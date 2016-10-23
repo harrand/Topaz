@@ -1,0 +1,25 @@
+textures: bricks,grass,lava,metal,sand,swordtexture
+bricks.path: ./res/textures/bricks.jpg
+bricks.name: [Dev] Copyrighted Bricks Texture
+grass.path: ./res/textures/grass.png
+grass.name: [Dev] Copyrighted Grass Texture
+lava.path: ./res/textures/lava.jpg
+lava.name: [Dev] Copyrighted Lava Texture
+metal.path: ./res/textures/metal.jpg
+metal.name: [Dev] Copyrighted Metal Texture
+sand.path: ./res/textures/sand.jpg
+sand.name: [Dev] Copyrighted Sand Texture
+swordtexture.path: ./res/textures/sword.png
+swordtexture.name: [Dev] Semicopyrighted Sword Texture
+
+models: cube,monkeyhead,sphere,sword
+cube.path: ./res/models/cube.obj
+cube.name: Complete Cube
+monkeyhead.path: ./res/models/monkey3.obj
+monkeyhead.name: Complete Monkey Head
+sphere.path: ./res/models/sphere.obj
+sphere.name: Complete Sphere
+sword.path: ./res/models/sword.obj
+sword.name: Complete Sword
+
+played: 59079

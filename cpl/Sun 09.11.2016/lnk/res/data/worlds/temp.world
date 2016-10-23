@@ -1,0 +1,31 @@
+objects: object0,object1,object2,object3,object4,object5
+object0.mesh: cube
+object0.texture: grass
+object0.pos: [0, 0, 0]
+object0.rot: [0, 0, 0]
+object0.scale: [2, 2, 2]
+object1.mesh: cube
+object1.texture: grass
+object1.pos: [6, 0, 0]
+object1.rot: [0, 0, 0]
+object1.scale: [2, 2, 2]
+object2.mesh: cube
+object2.texture: bricks
+object2.pos: [0, -1, 0]
+object2.rot: [0, 0, 0]
+object2.scale: [100, 2, 100]
+object3.mesh: monkeyhead
+object3.texture: grass
+object3.pos: [18.0488, 16.6728, 130.286]
+object3.rot: [-0.15, 3.90841, -0]
+object3.scale: [25, 25, 25]
+object4.mesh: monkeyhead
+object4.texture: lava
+object4.pos: [2.55315, 6.96808, -17.2341]
+object4.rot: [0, -3.14159, 0]
+object4.scale: [2, 2, 2]
+object5.mesh: monkeyhead
+object5.texture: lava
+object5.pos: [32.7329, 14.4681, -13.951]
+object5.rot: [-0.3, -4.14159, 0]
+object5.scale: [2, 2, 2]

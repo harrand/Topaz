@@ -1,0 +1,25 @@
+id ICON "../icon/ocular_test.ico"
+1 VERSIONINFO
+FILEVERSION     1,0,0,0
+PRODUCTVERSION  1,0,0,0
+BEGIN
+  BLOCK "StringFileInfo"
+  BEGIN
+    BLOCK "080904E4"
+    BEGIN
+      VALUE "CompanyName", "Harrand Dev"
+      VALUE "FileDescription", "Ocular Game Engine Testing"
+      VALUE "FileVersion", "1.0"
+      VALUE "InternalName", "oculargengtest"
+      VALUE "LegalCopyright", "Harrand"
+      VALUE "OriginalFilename", "ocular-graphics test.exe"
+      VALUE "ProductName", "OCULAR GENG TEST - DEV ONLY"
+      VALUE "ProductVersion", "1.0"
+    END
+  END
+
+  BLOCK "VarFileInfo"
+  BEGIN
+    VALUE "Translation", 0x809, 1252
+  END
+END

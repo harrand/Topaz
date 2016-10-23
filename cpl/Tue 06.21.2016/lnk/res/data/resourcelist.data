@@ -1,0 +1,7 @@
+#Resource Data List of all Models and Textures
+cube: ./res/models/cube.obj
+monkeyhead: ./res/models/monkey3.obj
+
+grass: ./res/textures/grass.png
+lava: ./res/textures/lava.jpg
+bricks: ./res/textures/bricks.jpg

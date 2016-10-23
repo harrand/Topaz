@@ -1,0 +1,19 @@
+objects: floor1,floor2,monkey1
+
+floor1.mesh: Cube
+floor1.texture: Grass
+floor1.pos: [0, 0, 0]
+floor1.rot: [0, 0, 0]
+floor1.scale: [4, 0.7, 4]
+
+floor2.mesh: Cube
+floor2.texture: Grass
+floor2.pos: [8, 0, 0]
+floor2.rot: [0, 0, 0]
+floor2.scale: [4, 0.7, 4]
+
+monkey1.mesh: MonkeyHead
+monkey1.texture: Lava
+monkey1.pos: [0, 10, 15]
+monkey1.rot: [0, 1.14159, 0]
+monkey1.scale: [8, 8, 8]
