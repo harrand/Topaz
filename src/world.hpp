@@ -9,7 +9,6 @@ class World
 public:
 	World(std::string filename);
 	World(Object* objects, unsigned int numObjects);
-	~World();
 	void addObject(Object obj);
 	void exportWorld(std::string worldName);
 	unsigned int getSize();

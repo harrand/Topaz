@@ -29,20 +29,6 @@ World::World(Object* objects, unsigned int numObjects)
 	}
 	this->allocatedHeap = false;
 }
-
-World::~World()
-{
-	/*
-	if(allocatedHeap)
-	{
-		for(unsigned int i = 0; i < meshHeap.size(); i++)
-			delete this->meshHeap.at(i);
-		for(unsigned int i = 0; i < textureHeap.size(); i++)
-			delete this->textureHeap.at(i);
-	}]
-	*/
-}
-
 void World::addObject(Object obj)
 {
 	this->members.push_back(obj);
@@ -113,8 +99,6 @@ Object World::retrieveData(std::string objectName, File f)
 	std::string rotationStr = FileUtility::getTag(f, (objectName + ".rot"));
 	std::string scaleStr = FileUtility::getTag(f, (objectName + ".scale"));
 	
-	//Mesh mesh(dt.getMeshLink(meshName));
-	//Texture texture(dt.getTextureLink(textureName));
 	std::string meshLink = dt.getMeshLink(meshName);
 	std::string textureLink = dt.getTextureLink(textureName);
 	
@@ -135,12 +119,6 @@ Object World::retrieveData(std::string objectName, File f)
 	float scaleY = MathsUtility::parseTemplateFloat(scaleData.at(1));
 	float scaleZ = MathsUtility::parseTemplateFloat(scaleData.at(2));
 	Vector3F scale(scaleX, scaleY, scaleZ);
-	
-	/*
-	// Keep track of the heap-allocated objects. Garbage collection occurs at destructor.
-	this->meshHeap.push_back(mesh);
-	this->textureHeap.push_back(texture);
-	*/
 	
 	return Object(meshLink, textureLink, pos, rot, scale);
 }

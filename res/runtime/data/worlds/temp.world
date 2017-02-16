@@ -1,0 +1,141 @@
+objects: object0,object1,object2,object3,object4,object5,object6,object7,object8,object9,object10,object11,object12,object13,object14,object15,object16,object17,object18,object19,object20,object21,object22,object23,object24,object25,object26,object27
+object0.mesh: cube
+object0.texture: sand
+object0.pos: [0, 0, 0]
+object0.rot: [0, 0, 0]
+object0.scale: [2, 2, 2]
+object1.mesh: cube
+object1.texture: grass
+object1.pos: [6, 0, 0]
+object1.rot: [0, 0, 0]
+object1.scale: [2, 2, 2]
+object2.mesh: torus
+object2.texture: sand
+object2.pos: [0, -15, 0]
+object2.rot: [0, 0, 0]
+object2.scale: [100, 100, 100]
+object3.mesh: torch
+object3.texture: torch1
+object3.pos: [18.0488, 16.6728, 130.286]
+object3.rot: [-0.15, 3.90841, -0]
+object3.scale: [25, 25, 25]
+object4.mesh: monkeyhead
+object4.texture: metal
+object4.pos: [-47.1851, 48.3911, 28.841]
+object4.rot: [-0.75, 1.34159, 0]
+object4.scale: [8, 8, 8]
+object5.mesh: monkeyhead
+object5.texture: lava
+object5.pos: [15.0001, 1.5, 50]
+object5.rot: [0, 6.2416, 0]
+object5.scale: [12, 12, 12]
+object6.mesh: monkeyhead
+object6.texture: bricks
+object6.pos: [19.6578, 97.6598, 22.0097]
+object6.rot: [-1.6, 6.2416, 0]
+object6.scale: [31, 31, 31]
+object7.mesh: cube
+object7.texture: lava
+object7.pos: [127.87, 58.3642, -25.6041]
+object7.rot: [-0.75, 12.6416, 0]
+object7.scale: [24, 21, 19]
+object8.mesh: cube
+object8.texture: lava
+object8.pos: [26.1821, 5.30777, 0.993736]
+object8.rot: [-0.9, 16.9916, 0]
+object8.scale: [0.5, 0.5, 0.5]
+object9.mesh: monkeyhead
+object9.texture: metal
+object9.pos: [21.0549, 5.1723, 1.0272]
+object9.rot: [-0.15, 19.9916, 0]
+object9.scale: [0.3, 0.3, 0.3]
+object10.mesh: monkeyhead
+object10.texture: lava
+object10.pos: [16.5289, 2.48079, 5.73992]
+object10.rot: [0.3, 18.9416, 0]
+object10.scale: [0.05, 0.05, 0.05]
+object11.mesh: sphere
+object11.texture: lava
+object11.pos: [86.4294, 32.143, 49.7597]
+object11.rot: [3.85, 22.4415, 0]
+object11.scale: [44, 44, 44]
+object12.mesh: monkeyhead
+object12.texture: grass
+object12.pos: [6.276, 13.2337, -6.67017]
+object12.rot: [-0.1, 2.99159, 0]
+object12.scale: [3, 3, 3]
+object13.mesh: cube
+object13.texture: bricks
+object13.pos: [9.60622, 13.1866, -12.4264]
+object13.rot: [-0.35, -3.80841, 0]
+object13.scale: [0.2, 3, 2]
+object14.mesh: cube
+object14.texture: grass
+object14.pos: [-32.594, 9.18197, -22.5678]
+object14.rot: [0, 0, 0]
+object14.scale: [3, 0.5, 3]
+object15.mesh: cube
+object15.texture: metal
+object15.pos: [-36.4294, 15.8781, -20.7226]
+object15.rot: [0, 0, 0]
+object15.scale: [3, 0.5, 3]
+object16.mesh: monkeyhead
+object16.texture: lava
+object16.pos: [6.99974, 32.5, -98]
+object16.rot: [2, 3, 4]
+object16.scale: [6, 6, 6]
+object17.mesh: cube
+object17.texture: grass
+object17.pos: [-71.6303, -21.5146, -71.1412]
+object17.rot: [-3.2, -3.85841, 0]
+object17.scale: [7, 7, 7]
+object18.mesh: cube
+object18.texture: bricks
+object18.pos: [-102.794, 0.751848, -5.05603]
+object18.rot: [0, 0, 0]
+object18.scale: [3, 1, 3]
+object19.mesh: cube
+object19.texture: bricks
+object19.pos: [-107.81, -1.73019, -4.63959]
+object19.rot: [0, 0, 0]
+object19.scale: [3, 1, 3]
+object20.mesh: cube
+object20.texture: bricks
+object20.pos: [-112.793, -3.24595, -5.25521]
+object20.rot: [0, 0, 0]
+object20.scale: [3, 1, 3]
+object21.mesh: cube
+object21.texture: bricks
+object21.pos: [-113.162, -6.0079, 1.51428]
+object21.rot: [0, 0, 0]
+object21.scale: [3, 1, 3]
+object22.mesh: cube
+object22.texture: bricks
+object22.pos: [-114.052, -14.4889, 7.47491]
+object22.rot: [0, 0, 0]
+object22.scale: [3, 1, 3]
+object23.mesh: cube
+object23.texture: grass
+object23.pos: [-47.7125, 22.8952, -76.3233]
+object23.rot: [-8.65001, -3.05841, 0]
+object23.scale: [8, 8, 8]
+object24.mesh: cube
+object24.texture: lava
+object24.pos: [-56.9156, 26.3428, -69.6882]
+object24.rot: [-12.6, -4.85841, 0]
+object24.scale: [8, 8, 8]
+object25.mesh: sphere
+object25.texture: bricks
+object25.pos: [-44.3168, 19.1442, -62.4959]
+object25.rot: [-13.8, -6.85842, 0]
+object25.scale: [8, 8, 8]
+object26.mesh: monkeyhead
+object26.texture: sand
+object26.pos: [-3.49096, 44.7591, -59.5275]
+object26.rot: [-0.15, 3.29159, 0]
+object26.scale: [2, 2, 2]
+object27.mesh: monkeyhead
+object27.texture: lava
+object27.pos: [-17.8136, 3.73753, 3.57915]
+object27.rot: [0, 2.44159, 0]
+object27.scale: [3, 3, 3]
