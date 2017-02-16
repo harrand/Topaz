@@ -1,0 +1,34 @@
+textures: undefined,bricks,grass,lava,metal,sand,torchblank,torch1
+undefined.path: ../../../res/runtime/textures/undefined.jpg
+undefined.name: Undefined Texture
+bricks.path: ../../../res/runtime/textures/bricks.jpg
+bricks.name: [Dev] Copyrighted Bricks Texture
+grass.path: ../../../res/runtime/textures/grass.png
+grass.name: [Dev] Copyrighted Grass Texture
+lava.path: ../../../res/runtime/textures/lava.jpg
+lava.name: [Dev] Copyrighted Lava Texture
+metal.path: ../../../res/runtime/textures/metal.jpg
+metal.name: [Dev] Copyrighted Metal Texture
+sand.path: ../../../res/runtime/textures/sand.jpg
+sand.name: [Dev] Copyrighted Sand Texture
+torchblank.path: ../../../res/runtime/textures/torch_blank.png
+torchblank.name: Torch Blank UV Map
+torch1.path: ../../../res/runtime/textures/torch_1.png
+torch1.name: Torch Texture Map 01
+
+models: cube,monkeyhead,sphere,torus,torch
+cube.path: ../../../res/runtime/models/cube.obj
+cube.name: Complete Cube
+monkeyhead.path: ../../../res/runtime/models/monkeyhead.obj
+monkeyhead.name: Complete Monkey Head
+sphere.path: ../../../res/runtime/models/sphere.obj
+sphere.name: Complete Sphere
+sword.path: ../../../res/runtime/models/sword.obj
+sword.name: Complete Sword
+torus.path: ../../../res/runtime/models/torus.obj
+torus.name: Complete Torus
+torch.path: ../../../res/runtime/models/torch.obj
+torch.name: Complete Torch
+
+played: 63051
+speed: 20

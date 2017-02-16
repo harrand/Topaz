@@ -50,7 +50,7 @@ void Mesh::render()
 }
 
 //static
-Mesh* Mesh::getFromLink(std::string meshLink, std::vector<Mesh*> allMeshes)
+std::shared_ptr<Mesh> Mesh::getFromLink(std::string meshLink, std::vector<std::shared_ptr<Mesh>> allMeshes)
 {
 	for(unsigned int i = 0; i < allMeshes.size(); i++)
 	{

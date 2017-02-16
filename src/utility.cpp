@@ -168,7 +168,7 @@ std::vector<std::string> File::getLines()
 	std::vector<std::string> res;
 	std::string str;
 	std::ifstream in((this->filename).c_str());
-	while(std::getline(in, str, '\n'))
+	while(std::getline(in, str))
 	{
 		res.push_back(str);
 	}

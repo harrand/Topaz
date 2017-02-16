@@ -2,6 +2,7 @@
 #define DATATRANSLATION_HPP
 #include "utility.hpp"
 #include <map>
+#define RES_POINT std::string("../../../res/runtime")
 
 class DataTranslation
 {

@@ -5,6 +5,7 @@
 #endif
 #include <vector>
 #include <string>
+#include <memory>
 #include "glew.h"
 #include "model_loader.hpp"
 
@@ -25,7 +26,7 @@ public:
 	~Mesh();
 	std::string getFileName();
 	void render();
-	static Mesh* getFromLink(std::string meshLink, std::vector<Mesh*> allMeshes);
+	static std::shared_ptr<Mesh> getFromLink(std::string meshLink, std::vector<std::shared_ptr<Mesh>> allMeshes);
 private:
 	std::string filename;
 	void initMesh(IndexedModel& model);

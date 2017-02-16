@@ -70,7 +70,7 @@ std::string Texture::getFileName()
 }
 
 //static
-Texture* Texture::getFromLink(std::string textureLink, std::vector<Texture*> allTextures)
+std::shared_ptr<Texture> Texture::getFromLink(std::string textureLink, std::vector<std::shared_ptr<Texture>> allTextures)
 {
 	for(unsigned int i = 0; i < allTextures.size(); i++)
 	{

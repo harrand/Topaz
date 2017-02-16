@@ -1,6 +1,25 @@
 #include "command.hpp"
 
-void Commands::loadWorld(std::vector<std::string> args, World*& world)
+void Commands::inputCommand(std::string cmd, std::shared_ptr<World>& world, Camera& cam)
+{
+	std::vector<std::string> args;
+	if(StringUtility::contains(cmd, ' '))
+		args = StringUtility::splitString(cmd, ' ');
+	else
+		args.push_back(cmd);
+	std::string cmdName = args.at(0);
+	
+	if(cmdName == "loadworld")
+		Commands::loadWorld(args, world);
+	else if(cmdName == "exportworld")
+		Commands::exportWorld(args, world);
+	else if(cmdName == "addobject")
+		Commands::addObject(args, world, cam, true);
+	else if(cmdName == "reloadworld")
+		Commands::reloadWorld(world, true);
+}
+
+void Commands::loadWorld(std::vector<std::string> args, std::shared_ptr<World>& world)
 {
 	if(args.size() != 2)
 	{
@@ -8,13 +27,13 @@ void Commands::loadWorld(std::vector<std::string> args, World*& world)
 		return;
 	}
 	std::string worldname = args.at(1);
-	delete world;
-	std::string link = ("./res/data/worlds/" + worldname);
-	world = new World(link);
+	//delete world;
+	std::string link = (RES_POINT + "/data/worlds/" + worldname);
+	world = std::shared_ptr<World>(new World(link));//std::make_shared<World>(link);
 	std::cout << "Now rendering the world '" << worldname << "'.\n";
 }
 
-void Commands::exportWorld(std::vector<std::string> args, World*& world)
+void Commands::exportWorld(std::vector<std::string> args, std::shared_ptr<World>& world)
 {
 	if(args.size() != 2)
 	{
@@ -25,14 +44,14 @@ void Commands::exportWorld(std::vector<std::string> args, World*& world)
 	world->exportWorld(worldname);
 }
 
-void Commands::addObject(std::vector<std::string> args, World*& world, Camera& cam, bool printResults)
+void Commands::addObject(std::vector<std::string> args, std::shared_ptr<World>& world, Camera& cam, bool printResults)
 {
 	if(args.size() != 6)
 	{
 		std::cout << "Nonfatal Command Error: Unexpected quantity of args, got " << args.size() << ", expected 6.\n";
 		return;
 	}
-	DataTranslation dt("./res/resources.data");
+	DataTranslation dt(RES_POINT + "/resources.data");
 	std::string meshName = args.at(1);
 	std::string textureName = args.at(2);
 	std::string posStr = args.at(3);
@@ -105,11 +124,11 @@ void Commands::addObject(std::vector<std::string> args, World*& world, Camera& c
 	}
 }
 
-void Commands::reloadWorld(World*& world, bool printResults)
+void Commands::reloadWorld(std::shared_ptr<World>& world, bool printResults)
 {
 	world->exportWorld("temp.world");
-	delete world;
-	world = new World("./res/data/worlds/temp.world");
+	//delete world;
+	world = std::shared_ptr<World>(new World(RES_POINT + "/data/worlds/temp.world"));
 	if(printResults)
 		std::cout << "World successfully reloaded via 'temp.world'.\n";
 }

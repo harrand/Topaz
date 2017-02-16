@@ -4,6 +4,7 @@
 #include <cassert>
 #include <iostream>
 #include <vector>
+#include <memory>
 #include "stb_image.h"
 #ifndef GLEW_STATIC
 #define GLEW_STATIC
@@ -17,7 +18,7 @@ public:
 	~Texture();
 	void bind(unsigned int id);
 	std::string getFileName();
-	static Texture* getFromLink(std::string textureLink, std::vector<Texture*> allTextures);
+	static std::shared_ptr<Texture> getFromLink(std::string textureLink, std::vector<std::shared_ptr<Texture>> allTextures);
 private:
 	unsigned char* loadTexture();
 	void deleteTexture(unsigned char* imgdata);

@@ -1,11 +1,7 @@
 #include "world.hpp"
 
-//template
-#include <iostream>
-
 World::World(std::string filename)
 {
-	std::cout << "loading new world...\n";
 	this->filename = filename;
 	this->allocatedHeap = false;
 	File input(filename);
@@ -20,8 +16,8 @@ World::World(std::string filename)
 		std::string objectName = objectListV.at(i);
 		Object obj = this->retrieveData(objectName, input);
 		this->addObject(obj);
-		std::cout << "Loaded " << objectName << " into world.\n";
-		std::cout << objectName << " uses the Mesh '" << obj.getMeshLink() << "' and the Texture '" << obj.getTextureLink() << "'.\n";
+		//std::cout << "Loaded " << objectName << " into world.\n";
+		//std::cout << objectName << " uses the Mesh '" << obj.getMeshLink() << "' and the Texture '" << obj.getTextureLink() << "'.\n";
 	}
 }
 
@@ -54,8 +50,8 @@ void World::addObject(Object obj)
 
 void World::exportWorld(std::string worldName)
 {
-	DataTranslation dt("./res/data/resourcelist.data");
-	std::string worldLink = "./res/data/worlds/" + worldName;
+	DataTranslation dt(RES_POINT + "/resources.data");
+	std::string worldLink = RES_POINT + "/data/worlds/" + worldName;
 	File output(worldLink);
 	if(!output.exists())
 	{
@@ -70,14 +66,14 @@ void World::exportWorld(std::string worldName)
 		if(objectList == "_")
 			objectList = "";
 		objectList += (objectList == "") ? (objectName) : ("," + objectName);
-		FileUtility::setTag(output, "objects", objectList);
-				
+		FileUtility::setTag(output, "objects", objectList);				
 		std::string meshLink = curObj.getMeshLink();
-		std::string textureLink = curObj.getTextureLink();
+		std::string textureLink = curObj.getTextureLink();		
+		
 		Vector3F pos = curObj.getPos();
 		Vector3F rot = curObj.getRot();
-		Vector3F scale = curObj.getScale();
-				
+		Vector3F scale = curObj.getScale();		
+		
 		std::string posLink = "[" + StringUtility::toString(pos.getX()) + ", " + StringUtility::toString(pos.getY()) + ", " + StringUtility::toString(pos.getZ()) + "]";
 		std::string rotLink = "[" + StringUtility::toString(rot.getX()) + ", " + StringUtility::toString(rot.getY()) + ", " + StringUtility::toString(rot.getZ()) + "]";
 		std::string scaleLink = "[" + StringUtility::toString(scale.getX()) + ", " + StringUtility::toString(scale.getY()) + ", " + StringUtility::toString(scale.getZ()) + "]";
@@ -89,7 +85,7 @@ void World::exportWorld(std::string worldName)
 		FileUtility::setTag(output, (objectName + ".texture"), textureName);
 		FileUtility::setTag(output, (objectName + ".pos"), posLink);
 		FileUtility::setTag(output, (objectName + ".rot"), rotLink);
-		FileUtility::setTag(output, (objectName + ".scale"), scaleLink);		
+		FileUtility::setTag(output, (objectName + ".scale"), scaleLink);	
 	}
 }
 
@@ -110,7 +106,7 @@ std::string World::getWorldLink()
 
 Object World::retrieveData(std::string objectName, File f)
 {
-	DataTranslation dt("./res/resources.data");
+	DataTranslation dt(RES_POINT + "/resources.data");
 	std::string meshName = FileUtility::getTag(f, (objectName + ".mesh"));
 	std::string textureName = FileUtility::getTag(f, (objectName + ".texture"));
 	std::string positionStr = FileUtility::getTag(f, (objectName + ".pos"));

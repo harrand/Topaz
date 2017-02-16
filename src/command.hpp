@@ -4,14 +4,13 @@
 #include "world.hpp"
 #include "object.hpp"
 
-class Commands
+namespace Commands
 {
-public:
-	static void loadWorld(std::vector<std::string> args, World*& world);
-	static void exportWorld(std::vector<std::string> args, World*& world);
-	static void addObject(std::vector<std::string> args, World*& world, Camera& cam, bool printResults);
-	static void reloadWorld(World*& world, bool printResults);
-private:
-};
+	void inputCommand(std::string cmd, std::shared_ptr<World>& world, Camera& cam);
+	void loadWorld(std::vector<std::string> args, std::shared_ptr<World>& world);
+	void exportWorld(std::vector<std::string> args, std::shared_ptr<World>& world);
+	void addObject(std::vector<std::string> args, std::shared_ptr<World>& world, Camera& cam, bool printResults);
+	void reloadWorld(std::shared_ptr<World>& world, bool printResults);
+}
 
 #endif

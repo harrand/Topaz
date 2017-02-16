@@ -3,34 +3,15 @@
 #include "command.hpp"
 #include <iostream>
 
-World* world;
-std::vector<Mesh*> allMeshes;
-std::vector<Texture*> allTextures;
+//World* world;
+std::shared_ptr<World> world;
+std::vector<std::shared_ptr<Mesh>> allMeshes;
+std::vector<std::shared_ptr<Texture>> allTextures;
 Camera cam(Vector3F(), Vector3F(0, 3.14159, 0));
 
-void handleCmd(std::string input)
+void handleKeybinds(Window& wnd, KeyListener kl, float avgFrameMillis)
 {
-	std::vector<std::string> args;
-	if(StringUtility::contains(input, ' '))
-		args = StringUtility::splitString(input, ' ');
-	else
-		args.push_back(input);
-	std::string n = args.at(0);
-	if(n == "loadworld")
-		Commands::loadWorld(args, world);
-	else if(n == "exportworld")
-		Commands::exportWorld(args, world);
-	else if(n == "addobject")
-		Commands::addObject(args, world, cam, true);
-	else if(n == "reloadworld")
-		Commands::reloadWorld(world, true);
-	else
-		std::cout << "Unknown command '" << n << "'.\n";
-}
-
-void handleKeybinds(Window* wnd, KeyListener kl, float avgFrameMillis)
-{
-	float multiplier = MathsUtility::parseTemplate(FileUtility::getTag(File("./res/resources.data"), "speed")) * (avgFrameMillis/1000);
+	float multiplier = MathsUtility::parseTemplate(FileUtility::getTag(File(RES_POINT + "/resources.data"), "speed")) * (avgFrameMillis/1000);
 	
 	if(kl.isKeyPressed("W"))
 	{
@@ -64,7 +45,7 @@ void handleKeybinds(Window* wnd, KeyListener kl, float avgFrameMillis)
 	}
 	if(kl.isKeyPressed("Escape"))
 	{
-		wnd->requestClose();
+		wnd.requestClose();
 	}
 	if(kl.isKeyPressed("I"))
 	{
@@ -86,7 +67,7 @@ void handleKeybinds(Window* wnd, KeyListener kl, float avgFrameMillis)
 	{
 		std::string input;
 		std::getline(std::cin, input);
-		handleCmd(input);
+		Commands::inputCommand(input, world, cam);
 	}
 }
 
@@ -98,7 +79,7 @@ int main()
 {	
 	std::cout << "== Ocular GEng Development Testing ==\n";
 	
-	File timeStorage("./res/resources.data");
+	File timeStorage(RES_POINT + "/resources.data");
 	int secondsLifetime = MathsUtility::parseTemplate(FileUtility::getTag(timeStorage, "played"));
 	KeyListener kl;
 	
@@ -108,12 +89,13 @@ int main()
 	TimeKeeper tk, fpscounter;
 	std::cout << "'Ocular GEng Development Window' created.\n";
 	
-	Shader shader("./res/shaders/vanilla");
+	Shader shader(RES_POINT + "/shaders/vanilla");
 	std::cout << "Ocular GEng Shader 'vanilla' initialised.\n";
 	
-	world = new World("./res/data/worlds/test.world");
+	world = std::shared_ptr<World>(new World(RES_POINT + "/data/worlds/test.world"));
+	//world = new World("./res/data/worlds/test.world");
 	
-	DataTranslation dt("./res/resources.data");
+	DataTranslation dt(RES_POINT + "/resources.data");
 	typedef std::map<std::string, std::string>::iterator iter;
 	std::map<std::string, std::string> models = dt.retrieveModels(), textures = dt.retrieveTextures();
 	
@@ -123,14 +105,16 @@ int main()
 		// iterator->first = key = model path
 		// iterator->second = value = model 'name'
 		//std::cout << "Model Detected of name '" << iterator->second << "' and is at the path '" << iterator->first << "'.\n";
-		allMeshes.push_back(new Mesh(iterator->first));
+		//allMeshes.push_back(new Mesh(iterator->first));
+		allMeshes.push_back(std::shared_ptr<Mesh>(new Mesh(iterator->first)));
 	}
 	for(it_type iterator = textures.begin(); iterator != textures.end(); iterator++)
 	{
 		// iterator->first = key = model path
 		// iterator->second = value = model 'name'
 		//std::cout << "Texture Detected of name '" << iterator->second << "' and is at the path '" << iterator->first << "'.\n";
-		allTextures.push_back(new Texture(iterator->first));
+		//allTextures.push_back(new Texture(iterator->first));
+		allTextures.push_back(std::shared_ptr<Texture>(new Texture(iterator->first)));
 	}
 	
 	std::vector<float> deltas;
@@ -163,7 +147,7 @@ int main()
 		wnd.clear(0.0f, 0.0f, 0.0f, 1.0f);
 		shader.bind();
 		
-		handleKeybinds(&wnd, kl, deltaTotal / deltas.size());
+		handleKeybinds(wnd, kl, deltaTotal / deltas.size());
 		fpscounter.reload();
 		
 		for(unsigned int i = 0; i < world->getMembers().size(); i++)
@@ -179,6 +163,7 @@ int main()
 	strum << secondsLifetime;
 	FileUtility::setTag(timeStorage, "played", strum.str());
 	
+	/*
 	for(unsigned int i = 0; i < allMeshes.size(); i++)
 	{
 		delete allMeshes.at(i);
@@ -187,7 +172,7 @@ int main()
 	{
 		delete allTextures.at(i);
 	}
-	
-	delete world;
+	*/
+	//delete world;
 	return 0;
 }

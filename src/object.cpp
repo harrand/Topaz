@@ -71,7 +71,7 @@ Texture Object::getTexture()
 }
 */
 
-void Object::render(Mesh* mesh, Texture* tex, Camera& cam, Shader& shad, float width, float height)
+void Object::render(std::shared_ptr<Mesh> mesh, std::shared_ptr<Texture> tex, Camera& cam, Shader& shad, float width, float height)
 {
 	//(MatrixTransformations::createMVPMatrix(this->pos, this->rot, this->scale, cam.getPosR(), cam.getRotR(), 1.5708, width, height, 0.1f, 1000.0f).washed()).fillData(this->mvp);
 	(MatrixTransformations::createModelMatrix(this->pos, this->rot, this->scale).washed()).fillData(this->m);

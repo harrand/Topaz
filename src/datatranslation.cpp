@@ -1,12 +1,6 @@
 #include "datatranslation.hpp"
 
-//TEMP
-#include <iostream>
-
-DataTranslation::DataTranslation(std::string datafilename)
-{
-	this->datafilename = datafilename;
-}
+DataTranslation::DataTranslation(std::string datafilename): datafilename(datafilename){}
 
 std::string DataTranslation::getMeshLink(std::string meshName)
 {
@@ -21,15 +15,17 @@ std::string DataTranslation::getTextureLink(std::string textureName)
 std::string DataTranslation::getMeshName(std::string meshLink)
 {
 	File input(this->datafilename);
-	for(unsigned int i = 0; i < (input.lineCount() - 1); i++)
+	for(unsigned int i = 0; i < input.lineCount(); i++)
 	{
-		std::string line = input.getFromLine(i + 1);
+		std::string line = input.getFromLine(i);
 		std::vector<std::string> lineSplit = StringUtility::splitString(line, ':');
 		if(lineSplit.size() != 0)
 		{
 			std::string tagname = lineSplit.at(0);
 			if(FileUtility::getTag(input, tagname) == meshLink)
 			{
+				std::string undesiredSuffix = ".path";
+				tagname.erase(tagname.find(undesiredSuffix), undesiredSuffix.length());
 				return tagname;
 			}
 		}
@@ -49,6 +45,8 @@ std::string DataTranslation::getTextureName(std::string textureLink)
 			std::string tagname = lineSplit.at(0);
 			if(FileUtility::getTag(input, tagname) == textureLink)
 			{
+				std::string undesiredSuffix = ".path";
+				tagname.erase(tagname.find(undesiredSuffix), undesiredSuffix.length());
 				return tagname;
 			}
 		}
@@ -56,8 +54,6 @@ std::string DataTranslation::getTextureName(std::string textureLink)
 	// There was no such name referenced...
 	return "_";
 }
-// std::map<std::string, std::string> retrieveModels(std::string datafilename);
-// std::map<std::string, std::string> retrieveTextures(std::string datafilename);
 
 std::map<std::string, std::string> DataTranslation::retrieveModels()
 {
