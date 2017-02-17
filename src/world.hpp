@@ -16,10 +16,7 @@ public:
 	std::string getWorldLink();
 private:
 	std::string filename;
-	bool allocatedHeap;
-	Object retrieveData(std::string objectName, File f);
-	//std::vector<Mesh> meshHeap;
-	//std::vector<Texture> textureHeap;
+	Object retrieveData(std::string objectName, MDLF& mdlf);
 	std::vector<Object> members;
 };
 

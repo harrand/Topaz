@@ -1,16 +1,5 @@
 #include "object.hpp"
 
-/*
-Object::Object(Mesh mesh, Texture texture, Vector3F pos, Vector3F rot, Vector3F scale)
-{
-	this->mesh = mesh;
-	this->tex = texture;
-	this->pos = pos;
-	this->rot = rot;
-	this->scale = scale;
-}
-*/
-
 Object::Object(std::string meshLink, std::string textureLink, Vector3F pos, Vector3F rot, Vector3F scale)
 {
 	this->meshLink = meshLink;

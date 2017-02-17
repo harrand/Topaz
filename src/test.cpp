@@ -3,7 +3,6 @@
 #include "command.hpp"
 #include <iostream>
 
-//World* world;
 std::shared_ptr<World> world;
 std::vector<std::shared_ptr<Mesh>> allMeshes;
 std::vector<std::shared_ptr<Texture>> allTextures;
@@ -11,8 +10,8 @@ Camera cam(Vector3F(), Vector3F(0, 3.14159, 0));
 
 void handleKeybinds(Window& wnd, KeyListener kl, float avgFrameMillis)
 {
-	float multiplier = MathsUtility::parseTemplate(FileUtility::getTag(File(RES_POINT + "/resources.data"), "speed")) * (avgFrameMillis/1000);
-	
+	//float multiplier = MathsUtility::parseTemplate(FileUtility::getTag(File(RES_POINT + "/resources.data"), "speed")) * (avgFrameMillis/1000);
+	float multiplier = MathsUtility::parseTemplate(MDLF(RawFile(RES_POINT + "/resources.data")).getTag("speed")) * (avgFrameMillis / 1000);
 	if(kl.isKeyPressed("W"))
 	{
 		cam.getPosR() += (cam.getForward() * multiplier);
@@ -79,8 +78,9 @@ int main()
 {	
 	std::cout << "== Ocular GEng Development Testing ==\n";
 	
-	File timeStorage(RES_POINT + "/resources.data");
-	int secondsLifetime = MathsUtility::parseTemplate(FileUtility::getTag(timeStorage, "played"));
+	MDLF timeStorage(RawFile(RES_POINT + "/resources.data"));
+	//int secondsLifetime = MathsUtility::parseTemplate(FileUtility::getTag(timeStorage, "played"));
+	int secondsLifetime = MathsUtility::parseTemplate(timeStorage.getTag("played"));
 	KeyListener kl;
 	
 	Window wnd(800, 600, "Ocular Game Engine : Test Window");
@@ -100,20 +100,16 @@ int main()
 	std::map<std::string, std::string> models = dt.retrieveModels(), textures = dt.retrieveTextures();
 	
 	typedef std::map<std::string, std::string>::iterator it_type;
+	std::cout << "Retriving models...\n";
 	for(it_type iterator = models.begin(); iterator != models.end(); iterator++)
 	{
-		// iterator->first = key = model path
-		// iterator->second = value = model 'name'
-		//std::cout << "Model Detected of name '" << iterator->second << "' and is at the path '" << iterator->first << "'.\n";
-		//allMeshes.push_back(new Mesh(iterator->first));
+		std::cout << "Initialising a mesh with the link " << iterator->first << ".\n";
 		allMeshes.push_back(std::shared_ptr<Mesh>(new Mesh(iterator->first)));
 	}
+	std::cout << "Retriving textures...\n";
 	for(it_type iterator = textures.begin(); iterator != textures.end(); iterator++)
 	{
-		// iterator->first = key = model path
-		// iterator->second = value = model 'name'
-		//std::cout << "Texture Detected of name '" << iterator->second << "' and is at the path '" << iterator->first << "'.\n";
-		//allTextures.push_back(new Texture(iterator->first));
+		std::cout << "Initialising a texture with the link " << iterator->first << ".\n";
 		allTextures.push_back(std::shared_ptr<Texture>(new Texture(iterator->first)));
 	}
 	
@@ -161,18 +157,8 @@ int main()
 	}
 	std::ostringstream strum;
 	strum << secondsLifetime;
-	FileUtility::setTag(timeStorage, "played", strum.str());
-	
-	/*
-	for(unsigned int i = 0; i < allMeshes.size(); i++)
-	{
-		delete allMeshes.at(i);
-	}
-	for(unsigned int i = 0; i < allTextures.size(); i++)
-	{
-		delete allTextures.at(i);
-	}
-	*/
-	//delete world;
+	//FileUtility::setTag(timeStorage, "played", strum.str());
+	timeStorage.deleteTag("played");
+	timeStorage.addTag("played", strum.str());
 	return 0;
 }

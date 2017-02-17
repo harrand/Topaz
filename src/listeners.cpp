@@ -1,20 +1,5 @@
 #include "listeners.hpp"
 
-/*
-
-if (std::find(v.begin(), v.end(), "abc") != v.end())
-{
-  // Element in vector.
-}
-
-
-std::vector<int> vec;
-// .. put in some values ..
-int int_to_remove = n;
-vec.erase(std::remove(vec.begin(), vec.end(), int_to_remove), vec.end());
-
-*/
-
 void KeyListener::handleEvents(SDL_Event& evt)
 {
 	switch(evt.type)

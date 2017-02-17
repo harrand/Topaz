@@ -81,14 +81,6 @@ void Window::update()
 {
 	SDL_GL_SwapWindow(this->wnd);
 	this->handleEvents();
-	/*
-	SDL_Event e;
-	while(SDL_PollEvent(&e))
-	{
-		if(e.type == SDL_QUIT)
-			this->iscloserequested = true;
-	}
-	*/
 }
 
 void Window::registerListener(Listener& l)
@@ -146,14 +138,11 @@ void Window::handleEvents()
 	SDL_Event evt;
 	while(SDL_PollEvent(&evt))
 	{
-		// Iterate through all active listeners and handle their events first.
 		typedef std::map<unsigned int, Listener*>::iterator iter;
 		for(iter iterator = this->registeredListeners.begin(); iterator != this->registeredListeners.end(); iterator++)
 		{
 			Listener* l = iterator->second;
 			l->handleEvents(evt);
-			// iterator->first = key
-			// iterator->second = value
 		}
 		
 		if(evt.type == SDL_QUIT)

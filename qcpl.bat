@@ -21,7 +21,7 @@ set lnkdir="%cpldir%\lnk"
 
 if not exist %lnkdir% mkdir %lnkdir%
 
-"C:\MinGW\bin\g++" -std=c++1y -static-libgcc -static-libstdc++ -Wall -pedantic -O3 *.o -L%libdir% -L"%scriptdir%\Lua\5.3.2\lib" -lOpenGL32 -lSDL2 -lSDL2main "%scriptdir%\res\exe\ocular.res" -o "oculargame-test.exe"
+"C:\MinGW\bin\g++" -std=c++1y -static-libgcc -static-libstdc++ -Wall -pedantic -O3 *.o -L%libdir% -L"%scriptdir%\Lua\5.3.2\lib" -lOpenGL32 -lSDL2 -lSDL2main -lmdl "%scriptdir%\res\exe\ocular.res" -o "oculargame-test.exe"
 
 move "oculargame-test.exe" %lnkdir%
 echo Linking Completed, "oculargame-test.exe" is in %lnkdir%

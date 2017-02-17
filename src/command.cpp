@@ -30,7 +30,7 @@ void Commands::loadWorld(std::vector<std::string> args, std::shared_ptr<World>& 
 	//delete world;
 	std::string link = (RES_POINT + "/data/worlds/" + worldname);
 	world = std::shared_ptr<World>(new World(link));//std::make_shared<World>(link);
-	std::cout << "Now rendering the world '" << worldname << "'.\n";
+	std::cout << "Now rendering the world '" << worldname << "' which has " << world->getSize() << " objects.\n";
 }
 
 void Commands::exportWorld(std::vector<std::string> args, std::shared_ptr<World>& world)

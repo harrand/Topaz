@@ -1,23 +1,14 @@
 #include "world.hpp"
 
-World::World(std::string filename)
+World::World(std::string filename): filename(filename)
 {
-	this->filename = filename;
-	this->allocatedHeap = false;
-	File input(filename);
-	std::string objectList = FileUtility::getTag(input, "objects");
-	std::vector<std::string> objectListV;
-	if(StringUtility::contains(objectList, ','))
-		objectListV = StringUtility::splitString(objectList, ',');
-	else if(objectList != "_")
-		objectListV.push_back(objectList);
-	for(unsigned int i = 0; i < objectListV.size(); i++)
+	MDLF input(RawFile(this->filename));
+	std::vector<std::string> objectList = input.getSequence("objects");
+	for(unsigned int i = 0; i < objectList.size(); i++)
 	{
-		std::string objectName = objectListV.at(i);
+		std::string objectName = objectList.at(i);
 		Object obj = this->retrieveData(objectName, input);
 		this->addObject(obj);
-		//std::cout << "Loaded " << objectName << " into world.\n";
-		//std::cout << objectName << " uses the Mesh '" << obj.getMeshLink() << "' and the Texture '" << obj.getTextureLink() << "'.\n";
 	}
 }
 
@@ -27,8 +18,8 @@ World::World(Object* objects, unsigned int numObjects)
 	{
 		members.push_back(objects[i]);
 	}
-	this->allocatedHeap = false;
 }
+
 void World::addObject(Object obj)
 {
 	this->members.push_back(obj);
@@ -38,27 +29,21 @@ void World::exportWorld(std::string worldName)
 {
 	DataTranslation dt(RES_POINT + "/resources.data");
 	std::string worldLink = RES_POINT + "/data/worlds/" + worldName;
-	File output(worldLink);
-	if(!output.exists())
-	{
-		output = FileUtility::createRelativeFile(worldLink);
-	}
-	output.clear();
+	MDLF output = MDLF(RawFile(worldLink));
+	output.getRawFile().clear();
 	for(unsigned int i = 0; i < this->members.size(); i++)
 	{
 		Object curObj = this->members.at(i);
 		std::string objectName = "object" + StringUtility::toString(i);
-		std::string objectList = FileUtility::getTag(output, "objects");
-		if(objectList == "_")
-			objectList = "";
-		objectList += (objectList == "") ? (objectName) : ("," + objectName);
-		FileUtility::setTag(output, "objects", objectList);				
-		std::string meshLink = curObj.getMeshLink();
-		std::string textureLink = curObj.getTextureLink();		
+		std::vector<std::string> objectList = output.getSequence("objects");
+		objectList.push_back(objectName);
 		
-		Vector3F pos = curObj.getPos();
-		Vector3F rot = curObj.getRot();
-		Vector3F scale = curObj.getScale();		
+		output.deleteSequence("objects");
+		output.addSequence("objects", objectList);
+		std::string meshLink = curObj.getMeshLink();
+		std::string textureLink = curObj.getTextureLink();
+		
+		Vector3F pos = curObj.getPos(), rot = curObj.getRot(), scale = curObj.getScale();
 		
 		std::string posLink = "[" + StringUtility::toString(pos.getX()) + ", " + StringUtility::toString(pos.getY()) + ", " + StringUtility::toString(pos.getZ()) + "]";
 		std::string rotLink = "[" + StringUtility::toString(rot.getX()) + ", " + StringUtility::toString(rot.getY()) + ", " + StringUtility::toString(rot.getZ()) + "]";
@@ -66,12 +51,18 @@ void World::exportWorld(std::string worldName)
 		
 		std::string meshName = dt.getMeshName(meshLink);
 		std::string textureName = dt.getTextureName(textureLink);
-				
-		FileUtility::setTag(output, (objectName + ".mesh"), meshName);
-		FileUtility::setTag(output, (objectName + ".texture"), textureName);
-		FileUtility::setTag(output, (objectName + ".pos"), posLink);
-		FileUtility::setTag(output, (objectName + ".rot"), rotLink);
-		FileUtility::setTag(output, (objectName + ".scale"), scaleLink);	
+		
+		output.deleteTag(objectName + ".mesh");
+		output.deleteTag(objectName + ".texture");
+		output.deleteTag(objectName + ".pos");
+		output.deleteTag(objectName + ".rot");
+		output.deleteTag(objectName + ".scale");
+		
+		output.addTag(objectName + ".mesh", meshName);
+		output.addTag(objectName + ".texture", textureName);
+		output.addTag(objectName + ".pos", posLink);
+		output.addTag(objectName + ".rot", rotLink);
+		output.addTag(objectName + ".scale", scaleLink);
 	}
 }
 
@@ -90,14 +81,15 @@ std::string World::getWorldLink()
 	return this->filename;
 }
 
-Object World::retrieveData(std::string objectName, File f)
+Object World::retrieveData(std::string objectName, MDLF& mdlf)
 {
+	std::string meshName = mdlf.getTag(objectName + ".mesh");
+	std::string textureName = mdlf.getTag(objectName + ".texture");
+	std::string positionStr = mdlf.getTag(objectName + ".pos");
+	std::string rotationStr = mdlf.getTag(objectName + ".rot");
+	std::string scaleStr = mdlf.getTag(objectName + ".scale");
+	
 	DataTranslation dt(RES_POINT + "/resources.data");
-	std::string meshName = FileUtility::getTag(f, (objectName + ".mesh"));
-	std::string textureName = FileUtility::getTag(f, (objectName + ".texture"));
-	std::string positionStr = FileUtility::getTag(f, (objectName + ".pos"));
-	std::string rotationStr = FileUtility::getTag(f, (objectName + ".rot"));
-	std::string scaleStr = FileUtility::getTag(f, (objectName + ".scale"));
 	
 	std::string meshLink = dt.getMeshLink(meshName);
 	std::string textureLink = dt.getTextureLink(textureName);

@@ -1,4 +1,12 @@
-textures: undefined,bricks,grass,lava,metal,sand,torchblank,torch1
+textures: %[
+- undefined
+- bricks
+- grass
+- lava
+- metal
+- sand
+- torchblank
+- torch1]%
 undefined.path: ../../../res/runtime/textures/undefined.jpg
 undefined.name: Undefined Texture
 bricks.path: ../../../res/runtime/textures/bricks.jpg
@@ -15,8 +23,12 @@ torchblank.path: ../../../res/runtime/textures/torch_blank.png
 torchblank.name: Torch Blank UV Map
 torch1.path: ../../../res/runtime/textures/torch_1.png
 torch1.name: Torch Texture Map 01
-
-models: cube,monkeyhead,sphere,torus,torch
+models: %[
+- cube
+- monkeyhead
+- sphere
+- torus
+- torch]%
 cube.path: ../../../res/runtime/models/cube.obj
 cube.name: Complete Cube
 monkeyhead.path: ../../../res/runtime/models/monkeyhead.obj
@@ -30,5 +42,8 @@ torus.name: Complete Torus
 torch.path: ../../../res/runtime/models/torch.obj
 torch.name: Complete Torch
 
-played: 63151
 speed: 20
+
+
+
+played: 63540

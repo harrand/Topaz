@@ -4,25 +4,27 @@ DataTranslation::DataTranslation(std::string datafilename): datafilename(datafil
 
 std::string DataTranslation::getMeshLink(std::string meshName)
 {
-	return FileUtility::getTag(File(this->datafilename), (meshName + ".path"));
+	return MDLF(RawFile(this->datafilename)).getTag(meshName + ".path");
 }
 
 std::string DataTranslation::getTextureLink(std::string textureName)
 {
-	return FileUtility::getTag(File(this->datafilename), (textureName + ".path"));
+	return MDLF(RawFile(this->datafilename)).getTag(textureName + ".path");
 }
 
 std::string DataTranslation::getMeshName(std::string meshLink)
 {
-	File input(this->datafilename);
-	for(unsigned int i = 0; i < input.lineCount(); i++)
+	//File input(this->datafilename);
+	const RawFile input(this->datafilename);
+	for(unsigned int i = 0; i < input.getLines().size(); i++)
 	{
-		std::string line = input.getFromLine(i);
+		std::string line = input.getLineByNumber(i);
 		std::vector<std::string> lineSplit = StringUtility::splitString(line, ':');
 		if(lineSplit.size() != 0)
 		{
 			std::string tagname = lineSplit.at(0);
-			if(FileUtility::getTag(input, tagname) == meshLink)
+			//if(FileUtility::getTag(input, tagname) == meshLink)
+			if(MDLF(input).getTag(tagname) == meshLink)
 			{
 				std::string undesiredSuffix = ".path";
 				tagname.erase(tagname.find(undesiredSuffix), undesiredSuffix.length());
@@ -35,15 +37,17 @@ std::string DataTranslation::getMeshName(std::string meshLink)
 
 std::string DataTranslation::getTextureName(std::string textureLink)
 {
-	File input(this->datafilename);
-	for(unsigned int i = 0; i < (input.lineCount() - 1); i++)
+	//File input(this->datafilename);
+	const RawFile input(this->datafilename);
+	for(unsigned int i = 0; i < input.getLines().size(); i++)
 	{
-		std::string line = input.getFromLine(i + 1);
+		std::string line = input.getLineByNumber(i);
 		std::vector<std::string> lineSplit = StringUtility::splitString(line, ':');
 		if(lineSplit.size() != 0)
 		{
 			std::string tagname = lineSplit.at(0);
-			if(FileUtility::getTag(input, tagname) == textureLink)
+			//if(FileUtility::getTag(input, tagname) == textureLink)
+			if(MDLF(input).getTag(tagname) == textureLink)
 			{
 				std::string undesiredSuffix = ".path";
 				tagname.erase(tagname.find(undesiredSuffix), undesiredSuffix.length());
@@ -58,9 +62,21 @@ std::string DataTranslation::getTextureName(std::string textureLink)
 std::map<std::string, std::string> DataTranslation::retrieveModels()
 {
 	std::map<std::string, std::string> modelMap;
-	File input(this->datafilename);
+	MDLF input(RawFile(this->datafilename));
+	std::vector<std::string> modelList = input.getSequence("models");
+	for(unsigned int i = 0; i < modelList.size(); i++)
+	{
+		std::string model = modelList.at(i);
+		modelMap[this->getMeshLink(model)] = input.getTag(model + ".name");
+	}
+	return modelMap;
+	/*
+	std::map<std::string, std::string> modelMap;
+	//File input(this->datafilename);
+	MDLF input(RawFile(this->datafilename));
 	std::vector<std::string> models;
-	std::string modelListStr = FileUtility::getTag(input, "models");
+	//std::string modelListStr = FileUtility::getTag(input, "models");
+	std::string modelListStr = input.getTag("models");
 	std::vector<std::string> modelList;
 	if(StringUtility::contains(modelListStr, ','))
 		modelList = StringUtility::splitString(modelListStr, ',');
@@ -73,11 +89,21 @@ std::map<std::string, std::string> DataTranslation::retrieveModels()
 		modelMap[this->getMeshLink(model)] = FileUtility::getTag(input, model + ".name");
 	}
 	return modelMap;
+	*/
 }
 
 std::map<std::string, std::string> DataTranslation::retrieveTextures()
 {
 	std::map<std::string, std::string> textureMap;
+	MDLF input(RawFile(this->datafilename));
+	std::vector<std::string> textureList = input.getSequence("textures");
+	for(unsigned int i = 0; i < textureList.size(); i++)
+	{
+		std::string texture = textureList.at(i);
+		textureMap[this->getTextureLink(texture)] = input.getTag(texture + ".name");
+	}
+	return textureMap;
+	/*
 	File input(this->datafilename);
 	std::vector<std::string> textures;
 	std::string textureListStr = FileUtility::getTag(input, "textures");
@@ -93,4 +119,5 @@ std::map<std::string, std::string> DataTranslation::retrieveTextures()
 		textureMap[this->getTextureLink(texture)] = FileUtility::getTag(input, texture + ".name");
 	}
 	return textureMap;
+	*/
 }

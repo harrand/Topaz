@@ -1,6 +1,7 @@
 #ifndef DATATRANSLATION_HPP
 #define DATATRANSLATION_HPP
 #include "utility.hpp"
+#include "mdl.hpp"
 #include <map>
 #define RES_POINT std::string("../../../res/runtime")
 
