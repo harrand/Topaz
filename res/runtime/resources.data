@@ -42,7 +42,6 @@ torus.name: Complete Torus
 torch.path: ../../../res/runtime/models/torch.obj
 torch.name: Complete Torch
 
-speed: 20
 
 
 
@@ -51,4 +50,10 @@ speed: 20
 
 
 
-played: 63673
+
+
+
+
+
+speed: 100
+played: 63822

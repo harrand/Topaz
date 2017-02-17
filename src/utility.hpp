@@ -22,34 +22,6 @@ namespace StringUtility
 	std::string substring(std::string str, unsigned int begin, unsigned int end);
 }
 
-class File
-{
-public:
-	File(std::string filename);
-	std::string getName();
-	std::string getAll();
-	std::vector<std::string> getLines();
-	std::string getFromLine(unsigned int line);
-	unsigned int lineCount();
-	unsigned int wordCount();
-	unsigned int charCount();
-	bool exists();
-	void clear();
-	void write(std::string contents, bool cleardata);
-	void writeLine(std::string contents, unsigned int line);
-	void deleteFile();
-private:
-	std::string filename;
-};
-
-namespace FileUtility
-{
-	File createRelativeFile(std::string relativeFilePath);
-	std::string getTag(File f, std::string tag);
-	void setTag(File f, std::string tag, std::string value);
-	void removeTag(File f, std::string tag);
-}
-
 namespace MathsUtility
 {
 	// c++98/03 use stringstreams to parse ints

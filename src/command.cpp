@@ -17,6 +17,8 @@ void Commands::inputCommand(std::string cmd, std::shared_ptr<World>& world, Came
 		Commands::addObject(args, world, cam, true);
 	else if(cmdName == "reloadworld")
 		Commands::reloadWorld(world, true);
+	else if(cmdName == "setspeed")
+		Commands::setSpeed(MathsUtility::parseTemplateFloat(args.at(1)));
 }
 
 void Commands::loadWorld(std::vector<std::string> args, std::shared_ptr<World>& world)
@@ -131,4 +133,12 @@ void Commands::reloadWorld(std::shared_ptr<World>& world, bool printResults)
 	world = std::shared_ptr<World>(new World(RES_POINT + "/data/worlds/temp.world"));
 	if(printResults)
 		std::cout << "World successfully reloaded via 'temp.world'.\n";
+}
+
+void Commands::setSpeed(float speed)
+{
+	MDLF output(RawFile(RES_POINT + "/resources.data"));
+	output.deleteTag("speed");
+	output.addTag("speed", StringUtility::toString(speed));
+	std::cout << "Setting speed to " << speed << ".\n";
 }

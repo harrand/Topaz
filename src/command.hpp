@@ -11,6 +11,7 @@ namespace Commands
 	void exportWorld(std::vector<std::string> args, std::shared_ptr<World>& world);
 	void addObject(std::vector<std::string> args, std::shared_ptr<World>& world, Camera& cam, bool printResults);
 	void reloadWorld(std::shared_ptr<World>& world, bool printResults);
+	void setSpeed(float speed);
 }
 
 #endif

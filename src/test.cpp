@@ -10,7 +10,6 @@ Camera cam(Vector3F(), Vector3F(0, 3.14159, 0));
 
 void handleKeybinds(Window& wnd, KeyListener kl, float avgFrameMillis)
 {
-	//float multiplier = MathsUtility::parseTemplate(FileUtility::getTag(File(RES_POINT + "/resources.data"), "speed")) * (avgFrameMillis/1000);
 	float multiplier = MathsUtility::parseTemplate(MDLF(RawFile(RES_POINT + "/resources.data")).getTag("speed")) * (avgFrameMillis / 1000);
 	if(kl.isKeyPressed("W"))
 	{
