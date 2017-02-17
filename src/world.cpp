@@ -31,15 +31,13 @@ void World::exportWorld(std::string worldName)
 	std::string worldLink = RES_POINT + "/data/worlds/" + worldName;
 	MDLF output = MDLF(RawFile(worldLink));
 	output.getRawFile().clear();
+	std::vector<std::string> objectList = output.getSequence("objects");
+	output.deleteSequence("objects");
 	for(unsigned int i = 0; i < this->members.size(); i++)
 	{
-		Object curObj = this->members.at(i);
 		std::string objectName = "object" + StringUtility::toString(i);
-		std::vector<std::string> objectList = output.getSequence("objects");
 		objectList.push_back(objectName);
-		
-		output.deleteSequence("objects");
-		output.addSequence("objects", objectList);
+		Object curObj = this->members.at(i);
 		std::string meshLink = curObj.getMeshLink();
 		std::string textureLink = curObj.getTextureLink();
 		
@@ -64,6 +62,7 @@ void World::exportWorld(std::string worldName)
 		output.addTag(objectName + ".rot", rotLink);
 		output.addTag(objectName + ".scale", scaleLink);
 	}
+	output.addSequence("objects", objectList);
 }
 
 unsigned int World::getSize()
