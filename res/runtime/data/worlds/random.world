@@ -143,11 +143,16 @@ object28.texture: sand
 object28.pos: [-7.06696e-005, 0, -27.8756]
 object28.rot: [0, 3.14159, 0]
 object28.scale: [2, 2, 2]
-object29.mesh: monkeyhead
-object29.texture: lava
-object29.pos: [-6.78874, 4.08152, -8.93664]
-object29.rot: [0, 3.14159, 0]
-object29.scale: [3, 3, 3]
+object29.mesh: cube
+object29.texture: sand
+object29.pos: [0, 0, 0]
+object29.rot: [0, 0, 0]
+object29.scale: [2, 2, 2]
+object30.mesh: cube
+object30.texture: grass
+object30.pos: [6, 0, 0]
+object30.rot: [0, 0, 0]
+object30.scale: [2, 2, 2]
 objects: %[
 - object0
 - object1
@@ -178,33 +183,5 @@ objects: %[
 - object26
 - object27
 - object28
-- object0
-- object1
-- object2
-- object3
-- object4
-- object5
-- object6
-- object7
-- object8
-- object9
-- object10
-- object11
-- object12
-- object13
-- object14
-- object15
-- object16
-- object17
-- object18
-- object19
-- object20
-- object21
-- object22
-- object23
-- object24
-- object25
-- object26
-- object27
-- object28
-- object29]%
+- object29
+- object30]%

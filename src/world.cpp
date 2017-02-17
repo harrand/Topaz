@@ -12,14 +12,6 @@ World::World(std::string filename): filename(filename)
 	}
 }
 
-World::World(Object* objects, unsigned int numObjects)
-{
-	for(unsigned int i = 0; i < numObjects; i++)
-	{
-		members.push_back(objects[i]);
-	}
-}
-
 void World::addObject(Object obj)
 {
 	this->members.push_back(obj);
@@ -31,7 +23,7 @@ void World::exportWorld(std::string worldName)
 	std::string worldLink = RES_POINT + "/data/worlds/" + worldName;
 	MDLF output = MDLF(RawFile(worldLink));
 	output.getRawFile().clear();
-	std::vector<std::string> objectList = output.getSequence("objects");
+	std::vector<std::string> objectList;
 	output.deleteSequence("objects");
 	for(unsigned int i = 0; i < this->members.size(); i++)
 	{
