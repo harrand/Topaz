@@ -34,10 +34,6 @@ Window::Window(int w, int h, std::string title)
 	
 	this->initSDL();
 	this->initGLEW();
-	
-	//glEnable(GL_CULL_FACE);
-	//glCullFace(GL_BACK);
-	//glEnable(GL_DEPTH_TEST);
 }
 
 Window::~Window()

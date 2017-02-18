@@ -497,7 +497,7 @@ Matrix4x4 MatrixTransformations::createProjectionMatrix(float fov, float aspectR
 	z.getZR() = (farclip + nearclip)/(nearclip - farclip);
 	z.getWR() = (2 * farclip * nearclip)/(nearclip - farclip);
 	w.getZR() = -1.0f;
-	return Matrix4x4(x, y, z, w);//.transposed();
+	return Matrix4x4(x, y, z, w);
 }
 
 Matrix4x4 MatrixTransformations::createProjectionMatrix(float fov, float width, float height, float nearclip, float farclip)

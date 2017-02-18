@@ -76,21 +76,6 @@ void Commands::addObject(std::vector<std::string> args, std::shared_ptr<World>& 
 		return;
 	}
 	
-	/*
-	Mesh* thisMesh;
-	Texture* thisTexture;
-	for(unsigned int i = 0; i < allMeshes.size(); i++)
-	{
-		if(meshLink == allMeshes.at(i).getFileName())
-			thisMesh = &(allMeshes.at(i));
-	}
-	for(unsigned int i = 0; i < allTextures.size(); i++)
-	{
-		if(textureLink == allTextures.at(i).getFileName())
-			thisTexture = &(allTextures.at(i));
-	}
-	*/
-	
 	if(posStr == "me")
 	{
 		pos = cam.getPos();

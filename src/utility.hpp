@@ -24,7 +24,6 @@ namespace StringUtility
 
 namespace MathsUtility
 {
-	// c++98/03 use stringstreams to parse ints
 	int parseTemplate(std::string x);
 	float parseTemplateFloat(std::string x);
 }

@@ -9,7 +9,6 @@
 class Object
 {
 public:
-	//Object(Mesh mesh, Texture texture, Vector3F pos, Vector3F rot, Vector3F scale);
 	Object(std::string meshLink, std::string textureLink, Vector3F pos, Vector3F rot, Vector3F scale);
 	Vector3F getPos();
 	Vector3F getRot();
@@ -27,10 +26,6 @@ private:
 	float m[16], v[16], p[16];
 	Vector3F pos, rot, scale;
 	std::string meshLink, textureLink;
-	/*
-	Mesh mesh;
-	Texture tex;
-	*/
 };
 
 #endif

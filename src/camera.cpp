@@ -66,17 +66,3 @@ Matrix4x4 Camera::getCameraMatrix()
 {
 	return MatrixTransformations::createModelMatrix(this->pos, this->rot, Vector3F(1, 1, 1));
 }
-
-/*
-
-Vector4F Camera::getPosHomo()
-{
-	return Vector4F(pos.getX(), pos.getY(), pos.getZ(), 1.0f);
-}
-
-Vector4F Camera::getRotHomo()
-{
-	return Vector4F(rot.getX(), rot.getY(), rot.getZ(), 0.0f);
-}
-
-*/

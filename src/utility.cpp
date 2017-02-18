@@ -79,7 +79,6 @@ std::vector<std::string> StringUtility::splitString(std::string split, char deli
 	for(unsigned int i = 0; i < strsize; i++)
 	{
 		char cur = str[i];
-		//TEMP
 		if(cur == delim)
 		{
 			num_pos[numcount] = i;
@@ -87,16 +86,12 @@ std::vector<std::string> StringUtility::splitString(std::string split, char deli
 		}
 		if(i == (strsize-1))
 		{
-			// at the end, sort everything out
 			for(unsigned int j = 0; j < numcount; j++)
 			{
-				// go through every bit of the map where there's a delim, and then form substrings
 				unsigned int prevpos;
 				if(j == 0)
 					prevpos = 0;
 				unsigned int posdelim = num_pos[j];
-				//if(prevpos != 0)
-				//{
 				if(prevpos == 0)
 				{
 					std::string sub = split.substr(prevpos, (posdelim-prevpos));
@@ -109,11 +104,9 @@ std::vector<std::string> StringUtility::splitString(std::string split, char deli
 				}
 				if(j == (numcount-1))
 				{
-					//right at the end, we add on the last bit because it probably doesnt end with a space (it shouldnt)
 					prevpos+=(posdelim-prevpos);
 					ret.push_back(split.substr((prevpos+1), (strsize-prevpos)));
 				}
-				//}
 				prevpos = posdelim;
 			}
 			

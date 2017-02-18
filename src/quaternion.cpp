@@ -114,7 +114,6 @@ Vector4F Quaternion::operator*(Vector4F other)
 Matrix4x4 MatrixTransformations::createQuaternionSourcedModelMatrix(Vector3F position, Vector3F eulerRotation, Vector3F scale)
 {
 	Quaternion rotation(eulerRotation);
-	//return MatrixTransformations::createTranslationMatrix(position) * rotation.getRotationalMatrix() * MatrixTransformations::createScalingMatrix(scale);
 	return MatrixTransformations::createScalingMatrix(scale) * rotation.getRotationalMatrix() * MatrixTransformations::createTranslationMatrix(position);
 }
 

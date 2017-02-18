@@ -18,8 +18,6 @@ public:
 	Vector3F getLeft();
 	Vector3F getRight();
 private:
-	//Vector4F getPosHomo();
-	//Vector4F getRotHomo();
 	Matrix4x4 getCameraMatrix();
 	Vector3F pos, rot;
 };
