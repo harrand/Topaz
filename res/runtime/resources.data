@@ -58,8 +58,16 @@ torch.name: Complete Torch
 
 
 
-speed: 177
 
 
 
-played: 74376
+
+
+
+speed: 80
+
+
+
+
+
+played: 80136
