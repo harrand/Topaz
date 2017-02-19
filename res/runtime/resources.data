@@ -64,10 +64,13 @@ torch.name: Complete Torch
 
 
 
-speed: 80
 
 
 
 
 
-played: 80136
+
+
+speed: 50
+
+played: 80180

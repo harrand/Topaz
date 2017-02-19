@@ -44,7 +44,6 @@ std::string Mesh::getFileName()
 void Mesh::render()
 {
 	glBindVertexArray(this->vertexArrayObject);
-	//glDrawArrays(GL_TRIANGLES, 0, this->renderCount);
 	glDrawElements(GL_TRIANGLES, this->renderCount, GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
 }

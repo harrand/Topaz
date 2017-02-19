@@ -29,9 +29,8 @@ void Commands::loadWorld(std::vector<std::string> args, std::shared_ptr<World>& 
 		return;
 	}
 	std::string worldname = args.at(1);
-	//delete world;
 	std::string link = (RES_POINT + "/data/worlds/" + worldname);
-	world = std::shared_ptr<World>(new World(link));//std::make_shared<World>(link);
+	world = std::shared_ptr<World>(new World(link));
 	std::cout << "Now rendering the world '" << worldname << "' which has " << world->getSize() << " objects.\n";
 }
 
@@ -114,7 +113,6 @@ void Commands::addObject(std::vector<std::string> args, std::shared_ptr<World>& 
 void Commands::reloadWorld(std::shared_ptr<World>& world, bool printResults)
 {
 	world->exportWorld("temp.world");
-	//delete world;
 	world = std::shared_ptr<World>(new World(RES_POINT + "/data/worlds/temp.world"));
 	if(printResults)
 		std::cout << "World successfully reloaded via 'temp.world'.\n";
