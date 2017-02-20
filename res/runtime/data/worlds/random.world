@@ -153,6 +153,11 @@ object30.texture: grass
 object30.pos: [6, 0, 0]
 object30.rot: [0, 0, 0]
 object30.scale: [2, 2, 2]
+object31.mesh: monkeyhead
+object31.texture: lava
+object31.pos: [-13.7053, 35.3744, 42.0686]
+object31.rot: [0, 12.4916, 0]
+object31.scale: [4, 4, 4]
 objects: %[
 - object0
 - object1
@@ -184,4 +189,5 @@ objects: %[
 - object27
 - object28
 - object29
-- object30]%
+- object30
+- object31]%
