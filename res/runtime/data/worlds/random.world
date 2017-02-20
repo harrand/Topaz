@@ -13,8 +13,8 @@ object2.texture: sand
 object2.pos: [0, -15, 0]
 object2.rot: [0, 0, 0]
 object2.scale: [100, 100, 100]
-object3.mesh: torch
-object3.texture: torch1
+object3.mesh: cube
+object3.texture: sand
 object3.pos: [18.0488, 16.6728, 130.286]
 object3.rot: [-0.15, 3.90841, -0]
 object3.scale: [25, 25, 25]

@@ -14,22 +14,17 @@ Camera cam(Vector3F(), Vector3F(0, 3.14159, 0));
 #endif
 int main()
 {	
-	std::cout << "== Ocular GEng Development Testing ==\n";
-	
 	MDLF timeStorage(RawFile(RES_POINT + "/resources.data"));
 	int secondsLifetime = MathsUtility::parseTemplate(timeStorage.getTag("played"));
 	
-	Window wnd(800, 600, "Ocular Game Engine : Test Window");
-	std::cout << "GLSL Version = " << glGetString(GL_SHADING_LANGUAGE_VERSION) << "\n";
-	
+	Window wnd(800, 600, "Ocular Game Engine : Test Window");	
 	TimeKeeper tk, fpscounter;
-	std::cout << "'Ocular GEng Development Window' created.\n";
 	
-	Shader shader(RES_POINT + "/shaders/vanilla");
-	std::cout << "Ocular GEng Shader 'vanilla' initialised.\n";
+	std::cout << "'Ocular GEng Testing Environment created.\n";
 	
+	Shader shader(RES_POINT + "/shaders/vanilla");	
 	world = std::shared_ptr<World>(new World(RES_POINT + "/data/worlds/test.world"));
-	
+	KeybindController kc(cam, world, wnd);
 	DataTranslation dt(RES_POINT + "/resources.data");
 	
 	std::map<std::string, std::string> models = dt.retrieveModels(), textures = dt.retrieveTextures();
@@ -50,9 +45,7 @@ int main()
 	std::vector<float> deltas;
 	float deltaTotal = 0.0f, deltaAverage = 0.0f;
 	unsigned long fps;
-	KeybindController kc(cam, world, wnd);
-	
-	std::cout << "\nOcular GEng Window Loop Began:\n";
+
 	while(!wnd.isCloseRequested())
 	{
 		if(tk.millisPassed(1000))
