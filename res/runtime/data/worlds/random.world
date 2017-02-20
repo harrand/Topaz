@@ -158,6 +158,16 @@ object31.texture: lava
 object31.pos: [-13.7053, 35.3744, 42.0686]
 object31.rot: [0, 12.4916, 0]
 object31.scale: [4, 4, 4]
+object32.mesh: sphere
+object32.texture: grass
+object32.pos: [28.5888, -47.4522, 3.81626]
+object32.rot: [-0.05, 3.99159, 0]
+object32.scale: [12, 12, 12]
+object33.mesh: cube
+object33.texture: sand
+object33.pos: [-11.9355, 7.30721, 36.4198]
+object33.rot: [0, 3.14159, 0]
+object33.scale: [6, 6, 6]
 objects: %[
 - object0
 - object1
@@ -190,4 +200,6 @@ objects: %[
 - object28
 - object29
 - object30
-- object31]%
+- object31
+- object32
+- object33]%

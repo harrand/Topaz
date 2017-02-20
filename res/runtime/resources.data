@@ -32,48 +32,7 @@ sword.path: ../../../res/runtime/models/sword.obj
 sword.name: Complete Sword
 torus.path: ../../../res/runtime/models/torus.obj
 torus.name: Complete Torus
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 speed: 100
-played: 82500
+
+
+played: 82565

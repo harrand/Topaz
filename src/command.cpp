@@ -116,10 +116,14 @@ void Commands::addObject(std::vector<std::string> args, std::shared_ptr<World>& 
 
 void Commands::reloadWorld(std::shared_ptr<World>& world, bool printResults)
 {
-	world->exportWorld("temp.world");
-	world = std::shared_ptr<World>(new World(RES_POINT + "/data/worlds/temp.world"));
+	std::string worldLink = world->getFileName(), worldName = worldLink;
+	//RES_POINT + "/data/worlds/" + worldName;
+	std::string toRemove = RES_POINT + "/data/worlds/";
+	worldName.erase(worldName.find(toRemove), toRemove.length());
+	world->exportWorld(worldName);
+	world = std::shared_ptr<World>(new World(worldLink));
 	if(printResults)
-		std::cout << "World successfully reloaded via 'temp.world'.\n";
+		std::cout << "Successfully reloaded the world named " << worldName << " (world link " << worldLink << ").\n";
 }
 
 void Commands::setSpeed(float speed)

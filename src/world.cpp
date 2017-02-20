@@ -12,6 +12,11 @@ World::World(std::string filename): filename(filename)
 	}
 }
 
+const std::string World::getFileName() const
+{
+	return this->filename;
+}
+
 void World::addObject(Object obj)
 {
 	this->members.push_back(obj);
