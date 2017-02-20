@@ -12,6 +12,7 @@ namespace Commands
 	void addObject(std::vector<std::string> args, std::shared_ptr<World>& world, Camera& cam, bool printResults);
 	void reloadWorld(std::shared_ptr<World>& world, bool printResults);
 	void setSpeed(float speed);
+	void teleport(std::vector<std::string> args, Camera& cam);
 }
 
 #endif

@@ -35,13 +35,13 @@ int main()
 	std::map<std::string, std::string> models = dt.retrieveModels(), textures = dt.retrieveTextures();
 	
 	typedef std::map<std::string, std::string>::iterator it_type;
-	std::cout << "Retriving models...\n";
+	std::cout << "Retrieving models...\n";
 	for(it_type iterator = models.begin(); iterator != models.end(); iterator++)
 	{
 		std::cout << "Initialising a mesh with the link " << iterator->first << ".\n";
 		allMeshes.push_back(std::shared_ptr<Mesh>(new Mesh(iterator->first)));
 	}
-	std::cout << "Retriving textures...\n";
+	std::cout << "Retrieving textures...\n";
 	for(it_type iterator = textures.begin(); iterator != textures.end(); iterator++)
 	{
 		std::cout << "Initialising a texture with the link " << iterator->first << ".\n";

@@ -19,6 +19,8 @@ void Commands::inputCommand(std::string cmd, std::shared_ptr<World>& world, Came
 		Commands::reloadWorld(world, true);
 	else if(cmdName == "setspeed")
 		Commands::setSpeed(MathsUtility::parseTemplateFloat(args.at(1)));
+	else if(cmdName == "teleport")
+		Commands::teleport(args, cam);
 }
 
 void Commands::loadWorld(std::vector<std::string> args, std::shared_ptr<World>& world)
@@ -124,4 +126,17 @@ void Commands::setSpeed(float speed)
 	output.deleteTag("speed");
 	output.addTag("speed", StringUtility::toString(speed));
 	std::cout << "Setting speed to " << speed << ".\n";
+}
+
+void Commands::teleport(std::vector<std::string> args, Camera& cam)
+{
+	if(args.size() != 2)
+	{
+		std::cout << "Command failed: Expected 2 arguments, got " << args.size() << ".\n";
+		return;
+	}
+	std::vector<std::string> teleSplit = StringUtility::splitString(StringUtility::replaceAllChar(StringUtility::replaceAllChar(args.at(1), '[', ""), ']', ""), ',');
+	Vector3F tele = Vector3F(MathsUtility::parseTemplateFloat(teleSplit.at(0)), MathsUtility::parseTemplateFloat(teleSplit.at(1)), MathsUtility::parseTemplateFloat(teleSplit.at(2)));
+	cam.getPosR() = tele;
+	std::cout << "Teleported.\n";
 }
