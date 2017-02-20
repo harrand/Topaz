@@ -22,10 +22,16 @@ namespace StringUtility
 	std::string substring(std::string str, unsigned int begin, unsigned int end);
 }
 
-namespace MathsUtility
+namespace CastUtility
 {
-	int parseTemplate(std::string x);
-	float parseTemplateFloat(std::string x);
+	template <typename T>
+	T fromString(std::string s)
+	{
+		T ret;
+		std::istringstream ss(s);
+		ss >> ret;
+		return ret;
+	}
 }
 
 #endif //UTILITY_HPP

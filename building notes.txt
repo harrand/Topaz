@@ -1,5 +1,0 @@
-At home:
-SDL2 Library Version which works: i686-w64-mingw32
-Other one does not work.
-
-At uni:

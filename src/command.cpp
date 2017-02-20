@@ -18,9 +18,11 @@ void Commands::inputCommand(std::string cmd, std::shared_ptr<World>& world, Came
 	else if(cmdName == "reloadworld")
 		Commands::reloadWorld(world, true);
 	else if(cmdName == "setspeed")
-		Commands::setSpeed(MathsUtility::parseTemplateFloat(args.at(1)));
+		Commands::setSpeed(CastUtility::fromString<float>(args.at(1)));
 	else if(cmdName == "teleport")
 		Commands::teleport(args, cam);
+	else
+		std::cout << "Unknown command. Maybe you made a typo?\n";
 }
 
 void Commands::loadWorld(std::vector<std::string> args, std::shared_ptr<World>& world)
@@ -84,7 +86,7 @@ void Commands::addObject(std::vector<std::string> args, std::shared_ptr<World>& 
 	else
 	{
 		std::vector<std::string> posSplit = StringUtility::splitString(StringUtility::replaceAllChar(StringUtility::replaceAllChar(posStr, '[', ""), ']', ""), ',');
-		pos = Vector3F(MathsUtility::parseTemplateFloat(posSplit.at(0)), MathsUtility::parseTemplateFloat(posSplit.at(1)), MathsUtility::parseTemplateFloat(posSplit.at(2)));
+		pos = Vector3F(CastUtility::fromString<float>(posSplit.at(0)), CastUtility::fromString<float>(posSplit.at(1)), CastUtility::fromString<float>(posSplit.at(2)));
 	}
 		
 	if(rotStr == "me")
@@ -94,11 +96,11 @@ void Commands::addObject(std::vector<std::string> args, std::shared_ptr<World>& 
 	else
 	{
 		std::vector<std::string> rotSplit = StringUtility::splitString(StringUtility::replaceAllChar(StringUtility::replaceAllChar(rotStr, '[', ""), ']', ""), ',');
-		rot = Vector3F(MathsUtility::parseTemplateFloat(rotSplit.at(0)), MathsUtility::parseTemplateFloat(rotSplit.at(1)), MathsUtility::parseTemplateFloat(rotSplit.at(2)));	
+		rot = Vector3F(CastUtility::fromString<float>(rotSplit.at(0)), CastUtility::fromString<float>(rotSplit.at(1)), CastUtility::fromString<float>(rotSplit.at(2)));	
 	}
 		
 	std::vector<std::string> scaleSplit = StringUtility::splitString(StringUtility::replaceAllChar(StringUtility::replaceAllChar(scaleStr, '[', ""), ']', ""), ',');
-	scale = Vector3F(MathsUtility::parseTemplateFloat(scaleSplit.at(0)), MathsUtility::parseTemplateFloat(scaleSplit.at(1)), MathsUtility::parseTemplateFloat(scaleSplit.at(2)));
+	scale = Vector3F(CastUtility::fromString<float>(scaleSplit.at(0)), CastUtility::fromString<float>(scaleSplit.at(1)), CastUtility::fromString<float>(scaleSplit.at(2)));
 		
 	world->addObject(Object(meshLink, textureLink, pos, rot, scale));
 	if(printResults)
@@ -136,7 +138,7 @@ void Commands::teleport(std::vector<std::string> args, Camera& cam)
 		return;
 	}
 	std::vector<std::string> teleSplit = StringUtility::splitString(StringUtility::replaceAllChar(StringUtility::replaceAllChar(args.at(1), '[', ""), ']', ""), ',');
-	Vector3F tele = Vector3F(MathsUtility::parseTemplateFloat(teleSplit.at(0)), MathsUtility::parseTemplateFloat(teleSplit.at(1)), MathsUtility::parseTemplateFloat(teleSplit.at(2)));
+	Vector3F tele = Vector3F(CastUtility::fromString<float>(teleSplit.at(0)), CastUtility::fromString<float>(teleSplit.at(1)), CastUtility::fromString<float>(teleSplit.at(2)));
 	cam.getPosR() = tele;
 	std::cout << "Teleported.\n";
 }

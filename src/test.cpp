@@ -15,7 +15,7 @@ Camera cam(Vector3F(), Vector3F(0, 3.14159, 0));
 int main()
 {	
 	MDLF timeStorage(RawFile(RES_POINT + "/resources.data"));
-	int secondsLifetime = MathsUtility::parseTemplate(timeStorage.getTag("played"));
+	int secondsLifetime = CastUtility::fromString<int>(timeStorage.getTag("played"));
 	
 	Window wnd(800, 600, "Ocular Game Engine : Test Window");	
 	TimeKeeper tk, fpscounter;

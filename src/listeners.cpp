@@ -119,7 +119,7 @@ KeybindController::~KeybindController()
 
 void KeybindController::handleKeybinds(float avgFrameMillis)
 {
-	float multiplier = MathsUtility::parseTemplate(MDLF(RawFile(RES_POINT + "/resources.data")).getTag("speed")) * (avgFrameMillis / 1000);
+	float multiplier = CastUtility::fromString<float>(MDLF(RawFile(RES_POINT + "/resources.data")).getTag("speed")) * (avgFrameMillis / 1000);
 	MDLF controlsDataFile = MDLF(RawFile(RES_POINT + "/controls.data"));
 	if(kl.isKeyPressed(KeyControls::getKeybind(controlsDataFile, KeybindType::MOVE_FORWARD)))
 		this->cam.getPosR() += (cam.getForward() * multiplier);

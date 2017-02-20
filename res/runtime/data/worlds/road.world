@@ -1,0 +1,25 @@
+object0.mesh: cube
+object0.texture: bricks
+object0.pos: [0, -1, 0]
+object0.rot: [0, 0, 0]
+object0.scale: [1, 0.1, 1]
+object1.mesh: cube
+object1.texture: bricks
+object1.pos: [-2, -1, 0]
+object1.rot: [0, 0, 0]
+object1.scale: [1, 0.1, 1]
+object2.mesh: cube
+object2.texture: bricks
+object2.pos: [0, -1, -2]
+object2.rot: [0, 0, 0]
+object2.scale: [1, 0.1, 1]
+object3.mesh: cube
+object3.texture: bricks
+object3.pos: [-2, -1, -2]
+object3.rot: [0, 0, 0]
+object3.scale: [1, 0.1, 1]
+objects: %[
+- object0
+- object1
+- object2
+- object3]%

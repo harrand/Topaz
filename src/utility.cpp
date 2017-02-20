@@ -135,23 +135,5 @@ std::string StringUtility::substring(std::string str, unsigned int begin, unsign
 	return str.substr((begin-1), (end-begin)+1);
 }
 
-int MathsUtility::parseTemplate(std::string x)
-{
-	std::istringstream is(x);
-	int i;
-	is >> i;
-	return i;
-}
-
-float MathsUtility::parseTemplateFloat(std::string x)
-{
-	//Ensure theres no spaces or extra shit in the string
-	std::string y = StringUtility::replaceAllChar(x, ' ', "");
-	std::istringstream is(x);
-	float i;
-	is >> i;
-	return i;
-}
-
 
 

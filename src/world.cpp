@@ -86,21 +86,21 @@ Object World::retrieveData(std::string objectName, MDLF& mdlf)
 	std::string textureLink = dt.getTextureLink(textureName);
 	
 	std::vector<std::string> posData = StringUtility::splitString(StringUtility::replaceAllChar((StringUtility::replaceAllChar(positionStr, '[', "")), ']', ""), ',');
-	float posX = MathsUtility::parseTemplateFloat(posData.at(0));
-	float posY = MathsUtility::parseTemplateFloat(posData.at(1));
-	float posZ = MathsUtility::parseTemplateFloat(posData.at(2));
+	float posX = CastUtility::fromString<float>(posData.at(0));
+	float posY = CastUtility::fromString<float>(posData.at(1));
+	float posZ = CastUtility::fromString<float>(posData.at(2));
 	Vector3F pos(posX, posY, posZ);
 	
 	std::vector<std::string> rotData = StringUtility::splitString(StringUtility::replaceAllChar((StringUtility::replaceAllChar(rotationStr, '[', "")), ']', ""), ',');
-	float rotX = MathsUtility::parseTemplateFloat(rotData.at(0));
-	float rotY = MathsUtility::parseTemplateFloat(rotData.at(1));
-	float rotZ = MathsUtility::parseTemplateFloat(rotData.at(2));
+	float rotX = CastUtility::fromString<float>(rotData.at(0));
+	float rotY = CastUtility::fromString<float>(rotData.at(1));
+	float rotZ = CastUtility::fromString<float>(rotData.at(2));
 	Vector3F rot(rotX, rotY, rotZ);
 	
 	std::vector<std::string> scaleData = StringUtility::splitString(StringUtility::replaceAllChar((StringUtility::replaceAllChar(scaleStr, '[', "")), ']', ""), ',');
-	float scaleX = MathsUtility::parseTemplateFloat(scaleData.at(0));
-	float scaleY = MathsUtility::parseTemplateFloat(scaleData.at(1));
-	float scaleZ = MathsUtility::parseTemplateFloat(scaleData.at(2));
+	float scaleX = CastUtility::fromString<float>(scaleData.at(0));
+	float scaleY = CastUtility::fromString<float>(scaleData.at(1));
+	float scaleZ = CastUtility::fromString<float>(scaleData.at(2));
 	Vector3F scale(scaleX, scaleY, scaleZ);
 	
 	return Object(meshLink, textureLink, pos, rot, scale);
