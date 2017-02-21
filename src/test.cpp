@@ -7,7 +7,7 @@ std::shared_ptr<World> world;
 std::vector<std::shared_ptr<Mesh>> allMeshes;
 std::vector<std::shared_ptr<Texture>> allTextures;
 Camera cam(Vector3F(), Vector3F(0, 3.14159, 0));
-Player player(cam);
+Player player(world, 10, cam);
 
 // SDL2 defines main.
 #ifdef main

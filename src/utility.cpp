@@ -135,5 +135,37 @@ std::string StringUtility::substring(std::string str, unsigned int begin, unsign
 	return str.substr((begin-1), (end-begin)+1);
 }
 
+Force::Force(Vector3F size): size(size){}
+
+Vector3F Force::getSize()
+{
+	return this->size;
+}
+
+void Force::setSize(Vector3F size)
+{
+	this->size = size;
+}
+
+Force Force::operator+(Force other)
+{
+	return Force(this->size + other.getSize());
+}
+
+Force Force::operator-(Force other)
+{
+	return Force(this->size - other.getSize());
+}
+
+void Force::operator+=(Force other)
+{
+	this->size += other.getSize();
+}
+
+void Force::operator-=(Force other)
+{
+	this->size -= other.getSize();
+}
+
 
 

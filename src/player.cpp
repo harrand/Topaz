@@ -1,6 +1,6 @@
 #include "player.hpp"
 
-Player::Player(Camera& cam): Entity(), cam(cam)
+Player::Player(std::shared_ptr<World>& world, float mass, Camera& cam): Entity(world, mass), cam(cam)
 {
 	
 }
@@ -22,6 +22,6 @@ Camera& Player::getCamera()
 
 void Player::updateMotion(unsigned int fps)
 {
-	this->velocity += (acceleration / fps);
+	this->velocity += (this->getAcceleration() / fps);
 	this->getCamera().getPosR() += (velocity / fps);
 }

@@ -11,10 +11,13 @@ public:
 	const std::string getFileName() const;
 	void addObject(Object obj);
 	void exportWorld(std::string worldName);
+	void setGravity(Vector3F gravity = Vector3F());
 	unsigned int getSize();
 	std::vector<Object> getMembers();
+	Vector3F getGravity();
 	std::string getWorldLink();
 private:
+	Vector3F gravity;
 	const std::string filename;
 	Object retrieveData(std::string objectName, MDLF& mdlf);
 	std::vector<Object> members;

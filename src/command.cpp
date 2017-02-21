@@ -40,6 +40,8 @@ void Commands::inputCommand(std::string cmd, std::shared_ptr<World>& world, Play
 		Commands::teleport(args, player);
 	else if(cmdName == "roundlocation")
 		Commands::roundLocation(player);
+	else if(cmdName == "gravity")
+		Commands::setGravity(args, world, true);
 	else
 		std::cout << "Unknown command. Maybe you made a typo?\n";
 }
@@ -199,4 +201,13 @@ void Commands::teleport(std::vector<std::string> args, Player& player)
 void Commands::roundLocation(Player& player)
 {
 	player.getCamera().getPosR() = Vector3F(round(player.getCamera().getPos().getX()), round(player.getCamera().getPos().getY()), round(player.getCamera().getPos().getZ()));
+}
+
+void Commands::setGravity(std::vector<std::string> args, std::shared_ptr<World>& world, bool printResults)
+{
+	std::vector<std::string> gravSplit = StringUtility::splitString(StringUtility::replaceAllChar(StringUtility::replaceAllChar(args.at(1), '[', ""), ']', ""), ',');
+	Vector3F grav = Vector3F(CastUtility::fromString<float>(gravSplit.at(0)), CastUtility::fromString<float>(gravSplit.at(1)), CastUtility::fromString<float>(gravSplit.at(2)));
+	world->setGravity(grav);
+	if(printResults)
+		std::cout << "Set gravity of the world '" << world->getFileName() << "' to [" << grav.getX() << "," << grav.getY() << "," << grav.getZ() << "] N\n";
 }

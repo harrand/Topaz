@@ -2,6 +2,7 @@
 
 World::World(std::string filename): filename(filename)
 {
+	this->gravity = false;
 	MDLF input(RawFile(this->filename));
 	std::vector<std::string> objectList = input.getSequence("objects");
 	for(unsigned int i = 0; i < objectList.size(); i++)
@@ -62,6 +63,11 @@ void World::exportWorld(std::string worldName)
 	output.addSequence("objects", objectList);
 }
 
+void World::setGravity(Vector3F gravity)
+{
+	this->gravity = gravity;
+}
+
 unsigned int World::getSize()
 {
 	return this->members.size();
@@ -70,6 +76,11 @@ unsigned int World::getSize()
 std::vector<Object> World::getMembers()
 {
 	return this->members;
+}
+
+Vector3F World::getGravity()
+{
+	return this->gravity;
 }
 
 std::string World::getWorldLink()

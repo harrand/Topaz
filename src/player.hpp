@@ -6,7 +6,7 @@
 class Player: public Entity
 {
 public:
-	Player(Camera& cam);
+	Player(std::shared_ptr<World>& world, float mass, Camera& cam);
 	void setPosition(Vector3F position);
 	Vector3F getPosition();
 	Camera& getCamera();

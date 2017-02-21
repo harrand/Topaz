@@ -8,6 +8,7 @@
 #include <vector>
 #include <algorithm>
 #include <map>
+#include "vector.hpp"
 
 namespace StringUtility
 {
@@ -33,5 +34,19 @@ namespace CastUtility
 		return ret;
 	}
 }
+
+class Force
+{
+public:
+	Force(Vector3F size = Vector3F());
+	Vector3F getSize();
+	void setSize(Vector3F size);
+	Force operator+(Force other);
+	Force operator-(Force other);
+	void operator+=(Force other);
+	void operator-=(Force other);
+private:
+	Vector3F size;
+};
 
 #endif //UTILITY_HPP

@@ -1,6 +1,6 @@
 #include "entity.hpp"
 
-Entity::Entity(Vector3F position, Vector3F velocity, Vector3F acceleration): position(position), velocity(velocity), acceleration(acceleration)
+Entity::Entity(std::shared_ptr<World>& world, float mass, Vector3F position, Vector3F velocity, std::vector<Force> forces): world(world), mass(mass), position(position), velocity(velocity), forces(forces)
 {
 	
 }
@@ -15,9 +15,9 @@ void Entity::setVelocity(Vector3F velocity)
 	this->velocity = velocity;
 }
 
-void Entity::setAcceleration(Vector3F acceleration)
+void Entity::applyForce(Force f)
 {
-	this->acceleration = acceleration;
+	this->forces.push_back(f);
 }
 
 Vector3F Entity::getPosition()
@@ -32,11 +32,23 @@ Vector3F Entity::getVelocity()
 
 Vector3F Entity::getAcceleration()
 {
-	return this->acceleration;
+	Force resultant;
+	resultant += this->world->getGravity();
+	for(unsigned int i = 0; i < this->forces.size(); i++)
+	{
+		resultant += this->forces.at(i);
+	}
+	// fnet = ma, so a = fnet/m
+	return Vector3F(resultant.getSize() / this->mass);
+}
+
+std::vector<Force> Entity::getForces()
+{
+	return this->forces;
 }
 
 void Entity::updateMotion(unsigned int fps)
 {
-	this->velocity += (acceleration / fps);
+	this->velocity += (this->getAcceleration() / fps);
 	this->position += (velocity / fps);
 }
