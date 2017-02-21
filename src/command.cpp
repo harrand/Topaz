@@ -117,7 +117,6 @@ void Commands::addObject(std::vector<std::string> args, std::shared_ptr<World>& 
 void Commands::reloadWorld(std::shared_ptr<World>& world, bool printResults)
 {
 	std::string worldLink = world->getFileName(), worldName = worldLink;
-	//RES_POINT + "/data/worlds/" + worldName;
 	std::string toRemove = RES_POINT + "/data/worlds/";
 	worldName.erase(worldName.find(toRemove), toRemove.length());
 	world->exportWorld(worldName);
