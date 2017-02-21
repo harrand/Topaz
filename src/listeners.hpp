@@ -13,9 +13,14 @@ public:
 	KeyListener(): Listener(){}
 	~KeyListener(){}
 	void handleEvents(SDL_Event& evt);
+	//void reload();
 	bool isKeyPressed(std::string keyname);
+	bool isKeyReleased(std::string keyname);
+	bool catchKeyPressed(std::string keyname);
+	bool catchKeyReleased(std::string keyname);
 private:
 	std::vector<std::string> pressedKeys;
+	std::vector<std::string> releasedKeys;
 };
 
 enum class KeybindType : unsigned int
@@ -49,6 +54,7 @@ public:
 	KeybindController(Camera& cam, std::shared_ptr<World>& world, Window& wnd);
 	~KeybindController();
 	void handleKeybinds(float avgFrameMillis);
+	//void reload();
 private:
 	Camera& cam;
 	std::shared_ptr<World>& world;

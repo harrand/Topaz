@@ -5,17 +5,25 @@ void KeyListener::handleEvents(SDL_Event& evt)
 	switch(evt.type)
 	{
 		case SDL_KEYDOWN:
+			if(std::find(this->releasedKeys.begin(), this->releasedKeys.end(), SDL_GetKeyName(evt.key.keysym.sym)) != this->releasedKeys.end())
+			{
+				this->releasedKeys.erase(std::remove(this->releasedKeys.begin(), this->releasedKeys.end(), SDL_GetKeyName(evt.key.keysym.sym)), this->releasedKeys.end());
+			}
 			if(std::find(pressedKeys.begin(), pressedKeys.end(), SDL_GetKeyName(evt.key.keysym.sym)) == pressedKeys.end())
 			{
 				// doesnt yet contain it.
-				pressedKeys.push_back(SDL_GetKeyName(evt.key.keysym.sym));
+				this->pressedKeys.push_back(SDL_GetKeyName(evt.key.keysym.sym));
 			}
 		break;
 		case SDL_KEYUP:
-			if(std::find(pressedKeys.begin(), pressedKeys.end(), SDL_GetKeyName(evt.key.keysym.sym)) != pressedKeys.end())
+			if(std::find(this->releasedKeys.begin(), this->releasedKeys.end(), SDL_GetKeyName(evt.key.keysym.sym)) == this->releasedKeys.end())
+			{
+				this->releasedKeys.push_back(SDL_GetKeyName(evt.key.keysym.sym));
+			}
+			if(std::find(this->pressedKeys.begin(), this->pressedKeys.end(), SDL_GetKeyName(evt.key.keysym.sym)) != this->pressedKeys.end())
 			{
 				// does actually contain it
-				pressedKeys.erase(std::remove(pressedKeys.begin(), pressedKeys.end(), SDL_GetKeyName(evt.key.keysym.sym)), pressedKeys.end());
+				this->pressedKeys.erase(std::remove(this->pressedKeys.begin(), this->pressedKeys.end(), SDL_GetKeyName(evt.key.keysym.sym)), this->pressedKeys.end());
 			}
 		break;
 	}
@@ -23,7 +31,28 @@ void KeyListener::handleEvents(SDL_Event& evt)
 
 bool KeyListener::isKeyPressed(std::string keyname)
 {
-	return (std::find(pressedKeys.begin(), pressedKeys.end(), keyname) != pressedKeys.end());
+	return (std::find(this->pressedKeys.begin(), this->pressedKeys.end(), keyname) != this->pressedKeys.end());
+}
+
+bool KeyListener::isKeyReleased(std::string keyname)
+{
+	return (std::find(this->releasedKeys.begin(), this->releasedKeys.end(), keyname) != this->releasedKeys.end());
+}
+
+bool KeyListener::catchKeyPressed(std::string keyname)
+{
+	bool pressed = this->isKeyPressed(keyname);
+	if(pressed)
+		this->pressedKeys.erase(std::remove(this->pressedKeys.begin(), this->pressedKeys.end(), keyname), this->pressedKeys.end());
+	return pressed;
+}
+
+bool KeyListener::catchKeyReleased(std::string keyname)
+{
+	bool released = this->isKeyReleased(keyname);
+	if(released)
+		this->releasedKeys.erase(std::remove(this->releasedKeys.begin(), this->releasedKeys.end(), keyname), this->releasedKeys.end());
+	return released;
 }
 
 KeybindType KeyControls::getKeybindType(std::string keyBindType)
@@ -159,9 +188,16 @@ void KeybindController::handleKeybinds(float avgFrameMillis)
 		cam.getPosR() = Vector3F(0, 0, 0);
 		cam.getRotR() = Vector3F(0, 3.14159, 0);
 	}
-	if(kl.isKeyPressed(KeyControls::getKeybind(controlsDataFile, KeybindType::ADDDEFAULTOBJECT)))
+	if(kl.catchKeyPressed(KeyControls::getKeybind(controlsDataFile, KeybindType::ADDDEFAULTOBJECT)))
 	{
 		//void setDefaultObject(std::vector<std::string> args, std::shared_ptr<World>& world, Camera& cam, bool printResults);
 		Commands::inputCommand("addobject", world, cam);
 	}
 }
+
+/*
+void KeybindController::reload()
+{
+	this->kl.reload();
+}
+*/
