@@ -18,8 +18,824 @@ object3.texture: bricks
 object3.pos: [-2, -1, -2]
 object3.rot: [0, 0, 0]
 object3.scale: [1, 0.1, 1]
+object4.mesh: cube
+object4.texture: bricks
+object4.pos: [-0, -1, -4]
+object4.rot: [0, 0, 0]
+object4.scale: [1, 0.1, 1]
+object5.mesh: cube
+object5.texture: bricks
+object5.pos: [-2, -1, -4]
+object5.rot: [0, 0, 0]
+object5.scale: [1, 0.1, 1]
+object6.mesh: cube
+object6.texture: bricks
+object6.pos: [17.502, 0, -33.4489]
+object6.rot: [0, 0, 0]
+object6.scale: [1, 0.1, 1]
+object7.mesh: cube
+object7.texture: bricks
+object7.pos: [17.502, 0, -32.7374]
+object7.rot: [0, 0, 0]
+object7.scale: [1, 0.1, 1]
+object8.mesh: cube
+object8.texture: bricks
+object8.pos: [17.502, 0, -32.0448]
+object8.rot: [0, 0, 0]
+object8.scale: [1, 0.1, 1]
+object9.mesh: cube
+object9.texture: bricks
+object9.pos: [17.502, 0, -31.3662]
+object9.rot: [0, 0, 0]
+object9.scale: [1, 0.1, 1]
+object10.mesh: cube
+object10.texture: bricks
+object10.pos: [17.502, 0, -30.7042]
+object10.rot: [0, 0, 0]
+object10.scale: [1, 0.1, 1]
+object11.mesh: cube
+object11.texture: bricks
+object11.pos: [17.502, 0, -30.0575]
+object11.rot: [0, 0, 0]
+object11.scale: [1, 0.1, 1]
+object12.mesh: cube
+object12.texture: bricks
+object12.pos: [17.502, 0, -29.4236]
+object12.rot: [0, 0, 0]
+object12.scale: [1, 0.1, 1]
+object13.mesh: cube
+object13.texture: bricks
+object13.pos: [17.502, 0, -28.8049]
+object13.rot: [0, 0, 0]
+object13.scale: [1, 0.1, 1]
+object14.mesh: cube
+object14.texture: bricks
+object14.pos: [17.502, 0, -28.1943]
+object14.rot: [0, 0, 0]
+object14.scale: [1, 0.1, 1]
+object15.mesh: cube
+object15.texture: bricks
+object15.pos: [17.502, 0, -27.5957]
+object15.rot: [0, 0, 0]
+object15.scale: [1, 0.1, 1]
+object16.mesh: cube
+object16.texture: bricks
+object16.pos: [17.502, 0, -27.01]
+object16.rot: [0, 0, 0]
+object16.scale: [1, 0.1, 1]
+object17.mesh: cube
+object17.texture: bricks
+object17.pos: [17.502, 0, -26.4336]
+object17.rot: [0, 0, 0]
+object17.scale: [1, 0.1, 1]
+object18.mesh: cube
+object18.texture: bricks
+object18.pos: [17.502, 0, -25.8661]
+object18.rot: [0, 0, 0]
+object18.scale: [1, 0.1, 1]
+object19.mesh: cube
+object19.texture: bricks
+object19.pos: [17.502, 0, -25.3069]
+object19.rot: [0, 0, 0]
+object19.scale: [1, 0.1, 1]
+object20.mesh: cube
+object20.texture: bricks
+object20.pos: [17.502, 0, -24.7569]
+object20.rot: [0, 0, 0]
+object20.scale: [1, 0.1, 1]
+object21.mesh: cube
+object21.texture: bricks
+object21.pos: [17.502, 0, -24.2131]
+object21.rot: [0, 0, 0]
+object21.scale: [1, 0.1, 1]
+object22.mesh: cube
+object22.texture: bricks
+object22.pos: [17.502, 0, -23.6765]
+object22.rot: [0, 0, 0]
+object22.scale: [1, 0.1, 1]
+object23.mesh: cube
+object23.texture: bricks
+object23.pos: [17.502, 0, -23.142]
+object23.rot: [0, 0, 0]
+object23.scale: [1, 0.1, 1]
+object24.mesh: cube
+object24.texture: bricks
+object24.pos: [17.502, 0, -22.6094]
+object24.rot: [0, 0, 0]
+object24.scale: [1, 0.1, 1]
+object25.mesh: cube
+object25.texture: bricks
+object25.pos: [17.502, 0, -22.0788]
+object25.rot: [0, 0, 0]
+object25.scale: [1, 0.1, 1]
+object26.mesh: cube
+object26.texture: bricks
+object26.pos: [17.502, 0, -21.5488]
+object26.rot: [0, 0, 0]
+object26.scale: [1, 0.1, 1]
+object27.mesh: cube
+object27.texture: bricks
+object27.pos: [17.502, 0, -21.0194]
+object27.rot: [0, 0, 0]
+object27.scale: [1, 0.1, 1]
+object28.mesh: cube
+object28.texture: bricks
+object28.pos: [17.502, 0, -20.4928]
+object28.rot: [0, 0, 0]
+object28.scale: [1, 0.1, 1]
+object29.mesh: cube
+object29.texture: bricks
+object29.pos: [17.502, 0, -19.9668]
+object29.rot: [0, 0, 0]
+object29.scale: [1, 0.1, 1]
+object30.mesh: cube
+object30.texture: bricks
+object30.pos: [17.502, 0, -19.4413]
+object30.rot: [0, 0, 0]
+object30.scale: [1, 0.1, 1]
+object31.mesh: cube
+object31.texture: bricks
+object31.pos: [17.502, 0, -18.9173]
+object31.rot: [0, 0, 0]
+object31.scale: [1, 0.1, 1]
+object32.mesh: cube
+object32.texture: bricks
+object32.pos: [17.502, 0, -18.3947]
+object32.rot: [0, 0, 0]
+object32.scale: [1, 0.1, 1]
+object33.mesh: cube
+object33.texture: bricks
+object33.pos: [17.502, 0, -17.8736]
+object33.rot: [0, 0, 0]
+object33.scale: [1, 0.1, 1]
+object34.mesh: cube
+object34.texture: bricks
+object34.pos: [17.502, 0, -17.3528]
+object34.rot: [0, 0, 0]
+object34.scale: [1, 0.1, 1]
+object35.mesh: cube
+object35.texture: bricks
+object35.pos: [17.502, 0, -16.8343]
+object35.rot: [0, 0, 0]
+object35.scale: [1, 0.1, 1]
+object36.mesh: cube
+object36.texture: bricks
+object36.pos: [17.502, 0, -16.3152]
+object36.rot: [0, 0, 0]
+object36.scale: [1, 0.1, 1]
+object37.mesh: cube
+object37.texture: bricks
+object37.pos: [17.502, 0, -15.7973]
+object37.rot: [0, 0, 0]
+object37.scale: [1, 0.1, 1]
+object38.mesh: cube
+object38.texture: bricks
+object38.pos: [17.502, 0, -15.2815]
+object38.rot: [0, 0, 0]
+object38.scale: [1, 0.1, 1]
+object39.mesh: cube
+object39.texture: bricks
+object39.pos: [17.502, 0, -14.7669]
+object39.rot: [0, 0, 0]
+object39.scale: [1, 0.1, 1]
+object40.mesh: cube
+object40.texture: bricks
+object40.pos: [17.502, 0, -14.2542]
+object40.rot: [0, 0, 0]
+object40.scale: [1, 0.1, 1]
+object41.mesh: cube
+object41.texture: bricks
+object41.pos: [17.502, 0, -13.7425]
+object41.rot: [0, 0, 0]
+object41.scale: [1, 0.1, 1]
+object42.mesh: cube
+object42.texture: bricks
+object42.pos: [17.5021, 0, -13.2327]
+object42.rot: [0, 0, 0]
+object42.scale: [1, 0.1, 1]
+object43.mesh: cube
+object43.texture: bricks
+object43.pos: [17.5021, 0, -12.7238]
+object43.rot: [0, 0, 0]
+object43.scale: [1, 0.1, 1]
+object44.mesh: cube
+object44.texture: bricks
+object44.pos: [17.5021, 0, -12.0738]
+object44.rot: [0, 0, 0]
+object44.scale: [1, 0.1, 1]
+object45.mesh: cube
+object45.texture: bricks
+object45.pos: [17.5021, 0, -11.5738]
+object45.rot: [0, 0, 0]
+object45.scale: [1, 0.1, 1]
+object46.mesh: cube
+object46.texture: bricks
+object46.pos: [17.5021, 0, -11.0905]
+object46.rot: [0, 0, 0]
+object46.scale: [1, 0.1, 1]
+object47.mesh: cube
+object47.texture: bricks
+object47.pos: [17.5021, 0, -10.6155]
+object47.rot: [0, 0, 0]
+object47.scale: [1, 0.1, 1]
+object48.mesh: cube
+object48.texture: bricks
+object48.pos: [17.5021, 0, -10.1355]
+object48.rot: [0, 0, 0]
+object48.scale: [1, 0.1, 1]
+object49.mesh: cube
+object49.texture: bricks
+object49.pos: [17.5021, 0, -9.6688]
+object49.rot: [0, 0, 0]
+object49.scale: [1, 0.1, 1]
+object50.mesh: cube
+object50.texture: bricks
+object50.pos: [17.5021, 0, -9.19737]
+object50.rot: [0, 0, 0]
+object50.scale: [1, 0.1, 1]
+object51.mesh: cube
+object51.texture: bricks
+object51.pos: [17.5021, 0, -8.73487]
+object51.rot: [0, 0, 0]
+object51.scale: [1, 0.1, 1]
+object52.mesh: cube
+object52.texture: bricks
+object52.pos: [17.5021, 0, -8.27376]
+object52.rot: [0, 0, 0]
+object52.scale: [1, 0.1, 1]
+object53.mesh: cube
+object53.texture: bricks
+object53.pos: [17.5021, 0, -7.81876]
+object53.rot: [0, 0, 0]
+object53.scale: [1, 0.1, 1]
+object54.mesh: cube
+object54.texture: bricks
+object54.pos: [17.5021, 0, -7.35967]
+object54.rot: [0, 0, 0]
+object54.scale: [1, 0.1, 1]
+object55.mesh: cube
+object55.texture: bricks
+object55.pos: [17.5021, 0, -6.90134]
+object55.rot: [0, 0, 0]
+object55.scale: [1, 0.1, 1]
+object56.mesh: cube
+object56.texture: bricks
+object56.pos: [17.5021, 0, -6.44749]
+object56.rot: [0, 0, 0]
+object56.scale: [1, 0.1, 1]
+object57.mesh: cube
+object57.texture: bricks
+object57.pos: [17.5021, 0, -5.99392]
+object57.rot: [0, 0, 0]
+object57.scale: [1, 0.1, 1]
+object58.mesh: cube
+object58.texture: bricks
+object58.pos: [17.5021, 0, -5.54059]
+object58.rot: [0, 0, 0]
+object58.scale: [1, 0.1, 1]
+object59.mesh: cube
+object59.texture: bricks
+object59.pos: [17.5021, 0, -5.09059]
+object59.rot: [0, 0, 0]
+object59.scale: [1, 0.1, 1]
+object60.mesh: cube
+object60.texture: bricks
+object60.pos: [15.6814, 0, -28.8187]
+object60.rot: [0, 0, 0]
+object60.scale: [1, 0.1, 1]
+object61.mesh: cube
+object61.texture: bricks
+object61.pos: [15.6814, 0, -28.0921]
+object61.rot: [0, 0, 0]
+object61.scale: [1, 0.1, 1]
+object62.mesh: cube
+object62.texture: bricks
+object62.pos: [15.6814, 0, -27.3765]
+object62.rot: [0, 0, 0]
+object62.scale: [1, 0.1, 1]
+object63.mesh: cube
+object63.texture: bricks
+object63.pos: [15.6815, 0, -26.6684]
+object63.rot: [0, 0, 0]
+object63.scale: [1, 0.1, 1]
+object64.mesh: cube
+object64.texture: bricks
+object64.pos: [15.6815, 0, -25.9704]
+object64.rot: [0, 0, 0]
+object64.scale: [1, 0.1, 1]
+object65.mesh: cube
+object65.texture: bricks
+object65.pos: [15.6815, 0, -25.2821]
+object65.rot: [0, 0, 0]
+object65.scale: [1, 0.1, 1]
+object66.mesh: cube
+object66.texture: bricks
+object66.pos: [15.6815, 0, -24.6033]
+object66.rot: [0, 0, 0]
+object66.scale: [1, 0.1, 1]
+object67.mesh: cube
+object67.texture: bricks
+object67.pos: [15.6815, 0, -23.9325]
+object67.rot: [0, 0, 0]
+object67.scale: [1, 0.1, 1]
+object68.mesh: cube
+object68.texture: bricks
+object68.pos: [15.6815, 0, -23.2705]
+object68.rot: [0, 0, 0]
+object68.scale: [1, 0.1, 1]
+object69.mesh: cube
+object69.texture: bricks
+object69.pos: [15.6815, 0, -22.6168]
+object69.rot: [0, 0, 0]
+object69.scale: [1, 0.1, 1]
+object70.mesh: cube
+object70.texture: bricks
+object70.pos: [15.6815, 0, -21.9713]
+object70.rot: [0, 0, 0]
+object70.scale: [1, 0.1, 1]
+object71.mesh: cube
+object71.texture: bricks
+object71.pos: [15.6815, 0, -21.3336]
+object71.rot: [0, 0, 0]
+object71.scale: [1, 0.1, 1]
+object72.mesh: cube
+object72.texture: bricks
+object72.pos: [15.6815, 0, -20.7034]
+object72.rot: [0, 0, 0]
+object72.scale: [1, 0.1, 1]
+object73.mesh: cube
+object73.texture: bricks
+object73.pos: [15.6815, 0, -20.0797]
+object73.rot: [0, 0, 0]
+object73.scale: [1, 0.1, 1]
+object74.mesh: cube
+object74.texture: bricks
+object74.pos: [15.6815, 0, -19.463]
+object74.rot: [0, 0, 0]
+object74.scale: [1, 0.1, 1]
+object75.mesh: cube
+object75.texture: bricks
+object75.pos: [15.6815, 0, -18.854]
+object75.rot: [0, 0, 0]
+object75.scale: [1, 0.1, 1]
+object76.mesh: cube
+object76.texture: bricks
+object76.pos: [15.6815, 0, -18.554]
+object76.rot: [0, 0, 0]
+object76.scale: [1, 0.1, 1]
+object77.mesh: cube
+object77.texture: bricks
+object77.pos: [15.6815, 0, -18.304]
+object77.rot: [0, 0, 0]
+object77.scale: [1, 0.1, 1]
+object78.mesh: cube
+object78.texture: bricks
+object78.pos: [15.6815, 0, -18.0707]
+object78.rot: [0, 0, 0]
+object78.scale: [1, 0.1, 1]
+object79.mesh: cube
+object79.texture: bricks
+object79.pos: [15.6815, 0, -17.8082]
+object79.rot: [0, 0, 0]
+object79.scale: [1, 0.1, 1]
+object80.mesh: cube
+object80.texture: bricks
+object80.pos: [15.6815, 0, -17.5382]
+object80.rot: [0, 0, 0]
+object80.scale: [1, 0.1, 1]
+object81.mesh: cube
+object81.texture: bricks
+object81.pos: [15.6815, 0, -17.2382]
+object81.rot: [0, 0, 0]
+object81.scale: [1, 0.1, 1]
+object82.mesh: cube
+object82.texture: bricks
+object82.pos: [15.6815, 0, -16.9167]
+object82.rot: [0, 0, 0]
+object82.scale: [1, 0.1, 1]
+object83.mesh: cube
+object83.texture: bricks
+object83.pos: [15.6815, 0, -16.5855]
+object83.rot: [0, 0, 0]
+object83.scale: [1, 0.1, 1]
+object84.mesh: cube
+object84.texture: bricks
+object84.pos: [15.6815, 0, -16.2466]
+object84.rot: [0, 0, 0]
+object84.scale: [1, 0.1, 1]
+object85.mesh: cube
+object85.texture: bricks
+object85.pos: [15.6815, 0, -15.8966]
+object85.rot: [0, 0, 0]
+object85.scale: [1, 0.1, 1]
+object86.mesh: cube
+object86.texture: bricks
+object86.pos: [15.6815, 0, -15.5375]
+object86.rot: [0, 0, 0]
+object86.scale: [1, 0.1, 1]
+object87.mesh: cube
+object87.texture: bricks
+object87.pos: [15.6815, 0, -15.1792]
+object87.rot: [0, 0, 0]
+object87.scale: [1, 0.1, 1]
+object88.mesh: cube
+object88.texture: bricks
+object88.pos: [15.6815, 0, -14.8138]
+object88.rot: [0, 0, 0]
+object88.scale: [1, 0.1, 1]
+object89.mesh: cube
+object89.texture: bricks
+object89.pos: [15.6815, 0, -14.4388]
+object89.rot: [0, 0, 0]
+object89.scale: [1, 0.1, 1]
+object90.mesh: cube
+object90.texture: bricks
+object90.pos: [15.6815, 0, -14.0655]
+object90.rot: [0, 0, 0]
+object90.scale: [1, 0.1, 1]
+object91.mesh: cube
+object91.texture: bricks
+object91.pos: [15.6815, 0, -13.6842]
+object91.rot: [0, 0, 0]
+object91.scale: [1, 0.1, 1]
+object92.mesh: cube
+object92.texture: bricks
+object92.pos: [15.6815, 0, -13.296]
+object92.rot: [0, 0, 0]
+object92.scale: [1, 0.1, 1]
+object93.mesh: cube
+object93.texture: bricks
+object93.pos: [15.6815, 0, -12.9099]
+object93.rot: [0, 0, 0]
+object93.scale: [1, 0.1, 1]
+object94.mesh: cube
+object94.texture: bricks
+object94.pos: [15.6815, 0, -12.5204]
+object94.rot: [0, 0, 0]
+object94.scale: [1, 0.1, 1]
+object95.mesh: cube
+object95.texture: bricks
+object95.pos: [15.6815, 0, -12.1254]
+object95.rot: [0, 0, 0]
+object95.scale: [1, 0.1, 1]
+object96.mesh: cube
+object96.texture: bricks
+object96.pos: [15.6815, 0, -11.7349]
+object96.rot: [0, 0, 0]
+object96.scale: [1, 0.1, 1]
+object97.mesh: cube
+object97.texture: bricks
+object97.pos: [15.6815, 0, -11.3417]
+object97.rot: [0, 0, 0]
+object97.scale: [1, 0.1, 1]
+object98.mesh: cube
+object98.texture: bricks
+object98.pos: [15.6815, 0, -10.9483]
+object98.rot: [0, 0, 0]
+object98.scale: [1, 0.1, 1]
+object99.mesh: cube
+object99.texture: bricks
+object99.pos: [15.6815, 0, -10.5545]
+object99.rot: [0, 0, 0]
+object99.scale: [1, 0.1, 1]
+object100.mesh: cube
+object100.texture: bricks
+object100.pos: [15.6815, 0, -10.1625]
+object100.rot: [0, 0, 0]
+object100.scale: [1, 0.1, 1]
+object101.mesh: cube
+object101.texture: bricks
+object101.pos: [15.6815, 0, -9.76828]
+object101.rot: [0, 0, 0]
+object101.scale: [1, 0.1, 1]
+object102.mesh: cube
+object102.texture: bricks
+object102.pos: [15.6815, 0, -9.37568]
+object102.rot: [0, 0, 0]
+object102.scale: [1, 0.1, 1]
+object103.mesh: cube
+object103.texture: bricks
+object103.pos: [15.6815, 0, -8.98104]
+object103.rot: [0, 0, 0]
+object103.scale: [1, 0.1, 1]
+object104.mesh: cube
+object104.texture: bricks
+object104.pos: [15.6815, 0, -8.58794]
+object104.rot: [0, 0, 0]
+object104.scale: [1, 0.1, 1]
+object105.mesh: cube
+object105.texture: bricks
+object105.pos: [15.6815, 0, -8.19627]
+object105.rot: [0, 0, 0]
+object105.scale: [1, 0.1, 1]
+object106.mesh: cube
+object106.texture: bricks
+object106.pos: [15.6815, 0, -7.80595]
+object106.rot: [0, 0, 0]
+object106.scale: [1, 0.1, 1]
+object107.mesh: cube
+object107.texture: bricks
+object107.pos: [15.6815, 0, -7.41532]
+object107.rot: [0, 0, 0]
+object107.scale: [1, 0.1, 1]
+object108.mesh: cube
+object108.texture: bricks
+object108.pos: [15.6815, 0, -7.02138]
+object108.rot: [0, 0, 0]
+object108.scale: [1, 0.1, 1]
+object109.mesh: cube
+object109.texture: bricks
+object109.pos: [15.6815, 0, -6.62874]
+object109.rot: [0, 0, 0]
+object109.scale: [1, 0.1, 1]
+object110.mesh: cube
+object110.texture: bricks
+object110.pos: [15.6815, 0, -6.23445]
+object110.rot: [0, 0, 0]
+object110.scale: [1, 0.1, 1]
+object111.mesh: cube
+object111.texture: bricks
+object111.pos: [15.6815, 0, -5.83723]
+object111.rot: [0, 0, 0]
+object111.scale: [1, 0.1, 1]
+object112.mesh: cube
+object112.texture: bricks
+object112.pos: [15.6815, 0, -5.43993]
+object112.rot: [0, 0, 0]
+object112.scale: [1, 0.1, 1]
+object113.mesh: cube
+object113.texture: bricks
+object113.pos: [15.6815, 0, -5.04388]
+object113.rot: [0, 0, 0]
+object113.scale: [1, 0.1, 1]
+object114.mesh: cube
+object114.texture: bricks
+object114.pos: [15.6815, 0, -4.64772]
+object114.rot: [0, 0, 0]
+object114.scale: [1, 0.1, 1]
+object115.mesh: cube
+object115.texture: bricks
+object115.pos: [15.6815, 0, -4.25147]
+object115.rot: [0, 0, 0]
+object115.scale: [1, 0.1, 1]
+object116.mesh: cube
+object116.texture: bricks
+object116.pos: [15.6815, 0, -3.85513]
+object116.rot: [0, 0, 0]
+object116.scale: [1, 0.1, 1]
+object117.mesh: cube
+object117.texture: bricks
+object117.pos: [15.6815, 0, -3.45751]
+object117.rot: [0, 0, 0]
+object117.scale: [1, 0.1, 1]
+object118.mesh: cube
+object118.texture: bricks
+object118.pos: [15.6815, 0, -3.061]
+object118.rot: [0, 0, 0]
+object118.scale: [1, 0.1, 1]
+object119.mesh: cube
+object119.texture: bricks
+object119.pos: [15.6815, 0, -2.66441]
+object119.rot: [0, 0, 0]
+object119.scale: [1, 0.1, 1]
+object120.mesh: cube
+object120.texture: bricks
+object120.pos: [5.76767, -12.9822, -3.23648]
+object120.rot: [0, 0, 0]
+object120.scale: [1, 0.1, 1]
+object121.mesh: cube
+object121.texture: bricks
+object121.pos: [5.76769, -16.5226, 1.42061]
+object121.rot: [0, 0, 0]
+object121.scale: [1, 0.1, 1]
+object122.mesh: cube
+object122.texture: bricks
+object122.pos: [5.7677, -20.0433, 6.05186]
+object122.rot: [0, 0, 0]
+object122.scale: [1, 0.1, 1]
+object123.mesh: cube
+object123.texture: bricks
+object123.pos: [5.76771, -23.545, 10.6582]
+object123.rot: [0, 0, 0]
+object123.scale: [1, 0.1, 1]
+object124.mesh: cube
+object124.texture: bricks
+object124.pos: [5.76772, -27.0161, 15.2242]
+object124.rot: [0, 0, 0]
+object124.scale: [1, 0.1, 1]
+object125.mesh: cube
+object125.texture: bricks
+object125.pos: [5.76773, -30.4536, 19.7459]
+object125.rot: [0, 0, 0]
+object125.scale: [1, 0.1, 1]
+object126.mesh: cube
+object126.texture: bricks
+object126.pos: [5.76774, -33.8624, 24.2301]
+object126.rot: [0, 0, 0]
+object126.scale: [1, 0.1, 1]
+object127.mesh: cube
+object127.texture: bricks
+object127.pos: [5.76775, -36.0411, 27.096]
+object127.rot: [0, 0, 0]
+object127.scale: [1, 0.1, 1]
+object128.mesh: cube
+object128.texture: bricks
+object128.pos: [5.76776, -37.8567, 29.4843]
+object128.rot: [0, 0, 0]
+object128.scale: [1, 0.1, 1]
+object129.mesh: cube
+object129.texture: bricks
+object129.pos: [5.76776, -39.7126, 31.9256]
+object129.rot: [0, 0, 0]
+object129.scale: [1, 0.1, 1]
+object130.mesh: cube
+object130.texture: bricks
+object130.pos: [5.76777, -41.6492, 34.4731]
+object130.rot: [0, 0, 0]
+object130.scale: [1, 0.1, 1]
+object131.mesh: cube
+object131.texture: bricks
+object131.pos: [5.76778, -43.5374, 36.9568]
+object131.rot: [0, 0, 0]
+object131.scale: [1, 0.1, 1]
+object132.mesh: cube
+object132.texture: bricks
+object132.pos: [5.76778, -45.474, 39.5043]
+object132.rot: [0, 0, 0]
+object132.scale: [1, 0.1, 1]
+object133.mesh: cube
+object133.texture: bricks
+object133.pos: [5.76779, -47.4797, 42.1427]
+object133.rot: [0, 0, 0]
+object133.scale: [1, 0.1, 1]
+object134.mesh: cube
+object134.texture: bricks
+object134.pos: [5.7678, -49.4466, 44.73]
+object134.rot: [0, 0, 0]
+object134.scale: [1, 0.1, 1]
+object135.mesh: cube
+object135.texture: bricks
+object135.pos: [5.7678, -51.4639, 47.3836]
+object135.rot: [0, 0, 0]
+object135.scale: [1, 0.1, 1]
+object136.mesh: cube
+object136.texture: bricks
+object136.pos: [5.76781, -53.5215, 50.0903]
+object136.rot: [0, 0, 0]
+object136.scale: [1, 0.1, 1]
+object137.mesh: cube
+object137.texture: bricks
+object137.pos: [5.76782, -55.5681, 52.7825]
+object137.rot: [0, 0, 0]
+object137.scale: [1, 0.1, 1]
+object138.mesh: cube
+object138.texture: bricks
+object138.pos: [5.76782, -57.6056, 55.4627]
+object138.rot: [0, 0, 0]
+object138.scale: [1, 0.1, 1]
+object139.mesh: cube
+object139.texture: bricks
+object139.pos: [5.76783, -59.6725, 58.1816]
+object139.rot: [0, 0, 0]
+object139.scale: [1, 0.1, 1]
 objects: %[
 - object0
 - object1
 - object2
-- object3]%
+- object3
+- object4
+- object5
+- object6
+- object7
+- object8
+- object9
+- object10
+- object11
+- object12
+- object13
+- object14
+- object15
+- object16
+- object17
+- object18
+- object19
+- object20
+- object21
+- object22
+- object23
+- object24
+- object25
+- object26
+- object27
+- object28
+- object29
+- object30
+- object31
+- object32
+- object33
+- object34
+- object35
+- object36
+- object37
+- object38
+- object39
+- object40
+- object41
+- object42
+- object43
+- object44
+- object45
+- object46
+- object47
+- object48
+- object49
+- object50
+- object51
+- object52
+- object53
+- object54
+- object55
+- object56
+- object57
+- object58
+- object59
+- object60
+- object61
+- object62
+- object63
+- object64
+- object65
+- object66
+- object67
+- object68
+- object69
+- object70
+- object71
+- object72
+- object73
+- object74
+- object75
+- object76
+- object77
+- object78
+- object79
+- object80
+- object81
+- object82
+- object83
+- object84
+- object85
+- object86
+- object87
+- object88
+- object89
+- object90
+- object91
+- object92
+- object93
+- object94
+- object95
+- object96
+- object97
+- object98
+- object99
+- object100
+- object101
+- object102
+- object103
+- object104
+- object105
+- object106
+- object107
+- object108
+- object109
+- object110
+- object111
+- object112
+- object113
+- object114
+- object115
+- object116
+- object117
+- object118
+- object119
+- object120
+- object121
+- object122
+- object123
+- object124
+- object125
+- object126
+- object127
+- object128
+- object129
+- object130
+- object131
+- object132
+- object133
+- object134
+- object135
+- object136
+- object137
+- object138
+- object139]%

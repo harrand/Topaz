@@ -54,6 +54,8 @@ KeybindType KeyControls::getKeybindType(std::string keyBindType)
 		return KeybindType::REQUEST_CLOSE;
 	else if(keyBindType == "RESTART")
 		return KeybindType::RESTART;
+	else if(keyBindType == "ADDDEFAULTOBJECT")
+		return KeybindType::ADDDEFAULTOBJECT;
 	else
 		return KeybindType::NIL;
 }
@@ -100,6 +102,9 @@ std::string KeyControls::getKeybind(MDLF& controlsDataFile, KeybindType kt)
 		break;
 		case KeybindType::RESTART:
 			return controlsDataFile.getTag("RESTART");
+		break;
+		case KeybindType::ADDDEFAULTOBJECT:
+			return controlsDataFile.getTag("ADDDEFAULTOBJECT");
 		break;
 		default:
 			return "0";
@@ -153,5 +158,10 @@ void KeybindController::handleKeybinds(float avgFrameMillis)
 	{
 		cam.getPosR() = Vector3F(0, 0, 0);
 		cam.getRotR() = Vector3F(0, 3.14159, 0);
+	}
+	if(kl.isKeyPressed(KeyControls::getKeybind(controlsDataFile, KeybindType::ADDDEFAULTOBJECT)))
+	{
+		//void setDefaultObject(std::vector<std::string> args, std::shared_ptr<World>& world, Camera& cam, bool printResults);
+		Commands::inputCommand("addobject", world, cam);
 	}
 }

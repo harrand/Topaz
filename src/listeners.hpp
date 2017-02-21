@@ -33,7 +33,8 @@ enum class KeybindType : unsigned int
 	INPUT_COMMAND = 10,
 	REQUEST_CLOSE = 11,
 	RESTART = 12,
-	NIL = 13
+	ADDDEFAULTOBJECT = 13,
+	NIL = 14
 };
 
 namespace KeyControls

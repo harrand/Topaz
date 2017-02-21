@@ -1,5 +1,18 @@
 #include "command.hpp"
 
+//Default value needed for CommandCache::defaultObjectArgs
+std::vector<std::string> CommandCache::defaultObjectArgs = std::vector<std::string>();
+
+void CommandCache::updateDefaultObject(std::vector<std::string> addObjectArgs)
+{
+	CommandCache::defaultObjectArgs = addObjectArgs;
+}
+
+std::vector<std::string> CommandCache::getDefaultObject()
+{
+	return CommandCache::defaultObjectArgs;
+}
+
 void Commands::inputCommand(std::string cmd, std::shared_ptr<World>& world, Camera& cam)
 {
 	std::vector<std::string> args;
@@ -13,14 +26,20 @@ void Commands::inputCommand(std::string cmd, std::shared_ptr<World>& world, Came
 		Commands::loadWorld(args, world);
 	else if(cmdName == "exportworld")
 		Commands::exportWorld(args, world);
+	else if(cmdName == "defaultobject")
+		Commands::setDefaultObject(args, world, cam, true);
 	else if(cmdName == "addobject")
 		Commands::addObject(args, world, cam, true);
 	else if(cmdName == "reloadworld")
 		Commands::reloadWorld(world, true);
+	else if(cmdName == "updateworld")
+		Commands::updateWorld(world, true);
 	else if(cmdName == "setspeed")
 		Commands::setSpeed(CastUtility::fromString<float>(args.at(1)));
 	else if(cmdName == "teleport")
 		Commands::teleport(args, cam);
+	else if(cmdName == "roundlocation")
+		Commands::roundLocation(cam);
 	else
 		std::cout << "Unknown command. Maybe you made a typo?\n";
 }
@@ -49,8 +68,32 @@ void Commands::exportWorld(std::vector<std::string> args, std::shared_ptr<World>
 	world->exportWorld(worldname);
 }
 
+void Commands::setDefaultObject(std::vector<std::string> args, std::shared_ptr<World>& world, Camera& cam, bool printResults)
+{
+	if(args.size() != 6)
+	{
+		std::cout << "Nonfatal Command Error: Unexpected quantity of args, got " << args.size() << ", expected 6.\n";
+		return;
+	}
+	args.erase(args.begin());
+	args.insert(args.begin(), "addobject");
+	CommandCache::updateDefaultObject(args);
+	if(printResults)
+	{
+		std::cout << "The command 'addobject' now serves as an alias for the following command:\n";
+		for(unsigned int i = 0; i < args.size(); i++)
+			std::cout << args.at(i);
+		std::cout << "\n";
+	}
+}
+
 void Commands::addObject(std::vector<std::string> args, std::shared_ptr<World>& world, Camera& cam, bool printResults)
 {
+	if(args.size() == 1 && !CommandCache::getDefaultObject().empty())
+	{
+		Commands::addObject(CommandCache::getDefaultObject(), world, cam, printResults);
+		return;
+	}
 	if(args.size() != 6)
 	{
 		std::cout << "Nonfatal Command Error: Unexpected quantity of args, got " << args.size() << ", expected 6.\n";
@@ -116,13 +159,20 @@ void Commands::addObject(std::vector<std::string> args, std::shared_ptr<World>& 
 
 void Commands::reloadWorld(std::shared_ptr<World>& world, bool printResults)
 {
+	world = std::shared_ptr<World>(new World(world->getFileName()));
+	if(printResults)
+		std::cout << "Successfully reloaded the world. (world link " << world->getFileName() << ").\n";
+}
+
+void Commands::updateWorld(std::shared_ptr<World>& world, bool printResults)
+{
 	std::string worldLink = world->getFileName(), worldName = worldLink;
 	std::string toRemove = RES_POINT + "/data/worlds/";
 	worldName.erase(worldName.find(toRemove), toRemove.length());
 	world->exportWorld(worldName);
 	world = std::shared_ptr<World>(new World(worldLink));
 	if(printResults)
-		std::cout << "Successfully reloaded the world named " << worldName << " (world link " << worldLink << ").\n";
+		std::cout << "Successfully updated all new objects to the world named " << worldName << " (world link " << worldLink << ").\n";
 }
 
 void Commands::setSpeed(float speed)
@@ -144,4 +194,9 @@ void Commands::teleport(std::vector<std::string> args, Camera& cam)
 	Vector3F tele = Vector3F(CastUtility::fromString<float>(teleSplit.at(0)), CastUtility::fromString<float>(teleSplit.at(1)), CastUtility::fromString<float>(teleSplit.at(2)));
 	cam.getPosR() = tele;
 	std::cout << "Teleported.\n";
+}
+
+void Commands::roundLocation(Camera& cam)
+{
+	cam.getPosR() = Vector3F(round(cam.getPos().getX()), round(cam.getPos().getY()), round(cam.getPos().getZ()));
 }

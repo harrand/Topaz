@@ -168,6 +168,36 @@ object33.texture: sand
 object33.pos: [-11.9355, 7.30721, 36.4198]
 object33.rot: [0, 3.14159, 0]
 object33.scale: [6, 6, 6]
+object34.mesh: cube
+object34.texture: lava
+object34.pos: [-91.939, 28.7416, -43.5665]
+object34.rot: [0, 3.14159, 0]
+object34.scale: [3, 3, 3]
+object35.mesh: cube
+object35.texture: lava
+object35.pos: [-84.3557, 28.7416, -70.4975]
+object35.rot: [0, 3.14159, 0]
+object35.scale: [3, 3, 3]
+object36.mesh: sphere
+object36.texture: grass
+object36.pos: [-106.639, 35.9633, -97.1567]
+object36.rot: [0, 3.14159, 0]
+object36.scale: [2, 2, 2]
+object37.mesh: sphere
+object37.texture: grass
+object37.pos: [-103.692, 35.9633, -112.538]
+object37.rot: [0, 3.14159, 0]
+object37.scale: [5, 5, 5]
+object38.mesh: sphere
+object38.texture: grass
+object38.pos: [-119.883, 35.9633, -144.593]
+object38.rot: [0, 3.14159, 0]
+object38.scale: [5, 5, 5]
+object39.mesh: sphere
+object39.texture: grass
+object39.pos: [-91.9258, 35.9633, -172.55]
+object39.rot: [0, 3.14159, 0]
+object39.scale: [5, 5, 5]
 objects: %[
 - object0
 - object1
@@ -202,4 +232,10 @@ objects: %[
 - object30
 - object31
 - object32
-- object33]%
+- object33
+- object34
+- object35
+- object36
+- object37
+- object38
+- object39]%
