@@ -141,7 +141,7 @@ std::string KeyControls::getKeybind(MDLF& controlsDataFile, KeybindType kt)
 	}
 }
 
-KeybindController::KeybindController(Camera& cam, std::shared_ptr<World>& world, Window& wnd): cam(cam), world(world), wnd(wnd)
+KeybindController::KeybindController(Player& player, std::shared_ptr<World>& world, Window& wnd): player(player), world(world), wnd(wnd)
 {
 	wnd.registerListener(this->kl);
 }
@@ -151,47 +151,47 @@ KeybindController::~KeybindController()
 	wnd.deregisterListener(this->kl);
 }
 
-void KeybindController::handleKeybinds(float avgFrameMillis)
+void KeybindController::handleKeybinds()
 {
-	float multiplier = CastUtility::fromString<float>(MDLF(RawFile(RES_POINT + "/resources.data")).getTag("speed")) * (avgFrameMillis / 1000);
+	float multiplier = CastUtility::fromString<float>(MDLF(RawFile(RES_POINT + "/resources.data")).getTag("speed"));
 	MDLF controlsDataFile = MDLF(RawFile(RES_POINT + "/controls.data"));
 	if(kl.isKeyPressed(KeyControls::getKeybind(controlsDataFile, KeybindType::MOVE_FORWARD)))
-		this->cam.getPosR() += (cam.getForward() * multiplier);
+		this->player.getCamera().getPosR() += (player.getCamera().getForward() * multiplier);
 	if(kl.isKeyPressed(KeyControls::getKeybind(controlsDataFile, KeybindType::MOVE_BACKWARD)))
-		this->cam.getPosR() += (cam.getBackward() * multiplier);
+		this->player.getCamera().getPosR() += (player.getCamera().getBackward() * multiplier);
 	if(kl.isKeyPressed(KeyControls::getKeybind(controlsDataFile, KeybindType::MOVE_LEFT)))
-		this->cam.getPosR() += (cam.getLeft() * multiplier);
+		this->player.getCamera().getPosR() += (player.getCamera().getLeft() * multiplier);
 	if(kl.isKeyPressed(KeyControls::getKeybind(controlsDataFile, KeybindType::MOVE_RIGHT)))
-		this->cam.getPosR() += (cam.getRight() * multiplier);
+		this->player.getCamera().getPosR() += (player.getCamera().getRight() * multiplier);
 	if(kl.isKeyPressed(KeyControls::getKeybind(controlsDataFile, KeybindType::MOVE_UP)))
-		this->cam.getPosR() += (Vector3F(0, 1, 0) * multiplier);
+		this->player.getCamera().getPosR() += (Vector3F(0, 1, 0) * multiplier);
 	if(kl.isKeyPressed(KeyControls::getKeybind(controlsDataFile, KeybindType::MOVE_DOWN)))
-		this->cam.getPosR() += (Vector3F(0, -1, 0) * multiplier);
+		this->player.getCamera().getPosR() += (Vector3F(0, -1, 0) * multiplier);
 	if(kl.isKeyPressed(KeyControls::getKeybind(controlsDataFile, KeybindType::LOOK_UP)))
-		cam.getRotR() += Vector3F(0.05, 0, 0);
+		player.getCamera().getRotR() += Vector3F(0.05, 0, 0);
 	if(kl.isKeyPressed(KeyControls::getKeybind(controlsDataFile, KeybindType::LOOK_DOWN)))
-		cam.getRotR() += Vector3F(-0.05, 0, 0);
+		player.getCamera().getRotR() += Vector3F(-0.05, 0, 0);
 	if(kl.isKeyPressed(KeyControls::getKeybind(controlsDataFile, KeybindType::LOOK_LEFT)))
-		cam.getRotR() += Vector3F(0, -0.05, 0);
+		player.getCamera().getRotR() += Vector3F(0, -0.05, 0);
 	if(kl.isKeyPressed(KeyControls::getKeybind(controlsDataFile, KeybindType::LOOK_RIGHT)))
-		cam.getRotR() += Vector3F(0, 0.05, 0);
+		player.getCamera().getRotR() += Vector3F(0, 0.05, 0);
 	if(kl.isKeyPressed(KeyControls::getKeybind(controlsDataFile, KeybindType::INPUT_COMMAND)))
 	{
 		std::string input;
 		std::getline(std::cin, input);
-		Commands::inputCommand(input, world, cam);
+		Commands::inputCommand(input, world, player);
 	}
 	if(kl.isKeyPressed(KeyControls::getKeybind(controlsDataFile, KeybindType::REQUEST_CLOSE)))
 		wnd.requestClose();
 	if(kl.isKeyPressed(KeyControls::getKeybind(controlsDataFile, KeybindType::RESTART)))
 	{
-		cam.getPosR() = Vector3F(0, 0, 0);
-		cam.getRotR() = Vector3F(0, 3.14159, 0);
+		player.getCamera().getPosR() = Vector3F(0, 0, 0);
+		player.getCamera().getRotR() = Vector3F(0, 3.14159, 0);
 	}
 	if(kl.catchKeyPressed(KeyControls::getKeybind(controlsDataFile, KeybindType::ADDDEFAULTOBJECT)))
 	{
-		//void setDefaultObject(std::vector<std::string> args, std::shared_ptr<World>& world, Camera& cam, bool printResults);
-		Commands::inputCommand("addobject", world, cam);
+		//void setDefaultObject(std::vector<std::string> args, std::shared_ptr<World>& world, Camera& player.getCamera(), bool printResults);
+		Commands::inputCommand("addobject", world, player);
 	}
 }
 

@@ -13,7 +13,7 @@ std::vector<std::string> CommandCache::getDefaultObject()
 	return CommandCache::defaultObjectArgs;
 }
 
-void Commands::inputCommand(std::string cmd, std::shared_ptr<World>& world, Camera& cam)
+void Commands::inputCommand(std::string cmd, std::shared_ptr<World>& world, Player& player)
 {
 	std::vector<std::string> args;
 	if(StringUtility::contains(cmd, ' '))
@@ -27,9 +27,9 @@ void Commands::inputCommand(std::string cmd, std::shared_ptr<World>& world, Came
 	else if(cmdName == "exportworld")
 		Commands::exportWorld(args, world);
 	else if(cmdName == "defaultobject")
-		Commands::setDefaultObject(args, world, cam, true);
+		Commands::setDefaultObject(args, true);
 	else if(cmdName == "addobject")
-		Commands::addObject(args, world, cam, true);
+		Commands::addObject(args, world, player, true);
 	else if(cmdName == "reloadworld")
 		Commands::reloadWorld(world, true);
 	else if(cmdName == "updateworld")
@@ -37,9 +37,9 @@ void Commands::inputCommand(std::string cmd, std::shared_ptr<World>& world, Came
 	else if(cmdName == "setspeed")
 		Commands::setSpeed(CastUtility::fromString<float>(args.at(1)));
 	else if(cmdName == "teleport")
-		Commands::teleport(args, cam);
+		Commands::teleport(args, player);
 	else if(cmdName == "roundlocation")
-		Commands::roundLocation(cam);
+		Commands::roundLocation(player);
 	else
 		std::cout << "Unknown command. Maybe you made a typo?\n";
 }
@@ -68,7 +68,7 @@ void Commands::exportWorld(std::vector<std::string> args, std::shared_ptr<World>
 	world->exportWorld(worldname);
 }
 
-void Commands::setDefaultObject(std::vector<std::string> args, std::shared_ptr<World>& world, Camera& cam, bool printResults)
+void Commands::setDefaultObject(std::vector<std::string> args, bool printResults)
 {
 	if(args.size() != 6)
 	{
@@ -87,11 +87,11 @@ void Commands::setDefaultObject(std::vector<std::string> args, std::shared_ptr<W
 	}
 }
 
-void Commands::addObject(std::vector<std::string> args, std::shared_ptr<World>& world, Camera& cam, bool printResults)
+void Commands::addObject(std::vector<std::string> args, std::shared_ptr<World>& world, Player& player, bool printResults)
 {
 	if(args.size() == 1 && !CommandCache::getDefaultObject().empty())
 	{
-		Commands::addObject(CommandCache::getDefaultObject(), world, cam, printResults);
+		Commands::addObject(CommandCache::getDefaultObject(), world, player, printResults);
 		return;
 	}
 	if(args.size() != 6)
@@ -124,7 +124,7 @@ void Commands::addObject(std::vector<std::string> args, std::shared_ptr<World>& 
 	
 	if(posStr == "me")
 	{
-		pos = cam.getPos();
+		pos = player.getCamera().getPos();
 	}
 	else
 	{
@@ -134,7 +134,7 @@ void Commands::addObject(std::vector<std::string> args, std::shared_ptr<World>& 
 		
 	if(rotStr == "me")
 	{
-		rot = Vector3F(cam.getRot().getX(), cam.getRot().getY(), cam.getRot().getZ());
+		rot = Vector3F(player.getCamera().getRot().getX(), player.getCamera().getRot().getY(), player.getCamera().getRot().getZ());
 	}
 	else
 	{
@@ -183,7 +183,7 @@ void Commands::setSpeed(float speed)
 	std::cout << "Setting speed to " << speed << ".\n";
 }
 
-void Commands::teleport(std::vector<std::string> args, Camera& cam)
+void Commands::teleport(std::vector<std::string> args, Player& player)
 {
 	if(args.size() != 2)
 	{
@@ -192,11 +192,11 @@ void Commands::teleport(std::vector<std::string> args, Camera& cam)
 	}
 	std::vector<std::string> teleSplit = StringUtility::splitString(StringUtility::replaceAllChar(StringUtility::replaceAllChar(args.at(1), '[', ""), ']', ""), ',');
 	Vector3F tele = Vector3F(CastUtility::fromString<float>(teleSplit.at(0)), CastUtility::fromString<float>(teleSplit.at(1)), CastUtility::fromString<float>(teleSplit.at(2)));
-	cam.getPosR() = tele;
+	player.getCamera().getPosR() = tele;
 	std::cout << "Teleported.\n";
 }
 
-void Commands::roundLocation(Camera& cam)
+void Commands::roundLocation(Player& player)
 {
-	cam.getPosR() = Vector3F(round(cam.getPos().getX()), round(cam.getPos().getY()), round(cam.getPos().getZ()));
+	player.getCamera().getPosR() = Vector3F(round(player.getCamera().getPos().getX()), round(player.getCamera().getPos().getY()), round(player.getCamera().getPos().getZ()));
 }

@@ -3,6 +3,7 @@
 #include "utility.hpp"
 #include "world.hpp"
 #include "object.hpp"
+#include "player.hpp"
 
 class CommandCache
 {
@@ -14,16 +15,16 @@ public:
 
 namespace Commands
 {
-	void inputCommand(std::string cmd, std::shared_ptr<World>& world, Camera& cam);
+	void inputCommand(std::string cmd, std::shared_ptr<World>& world, Player& player);
 	void loadWorld(std::vector<std::string> args, std::shared_ptr<World>& world);
 	void exportWorld(std::vector<std::string> args, std::shared_ptr<World>& world);
-	void setDefaultObject(std::vector<std::string> args, std::shared_ptr<World>& world, Camera& cam, bool printResults);
-	void addObject(std::vector<std::string> args, std::shared_ptr<World>& world, Camera& cam, bool printResults);
+	void setDefaultObject(std::vector<std::string> args, bool printResults);
+	void addObject(std::vector<std::string> args, std::shared_ptr<World>& world, Player& player, bool printResults);
 	void reloadWorld(std::shared_ptr<World>& world, bool printResults);
 	void updateWorld(std::shared_ptr<World>& world, bool printResults);
 	void setSpeed(float speed);
-	void teleport(std::vector<std::string> args, Camera& cam);
-	void roundLocation(Camera& cam);
+	void teleport(std::vector<std::string> args, Player& player);
+	void roundLocation(Player& player);
 }
 
 #endif

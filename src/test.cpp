@@ -7,6 +7,7 @@ std::shared_ptr<World> world;
 std::vector<std::shared_ptr<Mesh>> allMeshes;
 std::vector<std::shared_ptr<Texture>> allTextures;
 Camera cam(Vector3F(), Vector3F(0, 3.14159, 0));
+Player player(cam);
 
 // SDL2 defines main.
 #ifdef main
@@ -24,7 +25,7 @@ int main()
 	
 	Shader shader(RES_POINT + "/shaders/vanilla");	
 	world = std::shared_ptr<World>(new World(RES_POINT + "/data/worlds/test.world"));
-	KeybindController kc(cam, world, wnd);
+	KeybindController kc(player, world, wnd);
 	DataTranslation dt(RES_POINT + "/resources.data");
 	
 	std::map<std::string, std::string> models = dt.retrieveModels(), textures = dt.retrieveTextures();
@@ -62,6 +63,7 @@ int main()
 			std::cout << "Camera Position = [" << cam.getPosR().getX() << ", " << cam.getPosR().getY() << ", " << cam.getPosR().getZ() << "].\n";
 			std::cout << "Lifetime Spent: " << secondsLifetime << " seconds.\n";
 		}
+		player.updateMotion(fps);
 		fpscounter.update();
 		deltaTotal += fpscounter.getRange();
 		deltas.push_back(fpscounter.getRange());
@@ -70,7 +72,7 @@ int main()
 		wnd.clear(0.0f, 0.0f, 0.0f, 1.0f);
 		shader.bind();
 		
-		kc.handleKeybinds(deltaTotal / deltas.size());
+		kc.handleKeybinds();
 		fpscounter.reload();
 		
 		for(unsigned int i = 0; i < world->getMembers().size(); i++)

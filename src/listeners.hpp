@@ -51,15 +51,14 @@ namespace KeyControls
 class KeybindController
 {
 public:
-	KeybindController(Camera& cam, std::shared_ptr<World>& world, Window& wnd);
+	KeybindController(Player& player, std::shared_ptr<World>& world, Window& wnd);
 	~KeybindController();
-	void handleKeybinds(float avgFrameMillis);
+	void handleKeybinds();
 	//void reload();
 private:
-	Camera& cam;
+	Player& player;
 	std::shared_ptr<World>& world;
 	Window& wnd;
-	float avgFrameMillis;
 	KeyListener kl;
 };
 
