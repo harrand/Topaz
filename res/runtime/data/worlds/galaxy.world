@@ -1,0 +1,109 @@
+object0.mesh: sphere
+object0.texture: bricks
+object0.pos: [-3.99999, 0, 4.00001]
+object0.rot: [0, 3.14159, 0]
+object0.scale: [0.2, 0.2, 0.2]
+object1.mesh: sphere
+object1.texture: bricks
+object1.pos: [-17.0396, 0, 17.961]
+object1.rot: [0, 2.24159, 0]
+object1.scale: [0.2, 0.2, 0.2]
+object2.mesh: sphere
+object2.texture: bricks
+object2.pos: [-28.7573, 0, 27.7595]
+object2.rot: [0, 1.09159, 0]
+object2.scale: [0.2, 0.2, 0.2]
+object3.mesh: sphere
+object3.texture: bricks
+object3.pos: [-22.4021, 0, 45.038]
+object3.rot: [0, -0.058408, 0]
+object3.scale: [0.2, 0.2, 0.2]
+object4.mesh: sphere
+object4.texture: bricks
+object4.pos: [-3.92413, 7.98079, 61.2507]
+object4.rot: [-0.25, -0.058408, 0]
+object4.scale: [0.2, 0.2, 0.2]
+object5.mesh: sphere
+object5.texture: bricks
+object5.pos: [-16.8858, 7.78933, 60.0897]
+object5.rot: [-0.4, 0.841592, 0]
+object5.scale: [0.2, 0.2, 0.2]
+object6.mesh: sphere
+object6.texture: bricks
+object6.pos: [-8.57354, 3.1163, 52.6605]
+object6.rot: [-0.4, 0.491592, 0]
+object6.scale: [0.2, 0.2, 0.2]
+object7.mesh: sphere
+object7.texture: bricks
+object7.pos: [1.55382, -1.1673, 42.6872]
+object7.rot: [-0.4, -0.608408, 0]
+object7.scale: [0.2, 0.2, 0.2]
+object8.mesh: sphere
+object8.texture: bricks
+object8.pos: [-1.30498, -4.86678, 30.5835]
+object8.rot: [-0.4, -1.55841, 0]
+object8.scale: [0.2, 0.2, 0.2]
+object9.mesh: sphere
+object9.texture: bricks
+object9.pos: [-32.1321, -10.0365, 41.065]
+object9.rot: [-0.1, -2.05841, 0]
+object9.scale: [0.2, 0.2, 0.2]
+object10.mesh: sphere
+object10.texture: bricks
+object10.pos: [-43.353, 4.69009, 48.7766]
+object10.rot: [1.25, -3.10841, 0]
+object10.scale: [0.2, 0.2, 0.2]
+object11.mesh: sphere
+object11.texture: bricks
+object11.pos: [-41.3309, 17.0269, 52.1085]
+object11.rot: [1.25, -3.85841, 0]
+object11.scale: [0.2, 0.2, 0.2]
+object12.mesh: sphere
+object12.texture: bricks
+object12.pos: [-40.9395, 27.8982, 53.5375]
+object12.rot: [1.45, -2.75841, 0]
+object12.scale: [0.2, 0.2, 0.2]
+object13.mesh: sphere
+object13.texture: bricks
+object13.pos: [-45.3498, 48.0267, 52.8272]
+object13.rot: [1.15, -0.658408, 0]
+object13.scale: [0.2, 0.2, 0.2]
+object14.mesh: sphere
+object14.texture: bricks
+object14.pos: [-42.7079, 60.1973, 43.9504]
+object14.rot: [0.55, 0.991592, 0]
+object14.scale: [0.2, 0.2, 0.2]
+object15.mesh: sphere
+object15.texture: bricks
+object15.pos: [-34.9743, 65.1628, 42.9456]
+object15.rot: [0.55, 1.94159, 0]
+object15.scale: [0.2, 0.2, 0.2]
+object16.mesh: sphere
+object16.texture: bricks
+object16.pos: [-29.6584, 70.1284, 48.6518]
+object16.rot: [0.55, 2.89159, 0]
+object16.scale: [0.2, 0.2, 0.2]
+object17.mesh: sphere
+object17.texture: bricks
+object17.pos: [-31.7303, 75.878, 57.5885]
+object17.rot: [0.55, 3.99159, 0]
+object17.scale: [0.2, 0.2, 0.2]
+objects: %[
+- object0
+- object1
+- object2
+- object3
+- object4
+- object5
+- object6
+- object7
+- object8
+- object9
+- object10
+- object11
+- object12
+- object13
+- object14
+- object15
+- object16
+- object17]%
