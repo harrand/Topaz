@@ -1,8 +1,10 @@
 #include "world.hpp"
 
+//temp
+#include <iostream>
+
 World::World(std::string filename): filename(filename)
 {
-	this->gravity = false;
 	MDLF input(RawFile(this->filename));
 	std::vector<std::string> objectList = input.getSequence("objects");
 	for(unsigned int i = 0; i < objectList.size(); i++)
@@ -11,6 +13,11 @@ World::World(std::string filename): filename(filename)
 		Object obj = this->retrieveData(objectName, input);
 		this->addObject(obj);
 	}
+	std::string spawnStr = input.getTag("spawn"), gravStr = input.getTag("gravity");
+	std::vector<std::string> spawnSplit = StringUtility::splitString(StringUtility::replaceAllChar(StringUtility::replaceAllChar(spawnStr, '[', ""), ']', ""), ',');
+	std::vector<std::string> gravSplit = StringUtility::splitString(StringUtility::replaceAllChar(StringUtility::replaceAllChar(gravStr, '[', ""), ']', ""), ',');
+	this->spawnPoint = Vector3F(CastUtility::fromString<float>(spawnSplit.at(0)), CastUtility::fromString<float>(spawnSplit.at(1)), CastUtility::fromString<float>(spawnSplit.at(2)));
+	this->gravity = Vector3F(CastUtility::fromString<float>(gravSplit.at(0)), CastUtility::fromString<float>(gravSplit.at(1)), CastUtility::fromString<float>(gravSplit.at(2)));
 }
 
 const std::string World::getFileName() const
@@ -31,6 +38,12 @@ void World::exportWorld(std::string worldName)
 	output.getRawFile().clear();
 	std::vector<std::string> objectList;
 	output.deleteSequence("objects");
+	std::string gravLink = "[" + StringUtility::toString(this->gravity.getX()) + ", " + StringUtility::toString(this->gravity.getY()) + ", " + StringUtility::toString(this->gravity.getZ()) + "]";
+	std::string spawnLink = "[" + StringUtility::toString(this->spawnPoint.getX()) + ", " + StringUtility::toString(this->spawnPoint.getY()) + ", " + StringUtility::toString(this->spawnPoint.getZ()) + "]";
+	output.deleteTag("gravity");
+	output.deleteTag("spawn");
+	output.addTag("gravity", gravLink);
+	output.addTag("spawn", spawnLink);
 	for(unsigned int i = 0; i < this->members.size(); i++)
 	{
 		std::string objectName = "object" + StringUtility::toString(i);
@@ -68,6 +81,11 @@ void World::setGravity(Vector3F gravity)
 	this->gravity = gravity;
 }
 
+void World::setSpawnPoint(Vector3F spawnPoint)
+{
+	this->spawnPoint = spawnPoint;
+}
+
 unsigned int World::getSize()
 {
 	return this->members.size();
@@ -81,6 +99,11 @@ std::vector<Object> World::getMembers()
 Vector3F World::getGravity()
 {
 	return this->gravity;
+}
+
+Vector3F World::getSpawnPoint()
+{
+	return this->spawnPoint;
 }
 
 std::string World::getWorldLink()

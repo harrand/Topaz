@@ -24,7 +24,7 @@ int main()
 	std::cout << "'Ocular GEng Testing Environment created.\n";
 	
 	Shader shader(RES_POINT + "/shaders/vanilla");	
-	world = std::shared_ptr<World>(new World(RES_POINT + "/data/worlds/test.world"));
+	world = std::shared_ptr<World>(new World(RES_POINT + "/data/worlds/random.world"));
 	KeybindController kc(player, world, wnd);
 	DataTranslation dt(RES_POINT + "/resources.data");
 	

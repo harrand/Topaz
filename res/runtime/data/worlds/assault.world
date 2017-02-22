@@ -1,3 +1,5 @@
+spawn: [0,0,0]
+gravity: [0,0,0]
 object0.mesh: cube
 object0.texture: bricks
 object0.pos: [5.6352e-006, 0.811386, 2.2228]

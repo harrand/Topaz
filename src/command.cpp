@@ -42,6 +42,8 @@ void Commands::inputCommand(std::string cmd, std::shared_ptr<World>& world, Play
 		Commands::roundLocation(player);
 	else if(cmdName == "gravity")
 		Commands::setGravity(args, world, true);
+	else if(cmdName == "spawnpoint")
+		Commands::setSpawnPoint(args, world, true);
 	else
 		std::cout << "Unknown command. Maybe you made a typo?\n";
 }
@@ -210,4 +212,13 @@ void Commands::setGravity(std::vector<std::string> args, std::shared_ptr<World>&
 	world->setGravity(grav);
 	if(printResults)
 		std::cout << "Set gravity of the world '" << world->getFileName() << "' to [" << grav.getX() << "," << grav.getY() << "," << grav.getZ() << "] N\n";
+}
+
+void Commands::setSpawnPoint(std::vector<std::string> args, std::shared_ptr<World>& world, bool printResults)
+{
+	std::vector<std::string> spawnSplit = StringUtility::splitString(StringUtility::replaceAllChar(StringUtility::replaceAllChar(args.at(1), '[', ""), ']', ""), ',');
+	Vector3F spawn = Vector3F(CastUtility::fromString<float>(spawnSplit.at(0)), CastUtility::fromString<float>(spawnSplit.at(1)), CastUtility::fromString<float>(spawnSplit.at(2)));
+	world->setSpawnPoint(spawn);
+	if(printResults)
+		std::cout << "Set spawnpoint of the world '" << world->getFileName() << "' to [" << spawn.getX() << "," << spawn.getY() << "," << spawn.getZ() << "]\n";
 }
