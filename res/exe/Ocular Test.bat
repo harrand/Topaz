@@ -1,1 +1,0 @@
-windres ocular_test.rc -O coff -o ocular_test.res

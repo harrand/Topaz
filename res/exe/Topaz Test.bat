@@ -1,0 +1,1 @@
+windres topaz_test.rc -O coff -o topaz_test.res

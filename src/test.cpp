@@ -18,10 +18,10 @@ int main()
 	MDLF timeStorage(RawFile(RES_POINT + "/resources.data"));
 	int secondsLifetime = CastUtility::fromString<int>(timeStorage.getTag("played"));
 	
-	Window wnd(800, 600, "Ocular Game Engine : Test Window");	
+	Window wnd(800, 600, "Topaz Game Engine : Test Window");	
 	TimeKeeper tk, fpscounter;
 	
-	std::cout << "'Ocular GEng Testing Environment created.\n";
+	std::cout << "'Topaz Testing Environment created.\n";
 	
 	Shader shader(RES_POINT + "/shaders/vanilla");	
 	world = std::shared_ptr<World>(new World(RES_POINT + "/data/worlds/random.world"));

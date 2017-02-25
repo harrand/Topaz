@@ -1,4 +1,4 @@
-id ICON "../icon/ocular.ico"
+id ICON "../icon/topaz_test.ico"
 1 VERSIONINFO
 FILEVERSION     1,0,0,0
 PRODUCTVERSION  1,0,0,0
@@ -8,12 +8,12 @@ BEGIN
     BLOCK "080904E4"
     BEGIN
       VALUE "CompanyName", "Harrand"
-      VALUE "FileDescription", "Ocular Game Engine"
+      VALUE "FileDescription", "Topaz Game Engine Test Build"
       VALUE "FileVersion", "1.0"
-      VALUE "InternalName", "oculargeng"
+      VALUE "InternalName", "topaz_test"
       VALUE "LegalCopyright", "Harrand"
-      VALUE "OriginalFilename", "ocular.dll"
-      VALUE "ProductName", "OCULAR GENG"
+      VALUE "OriginalFilename", "topaz-test.exe"
+      VALUE "ProductName", "TOPAZ ENGINE (TEST)"
       VALUE "ProductVersion", "1.0"
     END
   END
