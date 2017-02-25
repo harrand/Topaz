@@ -9,10 +9,9 @@ class DataTranslation
 {
 public:
 	DataTranslation(std::string datafilename);
-	std::string getMeshLink(std::string meshName);
-	std::string getTextureLink(std::string textureName);
-	std::string getMeshName(std::string meshLink);
-	std::string getTextureName(std::string textureLink);
+
+	std::string getResourceLink(std::string resourceName);
+	std::string getResourceName(std::string resourceLink);
 	
 	std::map<std::string, std::string> retrieveModels();
 	std::map<std::string, std::string> retrieveTextures();

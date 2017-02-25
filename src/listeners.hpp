@@ -13,7 +13,6 @@ public:
 	KeyListener(): Listener(){}
 	~KeyListener(){}
 	void handleEvents(SDL_Event& evt);
-	//void reload();
 	bool isKeyPressed(std::string keyname);
 	bool isKeyReleased(std::string keyname);
 	bool catchKeyPressed(std::string keyname);
@@ -54,7 +53,6 @@ public:
 	KeybindController(Player& player, std::shared_ptr<World>& world, Window& wnd);
 	~KeybindController();
 	void handleKeybinds();
-	//void reload();
 private:
 	Player& player;
 	std::shared_ptr<World>& world;

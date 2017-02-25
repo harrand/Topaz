@@ -195,10 +195,3 @@ void KeybindController::handleKeybinds()
 		Commands::inputCommand("addobject", world, player);
 	}
 }
-
-/*
-void KeybindController::reload()
-{
-	this->kl.reload();
-}
-*/

@@ -22,7 +22,7 @@ public:
 	std::string getTextureLink();
 	
 	void render(std::shared_ptr<Mesh> mesh, std::shared_ptr<Texture> tex, Camera& cam, Shader& shad, float width, float height);
-private:
+protected:
 	float m[16], v[16], p[16];
 	Vector3F pos, rot, scale;
 	std::string meshLink, textureLink;

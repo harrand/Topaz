@@ -1,9 +1,6 @@
 #include "player.hpp"
 
-Player::Player(std::shared_ptr<World>& world, float mass, Camera& cam): Entity(world, mass), cam(cam)
-{
-	
-}
+Player::Player(std::shared_ptr<World>& world, float mass, Camera& cam): Entity(world, mass), cam(cam){}
 
 void Player::setPosition(Vector3F position)
 {

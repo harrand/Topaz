@@ -1,8 +1,5 @@
 #include "world.hpp"
 
-//temp
-#include <iostream>
-
 World::World(std::string filename): filename(filename)
 {
 	MDLF input(RawFile(this->filename));
@@ -58,8 +55,8 @@ void World::exportWorld(std::string worldName)
 		std::string rotLink = "[" + StringUtility::toString(rot.getX()) + ", " + StringUtility::toString(rot.getY()) + ", " + StringUtility::toString(rot.getZ()) + "]";
 		std::string scaleLink = "[" + StringUtility::toString(scale.getX()) + ", " + StringUtility::toString(scale.getY()) + ", " + StringUtility::toString(scale.getZ()) + "]";
 		
-		std::string meshName = dt.getMeshName(meshLink);
-		std::string textureName = dt.getTextureName(textureLink);
+		std::string meshName = dt.getResourceName(meshLink);
+		std::string textureName = dt.getResourceName(textureLink);
 		
 		output.deleteTag(objectName + ".mesh");
 		output.deleteTag(objectName + ".texture");
@@ -121,8 +118,8 @@ Object World::retrieveData(std::string objectName, MDLF& mdlf)
 	
 	DataTranslation dt(RES_POINT + "/resources.data");
 	
-	std::string meshLink = dt.getMeshLink(meshName);
-	std::string textureLink = dt.getTextureLink(textureName);
+	std::string meshLink = dt.getResourceLink(meshName);
+	std::string textureLink = dt.getResourceLink(textureName);
 	
 	std::vector<std::string> posData = StringUtility::splitString(StringUtility::replaceAllChar((StringUtility::replaceAllChar(positionStr, '[', "")), ']', ""), ',');
 	float posX = CastUtility::fromString<float>(posData.at(0));

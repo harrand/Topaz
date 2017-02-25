@@ -112,15 +112,15 @@ void Commands::addObject(std::vector<std::string> args, std::shared_ptr<World>& 
 
 	Vector3F pos, rot, scale;
 		
-	std::string meshLink = dt.getMeshLink(meshName);
-	std::string textureLink = dt.getTextureLink(textureName);
+	std::string meshLink = dt.getResourceLink(meshName);
+	std::string textureLink = dt.getResourceLink(textureName);
 	
-	if(meshLink == "_")
+	if(meshLink == "0")
 	{
 		std::cout << "Nonfatal Command Error: Unknown Mesh Name '" << meshName << "'.\n";
 		return;
 	}
-	if(textureLink == "_")
+	if(textureLink == "0")
 	{
 		std::cout << "Nonfatal Command Error: Unknown Texture Name '" << textureName << "'.\n";
 		return;
