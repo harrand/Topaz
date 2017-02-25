@@ -1,5 +1,6 @@
 gravity: [0, 0, 0]
-spawn: [0, -1, 12]
+spawnpoint: [0, -1, 12]
+spawnorientation: [0, 3.14159, 0]
 object0.mesh: cube
 object0.texture: sand
 object0.pos: [0, 0, 0]

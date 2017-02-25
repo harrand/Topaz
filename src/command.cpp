@@ -44,6 +44,8 @@ void Commands::inputCommand(std::string cmd, std::shared_ptr<World>& world, Play
 		Commands::setGravity(args, world, true);
 	else if(cmdName == "spawnpoint")
 		Commands::setSpawnPoint(args, world, true);
+	else if(cmdName == "spawnorientation")
+		Commands::setSpawnOrientation(args, world, true);
 	else
 		std::cout << "Unknown command. Maybe you made a typo?\n";
 }
@@ -221,4 +223,13 @@ void Commands::setSpawnPoint(std::vector<std::string> args, std::shared_ptr<Worl
 	world->setSpawnPoint(spawn);
 	if(printResults)
 		std::cout << "Set spawnpoint of the world '" << world->getFileName() << "' to [" << spawn.getX() << "," << spawn.getY() << "," << spawn.getZ() << "]\n";
+}
+
+void Commands::setSpawnOrientation(std::vector<std::string> args, std::shared_ptr<World>& world, bool printResults)
+{
+	std::vector<std::string> spawnSplit = StringUtility::splitString(StringUtility::replaceAllChar(StringUtility::replaceAllChar(args.at(1), '[', ""), ']', ""), ',');
+	Vector3F spawn = Vector3F(CastUtility::fromString<float>(spawnSplit.at(0)), CastUtility::fromString<float>(spawnSplit.at(1)), CastUtility::fromString<float>(spawnSplit.at(2)));
+	world->setSpawnOrientation(spawn);
+	if(printResults)
+		std::cout << "Set spawnorientation of the world '" << world->getFileName() << "' to [" << spawn.getX() << "," << spawn.getY() << "," << spawn.getZ() << "]\n";
 }

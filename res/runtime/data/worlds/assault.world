@@ -1,4 +1,5 @@
-spawn: [0,0,0]
+spawnpoint: [0,0,-10]
+spawnorientation: [0,3.14159,0]
 gravity: [0,0,0]
 object0.mesh: cube
 object0.texture: bricks

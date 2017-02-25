@@ -186,7 +186,7 @@ void KeybindController::handleKeybinds()
 	if(kl.isKeyPressed(KeyControls::getKeybind(controlsDataFile, KeybindType::RESTART)))
 	{
 		player.getCamera().getPosR() = this->world->getSpawnPoint();
-		player.getCamera().getRotR() = Vector3F(0, 0, 0);
+		player.getCamera().getRotR() = this->world->getSpawnOrientation();
 		player.setVelocity(Vector3F());
 	}
 	if(kl.catchKeyPressed(KeyControls::getKeybind(controlsDataFile, KeybindType::ADDDEFAULTOBJECT)))

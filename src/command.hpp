@@ -27,6 +27,7 @@ namespace Commands
 	void roundLocation(Player& player);
 	void setGravity(std::vector<std::string> args, std::shared_ptr<World>& world, bool printResults);
 	void setSpawnPoint(std::vector<std::string> args, std::shared_ptr<World>& world, bool printResults);
+	void setSpawnOrientation(std::vector<std::string> args, std::shared_ptr<World>& world, bool printResults);
 }
 
 #endif
