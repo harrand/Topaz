@@ -1,4 +1,4 @@
-Ocular Engine -- C/C++ Game Engine using SDL via dynamic link-library and OpenGL via the GL Extension Wrangler (GLEW), via source inclusion.
+Topaz -- C/C++ Game Engine using SDL via dynamic link-library and OpenGL via the GL Extension Wrangler (GLEW), via source inclusion.
 Aswell as the source code, this repository contains all the data files used during the development and testing process of the project, including but not limited to:
 - Wavefront OBJ Models (No copyright infringement intended, request and it shall be removed).
 - Image Textures (No copyright infringement intended, request and it shall be removed).
