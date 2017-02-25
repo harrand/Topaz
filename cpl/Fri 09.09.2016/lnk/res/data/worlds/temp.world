@@ -1,6 +1,0 @@
-objects: object0
-object0.mesh: cube
-object0.texture: lava
-object0.pos: [4.30981e-005, 0, 17]
-object0.rot: [0, 0, 0]
-object0.scale: [2, 23, 2]
