@@ -7,7 +7,7 @@ std::shared_ptr<World> world;
 std::vector<std::shared_ptr<Mesh>> allMeshes;
 std::vector<std::shared_ptr<Texture>> allTextures;
 Camera cam(Vector3F(), Vector3F(0, 3.14159, 0));
-Player player(world, 10, cam);
+Player player(10, cam);
 
 // SDL2 defines main.
 #ifdef main
@@ -18,7 +18,7 @@ int main()
 	MDLF timeStorage(RawFile(RES_POINT + "/resources.data"));
 	int secondsLifetime = CastUtility::fromString<int>(timeStorage.getTag("played"));
 	
-	Window wnd(800, 600, "Topaz Game Engine : Test Window");	
+	Window wnd(800, 600, "Topaz Game Engine : Test Window");
 	TimeKeeper tk, fpscounter;
 	
 	std::cout << "'Topaz Testing Environment created.\n";

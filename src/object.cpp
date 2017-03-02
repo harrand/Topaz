@@ -51,7 +51,7 @@ std::string Object::getTextureLink()
 
 void Object::render(std::shared_ptr<Mesh> mesh, std::shared_ptr<Texture> tex, Camera& cam, Shader& shad, float width, float height)
 {
-	(MatrixTransformations::createModelMatrix(this->pos, this->rot, this->scale).washed()).fillData(this->m);
+	(MatrixTransformations::createQuaternionSourcedModelMatrix(this->pos, this->rot, this->scale).washed()).fillData(this->m);
 	(MatrixTransformations::createViewMatrix(cam.getPosR(), cam.getRotR()).washed()).fillData(this->v);
 	(MatrixTransformations::createProjectionMatrix(1.5708, width, height, 0.1f, 1000.0f).washed()).fillData(this->p);
 	tex->bind(0);

@@ -23,7 +23,7 @@ void Commands::inputCommand(std::string cmd, std::shared_ptr<World>& world, Play
 	std::string cmdName = args.at(0);
 	
 	if(cmdName == "loadworld")
-		Commands::loadWorld(args, world);
+		Commands::loadWorld(args, world, player);
 	else if(cmdName == "exportworld")
 		Commands::exportWorld(args, world);
 	else if(cmdName == "defaultobject")
@@ -31,7 +31,7 @@ void Commands::inputCommand(std::string cmd, std::shared_ptr<World>& world, Play
 	else if(cmdName == "addobject")
 		Commands::addObject(args, world, player, true);
 	else if(cmdName == "reloadworld")
-		Commands::reloadWorld(world, true);
+		Commands::reloadWorld(world, player, true);
 	else if(cmdName == "updateworld")
 		Commands::updateWorld(world, true);
 	else if(cmdName == "setspeed")
@@ -41,7 +41,7 @@ void Commands::inputCommand(std::string cmd, std::shared_ptr<World>& world, Play
 	else if(cmdName == "roundlocation")
 		Commands::roundLocation(player);
 	else if(cmdName == "gravity")
-		Commands::setGravity(args, world, true);
+		Commands::setGravity(args, world, player, true);
 	else if(cmdName == "spawnpoint")
 		Commands::setSpawnPoint(args, world, true);
 	else if(cmdName == "spawnorientation")
@@ -50,7 +50,7 @@ void Commands::inputCommand(std::string cmd, std::shared_ptr<World>& world, Play
 		std::cout << "Unknown command. Maybe you made a typo?\n";
 }
 
-void Commands::loadWorld(std::vector<std::string> args, std::shared_ptr<World>& world)
+void Commands::loadWorld(std::vector<std::string> args, std::shared_ptr<World>& world, Player& player)
 {
 	if(args.size() != 2)
 	{
@@ -60,6 +60,7 @@ void Commands::loadWorld(std::vector<std::string> args, std::shared_ptr<World>& 
 	std::string worldname = args.at(1);
 	std::string link = (RES_POINT + "/data/worlds/" + worldname);
 	world = std::shared_ptr<World>(new World(link));
+	world->addEntity(player);
 	std::cout << "Now rendering the world '" << worldname << "' which has " << world->getSize() << " objects.\n";
 }
 
@@ -163,9 +164,10 @@ void Commands::addObject(std::vector<std::string> args, std::shared_ptr<World>& 
 	}
 }
 
-void Commands::reloadWorld(std::shared_ptr<World>& world, bool printResults)
+void Commands::reloadWorld(std::shared_ptr<World>& world, Player& player, bool printResults)
 {
 	world = std::shared_ptr<World>(new World(world->getFileName()));
+	world->addEntity(player);
 	if(printResults)
 		std::cout << "Successfully reloaded the world. (world link " << world->getFileName() << ").\n";
 }
@@ -207,11 +209,14 @@ void Commands::roundLocation(Player& player)
 	player.getCamera().getPosR() = Vector3F(round(player.getCamera().getPos().getX()), round(player.getCamera().getPos().getY()), round(player.getCamera().getPos().getZ()));
 }
 
-void Commands::setGravity(std::vector<std::string> args, std::shared_ptr<World>& world, bool printResults)
+void Commands::setGravity(std::vector<std::string> args, std::shared_ptr<World>& world, Player& player, bool printResults)
 {
 	std::vector<std::string> gravSplit = StringUtility::splitString(StringUtility::replaceAllChar(StringUtility::replaceAllChar(args.at(1), '[', ""), ']', ""), ',');
 	Vector3F grav = Vector3F(CastUtility::fromString<float>(gravSplit.at(0)), CastUtility::fromString<float>(gravSplit.at(1)), CastUtility::fromString<float>(gravSplit.at(2)));
 	world->setGravity(grav);
+	player.removeForce("gravity");
+	player.applyForce("gravity", Force(world->getGravity()));
+	
 	if(printResults)
 		std::cout << "Set gravity of the world '" << world->getFileName() << "' to [" << grav.getX() << "," << grav.getY() << "," << grav.getZ() << "] N\n";
 }

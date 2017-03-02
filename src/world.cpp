@@ -29,6 +29,21 @@ void World::addObject(Object obj)
 	this->members.push_back(obj);
 }
 
+//temp
+#include <iostream>
+
+void World::addEntity(Entity& ent)
+{
+	if(ent.getForces().find("gravity") != ent.getForces().end())
+	{
+		std::cout << "Entity already has a gravity force, so remove it before adding a new one.\n";
+		ent.removeForce("gravity");
+	}
+	std::cout << "Added a new gravity force:" << this->getGravity().getX() << ", " << this->getGravity().getY() << ", " << this->getGravity().getZ() << "\n";
+	ent.applyForce("gravity", Force(this->getGravity()));
+	this->entities.push_back(ent);
+}
+
 void World::exportWorld(std::string worldName)
 {
 	DataTranslation dt(RES_POINT + "/resources.data");
@@ -101,6 +116,11 @@ unsigned int World::getSize()
 std::vector<Object> World::getMembers()
 {
 	return this->members;
+}
+
+std::vector<std::reference_wrapper<Entity>> World::getEntities()
+{
+	return this->entities;
 }
 
 Vector3F World::getGravity()

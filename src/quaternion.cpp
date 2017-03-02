@@ -113,11 +113,10 @@ Vector4F Quaternion::operator*(Vector4F other)
 
 Matrix4x4 MatrixTransformations::createQuaternionSourcedModelMatrix(Vector3F position, Vector3F eulerRotation, Vector3F scale)
 {
-	Quaternion rotation(eulerRotation);
-	return MatrixTransformations::createScalingMatrix(scale) * rotation.getRotationalMatrix() * MatrixTransformations::createTranslationMatrix(position);
+	return MatrixTransformations::createTranslationMatrix(position) * Quaternion(eulerRotation).getRotationalMatrix() * MatrixTransformations::createScalingMatrix(scale);
 }
 
 Matrix4x4 MatrixTransformations::createMVPMatrix(Vector3F position, Vector3F eulerRotation, Vector3F scale, Vector3F cameraPosition, Vector3F cameraEulerRotation, float fov, float width, float height, float nearclip, float farclip)
 {
-	return MatrixTransformations::createProjectionMatrix(fov, width, height, nearclip, farclip) * MatrixTransformations::createViewMatrix(cameraPosition, cameraEulerRotation) * MatrixTransformations::createModelMatrix(position, eulerRotation, scale);
+	return MatrixTransformations::createProjectionMatrix(fov, width, height, nearclip, farclip) * MatrixTransformations::createViewMatrix(cameraPosition, cameraEulerRotation) * MatrixTransformations::createQuaternionSourcedModelMatrix(position, eulerRotation, scale);
 }

@@ -1,9 +1,6 @@
 #include "entity.hpp"
 
-Entity::Entity(std::shared_ptr<World>& world, float mass, Vector3F position, Vector3F velocity, std::vector<Force> forces): world(world), mass(mass), position(position), velocity(velocity), forces(forces)
-{
-	
-}
+Entity::Entity(float mass, Vector3F position, Vector3F velocity, std::map<std::string, Force> forces): mass(mass), position(position), velocity(velocity), forces(forces){}
 
 void Entity::setPosition(Vector3F position)
 {
@@ -15,9 +12,14 @@ void Entity::setVelocity(Vector3F velocity)
 	this->velocity = velocity;
 }
 
-void Entity::applyForce(Force f)
+void Entity::applyForce(std::string forceName, Force f)
 {
-	this->forces.push_back(f);
+	this->forces[forceName] = f;
+}
+
+void Entity::removeForce(std::string forceName)
+{
+	this->forces.erase(forceName);
 }
 
 Vector3F Entity::getPosition()
@@ -33,16 +35,22 @@ Vector3F Entity::getVelocity()
 Vector3F Entity::getAcceleration()
 {
 	Force resultant;
-	resultant += this->world->getGravity();
+	for(const auto &ent: this->forces)
+	{
+		resultant += ent.second;
+	}
+	/*
 	for(unsigned int i = 0; i < this->forces.size(); i++)
 	{
 		resultant += this->forces.at(i);
 	}
+	*/
+	
 	// fnet = ma, so a = fnet/m
 	return Vector3F(resultant.getSize() / this->mass);
 }
 
-std::vector<Force> Entity::getForces()
+std::map<std::string, Force> Entity::getForces()
 {
 	return this->forces;
 }
