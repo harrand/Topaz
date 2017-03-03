@@ -1,9 +1,7 @@
 #ifndef WORLD_HPP
 #define WORLD_HPP
-#include "object.hpp"
-#include "entity.hpp"
+#include "entityobject.hpp"
 #include "datatranslation.hpp"
-#include "utility.hpp"
 #include <functional>
 #include <vector>
 
@@ -14,6 +12,7 @@ public:
 	const std::string getFileName() const;
 	void addObject(Object obj);
 	void addEntity(Entity& ent);
+	void addEntityObject(EntityObject& eo);
 	void exportWorld(std::string worldName);
 	void setGravity(Vector3F gravity = Vector3F());
 	void setSpawnPoint(Vector3F spawnPoint = Vector3F());
@@ -21,6 +20,7 @@ public:
 	unsigned int getSize();
 	std::vector<Object> getMembers();
 	std::vector<std::reference_wrapper<Entity>> getEntities();
+	std::vector<std::reference_wrapper<EntityObject>> getEntityObjects();
 	Vector3F getGravity();
 	Vector3F getSpawnPoint();
 	Vector3F getSpawnOrientation();
@@ -31,6 +31,7 @@ private:
 	Object retrieveData(std::string objectName, MDLF& mdlf);
 	std::vector<Object> members;
 	std::vector<std::reference_wrapper<Entity>> entities;
+	std::vector<std::reference_wrapper<EntityObject>> entityObjects;
 };
 
 #endif

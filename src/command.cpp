@@ -214,8 +214,6 @@ void Commands::setGravity(std::vector<std::string> args, std::shared_ptr<World>&
 	std::vector<std::string> gravSplit = StringUtility::splitString(StringUtility::replaceAllChar(StringUtility::replaceAllChar(args.at(1), '[', ""), ']', ""), ',');
 	Vector3F grav = Vector3F(CastUtility::fromString<float>(gravSplit.at(0)), CastUtility::fromString<float>(gravSplit.at(1)), CastUtility::fromString<float>(gravSplit.at(2)));
 	world->setGravity(grav);
-	player.removeForce("gravity");
-	player.applyForce("gravity", Force(world->getGravity()));
 	
 	if(printResults)
 		std::cout << "Set gravity of the world '" << world->getFileName() << "' to [" << grav.getX() << "," << grav.getY() << "," << grav.getZ() << "] N\n";

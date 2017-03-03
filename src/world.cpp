@@ -29,19 +29,24 @@ void World::addObject(Object obj)
 	this->members.push_back(obj);
 }
 
-//temp
-#include <iostream>
-
 void World::addEntity(Entity& ent)
 {
 	if(ent.getForces().find("gravity") != ent.getForces().end())
 	{
-		std::cout << "Entity already has a gravity force, so remove it before adding a new one.\n";
 		ent.removeForce("gravity");
 	}
-	std::cout << "Added a new gravity force:" << this->getGravity().getX() << ", " << this->getGravity().getY() << ", " << this->getGravity().getZ() << "\n";
 	ent.applyForce("gravity", Force(this->getGravity()));
 	this->entities.push_back(ent);
+}
+
+void World::addEntityObject(EntityObject& eo)
+{
+	if(eo.getForces().find("gravity") != eo.getForces().end())
+	{
+		eo.removeForce("gravity");
+	}
+	eo.applyForce("gravity", Force(this->getGravity()));
+	this->entityObjects.push_back(eo);
 }
 
 void World::exportWorld(std::string worldName)
@@ -96,6 +101,18 @@ void World::exportWorld(std::string worldName)
 void World::setGravity(Vector3F gravity)
 {
 	this->gravity = gravity;
+	for(unsigned int i = 0; i < this->getEntities().size(); i++)
+	{
+		Entity& ent = this->getEntities().at(i);
+		ent.removeForce("gravity");
+		ent.applyForce("gravity", Force(this->getGravity()));
+	}
+	for(unsigned int i = 0; i < this->getEntityObjects().size(); i++)
+	{
+		EntityObject& eo = this->getEntityObjects().at(i);
+		eo.removeForce("gravity");
+		eo.applyForce("gravity", Force(this->getGravity()));
+	}
 }
 
 void World::setSpawnPoint(Vector3F spawnPoint)
@@ -121,6 +138,11 @@ std::vector<Object> World::getMembers()
 std::vector<std::reference_wrapper<Entity>> World::getEntities()
 {
 	return this->entities;
+}
+
+std::vector<std::reference_wrapper<EntityObject>> World::getEntityObjects()
+{
+	return this->entityObjects;
 }
 
 Vector3F World::getGravity()

@@ -1,8 +1,6 @@
 #ifndef COMMAND_HPP
 #define COMMAND_HPP
-#include "utility.hpp"
 #include "world.hpp"
-#include "object.hpp"
 #include "player.hpp"
 
 class CommandCache
