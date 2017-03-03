@@ -27,6 +27,11 @@ Vector3F Entity::getPosition()
 	return this->position;
 }
 
+float Entity::getMass()
+{
+	return this->mass;
+}
+
 Vector3F Entity::getVelocity()
 {
 	return this->velocity;

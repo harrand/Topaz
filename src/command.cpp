@@ -1,6 +1,5 @@
 #include "command.hpp"
 
-//Default value needed for CommandCache::defaultObjectArgs
 std::vector<std::string> CommandCache::defaultObjectArgs = std::vector<std::string>();
 
 void CommandCache::updateDefaultObject(std::vector<std::string> addObjectArgs)
@@ -23,7 +22,7 @@ void Commands::inputCommand(std::string cmd, std::shared_ptr<World>& world, Play
 	std::string cmdName = args.at(0);
 	
 	if(cmdName == "loadworld")
-		Commands::loadWorld(args, world, player);
+		Commands::loadWorld(args, world);
 	else if(cmdName == "exportworld")
 		Commands::exportWorld(args, world);
 	else if(cmdName == "defaultobject")
@@ -31,7 +30,7 @@ void Commands::inputCommand(std::string cmd, std::shared_ptr<World>& world, Play
 	else if(cmdName == "addobject")
 		Commands::addObject(args, world, player, true);
 	else if(cmdName == "reloadworld")
-		Commands::reloadWorld(world, player, true);
+		Commands::reloadWorld(args, world, true);
 	else if(cmdName == "updateworld")
 		Commands::updateWorld(world, true);
 	else if(cmdName == "setspeed")
@@ -41,7 +40,7 @@ void Commands::inputCommand(std::string cmd, std::shared_ptr<World>& world, Play
 	else if(cmdName == "roundlocation")
 		Commands::roundLocation(player);
 	else if(cmdName == "gravity")
-		Commands::setGravity(args, world, player, true);
+		Commands::setGravity(args, world, true);
 	else if(cmdName == "spawnpoint")
 		Commands::setSpawnPoint(args, world, true);
 	else if(cmdName == "spawnorientation")
@@ -50,17 +49,19 @@ void Commands::inputCommand(std::string cmd, std::shared_ptr<World>& world, Play
 		std::cout << "Unknown command. Maybe you made a typo?\n";
 }
 
-void Commands::loadWorld(std::vector<std::string> args, std::shared_ptr<World>& world, Player& player)
+void Commands::loadWorld(std::vector<std::string> args, std::shared_ptr<World>& world)
 {
 	if(args.size() != 2)
 	{
 		std::cout << "Nonfatal Command Error: Unexpected quantity of args, got " << args.size() << ", expected 2.\n";
 		return;
 	}
+	std::vector<Entity*> entities = world->getEntities();
 	std::string worldname = args.at(1);
 	std::string link = (RES_POINT + "/data/worlds/" + worldname);
 	world = std::shared_ptr<World>(new World(link));
-	world->addEntity(player);
+	for(unsigned int i = 0; i < entities.size(); i++)
+		world->addEntity(entities.at(i));
 	std::cout << "Now rendering the world '" << worldname << "' which has " << world->getSize() << " objects.\n";
 }
 
@@ -164,10 +165,15 @@ void Commands::addObject(std::vector<std::string> args, std::shared_ptr<World>& 
 	}
 }
 
-void Commands::reloadWorld(std::shared_ptr<World>& world, Player& player, bool printResults)
+void Commands::reloadWorld(std::vector<std::string> args, std::shared_ptr<World>& world, bool printResults)
 {
-	world = std::shared_ptr<World>(new World(world->getFileName()));
-	world->addEntity(player);
+	std::cout << "Reloading the world with link " << world->getFileName() << ".\n";
+	args.resize(2); // Resize not reserve; resize will add empty elements in but reserve will not (so with reserve args.at(1) will still crash)
+	args.at(1) = world->getFileName();
+	std::string toErase = RES_POINT + "/data/worlds/";
+	args.at(1).erase(args.at(1).find(toErase), toErase.length());
+	std::cout << "World NAME should be " << args.at(1) << ". Loading this world...\n";
+	Commands::loadWorld(args, world);
 	if(printResults)
 		std::cout << "Successfully reloaded the world. (world link " << world->getFileName() << ").\n";
 }
@@ -209,7 +215,7 @@ void Commands::roundLocation(Player& player)
 	player.getCamera().getPosR() = Vector3F(round(player.getCamera().getPos().getX()), round(player.getCamera().getPos().getY()), round(player.getCamera().getPos().getZ()));
 }
 
-void Commands::setGravity(std::vector<std::string> args, std::shared_ptr<World>& world, Player& player, bool printResults)
+void Commands::setGravity(std::vector<std::string> args, std::shared_ptr<World>& world, bool printResults)
 {
 	std::vector<std::string> gravSplit = StringUtility::splitString(StringUtility::replaceAllChar(StringUtility::replaceAllChar(args.at(1), '[', ""), ']', ""), ',');
 	Vector3F grav = Vector3F(CastUtility::fromString<float>(gravSplit.at(0)), CastUtility::fromString<float>(gravSplit.at(1)), CastUtility::fromString<float>(gravSplit.at(2)));

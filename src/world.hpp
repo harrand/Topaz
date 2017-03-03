@@ -11,16 +11,16 @@ public:
 	World(std::string filename);
 	const std::string getFileName() const;
 	void addObject(Object obj);
-	void addEntity(Entity& ent);
-	void addEntityObject(EntityObject& eo);
+	void addEntity(Entity* ent);
+	void addEntityObject(std::shared_ptr<EntityObject> eo);
 	void exportWorld(std::string worldName);
 	void setGravity(Vector3F gravity = Vector3F());
 	void setSpawnPoint(Vector3F spawnPoint = Vector3F());
 	void setSpawnOrientation(Vector3F spawnOrientation = Vector3F());
 	unsigned int getSize();
 	std::vector<Object> getMembers();
-	std::vector<std::reference_wrapper<Entity>> getEntities();
-	std::vector<std::reference_wrapper<EntityObject>> getEntityObjects();
+	std::vector<Entity*> getEntities();
+	std::vector<std::shared_ptr<EntityObject>> getEntityObjects();
 	Vector3F getGravity();
 	Vector3F getSpawnPoint();
 	Vector3F getSpawnOrientation();
@@ -29,9 +29,10 @@ private:
 	Vector3F gravity, spawnPoint, spawnOrientation;
 	const std::string filename;
 	Object retrieveData(std::string objectName, MDLF& mdlf);
+	std::shared_ptr<EntityObject> retrieveEOData(std::string eoName, MDLF& mdlf);
 	std::vector<Object> members;
-	std::vector<std::reference_wrapper<Entity>> entities;
-	std::vector<std::reference_wrapper<EntityObject>> entityObjects;
+	std::vector<Entity*> entities;
+	std::vector<std::shared_ptr<EntityObject>> entityObjects;
 };
 
 #endif

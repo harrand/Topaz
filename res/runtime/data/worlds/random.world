@@ -201,6 +201,12 @@ object39.texture: grass
 object39.pos: [-91.9258, 35.9633, -172.55]
 object39.rot: [0, 3.14159, 0]
 object39.scale: [5, 5, 5]
+eo0.mesh: cube
+eo0.texture: lava
+eo0.mass: 5
+eo0.pos: [0, 30, 0]
+eo0.rot: [0, 0, 0]
+eo0.scale: [10, 10, 10]
 objects: %[
 - object0
 - object1
@@ -242,3 +248,5 @@ objects: %[
 - object37
 - object38
 - object39]%
+entityobjects: %[
+- eo0]%

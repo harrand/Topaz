@@ -12,6 +12,7 @@ public:
 	void applyForce(std::string forceName, Force f);
 	void removeForce(std::string forceName);
 	virtual Vector3F getPosition();
+	float getMass();
 	Vector3F getVelocity();
 	Vector3F getAcceleration();
 	std::map<std::string, Force> getForces();
