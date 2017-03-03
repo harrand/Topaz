@@ -27,10 +27,6 @@ int main()
 	world = std::shared_ptr<World>(new World(RES_POINT + "/data/worlds/random.world"));
 	world->addEntity(&player);
 	
-	//test
-	//EntityObject fallingCube("../../../res/runtime/models/cube.obj", "../../../res/runtime/textures/metal.jpg", 5.0f, Vector3F(0, 0, 0), Vector3F(0, 0, 0), Vector3F(9, 9, 9));
-	//world->addEntityObject(fallingCube);
-	
 	KeybindController kc(player, world, wnd);
 	DataTranslation dt(RES_POINT + "/resources.data");
 	
@@ -69,8 +65,6 @@ int main()
 			std::cout << "Camera Position = [" << cam.getPosR().getX() << ", " << cam.getPosR().getY() << ", " << cam.getPosR().getZ() << "].\n";
 			std::cout << "Lifetime Spent: " << secondsLifetime << " seconds.\n";
 		}
-		//player.updateMotion(fps);
-		//fallingCube.updateMotion(fps);
 		fpscounter.update();
 		deltaTotal += fpscounter.getRange();
 		deltas.push_back(fpscounter.getRange());
@@ -82,24 +76,7 @@ int main()
 		kc.handleKeybinds();
 		fpscounter.reload();
 		
-		for(unsigned int i = 0; i < world->getMembers().size(); i++)
-		{
-			Object obj = world->getMembers().at(i);
-			obj.render(Mesh::getFromLink(obj.getMeshLink(), allMeshes), Texture::getFromLink(obj.getTextureLink(), allTextures), cam, shader, wnd.getWidth(), wnd.getHeight());
-		}
-		
-		for(unsigned int i = 0; i < world->getEntityObjects().size(); i++)
-		{
-			std::shared_ptr<EntityObject> eo = world->getEntityObjects().at(i);
-			eo->render(Mesh::getFromLink(eo->getMeshLink(), allMeshes), Texture::getFromLink(eo->getTextureLink(), allTextures), cam, shader, wnd.getWidth(), wnd.getHeight());
-			eo->updateMotion(fps);
-		}
-		
-		for(unsigned int i = 0; i < world->getEntities().size(); i++)
-		{
-			Entity* ent = world->getEntities().at(i);
-			ent->updateMotion(fps);
-		}
+		world->update(fps, cam, shader, wnd.getWidth(), wnd.getHeight(), allMeshes, allTextures);
 		
 		wnd.update();
 		wnd.setTitle("Game - World '" + world->getWorldLink() + "'");

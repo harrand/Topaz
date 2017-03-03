@@ -1,8 +1,5 @@
 #include "world.hpp"
 
-//temp
-#include <iostream>
-
 World::World(std::string filename): filename(filename)
 {
 	MDLF input(RawFile(this->filename));
@@ -150,7 +147,6 @@ void World::setGravity(Vector3F gravity)
 	this->gravity = gravity;
 	for(unsigned int i = 0; i < this->getEntities().size(); i++)
 	{
-		std::cout << i << ".\n";
 		Entity* ent = this->getEntities().at(i);
 		ent->removeForce("gravity");
 		ent->applyForce("gravity", Force(this->getGravity()));
@@ -171,6 +167,28 @@ void World::setSpawnPoint(Vector3F spawnPoint)
 void World::setSpawnOrientation(Vector3F spawnOrientation)
 {
 	this->spawnOrientation = spawnOrientation;
+}
+
+void World::update(unsigned int fps, Camera& cam, Shader& shader, unsigned int width, unsigned int height, std::vector<std::shared_ptr<Mesh>> allMeshes, std::vector<std::shared_ptr<Texture>> allTextures)
+{
+	for(unsigned int i = 0; i < this->getMembers().size(); i++)
+	{
+		Object obj = this->getMembers().at(i);
+		obj.render(Mesh::getFromLink(obj.getMeshLink(), allMeshes), Texture::getFromLink(obj.getTextureLink(), allTextures), cam, shader, width, height);
+	}
+		
+	for(unsigned int i = 0; i < this->getEntityObjects().size(); i++)
+	{
+		std::shared_ptr<EntityObject> eo = this->getEntityObjects().at(i);
+		eo->render(Mesh::getFromLink(eo->getMeshLink(), allMeshes), Texture::getFromLink(eo->getTextureLink(), allTextures), cam, shader, width, height);
+		eo->updateMotion(fps);
+	}
+		
+	for(unsigned int i = 0; i < this->getEntities().size(); i++)
+	{
+		Entity* ent = this->getEntities().at(i);
+		ent->updateMotion(fps);
+	}
 }
 
 unsigned int World::getSize()
@@ -255,13 +273,6 @@ std::shared_ptr<EntityObject> World::retrieveEOData(std::string eoName, MDLF& md
 	std::string positionStr = mdlf.getTag(eoName + ".pos");
 	std::string rotationStr = mdlf.getTag(eoName + ".rot");
 	std::string scaleStr = mdlf.getTag(eoName + ".scale");
-	
-	std::cout << eoName << ".mesh: " << meshName << "\n";
-	std::cout << eoName << ".texture: " << textureName << "\n";
-	std::cout << eoName << ".mass: " << massStr << "\n";
-	std::cout << eoName << ".pos: " << positionStr << "\n";
-	std::cout << eoName << ".rot: " << rotationStr << "\n";
-	std::cout << eoName << ".scale: " << scaleStr << "\n";
 	
 	DataTranslation dt(RES_POINT + "/resources.data");
 	

@@ -44,12 +44,6 @@ Vector3F Entity::getAcceleration()
 	{
 		resultant += ent.second;
 	}
-	/*
-	for(unsigned int i = 0; i < this->forces.size(); i++)
-	{
-		resultant += this->forces.at(i);
-	}
-	*/
 	
 	// fnet = ma, so a = fnet/m
 	return Vector3F(resultant.getSize() / this->mass);

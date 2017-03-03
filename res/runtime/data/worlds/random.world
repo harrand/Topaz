@@ -204,7 +204,7 @@ object39.scale: [5, 5, 5]
 eo0.mesh: cube
 eo0.texture: lava
 eo0.mass: 5
-eo0.pos: [0, -27.0245, 0]
+eo0.pos: [0, 29.7145, 0]
 eo0.rot: [0, 0, 0]
 eo0.scale: [10, 10, 10]
 objects: %[
