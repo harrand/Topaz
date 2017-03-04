@@ -3,8 +3,6 @@
 
 #include "window.hpp"
 #include "command.hpp"
-#include <vector>
-#include <string>
 #include <algorithm>
 
 class KeyListener: public Listener

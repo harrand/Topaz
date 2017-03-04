@@ -157,6 +157,16 @@ Force Force::operator-(Force other)
 	return Force(this->size - other.getSize());
 }
 
+Force Force::operator*(float rhs)
+{
+	return Force(this->size * rhs);
+}
+
+Force Force::operator/(float rhs)
+{
+	return Force(this->size / rhs);
+}
+
 void Force::operator+=(Force other)
 {
 	this->size += other.getSize();

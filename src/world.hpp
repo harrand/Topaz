@@ -2,8 +2,6 @@
 #define WORLD_HPP
 #include "entityobject.hpp"
 #include "datatranslation.hpp"
-#include <functional>
-#include <vector>
 
 class World
 {

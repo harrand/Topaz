@@ -77,6 +77,11 @@ int main()
 		fpscounter.reload();
 		
 		world->update(fps, cam, shader, wnd.getWidth(), wnd.getHeight(), allMeshes, allTextures);
+		for(unsigned int i = 0; i < world->getEntityObjects().size(); i++)
+		{
+			std::shared_ptr<EntityObject> eo = world->getEntityObjects().at(i);
+			eo->applyForce("playerattraction", Force(player.getPosition() - eo->getPosition()));
+		}
 		
 		wnd.update();
 		wnd.setTitle("Game - World '" + world->getWorldLink() + "'");

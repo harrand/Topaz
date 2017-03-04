@@ -43,6 +43,8 @@ public:
 	void setSize(Vector3F size);
 	Force operator+(Force other);
 	Force operator-(Force other);
+	Force operator*(float rhs);
+	Force operator/(float rhs);
 	void operator+=(Force other);
 	void operator-=(Force other);
 private:
