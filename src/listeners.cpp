@@ -83,8 +83,8 @@ KeybindType KeyControls::getKeybindType(std::string keyBindType)
 		return KeybindType::REQUEST_CLOSE;
 	else if(keyBindType == "RESTART")
 		return KeybindType::RESTART;
-	else if(keyBindType == "ADDDEFAULTOBJECT")
-		return KeybindType::ADDDEFAULTOBJECT;
+	else if(keyBindType == "ALIAS")
+		return KeybindType::ALIAS;
 	else
 		return KeybindType::NIL;
 }
@@ -132,8 +132,8 @@ std::string KeyControls::getKeybind(MDLF& controlsDataFile, KeybindType kt)
 		case KeybindType::RESTART:
 			return controlsDataFile.getTag("RESTART");
 		break;
-		case KeybindType::ADDDEFAULTOBJECT:
-			return controlsDataFile.getTag("ADDDEFAULTOBJECT");
+		case KeybindType::ALIAS:
+			return controlsDataFile.getTag("ALIAS");
 		break;
 		default:
 			return "0";
@@ -189,9 +189,12 @@ void KeybindController::handleKeybinds()
 		player.getCamera().getRotR() = this->world->getSpawnOrientation();
 		player.setVelocity(Vector3F());
 	}
-	if(kl.catchKeyPressed(KeyControls::getKeybind(controlsDataFile, KeybindType::ADDDEFAULTOBJECT)))
+	if(kl.catchKeyPressed(KeyControls::getKeybind(controlsDataFile, KeybindType::ALIAS)))
 	{
-		//void setDefaultObject(std::vector<std::string> args, std::shared_ptr<World>& world, Camera& player.getCamera(), bool printResults);
-		Commands::inputCommand("addobject", world, player);
+		std::vector<std::string> alias = CommandCache::getAlias();
+		std::string cmd = "";
+		for(unsigned int i = 0; i < alias.size(); i++)
+			cmd += (i != (alias.size() - 1)) ? alias.at(i) + " " : alias.at(i);
+		Commands::inputCommand(cmd, world, player);
 	}
 }

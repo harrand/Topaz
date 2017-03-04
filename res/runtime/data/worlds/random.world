@@ -207,6 +207,24 @@ eo0.mass: 5
 eo0.pos: [0, 29.7145, 0]
 eo0.rot: [0, 0, 0]
 eo0.scale: [10, 10, 10]
+eo1.mesh: monkeyhead
+eo1.texture: grass
+eo1.mass: 20
+eo1.pos: [-24, 32, -2.99992]
+eo1.rot: [0, 3.14159, 0]
+eo1.scale: [6, 6, 6]
+eo2.mesh: torus
+eo2.texture: lava
+eo2.mass: 7
+eo2.pos: [31.5, 29, -6.00008]
+eo2.rot: [0, 3.14159, 0]
+eo2.scale: [5, 5, 5]
+eo3.mesh: monkeyhead
+eo3.texture: sand
+eo3.mass: 3
+eo3.pos: [61.5, 45, -3.0001]
+eo3.rot: [0, 3.14159, 0]
+eo3.scale: [2, 2, 2]
 objects: %[
 - object0
 - object1
@@ -249,4 +267,7 @@ objects: %[
 - object38
 - object39]%
 entityobjects: %[
-- eo0]%
+- eo0
+- eo1
+- eo2
+- eo3]%

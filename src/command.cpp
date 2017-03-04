@@ -1,15 +1,15 @@
 #include "command.hpp"
 
-std::vector<std::string> CommandCache::defaultObjectArgs = std::vector<std::string>();
+std::vector<std::string> CommandCache::aliasArgs = std::vector<std::string>();
 
-void CommandCache::updateDefaultObject(std::vector<std::string> addObjectArgs)
+void CommandCache::updateAlias(std::vector<std::string> aliasArgs)
 {
-	CommandCache::defaultObjectArgs = addObjectArgs;
+	CommandCache::aliasArgs = aliasArgs;
 }
 
-std::vector<std::string> CommandCache::getDefaultObject()
+std::vector<std::string> CommandCache::getAlias()
 {
-	return CommandCache::defaultObjectArgs;
+	return CommandCache::aliasArgs;
 }
 
 void Commands::inputCommand(std::string cmd, std::shared_ptr<World>& world, Player& player)
@@ -25,10 +25,12 @@ void Commands::inputCommand(std::string cmd, std::shared_ptr<World>& world, Play
 		Commands::loadWorld(args, world);
 	else if(cmdName == "exportworld")
 		Commands::exportWorld(args, world);
-	else if(cmdName == "defaultobject")
-		Commands::setDefaultObject(args, true);
 	else if(cmdName == "addobject")
 		Commands::addObject(args, world, player, true);
+	else if(cmdName == "addentityobject")
+		Commands::addEntityObject(args, world, player, true);
+	else if(cmdName == "alias")
+		Commands::setAlias(args);
 	else if(cmdName == "reloadworld")
 		Commands::reloadWorld(args, world, true);
 	else if(cmdName == "updateworld")
@@ -76,32 +78,8 @@ void Commands::exportWorld(std::vector<std::string> args, std::shared_ptr<World>
 	world->exportWorld(worldname);
 }
 
-void Commands::setDefaultObject(std::vector<std::string> args, bool printResults)
-{
-	if(args.size() != 6)
-	{
-		std::cout << "Nonfatal Command Error: Unexpected quantity of args, got " << args.size() << ", expected 6.\n";
-		return;
-	}
-	args.erase(args.begin());
-	args.insert(args.begin(), "addobject");
-	CommandCache::updateDefaultObject(args);
-	if(printResults)
-	{
-		std::cout << "The command 'addobject' now serves as an alias for the following command:\n";
-		for(unsigned int i = 0; i < args.size(); i++)
-			std::cout << args.at(i);
-		std::cout << "\n";
-	}
-}
-
 void Commands::addObject(std::vector<std::string> args, std::shared_ptr<World>& world, Player& player, bool printResults)
 {
-	if(args.size() == 1 && !CommandCache::getDefaultObject().empty())
-	{
-		Commands::addObject(CommandCache::getDefaultObject(), world, player, printResults);
-		return;
-	}
 	if(args.size() != 6)
 	{
 		std::cout << "Nonfatal Command Error: Unexpected quantity of args, got " << args.size() << ", expected 6.\n";
@@ -162,7 +140,86 @@ void Commands::addObject(std::vector<std::string> args, std::shared_ptr<World>& 
 		std::cout << "Pos = [" << pos.getX() << ", " << pos.getY() << ", " << pos.getZ() << "].\n";
 		std::cout << "Rot = [" << rot.getX() << ", " << rot.getY() << ", " << rot.getZ() << "].\n";
 		std::cout << "Scale = [" << scale.getX() << ", " << scale.getY() << ", " << scale.getZ() << "].\n";
+	} 
+}
+
+void Commands::addEntityObject(std::vector<std::string> args, std::shared_ptr<World>& world, Player& player, bool printResults)
+{
+	if(args.size() != 7)
+	{
+		std::cout << "Nonfatal Command Error: Unexpected quantity of args, got " << args.size() << ", expected 6.\n";
+		return;
 	}
+	DataTranslation dt(RES_POINT + "/resources.data");
+	std::string meshName = args.at(1);
+	std::string textureName = args.at(2);
+	std::string massStr = args.at(3);
+	std::string posStr = args.at(4);
+	std::string rotStr = args.at(5);
+	std::string scaleStr = args.at(6);
+
+	Vector3F pos, rot, scale;
+		
+	std::string meshLink = dt.getResourceLink(meshName);
+	std::string textureLink = dt.getResourceLink(textureName);
+	
+	if(meshLink == "0")
+	{
+		std::cout << "Nonfatal Command Error: Unknown Mesh Name '" << meshName << "'.\n";
+		return;
+	}
+	if(textureLink == "0")
+	{
+		std::cout << "Nonfatal Command Error: Unknown Texture Name '" << textureName << "'.\n";
+		return;
+	}
+	
+	if(posStr == "me")
+	{
+		pos = player.getCamera().getPos();
+	}
+	else
+	{
+		std::vector<std::string> posSplit = StringUtility::splitString(StringUtility::replaceAllChar(StringUtility::replaceAllChar(posStr, '[', ""), ']', ""), ',');
+		pos = Vector3F(CastUtility::fromString<float>(posSplit.at(0)), CastUtility::fromString<float>(posSplit.at(1)), CastUtility::fromString<float>(posSplit.at(2)));
+	}
+		
+	if(rotStr == "me")
+	{
+		rot = Vector3F(player.getCamera().getRot().getX(), player.getCamera().getRot().getY(), player.getCamera().getRot().getZ());
+	}
+	else
+	{
+		std::vector<std::string> rotSplit = StringUtility::splitString(StringUtility::replaceAllChar(StringUtility::replaceAllChar(rotStr, '[', ""), ']', ""), ',');
+		rot = Vector3F(CastUtility::fromString<float>(rotSplit.at(0)), CastUtility::fromString<float>(rotSplit.at(1)), CastUtility::fromString<float>(rotSplit.at(2)));	
+	}
+		
+	std::vector<std::string> scaleSplit = StringUtility::splitString(StringUtility::replaceAllChar(StringUtility::replaceAllChar(scaleStr, '[', ""), ']', ""), ',');
+	scale = Vector3F(CastUtility::fromString<float>(scaleSplit.at(0)), CastUtility::fromString<float>(scaleSplit.at(1)), CastUtility::fromString<float>(scaleSplit.at(2)));
+	
+	float mass = CastUtility::fromString<float>(massStr);
+	
+	world->addEntityObject(std::shared_ptr<EntityObject>(new EntityObject(meshLink, textureLink, mass, pos, rot, scale)));
+	if(printResults)
+	{
+		std::cout << "Added the following to this world:\n";
+		std::cout << "Mesh name = " << meshName << ", link = " << meshLink << ".\n";
+		std::cout << "Texture name = " << textureName << ", link = " << textureLink << ".\n";
+		std::cout << "Mass = " << mass << "\n";
+		std::cout << "Pos = [" << pos.getX() << ", " << pos.getY() << ", " << pos.getZ() << "].\n";
+		std::cout << "Rot = [" << rot.getX() << ", " << rot.getY() << ", " << rot.getZ() << "].\n";
+		std::cout << "Scale = [" << scale.getX() << ", " << scale.getY() << ", " << scale.getZ() << "].\n";
+	} 
+}
+
+void Commands::setAlias(std::vector<std::string> args)
+{
+	args.erase(args.begin());
+	CommandCache::updateAlias(args);
+	std::cout << "alias: ";
+	for(unsigned int i = 0; i < args.size(); i++)
+		std::cout << args.at(i) << " ";
+	std::cout << "\n";
 }
 
 void Commands::reloadWorld(std::vector<std::string> args, std::shared_ptr<World>& world, bool printResults)
@@ -184,7 +241,10 @@ void Commands::updateWorld(std::shared_ptr<World>& world, bool printResults)
 	std::string toRemove = RES_POINT + "/data/worlds/";
 	worldName.erase(worldName.find(toRemove), toRemove.length());
 	world->exportWorld(worldName);
-	world = std::shared_ptr<World>(new World(worldLink));
+	std::vector<std::string> args = std::vector<std::string>();
+	args.push_back("loadworld");
+	args.push_back(worldName);
+	Commands::loadWorld(args, world);
 	if(printResults)
 		std::cout << "Successfully updated all new objects to the world named " << worldName << " (world link " << worldLink << ").\n";
 }

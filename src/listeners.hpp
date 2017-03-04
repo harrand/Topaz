@@ -37,7 +37,7 @@ enum class KeybindType : unsigned int
 	INPUT_COMMAND = 10,
 	REQUEST_CLOSE = 11,
 	RESTART = 12,
-	ADDDEFAULTOBJECT = 13,
+	ALIAS = 13,
 	NIL = 14
 };
 
