@@ -11,7 +11,7 @@ uniform sampler2D diffuse;
 layout(location = 0) out vec4 fragColor;
 
 const vec4 lightColour = vec4(1, 1, 1, 1);
-const float lightWattage = 4000;
+const float lightWattage = 1000;
 const vec4 textureColour = texture2D(diffuse, texcoordShared);
 const vec3 cameraLightSource = (inverse(viewShared) * vec4(0, 0, 0, 1)).xyz;
 const vec3 ld = positionShared - cameraLightSource;
