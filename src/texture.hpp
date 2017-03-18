@@ -16,15 +16,26 @@ class Texture
 public:
 	Texture(std::string filename = "./res/textures/undefined.jpg");
 	~Texture();
-	void bind(unsigned int id);
+	void bind(GLuint shaderProgram, unsigned int id);
 	std::string getFileName();
 	static std::shared_ptr<Texture> getFromLink(std::string textureLink, std::vector<std::shared_ptr<Texture>> allTextures);
+protected:
+	GLuint textureID;
+	GLuint texhandle;
 private:
 	unsigned char* loadTexture();
 	void deleteTexture(unsigned char* imgdata);
 	int width, height, comps;
 	std::string filename;
-	GLuint texhandle;
+};
+
+class NormalMap: public Texture
+{
+public:
+	NormalMap(std::string filename = "./res/normalmaps/undefined.jpg");
+	void bind(GLuint shaderProgram, unsigned int id);
+	static std::shared_ptr<NormalMap> getFromLink(std::string normalMapLink, std::vector<std::shared_ptr<NormalMap>> allNormalMaps);
+private:
 };
 
 class ShadowMap: public Texture

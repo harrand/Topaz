@@ -15,6 +15,7 @@ public:
 	
 	std::map<std::string, std::string> retrieveModels();
 	std::map<std::string, std::string> retrieveTextures();
+	std::map<std::string, std::string> retrieveNormalMaps();
 private:
 	std::string datafilename;
 };

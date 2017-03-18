@@ -83,6 +83,7 @@ void World::exportWorld(std::string worldName)
 		Object curObj = this->members.at(i);
 		std::string meshLink = curObj.getMeshLink();
 		std::string textureLink = curObj.getTextureLink();
+		std::string normalMapLink = curObj.getNormalMapLink();
 		
 		Vector3F pos = curObj.getPos(), rot = curObj.getRot(), scale = curObj.getScale();
 		
@@ -92,15 +93,18 @@ void World::exportWorld(std::string worldName)
 		
 		std::string meshName = dt.getResourceName(meshLink);
 		std::string textureName = dt.getResourceName(textureLink);
+		std::string normalMapName = dt.getResourceName(normalMapLink);
 		
 		output.deleteTag(objectName + ".mesh");
 		output.deleteTag(objectName + ".texture");
+		output.deleteTag(objectName + ".normalmap");
 		output.deleteTag(objectName + ".pos");
 		output.deleteTag(objectName + ".rot");
 		output.deleteTag(objectName + ".scale");
 		
 		output.addTag(objectName + ".mesh", meshName);
 		output.addTag(objectName + ".texture", textureName);
+		output.addTag(objectName + ".normalmap", normalMapName);
 		output.addTag(objectName + ".pos", posLink);
 		output.addTag(objectName + ".rot", rotLink);
 		output.addTag(objectName + ".scale", scaleLink);
@@ -112,6 +116,7 @@ void World::exportWorld(std::string worldName)
 		std::shared_ptr<EntityObject> curEO = this->entityObjects.at(i);
 		std::string meshLink = curEO->getMeshLink();
 		std::string textureLink = curEO->getTextureLink();
+		std::string normalMapLink = curEO->getNormalMapLink();
 		
 		std::string massStr = StringUtility::toString(curEO->getMass());
 		
@@ -123,9 +128,11 @@ void World::exportWorld(std::string worldName)
 		
 		std::string meshName = dt.getResourceName(meshLink);
 		std::string textureName = dt.getResourceName(textureLink);
+		std::string normalMapName = dt.getResourceName(normalMapLink);
 		
 		output.deleteTag(eoName + ".mesh");
 		output.deleteTag(eoName + ".texture");
+		output.deleteTag(eoName + ".normalmap");
 		output.deleteTag(eoName + ".mass");
 		output.deleteTag(eoName + ".pos");
 		output.deleteTag(eoName + ".rot");
@@ -133,6 +140,7 @@ void World::exportWorld(std::string worldName)
 		
 		output.addTag(eoName + ".mesh", meshName);
 		output.addTag(eoName + ".texture", textureName);
+		output.addTag(eoName + ".normalmap", normalMapName);
 		output.addTag(eoName + ".mass", massStr);
 		output.addTag(eoName + ".pos", posLink);
 		output.addTag(eoName + ".rot", rotLink);
@@ -169,18 +177,18 @@ void World::setSpawnOrientation(Vector3F spawnOrientation)
 	this->spawnOrientation = spawnOrientation;
 }
 
-void World::update(unsigned int fps, Camera& cam, Shader& shader, unsigned int width, unsigned int height, std::vector<std::shared_ptr<Mesh>> allMeshes, std::vector<std::shared_ptr<Texture>> allTextures)
+void World::update(unsigned int fps, Camera& cam, Shader& shader, unsigned int width, unsigned int height, std::vector<std::shared_ptr<Mesh>> allMeshes, std::vector<std::shared_ptr<Texture>> allTextures, std::vector<std::shared_ptr<NormalMap>> allNormalMaps)
 {
 	for(unsigned int i = 0; i < this->getMembers().size(); i++)
 	{
 		Object obj = this->getMembers().at(i);
-		obj.render(Mesh::getFromLink(obj.getMeshLink(), allMeshes), Texture::getFromLink(obj.getTextureLink(), allTextures), cam, shader, width, height);
+		obj.render(Mesh::getFromLink(obj.getMeshLink(), allMeshes), Texture::getFromLink(obj.getTextureLink(), allTextures), NormalMap::getFromLink(obj.getNormalMapLink(), allNormalMaps), cam, shader, width, height);
 	}
 		
 	for(unsigned int i = 0; i < this->getEntityObjects().size(); i++)
 	{
 		std::shared_ptr<EntityObject> eo = this->getEntityObjects().at(i);
-		eo->render(Mesh::getFromLink(eo->getMeshLink(), allMeshes), Texture::getFromLink(eo->getTextureLink(), allTextures), cam, shader, width, height);
+		eo->render(Mesh::getFromLink(eo->getMeshLink(), allMeshes), Texture::getFromLink(eo->getTextureLink(), allTextures), NormalMap::getFromLink(eo->getNormalMapLink(), allNormalMaps), cam, shader, width, height);
 		eo->updateMotion(fps);
 	}
 		
@@ -235,6 +243,7 @@ Object World::retrieveData(std::string objectName, MDLF& mdlf)
 {
 	std::string meshName = mdlf.getTag(objectName + ".mesh");
 	std::string textureName = mdlf.getTag(objectName + ".texture");
+	std::string normalMapName = mdlf.getTag(objectName + ".normalmap");
 	std::string positionStr = mdlf.getTag(objectName + ".pos");
 	std::string rotationStr = mdlf.getTag(objectName + ".rot");
 	std::string scaleStr = mdlf.getTag(objectName + ".scale");
@@ -243,6 +252,7 @@ Object World::retrieveData(std::string objectName, MDLF& mdlf)
 	
 	std::string meshLink = dt.getResourceLink(meshName);
 	std::string textureLink = dt.getResourceLink(textureName);
+	std::string normalMapLink = dt.getResourceLink(normalMapName);
 	
 	std::vector<std::string> posData = StringUtility::splitString(StringUtility::replaceAllChar((StringUtility::replaceAllChar(positionStr, '[', "")), ']', ""), ',');
 	float posX = CastUtility::fromString<float>(posData.at(0));
@@ -262,13 +272,14 @@ Object World::retrieveData(std::string objectName, MDLF& mdlf)
 	float scaleZ = CastUtility::fromString<float>(scaleData.at(2));
 	Vector3F scale(scaleX, scaleY, scaleZ);
 	
-	return Object(meshLink, textureLink, pos, rot, scale);
+	return Object(meshLink, textureLink, normalMapLink, pos, rot, scale);
 }
 
 std::shared_ptr<EntityObject> World::retrieveEOData(std::string eoName, MDLF& mdlf)
 {
 	std::string meshName = mdlf.getTag(eoName + ".mesh");
 	std::string textureName = mdlf.getTag(eoName + ".texture");
+	std::string normalMapName = mdlf.getTag(eoName + ".normalmap");
 	std::string massStr = mdlf.getTag(eoName + ".mass");
 	std::string positionStr = mdlf.getTag(eoName + ".pos");
 	std::string rotationStr = mdlf.getTag(eoName + ".rot");
@@ -278,6 +289,7 @@ std::shared_ptr<EntityObject> World::retrieveEOData(std::string eoName, MDLF& md
 	
 	std::string meshLink = dt.getResourceLink(meshName);
 	std::string textureLink = dt.getResourceLink(textureName);
+	std::string normalMapLink = dt.getResourceLink(normalMapName);
 	
 	std::vector<std::string> posData = StringUtility::splitString(StringUtility::replaceAllChar((StringUtility::replaceAllChar(positionStr, '[', "")), ']', ""), ',');
 	float posX = CastUtility::fromString<float>(posData.at(0));
@@ -299,5 +311,5 @@ std::shared_ptr<EntityObject> World::retrieveEOData(std::string eoName, MDLF& md
 	
 	float mass = CastUtility::fromString<float>(massStr);
 	
-	return std::shared_ptr<EntityObject>(new EntityObject(meshLink, textureLink, mass, pos, rot, scale));
+	return std::shared_ptr<EntityObject>(new EntityObject(meshLink, textureLink, normalMapLink, mass, pos, rot, scale));
 }

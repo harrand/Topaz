@@ -55,13 +55,15 @@ Texture::~Texture()
 	glDeleteTextures(1, &(this->texhandle));
 }
 
-void Texture::bind(unsigned int id)
+void Texture::bind(GLuint shaderProgram, unsigned int id)
 {
 	assert(id >= 0 && id <= 31);
 	// this sets which texture we want to bind (id can be from 0 to 31)
 	// GLTEXTURE0 is actually a number, so we can add the id instead of a massive switch statement
+	this->textureID = glGetUniformLocation(shaderProgram, "textureSampler");
 	glActiveTexture(GL_TEXTURE0 + id);
 	glBindTexture(GL_TEXTURE_2D, this->texhandle);
+	glUniform1i(this->textureID, id);
 }
 
 std::string Texture::getFileName()
@@ -76,6 +78,30 @@ std::shared_ptr<Texture> Texture::getFromLink(std::string textureLink, std::vect
 	{
 		if(allTextures.at(i)->getFileName() == textureLink)
 			return allTextures.at(i);
+	}
+	return __null;
+}
+
+NormalMap::NormalMap(std::string filename): Texture(filename){}
+
+void NormalMap::bind(GLuint shaderProgram, unsigned int id)
+{
+	assert(id >= 0 && id <= 31);
+	// this sets which texture we want to bind (id can be from 0 to 31)
+	// GLTEXTURE0 is actually a number, so we can add the id instead of a massive switch statement
+	this->textureID = glGetUniformLocation(shaderProgram, "normalMapSampler");
+	glActiveTexture(GL_TEXTURE0 + id);
+	glBindTexture(GL_TEXTURE_2D, this->texhandle);
+	glUniform1i(this->textureID, id);
+}
+
+//static
+std::shared_ptr<NormalMap> NormalMap::getFromLink(std::string normalMapLink, std::vector<std::shared_ptr<NormalMap>> allNormalMaps)
+{
+	for(unsigned int i = 0; i < allNormalMaps.size(); i++)
+	{
+		if(allNormalMaps.at(i)->getFileName() == normalMapLink)
+			return allNormalMaps.at(i);
 	}
 	return __null;
 }

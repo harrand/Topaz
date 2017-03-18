@@ -76,12 +76,48 @@ void IndexedModel::CalcNormals()
         normals[i] = normals[i].normalised();
 }
 
+void IndexedModel::calcTangents()
+{
+    for(unsigned int i = 0; i < indices.size(); i += 3)
+    {
+		//std::cout << "Calculating a trio of tangents... (Indices size = " << indices.size() << ") (Tangents reserved size = " << tangents.size() << ")\n";
+        int i0 = indices[i];
+        int i1 = indices[i + 1];
+        int i2 = indices[i + 2];
+
+        Vector3F edge1 = (positions[i1] - positions[i0]);
+        Vector3F edge2 = (positions[i2] - positions[i0]);
+        
+		float deltaU1 = texcoords.at(i1).getX() - texcoords.at(i0).getX();
+		float deltaU2 = texcoords.at(i2).getX() - texcoords.at(i0).getX();
+		float deltaV1 = texcoords.at(i1).getY() - texcoords.at(i0).getY();
+		float deltaV2 = texcoords.at(i2).getY() - texcoords.at(i0).getY();
+		
+		float f = 1.0f/(deltaU1 * deltaV2 - deltaU2 * deltaV1);
+		Vector3F tangent;
+		tangent.getXR() = f * (deltaV2 * edge1.getX() - deltaV1 * edge2.getX());
+		tangent.getYR() = f * (deltaV2 * edge1.getY() - deltaV1 * edge2.getY());
+		tangent.getZR() = f * (deltaV2 * edge1.getZ() - deltaV1 * edge2.getZ());
+		//std::cout << "Adding the tangent trio:\n";
+		//std::cout << "	[" << tangent.getX() << ", " << tangent.getY() << ", " << tangent.getZ() << "]\n";
+		tangents.at(i0) += tangent;
+		tangents.at(i1) += tangent;
+		tangents.at(i2) += tangent;
+		//std::cout << "		Added.\n";
+    }
+    
+    for(unsigned int i = 0; i < tangents.size(); i++)
+        tangents[i] = tangents[i].normalised();
+}
+
 IndexedModel OBJModel::ToIndexedModel()
 {
     IndexedModel result;
     IndexedModel normalModel;
     
     unsigned int numIndices = OBJIndices.size();
+	normalModel.tangents.resize(numIndices);
+	result.tangents.resize(numIndices);
     
     std::vector<OBJIndex*> indexLookup;
     
@@ -154,6 +190,10 @@ IndexedModel OBJModel::ToIndexedModel()
         for(unsigned int i = 0; i < result.positions.size(); i++)
             result.normals[i] = normalModel.normals[indexMap[i]];
     }
+	
+	normalModel.calcTangents();
+	for(unsigned int i = 0; i < result.tangents.size(); i++)
+		result.tangents.at(i) = normalModel.tangents[indexMap[i]];
     
     return result;
 };

@@ -36,6 +36,7 @@ private:
 		TEXCOORD_VB,
 		NORMAL_VB,
 		INDEX_VB,
+		TANGENT_VB,
 		
 		NUM_BUFFERS
 	};

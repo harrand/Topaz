@@ -6,6 +6,7 @@
 std::shared_ptr<World> world;
 std::vector<std::shared_ptr<Mesh>> allMeshes;
 std::vector<std::shared_ptr<Texture>> allTextures;
+std::vector<std::shared_ptr<NormalMap>> allNormalMaps;
 Camera cam(Vector3F(), Vector3F(0, 3.14159, 0));
 Player player(10, cam);
 
@@ -30,7 +31,7 @@ int main()
 	KeybindController kc(player, world, wnd);
 	DataTranslation dt(RES_POINT + "/resources.data");
 	
-	std::map<std::string, std::string> models = dt.retrieveModels(), textures = dt.retrieveTextures();
+	std::map<std::string, std::string> models = dt.retrieveModels(), textures = dt.retrieveTextures(), normalmaps = dt.retrieveNormalMaps();
 	
 	typedef std::map<std::string, std::string>::iterator it_type;
 	std::cout << "Retrieving models...\n";
@@ -44,6 +45,12 @@ int main()
 	{
 		std::cout << "Initialising a texture with the link " << iterator->first << ".\n";
 		allTextures.push_back(std::shared_ptr<Texture>(new Texture(iterator->first)));
+	}
+	std::cout << "Retrieving normalmaps...\n";
+	for(it_type iterator = normalmaps.begin(); iterator != normalmaps.end(); iterator++)
+	{
+		std::cout << "Initialising a normalmap with the link " << iterator->first << ".\n";
+		allNormalMaps.push_back(std::shared_ptr<NormalMap>(new NormalMap(iterator->first)));
 	}
 	std::vector<float> deltas;
 	float deltaTotal = 0.0f, deltaAverage = 0.0f;
@@ -76,7 +83,7 @@ int main()
 		kc.handleKeybinds();
 		fpscounter.reload();
 		
-		world->update(fps, cam, shader, wnd.getWidth(), wnd.getHeight(), allMeshes, allTextures);
+		world->update(fps, cam, shader, wnd.getWidth(), wnd.getHeight(), allMeshes, allTextures, allNormalMaps);
 		for(unsigned int i = 0; i < world->getEntityObjects().size(); i++)
 		{
 			std::shared_ptr<EntityObject> eo = world->getEntityObjects().at(i);

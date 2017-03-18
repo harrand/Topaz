@@ -9,7 +9,7 @@
 class Object
 {
 public:
-	Object(std::string meshLink, std::string textureLink, Vector3F pos, Vector3F rot, Vector3F scale);
+	Object(std::string meshLink, std::string textureLink, std::string normalMapLink, Vector3F pos, Vector3F rot, Vector3F scale);
 	Vector3F getPos();
 	Vector3F getRot();
 	Vector3F getScale();
@@ -20,12 +20,13 @@ public:
 	
 	std::string getMeshLink();
 	std::string getTextureLink();
+	std::string getNormalMapLink();
 	
-	void render(std::shared_ptr<Mesh> mesh, std::shared_ptr<Texture> tex, Camera& cam, Shader& shad, float width, float height);
+	void render(std::shared_ptr<Mesh> mesh, std::shared_ptr<Texture> tex, std::shared_ptr<NormalMap> nm, Camera& cam, Shader& shad, float width, float height);
 protected:
 	float m[16], v[16], p[16];
 	Vector3F pos, rot, scale;
-	std::string meshLink, textureLink;
+	std::string meshLink, textureLink, normalMapLink;
 };
 
 #endif

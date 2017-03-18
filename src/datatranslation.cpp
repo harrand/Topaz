@@ -53,3 +53,16 @@ std::map<std::string, std::string> DataTranslation::retrieveTextures()
 	}
 	return textureMap;
 }
+
+std::map<std::string, std::string> DataTranslation::retrieveNormalMaps()
+{
+	std::map<std::string, std::string> normalMapMap;
+	MDLF input(RawFile(this->datafilename));
+	std::vector<std::string> normalMapList = input.getSequence("normalmaps");
+	for(unsigned int i = 0; i < normalMapList.size(); i++)
+	{
+		std::string normalmap = normalMapList.at(i);
+		normalMapMap[this->getResourceLink(normalmap)] = input.getTag(normalmap + ".name");
+	}
+	return normalMapMap;
+}

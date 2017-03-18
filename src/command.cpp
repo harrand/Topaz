@@ -80,7 +80,7 @@ void Commands::exportWorld(std::vector<std::string> args, std::shared_ptr<World>
 
 void Commands::addObject(std::vector<std::string> args, std::shared_ptr<World>& world, Player& player, bool printResults)
 {
-	if(args.size() != 6)
+	if(args.size() != 7)
 	{
 		std::cout << "Nonfatal Command Error: Unexpected quantity of args, got " << args.size() << ", expected 6.\n";
 		return;
@@ -88,14 +88,16 @@ void Commands::addObject(std::vector<std::string> args, std::shared_ptr<World>& 
 	DataTranslation dt(RES_POINT + "/resources.data");
 	std::string meshName = args.at(1);
 	std::string textureName = args.at(2);
-	std::string posStr = args.at(3);
-	std::string rotStr = args.at(4);
-	std::string scaleStr = args.at(5);
+	std::string normalMapName = args.at(3);
+	std::string posStr = args.at(4);
+	std::string rotStr = args.at(5);
+	std::string scaleStr = args.at(6);
 
 	Vector3F pos, rot, scale;
 		
 	std::string meshLink = dt.getResourceLink(meshName);
 	std::string textureLink = dt.getResourceLink(textureName);
+	std::string normalMapLink = dt.getResourceLink(normalMapName);
 	
 	if(meshLink == "0")
 	{
@@ -131,12 +133,13 @@ void Commands::addObject(std::vector<std::string> args, std::shared_ptr<World>& 
 	std::vector<std::string> scaleSplit = StringUtility::splitString(StringUtility::replaceAllChar(StringUtility::replaceAllChar(scaleStr, '[', ""), ']', ""), ',');
 	scale = Vector3F(CastUtility::fromString<float>(scaleSplit.at(0)), CastUtility::fromString<float>(scaleSplit.at(1)), CastUtility::fromString<float>(scaleSplit.at(2)));
 		
-	world->addObject(Object(meshLink, textureLink, pos, rot, scale));
+	world->addObject(Object(meshLink, textureLink, normalMapLink, pos, rot, scale));
 	if(printResults)
 	{
 		std::cout << "Added the following to this world:\n";
 		std::cout << "Mesh name = " << meshName << ", link = " << meshLink << ".\n";
 		std::cout << "Texture name = " << textureName << ", link = " << textureLink << ".\n";
+		std::cout << "Normalmap name = " << normalMapName << ", link = " << normalMapLink << ".\n";
 		std::cout << "Pos = [" << pos.getX() << ", " << pos.getY() << ", " << pos.getZ() << "].\n";
 		std::cout << "Rot = [" << rot.getX() << ", " << rot.getY() << ", " << rot.getZ() << "].\n";
 		std::cout << "Scale = [" << scale.getX() << ", " << scale.getY() << ", " << scale.getZ() << "].\n";
@@ -145,7 +148,7 @@ void Commands::addObject(std::vector<std::string> args, std::shared_ptr<World>& 
 
 void Commands::addEntityObject(std::vector<std::string> args, std::shared_ptr<World>& world, Player& player, bool printResults)
 {
-	if(args.size() != 7)
+	if(args.size() != 8)
 	{
 		std::cout << "Nonfatal Command Error: Unexpected quantity of args, got " << args.size() << ", expected 6.\n";
 		return;
@@ -153,15 +156,17 @@ void Commands::addEntityObject(std::vector<std::string> args, std::shared_ptr<Wo
 	DataTranslation dt(RES_POINT + "/resources.data");
 	std::string meshName = args.at(1);
 	std::string textureName = args.at(2);
-	std::string massStr = args.at(3);
-	std::string posStr = args.at(4);
-	std::string rotStr = args.at(5);
-	std::string scaleStr = args.at(6);
+	std::string normalMapName = args.at(3);
+	std::string massStr = args.at(4);
+	std::string posStr = args.at(5);
+	std::string rotStr = args.at(6);
+	std::string scaleStr = args.at(7);
 
 	Vector3F pos, rot, scale;
 		
 	std::string meshLink = dt.getResourceLink(meshName);
 	std::string textureLink = dt.getResourceLink(textureName);
+	std::string normalMapLink = dt.getResourceLink(normalMapName);
 	
 	if(meshLink == "0")
 	{
@@ -199,12 +204,13 @@ void Commands::addEntityObject(std::vector<std::string> args, std::shared_ptr<Wo
 	
 	float mass = CastUtility::fromString<float>(massStr);
 	
-	world->addEntityObject(std::shared_ptr<EntityObject>(new EntityObject(meshLink, textureLink, mass, pos, rot, scale)));
+	world->addEntityObject(std::shared_ptr<EntityObject>(new EntityObject(meshLink, textureLink, normalMapLink, mass, pos, rot, scale)));
 	if(printResults)
 	{
 		std::cout << "Added the following to this world:\n";
 		std::cout << "Mesh name = " << meshName << ", link = " << meshLink << ".\n";
 		std::cout << "Texture name = " << textureName << ", link = " << textureLink << ".\n";
+		std::cout << "Normalmap name = " << normalMapName << ", link = " << normalMapLink << ".\n";
 		std::cout << "Mass = " << mass << "\n";
 		std::cout << "Pos = [" << pos.getX() << ", " << pos.getY() << ", " << pos.getZ() << "].\n";
 		std::cout << "Rot = [" << rot.getX() << ", " << rot.getY() << ", " << rot.getZ() << "].\n";

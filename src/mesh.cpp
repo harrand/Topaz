@@ -90,5 +90,10 @@ void Mesh::initMesh(IndexedModel& model)
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->vertexArrayBuffers[INDEX_VB]);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, model.indices.size() * sizeof(model.indices[0]), &(model.indices[0]), GL_STATIC_DRAW);
 	
+	glEnableVertexAttribArray(3);
+	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glBindBuffer(GL_ARRAY_BUFFER, this->vertexArrayBuffers[TANGENT_VB]);
+	glBufferData(GL_ARRAY_BUFFER, model.tangents.size() * sizeof(model.tangents[0]), &(model.tangents[0]), GL_STATIC_DRAW);
+
 	glBindVertexArray(0);
 }

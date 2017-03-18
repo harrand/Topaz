@@ -20,9 +20,11 @@ public:
     std::vector<Vector3F> positions;
     std::vector<Vector2F> texcoords;
     std::vector<Vector3F> normals;
+	std::vector<Vector3F> tangents;
     std::vector<unsigned int> indices;
     
     void CalcNormals();
+	void calcTangents();
 };
 
 class OBJModel

@@ -1,8 +1,5 @@
 #include "shader.hpp"
 
-//TEMP
-#include <iostream>
-
 Shader::Shader(std::string filename)
 {
 	this->filename = filename;
@@ -41,6 +38,11 @@ Shader::~Shader()
 	}
 	// Free GPU memory
 	glDeleteProgram(this->programHandle);
+}
+
+GLuint Shader::getProgramHandle() const
+{
+	return this->programHandle;
 }
 
 void Shader::bind()

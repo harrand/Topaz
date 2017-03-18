@@ -16,6 +16,7 @@ class Shader
 public:
 	Shader(std::string filename);
 	~Shader();
+	GLuint getProgramHandle() const;
 	void bind();
 	void update(float (&modeldata)[16], float (&viewdata)[16], float (&projectiondata)[16]);
 private:

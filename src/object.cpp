@@ -1,13 +1,6 @@
 #include "object.hpp"
 
-Object::Object(std::string meshLink, std::string textureLink, Vector3F pos, Vector3F rot, Vector3F scale)
-{
-	this->meshLink = meshLink;
-	this->textureLink = textureLink;
-	this->pos = pos;
-	this->rot = rot;
-	this->scale = scale;
-}
+Object::Object(std::string meshLink, std::string textureLink, std::string normalMapLink, Vector3F pos, Vector3F rot, Vector3F scale): meshLink(meshLink), textureLink(textureLink), normalMapLink(normalMapLink), pos(pos), rot(rot), scale(scale){}
 
 Vector3F Object::getPos()
 {
@@ -49,12 +42,19 @@ std::string Object::getTextureLink()
 	return this->textureLink;
 }
 
-void Object::render(std::shared_ptr<Mesh> mesh, std::shared_ptr<Texture> tex, Camera& cam, Shader& shad, float width, float height)
+std::string Object::getNormalMapLink()
+{
+	return this->normalMapLink;
+}
+
+void Object::render(std::shared_ptr<Mesh> mesh, std::shared_ptr<Texture> tex, std::shared_ptr<NormalMap> nm, Camera& cam, Shader& shad, float width, float height)
 {
 	(MatrixTransformations::createQuaternionSourcedModelMatrix(this->pos, this->rot, this->scale).washed()).fillData(this->m);
 	(MatrixTransformations::createViewMatrix(cam.getPosR(), cam.getRotR()).washed()).fillData(this->v);
 	(MatrixTransformations::createProjectionMatrix(1.5708, width, height, 0.1f, 1000.0f).washed()).fillData(this->p);
-	tex->bind(0);
+	shad.bind();
+	tex->bind(shad.getProgramHandle(), 0);
+	nm->bind(shad.getProgramHandle(), 1);
 	shad.update(this->m, this->v, this->p);
 	mesh->render();
 }
