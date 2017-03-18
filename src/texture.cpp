@@ -66,7 +66,7 @@ void Texture::bind(GLuint shaderProgram, unsigned int id)
 	glUniform1i(this->textureID, id);
 }
 
-std::string Texture::getFileName()
+std::string Texture::getFileName() const
 {
 	return this->filename;
 }
@@ -104,9 +104,4 @@ std::shared_ptr<NormalMap> NormalMap::getFromLink(std::string normalMapLink, std
 			return allNormalMaps.at(i);
 	}
 	return __null;
-}
-
-ShadowMap::ShadowMap(std::string filename)
-{
-	
 }

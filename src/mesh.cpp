@@ -36,12 +36,12 @@ Mesh::~Mesh()
 	glDeleteVertexArrays(1, &(this->vertexArrayObject));
 }
 
-std::string Mesh::getFileName()
+std::string Mesh::getFileName() const
 {
 	return this->filename;
 }
 
-void Mesh::render()
+void Mesh::render() const
 {
 	glBindVertexArray(this->vertexArrayObject);
 	glDrawElements(GL_TRIANGLES, this->renderCount, GL_UNSIGNED_INT, 0);

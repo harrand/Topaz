@@ -17,7 +17,7 @@ public:
 	Texture(std::string filename = "./res/textures/undefined.jpg");
 	~Texture();
 	void bind(GLuint shaderProgram, unsigned int id);
-	std::string getFileName();
+	std::string getFileName() const;
 	static std::shared_ptr<Texture> getFromLink(std::string textureLink, std::vector<std::shared_ptr<Texture>> allTextures);
 protected:
 	GLuint textureID;
@@ -35,13 +35,6 @@ public:
 	NormalMap(std::string filename = "./res/normalmaps/undefined.jpg");
 	void bind(GLuint shaderProgram, unsigned int id);
 	static std::shared_ptr<NormalMap> getFromLink(std::string normalMapLink, std::vector<std::shared_ptr<NormalMap>> allNormalMaps);
-private:
-};
-
-class ShadowMap: public Texture
-{
-public:
-	ShadowMap(std::string filename = "./res/textures/undefined.jpg");
 private:
 };
 

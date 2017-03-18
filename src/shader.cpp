@@ -45,17 +45,16 @@ GLuint Shader::getProgramHandle() const
 	return this->programHandle;
 }
 
-void Shader::bind()
+void Shader::bind() const
 {
 	glUseProgram(this->programHandle);
 }
 
-void Shader::update(float (&modeldata)[16], float (&viewdata)[16], float (&projectiondata)[16])
+void Shader::update(float (&modeldata)[16], float (&viewdata)[16], float (&projectiondata)[16]) const
 {
 	glUniformMatrix4fv(this->uniforms[MODEL_U], 1, GL_TRUE, modeldata);
 	glUniformMatrix4fv(this->uniforms[VIEW_U], 1, GL_TRUE, viewdata);
 	glUniformMatrix4fv(this->uniforms[PROJECTION_U], 1, GL_TRUE, projectiondata);
-	//glUniformMatrix4fv(this->uniforms[MVP_U], 1, GL_TRUE, matrixdata);
 }
 
 std::string Shader::loadShader(std::string filename)

@@ -17,8 +17,8 @@ public:
 	Shader(std::string filename);
 	~Shader();
 	GLuint getProgramHandle() const;
-	void bind();
-	void update(float (&modeldata)[16], float (&viewdata)[16], float (&projectiondata)[16]);
+	void bind() const;
+	void update(float (&modeldata)[16], float (&viewdata)[16], float (&projectiondata)[16]) const;
 private:
 	static std::string loadShader(std::string filename);
 	static void checkShaderError(GLuint shader, GLuint flag, bool isProgram, std::string errorMessage);
