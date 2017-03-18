@@ -8,12 +8,12 @@ Matrix2x2::Matrix2x2(Vector2F x, Vector2F y)
 	this->y = y;
 }
 
-Vector2F Matrix2x2::getRowX()
+Vector2F Matrix2x2::getRowX() const
 {
 	return this->x;
 }
 
-Vector2F Matrix2x2::getRowY()
+Vector2F Matrix2x2::getRowY() const
 {
 	return this->y;
 }
@@ -28,7 +28,7 @@ Vector2F& Matrix2x2::getRowYR()
 	return this->y;
 }
 
-float Matrix2x2::determinant()
+float Matrix2x2::determinant() const
 {
 	return (this->x.getX() * this->y.getY()) - (this->x.getY() * this->y.getX());
 }
@@ -42,17 +42,17 @@ Matrix3x3::Matrix3x3(Vector3F x, Vector3F y, Vector3F z)
 	this->z = z;
 }
 
-Vector3F Matrix3x3::getRowX()
+Vector3F Matrix3x3::getRowX() const
 {
 	return this->x;
 }
 
-Vector3F Matrix3x3::getRowY()
+Vector3F Matrix3x3::getRowY() const
 {
 	return this->y;
 }
 
-Vector3F Matrix3x3::getRowZ()
+Vector3F Matrix3x3::getRowZ() const
 {
 	return this->z;
 }
@@ -72,7 +72,7 @@ Vector3F& Matrix3x3::getRowZR()
 	return this->z;
 }
 
-float Matrix3x3::determinant()
+float Matrix3x3::determinant() const
 {
 	return ((this->x).getX() * (((this->y).getY() * (this->z).getZ()) - ((this->y).getZ() * (this->z).getY()))) - ((this->x).getY() * (((this->y).getX() * (this->z).getZ()) - ((this->y).getZ() * (this->z).getX()))) + ((this->x).getZ() * (((this->y).getX() * (this->z).getY()) - ((this->y).getY() * (this->z).getX())));
 }
@@ -92,22 +92,22 @@ Matrix4x4 Matrix4x4::identity()
 	return Matrix4x4();
 }
 
-Vector4F Matrix4x4::getRowX()
+Vector4F Matrix4x4::getRowX() const
 {
 	return this->x;
 }
 
-Vector4F Matrix4x4::getRowY()
+Vector4F Matrix4x4::getRowY() const
 {
 	return this->y;
 }
 
-Vector4F Matrix4x4::getRowZ()
+Vector4F Matrix4x4::getRowZ() const
 {
 	return this->z;
 }
 
-Vector4F Matrix4x4::getRowW()
+Vector4F Matrix4x4::getRowW() const
 {
 	return this->w;
 }
@@ -132,7 +132,7 @@ Vector4F& Matrix4x4::getRowWR()
 	return this->w;
 }
 
-Matrix4x4 Matrix4x4::transposed()
+Matrix4x4 Matrix4x4::transposed() const
 {
 	Vector4F tx(this->x.getX(), this->y.getX(), this->z.getX(), this->w.getX());
 	Vector4F ty(this->x.getY(), this->y.getY(), this->z.getY(), this->w.getY());
@@ -141,7 +141,7 @@ Matrix4x4 Matrix4x4::transposed()
 	return Matrix4x4(tx, ty, tz, tw);
 }
 
-Matrix4x4 Matrix4x4::washed(float min, float max)
+Matrix4x4 Matrix4x4::washed(float min, float max) const
 {
 	Matrix4x4 copy(Vector4F(this->x.getX(), this->x.getY(), this->x.getZ(), this->x.getW()), Vector4F(this->y.getX(), this->y.getY(), this->y.getZ(), this->y.getW()), Vector4F(this->z.getX(), this->z.getY(), this->z.getZ(), this->z.getW()), Vector4F(this->w.getX(), this->w.getY(), this->w.getZ(), this->w.getW()));
 	Vector4F* row;
@@ -188,7 +188,7 @@ Matrix4x4 Matrix4x4::washed(float min, float max)
 	return copy;
 }
 
-void Matrix4x4::fillData(float data[16])
+void Matrix4x4::fillData(float data[16]) const
 {
 	data[0] = this->x.getX();
 	data[1] = this->x.getY();
@@ -383,7 +383,7 @@ Matrix4x4 Matrix4x4::operator*(Matrix4x4 other)
 	
 }
 
-float Matrix4x4::determinant()
+float Matrix4x4::determinant() const
 {
 	return ((this->x).getX() * (((this->y).getY() * (this->z).getZ()) - ((this->y).getZ() * (this->z).getY()))) - ((this->x).getY() * (((this->y).getX() * (this->z).getZ()) - ((this->y).getZ() * (this->z).getX()))) + ((this->x).getZ() * (((this->y).getX() * (this->z).getY()) - ((this->y).getY() * (this->z).getX())));
 }

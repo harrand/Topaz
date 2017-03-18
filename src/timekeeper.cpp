@@ -18,12 +18,12 @@ void TimeKeeper::reload()
 	this->after = std::chrono::system_clock::now().time_since_epoch() / std::chrono::milliseconds(1);
 }
 
-float TimeKeeper::getRange()
+float TimeKeeper::getRange() const
 {
 	return (this->after) - (this->before);
 }
 
-bool TimeKeeper::millisPassed(float millis)
+bool TimeKeeper::millisPassed(float millis) const
 {
 	return (this->getRange() > millis);
 }

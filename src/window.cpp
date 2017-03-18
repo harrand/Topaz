@@ -14,7 +14,7 @@ Listener::~Listener()
 	Listener::NUM_LISTENERS--;
 }
 
-unsigned int Listener::getID()
+unsigned int Listener::getID() const
 {
 	return this->id;
 }
@@ -67,7 +67,7 @@ void Window::setTitle(std::string newTitle)
 	SDL_SetWindowTitle(this->wnd, newTitle.c_str());
 }
 
-void Window::clear(float r, float g, float b, float a)
+void Window::clear(float r, float g, float b, float a) const
 {
 		glClearColor(r, g, b, a);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

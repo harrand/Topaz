@@ -14,7 +14,7 @@ public:
 	Listener();
 	~Listener();
 	virtual void handleEvents(SDL_Event& evt) = 0;
-	unsigned int getID();
+	unsigned int getID() const;
 	static unsigned int getNumListeners();
 private:
 	unsigned int id;
@@ -32,7 +32,7 @@ public:
 	void requestClose();
 	void setTitle(std::string newTitle);
 	
-	void clear(float r = 1.0f, float g = 1.0f, float b = 1.0f, float a = 1.0f);
+	void clear(float r = 1.0f, float g = 1.0f, float b = 1.0f, float a = 1.0f) const;
 	void update();
 	
 	void registerListener(Listener& l);

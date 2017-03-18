@@ -39,7 +39,7 @@ class Force
 {
 public:
 	Force(Vector3F size = Vector3F());
-	Vector3F getSize();
+	Vector3F getSize() const;
 	void setSize(Vector3F size);
 	Force operator+(Force other);
 	Force operator-(Force other);

@@ -137,7 +137,7 @@ std::string StringUtility::substring(std::string str, unsigned int begin, unsign
 
 Force::Force(Vector3F size): size(size){}
 
-Vector3F Force::getSize()
+Vector3F Force::getSize() const
 {
 	return this->size;
 }

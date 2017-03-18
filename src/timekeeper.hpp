@@ -8,8 +8,8 @@ public:
 	TimeKeeper();
 	void update();
 	void reload();
-	bool millisPassed(float millis);
-	float getRange();
+	float getRange() const;
+	bool millisPassed(float millis) const;
 private:
 	unsigned long before, after;
 	time_t previous, now;
