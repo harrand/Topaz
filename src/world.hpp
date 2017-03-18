@@ -29,7 +29,7 @@ private:
 	Vector3F gravity, spawnPoint, spawnOrientation;
 	const std::string filename;
 	static Object retrieveData(std::string objectName, MDLF& mdlf);
-	std::shared_ptr<EntityObject> retrieveEOData(std::string eoName, MDLF& mdlf);
+	static std::shared_ptr<EntityObject> retrieveEOData(std::string eoName, MDLF& mdlf);
 	std::vector<Object> members;
 	std::vector<Entity*> entities;
 	std::vector<std::shared_ptr<EntityObject>> entityObjects;

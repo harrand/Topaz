@@ -22,7 +22,7 @@ World::World(std::string filename): filename(filename)
 	for(unsigned int i = 0; i < entityObjectList.size(); i++)
 	{
 		std::string eoName = entityObjectList.at(i);
-		std::shared_ptr<EntityObject> eo = this->retrieveEOData(eoName, input);
+		std::shared_ptr<EntityObject> eo = World::retrieveEOData(eoName, input);
 		this->addEntityObject(eo);
 	}
 }
