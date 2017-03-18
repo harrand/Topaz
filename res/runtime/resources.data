@@ -19,11 +19,14 @@ sand.path: ../../../res/runtime/textures/sand.jpg
 sand.name: [Dev] Copyrighted Sand Texture
 normalmaps: %[
 - default_normalmap
-- bricks_normalmap]%
+- bricks_normalmap
+- lava_normalmap]%
 default_normalmap.path: ../../../res/runtime/normalmaps/default_normalmap.jpg
 default_normalmap.name: Default Normalmap
 bricks_normalmap.path: ../../../res/runtime/normalmaps/bricks_normalmap.jpg
 bricks_normalmap.name: Bricks Normalmap
+lava_normalmap.path: ../../../res/runtime/normalmaps/lava_normalmap.jpg
+lava_normalmap.name: Lava Normalmap
 models: %[
 - cube
 - monkeyhead
@@ -253,4 +256,11 @@ speed: 1.5
 
 
 
-played: 109739
+
+
+
+
+
+
+
+played: 111030

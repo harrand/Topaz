@@ -10,14 +10,14 @@ class DataTranslation
 public:
 	DataTranslation(std::string datafilename);
 
-	std::string getResourceLink(std::string resourceName);
-	std::string getResourceName(std::string resourceLink);
+	std::string getResourceLink(std::string resourceName) const;
+	std::string getResourceName(std::string resourceLink) const;
 	
-	std::map<std::string, std::string> retrieveModels();
-	std::map<std::string, std::string> retrieveTextures();
-	std::map<std::string, std::string> retrieveNormalMaps();
+	std::map<std::string, std::string> retrieveModels() const;
+	std::map<std::string, std::string> retrieveTextures() const;
+	std::map<std::string, std::string> retrieveNormalMaps() const;
 private:
-	std::string datafilename;
+	const std::string datafilename;
 };
 
 #endif

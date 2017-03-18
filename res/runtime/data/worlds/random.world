@@ -39,13 +39,13 @@ object5.rot: [0, 6.2416, 0]
 object5.scale: [12, 12, 12]
 object6.mesh: monkeyhead
 object6.texture: bricks
-object6.normalmap: default_normalmap
+object6.normalmap: bricks_normalmap
 object6.pos: [19.6578, 97.6598, 22.0097]
 object6.rot: [-1.6, 6.2416, 0]
 object6.scale: [31, 31, 31]
 object7.mesh: cube
 object7.texture: lava
-object7.normalmap: default_normalmap
+object7.normalmap: lava_normalmap
 object7.pos: [127.87, 58.3642, -25.6041]
 object7.rot: [-0.75, 12.6416, 0]
 object7.scale: [24, 21, 19]
@@ -79,34 +79,47 @@ object12.normalmap: bricks_normalmap
 object12.pos: [16.4531, 31.5, -54.246]
 object12.rot: [0, -2.60841, 0]
 object12.scale: [30, 30, 30]
+object13.mesh: cube
+object13.texture: bricks
+object13.normalmap: bricks_normalmap
+object13.pos: [0, -56.5, 12]
+object13.rot: [0, 3.14159, 0]
+object13.scale: [150, 10, 150]
 eo0.mesh: cube
 eo0.texture: lava
 eo0.normalmap: default_normalmap
 eo0.mass: 5
-eo0.pos: [86.8114, 29.3195, -122.006]
+eo0.pos: [250.334, 239.553, 95.477]
 eo0.rot: [0, 0, 0]
 eo0.scale: [10, 10, 10]
 eo1.mesh: monkeyhead
 eo1.texture: grass
 eo1.normalmap: default_normalmap
 eo1.mass: 20
-eo1.pos: [52.3483, 78.9647, -125.17]
+eo1.pos: [-10.9906, 2.0945, 33.7407]
 eo1.rot: [0, 3.14159, 0]
 eo1.scale: [6, 6, 6]
 eo2.mesh: torus
 eo2.texture: lava
 eo2.normalmap: default_normalmap
 eo2.mass: 7
-eo2.pos: [-73.3387, 35.3078, -6.98416]
+eo2.pos: [201.309, -15.5294, 27.2502]
 eo2.rot: [0, 3.14159, 0]
 eo2.scale: [5, 5, 5]
 eo3.mesh: monkeyhead
 eo3.texture: sand
 eo3.normalmap: default_normalmap
 eo3.mass: 3
-eo3.pos: [38.7796, -59.4824, -281.121]
+eo3.pos: [-29.4858, 80.2667, 149.481]
 eo3.rot: [0, 3.14159, 0]
 eo3.scale: [2, 2, 2]
+eo4.mesh: cube
+eo4.texture: bricks
+eo4.normalmap: bricks_normalmap
+eo4.mass: 20
+eo4.pos: [-33.2962, -111.894, 210.394]
+eo4.rot: [0, 7.8916, 0]
+eo4.scale: [30, 30, 30]
 objects: %[
 - object0
 - object1
@@ -120,9 +133,11 @@ objects: %[
 - object9
 - object10
 - object11
-- object12]%
+- object12
+- object13]%
 entityobjects: %[
 - eo0
 - eo1
 - eo2
-- eo3]%
+- eo3
+- eo4]%

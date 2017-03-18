@@ -8,12 +8,12 @@ Vector2F::Vector2F(float x, float y)
 	this->y = y;
 }
 
-float Vector2F::getX()
+float Vector2F::getX() const
 {
 	return this->x;
 }
 
-float Vector2F::getY()
+float Vector2F::getY() const
 {
 	return this->y;
 }
@@ -28,17 +28,17 @@ float& Vector2F::getYR()
 	return this->y;
 }
 
-float Vector2F::length()
+float Vector2F::length() const
 {
 	return sqrt((this->x * this->x) + (this->y * this->y));
 }
 
-float Vector2F::dot(Vector2F other)
+float Vector2F::dot(Vector2F other) const
 {
 	return (this->x * other.getX()) + (this->y * other.getY());
 }
 
-Vector2F Vector2F::normalised()
+Vector2F Vector2F::normalised() const
 {
 	return Vector2F(this->x / this->length(), this->y / this->length());
 }
@@ -72,17 +72,17 @@ Vector3F::Vector3F(float x, float y, float z)
 	this->z = z;
 }
 
-float Vector3F::getX()
+float Vector3F::getX() const
 {
 	return this->x;
 }
 
-float Vector3F::getY()
+float Vector3F::getY() const
 {
 	return this->y;
 }
 
-float Vector3F::getZ()
+float Vector3F::getZ() const
 {
 	return this->z;
 }
@@ -102,22 +102,22 @@ float& Vector3F::getZR()
 	return this->z;
 }
 
-float Vector3F::length()
+float Vector3F::length() const
 {
 	return sqrt((this->x * this->x) + (this->y * this->y) + (this->z * this->z));
 }
 
-float Vector3F::dot(Vector3F other)
+float Vector3F::dot(Vector3F other) const
 {
 	return (this->x * other.getX()) + (this->y * other.getY()) + (this->z * other.getZ());
 }
 
-Vector3F Vector3F::cross(Vector3F other)
+Vector3F Vector3F::cross(Vector3F other) const
 {
 	return Vector3F((this->y * other.getZ()) - (this->z * other.getY()), (this->z * other.getX()) - (this->x * other.getZ()), (this->x * other.getY()) - (this->y * other.getX()));
 }
 
-Vector3F Vector3F::normalised()
+Vector3F Vector3F::normalised() const
 {
 	return Vector3F(this->x / this->length(), this->y / this->length(), this->z / this->length());
 }
@@ -167,22 +167,22 @@ Vector4F::Vector4F(float x, float y, float z, float w)
 	this->w = w;
 }
 
-float Vector4F::getX()
+float Vector4F::getX() const
 {
 	return this->x;
 }
 
-float Vector4F::getY()
+float Vector4F::getY() const
 {
 	return this->y;
 }
 
-float Vector4F::getZ()
+float Vector4F::getZ() const
 {
 	return this->z;
 }
 
-float Vector4F::getW()
+float Vector4F::getW() const
 {
 	return this->w;
 }
@@ -207,17 +207,17 @@ float& Vector4F::getWR()
 	return this->w;
 }
 
-float Vector4F::length()
+float Vector4F::length() const
 {
 	return sqrt((this->x * this->x) + (this->y * this->y) + (this->z * this->z) + (this->w * this->w));
 }
 
-float Vector4F::dot(Vector4F other)
+float Vector4F::dot(Vector4F other) const
 {
 	return (this->x * other.getX()) + (this->y * other.getY()) + (this->z * other.getZ() + (this->w * other.getW()));
 }
 
-Vector4F Vector4F::normalised()
+Vector4F Vector4F::normalised() const
 {
 	return Vector4F(this->x / this->length(), this->y / this->length(), this->z / this->length(), this->w / this->length());
 }

@@ -2,12 +2,12 @@
 
 DataTranslation::DataTranslation(std::string datafilename): datafilename(datafilename){}
 
-std::string DataTranslation::getResourceLink(std::string resourceName)
+std::string DataTranslation::getResourceLink(std::string resourceName) const
 {
 	return MDLF(RawFile(this->datafilename)).getTag(resourceName + ".path");
 }
 
-std::string DataTranslation::getResourceName(std::string resourceLink)
+std::string DataTranslation::getResourceName(std::string resourceLink) const
 {
 	const RawFile input(this->datafilename);
 	for(unsigned int i = 0; i < input.getLines().size(); i++)
@@ -28,7 +28,7 @@ std::string DataTranslation::getResourceName(std::string resourceLink)
 	return "0";
 }
 
-std::map<std::string, std::string> DataTranslation::retrieveModels()
+std::map<std::string, std::string> DataTranslation::retrieveModels() const
 {
 	std::map<std::string, std::string> modelMap;
 	MDLF input(RawFile(this->datafilename));
@@ -41,7 +41,7 @@ std::map<std::string, std::string> DataTranslation::retrieveModels()
 	return modelMap;
 }
 
-std::map<std::string, std::string> DataTranslation::retrieveTextures()
+std::map<std::string, std::string> DataTranslation::retrieveTextures() const
 {
 	std::map<std::string, std::string> textureMap;
 	MDLF input(RawFile(this->datafilename));
@@ -54,7 +54,7 @@ std::map<std::string, std::string> DataTranslation::retrieveTextures()
 	return textureMap;
 }
 
-std::map<std::string, std::string> DataTranslation::retrieveNormalMaps()
+std::map<std::string, std::string> DataTranslation::retrieveNormalMaps() const
 {
 	std::map<std::string, std::string> normalMapMap;
 	MDLF input(RawFile(this->datafilename));

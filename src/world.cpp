@@ -16,7 +16,7 @@ World::World(std::string filename): filename(filename)
 	for(unsigned int i = 0; i < objectList.size(); i++)
 	{
 		std::string objectName = objectList.at(i);
-		Object obj = this->retrieveData(objectName, input);
+		Object obj = World::retrieveData(objectName, input);
 		this->addObject(obj);
 	}
 	for(unsigned int i = 0; i < entityObjectList.size(); i++)
@@ -57,7 +57,7 @@ void World::addEntityObject(std::shared_ptr<EntityObject> eo)
 	this->entityObjects.push_back(eo);
 }
 
-void World::exportWorld(std::string worldName)
+void World::exportWorld(std::string worldName) const
 {
 	DataTranslation dt(RES_POINT + "/resources.data");
 	std::string worldLink = RES_POINT + "/data/worlds/" + worldName;
@@ -177,7 +177,7 @@ void World::setSpawnOrientation(Vector3F spawnOrientation)
 	this->spawnOrientation = spawnOrientation;
 }
 
-void World::update(unsigned int fps, Camera& cam, Shader& shader, unsigned int width, unsigned int height, std::vector<std::shared_ptr<Mesh>> allMeshes, std::vector<std::shared_ptr<Texture>> allTextures, std::vector<std::shared_ptr<NormalMap>> allNormalMaps)
+void World::update(unsigned int fps, Camera& cam, Shader& shader, unsigned int width, unsigned int height, std::vector<std::shared_ptr<Mesh>> allMeshes, std::vector<std::shared_ptr<Texture>> allTextures, std::vector<std::shared_ptr<NormalMap>> allNormalMaps) const
 {
 	for(unsigned int i = 0; i < this->getMembers().size(); i++)
 	{
@@ -199,42 +199,42 @@ void World::update(unsigned int fps, Camera& cam, Shader& shader, unsigned int w
 	}
 }
 
-unsigned int World::getSize()
+unsigned int World::getSize() const
 {
 	return this->members.size();
 }
 
-std::vector<Object> World::getMembers()
+std::vector<Object> World::getMembers() const
 {
 	return this->members;
 }
 
-std::vector<Entity*> World::getEntities()
+std::vector<Entity*> World::getEntities() const
 {
 	return this->entities;
 }
 
-std::vector<std::shared_ptr<EntityObject>> World::getEntityObjects()
+std::vector<std::shared_ptr<EntityObject>> World::getEntityObjects() const
 {
 	return this->entityObjects;
 }
 
-Vector3F World::getGravity()
+Vector3F World::getGravity() const
 {
 	return this->gravity;
 }
 
-Vector3F World::getSpawnPoint()
+Vector3F World::getSpawnPoint() const
 {
 	return this->spawnPoint;
 }
 
-Vector3F World::getSpawnOrientation()
+Vector3F World::getSpawnOrientation() const
 {
 	return this->spawnOrientation;
 }
 
-std::string World::getWorldLink()
+std::string World::getWorldLink() const
 {
 	return this->filename;
 }
