@@ -14,14 +14,14 @@ public:
 	float& getZ();
 	float& getW();
 	
-	float getAngleRadians();
-	Vector3F getRotationAxis();
-	Matrix4x4 getRotationalMatrix();
+	float getAngleRadians() const;
+	Vector3F getRotationAxis() const;
+	Matrix4x4 getRotationalMatrix() const;
 	
-	float length();
-	Quaternion normalised();
-	Quaternion conjugate();
-	Quaternion inverse();
+	float length() const;
+	Quaternion normalised() const;
+	Quaternion conjugate() const;
+	Quaternion inverse() const;
 	
 	Quaternion operator*(Quaternion other);
 	Vector4F operator*(Vector4F other);

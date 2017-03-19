@@ -8,7 +8,7 @@ class Player: public Entity
 public:
 	Player(float mass, Camera& cam);
 	void setPosition(Vector3F position);
-	Vector3F getPosition();
+	Vector3F getPosition() const;
 	Camera& getCamera();
 	void updateMotion(unsigned int fps);
 private:

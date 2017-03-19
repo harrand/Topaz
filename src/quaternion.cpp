@@ -49,18 +49,18 @@ float& Quaternion::getW()
 	return this->w;
 }
 
-float Quaternion::getAngleRadians()
+float Quaternion::getAngleRadians() const
 {
 	return (2 * acos(this->w));
 }
 
-Vector3F Quaternion::getRotationAxis()
+Vector3F Quaternion::getRotationAxis() const
 {
 	float sin_a = sin(this->getAngleRadians() / 2);
 	return Vector3F(this->x / sin_a, this->y / sin_a, this->z / sin_a);
 }
 
-Matrix4x4 Quaternion::getRotationalMatrix()
+Matrix4x4 Quaternion::getRotationalMatrix() const
 {
 	//The algorithm used gives a column-major matrix, will transpose at the end to get row-major.
 	Vector4F x(1 - (2 * (this->y * this->y) + (this->z * this->z)), 2 * ((this->x * this->y) - (this->z * this->w)), 2 * ((this->x * this->z) + (this->y * this->w)), 0.0f);
@@ -71,27 +71,27 @@ Matrix4x4 Quaternion::getRotationalMatrix()
 	return col.transposed();
 }
 
-float Quaternion::length()
+float Quaternion::length() const
 {
 	Vector4F quat(this->x, this->y, this->z, this->w);
 	return quat.length();
 }
 
-Quaternion Quaternion::normalised()
+Quaternion Quaternion::normalised() const
 {
 	Vector4F quat(this->x, this->y, this->z, this->w);
 	float length = quat.length();
 	return Quaternion(Vector4F(quat.getX() / length, quat.getY() / length, quat.getZ() / length, quat.getW() / length));
 }
 
-Quaternion Quaternion::conjugate()
+Quaternion Quaternion::conjugate() const
 {
 	Vector3F ra = this->getRotationAxis();
 	float ang = this->getAngleRadians();
 	return Quaternion(Vector3F(-ra.getX(), -ra.getY(), -ra.getZ()), ang);
 }
 
-Quaternion Quaternion::inverse()
+Quaternion Quaternion::inverse() const
 {
 	Quaternion quat = *this;
 	return (quat.normalised()).conjugate();

@@ -29,12 +29,12 @@ void KeyListener::handleEvents(SDL_Event& evt)
 	}
 }
 
-bool KeyListener::isKeyPressed(std::string keyname)
+bool KeyListener::isKeyPressed(std::string keyname) const
 {
 	return (std::find(this->pressedKeys.begin(), this->pressedKeys.end(), keyname) != this->pressedKeys.end());
 }
 
-bool KeyListener::isKeyReleased(std::string keyname)
+bool KeyListener::isKeyReleased(std::string keyname) const
 {
 	return (std::find(this->releasedKeys.begin(), this->releasedKeys.end(), keyname) != this->releasedKeys.end());
 }

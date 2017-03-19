@@ -11,8 +11,8 @@ public:
 	KeyListener(): Listener(){}
 	~KeyListener(){}
 	void handleEvents(SDL_Event& evt);
-	bool isKeyPressed(std::string keyname);
-	bool isKeyReleased(std::string keyname);
+	bool isKeyPressed(std::string keyname) const;
+	bool isKeyReleased(std::string keyname) const;
 	bool catchKeyPressed(std::string keyname);
 	bool catchKeyReleased(std::string keyname);
 private:
