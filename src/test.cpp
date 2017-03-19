@@ -21,7 +21,7 @@ int main()
 	MDLF timeStorage(RawFile(RES_POINT + "/resources.data"));
 	int secondsLifetime = CastUtility::fromString<int>(timeStorage.getTag("played"));
 	
-	Window wnd(800, 600, "Topaz Game Engine : Test Window");
+	Window wnd(800, 600, "Topaz Test Environment - Undefined World");
 	TimeKeeper tk, fpscounter;
 	
 	std::cout << "'Topaz Testing Environment created.\n";
@@ -93,7 +93,7 @@ int main()
 		}
 		
 		wnd.update();
-		wnd.setTitle("Game - World '" + world->getWorldLink() + "'");
+		wnd.setTitle("Topaz Testing Environment - '" + world->getWorldLink() + "'");
 	}
 	std::ostringstream strum;
 	strum << secondsLifetime;
