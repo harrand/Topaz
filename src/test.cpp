@@ -3,10 +3,12 @@
 #include "command.hpp"
 #include <iostream>
 
+//Global Heap Variables
 std::shared_ptr<World> world;
 std::vector<std::shared_ptr<Mesh>> allMeshes;
 std::vector<std::shared_ptr<Texture>> allTextures;
 std::vector<std::shared_ptr<NormalMap>> allNormalMaps;
+//Global Stack Variables
 Camera cam(Vector3F(), Vector3F(0, 3.14159, 0));
 Player player(10, cam);
 

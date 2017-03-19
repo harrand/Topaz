@@ -24,12 +24,14 @@ public:
 	Mesh(Vertex* vertices, unsigned int numVertices, unsigned int* indices, unsigned int numIndices);
 	Mesh(std::string filename = "./res/models/undefined.obj");
 	~Mesh();
+	IndexedModel getIndexedModel() const;
 	std::string getFileName() const;
 	void render() const;
 	static std::shared_ptr<Mesh> getFromLink(std::string meshLink, std::vector<std::shared_ptr<Mesh>> allMeshes);
 private:
-	std::string filename;
-	void initMesh(IndexedModel& model);
+	IndexedModel model;
+	const std::string filename;
+	void initMesh();
 	enum
 	{
 		POSITION_VB,

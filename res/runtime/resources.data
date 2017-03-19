@@ -4,7 +4,8 @@ textures: %[
 - grass
 - lava
 - metal
-- sand]%
+- sand
+- wood]%
 undefined.path: ../../../res/runtime/textures/undefined.jpg
 undefined.name: Undefined Texture
 bricks.path: ../../../res/runtime/textures/bricks.jpg
@@ -17,16 +18,27 @@ metal.path: ../../../res/runtime/textures/metal.jpg
 metal.name: [Dev] Copyrighted Metal Texture
 sand.path: ../../../res/runtime/textures/sand.jpg
 sand.name: [Dev] Copyrighted Sand Texture
+wood.path: ../../../res/runtime/textures/wood.jpg
+wood.name: [Dev] Copyrighted Wood Texture
 normalmaps: %[
 - default_normalmap
 - bricks_normalmap
-- lava_normalmap]%
+- lava_normalmap
+- metal_normalmap
+- sand_normalmap
+- wood_normalmap]%
 default_normalmap.path: ../../../res/runtime/normalmaps/default_normalmap.jpg
 default_normalmap.name: Default Normalmap
 bricks_normalmap.path: ../../../res/runtime/normalmaps/bricks_normalmap.jpg
 bricks_normalmap.name: Bricks Normalmap
 lava_normalmap.path: ../../../res/runtime/normalmaps/lava_normalmap.jpg
 lava_normalmap.name: Lava Normalmap
+metal_normalmap.path: ../../../res/runtime/normalmaps/metal_normalmap.jpg
+metal_normalmap.name: Metal Normalmap
+sand_normalmap.path: ../../../res/runtime/normalmaps/sand_normalmap.jpg
+sand_normalmap.name: Sand Normalmap
+wood_normalmap.path: ../../../res/runtime/normalmaps/wood_normalmap.jpg
+wood_normalmap.name: Sand Normalmap
 models: %[
 - cube
 - monkeyhead
@@ -42,234 +54,5 @@ sword.path: ../../../res/runtime/models/sword.obj
 sword.name: Complete Sword
 torus.path: ../../../res/runtime/models/torus.obj
 torus.name: Complete Torus
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 speed: 1.5
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-played: 111239
+played: 112340

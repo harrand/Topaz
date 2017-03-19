@@ -5,6 +5,7 @@
 #include <iostream>
 #include <vector>
 #include <memory>
+#define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 #ifndef GLEW_STATIC
 #define GLEW_STATIC
