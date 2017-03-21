@@ -289,12 +289,12 @@ Matrix3x3 Matrix4x4::subMatrix(float posI, float posJ)
 	return Matrix3x3(x, y, z);
 }
 
-Matrix4x4 Matrix4x4::operator+(Matrix4x4 other)
+Matrix4x4 Matrix4x4::operator+(const Matrix4x4& other) const
 {
 	return Matrix4x4(this->x + other.getRowX(), this->y + other.getRowY(), this->z + other.getRowZ(), this->w + other.getRowW());
 }
 
-Matrix4x4 Matrix4x4::operator-(Matrix4x4 other)
+Matrix4x4 Matrix4x4::operator-(const Matrix4x4& other) const
 {
 	return Matrix4x4(this->x - other.getRowX(), this->y - other.getRowY(), this->z - other.getRowZ(), this->w - other.getRowW());
 }
@@ -349,7 +349,7 @@ Vector4F Matrix4x4::operator*(Vector4F other)
 	return Vector4F(x, y, z, w);
 }
 
-Matrix4x4 Matrix4x4::operator*(Matrix4x4 other)
+Matrix4x4 Matrix4x4::operator*(const Matrix4x4& other) const
 {
 	Matrix4x4 oth = other.transposed();
 	Vector4F x(0.0f, 0.0f, 0.0f, 0.0f);

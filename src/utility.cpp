@@ -147,32 +147,32 @@ void Force::setSize(Vector3F size)
 	this->size = size;
 }
 
-Force Force::operator+(Force other)
+Force Force::operator+(const Force& other) const
 {
 	return Force(this->size + other.getSize());
 }
 
-Force Force::operator-(Force other)
+Force Force::operator-(const Force& other) const
 {
 	return Force(this->size - other.getSize());
 }
 
-Force Force::operator*(float rhs)
+Force Force::operator*(float rhs) const
 {
 	return Force(this->size * rhs);
 }
 
-Force Force::operator/(float rhs)
+Force Force::operator/(float rhs) const
 {
 	return Force(this->size / rhs);
 }
 
-void Force::operator+=(Force other)
+void Force::operator+=(const Force& other)
 {
 	this->size += other.getSize();
 }
 
-void Force::operator-=(Force other)
+void Force::operator-=(const Force& other)
 {
 	this->size -= other.getSize();
 }

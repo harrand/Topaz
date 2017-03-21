@@ -50,10 +50,10 @@ public:
 	void fillData(float data[16]) const;
 	Matrix3x3 subMatrix(float iterI, float iterJ);
 	
-	Matrix4x4 operator+(Matrix4x4 other);
-	Matrix4x4 operator-(Matrix4x4 other);
+	Matrix4x4 operator+(const Matrix4x4& other) const;
+	Matrix4x4 operator-(const Matrix4x4& other) const;
 	Vector4F operator*(Vector4F other);
-	Matrix4x4 operator*(Matrix4x4 other);
+	Matrix4x4 operator*(const Matrix4x4& other) const;
 	
 	float determinant() const;
 	Matrix4x4 inverse();

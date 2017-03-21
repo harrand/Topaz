@@ -41,12 +41,12 @@ public:
 	Force(Vector3F size = Vector3F());
 	Vector3F getSize() const;
 	void setSize(Vector3F size);
-	Force operator+(Force other);
-	Force operator-(Force other);
-	Force operator*(float rhs);
-	Force operator/(float rhs);
-	void operator+=(Force other);
-	void operator-=(Force other);
+	Force operator+(const Force& other) const;
+	Force operator-(const Force& other) const;
+	Force operator*(float rhs) const;
+	Force operator/(float rhs) const;
+	void operator+=(const Force& other);
+	void operator-=(const Force& other);
 private:
 	Vector3F size;
 };

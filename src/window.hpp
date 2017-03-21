@@ -4,7 +4,7 @@
 #define GLEW_STATIC
 #endif
 #include <string>
-#include <map>
+#include <unordered_map>
 #include "SDL.h"
 #include "glew.h"
 
@@ -45,7 +45,7 @@ private:
 	void initGLEW();
 	void destSDL();
 	void handleEvents();
-	std::map<unsigned int, Listener*> registeredListeners;
+	std::unordered_map<unsigned int, Listener*> registeredListeners;
 	int w, h;
 	std::string title;
 	

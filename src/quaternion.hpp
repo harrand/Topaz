@@ -9,10 +9,15 @@ public:
 	Quaternion(Vector3F eulerRotation);
 	Quaternion(Vector4F quat);
 	
-	float& getX();
-	float& getY();
-	float& getZ();
-	float& getW();
+	float& getXR();
+	float& getYR();
+	float& getZR();
+	float& getWR();
+	
+	float getX() const;
+	float getY() const;
+	float getZ() const;
+	float getW() const;
 	
 	float getAngleRadians() const;
 	Vector3F getRotationAxis() const;
@@ -23,8 +28,8 @@ public:
 	Quaternion conjugate() const;
 	Quaternion inverse() const;
 	
-	Quaternion operator*(Quaternion other);
-	Vector4F operator*(Vector4F other);
+	Quaternion operator*(const Quaternion& other) const;
+	Vector4F operator*(const Vector4F& other) const;
 private:
 	float x, y, z, w;
 };

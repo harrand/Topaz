@@ -29,22 +29,42 @@ Quaternion::Quaternion(Vector4F quat)
 	this->w = quat.getW();
 }
 
-float& Quaternion::getX()
+float& Quaternion::getXR()
 {
 	return this->x;
 }
 
-float& Quaternion::getY()
+float& Quaternion::getYR()
 {
 	return this->y;
 }
 
-float& Quaternion::getZ()
+float& Quaternion::getZR()
 {
 	return this->z;
 }
 
-float& Quaternion::getW()
+float& Quaternion::getWR()
+{
+	return this->w;
+}
+
+float Quaternion::getX() const
+{
+	return this->x;
+}
+
+float Quaternion::getY() const
+{
+	return this->y;
+}
+
+float Quaternion::getZ() const
+{
+	return this->z;
+}
+
+float Quaternion::getW() const
 {
 	return this->w;
 }
@@ -97,7 +117,7 @@ Quaternion Quaternion::inverse() const
 	return (quat.normalised()).conjugate();
 }
 
-Quaternion Quaternion::operator*(Quaternion other)
+Quaternion Quaternion::operator*(const Quaternion& other) const
 {
 	float w = (this->w * other.getW()) - (this->x * other.getX()) - (this->y * other.getY()) - (this->z * other.getZ());
 	float x = (this->w * other.getX()) + (this->x * other.getW()) + (this->y * other.getZ()) - (this->z * other.getY());
@@ -106,7 +126,7 @@ Quaternion Quaternion::operator*(Quaternion other)
 	return Quaternion(Vector4F(x, y, z, w));
 }
 
-Vector4F Quaternion::operator*(Vector4F other)
+Vector4F Quaternion::operator*(const Vector4F& other) const
 {
 	return (this->getRotationalMatrix()) * other;
 }

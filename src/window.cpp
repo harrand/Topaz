@@ -140,7 +140,7 @@ void Window::handleEvents()
 	SDL_Event evt;
 	while(SDL_PollEvent(&evt))
 	{
-		typedef std::map<unsigned int, Listener*>::iterator iter;
+		typedef std::unordered_map<unsigned int, Listener*>::iterator iter;
 		for(iter iterator = this->registeredListeners.begin(); iterator != this->registeredListeners.end(); iterator++)
 		{
 			Listener* l = iterator->second;
