@@ -67,6 +67,12 @@ void Window::setTitle(std::string newTitle)
 	SDL_SetWindowTitle(this->wnd, newTitle.c_str());
 }
 
+void Window::setRenderTarget() const
+{
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+	glViewport(0, 0, this->w, this->h);
+}
+
 void Window::clear(float r, float g, float b, float a) const
 {
 		glClearColor(r, g, b, a);

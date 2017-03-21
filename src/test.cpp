@@ -75,6 +75,7 @@ int main()
 			std::cout << "Camera Position = [" << cam.getPosR().getX() << ", " << cam.getPosR().getY() << ", " << cam.getPosR().getZ() << "].\n";
 			std::cout << "Lifetime Spent: " << secondsLifetime << " seconds.\n";
 		}
+		wnd.setRenderTarget();
 		fpscounter.update();
 		deltaTotal += fpscounter.getRange();
 		deltas.push_back(fpscounter.getRange());

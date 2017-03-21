@@ -66,6 +66,11 @@ void Texture::bind(GLuint shaderProgram, unsigned int id)
 	glUniform1i(this->textureID, id);
 }
 
+void Texture::setRenderTarget() const
+{
+	
+}
+
 std::string Texture::getFileName() const
 {
 	return this->filename;

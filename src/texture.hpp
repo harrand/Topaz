@@ -18,6 +18,7 @@ public:
 	Texture(std::string filename = "./res/textures/undefined.jpg");
 	~Texture();
 	void bind(GLuint shaderProgram, unsigned int id);
+	void setRenderTarget() const;
 	std::string getFileName() const;
 	static std::shared_ptr<Texture> getFromLink(std::string textureLink, std::vector<std::shared_ptr<Texture>> allTextures);
 protected:
