@@ -12,13 +12,23 @@
 #endif
 #include "glew.h"
 
+class FrameBuffer
+{
+public:
+	FrameBuffer(unsigned int width = 256, unsigned int height = 256);
+	void setRenderTarget() const;
+	void bind(unsigned int id) const;
+private:
+	unsigned int width, height;
+	GLuint fbHandle, texHandle, depthRenderBufferHandle;
+};
+
 class Texture
 {
 public:
 	Texture(std::string filename = "./res/textures/undefined.jpg");
 	~Texture();
 	void bind(GLuint shaderProgram, unsigned int id);
-	void setRenderTarget() const;
 	std::string getFileName() const;
 	static std::shared_ptr<Texture> getFromLink(std::string textureLink, std::vector<std::shared_ptr<Texture>> allTextures);
 protected:

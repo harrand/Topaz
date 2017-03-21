@@ -1,5 +1,49 @@
 #include "texture.hpp"
 
+FrameBuffer::FrameBuffer(unsigned int width, unsigned int height): width(width), height(height), fbHandle(0)
+{
+	glGenFramebuffers(1, &this->fbHandle);
+	glBindFramebuffer(GL_FRAMEBUFFER, this->fbHandle);
+	
+	glGenTextures(1, &this->texHandle);
+	glBindTexture(GL_TEXTURE_2D, this->texHandle);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, this->width, this->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+	
+	//Filtering
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	
+	glGenRenderbuffers(1, &this->depthRenderBufferHandle);
+	glBindRenderbuffer(GL_RENDERBUFFER, this->depthRenderBufferHandle);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, this->width, this->height);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, this->depthRenderBufferHandle);
+	
+	//Configure framebuffer
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, this->texHandle, 0);
+	GLenum drawBuffers[1] = {GL_COLOR_ATTACHMENT0};
+	glDrawBuffers(1, drawBuffers);
+	
+	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+	{
+		//problim
+	}
+}
+
+void FrameBuffer::setRenderTarget() const
+{
+	glBindFramebuffer(GL_FRAMEBUFFER, this->fbHandle);
+	glViewport(0, 0, this->width, this->height);
+}
+
+void FrameBuffer::bind(unsigned int id) const
+{
+	assert(id >= 0 && id <= 31);
+	// this sets which texture we want to bind (id can be from 0 to 31)
+	// GLTEXTURE0 is actually a number, so we can add the id instead of a massive switch statement
+	glActiveTexture(GL_TEXTURE0 + id);
+	glBindTexture(GL_TEXTURE_2D, this->texHandle);
+}
+
 unsigned char* Texture::loadTexture()
 {
 	return stbi_load((this->filename).c_str(), &(this->width), &(this->height), &(this->comps), 4);
@@ -64,11 +108,6 @@ void Texture::bind(GLuint shaderProgram, unsigned int id)
 	glActiveTexture(GL_TEXTURE0 + id);
 	glBindTexture(GL_TEXTURE_2D, this->texhandle);
 	glUniform1i(this->textureID, id);
-}
-
-void Texture::setRenderTarget() const
-{
-	
 }
 
 std::string Texture::getFileName() const
