@@ -69,7 +69,7 @@ object10.rot: [0.3, 18.9416, 0]
 object10.scale: [0.05, 0.05, 0.05]
 object11.mesh: sphere
 object11.texture: lava
-object11.normalmap: default_normalmap
+object11.normalmap: lava_normalmap
 object11.pos: [86.4294, 32.143, 49.7597]
 object11.rot: [3.85, 22.4415, 0]
 object11.scale: [44, 44, 44]

@@ -75,7 +75,7 @@ std::vector<std::string> StringUtility::splitString(std::string split, char deli
 	const char* str = split.c_str();
 	std::vector<std::string> ret;
 	unsigned int numcount = 0;
-	std::map<unsigned int, unsigned int> num_pos;
+	std::unordered_map<unsigned int, unsigned int> num_pos;
 	for(unsigned int i = 0; i < strsize; i++)
 	{
 		char cur = str[i];
