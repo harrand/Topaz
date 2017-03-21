@@ -5,6 +5,34 @@
 #include "command.hpp"
 #include <algorithm>
 
+class MouseListener: public Listener
+{
+public:
+	MouseListener(): Listener(){}
+	~MouseListener(){}
+	void handleEvents(SDL_Event& evt);
+	bool isLeftClicked() const;
+	bool isRightClicked() const;
+	Vector2F getMousePos() const;
+	Vector2F getMouseDeltaPos() const;
+private:
+	bool leftClick, rightClick;
+	Vector2F prevMousePos, mousePos;
+};
+
+class MouseController
+{
+public:
+	MouseController(Player& player, std::shared_ptr<World>& world, Window& wnd);
+	~MouseController();
+	void handleMouse();
+private: 
+	Player& player;
+	std::shared_ptr<World>& world;
+	Window& wnd;
+	MouseListener ml;
+};
+
 class KeyListener: public Listener
 {
 public:

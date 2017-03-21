@@ -1,5 +1,73 @@
 #include "listeners.hpp"
 
+void MouseListener::handleEvents(SDL_Event& evt)
+{
+	this->prevMousePos = this->mousePos;
+	if(evt.type == SDL_MOUSEMOTION)
+	{
+		int x, y;
+		SDL_GetMouseState(&x, &y);
+		this->mousePos.getXR() = x;
+		this->mousePos.getYR() = y;
+	}
+	if(evt.type == SDL_MOUSEBUTTONDOWN)
+	{
+		if(evt.button.button == SDL_BUTTON_LEFT)
+			this->leftClick = true;
+		else if(evt.button.button == SDL_BUTTON_RIGHT)
+			this->rightClick = true;
+	}
+		
+	if(evt.type == SDL_MOUSEBUTTONUP)
+	{
+		if(evt.button.button == SDL_BUTTON_LEFT)
+			this->leftClick = false;
+		else if(evt.button.button == SDL_BUTTON_RIGHT)
+			this->rightClick = false;
+	}
+}
+
+bool MouseListener::isLeftClicked() const
+{
+	return this->leftClick;
+}
+
+bool MouseListener::isRightClicked() const
+{
+	return this->rightClick;
+}
+
+Vector2F MouseListener::getMousePos() const
+{
+	return this->mousePos;
+}
+
+Vector2F MouseListener::getMouseDeltaPos() const
+{
+	return (this->mousePos - this->prevMousePos);
+}
+
+MouseController::MouseController(Player& player, std::shared_ptr<World>& world, Window& wnd): player(player), world(world), wnd(wnd)
+{
+	this->wnd.registerListener(this->ml);
+}
+
+MouseController::~MouseController()
+{
+	this->wnd.deregisterListener(this->ml);
+}
+
+void MouseController::handleMouse()
+{
+	if(this->ml.isLeftClicked())
+	{
+		Vector3F& orientation = this->player.getCamera().getRotR();
+		Vector2F delta = this->ml.getMouseDeltaPos();
+		orientation.getYR() += (3 * delta.getX() / (this->wnd.getWidth()));
+		orientation.getXR() -= (3 * delta.getY() / (this->wnd.getHeight()));
+	}
+}
+
 void KeyListener::handleEvents(SDL_Event& evt)
 {
 	switch(evt.type)

@@ -15,10 +15,10 @@ public:
 	float dot(Vector2F other) const;
 	Vector2F normalised() const;
 	
-	Vector2F operator+(Vector2F other);
-	Vector2F operator-(Vector2F other);
-	Vector2F operator*(float scalar);
-	bool operator==(Vector2F other);
+	Vector2F operator+(const Vector2F& other) const;
+	Vector2F operator-(const Vector2F& other) const;
+	Vector2F operator*(float scalar) const;
+	bool operator==(const Vector2F& other) const;
 private:
 	float x, y;
 };
@@ -38,13 +38,13 @@ public:
 	Vector3F cross(Vector3F other) const;
 	Vector3F normalised() const;
 	
-	Vector3F operator+(Vector3F other);
-	Vector3F operator-(Vector3F other);
-	Vector3F operator*(float scalar);
-	Vector3F operator/(float scalar);
-	bool operator==(Vector3F other);
-	void operator+=(Vector3F other);
-	void operator-=(Vector3F other);
+	Vector3F operator+(const Vector3F& other) const;
+	Vector3F operator-(const Vector3F& other) const;
+	Vector3F operator*(float scalar) const;
+	Vector3F operator/(float scalar) const;
+	bool operator==(const Vector3F& other) const;
+	void operator+=(const Vector3F& other);
+	void operator-=(const Vector3F& other);
 private:
 	float x, y, z;
 };
@@ -66,10 +66,10 @@ public:
 	Vector4F cross(Vector4F other) const;
 	Vector4F normalised() const;
 	
-	Vector4F operator+(Vector4F other);
-	Vector4F operator-(Vector4F other);
-	Vector4F operator*(float scalar);
-	bool operator==(Vector4F other);
+	Vector4F operator+(const Vector4F& other) const;
+	Vector4F operator-(const Vector4F& other) const;
+	Vector4F operator*(float scalar) const;
+	bool operator==(const Vector4F& other) const;
 private:
 	float x, y, z, w;
 };

@@ -31,6 +31,7 @@ int main()
 	world->addEntity(&player);
 	
 	KeybindController kc(player, world, wnd);
+	MouseController mc(player, world, wnd);
 	DataTranslation dt(RES_POINT + "/resources.data");
 	
 	std::map<std::string, std::string> models = dt.retrieveModels(), textures = dt.retrieveTextures(), normalmaps = dt.retrieveNormalMaps();
@@ -83,6 +84,8 @@ int main()
 		shader.bind();
 		
 		kc.handleKeybinds();
+		mc.handleMouse();
+		
 		fpscounter.reload();
 		
 		world->update(fps, cam, shader, wnd.getWidth(), wnd.getHeight(), allMeshes, allTextures, allNormalMaps);

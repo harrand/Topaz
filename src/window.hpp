@@ -17,8 +17,8 @@ public:
 	unsigned int getID() const;
 	static unsigned int getNumListeners();
 private:
-	unsigned int id;
 	static unsigned int NUM_LISTENERS;
+	unsigned int id;
 };
 
 class Window

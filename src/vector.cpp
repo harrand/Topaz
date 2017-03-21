@@ -43,22 +43,22 @@ Vector2F Vector2F::normalised() const
 	return Vector2F(this->x / this->length(), this->y / this->length());
 }
 
-Vector2F Vector2F::operator+(Vector2F other)
+Vector2F Vector2F::operator+(const Vector2F& other) const
 {
 	return Vector2F(this->x + other.getX(), this->y + other.getY());
 }
 
-Vector2F Vector2F::operator-(Vector2F other)
+Vector2F Vector2F::operator-(const Vector2F& other) const
 {
 	return Vector2F(this->x - other.getX(), this->y - other.getY());
 }
 
-Vector2F Vector2F::operator*(float scalar)
+Vector2F Vector2F::operator*(float scalar) const
 {
 	return Vector2F(this->x * scalar, this->y * scalar);
 }
 
-bool Vector2F::operator==(Vector2F other)
+bool Vector2F::operator==(const Vector2F& other) const
 {
 	return (this->x == other.getX()) && (this->y == other.getY());
 }
@@ -122,37 +122,37 @@ Vector3F Vector3F::normalised() const
 	return Vector3F(this->x / this->length(), this->y / this->length(), this->z / this->length());
 }
 
-Vector3F Vector3F::operator+(Vector3F other)
+Vector3F Vector3F::operator+(const Vector3F& other) const
 {
 	return Vector3F(this->x + other.getX(), this->y + other.getY(), this->z + other.getZ());
 }
 
-Vector3F Vector3F::operator-(Vector3F other)
+Vector3F Vector3F::operator-(const Vector3F& other) const
 {
 	return Vector3F(this->x - other.getX(), this->y - other.getY(), this->z - other.getZ());
 }
 
-Vector3F Vector3F::operator*(float scalar)
+Vector3F Vector3F::operator*(float scalar) const
 {
 	return Vector3F(this->x * scalar, this->y * scalar, this->z * scalar);
 }
 
-Vector3F Vector3F::operator/(float scalar)
+Vector3F Vector3F::operator/(float scalar) const
 {
 	return Vector3F(this->x / scalar, this->y / scalar, this->z / scalar);
 }
 
-bool Vector3F::operator==(Vector3F other)
+bool Vector3F::operator==(const Vector3F& other) const
 {
 	return (this->x == other.getX()) && (this->y == other.getY()) && (this->z == other.getZ());
 }
 
-void Vector3F::operator+=(Vector3F other)
+void Vector3F::operator+=(const Vector3F& other)
 {
 	(*this) = ((*this) + other);
 }
 
-void Vector3F::operator-=(Vector3F other)
+void Vector3F::operator-=(const Vector3F& other)
 {
 	(*this) = ((*this) - other);
 }
@@ -222,22 +222,22 @@ Vector4F Vector4F::normalised() const
 	return Vector4F(this->x / this->length(), this->y / this->length(), this->z / this->length(), this->w / this->length());
 }
 
-Vector4F Vector4F::operator+(Vector4F other)
+Vector4F Vector4F::operator+(const Vector4F& other) const
 {
 	return Vector4F(this->x + other.getX(), this->y + other.getY(), this->z + other.getZ(), this->w + other.getW());
 }
 
-Vector4F Vector4F::operator-(Vector4F other)
+Vector4F Vector4F::operator-(const Vector4F& other) const
 {
 	return Vector4F(this->x - other.getX(), this->y - other.getY(), this->z - other.getZ(), this->w - other.getW());
 }
 
-Vector4F Vector4F::operator*(float scalar)
+Vector4F Vector4F::operator*(float scalar) const
 {
 	return Vector4F(this->x * scalar, this->y * scalar, this->z * scalar, this->w * scalar);
 }
 
-bool Vector4F::operator==(Vector4F other)
+bool Vector4F::operator==(const Vector4F& other) const
 {
 	return (this->x == other.getX()) && (this->y == other.getY()) && (this->z == other.getZ()) && (this->w == other.getW());
 }
