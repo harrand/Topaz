@@ -26,7 +26,7 @@ int main()
 	
 	std::cout << "'Topaz Testing Environment created.\n";
 	
-	Shader shader(RES_POINT + "/shaders/vanilla");	
+	Shader shader(RES_POINT + "/shaders/noshadows");	
 	world = std::shared_ptr<World>(new World(RES_POINT + "/data/worlds/random.world"));
 	world->addEntity(&player);
 	
