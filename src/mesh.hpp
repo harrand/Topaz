@@ -32,6 +32,16 @@ private:
 	IndexedModel model;
 	const std::string filename;
 	void initMesh();
+	enum class BufferTypes : unsigned int
+	{
+		POSITION = 0,
+		TEXCOORD = 1,
+		NORMAL = 2,
+		INDEX = 3,
+		TANGENT = 4,
+		NUM_BUFFERS = 5
+	};
+	/*
 	enum
 	{
 		POSITION_VB,
@@ -42,8 +52,9 @@ private:
 		
 		NUM_BUFFERS
 	};
+	*/
 	GLuint vertexArrayObject;
-	GLuint vertexArrayBuffers[NUM_BUFFERS];
+	GLuint vertexArrayBuffers[(unsigned int)BufferTypes::NUM_BUFFERS];
 	unsigned int renderCount;
 };
 
