@@ -84,8 +84,9 @@ int main()
 		wnd.clear(0.0f, 0.0f, 0.0f, 1.0f);
 		shader.bind();
 		
-		kc.handleKeybinds();
 		mc.handleMouse();
+		kc.handleKeybinds();
+		mc.getMouseListener().reloadMouseDelta();
 		
 		fpscounter.reload();
 		

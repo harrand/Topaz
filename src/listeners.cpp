@@ -2,7 +2,7 @@
 
 void MouseListener::handleEvents(SDL_Event& evt)
 {
-	this->prevMousePos = this->mousePos;
+	this->reloadMouseDelta();
 	if(evt.type == SDL_MOUSEMOTION)
 	{
 		int x, y;
@@ -25,6 +25,11 @@ void MouseListener::handleEvents(SDL_Event& evt)
 		else if(evt.button.button == SDL_BUTTON_RIGHT)
 			this->rightClick = false;
 	}
+}
+
+void MouseListener::reloadMouseDelta()
+{
+	this->prevMousePos = this->mousePos;
 }
 
 bool MouseListener::isLeftClicked() const
@@ -66,6 +71,11 @@ void MouseController::handleMouse()
 		orientation.getYR() += (3 * delta.getX() / (this->wnd.getWidth()));
 		orientation.getXR() -= (3 * delta.getY() / (this->wnd.getHeight()));
 	}
+}
+
+MouseListener& MouseController::getMouseListener()
+{
+	return this->ml;
 }
 
 void KeyListener::handleEvents(SDL_Event& evt)

@@ -11,6 +11,7 @@ public:
 	MouseListener(): Listener(){}
 	~MouseListener(){}
 	void handleEvents(SDL_Event& evt);
+	void reloadMouseDelta();
 	bool isLeftClicked() const;
 	bool isRightClicked() const;
 	Vector2F getMousePos() const;
@@ -26,6 +27,7 @@ public:
 	MouseController(Player& player, std::shared_ptr<World>& world, Window& wnd);
 	~MouseController();
 	void handleMouse();
+	MouseListener& getMouseListener();
 private: 
 	Player& player;
 	std::shared_ptr<World>& world;
