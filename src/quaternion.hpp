@@ -37,6 +37,7 @@ private:
 namespace MatrixTransformations // extends from matrix.hpp
 {
 	Matrix4x4 createQuaternionSourcedModelMatrix(Vector3F position, Vector3F eulerRotation, Vector3F scale);
+	Matrix4x4 createQuaternionSourcedViewMatrix(Vector3F cameraPosition, Vector3F cameraEulerRotation);
 	Matrix4x4 createMVPMatrix(Vector3F position, Vector3F eulerRotation, Vector3F scale, Vector3F cameraPosition, Vector3F cameraEulerRotation, float fov, float width, float height, float nearclip, float farclip);
 }
 

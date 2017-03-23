@@ -69,7 +69,7 @@ void MouseController::handleMouse()
 		Vector3F& orientation = this->player.getCamera().getRotR();
 		Vector2F delta = this->ml.getMouseDeltaPos();
 		orientation.getYR() += (3 * delta.getX() / (this->wnd.getWidth()));
-		orientation.getXR() -= (3 * delta.getY() / (this->wnd.getHeight()));
+		orientation.getXR() += (3 * delta.getY() / (this->wnd.getHeight()));
 	}
 }
 
