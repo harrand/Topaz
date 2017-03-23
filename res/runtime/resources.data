@@ -60,7 +60,6 @@ torus.name: Complete Torus
 
 
 
-speed: 2.5
 
 
 
@@ -92,4 +91,7 @@ speed: 2.5
 
 
 
-played: 118661
+
+
+speed: 0.5
+played: 118806

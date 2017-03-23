@@ -112,6 +112,7 @@ void Window::initSDL()
 	
 	this->wnd = SDL_CreateWindow((this->title).c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, this->w, this->h, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
 	this->ctx = SDL_GL_CreateContext(this->wnd);
+	SDL_GL_SetSwapInterval(0);
 }
 
 void Window::initGLEW()
