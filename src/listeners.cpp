@@ -69,7 +69,7 @@ void MouseController::handleMouse()
 		Vector3F& orientation = this->player.getCamera().getRotR();
 		Vector2F delta = this->ml.getMouseDeltaPos();
 		orientation.getYR() += (3 * delta.getX() / (this->wnd.getWidth()));
-		orientation.getXR() += (3 * delta.getY() / (this->wnd.getHeight()));
+		orientation.getXR() -= (3 * delta.getY() / (this->wnd.getHeight()));
 	}
 }
 
@@ -246,13 +246,13 @@ void KeybindController::handleKeybinds()
 	if(kl.isKeyPressed(KeyControls::getKeybind(controlsDataFile, KeybindType::MOVE_DOWN)))
 		this->player.getCamera().getPosR() += (Vector3F(0, -1, 0) * multiplier);
 	if(kl.isKeyPressed(KeyControls::getKeybind(controlsDataFile, KeybindType::LOOK_UP)))
-		player.getCamera().getRotR() += Vector3F(0.05, 0, 0);
+		player.getCamera().getRotR() += (Vector3F(0.05, 0, 0) * multiplier / 5);
 	if(kl.isKeyPressed(KeyControls::getKeybind(controlsDataFile, KeybindType::LOOK_DOWN)))
-		player.getCamera().getRotR() += Vector3F(-0.05, 0, 0);
+		player.getCamera().getRotR() += (Vector3F(-0.05, 0, 0) * multiplier / 5);
 	if(kl.isKeyPressed(KeyControls::getKeybind(controlsDataFile, KeybindType::LOOK_LEFT)))
-		player.getCamera().getRotR() += Vector3F(0, -0.05, 0);
+		player.getCamera().getRotR() += (Vector3F(0, -0.05, 0) * multiplier / 5);
 	if(kl.isKeyPressed(KeyControls::getKeybind(controlsDataFile, KeybindType::LOOK_RIGHT)))
-		player.getCamera().getRotR() += Vector3F(0, 0.05, 0);
+		player.getCamera().getRotR() += (Vector3F(0, 0.05, 0) * multiplier / 5);
 	if(kl.isKeyPressed(KeyControls::getKeybind(controlsDataFile, KeybindType::INPUT_COMMAND)))
 	{
 		std::string input;

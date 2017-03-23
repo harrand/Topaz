@@ -50,8 +50,8 @@ std::string Object::getNormalMapLink() const
 void Object::render(std::shared_ptr<Mesh> mesh, std::shared_ptr<Texture> tex, std::shared_ptr<NormalMap> nm, Camera& cam, Shader& shad, float width, float height)
 {
 	(MatrixTransformations::createQuaternionSourcedModelMatrix(this->pos, this->rot, this->scale).washed()).fillData(this->m);
-	//(MatrixTransformations::createViewMatrix(cam.getPosR(), cam.getRotR()).washed()).fillData(this->v);
-	MatrixTransformations::createQuaternionSourcedViewMatrix(cam.getPosR(), cam.getRotR()).washed().fillData(this->v);
+	(MatrixTransformations::createViewMatrix(cam.getPosR(), cam.getRotR()).washed()).fillData(this->v);
+	//MatrixTransformations::createQuaternionSourcedViewMatrix(cam.getPosR(), cam.getRotR()).washed().fillData(this->v);
 	(MatrixTransformations::createProjectionMatrix(1.5708, width, height, 0.1f, 1000.0f).washed()).fillData(this->p);
 	shad.bind();
 	tex->bind(shad.getProgramHandle(), 0);

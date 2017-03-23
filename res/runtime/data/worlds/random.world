@@ -97,39 +97,87 @@ object15.normalmap: wood_normalmap
 object15.pos: [-166.596, 48.6411, 147.666]
 object15.rot: [-0.5, 6.9416, 0]
 object15.scale: [25, 25, 25]
+object16.mesh: cube
+object16.texture: metal
+object16.normalmap: default_normalmap
+object16.pos: [-238.026, 72.0878, -32.5975]
+object16.rot: [-0.11, 1.57786, 0]
+object16.scale: [30, 30, 30]
+object17.mesh: cube
+object17.texture: wood
+object17.normalmap: default_normalmap
+object17.pos: [-217.439, 70.5788, 84.0984]
+object17.rot: [-0.0549999, 1.72032, 0]
+object17.scale: [30, 30, 30]
+object18.mesh: cube
+object18.texture: lava
+object18.normalmap: bricks_normalmap
+object18.pos: [-72.5607, 94.0283, 79.1195]
+object18.rot: [-0.135, 0.441576, 0]
+object18.scale: [30, 30, 30]
+object19.mesh: cube
+object19.texture: lava
+object19.normalmap: metal_normalmap
+object19.pos: [-41.6143, 63.2966, -138.426]
+object19.rot: [-0.34, 3.28408, 0]
+object19.scale: [30, 30, 30]
+object20.mesh: sphere
+object20.texture: metal
+object20.normalmap: metal_normalmap
+object20.pos: [383.362, 47.3228, 235.985]
+object20.rot: [0.035, 4.72034, 0]
+object20.scale: [250, 250, 250]
+object21.mesh: sphere
+object21.texture: bricks
+object21.normalmap: bricks_normalmap
+object21.pos: [462.116, 73.3755, 15.0273]
+object21.rot: [-0.155, 4.45784, 0]
+object21.scale: [200, 200, 200]
+object22.mesh: monkeyhead
+object22.texture: metal
+object22.normalmap: metal_normalmap
+object22.pos: [417.931, 398.1, 88.8868]
+object22.rot: [-0.35, 5.09909, 0]
+object22.scale: [175, 175, 175]
+object23.mesh: torus
+object23.texture: wood
+object23.normalmap: wood_normalmap
+object23.pos: [210.758, 62.8585, -243.696]
+object23.rot: [-1.51, 3.74535, 0]
+object23.scale: [100, 100, 100]
 eo0.mesh: cube
 eo0.texture: lava
 eo0.normalmap: default_normalmap
 eo0.mass: 5
-eo0.pos: [406.316, 217.437, 266.834]
+eo0.pos: [649.067, 269.351, 543.142]
 eo0.rot: [0, 0, 0]
 eo0.scale: [10, 10, 10]
 eo1.mesh: monkeyhead
 eo1.texture: grass
 eo1.normalmap: default_normalmap
 eo1.mass: 20
-eo1.pos: [-76.7737, 127.258, -354.598]
+eo1.pos: [-2301.65, -7.96241, 410.172]
 eo1.rot: [0, 3.14159, 0]
 eo1.scale: [6, 6, 6]
 eo2.mesh: torus
 eo2.texture: lava
 eo2.normalmap: default_normalmap
 eo2.mass: 7
-eo2.pos: [-253.511, 59.9935, 310.109]
+eo2.pos: [-1534.27, 114.595, 490.347]
 eo2.rot: [0, 3.14159, 0]
 eo2.scale: [5, 5, 5]
 eo3.mesh: monkeyhead
 eo3.texture: sand
 eo3.normalmap: default_normalmap
 eo3.mass: 3
-eo3.pos: [-97.9336, -30.1514, 33.2811]
+eo3.pos: [-113.093, 37.4172, -874.872]
 eo3.rot: [0, 3.14159, 0]
 eo3.scale: [2, 2, 2]
 eo4.mesh: cube
 eo4.texture: bricks
 eo4.normalmap: bricks_normalmap
 eo4.mass: 20
-eo4.pos: [-80.4993, 108.22, -325.093]
+eo4.pos: [-2299.69, 2.0542, 394.644]
 eo4.rot: [0, 7.8916, 0]
 eo4.scale: [30, 30, 30]
 objects: %[
@@ -148,7 +196,15 @@ objects: %[
 - object12
 - object13
 - object14
-- object15]%
+- object15
+- object16
+- object17
+- object18
+- object19
+- object20
+- object21
+- object22
+- object23]%
 entityobjects: %[
 - eo0
 - eo1
