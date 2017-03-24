@@ -2,7 +2,7 @@
 #define DATATRANSLATION_HPP
 #include "utility.hpp"
 #include "mdl.hpp"
-#include <map>
+#include <unordered_map>
 #define RES_POINT std::string("../../../res/runtime")
 
 class DataTranslation
@@ -13,10 +13,10 @@ public:
 	std::string getResourceLink(std::string resourceName) const;
 	std::string getResourceName(std::string resourceLink) const;
 	
-	std::map<std::string, std::string> retrieveModels() const;
-	std::map<std::string, std::string> retrieveTextures() const;
-	std::map<std::string, std::string> retrieveNormalMaps() const;
-	std::map<std::string, std::string> retrieveDisplacementMaps() const;
+	std::unordered_map<std::string, std::string> retrieveModels() const;
+	std::unordered_map<std::string, std::string> retrieveTextures() const;
+	std::unordered_map<std::string, std::string> retrieveNormalMaps() const;
+	std::unordered_map<std::string, std::string> retrieveDisplacementMaps() const;
 private:
 	const std::string datafilename;
 };

@@ -35,9 +35,9 @@ int main()
 	MouseController mc(player, world, wnd);
 	DataTranslation dt(RES_POINT + "/resources.data");
 	
-	std::map<std::string, std::string> models = dt.retrieveModels(), textures = dt.retrieveTextures(), normalmaps = dt.retrieveNormalMaps(), displacementmaps = dt.retrieveDisplacementMaps();
+	std::unordered_map<std::string, std::string> models = dt.retrieveModels(), textures = dt.retrieveTextures(), normalmaps = dt.retrieveNormalMaps(), displacementmaps = dt.retrieveDisplacementMaps();
 	
-	typedef std::map<std::string, std::string>::iterator it_type;
+	typedef std::unordered_map<std::string, std::string>::iterator it_type;
 	std::cout << "Retrieving models...\n";
 	for(it_type iterator = models.begin(); iterator != models.end(); iterator++)
 	{

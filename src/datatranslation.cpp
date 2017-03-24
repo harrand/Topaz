@@ -28,9 +28,9 @@ std::string DataTranslation::getResourceName(std::string resourceLink) const
 	return "0";
 }
 
-std::map<std::string, std::string> DataTranslation::retrieveModels() const
+std::unordered_map<std::string, std::string> DataTranslation::retrieveModels() const
 {
-	std::map<std::string, std::string> modelMap;
+	std::unordered_map<std::string, std::string> modelMap;
 	MDLF input(RawFile(this->datafilename));
 	std::vector<std::string> modelList = input.getSequence("models");
 	for(unsigned int i = 0; i < modelList.size(); i++)
@@ -41,9 +41,9 @@ std::map<std::string, std::string> DataTranslation::retrieveModels() const
 	return modelMap;
 }
 
-std::map<std::string, std::string> DataTranslation::retrieveTextures() const
+std::unordered_map<std::string, std::string> DataTranslation::retrieveTextures() const
 {
-	std::map<std::string, std::string> textureMap;
+	std::unordered_map<std::string, std::string> textureMap;
 	MDLF input(RawFile(this->datafilename));
 	std::vector<std::string> textureList = input.getSequence("textures");
 	for(unsigned int i = 0; i < textureList.size(); i++)
@@ -54,9 +54,9 @@ std::map<std::string, std::string> DataTranslation::retrieveTextures() const
 	return textureMap;
 }
 
-std::map<std::string, std::string> DataTranslation::retrieveNormalMaps() const
+std::unordered_map<std::string, std::string> DataTranslation::retrieveNormalMaps() const
 {
-	std::map<std::string, std::string> normalMapMap;
+	std::unordered_map<std::string, std::string> normalMapMap;
 	MDLF input(RawFile(this->datafilename));
 	std::vector<std::string> normalMapList = input.getSequence("normalmaps");
 	for(unsigned int i = 0; i < normalMapList.size(); i++)
@@ -67,9 +67,9 @@ std::map<std::string, std::string> DataTranslation::retrieveNormalMaps() const
 	return normalMapMap;
 }
 
-std::map<std::string, std::string> DataTranslation::retrieveDisplacementMaps() const
+std::unordered_map<std::string, std::string> DataTranslation::retrieveDisplacementMaps() const
 {
-	std::map<std::string, std::string> displacementMapMap;
+	std::unordered_map<std::string, std::string> displacementMapMap;
 	MDLF input(RawFile(this->datafilename));
 	std::vector<std::string> displacementMapList = input.getSequence("displacementmaps");
 	for(unsigned int i = 0; i < displacementMapList.size(); i++)
