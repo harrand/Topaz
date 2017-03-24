@@ -27,8 +27,8 @@ Shader::Shader(std::string filename)
 	this->uniforms[(unsigned int)UniformTypes::MODEL] = glGetUniformLocation(this->programHandle, "m");
 	this->uniforms[(unsigned int)UniformTypes::VIEW] = glGetUniformLocation(this->programHandle, "v");
 	this->uniforms[(unsigned int)UniformTypes::PROJECTION] = glGetUniformLocation(this->programHandle, "p");
-	this->uniforms[(unsigned int)UniformTypes::DISPLACEMENT_MAP_SCALE] = glGetUniformLocation(this->programHandle, "displacementMultiplier");
-	this->uniforms[(unsigned int)UniformTypes::DISPLACEMENT_MAP_BIAS] = glGetUniformLocation(this->programHandle, "displacementBias");
+	this->uniforms[(unsigned int)UniformTypes::PARALLAX_MAP_SCALE] = glGetUniformLocation(this->programHandle, "parallaxMultiplier");
+	this->uniforms[(unsigned int)UniformTypes::PARALLAX_MAP_BIAS] = glGetUniformLocation(this->programHandle, "parallaxBias");
 }
 
 Shader::~Shader()
@@ -52,14 +52,14 @@ void Shader::bind() const
 	glUseProgram(this->programHandle);
 }
 
-void Shader::update(float (&modeldata)[16], float (&viewdata)[16], float (&projectiondata)[16], float displacementMapScale, float displacementMapOffset) const
+void Shader::update(float (&modeldata)[16], float (&viewdata)[16], float (&projectiondata)[16], float parallaxMapScale, float parallaxMapOffset) const
 {
 	glUniformMatrix4fv(this->uniforms[(unsigned int)UniformTypes::MODEL], 1, GL_TRUE, modeldata);
 	glUniformMatrix4fv(this->uniforms[(unsigned int)UniformTypes::VIEW], 1, GL_TRUE, viewdata);
 	glUniformMatrix4fv(this->uniforms[(unsigned int)UniformTypes::PROJECTION], 1, GL_TRUE, projectiondata);
-	glUniform1f(this->uniforms[(unsigned int)UniformTypes::DISPLACEMENT_MAP_SCALE], displacementMapScale);
-	float defaultBias = displacementMapScale / 2.0f;
-	glUniform1f(this->uniforms[(unsigned int)UniformTypes::DISPLACEMENT_MAP_BIAS], -defaultBias + defaultBias * displacementMapOffset);
+	glUniform1f(this->uniforms[(unsigned int)UniformTypes::PARALLAX_MAP_SCALE], parallaxMapScale);
+	float defaultBias = parallaxMapScale / 2.0f;
+	glUniform1f(this->uniforms[(unsigned int)UniformTypes::PARALLAX_MAP_BIAS], -defaultBias + defaultBias * parallaxMapOffset);
 }
 
 std::string Shader::loadShader(const std::string& filename)

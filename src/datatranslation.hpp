@@ -16,7 +16,7 @@ public:
 	std::unordered_map<std::string, std::string> retrieveModels() const;
 	std::unordered_map<std::string, std::string> retrieveTextures() const;
 	std::unordered_map<std::string, std::string> retrieveNormalMaps() const;
-	std::unordered_map<std::string, std::string> retrieveDisplacementMaps() const;
+	std::unordered_map<std::string, std::string> retrieveParallaxMaps() const;
 private:
 	const std::string datafilename;
 };

@@ -11,10 +11,10 @@ in mat3 tbnMatrix;
 
 uniform sampler2D textureSampler;
 uniform sampler2D normalMapSampler;
-uniform sampler2D displacementMapSampler;
+uniform sampler2D parallaxMapSampler;
 
-uniform float displacementMultiplier;
-uniform float displacementBias;
+uniform float parallaxMultiplier;
+uniform float parallaxBias;
 
 layout(location = 0) out vec4 fragColor;
 
@@ -35,7 +35,7 @@ const vec3 lightDirection_tangentspace = tbnMatrix * lightDirection_cameraspace;
 
 vec2 getTexcoordOffset()
 {
-	return texcoord_modelspace + lightDirection_tangentspace.xy * (texture2D(displacementMapSampler, texcoord_modelspace).r * displacementMultiplier + displacementBias);
+	return texcoord_modelspace + lightDirection_tangentspace.xy * (texture2D(parallaxMapSampler, texcoord_modelspace).r * parallaxMultiplier + parallaxBias);
 }
 
 vec4 textureColour = texture2D(textureSampler, getTexcoordOffset());

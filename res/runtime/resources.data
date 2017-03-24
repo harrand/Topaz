@@ -45,16 +45,25 @@ wood_normalmap.path: ../../../res/runtime/normalmaps/wood_normalmap.jpg
 wood_normalmap.name: Sand Normalmap
 stone_normalmap.path: ../../../res/runtime/normalmaps/stone_normalmap.jpg
 stone_normalmap.name: Stone Normalmap
-displacementmaps: %[
-- default_displacementmap
-- bricks_displacementmap
-- stone_displacementmap]%
-default_displacementmap.path: ../../../res/runtime/displacementmaps/default_displacement.png
-default_displacementmap.name: Default Displacementmap
-bricks_displacementmap.path: ../../../res/runtime/displacementmaps/bricks_displacement.jpg
-bricks_displacementmap.name: Bricks Displacementmap
-stone_displacementmap.path: ../../../res/runtime/displacementmaps/stone_displacement.png
-stone_displacementmap.name: Stone Displacementmap
+parallaxmaps: %[
+- default_parallaxmap
+- bricks_parallaxmap
+- lava_parallaxmap
+- metal_parallaxmap
+- stone_parallaxmap
+- sand_parallaxmap]%
+default_parallaxmap.path: ../../../res/runtime/parallaxmaps/default_parallax.png
+default_parallaxmap.name: Default Parallaxmap
+bricks_parallaxmap.path: ../../../res/runtime/parallaxmaps/bricks_parallax.jpg
+bricks_parallaxmap.name: Bricks Parallaxmap
+lava_parallaxmap.path: ../../../res/runtime/parallaxmaps/lava_parallax.jpg
+lava_parallaxmap.name: Lava Parallaxmap
+metal_parallaxmap.path: ../../../res/runtime/parallaxmaps/metal_parallax.jpg
+metal_parallaxmap.name: Metal Parallaxmap
+stone_parallaxmap.path: ../../../res/runtime/parallaxmaps/stone_parallax.png
+stone_parallaxmap.name: Stone Parallaxmap
+sand_parallaxmap.path: ../../../res/runtime/parallaxmaps/sand_parallax.jpg
+sand_parallaxmap.name: Sand Parallaxmap
 models: %[
 - cube
 - monkeyhead
@@ -70,5 +79,23 @@ sword.path: ../../../res/runtime/models/sword.obj
 sword.name: Complete Sword
 torus.path: ../../../res/runtime/models/torus.obj
 torus.name: Complete Torus
-speed: 0.5
-played: 124534
+
+
+
+
+
+
+
+
+
+speed: 1
+
+
+
+
+
+
+
+
+
+played: 125977

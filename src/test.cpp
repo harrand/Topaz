@@ -8,7 +8,7 @@ std::shared_ptr<World> world;
 std::vector<std::shared_ptr<Mesh>> allMeshes;
 std::vector<std::shared_ptr<Texture>> allTextures;
 std::vector<std::shared_ptr<NormalMap>> allNormalMaps;
-std::vector<std::shared_ptr<DisplacementMap>> allDisplacementMaps;
+std::vector<std::shared_ptr<ParallaxMap>> allParallaxMaps;
 //Global Stack Variables
 Camera cam(Vector3F(), Vector3F(0, 3.14159, 0));
 Player player(10, cam);
@@ -35,7 +35,7 @@ int main()
 	MouseController mc(player, world, wnd);
 	DataTranslation dt(RES_POINT + "/resources.data");
 	
-	std::unordered_map<std::string, std::string> models = dt.retrieveModels(), textures = dt.retrieveTextures(), normalmaps = dt.retrieveNormalMaps(), displacementmaps = dt.retrieveDisplacementMaps();
+	std::unordered_map<std::string, std::string> models = dt.retrieveModels(), textures = dt.retrieveTextures(), normalmaps = dt.retrieveNormalMaps(), parallaxmaps = dt.retrieveParallaxMaps();
 	
 	typedef std::unordered_map<std::string, std::string>::iterator it_type;
 	std::cout << "Retrieving models...\n";
@@ -56,11 +56,11 @@ int main()
 		std::cout << "Initialising a normalmap with the link " << iterator->first << ".\n";
 		allNormalMaps.push_back(std::shared_ptr<NormalMap>(new NormalMap(iterator->first)));
 	}
-	std::cout << "Retrieving displacementmaps...\n";
-	for(it_type iterator = displacementmaps.begin(); iterator != displacementmaps.end(); iterator++)
+	std::cout << "Retrieving parallaxmaps...\n";
+	for(it_type iterator = parallaxmaps.begin(); iterator != parallaxmaps.end(); iterator++)
 	{
-		std::cout << "Initialising a displacementmap with the link " << iterator->first << ".\n";
-		allDisplacementMaps.push_back(std::shared_ptr<DisplacementMap>(new DisplacementMap(iterator->first)));
+		std::cout << "Initialising a parallaxmap with the link " << iterator->first << ".\n";
+		allParallaxMaps.push_back(std::shared_ptr<ParallaxMap>(new ParallaxMap(iterator->first)));
 	}
 	std::vector<float> deltas;
 	float deltaTotal = 0.0f, deltaAverage = 0.0f;
@@ -97,7 +97,7 @@ int main()
 		
 		fpscounter.reload();
 		
-		world->update(fps, cam, shader, wnd.getWidth(), wnd.getHeight(), allMeshes, allTextures, allNormalMaps, allDisplacementMaps);
+		world->update(fps, cam, shader, wnd.getWidth(), wnd.getHeight(), allMeshes, allTextures, allNormalMaps, allParallaxMaps);
 		for(unsigned int i = 0; i < world->getEntityObjects().size(); i++)
 		{
 			std::shared_ptr<EntityObject> eo = world->getEntityObjects().at(i);

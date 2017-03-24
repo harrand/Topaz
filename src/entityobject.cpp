@@ -1,6 +1,6 @@
 #include "entityobject.hpp"
 
-EntityObject::EntityObject(std::string meshLink, std::string textureLink, std::string normalMapLink, std::string displacementMapLink, float mass, Vector3F position, Vector3F rotation, Vector3F scale, Vector3F velocity, std::unordered_map<std::string, Force> forces): Entity(mass, position, velocity, forces), Object(meshLink, textureLink, normalMapLink, displacementMapLink, position, rotation, scale){}
+EntityObject::EntityObject(std::string meshLink, std::string textureLink, std::string normalMapLink, std::string parallaxMapLink, float mass, Vector3F position, Vector3F rotation, Vector3F scale, Vector3F velocity, std::unordered_map<std::string, Force> forces): Entity(mass, position, velocity, forces), Object(meshLink, textureLink, normalMapLink, parallaxMapLink, position, rotation, scale){}
 
 void EntityObject::setPosition(Vector3F pos)
 {

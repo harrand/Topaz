@@ -67,15 +67,15 @@ std::unordered_map<std::string, std::string> DataTranslation::retrieveNormalMaps
 	return normalMapMap;
 }
 
-std::unordered_map<std::string, std::string> DataTranslation::retrieveDisplacementMaps() const
+std::unordered_map<std::string, std::string> DataTranslation::retrieveParallaxMaps() const
 {
-	std::unordered_map<std::string, std::string> displacementMapMap;
+	std::unordered_map<std::string, std::string> parallaxMapMap;
 	MDLF input(RawFile(this->datafilename));
-	std::vector<std::string> displacementMapList = input.getSequence("displacementmaps");
-	for(unsigned int i = 0; i < displacementMapList.size(); i++)
+	std::vector<std::string> parallaxMapList = input.getSequence("parallaxmaps");
+	for(unsigned int i = 0; i < parallaxMapList.size(); i++)
 	{
-		std::string displacementmap = displacementMapList.at(i);
-		displacementMapMap[this->getResourceLink(displacementmap)] = input.getTag(displacementmap + ".name");
+		std::string parallaxmap = parallaxMapList.at(i);
+		parallaxMapMap[this->getResourceLink(parallaxmap)] = input.getTag(parallaxmap + ".name");
 	}
-	return displacementMapMap;
+	return parallaxMapMap;
 }

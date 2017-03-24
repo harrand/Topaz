@@ -150,26 +150,26 @@ std::shared_ptr<NormalMap> NormalMap::getFromLink(const std::string& normalMapLi
 	return __null;
 }
 
-DisplacementMap::DisplacementMap(std::string filename): Texture(filename){}
+ParallaxMap::ParallaxMap(std::string filename): Texture(filename){}
 
-void DisplacementMap::bind(GLuint shaderProgram, unsigned int id)
+void ParallaxMap::bind(GLuint shaderProgram, unsigned int id)
 {
 	assert(id >= 0 && id <= 31);
 	// this sets which texture we want to bind (id can be from 0 to 31)
 	// GLTEXTURE0 is actually a number, so we can add the id instead of a massive switch statement
-	this->textureID = glGetUniformLocation(shaderProgram, "displacementMapSampler");
+	this->textureID = glGetUniformLocation(shaderProgram, "parallaxMapSampler");
 	glActiveTexture(GL_TEXTURE0 + id);
 	glBindTexture(GL_TEXTURE_2D, this->texhandle);
 	glUniform1i(this->textureID, id);
 }
 
 //static
-std::shared_ptr<DisplacementMap> DisplacementMap::getFromLink(const std::string& displacementMapLink, std::vector<std::shared_ptr<DisplacementMap>> allDisplacementMaps)
+std::shared_ptr<ParallaxMap> ParallaxMap::getFromLink(const std::string& parallaxMapLink, std::vector<std::shared_ptr<ParallaxMap>> allParallaxMaps)
 {
-	for(unsigned int i = 0; i < allDisplacementMaps.size(); i++)
+	for(unsigned int i = 0; i < allParallaxMaps.size(); i++)
 	{
-		if(allDisplacementMaps.at(i)->getFileName() == displacementMapLink)
-			return allDisplacementMaps.at(i);
+		if(allParallaxMaps.at(i)->getFileName() == parallaxMapLink)
+			return allParallaxMaps.at(i);
 	}
 	return __null;
 }

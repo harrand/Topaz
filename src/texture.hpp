@@ -50,12 +50,12 @@ public:
 private:
 };
 
-class DisplacementMap: public Texture
+class ParallaxMap: public Texture
 {
 public:
-	DisplacementMap(std::string filename = "./res/displacementmaps/undefined.jpg");
+	ParallaxMap(std::string filename = "./res/parallaxmaps/undefined.jpg");
 	void bind(GLuint shaderProgram, unsigned int id);
-	static std::shared_ptr<DisplacementMap> getFromLink(const std::string& displacementMapLink, std::vector<std::shared_ptr<DisplacementMap>> allDisplacementMaps);
+	static std::shared_ptr<ParallaxMap> getFromLink(const std::string& parallaxMapLink, std::vector<std::shared_ptr<ParallaxMap>> allParallaxMaps);
 private:
 };
 

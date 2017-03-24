@@ -89,7 +89,7 @@ void Commands::addObject(std::vector<std::string> args, std::shared_ptr<World>& 
 	std::string meshName = args.at(1);
 	std::string textureName = args.at(2);
 	std::string normalMapName = args.at(3);
-	std::string displacementMapName = args.at(4);
+	std::string parallaxMapName = args.at(4);
 	std::string posStr = args.at(5);
 	std::string rotStr = args.at(6);
 	std::string scaleStr = args.at(7);
@@ -99,7 +99,7 @@ void Commands::addObject(std::vector<std::string> args, std::shared_ptr<World>& 
 	std::string meshLink = dt.getResourceLink(meshName);
 	std::string textureLink = dt.getResourceLink(textureName);
 	std::string normalMapLink = dt.getResourceLink(normalMapName);
-	std::string displacementMapLink = dt.getResourceLink(displacementMapName);
+	std::string parallaxMapLink = dt.getResourceLink(parallaxMapName);
 	
 	if(meshLink == "0")
 	{
@@ -135,14 +135,14 @@ void Commands::addObject(std::vector<std::string> args, std::shared_ptr<World>& 
 	std::vector<std::string> scaleSplit = StringUtility::splitString(StringUtility::replaceAllChar(StringUtility::replaceAllChar(scaleStr, '[', ""), ']', ""), ',');
 	scale = Vector3F(CastUtility::fromString<float>(scaleSplit.at(0)), CastUtility::fromString<float>(scaleSplit.at(1)), CastUtility::fromString<float>(scaleSplit.at(2)));
 		
-	world->addObject(Object(meshLink, textureLink, normalMapLink, displacementMapLink, pos, rot, scale));
+	world->addObject(Object(meshLink, textureLink, normalMapLink, parallaxMapLink, pos, rot, scale));
 	if(printResults)
 	{
 		std::cout << "Added the following to this world:\n";
 		std::cout << "Mesh name = " << meshName << ", link = " << meshLink << ".\n";
 		std::cout << "Texture name = " << textureName << ", link = " << textureLink << ".\n";
 		std::cout << "Normalmap name = " << normalMapName << ", link = " << normalMapLink << ".\n";
-		std::cout << "Displacementmap name = " << displacementMapName << ", link = " << displacementMapLink << ".\n";
+		std::cout << "Parallaxmap name = " << parallaxMapName << ", link = " << parallaxMapLink << ".\n";
 		std::cout << "Pos = [" << pos.getX() << ", " << pos.getY() << ", " << pos.getZ() << "].\n";
 		std::cout << "Rot = [" << rot.getX() << ", " << rot.getY() << ", " << rot.getZ() << "].\n";
 		std::cout << "Scale = [" << scale.getX() << ", " << scale.getY() << ", " << scale.getZ() << "].\n";
@@ -160,7 +160,7 @@ void Commands::addEntityObject(std::vector<std::string> args, std::shared_ptr<Wo
 	std::string meshName = args.at(1);
 	std::string textureName = args.at(2);
 	std::string normalMapName = args.at(3);
-	std::string displacementMapName = args.at(4);
+	std::string parallaxMapName = args.at(4);
 	std::string massStr = args.at(5);
 	std::string posStr = args.at(6);
 	std::string rotStr = args.at(7);
@@ -171,7 +171,7 @@ void Commands::addEntityObject(std::vector<std::string> args, std::shared_ptr<Wo
 	std::string meshLink = dt.getResourceLink(meshName);
 	std::string textureLink = dt.getResourceLink(textureName);
 	std::string normalMapLink = dt.getResourceLink(normalMapName);
-	std::string displacementMapLink = dt.getResourceLink(displacementMapName);
+	std::string parallaxMapLink = dt.getResourceLink(parallaxMapName);
 	
 	if(meshLink == "0")
 	{
@@ -209,14 +209,14 @@ void Commands::addEntityObject(std::vector<std::string> args, std::shared_ptr<Wo
 	
 	float mass = CastUtility::fromString<float>(massStr);
 	
-	world->addEntityObject(std::shared_ptr<EntityObject>(new EntityObject(meshLink, textureLink, normalMapLink, displacementMapLink, mass, pos, rot, scale)));
+	world->addEntityObject(std::shared_ptr<EntityObject>(new EntityObject(meshLink, textureLink, normalMapLink, parallaxMapLink, mass, pos, rot, scale)));
 	if(printResults)
 	{
 		std::cout << "Added the following to this world:\n";
 		std::cout << "Mesh name = " << meshName << ", link = " << meshLink << ".\n";
 		std::cout << "Texture name = " << textureName << ", link = " << textureLink << ".\n";
 		std::cout << "Normalmap name = " << normalMapName << ", link = " << normalMapLink << ".\n";
-		std::cout << "Displacementmap name = " << displacementMapName << ", link = " << displacementMapLink << ".\n";
+		std::cout << "Parallaxmap name = " << parallaxMapName << ", link = " << parallaxMapLink << ".\n";
 		std::cout << "Mass = " << mass << "\n";
 		std::cout << "Pos = [" << pos.getX() << ", " << pos.getY() << ", " << pos.getZ() << "].\n";
 		std::cout << "Rot = [" << rot.getX() << ", " << rot.getY() << ", " << rot.getZ() << "].\n";

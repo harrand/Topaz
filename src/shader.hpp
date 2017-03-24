@@ -18,7 +18,7 @@ public:
 	~Shader();
 	GLuint getProgramHandle() const;
 	void bind() const;
-	void update(float (&modeldata)[16], float (&viewdata)[16], float (&projectiondata)[16], float displacementMapScale = 0.04f, float displacementMapOffset = -0.5f) const;
+	void update(float (&modeldata)[16], float (&viewdata)[16], float (&projectiondata)[16], float parallaxMapScale = 0.04f, float parallaxMapOffset = -0.5f) const;
 private:
 	static std::string loadShader(const std::string& filename);
 	static void checkShaderError(GLuint shader, GLuint flag, bool isProgram, std::string errorMessage);
@@ -29,8 +29,8 @@ private:
 		MODEL = 0,
 		VIEW = 1,
 		PROJECTION = 2,
-		DISPLACEMENT_MAP_SCALE = 3,
-		DISPLACEMENT_MAP_BIAS = 4,
+		PARALLAX_MAP_SCALE = 3,
+		PARALLAX_MAP_BIAS = 4,
 		NUM_UNIFORMS = 5
 	};
 	
