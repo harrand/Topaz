@@ -30,7 +30,7 @@ public:
 	~Texture();
 	void bind(GLuint shaderProgram, unsigned int id);
 	std::string getFileName() const;
-	static std::shared_ptr<Texture> getFromLink(std::string textureLink, std::vector<std::shared_ptr<Texture>> allTextures);
+	static std::shared_ptr<Texture> getFromLink(const std::string& textureLink, std::vector<std::shared_ptr<Texture>> allTextures);
 protected:
 	GLuint textureID;
 	GLuint texhandle;
@@ -46,7 +46,7 @@ class NormalMap: public Texture
 public:
 	NormalMap(std::string filename = "./res/normalmaps/undefined.jpg");
 	void bind(GLuint shaderProgram, unsigned int id);
-	static std::shared_ptr<NormalMap> getFromLink(std::string normalMapLink, std::vector<std::shared_ptr<NormalMap>> allNormalMaps);
+	static std::shared_ptr<NormalMap> getFromLink(const std::string& normalMapLink, std::vector<std::shared_ptr<NormalMap>> allNormalMaps);
 private:
 };
 
@@ -55,7 +55,7 @@ class DisplacementMap: public Texture
 public:
 	DisplacementMap(std::string filename = "./res/displacementmaps/undefined.jpg");
 	void bind(GLuint shaderProgram, unsigned int id);
-	static std::shared_ptr<DisplacementMap> getFromLink(std::string displacementMapLink, std::vector<std::shared_ptr<DisplacementMap>> allDisplacementMaps);
+	static std::shared_ptr<DisplacementMap> getFromLink(const std::string& displacementMapLink, std::vector<std::shared_ptr<DisplacementMap>> allDisplacementMaps);
 private:
 };
 

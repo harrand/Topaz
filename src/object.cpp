@@ -52,10 +52,10 @@ std::string Object::getDisplacementMapLink() const
 	return this->displacementMapLink;
 }
 
-void Object::render(std::shared_ptr<Mesh> mesh, std::shared_ptr<Texture> tex, std::shared_ptr<NormalMap> nm, std::shared_ptr<DisplacementMap> dm, Camera& cam, Shader& shad, float width, float height)
+void Object::render(const std::shared_ptr<Mesh>& mesh, const std::shared_ptr<Texture>& tex, const std::shared_ptr<NormalMap>& nm, const std::shared_ptr<DisplacementMap>& dm, const Camera& cam, const Shader& shad, float width, float height)
 {
 	(MatrixTransformations::createQuaternionSourcedModelMatrix(this->pos, this->rot, this->scale).washed()).fillData(this->m);
-	(MatrixTransformations::createViewMatrix(cam.getPosR(), cam.getRotR()).washed()).fillData(this->v);
+	(MatrixTransformations::createViewMatrix(cam.getPos(), cam.getRot()).washed()).fillData(this->v);
 	//MatrixTransformations::createQuaternionSourcedViewMatrix(cam.getPosR(), cam.getRotR()).washed().fillData(this->v);
 	(MatrixTransformations::createProjectionMatrix(1.5708, width, height, 0.1f, 1000.0f).washed()).fillData(this->p);
 	shad.bind();

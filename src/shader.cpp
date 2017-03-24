@@ -62,7 +62,7 @@ void Shader::update(float (&modeldata)[16], float (&viewdata)[16], float (&proje
 	glUniform1f(this->uniforms[(unsigned int)UniformTypes::DISPLACEMENT_MAP_BIAS], -defaultBias + defaultBias * displacementMapOffset);
 }
 
-std::string Shader::loadShader(std::string filename)
+std::string Shader::loadShader(const std::string& filename)
 {
     std::ifstream file;
     file.open((filename).c_str());

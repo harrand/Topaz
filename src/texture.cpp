@@ -116,7 +116,7 @@ std::string Texture::getFileName() const
 }
 
 //static
-std::shared_ptr<Texture> Texture::getFromLink(std::string textureLink, std::vector<std::shared_ptr<Texture>> allTextures)
+std::shared_ptr<Texture> Texture::getFromLink(const std::string& textureLink, std::vector<std::shared_ptr<Texture>> allTextures)
 {
 	for(unsigned int i = 0; i < allTextures.size(); i++)
 	{
@@ -140,7 +140,7 @@ void NormalMap::bind(GLuint shaderProgram, unsigned int id)
 }
 
 //static
-std::shared_ptr<NormalMap> NormalMap::getFromLink(std::string normalMapLink, std::vector<std::shared_ptr<NormalMap>> allNormalMaps)
+std::shared_ptr<NormalMap> NormalMap::getFromLink(const std::string& normalMapLink, std::vector<std::shared_ptr<NormalMap>> allNormalMaps)
 {
 	for(unsigned int i = 0; i < allNormalMaps.size(); i++)
 	{
@@ -164,7 +164,7 @@ void DisplacementMap::bind(GLuint shaderProgram, unsigned int id)
 }
 
 //static
-std::shared_ptr<DisplacementMap> DisplacementMap::getFromLink(std::string displacementMapLink, std::vector<std::shared_ptr<DisplacementMap>> allDisplacementMaps)
+std::shared_ptr<DisplacementMap> DisplacementMap::getFromLink(const std::string& displacementMapLink, std::vector<std::shared_ptr<DisplacementMap>> allDisplacementMaps)
 {
 	for(unsigned int i = 0; i < allDisplacementMaps.size(); i++)
 	{

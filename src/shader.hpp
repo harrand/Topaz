@@ -20,7 +20,7 @@ public:
 	void bind() const;
 	void update(float (&modeldata)[16], float (&viewdata)[16], float (&projectiondata)[16], float displacementMapScale = 0.04f, float displacementMapOffset = -0.5f) const;
 private:
-	static std::string loadShader(std::string filename);
+	static std::string loadShader(const std::string& filename);
 	static void checkShaderError(GLuint shader, GLuint flag, bool isProgram, std::string errorMessage);
 	static GLuint createShader(std::string source, GLenum shaderType);
 	
