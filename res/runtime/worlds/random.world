@@ -328,7 +328,7 @@ eo0.texture: lava
 eo0.normalmap: default_normalmap
 eo0.parallaxmap: default_parallaxmap
 eo0.mass: 5
-eo0.pos: [14.7956, 245.275, -1094.64]
+eo0.pos: [-121.229, 23.4656, 533.473]
 eo0.rot: [0, 0, 0]
 eo0.scale: [10, 10, 10]
 eo1.mesh: monkeyhead
@@ -336,7 +336,7 @@ eo1.texture: grass
 eo1.normalmap: default_normalmap
 eo1.parallaxmap: default_parallaxmap
 eo1.mass: 20
-eo1.pos: [-813.439, 443.304, -246.935]
+eo1.pos: [-234.055, 190.511, -364.34]
 eo1.rot: [0, 3.14159, 0]
 eo1.scale: [6, 6, 6]
 eo2.mesh: torus
@@ -344,7 +344,7 @@ eo2.texture: lava
 eo2.normalmap: default_normalmap
 eo2.parallaxmap: default_parallaxmap
 eo2.mass: 7
-eo2.pos: [801.214, -66.2679, -523.343]
+eo2.pos: [953.168, -43.5197, -633.221]
 eo2.rot: [0, 3.14159, 0]
 eo2.scale: [5, 5, 5]
 eo3.mesh: monkeyhead
@@ -352,7 +352,7 @@ eo3.texture: sand
 eo3.normalmap: default_normalmap
 eo3.parallaxmap: default_parallaxmap
 eo3.mass: 3
-eo3.pos: [-220.59, 68.2799, -228.144]
+eo3.pos: [104.033, 40.027, -556.489]
 eo3.rot: [0, 3.14159, 0]
 eo3.scale: [2, 2, 2]
 eo4.mesh: cube
@@ -360,7 +360,7 @@ eo4.texture: bricks
 eo4.normalmap: bricks_normalmap
 eo4.parallaxmap: default_parallaxmap
 eo4.mass: 20
-eo4.pos: [-813.439, 443.304, -246.935]
+eo4.pos: [-234.055, 190.511, -364.34]
 eo4.rot: [0, 7.8916, 0]
 eo4.scale: [30, 30, 30]
 objects: %[

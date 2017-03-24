@@ -69,7 +69,7 @@ void World::addEntityObject(std::shared_ptr<EntityObject> eo)
 void World::exportWorld(std::string worldName) const
 {
 	DataTranslation dt(RES_POINT + "/resources.data");
-	std::string worldLink = RES_POINT + "/data/worlds/" + worldName;
+	std::string worldLink = RES_POINT + "/worlds/" + worldName;
 	MDLF output = MDLF(RawFile(worldLink));
 	output.getRawFile().clear();
 	std::vector<std::string> objectList;

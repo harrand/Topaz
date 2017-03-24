@@ -60,7 +60,7 @@ void Commands::loadWorld(std::vector<std::string> args, std::shared_ptr<World>& 
 	}
 	std::vector<Entity*> entities = world->getEntities();
 	std::string worldname = args.at(1);
-	std::string link = (RES_POINT + "/data/worlds/" + worldname);
+	std::string link = (RES_POINT + "/worlds/" + worldname);
 	world = std::shared_ptr<World>(new World(link));
 	for(unsigned int i = 0; i < entities.size(); i++)
 		world->addEntity(entities.at(i));
@@ -239,7 +239,7 @@ void Commands::reloadWorld(std::vector<std::string> args, std::shared_ptr<World>
 	std::cout << "Reloading the world with link " << world->getFileName() << ".\n";
 	args.resize(2); // Resize not reserve; resize will add empty elements in but reserve will not (so with reserve args.at(1) will still crash)
 	args.at(1) = world->getFileName();
-	std::string toErase = RES_POINT + "/data/worlds/";
+	std::string toErase = RES_POINT + "/worlds/";
 	args.at(1).erase(args.at(1).find(toErase), toErase.length());
 	std::cout << "World NAME should be " << args.at(1) << ". Loading this world...\n";
 	Commands::loadWorld(args, world);
@@ -250,7 +250,7 @@ void Commands::reloadWorld(std::vector<std::string> args, std::shared_ptr<World>
 void Commands::updateWorld(std::shared_ptr<World>& world, bool printResults)
 {
 	std::string worldLink = world->getFileName(), worldName = worldLink;
-	std::string toRemove = RES_POINT + "/data/worlds/";
+	std::string toRemove = RES_POINT + "/worlds/";
 	worldName.erase(worldName.find(toRemove), toRemove.length());
 	world->exportWorld(worldName);
 	std::vector<std::string> args = std::vector<std::string>();
