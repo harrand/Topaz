@@ -1,6 +1,6 @@
 #include "object.hpp"
 
-Object::Object(std::string meshLink, std::string textureLink, std::string normalMapLink, Vector3F pos, Vector3F rot, Vector3F scale): meshLink(meshLink), textureLink(textureLink), normalMapLink(normalMapLink), pos(pos), rot(rot), scale(scale){}
+Object::Object(std::string meshLink, std::string textureLink, std::string normalMapLink, std::string displacementMapLink, Vector3F pos, Vector3F rot, Vector3F scale): meshLink(meshLink), textureLink(textureLink), normalMapLink(normalMapLink), displacementMapLink(displacementMapLink), pos(pos), rot(rot), scale(scale){}
 
 Vector3F Object::getPos() const
 {
@@ -47,7 +47,12 @@ std::string Object::getNormalMapLink() const
 	return this->normalMapLink;
 }
 
-void Object::render(std::shared_ptr<Mesh> mesh, std::shared_ptr<Texture> tex, std::shared_ptr<NormalMap> nm, Camera& cam, Shader& shad, float width, float height)
+std::string Object::getDisplacementMapLink() const
+{
+	return this->displacementMapLink;
+}
+
+void Object::render(std::shared_ptr<Mesh> mesh, std::shared_ptr<Texture> tex, std::shared_ptr<NormalMap> nm, std::shared_ptr<DisplacementMap> dm, Camera& cam, Shader& shad, float width, float height)
 {
 	(MatrixTransformations::createQuaternionSourcedModelMatrix(this->pos, this->rot, this->scale).washed()).fillData(this->m);
 	(MatrixTransformations::createViewMatrix(cam.getPosR(), cam.getRotR()).washed()).fillData(this->v);
@@ -56,6 +61,7 @@ void Object::render(std::shared_ptr<Mesh> mesh, std::shared_ptr<Texture> tex, st
 	shad.bind();
 	tex->bind(shad.getProgramHandle(), 0);
 	nm->bind(shad.getProgramHandle(), 1);
+	dm->bind(shad.getProgramHandle(), 2);
 	shad.update(this->m, this->v, this->p);
 	mesh->render();
 }

@@ -24,9 +24,11 @@ Shader::Shader(std::string filename)
 	glValidateProgram(this->programHandle);
 	Shader::checkShaderError(this->programHandle, GL_VALIDATE_STATUS, true, "Fatal Error: Program Validation failed.");
 	
-	this->uniforms[MODEL_U] = glGetUniformLocation(this->programHandle, "m");
-	this->uniforms[VIEW_U] = glGetUniformLocation(this->programHandle, "v");
-	this->uniforms[PROJECTION_U] = glGetUniformLocation(this->programHandle, "p");
+	this->uniforms[(unsigned int)UniformTypes::MODEL] = glGetUniformLocation(this->programHandle, "m");
+	this->uniforms[(unsigned int)UniformTypes::VIEW] = glGetUniformLocation(this->programHandle, "v");
+	this->uniforms[(unsigned int)UniformTypes::PROJECTION] = glGetUniformLocation(this->programHandle, "p");
+	this->uniforms[(unsigned int)UniformTypes::DISPLACEMENT_MAP_SCALE] = glGetUniformLocation(this->programHandle, "displacementMultiplier");
+	this->uniforms[(unsigned int)UniformTypes::DISPLACEMENT_MAP_BIAS] = glGetUniformLocation(this->programHandle, "displacementBias");
 }
 
 Shader::~Shader()
@@ -50,11 +52,14 @@ void Shader::bind() const
 	glUseProgram(this->programHandle);
 }
 
-void Shader::update(float (&modeldata)[16], float (&viewdata)[16], float (&projectiondata)[16]) const
+void Shader::update(float (&modeldata)[16], float (&viewdata)[16], float (&projectiondata)[16], float displacementMapScale, float displacementMapOffset) const
 {
-	glUniformMatrix4fv(this->uniforms[MODEL_U], 1, GL_TRUE, modeldata);
-	glUniformMatrix4fv(this->uniforms[VIEW_U], 1, GL_TRUE, viewdata);
-	glUniformMatrix4fv(this->uniforms[PROJECTION_U], 1, GL_TRUE, projectiondata);
+	glUniformMatrix4fv(this->uniforms[(unsigned int)UniformTypes::MODEL], 1, GL_TRUE, modeldata);
+	glUniformMatrix4fv(this->uniforms[(unsigned int)UniformTypes::VIEW], 1, GL_TRUE, viewdata);
+	glUniformMatrix4fv(this->uniforms[(unsigned int)UniformTypes::PROJECTION], 1, GL_TRUE, projectiondata);
+	glUniform1f(this->uniforms[(unsigned int)UniformTypes::DISPLACEMENT_MAP_SCALE], displacementMapScale);
+	float defaultBias = displacementMapScale / 2.0f;
+	glUniform1f(this->uniforms[(unsigned int)UniformTypes::DISPLACEMENT_MAP_BIAS], -defaultBias + defaultBias * displacementMapOffset);
 }
 
 std::string Shader::loadShader(std::string filename)

@@ -66,3 +66,16 @@ std::map<std::string, std::string> DataTranslation::retrieveNormalMaps() const
 	}
 	return normalMapMap;
 }
+
+std::map<std::string, std::string> DataTranslation::retrieveDisplacementMaps() const
+{
+	std::map<std::string, std::string> displacementMapMap;
+	MDLF input(RawFile(this->datafilename));
+	std::vector<std::string> displacementMapList = input.getSequence("displacementmaps");
+	for(unsigned int i = 0; i < displacementMapList.size(); i++)
+	{
+		std::string displacementmap = displacementMapList.at(i);
+		displacementMapMap[this->getResourceLink(displacementmap)] = input.getTag(displacementmap + ".name");
+	}
+	return displacementMapMap;
+}

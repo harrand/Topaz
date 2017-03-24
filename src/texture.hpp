@@ -50,4 +50,13 @@ public:
 private:
 };
 
+class DisplacementMap: public Texture
+{
+public:
+	DisplacementMap(std::string filename = "./res/displacementmaps/undefined.jpg");
+	void bind(GLuint shaderProgram, unsigned int id);
+	static std::shared_ptr<DisplacementMap> getFromLink(std::string displacementMapLink, std::vector<std::shared_ptr<DisplacementMap>> allDisplacementMaps);
+private:
+};
+
 #endif

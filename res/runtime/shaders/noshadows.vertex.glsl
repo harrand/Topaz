@@ -27,15 +27,15 @@ void share()
 	modelMatrix = m;
 	viewMatrix = v;
 	
-	vec3 normal_worldspace = normalize((m * vec4(normal, 0.0)).xyz);
-	vec3 tangent_worldspace = normalize((m * vec4(tangent, 0.0)).xyz);
+	vec3 normal_cameraspace = normalize((v * m * vec4(normal_modelspace, 0.0)).xyz);
+	vec3 tangent_cameraspace = normalize((v * m * vec4(tangent, 0.0)).xyz);
 	
 	// Gramm-Schmidt Process
-	tangent_worldspace = normalize(tangent_worldspace - dot(tangent_worldspace, normal_worldspace) * normal_worldspace);
+	//tangent_cameraspace = normalize(tangent_cameraspace - dot(tangent_cameraspace, normal_cameraspace) * normal_cameraspace);
 	
-	vec3 bitangent_worldspace = cross(tangent_worldspace, normal_worldspace);
+	vec3 bitangent_cameraspace = cross(tangent_cameraspace, normal_cameraspace);
 	
-	tbnMatrix = transpose(mat3(tangent_worldspace, bitangent_worldspace, normal_worldspace));
+	tbnMatrix = transpose(mat3(tangent_cameraspace, bitangent_cameraspace, normal_cameraspace));
 }
 
 void main()

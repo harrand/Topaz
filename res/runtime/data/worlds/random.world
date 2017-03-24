@@ -4,180 +4,286 @@ spawnorientation: [0, 3.14159, 0]
 object0.mesh: cube
 object0.texture: sand
 object0.normalmap: sand_normalmap
+object0.displacementmap: default_displacementmap
 object0.pos: [0, 0, 0]
 object0.rot: [0, 0, 0]
 object0.scale: [2, 2, 2]
 object1.mesh: cube
 object1.texture: grass
 object1.normalmap: default_normalmap
+object1.displacementmap: default_displacementmap
 object1.pos: [6, 0, 0]
 object1.rot: [0, 0, 0]
 object1.scale: [2, 2, 2]
 object2.mesh: torus
 object2.texture: sand
 object2.normalmap: sand_normalmap
+object2.displacementmap: default_displacementmap
 object2.pos: [0, -15, 0]
 object2.rot: [0, 0, 0]
 object2.scale: [100, 100, 100]
 object3.mesh: cube
 object3.texture: sand
 object3.normalmap: sand_normalmap
+object3.displacementmap: default_displacementmap
 object3.pos: [18.0488, 16.6728, 130.286]
 object3.rot: [-0.15, 3.90841, -0]
 object3.scale: [25, 25, 25]
 object4.mesh: monkeyhead
 object4.texture: metal
 object4.normalmap: metal_normalmap
+object4.displacementmap: default_displacementmap
 object4.pos: [-47.1851, 48.3911, 28.841]
 object4.rot: [-0.75, 1.34159, 0]
 object4.scale: [8, 8, 8]
 object5.mesh: monkeyhead
 object5.texture: lava
 object5.normalmap: default_normalmap
+object5.displacementmap: default_displacementmap
 object5.pos: [15.0001, 1.5, 50]
 object5.rot: [0, 6.2416, 0]
 object5.scale: [12, 12, 12]
 object6.mesh: monkeyhead
 object6.texture: bricks
 object6.normalmap: bricks_normalmap
+object6.displacementmap: default_displacementmap
 object6.pos: [19.6578, 97.6598, 22.0097]
 object6.rot: [-1.6, 6.2416, 0]
 object6.scale: [31, 31, 31]
 object7.mesh: cube
 object7.texture: lava
 object7.normalmap: lava_normalmap
+object7.displacementmap: default_displacementmap
 object7.pos: [127.87, 58.3642, -25.6041]
 object7.rot: [-0.75, 12.6416, 0]
 object7.scale: [24, 21, 19]
 object8.mesh: cube
 object8.texture: lava
 object8.normalmap: default_normalmap
+object8.displacementmap: default_displacementmap
 object8.pos: [26.1821, 5.30777, 0.993736]
 object8.rot: [-0.9, 16.9916, 0]
 object8.scale: [0.5, 0.5, 0.5]
 object9.mesh: monkeyhead
 object9.texture: metal
 object9.normalmap: metal_normalmap
+object9.displacementmap: default_displacementmap
 object9.pos: [21.0549, 5.1723, 1.0272]
 object9.rot: [-0.15, 19.9916, 0]
 object9.scale: [0.3, 0.3, 0.3]
 object10.mesh: monkeyhead
 object10.texture: lava
 object10.normalmap: default_normalmap
+object10.displacementmap: default_displacementmap
 object10.pos: [16.5289, 2.48079, 5.73992]
 object10.rot: [0.3, 18.9416, 0]
 object10.scale: [0.05, 0.05, 0.05]
 object11.mesh: sphere
 object11.texture: lava
 object11.normalmap: lava_normalmap
+object11.displacementmap: default_displacementmap
 object11.pos: [86.4294, 32.143, 49.7597]
 object11.rot: [3.85, 22.4415, 0]
 object11.scale: [44, 44, 44]
 object12.mesh: cube
 object12.texture: bricks
 object12.normalmap: bricks_normalmap
+object12.displacementmap: bricks_displacementmap
 object12.pos: [16.4531, 31.5, -54.246]
 object12.rot: [0, -2.60841, 0]
 object12.scale: [30, 30, 30]
 object13.mesh: cube
 object13.texture: bricks
 object13.normalmap: bricks_normalmap
+object13.displacementmap: bricks_displacementmap
 object13.pos: [0, -56.5, 12]
 object13.rot: [0, 3.14159, 0]
 object13.scale: [150, 10, 150]
 object14.mesh: cube
 object14.texture: metal
 object14.normalmap: metal_normalmap
+object14.displacementmap: default_displacementmap
 object14.pos: [-103.976, 58.5, -50.526]
 object14.rot: [0, 2.59159, 0]
 object14.scale: [30, 30, 30]
 object15.mesh: cube
 object15.texture: wood
 object15.normalmap: wood_normalmap
+object15.displacementmap: default_displacementmap
 object15.pos: [-166.596, 48.6411, 147.666]
 object15.rot: [-0.5, 6.9416, 0]
 object15.scale: [25, 25, 25]
 object16.mesh: cube
 object16.texture: metal
 object16.normalmap: default_normalmap
+object16.displacementmap: default_displacementmap
 object16.pos: [-238.026, 72.0878, -32.5975]
 object16.rot: [-0.11, 1.57786, 0]
 object16.scale: [30, 30, 30]
 object17.mesh: cube
 object17.texture: wood
 object17.normalmap: default_normalmap
+object17.displacementmap: default_displacementmap
 object17.pos: [-217.439, 70.5788, 84.0984]
 object17.rot: [-0.0549999, 1.72032, 0]
 object17.scale: [30, 30, 30]
 object18.mesh: cube
 object18.texture: lava
 object18.normalmap: bricks_normalmap
+object18.displacementmap: default_displacementmap
 object18.pos: [-72.5607, 94.0283, 79.1195]
 object18.rot: [-0.135, 0.441576, 0]
 object18.scale: [30, 30, 30]
 object19.mesh: cube
 object19.texture: lava
 object19.normalmap: metal_normalmap
+object19.displacementmap: default_displacementmap
 object19.pos: [-41.6143, 63.2966, -138.426]
 object19.rot: [-0.34, 3.28408, 0]
 object19.scale: [30, 30, 30]
 object20.mesh: sphere
 object20.texture: metal
 object20.normalmap: metal_normalmap
+object20.displacementmap: default_displacementmap
 object20.pos: [383.362, 47.3228, 235.985]
 object20.rot: [0.035, 4.72034, 0]
 object20.scale: [250, 250, 250]
 object21.mesh: sphere
 object21.texture: bricks
 object21.normalmap: bricks_normalmap
+object21.displacementmap: default_displacementmap
 object21.pos: [462.116, 73.3755, 15.0273]
 object21.rot: [-0.155, 4.45784, 0]
 object21.scale: [200, 200, 200]
 object22.mesh: monkeyhead
 object22.texture: metal
 object22.normalmap: metal_normalmap
+object22.displacementmap: default_displacementmap
 object22.pos: [417.931, 398.1, 88.8868]
 object22.rot: [-0.35, 5.09909, 0]
 object22.scale: [175, 175, 175]
 object23.mesh: torus
 object23.texture: wood
 object23.normalmap: wood_normalmap
+object23.displacementmap: default_displacementmap
 object23.pos: [210.758, 62.8585, -243.696]
 object23.rot: [-1.51, 3.74535, 0]
 object23.scale: [100, 100, 100]
+object24.mesh: cube
+object24.texture: sand
+object24.normalmap: bricks_normalmap
+object24.displacementmap: default_displacementmap
+object24.pos: [-62.702, 79.2323, 206.062]
+object24.rot: [-0.0849999, 6.08533, 0]
+object24.scale: [20, 20, 20]
+object25.mesh: cube
+object25.texture: bricks
+object25.normalmap: bricks_normalmap
+object25.displacementmap: bricks_displacementmap
+object25.pos: [-4.67621, 87.2118, 175.83]
+object25.rot: [-0.11, -0.162188, 0]
+object25.scale: [30, 30, 30]
+object26.mesh: cube
+object26.texture: bricks
+object26.normalmap: bricks_normalmap
+object26.displacementmap: default_displacementmap
+object26.pos: [104.83, 92.6372, 160.631]
+object26.rot: [0.0299998, 6.11157, 0]
+object26.scale: [30, 30, 30]
+object27.mesh: cube
+object27.texture: bricks
+object27.normalmap: default_normalmap
+object27.displacementmap: bricks_displacementmap
+object27.pos: [28.7183, 81.3509, 272.667]
+object27.rot: [0.0449998, 6.41157, 0]
+object27.scale: [30, 30, 30]
+object28.mesh: cube
+object28.texture: lava
+object28.normalmap: bricks_normalmap
+object28.displacementmap: default_displacementmap
+object28.pos: [-147.162, 96.4334, -198.509]
+object28.rot: [0.02, 21.8838, 0]
+object28.scale: [30, 30, 30]
+object29.mesh: cube
+object29.texture: lava
+object29.normalmap: bricks_normalmap
+object29.displacementmap: bricks_displacementmap
+object29.pos: [-229.186, 96.4334, -189.669]
+object29.rot: [0.02, 21.8838, 0]
+object29.scale: [30, 30, 30]
+object30.mesh: cube
+object30.texture: stone
+object30.normalmap: stone_normalmap
+object30.displacementmap: stone_displacementmap
+object30.pos: [-0.00132591, -64.5, -511]
+object30.rot: [0, 3.14159, 0]
+object30.scale: [300, 20, 300]
+object31.mesh: cube
+object31.texture: bricks
+object31.normalmap: bricks_normalmap
+object31.displacementmap: bricks_displacementmap
+object31.pos: [128.25, -16.5, -650.816]
+object31.rot: [0, 1.62656, 0]
+object31.scale: [50, 5, 50]
+object32.mesh: cube
+object32.texture: stone
+object32.normalmap: default_normalmap
+object32.displacementmap: default_displacementmap
+object32.pos: [-77.2259, -28.5, -430.477]
+object32.rot: [0, 0.0465658, 0]
+object32.scale: [50, 5, 50]
+object33.mesh: cube
+object33.texture: stone
+object33.normalmap: stone_normalmap
+object33.displacementmap: default_displacementmap
+object33.pos: [-18.2898, -28.5, -427.729]
+object33.rot: [0, 0.0465658, 0]
+object33.scale: [50, 5, 50]
+object34.mesh: cube
+object34.texture: stone
+object34.normalmap: stone_normalmap
+object34.displacementmap: stone_displacementmap
+object34.pos: [39.6473, -28.5, -425.028]
+object34.rot: [0, 0.0465658, 0]
+object34.scale: [50, 5, 50]
 eo0.mesh: cube
 eo0.texture: lava
 eo0.normalmap: default_normalmap
+eo0.displacementmap: default_displacementmap
 eo0.mass: 5
-eo0.pos: [649.067, 269.351, 543.142]
+eo0.pos: [-16.9518, 29.4272, -738.617]
 eo0.rot: [0, 0, 0]
 eo0.scale: [10, 10, 10]
 eo1.mesh: monkeyhead
 eo1.texture: grass
 eo1.normalmap: default_normalmap
+eo1.displacementmap: default_displacementmap
 eo1.mass: 20
-eo1.pos: [-2301.65, -7.96241, 410.172]
+eo1.pos: [229.659, -14.7248, -506.869]
 eo1.rot: [0, 3.14159, 0]
 eo1.scale: [6, 6, 6]
 eo2.mesh: torus
 eo2.texture: lava
 eo2.normalmap: default_normalmap
+eo2.displacementmap: default_displacementmap
 eo2.mass: 7
-eo2.pos: [-1534.27, 114.595, 490.347]
+eo2.pos: [59.8276, 89.4376, -795.399]
 eo2.rot: [0, 3.14159, 0]
 eo2.scale: [5, 5, 5]
 eo3.mesh: monkeyhead
 eo3.texture: sand
 eo3.normalmap: default_normalmap
+eo3.displacementmap: default_displacementmap
 eo3.mass: 3
-eo3.pos: [-113.093, 37.4172, -874.872]
+eo3.pos: [-65.4267, 97.2459, -811.597]
 eo3.rot: [0, 3.14159, 0]
 eo3.scale: [2, 2, 2]
 eo4.mesh: cube
 eo4.texture: bricks
 eo4.normalmap: bricks_normalmap
+eo4.displacementmap: default_displacementmap
 eo4.mass: 20
-eo4.pos: [-2299.69, 2.0542, 394.644]
+eo4.pos: [229.659, -14.7248, -506.869]
 eo4.rot: [0, 7.8916, 0]
 eo4.scale: [30, 30, 30]
 objects: %[
@@ -204,7 +310,18 @@ objects: %[
 - object20
 - object21
 - object22
-- object23]%
+- object23
+- object24
+- object25
+- object26
+- object27
+- object28
+- object29
+- object30
+- object31
+- object32
+- object33
+- object34]%
 entityobjects: %[
 - eo0
 - eo1
