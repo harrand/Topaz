@@ -50,8 +50,9 @@ parallaxmaps: %[
 - bricks_parallaxmap
 - lava_parallaxmap
 - metal_parallaxmap
-- stone_parallaxmap
-- sand_parallaxmap]%
+- sand_parallaxmap
+- wood_parallaxmap
+- stone_parallaxmap]%
 default_parallaxmap.path: ../../../res/runtime/parallaxmaps/default_parallax.png
 default_parallaxmap.name: Default Parallaxmap
 bricks_parallaxmap.path: ../../../res/runtime/parallaxmaps/bricks_parallax.jpg
@@ -60,10 +61,12 @@ lava_parallaxmap.path: ../../../res/runtime/parallaxmaps/lava_parallax.jpg
 lava_parallaxmap.name: Lava Parallaxmap
 metal_parallaxmap.path: ../../../res/runtime/parallaxmaps/metal_parallax.jpg
 metal_parallaxmap.name: Metal Parallaxmap
-stone_parallaxmap.path: ../../../res/runtime/parallaxmaps/stone_parallax.png
-stone_parallaxmap.name: Stone Parallaxmap
 sand_parallaxmap.path: ../../../res/runtime/parallaxmaps/sand_parallax.jpg
 sand_parallaxmap.name: Sand Parallaxmap
+wood_parallaxmap.path: ../../../res/runtime/parallaxmaps/wood_parallax.jpg
+wood_parallaxmap.name: Wood Parallaxmap
+stone_parallaxmap.path: ../../../res/runtime/parallaxmaps/stone_parallax.png
+stone_parallaxmap.name: Stone Parallaxmap
 models: %[
 - cube
 - monkeyhead
@@ -80,4 +83,4 @@ sword.name: Complete Sword
 torus.path: ../../../res/runtime/models/torus.obj
 torus.name: Complete Torus
 speed: 1
-played: 127490
+played: 128112

@@ -109,7 +109,7 @@ object14.scale: [30, 30, 30]
 object15.mesh: cube
 object15.texture: wood
 object15.normalmap: wood_normalmap
-object15.parallaxmap: default_parallaxmap
+object15.parallaxmap: wood_parallaxmap
 object15.pos: [-166.596, 48.6411, 147.666]
 object15.rot: [-0.5, 6.9416, 0]
 object15.scale: [25, 25, 25]

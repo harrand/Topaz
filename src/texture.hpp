@@ -26,7 +26,7 @@ private:
 class Texture
 {
 public:
-	Texture(std::string filename = "./res/textures/undefined.jpg");
+	Texture(std::string filename = "../../../res/runtime/textures/undefined.jpg");
 	~Texture();
 	void bind(GLuint shaderProgram, unsigned int id);
 	std::string getFileName() const;
@@ -44,7 +44,7 @@ private:
 class NormalMap: public Texture
 {
 public:
-	NormalMap(std::string filename = "./res/normalmaps/undefined.jpg");
+	NormalMap(std::string filename = "../../../res/runtime/normalmaps/default_normalmap.jpg");
 	void bind(GLuint shaderProgram, unsigned int id);
 	static std::shared_ptr<NormalMap> getFromLink(const std::string& normalMapLink, std::vector<std::shared_ptr<NormalMap>> allNormalMaps);
 private:
@@ -53,7 +53,7 @@ private:
 class ParallaxMap: public Texture
 {
 public:
-	ParallaxMap(std::string filename = "./res/parallaxmaps/undefined.jpg");
+	ParallaxMap(std::string filename = "../../../res/runtime/parallaxmaps/default_parallax.png");
 	void bind(GLuint shaderProgram, unsigned int id);
 	static std::shared_ptr<ParallaxMap> getFromLink(const std::string& parallaxMapLink, std::vector<std::shared_ptr<ParallaxMap>> allParallaxMaps);
 private:
