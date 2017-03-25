@@ -6,7 +6,8 @@ textures: %[
 - metal
 - sand
 - wood
-- stone]%
+- stone
+- birch]%
 undefined.path: ../../../res/runtime/textures/undefined.jpg
 undefined.name: Undefined Texture
 bricks.path: ../../../res/runtime/textures/bricks.jpg
@@ -23,6 +24,8 @@ wood.path: ../../../res/runtime/textures/wood.jpg
 wood.name: [Dev] Copyrighted Wood Texture
 stone.path: ../../../res/runtime/textures/stone.jpg
 stone.name: Copyrighted Stone Texture
+birch.path: ../../../res/runtime/textures/birch.jpg
+birch.name: Copyrighted Birch Texture
 normalmaps: %[
 - default_normalmap
 - bricks_normalmap
@@ -31,7 +34,8 @@ normalmaps: %[
 - metal_normalmap
 - sand_normalmap
 - wood_normalmap
-- stone_normalmap]%
+- stone_normalmap
+- birch_normalmap]%
 default_normalmap.path: ../../../res/runtime/normalmaps/default_normalmap.jpg
 default_normalmap.name: Default Normalmap
 bricks_normalmap.path: ../../../res/runtime/normalmaps/bricks_normalmap.jpg
@@ -48,6 +52,8 @@ wood_normalmap.path: ../../../res/runtime/normalmaps/wood_normalmap.jpg
 wood_normalmap.name: Sand Normalmap
 stone_normalmap.path: ../../../res/runtime/normalmaps/stone_normalmap.jpg
 stone_normalmap.name: Stone Normalmap
+birch_normalmap.path: ../../../res/runtime/normalmaps/birch_normalmap.jpg
+birch_normalmap.name: Birch Normalmap
 parallaxmaps: %[
 - default_parallaxmap
 - bricks_parallaxmap
@@ -56,7 +62,8 @@ parallaxmaps: %[
 - metal_parallaxmap
 - sand_parallaxmap
 - wood_parallaxmap
-- stone_parallaxmap]%
+- stone_parallaxmap
+- birch_parallaxmap]%
 default_parallaxmap.path: ../../../res/runtime/parallaxmaps/default_parallax.png
 default_parallaxmap.name: Default Parallaxmap
 bricks_parallaxmap.path: ../../../res/runtime/parallaxmaps/bricks_parallax.jpg
@@ -73,6 +80,8 @@ wood_parallaxmap.path: ../../../res/runtime/parallaxmaps/wood_parallax.jpg
 wood_parallaxmap.name: Wood Parallaxmap
 stone_parallaxmap.path: ../../../res/runtime/parallaxmaps/stone_parallax.png
 stone_parallaxmap.name: Stone Parallaxmap
+birch_parallaxmap.path: ../../../res/runtime/parallaxmaps/birch_parallax.jpg
+birch_parallaxmap.name: Birch Parallaxmap
 models: %[
 - cube
 - monkeyhead
@@ -91,5 +100,5 @@ torus.path: ../../../res/runtime/models/torus.obj
 torus.name: Complete Torus
 cylinder.path: ../../../res/runtime/models/cylinder.obj
 cylinder.name: Complete Cylinder
-speed: 1.5
-played: 125911
+speed: 6
+played: 132179

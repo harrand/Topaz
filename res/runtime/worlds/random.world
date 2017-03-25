@@ -99,6 +99,13 @@ object13.parallaxmap: lava_parallaxmap
 object13.pos: [0, -111.5, 0]
 object13.rot: [0, 0, 0]
 object13.scale: [50, 50, 50]
+object14.mesh: cube
+object14.texture: birch
+object14.normalmap: birch_normalmap
+object14.parallaxmap: birch_parallaxmap
+object14.pos: [-1533, 0, 99]
+object14.rot: [0, 0, 0]
+object14.scale: [400, 400, 400]
 objects: %[
 - object0
 - object1
@@ -113,5 +120,6 @@ objects: %[
 - object10
 - object11
 - object12
-- object13]%
+- object13
+- object14]%
 entityobjects: %[
