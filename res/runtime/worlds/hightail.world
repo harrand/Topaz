@@ -1,21 +1,77 @@
 gravity: [0, 0, 0]
-spawnpoint: [0, 0, 0]
-spawnorientation: [0, 0, 0]
+spawnpoint: [0, 60, 0]
+spawnorientation: [0, -1.57079632, 0]
 object0.mesh: cube
 object0.texture: stone
 object0.normalmap: stone_normalmap
 object0.parallaxmap: stone_parallaxmap
-object0.pos: [0, -108, 0]
+object0.pos: [0, -100, 0]
 object0.rot: [0, 0, 0]
 object0.scale: [800, 100, 800]
 object1.mesh: cube
 object1.texture: wood
 object1.normalmap: wood_normalmap
 object1.parallaxmap: wood_parallaxmap
-object1.pos: [-1395.5, 0, 0]
+object1.pos: [-1400, 0, 0]
 object1.rot: [0, 0, 0]
 object1.scale: [600, 40, 600]
+object2.mesh: cube
+object2.texture: wood
+object2.normalmap: wood_normalmap
+object2.parallaxmap: wood_parallaxmap
+object2.pos: [-2600, 0, 0]
+object2.rot: [0, 0, 0]
+object2.scale: [600, 40, 600]
+object3.mesh: cylinder
+object3.texture: wood
+object3.normalmap: wood_normalmap
+object3.parallaxmap: wood_parallaxmap
+object3.pos: [-1400, 400, 0]
+object3.rot: [0, 0, 0]
+object3.scale: [800, 200, 800]
+object4.mesh: cube
+object4.texture: wood
+object4.normalmap: wood_normalmap
+object4.parallaxmap: wood_parallaxmap
+object4.pos: [-1400, 800, 0]
+object4.rot: [0, 0, 0]
+object4.scale: [100, 100, 400]
+object5.mesh: cube
+object5.texture: stone
+object5.normalmap: stone_normalmap
+object5.parallaxmap: stone_parallaxmap
+object5.pos: [-1400, 470, 500]
+object5.rot: [0, 0, 0]
+object5.scale: [100, 430, 100]
+object6.mesh: cube
+object6.texture: stone
+object6.normalmap: stone_normalmap
+object6.parallaxmap: stone_parallaxmap
+object6.pos: [-1400, 470, -500]
+object6.rot: [0, 0, 0]
+object6.scale: [100, 430, 100]
+object7.mesh: cube
+object7.texture: stone
+object7.normalmap: stone_normalmap
+object7.parallaxmap: stone_parallaxmap
+object7.pos: [0, -100, 1600]
+object7.rot: [0, 0, 0]
+object7.scale: [800, 100, 800]
+object8.mesh: cube
+object8.texture: stone
+object8.normalmap: stone_normalmap
+object8.parallaxmap: stone_parallaxmap
+object8.pos: [0, -100, -1600]
+object8.rot: [0, 0, 0]
+object8.scale: [800, 100, 800]
 objects: %[
 - object0
-- object1]%
+- object1
+- object2
+- object3
+- object4
+- object5
+- object6
+- object7
+- object8]%
 entityobjects: %[
