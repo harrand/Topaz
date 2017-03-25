@@ -71,7 +71,8 @@ models: %[
 - cube
 - monkeyhead
 - sphere
-- torus]%
+- torus
+- cylinder]%
 cube.path: ../../../res/runtime/models/cube.obj
 cube.name: Complete Cube
 monkeyhead.path: ../../../res/runtime/models/monkeyhead.obj
@@ -82,5 +83,7 @@ sword.path: ../../../res/runtime/models/sword.obj
 sword.name: Complete Sword
 torus.path: ../../../res/runtime/models/torus.obj
 torus.name: Complete Torus
-speed: 1
-played: 128302
+cylinder.path: ../../../res/runtime/models/cylinder.obj
+cylinder.name: Complete Cylinder
+speed: 0.5
+played: 125253

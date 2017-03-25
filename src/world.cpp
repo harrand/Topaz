@@ -66,6 +66,9 @@ void World::addEntityObject(std::shared_ptr<EntityObject> eo)
 	this->entityObjects.push_back(eo);
 }
 
+//temp 
+#include <iostream>
+
 void World::exportWorld(std::string worldName) const
 {
 	DataTranslation dt(RES_POINT + "/resources.data");
@@ -88,6 +91,7 @@ void World::exportWorld(std::string worldName) const
 	for(unsigned int i = 0; i < this->members.size(); i++)
 	{
 		std::string objectName = "object" + StringUtility::toString(i);
+		std::cout << "Exporting " << objectName << "(" << this->members.size() << ")...\n";
 		objectList.push_back(objectName);
 		Object curObj = this->members.at(i);
 		std::string meshLink = curObj.getMeshLink();
