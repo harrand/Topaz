@@ -21,7 +21,7 @@ set lnkdir="%cpldir%\lnk"
 
 if not exist %lnkdir% mkdir %lnkdir%
 
-g++ -std=c++14 -static-libgcc -static-libstdc++ -Wall -pedantic -O3 *.o -L%libdir% -lOpenGL32 -lSDL2 -lSDL2main -lmdl "%scriptdir%\res\exe\topaz_test.res" -o "topaz-test.exe"
+g++ -std=c++14 -Wall -pedantic -O3 *.o -L%libdir% -lOpenGL32 -lSDL2 -lSDL2main -lmdl "%scriptdir%\res\exe\topaz_test.res" -o "topaz-test.exe"
 
 move "topaz-test.exe" %lnkdir%
 echo Linking Completed, "topaz-test.exe" is in %lnkdir%
