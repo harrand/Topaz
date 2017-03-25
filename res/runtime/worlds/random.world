@@ -50,6 +50,55 @@ object6.parallaxmap: lava_parallaxmap
 object6.pos: [-465.339, 0, -611.085]
 object6.rot: [0, 0.045, 0]
 object6.scale: [100, 100, 100]
+object7.mesh: cube
+object7.texture: lava
+object7.normalmap: bricks_normalmap
+object7.parallaxmap: bricks_parallaxmap
+object7.pos: [-437, 328, -855]
+object7.rot: [0, 0, 0]
+object7.scale: [100, 100, 100]
+object8.mesh: cube
+object8.texture: metal
+object8.normalmap: metal_normalmap
+object8.parallaxmap: metal_parallaxmap
+object8.pos: [339.5, 183, -687.5]
+object8.rot: [0, 0, 0]
+object8.scale: [80, 80, 80]
+object9.mesh: cube
+object9.texture: grass
+object9.normalmap: lava_normalmap
+object9.parallaxmap: lava_parallaxmap
+object9.pos: [349, 443.5, -718]
+object9.rot: [0, 0, 0]
+object9.scale: [80, 80, 80]
+object10.mesh: monkeyhead
+object10.texture: sand
+object10.normalmap: sand_normalmap
+object10.parallaxmap: sand_parallaxmap
+object10.pos: [336, 312, -705.5]
+object10.rot: [0.04, 3.12252, 0]
+object10.scale: [70, 70, 70]
+object11.mesh: cube
+object11.texture: stone
+object11.normalmap: lava_normalmap
+object11.parallaxmap: lava_parallaxmap
+object11.pos: [746.892, 214, -117.081]
+object11.rot: [0, -1.59, 0]
+object11.scale: [100, 100, 100]
+object12.mesh: cube
+object12.texture: grass
+object12.normalmap: bricks_normalmap
+object12.parallaxmap: bricks_parallaxmap
+object12.pos: [739, 229, 165.5]
+object12.rot: [0, 0, 0]
+object12.scale: [100, 100, 100]
+object13.mesh: cylinder
+object13.texture: lava
+object13.normalmap: lava_normalmap
+object13.parallaxmap: lava_parallaxmap
+object13.pos: [0, -111.5, 0]
+object13.rot: [0, 0, 0]
+object13.scale: [50, 50, 50]
 objects: %[
 - object0
 - object1
@@ -57,5 +106,12 @@ objects: %[
 - object3
 - object4
 - object5
-- object6]%
+- object6
+- object7
+- object8
+- object9
+- object10
+- object11
+- object12
+- object13]%
 entityobjects: %[

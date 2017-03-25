@@ -109,7 +109,10 @@ int main()
 	}
 	std::ostringstream strum;
 	strum << secondsLifetime;
+	std::cout << "Deleting tag...\n";
 	timeStorage.deleteTag("played");
+	std::cout << "Re-adding tag...\n";
 	timeStorage.addTag("played", strum.str());
+	std::cout << "Exit.\n";
 	return 0;
 }

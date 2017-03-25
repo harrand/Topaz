@@ -1,0 +1,21 @@
+gravity: [0, 0, 0]
+spawnpoint: [0, 0, 0]
+spawnorientation: [0, 0, 0]
+object0.mesh: cube
+object0.texture: stone
+object0.normalmap: stone_normalmap
+object0.parallaxmap: stone_parallaxmap
+object0.pos: [0, -108, 0]
+object0.rot: [0, 0, 0]
+object0.scale: [800, 100, 800]
+object1.mesh: cube
+object1.texture: wood
+object1.normalmap: wood_normalmap
+object1.parallaxmap: wood_parallaxmap
+object1.pos: [-1395.5, 0, 0]
+object1.rot: [0, 0, 0]
+object1.scale: [600, 40, 600]
+objects: %[
+- object0
+- object1]%
+entityobjects: %[
