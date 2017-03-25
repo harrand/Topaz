@@ -19,7 +19,7 @@ uniform float parallaxBias;
 layout(location = 0) out vec4 fragColor;
 
 const vec4 lightColour = vec4(1, 1, 1, 1);
-const float lightWattage = 5000;
+const float lightWattage = 100;
 
 const vec3 position_worldspace = (modelMatrix * vec4(position_modelspace, 1.0)).xyz;
 const vec3 position_cameraspace = (viewMatrix * vec4(position_worldspace, 1.0)).xyz;
@@ -29,7 +29,7 @@ const vec3 eyeDirection_cameraspace = vec3(0, 0, 0) - position_cameraspace;
 const vec3 eyeDirection_tangentspace = tbnMatrix * eyeDirection_cameraspace;
 
 const vec3 ld_cameraspace = cameraPosition_cameraspace - position_cameraspace;
-const float distance = length(ld_cameraspace);
+const float distance = sqrt(length(ld_cameraspace));
 const vec3 lightDirection_cameraspace = normalize(ld_cameraspace);
 const vec3 lightDirection_tangentspace = tbnMatrix * lightDirection_cameraspace;
 

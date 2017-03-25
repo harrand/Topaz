@@ -263,7 +263,7 @@ object36.scale: [80, 8, 80]
 object37.mesh: cube
 object37.texture: metal
 object37.normalmap: metal_normalmap
-object37.parallaxmap: default_parallaxmap
+object37.parallaxmap: metal_parallaxmap
 object37.pos: [141.321, 9, -803.441]
 object37.rot: [0, -0.0384342, 0]
 object37.scale: [80, 8, 80]
@@ -277,7 +277,7 @@ object38.scale: [80, 8, 80]
 object39.mesh: cube
 object39.texture: metal
 object39.normalmap: metal_normalmap
-object39.parallaxmap: default_parallaxmap
+object39.parallaxmap: metal_parallaxmap
 object39.pos: [-0.000628724, -300, -236]
 object39.rot: [0, 3.14159, 0]
 object39.scale: [800, 10, 800]
