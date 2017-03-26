@@ -38,6 +38,8 @@ public:
 	void addSequence(std::string sequenceName, std::vector<std::string> data) const;
 	void deleteTag(std::string tagName) const;
 	void deleteSequence(std::string sequenceName) const;
+	void editTag(std::string tagName, std::string data) const;
+	void editSequence(std::string sequenceName, std::vector<std::string> data) const;
 	std::string getTag(std::string tagName) const;
 	std::vector<std::string> getSequence(std::string sequenceName) const;
 	std::map<std::string, std::string> getParsedTags() const;

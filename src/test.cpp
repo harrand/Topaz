@@ -24,44 +24,18 @@ int main()
 	
 	Window wnd(800, 600, "Topaz Test Environment - Undefined World");
 	TimeKeeper tk, fpscounter;
-	
-	std::cout << "'Topaz Testing Environment created.\n";
-	
+		
 	Shader shader(RES_POINT + "/shaders/noshadows");	
 	world = std::shared_ptr<World>(new World(RES_POINT + "/worlds/random.world"));
 	world->addEntity(&player);
 	
 	KeybindController kc(player, world, wnd);
 	MouseController mc(player, world, wnd);
+	
 	DataTranslation dt(RES_POINT + "/resources.data");
+	std::cout << "Retrieving assets...\n";
+	std::cout << "Retrieved " << dt.retrieveAllData(allMeshes, allTextures, allNormalMaps, allParallaxMaps) << " assets.\n";
 	
-	std::unordered_map<std::string, std::string> models = dt.retrieveModels(), textures = dt.retrieveTextures(), normalmaps = dt.retrieveNormalMaps(), parallaxmaps = dt.retrieveParallaxMaps();
-	
-	typedef std::unordered_map<std::string, std::string>::iterator it_type;
-	std::cout << "Retrieving models...\n";
-	for(it_type iterator = models.begin(); iterator != models.end(); iterator++)
-	{
-		std::cout << "Initialising a mesh with the link " << iterator->first << ".\n";
-		allMeshes.push_back(std::shared_ptr<Mesh>(new Mesh(iterator->first)));
-	}
-	std::cout << "Retrieving textures...\n";
-	for(it_type iterator = textures.begin(); iterator != textures.end(); iterator++)
-	{
-		std::cout << "Initialising a texture with the link " << iterator->first << ".\n";
-		allTextures.push_back(std::shared_ptr<Texture>(new Texture(iterator->first)));
-	}
-	std::cout << "Retrieving normalmaps...\n";
-	for(it_type iterator = normalmaps.begin(); iterator != normalmaps.end(); iterator++)
-	{
-		std::cout << "Initialising a normalmap with the link " << iterator->first << ".\n";
-		allNormalMaps.push_back(std::shared_ptr<NormalMap>(new NormalMap(iterator->first)));
-	}
-	std::cout << "Retrieving parallaxmaps...\n";
-	for(it_type iterator = parallaxmaps.begin(); iterator != parallaxmaps.end(); iterator++)
-	{
-		std::cout << "Initialising a parallaxmap with the link " << iterator->first << ".\n";
-		allParallaxMaps.push_back(std::shared_ptr<ParallaxMap>(new ParallaxMap(iterator->first)));
-	}
 	std::vector<float> deltas;
 	float deltaTotal = 0.0f, deltaAverage = 0.0f;
 	unsigned long fps;
@@ -98,21 +72,12 @@ int main()
 		fpscounter.reload();
 		
 		world->update(fps, cam, shader, wnd.getWidth(), wnd.getHeight(), allMeshes, allTextures, allNormalMaps, allParallaxMaps);
-		for(unsigned int i = 0; i < world->getEntityObjects().size(); i++)
-		{
-			std::shared_ptr<EntityObject> eo = world->getEntityObjects().at(i);
-			eo->applyForce("playerattraction", Force(player.getPosition() - eo->getPosition()) * 100);
-		}
 		
 		wnd.update();
 		wnd.setTitle("Topaz Testing Environment - '" + world->getWorldLink() + "'");
 	}
 	std::ostringstream strum;
 	strum << secondsLifetime;
-	std::cout << "Deleting tag...\n";
-	timeStorage.deleteTag("played");
-	std::cout << "Re-adding tag...\n";
-	timeStorage.addTag("played", strum.str());
-	std::cout << "Exit.\n";
+	timeStorage.editTag("played", strum.str());
 	return 0;
 }

@@ -82,12 +82,10 @@ void World::exportWorld(std::string worldName) const
 	std::string gravLink = "[" + StringUtility::toString(this->gravity.getX()) + ", " + StringUtility::toString(this->gravity.getY()) + ", " + StringUtility::toString(this->gravity.getZ()) + "]";
 	std::string spawnPointLink = "[" + StringUtility::toString(this->spawnPoint.getX()) + ", " + StringUtility::toString(this->spawnPoint.getY()) + ", " + StringUtility::toString(this->spawnPoint.getZ()) + "]";
 	std::string spawnOrientationLink = "[" + StringUtility::toString(this->spawnOrientation.getX()) + ", " + StringUtility::toString(this->spawnOrientation.getY()) + ", " + StringUtility::toString(this->spawnOrientation.getZ()) + "]";
-	output.deleteTag("gravity");
-	output.deleteTag("spawnpoint");
-	output.deleteTag("spawnorientation");
-	output.addTag("gravity", gravLink);
-	output.addTag("spawnpoint", spawnPointLink);
-	output.addTag("spawnorientation", spawnOrientationLink);
+
+	output.editTag("gravity", gravLink);
+	output.editTag("spawnpoint", spawnPointLink);
+	output.editTag("spawnorientation", spawnOrientationLink);
 	for(unsigned int i = 0; i < this->members.size(); i++)
 	{
 		std::string objectName = "object" + StringUtility::toString(i);
@@ -110,21 +108,13 @@ void World::exportWorld(std::string worldName) const
 		std::string normalMapName = dt.getResourceName(normalMapLink);
 		std::string parallaxMapName = dt.getResourceName(parallaxMapLink);
 		
-		output.deleteTag(objectName + ".mesh");
-		output.deleteTag(objectName + ".texture");
-		output.deleteTag(objectName + ".normalmap");
-		output.deleteTag(objectName + ".parallaxmap");
-		output.deleteTag(objectName + ".pos");
-		output.deleteTag(objectName + ".rot");
-		output.deleteTag(objectName + ".scale");
-		
-		output.addTag(objectName + ".mesh", meshName);
-		output.addTag(objectName + ".texture", textureName);
-		output.addTag(objectName + ".normalmap", normalMapName);
-		output.addTag(objectName + ".parallaxmap", parallaxMapName);
-		output.addTag(objectName + ".pos", posLink);
-		output.addTag(objectName + ".rot", rotLink);
-		output.addTag(objectName + ".scale", scaleLink);
+		output.editTag(objectName + ".mesh", meshName);
+		output.editTag(objectName + ".texture", textureName);
+		output.editTag(objectName + ".normalmap", normalMapName);
+		output.editTag(objectName + ".parallaxmap", parallaxMapName);
+		output.editTag(objectName + ".pos", posLink);
+		output.editTag(objectName + ".rot", rotLink);
+		output.editTag(objectName + ".scale", scaleLink);
 	}
 	for(unsigned int i = 0; i < this->entityObjects.size(); i++)
 	{
@@ -149,23 +139,14 @@ void World::exportWorld(std::string worldName) const
 		std::string normalMapName = dt.getResourceName(normalMapLink);
 		std::string parallaxMapName = dt.getResourceName(parallaxMapLink);
 		
-		output.deleteTag(eoName + ".mesh");
-		output.deleteTag(eoName + ".texture");
-		output.deleteTag(eoName + ".normalmap");
-		output.deleteTag(eoName + ".parallaxmap");
-		output.deleteTag(eoName + ".mass");
-		output.deleteTag(eoName + ".pos");
-		output.deleteTag(eoName + ".rot");
-		output.deleteTag(eoName + ".scale");
-		
-		output.addTag(eoName + ".mesh", meshName);
-		output.addTag(eoName + ".texture", textureName);
-		output.addTag(eoName + ".normalmap", normalMapName);
-		output.addTag(eoName + ".parallaxmap", parallaxMapName);
-		output.addTag(eoName + ".mass", massStr);
-		output.addTag(eoName + ".pos", posLink);
-		output.addTag(eoName + ".rot", rotLink);
-		output.addTag(eoName + ".scale", scaleLink);
+		output.editTag(eoName + ".mesh", meshName);
+		output.editTag(eoName + ".texture", textureName);
+		output.editTag(eoName + ".normalmap", normalMapName);
+		output.editTag(eoName + ".parallaxmap", parallaxMapName);
+		output.editTag(eoName + ".mass", massStr);
+		output.editTag(eoName + ".pos", posLink);
+		output.editTag(eoName + ".rot", rotLink);
+		output.editTag(eoName + ".scale", scaleLink);
 	}
 	output.addSequence("objects", objectList);
 	output.addSequence("entityobjects", eoList);

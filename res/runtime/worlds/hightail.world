@@ -232,6 +232,83 @@ object32.parallaxmap: stone_parallaxmap
 object32.pos: [-2600, 1400, 2000]
 object32.rot: [0, 0, 0]
 object32.scale: [400, 430, 100]
+object33.mesh: cube
+object33.texture: birch
+object33.normalmap: birch_normalmap
+object33.parallaxmap: birch_parallaxmap
+object33.pos: [-1400, 0, -2400]
+object33.rot: [0, 0, 0]
+object33.scale: [600, 40, 600]
+object34.mesh: cube
+object34.texture: birch
+object34.normalmap: birch_normalmap
+object34.parallaxmap: birch_parallaxmap
+object34.pos: [-2600, 0, -2400]
+object34.rot: [0, 0, 0]
+object34.scale: [600, 40, 600]
+object35.mesh: cube
+object35.texture: birch
+object35.normalmap: birch_normalmap
+object35.parallaxmap: birch_parallaxmap
+object35.pos: [-3800, 0, -2400]
+object35.rot: [0, 0, 0]
+object35.scale: [600, 40, 600]
+object36.mesh: cube
+object36.texture: birch
+object36.normalmap: birch_normalmap
+object36.parallaxmap: birch_parallaxmap
+object36.pos: [-1400, 0, 2400]
+object36.rot: [0, 0, 0]
+object36.scale: [600, 40, 600]
+object37.mesh: cube
+object37.texture: birch
+object37.normalmap: birch_normalmap
+object37.parallaxmap: birch_parallaxmap
+object37.pos: [-2600, 0, 2400]
+object37.rot: [0, 0, 0]
+object37.scale: [600, 40, 600]
+object38.mesh: cube
+object38.texture: birch
+object38.normalmap: birch_normalmap
+object38.parallaxmap: birch_parallaxmap
+object38.pos: [-3800, 0, 2400]
+object38.rot: [0, 0, 0]
+object38.scale: [600, 40, 600]
+object39.mesh: cube
+object39.texture: birch
+object39.normalmap: birch_normalmap
+object39.parallaxmap: birch_parallaxmap
+object39.pos: [-3800, 0, 1200]
+object39.rot: [0, 0, 0]
+object39.scale: [600, 40, 600]
+object40.mesh: cube
+object40.texture: birch
+object40.normalmap: birch_normalmap
+object40.parallaxmap: birch_parallaxmap
+object40.pos: [-3800, 0, 0]
+object40.rot: [0, 0, 0]
+object40.scale: [600, 40, 600]
+object41.mesh: cube
+object41.texture: birch
+object41.normalmap: birch_normalmap
+object41.parallaxmap: birch_parallaxmap
+object41.pos: [-3800, 0, -1200]
+object41.rot: [0, 0, 0]
+object41.scale: [600, 40, 600]
+object42.mesh: torus
+object42.texture: stone
+object42.normalmap: default_normalmap
+object42.parallaxmap: default_parallaxmap
+object42.pos: [-1400, 200, 0]
+object42.rot: [0, 0, 0]
+object42.scale: [70, 70, 70]
+object43.mesh: torus
+object43.texture: stone
+object43.normalmap: default_normalmap
+object43.parallaxmap: default_parallaxmap
+object43.pos: [-1400, 600, 0]
+object43.rot: [0, 0, 0]
+object43.scale: [70, 70, 70]
 objects: %[
 - object0
 - object1
@@ -265,5 +342,16 @@ objects: %[
 - object29
 - object30
 - object31
-- object32]%
+- object32
+- object33
+- object34
+- object35
+- object36
+- object37
+- object38
+- object39
+- object40
+- object41
+- object42
+- object43]%
 entityobjects: %[
