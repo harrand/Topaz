@@ -21,58 +21,40 @@ int main()
 {	
 	MDLF timeStorage(RawFile(RES_POINT + "/resources.data"));
 	int secondsLifetime = CastUtility::fromString<int>(timeStorage.getTag("played"));
-	
 	Window wnd(800, 600, "Topaz Test Environment - Undefined World");
-	TimeKeeper tk, fpscounter;
-		
 	Shader shader(RES_POINT + "/shaders/noshadows");	
 	world = std::shared_ptr<World>(new World(RES_POINT + "/worlds/random.world"));
 	world->addEntity(&player);
-	
 	KeybindController kc(player, world, wnd);
 	MouseController mc(player, world, wnd);
-	
-	DataTranslation dt(RES_POINT + "/resources.data");
 	std::cout << "Retrieving assets...\n";
-	std::cout << "Retrieved " << dt.retrieveAllData(allMeshes, allTextures, allNormalMaps, allParallaxMaps) << " assets.\n";
-	
-	std::vector<float> deltas;
-	float deltaTotal = 0.0f, deltaAverage = 0.0f;
-	unsigned long fps;
+	std::cout << "Retrieved " << DataTranslation(RES_POINT + "/resources.data").retrieveAllData(allMeshes, allTextures, allNormalMaps, allParallaxMaps) << " assets.\n";
+	TimeKeeper tk;
+	TimeProfiler tp;
+	unsigned int fps  = 1;
 
 	while(!wnd.isCloseRequested())
 	{
 		if(tk.millisPassed(1000))
 		{
-			deltaAverage = deltaTotal/deltas.size();
-			fps = round(1000 / deltaAverage);
-			std::cout << "avgdt = " << deltaAverage << "ms, avgFPS = " << fps << " frames per second.\n";
-			
-			deltaAverage = 0;
-			deltaTotal = 0;
-			deltas.clear();
+			fps = tp.getFPS();
+			std::cout << "avgdt = " << tp.getDeltaAverage() << "ms, avgFPS = " << fps << " frames per second.\n";
+			tp.reset();
 			secondsLifetime++;
 			tk.reload();
 			std::cout << "Camera Position = [" << cam.getPosR().getX() << ", " << cam.getPosR().getY() << ", " << cam.getPosR().getZ() << "].\n";
 			std::cout << "Lifetime Spent: " << secondsLifetime << " seconds.\n";
 		}
 		wnd.setRenderTarget();
-		fpscounter.update();
-		deltaTotal += fpscounter.getRange();
-		deltas.push_back(fpscounter.getRange());
+		tp.beginFrame();
 		
 		tk.update();
 		wnd.clear(0.0f, 0.0f, 0.0f, 1.0f);
-		shader.bind();
-		
 		mc.handleMouse();
 		kc.handleKeybinds();
 		mc.getMouseListener().reloadMouseDelta();
-		
-		fpscounter.reload();
-		
+		tp.endFrame();
 		world->update(fps, cam, shader, wnd.getWidth(), wnd.getHeight(), allMeshes, allTextures, allNormalMaps, allParallaxMaps);
-		
 		wnd.update();
 		wnd.setTitle("Topaz Testing Environment - '" + world->getWorldLink() + "'");
 	}

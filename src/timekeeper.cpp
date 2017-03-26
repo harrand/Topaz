@@ -27,3 +27,35 @@ bool TimeKeeper::millisPassed(float millis) const
 {
 	return (this->getRange() > millis);
 }
+
+TimeProfiler::TimeProfiler(): tk(TimeKeeper()){}
+
+void TimeProfiler::beginFrame()
+{
+	this->tk.update();
+}
+
+void TimeProfiler::endFrame()
+{
+	this->deltas.push_back(this->tk.getRange());
+	this->tk.reload();
+}
+
+void TimeProfiler::reset()
+{
+	this->deltas.clear();
+	this->tk.reload();
+}
+
+float TimeProfiler::getDeltaAverage() const
+{
+	float total = 0.0f;
+	for(unsigned int i = 0; i < this->deltas.size(); i++)
+		total += this->deltas.at(i);
+	return total / this->deltas.size();
+}
+
+unsigned int TimeProfiler::getFPS() const
+{
+	return (int)(1000/this->getDeltaAverage());
+}

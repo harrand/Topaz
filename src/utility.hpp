@@ -25,8 +25,9 @@ namespace StringUtility
 
 namespace CastUtility
 {
+	// Implementation must be kept inside the header to avoid linker errors.
 	template <typename T>
-	T fromString(std::string s)
+	T fromString(const std::string& s)
 	{
 		T ret;
 		std::istringstream ss(s);
