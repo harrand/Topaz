@@ -10,15 +10,12 @@ Quaternion::Quaternion(Vector3F rotationAxis, float angleRadians)
 
 Quaternion::Quaternion(Vector3F eulerRotation)
 {
-	Vector3F vx(1, 0, 0), vy(0, 1, 0), vz(0, 0, 1);
-	Quaternion xr(vx, eulerRotation.getX());
-	Quaternion yr(vy, eulerRotation.getY());
-	Quaternion zr(vz, eulerRotation.getZ());
-	Quaternion res((xr * yr) * zr);
-	this->x = res.getX();
-	this->y = res.getY();
-	this->z = res.getZ();
-	this->w = res.getW();
+	Vector3F x(1, 0, 0), y(0, 1, 0), z(0, 0, 1);
+	Quaternion qx(x, eulerRotation.getX());
+	Quaternion qy(y, eulerRotation.getY());
+	Quaternion qz(z, eulerRotation.getZ());
+	Quaternion res = qx * qy * qz;
+	*this = res;
 }
 
 Quaternion::Quaternion(Vector4F quat)
@@ -82,13 +79,11 @@ Vector3F Quaternion::getRotationAxis() const
 
 Matrix4x4 Quaternion::getRotationalMatrix() const
 {
-	//The algorithm used gives a column-major matrix, will transpose at the end to get row-major.
-	Vector4F x(1 - (2 * (this->y * this->y) + (this->z * this->z)), 2 * ((this->x * this->y) - (this->z * this->w)), 2 * ((this->x * this->z) + (this->y * this->w)), 0.0f);
-	Vector4F y(2 * ((this->x * this->y) + (this->z * this->w)), 1 - (2 * ((this->x * this->x) + (this->z * this->z))), 2 * ((this->y * this->z) - (this->x * this->w)), 0.0f);
-	Vector4F z(2 * ((this->x * this->z) - (this->y * this->w)), 2 * ((this->y * this->z) + (this->x * this->w)), 1 - (2 * ((this->x * this->x) + (this->y * this->y))), 0.0f);
-	Vector4F w(0.0f, 0.0f, 0.0f, 1.0f);
-	Matrix4x4 col(x, y, z, w);
-	return col.transposed();
+	Vector4F rx(1 - (2 * y * y + 2 * z * z), 2 * x * y - 2 * z * w, 2 * x * z + 2 * y * w, 0);
+	Vector4F ry(2 * x * y + 2 * z * w, 1 - (2 * x * x + 2 * z * z), 2 * y * z - 2 * x * w, 0);
+	Vector4F rz(2 * x * z - 2 * y * w, 2 * y * z + 2 * x * w, 1 - (2 * x * x + 2 * y * y), 0);
+	Vector4F rw(0, 0, 0, 1);
+	return Matrix4x4(rx, ry, rz, rw);
 }
 
 float Quaternion::length() const
@@ -107,14 +102,12 @@ Quaternion Quaternion::normalised() const
 Quaternion Quaternion::conjugate() const
 {
 	Vector3F ra = this->getRotationAxis();
-	float ang = this->getAngleRadians();
-	return Quaternion(Vector3F(-ra.getX(), -ra.getY(), -ra.getZ()), ang);
+	return Quaternion(Vector4F(-ra.getX(), -ra.getY(), -ra.getZ(), this->getW()));
 }
 
 Quaternion Quaternion::inverse() const
 {
-	Quaternion quat = *this;
-	return (quat.normalised()).conjugate();
+	return (this->normalised()).conjugate();
 }
 
 Quaternion Quaternion::operator*(const Quaternion& other) const
@@ -133,7 +126,7 @@ Vector4F Quaternion::operator*(const Vector4F& other) const
 
 Matrix4x4 MatrixTransformations::createQuaternionSourcedModelMatrix(Vector3F position, Vector3F eulerRotation, Vector3F scale)
 {
-	return MatrixTransformations::createTranslationMatrix(position) * Quaternion(eulerRotation).getRotationalMatrix() * MatrixTransformations::createScalingMatrix(scale);
+	return MatrixTransformations::createTranslationMatrix(position) * Quaternion(eulerRotation).normalised().getRotationalMatrix() * MatrixTransformations::createScalingMatrix(scale);
 }
 
 Matrix4x4 MatrixTransformations::createQuaternionSourcedViewMatrix(Vector3F cameraPosition, Vector3F cameraEulerRotation)

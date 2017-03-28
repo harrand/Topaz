@@ -2,11 +2,7 @@
 
 // Matrix2x2
 
-Matrix2x2::Matrix2x2(Vector2F x, Vector2F y)
-{
-	this->x = x;
-	this->y = y;
-}
+Matrix2x2::Matrix2x2(Vector2F x, Vector2F y): x(x), y(y){}
 
 Vector2F Matrix2x2::getRowX() const
 {
@@ -35,12 +31,7 @@ float Matrix2x2::determinant() const
 
 // Matrix3x3
 
-Matrix3x3::Matrix3x3(Vector3F x, Vector3F y, Vector3F z)
-{
-	this->x = x;
-	this->y = y;
-	this->z = z;
-}
+Matrix3x3::Matrix3x3(Vector3F x, Vector3F y, Vector3F z): x(x), y(y), z(z){}
 
 Vector3F Matrix3x3::getRowX() const
 {
@@ -79,17 +70,11 @@ float Matrix3x3::determinant() const
 
 // Matrix4x4
 
-Matrix4x4::Matrix4x4(Vector4F x, Vector4F y, Vector4F z, Vector4F w)
-{
-	this->x = x;
-	this->y = y;
-	this->z = z;
-	this->w = w;
-}
+Matrix4x4::Matrix4x4(Vector4F x, Vector4F y, Vector4F z, Vector4F w): x(x), y(y), z(z), w(w){}
 
 Matrix4x4 Matrix4x4::identity()
 {
-	return Matrix4x4();
+	return Matrix4x4(Vector4F(1, 0, 0, 0), Vector4F(0, 1, 0, 0), Vector4F(0, 0, 1, 0), Vector4F(0, 0, 0, 1));
 }
 
 Vector4F Matrix4x4::getRowX() const
