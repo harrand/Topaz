@@ -80,7 +80,7 @@ class KeybindController
 public:
 	KeybindController(Player& player, std::shared_ptr<World>& world, Window& wnd);
 	~KeybindController();
-	void handleKeybinds();
+	void handleKeybinds(unsigned int fps);
 private:
 	Player& player;
 	std::shared_ptr<World>& world;

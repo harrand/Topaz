@@ -100,5 +100,5 @@ torus.path: ../../../res/runtime/models/torus.obj
 torus.name: Complete Torus
 cylinder.path: ../../../res/runtime/models/cylinder.obj
 cylinder.name: Complete Cylinder
-speed: 20
-played: 148149
+speed: 5
+played: 148386

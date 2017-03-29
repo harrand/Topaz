@@ -51,7 +51,7 @@ int main()
 		tk.update();
 		wnd.clear(0.0f, 0.0f, 0.0f, 1.0f);
 		mc.handleMouse();
-		kc.handleKeybinds();
+		kc.handleKeybinds(fps);
 		mc.getMouseListener().reloadMouseDelta();
 		tp.endFrame();
 		world->update(fps, cam, shader, wnd.getWidth(), wnd.getHeight(), allMeshes, allTextures, allNormalMaps, allParallaxMaps);

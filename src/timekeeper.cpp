@@ -52,6 +52,8 @@ float TimeProfiler::getDeltaAverage() const
 	float total = 0.0f;
 	for(unsigned int i = 0; i < this->deltas.size(); i++)
 		total += this->deltas.at(i);
+	if(total == 0.0f || this->deltas.size() == 0)
+		return 1000;
 	return total / this->deltas.size();
 }
 

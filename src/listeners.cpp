@@ -229,7 +229,7 @@ KeybindController::~KeybindController()
 	wnd.deregisterListener(this->kl);
 }
 
-void KeybindController::handleKeybinds()
+void KeybindController::handleKeybinds(unsigned int fps)
 {
 	float multiplier = CastUtility::fromString<float>(MDLF(RawFile(RES_POINT + "/resources.data")).getTag("speed"));
 	MDLF controlsDataFile = MDLF(RawFile(RES_POINT + "/controls.data"));
@@ -246,13 +246,13 @@ void KeybindController::handleKeybinds()
 	if(kl.isKeyPressed(KeyControls::getKeybind(controlsDataFile, KeybindType::MOVE_DOWN)))
 		this->player.getCamera().getPosR() += (Vector3F(0, -1, 0) * multiplier);
 	if(kl.isKeyPressed(KeyControls::getKeybind(controlsDataFile, KeybindType::LOOK_UP)))
-		player.getCamera().getRotR() += (Vector3F(0.05, 0, 0) * multiplier / 5);
+		player.getCamera().getRotR() += (Vector3F(0.05, 0, 0) * multiplier / fps);
 	if(kl.isKeyPressed(KeyControls::getKeybind(controlsDataFile, KeybindType::LOOK_DOWN)))
-		player.getCamera().getRotR() += (Vector3F(-0.05, 0, 0) * multiplier / 5);
+		player.getCamera().getRotR() += (Vector3F(-0.05, 0, 0) * multiplier / fps);
 	if(kl.isKeyPressed(KeyControls::getKeybind(controlsDataFile, KeybindType::LOOK_LEFT)))
-		player.getCamera().getRotR() += (Vector3F(0, -0.05, 0) * multiplier / 5);
+		player.getCamera().getRotR() += (Vector3F(0, -0.05, 0) * multiplier / fps);
 	if(kl.isKeyPressed(KeyControls::getKeybind(controlsDataFile, KeybindType::LOOK_RIGHT)))
-		player.getCamera().getRotR() += (Vector3F(0, 0.05, 0) * multiplier / 5);
+		player.getCamera().getRotR() += (Vector3F(0, 0.05, 0) * multiplier / fps);
 	if(kl.isKeyPressed(KeyControls::getKeybind(controlsDataFile, KeybindType::INPUT_COMMAND)))
 	{
 		std::string input;

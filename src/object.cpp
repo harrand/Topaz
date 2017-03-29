@@ -54,9 +54,9 @@ std::string Object::getParallaxMapLink() const
 
 void Object::render(const std::shared_ptr<Mesh>& mesh, const std::shared_ptr<Texture>& tex, const std::shared_ptr<NormalMap>& nm, const std::shared_ptr<ParallaxMap>& pm, const Camera& cam, const Shader& shad, float width, float height)
 {
-	MatrixTransformations::createModelMatrix(this->pos, this->rot, this->scale).washed().fillData(this->m);
-	MatrixTransformations::createViewMatrix(cam.getPos(), cam.getRot()).washed().fillData(this->v);
-	MatrixTransformations::createProjectionMatrix(1.5708, width, height, 0.1f, 10000.0f).washed().fillData(this->p);
+	MatrixTransformations::createModelMatrix(this->pos, this->rot, this->scale).fillData(this->m);
+	MatrixTransformations::createViewMatrix(cam.getPos(), cam.getRot()).fillData(this->v);
+	MatrixTransformations::createProjectionMatrix(1.5708, width, height, 0.1f, 10000.0f).fillData(this->p);
 	shad.bind();
 	tex->bind(shad.getProgramHandle(), 0);
 	nm->bind(shad.getProgramHandle(), 1);
