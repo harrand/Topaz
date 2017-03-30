@@ -234,17 +234,17 @@ void KeybindController::handleKeybinds(unsigned int fps)
 	float multiplier = CastUtility::fromString<float>(MDLF(RawFile(RES_POINT + "/resources.data")).getTag("speed"));
 	MDLF controlsDataFile = MDLF(RawFile(RES_POINT + "/controls.data"));
 	if(kl.isKeyPressed(KeyControls::getKeybind(controlsDataFile, KeybindType::MOVE_FORWARD)))
-		this->player.getCamera().getPosR() += (player.getCamera().getForward() * multiplier);
+		this->player.getCamera().getPosR() += (player.getCamera().getForward() * multiplier / fps);
 	if(kl.isKeyPressed(KeyControls::getKeybind(controlsDataFile, KeybindType::MOVE_BACKWARD)))
-		this->player.getCamera().getPosR() += (player.getCamera().getBackward() * multiplier);
+		this->player.getCamera().getPosR() += (player.getCamera().getBackward() * multiplier / fps);
 	if(kl.isKeyPressed(KeyControls::getKeybind(controlsDataFile, KeybindType::MOVE_LEFT)))
-		this->player.getCamera().getPosR() += (player.getCamera().getLeft() * multiplier);
+		this->player.getCamera().getPosR() += (player.getCamera().getLeft() * multiplier / fps);
 	if(kl.isKeyPressed(KeyControls::getKeybind(controlsDataFile, KeybindType::MOVE_RIGHT)))
-		this->player.getCamera().getPosR() += (player.getCamera().getRight() * multiplier);
+		this->player.getCamera().getPosR() += (player.getCamera().getRight() * multiplier / fps);
 	if(kl.isKeyPressed(KeyControls::getKeybind(controlsDataFile, KeybindType::MOVE_UP)))
-		this->player.getCamera().getPosR() += (Vector3F(0, 1, 0) * multiplier);
+		this->player.getCamera().getPosR() += (Vector3F(0, 1, 0) * multiplier / fps);
 	if(kl.isKeyPressed(KeyControls::getKeybind(controlsDataFile, KeybindType::MOVE_DOWN)))
-		this->player.getCamera().getPosR() += (Vector3F(0, -1, 0) * multiplier);
+		this->player.getCamera().getPosR() += (Vector3F(0, -1, 0) * multiplier / fps);
 	if(kl.isKeyPressed(KeyControls::getKeybind(controlsDataFile, KeybindType::LOOK_UP)))
 		player.getCamera().getRotR() += (Vector3F(0.05, 0, 0) * multiplier / fps);
 	if(kl.isKeyPressed(KeyControls::getKeybind(controlsDataFile, KeybindType::LOOK_DOWN)))
