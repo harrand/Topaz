@@ -265,7 +265,7 @@ void Commands::setSpeed(float speed)
 {
 	MDLF output(RawFile(RES_POINT + "/resources.data"));
 	output.deleteTag("speed");
-	output.addTag("speed", StringUtility::toString(speed));
+	output.addTag("speed", CastUtility::toString(speed));
 	std::cout << "Setting speed to " << speed << ".\n";
 }
 

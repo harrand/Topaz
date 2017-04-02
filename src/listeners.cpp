@@ -107,17 +107,17 @@ void KeyListener::handleEvents(SDL_Event& evt)
 	}
 }
 
-bool KeyListener::isKeyPressed(std::string keyname) const
+bool KeyListener::isKeyPressed(const std::string& keyname) const
 {
 	return (std::find(this->pressedKeys.begin(), this->pressedKeys.end(), keyname) != this->pressedKeys.end());
 }
 
-bool KeyListener::isKeyReleased(std::string keyname) const
+bool KeyListener::isKeyReleased(const std::string& keyname) const
 {
 	return (std::find(this->releasedKeys.begin(), this->releasedKeys.end(), keyname) != this->releasedKeys.end());
 }
 
-bool KeyListener::catchKeyPressed(std::string keyname)
+bool KeyListener::catchKeyPressed(const std::string& keyname)
 {
 	bool pressed = this->isKeyPressed(keyname);
 	if(pressed)
@@ -125,7 +125,7 @@ bool KeyListener::catchKeyPressed(std::string keyname)
 	return pressed;
 }
 
-bool KeyListener::catchKeyReleased(std::string keyname)
+bool KeyListener::catchKeyReleased(const std::string& keyname)
 {
 	bool released = this->isKeyReleased(keyname);
 	if(released)
@@ -133,7 +133,7 @@ bool KeyListener::catchKeyReleased(std::string keyname)
 	return released;
 }
 
-KeybindType KeyControls::getKeybindType(std::string keyBindType)
+KeybindType KeyControls::getKeybindType(const std::string& keyBindType)
 {
 	if(keyBindType == "MOVE_FORWARD")
 		return KeybindType::MOVE_FORWARD;

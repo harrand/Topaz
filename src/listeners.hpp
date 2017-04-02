@@ -41,10 +41,10 @@ public:
 	KeyListener(): Listener(){}
 	~KeyListener(){}
 	void handleEvents(SDL_Event& evt);
-	bool isKeyPressed(std::string keyname) const;
-	bool isKeyReleased(std::string keyname) const;
-	bool catchKeyPressed(std::string keyname);
-	bool catchKeyReleased(std::string keyname);
+	bool isKeyPressed(const std::string& keyname) const;
+	bool isKeyReleased(const std::string& keyname) const;
+	bool catchKeyPressed(const std::string& keyname);
+	bool catchKeyReleased(const std::string& keyname);
 private:
 	std::vector<std::string> pressedKeys;
 	std::vector<std::string> releasedKeys;
@@ -71,7 +71,7 @@ enum class KeybindType : unsigned int
 
 namespace KeyControls
 {
-	KeybindType getKeybindType(std::string keyBindType);
+	KeybindType getKeybindType(const std::string& keyBindType);
 	std::string getKeybind(MDLF& controlsDataFile, KeybindType kt);
 }
 

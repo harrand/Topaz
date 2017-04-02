@@ -66,10 +66,7 @@ void World::addEntityObject(std::shared_ptr<EntityObject> eo)
 	this->entityObjects.push_back(eo);
 }
 
-//temp 
-#include <iostream>
-
-void World::exportWorld(std::string worldName) const
+void World::exportWorld(const std::string& worldName) const
 {
 	DataTranslation dt(RES_POINT + "/resources.data");
 	std::string worldLink = RES_POINT + "/worlds/" + worldName;
@@ -79,17 +76,16 @@ void World::exportWorld(std::string worldName) const
 	std::vector<std::string> eoList;
 	output.deleteSequence("objects");
 	output.deleteSequence("entityobjects");
-	std::string gravLink = "[" + StringUtility::toString(this->gravity.getX()) + ", " + StringUtility::toString(this->gravity.getY()) + ", " + StringUtility::toString(this->gravity.getZ()) + "]";
-	std::string spawnPointLink = "[" + StringUtility::toString(this->spawnPoint.getX()) + ", " + StringUtility::toString(this->spawnPoint.getY()) + ", " + StringUtility::toString(this->spawnPoint.getZ()) + "]";
-	std::string spawnOrientationLink = "[" + StringUtility::toString(this->spawnOrientation.getX()) + ", " + StringUtility::toString(this->spawnOrientation.getY()) + ", " + StringUtility::toString(this->spawnOrientation.getZ()) + "]";
+	std::string gravLink = "[" + CastUtility::toString(this->gravity.getX()) + ", " + CastUtility::toString(this->gravity.getY()) + ", " + CastUtility::toString(this->gravity.getZ()) + "]";
+	std::string spawnPointLink = "[" + CastUtility::toString(this->spawnPoint.getX()) + ", " + CastUtility::toString(this->spawnPoint.getY()) + ", " + CastUtility::toString(this->spawnPoint.getZ()) + "]";
+	std::string spawnOrientationLink = "[" + CastUtility::toString(this->spawnOrientation.getX()) + ", " + CastUtility::toString(this->spawnOrientation.getY()) + ", " + CastUtility::toString(this->spawnOrientation.getZ()) + "]";
 
 	output.editTag("gravity", gravLink);
 	output.editTag("spawnpoint", spawnPointLink);
 	output.editTag("spawnorientation", spawnOrientationLink);
 	for(unsigned int i = 0; i < this->members.size(); i++)
 	{
-		std::string objectName = "object" + StringUtility::toString(i);
-		std::cout << "Exporting " << objectName << "(" << this->members.size() << ")...\n";
+		std::string objectName = "object" + CastUtility::toString(i);
 		objectList.push_back(objectName);
 		Object curObj = this->members.at(i);
 		std::string meshLink = curObj.getMeshLink();
@@ -99,9 +95,9 @@ void World::exportWorld(std::string worldName) const
 		
 		Vector3F pos = curObj.getPos(), rot = curObj.getRot(), scale = curObj.getScale();
 		
-		std::string posLink = "[" + StringUtility::toString(pos.getX()) + ", " + StringUtility::toString(pos.getY()) + ", " + StringUtility::toString(pos.getZ()) + "]";
-		std::string rotLink = "[" + StringUtility::toString(rot.getX()) + ", " + StringUtility::toString(rot.getY()) + ", " + StringUtility::toString(rot.getZ()) + "]";
-		std::string scaleLink = "[" + StringUtility::toString(scale.getX()) + ", " + StringUtility::toString(scale.getY()) + ", " + StringUtility::toString(scale.getZ()) + "]";
+		std::string posLink = "[" + CastUtility::toString(pos.getX()) + ", " + CastUtility::toString(pos.getY()) + ", " + CastUtility::toString(pos.getZ()) + "]";
+		std::string rotLink = "[" + CastUtility::toString(rot.getX()) + ", " + CastUtility::toString(rot.getY()) + ", " + CastUtility::toString(rot.getZ()) + "]";
+		std::string scaleLink = "[" + CastUtility::toString(scale.getX()) + ", " + CastUtility::toString(scale.getY()) + ", " + CastUtility::toString(scale.getZ()) + "]";
 		
 		std::string meshName = dt.getResourceName(meshLink);
 		std::string textureName = dt.getResourceName(textureLink);
@@ -118,7 +114,7 @@ void World::exportWorld(std::string worldName) const
 	}
 	for(unsigned int i = 0; i < this->entityObjects.size(); i++)
 	{
-		std::string eoName = "eo" + StringUtility::toString(i);
+		std::string eoName = "eo" + CastUtility::toString(i);
 		eoList.push_back(eoName);
 		std::shared_ptr<EntityObject> curEO = this->entityObjects.at(i);
 		std::string meshLink = curEO->getMeshLink();
@@ -126,13 +122,13 @@ void World::exportWorld(std::string worldName) const
 		std::string normalMapLink = curEO->getNormalMapLink();
 		std::string parallaxMapLink = curEO->getParallaxMapLink();
 		
-		std::string massStr = StringUtility::toString(curEO->getMass());
+		std::string massStr = CastUtility::toString(curEO->getMass());
 		
 		Vector3F pos = curEO->getPos(), rot = curEO->getRot(), scale = curEO->getScale();
 		
-		std::string posLink = "[" + StringUtility::toString(pos.getX()) + ", " + StringUtility::toString(pos.getY()) + ", " + StringUtility::toString(pos.getZ()) + "]";
-		std::string rotLink = "[" + StringUtility::toString(rot.getX()) + ", " + StringUtility::toString(rot.getY()) + ", " + StringUtility::toString(rot.getZ()) + "]";
-		std::string scaleLink = "[" + StringUtility::toString(scale.getX()) + ", " + StringUtility::toString(scale.getY()) + ", " + StringUtility::toString(scale.getZ()) + "]";
+		std::string posLink = "[" + CastUtility::toString(pos.getX()) + ", " + CastUtility::toString(pos.getY()) + ", " + CastUtility::toString(pos.getZ()) + "]";
+		std::string rotLink = "[" + CastUtility::toString(rot.getX()) + ", " + CastUtility::toString(rot.getY()) + ", " + CastUtility::toString(rot.getZ()) + "]";
+		std::string scaleLink = "[" + CastUtility::toString(scale.getX()) + ", " + CastUtility::toString(scale.getY()) + ", " + CastUtility::toString(scale.getZ()) + "]";
 		
 		std::string meshName = dt.getResourceName(meshLink);
 		std::string textureName = dt.getResourceName(textureLink);
@@ -241,7 +237,7 @@ std::string World::getWorldLink() const
 	return this->filename;
 }
 
-Object World::retrieveData(std::string objectName, MDLF& mdlf)
+Object World::retrieveData(const std::string& objectName, MDLF& mdlf)
 {
 	std::string meshName = mdlf.getTag(objectName + ".mesh");
 	std::string textureName = mdlf.getTag(objectName + ".texture");
@@ -279,7 +275,7 @@ Object World::retrieveData(std::string objectName, MDLF& mdlf)
 	return Object(meshLink, textureLink, normalMapLink, parallaxMapLink, pos, rot, scale);
 }
 
-std::shared_ptr<EntityObject> World::retrieveEOData(std::string eoName, MDLF& mdlf)
+std::shared_ptr<EntityObject> World::retrieveEOData(const std::string& eoName, MDLF& mdlf)
 {
 	std::string meshName = mdlf.getTag(eoName + ".mesh");
 	std::string textureName = mdlf.getTag(eoName + ".texture");

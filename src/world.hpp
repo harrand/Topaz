@@ -11,7 +11,7 @@ public:
 	void addObject(Object obj);
 	void addEntity(Entity* ent);
 	void addEntityObject(std::shared_ptr<EntityObject> eo);
-	void exportWorld(std::string worldName) const;
+	void exportWorld(const std::string& worldName) const;
 	void setGravity(Vector3F gravity = Vector3F());
 	void setSpawnPoint(Vector3F spawnPoint = Vector3F());
 	void setSpawnOrientation(Vector3F spawnOrientation = Vector3F());
@@ -28,8 +28,8 @@ public:
 private:
 	Vector3F gravity, spawnPoint, spawnOrientation;
 	const std::string filename;
-	static Object retrieveData(std::string objectName, MDLF& mdlf);
-	static std::shared_ptr<EntityObject> retrieveEOData(std::string eoName, MDLF& mdlf);
+	static Object retrieveData(const std::string& objectName, MDLF& mdlf);
+	static std::shared_ptr<EntityObject> retrieveEOData(const std::string& eoName, MDLF& mdlf);
 	std::vector<Object> members;
 	std::vector<Entity*> entities;
 	std::vector<std::shared_ptr<EntityObject>> entityObjects;

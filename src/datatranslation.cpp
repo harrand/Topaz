@@ -2,12 +2,12 @@
 
 DataTranslation::DataTranslation(std::string datafilename): datafilename(datafilename){}
 
-std::string DataTranslation::getResourceLink(std::string resourceName) const
+std::string DataTranslation::getResourceLink(const std::string& resourceName) const
 {
 	return MDLF(RawFile(this->datafilename)).getTag(resourceName + ".path");
 }
 
-std::string DataTranslation::getResourceName(std::string resourceLink) const
+std::string DataTranslation::getResourceName(const std::string& resourceLink) const
 {
 	const RawFile input(this->datafilename);
 	for(unsigned int i = 0; i < input.getLines().size(); i++)

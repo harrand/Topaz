@@ -1,9 +1,7 @@
 #include "shader.hpp"
 
-Shader::Shader(std::string filename)
+Shader::Shader(std::string filename): filename(filename)
 {
-	this->filename = filename;
-	
 	// Allocate space on GPU memory for shader.
 	this->programHandle = glCreateProgram();
 	// Vertex Shader

@@ -5,9 +5,9 @@
 class Quaternion
 {
 public:
-	Quaternion(Vector3F rotationAxis, float angleRadians);
-	Quaternion(Vector3F eulerRotation);
-	Quaternion(Vector4F quat);
+	Quaternion(const Vector3F& rotationAxis, float angleRadians);
+	Quaternion(const Vector3F& eulerRotation);
+	Quaternion(const Vector4F& quat);
 	
 	float& getXR();
 	float& getYR();

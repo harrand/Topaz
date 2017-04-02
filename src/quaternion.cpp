@@ -1,6 +1,6 @@
 #include "quaternion.hpp"
 
-Quaternion::Quaternion(Vector3F rotationAxis, float angleRadians)
+Quaternion::Quaternion(const Vector3F& rotationAxis, float angleRadians)
 {
 	this->x = rotationAxis.getX() * sin(angleRadians / 2);
 	this->y = rotationAxis.getY() * sin(angleRadians / 2);
@@ -8,9 +8,9 @@ Quaternion::Quaternion(Vector3F rotationAxis, float angleRadians)
 	this->w = cos(angleRadians / 2);
 }
 
-Quaternion::Quaternion(Vector3F eulerRotation)
+Quaternion::Quaternion(const Vector3F& eulerRotation)
 {
-	Vector3F x(1, 0, 0), y(0, 1, 0), z(0, 0, 1);
+	const Vector3F x(1, 0, 0), y(0, 1, 0), z(0, 0, 1);
 	Quaternion qx(x, eulerRotation.getX());
 	Quaternion qy(y, eulerRotation.getY());
 	Quaternion qz(z, eulerRotation.getZ());
@@ -18,7 +18,7 @@ Quaternion::Quaternion(Vector3F eulerRotation)
 	*this = res;
 }
 
-Quaternion::Quaternion(Vector4F quat)
+Quaternion::Quaternion(const Vector4F& quat)
 {
 	this->x = quat.getX();
 	this->y = quat.getY();

@@ -1,23 +1,18 @@
 #include "utility.hpp"
 
-std::string StringUtility::toString(float obj)
-{
-	std::ostringstream ostr;
-	ostr << obj;
-	return ostr.str();
-}
-
-inline void StringUtility::toLower(std::string& data)
+std::string StringUtility::toLower(std::string data)
 {
 	std::transform(data.begin(), data.end(), data.begin(), ::tolower);
+	return data;
 }
 
-inline void StringUtility::toUpper(std::string& data)
+std::string StringUtility::toUpper(std::string data)
 {
 	std::transform(data.begin(), data.end(), data.begin(), ::toupper);
+	return data;
 }
 
-bool StringUtility::beginsWith(std::string what, std::string withwhat)
+bool StringUtility::beginsWith(const std::string& what, const std::string& withwhat)
 {
 	unsigned int strsize = what.length(), withsize = withwhat.length();
 	const char* str = what.c_str();
@@ -39,7 +34,7 @@ bool StringUtility::beginsWith(std::string what, std::string withwhat)
 	}
 }
 
-bool StringUtility::endsWith(std::string what, std::string withwhat)
+bool StringUtility::endsWith(const std::string& what, const std::string& withwhat)
 {
 	unsigned int strsize = what.length(), withsize = withwhat.length();
 	const char* str = what.c_str();
@@ -61,7 +56,7 @@ bool StringUtility::endsWith(std::string what, std::string withwhat)
 	}
 }
 
-bool StringUtility::contains(std::string what, char withwhat)
+bool StringUtility::contains(const std::string& what, char withwhat)
 {
 	const char* whatcstr = what.c_str();
 	for(unsigned int i = 0; i < what.length(); i++)
@@ -69,7 +64,7 @@ bool StringUtility::contains(std::string what, char withwhat)
 			return true;
 }
 
-std::vector<std::string> StringUtility::splitString(std::string split, char delim)
+std::vector<std::string> StringUtility::splitString(const std::string& split, char delim)
 {
 	unsigned int strsize = split.length();
 	const char* str = split.c_str();
@@ -115,7 +110,7 @@ std::vector<std::string> StringUtility::splitString(std::string split, char deli
 	return ret;
 }
 
-std::string StringUtility::replaceAllChar(std::string str, char toreplace, std::string replacewith)
+std::string StringUtility::replaceAllChar(const std::string& str, char toreplace, const std::string& replacewith)
 {
 	std::string res;
 	std::vector<std::string> splitdelim = StringUtility::splitString(str, toreplace);
@@ -127,7 +122,7 @@ std::string StringUtility::replaceAllChar(std::string str, char toreplace, std::
 	return res;
 }
 
-std::string StringUtility::substring(std::string str, unsigned int begin, unsigned int end)
+std::string StringUtility::substring(const std::string& str, unsigned int begin, unsigned int end)
 {
 	unsigned int strsize = str.length();
 	if(end > strsize)

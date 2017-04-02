@@ -12,20 +12,27 @@
 
 namespace StringUtility
 {
-	std::string toString(float obj);
-	inline void toLower(std::string& data);
-	inline void toUpper(std::string& data);
-	bool beginsWith(std::string what, std::string withwhat);
-	bool endsWith(std::string what, std::string withwhat);
-	bool contains(std::string what, char withwhat);
-	std::vector<std::string> splitString(std::string split, char delim);
-	std::string replaceAllChar(std::string str, char toreplace, std::string replacewith);
-	std::string substring(std::string str, unsigned int begin, unsigned int end);
+	std::string toLower(std::string data);
+	std::string toUpper(std::string data);
+	bool beginsWith(const std::string& what, const std::string& withwhat);
+	bool endsWith(const std::string& what, const std::string& withwhat);
+	bool contains(const std::string& what, char withwhat);
+	std::vector<std::string> splitString(const std::string& split, char delim);
+	std::string replaceAllChar(const std::string& str, char toreplace, const std::string& replacewith);
+	std::string substring(const std::string& str, unsigned int begin, unsigned int end);
 }
 
 namespace CastUtility
 {
 	// Implementation must be kept inside the header to avoid linker errors.
+	template <typename T>
+	std::string toString(T obj)
+	{
+		std::ostringstream oss;
+		oss << obj;
+		return oss.str();
+	}
+	
 	template <typename T>
 	T fromString(const std::string& s)
 	{

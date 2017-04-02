@@ -31,19 +31,29 @@ int main()
 	std::cout << "Retrieved " << DataTranslation(RES_POINT + "/resources.data").retrieveAllData(allMeshes, allTextures, allNormalMaps, allParallaxMaps) << " assets.\n";
 	TimeKeeper tk;
 	TimeProfiler tp;
-	unsigned int fps  = 1;
+	unsigned int fps  = 1000;
+	
+	std::vector<float> processingThisFrame;
+	//processingThisFrame.reserve(1000);
 
 	while(!wnd.isCloseRequested())
 	{
 		if(tk.millisPassed(1000))
 		{
 			fps = tp.getFPS();
-			std::cout << "avgdt = " << tp.getDeltaAverage() << "ms, avgFPS = " << fps << " frames per second.\n";
+			std::cout << "avgdt = " << tp.getDeltaAverage() << " ms, avgFPS = " << fps << " frames per second.\n";
 			tp.reset();
 			secondsLifetime++;
 			tk.reload();
 			std::cout << "Camera Position = [" << cam.getPosR().getX() << ", " << cam.getPosR().getY() << ", " << cam.getPosR().getZ() << "].\n";
 			std::cout << "Lifetime Spent: " << secondsLifetime << " seconds.\n";
+			float total = 0;
+			for(unsigned int i = 0; i < processingThisFrame.size(); i++)
+			{
+				total += processingThisFrame.at(i);
+			}
+			std::cout << "Average Rendering Time: " << total/processingThisFrame.size() << " ms. Average Time spent rendering this second: " << total/processingThisFrame.size() * fps << " ms\n";
+			processingThisFrame.clear();
 		}
 		wnd.setRenderTarget();
 		tp.beginFrame();
@@ -54,7 +64,10 @@ int main()
 		kc.handleKeybinds(fps);
 		mc.getMouseListener().reloadMouseDelta();
 		tp.endFrame();
+		TimeKeeper renderTime;
 		world->update(fps, cam, shader, wnd.getWidth(), wnd.getHeight(), allMeshes, allTextures, allNormalMaps, allParallaxMaps);
+		renderTime.update();
+		processingThisFrame.push_back(renderTime.getRange());
 		wnd.update();
 		wnd.setTitle("Topaz Testing Environment - '" + world->getWorldLink() + "'");
 	}
