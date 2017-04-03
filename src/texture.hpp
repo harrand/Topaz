@@ -27,6 +27,8 @@ class Texture
 {
 public:
 	Texture(std::string filename = "../../../res/runtime/textures/undefined.jpg");
+	Texture(const Texture& copy);
+	Texture(Texture&& rmove);
 	~Texture();
 	void bind(GLuint shaderProgram, unsigned int id);
 	std::string getFileName() const;

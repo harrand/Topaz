@@ -94,6 +94,18 @@ Texture::Texture(std::string filename)
 	this->deleteTexture(imgdata);
 }
 
+Texture::Texture(const Texture& copy): Texture(copy.getFileName()){}
+
+Texture::Texture(Texture&& rmove): filename(rmove.getFileName()), textureID(rmove.textureID), texhandle(rmove.texhandle), width(rmove.width), height(rmove.height), comps(rmove.comps)
+{
+	rmove.textureID = 0;
+	rmove.texhandle = 0;
+	rmove.width = 0;
+	rmove.height = 0;
+	rmove.comps = 0;
+	rmove.filename = "";
+}
+
 Texture::~Texture()
 {
 	glDeleteTextures(1, &(this->texhandle));
