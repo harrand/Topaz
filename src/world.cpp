@@ -3,14 +3,12 @@
 World::World(std::string filename): filename(filename)
 {
 	MDLF input(RawFile(this->filename));
-	auto deformat = [](const std::string& str) -> std::vector<std::string>{return StringUtility::splitString(StringUtility::replaceAllChar(StringUtility::replaceAllChar(str, '[', ""), ']', ""), ',');};
-	auto vectoriseList = [](std::vector<std::string>&& list) -> Vector3F{if(list.size() < 3) return Vector3F(); return Vector3F(CastUtility::fromString<float>(list.at(0)), CastUtility::fromString<float>(list.at(1)), CastUtility::fromString<float>(list.at(2)));};
 	std::string spawnPointStr = input.getTag("spawnpoint"), spawnOrientationStr = input.getTag("spawnorientation"), gravStr = input.getTag("gravity");
 	if(spawnPointStr != "0" && spawnOrientationStr != "0" && gravStr != "0")
 	{
-		this->spawnPoint = vectoriseList(deformat(spawnPointStr));
-		this->spawnOrientation = vectoriseList(deformat(spawnOrientationStr));
-		this->gravity = vectoriseList(deformat(gravStr));
+		this->spawnPoint = StringUtility::vectoriseList3F(StringUtility::deformat(spawnPointStr));
+		this->spawnOrientation = StringUtility::vectoriseList3F(StringUtility::deformat(spawnOrientationStr));
+		this->gravity = StringUtility::vectoriseList3F(StringUtility::deformat(gravStr));
 	}
 	else
 	{
@@ -74,73 +72,38 @@ void World::exportWorld(const std::string& worldName) const
 	std::vector<std::string> eoList;
 	output.deleteSequence("objects");
 	output.deleteSequence("entityobjects");
-	std::string gravLink = "[" + CastUtility::toString<float>(this->gravity.getX()) + ", " + CastUtility::toString<float>(this->gravity.getY()) + ", " + CastUtility::toString<float>(this->gravity.getZ()) + "]";
-	std::string spawnPointLink = "[" + CastUtility::toString<float>(this->spawnPoint.getX()) + ", " + CastUtility::toString<float>(this->spawnPoint.getY()) + ", " + CastUtility::toString<float>(this->spawnPoint.getZ()) + "]";
-	std::string spawnOrientationLink = "[" + CastUtility::toString<float>(this->spawnOrientation.getX()) + ", " + CastUtility::toString<float>(this->spawnOrientation.getY()) + ", " + CastUtility::toString<float>(this->spawnOrientation.getZ()) + "]";
-
-	output.editTag("gravity", gravLink);
-	output.editTag("spawnpoint", spawnPointLink);
-	output.editTag("spawnorientation", spawnOrientationLink);
+	
+	output.editTag("gravity", StringUtility::format(StringUtility::devectoriseList3F(this->gravity)));
+	output.editTag("spawnpoint", StringUtility::format(StringUtility::devectoriseList3F(this->spawnPoint)));
+	output.editTag("spawnorientation", StringUtility::format(StringUtility::devectoriseList3F(this->spawnOrientation)));
 	for(unsigned int i = 0; i < this->members.size(); i++)
 	{
 		std::string objectName = "object" + CastUtility::toString<float>(i);
 		objectList.push_back(objectName);
 		Object curObj = this->members.at(i);
-		std::string meshLink = curObj.getMeshLink();
-		std::string textureLink = curObj.getTextureLink();
-		std::string normalMapLink = curObj.getNormalMapLink();
-		std::string parallaxMapLink = curObj.getParallaxMapLink();
 		
-		Vector3F pos = curObj.getPos(), rot = curObj.getRot(), scale = curObj.getScale();
-		
-		std::string posLink = "[" + CastUtility::toString<float>(pos.getX()) + ", " + CastUtility::toString<float>(pos.getY()) + ", " + CastUtility::toString<float>(pos.getZ()) + "]";
-		std::string rotLink = "[" + CastUtility::toString<float>(rot.getX()) + ", " + CastUtility::toString<float>(rot.getY()) + ", " + CastUtility::toString<float>(rot.getZ()) + "]";
-		std::string scaleLink = "[" + CastUtility::toString<float>(scale.getX()) + ", " + CastUtility::toString<float>(scale.getY()) + ", " + CastUtility::toString<float>(scale.getZ()) + "]";
-		
-		std::string meshName = dt.getResourceName(meshLink);
-		std::string textureName = dt.getResourceName(textureLink);
-		std::string normalMapName = dt.getResourceName(normalMapLink);
-		std::string parallaxMapName = dt.getResourceName(parallaxMapLink);
-		
-		output.editTag(objectName + ".mesh", meshName);
-		output.editTag(objectName + ".texture", textureName);
-		output.editTag(objectName + ".normalmap", normalMapName);
-		output.editTag(objectName + ".parallaxmap", parallaxMapName);
-		output.editTag(objectName + ".pos", posLink);
-		output.editTag(objectName + ".rot", rotLink);
-		output.editTag(objectName + ".scale", scaleLink);
+		output.editTag(objectName + ".mesh", dt.getResourceName(curObj.getMeshLink()));
+		output.editTag(objectName + ".texture", dt.getResourceName(curObj.getTextureLink()));
+		output.editTag(objectName + ".normalmap", dt.getResourceName(curObj.getNormalMapLink()));
+		output.editTag(objectName + ".parallaxmap", dt.getResourceName(curObj.getParallaxMapLink()));
+		output.editTag(objectName + ".pos", StringUtility::format(StringUtility::devectoriseList3F(curObj.getPos())));
+		output.editTag(objectName + ".rot", StringUtility::format(StringUtility::devectoriseList3F(curObj.getRot())));
+		output.editTag(objectName + ".scale", StringUtility::format(StringUtility::devectoriseList3F(curObj.getScale())));
 	}
 	for(unsigned int i = 0; i < this->entityObjects.size(); i++)
 	{
 		std::string eoName = "eo" + CastUtility::toString<float>(i);
 		eoList.push_back(eoName);
 		std::shared_ptr<EntityObject> curEO = this->entityObjects.at(i);
-		std::string meshLink = curEO->getMeshLink();
-		std::string textureLink = curEO->getTextureLink();
-		std::string normalMapLink = curEO->getNormalMapLink();
-		std::string parallaxMapLink = curEO->getParallaxMapLink();
-		
-		std::string massStr = CastUtility::toString<float>(curEO->getMass());
-		
-		Vector3F pos = curEO->getPos(), rot = curEO->getRot(), scale = curEO->getScale();
-		
-		std::string posLink = "[" + CastUtility::toString<float>(pos.getX()) + ", " + CastUtility::toString<float>(pos.getY()) + ", " + CastUtility::toString<float>(pos.getZ()) + "]";
-		std::string rotLink = "[" + CastUtility::toString<float>(rot.getX()) + ", " + CastUtility::toString<float>(rot.getY()) + ", " + CastUtility::toString<float>(rot.getZ()) + "]";
-		std::string scaleLink = "[" + CastUtility::toString<float>(scale.getX()) + ", " + CastUtility::toString<float>(scale.getY()) + ", " + CastUtility::toString<float>(scale.getZ()) + "]";
-		
-		std::string meshName = dt.getResourceName(meshLink);
-		std::string textureName = dt.getResourceName(textureLink);
-		std::string normalMapName = dt.getResourceName(normalMapLink);
-		std::string parallaxMapName = dt.getResourceName(parallaxMapLink);
-		
-		output.editTag(eoName + ".mesh", meshName);
-		output.editTag(eoName + ".texture", textureName);
-		output.editTag(eoName + ".normalmap", normalMapName);
-		output.editTag(eoName + ".parallaxmap", parallaxMapName);
-		output.editTag(eoName + ".mass", massStr);
-		output.editTag(eoName + ".pos", posLink);
-		output.editTag(eoName + ".rot", rotLink);
-		output.editTag(eoName + ".scale", scaleLink);
+
+		output.editTag(eoName + ".mesh", dt.getResourceName(curEO->getMeshLink()));
+		output.editTag(eoName + ".texture", dt.getResourceName(curEO->getTextureLink()));
+		output.editTag(eoName + ".normalmap", dt.getResourceName(curEO->getNormalMapLink()));
+		output.editTag(eoName + ".parallaxmap", dt.getResourceName(curEO->getParallaxMapLink()));
+		output.editTag(eoName + ".mass", CastUtility::toString<float>(curEO->getMass()));
+		output.editTag(eoName + ".pos", StringUtility::format(StringUtility::devectoriseList3F(curEO->getPos())));
+		output.editTag(eoName + ".rot", StringUtility::format(StringUtility::devectoriseList3F(curEO->getRot())));
+		output.editTag(eoName + ".scale", StringUtility::format(StringUtility::devectoriseList3F(curEO->getScale())));
 	}
 	output.addSequence("objects", objectList);
 	output.addSequence("entityobjects", eoList);
@@ -252,25 +215,7 @@ Object World::retrieveData(const std::string& objectName, MDLF& mdlf)
 	std::string normalMapLink = dt.getResourceLink(normalMapName);
 	std::string parallaxMapLink = dt.getResourceLink(parallaxMapName);
 	
-	std::vector<std::string> posData = StringUtility::splitString(StringUtility::replaceAllChar((StringUtility::replaceAllChar(positionStr, '[', "")), ']', ""), ',');
-	float posX = CastUtility::fromString<float>(posData.at(0));
-	float posY = CastUtility::fromString<float>(posData.at(1));
-	float posZ = CastUtility::fromString<float>(posData.at(2));
-	Vector3F pos(posX, posY, posZ);
-	
-	std::vector<std::string> rotData = StringUtility::splitString(StringUtility::replaceAllChar((StringUtility::replaceAllChar(rotationStr, '[', "")), ']', ""), ',');
-	float rotX = CastUtility::fromString<float>(rotData.at(0));
-	float rotY = CastUtility::fromString<float>(rotData.at(1));
-	float rotZ = CastUtility::fromString<float>(rotData.at(2));
-	Vector3F rot(rotX, rotY, rotZ);
-	
-	std::vector<std::string> scaleData = StringUtility::splitString(StringUtility::replaceAllChar((StringUtility::replaceAllChar(scaleStr, '[', "")), ']', ""), ',');
-	float scaleX = CastUtility::fromString<float>(scaleData.at(0));
-	float scaleY = CastUtility::fromString<float>(scaleData.at(1));
-	float scaleZ = CastUtility::fromString<float>(scaleData.at(2));
-	Vector3F scale(scaleX, scaleY, scaleZ);
-	
-	return Object(meshLink, textureLink, normalMapLink, parallaxMapLink, pos, rot, scale);
+	return Object(meshLink, textureLink, normalMapLink, parallaxMapLink, StringUtility::vectoriseList3F(StringUtility::deformat(positionStr)), StringUtility::vectoriseList3F(StringUtility::deformat(rotationStr)), StringUtility::vectoriseList3F(StringUtility::deformat(scaleStr)));
 }
 
 std::shared_ptr<EntityObject> World::retrieveEOData(const std::string& eoName, MDLF& mdlf)
@@ -290,26 +235,7 @@ std::shared_ptr<EntityObject> World::retrieveEOData(const std::string& eoName, M
 	std::string textureLink = dt.getResourceLink(textureName);
 	std::string normalMapLink = dt.getResourceLink(normalMapName);
 	std::string parallaxMapLink = dt.getResourceLink(parallaxMapName);
-	
-	std::vector<std::string> posData = StringUtility::splitString(StringUtility::replaceAllChar((StringUtility::replaceAllChar(positionStr, '[', "")), ']', ""), ',');
-	float posX = CastUtility::fromString<float>(posData.at(0));
-	float posY = CastUtility::fromString<float>(posData.at(1));
-	float posZ = CastUtility::fromString<float>(posData.at(2));
-	Vector3F pos(posX, posY, posZ);
-	
-	std::vector<std::string> rotData = StringUtility::splitString(StringUtility::replaceAllChar((StringUtility::replaceAllChar(rotationStr, '[', "")), ']', ""), ',');
-	float rotX = CastUtility::fromString<float>(rotData.at(0));
-	float rotY = CastUtility::fromString<float>(rotData.at(1));
-	float rotZ = CastUtility::fromString<float>(rotData.at(2));
-	Vector3F rot(rotX, rotY, rotZ);
-	
-	std::vector<std::string> scaleData = StringUtility::splitString(StringUtility::replaceAllChar((StringUtility::replaceAllChar(scaleStr, '[', "")), ']', ""), ',');
-	float scaleX = CastUtility::fromString<float>(scaleData.at(0));
-	float scaleY = CastUtility::fromString<float>(scaleData.at(1));
-	float scaleZ = CastUtility::fromString<float>(scaleData.at(2));
-	Vector3F scale(scaleX, scaleY, scaleZ);
-	
 	float mass = CastUtility::fromString<float>(massStr);
 	
-	return std::shared_ptr<EntityObject>(new EntityObject(meshLink, textureLink, normalMapLink, parallaxMapLink, mass, pos, rot, scale));
+	return std::shared_ptr<EntityObject>(new EntityObject(meshLink, textureLink, normalMapLink, parallaxMapLink, mass, StringUtility::vectoriseList3F(StringUtility::deformat(positionStr)), StringUtility::vectoriseList3F(StringUtility::deformat(rotationStr)), StringUtility::vectoriseList3F(StringUtility::deformat(scaleStr))));
 }

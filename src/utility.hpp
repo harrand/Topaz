@@ -10,6 +10,27 @@
 #include <unordered_map>
 #include "vector.hpp"
 
+namespace CastUtility
+{
+	// Implementation must be kept inside the header to avoid linker errors.
+	template <typename T>
+	inline std::string toString(T obj)
+	{
+		std::ostringstream oss;
+		oss << obj;
+		return oss.str();
+	}
+	
+	template <typename T>
+	inline T fromString(const std::string& s)
+	{
+		T ret;
+		std::istringstream ss(s);
+		ss >> ret;
+		return ret;
+	}
+}
+
 namespace StringUtility
 {
 	inline std::string toLower(std::string data)
@@ -141,25 +162,40 @@ namespace StringUtility
 			return "_";
 		return str.substr((begin-1), (end-begin)+1);
 	}
-}
-
-namespace CastUtility
-{
-	// Implementation must be kept inside the header to avoid linker errors.
-	template <typename T>
-	inline std::string toString(T obj)
+	
+	inline std::string format(const std::vector<std::string>& split)
 	{
-		std::ostringstream oss;
-		oss << obj;
-		return oss.str();
+		std::string ret = "[";
+		for(unsigned int i = 0; i < split.size(); i++)
+		{
+			ret += split.at(i);
+			if(i < (split.size() - 1))
+				ret += ",";
+			else
+				ret += "]";
+		}
+		return ret;
 	}
 	
-	template <typename T>
-	inline T fromString(const std::string& s)
+	inline std::vector<std::string> deformat(const std::string& str)
 	{
-		T ret;
-		std::istringstream ss(s);
-		ss >> ret;
+		return StringUtility::splitString(StringUtility::replaceAllChar(StringUtility::replaceAllChar(str, '[', ""), ']', ""), ',');
+	}
+	
+	inline Vector3F vectoriseList3F(const std::vector<std::string>& list)
+	{
+		if(list.size() < 3)
+			return Vector3F();
+		return Vector3F(CastUtility::fromString<float>(list.at(0)), CastUtility::fromString<float>(list.at(1)), CastUtility::fromString<float>(list.at(2)));
+	}
+	
+	inline std::vector<std::string> devectoriseList3F(Vector3F v)
+	{
+		std::vector<std::string> ret;
+		ret.reserve(3);
+		ret.push_back(CastUtility::toString<float>(v.getX()));
+		ret.push_back(CastUtility::toString<float>(v.getY()));
+		ret.push_back(CastUtility::toString<float>(v.getZ()));
 		return ret;
 	}
 }
