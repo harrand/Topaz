@@ -3,15 +3,14 @@
 World::World(std::string filename): filename(filename)
 {
 	MDLF input(RawFile(this->filename));
+	auto deformat = [](std::string str) -> std::vector<std::string>{return StringUtility::splitString(StringUtility::replaceAllChar(StringUtility::replaceAllChar(str, '[', ""), ']', ""), ',');};
+	auto vectoriseList = [](std::vector<std::string> list) -> Vector3F{if(list.size() < 3) return Vector3F(); return Vector3F(CastUtility::fromString<float>(list.at(0)), CastUtility::fromString<float>(list.at(1)), CastUtility::fromString<float>(list.at(2)));};
 	std::string spawnPointStr = input.getTag("spawnpoint"), spawnOrientationStr = input.getTag("spawnorientation"), gravStr = input.getTag("gravity");
 	if(spawnPointStr != "0" && spawnOrientationStr != "0" && gravStr != "0")
 	{
-		std::vector<std::string> spawnPointSplit = StringUtility::splitString(StringUtility::replaceAllChar(StringUtility::replaceAllChar(spawnPointStr, '[', ""), ']', ""), ',');
-		std::vector<std::string> spawnOrientationSplit = StringUtility::splitString(StringUtility::replaceAllChar(StringUtility::replaceAllChar(spawnOrientationStr, '[', ""), ']', ""), ',');
-		std::vector<std::string> gravSplit = StringUtility::splitString(StringUtility::replaceAllChar(StringUtility::replaceAllChar(gravStr, '[', ""), ']', ""), ',');
-		this->spawnPoint = Vector3F(CastUtility::fromString<float>(spawnPointSplit.at(0)), CastUtility::fromString<float>(spawnPointSplit.at(1)), CastUtility::fromString<float>(spawnPointSplit.at(2)));
-		this->spawnOrientation = Vector3F(CastUtility::fromString<float>(spawnOrientationSplit.at(0)), CastUtility::fromString<float>(spawnOrientationSplit.at(1)), CastUtility::fromString<float>(spawnOrientationSplit.at(2)));
-		this->gravity = Vector3F(CastUtility::fromString<float>(gravSplit.at(0)), CastUtility::fromString<float>(gravSplit.at(1)), CastUtility::fromString<float>(gravSplit.at(2)));
+		this->spawnPoint = vectoriseList(deformat(spawnPointStr));
+		this->spawnOrientation = vectoriseList(deformat(spawnOrientationStr));
+		this->gravity = vectoriseList(deformat(gravStr));
 	}
 	else
 	{
@@ -19,7 +18,6 @@ World::World(std::string filename): filename(filename)
 		this->spawnOrientation = Vector3F();
 		this->gravity = Vector3F();
 	}
-
 	std::vector<std::string> objectList = input.getSequence("objects");
 	std::vector<std::string> entityObjectList = input.getSequence("entityobjects");
 	for(unsigned int i = 0; i < objectList.size(); i++)
@@ -76,16 +74,16 @@ void World::exportWorld(const std::string& worldName) const
 	std::vector<std::string> eoList;
 	output.deleteSequence("objects");
 	output.deleteSequence("entityobjects");
-	std::string gravLink = "[" + CastUtility::toString(this->gravity.getX()) + ", " + CastUtility::toString(this->gravity.getY()) + ", " + CastUtility::toString(this->gravity.getZ()) + "]";
-	std::string spawnPointLink = "[" + CastUtility::toString(this->spawnPoint.getX()) + ", " + CastUtility::toString(this->spawnPoint.getY()) + ", " + CastUtility::toString(this->spawnPoint.getZ()) + "]";
-	std::string spawnOrientationLink = "[" + CastUtility::toString(this->spawnOrientation.getX()) + ", " + CastUtility::toString(this->spawnOrientation.getY()) + ", " + CastUtility::toString(this->spawnOrientation.getZ()) + "]";
+	std::string gravLink = "[" + CastUtility::toString<float>(this->gravity.getX()) + ", " + CastUtility::toString<float>(this->gravity.getY()) + ", " + CastUtility::toString<float>(this->gravity.getZ()) + "]";
+	std::string spawnPointLink = "[" + CastUtility::toString<float>(this->spawnPoint.getX()) + ", " + CastUtility::toString<float>(this->spawnPoint.getY()) + ", " + CastUtility::toString<float>(this->spawnPoint.getZ()) + "]";
+	std::string spawnOrientationLink = "[" + CastUtility::toString<float>(this->spawnOrientation.getX()) + ", " + CastUtility::toString<float>(this->spawnOrientation.getY()) + ", " + CastUtility::toString<float>(this->spawnOrientation.getZ()) + "]";
 
 	output.editTag("gravity", gravLink);
 	output.editTag("spawnpoint", spawnPointLink);
 	output.editTag("spawnorientation", spawnOrientationLink);
 	for(unsigned int i = 0; i < this->members.size(); i++)
 	{
-		std::string objectName = "object" + CastUtility::toString(i);
+		std::string objectName = "object" + CastUtility::toString<float>(i);
 		objectList.push_back(objectName);
 		Object curObj = this->members.at(i);
 		std::string meshLink = curObj.getMeshLink();
@@ -95,9 +93,9 @@ void World::exportWorld(const std::string& worldName) const
 		
 		Vector3F pos = curObj.getPos(), rot = curObj.getRot(), scale = curObj.getScale();
 		
-		std::string posLink = "[" + CastUtility::toString(pos.getX()) + ", " + CastUtility::toString(pos.getY()) + ", " + CastUtility::toString(pos.getZ()) + "]";
-		std::string rotLink = "[" + CastUtility::toString(rot.getX()) + ", " + CastUtility::toString(rot.getY()) + ", " + CastUtility::toString(rot.getZ()) + "]";
-		std::string scaleLink = "[" + CastUtility::toString(scale.getX()) + ", " + CastUtility::toString(scale.getY()) + ", " + CastUtility::toString(scale.getZ()) + "]";
+		std::string posLink = "[" + CastUtility::toString<float>(pos.getX()) + ", " + CastUtility::toString<float>(pos.getY()) + ", " + CastUtility::toString<float>(pos.getZ()) + "]";
+		std::string rotLink = "[" + CastUtility::toString<float>(rot.getX()) + ", " + CastUtility::toString<float>(rot.getY()) + ", " + CastUtility::toString<float>(rot.getZ()) + "]";
+		std::string scaleLink = "[" + CastUtility::toString<float>(scale.getX()) + ", " + CastUtility::toString<float>(scale.getY()) + ", " + CastUtility::toString<float>(scale.getZ()) + "]";
 		
 		std::string meshName = dt.getResourceName(meshLink);
 		std::string textureName = dt.getResourceName(textureLink);
@@ -114,7 +112,7 @@ void World::exportWorld(const std::string& worldName) const
 	}
 	for(unsigned int i = 0; i < this->entityObjects.size(); i++)
 	{
-		std::string eoName = "eo" + CastUtility::toString(i);
+		std::string eoName = "eo" + CastUtility::toString<float>(i);
 		eoList.push_back(eoName);
 		std::shared_ptr<EntityObject> curEO = this->entityObjects.at(i);
 		std::string meshLink = curEO->getMeshLink();
@@ -122,13 +120,13 @@ void World::exportWorld(const std::string& worldName) const
 		std::string normalMapLink = curEO->getNormalMapLink();
 		std::string parallaxMapLink = curEO->getParallaxMapLink();
 		
-		std::string massStr = CastUtility::toString(curEO->getMass());
+		std::string massStr = CastUtility::toString<float>(curEO->getMass());
 		
 		Vector3F pos = curEO->getPos(), rot = curEO->getRot(), scale = curEO->getScale();
 		
-		std::string posLink = "[" + CastUtility::toString(pos.getX()) + ", " + CastUtility::toString(pos.getY()) + ", " + CastUtility::toString(pos.getZ()) + "]";
-		std::string rotLink = "[" + CastUtility::toString(rot.getX()) + ", " + CastUtility::toString(rot.getY()) + ", " + CastUtility::toString(rot.getZ()) + "]";
-		std::string scaleLink = "[" + CastUtility::toString(scale.getX()) + ", " + CastUtility::toString(scale.getY()) + ", " + CastUtility::toString(scale.getZ()) + "]";
+		std::string posLink = "[" + CastUtility::toString<float>(pos.getX()) + ", " + CastUtility::toString<float>(pos.getY()) + ", " + CastUtility::toString<float>(pos.getZ()) + "]";
+		std::string rotLink = "[" + CastUtility::toString<float>(rot.getX()) + ", " + CastUtility::toString<float>(rot.getY()) + ", " + CastUtility::toString<float>(rot.getZ()) + "]";
+		std::string scaleLink = "[" + CastUtility::toString<float>(scale.getX()) + ", " + CastUtility::toString<float>(scale.getY()) + ", " + CastUtility::toString<float>(scale.getZ()) + "]";
 		
 		std::string meshName = dt.getResourceName(meshLink);
 		std::string textureName = dt.getResourceName(textureLink);

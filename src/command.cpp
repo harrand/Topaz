@@ -37,6 +37,8 @@ void Commands::inputCommand(std::string cmd, std::shared_ptr<World>& world, Play
 		Commands::updateWorld(world, true);
 	else if(cmdName == "setspeed")
 		Commands::setSpeed(CastUtility::fromString<float>(args.at(1)));
+	else if(cmdName == "speed")
+		Commands::printSpeed();
 	else if(cmdName == "teleport")
 		Commands::teleport(args, player);
 	else if(cmdName == "roundlocation")
@@ -267,6 +269,12 @@ void Commands::setSpeed(float speed)
 	output.deleteTag("speed");
 	output.addTag("speed", CastUtility::toString(speed));
 	std::cout << "Setting speed to " << speed << ".\n";
+}
+
+void Commands::printSpeed()
+{
+	MDLF output(RawFile(RES_POINT + "/resources.data"));
+	std::cout << "Current speed = " << output.getTag("speed") << "\n";
 }
 
 void Commands::teleport(std::vector<std::string> args, Player& player)

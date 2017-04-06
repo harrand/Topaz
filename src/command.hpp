@@ -22,6 +22,7 @@ namespace Commands
 	void reloadWorld(std::vector<std::string> args, std::shared_ptr<World>& world, bool printResults);
 	void updateWorld(std::shared_ptr<World>& world, bool printResults);
 	void setSpeed(float speed);
+	void printSpeed();
 	void teleport(std::vector<std::string> args, Player& player);
 	void roundLocation(Player& player);
 	void setGravity(std::vector<std::string> args, std::shared_ptr<World>& world, bool printResults);

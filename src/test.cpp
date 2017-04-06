@@ -34,7 +34,6 @@ int main()
 	unsigned int fps  = 1000;
 	
 	std::vector<float> processingThisFrame;
-	//processingThisFrame.reserve(1000);
 
 	while(!wnd.isCloseRequested())
 	{
