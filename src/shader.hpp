@@ -36,7 +36,7 @@ private:
 	
 	std::string filename;
 	GLuint programHandle;
-	GLuint shaders[2];
+	GLuint shaders[3];
 	GLuint uniforms[(unsigned int)UniformTypes::NUM_UNIFORMS];
 };
 

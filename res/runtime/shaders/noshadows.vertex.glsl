@@ -6,13 +6,13 @@ layout(location = 1) in vec2 texcoord;
 layout(location = 2) in vec3 normal;
 layout(location = 3) in vec3 tangent;
 
-out vec3 position_modelspace;
-out vec2 texcoord_modelspace;
-out vec3 normal_modelspace;
+out vec3 vs_position_modelspace;
+out vec2 vs_texcoord_modelspace;
+out vec3 vs_normal_modelspace;
 
-out mat4 modelMatrix;
-out mat4 viewMatrix;
-out mat3 tbnMatrix;
+out mat4 vs_modelMatrix;
+out mat4 vs_viewMatrix;
+out mat3 vs_tbnMatrix;
 
 uniform mat4 m;
 uniform mat4 v;
@@ -20,14 +20,14 @@ uniform mat4 p;
 
 void share()
 {
-	position_modelspace = position;
-	texcoord_modelspace = texcoord;
-	normal_modelspace = normal;
+	vs_position_modelspace = position;
+	vs_texcoord_modelspace = texcoord;
+	vs_normal_modelspace = normal;
 	
-	modelMatrix = m;
-	viewMatrix = v;
+	vs_modelMatrix = m;
+	vs_viewMatrix = v;
 	
-	vec3 normal_cameraspace = normalize((v * m * vec4(normal_modelspace, 0.0)).xyz);
+	vec3 normal_cameraspace = normalize((v * m * vec4(vs_normal_modelspace, 0.0)).xyz);
 	vec3 tangent_cameraspace = normalize((v * m * vec4(tangent, 0.0)).xyz);
 	
 	// Gramm-Schmidt Process
@@ -35,7 +35,7 @@ void share()
 	
 	vec3 bitangent_cameraspace = cross(tangent_cameraspace, normal_cameraspace);
 	
-	tbnMatrix = transpose(mat3(tangent_cameraspace, bitangent_cameraspace, normal_cameraspace));
+	vs_tbnMatrix = transpose(mat3(tangent_cameraspace, bitangent_cameraspace, normal_cameraspace));
 }
 
 void main()

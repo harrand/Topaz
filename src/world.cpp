@@ -3,8 +3,8 @@
 World::World(std::string filename): filename(filename)
 {
 	MDLF input(RawFile(this->filename));
-	auto deformat = [](std::string str) -> std::vector<std::string>{return StringUtility::splitString(StringUtility::replaceAllChar(StringUtility::replaceAllChar(str, '[', ""), ']', ""), ',');};
-	auto vectoriseList = [](std::vector<std::string> list) -> Vector3F{if(list.size() < 3) return Vector3F(); return Vector3F(CastUtility::fromString<float>(list.at(0)), CastUtility::fromString<float>(list.at(1)), CastUtility::fromString<float>(list.at(2)));};
+	auto deformat = [](const std::string& str) -> std::vector<std::string>{return StringUtility::splitString(StringUtility::replaceAllChar(StringUtility::replaceAllChar(str, '[', ""), ']', ""), ',');};
+	auto vectoriseList = [](std::vector<std::string>&& list) -> Vector3F{if(list.size() < 3) return Vector3F(); return Vector3F(CastUtility::fromString<float>(list.at(0)), CastUtility::fromString<float>(list.at(1)), CastUtility::fromString<float>(list.at(2)));};
 	std::string spawnPointStr = input.getTag("spawnpoint"), spawnOrientationStr = input.getTag("spawnorientation"), gravStr = input.getTag("gravity");
 	if(spawnPointStr != "0" && spawnOrientationStr != "0" && gravStr != "0")
 	{

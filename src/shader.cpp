@@ -8,13 +8,16 @@ Shader::Shader(std::string filename): filename(filename)
 	this->shaders[0] = Shader::createShader(Shader::loadShader(this->filename + ".vertex.glsl"), GL_VERTEX_SHADER);
 	// Fragment Shader
 	this->shaders[1] = Shader::createShader(Shader::loadShader(this->filename + ".fragment.glsl"), GL_FRAGMENT_SHADER);
+	// Geometry Shader
+	this->shaders[2] = Shader::createShader(Shader::loadShader(this->filename + ".geometry.glsl"), GL_GEOMETRY_SHADER);
 	
-	for(unsigned int i = 0; i < 2; i++)
+	for(unsigned int i = 0; i < 3; i++)
 		glAttachShader(this->programHandle, this->shaders[i]);
 	
 	glBindAttribLocation(this->programHandle, 0, "position");
 	glBindAttribLocation(this->programHandle, 1, "texcoord");
 	glBindAttribLocation(this->programHandle, 2, "normal");
+	glBindAttribLocation(this->programHandle, 3, "tangent");
 	
 	glLinkProgram(this->programHandle);
 	Shader::checkShaderError(this->programHandle, GL_LINK_STATUS, true, "Fatal Error: Program Linking failed.");
@@ -31,7 +34,7 @@ Shader::Shader(std::string filename): filename(filename)
 
 Shader::~Shader()
 {
-	for(unsigned int i = 0; i < 2; i++)
+	for(unsigned int i = 0; i < 3; i++)
 	{
 		glDetachShader(this->programHandle, this->shaders[i]);
 		glDeleteShader(this->shaders[i]);

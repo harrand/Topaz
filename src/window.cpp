@@ -25,13 +25,8 @@ unsigned int Listener::getNumListeners()
 	return Listener::NUM_LISTENERS;
 }
 
-Window::Window(int w, int h, std::string title)
+Window::Window(int w, int h, std::string title): w(w), h(h), title(title), iscloserequested(false)
 {
-	this->w = w;
-	this->h = h;
-	this->title = title;
-	this->iscloserequested = false;
-	
 	this->initSDL();
 	this->initGLEW();
 }

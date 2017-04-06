@@ -10,8 +10,8 @@ std::vector<std::shared_ptr<Texture>> allTextures;
 std::vector<std::shared_ptr<NormalMap>> allNormalMaps;
 std::vector<std::shared_ptr<ParallaxMap>> allParallaxMaps;
 //Global Stack Variables
-Camera cam(Vector3F(), Vector3F(0, 3.14159, 0));
-Player player(10, cam);
+Camera cam;
+Player player(10.0f, cam);
 
 // SDL2 defines main.
 #ifdef main
