@@ -173,27 +173,29 @@ Matrix4x4 Matrix4x4::washed(float min, float max) const
 	return copy;
 }
 
-void Matrix4x4::fillData(float data[16]) const
+void Matrix4x4::fillData(std::vector<float>& data) const
 {
-	data[0] = this->x.getX();
-	data[1] = this->x.getY();
-	data[2] = this->x.getZ();
-	data[3] = this->x.getW();
+	data.clear();
+	data.reserve(16);
+	data.push_back(this->x.getX());
+	data.push_back(this->x.getY());
+	data.push_back(this->x.getZ());
+	data.push_back(this->x.getW());
 	
-	data[4] = this->y.getX();
-	data[5] = this->y.getY();
-	data[6] = this->y.getZ();
-	data[7] = this->y.getW();
+	data.push_back(this->y.getX());
+	data.push_back(this->y.getY());
+	data.push_back(this->y.getZ());
+	data.push_back(this->y.getW());
 	
-	data[8] = this->z.getX();
-	data[9] = this->z.getY();
-	data[10] = this->z.getZ();
-	data[11] = this->z.getW();
+	data.push_back(this->z.getX());
+	data.push_back(this->z.getY());
+	data.push_back(this->z.getZ());
+	data.push_back(this->z.getW());
 	
-	data[12] = this->w.getX();
-	data[13] = this->w.getY();
-	data[14] = this->w.getZ();
-	data[15] = this->w.getW();
+	data.push_back(this->w.getX());
+	data.push_back(this->w.getY());
+	data.push_back(this->w.getZ());
+	data.push_back(this->w.getW());
 }
 
 Matrix3x3 Matrix4x4::subMatrix(float posI, float posJ)

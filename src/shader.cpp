@@ -53,11 +53,11 @@ void Shader::bind() const
 	glUseProgram(this->programHandle);
 }
 
-void Shader::update(float (&modeldata)[16], float (&viewdata)[16], float (&projectiondata)[16], float parallaxMapScale, float parallaxMapOffset) const
+void Shader::update(const std::vector<float>& modelData, const std::vector<float>& viewData, const std::vector<float>& projectionData, float parallaxMapScale, float parallaxMapOffset) const
 {
-	glUniformMatrix4fv(this->uniforms[(unsigned int)UniformTypes::MODEL], 1, GL_TRUE, modeldata);
-	glUniformMatrix4fv(this->uniforms[(unsigned int)UniformTypes::VIEW], 1, GL_TRUE, viewdata);
-	glUniformMatrix4fv(this->uniforms[(unsigned int)UniformTypes::PROJECTION], 1, GL_TRUE, projectiondata);
+	glUniformMatrix4fv(this->uniforms[(unsigned int)UniformTypes::MODEL], 1, GL_TRUE, &modelData[0]);
+	glUniformMatrix4fv(this->uniforms[(unsigned int)UniformTypes::VIEW], 1, GL_TRUE, &viewData[0]);
+	glUniformMatrix4fv(this->uniforms[(unsigned int)UniformTypes::PROJECTION], 1, GL_TRUE, &projectionData[0]);
 	glUniform1f(this->uniforms[(unsigned int)UniformTypes::PARALLAX_MAP_SCALE], parallaxMapScale);
 	float defaultBias = parallaxMapScale / 2.0f;
 	glUniform1f(this->uniforms[(unsigned int)UniformTypes::PARALLAX_MAP_BIAS], -defaultBias + defaultBias * parallaxMapOffset);
