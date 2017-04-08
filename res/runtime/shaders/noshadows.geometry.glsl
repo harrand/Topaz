@@ -8,7 +8,10 @@ in vec3 vs_normal_modelspace[3];
 
 in mat4 vs_modelMatrix[3];
 in mat4 vs_viewMatrix[3];
+in mat4 vs_projectionMatrix[3];
 in mat3 vs_tbnMatrix[3];
+
+uniform sampler2D parallaxMapSampler;
 
 out vec3 position_modelspace;
 out vec2 texcoord_modelspace;

@@ -41,18 +41,6 @@ private:
 		TANGENT = 4,
 		NUM_BUFFERS = 5
 	};
-	/*
-	enum
-	{
-		POSITION_VB,
-		TEXCOORD_VB,
-		NORMAL_VB,
-		INDEX_VB,
-		TANGENT_VB,
-		
-		NUM_BUFFERS
-	};
-	*/
 	GLuint vertexArrayObject;
 	GLuint vertexArrayBuffers[(unsigned int)BufferTypes::NUM_BUFFERS];
 	unsigned int renderCount;

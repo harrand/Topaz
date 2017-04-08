@@ -15,8 +15,10 @@ public:
 	void setGravity(Vector3F gravity = Vector3F());
 	void setSpawnPoint(Vector3F spawnPoint = Vector3F());
 	void setSpawnOrientation(Vector3F spawnOrientation = Vector3F());
-	
+
 	void update(unsigned int fps, Camera& cam, Shader& shader, unsigned int width, unsigned int height, std::vector<std::shared_ptr<Mesh>> allMeshes, std::vector<std::shared_ptr<Texture>> allTextures, std::vector<std::shared_ptr<NormalMap>> allNormalMaps, std::vector<std::shared_ptr<ParallaxMap>> allParallaxMaps) const;
+	void updateInstanced(unsigned int fps, Camera& cam, Shader& shader, unsigned int width, unsigned int height, std::vector<std::shared_ptr<Mesh>> allMeshes, std::vector<std::shared_ptr<Texture>> allTextures, std::vector<std::shared_ptr<NormalMap>> allNormalMaps, std::vector<std::shared_ptr<ParallaxMap>> allParallaxMaps) const;
+		
 	unsigned int getSize() const;
 	std::vector<Object> getMembers() const;
 	std::vector<Entity*> getEntities() const;
