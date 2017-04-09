@@ -36,14 +36,6 @@ int main()
 	
 	AudioMusic music(RES_POINT + "/music/music.wav");
 	music.play();
-	/*
-	Mix_Music* music = NULL;
-	music = Mix_LoadMUS((RES_POINT + "/music/music.wav").c_str());
-	if(music != NULL)
-		Mix_PlayMusic(music, -1);
-	else
-		std::cerr << "Couldn't play music: Did not load properly.\n";
-	*/
 	
 	std::vector<float> processingThisFrame;
 
@@ -52,12 +44,12 @@ int main()
 		if(tk.millisPassed(1000))
 		{
 			fps = tp.getFPS();
+			std::cout << "\n====== " << secondsLifetime << " seconds ======\n";
 			std::cout << "avgdt = " << tp.getDeltaAverage() << " ms, avgFPS = " << fps << " frames per second.\n";
 			tp.reset();
 			secondsLifetime++;
 			tk.reload();
 			std::cout << "Camera Position = [" << cam.getPosR().getX() << ", " << cam.getPosR().getY() << ", " << cam.getPosR().getZ() << "].\n";
-			std::cout << "Lifetime Spent: " << secondsLifetime << " seconds.\n";
 			float total = 0;
 			for(unsigned int i = 0; i < processingThisFrame.size(); i++)
 			{

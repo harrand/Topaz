@@ -27,8 +27,7 @@ World::World(std::string filename): filename(filename)
 	for(unsigned int i = 0; i < entityObjectList.size(); i++)
 	{
 		std::string eoName = entityObjectList.at(i);
-		std::shared_ptr<EntityObject> eo = World::retrieveEOData(eoName, input);
-		this->addEntityObject(eo);
+		this->addEntityObject(World::retrieveEOData(eoName, input));
 	}
 }
 
@@ -52,14 +51,14 @@ void World::addEntity(Entity* ent)
 	this->entities.push_back(ent);
 }
 
-void World::addEntityObject(std::shared_ptr<EntityObject> eo)
+void World::addEntityObject(std::unique_ptr<EntityObject> eo)
 {
 	if(eo->getForces().find("gravity") != eo->getForces().end())
 	{
 		eo->removeForce("gravity");
 	}
 	eo->applyForce("gravity", Force(this->getGravity()));
-	this->entityObjects.push_back(eo);
+	this->entityObjects.push_back(std::move(eo));
 }
 
 void World::exportWorld(const std::string& worldName) const
@@ -94,7 +93,7 @@ void World::exportWorld(const std::string& worldName) const
 	{
 		std::string eoName = "eo" + CastUtility::toString<float>(i);
 		eoList.push_back(eoName);
-		std::shared_ptr<EntityObject> curEO = this->entityObjects.at(i);
+		EntityObject* curEO = this->entityObjects.at(i).get();
 
 		output.editTag(eoName + ".mesh", dt.getResourceName(curEO->getMeshLink()));
 		output.editTag(eoName + ".texture", dt.getResourceName(curEO->getTextureLink()));
@@ -120,7 +119,7 @@ void World::setGravity(Vector3F gravity)
 	}
 	for(unsigned int i = 0; i < this->getEntityObjects().size(); i++)
 	{
-		std::shared_ptr<EntityObject> eo = this->getEntityObjects().at(i);
+		EntityObject* eo = this->getEntityObjects().at(i).get();
 		eo->removeForce("gravity");
 		eo->applyForce("gravity", Force(this->getGravity()));
 	}
@@ -146,7 +145,7 @@ void World::update(unsigned int fps, Camera& cam, Shader& shader, unsigned int w
 		
 	for(unsigned int i = 0; i < this->getEntityObjects().size(); i++)
 	{
-		std::shared_ptr<EntityObject> eo = this->getEntityObjects().at(i);
+		EntityObject* eo = this->getEntityObjects().at(i).get();
 		eo->render(Mesh::getFromLink(eo->getMeshLink(), allMeshes), Texture::getFromLink(eo->getTextureLink(), allTextures), NormalMap::getFromLink(eo->getNormalMapLink(), allNormalMaps), ParallaxMap::getFromLink(eo->getParallaxMapLink(), allParallaxMaps), cam, shader, width, height);
 		eo->updateMotion(fps);
 	}
@@ -163,17 +162,17 @@ unsigned int World::getSize() const
 	return this->members.size();
 }
 
-std::vector<Object> World::getMembers() const
+const std::vector<Object>& World::getMembers() const
 {
 	return this->members;
 }
 
-std::vector<Entity*> World::getEntities() const
+const std::vector<Entity*>& World::getEntities() const
 {
 	return this->entities;
 }
 
-std::vector<std::shared_ptr<EntityObject>> World::getEntityObjects() const
+const std::vector<std::unique_ptr<EntityObject>>& World::getEntityObjects() const
 {
 	return this->entityObjects;
 }
@@ -218,7 +217,7 @@ Object World::retrieveData(const std::string& objectName, MDLF& mdlf)
 	return Object(meshLink, textureLink, normalMapLink, parallaxMapLink, StringUtility::vectoriseList3F(StringUtility::deformat(positionStr)), StringUtility::vectoriseList3F(StringUtility::deformat(rotationStr)), StringUtility::vectoriseList3F(StringUtility::deformat(scaleStr)));
 }
 
-std::shared_ptr<EntityObject> World::retrieveEOData(const std::string& eoName, MDLF& mdlf)
+std::unique_ptr<EntityObject> World::retrieveEOData(const std::string& eoName, MDLF& mdlf)
 {
 	std::string meshName = mdlf.getTag(eoName + ".mesh");
 	std::string textureName = mdlf.getTag(eoName + ".texture");
@@ -237,5 +236,5 @@ std::shared_ptr<EntityObject> World::retrieveEOData(const std::string& eoName, M
 	std::string parallaxMapLink = dt.getResourceLink(parallaxMapName);
 	float mass = CastUtility::fromString<float>(massStr);
 	
-	return std::shared_ptr<EntityObject>(new EntityObject(meshLink, textureLink, normalMapLink, parallaxMapLink, mass, StringUtility::vectoriseList3F(StringUtility::deformat(positionStr)), StringUtility::vectoriseList3F(StringUtility::deformat(rotationStr)), StringUtility::vectoriseList3F(StringUtility::deformat(scaleStr))));
+	return std::unique_ptr<EntityObject>(new EntityObject(meshLink, textureLink, normalMapLink, parallaxMapLink, mass, StringUtility::vectoriseList3F(StringUtility::deformat(positionStr)), StringUtility::vectoriseList3F(StringUtility::deformat(rotationStr)), StringUtility::vectoriseList3F(StringUtility::deformat(scaleStr))));
 }

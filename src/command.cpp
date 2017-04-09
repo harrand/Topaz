@@ -210,7 +210,7 @@ void Commands::addEntityObject(std::vector<std::string> args, std::shared_ptr<Wo
 	
 	float mass = CastUtility::fromString<float>(massStr);
 	
-	world->addEntityObject(std::shared_ptr<EntityObject>(new EntityObject(meshLink, textureLink, normalMapLink, parallaxMapLink, mass, pos, rot, scale)));
+	world->addEntityObject(std::unique_ptr<EntityObject>(new EntityObject(meshLink, textureLink, normalMapLink, parallaxMapLink, mass, pos, rot, scale)));
 	if(printResults)
 	{
 		std::cout << "Added the following to this world:\n";
