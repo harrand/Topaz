@@ -47,7 +47,7 @@ public:
 	Matrix4x4 transposed() const;
 	Matrix4x4 washed(float min = 0.005f, float max = 99999.0f) const;
 	
-	void fillData(std::vector<float>& data) const;
+	std::vector<float> fillData() const;
 	Matrix3x3 subMatrix(float iterI, float iterJ);
 	
 	Matrix4x4 operator+(const Matrix4x4& other) const;

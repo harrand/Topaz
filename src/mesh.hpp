@@ -41,8 +41,8 @@ private:
 		TANGENT = 4,
 		NUM_BUFFERS = 5
 	};
-	GLuint vertexArrayObject;
-	GLuint vertexArrayBuffers[(unsigned int)BufferTypes::NUM_BUFFERS];
+	GLuint vertexArrayObject; //vao
+	GLuint vertexArrayBuffers[(unsigned int)BufferTypes::NUM_BUFFERS]; //vbo array
 	unsigned int renderCount;
 };
 

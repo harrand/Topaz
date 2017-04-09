@@ -173,8 +173,9 @@ Matrix4x4 Matrix4x4::washed(float min, float max) const
 	return copy;
 }
 
-void Matrix4x4::fillData(std::vector<float>& data) const
+std::vector<float> Matrix4x4::fillData() const
 {
+	std::vector<float> data;
 	data.clear();
 	data.reserve(16);
 	data.push_back(this->x.getX());
@@ -196,6 +197,7 @@ void Matrix4x4::fillData(std::vector<float>& data) const
 	data.push_back(this->w.getY());
 	data.push_back(this->w.getZ());
 	data.push_back(this->w.getW());
+	return data;
 }
 
 Matrix3x3 Matrix4x4::subMatrix(float posI, float posJ)

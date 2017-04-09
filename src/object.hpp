@@ -25,8 +25,6 @@ public:
 	
 	void render(const std::shared_ptr<Mesh>& mesh, const std::shared_ptr<Texture>& tex, const std::shared_ptr<NormalMap>& nm, const std::shared_ptr<ParallaxMap>& pm, const Camera& cam, const Shader& shad, float width, float height);
 protected:
-	//float m[16], v[16], p[16];
-	std::vector<float> m, v, p;
 	Vector3F pos, rot, scale;
 	const std::string meshLink, textureLink, normalMapLink, parallaxMapLink;
 };
