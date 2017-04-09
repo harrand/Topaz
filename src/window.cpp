@@ -108,6 +108,9 @@ void Window::initSDL()
 	this->wnd = SDL_CreateWindow((this->title).c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, this->w, this->h, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
 	this->ctx = SDL_GL_CreateContext(this->wnd);
 	SDL_GL_SetSwapInterval(0);
+	
+	//Initialise SDL_mixer
+	Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 2, 4096);
 }
 
 void Window::initGLEW()
@@ -126,6 +129,7 @@ void Window::initGLEW()
 
 void Window::destSDL()
 {
+	Mix_CloseAudio();
 	SDL_GL_DeleteContext(this->ctx);
 	SDL_DestroyWindow(this->wnd);
 	SDL_Quit();

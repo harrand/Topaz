@@ -33,6 +33,13 @@ int main()
 	TimeProfiler tp;
 	unsigned int fps  = 1000;
 	
+	Mix_Music* music = NULL;
+	music = Mix_LoadMUS((RES_POINT + "/music/music.wav").c_str());
+	if(music != NULL)
+		Mix_PlayMusic(music, -1);
+	else
+		std::cerr << "Couldn't play music: Did not load properly.\n";
+	
 	std::vector<float> processingThisFrame;
 
 	while(!wnd.isCloseRequested())
@@ -56,7 +63,6 @@ int main()
 		}
 		wnd.setRenderTarget();
 		tp.beginFrame();
-		
 		tk.update();
 		wnd.clear(0.0f, 0.0f, 0.0f, 1.0f);
 		mc.handleMouse();
@@ -73,5 +79,6 @@ int main()
 	std::ostringstream strum;
 	strum << secondsLifetime;
 	timeStorage.editTag("played", strum.str());
+	Mix_FreeMusic(music);
 	return 0;
 }
