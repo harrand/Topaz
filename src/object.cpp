@@ -54,6 +54,10 @@ std::string Object::getParallaxMapLink() const
 
 void Object::render(const std::shared_ptr<Mesh>& mesh, const std::shared_ptr<Texture>& tex, const std::shared_ptr<NormalMap>& nm, const std::shared_ptr<ParallaxMap>& pm, const Camera& cam, const Shader& shad, float width, float height)
 {
+	if(mesh == NULL || tex == NULL || nm == NULL || pm == NULL)
+	{
+		return;
+	}
 	shad.bind();
 	tex->bind(shad.getProgramHandle(), 0);
 	nm->bind(shad.getProgramHandle(), 1);

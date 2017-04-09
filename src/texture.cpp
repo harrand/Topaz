@@ -135,7 +135,7 @@ std::shared_ptr<Texture> Texture::getFromLink(const std::string& textureLink, st
 		if(allTextures.at(i)->getFileName() == textureLink)
 			return allTextures.at(i);
 	}
-	return __null;
+	return NULL;
 }
 
 NormalMap::NormalMap(std::string filename): Texture(filename){}
@@ -159,7 +159,7 @@ std::shared_ptr<NormalMap> NormalMap::getFromLink(const std::string& normalMapLi
 		if(allNormalMaps.at(i)->getFileName() == normalMapLink)
 			return allNormalMaps.at(i);
 	}
-	return __null;
+	return NULL;
 }
 
 ParallaxMap::ParallaxMap(std::string filename): Texture(filename){}
@@ -183,5 +183,5 @@ std::shared_ptr<ParallaxMap> ParallaxMap::getFromLink(const std::string& paralla
 		if(allParallaxMaps.at(i)->getFileName() == parallaxMapLink)
 			return allParallaxMaps.at(i);
 	}
-	return __null;
+	return NULL;
 }

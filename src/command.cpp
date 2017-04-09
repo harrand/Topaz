@@ -115,27 +115,16 @@ void Commands::addObject(std::vector<std::string> args, std::shared_ptr<World>& 
 	}
 	
 	if(posStr == "me")
-	{
 		pos = player.getCamera().getPos();
-	}
 	else
-	{
-		std::vector<std::string> posSplit = StringUtility::splitString(StringUtility::replaceAllChar(StringUtility::replaceAllChar(posStr, '[', ""), ']', ""), ',');
-		pos = Vector3F(CastUtility::fromString<float>(posSplit.at(0)), CastUtility::fromString<float>(posSplit.at(1)), CastUtility::fromString<float>(posSplit.at(2)));
-	}
+		pos = StringUtility::vectoriseList3F(StringUtility::deformat(posStr));
 		
 	if(rotStr == "me")
-	{
 		rot = Vector3F(player.getCamera().getRot().getX(), player.getCamera().getRot().getY(), player.getCamera().getRot().getZ());
-	}
 	else
-	{
-		std::vector<std::string> rotSplit = StringUtility::splitString(StringUtility::replaceAllChar(StringUtility::replaceAllChar(rotStr, '[', ""), ']', ""), ',');
-		rot = Vector3F(CastUtility::fromString<float>(rotSplit.at(0)), CastUtility::fromString<float>(rotSplit.at(1)), CastUtility::fromString<float>(rotSplit.at(2)));	
-	}
-		
-	std::vector<std::string> scaleSplit = StringUtility::splitString(StringUtility::replaceAllChar(StringUtility::replaceAllChar(scaleStr, '[', ""), ']', ""), ',');
-	scale = Vector3F(CastUtility::fromString<float>(scaleSplit.at(0)), CastUtility::fromString<float>(scaleSplit.at(1)), CastUtility::fromString<float>(scaleSplit.at(2)));
+		rot = StringUtility::vectoriseList3F(StringUtility::deformat(rotStr));
+	
+	scale = StringUtility::vectoriseList3F(StringUtility::deformat(scaleStr));
 		
 	world->addObject(Object(meshLink, textureLink, normalMapLink, parallaxMapLink, pos, rot, scale));
 	if(printResults)
@@ -187,27 +176,16 @@ void Commands::addEntityObject(std::vector<std::string> args, std::shared_ptr<Wo
 	}
 	
 	if(posStr == "me")
-	{
 		pos = player.getCamera().getPos();
-	}
 	else
-	{
-		std::vector<std::string> posSplit = StringUtility::splitString(StringUtility::replaceAllChar(StringUtility::replaceAllChar(posStr, '[', ""), ']', ""), ',');
-		pos = Vector3F(CastUtility::fromString<float>(posSplit.at(0)), CastUtility::fromString<float>(posSplit.at(1)), CastUtility::fromString<float>(posSplit.at(2)));
-	}
+		pos = StringUtility::vectoriseList3F(StringUtility::deformat(posStr));
 		
 	if(rotStr == "me")
-	{
 		rot = Vector3F(player.getCamera().getRot().getX(), player.getCamera().getRot().getY(), player.getCamera().getRot().getZ());
-	}
 	else
-	{
-		std::vector<std::string> rotSplit = StringUtility::splitString(StringUtility::replaceAllChar(StringUtility::replaceAllChar(rotStr, '[', ""), ']', ""), ',');
-		rot = Vector3F(CastUtility::fromString<float>(rotSplit.at(0)), CastUtility::fromString<float>(rotSplit.at(1)), CastUtility::fromString<float>(rotSplit.at(2)));	
-	}
-		
-	std::vector<std::string> scaleSplit = StringUtility::splitString(StringUtility::replaceAllChar(StringUtility::replaceAllChar(scaleStr, '[', ""), ']', ""), ',');
-	scale = Vector3F(CastUtility::fromString<float>(scaleSplit.at(0)), CastUtility::fromString<float>(scaleSplit.at(1)), CastUtility::fromString<float>(scaleSplit.at(2)));
+		rot = StringUtility::vectoriseList3F(StringUtility::deformat(rotStr));
+	
+	scale = StringUtility::vectoriseList3F(StringUtility::deformat(scaleStr));
 	
 	float mass = CastUtility::fromString<float>(massStr);
 	
@@ -297,18 +275,15 @@ void Commands::roundLocation(Player& player)
 
 void Commands::setGravity(std::vector<std::string> args, std::shared_ptr<World>& world, bool printResults)
 {
-	std::vector<std::string> gravSplit = StringUtility::splitString(StringUtility::replaceAllChar(StringUtility::replaceAllChar(args.at(1), '[', ""), ']', ""), ',');
-	Vector3F grav = Vector3F(CastUtility::fromString<float>(gravSplit.at(0)), CastUtility::fromString<float>(gravSplit.at(1)), CastUtility::fromString<float>(gravSplit.at(2)));
+	Vector3F grav = StringUtility::vectoriseList3F(StringUtility::deformat(args.at(1)));
 	world->setGravity(grav);
-	
 	if(printResults)
 		std::cout << "Set gravity of the world '" << world->getFileName() << "' to [" << grav.getX() << "," << grav.getY() << "," << grav.getZ() << "] N\n";
 }
 
 void Commands::setSpawnPoint(std::vector<std::string> args, std::shared_ptr<World>& world, bool printResults)
 {
-	std::vector<std::string> spawnSplit = StringUtility::splitString(StringUtility::replaceAllChar(StringUtility::replaceAllChar(args.at(1), '[', ""), ']', ""), ',');
-	Vector3F spawn = Vector3F(CastUtility::fromString<float>(spawnSplit.at(0)), CastUtility::fromString<float>(spawnSplit.at(1)), CastUtility::fromString<float>(spawnSplit.at(2)));
+	Vector3F spawn = StringUtility::vectoriseList3F(StringUtility::deformat(args.at(1)));
 	world->setSpawnPoint(spawn);
 	if(printResults)
 		std::cout << "Set spawnpoint of the world '" << world->getFileName() << "' to [" << spawn.getX() << "," << spawn.getY() << "," << spawn.getZ() << "]\n";
@@ -316,8 +291,7 @@ void Commands::setSpawnPoint(std::vector<std::string> args, std::shared_ptr<Worl
 
 void Commands::setSpawnOrientation(std::vector<std::string> args, std::shared_ptr<World>& world, bool printResults)
 {
-	std::vector<std::string> spawnSplit = StringUtility::splitString(StringUtility::replaceAllChar(StringUtility::replaceAllChar(args.at(1), '[', ""), ']', ""), ',');
-	Vector3F spawn = Vector3F(CastUtility::fromString<float>(spawnSplit.at(0)), CastUtility::fromString<float>(spawnSplit.at(1)), CastUtility::fromString<float>(spawnSplit.at(2)));
+	Vector3F spawn = StringUtility::vectoriseList3F(StringUtility::deformat(args.at(1)));
 	world->setSpawnOrientation(spawn);
 	if(printResults)
 		std::cout << "Set spawnorientation of the world '" << world->getFileName() << "' to [" << spawn.getX() << "," << spawn.getY() << "," << spawn.getZ() << "]\n";
