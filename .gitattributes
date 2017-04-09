@@ -1,2 +1,2 @@
-inc/* linguist-vendored
-*.h linguist-language=C++
+inc/* linguist-vendored=true
+*.h linguist-language=C
