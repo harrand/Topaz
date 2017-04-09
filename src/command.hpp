@@ -2,6 +2,7 @@
 #define COMMAND_HPP
 #include "world.hpp"
 #include "player.hpp"
+#include "audio.hpp"
 
 class CommandCache
 {
@@ -9,6 +10,10 @@ public:
 	static void updateAlias(std::vector<std::string> aliasArgs);
 	static std::vector<std::string> getAlias();
 	static std::vector<std::string> aliasArgs;
+	
+	static std::vector<std::unique_ptr<AudioClip>> clips;
+	static void addAudioClip(std::unique_ptr<AudioClip>&& clip);
+	static void destroyChannelClips(int channel);
 };
 
 namespace Commands
@@ -28,6 +33,7 @@ namespace Commands
 	void setGravity(std::vector<std::string> args, std::shared_ptr<World>& world, bool printResults);
 	void setSpawnPoint(std::vector<std::string> args, std::shared_ptr<World>& world, bool printResults);
 	void setSpawnOrientation(std::vector<std::string> args, std::shared_ptr<World>& world, bool printResults);
+	void playAudio(std::vector<std::string> args, bool printResults);
 }
 
 #endif

@@ -1,6 +1,7 @@
 #include "command.hpp"
 
 std::vector<std::string> CommandCache::aliasArgs = std::vector<std::string>();
+std::vector<std::unique_ptr<AudioClip>> CommandCache::clips = std::vector<std::unique_ptr<AudioClip>>();
 
 void CommandCache::updateAlias(std::vector<std::string> aliasArgs)
 {
@@ -10,6 +11,24 @@ void CommandCache::updateAlias(std::vector<std::string> aliasArgs)
 std::vector<std::string> CommandCache::getAlias()
 {
 	return CommandCache::aliasArgs;
+}
+
+void CommandCache::addAudioClip(std::unique_ptr<AudioClip>&& clip)
+{
+	CommandCache::clips.push_back(std::move(clip));
+}
+
+void CommandCache::destroyChannelClips(int channel)
+{
+	for(std::unique_ptr<AudioClip>& clip : CommandCache::clips)
+	{
+		unsigned int prevSize = CommandCache::clips.size();
+		auto lambda = [channel](const std::unique_ptr<AudioClip>& clip) -> bool{return clip->getChannel() == channel;};
+		auto rem = std::remove_if(CommandCache::clips.begin(), CommandCache::clips.end(), lambda);
+		CommandCache::clips.erase(rem, CommandCache::clips.end());
+		if(CommandCache::clips.size() != prevSize)
+			std::cout << "Clip belonging to the channel " << channel << " has been destroyed.\n";
+	}
 }
 
 void Commands::inputCommand(std::string cmd, std::shared_ptr<World>& world, Player& player)
@@ -49,6 +68,8 @@ void Commands::inputCommand(std::string cmd, std::shared_ptr<World>& world, Play
 		Commands::setSpawnPoint(args, world, true);
 	else if(cmdName == "spawnorientation")
 		Commands::setSpawnOrientation(args, world, true);
+	else if(cmdName == "play")
+		Commands::playAudio(args, true);
 	else
 		std::cout << "Unknown command. Maybe you made a typo?\n";
 }
@@ -295,4 +316,16 @@ void Commands::setSpawnOrientation(std::vector<std::string> args, std::shared_pt
 	world->setSpawnOrientation(spawn);
 	if(printResults)
 		std::cout << "Set spawnorientation of the world '" << world->getFileName() << "' to [" << spawn.getX() << "," << spawn.getY() << "," << spawn.getZ() << "]\n";
+}
+
+void Commands::playAudio(std::vector<std::string> args, bool printResults)
+{
+	std::string filename = RES_POINT + "/music/";
+	for(unsigned int i = 1; i < args.size(); i++)
+		filename += args.at(i);
+	std::unique_ptr<AudioClip> clip(new AudioClip(filename));
+	clip->play();
+	CommandCache::addAudioClip(std::move(clip));
+	Mix_ChannelFinished(CommandCache::destroyChannelClips);
+	std::cout << "Playing the audio clip with the file-path " << filename << "\n";
 }

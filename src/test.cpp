@@ -1,6 +1,7 @@
 #include "listeners.hpp"
 #include "timekeeper.hpp"
 #include "command.hpp"
+#include "audio.hpp"
 #include <iostream>
 
 //Global Heap Variables
@@ -33,12 +34,16 @@ int main()
 	TimeProfiler tp;
 	unsigned int fps  = 1000;
 	
+	AudioMusic music(RES_POINT + "/music/music.wav");
+	music.play();
+	/*
 	Mix_Music* music = NULL;
 	music = Mix_LoadMUS((RES_POINT + "/music/music.wav").c_str());
 	if(music != NULL)
 		Mix_PlayMusic(music, -1);
 	else
 		std::cerr << "Couldn't play music: Did not load properly.\n";
+	*/
 	
 	std::vector<float> processingThisFrame;
 
@@ -79,6 +84,6 @@ int main()
 	std::ostringstream strum;
 	strum << secondsLifetime;
 	timeStorage.editTag("played", strum.str());
-	Mix_FreeMusic(music);
+	//Mix_FreeMusic(music);
 	return 0;
 }
