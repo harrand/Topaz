@@ -8,7 +8,7 @@ void EntityObject::setPosition(Vector3F pos)
 	this->getPosR() = pos;
 }
 
-Vector3F EntityObject::getPosition() const
+const Vector3F& EntityObject::getPosition() const
 {
 	return this->getPos();
 }

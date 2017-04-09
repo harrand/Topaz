@@ -51,7 +51,7 @@ void World::addEntity(Entity* ent)
 	this->entities.push_back(ent);
 }
 
-void World::addEntityObject(std::unique_ptr<EntityObject> eo)
+void World::addEntityObject(std::unique_ptr<EntityObject>&& eo)
 {
 	if(eo->getForces().find("gravity") != eo->getForces().end())
 	{
@@ -159,7 +159,7 @@ void World::update(unsigned int fps, Camera& cam, Shader& shader, unsigned int w
 
 unsigned int World::getSize() const
 {
-	return this->members.size();
+	return this->members.size() + this->entities.size() + this->entityObjects.size();
 }
 
 const std::vector<Object>& World::getMembers() const
@@ -177,22 +177,22 @@ const std::vector<std::unique_ptr<EntityObject>>& World::getEntityObjects() cons
 	return this->entityObjects;
 }
 
-Vector3F World::getGravity() const
+const Vector3F& World::getGravity() const
 {
 	return this->gravity;
 }
 
-Vector3F World::getSpawnPoint() const
+const Vector3F& World::getSpawnPoint() const
 {
 	return this->spawnPoint;
 }
 
-Vector3F World::getSpawnOrientation() const
+const Vector3F& World::getSpawnOrientation() const
 {
 	return this->spawnOrientation;
 }
 
-std::string World::getWorldLink() const
+const std::string& World::getWorldLink() const
 {
 	return this->filename;
 }

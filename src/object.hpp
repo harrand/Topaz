@@ -10,18 +10,18 @@ class Object
 {
 public:
 	Object(std::string meshLink, std::string textureLink, std::string parallaxMapLink, std::string normalMapLink, Vector3F pos, Vector3F rot, Vector3F scale);
-	Vector3F getPos() const;
-	Vector3F getRot() const;
-	Vector3F getScale() const;
+	const Vector3F& getPos() const;
+	const Vector3F& getRot() const;
+	const Vector3F& getScale() const;
 	
 	Vector3F& getPosR();
 	Vector3F& getRotR();
 	Vector3F& getScaleR();
 	
-	std::string getMeshLink() const;
-	std::string getTextureLink() const;
-	std::string getNormalMapLink() const;
-	std::string getParallaxMapLink() const;
+	const std::string& getMeshLink() const;
+	const std::string& getTextureLink() const;
+	const std::string& getNormalMapLink() const;
+	const std::string& getParallaxMapLink() const;
 	
 	void render(const std::shared_ptr<Mesh>& mesh, const std::shared_ptr<Texture>& tex, const std::shared_ptr<NormalMap>& nm, const std::shared_ptr<ParallaxMap>& pm, const Camera& cam, const Shader& shad, float width, float height);
 protected:

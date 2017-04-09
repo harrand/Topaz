@@ -42,7 +42,7 @@ bool MouseListener::isRightClicked() const
 	return this->rightClick;
 }
 
-Vector2F MouseListener::getMousePos() const
+const Vector2F& MouseListener::getMousePos() const
 {
 	return this->mousePos;
 }

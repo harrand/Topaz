@@ -6,8 +6,8 @@ class Camera
 {
 public:
 	Camera(Vector3F pos = Vector3F(), Vector3F rot = Vector3F());
-	Vector3F getPos() const;
-	Vector3F getRot() const;
+	const Vector3F& getPos() const;
+	const Vector3F& getRot() const;
 	Vector3F& getPosR();
 	Vector3F& getRotR();
 	

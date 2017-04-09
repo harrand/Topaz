@@ -7,7 +7,7 @@ void Player::setPosition(Vector3F position)
 	this->cam.getPosR() = position;
 }
 
-Vector3F Player::getPosition() const
+const Vector3F& Player::getPosition() const
 {
 	return this->cam.getPos();
 }

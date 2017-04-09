@@ -14,7 +14,7 @@ public:
 	void reloadMouseDelta();
 	bool isLeftClicked() const;
 	bool isRightClicked() const;
-	Vector2F getMousePos() const;
+	const Vector2F& getMousePos() const;
 	Vector2F getMouseDeltaPos() const;
 private:
 	bool leftClick, rightClick;

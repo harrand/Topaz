@@ -2,17 +2,17 @@
 
 Object::Object(std::string meshLink, std::string textureLink, std::string normalMapLink, std::string parallaxMapLink, Vector3F pos, Vector3F rot, Vector3F scale): meshLink(meshLink), textureLink(textureLink), normalMapLink(normalMapLink), parallaxMapLink(parallaxMapLink), pos(pos), rot(rot), scale(scale){}
 
-Vector3F Object::getPos() const
+const Vector3F& Object::getPos() const
 {
 	return this->pos;
 }
 
-Vector3F Object::getRot() const
+const Vector3F& Object::getRot() const
 {
 	return this->rot;
 }
 
-Vector3F Object::getScale() const
+const Vector3F& Object::getScale() const
 {
 	return this->scale;
 }
@@ -32,22 +32,22 @@ Vector3F& Object::getScaleR()
 	return this->scale;
 }
 
-std::string Object::getMeshLink() const
+const std::string& Object::getMeshLink() const
 {
 	return this->meshLink;
 }
 
-std::string Object::getTextureLink() const
+const std::string& Object::getTextureLink() const
 {
 	return this->textureLink;
 }
 
-std::string Object::getNormalMapLink() const
+const std::string& Object::getNormalMapLink() const
 {
 	return this->normalMapLink;
 }
 
-std::string Object::getParallaxMapLink() const
+const std::string& Object::getParallaxMapLink() const
 {
 	return this->parallaxMapLink;
 }

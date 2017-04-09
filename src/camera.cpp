@@ -6,12 +6,12 @@ Camera::Camera(Vector3F pos, Vector3F rot)
 	this->rot = rot;
 }
 
-Vector3F Camera::getPos() const
+const Vector3F& Camera::getPos() const
 {
 	return this->pos;
 }
 
-Vector3F Camera::getRot() const
+const Vector3F& Camera::getRot() const
 {
 	return this->rot;
 }
