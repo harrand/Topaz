@@ -38,9 +38,10 @@ World::~World()
 	for(auto& iter : this->baseLights)
 	{
 		// Kill all the lights in the shader before losing all the data
-		std::vector<float> pos({0.0f, 0.0f, 0.0f});
-		glUniform3fv(iter.first.first, 1, &(pos[0]));
-		glUniform1f(iter.first.second, 0);
+		std::vector<float> pos({0.0f, 0.0f, 0.0f}), colour({0.0f, 0.0f, 0.0f});
+		glUniform3fv(iter.first.at(0), 1, &(pos[0]));
+		glUniform3fv(iter.first.at(1), 1, &(colour[0]));
+		glUniform1f(iter.first.at(2), 0);
 	}
 }
 
@@ -79,7 +80,12 @@ void World::addLight(BaseLight&& light, GLuint shader_programHandle)
 	while(this->baseLights.size() >= World::MAXIMUM_LIGHTS)
 		this->baseLights.erase(this->baseLights.begin());
 	//lights guaranteed to have at least one empty space now
-	this->baseLights[std::make_pair<GLuint, GLuint>(glGetUniformLocation(shader_programHandle, ("lights[" + CastUtility::toString<unsigned int>(this->baseLights.size()) + "].pos").c_str()), glGetUniformLocation(shader_programHandle, ("lights[" + CastUtility::toString<unsigned int>(this->baseLights.size()) + "].power").c_str()))] = std::make_unique<BaseLight>(std::move(light));
+	//this->baseLights[std::make_pair<GLuint, GLuint>(glGetUniformLocation(shader_programHandle, ("lights[" + CastUtility::toString<unsigned int>(this->baseLights.size()) + "].pos").c_str()), glGetUniformLocation(shader_programHandle, ("lights[" + CastUtility::toString<unsigned int>(this->baseLights.size()) + "].power").c_str()))] = std::make_unique<BaseLight>(std::move(light));
+	std::vector<GLuint> uniforms;
+	uniforms.push_back(glGetUniformLocation(shader_programHandle, ("lights[" + CastUtility::toString<unsigned int>(this->baseLights.size()) + "].pos").c_str()));
+	uniforms.push_back(glGetUniformLocation(shader_programHandle, ("lights[" + CastUtility::toString<unsigned int>(this->baseLights.size()) + "].colour").c_str()));
+	uniforms.push_back(glGetUniformLocation(shader_programHandle, ("lights[" + CastUtility::toString<unsigned int>(this->baseLights.size()) + "].power").c_str()));
+	this->baseLights[uniforms] = std::make_unique<BaseLight>(std::move(light));
 }
 
 void World::exportWorld(const std::string& worldName) const
@@ -180,12 +186,16 @@ void World::update(unsigned int fps, Camera& cam, Shader& shader, unsigned int w
 	for(auto& iter : this->baseLights)
 	{
 		BaseLight* light = iter.second.get();
-		std::vector<float> pos;
+		std::vector<float> pos, colour;
 		pos.push_back(light->getPos().getX());
 		pos.push_back(light->getPos().getY());
 		pos.push_back(light->getPos().getZ());
-		glUniform3fv(iter.first.first, 1, &(pos[0]));
-		glUniform1f(iter.first.second, light->getPower());
+		colour.push_back(light->getColour().getX());
+		colour.push_back(light->getColour().getY());
+		colour.push_back(light->getColour().getZ());
+		glUniform3fv(iter.first.at(0), 1, &(pos[0]));
+		glUniform3fv(iter.first.at(1), 1, &(colour[0]));
+		glUniform1f(iter.first.at(2), light->getPower());
 	}
 }
 
@@ -229,7 +239,7 @@ const std::string& World::getWorldLink() const
 	return this->filename;
 }
 
-const std::map<std::pair<GLuint, GLuint>, std::unique_ptr<BaseLight>>& World::getLights() const
+const std::map<std::vector<GLuint>, std::unique_ptr<BaseLight>>& World::getLights() const
 {
 	return this->baseLights;
 }

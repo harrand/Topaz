@@ -328,14 +328,15 @@ void Commands::setSpawnOrientation(std::vector<std::string> args, std::unique_pt
 
 void Commands::addLight(std::vector<std::string> args, std::unique_ptr<World>& world, Player& player, Shader& shader)
 {
-	Vector3F pos;
+	Vector3F pos, colour;
 	if(args.at(1) == "me")
 		pos = player.getPosition();
 	else
 		pos = StringUtility::vectoriseList3F(StringUtility::deformat(args.at(1)));
-	float pow = CastUtility::fromString<float>(args.at(2));
-	world->addLight(std::move(BaseLight(pos, pow)), shader.getProgramHandle());
-	std::cout << "Added a light at the position [" << pos.getX() << ", " << pos.getY() << ", " << pos.getZ() << "] with the power " << pow << " watts.\n";
+	colour = StringUtility::vectoriseList3F(StringUtility::deformat(args.at(2)));
+	float pow = CastUtility::fromString<float>(args.at(3));
+	world->addLight(std::move(BaseLight(pos, colour, pow)), shader.getProgramHandle());
+	std::cout << "Added a light at the position [" << pos.getX() << ", " << pos.getY() << ", " << pos.getZ() << "] with the colour [" << colour.getX() << ", " << colour.getY() << ", " << colour.getZ() << "] and the power " << pow << " watts.\n";
 }
 
 void Commands::toggleMusic()

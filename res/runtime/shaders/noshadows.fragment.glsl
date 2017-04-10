@@ -23,6 +23,7 @@ const unsigned int MAX_LIGHTS = 8;
 struct BaseLight
 {
 	vec3 pos;
+	vec3 colour;
 	float power;
 };
 
@@ -62,7 +63,7 @@ vec4 getDiffuseComponentFromLight(BaseLight l, vec3 parsedNormal_tangentspace)
 	vec3 displacementFromLight = lightPos_cameraspace - position_cameraspace;
 	float cosTheta = clamp(dot(parsedNormal_tangentspace, tbnMatrix * displacementFromLight), 0.0, 1.0);
 	float distanceFromLight = length(displacementFromLight);
-	return textureColour * vec4(1, 1, 1, 1) * l.power * cosTheta / (distanceFromLight * distanceFromLight);
+	return textureColour * vec4(l.colour, 1) * l.power * cosTheta / (distanceFromLight * distanceFromLight);
 }
 
 vec4 getAmbientComponent()
@@ -86,7 +87,7 @@ vec4 getSpecularComponentFromLight(BaseLight l, vec3 parsedNormal_tangentspace)
 	vec3 R = reflect(-normalize(tbnMatrix * displacementFromLight), parsedNormal_tangentspace);
 	float cosAlpha = clamp(dot(E, R), 0, 1);
 	float distanceFromLight = length(displacementFromLight);
-	return textureColour * vec4(1, 1, 1, 1) * l.power * pow(cosAlpha, 5) / (distanceFromLight * distanceFromLight);
+	return textureColour * vec4(l.colour, 1) * l.power * pow(cosAlpha, 5) / (distanceFromLight * distanceFromLight);
 }
 
 void main()

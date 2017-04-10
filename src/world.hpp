@@ -30,7 +30,7 @@ public:
 	const Vector3F& getSpawnPoint() const;
 	const Vector3F& getSpawnOrientation() const;
 	const std::string& getWorldLink() const;
-	const std::map<std::pair<GLuint, GLuint>, std::unique_ptr<BaseLight>>& getLights() const;
+	const std::map<std::vector<GLuint>, std::unique_ptr<BaseLight>>& getLights() const;
 private:
 	static const unsigned int MAXIMUM_LIGHTS;
 	Vector3F gravity, spawnPoint, spawnOrientation;
@@ -40,7 +40,7 @@ private:
 	std::vector<Object> members;
 	std::vector<Entity*> entities;
 	std::vector<std::unique_ptr<EntityObject>> entityObjects;
-	std::map<std::pair<GLuint, GLuint>, std::unique_ptr<BaseLight>> baseLights;
+	std::map<std::vector<GLuint>, std::unique_ptr<BaseLight>> baseLights;
 };
 
 #endif
