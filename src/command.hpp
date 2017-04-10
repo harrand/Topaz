@@ -18,7 +18,7 @@ public:
 
 namespace Commands
 {
-	void inputCommand(std::string cmd, std::unique_ptr<World>& world, Player& player);
+	void inputCommand(std::string cmd, std::unique_ptr<World>& world, Player& player, Shader& shader);
 	void loadWorld(std::vector<std::string> args, std::unique_ptr<World>& world);
 	void exportWorld(std::vector<std::string> args, std::unique_ptr<World>& world);
 	void addObject(std::vector<std::string> args, std::unique_ptr<World>& world, Player& player, bool printResults);
@@ -33,6 +33,7 @@ namespace Commands
 	void setGravity(std::vector<std::string> args, std::unique_ptr<World>& world, bool printResults);
 	void setSpawnPoint(std::vector<std::string> args, std::unique_ptr<World>& world, bool printResults);
 	void setSpawnOrientation(std::vector<std::string> args, std::unique_ptr<World>& world, bool printResults);
+	void addLight(std::vector<std::string> args, Shader& shader);
 	void toggleMusic();
 	void setVolume(std::vector<std::string> args);
 	void printVolume();

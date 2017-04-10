@@ -219,7 +219,7 @@ std::string KeyControls::getKeybind(MDLF& controlsDataFile, KeybindType kt)
 	}
 }
 
-KeybindController::KeybindController(Player& player, std::unique_ptr<World>& world, Window& wnd): player(player), world(world), wnd(wnd)
+KeybindController::KeybindController(Player& player, Shader& shader, std::unique_ptr<World>& world, Window& wnd): player(player), shader(shader), world(world), wnd(wnd)
 {
 	wnd.registerListener(this->kl);
 }
@@ -257,7 +257,7 @@ void KeybindController::handleKeybinds(unsigned int fps)
 	{
 		std::string input;
 		std::getline(std::cin, input);
-		Commands::inputCommand(input, world, player);
+		Commands::inputCommand(input, world, player, shader);
 	}
 	if(kl.isKeyPressed(KeyControls::getKeybind(controlsDataFile, KeybindType::REQUEST_CLOSE)))
 		wnd.requestClose();
@@ -273,6 +273,6 @@ void KeybindController::handleKeybinds(unsigned int fps)
 		std::string cmd = "";
 		for(unsigned int i = 0; i < alias.size(); i++)
 			cmd += (i != (alias.size() - 1)) ? alias.at(i) + " " : alias.at(i);
-		Commands::inputCommand(cmd, world, player);
+		Commands::inputCommand(cmd, world, player, shader);
 	}
 }

@@ -78,10 +78,11 @@ namespace KeyControls
 class KeybindController
 {
 public:
-	KeybindController(Player& player, std::unique_ptr<World>& world, Window& wnd);
+	KeybindController(Player& player, Shader& shader, std::unique_ptr<World>& world, Window& wnd);
 	~KeybindController();
 	void handleKeybinds(unsigned int fps);
 private:
+	Shader& shader;
 	Player& player;
 	std::unique_ptr<World>& world;
 	Window& wnd;

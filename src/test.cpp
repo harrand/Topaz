@@ -2,6 +2,7 @@
 #include "timekeeper.hpp"
 #include "command.hpp"
 #include "audio.hpp"
+#include "light.hpp"
 #include <iostream>
 
 //Global Heap Variables
@@ -24,9 +25,10 @@ int main()
 	int secondsLifetime = CastUtility::fromString<int>(timeStorage.getTag("played"));
 	Window wnd(800, 600, "Topaz Test Environment - Undefined World");
 	Shader shader(RES_POINT + "/shaders/noshadows");	
+	shader.addLight(std::move(BaseLight(Vector3F(), 10000.0f)));
 	world = std::unique_ptr<World>(new World(RES_POINT + "/worlds/random.world"));
 	world->addEntity(&player);
-	KeybindController kc(player, world, wnd);
+	KeybindController kc(player, shader, world, wnd);
 	MouseController mc(player, world, wnd);
 	std::cout << "Retrieving assets...\n";
 	std::cout << "Retrieved "<< DataTranslation(RES_POINT + "/resources.data").retrieveAllData(allMeshes, allTextures, allNormalMaps, allParallaxMaps) << " assets.\n";

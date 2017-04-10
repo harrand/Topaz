@@ -81,7 +81,7 @@ void Mesh::initMesh()
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
 	
 	glBindBuffer(GL_ARRAY_BUFFER, this->vertexArrayBuffers[(unsigned int) BufferTypes::TEXCOORD]);
-	glBufferData(GL_ARRAY_BUFFER, this->model.positions.size() * sizeof(this->model.texcoords[0]), &(this->model.texcoords[0]), GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, this->model.texcoords.size() * sizeof(this->model.texcoords[0]), &(this->model.texcoords[0]), GL_STATIC_DRAW);
 	
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);

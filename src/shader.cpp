@@ -1,5 +1,7 @@
 #include "shader.hpp"
 
+const unsigned int Shader::MAXIMUM_LIGHTS = 8;
+
 Shader::Shader(std::string filename): filename(filename)
 {
 	// Allocate space on GPU memory for shader.
@@ -48,6 +50,19 @@ GLuint Shader::getProgramHandle() const
 	return this->programHandle;
 }
 
+const std::map<std::pair<GLuint, GLuint>, std::unique_ptr<BaseLight>>& Shader::getLights() const
+{
+	return this->baseLights;
+}
+
+void Shader::addLight(BaseLight&& light)
+{
+	while(this->baseLights.size() >= Shader::MAXIMUM_LIGHTS)
+		this->baseLights.erase(this->baseLights.begin());
+	//lights guaranteed to have at least one empty space now
+	this->baseLights[std::make_pair<GLuint, GLuint>(glGetUniformLocation(this->programHandle, ("lights[" + CastUtility::toString<unsigned int>(this->baseLights.size()) + "].pos").c_str()), glGetUniformLocation(this->programHandle, ("lights[" + CastUtility::toString<unsigned int>(this->baseLights.size()) + "].power").c_str()))] = std::make_unique<BaseLight>(std::move(light));
+}
+
 void Shader::bind() const
 {
 	glUseProgram(this->programHandle);
@@ -55,6 +70,16 @@ void Shader::bind() const
 
 void Shader::update(const std::vector<float>&& modelData, const std::vector<float>&& viewData, const std::vector<float>&& projectionData, float parallaxMapScale, float parallaxMapOffset) const
 {
+	for(auto& iter : this->baseLights)
+	{
+		BaseLight* light = iter.second.get();
+		std::vector<float> pos;
+		pos.push_back(light->getPos().getX());
+		pos.push_back(light->getPos().getY());
+		pos.push_back(light->getPos().getZ());
+		glUniform3fv(iter.first.first, 1, &(pos[0]));
+		glUniform1f(iter.first.second, light->getPower());
+	}
 	glUniformMatrix4fv(this->uniforms[(unsigned int)UniformTypes::MODEL], 1, GL_TRUE, &modelData[0]);
 	glUniformMatrix4fv(this->uniforms[(unsigned int)UniformTypes::VIEW], 1, GL_TRUE, &viewData[0]);
 	glUniformMatrix4fv(this->uniforms[(unsigned int)UniformTypes::PROJECTION], 1, GL_TRUE, &projectionData[0]);
