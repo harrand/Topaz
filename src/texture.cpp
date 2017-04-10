@@ -128,12 +128,12 @@ std::string Texture::getFileName() const
 }
 
 //static
-std::shared_ptr<Texture> Texture::getFromLink(const std::string& textureLink, std::vector<std::shared_ptr<Texture>> allTextures)
+Texture* Texture::getFromLink(const std::string& textureLink, const std::vector<std::unique_ptr<Texture>>& allTextures)
 {
 	for(unsigned int i = 0; i < allTextures.size(); i++)
 	{
 		if(allTextures.at(i)->getFileName() == textureLink)
-			return allTextures.at(i);
+			return allTextures.at(i).get();
 	}
 	return NULL;
 }
@@ -152,12 +152,12 @@ void NormalMap::bind(GLuint shaderProgram, unsigned int id)
 }
 
 //static
-std::shared_ptr<NormalMap> NormalMap::getFromLink(const std::string& normalMapLink, std::vector<std::shared_ptr<NormalMap>> allNormalMaps)
+NormalMap* NormalMap::getFromLink(const std::string& normalMapLink, const std::vector<std::unique_ptr<NormalMap>>& allNormalMaps)
 {
 	for(unsigned int i = 0; i < allNormalMaps.size(); i++)
 	{
 		if(allNormalMaps.at(i)->getFileName() == normalMapLink)
-			return allNormalMaps.at(i);
+			return allNormalMaps.at(i).get();
 	}
 	return NULL;
 }
@@ -176,12 +176,12 @@ void ParallaxMap::bind(GLuint shaderProgram, unsigned int id)
 }
 
 //static
-std::shared_ptr<ParallaxMap> ParallaxMap::getFromLink(const std::string& parallaxMapLink, std::vector<std::shared_ptr<ParallaxMap>> allParallaxMaps)
+ParallaxMap* ParallaxMap::getFromLink(const std::string& parallaxMapLink, const std::vector<std::unique_ptr<ParallaxMap>>& allParallaxMaps)
 {
 	for(unsigned int i = 0; i < allParallaxMaps.size(); i++)
 	{
 		if(allParallaxMaps.at(i)->getFileName() == parallaxMapLink)
-			return allParallaxMaps.at(i);
+			return allParallaxMaps.at(i).get();
 	}
 	return NULL;
 }

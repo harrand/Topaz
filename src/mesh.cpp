@@ -53,14 +53,14 @@ void Mesh::render() const
 }
 
 //static
-std::shared_ptr<Mesh> Mesh::getFromLink(std::string meshLink, std::vector<std::shared_ptr<Mesh>> allMeshes)
+Mesh* Mesh::getFromLink(const std::string& meshLink, const std::vector<std::unique_ptr<Mesh>>& allMeshes)
 {
 	for(unsigned int i = 0; i < allMeshes.size(); i++)
 	{
 		if(allMeshes.at(i)->getFileName() == meshLink)
-			return allMeshes.at(i);
+			return allMeshes.at(i).get();
 	}
-	return __null;
+	return NULL;
 }
 
 //private

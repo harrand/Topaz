@@ -5,11 +5,11 @@
 #include <iostream>
 
 //Global Heap Variables
-std::shared_ptr<World> world;
-std::vector<std::shared_ptr<Mesh>> allMeshes;
-std::vector<std::shared_ptr<Texture>> allTextures;
-std::vector<std::shared_ptr<NormalMap>> allNormalMaps;
-std::vector<std::shared_ptr<ParallaxMap>> allParallaxMaps;
+std::unique_ptr<World> world;
+std::vector<std::unique_ptr<Mesh>> allMeshes;
+std::vector<std::unique_ptr<Texture>> allTextures;
+std::vector<std::unique_ptr<NormalMap>> allNormalMaps;
+std::vector<std::unique_ptr<ParallaxMap>> allParallaxMaps;
 //Global Stack Variables
 Camera cam;
 Player player(10.0f, cam);
@@ -24,12 +24,12 @@ int main()
 	int secondsLifetime = CastUtility::fromString<int>(timeStorage.getTag("played"));
 	Window wnd(800, 600, "Topaz Test Environment - Undefined World");
 	Shader shader(RES_POINT + "/shaders/noshadows");	
-	world = std::shared_ptr<World>(new World(RES_POINT + "/worlds/random.world"));
+	world = std::unique_ptr<World>(new World(RES_POINT + "/worlds/random.world"));
 	world->addEntity(&player);
 	KeybindController kc(player, world, wnd);
 	MouseController mc(player, world, wnd);
 	std::cout << "Retrieving assets...\n";
-	std::cout << "Retrieved " << DataTranslation(RES_POINT + "/resources.data").retrieveAllData(allMeshes, allTextures, allNormalMaps, allParallaxMaps) << " assets.\n";
+	std::cout << "Retrieved "<< DataTranslation(RES_POINT + "/resources.data").retrieveAllData(allMeshes, allTextures, allNormalMaps, allParallaxMaps) << " assets.\n";
 	TimeKeeper tk;
 	TimeProfiler tp;
 	unsigned int fps  = 1000;

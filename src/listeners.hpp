@@ -24,13 +24,13 @@ private:
 class MouseController
 {
 public:
-	MouseController(Player& player, std::shared_ptr<World>& world, Window& wnd);
+	MouseController(Player& player, std::unique_ptr<World>& world, Window& wnd);
 	~MouseController();
 	void handleMouse();
 	MouseListener& getMouseListener();
 private: 
 	Player& player;
-	std::shared_ptr<World>& world;
+	std::unique_ptr<World>& world;
 	Window& wnd;
 	MouseListener ml;
 };
@@ -78,12 +78,12 @@ namespace KeyControls
 class KeybindController
 {
 public:
-	KeybindController(Player& player, std::shared_ptr<World>& world, Window& wnd);
+	KeybindController(Player& player, std::unique_ptr<World>& world, Window& wnd);
 	~KeybindController();
 	void handleKeybinds(unsigned int fps);
 private:
 	Player& player;
-	std::shared_ptr<World>& world;
+	std::unique_ptr<World>& world;
 	Window& wnd;
 	KeyListener kl;
 };

@@ -32,7 +32,7 @@ public:
 	~Texture();
 	void bind(GLuint shaderProgram, unsigned int id);
 	std::string getFileName() const;
-	static std::shared_ptr<Texture> getFromLink(const std::string& textureLink, std::vector<std::shared_ptr<Texture>> allTextures);
+	static Texture* getFromLink(const std::string& textureLink, const std::vector<std::unique_ptr<Texture>>& allTextures);
 protected:
 	GLuint textureID;
 	GLuint texhandle;
@@ -48,7 +48,7 @@ class NormalMap: public Texture
 public:
 	NormalMap(std::string filename = "../../../res/runtime/normalmaps/default_normalmap.jpg");
 	void bind(GLuint shaderProgram, unsigned int id);
-	static std::shared_ptr<NormalMap> getFromLink(const std::string& normalMapLink, std::vector<std::shared_ptr<NormalMap>> allNormalMaps);
+	static NormalMap* getFromLink(const std::string& normalMapLink, const std::vector<std::unique_ptr<NormalMap>>& allNormalMaps);
 private:
 };
 
@@ -57,7 +57,7 @@ class ParallaxMap: public Texture
 public:
 	ParallaxMap(std::string filename = "../../../res/runtime/parallaxmaps/default_parallax.png");
 	void bind(GLuint shaderProgram, unsigned int id);
-	static std::shared_ptr<ParallaxMap> getFromLink(const std::string& parallaxMapLink, std::vector<std::shared_ptr<ParallaxMap>> allParallaxMaps);
+	static ParallaxMap* getFromLink(const std::string& parallaxMapLink, const std::vector<std::unique_ptr<ParallaxMap>>& allParallaxMaps);
 private:
 };
 

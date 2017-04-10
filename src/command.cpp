@@ -31,7 +31,7 @@ void CommandCache::destroyChannelClips(int channel)
 	}
 }
 
-void Commands::inputCommand(std::string cmd, std::shared_ptr<World>& world, Player& player)
+void Commands::inputCommand(std::string cmd, std::unique_ptr<World>& world, Player& player)
 {
 	std::vector<std::string> args;
 	if(StringUtility::contains(cmd, ' '))
@@ -74,7 +74,7 @@ void Commands::inputCommand(std::string cmd, std::shared_ptr<World>& world, Play
 		std::cout << "Unknown command. Maybe you made a typo?\n";
 }
 
-void Commands::loadWorld(std::vector<std::string> args, std::shared_ptr<World>& world)
+void Commands::loadWorld(std::vector<std::string> args, std::unique_ptr<World>& world)
 {
 	if(args.size() != 2)
 	{
@@ -84,13 +84,13 @@ void Commands::loadWorld(std::vector<std::string> args, std::shared_ptr<World>& 
 	std::vector<Entity*> entities = world->getEntities();
 	std::string worldname = args.at(1);
 	std::string link = (RES_POINT + "/worlds/" + worldname);
-	world = std::shared_ptr<World>(new World(link));
+	world = std::unique_ptr<World>(new World(link));
 	for(unsigned int i = 0; i < entities.size(); i++)
 		world->addEntity(entities.at(i));
 	std::cout << "Now rendering the world '" << worldname << "' which has " << world->getSize() << " objects.\n";
 }
 
-void Commands::exportWorld(std::vector<std::string> args, std::shared_ptr<World>& world)
+void Commands::exportWorld(std::vector<std::string> args, std::unique_ptr<World>& world)
 {
 	if(args.size() != 2)
 	{
@@ -101,7 +101,7 @@ void Commands::exportWorld(std::vector<std::string> args, std::shared_ptr<World>
 	world->exportWorld(worldname);
 }
 
-void Commands::addObject(std::vector<std::string> args, std::shared_ptr<World>& world, Player& player, bool printResults)
+void Commands::addObject(std::vector<std::string> args, std::unique_ptr<World>& world, Player& player, bool printResults)
 {
 	if(args.size() != 8)
 	{
@@ -161,7 +161,7 @@ void Commands::addObject(std::vector<std::string> args, std::shared_ptr<World>& 
 	} 
 }
 
-void Commands::addEntityObject(std::vector<std::string> args, std::shared_ptr<World>& world, Player& player, bool printResults)
+void Commands::addEntityObject(std::vector<std::string> args, std::unique_ptr<World>& world, Player& player, bool printResults)
 {
 	if(args.size() != 9)
 	{
@@ -235,7 +235,7 @@ void Commands::setAlias(std::vector<std::string> args)
 	std::cout << "\n";
 }
 
-void Commands::reloadWorld(std::vector<std::string> args, std::shared_ptr<World>& world, bool printResults)
+void Commands::reloadWorld(std::vector<std::string> args, std::unique_ptr<World>& world, bool printResults)
 {
 	std::cout << "Reloading the world with link " << world->getFileName() << ".\n";
 	args.resize(2); // Resize not reserve; resize will add empty elements in but reserve will not (so with reserve args.at(1) will still crash)
@@ -248,7 +248,7 @@ void Commands::reloadWorld(std::vector<std::string> args, std::shared_ptr<World>
 		std::cout << "Successfully reloaded the world. (world link " << world->getFileName() << ").\n";
 }
 
-void Commands::updateWorld(std::shared_ptr<World>& world, bool printResults)
+void Commands::updateWorld(std::unique_ptr<World>& world, bool printResults)
 {
 	std::string worldLink = world->getFileName(), worldName = worldLink;
 	std::string toRemove = RES_POINT + "/worlds/";
@@ -294,7 +294,7 @@ void Commands::roundLocation(Player& player)
 	player.getCamera().getPosR() = Vector3F(round(player.getCamera().getPos().getX()), round(player.getCamera().getPos().getY()), round(player.getCamera().getPos().getZ()));
 }
 
-void Commands::setGravity(std::vector<std::string> args, std::shared_ptr<World>& world, bool printResults)
+void Commands::setGravity(std::vector<std::string> args, std::unique_ptr<World>& world, bool printResults)
 {
 	Vector3F grav = StringUtility::vectoriseList3F(StringUtility::deformat(args.at(1)));
 	world->setGravity(grav);
@@ -302,7 +302,7 @@ void Commands::setGravity(std::vector<std::string> args, std::shared_ptr<World>&
 		std::cout << "Set gravity of the world '" << world->getFileName() << "' to [" << grav.getX() << "," << grav.getY() << "," << grav.getZ() << "] N\n";
 }
 
-void Commands::setSpawnPoint(std::vector<std::string> args, std::shared_ptr<World>& world, bool printResults)
+void Commands::setSpawnPoint(std::vector<std::string> args, std::unique_ptr<World>& world, bool printResults)
 {
 	Vector3F spawn = StringUtility::vectoriseList3F(StringUtility::deformat(args.at(1)));
 	world->setSpawnPoint(spawn);
@@ -310,7 +310,7 @@ void Commands::setSpawnPoint(std::vector<std::string> args, std::shared_ptr<Worl
 		std::cout << "Set spawnpoint of the world '" << world->getFileName() << "' to [" << spawn.getX() << "," << spawn.getY() << "," << spawn.getZ() << "]\n";
 }
 
-void Commands::setSpawnOrientation(std::vector<std::string> args, std::shared_ptr<World>& world, bool printResults)
+void Commands::setSpawnOrientation(std::vector<std::string> args, std::unique_ptr<World>& world, bool printResults)
 {
 	Vector3F spawn = StringUtility::vectoriseList3F(StringUtility::deformat(args.at(1)));
 	world->setSpawnOrientation(spawn);

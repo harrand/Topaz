@@ -80,29 +80,29 @@ std::unordered_map<std::string, std::string> DataTranslation::retrieveParallaxMa
 	return parallaxMapMap;
 }
 
-unsigned int DataTranslation::retrieveAllData(std::vector<std::shared_ptr<Mesh>>& allMeshes, std::vector<std::shared_ptr<Texture>>& allTextures, std::vector<std::shared_ptr<NormalMap>>& allNormalMaps, std::vector<std::shared_ptr<ParallaxMap>>& allParallaxMaps) const
+unsigned int DataTranslation::retrieveAllData(std::vector<std::unique_ptr<Mesh>>& allMeshes, std::vector<std::unique_ptr<Texture>>& allTextures, std::vector<std::unique_ptr<NormalMap>>& allNormalMaps, std::vector<std::unique_ptr<ParallaxMap>>& allParallaxMaps) const
 {
 	std::unordered_map<std::string, std::string> models = this->retrieveModels(), textures = this->retrieveTextures(), normalmaps = this->retrieveNormalMaps(), parallaxmaps = this->retrieveParallaxMaps();
 	unsigned int dataCount = 0;
 	typedef std::unordered_map<std::string, std::string>::iterator it_type;
 	for(it_type iterator = models.begin(); iterator != models.end(); iterator++)
 	{
-		allMeshes.push_back(std::shared_ptr<Mesh>(new Mesh(iterator->first)));
+		allMeshes.push_back(std::unique_ptr<Mesh>(new Mesh(iterator->first)));
 		dataCount++;
 	}
 	for(it_type iterator = textures.begin(); iterator != textures.end(); iterator++)
 	{
-		allTextures.push_back(std::shared_ptr<Texture>(new Texture(iterator->first)));
+		allTextures.push_back(std::unique_ptr<Texture>(new Texture(iterator->first)));
 		dataCount++;
 	}
 	for(it_type iterator = normalmaps.begin(); iterator != normalmaps.end(); iterator++)
 	{
-		allNormalMaps.push_back(std::shared_ptr<NormalMap>(new NormalMap(iterator->first)));
+		allNormalMaps.push_back(std::unique_ptr<NormalMap>(new NormalMap(iterator->first)));
 		dataCount++;
 	}
 	for(it_type iterator = parallaxmaps.begin(); iterator != parallaxmaps.end(); iterator++)
 	{
-		allParallaxMaps.push_back(std::shared_ptr<ParallaxMap>(new ParallaxMap(iterator->first)));
+		allParallaxMaps.push_back(std::unique_ptr<ParallaxMap>(new ParallaxMap(iterator->first)));
 		dataCount++;
 	}
 	return dataCount;

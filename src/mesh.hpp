@@ -27,7 +27,7 @@ public:
 	IndexedModel getIndexedModel() const;
 	std::string getFileName() const;
 	void render() const;
-	static std::shared_ptr<Mesh> getFromLink(std::string meshLink, std::vector<std::shared_ptr<Mesh>> allMeshes);
+	static Mesh* getFromLink(const std::string& meshLink, const std::vector<std::unique_ptr<Mesh>>& allMeshes);
 private:
 	IndexedModel model;
 	const std::string filename;

@@ -16,7 +16,7 @@ public:
 	void setSpawnPoint(Vector3F spawnPoint = Vector3F());
 	void setSpawnOrientation(Vector3F spawnOrientation = Vector3F());
 
-	void update(unsigned int fps, Camera& cam, Shader& shader, unsigned int width, unsigned int height, std::vector<std::shared_ptr<Mesh>> allMeshes, std::vector<std::shared_ptr<Texture>> allTextures, std::vector<std::shared_ptr<NormalMap>> allNormalMaps, std::vector<std::shared_ptr<ParallaxMap>> allParallaxMaps) const;
+	void update(unsigned int fps, Camera& cam, Shader& shader, unsigned int width, unsigned int height, const std::vector<std::unique_ptr<Mesh>>& allMeshes, const std::vector<std::unique_ptr<Texture>>& allTextures, const std::vector<std::unique_ptr<NormalMap>>& allNormalMaps, const std::vector<std::unique_ptr<ParallaxMap>>& allParallaxMaps) const;
 		
 	unsigned int getSize() const;
 	const std::vector<Object>& getMembers() const;

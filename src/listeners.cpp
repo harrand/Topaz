@@ -52,7 +52,7 @@ Vector2F MouseListener::getMouseDeltaPos() const
 	return (this->mousePos - this->prevMousePos);
 }
 
-MouseController::MouseController(Player& player, std::shared_ptr<World>& world, Window& wnd): player(player), world(world), wnd(wnd)
+MouseController::MouseController(Player& player, std::unique_ptr<World>& world, Window& wnd): player(player), world(world), wnd(wnd)
 {
 	this->wnd.registerListener(this->ml);
 }
@@ -219,7 +219,7 @@ std::string KeyControls::getKeybind(MDLF& controlsDataFile, KeybindType kt)
 	}
 }
 
-KeybindController::KeybindController(Player& player, std::shared_ptr<World>& world, Window& wnd): player(player), world(world), wnd(wnd)
+KeybindController::KeybindController(Player& player, std::unique_ptr<World>& world, Window& wnd): player(player), world(world), wnd(wnd)
 {
 	wnd.registerListener(this->kl);
 }
