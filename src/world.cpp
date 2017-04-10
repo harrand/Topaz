@@ -1,5 +1,7 @@
 #include "world.hpp"
 
+const unsigned int World::MAXIMUM_LIGHTS = 8;
+
 World::World(std::string filename): filename(filename)
 {
 	MDLF input(RawFile(this->filename));
@@ -31,6 +33,17 @@ World::World(std::string filename): filename(filename)
 	}
 }
 
+World::~World()
+{
+	for(auto& iter : this->baseLights)
+	{
+		// Kill all the lights in the shader before losing all the data
+		std::vector<float> pos({0.0f, 0.0f, 0.0f});
+		glUniform3fv(iter.first.first, 1, &(pos[0]));
+		glUniform1f(iter.first.second, 0);
+	}
+}
+
 const std::string World::getFileName() const
 {
 	return this->filename;
@@ -59,6 +72,14 @@ void World::addEntityObject(std::unique_ptr<EntityObject>&& eo)
 	}
 	eo->applyForce("gravity", Force(this->getGravity()));
 	this->entityObjects.push_back(std::move(eo));
+}
+
+void World::addLight(BaseLight&& light, GLuint shader_programHandle)
+{
+	while(this->baseLights.size() >= World::MAXIMUM_LIGHTS)
+		this->baseLights.erase(this->baseLights.begin());
+	//lights guaranteed to have at least one empty space now
+	this->baseLights[std::make_pair<GLuint, GLuint>(glGetUniformLocation(shader_programHandle, ("lights[" + CastUtility::toString<unsigned int>(this->baseLights.size()) + "].pos").c_str()), glGetUniformLocation(shader_programHandle, ("lights[" + CastUtility::toString<unsigned int>(this->baseLights.size()) + "].power").c_str()))] = std::make_unique<BaseLight>(std::move(light));
 }
 
 void World::exportWorld(const std::string& worldName) const
@@ -155,6 +176,17 @@ void World::update(unsigned int fps, Camera& cam, Shader& shader, unsigned int w
 		Entity* ent = this->getEntities().at(i);
 		ent->updateMotion(fps);
 	}
+	
+	for(auto& iter : this->baseLights)
+	{
+		BaseLight* light = iter.second.get();
+		std::vector<float> pos;
+		pos.push_back(light->getPos().getX());
+		pos.push_back(light->getPos().getY());
+		pos.push_back(light->getPos().getZ());
+		glUniform3fv(iter.first.first, 1, &(pos[0]));
+		glUniform1f(iter.first.second, light->getPower());
+	}
 }
 
 unsigned int World::getSize() const
@@ -195,6 +227,11 @@ const Vector3F& World::getSpawnOrientation() const
 const std::string& World::getWorldLink() const
 {
 	return this->filename;
+}
+
+const std::map<std::pair<GLuint, GLuint>, std::unique_ptr<BaseLight>>& World::getLights() const
+{
+	return this->baseLights;
 }
 
 Object World::retrieveData(const std::string& objectName, MDLF& mdlf)

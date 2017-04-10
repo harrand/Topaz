@@ -69,7 +69,7 @@ void Commands::inputCommand(std::string cmd, std::unique_ptr<World>& world, Play
 	else if(cmdName == "spawnorientation")
 		Commands::setSpawnOrientation(args, world, true);
 	else if(cmdName == "addLight")
-		Commands::addLight(args, shader);
+		Commands::addLight(args, world, player, shader);
 	else if(cmdName == "pause")
 		Commands::toggleMusic();
 	else if(cmdName == "setvolume")
@@ -326,11 +326,15 @@ void Commands::setSpawnOrientation(std::vector<std::string> args, std::unique_pt
 		std::cout << "Set spawnorientation of the world '" << world->getFileName() << "' to [" << spawn.getX() << "," << spawn.getY() << "," << spawn.getZ() << "]\n";
 }
 
-void Commands::addLight(std::vector<std::string> args, Shader& shader)
+void Commands::addLight(std::vector<std::string> args, std::unique_ptr<World>& world, Player& player, Shader& shader)
 {
-	Vector3F pos = StringUtility::vectoriseList3F(StringUtility::deformat(args.at(1)));
+	Vector3F pos;
+	if(args.at(1) == "me")
+		pos = player.getPosition();
+	else
+		pos = StringUtility::vectoriseList3F(StringUtility::deformat(args.at(1)));
 	float pow = CastUtility::fromString<float>(args.at(2));
-	shader.addLight(std::move(BaseLight(pos, pow)));
+	world->addLight(std::move(BaseLight(pos, pow)), shader.getProgramHandle());
 	std::cout << "Added a light at the position [" << pos.getX() << ", " << pos.getY() << ", " << pos.getZ() << "] with the power " << pow << " watts.\n";
 }
 

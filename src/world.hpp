@@ -1,16 +1,20 @@
 #ifndef WORLD_HPP
 #define WORLD_HPP
+#include <map>
 #include "entityobject.hpp"
 #include "datatranslation.hpp"
+#include "light.hpp"
 
 class World
 {
 public:
 	World(std::string filename);
+	~World();
 	const std::string getFileName() const;
 	void addObject(Object obj);
 	void addEntity(Entity* ent);
 	void addEntityObject(std::unique_ptr<EntityObject>&& eo);
+	void addLight(BaseLight&& light, GLuint shader_programHandle);
 	void exportWorld(const std::string& worldName) const;
 	void setGravity(Vector3F gravity = Vector3F());
 	void setSpawnPoint(Vector3F spawnPoint = Vector3F());
@@ -26,7 +30,9 @@ public:
 	const Vector3F& getSpawnPoint() const;
 	const Vector3F& getSpawnOrientation() const;
 	const std::string& getWorldLink() const;
+	const std::map<std::pair<GLuint, GLuint>, std::unique_ptr<BaseLight>>& getLights() const;
 private:
+	static const unsigned int MAXIMUM_LIGHTS;
 	Vector3F gravity, spawnPoint, spawnOrientation;
 	const std::string filename;
 	static Object retrieveData(const std::string& objectName, MDLF& mdlf);
@@ -34,6 +40,7 @@ private:
 	std::vector<Object> members;
 	std::vector<Entity*> entities;
 	std::vector<std::unique_ptr<EntityObject>> entityObjects;
+	std::map<std::pair<GLuint, GLuint>, std::unique_ptr<BaseLight>> baseLights;
 };
 
 #endif
