@@ -1,3 +1,4 @@
 inc/* linguist-vendored=true
-*.h linguist-language=c
-*.hpp linguist-language=cpp
+*.h linguist-language=C
+*.hpp linguist-language=C++
+src/stb_image.h linguist-language=C++
