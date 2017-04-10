@@ -12,7 +12,7 @@ Libraries in use (How they're used) [Source]:
 - SDL2 (Dynamically linked) [https://www.libsdl.org/index.php]
 - SDL2_mixer (Dynamically linked) [https://www.libsdl.org/projects/SDL_mixer/]
 - stb_image (Source included in project) [https://github.com/nothings/stb]
-- model_loader courtesy of Github User bennyQBD (Source included in project) [https://github.com/BennyQBD]
+- model_loader.cpp and .hpp, stolen shamelessly from Github User BennyQBD (Source included in project) [https://github.com/BennyQBD]
 
 Learning Resources Used:
 - BennyQBD's Github Repositories [https://github.com/BennyQBD]
