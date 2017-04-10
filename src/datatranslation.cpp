@@ -87,22 +87,22 @@ unsigned int DataTranslation::retrieveAllData(std::vector<std::unique_ptr<Mesh>>
 	typedef std::unordered_map<std::string, std::string>::iterator it_type;
 	for(it_type iterator = models.begin(); iterator != models.end(); iterator++)
 	{
-		allMeshes.push_back(std::unique_ptr<Mesh>(new Mesh(iterator->first)));
+		allMeshes.push_back(std::make_unique<Mesh>(iterator->first));
 		dataCount++;
 	}
 	for(it_type iterator = textures.begin(); iterator != textures.end(); iterator++)
 	{
-		allTextures.push_back(std::unique_ptr<Texture>(new Texture(iterator->first)));
+		allTextures.push_back(std::make_unique<Texture>(iterator->first));
 		dataCount++;
 	}
 	for(it_type iterator = normalmaps.begin(); iterator != normalmaps.end(); iterator++)
 	{
-		allNormalMaps.push_back(std::unique_ptr<NormalMap>(new NormalMap(iterator->first)));
+		allNormalMaps.push_back(std::make_unique<NormalMap>(iterator->first));
 		dataCount++;
 	}
 	for(it_type iterator = parallaxmaps.begin(); iterator != parallaxmaps.end(); iterator++)
 	{
-		allParallaxMaps.push_back(std::unique_ptr<ParallaxMap>(new ParallaxMap(iterator->first)));
+		allParallaxMaps.push_back(std::make_unique<ParallaxMap>(iterator->first));
 		dataCount++;
 	}
 	return dataCount;

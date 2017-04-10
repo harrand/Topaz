@@ -236,5 +236,5 @@ std::unique_ptr<EntityObject> World::retrieveEOData(const std::string& eoName, M
 	std::string parallaxMapLink = dt.getResourceLink(parallaxMapName);
 	float mass = CastUtility::fromString<float>(massStr);
 	
-	return std::unique_ptr<EntityObject>(new EntityObject(meshLink, textureLink, normalMapLink, parallaxMapLink, mass, StringUtility::vectoriseList3F(StringUtility::deformat(positionStr)), StringUtility::vectoriseList3F(StringUtility::deformat(rotationStr)), StringUtility::vectoriseList3F(StringUtility::deformat(scaleStr))));
+	return std::make_unique<EntityObject>(meshLink, textureLink, normalMapLink, parallaxMapLink, mass, StringUtility::vectoriseList3F(StringUtility::deformat(positionStr)), StringUtility::vectoriseList3F(StringUtility::deformat(rotationStr)), StringUtility::vectoriseList3F(StringUtility::deformat(scaleStr)));
 }

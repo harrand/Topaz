@@ -84,7 +84,7 @@ void Commands::loadWorld(std::vector<std::string> args, std::unique_ptr<World>& 
 	std::vector<Entity*> entities = world->getEntities();
 	std::string worldname = args.at(1);
 	std::string link = (RES_POINT + "/worlds/" + worldname);
-	world = std::unique_ptr<World>(new World(link));
+	world = std::make_unique<World>(link);
 	for(unsigned int i = 0; i < entities.size(); i++)
 		world->addEntity(entities.at(i));
 	std::cout << "Now rendering the world '" << worldname << "' which has " << world->getSize() << " objects.\n";
@@ -210,7 +210,7 @@ void Commands::addEntityObject(std::vector<std::string> args, std::unique_ptr<Wo
 	
 	float mass = CastUtility::fromString<float>(massStr);
 	
-	world->addEntityObject(std::unique_ptr<EntityObject>(new EntityObject(meshLink, textureLink, normalMapLink, parallaxMapLink, mass, pos, rot, scale)));
+	world->addEntityObject(std::make_unique<EntityObject>(meshLink, textureLink, normalMapLink, parallaxMapLink, mass, pos, rot, scale));
 	if(printResults)
 	{
 		std::cout << "Added the following to this world:\n";
@@ -323,7 +323,7 @@ void Commands::playAudio(std::vector<std::string> args, bool printResults)
 	std::string filename = RES_POINT + "/music/";
 	for(unsigned int i = 1; i < args.size(); i++)
 		filename += args.at(i);
-	std::unique_ptr<AudioClip> clip(new AudioClip(filename));
+	std::unique_ptr<AudioClip> clip = std::make_unique<AudioClip>(filename);
 	clip->play();
 	CommandCache::addAudioClip(std::move(clip));
 	Mix_ChannelFinished(CommandCache::destroyChannelClips);
