@@ -30,7 +30,7 @@ struct BaseLight
 uniform BaseLight lights[MAX_LIGHTS];
 
 const vec4 lightColour = vec4(1, 1, 1, 1);
-const float lightWattage = 50000;
+const float lightWattage = 500000;
 
 const vec3 position_worldspace = (modelMatrix * vec4(position_modelspace, 1.0)).xyz;
 const vec3 position_cameraspace = (viewMatrix * vec4(position_worldspace, 1.0)).xyz;
