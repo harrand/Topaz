@@ -33,6 +33,9 @@ namespace Commands
 	void setGravity(std::vector<std::string> args, std::unique_ptr<World>& world, bool printResults);
 	void setSpawnPoint(std::vector<std::string> args, std::unique_ptr<World>& world, bool printResults);
 	void setSpawnOrientation(std::vector<std::string> args, std::unique_ptr<World>& world, bool printResults);
+	void toggleMusic();
+	void setVolume(std::vector<std::string> args);
+	void printVolume();
 	void playAudio(std::vector<std::string> args, bool printResults);
 }
 

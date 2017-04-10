@@ -68,6 +68,12 @@ void Commands::inputCommand(std::string cmd, std::unique_ptr<World>& world, Play
 		Commands::setSpawnPoint(args, world, true);
 	else if(cmdName == "spawnorientation")
 		Commands::setSpawnOrientation(args, world, true);
+	else if(cmdName == "pause")
+		Commands::toggleMusic();
+	else if(cmdName == "setvolume")
+		Commands::setVolume(args);
+	else if(cmdName == "volume")
+		Commands::printVolume();
 	else if(cmdName == "play")
 		Commands::playAudio(args, true);
 	else
@@ -316,6 +322,31 @@ void Commands::setSpawnOrientation(std::vector<std::string> args, std::unique_pt
 	world->setSpawnOrientation(spawn);
 	if(printResults)
 		std::cout << "Set spawnorientation of the world '" << world->getFileName() << "' to [" << spawn.getX() << "," << spawn.getY() << "," << spawn.getZ() << "]\n";
+}
+
+void Commands::toggleMusic()
+{
+	if(Mix_PausedMusic())
+	{
+		Mix_ResumeMusic();
+		std::cout << "Resumed music...\n";
+	}
+	else
+	{
+		Mix_PauseMusic();
+		std::cout << "Paused music...\n";
+	}
+}
+
+void Commands::setVolume(std::vector<std::string> args)
+{
+	Mix_VolumeMusic(CastUtility::fromString<float>(args.at(1)) * 128.0f/100.0f);
+	std::cout << "Set volume of music to " << CastUtility::fromString<float>(args.at(1)) << "%\n";
+}
+
+void Commands::printVolume()
+{
+	std::cout << "Volume of music is " << Mix_VolumeMusic(-1) * 100.0f/128.0f << "%\n";
 }
 
 void Commands::playAudio(std::vector<std::string> args, bool printResults)
