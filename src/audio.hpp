@@ -4,8 +4,6 @@
 #include "SDL_mixer.h"
 #include "player.hpp"
 
-#include <iostream>
-
 class AudioClip
 {
 public:
