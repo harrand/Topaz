@@ -25,15 +25,16 @@ AudioSource::AudioSource(const std::string& filename, const Vector3F& position):
 void AudioSource::update(Player& relativeTo)
 {
 	Vector3F perp = relativeTo.getCamera().getForward().cross(this->getPosition() - relativeTo.getPosition());
-	float dir = perp.dot(relativeTo.getCamera().getUp());
-	float right = 1, left = 1;
+	float dir = perp.normalised().dot(relativeTo.getCamera().getUp());
+	float right = 1.0f, left = 1.0f;
 	if(!std::isnan(dir))
 	{
-		right = 1 - dir;
+		right  = - dir;
 		left = dir;
 	}
-	Mix_Volume(this->getChannel(), 256000/((this->getPosition() - relativeTo.getPosition()).length() + 1));
-	Mix_SetPanning(this->getChannel(), 255.0 * left, 255.0 * right);
+	float distance = (this->getPosition() - relativeTo.getPosition()).length() / 1000;
+	Mix_Volume(this->getChannel(), 128 / ((distance * distance) + 1));
+	Mix_SetPanning(this->getChannel(), left * 255, right * 255);
 }
 
 const Vector3F& AudioSource::getPosition() const

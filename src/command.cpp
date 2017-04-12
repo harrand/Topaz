@@ -431,13 +431,8 @@ void Commands::playAudio(std::vector<std::string> args, bool printResults, Playe
 	std::unique_ptr<AudioSource> clip = std::make_unique<AudioSource>(filename, pos);
 	clip->play();
 	AudioSource* raw = clip.get();
-	bool shouldStartThread = CommandCache::clips.empty();
 	CommandCache::addAudioClip(std::move(clip));
 	Mix_ChannelFinished(CommandCache::destroyChannelClips);
-	if(shouldStartThread)
-	{
-		std::thread(CommandCache::updateClip, raw, std::ref(player)).detach();
-		std::cout << "Started thread to manage audiosources.\n";
-	}
+	std::thread(CommandCache::updateClip, raw, std::ref(player)).detach();
 	std::cout << "Playing the audio clip with the file-path " << filename << " at the position [" << pos.getX() << ", " << pos.getY() << ", " << pos.getZ() << "]\n";
 }
