@@ -18,6 +18,32 @@ void CommandCache::addAudioClip(std::unique_ptr<AudioClip>&& clip)
 	CommandCache::clips.push_back(std::move(clip));
 }
 
+void CommandCache::updateClip(AudioSource* source, Player& player)
+{
+	bool exists = true;
+	while(exists)
+	{
+		source->update(player);
+		unsigned int size_cache = CommandCache::clips.size();
+		bool found = false;
+		if(CommandCache::clips.empty())
+			break;
+		for(auto& clip : CommandCache::clips)
+		{
+			if(CommandCache::clips.size() != size_cache)
+			{
+				// the other thread killed a clip and we need to fuck off immediately
+				break;
+			}
+			if(source == clip.get())
+			{
+				found = true;
+			}
+		}
+		exists = found;
+	}
+}
+
 void CommandCache::destroyChannelClips(int channel)
 {
 	for(std::unique_ptr<AudioClip>& clip : CommandCache::clips)
@@ -77,7 +103,7 @@ void Commands::inputCommand(std::string cmd, std::unique_ptr<World>& world, Play
 	else if(cmdName == "volume")
 		Commands::printVolume();
 	else if(cmdName == "play")
-		Commands::playAudio(args, true);
+		Commands::playAudio(args, true, player);
 	else
 		std::cout << "Unknown command. Maybe you made a typo?\n";
 }
@@ -304,6 +330,11 @@ void Commands::roundLocation(Player& player)
 
 void Commands::setGravity(std::vector<std::string> args, std::unique_ptr<World>& world, bool printResults)
 {
+	if(args.size() != 2)
+	{
+		std::cout << "Command failed: Expected 2 arguments, got " << args.size() << ".\n";
+		return;
+	}
 	Vector3F grav = StringUtility::vectoriseList3F(StringUtility::deformat(args.at(1)));
 	world->setGravity(grav);
 	if(printResults)
@@ -312,6 +343,11 @@ void Commands::setGravity(std::vector<std::string> args, std::unique_ptr<World>&
 
 void Commands::setSpawnPoint(std::vector<std::string> args, std::unique_ptr<World>& world, bool printResults)
 {
+	if(args.size() != 2)
+	{
+		std::cout << "Command failed: Expected 2 arguments, got " << args.size() << ".\n";
+		return;
+	}
 	Vector3F spawn = StringUtility::vectoriseList3F(StringUtility::deformat(args.at(1)));
 	world->setSpawnPoint(spawn);
 	if(printResults)
@@ -320,6 +356,11 @@ void Commands::setSpawnPoint(std::vector<std::string> args, std::unique_ptr<Worl
 
 void Commands::setSpawnOrientation(std::vector<std::string> args, std::unique_ptr<World>& world, bool printResults)
 {
+	if(args.size() != 2)
+	{
+		std::cout << "Command failed: Expected 2 arguments, got " << args.size() << ".\n";
+		return;
+	}
 	Vector3F spawn = StringUtility::vectoriseList3F(StringUtility::deformat(args.at(1)));
 	world->setSpawnOrientation(spawn);
 	if(printResults)
@@ -328,6 +369,11 @@ void Commands::setSpawnOrientation(std::vector<std::string> args, std::unique_pt
 
 void Commands::addLight(std::vector<std::string> args, std::unique_ptr<World>& world, Player& player, Shader& shader)
 {
+	if(args.size() != 4)
+	{
+		std::cout << "Command failed: Expected 4 arguments, got " << args.size() << ".\n";
+		return;
+	}
 	Vector3F pos, colour;
 	if(args.at(1) == "me")
 		pos = player.getPosition();
@@ -355,6 +401,11 @@ void Commands::toggleMusic()
 
 void Commands::setVolume(std::vector<std::string> args)
 {
+	if(args.size() != 2)
+	{
+		std::cout << "Command failed: Expected 2 arguments, got " << args.size() << ".\n";
+		return;
+	}
 	Mix_VolumeMusic(CastUtility::fromString<float>(args.at(1)) * 128.0f/100.0f);
 	std::cout << "Set volume of music to " << CastUtility::fromString<float>(args.at(1)) << "%\n";
 }
@@ -364,14 +415,29 @@ void Commands::printVolume()
 	std::cout << "Volume of music is " << Mix_VolumeMusic(-1) * 100.0f/128.0f << "%\n";
 }
 
-void Commands::playAudio(std::vector<std::string> args, bool printResults)
+void Commands::playAudio(std::vector<std::string> args, bool printResults, Player& player)
 {
-	std::string filename = RES_POINT + "/music/";
-	for(unsigned int i = 1; i < args.size(); i++)
-		filename += args.at(i);
-	std::unique_ptr<AudioClip> clip = std::make_unique<AudioClip>(filename);
+	if(args.size() != 3)
+	{
+		std::cout << "Command failed: Expected 3 arguments, got " << args.size() << ".\n";
+		return;
+	}
+	std::string filename = RES_POINT + "/music/" + args.at(1);
+	Vector3F pos;
+	if(args.at(2) == "me")
+		pos = player.getPosition();
+	else
+		pos = StringUtility::vectoriseList3F(StringUtility::deformat(args.at(2)));
+	std::unique_ptr<AudioSource> clip = std::make_unique<AudioSource>(filename, pos);
 	clip->play();
+	AudioSource* raw = clip.get();
+	bool shouldStartThread = CommandCache::clips.empty();
 	CommandCache::addAudioClip(std::move(clip));
 	Mix_ChannelFinished(CommandCache::destroyChannelClips);
-	std::cout << "Playing the audio clip with the file-path " << filename << "\n";
+	if(shouldStartThread)
+	{
+		std::thread(CommandCache::updateClip, raw, std::ref(player)).detach();
+		std::cout << "Started thread to manage audiosources.\n";
+	}
+	std::cout << "Playing the audio clip with the file-path " << filename << " at the position [" << pos.getX() << ", " << pos.getY() << ", " << pos.getZ() << "]\n";
 }

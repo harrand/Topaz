@@ -3,6 +3,7 @@
 #include "world.hpp"
 #include "player.hpp"
 #include "audio.hpp"
+#include <thread>
 
 class CommandCache
 {
@@ -13,6 +14,7 @@ public:
 	
 	static std::vector<std::unique_ptr<AudioClip>> clips;
 	static void addAudioClip(std::unique_ptr<AudioClip>&& clip);
+	static void updateClip(AudioSource* source, Player& player);
 	static void destroyChannelClips(int channel);
 };
 
@@ -37,7 +39,7 @@ namespace Commands
 	void toggleMusic();
 	void setVolume(std::vector<std::string> args);
 	void printVolume();
-	void playAudio(std::vector<std::string> args, bool printResults);
+	void playAudio(std::vector<std::string> args, bool printResults, Player& player);
 }
 
 #endif

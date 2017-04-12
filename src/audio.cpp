@@ -1,6 +1,6 @@
 #include "audio.hpp"
 
-AudioClip::AudioClip(std::string filename): filename(filename)
+AudioClip::AudioClip(const std::string& filename): filename(filename)
 {
 	this->audioHandle = Mix_LoadWAV(this->filename.c_str());
 }
@@ -20,7 +20,33 @@ int AudioClip::getChannel() const
 	return this->channel;
 }
 
-AudioMusic::AudioMusic(std::string filename): filename(filename), paused(false)
+AudioSource::AudioSource(const std::string& filename, const Vector3F& position): AudioClip(filename), position(position){}
+
+void AudioSource::update(Player& relativeTo)
+{
+	Vector3F perp = relativeTo.getCamera().getForward().cross(this->getPosition() - relativeTo.getPosition());
+	float dir = perp.dot(relativeTo.getCamera().getUp());
+	float right = 1, left = 1;
+	if(!std::isnan(dir))
+	{
+		right = 1 - dir;
+		left = dir;
+	}
+	Mix_Volume(this->getChannel(), 256000/((this->getPosition() - relativeTo.getPosition()).length() + 1));
+	Mix_SetPanning(this->getChannel(), 255.0 * left, 255.0 * right);
+}
+
+const Vector3F& AudioSource::getPosition() const
+{
+	return this->position;
+}
+
+void AudioSource::setPosition(Vector3F position)
+{
+	this->position = position;
+}
+
+AudioMusic::AudioMusic(const std::string& filename): filename(filename), paused(false)
 {
 	this->audioHandle = Mix_LoadMUS(this->filename.c_str());
 }

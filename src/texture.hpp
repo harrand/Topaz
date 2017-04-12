@@ -16,8 +16,8 @@ class FrameBuffer
 {
 public:
 	FrameBuffer(unsigned int width = 256, unsigned int height = 256);
-	void setRenderTarget() const;
-	void bind(unsigned int id) const;
+	virtual void setRenderTarget() const;
+	virtual void bind(unsigned int id) const;
 private:
 	unsigned int width, height;
 	GLuint fbHandle, texHandle, depthRenderBufferHandle;
