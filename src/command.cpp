@@ -24,6 +24,7 @@ void CommandCache::updateClip(AudioSource* source, Player& player)
 	while(exists)
 	{
 		source->update(player);
+		std::this_thread::sleep_for(std::chrono::milliseconds(10));
 		unsigned int size_cache = CommandCache::clips.size();
 		bool found = false;
 		if(CommandCache::clips.empty())
