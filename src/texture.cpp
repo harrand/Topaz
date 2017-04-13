@@ -185,3 +185,50 @@ ParallaxMap* ParallaxMap::getFromLink(const std::string& parallaxMapLink, const 
 	}
 	return NULL;
 }
+
+CubeMap::CubeMap(const std::string& rightTexture, const std::string& leftTexture, const std::string& topTexture, const std::string& bottomTexture, const std::string& backTexture, const std::string& frontTexture): rightTexture(rightTexture), leftTexture(leftTexture), topTexture(topTexture), bottomTexture(bottomTexture), backTexture(backTexture), frontTexture(frontTexture)
+{
+	glGenTextures(1, &(this->texHandle));
+	glBindTexture(GL_TEXTURE_CUBE_MAP, this->texHandle);
+	std::vector<unsigned char*> faceData = this->loadTextures();
+	for(GLuint i = 0; i < faceData.size(); i++)
+	{
+		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGBA, this->width[(unsigned int)i], this->height[(unsigned int)i], 0, GL_RGBA, GL_UNSIGNED_BYTE, faceData.at(i));
+	}
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+	for(auto& data : faceData)
+		stbi_image_free(data);
+}
+
+CubeMap::~CubeMap()
+{
+	glDeleteTextures(1, &(this->texHandle));
+}
+
+void CubeMap::bind(GLuint shaderProgram, unsigned int id)
+{
+	assert(id >= 0 && id <= 31);
+	// this sets which texture we want to bind (id can be from 0 to 31)
+	// GLTEXTURE0 is actually a number, so we can add the id instead of a massive switch statement
+	this->textureID = glGetUniformLocation(shaderProgram, "cubeMapSampler");
+	glActiveTexture(GL_TEXTURE0 + id);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, this->texHandle);
+	glUniform1i(this->textureID, id);
+}
+
+std::vector<unsigned char*> CubeMap::loadTextures()
+{
+	std::vector<unsigned char*> imageData;
+	imageData.reserve(6);
+	imageData.push_back(stbi_load((this->rightTexture).c_str(), &(this->width[0]), &(this->height[0]), &(this->comps[0]), 4));
+	imageData.push_back(stbi_load((this->leftTexture).c_str(), &(this->width[1]), &(this->height[1]), &(this->comps[1]), 4));
+	imageData.push_back(stbi_load((this->topTexture).c_str(), &(this->width[2]), &(this->height[2]), &(this->comps[2]), 4));
+	imageData.push_back(stbi_load((this->bottomTexture).c_str(), &(this->width[3]), &(this->height[3]), &(this->comps[3]), 4));
+	imageData.push_back(stbi_load((this->backTexture).c_str(), &(this->width[4]), &(this->height[4]), &(this->comps[4]), 4));
+	imageData.push_back(stbi_load((this->frontTexture).c_str(), &(this->width[5]), &(this->height[5]), &(this->comps[5]), 4));
+	return imageData;
+}

@@ -63,5 +63,17 @@ void Object::render(Mesh* mesh, Texture* tex, NormalMap* nm, ParallaxMap* pm, co
 	nm->bind(shad.getProgramHandle(), 1);
 	pm->bind(shad.getProgramHandle(), 2);
 	shad.update(MatrixTransformations::createModelMatrix(this->pos, this->rot, this->scale).fillData(), MatrixTransformations::createViewMatrix(cam.getPos(), cam.getRot()).fillData(), MatrixTransformations::createProjectionMatrix(1.5708, width, height, 0.1f, 10000.0f).fillData());
+	glFrontFace(GL_CCW);
 	mesh->render();
+	glFrontFace(GL_CW);
+}
+
+Skybox::Skybox(std::string cubeMeshLink, CubeMap& cm): cubeMeshLink(cubeMeshLink), cm(cm){}
+
+void Skybox::render(const Camera& cam, const Shader& shad, const std::vector<std::unique_ptr<Mesh>>& allMeshes, float width, float height)
+{
+	shad.bind();
+	this->cm.bind(shad.getProgramHandle(), 0);
+	shad.update(MatrixTransformations::createModelMatrix(cam.getPos(), Vector3F(), Vector3F(10000, 10000, 10000)).fillData(), MatrixTransformations::createViewMatrix(cam.getPos(), cam.getRot()).fillData(), MatrixTransformations::createProjectionMatrix(1.5708, width, height, 0.1f, 100000).fillData());
+	Mesh::getFromLink(this->cubeMeshLink, allMeshes)->render();
 }

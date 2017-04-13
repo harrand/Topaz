@@ -87,7 +87,8 @@ models: %[
 - monkeyhead
 - sphere
 - torus
-- cylinder]%
+- cylinder
+- skybox]%
 cube.path: ../../../res/runtime/models/cube.obj
 cube.name: Complete Cube
 monkeyhead.path: ../../../res/runtime/models/monkeyhead.obj
@@ -100,5 +101,7 @@ torus.path: ../../../res/runtime/models/torus.obj
 torus.name: Complete Torus
 cylinder.path: ../../../res/runtime/models/cylinder.obj
 cylinder.name: Complete Cylinder
-speed: 7000
-played: 192802
+skybox.path: ../../../res/runtime/models/skybox.obj
+skybox.name: Cube no UVs or normals
+speed: 2500
+played: 194392

@@ -61,4 +61,17 @@ public:
 private:
 };
 
+class CubeMap
+{
+public:
+	CubeMap(const std::string& rightTexture, const std::string& leftTexture, const std::string& topTexture, const std::string& bottomTexture, const std::string& backTexture, const std::string& frontTexture);
+	~CubeMap();
+	void bind(GLuint shaderProgram, unsigned int id);
+private:
+	std::vector<unsigned char*> loadTextures();
+	GLuint texHandle, textureID;
+	const std::string &rightTexture, &leftTexture, &topTexture, &bottomTexture, &backTexture, &frontTexture;
+	int width[6], height[6], comps[6];
+};
+
 #endif

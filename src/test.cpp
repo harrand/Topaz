@@ -24,13 +24,20 @@ int main()
 	MDLF timeStorage(RawFile(RES_POINT + "/resources.data"));
 	int secondsLifetime = CastUtility::fromString<int>(timeStorage.getTag("played"));
 	Window wnd(800, 600, "Topaz Test Environment - Undefined World");
-	Shader shader(RES_POINT + "/shaders/noshadows");	
+	Shader shader(RES_POINT + "/shaders/noshadows");
+	Shader skyboxShader(RES_POINT + "/shaders/skybox");
 	world = std::unique_ptr<World>(new World(RES_POINT + "/worlds/random.world"));
 	world->addEntity(&player);
 	KeybindController kc(player, shader, world, wnd);
 	MouseController mc(player, world, wnd);
 	std::cout << "Retrieving assets...\n";
 	std::cout << "Retrieved "<< DataTranslation(RES_POINT + "/resources.data").retrieveAllData(allMeshes, allTextures, allNormalMaps, allParallaxMaps) << " assets.\n";
+	
+	//(const std::string& rightTexture, const std::string& leftTexture, const std::string& topTexture, const std::string& bottomTexture, const std::string& backTexture, const std::string& frontTexture)
+	std::string texturesDirectory = RES_POINT + "/textures/";
+	CubeMap blood(texturesDirectory + "blood_rt.png", texturesDirectory + "blood_lf.png", texturesDirectory + "blood_up.png", texturesDirectory + "blood_dn.png", texturesDirectory + "blood_bk.png", texturesDirectory + "blood_ft.png");
+	Skybox box("../../../res/runtime/models/skybox.obj", blood);
+	
 	TimeKeeper tk;
 	TimeProfiler tp;
 	unsigned int fps  = 1000;
@@ -68,6 +75,8 @@ int main()
 		mc.getMouseListener().reloadMouseDelta();
 		tp.endFrame();
 		TimeKeeper renderTime;
+		
+		box.render(cam, skyboxShader, allMeshes, wnd.getWidth(), wnd.getHeight());
 		world->update(fps, cam, shader, wnd.getWidth(), wnd.getHeight(), allMeshes, allTextures, allNormalMaps, allParallaxMaps);
 		renderTime.update();
 		processingThisFrame.push_back(renderTime.getRange());

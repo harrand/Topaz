@@ -29,4 +29,14 @@ protected:
 	const std::string meshLink, textureLink, normalMapLink, parallaxMapLink;
 };
 
+class Skybox
+{
+public:
+	Skybox(std::string cubeMeshLink, CubeMap& cm);
+	void render(const Camera& cam, const Shader& shad, const std::vector<std::unique_ptr<Mesh>>& allMeshes, float width, float height);
+private:
+	std::string cubeMeshLink;
+	CubeMap& cm;
+};
+
 #endif

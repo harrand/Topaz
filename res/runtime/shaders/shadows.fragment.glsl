@@ -2,9 +2,9 @@
 #version 430
 
 in vec3 position_modelspace;
-in vec3 cubePosition_modelspace;
 in vec2 texcoord_modelspace;
 in vec3 normal_modelspace;
+in vec4 shadowCoord;
 
 in mat4 modelMatrix;
 in mat4 viewMatrix;
@@ -13,6 +13,7 @@ in mat3 tbnMatrix;
 uniform sampler2D textureSampler;
 uniform sampler2D normalMapSampler;
 uniform sampler2D parallaxMapSampler;
+uniform sampler2D shadowMapSampler;
 
 uniform float parallaxMultiplier;
 uniform float parallaxBias;
@@ -93,9 +94,11 @@ vec4 getSpecularComponentFromLight(BaseLight l, vec3 parsedNormal_tangentspace)
 
 void main()
 {
+	float visibility = 1.0;
+	if(texture2D(shadowMapSampler, shadowCoord.xy).z < shadowCoord.z)
+		visibility = 0.5;
 	vec3 normal_tangentspace = normalize(texture2D(normalMapSampler, getTexcoordOffset()).xyz * 255.0/128.0 - 1);
-	fragColor = vec4(0, 0, 0, 0);
-	fragColor += getAmbientComponent() + getDiffuseComponent(normal_tangentspace) + getSpecularComponent(normal_tangentspace);
+	fragColor = visibility * (getAmbientComponent() + getDiffuseComponent(normal_tangentspace) + getSpecularComponent(normal_tangentspace));
 	for(unsigned int i = 0; i < MAX_LIGHTS; i++)
 	{
 		fragColor += getDiffuseComponentFromLight(lights[i], normal_tangentspace) + getSpecularComponentFromLight(lights[i], normal_tangentspace);
