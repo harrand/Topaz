@@ -35,8 +35,9 @@ int main()
 	
 	//(const std::string& rightTexture, const std::string& leftTexture, const std::string& topTexture, const std::string& bottomTexture, const std::string& backTexture, const std::string& frontTexture)
 	std::string texturesDirectory = RES_POINT + "/textures/";
-	CubeMap blood(texturesDirectory + "blood_rt.png", texturesDirectory + "blood_lf.png", texturesDirectory + "blood_up.png", texturesDirectory + "blood_dn.png", texturesDirectory + "blood_bk.png", texturesDirectory + "blood_ft.png");
-	Skybox box("../../../res/runtime/models/skybox.obj", blood);
+	//CubeMap blood(texturesDirectory + "blood_rt.png", texturesDirectory + "blood_lf.png", texturesDirectory + "blood_up.png", texturesDirectory + "blood_dn.png", texturesDirectory + "blood_bk.png", texturesDirectory + "blood_ft.png");
+	CubeMap greenhaze(texturesDirectory + "greenhaze_rt.png", texturesDirectory + "greenhaze_lf.png", texturesDirectory + "greenhaze_up.png", texturesDirectory + "greenhaze_dn.png", texturesDirectory + "greenhaze_bk.png", texturesDirectory + "greenhaze_ft.png");
+	Skybox box("../../../res/runtime/models/skybox.obj", greenhaze);
 	
 	TimeKeeper tk;
 	TimeProfiler tp;

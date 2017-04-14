@@ -65,7 +65,7 @@ void Commands::inputCommand(std::string cmd, std::unique_ptr<World>& world, Play
 		args = StringUtility::splitString(cmd, ' ');
 	else
 		args.push_back(cmd);
-	std::string cmdName = args.at(0);
+	std::string cmdName = StringUtility::toLower(args.at(0));
 	
 	if(cmdName == "loadworld")
 		Commands::loadWorld(args, world);
@@ -95,7 +95,7 @@ void Commands::inputCommand(std::string cmd, std::unique_ptr<World>& world, Play
 		Commands::setSpawnPoint(args, world, true);
 	else if(cmdName == "spawnorientation")
 		Commands::setSpawnOrientation(args, world, true);
-	else if(cmdName == "addLight")
+	else if(cmdName == "addlight")
 		Commands::addLight(args, world, player, shader);
 	else if(cmdName == "pause")
 		Commands::toggleMusic();

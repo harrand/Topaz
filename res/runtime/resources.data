@@ -103,5 +103,5 @@ cylinder.path: ../../../res/runtime/models/cylinder.obj
 cylinder.name: Complete Cylinder
 skybox.path: ../../../res/runtime/models/skybox.obj
 skybox.name: Cube no UVs or normals
-speed: 2500
-played: 194392
+speed: 100
+played: 198509

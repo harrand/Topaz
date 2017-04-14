@@ -74,6 +74,6 @@ void Skybox::render(const Camera& cam, const Shader& shad, const std::vector<std
 {
 	shad.bind();
 	this->cm.bind(shad.getProgramHandle(), 0);
-	shad.update(MatrixTransformations::createModelMatrix(cam.getPos(), Vector3F(), Vector3F(10000, 10000, 10000)).fillData(), MatrixTransformations::createViewMatrix(cam.getPos(), cam.getRot()).fillData(), MatrixTransformations::createProjectionMatrix(1.5708, width, height, 0.1f, 100000).fillData());
+	shad.update(MatrixTransformations::createModelMatrix(cam.getPos(), Vector3F(), Vector3F(10000, 10000, 10000)).fillData(), MatrixTransformations::createViewMatrix(cam.getPos(), cam.getRot()).fillData(), MatrixTransformations::createProjectionMatrix(1.5708, width, height, 0.1f, 20000).fillData());
 	Mesh::getFromLink(this->cubeMeshLink, allMeshes)->render();
 }
