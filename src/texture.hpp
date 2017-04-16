@@ -1,6 +1,5 @@
 #ifndef TEXTURE_HPP
 #define TEXTURE_HPP
-#include <cassert>
 #include <memory>
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"

@@ -8,11 +8,11 @@ BEGIN
     BLOCK "080904E4"
     BEGIN
       VALUE "CompanyName", "Harrand"
-      VALUE "FileDescription", "Topaz Game Engine Test Build"
+      VALUE "FileDescription", "Topaz Test Executable"
       VALUE "FileVersion", "1.0"
       VALUE "InternalName", "topaz_test"
       VALUE "LegalCopyright", "Harrand"
-      VALUE "OriginalFilename", "topaz-test.exe"
+      VALUE "OriginalFilename", "topaz-test_dependent.exe"
       VALUE "ProductName", "TOPAZ ENGINE (TEST)"
       VALUE "ProductVersion", "1.0"
     END

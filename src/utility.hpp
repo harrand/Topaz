@@ -3,10 +3,8 @@
 #include <iostream>
 #include <string>
 #include <cstdio>
-#include <cmath>
 #include <sstream>
 #include <fstream>
-#include <vector>
 #include <algorithm>
 #include <unordered_map>
 #include "vector.hpp"

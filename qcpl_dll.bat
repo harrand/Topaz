@@ -39,7 +39,7 @@ cd "%scriptdir%\res\dep"
 xcopy /s "%cd%" %lnkdir%
 echo Dependencies copied...
 cd %lnkdir%
-g++ -o topaz_test_dependent.exe test.o "%scriptdir%\res\exe\topaz_test.res" -L. -L%libdir% -ltopaz -lmdl
+g++ -O3 -o topaz_test_dependent.exe test.o "%scriptdir%\res\exe\topaz_test.res" -L. -L%libdir% -ltopaz -lmdl
 move test.o "%cpldir%"
 move libtopazdll.a "%cpldir%"
 

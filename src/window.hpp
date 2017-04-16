@@ -5,7 +5,6 @@
 #endif
 #include <string>
 #include <unordered_map>
-#include <functional>
 #include "SDL_mixer.h"
 #include "SDL.h"
 #include "glew.h"

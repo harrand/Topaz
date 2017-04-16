@@ -37,7 +37,11 @@ void FrameBuffer::setRenderTarget() const
 
 void FrameBuffer::bind(unsigned int id) const
 {
-	assert(id >= 0 && id <= 31);
+	if(id > 31 || id < 0)
+	{
+		LogUtility::error("FrameBuffer bind ID " + CastUtility::toString<unsigned int>(id) + " is invalid. Must be between 1-31");
+		return;
+	}
 	// this sets which texture we want to bind (id can be from 0 to 31)
 	// GLTEXTURE0 is actually a number, so we can add the id instead of a massive switch statement
 	glActiveTexture(GL_TEXTURE0 + id);
@@ -110,7 +114,11 @@ Texture::~Texture()
 
 void Texture::bind(GLuint shaderProgram, unsigned int id)
 {
-	assert(id >= 0 && id <= 31);
+	if(id > 31 || id < 0)
+	{
+		LogUtility::error("FrameBuffer bind ID " + CastUtility::toString<unsigned int>(id) + " is invalid. Must be between 1-31");
+		return;
+	}
 	// this sets which texture we want to bind (id can be from 0 to 31)
 	// GLTEXTURE0 is actually a number, so we can add the id instead of a massive switch statement
 	this->textureID = glGetUniformLocation(shaderProgram, "textureSampler");
@@ -139,7 +147,11 @@ NormalMap::NormalMap(std::string filename): Texture(filename){}
 
 void NormalMap::bind(GLuint shaderProgram, unsigned int id)
 {
-	assert(id >= 0 && id <= 31);
+	if(id > 31 || id < 0)
+	{
+		LogUtility::error("FrameBuffer bind ID " + CastUtility::toString<unsigned int>(id) + " is invalid. Must be between 1-31");
+		return;
+	}
 	// this sets which texture we want to bind (id can be from 0 to 31)
 	// GLTEXTURE0 is actually a number, so we can add the id instead of a massive switch statement
 	this->textureID = glGetUniformLocation(shaderProgram, "normalMapSampler");
@@ -163,7 +175,11 @@ ParallaxMap::ParallaxMap(std::string filename): Texture(filename){}
 
 void ParallaxMap::bind(GLuint shaderProgram, unsigned int id)
 {
-	assert(id >= 0 && id <= 31);
+	if(id > 31 || id < 0)
+	{
+		LogUtility::error("FrameBuffer bind ID " + CastUtility::toString<unsigned int>(id) + " is invalid. Must be between 1-31");
+		return;
+	}
 	// this sets which texture we want to bind (id can be from 0 to 31)
 	// GLTEXTURE0 is actually a number, so we can add the id instead of a massive switch statement
 	this->textureID = glGetUniformLocation(shaderProgram, "parallaxMapSampler");
@@ -222,7 +238,11 @@ CubeMap::~CubeMap()
 
 void CubeMap::bind(GLuint shaderProgram, unsigned int id)
 {
-	assert(id >= 0 && id <= 31);
+	if(id > 31 || id < 0)
+	{
+		LogUtility::error("FrameBuffer bind ID " + CastUtility::toString<unsigned int>(id) + " is invalid. Must be between 1-31");
+		return;
+	}
 	// this sets which texture we want to bind (id can be from 0 to 31)
 	// GLTEXTURE0 is actually a number, so we can add the id instead of a massive switch statement
 	this->textureID = glGetUniformLocation(shaderProgram, "cubeMapSampler");

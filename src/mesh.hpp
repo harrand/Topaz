@@ -25,14 +25,13 @@ public:
 class Mesh
 {
 public:
+	Mesh(std::string filename = "./res/models/undefined.obj");
 	Mesh(Vertex* vertices, unsigned int numVertices, unsigned int* indices, unsigned int numIndices);
 	Mesh(const Mesh& copy) = delete;
 	Mesh(Mesh&& move) = delete;
+	~Mesh();
 	Mesh& operator=(const Mesh& rhs) = delete;
 	// Don't want any of these because I only ever want one instance of mesh per model. Allowing us to copy and move instances around will be inefficient and pointless.
-	
-	Mesh(std::string filename = "./res/models/undefined.obj");
-	~Mesh();
 	IndexedModel getIndexedModel() const;
 	std::string getFileName() const;
 	void render() const;
