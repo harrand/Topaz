@@ -34,7 +34,8 @@ class AudioMusic
 public:
 	AudioMusic(const std::string& filename);
 	~AudioMusic();
-	void play(bool priority = true);
+	Mix_Music*& getAudioHandle();
+	void play(bool priority = true) const;
 	void setPaused(bool pause);
 	void togglePaused();
 private:

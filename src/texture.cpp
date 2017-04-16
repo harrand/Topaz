@@ -62,7 +62,7 @@ Texture::Texture(std::string filename)
 	
 	if(imgdata == NULL)
 	{
-		std::cerr << "Texture from the path: '" << filename << "' couldn't be loaded!\n";
+		LogUtility::error("Texture from the path: '" + filename + "' could not be loaded.");
 	}
 	
 	//Store tex data in the handle

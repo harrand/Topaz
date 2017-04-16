@@ -98,7 +98,7 @@ std::string Shader::loadShader(const std::string& filename)
     }
     else
     {
-		std::cerr << "Unable to load shader: " << filename << std::endl;
+		LogUtility::error("Unable to load shader '" + filename + "'\n");
     }
     return output;
 }
@@ -120,7 +120,7 @@ void Shader::checkShaderError(GLuint shader, GLuint flag, bool isProgram, std::s
         else
             glGetShaderInfoLog(shader, sizeof(error), NULL, error);
 
-        std::cerr << errorMessage << ": '" << error << "'" << std::endl;
+        LogUtility::error(errorMessage + ": '" + std::string(error) + "'");
     }
 }
 
@@ -128,7 +128,7 @@ GLuint Shader::createShader(std::string source, GLenum shaderType)
 {
 	GLuint shader = glCreateShader(shaderType);
 	if(shader == 0)
-		std::cerr << "Fatal Error: Shader Creation failed (Perhaps out of memory?)\n";
+		LogUtility::error("Fatal Error: Shader Creation failed (Perhaps out of memory?)");
 	
 	const GLchar* shaderSources[1];
 	GLint shaderSourceLengths[1];

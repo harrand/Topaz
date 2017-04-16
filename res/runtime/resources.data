@@ -88,7 +88,8 @@ models: %[
 - sphere
 - torus
 - cylinder
-- skybox]%
+- skybox
+- house]%
 cube.path: ../../../res/runtime/models/cube.obj
 cube.name: Complete Cube
 monkeyhead.path: ../../../res/runtime/models/monkeyhead.obj
@@ -103,5 +104,7 @@ cylinder.path: ../../../res/runtime/models/cylinder.obj
 cylinder.name: Complete Cylinder
 skybox.path: ../../../res/runtime/models/skybox.obj
 skybox.name: Cube no UVs or normals
+house.path: ../../../res/runtime/models/house.obj
+house.name: House Model with uniform UVs
 speed: 100
-played: 198509
+played: 238682

@@ -79,13 +79,38 @@ void World::addLight(BaseLight&& light, GLuint shader_programHandle)
 {
 	while(this->baseLights.size() >= World::MAXIMUM_LIGHTS)
 		this->baseLights.erase(this->baseLights.begin());
-	//lights guaranteed to have at least one empty space now
-	//this->baseLights[std::make_pair<GLuint, GLuint>(glGetUniformLocation(shader_programHandle, ("lights[" + CastUtility::toString<unsigned int>(this->baseLights.size()) + "].pos").c_str()), glGetUniformLocation(shader_programHandle, ("lights[" + CastUtility::toString<unsigned int>(this->baseLights.size()) + "].power").c_str()))] = std::make_unique<BaseLight>(std::move(light));
 	std::vector<GLuint> uniforms;
 	uniforms.push_back(glGetUniformLocation(shader_programHandle, ("lights[" + CastUtility::toString<unsigned int>(this->baseLights.size()) + "].pos").c_str()));
 	uniforms.push_back(glGetUniformLocation(shader_programHandle, ("lights[" + CastUtility::toString<unsigned int>(this->baseLights.size()) + "].colour").c_str()));
 	uniforms.push_back(glGetUniformLocation(shader_programHandle, ("lights[" + CastUtility::toString<unsigned int>(this->baseLights.size()) + "].power").c_str()));
 	this->baseLights[uniforms] = std::make_unique<BaseLight>(std::move(light));
+}
+
+void World::setGravity(Vector3F gravity)
+{
+	this->gravity = gravity;
+	for(unsigned int i = 0; i < this->getEntities().size(); i++)
+	{
+		Entity* ent = this->getEntities().at(i);
+		ent->removeForce("gravity");
+		ent->applyForce("gravity", Force(this->getGravity()));
+	}
+	for(unsigned int i = 0; i < this->getEntityObjects().size(); i++)
+	{
+		EntityObject* eo = this->getEntityObjects().at(i).get();
+		eo->removeForce("gravity");
+		eo->applyForce("gravity", Force(this->getGravity()));
+	}
+}
+
+void World::setSpawnPoint(Vector3F spawnPoint)
+{
+	this->spawnPoint = spawnPoint;
+}
+
+void World::setSpawnOrientation(Vector3F spawnOrientation)
+{
+	this->spawnOrientation = spawnOrientation;
 }
 
 void World::exportWorld(const std::string& worldName) const
@@ -135,54 +160,17 @@ void World::exportWorld(const std::string& worldName) const
 	output.addSequence("entityobjects", eoList);
 }
 
-void World::setGravity(Vector3F gravity)
-{
-	this->gravity = gravity;
-	for(unsigned int i = 0; i < this->getEntities().size(); i++)
-	{
-		Entity* ent = this->getEntities().at(i);
-		ent->removeForce("gravity");
-		ent->applyForce("gravity", Force(this->getGravity()));
-	}
-	for(unsigned int i = 0; i < this->getEntityObjects().size(); i++)
-	{
-		EntityObject* eo = this->getEntityObjects().at(i).get();
-		eo->removeForce("gravity");
-		eo->applyForce("gravity", Force(this->getGravity()));
-	}
-}
-
-void World::setSpawnPoint(Vector3F spawnPoint)
-{
-	this->spawnPoint = spawnPoint;
-}
-
-void World::setSpawnOrientation(Vector3F spawnOrientation)
-{
-	this->spawnOrientation = spawnOrientation;
-}
-
 void World::update(unsigned int fps, Camera& cam, Shader& shader, unsigned int width, unsigned int height, const std::vector<std::unique_ptr<Mesh>>& allMeshes, const std::vector<std::unique_ptr<Texture>>& allTextures, const std::vector<std::unique_ptr<NormalMap>>& allNormalMaps, const std::vector<std::unique_ptr<ParallaxMap>>& allParallaxMaps) const
 {
-	for(unsigned int i = 0; i < this->getMembers().size(); i++)
-	{
-		Object obj = this->getMembers().at(i);
+	for(auto& obj : this->getMembers())
 		obj.render(Mesh::getFromLink(obj.getMeshLink(), allMeshes), Texture::getFromLink(obj.getTextureLink(), allTextures), NormalMap::getFromLink(obj.getNormalMapLink(), allNormalMaps), ParallaxMap::getFromLink(obj.getParallaxMapLink(), allParallaxMaps), cam, shader, width, height);
-	}
-		
-	for(unsigned int i = 0; i < this->getEntityObjects().size(); i++)
+	for(auto& eo : this->getEntityObjects())
 	{
-		EntityObject* eo = this->getEntityObjects().at(i).get();
 		eo->render(Mesh::getFromLink(eo->getMeshLink(), allMeshes), Texture::getFromLink(eo->getTextureLink(), allTextures), NormalMap::getFromLink(eo->getNormalMapLink(), allNormalMaps), ParallaxMap::getFromLink(eo->getParallaxMapLink(), allParallaxMaps), cam, shader, width, height);
 		eo->updateMotion(fps);
-	}
-		
-	for(unsigned int i = 0; i < this->getEntities().size(); i++)
-	{
-		Entity* ent = this->getEntities().at(i);
+	}	
+	for(auto& ent : this->getEntities())
 		ent->updateMotion(fps);
-	}
-	
 	for(auto& iter : this->baseLights)
 	{
 		BaseLight* light = iter.second.get();
@@ -199,7 +187,7 @@ void World::update(unsigned int fps, Camera& cam, Shader& shader, unsigned int w
 	}
 }
 
-unsigned int World::getSize() const
+const unsigned int World::getSize() const
 {
 	return this->members.size() + this->entities.size() + this->entityObjects.size();
 }

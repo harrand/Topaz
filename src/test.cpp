@@ -30,10 +30,8 @@ int main()
 	world->addEntity(&player);
 	KeybindController kc(player, shader, world, wnd);
 	MouseController mc(player, world, wnd);
-	std::cout << "Retrieving assets...\n";
-	std::cout << "Retrieved "<< DataTranslation(RES_POINT + "/resources.data").retrieveAllData(allMeshes, allTextures, allNormalMaps, allParallaxMaps) << " assets.\n";
-	
-	//(const std::string& rightTexture, const std::string& leftTexture, const std::string& topTexture, const std::string& bottomTexture, const std::string& backTexture, const std::string& frontTexture)
+	LogUtility::message("Loading assets...");
+	LogUtility::message("Retrieved " + CastUtility::toString<unsigned int>(DataTranslation(RES_POINT + "/resources.data").retrieveAllData(allMeshes, allTextures, allNormalMaps, allParallaxMaps)) + " assets.");
 	std::string texturesDirectory = RES_POINT + "/textures/";
 	//CubeMap blood(texturesDirectory + "blood_rt.png", texturesDirectory + "blood_lf.png", texturesDirectory + "blood_up.png", texturesDirectory + "blood_dn.png", texturesDirectory + "blood_bk.png", texturesDirectory + "blood_ft.png");
 	CubeMap greenhaze(texturesDirectory + "greenhaze_rt.png", texturesDirectory + "greenhaze_lf.png", texturesDirectory + "greenhaze_up.png", texturesDirectory + "greenhaze_dn.png", texturesDirectory + "greenhaze_bk.png", texturesDirectory + "greenhaze_ft.png");
@@ -53,18 +51,16 @@ int main()
 		if(tk.millisPassed(1000))
 		{
 			fps = tp.getFPS();
-			std::cout << "\n====== " << secondsLifetime << " seconds ======\n";
-			std::cout << "avgdt = " << tp.getDeltaAverage() << " ms, avgFPS = " << fps << " frames per second.\n";
+			LogUtility::silent("\n====== " + CastUtility::toString<int>(secondsLifetime) + " seconds ======\navgdt = " + CastUtility::toString<float>(tp.getDeltaAverage()) + " ms, avgFPS = " + CastUtility::toString<int>(fps) + " fps.");
 			tp.reset();
 			secondsLifetime++;
 			tk.reload();
-			std::cout << "Camera Position = [" << cam.getPosR().getX() << ", " << cam.getPosR().getY() << ", " << cam.getPosR().getZ() << "].\n";
+			LogUtility::silent("Camera Position = [" + CastUtility::toString<float>(cam.getPosR().getX()) + ", " + CastUtility::toString<float>(cam.getPosR().getY()) + ", " + CastUtility::toString<float>(cam.getPosR().getZ()) + "].");
 			float total = 0;
 			for(unsigned int i = 0; i < processingThisFrame.size(); i++)
 			{
 				total += processingThisFrame.at(i);
 			}
-			std::cout << "Average Rendering Time: " << total/processingThisFrame.size() << " ms. Average Time spent rendering this second: " << total/processingThisFrame.size() * fps << " ms\n";
 			processingThisFrame.clear();
 		}
 		wnd.setRenderTarget();
@@ -87,6 +83,5 @@ int main()
 	std::ostringstream strum;
 	strum << secondsLifetime;
 	timeStorage.editTag("played", strum.str());
-	//Mix_FreeMusic(music);
 	return 0;
 }

@@ -256,6 +256,8 @@ void KeybindController::handleKeybinds(unsigned int fps)
 	if(kl.isKeyPressed(KeyControls::getKeybind(controlsDataFile, KeybindType::INPUT_COMMAND)))
 	{
 		std::string input;
+		// dont bother with this, std::cin is not thread-safe
+		//std::thread([&](){std::getline(std::cin, input); Commands::inputCommand(input, world, player, shader);}).detach();
 		std::getline(std::cin, input);
 		Commands::inputCommand(input, world, player, shader);
 	}

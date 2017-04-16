@@ -41,7 +41,7 @@ object5.texture: bricks
 object5.normalmap: bricks_normalmap
 object5.parallaxmap: bricks_parallaxmap
 object5.pos: [-50,40,0]
-object5.rot: [-0.565,0.01875,0]
+object5.rot: [0,0,0]
 object5.scale: [12,12,12]
 object6.mesh: torus
 object6.texture: birch

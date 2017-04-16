@@ -57,9 +57,13 @@ AudioMusic::~AudioMusic()
 	Mix_FreeMusic(this->audioHandle);
 }
 
-void AudioMusic::play(bool priority)
+Mix_Music*& AudioMusic::getAudioHandle()
 {
-	// if its a priority or we're not playing music, play this.
+	return this->audioHandle;
+}
+
+void AudioMusic::play(bool priority) const
+{
 	if(priority || Mix_PlayingMusic() != 0)
 		Mix_PlayMusic(this->audioHandle, -1);
 }

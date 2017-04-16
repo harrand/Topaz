@@ -1,5 +1,6 @@
 #ifndef UTILITY_HPP
 #define UTILITY_HPP
+#include <iostream>
 #include <string>
 #include <cstdio>
 #include <cmath>
@@ -197,6 +198,29 @@ namespace StringUtility
 		ret.push_back(CastUtility::toString<float>(v.getY()));
 		ret.push_back(CastUtility::toString<float>(v.getZ()));
 		return ret;
+	}
+}
+
+namespace LogUtility
+{
+	inline void silent(const std::string& msg)
+	{
+		std::cout << msg << "\n";
+	}
+	
+	inline void message(const std::string& msg)
+	{
+		std::cout << "[Message]:\t" << msg << "\n";
+	}
+	
+	inline void warning(const std::string& msg)
+	{
+		std::cout << "[Warning]:\t" << msg << "\n";
+	}
+	
+	inline void error(const std::string& msg)
+	{
+		std::cout << "[Error]:\t" << msg << "\n";
 	}
 }
 

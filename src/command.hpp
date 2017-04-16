@@ -1,7 +1,6 @@
 #ifndef COMMAND_HPP
 #define COMMAND_HPP
 #include "world.hpp"
-#include "player.hpp"
 #include "audio.hpp"
 #include <thread>
 
@@ -35,7 +34,7 @@ namespace Commands
 	void setGravity(std::vector<std::string> args, std::unique_ptr<World>& world, bool printResults);
 	void setSpawnPoint(std::vector<std::string> args, std::unique_ptr<World>& world, bool printResults);
 	void setSpawnOrientation(std::vector<std::string> args, std::unique_ptr<World>& world, bool printResults);
-	void addLight(std::vector<std::string> args, std::unique_ptr<World>& world, Player& player, Shader& shader);
+	void addLight(std::vector<std::string> args, std::unique_ptr<World>& world, Player& player, Shader& shader, bool printResults);
 	void toggleMusic();
 	void setVolume(std::vector<std::string> args);
 	void printVolume();

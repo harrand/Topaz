@@ -23,7 +23,7 @@ public:
 	const std::string& getNormalMapLink() const;
 	const std::string& getParallaxMapLink() const;
 	
-	void render(Mesh* mesh, Texture* tex, NormalMap* nm, ParallaxMap* pm, const Camera& cam, const Shader& shad, float width, float height);
+	void render(Mesh* mesh, Texture* tex, NormalMap* nm, ParallaxMap* pm, const Camera& cam, const Shader& shad, float width, float height) const;
 protected:
 	Vector3F pos, rot, scale;
 	const std::string meshLink, textureLink, normalMapLink, parallaxMapLink;

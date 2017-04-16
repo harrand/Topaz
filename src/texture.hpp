@@ -1,9 +1,6 @@
 #ifndef TEXTURE_HPP
 #define TEXTURE_HPP
-#include <string>
 #include <cassert>
-#include <iostream>
-#include <vector>
 #include <memory>
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -11,6 +8,7 @@
 #define GLEW_STATIC
 #endif
 #include "glew.h"
+#include "utility.hpp"
 
 class FrameBuffer
 {
