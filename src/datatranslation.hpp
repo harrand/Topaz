@@ -12,6 +12,10 @@ class DataTranslation
 {
 public:
 	DataTranslation(std::string datafilename);
+	DataTranslation(const DataTranslation& copy) = default;
+	DataTranslation(DataTranslation&& move) = default;
+	
+	DataTranslation& operator=(const DataTranslation& rhs) = default;
 
 	std::string getResourceLink(const std::string& resourceName) const;
 	std::string getResourceName(const std::string& resourceLink) const;

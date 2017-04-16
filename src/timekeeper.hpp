@@ -7,6 +7,10 @@ class TimeKeeper
 {
 public:
 	TimeKeeper();
+	TimeKeeper(const TimeKeeper& copy) = default;
+	TimeKeeper(TimeKeeper&& move) = default;
+	TimeKeeper& operator=(const TimeKeeper& rhs) = default;
+	
 	void update();
 	void reload();
 	float getRange() const;
@@ -20,6 +24,10 @@ class TimeProfiler
 {
 public:
 	TimeProfiler();
+	TimeProfiler(const TimeProfiler& copy) = default;
+	TimeProfiler(TimeProfiler&& move) = default;
+	TimeProfiler& operator=(const TimeProfiler& rhs) = default;
+	
 	void beginFrame();
 	void endFrame();
 	void reset();

@@ -1,5 +1,7 @@
 #include "listeners.hpp"
 
+MouseListener::MouseListener(): Listener(){}
+
 void MouseListener::handleEvents(SDL_Event& evt)
 {
 	this->reloadMouseDelta();
@@ -52,14 +54,26 @@ Vector2F MouseListener::getMouseDeltaPos() const
 	return (this->mousePos - this->prevMousePos);
 }
 
-MouseController::MouseController(Player& player, std::unique_ptr<World>& world, Window& wnd): player(player), world(world), wnd(wnd)
+MouseController::MouseController(Player& player, std::unique_ptr<World>& world, Window& wnd): ml(), player(player), world(world), wnd(wnd)
 {
 	this->wnd.registerListener(this->ml);
 }
 
+MouseController::MouseController(const MouseController& copy): MouseController(copy.player, copy.world, copy.wnd){}
+
 MouseController::~MouseController()
 {
 	this->wnd.deregisterListener(this->ml);
+}
+
+const MouseListener& MouseController::getMouseListener()
+{
+	return this->ml;
+}
+
+MouseListener& MouseController::getMouseListenerR()
+{
+	return this->ml;
 }
 
 void MouseController::handleMouse()
@@ -73,10 +87,7 @@ void MouseController::handleMouse()
 	}
 }
 
-MouseListener& MouseController::getMouseListener()
-{
-	return this->ml;
-}
+KeyListener::KeyListener(): Listener(){}
 
 void KeyListener::handleEvents(SDL_Event& evt)
 {
@@ -223,6 +234,8 @@ KeybindController::KeybindController(Player& player, Shader& shader, std::unique
 {
 	wnd.registerListener(this->kl);
 }
+
+KeybindController::KeybindController(const KeybindController& copy): KeybindController(copy.player, copy.shader, copy.world, copy.wnd){}
 
 KeybindController::~KeybindController()
 {

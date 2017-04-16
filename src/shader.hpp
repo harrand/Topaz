@@ -7,10 +7,6 @@
 #include <string>
 #include <fstream>
 #include <iostream>
-/*
-#include <map>
-#include <memory>
-*/
 #include "utility.hpp"
 #include "glew.h"
 #include "matrix.hpp"
@@ -19,6 +15,9 @@ class Shader
 {
 public:
 	Shader(std::string filename);
+	Shader(const Shader& copy);
+	Shader(Shader&& move);
+	Shader& operator=(const Shader& rhs) = delete;
 	~Shader();
 	GLuint getProgramHandle() const;
 	//const std::map<std::pair<GLuint, GLuint>, std::unique_ptr<BaseLight>>& getLights() const;

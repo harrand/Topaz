@@ -7,6 +7,10 @@ class Vector2F
 {
 public:
 	Vector2F(float x = 0.0f, float y = 0.0f);
+	Vector2F(const Vector2F& copy) = default;
+	Vector2F(Vector2F&& move) = default;
+	Vector2F& operator=(const Vector2F& rhs) = default;
+	
 	float getX() const;
 	float getY() const;
 	float& getXR();
@@ -27,6 +31,10 @@ class Vector3F
 {
 public:
 	Vector3F(float x = 0.0f, float y = 0.0f, float z = 0.0f);
+	Vector3F(const Vector3F& copy) = default;
+	Vector3F(Vector3F&& move) = default;
+	Vector3F& operator=(const Vector3F& rhs) = default;
+	
 	float getX() const;
 	float getY() const;
 	float getZ() const;
@@ -53,6 +61,10 @@ class Vector4F
 {
 public:
 	Vector4F(float x = 0.0f, float y = 0.0f, float z = 0.0f, float w = 0.0f);
+	Vector4F(const Vector4F& copy) = default;
+	Vector4F(Vector4F&& move) = default;
+	Vector4F& operator=(const Vector4F& rhs) = default;
+	
 	float getX() const;
 	float getY() const;
 	float getZ() const;

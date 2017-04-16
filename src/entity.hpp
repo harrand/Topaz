@@ -7,6 +7,10 @@ class Entity
 {
 public:
 	Entity(float mass = 1.0f, Vector3F position = Vector3F(), Vector3F velocity = Vector3F(), std::unordered_map<std::string, Force> forces = std::unordered_map<std::string, Force>());
+	Entity(const Entity& copy) = default;
+	Entity(Entity&& move) = default;
+	Entity& operator=(const Entity& rhs) = default;
+	
 	virtual void setPosition(Vector3F position);
 	void setVelocity(Vector3F velocity);
 	void applyForce(std::string forceName, Force f);

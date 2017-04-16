@@ -9,7 +9,11 @@ class World
 {
 public:
 	World(std::string filename);
+	World(const World& copy);
+	World(World&& move);
+	World& operator=(const World& rhs) = delete;
 	~World();
+	
 	const std::string getFileName() const;
 	void addObject(Object obj);
 	void addEntity(Entity* ent);

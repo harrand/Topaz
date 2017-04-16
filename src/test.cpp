@@ -69,7 +69,7 @@ int main()
 		wnd.clear(0.0f, 0.0f, 0.0f, 1.0f);
 		mc.handleMouse();
 		kc.handleKeybinds(fps);
-		mc.getMouseListener().reloadMouseDelta();
+		mc.getMouseListenerR().reloadMouseDelta();
 		tp.endFrame();
 		TimeKeeper renderTime;
 		

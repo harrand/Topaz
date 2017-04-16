@@ -8,8 +8,11 @@
 class MouseListener: public Listener
 {
 public:
-	MouseListener(): Listener(){}
-	~MouseListener(){}
+	MouseListener();
+	MouseListener(const MouseListener& copy) = default;
+	MouseListener(MouseListener&& move) = default;
+	MouseListener& operator=(const MouseListener& rhs) = default;
+	
 	void handleEvents(SDL_Event& evt);
 	void reloadMouseDelta();
 	bool isLeftClicked() const;
@@ -25,9 +28,13 @@ class MouseController
 {
 public:
 	MouseController(Player& player, std::unique_ptr<World>& world, Window& wnd);
+	MouseController(const MouseController& copy);
+	MouseController(MouseController&& move) = delete;
+	MouseController& operator=(const MouseController& rhs) = delete;
 	~MouseController();
+	const MouseListener& getMouseListener();
+	MouseListener& getMouseListenerR();
 	void handleMouse();
-	MouseListener& getMouseListener();
 private: 
 	Player& player;
 	std::unique_ptr<World>& world;
@@ -38,8 +45,11 @@ private:
 class KeyListener: public Listener
 {
 public:
-	KeyListener(): Listener(){}
-	~KeyListener(){}
+	KeyListener();
+	KeyListener(const KeyListener& copy) = default;
+	KeyListener(KeyListener&& move) = default;
+	KeyListener& operator=(const KeyListener& rhs) = default;
+	
 	void handleEvents(SDL_Event& evt);
 	bool isKeyPressed(const std::string& keyname) const;
 	bool isKeyReleased(const std::string& keyname) const;
@@ -79,6 +89,9 @@ class KeybindController
 {
 public:
 	KeybindController(Player& player, Shader& shader, std::unique_ptr<World>& world, Window& wnd);
+	KeybindController(const KeybindController& copy);
+	KeybindController(KeybindController&& move) = delete;
+	KeybindController& operator=(const KeybindController& rhs) = delete;
 	~KeybindController();
 	void handleKeybinds(unsigned int fps);
 private:

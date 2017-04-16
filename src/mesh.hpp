@@ -13,6 +13,10 @@ class Vertex
 {
 public:
 	Vertex(Vector3F position, Vector2F texcoord, Vector3F normal);
+	Vertex(const Vertex& copy) = default;
+	Vertex(Vertex&& move) = default;
+	Vertex& operator=(const Vertex& rhs) = default;
+	
 	Vector3F position;
 	Vector2F texcoord;
 	Vector3F normal;
@@ -22,6 +26,11 @@ class Mesh
 {
 public:
 	Mesh(Vertex* vertices, unsigned int numVertices, unsigned int* indices, unsigned int numIndices);
+	Mesh(const Mesh& copy) = delete;
+	Mesh(Mesh&& move) = delete;
+	Mesh& operator=(const Mesh& rhs) = delete;
+	// Don't want any of these because I only ever want one instance of mesh per model. Allowing us to copy and move instances around will be inefficient and pointless.
+	
 	Mesh(std::string filename = "./res/models/undefined.obj");
 	~Mesh();
 	IndexedModel getIndexedModel() const;

@@ -5,9 +5,18 @@ AudioClip::AudioClip(const std::string& filename): filename(filename)
 	this->audioHandle = Mix_LoadWAV(this->filename.c_str());
 }
 
+AudioClip::AudioClip(const AudioClip& copy): AudioClip(copy.getFileName()){}
+
+AudioClip::AudioClip(AudioClip&& move): filename(move.getFileName()), audioHandle(move.audioHandle)
+{
+	move.audioHandle = NULL;
+}
+
 AudioClip::~AudioClip()
 {
-	Mix_FreeChunk(this->audioHandle);
+	// Cannot guarantee that Mix_FreeChunk(NULL) doesn't to UB (this happens if this instance was moved to another) so put a check in here to prevent crashing
+	if(this->audioHandle != NULL)
+		Mix_FreeChunk(this->audioHandle);
 }
 
 void AudioClip::play()
@@ -18,6 +27,16 @@ void AudioClip::play()
 int AudioClip::getChannel() const
 {
 	return this->channel;
+}
+
+const std::string& AudioClip::getFileName() const
+{
+	return this->filename;
+}
+
+const Mix_Chunk* AudioClip::getAudioHandle() const
+{
+	return this->audioHandle;
 }
 
 AudioSource::AudioSource(const std::string& filename, const Vector3F& position): AudioClip(filename), position(position){}

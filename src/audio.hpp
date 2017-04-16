@@ -8,10 +8,18 @@ class AudioClip
 {
 public:
 	AudioClip(const std::string& filename);
+	AudioClip(const AudioClip& copy);
+	AudioClip(AudioClip&& move);
 	~AudioClip();
+	
+	// Don't want two audioclips sharing the same audioHandles (because when destructor is called will crash)
+	AudioClip& operator=(const AudioClip& rhs) = delete;
+	
 	void play();
 	virtual void update(Player& relativeTo){}
 	int getChannel() const;
+	const std::string& getFileName() const;
+	const Mix_Chunk* getAudioHandle() const;
 private:
 	int channel;
 	const std::string filename;

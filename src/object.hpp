@@ -10,6 +10,10 @@ class Object
 {
 public:
 	Object(std::string meshLink, std::string textureLink, std::string parallaxMapLink, std::string normalMapLink, Vector3F pos, Vector3F rot, Vector3F scale);
+	Object(const Object& copy) = default;
+	Object(Object&& move) = default;
+	Object& operator=(const Object& rhs) = default;
+	
 	const Vector3F& getPos() const;
 	const Vector3F& getRot() const;
 	const Vector3F& getScale() const;

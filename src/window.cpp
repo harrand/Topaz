@@ -9,6 +9,9 @@ Listener::Listener()
 	this->id = Listener::NUM_LISTENERS;
 }
 
+// Don't want it defaulting or this id will be the same as the copy without incrementing NUM_LISTENERS. Calling ctor works fine
+Listener::Listener(const Listener& copy): Listener(){}
+
 Listener::~Listener()
 {
 	Listener::NUM_LISTENERS--;
@@ -30,6 +33,8 @@ Window::Window(int w, int h, std::string title): w(w), h(h), title(title), isclo
 	this->initSDL();
 	this->initGLEW();
 }
+
+Window::Window(const Window& copy): Window(copy.w, copy.h, copy.title){}
 
 Window::~Window()
 {
@@ -140,12 +145,8 @@ void Window::handleEvents()
 	SDL_Event evt;
 	while(SDL_PollEvent(&evt))
 	{
-		typedef std::unordered_map<unsigned int, Listener*>::iterator iter;
-		for(iter iterator = this->registeredListeners.begin(); iterator != this->registeredListeners.end(); iterator++)
-		{
-			Listener* l = iterator->second;
-			l->handleEvents(evt);
-		}
+		for(auto& listener : this->registeredListeners)
+			listener.second->handleEvents(evt);
 		
 		if(evt.type == SDL_QUIT)
 			this->iscloserequested = true;

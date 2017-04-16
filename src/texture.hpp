@@ -14,6 +14,10 @@ class FrameBuffer
 {
 public:
 	FrameBuffer(unsigned int width = 256, unsigned int height = 256);
+	FrameBuffer(const FrameBuffer& copy) = default;
+	FrameBuffer(FrameBuffer&& move) = default;
+	FrameBuffer& operator=(const FrameBuffer& rhs) = default;
+	
 	virtual void setRenderTarget() const;
 	virtual void bind(unsigned int id) const;
 private:
@@ -25,8 +29,11 @@ class Texture
 {
 public:
 	Texture(std::string filename = "../../../res/runtime/textures/undefined.jpg");
+	// NormalMap and ParallaxMap inherit copy and move constructors so having them defined as default still works fine.
 	Texture(const Texture& copy);
-	Texture(Texture&& rmove);
+	Texture(Texture&& move);
+	Texture& operator=(const Texture& rhs) = delete;
+	
 	~Texture();
 	void bind(GLuint shaderProgram, unsigned int id);
 	std::string getFileName() const;
@@ -34,7 +41,6 @@ public:
 protected:
 	GLuint textureID;
 	GLuint texhandle;
-private:
 	unsigned char* loadTexture();
 	void deleteTexture(unsigned char* imgdata);
 	int width, height, comps;
@@ -45,25 +51,35 @@ class NormalMap: public Texture
 {
 public:
 	NormalMap(std::string filename = "../../../res/runtime/normalmaps/default_normalmap.jpg");
+	NormalMap(const NormalMap& copy) = default;
+	NormalMap(NormalMap&& move) = default;
+	NormalMap& operator=(const NormalMap& rhs) = delete;
+	
 	void bind(GLuint shaderProgram, unsigned int id);
 	static NormalMap* getFromLink(const std::string& normalMapLink, const std::vector<std::unique_ptr<NormalMap>>& allNormalMaps);
-private:
 };
 
 class ParallaxMap: public Texture
 {
 public:
 	ParallaxMap(std::string filename = "../../../res/runtime/parallaxmaps/default_parallax.png");
+	ParallaxMap(const ParallaxMap& copy) = default;
+	ParallaxMap(ParallaxMap&& move) = default;
+	ParallaxMap& operator=(const ParallaxMap& rhs) = delete;
+	
 	void bind(GLuint shaderProgram, unsigned int id);
 	static ParallaxMap* getFromLink(const std::string& parallaxMapLink, const std::vector<std::unique_ptr<ParallaxMap>>& allParallaxMaps);
-private:
 };
 
 class CubeMap
 {
 public:
 	CubeMap(const std::string& rightTexture, const std::string& leftTexture, const std::string& topTexture, const std::string& bottomTexture, const std::string& backTexture, const std::string& frontTexture);
+	CubeMap(const CubeMap& copy);
+	CubeMap(CubeMap&& move);
+	CubeMap& operator=(const CubeMap& rhs) = delete;
 	~CubeMap();
+	
 	void bind(GLuint shaderProgram, unsigned int id);
 private:
 	std::vector<unsigned char*> loadTextures();

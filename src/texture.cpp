@@ -96,18 +96,15 @@ Texture::Texture(std::string filename)
 
 Texture::Texture(const Texture& copy): Texture(copy.getFileName()){}
 
-Texture::Texture(Texture&& rmove): filename(rmove.getFileName()), textureID(rmove.textureID), texhandle(rmove.texhandle), width(rmove.width), height(rmove.height), comps(rmove.comps)
+Texture::Texture(Texture&& move): filename(move.getFileName()), textureID(move.textureID), texhandle(move.texhandle), width(move.width), height(move.height), comps(move.comps)
 {
-	rmove.textureID = 0;
-	rmove.texhandle = 0;
-	rmove.width = 0;
-	rmove.height = 0;
-	rmove.comps = 0;
-	rmove.filename = "";
+	move.textureID = 0;
+	move.texhandle = 0;
 }
 
 Texture::~Texture()
 {
+	// glDeleteTextures silently ignores 0 as a texhandle so this should not cause problems if just moved.
 	glDeleteTextures(1, &(this->texhandle));
 }
 
@@ -202,6 +199,20 @@ CubeMap::CubeMap(const std::string& rightTexture, const std::string& leftTexture
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 	for(auto& data : faceData)
 		stbi_image_free(data);
+}
+
+CubeMap::CubeMap(const CubeMap& copy): CubeMap(copy.rightTexture, copy.leftTexture, copy.topTexture, copy.bottomTexture, copy.backTexture, copy.frontTexture){}
+
+CubeMap::CubeMap(CubeMap&& move): texHandle(move.texHandle), textureID(move.textureID), rightTexture(move.rightTexture), leftTexture(move.leftTexture), topTexture(move.topTexture), bottomTexture(move.bottomTexture), backTexture(move.backTexture), frontTexture(move.frontTexture)
+{
+	for(unsigned int i = 0; i < 6; i++)
+	{
+		this->width[i] = move.width[i];
+		this->height[i] = move.height[i];
+		this->comps[i] = move.comps[i];
+	}
+	move.texHandle = 0;
+	move.textureID = 0;
 }
 
 CubeMap::~CubeMap()

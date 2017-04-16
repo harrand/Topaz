@@ -5,6 +5,7 @@
 #endif
 #include <string>
 #include <unordered_map>
+#include <functional>
 #include "SDL_mixer.h"
 #include "SDL.h"
 #include "glew.h"
@@ -13,7 +14,11 @@ class Listener
 {
 public:
 	Listener();
+	Listener(const Listener& copy);
+	Listener(Listener&& move) = delete;
+	Listener& operator=(const Listener& rhs) = delete;
 	~Listener();
+	
 	virtual void handleEvents(SDL_Event& evt) = 0;
 	unsigned int getID() const;
 	static unsigned int getNumListeners();
@@ -26,6 +31,11 @@ class Window
 {
 public:
 	Window(int w = 800, int h = 600, std::string title = "Undefined");
+	Window(const Window& copy);
+	// Can't have these because the GL_Context cant be changed to anything that isn't dangerous when move's destructor is invoked (why would we want to move/assign a window anyway?)
+	Window(Window&& move) = delete;
+	Window& operator=(const Window& rhs) = delete;
+	
 	~Window();
 	int& getWidth();
 	int& getHeight();

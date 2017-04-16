@@ -6,6 +6,10 @@ class Matrix2x2
 {
 public:
 	Matrix2x2(Vector2F x = Vector2F(1.0f, 0.0f), Vector2F y = Vector2F(0.0f, 1.0f));
+	Matrix2x2(const Matrix2x2& copy) = default;
+	Matrix2x2(Matrix2x2&& move) = default;
+	Matrix2x2& operator=(const Matrix2x2& rhs) = default;
+	
 	Vector2F getRowX() const;
 	Vector2F getRowY() const;
 	Vector2F& getRowXR();
@@ -19,6 +23,10 @@ class Matrix3x3
 {
 public:
 	Matrix3x3(Vector3F x = Vector3F(1.0f, 0.0f, 0.0f), Vector3F y = Vector3F(0.0f, 1.0f, 0.0f), Vector3F z = Vector3F(0.0f, 0.0f, 1.0f));
+	Matrix3x3(const Matrix3x3& copy) = default;
+	Matrix3x3(Matrix3x3&& move) = default;
+	Matrix3x3& operator=(const Matrix3x3& rhs) = default;
+	
 	Vector3F getRowX() const;
 	Vector3F getRowY() const;
 	Vector3F getRowZ() const;
@@ -34,6 +42,10 @@ class Matrix4x4
 {
 public:
 	Matrix4x4(Vector4F x = Vector4F(1.0f, 0.0f, 0.0f, 0.0f), Vector4F y = Vector4F(0.0f, 1.0f, 0.0f, 0.0f), Vector4F z = Vector4F(0.0f, 0.0f, 1.0f, 0.0f), Vector4F w = Vector4F(0.0f, 0.0f, 0.0f, 1.0f));
+	Matrix4x4(const Matrix4x4& copy) = default;
+	Matrix4x4(Matrix4x4&& move) = default;
+	Matrix4x4& operator=(const Matrix4x4& rhs) = default;
+	
 	static Matrix4x4 identity();
 	Vector4F getRowX() const;
 	Vector4F getRowY() const;

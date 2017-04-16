@@ -6,6 +6,10 @@ class Camera
 {
 public:
 	Camera(Vector3F pos = Vector3F(), Vector3F rot = Vector3F());
+	Camera(const Camera& copy) = default;
+	Camera(Camera&& move) = default;
+	Camera& operator=(const Camera& rhs) = default;
+	
 	const Vector3F& getPos() const;
 	const Vector3F& getRot() const;
 	Vector3F& getPosR();

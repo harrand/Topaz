@@ -33,6 +33,10 @@ World::World(std::string filename): filename(filename)
 	}
 }
 
+World::World(const World& copy): World(copy.filename){}
+
+World::World(World&& move): gravity(move.gravity), spawnPoint(move.spawnPoint), spawnOrientation(move.spawnOrientation), filename(move.filename), members(move.members), entities(move.entities), entityObjects(std::move(move.entityObjects)), baseLights(std::move(move.baseLights)){}
+
 World::~World()
 {
 	for(auto& iter : this->baseLights)

@@ -34,8 +34,29 @@ Shader::Shader(std::string filename): filename(filename)
 	this->uniforms[(unsigned int)UniformTypes::PARALLAX_MAP_BIAS] = glGetUniformLocation(this->programHandle, "parallaxBias");
 }
 
+Shader::Shader(const Shader& copy): Shader(copy.filename){}
+
+Shader::Shader(Shader&& move): filename(move.filename), programHandle(move.programHandle)
+{
+	for(unsigned int i = 0; i < 3; i++)
+	{
+		this->shaders[i] = move.shaders[i];
+		move.shaders[i] = 0;
+	}
+	for(unsigned int i = 0; i < (unsigned int)UniformTypes::NUM_UNIFORMS; i++)
+	{
+		this->uniforms[i] = move.uniforms[i];
+		move.uniforms[i] = 0;
+	}
+	move.programHandle = 0;
+	// Now when destructor of move is invoked, nothing is attempted to be deleted or detached so the shader lives on in this instance.
+}
+
 Shader::~Shader()
 {
+	// If this was moved and this destructor was invoked, then the programHandle will be zero (cant normally be zero so we skip all of this crap to avoid crashes)
+	if(this->programHandle == 0)
+		return;
 	for(unsigned int i = 0; i < 3; i++)
 	{
 		glDetachShader(this->programHandle, this->shaders[i]);

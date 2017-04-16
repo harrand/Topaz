@@ -8,6 +8,9 @@ public:
 	Quaternion(const Vector3F& rotationAxis, float angleRadians);
 	Quaternion(const Vector3F& eulerRotation);
 	Quaternion(const Vector4F& quat);
+	Quaternion(const Quaternion& copy) = default;
+	Quaternion(Quaternion&& move) = default;
+	Quaternion& operator=(const Quaternion& rhs) = default;
 	
 	float& getXR();
 	float& getYR();

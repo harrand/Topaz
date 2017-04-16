@@ -228,6 +228,10 @@ class Force
 {
 public:
 	Force(Vector3F size = Vector3F());
+	Force(const Force& copy) = default;
+	Force(Force&& move) = default;
+	Force& operator=(const Force& rhs) = default;
+	
 	Vector3F getSize() const;
 	void setSize(Vector3F size);
 	Force operator+(const Force& other) const;
