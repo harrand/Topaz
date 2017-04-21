@@ -22,10 +22,10 @@ Shader::Shader(std::string filename): filename(filename)
 	glBindAttribLocation(this->programHandle, 3, "tangent");
 	
 	glLinkProgram(this->programHandle);
-	Shader::checkShaderError(this->programHandle, GL_LINK_STATUS, true, "Fatal Error: Program Linking failed.");
+	Shader::checkShaderError(this->programHandle, GL_LINK_STATUS, true, "Program Linking failed");
 	
 	glValidateProgram(this->programHandle);
-	Shader::checkShaderError(this->programHandle, GL_VALIDATE_STATUS, true, "Fatal Error: Program Validation failed.");
+	Shader::checkShaderError(this->programHandle, GL_VALIDATE_STATUS, true, "Program Validation failed");
 	
 	this->uniforms[(unsigned int)UniformTypes::MODEL] = glGetUniformLocation(this->programHandle, "m");
 	this->uniforms[(unsigned int)UniformTypes::VIEW] = glGetUniformLocation(this->programHandle, "v");
@@ -141,7 +141,7 @@ void Shader::checkShaderError(GLuint shader, GLuint flag, bool isProgram, std::s
         else
             glGetShaderInfoLog(shader, sizeof(error), NULL, error);
 
-        LogUtility::error(errorMessage + ": '" + std::string(error) + "'");
+        LogUtility::error(errorMessage + std::string(error));
     }
 }
 
