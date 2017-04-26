@@ -1,6 +1,7 @@
 #ifndef AUDIO_HPP
 #define AUDIO_HPP
 #include <string>
+#include <algorithm>
 #include "SDL_mixer.h"
 #include "player.hpp"
 
@@ -44,7 +45,7 @@ public:
 	~AudioMusic();
 	Mix_Music*& getAudioHandle();
 	void play(bool priority = true) const;
-	void setPaused(bool pause);
+	void setPaused(bool pause = true);
 	void togglePaused();
 private:
 	bool paused;

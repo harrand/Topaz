@@ -15,7 +15,7 @@ public:
 	~World();
 	
 	const std::string getFileName() const;
-	void addObject(Object obj);
+	void addObject(Object&& obj);
 	void addEntity(Entity* ent);
 	void addEntityObject(std::unique_ptr<EntityObject>&& eo);
 	void addLight(BaseLight&& light, GLuint shader_programHandle);

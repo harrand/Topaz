@@ -40,6 +40,21 @@ IndexedModel Mesh::getIndexedModel() const
 	return this->model;
 }
 
+const std::vector<Vector3F>& Mesh::getPositions() const
+{
+	return this->model.positions;
+}
+
+const std::vector<Vector2F>& Mesh::getTexcoords() const
+{
+	return this->model.texcoords;
+}
+
+const std::vector<Vector3F>& Mesh::getNormals() const
+{
+	return this->model.normals;
+}
+
 std::string Mesh::getFileName() const
 {
 	return this->filename;

@@ -14,7 +14,7 @@ AudioClip::AudioClip(AudioClip&& move): filename(move.getFileName()), audioHandl
 
 AudioClip::~AudioClip()
 {
-	// Cannot guarantee that Mix_FreeChunk(NULL) doesn't to UB (this happens if this instance was moved to another) so put a check in here to prevent crashing
+	// Cannot guarantee that Mix_FreeChunk(NULL) doesn't lead to UB (this happens if this instance was moved to another) so put a check in here to prevent crashing
 	if(this->audioHandle != NULL)
 		Mix_FreeChunk(this->audioHandle);
 }
@@ -43,17 +43,19 @@ AudioSource::AudioSource(const std::string& filename, const Vector3F& position):
 
 void AudioSource::update(Player& relativeTo)
 {
-	Vector3F perp = relativeTo.getCamera().getForward().cross(this->getPosition() - relativeTo.getPosition());
-	float dir = perp.normalised().dot(relativeTo.getCamera().getUp());
-	float right = 1.0f, left = 1.0f;
-	if(!std::isnan(dir))
-	{
-		right  = - dir;
-		left = dir;
-	}
-	float distance = (this->getPosition() - relativeTo.getPosition()).length() / 1000;
-	Mix_Volume(this->getChannel(), 128 / ((distance * distance) + 1));
+	//cameraPos_cameraspace = Vector2F(0, 0);
+	const Vector3F sourcePosition = this->position;
+	const Vector3F listenerPosition = relativeTo.getPosition();
+	const Vector3F forward = relativeTo.getCamera().getForward();
+	const Vector3F up = relativeTo.getCamera().getUp();
+	float proportionRight = (forward.cross(up).normalised().dot((sourcePosition - listenerPosition).normalised()) + 1) / 2;
+	if(sourcePosition == listenerPosition)
+		proportionRight = 0.5;
+	float right = proportionRight;
+	float left = 1 - proportionRight;
 	Mix_SetPanning(this->getChannel(), left * 255, right * 255);
+	float distance = (this->getPosition() - relativeTo.getPosition()).length() / 100;
+	Mix_Volume(this->getChannel(), 128 / ((distance * distance) + 1));
 }
 
 const Vector3F& AudioSource::getPosition() const
@@ -87,7 +89,7 @@ void AudioMusic::play(bool priority) const
 		Mix_PlayMusic(this->audioHandle, -1);
 }
 
-void AudioMusic::setPaused(bool pause = true)
+void AudioMusic::setPaused(bool pause)
 {
 	this->paused = pause;
 	if(this->paused)

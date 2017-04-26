@@ -1,7 +1,5 @@
 #include "shader.hpp"
 
-//const unsigned int Shader::MAXIMUM_LIGHTS = 8;
-
 Shader::Shader(std::string filename): filename(filename)
 {
 	// Allocate space on GPU memory for shader.
@@ -70,22 +68,6 @@ GLuint Shader::getProgramHandle() const
 {
 	return this->programHandle;
 }
-/*
-const std::map<std::pair<GLuint, GLuint>, std::unique_ptr<BaseLight>>& Shader::getLights() const
-{
-	return this->baseLights;
-}
-*/
-
-/*
-void Shader::addLight(BaseLight&& light)
-{
-	while(this->baseLights.size() >= Shader::MAXIMUM_LIGHTS)
-		this->baseLights.erase(this->baseLights.begin());
-	//lights guaranteed to have at least one empty space now
-	this->baseLights[std::make_pair<GLuint, GLuint>(glGetUniformLocation(this->programHandle, ("lights[" + CastUtility::toString<unsigned int>(this->baseLights.size()) + "].pos").c_str()), glGetUniformLocation(this->programHandle, ("lights[" + CastUtility::toString<unsigned int>(this->baseLights.size()) + "].power").c_str()))] = std::make_unique<BaseLight>(std::move(light));
-}
-*/
 
 void Shader::bind() const
 {
@@ -160,7 +142,7 @@ GLuint Shader::createShader(std::string source, GLenum shaderType)
 	glShaderSource(shader, 1, shaderSources, shaderSourceLengths);
 	glCompileShader(shader);
 	
-	Shader::checkShaderError(shader, GL_COMPILE_STATUS, false, "Fatal Error: Shader Compilation failed:\n");
+	Shader::checkShaderError(shader, GL_COMPILE_STATUS, false, "Shader Compilation failed");
 	
 	return shader;
 }

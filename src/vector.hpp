@@ -16,13 +16,15 @@ public:
 	float& getXR();
 	float& getYR();
 	float length() const;
-	float dot(Vector2F other) const;
+	float dot(Vector2F rhs) const;
 	Vector2F normalised() const;
 	
-	Vector2F operator+(const Vector2F& other) const;
-	Vector2F operator-(const Vector2F& other) const;
+	Vector2F operator+(const Vector2F& rhs) const;
+	Vector2F operator-(const Vector2F& rhs) const;
 	Vector2F operator*(float scalar) const;
-	bool operator==(const Vector2F& other) const;
+	bool operator<(const Vector2F& rhs) const;
+	bool operator>(const Vector2F& rhs) const;
+	bool operator==(const Vector2F& rhs) const;
 private:
 	float x, y;
 };
@@ -42,17 +44,19 @@ public:
 	float& getYR();
 	float& getZR();
 	float length() const;
-	float dot(Vector3F other) const;
-	Vector3F cross(Vector3F other) const;
+	float dot(Vector3F rhs) const;
+	Vector3F cross(Vector3F rhs) const;
 	Vector3F normalised() const;
 	
-	Vector3F operator+(const Vector3F& other) const;
-	Vector3F operator-(const Vector3F& other) const;
+	Vector3F operator+(const Vector3F& rhs) const;
+	Vector3F operator-(const Vector3F& rhs) const;
 	Vector3F operator*(float scalar) const;
 	Vector3F operator/(float scalar) const;
-	bool operator==(const Vector3F& other) const;
-	void operator+=(const Vector3F& other);
-	void operator-=(const Vector3F& other);
+	bool operator<(const Vector3F& rhs) const;
+	bool operator>(const Vector3F& rhs) const;
+	bool operator==(const Vector3F& rhs) const;
+	void operator+=(const Vector3F& rhs);
+	void operator-=(const Vector3F& rhs);
 private:
 	float x, y, z;
 };
@@ -74,14 +78,16 @@ public:
 	float& getZR();
 	float& getWR();
 	float length() const;
-	float dot(Vector4F other) const;
-	Vector4F cross(Vector4F other) const;
+	float dot(Vector4F rhs) const;
+	Vector4F cross(Vector4F rhs) const;
 	Vector4F normalised() const;
 	
-	Vector4F operator+(const Vector4F& other) const;
-	Vector4F operator-(const Vector4F& other) const;
+	Vector4F operator+(const Vector4F& rhs) const;
+	Vector4F operator-(const Vector4F& rhs) const;
 	Vector4F operator*(float scalar) const;
-	bool operator==(const Vector4F& other) const;
+	bool operator<(const Vector4F& rhs) const;
+	bool operator>(const Vector4F& rhs) const;
+	bool operator==(const Vector4F& rhs) const;
 private:
 	float x, y, z, w;
 };

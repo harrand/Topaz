@@ -14,7 +14,6 @@ public:
 	void setPosition(Vector3F position);
 	const Vector3F& getPosition() const;
 	void updateMotion(unsigned int fps);
-private:
 };
 
 #endif

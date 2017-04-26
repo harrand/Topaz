@@ -23,8 +23,7 @@ World::World(std::string filename): filename(filename)
 	for(unsigned int i = 0; i < objectList.size(); i++)
 	{
 		std::string objectName = objectList.at(i);
-		Object obj = World::retrieveData(objectName, input);
-		this->addObject(obj);
+		this->addObject(World::retrieveData(objectName, input));
 	}
 	for(unsigned int i = 0; i < entityObjectList.size(); i++)
 	{
@@ -54,7 +53,7 @@ const std::string World::getFileName() const
 	return this->filename;
 }
 
-void World::addObject(Object obj)
+void World::addObject(Object&& obj)
 {
 	this->members.push_back(obj);
 }
@@ -119,8 +118,8 @@ void World::setSpawnOrientation(Vector3F spawnOrientation)
 
 void World::exportWorld(const std::string& worldName) const
 {
-	DataTranslation dt(RES_POINT + "/resources.data");
-	std::string worldLink = RES_POINT + "/worlds/" + worldName;
+	const DataTranslation dt(RES_POINT + "/resources.data");
+	const std::string worldLink = RES_POINT + "/worlds/" + worldName;
 	MDLF output = MDLF(RawFile(worldLink));
 	output.getRawFile().clear();
 	std::vector<std::string> objectList;
@@ -133,9 +132,9 @@ void World::exportWorld(const std::string& worldName) const
 	output.editTag("spawnorientation", StringUtility::format(StringUtility::devectoriseList3F(this->spawnOrientation)));
 	for(unsigned int i = 0; i < this->members.size(); i++)
 	{
-		std::string objectName = "object" + CastUtility::toString<float>(i);
+		const std::string objectName = "object" + CastUtility::toString<float>(i);
 		objectList.push_back(objectName);
-		Object curObj = this->members.at(i);
+		const Object curObj = this->members.at(i);
 		
 		output.editTag(objectName + ".mesh", dt.getResourceName(curObj.getMeshLink()));
 		output.editTag(objectName + ".texture", dt.getResourceName(curObj.getTextureLink()));
@@ -147,7 +146,7 @@ void World::exportWorld(const std::string& worldName) const
 	}
 	for(unsigned int i = 0; i < this->entityObjects.size(); i++)
 	{
-		std::string eoName = "eo" + CastUtility::toString<float>(i);
+		const std::string eoName = "eo" + CastUtility::toString<float>(i);
 		eoList.push_back(eoName);
 		EntityObject* curEO = this->entityObjects.at(i).get();
 
