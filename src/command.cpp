@@ -105,6 +105,8 @@ void Commands::inputCommand(std::string cmd, std::unique_ptr<World>& world, Play
 		Commands::printVolume();
 	else if(cmdName == "play")
 		Commands::playAudio(args, true, player);
+	else if(cmdName == "delayedmsg")
+		Commands::scheduleAsyncDelayedMessage(args, true);
 	else
 		LogUtility::warning("Unknown command. Maybe you made a typo?");
 }
@@ -417,4 +419,20 @@ void Commands::playAudio(std::vector<std::string> args, bool printResults, Playe
 	std::thread(CommandCache::updateClip, raw, std::ref(player)).detach();
 	if(printResults)
 		LogUtility::message("Playing the audio clip with the file-path " + filename + " at the position " + StringUtility::format(StringUtility::devectoriseList3F(pos)) +".");
+}
+
+void Commands::scheduleAsyncDelayedMessage(std::vector<std::string> args, bool printResults)
+{
+	if(args.size() < 3)
+	{
+		LogUtility::warning("Nonfatal Command Error: Unexpected quantity of args, got " + CastUtility::toString<unsigned int>(args.size()) + ", expected at least 3.");
+		return;
+	}
+	unsigned int millisDelay = CastUtility::fromString<unsigned int>(args.at(1));
+	if(printResults)
+		LogUtility::message("Scheduling async delayed task of " + CastUtility::toString<unsigned int>(millisDelay) + "ms");
+	std::string msg = "";
+	for(unsigned int i = 2; i < args.size(); i++)
+		msg += args.at(i) + ((i == (args.size() - 1)) ? "" : " ");
+	Scheduler::asyncDelayedTask<void()>(millisDelay, [msg](){LogUtility::message(msg);});
 }

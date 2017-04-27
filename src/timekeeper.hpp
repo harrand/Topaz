@@ -2,6 +2,8 @@
 #define TIMEKEEPER_HPP
 #include <chrono>
 #include <vector>
+#include <thread>
+#include <functional>
 
 class TimeKeeper
 {
@@ -37,5 +39,21 @@ private:
 	std::vector<float> deltas;
 	TimeKeeper tk;
 };
+
+namespace Scheduler
+{
+template<class ReturnType>
+inline void syncDelayedTask(unsigned int millisDelay, std::function<ReturnType> f)
+{
+	std::this_thread::sleep_for(std::chrono::duration<unsigned int, std::milli>(millisDelay));
+	f();
+}
+
+template<class ReturnType>
+inline void asyncDelayedTask(unsigned int millisDelay, std::function<ReturnType> f)
+{
+	std::thread(Scheduler::syncDelayedTask<ReturnType>, millisDelay, f).detach();
+}
+}
 
 #endif // TIMEKEEPER_HPP

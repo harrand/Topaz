@@ -2,6 +2,7 @@
 #define COMMAND_HPP
 #include "world.hpp"
 #include "audio.hpp"
+#include "timekeeper.hpp"
 #include <thread>
 
 class CommandCache
@@ -39,6 +40,7 @@ namespace Commands
 	void setVolume(std::vector<std::string> args);
 	void printVolume();
 	void playAudio(std::vector<std::string> args, bool printResults, Player& player);
+	void scheduleAsyncDelayedMessage(std::vector<std::string> args, bool printResults);
 }
 
 #endif
