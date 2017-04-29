@@ -50,7 +50,7 @@ int main()
 	{
 		if(tk.millisPassed(1000))
 		{
-			fps = tp.getFPS();
+			//fps = tp.getFPS();
 			LogUtility::silent("\n====== " + CastUtility::toString<int>(secondsLifetime) + " seconds ======\navgdt = " + CastUtility::toString<float>(tp.getDeltaAverage()) + " ms, avgFPS = " + CastUtility::toString<int>(fps) + " fps.");
 			tp.reset();
 			secondsLifetime++;
@@ -68,6 +68,7 @@ int main()
 		tk.update();
 		wnd.clear(0.0f, 0.0f, 0.0f, 1.0f);
 		mc.handleMouse();
+		fps = tp.getFPS();
 		kc.handleKeybinds(fps);
 		mc.getMouseListenerR().reloadMouseDelta();
 		tp.endFrame();

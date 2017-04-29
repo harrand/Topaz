@@ -33,27 +33,29 @@ public:
 	void beginFrame();
 	void endFrame();
 	void reset();
-	float getDeltaAverage() const;
-	unsigned int getFPS() const;
+	float getDeltaAverage();
+	unsigned int getFPS();
 private:
+	float lastDeltaAverage;
 	std::vector<float> deltas;
 	TimeKeeper tk;
 };
 
-namespace Scheduler
+class Scheduler
 {
-template<class ReturnType>
-inline void syncDelayedTask(unsigned int millisDelay, std::function<ReturnType> f)
-{
-	std::this_thread::sleep_for(std::chrono::duration<unsigned int, std::milli>(millisDelay));
-	f();
-}
+public:
+	template<class ReturnType>
+	static inline void syncDelayedTask(unsigned int millisDelay, std::function<ReturnType> f)
+	{
+		std::this_thread::sleep_for(std::chrono::duration<unsigned int, std::milli>(millisDelay));
+		f();
+	}
 
-template<class ReturnType>
-inline void asyncDelayedTask(unsigned int millisDelay, std::function<ReturnType> f)
-{
-	std::thread(Scheduler::syncDelayedTask<ReturnType>, millisDelay, f).detach();
-}
-}
+	template<class ReturnType>
+	static inline void asyncDelayedTask(unsigned int millisDelay, std::function<ReturnType> f)
+	{
+		std::thread(Scheduler::syncDelayedTask<ReturnType>, millisDelay, f).detach();
+	}
+};
 
 #endif // TIMEKEEPER_HPP
