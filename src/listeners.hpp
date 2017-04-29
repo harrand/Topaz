@@ -93,7 +93,7 @@ public:
 	KeybindController(KeybindController&& move) = delete;
 	KeybindController& operator=(const KeybindController& rhs) = delete;
 	~KeybindController();
-	void handleKeybinds(unsigned int fps);
+	void handleKeybinds(float secondsSinceLastFrame);
 private:
 	Shader& shader;
 	Player& player;

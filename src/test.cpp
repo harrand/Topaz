@@ -50,26 +50,19 @@ int main()
 	{
 		if(tk.millisPassed(1000))
 		{
-			//fps = tp.getFPS();
+			fps = tp.getFPS();
 			LogUtility::silent("\n====== " + CastUtility::toString<int>(secondsLifetime) + " seconds ======\navgdt = " + CastUtility::toString<float>(tp.getDeltaAverage()) + " ms, avgFPS = " + CastUtility::toString<int>(fps) + " fps.");
 			tp.reset();
 			secondsLifetime++;
 			tk.reload();
 			LogUtility::silent("Camera Position = [" + CastUtility::toString<float>(cam.getPosR().getX()) + ", " + CastUtility::toString<float>(cam.getPosR().getY()) + ", " + CastUtility::toString<float>(cam.getPosR().getZ()) + "].");
-			float total = 0;
-			for(unsigned int i = 0; i < processingThisFrame.size(); i++)
-			{
-				total += processingThisFrame.at(i);
-			}
-			processingThisFrame.clear();
 		}
 		wnd.setRenderTarget();
 		tp.beginFrame();
 		tk.update();
 		wnd.clear(0.0f, 0.0f, 0.0f, 1.0f);
 		mc.handleMouse();
-		fps = tp.getFPS();
-		kc.handleKeybinds(fps);
+		kc.handleKeybinds(tp.getLastDelta());
 		mc.getMouseListenerR().reloadMouseDelta();
 		tp.endFrame();
 		TimeKeeper renderTime;

@@ -28,7 +28,7 @@ bool TimeKeeper::millisPassed(float millis) const
 	return (this->getRange() > millis);
 }
 
-TimeProfiler::TimeProfiler(): tk(TimeKeeper()), lastDeltaAverage(10.0f/6.0f){}
+TimeProfiler::TimeProfiler(): tk(TimeKeeper()){}
 
 void TimeProfiler::beginFrame()
 {
@@ -52,12 +52,19 @@ float TimeProfiler::getDeltaAverage()
 	float total = 0.0f;
 	for(unsigned int i = 0; i < this->deltas.size(); i++)
 		total += this->deltas.at(i);
-	if(total != 0.0f && this->deltas.size() != 0)
-		this->lastDeltaAverage = total / this->deltas.size();
-	return this->lastDeltaAverage;
+	if(deltas.size() == 0)
+		return 5.0f/3.0f;
+	return total / deltas.size();
+}
+
+float TimeProfiler::getLastDelta() const
+{
+	if(this->deltas.empty())
+		return 5.0f/3.0f;
+	return this->deltas.at(this->deltas.size() - 1);
 }
 
 unsigned int TimeProfiler::getFPS()
 {
-	return (int)(1000/this->getDeltaAverage());
+	return (unsigned int)(1000/this->getDeltaAverage());
 }
