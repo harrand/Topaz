@@ -7,7 +7,7 @@ set cpldir=%cpldirX:/=.%
 color e
 cd src
 ren test.cpp test.saved
-g++ -std=c++14 -c -DTOPAZDLLBUILD *.cpp -I %incdir%
+g++ -std=c++14 -Wall -pedantic-errors -O3 -c -DTOPAZDLLBUILD *.cpp -I %incdir%
 gcc -c -DTOPAZDLLBUILD *.c -w -I %incdir%
 ren test.saved test.cpp
 
@@ -24,7 +24,7 @@ set lnkdir="%cpldir%\lnk"
 
 if not exist %lnkdir% mkdir %lnkdir%
 
-g++ -std=c++14 -Wall -pedantic -O3 -shared -Wl,-no-undefined,--enable-runtime-pseudo-reloc,--out-implib,libtopazdll.a *.o -L%libdir% -lOpenGL32 -lSDL2 -lSDL2_mixer -lSDL2main -lmdl -o "topaz.dll"
+g++ -std=c++14 -Wall -pedantic-errors -O3 -shared -Wl,-no-undefined,--enable-runtime-pseudo-reloc,--out-implib,libtopazdll.a *.o -L%libdir% -lOpenGL32 -lSDL2 -lSDL2_mixer -lSDL2main -lmdl -o "topaz.dll"
 
 move "topaz.dll" %lnkdir%
 move "libtopazdll.a" %lnkdir%

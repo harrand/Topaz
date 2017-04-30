@@ -95,8 +95,8 @@ public:
 	~KeybindController();
 	void handleKeybinds(float secondsSinceLastFrame);
 private:
-	Shader& shader;
 	Player& player;
+	Shader& shader;
 	std::unique_ptr<World>& world;
 	Window& wnd;
 	KeyListener kl;

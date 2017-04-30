@@ -317,7 +317,6 @@ Vector4F Matrix4x4::operator*(Vector4F other)
 		
 		for(unsigned int rowCounter = 0; rowCounter < 4; rowCounter++)
 		{
-			float res = 0.0f;
 			switch(rowCounter)
 			{
 				case 0:

@@ -54,7 +54,7 @@ Vector2F MouseListener::getMouseDeltaPos() const
 	return (this->mousePos - this->prevMousePos);
 }
 
-MouseController::MouseController(Player& player, std::unique_ptr<World>& world, Window& wnd): ml(), player(player), world(world), wnd(wnd)
+MouseController::MouseController(Player& player, std::unique_ptr<World>& world, Window& wnd): player(player), world(world), wnd(wnd), ml()
 {
 	this->wnd.registerListener(this->ml);
 }

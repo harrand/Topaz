@@ -50,15 +50,15 @@ public:
 	void deregisterListener(Listener& l);
 	
 private:
-	bool iscloserequested;
 	void initSDL();
 	void initGLEW();
 	void destSDL();
 	void handleEvents();
 	std::unordered_map<unsigned int, Listener*> registeredListeners;
+	
 	int w, h;
 	std::string title;
-	
+	bool iscloserequested;
 	SDL_Window* wnd;
 	SDL_GLContext ctx;
 };

@@ -38,12 +38,12 @@ public:
 	std::string getFileName() const;
 	static Texture* getFromLink(const std::string& textureLink, const std::vector<std::unique_ptr<Texture>>& allTextures);
 protected:
-	GLuint textureID;
-	GLuint texhandle;
 	unsigned char* loadTexture();
 	void deleteTexture(unsigned char* imgdata);
-	int width, height, comps;
 	std::string filename;
+	GLuint textureID;
+	GLuint texhandle;
+	int width, height, comps;
 };
 
 class NormalMap: public Texture

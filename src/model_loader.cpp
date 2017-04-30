@@ -196,7 +196,7 @@ IndexedModel OBJModel::ToIndexedModel()
 		result.tangents.at(i) = normalModel.tangents[indexMap[i]];
     
     return result;
-};
+}
 
 unsigned int OBJModel::FindLastVertexIndex(const std::vector<OBJIndex*>& indexLookup, const OBJIndex* currentIndex, const IndexedModel& result)
 {

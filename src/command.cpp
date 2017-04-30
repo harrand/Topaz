@@ -47,7 +47,7 @@ void CommandCache::updateClip(AudioSource* source, Player& player)
 
 void CommandCache::destroyChannelClips(int channel)
 {
-	for(std::unique_ptr<AudioClip>& clip : CommandCache::clips)
+	for(unsigned int i = 0; i < CommandCache::clips.size(); i++/*std::unique_ptr<AudioClip>& clip : CommandCache::clips*/)
 	{
 		unsigned int prevSize = CommandCache::clips.size();
 		auto lambda = [channel](const std::unique_ptr<AudioClip>& clip) -> bool{return clip->getChannel() == channel;};

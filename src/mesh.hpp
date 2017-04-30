@@ -40,8 +40,8 @@ public:
 	void render() const;
 	static Mesh* getFromLink(const std::string& meshLink, const std::vector<std::unique_ptr<Mesh>>& allMeshes);
 private:
-	IndexedModel model;
 	const std::string filename;
+	IndexedModel model;
 	void initMesh();
 	enum class BufferTypes : unsigned int
 	{

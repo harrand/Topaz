@@ -94,6 +94,7 @@ namespace StringUtility
 		for(unsigned int i = 0; i < what.length(); i++)
 			if(whatcstr[i] == withwhat)
 				return true;
+		return false;
 	}
 
 	inline std::vector<std::string> splitString(const std::string& split, char delim)

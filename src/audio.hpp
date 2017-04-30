@@ -48,8 +48,8 @@ public:
 	void setPaused(bool pause = true);
 	void togglePaused();
 private:
-	bool paused;
 	const std::string filename;
+	bool paused;
 	Mix_Music* audioHandle;
 };
 
