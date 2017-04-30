@@ -54,7 +54,7 @@ Vector2F MouseListener::getMouseDeltaPos() const
 	return (this->mousePos - this->prevMousePos);
 }
 
-MouseController::MouseController(Player& player, std::unique_ptr<World>& world, Window& wnd): player(player), world(world), wnd(wnd), ml()
+MouseController::MouseController(Player& player, World& world, Window& wnd): player(player), world(world), wnd(wnd), ml()
 {
 	this->wnd.registerListener(this->ml);
 }
@@ -230,7 +230,7 @@ std::string KeyControls::getKeybind(MDLF& controlsDataFile, KeybindType kt)
 	}
 }
 
-KeybindController::KeybindController(Player& player, Shader& shader, std::unique_ptr<World>& world, Window& wnd): player(player), shader(shader), world(world), wnd(wnd)
+KeybindController::KeybindController(Player& player, Shader& shader, World& world, Window& wnd): player(player), shader(shader), world(world), wnd(wnd)
 {
 	wnd.registerListener(this->kl);
 }
@@ -278,8 +278,8 @@ void KeybindController::handleKeybinds(float secondsSinceLastFrame)
 		wnd.requestClose();
 	if(kl.isKeyPressed(KeyControls::getKeybind(controlsDataFile, KeybindType::RESTART)))
 	{
-		player.getCamera().getPosR() = this->world->getSpawnPoint();
-		player.getCamera().getRotR() = this->world->getSpawnOrientation();
+		player.getCamera().getPosR() = this->world.getSpawnPoint();
+		player.getCamera().getRotR() = this->world.getSpawnOrientation();
 		player.setVelocity(Vector3F());
 	}
 	if(kl.catchKeyPressed(KeyControls::getKeybind(controlsDataFile, KeybindType::ALIAS)))

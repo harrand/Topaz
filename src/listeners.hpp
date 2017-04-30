@@ -27,7 +27,7 @@ private:
 class MouseController
 {
 public:
-	MouseController(Player& player, std::unique_ptr<World>& world, Window& wnd);
+	MouseController(Player& player, World& world, Window& wnd);
 	MouseController(const MouseController& copy);
 	MouseController(MouseController&& move) = delete;
 	MouseController& operator=(const MouseController& rhs) = delete;
@@ -37,7 +37,7 @@ public:
 	void handleMouse();
 private: 
 	Player& player;
-	std::unique_ptr<World>& world;
+	World& world;
 	Window& wnd;
 	MouseListener ml;
 };
@@ -88,7 +88,7 @@ namespace KeyControls
 class KeybindController
 {
 public:
-	KeybindController(Player& player, Shader& shader, std::unique_ptr<World>& world, Window& wnd);
+	KeybindController(Player& player, Shader& shader, World& world, Window& wnd);
 	KeybindController(const KeybindController& copy);
 	KeybindController(KeybindController&& move) = delete;
 	KeybindController& operator=(const KeybindController& rhs) = delete;
@@ -97,7 +97,7 @@ public:
 private:
 	Player& player;
 	Shader& shader;
-	std::unique_ptr<World>& world;
+	World& world;
 	Window& wnd;
 	KeyListener kl;
 };

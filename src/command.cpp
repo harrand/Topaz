@@ -58,7 +58,7 @@ void CommandCache::destroyChannelClips(int channel)
 	}
 }
 
-void Commands::inputCommand(std::string cmd, std::unique_ptr<World>& world, Player& player, Shader& shader)
+void Commands::inputCommand(std::string cmd, World& world, Player& player, Shader& shader)
 {
 	std::vector<std::string> args;
 	if(StringUtility::contains(cmd, ' '))
@@ -111,23 +111,23 @@ void Commands::inputCommand(std::string cmd, std::unique_ptr<World>& world, Play
 		LogUtility::warning("Unknown command. Maybe you made a typo?");
 }
 
-void Commands::loadWorld(std::vector<std::string> args, std::unique_ptr<World>& world)
+void Commands::loadWorld(std::vector<std::string> args, World& world)
 {
 	if(args.size() != 2)
 	{
 		LogUtility::warning("Nonfatal Command Error: Unexpected quantity of args, got " + CastUtility::toString<unsigned int>(args.size()) + ", expected 2.");
 		return;
 	}
-	std::vector<Entity*> entities = world->getEntities();
+	std::vector<Entity> entities = world.getEntities();
 	std::string worldname = args.at(1);
 	std::string link = (RES_POINT + "/worlds/" + worldname);
-	world = std::make_unique<World>(link);
+	world = World(link);
 	for(unsigned int i = 0; i < entities.size(); i++)
-		world->addEntity(entities.at(i));
-	LogUtility::message("Now rendering the world '" + worldname + "' which has " + CastUtility::toString<unsigned int>(world->getSize()) + " elements.");
+		world.addEntity(entities.at(i));
+	LogUtility::message("Now rendering the world '" + worldname + "' which has " + CastUtility::toString<unsigned int>(world.getSize()) + " elements.");
 }
 
-void Commands::exportWorld(std::vector<std::string> args, std::unique_ptr<World>& world)
+void Commands::exportWorld(std::vector<std::string> args, World& world)
 {
 	if(args.size() != 2)
 	{
@@ -135,10 +135,10 @@ void Commands::exportWorld(std::vector<std::string> args, std::unique_ptr<World>
 		return;
 	}
 	std::string worldname = args.at(1);
-	world->exportWorld(worldname);
+	world.exportWorld(worldname);
 }
 
-void Commands::addObject(std::vector<std::string> args, std::unique_ptr<World>& world, Player& player, bool printResults)
+void Commands::addObject(std::vector<std::string> args, World& world, Player& player, bool printResults)
 {
 	if(args.size() != 8)
 	{
@@ -184,12 +184,12 @@ void Commands::addObject(std::vector<std::string> args, std::unique_ptr<World>& 
 	
 	scale = StringUtility::vectoriseList3F(StringUtility::deformat(scaleStr));
 		
-	world->addObject(Object(meshLink, textureLink, normalMapLink, parallaxMapLink, pos, rot, scale));
+	world.addObject(Object(meshLink, textureLink, normalMapLink, parallaxMapLink, pos, rot, scale));
 	if(printResults)
 		LogUtility::message("Added the following to this world:\nMesh name = " + meshName + ", link = " + meshLink + ".\nTexture name = " + textureName + ", link = " + textureLink + ".\nNormalmap name = " + normalMapName + ", link = " + normalMapLink + ".\nParallaxmap name = " + parallaxMapName + ", link = " + parallaxMapLink + ".\nPosition = " + StringUtility::format(StringUtility::devectoriseList3F(pos)) + ".\nRotation = " + StringUtility::format(StringUtility::devectoriseList3F(rot)) + ".\nScale = " + StringUtility::format(StringUtility::devectoriseList3F(scale)) + ".");
 }
 
-void Commands::addEntityObject(std::vector<std::string> args, std::unique_ptr<World>& world, Player& player, bool printResults)
+void Commands::addEntityObject(std::vector<std::string> args, World& world, Player& player, bool printResults)
 {
 	if(args.size() != 9)
 	{
@@ -238,7 +238,7 @@ void Commands::addEntityObject(std::vector<std::string> args, std::unique_ptr<Wo
 	
 	float mass = CastUtility::fromString<float>(massStr);
 	
-	world->addEntityObject(std::make_unique<EntityObject>(meshLink, textureLink, normalMapLink, parallaxMapLink, mass, pos, rot, scale));
+	world.addEntityObject(EntityObject(meshLink, textureLink, normalMapLink, parallaxMapLink, mass, pos, rot, scale));
 	if(printResults)
 		LogUtility::message("Added the following to this world:\nMesh name = " + meshName + ", link = " + meshLink + ".\nTexture name = " + textureName + ", link = " + textureLink + ".\nNormalmap name = " + normalMapName + ", link = " + normalMapLink + ".\nParallaxmap name = " + parallaxMapName + ", link = " + parallaxMapLink + ".\nMass = " + CastUtility::toString<float>(mass) + ".\nPosition = " + StringUtility::format(StringUtility::devectoriseList3F(pos)) + ".\nRotation = " + StringUtility::format(StringUtility::devectoriseList3F(rot)) + ".\nScale = " + StringUtility::format(StringUtility::devectoriseList3F(scale)) + ".");
 }
@@ -253,23 +253,23 @@ void Commands::setAlias(std::vector<std::string> args)
 	LogUtility::message(msg);
 }
 
-void Commands::reloadWorld(std::vector<std::string> args, std::unique_ptr<World>& world, bool printResults)
+void Commands::reloadWorld(std::vector<std::string> args, World& world, bool printResults)
 {
 	args.resize(2); // Resize not reserve; resize will add empty elements in but reserve will not (so with reserve args.at(1) will still crash)
-	args.at(1) = world->getFileName();
+	args.at(1) = world.getFileName();
 	std::string toErase = RES_POINT + "/worlds/";
 	args.at(1).erase(args.at(1).find(toErase), toErase.length());
 	Commands::loadWorld(args, world);
 	if(printResults)
-		LogUtility::message("Successfully reloaded the world. (world link " + world->getFileName() + ").");
+		LogUtility::message("Successfully reloaded the world. (world link " + world.getFileName() + ").");
 }
 
-void Commands::updateWorld(std::unique_ptr<World>& world, bool printResults)
+void Commands::updateWorld(World& world, bool printResults)
 {
-	std::string worldLink = world->getFileName(), worldName = worldLink;
+	std::string worldLink = world.getFileName(), worldName = worldLink;
 	std::string toRemove = RES_POINT + "/worlds/";
 	worldName.erase(worldName.find(toRemove), toRemove.length());
-	world->exportWorld(worldName);
+	world.exportWorld(worldName);
 	std::vector<std::string> args = std::vector<std::string>();
 	args.push_back("loadworld");
 	args.push_back(worldName);
@@ -310,7 +310,7 @@ void Commands::roundLocation(Player& player)
 	player.getCamera().getPosR() = Vector3F(round(player.getCamera().getPos().getX()), round(player.getCamera().getPos().getY()), round(player.getCamera().getPos().getZ()));
 }
 
-void Commands::setGravity(std::vector<std::string> args, std::unique_ptr<World>& world, bool printResults)
+void Commands::setGravity(std::vector<std::string> args, World& world, bool printResults)
 {
 	if(args.size() != 2)
 	{
@@ -318,12 +318,12 @@ void Commands::setGravity(std::vector<std::string> args, std::unique_ptr<World>&
 		return;
 	}
 	Vector3F grav = StringUtility::vectoriseList3F(StringUtility::deformat(args.at(1)));
-	world->setGravity(grav);
+	world.setGravity(grav);
 	if(printResults)
-		LogUtility::message("Set gravity of the world '" + world->getFileName() + "' to " + StringUtility::format(StringUtility::devectoriseList3F(grav)) + " N.");
+		LogUtility::message("Set gravity of the world '" + world.getFileName() + "' to " + StringUtility::format(StringUtility::devectoriseList3F(grav)) + " N.");
 }
 
-void Commands::setSpawnPoint(std::vector<std::string> args, std::unique_ptr<World>& world, bool printResults)
+void Commands::setSpawnPoint(std::vector<std::string> args, World& world, bool printResults)
 {
 	if(args.size() != 2)
 	{
@@ -331,12 +331,12 @@ void Commands::setSpawnPoint(std::vector<std::string> args, std::unique_ptr<Worl
 		return;
 	}
 	Vector3F spawn = StringUtility::vectoriseList3F(StringUtility::deformat(args.at(1)));
-	world->setSpawnPoint(spawn);
+	world.setSpawnPoint(spawn);
 	if(printResults)
-		LogUtility::message("Set spawnpoint of the world '" + world->getFileName() + "' to " + StringUtility::format(StringUtility::devectoriseList3F(spawn)) + ".");
+		LogUtility::message("Set spawnpoint of the world '" + world.getFileName() + "' to " + StringUtility::format(StringUtility::devectoriseList3F(spawn)) + ".");
 }
 
-void Commands::setSpawnOrientation(std::vector<std::string> args, std::unique_ptr<World>& world, bool printResults)
+void Commands::setSpawnOrientation(std::vector<std::string> args, World& world, bool printResults)
 {
 	if(args.size() != 2)
 	{
@@ -344,12 +344,12 @@ void Commands::setSpawnOrientation(std::vector<std::string> args, std::unique_pt
 		return;
 	}
 	Vector3F spawn = StringUtility::vectoriseList3F(StringUtility::deformat(args.at(1)));
-	world->setSpawnOrientation(spawn);
+	world.setSpawnOrientation(spawn);
 	if(printResults)
-		LogUtility::message("Set spawnorientation of the world '" + world->getFileName() + "' to " + StringUtility::format(StringUtility::devectoriseList3F(spawn)) + ".");
+		LogUtility::message("Set spawnorientation of the world '" + world.getFileName() + "' to " + StringUtility::format(StringUtility::devectoriseList3F(spawn)) + ".");
 }
 
-void Commands::addLight(std::vector<std::string> args, std::unique_ptr<World>& world, Player& player, Shader& shader, bool printResults)
+void Commands::addLight(std::vector<std::string> args, World& world, Player& player, Shader& shader, bool printResults)
 {
 	if(args.size() != 4)
 	{
@@ -363,7 +363,7 @@ void Commands::addLight(std::vector<std::string> args, std::unique_ptr<World>& w
 		pos = StringUtility::vectoriseList3F(StringUtility::deformat(args.at(1)));
 	colour = StringUtility::vectoriseList3F(StringUtility::deformat(args.at(2)));
 	float pow = CastUtility::fromString<float>(args.at(3));
-	world->addLight(std::move(BaseLight(pos, colour, pow)), shader.getProgramHandle());
+	world.addLight(std::move(BaseLight(pos, colour, pow)), shader.getProgramHandle());
 	if(printResults)
 		LogUtility::message("Added a light at the position " + StringUtility::format(StringUtility::devectoriseList3F(pos)) + " with the RGB colour " + StringUtility::format(StringUtility::devectoriseList3F(colour)) + " and the power " + CastUtility::toString<float>(pow) + " W.");
 }
@@ -433,6 +433,6 @@ void Commands::scheduleAsyncDelayedMessage(std::vector<std::string> args, bool p
 		LogUtility::message("Scheduling async delayed task of " + CastUtility::toString<unsigned int>(millisDelay) + "ms");
 	std::string msg = "";
 	for(unsigned int i = 2; i < args.size(); i++)
-		msg += args.at(i) + ((i == (args.size() - 1)) ? "" : " ");
+		msg += args.at(i) + (i == (args.size() - 1) ? "" : " ");
 	Scheduler::asyncDelayedTask<void()>(millisDelay, [msg](){LogUtility::message(msg);});
 }

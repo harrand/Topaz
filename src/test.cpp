@@ -6,12 +6,12 @@
 #include <iostream>
 
 //Global Heap Variables
-std::unique_ptr<World> world;
 std::vector<std::unique_ptr<Mesh>> allMeshes;
 std::vector<std::unique_ptr<Texture>> allTextures;
 std::vector<std::unique_ptr<NormalMap>> allNormalMaps;
 std::vector<std::unique_ptr<ParallaxMap>> allParallaxMaps;
 //Global Stack Variables
+World world(RES_POINT + "/worlds/random.world");
 Camera cam;
 Player player(10.0f, cam);
 
@@ -26,8 +26,7 @@ int main()
 	Window wnd(800, 600, "Topaz Test Environment - Undefined World");
 	Shader shader(RES_POINT + "/shaders/noshadows");
 	Shader skyboxShader(RES_POINT + "/shaders/skybox");
-	world = std::unique_ptr<World>(new World(RES_POINT + "/worlds/random.world"));
-	world->addEntity(&player);
+	world.addEntity(player);
 	KeybindController kc(player, shader, world, wnd);
 	MouseController mc(player, world, wnd);
 	LogUtility::message("Loading assets...");
@@ -68,11 +67,11 @@ int main()
 		TimeKeeper renderTime;
 		
 		box.render(cam, skyboxShader, allMeshes, wnd.getWidth(), wnd.getHeight());
-		world->update(fps, cam, shader, wnd.getWidth(), wnd.getHeight(), allMeshes, allTextures, allNormalMaps, allParallaxMaps);
+		world.update(fps, cam, shader, wnd.getWidth(), wnd.getHeight(), allMeshes, allTextures, allNormalMaps, allParallaxMaps);
 		renderTime.update();
 		processingThisFrame.push_back(renderTime.getRange());
 		wnd.update();
-		wnd.setTitle("Topaz Testing Environment - '" + world->getWorldLink() + "'");
+		wnd.setTitle("Topaz Testing Environment - '" + world.getWorldLink() + "'");
 	}
 	std::ostringstream strum;
 	strum << secondsLifetime;

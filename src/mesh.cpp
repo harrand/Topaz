@@ -86,33 +86,33 @@ void Mesh::initMesh()
 	glGenVertexArrays(1, &(this->vertexArrayObject));
 	glBindVertexArray(this->vertexArrayObject);
 	
-	glGenBuffers((unsigned int) BufferTypes::NUM_BUFFERS, this->vertexArrayBuffers);
+	glGenBuffers(static_cast<unsigned int>(BufferTypes::NUM_BUFFERS), this->vertexArrayBuffers);
 	// 0 = Vertices, 1 = Texture Coordinates, 2 = Internal Normals, 3 = Tangents
 	
-	glBindBuffer(GL_ARRAY_BUFFER, this->vertexArrayBuffers[(unsigned int) BufferTypes::POSITION]);
+	glBindBuffer(GL_ARRAY_BUFFER, this->vertexArrayBuffers[static_cast<unsigned int>(BufferTypes::POSITION)]);
 	glBufferData(GL_ARRAY_BUFFER, this->model.positions.size() * sizeof(this->model.positions[0]), &(this->model.positions[0]), GL_STATIC_DRAW);
 	
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
 	
-	glBindBuffer(GL_ARRAY_BUFFER, this->vertexArrayBuffers[(unsigned int) BufferTypes::TEXCOORD]);
+	glBindBuffer(GL_ARRAY_BUFFER, this->vertexArrayBuffers[static_cast<unsigned int>(BufferTypes::TEXCOORD)]);
 	glBufferData(GL_ARRAY_BUFFER, this->model.texcoords.size() * sizeof(this->model.texcoords[0]), &(this->model.texcoords[0]), GL_STATIC_DRAW);
 	
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);
 	
-	glBindBuffer(GL_ARRAY_BUFFER, this->vertexArrayBuffers[(unsigned int) BufferTypes::NORMAL]);
+	glBindBuffer(GL_ARRAY_BUFFER, this->vertexArrayBuffers[static_cast<unsigned int>(BufferTypes::NORMAL)]);
 	glBufferData(GL_ARRAY_BUFFER, this->model.normals.size() * sizeof(this->model.normals[0]), &(this->model.normals[0]), GL_STATIC_DRAW);
 	
 	glEnableVertexAttribArray(2);
 	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
 	
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->vertexArrayBuffers[(unsigned int) BufferTypes::INDEX]);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->vertexArrayBuffers[static_cast<unsigned int>(BufferTypes::INDEX)]);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->model.indices.size() * sizeof(this->model.indices[0]), &(this->model.indices[0]), GL_STATIC_DRAW);
 	
 	glEnableVertexAttribArray(3);
 	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 0, 0);
-	glBindBuffer(GL_ARRAY_BUFFER, this->vertexArrayBuffers[(unsigned int) BufferTypes::TANGENT]);
+	glBindBuffer(GL_ARRAY_BUFFER, this->vertexArrayBuffers[static_cast<unsigned int>(BufferTypes::TANGENT)]);
 	glBufferData(GL_ARRAY_BUFFER, this->model.tangents.size() * sizeof(this->model.tangents[0]), &(this->model.tangents[0]), GL_STATIC_DRAW);
 
 	glBindVertexArray(0);

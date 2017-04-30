@@ -14,9 +14,9 @@ public:
 	const Vector3F& getColour() const;
 	const float getPower() const;
 private:
-	const Vector3F pos;
-	const Vector3F colour;
-	const float power;
+	Vector3F pos;
+	Vector3F colour;
+	float power;
 };
 
 #endif
