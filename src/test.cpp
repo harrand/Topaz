@@ -42,8 +42,6 @@ int main()
 	
 	AudioMusic music(RES_POINT + "/music/music.wav");
 	music.play();
-	
-	std::vector<float> processingThisFrame;
 
 	while(!wnd.isCloseRequested())
 	{
@@ -69,7 +67,6 @@ int main()
 		box.render(cam, skyboxShader, allMeshes, wnd.getWidth(), wnd.getHeight());
 		world.update(fps, cam, shader, wnd.getWidth(), wnd.getHeight(), allMeshes, allTextures, allNormalMaps, allParallaxMaps);
 		renderTime.update();
-		processingThisFrame.push_back(renderTime.getRange());
 		wnd.update();
 		wnd.setTitle("Topaz Testing Environment - '" + world.getWorldLink() + "'");
 	}

@@ -41,6 +41,7 @@ namespace Commands
 	void printVolume();
 	void playAudio(std::vector<std::string> args, bool printResults, Player& player);
 	void scheduleAsyncDelayedMessage(std::vector<std::string> args, bool printResults);
+	void scheduleAsyncDelayedCmd(std::vector<std::string> args, World& world, Player& player, Shader& shader, bool printResults);
 }
 
 #endif

@@ -44,6 +44,19 @@ private:
 class Scheduler
 {
 public:
+	template<class ReturnType, class... Args>
+	static inline void syncDelayedTask(unsigned int millisDelay, std::function<ReturnType(Args...)> f, Args... args)
+	{
+		std::this_thread::sleep_for(std::chrono::duration<unsigned int, std::milli>(millisDelay));
+		f(args...);
+	}
+
+	template<class ReturnType, class... Args>
+	static inline void asyncDelayedTask(unsigned int millisDelay, std::function<ReturnType(Args...)> f, Args... args)
+	{
+		std::thread(syncDelayedTask<ReturnType, Args...>, millisDelay, f, args...).detach();
+	}
+	/*
 	template<class ReturnType>
 	static inline void syncDelayedTask(unsigned int millisDelay, std::function<ReturnType> f)
 	{
@@ -56,6 +69,7 @@ public:
 	{
 		std::thread(Scheduler::syncDelayedTask<ReturnType>, millisDelay, f).detach();
 	}
+	*/
 };
 
 #endif // TIMEKEEPER_HPP

@@ -107,6 +107,8 @@ void Commands::inputCommand(std::string cmd, World& world, Player& player, Shade
 		Commands::playAudio(args, true, player);
 	else if(cmdName == "delayedmsg")
 		Commands::scheduleAsyncDelayedMessage(args, true);
+	else if(cmdName == "delayedcmd")
+		Commands::scheduleAsyncDelayedCmd(args, world, player, shader, true);
 	else
 		LogUtility::warning("Unknown command. Maybe you made a typo?");
 }
@@ -434,5 +436,23 @@ void Commands::scheduleAsyncDelayedMessage(std::vector<std::string> args, bool p
 	std::string msg = "";
 	for(unsigned int i = 2; i < args.size(); i++)
 		msg += args.at(i) + (i == (args.size() - 1) ? "" : " ");
-	Scheduler::asyncDelayedTask<void()>(millisDelay, [msg](){LogUtility::message(msg);});
+	std::function<void(std::string)> printMsg([](std::string msg)->void{LogUtility::message(msg);});
+	Scheduler::asyncDelayedTask<void, std::string>(millisDelay, printMsg, msg);
+}
+
+void Commands::scheduleAsyncDelayedCmd(std::vector<std::string> args, World& world, Player& player, Shader& shader, bool printResults)
+{
+	if(args.size() < 3)
+	{
+		LogUtility::warning("Nonfatal Command Error: Unexpected quantity of args, got " + CastUtility::toString<unsigned int>(args.size()) + ", expected at least 3.");
+		return;
+	}
+	unsigned int millisDelay = CastUtility::fromString<unsigned int>(args.at(1));
+	if(printResults)
+		LogUtility::message("Scheduling async delayed task of " + CastUtility::toString<unsigned int>(millisDelay) + "ms to execute a command.");
+	std::string cmd = "";
+	for(unsigned int i = 2; i < args.size(); i++)
+		cmd += args.at(i) + (i == (args.size() - 1) ? "" : " ");
+	std::function<void(std::string, std::reference_wrapper<World>, std::reference_wrapper<Player>, std::reference_wrapper<Shader>)> inputCmd([](std::string cmd, std::reference_wrapper<World> world, std::reference_wrapper<Player> player, std::reference_wrapper<Shader> shader)->void{Commands::inputCommand(cmd, world, player, shader);});
+	Scheduler::asyncDelayedTask<void, std::string, std::reference_wrapper<World>, std::reference_wrapper<Player>, std::reference_wrapper<Shader>>(millisDelay, inputCmd, cmd, std::ref(world), std::ref(player), std::ref(shader));
 }
