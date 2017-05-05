@@ -17,7 +17,6 @@ public:
 	const Vector3F& getPos() const;
 	const Vector3F& getRot() const;
 	const Vector3F& getScale() const;
-	
 	Vector3F& getPosR();
 	Vector3F& getRotR();
 	Vector3F& getScaleR();

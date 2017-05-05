@@ -69,6 +69,10 @@ int main()
 		renderTime.update();
 		wnd.update();
 		wnd.setTitle("Topaz Testing Environment - '" + world.getWorldLink() + "'");
+		
+		GLenum error;
+		if((error = glGetError()) != GL_NO_ERROR)
+			LogUtility::error("OpenGL Error: " + CastUtility::toString<GLenum>(error) + "\n");
 	}
 	std::ostringstream strum;
 	strum << secondsLifetime;

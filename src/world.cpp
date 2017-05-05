@@ -8,9 +8,9 @@ World::World(std::string filename): filename(filename)
 	std::string spawnPointStr = input.getTag("spawnpoint"), spawnOrientationStr = input.getTag("spawnorientation"), gravStr = input.getTag("gravity");
 	if(spawnPointStr != "0" && spawnOrientationStr != "0" && gravStr != "0")
 	{
-		this->spawnPoint = StringUtility::vectoriseList3F(StringUtility::deformat(spawnPointStr));
-		this->spawnOrientation = StringUtility::vectoriseList3F(StringUtility::deformat(spawnOrientationStr));
-		this->gravity = StringUtility::vectoriseList3F(StringUtility::deformat(gravStr));
+		this->spawnPoint = StringUtility::vectoriseList3<float>(StringUtility::deformat(spawnPointStr));
+		this->spawnOrientation = StringUtility::vectoriseList3<float>(StringUtility::deformat(spawnOrientationStr));
+		this->gravity = StringUtility::vectoriseList3<float>(StringUtility::deformat(gravStr));
 	}
 	else
 	{
@@ -127,9 +127,9 @@ void World::exportWorld(const std::string& worldName) const
 	output.deleteSequence("objects");
 	output.deleteSequence("entityobjects");
 	
-	output.editTag("gravity", StringUtility::format(StringUtility::devectoriseList3F(this->gravity)));
-	output.editTag("spawnpoint", StringUtility::format(StringUtility::devectoriseList3F(this->spawnPoint)));
-	output.editTag("spawnorientation", StringUtility::format(StringUtility::devectoriseList3F(this->spawnOrientation)));
+	output.editTag("gravity", StringUtility::format(StringUtility::devectoriseList3<float>(this->gravity)));
+	output.editTag("spawnpoint", StringUtility::format(StringUtility::devectoriseList3<float>(this->spawnPoint)));
+	output.editTag("spawnorientation", StringUtility::format(StringUtility::devectoriseList3<float>(this->spawnOrientation)));
 	for(unsigned int i = 0; i < this->members.size(); i++)
 	{
 		const std::string objectName = "object" + CastUtility::toString<float>(i);
@@ -140,9 +140,9 @@ void World::exportWorld(const std::string& worldName) const
 		output.editTag(objectName + ".texture", dt.getResourceName(curObj.getTextureLink()));
 		output.editTag(objectName + ".normalmap", dt.getResourceName(curObj.getNormalMapLink()));
 		output.editTag(objectName + ".parallaxmap", dt.getResourceName(curObj.getParallaxMapLink()));
-		output.editTag(objectName + ".pos", StringUtility::format(StringUtility::devectoriseList3F(curObj.getPos())));
-		output.editTag(objectName + ".rot", StringUtility::format(StringUtility::devectoriseList3F(curObj.getRot())));
-		output.editTag(objectName + ".scale", StringUtility::format(StringUtility::devectoriseList3F(curObj.getScale())));
+		output.editTag(objectName + ".pos", StringUtility::format(StringUtility::devectoriseList3<float>(curObj.getPos())));
+		output.editTag(objectName + ".rot", StringUtility::format(StringUtility::devectoriseList3<float>(curObj.getRot())));
+		output.editTag(objectName + ".scale", StringUtility::format(StringUtility::devectoriseList3<float>(curObj.getScale())));
 	}
 	for(unsigned int i = 0; i < this->entityObjects.size(); i++)
 	{
@@ -155,9 +155,9 @@ void World::exportWorld(const std::string& worldName) const
 		output.editTag(eoName + ".normalmap", dt.getResourceName(curEO.getNormalMapLink()));
 		output.editTag(eoName + ".parallaxmap", dt.getResourceName(curEO.getParallaxMapLink()));
 		output.editTag(eoName + ".mass", CastUtility::toString<float>(curEO.getMass()));
-		output.editTag(eoName + ".pos", StringUtility::format(StringUtility::devectoriseList3F(curEO.getPos())));
-		output.editTag(eoName + ".rot", StringUtility::format(StringUtility::devectoriseList3F(curEO.getRot())));
-		output.editTag(eoName + ".scale", StringUtility::format(StringUtility::devectoriseList3F(curEO.getScale())));
+		output.editTag(eoName + ".pos", StringUtility::format(StringUtility::devectoriseList3<float>(curEO.getPos())));
+		output.editTag(eoName + ".rot", StringUtility::format(StringUtility::devectoriseList3<float>(curEO.getRot())));
+		output.editTag(eoName + ".scale", StringUtility::format(StringUtility::devectoriseList3<float>(curEO.getScale())));
 	}
 	output.addSequence("objects", objectList);
 	output.addSequence("entityobjects", eoList);
@@ -252,7 +252,7 @@ Object World::retrieveData(const std::string& objectName, MDLF& mdlf)
 	std::string normalMapLink = dt.getResourceLink(normalMapName);
 	std::string parallaxMapLink = dt.getResourceLink(parallaxMapName);
 	
-	return Object(meshLink, textureLink, normalMapLink, parallaxMapLink, StringUtility::vectoriseList3F(StringUtility::deformat(positionStr)), StringUtility::vectoriseList3F(StringUtility::deformat(rotationStr)), StringUtility::vectoriseList3F(StringUtility::deformat(scaleStr)));
+	return Object(meshLink, textureLink, normalMapLink, parallaxMapLink, StringUtility::vectoriseList3<float>(StringUtility::deformat(positionStr)), StringUtility::vectoriseList3<float>(StringUtility::deformat(rotationStr)), StringUtility::vectoriseList3<float>(StringUtility::deformat(scaleStr)));
 }
 
 EntityObject World::retrieveEOData(const std::string& eoName, MDLF& mdlf)
@@ -274,5 +274,5 @@ EntityObject World::retrieveEOData(const std::string& eoName, MDLF& mdlf)
 	std::string parallaxMapLink = dt.getResourceLink(parallaxMapName);
 	float mass = CastUtility::fromString<float>(massStr);
 	
-	return EntityObject(meshLink, textureLink, normalMapLink, parallaxMapLink, mass, StringUtility::vectoriseList3F(StringUtility::deformat(positionStr)), StringUtility::vectoriseList3F(StringUtility::deformat(rotationStr)), StringUtility::vectoriseList3F(StringUtility::deformat(scaleStr)));
+	return EntityObject(meshLink, textureLink, normalMapLink, parallaxMapLink, mass, StringUtility::vectoriseList3<float>(StringUtility::deformat(positionStr)), StringUtility::vectoriseList3<float>(StringUtility::deformat(rotationStr)), StringUtility::vectoriseList3<float>(StringUtility::deformat(scaleStr)));
 }

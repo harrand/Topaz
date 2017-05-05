@@ -177,18 +177,18 @@ void Commands::addObject(std::vector<std::string> args, World& world, Player& pl
 	if(posStr == "me")
 		pos = player.getCamera().getPos();
 	else
-		pos = StringUtility::vectoriseList3F(StringUtility::deformat(posStr));
+		pos = StringUtility::vectoriseList3<float>(StringUtility::deformat(posStr));
 		
 	if(rotStr == "me")
 		rot = Vector3F(player.getCamera().getRot().getX(), player.getCamera().getRot().getY(), player.getCamera().getRot().getZ());
 	else
-		rot = StringUtility::vectoriseList3F(StringUtility::deformat(rotStr));
+		rot = StringUtility::vectoriseList3<float>(StringUtility::deformat(rotStr));
 	
-	scale = StringUtility::vectoriseList3F(StringUtility::deformat(scaleStr));
+	scale = StringUtility::vectoriseList3<float>(StringUtility::deformat(scaleStr));
 		
 	world.addObject(Object(meshLink, textureLink, normalMapLink, parallaxMapLink, pos, rot, scale));
 	if(printResults)
-		LogUtility::message("Added the following to this world:\nMesh name = " + meshName + ", link = " + meshLink + ".\nTexture name = " + textureName + ", link = " + textureLink + ".\nNormalmap name = " + normalMapName + ", link = " + normalMapLink + ".\nParallaxmap name = " + parallaxMapName + ", link = " + parallaxMapLink + ".\nPosition = " + StringUtility::format(StringUtility::devectoriseList3F(pos)) + ".\nRotation = " + StringUtility::format(StringUtility::devectoriseList3F(rot)) + ".\nScale = " + StringUtility::format(StringUtility::devectoriseList3F(scale)) + ".");
+		LogUtility::message("Added the following to this world:\nMesh name = " + meshName + ", link = " + meshLink + ".\nTexture name = " + textureName + ", link = " + textureLink + ".\nNormalmap name = " + normalMapName + ", link = " + normalMapLink + ".\nParallaxmap name = " + parallaxMapName + ", link = " + parallaxMapLink + ".\nPosition = " + StringUtility::format(StringUtility::devectoriseList3<float>(pos)) + ".\nRotation = " + StringUtility::format(StringUtility::devectoriseList3<float>(rot)) + ".\nScale = " + StringUtility::format(StringUtility::devectoriseList3<float>(scale)) + ".");
 }
 
 void Commands::addEntityObject(std::vector<std::string> args, World& world, Player& player, bool printResults)
@@ -229,20 +229,20 @@ void Commands::addEntityObject(std::vector<std::string> args, World& world, Play
 	if(posStr == "me")
 		pos = player.getCamera().getPos();
 	else
-		pos = StringUtility::vectoriseList3F(StringUtility::deformat(posStr));
+		pos = StringUtility::vectoriseList3<float>(StringUtility::deformat(posStr));
 		
 	if(rotStr == "me")
 		rot = Vector3F(player.getCamera().getRot().getX(), player.getCamera().getRot().getY(), player.getCamera().getRot().getZ());
 	else
-		rot = StringUtility::vectoriseList3F(StringUtility::deformat(rotStr));
+		rot = StringUtility::vectoriseList3<float>(StringUtility::deformat(rotStr));
 	
-	scale = StringUtility::vectoriseList3F(StringUtility::deformat(scaleStr));
+	scale = StringUtility::vectoriseList3<float>(StringUtility::deformat(scaleStr));
 	
 	float mass = CastUtility::fromString<float>(massStr);
 	
 	world.addEntityObject(EntityObject(meshLink, textureLink, normalMapLink, parallaxMapLink, mass, pos, rot, scale));
 	if(printResults)
-		LogUtility::message("Added the following to this world:\nMesh name = " + meshName + ", link = " + meshLink + ".\nTexture name = " + textureName + ", link = " + textureLink + ".\nNormalmap name = " + normalMapName + ", link = " + normalMapLink + ".\nParallaxmap name = " + parallaxMapName + ", link = " + parallaxMapLink + ".\nMass = " + CastUtility::toString<float>(mass) + ".\nPosition = " + StringUtility::format(StringUtility::devectoriseList3F(pos)) + ".\nRotation = " + StringUtility::format(StringUtility::devectoriseList3F(rot)) + ".\nScale = " + StringUtility::format(StringUtility::devectoriseList3F(scale)) + ".");
+		LogUtility::message("Added the following to this world:\nMesh name = " + meshName + ", link = " + meshLink + ".\nTexture name = " + textureName + ", link = " + textureLink + ".\nNormalmap name = " + normalMapName + ", link = " + normalMapLink + ".\nParallaxmap name = " + parallaxMapName + ", link = " + parallaxMapLink + ".\nMass = " + CastUtility::toString<float>(mass) + ".\nPosition = " + StringUtility::format(StringUtility::devectoriseList3<float>(pos)) + ".\nRotation = " + StringUtility::format(StringUtility::devectoriseList3<float>(rot)) + ".\nScale = " + StringUtility::format(StringUtility::devectoriseList3<float>(scale)) + ".");
 }
 
 void Commands::setAlias(std::vector<std::string> args)
@@ -319,10 +319,10 @@ void Commands::setGravity(std::vector<std::string> args, World& world, bool prin
 		LogUtility::warning("Nonfatal Command Error: Unexpected quantity of args, got " + CastUtility::toString<unsigned int>(args.size()) + ", expected 2.");
 		return;
 	}
-	Vector3F grav = StringUtility::vectoriseList3F(StringUtility::deformat(args.at(1)));
+	Vector3F grav = StringUtility::vectoriseList3<float>(StringUtility::deformat(args.at(1)));
 	world.setGravity(grav);
 	if(printResults)
-		LogUtility::message("Set gravity of the world '" + world.getFileName() + "' to " + StringUtility::format(StringUtility::devectoriseList3F(grav)) + " N.");
+		LogUtility::message("Set gravity of the world '" + world.getFileName() + "' to " + StringUtility::format(StringUtility::devectoriseList3<float>(grav)) + " N.");
 }
 
 void Commands::setSpawnPoint(std::vector<std::string> args, World& world, bool printResults)
@@ -332,10 +332,10 @@ void Commands::setSpawnPoint(std::vector<std::string> args, World& world, bool p
 		LogUtility::warning("Nonfatal Command Error: Unexpected quantity of args, got " + CastUtility::toString<unsigned int>(args.size()) + ", expected 2.");
 		return;
 	}
-	Vector3F spawn = StringUtility::vectoriseList3F(StringUtility::deformat(args.at(1)));
+	Vector3F spawn = StringUtility::vectoriseList3<float>(StringUtility::deformat(args.at(1)));
 	world.setSpawnPoint(spawn);
 	if(printResults)
-		LogUtility::message("Set spawnpoint of the world '" + world.getFileName() + "' to " + StringUtility::format(StringUtility::devectoriseList3F(spawn)) + ".");
+		LogUtility::message("Set spawnpoint of the world '" + world.getFileName() + "' to " + StringUtility::format(StringUtility::devectoriseList3<float>(spawn)) + ".");
 }
 
 void Commands::setSpawnOrientation(std::vector<std::string> args, World& world, bool printResults)
@@ -345,10 +345,10 @@ void Commands::setSpawnOrientation(std::vector<std::string> args, World& world, 
 		LogUtility::warning("Nonfatal Command Error: Unexpected quantity of args, got " + CastUtility::toString<unsigned int>(args.size()) + ", expected 2.");
 		return;
 	}
-	Vector3F spawn = StringUtility::vectoriseList3F(StringUtility::deformat(args.at(1)));
+	Vector3F spawn = StringUtility::vectoriseList3<float>(StringUtility::deformat(args.at(1)));
 	world.setSpawnOrientation(spawn);
 	if(printResults)
-		LogUtility::message("Set spawnorientation of the world '" + world.getFileName() + "' to " + StringUtility::format(StringUtility::devectoriseList3F(spawn)) + ".");
+		LogUtility::message("Set spawnorientation of the world '" + world.getFileName() + "' to " + StringUtility::format(StringUtility::devectoriseList3<float>(spawn)) + ".");
 }
 
 void Commands::addLight(std::vector<std::string> args, World& world, Player& player, Shader& shader, bool printResults)
@@ -362,12 +362,12 @@ void Commands::addLight(std::vector<std::string> args, World& world, Player& pla
 	if(args.at(1) == "me")
 		pos = player.getPosition();
 	else
-		pos = StringUtility::vectoriseList3F(StringUtility::deformat(args.at(1)));
-	colour = StringUtility::vectoriseList3F(StringUtility::deformat(args.at(2)));
+		pos = StringUtility::vectoriseList3<float>(StringUtility::deformat(args.at(1)));
+	colour = StringUtility::vectoriseList3<float>(StringUtility::deformat(args.at(2)));
 	float pow = CastUtility::fromString<float>(args.at(3));
 	world.addLight(std::move(BaseLight(pos, colour, pow)), shader.getProgramHandle());
 	if(printResults)
-		LogUtility::message("Added a light at the position " + StringUtility::format(StringUtility::devectoriseList3F(pos)) + " with the RGB colour " + StringUtility::format(StringUtility::devectoriseList3F(colour)) + " and the power " + CastUtility::toString<float>(pow) + " W.");
+		LogUtility::message("Added a light at the position " + StringUtility::format(StringUtility::devectoriseList3<float>(pos)) + " with the RGB colour " + StringUtility::format(StringUtility::devectoriseList3<float>(colour)) + " and the power " + CastUtility::toString<float>(pow) + " W.");
 }
 
 void Commands::toggleMusic()
@@ -412,7 +412,7 @@ void Commands::playAudio(std::vector<std::string> args, bool printResults, Playe
 	if(args.at(2) == "me")
 		pos = player.getPosition();
 	else
-		pos = StringUtility::vectoriseList3F(StringUtility::deformat(args.at(2)));
+		pos = StringUtility::vectoriseList3<float>(StringUtility::deformat(args.at(2)));
 	std::unique_ptr<AudioSource> clip = std::make_unique<AudioSource>(filename, pos);
 	clip->play();
 	AudioSource* raw = clip.get();
@@ -420,7 +420,7 @@ void Commands::playAudio(std::vector<std::string> args, bool printResults, Playe
 	Mix_ChannelFinished(CommandCache::destroyChannelClips);
 	std::thread(CommandCache::updateClip, raw, std::ref(player)).detach();
 	if(printResults)
-		LogUtility::message("Playing the audio clip with the file-path " + filename + " at the position " + StringUtility::format(StringUtility::devectoriseList3F(pos)) +".");
+		LogUtility::message("Playing the audio clip with the file-path " + filename + " at the position " + StringUtility::format(StringUtility::devectoriseList3<float>(pos)) +".");
 }
 
 void Commands::scheduleAsyncDelayedMessage(std::vector<std::string> args, bool printResults)

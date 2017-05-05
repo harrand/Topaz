@@ -22,7 +22,7 @@ Vector3F& AABB::getMinimumR()
 	return this->min;
 }
 
-Vector3F AABB::getMaximumR()
+Vector3F& AABB::getMaximumR()
 {
 	return this->max;
 }

@@ -21,7 +21,7 @@ public:
 	const Vector3F& getMinimum() const;
 	const Vector3F& getMaximum() const;
 	Vector3F& getMinimumR();
-	Vector3F getMaximumR();
+	Vector3F& getMaximumR();
 private:
 	Vector3F min, max;
 };

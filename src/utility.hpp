@@ -182,20 +182,22 @@ namespace StringUtility
 		return StringUtility::splitString(StringUtility::replaceAllChar(StringUtility::replaceAllChar(str, '[', ""), ']', ""), ',');
 	}
 	
-	inline Vector3F vectoriseList3F(const std::vector<std::string>& list)
+	template<typename T>
+	inline Vector3<T> vectoriseList3(const std::vector<std::string>& list)
 	{
 		if(list.size() < 3)
-			return Vector3F();
-		return Vector3F(CastUtility::fromString<float>(list.at(0)), CastUtility::fromString<float>(list.at(1)), CastUtility::fromString<float>(list.at(2)));
+			return Vector3<T>();
+		return Vector3<T>(CastUtility::fromString<T>(list.at(0)), CastUtility::fromString<T>(list.at(1)), CastUtility::fromString<T>(list.at(2)));
 	}
 	
-	inline std::vector<std::string> devectoriseList3F(Vector3F v)
+	template<typename T>
+	inline std::vector<std::string> devectoriseList3(Vector3<T> v)
 	{
 		std::vector<std::string> ret;
 		ret.reserve(3);
-		ret.push_back(CastUtility::toString<float>(v.getX()));
-		ret.push_back(CastUtility::toString<float>(v.getY()));
-		ret.push_back(CastUtility::toString<float>(v.getZ()));
+		ret.push_back(CastUtility::toString<T>(v.getX()));
+		ret.push_back(CastUtility::toString<T>(v.getY()));
+		ret.push_back(CastUtility::toString<T>(v.getZ()));
 		return ret;
 	}
 }

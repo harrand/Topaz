@@ -1,185 +1,219 @@
 #include "vector.hpp"
 
-// Vector2F
+// Vector2
 
-Vector2F::Vector2F(float x, float y)
+template<typename T>
+Vector2<T>::Vector2(T x, T y)
 {
 	this->x = x;
 	this->y = y;
 }
 
-float Vector2F::getX() const
+template<typename T>
+T Vector2<T>::getX() const
 {
 	return this->x;
 }
 
-float Vector2F::getY() const
+template<typename T>
+T Vector2<T>::getY() const
 {
 	return this->y;
 }
 
-float& Vector2F::getXR()
+template<typename T>
+T& Vector2<T>::getXR()
 {
 	return this->x;
 }
 
-float& Vector2F::getYR()
+template<typename T>
+T& Vector2<T>::getYR()
 {
 	return this->y;
 }
 
-float Vector2F::length() const
+template<typename T>
+T Vector2<T>::length() const
 {
 	return sqrt((this->x * this->x) + (this->y * this->y));
 }
 
-float Vector2F::dot(Vector2F rhs) const
+template<typename T>
+T Vector2<T>::dot(Vector2 rhs) const
 {
 	return (this->x * rhs.getX()) + (this->y * rhs.getY());
 }
 
-Vector2F Vector2F::normalised() const
+template<typename T>
+Vector2<T> Vector2<T>::normalised() const
 {
-	return Vector2F(this->x / this->length(), this->y / this->length());
+	return Vector2<T>(this->x / this->length(), this->y / this->length());
 }
 
-Vector2F Vector2F::operator+(const Vector2F& rhs) const
+template<typename T>
+Vector2<T> Vector2<T>::operator+(const Vector2& rhs) const
 {
-	return Vector2F(this->x + rhs.getX(), this->y + rhs.getY());
+	return Vector2<T>(this->x + rhs.getX(), this->y + rhs.getY());
 }
 
-Vector2F Vector2F::operator-(const Vector2F& rhs) const
+template<typename T>
+Vector2<T> Vector2<T>::operator-(const Vector2& rhs) const
 {
-	return Vector2F(this->x - rhs.getX(), this->y - rhs.getY());
+	return Vector2<T>(this->x - rhs.getX(), this->y - rhs.getY());
 }
 
-Vector2F Vector2F::operator*(float scalar) const
+template<typename T>
+Vector2<T> Vector2<T>::operator*(T scalar) const
 {
-	return Vector2F(this->x * scalar, this->y * scalar);
+	return Vector2<T>(this->x * scalar, this->y * scalar);
 }
 
-bool Vector2F::operator<(const Vector2F& rhs) const
+template<typename T>
+bool Vector2<T>::operator<(const Vector2& rhs) const
 {
 	return this->length() < rhs.length();
 }
 
-bool Vector2F::operator>(const Vector2F& rhs) const
+template<typename T>
+bool Vector2<T>::operator>(const Vector2& rhs) const
 {
 	return this->length() > rhs.length();
 }
 
-bool Vector2F::operator==(const Vector2F& rhs) const
+template<typename T>
+bool Vector2<T>::operator==(const Vector2& rhs) const
 {
 	return (this->x == rhs.getX()) && (this->y == rhs.getY());
 }
 
-// Vector3F
+// Vector3
 
-Vector3F::Vector3F(float x, float y, float z)
+template<typename T>
+Vector3<T>::Vector3(T x, T y, T z)
 {
 	this->x = x;
 	this->y = y;
 	this->z = z;
 }
 
-float Vector3F::getX() const
+template<typename T>
+T Vector3<T>::getX() const
 {
 	return this->x;
 }
 
-float Vector3F::getY() const
+template<typename T>
+T Vector3<T>::getY() const
 {
 	return this->y;
 }
 
-float Vector3F::getZ() const
+template<typename T>
+T Vector3<T>::getZ() const
 {
 	return this->z;
 }
 
-float& Vector3F::getXR()
+template<typename T>
+T& Vector3<T>::getXR()
 {
 	return this->x;
 }
 
-float& Vector3F::getYR()
+template<typename T>
+T& Vector3<T>::getYR()
 {
 	return this->y;
 }
 
-float& Vector3F::getZR()
+template<typename T>
+T& Vector3<T>::getZR()
 {
 	return this->z;
 }
 
-float Vector3F::length() const
+template<typename T>
+T Vector3<T>::length() const
 {
 	return sqrt((this->x * this->x) + (this->y * this->y) + (this->z * this->z));
 }
 
-float Vector3F::dot(Vector3F rhs) const
+template<typename T>
+T Vector3<T>::dot(Vector3 rhs) const
 {
 	return (this->x * rhs.getX()) + (this->y * rhs.getY()) + (this->z * rhs.getZ());
 }
 
-Vector3F Vector3F::cross(Vector3F rhs) const
+template<typename T>
+Vector3<T> Vector3<T>::cross(Vector3 rhs) const
 {
-	return Vector3F((this->y * rhs.getZ()) - (this->z * rhs.getY()), (this->z * rhs.getX()) - (this->x * rhs.getZ()), (this->x * rhs.getY()) - (this->y * rhs.getX()));
+	return Vector3<T>((this->y * rhs.getZ()) - (this->z * rhs.getY()), (this->z * rhs.getX()) - (this->x * rhs.getZ()), (this->x * rhs.getY()) - (this->y * rhs.getX()));
 }
 
-Vector3F Vector3F::normalised() const
+template<typename T>
+Vector3<T> Vector3<T>::normalised() const
 {
-	return Vector3F(this->x / this->length(), this->y / this->length(), this->z / this->length());
+	return Vector3<T>(this->x / this->length(), this->y / this->length(), this->z / this->length());
 }
 
-Vector3F Vector3F::operator+(const Vector3F& rhs) const
+template<typename T>
+Vector3<T> Vector3<T>::operator+(const Vector3& rhs) const
 {
-	return Vector3F(this->x + rhs.getX(), this->y + rhs.getY(), this->z + rhs.getZ());
+	return Vector3<T>(this->x + rhs.getX(), this->y + rhs.getY(), this->z + rhs.getZ());
 }
 
-Vector3F Vector3F::operator-(const Vector3F& rhs) const
+template<typename T>
+Vector3<T> Vector3<T>::operator-(const Vector3& rhs) const
 {
-	return Vector3F(this->x - rhs.getX(), this->y - rhs.getY(), this->z - rhs.getZ());
+	return Vector3<T>(this->x - rhs.getX(), this->y - rhs.getY(), this->z - rhs.getZ());
 }
 
-Vector3F Vector3F::operator*(float scalar) const
+template<typename T>
+Vector3<T> Vector3<T>::operator*(T scalar) const
 {
-	return Vector3F(this->x * scalar, this->y * scalar, this->z * scalar);
+	return Vector3<T>(this->x * scalar, this->y * scalar, this->z * scalar);
 }
 
-Vector3F Vector3F::operator/(float scalar) const
+template<typename T>
+Vector3<T> Vector3<T>::operator/(T scalar) const
 {
-	return Vector3F(this->x / scalar, this->y / scalar, this->z / scalar);
+	return Vector3<T>(this->x / scalar, this->y / scalar, this->z / scalar);
 }
 
-bool Vector3F::operator<(const Vector3F& rhs) const
+template<typename T>
+bool Vector3<T>::operator<(const Vector3& rhs) const
 {
 	return this->length() < rhs.length();
 }
 
-bool Vector3F::operator>(const Vector3F& rhs) const
+template<typename T>
+bool Vector3<T>::operator>(const Vector3& rhs) const
 {
 	return this->length() > rhs.length();
 }
 
-bool Vector3F::operator==(const Vector3F& rhs) const
+template<typename T>
+bool Vector3<T>::operator==(const Vector3& rhs) const
 {
 	return (this->x == rhs.getX()) && (this->y == rhs.getY()) && (this->z == rhs.getZ());
 }
 
-void Vector3F::operator+=(const Vector3F& rhs)
+template<typename T>
+void Vector3<T>::operator+=(const Vector3& rhs)
 {
 	(*this) = ((*this) + rhs);
 }
 
-void Vector3F::operator-=(const Vector3F& rhs)
+template<typename T>
+void Vector3<T>::operator-=(const Vector3& rhs)
 {
 	(*this) = ((*this) - rhs);
 }
 
-// Vector4F
-
-Vector4F::Vector4F(float x, float y, float z, float w)
+// Vector4
+template<typename T>
+Vector4<T>::Vector4(T x, T y, T z, T w)
 {
 	this->x = x;
 	this->y = y;
@@ -187,87 +221,111 @@ Vector4F::Vector4F(float x, float y, float z, float w)
 	this->w = w;
 }
 
-float Vector4F::getX() const
+template<typename T>
+T Vector4<T>::getX() const
 {
 	return this->x;
 }
 
-float Vector4F::getY() const
+template<typename T>
+T Vector4<T>::getY() const
 {
 	return this->y;
 }
 
-float Vector4F::getZ() const
+template<typename T>
+T Vector4<T>::getZ() const
 {
 	return this->z;
 }
 
-float Vector4F::getW() const
+template<typename T>
+T Vector4<T>::getW() const
 {
 	return this->w;
 }
 
-float& Vector4F::getXR()
+template<typename T>
+T& Vector4<T>::getXR()
 {
 	return this->x;
 }
 
-float& Vector4F::getYR()
+template<typename T>
+T& Vector4<T>::getYR()
 {
 	return this->y;
 }
 
-float& Vector4F::getZR()
+template<typename T>
+T& Vector4<T>::getZR()
 {
 	return this->z;
 }
 
-float& Vector4F::getWR()
+template<typename T>
+T& Vector4<T>::getWR()
 {
 	return this->w;
 }
 
-float Vector4F::length() const
+template<typename T>
+T Vector4<T>::length() const
 {
 	return sqrt((this->x * this->x) + (this->y * this->y) + (this->z * this->z) + (this->w * this->w));
 }
 
-float Vector4F::dot(Vector4F rhs) const
+template<typename T>
+T Vector4<T>::dot(Vector4 rhs) const
 {
 	return (this->x * rhs.getX()) + (this->y * rhs.getY()) + (this->z * rhs.getZ() + (this->w * rhs.getW()));
 }
 
-Vector4F Vector4F::normalised() const
+template<typename T>
+Vector4<T> Vector4<T>::normalised() const
 {
-	return Vector4F(this->x / this->length(), this->y / this->length(), this->z / this->length(), this->w / this->length());
+	return Vector4<T>(this->x / this->length(), this->y / this->length(), this->z / this->length(), this->w / this->length());
 }
 
-Vector4F Vector4F::operator+(const Vector4F& rhs) const
+template<typename T>
+Vector4<T> Vector4<T>::operator+(const Vector4& rhs) const
 {
-	return Vector4F(this->x + rhs.getX(), this->y + rhs.getY(), this->z + rhs.getZ(), this->w + rhs.getW());
+	return Vector4<T>(this->x + rhs.getX(), this->y + rhs.getY(), this->z + rhs.getZ(), this->w + rhs.getW());
 }
 
-Vector4F Vector4F::operator-(const Vector4F& rhs) const
+template<typename T>
+Vector4<T> Vector4<T>::operator-(const Vector4& rhs) const
 {
-	return Vector4F(this->x - rhs.getX(), this->y - rhs.getY(), this->z - rhs.getZ(), this->w - rhs.getW());
+	return Vector4<T>(this->x - rhs.getX(), this->y - rhs.getY(), this->z - rhs.getZ(), this->w - rhs.getW());
 }
 
-Vector4F Vector4F::operator*(float scalar) const
+template<typename T>
+Vector4<T> Vector4<T>::operator*(T scalar) const
 {
-	return Vector4F(this->x * scalar, this->y * scalar, this->z * scalar, this->w * scalar);
+	return Vector4<T>(this->x * scalar, this->y * scalar, this->z * scalar, this->w * scalar);
 }
 
-bool Vector4F::operator<(const Vector4F& rhs) const
+template<typename T>
+bool Vector4<T>::operator<(const Vector4& rhs) const
 {
 	return this->length() < rhs.length();
 }
 
-bool Vector4F::operator>(const Vector4F& rhs) const
+template<typename T>
+bool Vector4<T>::operator>(const Vector4& rhs) const
 {
 	return this->length() > rhs.length();
 }
 
-bool Vector4F::operator==(const Vector4F& rhs) const
+template<typename T>
+bool Vector4<T>::operator==(const Vector4& rhs) const
 {
 	return (this->x == rhs.getX()) && (this->y == rhs.getY()) && (this->z == rhs.getZ()) && (this->w == rhs.getW());
 }
+
+template class Vector2<float>;
+template class Vector2<unsigned int>;
+template class Vector3<float>;
+template class Vector3<unsigned int>;
+template class Vector4<float>;
+template class Vector4<unsigned int>;

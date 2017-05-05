@@ -3,93 +3,102 @@
 #include <cmath>
 #include <vector>
 
-class Vector2F
+template<typename T>
+class Vector2
 {
 public:
-	Vector2F(float x = 0.0f, float y = 0.0f);
-	Vector2F(const Vector2F& copy) = default;
-	Vector2F(Vector2F&& move) = default;
-	Vector2F& operator=(const Vector2F& rhs) = default;
+	Vector2(T x = 0.0f, T y = 0.0f);
+	Vector2(const Vector2& copy) = default;
+	Vector2(Vector2&& move) = default;
+	Vector2& operator=(const Vector2& rhs) = default;
 	
-	float getX() const;
-	float getY() const;
-	float& getXR();
-	float& getYR();
-	float length() const;
-	float dot(Vector2F rhs) const;
-	Vector2F normalised() const;
+	T getX() const;
+	T getY() const;
+	T& getXR();
+	T& getYR();
+	T length() const;
+	T dot(Vector2 rhs) const;
+	Vector2 normalised() const;
 	
-	Vector2F operator+(const Vector2F& rhs) const;
-	Vector2F operator-(const Vector2F& rhs) const;
-	Vector2F operator*(float scalar) const;
-	bool operator<(const Vector2F& rhs) const;
-	bool operator>(const Vector2F& rhs) const;
-	bool operator==(const Vector2F& rhs) const;
+	Vector2 operator+(const Vector2& rhs) const;
+	Vector2 operator-(const Vector2& rhs) const;
+	Vector2 operator*(T scalar) const;
+	bool operator<(const Vector2& rhs) const;
+	bool operator>(const Vector2& rhs) const;
+	bool operator==(const Vector2& rhs) const;
 private:
-	float x, y;
+	T x, y;
 };
 
-class Vector3F
+template<typename T>
+class Vector3
 {
 public:
-	Vector3F(float x = 0.0f, float y = 0.0f, float z = 0.0f);
-	Vector3F(const Vector3F& copy) = default;
-	Vector3F(Vector3F&& move) = default;
-	Vector3F& operator=(const Vector3F& rhs) = default;
+	Vector3(T x = 0.0f, T y = 0.0f, T z = 0.0f);
+	Vector3(const Vector3& copy) = default;
+	Vector3(Vector3&& move) = default;
+	Vector3& operator=(const Vector3& rhs) = default;
 	
-	float getX() const;
-	float getY() const;
-	float getZ() const;
-	float& getXR();
-	float& getYR();
-	float& getZR();
-	float length() const;
-	float dot(Vector3F rhs) const;
-	Vector3F cross(Vector3F rhs) const;
-	Vector3F normalised() const;
+	T getX() const;
+	T getY() const;
+	T getZ() const;
+	T& getXR();
+	T& getYR();
+	T& getZR();
+	T length() const;
+	T dot(Vector3 rhs) const;
+	Vector3 cross(Vector3 rhs) const;
+	Vector3 normalised() const;
 	
-	Vector3F operator+(const Vector3F& rhs) const;
-	Vector3F operator-(const Vector3F& rhs) const;
-	Vector3F operator*(float scalar) const;
-	Vector3F operator/(float scalar) const;
-	bool operator<(const Vector3F& rhs) const;
-	bool operator>(const Vector3F& rhs) const;
-	bool operator==(const Vector3F& rhs) const;
-	void operator+=(const Vector3F& rhs);
-	void operator-=(const Vector3F& rhs);
+	Vector3 operator+(const Vector3& rhs) const;
+	Vector3 operator-(const Vector3& rhs) const;
+	Vector3 operator*(T scalar) const;
+	Vector3 operator/(T scalar) const;
+	bool operator<(const Vector3& rhs) const;
+	bool operator>(const Vector3& rhs) const;
+	bool operator==(const Vector3& rhs) const;
+	void operator+=(const Vector3& rhs);
+	void operator-=(const Vector3& rhs);
 private:
-	float x, y, z;
+	T x, y, z;
 };
 
-class Vector4F
+template<typename T>
+class Vector4
 {
 public:
-	Vector4F(float x = 0.0f, float y = 0.0f, float z = 0.0f, float w = 0.0f);
-	Vector4F(const Vector4F& copy) = default;
-	Vector4F(Vector4F&& move) = default;
-	Vector4F& operator=(const Vector4F& rhs) = default;
+	Vector4(T x = 0.0f, T y = 0.0f, T z = 0.0f, T w = 0.0f);
+	Vector4(const Vector4& copy) = default;
+	Vector4(Vector4&& move) = default;
+	Vector4& operator=(const Vector4& rhs) = default;
 	
-	float getX() const;
-	float getY() const;
-	float getZ() const;
-	float getW() const;
-	float& getXR();
-	float& getYR();
-	float& getZR();
-	float& getWR();
-	float length() const;
-	float dot(Vector4F rhs) const;
-	Vector4F cross(Vector4F rhs) const;
-	Vector4F normalised() const;
+	T getX() const;
+	T getY() const;
+	T getZ() const;
+	T getW() const;
+	T& getXR();
+	T& getYR();
+	T& getZR();
+	T& getWR();
+	T length() const;
+	T dot(Vector4 rhs) const;
+	Vector4 cross(Vector4 rhs) const;
+	Vector4 normalised() const;
 	
-	Vector4F operator+(const Vector4F& rhs) const;
-	Vector4F operator-(const Vector4F& rhs) const;
-	Vector4F operator*(float scalar) const;
-	bool operator<(const Vector4F& rhs) const;
-	bool operator>(const Vector4F& rhs) const;
-	bool operator==(const Vector4F& rhs) const;
+	Vector4 operator+(const Vector4& rhs) const;
+	Vector4 operator-(const Vector4& rhs) const;
+	Vector4 operator*(T scalar) const;
+	bool operator<(const Vector4& rhs) const;
+	bool operator>(const Vector4& rhs) const;
+	bool operator==(const Vector4& rhs) const;
 private:
-	float x, y, z, w;
+	T x, y, z, w;
 };
 
+typedef Vector2<float> Vector2F;
+typedef Vector2<unsigned int> Vector2UI;
+typedef Vector3<float> Vector3F;
+typedef Vector3<unsigned int> Vector3UI;
+typedef Vector4<float> Vector4F;
+typedef Vector4<unsigned int> Vector4UI;
 #endif

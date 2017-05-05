@@ -42,7 +42,12 @@ class AudioMusic
 {
 public:
 	AudioMusic(const std::string& filename);
+	AudioMusic(const AudioMusic& copy);
+	AudioMusic(AudioMusic&& move);
 	~AudioMusic();
+	AudioMusic& operator=(const AudioMusic& rhs) = delete;
+	
+	const std::string& getFileName() const;
 	Mix_Music*& getAudioHandle();
 	void play(bool priority = true) const;
 	void setPaused(bool pause = true);

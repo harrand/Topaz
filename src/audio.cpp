@@ -72,10 +72,21 @@ AudioMusic::AudioMusic(const std::string& filename): filename(filename), paused(
 {
 	this->audioHandle = Mix_LoadMUS(this->filename.c_str());
 }
+AudioMusic::AudioMusic(const AudioMusic& copy): AudioMusic(copy.getFileName()){}
+
+AudioMusic::AudioMusic(AudioMusic&& move): filename(move.getFileName()), audioHandle(move.audioHandle)
+{
+	move.audioHandle = NULL;
+}
 
 AudioMusic::~AudioMusic()
 {
 	Mix_FreeMusic(this->audioHandle);
+}
+
+const std::string& AudioMusic::getFileName() const
+{
+	return this->filename;
 }
 
 Mix_Music*& AudioMusic::getAudioHandle()
