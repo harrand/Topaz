@@ -30,10 +30,8 @@ int main()
 	KeybindController kc(player, shader, world, wnd);
 	MouseController mc(player, world, wnd);
 	LogUtility::message("Loading assets...");
-	LogUtility::message("Retrieved " + CastUtility::toString<unsigned int>(DataTranslation(RES_POINT + "/resources.data").retrieveAllData(allMeshes, allTextures, allNormalMaps, allParallaxMaps)) + " assets.");
-	std::string texturesDirectory = RES_POINT + "/textures/";
-	//CubeMap blood(texturesDirectory + "blood_rt.png", texturesDirectory + "blood_lf.png", texturesDirectory + "blood_up.png", texturesDirectory + "blood_dn.png", texturesDirectory + "blood_bk.png", texturesDirectory + "blood_ft.png");
-	CubeMap greenhaze(texturesDirectory + "greenhaze_rt.png", texturesDirectory + "greenhaze_lf.png", texturesDirectory + "greenhaze_up.png", texturesDirectory + "greenhaze_dn.png", texturesDirectory + "greenhaze_bk.png", texturesDirectory + "greenhaze_ft.png");
+	LogUtility::message("Retrieved ", DataTranslation(RES_POINT + "/resources.data").retrieveAllData(allMeshes, allTextures, allNormalMaps, allParallaxMaps), " assets.");
+	CubeMap greenhaze(RES_POINT + "/textures/", "greenhaze", ".png");
 	Skybox box("../../../res/runtime/models/skybox.obj", greenhaze);
 	
 	TimeKeeper tk;
@@ -48,11 +46,11 @@ int main()
 		if(tk.millisPassed(1000))
 		{
 			fps = tp.getFPS();
-			LogUtility::silent("\n====== " + CastUtility::toString<int>(secondsLifetime) + " seconds ======\navgdt = " + CastUtility::toString<float>(tp.getDeltaAverage()) + " ms, avgFPS = " + CastUtility::toString<int>(fps) + " fps.");
+			LogUtility::silent("\n====== ", secondsLifetime, " seconds ======\navgdt = ", tp.getDeltaAverage(), " ms, avgFPS = ", fps, " fps.");
 			tp.reset();
 			secondsLifetime++;
 			tk.reload();
-			LogUtility::silent("Camera Position = [" + CastUtility::toString<float>(cam.getPosR().getX()) + ", " + CastUtility::toString<float>(cam.getPosR().getY()) + ", " + CastUtility::toString<float>(cam.getPosR().getZ()) + "].");
+			LogUtility::silent("Camera Position = ", StringUtility::format(StringUtility::devectoriseList3<float>(cam.getPos())));
 		}
 		wnd.setRenderTarget();
 		tp.beginFrame();
@@ -72,7 +70,7 @@ int main()
 		
 		GLenum error;
 		if((error = glGetError()) != GL_NO_ERROR)
-			LogUtility::error("OpenGL Error: " + CastUtility::toString<GLenum>(error) + "\n");
+			LogUtility::error("OpenGL Error: ", error, "\n");
 	}
 	std::ostringstream strum;
 	strum << secondsLifetime;

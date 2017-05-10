@@ -7,6 +7,7 @@
 #include <fstream>
 #include <algorithm>
 #include <unordered_map>
+#include <typeinfo>
 #include "vector.hpp"
 
 namespace CastUtility
@@ -204,24 +205,39 @@ namespace StringUtility
 
 namespace LogUtility
 {
-	inline void silent(const std::string& msg)
+	inline void silent()
 	{
-		std::cout << msg << "\n";
+		std::cout << "\n";
+	}
+	template<typename FirstArg, typename... Args>
+	inline void silent(FirstArg arg, Args... args)
+	{
+		if(std::string(typeid(arg).name()) == "std::string")
+			std::cout << arg;
+		else
+			std::cout << CastUtility::toString<FirstArg>(arg);
+		LogUtility::silent(args...);
 	}
 	
-	inline void message(const std::string& msg)
+	template<typename FirstArg = void, typename... Args>
+	inline void message(FirstArg arg, Args... args)
 	{
-		std::cout << "[Message]:\t" << msg << "\n";
+		std::cout << "[Message]:\t";
+		LogUtility::silent(arg, args...);
 	}
 	
-	inline void warning(const std::string& msg)
+	template<typename FirstArg = void, typename... Args>
+	inline void warning(FirstArg arg, Args... args)
 	{
-		std::cout << "[Warning]:\t" << msg << "\n";
+		std::cout << "[Warning]:\t";
+		LogUtility::silent(arg, args...);
 	}
 	
-	inline void error(const std::string& msg)
+	template<typename FirstArg = void, typename... Args>
+	inline void error(FirstArg arg, Args... args)
 	{
-		std::cout << "[Error]:\t" << msg << "\n";
+		std::cout << "[Error]:\t";
+		LogUtility::silent(arg, args...);
 	}
 }
 
@@ -233,14 +249,14 @@ public:
 	Force(Force&& move) = default;
 	Force& operator=(const Force& rhs) = default;
 	
-	Vector3F getSize() const;
+	const Vector3F& getSize() const;
 	void setSize(Vector3F size);
 	Force operator+(const Force& other) const;
 	Force operator-(const Force& other) const;
 	Force operator*(float rhs) const;
 	Force operator/(float rhs) const;
-	void operator+=(const Force& other);
-	void operator-=(const Force& other);
+	Force& operator+=(const Force& other);
+	Force& operator-=(const Force& other);
 private:
 	Vector3F size;
 };

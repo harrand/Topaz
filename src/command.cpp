@@ -54,7 +54,7 @@ void CommandCache::destroyChannelClips(int channel)
 		auto rem = std::remove_if(CommandCache::clips.begin(), CommandCache::clips.end(), lambda);
 		CommandCache::clips.erase(rem, CommandCache::clips.end());
 		if(CommandCache::clips.size() != prevSize)
-			LogUtility::message("Clip belonging to the channel " + CastUtility::toString<int>(channel) + " has been destroyed.");
+			LogUtility::message("Clip belonging to the channel ", channel, " has been destroyed.");
 	}
 }
 
@@ -117,7 +117,7 @@ void Commands::loadWorld(std::vector<std::string> args, World& world)
 {
 	if(args.size() != 2)
 	{
-		LogUtility::warning("Nonfatal Command Error: Unexpected quantity of args, got " + CastUtility::toString<unsigned int>(args.size()) + ", expected 2.");
+		LogUtility::warning("Nonfatal Command Error: Unexpected quantity of args, got ", args.size(), ", expected 2.");
 		return;
 	}
 	std::vector<Entity> entities = world.getEntities();
@@ -126,14 +126,14 @@ void Commands::loadWorld(std::vector<std::string> args, World& world)
 	world = World(link);
 	for(unsigned int i = 0; i < entities.size(); i++)
 		world.addEntity(entities.at(i));
-	LogUtility::message("Now rendering the world '" + worldname + "' which has " + CastUtility::toString<unsigned int>(world.getSize()) + " elements.");
+	LogUtility::message("Now rendering the world '", worldname, "' which has ", world.getSize(), " elements.");
 }
 
 void Commands::exportWorld(std::vector<std::string> args, World& world)
 {
 	if(args.size() != 2)
 	{
-	LogUtility::warning("Nonfatal Command Error: Unexpected quantity of args, got " + CastUtility::toString<unsigned int>(args.size()) + ", expected 2.");
+	LogUtility::warning("Nonfatal Command Error: Unexpected quantity of args, got ", args.size(), ", expected 2.");
 		return;
 	}
 	std::string worldname = args.at(1);
@@ -144,7 +144,7 @@ void Commands::addObject(std::vector<std::string> args, World& world, Player& pl
 {
 	if(args.size() != 8)
 	{
-		LogUtility::warning("Nonfatal Command Error: Unexpected quantity of args, got " + CastUtility::toString<unsigned int>(args.size()) + ", expected 8.");
+		LogUtility::warning("Nonfatal Command Error: Unexpected quantity of args, got ", args.size(), ", expected 8.");
 		return;
 	}
 	DataTranslation dt(RES_POINT + "/resources.data");
@@ -165,12 +165,12 @@ void Commands::addObject(std::vector<std::string> args, World& world, Player& pl
 	
 	if(meshLink == "0")
 	{
-		LogUtility::warning("Nonfatal Command Error: Unknown Mesh Name '" + meshName + "'.");
+		LogUtility::warning("Nonfatal Command Error: Unknown Mesh Name '",  meshName, "'.");
 		return;
 	}
 	if(textureLink == "0")
 	{
-		LogUtility::warning("Nonfatal Command Error: Unknown Texture Name '" + textureName + "'.");
+		LogUtility::warning("Nonfatal Command Error: Unknown Texture Name '", textureName, "'.");
 		return;
 	}
 	
@@ -188,14 +188,14 @@ void Commands::addObject(std::vector<std::string> args, World& world, Player& pl
 		
 	world.addObject(Object(meshLink, textureLink, normalMapLink, parallaxMapLink, pos, rot, scale));
 	if(printResults)
-		LogUtility::message("Added the following to this world:\nMesh name = " + meshName + ", link = " + meshLink + ".\nTexture name = " + textureName + ", link = " + textureLink + ".\nNormalmap name = " + normalMapName + ", link = " + normalMapLink + ".\nParallaxmap name = " + parallaxMapName + ", link = " + parallaxMapLink + ".\nPosition = " + StringUtility::format(StringUtility::devectoriseList3<float>(pos)) + ".\nRotation = " + StringUtility::format(StringUtility::devectoriseList3<float>(rot)) + ".\nScale = " + StringUtility::format(StringUtility::devectoriseList3<float>(scale)) + ".");
+		LogUtility::message("Added the following to this world:\nMesh name = ", meshName, ", link = ", meshLink, ".\nTexture name = ", textureName, ", link = ", textureLink, ".\nNormalmap name = ", normalMapName, ", link = ", normalMapLink, ".\nParallaxmap name = ", parallaxMapName, ", link = ", parallaxMapLink, ".\nPosition = ", StringUtility::format(StringUtility::devectoriseList3<float>(pos)), ".\nRotation = ", StringUtility::format(StringUtility::devectoriseList3<float>(rot)), ".\nScale = ", StringUtility::format(StringUtility::devectoriseList3<float>(scale)), ".");
 }
 
 void Commands::addEntityObject(std::vector<std::string> args, World& world, Player& player, bool printResults)
 {
 	if(args.size() != 9)
 	{
-		LogUtility::warning("Nonfatal Command Error: Unexpected quantity of args, got " + CastUtility::toString<unsigned int>(args.size()) + ", expected 9.");
+		LogUtility::warning("Nonfatal Command Error: Unexpected quantity of args, got ", args.size(), ", expected 9.");
 		return;
 	}
 	DataTranslation dt(RES_POINT + "/resources.data");
@@ -217,12 +217,12 @@ void Commands::addEntityObject(std::vector<std::string> args, World& world, Play
 	
 	if(meshLink == "0")
 	{
-		LogUtility::warning("Nonfatal Command Error: Unknown Mesh Name '" + meshName + "'.");
+		LogUtility::warning("Nonfatal Command Error: Unknown Mesh Name '", meshName, "'.");
 		return;
 	}
 	if(textureLink == "0")
 	{
-		LogUtility::warning("Nonfatal Command Error: Unknown Texture Name '" + textureName + "'.");
+		LogUtility::warning("Nonfatal Command Error: Unknown Texture Name '", textureName, "'.");
 		return;
 	}
 	
@@ -242,7 +242,7 @@ void Commands::addEntityObject(std::vector<std::string> args, World& world, Play
 	
 	world.addEntityObject(EntityObject(meshLink, textureLink, normalMapLink, parallaxMapLink, mass, pos, rot, scale));
 	if(printResults)
-		LogUtility::message("Added the following to this world:\nMesh name = " + meshName + ", link = " + meshLink + ".\nTexture name = " + textureName + ", link = " + textureLink + ".\nNormalmap name = " + normalMapName + ", link = " + normalMapLink + ".\nParallaxmap name = " + parallaxMapName + ", link = " + parallaxMapLink + ".\nMass = " + CastUtility::toString<float>(mass) + ".\nPosition = " + StringUtility::format(StringUtility::devectoriseList3<float>(pos)) + ".\nRotation = " + StringUtility::format(StringUtility::devectoriseList3<float>(rot)) + ".\nScale = " + StringUtility::format(StringUtility::devectoriseList3<float>(scale)) + ".");
+		LogUtility::message("Added the following to this world:\nMesh name = ", meshName, ", link = ", meshLink, ".\nTexture name = ", textureName, ", link = ", textureLink, ".\nNormalmap name = ", normalMapName, ", link = ", normalMapLink, ".\nParallaxmap name = ", parallaxMapName, ", link = ", parallaxMapLink, ".\nMass = ", mass, ".\nPosition = ", StringUtility::format(StringUtility::devectoriseList3<float>(pos)), ".\nRotation = ", StringUtility::format(StringUtility::devectoriseList3<float>(rot)), ".\nScale = ", StringUtility::format(StringUtility::devectoriseList3<float>(scale)), ".");
 }
 
 void Commands::setAlias(std::vector<std::string> args)
@@ -263,7 +263,7 @@ void Commands::reloadWorld(std::vector<std::string> args, World& world, bool pri
 	args.at(1).erase(args.at(1).find(toErase), toErase.length());
 	Commands::loadWorld(args, world);
 	if(printResults)
-		LogUtility::message("Successfully reloaded the world. (world link " + world.getFileName() + ").");
+		LogUtility::message("Successfully reloaded the world. (world link ", world.getFileName(), ").");
 }
 
 void Commands::updateWorld(World& world, bool printResults)
@@ -277,7 +277,7 @@ void Commands::updateWorld(World& world, bool printResults)
 	args.push_back(worldName);
 	Commands::loadWorld(args, world);
 	if(printResults)
-		LogUtility::message("Successfully updated all new objects to the world named " + worldName + " (world link " + worldLink + ").");
+		LogUtility::message("Successfully updated all new objects to the world named ", worldName, " (world link ", worldLink, ").");
 }
 
 void Commands::setSpeed(float speed)
@@ -285,20 +285,20 @@ void Commands::setSpeed(float speed)
 	MDLF output(RawFile(RES_POINT + "/resources.data"));
 	output.deleteTag("speed");
 	output.addTag("speed", CastUtility::toString<float>(speed));
-	LogUtility::message("Setting speed to " + CastUtility::toString<float>(speed) + ".");
+	LogUtility::message("Setting speed to ", speed, ".");
 }
 
 void Commands::printSpeed()
 {
 	MDLF output(RawFile(RES_POINT + "/resources.data"));
-	LogUtility::message("Current speed = " + output.getTag("speed") + ".");
+	LogUtility::message("Current speed = ", output.getTag("speed"), ".");
 }
 
 void Commands::teleport(std::vector<std::string> args, Player& player)
 {
 	if(args.size() != 2)
 	{
-		LogUtility::warning("Nonfatal Command Error: Unexpected quantity of args, got " + CastUtility::toString<unsigned int>(args.size()) + ", expected 2.");
+		LogUtility::warning("Nonfatal Command Error: Unexpected quantity of args, got ", args.size(), ", expected 2.");
 		return;
 	}
 	std::vector<std::string> teleSplit = StringUtility::splitString(StringUtility::replaceAllChar(StringUtility::replaceAllChar(args.at(1), '[', ""), ']', ""), ',');
@@ -316,46 +316,46 @@ void Commands::setGravity(std::vector<std::string> args, World& world, bool prin
 {
 	if(args.size() != 2)
 	{
-		LogUtility::warning("Nonfatal Command Error: Unexpected quantity of args, got " + CastUtility::toString<unsigned int>(args.size()) + ", expected 2.");
+		LogUtility::warning("Nonfatal Command Error: Unexpected quantity of args, got ", args.size(), ", expected 2.");
 		return;
 	}
 	Vector3F grav = StringUtility::vectoriseList3<float>(StringUtility::deformat(args.at(1)));
 	world.setGravity(grav);
 	if(printResults)
-		LogUtility::message("Set gravity of the world '" + world.getFileName() + "' to " + StringUtility::format(StringUtility::devectoriseList3<float>(grav)) + " N.");
+		LogUtility::message("Set gravity of the world '", world.getFileName(), "' to ", StringUtility::format(StringUtility::devectoriseList3<float>(grav)), " N.");
 }
 
 void Commands::setSpawnPoint(std::vector<std::string> args, World& world, bool printResults)
 {
 	if(args.size() != 2)
 	{
-		LogUtility::warning("Nonfatal Command Error: Unexpected quantity of args, got " + CastUtility::toString<unsigned int>(args.size()) + ", expected 2.");
+		LogUtility::warning("Nonfatal Command Error: Unexpected quantity of args, got ", args.size(), ", expected 2.");
 		return;
 	}
 	Vector3F spawn = StringUtility::vectoriseList3<float>(StringUtility::deformat(args.at(1)));
 	world.setSpawnPoint(spawn);
 	if(printResults)
-		LogUtility::message("Set spawnpoint of the world '" + world.getFileName() + "' to " + StringUtility::format(StringUtility::devectoriseList3<float>(spawn)) + ".");
+		LogUtility::message("Set spawnpoint of the world '", world.getFileName(), "' to ", StringUtility::format(StringUtility::devectoriseList3<float>(spawn)), ".");
 }
 
 void Commands::setSpawnOrientation(std::vector<std::string> args, World& world, bool printResults)
 {
 	if(args.size() != 2)
 	{
-		LogUtility::warning("Nonfatal Command Error: Unexpected quantity of args, got " + CastUtility::toString<unsigned int>(args.size()) + ", expected 2.");
+		LogUtility::warning("Nonfatal Command Error: Unexpected quantity of args, got ", args.size(), ", expected 2.");
 		return;
 	}
 	Vector3F spawn = StringUtility::vectoriseList3<float>(StringUtility::deformat(args.at(1)));
 	world.setSpawnOrientation(spawn);
 	if(printResults)
-		LogUtility::message("Set spawnorientation of the world '" + world.getFileName() + "' to " + StringUtility::format(StringUtility::devectoriseList3<float>(spawn)) + ".");
+		LogUtility::message("Set spawnorientation of the world '", world.getFileName(), "' to ", StringUtility::format(StringUtility::devectoriseList3<float>(spawn)), ".");
 }
 
 void Commands::addLight(std::vector<std::string> args, World& world, Player& player, Shader& shader, bool printResults)
 {
 	if(args.size() != 4)
 	{
-		LogUtility::warning("Nonfatal Command Error: Unexpected quantity of args, got " + CastUtility::toString<unsigned int>(args.size()) + ", expected 4.");
+		LogUtility::warning("Nonfatal Command Error: Unexpected quantity of args, got ", args.size(), ", expected 4.");
 		return;
 	}
 	Vector3F pos, colour;
@@ -367,7 +367,7 @@ void Commands::addLight(std::vector<std::string> args, World& world, Player& pla
 	float pow = CastUtility::fromString<float>(args.at(3));
 	world.addLight(std::move(BaseLight(pos, colour, pow)), shader.getProgramHandle());
 	if(printResults)
-		LogUtility::message("Added a light at the position " + StringUtility::format(StringUtility::devectoriseList3<float>(pos)) + " with the RGB colour " + StringUtility::format(StringUtility::devectoriseList3<float>(colour)) + " and the power " + CastUtility::toString<float>(pow) + " W.");
+		LogUtility::message("Added a light at the position ", StringUtility::format(StringUtility::devectoriseList3<float>(pos)), " with the RGB colour ", StringUtility::format(StringUtility::devectoriseList3<float>(colour)), " and the power ", pow," W.");
 }
 
 void Commands::toggleMusic()
@@ -388,23 +388,23 @@ void Commands::setVolume(std::vector<std::string> args)
 {
 	if(args.size() != 2)
 	{
-		LogUtility::warning("Nonfatal Command Error: Unexpected quantity of args, got " + CastUtility::toString<unsigned int>(args.size()) + ", expected 2.");
+		LogUtility::warning("Nonfatal Command Error: Unexpected quantity of args, got ", args.size(), ", expected 2.");
 		return;
 	}
 	Mix_VolumeMusic(CastUtility::fromString<float>(args.at(1)) * 128.0f/100.0f);
-	LogUtility::message("Set volume of music to " + CastUtility::toString<float>(CastUtility::fromString<float>(args.at(1))) + "%");
+	LogUtility::message("Set volume of music to ", CastUtility::fromString<float>(args.at(1)), "%");
 }
 
 void Commands::printVolume()
 {
-	LogUtility::message("Volume of music is " + CastUtility::toString<unsigned int>(Mix_VolumeMusic(-1) * 100.0f/128.0f) + "%");
+	LogUtility::message("Volume of music is ", (Mix_VolumeMusic(-1) * 100.0f/128.0f), "%");
 }
 
 void Commands::playAudio(std::vector<std::string> args, bool printResults, Player& player)
 {
 	if(args.size() != 3)
 	{
-		LogUtility::warning("Nonfatal Command Error: Unexpected quantity of args, got " + CastUtility::toString<unsigned int>(args.size()) + ", expected 3.");
+		LogUtility::warning("Nonfatal Command Error: Unexpected quantity of args, got ", args.size(),", expected 3.");
 		return;
 	}
 	std::string filename = RES_POINT + "/music/" + args.at(1);
@@ -420,19 +420,19 @@ void Commands::playAudio(std::vector<std::string> args, bool printResults, Playe
 	Mix_ChannelFinished(CommandCache::destroyChannelClips);
 	std::thread(CommandCache::updateClip, raw, std::ref(player)).detach();
 	if(printResults)
-		LogUtility::message("Playing the audio clip with the file-path " + filename + " at the position " + StringUtility::format(StringUtility::devectoriseList3<float>(pos)) +".");
+		LogUtility::message("Playing the audio clip with the file-path ", filename, " at the position ", StringUtility::format(StringUtility::devectoriseList3<float>(pos)), ".");
 }
 
 void Commands::scheduleAsyncDelayedMessage(std::vector<std::string> args, bool printResults)
 {
 	if(args.size() < 3)
 	{
-		LogUtility::warning("Nonfatal Command Error: Unexpected quantity of args, got " + CastUtility::toString<unsigned int>(args.size()) + ", expected at least 3.");
+		LogUtility::warning("Nonfatal Command Error: Unexpected quantity of args, got ", args.size(), ", expected at least 3.");
 		return;
 	}
 	unsigned int millisDelay = CastUtility::fromString<unsigned int>(args.at(1));
 	if(printResults)
-		LogUtility::message("Scheduling async delayed task of " + CastUtility::toString<unsigned int>(millisDelay) + "ms");
+		LogUtility::message("Scheduling async delayed task of ", millisDelay, "ms");
 	std::string msg = "";
 	for(unsigned int i = 2; i < args.size(); i++)
 		msg += args.at(i) + (i == (args.size() - 1) ? "" : " ");
@@ -444,12 +444,12 @@ void Commands::scheduleAsyncDelayedCmd(std::vector<std::string> args, World& wor
 {
 	if(args.size() < 3)
 	{
-		LogUtility::warning("Nonfatal Command Error: Unexpected quantity of args, got " + CastUtility::toString<unsigned int>(args.size()) + ", expected at least 3.");
+		LogUtility::warning("Nonfatal Command Error: Unexpected quantity of args, got ", args.size(), ", expected at least 3.");
 		return;
 	}
 	unsigned int millisDelay = CastUtility::fromString<unsigned int>(args.at(1));
 	if(printResults)
-		LogUtility::message("Scheduling async delayed task of " + CastUtility::toString<unsigned int>(millisDelay) + "ms to execute a command.");
+		LogUtility::message("Scheduling async delayed task of ", millisDelay, "ms to execute a command.");
 	std::string cmd = "";
 	for(unsigned int i = 2; i < args.size(); i++)
 		cmd += args.at(i) + (i == (args.size() - 1) ? "" : " ");

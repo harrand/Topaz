@@ -10,9 +10,9 @@ std::string DataTranslation::getResourceLink(const std::string& resourceName) co
 std::string DataTranslation::getResourceName(const std::string& resourceLink) const
 {
 	const RawFile input(this->datafilename);
-	for(unsigned int i = 0; i < input.getLines().size(); i++)
+	std::vector<std::string> lines = input.getLines();
+	for(std::string line : lines)
 	{
-		std::string line = input.getLineByNumber(i);
 		std::vector<std::string> lineSplit = StringUtility::splitString(line, ':');
 		if(lineSplit.size() != 0)
 		{

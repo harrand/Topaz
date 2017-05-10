@@ -1,6 +1,6 @@
 #ifndef OBJECT_HPP
 #define OBJECT_HPP
-#include "quaternion.hpp"
+#include "matrix.hpp"
 #include "mesh.hpp"
 #include "shader.hpp"
 #include "texture.hpp"

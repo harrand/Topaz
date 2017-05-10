@@ -6,7 +6,8 @@
 #include <fstream>
 #include <sstream>
 #include <map>
-/*	MDL - Minimalist Data Language
+/*
+	MDL - Minimalist Data Language
 	Written by Harry "Harrand" Hollands 2017. 
 	Designed for use with C++11 or newer to manipulate and read data in a simple and efficient manner.
 */
@@ -14,16 +15,15 @@
 class RawFile
 {
 public:
-	RawFile(const std::string path);
-	const std::string getPath() const;
+	RawFile(std::string path);
+	const std::string& getPath() const;
 	std::vector<std::string> getLines() const;
-	std::string getLineByNumber(unsigned int index) const;
 	std::string getData() const;
 	void clear() const;
 	void write(std::string data, bool clear) const;// will append the end of the file (so data is the final data in the file)
 	void writeLine(std::string data, unsigned int line) const;
 private:
-	const std::string path;
+	std::string path;
 };
 
 class MDLF

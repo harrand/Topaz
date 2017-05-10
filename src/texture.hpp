@@ -74,6 +74,8 @@ class CubeMap
 {
 public:
 	CubeMap(const std::string& rightTexture, const std::string& leftTexture, const std::string& topTexture, const std::string& bottomTexture, const std::string& backTexture, const std::string& frontTexture);
+	CubeMap(const std::string& textureDirectory = "./", const std::string& skyboxName = "skybox", const std::string& imageExtension = ".png");
+	//CubeMap greenhaze(texturesDirectory + "greenhaze_rt.png", texturesDirectory + "greenhaze_lf.png", texturesDirectory + "greenhaze_up.png", texturesDirectory + "greenhaze_dn.png", texturesDirectory + "greenhaze_bk.png", texturesDirectory + "greenhaze_ft.png");
 	CubeMap(const CubeMap& copy);
 	CubeMap(CubeMap&& move);
 	CubeMap& operator=(const CubeMap& rhs) = delete;

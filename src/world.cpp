@@ -20,16 +20,10 @@ World::World(std::string filename): filename(filename)
 	}
 	std::vector<std::string> objectList = input.getSequence("objects");
 	std::vector<std::string> entityObjectList = input.getSequence("entityobjects");
-	for(unsigned int i = 0; i < objectList.size(); i++)
-	{
-		std::string objectName = objectList.at(i);
+	for(std::string objectName : objectList)
 		this->addObject(World::retrieveData(objectName, input));
-	}
-	for(unsigned int i = 0; i < entityObjectList.size(); i++)
-	{
-		std::string eoName = entityObjectList.at(i);
+	for(std::string eoName : entityObjectList)
 		this->addEntityObject(World::retrieveEOData(eoName, input));
-	}
 }
 
 World::World(const World& copy): World(copy.filename){}

@@ -217,6 +217,8 @@ CubeMap::CubeMap(const std::string& rightTexture, const std::string& leftTexture
 		stbi_image_free(data);
 }
 
+CubeMap::CubeMap(const std::string& textureDirectory, const std::string& skyboxName, const std::string& imageExtension): CubeMap(textureDirectory + skyboxName + "_rt" + imageExtension, textureDirectory + skyboxName + "_lf" + imageExtension, textureDirectory + skyboxName + "_up" + imageExtension, textureDirectory + skyboxName + "_dn" + imageExtension, textureDirectory + skyboxName + "_bk" + imageExtension, textureDirectory + skyboxName + "_ft" + imageExtension){}
+
 CubeMap::CubeMap(const CubeMap& copy): CubeMap(copy.rightTexture, copy.leftTexture, copy.topTexture, copy.bottomTexture, copy.backTexture, copy.frontTexture){}
 
 CubeMap::CubeMap(CubeMap&& move): texHandle(move.texHandle), textureID(move.textureID), rightTexture(move.rightTexture), leftTexture(move.leftTexture), topTexture(move.topTexture), bottomTexture(move.bottomTexture), backTexture(move.backTexture), frontTexture(move.frontTexture)

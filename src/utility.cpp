@@ -2,7 +2,7 @@
 
 Force::Force(Vector3F size): size(size){}
 
-Vector3F Force::getSize() const
+const Vector3F& Force::getSize() const
 {
 	return this->size;
 }
@@ -32,14 +32,16 @@ Force Force::operator/(float rhs) const
 	return Force(this->size / rhs);
 }
 
-void Force::operator+=(const Force& other)
+Force& Force::operator+=(const Force& other)
 {
 	this->size += other.getSize();
+	return *this;
 }
 
-void Force::operator-=(const Force& other)
+Force& Force::operator-=(const Force& other)
 {
 	this->size -= other.getSize();
+	return *this;
 }
 
 
