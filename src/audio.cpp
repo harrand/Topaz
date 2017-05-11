@@ -43,7 +43,6 @@ AudioSource::AudioSource(const std::string& filename, const Vector3F& position):
 
 void AudioSource::update(Player& relativeTo)
 {
-	//cameraPos_cameraspace = Vector2F(0, 0);
 	const Vector3F sourcePosition = this->position;
 	const Vector3F listenerPosition = relativeTo.getPosition();
 	const Vector3F forward = relativeTo.getCamera().getForward();

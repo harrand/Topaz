@@ -3,11 +3,7 @@
 // Vector2
 
 template<typename T>
-Vector2<T>::Vector2(T x, T y)
-{
-	this->x = x;
-	this->y = y;
-}
+Vector2<T>::Vector2(T x, T y): x(x), y(y){}
 
 template<typename T>
 T Vector2<T>::getX() const
@@ -40,7 +36,7 @@ T Vector2<T>::length() const
 }
 
 template<typename T>
-T Vector2<T>::dot(Vector2 rhs) const
+T Vector2<T>::dot(Vector2<T> rhs) const
 {
 	return (this->x * rhs.getX()) + (this->y * rhs.getY());
 }
@@ -52,13 +48,13 @@ Vector2<T> Vector2<T>::normalised() const
 }
 
 template<typename T>
-Vector2<T> Vector2<T>::operator+(const Vector2& rhs) const
+Vector2<T> Vector2<T>::operator+(const Vector2<T>& rhs) const
 {
 	return Vector2<T>(this->x + rhs.getX(), this->y + rhs.getY());
 }
 
 template<typename T>
-Vector2<T> Vector2<T>::operator-(const Vector2& rhs) const
+Vector2<T> Vector2<T>::operator-(const Vector2<T>& rhs) const
 {
 	return Vector2<T>(this->x - rhs.getX(), this->y - rhs.getY());
 }
@@ -70,19 +66,19 @@ Vector2<T> Vector2<T>::operator*(T scalar) const
 }
 
 template<typename T>
-bool Vector2<T>::operator<(const Vector2& rhs) const
+bool Vector2<T>::operator<(const Vector2<T>& rhs) const
 {
 	return this->length() < rhs.length();
 }
 
 template<typename T>
-bool Vector2<T>::operator>(const Vector2& rhs) const
+bool Vector2<T>::operator>(const Vector2<T>& rhs) const
 {
 	return this->length() > rhs.length();
 }
 
 template<typename T>
-bool Vector2<T>::operator==(const Vector2& rhs) const
+bool Vector2<T>::operator==(const Vector2<T>& rhs) const
 {
 	return (this->x == rhs.getX()) && (this->y == rhs.getY());
 }
@@ -90,12 +86,7 @@ bool Vector2<T>::operator==(const Vector2& rhs) const
 // Vector3
 
 template<typename T>
-Vector3<T>::Vector3(T x, T y, T z)
-{
-	this->x = x;
-	this->y = y;
-	this->z = z;
-}
+Vector3<T>::Vector3(T x, T y, T z): x(x), y(y), z(z){}
 
 template<typename T>
 T Vector3<T>::getX() const
@@ -140,13 +131,13 @@ T Vector3<T>::length() const
 }
 
 template<typename T>
-T Vector3<T>::dot(Vector3 rhs) const
+T Vector3<T>::dot(Vector3<T> rhs) const
 {
 	return (this->x * rhs.getX()) + (this->y * rhs.getY()) + (this->z * rhs.getZ());
 }
 
 template<typename T>
-Vector3<T> Vector3<T>::cross(Vector3 rhs) const
+Vector3<T> Vector3<T>::cross(Vector3<T> rhs) const
 {
 	return Vector3<T>((this->y * rhs.getZ()) - (this->z * rhs.getY()), (this->z * rhs.getX()) - (this->x * rhs.getZ()), (this->x * rhs.getY()) - (this->y * rhs.getX()));
 }
@@ -158,13 +149,13 @@ Vector3<T> Vector3<T>::normalised() const
 }
 
 template<typename T>
-Vector3<T> Vector3<T>::operator+(const Vector3& rhs) const
+Vector3<T> Vector3<T>::operator+(const Vector3<T>& rhs) const
 {
 	return Vector3<T>(this->x + rhs.getX(), this->y + rhs.getY(), this->z + rhs.getZ());
 }
 
 template<typename T>
-Vector3<T> Vector3<T>::operator-(const Vector3& rhs) const
+Vector3<T> Vector3<T>::operator-(const Vector3<T>& rhs) const
 {
 	return Vector3<T>(this->x - rhs.getX(), this->y - rhs.getY(), this->z - rhs.getZ());
 }
@@ -182,44 +173,40 @@ Vector3<T> Vector3<T>::operator/(T scalar) const
 }
 
 template<typename T>
-bool Vector3<T>::operator<(const Vector3& rhs) const
+bool Vector3<T>::operator<(const Vector3<T>& rhs) const
 {
 	return this->length() < rhs.length();
 }
 
 template<typename T>
-bool Vector3<T>::operator>(const Vector3& rhs) const
+bool Vector3<T>::operator>(const Vector3<T>& rhs) const
 {
 	return this->length() > rhs.length();
 }
 
 template<typename T>
-bool Vector3<T>::operator==(const Vector3& rhs) const
+bool Vector3<T>::operator==(const Vector3<T>& rhs) const
 {
 	return (this->x == rhs.getX()) && (this->y == rhs.getY()) && (this->z == rhs.getZ());
 }
 
 template<typename T>
-void Vector3<T>::operator+=(const Vector3& rhs)
+Vector3<T>& Vector3<T>::operator+=(const Vector3<T>& rhs)
 {
 	(*this) = ((*this) + rhs);
+	return *this;
 }
 
 template<typename T>
-void Vector3<T>::operator-=(const Vector3& rhs)
+Vector3<T>& Vector3<T>::operator-=(const Vector3<T>& rhs)
 {
 	(*this) = ((*this) - rhs);
+	return *this;
 }
 
 // Vector4
 template<typename T>
-Vector4<T>::Vector4(T x, T y, T z, T w)
-{
-	this->x = x;
-	this->y = y;
-	this->z = z;
-	this->w = w;
-}
+Vector4<T>::Vector4(T x, T y, T z, T w): x(x), y(y), z(z), w(w){}
 
 template<typename T>
 T Vector4<T>::getX() const
@@ -276,7 +263,7 @@ T Vector4<T>::length() const
 }
 
 template<typename T>
-T Vector4<T>::dot(Vector4 rhs) const
+T Vector4<T>::dot(Vector4<T> rhs) const
 {
 	return (this->x * rhs.getX()) + (this->y * rhs.getY()) + (this->z * rhs.getZ() + (this->w * rhs.getW()));
 }
@@ -288,13 +275,13 @@ Vector4<T> Vector4<T>::normalised() const
 }
 
 template<typename T>
-Vector4<T> Vector4<T>::operator+(const Vector4& rhs) const
+Vector4<T> Vector4<T>::operator+(const Vector4<T>& rhs) const
 {
 	return Vector4<T>(this->x + rhs.getX(), this->y + rhs.getY(), this->z + rhs.getZ(), this->w + rhs.getW());
 }
 
 template<typename T>
-Vector4<T> Vector4<T>::operator-(const Vector4& rhs) const
+Vector4<T> Vector4<T>::operator-(const Vector4<T>& rhs) const
 {
 	return Vector4<T>(this->x - rhs.getX(), this->y - rhs.getY(), this->z - rhs.getZ(), this->w - rhs.getW());
 }
@@ -306,19 +293,19 @@ Vector4<T> Vector4<T>::operator*(T scalar) const
 }
 
 template<typename T>
-bool Vector4<T>::operator<(const Vector4& rhs) const
+bool Vector4<T>::operator<(const Vector4<T>& rhs) const
 {
 	return this->length() < rhs.length();
 }
 
 template<typename T>
-bool Vector4<T>::operator>(const Vector4& rhs) const
+bool Vector4<T>::operator>(const Vector4<T>& rhs) const
 {
 	return this->length() > rhs.length();
 }
 
 template<typename T>
-bool Vector4<T>::operator==(const Vector4& rhs) const
+bool Vector4<T>::operator==(const Vector4<T>& rhs) const
 {
 	return (this->x == rhs.getX()) && (this->y == rhs.getY()) && (this->z == rhs.getZ()) && (this->w == rhs.getW());
 }

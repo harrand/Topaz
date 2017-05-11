@@ -1,11 +1,6 @@
 #include "mesh.hpp"
 
-Vertex::Vertex(Vector3F position, Vector2F texcoord, Vector3F normal)
-{
-	this->position = position;
-	this->texcoord = texcoord;
-	this->normal = normal;
-}
+Vertex::Vertex(Vector3F position, Vector2F texcoord, Vector3F normal): position(position), texcoord(texcoord), normal(normal){}
 
 Mesh::Mesh(std::string filename): filename(filename), model(OBJModel(filename).ToIndexedModel())
 {
@@ -70,12 +65,10 @@ void Mesh::render() const
 //static
 Mesh* Mesh::getFromLink(const std::string& meshLink, const std::vector<std::unique_ptr<Mesh>>& allMeshes)
 {
-	for(unsigned int i = 0; i < allMeshes.size(); i++)
-	{
-		if(allMeshes.at(i)->getFileName() == meshLink)
-			return allMeshes.at(i).get();
-	}
-	return NULL;
+	for(auto& mesh : allMeshes)
+		if(mesh->getFileName() == meshLink)
+			return mesh.get();
+	return nullptr;
 }
 
 //private

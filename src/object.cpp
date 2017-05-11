@@ -54,7 +54,7 @@ const std::string& Object::getParallaxMapLink() const
 
 void Object::render(Mesh* mesh, Texture* tex, NormalMap* nm, ParallaxMap* pm, const Camera& cam, const Shader& shad, float width, float height) const
 {
-	if(mesh == NULL || tex == NULL || nm == NULL || pm == NULL)
+	if(mesh == nullptr || tex == nullptr || nm == nullptr || pm == nullptr)
 	{
 		return;
 	}

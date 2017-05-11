@@ -25,7 +25,7 @@ FrameBuffer::FrameBuffer(unsigned int width, unsigned int height): width(width),
 	
 	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 	{
-		//problim
+		LogUtility::warning("FrameBuffer invalid; glCheckFramebufferStatus != GL_FRAMEBUFFER_COMPLETE");
 	}
 }
 
@@ -39,7 +39,7 @@ void FrameBuffer::bind(unsigned int id) const
 {
 	if(id > 31 || id < 0)
 	{
-		LogUtility::error("FrameBuffer bind ID " + CastUtility::toString<unsigned int>(id) + " is invalid. Must be between 1-31");
+		LogUtility::error("FrameBuffer bind ID ", id, " is invalid. Must be between 1-31");
 		return;
 	}
 	// this sets which texture we want to bind (id can be from 0 to 31)
@@ -64,9 +64,9 @@ Texture::Texture(std::string filename)
 	this->filename = filename;
 	unsigned char* imgdata = this->loadTexture();
 	
-	if(imgdata == NULL)
+	if(imgdata == nullptr)
 	{
-		LogUtility::error("Texture from the path: '" + filename + "' could not be loaded.");
+		LogUtility::error("Texture from the path: '", filename, "' could not be loaded.");
 	}
 	
 	//Store tex data in the handle
@@ -116,7 +116,7 @@ void Texture::bind(GLuint shaderProgram, unsigned int id)
 {
 	if(id > 31 || id < 0)
 	{
-		LogUtility::error("FrameBuffer bind ID " + CastUtility::toString<unsigned int>(id) + " is invalid. Must be between 1-31");
+		LogUtility::error("FrameBuffer bind ID ", id, " is invalid. Must be between 1-31");
 		return;
 	}
 	// this sets which texture we want to bind (id can be from 0 to 31)
@@ -135,12 +135,12 @@ std::string Texture::getFileName() const
 //static
 Texture* Texture::getFromLink(const std::string& textureLink, const std::vector<std::unique_ptr<Texture>>& allTextures)
 {
-	for(unsigned int i = 0; i < allTextures.size(); i++)
+	for(auto& texture : allTextures)
 	{
-		if(allTextures.at(i)->getFileName() == textureLink)
-			return allTextures.at(i).get();
+		if(texture->getFileName() == textureLink)
+			return texture.get();
 	}
-	return NULL;
+	return nullptr;
 }
 
 NormalMap::NormalMap(std::string filename): Texture(filename){}
@@ -149,7 +149,7 @@ void NormalMap::bind(GLuint shaderProgram, unsigned int id)
 {
 	if(id > 31 || id < 0)
 	{
-		LogUtility::error("FrameBuffer bind ID " + CastUtility::toString<unsigned int>(id) + " is invalid. Must be between 1-31");
+		LogUtility::error("FrameBuffer bind ID ", id, " is invalid. Must be between 1-31");
 		return;
 	}
 	// this sets which texture we want to bind (id can be from 0 to 31)
@@ -163,12 +163,12 @@ void NormalMap::bind(GLuint shaderProgram, unsigned int id)
 //static
 NormalMap* NormalMap::getFromLink(const std::string& normalMapLink, const std::vector<std::unique_ptr<NormalMap>>& allNormalMaps)
 {
-	for(unsigned int i = 0; i < allNormalMaps.size(); i++)
+	for(auto& normalMap : allNormalMaps)
 	{
-		if(allNormalMaps.at(i)->getFileName() == normalMapLink)
-			return allNormalMaps.at(i).get();
+		if(normalMap->getFileName() == normalMapLink)
+			return normalMap.get();
 	}
-	return NULL;
+	return nullptr;
 }
 
 ParallaxMap::ParallaxMap(std::string filename): Texture(filename){}
@@ -177,7 +177,7 @@ void ParallaxMap::bind(GLuint shaderProgram, unsigned int id)
 {
 	if(id > 31 || id < 0)
 	{
-		LogUtility::error("FrameBuffer bind ID " + CastUtility::toString<unsigned int>(id) + " is invalid. Must be between 1-31");
+		LogUtility::error("FrameBuffer bind ID ", id, " is invalid. Must be between 1-31");
 		return;
 	}
 	// this sets which texture we want to bind (id can be from 0 to 31)
@@ -191,12 +191,12 @@ void ParallaxMap::bind(GLuint shaderProgram, unsigned int id)
 //static
 ParallaxMap* ParallaxMap::getFromLink(const std::string& parallaxMapLink, const std::vector<std::unique_ptr<ParallaxMap>>& allParallaxMaps)
 {
-	for(unsigned int i = 0; i < allParallaxMaps.size(); i++)
+	for(auto& parallaxMap : allParallaxMaps)
 	{
-		if(allParallaxMaps.at(i)->getFileName() == parallaxMapLink)
-			return allParallaxMaps.at(i).get();
+		if(parallaxMap->getFileName() == parallaxMapLink)
+			return parallaxMap.get();
 	}
-	return NULL;
+	return nullptr;
 }
 
 CubeMap::CubeMap(const std::string& rightTexture, const std::string& leftTexture, const std::string& topTexture, const std::string& bottomTexture, const std::string& backTexture, const std::string& frontTexture): rightTexture(rightTexture), leftTexture(leftTexture), topTexture(topTexture), bottomTexture(bottomTexture), backTexture(backTexture), frontTexture(frontTexture)
@@ -206,7 +206,7 @@ CubeMap::CubeMap(const std::string& rightTexture, const std::string& leftTexture
 	std::vector<unsigned char*> faceData = this->loadTextures();
 	for(GLuint i = 0; i < faceData.size(); i++)
 	{
-		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGBA, this->width[(unsigned int)i], this->height[(unsigned int)i], 0, GL_RGBA, GL_UNSIGNED_BYTE, faceData.at(i));
+		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGBA, this->width[static_cast<unsigned int>(i)], this->height[static_cast<unsigned int>(i)], 0, GL_RGBA, GL_UNSIGNED_BYTE, faceData.at(i));
 	}
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -242,7 +242,7 @@ void CubeMap::bind(GLuint shaderProgram, unsigned int id)
 {
 	if(id > 31 || id < 0)
 	{
-		LogUtility::error("FrameBuffer bind ID " + CastUtility::toString<unsigned int>(id) + " is invalid. Must be between 1-31");
+		LogUtility::error("FrameBuffer bind ID ", id, " is invalid. Must be between 1-31");
 		return;
 	}
 	// this sets which texture we want to bind (id can be from 0 to 31)

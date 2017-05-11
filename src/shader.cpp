@@ -25,11 +25,11 @@ Shader::Shader(std::string filename): filename(filename)
 	glValidateProgram(this->programHandle);
 	Shader::checkShaderError(this->programHandle, GL_VALIDATE_STATUS, true, "Program Validation failed");
 	
-	this->uniforms[(unsigned int)UniformTypes::MODEL] = glGetUniformLocation(this->programHandle, "m");
-	this->uniforms[(unsigned int)UniformTypes::VIEW] = glGetUniformLocation(this->programHandle, "v");
-	this->uniforms[(unsigned int)UniformTypes::PROJECTION] = glGetUniformLocation(this->programHandle, "p");
-	this->uniforms[(unsigned int)UniformTypes::PARALLAX_MAP_SCALE] = glGetUniformLocation(this->programHandle, "parallaxMultiplier");
-	this->uniforms[(unsigned int)UniformTypes::PARALLAX_MAP_BIAS] = glGetUniformLocation(this->programHandle, "parallaxBias");
+	this->uniforms[static_cast<unsigned int>(UniformTypes::MODEL)] = glGetUniformLocation(this->programHandle, "m");
+	this->uniforms[static_cast<unsigned int>(UniformTypes::VIEW)] = glGetUniformLocation(this->programHandle, "v");
+	this->uniforms[static_cast<unsigned int>(UniformTypes::PROJECTION)] = glGetUniformLocation(this->programHandle, "p");
+	this->uniforms[static_cast<unsigned int>(UniformTypes::PARALLAX_MAP_SCALE)] = glGetUniformLocation(this->programHandle, "parallaxMultiplier");
+	this->uniforms[static_cast<unsigned int>(UniformTypes::PARALLAX_MAP_BIAS)] = glGetUniformLocation(this->programHandle, "parallaxBias");
 }
 
 Shader::Shader(const Shader& copy): Shader(copy.filename){}

@@ -86,15 +86,13 @@ void World::addLight(BaseLight light, GLuint shader_programHandle)
 void World::setGravity(Vector3F gravity)
 {
 	this->gravity = gravity;
-	for(unsigned int i = 0; i < this->getEntities().size(); i++)
+	for(Entity& ent : this->entities)
 	{
-		Entity ent = this->getEntities().at(i);
 		ent.removeForce("gravity");
 		ent.applyForce("gravity", Force(this->getGravity()));
 	}
-	for(unsigned int i = 0; i < this->getEntityObjects().size(); i++)
+	for(EntityObject& eo : this->entityObjects)
 	{
-		EntityObject eo = this->getEntityObjects().at(i);
 		eo.removeForce("gravity");
 		eo.applyForce("gravity", Force(this->getGravity()));
 	}

@@ -11,7 +11,7 @@ std::string DataTranslation::getResourceName(const std::string& resourceLink) co
 {
 	const RawFile input(this->datafilename);
 	std::vector<std::string> lines = input.getLines();
-	for(std::string line : lines)
+	for(std::string& line : lines)
 	{
 		std::vector<std::string> lineSplit = StringUtility::splitString(line, ':');
 		if(lineSplit.size() != 0)
@@ -32,10 +32,8 @@ std::unordered_map<std::string, std::string> DataTranslation::retrieveModels() c
 {
 	std::unordered_map<std::string, std::string> modelMap;
 	MDLF input(RawFile(this->datafilename));
-	std::vector<std::string> modelList = input.getSequence("models");
-	for(unsigned int i = 0; i < modelList.size(); i++)
+	for(std::string& model : input.getSequence("models"))
 	{
-		std::string model = modelList.at(i);
 		modelMap[this->getResourceLink(model)] = input.getTag(model + ".name");
 	}
 	return modelMap;
@@ -45,10 +43,8 @@ std::unordered_map<std::string, std::string> DataTranslation::retrieveTextures()
 {
 	std::unordered_map<std::string, std::string> textureMap;
 	MDLF input(RawFile(this->datafilename));
-	std::vector<std::string> textureList = input.getSequence("textures");
-	for(unsigned int i = 0; i < textureList.size(); i++)
+	for(const std::string& texture : input.getSequence("textures"))
 	{
-		std::string texture = textureList.at(i);
 		textureMap[this->getResourceLink(texture)] = input.getTag(texture + ".name");
 	}
 	return textureMap;
@@ -58,10 +54,8 @@ std::unordered_map<std::string, std::string> DataTranslation::retrieveNormalMaps
 {
 	std::unordered_map<std::string, std::string> normalMapMap;
 	MDLF input(RawFile(this->datafilename));
-	std::vector<std::string> normalMapList = input.getSequence("normalmaps");
-	for(unsigned int i = 0; i < normalMapList.size(); i++)
+	for(const std::string& normalmap : input.getSequence("normalmaps"))
 	{
-		std::string normalmap = normalMapList.at(i);
 		normalMapMap[this->getResourceLink(normalmap)] = input.getTag(normalmap + ".name");
 	}
 	return normalMapMap;
@@ -71,10 +65,8 @@ std::unordered_map<std::string, std::string> DataTranslation::retrieveParallaxMa
 {
 	std::unordered_map<std::string, std::string> parallaxMapMap;
 	MDLF input(RawFile(this->datafilename));
-	std::vector<std::string> parallaxMapList = input.getSequence("parallaxmaps");
-	for(unsigned int i = 0; i < parallaxMapList.size(); i++)
+	for(const std::string& parallaxmap : input.getSequence("parallaxmaps"))
 	{
-		std::string parallaxmap = parallaxMapList.at(i);
 		parallaxMapMap[this->getResourceLink(parallaxmap)] = input.getTag(parallaxmap + ".name");
 	}
 	return parallaxMapMap;

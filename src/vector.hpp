@@ -7,25 +7,25 @@ template<typename T>
 class Vector2
 {
 public:
-	Vector2(T x = 0.0f, T y = 0.0f);
-	Vector2(const Vector2& copy) = default;
-	Vector2(Vector2&& move) = default;
-	Vector2& operator=(const Vector2& rhs) = default;
+	Vector2<T>(T x = 0.0f, T y = 0.0f);
+	Vector2<T>(const Vector2<T>& copy) = default;
+	Vector2<T>(Vector2<T>&& move) = default;
+	Vector2<T>& operator=(const Vector2<T>& rhs) = default;
 	
 	T getX() const;
 	T getY() const;
 	T& getXR();
 	T& getYR();
 	T length() const;
-	T dot(Vector2 rhs) const;
-	Vector2 normalised() const;
+	T dot(Vector2<T> rhs) const;
+	Vector2<T> normalised() const;
 	
-	Vector2 operator+(const Vector2& rhs) const;
-	Vector2 operator-(const Vector2& rhs) const;
-	Vector2 operator*(T scalar) const;
-	bool operator<(const Vector2& rhs) const;
-	bool operator>(const Vector2& rhs) const;
-	bool operator==(const Vector2& rhs) const;
+	Vector2<T> operator+(const Vector2<T>& rhs) const;
+	Vector2<T> operator-(const Vector2<T>& rhs) const;
+	Vector2<T> operator*(T scalar) const;
+	bool operator<(const Vector2<T>& rhs) const;
+	bool operator>(const Vector2<T>& rhs) const;
+	bool operator==(const Vector2<T>& rhs) const;
 private:
 	T x, y;
 };
@@ -34,10 +34,10 @@ template<typename T>
 class Vector3
 {
 public:
-	Vector3(T x = 0.0f, T y = 0.0f, T z = 0.0f);
-	Vector3(const Vector3& copy) = default;
-	Vector3(Vector3&& move) = default;
-	Vector3& operator=(const Vector3& rhs) = default;
+	Vector3<T>(T x = 0.0f, T y = 0.0f, T z = 0.0f);
+	Vector3<T>(const Vector3<T>& copy) = default;
+	Vector3<T>(Vector3<T>&& move) = default;
+	Vector3<T>& operator=(const Vector3<T>& rhs) = default;
 	
 	T getX() const;
 	T getY() const;
@@ -46,19 +46,19 @@ public:
 	T& getYR();
 	T& getZR();
 	T length() const;
-	T dot(Vector3 rhs) const;
-	Vector3 cross(Vector3 rhs) const;
+	T dot(Vector3<T> rhs) const;
+	Vector3 cross(Vector3<T> rhs) const;
 	Vector3 normalised() const;
 	
-	Vector3 operator+(const Vector3& rhs) const;
-	Vector3 operator-(const Vector3& rhs) const;
-	Vector3 operator*(T scalar) const;
-	Vector3 operator/(T scalar) const;
-	bool operator<(const Vector3& rhs) const;
-	bool operator>(const Vector3& rhs) const;
-	bool operator==(const Vector3& rhs) const;
-	void operator+=(const Vector3& rhs);
-	void operator-=(const Vector3& rhs);
+	Vector3<T> operator+(const Vector3<T>& rhs) const;
+	Vector3<T> operator-(const Vector3<T>& rhs) const;
+	Vector3<T> operator*(T scalar) const;
+	Vector3<T> operator/(T scalar) const;
+	bool operator<(const Vector3<T>& rhs) const;
+	bool operator>(const Vector3<T>& rhs) const;
+	bool operator==(const Vector3<T>& rhs) const;
+	Vector3<T>& operator+=(const Vector3<T>& rhs);
+	Vector3<T>& operator-=(const Vector3<T>& rhs);
 private:
 	T x, y, z;
 };
@@ -67,10 +67,10 @@ template<typename T>
 class Vector4
 {
 public:
-	Vector4(T x = 0.0f, T y = 0.0f, T z = 0.0f, T w = 0.0f);
-	Vector4(const Vector4& copy) = default;
-	Vector4(Vector4&& move) = default;
-	Vector4& operator=(const Vector4& rhs) = default;
+	Vector4<T>(T x = 0.0f, T y = 0.0f, T z = 0.0f, T w = 0.0f);
+	Vector4<T>(const Vector4& copy) = default;
+	Vector4<T>(Vector4&& move) = default;
+	Vector4<T>& operator=(const Vector4<T>& rhs) = default;
 	
 	T getX() const;
 	T getY() const;
@@ -81,16 +81,16 @@ public:
 	T& getZR();
 	T& getWR();
 	T length() const;
-	T dot(Vector4 rhs) const;
-	Vector4 cross(Vector4 rhs) const;
-	Vector4 normalised() const;
+	T dot(Vector4<T> rhs) const;
+	Vector4<T> cross(Vector4<T> rhs) const;
+	Vector4<T> normalised() const;
 	
-	Vector4 operator+(const Vector4& rhs) const;
-	Vector4 operator-(const Vector4& rhs) const;
-	Vector4 operator*(T scalar) const;
-	bool operator<(const Vector4& rhs) const;
-	bool operator>(const Vector4& rhs) const;
-	bool operator==(const Vector4& rhs) const;
+	Vector4<T> operator+(const Vector4<T>& rhs) const;
+	Vector4<T> operator-(const Vector4<T>& rhs) const;
+	Vector4<T> operator*(T scalar) const;
+	bool operator<(const Vector4<T>& rhs) const;
+	bool operator>(const Vector4<T>& rhs) const;
+	bool operator==(const Vector4<T>& rhs) const;
 private:
 	T x, y, z, w;
 };
