@@ -10,6 +10,7 @@
 #include "utility.hpp"
 #include "glew.h"
 #include "matrix.hpp"
+#define MAX_SHADERS 5
 
 class Shader
 {
@@ -19,6 +20,13 @@ public:
 	Shader(Shader&& move);
 	Shader& operator=(const Shader& rhs) = delete;
 	~Shader();
+	
+	bool hasVertexShader() const;
+	bool hasTessellationControlShader() const;
+	bool hasTessellationEvaluationShader() const;
+	bool hasGeometryShader() const;
+	bool hasFragmentShader() const;
+	
 	GLuint getProgramHandle() const;
 	void bind() const;
 	void update(const std::vector<float>&& modelData, const std::vector<float>&& viewData, const std::vector<float>&& projectionData, float parallaxMapScale = 0.04f, float parallaxMapOffset = -0.5f) const;
@@ -37,7 +45,7 @@ private:
 	};
 	std::string filename;
 	GLuint programHandle;
-	GLuint shaders[3];
+	GLuint shaders[MAX_SHADERS];
 	GLuint uniforms[(unsigned int)UniformTypes::NUM_UNIFORMS];
 };
 

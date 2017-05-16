@@ -6,13 +6,17 @@ Shader::Shader(std::string filename): filename(filename)
 	this->programHandle = glCreateProgram();
 	// Vertex Shader
 	this->shaders[0] = Shader::createShader(Shader::loadShader(this->filename + ".vertex.glsl"), GL_VERTEX_SHADER);
-	// Fragment Shader
-	this->shaders[1] = Shader::createShader(Shader::loadShader(this->filename + ".fragment.glsl"), GL_FRAGMENT_SHADER);
+	// Tessellation Control Shader
+	this->shaders[1] = Shader::createShader(Shader::loadShader(this->filename + ".tessellation_control.glsl"), GL_TESS_CONTROL_SHADER);
+	// Tessellation Evalution Shader
+	this->shaders[2] = Shader::createShader(Shader::loadShader(this->filename + ".tessellation_evaluation.glsl"), GL_TESS_EVALUATION_SHADER);
 	// Geometry Shader
-	this->shaders[2] = Shader::createShader(Shader::loadShader(this->filename + ".geometry.glsl"), GL_GEOMETRY_SHADER);
-	
-	for(unsigned int i = 0; i < 3; i++)
-		glAttachShader(this->programHandle, this->shaders[i]);
+	this->shaders[3] = Shader::createShader(Shader::loadShader(this->filename + ".geometry.glsl"), GL_GEOMETRY_SHADER);
+	// Fragment Shader
+	this->shaders[4] = Shader::createShader(Shader::loadShader(this->filename + ".fragment.glsl"), GL_FRAGMENT_SHADER);
+	for(unsigned int i = 0; i < MAX_SHADERS; i++)
+		if(this->shaders[i] != 0)
+			glAttachShader(this->programHandle, this->shaders[i]);
 	
 	glBindAttribLocation(this->programHandle, 0, "position");
 	glBindAttribLocation(this->programHandle, 1, "texcoord");
@@ -30,13 +34,19 @@ Shader::Shader(std::string filename): filename(filename)
 	this->uniforms[static_cast<unsigned int>(UniformTypes::PROJECTION)] = glGetUniformLocation(this->programHandle, "p");
 	this->uniforms[static_cast<unsigned int>(UniformTypes::PARALLAX_MAP_SCALE)] = glGetUniformLocation(this->programHandle, "parallaxMultiplier");
 	this->uniforms[static_cast<unsigned int>(UniformTypes::PARALLAX_MAP_BIAS)] = glGetUniformLocation(this->programHandle, "parallaxBias");
+	LogUtility::message("Shader with link '", filename, "':");
+	LogUtility::message("\tHas Vertex Shader: ", this->hasVertexShader());
+	LogUtility::message("\tHas Tessellation Control Shader: ", this->hasTessellationControlShader());
+	LogUtility::message("\tHas Tessellation Evaluation Shader: ", this->hasTessellationEvaluationShader());
+	LogUtility::message("\tHas Geometry Shader: ", this->hasGeometryShader());
+	LogUtility::message("\tHas Fragment Shader: ", this->hasFragmentShader());
 }
 
 Shader::Shader(const Shader& copy): Shader(copy.filename){}
 
 Shader::Shader(Shader&& move): filename(move.filename), programHandle(move.programHandle)
 {
-	for(unsigned int i = 0; i < 3; i++)
+	for(unsigned int i = 0; i < MAX_SHADERS; i++)
 	{
 		this->shaders[i] = move.shaders[i];
 		move.shaders[i] = 0;
@@ -55,13 +65,40 @@ Shader::~Shader()
 	// If this was moved and this destructor was invoked, then the programHandle will be zero (cant normally be zero so we skip all of this crap to avoid crashes)
 	if(this->programHandle == 0)
 		return;
-	for(unsigned int i = 0; i < 3; i++)
+	for(unsigned int i = 0; i < MAX_SHADERS; i++)
 	{
+		if(this->shaders[i] == 0)
+			continue;
 		glDetachShader(this->programHandle, this->shaders[i]);
 		glDeleteShader(this->shaders[i]);
 	}
 	// Free GPU memory
 	glDeleteProgram(this->programHandle);
+}
+
+bool Shader::hasVertexShader() const
+{
+	return this->shaders[0] != 0;
+}
+
+bool Shader::hasTessellationControlShader() const
+{
+	return this->shaders[1] != 0;
+}
+
+bool Shader::hasTessellationEvaluationShader() const
+{
+	return this->shaders[2] != 0;
+}
+
+bool Shader::hasGeometryShader() const
+{
+	return this->shaders[3] != 0;
+}
+
+bool Shader::hasFragmentShader() const
+{
+	return this->shaders[4] != 0;
 }
 
 GLuint Shader::getProgramHandle() const
@@ -99,9 +136,9 @@ std::string Shader::loadShader(const std::string& filename)
 			output.append(line + "\n");
         }
     }
-    else
+    else if(output != "")
     {
-		LogUtility::error("Unable to load shader '" + filename + "'\n");
+		LogUtility::error("Unable to load shader '" + filename + "' with source '", output, "'");
     }
     return output;
 }
@@ -129,9 +166,17 @@ void Shader::checkShaderError(GLuint shader, GLuint flag, bool isProgram, std::s
 
 GLuint Shader::createShader(std::string source, GLenum shaderType)
 {
+	if(source == "")
+	{
+		LogUtility::message("Shader Source for Type [", shaderType, "] was empty, skipping it.");
+		return 0;
+	}
 	GLuint shader = glCreateShader(shaderType);
 	if(shader == 0)
+	{
 		LogUtility::error("Fatal Error: Shader Creation failed (Perhaps out of memory?)");
+		return 0;
+	}
 	
 	const GLchar* shaderSources[1];
 	GLint shaderSourceLengths[1];

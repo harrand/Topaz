@@ -55,10 +55,18 @@ std::string Mesh::getFileName() const
 	return this->filename;
 }
 
-void Mesh::render() const
+void Mesh::render(bool patches) const
 {
 	glBindVertexArray(this->vertexArrayObject);
-	glDrawElements(GL_TRIANGLES, this->renderCount, GL_UNSIGNED_INT, 0);
+	if(patches)
+	{
+		glPatchParameteri(GL_PATCH_VERTICES, 16);
+		glDrawElements(GL_PATCHES, this->renderCount, GL_UNSIGNED_INT, 0);
+	}
+	else
+	{
+		glDrawElements(GL_TRIANGLES, this->renderCount, GL_UNSIGNED_INT, 0);
+	}
 	glBindVertexArray(0);
 }
 

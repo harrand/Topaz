@@ -37,7 +37,7 @@ public:
 	const std::vector<Vector2F>& getTexcoords() const;
 	const std::vector<Vector3F>& getNormals() const;
 	std::string getFileName() const;
-	void render() const;
+	void render(bool patches) const;
 	static Mesh* getFromLink(const std::string& meshLink, const std::vector<std::unique_ptr<Mesh>>& allMeshes);
 private:
 	const std::string filename;
