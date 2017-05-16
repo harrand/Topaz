@@ -129,9 +129,10 @@ void World::exportWorld(const std::string& worldName) const
 		const Object curObj = this->members.at(i);
 		
 		output.editTag(objectName + ".mesh", dt.getResourceName(curObj.getMeshLink()));
-		output.editTag(objectName + ".texture", dt.getResourceName(curObj.getTextureLink()));
-		output.editTag(objectName + ".normalmap", dt.getResourceName(curObj.getNormalMapLink()));
-		output.editTag(objectName + ".parallaxmap", dt.getResourceName(curObj.getParallaxMapLink()));
+		for(auto& texture : curObj.getTextures())
+		{
+			output.editTag(objectName + ".texture" + CastUtility::toString<unsigned int>(static_cast<unsigned int>(texture.second)), dt.getResourceName(texture.first));
+		}
 		output.editTag(objectName + ".pos", StringUtility::format(StringUtility::devectoriseList3<float>(curObj.getPos())));
 		output.editTag(objectName + ".rot", StringUtility::format(StringUtility::devectoriseList3<float>(curObj.getRot())));
 		output.editTag(objectName + ".scale", StringUtility::format(StringUtility::devectoriseList3<float>(curObj.getScale())));
@@ -143,9 +144,10 @@ void World::exportWorld(const std::string& worldName) const
 		const EntityObject curEO = this->entityObjects.at(i);
 
 		output.editTag(eoName + ".mesh", dt.getResourceName(curEO.getMeshLink()));
-		output.editTag(eoName + ".texture", dt.getResourceName(curEO.getTextureLink()));
-		output.editTag(eoName + ".normalmap", dt.getResourceName(curEO.getNormalMapLink()));
-		output.editTag(eoName + ".parallaxmap", dt.getResourceName(curEO.getParallaxMapLink()));
+		for(auto& texture : curEO.getTextures())
+		{
+			output.editTag(eoName + ".texture" + CastUtility::toString<unsigned int>(static_cast<unsigned int>(texture.second)), dt.getResourceName(texture.first));
+		}
 		output.editTag(eoName + ".mass", CastUtility::toString<float>(curEO.getMass()));
 		output.editTag(eoName + ".pos", StringUtility::format(StringUtility::devectoriseList3<float>(curEO.getPos())));
 		output.editTag(eoName + ".rot", StringUtility::format(StringUtility::devectoriseList3<float>(curEO.getRot())));
@@ -155,13 +157,41 @@ void World::exportWorld(const std::string& worldName) const
 	output.addSequence("entityobjects", eoList);
 }
 
-void World::update(unsigned int fps, Camera& cam, Shader& shader, unsigned int width, unsigned int height, const std::vector<std::unique_ptr<Mesh>>& allMeshes, const std::vector<std::unique_ptr<Texture>>& allTextures, const std::vector<std::unique_ptr<NormalMap>>& allNormalMaps, const std::vector<std::unique_ptr<ParallaxMap>>& allParallaxMaps)
+void World::update(unsigned int fps, Camera& cam, Shader& shader, unsigned int width, unsigned int height, const std::vector<std::unique_ptr<Mesh>>& allMeshes, const std::vector<std::unique_ptr<Texture>>& allTextures, const std::vector<std::unique_ptr<NormalMap>>& allNormalMaps, const std::vector<std::unique_ptr<ParallaxMap>>& allParallaxMaps, const std::vector<std::unique_ptr<DisplacementMap>>& allDisplacementMaps)
 {
 	for(auto& obj : this->members)
-		obj.render(Mesh::getFromLink(obj.getMeshLink(), allMeshes), Texture::getFromLink(obj.getTextureLink(), allTextures), NormalMap::getFromLink(obj.getNormalMapLink(), allNormalMaps), ParallaxMap::getFromLink(obj.getParallaxMapLink(), allParallaxMaps), cam, shader, width, height);
+	{
+		Mesh* mesh = Mesh::getFromLink(obj.getMeshLink(), allMeshes);
+		Texture* tex = nullptr; NormalMap* nm = nullptr; ParallaxMap* pm = nullptr; DisplacementMap* dm = nullptr;
+		for(auto& texture : obj.getTextures())
+		{
+			if(texture.second == Texture::TextureType::TEXTURE)
+				tex = Texture::getFromLink(texture.first, allTextures);
+			else if(texture.second == Texture::TextureType::NORMAL_MAP)
+				nm = NormalMap::getFromLink(texture.first, allNormalMaps);
+			else if(texture.second == Texture::TextureType::PARALLAX_MAP)
+				pm = ParallaxMap::getFromLink(texture.first, allParallaxMaps);
+			else if(texture.second == Texture::TextureType::DISPLACEMENT_MAP)
+				dm = DisplacementMap::getFromLink(texture.first, allDisplacementMaps);
+		}
+		obj.render(mesh, tex, nm, pm, dm, cam, shader, width, height);
+	}
 	for(auto& eo : this->entityObjects)
 	{
-		eo.render(Mesh::getFromLink(eo.getMeshLink(), allMeshes), Texture::getFromLink(eo.getTextureLink(), allTextures), NormalMap::getFromLink(eo.getNormalMapLink(), allNormalMaps), ParallaxMap::getFromLink(eo.getParallaxMapLink(), allParallaxMaps), cam, shader, width, height);
+		Mesh* mesh = Mesh::getFromLink(eo.getMeshLink(), allMeshes);
+		Texture* tex = nullptr; NormalMap* nm = nullptr; ParallaxMap* pm = nullptr; DisplacementMap* dm = nullptr;
+		for(auto& texture : eo.getTextures())
+		{
+			if(texture.second == Texture::TextureType::TEXTURE)
+				tex = Texture::getFromLink(texture.first, allTextures);
+			else if(texture.second == Texture::TextureType::NORMAL_MAP)
+				nm = NormalMap::getFromLink(texture.first, allNormalMaps);
+			else if(texture.second == Texture::TextureType::PARALLAX_MAP)
+				pm = ParallaxMap::getFromLink(texture.first, allParallaxMaps);
+			else if(texture.second == Texture::TextureType::DISPLACEMENT_MAP)
+				dm = DisplacementMap::getFromLink(texture.first, allDisplacementMaps);
+		}
+		eo.render(mesh, tex, nm, pm, dm, cam, shader, width, height);
 		eo.updateMotion(fps);
 	}	
 	for(auto& ent : this->entities)
@@ -230,9 +260,7 @@ const std::map<std::vector<GLuint>, BaseLight>& World::getLights() const
 Object World::retrieveData(const std::string& objectName, MDLF& mdlf)
 {
 	std::string meshName = mdlf.getTag(objectName + ".mesh");
-	std::string textureName = mdlf.getTag(objectName + ".texture");
-	std::string normalMapName = mdlf.getTag(objectName + ".normalmap");
-	std::string parallaxMapName = mdlf.getTag(objectName + ".parallaxmap");
+
 	std::string positionStr = mdlf.getTag(objectName + ".pos");
 	std::string rotationStr = mdlf.getTag(objectName + ".rot");
 	std::string scaleStr = mdlf.getTag(objectName + ".scale");
@@ -240,19 +268,20 @@ Object World::retrieveData(const std::string& objectName, MDLF& mdlf)
 	DataTranslation dt(RES_POINT + "/resources.data");
 	
 	std::string meshLink = dt.getResourceLink(meshName);
-	std::string textureLink = dt.getResourceLink(textureName);
-	std::string normalMapLink = dt.getResourceLink(normalMapName);
-	std::string parallaxMapLink = dt.getResourceLink(parallaxMapName);
+	std::vector<std::pair<std::string, Texture::TextureType>> textures;
+	for(unsigned int i = 0; i < static_cast<unsigned int>(Texture::TextureType::TEXTURE_TYPES); i++)
+	{
+		std::string textureName = mdlf.getTag(objectName + ".texture" + CastUtility::toString<unsigned int>(i));
+		std::string textureLink = dt.getResourceLink(textureName);
+		textures.push_back(std::make_pair(textureLink, static_cast<Texture::TextureType>(i)));
+	}
 	
-	return Object(meshLink, textureLink, normalMapLink, parallaxMapLink, StringUtility::vectoriseList3<float>(StringUtility::deformat(positionStr)), StringUtility::vectoriseList3<float>(StringUtility::deformat(rotationStr)), StringUtility::vectoriseList3<float>(StringUtility::deformat(scaleStr)));
+	return Object(meshLink, textures, StringUtility::vectoriseList3<float>(StringUtility::deformat(positionStr)), StringUtility::vectoriseList3<float>(StringUtility::deformat(rotationStr)), StringUtility::vectoriseList3<float>(StringUtility::deformat(scaleStr)));
 }
 
 EntityObject World::retrieveEOData(const std::string& eoName, MDLF& mdlf)
 {
 	std::string meshName = mdlf.getTag(eoName + ".mesh");
-	std::string textureName = mdlf.getTag(eoName + ".texture");
-	std::string normalMapName = mdlf.getTag(eoName + ".normalmap");
-	std::string parallaxMapName = mdlf.getTag(eoName + ".parallaxmap");
 	std::string massStr = mdlf.getTag(eoName + ".mass");
 	std::string positionStr = mdlf.getTag(eoName + ".pos");
 	std::string rotationStr = mdlf.getTag(eoName + ".rot");
@@ -261,10 +290,15 @@ EntityObject World::retrieveEOData(const std::string& eoName, MDLF& mdlf)
 	DataTranslation dt(RES_POINT + "/resources.data");
 	
 	std::string meshLink = dt.getResourceLink(meshName);
-	std::string textureLink = dt.getResourceLink(textureName);
-	std::string normalMapLink = dt.getResourceLink(normalMapName);
-	std::string parallaxMapLink = dt.getResourceLink(parallaxMapName);
+	std::vector<std::pair<std::string, Texture::TextureType>> textures;
+	for(unsigned int i = 0; i < static_cast<unsigned int>(Texture::TextureType::TEXTURE_TYPES); i++)
+	{
+		std::string textureName = mdlf.getTag(eoName + ".texture" + CastUtility::toString<unsigned int>(i));
+		std::string textureLink = dt.getResourceLink(textureName);
+		//LogUtility::message(eoName, ".texture", CastUtility::toString<unsigned int>(i), " yields the name ", textureName, " and the link ", textureLink, "\n");
+		textures.push_back(std::make_pair(textureLink, static_cast<Texture::TextureType>(i)));
+	}
 	float mass = CastUtility::fromString<float>(massStr);
 	
-	return EntityObject(meshLink, textureLink, normalMapLink, parallaxMapLink, mass, StringUtility::vectoriseList3<float>(StringUtility::deformat(positionStr)), StringUtility::vectoriseList3<float>(StringUtility::deformat(rotationStr)), StringUtility::vectoriseList3<float>(StringUtility::deformat(scaleStr)));
+	return EntityObject(meshLink, textures, mass, StringUtility::vectoriseList3<float>(StringUtility::deformat(positionStr)), StringUtility::vectoriseList3<float>(StringUtility::deformat(rotationStr)), StringUtility::vectoriseList3<float>(StringUtility::deformat(scaleStr)));
 }

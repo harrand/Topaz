@@ -1,6 +1,6 @@
 #include "object.hpp"
 
-Object::Object(std::string meshLink, std::string textureLink, std::string normalMapLink, std::string parallaxMapLink, Vector3F pos, Vector3F rot, Vector3F scale): pos(pos), rot(rot), scale(scale), meshLink(meshLink), textureLink(textureLink), normalMapLink(normalMapLink), parallaxMapLink(parallaxMapLink){}
+Object::Object(std::string meshLink, std::vector<std::pair<std::string, Texture::TextureType>> textures, Vector3F pos, Vector3F rot, Vector3F scale): pos(pos), rot(rot), scale(scale), meshLink(meshLink), textures(textures){}
 
 const Vector3F& Object::getPos() const
 {
@@ -37,35 +37,28 @@ const std::string& Object::getMeshLink() const
 	return this->meshLink;
 }
 
-const std::string& Object::getTextureLink() const
+const std::vector<std::pair<std::string, Texture::TextureType>> Object::getTextures() const
 {
-	return this->textureLink;
+	return this->textures;
 }
 
-const std::string& Object::getNormalMapLink() const
+void Object::render(Mesh* mesh, Texture* tex, NormalMap* nm, ParallaxMap* pm, DisplacementMap* dm, const Camera& cam, const Shader& shad, float width, float height) const
 {
-	return this->normalMapLink;
-}
-
-const std::string& Object::getParallaxMapLink() const
-{
-	return this->parallaxMapLink;
-}
-
-void Object::render(Mesh* mesh, Texture* tex, NormalMap* nm, ParallaxMap* pm, const Camera& cam, const Shader& shad, float width, float height) const
-{
-	if(mesh == nullptr || tex == nullptr || nm == nullptr || pm == nullptr)
-	{
+	if(mesh == nullptr)
 		return;
-	}
 	shad.bind();
-	tex->bind(shad.getProgramHandle(), 0);
-	nm->bind(shad.getProgramHandle(), 1);
-	pm->bind(shad.getProgramHandle(), 2);
+	if(tex != nullptr)
+		tex->bind(shad.getProgramHandle(), static_cast<unsigned int>(tex->getTextureType()));
+	if(nm != nullptr)
+		nm->bind(shad.getProgramHandle(), static_cast<unsigned int>(nm->getTextureType()));
+	if(pm != nullptr)
+		pm->bind(shad.getProgramHandle(), static_cast<unsigned int>(pm->getTextureType()));
+	if(dm != nullptr)
+		dm->bind(shad.getProgramHandle(), static_cast<unsigned int>(dm->getTextureType()));
 	shad.update(MatrixTransformations::createModelMatrix(this->pos, this->rot, this->scale).fillData(), MatrixTransformations::createViewMatrix(cam.getPos(), cam.getRot()).fillData(), MatrixTransformations::createProjectionMatrix(1.5708, width, height, 0.1f, 10000.0f).fillData());
-	glFrontFace(GL_CCW);
+	//glFrontFace(GL_CCW);
 	mesh->render();
-	glFrontFace(GL_CW);
+	//glFrontFace(GL_CW);
 }
 
 Skybox::Skybox(std::string cubeMeshLink, CubeMap& cm): cubeMeshLink(cubeMeshLink), cm(cm){}
@@ -75,5 +68,7 @@ void Skybox::render(const Camera& cam, const Shader& shad, const std::vector<std
 	shad.bind();
 	this->cm.bind(shad.getProgramHandle(), 0);
 	shad.update(MatrixTransformations::createModelMatrix(cam.getPos(), Vector3F(), Vector3F(10000, 10000, 10000)).fillData(), MatrixTransformations::createViewMatrix(cam.getPos(), cam.getRot()).fillData(), MatrixTransformations::createProjectionMatrix(1.5708, width, height, 0.1f, 20000).fillData());
+	glFrontFace(GL_CW);
 	Mesh::getFromLink(this->cubeMeshLink, allMeshes)->render();
+	glFrontFace(GL_CCW);
 }

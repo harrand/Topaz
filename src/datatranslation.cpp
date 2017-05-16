@@ -72,9 +72,20 @@ std::unordered_map<std::string, std::string> DataTranslation::retrieveParallaxMa
 	return parallaxMapMap;
 }
 
-unsigned int DataTranslation::retrieveAllData(std::vector<std::unique_ptr<Mesh>>& allMeshes, std::vector<std::unique_ptr<Texture>>& allTextures, std::vector<std::unique_ptr<NormalMap>>& allNormalMaps, std::vector<std::unique_ptr<ParallaxMap>>& allParallaxMaps) const
+std::unordered_map<std::string, std::string> DataTranslation::retrieveDisplacementMaps() const
 {
-	std::unordered_map<std::string, std::string> models = this->retrieveModels(), textures = this->retrieveTextures(), normalmaps = this->retrieveNormalMaps(), parallaxmaps = this->retrieveParallaxMaps();
+	std::unordered_map<std::string, std::string> displacementMapMap;
+	MDLF input(RawFile(this->datafilename));
+	for(const std::string& displacementmap : input.getSequence("displacementmaps"))
+	{
+		displacementMapMap[this->getResourceLink(displacementmap)] = input.getTag(displacementmap + ".name");
+	}
+	return displacementMapMap;
+}
+
+unsigned int DataTranslation::retrieveAllData(std::vector<std::unique_ptr<Mesh>>& allMeshes, std::vector<std::unique_ptr<Texture>>& allTextures, std::vector<std::unique_ptr<NormalMap>>& allNormalMaps, std::vector<std::unique_ptr<ParallaxMap>>& allParallaxMaps, std::vector<std::unique_ptr<DisplacementMap>>& allDisplacementMaps) const
+{
+	std::unordered_map<std::string, std::string> models = this->retrieveModels(), textures = this->retrieveTextures(), normalmaps = this->retrieveNormalMaps(), parallaxmaps = this->retrieveParallaxMaps(), displacementmaps = this->retrieveDisplacementMaps();
 	unsigned int dataCount = 0;
 	typedef std::unordered_map<std::string, std::string>::iterator it_type;
 	for(it_type iterator = models.begin(); iterator != models.end(); iterator++)
@@ -95,6 +106,11 @@ unsigned int DataTranslation::retrieveAllData(std::vector<std::unique_ptr<Mesh>>
 	for(it_type iterator = parallaxmaps.begin(); iterator != parallaxmaps.end(); iterator++)
 	{
 		allParallaxMaps.push_back(std::make_unique<ParallaxMap>(iterator->first));
+		dataCount++;
+	}
+	for(it_type iterator = displacementmaps.begin(); iterator != displacementmaps.end(); iterator++)
+	{
+		allDisplacementMaps.push_back(std::make_unique<DisplacementMap>(iterator->first));
 		dataCount++;
 	}
 	return dataCount;

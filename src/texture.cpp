@@ -132,6 +132,11 @@ std::string Texture::getFileName() const
 	return this->filename;
 }
 
+Texture::TextureType Texture::getTextureType()
+{
+	return TextureType::TEXTURE;
+}
+
 //static
 Texture* Texture::getFromLink(const std::string& textureLink, const std::vector<std::unique_ptr<Texture>>& allTextures)
 {
@@ -158,6 +163,11 @@ void NormalMap::bind(GLuint shaderProgram, unsigned int id)
 	glActiveTexture(GL_TEXTURE0 + id);
 	glBindTexture(GL_TEXTURE_2D, this->texhandle);
 	glUniform1i(this->textureID, id);
+}
+
+Texture::TextureType NormalMap::getTextureType()
+{
+	return TextureType::NORMAL_MAP;
 }
 
 //static
@@ -188,6 +198,11 @@ void ParallaxMap::bind(GLuint shaderProgram, unsigned int id)
 	glUniform1i(this->textureID, id);
 }
 
+Texture::TextureType ParallaxMap::getTextureType()
+{
+	return TextureType::PARALLAX_MAP;
+}
+
 //static
 ParallaxMap* ParallaxMap::getFromLink(const std::string& parallaxMapLink, const std::vector<std::unique_ptr<ParallaxMap>>& allParallaxMaps)
 {
@@ -195,6 +210,39 @@ ParallaxMap* ParallaxMap::getFromLink(const std::string& parallaxMapLink, const 
 	{
 		if(parallaxMap->getFileName() == parallaxMapLink)
 			return parallaxMap.get();
+	}
+	return nullptr;
+}
+
+DisplacementMap::DisplacementMap(std::string filename): Texture(filename){}
+
+void DisplacementMap::bind(GLuint shaderProgram, unsigned int id)
+{
+	if(id > 31 || id < 0)
+	{
+		LogUtility::error("FrameBuffer bind ID ", id, " is invalid. Must be between 1-31");
+		return;
+	}
+	// this sets which texture we want to bind (id can be from 0 to 31)
+	// GLTEXTURE0 is actually a number, so we can add the id instead of a massive switch statement
+	this->textureID = glGetUniformLocation(shaderProgram, "displacementMapSampler");
+	glActiveTexture(GL_TEXTURE0 + id);
+	glBindTexture(GL_TEXTURE_2D, this->texhandle);
+	glUniform1i(this->textureID, id);
+}
+
+Texture::TextureType DisplacementMap::getTextureType()
+{
+	return TextureType::DISPLACEMENT_MAP;
+}
+
+//static
+DisplacementMap* DisplacementMap::getFromLink(const std::string& DisplacementMapLink, const std::vector<std::unique_ptr<DisplacementMap>>& allDisplacementMaps)
+{
+	for(auto& DisplacementMap : allDisplacementMaps)
+	{
+		if(DisplacementMap->getFileName() == DisplacementMapLink)
+			return DisplacementMap.get();
 	}
 	return nullptr;
 }

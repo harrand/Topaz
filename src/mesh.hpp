@@ -53,7 +53,7 @@ private:
 		NUM_BUFFERS = 5
 	};
 	GLuint vertexArrayObject; //vao
-	GLuint vertexArrayBuffers[(unsigned int)BufferTypes::NUM_BUFFERS]; //vbo array
+	GLuint vertexArrayBuffers[static_cast<unsigned int>(BufferTypes::NUM_BUFFERS)]; //vbo array
 	unsigned int renderCount;
 };
 

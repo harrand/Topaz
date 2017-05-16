@@ -5,7 +5,7 @@ std::vector<std::unique_ptr<AudioClip>> CommandCache::clips = std::vector<std::u
 
 void CommandCache::updateAlias(std::vector<std::string> aliasArgs)
 {
-	CommandCache::aliasArgs = aliasArgs;
+	CommandCache::aliasArgs = std::move(aliasArgs);
 }
 
 std::vector<std::string> CommandCache::getAlias()
@@ -142,9 +142,9 @@ void Commands::exportWorld(std::vector<std::string> args, World& world)
 
 void Commands::addObject(std::vector<std::string> args, World& world, Player& player, bool printResults)
 {
-	if(args.size() != 8)
+	if(args.size() != 9)
 	{
-		LogUtility::warning("Nonfatal Command Error: Unexpected quantity of args, got ", args.size(), ", expected 8.");
+		LogUtility::warning("Nonfatal Command Error: Unexpected quantity of args, got ", args.size(), ", expected 9.");
 		return;
 	}
 	DataTranslation dt(RES_POINT + "/resources.data");
@@ -152,9 +152,10 @@ void Commands::addObject(std::vector<std::string> args, World& world, Player& pl
 	std::string textureName = args.at(2);
 	std::string normalMapName = args.at(3);
 	std::string parallaxMapName = args.at(4);
-	std::string posStr = args.at(5);
-	std::string rotStr = args.at(6);
-	std::string scaleStr = args.at(7);
+	std::string displacementMapName = args.at(5);
+	std::string posStr = args.at(6);
+	std::string rotStr = args.at(7);
+	std::string scaleStr = args.at(8);
 
 	Vector3F pos, rot, scale;
 		
@@ -162,6 +163,7 @@ void Commands::addObject(std::vector<std::string> args, World& world, Player& pl
 	std::string textureLink = dt.getResourceLink(textureName);
 	std::string normalMapLink = dt.getResourceLink(normalMapName);
 	std::string parallaxMapLink = dt.getResourceLink(parallaxMapName);
+	std::string displacementMapLink = dt.getResourceLink(displacementMapName);
 	
 	if(meshLink == "0")
 	{
@@ -186,16 +188,22 @@ void Commands::addObject(std::vector<std::string> args, World& world, Player& pl
 	
 	scale = StringUtility::vectoriseList3<float>(StringUtility::deformat(scaleStr));
 		
-	world.addObject(Object(meshLink, textureLink, normalMapLink, parallaxMapLink, pos, rot, scale));
+	std::vector<std::pair<std::string, Texture::TextureType>> textures;
+	textures.push_back(std::make_pair(textureLink, Texture::TextureType::TEXTURE));
+	textures.push_back(std::make_pair(normalMapLink, Texture::TextureType::NORMAL_MAP));
+	textures.push_back(std::make_pair(parallaxMapLink, Texture::TextureType::PARALLAX_MAP));
+	textures.push_back(std::make_pair(displacementMapLink, Texture::TextureType::DISPLACEMENT_MAP));
+		
+	world.addObject(Object(meshLink, textures, pos, rot, scale));
 	if(printResults)
-		LogUtility::message("Added the following to this world:\nMesh name = ", meshName, ", link = ", meshLink, ".\nTexture name = ", textureName, ", link = ", textureLink, ".\nNormalmap name = ", normalMapName, ", link = ", normalMapLink, ".\nParallaxmap name = ", parallaxMapName, ", link = ", parallaxMapLink, ".\nPosition = ", StringUtility::format(StringUtility::devectoriseList3<float>(pos)), ".\nRotation = ", StringUtility::format(StringUtility::devectoriseList3<float>(rot)), ".\nScale = ", StringUtility::format(StringUtility::devectoriseList3<float>(scale)), ".");
+		LogUtility::message("Added the following to this world:\nMesh name = ", meshName, ", link = ", meshLink, ".\nTexture name = ", textureName, ", link = ", textureLink, ".\nNormalmap name = ", normalMapName, ", link = ", normalMapLink, ".\nParallaxmap name = ", parallaxMapName, ", link = ", parallaxMapLink, "\nDisplacementmap name = ", displacementMapName, ", link = ", displacementMapLink, ".\nPosition = ", StringUtility::format(StringUtility::devectoriseList3<float>(pos)), ".\nRotation = ", StringUtility::format(StringUtility::devectoriseList3<float>(rot)), ".\nScale = ", StringUtility::format(StringUtility::devectoriseList3<float>(scale)), ".");
 }
 
 void Commands::addEntityObject(std::vector<std::string> args, World& world, Player& player, bool printResults)
 {
-	if(args.size() != 9)
+	if(args.size() != 10)
 	{
-		LogUtility::warning("Nonfatal Command Error: Unexpected quantity of args, got ", args.size(), ", expected 9.");
+		LogUtility::warning("Nonfatal Command Error: Unexpected quantity of args, got ", args.size(), ", expected 10.");
 		return;
 	}
 	DataTranslation dt(RES_POINT + "/resources.data");
@@ -203,10 +211,11 @@ void Commands::addEntityObject(std::vector<std::string> args, World& world, Play
 	std::string textureName = args.at(2);
 	std::string normalMapName = args.at(3);
 	std::string parallaxMapName = args.at(4);
-	std::string massStr = args.at(5);
-	std::string posStr = args.at(6);
-	std::string rotStr = args.at(7);
-	std::string scaleStr = args.at(8);
+	std::string displacementMapName = args.at(5);
+	std::string massStr = args.at(6);
+	std::string posStr = args.at(7);
+	std::string rotStr = args.at(8);
+	std::string scaleStr = args.at(9);
 
 	Vector3F pos, rot, scale;
 		
@@ -214,6 +223,7 @@ void Commands::addEntityObject(std::vector<std::string> args, World& world, Play
 	std::string textureLink = dt.getResourceLink(textureName);
 	std::string normalMapLink = dt.getResourceLink(normalMapName);
 	std::string parallaxMapLink = dt.getResourceLink(parallaxMapName);
+	std::string displacementMapLink = dt.getResourceLink(displacementMapName);
 	
 	if(meshLink == "0")
 	{
@@ -240,9 +250,15 @@ void Commands::addEntityObject(std::vector<std::string> args, World& world, Play
 	
 	float mass = CastUtility::fromString<float>(massStr);
 	
-	world.addEntityObject(EntityObject(meshLink, textureLink, normalMapLink, parallaxMapLink, mass, pos, rot, scale));
+	std::vector<std::pair<std::string, Texture::TextureType>> textures;
+	textures.push_back(std::make_pair(textureLink, Texture::TextureType::TEXTURE));
+	textures.push_back(std::make_pair(normalMapLink, Texture::TextureType::NORMAL_MAP));
+	textures.push_back(std::make_pair(parallaxMapLink, Texture::TextureType::PARALLAX_MAP));
+	textures.push_back(std::make_pair(displacementMapLink, Texture::TextureType::DISPLACEMENT_MAP));
+	
+	world.addEntityObject(EntityObject(meshLink, textures, mass, pos, rot, scale));
 	if(printResults)
-		LogUtility::message("Added the following to this world:\nMesh name = ", meshName, ", link = ", meshLink, ".\nTexture name = ", textureName, ", link = ", textureLink, ".\nNormalmap name = ", normalMapName, ", link = ", normalMapLink, ".\nParallaxmap name = ", parallaxMapName, ", link = ", parallaxMapLink, ".\nMass = ", mass, ".\nPosition = ", StringUtility::format(StringUtility::devectoriseList3<float>(pos)), ".\nRotation = ", StringUtility::format(StringUtility::devectoriseList3<float>(rot)), ".\nScale = ", StringUtility::format(StringUtility::devectoriseList3<float>(scale)), ".");
+		LogUtility::message("Added the following to this world:\nMesh name = ", meshName, ", link = ", meshLink, ".\nTexture name = ", textureName, ", link = ", textureLink, ".\nNormalmap name = ", normalMapName, ", link = ", normalMapLink, ".\nParallaxmap name = ", parallaxMapName, ", link = ", parallaxMapLink, "\nDisplacementmap name = ", displacementMapName, ", link = ", displacementMapLink, ".\nMass = ", mass, ".\nPosition = ", StringUtility::format(StringUtility::devectoriseList3<float>(pos)), ".\nRotation = ", StringUtility::format(StringUtility::devectoriseList3<float>(rot)), ".\nScale = ", StringUtility::format(StringUtility::devectoriseList3<float>(scale)), ".");
 }
 
 void Commands::setAlias(std::vector<std::string> args)

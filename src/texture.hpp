@@ -36,6 +36,18 @@ public:
 	~Texture();
 	void bind(GLuint shaderProgram, unsigned int id);
 	std::string getFileName() const;
+	
+	enum class TextureType : unsigned int
+	{
+		TEXTURE = 0,
+		NORMAL_MAP = 1,
+		PARALLAX_MAP = 2,
+		DISPLACEMENT_MAP = 3,
+		TEXTURE_TYPES = 4,
+	};
+	
+	virtual TextureType getTextureType();
+	
 	static Texture* getFromLink(const std::string& textureLink, const std::vector<std::unique_ptr<Texture>>& allTextures);
 protected:
 	unsigned char* loadTexture();
@@ -55,6 +67,8 @@ public:
 	NormalMap& operator=(const NormalMap& rhs) = delete;
 	
 	void bind(GLuint shaderProgram, unsigned int id);
+	TextureType getTextureType();
+	
 	static NormalMap* getFromLink(const std::string& normalMapLink, const std::vector<std::unique_ptr<NormalMap>>& allNormalMaps);
 };
 
@@ -67,7 +81,23 @@ public:
 	ParallaxMap& operator=(const ParallaxMap& rhs) = delete;
 	
 	void bind(GLuint shaderProgram, unsigned int id);
+	TextureType getTextureType();
+	
 	static ParallaxMap* getFromLink(const std::string& parallaxMapLink, const std::vector<std::unique_ptr<ParallaxMap>>& allParallaxMaps);
+};
+
+class DisplacementMap: public Texture
+{
+public:
+	DisplacementMap(std::string filename = "../../../res/runtime/displacementmaps/default_displacement.png");
+	DisplacementMap(const DisplacementMap& copy) = default;
+	DisplacementMap(DisplacementMap&& move) = default;
+	DisplacementMap& operator=(const DisplacementMap& rhs) = delete;
+	
+	void bind(GLuint shaderProgram, unsigned int id);
+	TextureType getTextureType();
+	
+	static DisplacementMap* getFromLink(const std::string& DisplacementMapLink, const std::vector<std::unique_ptr<DisplacementMap>>& allDisplacementMaps);
 };
 
 class CubeMap

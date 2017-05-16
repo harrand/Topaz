@@ -8,7 +8,7 @@
 class World
 {
 public:
-	World(std::string filename);
+	World(std::string filename = RES_POINT + "/worlds/default.world");
 	World(const World& copy);
 	World(World&& move);
 	World& operator=(const World& rhs) = default;
@@ -24,7 +24,7 @@ public:
 	void setSpawnOrientation(Vector3F spawnOrientation = Vector3F());
 	
 	void exportWorld(const std::string& worldName) const;
-	void update(unsigned int fps, Camera& cam, Shader& shader, unsigned int width, unsigned int height, const std::vector<std::unique_ptr<Mesh>>& allMeshes, const std::vector<std::unique_ptr<Texture>>& allTextures, const std::vector<std::unique_ptr<NormalMap>>& allNormalMaps, const std::vector<std::unique_ptr<ParallaxMap>>& allParallaxMaps);
+	void update(unsigned int fps, Camera& cam, Shader& shader, unsigned int width, unsigned int height, const std::vector<std::unique_ptr<Mesh>>& allMeshes, const std::vector<std::unique_ptr<Texture>>& allTextures, const std::vector<std::unique_ptr<NormalMap>>& allNormalMaps, const std::vector<std::unique_ptr<ParallaxMap>>& allParallaxMaps, const std::vector<std::unique_ptr<DisplacementMap>>& allDisplacementMaps);
 		
 	const unsigned int getSize() const;
 	const std::vector<Object>& getMembers() const;

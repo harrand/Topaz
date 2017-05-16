@@ -82,6 +82,13 @@ stone_parallaxmap.path: ../../../res/runtime/parallaxmaps/stone_parallax.png
 stone_parallaxmap.name: Stone Parallaxmap
 birch_parallaxmap.path: ../../../res/runtime/parallaxmaps/birch_parallax.jpg
 birch_parallaxmap.name: Birch Parallaxmap
+displacementmaps: %[
+- default_displacementmap
+- bricks_displacementmap]%
+default_displacementmap.path: ../../../res/runtime/displacementmaps/default_displacement.png
+default_displacementmap.name: Default Displacementmap
+bricks_displacementmap.path: ../../../res/runtime/displacementmaps/bricks_displacement.png
+bricks_displacementmap.name: Bricks Displacementmap
 models: %[
 - cube
 - monkeyhead
@@ -107,4 +114,4 @@ skybox.name: Cube no UVs or normals
 house.path: ../../../res/runtime/models/house.obj
 house.name: House Model with uniform UVs
 speed: 0.35
-played: 277251
+played: 288268

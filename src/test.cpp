@@ -3,13 +3,13 @@
 #include "command.hpp"
 #include "audio.hpp"
 #include "light.hpp"
-#include <iostream>
 
 //Global Heap Variables
 std::vector<std::unique_ptr<Mesh>> allMeshes;
 std::vector<std::unique_ptr<Texture>> allTextures;
 std::vector<std::unique_ptr<NormalMap>> allNormalMaps;
 std::vector<std::unique_ptr<ParallaxMap>> allParallaxMaps;
+std::vector<std::unique_ptr<DisplacementMap>> allDisplacementMaps;
 //Global Stack Variables
 World world(RES_POINT + "/worlds/random.world");
 Camera cam;
@@ -30,7 +30,7 @@ int main()
 	KeybindController kc(player, shader, world, wnd);
 	MouseController mc(player, world, wnd);
 	LogUtility::message("Loading assets...");
-	LogUtility::message("Retrieved ", DataTranslation(RES_POINT + "/resources.data").retrieveAllData(allMeshes, allTextures, allNormalMaps, allParallaxMaps), " assets.");
+	LogUtility::message("Retrieved ", DataTranslation(RES_POINT + "/resources.data").retrieveAllData(allMeshes, allTextures, allNormalMaps, allParallaxMaps, allDisplacementMaps), " assets.");
 	CubeMap greenhaze(RES_POINT + "/textures/", "greenhaze", ".png");
 	Skybox box("../../../res/runtime/models/skybox.obj", greenhaze);
 	
@@ -63,7 +63,7 @@ int main()
 		TimeKeeper renderTime;
 		
 		box.render(cam, skyboxShader, allMeshes, wnd.getWidth(), wnd.getHeight());
-		world.update(fps, cam, shader, wnd.getWidth(), wnd.getHeight(), allMeshes, allTextures, allNormalMaps, allParallaxMaps);
+		world.update(fps, cam, shader, wnd.getWidth(), wnd.getHeight(), allMeshes, allTextures, allNormalMaps, allParallaxMaps, allDisplacementMaps);
 		renderTime.update();
 		wnd.update();
 		wnd.setTitle("Topaz Testing Environment - '" + world.getWorldLink() + "'");

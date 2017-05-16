@@ -2,7 +2,6 @@
 #define UTILITY_HPP
 #include <iostream>
 #include <string>
-#include <cstdio>
 #include <sstream>
 #include <fstream>
 #include <algorithm>
@@ -215,7 +214,7 @@ namespace LogUtility
 		if(std::string(typeid(arg).name()) == "std::string")
 			std::cout << arg;
 		else
-			std::cout << CastUtility::toString<FirstArg>(arg);
+			std::cout << CastUtility::toString(arg);
 		LogUtility::silent(args...);
 	}
 	

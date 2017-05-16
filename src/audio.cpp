@@ -1,6 +1,6 @@
 #include "audio.hpp"
 
-AudioClip::AudioClip(const std::string& filename): filename(filename)
+AudioClip::AudioClip(std::string filename): filename(std::move(filename))
 {
 	this->audioHandle = Mix_LoadWAV(this->filename.c_str());
 }
@@ -39,7 +39,7 @@ const Mix_Chunk* AudioClip::getAudioHandle() const
 	return this->audioHandle;
 }
 
-AudioSource::AudioSource(const std::string& filename, const Vector3F& position): AudioClip(filename), position(position){}
+AudioSource::AudioSource(std::string filename, Vector3F position): AudioClip(filename), position(std::move(position)){}
 
 void AudioSource::update(Player& relativeTo)
 {
@@ -67,7 +67,7 @@ void AudioSource::setPosition(Vector3F position)
 	this->position = position;
 }
 
-AudioMusic::AudioMusic(const std::string& filename): filename(filename), paused(false)
+AudioMusic::AudioMusic(std::string filename): filename(std::move(filename)), paused(false)
 {
 	this->audioHandle = Mix_LoadMUS(this->filename.c_str());
 }
