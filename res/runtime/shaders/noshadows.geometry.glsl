@@ -23,7 +23,7 @@ out mat3 tbnMatrix;
 void main()
 {
 	for(unsigned int i = 0; i < gl_in.length(); i++)
-	{	
+	{
 		position_modelspace = vs_position_modelspace[i];
 		texcoord_modelspace = vs_texcoord_modelspace[i];
 		normal_modelspace = vs_normal_modelspace[i];

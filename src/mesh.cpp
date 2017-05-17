@@ -60,7 +60,7 @@ void Mesh::render(bool patches) const
 	glBindVertexArray(this->vertexArrayObject);
 	if(patches)
 	{
-		glPatchParameteri(GL_PATCH_VERTICES, 16);
+		glPatchParameteri(GL_PATCH_VERTICES, 3);
 		glDrawElements(GL_PATCHES, this->renderCount, GL_UNSIGNED_INT, 0);
 	}
 	else
