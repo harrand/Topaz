@@ -12,8 +12,8 @@ public:
 	Vector2<T>(Vector2<T>&& move) = default;
 	Vector2<T>& operator=(const Vector2<T>& rhs) = default;
 	
-	T getX() const;
-	T getY() const;
+	const T& getX() const;
+	const T& getY() const;
 	T& getXR();
 	T& getYR();
 	T length() const;
@@ -39,9 +39,9 @@ public:
 	Vector3<T>(Vector3<T>&& move) = default;
 	Vector3<T>& operator=(const Vector3<T>& rhs) = default;
 	
-	T getX() const;
-	T getY() const;
-	T getZ() const;
+	const T& getX() const;
+	const T& getY() const;
+	const T& getZ() const;
 	T& getXR();
 	T& getYR();
 	T& getZR();
@@ -72,10 +72,10 @@ public:
 	Vector4<T>(Vector4&& move) = default;
 	Vector4<T>& operator=(const Vector4<T>& rhs) = default;
 	
-	T getX() const;
-	T getY() const;
-	T getZ() const;
-	T getW() const;
+	const T& getX() const;
+	const T& getY() const;
+	const T& getZ() const;
+	const T& getW() const;
 	T& getXR();
 	T& getYR();
 	T& getZR();

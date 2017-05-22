@@ -286,7 +286,7 @@ void KeybindController::handleKeybinds(float secondsSinceLastFrame)
 	{
 		std::vector<std::string> alias = CommandCache::getAlias();
 		std::string cmd = "";
-		for(unsigned int i = 0; i < alias.size(); i++)
+		for(size_t i = 0; i < alias.size(); i++)
 			cmd += (i != (alias.size() - 1)) ? alias.at(i) + " " : alias.at(i);
 		Commands::inputCommand(cmd, world, player, shader);
 	}

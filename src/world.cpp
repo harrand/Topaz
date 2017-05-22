@@ -32,14 +32,7 @@ World::World(World&& move): gravity(move.gravity), spawnPoint(move.spawnPoint), 
 
 World::~World()
 {
-	for(auto& iter : this->baseLights)
-	{
-		// Kill all the lights in the shader before losing all the data
-		std::vector<float> pos({0.0f, 0.0f, 0.0f}), colour({0.0f, 0.0f, 0.0f});
-		glUniform3fv(iter.first.at(0), 1, &(pos[0]));
-		glUniform3fv(iter.first.at(1), 1, &(colour[0]));
-		glUniform1f(iter.first.at(2), 0);
-	}
+	this->killLights();
 }
 
 const std::string World::getFileName() const
@@ -108,6 +101,18 @@ void World::setSpawnOrientation(Vector3F spawnOrientation)
 	this->spawnOrientation = spawnOrientation;
 }
 
+void World::killLights()
+{
+	for(auto& iter : this->baseLights)
+	{
+		// Kill all the lights in the shader before losing all the data
+		std::vector<float> pos({0.0f, 0.0f, 0.0f}), colour({0.0f, 0.0f, 0.0f});
+		glUniform3fv(iter.first.at(0), 1, &(pos[0]));
+		glUniform3fv(iter.first.at(1), 1, &(colour[0]));
+		glUniform1f(iter.first.at(2), 0);
+	}
+}
+
 void World::exportWorld(const std::string& worldName) const
 {
 	const DataTranslation dt(RES_POINT + "/resources.data");
@@ -122,7 +127,7 @@ void World::exportWorld(const std::string& worldName) const
 	output.editTag("gravity", StringUtility::format(StringUtility::devectoriseList3<float>(this->gravity)));
 	output.editTag("spawnpoint", StringUtility::format(StringUtility::devectoriseList3<float>(this->spawnPoint)));
 	output.editTag("spawnorientation", StringUtility::format(StringUtility::devectoriseList3<float>(this->spawnOrientation)));
-	for(unsigned int i = 0; i < this->members.size(); i++)
+	for(size_t i = 0; i < this->members.size(); i++)
 	{
 		const std::string objectName = "object" + CastUtility::toString<float>(i);
 		objectList.push_back(objectName);
@@ -137,7 +142,7 @@ void World::exportWorld(const std::string& worldName) const
 		output.editTag(objectName + ".rot", StringUtility::format(StringUtility::devectoriseList3<float>(curObj.getRot())));
 		output.editTag(objectName + ".scale", StringUtility::format(StringUtility::devectoriseList3<float>(curObj.getScale())));
 	}
-	for(unsigned int i = 0; i < this->entityObjects.size(); i++)
+	for(size_t i = 0; i < this->entityObjects.size(); i++)
 	{
 		const std::string eoName = "eo" + CastUtility::toString<float>(i);
 		eoList.push_back(eoName);
@@ -166,13 +171,13 @@ void World::update(unsigned int fps, Camera& cam, Shader& shader, unsigned int w
 		for(auto& texture : obj.getTextures())
 		{
 			if(texture.second == Texture::TextureType::TEXTURE)
-				tex = Texture::getFromLink(texture.first, allTextures);
+				tex = Texture::getFromLink<Texture>(texture.first, allTextures);
 			else if(texture.second == Texture::TextureType::NORMAL_MAP)
-				nm = NormalMap::getFromLink(texture.first, allNormalMaps);
+				nm = Texture::getFromLink<NormalMap>(texture.first, allNormalMaps);
 			else if(texture.second == Texture::TextureType::PARALLAX_MAP)
-				pm = ParallaxMap::getFromLink(texture.first, allParallaxMaps);
+				pm = Texture::getFromLink<ParallaxMap>(texture.first, allParallaxMaps);
 			else if(texture.second == Texture::TextureType::DISPLACEMENT_MAP)
-				dm = DisplacementMap::getFromLink(texture.first, allDisplacementMaps);
+				dm = Texture::getFromLink<DisplacementMap>(texture.first, allDisplacementMaps);
 		}
 		obj.render(mesh, tex, nm, pm, dm, cam, shader, width, height);
 	}
@@ -183,13 +188,13 @@ void World::update(unsigned int fps, Camera& cam, Shader& shader, unsigned int w
 		for(auto& texture : eo.getTextures())
 		{
 			if(texture.second == Texture::TextureType::TEXTURE)
-				tex = Texture::getFromLink(texture.first, allTextures);
+				tex = Texture::getFromLink<Texture>(texture.first, allTextures);
 			else if(texture.second == Texture::TextureType::NORMAL_MAP)
-				nm = NormalMap::getFromLink(texture.first, allNormalMaps);
+				nm = Texture::getFromLink<NormalMap>(texture.first, allNormalMaps);
 			else if(texture.second == Texture::TextureType::PARALLAX_MAP)
-				pm = ParallaxMap::getFromLink(texture.first, allParallaxMaps);
+				pm = Texture::getFromLink<ParallaxMap>(texture.first, allParallaxMaps);
 			else if(texture.second == Texture::TextureType::DISPLACEMENT_MAP)
-				dm = DisplacementMap::getFromLink(texture.first, allDisplacementMaps);
+				dm = Texture::getFromLink<DisplacementMap>(texture.first, allDisplacementMaps);
 		}
 		eo.render(mesh, tex, nm, pm, dm, cam, shader, width, height);
 		eo.updateMotion(fps);
@@ -212,7 +217,7 @@ void World::update(unsigned int fps, Camera& cam, Shader& shader, unsigned int w
 	}
 }
 
-const unsigned int World::getSize() const
+const size_t World::getSize() const
 {
 	return this->members.size() + this->entities.size() + this->entityObjects.size();
 }

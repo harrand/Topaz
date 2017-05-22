@@ -111,11 +111,11 @@ void Shader::bind() const
 	glUseProgram(this->programHandle);
 }
 
-void Shader::update(const std::vector<float>&& modelData, const std::vector<float>&& viewData, const std::vector<float>&& projectionData, float parallaxMapScale, float parallaxMapOffset) const
+void Shader::update(const std::array<float, 16>& modelData, const std::array<float, 16>& viewData, const std::array<float, 16>& projectionData, float parallaxMapScale, float parallaxMapOffset) const
 {
-	glUniformMatrix4fv(this->uniforms[(unsigned int)UniformTypes::MODEL], 1, GL_TRUE, &modelData[0]);
-	glUniformMatrix4fv(this->uniforms[(unsigned int)UniformTypes::VIEW], 1, GL_TRUE, &viewData[0]);
-	glUniformMatrix4fv(this->uniforms[(unsigned int)UniformTypes::PROJECTION], 1, GL_TRUE, &projectionData[0]);
+	glUniformMatrix4fv(this->uniforms[(unsigned int)UniformTypes::MODEL], 1, GL_TRUE, modelData.data());
+	glUniformMatrix4fv(this->uniforms[(unsigned int)UniformTypes::VIEW], 1, GL_TRUE, viewData.data());
+	glUniformMatrix4fv(this->uniforms[(unsigned int)UniformTypes::PROJECTION], 1, GL_TRUE, projectionData.data());
 	glUniform1f(this->uniforms[(unsigned int)UniformTypes::PARALLAX_MAP_SCALE], parallaxMapScale);
 	glUniform1f(this->uniforms[(unsigned int)UniformTypes::PARALLAX_MAP_BIAS], parallaxMapScale / 2.0f * (parallaxMapOffset - 1));
 }

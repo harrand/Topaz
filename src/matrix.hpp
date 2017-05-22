@@ -1,5 +1,6 @@
 #ifndef MATRIX_HPP
 #define MATRIX_HPP
+#include <array>
 #include "vector.hpp"
 
 class Matrix2x2
@@ -59,12 +60,12 @@ public:
 	Matrix4x4 transposed() const;
 	Matrix4x4 washed(float min = 0.005f, float max = 99999.0f) const;
 	
-	std::vector<float> fillData() const;
+	std::array<float, 16> fillData() const;
 	Matrix3x3 subMatrix(float iterI, float iterJ);
 	
 	Matrix4x4 operator+(const Matrix4x4& other) const;
 	Matrix4x4 operator-(const Matrix4x4& other) const;
-	Vector4F operator*(Vector4F other);
+	Vector4F operator*(const Vector4F& other);
 	Matrix4x4 operator*(const Matrix4x4& other) const;
 	
 	float determinant() const;

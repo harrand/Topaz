@@ -173,31 +173,9 @@ Matrix4x4 Matrix4x4::washed(float min, float max) const
 	return copy;
 }
 
-std::vector<float> Matrix4x4::fillData() const
+std::array<float, 16> Matrix4x4::fillData() const
 {
-	std::vector<float> data;
-	data.clear();
-	data.reserve(16);
-	data.push_back(this->x.getX());
-	data.push_back(this->x.getY());
-	data.push_back(this->x.getZ());
-	data.push_back(this->x.getW());
-	
-	data.push_back(this->y.getX());
-	data.push_back(this->y.getY());
-	data.push_back(this->y.getZ());
-	data.push_back(this->y.getW());
-	
-	data.push_back(this->z.getX());
-	data.push_back(this->z.getY());
-	data.push_back(this->z.getZ());
-	data.push_back(this->z.getW());
-	
-	data.push_back(this->w.getX());
-	data.push_back(this->w.getY());
-	data.push_back(this->w.getZ());
-	data.push_back(this->w.getW());
-	return data;
+	return std::array<float, 16>({this->x.getX(), this->x.getY(), this->x.getZ(), this->x.getW(), this->y.getX(), this->y.getY(), this->y.getZ(), this->y.getW(), this->z.getX(), this->z.getY(), this->z.getZ(), this->z.getW(), this->w.getX(), this->w.getY(), this->w.getZ(), this->w.getW()});
 }
 
 Matrix3x3 Matrix4x4::subMatrix(float posI, float posJ)
@@ -288,7 +266,7 @@ Matrix4x4 Matrix4x4::operator-(const Matrix4x4& other) const
 	return Matrix4x4(this->x - other.getRowX(), this->y - other.getRowY(), this->z - other.getRowZ(), this->w - other.getRowW());
 }
 
-Vector4F Matrix4x4::operator*(Vector4F other)
+Vector4F Matrix4x4::operator*(const Vector4F& other)
 {
 	float x = 0.0f, y = 0.0f, z = 0.0f, w = 0.0f;
 	float* curRes;
@@ -320,16 +298,16 @@ Vector4F Matrix4x4::operator*(Vector4F other)
 			switch(rowCounter)
 			{
 				case 0:
-				*curRes += row.getXR() * other.getXR();
+				*curRes += row.getX() * other.getX();
 				break;
 				case 1:
-				*curRes += row.getYR() * other.getYR();
+				*curRes += row.getY() * other.getY();
 				break;
 				case 2:
-				*curRes += row.getZR() * other.getZR();
+				*curRes += row.getZ() * other.getZ();
 				break;
 				case 3:
-				*curRes += row.getWR() * other.getWR();
+				*curRes += row.getW() * other.getW();
 				break;
 			}
 		}

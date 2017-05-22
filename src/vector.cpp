@@ -6,13 +6,13 @@ template<typename T>
 Vector2<T>::Vector2(T x, T y): x(x), y(y){}
 
 template<typename T>
-T Vector2<T>::getX() const
+const T& Vector2<T>::getX() const
 {
 	return this->x;
 }
 
 template<typename T>
-T Vector2<T>::getY() const
+const T& Vector2<T>::getY() const
 {
 	return this->y;
 }
@@ -89,19 +89,19 @@ template<typename T>
 Vector3<T>::Vector3(T x, T y, T z): x(x), y(y), z(z){}
 
 template<typename T>
-T Vector3<T>::getX() const
+const T& Vector3<T>::getX() const
 {
 	return this->x;
 }
 
 template<typename T>
-T Vector3<T>::getY() const
+const T& Vector3<T>::getY() const
 {
 	return this->y;
 }
 
 template<typename T>
-T Vector3<T>::getZ() const
+const T& Vector3<T>::getZ() const
 {
 	return this->z;
 }
@@ -209,25 +209,25 @@ template<typename T>
 Vector4<T>::Vector4(T x, T y, T z, T w): x(x), y(y), z(z), w(w){}
 
 template<typename T>
-T Vector4<T>::getX() const
+const T& Vector4<T>::getX() const
 {
 	return this->x;
 }
 
 template<typename T>
-T Vector4<T>::getY() const
+const T& Vector4<T>::getY() const
 {
 	return this->y;
 }
 
 template<typename T>
-T Vector4<T>::getZ() const
+const T& Vector4<T>::getZ() const
 {
 	return this->z;
 }
 
 template<typename T>
-T Vector4<T>::getW() const
+const T& Vector4<T>::getW() const
 {
 	return this->w;
 }

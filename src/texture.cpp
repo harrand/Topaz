@@ -137,17 +137,6 @@ Texture::TextureType Texture::getTextureType()
 	return TextureType::TEXTURE;
 }
 
-//static
-Texture* Texture::getFromLink(const std::string& textureLink, const std::vector<std::unique_ptr<Texture>>& allTextures)
-{
-	for(auto& texture : allTextures)
-	{
-		if(texture->getFileName() == textureLink)
-			return texture.get();
-	}
-	return nullptr;
-}
-
 NormalMap::NormalMap(std::string filename): Texture(filename){}
 
 void NormalMap::bind(GLuint shaderProgram, unsigned int id)
@@ -168,17 +157,6 @@ void NormalMap::bind(GLuint shaderProgram, unsigned int id)
 Texture::TextureType NormalMap::getTextureType()
 {
 	return TextureType::NORMAL_MAP;
-}
-
-//static
-NormalMap* NormalMap::getFromLink(const std::string& normalMapLink, const std::vector<std::unique_ptr<NormalMap>>& allNormalMaps)
-{
-	for(auto& normalMap : allNormalMaps)
-	{
-		if(normalMap->getFileName() == normalMapLink)
-			return normalMap.get();
-	}
-	return nullptr;
 }
 
 ParallaxMap::ParallaxMap(std::string filename): Texture(filename){}
@@ -203,17 +181,6 @@ Texture::TextureType ParallaxMap::getTextureType()
 	return TextureType::PARALLAX_MAP;
 }
 
-//static
-ParallaxMap* ParallaxMap::getFromLink(const std::string& parallaxMapLink, const std::vector<std::unique_ptr<ParallaxMap>>& allParallaxMaps)
-{
-	for(auto& parallaxMap : allParallaxMaps)
-	{
-		if(parallaxMap->getFileName() == parallaxMapLink)
-			return parallaxMap.get();
-	}
-	return nullptr;
-}
-
 DisplacementMap::DisplacementMap(std::string filename): Texture(filename){}
 
 void DisplacementMap::bind(GLuint shaderProgram, unsigned int id)
@@ -234,17 +201,6 @@ void DisplacementMap::bind(GLuint shaderProgram, unsigned int id)
 Texture::TextureType DisplacementMap::getTextureType()
 {
 	return TextureType::DISPLACEMENT_MAP;
-}
-
-//static
-DisplacementMap* DisplacementMap::getFromLink(const std::string& DisplacementMapLink, const std::vector<std::unique_ptr<DisplacementMap>>& allDisplacementMaps)
-{
-	for(auto& DisplacementMap : allDisplacementMaps)
-	{
-		if(DisplacementMap->getFileName() == DisplacementMapLink)
-			return DisplacementMap.get();
-	}
-	return nullptr;
 }
 
 CubeMap::CubeMap(const std::string& rightTexture, const std::string& leftTexture, const std::string& topTexture, const std::string& bottomTexture, const std::string& backTexture, const std::string& frontTexture): rightTexture(rightTexture), leftTexture(leftTexture), topTexture(topTexture), bottomTexture(bottomTexture), backTexture(backTexture), frontTexture(frontTexture)

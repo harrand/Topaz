@@ -2,10 +2,10 @@
 
 layout(location = 0) out vec4 fragColor;
 
-in vec3 cubePosition_modelspace;
+in vec3 vs_cubePosition_modelspace;
 uniform samplerCube cubeMapSampler;
 
 void main()
 {
-	fragColor = texture(cubeMapSampler, cubePosition_modelspace);
+	fragColor = texture(cubeMapSampler, vs_cubePosition_modelspace);
 }

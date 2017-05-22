@@ -29,7 +29,7 @@ public:
 	
 	GLuint getProgramHandle() const;
 	void bind() const;
-	void update(const std::vector<float>&& modelData, const std::vector<float>&& viewData, const std::vector<float>&& projectionData, float parallaxMapScale = 0.04f, float parallaxMapOffset = -0.5f) const;
+	void update(const std::array<float, 16>& modelData, const std::array<float, 16>& viewData, const std::array<float, 16>& projectionData, float parallaxMapScale = 0.04f, float parallaxMapOffset = -0.5f) const;
 private:
 	static std::string loadShader(const std::string& filename);
 	static void checkShaderError(GLuint shader, GLuint flag, bool isProgram, std::string errorMessage);

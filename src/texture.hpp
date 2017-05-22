@@ -48,7 +48,16 @@ public:
 	
 	virtual TextureType getTextureType();
 	
-	static Texture* getFromLink(const std::string& textureLink, const std::vector<std::unique_ptr<Texture>>& allTextures);
+	template<class Tex>
+	static Tex* getFromLink(const std::string& textureLink, const std::vector<std::unique_ptr<Tex>>& allTextures)
+	{
+		for(auto& texture : allTextures)
+		{
+			if(texture->getFileName() == textureLink)
+				return texture.get();
+		}
+		return nullptr;
+	}
 protected:
 	unsigned char* loadTexture();
 	void deleteTexture(unsigned char* imgdata);
@@ -69,7 +78,7 @@ public:
 	void bind(GLuint shaderProgram, unsigned int id);
 	TextureType getTextureType();
 	
-	static NormalMap* getFromLink(const std::string& normalMapLink, const std::vector<std::unique_ptr<NormalMap>>& allNormalMaps);
+	//static NormalMap* getFromLink(const std::string& normalMapLink, const std::vector<std::unique_ptr<NormalMap>>& allNormalMaps);
 };
 
 class ParallaxMap: public Texture
@@ -83,7 +92,7 @@ public:
 	void bind(GLuint shaderProgram, unsigned int id);
 	TextureType getTextureType();
 	
-	static ParallaxMap* getFromLink(const std::string& parallaxMapLink, const std::vector<std::unique_ptr<ParallaxMap>>& allParallaxMaps);
+	//static ParallaxMap* getFromLink(const std::string& parallaxMapLink, const std::vector<std::unique_ptr<ParallaxMap>>& allParallaxMaps);
 };
 
 class DisplacementMap: public Texture
@@ -97,7 +106,7 @@ public:
 	void bind(GLuint shaderProgram, unsigned int id);
 	TextureType getTextureType();
 	
-	static DisplacementMap* getFromLink(const std::string& DisplacementMapLink, const std::vector<std::unique_ptr<DisplacementMap>>& allDisplacementMaps);
+	//static DisplacementMap* getFromLink(const std::string& DisplacementMapLink, const std::vector<std::unique_ptr<DisplacementMap>>& allDisplacementMaps);
 };
 
 class CubeMap

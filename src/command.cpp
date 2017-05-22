@@ -25,7 +25,7 @@ void CommandCache::updateClip(AudioSource* source, Player& player)
 	{
 		source->update(player);
 		std::this_thread::sleep_for(std::chrono::milliseconds(10));
-		unsigned int size_cache = CommandCache::clips.size();
+		size_t size_cache = CommandCache::clips.size();
 		bool found = false;
 		if(CommandCache::clips.empty())
 			break;
@@ -49,9 +49,9 @@ void CommandCache::destroyChannelClips(int channel)
 {
 	auto lambda = [channel](const std::unique_ptr<AudioClip>& clip) -> bool{return clip->getChannel() == channel;};
 	auto rem = std::remove_if(CommandCache::clips.begin(), CommandCache::clips.end(), lambda);
-	for(unsigned int i = 0; i < CommandCache::clips.size(); i++/*std::unique_ptr<AudioClip>& clip : CommandCache::clips*/)
+	for(size_t i = 0; i < CommandCache::clips.size(); i++/*std::unique_ptr<AudioClip>& clip : CommandCache::clips*/)
 	{
-		unsigned int prevSize = CommandCache::clips.size();
+		size_t prevSize = CommandCache::clips.size();
 		CommandCache::clips.erase(rem, CommandCache::clips.end());
 		if(CommandCache::clips.size() != prevSize)
 			LogUtility::message("Clip belonging to the channel ", channel, " has been destroyed.");
@@ -124,7 +124,7 @@ void Commands::loadWorld(std::vector<std::string> args, World& world)
 	std::string worldname = args.at(1);
 	std::string link = (RES_POINT + "/worlds/" + worldname);
 	world = World(link);
-	for(unsigned int i = 0; i < entities.size(); i++)
+	for(size_t i = 0; i < entities.size(); i++)
 		world.addEntity(entities.at(i));
 	LogUtility::message("Now rendering the world '", worldname, "' which has ", world.getSize(), " elements.");
 }
@@ -450,7 +450,7 @@ void Commands::scheduleAsyncDelayedMessage(std::vector<std::string> args, bool p
 	if(printResults)
 		LogUtility::message("Scheduling async delayed task of ", millisDelay, "ms");
 	std::string msg = "";
-	for(unsigned int i = 2; i < args.size(); i++)
+	for(size_t i = 2; i < args.size(); i++)
 		msg += args.at(i) + (i == (args.size() - 1) ? "" : " ");
 	std::function<void(std::string)> printMsg([](std::string msg)->void{LogUtility::message(msg);});
 	Scheduler::asyncDelayedTask<void, std::string>(millisDelay, printMsg, msg);
@@ -467,7 +467,7 @@ void Commands::scheduleAsyncDelayedCmd(std::vector<std::string> args, World& wor
 	if(printResults)
 		LogUtility::message("Scheduling async delayed task of ", millisDelay, "ms to execute a command.");
 	std::string cmd = "";
-	for(unsigned int i = 2; i < args.size(); i++)
+	for(size_t i = 2; i < args.size(); i++)
 		cmd += args.at(i) + (i == (args.size() - 1) ? "" : " ");
 	std::function<void(std::string, std::reference_wrapper<World>, std::reference_wrapper<Player>, std::reference_wrapper<Shader>)> inputCmd([](std::string cmd, std::reference_wrapper<World> world, std::reference_wrapper<Player> player, std::reference_wrapper<Shader> shader)->void{Commands::inputCommand(cmd, world, player, shader);});
 	Scheduler::asyncDelayedTask<void, std::string, std::reference_wrapper<World>, std::reference_wrapper<Player>, std::reference_wrapper<Shader>>(millisDelay, inputCmd, cmd, std::ref(world), std::ref(player), std::ref(shader));

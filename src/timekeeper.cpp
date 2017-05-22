@@ -50,8 +50,8 @@ void TimeProfiler::reset()
 float TimeProfiler::getDeltaAverage()
 {
 	float total = 0.0f;
-	for(unsigned int i = 0; i < this->deltas.size(); i++)
-		total += this->deltas.at(i);
+	for(float delta : this->deltas)
+		total += delta;
 	if(deltas.size() == 0)
 		return 5.0f/3.0f;
 	return total / deltas.size();
