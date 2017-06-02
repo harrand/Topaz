@@ -4,23 +4,21 @@
 #include "audio.hpp"
 #include "light.hpp"
 
-//Global Heap Variables
-std::vector<std::unique_ptr<Mesh>> allMeshes;
-std::vector<std::unique_ptr<Texture>> allTextures;
-std::vector<std::unique_ptr<NormalMap>> allNormalMaps;
-std::vector<std::unique_ptr<ParallaxMap>> allParallaxMaps;
-std::vector<std::unique_ptr<DisplacementMap>> allDisplacementMaps;
-//Global Stack Variables
-World world(RES_POINT + "/worlds/random.world");
-Camera cam;
-Player player(10.0f, cam);
-
-// SDL2 defines main.
 #ifdef main
 #undef main
 #endif
 int main()
 {	
+	World world(RES_POINT + "/worlds/random.world");
+	Camera cam;
+	Player player(10.0f, cam);
+	
+	std::vector<std::unique_ptr<Mesh>> allMeshes;
+	std::vector<std::unique_ptr<Texture>> allTextures;
+	std::vector<std::unique_ptr<NormalMap>> allNormalMaps;
+	std::vector<std::unique_ptr<ParallaxMap>> allParallaxMaps;
+	std::vector<std::unique_ptr<DisplacementMap>> allDisplacementMaps;
+
 	MDLF timeStorage(RawFile(RES_POINT + "/resources.data"));
 	int secondsLifetime = CastUtility::fromString<int>(timeStorage.getTag("played"));
 	Window wnd(800, 600, "Topaz Test Environment - Undefined World");

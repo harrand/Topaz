@@ -150,9 +150,9 @@ void Window::handleEvents()
 		
 		if(evt.type == SDL_QUIT)
 			this->iscloserequested = true;
-		else if(evt.type == SDL_WINDOWEVENT)
+		if(evt.type == SDL_WINDOWEVENT)
 		{
-			if (evt.window.event == (SDL_WINDOWEVENT_RESIZED | SDL_WINDOWEVENT_SIZE_CHANGED))
+			if (evt.window.event == SDL_WINDOWEVENT_RESIZED || evt.window.event == SDL_WINDOWEVENT_SIZE_CHANGED)
 			{
 				SDL_GetWindowSize(this->wnd, &(this->w), &(this->h));
 				//update the glVievwport, so that OpenGL know the new window size
