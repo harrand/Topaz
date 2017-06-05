@@ -33,7 +33,7 @@ void share()
 	vec3 tangent_cameraspace = normalize((v * m * vec4(tangent, 0.0)).xyz);
 	
 	// Gramm-Schmidt Process
-	//tangent_cameraspace = normalize(tangent_cameraspace - dot(tangent_cameraspace, normal_cameraspace) * normal_cameraspace);
+	tangent_cameraspace = normalize(tangent_cameraspace - dot(tangent_cameraspace, normal_cameraspace) * normal_cameraspace);
 	
 	vec3 bitangent_cameraspace = cross(tangent_cameraspace, normal_cameraspace);
 	
