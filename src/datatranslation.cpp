@@ -87,30 +87,29 @@ unsigned int DataTranslation::retrieveAllData(std::vector<std::unique_ptr<Mesh>>
 {
 	std::unordered_map<std::string, std::string> models = this->retrieveModels(), textures = this->retrieveTextures(), normalmaps = this->retrieveNormalMaps(), parallaxmaps = this->retrieveParallaxMaps(), displacementmaps = this->retrieveDisplacementMaps();
 	unsigned int dataCount = 0;
-	typedef std::unordered_map<std::string, std::string>::iterator it_type;
-	for(it_type iterator = models.begin(); iterator != models.end(); iterator++)
+	for(auto& it : models)
 	{
-		allMeshes.push_back(std::make_unique<Mesh>(iterator->first));
+		allMeshes.push_back(std::make_unique<Mesh>(it.first));
 		dataCount++;
 	}
-	for(it_type iterator = textures.begin(); iterator != textures.end(); iterator++)
+	for(auto& it : textures)
 	{
-		allTextures.push_back(std::make_unique<Texture>(iterator->first));
+		allTextures.push_back(std::make_unique<Texture>(it.first));
 		dataCount++;
 	}
-	for(it_type iterator = normalmaps.begin(); iterator != normalmaps.end(); iterator++)
+	for(auto& it : normalmaps)
 	{
-		allNormalMaps.push_back(std::make_unique<NormalMap>(iterator->first));
+		allNormalMaps.push_back(std::make_unique<NormalMap>(it.first));
 		dataCount++;
 	}
-	for(it_type iterator = parallaxmaps.begin(); iterator != parallaxmaps.end(); iterator++)
+	for(auto& it : parallaxmaps)
 	{
-		allParallaxMaps.push_back(std::make_unique<ParallaxMap>(iterator->first));
+		allParallaxMaps.push_back(std::make_unique<ParallaxMap>(it.first));
 		dataCount++;
 	}
-	for(it_type iterator = displacementmaps.begin(); iterator != displacementmaps.end(); iterator++)
+	for(auto& it : displacementmaps)
 	{
-		allDisplacementMaps.push_back(std::make_unique<DisplacementMap>(iterator->first));
+		allDisplacementMaps.push_back(std::make_unique<DisplacementMap>(it.first));
 		dataCount++;
 	}
 	return dataCount;
