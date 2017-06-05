@@ -166,6 +166,8 @@ KeybindType KeyControls::getKeybindType(const std::string& keyBindType)
 		return KeybindType::LOOK_LEFT;
 	else if(keyBindType == "LOOK_RIGHT")
 		return KeybindType::LOOK_RIGHT;
+	else if(keyBindType == "TOGGLE_FULLSCREEN")
+		return KeybindType::TOGGLE_FULLSCREEN;
 	else if(keyBindType == "INPUT_COMMAND")
 		return KeybindType::INPUT_COMMAND;
 	else if(keyBindType == "REQUEST_CLOSE")
@@ -211,6 +213,9 @@ std::string KeyControls::getKeybind(MDLF& controlsDataFile, KeybindType kt)
 		break;
 		case KeybindType::LOOK_RIGHT:
 			return controlsDataFile.getTag("LOOK_RIGHT");
+		break;
+		case KeybindType::TOGGLE_FULLSCREEN:
+			return controlsDataFile.getTag("TOGGLE_FULLSCREEN");
 		break;
 		case KeybindType::INPUT_COMMAND:
 			return controlsDataFile.getTag("INPUT_COMMAND");
@@ -259,13 +264,16 @@ void KeybindController::handleKeybinds(float secondsSinceLastFrame)
 	if(kl.isKeyPressed(KeyControls::getKeybind(controlsDataFile, KeybindType::MOVE_DOWN)))
 		this->player.getCamera().getPosR() += (Vector3F(0, -1, 0) * multiplier * secondsSinceLastFrame);
 	if(kl.isKeyPressed(KeyControls::getKeybind(controlsDataFile, KeybindType::LOOK_UP)))
-		player.getCamera().getRotR() += (Vector3F(1.0f/360.0f, 0, 0) * multiplier * 5 * secondsSinceLastFrame);
+		this->player.getCamera().getRotR() += (Vector3F(1.0f/360.0f, 0, 0) * multiplier * 5 * secondsSinceLastFrame);
 	if(kl.isKeyPressed(KeyControls::getKeybind(controlsDataFile, KeybindType::LOOK_DOWN)))
-		player.getCamera().getRotR() += (Vector3F(-1.0f/360.0f, 0, 0) * multiplier * 5 * secondsSinceLastFrame);
+		this->player.getCamera().getRotR() += (Vector3F(-1.0f/360.0f, 0, 0) * multiplier * 5 * secondsSinceLastFrame);
 	if(kl.isKeyPressed(KeyControls::getKeybind(controlsDataFile, KeybindType::LOOK_LEFT)))
-		player.getCamera().getRotR() += (Vector3F(0, -1.0f/360.0f, 0) * multiplier * 5 * secondsSinceLastFrame);
+		this->player.getCamera().getRotR() += (Vector3F(0, -1.0f/360.0f, 0) * multiplier * 5 * secondsSinceLastFrame);
 	if(kl.isKeyPressed(KeyControls::getKeybind(controlsDataFile, KeybindType::LOOK_RIGHT)))
-		player.getCamera().getRotR() += (Vector3F(0, 1.0f/360.0f, 0) * multiplier * 5 * secondsSinceLastFrame);
+		this->player.getCamera().getRotR() += (Vector3F(0, 1.0f/360.0f, 0) * multiplier * 5 * secondsSinceLastFrame);
+	if(kl.isKeyPressed(KeyControls::getKeybind(controlsDataFile, KeybindType::TOGGLE_FULLSCREEN)))
+		SDL_SetWindowFullscreen(this->wnd.getWindowHandle(), !(SDL_GetWindowFlags(this->wnd.getWindowHandle()) & SDL_WINDOW_FULLSCREEN));
+			
 	if(kl.isKeyPressed(KeyControls::getKeybind(controlsDataFile, KeybindType::INPUT_COMMAND)))
 	{
 		std::string input;

@@ -73,6 +73,11 @@ void Window::setRenderTarget() const
 	glViewport(0, 0, this->w, this->h);
 }
 
+SDL_Window*& Window::getWindowHandle()
+{
+	return this->wnd;
+}
+
 void Window::clear(float r, float g, float b, float a) const
 {
 	glClearColor(r, g, b, a);
@@ -154,7 +159,7 @@ void Window::handleEvents()
 		{
 			if (evt.window.event == SDL_WINDOWEVENT_RESIZED || evt.window.event == SDL_WINDOWEVENT_SIZE_CHANGED)
 			{
-				SDL_GetWindowSize(this->wnd, &(this->w), &(this->h));
+				SDL_GL_GetDrawableSize(this->wnd, &(this->w), &(this->h));
 				//update the glVievwport, so that OpenGL know the new window size
 				glViewport(0, 0, this->w, this->h);
 			}

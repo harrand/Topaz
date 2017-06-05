@@ -72,11 +72,12 @@ enum class KeybindType : unsigned int
 	LOOK_DOWN = 7,
 	LOOK_LEFT = 8,
 	LOOK_RIGHT = 9,
-	INPUT_COMMAND = 10,
-	REQUEST_CLOSE = 11,
-	RESTART = 12,
-	ALIAS = 13,
-	NIL = 14
+	TOGGLE_FULLSCREEN = 10,
+	INPUT_COMMAND = 11,
+	REQUEST_CLOSE = 12,
+	RESTART = 13,
+	ALIAS = 14,
+	NIL = 15
 };
 
 namespace KeyControls

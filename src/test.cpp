@@ -38,6 +38,7 @@ int main()
 	
 	AudioMusic music(RES_POINT + "/music/music.wav");
 	music.play();
+	Mix_PauseMusic();
 
 	while(!wnd.isCloseRequested())
 	{
