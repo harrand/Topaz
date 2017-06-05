@@ -83,38 +83,46 @@ Mesh* Mesh::getFromLink(const std::string& meshLink, const std::vector<std::uniq
 void Mesh::initMesh()
 {
 	this->renderCount = this->model.indices.size();
+	// Our vector class is not "c-enough" (contains stuff like protected variables which C structs don't support. Therefore we use VectorSXF instead which can work with OpenGL easily.
+	// However our indices vector from model is fine as-is.
+	std::vector<VectorS3F> positions;
+	positions.reserve(this->model.positions.size());
+    std::vector<VectorS2F> texcoords;
+	texcoords.reserve(this->model.texcoords.size());
+    std::vector<VectorS3F> normals;
+	normals.reserve(this->model.normals.size());
+	for(auto vec : this->model.positions)
+		positions.push_back(vec.toRaw());
+	for(auto vec : this->model.texcoords)
+		texcoords.push_back(vec.toRaw());
+	for(auto vec : this->model.normals)
+		normals.push_back(vec.toRaw());
 	
 	glGenVertexArrays(1, &(this->vertexArrayObject));
 	glBindVertexArray(this->vertexArrayObject);
 	
 	glGenBuffers(static_cast<unsigned int>(BufferTypes::NUM_BUFFERS), this->vertexArrayBuffers);
-	// 0 = Vertices, 1 = Texture Coordinates, 2 = Internal Normals, 3 = Tangents
+	// 0 = Vertices, 1 = Texture Coordinates, 2 = Internal Normals, 4 = Indices
 	
 	glBindBuffer(GL_ARRAY_BUFFER, this->vertexArrayBuffers[static_cast<unsigned int>(BufferTypes::POSITION)]);
-	glBufferData(GL_ARRAY_BUFFER, this->model.positions.size() * sizeof(this->model.positions[0]), this->model.positions.data(), GL_STATIC_DRAW);
-	
+	glBufferData(GL_ARRAY_BUFFER, positions.size() * sizeof(positions[0]), positions.data(), GL_STATIC_DRAW);
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
 	
 	glBindBuffer(GL_ARRAY_BUFFER, this->vertexArrayBuffers[static_cast<unsigned int>(BufferTypes::TEXCOORD)]);
-	glBufferData(GL_ARRAY_BUFFER, this->model.texcoords.size() * sizeof(this->model.texcoords[0]), this->model.texcoords.data(), GL_STATIC_DRAW);
-	
+	glBufferData(GL_ARRAY_BUFFER, texcoords.size() * sizeof(texcoords[0]), texcoords.data(), GL_STATIC_DRAW);
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);
 	
 	glBindBuffer(GL_ARRAY_BUFFER, this->vertexArrayBuffers[static_cast<unsigned int>(BufferTypes::NORMAL)]);
-	glBufferData(GL_ARRAY_BUFFER, this->model.normals.size() * sizeof(this->model.normals[0]), this->model.normals.data(), GL_STATIC_DRAW);
-	
+	glBufferData(GL_ARRAY_BUFFER, normals.size() * sizeof(normals[0]), normals.data(), GL_STATIC_DRAW);
 	glEnableVertexAttribArray(2);
 	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
 	
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->vertexArrayBuffers[static_cast<unsigned int>(BufferTypes::INDEX)]);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->model.indices.size() * sizeof(this->model.indices[0]), this->model.indices.data(), GL_STATIC_DRAW);
-	
-	glEnableVertexAttribArray(3);
-	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 0, 0);
-	glBindBuffer(GL_ARRAY_BUFFER, this->vertexArrayBuffers[static_cast<unsigned int>(BufferTypes::TANGENT)]);
-	glBufferData(GL_ARRAY_BUFFER, this->model.tangents.size() * sizeof(this->model.tangents[0]), this->model.tangents.data(), GL_STATIC_DRAW);
+	glEnableVertexAttribArray(4);
+	glVertexAttribPointer(4, 3, GL_UNSIGNED_INT, GL_FALSE, 0, 0);
 
 	glBindVertexArray(0);
 }
