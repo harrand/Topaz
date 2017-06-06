@@ -115,6 +115,6 @@ house.path: ../../../res/runtime/models/house.obj
 house.name: House Model with uniform UVs
 <<<<<<< HEAD
 =======
-played: 304112
-speed: 3.5
-played: 305099
+speed: 0.35
+played: 323074
+played: 323077
