@@ -6,7 +6,7 @@ object0.texture0: stone
 object0.texture1: stone_normalmap
 object0.texture2: stone_parallaxmap
 object0.texture3: default_displacementmap
-object0.pos: [0,-5,0]
+object0.pos: [-40,-5,40]
 object0.rot: [0,0,0]
 object0.scale: [40,3,40]
 object1.mesh: monkeyhead
@@ -86,7 +86,7 @@ object10.texture0: bricks
 object10.texture1: bricks_normalmap
 object10.texture2: bricks_parallaxmap
 object10.texture3: bricks_displacementmap
-object10.pos: [61.4832,0,-75.9498]
+object10.pos: [31.4832,0,-45.9498]
 object10.rot: [0,0,0]
 object10.scale: [30,30,30]
 objects: %[

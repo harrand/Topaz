@@ -9,9 +9,12 @@
 #endif
 int main()
 {	
-	World world(RES_POINT + "/worlds/random.world");
+	World world;
+	std::vector<std::string> loadWorldArgs({"loadworld", "random.world"});
+	Commands::loadWorld(loadWorldArgs, world);
 	Camera cam;
 	Player player(10.0f, cam);
+	player.setPosition(world.getSpawnPoint());
 	
 	std::vector<std::unique_ptr<Mesh>> allMeshes;
 	std::vector<std::unique_ptr<Texture>> allTextures;
