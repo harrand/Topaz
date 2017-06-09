@@ -1,4 +1,6 @@
 #include "shader.hpp"
+#include "matrix.hpp"
+#include <fstream>
 
 Shader::Shader(std::string filename): filename(filename)
 {

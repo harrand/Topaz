@@ -1,9 +1,7 @@
 #ifndef LISTENERS_HPP
 #define LISTENERS_HPP
-
 #include "window.hpp"
 #include "command.hpp"
-#include <algorithm>
 
 class MouseListener: public Listener
 {

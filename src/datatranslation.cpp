@@ -1,4 +1,5 @@
 #include "datatranslation.hpp"
+#include "utility.hpp"
 
 DataTranslation::DataTranslation(std::string datafilename): datafilename(datafilename){}
 

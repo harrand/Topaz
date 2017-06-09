@@ -1,4 +1,6 @@
 #include "command.hpp"
+#include "timekeeper.hpp"
+#include <thread>
 
 std::vector<std::string> CommandCache::aliasArgs = std::vector<std::string>();
 std::vector<std::unique_ptr<AudioClip>> CommandCache::clips = std::vector<std::unique_ptr<AudioClip>>();

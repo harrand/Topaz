@@ -3,13 +3,9 @@
 #ifndef GLEW_STATIC
 #define GLEW_STATIC
 #endif
-
 #include <string>
-#include <fstream>
-#include <iostream>
 #include "utility.hpp"
 #include "glew.h"
-#include "matrix.hpp"
 #define MAX_SHADERS 5
 
 class Shader

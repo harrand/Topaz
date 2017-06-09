@@ -1,4 +1,6 @@
 #include "window.hpp"
+#include "SDL_mixer.h"
+#include "glew.h"
 
 // Static members need to be initialised like this
 unsigned int Listener::NUM_LISTENERS = 0;

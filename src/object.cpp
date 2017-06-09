@@ -1,4 +1,5 @@
 #include "object.hpp"
+#include "matrix.hpp"
 
 Object::Object(std::string meshLink, std::vector<std::pair<std::string, Texture::TextureType>> textures, Vector3F pos, Vector3F rot, Vector3F scale): pos(pos), rot(rot), scale(scale), meshLink(meshLink), textures(textures){}
 

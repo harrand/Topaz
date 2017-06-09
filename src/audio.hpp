@@ -1,8 +1,6 @@
 #ifndef AUDIO_HPP
 #define AUDIO_HPP
 #include <string>
-#include <algorithm>
-#include <utility>
 #include "SDL_mixer.h"
 #include "player.hpp"
 

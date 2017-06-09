@@ -2,8 +2,6 @@
 #define COMMAND_HPP
 #include "world.hpp"
 #include "audio.hpp"
-#include "timekeeper.hpp"
-#include <thread>
 
 class CommandCache
 {

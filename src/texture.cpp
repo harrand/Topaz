@@ -1,4 +1,6 @@
 #include "texture.hpp"
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
 
 FrameBuffer::FrameBuffer(unsigned int width, unsigned int height): width(width), height(height), fbHandle(0)
 {

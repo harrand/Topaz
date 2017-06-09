@@ -2,8 +2,8 @@
 #define WORLD_HPP
 #include <map>
 #include "entityobject.hpp"
-#include "datatranslation.hpp"
 #include "light.hpp"
+#include "datatranslation.hpp"
 
 class World
 {

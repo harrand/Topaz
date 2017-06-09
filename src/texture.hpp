@@ -1,8 +1,6 @@
 #ifndef TEXTURE_HPP
 #define TEXTURE_HPP
 #include <memory>
-#define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
 #ifndef GLEW_STATIC
 #define GLEW_STATIC
 #endif

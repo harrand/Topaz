@@ -5,9 +5,7 @@
 #endif
 #include <string>
 #include <unordered_map>
-#include "SDL_mixer.h"
 #include "SDL.h"
-#include "glew.h"
 
 class Listener
 {

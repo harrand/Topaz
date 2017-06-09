@@ -1,9 +1,8 @@
 #ifndef DATATRANSLATION_HPP
 #define DATATRANSLATION_HPP
-#include "utility.hpp"
-#include "mdl.hpp"
 #include "mesh.hpp"
 #include "texture.hpp"
+#include "mdl.hpp"
 #include <unordered_map>
 #include <memory>
 #define RES_POINT std::string("../../../res/runtime")
