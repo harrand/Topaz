@@ -18,7 +18,7 @@ public:
 
 namespace Commands
 {
-	void inputCommand(std::string cmd, World& world, Player& player, Shader& shader);
+	void inputCommand(std::string cmd, World& world, Player& player, const Shader& shader);
 	void loadWorld(std::vector<std::string> args, World& world);
 	void exportWorld(std::vector<std::string> args, World& world);
 	void addObject(std::vector<std::string> args, World& world, Player& player, bool printResults);
@@ -33,13 +33,13 @@ namespace Commands
 	void setGravity(std::vector<std::string> args, World& world, bool printResults);
 	void setSpawnPoint(std::vector<std::string> args, World& world, bool printResults);
 	void setSpawnOrientation(std::vector<std::string> args, World& world, bool printResults);
-	void addLight(std::vector<std::string> args, World& world, Player& player, Shader& shader, bool printResults);
+	void addLight(std::vector<std::string> args, World& world, Player& player, const Shader& shader, bool printResults);
 	void toggleMusic();
 	void setVolume(std::vector<std::string> args);
 	void printVolume();
 	void playAudio(std::vector<std::string> args, bool printResults, Player& player);
 	void scheduleAsyncDelayedMessage(std::vector<std::string> args, bool printResults);
-	void scheduleAsyncDelayedCmd(std::vector<std::string> args, World& world, Player& player, Shader& shader, bool printResults);
+	void scheduleAsyncDelayedCmd(std::vector<std::string> args, World& world, Player& player, const Shader& shader, bool printResults);
 }
 
 #endif

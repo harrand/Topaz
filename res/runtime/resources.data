@@ -113,8 +113,5 @@ skybox.path: ../../../res/runtime/models/skybox.obj
 skybox.name: Cube no UVs or normals
 house.path: ../../../res/runtime/models/house.obj
 house.name: House Model with uniform UVs
-<<<<<<< HEAD
-=======
 speed: 0.35
-played: 324511
-played: 324522
+played: 325144

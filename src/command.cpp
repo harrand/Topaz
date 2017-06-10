@@ -60,7 +60,7 @@ void CommandCache::destroyChannelClips(int channel)
 	}
 }
 
-void Commands::inputCommand(std::string cmd, World& world, Player& player, Shader& shader)
+void Commands::inputCommand(std::string cmd, World& world, Player& player, const Shader& shader)
 {
 	std::vector<std::string> args;
 	if(StringUtility::contains(cmd, ' '))
@@ -369,7 +369,7 @@ void Commands::setSpawnOrientation(std::vector<std::string> args, World& world, 
 		LogUtility::message("Set spawnorientation of the world '", world.getFileName(), "' to ", StringUtility::format(StringUtility::devectoriseList3<float>(spawn)), ".");
 }
 
-void Commands::addLight(std::vector<std::string> args, World& world, Player& player, Shader& shader, bool printResults)
+void Commands::addLight(std::vector<std::string> args, World& world, Player& player, const Shader& shader, bool printResults)
 {
 	if(args.size() != 4)
 	{
@@ -458,7 +458,7 @@ void Commands::scheduleAsyncDelayedMessage(std::vector<std::string> args, bool p
 	Scheduler::asyncDelayedTask<void, std::string>(millisDelay, printMsg, msg);
 }
 
-void Commands::scheduleAsyncDelayedCmd(std::vector<std::string> args, World& world, Player& player, Shader& shader, bool printResults)
+void Commands::scheduleAsyncDelayedCmd(std::vector<std::string> args, World& world, Player& player, const Shader& shader, bool printResults)
 {
 	if(args.size() < 3)
 	{
@@ -471,6 +471,6 @@ void Commands::scheduleAsyncDelayedCmd(std::vector<std::string> args, World& wor
 	std::string cmd = "";
 	for(size_t i = 2; i < args.size(); i++)
 		cmd += args.at(i) + (i == (args.size() - 1) ? "" : " ");
-	std::function<void(std::string, std::reference_wrapper<World>, std::reference_wrapper<Player>, std::reference_wrapper<Shader>)> inputCmd([](std::string cmd, std::reference_wrapper<World> world, std::reference_wrapper<Player> player, std::reference_wrapper<Shader> shader)->void{Commands::inputCommand(cmd, world, player, shader);});
-	Scheduler::asyncDelayedTask<void, std::string, std::reference_wrapper<World>, std::reference_wrapper<Player>, std::reference_wrapper<Shader>>(millisDelay, inputCmd, cmd, std::ref(world), std::ref(player), std::ref(shader));
+	std::function<void(std::string, std::reference_wrapper<World>, std::reference_wrapper<Player>, std::reference_wrapper<const Shader>)> inputCmd([](std::string cmd, std::reference_wrapper<World> world, std::reference_wrapper<Player> player, std::reference_wrapper<const Shader> shader)->void{Commands::inputCommand(cmd, world, player, shader);});
+	Scheduler::asyncDelayedTask<void, std::string, std::reference_wrapper<World>, std::reference_wrapper<Player>, std::reference_wrapper<const Shader>>(millisDelay, inputCmd, cmd, std::ref(world), std::ref(player), std::cref(shader));
 }

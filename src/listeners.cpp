@@ -237,7 +237,7 @@ std::string KeyControls::getKeybind(MDLF& controlsDataFile, KeybindType kt)
 	}
 }
 
-KeybindController::KeybindController(Player& player, Shader& shader, World& world, Window& wnd): player(player), shader(shader), world(world), wnd(wnd)
+KeybindController::KeybindController(Player& player, const Shader& shader, World& world, Window& wnd): player(player), shader(shader), world(world), wnd(wnd)
 {
 	wnd.registerListener(this->kl);
 }

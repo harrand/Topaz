@@ -87,7 +87,7 @@ namespace KeyControls
 class KeybindController
 {
 public:
-	KeybindController(Player& player, Shader& shader, World& world, Window& wnd);
+	KeybindController(Player& player, const Shader& shader, World& world, Window& wnd);
 	KeybindController(const KeybindController& copy);
 	KeybindController(KeybindController&& move) = delete;
 	KeybindController& operator=(const KeybindController& rhs) = delete;
@@ -95,7 +95,7 @@ public:
 	void handleKeybinds(float secondsSinceLastFrame);
 private:
 	Player& player;
-	Shader& shader;
+	const Shader& shader;
 	World& world;
 	Window& wnd;
 	KeyListener kl;
