@@ -42,7 +42,6 @@ private:
 	static const unsigned int MAXIMUM_LIGHTS;
 	Vector3F gravity, spawnPoint, spawnOrientation;
 	std::string filename;
-	//std::optional would be really good to store the skybox
 	std::vector<Object> members;
 	std::vector<Entity> entities;
 	std::vector<EntityObject> entityObjects;

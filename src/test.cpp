@@ -13,7 +13,8 @@ int main()
 	LogUtility::message("Initialising engine...");
 	Engine engine(player, wnd);
 	LogUtility::message("Initialising key and mouse controllers...");
-	KeybindController kc(player, engine.getShader(0), engine.getWorldR(), wnd);
+	size_t shader_id = 0;
+	KeybindController kc(player, engine.getShader(shader_id), engine.getWorldR(), wnd);
 	MouseController mc(player, engine.getWorldR(), wnd);
 	
 	AudioMusic music(RES_POINT + "/music/music.wav");
@@ -22,7 +23,7 @@ int main()
 	
 	while(!wnd.isCloseRequested())
 	{
-		engine.update(cam, 0, mc, kc);
+		engine.update(cam, shader_id, mc, kc);
 	}
 	return 0;
 }
