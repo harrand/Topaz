@@ -17,7 +17,7 @@ Engine::~Engine()
 	this->resources.editTag("played", CastUtility::toString<unsigned int>(this->secondsLifetime));
 }
 
-void Engine::update(Camera& cam, size_t shader_index, MouseController& mc, KeybindController& kc)
+void Engine::update(size_t shader_index, MouseController& mc, KeybindController& kc)
 {
 	if(this->keeper.millisPassed(1000))
 	{
@@ -26,7 +26,7 @@ void Engine::update(Camera& cam, size_t shader_index, MouseController& mc, Keybi
 			this->profiler.reset();
 			this->secondsLifetime++;
 			this->keeper.reload();
-			LogUtility::silent("Camera Position = ", StringUtility::format(StringUtility::devectoriseList3<float>(cam.getPos())));
+			LogUtility::silent("Camera Position = ", StringUtility::format(StringUtility::devectoriseList3<float>(this->player.getPosition())));
 	}
 	this->wnd.setRenderTarget();
 	this->profiler.beginFrame();
@@ -36,7 +36,7 @@ void Engine::update(Camera& cam, size_t shader_index, MouseController& mc, Keybi
 	kc.handleKeybinds(this->profiler.getLastDelta());
 	mc.getMouseListenerR().reloadMouseDelta();
 	this->profiler.endFrame();
-	this->world.update(this->fps, cam, this->getShader(shader_index), this->wnd.getWidth(), this->wnd.getHeight(), this->meshes, this->textures, this->normalMaps, this->parallaxMaps, this->displacementMaps);
+	this->world.update(this->fps, this->player.getCamera(), this->getShader(shader_index), this->wnd.getWidth(), this->wnd.getHeight(), this->meshes, this->textures, this->normalMaps, this->parallaxMaps, this->displacementMaps);
 	this->wnd.update();
 	
 	GLenum error;

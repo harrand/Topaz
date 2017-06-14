@@ -23,7 +23,7 @@ int main()
 	
 	while(!wnd.isCloseRequested())
 	{
-		engine.update(cam, shader_id, mc, kc);
+		engine.update(shader_id, mc, kc);
 	}
 	return 0;
 }
