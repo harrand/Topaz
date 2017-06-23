@@ -27,7 +27,7 @@ private:
 class Window
 {
 public:
-	Window(int w = 800, int h = 600, std::string title = "Undefined");
+	Window(int w = 800, int h = 600, std::string title = "Untitled");
 	Window(const Window& copy);
 	// Can't have these because the GL_Context cant be changed to anything that isn't dangerous when move's destructor is invoked (why would we want to move/assign a window anyway?)
 	Window(Window&& move) = delete;

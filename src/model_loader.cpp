@@ -80,7 +80,6 @@ void IndexedModel::calcTangents()
 {
     for(unsigned int i = 0; i < indices.size(); i += 3)
     {
-		//std::cout << "Calculating a trio of tangents... (Indices size = " << indices.size() << ") (Tangents reserved size = " << tangents.size() << ")\n";
         int i0 = indices[i];
         int i1 = indices[i + 1];
         int i2 = indices[i + 2];
@@ -191,9 +190,11 @@ IndexedModel OBJModel::ToIndexedModel()
             result.normals[i] = normalModel.normals[indexMap[i]];
     }
 	
+	/*
 	normalModel.calcTangents();
 	for(unsigned int i = 0; i < result.tangents.size(); i++)
 		result.tangents.at(i) = normalModel.tangents[indexMap[i]];
+	*/
     
     return result;
 }
