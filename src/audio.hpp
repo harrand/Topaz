@@ -16,7 +16,7 @@ public:
 	AudioClip& operator=(const AudioClip& rhs) = delete;
 	
 	void play();
-	virtual void update(Player& relativeTo){}
+	virtual void update(){}
 	int getChannel() const;
 	const std::string& getFileName() const;
 	const Mix_Chunk* getAudioHandle() const;

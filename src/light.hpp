@@ -12,7 +12,7 @@ public:
 	
 	const Vector3F& getPos() const;
 	const Vector3F& getColour() const;
-	const float getPower() const;
+	float getPower() const;
 private:
 	Vector3F pos;
 	Vector3F colour;

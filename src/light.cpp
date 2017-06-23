@@ -12,7 +12,7 @@ const Vector3F& BaseLight::getColour() const
 	return this->colour;
 }
 
-const float BaseLight::getPower() const
+float BaseLight::getPower() const
 {
 	return this->power;
 }

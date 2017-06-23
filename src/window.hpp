@@ -11,7 +11,7 @@ class Listener
 {
 public:
 	Listener();
-	Listener(const Listener& copy);
+	Listener(const Listener& copy) = delete;
 	Listener(Listener&& move) = delete;
 	Listener& operator=(const Listener& rhs) = delete;
 	~Listener();

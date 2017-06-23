@@ -11,9 +11,6 @@ Listener::Listener()
 	this->id = Listener::NUM_LISTENERS;
 }
 
-// Don't want it defaulting or this id will be the same as the copy without incrementing NUM_LISTENERS. Calling ctor works fine
-Listener::Listener(const Listener& copy): Listener(){}
-
 Listener::~Listener()
 {
 	Listener::NUM_LISTENERS--;

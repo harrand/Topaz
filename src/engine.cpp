@@ -17,7 +17,7 @@ Engine::~Engine()
 	this->resources.editTag("played", CastUtility::toString<unsigned int>(this->secondsLifetime));
 }
 
-void Engine::update(size_t shader_index, MouseController& mc, KeybindController& kc)
+void Engine::update(std::size_t shader_index, MouseController& mc, KeybindController& kc)
 {
 	if(this->keeper.millisPassed(1000))
 	{
@@ -99,7 +99,7 @@ const std::vector<std::unique_ptr<DisplacementMap>>& Engine::getDisplacementMaps
 	return this->displacementMaps;
 }
 
-const Shader& Engine::getShader(size_t index) const
+const Shader& Engine::getShader(std::size_t index) const
 {
 	if(index > this->extraShaders.size())
 		LogUtility::error("Could not retrieve shader index ", index, ", retrieving default instead.");

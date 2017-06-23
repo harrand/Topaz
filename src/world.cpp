@@ -127,7 +127,7 @@ void World::exportWorld(const std::string& worldName) const
 	output.editTag("gravity", StringUtility::format(StringUtility::devectoriseList3<float>(this->gravity)));
 	output.editTag("spawnpoint", StringUtility::format(StringUtility::devectoriseList3<float>(this->spawnPoint)));
 	output.editTag("spawnorientation", StringUtility::format(StringUtility::devectoriseList3<float>(this->spawnOrientation)));
-	for(size_t i = 0; i < this->members.size(); i++)
+	for(std::size_t i = 0; i < this->members.size(); i++)
 	{
 		const std::string objectName = "object" + CastUtility::toString<float>(i);
 		objectList.push_back(objectName);
@@ -142,7 +142,7 @@ void World::exportWorld(const std::string& worldName) const
 		output.editTag(objectName + ".rot", StringUtility::format(StringUtility::devectoriseList3<float>(curObj.getRot())));
 		output.editTag(objectName + ".scale", StringUtility::format(StringUtility::devectoriseList3<float>(curObj.getScale())));
 	}
-	for(size_t i = 0; i < this->entityObjects.size(); i++)
+	for(std::size_t i = 0; i < this->entityObjects.size(); i++)
 	{
 		const std::string eoName = "eo" + CastUtility::toString<float>(i);
 		eoList.push_back(eoName);
@@ -217,7 +217,7 @@ void World::update(unsigned int fps, Camera& cam, const Shader& shader, unsigned
 	}
 }
 
-const size_t World::getSize() const
+std::size_t World::getSize() const
 {
 	return this->members.size() + this->entities.size() + this->entityObjects.size();
 }

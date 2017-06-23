@@ -39,7 +39,7 @@ void FrameBuffer::setRenderTarget() const
 
 void FrameBuffer::bind(unsigned int id) const
 {
-	if(id > 31 || id < 0)
+	if(id > 31)
 	{
 		LogUtility::error("FrameBuffer bind ID ", id, " is invalid. Must be between 1-31");
 		return;
@@ -116,7 +116,7 @@ Texture::~Texture()
 
 void Texture::bind(GLuint shaderProgram, unsigned int id)
 {
-	if(id > 31 || id < 0)
+	if(id > 31)
 	{
 		LogUtility::error("FrameBuffer bind ID ", id, " is invalid. Must be between 1-31");
 		return;
@@ -143,7 +143,7 @@ NormalMap::NormalMap(std::string filename): Texture(filename){}
 
 void NormalMap::bind(GLuint shaderProgram, unsigned int id)
 {
-	if(id > 31 || id < 0)
+	if(id > 31)
 	{
 		LogUtility::error("FrameBuffer bind ID ", id, " is invalid. Must be between 1-31");
 		return;
@@ -165,7 +165,7 @@ ParallaxMap::ParallaxMap(std::string filename): Texture(filename){}
 
 void ParallaxMap::bind(GLuint shaderProgram, unsigned int id)
 {
-	if(id > 31 || id < 0)
+	if(id > 31)
 	{
 		LogUtility::error("FrameBuffer bind ID ", id, " is invalid. Must be between 1-31");
 		return;
@@ -187,7 +187,7 @@ DisplacementMap::DisplacementMap(std::string filename): Texture(filename){}
 
 void DisplacementMap::bind(GLuint shaderProgram, unsigned int id)
 {
-	if(id > 31 || id < 0)
+	if(id > 31)
 	{
 		LogUtility::error("FrameBuffer bind ID ", id, " is invalid. Must be between 1-31");
 		return;
@@ -246,7 +246,7 @@ CubeMap::~CubeMap()
 
 void CubeMap::bind(GLuint shaderProgram, unsigned int id)
 {
-	if(id > 31 || id < 0)
+	if(id > 31)
 	{
 		LogUtility::error("FrameBuffer bind ID ", id, " is invalid. Must be between 1-31");
 		return;

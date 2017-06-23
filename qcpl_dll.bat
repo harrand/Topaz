@@ -7,7 +7,7 @@ set cpldir=%cpldirX:/=.%
 color e
 cd src
 ren test.cpp test.saved
-g++ -std=c++14 -Wall -pedantic-errors -O3 -c -DTOPAZDLLBUILD *.cpp -I %incdir%
+g++ -std=c++14 -Wall -Wextra -pedantic-errors -O3 -c -DTOPAZDLLBUILD *.cpp -I %incdir%
 gcc -c -DTOPAZDLLBUILD *.c -w -I %incdir%
 ren test.saved test.cpp
 
@@ -31,7 +31,7 @@ move "libtopazdll.a" %lnkdir%
 echo Linking Completed, "topaz.dll" is in %lnkdir%
 cd %scriptdir%
 cd src
-g++ -std=c++14 -c test.cpp -I %incdir%
+g++ -std=c++14 -Wall -Wextra -pedantic-errors -O3 -c test.cpp -I %incdir%
 move test.o %lnkdir%
 color d
 echo Ensuring that dependencies are present...

@@ -5,7 +5,6 @@
 #endif
 int main()
 {	
-	
 	LogUtility::message("Initialising camera, player and window...");
 	Camera cam;
 	Player player(10, cam);
@@ -13,7 +12,7 @@ int main()
 	LogUtility::message("Initialising engine...");
 	Engine engine(player, wnd);
 	LogUtility::message("Initialising key and mouse controllers...");
-	size_t shader_id = 0;
+	std::size_t shader_id = 0;
 	KeybindController kc(player, engine.getShader(shader_id), engine.getWorldR(), wnd);
 	MouseController mc(player, engine.getWorldR(), wnd);
 	

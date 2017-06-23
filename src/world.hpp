@@ -1,6 +1,7 @@
 #ifndef WORLD_HPP
 #define WORLD_HPP
 #include <map>
+#include <cstddef>
 #include "entityobject.hpp"
 #include "light.hpp"
 #include "datatranslation.hpp"
@@ -27,7 +28,7 @@ public:
 	void exportWorld(const std::string& worldName) const;
 	void update(unsigned int fps, Camera& cam, const Shader& shader, unsigned int width, unsigned int height, const std::vector<std::unique_ptr<Mesh>>& allMeshes, const std::vector<std::unique_ptr<Texture>>& allTextures, const std::vector<std::unique_ptr<NormalMap>>& allNormalMaps, const std::vector<std::unique_ptr<ParallaxMap>>& allParallaxMaps, const std::vector<std::unique_ptr<DisplacementMap>>& allDisplacementMaps);
 		
-	const size_t getSize() const;
+	std::size_t getSize() const;
 	const std::vector<Object>& getMembers() const;
 	const std::vector<Entity>& getEntities() const;
 	const std::vector<EntityObject>& getEntityObjects() const;
