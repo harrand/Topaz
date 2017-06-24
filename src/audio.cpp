@@ -57,6 +57,11 @@ void AudioSource::update(Player& relativeTo)
 	Mix_Volume(this->getChannel(), 128 / ((distance * distance) + 1));
 }
 
+Vector3F& AudioSource::getPositionR()
+{
+	return this->position;
+}
+
 const Vector3F& AudioSource::getPosition() const
 {
 	return this->position;

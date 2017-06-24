@@ -15,9 +15,11 @@ public:
 	void setVelocity(Vector3F velocity);
 	void applyForce(std::string forceName, Force f);
 	void removeForce(std::string forceName);
+	virtual Vector3F& getPositionR();
 	virtual const Vector3F& getPosition() const;
 	float getMass() const;
 	const Vector3F& getVelocity() const;
+	Vector3F& getVelocityR();
 	const Vector3F getAcceleration() const;
 	const std::unordered_map<std::string, Force>& getForces() const;
 	virtual void updateMotion(unsigned int fps);

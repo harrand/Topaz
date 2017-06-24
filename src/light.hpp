@@ -10,8 +10,10 @@ public:
 	BaseLight(BaseLight&& move) = default;
 	BaseLight& operator=(const BaseLight& rhs) = default;
 	
-	const Vector3F& getPos() const;
+	const Vector3F& getPosition() const;
+	Vector3F& getPositionR();
 	const Vector3F& getColour() const;
+	Vector3F& getColourR();
 	float getPower() const;
 private:
 	Vector3F pos;

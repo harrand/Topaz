@@ -82,7 +82,7 @@ void MouseController::handleMouse()
 {
 	if(this->ml.isLeftClicked())
 	{
-		Vector3F& orientation = this->player.getCamera().getRotR();
+		Vector3F& orientation = this->player.getCamera().getRotationR();
 		Vector2F delta = this->ml.getMouseDeltaPos();
 		orientation.getYR() += (3 * delta.getX() / (this->wnd.getWidth()));
 		orientation.getXR() -= (3 * delta.getY() / (this->wnd.getHeight()));
@@ -254,25 +254,25 @@ void KeybindController::handleKeybinds(float secondsSinceLastFrame)
 	float multiplier = CastUtility::fromString<float>(MDLF(RawFile(RES_POINT + "/resources.data")).getTag("speed"));
 	MDLF controlsDataFile = MDLF(RawFile(RES_POINT + "/controls.data"));
 	if(kl.isKeyPressed(KeyControls::getKeybind(controlsDataFile, KeybindType::MOVE_FORWARD)))
-		this->player.getCamera().getPosR() += (player.getCamera().getForward() * multiplier * secondsSinceLastFrame);
+		this->player.getCamera().getPositionR() += (player.getCamera().getForward() * multiplier * secondsSinceLastFrame);
 	if(kl.isKeyPressed(KeyControls::getKeybind(controlsDataFile, KeybindType::MOVE_BACKWARD)))
-		this->player.getCamera().getPosR() += (player.getCamera().getBackward() * multiplier * secondsSinceLastFrame);
+		this->player.getCamera().getPositionR() += (player.getCamera().getBackward() * multiplier * secondsSinceLastFrame);
 	if(kl.isKeyPressed(KeyControls::getKeybind(controlsDataFile, KeybindType::MOVE_LEFT)))
-		this->player.getCamera().getPosR() += (player.getCamera().getLeft() * multiplier * secondsSinceLastFrame);
+		this->player.getCamera().getPositionR() += (player.getCamera().getLeft() * multiplier * secondsSinceLastFrame);
 	if(kl.isKeyPressed(KeyControls::getKeybind(controlsDataFile, KeybindType::MOVE_RIGHT)))
-		this->player.getCamera().getPosR() += (player.getCamera().getRight() * multiplier * secondsSinceLastFrame);
+		this->player.getCamera().getPositionR() += (player.getCamera().getRight() * multiplier * secondsSinceLastFrame);
 	if(kl.isKeyPressed(KeyControls::getKeybind(controlsDataFile, KeybindType::MOVE_UP)))
-		this->player.getCamera().getPosR() += (Vector3F(0, 1, 0) * multiplier * secondsSinceLastFrame);
+		this->player.getCamera().getPositionR() += (Vector3F(0, 1, 0) * multiplier * secondsSinceLastFrame);
 	if(kl.isKeyPressed(KeyControls::getKeybind(controlsDataFile, KeybindType::MOVE_DOWN)))
-		this->player.getCamera().getPosR() += (Vector3F(0, -1, 0) * multiplier * secondsSinceLastFrame);
+		this->player.getCamera().getPositionR() += (Vector3F(0, -1, 0) * multiplier * secondsSinceLastFrame);
 	if(kl.isKeyPressed(KeyControls::getKeybind(controlsDataFile, KeybindType::LOOK_UP)))
-		this->player.getCamera().getRotR() += (Vector3F(1.0f/360.0f, 0, 0) * multiplier * 5 * secondsSinceLastFrame);
+		this->player.getCamera().getRotationR() += (Vector3F(1.0f/360.0f, 0, 0) * multiplier * 5 * secondsSinceLastFrame);
 	if(kl.isKeyPressed(KeyControls::getKeybind(controlsDataFile, KeybindType::LOOK_DOWN)))
-		this->player.getCamera().getRotR() += (Vector3F(-1.0f/360.0f, 0, 0) * multiplier * 5 * secondsSinceLastFrame);
+		this->player.getCamera().getRotationR() += (Vector3F(-1.0f/360.0f, 0, 0) * multiplier * 5 * secondsSinceLastFrame);
 	if(kl.isKeyPressed(KeyControls::getKeybind(controlsDataFile, KeybindType::LOOK_LEFT)))
-		this->player.getCamera().getRotR() += (Vector3F(0, -1.0f/360.0f, 0) * multiplier * 5 * secondsSinceLastFrame);
+		this->player.getCamera().getRotationR() += (Vector3F(0, -1.0f/360.0f, 0) * multiplier * 5 * secondsSinceLastFrame);
 	if(kl.isKeyPressed(KeyControls::getKeybind(controlsDataFile, KeybindType::LOOK_RIGHT)))
-		this->player.getCamera().getRotR() += (Vector3F(0, 1.0f/360.0f, 0) * multiplier * 5 * secondsSinceLastFrame);
+		this->player.getCamera().getRotationR() += (Vector3F(0, 1.0f/360.0f, 0) * multiplier * 5 * secondsSinceLastFrame);
 	if(kl.isKeyPressed(KeyControls::getKeybind(controlsDataFile, KeybindType::TOGGLE_FULLSCREEN)))
 		SDL_SetWindowFullscreen(this->wnd.getWindowHandle(), !(SDL_GetWindowFlags(this->wnd.getWindowHandle()) & SDL_WINDOW_FULLSCREEN));
 			
@@ -288,8 +288,8 @@ void KeybindController::handleKeybinds(float secondsSinceLastFrame)
 		wnd.requestClose();
 	if(kl.isKeyPressed(KeyControls::getKeybind(controlsDataFile, KeybindType::RESTART)))
 	{
-		player.getCamera().getPosR() = this->world.getSpawnPoint();
-		player.getCamera().getRotR() = this->world.getSpawnOrientation();
+		player.getCamera().getPositionR() = this->world.getSpawnPoint();
+		player.getCamera().getRotationR() = this->world.getSpawnOrientation();
 		player.setVelocity(Vector3F());
 	}
 	if(kl.catchKeyPressed(KeyControls::getKeybind(controlsDataFile, KeybindType::ALIAS)))

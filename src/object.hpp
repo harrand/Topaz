@@ -14,11 +14,11 @@ public:
 	Object(Object&& move) = default;
 	Object& operator=(const Object& rhs) = default;
 	
-	const Vector3F& getPos() const;
-	const Vector3F& getRot() const;
+	const Vector3F& getPosition() const;
+	const Vector3F& getRotation() const;
 	const Vector3F& getScale() const;
-	Vector3F& getPosR();
-	Vector3F& getRotR();
+	Vector3F& getPositionR();
+	Vector3F& getRotationR();
 	Vector3F& getScaleR();
 	
 	const std::string& getMeshLink() const;

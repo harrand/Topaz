@@ -2,22 +2,22 @@
 
 Camera::Camera(Vector3F pos, Vector3F rot): pos(pos), rot(rot){}
 
-const Vector3F& Camera::getPos() const
+const Vector3F& Camera::getPosition() const
 {
 	return this->pos;
 }
 
-const Vector3F& Camera::getRot() const
+const Vector3F& Camera::getRotation() const
 {
 	return this->rot;
 }
 
-Vector3F& Camera::getPosR()
+Vector3F& Camera::getPositionR()
 {
 	return this->pos;
 }
 
-Vector3F& Camera::getRotR()
+Vector3F& Camera::getRotationR()
 {
 	return this->rot;
 }

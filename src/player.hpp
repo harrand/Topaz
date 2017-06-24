@@ -13,6 +13,7 @@ public:
 	
 	void setPosition(Vector3F position);
 	const Vector3F& getPosition() const;
+	Vector3F& getPositionR();
 	Camera& getCamera();
 	void updateMotion(unsigned int fps);
 private:

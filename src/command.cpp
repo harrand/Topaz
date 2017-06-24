@@ -179,12 +179,12 @@ void Commands::addObject(std::vector<std::string> args, World& world, Player& pl
 	}
 	
 	if(posStr == "me")
-		pos = player.getCamera().getPos();
+		pos = player.getCamera().getPosition();
 	else
 		pos = StringUtility::vectoriseList3<float>(StringUtility::deformat(posStr));
 		
 	if(rotStr == "me")
-		rot = Vector3F(player.getCamera().getRot().getX(), player.getCamera().getRot().getY(), player.getCamera().getRot().getZ());
+		rot = Vector3F(player.getCamera().getRotation().getX(), player.getCamera().getRotation().getY(), player.getCamera().getRotation().getZ());
 	else
 		rot = StringUtility::vectoriseList3<float>(StringUtility::deformat(rotStr));
 	
@@ -239,12 +239,12 @@ void Commands::addEntityObject(std::vector<std::string> args, World& world, Play
 	}
 	
 	if(posStr == "me")
-		pos = player.getCamera().getPos();
+		pos = player.getCamera().getPosition();
 	else
 		pos = StringUtility::vectoriseList3<float>(StringUtility::deformat(posStr));
 		
 	if(rotStr == "me")
-		rot = Vector3F(player.getCamera().getRot().getX(), player.getCamera().getRot().getY(), player.getCamera().getRot().getZ());
+		rot = Vector3F(player.getCamera().getRotation().getX(), player.getCamera().getRotation().getY(), player.getCamera().getRotation().getZ());
 	else
 		rot = StringUtility::vectoriseList3<float>(StringUtility::deformat(rotStr));
 	
@@ -321,13 +321,13 @@ void Commands::teleport(std::vector<std::string> args, Player& player)
 	}
 	std::vector<std::string> teleSplit = StringUtility::splitString(StringUtility::replaceAllChar(StringUtility::replaceAllChar(args.at(1), '[', ""), ']', ""), ',');
 	Vector3F tele = Vector3F(CastUtility::fromString<float>(teleSplit.at(0)), CastUtility::fromString<float>(teleSplit.at(1)), CastUtility::fromString<float>(teleSplit.at(2)));
-	player.getCamera().getPosR() = tele;
+	player.getCamera().getPositionR() = tele;
 	LogUtility::message("Teleported.");
 }
 
 void Commands::roundLocation(Player& player)
 {
-	player.getCamera().getPosR() = Vector3F(round(player.getCamera().getPos().getX()), round(player.getCamera().getPos().getY()), round(player.getCamera().getPos().getZ()));
+	player.getCamera().getPositionR() = Vector3F(round(player.getCamera().getPosition().getX()), round(player.getCamera().getPosition().getY()), round(player.getCamera().getPosition().getZ()));
 }
 
 void Commands::setGravity(std::vector<std::string> args, World& world, bool printResults)

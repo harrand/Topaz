@@ -29,12 +29,18 @@ public:
 	void update(unsigned int fps, Camera& cam, const Shader& shader, unsigned int width, unsigned int height, const std::vector<std::unique_ptr<Mesh>>& allMeshes, const std::vector<std::unique_ptr<Texture>>& allTextures, const std::vector<std::unique_ptr<NormalMap>>& allNormalMaps, const std::vector<std::unique_ptr<ParallaxMap>>& allParallaxMaps, const std::vector<std::unique_ptr<DisplacementMap>>& allDisplacementMaps);
 		
 	std::size_t getSize() const;
-	const std::vector<Object>& getMembers() const;
+	const std::vector<Object>& getObjects() const;
 	const std::vector<Entity>& getEntities() const;
 	const std::vector<EntityObject>& getEntityObjects() const;
+	std::vector<Object>& getObjectsR();
+	std::vector<Entity>& getEntitiesR();
+	std::vector<EntityObject>& getEntityObjectsR();
 	const Vector3F& getGravity() const;
 	const Vector3F& getSpawnPoint() const;
 	const Vector3F& getSpawnOrientation() const;
+	Vector3F& getGravityR();
+	Vector3F& getSpawnPointR();
+	Vector3F& getSpawnOrientationR();
 	const std::string& getWorldLink() const;
 	const std::map<std::vector<GLuint>, BaseLight>& getLights() const;
 private:
@@ -43,7 +49,7 @@ private:
 	static const unsigned int MAXIMUM_LIGHTS;
 	Vector3F gravity, spawnPoint, spawnOrientation;
 	std::string filename;
-	std::vector<Object> members;
+	std::vector<Object> objects;
 	std::vector<Entity> entities;
 	std::vector<EntityObject> entityObjects;
 	std::map<std::vector<GLuint>, BaseLight> baseLights;

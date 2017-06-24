@@ -31,6 +31,7 @@ class AudioSource: public AudioClip
 public:
 	AudioSource(std::string filename, Vector3F position);
 	void update(Player& relativeTo);
+	Vector3F& getPositionR();
 	const Vector3F& getPosition() const;
 	void setPosition(Vector3F position);
 private:

@@ -4,12 +4,17 @@ Player::Player(float mass, Camera& cam): Entity(mass), cam(cam){}
 
 void Player::setPosition(Vector3F position)
 {
-	this->cam.getPosR() = position;
+	this->cam.getPositionR() = position;
 }
 
 const Vector3F& Player::getPosition() const
 {
-	return this->cam.getPos();
+	return this->cam.getPosition();
+}
+
+Vector3F& Player::getPositionR()
+{
+	return this->cam.getPositionR();
 }
 
 Camera& Player::getCamera()
@@ -20,5 +25,5 @@ Camera& Player::getCamera()
 void Player::updateMotion(unsigned int fps)
 {
 	this->velocity += (this->getAcceleration() / fps);
-	this->getCamera().getPosR() += (velocity / fps);
+	this->getCamera().getPositionR() += (velocity / fps);
 }

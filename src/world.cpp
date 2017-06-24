@@ -28,7 +28,7 @@ World::World(std::string filename): filename(filename)
 
 World::World(const World& copy): World(copy.filename){}
 
-World::World(World&& move): gravity(move.gravity), spawnPoint(move.spawnPoint), spawnOrientation(move.spawnOrientation), filename(move.filename), members(move.members), entities(move.entities), entityObjects(std::move(move.entityObjects)), baseLights(std::move(move.baseLights)){}
+World::World(World&& move): gravity(move.gravity), spawnPoint(move.spawnPoint), spawnOrientation(move.spawnOrientation), filename(move.filename), objects(move.objects), entities(move.entities), entityObjects(std::move(move.entityObjects)), baseLights(std::move(move.baseLights)){}
 
 World::~World()
 {
@@ -42,7 +42,7 @@ const std::string World::getFileName() const
 
 void World::addObject(Object obj)
 {
-	this->members.push_back(obj);
+	this->objects.push_back(obj);
 }
 
 void World::addEntity(Entity ent)
@@ -127,19 +127,19 @@ void World::exportWorld(const std::string& worldName) const
 	output.editTag("gravity", StringUtility::format(StringUtility::devectoriseList3<float>(this->gravity)));
 	output.editTag("spawnpoint", StringUtility::format(StringUtility::devectoriseList3<float>(this->spawnPoint)));
 	output.editTag("spawnorientation", StringUtility::format(StringUtility::devectoriseList3<float>(this->spawnOrientation)));
-	for(std::size_t i = 0; i < this->members.size(); i++)
+	for(std::size_t i = 0; i < this->objects.size(); i++)
 	{
 		const std::string objectName = "object" + CastUtility::toString<float>(i);
 		objectList.push_back(objectName);
-		const Object curObj = this->members.at(i);
+		const Object curObj = this->objects.at(i);
 		
 		output.editTag(objectName + ".mesh", dt.getResourceName(curObj.getMeshLink()));
 		for(auto& texture : curObj.getTextures())
 		{
 			output.editTag(objectName + ".texture" + CastUtility::toString<unsigned int>(static_cast<unsigned int>(texture.second)), dt.getResourceName(texture.first));
 		}
-		output.editTag(objectName + ".pos", StringUtility::format(StringUtility::devectoriseList3<float>(curObj.getPos())));
-		output.editTag(objectName + ".rot", StringUtility::format(StringUtility::devectoriseList3<float>(curObj.getRot())));
+		output.editTag(objectName + ".pos", StringUtility::format(StringUtility::devectoriseList3<float>(curObj.getPosition())));
+		output.editTag(objectName + ".rot", StringUtility::format(StringUtility::devectoriseList3<float>(curObj.getRotation())));
 		output.editTag(objectName + ".scale", StringUtility::format(StringUtility::devectoriseList3<float>(curObj.getScale())));
 	}
 	for(std::size_t i = 0; i < this->entityObjects.size(); i++)
@@ -154,8 +154,8 @@ void World::exportWorld(const std::string& worldName) const
 			output.editTag(eoName + ".texture" + CastUtility::toString<unsigned int>(static_cast<unsigned int>(texture.second)), dt.getResourceName(texture.first));
 		}
 		output.editTag(eoName + ".mass", CastUtility::toString<float>(curEO.getMass()));
-		output.editTag(eoName + ".pos", StringUtility::format(StringUtility::devectoriseList3<float>(curEO.getPos())));
-		output.editTag(eoName + ".rot", StringUtility::format(StringUtility::devectoriseList3<float>(curEO.getRot())));
+		output.editTag(eoName + ".pos", StringUtility::format(StringUtility::devectoriseList3<float>(curEO.getPosition())));
+		output.editTag(eoName + ".rot", StringUtility::format(StringUtility::devectoriseList3<float>(curEO.getRotation())));
 		output.editTag(eoName + ".scale", StringUtility::format(StringUtility::devectoriseList3<float>(curEO.getScale())));
 	}
 	output.addSequence("objects", objectList);
@@ -164,7 +164,7 @@ void World::exportWorld(const std::string& worldName) const
 
 void World::update(unsigned int fps, Camera& cam, const Shader& shader, unsigned int width, unsigned int height, const std::vector<std::unique_ptr<Mesh>>& allMeshes, const std::vector<std::unique_ptr<Texture>>& allTextures, const std::vector<std::unique_ptr<NormalMap>>& allNormalMaps, const std::vector<std::unique_ptr<ParallaxMap>>& allParallaxMaps, const std::vector<std::unique_ptr<DisplacementMap>>& allDisplacementMaps)
 {
-	for(auto& obj : this->members)
+	for(auto& obj : this->objects)
 	{
 		Mesh* mesh = Mesh::getFromLink(obj.getMeshLink(), allMeshes);
 		Texture* tex = nullptr; NormalMap* nm = nullptr; ParallaxMap* pm = nullptr; DisplacementMap* dm = nullptr;
@@ -205,9 +205,9 @@ void World::update(unsigned int fps, Camera& cam, const Shader& shader, unsigned
 	{
 		BaseLight light = iter.second;
 		std::vector<float> pos, colour;
-		pos.push_back(light.getPos().getX());
-		pos.push_back(light.getPos().getY());
-		pos.push_back(light.getPos().getZ());
+		pos.push_back(light.getPosition().getX());
+		pos.push_back(light.getPosition().getY());
+		pos.push_back(light.getPosition().getZ());
 		colour.push_back(light.getColour().getX());
 		colour.push_back(light.getColour().getY());
 		colour.push_back(light.getColour().getZ());
@@ -219,12 +219,12 @@ void World::update(unsigned int fps, Camera& cam, const Shader& shader, unsigned
 
 std::size_t World::getSize() const
 {
-	return this->members.size() + this->entities.size() + this->entityObjects.size();
+	return this->objects.size() + this->entities.size() + this->entityObjects.size();
 }
 
-const std::vector<Object>& World::getMembers() const
+const std::vector<Object>& World::getObjects() const
 {
-	return this->members;
+	return this->objects;
 }
 
 const std::vector<Entity>& World::getEntities() const
@@ -233,6 +233,21 @@ const std::vector<Entity>& World::getEntities() const
 }
 
 const std::vector<EntityObject>& World::getEntityObjects() const
+{
+	return this->entityObjects;
+}
+
+std::vector<Object>& World::getObjectsR()
+{
+	return this->objects;
+}
+
+std::vector<Entity>& World::getEntitiesR()
+{
+	return this->entities;
+}
+
+std::vector<EntityObject>& World::getEntityObjectsR()
 {
 	return this->entityObjects;
 }
@@ -248,6 +263,21 @@ const Vector3F& World::getSpawnPoint() const
 }
 
 const Vector3F& World::getSpawnOrientation() const
+{
+	return this->spawnOrientation;
+}
+
+Vector3F& World::getGravityR()
+{
+	return this->gravity;
+}
+
+Vector3F& World::getSpawnPointR()
+{
+	return this->spawnPoint;
+}
+
+Vector3F& World::getSpawnOrientationR()
 {
 	return this->spawnOrientation;
 }

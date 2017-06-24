@@ -5,16 +5,21 @@ EntityObject::EntityObject(std::string meshLink, std::vector<std::pair<std::stri
 void EntityObject::setPosition(Vector3F pos)
 {
 	//this->pos is a protected member in Object. Entity::position is private so is not visible here.
-	this->getPosR() = pos;
+	this->getPositionR() = pos;
 }
 
 const Vector3F& EntityObject::getPosition() const
 {
-	return this->getPos();
+	return Object::getPosition();
+}
+
+Vector3F& EntityObject::getPositionR()
+{
+	return Object::getPositionR();
 }
 
 void EntityObject::updateMotion(unsigned int fps)
 {
 	this->velocity += (this->getAcceleration() / fps);
-	this->getPosR() += (this->velocity/fps);
+	this->getPositionR() += (this->velocity/fps);
 }

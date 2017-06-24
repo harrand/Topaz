@@ -34,8 +34,10 @@ public:
 	Window& operator=(const Window& rhs) = delete;
 	~Window();
 	
-	int& getWidth();
-	int& getHeight();
+	int getWidth() const;
+	int getHeight() const;
+	int& getWidthR();
+	int& getHeightR();
 	bool isCloseRequested() const;
 	void requestClose();
 	void setTitle(std::string newTitle);

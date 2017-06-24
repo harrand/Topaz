@@ -2,7 +2,7 @@
 #include "SDL_mixer.h"
 #include "glew.h"
 
-// Static members need to be initialised like this
+// Static objects need to be initialised like this
 unsigned int Listener::NUM_LISTENERS = 0;
 
 Listener::Listener()
@@ -40,12 +40,22 @@ Window::~Window()
 	this->destSDL();
 }
 
-int& Window::getWidth()
+int Window::getWidth() const
 {
 	return this->w;
 }
 
-int& Window::getHeight()
+int Window::getHeight() const
+{
+	return this->h;
+}
+
+int& Window::getWidthR()
+{
+	return this->w;
+}
+
+int& Window::getHeightR()
 {
 	return this->h;
 }

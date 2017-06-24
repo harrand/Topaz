@@ -10,10 +10,10 @@ public:
 	Camera(Camera&& move) = default;
 	Camera& operator=(const Camera& rhs) = default;
 	
-	const Vector3F& getPos() const;
-	const Vector3F& getRot() const;
-	Vector3F& getPosR();
-	Vector3F& getRotR();
+	const Vector3F& getPosition() const;
+	const Vector3F& getRotation() const;
+	Vector3F& getPositionR();
+	Vector3F& getRotationR();
 	
 	Vector3F getForward() const;
 	Vector3F getBackward() const;
