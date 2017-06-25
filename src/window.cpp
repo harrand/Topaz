@@ -82,7 +82,12 @@ void Window::setRenderTarget() const
 	glViewport(0, 0, this->w, this->h);
 }
 
-SDL_Window*& Window::getWindowHandle()
+const SDL_Window*& Window::getWindowHandle() const
+{
+	return this->wnd;
+}
+
+SDL_Window*& Window::getWindowHandleR() const
 {
 	return this->wnd;
 }

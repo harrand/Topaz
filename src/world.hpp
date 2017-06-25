@@ -43,6 +43,7 @@ public:
 	Vector3F& getSpawnOrientationR();
 	const std::string& getWorldLink() const;
 	const std::map<std::vector<GLuint>, BaseLight>& getLights() const;
+	std::map<std::vector<GLuint>, BaseLight>& getLightsR();
 private:
 	static Object retrieveData(const std::string& objectName, MDLF& mdlf);
 	static EntityObject retrieveEOData(const std::string& eoName, MDLF& mdlf);

@@ -42,7 +42,7 @@ const std::string World::getFileName() const
 
 void World::addObject(Object obj)
 {
-	this->objects.push_back(obj);
+	this->objects.push_back(std::move(obj));
 }
 
 void World::addEntity(Entity ent)
@@ -52,7 +52,7 @@ void World::addEntity(Entity ent)
 		ent.removeForce("gravity");
 	}
 	ent.applyForce("gravity", Force(this->getGravity()));
-	this->entities.push_back(ent);
+	this->entities.push_back(std::move(ent));
 }
 
 void World::addEntityObject(EntityObject eo)
@@ -62,7 +62,7 @@ void World::addEntityObject(EntityObject eo)
 		eo.removeForce("gravity");
 	}
 	eo.applyForce("gravity", Force(this->getGravity()));
-	this->entityObjects.push_back(eo);
+	this->entityObjects.push_back(std::move(eo));
 }
 
 void World::addLight(BaseLight light, GLuint shader_programHandle)
@@ -288,6 +288,11 @@ const std::string& World::getWorldLink() const
 }
 
 const std::map<std::vector<GLuint>, BaseLight>& World::getLights() const
+{
+	return this->baseLights;
+}
+
+std::map<std::vector<GLuint>, BaseLight>& World::getLightsR()
 {
 	return this->baseLights;
 }
