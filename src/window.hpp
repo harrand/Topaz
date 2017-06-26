@@ -42,7 +42,6 @@ public:
 	void requestClose();
 	void setTitle(std::string newTitle);
 	void setRenderTarget() const;
-	const SDL_Window*& getWindowHandle() const;
 	SDL_Window*& getWindowHandleR();
 	
 	void clear(float r = 1.0f, float g = 1.0f, float b = 1.0f, float a = 1.0f) const;

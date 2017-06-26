@@ -274,7 +274,7 @@ void KeybindController::handleKeybinds(float secondsSinceLastFrame)
 	if(kl.isKeyPressed(KeyControls::getKeybind(controlsDataFile, KeybindType::LOOK_RIGHT)))
 		this->player.getCamera().getRotationR() += (Vector3F(0, 1.0f/360.0f, 0) * multiplier * 5 * secondsSinceLastFrame);
 	if(kl.isKeyPressed(KeyControls::getKeybind(controlsDataFile, KeybindType::TOGGLE_FULLSCREEN)))
-		SDL_SetWindowFullscreen(this->wnd.getWindowHandle(), !(SDL_GetWindowFlags(this->wnd.getWindowHandle()) & SDL_WINDOW_FULLSCREEN));
+		SDL_SetWindowFullscreen(this->wnd.getWindowHandleR(), !(SDL_GetWindowFlags(this->wnd.getWindowHandleR()) & SDL_WINDOW_FULLSCREEN));
 			
 	if(kl.isKeyPressed(KeyControls::getKeybind(controlsDataFile, KeybindType::INPUT_COMMAND)))
 	{
