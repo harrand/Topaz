@@ -7,7 +7,7 @@
 class Engine
 {
 public:
-	Engine(Player& player, Window& wnd, std::string properties_path = RES_POINT + "/properties.mdl");
+	Engine(Player& player, Window& wnd, std::string properties_path = "properties.mdl");
 	~Engine();
 	void update(std::size_t shader_index, MouseController& mc, KeybindController& kc);
 	const MDLF& getProperties() const;

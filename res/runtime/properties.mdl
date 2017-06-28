@@ -1,3 +1,4 @@
 resources: ../../../res/runtime/resources.data
-default_world: random.world
+controls: ../../../res/runtime/controls.data
+default_world: ../../../res/runtime/worlds/random.world
 default_shader: ../../../res/runtime/shaders/noshadows

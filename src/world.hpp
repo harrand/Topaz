@@ -9,7 +9,7 @@
 class World
 {
 public:
-	World(std::string filename = RES_POINT + "/worlds/default.world");
+	World(std::string filename = "default.world", std::string resources_path = "resources.data");
 	World(const World& copy);
 	World(World&& move);
 	World& operator=(const World& rhs) = default;
@@ -25,7 +25,7 @@ public:
 	void setSpawnOrientation(Vector3F spawnOrientation = Vector3F());
 	void killLights();
 	
-	void exportWorld(const std::string& worldName) const;
+	void exportWorld(const std::string& worldLink, std::string resources_path) const;
 	void update(unsigned int fps, Camera& cam, const Shader& shader, unsigned int width, unsigned int height, const std::vector<std::unique_ptr<Mesh>>& allMeshes, const std::vector<std::unique_ptr<Texture>>& allTextures, const std::vector<std::unique_ptr<NormalMap>>& allNormalMaps, const std::vector<std::unique_ptr<ParallaxMap>>& allParallaxMaps, const std::vector<std::unique_ptr<DisplacementMap>>& allDisplacementMaps);
 		
 	std::size_t getSize() const;
@@ -45,8 +45,8 @@ public:
 	const std::map<std::vector<GLuint>, BaseLight>& getLights() const;
 	std::map<std::vector<GLuint>, BaseLight>& getLightsR();
 private:
-	static Object retrieveData(const std::string& objectName, MDLF& mdlf);
-	static EntityObject retrieveEOData(const std::string& eoName, MDLF& mdlf);
+	static Object retrieveData(const std::string& objectName, std::string resources_path, MDLF& mdlf);
+	static EntityObject retrieveEOData(const std::string& eoName, std::string resources_path, MDLF& mdlf);
 	static const unsigned int MAXIMUM_LIGHTS;
 	Vector3F gravity, spawnPoint, spawnOrientation;
 	std::string filename;

@@ -18,14 +18,14 @@ public:
 
 namespace Commands
 {
-	void inputCommand(std::string cmd, World& world, Player& player, const Shader& shader);
-	void loadWorld(std::vector<std::string> args, World& world);
-	void exportWorld(std::vector<std::string> args, World& world);
+	void inputCommand(std::string cmd, std::string resources_path, World& world, Player& player, const Shader& shader);
+	void loadWorld(std::vector<std::string> args, std::string resources_path, World& world);
+	void exportWorld(std::vector<std::string> args, std::string resources_path, World& world);
 	void addObject(std::vector<std::string> args, World& world, Player& player, bool printResults);
 	void addEntityObject(std::vector<std::string> args, World& world, Player& player, bool printResults);
 	void setAlias(std::vector<std::string> args);
-	void reloadWorld(std::vector<std::string> args, World& world, bool printResults);
-	void updateWorld(World& world, bool printResults);
+	void reloadWorld(std::vector<std::string> args, std::string resources_path, World& world, bool printResults);
+	void updateWorld(World& world, std::string resources_path, bool printResults);
 	void setSpeed(float speed);
 	void printSpeed();
 	void teleport(std::vector<std::string> args, Player& player);
@@ -39,7 +39,7 @@ namespace Commands
 	void printVolume();
 	void playAudio(std::vector<std::string> args, bool printResults, Player& player);
 	void scheduleAsyncDelayedMessage(std::vector<std::string> args, bool printResults);
-	void scheduleAsyncDelayedCmd(std::vector<std::string> args, World& world, Player& player, const Shader& shader, bool printResults);
+	void scheduleAsyncDelayedCmd(std::vector<std::string> args, std::string resources_path, World& world, Player& player, const Shader& shader, bool printResults);
 }
 
 #endif

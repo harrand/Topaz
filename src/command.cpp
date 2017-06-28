@@ -60,7 +60,7 @@ void CommandCache::destroyChannelClips(int channel)
 	}
 }
 
-void Commands::inputCommand(std::string cmd, World& world, Player& player, const Shader& shader)
+void Commands::inputCommand(std::string cmd, std::string resources_path, World& world, Player& player, const Shader& shader)
 {
 	std::vector<std::string> args;
 	if(StringUtility::contains(cmd, ' '))
@@ -70,9 +70,9 @@ void Commands::inputCommand(std::string cmd, World& world, Player& player, const
 	std::string cmdName = StringUtility::toLower(args.at(0));
 	
 	if(cmdName == "loadworld")
-		Commands::loadWorld(args, world);
+		Commands::loadWorld(args, resources_path, world);
 	else if(cmdName == "exportworld")
-		Commands::exportWorld(args, world);
+		Commands::exportWorld(args, resources_path, world);
 	else if(cmdName == "addobject")
 		Commands::addObject(args, world, player, true);
 	else if(cmdName == "addentityobject")
@@ -80,9 +80,9 @@ void Commands::inputCommand(std::string cmd, World& world, Player& player, const
 	else if(cmdName == "alias")
 		Commands::setAlias(args);
 	else if(cmdName == "reloadworld")
-		Commands::reloadWorld(args, world, true);
+		Commands::reloadWorld(args, resources_path, world, true);
 	else if(cmdName == "updateworld")
-		Commands::updateWorld(world, true);
+		Commands::updateWorld(world, resources_path, true);
 	else if(cmdName == "setspeed")
 		Commands::setSpeed(CastUtility::fromString<float>(args.at(1)));
 	else if(cmdName == "speed")
@@ -110,12 +110,12 @@ void Commands::inputCommand(std::string cmd, World& world, Player& player, const
 	else if(cmdName == "delayedmsg")
 		Commands::scheduleAsyncDelayedMessage(args, true);
 	else if(cmdName == "delayedcmd")
-		Commands::scheduleAsyncDelayedCmd(args, world, player, shader, true);
+		Commands::scheduleAsyncDelayedCmd(args, resources_path, world, player, shader, true);
 	else
 		LogUtility::warning("Unknown command. Maybe you made a typo?");
 }
 
-void Commands::loadWorld(std::vector<std::string> args, World& world)
+void Commands::loadWorld(std::vector<std::string> args, std::string resources_path, World& world)
 {
 	if(args.size() != 2)
 	{
@@ -124,22 +124,22 @@ void Commands::loadWorld(std::vector<std::string> args, World& world)
 	}
 	std::vector<Entity> entities = world.getEntities();
 	std::string worldname = args.at(1);
-	std::string link = (RES_POINT + "/worlds/" + worldname);
-	world = World(link);
+	std::string link = (worldname);
+	world = World(link, resources_path);
 	for(std::size_t i = 0; i < entities.size(); i++)
 		world.addEntity(entities.at(i));
 	LogUtility::message("Now rendering the world '", worldname, "' which has ", world.getSize(), " elements.");
 }
 
-void Commands::exportWorld(std::vector<std::string> args, World& world)
+void Commands::exportWorld(std::vector<std::string> args, std::string resources_path, World& world)
 {
 	if(args.size() != 2)
 	{
 	LogUtility::warning("Nonfatal Command Error: Unexpected quantity of args, got ", args.size(), ", expected 2.");
 		return;
 	}
-	std::string worldname = args.at(1);
-	world.exportWorld(worldname);
+	std::string worldlink = args.at(1);
+	world.exportWorld(worldlink, resources_path);
 }
 
 void Commands::addObject(std::vector<std::string> args, World& world, Player& player, bool printResults)
@@ -149,7 +149,7 @@ void Commands::addObject(std::vector<std::string> args, World& world, Player& pl
 		LogUtility::warning("Nonfatal Command Error: Unexpected quantity of args, got ", args.size(), ", expected 9.");
 		return;
 	}
-	DataTranslation dt(RES_POINT + "/resources.data");
+	DataTranslation dt("resources.data");
 	std::string meshName = args.at(1);
 	std::string textureName = args.at(2);
 	std::string normalMapName = args.at(3);
@@ -208,7 +208,7 @@ void Commands::addEntityObject(std::vector<std::string> args, World& world, Play
 		LogUtility::warning("Nonfatal Command Error: Unexpected quantity of args, got ", args.size(), ", expected 10.");
 		return;
 	}
-	DataTranslation dt(RES_POINT + "/resources.data");
+	DataTranslation dt("resources.data");
 	std::string meshName = args.at(1);
 	std::string textureName = args.at(2);
 	std::string normalMapName = args.at(3);
@@ -273,34 +273,30 @@ void Commands::setAlias(std::vector<std::string> args)
 	LogUtility::message(msg);
 }
 
-void Commands::reloadWorld(std::vector<std::string> args, World& world, bool printResults)
+void Commands::reloadWorld(std::vector<std::string> args, std::string resources_path, World& world, bool printResults)
 {
 	args.resize(2); // Resize not reserve; resize will add empty elements in but reserve will not (so with reserve args.at(1) will still crash)
 	args.at(1) = world.getFileName();
-	std::string toErase = RES_POINT + "/worlds/";
-	args.at(1).erase(args.at(1).find(toErase), toErase.length());
-	Commands::loadWorld(args, world);
+	Commands::loadWorld(args, resources_path, world);
 	if(printResults)
 		LogUtility::message("Successfully reloaded the world. (world link ", world.getFileName(), ").");
 }
 
-void Commands::updateWorld(World& world, bool printResults)
+void Commands::updateWorld(World& world, std::string resources_path, bool printResults)
 {
-	std::string worldLink = world.getFileName(), worldName = worldLink;
-	std::string toRemove = RES_POINT + "/worlds/";
-	worldName.erase(worldName.find(toRemove), toRemove.length());
-	world.exportWorld(worldName);
+	std::string worldLink = world.getFileName();
+	world.exportWorld(worldLink, resources_path);
 	std::vector<std::string> args = std::vector<std::string>();
 	args.push_back("loadworld");
-	args.push_back(worldName);
-	Commands::loadWorld(args, world);
+	args.push_back(worldLink);
+	Commands::loadWorld(args, resources_path, world);
 	if(printResults)
-		LogUtility::message("Successfully updated all new objects to the world named ", worldName, " (world link ", worldLink, ").");
+		LogUtility::message("Successfully updated all new objects to world link ", worldLink, ".");
 }
 
 void Commands::setSpeed(float speed)
 {
-	MDLF output(RawFile(RES_POINT + "/resources.data"));
+	MDLF output(RawFile("resources.data"));
 	output.deleteTag("speed");
 	output.addTag("speed", CastUtility::toString<float>(speed));
 	LogUtility::message("Setting speed to ", speed, ".");
@@ -308,7 +304,7 @@ void Commands::setSpeed(float speed)
 
 void Commands::printSpeed()
 {
-	MDLF output(RawFile(RES_POINT + "/resources.data"));
+	MDLF output(RawFile("resources.data"));
 	LogUtility::message("Current speed = ", output.getTag("speed"), ".");
 }
 
@@ -425,7 +421,7 @@ void Commands::playAudio(std::vector<std::string> args, bool printResults, Playe
 		LogUtility::warning("Nonfatal Command Error: Unexpected quantity of args, got ", args.size(),", expected 3.");
 		return;
 	}
-	std::string filename = RES_POINT + "/music/" + args.at(1);
+	std::string filename = args.at(1);
 	Vector3F pos;
 	if(args.at(2) == "me")
 		pos = player.getPosition();
@@ -458,7 +454,7 @@ void Commands::scheduleAsyncDelayedMessage(std::vector<std::string> args, bool p
 	Scheduler::asyncDelayedTask<void, std::string>(millisDelay, printMsg, msg);
 }
 
-void Commands::scheduleAsyncDelayedCmd(std::vector<std::string> args, World& world, Player& player, const Shader& shader, bool printResults)
+void Commands::scheduleAsyncDelayedCmd(std::vector<std::string> args, std::string resources_path, World& world, Player& player, const Shader& shader, bool printResults)
 {
 	if(args.size() < 3)
 	{
@@ -471,6 +467,6 @@ void Commands::scheduleAsyncDelayedCmd(std::vector<std::string> args, World& wor
 	std::string cmd = "";
 	for(std::size_t i = 2; i < args.size(); i++)
 		cmd += args.at(i) + (i == (args.size() - 1) ? "" : " ");
-	std::function<void(std::string, std::reference_wrapper<World>, std::reference_wrapper<Player>, std::reference_wrapper<const Shader>)> inputCmd([](std::string cmd, std::reference_wrapper<World> world, std::reference_wrapper<Player> player, std::reference_wrapper<const Shader> shader)->void{Commands::inputCommand(cmd, world, player, shader);});
-	Scheduler::asyncDelayedTask<void, std::string, std::reference_wrapper<World>, std::reference_wrapper<Player>, std::reference_wrapper<const Shader>>(millisDelay, inputCmd, cmd, std::ref(world), std::ref(player), std::cref(shader));
+	std::function<void(std::string, std::string, std::reference_wrapper<World>, std::reference_wrapper<Player>, std::reference_wrapper<const Shader>)> inputCmd([](std::string cmd, std::string resources_path, std::reference_wrapper<World> world, std::reference_wrapper<Player> player, std::reference_wrapper<const Shader> shader)->void{Commands::inputCommand(cmd, resources_path, world, player, shader);});
+	Scheduler::asyncDelayedTask<void, std::string, std::string, std::reference_wrapper<World>, std::reference_wrapper<Player>, std::reference_wrapper<const Shader>>(millisDelay, inputCmd, cmd, resources_path, std::ref(world), std::ref(player), std::cref(shader));
 }

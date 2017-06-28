@@ -249,10 +249,10 @@ KeybindController::~KeybindController()
 	wnd.deregisterListener(this->kl);
 }
 
-void KeybindController::handleKeybinds(float secondsSinceLastFrame)
+void KeybindController::handleKeybinds(float secondsSinceLastFrame, std::string resources_path, std::string controls_path)
 {
-	float multiplier = CastUtility::fromString<float>(MDLF(RawFile(RES_POINT + "/resources.data")).getTag("speed"));
-	MDLF controlsDataFile = MDLF(RawFile(RES_POINT + "/controls.data"));
+	float multiplier = CastUtility::fromString<float>(MDLF(RawFile(resources_path)).getTag("speed"));
+	MDLF controlsDataFile = MDLF(RawFile(controls_path));
 	if(kl.isKeyPressed(KeyControls::getKeybind(controlsDataFile, KeybindType::MOVE_FORWARD)))
 		this->player.getCamera().getPositionR() += (player.getCamera().getForward() * multiplier * secondsSinceLastFrame);
 	if(kl.isKeyPressed(KeyControls::getKeybind(controlsDataFile, KeybindType::MOVE_BACKWARD)))
@@ -282,7 +282,7 @@ void KeybindController::handleKeybinds(float secondsSinceLastFrame)
 		// dont bother with this, std::cin is not thread-safe
 		//std::thread([&](){std::getline(std::cin, input); Commands::inputCommand(input, world, player, shader);}).detach();
 		std::getline(std::cin, input);
-		Commands::inputCommand(input, world, player, shader);
+		Commands::inputCommand(input, resources_path, world, player, shader);
 	}
 	if(kl.isKeyPressed(KeyControls::getKeybind(controlsDataFile, KeybindType::REQUEST_CLOSE)))
 		wnd.requestClose();
@@ -298,6 +298,6 @@ void KeybindController::handleKeybinds(float secondsSinceLastFrame)
 		std::string cmd = "";
 		for(std::size_t i = 0; i < alias.size(); i++)
 			cmd += (i != (alias.size() - 1)) ? alias.at(i) + " " : alias.at(i);
-		Commands::inputCommand(cmd, world, player, shader);
+		Commands::inputCommand(cmd, resources_path, world, player, shader);
 	}
 }

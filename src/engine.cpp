@@ -2,10 +2,10 @@
 
 Engine::Engine(Player& player, Window& wnd, std::string properties_path): properties(RawFile(properties_path)), resources(RawFile(this->properties.getTag("resources"))), default_shader(this->properties.getTag("default_shader")), player(player), wnd(wnd), secondsLifetime(CastUtility::fromString<unsigned int>(this->resources.getTag("played"))), fps(1000)
 {
-	Commands::loadWorld(std::vector<std::string>({"loadworld", this->properties.getTag("default_world")}), this->world);
+	Commands::loadWorld(std::vector<std::string>({"loadworld", this->properties.getTag("default_world")}), this->properties.getTag("resources"), this->world);
 	this->player.setPosition(this->world.getSpawnPoint());
 	LogUtility::message("Set player position to world spawn.");
-	LogUtility::message("Loading assets from ", this->properties.getTag("resources"), "...");
+	LogUtility::message("Loading assets from '", this->properties.getTag("resources"), "'...");
 	LogUtility::message("Loaded ", DataTranslation(this->properties.getTag("resources")).retrieveAllData(this->meshes, this->textures, this->normalMaps, this->parallaxMaps, this->displacementMaps), " assets.");
 	this->world.addEntity(this->player);
 	for(std::string shaderPath : this->properties.getSequence("extra_shaders"))
@@ -33,7 +33,7 @@ void Engine::update(std::size_t shader_index, MouseController& mc, KeybindContro
 	this->keeper.update();
 	this->wnd.clear(0.0f, 0.0f, 0.0f, 1.0f);
 	mc.handleMouse();
-	kc.handleKeybinds(this->profiler.getLastDelta());
+	kc.handleKeybinds(this->profiler.getLastDelta(), this->getProperties().getTag("resources"), this->getProperties().getTag("controls"));
 	mc.getMouseListenerR().reloadMouseDelta();
 	this->profiler.endFrame();
 	this->world.update(this->fps, this->player.getCamera(), this->getShader(shader_index), this->wnd.getWidth(), this->wnd.getHeight(), this->meshes, this->textures, this->normalMaps, this->parallaxMaps, this->displacementMaps);

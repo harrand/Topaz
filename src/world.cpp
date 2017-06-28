@@ -2,7 +2,7 @@
 
 const unsigned int World::MAXIMUM_LIGHTS = 8;
 
-World::World(std::string filename): filename(filename)
+World::World(std::string filename, std::string resources_path): filename(filename)
 {
 	MDLF input(RawFile(this->filename));
 	std::string spawnPointStr = input.getTag("spawnpoint"), spawnOrientationStr = input.getTag("spawnorientation"), gravStr = input.getTag("gravity");
@@ -21,9 +21,9 @@ World::World(std::string filename): filename(filename)
 	std::vector<std::string> objectList = input.getSequence("objects");
 	std::vector<std::string> entityObjectList = input.getSequence("entityobjects");
 	for(std::string objectName : objectList)
-		this->addObject(World::retrieveData(objectName, input));
+		this->addObject(World::retrieveData(objectName, resources_path, input));
 	for(std::string eoName : entityObjectList)
-		this->addEntityObject(World::retrieveEOData(eoName, input));
+		this->addEntityObject(World::retrieveEOData(eoName, resources_path, input));
 }
 
 World::World(const World& copy): World(copy.filename){}
@@ -113,10 +113,9 @@ void World::killLights()
 	}
 }
 
-void World::exportWorld(const std::string& worldName) const
+void World::exportWorld(const std::string& worldLink, std::string resources_path) const
 {
-	const DataTranslation dt(RES_POINT + "/resources.data");
-	const std::string worldLink = RES_POINT + "/worlds/" + worldName;
+	const DataTranslation dt(resources_path);
 	MDLF output = MDLF(RawFile(worldLink));
 	output.getRawFile().clear();
 	std::vector<std::string> objectList;
@@ -297,7 +296,7 @@ std::map<std::vector<GLuint>, BaseLight>& World::getLightsR()
 	return this->baseLights;
 }
 
-Object World::retrieveData(const std::string& objectName, MDLF& mdlf)
+Object World::retrieveData(const std::string& objectName, std::string resources_path, MDLF& mdlf)
 {
 	std::string meshName = mdlf.getTag(objectName + ".mesh");
 
@@ -305,7 +304,7 @@ Object World::retrieveData(const std::string& objectName, MDLF& mdlf)
 	std::string rotationStr = mdlf.getTag(objectName + ".rot");
 	std::string scaleStr = mdlf.getTag(objectName + ".scale");
 	
-	DataTranslation dt(RES_POINT + "/resources.data");
+	DataTranslation dt(resources_path);
 	
 	std::string meshLink = dt.getResourceLink(meshName);
 	std::vector<std::pair<std::string, Texture::TextureType>> textures;
@@ -319,7 +318,7 @@ Object World::retrieveData(const std::string& objectName, MDLF& mdlf)
 	return Object(meshLink, textures, StringUtility::vectoriseList3<float>(StringUtility::deformat(positionStr)), StringUtility::vectoriseList3<float>(StringUtility::deformat(rotationStr)), StringUtility::vectoriseList3<float>(StringUtility::deformat(scaleStr)));
 }
 
-EntityObject World::retrieveEOData(const std::string& eoName, MDLF& mdlf)
+EntityObject World::retrieveEOData(const std::string& eoName, std::string resources_path, MDLF& mdlf)
 {
 	std::string meshName = mdlf.getTag(eoName + ".mesh");
 	std::string massStr = mdlf.getTag(eoName + ".mass");
@@ -327,7 +326,7 @@ EntityObject World::retrieveEOData(const std::string& eoName, MDLF& mdlf)
 	std::string rotationStr = mdlf.getTag(eoName + ".rot");
 	std::string scaleStr = mdlf.getTag(eoName + ".scale");
 	
-	DataTranslation dt(RES_POINT + "/resources.data");
+	DataTranslation dt(resources_path);
 	
 	std::string meshLink = dt.getResourceLink(meshName);
 	std::vector<std::pair<std::string, Texture::TextureType>> textures;
