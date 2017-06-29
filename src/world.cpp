@@ -214,6 +214,10 @@ void World::update(unsigned int fps, Camera& cam, const Shader& shader, unsigned
 		glUniform3fv(iter.first.at(1), 1, &(colour[0]));
 		glUniform1f(iter.first.at(2), light.getPower());
 	}
+	/*
+	if(this->hasSkybox())
+			this->skybox->render(cam, this->skyboxShader.value_or(shader), allMeshes, width, height);
+	*/
 }
 
 std::size_t World::getSize() const

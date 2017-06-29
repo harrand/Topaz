@@ -42,7 +42,7 @@ private:
 	std::string filename;
 	GLuint programHandle;
 	GLuint shaders[MAX_SHADERS];
-	GLuint uniforms[(unsigned int)UniformTypes::NUM_UNIFORMS];
+	GLuint uniforms[static_cast<unsigned int>(UniformTypes::NUM_UNIFORMS)];
 };
 
 #endif

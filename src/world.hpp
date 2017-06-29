@@ -1,5 +1,6 @@
 #ifndef WORLD_HPP
 #define WORLD_HPP
+//#include <experimental/optional>
 #include <map>
 #include <cstddef>
 #include "entityobject.hpp"
@@ -54,6 +55,8 @@ private:
 	std::vector<Entity> entities;
 	std::vector<EntityObject> entityObjects;
 	std::map<std::vector<GLuint>, BaseLight> baseLights;
+	//std::experimental::optional<Skybox> skybox;
+	//std::experimental::optional<Shader> skyboxShader;
 };
 
 #endif

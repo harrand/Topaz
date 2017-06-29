@@ -96,51 +96,30 @@ namespace StringUtility
 				return true;
 		return false;
 	}
-
-	inline std::vector<std::string> splitString(const std::string& split, char delim)
+	
+	inline std::vector<std::string> splitString(const std::string& s, const std::string& delims)
 	{
-		unsigned int strsize = split.length();
-		const char* str = split.c_str();
-		std::vector<std::string> ret;
-		unsigned int numcount = 0;
-		std::unordered_map<unsigned int, unsigned int> num_pos;
-		for(unsigned int i = 0; i < strsize; i++)
+		std::vector<std::string> v;
+		// Start of an element.
+		std::size_t elemStart = 0;
+		// We start searching from the end of the previous element, which
+		// initially is the start of the string.
+		std::size_t elemEnd = 0;
+		// Find the first non-delim, i.e. the start of an element, after the end of the previous element.
+		while((elemStart = s.find_first_not_of(delims, elemEnd)) != std::string::npos)
 		{
-			char cur = str[i];
-			if(cur == delim)
-			{
-				num_pos[numcount] = i;
-				numcount++;
-			}
-			if(i == (strsize-1))
-			{
-				for(unsigned int j = 0; j < numcount; j++)
-				{
-					unsigned int prevpos;
-					if(j == 0)
-						prevpos = 0;
-					unsigned int posdelim = num_pos[j];
-					if(prevpos == 0)
-					{
-						std::string sub = split.substr(prevpos, (posdelim-prevpos));
-						ret.push_back(sub);
-					}
-					else
-					{
-						std::string sub = split.substr((prevpos+1), (posdelim-prevpos-1));
-						ret.push_back(sub);
-					}
-					if(j == (numcount-1))
-					{
-						prevpos+=(posdelim-prevpos);
-						ret.push_back(split.substr((prevpos+1), (strsize-prevpos)));
-					}
-					prevpos = posdelim;
-				}
-				
-			}
+			// Find the first delem, i.e. the end of the element (or if this fails it is the end of the string).
+			elemEnd = s.find_first_of(delims, elemStart);
+			// Add it.
+			v.emplace_back(s, elemStart, elemEnd == std::string::npos ? std::string::npos : elemEnd - elemStart);
 		}
-		return ret;
+		// When there are no more non-spaces, we are done.
+		return v;
+	}
+	
+	inline std::vector<std::string> splitString(const std::string& s, char delim)
+	{
+		return splitString(s, CastUtility::toString(delim));
 	}
 
 	inline std::string replaceAllChar(const std::string& str, char toreplace, const std::string& replacewith)

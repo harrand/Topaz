@@ -35,6 +35,10 @@ class Skybox
 {
 public:
 	Skybox(std::string cubeMeshLink, CubeMap& cm);
+	Skybox(const Skybox& copy) = default;
+	Skybox(Skybox&& move) = default;
+	Skybox& operator=(const Skybox& rhs) = default;
+	
 	void render(const Camera& cam, const Shader& shad, const std::vector<std::unique_ptr<Mesh>>& allMeshes, float width, float height);
 private:
 	std::string cubeMeshLink;
