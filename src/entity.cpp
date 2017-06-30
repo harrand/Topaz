@@ -54,8 +54,6 @@ const Vector3F Entity::getAcceleration() const
 	{
 		resultant += ent.second;
 	}
-	
-	// fnet = ma, so a = fnet/m
 	return Vector3F(resultant.getSize() / this->mass);
 }
 

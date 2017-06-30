@@ -32,7 +32,7 @@ public:
 	~MouseController();
 	const MouseListener& getMouseListener();
 	MouseListener& getMouseListenerR();
-	void handleMouse();
+	virtual void handleMouse();
 private: 
 	Player& player;
 	World& world;
@@ -48,7 +48,7 @@ public:
 	KeyListener(KeyListener&& move) = default;
 	KeyListener& operator=(const KeyListener& rhs) = default;
 	
-	void handleEvents(SDL_Event& evt);
+	virtual void handleEvents(SDL_Event& evt);
 	bool isKeyPressed(const std::string& keyname) const;
 	bool isKeyReleased(const std::string& keyname) const;
 	bool catchKeyPressed(const std::string& keyname);

@@ -1,6 +1,6 @@
 #include "engine.hpp"
 
-Engine::Engine(Player& player, Window& wnd, std::string properties_path): properties(RawFile(properties_path)), resources(RawFile(this->properties.getTag("resources"))), default_shader(this->properties.getTag("default_shader")), player(player), wnd(wnd), secondsLifetime(CastUtility::fromString<unsigned int>(this->resources.getTag("played"))), fps(1000)
+Engine::Engine(Player& player, Window& wnd, std::string properties_path, unsigned int initial_fps): properties(RawFile(properties_path)), resources(RawFile(this->properties.getTag("resources"))), default_shader(this->properties.getTag("default_shader")), player(player), wnd(wnd), fps(initial_fps)
 {
 	Commands::loadWorld(std::vector<std::string>({"loadworld", this->properties.getTag("default_world")}), this->properties.getTag("resources"), this->world);
 	this->player.setPosition(this->world.getSpawnPoint());
@@ -12,36 +12,37 @@ Engine::Engine(Player& player, Window& wnd, std::string properties_path): proper
 		this->extraShaders.push_back(Shader(shaderPath));
 }
 
-Engine::~Engine()
-{
-	this->resources.editTag("played", CastUtility::toString<unsigned int>(this->secondsLifetime));
-}
-
-void Engine::update(std::size_t shader_index, MouseController& mc, KeybindController& kc)
+void Engine::update(std::size_t shader_index)
 {
 	if(this->keeper.millisPassed(1000))
 	{
-			this->fps = this->profiler.getFPS();
-			LogUtility::silent("\n====== ", this->secondsLifetime, " seconds ======\navgdt = ", this->profiler.getDeltaAverage(), " ms, avgFPS = ", this->fps, " fps.");
 			this->profiler.reset();
-			this->secondsLifetime++;
 			this->keeper.reload();
-			LogUtility::silent("Camera Position = ", StringUtility::format(StringUtility::devectoriseList3<float>(this->player.getPosition())));
 	}
 	this->wnd.setRenderTarget();
 	this->profiler.beginFrame();
+	
 	this->keeper.update();
 	this->wnd.clear(0.0f, 0.0f, 0.0f, 1.0f);
-	mc.handleMouse();
-	kc.handleKeybinds(this->profiler.getLastDelta(), this->getProperties().getTag("resources"), this->getProperties().getTag("controls"));
-	mc.getMouseListenerR().reloadMouseDelta();
 	this->profiler.endFrame();
+	
 	this->world.update(this->fps, this->player.getCamera(), this->getShader(shader_index), this->wnd.getWidth(), this->wnd.getHeight(), this->meshes, this->textures, this->normalMaps, this->parallaxMaps, this->displacementMaps);
 	this->wnd.update();
+	this->fps = this->profiler.getFPS();
 	
 	GLenum error;
 		if((error = glGetError()) != GL_NO_ERROR)
 			LogUtility::error("OpenGL Error: ", error, "\n");
+}
+
+const TimeKeeper& Engine::getTimeKeeper() const
+{
+	return this->keeper;
+}
+
+const TimeProfiler& Engine::getTimeProfiler() const
+{
+	return this->profiler;
 }
 
 const MDLF& Engine::getProperties() const
@@ -106,6 +107,11 @@ const Shader& Engine::getShader(std::size_t index) const
 	else if(index != 0)
 		return this->extraShaders.at(index - 1);
 	return this->getDefaultShader();
+}
+
+unsigned int Engine::getFPS() const
+{
+	return this->fps;
 }
 
 World& Engine::getWorldR()
