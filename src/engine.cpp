@@ -16,8 +16,9 @@ void Engine::update(std::size_t shader_index)
 {
 	if(this->keeper.millisPassed(1000))
 	{
-			this->profiler.reset();
-			this->keeper.reload();
+		this->fps = this->profiler.getFPS();
+		this->profiler.reset();
+		this->keeper.reload();
 	}
 	this->wnd.setRenderTarget();
 	this->profiler.beginFrame();
@@ -28,7 +29,6 @@ void Engine::update(std::size_t shader_index)
 	
 	this->world.update(this->fps, this->player.getCamera(), this->getShader(shader_index), this->wnd.getWidth(), this->wnd.getHeight(), this->meshes, this->textures, this->normalMaps, this->parallaxMaps, this->displacementMaps);
 	this->wnd.update();
-	this->fps = this->profiler.getFPS();
 	
 	GLenum error;
 		if((error = glGetError()) != GL_NO_ERROR)
