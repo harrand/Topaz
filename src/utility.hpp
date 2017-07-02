@@ -6,6 +6,7 @@
 #include <fstream>
 #include <algorithm>
 #include <unordered_map>
+#include <limits>
 #include <typeinfo>
 #include "vector.hpp"
 
@@ -237,6 +238,25 @@ public:
 	Force& operator-=(const Force& other);
 private:
 	Vector3F size;
+};
+
+class MersenneTwister
+{
+public:
+	MersenneTwister(std::mt19937::result_type seed = std::random_device()());
+	MersenneTwister(const MersenneTwister& copy);
+	MersenneTwister(MersenneTwister&& move) = default;
+	MersenneTwister& operator=(const MersenneTwister& rhs) = default;
+	
+	const std::mt19937::result_type& getSeed() const;
+	const std::mt19937& getEngine() const;
+	std::mt19937& getEngineR();
+	
+	int nextInt(int min = 0, int max = std::numeric_limits<int>::max());
+	float nextFloat(float min = 0, float max = std::numeric_limits<float>::max());
+private:
+	const std::mt19937::result_type seed;
+	std::mt19937 mersenne_twister;
 };
 
 #endif //UTILITY_HPP

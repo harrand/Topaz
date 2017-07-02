@@ -27,13 +27,6 @@ int main()
 	Mix_PauseMusic();
 	
 	TimeKeeper updater;
-	/*
-	Shader skyboxShader(engine.getProperties().getTag("skybox_shader_path"));
-	CubeMap cm(engine.getProperties().getTag("skybox_directory"), engine.getProperties().getTag("skybox_name"), ".png");
-	Skybox skybox(engine.getResources().getTag("cube.path"), cm);
-	engine.getWorldR().getSkyboxShaderR() = skyboxShader;
-	engine.getWorldR().getSkyboxR() = skybox;
-	*/
 	
 	LogUtility::message("Beginning loop...");
 	while(!wnd.isCloseRequested())
