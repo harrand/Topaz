@@ -2,7 +2,7 @@
 
 const unsigned int World::MAXIMUM_LIGHTS = 8;
 
-World::World(std::string filename, std::string resources_path): filename(filename)
+World::World(std::string filename, std::string resources_path): filename(filename), resources_path(resources_path)
 {
 	MDLF input(RawFile(this->filename));
 	std::string spawnPointStr = input.getTag("spawnpoint"), spawnOrientationStr = input.getTag("spawnorientation"), gravStr = input.getTag("gravity");
@@ -28,14 +28,14 @@ World::World(std::string filename, std::string resources_path): filename(filenam
 
 World::World(const World& copy): World(copy.filename){}
 
-World::World(World&& move): gravity(move.gravity), spawnPoint(move.spawnPoint), spawnOrientation(move.spawnOrientation), filename(move.filename), objects(move.objects), entities(move.entities), entityObjects(std::move(move.entityObjects)), baseLights(std::move(move.baseLights)){}
+World::World(World&& move): filename(move.filename), resources_path(move.resources_path), gravity(move.gravity), spawnPoint(move.spawnPoint), spawnOrientation(move.spawnOrientation), objects(move.objects), entities(move.entities), entityObjects(std::move(move.entityObjects)), baseLights(std::move(move.baseLights)){}
 
 World::~World()
 {
 	this->killLights();
 }
 
-const std::string World::getFileName() const
+const std::string& World::getFileName() const
 {
 	return this->filename;
 }
@@ -113,9 +113,9 @@ void World::killLights()
 	}
 }
 
-void World::exportWorld(const std::string& worldLink, std::string resources_path) const
+void World::exportWorld(const std::string& worldLink) const
 {
-	const DataTranslation dt(resources_path);
+	const DataTranslation dt(this->resources_path);
 	MDLF output = MDLF(RawFile(worldLink));
 	output.getRawFile().clear();
 	std::vector<std::string> objectList;

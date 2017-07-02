@@ -72,7 +72,7 @@ void Commands::inputCommand(std::string cmd, std::string resources_path, World& 
 	if(cmdName == "loadworld")
 		Commands::loadWorld(args, resources_path, world);
 	else if(cmdName == "exportworld")
-		Commands::exportWorld(args, resources_path, world);
+		Commands::exportWorld(args, world);
 	else if(cmdName == "addobject")
 		Commands::addObject(args, world, player, true);
 	else if(cmdName == "addentityobject")
@@ -131,7 +131,7 @@ void Commands::loadWorld(std::vector<std::string> args, std::string resources_pa
 	LogUtility::message("Now rendering the world '", worldname, "' which has ", world.getSize(), " elements.");
 }
 
-void Commands::exportWorld(std::vector<std::string> args, std::string resources_path, World& world)
+void Commands::exportWorld(std::vector<std::string> args, World& world)
 {
 	if(args.size() != 2)
 	{
@@ -139,7 +139,7 @@ void Commands::exportWorld(std::vector<std::string> args, std::string resources_
 		return;
 	}
 	std::string worldlink = args.at(1);
-	world.exportWorld(worldlink, resources_path);
+	world.exportWorld(worldlink);
 }
 
 void Commands::addObject(std::vector<std::string> args, World& world, Player& player, bool printResults)
@@ -285,7 +285,7 @@ void Commands::reloadWorld(std::vector<std::string> args, std::string resources_
 void Commands::updateWorld(World& world, std::string resources_path, bool printResults)
 {
 	std::string worldLink = world.getFileName();
-	world.exportWorld(worldLink, resources_path);
+	world.exportWorld(worldLink);
 	std::vector<std::string> args = std::vector<std::string>();
 	args.push_back("loadworld");
 	args.push_back(worldLink);

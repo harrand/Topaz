@@ -16,7 +16,7 @@ public:
 	World& operator=(const World& rhs) = default;
 	~World();
 	
-	const std::string getFileName() const;
+	const std::string& getFileName() const;
 	void addObject(Object obj);
 	void addEntity(Entity ent);
 	void addEntityObject(EntityObject eo);
@@ -26,7 +26,7 @@ public:
 	void setSpawnOrientation(Vector3F spawnOrientation = Vector3F());
 	void killLights();
 	
-	void exportWorld(const std::string& worldLink, std::string resources_path) const;
+	void exportWorld(const std::string& worldLink) const;
 	void update(unsigned int fps, Camera& cam, const Shader& shader, unsigned int width, unsigned int height, const std::vector<std::unique_ptr<Mesh>>& allMeshes, const std::vector<std::unique_ptr<Texture>>& allTextures, const std::vector<std::unique_ptr<NormalMap>>& allNormalMaps, const std::vector<std::unique_ptr<ParallaxMap>>& allParallaxMaps, const std::vector<std::unique_ptr<DisplacementMap>>& allDisplacementMaps);
 		
 	std::size_t getSize() const;
@@ -48,9 +48,12 @@ public:
 private:
 	static Object retrieveData(const std::string& objectName, std::string resources_path, MDLF& mdlf);
 	static EntityObject retrieveEOData(const std::string& eoName, std::string resources_path, MDLF& mdlf);
+	
 	static const unsigned int MAXIMUM_LIGHTS;
-	Vector3F gravity, spawnPoint, spawnOrientation;
+	
 	std::string filename;
+	std::string resources_path;
+	Vector3F gravity, spawnPoint, spawnOrientation;
 	std::vector<Object> objects;
 	std::vector<Entity> entities;
 	std::vector<EntityObject> entityObjects;

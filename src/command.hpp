@@ -14,13 +14,19 @@ public:
 	static void addAudioClip(std::unique_ptr<AudioClip>&& clip);
 	static void updateClip(AudioSource* source, Player& player);
 	static void destroyChannelClips(int channel);
+private:
+	CommandCache();
+	CommandCache(const CommandCache& copy) = delete;
+	CommandCache(CommandCache&& move) = delete;
+	CommandCache& operator=(const CommandCache& rhs) = delete;
+	~CommandCache() = delete;
 };
 
 namespace Commands
 {
 	void inputCommand(std::string cmd, std::string resources_path, World& world, Player& player, const Shader& shader);
 	void loadWorld(std::vector<std::string> args, std::string resources_path, World& world);
-	void exportWorld(std::vector<std::string> args, std::string resources_path, World& world);
+	void exportWorld(std::vector<std::string> args, World& world);
 	void addObject(std::vector<std::string> args, World& world, Player& player, bool printResults);
 	void addEntityObject(std::vector<std::string> args, World& world, Player& player, bool printResults);
 	void setAlias(std::vector<std::string> args);
