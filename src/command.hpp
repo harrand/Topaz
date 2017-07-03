@@ -2,6 +2,7 @@
 #define COMMAND_HPP
 #include "world.hpp"
 #include "audio.hpp"
+#include <unordered_set>
 
 class Command
 {
@@ -37,17 +38,16 @@ public:
 	CommandExecutor& operator=(const CommandExecutor& rhs) = default;
 	~CommandExecutor() = default;
 	
-	const std::vector<Command*>& getCommands() const;
-	std::vector<Command*>& getCommandsR();
+	const std::unordered_set<Command*>& getCommands() const;
+	std::unordered_set<Command*>& getCommandsR();
 	
 	void registerCommand(Command* command);
 	void deregisterCommand(Command* command);
 	void deregisterCommand(const std::string& command_name);
-	
-	void operator()(std::size_t index, const std::vector<std::string>& args);
+
 	void operator()(const std::string& name, const std::vector<std::string>& args);
 private:
-	std::vector<Command*> commands;
+	std::unordered_set<Command*> commands;
 };
 
 class CommandCache

@@ -44,45 +44,38 @@ bool Command::operator==(const Command& rhs) const
 	return this->name == rhs.getName() && this->description == rhs.getDescription() && this->usage == rhs.getUsage();
 }
 
-const std::vector<Command*>& CommandExecutor::getCommands() const
+const std::unordered_set<Command*>& CommandExecutor::getCommands() const
 {
 	return this->commands;
 }
 
-std::vector<Command*>& CommandExecutor::getCommandsR()
+std::unordered_set<Command*>& CommandExecutor::getCommandsR()
 {
 	return this->commands;
 }
 
 void CommandExecutor::registerCommand(Command* command)
 {
-	this->commands.push_back(command);	
+	this->commands.insert(command);	
 }
 
 void CommandExecutor::deregisterCommand(Command* command)
 {
-	auto check = [command](Command* cmd) -> bool{return *cmd == *command;};
-	auto rem = std::remove_if(this->commands.begin(), this->commands.end(), check);
-	this->commands.erase(rem, this->commands.end());
+	this->commands.erase(command);
 }
 
 void CommandExecutor::deregisterCommand(const std::string& command_name)
 {
-	auto check = [command_name](Command* cmd) -> bool{return cmd->getName() == command_name;};
-	auto rem = std::remove_if(this->commands.begin(), this->commands.end(), check);
-	this->commands.erase(rem, this->commands.end());
-}
-
-void CommandExecutor::operator()(std::size_t index, const std::vector<std::string>& args)
-{
-	(*this->commands[index])(args);
+	for(auto& command : this->commands)
+		if(command->getName() == command_name)
+			this->deregisterCommand(command);
 }
 
 void CommandExecutor::operator()(const std::string& name, const std::vector<std::string>& args)
 {
-	for(std::size_t index = 0; index < this->commands.size(); index++)
-		if(this->commands[index]->getName() == name)
-			(*this)(index, args);
+	for(auto command : this->commands)
+		if(command->getName() == name)
+			(*command)(args);
 }
 
 std::vector<std::string> CommandCache::aliasArgs = std::vector<std::string>();
