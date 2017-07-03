@@ -2,6 +2,89 @@
 #include "timekeeper.hpp"
 #include <thread>
 
+Command::Command(std::string name, std::string description, std::string usage): name(name), description(description), usage(usage){}
+
+const std::string& Command::getName() const
+{
+	return this->name;
+}
+
+std::string& Command::getNameR()
+{
+	return this->name;
+}
+
+const std::string& Command::getDescription() const
+{
+	return this->description;
+}
+
+std::string& Command::getDescriptionR()
+{
+	return this->description;
+}
+
+const std::string& Command::getUsage() const
+{
+	return this->usage;
+}
+
+std::string& Command::getUsageR()
+{
+	return this->usage;
+}
+
+std::size_t Command::getExpectedParameterSize() const
+{
+	return StringUtility::splitString(this->usage, " ").size();
+}
+
+bool Command::operator==(const Command& rhs) const
+{
+	return this->name == rhs.getName() && this->description == rhs.getDescription() && this->usage == rhs.getUsage();
+}
+
+const std::vector<Command*>& CommandExecutor::getCommands() const
+{
+	return this->commands;
+}
+
+std::vector<Command*>& CommandExecutor::getCommandsR()
+{
+	return this->commands;
+}
+
+void CommandExecutor::registerCommand(Command* command)
+{
+	this->commands.push_back(command);	
+}
+
+void CommandExecutor::deregisterCommand(Command* command)
+{
+	auto check = [command](Command* cmd) -> bool{return *cmd == *command;};
+	auto rem = std::remove_if(this->commands.begin(), this->commands.end(), check);
+	this->commands.erase(rem, this->commands.end());
+}
+
+void CommandExecutor::deregisterCommand(const std::string& command_name)
+{
+	auto check = [command_name](Command* cmd) -> bool{return cmd->getName() == command_name;};
+	auto rem = std::remove_if(this->commands.begin(), this->commands.end(), check);
+	this->commands.erase(rem, this->commands.end());
+}
+
+void CommandExecutor::operator()(std::size_t index, const std::vector<std::string>& args)
+{
+	(*this->commands[index])(args);
+}
+
+void CommandExecutor::operator()(const std::string& name, const std::vector<std::string>& args)
+{
+	for(std::size_t index = 0; index < this->commands.size(); index++)
+		if(this->commands[index]->getName() == name)
+			(*this)(index, args);
+}
+
 std::vector<std::string> CommandCache::aliasArgs = std::vector<std::string>();
 std::vector<std::unique_ptr<AudioClip>> CommandCache::clips = std::vector<std::unique_ptr<AudioClip>>();
 
@@ -51,7 +134,7 @@ void CommandCache::destroyChannelClips(int channel)
 {
 	auto lambda = [channel](const std::unique_ptr<AudioClip>& clip) -> bool{return clip->getChannel() == channel;};
 	auto rem = std::remove_if(CommandCache::clips.begin(), CommandCache::clips.end(), lambda);
-	for(std::size_t i = 0; i < CommandCache::clips.size(); i++/*std::unique_ptr<AudioClip>& clip : CommandCache::clips*/)
+	for(std::size_t i = 0; i < CommandCache::clips.size(); i++)
 	{
 		std::size_t prevSize = CommandCache::clips.size();
 		CommandCache::clips.erase(rem, CommandCache::clips.end());

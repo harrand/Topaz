@@ -1,8 +1,7 @@
 #include "engine.hpp"
 
-Engine::Engine(Player& player, Window& wnd, std::string properties_path, unsigned int initial_fps): properties(RawFile(properties_path)), resources(RawFile(this->properties.getTag("resources"))), default_shader(this->properties.getTag("default_shader")), player(player), wnd(wnd), fps(initial_fps)
+Engine::Engine(Player& player, Window& wnd, std::string properties_path, unsigned int initial_fps): properties(RawFile(properties_path)), resources(RawFile(this->properties.getTag("resources"))), default_shader(this->properties.getTag("default_shader")), player(player), wnd(wnd), world(this->properties.getTag("default_world")), fps(initial_fps)
 {
-	Commands::loadWorld(std::vector<std::string>({"loadworld", this->properties.getTag("default_world")}), this->properties.getTag("resources"), this->world);
 	this->player.setPosition(this->world.getSpawnPoint());
 	LogUtility::message("Set player position to world spawn.");
 	LogUtility::message("Loading assets from '", this->properties.getTag("resources"), "'...");

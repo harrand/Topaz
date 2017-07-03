@@ -65,6 +65,16 @@ bool Window::isCloseRequested() const
 	return this->iscloserequested;
 }
 
+void Window::setSwapIntervalType(Window::SwapIntervalType type) const
+{
+	SDL_GL_SetSwapInterval(static_cast<int>(type));
+}
+
+Window::SwapIntervalType Window::getSwapIntervalType() const
+{
+	return static_cast<SwapIntervalType>(SDL_GL_GetSwapInterval());
+}
+
 void Window::requestClose()
 {
 	this->iscloserequested = true;
@@ -126,7 +136,7 @@ void Window::initSDL()
 	
 	this->wnd = SDL_CreateWindow((this->title).c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, this->w, this->h, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
 	this->ctx = SDL_GL_CreateContext(this->wnd);
-	SDL_GL_SetSwapInterval(0);
+	this->setSwapIntervalType(Window::SwapIntervalType::IMMEDIATE_UPDATES);
 	
 	//Initialise SDL_mixer
 	Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 2, 4096);

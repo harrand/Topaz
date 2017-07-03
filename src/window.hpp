@@ -34,11 +34,22 @@ public:
 	Window& operator=(const Window& rhs) = delete;
 	~Window();
 	
+	enum class SwapIntervalType : int
+	{
+		LATE_SWAP_TEARING = -1,
+		IMMEDIATE_UPDATES = 0,
+		VSYNC = 1,
+	};
+	
 	int getWidth() const;
 	int getHeight() const;
 	int& getWidthR();
 	int& getHeightR();
 	bool isCloseRequested() const;
+	
+	void setSwapIntervalType(SwapIntervalType type) const;
+	SwapIntervalType getSwapIntervalType() const;
+	
 	void requestClose();
 	void setTitle(std::string newTitle);
 	void setRenderTarget() const;
