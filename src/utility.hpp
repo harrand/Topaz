@@ -240,6 +240,35 @@ private:
 	Vector3F size;
 };
 
+class Random
+{
+public:
+	Random(std::default_random_engine::result_type seed = std::random_device()());
+	Random(const Random& copy);
+	Random(Random&& move) = default;
+	Random& operator=(const Random& rhs) = default;
+	
+	const std::default_random_engine::result_type& getSeed() const;
+	const std::default_random_engine& getEngine() const;
+	std::default_random_engine& getEngineR();
+	
+	int nextInt(int min = 0, int max = std::numeric_limits<int>::max());
+	float nextFloat(float min = 0, float max = std::numeric_limits<float>::max());
+	
+	template <typename Number>
+	inline Number operator()(Number min, Number max)
+	{
+		static_assert(std::is_same<Number, float>::value || std::is_same<Number, int>::value, "Random::operator() must receive template arguments of float or int.");
+		if(std::is_same<Number, float>::value)
+			return nextFloat(min, max);
+		else if(std::is_same<Number, int>::value)
+			return nextInt(min, max);
+	}
+private:
+	const std::default_random_engine::result_type seed;
+	std::default_random_engine random_engine;
+};
+
 class MersenneTwister
 {
 public:
@@ -254,9 +283,19 @@ public:
 	
 	int nextInt(int min = 0, int max = std::numeric_limits<int>::max());
 	float nextFloat(float min = 0, float max = std::numeric_limits<float>::max());
+	
+	template <typename Number>
+	inline Number operator()(Number min, Number max)
+	{
+		static_assert(std::is_same<Number, float>::value || std::is_same<Number, int>::value, "MersenneTwister::operator() must receive template arguments of float or int.");
+		if(std::is_same<Number, float>::value)
+			return nextFloat(min, max);
+		else if(std::is_same<Number, int>::value)
+			return nextInt(min, max);
+	}
 private:
 	const std::mt19937::result_type seed;
-	std::mt19937 mersenne_twister;
+	std::mt19937 mersenne_twister_engine;
 };
 
 #endif //UTILITY_HPP
