@@ -8,6 +8,7 @@
 #include <unordered_map>
 #include <limits>
 #include <typeinfo>
+#include <random>
 #include "vector.hpp"
 
 namespace CastUtility
