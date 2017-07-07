@@ -1,4 +1,4 @@
-inc/* linguist-vendored
+* linguist-vendored
 *.mdl linguist-vendored=false
 *.data linguist-vendored=false
 *.mdl linguist-language=YAML
