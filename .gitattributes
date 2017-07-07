@@ -1,4 +1,6 @@
 * linguist-vendored
+*.mdl linguist-vendored=false
+*.mdl linguist-language=YAML
 *.hpp linguist-vendored=false
 *.cpp linguist-vendored=false
 *.bat linguist-vendored=false
