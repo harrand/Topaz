@@ -1,3 +1,6 @@
 * linguist-vendored
 *.hpp linguist-vendored=false
 *.cpp linguist-vendored=false
+*.bat linguist-vendored=false
+*.glsl linguist-vendored=false
+*.obj linguist-vendored=false
