@@ -1,7 +1,5 @@
 #include "world.hpp"
 
-const unsigned int World::MAXIMUM_LIGHTS = 8;
-
 World::World(std::string filename, std::string resources_path): filename(filename), resources_path(resources_path)
 {
 	MDLF input(RawFile(this->filename));

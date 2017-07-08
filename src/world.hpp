@@ -49,7 +49,7 @@ private:
 	static Object retrieveData(const std::string& objectName, std::string resources_path, MDLF& mdlf);
 	static EntityObject retrieveEOData(const std::string& eoName, std::string resources_path, MDLF& mdlf);
 	
-	static const unsigned int MAXIMUM_LIGHTS;
+	static constexpr unsigned int MAXIMUM_LIGHTS = 8;
 	
 	std::string filename;
 	std::string resources_path;
