@@ -27,7 +27,6 @@ int main()
 	Mix_PauseMusic();
 	
 	TimeKeeper updater;
-	Random rand;
 	
 	LogUtility::message("Beginning loop...");
 	while(!wnd.isCloseRequested())
