@@ -26,7 +26,7 @@ void Engine::update(std::size_t shader_index)
 	this->wnd.clear(0.0f, 0.0f, 0.0f, 1.0f);
 	this->profiler.endFrame();
 	
-	this->world.update(this->fps, this->player.getCamera(), this->getShader(shader_index), this->wnd.getWidth(), this->wnd.getHeight(), this->meshes, this->textures, this->normalMaps, this->parallaxMaps, this->displacementMaps);
+	this->world.update(this->profiler.getLastDelta(), this->player.getCamera(), this->getShader(shader_index), this->wnd.getWidth(), this->wnd.getHeight(), this->meshes, this->textures, this->normalMaps, this->parallaxMaps, this->displacementMaps);
 	this->wnd.update();
 	
 	GLenum error;

@@ -250,10 +250,8 @@ protected:
 	T w;
 };
 
-typedef Vector2<float> Vector2F;
-typedef Vector2<unsigned int> Vector2UI;
-typedef Vector3<float> Vector3F;
-typedef Vector3<unsigned int> Vector3UI;
-typedef Vector4<float> Vector4F;
-typedef Vector4<unsigned int> Vector4UI;
+
+using Vector2F = Vector2<float>;
+using Vector3F = Vector3<float>;
+using Vector4F = Vector4<float>;
 #endif
