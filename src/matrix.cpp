@@ -178,7 +178,7 @@ std::array<float, 16> Matrix4x4::fillData() const
 	return std::array<float, 16>({this->x.getX(), this->x.getY(), this->x.getZ(), this->x.getW(), this->y.getX(), this->y.getY(), this->y.getZ(), this->y.getW(), this->z.getX(), this->z.getY(), this->z.getZ(), this->z.getW(), this->w.getX(), this->w.getY(), this->w.getZ(), this->w.getW()});
 }
 
-Matrix3x3 Matrix4x4::subMatrix(float posI, float posJ)
+Matrix3x3 Matrix4x4::subMatrix(float posI, float posJ) const
 {
 	Vector3F x(0, 0, 0), y(0, 0, 0), z(0, 0, 0);
 	int di, dj, si, sj;
@@ -189,10 +189,10 @@ Matrix3x3 Matrix4x4::subMatrix(float posI, float posJ)
 			si = di + ((di >= posI) ? 1 : 0);
 			sj = dj + ((dj >= posJ) ? 1 : 0);
 			
-			Vector3F* row3;
-			Vector4F* row4;
-			float* pos3;
-			float* pos4;
+			const Vector3F* row3;
+			const Vector4F* row4;
+			const float* pos3;
+			const float* pos4;
 			switch(di)
 			{
 				case 0:
@@ -209,13 +209,13 @@ Matrix3x3 Matrix4x4::subMatrix(float posI, float posJ)
 			switch(dj)
 			{
 				case 0:
-				pos3 = &(row3->getXR());
+				pos3 = &(row3->getX());
 				break;
 				case 1:
-				pos3 = &(row3->getYR());
+				pos3 = &(row3->getY());
 				break;
 				case 2:
-				pos3 = &(row3->getZR());
+				pos3 = &(row3->getZ());
 				break;
 			}
 			
@@ -238,19 +238,20 @@ Matrix3x3 Matrix4x4::subMatrix(float posI, float posJ)
 			switch(sj)
 			{
 				case 0:
-				pos4 = &(row4->getXR());
+				pos4 = &(row4->getX());
 				break;
 				case 1:
-				pos4 = &(row4->getYR());
+				pos4 = &(row4->getY());
 				break;
 				case 2:
-				pos4 = &(row4->getZR());
+				pos4 = &(row4->getZ());
 				break;
 				case 3:
-				pos4 = &(row4->getWR());
+				pos4 = &(row4->getW());
 				break;
 			}
-			*pos3 = *pos4;
+			// Not evil; no UB as Vector4F members are non-const but using a const reference getter.
+			*const_cast<float*>(pos3) = *const_cast<float*>(pos4);
 		}
 	}
 	return Matrix3x3(x, y, z);
@@ -354,7 +355,7 @@ float Matrix4x4::determinant() const
 	return ((this->x).getX() * (((this->y).getY() * (this->z).getZ()) - ((this->y).getZ() * (this->z).getY()))) - ((this->x).getY() * (((this->y).getX() * (this->z).getZ()) - ((this->y).getZ() * (this->z).getX()))) + ((this->x).getZ() * (((this->y).getX() * (this->z).getY()) - ((this->y).getY() * (this->z).getX())));
 }
 
-Matrix4x4 Matrix4x4::inverse()
+Matrix4x4 Matrix4x4::inverse() const
 {
 	Vector4F x(0, 0, 0, 0), y(0, 0, 0, 0), z(0, 0, 0, 0), w(0, 0, 0, 0);
 	float det = this->determinant();
@@ -370,8 +371,8 @@ Matrix4x4 Matrix4x4::inverse()
 			int sign = 1 - ((i + j) % 2) * 2;
 			Matrix3x3 sub = this->subMatrix(i, j);
 			
-			Vector4F* row;
-			float* pos;
+			const Vector4F* row;
+			const float* pos;
 			switch(j)
 			{
 				case 0:
@@ -390,19 +391,20 @@ Matrix4x4 Matrix4x4::inverse()
 			switch(i)
 			{
 				case 0:
-				pos = &(row->getXR());
+				pos = &(row->getX());
 				break;
 				case 1:
-				pos = &(row->getYR());
+				pos = &(row->getY());
 				break;
 				case 2:
-				pos = &(row->getZR());
+				pos = &(row->getZ());
 				break;
 				case 3:
-				pos = &(row->getWR());
+				pos = &(row->getW());
 				break;
 			}
-			*pos = (sub.determinant() * sign) / det;
+			// Not evil, check Matrix4x4::subMatrix explanation.
+			*const_cast<float*>(pos) = (sub.determinant() * sign) / det;
 		}
 	}
 	return Matrix4x4(x, y, z, w);

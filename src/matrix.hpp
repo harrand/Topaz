@@ -61,7 +61,7 @@ public:
 	Matrix4x4 washed(float min = 0.005f, float max = 99999.0f) const;
 	
 	std::array<float, 16> fillData() const;
-	Matrix3x3 subMatrix(float iterI, float iterJ);
+	Matrix3x3 subMatrix(float iterI, float iterJ) const;
 	
 	Matrix4x4 operator+(const Matrix4x4& other) const;
 	Matrix4x4 operator-(const Matrix4x4& other) const;
@@ -69,7 +69,7 @@ public:
 	Matrix4x4 operator*(const Matrix4x4& other) const;
 	
 	float determinant() const;
-	Matrix4x4 inverse();
+	Matrix4x4 inverse() const;
 private:
 	Vector4F x, y, z, w;
 };
