@@ -222,16 +222,16 @@ Matrix3x3 Matrix4x4::subMatrix(float posI, float posJ)
 			switch(si)
 			{
 				case 0:
-				row4 = &(this->getRowXR());
+				row4 = &(this->x);
 				break;
 				case 1:
-				row4 = &(this->getRowYR());
+				row4 = &(this->y);
 				break;
 				case 2:
-				row4 = &(this->getRowZR());
+				row4 = &(this->z);
 				break;
 				case 3:
-				row4 = &(this->getRowWR());
+				row4 = &(this->w);
 				break;
 			}
 			
@@ -266,7 +266,7 @@ Matrix4x4 Matrix4x4::operator-(const Matrix4x4& other) const
 	return Matrix4x4(this->x - other.getRowX(), this->y - other.getRowY(), this->z - other.getRowZ(), this->w - other.getRowW());
 }
 
-Vector4F Matrix4x4::operator*(const Vector4F& other)
+Vector4F Matrix4x4::operator*(const Vector4F& other) const
 {
 	float x = 0.0f, y = 0.0f, z = 0.0f, w = 0.0f;
 	float* curRes;

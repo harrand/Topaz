@@ -65,7 +65,7 @@ public:
 	
 	Matrix4x4 operator+(const Matrix4x4& other) const;
 	Matrix4x4 operator-(const Matrix4x4& other) const;
-	Vector4F operator*(const Vector4F& other);
+	Vector4F operator*(const Vector4F& other) const;
 	Matrix4x4 operator*(const Matrix4x4& other) const;
 	
 	float determinant() const;

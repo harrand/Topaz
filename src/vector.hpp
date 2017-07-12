@@ -250,7 +250,6 @@ protected:
 	T w;
 };
 
-
 using Vector2F = Vector2<float>;
 using Vector3F = Vector3<float>;
 using Vector4F = Vector4<float>;
