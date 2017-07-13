@@ -1,6 +1,6 @@
 #include "entity.hpp"
 
-Entity::Entity(float mass, Vector3F position, Vector3F velocity, std::unordered_map<std::string, Force> forces): mass(mass), velocity(velocity), forces(forces), position(position){}
+Entity::Entity(float mass, Vector3F position, Vector3F velocity, std::unordered_map<std::string, Force> forces): mass(mass), velocity(std::move(velocity)), forces(std::move(forces)), position(std::move(position)){}
 
 void Entity::setPosition(Vector3F position)
 {

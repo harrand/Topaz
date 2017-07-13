@@ -2,7 +2,7 @@
 #include "matrix.hpp"
 #include <fstream>
 
-Shader::Shader(std::string filename): filename(filename)
+Shader::Shader(std::string filename): filename(std::move(filename))
 {
 	// Allocate space on GPU memory for shader.
 	this->programHandle = glCreateProgram();

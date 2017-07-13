@@ -1,6 +1,6 @@
 #include "world.hpp"
 
-World::World(std::string filename, std::string resources_path): filename(filename), resources_path(resources_path)
+World::World(std::string filename, std::string resources_path): filename(std::move(filename)), resources_path(std::move(resources_path))
 {
 	MDLF input(RawFile(this->filename));
 	std::string spawnPointStr = input.getTag("spawnpoint"), spawnOrientationStr = input.getTag("spawnorientation"), gravStr = input.getTag("gravity");
@@ -19,9 +19,9 @@ World::World(std::string filename, std::string resources_path): filename(filenam
 	std::vector<std::string> objectList = input.getSequence("objects");
 	std::vector<std::string> entityObjectList = input.getSequence("entityobjects");
 	for(std::string objectName : objectList)
-		this->addObject(World::retrieveData(objectName, resources_path, input));
+		this->addObject(World::retrieveData(objectName, this->resources_path, input));
 	for(std::string eoName : entityObjectList)
-		this->addEntityObject(World::retrieveEOData(eoName, resources_path, input));
+		this->addEntityObject(World::retrieveEOData(eoName, this->resources_path, input));
 }
 
 World::World(const World& copy): World(copy.filename){}

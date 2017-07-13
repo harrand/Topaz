@@ -61,11 +61,9 @@ void Texture::deleteTexture(unsigned char* imgdata)
 	stbi_image_free(imgdata);
 }
 
-Texture::Texture(std::string filename)
+Texture::Texture(std::string filename): filename(std::move(filename))
 {
-	this->filename = filename;
 	unsigned char* imgdata = this->loadTexture();
-	
 	if(imgdata == nullptr)
 	{
 		LogUtility::error("Texture from the path: '", filename, "' could not be loaded.");
@@ -205,7 +203,7 @@ Texture::TextureType DisplacementMap::getTextureType()
 	return TextureType::DISPLACEMENT_MAP;
 }
 
-CubeMap::CubeMap(const std::string& rightTexture, const std::string& leftTexture, const std::string& topTexture, const std::string& bottomTexture, const std::string& backTexture, const std::string& frontTexture): rightTexture(rightTexture), leftTexture(leftTexture), topTexture(topTexture), bottomTexture(bottomTexture), backTexture(backTexture), frontTexture(frontTexture)
+CubeMap::CubeMap(std::string rightTexture, std::string leftTexture, std::string topTexture, std::string bottomTexture, std::string backTexture, std::string frontTexture): rightTexture(std::move(rightTexture)), leftTexture(std::move(leftTexture)), topTexture(std::move(topTexture)), bottomTexture(std::move(bottomTexture)), backTexture(std::move(backTexture)), frontTexture(std::move(frontTexture))
 {
 	glGenTextures(1, &(this->texHandle));
 	glBindTexture(GL_TEXTURE_CUBE_MAP, this->texHandle);
@@ -223,7 +221,7 @@ CubeMap::CubeMap(const std::string& rightTexture, const std::string& leftTexture
 		stbi_image_free(data);
 }
 
-CubeMap::CubeMap(const std::string& textureDirectory, const std::string& skyboxName, const std::string& imageExtension): CubeMap(textureDirectory + skyboxName + "_rt" + imageExtension, textureDirectory + skyboxName + "_lf" + imageExtension, textureDirectory + skyboxName + "_up" + imageExtension, textureDirectory + skyboxName + "_dn" + imageExtension, textureDirectory + skyboxName + "_bk" + imageExtension, textureDirectory + skyboxName + "_ft" + imageExtension){}
+CubeMap::CubeMap(std::string textureDirectory, std::string skyboxName, std::string imageExtension): CubeMap(textureDirectory + skyboxName + "_rt" + imageExtension, textureDirectory + skyboxName + "_lf" + imageExtension, textureDirectory + skyboxName + "_up" + imageExtension, textureDirectory + skyboxName + "_dn" + imageExtension, textureDirectory + skyboxName + "_bk" + imageExtension, textureDirectory + skyboxName + "_ft" + imageExtension){}
 
 CubeMap::CubeMap(const CubeMap& copy): CubeMap(copy.rightTexture, copy.leftTexture, copy.topTexture, copy.bottomTexture, copy.backTexture, copy.frontTexture){}
 

@@ -1,6 +1,6 @@
 #include "light.hpp"
 
-BaseLight::BaseLight(const Vector3F& pos, const Vector3F& colour, const float power): pos(pos), colour(colour), power(power){}
+BaseLight::BaseLight(Vector3F pos, Vector3F colour, float power): pos(std::move(pos)), colour(std::move(colour)), power(power){}
 
 const Vector3F& BaseLight::getPosition() const
 {

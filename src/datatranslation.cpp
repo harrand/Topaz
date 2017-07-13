@@ -1,7 +1,7 @@
 #include "datatranslation.hpp"
 #include "utility.hpp"
 
-DataTranslation::DataTranslation(std::string datafilename): datafilename(datafilename){}
+DataTranslation::DataTranslation(std::string datafilename): datafilename(std::move(datafilename)){}
 
 std::string DataTranslation::getResourceLink(const std::string& resourceName) const
 {

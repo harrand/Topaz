@@ -1,6 +1,6 @@
 #include "camera.hpp"
 
-Camera::Camera(Vector3F pos, Vector3F rot): pos(pos), rot(rot){}
+Camera::Camera(Vector3F pos, Vector3F rot): pos(std::move(pos)), rot(std::move(rot)){}
 
 const Vector3F& Camera::getPosition() const
 {

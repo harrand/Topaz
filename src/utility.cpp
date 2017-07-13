@@ -1,6 +1,6 @@
 #include "utility.hpp"
 
-Force::Force(Vector3F size): size(size){}
+Force::Force(Vector3F size): size(std::move(size)){}
 
 const Vector3F& Force::getSize() const
 {
