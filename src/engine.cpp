@@ -3,9 +3,9 @@
 Engine::Engine(Player& player, Window& wnd, std::string properties_path, unsigned int initial_fps): properties(RawFile(properties_path)), resources(RawFile(this->properties.getTag("resources"))), default_shader(this->properties.getTag("default_shader")), player(player), wnd(wnd), world(this->properties.getTag("default_world"), this->properties.getTag("resources")), fps(initial_fps)
 {
 	this->player.setPosition(this->world.getSpawnPoint());
-	LogUtility::message("Set player position to world spawn.");
-	LogUtility::message("Loading assets from '", this->properties.getTag("resources"), "'...");
-	LogUtility::message("Loaded ", DataTranslation(this->properties.getTag("resources")).retrieveAllData(this->meshes, this->textures, this->normalMaps, this->parallaxMaps, this->displacementMaps), " assets.");
+	logutility::message("Set player position to world spawn.");
+	logutility::message("Loading assets from '", this->properties.getTag("resources"), "'...");
+	logutility::message("Loaded ", DataTranslation(this->properties.getTag("resources")).retrieveAllData(this->meshes, this->textures, this->normalMaps, this->parallaxMaps, this->displacementMaps), " assets.");
 	this->world.addEntity(this->player);
 	for(std::string shaderPath : this->properties.getSequence("extra_shaders"))
 		this->extraShaders.push_back(Shader(shaderPath));
@@ -31,7 +31,7 @@ void Engine::update(std::size_t shader_index)
 	
 	GLenum error;
 		if((error = glGetError()) != GL_NO_ERROR)
-			LogUtility::error("OpenGL Error: ", error, "\n");
+			logutility::error("OpenGL Error: ", error, "\n");
 }
 
 const TimeKeeper& Engine::getTimeKeeper() const
@@ -102,7 +102,7 @@ const std::vector<std::unique_ptr<DisplacementMap>>& Engine::getDisplacementMaps
 const Shader& Engine::getShader(std::size_t index) const
 {
 	if(index > this->extraShaders.size())
-		LogUtility::error("Could not retrieve shader index ", index, ", retrieving default instead.");
+		logutility::error("Could not retrieve shader index ", index, ", retrieving default instead.");
 	else if(index != 0)
 		return this->extraShaders.at(index - 1);
 	return this->getDefaultShader();

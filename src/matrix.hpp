@@ -74,7 +74,7 @@ private:
 	Vector4F x, y, z, w;
 };
 
-namespace MatrixTransformations
+namespace matrixtransformations
 {
 	Matrix4x4 createTranslationMatrix(Vector3F position);
 	

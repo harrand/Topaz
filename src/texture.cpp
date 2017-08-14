@@ -27,7 +27,7 @@ FrameBuffer::FrameBuffer(unsigned int width, unsigned int height): width(width),
 	
 	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 	{
-		LogUtility::warning("FrameBuffer invalid; glCheckFramebufferStatus != GL_FRAMEBUFFER_COMPLETE");
+		logutility::warning("FrameBuffer invalid; glCheckFramebufferStatus != GL_FRAMEBUFFER_COMPLETE");
 	}
 }
 
@@ -41,7 +41,7 @@ void FrameBuffer::bind(unsigned int id) const
 {
 	if(id > 31)
 	{
-		LogUtility::error("FrameBuffer bind ID ", id, " is invalid. Must be between 1-31");
+		logutility::error("FrameBuffer bind ID ", id, " is invalid. Must be between 1-31");
 		return;
 	}
 	// this sets which texture we want to bind (id can be from 0 to 31)
@@ -66,7 +66,7 @@ Texture::Texture(std::string filename): filename(std::move(filename))
 	unsigned char* imgdata = this->loadTexture();
 	if(imgdata == nullptr)
 	{
-		LogUtility::error("Texture from the path: '", filename, "' could not be loaded.");
+		logutility::error("Texture from the path: '", filename, "' could not be loaded.");
 	}
 	
 	//Store tex data in the handle
@@ -116,7 +116,7 @@ void Texture::bind(GLuint shaderProgram, unsigned int id)
 {
 	if(id > 31)
 	{
-		LogUtility::error("FrameBuffer bind ID ", id, " is invalid. Must be between 1-31");
+		logutility::error("FrameBuffer bind ID ", id, " is invalid. Must be between 1-31");
 		return;
 	}
 	// this sets which texture we want to bind (id can be from 0 to 31)
@@ -143,7 +143,7 @@ void NormalMap::bind(GLuint shaderProgram, unsigned int id)
 {
 	if(id > 31)
 	{
-		LogUtility::error("FrameBuffer bind ID ", id, " is invalid. Must be between 1-31");
+		logutility::error("FrameBuffer bind ID ", id, " is invalid. Must be between 1-31");
 		return;
 	}
 	// this sets which texture we want to bind (id can be from 0 to 31)
@@ -165,7 +165,7 @@ void ParallaxMap::bind(GLuint shaderProgram, unsigned int id)
 {
 	if(id > 31)
 	{
-		LogUtility::error("FrameBuffer bind ID ", id, " is invalid. Must be between 1-31");
+		logutility::error("FrameBuffer bind ID ", id, " is invalid. Must be between 1-31");
 		return;
 	}
 	// this sets which texture we want to bind (id can be from 0 to 31)
@@ -187,7 +187,7 @@ void DisplacementMap::bind(GLuint shaderProgram, unsigned int id)
 {
 	if(id > 31)
 	{
-		LogUtility::error("FrameBuffer bind ID ", id, " is invalid. Must be between 1-31");
+		logutility::error("FrameBuffer bind ID ", id, " is invalid. Must be between 1-31");
 		return;
 	}
 	// this sets which texture we want to bind (id can be from 0 to 31)
@@ -246,7 +246,7 @@ void CubeMap::bind(GLuint shaderProgram, unsigned int id)
 {
 	if(id > 31)
 	{
-		LogUtility::error("FrameBuffer bind ID ", id, " is invalid. Must be between 1-31");
+		logutility::error("FrameBuffer bind ID ", id, " is invalid. Must be between 1-31");
 		return;
 	}
 	// this sets which texture we want to bind (id can be from 0 to 31)

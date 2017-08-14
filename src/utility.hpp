@@ -12,7 +12,7 @@
 #include <utility>
 #include "vector.hpp"
 
-namespace CastUtility
+namespace castutility
 {
 	// Implementation must be kept inside the header to avoid linker errors.
 	template <typename T>
@@ -33,7 +33,7 @@ namespace CastUtility
 	}
 }
 
-namespace StringUtility
+namespace stringutility
 {
 	inline std::string toLower(std::string data)
 	{
@@ -122,13 +122,13 @@ namespace StringUtility
 	
 	inline std::vector<std::string> splitString(const std::string& s, char delim)
 	{
-		return splitString(s, CastUtility::toString(delim));
+		return splitString(s, castutility::toString(delim));
 	}
 
 	inline std::string replaceAllChar(const std::string& str, char toreplace, const std::string& replacewith)
 	{
 		std::string res;
-		std::vector<std::string> splitdelim = StringUtility::splitString(str, toreplace);
+		std::vector<std::string> splitdelim = stringutility::splitString(str, toreplace);
 		for(unsigned int i = 0; i < splitdelim.size(); i++)
 		{
 			res += splitdelim.at(i);
@@ -161,7 +161,7 @@ namespace StringUtility
 	
 	inline std::vector<std::string> deformat(const std::string& str)
 	{
-		return StringUtility::splitString(StringUtility::replaceAllChar(StringUtility::replaceAllChar(str, '[', ""), ']', ""), ',');
+		return stringutility::splitString(stringutility::replaceAllChar(stringutility::replaceAllChar(str, '[', ""), ']', ""), ',');
 	}
 	
 	template<typename T>
@@ -169,7 +169,7 @@ namespace StringUtility
 	{
 		if(list.size() < 3)
 			return Vector3<T>();
-		return Vector3<T>(CastUtility::fromString<T>(list.at(0)), CastUtility::fromString<T>(list.at(1)), CastUtility::fromString<T>(list.at(2)));
+		return Vector3<T>(castutility::fromString<T>(list.at(0)), castutility::fromString<T>(list.at(1)), castutility::fromString<T>(list.at(2)));
 	}
 	
 	template<typename T>
@@ -177,14 +177,14 @@ namespace StringUtility
 	{
 		std::vector<std::string> ret;
 		ret.reserve(3);
-		ret.push_back(CastUtility::toString<T>(v.getX()));
-		ret.push_back(CastUtility::toString<T>(v.getY()));
-		ret.push_back(CastUtility::toString<T>(v.getZ()));
+		ret.push_back(castutility::toString<T>(v.getX()));
+		ret.push_back(castutility::toString<T>(v.getY()));
+		ret.push_back(castutility::toString<T>(v.getZ()));
 		return ret;
 	}
 }
 
-namespace LogUtility
+namespace logutility
 {
 	inline void silent()
 	{
@@ -196,29 +196,29 @@ namespace LogUtility
 		if(std::string(typeid(arg).name()) == "std::string")
 			std::cout << arg;
 		else
-			std::cout << CastUtility::toString(arg);
-		LogUtility::silent(args...);
+			std::cout << castutility::toString(arg);
+		logutility::silent(args...);
 	}
 	
 	template<typename FirstArg = void, typename... Args>
 	inline void message(FirstArg arg, Args... args)
 	{
 		std::cout << "[Message]:\t";
-		LogUtility::silent(arg, args...);
+		logutility::silent(arg, args...);
 	}
 	
 	template<typename FirstArg = void, typename... Args>
 	inline void warning(FirstArg arg, Args... args)
 	{
 		std::cout << "[Warning]:\t";
-		LogUtility::silent(arg, args...);
+		logutility::silent(arg, args...);
 	}
 	
 	template<typename FirstArg = void, typename... Args>
 	inline void error(FirstArg arg, Args... args)
 	{
 		std::cout << "[Error]:\t";
-		LogUtility::silent(arg, args...);
+		logutility::silent(arg, args...);
 	}
 }
 

@@ -104,7 +104,7 @@ Quaternion::operator Matrix4x4() const
 
 Matrix4x4 Quaternion::createModelMatrix(Vector3F position, Vector3F eulerRotation, Vector3F scale)
 {
-	return MatrixTransformations::createTranslationMatrix(position) * static_cast<Matrix4x4>(Quaternion(eulerRotation).normalised()) * MatrixTransformations::createScalingMatrix(scale);
+	return matrixtransformations::createTranslationMatrix(position) * static_cast<Matrix4x4>(Quaternion(eulerRotation).normalised()) * matrixtransformations::createScalingMatrix(scale);
 }
 
 Matrix4x4 Quaternion::createViewMatrix(Vector3F cameraPosition, Vector3F cameraEulerRotation)

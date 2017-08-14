@@ -60,5 +60,5 @@ Vector3F Camera::getRight() const
 
 Matrix4x4 Camera::getCameraMatrix() const
 {
-	return MatrixTransformations::createModelMatrix(this->pos, this->rot, Vector3F(1, 1, 1));
+	return matrixtransformations::createModelMatrix(this->pos, this->rot, Vector3F(1, 1, 1));
 }

@@ -56,7 +56,7 @@ void Object::render(Mesh* mesh, Texture* tex, NormalMap* nm, ParallaxMap* pm, Di
 		pm->bind(shad.getProgramHandle(), static_cast<unsigned int>(pm->getTextureType()));
 	if(dm != nullptr)
 		dm->bind(shad.getProgramHandle(), static_cast<unsigned int>(dm->getTextureType()));
-	shad.update(MatrixTransformations::createModelMatrix(this->pos, this->rot, this->scale).fillData(), MatrixTransformations::createViewMatrix(cam.getPosition(), cam.getRotation()).fillData(), MatrixTransformations::createProjectionMatrix(1.5708, width, height, 0.1f, 10000.0f).fillData());
+	shad.update(matrixtransformations::createModelMatrix(this->pos, this->rot, this->scale).fillData(), matrixtransformations::createViewMatrix(cam.getPosition(), cam.getRotation()).fillData(), matrixtransformations::createProjectionMatrix(1.5708, width, height, 0.1f, 10000.0f).fillData());
 	//glFrontFace(GL_CCW);
 	mesh->render(shad.hasTessellationControlShader());
 	//glFrontFace(GL_CW);
@@ -68,7 +68,7 @@ void Skybox::render(const Camera& cam, const Shader& shad, const std::vector<std
 {
 	shad.bind();
 	this->cm.bind(shad.getProgramHandle(), 0);
-	shad.update(MatrixTransformations::createModelMatrix(cam.getPosition(), Vector3F(), Vector3F(10000, 10000, 10000)).fillData(), MatrixTransformations::createViewMatrix(cam.getPosition(), cam.getRotation()).fillData(), MatrixTransformations::createProjectionMatrix(1.5708, width, height, 0.1f, 20000).fillData());
+	shad.update(matrixtransformations::createModelMatrix(cam.getPosition(), Vector3F(), Vector3F(10000, 10000, 10000)).fillData(), matrixtransformations::createViewMatrix(cam.getPosition(), cam.getRotation()).fillData(), matrixtransformations::createProjectionMatrix(1.5708, width, height, 0.1f, 20000).fillData());
 	glFrontFace(GL_CW);
 	Mesh::getFromLink(this->cubeMeshLink, allMeshes)->render(shad.hasTessellationControlShader());
 	glFrontFace(GL_CCW);
