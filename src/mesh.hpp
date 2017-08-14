@@ -48,9 +48,9 @@ private:
 		POSITION = 0,
 		TEXCOORD = 1,
 		NORMAL = 2,
-		//TANGENT = 3,
 		INDEX = 3,
-		NUM_BUFFERS = 4
+		TANGENT = 4,
+		NUM_BUFFERS = 5
 	};
 	GLuint vertexArrayObject; //vao
 	GLuint vertexArrayBuffers[static_cast<unsigned int>(BufferTypes::NUM_BUFFERS)]; //vbo array

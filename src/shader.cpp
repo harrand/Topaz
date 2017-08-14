@@ -23,6 +23,7 @@ Shader::Shader(std::string filename): filename(std::move(filename))
 	glBindAttribLocation(this->programHandle, 0, "position");
 	glBindAttribLocation(this->programHandle, 1, "texcoord");
 	glBindAttribLocation(this->programHandle, 2, "normal");
+	glBindAttribLocation(this->programHandle, 3, "tangent");
 	
 	glLinkProgram(this->programHandle);
 	Shader::checkShaderError(this->programHandle, GL_LINK_STATUS, true, "Program Linking failed");
@@ -35,7 +36,7 @@ Shader::Shader(std::string filename): filename(std::move(filename))
 	this->uniforms[static_cast<unsigned int>(UniformTypes::PROJECTION)] = glGetUniformLocation(this->programHandle, "p");
 	this->uniforms[static_cast<unsigned int>(UniformTypes::PARALLAX_MAP_SCALE)] = glGetUniformLocation(this->programHandle, "parallaxMultiplier");
 	this->uniforms[static_cast<unsigned int>(UniformTypes::PARALLAX_MAP_BIAS)] = glGetUniformLocation(this->programHandle, "parallaxBias");
-	LogUtility::message("Shader with link '", filename, "':");
+	LogUtility::message("Shader with link '", this->filename, "':");
 	LogUtility::message("\tHas Vertex Shader: ", this->hasVertexShader());
 	LogUtility::message("\tHas Tessellation Control Shader: ", this->hasTessellationControlShader());
 	LogUtility::message("\tHas Tessellation Evaluation Shader: ", this->hasTessellationEvaluationShader());

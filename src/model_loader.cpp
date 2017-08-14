@@ -190,11 +190,11 @@ IndexedModel OBJModel::ToIndexedModel()
             result.normals[i] = normalModel.normals[indexMap[i]];
     }
 	
-	/*
+	
 	normalModel.calcTangents();
 	for(unsigned int i = 0; i < result.tangents.size(); i++)
 		result.tangents.at(i) = normalModel.tangents[indexMap[i]];
-	*/
+	
     
     return result;
 }

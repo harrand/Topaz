@@ -19,7 +19,7 @@ uniform float parallaxBias;
 
 layout(location = 0) out vec4 fragColor;
 
-const unsigned int MAX_LIGHTS = 8;
+const uint MAX_LIGHTS = 8u;
 
 struct BaseLight
 {
@@ -51,7 +51,7 @@ vec2 getTexcoordOffset()
 	return texcoord_modelspace + lightDirection_tangentspace.xy * (texture2D(parallaxMapSampler, texcoord_modelspace).r * parallaxMultiplier + parallaxBias);
 }
 
-vec4 textureColour = texture2D(textureSampler, getTexcoordOffset());
+vec4 textureColour = texture2D(textureSampler, texcoord_modelspace);//texture2D(textureSampler, getTexcoordOffset());
 
 vec4 getDiffuseComponent(vec3 parsedNormal_tangentspace)
 {
@@ -97,8 +97,10 @@ void main()
 	vec3 normal_tangentspace = normalize(texture2D(normalMapSampler, getTexcoordOffset()).xyz * 255.0/128.0 - 1);
 	fragColor = vec4(0, 0, 0, 0);
 	fragColor += getAmbientComponent() + getDiffuseComponent(normal_tangentspace) + getSpecularComponent(normal_tangentspace);
-	for(unsigned int i = 0; i < MAX_LIGHTS; i++)
+	//fragColor *= 10;
+	for(uint i = 0u; i < MAX_LIGHTS; i++)
 	{
 		fragColor += getDiffuseComponentFromLight(lights[i], normal_tangentspace) + getSpecularComponentFromLight(lights[i], normal_tangentspace);
+		//fragColor += vec4(0.1, 0.1, 0.1, 0.1);
 	}
 }
