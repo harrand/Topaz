@@ -5,7 +5,7 @@
 Shader::Shader(std::string filename): filename(std::move(filename))
 {
 	// Allocate space on GPU memory for shader.
-	this->programHandle = glCreateProgram();
+	this->program_handle = glCreateProgram();
 	// Vertex Shader
 	this->shaders[0] = Shader::createShader(Shader::loadShader(this->filename + ".vertex.glsl"), GL_VERTEX_SHADER);
 	// Tessellation Control Shader
@@ -18,24 +18,24 @@ Shader::Shader(std::string filename): filename(std::move(filename))
 	this->shaders[4] = Shader::createShader(Shader::loadShader(this->filename + ".fragment.glsl"), GL_FRAGMENT_SHADER);
 	for(std::size_t i = 0; i < MAX_SHADERS; i++)
 		if(this->shaders[i] != 0)
-			glAttachShader(this->programHandle, this->shaders[i]);
+			glAttachShader(this->program_handle, this->shaders[i]);
 	
-	glBindAttribLocation(this->programHandle, 0, "position");
-	glBindAttribLocation(this->programHandle, 1, "texcoord");
-	glBindAttribLocation(this->programHandle, 2, "normal");
-	glBindAttribLocation(this->programHandle, 3, "tangent");
+	glBindAttribLocation(this->program_handle, 0, "position");
+	glBindAttribLocation(this->program_handle, 1, "texcoord");
+	glBindAttribLocation(this->program_handle, 2, "normal");
+	glBindAttribLocation(this->program_handle, 3, "tangent");
 	
-	glLinkProgram(this->programHandle);
-	Shader::checkShaderError(this->programHandle, GL_LINK_STATUS, true, "Program Linking failed");
+	glLinkProgram(this->program_handle);
+	Shader::checkShaderError(this->program_handle, GL_LINK_STATUS, true, "Program Linking failed");
 	
-	glValidateProgram(this->programHandle);
-	Shader::checkShaderError(this->programHandle, GL_VALIDATE_STATUS, true, "Program Validation failed");
+	glValidateProgram(this->program_handle);
+	Shader::checkShaderError(this->program_handle, GL_VALIDATE_STATUS, true, "Program Validation failed");
 	
-	this->uniforms[static_cast<unsigned int>(UniformTypes::MODEL)] = glGetUniformLocation(this->programHandle, "m");
-	this->uniforms[static_cast<unsigned int>(UniformTypes::VIEW)] = glGetUniformLocation(this->programHandle, "v");
-	this->uniforms[static_cast<unsigned int>(UniformTypes::PROJECTION)] = glGetUniformLocation(this->programHandle, "p");
-	this->uniforms[static_cast<unsigned int>(UniformTypes::PARALLAX_MAP_SCALE)] = glGetUniformLocation(this->programHandle, "parallaxMultiplier");
-	this->uniforms[static_cast<unsigned int>(UniformTypes::PARALLAX_MAP_BIAS)] = glGetUniformLocation(this->programHandle, "parallaxBias");
+	this->uniforms[static_cast<unsigned int>(UniformTypes::MODEL)] = glGetUniformLocation(this->program_handle, "m");
+	this->uniforms[static_cast<unsigned int>(UniformTypes::VIEW)] = glGetUniformLocation(this->program_handle, "v");
+	this->uniforms[static_cast<unsigned int>(UniformTypes::PROJECTION)] = glGetUniformLocation(this->program_handle, "p");
+	this->uniforms[static_cast<unsigned int>(UniformTypes::PARALLAX_MAP_SCALE)] = glGetUniformLocation(this->program_handle, "parallaxMultiplier");
+	this->uniforms[static_cast<unsigned int>(UniformTypes::PARALLAX_MAP_BIAS)] = glGetUniformLocation(this->program_handle, "parallaxBias");
 	logutility::message("Shader with link '", this->filename, "':");
 	logutility::message("\tHas Vertex Shader: ", this->hasVertexShader());
 	logutility::message("\tHas Tessellation Control Shader: ", this->hasTessellationControlShader());
@@ -46,7 +46,7 @@ Shader::Shader(std::string filename): filename(std::move(filename))
 
 Shader::Shader(const Shader& copy): Shader(copy.filename){}
 
-Shader::Shader(Shader&& move): filename(move.filename), programHandle(move.programHandle)
+Shader::Shader(Shader&& move): filename(move.filename), program_handle(move.program_handle)
 {
 	for(std::size_t i = 0; i < MAX_SHADERS; i++)
 	{
@@ -58,24 +58,24 @@ Shader::Shader(Shader&& move): filename(move.filename), programHandle(move.progr
 		this->uniforms[i] = move.uniforms[i];
 		move.uniforms[i] = 0;
 	}
-	move.programHandle = 0;
+	move.program_handle = 0;
 	// Now when destructor of move is invoked, nothing is attempted to be deleted or detached so the shader lives on in this instance.
 }
 
 Shader::~Shader()
 {
-	// If this was moved and this destructor was invoked, then the programHandle will be zero (cant normally be zero so we skip all of this crap to avoid crashes)
-	if(this->programHandle == 0)
+	// If this was moved and this destructor was invoked, then the program_handle will be zero (cant normally be zero so we skip all of this crap to avoid crashes)
+	if(this->program_handle == 0)
 		return;
 	for(std::size_t i = 0; i < MAX_SHADERS; i++)
 	{
 		if(this->shaders[i] == 0)
 			continue;
-		glDetachShader(this->programHandle, this->shaders[i]);
+		glDetachShader(this->program_handle, this->shaders[i]);
 		glDeleteShader(this->shaders[i]);
 	}
 	// Free GPU memory
-	glDeleteProgram(this->programHandle);
+	glDeleteProgram(this->program_handle);
 }
 
 bool Shader::hasVertexShader() const
@@ -105,12 +105,12 @@ bool Shader::hasFragmentShader() const
 
 GLuint Shader::getProgramHandle() const
 {
-	return this->programHandle;
+	return this->program_handle;
 }
 
 void Shader::bind() const
 {
-	glUseProgram(this->programHandle);
+	glUseProgram(this->program_handle);
 }
 
 void Shader::update(const std::array<float, 16>& modelData, const std::array<float, 16>& viewData, const std::array<float, 16>& projectionData, float parallaxMapScale, float parallaxMapOffset) const

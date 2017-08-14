@@ -3,17 +3,17 @@
 World::World(std::string filename, std::string resources_path): filename(std::move(filename)), resources_path(std::move(resources_path))
 {
 	MDLF input(RawFile(this->filename));
-	std::string spawnPointStr = input.getTag("spawnpoint"), spawnOrientationStr = input.getTag("spawnorientation"), gravStr = input.getTag("gravity");
-	if(spawnPointStr != "0" && spawnOrientationStr != "0" && gravStr != "0")
+	std::string spawn_pointStr = input.getTag("spawnpoint"), spawnOrientationStr = input.getTag("spawnorientation"), gravStr = input.getTag("gravity");
+	if(spawn_pointStr != "0" && spawnOrientationStr != "0" && gravStr != "0")
 	{
-		this->spawnPoint = stringutility::vectoriseList3<float>(stringutility::deformat(spawnPointStr));
-		this->spawnOrientation = stringutility::vectoriseList3<float>(stringutility::deformat(spawnOrientationStr));
+		this->spawn_point = stringutility::vectoriseList3<float>(stringutility::deformat(spawn_pointStr));
+		this->spawn_orientation = stringutility::vectoriseList3<float>(stringutility::deformat(spawnOrientationStr));
 		this->gravity = stringutility::vectoriseList3<float>(stringutility::deformat(gravStr));
 	}
 	else
 	{
-		this->spawnPoint = Vector3F();
-		this->spawnOrientation = Vector3F();
+		this->spawn_point = Vector3F();
+		this->spawn_orientation = Vector3F();
 		this->gravity = Vector3F();
 	}
 	std::vector<std::string> objectList = input.getSequence("objects");
@@ -26,7 +26,7 @@ World::World(std::string filename, std::string resources_path): filename(std::mo
 
 World::World(const World& copy): World(copy.filename){}
 
-World::World(World&& move): filename(move.filename), resources_path(move.resources_path), gravity(move.gravity), spawnPoint(move.spawnPoint), spawnOrientation(move.spawnOrientation), objects(move.objects), entities(move.entities), entityObjects(std::move(move.entityObjects)), baseLights(std::move(move.baseLights)){}
+World::World(World&& move): filename(move.filename), resources_path(move.resources_path), gravity(move.gravity), spawn_point(move.spawn_point), spawn_orientation(move.spawn_orientation), objects(move.objects), entities(move.entities), entity_objects(std::move(move.entity_objects)), base_lights(std::move(move.base_lights)){}
 
 World::~World()
 {
@@ -60,18 +60,18 @@ void World::addEntityObject(EntityObject eo)
 		eo.removeForce("gravity");
 	}
 	eo.applyForce("gravity", Force(this->getGravity()));
-	this->entityObjects.push_back(std::move(eo));
+	this->entity_objects.push_back(std::move(eo));
 }
 
 void World::addLight(BaseLight light, GLuint shader_programHandle)
 {
-	while(this->baseLights.size() >= World::MAXIMUM_LIGHTS)
-		this->baseLights.erase(this->baseLights.begin());
+	while(this->base_lights.size() >= World::MAXIMUM_LIGHTS)
+		this->base_lights.erase(this->base_lights.begin());
 	std::vector<GLuint> uniforms;
-	uniforms.push_back(glGetUniformLocation(shader_programHandle, ("lights[" + castutility::toString<unsigned int>(this->baseLights.size()) + "].pos").c_str()));
-	uniforms.push_back(glGetUniformLocation(shader_programHandle, ("lights[" + castutility::toString<unsigned int>(this->baseLights.size()) + "].colour").c_str()));
-	uniforms.push_back(glGetUniformLocation(shader_programHandle, ("lights[" + castutility::toString<unsigned int>(this->baseLights.size()) + "].power").c_str()));
-	this->baseLights[uniforms] = light;
+	uniforms.push_back(glGetUniformLocation(shader_programHandle, ("lights[" + castutility::toString<unsigned int>(this->base_lights.size()) + "].pos").c_str()));
+	uniforms.push_back(glGetUniformLocation(shader_programHandle, ("lights[" + castutility::toString<unsigned int>(this->base_lights.size()) + "].colour").c_str()));
+	uniforms.push_back(glGetUniformLocation(shader_programHandle, ("lights[" + castutility::toString<unsigned int>(this->base_lights.size()) + "].power").c_str()));
+	this->base_lights[uniforms] = light;
 }
 
 void World::setGravity(Vector3F gravity)
@@ -82,26 +82,26 @@ void World::setGravity(Vector3F gravity)
 		ent.removeForce("gravity");
 		ent.applyForce("gravity", Force(this->getGravity()));
 	}
-	for(EntityObject& eo : this->entityObjects)
+	for(EntityObject& eo : this->entity_objects)
 	{
 		eo.removeForce("gravity");
 		eo.applyForce("gravity", Force(this->getGravity()));
 	}
 }
 
-void World::setSpawnPoint(Vector3F spawnPoint)
+void World::setSpawnPoint(Vector3F spawn_point)
 {
-	this->spawnPoint = spawnPoint;
+	this->spawn_point = spawn_point;
 }
 
-void World::setSpawnOrientation(Vector3F spawnOrientation)
+void World::setSpawnOrientation(Vector3F spawn_orientation)
 {
-	this->spawnOrientation = spawnOrientation;
+	this->spawn_orientation = spawn_orientation;
 }
 
 void World::killLights()
 {
-	for(auto& iter : this->baseLights)
+	for(auto& iter : this->base_lights)
 	{
 		// Kill all the lights in the shader before losing all the data
 		std::vector<float> pos({0.0f, 0.0f, 0.0f}), colour({0.0f, 0.0f, 0.0f});
@@ -122,8 +122,8 @@ void World::exportWorld(const std::string& worldLink) const
 	output.deleteSequence("entityobjects");
 	
 	output.editTag("gravity", stringutility::format(stringutility::devectoriseList3<float>(this->gravity)));
-	output.editTag("spawnpoint", stringutility::format(stringutility::devectoriseList3<float>(this->spawnPoint)));
-	output.editTag("spawnorientation", stringutility::format(stringutility::devectoriseList3<float>(this->spawnOrientation)));
+	output.editTag("spawnpoint", stringutility::format(stringutility::devectoriseList3<float>(this->spawn_point)));
+	output.editTag("spawnorientation", stringutility::format(stringutility::devectoriseList3<float>(this->spawn_orientation)));
 	for(std::size_t i = 0; i < this->objects.size(); i++)
 	{
 		const std::string objectName = "object" + castutility::toString<float>(i);
@@ -139,11 +139,11 @@ void World::exportWorld(const std::string& worldLink) const
 		output.editTag(objectName + ".rot", stringutility::format(stringutility::devectoriseList3<float>(curObj.getRotation())));
 		output.editTag(objectName + ".scale", stringutility::format(stringutility::devectoriseList3<float>(curObj.getScale())));
 	}
-	for(std::size_t i = 0; i < this->entityObjects.size(); i++)
+	for(std::size_t i = 0; i < this->entity_objects.size(); i++)
 	{
 		const std::string eoName = "eo" + castutility::toString<float>(i);
 		eoList.push_back(eoName);
-		const EntityObject curEO = this->entityObjects.at(i);
+		const EntityObject curEO = this->entity_objects.at(i);
 
 		output.editTag(eoName + ".mesh", dt.getResourceName(curEO.getMeshLink()));
 		for(auto& texture : curEO.getTextures())
@@ -178,7 +178,7 @@ void World::update(unsigned int fps, Camera& cam, const Shader& shader, unsigned
 		}
 		obj.render(mesh, tex, nm, pm, dm, cam, shader, width, height);
 	}
-	for(auto& eo : this->entityObjects)
+	for(auto& eo : this->entity_objects)
 	{
 		Mesh* mesh = Mesh::getFromLink(eo.getMeshLink(), allMeshes);
 		Texture* tex = nullptr; NormalMap* nm = nullptr; ParallaxMap* pm = nullptr; DisplacementMap* dm = nullptr;
@@ -198,7 +198,7 @@ void World::update(unsigned int fps, Camera& cam, const Shader& shader, unsigned
 	}	
 	for(auto& ent : this->entities)
 		ent.updateMotion(fps);
-	for(auto& iter : this->baseLights)
+	for(auto& iter : this->base_lights)
 	{
 		BaseLight light = iter.second;
 		std::vector<float> pos, colour;
@@ -220,7 +220,7 @@ void World::update(unsigned int fps, Camera& cam, const Shader& shader, unsigned
 
 std::size_t World::getSize() const
 {
-	return this->objects.size() + this->entities.size() + this->entityObjects.size();
+	return this->objects.size() + this->entities.size() + this->entity_objects.size();
 }
 
 const std::vector<Object>& World::getObjects() const
@@ -235,7 +235,7 @@ const std::vector<Entity>& World::getEntities() const
 
 const std::vector<EntityObject>& World::getEntityObjects() const
 {
-	return this->entityObjects;
+	return this->entity_objects;
 }
 
 std::vector<Object>& World::getObjectsR()
@@ -250,7 +250,7 @@ std::vector<Entity>& World::getEntitiesR()
 
 std::vector<EntityObject>& World::getEntityObjectsR()
 {
-	return this->entityObjects;
+	return this->entity_objects;
 }
 
 const Vector3F& World::getGravity() const
@@ -260,12 +260,12 @@ const Vector3F& World::getGravity() const
 
 const Vector3F& World::getSpawnPoint() const
 {
-	return this->spawnPoint;
+	return this->spawn_point;
 }
 
 const Vector3F& World::getSpawnOrientation() const
 {
-	return this->spawnOrientation;
+	return this->spawn_orientation;
 }
 
 Vector3F& World::getGravityR()
@@ -275,12 +275,12 @@ Vector3F& World::getGravityR()
 
 Vector3F& World::getSpawnPointR()
 {
-	return this->spawnPoint;
+	return this->spawn_point;
 }
 
 Vector3F& World::getSpawnOrientationR()
 {
-	return this->spawnOrientation;
+	return this->spawn_orientation;
 }
 
 const std::string& World::getWorldLink() const
@@ -290,12 +290,12 @@ const std::string& World::getWorldLink() const
 
 const std::map<std::vector<GLuint>, BaseLight>& World::getLights() const
 {
-	return this->baseLights;
+	return this->base_lights;
 }
 
 std::map<std::vector<GLuint>, BaseLight>& World::getLightsR()
 {
-	return this->baseLights;
+	return this->base_lights;
 }
 
 Object World::retrieveData(const std::string& objectName, std::string resources_path, MDLF& mdlf)

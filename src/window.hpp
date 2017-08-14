@@ -66,13 +66,13 @@ private:
 	void initGLEW();
 	void destSDL();
 	void handleEvents();
-	std::unordered_map<unsigned int, Listener*> registeredListeners;
+	std::unordered_map<unsigned int, Listener*> registered_listeners;
 	
 	int w, h;
 	std::string title;
-	bool iscloserequested;
-	SDL_Window* wnd;
-	SDL_GLContext ctx;
+	bool is_close_requested;
+	SDL_Window* sdl_window_pointer;
+	SDL_GLContext sdl_gl_context_handle;
 };
 
 #endif

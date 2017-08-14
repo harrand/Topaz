@@ -410,9 +410,7 @@ Matrix4x4 Matrix4x4::inverse() const
 	return Matrix4x4(x, y, z, w);
 }
 
-// matrixtransformations
-
-Matrix4x4 matrixtransformations::createTranslationMatrix(Vector3F position)
+Matrix4x4 Matrix4x4::createTranslationMatrix(Vector3F position)
 {
 	Matrix4x4 res = Matrix4x4::identity();
 	res.getRowXR().getWR() = position.getX();
@@ -421,42 +419,42 @@ Matrix4x4 matrixtransformations::createTranslationMatrix(Vector3F position)
 	return res;
 }
 
-Matrix4x4 matrixtransformations::createRotationalXMatrix(float eulerX)
+Matrix4x4 Matrix4x4::createRotationalXMatrix(float eulerX)
 {
 	return Matrix4x4(Vector4F(1, 0, 0, 0), Vector4F(0, cos(eulerX), -sin(eulerX), 0), Vector4F(0, sin(eulerX), cos(eulerX), 0), Vector4F(0, 0, 0, 1));
 }
 
-Matrix4x4 matrixtransformations::createRotationalYMatrix(float eulerY)
+Matrix4x4 Matrix4x4::createRotationalYMatrix(float eulerY)
 {
 	return Matrix4x4(Vector4F(cos(eulerY), 0, -sin(eulerY), 0), Vector4F(0, 1, 0, 0), Vector4F(sin(eulerY), 0, cos(eulerY), 0), Vector4F(0, 0, 0, 1));
 }
 
-Matrix4x4 matrixtransformations::createRotationalZMatrix(float eulerZ)
+Matrix4x4 Matrix4x4::createRotationalZMatrix(float eulerZ)
 {
 	return Matrix4x4(Vector4F(cos(eulerZ), -sin(eulerZ), 0, 0), Vector4F(sin(eulerZ), cos(eulerZ), 0, 0), Vector4F(0, 0, 1, 0), Vector4F(0, 0, 0, 1));
 }
 
-Matrix4x4 matrixtransformations::createRotationalMatrix(Vector3F eulerRotation)
+Matrix4x4 Matrix4x4::createRotationalMatrix(Vector3F eulerRotation)
 {
-	return matrixtransformations::createRotationalZMatrix(eulerRotation.getZ()) * matrixtransformations::createRotationalYMatrix(eulerRotation.getY()) * matrixtransformations::createRotationalXMatrix(eulerRotation.getX());
+	return Matrix4x4::createRotationalZMatrix(eulerRotation.getZ()) * Matrix4x4::createRotationalYMatrix(eulerRotation.getY()) * Matrix4x4::createRotationalXMatrix(eulerRotation.getX());
 }
 
-Matrix4x4 matrixtransformations::createScalingMatrix(Vector3F scale)
+Matrix4x4 Matrix4x4::createScalingMatrix(Vector3F scale)
 {
 	return Matrix4x4(Vector4F(scale.getX(), 0, 0, 0), Vector4F(0, scale.getY(), 0, 0), Vector4F(0, 0, scale.getZ(), 0), Vector4F(0, 0, 0, 1));
 }
 
-Matrix4x4 matrixtransformations::createModelMatrix(Vector3F position, Vector3F eulerRotation, Vector3F scale)
+Matrix4x4 Matrix4x4::createModelMatrix(Vector3F position, Vector3F eulerRotation, Vector3F scale)
 {
-	return matrixtransformations::createTranslationMatrix(position) * matrixtransformations::createRotationalMatrix(eulerRotation) * matrixtransformations::createScalingMatrix(scale);
+	return Matrix4x4::createTranslationMatrix(position) * Matrix4x4::createRotationalMatrix(eulerRotation) * Matrix4x4::createScalingMatrix(scale);
 }
 
-Matrix4x4 matrixtransformations::createViewMatrix(Vector3F cameraPosition, Vector3F cameraEulerRotation)
+Matrix4x4 Matrix4x4::createViewMatrix(Vector3F cameraPosition, Vector3F cameraEulerRotation)
 {
-	return matrixtransformations::createModelMatrix(cameraPosition, cameraEulerRotation, Vector3F(1, 1, 1)).inverse();
+	return Matrix4x4::createModelMatrix(cameraPosition, cameraEulerRotation, Vector3F(1, 1, 1)).inverse();
 }
 
-Matrix4x4 matrixtransformations::createProjectionMatrix(float fov, float aspectRatio, float nearclip, float farclip)
+Matrix4x4 Matrix4x4::createProjectionMatrix(float fov, float aspectRatio, float nearclip, float farclip)
 {
 	Vector4F x(0, 0, 0, 0), y(0, 0, 0, 0), z(0, 0, 0, 0), w(0, 0, 0, 0);
 	float thf = tan(fov / 2);
@@ -468,7 +466,7 @@ Matrix4x4 matrixtransformations::createProjectionMatrix(float fov, float aspectR
 	return Matrix4x4(x, y, z, w);
 }
 
-Matrix4x4 matrixtransformations::createProjectionMatrix(float fov, float width, float height, float nearclip, float farclip)
+Matrix4x4 Matrix4x4::createProjectionMatrix(float fov, float width, float height, float nearclip, float farclip)
 {
-	return matrixtransformations::createProjectionMatrix(fov, (float)((width)/(height)), nearclip, farclip);
+	return Matrix4x4::createProjectionMatrix(fov, (float)((width)/(height)), nearclip, farclip);
 }

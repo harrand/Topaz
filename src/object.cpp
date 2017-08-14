@@ -1,7 +1,7 @@
 #include "object.hpp"
 #include "quaternion.hpp"
 
-Object::Object(std::string meshLink, std::vector<std::pair<std::string, Texture::TextureType>> textures, Vector3F pos, Vector3F rot, Vector3F scale): pos(std::move(pos)), rot(std::move(rot)), scale(std::move(scale)), meshLink(std::move(meshLink)), textures(std::move(textures)){}
+Object::Object(std::string mesh_link, std::vector<std::pair<std::string, Texture::TextureType>> textures, Vector3F pos, Vector3F rot, Vector3F scale): pos(std::move(pos)), rot(std::move(rot)), scale(std::move(scale)), mesh_link(std::move(mesh_link)), textures(std::move(textures)){}
 
 const Vector3F& Object::getPosition() const
 {
@@ -35,7 +35,7 @@ Vector3F& Object::getScaleR()
 
 const std::string& Object::getMeshLink() const
 {
-	return this->meshLink;
+	return this->mesh_link;
 }
 
 const std::vector<std::pair<std::string, Texture::TextureType>> Object::getTextures() const
@@ -56,20 +56,20 @@ void Object::render(Mesh* mesh, Texture* tex, NormalMap* nm, ParallaxMap* pm, Di
 		pm->bind(shad.getProgramHandle(), static_cast<unsigned int>(pm->getTextureType()));
 	if(dm != nullptr)
 		dm->bind(shad.getProgramHandle(), static_cast<unsigned int>(dm->getTextureType()));
-	shad.update(matrixtransformations::createModelMatrix(this->pos, this->rot, this->scale).fillData(), matrixtransformations::createViewMatrix(cam.getPosition(), cam.getRotation()).fillData(), matrixtransformations::createProjectionMatrix(1.5708, width, height, 0.1f, 10000.0f).fillData());
+	shad.update(Matrix4x4::createModelMatrix(this->pos, this->rot, this->scale).fillData(), Matrix4x4::createViewMatrix(cam.getPosition(), cam.getRotation()).fillData(), Matrix4x4::createProjectionMatrix(1.5708, width, height, 0.1f, 10000.0f).fillData());
 	//glFrontFace(GL_CCW);
 	mesh->render(shad.hasTessellationControlShader());
 	//glFrontFace(GL_CW);
 }
 
-Skybox::Skybox(std::string cubeMeshLink, CubeMap& cm): cubeMeshLink(cubeMeshLink), cm(cm){}
+Skybox::Skybox(std::string cube_mesh_link, CubeMap& cm): cube_mesh_link(cube_mesh_link), cm(cm){}
 
 void Skybox::render(const Camera& cam, const Shader& shad, const std::vector<std::unique_ptr<Mesh>>& allMeshes, float width, float height)
 {
 	shad.bind();
 	this->cm.bind(shad.getProgramHandle(), 0);
-	shad.update(matrixtransformations::createModelMatrix(cam.getPosition(), Vector3F(), Vector3F(10000, 10000, 10000)).fillData(), matrixtransformations::createViewMatrix(cam.getPosition(), cam.getRotation()).fillData(), matrixtransformations::createProjectionMatrix(1.5708, width, height, 0.1f, 20000).fillData());
+	shad.update(Matrix4x4::createModelMatrix(cam.getPosition(), Vector3F(), Vector3F(10000, 10000, 10000)).fillData(), Matrix4x4::createViewMatrix(cam.getPosition(), cam.getRotation()).fillData(), Matrix4x4::createProjectionMatrix(1.5708, width, height, 0.1f, 20000).fillData());
 	glFrontFace(GL_CW);
-	Mesh::getFromLink(this->cubeMeshLink, allMeshes)->render(shad.hasTessellationControlShader());
+	Mesh::getFromLink(this->cube_mesh_link, allMeshes)->render(shad.hasTessellationControlShader());
 	glFrontFace(GL_CCW);
 }

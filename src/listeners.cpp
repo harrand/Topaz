@@ -11,49 +11,49 @@ void MouseListener::handleEvents(SDL_Event& evt)
 	{
 		int x, y;
 		SDL_GetMouseState(&x, &y);
-		this->mousePos.getXR() = x;
-		this->mousePos.getYR() = y;
+		this->mouse_position.getXR() = x;
+		this->mouse_position.getYR() = y;
 	}
 	if(evt.type == SDL_MOUSEBUTTONDOWN)
 	{
 		if(evt.button.button == SDL_BUTTON_LEFT)
-			this->leftClick = true;
+			this->left_click = true;
 		else if(evt.button.button == SDL_BUTTON_RIGHT)
-			this->rightClick = true;
+			this->right_click = true;
 	}
 		
 	if(evt.type == SDL_MOUSEBUTTONUP)
 	{
 		if(evt.button.button == SDL_BUTTON_LEFT)
-			this->leftClick = false;
+			this->left_click = false;
 		else if(evt.button.button == SDL_BUTTON_RIGHT)
-			this->rightClick = false;
+			this->right_click = false;
 	}
 }
 
 void MouseListener::reloadMouseDelta()
 {
-	this->prevMousePos = this->mousePos;
+	this->previous_mouse_position = this->mouse_position;
 }
 
 bool MouseListener::isLeftClicked() const
 {
-	return this->leftClick;
+	return this->left_click;
 }
 
 bool MouseListener::isRightClicked() const
 {
-	return this->rightClick;
+	return this->right_click;
 }
 
 const Vector2F& MouseListener::getMousePos() const
 {
-	return this->mousePos;
+	return this->mouse_position;
 }
 
 Vector2F MouseListener::getMouseDeltaPos() const
 {
-	return (this->mousePos - this->prevMousePos);
+	return (this->mouse_position - this->previous_mouse_position);
 }
 
 MouseController::MouseController(Player& player, World& world, Window& wnd): player(player), world(world), wnd(wnd), ml()
@@ -96,25 +96,25 @@ void KeyListener::handleEvents(SDL_Event& evt)
 	switch(evt.type)
 	{
 		case SDL_KEYDOWN:
-			if(std::find(this->releasedKeys.begin(), this->releasedKeys.end(), SDL_GetKeyName(evt.key.keysym.sym)) != this->releasedKeys.end())
+			if(std::find(this->released_keys.begin(), this->released_keys.end(), SDL_GetKeyName(evt.key.keysym.sym)) != this->released_keys.end())
 			{
-				this->releasedKeys.erase(std::remove(this->releasedKeys.begin(), this->releasedKeys.end(), SDL_GetKeyName(evt.key.keysym.sym)), this->releasedKeys.end());
+				this->released_keys.erase(std::remove(this->released_keys.begin(), this->released_keys.end(), SDL_GetKeyName(evt.key.keysym.sym)), this->released_keys.end());
 			}
-			if(std::find(pressedKeys.begin(), pressedKeys.end(), SDL_GetKeyName(evt.key.keysym.sym)) == pressedKeys.end())
+			if(std::find(pressed_keys.begin(), pressed_keys.end(), SDL_GetKeyName(evt.key.keysym.sym)) == pressed_keys.end())
 			{
 				// doesnt yet contain it.
-				this->pressedKeys.push_back(SDL_GetKeyName(evt.key.keysym.sym));
+				this->pressed_keys.push_back(SDL_GetKeyName(evt.key.keysym.sym));
 			}
 		break;
 		case SDL_KEYUP:
-			if(std::find(this->releasedKeys.begin(), this->releasedKeys.end(), SDL_GetKeyName(evt.key.keysym.sym)) == this->releasedKeys.end())
+			if(std::find(this->released_keys.begin(), this->released_keys.end(), SDL_GetKeyName(evt.key.keysym.sym)) == this->released_keys.end())
 			{
-				this->releasedKeys.push_back(SDL_GetKeyName(evt.key.keysym.sym));
+				this->released_keys.push_back(SDL_GetKeyName(evt.key.keysym.sym));
 			}
-			if(std::find(this->pressedKeys.begin(), this->pressedKeys.end(), SDL_GetKeyName(evt.key.keysym.sym)) != this->pressedKeys.end())
+			if(std::find(this->pressed_keys.begin(), this->pressed_keys.end(), SDL_GetKeyName(evt.key.keysym.sym)) != this->pressed_keys.end())
 			{
 				// does actually contain it
-				this->pressedKeys.erase(std::remove(this->pressedKeys.begin(), this->pressedKeys.end(), SDL_GetKeyName(evt.key.keysym.sym)), this->pressedKeys.end());
+				this->pressed_keys.erase(std::remove(this->pressed_keys.begin(), this->pressed_keys.end(), SDL_GetKeyName(evt.key.keysym.sym)), this->pressed_keys.end());
 			}
 		break;
 	}
@@ -122,19 +122,19 @@ void KeyListener::handleEvents(SDL_Event& evt)
 
 bool KeyListener::isKeyPressed(const std::string& keyname) const
 {
-	return (std::find(this->pressedKeys.begin(), this->pressedKeys.end(), keyname) != this->pressedKeys.end());
+	return (std::find(this->pressed_keys.begin(), this->pressed_keys.end(), keyname) != this->pressed_keys.end());
 }
 
 bool KeyListener::isKeyReleased(const std::string& keyname) const
 {
-	return (std::find(this->releasedKeys.begin(), this->releasedKeys.end(), keyname) != this->releasedKeys.end());
+	return (std::find(this->released_keys.begin(), this->released_keys.end(), keyname) != this->released_keys.end());
 }
 
 bool KeyListener::catchKeyPressed(const std::string& keyname)
 {
 	bool pressed = this->isKeyPressed(keyname);
 	if(pressed)
-		this->pressedKeys.erase(std::remove(this->pressedKeys.begin(), this->pressedKeys.end(), keyname), this->pressedKeys.end());
+		this->pressed_keys.erase(std::remove(this->pressed_keys.begin(), this->pressed_keys.end(), keyname), this->pressed_keys.end());
 	return pressed;
 }
 
@@ -142,7 +142,7 @@ bool KeyListener::catchKeyReleased(const std::string& keyname)
 {
 	bool released = this->isKeyReleased(keyname);
 	if(released)
-		this->releasedKeys.erase(std::remove(this->releasedKeys.begin(), this->releasedKeys.end(), keyname), this->releasedKeys.end());
+		this->released_keys.erase(std::remove(this->released_keys.begin(), this->released_keys.end(), keyname), this->released_keys.end());
 	return released;
 }
 

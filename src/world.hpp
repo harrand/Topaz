@@ -22,8 +22,8 @@ public:
 	void addEntityObject(EntityObject eo);
 	void addLight(BaseLight light, GLuint shader_programHandle);
 	void setGravity(Vector3F gravity = Vector3F());
-	void setSpawnPoint(Vector3F spawnPoint = Vector3F());
-	void setSpawnOrientation(Vector3F spawnOrientation = Vector3F());
+	void setSpawnPoint(Vector3F spawn_point = Vector3F());
+	void setSpawnOrientation(Vector3F spawn_orientation = Vector3F());
 	void killLights();
 	
 	void exportWorld(const std::string& worldLink) const;
@@ -53,13 +53,11 @@ private:
 	
 	std::string filename;
 	std::string resources_path;
-	Vector3F gravity, spawnPoint, spawnOrientation;
+	Vector3F gravity, spawn_point, spawn_orientation;
 	std::vector<Object> objects;
 	std::vector<Entity> entities;
-	std::vector<EntityObject> entityObjects;
-	std::map<std::vector<GLuint>, BaseLight> baseLights;
-	//std::experimental::optional<Skybox> skybox;
-	//std::experimental::optional<Shader> skyboxShader;
+	std::vector<EntityObject> entity_objects;
+	std::map<std::vector<GLuint>, BaseLight> base_lights;
 };
 
 #endif

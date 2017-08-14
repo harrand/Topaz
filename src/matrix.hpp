@@ -70,25 +70,22 @@ public:
 	
 	float determinant() const;
 	Matrix4x4 inverse() const;
+	
+	static Matrix4x4 createTranslationMatrix(Vector3F position);
+	
+	static Matrix4x4 createRotationalXMatrix(float eulerX);
+	static Matrix4x4 createRotationalYMatrix(float eulerY);
+	static Matrix4x4 createRotationalZMatrix(float eulerZ);
+	static Matrix4x4 createRotationalMatrix(Vector3F eulerRotation);
+	
+	static Matrix4x4 createScalingMatrix(Vector3F scale);
+	
+	static Matrix4x4 createModelMatrix(Vector3F position, Vector3F eulerRotation, Vector3F scale);
+	static Matrix4x4 createViewMatrix(Vector3F cameraPosition, Vector3F cameraEulerRotation);
+	static Matrix4x4 createProjectionMatrix(float fov, float aspectRatio, float nearclip, float farclip);
+	static Matrix4x4 createProjectionMatrix(float fov, float width, float height, float nearclip, float farclip);
 private:
 	Vector4F x, y, z, w;
 };
-
-namespace matrixtransformations
-{
-	Matrix4x4 createTranslationMatrix(Vector3F position);
-	
-	Matrix4x4 createRotationalXMatrix(float eulerX);
-	Matrix4x4 createRotationalYMatrix(float eulerY);
-	Matrix4x4 createRotationalZMatrix(float eulerZ);
-	Matrix4x4 createRotationalMatrix(Vector3F eulerRotation);
-	
-	Matrix4x4 createScalingMatrix(Vector3F scale);
-	
-	Matrix4x4 createModelMatrix(Vector3F position, Vector3F eulerRotation, Vector3F scale);
-	Matrix4x4 createViewMatrix(Vector3F cameraPosition, Vector3F cameraEulerRotation);
-	Matrix4x4 createProjectionMatrix(float fov, float aspectRatio, float nearclip, float farclip);
-	Matrix4x4 createProjectionMatrix(float fov, float width, float height, float nearclip, float farclip);
-}
 
 #endif

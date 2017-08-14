@@ -2,26 +2,26 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
-FrameBuffer::FrameBuffer(unsigned int width, unsigned int height): width(width), height(height), fbHandle(0)
+FrameBuffer::FrameBuffer(unsigned int width, unsigned int height): width(width), height(height), framebuffer_handle(0)
 {
-	glGenFramebuffers(1, &this->fbHandle);
-	glBindFramebuffer(GL_FRAMEBUFFER, this->fbHandle);
+	glGenFramebuffers(1, &this->framebuffer_handle);
+	glBindFramebuffer(GL_FRAMEBUFFER, this->framebuffer_handle);
 	
-	glGenTextures(1, &this->texHandle);
-	glBindTexture(GL_TEXTURE_2D, this->texHandle);
+	glGenTextures(1, &this->texture_handle);
+	glBindTexture(GL_TEXTURE_2D, this->texture_handle);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, this->width, this->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
 	
 	//Filtering
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	
-	glGenRenderbuffers(1, &this->depthRenderBufferHandle);
-	glBindRenderbuffer(GL_RENDERBUFFER, this->depthRenderBufferHandle);
+	glGenRenderbuffers(1, &this->depth_render_buffer_handle);
+	glBindRenderbuffer(GL_RENDERBUFFER, this->depth_render_buffer_handle);
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, this->width, this->height);
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, this->depthRenderBufferHandle);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, this->depth_render_buffer_handle);
 	
 	//Configure framebuffer
-	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, this->texHandle, 0);
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, this->texture_handle, 0);
 	GLenum drawBuffers[1] = {GL_COLOR_ATTACHMENT0};
 	glDrawBuffers(1, drawBuffers);
 	
@@ -33,7 +33,7 @@ FrameBuffer::FrameBuffer(unsigned int width, unsigned int height): width(width),
 
 void FrameBuffer::setRenderTarget() const
 {
-	glBindFramebuffer(GL_FRAMEBUFFER, this->fbHandle);
+	glBindFramebuffer(GL_FRAMEBUFFER, this->framebuffer_handle);
 	glViewport(0, 0, this->width, this->height);
 }
 
@@ -47,12 +47,12 @@ void FrameBuffer::bind(unsigned int id) const
 	// this sets which texture we want to bind (id can be from 0 to 31)
 	// GLTEXTURE0 is actually a number, so we can add the id instead of a massive switch statement
 	glActiveTexture(GL_TEXTURE0 + id);
-	glBindTexture(GL_TEXTURE_2D, this->texHandle);
+	glBindTexture(GL_TEXTURE_2D, this->texture_handle);
 }
 
 unsigned char* Texture::loadTexture()
 {
-	return stbi_load((this->filename).c_str(), &(this->width), &(this->height), &(this->comps), 4);
+	return stbi_load((this->filename).c_str(), &(this->width), &(this->height), &(this->components), 4);
 }
 
 // Deleting texture as far as stb_image is concerned (We want to leave it alone when it's gone to the GPU)
@@ -70,9 +70,9 @@ Texture::Texture(std::string filename): filename(std::move(filename))
 	}
 	
 	//Store tex data in the handle
-	glGenTextures(1, &(this->texhandle));
+	glGenTextures(1, &(this->texture_handle));
 	// Let OGL know it's just a 2d texture.
-	glBindTexture(GL_TEXTURE_2D, this->texhandle);
+	glBindTexture(GL_TEXTURE_2D, this->texture_handle);
 	
 	// These both are optional.
 	// Controls texture wrapping. i.e it wraps if dimensions of model is larger than image size.
@@ -100,16 +100,16 @@ Texture::Texture(std::string filename): filename(std::move(filename))
 
 Texture::Texture(const Texture& copy): Texture(copy.getFileName()){}
 
-Texture::Texture(Texture&& move): filename(move.getFileName()), textureID(move.textureID), texhandle(move.texhandle), width(move.width), height(move.height), comps(move.comps)
+Texture::Texture(Texture&& move): filename(move.getFileName()), texture_id(move.texture_id), texture_handle(move.texture_handle), width(move.width), height(move.height), components(move.components)
 {
-	move.textureID = 0;
-	move.texhandle = 0;
+	move.texture_id = 0;
+	move.texture_handle = 0;
 }
 
 Texture::~Texture()
 {
-	// glDeleteTextures silently ignores 0 as a texhandle so this should not cause problems if just moved.
-	glDeleteTextures(1, &(this->texhandle));
+	// glDeleteTextures silently ignores 0 as a texture_handle so this should not cause problems if just moved.
+	glDeleteTextures(1, &(this->texture_handle));
 }
 
 void Texture::bind(GLuint shaderProgram, unsigned int id)
@@ -121,10 +121,10 @@ void Texture::bind(GLuint shaderProgram, unsigned int id)
 	}
 	// this sets which texture we want to bind (id can be from 0 to 31)
 	// GLTEXTURE0 is actually a number, so we can add the id instead of a massive switch statement
-	this->textureID = glGetUniformLocation(shaderProgram, "textureSampler");
+	this->texture_id = glGetUniformLocation(shaderProgram, "textureSampler");
 	glActiveTexture(GL_TEXTURE0 + id);
-	glBindTexture(GL_TEXTURE_2D, this->texhandle);
-	glUniform1i(this->textureID, id);
+	glBindTexture(GL_TEXTURE_2D, this->texture_handle);
+	glUniform1i(this->texture_id, id);
 }
 
 std::string Texture::getFileName() const
@@ -148,10 +148,10 @@ void NormalMap::bind(GLuint shaderProgram, unsigned int id)
 	}
 	// this sets which texture we want to bind (id can be from 0 to 31)
 	// GLTEXTURE0 is actually a number, so we can add the id instead of a massive switch statement
-	this->textureID = glGetUniformLocation(shaderProgram, "normalMapSampler");
+	this->texture_id = glGetUniformLocation(shaderProgram, "normalMapSampler");
 	glActiveTexture(GL_TEXTURE0 + id);
-	glBindTexture(GL_TEXTURE_2D, this->texhandle);
-	glUniform1i(this->textureID, id);
+	glBindTexture(GL_TEXTURE_2D, this->texture_handle);
+	glUniform1i(this->texture_id, id);
 }
 
 Texture::TextureType NormalMap::getTextureType()
@@ -170,10 +170,10 @@ void ParallaxMap::bind(GLuint shaderProgram, unsigned int id)
 	}
 	// this sets which texture we want to bind (id can be from 0 to 31)
 	// GLTEXTURE0 is actually a number, so we can add the id instead of a massive switch statement
-	this->textureID = glGetUniformLocation(shaderProgram, "parallaxMapSampler");
+	this->texture_id = glGetUniformLocation(shaderProgram, "parallaxMapSampler");
 	glActiveTexture(GL_TEXTURE0 + id);
-	glBindTexture(GL_TEXTURE_2D, this->texhandle);
-	glUniform1i(this->textureID, id);
+	glBindTexture(GL_TEXTURE_2D, this->texture_handle);
+	glUniform1i(this->texture_id, id);
 }
 
 Texture::TextureType ParallaxMap::getTextureType()
@@ -192,10 +192,10 @@ void DisplacementMap::bind(GLuint shaderProgram, unsigned int id)
 	}
 	// this sets which texture we want to bind (id can be from 0 to 31)
 	// GLTEXTURE0 is actually a number, so we can add the id instead of a massive switch statement
-	this->textureID = glGetUniformLocation(shaderProgram, "displacementMapSampler");
+	this->texture_id = glGetUniformLocation(shaderProgram, "displacementMapSampler");
 	glActiveTexture(GL_TEXTURE0 + id);
-	glBindTexture(GL_TEXTURE_2D, this->texhandle);
-	glUniform1i(this->textureID, id);
+	glBindTexture(GL_TEXTURE_2D, this->texture_handle);
+	glUniform1i(this->texture_id, id);
 }
 
 Texture::TextureType DisplacementMap::getTextureType()
@@ -203,10 +203,10 @@ Texture::TextureType DisplacementMap::getTextureType()
 	return TextureType::DISPLACEMENT_MAP;
 }
 
-CubeMap::CubeMap(std::string rightTexture, std::string leftTexture, std::string topTexture, std::string bottomTexture, std::string backTexture, std::string frontTexture): rightTexture(std::move(rightTexture)), leftTexture(std::move(leftTexture)), topTexture(std::move(topTexture)), bottomTexture(std::move(bottomTexture)), backTexture(std::move(backTexture)), frontTexture(std::move(frontTexture))
+CubeMap::CubeMap(std::string right_texture, std::string left_texture, std::string top_texture, std::string bottom_texture, std::string back_texture, std::string front_texture): right_texture(std::move(right_texture)), left_texture(std::move(left_texture)), top_texture(std::move(top_texture)), bottom_texture(std::move(bottom_texture)), back_texture(std::move(back_texture)), front_texture(std::move(front_texture))
 {
-	glGenTextures(1, &(this->texHandle));
-	glBindTexture(GL_TEXTURE_CUBE_MAP, this->texHandle);
+	glGenTextures(1, &(this->texture_handle));
+	glBindTexture(GL_TEXTURE_CUBE_MAP, this->texture_handle);
 	std::vector<unsigned char*> faceData = this->loadTextures();
 	for(GLuint i = 0; i < faceData.size(); i++)
 	{
@@ -223,23 +223,23 @@ CubeMap::CubeMap(std::string rightTexture, std::string leftTexture, std::string 
 
 CubeMap::CubeMap(std::string textureDirectory, std::string skyboxName, std::string imageExtension): CubeMap(textureDirectory + skyboxName + "_rt" + imageExtension, textureDirectory + skyboxName + "_lf" + imageExtension, textureDirectory + skyboxName + "_up" + imageExtension, textureDirectory + skyboxName + "_dn" + imageExtension, textureDirectory + skyboxName + "_bk" + imageExtension, textureDirectory + skyboxName + "_ft" + imageExtension){}
 
-CubeMap::CubeMap(const CubeMap& copy): CubeMap(copy.rightTexture, copy.leftTexture, copy.topTexture, copy.bottomTexture, copy.backTexture, copy.frontTexture){}
+CubeMap::CubeMap(const CubeMap& copy): CubeMap(copy.right_texture, copy.left_texture, copy.top_texture, copy.bottom_texture, copy.back_texture, copy.front_texture){}
 
-CubeMap::CubeMap(CubeMap&& move): texHandle(move.texHandle), textureID(move.textureID), rightTexture(move.rightTexture), leftTexture(move.leftTexture), topTexture(move.topTexture), bottomTexture(move.bottomTexture), backTexture(move.backTexture), frontTexture(move.frontTexture)
+CubeMap::CubeMap(CubeMap&& move): texture_handle(move.texture_handle), texture_id(move.texture_id), right_texture(move.right_texture), left_texture(move.left_texture), top_texture(move.top_texture), bottom_texture(move.bottom_texture), back_texture(move.back_texture), front_texture(move.front_texture)
 {
 	for(unsigned int i = 0; i < 6; i++)
 	{
 		this->width[i] = move.width[i];
 		this->height[i] = move.height[i];
-		this->comps[i] = move.comps[i];
+		this->components[i] = move.components[i];
 	}
-	move.texHandle = 0;
-	move.textureID = 0;
+	move.texture_handle = 0;
+	move.texture_id = 0;
 }
 
 CubeMap::~CubeMap()
 {
-	glDeleteTextures(1, &(this->texHandle));
+	glDeleteTextures(1, &(this->texture_handle));
 }
 
 void CubeMap::bind(GLuint shaderProgram, unsigned int id)
@@ -251,21 +251,21 @@ void CubeMap::bind(GLuint shaderProgram, unsigned int id)
 	}
 	// this sets which texture we want to bind (id can be from 0 to 31)
 	// GLTEXTURE0 is actually a number, so we can add the id instead of a massive switch statement
-	this->textureID = glGetUniformLocation(shaderProgram, "cubeMapSampler");
+	this->texture_id = glGetUniformLocation(shaderProgram, "cubeMapSampler");
 	glActiveTexture(GL_TEXTURE0 + id);
-	glBindTexture(GL_TEXTURE_CUBE_MAP, this->texHandle);
-	glUniform1i(this->textureID, id);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, this->texture_handle);
+	glUniform1i(this->texture_id, id);
 }
 
 std::vector<unsigned char*> CubeMap::loadTextures()
 {
 	std::vector<unsigned char*> imageData;
 	imageData.reserve(6);
-	imageData.push_back(stbi_load((this->rightTexture).c_str(), &(this->width[0]), &(this->height[0]), &(this->comps[0]), 4));
-	imageData.push_back(stbi_load((this->leftTexture).c_str(), &(this->width[1]), &(this->height[1]), &(this->comps[1]), 4));
-	imageData.push_back(stbi_load((this->topTexture).c_str(), &(this->width[2]), &(this->height[2]), &(this->comps[2]), 4));
-	imageData.push_back(stbi_load((this->bottomTexture).c_str(), &(this->width[3]), &(this->height[3]), &(this->comps[3]), 4));
-	imageData.push_back(stbi_load((this->backTexture).c_str(), &(this->width[4]), &(this->height[4]), &(this->comps[4]), 4));
-	imageData.push_back(stbi_load((this->frontTexture).c_str(), &(this->width[5]), &(this->height[5]), &(this->comps[5]), 4));
+	imageData.push_back(stbi_load((this->right_texture).c_str(), &(this->width[0]), &(this->height[0]), &(this->components[0]), 4));
+	imageData.push_back(stbi_load((this->left_texture).c_str(), &(this->width[1]), &(this->height[1]), &(this->components[1]), 4));
+	imageData.push_back(stbi_load((this->top_texture).c_str(), &(this->width[2]), &(this->height[2]), &(this->components[2]), 4));
+	imageData.push_back(stbi_load((this->bottom_texture).c_str(), &(this->width[3]), &(this->height[3]), &(this->components[3]), 4));
+	imageData.push_back(stbi_load((this->back_texture).c_str(), &(this->width[4]), &(this->height[4]), &(this->components[4]), 4));
+	imageData.push_back(stbi_load((this->front_texture).c_str(), &(this->width[5]), &(this->height[5]), &(this->components[5]), 4));
 	return imageData;
 }

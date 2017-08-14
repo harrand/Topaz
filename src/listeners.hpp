@@ -18,8 +18,8 @@ public:
 	const Vector2F& getMousePos() const;
 	Vector2F getMouseDeltaPos() const;
 private:
-	bool leftClick, rightClick;
-	Vector2F prevMousePos, mousePos;
+	bool left_click, right_click;
+	Vector2F previous_mouse_position, mouse_position;
 };
 
 class MouseController
@@ -54,8 +54,8 @@ public:
 	bool catchKeyPressed(const std::string& keyname);
 	bool catchKeyReleased(const std::string& keyname);
 private:
-	std::vector<std::string> pressedKeys;
-	std::vector<std::string> releasedKeys;
+	std::vector<std::string> pressed_keys;
+	std::vector<std::string> released_keys;
 };
 
 enum class KeybindType : unsigned int

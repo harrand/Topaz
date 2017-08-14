@@ -45,10 +45,10 @@ private:
 	World world;
 	std::vector<std::unique_ptr<Mesh>> meshes;
 	std::vector<std::unique_ptr<Texture>> textures;
-	std::vector<std::unique_ptr<NormalMap>> normalMaps;
-	std::vector<std::unique_ptr<ParallaxMap>> parallaxMaps;
-	std::vector<std::unique_ptr<DisplacementMap>> displacementMaps;
-	std::vector<Shader> extraShaders;
+	std::vector<std::unique_ptr<NormalMap>> normal_maps;
+	std::vector<std::unique_ptr<ParallaxMap>> parallax_maps;
+	std::vector<std::unique_ptr<DisplacementMap>> displacement_maps;
+	std::vector<Shader> extra_shaders;
 	unsigned int fps;
 };
 

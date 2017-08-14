@@ -12,7 +12,7 @@ public:
 	AudioClip(AudioClip&& move);
 	~AudioClip();
 	
-	// Don't want two audioclips sharing the same audioHandles (because when destructor is called will crash)
+	// Don't want two audioclips sharing the same audio_handles (because when destructor is called will crash)
 	AudioClip& operator=(const AudioClip& rhs) = delete;
 	
 	void play();
@@ -23,7 +23,7 @@ public:
 private:
 	int channel;
 	std::string filename;
-	Mix_Chunk* audioHandle;
+	Mix_Chunk* audio_handle;
 };
 
 class AudioSource: public AudioClip
@@ -55,7 +55,7 @@ public:
 private:
 	std::string filename;
 	bool paused;
-	Mix_Music* audioHandle;
+	Mix_Music* audio_handle;
 };
 
 #endif

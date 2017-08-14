@@ -38,7 +38,7 @@ public:
 	const std::vector<Vector3F>& getNormals() const;
 	std::string getFileName() const;
 	void render(bool patches) const;
-	static Mesh* getFromLink(const std::string& meshLink, const std::vector<std::unique_ptr<Mesh>>& allMeshes);
+	static Mesh* getFromLink(const std::string& mesh_link, const std::vector<std::unique_ptr<Mesh>>& allMeshes);
 private:
 	const std::string filename;
 	IndexedModel model;
@@ -52,9 +52,9 @@ private:
 		TANGENT = 4,
 		NUM_BUFFERS = 5
 	};
-	GLuint vertexArrayObject; //vao
-	GLuint vertexArrayBuffers[static_cast<unsigned int>(BufferTypes::NUM_BUFFERS)]; //vbo array
-	unsigned int renderCount;
+	GLuint vertex_array_object; //vao
+	GLuint vbo_buffers[static_cast<unsigned int>(BufferTypes::NUM_BUFFERS)]; //vbo array
+	unsigned int render_count;
 };
 
 #endif

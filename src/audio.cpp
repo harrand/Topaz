@@ -2,26 +2,26 @@
 
 AudioClip::AudioClip(std::string filename): filename(std::move(filename))
 {
-	this->audioHandle = Mix_LoadWAV(this->filename.c_str());
+	this->audio_handle = Mix_LoadWAV(this->filename.c_str());
 }
 
 AudioClip::AudioClip(const AudioClip& copy): AudioClip(copy.getFileName()){}
 
-AudioClip::AudioClip(AudioClip&& move): filename(move.getFileName()), audioHandle(move.audioHandle)
+AudioClip::AudioClip(AudioClip&& move): filename(move.getFileName()), audio_handle(move.audio_handle)
 {
-	move.audioHandle = NULL;
+	move.audio_handle = nullptr;
 }
 
 AudioClip::~AudioClip()
 {
-	// Cannot guarantee that Mix_FreeChunk(NULL) doesn't lead to UB (this happens if this instance was moved to another) so put a check in here to prevent crashing
-	if(this->audioHandle != NULL)
-		Mix_FreeChunk(this->audioHandle);
+	// Cannot guarantee that Mix_FreeChunk(nullptr) doesn't lead to UB (this happens if this instance was moved to another) so put a check in here to prevent crashing
+	if(this->audio_handle != nullptr)
+		Mix_FreeChunk(this->audio_handle);
 }
 
 void AudioClip::play()
 {
-	this->channel = Mix_PlayChannel(-1, this->audioHandle, 0);
+	this->channel = Mix_PlayChannel(-1, this->audio_handle, 0);
 }
 
 int AudioClip::getChannel() const
@@ -36,7 +36,7 @@ const std::string& AudioClip::getFileName() const
 
 const Mix_Chunk* AudioClip::getAudioHandle() const
 {
-	return this->audioHandle;
+	return this->audio_handle;
 }
 
 AudioSource::AudioSource(std::string filename, Vector3F position): AudioClip(filename), position(std::move(position)){}
@@ -74,18 +74,18 @@ void AudioSource::setPosition(Vector3F position)
 
 AudioMusic::AudioMusic(std::string filename): filename(std::move(filename)), paused(false)
 {
-	this->audioHandle = Mix_LoadMUS(this->filename.c_str());
+	this->audio_handle = Mix_LoadMUS(this->filename.c_str());
 }
 AudioMusic::AudioMusic(const AudioMusic& copy): AudioMusic(copy.getFileName()){}
 
-AudioMusic::AudioMusic(AudioMusic&& move): filename(move.getFileName()), audioHandle(move.audioHandle)
+AudioMusic::AudioMusic(AudioMusic&& move): filename(move.getFileName()), audio_handle(move.audio_handle)
 {
-	move.audioHandle = NULL;
+	move.audio_handle = nullptr;
 }
 
 AudioMusic::~AudioMusic()
 {
-	Mix_FreeMusic(this->audioHandle);
+	Mix_FreeMusic(this->audio_handle);
 }
 
 const std::string& AudioMusic::getFileName() const
@@ -95,13 +95,13 @@ const std::string& AudioMusic::getFileName() const
 
 Mix_Music*& AudioMusic::getAudioHandle()
 {
-	return this->audioHandle;
+	return this->audio_handle;
 }
 
 void AudioMusic::play(bool priority) const
 {
 	if(priority || Mix_PlayingMusic() != 0)
-		Mix_PlayMusic(this->audioHandle, -1);
+		Mix_PlayMusic(this->audio_handle, -1);
 }
 
 void AudioMusic::setPaused(bool pause)

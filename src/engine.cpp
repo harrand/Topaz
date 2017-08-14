@@ -5,10 +5,10 @@ Engine::Engine(Player& player, Window& wnd, std::string properties_path, unsigne
 	this->player.setPosition(this->world.getSpawnPoint());
 	logutility::message("Set player position to world spawn.");
 	logutility::message("Loading assets from '", this->properties.getTag("resources"), "'...");
-	logutility::message("Loaded ", DataTranslation(this->properties.getTag("resources")).retrieveAllData(this->meshes, this->textures, this->normalMaps, this->parallaxMaps, this->displacementMaps), " assets.");
+	logutility::message("Loaded ", DataTranslation(this->properties.getTag("resources")).retrieveAllData(this->meshes, this->textures, this->normal_maps, this->parallax_maps, this->displacement_maps), " assets.");
 	this->world.addEntity(this->player);
 	for(std::string shaderPath : this->properties.getSequence("extra_shaders"))
-		this->extraShaders.push_back(Shader(shaderPath));
+		this->extra_shaders.push_back(Shader(shaderPath));
 }
 
 void Engine::update(std::size_t shader_index)
@@ -26,7 +26,7 @@ void Engine::update(std::size_t shader_index)
 	this->wnd.clear(0.0f, 0.0f, 0.0f, 1.0f);
 	this->profiler.endFrame();
 	
-	this->world.update(this->profiler.getLastDelta(), this->player.getCamera(), this->getShader(shader_index), this->wnd.getWidth(), this->wnd.getHeight(), this->meshes, this->textures, this->normalMaps, this->parallaxMaps, this->displacementMaps);
+	this->world.update(this->profiler.getLastDelta(), this->player.getCamera(), this->getShader(shader_index), this->wnd.getWidth(), this->wnd.getHeight(), this->meshes, this->textures, this->normal_maps, this->parallax_maps, this->displacement_maps);
 	this->wnd.update();
 	
 	GLenum error;
@@ -86,25 +86,25 @@ const std::vector<std::unique_ptr<Texture>>& Engine::getTextures() const
 
 const std::vector<std::unique_ptr<NormalMap>>& Engine::getNormalMaps() const
 {
-	return this->normalMaps;
+	return this->normal_maps;
 }
 
 const std::vector<std::unique_ptr<ParallaxMap>>& Engine::getParallaxMaps() const
 {
-	return this->parallaxMaps;
+	return this->parallax_maps;
 }
 
 const std::vector<std::unique_ptr<DisplacementMap>>& Engine::getDisplacementMaps() const
 {
-	return this->displacementMaps;
+	return this->displacement_maps;
 }
 
 const Shader& Engine::getShader(std::size_t index) const
 {
-	if(index > this->extraShaders.size())
+	if(index > this->extra_shaders.size())
 		logutility::error("Could not retrieve shader index ", index, ", retrieving default instead.");
 	else if(index != 0)
-		return this->extraShaders.at(index - 1);
+		return this->extra_shaders.at(index - 1);
 	return this->getDefaultShader();
 }
 

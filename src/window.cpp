@@ -27,7 +27,7 @@ unsigned int Listener::getNumListeners()
 	return Listener::NUM_LISTENERS;
 }
 
-Window::Window(int w, int h, std::string title): w(w), h(h), title(std::move(title)), iscloserequested(false)
+Window::Window(int w, int h, std::string title): w(w), h(h), title(std::move(title)), is_close_requested(false)
 {
 	this->initSDL();
 	this->initGLEW();
@@ -62,7 +62,7 @@ int& Window::getHeightR()
 
 bool Window::isCloseRequested() const
 {
-	return this->iscloserequested;
+	return this->is_close_requested;
 }
 
 void Window::setSwapIntervalType(Window::SwapIntervalType type) const
@@ -77,13 +77,13 @@ Window::SwapIntervalType Window::getSwapIntervalType() const
 
 void Window::requestClose()
 {
-	this->iscloserequested = true;
+	this->is_close_requested = true;
 }
 
 void Window::setTitle(std::string newTitle)
 {
 	this->title = newTitle;
-	SDL_SetWindowTitle(this->wnd, newTitle.c_str());
+	SDL_SetWindowTitle(this->sdl_window_pointer, newTitle.c_str());
 }
 
 void Window::setRenderTarget() const
@@ -94,7 +94,7 @@ void Window::setRenderTarget() const
 
 SDL_Window*& Window::getWindowHandleR()
 {
-	return this->wnd;
+	return this->sdl_window_pointer;
 }
 
 void Window::clear(float r, float g, float b, float a) const
@@ -105,21 +105,21 @@ void Window::clear(float r, float g, float b, float a) const
 
 void Window::update()
 {
-	SDL_GL_SwapWindow(this->wnd);
+	SDL_GL_SwapWindow(this->sdl_window_pointer);
 	this->handleEvents();
 }
 
 void Window::registerListener(Listener& l)
 {
-	this->registeredListeners[l.getID()] = &l;
+	this->registered_listeners[l.getID()] = &l;
 }
 
 void Window::deregisterListener(Listener& l)
 {
 	// Check if it actually exists before trying to remove it.
-	if(this->registeredListeners.find(l.getID()) == this->registeredListeners.end())
+	if(this->registered_listeners.find(l.getID()) == this->registered_listeners.end())
 		return;
-	this->registeredListeners.erase(l.getID());
+	this->registered_listeners.erase(l.getID());
 }
 
 void Window::initSDL()
@@ -134,8 +134,8 @@ void Window::initSDL()
 	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 	
-	this->wnd = SDL_CreateWindow((this->title).c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, this->w, this->h, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
-	this->ctx = SDL_GL_CreateContext(this->wnd);
+	this->sdl_window_pointer = SDL_CreateWindow((this->title).c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, this->w, this->h, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+	this->sdl_gl_context_handle = SDL_GL_CreateContext(this->sdl_window_pointer);
 	this->setSwapIntervalType(Window::SwapIntervalType::IMMEDIATE_UPDATES);
 	
 	//Initialise SDL_mixer
@@ -159,8 +159,8 @@ void Window::initGLEW()
 void Window::destSDL()
 {
 	Mix_CloseAudio();
-	SDL_GL_DeleteContext(this->ctx);
-	SDL_DestroyWindow(this->wnd);
+	SDL_GL_DeleteContext(this->sdl_gl_context_handle);
+	SDL_DestroyWindow(this->sdl_window_pointer);
 	SDL_Quit();
 }
 
@@ -169,16 +169,16 @@ void Window::handleEvents()
 	SDL_Event evt;
 	while(SDL_PollEvent(&evt))
 	{
-		for(auto& listener : this->registeredListeners)
+		for(auto& listener : this->registered_listeners)
 			listener.second->handleEvents(evt);
 		
 		if(evt.type == SDL_QUIT)
-			this->iscloserequested = true;
+			this->is_close_requested = true;
 		if(evt.type == SDL_WINDOWEVENT)
 		{
 			if (evt.window.event == SDL_WINDOWEVENT_RESIZED || evt.window.event == SDL_WINDOWEVENT_SIZE_CHANGED)
 			{
-				SDL_GL_GetDrawableSize(this->wnd, &(this->w), &(this->h));
+				SDL_GL_GetDrawableSize(this->sdl_window_pointer, &(this->w), &(this->h));
 				//update the glVievwport, so that OpenGL know the new window size
 				glViewport(0, 0, this->w, this->h);
 			}

@@ -19,7 +19,7 @@ public:
 	virtual void bind(unsigned int id) const;
 private:
 	unsigned int width, height;
-	GLuint fbHandle, texHandle, depthRenderBufferHandle;
+	GLuint framebuffer_handle, texture_handle, depth_render_buffer_handle;
 };
 
 class Texture
@@ -60,9 +60,9 @@ protected:
 	unsigned char* loadTexture();
 	void deleteTexture(unsigned char* imgdata);
 	std::string filename;
-	GLuint textureID;
-	GLuint texhandle;
-	int width, height, comps;
+	GLuint texture_id;
+	GLuint texture_handle;
+	int width, height, components;
 };
 
 class NormalMap: public Texture
@@ -110,7 +110,7 @@ public:
 class CubeMap
 {
 public:
-	CubeMap(std::string rightTexture, std::string leftTexture, std::string topTexture, std::string bottomTexture, std::string backTexture, std::string frontTexture);
+	CubeMap(std::string right_texture, std::string left_texture, std::string top_texture, std::string bottom_texture, std::string back_texture, std::string front_texture);
 	CubeMap(std::string textureDirectory = "./", std::string skyboxName = "skybox", std::string imageExtension = ".png");
 	//CubeMap greenhaze(texturesDirectory + "greenhaze_rt.png", texturesDirectory + "greenhaze_lf.png", texturesDirectory + "greenhaze_up.png", texturesDirectory + "greenhaze_dn.png", texturesDirectory + "greenhaze_bk.png", texturesDirectory + "greenhaze_ft.png");
 	CubeMap(const CubeMap& copy);
@@ -121,9 +121,9 @@ public:
 	void bind(GLuint shaderProgram, unsigned int id);
 private:
 	std::vector<unsigned char*> loadTextures();
-	GLuint texHandle, textureID;
-	const std::string rightTexture, leftTexture, topTexture, bottomTexture, backTexture, frontTexture;
-	int width[6], height[6], comps[6];
+	GLuint texture_handle, texture_id;
+	const std::string right_texture, left_texture, top_texture, bottom_texture, back_texture, front_texture;
+	int width[6], height[6], components[6];
 };
 
 #endif

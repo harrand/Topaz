@@ -27,7 +27,7 @@ Mesh::Mesh(Vertex* vertices, unsigned int numVertices, unsigned int* indices, un
 
 Mesh::~Mesh()
 {
-	glDeleteVertexArrays(1, &(this->vertexArrayObject));
+	glDeleteVertexArrays(1, &(this->vertex_array_object));
 }
 
 IndexedModel Mesh::getIndexedModel() const
@@ -57,24 +57,24 @@ std::string Mesh::getFileName() const
 
 void Mesh::render(bool patches) const
 {
-	glBindVertexArray(this->vertexArrayObject);
+	glBindVertexArray(this->vertex_array_object);
 	if(patches)
 	{
 		glPatchParameteri(GL_PATCH_VERTICES, 3);
-		glDrawElements(GL_PATCHES, this->renderCount, GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_PATCHES, this->render_count, GL_UNSIGNED_INT, 0);
 	}
 	else
 	{
-		glDrawElements(GL_TRIANGLES, this->renderCount, GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, this->render_count, GL_UNSIGNED_INT, 0);
 	}
 	glBindVertexArray(0);
 }
 
 //static
-Mesh* Mesh::getFromLink(const std::string& meshLink, const std::vector<std::unique_ptr<Mesh>>& allMeshes)
+Mesh* Mesh::getFromLink(const std::string& mesh_link, const std::vector<std::unique_ptr<Mesh>>& allMeshes)
 {
 	for(auto& mesh : allMeshes)
-		if(mesh->getFileName() == meshLink)
+		if(mesh->getFileName() == mesh_link)
 			return mesh.get();
 	return nullptr;
 }
@@ -82,7 +82,7 @@ Mesh* Mesh::getFromLink(const std::string& meshLink, const std::vector<std::uniq
 //private
 void Mesh::initMesh()
 {
-	this->renderCount = this->model.indices.size();
+	this->render_count = this->model.indices.size();
 	// Our vector class is not "c-enough" (contains stuff like protected variables which C structs don't support. Therefore we use VectorSXF instead which can work with OpenGL easily.
 	// However our indices vector from model is fine as-is.
 	std::vector<VectorS3F> positions;
@@ -102,33 +102,33 @@ void Mesh::initMesh()
 	for(auto vec : this->model.tangents)
 		tangents.push_back(vec.toRaw());
 	
-	glGenVertexArrays(1, &(this->vertexArrayObject));
-	glBindVertexArray(this->vertexArrayObject);
+	glGenVertexArrays(1, &(this->vertex_array_object));
+	glBindVertexArray(this->vertex_array_object);
 	
-	glGenBuffers(static_cast<unsigned int>(BufferTypes::NUM_BUFFERS), this->vertexArrayBuffers);
+	glGenBuffers(static_cast<unsigned int>(BufferTypes::NUM_BUFFERS), this->vbo_buffers);
 	// 0 = Vertices, 1 = Texture Coordinates, 2 = Internal Normals, 3 = Indices, 4 = Tangents
 	
-	glBindBuffer(GL_ARRAY_BUFFER, this->vertexArrayBuffers[static_cast<unsigned int>(BufferTypes::POSITION)]);
+	glBindBuffer(GL_ARRAY_BUFFER, this->vbo_buffers[static_cast<unsigned int>(BufferTypes::POSITION)]);
 	glBufferData(GL_ARRAY_BUFFER, positions.size() * sizeof(positions[0]), positions.data(), GL_STATIC_DRAW);
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
 	
-	glBindBuffer(GL_ARRAY_BUFFER, this->vertexArrayBuffers[static_cast<unsigned int>(BufferTypes::TEXCOORD)]);
+	glBindBuffer(GL_ARRAY_BUFFER, this->vbo_buffers[static_cast<unsigned int>(BufferTypes::TEXCOORD)]);
 	glBufferData(GL_ARRAY_BUFFER, texcoords.size() * sizeof(texcoords[0]), texcoords.data(), GL_STATIC_DRAW);
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);
 	
-	glBindBuffer(GL_ARRAY_BUFFER, this->vertexArrayBuffers[static_cast<unsigned int>(BufferTypes::NORMAL)]);
+	glBindBuffer(GL_ARRAY_BUFFER, this->vbo_buffers[static_cast<unsigned int>(BufferTypes::NORMAL)]);
 	glBufferData(GL_ARRAY_BUFFER, normals.size() * sizeof(normals[0]), normals.data(), GL_STATIC_DRAW);
 	glEnableVertexAttribArray(2);
 	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
 	
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->vertexArrayBuffers[static_cast<unsigned int>(BufferTypes::INDEX)]);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->vbo_buffers[static_cast<unsigned int>(BufferTypes::INDEX)]);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->model.indices.size() * sizeof(this->model.indices[0]), this->model.indices.data(), GL_STATIC_DRAW);
 	glEnableVertexAttribArray(3);
 	glVertexAttribPointer(3, 3, GL_UNSIGNED_INT, GL_FALSE, 0, 0);
 	
-	glBindBuffer(GL_ARRAY_BUFFER, this->vertexArrayBuffers[static_cast<unsigned int>(BufferTypes::TANGENT)]);
+	glBindBuffer(GL_ARRAY_BUFFER, this->vbo_buffers[static_cast<unsigned int>(BufferTypes::TANGENT)]);
 	glBufferData(GL_ARRAY_BUFFER, tangents.size() * sizeof(tangents[0]), tangents.data(), GL_STATIC_DRAW);
 	glEnableVertexAttribArray(4);
 	glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 0, 0);
