@@ -102,12 +102,12 @@ Quaternion::operator Matrix4x4() const
 	return Matrix4x4(x, y, z, w);
 }
 
-Matrix4x4 Quaternion::createModelMatrix(Vector3F position, Vector3F eulerRotation, Vector3F scale)
+Matrix4x4 Quaternion::createModelMatrix(Vector3F position, Vector3F euler_rotation, Vector3F scale)
 {
-	return Matrix4x4::createTranslationMatrix(position) * static_cast<Matrix4x4>(Quaternion(eulerRotation).normalised()) * Matrix4x4::createScalingMatrix(scale);
+	return Matrix4x4::createTranslationMatrix(position) * static_cast<Matrix4x4>(Quaternion(euler_rotation).normalised()) * Matrix4x4::createScalingMatrix(scale);
 }
 
-Matrix4x4 Quaternion::createViewMatrix(Vector3F cameraPosition, Vector3F cameraEulerRotation)
+Matrix4x4 Quaternion::createViewMatrix(Vector3F camera_position, Vector3F camera_euler_rotation)
 {
-	return Quaternion::createModelMatrix(cameraPosition, cameraEulerRotation, Vector3F(1, 1, 1)).inverse();
+	return Quaternion::createModelMatrix(camera_position, camera_euler_rotation, Vector3F(1, 1, 1)).inverse();
 }

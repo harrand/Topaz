@@ -80,8 +80,8 @@ enum class KeybindType : unsigned int
 
 namespace KeyControls
 {
-	KeybindType getKeybindType(const std::string& keyBindType);
-	std::string getKeybind(MDLF& controlsDataFile, KeybindType kt);
+	KeybindType getKeybindType(const std::string& keybind_type);
+	std::string getKeybind(MDLF& controls_data_file, KeybindType kt);
 }
 
 class KeybindController
@@ -92,7 +92,7 @@ public:
 	KeybindController(KeybindController&& move) = delete;
 	KeybindController& operator=(const KeybindController& rhs) = delete;
 	~KeybindController();
-	void handleKeybinds(float secondsSinceLastFrame, std::string resources_path, std::string controls_path);
+	void handleKeybinds(float seconds_since_last_frame, std::string resources_path, std::string controls_path);
 private:
 	Player& player;
 	const Shader& shader;

@@ -113,13 +113,13 @@ void Shader::bind() const
 	glUseProgram(this->program_handle);
 }
 
-void Shader::update(const std::array<float, 16>& modelData, const std::array<float, 16>& viewData, const std::array<float, 16>& projectionData, float parallaxMapScale, float parallaxMapOffset) const
+void Shader::update(const std::array<float, 16>& model_matrix_array, const std::array<float, 16>& view_matrix_array, const std::array<float, 16>& projection_matrix_array, float parallaxmap_scale_constant, float parallaxmap_offset_constant) const
 {
-	glUniformMatrix4fv(this->uniforms[static_cast<unsigned int>(UniformTypes::MODEL)], 1, GL_TRUE, modelData.data());
-	glUniformMatrix4fv(this->uniforms[static_cast<unsigned int>(UniformTypes::VIEW)], 1, GL_TRUE, viewData.data());
-	glUniformMatrix4fv(this->uniforms[static_cast<unsigned int>(UniformTypes::PROJECTION)], 1, GL_TRUE, projectionData.data());
-	glUniform1f(this->uniforms[static_cast<unsigned int>(UniformTypes::PARALLAX_MAP_SCALE)], parallaxMapScale);
-	glUniform1f(this->uniforms[static_cast<unsigned int>(UniformTypes::PARALLAX_MAP_BIAS)], parallaxMapScale / 2.0f * (parallaxMapOffset - 1));
+	glUniformMatrix4fv(this->uniforms[static_cast<unsigned int>(UniformTypes::MODEL)], 1, GL_TRUE, model_matrix_array.data());
+	glUniformMatrix4fv(this->uniforms[static_cast<unsigned int>(UniformTypes::VIEW)], 1, GL_TRUE, view_matrix_array.data());
+	glUniformMatrix4fv(this->uniforms[static_cast<unsigned int>(UniformTypes::PROJECTION)], 1, GL_TRUE, projection_matrix_array.data());
+	glUniform1f(this->uniforms[static_cast<unsigned int>(UniformTypes::PARALLAX_MAP_SCALE)], parallaxmap_scale_constant);
+	glUniform1f(this->uniforms[static_cast<unsigned int>(UniformTypes::PARALLAX_MAP_BIAS)], parallaxmap_scale_constant / 2.0f * (parallaxmap_offset_constant - 1));
 }
 
 std::string Shader::loadShader(const std::string& filename)
@@ -145,34 +145,34 @@ std::string Shader::loadShader(const std::string& filename)
     return output;
 }
 
-void Shader::checkShaderError(GLuint shader, GLuint flag, bool isProgram, std::string errorMessage)
+void Shader::checkShaderError(GLuint shader, GLuint flag, bool is_program, std::string error_message)
 {
     GLint success = 0;
     GLchar error[1024] = {0};
 
-    if(isProgram)
+    if(is_program)
         glGetProgramiv(shader, flag, &success);
     else
         glGetShaderiv(shader, flag, &success);
 
     if(success == GL_FALSE)
     {
-        if(isProgram)
+        if(is_program)
             glGetProgramInfoLog(shader, sizeof(error), NULL, error);
         else
             glGetShaderInfoLog(shader, sizeof(error), NULL, error);
-        logutility::error(errorMessage + std::string(error));
+        logutility::error(error_message + std::string(error));
     }
 }
 
-GLuint Shader::createShader(std::string source, GLenum shaderType)
+GLuint Shader::createShader(std::string source, GLenum shader_type)
 {
 	if(source == "")
 	{
-		logutility::message("Shader Source for Type [", shaderType, "] was empty, skipping it.");
+		logutility::message("Shader Source for Type [", shader_type, "] was empty, skipping it.");
 		return 0;
 	}
-	GLuint shader = glCreateShader(shaderType);
+	GLuint shader = glCreateShader(shader_type);
 	if(shader == 0)
 	{
 		logutility::error("Fatal Error: Shader Creation failed (Perhaps out of memory?)");

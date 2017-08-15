@@ -237,18 +237,18 @@ void Commands::addObject(std::vector<std::string> args, World& world, Player& pl
 
 	Vector3F pos, rot, scale;
 		
-	std::string meshLink = dt.getResourceLink(meshName);
-	std::string textureLink = dt.getResourceLink(textureName);
+	std::string mesh_link = dt.getResourceLink(meshName);
+	std::string texture_link = dt.getResourceLink(textureName);
 	std::string normalMapLink = dt.getResourceLink(normalMapName);
 	std::string parallaxMapLink = dt.getResourceLink(parallaxMapName);
 	std::string displacementMapLink = dt.getResourceLink(displacementMapName);
 	
-	if(meshLink == "0")
+	if(mesh_link == "0")
 	{
 		logutility::warning("Nonfatal Command Error: Unknown Mesh Name '",  meshName, "'.");
 		return;
 	}
-	if(textureLink == "0")
+	if(texture_link == "0")
 	{
 		logutility::warning("Nonfatal Command Error: Unknown Texture Name '", textureName, "'.");
 		return;
@@ -267,14 +267,14 @@ void Commands::addObject(std::vector<std::string> args, World& world, Player& pl
 	scale = stringutility::vectoriseList3<float>(stringutility::deformat(scaleStr));
 		
 	std::vector<std::pair<std::string, Texture::TextureType>> textures;
-	textures.push_back(std::make_pair(textureLink, Texture::TextureType::TEXTURE));
+	textures.push_back(std::make_pair(texture_link, Texture::TextureType::TEXTURE));
 	textures.push_back(std::make_pair(normalMapLink, Texture::TextureType::NORMAL_MAP));
 	textures.push_back(std::make_pair(parallaxMapLink, Texture::TextureType::PARALLAX_MAP));
 	textures.push_back(std::make_pair(displacementMapLink, Texture::TextureType::DISPLACEMENT_MAP));
 		
-	world.addObject(Object(meshLink, textures, pos, rot, scale));
+	world.addObject(Object(mesh_link, textures, pos, rot, scale));
 	if(printResults)
-		logutility::message("Added the following to this world:\nMesh name = ", meshName, ", link = ", meshLink, ".\nTexture name = ", textureName, ", link = ", textureLink, ".\nNormalmap name = ", normalMapName, ", link = ", normalMapLink, ".\nParallaxmap name = ", parallaxMapName, ", link = ", parallaxMapLink, "\nDisplacementmap name = ", displacementMapName, ", link = ", displacementMapLink, ".\nPosition = ", stringutility::format(stringutility::devectoriseList3<float>(pos)), ".\nRotation = ", stringutility::format(stringutility::devectoriseList3<float>(rot)), ".\nScale = ", stringutility::format(stringutility::devectoriseList3<float>(scale)), ".");
+		logutility::message("Added the following to this world:\nMesh name = ", meshName, ", link = ", mesh_link, ".\nTexture name = ", textureName, ", link = ", texture_link, ".\nNormalmap name = ", normalMapName, ", link = ", normalMapLink, ".\nParallaxmap name = ", parallaxMapName, ", link = ", parallaxMapLink, "\nDisplacementmap name = ", displacementMapName, ", link = ", displacementMapLink, ".\nPosition = ", stringutility::format(stringutility::devectoriseList3<float>(pos)), ".\nRotation = ", stringutility::format(stringutility::devectoriseList3<float>(rot)), ".\nScale = ", stringutility::format(stringutility::devectoriseList3<float>(scale)), ".");
 }
 
 void Commands::addEntityObject(std::vector<std::string> args, World& world, Player& player, bool printResults)
@@ -297,18 +297,18 @@ void Commands::addEntityObject(std::vector<std::string> args, World& world, Play
 
 	Vector3F pos, rot, scale;
 		
-	std::string meshLink = dt.getResourceLink(meshName);
-	std::string textureLink = dt.getResourceLink(textureName);
+	std::string mesh_link = dt.getResourceLink(meshName);
+	std::string texture_link = dt.getResourceLink(textureName);
 	std::string normalMapLink = dt.getResourceLink(normalMapName);
 	std::string parallaxMapLink = dt.getResourceLink(parallaxMapName);
 	std::string displacementMapLink = dt.getResourceLink(displacementMapName);
 	
-	if(meshLink == "0")
+	if(mesh_link == "0")
 	{
 		logutility::warning("Nonfatal Command Error: Unknown Mesh Name '", meshName, "'.");
 		return;
 	}
-	if(textureLink == "0")
+	if(texture_link == "0")
 	{
 		logutility::warning("Nonfatal Command Error: Unknown Texture Name '", textureName, "'.");
 		return;
@@ -329,14 +329,14 @@ void Commands::addEntityObject(std::vector<std::string> args, World& world, Play
 	float mass = castutility::fromString<float>(massStr);
 	
 	std::vector<std::pair<std::string, Texture::TextureType>> textures;
-	textures.push_back(std::make_pair(textureLink, Texture::TextureType::TEXTURE));
+	textures.push_back(std::make_pair(texture_link, Texture::TextureType::TEXTURE));
 	textures.push_back(std::make_pair(normalMapLink, Texture::TextureType::NORMAL_MAP));
 	textures.push_back(std::make_pair(parallaxMapLink, Texture::TextureType::PARALLAX_MAP));
 	textures.push_back(std::make_pair(displacementMapLink, Texture::TextureType::DISPLACEMENT_MAP));
 	
-	world.addEntityObject(EntityObject(meshLink, textures, mass, pos, rot, scale));
+	world.addEntityObject(EntityObject(mesh_link, textures, mass, pos, rot, scale));
 	if(printResults)
-		logutility::message("Added the following to this world:\nMesh name = ", meshName, ", link = ", meshLink, ".\nTexture name = ", textureName, ", link = ", textureLink, ".\nNormalmap name = ", normalMapName, ", link = ", normalMapLink, ".\nParallaxmap name = ", parallaxMapName, ", link = ", parallaxMapLink, "\nDisplacementmap name = ", displacementMapName, ", link = ", displacementMapLink, ".\nMass = ", mass, ".\nPosition = ", stringutility::format(stringutility::devectoriseList3<float>(pos)), ".\nRotation = ", stringutility::format(stringutility::devectoriseList3<float>(rot)), ".\nScale = ", stringutility::format(stringutility::devectoriseList3<float>(scale)), ".");
+		logutility::message("Added the following to this world:\nMesh name = ", meshName, ", link = ", mesh_link, ".\nTexture name = ", textureName, ", link = ", texture_link, ".\nNormalmap name = ", normalMapName, ", link = ", normalMapLink, ".\nParallaxmap name = ", parallaxMapName, ", link = ", parallaxMapLink, "\nDisplacementmap name = ", displacementMapName, ", link = ", displacementMapLink, ".\nMass = ", mass, ".\nPosition = ", stringutility::format(stringutility::devectoriseList3<float>(pos)), ".\nRotation = ", stringutility::format(stringutility::devectoriseList3<float>(rot)), ".\nScale = ", stringutility::format(stringutility::devectoriseList3<float>(scale)), ".");
 }
 
 void Commands::setAlias(std::vector<std::string> args)

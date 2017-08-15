@@ -27,7 +27,7 @@ public:
 	void killLights();
 	
 	void exportWorld(const std::string& worldLink) const;
-	void update(unsigned int fps, Camera& cam, const Shader& shader, unsigned int width, unsigned int height, const std::vector<std::unique_ptr<Mesh>>& allMeshes, const std::vector<std::unique_ptr<Texture>>& allTextures, const std::vector<std::unique_ptr<NormalMap>>& allNormalMaps, const std::vector<std::unique_ptr<ParallaxMap>>& allParallaxMaps, const std::vector<std::unique_ptr<DisplacementMap>>& allDisplacementMaps);
+	void update(unsigned int fps, Camera& cam, const Shader& shader, unsigned int width, unsigned int height, const std::vector<std::unique_ptr<Mesh>>& all_meshes, const std::vector<std::unique_ptr<Texture>>& all_textures, const std::vector<std::unique_ptr<NormalMap>>& all_normalmaps, const std::vector<std::unique_ptr<ParallaxMap>>& all_parallaxmaps, const std::vector<std::unique_ptr<DisplacementMap>>& all_displacementmaps);
 		
 	std::size_t getSize() const;
 	const std::vector<Object>& getObjects() const;
@@ -47,7 +47,7 @@ public:
 	std::map<std::vector<GLuint>, BaseLight>& getLightsR();
 private:
 	static Object retrieveData(const std::string& objectName, std::string resources_path, MDLF& mdlf);
-	static EntityObject retrieveEOData(const std::string& eoName, std::string resources_path, MDLF& mdlf);
+	static EntityObject retrieveEOData(const std::string& entity_object_name, std::string resources_path, MDLF& mdlf);
 	
 	static constexpr unsigned int MAXIMUM_LIGHTS = 8;
 	

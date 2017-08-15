@@ -32,7 +32,7 @@ public:
 	Texture& operator=(const Texture& rhs) = delete;
 	
 	~Texture();
-	void bind(GLuint shaderProgram, unsigned int id);
+	void bind(GLuint shader_program_handle, unsigned int id);
 	std::string getFileName() const;
 	
 	enum class TextureType : unsigned int
@@ -47,11 +47,11 @@ public:
 	virtual TextureType getTextureType();
 	
 	template<class Tex>
-	static Tex* getFromLink(const std::string& textureLink, const std::vector<std::unique_ptr<Tex>>& allTextures)
+	static Tex* getFromLink(const std::string& texture_link, const std::vector<std::unique_ptr<Tex>>& all_textures)
 	{
-		for(auto& texture : allTextures)
+		for(auto& texture : all_textures)
 		{
-			if(texture->getFileName() == textureLink)
+			if(texture->getFileName() == texture_link)
 				return texture.get();
 		}
 		return nullptr;
@@ -73,10 +73,10 @@ public:
 	NormalMap(NormalMap&& move) = default;
 	NormalMap& operator=(const NormalMap& rhs) = delete;
 	
-	void bind(GLuint shaderProgram, unsigned int id);
+	void bind(GLuint shader_program_handle, unsigned int id);
 	TextureType getTextureType();
 	
-	//static NormalMap* getFromLink(const std::string& normalMapLink, const std::vector<std::unique_ptr<NormalMap>>& allNormalMaps);
+	//static NormalMap* getFromLink(const std::string& normalMapLink, const std::vector<std::unique_ptr<NormalMap>>& all_normalmaps);
 };
 
 class ParallaxMap: public Texture
@@ -87,10 +87,10 @@ public:
 	ParallaxMap(ParallaxMap&& move) = default;
 	ParallaxMap& operator=(const ParallaxMap& rhs) = delete;
 	
-	void bind(GLuint shaderProgram, unsigned int id);
+	void bind(GLuint shader_program_handle, unsigned int id);
 	TextureType getTextureType();
 	
-	//static ParallaxMap* getFromLink(const std::string& parallaxMapLink, const std::vector<std::unique_ptr<ParallaxMap>>& allParallaxMaps);
+	//static ParallaxMap* getFromLink(const std::string& parallaxMapLink, const std::vector<std::unique_ptr<ParallaxMap>>& all_parallaxmaps);
 };
 
 class DisplacementMap: public Texture
@@ -101,24 +101,24 @@ public:
 	DisplacementMap(DisplacementMap&& move) = default;
 	DisplacementMap& operator=(const DisplacementMap& rhs) = delete;
 	
-	void bind(GLuint shaderProgram, unsigned int id);
+	void bind(GLuint shader_program_handle, unsigned int id);
 	TextureType getTextureType();
 	
-	//static DisplacementMap* getFromLink(const std::string& DisplacementMapLink, const std::vector<std::unique_ptr<DisplacementMap>>& allDisplacementMaps);
+	//static DisplacementMap* getFromLink(const std::string& DisplacementMapLink, const std::vector<std::unique_ptr<DisplacementMap>>& all_displacementmaps);
 };
 
 class CubeMap
 {
 public:
 	CubeMap(std::string right_texture, std::string left_texture, std::string top_texture, std::string bottom_texture, std::string back_texture, std::string front_texture);
-	CubeMap(std::string textureDirectory = "./", std::string skyboxName = "skybox", std::string imageExtension = ".png");
+	CubeMap(std::string texture_directory = "./", std::string skybox_name = "skybox", std::string skybox_image_file_extension = ".png");
 	//CubeMap greenhaze(texturesDirectory + "greenhaze_rt.png", texturesDirectory + "greenhaze_lf.png", texturesDirectory + "greenhaze_up.png", texturesDirectory + "greenhaze_dn.png", texturesDirectory + "greenhaze_bk.png", texturesDirectory + "greenhaze_ft.png");
 	CubeMap(const CubeMap& copy);
 	CubeMap(CubeMap&& move);
 	CubeMap& operator=(const CubeMap& rhs) = delete;
 	~CubeMap();
 	
-	void bind(GLuint shaderProgram, unsigned int id);
+	void bind(GLuint shader_program_handle, unsigned int id);
 private:
 	std::vector<unsigned char*> loadTextures();
 	GLuint texture_handle, texture_id;

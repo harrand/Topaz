@@ -76,13 +76,13 @@ public:
 	static Matrix4x4 createRotationalXMatrix(float eulerX);
 	static Matrix4x4 createRotationalYMatrix(float eulerY);
 	static Matrix4x4 createRotationalZMatrix(float eulerZ);
-	static Matrix4x4 createRotationalMatrix(Vector3F eulerRotation);
+	static Matrix4x4 createRotationalMatrix(Vector3F euler_rotation);
 	
 	static Matrix4x4 createScalingMatrix(Vector3F scale);
 	
-	static Matrix4x4 createModelMatrix(Vector3F position, Vector3F eulerRotation, Vector3F scale);
-	static Matrix4x4 createViewMatrix(Vector3F cameraPosition, Vector3F cameraEulerRotation);
-	static Matrix4x4 createProjectionMatrix(float fov, float aspectRatio, float nearclip, float farclip);
+	static Matrix4x4 createModelMatrix(Vector3F position, Vector3F euler_rotation, Vector3F scale);
+	static Matrix4x4 createViewMatrix(Vector3F camera_position, Vector3F camera_euler_rotation);
+	static Matrix4x4 createProjectionMatrix(float fov, float aspect_ratio, float nearclip, float farclip);
 	static Matrix4x4 createProjectionMatrix(float fov, float width, float height, float nearclip, float farclip);
 private:
 	Vector4F x, y, z, w;

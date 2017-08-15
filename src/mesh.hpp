@@ -26,7 +26,7 @@ class Mesh
 {
 public:
 	Mesh(std::string filename = "./res/models/undefined.obj");
-	Mesh(Vertex* vertices, unsigned int numVertices, unsigned int* indices, unsigned int numIndices);
+	Mesh(Vertex* vertices, unsigned int number_of_vertices, unsigned int* indices, unsigned int number_of_indices);
 	Mesh(const Mesh& copy) = delete;
 	Mesh(Mesh&& move) = delete;
 	~Mesh();
@@ -38,7 +38,7 @@ public:
 	const std::vector<Vector3F>& getNormals() const;
 	std::string getFileName() const;
 	void render(bool patches) const;
-	static Mesh* getFromLink(const std::string& mesh_link, const std::vector<std::unique_ptr<Mesh>>& allMeshes);
+	static Mesh* getFromLink(const std::string& mesh_link, const std::vector<std::unique_ptr<Mesh>>& all_meshes);
 private:
 	const std::string filename;
 	IndexedModel model;

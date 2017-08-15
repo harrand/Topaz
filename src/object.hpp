@@ -39,7 +39,7 @@ public:
 	Skybox(Skybox&& move) = default;
 	Skybox& operator=(const Skybox& rhs) = default;
 	
-	void render(const Camera& cam, const Shader& shad, const std::vector<std::unique_ptr<Mesh>>& allMeshes, float width, float height);
+	void render(const Camera& cam, const Shader& shad, const std::vector<std::unique_ptr<Mesh>>& all_meshes, float width, float height);
 private:
 	std::string cube_mesh_link;
 	CubeMap& cm;

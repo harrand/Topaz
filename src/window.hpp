@@ -51,7 +51,7 @@ public:
 	SwapIntervalType getSwapIntervalType() const;
 	
 	void requestClose();
-	void setTitle(std::string newTitle);
+	void setTitle(std::string new_title);
 	void setRenderTarget() const;
 	SDL_Window*& getWindowHandleR();
 	

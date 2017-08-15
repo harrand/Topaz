@@ -64,12 +64,12 @@ void Object::render(Mesh* mesh, Texture* tex, NormalMap* nm, ParallaxMap* pm, Di
 
 Skybox::Skybox(std::string cube_mesh_link, CubeMap& cm): cube_mesh_link(cube_mesh_link), cm(cm){}
 
-void Skybox::render(const Camera& cam, const Shader& shad, const std::vector<std::unique_ptr<Mesh>>& allMeshes, float width, float height)
+void Skybox::render(const Camera& cam, const Shader& shad, const std::vector<std::unique_ptr<Mesh>>& all_meshes, float width, float height)
 {
 	shad.bind();
 	this->cm.bind(shad.getProgramHandle(), 0);
 	shad.update(Matrix4x4::createModelMatrix(cam.getPosition(), Vector3F(), Vector3F(10000, 10000, 10000)).fillData(), Matrix4x4::createViewMatrix(cam.getPosition(), cam.getRotation()).fillData(), Matrix4x4::createProjectionMatrix(1.5708, width, height, 0.1f, 20000).fillData());
 	glFrontFace(GL_CW);
-	Mesh::getFromLink(this->cube_mesh_link, allMeshes)->render(shad.hasTessellationControlShader());
+	Mesh::getFromLink(this->cube_mesh_link, all_meshes)->render(shad.hasTessellationControlShader());
 	glFrontFace(GL_CCW);
 }

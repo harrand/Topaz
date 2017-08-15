@@ -41,19 +41,19 @@ const Mix_Chunk* AudioClip::getAudioHandle() const
 
 AudioSource::AudioSource(std::string filename, Vector3F position): AudioClip(filename), position(std::move(position)){}
 
-void AudioSource::update(Player& relativeTo)
+void AudioSource::update(Player& relative_to)
 {
-	const Vector3F sourcePosition = this->position;
-	const Vector3F listenerPosition = relativeTo.getPosition();
-	const Vector3F forward = relativeTo.getCamera().getForward();
-	const Vector3F up = relativeTo.getCamera().getUp();
-	float proportionRight = (forward.cross(up).normalised().dot((sourcePosition - listenerPosition).normalised()) + 1) / 2;
-	if(sourcePosition == listenerPosition)
-		proportionRight = 0.5;
-	float right = proportionRight;
-	float left = 1 - proportionRight;
+	const Vector3F source_position = this->position;
+	const Vector3F listener_position = relative_to.getPosition();
+	const Vector3F forward = relative_to.getCamera().getForward();
+	const Vector3F up = relative_to.getCamera().getUp();
+	float proportion_right = (forward.cross(up).normalised().dot((source_position - listener_position).normalised()) + 1) / 2;
+	if(source_position == listener_position)
+		proportion_right = 0.5;
+	float right = proportion_right;
+	float left = 1 - proportion_right;
 	Mix_SetPanning(this->getChannel(), left * 255, right * 255);
-	float distance = (this->getPosition() - relativeTo.getPosition()).length() / 100;
+	float distance = (this->getPosition() - relative_to.getPosition()).length() / 100;
 	Mix_Volume(this->getChannel(), 128 / ((distance * distance) + 1));
 }
 

@@ -23,7 +23,7 @@ public:
 	std::unordered_map<std::string, std::string> retrieveParallaxMaps() const;
 	std::unordered_map<std::string, std::string> retrieveDisplacementMaps() const;
 	
-	unsigned int retrieveAllData(std::vector<std::unique_ptr<Mesh>>& allMeshes, std::vector<std::unique_ptr<Texture>>& allTextures, std::vector<std::unique_ptr<NormalMap>>& allNormalMaps, std::vector<std::unique_ptr<ParallaxMap>>& allParallaxMaps, std::vector<std::unique_ptr<DisplacementMap>>& allDisplacementMaps) const;
+	unsigned int retrieveAllData(std::vector<std::unique_ptr<Mesh>>& all_meshes, std::vector<std::unique_ptr<Texture>>& all_textures, std::vector<std::unique_ptr<NormalMap>>& all_normalmaps, std::vector<std::unique_ptr<ParallaxMap>>& all_parallaxmaps, std::vector<std::unique_ptr<DisplacementMap>>& all_displacementmaps) const;
 private:
 	const std::string datafilename;
 };

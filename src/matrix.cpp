@@ -270,45 +270,45 @@ Matrix4x4 Matrix4x4::operator-(const Matrix4x4& other) const
 Vector4F Matrix4x4::operator*(const Vector4F& other) const
 {
 	float x = 0.0f, y = 0.0f, z = 0.0f, w = 0.0f;
-	float* curRes;
-	for(unsigned int rowIter = 0; rowIter < 4; rowIter++)
+	float* current_result;
+	for(unsigned int row_iterator = 0; row_iterator < 4; row_iterator++)
 	{
 		Vector4F row;
-		switch(rowIter)
+		switch(row_iterator)
 		{
 			case 0:
 			row = this->x;
-			curRes = &x;
+			current_result = &x;
 			break;
 			case 1:
 			row = this->y;
-			curRes = &y;
+			current_result = &y;
 			break;
 			case 2:
 			row = this->z;
-			curRes = &z;
+			current_result = &z;
 			break;
 			case 3:
 			row = this->w;
-			curRes = &w;
+			current_result = &w;
 			break;
 		}
 		
-		for(unsigned int rowCounter = 0; rowCounter < 4; rowCounter++)
+		for(unsigned int row_element_iterator = 0; row_element_iterator < 4; row_element_iterator++)
 		{
-			switch(rowCounter)
+			switch(row_element_iterator)
 			{
 				case 0:
-				*curRes += row.getX() * other.getX();
+				*current_result += row.getX() * other.getX();
 				break;
 				case 1:
-				*curRes += row.getY() * other.getY();
+				*current_result += row.getY() * other.getY();
 				break;
 				case 2:
-				*curRes += row.getZ() * other.getZ();
+				*current_result += row.getZ() * other.getZ();
 				break;
 				case 3:
-				*curRes += row.getW() * other.getW();
+				*current_result += row.getW() * other.getW();
 				break;
 			}
 		}
@@ -323,10 +323,10 @@ Matrix4x4 Matrix4x4::operator*(const Matrix4x4& other) const
 	Vector4F y(0.0f, 0.0f, 0.0f, 0.0f);
 	Vector4F z(0.0f, 0.0f, 0.0f, 0.0f);
 	Vector4F w(0.0f, 0.0f, 0.0f, 0.0f);
-	for(unsigned int rowIter = 0; rowIter < 4; rowIter++)
+	for(unsigned int row_iterator = 0; row_iterator < 4; row_iterator++)
 	{
 		Vector4F row;
-		switch(rowIter)
+		switch(row_iterator)
 		{
 			case 0:
 			row = this->x;
@@ -434,9 +434,9 @@ Matrix4x4 Matrix4x4::createRotationalZMatrix(float eulerZ)
 	return Matrix4x4(Vector4F(cos(eulerZ), -sin(eulerZ), 0, 0), Vector4F(sin(eulerZ), cos(eulerZ), 0, 0), Vector4F(0, 0, 1, 0), Vector4F(0, 0, 0, 1));
 }
 
-Matrix4x4 Matrix4x4::createRotationalMatrix(Vector3F eulerRotation)
+Matrix4x4 Matrix4x4::createRotationalMatrix(Vector3F euler_rotation)
 {
-	return Matrix4x4::createRotationalZMatrix(eulerRotation.getZ()) * Matrix4x4::createRotationalYMatrix(eulerRotation.getY()) * Matrix4x4::createRotationalXMatrix(eulerRotation.getX());
+	return Matrix4x4::createRotationalZMatrix(euler_rotation.getZ()) * Matrix4x4::createRotationalYMatrix(euler_rotation.getY()) * Matrix4x4::createRotationalXMatrix(euler_rotation.getX());
 }
 
 Matrix4x4 Matrix4x4::createScalingMatrix(Vector3F scale)
@@ -444,21 +444,21 @@ Matrix4x4 Matrix4x4::createScalingMatrix(Vector3F scale)
 	return Matrix4x4(Vector4F(scale.getX(), 0, 0, 0), Vector4F(0, scale.getY(), 0, 0), Vector4F(0, 0, scale.getZ(), 0), Vector4F(0, 0, 0, 1));
 }
 
-Matrix4x4 Matrix4x4::createModelMatrix(Vector3F position, Vector3F eulerRotation, Vector3F scale)
+Matrix4x4 Matrix4x4::createModelMatrix(Vector3F position, Vector3F euler_rotation, Vector3F scale)
 {
-	return Matrix4x4::createTranslationMatrix(position) * Matrix4x4::createRotationalMatrix(eulerRotation) * Matrix4x4::createScalingMatrix(scale);
+	return Matrix4x4::createTranslationMatrix(position) * Matrix4x4::createRotationalMatrix(euler_rotation) * Matrix4x4::createScalingMatrix(scale);
 }
 
-Matrix4x4 Matrix4x4::createViewMatrix(Vector3F cameraPosition, Vector3F cameraEulerRotation)
+Matrix4x4 Matrix4x4::createViewMatrix(Vector3F camera_position, Vector3F camera_euler_rotation)
 {
-	return Matrix4x4::createModelMatrix(cameraPosition, cameraEulerRotation, Vector3F(1, 1, 1)).inverse();
+	return Matrix4x4::createModelMatrix(camera_position, camera_euler_rotation, Vector3F(1, 1, 1)).inverse();
 }
 
-Matrix4x4 Matrix4x4::createProjectionMatrix(float fov, float aspectRatio, float nearclip, float farclip)
+Matrix4x4 Matrix4x4::createProjectionMatrix(float fov, float aspect_ratio, float nearclip, float farclip)
 {
 	Vector4F x(0, 0, 0, 0), y(0, 0, 0, 0), z(0, 0, 0, 0), w(0, 0, 0, 0);
 	float thf = tan(fov / 2);
-	x.getXR() = 1/(aspectRatio * thf);
+	x.getXR() = 1/(aspect_ratio * thf);
 	y.getYR() = 1/thf;
 	z.getZR() = (farclip + nearclip)/(nearclip - farclip);
 	z.getWR() = (2 * farclip * nearclip)/(nearclip - farclip);

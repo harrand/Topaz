@@ -3,12 +3,12 @@
 
 DataTranslation::DataTranslation(std::string datafilename): datafilename(std::move(datafilename)){}
 
-std::string DataTranslation::getResourceLink(const std::string& resourceName) const
+std::string DataTranslation::getResourceLink(const std::string& resource_name) const
 {
-	return MDLF(RawFile(this->datafilename)).getTag(resourceName + ".path");
+	return MDLF(RawFile(this->datafilename)).getTag(resource_name + ".path");
 }
 
-std::string DataTranslation::getResourceName(const std::string& resourceLink) const
+std::string DataTranslation::getResourceName(const std::string& resource_link) const
 {
 	const RawFile input(this->datafilename);
 	std::vector<std::string> lines = input.getLines();
@@ -18,10 +18,10 @@ std::string DataTranslation::getResourceName(const std::string& resourceLink) co
 		if(lineSplit.size() != 0)
 		{
 			std::string tagname = lineSplit.at(0);
-			if(MDLF(input).getTag(tagname) == resourceLink)
+			if(MDLF(input).getTag(tagname) == resource_link)
 			{
-				std::string undesiredSuffix = ".path";
-				tagname.erase(tagname.find(undesiredSuffix), undesiredSuffix.length());
+				std::string undesired_suffix = ".path";
+				tagname.erase(tagname.find(undesired_suffix), undesired_suffix.length());
 				return tagname;
 			}
 		}
@@ -31,88 +31,88 @@ std::string DataTranslation::getResourceName(const std::string& resourceLink) co
 
 std::unordered_map<std::string, std::string> DataTranslation::retrieveModels() const
 {
-	std::unordered_map<std::string, std::string> modelMap;
+	std::unordered_map<std::string, std::string> model_map;
 	MDLF input(RawFile(this->datafilename));
 	for(std::string& model : input.getSequence("models"))
 	{
-		modelMap[this->getResourceLink(model)] = input.getTag(model + ".name");
+		model_map[this->getResourceLink(model)] = input.getTag(model + ".name");
 	}
-	return modelMap;
+	return model_map;
 }
 
 std::unordered_map<std::string, std::string> DataTranslation::retrieveTextures() const
 {
-	std::unordered_map<std::string, std::string> textureMap;
+	std::unordered_map<std::string, std::string> texture_map;
 	MDLF input(RawFile(this->datafilename));
 	for(const std::string& texture : input.getSequence("textures"))
 	{
-		textureMap[this->getResourceLink(texture)] = input.getTag(texture + ".name");
+		texture_map[this->getResourceLink(texture)] = input.getTag(texture + ".name");
 	}
-	return textureMap;
+	return texture_map;
 }
 
 std::unordered_map<std::string, std::string> DataTranslation::retrieveNormalMaps() const
 {
-	std::unordered_map<std::string, std::string> normalMapMap;
+	std::unordered_map<std::string, std::string> normalmap_map;
 	MDLF input(RawFile(this->datafilename));
 	for(const std::string& normalmap : input.getSequence("normalmaps"))
 	{
-		normalMapMap[this->getResourceLink(normalmap)] = input.getTag(normalmap + ".name");
+		normalmap_map[this->getResourceLink(normalmap)] = input.getTag(normalmap + ".name");
 	}
-	return normalMapMap;
+	return normalmap_map;
 }
 
 std::unordered_map<std::string, std::string> DataTranslation::retrieveParallaxMaps() const
 {
-	std::unordered_map<std::string, std::string> parallaxMapMap;
+	std::unordered_map<std::string, std::string> parallaxmap_map;
 	MDLF input(RawFile(this->datafilename));
 	for(const std::string& parallaxmap : input.getSequence("parallaxmaps"))
 	{
-		parallaxMapMap[this->getResourceLink(parallaxmap)] = input.getTag(parallaxmap + ".name");
+		parallaxmap_map[this->getResourceLink(parallaxmap)] = input.getTag(parallaxmap + ".name");
 	}
-	return parallaxMapMap;
+	return parallaxmap_map;
 }
 
 std::unordered_map<std::string, std::string> DataTranslation::retrieveDisplacementMaps() const
 {
-	std::unordered_map<std::string, std::string> displacementMapMap;
+	std::unordered_map<std::string, std::string> displacementmap_map;
 	MDLF input(RawFile(this->datafilename));
 	for(const std::string& displacementmap : input.getSequence("displacementmaps"))
 	{
-		displacementMapMap[this->getResourceLink(displacementmap)] = input.getTag(displacementmap + ".name");
+		displacementmap_map[this->getResourceLink(displacementmap)] = input.getTag(displacementmap + ".name");
 	}
-	return displacementMapMap;
+	return displacementmap_map;
 }
 
-unsigned int DataTranslation::retrieveAllData(std::vector<std::unique_ptr<Mesh>>& allMeshes, std::vector<std::unique_ptr<Texture>>& allTextures, std::vector<std::unique_ptr<NormalMap>>& allNormalMaps, std::vector<std::unique_ptr<ParallaxMap>>& allParallaxMaps, std::vector<std::unique_ptr<DisplacementMap>>& allDisplacementMaps) const
+unsigned int DataTranslation::retrieveAllData(std::vector<std::unique_ptr<Mesh>>& all_meshes, std::vector<std::unique_ptr<Texture>>& all_textures, std::vector<std::unique_ptr<NormalMap>>& all_normalmaps, std::vector<std::unique_ptr<ParallaxMap>>& all_parallaxmaps, std::vector<std::unique_ptr<DisplacementMap>>& all_displacementmaps) const
 {
 	std::unordered_map<std::string, std::string> models = this->retrieveModels(), textures = this->retrieveTextures(), normalmaps = this->retrieveNormalMaps(), parallaxmaps = this->retrieveParallaxMaps(), displacementmaps = this->retrieveDisplacementMaps();
-	unsigned int dataCount = 0;
+	unsigned int data_count = 0;
 	for(auto& it : models)
 	{
-		allMeshes.push_back(std::make_unique<Mesh>(it.first));
-		dataCount++;
+		all_meshes.push_back(std::make_unique<Mesh>(it.first));
+		data_count++;
 	}
 	for(auto& it : textures)
 	{
-		allTextures.push_back(std::make_unique<Texture>(it.first));
-		dataCount++;
+		all_textures.push_back(std::make_unique<Texture>(it.first));
+		data_count++;
 	}
 	for(auto& it : normalmaps)
 	{
-		allNormalMaps.push_back(std::make_unique<NormalMap>(it.first));
-		dataCount++;
+		all_normalmaps.push_back(std::make_unique<NormalMap>(it.first));
+		data_count++;
 	}
 	for(auto& it : parallaxmaps)
 	{
-		allParallaxMaps.push_back(std::make_unique<ParallaxMap>(it.first));
-		dataCount++;
+		all_parallaxmaps.push_back(std::make_unique<ParallaxMap>(it.first));
+		data_count++;
 	}
 	for(auto& it : displacementmaps)
 	{
-		allDisplacementMaps.push_back(std::make_unique<DisplacementMap>(it.first));
-		dataCount++;
+		all_displacementmaps.push_back(std::make_unique<DisplacementMap>(it.first));
+		data_count++;
 	}
-	return dataCount;
+	return data_count;
 }
 

@@ -146,90 +146,90 @@ bool KeyListener::catchKeyReleased(const std::string& keyname)
 	return released;
 }
 
-KeybindType KeyControls::getKeybindType(const std::string& keyBindType)
+KeybindType KeyControls::getKeybindType(const std::string& keybind_type)
 {
-	if(keyBindType == "MOVE_FORWARD")
+	if(keybind_type == "MOVE_FORWARD")
 		return KeybindType::MOVE_FORWARD;
-	else if(keyBindType == "MOVE_BACKWARD")
+	else if(keybind_type == "MOVE_BACKWARD")
 		return KeybindType::MOVE_BACKWARD;
-	else if(keyBindType == "MOVE_LEFT")
+	else if(keybind_type == "MOVE_LEFT")
 		return KeybindType::MOVE_LEFT;
-	else if(keyBindType == "MOVE_RIGHT")
+	else if(keybind_type == "MOVE_RIGHT")
 		return KeybindType::MOVE_RIGHT;
-	else if(keyBindType == "MOVE_UP")
+	else if(keybind_type == "MOVE_UP")
 		return KeybindType::MOVE_UP;
-	else if(keyBindType == "MOVE_DOWN")
+	else if(keybind_type == "MOVE_DOWN")
 		return KeybindType::MOVE_DOWN;
-	else if(keyBindType == "LOOK_UP")
+	else if(keybind_type == "LOOK_UP")
 		return KeybindType::LOOK_UP;
-	else if(keyBindType == "LOOK_DOWN")
+	else if(keybind_type == "LOOK_DOWN")
 		return KeybindType::LOOK_DOWN;
-	else if(keyBindType == "LOOK_LEFT")
+	else if(keybind_type == "LOOK_LEFT")
 		return KeybindType::LOOK_LEFT;
-	else if(keyBindType == "LOOK_RIGHT")
+	else if(keybind_type == "LOOK_RIGHT")
 		return KeybindType::LOOK_RIGHT;
-	else if(keyBindType == "TOGGLE_FULLSCREEN")
+	else if(keybind_type == "TOGGLE_FULLSCREEN")
 		return KeybindType::TOGGLE_FULLSCREEN;
-	else if(keyBindType == "INPUT_COMMAND")
+	else if(keybind_type == "INPUT_COMMAND")
 		return KeybindType::INPUT_COMMAND;
-	else if(keyBindType == "REQUEST_CLOSE")
+	else if(keybind_type == "REQUEST_CLOSE")
 		return KeybindType::REQUEST_CLOSE;
-	else if(keyBindType == "RESTART")
+	else if(keybind_type == "RESTART")
 		return KeybindType::RESTART;
-	else if(keyBindType == "ALIAS")
+	else if(keybind_type == "ALIAS")
 		return KeybindType::ALIAS;
 	else
 		return KeybindType::NIL;
 }
 
-std::string KeyControls::getKeybind(MDLF& controlsDataFile, KeybindType kt)
+std::string KeyControls::getKeybind(MDLF& controls_data_file, KeybindType kt)
 {
 	switch(kt)
 	{
 		case KeybindType::MOVE_FORWARD:
-			return controlsDataFile.getTag("MOVE_FORWARD");
+			return controls_data_file.getTag("MOVE_FORWARD");
 		break;
 		case KeybindType::MOVE_BACKWARD:
-			return controlsDataFile.getTag("MOVE_BACKWARD");
+			return controls_data_file.getTag("MOVE_BACKWARD");
 		break;
 		case KeybindType::MOVE_LEFT:
-			return controlsDataFile.getTag("MOVE_LEFT");
+			return controls_data_file.getTag("MOVE_LEFT");
 		break;
 		case KeybindType::MOVE_RIGHT:
-			return controlsDataFile.getTag("MOVE_RIGHT");
+			return controls_data_file.getTag("MOVE_RIGHT");
 		break;
 		case KeybindType::MOVE_UP:
-			return controlsDataFile.getTag("MOVE_UP");
+			return controls_data_file.getTag("MOVE_UP");
 		break;
 		case KeybindType::MOVE_DOWN:
-			return controlsDataFile.getTag("MOVE_DOWN");
+			return controls_data_file.getTag("MOVE_DOWN");
 		break;
 		case KeybindType::LOOK_UP:
-			return controlsDataFile.getTag("LOOK_UP");
+			return controls_data_file.getTag("LOOK_UP");
 		break;
 		case KeybindType::LOOK_DOWN:
-			return controlsDataFile.getTag("LOOK_DOWN");
+			return controls_data_file.getTag("LOOK_DOWN");
 		break;
 		case KeybindType::LOOK_LEFT:
-			return controlsDataFile.getTag("LOOK_LEFT");
+			return controls_data_file.getTag("LOOK_LEFT");
 		break;
 		case KeybindType::LOOK_RIGHT:
-			return controlsDataFile.getTag("LOOK_RIGHT");
+			return controls_data_file.getTag("LOOK_RIGHT");
 		break;
 		case KeybindType::TOGGLE_FULLSCREEN:
-			return controlsDataFile.getTag("TOGGLE_FULLSCREEN");
+			return controls_data_file.getTag("TOGGLE_FULLSCREEN");
 		break;
 		case KeybindType::INPUT_COMMAND:
-			return controlsDataFile.getTag("INPUT_COMMAND");
+			return controls_data_file.getTag("INPUT_COMMAND");
 		break;
 		case KeybindType::REQUEST_CLOSE:
-			return controlsDataFile.getTag("REQUEST_CLOSE");
+			return controls_data_file.getTag("REQUEST_CLOSE");
 		break;
 		case KeybindType::RESTART:
-			return controlsDataFile.getTag("RESTART");
+			return controls_data_file.getTag("RESTART");
 		break;
 		case KeybindType::ALIAS:
-			return controlsDataFile.getTag("ALIAS");
+			return controls_data_file.getTag("ALIAS");
 		break;
 		default:
 			return "0";
@@ -249,48 +249,48 @@ KeybindController::~KeybindController()
 	wnd.deregisterListener(this->kl);
 }
 
-void KeybindController::handleKeybinds(float secondsSinceLastFrame, std::string resources_path, std::string controls_path)
+void KeybindController::handleKeybinds(float seconds_since_last_frame, std::string resources_path, std::string controls_path)
 {
 	float multiplier = castutility::fromString<float>(MDLF(RawFile(resources_path)).getTag("speed"));
-	MDLF controlsDataFile = MDLF(RawFile(controls_path));
-	if(kl.isKeyPressed(KeyControls::getKeybind(controlsDataFile, KeybindType::MOVE_FORWARD)))
-		this->player.getCamera().getPositionR() += (player.getCamera().getForward() * multiplier * secondsSinceLastFrame);
-	if(kl.isKeyPressed(KeyControls::getKeybind(controlsDataFile, KeybindType::MOVE_BACKWARD)))
-		this->player.getCamera().getPositionR() += (player.getCamera().getBackward() * multiplier * secondsSinceLastFrame);
-	if(kl.isKeyPressed(KeyControls::getKeybind(controlsDataFile, KeybindType::MOVE_LEFT)))
-		this->player.getCamera().getPositionR() += (player.getCamera().getLeft() * multiplier * secondsSinceLastFrame);
-	if(kl.isKeyPressed(KeyControls::getKeybind(controlsDataFile, KeybindType::MOVE_RIGHT)))
-		this->player.getCamera().getPositionR() += (player.getCamera().getRight() * multiplier * secondsSinceLastFrame);
-	if(kl.isKeyPressed(KeyControls::getKeybind(controlsDataFile, KeybindType::MOVE_UP)))
-		this->player.getCamera().getPositionR() += (Vector3F(0, 1, 0) * multiplier * secondsSinceLastFrame);
-	if(kl.isKeyPressed(KeyControls::getKeybind(controlsDataFile, KeybindType::MOVE_DOWN)))
-		this->player.getCamera().getPositionR() += (Vector3F(0, -1, 0) * multiplier * secondsSinceLastFrame);
-	if(kl.isKeyPressed(KeyControls::getKeybind(controlsDataFile, KeybindType::LOOK_UP)))
-		this->player.getCamera().getRotationR() += (Vector3F(1.0f/360.0f, 0, 0) * multiplier * 5 * secondsSinceLastFrame);
-	if(kl.isKeyPressed(KeyControls::getKeybind(controlsDataFile, KeybindType::LOOK_DOWN)))
-		this->player.getCamera().getRotationR() += (Vector3F(-1.0f/360.0f, 0, 0) * multiplier * 5 * secondsSinceLastFrame);
-	if(kl.isKeyPressed(KeyControls::getKeybind(controlsDataFile, KeybindType::LOOK_LEFT)))
-		this->player.getCamera().getRotationR() += (Vector3F(0, -1.0f/360.0f, 0) * multiplier * 5 * secondsSinceLastFrame);
-	if(kl.isKeyPressed(KeyControls::getKeybind(controlsDataFile, KeybindType::LOOK_RIGHT)))
-		this->player.getCamera().getRotationR() += (Vector3F(0, 1.0f/360.0f, 0) * multiplier * 5 * secondsSinceLastFrame);
-	if(kl.isKeyPressed(KeyControls::getKeybind(controlsDataFile, KeybindType::TOGGLE_FULLSCREEN)))
+	MDLF controls_data_file = MDLF(RawFile(controls_path));
+	if(kl.isKeyPressed(KeyControls::getKeybind(controls_data_file, KeybindType::MOVE_FORWARD)))
+		this->player.getCamera().getPositionR() += (player.getCamera().getForward() * multiplier * seconds_since_last_frame);
+	if(kl.isKeyPressed(KeyControls::getKeybind(controls_data_file, KeybindType::MOVE_BACKWARD)))
+		this->player.getCamera().getPositionR() += (player.getCamera().getBackward() * multiplier * seconds_since_last_frame);
+	if(kl.isKeyPressed(KeyControls::getKeybind(controls_data_file, KeybindType::MOVE_LEFT)))
+		this->player.getCamera().getPositionR() += (player.getCamera().getLeft() * multiplier * seconds_since_last_frame);
+	if(kl.isKeyPressed(KeyControls::getKeybind(controls_data_file, KeybindType::MOVE_RIGHT)))
+		this->player.getCamera().getPositionR() += (player.getCamera().getRight() * multiplier * seconds_since_last_frame);
+	if(kl.isKeyPressed(KeyControls::getKeybind(controls_data_file, KeybindType::MOVE_UP)))
+		this->player.getCamera().getPositionR() += (Vector3F(0, 1, 0) * multiplier * seconds_since_last_frame);
+	if(kl.isKeyPressed(KeyControls::getKeybind(controls_data_file, KeybindType::MOVE_DOWN)))
+		this->player.getCamera().getPositionR() += (Vector3F(0, -1, 0) * multiplier * seconds_since_last_frame);
+	if(kl.isKeyPressed(KeyControls::getKeybind(controls_data_file, KeybindType::LOOK_UP)))
+		this->player.getCamera().getRotationR() += (Vector3F(1.0f/360.0f, 0, 0) * multiplier * 5 * seconds_since_last_frame);
+	if(kl.isKeyPressed(KeyControls::getKeybind(controls_data_file, KeybindType::LOOK_DOWN)))
+		this->player.getCamera().getRotationR() += (Vector3F(-1.0f/360.0f, 0, 0) * multiplier * 5 * seconds_since_last_frame);
+	if(kl.isKeyPressed(KeyControls::getKeybind(controls_data_file, KeybindType::LOOK_LEFT)))
+		this->player.getCamera().getRotationR() += (Vector3F(0, -1.0f/360.0f, 0) * multiplier * 5 * seconds_since_last_frame);
+	if(kl.isKeyPressed(KeyControls::getKeybind(controls_data_file, KeybindType::LOOK_RIGHT)))
+		this->player.getCamera().getRotationR() += (Vector3F(0, 1.0f/360.0f, 0) * multiplier * 5 * seconds_since_last_frame);
+	if(kl.isKeyPressed(KeyControls::getKeybind(controls_data_file, KeybindType::TOGGLE_FULLSCREEN)))
 		SDL_SetWindowFullscreen(this->wnd.getWindowHandleR(), !(SDL_GetWindowFlags(this->wnd.getWindowHandleR()) & SDL_WINDOW_FULLSCREEN));
 			
-	if(kl.isKeyPressed(KeyControls::getKeybind(controlsDataFile, KeybindType::INPUT_COMMAND)))
+	if(kl.isKeyPressed(KeyControls::getKeybind(controls_data_file, KeybindType::INPUT_COMMAND)))
 	{
 		std::string input;
 		std::getline(std::cin, input);
 		Commands::inputCommand(input, resources_path, world, player, shader);
 	}
-	if(kl.isKeyPressed(KeyControls::getKeybind(controlsDataFile, KeybindType::REQUEST_CLOSE)))
+	if(kl.isKeyPressed(KeyControls::getKeybind(controls_data_file, KeybindType::REQUEST_CLOSE)))
 		wnd.requestClose();
-	if(kl.isKeyPressed(KeyControls::getKeybind(controlsDataFile, KeybindType::RESTART)))
+	if(kl.isKeyPressed(KeyControls::getKeybind(controls_data_file, KeybindType::RESTART)))
 	{
 		player.getCamera().getPositionR() = this->world.getSpawnPoint();
 		player.getCamera().getRotationR() = this->world.getSpawnOrientation();
 		player.setVelocity(Vector3F());
 	}
-	if(kl.catchKeyPressed(KeyControls::getKeybind(controlsDataFile, KeybindType::ALIAS)))
+	if(kl.catchKeyPressed(KeyControls::getKeybind(controls_data_file, KeybindType::ALIAS)))
 	{
 		std::vector<std::string> alias = CommandCache::getAlias();
 		std::string cmd = "";

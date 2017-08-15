@@ -7,18 +7,18 @@ Mesh::Mesh(std::string filename): filename(std::move(filename)), model(OBJModel(
 	this->initMesh();
 }
 
-Mesh::Mesh(Vertex* vertices, unsigned int numVertices, unsigned int* indices, unsigned int numIndices)
+Mesh::Mesh(Vertex* vertices, unsigned int number_of_vertices, unsigned int* indices, unsigned int number_of_indices)
 {
 	IndexedModel model;
 	
-	for(unsigned int i = 0; i < numVertices; i++)
+	for(unsigned int i = 0; i < number_of_vertices; i++)
 	{
 		model.positions.push_back(vertices[i].position);
 		model.texcoords.push_back(vertices[i].texcoord);
 		model.normals.push_back(vertices[i].normal);
 	}
 	
-	for(unsigned int i = 0; i < numIndices; i++)
+	for(unsigned int i = 0; i < number_of_indices; i++)
 		model.indices.push_back(indices[i]);
 	
 	this->model = model;
@@ -71,9 +71,9 @@ void Mesh::render(bool patches) const
 }
 
 //static
-Mesh* Mesh::getFromLink(const std::string& mesh_link, const std::vector<std::unique_ptr<Mesh>>& allMeshes)
+Mesh* Mesh::getFromLink(const std::string& mesh_link, const std::vector<std::unique_ptr<Mesh>>& all_meshes)
 {
-	for(auto& mesh : allMeshes)
+	for(auto& mesh : all_meshes)
 		if(mesh->getFileName() == mesh_link)
 			return mesh.get();
 	return nullptr;

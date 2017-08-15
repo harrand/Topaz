@@ -80,10 +80,10 @@ void Window::requestClose()
 	this->is_close_requested = true;
 }
 
-void Window::setTitle(std::string newTitle)
+void Window::setTitle(std::string new_title)
 {
-	this->title = newTitle;
-	SDL_SetWindowTitle(this->sdl_window_pointer, newTitle.c_str());
+	this->title = new_title;
+	SDL_SetWindowTitle(this->sdl_window_pointer, new_title.c_str());
 }
 
 void Window::setRenderTarget() const

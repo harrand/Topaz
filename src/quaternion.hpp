@@ -34,8 +34,8 @@ public:
 	Quaternion operator*(const Quaternion& rhs) const;
 	explicit operator Matrix4x4() const;
 	
-	static Matrix4x4 createModelMatrix(Vector3F position, Vector3F eulerRotation, Vector3F scale);
-	static Matrix4x4 createViewMatrix(Vector3F cameraPosition, Vector3F cameraEulerRotation);
+	static Matrix4x4 createModelMatrix(Vector3F position, Vector3F euler_rotation, Vector3F scale);
+	static Matrix4x4 createViewMatrix(Vector3F camera_position, Vector3F camera_euler_rotation);
 };
 
 #endif

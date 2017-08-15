@@ -12,14 +12,14 @@ void Entity::setVelocity(Vector3F velocity)
 	this->velocity = velocity;
 }
 
-void Entity::applyForce(std::string forceName, Force f)
+void Entity::applyForce(std::string force_name, Force f)
 {
-	this->forces[forceName] = f;
+	this->forces[force_name] = f;
 }
 
-void Entity::removeForce(std::string forceName)
+void Entity::removeForce(std::string force_name)
 {
-	this->forces.erase(forceName);
+	this->forces.erase(force_name);
 }
 
 Vector3F& Entity::getPositionR()
