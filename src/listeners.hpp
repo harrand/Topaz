@@ -12,9 +12,12 @@ public:
 	MouseListener& operator=(const MouseListener& rhs) = default;
 	
 	void handleEvents(SDL_Event& evt);
+	
 	void reloadMouseDelta();
+	
 	bool isLeftClicked() const;
 	bool isRightClicked() const;
+	
 	const Vector2F& getMousePos() const;
 	Vector2F getMouseDeltaPos() const;
 private:
@@ -30,8 +33,10 @@ public:
 	MouseController(MouseController&& move) = delete;
 	MouseController& operator=(const MouseController& rhs) = delete;
 	~MouseController();
+	
 	const MouseListener& getMouseListener();
 	MouseListener& getMouseListenerR();
+	
 	virtual void handleMouse();
 private: 
 	Player& player;
@@ -49,6 +54,7 @@ public:
 	KeyListener& operator=(const KeyListener& rhs) = default;
 	
 	virtual void handleEvents(SDL_Event& evt);
+	
 	bool isKeyPressed(const std::string& keyname) const;
 	bool isKeyReleased(const std::string& keyname) const;
 	bool catchKeyPressed(const std::string& keyname);
@@ -92,6 +98,7 @@ public:
 	KeybindController(KeybindController&& move) = delete;
 	KeybindController& operator=(const KeybindController& rhs) = delete;
 	~KeybindController();
+	
 	void handleKeybinds(float seconds_since_last_frame, std::string resources_path, std::string controls_path);
 private:
 	Player& player;

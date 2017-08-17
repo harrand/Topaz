@@ -14,11 +14,12 @@ public:
 	~Command() = default;
 	
 	const std::string& getName() const;
-	std::string& getNameR();
 	const std::string& getDescription() const;
-	std::string& getDescriptionR();
 	const std::string& getUsage() const;
 	std::string& getUsageR();
+	std::string& getNameR();
+	std::string& getDescriptionR();
+	
 	std::size_t getExpectedParameterSize() const;
 	
 	virtual bool operator==(const Command& rhs) const;

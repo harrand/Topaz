@@ -11,14 +11,16 @@ public:
 	AudioClip(const AudioClip& copy);
 	AudioClip(AudioClip&& move);
 	~AudioClip();
-	
-	// Don't want two audioclips sharing the same audio_handles (because when destructor is called will crash)
 	AudioClip& operator=(const AudioClip& rhs) = delete;
 	
 	void play();
-	virtual void update(){}
+	
+	virtual void update(){};
+	
 	int getChannel() const;
+	
 	const std::string& getFileName() const;
+	
 	const Mix_Chunk* getAudioHandle() const;
 private:
 	int channel;
@@ -30,10 +32,11 @@ class AudioSource: public AudioClip
 {
 public:
 	AudioSource(std::string filename, Vector3F position);
+	
 	void update(Player& relativeTo);
+	
 	Vector3F& getPositionR();
 	const Vector3F& getPosition() const;
-	void setPosition(Vector3F position);
 private:
 	Vector3F position;
 };
@@ -48,8 +51,11 @@ public:
 	AudioMusic& operator=(const AudioMusic& rhs) = delete;
 	
 	const std::string& getFileName() const;
+	
 	Mix_Music*& getAudioHandle();
+	
 	void play(bool priority = true) const;
+	
 	void setPaused(bool pause = true);
 	void togglePaused();
 private:

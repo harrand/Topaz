@@ -34,6 +34,7 @@ public:
 		raw.y = this->getY();
 		return raw;
 	}
+	
 	inline const T& getX() const
 	{
 		return this->x;
@@ -50,14 +51,17 @@ public:
 	{
 		return this->y;
 	}
+	
 	inline virtual T length() const
 	{
 		return sqrt((this->x * this->x) + (this->y * this->y));
 	}
+	
 	inline virtual T dot(Vector2<T> rhs) const
 	{
 		return (this->x * rhs.getX()) + (this->y * rhs.getY());
 	}
+	
 	inline Vector2<T> normalised() const
 	{
 		return Vector2<T>(this->x / this->length(), this->y / this->length());
@@ -110,6 +114,7 @@ public:
 		raw.z = this->getZ();
 		return raw;
 	}
+	
 	inline const T& getZ() const
 	{
 		return this->z;
@@ -118,18 +123,22 @@ public:
 	{
 		return this->z;
 	}
+	
 	inline virtual T length() const
 	{
 		return sqrt((this->x * this->x) + (this->y * this->y) + (this->z * this->z));
 	}
+	
 	inline virtual T dot(Vector3<T> rhs) const
 	{
 		return (this->x * rhs.getX()) + (this->y * rhs.getY()) + (this->z * rhs.getZ());
 	}
+	
 	inline virtual Vector3<T> cross(Vector3<T> rhs) const
 	{
 		return Vector3<T>((this->y * rhs.getZ()) - (this->z * rhs.getY()), (this->z * rhs.getX()) - (this->x * rhs.getZ()), (this->x * rhs.getY()) - (this->y * rhs.getX()));
 	}
+	
 	inline Vector3<T> normalised() const
 	{
 		return Vector3<T>(this->x / this->length(), this->y / this->length(), this->z / this->length());
@@ -197,6 +206,7 @@ public:
 		raw.w = this->getW();
 		return raw;
 	}
+	
 	inline const T& getW() const
 	{
 		return this->w;
@@ -205,14 +215,17 @@ public:
 	{
 		return this->w;
 	}
+	
 	inline virtual T length() const
 	{
 		return sqrt((this->x * this->x) + (this->y * this->y) + (this->z * this->z) + (this->w * this->w));
 	}
+	
 	inline virtual T dot(Vector4<T> rhs) const
 	{
 		return (this->x * rhs.getX()) + (this->y * rhs.getY()) + (this->z * rhs.getZ() + (this->w * rhs.getW()));
 	}
+	
 	inline Vector4<T> normalised() const
 	{
 		return Vector4<T>(this->x / this->length(), this->y / this->length(), this->z / this->length(), this->w / this->length());

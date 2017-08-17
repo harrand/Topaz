@@ -32,12 +32,17 @@ public:
 	~Mesh();
 	Mesh& operator=(const Mesh& rhs) = delete;
 	// Don't want any of these because I only ever want one instance of mesh per model. Allowing us to copy and move instances around will be inefficient and pointless.
+	
 	IndexedModel getIndexedModel() const;
+	
 	const std::vector<Vector3F>& getPositions() const;
 	const std::vector<Vector2F>& getTexcoords() const;
 	const std::vector<Vector3F>& getNormals() const;
+	
 	std::string getFileName() const;
+	
 	void render(bool patches) const;
+	
 	static Mesh* getFromLink(const std::string& mesh_link, const std::vector<std::unique_ptr<Mesh>>& all_meshes);
 private:
 	const std::string filename;

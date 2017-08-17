@@ -9,7 +9,6 @@ public:
 	Quaternion(const Vector3F& euler_rotation);
 	Quaternion(const Vector3F& rotation_axis, float angle);
 	Quaternion(const Matrix4x4& rotation);
-	
 	Quaternion(const Quaternion& copy) = default;
 	Quaternion(Quaternion&& move) = default;
 	Quaternion& operator=(const Quaternion& rhs) = default;
@@ -26,6 +25,7 @@ public:
 	using Vector4<float>::getWR;
 	
 	Quaternion conjugate() const;
+	
 	Quaternion inverse() const;
 	
 	using Vector4<float>::length;

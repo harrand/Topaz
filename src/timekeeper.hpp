@@ -13,7 +13,9 @@ public:
 	TimeKeeper& operator=(const TimeKeeper& rhs) = default;
 	
 	void update();
+	
 	void reload();
+	
 	float getRange() const;
 	bool millisPassed(float millis) const;
 private:
@@ -31,7 +33,9 @@ public:
 	
 	void beginFrame();
 	void endFrame();
+	
 	void reset();
+	
 	float getDeltaAverage();
 	float getLastDelta() const;
 	unsigned int getFPS();

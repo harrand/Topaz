@@ -12,8 +12,10 @@ public:
 	
 	const Vector3F& getPosition() const;
 	Vector3F& getPositionR();
+	
 	const Vector3F& getColour() const;
 	Vector3F& getColourR();
+	
 	float getPower() const;
 private:
 	Vector3F pos;

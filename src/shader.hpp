@@ -24,12 +24,15 @@ public:
 	bool hasFragmentShader() const;
 	
 	GLuint getProgramHandle() const;
+	
 	void bind() const;
+	
 	void update(const std::array<float, 16>& model_matrix_array, const std::array<float, 16>& view_matrix_array, const std::array<float, 16>& projection_matrix_array, float parallaxmap_scale_constant = 0.04f, float parallaxmap_offset_constant = -0.5f) const;
 private:
 	static std::string loadShader(const std::string& filename);
 	static void checkShaderError(GLuint shader, GLuint flag, bool is_program, std::string error_message);
 	static GLuint createShader(std::string source, GLenum shader_type);
+	
 	enum class UniformTypes : unsigned int
 	{
 		MODEL = 0,

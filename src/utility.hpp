@@ -232,6 +232,7 @@ public:
 	
 	const Vector3F& getSize() const;
 	void setSize(Vector3F size);
+	
 	Force operator+(const Force& other) const;
 	Force operator-(const Force& other) const;
 	Force operator*(float rhs) const;
@@ -251,6 +252,7 @@ public:
 	Random& operator=(const Random& rhs) = default;
 	
 	const std::default_random_engine::result_type& getSeed() const;
+	
 	const std::default_random_engine& getEngine() const;
 	std::default_random_engine& getEngineR();
 	
@@ -280,6 +282,7 @@ public:
 	MersenneTwister& operator=(const MersenneTwister& rhs) = default;
 	
 	const std::mt19937::result_type& getSeed() const;
+	
 	const std::mt19937& getEngine() const;
 	std::mt19937& getEngineR();
 	

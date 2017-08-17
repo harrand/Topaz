@@ -9,17 +9,7 @@ const std::string& Command::getName() const
 	return this->name;
 }
 
-std::string& Command::getNameR()
-{
-	return this->name;
-}
-
 const std::string& Command::getDescription() const
-{
-	return this->description;
-}
-
-std::string& Command::getDescriptionR()
 {
 	return this->description;
 }
@@ -27,6 +17,16 @@ std::string& Command::getDescriptionR()
 const std::string& Command::getUsage() const
 {
 	return this->usage;
+}
+
+std::string& Command::getNameR()
+{
+	return this->name;
+}
+
+std::string& Command::getDescriptionR()
+{
+	return this->description;
 }
 
 std::string& Command::getUsageR()

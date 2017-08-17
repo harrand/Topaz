@@ -19,9 +19,9 @@ World::World(std::string filename, std::string resources_path): filename(std::mo
 	std::vector<std::string> object_list = input.getSequence("objects");
 	std::vector<std::string> entity_object_list = input.getSequence("entityobjects");
 	for(std::string object_name : object_list)
-		this->addObject(World::retrieveData(object_name, this->resources_path, input));
+		this->addObject(World::retrieveObjectData(object_name, this->resources_path, input));
 	for(std::string entity_object_name : entity_object_list)
-		this->addEntityObject(World::retrieveEOData(entity_object_name, this->resources_path, input));
+		this->addEntityObject(World::retrieveEntityObjectData(entity_object_name, this->resources_path, input));
 }
 
 World::World(const World& copy): World(copy.filename){}
@@ -298,7 +298,7 @@ std::map<std::vector<GLuint>, BaseLight>& World::getLightsR()
 	return this->base_lights;
 }
 
-Object World::retrieveData(const std::string& object_name, std::string resources_path, MDLF& mdlf)
+Object World::retrieveObjectData(const std::string& object_name, std::string resources_path, MDLF& mdlf)
 {
 	std::string mesh_name = mdlf.getTag(object_name + ".mesh");
 
@@ -320,7 +320,7 @@ Object World::retrieveData(const std::string& object_name, std::string resources
 	return Object(mesh_link, textures, stringutility::vectoriseList3<float>(stringutility::deformat(position_string)), stringutility::vectoriseList3<float>(stringutility::deformat(rotation_string)), stringutility::vectoriseList3<float>(stringutility::deformat(scale_string)));
 }
 
-EntityObject World::retrieveEOData(const std::string& entity_object_name, std::string resources_path, MDLF& mdlf)
+EntityObject World::retrieveEntityObjectData(const std::string& entity_object_name, std::string resources_path, MDLF& mdlf)
 {
 	std::string mesh_name = mdlf.getTag(entity_object_name + ".mesh");
 	std::string mass_string = mdlf.getTag(entity_object_name + ".mass");

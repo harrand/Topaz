@@ -74,6 +74,21 @@ const Shader& Engine::getDefaultShader() const
 	return this->default_shader;
 }
 
+Player& Engine::getPlayerR()
+{
+	return this->player;
+}
+
+Window& Engine::getWindowR()
+{
+	return this->wnd;
+}
+
+World& Engine::getWorldR()
+{
+	return this->world;
+}
+
 const std::vector<std::unique_ptr<Mesh>>& Engine::getMeshes() const
 {
 	return this->meshes;
@@ -111,9 +126,4 @@ const Shader& Engine::getShader(std::size_t index) const
 unsigned int Engine::getFPS() const
 {
 	return this->fps;
-}
-
-World& Engine::getWorldR()
-{
-	return this->world;
 }

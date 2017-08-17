@@ -24,6 +24,10 @@ public:
 	const World& getWorld() const;
 	const Shader& getDefaultShader() const;
 	
+	Player& getPlayerR();
+	Window& getWindowR();
+	World& getWorldR();
+	
 	const std::vector<std::unique_ptr<Mesh>>& getMeshes() const;
 	const std::vector<std::unique_ptr<Texture>>& getTextures() const;
 	const std::vector<std::unique_ptr<NormalMap>>& getNormalMaps() const;
@@ -31,9 +35,8 @@ public:
 	const std::vector<std::unique_ptr<DisplacementMap>>& getDisplacementMaps() const;
 	
 	const Shader& getShader(std::size_t index) const;
-	unsigned int getFPS() const;
 	
-	World& getWorldR();
+	unsigned int getFPS() const;
 private:
 	TimeKeeper keeper;
 	TimeProfiler profiler;

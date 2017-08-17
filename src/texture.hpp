@@ -16,6 +16,7 @@ public:
 	FrameBuffer& operator=(const FrameBuffer& rhs) = default;
 	
 	virtual void setRenderTarget() const;
+	
 	virtual void bind(unsigned int id) const;
 private:
 	unsigned int width, height;
@@ -30,9 +31,10 @@ public:
 	Texture(const Texture& copy);
 	Texture(Texture&& move);
 	Texture& operator=(const Texture& rhs) = delete;
-	
 	~Texture();
+	
 	void bind(GLuint shader_program_handle, unsigned int id);
+	
 	std::string getFileName() const;
 	
 	enum class TextureType : unsigned int
@@ -59,6 +61,7 @@ public:
 protected:
 	unsigned char* loadTexture();
 	void deleteTexture(unsigned char* imgdata);
+	
 	std::string filename;
 	GLuint texture_id;
 	GLuint texture_handle;
@@ -74,9 +77,8 @@ public:
 	NormalMap& operator=(const NormalMap& rhs) = delete;
 	
 	void bind(GLuint shader_program_handle, unsigned int id);
-	TextureType getTextureType();
 	
-	//static NormalMap* getFromLink(const std::string& normalMapLink, const std::vector<std::unique_ptr<NormalMap>>& all_normalmaps);
+	TextureType getTextureType();
 };
 
 class ParallaxMap: public Texture
@@ -88,6 +90,7 @@ public:
 	ParallaxMap& operator=(const ParallaxMap& rhs) = delete;
 	
 	void bind(GLuint shader_program_handle, unsigned int id);
+	
 	TextureType getTextureType();
 	
 	//static ParallaxMap* getFromLink(const std::string& parallaxMapLink, const std::vector<std::unique_ptr<ParallaxMap>>& all_parallaxmaps);

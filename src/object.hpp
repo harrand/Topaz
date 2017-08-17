@@ -22,6 +22,7 @@ public:
 	Vector3F& getScaleR();
 	
 	const std::string& getMeshLink() const;
+	
 	const std::vector<std::pair<std::string, Texture::TextureType>> getTextures() const;
 	
 	virtual void render(Mesh* mesh, Texture* tex, NormalMap* nm, ParallaxMap* pm, DisplacementMap* dm, const Camera& cam, const Shader& shad, float width, float height) const;

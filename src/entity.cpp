@@ -2,6 +2,11 @@
 
 Entity::Entity(float mass, Vector3F position, Vector3F velocity, std::unordered_map<std::string, Force> forces): mass(mass), velocity(std::move(velocity)), forces(std::move(forces)), position(std::move(position)){}
 
+float Entity::getMass() const
+{
+	return this->mass;
+}
+
 void Entity::setPosition(Vector3F position)
 {
 	this->position = position;
@@ -32,11 +37,6 @@ const Vector3F& Entity::getPosition() const
 	return this->position;
 }
 
-float Entity::getMass() const
-{
-	return this->mass;
-}
-
 const Vector3F& Entity::getVelocity() const
 {
 	return this->velocity;
@@ -58,6 +58,11 @@ const Vector3F Entity::getAcceleration() const
 }
 
 const std::unordered_map<std::string, Force>& Entity::getForces() const
+{
+	return this->forces;
+}
+
+std::unordered_map<std::string, Force>& Entity::getForcesR()
 {
 	return this->forces;
 }

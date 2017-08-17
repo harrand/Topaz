@@ -14,7 +14,7 @@ int main()
 	Engine engine(player, sdl_window_pointer, "../../../res/runtime/properties.mdl");
 	
 	unsigned int seconds = castutility::fromString<unsigned int>(engine.getResources().getTag("played"));
-	std::size_t shader_id = 0;
+	constexpr std::size_t shader_id = 0;
 	
 	logutility::message("Initialising key controller...");
 	KeybindController kc(player, engine.getShader(shader_id), engine.getWorldR(), sdl_window_pointer);

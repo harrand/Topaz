@@ -17,7 +17,9 @@ public:
 	~Listener();
 	
 	virtual void handleEvents(SDL_Event& evt) = 0;
+	
 	unsigned int getID() const;
+	
 	static unsigned int getNumListeners();
 private:
 	static unsigned int NUM_LISTENERS;
@@ -45,22 +47,26 @@ public:
 	int getHeight() const;
 	int& getWidthR();
 	int& getHeightR();
+	
 	bool isCloseRequested() const;
 	
 	void setSwapIntervalType(SwapIntervalType type) const;
 	SwapIntervalType getSwapIntervalType() const;
 	
 	void requestClose();
+	
 	void setTitle(std::string new_title);
+	
 	void setRenderTarget() const;
+	
 	SDL_Window*& getWindowHandleR();
 	
 	void clear(float r = 1.0f, float g = 1.0f, float b = 1.0f, float a = 1.0f) const;
+	
 	void update();
 	
 	void registerListener(Listener& l);
 	void deregisterListener(Listener& l);
-	
 private:
 	void initSDL();
 	void initGLEW();

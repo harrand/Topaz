@@ -15,6 +15,7 @@ public:
 	Vector2F getRowY() const;
 	Vector2F& getRowXR();
 	Vector2F& getRowYR();
+	
 	float determinant() const;
 private:
 	Vector2F x, y;
@@ -34,6 +35,7 @@ public:
 	Vector3F& getRowXR();
 	Vector3F& getRowYR();
 	Vector3F& getRowZR();
+	
 	float determinant() const;
 private:
 	Vector3F x, y, z;
@@ -48,19 +50,23 @@ public:
 	Matrix4x4& operator=(const Matrix4x4& rhs) = default;
 	
 	static Matrix4x4 identity();
+	
 	Vector4F getRowX() const;
 	Vector4F getRowY() const;
 	Vector4F getRowZ() const;
 	Vector4F getRowW() const;
+	
 	Vector4F& getRowXR();
 	Vector4F& getRowYR();
 	Vector4F& getRowZR();
 	Vector4F& getRowWR();
 	
 	Matrix4x4 transposed() const;
+	
 	Matrix4x4 washed(float min = 0.005f, float max = 99999.0f) const;
 	
 	std::array<float, 16> fillData() const;
+	
 	Matrix3x3 subMatrix(float iterI, float iterJ) const;
 	
 	Matrix4x4 operator+(const Matrix4x4& other) const;
@@ -69,15 +75,14 @@ public:
 	Matrix4x4 operator*(const Matrix4x4& other) const;
 	
 	float determinant() const;
+	
 	Matrix4x4 inverse() const;
 	
 	static Matrix4x4 createTranslationMatrix(Vector3F position);
-	
 	static Matrix4x4 createRotationalXMatrix(float eulerX);
 	static Matrix4x4 createRotationalYMatrix(float eulerY);
 	static Matrix4x4 createRotationalZMatrix(float eulerZ);
 	static Matrix4x4 createRotationalMatrix(Vector3F euler_rotation);
-	
 	static Matrix4x4 createScalingMatrix(Vector3F scale);
 	
 	static Matrix4x4 createModelMatrix(Vector3F position, Vector3F euler_rotation, Vector3F scale);
