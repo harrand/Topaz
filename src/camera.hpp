@@ -14,7 +14,6 @@ public:
 	const Vector3F& getRotation() const;
 	Vector3F& getPositionR();
 	Vector3F& getRotationR();
-	
 	Vector3F getForward() const;
 	Vector3F getBackward() const;
 	Vector3F getUp() const;

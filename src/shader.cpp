@@ -36,12 +36,12 @@ Shader::Shader(std::string filename): filename(std::move(filename))
 	this->uniforms[static_cast<unsigned int>(UniformTypes::PROJECTION)] = glGetUniformLocation(this->program_handle, "p");
 	this->uniforms[static_cast<unsigned int>(UniformTypes::PARALLAX_MAP_SCALE)] = glGetUniformLocation(this->program_handle, "parallaxMultiplier");
 	this->uniforms[static_cast<unsigned int>(UniformTypes::PARALLAX_MAP_BIAS)] = glGetUniformLocation(this->program_handle, "parallaxBias");
-	logutility::message("Shader with link '", this->filename, "':");
-	logutility::message("\tHas Vertex Shader: ", this->hasVertexShader());
-	logutility::message("\tHas Tessellation Control Shader: ", this->hasTessellationControlShader());
-	logutility::message("\tHas Tessellation Evaluation Shader: ", this->hasTessellationEvaluationShader());
-	logutility::message("\tHas Geometry Shader: ", this->hasGeometryShader());
-	logutility::message("\tHas Fragment Shader: ", this->hasFragmentShader());
+	tz::util::log::message("Shader with link '", this->filename, "':");
+	tz::util::log::message("\tHas Vertex Shader: ", this->hasVertexShader());
+	tz::util::log::message("\tHas Tessellation Control Shader: ", this->hasTessellationControlShader());
+	tz::util::log::message("\tHas Tessellation Evaluation Shader: ", this->hasTessellationEvaluationShader());
+	tz::util::log::message("\tHas Geometry Shader: ", this->hasGeometryShader());
+	tz::util::log::message("\tHas Fragment Shader: ", this->hasFragmentShader());
 }
 
 Shader::Shader(const Shader& copy): Shader(copy.filename){}
@@ -140,7 +140,7 @@ std::string Shader::loadShader(const std::string& filename)
     }
     else if(output != "")
     {
-		logutility::error("Unable to load shader '" + filename + "' with source '", output, "'");
+		tz::util::log::error("Unable to load shader '" + filename + "' with source '", output, "'");
     }
     return output;
 }
@@ -161,7 +161,7 @@ void Shader::checkShaderError(GLuint shader, GLuint flag, bool is_program, std::
             glGetProgramInfoLog(shader, sizeof(error), NULL, error);
         else
             glGetShaderInfoLog(shader, sizeof(error), NULL, error);
-        logutility::error(error_message + std::string(error));
+        tz::util::log::error(error_message + std::string(error));
     }
 }
 
@@ -169,13 +169,13 @@ GLuint Shader::createShader(std::string source, GLenum shader_type)
 {
 	if(source == "")
 	{
-		logutility::message("Shader Source for Type [", shader_type, "] was empty, skipping it.");
+		tz::util::log::message("Shader Source for Type [", shader_type, "] was empty, skipping it.");
 		return 0;
 	}
 	GLuint shader = glCreateShader(shader_type);
 	if(shader == 0)
 	{
-		logutility::error("Fatal Error: Shader Creation failed (Perhaps out of memory?)");
+		tz::util::log::error("Fatal Error: Shader Creation failed (Perhaps out of memory?)");
 		return 0;
 	}
 	

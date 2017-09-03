@@ -124,7 +124,7 @@ void Window::deregisterListener(Listener& l)
 
 void Window::initSDL()
 {
-	SDL_Init(SDL_INIT_EVERYTHING);
+	//SDL_Init(SDL_INIT_EVERYTHING);
 	
 	SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
 	SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
@@ -137,18 +137,22 @@ void Window::initSDL()
 	this->sdl_window_pointer = SDL_CreateWindow((this->title).c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, this->w, this->h, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
 	this->sdl_gl_context_handle = SDL_GL_CreateContext(this->sdl_window_pointer);
 	this->setSwapIntervalType(Window::SwapIntervalType::IMMEDIATE_UPDATES);
-	
+	tz::graphics::has_context = true;
+	if(!tz::graphics::initialised)
+		tz::graphics::initialise();
 	//Initialise SDL_mixer
-	Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 2, 4096);
+	//Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 2, 4096);
 }
 
 void Window::initGLEW()
 {
+	/*
 	GLenum status = glewInit();
 	if(status != GLEW_OK)
 	{
 		this->title = "Fatal Error: GLEW Initialisation Failed";
 	}
+	*/
 	
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_DEPTH_CLAMP);
@@ -158,10 +162,10 @@ void Window::initGLEW()
 
 void Window::destSDL()
 {
-	Mix_CloseAudio();
+	//Mix_CloseAudio();
 	SDL_GL_DeleteContext(this->sdl_gl_context_handle);
 	SDL_DestroyWindow(this->sdl_window_pointer);
-	SDL_Quit();
+	//SDL_Quit();
 }
 
 void Window::handleEvents()

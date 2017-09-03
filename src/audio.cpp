@@ -1,5 +1,17 @@
 #include "audio.hpp"
 
+void tz::audio::initialise()
+{
+	Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 2, 4096);
+	tz::util::log::message("Initialised tz::audio via SDL_Mixer");
+}
+
+void tz::audio::terminate()
+{
+	Mix_CloseAudio();
+	tz::util::log::message("Terminated tz::audio via SDL_Mixer");
+}
+
 AudioClip::AudioClip(std::string filename): filename(std::move(filename))
 {
 	this->audio_handle = Mix_LoadWAV(this->filename.c_str());
@@ -21,6 +33,7 @@ AudioClip::~AudioClip()
 
 void AudioClip::play()
 {
+	// -1 as channel argument just means that use any old free channel.
 	this->channel = Mix_PlayChannel(-1, this->audio_handle, 0);
 }
 
@@ -47,13 +60,15 @@ void AudioSource::update(Player& relative_to)
 	const Vector3F listener_position = relative_to.getPosition();
 	const Vector3F forward = relative_to.getCamera().getForward();
 	const Vector3F up = relative_to.getCamera().getUp();
-	float proportion_right = (forward.cross(up).normalised().dot((source_position - listener_position).normalised()) + 1) / 2;
+	float proportion_right = (forward.cross(up).normalised().dot((source_position - listener_position).normalised()) + 1) / 2;	//Get how strongly in the right that the audio source is at
 	if(source_position == listener_position)
 		proportion_right = 0.5;
 	float right = proportion_right;
 	float left = 1 - proportion_right;
+	// Split stereo sound such that it reflects where the audio is relative to the player.
 	Mix_SetPanning(this->getChannel(), left * 255, right * 255);
 	float distance = (this->getPosition() - relative_to.getPosition()).length() / 100;
+	// Attenuate audio of course
 	Mix_Volume(this->getChannel(), 128 / ((distance * distance) + 1));
 }
 

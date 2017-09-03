@@ -5,6 +5,12 @@
 #include "timekeeper.hpp"
 #include "player.hpp"
 
+namespace tz
+{
+	void initialise();
+	void terminate();
+}
+
 class Engine
 {
 public:

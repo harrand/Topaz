@@ -1,11 +1,30 @@
 #include "engine.hpp"
 
+void tz::initialise()
+{
+	tz::util::log::message("Initialising Topaz...");
+	SDL_Init(SDL_INIT_EVERYTHING);
+	tz::util::log::message("Initialised SDL2.");
+	tz::audio::initialise();
+	tz::util::log::message("Initialised Topaz. Ready to receive OpenGL context...");
+}
+
+void tz::terminate()
+{
+	tz::util::log::message("Terminating Topaz...");
+	tz::graphics::terminate();
+	tz::audio::terminate();
+	SDL_Quit();
+	tz::util::log::message("Terminated SDL2.");
+	tz::util::log::message("Terminated Topaz.");
+}
+
 Engine::Engine(Player& player, Window& wnd, std::string properties_path, unsigned int initial_fps): properties(RawFile(properties_path)), resources(RawFile(this->properties.getTag("resources"))), default_shader(this->properties.getTag("default_shader")), player(player), wnd(wnd), world(this->properties.getTag("default_world"), this->properties.getTag("resources")), fps(initial_fps)
 {
 	this->player.setPosition(this->world.getSpawnPoint());
-	logutility::message("Set player position to world spawn.");
-	logutility::message("Loading assets from '", this->properties.getTag("resources"), "'...");
-	logutility::message("Loaded ", DataTranslation(this->properties.getTag("resources")).retrieveAllData(this->meshes, this->textures, this->normal_maps, this->parallax_maps, this->displacement_maps), " assets.");
+	tz::util::log::message("Set player position to world spawn.");
+	tz::util::log::message("Loading assets from '", this->properties.getTag("resources"), "'...");
+	tz::util::log::message("Loaded ", DataTranslation(this->properties.getTag("resources")).retrieveAllData(this->meshes, this->textures, this->normal_maps, this->parallax_maps, this->displacement_maps), " assets.");
 	this->world.addEntity(this->player);
 	for(std::string shaderPath : this->properties.getSequence("extra_shaders"))
 		this->extra_shaders.push_back(Shader(shaderPath));
@@ -31,7 +50,7 @@ void Engine::update(std::size_t shader_index)
 	
 	GLenum error;
 		if((error = glGetError()) != GL_NO_ERROR)
-			logutility::error("OpenGL Error: ", error, "\n");
+			tz::util::log::error("OpenGL Error: ", error, "\n");
 }
 
 const TimeKeeper& Engine::getTimeKeeper() const
@@ -117,7 +136,7 @@ const std::vector<std::unique_ptr<DisplacementMap>>& Engine::getDisplacementMaps
 const Shader& Engine::getShader(std::size_t index) const
 {
 	if(index > this->extra_shaders.size())
-		logutility::error("Could not retrieve shader index ", index, ", retrieving default instead.");
+		tz::util::log::error("Could not retrieve shader index ", index, ", retrieving default instead.");
 	else if(index != 0)
 		return this->extra_shaders.at(index - 1);
 	return this->getDefaultShader();

@@ -85,13 +85,13 @@ void Mesh::initMesh()
 	this->render_count = this->model.indices.size();
 	// Our vector class is not "c-enough" (contains stuff like protected variables which C structs don't support. Therefore we use VectorSXF instead which can work with OpenGL easily.
 	// However our indices vector from model is fine as-is.
-	std::vector<VectorS3F> positions;
+	std::vector<Vector3POD> positions;
 	positions.reserve(this->model.positions.size());
-    std::vector<VectorS2F> texcoords;
+    std::vector<Vector2POD> texcoords;
 	texcoords.reserve(this->model.texcoords.size());
-    std::vector<VectorS3F> normals;
+    std::vector<Vector3POD> normals;
 	normals.reserve(this->model.normals.size());
-	std::vector<VectorS3F> tangents;
+	std::vector<Vector3POD> tangents;
 	tangents.reserve(this->model.tangents.size());
 	for(auto vec : this->model.positions)
 		positions.push_back(vec.toRaw());

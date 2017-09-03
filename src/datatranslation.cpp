@@ -14,7 +14,7 @@ std::string DataTranslation::getResourceName(const std::string& resource_link) c
 	std::vector<std::string> lines = input.getLines();
 	for(std::string& line : lines)
 	{
-		std::vector<std::string> lineSplit = stringutility::splitString(line, ':');
+		std::vector<std::string> lineSplit = tz::util::string::splitString(line, ':');
 		if(lineSplit.size() != 0)
 		{
 			std::string tagname = lineSplit.at(0);

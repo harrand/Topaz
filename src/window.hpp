@@ -1,11 +1,9 @@
 #ifndef WINDOW_HPP
 #define WINDOW_HPP
-#ifndef GLEW_STATIC
-#define GLEW_STATIC
-#endif
 #include <string>
 #include <unordered_map>
 #include "SDL.h"
+#include "utility.hpp"
 
 class Listener
 {

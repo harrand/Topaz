@@ -3,17 +3,17 @@
 #include <cmath>
 #include <vector>
 
-struct VectorS2F
+struct Vector2POD
 {
 	float x, y;
 };
 
-struct VectorS3F
+struct Vector3POD
 {
 	float x, y, z;
 };
 
-struct VectorS4F
+struct Vector4POD
 {
 	float x, y, z, w;
 };
@@ -27,9 +27,9 @@ public:
 	inline Vector2<T>(Vector2<T>&& move) = default;
 	inline Vector2<T>& operator=(const Vector2<T>& rhs) = default;
 	
-	inline VectorS2F toRaw() const
+	inline Vector2POD toRaw() const
 	{
-		VectorS2F raw;
+		Vector2POD raw;
 		raw.x = this->getX();
 		raw.y = this->getY();
 		return raw;
@@ -106,9 +106,9 @@ public:
 	inline Vector3<T>(Vector3<T>&& move) = default;
 	inline Vector3<T>& operator=(const Vector3<T>& rhs) = default;
 	
-	inline VectorS3F toRaw() const
+	inline Vector3POD toRaw() const
 	{
-		VectorS3F raw;
+		Vector3POD raw;
 		raw.x = this->getX();
 		raw.y = this->getY();
 		raw.z = this->getZ();
@@ -197,9 +197,9 @@ public:
 	inline Vector4<T>(Vector4&& move) = default;
 	inline Vector4<T>& operator=(const Vector4<T>& rhs) = default;
 	
-	inline VectorS4F toRaw() const
+	inline Vector4POD toRaw() const
 	{
-		VectorS4F raw;
+		Vector4POD raw;
 		raw.x = this->getX();
 		raw.y = this->getY();
 		raw.z = this->getZ();

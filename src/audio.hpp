@@ -4,6 +4,15 @@
 #include "SDL_mixer.h"
 #include "player.hpp"
 
+namespace tz
+{
+	namespace audio
+	{
+		void initialise();
+		void terminate();
+	}
+}
+
 class AudioClip
 {
 public:
@@ -14,13 +23,9 @@ public:
 	AudioClip& operator=(const AudioClip& rhs) = delete;
 	
 	void play();
-	
 	virtual void update(){};
-	
 	int getChannel() const;
-	
 	const std::string& getFileName() const;
-	
 	const Mix_Chunk* getAudioHandle() const;
 private:
 	int channel;
@@ -32,9 +37,7 @@ class AudioSource: public AudioClip
 {
 public:
 	AudioSource(std::string filename, Vector3F position);
-	
 	void update(Player& relativeTo);
-	
 	Vector3F& getPositionR();
 	const Vector3F& getPosition() const;
 private:
@@ -51,11 +54,8 @@ public:
 	AudioMusic& operator=(const AudioMusic& rhs) = delete;
 	
 	const std::string& getFileName() const;
-	
 	Mix_Music*& getAudioHandle();
-	
 	void play(bool priority = true) const;
-	
 	void setPaused(bool pause = true);
 	void togglePaused();
 private:

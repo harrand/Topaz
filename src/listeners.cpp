@@ -251,7 +251,7 @@ KeybindController::~KeybindController()
 
 void KeybindController::handleKeybinds(float seconds_since_last_frame, std::string resources_path, std::string controls_path)
 {
-	float multiplier = castutility::fromString<float>(MDLF(RawFile(resources_path)).getTag("speed"));
+	float multiplier = tz::util::cast::fromString<float>(MDLF(RawFile(resources_path)).getTag("speed"));
 	MDLF controls_data_file = MDLF(RawFile(controls_path));
 	if(kl.isKeyPressed(KeyControls::getKeybind(controls_data_file, KeybindType::MOVE_FORWARD)))
 		this->player.getCamera().getPositionR() += (player.getCamera().getForward() * multiplier * seconds_since_last_frame);
