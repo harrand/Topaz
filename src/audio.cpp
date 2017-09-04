@@ -3,13 +3,13 @@
 void tz::audio::initialise()
 {
 	Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 2, 4096);
-	tz::util::log::message("Initialised tz::audio via SDL_Mixer");
+	tz::util::log::message("Initialised tz::audio via SDL_Mixer.");
 }
 
 void tz::audio::terminate()
 {
 	Mix_CloseAudio();
-	tz::util::log::message("Terminated tz::audio via SDL_Mixer");
+	tz::util::log::message("Terminated tz::audio via SDL_Mixer.");
 }
 
 AudioClip::AudioClip(std::string filename): filename(std::move(filename))
