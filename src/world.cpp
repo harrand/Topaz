@@ -159,7 +159,7 @@ void World::exportWorld(const std::string& worldLink) const
 	output.addSequence("entityobjects", entity_object_list);
 }
 
-void World::update(unsigned int fps, Camera& cam, const Shader& shader, unsigned int width, unsigned int height, const std::vector<std::unique_ptr<Mesh>>& all_meshes, const std::vector<std::unique_ptr<Texture>>& all_textures, const std::vector<std::unique_ptr<NormalMap>>& all_normalmaps, const std::vector<std::unique_ptr<ParallaxMap>>& all_parallaxmaps, const std::vector<std::unique_ptr<DisplacementMap>>& all_displacementmaps)
+void World::render(unsigned int fps, Camera& cam, const Shader& shader, unsigned int width, unsigned int height, const std::vector<std::unique_ptr<Mesh>>& all_meshes, const std::vector<std::unique_ptr<Texture>>& all_textures, const std::vector<std::unique_ptr<NormalMap>>& all_normalmaps, const std::vector<std::unique_ptr<ParallaxMap>>& all_parallaxmaps, const std::vector<std::unique_ptr<DisplacementMap>>& all_displacementmaps)
 {
 	for(auto& obj : this->objects)
 	{
@@ -194,7 +194,6 @@ void World::update(unsigned int fps, Camera& cam, const Shader& shader, unsigned
 				dm = Texture::getFromLink<DisplacementMap>(texture.first, all_displacementmaps);
 		}
 		eo.render(mesh, tex, nm, pm, dm, cam, shader, width, height);
-		eo.updateMotion(fps);
 	}	
 	for(auto& ent : this->entities)
 		ent.updateMotion(fps);
@@ -216,6 +215,14 @@ void World::update(unsigned int fps, Camera& cam, const Shader& shader, unsigned
 	if(this->hasSkybox())
 			this->skybox->render(cam, this->skyboxShader.value_or(shader), all_meshes, width, height);
 	*/
+}
+
+void World::update(unsigned int tps)
+{
+	for(auto& eo : this->entity_objects)
+		eo.updateMotion(tps);
+	for(auto& ent : this->entities)
+		ent.updateMotion(tps);
 }
 
 std::size_t World::getSize() const

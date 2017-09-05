@@ -14,7 +14,7 @@ namespace tz
 class Engine
 {
 public:
-	Engine(Player& player, Window& wnd, std::string properties_path = "properties.mdl", unsigned int initial_fps = 60);
+	Engine(Player& player, Window& wnd, std::string properties_path = "properties.mdl", unsigned int initial_fps = 60, unsigned int tps = 30);
 	~Engine(){};
 	
 	void update(std::size_t shader_index);
@@ -43,6 +43,7 @@ public:
 	const Shader& getShader(std::size_t index) const;
 	
 	unsigned int getFPS() const;
+	unsigned int getTPS() const;
 private:
 	TimeKeeper keeper;
 	TimeProfiler profiler;
@@ -59,6 +60,7 @@ private:
 	std::vector<std::unique_ptr<DisplacementMap>> displacement_maps;
 	std::vector<Shader> extra_shaders;
 	unsigned int fps;
+	const unsigned int tps;
 };
 
 #endif

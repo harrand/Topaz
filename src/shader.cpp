@@ -16,7 +16,7 @@ Shader::Shader(std::string filename): filename(std::move(filename))
 	this->shaders[3] = Shader::createShader(Shader::loadShader(this->filename + ".geometry.glsl"), GL_GEOMETRY_SHADER);
 	// Fragment Shader
 	this->shaders[4] = Shader::createShader(Shader::loadShader(this->filename + ".fragment.glsl"), GL_FRAGMENT_SHADER);
-	for(std::size_t i = 0; i < MAX_SHADERS; i++)
+	for(std::size_t i = 0; i < tz::graphics::maximum_shaders; i++)
 		if(this->shaders[i] != 0)
 			glAttachShader(this->program_handle, this->shaders[i]);
 	
@@ -48,7 +48,7 @@ Shader::Shader(const Shader& copy): Shader(copy.filename){}
 
 Shader::Shader(Shader&& move): filename(move.filename), program_handle(move.program_handle)
 {
-	for(std::size_t i = 0; i < MAX_SHADERS; i++)
+	for(std::size_t i = 0; i < tz::graphics::maximum_shaders; i++)
 	{
 		this->shaders[i] = move.shaders[i];
 		move.shaders[i] = 0;
@@ -67,7 +67,7 @@ Shader::~Shader()
 	// If this was moved and this destructor was invoked, then the program_handle will be zero (cant normally be zero so we skip all of this crap to avoid crashes)
 	if(this->program_handle == 0)
 		return;
-	for(std::size_t i = 0; i < MAX_SHADERS; i++)
+	for(std::size_t i = 0; i < tz::graphics::maximum_shaders; i++)
 	{
 		if(this->shaders[i] == 0)
 			continue;

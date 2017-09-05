@@ -19,7 +19,7 @@ void tz::terminate()
 	tz::util::log::message("Terminated Topaz.");
 }
 
-Engine::Engine(Player& player, Window& wnd, std::string properties_path, unsigned int initial_fps): properties(RawFile(properties_path)), resources(RawFile(this->properties.getTag("resources"))), default_shader(this->properties.getTag("default_shader")), player(player), wnd(wnd), world(this->properties.getTag("default_world"), this->properties.getTag("resources")), fps(initial_fps)
+Engine::Engine(Player& player, Window& wnd, std::string properties_path, unsigned int initial_fps, unsigned int tps): properties(RawFile(properties_path)), resources(RawFile(this->properties.getTag("resources"))), default_shader(this->properties.getTag("default_shader")), player(player), wnd(wnd), world(this->properties.getTag("default_world"), this->properties.getTag("resources")), fps(initial_fps), tps(tps)
 {
 	this->player.setPosition(this->world.getSpawnPoint());
 	tz::util::log::message("Set player position to world spawn.");
@@ -32,6 +32,7 @@ Engine::Engine(Player& player, Window& wnd, std::string properties_path, unsigne
 
 void Engine::update(std::size_t shader_index)
 {
+	static TimeKeeper ticker;
 	if(this->keeper.millisPassed(1000))
 	{
 		this->fps = this->profiler.getFPS();
@@ -42,10 +43,17 @@ void Engine::update(std::size_t shader_index)
 	this->profiler.beginFrame();
 	
 	this->keeper.update();
+	ticker.update();
 	this->wnd.clear(0.0f, 0.0f, 0.0f, 1.0f);
 	this->profiler.endFrame();
 	
-	this->world.update(this->profiler.getLastDelta(), this->player.getCamera(), this->getShader(shader_index), this->wnd.getWidth(), this->wnd.getHeight(), this->meshes, this->textures, this->normal_maps, this->parallax_maps, this->displacement_maps);
+	this->world.render(this->profiler.getLastDelta(), this->player.getCamera(), this->getShader(shader_index), this->wnd.getWidth(), this->wnd.getHeight(), this->meshes, this->textures, this->normal_maps, this->parallax_maps, this->displacement_maps);
+	
+	if(ticker.millisPassed(1000/this->tps))
+	{
+		this->world.update(this->tps);
+		ticker.reload();
+	}
 	this->wnd.update();
 	
 	GLenum error;
@@ -145,4 +153,9 @@ const Shader& Engine::getShader(std::size_t index) const
 unsigned int Engine::getFPS() const
 {
 	return this->fps;
+}
+
+unsigned int Engine::getTPS() const
+{
+	return this->tps;
 }

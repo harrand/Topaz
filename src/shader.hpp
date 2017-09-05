@@ -6,7 +6,14 @@
 #include <string>
 #include "utility.hpp"
 #include "glew.h"
-#define MAX_SHADERS 5
+
+namespace tz
+{
+	namespace graphics
+	{
+		constexpr unsigned int maximum_shaders = 5;
+	}
+}
 
 class Shader
 {
@@ -44,7 +51,7 @@ private:
 	};
 	std::string filename;
 	GLuint program_handle;
-	GLuint shaders[MAX_SHADERS];
+	GLuint shaders[tz::graphics::maximum_shaders];
 	GLuint uniforms[static_cast<unsigned int>(UniformTypes::NUM_UNIFORMS)];
 };
 
