@@ -527,7 +527,7 @@ void Commands::scheduleAsyncDelayedMessage(std::vector<std::string> args, bool p
 	for(std::size_t i = 2; i < args.size(); i++)
 		msg += args.at(i) + (i == (args.size() - 1) ? "" : " ");
 	std::function<void(std::string)> printMsg([](std::string msg)->void{tz::util::log::message(msg);});
-	Scheduler::asyncDelayedTask<void, std::string>(millisDelay, printMsg, msg);
+	tz::scheduler::asyncDelayedTask<void, std::string>(millisDelay, printMsg, msg);
 }
 
 void Commands::scheduleAsyncDelayedCmd(std::vector<std::string> args, std::string resources_path, World& world, Player& player, const Shader& shader, bool printResults)
@@ -544,5 +544,5 @@ void Commands::scheduleAsyncDelayedCmd(std::vector<std::string> args, std::strin
 	for(std::size_t i = 2; i < args.size(); i++)
 		cmd += args.at(i) + (i == (args.size() - 1) ? "" : " ");
 	std::function<void(std::string, std::string, std::reference_wrapper<World>, std::reference_wrapper<Player>, std::reference_wrapper<const Shader>)> inputCmd([](std::string cmd, std::string resources_path, std::reference_wrapper<World> world, std::reference_wrapper<Player> player, std::reference_wrapper<const Shader> shader)->void{Commands::inputCommand(cmd, resources_path, world, player, shader);});
-	Scheduler::asyncDelayedTask<void, std::string, std::string, std::reference_wrapper<World>, std::reference_wrapper<Player>, std::reference_wrapper<const Shader>>(millisDelay, inputCmd, cmd, resources_path, std::ref(world), std::ref(player), std::cref(shader));
+	tz::scheduler::asyncDelayedTask<void, std::string, std::string, std::reference_wrapper<World>, std::reference_wrapper<Player>, std::reference_wrapper<const Shader>>(millisDelay, inputCmd, cmd, resources_path, std::ref(world), std::ref(player), std::cref(shader));
 }

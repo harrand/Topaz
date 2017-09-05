@@ -122,10 +122,10 @@ void Window::deregisterListener(Listener& l)
 	this->registered_listeners.erase(l.getID());
 }
 
+bool tz::graphics::initialised = false;
+bool tz::graphics::has_context = false;
 void Window::initSDL()
 {
-	//SDL_Init(SDL_INIT_EVERYTHING);
-	
 	SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
 	SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
 	SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
@@ -140,20 +140,10 @@ void Window::initSDL()
 	tz::graphics::has_context = true;
 	if(!tz::graphics::initialised)
 		tz::graphics::initialise();
-	//Initialise SDL_mixer
-	//Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 2, 4096);
 }
 
 void Window::initGLEW()
 {
-	/*
-	GLenum status = glewInit();
-	if(status != GLEW_OK)
-	{
-		this->title = "Fatal Error: GLEW Initialisation Failed";
-	}
-	*/
-	
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_DEPTH_CLAMP);
 	glEnable(GL_CULL_FACE);
@@ -162,10 +152,8 @@ void Window::initGLEW()
 
 void Window::destSDL()
 {
-	//Mix_CloseAudio();
 	SDL_GL_DeleteContext(this->sdl_gl_context_handle);
 	SDL_DestroyWindow(this->sdl_window_pointer);
-	//SDL_Quit();
 }
 
 void Window::handleEvents()

@@ -10,7 +10,7 @@ int main()
 	tz::util::log::message("Initialising camera, player and window...");
 	Camera cam;
 	Player player(10, cam);
-	Window sdl_window_pointer(800, 600, "Topaz Engine - Default World");
+	Window sdl_window_pointer(800, 600, "Topaz Development Test Program");
 	tz::util::log::message("Initialising engine...");
 	Engine engine(player, sdl_window_pointer, "../../../res/runtime/properties.mdl");
 	
