@@ -3,7 +3,6 @@
 #include <string>
 #include <unordered_map>
 #include "SDL.h"
-#include "utility.hpp"
 
 class Listener
 {

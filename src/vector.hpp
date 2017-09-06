@@ -64,20 +64,20 @@ public:
 	
 	inline Vector2<T> normalised() const
 	{
-		return Vector2<T>(this->x / this->length(), this->y / this->length());
+		return {this->x / this->length(), this->y / this->length()};
 	}
 	
 	inline Vector2<T> operator+(const Vector2<T>& rhs) const
 	{
-		return Vector2<T>(this->x + rhs.getX(), this->y + rhs.getY());
+		return {this->x + rhs.getX(), this->y + rhs.getY()};
 	}
 	inline Vector2<T> operator-(const Vector2<T>& rhs) const
 	{
-		return Vector2<T>(this->x - rhs.getX(), this->y - rhs.getY());
+		return {this->x - rhs.getX(), this->y - rhs.getY()};
 	}
 	inline Vector2<T> operator*(T scalar) const
 	{
-		return Vector2<T>(this->x * scalar, this->y * scalar);
+		return {this->x * scalar, this->y * scalar};
 	}
 	inline bool operator<(const Vector2<T>& rhs) const
 	{
@@ -136,29 +136,29 @@ public:
 	
 	inline virtual Vector3<T> cross(Vector3<T> rhs) const
 	{
-		return Vector3<T>((this->y * rhs.getZ()) - (this->z * rhs.getY()), (this->z * rhs.getX()) - (this->x * rhs.getZ()), (this->x * rhs.getY()) - (this->y * rhs.getX()));
+		return {(this->y * rhs.getZ()) - (this->z * rhs.getY()), (this->z * rhs.getX()) - (this->x * rhs.getZ()), (this->x * rhs.getY()) - (this->y * rhs.getX())};
 	}
 	
 	inline Vector3<T> normalised() const
 	{
-		return Vector3<T>(this->x / this->length(), this->y / this->length(), this->z / this->length());
+		return {this->x / this->length(), this->y / this->length(), this->z / this->length()};
 	}
 	
 	inline Vector3<T> operator+(const Vector3<T>& rhs) const
 	{
-		return Vector3<T>(this->x + rhs.getX(), this->y + rhs.getY(), this->z + rhs.getZ());
+		return {this->x + rhs.getX(), this->y + rhs.getY(), this->z + rhs.getZ()};
 	}
 	inline Vector3<T> operator-(const Vector3<T>& rhs) const
 	{
-		return Vector3<T>(this->x - rhs.getX(), this->y - rhs.getY(), this->z - rhs.getZ());
+		return {this->x - rhs.getX(), this->y - rhs.getY(), this->z - rhs.getZ()};
 	}
 	inline Vector3<T> operator*(T scalar) const
 	{
-		return Vector3<T>(this->x * scalar, this->y * scalar, this->z * scalar);
+		return {this->x * scalar, this->y * scalar, this->z * scalar};
 	}
 	inline Vector3<T> operator/(T scalar) const
 	{
-		return Vector3<T>(this->x / scalar, this->y / scalar, this->z / scalar);
+		return {this->x / scalar, this->y / scalar, this->z / scalar};
 	}
 	inline bool operator<(const Vector3<T>& rhs) const
 	{
@@ -228,24 +228,24 @@ public:
 	
 	inline Vector4<T> normalised() const
 	{
-		return Vector4<T>(this->x / this->length(), this->y / this->length(), this->z / this->length(), this->w / this->length());
+		return {this->x / this->length(), this->y / this->length(), this->z / this->length(), this->w / this->length()};
 	}
 	
 	inline Vector4<T> operator+(const Vector4<T>& rhs) const
 	{
-		return Vector4<T>(this->x + rhs.getX(), this->y + rhs.getY(), this->z + rhs.getZ(), this->w + rhs.getW());
+		return {this->x + rhs.getX(), this->y + rhs.getY(), this->z + rhs.getZ(), this->w + rhs.getW()};
 	}
 	inline Vector4<T> operator-(const Vector4<T>& rhs) const
 	{
-		return Vector4<T>(this->x - rhs.getX(), this->y - rhs.getY(), this->z - rhs.getZ(), this->w - rhs.getW());
+		return {this->x - rhs.getX(), this->y - rhs.getY(), this->z - rhs.getZ(), this->w - rhs.getW()};
 	}
 	inline Vector4<T> operator*(T scalar) const
 	{
-		return Vector4<T>(this->x * scalar, this->y * scalar, this->z * scalar, this->w * scalar);
+		return {this->x * scalar, this->y * scalar, this->z * scalar, this->w * scalar};
 	}
 	inline Vector4<T> operator/(T scalar) const
 	{
-		return Vector4<T>(this->x / scalar, this->y / scalar, this->z / scalar, this->w / scalar);
+		return {this->x / scalar, this->y / scalar, this->z / scalar, this->w / scalar};
 	}
 	inline bool operator<(const Vector4<T>& rhs) const
 	{

@@ -1,5 +1,4 @@
 #include "object.hpp"
-#include "quaternion.hpp"
 
 Object::Object(std::string mesh_link, std::vector<std::pair<std::string, Texture::TextureType>> textures, Vector3F pos, Vector3F rot, Vector3F scale): pos(std::move(pos)), rot(std::move(rot)), scale(std::move(scale)), mesh_link(std::move(mesh_link)), textures(std::move(textures)){}
 

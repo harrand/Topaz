@@ -1,4 +1,5 @@
 #include "engine.hpp"
+#include "graphics.hpp"
 
 void tz::initialise()
 {
