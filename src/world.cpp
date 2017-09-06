@@ -323,8 +323,7 @@ Object World::retrieveObjectData(const std::string& object_name, std::string res
 		std::string texture_link = dt.getResourceLink(texture_name);
 		textures.push_back(std::make_pair(texture_link, static_cast<Texture::TextureType>(i)));
 	}
-	
-	return Object(mesh_link, textures, tz::util::string::vectoriseList3<float>(tz::util::string::deformat(position_string)), tz::util::string::vectoriseList3<float>(tz::util::string::deformat(rotation_string)), tz::util::string::vectoriseList3<float>(tz::util::string::deformat(scale_string)));
+	return {mesh_link, textures, tz::util::string::vectoriseList3<float>(tz::util::string::deformat(position_string)), tz::util::string::vectoriseList3<float>(tz::util::string::deformat(rotation_string)), tz::util::string::vectoriseList3<float>(tz::util::string::deformat(scale_string))};
 }
 
 EntityObject World::retrieveEntityObjectData(const std::string& entity_object_name, std::string resources_path, MDLF& mdlf)
@@ -348,5 +347,5 @@ EntityObject World::retrieveEntityObjectData(const std::string& entity_object_na
 	}
 	float mass = tz::util::cast::fromString<float>(mass_string);
 	
-	return EntityObject(mesh_link, textures, mass, tz::util::string::vectoriseList3<float>(tz::util::string::deformat(position_string)), tz::util::string::vectoriseList3<float>(tz::util::string::deformat(rotation_string)), tz::util::string::vectoriseList3<float>(tz::util::string::deformat(scale_string)));
+	return {mesh_link, textures, mass, tz::util::string::vectoriseList3<float>(tz::util::string::deformat(position_string)), tz::util::string::vectoriseList3<float>(tz::util::string::deformat(rotation_string)), tz::util::string::vectoriseList3<float>(tz::util::string::deformat(scale_string))};
 }

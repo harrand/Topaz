@@ -74,7 +74,7 @@ Matrix4x4::Matrix4x4(Vector4F x, Vector4F y, Vector4F z, Vector4F w): x(std::mov
 
 Matrix4x4 Matrix4x4::identity()
 {
-	return Matrix4x4(Vector4F(1, 0, 0, 0), Vector4F(0, 1, 0, 0), Vector4F(0, 0, 1, 0), Vector4F(0, 0, 0, 1));
+	return {Vector4F(1, 0, 0, 0), Vector4F(0, 1, 0, 0), Vector4F(0, 0, 1, 0), Vector4F(0, 0, 0, 1)};
 }
 
 Vector4F Matrix4x4::getRowX() const
@@ -123,7 +123,7 @@ Matrix4x4 Matrix4x4::transposed() const
 	Vector4F ty(this->x.getY(), this->y.getY(), this->z.getY(), this->w.getY());
 	Vector4F tz(this->x.getZ(), this->y.getZ(), this->z.getZ(), this->w.getZ());
 	Vector4F tw(this->x.getW(), this->y.getW(), this->z.getW(), this->w.getW());
-	return Matrix4x4(tx, ty, tz, tw);
+	return {tx, ty, tz, tw};
 }
 
 Matrix4x4 Matrix4x4::washed(float min, float max) const
@@ -175,7 +175,7 @@ Matrix4x4 Matrix4x4::washed(float min, float max) const
 
 std::array<float, 16> Matrix4x4::fillData() const
 {
-	return std::array<float, 16>({this->x.getX(), this->x.getY(), this->x.getZ(), this->x.getW(), this->y.getX(), this->y.getY(), this->y.getZ(), this->y.getW(), this->z.getX(), this->z.getY(), this->z.getZ(), this->z.getW(), this->w.getX(), this->w.getY(), this->w.getZ(), this->w.getW()});
+	return {{this->x.getX(), this->x.getY(), this->x.getZ(), this->x.getW(), this->y.getX(), this->y.getY(), this->y.getZ(), this->y.getW(), this->z.getX(), this->z.getY(), this->z.getZ(), this->z.getW(), this->w.getX(), this->w.getY(), this->w.getZ(), this->w.getW()}};
 }
 
 Matrix3x3 Matrix4x4::subMatrix(float posI, float posJ) const
@@ -254,17 +254,17 @@ Matrix3x3 Matrix4x4::subMatrix(float posI, float posJ) const
 			*const_cast<float*>(pos3) = *const_cast<float*>(pos4);
 		}
 	}
-	return Matrix3x3(x, y, z);
+	return {x, y, z};
 }
 
 Matrix4x4 Matrix4x4::operator+(const Matrix4x4& other) const
 {
-	return Matrix4x4(this->x + other.getRowX(), this->y + other.getRowY(), this->z + other.getRowZ(), this->w + other.getRowW());
+	return {this->x + other.getRowX(), this->y + other.getRowY(), this->z + other.getRowZ(), this->w + other.getRowW()};
 }
 
 Matrix4x4 Matrix4x4::operator-(const Matrix4x4& other) const
 {
-	return Matrix4x4(this->x - other.getRowX(), this->y - other.getRowY(), this->z - other.getRowZ(), this->w - other.getRowW());
+	return {this->x - other.getRowX(), this->y - other.getRowY(), this->z - other.getRowZ(), this->w - other.getRowW()};
 }
 
 Vector4F Matrix4x4::operator*(const Vector4F& other) const
@@ -313,7 +313,7 @@ Vector4F Matrix4x4::operator*(const Vector4F& other) const
 			}
 		}
 	}
-	return Vector4F(x, y, z, w);
+	return {x, y, z, w};
 }
 
 Matrix4x4 Matrix4x4::operator*(const Matrix4x4& other) const
@@ -346,8 +346,7 @@ Matrix4x4 Matrix4x4::operator*(const Matrix4x4& other) const
 			break;	
 		}
 	}
-	return Matrix4x4(x, y, z, w);
-	
+	return {x, y, z, w};
 }
 
 float Matrix4x4::determinant() const
@@ -407,7 +406,7 @@ Matrix4x4 Matrix4x4::inverse() const
 			*const_cast<float*>(pos) = (sub.determinant() * sign) / det;
 		}
 	}
-	return Matrix4x4(x, y, z, w);
+	return {x, y, z, w};
 }
 
 Matrix4x4 Matrix4x4::createTranslationMatrix(Vector3F position)
@@ -421,17 +420,17 @@ Matrix4x4 Matrix4x4::createTranslationMatrix(Vector3F position)
 
 Matrix4x4 Matrix4x4::createRotationalXMatrix(float eulerX)
 {
-	return Matrix4x4(Vector4F(1, 0, 0, 0), Vector4F(0, cos(eulerX), -sin(eulerX), 0), Vector4F(0, sin(eulerX), cos(eulerX), 0), Vector4F(0, 0, 0, 1));
+	return {Vector4F(1, 0, 0, 0), Vector4F(0, cos(eulerX), -sin(eulerX), 0), Vector4F(0, sin(eulerX), cos(eulerX), 0), Vector4F(0, 0, 0, 1)};
 }
 
 Matrix4x4 Matrix4x4::createRotationalYMatrix(float eulerY)
 {
-	return Matrix4x4(Vector4F(cos(eulerY), 0, -sin(eulerY), 0), Vector4F(0, 1, 0, 0), Vector4F(sin(eulerY), 0, cos(eulerY), 0), Vector4F(0, 0, 0, 1));
+	return {Vector4F(cos(eulerY), 0, -sin(eulerY), 0), Vector4F(0, 1, 0, 0), Vector4F(sin(eulerY), 0, cos(eulerY), 0), Vector4F(0, 0, 0, 1)};
 }
 
 Matrix4x4 Matrix4x4::createRotationalZMatrix(float eulerZ)
 {
-	return Matrix4x4(Vector4F(cos(eulerZ), -sin(eulerZ), 0, 0), Vector4F(sin(eulerZ), cos(eulerZ), 0, 0), Vector4F(0, 0, 1, 0), Vector4F(0, 0, 0, 1));
+	return {Vector4F(cos(eulerZ), -sin(eulerZ), 0, 0), Vector4F(sin(eulerZ), cos(eulerZ), 0, 0), Vector4F(0, 0, 1, 0), Vector4F(0, 0, 0, 1)};
 }
 
 Matrix4x4 Matrix4x4::createRotationalMatrix(Vector3F euler_rotation)
@@ -441,7 +440,7 @@ Matrix4x4 Matrix4x4::createRotationalMatrix(Vector3F euler_rotation)
 
 Matrix4x4 Matrix4x4::createScalingMatrix(Vector3F scale)
 {
-	return Matrix4x4(Vector4F(scale.getX(), 0, 0, 0), Vector4F(0, scale.getY(), 0, 0), Vector4F(0, 0, scale.getZ(), 0), Vector4F(0, 0, 0, 1));
+	return {Vector4F(scale.getX(), 0, 0, 0), Vector4F(0, scale.getY(), 0, 0), Vector4F(0, 0, scale.getZ(), 0), Vector4F(0, 0, 0, 1)};
 }
 
 Matrix4x4 Matrix4x4::createModelMatrix(Vector3F position, Vector3F euler_rotation, Vector3F scale)
@@ -463,7 +462,7 @@ Matrix4x4 Matrix4x4::createProjectionMatrix(float fov, float aspect_ratio, float
 	z.getZR() = (farclip + nearclip)/(nearclip - farclip);
 	z.getWR() = (2 * farclip * nearclip)/(nearclip - farclip);
 	w.getZR() = -1.0f;
-	return Matrix4x4(x, y, z, w);
+	return {x, y, z, w};
 }
 
 Matrix4x4 Matrix4x4::createProjectionMatrix(float fov, float width, float height, float nearclip, float farclip)
