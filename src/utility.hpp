@@ -20,10 +20,10 @@ namespace tz
 		{
 			// Implementation must be kept inside the header to avoid linker errors.
 			template <typename T>
-			inline std::string toString(T obj)
+			inline std::string toString(T&& obj)
 			{
 				std::ostringstream oss;
-				oss << obj;
+				oss << std::forward<T>(obj);
 				return oss.str();
 			}
 			
@@ -181,9 +181,9 @@ namespace tz
 			{
 				std::vector<std::string> ret;
 				ret.reserve(3);
-				ret.push_back(tz::util::cast::toString<T>(v.getX()));
-				ret.push_back(tz::util::cast::toString<T>(v.getY()));
-				ret.push_back(tz::util::cast::toString<T>(v.getZ()));
+				ret.push_back(tz::util::cast::toString(v.getX()));
+				ret.push_back(tz::util::cast::toString(v.getY()));
+				ret.push_back(tz::util::cast::toString(v.getZ()));
 				return ret;
 			}
 		}
@@ -227,6 +227,7 @@ namespace tz
 		}
 	}
 }
+
 class Force
 {
 public:

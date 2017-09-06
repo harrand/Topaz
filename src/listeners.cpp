@@ -280,7 +280,7 @@ void KeybindController::handleKeybinds(float seconds_since_last_frame, std::stri
 	{
 		std::string input;
 		std::getline(std::cin, input);
-		Commands::inputCommand(input, resources_path, world, player, shader);
+		//Commands::inputCommand(input, resources_path, world, player, shader);
 	}
 	if(kl.isKeyPressed(KeyControls::getKeybind(controls_data_file, KeybindType::REQUEST_CLOSE)))
 		wnd.requestClose();
@@ -290,12 +290,12 @@ void KeybindController::handleKeybinds(float seconds_since_last_frame, std::stri
 		player.getCamera().getRotationR() = this->world.getSpawnOrientation();
 		player.setVelocity(Vector3F());
 	}
-	if(kl.catchKeyPressed(KeyControls::getKeybind(controls_data_file, KeybindType::ALIAS)))
+	/*	if(kl.catchKeyPressed(KeyControls::getKeybind(controls_data_file, KeybindType::ALIAS)))
 	{
 		std::vector<std::string> alias = CommandCache::getAlias();
 		std::string cmd = "";
 		for(std::size_t i = 0; i < alias.size(); i++)
 			cmd += (i != (alias.size() - 1)) ? alias.at(i) + " " : alias.at(i);
-		Commands::inputCommand(cmd, resources_path, world, player, shader);
-	}
+		//Commands::inputCommand(cmd, resources_path, world, player, shader);
+	}*/
 }

@@ -2,8 +2,13 @@
 
 void tz::audio::initialise()
 {
-	Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 2, 4096);
-	tz::util::log::message("Initialised tz::audio via SDL_Mixer.");
+	constexpr int channels = 2; // number of sound chanels in output. 2 for stereo, 1 for mono.
+	constexpr int chunk_size = 4096; // bytes used per output sample
+	constexpr Uint16 format = MIX_DEFAULT_FORMAT; // output sample format. MIX_DEFAULT_FORMAT is the same as AUDIO_S16SYS (signed 16-bit samples, in system byte order)
+	if(Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, format, channels, chunk_size) == -1)
+		tz::util::log::error("Mix_OpenAudio returned -1: ", Mix_GetError(), "\n\tInitialisation of tz::audio failed.");
+	else
+		tz::util::log::message("Initialised tz::audio via SDL_Mixer.");
 }
 
 void tz::audio::terminate()
@@ -33,8 +38,9 @@ AudioClip::~AudioClip()
 
 void AudioClip::play()
 {
-	// -1 as channel argument just means that use any old free channel.
-	this->channel = Mix_PlayChannel(-1, this->audio_handle, 0);
+	constexpr int first_free_unreserved_channel = -1;
+	constexpr int number_of_loops = 0;
+	this->channel = Mix_PlayChannel(first_free_unreserved_channel, this->audio_handle, number_of_loops);
 }
 
 int AudioClip::getChannel() const

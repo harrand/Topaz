@@ -319,7 +319,7 @@ Object World::retrieveObjectData(const std::string& object_name, std::string res
 	std::vector<std::pair<std::string, Texture::TextureType>> textures;
 	for(unsigned int i = 0; i < static_cast<unsigned int>(Texture::TextureType::TEXTURE_TYPES); i++)
 	{
-		std::string texture_name = mdlf.getTag(object_name + ".texture" + tz::util::cast::toString<unsigned int>(i));
+		std::string texture_name = mdlf.getTag(object_name + ".texture" + tz::util::cast::toString(i));
 		std::string texture_link = dt.getResourceLink(texture_name);
 		textures.push_back(std::make_pair(texture_link, static_cast<Texture::TextureType>(i)));
 	}
@@ -340,7 +340,7 @@ EntityObject World::retrieveEntityObjectData(const std::string& entity_object_na
 	std::vector<std::pair<std::string, Texture::TextureType>> textures;
 	for(unsigned int i = 0; i < static_cast<unsigned int>(Texture::TextureType::TEXTURE_TYPES); i++)
 	{
-		std::string texture_name = mdlf.getTag(entity_object_name + ".texture" + tz::util::cast::toString<unsigned int>(i));
+		std::string texture_name = mdlf.getTag(entity_object_name + ".texture" + tz::util::cast::toString(i));
 		std::string texture_link = dt.getResourceLink(texture_name);
 		//tz::util::log::message(entity_object_name, ".texture", tz::util::cast::toString<unsigned int>(i), " yields the name ", texture_name, " and the link ", texture_link, "\n");
 		textures.push_back(std::make_pair(texture_link, static_cast<Texture::TextureType>(i)));
