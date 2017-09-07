@@ -1,14 +1,14 @@
-#include "datatranslation.hpp"
+#include "data.hpp"
 #include "utility.hpp"
 
-DataTranslation::DataTranslation(std::string datafilename): datafilename(std::move(datafilename)), data_file(RawFile(this->datafilename)){}
+tz::data::Manager::Manager(std::string datafilename): datafilename(std::move(datafilename)), data_file(RawFile(this->datafilename)){}
 
-std::string DataTranslation::getResourceLink(const std::string& resource_name) const
+std::string tz::data::Manager::getResourceLink(const std::string& resource_name) const
 {
 	return this->data_file.getTag(resource_name + ".path");
 }
 
-std::string DataTranslation::getResourceName(const std::string& resource_link) const
+std::string tz::data::Manager::getResourceName(const std::string& resource_link) const
 {
 	std::vector<std::string> lines = this->data_file.getRawFile().getLines();
 	for(std::string& line : lines)
@@ -28,7 +28,7 @@ std::string DataTranslation::getResourceName(const std::string& resource_link) c
 	return "0";
 }
 
-std::unordered_map<std::string, std::string> DataTranslation::retrieveModels() const
+std::unordered_map<std::string, std::string> tz::data::Manager::retrieveModels() const
 {
 	std::unordered_map<std::string, std::string> model_map;
 	for(std::string& model : this->data_file.getSequence("models"))
@@ -38,7 +38,7 @@ std::unordered_map<std::string, std::string> DataTranslation::retrieveModels() c
 	return model_map;
 }
 
-std::unordered_map<std::string, std::string> DataTranslation::retrieveTextures() const
+std::unordered_map<std::string, std::string> tz::data::Manager::retrieveTextures() const
 {
 	std::unordered_map<std::string, std::string> texture_map;
 	for(const std::string& texture : this->data_file.getSequence("textures"))
@@ -48,7 +48,7 @@ std::unordered_map<std::string, std::string> DataTranslation::retrieveTextures()
 	return texture_map;
 }
 
-std::unordered_map<std::string, std::string> DataTranslation::retrieveNormalMaps() const
+std::unordered_map<std::string, std::string> tz::data::Manager::retrieveNormalMaps() const
 {
 	std::unordered_map<std::string, std::string> normalmap_map;
 	for(const std::string& normalmap : this->data_file.getSequence("normalmaps"))
@@ -58,7 +58,7 @@ std::unordered_map<std::string, std::string> DataTranslation::retrieveNormalMaps
 	return normalmap_map;
 }
 
-std::unordered_map<std::string, std::string> DataTranslation::retrieveParallaxMaps() const
+std::unordered_map<std::string, std::string> tz::data::Manager::retrieveParallaxMaps() const
 {
 	std::unordered_map<std::string, std::string> parallaxmap_map;
 	for(const std::string& parallaxmap : this->data_file.getSequence("parallaxmaps"))
@@ -68,7 +68,7 @@ std::unordered_map<std::string, std::string> DataTranslation::retrieveParallaxMa
 	return parallaxmap_map;
 }
 
-std::unordered_map<std::string, std::string> DataTranslation::retrieveDisplacementMaps() const
+std::unordered_map<std::string, std::string> tz::data::Manager::retrieveDisplacementMaps() const
 {
 	std::unordered_map<std::string, std::string> displacementmap_map;
 	for(const std::string& displacementmap : this->data_file.getSequence("displacementmaps"))
@@ -78,7 +78,7 @@ std::unordered_map<std::string, std::string> DataTranslation::retrieveDisplaceme
 	return displacementmap_map;
 }
 
-unsigned int DataTranslation::retrieveAllData(std::vector<std::unique_ptr<Mesh>>& all_meshes, std::vector<std::unique_ptr<Texture>>& all_textures, std::vector<std::unique_ptr<NormalMap>>& all_normalmaps, std::vector<std::unique_ptr<ParallaxMap>>& all_parallaxmaps, std::vector<std::unique_ptr<DisplacementMap>>& all_displacementmaps) const
+unsigned int tz::data::Manager::retrieveAllData(std::vector<std::unique_ptr<Mesh>>& all_meshes, std::vector<std::unique_ptr<Texture>>& all_textures, std::vector<std::unique_ptr<NormalMap>>& all_normalmaps, std::vector<std::unique_ptr<ParallaxMap>>& all_parallaxmaps, std::vector<std::unique_ptr<DisplacementMap>>& all_displacementmaps) const
 {
 	std::unordered_map<std::string, std::string> models = this->retrieveModels(), textures = this->retrieveTextures(), normalmaps = this->retrieveNormalMaps(), parallaxmaps = this->retrieveParallaxMaps(), displacementmaps = this->retrieveDisplacementMaps();
 	unsigned int data_count = 0;

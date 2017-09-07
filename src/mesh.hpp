@@ -6,8 +6,7 @@
 #include <vector>
 #include <string>
 #include <memory>
-#include "glew.h"
-#include "model_loader.hpp"
+#include "graphics.hpp"
 
 class Vertex
 {

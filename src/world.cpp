@@ -1,4 +1,5 @@
 #include "world.hpp"
+#include "data.hpp"
 
 World::World(std::string filename, std::string resources_path): filename(std::move(filename)), resources_path(std::move(resources_path))
 {
@@ -113,7 +114,7 @@ void World::killLights()
 
 void World::exportWorld(const std::string& worldLink) const
 {
-	const DataTranslation dt(this->resources_path);
+	const tz::data::Manager dt(this->resources_path);
 	MDLF output = MDLF(RawFile(worldLink));
 	output.getRawFile().clear();
 	std::vector<std::string> object_list;
@@ -313,7 +314,7 @@ Object World::retrieveObjectData(const std::string& object_name, std::string res
 	std::string rotation_string = mdlf.getTag(object_name + ".rot");
 	std::string scale_string = mdlf.getTag(object_name + ".scale");
 	
-	DataTranslation dt(resources_path);
+	tz::data::Manager dt(resources_path);
 	
 	std::string mesh_link = dt.getResourceLink(mesh_name);
 	std::vector<std::pair<std::string, Texture::TextureType>> textures;
@@ -334,7 +335,7 @@ EntityObject World::retrieveEntityObjectData(const std::string& entity_object_na
 	std::string rotation_string = mdlf.getTag(entity_object_name + ".rot");
 	std::string scale_string = mdlf.getTag(entity_object_name + ".scale");
 	
-	DataTranslation dt(resources_path);
+	tz::data::Manager dt(resources_path);
 	
 	std::string mesh_link = dt.getResourceLink(mesh_name);
 	std::vector<std::pair<std::string, Texture::TextureType>> textures;

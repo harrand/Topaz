@@ -2,7 +2,7 @@
 
 Vertex::Vertex(Vector3F position, Vector2F texcoord, Vector3F normal): position(std::move(position)), texcoord(std::move(texcoord)), normal(std::move(normal)){}
 
-Mesh::Mesh(std::string filename): filename(std::move(filename)), model(OBJModel(this->filename).ToIndexedModel())
+Mesh::Mesh(std::string filename): filename(std::move(filename)), model(OBJModel(this->filename).toIndexedModel())
 {
 	this->initMesh();
 }

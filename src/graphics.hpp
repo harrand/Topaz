@@ -34,4 +34,48 @@ namespace tz
 	}
 }
 
+struct OBJIndex
+{
+    unsigned int vertex_index;
+    unsigned int uv_index;
+    unsigned int normal_index;
+    
+    bool operator<(const OBJIndex& r) const { return vertex_index < r.vertex_index; }
+};
+
+class IndexedModel
+{
+public:
+    std::vector<Vector3F> positions;
+    std::vector<Vector2F> texcoords;
+    std::vector<Vector3F> normals;
+	std::vector<Vector3F> tangents;
+    std::vector<unsigned int> indices;
+    
+    void calcNormals();
+	void calcTangents();
+};
+
+class OBJModel
+{
+public:
+    std::vector<OBJIndex> obj_indices;
+    std::vector<Vector3F> vertices;
+    std::vector<Vector2F> uvs;
+    std::vector<Vector3F> normals;
+    bool has_uvs;
+    bool has_normals;
+    
+    OBJModel(const std::string& file_name);
+    
+    IndexedModel toIndexedModel();
+private:
+    unsigned int findLastVertexIndex(const std::vector<OBJIndex*>& index_lookup, const OBJIndex* current_index, const IndexedModel& result);
+    void createOBJFace(const std::string& line);
+    
+    Vector2F parseOBJVector2F(const std::string& line);
+    Vector3F parseOBJVector3F(const std::string& line);
+    OBJIndex parseOBJIndex(const std::string& token, bool* has_uvs, bool* has_normals);
+};
+
 #endif

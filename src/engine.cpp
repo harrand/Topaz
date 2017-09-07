@@ -1,5 +1,6 @@
 #include "engine.hpp"
 #include "graphics.hpp"
+#include "data.hpp"
 
 void tz::initialise()
 {
@@ -25,7 +26,7 @@ Engine::Engine(Player& player, Window& wnd, std::string properties_path, unsigne
 	this->player.setPosition(this->world.getSpawnPoint());
 	tz::util::log::message("Set player position to world spawn.");
 	tz::util::log::message("Loading assets from '", this->properties.getTag("resources"), "'...");
-	tz::util::log::message("Loaded ", DataTranslation(this->properties.getTag("resources")).retrieveAllData(this->meshes, this->textures, this->normal_maps, this->parallax_maps, this->displacement_maps), " assets.");
+	tz::util::log::message("Loaded ", tz::data::Manager(this->properties.getTag("resources")).retrieveAllData(this->meshes, this->textures, this->normal_maps, this->parallax_maps, this->displacement_maps), " assets.");
 	this->world.addEntity(this->player);
 	for(std::string shaderPath : this->properties.getSequence("extra_shaders"))
 		this->extra_shaders.push_back(Shader(shaderPath));
