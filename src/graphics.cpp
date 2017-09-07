@@ -18,7 +18,7 @@ OBJModel::OBJModel(const std::string& file_name): has_uvs(false), has_normals(fa
         {
             getline(file, line);
         
-            unsigned int line_length = line.length();
+            std::size_t line_length = line.length();
             
             if(line_length < 2)
                 continue;
@@ -50,7 +50,7 @@ OBJModel::OBJModel(const std::string& file_name): has_uvs(false), has_normals(fa
 
 void IndexedModel::calcNormals()
 {
-    for(unsigned int i = 0; i < indices.size(); i += 3)
+    for(std::size_t i = 0; i < indices.size(); i += 3)
     {
         int i0 = indices[i];
         int i1 = indices[i + 1];
@@ -66,13 +66,13 @@ void IndexedModel::calcNormals()
         normals[i2] = (normals[i2] + normal);
     }
     
-    for(unsigned int i = 0; i < positions.size(); i++)
+    for(std::size_t i = 0; i < positions.size(); i++)
         normals[i] = normals[i].normalised();
 }
 
 void IndexedModel::calcTangents()
 {
-    for(unsigned int i = 0; i < indices.size(); i += 3)
+    for(std::size_t i = 0; i < indices.size(); i += 3)
     {
         int i0 = indices[i];
         int i1 = indices[i + 1];
@@ -99,7 +99,7 @@ void IndexedModel::calcTangents()
 		//std::cout << "		Added.\n";
     }
     
-    for(unsigned int i = 0; i < tangents.size(); i++)
+    for(std::size_t i = 0; i < tangents.size(); i++)
         tangents[i] = tangents[i].normalised();
 }
 
@@ -108,13 +108,13 @@ IndexedModel OBJModel::toIndexedModel()
     IndexedModel result;
     IndexedModel normal_model;
     
-    unsigned int number_of_indices = obj_indices.size();
+    std::size_t number_of_indices = obj_indices.size();
 	normal_model.tangents.resize(number_of_indices);
 	result.tangents.resize(number_of_indices);
     
     std::vector<OBJIndex*> index_lookup;
     
-    for(unsigned int i = 0; i < number_of_indices; i++)
+    for(std::size_t i = 0; i < number_of_indices; i++)
         index_lookup.push_back(&obj_indices[i]);
     
     std::sort(index_lookup.begin(), index_lookup.end(), compareOBJIndexPointer);
@@ -122,7 +122,7 @@ IndexedModel OBJModel::toIndexedModel()
     std::map<OBJIndex, unsigned int> normal_model_index_map;
     std::map<unsigned int, unsigned int> index_map;
     
-    for(unsigned int i = 0; i < number_of_indices; i++)
+    for(std::size_t i = 0; i < number_of_indices; i++)
     {
         OBJIndex* current_index = &obj_indices[i];
         
@@ -160,7 +160,7 @@ IndexedModel OBJModel::toIndexedModel()
         //Create model which properly separates texture coordinates
         unsigned int previous_vertex_location = findLastVertexIndex(index_lookup, current_index, result);
         
-        if(previous_vertex_location == (unsigned int)-1)
+        if(previous_vertex_location == static_cast<unsigned int>(-1))
         {
             result_model_index = result.positions.size();
         
@@ -180,13 +180,13 @@ IndexedModel OBJModel::toIndexedModel()
     {
         normal_model.calcNormals();
         
-        for(unsigned int i = 0; i < result.positions.size(); i++)
+        for(std::size_t i = 0; i < result.positions.size(); i++)
             result.normals[i] = normal_model.normals[index_map[i]];
     }
 	
 	
 	normal_model.calcTangents();
-	for(unsigned int i = 0; i < result.tangents.size(); i++)
+	for(std::size_t i = 0; i < result.tangents.size(); i++)
 		result.tangents.at(i) = normal_model.tangents[index_map[i]];
 	
     
@@ -196,8 +196,8 @@ IndexedModel OBJModel::toIndexedModel()
 unsigned int OBJModel::findLastVertexIndex(const std::vector<OBJIndex*>& index_lookup, const OBJIndex* current_index, const IndexedModel& result)
 {
     unsigned int start = 0;
-    unsigned int end = index_lookup.size();
-    unsigned int current = (end - start) / 2 + start;
+    std::size_t end = index_lookup.size();
+    std::size_t current = (end - start) / 2 + start;
     unsigned int previous = start;
     
     while(current != previous)
@@ -206,9 +206,9 @@ unsigned int OBJModel::findLastVertexIndex(const std::vector<OBJIndex*>& index_l
         
         if(test_index->vertex_index == current_index->vertex_index)
         {
-            unsigned int count_start = current;
+            std::size_t count_start = current;
         
-            for(unsigned int i = 0; i < current; i++)
+            for(std::size_t i = 0; i < current; i++)
             {
                 OBJIndex* possible_index = index_lookup[current - i];
                 
@@ -221,7 +221,7 @@ unsigned int OBJModel::findLastVertexIndex(const std::vector<OBJIndex*>& index_l
                 count_start--;
             }
             
-            for(unsigned int i = count_start; i < index_lookup.size() - count_start; i++)
+            for(std::size_t i = count_start; i < index_lookup.size() - count_start; i++)
             {
                 OBJIndex* possible_index = index_lookup[current + i];
                 
@@ -247,7 +247,7 @@ unsigned int OBJModel::findLastVertexIndex(const std::vector<OBJIndex*>& index_l
                     else
                         current_normal = Vector3F(0,0,0);
                     
-                    for(unsigned int j = 0; j < result.positions.size(); j++)
+                    for(std::size_t j = 0; j < result.positions.size(); j++)
                     {
                         if(current_position == result.positions[j] 
                             && ((!has_uvs || current_texture_coordinate == result.texcoords[j])
@@ -294,7 +294,7 @@ void OBJModel::createOBJFace(const std::string& line)
 
 OBJIndex OBJModel::parseOBJIndex(const std::string& token, bool* has_uvs, bool* has_normals)
 {
-    unsigned int token_length = token.length();
+    std::size_t token_length = token.length();
     const char* token_c_string = token.c_str();
     
     unsigned int vertex_index_start = 0;
@@ -359,7 +359,7 @@ Vector3F OBJModel::parseOBJVector3F(const std::string& line)
 
 Vector2F OBJModel::parseOBJVector2F(const std::string& line)
 {
-    unsigned int token_length = line.length();
+    std::size_t token_length = line.length();
     const char* token_c_string = line.c_str();
     
     unsigned int vertex_index_start = 3;
