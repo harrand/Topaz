@@ -1,24 +1,23 @@
 #include "datatranslation.hpp"
 #include "utility.hpp"
 
-DataTranslation::DataTranslation(std::string datafilename): datafilename(std::move(datafilename)){}
+DataTranslation::DataTranslation(std::string datafilename): datafilename(std::move(datafilename)), data_file(RawFile(this->datafilename)){}
 
 std::string DataTranslation::getResourceLink(const std::string& resource_name) const
 {
-	return MDLF(RawFile(this->datafilename)).getTag(resource_name + ".path");
+	return this->data_file.getTag(resource_name + ".path");
 }
 
 std::string DataTranslation::getResourceName(const std::string& resource_link) const
 {
-	const RawFile input(this->datafilename);
-	std::vector<std::string> lines = input.getLines();
+	std::vector<std::string> lines = this->data_file.getRawFile().getLines();
 	for(std::string& line : lines)
 	{
 		std::vector<std::string> lineSplit = tz::util::string::splitString(line, ':');
 		if(lineSplit.size() != 0)
 		{
 			std::string tagname = lineSplit.at(0);
-			if(MDLF(input).getTag(tagname) == resource_link)
+			if(this->data_file.getTag(tagname) == resource_link)
 			{
 				std::string undesired_suffix = ".path";
 				tagname.erase(tagname.find(undesired_suffix), undesired_suffix.length());
@@ -32,10 +31,9 @@ std::string DataTranslation::getResourceName(const std::string& resource_link) c
 std::unordered_map<std::string, std::string> DataTranslation::retrieveModels() const
 {
 	std::unordered_map<std::string, std::string> model_map;
-	MDLF input(RawFile(this->datafilename));
-	for(std::string& model : input.getSequence("models"))
+	for(std::string& model : this->data_file.getSequence("models"))
 	{
-		model_map[this->getResourceLink(model)] = input.getTag(model + ".name");
+		model_map[this->getResourceLink(model)] = this->data_file.getTag(model + ".name");
 	}
 	return model_map;
 }
@@ -43,10 +41,9 @@ std::unordered_map<std::string, std::string> DataTranslation::retrieveModels() c
 std::unordered_map<std::string, std::string> DataTranslation::retrieveTextures() const
 {
 	std::unordered_map<std::string, std::string> texture_map;
-	MDLF input(RawFile(this->datafilename));
-	for(const std::string& texture : input.getSequence("textures"))
+	for(const std::string& texture : this->data_file.getSequence("textures"))
 	{
-		texture_map[this->getResourceLink(texture)] = input.getTag(texture + ".name");
+		texture_map[this->getResourceLink(texture)] = this->data_file.getTag(texture + ".name");
 	}
 	return texture_map;
 }
@@ -54,10 +51,9 @@ std::unordered_map<std::string, std::string> DataTranslation::retrieveTextures()
 std::unordered_map<std::string, std::string> DataTranslation::retrieveNormalMaps() const
 {
 	std::unordered_map<std::string, std::string> normalmap_map;
-	MDLF input(RawFile(this->datafilename));
-	for(const std::string& normalmap : input.getSequence("normalmaps"))
+	for(const std::string& normalmap : this->data_file.getSequence("normalmaps"))
 	{
-		normalmap_map[this->getResourceLink(normalmap)] = input.getTag(normalmap + ".name");
+		normalmap_map[this->getResourceLink(normalmap)] = this->data_file.getTag(normalmap + ".name");
 	}
 	return normalmap_map;
 }
@@ -65,10 +61,9 @@ std::unordered_map<std::string, std::string> DataTranslation::retrieveNormalMaps
 std::unordered_map<std::string, std::string> DataTranslation::retrieveParallaxMaps() const
 {
 	std::unordered_map<std::string, std::string> parallaxmap_map;
-	MDLF input(RawFile(this->datafilename));
-	for(const std::string& parallaxmap : input.getSequence("parallaxmaps"))
+	for(const std::string& parallaxmap : this->data_file.getSequence("parallaxmaps"))
 	{
-		parallaxmap_map[this->getResourceLink(parallaxmap)] = input.getTag(parallaxmap + ".name");
+		parallaxmap_map[this->getResourceLink(parallaxmap)] = this->data_file.getTag(parallaxmap + ".name");
 	}
 	return parallaxmap_map;
 }
@@ -76,10 +71,9 @@ std::unordered_map<std::string, std::string> DataTranslation::retrieveParallaxMa
 std::unordered_map<std::string, std::string> DataTranslation::retrieveDisplacementMaps() const
 {
 	std::unordered_map<std::string, std::string> displacementmap_map;
-	MDLF input(RawFile(this->datafilename));
-	for(const std::string& displacementmap : input.getSequence("displacementmaps"))
+	for(const std::string& displacementmap : this->data_file.getSequence("displacementmaps"))
 	{
-		displacementmap_map[this->getResourceLink(displacementmap)] = input.getTag(displacementmap + ".name");
+		displacementmap_map[this->getResourceLink(displacementmap)] = this->data_file.getTag(displacementmap + ".name");
 	}
 	return displacementmap_map;
 }
@@ -115,4 +109,3 @@ unsigned int DataTranslation::retrieveAllData(std::vector<std::unique_ptr<Mesh>>
 	}
 	return data_count;
 }
-
