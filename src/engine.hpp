@@ -3,7 +3,6 @@
 #include "window.hpp"
 #include "command.hpp"
 #include "timekeeper.hpp"
-#include "player.hpp"
 
 namespace tz
 {
@@ -14,7 +13,7 @@ namespace tz
 class Engine
 {
 public:
-	Engine(Player& player, Window& wnd, std::string properties_path = "properties.mdl", unsigned int initial_fps = 60, unsigned int tps = 30);
+	Engine(Camera& camera, Window& wnd, std::string properties_path = "properties.mdl", unsigned int initial_fps = 60, unsigned int tps = 30);
 	~Engine(){};
 	
 	void update(std::size_t shader_index);
@@ -25,12 +24,12 @@ public:
 	const MDLF& getProperties() const;
 	const MDLF& getResources() const;
 	
-	const Player& getPlayer() const;
+	const Camera& getCamera() const;
 	const Window& getWindow() const;
 	const World& getWorld() const;
 	const Shader& getDefaultShader() const;
 	
-	Player& getPlayerR();
+	Camera& getCameraR();
 	Window& getWindowR();
 	World& getWorldR();
 	
@@ -50,7 +49,7 @@ private:
 	const MDLF properties;
 	const MDLF resources;
 	const Shader default_shader;
-	Player& player;
+	Camera& camera;
 	Window& wnd;
 	World world;
 	std::vector<std::unique_ptr<Mesh>> meshes;

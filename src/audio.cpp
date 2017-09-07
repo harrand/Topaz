@@ -60,12 +60,12 @@ const Mix_Chunk* AudioClip::getAudioHandle() const
 
 AudioSource::AudioSource(std::string filename, Vector3F position): AudioClip(filename), position(std::move(position)){}
 
-void AudioSource::update(Player& relative_to)
+void AudioSource::update(const Camera& relative_to)
 {
 	const Vector3F source_position = this->position;
 	const Vector3F listener_position = relative_to.getPosition();
-	const Vector3F forward = relative_to.getCamera().getForward();
-	const Vector3F up = relative_to.getCamera().getUp();
+	const Vector3F forward = relative_to.getForward();
+	const Vector3F up = relative_to.getUp();
 	float proportion_right = (forward.cross(up).normalised().dot((source_position - listener_position).normalised()) + 1) / 2;	//Get how strongly in the right that the audio source is at
 	if(source_position == listener_position)
 		proportion_right = 0.5;

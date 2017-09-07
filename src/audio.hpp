@@ -2,7 +2,8 @@
 #define AUDIO_HPP
 #include <string>
 #include "SDL_mixer.h"
-#include "player.hpp"
+#include "camera.hpp"
+#include "utility.hpp"
 
 namespace tz
 {
@@ -37,7 +38,7 @@ class AudioSource: public AudioClip
 {
 public:
 	AudioSource(std::string filename, Vector3F position);
-	void update(Player& relativeTo);
+	void update(const Camera& relative_to);
 	Vector3F& getPositionR();
 	const Vector3F& getPosition() const;
 private:

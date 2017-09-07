@@ -28,7 +28,7 @@ private:
 class MouseController
 {
 public:
-	MouseController(Player& player, World& world, Window& wnd);
+	MouseController(Camera& camera, World& world, Window& wnd);
 	MouseController(const MouseController& copy);
 	MouseController(MouseController&& move) = delete;
 	MouseController& operator=(const MouseController& rhs) = delete;
@@ -39,7 +39,7 @@ public:
 	
 	virtual void handleMouse();
 private: 
-	Player& player;
+	Camera& camera;
 	World& world;
 	Window& wnd;
 	MouseListener ml;
@@ -93,7 +93,7 @@ namespace KeyControls
 class KeybindController
 {
 public:
-	KeybindController(Player& player, const Shader& shader, World& world, Window& wnd);
+	KeybindController(Camera& camera, const Shader& shader, World& world, Window& wnd);
 	KeybindController(const KeybindController& copy);
 	KeybindController(KeybindController&& move) = delete;
 	KeybindController& operator=(const KeybindController& rhs) = delete;
@@ -101,7 +101,7 @@ public:
 	
 	void handleKeybinds(float seconds_since_last_frame, std::string resources_path, std::string controls_path);
 private:
-	Player& player;
+	Camera& camera;
 	const Shader& shader;
 	World& world;
 	Window& wnd;

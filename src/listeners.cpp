@@ -56,12 +56,12 @@ Vector2F MouseListener::getMouseDeltaPos() const
 	return (this->mouse_position - this->previous_mouse_position);
 }
 
-MouseController::MouseController(Player& player, World& world, Window& wnd): player(player), world(world), wnd(wnd), ml()
+MouseController::MouseController(Camera& camera, World& world, Window& wnd): camera(camera), world(world), wnd(wnd), ml()
 {
 	this->wnd.registerListener(this->ml);
 }
 
-MouseController::MouseController(const MouseController& copy): MouseController(copy.player, copy.world, copy.wnd){}
+MouseController::MouseController(const MouseController& copy): MouseController(copy.camera, copy.world, copy.wnd){}
 
 MouseController::~MouseController()
 {
@@ -82,7 +82,7 @@ void MouseController::handleMouse()
 {
 	if(this->ml.isLeftClicked())
 	{
-		Vector3F& orientation = this->player.getCamera().getRotationR();
+		Vector3F& orientation = this->camera.getRotationR();
 		Vector2F delta = this->ml.getMouseDeltaPos();
 		orientation.getYR() += (3 * delta.getX() / (this->wnd.getWidth()));
 		orientation.getXR() -= (3 * delta.getY() / (this->wnd.getHeight()));
@@ -237,12 +237,12 @@ std::string KeyControls::getKeybind(MDLF& controls_data_file, KeybindType kt)
 	}
 }
 
-KeybindController::KeybindController(Player& player, const Shader& shader, World& world, Window& wnd): player(player), shader(shader), world(world), wnd(wnd)
+KeybindController::KeybindController(Camera& camera, const Shader& shader, World& world, Window& wnd): camera(camera), shader(shader), world(world), wnd(wnd)
 {
 	wnd.registerListener(this->kl);
 }
 
-KeybindController::KeybindController(const KeybindController& copy): KeybindController(copy.player, copy.shader, copy.world, copy.wnd){}
+KeybindController::KeybindController(const KeybindController& copy): KeybindController(copy.camera, copy.shader, copy.world, copy.wnd){}
 
 KeybindController::~KeybindController()
 {
@@ -254,25 +254,25 @@ void KeybindController::handleKeybinds(float seconds_since_last_frame, std::stri
 	float multiplier = tz::util::cast::fromString<float>(MDLF(RawFile(resources_path)).getTag("speed"));
 	MDLF controls_data_file = MDLF(RawFile(controls_path));
 	if(kl.isKeyPressed(KeyControls::getKeybind(controls_data_file, KeybindType::MOVE_FORWARD)))
-		this->player.getCamera().getPositionR() += (player.getCamera().getForward() * multiplier * seconds_since_last_frame);
+		this->camera.getPositionR() += (this->camera.getForward() * multiplier * seconds_since_last_frame);
 	if(kl.isKeyPressed(KeyControls::getKeybind(controls_data_file, KeybindType::MOVE_BACKWARD)))
-		this->player.getCamera().getPositionR() += (player.getCamera().getBackward() * multiplier * seconds_since_last_frame);
+		this->camera.getPositionR() += (this->camera.getBackward() * multiplier * seconds_since_last_frame);
 	if(kl.isKeyPressed(KeyControls::getKeybind(controls_data_file, KeybindType::MOVE_LEFT)))
-		this->player.getCamera().getPositionR() += (player.getCamera().getLeft() * multiplier * seconds_since_last_frame);
+		this->camera.getPositionR() += (this->camera.getLeft() * multiplier * seconds_since_last_frame);
 	if(kl.isKeyPressed(KeyControls::getKeybind(controls_data_file, KeybindType::MOVE_RIGHT)))
-		this->player.getCamera().getPositionR() += (player.getCamera().getRight() * multiplier * seconds_since_last_frame);
+		this->camera.getPositionR() += (this->camera.getRight() * multiplier * seconds_since_last_frame);
 	if(kl.isKeyPressed(KeyControls::getKeybind(controls_data_file, KeybindType::MOVE_UP)))
-		this->player.getCamera().getPositionR() += (Vector3F(0, 1, 0) * multiplier * seconds_since_last_frame);
+		this->camera.getPositionR() += (Vector3F(0, 1, 0) * multiplier * seconds_since_last_frame);
 	if(kl.isKeyPressed(KeyControls::getKeybind(controls_data_file, KeybindType::MOVE_DOWN)))
-		this->player.getCamera().getPositionR() += (Vector3F(0, -1, 0) * multiplier * seconds_since_last_frame);
+		this->camera.getPositionR() += (Vector3F(0, -1, 0) * multiplier * seconds_since_last_frame);
 	if(kl.isKeyPressed(KeyControls::getKeybind(controls_data_file, KeybindType::LOOK_UP)))
-		this->player.getCamera().getRotationR() += (Vector3F(1.0f/360.0f, 0, 0) * multiplier * 5 * seconds_since_last_frame);
+		this->camera.getRotationR() += (Vector3F(1.0f/360.0f, 0, 0) * multiplier * 5 * seconds_since_last_frame);
 	if(kl.isKeyPressed(KeyControls::getKeybind(controls_data_file, KeybindType::LOOK_DOWN)))
-		this->player.getCamera().getRotationR() += (Vector3F(-1.0f/360.0f, 0, 0) * multiplier * 5 * seconds_since_last_frame);
+		this->camera.getRotationR() += (Vector3F(-1.0f/360.0f, 0, 0) * multiplier * 5 * seconds_since_last_frame);
 	if(kl.isKeyPressed(KeyControls::getKeybind(controls_data_file, KeybindType::LOOK_LEFT)))
-		this->player.getCamera().getRotationR() += (Vector3F(0, -1.0f/360.0f, 0) * multiplier * 5 * seconds_since_last_frame);
+		this->camera.getRotationR() += (Vector3F(0, -1.0f/360.0f, 0) * multiplier * 5 * seconds_since_last_frame);
 	if(kl.isKeyPressed(KeyControls::getKeybind(controls_data_file, KeybindType::LOOK_RIGHT)))
-		this->player.getCamera().getRotationR() += (Vector3F(0, 1.0f/360.0f, 0) * multiplier * 5 * seconds_since_last_frame);
+		this->camera.getRotationR() += (Vector3F(0, 1.0f/360.0f, 0) * multiplier * 5 * seconds_since_last_frame);
 	if(kl.isKeyPressed(KeyControls::getKeybind(controls_data_file, KeybindType::TOGGLE_FULLSCREEN)))
 		SDL_SetWindowFullscreen(this->wnd.getWindowHandleR(), !(SDL_GetWindowFlags(this->wnd.getWindowHandleR()) & SDL_WINDOW_FULLSCREEN));
 			
@@ -286,9 +286,8 @@ void KeybindController::handleKeybinds(float seconds_since_last_frame, std::stri
 		wnd.requestClose();
 	if(kl.isKeyPressed(KeyControls::getKeybind(controls_data_file, KeybindType::RESTART)))
 	{
-		player.getCamera().getPositionR() = this->world.getSpawnPoint();
-		player.getCamera().getRotationR() = this->world.getSpawnOrientation();
-		player.setVelocity(Vector3F());
+		camera.getPositionR() = this->world.getSpawnPoint();
+		camera.getRotationR() = this->world.getSpawnOrientation();
 	}
 	/*	if(kl.catchKeyPressed(KeyControls::getKeybind(controls_data_file, KeybindType::ALIAS)))
 	{

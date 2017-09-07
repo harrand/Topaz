@@ -21,13 +21,12 @@ void tz::terminate()
 	tz::util::log::message("Terminated Topaz.");
 }
 
-Engine::Engine(Player& player, Window& wnd, std::string properties_path, unsigned int initial_fps, unsigned int tps): properties(RawFile(properties_path)), resources(RawFile(this->properties.getTag("resources"))), default_shader(this->properties.getTag("default_shader")), player(player), wnd(wnd), world(this->properties.getTag("default_world"), this->properties.getTag("resources")), fps(initial_fps), tps(tps)
+Engine::Engine(Camera& camera, Window& wnd, std::string properties_path, unsigned int initial_fps, unsigned int tps): properties(RawFile(properties_path)), resources(RawFile(this->properties.getTag("resources"))), default_shader(this->properties.getTag("default_shader")), camera(camera), wnd(wnd), world(this->properties.getTag("default_world"), this->properties.getTag("resources")), fps(initial_fps), tps(tps)
 {
-	this->player.setPosition(this->world.getSpawnPoint());
+	this->camera.getPositionR() = this->world.getSpawnPoint();
 	tz::util::log::message("Set player position to world spawn.");
 	tz::util::log::message("Loading assets from '", this->properties.getTag("resources"), "'...");
 	tz::util::log::message("Loaded ", tz::data::Manager(this->properties.getTag("resources")).retrieveAllData(this->meshes, this->textures, this->normal_maps, this->parallax_maps, this->displacement_maps), " assets.");
-	this->world.addEntity(this->player);
 	for(std::string shaderPath : this->properties.getSequence("extra_shaders"))
 		this->extra_shaders.push_back(Shader(shaderPath));
 }
@@ -49,7 +48,7 @@ void Engine::update(std::size_t shader_index)
 	this->wnd.clear(0.0f, 0.0f, 0.0f, 1.0f);
 	this->profiler.endFrame();
 	
-	this->world.render(this->profiler.getLastDelta(), this->player.getCamera(), this->getShader(shader_index), this->wnd.getWidth(), this->wnd.getHeight(), this->meshes, this->textures, this->normal_maps, this->parallax_maps, this->displacement_maps);
+	this->world.render(this->profiler.getLastDelta(), this->camera, this->getShader(shader_index), this->wnd.getWidth(), this->wnd.getHeight(), this->meshes, this->textures, this->normal_maps, this->parallax_maps, this->displacement_maps);
 	
 	if(ticker.millisPassed(1000/this->tps))
 	{
@@ -83,9 +82,9 @@ const MDLF& Engine::getResources() const
 	return this->resources;
 }
 
-const Player& Engine::getPlayer() const
+const Camera& Engine::getCamera() const
 {
-	return this->player;
+	return this->camera;
 }
 
 const Window& Engine::getWindow() const
@@ -103,9 +102,9 @@ const Shader& Engine::getDefaultShader() const
 	return this->default_shader;
 }
 
-Player& Engine::getPlayerR()
+Camera& Engine::getCameraR()
 {
-	return this->player;
+	return this->camera;
 }
 
 Window& Engine::getWindowR()

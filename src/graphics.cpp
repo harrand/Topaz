@@ -44,7 +44,7 @@ OBJModel::OBJModel(const std::string& file_name): has_uvs(false), has_normals(fa
     }
     else
     {
-        std::cerr << "Unable to load mesh: " << file_name << std::endl;
+        tz::util::log::error("Unable to load mesh: ", file_name);
     }
 }
 
