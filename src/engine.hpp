@@ -3,6 +3,7 @@
 #include "gui.hpp"
 #include "command.hpp"
 #include "timekeeper.hpp"
+#include "audio.hpp"
 
 namespace tz
 {

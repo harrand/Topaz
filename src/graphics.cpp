@@ -6,6 +6,8 @@ static inline unsigned int findNextChar(unsigned int start, const char* str, uns
 static inline unsigned int parseOBJIndexValue(const std::string& token, unsigned int start, unsigned int end);
 static inline float parseOBJFloatValue(const std::string& token, unsigned int start, unsigned int end);
 
+Vertex::Vertex(Vector3F position, Vector2F texcoord, Vector3F normal): position(std::move(position)), texcoord(std::move(texcoord)), normal(std::move(normal)){}
+
 OBJModel::OBJModel(const std::string& file_name): has_uvs(false), has_normals(false)
 {
     std::ifstream file;

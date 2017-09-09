@@ -1,10 +1,10 @@
 #ifndef GUI_HPP
 #define GUI_HPP
-#include <unordered_set>
 #include <string>
 #include <unordered_map>
 #include "SDL.h"
 #include "listeners.hpp"
+#include "vector.hpp"
 
 class GUIElement
 {
@@ -32,39 +32,27 @@ public:
 	Window(Window&& move) = delete;
 	Window& operator=(const Window& rhs) = delete;
 	~Window();
-	
 	virtual void destroy();
 	virtual bool focused();
-	
 	enum class SwapIntervalType : int
 	{
 		LATE_SWAP_TEARING = -1,
 		IMMEDIATE_UPDATES = 0,
 		VSYNC = 1,
 	};
-	
 	int getWidth() const;
 	int getHeight() const;
 	int& getWidthR();
 	int& getHeightR();
-	
 	bool isCloseRequested() const;
-	
 	void setSwapIntervalType(SwapIntervalType type) const;
 	SwapIntervalType getSwapIntervalType() const;
-	
 	void requestClose();
-	
 	void setTitle(std::string new_title);
-	
 	void setRenderTarget() const;
-	
 	SDL_Window*& getWindowHandleR();
-	
 	void clear(float r = 1.0f, float g = 1.0f, float b = 1.0f, float a = 1.0f) const;
-	
 	void update();
-	
 	void registerListener(Listener& l);
 	void deregisterListener(Listener& l);
 private:
@@ -72,13 +60,39 @@ private:
 	void initGLEW();
 	void destSDL();
 	void handleEvents();
-	std::unordered_map<unsigned int, Listener*> registered_listeners;
 	
+	std::unordered_map<unsigned int, Listener*> registered_listeners;
 	int w, h;
 	std::string title;
 	bool is_close_requested;
 	SDL_Window* sdl_window_pointer;
 	SDL_GLContext sdl_gl_context_handle;
+};
+
+class Panel : public GUIElement
+{
+public:
+	Panel(unsigned int x, unsigned int y, unsigned int width, unsigned int height);
+	unsigned int getX() const;
+	unsigned int getY() const;
+	unsigned int getWidth() const;
+	unsigned int getHeight() const;
+	unsigned int& getXR();
+	unsigned int& getYR();
+	unsigned int& getWidthR();
+	unsigned int& getHeightR();
+	const Vector3F& getColour() const;
+	Vector3F& getColourR();
+	
+	virtual void update();
+	virtual void destroy();
+	virtual bool focused();
+	void setFocused(bool focused);
+protected:
+	bool is_focused;
+private:
+	unsigned int x, y, width, height;
+	Vector3F colour;
 };
 
 #endif

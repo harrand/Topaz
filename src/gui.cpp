@@ -186,3 +186,75 @@ void Window::handleEvents()
 		}
 	}
 }
+
+Panel::Panel(unsigned int x, unsigned int y, unsigned int width, unsigned int height): GUIElement(), is_focused(false), x(x), y(y), width(width), height(height){}
+
+unsigned int Panel::getX() const
+{
+	return this->x;
+}
+
+unsigned int Panel::getY() const
+{
+	return this->y;
+}
+
+unsigned int Panel::getWidth() const
+{
+	return this->width;
+}
+
+unsigned int Panel::getHeight() const
+{
+	return this->height;
+}
+
+unsigned int& Panel::getXR()
+{
+	return this->x;
+}
+
+unsigned int& Panel::getYR()
+{
+	return this->y;
+}
+
+unsigned int& Panel::getWidthR()
+{
+	return this->width;
+}
+
+unsigned int& Panel::getHeightR()
+{
+	return this->height;
+}
+
+const Vector3F& Panel::getColour() const
+{
+	return this->colour;
+}
+
+Vector3F& Panel::getColourR()
+{
+	return this->colour;
+}
+
+void Panel::update()
+{
+	
+}
+
+void Panel::destroy()
+{
+	
+}
+
+bool Panel::focused()
+{
+	return this->is_focused;
+}
+
+void Panel::setFocused(bool focused)
+{
+	this->is_focused = focused;
+}

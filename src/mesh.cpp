@@ -1,13 +1,11 @@
 #include "mesh.hpp"
 
-Vertex::Vertex(Vector3F position, Vector2F texcoord, Vector3F normal): position(std::move(position)), texcoord(std::move(texcoord)), normal(std::move(normal)){}
-
 Mesh::Mesh(std::string filename): filename(std::move(filename)), model(OBJModel(this->filename).toIndexedModel())
 {
 	this->initMesh();
 }
 
-Mesh::Mesh(Vertex* vertices, unsigned int number_of_vertices, unsigned int* indices, unsigned int number_of_indices)
+Mesh::Mesh(const Vertex* vertices, unsigned int number_of_vertices, const unsigned int* indices, unsigned int number_of_indices)
 {
 	IndexedModel model;
 	
@@ -24,6 +22,8 @@ Mesh::Mesh(Vertex* vertices, unsigned int number_of_vertices, unsigned int* indi
 	this->model = model;
 	this->initMesh();
 }
+
+Mesh::Mesh(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices): Mesh(vertices.data(), vertices.size(), indices.data(), indices.size()){}
 
 Mesh::~Mesh()
 {

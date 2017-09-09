@@ -34,6 +34,19 @@ namespace tz
 	}
 }
 
+class Vertex
+{
+public:
+	Vertex(Vector3F position, Vector2F texcoord, Vector3F normal);
+	Vertex(const Vertex& copy) = default;
+	Vertex(Vertex&& move) = default;
+	Vertex& operator=(const Vertex& rhs) = default;
+	
+	Vector3F position;
+	Vector2F texcoord;
+	Vector3F normal;
+};
+
 struct OBJIndex
 {
     unsigned int vertex_index;

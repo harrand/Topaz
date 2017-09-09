@@ -1,7 +1,9 @@
 #ifndef LISTENERS_HPP
 #define LISTENERS_HPP
-#include "command.hpp"
 #include "SDL.h"
+#include "command.hpp"
+#include "camera.hpp"
+#include "world.hpp"
 
 class Listener
 {

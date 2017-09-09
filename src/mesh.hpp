@@ -8,24 +8,12 @@
 #include <memory>
 #include "graphics.hpp"
 
-class Vertex
-{
-public:
-	Vertex(Vector3F position, Vector2F texcoord, Vector3F normal);
-	Vertex(const Vertex& copy) = default;
-	Vertex(Vertex&& move) = default;
-	Vertex& operator=(const Vertex& rhs) = default;
-	
-	Vector3F position;
-	Vector2F texcoord;
-	Vector3F normal;
-};
-
 class Mesh
 {
 public:
 	Mesh(std::string filename = "./res/models/undefined.obj");
-	Mesh(Vertex* vertices, unsigned int number_of_vertices, unsigned int* indices, unsigned int number_of_indices);
+	Mesh(const Vertex* vertices, unsigned int number_of_vertices, const unsigned int* indices, unsigned int number_of_indices);
+	Mesh(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices);
 	Mesh(const Mesh& copy) = delete;
 	Mesh(Mesh&& move) = delete;
 	~Mesh();

@@ -1,8 +1,7 @@
 #ifndef COMMAND_HPP
 #define COMMAND_HPP
-#include "world.hpp"
-#include "audio.hpp"
 #include <unordered_set>
+#include <vector>
 
 class Command
 {
