@@ -1,6 +1,6 @@
 #ifndef ENGINE_HPP
 #define ENGINE_HPP
-#include "window.hpp"
+#include "gui.hpp"
 #include "command.hpp"
 #include "timekeeper.hpp"
 

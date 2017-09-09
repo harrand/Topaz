@@ -17,9 +17,11 @@ int main()
 	constexpr std::size_t shader_id = 0;
 	
 	tz::util::log::message("Initialising key controller...");
-	KeybindController kc(cam, engine.getShader(shader_id), engine.getWorldR(), sdl_window_pointer);
+	KeybindController kc(cam, engine.getShader(shader_id), engine.getWorldR());
 	tz::util::log::message("Initialising mouse controller...");
-	MouseController mc(cam, engine.getWorldR(), sdl_window_pointer);
+	MouseController mc(cam, engine.getWorldR());
+	sdl_window_pointer.registerListener(kc.getKeyListenerR());
+	sdl_window_pointer.registerListener(mc.getMouseListenerR());
 	
 	tz::util::log::message("Loading music");
 	AudioMusic music("../../../res/runtime/music/music.wav");

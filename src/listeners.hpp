@@ -1,7 +1,26 @@
 #ifndef LISTENERS_HPP
 #define LISTENERS_HPP
-#include "window.hpp"
 #include "command.hpp"
+#include "SDL.h"
+
+class Listener
+{
+public:
+	Listener();
+	Listener(const Listener& copy) = delete;
+	Listener(Listener&& move) = delete;
+	Listener& operator=(const Listener& rhs) = delete;
+	~Listener();
+	
+	virtual void handleEvents(SDL_Event& evt) = 0;
+	
+	unsigned int getID() const;
+	
+	static unsigned int getNumListeners();
+private:
+	static unsigned int NUM_LISTENERS;
+	unsigned int id;
+};
 
 class MouseListener: public Listener
 {
@@ -28,11 +47,10 @@ private:
 class MouseController
 {
 public:
-	MouseController(Camera& camera, World& world, Window& wnd);
+	MouseController(Camera& camera, World& world);
 	MouseController(const MouseController& copy);
 	MouseController(MouseController&& move) = delete;
 	MouseController& operator=(const MouseController& rhs) = delete;
-	~MouseController();
 	
 	const MouseListener& getMouseListener();
 	MouseListener& getMouseListenerR();
@@ -41,7 +59,6 @@ public:
 private: 
 	Camera& camera;
 	World& world;
-	Window& wnd;
 	MouseListener ml;
 };
 
@@ -93,18 +110,19 @@ namespace KeyControls
 class KeybindController
 {
 public:
-	KeybindController(Camera& camera, const Shader& shader, World& world, Window& wnd);
+	KeybindController(Camera& camera, const Shader& shader, World& world);
 	KeybindController(const KeybindController& copy);
 	KeybindController(KeybindController&& move) = delete;
 	KeybindController& operator=(const KeybindController& rhs) = delete;
-	~KeybindController();
+	
+	const KeyListener& getKeyListener() const;
+	KeyListener& getKeyListenerR();
 	
 	void handleKeybinds(float seconds_since_last_frame, std::string resources_path, std::string controls_path);
 private:
 	Camera& camera;
 	const Shader& shader;
 	World& world;
-	Window& wnd;
 	KeyListener kl;
 };
 

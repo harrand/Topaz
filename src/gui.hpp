@@ -1,29 +1,29 @@
-#ifndef WINDOW_HPP
-#define WINDOW_HPP
+#ifndef GUI_HPP
+#define GUI_HPP
+#include <unordered_set>
 #include <string>
 #include <unordered_map>
 #include "SDL.h"
+#include "listeners.hpp"
 
-class Listener
+class GUIElement
 {
 public:
-	Listener();
-	Listener(const Listener& copy) = delete;
-	Listener(Listener&& move) = delete;
-	Listener& operator=(const Listener& rhs) = delete;
-	~Listener();
-	
-	virtual void handleEvents(SDL_Event& evt) = 0;
-	
-	unsigned int getID() const;
-	
-	static unsigned int getNumListeners();
-private:
-	static unsigned int NUM_LISTENERS;
-	unsigned int id;
+	GUIElement();
+	virtual void update() = 0;
+	virtual void destroy() = 0;
+	virtual bool focused() = 0;
+	GUIElement* getParent() const;
+	const std::unordered_set<GUIElement*>& getChildren() const;
+	bool isHidden() const;
+	void setHidden(bool hidden);
+protected:
+	GUIElement* parent;
+	std::unordered_set<GUIElement*> children;
+	bool hidden;
 };
 
-class Window
+class Window : public GUIElement
 {
 public:
 	Window(int w = 800, int h = 600, std::string title = "Untitled");
@@ -32,6 +32,9 @@ public:
 	Window(Window&& move) = delete;
 	Window& operator=(const Window& rhs) = delete;
 	~Window();
+	
+	virtual void destroy();
+	virtual bool focused();
 	
 	enum class SwapIntervalType : int
 	{

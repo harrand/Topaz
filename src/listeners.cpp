@@ -1,6 +1,30 @@
 #include "listeners.hpp"
 #include <algorithm>
 
+// Static objects need to be initialised like this
+unsigned int Listener::NUM_LISTENERS = 0;
+
+Listener::Listener()
+{
+	Listener::NUM_LISTENERS++;
+	this->id = Listener::NUM_LISTENERS;
+}
+
+Listener::~Listener()
+{
+	Listener::NUM_LISTENERS--;
+}
+
+unsigned int Listener::getID() const
+{
+	return this->id;
+}
+
+// static
+unsigned int Listener::getNumListeners()
+{
+	return Listener::NUM_LISTENERS;
+}
 
 MouseListener::MouseListener(): Listener(){}
 
@@ -56,17 +80,9 @@ Vector2F MouseListener::getMouseDeltaPos() const
 	return (this->mouse_position - this->previous_mouse_position);
 }
 
-MouseController::MouseController(Camera& camera, World& world, Window& wnd): camera(camera), world(world), wnd(wnd), ml()
-{
-	this->wnd.registerListener(this->ml);
-}
+MouseController::MouseController(Camera& camera, World& world): camera(camera), world(world), ml(){}
 
-MouseController::MouseController(const MouseController& copy): MouseController(copy.camera, copy.world, copy.wnd){}
-
-MouseController::~MouseController()
-{
-	this->wnd.deregisterListener(this->ml);
-}
+MouseController::MouseController(const MouseController& copy): MouseController(copy.camera, copy.world){}
 
 const MouseListener& MouseController::getMouseListener()
 {
@@ -84,8 +100,8 @@ void MouseController::handleMouse()
 	{
 		Vector3F& orientation = this->camera.getRotationR();
 		Vector2F delta = this->ml.getMouseDeltaPos();
-		orientation.getYR() += (3 * delta.getX() / (this->wnd.getWidth()));
-		orientation.getXR() -= (3 * delta.getY() / (this->wnd.getHeight()));
+		orientation.getYR() += (3 * delta.getX());
+		orientation.getXR() -= (3 * delta.getY());
 	}
 }
 
@@ -237,16 +253,18 @@ std::string KeyControls::getKeybind(MDLF& controls_data_file, KeybindType kt)
 	}
 }
 
-KeybindController::KeybindController(Camera& camera, const Shader& shader, World& world, Window& wnd): camera(camera), shader(shader), world(world), wnd(wnd)
+KeybindController::KeybindController(Camera& camera, const Shader& shader, World& world): camera(camera), shader(shader), world(world){}
+
+KeybindController::KeybindController(const KeybindController& copy): KeybindController(copy.camera, copy.shader, copy.world){}
+
+const KeyListener& KeybindController::getKeyListener() const
 {
-	wnd.registerListener(this->kl);
+	return this->kl;
 }
 
-KeybindController::KeybindController(const KeybindController& copy): KeybindController(copy.camera, copy.shader, copy.world, copy.wnd){}
-
-KeybindController::~KeybindController()
+KeyListener& KeybindController::getKeyListenerR()
 {
-	wnd.deregisterListener(this->kl);
+	return this->kl;
 }
 
 void KeybindController::handleKeybinds(float seconds_since_last_frame, std::string resources_path, std::string controls_path)
@@ -273,8 +291,10 @@ void KeybindController::handleKeybinds(float seconds_since_last_frame, std::stri
 		this->camera.getRotationR() += (Vector3F(0, -1.0f/360.0f, 0) * multiplier * 5 * seconds_since_last_frame);
 	if(kl.isKeyPressed(KeyControls::getKeybind(controls_data_file, KeybindType::LOOK_RIGHT)))
 		this->camera.getRotationR() += (Vector3F(0, 1.0f/360.0f, 0) * multiplier * 5 * seconds_since_last_frame);
+	/*
 	if(kl.isKeyPressed(KeyControls::getKeybind(controls_data_file, KeybindType::TOGGLE_FULLSCREEN)))
 		SDL_SetWindowFullscreen(this->wnd.getWindowHandleR(), !(SDL_GetWindowFlags(this->wnd.getWindowHandleR()) & SDL_WINDOW_FULLSCREEN));
+	*/
 			
 	if(kl.isKeyPressed(KeyControls::getKeybind(controls_data_file, KeybindType::INPUT_COMMAND)))
 	{
@@ -282,8 +302,10 @@ void KeybindController::handleKeybinds(float seconds_since_last_frame, std::stri
 		std::getline(std::cin, input);
 		//Commands::inputCommand(input, resources_path, world, player, shader);
 	}
+	/*
 	if(kl.isKeyPressed(KeyControls::getKeybind(controls_data_file, KeybindType::REQUEST_CLOSE)))
 		wnd.requestClose();
+	*/
 	if(kl.isKeyPressed(KeyControls::getKeybind(controls_data_file, KeybindType::RESTART)))
 	{
 		camera.getPositionR() = this->world.getSpawnPoint();

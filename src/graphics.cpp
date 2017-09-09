@@ -16,7 +16,7 @@ OBJModel::OBJModel(const std::string& file_name): has_uvs(false), has_normals(fa
     {
         while(file.good())
         {
-            getline(file, line);
+            std::getline(file, line);
         
             std::size_t line_length = line.length();
             

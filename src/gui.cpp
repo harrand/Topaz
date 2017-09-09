@@ -1,33 +1,30 @@
-#include "window.hpp"
+#include "gui.hpp"
 #include "SDL_mixer.h"
 #include "graphics.hpp"
 
-// Static objects need to be initialised like this
-unsigned int Listener::NUM_LISTENERS = 0;
+GUIElement::GUIElement(): parent(nullptr), children(std::unordered_set<GUIElement*>()){}
 
-Listener::Listener()
+GUIElement* GUIElement::getParent() const
 {
-	Listener::NUM_LISTENERS++;
-	this->id = Listener::NUM_LISTENERS;
+	return this->parent;
 }
 
-Listener::~Listener()
+const std::unordered_set<GUIElement*>& GUIElement::getChildren() const
 {
-	Listener::NUM_LISTENERS--;
+	return this->children;
 }
 
-unsigned int Listener::getID() const
+bool GUIElement::isHidden() const
 {
-	return this->id;
+	return this->hidden;
 }
 
-// static
-unsigned int Listener::getNumListeners()
+void GUIElement::setHidden(bool hidden)
 {
-	return Listener::NUM_LISTENERS;
+	this->hidden = hidden;
 }
 
-Window::Window(int w, int h, std::string title): w(w), h(h), title(std::move(title)), is_close_requested(false)
+Window::Window(int w, int h, std::string title): GUIElement(), w(w), h(h), title(std::move(title)), is_close_requested(false)
 {
 	this->initSDL();
 	this->initGLEW();
@@ -38,6 +35,18 @@ Window::Window(const Window& copy): Window(copy.w, copy.h, copy.title){}
 Window::~Window()
 {
 	this->destSDL();
+	for(auto pair : registered_listeners)
+		this->deregisterListener(*(pair.second));
+}
+
+void Window::destroy()
+{
+	this->requestClose();
+}
+
+bool Window::focused()
+{
+	return SDL_GetWindowFlags(this->sdl_window_pointer) | SDL_WINDOW_INPUT_FOCUS | SDL_WINDOW_MOUSE_FOCUS;
 }
 
 int Window::getWidth() const
