@@ -30,7 +30,6 @@ public:
 	
 	void render(bool patches) const;
 	
-	static Mesh* getFromLink(const std::string& mesh_link, const std::vector<std::unique_ptr<Mesh>>& all_meshes);
 private:
 	const std::string filename;
 	IndexedModel model;
@@ -53,6 +52,7 @@ namespace tz
 {
 	namespace graphics
 	{
+		Mesh* findMesh(const std::string& mesh_link, const std::vector<std::unique_ptr<Mesh>>& all_meshes);
 		Mesh createQuad();
 	}
 }

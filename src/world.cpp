@@ -164,7 +164,7 @@ void World::render(unsigned int fps, Camera& cam, const Shader& shader, unsigned
 {
 	for(auto& obj : this->objects)
 	{
-		Mesh* mesh = Mesh::getFromLink(obj.getMeshLink(), all_meshes);
+		Mesh* mesh = tz::graphics::findMesh(obj.getMeshLink(), all_meshes);
 		Texture* tex = nullptr; NormalMap* nm = nullptr; ParallaxMap* pm = nullptr; DisplacementMap* dm = nullptr;
 		for(auto& texture : obj.getTextures())
 		{
@@ -181,7 +181,7 @@ void World::render(unsigned int fps, Camera& cam, const Shader& shader, unsigned
 	}
 	for(auto& eo : this->entity_objects)
 	{
-		Mesh* mesh = Mesh::getFromLink(eo.getMeshLink(), all_meshes);
+		Mesh* mesh = tz::graphics::findMesh(eo.getMeshLink(), all_meshes);
 		Texture* tex = nullptr; NormalMap* nm = nullptr; ParallaxMap* pm = nullptr; DisplacementMap* dm = nullptr;
 		for(auto& texture : eo.getTextures())
 		{

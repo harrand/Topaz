@@ -70,15 +70,6 @@ void Mesh::render(bool patches) const
 	glBindVertexArray(0);
 }
 
-//static
-Mesh* Mesh::getFromLink(const std::string& mesh_link, const std::vector<std::unique_ptr<Mesh>>& all_meshes)
-{
-	for(auto& mesh : all_meshes)
-		if(mesh->getFileName() == mesh_link)
-			return mesh.get();
-	return nullptr;
-}
-
 //private
 void Mesh::initMesh()
 {
@@ -134,6 +125,14 @@ void Mesh::initMesh()
 	glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
 	glBindVertexArray(0);
+}
+
+Mesh* tz::graphics::findMesh(const std::string& mesh_link, const std::vector<std::unique_ptr<Mesh>>& all_meshes)
+{
+	for(auto& mesh : all_meshes)
+		if(mesh->getFileName() == mesh_link)
+			return mesh.get();
+	return nullptr;
 }
 
 Mesh tz::graphics::createQuad()
