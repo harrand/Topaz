@@ -135,3 +135,10 @@ void Mesh::initMesh()
 
 	glBindVertexArray(0);
 }
+
+Mesh tz::graphics::createQuad()
+{
+	std::array<Vertex, 4> vertices({Vertex(Vector3F(), Vector2F(), Vector3F()), Vertex(Vector3F(0, 1, 0), Vector2F(0, 1), Vector3F()), Vertex(Vector3F(1, 1, 0), Vector2F(1, 1), Vector3F()), Vertex(Vector3F(0, 1, 0), Vector2F(1, 0), Vector3F())});
+	std::array<unsigned int, 4> indices({0, 1, 2, 3});
+	return Mesh(vertices.data(), vertices.size(), indices.data(), indices.size());
+}

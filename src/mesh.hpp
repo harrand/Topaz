@@ -6,19 +6,19 @@
 #include <vector>
 #include <string>
 #include <memory>
+#include <array>
 #include "graphics.hpp"
 
 class Mesh
 {
 public:
-	Mesh(std::string filename = "./res/models/undefined.obj");
+	Mesh(std::string filename = "undefined.obj");
 	Mesh(const Vertex* vertices, unsigned int number_of_vertices, const unsigned int* indices, unsigned int number_of_indices);
 	Mesh(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices);
-	Mesh(const Mesh& copy) = delete;
-	Mesh(Mesh&& move) = delete;
+	Mesh(const Mesh& copy) = default;
+	Mesh(Mesh&& move) = default;
 	~Mesh();
-	Mesh& operator=(const Mesh& rhs) = delete;
-	// Don't want any of these because I only ever want one instance of mesh per model. Allowing us to copy and move instances around will be inefficient and pointless.
+	Mesh& operator=(const Mesh& rhs) = default;
 	
 	IndexedModel getIndexedModel() const;
 	
@@ -48,5 +48,13 @@ private:
 	GLuint vbo_buffers[static_cast<unsigned int>(BufferTypes::NUM_BUFFERS)]; //vbo array
 	unsigned int render_count;
 };
+
+namespace tz
+{
+	namespace graphics
+	{
+		Mesh createQuad();
+	}
+}
 
 #endif

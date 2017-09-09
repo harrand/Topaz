@@ -9,9 +9,25 @@ GUIElement* GUIElement::getParent() const
 	return this->parent;
 }
 
+GUIElement*& GUIElement::getParentR()
+{
+	return this->parent;
+}
+
 const std::unordered_set<GUIElement*>& GUIElement::getChildren() const
 {
 	return this->children;
+}
+
+std::unordered_set<GUIElement*>& GUIElement::getChildrenR()
+{
+	return this->children;
+}
+
+void GUIElement::addChild(GUIElement* child)
+{
+	this->children.insert(child);
+	child->getParentR() = this;
 }
 
 bool GUIElement::isHidden() const
@@ -41,6 +57,8 @@ Window::~Window()
 
 void Window::destroy()
 {
+	for(GUIElement* child : this->children)
+		child->destroy();
 	this->requestClose();
 }
 
@@ -114,6 +132,8 @@ void Window::clear(float r, float g, float b, float a) const
 
 void Window::update()
 {
+	for(GUIElement* element : this->children)
+		element->update();
 	SDL_GL_SwapWindow(this->sdl_window_pointer);
 	this->handleEvents();
 }
@@ -187,7 +207,7 @@ void Window::handleEvents()
 	}
 }
 
-Panel::Panel(unsigned int x, unsigned int y, unsigned int width, unsigned int height): GUIElement(), is_focused(false), x(x), y(y), width(width), height(height){}
+Panel::Panel(unsigned int x, unsigned int y, unsigned int width, unsigned int height): GUIElement(), is_focused(false), x(x), y(y), width(width), height(height), quad(tz::graphics::createQuad()){}
 
 unsigned int Panel::getX() const
 {
@@ -241,7 +261,7 @@ Vector3F& Panel::getColourR()
 
 void Panel::update()
 {
-	
+	this->quad.render(false);
 }
 
 void Panel::destroy()

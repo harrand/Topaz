@@ -5,6 +5,7 @@
 #include "SDL.h"
 #include "listeners.hpp"
 #include "vector.hpp"
+#include "mesh.hpp"
 
 class GUIElement
 {
@@ -14,7 +15,10 @@ public:
 	virtual void destroy() = 0;
 	virtual bool focused() = 0;
 	GUIElement* getParent() const;
+	GUIElement*& getParentR();
 	const std::unordered_set<GUIElement*>& getChildren() const;
+	std::unordered_set<GUIElement*>& getChildrenR();
+	void addChild(GUIElement* child);
 	bool isHidden() const;
 	void setHidden(bool hidden);
 protected:
@@ -93,6 +97,7 @@ protected:
 private:
 	unsigned int x, y, width, height;
 	Vector3F colour;
+	Mesh quad;
 };
 
 #endif
