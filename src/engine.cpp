@@ -21,7 +21,7 @@ void tz::terminate()
 	tz::util::log::message("Terminated Topaz.");
 }
 
-Engine::Engine(Camera& camera, Window& wnd, std::string properties_path, unsigned int initial_fps, unsigned int tps): properties(RawFile(properties_path)), resources(RawFile(this->properties.getTag("resources"))), default_shader(this->properties.getTag("default_shader")), camera(camera), wnd(wnd), world(this->properties.getTag("default_world"), this->properties.getTag("resources")), fps(initial_fps), tps(tps)
+Engine::Engine(Camera& camera, Window& wnd, std::string properties_path, unsigned int initial_fps, unsigned int tps): properties(RawFile(properties_path)), resources(RawFile(this->properties.getTag("resources"))), default_shader(this->properties.getTag("default_shader")), default_gui_shader(this->properties.getTag("default_gui_shader")), camera(camera), wnd(wnd), world(this->properties.getTag("default_world"), this->properties.getTag("resources")), fps(initial_fps), tps(tps)
 {
 	this->camera.getPositionR() = this->world.getSpawnPoint();
 	tz::util::log::message("Set player position to world spawn.");
@@ -45,16 +45,19 @@ void Engine::update(std::size_t shader_index)
 	
 	this->keeper.update();
 	ticker.update();
-	this->wnd.clear(0.0f, 0.0f, 0.0f, 1.0f);
+	this->wnd.clear(0.0f, 0.0f, 1.0f, 1.0f);
 	this->profiler.endFrame();
 	
-	this->world.render(this->profiler.getLastDelta(), this->camera, this->getShader(shader_index), this->wnd.getWidth(), this->wnd.getHeight(), this->meshes, this->textures, this->normal_maps, this->parallax_maps, this->displacement_maps);
+	this->world.render(this->camera, this->getShader(shader_index), this->wnd.getWidth(), this->wnd.getHeight(), this->meshes, this->textures, this->normal_maps, this->parallax_maps, this->displacement_maps);
 	
 	if(ticker.millisPassed(1000/this->tps))
 	{
 		this->world.update(this->tps);
 		ticker.reload();
 	}
+	default_gui_shader.bind();
+	Matrix4x4 i = Matrix4x4::identity();
+	default_gui_shader.update(i.fillData(), i.fillData(), i.fillData());
 	this->wnd.update();
 	
 	GLenum error;

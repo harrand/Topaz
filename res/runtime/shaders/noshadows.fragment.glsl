@@ -10,9 +10,9 @@ in mat4 modelMatrix;
 in mat4 viewMatrix;
 in mat3 tbnMatrix;
 
-uniform sampler2D textureSampler;
-uniform sampler2D normalMapSampler;
-uniform sampler2D parallaxMapSampler;
+uniform sampler2D texture_sampler;
+uniform sampler2D normal_map_sampler;
+uniform sampler2D parallax_map_sampler;
 
 uniform float parallaxMultiplier;
 uniform float parallaxBias;
@@ -48,10 +48,10 @@ const vec3 lightDirection_tangentspace = tbnMatrix * lightDirection_cameraspace;
 
 vec2 getTexcoordOffset()
 {
-	return texcoord_modelspace + lightDirection_tangentspace.xy * (texture2D(parallaxMapSampler, texcoord_modelspace).r * parallaxMultiplier + parallaxBias);
+	return texcoord_modelspace + lightDirection_tangentspace.xy * (texture2D(parallax_map_sampler, texcoord_modelspace).r * parallaxMultiplier + parallaxBias);
 }
 
-vec4 textureColour = texture2D(textureSampler, texcoord_modelspace);//texture2D(textureSampler, getTexcoordOffset());
+vec4 textureColour = texture2D(texture_sampler, texcoord_modelspace);//texture2D(texture_sampler, getTexcoordOffset());
 
 vec4 getDiffuseComponent(vec3 parsedNormal_tangentspace)
 {
@@ -94,7 +94,7 @@ vec4 getSpecularComponentFromLight(BaseLight l, vec3 parsedNormal_tangentspace)
 
 void main()
 {
-	vec3 normal_tangentspace = normalize(texture2D(normalMapSampler, getTexcoordOffset()).xyz * 255.0/128.0 - 1);
+	vec3 normal_tangentspace = normalize(texture2D(normal_map_sampler, getTexcoordOffset()).xyz * 255.0/128.0 - 1);
 	fragColor = vec4(0, 0, 0, 0);
 	fragColor += getAmbientComponent() + getDiffuseComponent(normal_tangentspace) + getSpecularComponent(normal_tangentspace);
 	//fragColor *= 10;

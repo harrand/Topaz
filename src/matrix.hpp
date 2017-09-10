@@ -87,8 +87,9 @@ public:
 	
 	static Matrix4x4 createModelMatrix(Vector3F position, Vector3F euler_rotation, Vector3F scale);
 	static Matrix4x4 createViewMatrix(Vector3F camera_position, Vector3F camera_euler_rotation);
-	static Matrix4x4 createProjectionMatrix(float fov, float aspect_ratio, float nearclip, float farclip);
-	static Matrix4x4 createProjectionMatrix(float fov, float width, float height, float nearclip, float farclip);
+	static Matrix4x4 createOrthographicMatrix(float right, float left, float top, float bottom, float near, float far);
+	static Matrix4x4 createPerspectiveMatrix(float fov, float aspect_ratio, float nearclip, float farclip);
+	static Matrix4x4 createPerspectiveMatrix(float fov, float width, float height, float nearclip, float farclip);
 private:
 	Vector4F x, y, z, w;
 };

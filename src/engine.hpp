@@ -49,7 +49,7 @@ private:
 	TimeProfiler profiler;
 	const MDLF properties;
 	const MDLF resources;
-	const Shader default_shader;
+	const Shader default_shader, default_gui_shader;
 	Camera& camera;
 	Window& wnd;
 	World world;

@@ -121,7 +121,7 @@ void Texture::bind(GLuint shader_program_handle, unsigned int id)
 	}
 	// this sets which texture we want to bind (id can be from 0 to 31)
 	// GLTEXTURE0 is actually a number, so we can add the id instead of a massive switch statement
-	this->texture_id = glGetUniformLocation(shader_program_handle, "textureSampler");
+	this->texture_id = glGetUniformLocation(shader_program_handle, "texture_sampler");
 	glActiveTexture(GL_TEXTURE0 + id);
 	glBindTexture(GL_TEXTURE_2D, this->texture_handle);
 	glUniform1i(this->texture_id, id);
@@ -148,7 +148,7 @@ void NormalMap::bind(GLuint shader_program_handle, unsigned int id)
 	}
 	// this sets which texture we want to bind (id can be from 0 to 31)
 	// GLTEXTURE0 is actually a number, so we can add the id instead of a massive switch statement
-	this->texture_id = glGetUniformLocation(shader_program_handle, "normalMapSampler");
+	this->texture_id = glGetUniformLocation(shader_program_handle, "normal_map_sampler");
 	glActiveTexture(GL_TEXTURE0 + id);
 	glBindTexture(GL_TEXTURE_2D, this->texture_handle);
 	glUniform1i(this->texture_id, id);
@@ -170,7 +170,7 @@ void ParallaxMap::bind(GLuint shader_program_handle, unsigned int id)
 	}
 	// this sets which texture we want to bind (id can be from 0 to 31)
 	// GLTEXTURE0 is actually a number, so we can add the id instead of a massive switch statement
-	this->texture_id = glGetUniformLocation(shader_program_handle, "parallaxMapSampler");
+	this->texture_id = glGetUniformLocation(shader_program_handle, "parallax_map_sampler");
 	glActiveTexture(GL_TEXTURE0 + id);
 	glBindTexture(GL_TEXTURE_2D, this->texture_handle);
 	glUniform1i(this->texture_id, id);
@@ -192,7 +192,7 @@ void DisplacementMap::bind(GLuint shader_program_handle, unsigned int id)
 	}
 	// this sets which texture we want to bind (id can be from 0 to 31)
 	// GLTEXTURE0 is actually a number, so we can add the id instead of a massive switch statement
-	this->texture_id = glGetUniformLocation(shader_program_handle, "displacementMapSampler");
+	this->texture_id = glGetUniformLocation(shader_program_handle, "displacement_map_sampler");
 	glActiveTexture(GL_TEXTURE0 + id);
 	glBindTexture(GL_TEXTURE_2D, this->texture_handle);
 	glUniform1i(this->texture_id, id);
@@ -251,7 +251,7 @@ void CubeMap::bind(GLuint shader_program_handle, unsigned int id)
 	}
 	// this sets which texture we want to bind (id can be from 0 to 31)
 	// GLTEXTURE0 is actually a number, so we can add the id instead of a massive switch statement
-	this->texture_id = glGetUniformLocation(shader_program_handle, "cubeMapSampler");
+	this->texture_id = glGetUniformLocation(shader_program_handle, "cube_map_sampler");
 	glActiveTexture(GL_TEXTURE0 + id);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, this->texture_handle);
 	glUniform1i(this->texture_id, id);

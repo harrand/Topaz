@@ -160,8 +160,12 @@ void World::exportWorld(const std::string& worldLink) const
 	output.addSequence("entityobjects", entity_object_list);
 }
 
-void World::render(unsigned int fps, Camera& cam, const Shader& shader, unsigned int width, unsigned int height, const std::vector<std::unique_ptr<Mesh>>& all_meshes, const std::vector<std::unique_ptr<Texture>>& all_textures, const std::vector<std::unique_ptr<NormalMap>>& all_normalmaps, const std::vector<std::unique_ptr<ParallaxMap>>& all_parallaxmaps, const std::vector<std::unique_ptr<DisplacementMap>>& all_displacementmaps)
+void World::render(Camera& cam, const Shader& shader, unsigned int width, unsigned int height, const std::vector<std::unique_ptr<Mesh>>& all_meshes, const std::vector<std::unique_ptr<Texture>>& all_textures, const std::vector<std::unique_ptr<NormalMap>>& all_normalmaps, const std::vector<std::unique_ptr<ParallaxMap>>& all_parallaxmaps, const std::vector<std::unique_ptr<DisplacementMap>>& all_displacementmaps)
 {
+	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_DEPTH_CLAMP);
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
 	for(auto& obj : this->objects)
 	{
 		Mesh* mesh = tz::graphics::findMesh(obj.getMeshLink(), all_meshes);
@@ -196,8 +200,6 @@ void World::render(unsigned int fps, Camera& cam, const Shader& shader, unsigned
 		}
 		eo.render(mesh, tex, nm, pm, dm, cam, shader, width, height);
 	}	
-	for(auto& ent : this->entities)
-		ent.updateMotion(fps);
 	for(auto& iter : this->base_lights)
 	{
 		BaseLight light = iter.second;

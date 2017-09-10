@@ -2,3 +2,4 @@ resources: ../../../res/runtime/resources.data
 controls: ../../../res/runtime/controls.data
 default_world: ../../../res/runtime/worlds/random.world
 default_shader: ../../../res/runtime/shaders/noshadows
+default_gui_shader: ../../../res/runtime/shaders/gui

@@ -453,7 +453,19 @@ Matrix4x4 Matrix4x4::createViewMatrix(Vector3F camera_position, Vector3F camera_
 	return Matrix4x4::createModelMatrix(camera_position, camera_euler_rotation, Vector3F(1, 1, 1)).inverse();
 }
 
-Matrix4x4 Matrix4x4::createProjectionMatrix(float fov, float aspect_ratio, float nearclip, float farclip)
+Matrix4x4 Matrix4x4::createOrthographicMatrix(float right, float left, float top, float bottom, float near, float far)
+{
+	Vector4F x(0, 0, 0, 0), y(0, 0, 0, 0), z(0, 0, 0, 0), w(0, 0, 0, 1);
+	x.getXR() = 2 / (right - left);
+	x.getWR() = -1 * ((right + left)/(right - left));
+	y.getYR() = 2 / (top - bottom);
+	y.getWR() = -1 * ((top + bottom)/(top - bottom));
+	z.getZR() = -2 / (far - near);
+	z.getWR() = -1 * ((far + near)/(far - near));
+	return {x, y, z, w};
+}
+
+Matrix4x4 Matrix4x4::createPerspectiveMatrix(float fov, float aspect_ratio, float nearclip, float farclip)
 {
 	Vector4F x(0, 0, 0, 0), y(0, 0, 0, 0), z(0, 0, 0, 0), w(0, 0, 0, 0);
 	float thf = tan(fov / 2);
@@ -465,7 +477,7 @@ Matrix4x4 Matrix4x4::createProjectionMatrix(float fov, float aspect_ratio, float
 	return {x, y, z, w};
 }
 
-Matrix4x4 Matrix4x4::createProjectionMatrix(float fov, float width, float height, float nearclip, float farclip)
+Matrix4x4 Matrix4x4::createPerspectiveMatrix(float fov, float width, float height, float nearclip, float farclip)
 {
-	return Matrix4x4::createProjectionMatrix(fov, (float)((width)/(height)), nearclip, farclip);
+	return Matrix4x4::createPerspectiveMatrix(fov, (float)((width)/(height)), nearclip, farclip);
 }

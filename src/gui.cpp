@@ -132,6 +132,9 @@ void Window::clear(float r, float g, float b, float a) const
 
 void Window::update()
 {
+	glDisable(GL_DEPTH_TEST);
+	glDisable(GL_DEPTH_CLAMP);
+	glDisable(GL_CULL_FACE);
 	for(GUIElement* element : this->children)
 		element->update();
 	SDL_GL_SwapWindow(this->sdl_window_pointer);
