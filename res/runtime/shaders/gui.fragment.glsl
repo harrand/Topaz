@@ -15,5 +15,5 @@ void main()
 	if(has_texture)
 		fragColor = texture2D(texture_sampler, vs_texcoord_modelspace);
 	else
-		fragColor = vec4(colour, 1.0);
+		fragColor = vec4(colour, 0.5);
 }

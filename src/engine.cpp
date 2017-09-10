@@ -45,7 +45,7 @@ void Engine::update(std::size_t shader_index)
 	
 	this->keeper.update();
 	ticker.update();
-	this->wnd.clear(0.0f, 0.0f, 1.0f, 1.0f);
+	this->wnd.clear(0.0f, 0.0f, 0.0f, 1.0f);
 	this->profiler.endFrame();
 	
 	this->world.render(this->camera, this->getShader(shader_index), this->wnd.getWidth(), this->wnd.getHeight(), this->meshes, this->textures, this->normal_maps, this->parallax_maps, this->displacement_maps);

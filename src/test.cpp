@@ -41,6 +41,7 @@ int main()
 			tz::util::log::message("Played: ", seconds++, ", FPS = ", engine.getFPS());
 			updater.reload();
 		}
+		panel.setHidden(!kc.getKeyListener().isKeyPressed("G"));
 		updater.update();
 		engine.update(shader_id);
 		mc.handleMouse();

@@ -264,7 +264,8 @@ Vector3F& Panel::getColourR()
 
 void Panel::update()
 {
-	this->quad.render(false);
+	if(!this->hidden)
+		this->quad.render(false);
 }
 
 void Panel::destroy()

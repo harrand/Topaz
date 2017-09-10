@@ -28,7 +28,7 @@ public:
 	
 	std::string getFileName() const;
 	
-	void render(bool patches) const;
+	void render(bool patches, GLenum mode = GL_TRIANGLES) const;
 	
 private:
 	const std::string filename;
