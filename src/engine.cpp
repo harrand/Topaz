@@ -24,9 +24,7 @@ void tz::terminate()
 Engine::Engine(Window& wnd, std::string properties_path, unsigned int initial_fps, unsigned int tps): properties(RawFile(properties_path)), resources(RawFile(this->properties.getTag("resources"))), default_shader(this->properties.getTag("default_shader")), default_gui_shader(this->properties.getTag("default_gui_shader")), camera(Camera()), wnd(wnd), world(this->properties.getTag("default_world"), this->properties.getTag("resources")), fps(initial_fps), tps(tps)
 {
 	this->camera.getPositionR() = this->world.getSpawnPoint();
-	tz::util::log::message("Set player position to world spawn.");
-	tz::util::log::message("Loading assets from '", this->properties.getTag("resources"), "'...");
-	tz::util::log::message("Loaded ", tz::data::Manager(this->properties.getTag("resources")).retrieveAllData(this->meshes, this->textures, this->normal_maps, this->parallax_maps, this->displacement_maps), " assets.");
+	tz::data::Manager(this->properties.getTag("resources")).retrieveAllData(this->meshes, this->textures, this->normal_maps, this->parallax_maps, this->displacement_maps);
 	for(std::string shaderPath : this->properties.getSequence("extra_shaders"))
 		this->extra_shaders.push_back(Shader(shaderPath));
 }

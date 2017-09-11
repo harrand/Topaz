@@ -20,7 +20,7 @@ public:
 	
 	static unsigned int getNumListeners();
 private:
-	static unsigned int NUM_LISTENERS;
+	static unsigned int number_of_listeners;
 	unsigned int id;
 };
 

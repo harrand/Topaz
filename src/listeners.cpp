@@ -2,17 +2,13 @@
 #include <algorithm>
 
 // Static objects need to be initialised like this
-unsigned int Listener::NUM_LISTENERS = 0;
+unsigned int Listener::number_of_listeners = 0;
 
-Listener::Listener()
-{
-	Listener::NUM_LISTENERS++;
-	this->id = Listener::NUM_LISTENERS;
-}
+Listener::Listener(): id(Listener::number_of_listeners++){}
 
 Listener::~Listener()
 {
-	Listener::NUM_LISTENERS--;
+	Listener::number_of_listeners--;
 }
 
 unsigned int Listener::getID() const
@@ -23,7 +19,7 @@ unsigned int Listener::getID() const
 // static
 unsigned int Listener::getNumListeners()
 {
-	return Listener::NUM_LISTENERS;
+	return Listener::number_of_listeners;
 }
 
 MouseListener::MouseListener(): Listener(){}
