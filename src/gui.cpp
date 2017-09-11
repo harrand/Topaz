@@ -210,44 +210,44 @@ void Window::handleEvents()
 	}
 }
 
-Panel::Panel(unsigned int x, unsigned int y, unsigned int width, unsigned int height): GUIElement(), is_focused(false), x(x), y(y), width(width), height(height), quad(tz::graphics::createQuad()){}
+Panel::Panel(float x, float y, float width, float height): GUIElement(), is_focused(false), x(x), y(y), width(width), height(height), quad(tz::graphics::createQuad(x, y, width, height)){}
 
-unsigned int Panel::getX() const
+float Panel::getX() const
 {
 	return this->x;
 }
 
-unsigned int Panel::getY() const
+float Panel::getY() const
 {
 	return this->y;
 }
 
-unsigned int Panel::getWidth() const
+float Panel::getWidth() const
 {
 	return this->width;
 }
 
-unsigned int Panel::getHeight() const
+float Panel::getHeight() const
 {
 	return this->height;
 }
 
-unsigned int& Panel::getXR()
+float& Panel::getXR()
 {
 	return this->x;
 }
 
-unsigned int& Panel::getYR()
+float& Panel::getYR()
 {
 	return this->y;
 }
 
-unsigned int& Panel::getWidthR()
+float& Panel::getWidthR()
 {
 	return this->width;
 }
 
-unsigned int& Panel::getHeightR()
+float& Panel::getHeightR()
 {
 	return this->height;
 }

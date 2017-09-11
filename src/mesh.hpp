@@ -53,7 +53,7 @@ namespace tz
 	namespace graphics
 	{
 		Mesh* findMesh(const std::string& mesh_link, const std::vector<std::unique_ptr<Mesh>>& all_meshes);
-		Mesh createQuad();
+		Mesh createQuad(float x, float y, float width, float height);
 	}
 }
 

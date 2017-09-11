@@ -76,15 +76,15 @@ private:
 class Panel : public GUIElement
 {
 public:
-	Panel(unsigned int x, unsigned int y, unsigned int width, unsigned int height);
-	unsigned int getX() const;
-	unsigned int getY() const;
-	unsigned int getWidth() const;
-	unsigned int getHeight() const;
-	unsigned int& getXR();
-	unsigned int& getYR();
-	unsigned int& getWidthR();
-	unsigned int& getHeightR();
+	Panel(float x, float y, float width, float height);
+	float getX() const;
+	float getY() const;
+	float getWidth() const;
+	float getHeight() const;
+	float& getXR();
+	float& getYR();
+	float& getWidthR();
+	float& getHeightR();
 	const Vector3F& getColour() const;
 	Vector3F& getColourR();
 	
@@ -95,7 +95,7 @@ public:
 protected:
 	bool is_focused;
 private:
-	unsigned int x, y, width, height;
+	float x, y, width, height;
 	Vector3F colour;
 	Mesh quad;
 };

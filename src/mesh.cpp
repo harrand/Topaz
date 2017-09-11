@@ -135,10 +135,9 @@ Mesh* tz::graphics::findMesh(const std::string& mesh_link, const std::vector<std
 	return nullptr;
 }
 
-Mesh tz::graphics::createQuad()
+Mesh tz::graphics::createQuad(float x, float y, float width, float height)
 {
-	//return Mesh("../../../res/runtime/models/plane.obj");
-	std::array<Vertex, 4> vertices({Vertex(Vector3F(-1, -1, 0), Vector2F(), Vector3F()), Vertex(Vector3F(-1, 1, 0), Vector2F(0, 1), Vector3F()), Vertex(Vector3F(1, 1, 0), Vector2F(1, 1), Vector3F()), Vertex(Vector3F(1, -1, 0), Vector2F(1, 0), Vector3F())});
+	std::array<Vertex, 4> vertices({Vertex(Vector3F(x + -1 * width, y + -1 * height, 0), Vector2F(), Vector3F()), Vertex(Vector3F(x + -1 * width, y + 1 * height, 0), Vector2F(0, 1), Vector3F()), Vertex(Vector3F(x + 1 * width, y + 1 * height, 0), Vector2F(1, 1), Vector3F()), Vertex(Vector3F(x + 1 * width, y + -1 * height, 0), Vector2F(1, 0), Vector3F())});
 	std::array<unsigned int, 6> indices({0, 1, 2, 0, 2, 3});
 	return Mesh(vertices.data(), vertices.size(), indices.data(), indices.size());
 }

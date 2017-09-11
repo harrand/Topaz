@@ -14,7 +14,7 @@ namespace tz
 class Engine
 {
 public:
-	Engine(Camera& camera, Window& wnd, std::string properties_path = "properties.mdl", unsigned int initial_fps = 60, unsigned int tps = 30);
+	Engine(Window& wnd, std::string properties_path = "properties.mdl", unsigned int initial_fps = 60, unsigned int tps = 30);
 	~Engine(){};
 	
 	void update(std::size_t shader_index);
@@ -50,7 +50,7 @@ private:
 	const MDLF properties;
 	const MDLF resources;
 	const Shader default_shader, default_gui_shader;
-	Camera& camera;
+	Camera camera;
 	Window& wnd;
 	World world;
 	std::vector<std::unique_ptr<Mesh>> meshes;
