@@ -100,18 +100,21 @@ Texture::Texture(std::string filename): filename(std::move(filename))
 
 Texture::Texture(TTF_Font* font, const std::string& text, SDL_Color foreground_colour)
 {
+	if(font == nullptr)
+		tz::util::log::error("Texture attempted to load from an invalid font.");
 	SDL_Surface* text_surface = TTF_RenderUTF8_Blended(font, text.c_str(), foreground_colour);
 	GLint texture_format, bytes_per_pixel = text_surface->format->BytesPerPixel;
+	constexpr long mask = 0x000000ff;
 	if(bytes_per_pixel == 4) // alpha
 	{
-		if(text_surface->format->Rmask == 0x000000ff)
+		if(text_surface->format->Rmask == mask)
 			texture_format = GL_RGBA;
 		else
 			texture_format = GL_BGRA;
 	}
 	else
 	{	// no alpha
-		if(text_surface->format->Rmask == 0x000000ff)
+		if(text_surface->format->Rmask == mask)
 			texture_format = GL_RGB;
 		else
 			texture_format = GL_BGR;

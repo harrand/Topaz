@@ -54,7 +54,7 @@ const Vector3F Entity::getAcceleration() const
 	{
 		resultant += ent.second;
 	}
-	return Vector3F(resultant.getSize() / this->mass);
+	return (resultant.getSize() / this->mass);
 }
 
 const std::unordered_map<std::string, Force>& Entity::getForces() const

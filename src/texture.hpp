@@ -28,8 +28,8 @@ private:
 class Texture
 {
 public:
-	Texture(TTF_Font* font, const std::string& text, SDL_Color foreground_colour);
 	Texture(std::string filename = "../../../res/runtime/textures/undefined.jpg");
+	Texture(TTF_Font* font, const std::string& text, SDL_Color foreground_colour);
 	// NormalMap and ParallaxMap inherit copy and move constructors so having them defined as default still works fine.
 	Texture(const Texture& copy);
 	Texture(Texture&& move);

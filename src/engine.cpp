@@ -25,8 +25,8 @@ Engine::Engine(Window& wnd, std::string properties_path, unsigned int initial_fp
 {
 	this->camera.getPositionR() = this->world.getSpawnPoint();
 	tz::data::Manager(this->properties.getTag("resources")).retrieveAllData(this->meshes, this->textures, this->normal_maps, this->parallax_maps, this->displacement_maps);
-	for(std::string shaderPath : this->properties.getSequence("extra_shaders"))
-		this->extra_shaders.push_back(Shader(shaderPath));
+	for(std::string shader_path : this->properties.getSequence("extra_shaders"))
+		this->extra_shaders.emplace_back(shader_path);
 }
 
 void Engine::update(std::size_t shader_index)
@@ -45,6 +45,15 @@ void Engine::update(std::size_t shader_index)
 	ticker.update();
 	this->wnd.clear(0.0f, 0.0f, 0.0f, 1.0f);
 	this->profiler.endFrame();
+	
+	/* example code to test fonts. nearly works
+	TTF_Font* example_font = TTF_OpenFont("C:/Windows/Fonts/Arial.ttf", 12);
+	SDL_Color red_colour = SDL_Color{255, 0, 0, 255};
+	Texture red_hello_arial(example_font, "hello!", red_colour);
+	Object text("", std::vector<std::pair<std::string, Texture::TextureType>>(), Vector3F(0, 10, 0), Vector3F(), Vector3F(5, 5, 5));
+	Mesh mesh("../../../res/runtime/models/cube.obj");
+	text.render(&mesh, &red_hello_arial, nullptr, nullptr, nullptr, this->camera, this->getShader(shader_index), this->wnd.getWidth(), this->wnd.getHeight());
+	*/ 
 	
 	this->world.render(this->camera, this->getShader(shader_index), this->wnd.getWidth(), this->wnd.getHeight(), this->meshes, this->textures, this->normal_maps, this->parallax_maps, this->displacement_maps);
 	

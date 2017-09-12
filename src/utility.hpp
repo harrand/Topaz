@@ -172,8 +172,8 @@ namespace tz
 			inline Vector3<T> vectoriseList3(const std::vector<std::string>& list)
 			{
 				if(list.size() < 3)
-					return Vector3<T>();
-				return Vector3<T>(tz::util::cast::fromString<T>(list.at(0)), tz::util::cast::fromString<T>(list.at(1)), tz::util::cast::fromString<T>(list.at(2)));
+					return {};
+				return {tz::util::cast::fromString<T>(list.at(0)), tz::util::cast::fromString<T>(list.at(1)), tz::util::cast::fromString<T>(list.at(2))};
 			}
 			
 			template<typename T>

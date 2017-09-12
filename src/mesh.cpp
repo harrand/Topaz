@@ -5,7 +5,7 @@ Mesh::Mesh(std::string filename): filename(std::move(filename)), model(OBJModel(
 	this->initMesh();
 }
 
-Mesh::Mesh(const Vertex* vertices, unsigned int number_of_vertices, const unsigned int* indices, unsigned int number_of_indices)
+Mesh::Mesh(const Vertex* vertices, std::size_t number_of_vertices, const unsigned int* indices, std::size_t number_of_indices)
 {
 	IndexedModel model;
 	
@@ -139,5 +139,5 @@ Mesh tz::graphics::createQuad(float x, float y, float width, float height)
 {
 	std::array<Vertex, 4> vertices({Vertex(Vector3F(x + -1 * width, y + -1 * height, 0), Vector2F(), Vector3F()), Vertex(Vector3F(x + -1 * width, y + 1 * height, 0), Vector2F(0, 1), Vector3F()), Vertex(Vector3F(x + 1 * width, y + 1 * height, 0), Vector2F(1, 1), Vector3F()), Vertex(Vector3F(x + 1 * width, y + -1 * height, 0), Vector2F(1, 0), Vector3F())});
 	std::array<unsigned int, 6> indices({0, 1, 2, 0, 2, 3});
-	return Mesh(vertices.data(), vertices.size(), indices.data(), indices.size());
+	return {vertices.data(), vertices.size(), indices.data(), indices.size()};
 }

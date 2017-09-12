@@ -67,5 +67,5 @@ float TimeProfiler::getLastDelta() const
 
 unsigned int TimeProfiler::getFPS()
 {
-	return (unsigned int)(1000/this->getDeltaAverage());
+	return static_cast<unsigned int>(1000/this->getDeltaAverage());
 }

@@ -324,7 +324,7 @@ Object World::retrieveObjectData(const std::string& object_name, std::string res
 	{
 		std::string texture_name = mdlf.getTag(object_name + ".texture" + tz::util::cast::toString(i));
 		std::string texture_link = dt.getResourceLink(texture_name);
-		textures.push_back(std::make_pair(texture_link, static_cast<Texture::TextureType>(i)));
+		textures.emplace_back(texture_link, static_cast<Texture::TextureType>(i));
 	}
 	return {mesh_link, textures, tz::util::string::vectoriseList3<float>(tz::util::string::deformat(position_string)), tz::util::string::vectoriseList3<float>(tz::util::string::deformat(rotation_string)), tz::util::string::vectoriseList3<float>(tz::util::string::deformat(scale_string))};
 }
@@ -346,7 +346,7 @@ EntityObject World::retrieveEntityObjectData(const std::string& entity_object_na
 		std::string texture_name = mdlf.getTag(entity_object_name + ".texture" + tz::util::cast::toString(i));
 		std::string texture_link = dt.getResourceLink(texture_name);
 		//tz::util::log::message(entity_object_name, ".texture", tz::util::cast::toString<unsigned int>(i), " yields the name ", texture_name, " and the link ", texture_link, "\n");
-		textures.push_back(std::make_pair(texture_link, static_cast<Texture::TextureType>(i)));
+		textures.emplace_back(texture_link, static_cast<Texture::TextureType>(i));
 	}
 	float mass = tz::util::cast::fromString<float>(mass_string);
 	

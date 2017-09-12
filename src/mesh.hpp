@@ -13,7 +13,7 @@ class Mesh
 {
 public:
 	Mesh(std::string filename = "undefined.obj");
-	Mesh(const Vertex* vertices, unsigned int number_of_vertices, const unsigned int* indices, unsigned int number_of_indices);
+	Mesh(const Vertex* vertices, std::size_t number_of_vertices, const unsigned int* indices, std::size_t number_of_indices);
 	Mesh(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices);
 	Mesh(const Mesh& copy) = default;
 	Mesh(Mesh&& move) = default;

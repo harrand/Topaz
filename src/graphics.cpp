@@ -151,7 +151,7 @@ IndexedModel OBJModel::toIndexedModel()
         {
             normal_model_index = normal_model.positions.size();
         
-            normal_model_index_map.insert(std::pair<OBJIndex, unsigned int>(*current_index, normal_model_index));
+            normal_model_index_map.emplace(*current_index, normal_model_index);
             normal_model.positions.push_back(current_position);
             normal_model.texcoords.push_back(current_texture_coordinate);
             normal_model.normals.push_back(current_normal);
@@ -175,7 +175,7 @@ IndexedModel OBJModel::toIndexedModel()
         
         normal_model.indices.push_back(normal_model_index);
         result.indices.push_back(result_model_index);
-        index_map.insert(std::pair<unsigned int, unsigned int>(result_model_index, normal_model_index));
+        index_map.emplace(result_model_index, normal_model_index);
     }
     
     if(!has_normals)
