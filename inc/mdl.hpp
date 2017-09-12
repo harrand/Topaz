@@ -35,22 +35,22 @@ public:
 	
 	const RawFile& getRawFile() const;
 	void update() const;
-	bool existsTag(std::string tagName) const;
-	bool existsSequence(std::string sequenceName) const;
-	void addTag(std::string tagName, std::string data) const;
-	void addSequence(std::string sequenceName, std::vector<std::string> data) const;
-	void deleteTag(std::string tagName) const;
-	void deleteSequence(std::string sequenceName) const;
-	void editTag(std::string tagName, std::string data) const;
-	void editSequence(std::string sequenceName, std::vector<std::string> data) const;
-	std::string getTag(std::string tagName) const;
-	std::vector<std::string> getSequence(std::string sequenceName) const;
-	std::map<std::string, std::string> getParsedTags() const;
-	std::map<std::string, std::vector<std::string>> getParsedSequences() const;
+	bool existsTag(std::string tag_name) const;
+	bool existsSequence(std::string sequence_name) const;
+	void addTag(std::string tag_name, std::string data) const;
+	void addSequence(std::string sequence_name, std::vector<std::string> data) const;
+	void deleteTag(std::string tag_name) const;
+	void deleteSequence(std::string sequence_name) const;
+	void editTag(std::string tag_name, std::string data) const;
+	void editSequence(std::string sequence_name, std::vector<std::string> data) const;
+	std::string getTag(std::string tag_name) const;
+	std::vector<std::string> getSequence(std::string sequence_name) const;
+	const std::map<std::string, std::string>& getParsedTags() const;
+	const std::map<std::string, std::vector<std::string>>& getParsedSequences() const;
 private:
 	RawFile rf;
-	mutable std::map<std::string, std::string> parsedTags;
-	mutable std::map<std::string, std::vector<std::string>> parsedSequences;
+	mutable std::map<std::string, std::string> parsed_tags;
+	mutable std::map<std::string, std::vector<std::string>> parsed_sequences;
 	
 	std::vector<std::string> splitString(std::string s, char d) const;
 	std::string getTagName(std::string tag) const;
