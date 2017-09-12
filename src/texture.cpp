@@ -98,6 +98,30 @@ Texture::Texture(std::string filename): filename(std::move(filename))
 	this->deleteTexture(imgdata);
 }
 
+Texture::Texture(TTF_Font* font, const std::string& text, SDL_Color foreground_colour)
+{
+	SDL_Surface* text_surface = TTF_RenderUTF8_Blended(font, text.c_str(), foreground_colour);
+	GLint texture_format, bytes_per_pixel = text_surface->format->BytesPerPixel;
+	if(bytes_per_pixel == 4) // alpha
+	{
+		if(text_surface->format->Rmask == 0x000000ff)
+			texture_format = GL_RGBA;
+		else
+			texture_format = GL_BGRA;
+	}
+	else
+	{	// no alpha
+		if(text_surface->format->Rmask == 0x000000ff)
+			texture_format = GL_RGB;
+		else
+			texture_format = GL_BGR;
+	}
+	glGenTextures(1, &(this->texture_handle));
+	// Let OGL know it's just a 2d texture.
+	glBindTexture(GL_TEXTURE_2D, this->texture_handle);
+	glTexImage2D(GL_TEXTURE_2D, 0, bytes_per_pixel, text_surface->w, text_surface->h, 0, texture_format, GL_UNSIGNED_BYTE, text_surface->pixels);
+}
+
 Texture::Texture(const Texture& copy): Texture(copy.getFileName()){}
 
 Texture::Texture(Texture&& move): filename(move.getFileName()), texture_id(move.texture_id), texture_handle(move.texture_handle), width(move.width), height(move.height), components(move.components)

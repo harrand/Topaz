@@ -8,12 +8,12 @@ uniform vec3 colour = vec3(1.0, 1.0, 0.0);
 uniform bool has_texture = false;
 uniform sampler2D texture_sampler;
 
-layout(location = 0) out vec4 fragColor;
+layout(location = 0) out vec4 fragment_colour;
 
 void main()
 {
 	if(has_texture)
-		fragColor = texture2D(texture_sampler, vs_texcoord_modelspace);
+		fragment_colour = texture2D(texture_sampler, vs_texcoord_modelspace);
 	else
-		fragColor = vec4(colour, 0.5);
+		fragment_colour = vec4(colour, 1.0);
 }

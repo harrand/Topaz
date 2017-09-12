@@ -4,6 +4,8 @@
 #define GLEW_STATIC
 #endif
 #include "glew.h"
+#include "SDL.h"
+#include "SDL_ttf.h"
 #include "utility.hpp"
 
 namespace tz
@@ -25,10 +27,16 @@ namespace tz
 				tz::util::log::error("Initialisation of GLEW failed.\n\tInitialisation of tz::graphics unsuccessful!");
 			else
 				tz::util::log::message("Initialisation of GLEW successful.\n\tInitialised tz::graphics via GLEW (OpenGL).");
+			if(TTF_Init() == 0)
+				tz::util::log::message("Successfully initialised SDL2_ttf.");
+			else
+				tz::util::log::error("Initialisation of SDL2_ttf failed.");
 			tz::graphics::initialised = true;
 		}
 		inline void terminate()
 		{
+			TTF_Quit();
+			tz::util::log::message("Terminated SDL2_ttf");
 			tz::util::log::message("Terminated tz::graphics via GLEW (OpenGL).");
 		}
 	}

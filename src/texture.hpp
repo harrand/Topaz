@@ -5,6 +5,8 @@
 #define GLEW_STATIC
 #endif
 #include "glew.h"
+#include "SDL.h"
+#include "SDL_ttf.h"
 #include "utility.hpp"
 
 class FrameBuffer
@@ -26,6 +28,7 @@ private:
 class Texture
 {
 public:
+	Texture(TTF_Font* font, const std::string& text, SDL_Color foreground_colour);
 	Texture(std::string filename = "../../../res/runtime/textures/undefined.jpg");
 	// NormalMap and ParallaxMap inherit copy and move constructors so having them defined as default still works fine.
 	Texture(const Texture& copy);
