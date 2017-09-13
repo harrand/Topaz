@@ -20,20 +20,24 @@ int main()
 	
 	TimeKeeper updater;
 	
-	Panel panel(0.0f, 0.0f, 0.5f, 0.5f);
-	engine.getWindowR().addChild(&panel);
+	//Panel panel(0.0f, 0.0f, 0.5f, 0.5f, Vector3F(1, 0, 0), engine.getDefaultGuiShader());
+	//engine.getWindowR().addChild(&panel);
+	TTF_Font* example_font = TTF_OpenFont("../../../res/runtime/fonts/upheaval.ttf", 25);
+	TextField text(-0.75f, 0.875f, 0.25f, 0.25f, Vector3F(1, 0, 0), example_font, "FPS: 0", engine.getDefaultGuiShader());
+	engine.getWindowR().addChild(&text);
 	
 	while(!engine.getWindowR().isCloseRequested())
 	{
 		if(updater.millisPassed(1000))
 		{
+			text.setText("FPS: " + tz::util::cast::toString(engine.getFPS()));
 			seconds++;
 			updater.reload();
 		}
 		if(kc.getKeyListenerR().catchKeyPressed("Q"))
 			tz::util::log::message("Played: ", seconds, ", FPS = ", engine.getFPS());
 		if(kc.getKeyListenerR().catchKeyPressed("Escape"))
-			panel.setHidden(!panel.isHidden());
+			text.setHidden(!text.isHidden());
 		updater.update();
 		engine.update(shader_id);
 		mc.handleMouse();

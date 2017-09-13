@@ -33,7 +33,7 @@ public:
 	// NormalMap and ParallaxMap inherit copy and move constructors so having them defined as default still works fine.
 	Texture(const Texture& copy);
 	Texture(Texture&& move);
-	Texture& operator=(const Texture& rhs) = delete;
+	Texture& operator=(Texture&& rhs);
 	~Texture();
 	
 	void bind(GLuint shader_program_handle, unsigned int id);

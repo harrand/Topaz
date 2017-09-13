@@ -7,7 +7,7 @@ set cpldir=%cpldirX:/=.%
 color e
 cd src
 ren test.cpp test.saved
-g++ -std=c++14 -Wall -Wextra -pedantic-errors -O3 -c -DTOPAZDLLBUILD *.cpp -I %incdir%
+g++ -std=c++17 -Wall -Wextra -pedantic-errors -O3 -c -DTOPAZDLLBUILD *.cpp -I %incdir%
 gcc -c -DTOPAZDLLBUILD *.c -w -I %incdir%
 ren test.saved test.cpp
 

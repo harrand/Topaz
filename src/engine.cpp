@@ -62,7 +62,8 @@ void Engine::update(std::size_t shader_index)
 		this->world.update(this->tps);
 		ticker.reload();
 	}
-	default_gui_shader.bind();
+	//default_gui_shader.bind();
+	// TODO: Get a shader reference to children
 	this->wnd.update();
 	
 	GLenum error;
@@ -108,6 +109,11 @@ const World& Engine::getWorld() const
 const Shader& Engine::getDefaultShader() const
 {
 	return this->default_shader;
+}
+
+const Shader& Engine::getDefaultGuiShader() const
+{
+	return this->default_gui_shader;
 }
 
 Camera& Engine::getCameraR()

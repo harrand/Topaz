@@ -100,8 +100,8 @@ Texture::Texture(std::string filename): filename(std::move(filename))
 
 Texture::Texture(TTF_Font* font, const std::string& text, SDL_Color foreground_colour)
 {
-	if(font == nullptr)
-		tz::util::log::error("Texture attempted to load from an invalid font.");
+	if(font == NULL)
+		tz::util::log::error("Texture attempted to load from an invalid font. Error: ", TTF_GetError());
 	SDL_Surface* text_surface = TTF_RenderUTF8_Blended(font, text.c_str(), foreground_colour);
 	GLint texture_format, bytes_per_pixel = text_surface->format->BytesPerPixel;
 	constexpr long mask = 0x000000ff;
@@ -122,7 +122,12 @@ Texture::Texture(TTF_Font* font, const std::string& text, SDL_Color foreground_c
 	glGenTextures(1, &(this->texture_handle));
 	// Let OGL know it's just a 2d texture.
 	glBindTexture(GL_TEXTURE_2D, this->texture_handle);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexImage2D(GL_TEXTURE_2D, 0, bytes_per_pixel, text_surface->w, text_surface->h, 0, texture_format, GL_UNSIGNED_BYTE, text_surface->pixels);
+	SDL_FreeSurface(text_surface);
 }
 
 Texture::Texture(const Texture& copy): Texture(copy.getFileName()){}
@@ -137,6 +142,19 @@ Texture::~Texture()
 {
 	// glDeleteTextures silently ignores 0 as a texture_handle so this should not cause problems if just moved.
 	glDeleteTextures(1, &(this->texture_handle));
+}
+
+Texture& Texture::operator=(Texture&& rhs)
+{
+	this->filename = rhs.getFileName();
+	this->texture_id = rhs.texture_id;
+	this->texture_handle = rhs.texture_handle;
+	this->width = rhs.width;
+	this->height = rhs.height;
+	this->components = rhs.components;
+	rhs.texture_id = 0;
+	rhs.texture_handle = 0;
+	return *this;
 }
 
 void Texture::bind(GLuint shader_program_handle, unsigned int id)

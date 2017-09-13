@@ -2,7 +2,35 @@
 #include "SDL_mixer.h"
 #include "graphics.hpp"
 
-GUIElement::GUIElement(): parent(nullptr), children(std::unordered_set<GUIElement*>()){}
+GUIElement::GUIElement(std::optional<std::reference_wrapper<const Shader>> shader): shader(shader), parent(nullptr), children(std::unordered_set<GUIElement*>()), hidden(true){}
+
+const Window* GUIElement::findWindowParent() const
+{
+	const GUIElement* res = this;
+	while(res != nullptr && !res->isWindow())
+		res = res->getParent();
+	return dynamic_cast<const Window*>(res);
+}
+
+bool GUIElement::hasWindowParent() const
+{
+	return this->findWindowParent() != nullptr;
+}
+
+const std::optional<std::reference_wrapper<const Shader>> GUIElement::getShader() const
+{
+	return this->shader;
+}
+
+std::optional<std::reference_wrapper<const Shader>>& GUIElement::getShaderR()
+{
+	return this->shader;
+}
+
+bool GUIElement::hasShader() const
+{
+	return this->shader.has_value();
+}
 
 GUIElement* GUIElement::getParent() const
 {
@@ -40,7 +68,7 @@ void GUIElement::setHidden(bool hidden)
 	this->hidden = hidden;
 }
 
-Window::Window(int w, int h, std::string title): GUIElement(), w(w), h(h), title(std::move(title)), is_close_requested(false)
+Window::Window(int w, int h, std::string title): GUIElement({}), w(w), h(h), title(std::move(title)), is_close_requested(false)
 {
 	this->initSDL();
 	this->initGLEW();
@@ -62,9 +90,14 @@ void Window::destroy()
 	this->requestClose();
 }
 
-bool Window::focused()
+bool Window::focused() const
 {
 	return SDL_GetWindowFlags(this->sdl_window_pointer) | SDL_WINDOW_INPUT_FOCUS | SDL_WINDOW_MOUSE_FOCUS;
+}
+
+bool Window::isWindow() const
+{
+	return true;
 }
 
 int Window::getWidth() const
@@ -210,7 +243,7 @@ void Window::handleEvents()
 	}
 }
 
-Panel::Panel(float x, float y, float width, float height): GUIElement(), is_focused(false), x(x), y(y), width(width), height(height), quad(tz::graphics::createQuad(x, y, width, height)){}
+Panel::Panel(float x, float y, float width, float height, Vector3F colour, const Shader& shader): GUIElement(shader), is_focused(false), x(x), y(y), width(width), height(height), colour(colour), quad(tz::graphics::createQuad()), colour_uniform(glGetUniformLocation(this->shader.value().get().getProgramHandle(), "colour")), model_matrix_uniform(glGetUniformLocation(this->shader.value().get().getProgramHandle(), "model_matrix")){}
 
 float Panel::getX() const
 {
@@ -265,7 +298,13 @@ Vector3F& Panel::getColourR()
 void Panel::update()
 {
 	if(!this->hidden)
+	{
+		this->shader.value().get().bind();
+		glUniform1i(glGetUniformLocation(this->shader.value().get().getProgramHandle(), "has_texture"), false);
+		glUniform3f(this->colour_uniform, this->colour.getX(), this->colour.getY(), this->colour.getZ());
+		glUniformMatrix4fv(this->model_matrix_uniform, 1, GL_TRUE, Matrix4x4::createModelMatrix(Vector3F(this->x, this->y, 0.0f), Vector3F(), Vector3F(this->width, this->height, 0.0f)).fillData().data());
 		this->quad.render(false);
+	}
 }
 
 void Panel::destroy()
@@ -274,12 +313,43 @@ void Panel::destroy()
 	this->parent = nullptr;
 }
 
-bool Panel::focused()
+bool Panel::focused() const
 {
 	return this->is_focused;
+}
+
+bool Panel::isWindow() const
+{
+	return false;
 }
 
 void Panel::setFocused(bool focused)
 {
 	this->is_focused = focused;
+}
+
+TextField::TextField(float x, float y, float width, float height, Vector3F colour, TTF_Font* font, const std::string& text, const Shader& shader): Panel(x, y, width, height, colour, shader), font(font), text(text), text_texture(this->font, this->text, SDL_Color({static_cast<unsigned char>(this->colour.getX() * 255), static_cast<unsigned char>(this->colour.getY() * 255), static_cast<unsigned char>(this->colour.getZ() * 255), static_cast<unsigned char>(255)})){}
+
+void TextField::update()
+{
+	if(!this->hidden)
+	{
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		this->shader.value().get().bind();
+		glUniform1i(glGetUniformLocation(this->shader.value().get().getProgramHandle(), "has_texture"), true);
+		glUniformMatrix4fv(this->model_matrix_uniform, 1, GL_TRUE, Matrix4x4::createModelMatrix(Vector3F(this->x, this->y, 0.0f), Vector3F(), Vector3F(this->width, this->height, 0.0f)).fillData().data());
+		this->text_texture.bind(this->shader.value().get().getProgramHandle(), 0);
+		this->quad.render(false);
+	}
+}
+
+const std::string& TextField::getText() const
+{
+	return this->text;
+}
+void TextField::setText(const std::string& new_text)
+{
+	this->text = new_text;
+	this->text_texture = Texture(this->font, this->text, SDL_Color({static_cast<unsigned char>(this->colour.getX() * 255), static_cast<unsigned char>(this->colour.getY() * 255), static_cast<unsigned char>(this->colour.getZ() * 255), static_cast<unsigned char>(255)}));
 }

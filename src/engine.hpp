@@ -29,6 +29,7 @@ public:
 	const Window& getWindow() const;
 	const World& getWorld() const;
 	const Shader& getDefaultShader() const;
+	const Shader& getDefaultGuiShader() const;
 	
 	Camera& getCameraR();
 	Window& getWindowR();
