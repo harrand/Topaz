@@ -1,12 +1,20 @@
 #include "engine.hpp"
-#include "listeners.hpp"
+#include "listener.hpp"
 
+void init();
 #ifdef main
 #undef main
 #endif
 int main()
-{	
+{
 	tz::initialise();
+	init();
+	tz::terminate();
+	return 0;
+}
+
+void init()
+{
 	Window wnd(800, 600, "Topaz Development Window");
 	Engine engine(wnd, "../../../res/runtime/properties.mdl");
 	
@@ -20,8 +28,6 @@ int main()
 	
 	TimeKeeper updater;
 	
-	//Panel panel(0.0f, 0.0f, 0.5f, 0.5f, Vector3F(1, 0, 0), engine.getDefaultGuiShader());
-	//engine.getWindowR().addChild(&panel);
 	Font example_font("../../../res/runtime/fonts/upheaval.ttf", 25);
 	TextField text(0.0f, 0.0f, Vector3F(1, 0, 0), {}, example_font, "FPS: 0", engine.getDefaultGuiShader());
 	engine.getWindowR().addChild(&text);
@@ -44,6 +50,4 @@ int main()
 		kc.handleKeybinds(engine.getTimeProfiler().getLastDelta(), engine.getProperties().getTag("resources"), engine.getProperties().getTag("controls"));
 		mc.getMouseListenerR().reloadMouseDelta();
 	}
-	tz::terminate();
-	return 0;
 }
