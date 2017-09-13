@@ -105,6 +105,8 @@ Texture::Texture(TTF_Font* font, const std::string& text, SDL_Color foreground_c
 	SDL_Surface* text_surface = TTF_RenderUTF8_Blended(font, text.c_str(), foreground_colour);
 	GLint texture_format, bytes_per_pixel = text_surface->format->BytesPerPixel;
 	constexpr long mask = 0x000000ff;
+	this->width = text_surface->w;
+	this->height = text_surface->h;
 	if(bytes_per_pixel == 4) // alpha
 	{
 		if(text_surface->format->Rmask == mask)
@@ -172,9 +174,19 @@ void Texture::bind(GLuint shader_program_handle, unsigned int id)
 	glUniform1i(this->texture_id, id);
 }
 
-std::string Texture::getFileName() const
+const std::string& Texture::getFileName() const
 {
 	return this->filename;
+}
+
+int Texture::getWidth() const
+{
+	return this->width;
+}
+
+int Texture::getHeight() const
+{
+	return this->height;
 }
 
 Texture::TextureType Texture::getTextureType()

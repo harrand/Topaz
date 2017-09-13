@@ -22,8 +22,8 @@ int main()
 	
 	//Panel panel(0.0f, 0.0f, 0.5f, 0.5f, Vector3F(1, 0, 0), engine.getDefaultGuiShader());
 	//engine.getWindowR().addChild(&panel);
-	TTF_Font* example_font = TTF_OpenFont("../../../res/runtime/fonts/upheaval.ttf", 25);
-	TextField text(-0.75f, 0.875f, 0.25f, 0.25f, Vector3F(1, 0, 0), example_font, "FPS: 0", engine.getDefaultGuiShader());
+	Font example_font("../../../res/runtime/fonts/upheaval.ttf", 25);
+	TextField text(0.0f, 0.0f, Vector3F(1, 0, 0), {}, example_font, "FPS: 0", engine.getDefaultGuiShader());
 	engine.getWindowR().addChild(&text);
 	
 	while(!engine.getWindowR().isCloseRequested())

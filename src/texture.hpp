@@ -38,7 +38,9 @@ public:
 	
 	void bind(GLuint shader_program_handle, unsigned int id);
 	
-	std::string getFileName() const;
+	const std::string& getFileName() const;
+	int getWidth() const;
+	int getHeight() const;
 	
 	enum class TextureType : unsigned int
 	{

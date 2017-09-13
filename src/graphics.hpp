@@ -99,4 +99,20 @@ private:
     OBJIndex parseOBJIndex(const std::string& token, bool* has_uvs, bool* has_normals);
 };
 
+class Font
+{
+public:
+	Font(const std::string& font_path, int pixel_height);
+	Font(const Font& copy);
+	Font(Font&& move);
+	Font& operator=(Font&& rhs);
+	~Font();
+	TTF_Font* getTTF() const;
+	TTF_Font*& getTTFR();
+private:
+	std::string font_path;
+	int pixel_height;
+	TTF_Font* font;
+};
+
 #endif

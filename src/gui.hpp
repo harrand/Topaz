@@ -4,8 +4,7 @@
 #include <functional>
 #include <string>
 #include <unordered_map>
-#include "SDL.h"
-#include "SDL_ttf.h"
+#include "graphics.hpp"
 #include "listeners.hpp"
 #include "vector.hpp"
 #include "mesh.hpp"
@@ -117,14 +116,17 @@ protected:
 class TextField : public Panel
 {
 public:
-	TextField(float x, float y, float width, float height, Vector3F colour, TTF_Font* font, const std::string& text, const Shader& shader);
+	TextField(float x, float y, Vector3F colour, std::optional<Vector3F> background_colour, Font font, const std::string& text, const Shader& shader);
 	virtual void update();
+	bool hasBackgroundColour() const;
 	const std::string& getText() const;
 	void setText(const std::string& new_text);
 private:
-	TTF_Font* font;
+	std::optional<Vector3F>& background_colour;
+	Font font;
 	std::string text;
 	Texture text_texture;
+	GLuint background_colour_uniform, has_background_colour_uniform;
 };
 
 #endif
