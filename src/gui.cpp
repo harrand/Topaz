@@ -270,7 +270,8 @@ void Panel::update()
 
 void Panel::destroy()
 {
-	
+	this->parent->getChildrenR().erase(this);
+	this->parent = nullptr;
 }
 
 bool Panel::focused()

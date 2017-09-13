@@ -11,6 +11,7 @@
 #include <random>
 #include <utility>
 #include "vector.hpp"
+#include "SDL.h"
 
 namespace tz
 {	

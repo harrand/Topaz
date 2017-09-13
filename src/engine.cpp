@@ -63,8 +63,6 @@ void Engine::update(std::size_t shader_index)
 		ticker.reload();
 	}
 	default_gui_shader.bind();
-	Matrix4x4 i = Matrix4x4::identity();
-	default_gui_shader.update(i.fillData(), i.fillData(), i.fillData());
 	this->wnd.update();
 	
 	GLenum error;

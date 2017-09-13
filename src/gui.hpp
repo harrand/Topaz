@@ -94,7 +94,6 @@ public:
 	void setFocused(bool focused);
 protected:
 	bool is_focused;
-private:
 	float x, y, width, height;
 	Vector3F colour;
 	Mesh quad;

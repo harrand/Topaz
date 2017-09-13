@@ -8,10 +8,6 @@ out vec3 vs_position_modelspace;
 out vec2 vs_texcoord_modelspace;
 out vec3 vs_normal_modelspace;
 
-uniform mat4 m;
-uniform mat4 v;
-uniform mat4 p;
-
 void share();
 
 void main()
