@@ -2,7 +2,19 @@
 #include "SDL_mixer.h"
 #include "graphics.hpp"
 
-GUIElement::GUIElement(std::optional<std::reference_wrapper<const Shader>> shader): shader(shader), parent(nullptr), children(std::unordered_set<GUIElement*>()), hidden(true){}
+GUIElement::GUIElement(std::optional<std::reference_wrapper<const Shader>> shader): shader(shader), parent(nullptr), children(std::unordered_set<GUIElement*>()), hidden(false){}
+
+void GUIElement::update()
+{
+	for(GUIElement* child : this->children)
+		child->update();
+}
+
+void GUIElement::destroy()
+{
+	for(GUIElement* child : this->children)
+		child->destroy();
+}
 
 const Window* GUIElement::findWindowParent() const
 {
@@ -78,15 +90,15 @@ Window::Window(const Window& copy): Window(copy.w, copy.h, copy.title){}
 
 Window::~Window()
 {
-	this->destSDL();
 	for(auto pair : registered_listeners)
-		this->deregisterListener(*(pair.second));
+		if(pair.first < Listener::getNumListeners()) // checks to make sure the listener hasnt gone out of scope
+			this->deregisterListener(*(pair.second));
+	this->destSDL();
 }
 
 void Window::destroy()
 {
-	for(GUIElement* child : this->children)
-		child->destroy();
+	GUIElement::destroy();
 	this->requestClose();
 }
 
@@ -98,6 +110,16 @@ bool Window::focused() const
 bool Window::isWindow() const
 {
 	return true;
+}
+
+float Window::getWindowPosX() const
+{
+	return 0;
+}
+
+float Window::getWindowPosY() const
+{
+	return 0;
 }
 
 int Window::getWidth() const
@@ -168,8 +190,7 @@ void Window::update()
 	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_DEPTH_CLAMP);
 	glDisable(GL_CULL_FACE);
-	for(GUIElement* element : this->children)
-		element->update();
+	GUIElement::update();
 	SDL_GL_SwapWindow(this->sdl_window_pointer);
 	this->handleEvents();
 }
@@ -243,7 +264,7 @@ void Window::handleEvents()
 	}
 }
 
-Panel::Panel(float x, float y, float width, float height, Vector3F colour, const Shader& shader): GUIElement(shader), is_focused(false), x(x), y(y), width(width), height(height), colour(colour), quad(tz::graphics::createQuad()), colour_uniform(glGetUniformLocation(this->shader.value().get().getProgramHandle(), "colour")), model_matrix_uniform(glGetUniformLocation(this->shader.value().get().getProgramHandle(), "model_matrix")){}
+Panel::Panel(float x, float y, float width, float height, Vector3F colour, const Shader& shader): GUIElement(shader), is_focused(false), use_proportional_positioning(false), x(x), y(y), width(width), height(height), colour(colour), quad(tz::graphics::createQuad()), colour_uniform(glGetUniformLocation(this->shader.value().get().getProgramHandle(), "colour")), model_matrix_uniform(glGetUniformLocation(this->shader.value().get().getProgramHandle(), "model_matrix")){}
 
 float Panel::getX() const
 {
@@ -253,6 +274,22 @@ float Panel::getX() const
 float Panel::getY() const
 {
 	return this->y;
+}
+
+float Panel::getWindowPosX() const
+{
+	float offset = 0;
+	if(this->parent != nullptr)
+		offset = this->parent->getWindowPosX();
+	return offset + (this->x + this->width);
+}
+
+float Panel::getWindowPosY() const
+{
+	float offset = 0;
+	if(this->parent != nullptr)
+		offset = this->parent->getWindowPosY();
+	return offset + (this->y + this->height);
 }
 
 float Panel::getWidth() const
@@ -302,13 +339,20 @@ void Panel::update()
 		this->shader.value().get().bind();
 		glUniform1i(glGetUniformLocation(this->shader.value().get().getProgramHandle(), "has_texture"), false);
 		glUniform3f(this->colour_uniform, this->colour.getX(), this->colour.getY(), this->colour.getZ());
-		glUniformMatrix4fv(this->model_matrix_uniform, 1, GL_TRUE, Matrix4x4::createModelMatrix(Vector3F(this->x, this->y, 0.0f), Vector3F(), Vector3F(this->width, this->height, 0.0f)).fillData().data());
+		Matrix4x4 projection;
+		if(this->hasWindowParent() && !this->use_proportional_positioning)
+			projection = Matrix4x4::createOrthographicMatrix(this->findWindowParent()->getWidth(), 0.0f, this->findWindowParent()->getHeight(), 0.0f, -1.0f, 1.0f);
+		else
+			projection = Matrix4x4::identity();
+		glUniformMatrix4fv(this->model_matrix_uniform, 1, GL_TRUE, (projection * Matrix4x4::createModelMatrix(Vector3F(this->getWindowPosX(), this->getWindowPosY(), 0.0f), Vector3F(), Vector3F(this->width, this->height, 0.0f))).fillData().data());
 		this->quad.render(false);
+		GUIElement::update();
 	}
 }
 
 void Panel::destroy()
 {
+	GUIElement::destroy();
 	this->parent->getChildrenR().erase(this);
 	this->parent = nullptr;
 }
@@ -323,6 +367,16 @@ bool Panel::isWindow() const
 	return false;
 }
 
+void Panel::setUsingProportionalPositioning(bool use_proportional_positioning)
+{
+	this->use_proportional_positioning = use_proportional_positioning;
+}
+
+bool Panel::isUsingProportionalPositioning() const
+{
+	return this->use_proportional_positioning;
+}
+
 void Panel::setFocused(bool focused)
 {
 	this->is_focused = focused;
@@ -333,8 +387,6 @@ TextLabel::TextLabel(float x, float y, Vector3F colour, std::optional<Vector3F> 
 	// Not in initialiser list because text_texture MUST be initialised after Panel, and theres no way of initialising it before without a warning so do it here.
 	this->width = text_texture.getWidth();
 	this->height = text_texture.getHeight();
-	this->x += this->width;
-	this->y += this->height;
 }
 
 void TextLabel::update()
@@ -349,14 +401,31 @@ void TextLabel::update()
 		if(this->hasBackgroundColour())
 			glUniform3f(this->background_colour_uniform, this->background_colour.value().getX(), this->background_colour.value().getY(), this->background_colour.value().getZ());
 		Matrix4x4 projection;
-		if(this->hasWindowParent())
+		if(this->hasWindowParent() && !this->use_proportional_positioning)
 			projection = Matrix4x4::createOrthographicMatrix(this->findWindowParent()->getWidth(), 0.0f, this->findWindowParent()->getHeight(), 0.0f, -1.0f, 1.0f);
 		else
 			projection = Matrix4x4::identity();
-		glUniformMatrix4fv(this->model_matrix_uniform, 1, GL_TRUE, (projection * Matrix4x4::createModelMatrix(Vector3F(this->x, this->y, 0.0f), Vector3F(), Vector3F(this->width, this->height, 0.0f))).fillData().data());
+		glUniformMatrix4fv(this->model_matrix_uniform, 1, GL_TRUE, (projection * Matrix4x4::createModelMatrix(Vector3F(this->getWindowPosX(), this->getWindowPosY(), 0.0f), Vector3F(), Vector3F(this->width, this->height, 0.0f))).fillData().data());
 		this->text_texture.bind(this->shader.value().get().getProgramHandle(), 0);
 		this->quad.render(false);
+		GUIElement::update();
 	}
+}
+
+float TextLabel::getWindowPosX() const
+{
+	float offset = 0;
+	if(this->parent != nullptr && !this->parent->isWindow())
+		offset = dynamic_cast<Panel*>(this->parent)->getX();
+	return offset + (this->x + this->width);
+}
+
+float TextLabel::getWindowPosY() const
+{
+	float offset = 0;
+	if(this->parent != nullptr && !this->parent->isWindow())
+		offset = dynamic_cast<Panel*>(this->parent)->getY();
+	return offset + (this->y + this->height);
 }
 
 bool TextLabel::hasBackgroundColour() const
@@ -380,14 +449,10 @@ const std::string& TextLabel::getText() const
 }
 void TextLabel::setText(const std::string& new_text)
 {
-	this->x -= this->width;
-	this->y -= this->height;
 	this->text = new_text;
 	this->text_texture = Texture(this->font.getTTFR(), this->text, SDL_Color({static_cast<unsigned char>(this->colour.getX() * 255), static_cast<unsigned char>(this->colour.getY() * 255), static_cast<unsigned char>(this->colour.getZ() * 255), static_cast<unsigned char>(255)}));
 	this->width = text_texture.getWidth();
 	this->height = text_texture.getHeight();
-	this->x += this->width;
-	this->y += this->height;
 }
 
 const Texture& TextLabel::getTexture() const
@@ -421,15 +486,34 @@ void Button::update()
 	TextLabel::update();
 }
 
-void Button::onMouseOver(){}
-void Button::onMouseClick(){}
+Command* Button::getOnMouseOver() const
+{
+	return this->on_mouse_over;
+}
+
+Command* Button::getOnMouseClick() const
+{
+	return this->on_mouse_click;
+}
+
+Command*& Button::getOnMouseOverR()
+{
+	return this->on_mouse_over;
+}
+
+Command*& Button::getOnMouseClickR()
+{
+	return this->on_mouse_click;
+}
+
+void Button::onMouseOver(){this->setText("DEWIT");}
+void Button::onMouseClick(){this->setText("MMM THATS GOOD");}
 
 bool Button::mousedOver() const
 {
 	Vector2F mouse_pos = this->mouse_listener.getMousePos();
 	bool x_aligned = mouse_pos.getX() >= (this->x - this->width) && mouse_pos.getX() <= (this->x + this->width);
 	bool y_aligned = mouse_pos.getY() >= (this->findWindowParent()->getHeight() - this->y - this->height) && mouse_pos.getY() <= ((this->findWindowParent()->getHeight() - this->y) + this->height);
-	tz::util::log::message("x align: ", x_aligned, ", y align: ", y_aligned);
 	return x_aligned && y_aligned;
 }
 

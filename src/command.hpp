@@ -6,7 +6,7 @@
 class Command
 {
 public:
-	Command(std::string name, std::string description, std::string usage);
+	Command(std::string name = "", std::string description = "", std::string usage = "");
 	Command(const Command& copy) = default;
 	Command(Command&& move) = default;
 	Command& operator=(const Command& rhs) = default;

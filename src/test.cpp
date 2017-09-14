@@ -32,6 +32,7 @@ void init()
 	TextLabel text(0.0f, 0.0f, Vector3F(1, 1, 1), {}, example_font, "FPS: ...", engine.getDefaultGuiShader());
 	engine.getWindowR().addChild(&text);
 	
+	
 	while(!engine.getWindowR().isCloseRequested())
 	{
 		if(updater.millisPassed(1000))

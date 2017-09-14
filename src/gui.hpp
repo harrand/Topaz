@@ -15,10 +15,12 @@ class GUIElement
 {
 public:
 	GUIElement(std::optional<std::reference_wrapper<const Shader>> shader);
-	virtual void update() = 0;
-	virtual void destroy() = 0;
+	virtual void update();
+	virtual void destroy();
 	virtual bool focused() const = 0;
 	virtual bool isWindow() const = 0;
+	virtual float getWindowPosX() const = 0;
+	virtual float getWindowPosY() const = 0;
 	const Window* findWindowParent() const;
 	bool hasWindowParent() const;
 	const std::optional<std::reference_wrapper<const Shader>> getShader() const;
@@ -50,6 +52,8 @@ public:
 	virtual void destroy();
 	virtual bool focused() const;
 	virtual bool isWindow() const;
+	virtual float getWindowPosX() const;
+	virtual float getWindowPosY() const;
 	enum class SwapIntervalType : int
 	{
 		LATE_SWAP_TEARING = -1,
@@ -91,6 +95,8 @@ public:
 	Panel(float x, float y, float width, float height, Vector3F colour, const Shader& shader);
 	float getX() const;
 	float getY() const;
+	virtual float getWindowPosX() const;
+	virtual float getWindowPosY() const;
 	float getWidth() const;
 	float getHeight() const;
 	float& getXR();
@@ -104,9 +110,11 @@ public:
 	virtual void destroy();
 	virtual bool focused() const;
 	virtual bool isWindow() const;
+	void setUsingProportionalPositioning(bool use_proportional_positioning);
+	bool isUsingProportionalPositioning() const;
 	void setFocused(bool focused);
 protected:
-	bool is_focused;
+	bool is_focused, use_proportional_positioning;
 	float x, y, width, height;
 	Vector3F colour;
 	Mesh quad;
@@ -118,6 +126,8 @@ class TextLabel : public Panel
 public:
 	TextLabel(float x, float y, Vector3F colour, std::optional<Vector3F> background_colour, Font font, const std::string& text, const Shader& shader);
 	virtual void update();
+	virtual float getWindowPosX() const;
+	virtual float getWindowPosY() const;
 	bool hasBackgroundColour() const;
 	const Font& getFont() const;
 	Font& getFontR();
@@ -140,12 +150,19 @@ class Button : public TextLabel
 public:
 	Button(float x, float y, Vector3F colour, std::optional<Vector3F> background_colour, Font font, const std::string& text, const Shader& shader, MouseListener& mouse_listener);
 	virtual void update();
-	virtual void onMouseOver();
-	virtual void onMouseClick();
+	Command* getOnMouseOver() const;
+	Command* getOnMouseClick() const;
+	Command*& getOnMouseOverR();
+	Command*& getOnMouseClickR();
 	bool mousedOver() const;
 	bool clickedOn() const;
+protected:
+	virtual void onMouseOver();
+	virtual void onMouseClick();
 private:
 	MouseListener& mouse_listener;
+	Command* on_mouse_over;
+	Command* on_mouse_click;
 };
 
 #endif
