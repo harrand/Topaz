@@ -328,7 +328,7 @@ void Panel::setFocused(bool focused)
 	this->is_focused = focused;
 }
 
-TextField::TextField(float x, float y, Vector3F colour, std::optional<Vector3F> background_colour, Font font, const std::string& text, const Shader& shader): Panel(x, y, 0, 0, colour, shader), background_colour(background_colour), font(font), text(text), text_texture(this->font.getTTFR(), this->text, SDL_Color({static_cast<unsigned char>(this->colour.getX() * 255), static_cast<unsigned char>(this->colour.getY() * 255), static_cast<unsigned char>(this->colour.getZ() * 255), static_cast<unsigned char>(255)})), background_colour_uniform(glGetUniformLocation(this->shader.value().get().getProgramHandle(), "background_colour")), has_background_colour_uniform(glGetUniformLocation(this->shader.value().get().getProgramHandle(), "has_background_colour"))
+TextLabel::TextLabel(float x, float y, Vector3F colour, std::optional<Vector3F> background_colour, Font font, const std::string& text, const Shader& shader): Panel(x, y, 0, 0, colour, shader), background_colour(background_colour), font(font), text(text), text_texture(this->font.getTTFR(), this->text, SDL_Color({static_cast<unsigned char>(this->colour.getX() * 255), static_cast<unsigned char>(this->colour.getY() * 255), static_cast<unsigned char>(this->colour.getZ() * 255), static_cast<unsigned char>(255)})), background_colour_uniform(glGetUniformLocation(this->shader.value().get().getProgramHandle(), "background_colour")), has_background_colour_uniform(glGetUniformLocation(this->shader.value().get().getProgramHandle(), "has_background_colour"))
 {
 	// Not in initialiser list because text_texture MUST be initialised after Panel, and theres no way of initialising it before without a warning so do it here.
 	this->width = text_texture.getWidth();
@@ -337,7 +337,7 @@ TextField::TextField(float x, float y, Vector3F colour, std::optional<Vector3F> 
 	this->y += this->height;
 }
 
-void TextField::update()
+void TextLabel::update()
 {
 	if(!this->hidden)
 	{
@@ -359,16 +359,26 @@ void TextField::update()
 	}
 }
 
-bool TextField::hasBackgroundColour() const
+bool TextLabel::hasBackgroundColour() const
 {
 	return this->background_colour.has_value();
 }
 
-const std::string& TextField::getText() const
+const Font& TextLabel::getFont() const
+{
+	return this->font;
+}
+
+Font& TextLabel::getFontR()
+{
+	return this->font;
+}
+
+const std::string& TextLabel::getText() const
 {
 	return this->text;
 }
-void TextField::setText(const std::string& new_text)
+void TextLabel::setText(const std::string& new_text)
 {
 	this->x -= this->width;
 	this->y -= this->height;
@@ -378,4 +388,52 @@ void TextField::setText(const std::string& new_text)
 	this->height = text_texture.getHeight();
 	this->x += this->width;
 	this->y += this->height;
+}
+
+const Texture& TextLabel::getTexture() const
+{
+	return this->text_texture;
+}
+
+Texture& TextLabel::getTextureR()
+{
+	return this->text_texture;
+}
+
+GLuint TextLabel::getBackgroundColourUniform() const
+{
+	return this->background_colour_uniform;
+}
+
+GLuint TextLabel::getHasBackgroundColourUniform() const
+{
+	return this->has_background_colour_uniform;
+}
+
+Button::Button(float x, float y, Vector3F colour, std::optional<Vector3F> background_colour, Font font, const std::string& text, const Shader& shader, MouseListener& mouse_listener): TextLabel(x, y, colour, background_colour, font, text, shader), mouse_listener(mouse_listener){}
+
+void Button::update()
+{
+	if(this->clickedOn())
+		this->onMouseClick();
+	else if(this->mousedOver())
+		this->onMouseOver();
+	TextLabel::update();
+}
+
+void Button::onMouseOver(){}
+void Button::onMouseClick(){}
+
+bool Button::mousedOver() const
+{
+	Vector2F mouse_pos = this->mouse_listener.getMousePos();
+	bool x_aligned = mouse_pos.getX() >= (this->x - this->width) && mouse_pos.getX() <= (this->x + this->width);
+	bool y_aligned = mouse_pos.getY() >= (this->findWindowParent()->getHeight() - this->y - this->height) && mouse_pos.getY() <= ((this->findWindowParent()->getHeight() - this->y) + this->height);
+	tz::util::log::message("x align: ", x_aligned, ", y align: ", y_aligned);
+	return x_aligned && y_aligned;
+}
+
+bool Button::clickedOn() const
+{
+	return this->mousedOver() && this->mouse_listener.isLeftClicked();
 }

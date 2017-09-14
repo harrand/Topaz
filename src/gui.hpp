@@ -113,20 +113,39 @@ protected:
 	GLuint colour_uniform, model_matrix_uniform;
 };
 
-class TextField : public Panel
+class TextLabel : public Panel
 {
 public:
-	TextField(float x, float y, Vector3F colour, std::optional<Vector3F> background_colour, Font font, const std::string& text, const Shader& shader);
+	TextLabel(float x, float y, Vector3F colour, std::optional<Vector3F> background_colour, Font font, const std::string& text, const Shader& shader);
 	virtual void update();
 	bool hasBackgroundColour() const;
+	const Font& getFont() const;
+	Font& getFontR();
 	const std::string& getText() const;
 	void setText(const std::string& new_text);
+	const Texture& getTexture() const;
+	Texture& getTextureR();
+	GLuint getBackgroundColourUniform() const;
+	GLuint getHasBackgroundColourUniform() const;
 private:
 	std::optional<Vector3F>& background_colour;
 	Font font;
 	std::string text;
 	Texture text_texture;
 	GLuint background_colour_uniform, has_background_colour_uniform;
+};
+
+class Button : public TextLabel
+{
+public:
+	Button(float x, float y, Vector3F colour, std::optional<Vector3F> background_colour, Font font, const std::string& text, const Shader& shader, MouseListener& mouse_listener);
+	virtual void update();
+	virtual void onMouseOver();
+	virtual void onMouseClick();
+	bool mousedOver() const;
+	bool clickedOn() const;
+private:
+	MouseListener& mouse_listener;
 };
 
 #endif

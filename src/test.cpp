@@ -29,7 +29,7 @@ void init()
 	TimeKeeper updater;
 	
 	Font example_font("../../../res/runtime/fonts/upheaval.ttf", 25);
-	TextField text(0.0f, 0.0f, Vector3F(1, 0, 0), {}, example_font, "FPS: 0", engine.getDefaultGuiShader());
+	TextLabel text(0.0f, 0.0f, Vector3F(1, 1, 1), {}, example_font, "FPS: ...", engine.getDefaultGuiShader());
 	engine.getWindowR().addChild(&text);
 	
 	while(!engine.getWindowR().isCloseRequested())
@@ -37,11 +37,9 @@ void init()
 		if(updater.millisPassed(1000))
 		{
 			text.setText("FPS: " + tz::util::cast::toString(engine.getFPS()));
-			seconds++;
 			updater.reload();
+			seconds++;
 		}
-		if(kc.getKeyListenerR().catchKeyPressed("Q"))
-			tz::util::log::message("Played: ", seconds, ", FPS = ", engine.getFPS());
 		if(kc.getKeyListenerR().catchKeyPressed("Escape"))
 			text.setHidden(!text.isHidden());
 		updater.update();
