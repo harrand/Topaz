@@ -30,7 +30,9 @@ void init()
 	
 	Font example_font("../../../res/runtime/fonts/upheaval.ttf", 25);
 	TextLabel text(0.0f, 0.0f, Vector3F(1, 1, 1), {}, example_font, "FPS: ...", engine.getDefaultGuiShader());
+	Button test_button(400.0f, 400.0f, Vector3F(0, 1, 1), {}, example_font, "Press me", engine.getDefaultGuiShader(), mc.getMouseListenerR());
 	engine.getWindowR().addChild(&text);
+	engine.getWindowR().addChild(&test_button);
 	
 	
 	while(!engine.getWindowR().isCloseRequested())

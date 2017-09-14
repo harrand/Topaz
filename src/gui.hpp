@@ -156,9 +156,6 @@ public:
 	Command*& getOnMouseClickR();
 	bool mousedOver() const;
 	bool clickedOn() const;
-protected:
-	virtual void onMouseOver();
-	virtual void onMouseClick();
 private:
 	MouseListener& mouse_listener;
 	Command* on_mouse_over;

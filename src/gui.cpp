@@ -475,14 +475,14 @@ GLuint TextLabel::getHasBackgroundColourUniform() const
 	return this->has_background_colour_uniform;
 }
 
-Button::Button(float x, float y, Vector3F colour, std::optional<Vector3F> background_colour, Font font, const std::string& text, const Shader& shader, MouseListener& mouse_listener): TextLabel(x, y, colour, background_colour, font, text, shader), mouse_listener(mouse_listener){}
+Button::Button(float x, float y, Vector3F colour, std::optional<Vector3F> background_colour, Font font, const std::string& text, const Shader& shader, MouseListener& mouse_listener): TextLabel(x, y, colour, background_colour, font, text, shader), mouse_listener(mouse_listener), on_mouse_over(nullptr), on_mouse_click(nullptr){}
 
 void Button::update()
 {
-	if(this->clickedOn())
-		this->onMouseClick();
-	else if(this->mousedOver())
-		this->onMouseOver();
+	if(this->clickedOn() && this->on_mouse_click != nullptr)
+		this->on_mouse_click->operator()({});
+	else if(this->mousedOver() && this->on_mouse_over != nullptr)
+		this->on_mouse_over->operator()({});
 	TextLabel::update();
 }
 
@@ -505,9 +505,6 @@ Command*& Button::getOnMouseClickR()
 {
 	return this->on_mouse_click;
 }
-
-void Button::onMouseOver(){this->setText("DEWIT");}
-void Button::onMouseClick(){this->setText("MMM THATS GOOD");}
 
 bool Button::mousedOver() const
 {
