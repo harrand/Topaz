@@ -63,12 +63,14 @@ void init()
 	
 	while(!engine.getWindowR().isCloseRequested())
 	{
+		
 		if(updater.millisPassed(1000))
 		{
 			text.setText("FPS: " + tz::util::cast::toString(engine.getFPS()));
 			updater.reload();
 			seconds++;
 		}
+		
 		if(kc.getKeyListenerR().catchKeyPressed("Escape"))
 			gui_panel.setHidden(!gui_panel.isHidden());
 		updater.update();

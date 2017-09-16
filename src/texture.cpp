@@ -148,6 +148,7 @@ Texture::~Texture()
 
 Texture& Texture::operator=(Texture&& rhs)
 {
+	glDeleteTextures(1, &(this->texture_handle));
 	this->filename = rhs.getFileName();
 	this->texture_id = rhs.texture_id;
 	this->texture_handle = rhs.texture_handle;
