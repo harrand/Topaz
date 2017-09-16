@@ -264,7 +264,7 @@ void Window::handleEvents()
 	}
 }
 
-Panel::Panel(float x, float y, float width, float height, Vector3F colour, const Shader& shader): GUIElement(shader), is_focused(false), use_proportional_positioning(false), x(x), y(y), width(width), height(height), colour(colour), quad(tz::graphics::createQuad()), colour_uniform(glGetUniformLocation(this->shader.value().get().getProgramHandle(), "colour")), model_matrix_uniform(glGetUniformLocation(this->shader.value().get().getProgramHandle(), "model_matrix")){}
+Panel::Panel(float x, float y, float width, float height, Vector4F colour, const Shader& shader): GUIElement(shader), is_focused(false), use_proportional_positioning(false), x(x), y(y), width(width), height(height), colour(colour), quad(tz::graphics::createQuad()), colour_uniform(glGetUniformLocation(this->shader.value().get().getProgramHandle(), "colour")), model_matrix_uniform(glGetUniformLocation(this->shader.value().get().getProgramHandle(), "model_matrix")){}
 
 float Panel::getX() const
 {
@@ -322,12 +322,12 @@ float& Panel::getHeightR()
 	return this->height;
 }
 
-const Vector3F& Panel::getColour() const
+const Vector4F& Panel::getColour() const
 {
 	return this->colour;
 }
 
-Vector3F& Panel::getColourR()
+Vector4F& Panel::getColourR()
 {
 	return this->colour;
 }
@@ -338,7 +338,7 @@ void Panel::update()
 	{
 		this->shader.value().get().bind();
 		glUniform1i(glGetUniformLocation(this->shader.value().get().getProgramHandle(), "has_texture"), false);
-		glUniform3f(this->colour_uniform, this->colour.getX(), this->colour.getY(), this->colour.getZ());
+		glUniform4f(this->colour_uniform, this->colour.getX(), this->colour.getY(), this->colour.getZ(), this->colour.getW());
 		Matrix4x4 projection;
 		if(this->hasWindowParent() && !this->use_proportional_positioning)
 			projection = Matrix4x4::createOrthographicMatrix(this->findWindowParent()->getWidth(), 0.0f, this->findWindowParent()->getHeight(), 0.0f, -1.0f, 1.0f);
@@ -382,7 +382,7 @@ void Panel::setFocused(bool focused)
 	this->is_focused = focused;
 }
 
-TextLabel::TextLabel(float x, float y, Vector3F colour, std::optional<Vector3F> background_colour, std::optional<Vector3F> text_border_colour, Font font, const std::string& text, const Shader& shader): Panel(x, y, 0, 0, colour, shader), background_colour(background_colour), text_border_colour(text_border_colour), font(font), text(text), text_texture(this->font.getTTFR(), this->text, SDL_Color({static_cast<unsigned char>(this->colour.getX() * 255), static_cast<unsigned char>(this->colour.getY() * 255), static_cast<unsigned char>(this->colour.getZ() * 255), static_cast<unsigned char>(255)})), background_colour_uniform(glGetUniformLocation(this->shader.value().get().getProgramHandle(), "background_colour")), has_background_colour_uniform(glGetUniformLocation(this->shader.value().get().getProgramHandle(), "has_background_colour")), text_border_colour_uniform(glGetUniformLocation(this->shader.value().get().getProgramHandle(), "text_border_colour")), has_text_border_colour_uniform(glGetUniformLocation(this->shader.value().get().getProgramHandle(), "has_text_border_colour"))
+TextLabel::TextLabel(float x, float y, Vector4F colour, std::optional<Vector4F> background_colour, std::optional<Vector3F> text_border_colour, Font font, const std::string& text, const Shader& shader): Panel(x, y, 0, 0, colour, shader), background_colour(background_colour), text_border_colour(text_border_colour), font(font), text(text), text_texture(this->font.getTTFR(), this->text, SDL_Color({static_cast<unsigned char>(this->colour.getX() * 255), static_cast<unsigned char>(this->colour.getY() * 255), static_cast<unsigned char>(this->colour.getZ() * 255), static_cast<unsigned char>(255)})), background_colour_uniform(glGetUniformLocation(this->shader.value().get().getProgramHandle(), "background_colour")), has_background_colour_uniform(glGetUniformLocation(this->shader.value().get().getProgramHandle(), "has_background_colour")), text_border_colour_uniform(glGetUniformLocation(this->shader.value().get().getProgramHandle(), "text_border_colour")), has_text_border_colour_uniform(glGetUniformLocation(this->shader.value().get().getProgramHandle(), "has_text_border_colour"))
 {
 	// Not in initialiser list because text_texture MUST be initialised after Panel, and theres no way of initialising it before without a warning so do it here.
 	this->width = text_texture.getWidth();
@@ -400,7 +400,7 @@ void TextLabel::update()
 		glUniform1i(this->has_background_colour_uniform, this->hasBackgroundColour() ? true : false);
 		glUniform1i(this->has_text_border_colour_uniform, this->hasTextBorderColour() ? true : false);
 		if(this->hasBackgroundColour())
-			glUniform3f(this->background_colour_uniform, this->background_colour.value().getX(), this->background_colour.value().getY(), this->background_colour.value().getZ());
+			glUniform4f(this->background_colour_uniform, this->background_colour.value().getX(), this->background_colour.value().getY(), this->background_colour.value().getZ(), this->background_colour.value().getW());
 		if(this->hasTextBorderColour())
 			glUniform3f(this->text_border_colour_uniform, this->text_border_colour.value().getX(), this->text_border_colour.value().getY(), this->text_border_colour.value().getZ());
 		Matrix4x4 projection;
@@ -488,7 +488,7 @@ GLuint TextLabel::getHasTextBorderColourUniform() const
 	return this->has_text_border_colour_uniform;
 }
 
-Button::Button(float x, float y, Vector3F colour, std::optional<Vector3F> background_colour, std::optional<Vector3F> text_border_colour, Font font, const std::string& text, const Shader& shader, MouseListener& mouse_listener): TextLabel(x, y, colour, background_colour, text_border_colour, font, text, shader), mouse_listener(mouse_listener), on_mouse_over(nullptr), on_mouse_click(nullptr), just_clicked(false), just_moused_over(false){}
+Button::Button(float x, float y, Vector4F colour, std::optional<Vector4F> background_colour, std::optional<Vector3F> text_border_colour, Font font, const std::string& text, const Shader& shader, MouseListener& mouse_listener): TextLabel(x, y, colour, background_colour, text_border_colour, font, text, shader), mouse_listener(mouse_listener), on_mouse_over(nullptr), on_mouse_click(nullptr), just_clicked(false), just_moused_over(false){}
 
 void Button::update()
 {

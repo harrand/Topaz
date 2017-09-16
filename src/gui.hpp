@@ -92,7 +92,7 @@ private:
 class Panel : public GUIElement
 {
 public:
-	Panel(float x, float y, float width, float height, Vector3F colour, const Shader& shader);
+	Panel(float x, float y, float width, float height, Vector4F colour, const Shader& shader);
 	float getX() const;
 	float getY() const;
 	virtual float getWindowPosX() const;
@@ -103,8 +103,8 @@ public:
 	float& getYR();
 	float& getWidthR();
 	float& getHeightR();
-	const Vector3F& getColour() const;
-	Vector3F& getColourR();
+	const Vector4F& getColour() const;
+	Vector4F& getColourR();
 	
 	virtual void update();
 	virtual void destroy();
@@ -116,7 +116,7 @@ public:
 protected:
 	bool is_focused, use_proportional_positioning;
 	float x, y, width, height;
-	Vector3F colour;
+	Vector4F colour;
 	Mesh quad;
 	GLuint colour_uniform, model_matrix_uniform;
 };
@@ -124,7 +124,7 @@ protected:
 class TextLabel : public Panel
 {
 public:
-	TextLabel(float x, float y, Vector3F colour, std::optional<Vector3F> background_colour, std::optional<Vector3F> text_border_colour, Font font, const std::string& text, const Shader& shader);
+	TextLabel(float x, float y, Vector4F colour, std::optional<Vector4F> background_colour, std::optional<Vector3F> text_border_colour, Font font, const std::string& text, const Shader& shader);
 	virtual void update();
 	virtual float getWindowPosX() const;
 	virtual float getWindowPosY() const;
@@ -140,7 +140,8 @@ public:
 	GLuint getHasBackgroundColourUniform() const;
 	GLuint getHasTextBorderColourUniform() const;
 private:
-	std::optional<Vector3F> background_colour, text_border_colour;
+	std::optional<Vector4F> background_colour;
+	std::optional<Vector3F> text_border_colour;
 	Font font;
 	std::string text;
 	Texture text_texture;
@@ -150,7 +151,7 @@ private:
 class Button : public TextLabel
 {
 public:
-	Button(float x, float y, Vector3F colour, std::optional<Vector3F> background_colour, std::optional<Vector3F> text_border_colour, Font font, const std::string& text, const Shader& shader, MouseListener& mouse_listener);
+	Button(float x, float y, Vector4F colour, std::optional<Vector4F> background_colour, std::optional<Vector3F> text_border_colour, Font font, const std::string& text, const Shader& shader, MouseListener& mouse_listener);
 	virtual void update();
 	Command* getOnMouseOver() const;
 	Command* getOnMouseClick() const;
