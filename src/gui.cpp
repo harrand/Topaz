@@ -34,11 +34,6 @@ const std::optional<std::reference_wrapper<const Shader>> GUIElement::getShader(
 	return this->shader;
 }
 
-std::optional<std::reference_wrapper<const Shader>>& GUIElement::getShaderR()
-{
-	return this->shader;
-}
-
 bool GUIElement::hasShader() const
 {
 	return this->shader.has_value();

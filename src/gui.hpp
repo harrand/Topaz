@@ -24,7 +24,6 @@ public:
 	const Window* findWindowParent() const;
 	bool hasWindowParent() const;
 	const std::optional<std::reference_wrapper<const Shader>> getShader() const;
-	std::optional<std::reference_wrapper<const Shader>>& getShaderR();
 	bool hasShader() const;
 	GUIElement* getParent() const;
 	GUIElement*& getParentR();
