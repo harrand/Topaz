@@ -22,7 +22,7 @@ public:
 	std::size_t getExpectedParameterSize() const;
 	
 	virtual bool operator==(const Command& rhs) const;
-	virtual void operator()(const std::vector<std::string>& args) = 0;
+	virtual void operator()(const std::vector<std::string>& args = std::vector<std::string>()) = 0;
 private:
 	std::string name;
 	std::string description;
@@ -45,7 +45,7 @@ public:
 	void deregisterCommand(Command* command);
 	void deregisterCommand(const std::string& command_name);
 
-	void operator()(const std::string& name, const std::vector<std::string>& args);
+	void operator()(const std::string& name, const std::vector<std::string>& args = std::vector<std::string>());
 private:
 	std::unordered_set<Command*> commands;
 };

@@ -338,6 +338,8 @@ void Panel::update()
 	{
 		this->shader.value().get().bind();
 		glUniform1i(glGetUniformLocation(this->shader.value().get().getProgramHandle(), "has_texture"), false);
+		glUniform1i(glGetUniformLocation(this->shader.value().get().getProgramHandle(), "has_background_colour"), false);
+		glUniform1i(glGetUniformLocation(this->shader.value().get().getProgramHandle(), "has_text_border_colour"), false);
 		glUniform4f(this->colour_uniform, this->colour.getX(), this->colour.getY(), this->colour.getZ(), this->colour.getW());
 		Matrix4x4 projection;
 		if(this->hasWindowParent() && !this->use_proportional_positioning)
