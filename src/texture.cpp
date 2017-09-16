@@ -93,7 +93,7 @@ Texture::Texture(std::string filename): filename(std::move(filename))
 	// Like glBufferData, just sends the image data to the GPU
 	// Par2 is mipmapping, when we change the resolution of the image depending on how far we are away from it (i.e higher resolution if we're closer)
 	// Expand upon this later, 0 means that we're not changing anything.
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, this->width, this->height, /*Border size*/0, GL_RGBA, GL_UNSIGNED_BYTE, imgdata);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, this->width, this->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, imgdata);
 	
 	this->deleteTexture(imgdata);
 }

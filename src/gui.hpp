@@ -124,11 +124,12 @@ protected:
 class TextLabel : public Panel
 {
 public:
-	TextLabel(float x, float y, Vector3F colour, std::optional<Vector3F> background_colour, Font font, const std::string& text, const Shader& shader);
+	TextLabel(float x, float y, Vector3F colour, std::optional<Vector3F> background_colour, std::optional<Vector3F> text_border_colour, Font font, const std::string& text, const Shader& shader);
 	virtual void update();
 	virtual float getWindowPosX() const;
 	virtual float getWindowPosY() const;
 	bool hasBackgroundColour() const;
+	bool hasTextBorderColour() const;
 	const Font& getFont() const;
 	Font& getFontR();
 	const std::string& getText() const;
@@ -137,18 +138,19 @@ public:
 	Texture& getTextureR();
 	GLuint getBackgroundColourUniform() const;
 	GLuint getHasBackgroundColourUniform() const;
+	GLuint getHasTextBorderColourUniform() const;
 private:
-	std::optional<Vector3F>& background_colour;
+	std::optional<Vector3F> background_colour, text_border_colour;
 	Font font;
 	std::string text;
 	Texture text_texture;
-	GLuint background_colour_uniform, has_background_colour_uniform;
+	GLuint background_colour_uniform, has_background_colour_uniform, text_border_colour_uniform, has_text_border_colour_uniform;
 };
 
 class Button : public TextLabel
 {
 public:
-	Button(float x, float y, Vector3F colour, std::optional<Vector3F> background_colour, Font font, const std::string& text, const Shader& shader, MouseListener& mouse_listener);
+	Button(float x, float y, Vector3F colour, std::optional<Vector3F> background_colour, std::optional<Vector3F> text_border_colour, Font font, const std::string& text, const Shader& shader, MouseListener& mouse_listener);
 	virtual void update();
 	Command* getOnMouseOver() const;
 	Command* getOnMouseClick() const;
@@ -160,6 +162,7 @@ private:
 	MouseListener& mouse_listener;
 	Command* on_mouse_over;
 	Command* on_mouse_click;
+	bool just_clicked, just_moused_over;
 };
 
 #endif

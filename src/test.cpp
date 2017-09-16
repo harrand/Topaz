@@ -13,6 +13,22 @@ int main()
 	return 0;
 }
 
+class FPSToggleCommand : public Command
+{
+public:
+	FPSToggleCommand(TextLabel& fps_label): fps_label(fps_label){}
+	virtual void operator()(const std::vector<std::string>& args){fps_label.setHidden(!fps_label.isHidden());}
+	TextLabel& fps_label;
+};
+
+class ExitGuiCommand : public Command
+{
+public:
+	ExitGuiCommand(Panel& gui_panel): gui_panel(gui_panel){}
+	virtual void operator()(const std::vector<std::string>& args){gui_panel.setHidden(true);}
+	Panel& gui_panel;
+};
+
 void init()
 {
 	Window wnd(800, 600, "Topaz Development Window");
@@ -29,10 +45,20 @@ void init()
 	TimeKeeper updater;
 	
 	Font example_font("../../../res/runtime/fonts/upheaval.ttf", 25);
-	TextLabel text(0.0f, 0.0f, Vector3F(1, 1, 1), {}, example_font, "FPS: ...", engine.getDefaultGuiShader());
-	Button test_button(400.0f, 400.0f, Vector3F(0, 1, 1), {}, example_font, "Press me", engine.getDefaultGuiShader(), mc.getMouseListenerR());
+	TextLabel text(0.0f, 0.0f, Vector3F(1, 1, 1), {}, Vector3F(0, 0, 0), example_font, "FPS: ...", engine.getDefaultGuiShader());
+	FPSToggleCommand toggle(text);
+	Panel gui_panel(0.0f, 0.0f, wnd.getWidth(), wnd.getHeight(), Vector3F(0.5f, 0.5f, 0.0f), engine.getDefaultGuiShader());
+	ExitGuiCommand exit(gui_panel);
+	TextLabel gui_title(0.0f, wnd.getHeight() - 50, Vector3F(1, 1, 1), {}, Vector3F(0, 0, 0), example_font, "Main Menu", engine.getDefaultGuiShader());
+	Button test_button(0.0f, 2 * text.getHeight(), Vector3F(1, 1, 1), Vector3F(0.2, 0.2, 0.2), Vector3F(0, 0, 0), example_font, "Hide/Show", engine.getDefaultGuiShader(), mc.getMouseListenerR());
+	Button exit_gui_button(wnd.getWidth() - 50, wnd.getHeight() - 50, Vector3F(1, 1, 1), Vector3F(1.0, 0, 0), Vector3F(0, 0, 0), example_font, "X", engine.getDefaultGuiShader(), mc.getMouseListenerR());
 	engine.getWindowR().addChild(&text);
-	engine.getWindowR().addChild(&test_button);
+	engine.getWindowR().addChild(&gui_panel);
+	gui_panel.addChild(&gui_title);
+	gui_panel.addChild(&test_button);
+	gui_panel.addChild(&exit_gui_button);
+	test_button.getOnMouseClickR() = &toggle;
+	exit_gui_button.getOnMouseClickR() = &exit;
 	
 	
 	while(!engine.getWindowR().isCloseRequested())
@@ -44,7 +70,7 @@ void init()
 			seconds++;
 		}
 		if(kc.getKeyListenerR().catchKeyPressed("Escape"))
-			text.setHidden(!text.isHidden());
+			gui_panel.setHidden(!gui_panel.isHidden());
 		updater.update();
 		engine.update(shader_id);
 		mc.handleMouse();

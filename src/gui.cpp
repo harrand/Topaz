@@ -382,7 +382,7 @@ void Panel::setFocused(bool focused)
 	this->is_focused = focused;
 }
 
-TextLabel::TextLabel(float x, float y, Vector3F colour, std::optional<Vector3F> background_colour, Font font, const std::string& text, const Shader& shader): Panel(x, y, 0, 0, colour, shader), background_colour(background_colour), font(font), text(text), text_texture(this->font.getTTFR(), this->text, SDL_Color({static_cast<unsigned char>(this->colour.getX() * 255), static_cast<unsigned char>(this->colour.getY() * 255), static_cast<unsigned char>(this->colour.getZ() * 255), static_cast<unsigned char>(255)})), background_colour_uniform(glGetUniformLocation(this->shader.value().get().getProgramHandle(), "background_colour")), has_background_colour_uniform(glGetUniformLocation(this->shader.value().get().getProgramHandle(), "has_background_colour"))
+TextLabel::TextLabel(float x, float y, Vector3F colour, std::optional<Vector3F> background_colour, std::optional<Vector3F> text_border_colour, Font font, const std::string& text, const Shader& shader): Panel(x, y, 0, 0, colour, shader), background_colour(background_colour), text_border_colour(text_border_colour), font(font), text(text), text_texture(this->font.getTTFR(), this->text, SDL_Color({static_cast<unsigned char>(this->colour.getX() * 255), static_cast<unsigned char>(this->colour.getY() * 255), static_cast<unsigned char>(this->colour.getZ() * 255), static_cast<unsigned char>(255)})), background_colour_uniform(glGetUniformLocation(this->shader.value().get().getProgramHandle(), "background_colour")), has_background_colour_uniform(glGetUniformLocation(this->shader.value().get().getProgramHandle(), "has_background_colour")), text_border_colour_uniform(glGetUniformLocation(this->shader.value().get().getProgramHandle(), "text_border_colour")), has_text_border_colour_uniform(glGetUniformLocation(this->shader.value().get().getProgramHandle(), "has_text_border_colour"))
 {
 	// Not in initialiser list because text_texture MUST be initialised after Panel, and theres no way of initialising it before without a warning so do it here.
 	this->width = text_texture.getWidth();
@@ -397,9 +397,12 @@ void TextLabel::update()
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		this->shader.value().get().bind();
 		glUniform1i(glGetUniformLocation(this->shader.value().get().getProgramHandle(), "has_texture"), true);
-		glUniform1i(this->has_background_colour_uniform, this->hasBackgroundColour() ? 1 : 0);
+		glUniform1i(this->has_background_colour_uniform, this->hasBackgroundColour() ? true : false);
+		glUniform1i(this->has_text_border_colour_uniform, this->hasTextBorderColour() ? true : false);
 		if(this->hasBackgroundColour())
 			glUniform3f(this->background_colour_uniform, this->background_colour.value().getX(), this->background_colour.value().getY(), this->background_colour.value().getZ());
+		if(this->hasTextBorderColour())
+			glUniform3f(this->text_border_colour_uniform, this->text_border_colour.value().getX(), this->text_border_colour.value().getY(), this->text_border_colour.value().getZ());
 		Matrix4x4 projection;
 		if(this->hasWindowParent() && !this->use_proportional_positioning)
 			projection = Matrix4x4::createOrthographicMatrix(this->findWindowParent()->getWidth(), 0.0f, this->findWindowParent()->getHeight(), 0.0f, -1.0f, 1.0f);
@@ -431,6 +434,11 @@ float TextLabel::getWindowPosY() const
 bool TextLabel::hasBackgroundColour() const
 {
 	return this->background_colour.has_value();
+}
+
+bool TextLabel::hasTextBorderColour() const
+{
+	return this->text_border_colour.has_value();
 }
 
 const Font& TextLabel::getFont() const
@@ -475,14 +483,22 @@ GLuint TextLabel::getHasBackgroundColourUniform() const
 	return this->has_background_colour_uniform;
 }
 
-Button::Button(float x, float y, Vector3F colour, std::optional<Vector3F> background_colour, Font font, const std::string& text, const Shader& shader, MouseListener& mouse_listener): TextLabel(x, y, colour, background_colour, font, text, shader), mouse_listener(mouse_listener), on_mouse_over(nullptr), on_mouse_click(nullptr){}
+GLuint TextLabel::getHasTextBorderColourUniform() const
+{
+	return this->has_text_border_colour_uniform;
+}
+
+Button::Button(float x, float y, Vector3F colour, std::optional<Vector3F> background_colour, std::optional<Vector3F> text_border_colour, Font font, const std::string& text, const Shader& shader, MouseListener& mouse_listener): TextLabel(x, y, colour, background_colour, text_border_colour, font, text, shader), mouse_listener(mouse_listener), on_mouse_over(nullptr), on_mouse_click(nullptr), just_clicked(false), just_moused_over(false){}
 
 void Button::update()
 {
-	if(this->clickedOn() && this->on_mouse_click != nullptr)
+	if(this->clickedOn() && this->on_mouse_click != nullptr && !this->just_clicked)
+	{
 		this->on_mouse_click->operator()({});
-	else if(this->mousedOver() && this->on_mouse_over != nullptr)
-		this->on_mouse_over->operator()({});
+		this->just_clicked = true;
+	}
+	else if(!this->clickedOn())
+		this->just_clicked = false;
 	TextLabel::update();
 }
 
@@ -509,8 +525,8 @@ Command*& Button::getOnMouseClickR()
 bool Button::mousedOver() const
 {
 	Vector2F mouse_pos = this->mouse_listener.getMousePos();
-	bool x_aligned = mouse_pos.getX() >= (this->x - this->width) && mouse_pos.getX() <= (this->x + this->width);
-	bool y_aligned = mouse_pos.getY() >= (this->findWindowParent()->getHeight() - this->y - this->height) && mouse_pos.getY() <= ((this->findWindowParent()->getHeight() - this->y) + this->height);
+	bool x_aligned = mouse_pos.getX() >= (this->getWindowPosX() - this->width) && mouse_pos.getX() <= (this->getWindowPosX() + this->width);
+	bool y_aligned = mouse_pos.getY() >= (this->findWindowParent()->getHeight() - this->getWindowPosY() - this->height) && mouse_pos.getY() <= ((this->findWindowParent()->getHeight() - this->getWindowPosY() + this->height));
 	return x_aligned && y_aligned;
 }
 
