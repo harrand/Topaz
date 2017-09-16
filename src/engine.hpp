@@ -45,6 +45,9 @@ public:
 	
 	unsigned int getFPS() const;
 	unsigned int getTPS() const;
+	
+	const CommandExecutor& getCommandExecutor() const;
+	CommandExecutor& getCommandExecutorR();
 private:
 	TimeKeeper keeper;
 	TimeProfiler profiler;
@@ -62,6 +65,7 @@ private:
 	std::vector<Shader> extra_shaders;
 	unsigned int fps;
 	const unsigned int tps;
+	CommandExecutor command_executor;
 };
 
 #endif

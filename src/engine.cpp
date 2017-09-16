@@ -21,7 +21,7 @@ void tz::terminate()
 	tz::util::log::message("Terminated Topaz.");
 }
 
-Engine::Engine(Window& wnd, std::string properties_path, unsigned int initial_fps, unsigned int tps): properties(RawFile(properties_path)), resources(RawFile(this->properties.getTag("resources"))), default_shader(this->properties.getTag("default_shader")), default_gui_shader(this->properties.getTag("default_gui_shader")), camera(Camera()), wnd(wnd), world(this->properties.getTag("default_world"), this->properties.getTag("resources")), fps(initial_fps), tps(tps)
+Engine::Engine(Window& wnd, std::string properties_path, unsigned int initial_fps, unsigned int tps): properties(RawFile(properties_path)), resources(RawFile(this->properties.getTag("resources"))), default_shader(this->properties.getTag("default_shader")), default_gui_shader(this->properties.getTag("default_gui_shader")), camera(Camera()), wnd(wnd), world(this->properties.getTag("default_world"), this->properties.getTag("resources")), fps(initial_fps), tps(tps), command_executor()
 {
 	this->camera.getPositionR() = this->world.getSpawnPoint();
 	tz::data::Manager(this->properties.getTag("resources")).retrieveAllData(this->meshes, this->textures, this->normal_maps, this->parallax_maps, this->displacement_maps);
@@ -46,16 +46,10 @@ void Engine::update(std::size_t shader_index)
 	this->wnd.clear(0.0f, 0.0f, 0.0f, 1.0f);
 	this->profiler.endFrame();
 	
-	/* example code to test fonts. nearly works
-	TTF_Font* example_font = TTF_OpenFont("C:/Windows/Fonts/Arial.ttf", 12);
-	SDL_Color red_colour = SDL_Color{255, 0, 0, 255};
-	Texture red_hello_arial(example_font, "hello!", red_colour);
-	Object text("", std::vector<std::pair<std::string, Texture::TextureType>>(), Vector3F(0, 10, 0), Vector3F(), Vector3F(5, 5, 5));
-	Mesh mesh("../../../res/runtime/models/cube.obj");
-	text.render(&mesh, &red_hello_arial, nullptr, nullptr, nullptr, this->camera, this->getShader(shader_index), this->wnd.getWidth(), this->wnd.getHeight());
-	*/ 
-	
 	this->world.render(this->camera, this->getShader(shader_index), this->wnd.getWidth(), this->wnd.getHeight(), this->meshes, this->textures, this->normal_maps, this->parallax_maps, this->displacement_maps);
+	
+	for(auto command : this->command_executor.getCommandsR())
+		command->operator()({});
 	
 	if(ticker.millisPassed(1000/this->tps))
 	{
@@ -173,4 +167,14 @@ unsigned int Engine::getFPS() const
 unsigned int Engine::getTPS() const
 {
 	return this->tps;
+}
+
+const CommandExecutor& Engine::getCommandExecutor() const
+{
+	return this->command_executor;
+}
+
+CommandExecutor& Engine::getCommandExecutorR()
+{
+	return this->command_executor;
 }

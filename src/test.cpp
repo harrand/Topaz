@@ -59,8 +59,7 @@ void init()
 	gui_panel.addChild(&test_button);
 	gui_panel.addChild(&exit_gui_button);
 	test_button.getOnMouseClickR() = &toggle;
-	exit_gui_button.getOnMouseClickR() = &exit;
-	
+	exit_gui_button.getOnMouseClickR() = &exit;	
 	
 	while(!engine.getWindowR().isCloseRequested())
 	{
