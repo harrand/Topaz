@@ -1,1 +1,0 @@
-windres topaz.rc -O coff -o topaz.res

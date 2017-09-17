@@ -287,32 +287,9 @@ void KeybindController::handleKeybinds(float seconds_since_last_frame, std::stri
 		this->camera.getRotationR() += (Vector3F(0, -1.0f/360.0f, 0) * multiplier * 5 * seconds_since_last_frame);
 	if(kl.isKeyPressed(KeyControls::getKeybind(controls_data_file, KeybindType::LOOK_RIGHT)))
 		this->camera.getRotationR() += (Vector3F(0, 1.0f/360.0f, 0) * multiplier * 5 * seconds_since_last_frame);
-	/*
-	if(kl.isKeyPressed(KeyControls::getKeybind(controls_data_file, KeybindType::TOGGLE_FULLSCREEN)))
-		SDL_SetWindowFullscreen(this->wnd.getWindowHandleR(), !(SDL_GetWindowFlags(this->wnd.getWindowHandleR()) & SDL_WINDOW_FULLSCREEN));
-	*/
-			
-	if(kl.isKeyPressed(KeyControls::getKeybind(controls_data_file, KeybindType::INPUT_COMMAND)))
-	{
-		std::string input;
-		std::getline(std::cin, input);
-		//Commands::inputCommand(input, resources_path, world, player, shader);
-	}
-	/*
-	if(kl.isKeyPressed(KeyControls::getKeybind(controls_data_file, KeybindType::REQUEST_CLOSE)))
-		wnd.requestClose();
-	*/
 	if(kl.isKeyPressed(KeyControls::getKeybind(controls_data_file, KeybindType::RESTART)))
 	{
 		camera.getPositionR() = this->world.getSpawnPoint();
 		camera.getRotationR() = this->world.getSpawnOrientation();
 	}
-	/*	if(kl.catchKeyPressed(KeyControls::getKeybind(controls_data_file, KeybindType::ALIAS)))
-	{
-		std::vector<std::string> alias = CommandCache::getAlias();
-		std::string cmd = "";
-		for(std::size_t i = 0; i < alias.size(); i++)
-			cmd += (i != (alias.size() - 1)) ? alias.at(i) + " " : alias.at(i);
-		//Commands::inputCommand(cmd, resources_path, world, player, shader);
-	}*/
 }

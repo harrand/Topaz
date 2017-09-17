@@ -75,10 +75,29 @@ void GUIElement::setHidden(bool hidden)
 	this->hidden = hidden;
 }
 
+bool tz::graphics::initialised = false;
+bool tz::graphics::has_context = false;
+
 Window::Window(int w, int h, std::string title): GUIElement({}), w(w), h(h), title(std::move(title)), is_close_requested(false)
 {
-	this->initSDL();
-	this->initGLEW();
+	SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
+	SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
+	SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
+	SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
+	SDL_GL_SetAttribute(SDL_GL_BUFFER_SIZE, 32);
+	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
+	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+	
+	this->sdl_window_pointer = SDL_CreateWindow((this->title).c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, this->w, this->h, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+	this->sdl_gl_context_handle = SDL_GL_CreateContext(this->sdl_window_pointer);
+	this->setSwapIntervalType(Window::SwapIntervalType::IMMEDIATE_UPDATES);
+	tz::graphics::has_context = true;
+	if(!tz::graphics::initialised)
+		tz::graphics::initialise();
+	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_DEPTH_CLAMP);
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
 }
 
 Window::Window(const Window& copy): Window(copy.w, copy.h, copy.title){}
@@ -88,13 +107,41 @@ Window::~Window()
 	for(auto pair : registered_listeners)
 		if(pair.first < Listener::getNumListeners()) // checks to make sure the listener hasnt gone out of scope
 			this->deregisterListener(*(pair.second));
-	this->destSDL();
+	SDL_GL_DeleteContext(this->sdl_gl_context_handle);
+	SDL_DestroyWindow(this->sdl_window_pointer);
+}
+
+void Window::update()
+{
+	glDisable(GL_DEPTH_TEST);
+	glDisable(GL_DEPTH_CLAMP);
+	glDisable(GL_CULL_FACE);
+	GUIElement::update();
+	SDL_GL_SwapWindow(this->sdl_window_pointer);
+	SDL_Event evt;
+	while(SDL_PollEvent(&evt))
+	{
+		for(auto& listener : this->registered_listeners)
+			listener.second->handleEvents(evt);
+		
+		if(evt.type == SDL_QUIT)
+			this->is_close_requested = true;
+		if(evt.type == SDL_WINDOWEVENT)
+		{
+			if (evt.window.event == SDL_WINDOWEVENT_RESIZED || evt.window.event == SDL_WINDOWEVENT_SIZE_CHANGED)
+			{
+				SDL_GL_GetDrawableSize(this->sdl_window_pointer, &(this->w), &(this->h));
+				//update the glVievwport, so that OpenGL know the new window size
+				glViewport(0, 0, this->w, this->h);
+			}
+		}
+	}
 }
 
 void Window::destroy()
 {
 	GUIElement::destroy();
-	this->requestClose();
+	this->is_close_requested = true;
 }
 
 bool Window::focused() const
@@ -152,12 +199,7 @@ Window::SwapIntervalType Window::getSwapIntervalType() const
 	return static_cast<SwapIntervalType>(SDL_GL_GetSwapInterval());
 }
 
-void Window::requestClose()
-{
-	this->is_close_requested = true;
-}
-
-void Window::setTitle(std::string new_title)
+void Window::setTitle(const std::string& new_title)
 {
 	this->title = new_title;
 	SDL_SetWindowTitle(this->sdl_window_pointer, new_title.c_str());
@@ -180,16 +222,6 @@ void Window::clear(float r, float g, float b, float a) const
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void Window::update()
-{
-	glDisable(GL_DEPTH_TEST);
-	glDisable(GL_DEPTH_CLAMP);
-	glDisable(GL_CULL_FACE);
-	GUIElement::update();
-	SDL_GL_SwapWindow(this->sdl_window_pointer);
-	this->handleEvents();
-}
-
 void Window::registerListener(Listener& l)
 {
 	this->registered_listeners[l.getID()] = &l;
@@ -203,63 +235,7 @@ void Window::deregisterListener(Listener& l)
 	this->registered_listeners.erase(l.getID());
 }
 
-bool tz::graphics::initialised = false;
-bool tz::graphics::has_context = false;
-void Window::initSDL()
-{
-	SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
-	SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
-	SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
-	SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
-	SDL_GL_SetAttribute(SDL_GL_BUFFER_SIZE, 32);
-	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
-	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-	
-	this->sdl_window_pointer = SDL_CreateWindow((this->title).c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, this->w, this->h, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
-	this->sdl_gl_context_handle = SDL_GL_CreateContext(this->sdl_window_pointer);
-	this->setSwapIntervalType(Window::SwapIntervalType::IMMEDIATE_UPDATES);
-	tz::graphics::has_context = true;
-	if(!tz::graphics::initialised)
-		tz::graphics::initialise();
-}
-
-void Window::initGLEW()
-{
-	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_DEPTH_CLAMP);
-	glEnable(GL_CULL_FACE);
-	glCullFace(GL_BACK);
-}
-
-void Window::destSDL()
-{
-	SDL_GL_DeleteContext(this->sdl_gl_context_handle);
-	SDL_DestroyWindow(this->sdl_window_pointer);
-}
-
-void Window::handleEvents()
-{
-	SDL_Event evt;
-	while(SDL_PollEvent(&evt))
-	{
-		for(auto& listener : this->registered_listeners)
-			listener.second->handleEvents(evt);
-		
-		if(evt.type == SDL_QUIT)
-			this->is_close_requested = true;
-		if(evt.type == SDL_WINDOWEVENT)
-		{
-			if (evt.window.event == SDL_WINDOWEVENT_RESIZED || evt.window.event == SDL_WINDOWEVENT_SIZE_CHANGED)
-			{
-				SDL_GL_GetDrawableSize(this->sdl_window_pointer, &(this->w), &(this->h));
-				//update the glVievwport, so that OpenGL know the new window size
-				glViewport(0, 0, this->w, this->h);
-			}
-		}
-	}
-}
-
-Panel::Panel(float x, float y, float width, float height, Vector4F colour, const Shader& shader): GUIElement(shader), is_focused(false), use_proportional_positioning(false), x(x), y(y), width(width), height(height), colour(colour), quad(tz::graphics::createQuad()), colour_uniform(glGetUniformLocation(this->shader.value().get().getProgramHandle(), "colour")), model_matrix_uniform(glGetUniformLocation(this->shader.value().get().getProgramHandle(), "model_matrix")){}
+Panel::Panel(float x, float y, float width, float height, Vector4F colour, const Shader& shader): GUIElement(shader), use_proportional_positioning(false), x(x), y(y), width(width), height(height), colour(colour), quad(tz::graphics::createQuad()), colour_uniform(glGetUniformLocation(this->shader.value().get().getProgramHandle(), "colour")), model_matrix_uniform(glGetUniformLocation(this->shader.value().get().getProgramHandle(), "model_matrix")){}
 
 float Panel::getX() const
 {
@@ -350,13 +326,18 @@ void Panel::update()
 void Panel::destroy()
 {
 	GUIElement::destroy();
-	this->parent->getChildrenR().erase(this);
-	this->parent = nullptr;
+	if(this->parent != nullptr)
+	{
+		this->parent->getChildrenR().erase(this);
+		this->parent = nullptr;
+	}
 }
 
 bool Panel::focused() const
 {
-	return this->is_focused;
+	if(!this->hasWindowParent())
+		return false;
+	return this->findWindowParent()->focused();
 }
 
 bool Panel::isWindow() const
@@ -374,12 +355,7 @@ bool Panel::isUsingProportionalPositioning() const
 	return this->use_proportional_positioning;
 }
 
-void Panel::setFocused(bool focused)
-{
-	this->is_focused = focused;
-}
-
-TextLabel::TextLabel(float x, float y, Vector4F colour, std::optional<Vector4F> background_colour, std::optional<Vector3F> text_border_colour, Font font, const std::string& text, const Shader& shader): Panel(x, y, 0, 0, colour, shader), background_colour(background_colour), text_border_colour(text_border_colour), font(font), text(text), text_texture(this->font.getTTFR(), this->text, SDL_Color({static_cast<unsigned char>(this->colour.getX() * 255), static_cast<unsigned char>(this->colour.getY() * 255), static_cast<unsigned char>(this->colour.getZ() * 255), static_cast<unsigned char>(255)})), background_colour_uniform(glGetUniformLocation(this->shader.value().get().getProgramHandle(), "background_colour")), has_background_colour_uniform(glGetUniformLocation(this->shader.value().get().getProgramHandle(), "has_background_colour")), text_border_colour_uniform(glGetUniformLocation(this->shader.value().get().getProgramHandle(), "text_border_colour")), has_text_border_colour_uniform(glGetUniformLocation(this->shader.value().get().getProgramHandle(), "has_text_border_colour"))
+TextLabel::TextLabel(float x, float y, Vector4F colour, std::optional<Vector4F> background_colour, std::optional<Vector3F> text_border_colour, Font font, const std::string& text, const Shader& shader): Panel(x, y, this->text_texture.getWidth(), this->text_texture.getHeight(), colour, shader), background_colour(background_colour), text_border_colour(text_border_colour), font(font), text(text), text_texture(this->font.getTTFR(), this->text, SDL_Color({static_cast<unsigned char>(this->colour.getX() * 255), static_cast<unsigned char>(this->colour.getY() * 255), static_cast<unsigned char>(this->colour.getZ() * 255), static_cast<unsigned char>(255)})), background_colour_uniform(glGetUniformLocation(this->shader.value().get().getProgramHandle(), "background_colour")), has_background_colour_uniform(glGetUniformLocation(this->shader.value().get().getProgramHandle(), "has_background_colour")), text_border_colour_uniform(glGetUniformLocation(this->shader.value().get().getProgramHandle(), "text_border_colour")), has_text_border_colour_uniform(glGetUniformLocation(this->shader.value().get().getProgramHandle(), "has_text_border_colour"))
 {
 	// Not in initialiser list because text_texture MUST be initialised after Panel, and theres no way of initialising it before without a warning so do it here.
 	this->width = text_texture.getWidth();

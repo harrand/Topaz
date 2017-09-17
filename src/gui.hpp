@@ -44,10 +44,10 @@ class Window : public GUIElement
 public:
 	Window(int w = 800, int h = 600, std::string title = "Untitled");
 	Window(const Window& copy);
-	// Can't have these because the GL_Context cant be changed to anything that isn't dangerous when move's destructor is invoked (why would we want to move/assign a window anyway?)
 	Window(Window&& move) = delete;
 	Window& operator=(const Window& rhs) = delete;
 	~Window();
+	virtual void update();
 	virtual void destroy();
 	virtual bool focused() const;
 	virtual bool isWindow() const;
@@ -66,20 +66,13 @@ public:
 	bool isCloseRequested() const;
 	void setSwapIntervalType(SwapIntervalType type) const;
 	SwapIntervalType getSwapIntervalType() const;
-	void requestClose();
-	void setTitle(std::string new_title);
+	void setTitle(const std::string& new_title);
 	void setRenderTarget() const;
 	SDL_Window*& getWindowHandleR();
 	void clear(float r = 1.0f, float g = 1.0f, float b = 1.0f, float a = 1.0f) const;
-	void update();
 	void registerListener(Listener& l);
 	void deregisterListener(Listener& l);
-private:
-	void initSDL();
-	void initGLEW();
-	void destSDL();
-	void handleEvents();
-	
+private:	
 	std::unordered_map<unsigned int, Listener*> registered_listeners;
 	int w, h;
 	std::string title;
@@ -104,16 +97,14 @@ public:
 	float& getHeightR();
 	const Vector4F& getColour() const;
 	Vector4F& getColourR();
-	
 	virtual void update();
 	virtual void destroy();
 	virtual bool focused() const;
 	virtual bool isWindow() const;
 	void setUsingProportionalPositioning(bool use_proportional_positioning);
 	bool isUsingProportionalPositioning() const;
-	void setFocused(bool focused);
 protected:
-	bool is_focused, use_proportional_positioning;
+	bool use_proportional_positioning;
 	float x, y, width, height;
 	Vector4F colour;
 	Mesh quad;
