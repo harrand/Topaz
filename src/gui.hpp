@@ -19,9 +19,11 @@ public:
 	virtual void destroy();
 	virtual bool focused() const = 0;
 	virtual bool isWindow() const = 0;
+	virtual bool isMouseSensitive() const = 0;
 	virtual float getWindowPosX() const = 0;
 	virtual float getWindowPosY() const = 0;
 	const Window* findWindowParent() const;
+	Window* findWindowParentR();
 	bool hasWindowParent() const;
 	const std::optional<std::reference_wrapper<const Shader>> getShader() const;
 	bool hasShader() const;
@@ -51,6 +53,7 @@ public:
 	virtual void destroy();
 	virtual bool focused() const;
 	virtual bool isWindow() const;
+	virtual bool isMouseSensitive() const;
 	virtual float getWindowPosX() const;
 	virtual float getWindowPosY() const;
 	enum class SwapIntervalType : int
@@ -72,6 +75,8 @@ public:
 	void clear(float r = 1.0f, float g = 1.0f, float b = 1.0f, float a = 1.0f) const;
 	void registerListener(Listener& l);
 	void deregisterListener(Listener& l);
+	GUIElement* getFocusedChild() const;
+	GUIElement*& getFocusedChildR();
 private:	
 	std::unordered_map<unsigned int, Listener*> registered_listeners;
 	int w, h;
@@ -79,6 +84,7 @@ private:
 	bool is_close_requested;
 	SDL_Window* sdl_window_pointer;
 	SDL_GLContext sdl_gl_context_handle;
+	GUIElement* focused_child;
 };
 
 class Panel : public GUIElement
@@ -101,6 +107,7 @@ public:
 	virtual void destroy();
 	virtual bool focused() const;
 	virtual bool isWindow() const;
+	virtual bool isMouseSensitive() const;
 	void setUsingProportionalPositioning(bool use_proportional_positioning);
 	bool isUsingProportionalPositioning() const;
 protected:
@@ -143,17 +150,20 @@ class Button : public TextLabel
 public:
 	Button(float x, float y, Vector4F colour, std::optional<Vector4F> background_colour, std::optional<Vector3F> text_border_colour, Font font, const std::string& text, const Shader& shader, MouseListener& mouse_listener);
 	virtual void update();
+	virtual bool focused() const;
+	virtual bool isMouseSensitive() const;
 	Command* getOnMouseOver() const;
 	Command* getOnMouseClick() const;
 	Command*& getOnMouseOverR();
 	Command*& getOnMouseClickR();
 	bool mousedOver() const;
 	bool clickedOn() const;
-private:
+protected:
 	MouseListener& mouse_listener;
+	bool just_clicked, just_moused_over;
+private:
 	Command* on_mouse_over;
 	Command* on_mouse_click;
-	bool just_clicked, just_moused_over;
 };
 
 #endif

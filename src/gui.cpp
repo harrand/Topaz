@@ -24,6 +24,14 @@ const Window* GUIElement::findWindowParent() const
 	return dynamic_cast<const Window*>(res);
 }
 
+Window* GUIElement::findWindowParentR()
+{
+	GUIElement* res = this;
+	while(res != nullptr && !res->isWindow())
+		res = res->getParentR();
+	return dynamic_cast<Window*>(res);
+}
+
 bool GUIElement::hasWindowParent() const
 {
 	return this->findWindowParent() != nullptr;
@@ -78,7 +86,7 @@ void GUIElement::setHidden(bool hidden)
 bool tz::graphics::initialised = false;
 bool tz::graphics::has_context = false;
 
-Window::Window(int w, int h, std::string title): GUIElement({}), w(w), h(h), title(std::move(title)), is_close_requested(false)
+Window::Window(int w, int h, std::string title): GUIElement({}), w(w), h(h), title(std::move(title)), is_close_requested(false), focused_child(nullptr)
 {
 	SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
 	SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
@@ -152,6 +160,11 @@ bool Window::focused() const
 bool Window::isWindow() const
 {
 	return true;
+}
+
+bool Window::isMouseSensitive() const
+{
+	return false;
 }
 
 float Window::getWindowPosX() const
@@ -233,6 +246,16 @@ void Window::deregisterListener(Listener& l)
 	if(this->registered_listeners.find(l.getID()) == this->registered_listeners.end())
 		return;
 	this->registered_listeners.erase(l.getID());
+}
+
+GUIElement* Window::getFocusedChild() const
+{
+	return this->focused_child;
+}
+
+GUIElement*& Window::getFocusedChildR()
+{
+	return this->focused_child;
 }
 
 Panel::Panel(float x, float y, float width, float height, Vector4F colour, const Shader& shader): GUIElement(shader), use_proportional_positioning(false), x(x), y(y), width(width), height(height), colour(colour), quad(tz::graphics::createQuad()), colour_uniform(glGetUniformLocation(this->shader.value().get().getProgramHandle(), "colour")), model_matrix_uniform(glGetUniformLocation(this->shader.value().get().getProgramHandle(), "model_matrix")){}
@@ -335,12 +358,15 @@ void Panel::destroy()
 
 bool Panel::focused() const
 {
-	if(!this->hasWindowParent())
-		return false;
-	return this->findWindowParent()->focused();
+	return false;
 }
 
 bool Panel::isWindow() const
+{
+	return false;
+}
+
+bool Panel::isMouseSensitive() const
 {
 	return false;
 }
@@ -461,18 +487,34 @@ GLuint TextLabel::getHasTextBorderColourUniform() const
 	return this->has_text_border_colour_uniform;
 }
 
-Button::Button(float x, float y, Vector4F colour, std::optional<Vector4F> background_colour, std::optional<Vector3F> text_border_colour, Font font, const std::string& text, const Shader& shader, MouseListener& mouse_listener): TextLabel(x, y, colour, background_colour, text_border_colour, font, text, shader), mouse_listener(mouse_listener), on_mouse_over(nullptr), on_mouse_click(nullptr), just_clicked(false), just_moused_over(false){}
+Button::Button(float x, float y, Vector4F colour, std::optional<Vector4F> background_colour, std::optional<Vector3F> text_border_colour, Font font, const std::string& text, const Shader& shader, MouseListener& mouse_listener): TextLabel(x, y, colour, background_colour, text_border_colour, font, text, shader), mouse_listener(mouse_listener), just_clicked(false), just_moused_over(false), on_mouse_over(nullptr), on_mouse_click(nullptr){}
 
 void Button::update()
 {
-	if(this->clickedOn() && this->on_mouse_click != nullptr && !this->just_clicked)
+	if(this->clickedOn() && this->on_mouse_click != nullptr && !this->just_clicked && this->hasWindowParent())
 	{
+		this->findWindowParentR()->getFocusedChildR() = this;
 		this->on_mouse_click->operator()({});
 		this->just_clicked = true;
 	}
 	else if(!this->clickedOn())
 		this->just_clicked = false;
+	// if click mouse button is down but this is not moused over, make sure its not focused
+	if(this->mouse_listener.isLeftClicked() && !this->mousedOver() && this->focused())
+		this->findWindowParentR()->getFocusedChildR() = nullptr;
 	TextLabel::update();
+}
+
+bool Button::focused() const
+{
+	if(!this->hasWindowParent())
+		return false;
+	return this->findWindowParent()->getFocusedChild() == this;
+}
+
+bool Button::isMouseSensitive() const
+{
+	return true;
 }
 
 Command* Button::getOnMouseOver() const
