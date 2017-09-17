@@ -46,24 +46,6 @@ private:
 	Vector2F previous_mouse_position, mouse_position;
 };
 
-class MouseController
-{
-public:
-	MouseController(Camera& camera, World& world);
-	MouseController(const MouseController& copy);
-	MouseController(MouseController&& move) = delete;
-	MouseController& operator=(const MouseController& rhs) = delete;
-	
-	const MouseListener& getMouseListener();
-	MouseListener& getMouseListenerR();
-	
-	virtual void handleMouse();
-private: 
-	Camera& camera;
-	World& world;
-	MouseListener ml;
-};
-
 class KeyListener: public Listener
 {
 public:
@@ -81,51 +63,6 @@ public:
 private:
 	std::vector<std::string> pressed_keys;
 	std::vector<std::string> released_keys;
-};
-
-enum class KeybindType : unsigned int
-{
-	MOVE_FORWARD = 0,
-	MOVE_BACKWARD = 1,
-	MOVE_LEFT = 2,
-	MOVE_RIGHT = 3,
-	MOVE_UP = 4,
-	MOVE_DOWN = 5,
-	LOOK_UP = 6,
-	LOOK_DOWN = 7,
-	LOOK_LEFT = 8,
-	LOOK_RIGHT = 9,
-	TOGGLE_FULLSCREEN = 10,
-	INPUT_COMMAND = 11,
-	REQUEST_CLOSE = 12,
-	RESTART = 13,
-	ALIAS = 14,
-	NIL = 15
-};
-
-namespace KeyControls
-{
-	KeybindType getKeybindType(const std::string& keybind_type);
-	std::string getKeybind(MDLF& controls_data_file, KeybindType kt);
-}
-
-class KeybindController
-{
-public:
-	KeybindController(Camera& camera, const Shader& shader, World& world);
-	KeybindController(const KeybindController& copy);
-	KeybindController(KeybindController&& move) = delete;
-	KeybindController& operator=(const KeybindController& rhs) = delete;
-	
-	const KeyListener& getKeyListener() const;
-	KeyListener& getKeyListenerR();
-	
-	void handleKeybinds(float seconds_since_last_frame, std::string resources_path, std::string controls_path);
-private:
-	Camera& camera;
-	const Shader& shader;
-	World& world;
-	KeyListener kl;
 };
 
 #endif

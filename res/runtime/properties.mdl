@@ -1,5 +1,4 @@
-resources: ../../../res/runtime/resources.data
-controls: ../../../res/runtime/controls.data
+resources: ../../../res/runtime/resources.mdl
 default_world: ../../../res/runtime/worlds/random.world
 default_shader: ../../../src/shaders/noshadows
 default_gui_shader: ../../../src/shaders/gui
