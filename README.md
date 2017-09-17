@@ -4,16 +4,27 @@ Topaz is a multimedia engine written in C++ to be used as a cross-platform power
 
 ## PFAQ (Probably Frequency Asked Questions (I haven't been asked any yet and wanted to look clever))
 Q: Have you just asked yourself all these questions and answered them yourself like a madman?
+
 A: Yes.
+
 Q: Why the hell are you using `Foo& getFooR()` instead of `void setFoo(Foo f)`? You're breaking encapsulation!
+
 A: My personal style conflicts somewhat with the standard idea of encapsulation. I prefer to expose implementation details of a class if I want it to be editable in anyway, as it avoids verbosity via simply accessing the data member indirectly.
+
 Q: If so, why don't you just make data-members public?
+
 A: With `Foo& getFooR()`, I can make explicitly clear (due to the R) that I intend to edit the value in question whilst having this in a function, allowing me to implement debugging details (such as printing when the variable is accessed) should I choose so. Although I do understand that this style conflicts greatly with standard OO practises and may well ire other programmers, in my own case it's greatly increased productivity all the while I've trusted myself not to be dumb enough to do something silly to the value.
+
 Q: This style is stupid! It's so insecure! How will you be able to verify that a user is using a valid parameter?
+
 A: With this style I indeed cannot easily verify the validity of a parameter. However, this does not disturb me as it may to you: If a parameter is invalid in your setter, you would either do nothing or result to a default. In my view, this seems more like sweeping an error under the rug as opposed to receiving a quick gunshot in the leg for making a mistake.
+
 Q: This is a truly horrific technical style, you should desist.
+
 A: This is a FAQ and that's not a question. That is a truly horrific technical style of questioning, you should desist.
+
 Q: If these questions were all asked by yourself, why are you dissing your own programming style so harshly?
+
 A: So when I commence my bi-weekly debate with myself whether to keep my current style or just use standard getters and setters, I can look back to this PFAQ and consolidate my own stubbornness, hopefully shortly followed by a short chuckle upon seeing how very meta this PFAQ is (and now even more meta because I highlighted that (and even more so now, recursion!)).
 
 ## Getting Started
