@@ -7,16 +7,6 @@ float Entity::getMass() const
 	return this->mass;
 }
 
-void Entity::setPosition(Vector3F position)
-{
-	this->position = position;
-}
-
-void Entity::setVelocity(Vector3F velocity)
-{
-	this->velocity = velocity;
-}
-
 void Entity::applyForce(std::string force_name, Force f)
 {
 	this->forces[force_name] = f;

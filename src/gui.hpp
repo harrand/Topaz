@@ -48,7 +48,7 @@ public:
 	Window(const Window& copy);
 	Window(Window&& move) = delete;
 	Window& operator=(const Window& rhs) = delete;
-	~Window();
+	virtual ~Window();
 	virtual void update();
 	virtual void destroy();
 	virtual bool focused() const;

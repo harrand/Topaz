@@ -53,7 +53,12 @@ const std::string& AudioClip::getFileName() const
 	return this->filename;
 }
 
-const Mix_Chunk* AudioClip::getAudioHandle() const
+Mix_Chunk* AudioClip::getAudioHandle() const
+{
+	return this->audio_handle;
+}
+
+Mix_Chunk*& AudioClip::getAudioHandleR()
 {
 	return this->audio_handle;
 }
@@ -78,12 +83,12 @@ void AudioSource::update(const Camera& relative_to)
 	Mix_Volume(this->getChannel(), 128 / ((distance * distance) + 1));
 }
 
-Vector3F& AudioSource::getPositionR()
+const Vector3F& AudioSource::getPosition() const
 {
 	return this->position;
 }
 
-const Vector3F& AudioSource::getPosition() const
+Vector3F& AudioSource::getPositionR()
 {
 	return this->position;
 }
@@ -109,7 +114,12 @@ const std::string& AudioMusic::getFileName() const
 	return this->filename;
 }
 
-Mix_Music*& AudioMusic::getAudioHandle()
+Mix_Music* AudioMusic::getAudioHandle() const
+{
+	return this->audio_handle;
+}
+
+Mix_Music*& AudioMusic::getAudioHandleR()
 {
 	return this->audio_handle;
 }

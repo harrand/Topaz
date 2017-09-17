@@ -13,9 +13,6 @@ public:
 	
 	float getMass() const;
 	
-	virtual void setPosition(Vector3F position);
-	void setVelocity(Vector3F velocity);
-	
 	void applyForce(std::string force_name, Force f);
 	void removeForce(std::string force_name);
 	

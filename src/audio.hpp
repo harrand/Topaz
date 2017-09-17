@@ -27,7 +27,8 @@ public:
 	virtual void update(){};
 	int getChannel() const;
 	const std::string& getFileName() const;
-	const Mix_Chunk* getAudioHandle() const;
+	Mix_Chunk* getAudioHandle() const;
+	Mix_Chunk*& getAudioHandleR();
 private:
 	int channel;
 	std::string filename;
@@ -39,8 +40,8 @@ class AudioSource: public AudioClip
 public:
 	AudioSource(std::string filename, Vector3F position);
 	void update(const Camera& relative_to);
-	Vector3F& getPositionR();
 	const Vector3F& getPosition() const;
+	Vector3F& getPositionR();
 private:
 	Vector3F position;
 };
@@ -55,7 +56,8 @@ public:
 	AudioMusic& operator=(const AudioMusic& rhs) = delete;
 	
 	const std::string& getFileName() const;
-	Mix_Music*& getAudioHandle();
+	Mix_Music* getAudioHandle() const;
+	Mix_Music*& getAudioHandleR();
 	void play(bool priority = true) const;
 	void setPaused(bool pause = true);
 	void togglePaused();
