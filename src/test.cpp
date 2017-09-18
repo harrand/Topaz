@@ -71,7 +71,7 @@ void init()
 			seconds++;
 		}
 		
-		if(mouse_listener.isLeftClicked())
+		if(mouse_listener.isLeftClicked() && gui_panel.isHidden())
 		{
 			Vector3F& orientation = engine.getCameraR().getRotationR();
 			Vector2F delta = mouse_listener.getMouseDeltaPos();
