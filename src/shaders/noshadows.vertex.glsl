@@ -10,10 +10,10 @@ out vec3 vs_position_modelspace;
 out vec2 vs_texcoord_modelspace;
 out vec3 vs_normal_modelspace;
 
-out mat4 vs_modelMatrix;
-out mat4 vs_viewMatrix;
-out mat4 vs_projectionMatrix;
-out mat3 vs_tbnMatrix;
+out mat4 vs_model_matrix;
+out mat4 vs_view_matrix;
+out mat4 vs_projection_matrix;
+out mat3 vs_tbn_matrix;
 
 uniform mat4 m;
 uniform mat4 v;
@@ -25,9 +25,9 @@ void share()
 	vs_texcoord_modelspace = texcoord;
 	vs_normal_modelspace = normal;
 	
-	vs_modelMatrix = m;
-	vs_viewMatrix = v;
-	vs_projectionMatrix = p;
+	vs_model_matrix = m;
+	vs_view_matrix = v;
+	vs_projection_matrix = p;
 	
 	vec3 normal_cameraspace = normalize((v * m * vec4(vs_normal_modelspace, 0.0)).xyz);
 	vec3 tangent_cameraspace = normalize((v * m * vec4(tangent, 0.0)).xyz);
@@ -37,7 +37,7 @@ void share()
 	
 	vec3 bitangent_cameraspace = cross(tangent_cameraspace, normal_cameraspace);
 	
-	vs_tbnMatrix = transpose(mat3(tangent_cameraspace, bitangent_cameraspace, normal_cameraspace));
+	vs_tbn_matrix = transpose(mat3(tangent_cameraspace, bitangent_cameraspace, normal_cameraspace));
 }
 
 void main()

@@ -42,12 +42,12 @@ private:
 	
 	enum class UniformTypes : unsigned int
 	{
-		MODEL = 0,
-		VIEW = 1,
-		PROJECTION = 2,
-		PARALLAX_MAP_SCALE = 3,
-		PARALLAX_MAP_BIAS = 4,
-		NUM_UNIFORMS = 5
+		MODEL,
+		VIEW,
+		PROJECTION,
+		PARALLAX_MAP_SCALE,
+		PARALLAX_MAP_BIAS,
+		NUM_UNIFORMS,
 	};
 	std::string filename;
 	GLuint program_handle;

@@ -26,16 +26,16 @@ Shader::Shader(std::string filename): filename(std::move(filename))
 	glBindAttribLocation(this->program_handle, 3, "tangent");
 	
 	glLinkProgram(this->program_handle);
-	Shader::checkShaderError(this->program_handle, GL_LINK_STATUS, true, "Program Linking failed");
+	Shader::checkShaderError(this->program_handle, GL_LINK_STATUS, true, "Shader Program Linking Failed:\n");
 	
 	glValidateProgram(this->program_handle);
-	Shader::checkShaderError(this->program_handle, GL_VALIDATE_STATUS, true, "Program Validation failed");
+	Shader::checkShaderError(this->program_handle, GL_VALIDATE_STATUS, true, "Shader Program Validation Failed:\n");
 	
 	this->uniforms[static_cast<unsigned int>(UniformTypes::MODEL)] = glGetUniformLocation(this->program_handle, "m");
 	this->uniforms[static_cast<unsigned int>(UniformTypes::VIEW)] = glGetUniformLocation(this->program_handle, "v");
 	this->uniforms[static_cast<unsigned int>(UniformTypes::PROJECTION)] = glGetUniformLocation(this->program_handle, "p");
-	this->uniforms[static_cast<unsigned int>(UniformTypes::PARALLAX_MAP_SCALE)] = glGetUniformLocation(this->program_handle, "parallaxMultiplier");
-	this->uniforms[static_cast<unsigned int>(UniformTypes::PARALLAX_MAP_BIAS)] = glGetUniformLocation(this->program_handle, "parallaxBias");
+	this->uniforms[static_cast<unsigned int>(UniformTypes::PARALLAX_MAP_SCALE)] = glGetUniformLocation(this->program_handle, "parallax_multiplier");
+	this->uniforms[static_cast<unsigned int>(UniformTypes::PARALLAX_MAP_BIAS)] = glGetUniformLocation(this->program_handle, "parallax_bias");
 	tz::util::log::message("Shader with link '", this->filename, "':");
 	tz::util::log::message("\tHas Vertex Shader: ", this->hasVertexShader());
 	tz::util::log::message("\tHas Tessellation Control Shader: ", this->hasTessellationControlShader());
@@ -155,14 +155,14 @@ void Shader::checkShaderError(GLuint shader, GLuint flag, bool is_program, std::
     else
         glGetShaderiv(shader, flag, &success);
 
-    if(success == GL_FALSE)
-    {
-        if(is_program)
-            glGetProgramInfoLog(shader, sizeof(error), NULL, error);
-        else
-            glGetShaderInfoLog(shader, sizeof(error), NULL, error);
-        tz::util::log::error(error_message + std::string(error));
-    }
+	if(is_program)
+		glGetProgramInfoLog(shader, sizeof(error), NULL, error);
+	else
+		glGetShaderInfoLog(shader, sizeof(error), NULL, error);
+	if(success == GL_TRUE && std::string(error) != "")
+		tz::util::log::message("Success, Log:\n", std::string(error));
+	else if(success != GL_TRUE)
+		tz::util::log::error(error_message, std::string(error));
 }
 
 GLuint Shader::createShader(std::string source, GLenum shader_type)
@@ -188,7 +188,7 @@ GLuint Shader::createShader(std::string source, GLenum shader_type)
 	glShaderSource(shader, 1, shaderSources, shaderSourceLengths);
 	glCompileShader(shader);
 	
-	Shader::checkShaderError(shader, GL_COMPILE_STATUS, false, "Shader Compilation failed");
+	Shader::checkShaderError(shader, GL_COMPILE_STATUS, false, "Shader Compilation Failed:\n");
 	
 	return shader;
 }

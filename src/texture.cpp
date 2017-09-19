@@ -31,6 +31,11 @@ FrameBuffer::FrameBuffer(unsigned int width, unsigned int height): width(width),
 	}
 }
 
+FrameBuffer::~FrameBuffer()
+{
+	glDeleteTextures(1, &(this->texture_handle));
+}
+
 void FrameBuffer::setRenderTarget() const
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, this->framebuffer_handle);
@@ -50,7 +55,7 @@ void FrameBuffer::bind(unsigned int id) const
 	glBindTexture(GL_TEXTURE_2D, this->texture_handle);
 }
 
-DepthTexture::DepthTexture(unsigned int width, unsigned int height): width(width), height(height), framebuffer_handle(0)
+DepthTexture::DepthTexture(unsigned int width, unsigned int height): FrameBuffer(width, height)
 {
 	glGenFramebuffers(1, &this->framebuffer_handle);
 	glBindFramebuffer(GL_FRAMEBUFFER, this->framebuffer_handle);
@@ -67,7 +72,6 @@ DepthTexture::DepthTexture(unsigned int width, unsigned int height): width(width
  
 	//Configure framebuffer
 	glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, this->texture_handle, 0);
-	GLenum drawBuffers[1] = {GL_COLOR_ATTACHMENT0};
 	glDrawBuffer(GL_NONE); // no colour buffer drawn to
 	
 	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)

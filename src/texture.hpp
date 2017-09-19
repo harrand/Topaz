@@ -13,21 +13,28 @@ class FrameBuffer
 {
 public:
 	FrameBuffer(unsigned int width = 256, unsigned int height = 256);
-	FrameBuffer(const FrameBuffer& copy) = default;
-	FrameBuffer(FrameBuffer&& move) = default;
-	FrameBuffer& operator=(const FrameBuffer& rhs) = default;
+	FrameBuffer(const FrameBuffer& copy) = delete;
+	FrameBuffer(FrameBuffer&& move) = delete;
+	FrameBuffer& operator=(const FrameBuffer& rhs) = delete;
+	virtual ~FrameBuffer();
 	
 	virtual void setRenderTarget() const;
 	
 	virtual void bind(unsigned int id) const;
-private:
+protected:
 	unsigned int width, height;
-	GLuint framebuffer_handle, texture_handle, depth_render_buffer_handle;
+	GLuint framebuffer_handle, texture_handle;
+private:
+	GLuint depth_render_buffer_handle;
 };
 
 class DepthTexture: public FrameBuffer
 {
 	DepthTexture(unsigned int width = 1024, unsigned int height = 1024);
+	DepthTexture(const DepthTexture& copy) = delete;
+	DepthTexture(DepthTexture&& move) = delete;
+	DepthTexture& operator=(const DepthTexture& rhs) = delete;
+	~DepthTexture() = default;
 };
 
 class Texture
@@ -49,11 +56,11 @@ public:
 	
 	enum class TextureType : unsigned int
 	{
-		TEXTURE = 0,
-		NORMAL_MAP = 1,
-		PARALLAX_MAP = 2,
-		DISPLACEMENT_MAP = 3,
-		TEXTURE_TYPES = 4,
+		TEXTURE,
+		NORMAL_MAP,
+		PARALLAX_MAP,
+		DISPLACEMENT_MAP,
+		TEXTURE_TYPES,
 	};
 	
 	virtual TextureType getTextureType();
@@ -101,9 +108,7 @@ public:
 	
 	void bind(GLuint shader_program_handle, unsigned int id);
 	
-	TextureType getTextureType();
-	
-	//static ParallaxMap* getFromLink(const std::string& parallaxMapLink, const std::vector<std::unique_ptr<ParallaxMap>>& all_parallaxmaps);
+	TextureType getTextureType();	
 };
 
 class DisplacementMap: public Texture
@@ -116,8 +121,6 @@ public:
 	
 	void bind(GLuint shader_program_handle, unsigned int id);
 	TextureType getTextureType();
-	
-	//static DisplacementMap* getFromLink(const std::string& DisplacementMapLink, const std::vector<std::unique_ptr<DisplacementMap>>& all_displacementmaps);
 };
 
 class CubeMap
@@ -125,7 +128,6 @@ class CubeMap
 public:
 	CubeMap(std::string right_texture, std::string left_texture, std::string top_texture, std::string bottom_texture, std::string back_texture, std::string front_texture);
 	CubeMap(std::string texture_directory = "./", std::string skybox_name = "skybox", std::string skybox_image_file_extension = ".png");
-	//CubeMap greenhaze(texturesDirectory + "greenhaze_rt.png", texturesDirectory + "greenhaze_lf.png", texturesDirectory + "greenhaze_up.png", texturesDirectory + "greenhaze_dn.png", texturesDirectory + "greenhaze_bk.png", texturesDirectory + "greenhaze_ft.png");
 	CubeMap(const CubeMap& copy);
 	CubeMap(CubeMap&& move);
 	CubeMap& operator=(const CubeMap& rhs) = delete;
@@ -136,7 +138,8 @@ private:
 	std::vector<unsigned char*> loadTextures();
 	GLuint texture_handle, texture_id;
 	const std::string right_texture, left_texture, top_texture, bottom_texture, back_texture, front_texture;
-	int width[6], height[6], components[6];
+	static constexpr std::size_t number_of_textures = 6;
+	int width[number_of_textures], height[number_of_textures], components[number_of_textures];
 };
 
 #endif
