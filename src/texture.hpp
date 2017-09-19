@@ -25,6 +25,11 @@ private:
 	GLuint framebuffer_handle, texture_handle, depth_render_buffer_handle;
 };
 
+class DepthTexture: public FrameBuffer
+{
+	DepthTexture(unsigned int width = 1024, unsigned int height = 1024);
+};
+
 class Texture
 {
 public:

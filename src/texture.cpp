@@ -50,6 +50,32 @@ void FrameBuffer::bind(unsigned int id) const
 	glBindTexture(GL_TEXTURE_2D, this->texture_handle);
 }
 
+DepthTexture::DepthTexture(unsigned int width, unsigned int height): width(width), height(height), framebuffer_handle(0)
+{
+	glGenFramebuffers(1, &this->framebuffer_handle);
+	glBindFramebuffer(GL_FRAMEBUFFER, this->framebuffer_handle);
+	
+	glGenTextures(1, &this->texture_handle);
+	glBindTexture(GL_TEXTURE_2D, this->texture_handle);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT16, this->width, this->height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
+	
+	//Filtering
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+ 
+	//Configure framebuffer
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, this->texture_handle, 0);
+	GLenum drawBuffers[1] = {GL_COLOR_ATTACHMENT0};
+	glDrawBuffer(GL_NONE); // no colour buffer drawn to
+	
+	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+	{
+		tz::util::log::warning("DepthTexture invalid; glCheckFramebufferStatus != GL_FRAMEBUFFER_COMPLETE");
+	}
+}
+
 unsigned char* Texture::loadTexture()
 {
 	return stbi_load((this->filename).c_str(), &(this->width), &(this->height), &(this->components), 4);
