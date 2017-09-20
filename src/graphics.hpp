@@ -55,12 +55,12 @@ public:
 	Vector3F normal;
 };
 
-struct OBJIndex
+class OBJIndex
 {
+public:
     unsigned int vertex_index;
     unsigned int uv_index;
     unsigned int normal_index;
-    
     bool operator<(const OBJIndex& r) const { return vertex_index < r.vertex_index; }
 };
 
@@ -72,7 +72,6 @@ public:
     std::vector<Vector3F> normals;
 	std::vector<Vector3F> tangents;
     std::vector<unsigned int> indices;
-    
     void calcNormals();
 	void calcTangents();
 };

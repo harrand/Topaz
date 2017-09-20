@@ -18,9 +18,7 @@ public:
 	std::string& getUsageR();
 	std::string& getNameR();
 	std::string& getDescriptionR();
-	
 	std::size_t getExpectedParameterSize() const;
-	
 	virtual bool operator==(const Command& rhs) const;
 	virtual void operator()(const std::vector<std::string>& args = std::vector<std::string>()) = 0;
 private:
@@ -40,11 +38,9 @@ public:
 	
 	const std::unordered_set<Command*>& getCommands() const;
 	std::unordered_set<Command*>& getCommandsR();
-	
 	void registerCommand(Command* command);
 	void deregisterCommand(Command* command);
 	void deregisterCommand(const std::string& command_name);
-
 	void operator()(const std::string& name, const std::vector<std::string>& args = std::vector<std::string>());
 private:
 	std::unordered_set<Command*> commands;

@@ -10,12 +10,11 @@ public:
 	TimeKeeper();
 	TimeKeeper(const TimeKeeper& copy) = default;
 	TimeKeeper(TimeKeeper&& move) = default;
+	~TimeKeeper() = default;
 	TimeKeeper& operator=(const TimeKeeper& rhs) = default;
 	
 	void update();
-	
 	void reload();
-	
 	float getRange() const;
 	bool millisPassed(float millis) const;
 private:
@@ -29,13 +28,12 @@ public:
 	TimeProfiler();
 	TimeProfiler(const TimeProfiler& copy) = default;
 	TimeProfiler(TimeProfiler&& move) = default;
+	~TimeProfiler() = default;
 	TimeProfiler& operator=(const TimeProfiler& rhs) = default;
 	
 	void beginFrame();
 	void endFrame();
-	
 	void reset();
-	
 	float getDeltaAverage();
 	float getLastDelta() const;
 	unsigned int getFPS();
@@ -61,5 +59,4 @@ namespace tz
 		}
 	}
 }
-
 #endif // TIMEKEEPER_HPP

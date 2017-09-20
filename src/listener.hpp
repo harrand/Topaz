@@ -15,9 +15,7 @@ public:
 	~Listener();
 	
 	virtual void handleEvents(SDL_Event& evt) = 0;
-	
 	unsigned int getID() const;
-	
 	static unsigned int getNumListeners();
 private:
 	static unsigned int number_of_listeners;
@@ -30,15 +28,13 @@ public:
 	MouseListener();
 	MouseListener(const MouseListener& copy) = default;
 	MouseListener(MouseListener&& move) = default;
+	~MouseListener() = default;
 	MouseListener& operator=(const MouseListener& rhs) = default;
 	
 	void handleEvents(SDL_Event& evt);
-	
 	void reloadMouseDelta();
-	
 	bool isLeftClicked() const;
 	bool isRightClicked() const;
-	
 	const Vector2F& getMousePos() const;
 	Vector2F getMouseDeltaPos() const;
 private:
@@ -52,10 +48,10 @@ public:
 	KeyListener();
 	KeyListener(const KeyListener& copy) = default;
 	KeyListener(KeyListener&& move) = default;
+	~KeyListener() = default;
 	KeyListener& operator=(const KeyListener& rhs) = default;
 	
 	virtual void handleEvents(SDL_Event& evt);
-	
 	bool isKeyPressed(const std::string& keyname) const;
 	bool isKeyReleased(const std::string& keyname) const;
 	bool catchKeyPressed(const std::string& keyname);

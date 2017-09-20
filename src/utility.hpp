@@ -19,7 +19,6 @@ namespace tz
 	{
 		namespace cast
 		{
-			// Implementation must be kept inside the header to avoid linker errors.
 			template <typename T>
 			inline std::string toString(T&& obj)
 			{
@@ -235,11 +234,11 @@ public:
 	Force(Vector3F size = Vector3F());
 	Force(const Force& copy) = default;
 	Force(Force&& move) = default;
+	~Force() = default;
 	Force& operator=(const Force& rhs) = default;
 	
 	const Vector3F& getSize() const;
 	void setSize(Vector3F size);
-	
 	Force operator+(const Force& other) const;
 	Force operator-(const Force& other) const;
 	Force operator*(float rhs) const;
@@ -256,16 +255,14 @@ public:
 	Random(std::default_random_engine::result_type seed = std::random_device()());
 	Random(const Random& copy);
 	Random(Random&& move) = default;
+	~Random() = default;
 	Random& operator=(const Random& rhs) = default;
 	
 	const std::default_random_engine::result_type& getSeed() const;
-	
 	const std::default_random_engine& getEngine() const;
 	std::default_random_engine& getEngineR();
-	
 	int nextInt(int min = 0, int max = std::numeric_limits<int>::max());
 	float nextFloat(float min = 0, float max = std::numeric_limits<float>::max());
-	
 	template <typename Number>
 	inline Number operator()(Number min, Number max)
 	{
@@ -286,16 +283,14 @@ public:
 	MersenneTwister(std::mt19937::result_type seed = std::random_device()());
 	MersenneTwister(const MersenneTwister& copy);
 	MersenneTwister(MersenneTwister&& move) = default;
+	~MersenneTwister() = default;
 	MersenneTwister& operator=(const MersenneTwister& rhs) = default;
 	
 	const std::mt19937::result_type& getSeed() const;
-	
 	const std::mt19937& getEngine() const;
 	std::mt19937& getEngineR();
-	
 	int nextInt(int min = 0, int max = std::numeric_limits<int>::max());
 	float nextFloat(float min = 0, float max = std::numeric_limits<float>::max());
-	
 	template <typename Number>
 	inline Number operator()(Number min, Number max)
 	{

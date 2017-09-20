@@ -11,22 +11,16 @@ public:
 	Entity(Entity&& move) = default;
 	Entity& operator=(const Entity& rhs) = default;
 	
-	float getMass() const;
-	
+	float getMass() const;	
 	void applyForce(std::string force_name, Force f);
 	void removeForce(std::string force_name);
-	
 	virtual Vector3F& getPositionR();
 	virtual const Vector3F& getPosition() const;
-	
 	const Vector3F& getVelocity() const;
 	Vector3F& getVelocityR();
-	
 	const Vector3F getAcceleration() const;
-	
 	const std::unordered_map<std::string, Force>& getForces() const;
 	std::unordered_map<std::string, Force>& getForcesR();
-	
 	virtual void updateMotion(unsigned int fps);
 protected:
 	float mass;
@@ -34,7 +28,6 @@ protected:
 	std::unordered_map<std::string, Force> forces;
 private:
 	Vector3F position;
-	//Position is private because a child (Player) will not need an instance of position. getters and setters should mean that other children keep this instance of position.
 };
 
 #endif

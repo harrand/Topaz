@@ -11,10 +11,8 @@ public:
 	EntityObject(EntityObject&& move) = default;
 	EntityObject& operator=(const EntityObject& rhs) = default;
 	
-	void setPosition(Vector3F position);
 	const Vector3F& getPosition() const;
 	Vector3F& getPositionR();
-	
 	void updateMotion(unsigned int fps);
 };
 

@@ -21,15 +21,11 @@ public:
 	Mesh& operator=(const Mesh& rhs) = default;
 	
 	IndexedModel getIndexedModel() const;
-	
 	const std::vector<Vector3F>& getPositions() const;
 	const std::vector<Vector2F>& getTexcoords() const;
 	const std::vector<Vector3F>& getNormals() const;
-	
 	std::string getFileName() const;
-	
 	void render(bool patches, GLenum mode = GL_TRIANGLES) const;
-	
 private:
 	const std::string filename;
 	IndexedModel model;

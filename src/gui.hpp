@@ -47,8 +47,9 @@ public:
 	Window(int w = 800, int h = 600, std::string title = "Untitled");
 	Window(const Window& copy);
 	Window(Window&& move) = delete;
-	Window& operator=(const Window& rhs) = delete;
 	virtual ~Window();
+	Window& operator=(const Window& rhs) = delete;
+	
 	virtual void update();
 	virtual void destroy();
 	virtual bool focused() const;
@@ -91,6 +92,7 @@ class Panel : public GUIElement
 {
 public:
 	Panel(float x, float y, float width, float height, Vector4F colour, const Shader& shader);
+	
 	float getX() const;
 	float getY() const;
 	virtual float getWindowPosX() const;
@@ -122,6 +124,7 @@ class TextLabel : public Panel
 {
 public:
 	TextLabel(float x, float y, Vector4F colour, std::optional<Vector4F> background_colour, std::optional<Vector3F> text_border_colour, Font font, const std::string& text, const Shader& shader);
+	
 	virtual void update();
 	virtual float getWindowPosX() const;
 	virtual float getWindowPosY() const;
@@ -149,6 +152,7 @@ class Button : public TextLabel
 {
 public:
 	Button(float x, float y, Vector4F colour, std::optional<Vector4F> background_colour, std::optional<Vector3F> text_border_colour, Font font, const std::string& text, const Shader& shader, MouseListener& mouse_listener);
+	
 	virtual void update();
 	virtual bool focused() const;
 	virtual bool isMouseSensitive() const;

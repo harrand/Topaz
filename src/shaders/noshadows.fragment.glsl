@@ -2,7 +2,7 @@
 #version 430
 
 in vec3 position_modelspace;
-in vec3 cubePosition_modelspace;
+in vec3 cube_position_modelspace;
 in vec2 texcoord_modelspace;
 in vec3 normal_modelspace;
 

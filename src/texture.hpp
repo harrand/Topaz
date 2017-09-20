@@ -15,11 +15,10 @@ public:
 	FrameBuffer(unsigned int width = 256, unsigned int height = 256);
 	FrameBuffer(const FrameBuffer& copy) = delete;
 	FrameBuffer(FrameBuffer&& move) = delete;
-	FrameBuffer& operator=(const FrameBuffer& rhs) = delete;
 	virtual ~FrameBuffer();
+	FrameBuffer& operator=(const FrameBuffer& rhs) = delete;
 	
 	virtual void setRenderTarget() const;
-	
 	virtual void bind(unsigned int id) const;
 protected:
 	unsigned int width, height;
@@ -33,8 +32,8 @@ class DepthTexture: public FrameBuffer
 	DepthTexture(unsigned int width = 1024, unsigned int height = 1024);
 	DepthTexture(const DepthTexture& copy) = delete;
 	DepthTexture(DepthTexture&& move) = delete;
-	DepthTexture& operator=(const DepthTexture& rhs) = delete;
 	~DepthTexture() = default;
+	DepthTexture& operator=(const DepthTexture& rhs) = delete;
 };
 
 class Texture
@@ -42,18 +41,15 @@ class Texture
 public:
 	Texture(std::string filename = "../../../res/runtime/textures/undefined.jpg");
 	Texture(TTF_Font* font, const std::string& text, SDL_Color foreground_colour);
-	// NormalMap and ParallaxMap inherit copy and move constructors so having them defined as default still works fine.
 	Texture(const Texture& copy);
 	Texture(Texture&& move);
-	Texture& operator=(Texture&& rhs);
 	~Texture();
+	Texture& operator=(Texture&& rhs);
 	
 	void bind(GLuint shader_program_handle, unsigned int id);
-	
 	const std::string& getFileName() const;
 	int getWidth() const;
 	int getHeight() const;
-	
 	enum class TextureType : unsigned int
 	{
 		TEXTURE,
@@ -62,9 +58,7 @@ public:
 		DISPLACEMENT_MAP,
 		TEXTURE_TYPES,
 	};
-	
 	virtual TextureType getTextureType();
-	
 	template<class Tex>
 	static Tex* getFromLink(const std::string& texture_link, const std::vector<std::unique_ptr<Tex>>& all_textures)
 	{
@@ -78,7 +72,6 @@ public:
 protected:
 	unsigned char* loadTexture();
 	void deleteTexture(unsigned char* imgdata);
-	
 	std::string filename;
 	GLuint texture_id;
 	GLuint texture_handle;
@@ -91,10 +84,10 @@ public:
 	NormalMap(std::string filename = "../../../res/runtime/normalmaps/default_normalmap.jpg");
 	NormalMap(const NormalMap& copy) = default;
 	NormalMap(NormalMap&& move) = default;
+	~NormalMap() = default;
 	NormalMap& operator=(const NormalMap& rhs) = delete;
 	
 	void bind(GLuint shader_program_handle, unsigned int id);
-	
 	TextureType getTextureType();
 };
 
@@ -104,10 +97,10 @@ public:
 	ParallaxMap(std::string filename = "../../../res/runtime/parallaxmaps/default_parallax.png");
 	ParallaxMap(const ParallaxMap& copy) = default;
 	ParallaxMap(ParallaxMap&& move) = default;
+	~ParallaxMap() = default;
 	ParallaxMap& operator=(const ParallaxMap& rhs) = delete;
 	
 	void bind(GLuint shader_program_handle, unsigned int id);
-	
 	TextureType getTextureType();	
 };
 
@@ -117,6 +110,7 @@ public:
 	DisplacementMap(std::string filename = "../../../res/runtime/displacementmaps/default_displacement.png");
 	DisplacementMap(const DisplacementMap& copy) = default;
 	DisplacementMap(DisplacementMap&& move) = default;
+	~DisplacementMap() = default;
 	DisplacementMap& operator=(const DisplacementMap& rhs) = delete;
 	
 	void bind(GLuint shader_program_handle, unsigned int id);
@@ -130,8 +124,8 @@ public:
 	CubeMap(std::string texture_directory = "./", std::string skybox_name = "skybox", std::string skybox_image_file_extension = ".png");
 	CubeMap(const CubeMap& copy);
 	CubeMap(CubeMap&& move);
-	CubeMap& operator=(const CubeMap& rhs) = delete;
 	~CubeMap();
+	CubeMap& operator=(const CubeMap& rhs) = delete;
 	
 	void bind(GLuint shader_program_handle, unsigned int id);
 private:

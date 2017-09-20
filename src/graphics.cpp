@@ -197,10 +197,10 @@ IndexedModel OBJModel::toIndexedModel()
 
 unsigned int OBJModel::findLastVertexIndex(const std::vector<OBJIndex*>& index_lookup, const OBJIndex* current_index, const IndexedModel& result)
 {
-    unsigned int start = 0;
+    std::size_t start = 0;
     std::size_t end = index_lookup.size();
     std::size_t current = (end - start) / 2 + start;
-    unsigned int previous = start;
+    std::size_t previous = start;
     
     while(current != previous)
     {
@@ -330,10 +330,10 @@ OBJIndex OBJModel::parseOBJIndex(const std::string& token, bool* has_uvs, bool* 
 
 Vector3F OBJModel::parseOBJVector3F(const std::string& line) 
 {
-    unsigned int token_length = line.length();
+    std::size_t token_length = line.length();
     const char* token_c_string = line.c_str();
     
-    unsigned int vertex_index_start = 2;
+    std::size_t vertex_index_start = 2;
     
     while(vertex_index_start < token_length)
     {
@@ -364,7 +364,7 @@ Vector2F OBJModel::parseOBJVector2F(const std::string& line)
     std::size_t token_length = line.length();
     const char* token_c_string = line.c_str();
     
-    unsigned int vertex_index_start = 3;
+    std::size_t vertex_index_start = 3;
     
     while(vertex_index_start < token_length)
     {

@@ -25,6 +25,7 @@ public:
 	inline Vector2<T>(T x = T(), T y = T()): x(x), y(y){}
 	inline Vector2<T>(const Vector2<T>& copy) = default;
 	inline Vector2<T>(Vector2<T>&& move) = default;
+	inline ~Vector2<T>() = default;
 	inline Vector2<T>& operator=(const Vector2<T>& rhs) = default;
 	
 	inline Vector2POD toRaw() const
@@ -39,14 +40,17 @@ public:
 	{
 		return this->x;
 	}
+	
 	inline const T& getY() const
 	{
 		return this->y;
 	}
+	
 	inline T& getXR()
 	{
 		return this->x;
 	}
+	
 	inline T& getYR()
 	{
 		return this->y;
@@ -57,7 +61,7 @@ public:
 		return sqrt((this->x * this->x) + (this->y * this->y));
 	}
 	
-	inline virtual T dot(Vector2<T> rhs) const
+	inline virtual T dot(const Vector2<T>& rhs) const
 	{
 		return (this->x * rhs.getX()) + (this->y * rhs.getY());
 	}
@@ -71,25 +75,47 @@ public:
 	{
 		return {this->x + rhs.getX(), this->y + rhs.getY()};
 	}
+	
 	inline Vector2<T> operator-(const Vector2<T>& rhs) const
 	{
 		return {this->x - rhs.getX(), this->y - rhs.getY()};
 	}
+	
 	inline Vector2<T> operator*(T scalar) const
 	{
 		return {this->x * scalar, this->y * scalar};
 	}
+	
+	inline Vector2<T> operator/(T scalar) const
+	{
+		return {this->x / scalar, this->y / scalar};
+	}
+	
 	inline bool operator<(const Vector2<T>& rhs) const
 	{
 		return this->length() < rhs.length();
 	}
+	
 	inline bool operator>(const Vector2<T>& rhs) const
 	{
 		return this->length() > rhs.length();
 	}
+	
 	inline bool operator==(const Vector2<T>& rhs) const
 	{
 		return (this->x == rhs.getX()) && (this->y == rhs.getY());
+	}
+	
+	inline Vector2<T>& operator+=(const Vector2<T>& rhs)
+	{
+		(*this) = (*this) + rhs;
+		return (*this);
+	}
+	
+	inline Vector2<T>& operator-=(const Vector2<T>& rhs)
+	{
+		(*this) = (*this) - rhs;
+		return (*this);
 	}
 protected:
 	T x, y;
@@ -104,6 +130,7 @@ public:
 	inline Vector3<T>(T x = T(), T y = T(), T z = T()): Vector2<T>(x, y), z(z){}
 	inline Vector3<T>(const Vector3<T>& copy) = default;
 	inline Vector3<T>(Vector3<T>&& move) = default;
+	inline ~Vector3<T>() = default;
 	inline Vector3<T>& operator=(const Vector3<T>& rhs) = default;
 	
 	inline Vector3POD toRaw() const
@@ -119,6 +146,7 @@ public:
 	{
 		return this->z;
 	}
+	
 	inline T& getZR()
 	{
 		return this->z;
@@ -129,12 +157,12 @@ public:
 		return sqrt((this->x * this->x) + (this->y * this->y) + (this->z * this->z));
 	}
 	
-	inline virtual T dot(Vector3<T> rhs) const
+	inline virtual T dot(const Vector3<T>& rhs) const
 	{
 		return (this->x * rhs.getX()) + (this->y * rhs.getY()) + (this->z * rhs.getZ());
 	}
 	
-	inline virtual Vector3<T> cross(Vector3<T> rhs) const
+	inline virtual Vector3<T> cross(const Vector3<T>& rhs) const
 	{
 		return {(this->y * rhs.getZ()) - (this->z * rhs.getY()), (this->z * rhs.getX()) - (this->x * rhs.getZ()), (this->x * rhs.getY()) - (this->y * rhs.getX())};
 	}
@@ -148,35 +176,43 @@ public:
 	{
 		return {this->x + rhs.getX(), this->y + rhs.getY(), this->z + rhs.getZ()};
 	}
+	
 	inline Vector3<T> operator-(const Vector3<T>& rhs) const
 	{
 		return {this->x - rhs.getX(), this->y - rhs.getY(), this->z - rhs.getZ()};
 	}
+	
 	inline Vector3<T> operator*(T scalar) const
 	{
 		return {this->x * scalar, this->y * scalar, this->z * scalar};
 	}
+	
 	inline Vector3<T> operator/(T scalar) const
 	{
 		return {this->x / scalar, this->y / scalar, this->z / scalar};
 	}
+	
 	inline bool operator<(const Vector3<T>& rhs) const
 	{
 		return this->length() < rhs.length();
 	}
+	
 	inline bool operator>(const Vector3<T>& rhs) const
 	{
 		return this->length() > rhs.length();
 	}
+	
 	inline bool operator==(const Vector3<T>& rhs) const
 	{
 		return (this->x == rhs.getX()) && (this->y == rhs.getY()) && (this->z == rhs.getZ());
 	}
+	
 	inline Vector3<T>& operator+=(const Vector3<T>& rhs)
 	{
 		(*this) = ((*this) + rhs);
 		return *this;
 	}
+	
 	inline Vector3<T>& operator-=(const Vector3<T>& rhs)
 	{
 		(*this) = ((*this) - rhs);
@@ -195,6 +231,7 @@ public:
 	inline Vector4<T>(T x = T(), T y = T(), T z = T(), T w = T()): Vector3<T>(x, y, z), w(w){}
 	inline Vector4<T>(const Vector4& copy) = default;
 	inline Vector4<T>(Vector4&& move) = default;
+	inline ~Vector4<T>() = default;
 	inline Vector4<T>& operator=(const Vector4<T>& rhs) = default;
 	
 	inline Vector4POD toRaw() const
@@ -211,6 +248,7 @@ public:
 	{
 		return this->w;
 	}
+	
 	inline T& getWR()
 	{
 		return this->w;
@@ -235,34 +273,51 @@ public:
 	{
 		return {this->x + rhs.getX(), this->y + rhs.getY(), this->z + rhs.getZ(), this->w + rhs.getW()};
 	}
+	
 	inline Vector4<T> operator-(const Vector4<T>& rhs) const
 	{
 		return {this->x - rhs.getX(), this->y - rhs.getY(), this->z - rhs.getZ(), this->w - rhs.getW()};
 	}
+	
 	inline Vector4<T> operator*(T scalar) const
 	{
 		return {this->x * scalar, this->y * scalar, this->z * scalar, this->w * scalar};
 	}
+	
 	inline Vector4<T> operator/(T scalar) const
 	{
 		return {this->x / scalar, this->y / scalar, this->z / scalar, this->w / scalar};
 	}
+	
 	inline bool operator<(const Vector4<T>& rhs) const
 	{
 		return this->length() < rhs.length();
 	}
+	
 	inline bool operator>(const Vector4<T>& rhs) const
 	{
 		return this->length() > rhs.length();
 	}
+	
 	inline bool operator==(const Vector4<T>& rhs) const
 	{
 		return (this->x == rhs.getX()) && (this->y == rhs.getY()) && (this->z == rhs.getZ()) && (this->w == rhs.getW());
 	}
+	
+	inline Vector4<T>& operator+=(const Vector4<T>& rhs)
+	{
+		(*this) = (*this) + rhs;
+		return (*this);
+	}
+	
+	inline Vector4<T>& operator+=(const Vector4<T>& rhs)
+	{
+		(*this) = (*this) + rhs;
+		return (*this);
+	}
 protected:
 	T w;
 };
-
 using Vector2F = Vector2<float>;
 using Vector3F = Vector3<float>;
 using Vector4F = Vector4<float>;

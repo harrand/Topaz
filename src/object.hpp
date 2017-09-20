@@ -12,6 +12,7 @@ public:
 	Object(std::string mesh_link, std::vector<std::pair<std::string, Texture::TextureType>> textures, Vector3F pos, Vector3F rot, Vector3F scale);
 	Object(const Object& copy) = default;
 	Object(Object&& move) = default;
+	~Object() = default;
 	Object& operator=(const Object& rhs) = default;
 	
 	const Vector3F& getPosition() const;
@@ -20,11 +21,8 @@ public:
 	Vector3F& getPositionR();
 	Vector3F& getRotationR();
 	Vector3F& getScaleR();
-	
 	const std::string& getMeshLink() const;
-	
 	const std::vector<std::pair<std::string, Texture::TextureType>> getTextures() const;
-	
 	virtual void render(Mesh* mesh, Texture* tex, NormalMap* nm, ParallaxMap* pm, DisplacementMap* dm, const Camera& cam, const Shader& shad, float width, float height) const;
 protected:
 	Vector3F pos, rot, scale;
@@ -38,6 +36,7 @@ public:
 	Skybox(std::string cube_mesh_link, CubeMap& cm);
 	Skybox(const Skybox& copy) = default;
 	Skybox(Skybox&& move) = default;
+	~Skybox() = default;
 	Skybox& operator=(const Skybox& rhs) = default;
 	
 	void render(const Camera& cam, const Shader& shad, const std::vector<std::unique_ptr<Mesh>>& all_meshes, float width, float height);
