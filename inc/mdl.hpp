@@ -35,16 +35,16 @@ public:
 	
 	const RawFile& getRawFile() const;
 	void update() const;
-	bool existsTag(std::string tag_name) const;
-	bool existsSequence(std::string sequence_name) const;
+	bool existsTag(const std::string& tag_name) const;
+	bool existsSequence(const std::string& sequence_name) const;
 	void addTag(std::string tag_name, std::string data) const;
 	void addSequence(std::string sequence_name, std::vector<std::string> data) const;
 	void deleteTag(std::string tag_name) const;
 	void deleteSequence(std::string sequence_name) const;
 	void editTag(std::string tag_name, std::string data) const;
 	void editSequence(std::string sequence_name, std::vector<std::string> data) const;
-	std::string getTag(std::string tag_name) const;
-	std::vector<std::string> getSequence(std::string sequence_name) const;
+	std::string getTag(const std::string& tag_name) const;
+	std::vector<std::string> getSequence(const std::string& sequence_name) const;
 	const std::map<std::string, std::string>& getParsedTags() const;
 	const std::map<std::string, std::vector<std::string>>& getParsedSequences() const;
 private:
@@ -54,10 +54,10 @@ private:
 	
 	std::vector<std::string> splitString(std::string s, char d) const;
 	std::string getTagName(std::string tag) const;
-	bool hasEnding(std::string s, std::string e) const;
-	bool hasBeginning(std::string s, std::string b) const;
-	bool isSequence(std::string s) const;
-	bool isEndOfSequence(std::string s) const;
+	bool hasEnding(const std::string& s, const std::string& e) const;
+	bool hasBeginning(const std::string& s, const std::string& b) const;
+	bool isSequence(const std::string& s) const;
+	bool isEndOfSequence(const std::string& s) const;
 	std::vector<std::string> getSequences(std::vector<std::string> lines, unsigned int index) const;
 	
 	void parse() const;
