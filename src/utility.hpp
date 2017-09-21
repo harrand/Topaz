@@ -10,6 +10,7 @@
 #include <typeinfo>
 #include <random>
 #include <utility>
+#include "mdl.hpp"
 #include "vector.hpp"
 #include "SDL.h"
 
@@ -51,48 +52,14 @@ namespace tz
 				return data;
 			}
 		
-			inline bool beginsWith(const std::string& what, const std::string& withwhat)
+			inline bool beginsWith(const std::string& what, const std::string& with_what)
 			{
-				unsigned int strsize = what.length(), withsize = withwhat.length();
-				const char* str = what.c_str();
-				const char* with = withwhat.c_str();
-				if(strsize < withsize || str[0] != with[0])
-					return false;
-				for(unsigned int iter = 0; iter < withsize; iter++)
-				{
-					char str_at = str[iter], with_at = with[iter];
-					if(str_at == with_at)
-					{
-						if(iter == withsize)
-							return true;
-					}
-					else
-					{
-						return false;
-					}
-				}
+				return mdl::util::beginsWith(what, with_what);
 			}
 		
-			inline bool endsWith(const std::string& what, const std::string& withwhat)
+			inline bool endsWith(const std::string& what, const std::string& with_what)
 			{
-				unsigned int strsize = what.length(), withsize = withwhat.length();
-				const char* str = what.c_str();
-				const char* with = withwhat.c_str();
-				if(strsize < withsize || str[strsize-withsize] != with[0])
-					return false;
-				for(unsigned int iter = 0; iter < withsize; iter++)
-				{
-					char str_at = str[strsize-(withsize-iter)], with_at = with[iter];
-					if(str_at == with_at)
-					{
-						if(iter == withsize)
-							return true;
-					}
-					else
-					{
-						return false;
-					}
-				}
+				return mdl::util::endsWith(what, with_what);
 			}
 		
 			inline bool contains(const std::string& what, char withwhat)
@@ -104,24 +71,9 @@ namespace tz
 				return false;
 			}
 			
-			inline std::vector<std::string> splitString(const std::string& s, const std::string& delims)
+			inline std::vector<std::string> splitString(const std::string& s, const std::string& delim)
 			{
-				std::vector<std::string> v;
-				// Start of an element.
-				std::size_t elemStart = 0;
-				// We start searching from the end of the previous element, which
-				// initially is the start of the string.
-				std::size_t elemEnd = 0;
-				// Find the first non-delim, i.e. the start of an element, after the end of the previous element.
-				while((elemStart = s.find_first_not_of(delims, elemEnd)) != std::string::npos)
-				{
-					// Find the first delem, i.e. the end of the element (or if this fails it is the end of the string).
-					elemEnd = s.find_first_of(delims, elemStart);
-					// Add it.
-					v.emplace_back(s, elemStart, elemEnd == std::string::npos ? std::string::npos : elemEnd - elemStart);
-				}
-				// When there are no more non-spaces, we are done.
-				return v;
+				return mdl::util::splitString(s, delim);
 			}
 			
 			inline std::vector<std::string> splitString(const std::string& s, char delim)
