@@ -35,7 +35,6 @@ public:
 	MDLF& operator=(const MDLF& rhs) = default;
 	
 	const RawFile& getRawFile() const;
-	void update() const;
 	bool existsTag(const std::string& tag_name) const;
 	bool existsSequence(const std::string& sequence_name) const;
 	void addTag(std::string tag_name, std::string data) const;
@@ -48,6 +47,7 @@ public:
 	std::vector<std::string> getSequence(const std::string& sequence_name) const;
 	const std::map<std::string, std::string>& getParsedTags() const;
 	const std::map<std::string, std::vector<std::string>>& getParsedSequences() const;
+	void update() const;
 private:
 	RawFile rf;
 	mutable std::map<std::string, std::string> parsed_tags;
