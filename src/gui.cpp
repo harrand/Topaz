@@ -381,7 +381,7 @@ bool Panel::isUsingProportionalPositioning() const
 	return this->use_proportional_positioning;
 }
 
-TextLabel::TextLabel(float x, float y, Vector4F colour, std::optional<Vector4F> background_colour, std::optional<Vector3F> text_border_colour, Font font, const std::string& text, const Shader& shader): Panel(x, y, this->text_texture.getWidth(), this->text_texture.getHeight(), colour, shader), background_colour(background_colour), text_border_colour(text_border_colour), font(font), text(text), text_texture(this->font.getTTFR(), this->text, SDL_Color({static_cast<unsigned char>(this->colour.getX() * 255), static_cast<unsigned char>(this->colour.getY() * 255), static_cast<unsigned char>(this->colour.getZ() * 255), static_cast<unsigned char>(255)})), background_colour_uniform(glGetUniformLocation(this->shader.value().get().getProgramHandle(), "background_colour")), has_background_colour_uniform(glGetUniformLocation(this->shader.value().get().getProgramHandle(), "has_background_colour")), text_border_colour_uniform(glGetUniformLocation(this->shader.value().get().getProgramHandle(), "text_border_colour")), has_text_border_colour_uniform(glGetUniformLocation(this->shader.value().get().getProgramHandle(), "has_text_border_colour"))
+TextLabel::TextLabel(float x, float y, Vector4F colour, std::optional<Vector4F> background_colour, std::optional<Vector3F> text_border_colour, Font font, const std::string& text, const Shader& shader): Panel(x, y, this->text_texture.getWidth(), this->text_texture.getHeight(), colour, shader), background_colour(background_colour), text_border_colour(text_border_colour), font(font), text(text), text_texture(this->font.getFontHandleR(), this->text, SDL_Color({static_cast<unsigned char>(this->colour.getX() * 255), static_cast<unsigned char>(this->colour.getY() * 255), static_cast<unsigned char>(this->colour.getZ() * 255), static_cast<unsigned char>(255)})), background_colour_uniform(glGetUniformLocation(this->shader.value().get().getProgramHandle(), "background_colour")), has_background_colour_uniform(glGetUniformLocation(this->shader.value().get().getProgramHandle(), "has_background_colour")), text_border_colour_uniform(glGetUniformLocation(this->shader.value().get().getProgramHandle(), "text_border_colour")), has_text_border_colour_uniform(glGetUniformLocation(this->shader.value().get().getProgramHandle(), "has_text_border_colour"))
 {
 	// Not in initialiser list because text_texture MUST be initialised after Panel, and theres no way of initialising it before without a warning so do it here.
 	this->width = text_texture.getWidth();
@@ -457,7 +457,7 @@ const std::string& TextLabel::getText() const
 void TextLabel::setText(const std::string& new_text)
 {
 	this->text = new_text;
-	this->text_texture = Texture(this->font.getTTFR(), this->text, SDL_Color({static_cast<unsigned char>(this->colour.getX() * 255), static_cast<unsigned char>(this->colour.getY() * 255), static_cast<unsigned char>(this->colour.getZ() * 255), static_cast<unsigned char>(255)}));
+	this->text_texture = Texture(this->font.getFontHandleR(), this->text, SDL_Color({static_cast<unsigned char>(this->colour.getX() * 255), static_cast<unsigned char>(this->colour.getY() * 255), static_cast<unsigned char>(this->colour.getZ() * 255), static_cast<unsigned char>(255)}));
 	this->width = text_texture.getWidth();
 	this->height = text_texture.getHeight();
 }

@@ -50,7 +50,7 @@ OBJModel::OBJModel(const std::string& file_name): has_uvs(false), has_normals(fa
     }
 }
 
-void IndexedModel::calcNormals()
+void IndexedModel::calculateNormals()
 {
     for(std::size_t i = 0; i < indices.size(); i += 3)
     {
@@ -72,35 +72,28 @@ void IndexedModel::calcNormals()
         normals[i] = normals[i].normalised();
 }
 
-void IndexedModel::calcTangents()
+void IndexedModel::calculateTangents()
 {
     for(std::size_t i = 0; i < indices.size(); i += 3)
     {
         int i0 = indices[i];
         int i1 = indices[i + 1];
         int i2 = indices[i + 2];
-
         Vector3F edge1 = (positions[i1] - positions[i0]);
         Vector3F edge2 = (positions[i2] - positions[i0]);
-        
 		float deltaU1 = texcoords.at(i1).getX() - texcoords.at(i0).getX();
 		float deltaU2 = texcoords.at(i2).getX() - texcoords.at(i0).getX();
 		float deltaV1 = texcoords.at(i1).getY() - texcoords.at(i0).getY();
 		float deltaV2 = texcoords.at(i2).getY() - texcoords.at(i0).getY();
-		
 		float f = 1.0f/(deltaU1 * deltaV2 - deltaU2 * deltaV1);
 		Vector3F tangent;
 		tangent.getXR() = f * (deltaV2 * edge1.getX() - deltaV1 * edge2.getX());
 		tangent.getYR() = f * (deltaV2 * edge1.getY() - deltaV1 * edge2.getY());
 		tangent.getZR() = f * (deltaV2 * edge1.getZ() - deltaV1 * edge2.getZ());
-		//std::cout << "Adding the tangent trio:\n";
-		//std::cout << "	[" << tangent.getX() << ", " << tangent.getY() << ", " << tangent.getZ() << "]\n";
 		tangents.at(i0) += tangent;
 		tangents.at(i1) += tangent;
 		tangents.at(i2) += tangent;
-		//std::cout << "		Added.\n";
     }
-    
     for(std::size_t i = 0; i < tangents.size(); i++)
         tangents[i] = tangents[i].normalised();
 }
@@ -109,43 +102,31 @@ IndexedModel OBJModel::toIndexedModel()
 {
     IndexedModel result;
     IndexedModel normal_model;
-    
     std::size_t number_of_indices = obj_indices.size();
 	normal_model.tangents.resize(number_of_indices);
 	result.tangents.resize(number_of_indices);
-    
     std::vector<OBJIndex*> index_lookup;
-    
     for(std::size_t i = 0; i < number_of_indices; i++)
         index_lookup.push_back(&obj_indices[i]);
-    
     std::sort(index_lookup.begin(), index_lookup.end(), compareOBJIndexPointer);
-    
     std::map<OBJIndex, unsigned int> normal_model_index_map;
     std::map<unsigned int, unsigned int> index_map;
-    
     for(std::size_t i = 0; i < number_of_indices; i++)
     {
         OBJIndex* current_index = &obj_indices[i];
-        
         Vector3F current_position = vertices[current_index->vertex_index];
         Vector2F current_texture_coordinate;
         Vector3F current_normal;
-        
         if(has_uvs)
             current_texture_coordinate = uvs[current_index->uv_index];
         else
             current_texture_coordinate = Vector2F(0,0);
-            
         if(has_normals)
             current_normal = normals[current_index->normal_index];
         else
             current_normal = Vector3F(0,0,0);
-        
         unsigned int normal_model_index;
         unsigned int result_model_index;
-        
-        //Create model to properly generate normals on
         std::map<OBJIndex, unsigned int>::iterator it = normal_model_index_map.find(*current_index);
         if(it == normal_model_index_map.end())
         {
@@ -158,10 +139,7 @@ IndexedModel OBJModel::toIndexedModel()
         }
         else
             normal_model_index = it->second;
-        
-        //Create model which properly separates texture coordinates
         unsigned int previous_vertex_location = findLastVertexIndex(index_lookup, current_index, result);
-        
         if(previous_vertex_location == static_cast<unsigned int>(-1))
         {
             result_model_index = result.positions.size();
@@ -172,26 +150,20 @@ IndexedModel OBJModel::toIndexedModel()
         }
         else
             result_model_index = previous_vertex_location;
-        
         normal_model.indices.push_back(normal_model_index);
         result.indices.push_back(result_model_index);
         index_map.emplace(result_model_index, normal_model_index);
     }
-    
     if(!has_normals)
     {
-        normal_model.calcNormals();
+        normal_model.calculateNormals();
         
         for(std::size_t i = 0; i < result.positions.size(); i++)
             result.normals[i] = normal_model.normals[index_map[i]];
     }
-	
-	
-	normal_model.calcTangents();
+	normal_model.calculateTangents();
 	for(std::size_t i = 0; i < result.tangents.size(); i++)
 		result.tangents.at(i) = normal_model.tangents[index_map[i]];
-	
-    
     return result;
 }
 
@@ -438,12 +410,12 @@ Font::~Font()
 	this->font = nullptr;
 }
 
-TTF_Font* Font::getTTF() const
+TTF_Font* Font::getFontHandle() const
 {
 	return this->font;
 }
 
-TTF_Font*& Font::getTTFR()
+TTF_Font*& Font::getFontHandleR()
 {
 	return this->font;
 }

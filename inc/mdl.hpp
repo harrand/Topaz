@@ -1,11 +1,8 @@
 #ifndef MDL_HPP
 #define MDL_HPP
-
 #include <cstddef>
 #include <string>
 #include <vector>
-#include <fstream>
-#include <sstream>
 #include <map>
 
 class RawFile
@@ -14,14 +11,15 @@ public:
 	RawFile(std::string path);
 	RawFile(const RawFile& copy) = default;
 	RawFile(RawFile&& move) = default;
+	~RawFile() = default;
 	RawFile& operator=(const RawFile& rhs) = default;
 	
 	const std::string& getPath() const;
 	std::vector<std::string> getLines() const;
 	std::string getData() const;
 	void clear() const;
-	void write(std::string data, bool clear) const;// will append the end of the file (so data is the final data in the file)
-	void writeLine(std::string data, unsigned int line) const;
+	void write(std::string data, bool clear) const;
+	void writeLine(std::string data, std::size_t line) const;
 private:
 	std::string path;
 };
@@ -29,9 +27,11 @@ private:
 class MDLF
 {
 public:
-	MDLF(RawFile rf);
+	MDLF(std::string file_path);
+	MDLF(RawFile raw_file);
 	MDLF(const MDLF& copy) = default;
 	MDLF(MDLF&& move) = default;
+	~MDLF() = default;
 	MDLF& operator=(const MDLF& rhs) = default;
 	
 	const RawFile& getRawFile() const;
@@ -49,13 +49,14 @@ public:
 	const std::map<std::string, std::vector<std::string>>& getParsedSequences() const;
 	void update() const;
 private:
-	RawFile rf;
+	RawFile raw_file;
 	mutable std::map<std::string, std::string> parsed_tags;
 	mutable std::map<std::string, std::vector<std::string>> parsed_sequences;	
 };
 
 namespace mdl
 {
+	constexpr char default_string[] = "0";
 	namespace syntax
 	{
 		bool isComment(const std::string& line);

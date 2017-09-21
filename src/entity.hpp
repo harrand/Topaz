@@ -14,11 +14,11 @@ public:
 	float getMass() const;	
 	void applyForce(std::string force_name, Force f);
 	void removeForce(std::string force_name);
-	virtual Vector3F& getPositionR();
 	virtual const Vector3F& getPosition() const;
+	virtual Vector3F& getPositionR();
 	const Vector3F& getVelocity() const;
 	Vector3F& getVelocityR();
-	const Vector3F getAcceleration() const;
+	Vector3F getAcceleration() const;
 	const std::unordered_map<std::string, Force>& getForces() const;
 	std::unordered_map<std::string, Force>& getForcesR();
 	virtual void updateMotion(unsigned int fps);

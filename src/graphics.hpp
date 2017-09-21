@@ -61,7 +61,7 @@ public:
     unsigned int vertex_index;
     unsigned int uv_index;
     unsigned int normal_index;
-    bool operator<(const OBJIndex& r) const { return vertex_index < r.vertex_index; }
+    bool operator<(const OBJIndex& rhs) const { return vertex_index < rhs.vertex_index; }
 };
 
 class IndexedModel
@@ -72,8 +72,8 @@ public:
     std::vector<Vector3F> normals;
 	std::vector<Vector3F> tangents;
     std::vector<unsigned int> indices;
-    void calcNormals();
-	void calcTangents();
+    void calculateNormals();
+	void calculateTangents();
 };
 
 class OBJModel
@@ -106,12 +106,12 @@ public:
 	Font(Font&& move);
 	Font& operator=(Font&& rhs);
 	~Font();
-	TTF_Font* getTTF() const;
-	TTF_Font*& getTTFR();
+	TTF_Font* getFontHandle() const;
+	TTF_Font*& getFontHandleR();
 private:
 	std::string font_path;
 	int pixel_height;
-	TTF_Font* font;
+	TTF_Font* font_handle;
 };
 
 #endif

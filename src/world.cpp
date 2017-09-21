@@ -64,14 +64,14 @@ void World::addEntityObject(EntityObject eo)
 	this->entity_objects.push_back(std::move(eo));
 }
 
-void World::addLight(BaseLight light, GLuint shader_programHandle)
+void World::addLight(BaseLight light, GLuint shader_program_handle)
 {
 	while(this->base_lights.size() >= World::MAXIMUM_LIGHTS)
 		this->base_lights.erase(this->base_lights.begin());
 	std::vector<GLuint> uniforms;
-	uniforms.push_back(glGetUniformLocation(shader_programHandle, ("lights[" + tz::util::cast::toString<unsigned int>(this->base_lights.size()) + "].pos").c_str()));
-	uniforms.push_back(glGetUniformLocation(shader_programHandle, ("lights[" + tz::util::cast::toString<unsigned int>(this->base_lights.size()) + "].colour").c_str()));
-	uniforms.push_back(glGetUniformLocation(shader_programHandle, ("lights[" + tz::util::cast::toString<unsigned int>(this->base_lights.size()) + "].power").c_str()));
+	uniforms.push_back(glGetUniformLocation(shader_program_handle, ("lights[" + tz::util::cast::toString<unsigned int>(this->base_lights.size()) + "].pos").c_str()));
+	uniforms.push_back(glGetUniformLocation(shader_program_handle, ("lights[" + tz::util::cast::toString<unsigned int>(this->base_lights.size()) + "].colour").c_str()));
+	uniforms.push_back(glGetUniformLocation(shader_program_handle, ("lights[" + tz::util::cast::toString<unsigned int>(this->base_lights.size()) + "].power").c_str()));
 	this->base_lights[uniforms] = light;
 }
 
@@ -112,10 +112,10 @@ void World::killLights()
 	}
 }
 
-void World::exportWorld(const std::string& worldLink) const
+void World::exportWorld(const std::string& world_link) const
 {
-	const tz::data::Manager dt(this->resources_path);
-	MDLF output = MDLF(RawFile(worldLink));
+	const tz::data::Manager data_manager(this->resources_path);
+	MDLF output = MDLF(RawFile(world_link));
 	output.getRawFile().clear();
 	std::vector<std::string> object_list;
 	std::vector<std::string> entity_object_list;
@@ -131,10 +131,10 @@ void World::exportWorld(const std::string& worldLink) const
 		object_list.push_back(object_name);
 		const Object current_object = this->objects.at(i);
 		
-		output.editTag(object_name + ".mesh", dt.getResourceName(current_object.getMeshLink()));
+		output.editTag(object_name + ".mesh", data_manager.getResourceName(current_object.getMeshLink()));
 		for(auto& texture : current_object.getTextures())
 		{
-			output.editTag(object_name + ".texture" + tz::util::cast::toString<unsigned int>(static_cast<unsigned int>(texture.second)), dt.getResourceName(texture.first));
+			output.editTag(object_name + ".texture" + tz::util::cast::toString<unsigned int>(static_cast<unsigned int>(texture.second)), data_manager.getResourceName(texture.first));
 		}
 		output.editTag(object_name + ".pos", tz::util::string::format(tz::util::string::devectoriseList3<float>(current_object.getPosition())));
 		output.editTag(object_name + ".rot", tz::util::string::format(tz::util::string::devectoriseList3<float>(current_object.getRotation())));
@@ -146,10 +146,10 @@ void World::exportWorld(const std::string& worldLink) const
 		entity_object_list.push_back(entity_object_name);
 		const EntityObject current_entity_object = this->entity_objects.at(i);
 
-		output.editTag(entity_object_name + ".mesh", dt.getResourceName(current_entity_object.getMeshLink()));
+		output.editTag(entity_object_name + ".mesh", data_manager.getResourceName(current_entity_object.getMeshLink()));
 		for(auto& texture : current_entity_object.getTextures())
 		{
-			output.editTag(entity_object_name + ".texture" + tz::util::cast::toString<unsigned int>(static_cast<unsigned int>(texture.second)), dt.getResourceName(texture.first));
+			output.editTag(entity_object_name + ".texture" + tz::util::cast::toString<unsigned int>(static_cast<unsigned int>(texture.second)), data_manager.getResourceName(texture.first));
 		}
 		output.editTag(entity_object_name + ".mass", tz::util::cast::toString<float>(current_entity_object.getMass()));
 		output.editTag(entity_object_name + ".pos", tz::util::string::format(tz::util::string::devectoriseList3<float>(current_entity_object.getPosition())));
@@ -160,7 +160,7 @@ void World::exportWorld(const std::string& worldLink) const
 	output.addSequence("entityobjects", entity_object_list);
 }
 
-void World::render(Camera& cam, const Shader& shader, unsigned int width, unsigned int height, const std::vector<std::unique_ptr<Mesh>>& all_meshes, const std::vector<std::unique_ptr<Texture>>& all_textures, const std::vector<std::unique_ptr<NormalMap>>& all_normalmaps, const std::vector<std::unique_ptr<ParallaxMap>>& all_parallaxmaps, const std::vector<std::unique_ptr<DisplacementMap>>& all_displacementmaps)
+void World::render(Camera& cam, const Shader& shader, unsigned int widata_managerh, unsigned int height, const std::vector<std::unique_ptr<Mesh>>& all_meshes, const std::vector<std::unique_ptr<Texture>>& all_textures, const std::vector<std::unique_ptr<NormalMap>>& all_normalmaps, const std::vector<std::unique_ptr<ParallaxMap>>& all_parallaxmaps, const std::vector<std::unique_ptr<DisplacementMap>>& all_displacementmaps)
 {
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_DEPTH_CLAMP);
@@ -181,7 +181,7 @@ void World::render(Camera& cam, const Shader& shader, unsigned int width, unsign
 			else if(texture.second == Texture::TextureType::DISPLACEMENT_MAP)
 				dm = Texture::getFromLink<DisplacementMap>(texture.first, all_displacementmaps);
 		}
-		obj.render(mesh, tex, nm, pm, dm, cam, shader, width, height);
+		obj.render(mesh, tex, nm, pm, dm, cam, shader, widata_managerh, height);
 	}
 	for(auto& eo : this->entity_objects)
 	{
@@ -198,7 +198,7 @@ void World::render(Camera& cam, const Shader& shader, unsigned int width, unsign
 			else if(texture.second == Texture::TextureType::DISPLACEMENT_MAP)
 				dm = Texture::getFromLink<DisplacementMap>(texture.first, all_displacementmaps);
 		}
-		eo.render(mesh, tex, nm, pm, dm, cam, shader, width, height);
+		eo.render(mesh, tex, nm, pm, dm, cam, shader, widata_managerh, height);
 	}	
 	for(auto& iter : this->base_lights)
 	{
@@ -216,7 +216,7 @@ void World::render(Camera& cam, const Shader& shader, unsigned int width, unsign
 	}
 	/*
 	if(this->hasSkybox())
-			this->skybox->render(cam, this->skyboxShader.value_or(shader), all_meshes, width, height);
+			this->skybox->render(cam, this->skyboxShader.value_or(shader), all_meshes, widata_managerh, height);
 	*/
 }
 
@@ -316,14 +316,14 @@ Object World::retrieveObjectData(const std::string& object_name, std::string res
 	std::string rotation_string = mdlf.getTag(object_name + ".rot");
 	std::string scale_string = mdlf.getTag(object_name + ".scale");
 	
-	tz::data::Manager dt(resources_path);
+	tz::data::Manager data_manager(resources_path);
 	
-	std::string mesh_link = dt.getResourceLink(mesh_name);
+	std::string mesh_link = data_manager.getResourceLink(mesh_name);
 	std::vector<std::pair<std::string, Texture::TextureType>> textures;
 	for(unsigned int i = 0; i < static_cast<unsigned int>(Texture::TextureType::TEXTURE_TYPES); i++)
 	{
 		std::string texture_name = mdlf.getTag(object_name + ".texture" + tz::util::cast::toString(i));
-		std::string texture_link = dt.getResourceLink(texture_name);
+		std::string texture_link = data_manager.getResourceLink(texture_name);
 		textures.emplace_back(texture_link, static_cast<Texture::TextureType>(i));
 	}
 	return {mesh_link, textures, tz::util::string::vectoriseList3<float>(tz::util::string::deformat(position_string)), tz::util::string::vectoriseList3<float>(tz::util::string::deformat(rotation_string)), tz::util::string::vectoriseList3<float>(tz::util::string::deformat(scale_string))};
@@ -337,14 +337,14 @@ EntityObject World::retrieveEntityObjectData(const std::string& entity_object_na
 	std::string rotation_string = mdlf.getTag(entity_object_name + ".rot");
 	std::string scale_string = mdlf.getTag(entity_object_name + ".scale");
 	
-	tz::data::Manager dt(resources_path);
+	tz::data::Manager data_manager(resources_path);
 	
-	std::string mesh_link = dt.getResourceLink(mesh_name);
+	std::string mesh_link = data_manager.getResourceLink(mesh_name);
 	std::vector<std::pair<std::string, Texture::TextureType>> textures;
 	for(unsigned int i = 0; i < static_cast<unsigned int>(Texture::TextureType::TEXTURE_TYPES); i++)
 	{
 		std::string texture_name = mdlf.getTag(entity_object_name + ".texture" + tz::util::cast::toString(i));
-		std::string texture_link = dt.getResourceLink(texture_name);
+		std::string texture_link = data_manager.getResourceLink(texture_name);
 		//tz::util::log::message(entity_object_name, ".texture", tz::util::cast::toString<unsigned int>(i), " yields the name ", texture_name, " and the link ", texture_link, "\n");
 		textures.emplace_back(texture_link, static_cast<Texture::TextureType>(i));
 	}

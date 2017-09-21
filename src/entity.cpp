@@ -17,12 +17,12 @@ void Entity::removeForce(std::string force_name)
 	this->forces.erase(force_name);
 }
 
-Vector3F& Entity::getPositionR()
+const Vector3F& Entity::getPosition() const
 {
 	return this->position;
 }
 
-const Vector3F& Entity::getPosition() const
+Vector3F& Entity::getPositionR()
 {
 	return this->position;
 }
@@ -37,7 +37,7 @@ Vector3F& Entity::getVelocityR()
 	return this->velocity;
 }
 
-const Vector3F Entity::getAcceleration() const
+Vector3F Entity::getAcceleration() const
 {
 	Force resultant;
 	for(const auto &ent: this->forces)
