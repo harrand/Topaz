@@ -385,37 +385,37 @@ static inline float parseOBJFloatValue(const std::string& token, unsigned int st
     return atof(token.substr(start, end - start).c_str());
 }
 
-Font::Font(const std::string& font_path, int pixel_height): font_path(font_path), pixel_height(pixel_height), font(TTF_OpenFont(this->font_path.c_str(), this->pixel_height)){}
+Font::Font(const std::string& font_path, int pixel_height): font_path(font_path), pixel_height(pixel_height), font_handle(TTF_OpenFont(this->font_path.c_str(), this->pixel_height)){}
 
 Font::Font(const Font& copy): Font(copy.font_path, copy.pixel_height){}
-Font::Font(Font&& move): font_path(move.font_path), pixel_height(move.pixel_height), font(move.font)
+Font::Font(Font&& move): font_path(move.font_path), pixel_height(move.pixel_height), font_handle(move.font_handle)
 {
-	move.font = nullptr;
+	move.font_handle = nullptr;
 }
 
 Font& Font::operator=(Font&& rhs)
 {
 	this->font_path = rhs.font_path;
 	this->pixel_height = rhs.pixel_height;
-	this->font = rhs.font;
-	rhs.font = nullptr;
+	this->font_handle = rhs.font_handle;
+	rhs.font_handle = nullptr;
 	return *this;
 }
 
 Font::~Font()
 {
-	if(this->font == nullptr) // if its been moved, dont try and delete it'll crash if you do
+	if(this->font_handle == nullptr) // if its been moved, dont try and delete it'll crash if you do
 		return;
-	TTF_CloseFont(this->font);
-	this->font = nullptr;
+	TTF_CloseFont(this->font_handle);
+	this->font_handle = nullptr;
 }
 
 TTF_Font* Font::getFontHandle() const
 {
-	return this->font;
+	return this->font_handle;
 }
 
 TTF_Font*& Font::getFontHandleR()
 {
-	return this->font;
+	return this->font_handle;
 }

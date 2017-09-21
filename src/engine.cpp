@@ -80,7 +80,17 @@ const MDLF& Engine::getProperties() const
 	return this->properties;
 }
 
+MDLF& Engine::getPropertiesR()
+{
+	return this->properties;
+}
+
 const MDLF& Engine::getResources() const
+{
+	return this->resources;
+}
+
+MDLF& Engine::getResourcesR()
 {
 	return this->resources;
 }

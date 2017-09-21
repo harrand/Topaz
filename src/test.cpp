@@ -110,4 +110,5 @@ void init()
 		updater.update();
 		engine.update(shader_id);
 	}
+	engine.getResourcesR().editTag("played", tz::util::cast::toString(seconds));
 }

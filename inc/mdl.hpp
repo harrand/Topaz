@@ -5,10 +5,15 @@
 #include <vector>
 #include <map>
 
+namespace mdl
+{
+	constexpr char default_string[] = "0";
+}
+
 class RawFile
 {
 public:
-	RawFile(std::string path);
+	RawFile(std::string path = mdl::default_string);
 	RawFile(const RawFile& copy) = default;
 	RawFile(RawFile&& move) = default;
 	~RawFile() = default;
@@ -27,7 +32,7 @@ private:
 class MDLF
 {
 public:
-	MDLF(std::string file_path);
+	MDLF(std::string file_path = mdl::default_string);
 	MDLF(RawFile raw_file);
 	MDLF(const MDLF& copy) = default;
 	MDLF(MDLF&& move) = default;
@@ -37,26 +42,25 @@ public:
 	const RawFile& getRawFile() const;
 	bool existsTag(const std::string& tag_name) const;
 	bool existsSequence(const std::string& sequence_name) const;
-	void addTag(std::string tag_name, std::string data) const;
-	void addSequence(std::string sequence_name, std::vector<std::string> data) const;
-	void deleteTag(std::string tag_name) const;
-	void deleteSequence(std::string sequence_name) const;
-	void editTag(std::string tag_name, std::string data) const;
-	void editSequence(std::string sequence_name, std::vector<std::string> data) const;
+	void addTag(std::string tag_name, std::string data);
+	void addSequence(std::string sequence_name, std::vector<std::string> data);
+	void deleteTag(std::string tag_name);
+	void deleteSequence(std::string sequence_name);
+	void editTag(std::string tag_name, std::string data);
+	void editSequence(std::string sequence_name, std::vector<std::string> data);
 	std::string getTag(const std::string& tag_name) const;
 	std::vector<std::string> getSequence(const std::string& sequence_name) const;
 	const std::map<std::string, std::string>& getParsedTags() const;
 	const std::map<std::string, std::vector<std::string>>& getParsedSequences() const;
-	void update() const;
+	void update();
 private:
 	RawFile raw_file;
-	mutable std::map<std::string, std::string> parsed_tags;
-	mutable std::map<std::string, std::vector<std::string>> parsed_sequences;	
+	std::map<std::string, std::string> parsed_tags;
+	std::map<std::string, std::vector<std::string>> parsed_sequences;	
 };
 
 namespace mdl
 {
-	constexpr char default_string[] = "0";
 	namespace syntax
 	{
 		bool isComment(const std::string& line);

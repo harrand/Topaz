@@ -24,7 +24,9 @@ public:
 	const TimeKeeper& getTimeKeeper() const;
 	const TimeProfiler& getTimeProfiler() const;
 	const MDLF& getProperties() const;
+	MDLF& getPropertiesR();
 	const MDLF& getResources() const;
+	MDLF& getResourcesR();
 	const Camera& getCamera() const;
 	const Window& getWindow() const;
 	const World& getWorld() const;
@@ -46,8 +48,8 @@ public:
 private:
 	TimeKeeper keeper;
 	TimeProfiler profiler;
-	const MDLF properties;
-	const MDLF resources;
+	MDLF properties;
+	MDLF resources;
 	const Shader default_shader, default_gui_shader;
 	Camera camera;
 	Window& wnd;
