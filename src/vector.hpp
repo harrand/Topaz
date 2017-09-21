@@ -310,9 +310,9 @@ public:
 		return (*this);
 	}
 	
-	inline Vector4<T>& operator+=(const Vector4<T>& rhs)
+	inline Vector4<T>& operator-=(const Vector4<T>& rhs)
 	{
-		(*this) = (*this) + rhs;
+		(*this) = (*this) - rhs;
 		return (*this);
 	}
 protected:
