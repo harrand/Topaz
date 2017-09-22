@@ -48,6 +48,6 @@ private:
 	std::string filename;
 	GLuint program_handle;
 	GLuint shaders[tz::graphics::maximum_shaders];
-	GLuint uniforms[static_cast<unsigned int>(UniformTypes::NUM_UNIFORMS)];
+	GLuint uniforms[static_cast<std::size_t>(UniformTypes::NUM_UNIFORMS)];
 };
 #endif

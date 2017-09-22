@@ -80,7 +80,7 @@ void AudioSource::update(const Camera& relative_to)
 	Mix_SetPanning(this->getChannel(), left * 255, right * 255);
 	float distance = (this->getPosition() - relative_to.getPosition()).length() / 100;
 	// Attenuate audio of course
-	Mix_Volume(this->getChannel(), 128 / ((distance * distance) + 1));
+	Mix_Volume(this->getChannel(), 128 / (distance + 1));
 }
 
 const Vector3F& AudioSource::getPosition() const

@@ -47,7 +47,7 @@ const vec3 light_direction_tangentspace = normalize(tbn_matrix * light_direction
 
 vec2 getTexcoordOffset()
 {
-	return texcoord_modelspace + light_direction_tangentspace.xy * (texture2D(parallax_map_sampler, texcoord_modelspace).r * parallax_multiplier + parallax_bias);
+	return texcoord_modelspace + light_direction_tangentspace.xy * (texture2D(parallax_map_sampler, texcoord_modelspace).r * (parallax_multiplier) + (parallax_bias));
 }
 
 vec4 texture_colour = texture2D(texture_sampler, texcoord_modelspace);//texture2D(texture_sampler, getTexcoordOffset());
@@ -69,7 +69,7 @@ vec4 getDiffuseComponentFromLight(BaseLight l, vec3 parsed_normal_tangentspace)
 
 vec4 getAmbientComponent()
 {
-	return texture_colour * vec4(0.01, 0.01, 0.01, 1);
+	return texture_colour * vec4(0.001, 0.001, 0.001, 1.0);
 }
 
 vec4 getSpecularComponent(vec3 parsed_normal_tangentspace)
