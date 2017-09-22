@@ -63,6 +63,7 @@ namespace mdl
 {
 	namespace syntax
 	{
+		bool isValid(const MDLF& file);
 		bool isComment(const std::string& line);
 		bool isTag(const std::string& line);
 		bool isSequence(const std::string& line);
@@ -71,11 +72,12 @@ namespace mdl
 	namespace util
 	{
 		std::vector<std::string> splitString(const std::string& string, const std::string& delimiter);
-		std::string getTagName(std::string tag);
 		bool endsWith(const std::string& string, const std::string& suffix);
 		bool beginsWith(const std::string& string, const std::string& prefix);
-		std::string findTagValue(std::string line);
-		std::vector<std::string> findSequence(std::vector<std::string> lines, std::size_t index);
+		std::string findTagName(const std::string& line);
+		std::string findTagValue(const std::string& line);
+		std::string findSequenceName(const std::string& line);
+		std::vector<std::string> findSequenceValues(const std::vector<std::string>& lines, std::size_t index);
 	}
 }
 

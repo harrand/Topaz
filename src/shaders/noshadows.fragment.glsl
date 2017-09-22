@@ -43,7 +43,7 @@ const vec3 eye_direction_tangentspace = tbn_matrix * eye_direction_cameraspace;
 const vec3 ld_cameraspace = camera_position_cameraspace - position_cameraspace;
 const float distance = length(ld_cameraspace);
 const vec3 light_direction_cameraspace = normalize(ld_cameraspace);
-const vec3 light_direction_tangentspace = tbn_matrix * light_direction_cameraspace;
+const vec3 light_direction_tangentspace = normalize(tbn_matrix * light_direction_cameraspace);
 
 vec2 getTexcoordOffset()
 {

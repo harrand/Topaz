@@ -30,7 +30,7 @@ void share()
 	vs_projection_matrix = p;
 	
 	vec3 normal_cameraspace = normalize((v * m * vec4(vs_normal_modelspace, 0.0)).xyz);
-	vec3 tangent_cameraspace = normalize((v * m * vec4(tangent, 0.0)).xyz);
+	vec3 tangent_cameraspace = normalize((m * vec4(tangent, 0.0)).xyz);
 	
 	// Gramm-Schmidt Process
 	tangent_cameraspace = normalize(tangent_cameraspace - dot(tangent_cameraspace, normal_cameraspace) * normal_cameraspace);
