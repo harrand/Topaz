@@ -7,9 +7,9 @@ const Vector3F& Force::getSize() const
 	return this->size;
 }
 
-void Force::setSize(Vector3F size)
+Vector3F& Force::getSizeR()
 {
-	this->size = size;
+	return this->size;
 }
 
 Force Force::operator+(const Force& other) const
@@ -105,6 +105,3 @@ float MersenneTwister::nextFloat(float min, float max)
 {
 	return std::uniform_real_distribution<>(min, max)(this->mersenne_twister_engine);
 }
-
-
-

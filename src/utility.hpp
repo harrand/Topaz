@@ -98,7 +98,7 @@ namespace tz
 				unsigned int strsize = str.length();
 				if(end > strsize)
 					return "_";
-				return str.substr((begin-1), (end-begin)+1);
+				return str.substr((begin - 1), (end-begin) + 1);
 			}
 			
 			inline std::string format(const std::vector<std::string>& split)
@@ -190,7 +190,7 @@ public:
 	Force& operator=(const Force& rhs) = default;
 	
 	const Vector3F& getSize() const;
-	void setSize(Vector3F size);
+	Vector3F& getSizeR();
 	Force operator+(const Force& other) const;
 	Force operator-(const Force& other) const;
 	Force operator*(float rhs) const;

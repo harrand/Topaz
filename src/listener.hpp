@@ -31,7 +31,7 @@ public:
 	~MouseListener() = default;
 	MouseListener& operator=(const MouseListener& rhs) = default;
 	
-	void handleEvents(SDL_Event& evt);
+	virtual void handleEvents(SDL_Event& evt);
 	void reloadMouseDelta();
 	bool isLeftClicked() const;
 	bool isRightClicked() const;

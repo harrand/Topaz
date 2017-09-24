@@ -41,6 +41,7 @@ void init()
 	MouseListener mouse_listener;
 	engine.getWindowR().registerListener(key_listener);
 	engine.getWindowR().registerListener(mouse_listener);
+	CubeMap skybox_texture("../../../res/runtime/textures/skybox/", "greenhaze", ".png");
 	
 	TimeKeeper updater;
 	
@@ -63,7 +64,6 @@ void init()
 	
 	while(!engine.getWindowR().isCloseRequested())
 	{
-		
 		if(updater.millisPassed(1000))
 		{
 			text.setText("FPS: " + tz::util::cast::toString(engine.getFPS()));
@@ -71,6 +71,7 @@ void init()
 			seconds++;
 		}
 		
+		/* so annoying on trackpad
 		if(mouse_listener.isLeftClicked() && gui_panel.isHidden())
 		{
 			Vector3F& orientation = engine.getCameraR().getRotationR();
@@ -78,6 +79,7 @@ void init()
 			orientation.getYR() += (3 * delta.getX());
 			orientation.getXR() -= (3 * delta.getY());
 		}
+		*/
 	
 		float multiplier = tz::util::cast::fromString<float>(MDLF(RawFile(engine.getProperties().getTag("resources"))).getTag("speed"));
 		if(key_listener.isKeyPressed("W"))

@@ -81,14 +81,22 @@ object9.texture3: default_displacementmap
 object9.pos: [-20,0,-30]
 object9.rot: [0,0,0]
 object9.scale: [2,2,2]
-object10.mesh: cube
+object10.mesh: cube_hd
 object10.texture0: bricks
 object10.texture1: bricks_normalmap
-object10.texture2: bricks_parallaxmap
+object10.texture2: default_parallaxmap
 object10.texture3: bricks_displacementmap
 object10.pos: [31.4832,0,-45.9498]
 object10.rot: [0,0,0]
 object10.scale: [30,30,30]
+object11.mesh: cube_hd
+object11.texture0: bricks
+object11.texture1: bricks_normalmap
+object11.texture2: default_parallaxmap
+object11.texture3: bricks_displacementmap
+object11.pos: [-100, -155, 0]
+object11.rot: [0, 0, 0]
+object11.scale: [50, 50, 50]
 objects: %[
 - object0
 - object1
@@ -100,6 +108,7 @@ objects: %[
 - object7
 - object8
 - object9
-- object10]%
+- object10
+- object11]%
 entityobjects: %[
 ]%

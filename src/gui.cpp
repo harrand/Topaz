@@ -224,6 +224,11 @@ void Window::setRenderTarget() const
 	glViewport(0, 0, this->w, this->h);
 }
 
+void Window::clearFocus()
+{
+	this->focused_child = nullptr;
+}
+
 SDL_Window*& Window::getWindowHandleR()
 {
 	return this->sdl_window_pointer;

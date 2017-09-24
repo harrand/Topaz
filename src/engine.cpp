@@ -56,8 +56,6 @@ void Engine::update(std::size_t shader_index)
 		this->world.update(this->tps);
 		ticker.reload();
 	}
-	//default_gui_shader.bind();
-	// TODO: Get a shader reference to children
 	this->wnd.update();
 	
 	GLenum error;

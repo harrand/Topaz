@@ -72,6 +72,7 @@ public:
 	SwapIntervalType getSwapIntervalType() const;
 	void setTitle(const std::string& new_title);
 	void setRenderTarget() const;
+	void clearFocus();
 	SDL_Window*& getWindowHandleR();
 	void clear(float r = 1.0f, float g = 1.0f, float b = 1.0f, float a = 1.0f) const;
 	void registerListener(Listener& l);

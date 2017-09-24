@@ -13,6 +13,7 @@ in mat3 tbn_matrix;
 uniform sampler2D texture_sampler;
 uniform sampler2D normal_map_sampler;
 uniform sampler2D parallax_map_sampler;
+uniform sampler2D displacement_map_sampler;
 
 uniform float parallax_multiplier;
 uniform float parallax_bias;
@@ -50,7 +51,7 @@ vec2 getTexcoordOffset()
 	return texcoord_modelspace + light_direction_tangentspace.xy * (texture2D(parallax_map_sampler, texcoord_modelspace).r * (parallax_multiplier) + (parallax_bias));
 }
 
-vec4 texture_colour = texture2D(texture_sampler, texcoord_modelspace);//texture2D(texture_sampler, getTexcoordOffset());
+vec4 texture_colour = texture2D(texture_sampler, texcoord_modelspace);
 
 vec4 getDiffuseComponent(vec3 parsed_normal_tangentspace)
 {
