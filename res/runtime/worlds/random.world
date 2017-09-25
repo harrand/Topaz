@@ -9,6 +9,7 @@ object0.texture3: default_displacementmap
 object0.pos: [-40,-5,40]
 object0.rot: [0,0,0]
 object0.scale: [40,3,40]
+object0.shininess: 10
 object1.mesh: monkeyhead
 object1.texture0: sand
 object1.texture1: sand_normalmap

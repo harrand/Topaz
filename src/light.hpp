@@ -2,14 +2,14 @@
 #define LIGHT_HPP
 #include "vector.hpp"
 
-class BaseLight
+class Light
 {
 public:
-	BaseLight(Vector3F pos = Vector3F(), Vector3F colour = Vector3F(1, 1, 1), float power = 1.0f);
-	BaseLight(const BaseLight& copy) = default;
-	BaseLight(BaseLight&& move) = default;
-	~BaseLight() = default;
-	BaseLight& operator=(const BaseLight& rhs) = default;
+	Light(Vector3F pos = Vector3F(), Vector3F colour = Vector3F(1, 1, 1), float power = 1.0f);
+	Light(const Light& copy) = default;
+	Light(Light&& move) = default;
+	~Light() = default;
+	Light& operator=(const Light& rhs) = default;
 	
 	const Vector3F& getPosition() const;
 	Vector3F& getPositionR();

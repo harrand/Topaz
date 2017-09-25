@@ -64,7 +64,7 @@ void World::addEntityObject(EntityObject eo)
 	this->entity_objects.push_back(std::move(eo));
 }
 
-void World::addLight(BaseLight light, GLuint shader_program_handle)
+void World::addLight(Light light, GLuint shader_program_handle)
 {
 	while(this->base_lights.size() >= World::MAXIMUM_LIGHTS)
 		this->base_lights.erase(this->base_lights.begin());
@@ -202,7 +202,7 @@ void World::render(Camera& cam, const Shader& shader, unsigned int widata_manage
 	}	
 	for(auto& iter : this->base_lights)
 	{
-		BaseLight light = iter.second;
+		Light light = iter.second;
 		std::vector<float> pos, colour;
 		pos.push_back(light.getPosition().getX());
 		pos.push_back(light.getPosition().getY());
@@ -298,12 +298,12 @@ const std::string& World::getWorldLink() const
 	return this->filename;
 }
 
-const std::map<std::vector<GLuint>, BaseLight>& World::getLights() const
+const std::map<std::vector<GLuint>, Light>& World::getLights() const
 {
 	return this->base_lights;
 }
 
-std::map<std::vector<GLuint>, BaseLight>& World::getLightsR()
+std::map<std::vector<GLuint>, Light>& World::getLightsR()
 {
 	return this->base_lights;
 }
@@ -315,7 +315,15 @@ Object World::retrieveObjectData(const std::string& object_name, std::string res
 	std::string position_string = mdlf.getTag(object_name + ".pos");
 	std::string rotation_string = mdlf.getTag(object_name + ".rot");
 	std::string scale_string = mdlf.getTag(object_name + ".scale");
-	
+	unsigned int shininess = tz::util::cast::fromString<unsigned int>(mdlf.getTag(object_name + ".shininess"));
+	float parallax_map_scale = tz::util::cast::fromString<float>(mdlf.getTag(object_name + ".parallax_map_scale"));
+	float parallax_map_offset = tz::util::cast::fromString<float>(mdlf.getTag(object_name + ".parallax_map_offset"));
+	if(!mdlf.existsTag(object_name + ".shininess"))
+		shininess = 5;
+	if(!mdlf.existsTag(object_name + ".parallax_map_scale"))
+		parallax_map_scale = 0.04f;
+	if(!mdlf.existsTag(object_name + ".parallax_map_offset"))
+		parallax_map_offset = -0.5f;
 	tz::data::Manager data_manager(resources_path);
 	
 	std::string mesh_link = data_manager.getResourceLink(mesh_name);
@@ -326,7 +334,7 @@ Object World::retrieveObjectData(const std::string& object_name, std::string res
 		std::string texture_link = data_manager.getResourceLink(texture_name);
 		textures.emplace_back(texture_link, static_cast<Texture::TextureType>(i));
 	}
-	return {mesh_link, textures, tz::util::string::vectoriseList3<float>(tz::util::string::deformat(position_string)), tz::util::string::vectoriseList3<float>(tz::util::string::deformat(rotation_string)), tz::util::string::vectoriseList3<float>(tz::util::string::deformat(scale_string))};
+	return {mesh_link, textures, tz::util::string::vectoriseList3<float>(tz::util::string::deformat(position_string)), tz::util::string::vectoriseList3<float>(tz::util::string::deformat(rotation_string)), tz::util::string::vectoriseList3<float>(tz::util::string::deformat(scale_string)), shininess, parallax_map_scale, parallax_map_offset};
 }
 
 EntityObject World::retrieveEntityObjectData(const std::string& entity_object_name, std::string resources_path, MDLF& mdlf)

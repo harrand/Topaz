@@ -12,7 +12,6 @@ in mat4 vs_projection_matrix[3];
 in mat3 vs_tbn_matrix[3];
 
 out vec3 position_modelspace;
-out vec3 cube_position_modelspace;
 out vec2 texcoord_modelspace;
 out vec3 normal_modelspace;
 

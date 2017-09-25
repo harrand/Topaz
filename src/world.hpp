@@ -19,7 +19,7 @@ public:
 	void addObject(Object obj);
 	void addEntity(Entity ent);
 	void addEntityObject(EntityObject eo);
-	void addLight(BaseLight light, GLuint shader_program_handle);
+	void addLight(Light light, GLuint shader_program_handle);
 	void setGravity(Vector3F gravity = Vector3F());
 	void setSpawnPoint(Vector3F spawn_point = Vector3F());
 	void setSpawnOrientation(Vector3F spawn_orientation = Vector3F());
@@ -41,8 +41,8 @@ public:
 	Vector3F& getSpawnPointR();
 	Vector3F& getSpawnOrientationR();
 	const std::string& getWorldLink() const;
-	const std::map<std::vector<GLuint>, BaseLight>& getLights() const;
-	std::map<std::vector<GLuint>, BaseLight>& getLightsR();
+	const std::map<std::vector<GLuint>, Light>& getLights() const;
+	std::map<std::vector<GLuint>, Light>& getLightsR();
 private:
 	static Object retrieveObjectData(const std::string& object_name, std::string resources_path, MDLF& mdlf);
 	static EntityObject retrieveEntityObjectData(const std::string& entity_object_name, std::string resources_path, MDLF& mdlf);
@@ -53,6 +53,6 @@ private:
 	std::vector<Object> objects;
 	std::vector<Entity> entities;
 	std::vector<EntityObject> entity_objects;
-	std::map<std::vector<GLuint>, BaseLight> base_lights;
+	std::map<std::vector<GLuint>, Light> base_lights;
 };
 #endif

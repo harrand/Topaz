@@ -9,7 +9,7 @@
 class Object
 {
 public:
-	Object(std::string mesh_link, std::vector<std::pair<std::string, Texture::TextureType>> textures, Vector3F pos, Vector3F rot, Vector3F scale);
+	Object(std::string mesh_link, std::vector<std::pair<std::string, Texture::TextureType>> textures, Vector3F pos, Vector3F rot, Vector3F scale, unsigned int shininess = 5, float parallax_map_scale = 0.04, float parallax_map_offset = -0.5);
 	Object(const Object& copy) = default;
 	Object(Object&& move) = default;
 	~Object() = default;
@@ -18,14 +18,18 @@ public:
 	const Vector3F& getPosition() const;
 	const Vector3F& getRotation() const;
 	const Vector3F& getScale() const;
+	unsigned int getShininess() const;
 	Vector3F& getPositionR();
 	Vector3F& getRotationR();
 	Vector3F& getScaleR();
+	unsigned int& getShininessR();
 	const std::string& getMeshLink() const;
 	const std::vector<std::pair<std::string, Texture::TextureType>> getTextures() const;
 	virtual void render(Mesh* mesh, Texture* tex, NormalMap* nm, ParallaxMap* pm, DisplacementMap* dm, const Camera& cam, const Shader& shad, float width, float height) const;
 protected:
 	Vector3F pos, rot, scale;
+	unsigned int shininess;
+	float parallax_map_scale, parallax_map_offset;
 	std::string mesh_link;
 	std::vector<std::pair<std::string, Texture::TextureType>> textures;
 };

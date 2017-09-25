@@ -31,7 +31,7 @@ public:
 	bool hasFragmentShader() const;
 	GLuint getProgramHandle() const;
 	void bind() const;
-	void update(const std::array<float, 16>& model_matrix_array, const std::array<float, 16>& view_matrix_array, const std::array<float, 16>& projection_matrix_array, float parallaxmap_scale_constant = 0.04f, float parallaxmap_offset_constant = -0.5f) const;
+	void update(const std::array<float, 16>& model_matrix_array, const std::array<float, 16>& view_matrix_array, const std::array<float, 16>& projection_matrix_array, unsigned int shininess, float parallaxmap_scale_constant, float parallaxmap_offset_constant) const;
 private:
 	static std::string loadShader(const std::string& filename);
 	static void checkShaderError(GLuint shader, GLuint flag, bool is_program, std::string error_message);
@@ -41,6 +41,7 @@ private:
 		MODEL,
 		VIEW,
 		PROJECTION,
+		SHININESS,
 		PARALLAX_MAP_SCALE,
 		PARALLAX_MAP_BIAS,
 		NUM_UNIFORMS,

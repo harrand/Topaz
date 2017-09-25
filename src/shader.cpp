@@ -34,6 +34,7 @@ Shader::Shader(std::string filename): filename(std::move(filename))
 	this->uniforms[static_cast<unsigned int>(UniformTypes::MODEL)] = glGetUniformLocation(this->program_handle, "m");
 	this->uniforms[static_cast<unsigned int>(UniformTypes::VIEW)] = glGetUniformLocation(this->program_handle, "v");
 	this->uniforms[static_cast<unsigned int>(UniformTypes::PROJECTION)] = glGetUniformLocation(this->program_handle, "p");
+	this->uniforms[static_cast<unsigned int>(UniformTypes::SHININESS)] = glGetUniformLocation(this->program_handle, "shininess");
 	this->uniforms[static_cast<unsigned int>(UniformTypes::PARALLAX_MAP_SCALE)] = glGetUniformLocation(this->program_handle, "parallax_multiplier");
 	this->uniforms[static_cast<unsigned int>(UniformTypes::PARALLAX_MAP_BIAS)] = glGetUniformLocation(this->program_handle, "parallax_bias");
 	tz::util::log::message("Shader with link '", this->filename, "':");
@@ -113,11 +114,12 @@ void Shader::bind() const
 	glUseProgram(this->program_handle);
 }
 
-void Shader::update(const std::array<float, 16>& model_matrix_array, const std::array<float, 16>& view_matrix_array, const std::array<float, 16>& projection_matrix_array, float parallaxmap_scale_constant, float parallaxmap_offset_constant) const
+void Shader::update(const std::array<float, 16>& model_matrix_array, const std::array<float, 16>& view_matrix_array, const std::array<float, 16>& projection_matrix_array, unsigned int shininess, float parallaxmap_scale_constant, float parallaxmap_offset_constant) const
 {
 	glUniformMatrix4fv(this->uniforms[static_cast<unsigned int>(UniformTypes::MODEL)], 1, GL_TRUE, model_matrix_array.data());
 	glUniformMatrix4fv(this->uniforms[static_cast<unsigned int>(UniformTypes::VIEW)], 1, GL_TRUE, view_matrix_array.data());
 	glUniformMatrix4fv(this->uniforms[static_cast<unsigned int>(UniformTypes::PROJECTION)], 1, GL_TRUE, projection_matrix_array.data());
+	glUniform1ui(this->uniforms[static_cast<unsigned int>(UniformTypes::SHININESS)], shininess);
 	glUniform1f(this->uniforms[static_cast<unsigned int>(UniformTypes::PARALLAX_MAP_SCALE)], parallaxmap_scale_constant);
 	glUniform1f(this->uniforms[static_cast<unsigned int>(UniformTypes::PARALLAX_MAP_BIAS)], parallaxmap_scale_constant / 2.0f * (parallaxmap_offset_constant - 1));
 }
