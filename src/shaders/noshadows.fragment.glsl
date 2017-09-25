@@ -32,7 +32,7 @@ struct BaseLight
 uniform BaseLight lights[MAX_LIGHTS];
 
 const vec4 light_colour = vec4(1, 1, 1, 1);
-const float light_wattage = 1000;
+const float light_wattage = 50.0;
 
 const vec3 position_worldspace = (model_matrix * vec4(position_modelspace, 1.0)).xyz;
 const vec3 position_cameraspace = (view_matrix * vec4(position_worldspace, 1.0)).xyz;
@@ -56,7 +56,9 @@ vec4 texture_colour = texture2D(texture_sampler, texcoord_modelspace);
 vec4 getDiffuseComponent(vec3 parsed_normal_tangentspace)
 {
 	float cos_theta = clamp(dot(parsed_normal_tangentspace, light_direction_tangentspace), 0.0, 1.0);
-	return texture_colour * light_colour * light_wattage * cos_theta / (distance * distance);
+	vec4 res = texture_colour * light_colour * light_wattage * cos_theta;
+	res.xyz /= (distance * distance);
+	return res;
 }
 
 vec4 getDiffuseComponentFromLight(BaseLight l, vec3 parsed_normal_tangentspace)
@@ -78,7 +80,9 @@ vec4 getSpecularComponent(vec3 parsed_normal_tangentspace)
 	vec3 E = normalize(eye_direction_tangentspace);
 	vec3 R = reflect(-normalize(light_direction_tangentspace), parsed_normal_tangentspace);
 	float cos_alpha = clamp(dot(E, R), 0, 1);
-	return texture_colour * light_colour * light_wattage * pow(cos_alpha, 5) / (distance * distance);
+	vec4 res = texture_colour * light_colour * light_wattage * pow(cos_alpha, 5);
+	res.xyz /= (distance * distance);
+	return res;
 }
 
 vec4 getSpecularComponentFromLight(BaseLight l, vec3 parsed_normal_tangentspace)
@@ -95,8 +99,8 @@ vec4 getSpecularComponentFromLight(BaseLight l, vec3 parsed_normal_tangentspace)
 void main()
 {
 	vec3 normal_tangentspace = normalize(texture2D(normal_map_sampler, getTexcoordOffset()).xyz * 255.0/128.0 - 1);
-	fragment_colour = vec4(0, 0, 0, 0);
-	fragment_colour += getAmbientComponent() + getDiffuseComponent(normal_tangentspace) + getSpecularComponent(normal_tangentspace);
+	fragment_colour = vec4(0, 0, 0, 1);
+	fragment_colour += /*getAmbientComponent() +*/ getDiffuseComponent(normal_tangentspace) + getSpecularComponent(normal_tangentspace);
 	for(uint i = 0u; i < MAX_LIGHTS; i++)
 		fragment_colour += getDiffuseComponentFromLight(lights[i], normal_tangentspace) + getSpecularComponentFromLight(lights[i], normal_tangentspace);
 }

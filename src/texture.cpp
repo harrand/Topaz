@@ -91,7 +91,7 @@ void Texture::deleteTexture(unsigned char* imgdata)
 	stbi_image_free(imgdata);
 }
 
-Texture::Texture(std::string filename): filename(std::move(filename))
+Texture::Texture(std::string filename, bool gamma_corrected): filename(std::move(filename)), gamma_corrected(gamma_corrected)
 {
 	unsigned char* imgdata = this->loadTexture();
 	if(imgdata == nullptr)
@@ -123,7 +123,10 @@ Texture::Texture(std::string filename): filename(std::move(filename))
 	// Like glBufferData, just sends the image data to the GPU
 	// Par2 is mipmapping, when we change the resolution of the image depending on how far we are away from it (i.e higher resolution if we're closer)
 	// Expand upon this later, 0 means that we're not changing anything.
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, this->width, this->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, imgdata);
+	if(this->gamma_corrected)
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_SRGB_ALPHA, this->width, this->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, imgdata);
+	else
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, this->width, this->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, imgdata);
 	
 	this->deleteTexture(imgdata);
 }
@@ -225,7 +228,7 @@ Texture::TextureType Texture::getTextureType()
 	return TextureType::TEXTURE;
 }
 
-NormalMap::NormalMap(std::string filename): Texture(filename){}
+NormalMap::NormalMap(std::string filename): Texture(filename, false){}
 
 void NormalMap::bind(GLuint shader_program_handle, unsigned int id)
 {
@@ -247,7 +250,7 @@ Texture::TextureType NormalMap::getTextureType()
 	return TextureType::NORMAL_MAP;
 }
 
-ParallaxMap::ParallaxMap(std::string filename): Texture(filename){}
+ParallaxMap::ParallaxMap(std::string filename): Texture(filename, false){}
 
 void ParallaxMap::bind(GLuint shader_program_handle, unsigned int id)
 {
@@ -269,7 +272,7 @@ Texture::TextureType ParallaxMap::getTextureType()
 	return TextureType::PARALLAX_MAP;
 }
 
-DisplacementMap::DisplacementMap(std::string filename): Texture(filename){}
+DisplacementMap::DisplacementMap(std::string filename): Texture(filename, false){}
 
 void DisplacementMap::bind(GLuint shader_program_handle, unsigned int id)
 {

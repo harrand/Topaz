@@ -39,7 +39,7 @@ class DepthTexture: public FrameBuffer
 class Texture
 {
 public:
-	Texture(std::string filename = "../../../res/runtime/textures/undefined.jpg");
+	Texture(std::string filename = "../../../res/runtime/textures/undefined.jpg", bool gamma_corrected = true);
 	Texture(TTF_Font* font, const std::string& text, SDL_Color foreground_colour);
 	Texture(const Texture& copy);
 	Texture(Texture&& move);
@@ -76,6 +76,7 @@ protected:
 	GLuint texture_id;
 	GLuint texture_handle;
 	int width, height, components;
+	bool gamma_corrected;
 };
 
 class NormalMap: public Texture

@@ -92,6 +92,8 @@ bricks_displacementmap.name: Bricks Displacementmap
 models: %[
 - cube
 - cube_hd
+- plane
+- plane_hd
 - monkeyhead
 - sphere
 - torus
@@ -102,6 +104,8 @@ cube.path: ../../../res/runtime/models/cube.obj
 cube.name: Complete Cube
 cube_hd.path: ../../../res/runtime/models/cube_hd.obj
 cube_hd.name: HD Cube
+plane.path: ../../../res/runtime/models/plane.obj
+plane_hd.path: ../../../res/runtime/models/plane_hd.obj
 monkeyhead.path: ../../../res/runtime/models/monkeyhead.obj
 monkeyhead.name: Complete Monkey Head
 sphere.path: ../../../res/runtime/models/sphere.obj
@@ -117,4 +121,4 @@ skybox.name: Cube no UVs or normals
 house.path: ../../../res/runtime/models/house.obj
 house.name: House Model with uniform UVs
 speed: 0.35
-played: 331330
+played: 332312

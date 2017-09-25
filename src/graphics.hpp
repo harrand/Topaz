@@ -32,6 +32,7 @@ namespace tz
 			else
 				tz::util::log::error("Initialisation of SDL2_ttf failed.");
 			tz::graphics::initialised = true;
+			glEnable(GL_FRAMEBUFFER_SRGB); 
 		}
 		inline void terminate()
 		{
