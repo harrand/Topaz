@@ -10,5 +10,6 @@ uniform mat4 p;
 void main()
 {
 	gl_Position = (p * v * m) * vec4(position, 1.0);
+	gl_Position.z = gl_Position.w - 1; // Fix to far plane.
 	vs_cube_position_modelspace = position;
 }

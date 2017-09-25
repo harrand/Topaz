@@ -77,7 +77,7 @@ void Skybox::render(const Camera& cam, const Shader& shad, const std::vector<std
 {
 	shad.bind();
 	this->cm.bind(shad.getProgramHandle(), 0);
-	shad.update(Matrix4x4::createModelMatrix(cam.getPosition(), Vector3F(), Vector3F(10000, 10000, 10000)).fillData(), Matrix4x4::createViewMatrix(cam.getPosition(), cam.getRotation()).fillData(), Matrix4x4::createPerspectiveMatrix(1.5708, width, height, 0.1f, 20000).fillData(), 0, 0, 0);
+	shad.update(Matrix4x4::createModelMatrix(cam.getPosition(), Vector3F(), Vector3F(10000, 10000, 10000)).fillData(), Matrix4x4::createViewMatrix(cam.getPosition(), cam.getRotation()).fillData(), Matrix4x4::createPerspectiveMatrix(1.5708, width, height, 0.1f, 10000.0f).fillData(), 0, 0, 0);
 	glFrontFace(GL_CW);
 	tz::graphics::findMesh(this->cube_mesh_link, all_meshes)->render(shad.hasTessellationControlShader());
 	glFrontFace(GL_CCW);

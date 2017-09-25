@@ -4,7 +4,7 @@ spawnorientation: [0,0,0]
 object0.mesh: cube_hd
 object0.texture0: stone
 object0.texture1: stone_normalmap
-object0.texture2: stone_parallaxmap
+object0.texture2: default_parallaxmap
 object0.texture3: stone_displacementmap
 object0.pos: [-40,-40,40]
 object0.rot: [0,0,0]

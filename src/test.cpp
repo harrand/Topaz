@@ -29,6 +29,21 @@ public:
 	Panel& gui_panel;
 };
 
+class RenderSkyboxCommand : public Command
+{
+public:
+	RenderSkyboxCommand(Skybox& skybox, Camera& camera, Shader& shader, const std::vector<std::unique_ptr<Mesh>>& all_meshes, Window& wnd): skybox(skybox), camera(camera), shader(shader), all_meshes(all_meshes), wnd(wnd){}
+	virtual void operator()([[maybe_unusued]] const std::vector<std::string>& args)
+	{
+		skybox.render(camera, shader, all_meshes, wnd.getWidth(), wnd.getHeight());
+	}
+	Skybox& skybox;
+	Camera& camera;
+	Shader& shader;
+	const std::vector<std::unique_ptr<Mesh>>& all_meshes;
+	Window& wnd;
+};
+
 void init()
 {
 	Window wnd(800, 600, "Topaz Development Window");
@@ -42,6 +57,7 @@ void init()
 	engine.getWindowR().registerListener(key_listener);
 	engine.getWindowR().registerListener(mouse_listener);
 	CubeMap skybox_texture("../../../res/runtime/textures/skybox/", "greenhaze", ".png");
+	Shader skybox_shader("../../../src/shaders/skybox");
 	
 	TimeKeeper updater;
 	
@@ -62,6 +78,10 @@ void init()
 	test_button.getOnMouseClickR() = &toggle;
 	exit_gui_button.getOnMouseClickR() = &exit;	
 	
+	Skybox skybox("../../../res/runtime/models/skybox.obj", skybox_texture);
+	RenderSkyboxCommand render_skybox(skybox, engine.getCameraR(), skybox_shader, engine.getMeshes(), wnd);
+	engine.getCommandExecutorR().registerCommand(&render_skybox);
+
 	while(!engine.getWindowR().isCloseRequested())
 	{
 		if(updater.millisPassed(1000))
