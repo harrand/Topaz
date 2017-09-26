@@ -4,13 +4,13 @@
 
 GUIElement::GUIElement(std::optional<std::reference_wrapper<const Shader>> shader): shader(shader), parent(nullptr), children(std::unordered_set<GUIElement*>()), hidden(false){}
 
-void GUIElement::update()
+void GUIElement::update() // updates all children
 {
 	for(GUIElement* child : this->children)
 		child->update();
 }
 
-void GUIElement::destroy()
+void GUIElement::destroy() // destroys all children
 {
 	for(GUIElement* child : this->children)
 		child->destroy();
@@ -18,6 +18,7 @@ void GUIElement::destroy()
 
 const Window* GUIElement::findWindowParent() const
 {
+	// returns a pointer to the first ancestor which is a window. if there is no such ancestor, return nullptr
 	const GUIElement* res = this;
 	while(res != nullptr && !res->isWindow())
 		res = res->getParent();
@@ -88,12 +89,13 @@ bool tz::graphics::has_context = false;
 
 Window::Window(int w, int h, std::string title): GUIElement({}), w(w), h(h), title(std::move(title)), is_close_requested(false), focused_child(nullptr)
 {
+	// setup attributes for the gl_context
 	SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
 	SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
 	SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
 	SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
-	SDL_GL_SetAttribute(SDL_GL_BUFFER_SIZE, 32);
-	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
+	SDL_GL_SetAttribute(SDL_GL_BUFFER_SIZE, 32); // number of bits per pixel (should be total of rgba size)
+	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24); // 24-bit depth-buffer. was originally using 16-bit but i found that it's not quite enough for my liking. 24 bits is plenty.
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 	
 	this->sdl_window_pointer = SDL_CreateWindow((this->title).c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, this->w, this->h, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);

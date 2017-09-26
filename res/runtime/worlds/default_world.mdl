@@ -62,7 +62,7 @@ object7.mesh: cube
 object7.texture0: bricks
 object7.texture1: bricks_normalmap
 object7.texture2: bricks_parallaxmap
-object7.texture3: default_displacementmap
+object7.texture3: bricks_displacementmap
 object7.pos: [-30,0,-20]
 object7.rot: [0,0,0]
 object7.scale: [2,2,2]

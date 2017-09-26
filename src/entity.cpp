@@ -41,9 +41,7 @@ Vector3F Entity::getAcceleration() const
 {
 	Force resultant;
 	for(const auto &ent: this->forces)
-	{
 		resultant += ent.second;
-	}
 	return (resultant.getSize() / this->mass);
 }
 

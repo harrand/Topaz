@@ -10,6 +10,7 @@ std::string tz::data::Manager::getResourceLink(const std::string& resource_name)
 
 std::string tz::data::Manager::getResourceName(const std::string& resource_link) const
 {
+	// basically removes .path from the end of the tag which has resource_link as a value
 	std::vector<std::string> lines = this->data_file.getRawFile().getLines();
 	for(std::string& line : lines)
 	{

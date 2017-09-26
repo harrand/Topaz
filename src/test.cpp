@@ -33,7 +33,7 @@ class RenderSkyboxCommand : public Command
 {
 public:
 	RenderSkyboxCommand(Skybox& skybox, Camera& camera, Shader& shader, const std::vector<std::unique_ptr<Mesh>>& all_meshes, Window& wnd): skybox(skybox), camera(camera), shader(shader), all_meshes(all_meshes), wnd(wnd){}
-	virtual void operator()([[maybe_unusued]] const std::vector<std::string>& args)
+	virtual void operator()([[maybe_unused]] const std::vector<std::string>& args)
 	{
 		skybox.render(camera, shader, all_meshes, wnd.getWidth(), wnd.getHeight());
 	}
@@ -91,15 +91,16 @@ void init()
 			seconds++;
 		}
 		
-		/* so annoying on trackpad
+		///* so annoying on trackpad
 		if(mouse_listener.isLeftClicked() && gui_panel.isHidden())
 		{
 			Vector3F& orientation = engine.getCameraR().getRotationR();
 			Vector2F delta = mouse_listener.getMouseDeltaPos();
-			orientation.getYR() += (3 * delta.getX());
-			orientation.getXR() -= (3 * delta.getY());
+			orientation.getYR() += (0.03 * delta.getX());
+			orientation.getXR() -= (0.03 * delta.getY());
+			mouse_listener.reloadMouseDelta();
 		}
-		*/
+		//*/
 	
 		float multiplier = tz::util::cast::fromString<float>(MDLF(RawFile(engine.getProperties().getTag("resources"))).getTag("speed"));
 		if(key_listener.isKeyPressed("W"))
