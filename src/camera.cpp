@@ -1,6 +1,6 @@
 #include "camera.hpp"
 
-Camera::Camera(Vector3F pos, Vector3F rot): pos(std::move(pos)), rot(std::move(rot)){}
+Camera::Camera(Vector3F pos, Vector3F rot, float fov, float near_clip, float far_clip): pos(std::move(pos)), rot(std::move(rot)), fov(fov), near_clip(near_clip), far_clip(far_clip){}
 
 const Vector3F& Camera::getPosition() const
 {
@@ -20,6 +20,36 @@ Vector3F& Camera::getPositionR()
 Vector3F& Camera::getRotationR()
 {
 	return this->rot;
+}
+
+float Camera::getFOV() const
+{
+	return this->fov;
+}
+
+float Camera::getNearClip() const
+{
+	return this->near_clip;
+}
+
+float Camera::getFarClip() const
+{
+	return this->far_clip;
+}
+
+float& Camera::getFOVR()
+{
+	return this->fov;
+}
+
+float& Camera::getNearClipR()
+{
+	return this->near_clip;
+}
+
+float& Camera::getFarClipR()
+{
+	return this->far_clip;
 }
 
 Vector3F Camera::getForward() const

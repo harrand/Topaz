@@ -16,6 +16,11 @@
 
 namespace tz
 {	
+	namespace consts
+	{
+		constexpr double pi = 4 * std::atan(1);
+		constexpr double e = std::exp(1);
+	}
 	namespace util
 	{
 		namespace cast

@@ -50,6 +50,7 @@ void init()
 	Engine engine(wnd, "../../../res/runtime/properties.mdl");
 	
 	unsigned int seconds = tz::util::cast::fromString<unsigned int>(engine.getResources().getTag("played"));
+	float rotational_speed = tz::util::cast::fromString<float>(engine.getResources().getTag("rotational_speed"));
 	constexpr std::size_t shader_id = 0;
 	
 	KeyListener key_listener;
@@ -91,17 +92,6 @@ void init()
 			updater.reload();
 			seconds++;
 		}
-		
-		///* so annoying on trackpad
-		if(mouse_listener.isLeftClicked() && gui_panel.isHidden())
-		{
-			Vector3F& orientation = engine.getCameraR().getRotationR();
-			Vector2F delta = mouse_listener.getMouseDeltaPos();
-			orientation.getYR() += (0.03 * delta.getX());
-			orientation.getXR() -= (0.03 * delta.getY());
-			mouse_listener.reloadMouseDelta();
-		}
-		//*/
 	
 		float multiplier = tz::util::cast::fromString<float>(MDLF(RawFile(engine.getProperties().getTag("resources"))).getTag("speed"));
 		if(key_listener.isKeyPressed("W"))
@@ -133,6 +123,14 @@ void init()
 			gui_panel.setHidden(!gui_panel.isHidden());
 		updater.update();
 		engine.update(shader_id);
+		if(mouse_listener.isLeftClicked() && gui_panel.isHidden())
+		{
+			Vector3F& orientation = engine.getCameraR().getRotationR();
+			Vector2F delta = mouse_listener.getMouseDeltaPos();
+			orientation.getYR() += (rotational_speed * delta.getX());
+			orientation.getXR() -= (rotational_speed * delta.getY());
+			mouse_listener.reloadMouseDelta();
+		}
 	}
 	engine.getResourcesR().editTag("played", tz::util::cast::toString(seconds));
 }
