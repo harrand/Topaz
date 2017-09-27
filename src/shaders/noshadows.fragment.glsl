@@ -32,18 +32,18 @@ struct Light
 
 uniform Light lights[MAX_LIGHTS];
 
-const vec3 position_worldspace = (model_matrix * vec4(position_modelspace, 1.0)).xyz;
-const vec3 position_cameraspace = (view_matrix * vec4(position_worldspace, 1.0)).xyz;
+vec3 position_worldspace = (model_matrix * vec4(position_modelspace, 1.0)).xyz;
+vec3 position_cameraspace = (view_matrix * vec4(position_worldspace, 1.0)).xyz;
 
 const vec3 camera_position_cameraspace = vec3(0, 0, 0);
-vec3 camera_position_worldspace = (inverse(view_matrix) * vec4(camera_position_cameraspace, 1.0)).xyz;
-const vec3 eye_direction_cameraspace = vec3(0, 0, 0) - position_cameraspace;
-const vec3 eye_direction_tangentspace = tbn_matrix * eye_direction_cameraspace;
+const vec3 camera_position_worldspace = (inverse(view_matrix) * vec4(camera_position_cameraspace, 1.0)).xyz;
+vec3 eye_direction_cameraspace = vec3(0, 0, 0) - position_cameraspace;
+vec3 eye_direction_tangentspace = tbn_matrix * eye_direction_cameraspace;
 
-const vec3 ld_cameraspace = camera_position_cameraspace - position_cameraspace;
-const float distance = length(ld_cameraspace);
-const vec3 light_direction_cameraspace = normalize(ld_cameraspace);
-const vec3 light_direction_tangentspace = normalize(tbn_matrix * light_direction_cameraspace);
+vec3 ld_cameraspace = camera_position_cameraspace - position_cameraspace;
+float distance = length(ld_cameraspace);
+vec3 light_direction_cameraspace = normalize(ld_cameraspace);
+vec3 light_direction_tangentspace = normalize(tbn_matrix * light_direction_cameraspace);
 
 vec2 getTexcoordOffset()
 {
