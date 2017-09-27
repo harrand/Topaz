@@ -26,6 +26,8 @@ struct Light
 	vec3 pos;
 	vec3 colour;
 	float power;
+	float diffuse_component;
+	float specular_component;
 };
 
 uniform Light lights[MAX_LIGHTS];
@@ -50,13 +52,13 @@ vec2 getTexcoordOffset()
 
 vec4 texture_colour = texture2D(texture_sampler, texcoord_modelspace);//texture2D(texture_sampler, getTexcoordOffset());
 
-vec4 getDiffuseComponentFromLight(Light l, vec3 parsed_normal_tangentspace)
+vec4 getDiffuseComponent(Light l, vec3 parsed_normal_tangentspace)
 {
 	vec3 light_position_cameraspace = (view_matrix * vec4(l.pos, 1.0)).xyz;
 	vec3 displacement_from_light = light_position_cameraspace - position_cameraspace;
 	float cos_theta = clamp(dot(parsed_normal_tangentspace, tbn_matrix * displacement_from_light), 0.0, 1.0);
 	float distance_from_light = length(displacement_from_light);
-	return texture_colour * vec4(l.colour, 1) * l.power * cos_theta / (distance_from_light * distance_from_light);
+	return l.diffuse_component * texture_colour * vec4(l.colour, 1) * l.power * cos_theta / (distance_from_light * distance_from_light);
 }
 
 vec4 getAmbientComponent()
@@ -64,7 +66,7 @@ vec4 getAmbientComponent()
 	return texture_colour * vec4(0.01, 0.01, 0.01, 1);
 }
 
-vec4 getSpecularComponentFromLight(Light l, vec3 parsed_normal_tangentspace)
+vec4 getSpecularComponent(Light l, vec3 parsed_normal_tangentspace)
 {
 	vec3 light_position_cameraspace = (view_matrix * vec4(l.pos, 1.0)).xyz;
 	vec3 displacement_from_light = light_position_cameraspace - position_cameraspace;
@@ -72,7 +74,7 @@ vec4 getSpecularComponentFromLight(Light l, vec3 parsed_normal_tangentspace)
 	vec3 R = reflect(-normalize(tbn_matrix * displacement_from_light), parsed_normal_tangentspace);
 	float cos_alpha = clamp(dot(E, R), 0, 1);
 	float distance_from_light = length(displacement_from_light);
-	return texture_colour * vec4(l.colour, 1) * l.power * pow(cos_alpha, 5) / (distance_from_light * distance_from_light);
+	return l.specular_component * texture_colour * vec4(l.colour, 1) * l.power * pow(cos_alpha, 5) / (distance_from_light * distance_from_light);
 }
 
 void main()
@@ -83,8 +85,9 @@ void main()
 	camera_light.pos = camera_position_worldspace;
 	camera_light.colour = vec3(1, 1, 1);
 	camera_light.power = 1000;
-	fragment_colour += getAmbientComponent() + getDiffuseComponentFromLight(camera_light, normal_tangentspace) + getSpecularComponentFromLight(camera_light, normal_tangentspace);
-	//fragment_colour += getAmbientComponent() + getDiffuseComponent(normal_tangentspace) + getSpecularComponent(normal_tangentspace);
+	camera_light.diffuse_component = 1.0;
+	camera_light.specular_component = 1.0;
+	fragment_colour += getAmbientComponent() + getDiffuseComponent(camera_light, normal_tangentspace) + getSpecularComponent(camera_light, normal_tangentspace);
 	for(uint i = 0u; i < MAX_LIGHTS; i++)
-		fragment_colour += getDiffuseComponentFromLight(lights[i], normal_tangentspace) + getSpecularComponentFromLight(lights[i], normal_tangentspace);
+		fragment_colour += getDiffuseComponent(lights[i], normal_tangentspace) + getSpecularComponent(lights[i], normal_tangentspace);
 }

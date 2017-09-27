@@ -68,11 +68,7 @@ void World::addLight(Light light, GLuint shader_program_handle)
 {
 	while(this->base_lights.size() >= World::MAXIMUM_LIGHTS)
 		this->base_lights.erase(this->base_lights.begin());
-	std::vector<GLuint> uniforms;
-	uniforms.push_back(glGetUniformLocation(shader_program_handle, ("lights[" + tz::util::cast::toString<unsigned int>(this->base_lights.size()) + "].pos").c_str()));
-	uniforms.push_back(glGetUniformLocation(shader_program_handle, ("lights[" + tz::util::cast::toString<unsigned int>(this->base_lights.size()) + "].colour").c_str()));
-	uniforms.push_back(glGetUniformLocation(shader_program_handle, ("lights[" + tz::util::cast::toString<unsigned int>(this->base_lights.size()) + "].power").c_str()));
-	this->base_lights[uniforms] = light;
+	this->base_lights[light.getUniforms(shader_program_handle, this->base_lights.size())] = light;
 }
 
 void World::setGravity(Vector3F gravity)
@@ -109,6 +105,8 @@ void World::killLights()
 		glUniform3fv(iter.first.at(0), 1, &(pos[0]));
 		glUniform3fv(iter.first.at(1), 1, &(colour[0]));
 		glUniform1f(iter.first.at(2), 0);
+		glUniform1f(iter.first.at(3), 0);
+		glUniform1f(iter.first.at(4), 0);
 	}
 }
 
@@ -213,11 +211,9 @@ void World::render(Camera& cam, const Shader& shader, unsigned int widata_manage
 		glUniform3fv(iter.first.at(0), 1, &(pos[0]));
 		glUniform3fv(iter.first.at(1), 1, &(colour[0]));
 		glUniform1f(iter.first.at(2), light.getPower());
+		glUniform1f(iter.first.at(3), light.getDiffuseComponent());
+		glUniform1f(iter.first.at(4), light.getSpecularComponent());
 	}
-	/*
-	if(this->hasSkybox())
-			this->skybox->render(cam, this->skyboxShader.value_or(shader), all_meshes, widata_managerh, height);
-	*/
 }
 
 void World::update(unsigned int tps)

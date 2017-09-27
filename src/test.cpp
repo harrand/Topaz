@@ -78,6 +78,7 @@ void init()
 	test_button.getOnMouseClickR() = &toggle;
 	exit_gui_button.getOnMouseClickR() = &exit;	
 	
+	
 	Skybox skybox("../../../res/runtime/models/skybox.obj", skybox_texture);
 	RenderSkyboxCommand render_skybox(skybox, engine.getCameraR(), skybox_shader, engine.getMeshes(), wnd);
 	engine.getCommandExecutorR().registerCommand(&render_skybox);

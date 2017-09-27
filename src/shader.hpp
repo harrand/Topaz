@@ -11,6 +11,7 @@ namespace tz
 {
 	namespace graphics
 	{
+		// vertex, tessellation_control, tessellation_evaluation, geometry, fragment
 		constexpr unsigned int maximum_shaders = 5;
 	}
 }
