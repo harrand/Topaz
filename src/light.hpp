@@ -3,6 +3,14 @@
 #include "vector.hpp"
 #include "graphics.hpp"
 
+namespace tz
+{
+	namespace graphics
+	{
+		constexpr std::size_t light_number_of_uniforms = 5;
+	}
+}
+
 class Light
 {
 public:
@@ -19,7 +27,7 @@ public:
 	float getPower() const;
 	float getDiffuseComponent() const;
 	float getSpecularComponent() const;
-	std::vector<GLuint> getUniforms(GLuint shader_program_handle, std::size_t light_uniform_index) const;
+	std::array<GLint, tz::graphics::light_number_of_uniforms> getUniforms(GLuint shader_program_handle, std::size_t light_uniform_index) const;
 private:
 	Vector3F pos;
 	Vector3F colour;

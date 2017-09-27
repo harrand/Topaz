@@ -41,8 +41,8 @@ public:
 	Vector3F& getSpawnPointR();
 	Vector3F& getSpawnOrientationR();
 	const std::string& getWorldLink() const;
-	const std::map<std::vector<GLuint>, Light>& getLights() const;
-	std::map<std::vector<GLuint>, Light>& getLightsR();
+	const std::map<std::array<GLint, tz::graphics::light_number_of_uniforms>, Light>& getLights() const;
+	std::map<std::array<GLint, tz::graphics::light_number_of_uniforms>, Light>& getLightsR();
 private:
 	static Object retrieveObjectData(const std::string& object_name, std::string resources_path, MDLF& mdlf);
 	static EntityObject retrieveEntityObjectData(const std::string& entity_object_name, std::string resources_path, MDLF& mdlf);
@@ -53,6 +53,6 @@ private:
 	std::vector<Object> objects;
 	std::vector<Entity> entities;
 	std::vector<EntityObject> entity_objects;
-	std::map<std::vector<GLuint>, Light> base_lights;
+	std::map<std::array<GLint, tz::graphics::light_number_of_uniforms>, Light> base_lights;
 };
 #endif

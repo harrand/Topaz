@@ -37,13 +37,14 @@ float Light::getSpecularComponent() const
 	return this->specular_component;
 }
 
-std::vector<GLuint> Light::getUniforms(GLuint shader_program_handle, std::size_t light_uniform_index) const
+std::array<GLint, tz::graphics::light_number_of_uniforms> Light::getUniforms(GLuint shader_program_handle, std::size_t light_uniform_index) const
 {
-	std::vector<GLuint> uniforms; // should really be an std::array<5>
-	uniforms.push_back(glGetUniformLocation(shader_program_handle, ("lights[" + tz::util::cast::toString(light_uniform_index) + "].pos").c_str()));
-	uniforms.push_back(glGetUniformLocation(shader_program_handle, ("lights[" + tz::util::cast::toString(light_uniform_index) + "].colour").c_str()));
-	uniforms.push_back(glGetUniformLocation(shader_program_handle, ("lights[" + tz::util::cast::toString(light_uniform_index) + "].power").c_str()));
-	uniforms.push_back(glGetUniformLocation(shader_program_handle, ("lights[" + tz::util::cast::toString(light_uniform_index) + "].diffuse_component").c_str()));
-	uniforms.push_back(glGetUniformLocation(shader_program_handle, ("lights[" + tz::util::cast::toString(light_uniform_index) + "].specular_component").c_str()));
-	return uniforms;
+return
+	{	
+	glGetUniformLocation(shader_program_handle, ("lights[" + tz::util::cast::toString(light_uniform_index) + "].pos").c_str()),
+	glGetUniformLocation(shader_program_handle, ("lights[" + tz::util::cast::toString(light_uniform_index) + "].colour").c_str()),
+	glGetUniformLocation(shader_program_handle, ("lights[" + tz::util::cast::toString(light_uniform_index) + "].power").c_str()),
+	glGetUniformLocation(shader_program_handle, ("lights[" + tz::util::cast::toString(light_uniform_index) + "].diffuse_component").c_str()),
+	glGetUniformLocation(shader_program_handle, ("lights[" + tz::util::cast::toString(light_uniform_index) + "].specular_component").c_str())
+	};
 }

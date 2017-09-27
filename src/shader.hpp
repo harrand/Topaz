@@ -12,7 +12,7 @@ namespace tz
 	namespace graphics
 	{
 		// vertex, tessellation_control, tessellation_evaluation, geometry, fragment
-		constexpr unsigned int maximum_shaders = 5;
+		constexpr std::size_t maximum_shaders = 5;
 	}
 }
 
@@ -37,7 +37,7 @@ private:
 	static std::string loadShader(const std::string& filename);
 	static void checkShaderError(GLuint shader, GLuint flag, bool is_program, std::string error_message);
 	static GLuint createShader(std::string source, GLenum shader_type);
-	enum class UniformTypes : unsigned int
+	enum class UniformTypes : std::size_t
 	{
 		MODEL,
 		VIEW,
@@ -51,6 +51,6 @@ private:
 	std::string filename;
 	GLuint program_handle;
 	GLuint shaders[tz::graphics::maximum_shaders];
-	GLuint uniforms[static_cast<std::size_t>(UniformTypes::NUM_UNIFORMS)];
+	GLint uniforms[static_cast<std::size_t>(UniformTypes::NUM_UNIFORMS)];
 };
 #endif
