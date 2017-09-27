@@ -18,6 +18,7 @@ out mat3 vs_tbn_matrix;
 uniform mat4 m;
 uniform mat4 v;
 uniform mat4 p;
+uniform float displacement_factor;
 
 uniform sampler2D displacement_map_sampler;
 
@@ -26,7 +27,7 @@ void share()
 	vs_position_modelspace = position;
 	vs_texcoord_modelspace = texcoord;
 	vs_normal_modelspace = normal;
-	vs_position_modelspace += normal * texture2D(displacement_map_sampler, vs_texcoord_modelspace).r * 0.25;
+	vs_position_modelspace += normal * texture2D(displacement_map_sampler, vs_texcoord_modelspace).r * displacement_factor;
 	
 	vs_model_matrix = m;
 	vs_view_matrix = v;

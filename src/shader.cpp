@@ -37,6 +37,7 @@ Shader::Shader(std::string filename): filename(std::move(filename))
 	this->uniforms[static_cast<unsigned int>(UniformTypes::SHININESS)] = glGetUniformLocation(this->program_handle, "shininess");
 	this->uniforms[static_cast<unsigned int>(UniformTypes::PARALLAX_MAP_SCALE)] = glGetUniformLocation(this->program_handle, "parallax_multiplier");
 	this->uniforms[static_cast<unsigned int>(UniformTypes::PARALLAX_MAP_BIAS)] = glGetUniformLocation(this->program_handle, "parallax_bias");
+	this->uniforms[static_cast<unsigned int>(UniformTypes::DISPLACEMENT_FACTOR)] = glGetUniformLocation(this->program_handle, "displacement_factor");
 	tz::util::log::message("Shader with link '", this->filename, "':");
 	tz::util::log::message("\tHas Vertex Shader: ", this->hasVertexShader());
 	tz::util::log::message("\tHas Tessellation Control Shader: ", this->hasTessellationControlShader());
@@ -114,7 +115,7 @@ void Shader::bind() const
 	glUseProgram(this->program_handle);
 }
 
-void Shader::update(const std::array<float, 16>& model_matrix_array, const std::array<float, 16>& view_matrix_array, const std::array<float, 16>& projection_matrix_array, unsigned int shininess, float parallaxmap_scale_constant, float parallaxmap_offset_constant) const
+void Shader::update(const std::array<float, 16>& model_matrix_array, const std::array<float, 16>& view_matrix_array, const std::array<float, 16>& projection_matrix_array, unsigned int shininess, float parallaxmap_scale_constant, float parallaxmap_offset_constant, float displacement_factor) const
 {
 	glUniformMatrix4fv(this->uniforms[static_cast<unsigned int>(UniformTypes::MODEL)], 1, GL_TRUE, model_matrix_array.data());
 	glUniformMatrix4fv(this->uniforms[static_cast<unsigned int>(UniformTypes::VIEW)], 1, GL_TRUE, view_matrix_array.data());
@@ -122,6 +123,7 @@ void Shader::update(const std::array<float, 16>& model_matrix_array, const std::
 	glUniform1ui(this->uniforms[static_cast<unsigned int>(UniformTypes::SHININESS)], shininess);
 	glUniform1f(this->uniforms[static_cast<unsigned int>(UniformTypes::PARALLAX_MAP_SCALE)], parallaxmap_scale_constant);
 	glUniform1f(this->uniforms[static_cast<unsigned int>(UniformTypes::PARALLAX_MAP_BIAS)], parallaxmap_scale_constant / 2.0f * (parallaxmap_offset_constant - 1));
+	glUniform1f(this->uniforms[static_cast<unsigned int>(UniformTypes::DISPLACEMENT_FACTOR)], displacement_factor);
 }
 
 std::string Shader::loadShader(const std::string& filename)

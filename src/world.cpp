@@ -137,6 +137,10 @@ void World::exportWorld(const std::string& world_link) const
 		output.editTag(object_name + ".pos", tz::util::string::format(tz::util::string::devectoriseList3<float>(current_object.getPosition())));
 		output.editTag(object_name + ".rot", tz::util::string::format(tz::util::string::devectoriseList3<float>(current_object.getRotation())));
 		output.editTag(object_name + ".scale", tz::util::string::format(tz::util::string::devectoriseList3<float>(current_object.getScale())));
+		output.editTag(object_name + ".shininess", tz::util::cast::toString(current_object.getShininess()));
+		output.editTag(object_name + ".parallax_map_scale", tz::util::cast::toString(current_object.getParallaxMapScale()));
+		output.editTag(object_name + ".parallax_map_offset", tz::util::cast::toString(current_object.getParallaxMapOffset()));
+		output.editTag(object_name + ".displacement_factor", tz::util::cast::toString(current_object.getDisplacementFactor()));
 	}
 	for(std::size_t i = 0; i < this->entity_objects.size(); i++)
 	{
@@ -153,6 +157,10 @@ void World::exportWorld(const std::string& world_link) const
 		output.editTag(entity_object_name + ".pos", tz::util::string::format(tz::util::string::devectoriseList3<float>(current_entity_object.getPosition())));
 		output.editTag(entity_object_name + ".rot", tz::util::string::format(tz::util::string::devectoriseList3<float>(current_entity_object.getRotation())));
 		output.editTag(entity_object_name + ".scale", tz::util::string::format(tz::util::string::devectoriseList3<float>(current_entity_object.getScale())));
+		output.editTag(entity_object_name + ".shininess", tz::util::cast::toString(current_entity_object.getShininess()));
+		output.editTag(entity_object_name + ".parallax_map_scale", tz::util::cast::toString(current_entity_object.getParallaxMapScale()));
+		output.editTag(entity_object_name + ".parallax_map_offset", tz::util::cast::toString(current_entity_object.getParallaxMapOffset()));
+		output.editTag(entity_object_name + ".displacement_factor", tz::util::cast::toString(current_entity_object.getDisplacementFactor()));
 	}
 	output.addSequence("objects", object_list);
 	output.addSequence("entityobjects", entity_object_list);
@@ -314,12 +322,15 @@ Object World::retrieveObjectData(const std::string& object_name, std::string res
 	unsigned int shininess = tz::util::cast::fromString<unsigned int>(mdlf.getTag(object_name + ".shininess"));
 	float parallax_map_scale = tz::util::cast::fromString<float>(mdlf.getTag(object_name + ".parallax_map_scale"));
 	float parallax_map_offset = tz::util::cast::fromString<float>(mdlf.getTag(object_name + ".parallax_map_offset"));
+	float displacement_factor = tz::util::cast::fromString<float>(mdlf.getTag(object_name + ".displacement_factor"));
 	if(!mdlf.existsTag(object_name + ".shininess"))
 		shininess = 5;
 	if(!mdlf.existsTag(object_name + ".parallax_map_scale"))
 		parallax_map_scale = 0.04f;
 	if(!mdlf.existsTag(object_name + ".parallax_map_offset"))
 		parallax_map_offset = -0.5f;
+	if(!mdlf.existsTag(object_name + ".displacement_factor"))
+		displacement_factor = 0.25f;
 	tz::data::Manager data_manager(resources_path);
 	
 	std::string mesh_link = data_manager.getResourceLink(mesh_name);
@@ -330,7 +341,7 @@ Object World::retrieveObjectData(const std::string& object_name, std::string res
 		std::string texture_link = data_manager.getResourceLink(texture_name);
 		textures.emplace_back(texture_link, static_cast<Texture::TextureType>(i));
 	}
-	return {mesh_link, textures, tz::util::string::vectoriseList3<float>(tz::util::string::deformat(position_string)), tz::util::string::vectoriseList3<float>(tz::util::string::deformat(rotation_string)), tz::util::string::vectoriseList3<float>(tz::util::string::deformat(scale_string)), shininess, parallax_map_scale, parallax_map_offset};
+	return {mesh_link, textures, tz::util::string::vectoriseList3<float>(tz::util::string::deformat(position_string)), tz::util::string::vectoriseList3<float>(tz::util::string::deformat(rotation_string)), tz::util::string::vectoriseList3<float>(tz::util::string::deformat(scale_string)), shininess, parallax_map_scale, parallax_map_offset, displacement_factor};
 }
 
 EntityObject World::retrieveEntityObjectData(const std::string& entity_object_name, std::string resources_path, MDLF& mdlf)
@@ -340,6 +351,18 @@ EntityObject World::retrieveEntityObjectData(const std::string& entity_object_na
 	std::string position_string = mdlf.getTag(entity_object_name + ".pos");
 	std::string rotation_string = mdlf.getTag(entity_object_name + ".rot");
 	std::string scale_string = mdlf.getTag(entity_object_name + ".scale");
+	unsigned int shininess = tz::util::cast::fromString<unsigned int>(mdlf.getTag(entity_object_name + ".shininess"));
+	float parallax_map_scale = tz::util::cast::fromString<float>(mdlf.getTag(entity_object_name + ".parallax_map_scale"));
+	float parallax_map_offset = tz::util::cast::fromString<float>(mdlf.getTag(entity_object_name + ".parallax_map_offset"));
+	float displacement_factor = tz::util::cast::fromString<float>(mdlf.getTag(entity_object_name + ".displacement_factor"));
+	if(!mdlf.existsTag(entity_object_name + ".shininess"))
+		shininess = 5;
+	if(!mdlf.existsTag(entity_object_name + ".parallax_map_scale"))
+		parallax_map_scale = 0.04f;
+	if(!mdlf.existsTag(entity_object_name + ".parallax_map_offset"))
+		parallax_map_offset = -0.5f;
+	if(!mdlf.existsTag(entity_object_name + ".displacement_factor"))
+		displacement_factor = 0.25f;
 	
 	tz::data::Manager data_manager(resources_path);
 	
@@ -354,5 +377,5 @@ EntityObject World::retrieveEntityObjectData(const std::string& entity_object_na
 	}
 	float mass = tz::util::cast::fromString<float>(mass_string);
 	
-	return {mesh_link, textures, mass, tz::util::string::vectoriseList3<float>(tz::util::string::deformat(position_string)), tz::util::string::vectoriseList3<float>(tz::util::string::deformat(rotation_string)), tz::util::string::vectoriseList3<float>(tz::util::string::deformat(scale_string))};
+	return {mesh_link, textures, mass, tz::util::string::vectoriseList3<float>(tz::util::string::deformat(position_string)), tz::util::string::vectoriseList3<float>(tz::util::string::deformat(rotation_string)), tz::util::string::vectoriseList3<float>(tz::util::string::deformat(scale_string)), shininess, parallax_map_scale, parallax_map_offset, displacement_factor};
 }

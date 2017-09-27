@@ -10,6 +10,9 @@ object0.pos: [-40,-40,40]
 object0.rot: [0,0,0]
 object0.scale: [40,40,40]
 object0.shininess: 10
+object0.parallax_map_scale: 0.04
+object0.parallax_map_offset: -0.5
+object0.displacement_factor: 0.25
 object1.mesh: monkeyhead
 object1.texture0: sand
 object1.texture1: sand_normalmap
@@ -18,6 +21,10 @@ object1.texture3: default_displacementmap
 object1.pos: [-10.2918,9.12472,-85.6282]
 object1.rot: [0.04,-6.28121,0]
 object1.scale: [20,20,20]
+object1.shininess: 5
+object1.parallax_map_scale: 0.04
+object1.parallax_map_offset: -0.5
+object1.displacement_factor: 0.25
 object2.mesh: cube
 object2.texture0: lava
 object2.texture1: lava_normalmap
@@ -26,6 +33,10 @@ object2.texture3: default_displacementmap
 object2.pos: [-30,0,-30]
 object2.rot: [0,0,0]
 object2.scale: [2,2,2]
+object2.shininess: 5
+object2.parallax_map_scale: 0.04
+object2.parallax_map_offset: -0.5
+object2.displacement_factor: 0.25
 object3.mesh: cylinder
 object3.texture0: wood
 object3.texture1: wood_normalmap
@@ -34,6 +45,10 @@ object3.texture3: default_displacementmap
 object3.pos: [-50,0,0]
 object3.rot: [0,0,0]
 object3.scale: [100,20,100]
+object3.shininess: 5
+object3.parallax_map_scale: 0.04
+object3.parallax_map_offset: -0.5
+object3.displacement_factor: 0.25
 object4.mesh: torus
 object4.texture0: birch
 object4.texture1: birch_normalmap
@@ -42,6 +57,10 @@ object4.texture3: default_displacementmap
 object4.pos: [-50,8.85321,0]
 object4.rot: [0,0,0]
 object4.scale: [9,9,9]
+object4.shininess: 5
+object4.parallax_map_scale: 0.04
+object4.parallax_map_offset: -0.5
+object4.displacement_factor: 0.25
 object5.mesh: sphere
 object5.texture0: bricks
 object5.texture1: bricks_normalmap
@@ -50,6 +69,10 @@ object5.texture3: bricks_displacementmap
 object5.pos: [-50,40,0]
 object5.rot: [0,0,0]
 object5.scale: [12,12,12]
+object5.shininess: 5
+object5.parallax_map_scale: 0.04
+object5.parallax_map_offset: -0.5
+object5.displacement_factor: 0.25
 object6.mesh: torus
 object6.texture0: birch
 object6.texture1: birch_normalmap
@@ -58,6 +81,10 @@ object6.texture3: default_displacementmap
 object6.pos: [-50,35,0]
 object6.rot: [0,0,0]
 object6.scale: [9,9,9]
+object6.shininess: 5
+object6.parallax_map_scale: 0.04
+object6.parallax_map_offset: -0.5
+object6.displacement_factor: 0.25
 object7.mesh: cube
 object7.texture0: bricks
 object7.texture1: bricks_normalmap
@@ -66,6 +93,10 @@ object7.texture3: bricks_displacementmap
 object7.pos: [-30,0,-20]
 object7.rot: [0,0,0]
 object7.scale: [2,2,2]
+object7.shininess: 5
+object7.parallax_map_scale: 0.04
+object7.parallax_map_offset: -0.5
+object7.displacement_factor: 0.25
 object8.mesh: cube
 object8.texture0: birch
 object8.texture1: birch_normalmap
@@ -74,6 +105,10 @@ object8.texture3: default_displacementmap
 object8.pos: [-30,0,-10]
 object8.rot: [0,0,0]
 object8.scale: [2,2,2]
+object8.shininess: 5
+object8.parallax_map_scale: 0.04
+object8.parallax_map_offset: -0.5
+object8.displacement_factor: 0.25
 object9.mesh: cube
 object9.texture0: undefined
 object9.texture1: default_normalmap
@@ -82,6 +117,10 @@ object9.texture3: default_displacementmap
 object9.pos: [-20,0,-30]
 object9.rot: [0,0,0]
 object9.scale: [2,2,2]
+object9.shininess: 5
+object9.parallax_map_scale: 0.04
+object9.parallax_map_offset: -0.5
+object9.displacement_factor: 0.25
 object10.mesh: cube_hd
 object10.texture0: bricks
 object10.texture1: bricks_normalmap
@@ -90,14 +129,22 @@ object10.texture3: bricks_displacementmap
 object10.pos: [31.4832,0,-45.9498]
 object10.rot: [0,0,0]
 object10.scale: [30,30,30]
+object10.shininess: 5
+object10.parallax_map_scale: 0.04
+object10.parallax_map_offset: -0.5
+object10.displacement_factor: 0.25
 object11.mesh: plane_hd
 object11.texture0: bricks
 object11.texture1: bricks_normalmap
 object11.texture2: default_parallaxmap
 object11.texture3: bricks_displacementmap
-object11.pos: [-100, -155, 0]
-object11.rot: [0, 0, 0]
-object11.scale: [50, 50, 50]
+object11.pos: [-100,-155,0]
+object11.rot: [0,0,0]
+object11.scale: [50,50,50]
+object11.shininess: 5
+object11.parallax_map_scale: 0.04
+object11.parallax_map_offset: -0.5
+object11.displacement_factor: 0.25
 objects: %[
 - object0
 - object1
