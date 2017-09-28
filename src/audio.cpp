@@ -58,11 +58,6 @@ Mix_Chunk* AudioClip::getAudioHandle() const
 	return this->audio_handle;
 }
 
-Mix_Chunk*& AudioClip::getAudioHandleR()
-{
-	return this->audio_handle;
-}
-
 AudioSource::AudioSource(std::string filename, Vector3F position): AudioClip(filename), position(std::move(position)){}
 
 void AudioSource::update(const Camera& relative_to)

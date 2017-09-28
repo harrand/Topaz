@@ -28,7 +28,6 @@ public:
 	int getChannel() const;
 	const std::string& getFileName() const;
 	Mix_Chunk* getAudioHandle() const;
-	Mix_Chunk*& getAudioHandleR();
 private:
 	int channel;
 	std::string filename;

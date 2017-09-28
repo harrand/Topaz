@@ -97,6 +97,9 @@ Window::Window(int w, int h, std::string title): GUIElement({}), w(w), h(h), tit
 	SDL_GL_SetAttribute(SDL_GL_BUFFER_SIZE, 32); // number of bits per pixel (should be total of rgba size)
 	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24); // 24-bit depth-buffer. was originally using 16-bit but i found that it's not quite enough for my liking. 24 bits is plenty.
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+	// msaa, one buffer, 4 samples
+	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
+	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 4);
 	
 	this->sdl_window_pointer = SDL_CreateWindow((this->title).c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, this->w, this->h, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
 	this->sdl_gl_context_handle = SDL_GL_CreateContext(this->sdl_window_pointer);
