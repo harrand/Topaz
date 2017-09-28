@@ -302,12 +302,12 @@ const std::string& World::getWorldLink() const
 	return this->filename;
 }
 
-const std::map<std::vector<GLuint>, Light>& World::getLights() const
+const std::map<std::array<GLint, tz::graphics::light_number_of_uniforms>, Light>& World::getLights() const
 {
 	return this->base_lights;
 }
 
-std::map<std::vector<GLuint>, Light>& World::getLightsR()
+std::map<std::array<GLint, tz::graphics::light_number_of_uniforms>, Light>& World::getLightsR()
 {
 	return this->base_lights;
 }

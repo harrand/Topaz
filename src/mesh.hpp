@@ -20,7 +20,7 @@ public:
 	~Mesh();
 	Mesh& operator=(const Mesh& rhs) = default;
 	
-	IndexedModel getIndexedModel() const;
+	tz::graphics::model::IndexedModel getIndexedModel() const;
 	const std::vector<Vector3F>& getPositions() const;
 	const std::vector<Vector2F>& getTexcoords() const;
 	const std::vector<Vector3F>& getNormals() const;
@@ -28,9 +28,9 @@ public:
 	void render(bool patches, GLenum mode = GL_TRIANGLES) const;
 private:
 	const std::string filename;
-	IndexedModel model;
+	tz::graphics::model::IndexedModel model;
 	void initMesh();
-	enum class BufferTypes : unsigned int
+	enum class BufferTypes : std::size_t
 	{
 		POSITION = 0,
 		TEXCOORD = 1,
@@ -40,7 +40,7 @@ private:
 		NUM_BUFFERS = 5
 	};
 	GLuint vertex_array_object; //vao
-	GLuint vbo_buffers[static_cast<unsigned int>(BufferTypes::NUM_BUFFERS)]; //vbo array
+	std::array<GLuint, static_cast<std::size_t>(BufferTypes::NUM_BUFFERS)> vbo_buffers;
 	unsigned int render_count;
 };
 

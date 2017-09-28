@@ -50,7 +50,7 @@ private:
 	};
 	std::string filename;
 	GLuint program_handle;
-	GLuint shaders[tz::graphics::maximum_shaders];
-	GLint uniforms[static_cast<std::size_t>(UniformTypes::NUM_UNIFORMS)];
+	std::array<GLuint, tz::graphics::maximum_shaders> shaders;
+	std::array<GLint, static_cast<std::size_t>(UniformTypes::NUM_UNIFORMS)> uniforms;
 };
 #endif

@@ -65,7 +65,8 @@ void init()
 	Font example_font("../../../res/runtime/fonts/upheaval.ttf", 25);
 	TextLabel text(0.0f, 0.0f, Vector4F(1, 1, 1, 1), {}, Vector3F(0, 0, 0), example_font, "FPS: ...", engine.getDefaultGuiShader());
 	FPSToggleCommand toggle(text);
-	Panel gui_panel(0.0f, 0.0f, wnd.getWidth(), wnd.getHeight(), Vector4F(0.4f, 0.4f, 0.4f, 0.5f), engine.getDefaultGuiShader());
+	Panel gui_panel(-1.0f, -1.0f, 1.0f, 1.0f, Vector4F(0.4f, 0.4f, 0.4f, 0.5f), engine.getDefaultGuiShader());
+	gui_panel.setUsingProportionalPositioning(true);
 	gui_panel.setHidden(true);
 	ExitGuiCommand exit(gui_panel);
 	TextLabel gui_title(0.0f, wnd.getHeight() - 50, Vector4F(1, 1, 1, 1), {}, Vector3F(0, 0, 0), example_font, "Main Menu", engine.getDefaultGuiShader());
@@ -121,6 +122,8 @@ void init()
 		}
 		if(key_listener.catchKeyPressed("Escape"))
 			gui_panel.setHidden(!gui_panel.isHidden());
+		exit_gui_button.getXR() = wnd.getWidth() - (exit_gui_button.getWidth() * 2);
+		exit_gui_button.getYR() = wnd.getHeight() - (exit_gui_button.getHeight() * 2);
 		updater.update();
 		engine.update(shader_id);
 		if(mouse_listener.isLeftClicked() && gui_panel.isHidden())

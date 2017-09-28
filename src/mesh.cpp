@@ -1,19 +1,19 @@
 #include "mesh.hpp"
 
-Mesh::Mesh(std::string filename): filename(std::move(filename)), model(OBJModel(this->filename).toIndexedModel())
+Mesh::Mesh(std::string filename): filename(std::move(filename)), model(tz::graphics::model::OBJModel(this->filename).toIndexedModel())
 {
 	this->initMesh();
 }
 
 Mesh::Mesh(const Vertex* vertices, std::size_t number_of_vertices, const unsigned int* indices, std::size_t number_of_indices)
 {
-	IndexedModel model;
+	tz::graphics::model::IndexedModel model;
 	
 	for(unsigned int i = 0; i < number_of_vertices; i++)
 	{
-		model.positions.push_back(vertices[i].position);
-		model.texcoords.push_back(vertices[i].texcoord);
-		model.normals.push_back(vertices[i].normal);
+		model.positions.push_back(vertices[i].getPosition());
+		model.texcoords.push_back(vertices[i].getTextureCoordinate());
+		model.normals.push_back(vertices[i].getNormal());
 	}
 	
 	for(unsigned int i = 0; i < number_of_indices; i++)
@@ -30,7 +30,7 @@ Mesh::~Mesh()
 	glDeleteVertexArrays(1, &(this->vertex_array_object));
 }
 
-IndexedModel Mesh::getIndexedModel() const
+tz::graphics::model::IndexedModel Mesh::getIndexedModel() const
 {
 	return this->model;
 }
@@ -96,7 +96,7 @@ void Mesh::initMesh()
 	glGenVertexArrays(1, &(this->vertex_array_object));
 	glBindVertexArray(this->vertex_array_object);
 	
-	glGenBuffers(static_cast<unsigned int>(BufferTypes::NUM_BUFFERS), this->vbo_buffers);
+	glGenBuffers(static_cast<unsigned int>(BufferTypes::NUM_BUFFERS), this->vbo_buffers.data());
 	// 0 = Vertices, 1 = Texture Coordinates, 2 = Internal Normals, 3 = Indices, 4 = Tangents
 	
 	glBindBuffer(GL_ARRAY_BUFFER, this->vbo_buffers[static_cast<unsigned int>(BufferTypes::POSITION)]);
