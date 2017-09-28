@@ -56,7 +56,6 @@ public:
 	
 	const std::string& getFileName() const;
 	Mix_Music* getAudioHandle() const;
-	Mix_Music*& getAudioHandleR();
 	void play(bool priority = true) const;
 	void setPaused(bool pause = true);
 	void togglePaused();

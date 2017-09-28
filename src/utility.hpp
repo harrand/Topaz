@@ -154,7 +154,7 @@ namespace tz
 			template<typename FirstArg, typename... Args>
 			inline void silent(FirstArg arg, Args... args)
 			{
-				if(std::string(typeid(arg).name()) == "std::string")
+				if constexpr(std::is_same<decltype(arg), std::string>::value)
 					std::cout << arg;
 				else
 					std::cout << tz::util::cast::toString(arg);

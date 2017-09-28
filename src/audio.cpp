@@ -114,11 +114,6 @@ Mix_Music* AudioMusic::getAudioHandle() const
 	return this->audio_handle;
 }
 
-Mix_Music*& AudioMusic::getAudioHandleR()
-{
-	return this->audio_handle;
-}
-
 void AudioMusic::play(bool priority) const
 {
 	if(priority || Mix_PlayingMusic() != 0)
