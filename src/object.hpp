@@ -9,7 +9,7 @@
 class Object
 {
 public:
-	Object(std::string mesh_link, std::vector<std::pair<std::string, Texture::TextureType>> textures, Vector3F pos, Vector3F rot, Vector3F scale, unsigned int shininess = 5, float parallax_map_scale = 0.04, float parallax_map_offset = -0.5, float displacement_factor = 0.25f);
+	Object(std::string mesh_link, std::vector<std::pair<std::string, Texture::TextureType>> textures, Vector3F pos, Vector3F rot, Vector3F scale, unsigned int shininess = 5, float parallax_map_scale = 0.04f, float parallax_map_offset = -0.5f, float displacement_factor = 0.25f);
 	Object(const Object& copy) = default;
 	Object(Object&& move) = default;
 	~Object() = default;

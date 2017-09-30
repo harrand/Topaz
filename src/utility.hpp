@@ -70,7 +70,7 @@ namespace tz
 			inline bool contains(const std::string& what, char withwhat)
 			{
 				const char* whatcstr = what.c_str();
-				for(unsigned int i = 0; i < what.length(); i++)
+				for(std::size_t i = 0; i < what.length(); i++)
 					if(whatcstr[i] == withwhat)
 						return true;
 				return false;
@@ -90,9 +90,9 @@ namespace tz
 			{
 				std::string res;
 				std::vector<std::string> splitdelim = tz::util::string::splitString(str, toreplace);
-				for(unsigned int i = 0; i < splitdelim.size(); i++)
+				for(std::size_t i = 0; i < splitdelim.size(); i++)
 				{
-					res += splitdelim.at(i);
+					res += splitdelim[i];
 					res += replacewith;
 				}
 				return res;
@@ -100,7 +100,7 @@ namespace tz
 		
 			inline std::string substring(const std::string& str, unsigned int begin, unsigned int end)
 			{
-				unsigned int strsize = str.length();
+				std::size_t strsize = str.length();
 				if(end > strsize)
 					return "_";
 				return str.substr((begin - 1), (end-begin) + 1);
@@ -109,9 +109,9 @@ namespace tz
 			inline std::string format(const std::vector<std::string>& split)
 			{
 				std::string ret = "[";
-				for(unsigned int i = 0; i < split.size(); i++)
+				for(std::size_t i = 0; i < split.size(); i++)
 				{
-					ret += split.at(i);
+					ret += split[i];
 					if(i < (split.size() - 1))
 						ret += ",";
 					else
@@ -130,7 +130,7 @@ namespace tz
 			{
 				if(list.size() < 3)
 					return {};
-				return {tz::util::cast::fromString<T>(list.at(0)), tz::util::cast::fromString<T>(list.at(1)), tz::util::cast::fromString<T>(list.at(2))};
+				return {tz::util::cast::fromString<T>(list[0]), tz::util::cast::fromString<T>(list[1]), tz::util::cast::fromString<T>(list[2])};
 			}
 			
 			template<typename T>

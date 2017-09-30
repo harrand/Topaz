@@ -124,6 +124,7 @@ void init()
 			gui_panel.setHidden(!gui_panel.isHidden());
 		exit_gui_button.getXR() = wnd.getWidth() - (exit_gui_button.getWidth() * 2);
 		exit_gui_button.getYR() = wnd.getHeight() - (exit_gui_button.getHeight() * 2);
+		gui_title.getYR() = wnd.getHeight() - (gui_title.getHeight() * 2);
 		updater.update();
 		engine.update(shader_id);
 		if(mouse_listener.isLeftClicked() && gui_panel.isHidden())
