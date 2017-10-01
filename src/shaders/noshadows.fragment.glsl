@@ -35,17 +35,13 @@ uniform Light lights[MAX_LIGHTS];
 vec3 position_worldspace = (model_matrix * vec4(position_modelspace, 1.0)).xyz;
 vec3 position_cameraspace = (view_matrix * vec4(position_worldspace, 1.0)).xyz;
 
-const vec3 camera_position_cameraspace = vec3(0, 0, 0);
-const vec3 camera_position_worldspace = (inverse(view_matrix) * vec4(camera_position_cameraspace, 1.0)).xyz;
 vec3 eye_direction_cameraspace = vec3(0, 0, 0) - position_cameraspace;
 vec3 eye_direction_tangentspace = tbn_matrix * eye_direction_cameraspace;
 
-vec3 ld_cameraspace = camera_position_cameraspace - position_cameraspace;
-float distance = length(ld_cameraspace);
-vec3 light_direction_cameraspace = normalize(ld_cameraspace);
-vec3 light_direction_tangentspace = normalize(tbn_matrix * light_direction_cameraspace);
+//vec3 ld_cameraspace = camera_position_cameraspace - position_cameraspace;
+//vec3 ld_cameraspace = camera_position_cameraspace + eye_direction_cameraspace;
 
-vec2 getTexcoordOffset()
+vec2 getTexcoordOffset(vec3 light_direction_tangentspace)
 {
 	return texcoord_modelspace + light_direction_tangentspace.xy * (texture2D(parallax_map_sampler, texcoord_modelspace).r * parallax_multiplier + parallax_bias);
 }
@@ -56,7 +52,7 @@ vec4 getDiffuseComponent(Light l, vec3 parsed_normal_tangentspace)
 {
 	vec3 light_position_cameraspace = (view_matrix * vec4(l.pos, 1.0)).xyz;
 	vec3 displacement_from_light = light_position_cameraspace - position_cameraspace;
-	float cos_theta = clamp(dot(parsed_normal_tangentspace, tbn_matrix * displacement_from_light), 0.0, 1.0);
+	float cos_theta = clamp(dot(parsed_normal_tangentspace, tbn_matrix * normalize(displacement_from_light)), 0.0, 1.0);
 	float distance_from_light = length(displacement_from_light);
 	return l.diffuse_component * texture_colour * vec4(l.colour, 1) * l.power * cos_theta / (distance_from_light * distance_from_light);
 }
@@ -79,14 +75,21 @@ vec4 getSpecularComponent(Light l, vec3 parsed_normal_tangentspace)
 
 void main()
 {
-	vec3 normal_tangentspace = normalize(texture2D(normal_map_sampler, getTexcoordOffset()).xyz * 255.0/128.0 - 1);
+	vec3 ld_cameraspace = (view_matrix * vec4(-normal_modelspace, 0.0)).xyz;
+	float distance = length(ld_cameraspace);
+	vec3 light_direction_cameraspace = normalize(ld_cameraspace);
+	vec3 light_direction_tangentspace = normalize(tbn_matrix * light_direction_cameraspace);
+	
+	const vec3 camera_position_cameraspace = vec3(0, 0, 0);
+	const vec3 camera_position_worldspace = (inverse(view_matrix) * vec4(camera_position_cameraspace, 1.0)).xyz;
+	vec3 normal_tangentspace = normalize(texture2D(normal_map_sampler, getTexcoordOffset(light_direction_tangentspace)).xyz * 255.0/128.0 - 1);
 	fragment_colour = vec4(0, 0, 0, 0);
 	Light camera_light;
 	camera_light.pos = camera_position_worldspace;
 	camera_light.colour = vec3(1, 1, 1);
 	camera_light.power = 1000;
 	camera_light.diffuse_component = 1.0;
-	camera_light.specular_component = 1.0;
+	camera_light.specular_component = 10.0;
 	fragment_colour += getAmbientComponent() + getDiffuseComponent(camera_light, normal_tangentspace) + getSpecularComponent(camera_light, normal_tangentspace);
 	for(uint i = 0u; i < MAX_LIGHTS; i++)
 		fragment_colour += getDiffuseComponent(lights[i], normal_tangentspace) + getSpecularComponent(lights[i], normal_tangentspace);
