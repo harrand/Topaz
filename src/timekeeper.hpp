@@ -3,6 +3,7 @@
 #include <vector>
 #include <thread>
 #include <functional>
+#include <ctime>
 
 class TimeKeeper
 {
@@ -18,8 +19,7 @@ public:
 	float getRange() const;
 	bool millisPassed(float millis) const;
 private:
-	unsigned long before, after;
-	time_t previous, now;
+	std::chrono::milliseconds before, after;
 };
 
 class TimeProfiler
