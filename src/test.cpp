@@ -25,7 +25,7 @@ class ExitGuiCommand : public Command
 {
 public:
 	ExitGuiCommand(Panel& gui_panel): gui_panel(gui_panel){}
-	virtual void operator()([[maybe_unused]] const std::vector<std::string>& args){gui_panel.setHidden(true);}
+	virtual void operator()([[maybe_unused]] const std::vector<std::string>& args){gui_panel.setHidden(!gui_panel.isHidden());}
 	Panel& gui_panel;
 };
 
@@ -71,14 +71,22 @@ void init()
 	ExitGuiCommand exit(gui_panel);
 	TextLabel gui_title(0.0f, wnd.getHeight() - 50, Vector4F(1, 1, 1, 1), {}, Vector3F(0, 0, 0), example_font, "Main Menu", engine.getDefaultGuiShader());
 	Button test_button(0.0f, 2 * text.getHeight(), Vector4F(1, 1, 1, 1), Vector4F(0.7, 0.7, 0.7, 1.0), Vector3F(0, 0, 0), example_font, "Hide/Show", engine.getDefaultGuiShader(), mouse_listener);
+	Button creation_toggle(0.0f, 2 * text.getHeight() + 2 * test_button.getHeight(), Vector4F(1, 1, 1, 1), Vector4F(0.7, 0.7, 0.7, 1.0), Vector3F(0, 0, 0), example_font, "Create Objects", engine.getDefaultGuiShader(), mouse_listener);
 	Button exit_gui_button(wnd.getWidth() - 50, wnd.getHeight() - 50, Vector4F(1, 1, 1, 1), Vector4F(1.0, 0, 0, 1.0), Vector3F(0, 0, 0), example_font, "X", engine.getDefaultGuiShader(), mouse_listener);
+	Panel creation_panel(-1.0f, -1.0f, 1.0f, 1.0f, Vector4F(0.4f, 0.4f, 0.4f, 1.0f), engine.getDefaultGuiShader());
+	ExitGuiCommand exit_creation(creation_panel);
+	creation_panel.setUsingProportionalPositioning(true);
+	creation_panel.setHidden(true);
+	engine.getWindowR().addChild(&creation_panel);
 	engine.getWindowR().addChild(&text);
 	engine.getWindowR().addChild(&gui_panel);
 	gui_panel.addChild(&gui_title);
 	gui_panel.addChild(&test_button);
 	gui_panel.addChild(&exit_gui_button);
+	gui_panel.addChild(&creation_toggle);
 	test_button.getOnMouseClickR() = &toggle;
-	exit_gui_button.getOnMouseClickR() = &exit;	
+	exit_gui_button.getOnMouseClickR() = &exit;
+	creation_toggle.getOnMouseClickR() = &exit_creation;
 	
 	
 	Skybox skybox("../../../res/runtime/models/skybox.obj", skybox_texture);
