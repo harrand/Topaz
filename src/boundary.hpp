@@ -39,4 +39,20 @@ private:
 	Vector3F minimum, maximum;
 };
 
+class BoundingPlane
+{
+public:
+	BoundingPlane(Vector3F normal, float distance);
+	
+	const Vector3F& getNormal() const;
+	Vector3F& getNormalR();
+	float getDistance() const;
+	float& getDistanceR();
+	BoundingPlane normalised() const;
+	bool intersects(const BoundingSphere& other) const;
+private:
+	Vector3F normal;
+	float distance;
+};
+
 #endif

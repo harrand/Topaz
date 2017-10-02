@@ -59,3 +59,36 @@ bool AABB::intersects(const AABB& rhs) const
 	Vector3F distance = std::max(forward_distance, backward_distance);
 	return std::max({distance.getX(), distance.getY(), distance.getZ()}) < 0;
 }
+
+BoundingPlane::BoundingPlane(Vector3F normal, float distance): normal(normal), distance(distance){}
+
+const Vector3F& BoundingPlane::getNormal() const
+{
+	return this->normal;
+}
+
+Vector3F& BoundingPlane::getNormalR()
+{
+	return this->normal;
+}
+
+float BoundingPlane::getDistance() const
+{
+	return this->distance;
+}
+
+float& BoundingPlane::getDistanceR()
+{
+	return this->distance;
+}
+
+BoundingPlane BoundingPlane::normalised() const
+{
+	float length = this->normal.length();
+	return {this->normal.normalised(), this->distance / length};
+}
+
+bool BoundingPlane::intersects(const BoundingSphere& rhs) const
+{
+	return (std::fabs(this->normal.dot(rhs.getCentre()) + this->distance) - rhs.getRadius()) < 0;
+}
