@@ -1,5 +1,6 @@
 #include "engine.hpp"
 #include "listener.hpp"
+#include "physics.hpp"
 
 void init();
 #ifdef main
@@ -92,12 +93,16 @@ void init()
 	Skybox skybox("../../../res/runtime/models/skybox.obj", skybox_texture);
 	RenderSkyboxCommand render_skybox(skybox, engine.getCameraR(), skybox_shader, engine.getMeshes(), wnd);
 	engine.getCommandExecutorR().registerCommand(&render_skybox);
+	
+	BoundingSphere test_boundary = tz::physics::boundSphere(engine.getWorld().getObjects().at(0), engine.getMeshes());
 
 	while(!engine.getWindowR().isCloseRequested())
 	{
 		if(updater.millisPassed(1000))
 		{
-			text.setText("FPS: " + tz::util::cast::toString(engine.getFPS()));
+			//text.setText("FPS: " + tz::util::cast::toString(engine.getFPS()));
+			BoundingSphere player_bound(engine.getCamera().getPosition(), 1.0f);
+			text.setText("Player Intersect with Object 0: " + tz::util::cast::toString(test_boundary.intersects(player_bound)));
 			updater.reload();
 			seconds++;
 		}
