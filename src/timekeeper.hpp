@@ -19,7 +19,7 @@ public:
 	float getRange() const;
 	bool millisPassed(float millis) const;
 private:
-	std::chrono::milliseconds before, after;
+	long long int before, after;
 };
 
 class TimeProfiler
@@ -47,13 +47,13 @@ namespace tz
 	namespace scheduler
 	{
 		template<class ReturnType, class... Args>
-		static inline void syncDelayedTask(unsigned int milliseconds_delay, std::function<ReturnType(Args...)> f, Args... args)
+		inline void syncDelayedTask(unsigned int milliseconds_delay, std::function<ReturnType(Args...)> f, Args... args)
 		{
 			std::this_thread::sleep_for(std::chrono::duration<unsigned int, std::milli>(milliseconds_delay));
 			f(args...);
 		}
 		template<class ReturnType, class... Args>
-		static inline void asyncDelayedTask(unsigned int milliseconds_delay, std::function<ReturnType(Args...)> f, Args... args)
+		inline void asyncDelayedTask(unsigned int milliseconds_delay, std::function<ReturnType(Args...)> f, Args... args)
 		{
 			std::thread(syncDelayedTask<ReturnType, Args...>, milliseconds_delay, f, args...).detach();
 		}

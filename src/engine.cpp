@@ -51,7 +51,7 @@ void Engine::update(std::size_t shader_index)
 	for(auto command : this->command_executor.getCommandsR())
 		command->operator()({});
 	
-	if(ticker.millisPassed(1000/this->tps))
+	if(ticker.millisPassed(1000.0f/this->tps))
 	{
 		this->world.update(this->tps);
 		ticker.reload();
