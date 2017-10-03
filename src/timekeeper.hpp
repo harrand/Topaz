@@ -34,9 +34,9 @@ public:
 	void beginFrame();
 	void endFrame();
 	void reset();
-	float getDeltaAverage();
+	float getDeltaAverage() const;
 	float getLastDelta() const;
-	unsigned int getFPS();
+	unsigned int getFPS() const;
 private:
 	std::vector<float> deltas;
 	TimeKeeper tk;

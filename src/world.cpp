@@ -39,7 +39,7 @@ const std::string& World::getFileName() const
 	return this->filename;
 }
 
-void World::addObject(Object obj)
+void World::addObject(StaticObject obj)
 {
 	this->objects.push_back(std::move(obj));
 }
@@ -127,7 +127,7 @@ void World::exportWorld(const std::string& world_link) const
 	{
 		const std::string object_name = "object" + tz::util::cast::toString<float>(i);
 		object_list.push_back(object_name);
-		const Object current_object = this->objects.at(i);
+		const StaticObject current_object = this->objects.at(i);
 		
 		output.editTag(object_name + ".mesh", data_manager.getResourceName(current_object.getMeshLink()));
 		for(auto& texture : current_object.getTextures())
@@ -237,7 +237,7 @@ std::size_t World::getSize() const
 	return this->objects.size() + this->entities.size() + this->entity_objects.size();
 }
 
-const std::vector<Object>& World::getObjects() const
+const std::vector<StaticObject>& World::getObjects() const
 {
 	return this->objects;
 }
@@ -252,7 +252,7 @@ const std::vector<EntityObject>& World::getEntityObjects() const
 	return this->entity_objects;
 }
 
-std::vector<Object>& World::getObjectsR()
+std::vector<StaticObject>& World::getObjectsR()
 {
 	return this->objects;
 }
@@ -312,7 +312,7 @@ std::map<std::array<GLint, tz::graphics::light_number_of_uniforms>, Light>& Worl
 	return this->base_lights;
 }
 
-Object World::retrieveObjectData(const std::string& object_name, std::string resources_path, MDLF& mdlf)
+StaticObject World::retrieveObjectData(const std::string& object_name, std::string resources_path, MDLF& mdlf)
 {
 	std::string mesh_name = mdlf.getTag(object_name + ".mesh");
 

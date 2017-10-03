@@ -48,7 +48,7 @@ void TimeProfiler::reset()
 	this->tk.reload();
 }
 
-float TimeProfiler::getDeltaAverage()
+float TimeProfiler::getDeltaAverage() const
 {
 	float total = 0.0f;
 	for(float delta : this->deltas)
@@ -65,7 +65,7 @@ float TimeProfiler::getLastDelta() const
 	return this->deltas.at(this->deltas.size() - 1);
 }
 
-unsigned int TimeProfiler::getFPS()
+unsigned int TimeProfiler::getFPS() const
 {
 	return static_cast<unsigned int>(1000/this->getDeltaAverage());
 }

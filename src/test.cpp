@@ -94,53 +94,112 @@ void init()
 	RenderSkyboxCommand render_skybox(skybox, engine.getCameraR(), skybox_shader, engine.getMeshes(), wnd);
 	engine.getCommandExecutorR().registerCommand(&render_skybox);
 	
-	AABB test_boundary = tz::physics::boundAABB(engine.getWorld().getObjects().at(0), engine.getMeshes());
+	std::vector<AABB> bounds;
+	bounds.reserve(engine.getWorld().getObjects().size());
+	for(const StaticObject& object : engine.getWorld().getObjects())
+		bounds.push_back(tz::physics::boundAABB(object, engine.getMeshes()));
+	//AABB test_boundary = tz::physics::boundAABB(engine.getWorld().getObjects().at(0), engine.getMeshes());
+	bool on_ground = false;
+	constexpr float a = 250.0f;
+	float speed = 0.0f;
 
 	while(!engine.getWindowR().isCloseRequested())
 	{
+		float multiplier = tz::util::cast::fromString<float>(MDLF(RawFile(engine.getProperties().getTag("resources"))).getTag("speed"));
+		float velocity = multiplier * engine.getTimeProfiler().getLastDelta();
+		on_ground = false;
 		if(updater.millisPassed(1000))
 		{
 			text.setText("FPS: " + tz::util::cast::toString(engine.getFPS()));
+			tz::util::log::message("pos: ", tz::util::string::format(tz::util::string::devectoriseList3<float>(engine.getCamera().getPosition())));
 			updater.reload();
 			seconds++;
 		}
-	
-		float multiplier = tz::util::cast::fromString<float>(MDLF(RawFile(engine.getProperties().getTag("resources"))).getTag("speed"));
-		float velocity = multiplier * engine.getTimeProfiler().getLastDelta();
+		
+		for(const AABB& bound : bounds)
+			if(bound.intersects(engine.getCamera().getPosition() - (Vector3F(0, 1, 0) * (velocity + (a / engine.getTimeProfiler().getFPS())))))
+				on_ground = true;
+		if(on_ground)
+		{
+			speed = 0.0f;
+			tz::util::log::message("on ground now.");
+		}
+		else if(engine.getTimeProfiler().getFPS() != 0)
+		{
+			engine.getCameraR().getPositionR() -= Vector3F(0, speed / engine.getTimeProfiler().getFPS(), 0);
+			speed += a / engine.getTimeProfiler().getFPS();
+		}
+		
 		if(key_listener.isKeyPressed("W"))
 		{
 			Vector3F after = (engine.getCamera().getPosition() + (engine.getCameraR().getForward() * velocity));
-			if(!test_boundary.intersects(after))
+			bool collide = false;
+			for(const AABB& bound : bounds)
+			{
+				if(bound.intersects(after))
+					collide = true;
+			}
+			if(!collide)
 				engine.getCameraR().getPositionR() = after;
 		}
 		if(key_listener.isKeyPressed("S"))
 		{
 			Vector3F after = (engine.getCamera().getPosition() + (engine.getCameraR().getBackward() * velocity));
-			if(!test_boundary.intersects(after))
+			bool collide = false;
+			for(const AABB& bound : bounds)
+			{
+				if(bound.intersects(after))
+					collide = true;
+			}
+			if(!collide)
 				engine.getCameraR().getPositionR() = after;
 		}
 		if(key_listener.isKeyPressed("A"))
 		{
 			Vector3F after = (engine.getCamera().getPosition() + (engine.getCameraR().getLeft() * velocity));
-			if(!test_boundary.intersects(after))
+			bool collide = false;
+			for(const AABB& bound : bounds)
+			{
+				if(bound.intersects(after))
+					collide = true;
+			}
+			if(!collide)
 				engine.getCameraR().getPositionR() = after;
 		}
 		if(key_listener.isKeyPressed("D"))
 		{
 			Vector3F after = (engine.getCamera().getPosition() + (engine.getCameraR().getRight() * velocity));
-			if(!test_boundary.intersects(after))
+			bool collide = false;
+			for(const AABB& bound : bounds)
+			{
+				if(bound.intersects(after))
+					collide = true;
+			}
+			if(!collide)
 				engine.getCameraR().getPositionR() = after;
 		}
 		if(key_listener.isKeyPressed("Space"))
 		{
 			Vector3F after = (engine.getCamera().getPosition() + (Vector3F(0, 1, 0) * velocity));
-			if(!test_boundary.intersects(after))
+			bool collide = false;
+			for(const AABB& bound : bounds)
+			{
+				if(bound.intersects(after))
+					collide = true;
+			}
+			if(!collide)
 				engine.getCameraR().getPositionR() = after;
 		}
 		if(key_listener.isKeyPressed("Z"))
 		{
 			Vector3F after = (engine.getCamera().getPosition() + (Vector3F(0, -1, 0) * velocity));
-			if(!test_boundary.intersects(after))
+			bool collide = false;
+			for(const AABB& bound : bounds)
+			{
+				if(bound.intersects(after))
+					collide = true;
+			}
+			if(!collide)
 				engine.getCameraR().getPositionR() = after;
 		}
 		if(key_listener.isKeyPressed("I"))

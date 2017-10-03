@@ -1,6 +1,6 @@
 #ifndef ENTITY_HPP
 #define ENTITY_HPP
-#include "utility.hpp"
+#include "physics.hpp"
 #include "object.hpp"
 #include <memory>
 
@@ -12,7 +12,7 @@ public:
 	Entity(Entity&& move) = default;
 	Entity& operator=(const Entity& rhs) = default;
 	
-	float getMass() const;	
+	float getMass() const;
 	void applyForce(std::string force_name, Force f);
 	void removeForce(std::string force_name);
 	virtual const Vector3F& getPosition() const;
@@ -31,7 +31,7 @@ private:
 	Vector3F position;
 };
 
-class EntityObject: public Entity, public Object
+class EntityObject: public Entity, public StaticObject
 {
 public:
 	EntityObject(std::string mesh_link, std::vector<std::pair<std::string, Texture::TextureType>> textures, float mass = 1.0f, Vector3F position = Vector3F(), Vector3F rotation = Vector3F(), Vector3F scale = Vector3F(1, 1, 1), unsigned int shininess = 5, float parallax_map_scale = 0.04f, float parallax_map_offset = -0.5f, float displacement_factor = 0.25f, Vector3F velocity = Vector3F(), std::unordered_map<std::string, Force> forces = std::unordered_map<std::string, Force>());

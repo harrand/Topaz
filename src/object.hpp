@@ -4,16 +4,17 @@
 #include "shader.hpp"
 #include "texture.hpp"
 #include "camera.hpp"
+#include "boundary.hpp"
 #include <initializer_list>
 
-class Object
+class StaticObject
 {
 public:
-	Object(std::string mesh_link, std::vector<std::pair<std::string, Texture::TextureType>> textures, Vector3F pos, Vector3F rot, Vector3F scale, unsigned int shininess = 5, float parallax_map_scale = 0.04f, float parallax_map_offset = -0.5f, float displacement_factor = 0.25f);
-	Object(const Object& copy) = default;
-	Object(Object&& move) = default;
-	~Object() = default;
-	Object& operator=(const Object& rhs) = default;
+	StaticObject(std::string mesh_link, std::vector<std::pair<std::string, Texture::TextureType>> textures, Vector3F pos, Vector3F rot, Vector3F scale, unsigned int shininess = 5, float parallax_map_scale = 0.04f, float parallax_map_offset = -0.5f, float displacement_factor = 0.25f);
+	StaticObject(const StaticObject& copy) = default;
+	StaticObject(StaticObject&& move) = default;
+	~StaticObject() = default;
+	StaticObject& operator=(const StaticObject& rhs) = default;
 	
 	const Vector3F& getPosition() const;
 	const Vector3F& getRotation() const;
@@ -53,5 +54,11 @@ private:
 	std::string cube_mesh_link;
 	CubeMap& cm;
 };
+
+namespace tz::physics
+{
+	BoundingSphere boundSphere(const StaticObject& object, const std::vector<std::unique_ptr<Mesh>>& all_meshes);
+	AABB boundAABB(const StaticObject& object, const std::vector<std::unique_ptr<Mesh>>& all_meshes);
+}
 
 #endif
