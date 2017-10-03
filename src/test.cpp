@@ -100,27 +100,49 @@ void init()
 	{
 		if(updater.millisPassed(1000))
 		{
-			//text.setText("FPS: " + tz::util::cast::toString(engine.getFPS()));
-			text.setText("meet: " + tz::util::cast::toString(test_boundary.intersects(engine.getCamera().getPosition())) + ", dist min: " + tz::util::cast::toString((test_boundary.getMinimum() - engine.getCamera().getPosition()).length()) + ", dist max: " + tz::util::cast::toString((test_boundary.getMaximum() - engine.getCamera().getPosition()).length()));
+			text.setText("FPS: " + tz::util::cast::toString(engine.getFPS()));
 			updater.reload();
 			seconds++;
 		}
 	
 		float multiplier = tz::util::cast::fromString<float>(MDLF(RawFile(engine.getProperties().getTag("resources"))).getTag("speed"));
-		if(test_boundary.intersects(engine.getCamera().getPosition()))
-			multiplier *= -5;
+		float velocity = multiplier * engine.getTimeProfiler().getLastDelta();
 		if(key_listener.isKeyPressed("W"))
-			engine.getCameraR().getPositionR() += (engine.getCameraR().getForward() * multiplier * engine.getTimeProfiler().getLastDelta());
+		{
+			Vector3F after = (engine.getCamera().getPosition() + (engine.getCameraR().getForward() * velocity));
+			if(!test_boundary.intersects(after))
+				engine.getCameraR().getPositionR() = after;
+		}
 		if(key_listener.isKeyPressed("S"))
-			engine.getCameraR().getPositionR() += (engine.getCameraR().getBackward() * multiplier * engine.getTimeProfiler().getLastDelta());
+		{
+			Vector3F after = (engine.getCamera().getPosition() + (engine.getCameraR().getBackward() * velocity));
+			if(!test_boundary.intersects(after))
+				engine.getCameraR().getPositionR() = after;
+		}
 		if(key_listener.isKeyPressed("A"))
-			engine.getCameraR().getPositionR() += (engine.getCameraR().getLeft() * multiplier * engine.getTimeProfiler().getLastDelta());
+		{
+			Vector3F after = (engine.getCamera().getPosition() + (engine.getCameraR().getLeft() * velocity));
+			if(!test_boundary.intersects(after))
+				engine.getCameraR().getPositionR() = after;
+		}
 		if(key_listener.isKeyPressed("D"))
-			engine.getCameraR().getPositionR() += (engine.getCameraR().getRight() * multiplier * engine.getTimeProfiler().getLastDelta());
+		{
+			Vector3F after = (engine.getCamera().getPosition() + (engine.getCameraR().getRight() * velocity));
+			if(!test_boundary.intersects(after))
+				engine.getCameraR().getPositionR() = after;
+		}
 		if(key_listener.isKeyPressed("Space"))
-			engine.getCameraR().getPositionR() += (Vector3F(0, 1, 0) * multiplier * engine.getTimeProfiler().getLastDelta());
+		{
+			Vector3F after = (engine.getCamera().getPosition() + (Vector3F(0, 1, 0) * velocity));
+			if(!test_boundary.intersects(after))
+				engine.getCameraR().getPositionR() = after;
+		}
 		if(key_listener.isKeyPressed("Z"))
-			engine.getCameraR().getPositionR() += (Vector3F(0, -1, 0) * multiplier * engine.getTimeProfiler().getLastDelta());
+		{
+			Vector3F after = (engine.getCamera().getPosition() + (Vector3F(0, -1, 0) * velocity));
+			if(!test_boundary.intersects(after))
+				engine.getCameraR().getPositionR() = after;
+		}
 		if(key_listener.isKeyPressed("I"))
 			engine.getCameraR().getRotationR() += (Vector3F(1.0f/360.0f, 0, 0) * multiplier * 5 * engine.getTimeProfiler().getLastDelta());
 		if(key_listener.isKeyPressed("K"))

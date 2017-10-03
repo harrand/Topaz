@@ -2,7 +2,7 @@
 #define WORLD_HPP
 #include <map>
 #include <cstddef>
-#include "entityobject.hpp"
+#include "entity.hpp"
 #include "light.hpp"
 #include "mdl.hpp"
 
