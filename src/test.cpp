@@ -94,20 +94,21 @@ void init()
 	RenderSkyboxCommand render_skybox(skybox, engine.getCameraR(), skybox_shader, engine.getMeshes(), wnd);
 	engine.getCommandExecutorR().registerCommand(&render_skybox);
 	
-	BoundingSphere test_boundary = tz::physics::boundSphere(engine.getWorld().getObjects().at(0), engine.getMeshes());
+	AABB test_boundary = tz::physics::boundAABB(engine.getWorld().getObjects().at(0), engine.getMeshes());
 
 	while(!engine.getWindowR().isCloseRequested())
 	{
 		if(updater.millisPassed(1000))
 		{
 			//text.setText("FPS: " + tz::util::cast::toString(engine.getFPS()));
-			BoundingSphere player_bound(engine.getCamera().getPosition(), 1.0f);
-			text.setText("Player Intersect with Object 0: " + tz::util::cast::toString(test_boundary.intersects(player_bound)));
+			text.setText("meet: " + tz::util::cast::toString(test_boundary.intersects(engine.getCamera().getPosition())) + ", dist min: " + tz::util::cast::toString((test_boundary.getMinimum() - engine.getCamera().getPosition()).length()) + ", dist max: " + tz::util::cast::toString((test_boundary.getMaximum() - engine.getCamera().getPosition()).length()));
 			updater.reload();
 			seconds++;
 		}
 	
 		float multiplier = tz::util::cast::fromString<float>(MDLF(RawFile(engine.getProperties().getTag("resources"))).getTag("speed"));
+		if(test_boundary.intersects(engine.getCamera().getPosition()))
+			multiplier *= -5;
 		if(key_listener.isKeyPressed("W"))
 			engine.getCameraR().getPositionR() += (engine.getCameraR().getForward() * multiplier * engine.getTimeProfiler().getLastDelta());
 		if(key_listener.isKeyPressed("S"))

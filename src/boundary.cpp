@@ -60,6 +60,14 @@ bool AABB::intersects(const AABB& rhs) const
 	return std::max({distance.getX(), distance.getY(), distance.getZ()}) < 0;
 }
 
+bool AABB::intersects(const Vector3F& point) const
+{
+	bool meet_x = this->minimum.getX() <= point.getX() && this->maximum.getX() >= point.getX();
+	bool meet_y = this->minimum.getY() <= point.getY() && this->maximum.getY() >= point.getY();
+	bool meet_z = this->minimum.getZ() <= point.getZ() && this->maximum.getZ() >= point.getZ();
+	return meet_x && meet_y && meet_z;
+}
+
 BoundingPlane::BoundingPlane(Vector3F normal, float distance): normal(normal), distance(distance){}
 
 const Vector3F& BoundingPlane::getNormal() const

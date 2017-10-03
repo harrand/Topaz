@@ -35,6 +35,7 @@ public:
 	const Vector3F& getMaximum() const;
 	Vector3F& getMaximumR();
 	bool intersects(const AABB& rhs) const;
+	bool intersects(const Vector3F& point) const;
 private:
 	Vector3F minimum, maximum;
 };

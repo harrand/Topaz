@@ -202,6 +202,16 @@ public:
 		return this->length() > rhs.length();
 	}
 	
+	inline bool operator<=(const Vector3<T>& rhs) const
+	{
+		return *this < rhs || *this == rhs;
+	}
+	
+	inline bool operator>=(const Vector3<T>& rhs) const
+	{
+		return *this > rhs || *this == rhs;
+	}
+	
 	inline bool operator==(const Vector3<T>& rhs) const
 	{
 		return (this->x == rhs.getX()) && (this->y == rhs.getY()) && (this->z == rhs.getZ());
