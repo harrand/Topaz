@@ -135,7 +135,7 @@ void init()
 	while(!engine.getWindowR().isCloseRequested())
 	{
 		float multiplier = tz::util::cast::fromString<float>(MDLF(RawFile(engine.getProperties().getTag("resources"))).getTag("speed"));
-		float velocity = multiplier * engine.getTimeProfiler().getLastDelta();
+		float velocity = multiplier;
 		on_ground = false;
 		if(updater.millisPassed(1000))
 		{
@@ -149,6 +149,7 @@ void init()
 			for(const AABB& bound : bounds)
 				if(bound.intersects(engine.getCamera().getPosition() - (Vector3F(0, 1, 0) * (velocity + (a)))))
 					on_ground = true;
+			engine.getCameraR().setAxisBound(!noclip);
 			if(!noclip)
 			{
 				if(on_ground)

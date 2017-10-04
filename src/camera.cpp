@@ -90,5 +90,18 @@ Vector3F Camera::getRight() const
 
 Matrix4x4 Camera::getCameraMatrix() const
 {
-	return Matrix4x4::createModelMatrix(this->pos, this->rot, Vector3F(1, 1, 1));
+	if(this->axis_bound)
+		return Matrix4x4::createModelMatrix(this->pos, Vector3F(0, this->rot.getY(), 0), Vector3F(1, 1, 1));
+	else
+		return Matrix4x4::createModelMatrix(this->pos, this->rot, Vector3F(1, 1, 1));
+}
+
+bool Camera::isAxisBound() const
+{
+	return this->axis_bound;
+}
+
+void Camera::setAxisBound(bool axis_bound)
+{
+	this->axis_bound = axis_bound;
 }

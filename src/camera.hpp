@@ -27,10 +27,13 @@ public:
 	Vector3F getDown() const;
 	Vector3F getLeft() const;
 	Vector3F getRight() const;
+	bool isAxisBound() const;
+	void setAxisBound(bool axis_bound);
 private:
 	Matrix4x4 getCameraMatrix() const;
 	Vector3F pos, rot;
 	float fov, near_clip, far_clip;
+	bool axis_bound;
 };
 
 #endif
