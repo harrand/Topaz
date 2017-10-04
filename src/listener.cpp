@@ -37,9 +37,15 @@ void MouseListener::handleEvents(SDL_Event& evt)
 	if(evt.type == SDL_MOUSEBUTTONDOWN)
 	{
 		if(evt.button.button == SDL_BUTTON_LEFT)
+		{
 			this->left_click = true;
+			this->left_click_location = this->mouse_position;
+		}
 		else if(evt.button.button == SDL_BUTTON_RIGHT)
+		{
 			this->right_click = true;
+			this->right_click_location = this->mouse_position;
+		}
 	}
 		
 	if(evt.type == SDL_MOUSEBUTTONUP)
@@ -74,6 +80,16 @@ const Vector2F& MouseListener::getMousePos() const
 Vector2F MouseListener::getMouseDeltaPos() const
 {
 	return (this->mouse_position - this->previous_mouse_position);
+}
+
+const Vector2F& MouseListener::getLeftClickLocation() const
+{
+	return this->left_click_location;
+}
+
+const Vector2F& MouseListener::getRightClickLocation() const
+{
+	return this->right_click_location;
 }
 
 KeyListener::KeyListener(): Listener(){}

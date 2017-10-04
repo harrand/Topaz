@@ -37,8 +37,11 @@ public:
 	bool isRightClicked() const;
 	const Vector2F& getMousePos() const;
 	Vector2F getMouseDeltaPos() const;
+	const Vector2F& getLeftClickLocation() const;
+	const Vector2F& getRightClickLocation() const;
 private:
 	bool left_click, right_click;
+	Vector2F left_click_location, right_click_location;
 	Vector2F previous_mouse_position, mouse_position;
 };
 

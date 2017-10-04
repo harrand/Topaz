@@ -557,5 +557,8 @@ bool Button::mousedOver() const
 
 bool Button::clickedOn() const
 {
-	return this->mousedOver() && this->mouse_listener.isLeftClicked();
+	Vector2F mouse_pos = this->mouse_listener.getLeftClickLocation();
+	bool x_aligned = mouse_pos.getX() >= (this->getWindowPosX() - this->width) && mouse_pos.getX() <= (this->getWindowPosX() + this->width);
+	bool y_aligned = mouse_pos.getY() >= (this->findWindowParent()->getHeight() - this->getWindowPosY() - this->height) && mouse_pos.getY() <= ((this->findWindowParent()->getHeight() - this->getWindowPosY() + this->height));
+	return this->mouse_listener.isLeftClicked() && x_aligned && y_aligned;
 }
