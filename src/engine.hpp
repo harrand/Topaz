@@ -45,6 +45,7 @@ public:
 	unsigned int getTPS() const;
 	const CommandExecutor& getCommandExecutor() const;
 	CommandExecutor& getCommandExecutorR();
+	bool isUpdateDue() const;
 private:
 	TimeKeeper keeper;
 	TimeProfiler profiler;
@@ -63,6 +64,7 @@ private:
 	unsigned int fps;
 	const unsigned int tps;
 	CommandExecutor command_executor;
+	bool update_due;
 };
 
 #endif

@@ -21,7 +21,7 @@ void tz::terminate()
 	tz::util::log::message("Terminated Topaz.");
 }
 
-Engine::Engine(Window& wnd, std::string properties_path, unsigned int initial_fps, unsigned int tps): properties(RawFile(properties_path)), resources(RawFile(this->properties.getTag("resources"))), default_shader(this->properties.getTag("default_shader")), default_gui_shader(this->properties.getTag("default_gui_shader")), camera(Camera()), wnd(wnd), world(this->properties.getTag("default_world"), this->properties.getTag("resources")), fps(initial_fps), tps(tps), command_executor()
+Engine::Engine(Window& wnd, std::string properties_path, unsigned int initial_fps, unsigned int tps): properties(RawFile(properties_path)), resources(RawFile(this->properties.getTag("resources"))), default_shader(this->properties.getTag("default_shader")), default_gui_shader(this->properties.getTag("default_gui_shader")), camera(Camera()), wnd(wnd), world(this->properties.getTag("default_world"), this->properties.getTag("resources")), fps(initial_fps), tps(tps), command_executor(), update_due(false)
 {
 	this->camera.getPositionR() = this->world.getSpawnPoint();
 	tz::data::Manager(this->properties.getTag("resources")).retrieveAllData(this->meshes, this->textures, this->normal_maps, this->parallax_maps, this->displacement_maps);
@@ -55,7 +55,10 @@ void Engine::update(std::size_t shader_index)
 	{
 		this->world.update(this->tps);
 		ticker.reload();
+		this->update_due = true;
 	}
+	else
+		this->update_due = false;
 	this->wnd.update();
 	
 	GLenum error;
@@ -185,4 +188,9 @@ const CommandExecutor& Engine::getCommandExecutor() const
 CommandExecutor& Engine::getCommandExecutorR()
 {
 	return this->command_executor;
+}
+
+bool Engine::isUpdateDue() const
+{
+	return this->update_due;
 }

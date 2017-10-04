@@ -1,6 +1,7 @@
 #include "engine.hpp"
 #include "listener.hpp"
 #include "physics.hpp"
+#include "data.hpp"
 
 void init();
 #ifdef main
@@ -28,6 +29,34 @@ public:
 	ExitGuiCommand(Panel& gui_panel): gui_panel(gui_panel){}
 	virtual void operator()([[maybe_unused]] const std::vector<std::string>& args){gui_panel.setHidden(!gui_panel.isHidden());}
 	Panel& gui_panel;
+};
+
+class ToggleCommand : public Command
+{
+public:
+	ToggleCommand(bool& toggle): toggle(toggle){}
+	virtual void operator()([[maybe_unused]] const std::vector<std::string>& args){toggle = !toggle;}
+	bool& toggle;
+};
+
+class SpawnBlockCommand : public Command
+{
+public:
+	SpawnBlockCommand(Engine& engine, std::vector<AABB>& bounds): engine(engine), bounds(bounds){}
+	virtual void operator()([[maybe_unused]] const std::vector<std::string>& args)
+	{
+		tz::data::Manager manager(engine.getResources().getRawFile().getPath());
+		std::vector<std::pair<std::string, Texture::TextureType>> textures;
+		textures.emplace_back(manager.getResourceLink("bricks"), Texture::TextureType::TEXTURE);
+		textures.emplace_back(manager.getResourceLink("bricks_normalmap"), Texture::TextureType::NORMAL_MAP);
+		textures.emplace_back(manager.getResourceLink("bricks_parallaxmap"), Texture::TextureType::PARALLAX_MAP);
+		textures.emplace_back(manager.getResourceLink("bricks_displacementmap"), Texture::TextureType::DISPLACEMENT_MAP);
+		StaticObject obj(manager.getResourceLink("cube_hd"), textures, engine.getCamera().getPosition(), engine.getCamera().getRotation(), Vector3F(40, 20, 40));
+		bounds.push_back(tz::physics::boundAABB(obj, engine.getMeshes()));
+		engine.getWorldR().addObject(obj);
+	}
+	Engine& engine;
+	std::vector<AABB>& bounds;
 };
 
 class RenderSkyboxCommand : public Command
@@ -62,6 +91,12 @@ void init()
 	Shader skybox_shader("../../../src/shaders/skybox");
 	
 	TimeKeeper updater;
+	bool noclip = false;
+	
+	std::vector<AABB> bounds;
+	bounds.reserve(engine.getWorld().getObjects().size());
+	for(const StaticObject& object : engine.getWorld().getObjects())
+		bounds.push_back(tz::physics::boundAABB(object, engine.getMeshes()));
 	
 	Font example_font("../../../res/runtime/fonts/upheaval.ttf", 25);
 	TextLabel text(0.0f, 0.0f, Vector4F(1, 1, 1, 1), {}, Vector3F(0, 0, 0), example_font, "FPS: ...", engine.getDefaultGuiShader());
@@ -72,35 +107,29 @@ void init()
 	ExitGuiCommand exit(gui_panel);
 	TextLabel gui_title(0.0f, wnd.getHeight() - 50, Vector4F(1, 1, 1, 1), {}, Vector3F(0, 0, 0), example_font, "Main Menu", engine.getDefaultGuiShader());
 	Button test_button(0.0f, 2 * text.getHeight(), Vector4F(1, 1, 1, 1), Vector4F(0.7, 0.7, 0.7, 1.0), Vector3F(0, 0, 0), example_font, "Hide/Show", engine.getDefaultGuiShader(), mouse_listener);
-	Button creation_toggle(0.0f, 2 * text.getHeight() + 2 * test_button.getHeight(), Vector4F(1, 1, 1, 1), Vector4F(0.7, 0.7, 0.7, 1.0), Vector3F(0, 0, 0), example_font, "Create Objects", engine.getDefaultGuiShader(), mouse_listener);
+	Button noclip_toggle(0.0f, 2 * text.getHeight() + 2 * test_button.getHeight(), Vector4F(1, 1, 1, 1), Vector4F(0.7, 0.7, 0.7, 1.0), Vector3F(0, 0, 0), example_font, "Toggle Noclip", engine.getDefaultGuiShader(), mouse_listener);
+	Button spawn_block(0.0f, 2 * text.getHeight() + 2 * noclip_toggle.getHeight() + 2 * test_button.getHeight(), Vector4F(1, 1, 1, 1), Vector4F(0.7, 0.5, 0.5, 1.0), Vector3F(), example_font, "Spawn Block", engine.getDefaultGuiShader(), mouse_listener);
 	Button exit_gui_button(wnd.getWidth() - 50, wnd.getHeight() - 50, Vector4F(1, 1, 1, 1), Vector4F(1.0, 0, 0, 1.0), Vector3F(0, 0, 0), example_font, "X", engine.getDefaultGuiShader(), mouse_listener);
-	Panel creation_panel(-1.0f, -1.0f, 1.0f, 1.0f, Vector4F(0.4f, 0.4f, 0.4f, 1.0f), engine.getDefaultGuiShader());
-	ExitGuiCommand exit_creation(creation_panel);
-	creation_panel.setUsingProportionalPositioning(true);
-	creation_panel.setHidden(true);
-	engine.getWindowR().addChild(&creation_panel);
 	engine.getWindowR().addChild(&text);
 	engine.getWindowR().addChild(&gui_panel);
+	engine.getWindowR().addChild(&spawn_block);
 	gui_panel.addChild(&gui_title);
 	gui_panel.addChild(&test_button);
 	gui_panel.addChild(&exit_gui_button);
-	gui_panel.addChild(&creation_toggle);
+	gui_panel.addChild(&noclip_toggle);
+	ToggleCommand toggle_noclip(noclip);
+	SpawnBlockCommand spawn_test_cube(engine, bounds);
 	test_button.getOnMouseClickR() = &toggle;
 	exit_gui_button.getOnMouseClickR() = &exit;
-	creation_toggle.getOnMouseClickR() = &exit_creation;
-	
+	noclip_toggle.getOnMouseClickR() = &toggle_noclip;
+	spawn_block.getOnMouseClickR() = &spawn_test_cube;
 	
 	Skybox skybox("../../../res/runtime/models/skybox.obj", skybox_texture);
 	RenderSkyboxCommand render_skybox(skybox, engine.getCameraR(), skybox_shader, engine.getMeshes(), wnd);
 	engine.getCommandExecutorR().registerCommand(&render_skybox);
 	
-	std::vector<AABB> bounds;
-	bounds.reserve(engine.getWorld().getObjects().size());
-	for(const StaticObject& object : engine.getWorld().getObjects())
-		bounds.push_back(tz::physics::boundAABB(object, engine.getMeshes()));
-	//AABB test_boundary = tz::physics::boundAABB(engine.getWorld().getObjects().at(0), engine.getMeshes());
 	bool on_ground = false;
-	constexpr float a = 250.0f;
+	constexpr float a = 0.5f;
 	float speed = 0.0f;
 
 	while(!engine.getWindowR().isCloseRequested())
@@ -111,125 +140,127 @@ void init()
 		if(updater.millisPassed(1000))
 		{
 			text.setText("FPS: " + tz::util::cast::toString(engine.getFPS()));
-			tz::util::log::message("pos: ", tz::util::string::format(tz::util::string::devectoriseList3<float>(engine.getCamera().getPosition())));
 			updater.reload();
 			seconds++;
 		}
 		
-		for(const AABB& bound : bounds)
-			if(bound.intersects(engine.getCamera().getPosition() - (Vector3F(0, 1, 0) * (velocity + (a / engine.getTimeProfiler().getFPS())))))
-				on_ground = true;
-		if(on_ground)
+		if(engine.isUpdateDue())
 		{
-			speed = 0.0f;
-			tz::util::log::message("on ground now.");
-		}
-		else if(engine.getTimeProfiler().getFPS() != 0)
-		{
-			engine.getCameraR().getPositionR() -= Vector3F(0, speed / engine.getTimeProfiler().getFPS(), 0);
-			speed += a / engine.getTimeProfiler().getFPS();
-		}
-		
-		if(key_listener.isKeyPressed("W"))
-		{
-			Vector3F after = (engine.getCamera().getPosition() + (engine.getCameraR().getForward() * velocity));
-			bool collide = false;
 			for(const AABB& bound : bounds)
+				if(bound.intersects(engine.getCamera().getPosition() - (Vector3F(0, 1, 0) * (velocity + (a)))))
+					on_ground = true;
+			if(!noclip)
 			{
-				if(bound.intersects(after))
-					collide = true;
+				if(on_ground)
+					speed = 0.0f;
+				else if(engine.getTimeProfiler().getFPS() != 0)
+				{
+					engine.getCameraR().getPositionR() -= Vector3F(0, speed, 0);
+					speed += a;
+				}
 			}
-			if(!collide)
-				engine.getCameraR().getPositionR() = after;
-		}
-		if(key_listener.isKeyPressed("S"))
-		{
-			Vector3F after = (engine.getCamera().getPosition() + (engine.getCameraR().getBackward() * velocity));
-			bool collide = false;
-			for(const AABB& bound : bounds)
+			
+			if(key_listener.isKeyPressed("W"))
 			{
-				if(bound.intersects(after))
-					collide = true;
+				Vector3F after = (engine.getCamera().getPosition() + (engine.getCameraR().getForward() * velocity));
+				bool collide = false;
+				for(const AABB& bound : bounds)
+				{
+					if(bound.intersects(after))
+						collide = true;
+				}
+				if(!collide)
+					engine.getCameraR().getPositionR() = after;
 			}
-			if(!collide)
-				engine.getCameraR().getPositionR() = after;
-		}
-		if(key_listener.isKeyPressed("A"))
-		{
-			Vector3F after = (engine.getCamera().getPosition() + (engine.getCameraR().getLeft() * velocity));
-			bool collide = false;
-			for(const AABB& bound : bounds)
+			if(key_listener.isKeyPressed("S"))
 			{
-				if(bound.intersects(after))
-					collide = true;
+				Vector3F after = (engine.getCamera().getPosition() + (engine.getCameraR().getBackward() * velocity));
+				bool collide = false;
+				for(const AABB& bound : bounds)
+				{
+					if(bound.intersects(after))
+						collide = true;
+				}
+				if(!collide)
+					engine.getCameraR().getPositionR() = after;
 			}
-			if(!collide)
-				engine.getCameraR().getPositionR() = after;
-		}
-		if(key_listener.isKeyPressed("D"))
-		{
-			Vector3F after = (engine.getCamera().getPosition() + (engine.getCameraR().getRight() * velocity));
-			bool collide = false;
-			for(const AABB& bound : bounds)
+			if(key_listener.isKeyPressed("A"))
 			{
-				if(bound.intersects(after))
-					collide = true;
+				Vector3F after = (engine.getCamera().getPosition() + (engine.getCameraR().getLeft() * velocity));
+				bool collide = false;
+				for(const AABB& bound : bounds)
+				{
+					if(bound.intersects(after))
+						collide = true;
+				}
+				if(!collide)
+					engine.getCameraR().getPositionR() = after;
 			}
-			if(!collide)
-				engine.getCameraR().getPositionR() = after;
-		}
-		if(key_listener.isKeyPressed("Space"))
-		{
-			Vector3F after = (engine.getCamera().getPosition() + (Vector3F(0, 1, 0) * velocity));
-			bool collide = false;
-			for(const AABB& bound : bounds)
+			if(key_listener.isKeyPressed("D"))
 			{
-				if(bound.intersects(after))
-					collide = true;
+				Vector3F after = (engine.getCamera().getPosition() + (engine.getCameraR().getRight() * velocity));
+				bool collide = false;
+				for(const AABB& bound : bounds)
+				{
+					if(bound.intersects(after))
+						collide = true;
+				}
+				if(!collide)
+					engine.getCameraR().getPositionR() = after;
 			}
-			if(!collide)
-				engine.getCameraR().getPositionR() = after;
-		}
-		if(key_listener.isKeyPressed("Z"))
-		{
-			Vector3F after = (engine.getCamera().getPosition() + (Vector3F(0, -1, 0) * velocity));
-			bool collide = false;
-			for(const AABB& bound : bounds)
+			if(key_listener.isKeyPressed("Space"))
 			{
-				if(bound.intersects(after))
-					collide = true;
+				Vector3F after = (engine.getCamera().getPosition() + (Vector3F(0, 1, 0) * velocity));
+				bool collide = false;
+				for(const AABB& bound : bounds)
+				{
+					if(bound.intersects(after))
+						collide = true;
+				}
+				if(!collide)
+					engine.getCameraR().getPositionR() = after;
 			}
-			if(!collide)
-				engine.getCameraR().getPositionR() = after;
+			if(key_listener.isKeyPressed("Z"))
+			{
+				Vector3F after = (engine.getCamera().getPosition() + (Vector3F(0, -1, 0) * velocity));
+				bool collide = false;
+				for(const AABB& bound : bounds)
+				{
+					if(bound.intersects(after))
+						collide = true;
+				}
+				if(!collide)
+					engine.getCameraR().getPositionR() = after;
+			}
+			if(key_listener.isKeyPressed("I"))
+				engine.getCameraR().getRotationR() += (Vector3F(1.0f/360.0f, 0, 0) * multiplier * 5 * engine.getTimeProfiler().getLastDelta());
+			if(key_listener.isKeyPressed("K"))
+				engine.getCameraR().getRotationR() += (Vector3F(-1.0f/360.0f, 0, 0) * multiplier * 5 * engine.getTimeProfiler().getLastDelta());
+			if(key_listener.isKeyPressed("J"))
+				engine.getCameraR().getRotationR() += (Vector3F(0, -1.0f/360.0f, 0) * multiplier * 5 * engine.getTimeProfiler().getLastDelta());
+			if(key_listener.isKeyPressed("L"))
+				engine.getCameraR().getRotationR() += (Vector3F(0, 1.0f/360.0f, 0) * multiplier * 5 * engine.getTimeProfiler().getLastDelta());
+			if(key_listener.isKeyPressed("R"))
+			{
+				engine.getCameraR().getPositionR() = engine.getWorldR().getSpawnPoint();
+				engine.getCameraR().getRotationR() = engine.getWorldR().getSpawnOrientation();
+			}
+			if(key_listener.catchKeyPressed("Escape"))
+				gui_panel.setHidden(!gui_panel.isHidden());
+			if(mouse_listener.isLeftClicked() && gui_panel.isHidden())
+			{
+				Vector3F& orientation = engine.getCameraR().getRotationR();
+				Vector2F delta = mouse_listener.getMouseDeltaPos();
+				orientation.getYR() += (rotational_speed * delta.getX());
+				orientation.getXR() -= (rotational_speed * delta.getY());
+				mouse_listener.reloadMouseDelta();
+			}
 		}
-		if(key_listener.isKeyPressed("I"))
-			engine.getCameraR().getRotationR() += (Vector3F(1.0f/360.0f, 0, 0) * multiplier * 5 * engine.getTimeProfiler().getLastDelta());
-		if(key_listener.isKeyPressed("K"))
-			engine.getCameraR().getRotationR() += (Vector3F(-1.0f/360.0f, 0, 0) * multiplier * 5 * engine.getTimeProfiler().getLastDelta());
-		if(key_listener.isKeyPressed("J"))
-			engine.getCameraR().getRotationR() += (Vector3F(0, -1.0f/360.0f, 0) * multiplier * 5 * engine.getTimeProfiler().getLastDelta());
-		if(key_listener.isKeyPressed("L"))
-			engine.getCameraR().getRotationR() += (Vector3F(0, 1.0f/360.0f, 0) * multiplier * 5 * engine.getTimeProfiler().getLastDelta());
-		if(key_listener.isKeyPressed("R"))
-		{
-			engine.getCameraR().getPositionR() = engine.getWorldR().getSpawnPoint();
-			engine.getCameraR().getRotationR() = engine.getWorldR().getSpawnOrientation();
-		}
-		if(key_listener.catchKeyPressed("Escape"))
-			gui_panel.setHidden(!gui_panel.isHidden());
 		exit_gui_button.getXR() = wnd.getWidth() - (exit_gui_button.getWidth() * 2);
 		exit_gui_button.getYR() = wnd.getHeight() - (exit_gui_button.getHeight() * 2);
 		gui_title.getYR() = wnd.getHeight() - (gui_title.getHeight() * 2);
 		updater.update();
 		engine.update(shader_id);
-		if(mouse_listener.isLeftClicked() && gui_panel.isHidden())
-		{
-			Vector3F& orientation = engine.getCameraR().getRotationR();
-			Vector2F delta = mouse_listener.getMouseDeltaPos();
-			orientation.getYR() += (rotational_speed * delta.getX());
-			orientation.getXR() -= (rotational_speed * delta.getY());
-			mouse_listener.reloadMouseDelta();
-		}
 	}
 	engine.getResourcesR().editTag("played", tz::util::cast::toString(seconds));
 }
