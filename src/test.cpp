@@ -129,7 +129,7 @@ void init()
 	engine.getCommandExecutorR().registerCommand(&render_skybox);
 	
 	bool on_ground = false;
-	constexpr float a = 0.5f;
+	const float a = engine.getWorld().getGravity().length();
 	float speed = 0.0f;
 
 	while(!engine.getWindowR().isCloseRequested())
