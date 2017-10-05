@@ -25,6 +25,7 @@ public:
 	void setSpawnOrientation(Vector3F spawn_orientation = Vector3F());
 	void killLights();
 	void exportWorld(const std::string& world_link) const;
+	void save() const;
 	void render(Camera& cam, const Shader& shader, unsigned int width, unsigned int height, const std::vector<std::unique_ptr<Mesh>>& all_meshes, const std::vector<std::unique_ptr<Texture>>& all_textures, const std::vector<std::unique_ptr<NormalMap>>& all_normalmaps, const std::vector<std::unique_ptr<ParallaxMap>>& all_parallaxmaps, const std::vector<std::unique_ptr<DisplacementMap>>& all_displacementmaps);
 	void update(unsigned int tps);
 	std::size_t getSize() const;

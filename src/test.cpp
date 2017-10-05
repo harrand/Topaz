@@ -59,6 +59,15 @@ public:
 	std::vector<AABB>& bounds;
 };
 
+class SaveWorldCommand : public Command
+{
+public:
+	SaveWorldCommand(World& world): world(world){}
+	virtual void operator()([[maybe_unused]] const std::vector<std::string>& args)
+	{world.save();tz::util::log::message("World Saved.");};
+	World& world;
+};
+
 class RenderSkyboxCommand : public Command
 {
 public:
@@ -110,6 +119,7 @@ void init()
 	Button noclip_toggle(0.0f, 2 * text.getHeight() + 2 * test_button.getHeight(), Vector4F(1, 1, 1, 1), Vector4F(0.7, 0.7, 0.7, 1.0), Vector3F(0, 0, 0), example_font, "Toggle Noclip", engine.getDefaultGuiShader(), mouse_listener);
 	Button spawn_block(0.0f, 2 * text.getHeight() + 2 * noclip_toggle.getHeight() + 2 * test_button.getHeight(), Vector4F(1, 1, 1, 1), Vector4F(0.7, 0.5, 0.5, 1.0), Vector3F(), example_font, "Spawn Block", engine.getDefaultGuiShader(), mouse_listener);
 	Button exit_gui_button(wnd.getWidth() - 50, wnd.getHeight() - 50, Vector4F(1, 1, 1, 1), Vector4F(1.0, 0, 0, 1.0), Vector3F(0, 0, 0), example_font, "X", engine.getDefaultGuiShader(), mouse_listener);
+	Button save_world_button(0.0f, 2 * text.getHeight() + 2 * noclip_toggle.getHeight() + 2 * test_button.getHeight() + 2 * spawn_block.getHeight(), Vector4F(1, 1, 1, 1), Vector4F(0.7, 0.7, 0.7, 1.0), Vector3F(), example_font, "Save World", engine.getDefaultGuiShader(), mouse_listener);
 	engine.getWindowR().addChild(&text);
 	engine.getWindowR().addChild(&gui_panel);
 	engine.getWindowR().addChild(&spawn_block);
@@ -117,12 +127,15 @@ void init()
 	gui_panel.addChild(&test_button);
 	gui_panel.addChild(&exit_gui_button);
 	gui_panel.addChild(&noclip_toggle);
+	gui_panel.addChild(&save_world_button);
+	SaveWorldCommand save_world_cmd(engine.getWorldR());
 	ToggleCommand toggle_noclip(noclip);
 	SpawnBlockCommand spawn_test_cube(engine, bounds);
 	test_button.getOnMouseClickR() = &toggle;
 	exit_gui_button.getOnMouseClickR() = &exit;
 	noclip_toggle.getOnMouseClickR() = &toggle_noclip;
 	spawn_block.getOnMouseClickR() = &spawn_test_cube;
+	save_world_button.getOnMouseClickR() = &save_world_cmd;
 	
 	Skybox skybox("../../../res/runtime/models/skybox.obj", skybox_texture);
 	RenderSkyboxCommand render_skybox(skybox, engine.getCameraR(), skybox_shader, engine.getMeshes(), wnd);

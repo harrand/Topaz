@@ -165,6 +165,10 @@ void World::exportWorld(const std::string& world_link) const
 	output.addSequence("objects", object_list);
 	output.addSequence("entityobjects", entity_object_list);
 }
+void World::save() const
+{
+	this->exportWorld(this->getWorldLink());
+}
 
 void World::render(Camera& cam, const Shader& shader, unsigned int widata_managerh, unsigned int height, const std::vector<std::unique_ptr<Mesh>>& all_meshes, const std::vector<std::unique_ptr<Texture>>& all_textures, const std::vector<std::unique_ptr<NormalMap>>& all_normalmaps, const std::vector<std::unique_ptr<ParallaxMap>>& all_parallaxmaps, const std::vector<std::unique_ptr<DisplacementMap>>& all_displacementmaps)
 {
