@@ -90,7 +90,7 @@ void init()
 	CubeMap skybox_texture("../../../res/runtime/textures/skybox/", "greenhaze", ".png");
 	Shader skybox_shader("../../../src/shaders/skybox");
 	
-	TimeKeeper updater;
+	Timer updater;
 	bool noclip = false;
 	
 	std::vector<AABB> bounds;

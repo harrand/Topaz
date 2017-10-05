@@ -1,35 +1,35 @@
-#include "timekeeper.hpp"
+#include "time.hpp"
 #include <chrono>
 
-TimeKeeper::TimeKeeper()
+Timer::Timer()
 {
 	this->reload();
 }
 
-void TimeKeeper::update()
+void Timer::update()
 {
 	// Assign 'after' to the current number of millis past since Epoch.
 	this->after = std::chrono::system_clock::now().time_since_epoch() / std::chrono::milliseconds(1);
 }
 
-void TimeKeeper::reload()
+void Timer::reload()
 {
 	// Assign both to the number of millis past since Epoch, so that the range is zero.
 	this->before = std::chrono::system_clock::now().time_since_epoch() / std::chrono::milliseconds(1);
 	this->after = std::chrono::system_clock::now().time_since_epoch() / std::chrono::milliseconds(1);
 }
 
-float TimeKeeper::getRange() const
+float Timer::getRange() const
 {
 	return (this->after) - (this->before);
 }
 
-bool TimeKeeper::millisPassed(float millis) const
+bool Timer::millisPassed(float millis) const
 {
 	return (this->getRange() > millis);
 }
 
-TimeProfiler::TimeProfiler(): tk(TimeKeeper()){}
+TimeProfiler::TimeProfiler(): tk(Timer()){}
 
 void TimeProfiler::beginFrame()
 {

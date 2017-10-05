@@ -2,7 +2,7 @@
 #define ENGINE_HPP
 #include "gui.hpp"
 #include "command.hpp"
-#include "timekeeper.hpp"
+#include "time.hpp"
 #include "audio.hpp"
 
 namespace tz
@@ -21,7 +21,7 @@ public:
 	~Engine(){};
 	
 	void update(std::size_t shader_index);
-	const TimeKeeper& getTimeKeeper() const;
+	const Timer& getTimer() const;
 	const TimeProfiler& getTimeProfiler() const;
 	const MDLF& getProperties() const;
 	MDLF& getPropertiesR();
@@ -47,7 +47,7 @@ public:
 	CommandExecutor& getCommandExecutorR();
 	bool isUpdateDue() const;
 private:
-	TimeKeeper keeper;
+	Timer keeper;
 	TimeProfiler profiler;
 	MDLF properties;
 	MDLF resources;

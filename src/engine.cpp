@@ -31,7 +31,7 @@ Engine::Engine(Window& wnd, std::string properties_path, unsigned int initial_fp
 
 void Engine::update(std::size_t shader_index)
 {
-	static TimeKeeper ticker;
+	static Timer ticker;
 	if(this->keeper.millisPassed(1000))
 	{
 		this->fps = this->profiler.getFPS();
@@ -66,7 +66,7 @@ void Engine::update(std::size_t shader_index)
 			tz::util::log::error("OpenGL Error: ", error, "\n");
 }
 
-const TimeKeeper& Engine::getTimeKeeper() const
+const Timer& Engine::getTimer() const
 {
 	return this->keeper;
 }

@@ -5,14 +5,14 @@
 #include <functional>
 #include <ctime>
 
-class TimeKeeper
+class Timer
 {
 public:
-	TimeKeeper();
-	TimeKeeper(const TimeKeeper& copy) = default;
-	TimeKeeper(TimeKeeper&& move) = default;
-	~TimeKeeper() = default;
-	TimeKeeper& operator=(const TimeKeeper& rhs) = default;
+	Timer();
+	Timer(const Timer& copy) = default;
+	Timer(Timer&& move) = default;
+	~Timer() = default;
+	Timer& operator=(const Timer& rhs) = default;
 	
 	void update();
 	void reload();
@@ -39,10 +39,10 @@ public:
 	unsigned int getFPS() const;
 private:
 	std::vector<float> deltas;
-	TimeKeeper tk;
+	Timer tk;
 };
 
-namespace tz
+namespace tz::time
 {
 	namespace scheduler
 	{
