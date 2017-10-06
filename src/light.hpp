@@ -8,13 +8,17 @@ namespace tz
 	namespace graphics
 	{
 		constexpr std::size_t light_number_of_uniforms = 5;
+		constexpr Vector3F light_default_colour(std::array<float, 3>({1.0f, 1.0f, 1.0f}));
+		constexpr float light_default_power = 1.0f;
+		constexpr float light_default_diffuse_component = 1.0f;
+		constexpr float light_default_specular_component = 10.0f;
 	}
 }
 
 class Light
 {
 public:
-	Light(Vector3F pos = Vector3F(), Vector3F colour = Vector3F(1, 1, 1), float power = 1.0f, float diffuse_component = 1.0f, float specular_component = 1.0f);
+	Light(Vector3F pos = Vector3F(), Vector3F colour = tz::graphics::light_default_colour, float power = tz::graphics::light_default_power, float diffuse_component = tz::graphics::light_default_diffuse_component, float specular_component = tz::graphics::light_default_specular_component);
 	Light(const Light& copy) = default;
 	Light(Light&& move) = default;
 	~Light() = default;

@@ -1,7 +1,7 @@
 #ifndef VECTOR_HPP
 #define VECTOR_HPP
 #include <cmath>
-#include <vector>
+#include <array>
 
 struct Vector2POD
 {
@@ -22,7 +22,8 @@ template<typename T>
 class Vector2
 {
 public:
-	inline Vector2<T>(T x = T(), T y = T()): x(x), y(y){}
+	Vector2<T>(T x = T(), T y = T()): x(x), y(y){}
+	constexpr Vector2<T>(const std::array<T, 2>& data): x(data[0]), y(data[1]){}
 	inline Vector2<T>(const Vector2<T>& copy) = default;
 	inline Vector2<T>(Vector2<T>&& move) = default;
 	inline ~Vector2<T>() = default;
@@ -128,6 +129,7 @@ private:
 	using Vector2<T>::normalised;
 public:
 	inline Vector3<T>(T x = T(), T y = T(), T z = T()): Vector2<T>(x, y), z(z){}
+	constexpr Vector3<T>(const std::array<T, 3>& data): Vector2<T>(std::array<T, 2>({data[0], data[1]})), z(data[2]){}
 	inline Vector3<T>(const Vector3<T>& copy) = default;
 	inline Vector3<T>(Vector3<T>&& move) = default;
 	inline ~Vector3<T>() = default;
@@ -239,6 +241,7 @@ private:
 	using Vector3<T>::normalised;
 public:
 	inline Vector4<T>(T x = T(), T y = T(), T z = T(), T w = T()): Vector3<T>(x, y, z), w(w){}
+	constexpr Vector4<T>(const std::array<T, 4>& data): Vector3<T>(std::array<T, 3>({data[0], data[1], data[2]})), w(data[3]){}
 	inline Vector4<T>(const Vector4& copy) = default;
 	inline Vector4<T>(Vector4&& move) = default;
 	inline ~Vector4<T>() = default;

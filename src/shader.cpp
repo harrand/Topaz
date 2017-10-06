@@ -31,13 +31,13 @@ Shader::Shader(std::string filename): filename(std::move(filename))
 	glValidateProgram(this->program_handle);
 	Shader::checkShaderError(this->program_handle, GL_VALIDATE_STATUS, true, "Shader Program Validation Failed:\n");
 	
-	this->uniforms[static_cast<unsigned int>(UniformTypes::MODEL)] = glGetUniformLocation(this->program_handle, "m");
-	this->uniforms[static_cast<unsigned int>(UniformTypes::VIEW)] = glGetUniformLocation(this->program_handle, "v");
-	this->uniforms[static_cast<unsigned int>(UniformTypes::PROJECTION)] = glGetUniformLocation(this->program_handle, "p");
-	this->uniforms[static_cast<unsigned int>(UniformTypes::SHININESS)] = glGetUniformLocation(this->program_handle, "shininess");
-	this->uniforms[static_cast<unsigned int>(UniformTypes::PARALLAX_MAP_SCALE)] = glGetUniformLocation(this->program_handle, "parallax_multiplier");
-	this->uniforms[static_cast<unsigned int>(UniformTypes::PARALLAX_MAP_BIAS)] = glGetUniformLocation(this->program_handle, "parallax_bias");
-	this->uniforms[static_cast<unsigned int>(UniformTypes::DISPLACEMENT_FACTOR)] = glGetUniformLocation(this->program_handle, "displacement_factor");
+	this->uniforms[static_cast<std::size_t>(UniformTypes::MODEL)] = glGetUniformLocation(this->program_handle, "m");
+	this->uniforms[static_cast<std::size_t>(UniformTypes::VIEW)] = glGetUniformLocation(this->program_handle, "v");
+	this->uniforms[static_cast<std::size_t>(UniformTypes::PROJECTION)] = glGetUniformLocation(this->program_handle, "p");
+	this->uniforms[static_cast<std::size_t>(UniformTypes::SHININESS)] = glGetUniformLocation(this->program_handle, "shininess");
+	this->uniforms[static_cast<std::size_t>(UniformTypes::PARALLAX_MAP_SCALE)] = glGetUniformLocation(this->program_handle, "parallax_multiplier");
+	this->uniforms[static_cast<std::size_t>(UniformTypes::PARALLAX_MAP_BIAS)] = glGetUniformLocation(this->program_handle, "parallax_bias");
+	this->uniforms[static_cast<std::size_t>(UniformTypes::DISPLACEMENT_FACTOR)] = glGetUniformLocation(this->program_handle, "displacement_factor");
 	tz::util::log::message("Shader with link '", this->filename, "':");
 	tz::util::log::message("\tHas Vertex Shader: ", this->hasVertexShader());
 	tz::util::log::message("\tHas Tessellation Control Shader: ", this->hasTessellationControlShader());
@@ -128,25 +128,10 @@ void Shader::update(const std::array<float, 16>& model_matrix_array, const std::
 
 std::string Shader::loadShader(const std::string& filename)
 {
-    std::ifstream file;
-    file.open((filename).c_str());
-
-    std::string output;
-    std::string line;
-
-    if(file.is_open())
-    {
-        while(file.good())
-        {
-            getline(file, line);
-			output.append(line + "\n");
-        }
-    }
-    else if(output != "")
-    {
-		tz::util::log::error("Unable to load shader '" + filename + "' with source '", output, "'");
-    }
-    return output;
+	std::string source = "";
+	for(std::string str : RawFile(filename).getLines())
+		source += str + "\n";
+	return source;
 }
 
 void Shader::checkShaderError(GLuint shader, GLuint flag, bool is_program, std::string error_message)

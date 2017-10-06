@@ -163,7 +163,7 @@ void init()
 			{
 				if(bound.intersects(engine.getCamera().getPosition())) // teleport camera above any object it's inside
 					engine.getCameraR().getPositionR().getYR() = bound.getMaximum().getY();
-				if(bound.intersects(engine.getCamera().getPosition() - (Vector3F(0, 1, 0) * (velocity + (a)))))
+				if(bound.intersects(engine.getCamera().getPosition() - (Vector3F(0, 1, 0) * (velocity + a))))
 					on_ground = true;
 			}
 			engine.getCameraR().setAxisBound(!noclip);
