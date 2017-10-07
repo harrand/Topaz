@@ -21,6 +21,23 @@ namespace tz
 		constexpr double pi = 4 * std::atan(1);
 		constexpr double e = std::exp(1);
 	}
+	namespace literals
+	{
+		// to encourage sticking to SI units and radians
+		inline long double operator""_lb(long double mass)// return angle in kilograms
+		{
+			return mass * 0.45359237;
+		}
+		inline long double operator""_st(long double mass)// return angle in kilograms
+		{
+			using namespace tz::literals;
+			return operator""_lb(mass * 14.0);
+		}
+		inline long double operator""_deg(long double angle)// return angle in radians
+		{
+			return angle * tz::consts::pi / 180.0;
+		}
+	}
 	namespace util
 	{
 		namespace cast
