@@ -45,7 +45,7 @@ Force& Force::operator-=(const Force& other)
 	return *this;
 }
 
-BoundingSphere tz::physics::boundSphere(const StaticObject& object, const std::vector<std::unique_ptr<Mesh>>& all_meshes)
+BoundingSphere tz::physics::boundSphere(const Object& object, const std::vector<std::unique_ptr<Mesh>>& all_meshes)
 {
 	std::vector<Vector3F> positions_worldspace;
 	const std::vector<Vector3F>& positions_modelspace = tz::graphics::findMesh(object.getMeshLink(), all_meshes)->getPositions();
@@ -67,7 +67,7 @@ BoundingSphere tz::physics::boundSphere(const StaticObject& object, const std::v
 	return {mean, *std::max_element(distances.begin(), distances.end())};
 }
 	
-AABB tz::physics::boundAABB(const StaticObject& object, const std::vector<std::unique_ptr<Mesh>>& all_meshes)
+AABB tz::physics::boundAABB(const Object& object, const std::vector<std::unique_ptr<Mesh>>& all_meshes)
 {
 	const std::vector<Vector3F>& positions_modelspace = tz::graphics::findMesh(object.getMeshLink(), all_meshes)->getPositions();
 	std::vector<Vector3F> positions_worldspace;

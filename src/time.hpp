@@ -1,5 +1,5 @@
-#ifndef TIMEKEEPER_HPP
-#define TIMEKEEPER_HPP
+#ifndef TIME_HPP
+#define TIME_HPP
 #include <vector>
 #include <thread>
 #include <functional>

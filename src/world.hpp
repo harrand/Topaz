@@ -16,7 +16,7 @@ public:
 	World& operator=(const World& rhs) = default;
 	
 	const std::string& getFileName() const;
-	void addObject(StaticObject obj);
+	void addObject(Object obj);
 	void addEntity(Entity ent);
 	void addEntityObject(EntityObject eo);
 	void addLight(Light light, GLuint shader_program_handle);
@@ -29,10 +29,10 @@ public:
 	void render(Camera& cam, const Shader& shader, unsigned int width, unsigned int height, const std::vector<std::unique_ptr<Mesh>>& all_meshes, const std::vector<std::unique_ptr<Texture>>& all_textures, const std::vector<std::unique_ptr<NormalMap>>& all_normalmaps, const std::vector<std::unique_ptr<ParallaxMap>>& all_parallaxmaps, const std::vector<std::unique_ptr<DisplacementMap>>& all_displacementmaps);
 	void update(unsigned int tps);
 	std::size_t getSize() const;
-	const std::vector<StaticObject>& getObjects() const;
+	const std::vector<Object>& getObjects() const;
 	const std::vector<Entity>& getEntities() const;
 	const std::vector<EntityObject>& getEntityObjects() const;
-	std::vector<StaticObject>& getObjectsR();
+	std::vector<Object>& getObjectsR();
 	std::vector<Entity>& getEntitiesR();
 	std::vector<EntityObject>& getEntityObjectsR();
 	const Vector3F& getGravity() const;
@@ -45,13 +45,13 @@ public:
 	const std::map<std::array<GLint, tz::graphics::light_number_of_uniforms>, Light>& getLights() const;
 	std::map<std::array<GLint, tz::graphics::light_number_of_uniforms>, Light>& getLightsR();
 private:
-	static StaticObject retrieveObjectData(const std::string& object_name, std::string resources_path, MDLF& mdlf);
+	static Object retrieveObjectData(const std::string& object_name, std::string resources_path, MDLF& mdlf);
 	static EntityObject retrieveEntityObjectData(const std::string& entity_object_name, std::string resources_path, MDLF& mdlf);
 	static constexpr unsigned int MAXIMUM_LIGHTS = 8;
 	std::string filename;
 	std::string resources_path;
 	Vector3F gravity, spawn_point, spawn_orientation;
-	std::vector<StaticObject> objects;
+	std::vector<Object> objects;
 	std::vector<Entity> entities;
 	std::vector<EntityObject> entity_objects;
 	std::map<std::array<GLint, tz::graphics::light_number_of_uniforms>, Light> base_lights;

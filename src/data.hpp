@@ -1,5 +1,5 @@
-#ifndef DATATRANSLATION_HPP
-#define DATATRANSLATION_HPP
+#ifndef DATA_HPP
+#define DATA_HPP
 #include "mesh.hpp"
 #include "texture.hpp"
 #include "mdl.hpp"
@@ -18,7 +18,7 @@ namespace tz
 			Manager(Manager&& move) = default;
 			Manager& operator=(const Manager& rhs) = default;
 			~Manager() = default;
-		
+			
 			std::string getResourceLink(const std::string& resourceName) const;
 			std::string getResourceName(const std::string& resourceLink) const;
 			std::unordered_map<std::string, std::string> retrieveModels() const;

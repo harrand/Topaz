@@ -26,8 +26,15 @@ private:
 
 namespace tz::physics
 {
-	BoundingSphere boundSphere(const StaticObject& object, const std::vector<std::unique_ptr<Mesh>>& all_meshes);
-	AABB boundAABB(const StaticObject& object, const std::vector<std::unique_ptr<Mesh>>& all_meshes);
+	enum class BoundaryType : unsigned int
+	{
+		NONE,
+		SPHERE,
+		AXIS_ALIGNED_BOUNDING_BOX,
+		PLANE
+	};
+	BoundingSphere boundSphere(const Object& object, const std::vector<std::unique_ptr<Mesh>>& all_meshes);
+	AABB boundAABB(const Object& object, const std::vector<std::unique_ptr<Mesh>>& all_meshes);
 }
 
 #endif

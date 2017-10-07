@@ -1,5 +1,5 @@
-#ifndef LISTENERS_HPP
-#define LISTENERS_HPP
+#ifndef LISTENER_HPP
+#define LISTENER_HPP
 #include "SDL.h"
 #include "command.hpp"
 #include "camera.hpp"

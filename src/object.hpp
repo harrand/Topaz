@@ -7,14 +7,22 @@
 #include "boundary.hpp"
 #include <initializer_list>
 
-class StaticObject
+namespace tz::graphics
+{
+	constexpr unsigned int default_shininess = 5;
+	constexpr float default_parallax_map_scale = 0.04f;
+	constexpr float default_parallax_map_offset = -0.5f;
+	constexpr float default_displacement_factor = 0.25f;
+}
+
+class Object
 {
 public:
-	StaticObject(std::string mesh_link, std::vector<std::pair<std::string, Texture::TextureType>> textures, Vector3F pos, Vector3F rot, Vector3F scale, unsigned int shininess = 5, float parallax_map_scale = 0.04f, float parallax_map_offset = -0.5f, float displacement_factor = 0.25f);
-	StaticObject(const StaticObject& copy) = default;
-	StaticObject(StaticObject&& move) = default;
-	~StaticObject() = default;
-	StaticObject& operator=(const StaticObject& rhs) = default;
+	Object(std::string mesh_link, std::vector<std::pair<std::string, Texture::TextureType>> textures, Vector3F pos, Vector3F rot, Vector3F scale, unsigned int shininess = tz::graphics::default_shininess, float parallax_map_scale = tz::graphics::default_parallax_map_scale, float parallax_map_offset = tz::graphics::default_parallax_map_offset, float displacement_factor = tz::graphics::default_displacement_factor);
+	Object(const Object& copy) = default;
+	Object(Object&& move) = default;
+	~Object() = default;
+	Object& operator=(const Object& rhs) = default;
 	
 	const Vector3F& getPosition() const;
 	const Vector3F& getRotation() const;

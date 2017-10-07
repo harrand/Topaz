@@ -51,7 +51,7 @@ public:
 		textures.emplace_back(manager.getResourceLink("bricks_normalmap"), Texture::TextureType::NORMAL_MAP);
 		textures.emplace_back(manager.getResourceLink("bricks_parallaxmap"), Texture::TextureType::PARALLAX_MAP);
 		textures.emplace_back(manager.getResourceLink("bricks_displacementmap"), Texture::TextureType::DISPLACEMENT_MAP);
-		StaticObject obj(manager.getResourceLink("cube_hd"), textures, engine.getCamera().getPosition(), engine.getCamera().getRotation(), Vector3F(40, 20, 40));
+		Object obj(manager.getResourceLink("cube_hd"), textures, engine.getCamera().getPosition(), engine.getCamera().getRotation(), Vector3F(40, 20, 40));
 		bounds.push_back(tz::physics::boundAABB(obj, engine.getMeshes()));
 		engine.getWorldR().addObject(obj);
 	}
@@ -104,7 +104,7 @@ void init()
 	
 	std::vector<AABB> bounds;
 	bounds.reserve(engine.getWorld().getObjects().size());
-	for(const StaticObject& object : engine.getWorld().getObjects())
+	for(const Object& object : engine.getWorld().getObjects())
 		bounds.push_back(tz::physics::boundAABB(object, engine.getMeshes()));
 	
 	Font example_font("../../../res/runtime/fonts/upheaval.ttf", 25);

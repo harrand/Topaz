@@ -4,10 +4,15 @@
 #include "object.hpp"
 #include <memory>
 
+namespace tz::physics
+{
+	constexpr float default_mass = 1.0f;
+}
+
 class Entity
 {
 public:
-	Entity(float mass = 1.0f, Vector3F position = Vector3F(), Vector3F velocity = Vector3F(), std::unordered_map<std::string, Force> forces = std::unordered_map<std::string, Force>());
+	Entity(float mass = tz::physics::default_mass, Vector3F position = Vector3F(), Vector3F velocity = Vector3F(), std::unordered_map<std::string, Force> forces = std::unordered_map<std::string, Force>());
 	Entity(const Entity& copy) = default;
 	Entity(Entity&& move) = default;
 	Entity& operator=(const Entity& rhs) = default;
@@ -31,10 +36,10 @@ private:
 	Vector3F position;
 };
 
-class EntityObject: public Entity, public StaticObject
+class EntityObject : public Entity, public Object
 {
 public:
-	EntityObject(std::string mesh_link, std::vector<std::pair<std::string, Texture::TextureType>> textures, float mass = 1.0f, Vector3F position = Vector3F(), Vector3F rotation = Vector3F(), Vector3F scale = Vector3F(1, 1, 1), unsigned int shininess = 5, float parallax_map_scale = 0.04f, float parallax_map_offset = -0.5f, float displacement_factor = 0.25f, Vector3F velocity = Vector3F(), std::unordered_map<std::string, Force> forces = std::unordered_map<std::string, Force>());
+	EntityObject(std::string mesh_link, std::vector<std::pair<std::string, Texture::TextureType>> textures, float mass = tz::physics::default_mass, Vector3F position = Vector3F(), Vector3F rotation = Vector3F(), Vector3F scale = Vector3F(1, 1, 1), unsigned int shininess = tz::graphics::default_shininess, float parallax_map_scale = tz::graphics::default_parallax_map_scale, float parallax_map_offset = tz::graphics::default_parallax_map_offset, float displacement_factor = tz::graphics::default_displacement_factor, Vector3F velocity = Vector3F(), std::unordered_map<std::string, Force> forces = std::unordered_map<std::string, Force>());
 	EntityObject(const EntityObject& copy) = default;
 	EntityObject(EntityObject&& move) = default;
 	EntityObject& operator=(const EntityObject& rhs) = default;

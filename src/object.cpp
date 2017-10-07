@@ -1,88 +1,88 @@
 #include "object.hpp"
 
-StaticObject::StaticObject(std::string mesh_link, std::vector<std::pair<std::string, Texture::TextureType>> textures, Vector3F pos, Vector3F rot, Vector3F scale, unsigned int shininess, float parallax_map_scale, float parallax_map_offset, float displacement_factor): pos(std::move(pos)), rot(std::move(rot)), scale(std::move(scale)), shininess(shininess), parallax_map_scale(parallax_map_scale), parallax_map_offset(parallax_map_offset), displacement_factor(displacement_factor), mesh_link(std::move(mesh_link)), textures(std::move(textures)){}
+Object::Object(std::string mesh_link, std::vector<std::pair<std::string, Texture::TextureType>> textures, Vector3F pos, Vector3F rot, Vector3F scale, unsigned int shininess, float parallax_map_scale, float parallax_map_offset, float displacement_factor): pos(std::move(pos)), rot(std::move(rot)), scale(std::move(scale)), shininess(shininess), parallax_map_scale(parallax_map_scale), parallax_map_offset(parallax_map_offset), displacement_factor(displacement_factor), mesh_link(std::move(mesh_link)), textures(std::move(textures)){}
 
-const Vector3F& StaticObject::getPosition() const
+const Vector3F& Object::getPosition() const
 {
 	return this->pos;
 }
 
-const Vector3F& StaticObject::getRotation() const
+const Vector3F& Object::getRotation() const
 {
 	return this->rot;
 }
 
-const Vector3F& StaticObject::getScale() const
+const Vector3F& Object::getScale() const
 {
 	return this->scale;
 }
 
-unsigned int StaticObject::getShininess() const
+unsigned int Object::getShininess() const
 {
 	return this->shininess;
 }
 
-float StaticObject::getParallaxMapScale() const
+float Object::getParallaxMapScale() const
 {
 	return this->parallax_map_scale;
 }
 
-float StaticObject::getParallaxMapOffset() const
+float Object::getParallaxMapOffset() const
 {
 	return this->parallax_map_offset;
 }
 
-float StaticObject::getDisplacementFactor() const
+float Object::getDisplacementFactor() const
 {
 	return this->displacement_factor;
 }
 
-Vector3F& StaticObject::getPositionR()
+Vector3F& Object::getPositionR()
 {
 	return this->pos;
 }
 
-Vector3F& StaticObject::getRotationR()
+Vector3F& Object::getRotationR()
 {
 	return this->rot;
 }
 
-Vector3F& StaticObject::getScaleR()
+Vector3F& Object::getScaleR()
 {
 	return this->scale;
 }
 
-unsigned int& StaticObject::getShininessR()
+unsigned int& Object::getShininessR()
 {
 	return this->shininess;
 }
 
-float& StaticObject::getParallaxMapScaleR()
+float& Object::getParallaxMapScaleR()
 {
 	return this->parallax_map_scale;
 }
 
-float& StaticObject::getParallaxMapOffsetR()
+float& Object::getParallaxMapOffsetR()
 {
 	return this->parallax_map_offset;
 }
 
-float& StaticObject::getDisplacementFactorR()
+float& Object::getDisplacementFactorR()
 {
 	return this->displacement_factor;
 }
 
-const std::string& StaticObject::getMeshLink() const
+const std::string& Object::getMeshLink() const
 {
 	return this->mesh_link;
 }
 
-const std::vector<std::pair<std::string, Texture::TextureType>> StaticObject::getTextures() const
+const std::vector<std::pair<std::string, Texture::TextureType>> Object::getTextures() const
 {
 	return this->textures;
 }
 
-void StaticObject::render(Mesh* mesh, Texture* tex, NormalMap* nm, ParallaxMap* pm, DisplacementMap* dm, const Camera& cam, const Shader& shad, float width, float height) const
+void Object::render(Mesh* mesh, Texture* tex, NormalMap* nm, ParallaxMap* pm, DisplacementMap* dm, const Camera& cam, const Shader& shad, float width, float height) const
 {
 	if(mesh == nullptr)
 		return;

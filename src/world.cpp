@@ -39,7 +39,7 @@ const std::string& World::getFileName() const
 	return this->filename;
 }
 
-void World::addObject(StaticObject obj)
+void World::addObject(Object obj)
 {
 	this->objects.push_back(std::move(obj));
 }
@@ -127,7 +127,7 @@ void World::exportWorld(const std::string& world_link) const
 	{
 		const std::string object_name = "object" + tz::util::cast::toString<float>(i);
 		object_list.push_back(object_name);
-		const StaticObject current_object = this->objects.at(i);
+		const Object current_object = this->objects.at(i);
 		
 		output.editTag(object_name + ".mesh", data_manager.getResourceName(current_object.getMeshLink()));
 		for(auto& texture : current_object.getTextures())
@@ -241,7 +241,7 @@ std::size_t World::getSize() const
 	return this->objects.size() + this->entities.size() + this->entity_objects.size();
 }
 
-const std::vector<StaticObject>& World::getObjects() const
+const std::vector<Object>& World::getObjects() const
 {
 	return this->objects;
 }
@@ -256,7 +256,7 @@ const std::vector<EntityObject>& World::getEntityObjects() const
 	return this->entity_objects;
 }
 
-std::vector<StaticObject>& World::getObjectsR()
+std::vector<Object>& World::getObjectsR()
 {
 	return this->objects;
 }
@@ -316,7 +316,7 @@ std::map<std::array<GLint, tz::graphics::light_number_of_uniforms>, Light>& Worl
 	return this->base_lights;
 }
 
-StaticObject World::retrieveObjectData(const std::string& object_name, std::string resources_path, MDLF& mdlf)
+Object World::retrieveObjectData(const std::string& object_name, std::string resources_path, MDLF& mdlf)
 {
 	std::string mesh_name = mdlf.getTag(object_name + ".mesh");
 
@@ -328,13 +328,13 @@ StaticObject World::retrieveObjectData(const std::string& object_name, std::stri
 	float parallax_map_offset = tz::util::cast::fromString<float>(mdlf.getTag(object_name + ".parallax_map_offset"));
 	float displacement_factor = tz::util::cast::fromString<float>(mdlf.getTag(object_name + ".displacement_factor"));
 	if(!mdlf.existsTag(object_name + ".shininess"))
-		shininess = 5;
+		shininess = tz::graphics::default_shininess;
 	if(!mdlf.existsTag(object_name + ".parallax_map_scale"))
-		parallax_map_scale = 0.04f;
+		parallax_map_scale = tz::graphics::default_parallax_map_scale;
 	if(!mdlf.existsTag(object_name + ".parallax_map_offset"))
-		parallax_map_offset = -0.5f;
+		parallax_map_offset = tz::graphics::default_parallax_map_offset;
 	if(!mdlf.existsTag(object_name + ".displacement_factor"))
-		displacement_factor = 0.25f;
+		displacement_factor = tz::graphics::default_displacement_factor;
 	tz::data::Manager data_manager(resources_path);
 	
 	std::string mesh_link = data_manager.getResourceLink(mesh_name);
@@ -355,18 +355,21 @@ EntityObject World::retrieveEntityObjectData(const std::string& entity_object_na
 	std::string position_string = mdlf.getTag(entity_object_name + ".pos");
 	std::string rotation_string = mdlf.getTag(entity_object_name + ".rot");
 	std::string scale_string = mdlf.getTag(entity_object_name + ".scale");
+	float mass = tz::util::cast::fromString<float>(mass_string);
 	unsigned int shininess = tz::util::cast::fromString<unsigned int>(mdlf.getTag(entity_object_name + ".shininess"));
 	float parallax_map_scale = tz::util::cast::fromString<float>(mdlf.getTag(entity_object_name + ".parallax_map_scale"));
 	float parallax_map_offset = tz::util::cast::fromString<float>(mdlf.getTag(entity_object_name + ".parallax_map_offset"));
 	float displacement_factor = tz::util::cast::fromString<float>(mdlf.getTag(entity_object_name + ".displacement_factor"));
+	if(!mdlf.existsTag(entity_object_name + ".mass"))
+		mass = tz::physics::default_mass;
 	if(!mdlf.existsTag(entity_object_name + ".shininess"))
-		shininess = 5;
+		shininess = tz::graphics::default_shininess;
 	if(!mdlf.existsTag(entity_object_name + ".parallax_map_scale"))
-		parallax_map_scale = 0.04f;
+		parallax_map_scale = tz::graphics::default_parallax_map_scale;
 	if(!mdlf.existsTag(entity_object_name + ".parallax_map_offset"))
-		parallax_map_offset = -0.5f;
+		parallax_map_offset = tz::graphics::default_parallax_map_offset;
 	if(!mdlf.existsTag(entity_object_name + ".displacement_factor"))
-		displacement_factor = 0.25f;
+		displacement_factor = tz::graphics::default_displacement_factor;
 	
 	tz::data::Manager data_manager(resources_path);
 	
@@ -379,7 +382,6 @@ EntityObject World::retrieveEntityObjectData(const std::string& entity_object_na
 		//tz::util::log::message(entity_object_name, ".texture", tz::util::cast::toString<unsigned int>(i), " yields the name ", texture_name, " and the link ", texture_link, "\n");
 		textures.emplace_back(texture_link, static_cast<Texture::TextureType>(i));
 	}
-	float mass = tz::util::cast::fromString<float>(mass_string);
 	
 	return {mesh_link, textures, mass, tz::util::string::vectoriseList3<float>(tz::util::string::deformat(position_string)), tz::util::string::vectoriseList3<float>(tz::util::string::deformat(rotation_string)), tz::util::string::vectoriseList3<float>(tz::util::string::deformat(scale_string)), shininess, parallax_map_scale, parallax_map_offset, displacement_factor};
 }
