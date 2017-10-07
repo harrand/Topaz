@@ -46,7 +46,7 @@ public:
 	~Texture();
 	Texture& operator=(Texture&& rhs);
 	
-	void bind(GLuint shader_program_handle, unsigned int id);
+	virtual void bind(GLuint shader_program_handle, unsigned int id);
 	const std::string& getFileName() const;
 	int getWidth() const;
 	int getHeight() const;
@@ -88,7 +88,7 @@ public:
 	~NormalMap() = default;
 	NormalMap& operator=(const NormalMap& rhs) = delete;
 	
-	void bind(GLuint shader_program_handle, unsigned int id);
+	virtual void bind(GLuint shader_program_handle, unsigned int id) override;
 	TextureType getTextureType();
 };
 
@@ -101,7 +101,7 @@ public:
 	~ParallaxMap() = default;
 	ParallaxMap& operator=(const ParallaxMap& rhs) = delete;
 	
-	void bind(GLuint shader_program_handle, unsigned int id);
+	virtual void bind(GLuint shader_program_handle, unsigned int id) override;
 	TextureType getTextureType();	
 };
 
@@ -114,7 +114,7 @@ public:
 	~DisplacementMap() = default;
 	DisplacementMap& operator=(const DisplacementMap& rhs) = delete;
 	
-	void bind(GLuint shader_program_handle, unsigned int id);
+	virtual void bind(GLuint shader_program_handle, unsigned int id) override;
 	TextureType getTextureType();
 };
 

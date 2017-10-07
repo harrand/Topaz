@@ -44,9 +44,9 @@ public:
 	EntityObject(EntityObject&& move) = default;
 	EntityObject& operator=(const EntityObject& rhs) = default;
 	
-	const Vector3F& getPosition() const;
-	Vector3F& getPositionR();
-	void updateMotion(unsigned int fps);
+	virtual const Vector3F& getPosition() const override;
+	virtual Vector3F& getPositionR() override;
+	virtual void updateMotion(unsigned int fps) override;
 };
 
 #endif

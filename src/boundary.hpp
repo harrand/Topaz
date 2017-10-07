@@ -28,7 +28,7 @@ public:
 	float getRadius() const;
 	float& getRadiusR();
 	bool intersects(const BoundingSphere& rhs) const;
-	virtual bool intersects(Boundary* other_boundary) const;
+	virtual bool intersects(Boundary* other_boundary) const override;
 private:
 	Vector3F centre;
 	float radius;
@@ -49,7 +49,7 @@ public:
 	Vector3F& getMaximumR();
 	bool intersects(const AABB& rhs) const;
 	bool intersects(const Vector3F& point) const;
-	bool intersects(Boundary* other_boundary) const;
+	virtual bool intersects(Boundary* other_boundary) const override;
 private:
 	Vector3F minimum, maximum;
 };
@@ -69,7 +69,7 @@ public:
 	float& getDistanceR();
 	BoundingPlane normalised() const;
 	bool intersects(const BoundingSphere& other) const;
-	bool intersects(Boundary* other_boundary) const;
+	virtual bool intersects(Boundary* other_boundary) const override;
 private:
 	Vector3F normal;
 	float distance;

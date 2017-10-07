@@ -57,12 +57,12 @@ public:
 		return this->y;
 	}
 	
-	inline virtual T length() const
+	inline T length() const
 	{
 		return sqrt((this->x * this->x) + (this->y * this->y));
 	}
 	
-	inline virtual T dot(const Vector2<T>& rhs) const
+	inline T dot(const Vector2<T>& rhs) const
 	{
 		return (this->x * rhs.getX()) + (this->y * rhs.getY());
 	}
@@ -154,17 +154,17 @@ public:
 		return this->z;
 	}
 	
-	inline virtual T length() const
+	inline T length() const 
 	{
 		return sqrt((this->x * this->x) + (this->y * this->y) + (this->z * this->z));
 	}
 	
-	inline virtual T dot(const Vector3<T>& rhs) const
+	inline T dot(const Vector3<T>& rhs) const
 	{
 		return (this->x * rhs.getX()) + (this->y * rhs.getY()) + (this->z * rhs.getZ());
 	}
 	
-	inline virtual Vector3<T> cross(const Vector3<T>& rhs) const
+	inline Vector3<T> cross(const Vector3<T>& rhs) const
 	{
 		return {(this->y * rhs.getZ()) - (this->z * rhs.getY()), (this->z * rhs.getX()) - (this->x * rhs.getZ()), (this->x * rhs.getY()) - (this->y * rhs.getX())};
 	}
@@ -267,12 +267,12 @@ public:
 		return this->w;
 	}
 	
-	inline virtual T length() const
+	inline T length() const
 	{
 		return sqrt((this->x * this->x) + (this->y * this->y) + (this->z * this->z) + (this->w * this->w));
 	}
 	
-	inline virtual T dot(Vector4<T> rhs) const
+	inline T dot(Vector4<T> rhs) const
 	{
 		return (this->x * rhs.getX()) + (this->y * rhs.getY()) + (this->z * rhs.getZ() + (this->w * rhs.getW()));
 	}

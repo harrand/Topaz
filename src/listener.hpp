@@ -31,7 +31,7 @@ public:
 	~MouseListener() = default;
 	MouseListener& operator=(const MouseListener& rhs) = default;
 	
-	virtual void handleEvents(SDL_Event& evt);
+	virtual void handleEvents(SDL_Event& evt) override;
 	void reloadMouseDelta();
 	bool isLeftClicked() const;
 	bool isRightClicked() const;
@@ -54,7 +54,7 @@ public:
 	~KeyListener() = default;
 	KeyListener& operator=(const KeyListener& rhs) = default;
 	
-	virtual void handleEvents(SDL_Event& evt);
+	virtual void handleEvents(SDL_Event& evt) override;
 	bool isKeyPressed(const std::string& keyname) const;
 	bool isKeyReleased(const std::string& keyname) const;
 	bool catchKeyPressed(const std::string& keyname);

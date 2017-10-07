@@ -15,6 +15,11 @@ class GUIElement
 {
 public:
 	GUIElement(std::optional<std::reference_wrapper<const Shader>> shader);
+	GUIElement(const GUIElement& copy) = default;
+	GUIElement(GUIElement&& move) = default;
+	virtual ~GUIElement() = default;
+	GUIElement& operator=(const GUIElement& rhs) = default;
+	
 	virtual void update();
 	virtual void destroy();
 	virtual bool focused() const = 0;
@@ -50,13 +55,13 @@ public:
 	virtual ~Window();
 	Window& operator=(const Window& rhs) = delete;
 	
-	virtual void update();
-	virtual void destroy();
-	virtual bool focused() const;
-	virtual bool isWindow() const;
-	virtual bool isMouseSensitive() const;
-	virtual float getWindowPosX() const;
-	virtual float getWindowPosY() const;
+	virtual void update() override;
+	virtual void destroy() override;
+	virtual bool focused() const override;
+	virtual bool isWindow() const override;
+	virtual bool isMouseSensitive() const override;
+	virtual float getWindowPosX() const override;
+	virtual float getWindowPosY() const override;
 	enum class SwapIntervalType : int
 	{
 		LATE_SWAP_TEARING = -1,
@@ -96,8 +101,8 @@ public:
 	
 	float getX() const;
 	float getY() const;
-	virtual float getWindowPosX() const;
-	virtual float getWindowPosY() const;
+	virtual float getWindowPosX() const override;
+	virtual float getWindowPosY() const override;
 	float getWidth() const;
 	float getHeight() const;
 	float& getXR();
@@ -106,11 +111,11 @@ public:
 	float& getHeightR();
 	const Vector4F& getColour() const;
 	Vector4F& getColourR();
-	virtual void update();
-	virtual void destroy();
-	virtual bool focused() const;
-	virtual bool isWindow() const;
-	virtual bool isMouseSensitive() const;
+	virtual void update() override;
+	virtual void destroy() override;
+	virtual bool focused() const override;
+	virtual bool isWindow() const override;
+	virtual bool isMouseSensitive() const override;
 	void setUsingProportionalPositioning(bool use_proportional_positioning);
 	bool isUsingProportionalPositioning() const;
 protected:
@@ -126,9 +131,9 @@ class TextLabel : public Panel
 public:
 	TextLabel(float x, float y, Vector4F colour, std::optional<Vector4F> background_colour, std::optional<Vector3F> text_border_colour, Font font, const std::string& text, const Shader& shader);
 	
-	virtual void update();
-	virtual float getWindowPosX() const;
-	virtual float getWindowPosY() const;
+	virtual void update() override;
+	virtual float getWindowPosX() const override;
+	virtual float getWindowPosY() const override;
 	bool hasBackgroundColour() const;
 	bool hasTextBorderColour() const;
 	const Font& getFont() const;
@@ -154,9 +159,9 @@ class Button : public TextLabel
 public:
 	Button(float x, float y, Vector4F colour, std::optional<Vector4F> background_colour, std::optional<Vector3F> text_border_colour, Font font, const std::string& text, const Shader& shader, MouseListener& mouse_listener);
 	
-	virtual void update();
-	virtual bool focused() const;
-	virtual bool isMouseSensitive() const;
+	virtual void update() override;
+	virtual bool focused() const override;
+	virtual bool isMouseSensitive() const override;
 	Command* getOnMouseOver() const;
 	Command* getOnMouseClick() const;
 	Command*& getOnMouseOverR();
