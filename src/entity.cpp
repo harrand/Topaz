@@ -39,6 +39,7 @@ Vector3F& Entity::getVelocityR()
 
 Vector3F Entity::getAcceleration() const
 {
+	// get net force (total) and divide by mass. Newton's second law.
 	Force resultant;
 	for(const auto &ent: this->forces)
 		resultant += ent.second;
@@ -57,8 +58,9 @@ std::unordered_map<std::string, Force>& Entity::getForcesR()
 
 void Entity::updateMotion(unsigned int fps)
 {
+	// basically perform integral numerically
 	this->velocity += (this->getAcceleration() / fps);
-	this->position += (velocity / fps);
+	this->position += (this->velocity / fps);
 }
 
 EntityObject::EntityObject(std::string mesh_link, std::vector<std::pair<std::string, Texture::TextureType>> textures, float mass, Vector3F position, Vector3F rotation, Vector3F scale, unsigned int shininess, float parallax_map_scale, float parallax_map_offset, float displacement_factor, Vector3F velocity, std::unordered_map<std::string, Force> forces): Entity(mass, position, velocity, forces), Object(mesh_link, textures, position, rotation, scale, shininess, parallax_map_scale, parallax_map_offset, displacement_factor){}
@@ -71,10 +73,4 @@ const Vector3F& EntityObject::getPosition() const
 Vector3F& EntityObject::getPositionR()
 {
 	return Object::getPositionR();
-}
-
-void EntityObject::updateMotion(unsigned int fps)
-{
-	this->velocity += (this->getAcceleration() / fps);
-	this->getPositionR() += (this->velocity/fps);
 }

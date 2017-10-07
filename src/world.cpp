@@ -100,7 +100,7 @@ void World::killLights()
 {
 	for(auto& iter : this->base_lights)
 	{
-		// Kill all the lights in the shader before losing all the data
+		// Kill all the lights in the shader before losing all the data by zeroing their corresponding uniforms
 		std::vector<float> pos({0.0f, 0.0f, 0.0f}), colour({0.0f, 0.0f, 0.0f});
 		glUniform3fv(iter.first.at(0), 1, &(pos[0]));
 		glUniform3fv(iter.first.at(1), 1, &(colour[0]));
@@ -319,7 +319,6 @@ std::map<std::array<GLint, tz::graphics::light_number_of_uniforms>, Light>& Worl
 Object World::retrieveObjectData(const std::string& object_name, std::string resources_path, MDLF& mdlf)
 {
 	std::string mesh_name = mdlf.getTag(object_name + ".mesh");
-
 	std::string position_string = mdlf.getTag(object_name + ".pos");
 	std::string rotation_string = mdlf.getTag(object_name + ".rot");
 	std::string scale_string = mdlf.getTag(object_name + ".scale");
@@ -350,6 +349,7 @@ Object World::retrieveObjectData(const std::string& object_name, std::string res
 
 EntityObject World::retrieveEntityObjectData(const std::string& entity_object_name, std::string resources_path, MDLF& mdlf)
 {
+	// really repeating myself here. bit ugly.
 	std::string mesh_name = mdlf.getTag(entity_object_name + ".mesh");
 	std::string mass_string = mdlf.getTag(entity_object_name + ".mass");
 	std::string position_string = mdlf.getTag(entity_object_name + ".pos");
@@ -379,7 +379,6 @@ EntityObject World::retrieveEntityObjectData(const std::string& entity_object_na
 	{
 		std::string texture_name = mdlf.getTag(entity_object_name + ".texture" + tz::util::cast::toString(i));
 		std::string texture_link = data_manager.getResourceLink(texture_name);
-		//tz::util::log::message(entity_object_name, ".texture", tz::util::cast::toString<unsigned int>(i), " yields the name ", texture_name, " and the link ", texture_link, "\n");
 		textures.emplace_back(texture_link, static_cast<Texture::TextureType>(i));
 	}
 	

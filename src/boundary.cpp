@@ -23,7 +23,7 @@ float& BoundingSphere::getRadiusR()
 	return this->radius;
 }
 
-bool BoundingSphere::intersects(const BoundingSphere& rhs) const
+bool BoundingSphere::intersects(const BoundingSphere& rhs) const // returns true if the total radii is less than the distance between their centres
 {
 	float radius_distance = this->radius + rhs.getRadius();
 	float centre_distance = (this->centre - rhs.getCentre()).length();
@@ -61,6 +61,12 @@ Vector3F& AABB::getMaximumR()
 
 bool AABB::intersects(const AABB& rhs) const
 {
+	/* Returns true if the maximum distance between the boxes in any of the three dimensions is less than zero (aka there is no distance)
+		*---*
+		|  *|--*
+		*--|*  |
+		   *---*
+	*/
 	Vector3F forward_distance = rhs.getMinimum() - this->maximum;
 	Vector3F backward_distance = this->minimum - rhs.getMaximum();
 	Vector3F distance = std::max(forward_distance, backward_distance);
@@ -69,6 +75,11 @@ bool AABB::intersects(const AABB& rhs) const
 
 bool AABB::intersects(const Vector3F& point) const
 {
+	/* Returns true if the point is greater than the minimum but less than the maximum in all three dimensions
+		*---*
+		| * |
+		*---*
+	*/
 	bool meet_x = this->minimum.getX() <= point.getX() && this->maximum.getX() >= point.getX();
 	bool meet_y = this->minimum.getY() <= point.getY() && this->maximum.getY() >= point.getY();
 	bool meet_z = this->minimum.getZ() <= point.getZ() && this->maximum.getZ() >= point.getZ();
@@ -112,6 +123,10 @@ BoundingPlane BoundingPlane::normalised() const
 
 bool BoundingPlane::intersects(const BoundingSphere& rhs) const
 {
+/*	Returns true if |dot product of the plane distance + the sphere centre| is less than the radius of the sphere
+//  	  **/
+//  	 * / *
+//        /**
 	return (std::fabs(this->normal.dot(rhs.getCentre()) + this->distance) - rhs.getRadius()) < 0;
 }
 

@@ -1,7 +1,7 @@
 #include "listener.hpp"
 #include <algorithm>
 
-// Static objects need to be initialised like this
+// static objects need to be initialised like this. really annoying.
 unsigned int Listener::number_of_listeners = 0;
 
 Listener::Listener(): id(Listener::number_of_listeners++){}
@@ -16,7 +16,6 @@ unsigned int Listener::getID() const
 	return this->id;
 }
 
-// static
 unsigned int Listener::getNumListeners()
 {
 	return Listener::number_of_listeners;

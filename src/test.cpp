@@ -4,6 +4,7 @@
 #include "data.hpp"
 
 void init();
+void test();
 #ifdef main
 #undef main
 #endif
@@ -281,4 +282,35 @@ void init()
 		engine.update(shader_id);
 	}
 	engine.getResourcesR().editTag("played", tz::util::cast::toString(seconds));
+}
+
+void test()
+{
+	using namespace std::chrono_literals;
+	using namespace tz::util::log;
+	auto cls = [](){system("cls");};
+	
+	message("Playing test.wav asynchronously...");
+	AudioClip test_wav("../../../res/runtime/music/test.wav");
+	test_wav.play();
+	message("Waiting 5 seconds...");
+	std::this_thread::sleep_for(5s);
+	AudioClip test_wav_copy(test_wav);
+	cls();
+	message("Playing copy of test wav...");
+	test_wav_copy.play();
+	message("Waiting 5 seconds...");
+	std::this_thread::sleep_for(5s);
+	cls();
+	message("Re-playing origin copy of test.wav...");
+	test_wav.play();
+	message("Waiting 5 seconds");
+	cls();
+	AudioClip test_wav_moved(std::move(test_wav));
+	message("Moved test.wav to a new instance, playing once more...");
+	test_wav_moved.play();
+	message("Waiting 5 seconds...");
+	std::this_thread::sleep_for(5s);
+	cls();
+	message("TESTING COMPLETE");
 }

@@ -119,6 +119,7 @@ Vector4F& Matrix4x4::getRowWR()
 
 Matrix4x4 Matrix4x4::transposed() const
 {
+	// optimiser should omit these copies
 	Vector4F tx(this->x.getX(), this->y.getX(), this->z.getX(), this->w.getX());
 	Vector4F ty(this->x.getY(), this->y.getY(), this->z.getY(), this->w.getY());
 	Vector4F tz(this->x.getZ(), this->y.getZ(), this->z.getZ(), this->w.getZ());
@@ -170,16 +171,19 @@ Matrix4x4 Matrix4x4::washed(float min, float max) const
 				*val = 0.0f;
 		}
 	}
+	// lots of branching. but branch prediction fail shouldn't provide any noticeable overhead for such small N
 	return copy;
 }
 
 std::array<float, 16> Matrix4x4::fillData() const
 {
+	// super cheap
 	return {{this->x.getX(), this->x.getY(), this->x.getZ(), this->x.getW(), this->y.getX(), this->y.getY(), this->y.getZ(), this->y.getW(), this->z.getX(), this->z.getY(), this->z.getZ(), this->z.getW(), this->w.getX(), this->w.getY(), this->w.getZ(), this->w.getW()}};
 }
 
 Matrix3x3 Matrix4x4::subMatrix(float posI, float posJ) const
 {
+	// your guess is as good as mine. can apply kramer's rule on 3x3 matrices so we split a 4x4 matrix into multiple 3x3s to perform kramers rule on each to find the inverse of the 4x4
 	Vector3F x(0, 0, 0), y(0, 0, 0), z(0, 0, 0);
 	int di, dj, si, sj;
 	for(di = 0; di < 3; di++)
@@ -455,6 +459,14 @@ Matrix4x4 Matrix4x4::createViewMatrix(Vector3F camera_position, Vector3F camera_
 
 Matrix4x4 Matrix4x4::createOrthographicMatrix(float right, float left, float top, float bottom, float near, float far)
 {
+	/* just following algorithm in row major:
+	
+	|2/(r-l)		0		0		-(r+l)/(r-l)|
+	|	0	 	 2/(t-b)	0		-(t+b)/(t-b)|
+	|	0			0	-2/(f-n)	-(f+n)/(f-n)|
+	|	0			0		0				1	|
+	
+	*/
 	Vector4F x(0, 0, 0, 0), y(0, 0, 0, 0), z(0, 0, 0, 0), w(0, 0, 0, 1);
 	x.getXR() = 2 / (right - left);
 	x.getWR() = -1 * ((right + left)/(right - left));
@@ -467,6 +479,14 @@ Matrix4x4 Matrix4x4::createOrthographicMatrix(float right, float left, float top
 
 Matrix4x4 Matrix4x4::createPerspectiveMatrix(float fov, float aspect_ratio, float nearclip, float farclip)
 {
+	/* just following algorithm in row major:
+	
+	|1/(w/h*tan(fov/2))			0		0				0	 |
+	|			0		1/tan(fov/2)	0				0	 |
+	|			0				0	(f+n)/(n-f) (2*f*n)/(n-f)|
+	|			0				0	  -1.0				0	 |
+	
+	*/
 	Vector4F x(0, 0, 0, 0), y(0, 0, 0, 0), z(0, 0, 0, 0), w(0, 0, 0, 0);
 	float thf = tan(fov / 2);
 	x.getXR() = 1/(aspect_ratio * thf);
@@ -479,5 +499,5 @@ Matrix4x4 Matrix4x4::createPerspectiveMatrix(float fov, float aspect_ratio, floa
 
 Matrix4x4 Matrix4x4::createPerspectiveMatrix(float fov, float width, float height, float nearclip, float farclip)
 {
-	return Matrix4x4::createPerspectiveMatrix(fov, (float)((width)/(height)), nearclip, farclip);
+	return Matrix4x4::createPerspectiveMatrix(fov, width/height, nearclip, farclip);
 }

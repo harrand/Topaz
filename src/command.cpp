@@ -37,16 +37,19 @@ std::string& Command::getUsageR()
 
 std::size_t Command::getExpectedParameterSize() const
 {
-	return tz::util::string::splitString(this->usage, " ").size();
+	// equal to number of spaces in the arguments + 1 because we want the number of words in the sentence including the first argument as that does not equal the command name in Topaz.
+	return tz::util::string::splitString(this->usage, " ").size() + 1;
 }
 
 bool Command::operator==(const Command& rhs) const
 {
+	// is a shallow equality operator, default works the same
 	return this->name == rhs.getName() && this->description == rhs.getDescription() && this->usage == rhs.getUsage();
 }
 
 void TrivialCommand::operator()()
 {
+	// just call operator()(args...) where args is empty. optimiser should prevent the unnecessary construction of the vector
 	this->operator()(std::vector<std::string>());
 }
 

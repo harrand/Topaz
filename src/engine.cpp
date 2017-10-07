@@ -23,8 +23,11 @@ void tz::terminate()
 
 Engine::Engine(Window& wnd, std::string properties_path, unsigned int initial_fps, unsigned int tps): properties(RawFile(properties_path)), resources(RawFile(this->properties.getTag("resources"))), default_shader(this->properties.getTag("default_shader")), default_gui_shader(this->properties.getTag("default_gui_shader")), camera(Camera()), wnd(wnd), world(this->properties.getTag("default_world"), this->properties.getTag("resources")), fps(initial_fps), tps(tps), command_executor(), update_due(false)
 {
+	// move the camera to the world's spawn point.
 	this->camera.getPositionR() = this->world.getSpawnPoint();
+	// fill all the asset buffers via tz data manager
 	tz::data::Manager(this->properties.getTag("resources")).retrieveAllData(this->meshes, this->textures, this->normal_maps, this->parallax_maps, this->displacement_maps);
+	// read the properties file for any extra shaders specified (gui shader not included in this)
 	for(std::string shader_path : this->properties.getSequence("extra_shaders"))
 		this->extra_shaders.emplace_back(shader_path);
 }
@@ -34,6 +37,7 @@ void Engine::update(std::size_t shader_index)
 	static Timer ticker;
 	if(this->keeper.millisPassed(1000))
 	{
+		// update fps every second instead of every frame; suppresses random spikes in performance and reduces runtime overhead slightly
 		this->fps = this->profiler.getFPS();
 		this->profiler.reset();
 		this->keeper.reload();
@@ -53,6 +57,7 @@ void Engine::update(std::size_t shader_index)
 	
 	if(ticker.millisPassed(1000.0f/this->tps))
 	{
+		// update physics engine when the average time of a fixed 'tick' has passed
 		this->world.update(this->tps);
 		ticker.reload();
 		this->update_due = true;

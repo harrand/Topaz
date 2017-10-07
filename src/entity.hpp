@@ -46,7 +46,6 @@ public:
 	
 	virtual const Vector3F& getPosition() const override;
 	virtual Vector3F& getPositionR() override;
-	virtual void updateMotion(unsigned int fps) override;
 };
 
 #endif

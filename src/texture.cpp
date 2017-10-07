@@ -4,23 +4,26 @@
 
 FrameBuffer::FrameBuffer(unsigned int width, unsigned int height): width(width), height(height), framebuffer_handle(0)
 {
+	// allocate vram for the framebuffer
 	glGenFramebuffers(1, &this->framebuffer_handle);
 	glBindFramebuffer(GL_FRAMEBUFFER, this->framebuffer_handle);
 	
 	glGenTextures(1, &this->texture_handle);
 	glBindTexture(GL_TEXTURE_2D, this->texture_handle);
+	// using normal RGBA colour data with unsigned bytes (as close to raw data as C will allow, can't use c++17 std::byte for obvious reasons)
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, this->width, this->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
 	
 	//Filtering
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	
+	// allocate vram for the depth render buffer and pass dimensions so its the right size and takes the depth component aswell
 	glGenRenderbuffers(1, &this->depth_render_buffer_handle);
 	glBindRenderbuffer(GL_RENDERBUFFER, this->depth_render_buffer_handle);
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, this->width, this->height);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, this->depth_render_buffer_handle);
 	
-	//Configure framebuffer
+	//Configure framebuffer to use colours
 	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, this->texture_handle, 0);
 	GLenum drawBuffers[1] = {GL_COLOR_ATTACHMENT0};
 	glDrawBuffers(1, drawBuffers);
@@ -44,6 +47,7 @@ void FrameBuffer::setRenderTarget() const
 
 void FrameBuffer::bind(unsigned int id) const
 {
+	// opengl only supports 32 bound textures at a time. magic number should really add a constexpr somewhere in graphics.hpp
 	if(id > 31)
 	{
 		tz::util::log::error("FrameBuffer bind ID ", id, " is invalid. Must be between 1-31");
@@ -72,7 +76,7 @@ DepthTexture::DepthTexture(unsigned int width, unsigned int height): FrameBuffer
  
 	//Configure framebuffer
 	glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, this->texture_handle, 0);
-	glDrawBuffer(GL_NONE); // no colour buffer drawn to
+	glDrawBuffer(GL_NONE); // no colour buffer drawn to as we only care about depth (would be a huge waste of time and memory to take the colour too)
 	
 	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 	{
@@ -350,13 +354,13 @@ void CubeMap::bind(GLuint shader_program_handle, unsigned int id)
 
 std::vector<unsigned char*> CubeMap::loadTextures()
 {
-	std::vector<unsigned char*> imageData;
-	imageData.reserve(6);
-	imageData.push_back(stbi_load((this->right_texture).c_str(), &(this->width[0]), &(this->height[0]), &(this->components[0]), 4));
-	imageData.push_back(stbi_load((this->left_texture).c_str(), &(this->width[1]), &(this->height[1]), &(this->components[1]), 4));
-	imageData.push_back(stbi_load((this->top_texture).c_str(), &(this->width[2]), &(this->height[2]), &(this->components[2]), 4));
-	imageData.push_back(stbi_load((this->bottom_texture).c_str(), &(this->width[3]), &(this->height[3]), &(this->components[3]), 4));
-	imageData.push_back(stbi_load((this->back_texture).c_str(), &(this->width[4]), &(this->height[4]), &(this->components[4]), 4));
-	imageData.push_back(stbi_load((this->front_texture).c_str(), &(this->width[5]), &(this->height[5]), &(this->components[5]), 4));
-	return imageData;
+	std::vector<unsigned char*> image_data;
+	image_data.reserve(6);
+	image_data.push_back(stbi_load((this->right_texture).c_str(), &(this->width[0]), &(this->height[0]), &(this->components[0]), 4));
+	image_data.push_back(stbi_load((this->left_texture).c_str(), &(this->width[1]), &(this->height[1]), &(this->components[1]), 4));
+	image_data.push_back(stbi_load((this->top_texture).c_str(), &(this->width[2]), &(this->height[2]), &(this->components[2]), 4));
+	image_data.push_back(stbi_load((this->bottom_texture).c_str(), &(this->width[3]), &(this->height[3]), &(this->components[3]), 4));
+	image_data.push_back(stbi_load((this->back_texture).c_str(), &(this->width[4]), &(this->height[4]), &(this->components[4]), 4));
+	image_data.push_back(stbi_load((this->front_texture).c_str(), &(this->width[5]), &(this->height[5]), &(this->components[5]), 4));
+	return image_data;
 }

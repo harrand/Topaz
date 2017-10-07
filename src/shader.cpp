@@ -20,6 +20,7 @@ Shader::Shader(std::string filename): filename(std::move(filename))
 		if(this->shaders[i] != 0)
 			glAttachShader(this->program_handle, this->shaders[i]);
 	
+	// bind the attributes needed normally
 	glBindAttribLocation(this->program_handle, 0, "position");
 	glBindAttribLocation(this->program_handle, 1, "texcoord");
 	glBindAttribLocation(this->program_handle, 2, "normal");
@@ -117,6 +118,7 @@ void Shader::bind() const
 
 void Shader::update(const std::array<float, 16>& model_matrix_array, const std::array<float, 16>& view_matrix_array, const std::array<float, 16>& projection_matrix_array, unsigned int shininess, float parallaxmap_scale_constant, float parallaxmap_offset_constant, float displacement_factor) const
 {
+	// literally just update uniforms with the parameters
 	glUniformMatrix4fv(this->uniforms[static_cast<unsigned int>(UniformTypes::MODEL)], 1, GL_TRUE, model_matrix_array.data());
 	glUniformMatrix4fv(this->uniforms[static_cast<unsigned int>(UniformTypes::VIEW)], 1, GL_TRUE, view_matrix_array.data());
 	glUniformMatrix4fv(this->uniforms[static_cast<unsigned int>(UniformTypes::PROJECTION)], 1, GL_TRUE, projection_matrix_array.data());
@@ -128,6 +130,7 @@ void Shader::update(const std::array<float, 16>& model_matrix_array, const std::
 
 std::string Shader::loadShader(const std::string& filename)
 {
+	// use MDL rawfile to slurp the entire file and then parse each lines with a newline between each. might be an optimisation to use RawFile slurp function
 	std::string source = "";
 	for(std::string str : RawFile(filename).getLines())
 		source += str + "\n";
@@ -168,6 +171,7 @@ GLuint Shader::createShader(std::string source, GLenum shader_type)
 		return 0;
 	}
 	
+	// opengl has support for multiple shader sources so must pass it an array. we're (meant to be) sane so we only need one source per shader actually thank you very much
 	const GLchar* shaderSources[1];
 	GLint shaderSourceLengths[1];
 	

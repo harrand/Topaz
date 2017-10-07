@@ -126,6 +126,7 @@ Window::~Window()
 
 void Window::update()
 {
+	// temporarily disable all the 3d features whilst rendering GUI (we don't want a depth buffer culling gui)
 	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_DEPTH_CLAMP);
 	glDisable(GL_CULL_FACE);
@@ -144,7 +145,7 @@ void Window::update()
 			if (evt.window.event == SDL_WINDOWEVENT_RESIZED || evt.window.event == SDL_WINDOWEVENT_SIZE_CHANGED)
 			{
 				SDL_GL_GetDrawableSize(this->sdl_window_pointer, &(this->w), &(this->h));
-				//update the glVievwport, so that OpenGL know the new window size
+				//update the glVievwport, so that OpenGL knows the new window size
 				glViewport(0, 0, this->w, this->h);
 			}
 		}
@@ -284,7 +285,7 @@ float Panel::getWindowPosX() const
 {
 	float offset = 0;
 	if(this->parent != nullptr)
-		offset = this->parent->getWindowPosX();
+		offset = this->parent->getWindowPosX(); // recursive. offset = total offsets of all ancestors to get true window pos
 	return offset + (this->x + this->width);
 }
 
@@ -292,7 +293,7 @@ float Panel::getWindowPosY() const
 {
 	float offset = 0;
 	if(this->parent != nullptr)
-		offset = this->parent->getWindowPosY();
+		offset = this->parent->getWindowPosY(); // recursive. offset = total offsets of all ancestors to get true window pos
 	return offset + (this->y + this->height);
 }
 
@@ -340,6 +341,7 @@ void Panel::update()
 {
 	if(!this->hidden)
 	{
+		//update uniforms & bind & render. THEN update all children (unless the panel is hidden in which case do nothing)
 		this->shader.value().get().bind();
 		glUniform1i(glGetUniformLocation(this->shader.value().get().getProgramHandle(), "has_texture"), false);
 		glUniform1i(glGetUniformLocation(this->shader.value().get().getProgramHandle(), "has_background_colour"), false);
@@ -358,6 +360,7 @@ void Panel::update()
 
 void Panel::destroy()
 {
+	// kill all children before killing itself (that was a dark comment)
 	GUIElement::destroy();
 	if(this->parent != nullptr)
 	{
@@ -402,6 +405,7 @@ void TextLabel::update()
 {
 	if(!this->hidden)
 	{
+		// enable blending as the glyphs from TTF fonts have alot of alpha variation which requires blending to look in any-way legible
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		this->shader.value().get().bind();
@@ -467,6 +471,7 @@ const std::string& TextLabel::getText() const
 void TextLabel::setText(const std::string& new_text)
 {
 	this->text = new_text;
+	// remember texture assignment operator is a move-assignment, so no memory droplet is created
 	this->text_texture = Texture(this->font.getFontHandleR(), this->text, SDL_Color({static_cast<unsigned char>(this->colour.getX() * 255), static_cast<unsigned char>(this->colour.getY() * 255), static_cast<unsigned char>(this->colour.getZ() * 255), static_cast<unsigned char>(255)}));
 	this->width = text_texture.getWidth();
 	this->height = text_texture.getHeight();
@@ -503,6 +508,7 @@ void Button::update()
 {
 	if(this->clickedOn() && this->on_mouse_click != nullptr && !this->just_clicked && this->hasWindowParent())
 	{
+		// if clicked on properly, run the mouse_click command, set it as just clicked and make it the focus of the window ancestor
 		this->findWindowParentR()->getFocusedChildR() = this;
 		this->on_mouse_click->operator()({});
 		this->just_clicked = true;
@@ -557,6 +563,7 @@ bool Button::mousedOver() const
 
 bool Button::clickedOn() const
 {
+	// need to take into account the location where the left click was pressed to prevent dragging from firing off the button.
 	Vector2F mouse_pos = this->mouse_listener.getLeftClickLocation();
 	bool x_aligned = mouse_pos.getX() >= (this->getWindowPosX() - this->width) && mouse_pos.getX() <= (this->getWindowPosX() + this->width);
 	bool y_aligned = mouse_pos.getY() >= (this->findWindowParent()->getHeight() - this->getWindowPosY() - this->height) && mouse_pos.getY() <= ((this->findWindowParent()->getHeight() - this->getWindowPosY() + this->height));

@@ -39,6 +39,7 @@ float Light::getSpecularComponent() const
 
 std::array<GLint, tz::graphics::light_number_of_uniforms> Light::getUniforms(GLuint shader_program_handle, std::size_t light_uniform_index) const
 {
+	// nice cheap temporary std::array
 return
 	{	
 	glGetUniformLocation(shader_program_handle, ("lights[" + tz::util::cast::toString(light_uniform_index) + "].pos").c_str()),

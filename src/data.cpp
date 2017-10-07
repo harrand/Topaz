@@ -5,6 +5,7 @@ tz::data::Manager::Manager(std::string datafilename): datafilename(std::move(dat
 
 std::string tz::data::Manager::getResourceLink(const std::string& resource_name) const
 {
+	// just gets the value of resource_name.path
 	return this->data_file.getTag(resource_name + ".path");
 }
 

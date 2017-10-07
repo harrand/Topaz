@@ -60,6 +60,7 @@ float TimeProfiler::getDeltaAverage() const
 
 float TimeProfiler::getLastDelta() const
 {
+	// this is useful for updating physics engine to prevent updates from changing so strongly every second
 	if(this->deltas.empty())
 		return 5.0f/3.0f;
 	return this->deltas.at(this->deltas.size() - 1);

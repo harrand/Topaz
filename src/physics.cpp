@@ -47,6 +47,7 @@ Force& Force::operator-=(const Force& other)
 
 BoundingSphere tz::physics::boundSphere(const Object& object, const std::vector<std::unique_ptr<Mesh>>& all_meshes)
 {
+	// get list of positions in world space
 	std::vector<Vector3F> positions_worldspace;
 	const std::vector<Vector3F>& positions_modelspace = tz::graphics::findMesh(object.getMeshLink(), all_meshes)->getPositions();
 	positions_worldspace.reserve(positions_modelspace.size());
@@ -58,6 +59,7 @@ BoundingSphere tz::physics::boundSphere(const Object& object, const std::vector<
 	}
 	// Objects are static so don't need to worry about updating this ever again. Best solution is O(n) which is to find the average position and use that as centre, and then find maximum distance and make that the distance
 	Vector3F mean = std::accumulate(positions_worldspace.begin(), positions_worldspace.end(), Vector3F(), [](const Vector3F& a, const Vector3F& b) -> Vector3F{return a + b;}) / positions_worldspace.size();
+	// get mean of the positions_worldspace to be the centre
 	// if centre is the mean, then distance is the distance between the mean and whatever is furthest away from the mean i.e biggest outlier
 	std::transform(positions_worldspace.begin(), positions_worldspace.end(), positions_worldspace.begin(), [&mean](const Vector3F& position) -> Vector3F{return mean - position;});
 	std::vector<float> distances;
@@ -69,6 +71,7 @@ BoundingSphere tz::physics::boundSphere(const Object& object, const std::vector<
 	
 AABB tz::physics::boundAABB(const Object& object, const std::vector<std::unique_ptr<Mesh>>& all_meshes)
 {
+	// once again get positions in worldspace
 	const std::vector<Vector3F>& positions_modelspace = tz::graphics::findMesh(object.getMeshLink(), all_meshes)->getPositions();
 	std::vector<Vector3F> positions_worldspace;
 	positions_worldspace.reserve(positions_modelspace.size());
@@ -91,5 +94,6 @@ AABB tz::physics::boundAABB(const Object& object, const std::vector<std::unique_
 		max_y = std::max(position_worldspace.getY(), max_y);
 		max_z = std::max(position_worldspace.getZ(), max_z);
 	}
+	// get minimum and maximum values for all three dimensions. use the minimums and maximums to construct the AABB
 	return {Vector3F(min_x, min_y, min_z), Vector3F(max_x, max_y, max_z)};
 }
