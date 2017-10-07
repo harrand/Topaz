@@ -20,11 +20,27 @@ public:
 	std::string& getDescriptionR();
 	std::size_t getExpectedParameterSize() const;
 	virtual bool operator==(const Command& rhs) const;
-	virtual void operator()(const std::vector<std::string>& args = std::vector<std::string>()) = 0;
+	virtual void operator()(const std::vector<std::string>& args) = 0;
 private:
 	std::string name;
 	std::string description;
 	std::string usage;
+};
+
+class TrivialCommand : public Command
+{
+public:
+	TrivialCommand(std::string name = "", std::string description = ""): Command(name, description, ""){}
+	TrivialCommand(const TrivialCommand& copy) = default;
+	TrivialCommand(TrivialCommand&& move) = default;
+	~TrivialCommand() = default;
+	TrivialCommand& operator=(const TrivialCommand& rhs) = default;
+	
+	virtual void operator()() = 0;
+private:
+	void operator()([[maybe_unused]] const std::vector<std::string>& args) final{operator()();}
+	using Command::getUsage;
+	using Command::getExpectedParameterSize;
 };
 
 class CommandExecutor

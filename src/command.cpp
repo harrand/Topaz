@@ -45,6 +45,11 @@ bool Command::operator==(const Command& rhs) const
 	return this->name == rhs.getName() && this->description == rhs.getDescription() && this->usage == rhs.getUsage();
 }
 
+void TrivialCommand::operator()()
+{
+	this->operator()(std::vector<std::string>());
+}
+
 const std::unordered_set<Command*>& CommandExecutor::getCommands() const
 {
 	return this->commands;

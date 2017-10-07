@@ -15,35 +15,35 @@ int main()
 	return 0;
 }
 
-class FPSToggleCommand : public Command
+class FPSToggleCommand : public TrivialCommand
 {
 public:
 	FPSToggleCommand(TextLabel& fps_label): fps_label(fps_label){}
-	virtual void operator()([[maybe_unused]] const std::vector<std::string>& args){fps_label.setHidden(!fps_label.isHidden());}
+	virtual void operator()(){fps_label.setHidden(!fps_label.isHidden());}
 	TextLabel& fps_label;
 };
 
-class ExitGuiCommand : public Command
+class ExitGuiCommand : public TrivialCommand
 {
 public:
 	ExitGuiCommand(Panel& gui_panel): gui_panel(gui_panel){}
-	virtual void operator()([[maybe_unused]] const std::vector<std::string>& args){gui_panel.setHidden(!gui_panel.isHidden());}
+	virtual void operator()(){gui_panel.setHidden(!gui_panel.isHidden());}
 	Panel& gui_panel;
 };
 
-class ToggleCommand : public Command
+class ToggleCommand : public TrivialCommand
 {
 public:
 	ToggleCommand(bool& toggle): toggle(toggle){}
-	virtual void operator()([[maybe_unused]] const std::vector<std::string>& args){toggle = !toggle;}
+	virtual void operator()(){toggle = !toggle;}
 	bool& toggle;
 };
 
-class SpawnBlockCommand : public Command
+class SpawnBlockCommand : public TrivialCommand
 {
 public:
 	SpawnBlockCommand(Engine& engine, std::vector<AABB>& bounds): engine(engine), bounds(bounds){}
-	virtual void operator()([[maybe_unused]] const std::vector<std::string>& args)
+	virtual void operator()()
 	{
 		tz::data::Manager manager(engine.getResources().getRawFile().getPath());
 		std::vector<std::pair<std::string, Texture::TextureType>> textures;
@@ -59,20 +59,20 @@ public:
 	std::vector<AABB>& bounds;
 };
 
-class SaveWorldCommand : public Command
+class SaveWorldCommand : public TrivialCommand
 {
 public:
 	SaveWorldCommand(World& world): world(world){}
-	virtual void operator()([[maybe_unused]] const std::vector<std::string>& args)
+	virtual void operator()()
 	{world.save();tz::util::log::message("World Saved.");};
 	World& world;
 };
 
-class RenderSkyboxCommand : public Command
+class RenderSkyboxCommand : public TrivialCommand
 {
 public:
 	RenderSkyboxCommand(Skybox& skybox, Camera& camera, Shader& shader, const std::vector<std::unique_ptr<Mesh>>& all_meshes, Window& wnd): skybox(skybox), camera(camera), shader(shader), all_meshes(all_meshes), wnd(wnd){}
-	virtual void operator()([[maybe_unused]] const std::vector<std::string>& args)
+	virtual void operator()()
 	{
 		skybox.render(camera, shader, all_meshes, wnd.getWidth(), wnd.getHeight());
 	}
