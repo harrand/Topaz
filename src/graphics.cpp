@@ -116,18 +116,18 @@ namespace tz::graphics::model
 			int i2 = indices[i + 2];
 			Vector3F edge1 = (positions[i1] - positions[i0]);
 			Vector3F edge2 = (positions[i2] - positions[i0]);
-			float deltaU1 = texcoords.at(i1).getX() - texcoords.at(i0).getX();
-			float deltaU2 = texcoords.at(i2).getX() - texcoords.at(i0).getX();
-			float deltaV1 = texcoords.at(i1).getY() - texcoords.at(i0).getY();
-			float deltaV2 = texcoords.at(i2).getY() - texcoords.at(i0).getY();
+			float deltaU1 = texcoords[i1].getX() - texcoords[i0].getX();
+			float deltaU2 = texcoords[i2].getX() - texcoords[i0].getX();
+			float deltaV1 = texcoords[i1].getY() - texcoords[i0].getY();
+			float deltaV2 = texcoords[i2].getY() - texcoords[i0].getY();
 			float f = 1.0f/(deltaU1 * deltaV2 - deltaU2 * deltaV1);
 			Vector3F tangent;
 			tangent.getXR() = f * (deltaV2 * edge1.getX() - deltaV1 * edge2.getX());
 			tangent.getYR() = f * (deltaV2 * edge1.getY() - deltaV1 * edge2.getY());
 			tangent.getZR() = f * (deltaV2 * edge1.getZ() - deltaV1 * edge2.getZ());
-			tangents.at(i0) += tangent;
-			tangents.at(i1) += tangent;
-			tangents.at(i2) += tangent;
+			tangents[i0] += tangent;
+			tangents[i1] += tangent;
+			tangents[i2] += tangent;
 		}
 		for(std::size_t i = 0; i < tangents.size(); i++)
 			tangents[i] = tangents[i].normalised();
@@ -198,7 +198,7 @@ namespace tz::graphics::model
 		}
 		normal_model.calculateTangents();
 		for(std::size_t i = 0; i < result.tangents.size(); i++)
-			result.tangents.at(i) = normal_model.tangents[index_map[i]];
+			result.tangents[i] = normal_model.tangents[index_map[i]];
 		return result;
 	}
 	

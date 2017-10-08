@@ -18,7 +18,7 @@ std::string tz::data::Manager::getResourceName(const std::string& resource_link)
 		std::vector<std::string> lineSplit = tz::util::string::splitString(line, ':');
 		if(lineSplit.size() != 0)
 		{
-			std::string tagname = lineSplit.at(0);
+			std::string tagname = lineSplit.front();
 			if(this->data_file.getTag(tagname) == resource_link)
 			{
 				std::string undesired_suffix = ".path";
@@ -27,7 +27,7 @@ std::string tz::data::Manager::getResourceName(const std::string& resource_link)
 			}
 		}
 	}
-	return "0";
+	return std::string(mdl::default_string);
 }
 
 std::unordered_map<std::string, std::string> tz::data::Manager::retrieveModels() const

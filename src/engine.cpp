@@ -171,7 +171,7 @@ const Shader& Engine::getShader(std::size_t index) const
 	if(index > this->extra_shaders.size())
 		tz::util::log::error("Could not retrieve shader index ", index, ", retrieving default instead.");
 	else if(index != 0)
-		return this->extra_shaders.at(index - 1);
+		return this->extra_shaders[index - 1];
 	return this->getDefaultShader();
 }
 

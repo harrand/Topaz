@@ -5,7 +5,7 @@ World::World(std::string filename, std::string resources_path): filename(std::mo
 {
 	MDLF input(RawFile(this->filename));
 	std::string spawn_point_string = input.getTag("spawnpoint"), spawn_orientation_string = input.getTag("spawnorientation"), gravity_string = input.getTag("gravity");
-	if(spawn_point_string != "0" && spawn_orientation_string != "0" && gravity_string != "0")
+	if(spawn_point_string != mdl::default_string && spawn_orientation_string != mdl::default_string && gravity_string != mdl::default_string)
 	{
 		this->spawn_point = tz::util::string::vectoriseList3<float>(tz::util::string::deformat(spawn_point_string));
 		this->spawn_orientation = tz::util::string::vectoriseList3<float>(tz::util::string::deformat(spawn_orientation_string));
@@ -102,11 +102,11 @@ void World::killLights()
 	{
 		// Kill all the lights in the shader before losing all the data by zeroing their corresponding uniforms
 		std::vector<float> pos({0.0f, 0.0f, 0.0f}), colour({0.0f, 0.0f, 0.0f});
-		glUniform3fv(iter.first.at(0), 1, &(pos[0]));
-		glUniform3fv(iter.first.at(1), 1, &(colour[0]));
-		glUniform1f(iter.first.at(2), 0);
-		glUniform1f(iter.first.at(3), 0);
-		glUniform1f(iter.first.at(4), 0);
+		glUniform3fv(iter.first.front(), 1, &(pos[0]));
+		glUniform3fv(iter.first[1], 1, &(colour[0]));
+		glUniform1f(iter.first[2], 0);
+		glUniform1f(iter.first[3], 0);
+		glUniform1f(iter.first[4], 0);
 	}
 }
 
@@ -127,7 +127,7 @@ void World::exportWorld(const std::string& world_link) const
 	{
 		const std::string object_name = "object" + tz::util::cast::toString<float>(i);
 		object_list.push_back(object_name);
-		const Object current_object = this->objects.at(i);
+		const Object current_object = this->objects[i];
 		
 		output.editTag(object_name + ".mesh", data_manager.getResourceName(current_object.getMeshLink()));
 		for(auto& texture : current_object.getTextures())
@@ -146,7 +146,7 @@ void World::exportWorld(const std::string& world_link) const
 	{
 		const std::string entity_object_name = "eo" + tz::util::cast::toString<float>(i);
 		entity_object_list.push_back(entity_object_name);
-		const EntityObject current_entity_object = this->entity_objects.at(i);
+		const EntityObject current_entity_object = this->entity_objects[i];
 
 		output.editTag(entity_object_name + ".mesh", data_manager.getResourceName(current_entity_object.getMeshLink()));
 		for(auto& texture : current_entity_object.getTextures())
@@ -220,11 +220,11 @@ void World::render(Camera& cam, const Shader& shader, unsigned int widata_manage
 		colour.push_back(light.getColour().getX());
 		colour.push_back(light.getColour().getY());
 		colour.push_back(light.getColour().getZ());
-		glUniform3fv(iter.first.at(0), 1, &(pos[0]));
-		glUniform3fv(iter.first.at(1), 1, &(colour[0]));
-		glUniform1f(iter.first.at(2), light.getPower());
-		glUniform1f(iter.first.at(3), light.getDiffuseComponent());
-		glUniform1f(iter.first.at(4), light.getSpecularComponent());
+		glUniform3fv(iter.first.front(), 1, &(pos[0]));
+		glUniform3fv(iter.first[1], 1, &(colour[0]));
+		glUniform1f(iter.first[2], light.getPower());
+		glUniform1f(iter.first[3], light.getDiffuseComponent());
+		glUniform1f(iter.first[4], light.getSpecularComponent());
 	}
 }
 
