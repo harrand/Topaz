@@ -429,6 +429,14 @@ Font::Font(Font&& move): font_path(move.font_path), pixel_height(move.pixel_heig
 	move.font_handle = nullptr;
 }
 
+Font::~Font()
+{
+	if(this->font_handle == nullptr) // if its been moved, dont try and delete it'll crash if you do
+		return;
+	TTF_CloseFont(this->font_handle);
+	this->font_handle = nullptr;
+}
+
 Font& Font::operator=(Font&& rhs)
 {
 	this->font_path = rhs.font_path;
@@ -436,14 +444,6 @@ Font& Font::operator=(Font&& rhs)
 	this->font_handle = rhs.font_handle;
 	rhs.font_handle = nullptr;
 	return *this;
-}
-
-Font::~Font()
-{
-	if(this->font_handle == nullptr) // if its been moved, dont try and delete it'll crash if you do
-		return;
-	TTF_CloseFont(this->font_handle);
-	this->font_handle = nullptr;
 }
 
 TTF_Font* Font::getFontHandle() const

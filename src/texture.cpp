@@ -43,6 +43,7 @@ void FrameBuffer::setRenderTarget() const
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, this->framebuffer_handle);
 	glViewport(0, 0, this->width, this->height);
+	glClear(GL_DEPTH_BUFFER_BIT);
 }
 
 void FrameBuffer::bind(unsigned int id) const
@@ -62,7 +63,6 @@ void FrameBuffer::bind(unsigned int id) const
 DepthTexture::DepthTexture(unsigned int width, unsigned int height): FrameBuffer(width, height)
 {
 	glGenFramebuffers(1, &this->framebuffer_handle);
-	glBindFramebuffer(GL_FRAMEBUFFER, this->framebuffer_handle);
 	
 	glGenTextures(1, &this->texture_handle);
 	glBindTexture(GL_TEXTURE_2D, this->texture_handle);
@@ -75,8 +75,11 @@ DepthTexture::DepthTexture(unsigned int width, unsigned int height): FrameBuffer
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
  
 	//Configure framebuffer
-	glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, this->texture_handle, 0);
-	glDrawBuffer(GL_NONE); // no colour buffer drawn to as we only care about depth (would be a huge waste of time and memory to take the colour too)
+	glBindFramebuffer(GL_FRAMEBUFFER, this->framebuffer_handle);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, this->texture_handle, 0);
+	glDrawBuffer(GL_NONE);
+	glReadBuffer(GL_NONE);
+	glBindFrameBuffer(GL_FRAMEBUFFER, 0);// no colour buffer drawn to as we only care about depth (would be a huge waste of time and memory to take the colour too)
 	
 	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 	{

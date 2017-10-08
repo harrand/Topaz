@@ -98,6 +98,7 @@ public:
 	Vertex(Vertex&& move) = default;
 	~Vertex() = default;
 	Vertex& operator=(const Vertex& rhs) = default;
+	
 	const Vector3F& getPosition() const;
 	const Vector2F& getTextureCoordinate() const;
 	const Vector3F& getNormal() const;
@@ -116,8 +117,9 @@ public:
 	Font(const std::string& font_path, int pixel_height);
 	Font(const Font& copy);
 	Font(Font&& move);
-	Font& operator=(Font&& rhs);
 	~Font();
+	Font& operator=(Font&& rhs); // move assignment operator
+	
 	TTF_Font* getFontHandle() const;
 	TTF_Font*& getFontHandleR();
 private:
