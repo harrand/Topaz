@@ -2,43 +2,18 @@
 #include "matrix.hpp"
 #include <fstream>
 
-Shader::Shader(std::string filename): filename(std::move(filename))
+Shader::Shader(std::string filename, bool compile, bool link, bool validate): filename(std::move(filename)), compiled(false)
 {
 	// Allocate space on GPU memory for shader.
 	this->program_handle = glCreateProgram();
-	// Vertex Shader
-	this->shaders[0] = Shader::createShader(Shader::loadShader(this->filename + ".vertex.glsl"), GL_VERTEX_SHADER);
-	// Tessellation Control Shader
-	this->shaders[1] = Shader::createShader(Shader::loadShader(this->filename + ".tessellation_control.glsl"), GL_TESS_CONTROL_SHADER);
-	// Tessellation Evalution Shader
-	this->shaders[2] = Shader::createShader(Shader::loadShader(this->filename + ".tessellation_evaluation.glsl"), GL_TESS_EVALUATION_SHADER);
-	// Geometry Shader
-	this->shaders[3] = Shader::createShader(Shader::loadShader(this->filename + ".geometry.glsl"), GL_GEOMETRY_SHADER);
-	// Fragment Shader
-	this->shaders[4] = Shader::createShader(Shader::loadShader(this->filename + ".fragment.glsl"), GL_FRAGMENT_SHADER);
-	for(std::size_t i = 0; i < tz::graphics::maximum_shaders; i++)
-		if(this->shaders[i] != 0)
-			glAttachShader(this->program_handle, this->shaders[i]);
-	
-	// bind the attributes needed normally
-	glBindAttribLocation(this->program_handle, 0, "position");
-	glBindAttribLocation(this->program_handle, 1, "texcoord");
-	glBindAttribLocation(this->program_handle, 2, "normal");
-	glBindAttribLocation(this->program_handle, 3, "tangent");
-	
-	glLinkProgram(this->program_handle);
-	Shader::checkShaderError(this->program_handle, GL_LINK_STATUS, true, "Shader Program Linking Failed:\n");
-	
-	glValidateProgram(this->program_handle);
-	Shader::checkShaderError(this->program_handle, GL_VALIDATE_STATUS, true, "Shader Program Validation Failed:\n");
-	
-	this->uniforms[static_cast<std::size_t>(UniformTypes::MODEL)] = glGetUniformLocation(this->program_handle, "m");
-	this->uniforms[static_cast<std::size_t>(UniformTypes::VIEW)] = glGetUniformLocation(this->program_handle, "v");
-	this->uniforms[static_cast<std::size_t>(UniformTypes::PROJECTION)] = glGetUniformLocation(this->program_handle, "p");
-	this->uniforms[static_cast<std::size_t>(UniformTypes::SHININESS)] = glGetUniformLocation(this->program_handle, "shininess");
-	this->uniforms[static_cast<std::size_t>(UniformTypes::PARALLAX_MAP_SCALE)] = glGetUniformLocation(this->program_handle, "parallax_multiplier");
-	this->uniforms[static_cast<std::size_t>(UniformTypes::PARALLAX_MAP_BIAS)] = glGetUniformLocation(this->program_handle, "parallax_bias");
-	this->uniforms[static_cast<std::size_t>(UniformTypes::DISPLACEMENT_FACTOR)] = glGetUniformLocation(this->program_handle, "displacement_factor");
+	if(compile)
+		this->compile();
+	if(link)
+		this->link();
+	if(validate)
+		this->validate();
+	if(this->ready())
+		this->initialiseUniforms();
 	tz::util::log::message("Shader with link '", this->filename, "':");
 	tz::util::log::message("\tHas Vertex Shader: ", this->hasVertexShader());
 	tz::util::log::message("\tHas Tessellation Control Shader: ", this->hasTessellationControlShader());
@@ -79,6 +54,77 @@ Shader::~Shader()
 	}
 	// Free GPU memory
 	glDeleteProgram(this->program_handle);
+}
+
+void Shader::compile()
+{
+	// Vertex Shader
+	this->shaders[0] = Shader::createShader(Shader::loadShader(this->filename + ".vertex.glsl"), GL_VERTEX_SHADER);
+	// Tessellation Control Shader
+	this->shaders[1] = Shader::createShader(Shader::loadShader(this->filename + ".tessellation_control.glsl"), GL_TESS_CONTROL_SHADER);
+	// Tessellation Evalution Shader
+	this->shaders[2] = Shader::createShader(Shader::loadShader(this->filename + ".tessellation_evaluation.glsl"), GL_TESS_EVALUATION_SHADER);
+	// Geometry Shader
+	this->shaders[3] = Shader::createShader(Shader::loadShader(this->filename + ".geometry.glsl"), GL_GEOMETRY_SHADER);
+	// Fragment Shader
+	this->shaders[4] = Shader::createShader(Shader::loadShader(this->filename + ".fragment.glsl"), GL_FRAGMENT_SHADER);
+	for(std::size_t i = 0; i < tz::graphics::maximum_shaders; i++)
+		if(this->shaders[i] != 0)
+			glAttachShader(this->program_handle, this->shaders[i]);
+	
+	// bind the attributes needed normally
+	glBindAttribLocation(this->program_handle, 0, "position");
+	glBindAttribLocation(this->program_handle, 1, "texcoord");
+	glBindAttribLocation(this->program_handle, 2, "normal");
+	glBindAttribLocation(this->program_handle, 3, "tangent");
+	this->compiled = true;
+}
+
+void Shader::link()
+{
+	glLinkProgram(this->program_handle);
+	Shader::checkShaderError(this->program_handle, GL_LINK_STATUS, true, "Shader Program Linking Failed:\n");
+}
+
+void Shader::validate()
+{
+	glValidateProgram(this->program_handle);
+	Shader::checkShaderError(this->program_handle, GL_VALIDATE_STATUS, true, "Shader Program Validation Failed:\n");
+}
+
+bool Shader::isCompiled() const
+{
+	return this->compiled;
+}
+
+bool Shader::isLinked() const
+{
+	GLint status;
+	glGetProgramiv(this->program_handle, GL_LINK_STATUS, &status);
+	return status == GL_TRUE;
+}
+
+bool Shader::isValidated() const
+{
+	GLint status;
+	glGetProgramiv(this->program_handle, GL_VALIDATE_STATUS, &status);
+	return status == GL_TRUE;
+}
+
+bool Shader::ready() const
+{
+	return this->isCompiled() && this->isLinked() && this->isValidated();
+}
+
+void Shader::initialiseUniforms()
+{
+	this->uniforms[static_cast<std::size_t>(UniformTypes::MODEL)] = glGetUniformLocation(this->program_handle, "m");
+	this->uniforms[static_cast<std::size_t>(UniformTypes::VIEW)] = glGetUniformLocation(this->program_handle, "v");
+	this->uniforms[static_cast<std::size_t>(UniformTypes::PROJECTION)] = glGetUniformLocation(this->program_handle, "p");
+	this->uniforms[static_cast<std::size_t>(UniformTypes::SHININESS)] = glGetUniformLocation(this->program_handle, "shininess");
+	this->uniforms[static_cast<std::size_t>(UniformTypes::PARALLAX_MAP_SCALE)] = glGetUniformLocation(this->program_handle, "parallax_multiplier");
+	this->uniforms[static_cast<std::size_t>(UniformTypes::PARALLAX_MAP_BIAS)] = glGetUniformLocation(this->program_handle, "parallax_bias");
+	this->uniforms[static_cast<std::size_t>(UniformTypes::DISPLACEMENT_FACTOR)] = glGetUniformLocation(this->program_handle, "displacement_factor");
 }
 
 bool Shader::hasVertexShader() const

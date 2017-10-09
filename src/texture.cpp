@@ -79,7 +79,7 @@ DepthTexture::DepthTexture(unsigned int width, unsigned int height): FrameBuffer
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, this->texture_handle, 0);
 	glDrawBuffer(GL_NONE);
 	glReadBuffer(GL_NONE);
-	glBindFrameBuffer(GL_FRAMEBUFFER, 0);// no colour buffer drawn to as we only care about depth (would be a huge waste of time and memory to take the colour too)
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);// no colour buffer drawn to as we only care about depth (would be a huge waste of time and memory to take the colour too)
 	
 	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 	{

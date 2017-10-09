@@ -19,12 +19,20 @@ namespace tz
 class Shader
 {
 public:
-	Shader(std::string filename);
+	Shader(std::string filename, bool compile = true, bool link = true, bool validate = true);
 	Shader(const Shader& copy);
 	Shader(Shader&& move);
 	~Shader();
 	Shader& operator=(const Shader& rhs) = delete;
 	
+	void compile();
+	void link();
+	void validate();
+	bool isCompiled() const;
+	bool isLinked() const;
+	bool isValidated() const;
+	bool ready() const;
+	void initialiseUniforms();
 	bool hasVertexShader() const;
 	bool hasTessellationControlShader() const;
 	bool hasTessellationEvaluationShader() const;
@@ -49,6 +57,7 @@ private:
 		NUM_UNIFORMS,
 	};
 	std::string filename;
+	bool compiled;
 	GLuint program_handle;
 	std::array<GLuint, tz::graphics::maximum_shaders> shaders;
 	std::array<GLint, static_cast<std::size_t>(UniformTypes::NUM_UNIFORMS)> uniforms;
