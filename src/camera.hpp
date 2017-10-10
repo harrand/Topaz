@@ -20,14 +20,14 @@ public:
 	
 	const Vector3F& getPosition() const;
 	const Vector3F& getRotation() const;
-	Vector3F& getPositionR();
-	Vector3F& getRotationR();
+	void setPosition(Vector3F position);
+	void setRotation(Vector3F rotation);
 	float getFOV() const;
 	float getNearClip() const;
 	float getFarClip() const;
-	float& getFOVR();
-	float& getNearClipR();
-	float& getFarClipR();
+	void setFOV(float fov);
+	void setNearClip(float near_clip);
+	void setFarClip(float far_clip);
 	Vector3F getForward() const;
 	Vector3F getBackward() const;
 	Vector3F getUp() const;

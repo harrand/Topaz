@@ -77,9 +77,9 @@ const Vector3F& AudioSource::getPosition() const
 	return this->position;
 }
 
-Vector3F& AudioSource::getPositionR()
+void AudioSource::setPosition(Vector3F position)
 {
-	return this->position;
+	this->position = position;
 }
 
 AudioMusic::AudioMusic(std::string filename): filename(std::move(filename)), paused(false)

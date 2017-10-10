@@ -30,8 +30,8 @@ void MouseListener::handleEvents(SDL_Event& evt)
 	{
 		int x, y;
 		SDL_GetMouseState(&x, &y);
-		this->mouse_position.getXR() = x;
-		this->mouse_position.getYR() = y;
+		this->mouse_position.setX(x);
+		this->mouse_position.setY(y);
 	}
 	if(evt.type == SDL_MOUSEBUTTONDOWN)
 	{

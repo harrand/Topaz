@@ -14,14 +14,14 @@ Vector2F Matrix2x2::getRowY() const
 	return this->y;
 }
 
-Vector2F& Matrix2x2::getRowXR()
+void Matrix2x2::setRowX(Vector2F row_x)
 {
-	return this->x;
+	this->x = row_x;
 }
 
-Vector2F& Matrix2x2::getRowYR()
+void Matrix2x2::setRowY(Vector2F row_y)
 {
-	return this->y;
+	this->y = row_y;
 }
 
 float Matrix2x2::determinant() const
@@ -48,19 +48,19 @@ Vector3F Matrix3x3::getRowZ() const
 	return this->z;
 }
 
-Vector3F& Matrix3x3::getRowXR()
+void Matrix3x3::setRowX(Vector3F row_x)
 {
-	return this->x;
+	this->x = row_x;
 }
 
-Vector3F& Matrix3x3::getRowYR()
+void Matrix3x3::setRowY(Vector3F row_y)
 {
-	return this->y;
+	this->y = row_y;
 }
 
-Vector3F& Matrix3x3::getRowZR()
+void Matrix3x3::setRowZ(Vector3F row_z)
 {
-	return this->z;
+	this->z = row_z;
 }
 
 float Matrix3x3::determinant() const
@@ -97,24 +97,24 @@ Vector4F Matrix4x4::getRowW() const
 	return this->w;
 }
 
-Vector4F& Matrix4x4::getRowXR()
+void Matrix4x4::setRowX(Vector4F row_x)
 {
-	return this->x;
+	this->x = row_x;
 }
 
-Vector4F& Matrix4x4::getRowYR()
+void Matrix4x4::setRowY(Vector4F row_y)
 {
-	return this->y;
+	this->y = row_y;
 }
 
-Vector4F& Matrix4x4::getRowZR()
+void Matrix4x4::setRowZ(Vector4F row_z)
 {
-	return this->z;
+	this->z = row_z;
 }
 
-Vector4F& Matrix4x4::getRowWR()
+void Matrix4x4::setRowW(Vector4F row_w)
 {
-	return this->w;
+	this->w = row_w;
 }
 
 Matrix4x4 Matrix4x4::transposed() const
@@ -125,54 +125,6 @@ Matrix4x4 Matrix4x4::transposed() const
 	Vector4F tz(this->x.getZ(), this->y.getZ(), this->z.getZ(), this->w.getZ());
 	Vector4F tw(this->x.getW(), this->y.getW(), this->z.getW(), this->w.getW());
 	return {tx, ty, tz, tw};
-}
-
-Matrix4x4 Matrix4x4::washed(float min, float max) const
-{
-	Matrix4x4 copy(Vector4F(this->x.getX(), this->x.getY(), this->x.getZ(), this->x.getW()), Vector4F(this->y.getX(), this->y.getY(), this->y.getZ(), this->y.getW()), Vector4F(this->z.getX(), this->z.getY(), this->z.getZ(), this->z.getW()), Vector4F(this->w.getX(), this->w.getY(), this->w.getZ(), this->w.getW()));
-	Vector4F* row;
-	float* val;
-	for(unsigned int i = 0; i < 4; i++)
-	{
-		switch(i)
-		{
-			case 0:
-			row = &(copy.getRowXR());
-			break;
-			case 1:
-			row = &(copy.getRowYR());
-			break;
-			case 2:
-			row = &(copy.getRowZR());
-			break;
-			case 3:
-			row = &(copy.getRowWR());
-			break;
-		}
-		
-		for(unsigned int j = 0; j < 4; j++)
-		{
-			switch(j)
-			{
-				case 0:
-				val = &(row->getXR());
-				break;
-				case 1:
-				val = &(row->getYR());
-				break;
-				case 2:
-				val = &(row->getZR());
-				break;
-				case 3:
-				val = &(row->getWR());
-				break;
-			}
-			if(fabs(*val) < min || fabs(*val) > max)
-				*val = 0.0f;
-		}
-	}
-	// lots of branching. but branch prediction fail shouldn't provide any noticeable overhead for such small N
-	return copy;
 }
 
 std::array<float, 16> Matrix4x4::fillData() const
@@ -415,10 +367,12 @@ Matrix4x4 Matrix4x4::inverse() const
 
 Matrix4x4 Matrix4x4::createTranslationMatrix(Vector3F position)
 {
-	Matrix4x4 res = Matrix4x4::identity();
-	res.getRowXR().getWR() = position.getX();
-	res.getRowYR().getWR() = position.getY();
-	res.getRowZR().getWR() = position.getZ();
+	Matrix4x4 res(Vector4F(1.0f, 0.0f, 0.0f, position.getX()), Vector4F(0.0f, 1.0f, 0.0f, position.getY()), Vector4F(0.0f, 0.0f, 1.0f, position.getZ()), Vector4F(0.0f, 0.0f, 0.0f, 1.0f));
+	/*
+	res.getRowXR().setW(position.getX());
+	res.getRowYR().setW(position.getY());
+	res.getRowZR().setW(position.getZ());
+	*/
 	return res;
 }
 
@@ -467,13 +421,7 @@ Matrix4x4 Matrix4x4::createOrthographicMatrix(float right, float left, float top
 	|	0			0		0				1	|
 	
 	*/
-	Vector4F x(0, 0, 0, 0), y(0, 0, 0, 0), z(0, 0, 0, 0), w(0, 0, 0, 1);
-	x.getXR() = 2 / (right - left);
-	x.getWR() = -1 * ((right + left)/(right - left));
-	y.getYR() = 2 / (top - bottom);
-	y.getWR() = -1 * ((top + bottom)/(top - bottom));
-	z.getZR() = -2 / (far - near);
-	z.getWR() = -1 * ((far + near)/(far - near));
+	Vector4F x(2 / (right - left), 0, 0, -1 * ((right + left)/(right - left))), y(0, 2 / (top - bottom), 0, -1 * ((top + bottom)/(top - bottom))), z(0, 0, -2 / (far - near), -1 * ((far + near)/(far - near))), w(0, 0, 0, 1);
 	return {x, y, z, w};
 }
 
@@ -487,13 +435,8 @@ Matrix4x4 Matrix4x4::createPerspectiveMatrix(float fov, float aspect_ratio, floa
 	|			0				0	  -1.0				0	 |
 	
 	*/
-	Vector4F x(0, 0, 0, 0), y(0, 0, 0, 0), z(0, 0, 0, 0), w(0, 0, 0, 0);
 	float thf = tan(fov / 2);
-	x.getXR() = 1/(aspect_ratio * thf);
-	y.getYR() = 1/thf;
-	z.getZR() = (farclip + nearclip)/(nearclip - farclip);
-	z.getWR() = (2 * farclip * nearclip)/(nearclip - farclip);
-	w.getZR() = -1.0f;
+	Vector4F x(1/(aspect_ratio * thf), 0, 0, 0), y(0, 1/thf, 0, 0), z(0, 0, (farclip + nearclip)/(nearclip - farclip), (2 * farclip * nearclip)/(nearclip - farclip)), w(0, 0, -1.0f, 0);
 	return {x, y, z, w};
 }
 

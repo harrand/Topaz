@@ -12,14 +12,14 @@ const Vector3F& Camera::getRotation() const
 	return this->rot;
 }
 
-Vector3F& Camera::getPositionR()
+void Camera::setPosition(Vector3F position)
 {
-	return this->pos;
+	this->pos = position;
 }
 
-Vector3F& Camera::getRotationR()
+void Camera::setRotation(Vector3F rotation)
 {
-	return this->rot;
+	this->rot = rotation;
 }
 
 float Camera::getFOV() const
@@ -37,19 +37,19 @@ float Camera::getFarClip() const
 	return this->far_clip;
 }
 
-float& Camera::getFOVR()
+void Camera::setFOV(float fov)
 {
-	return this->fov;
+	this->fov = fov;
 }
 
-float& Camera::getNearClipR()
+void Camera::setNearClip(float near_clip)
 {
-	return this->near_clip;
+	this->near_clip = near_clip;
 }
 
-float& Camera::getFarClipR()
+void Camera::setFarClip(float far_clip)
 {
-	return this->far_clip;
+	this->far_clip = far_clip;
 }
 
 Vector3F Camera::getForward() const

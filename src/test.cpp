@@ -162,8 +162,13 @@ void init()
 		{
 			for(const AABB& bound : bounds)
 			{
-				if(bound.intersects(engine.getCamera().getPosition())) // teleport camera above any object it's inside
-					engine.getCameraR().getPositionR().getYR() = bound.getMaximum().getY();
+				if(bound.intersects(engine.getCamera().getPosition()))// teleport camera above any object it's inside
+				{
+					//engine.getCameraR().getPositionR().setY(bound.getMaximum().getY());
+					Vector3F position = engine.getCamera().getPosition();
+					position.setY(bound.getMaximum().getY());
+					engine.getCameraR().setPosition(position);
+				}
 				if(bound.intersects(engine.getCamera().getPosition() - (Vector3F(0, 1, 0) * (velocity + a))))
 					on_ground = true;
 			}
@@ -174,7 +179,8 @@ void init()
 					speed = 0.0f;
 				else if(engine.getTimeProfiler().getFPS() != 0)
 				{
-					engine.getCameraR().getPositionR() -= Vector3F(0, speed, 0);
+					//engine.getCameraR().getPositionR() -= Vector3F(0, speed, 0);
+					engine.getCameraR().setPosition(engine.getCamera().getPosition() - Vector3F(0, speed, 0));
 					speed += a;
 				}
 			}
@@ -189,11 +195,11 @@ void init()
 						collide = true;
 				}
 				if(!collide)
-					engine.getCameraR().getPositionR() = after;
+					engine.getCameraR().setPosition(after);
 			}
 			if(key_listener.isKeyPressed("S"))
 			{
-				Vector3F after = (engine.getCamera().getPosition() + (engine.getCameraR().getBackward() * velocity));
+				Vector3F after = (engine.getCamera().getPosition() + (engine.getCamera().getBackward() * velocity));
 				bool collide = false;
 				for(const AABB& bound : bounds)
 				{
@@ -201,11 +207,11 @@ void init()
 						collide = true;
 				}
 				if(!collide)
-					engine.getCameraR().getPositionR() = after;
+					engine.getCameraR().setPosition(after);
 			}
 			if(key_listener.isKeyPressed("A"))
 			{
-				Vector3F after = (engine.getCamera().getPosition() + (engine.getCameraR().getLeft() * velocity));
+				Vector3F after = (engine.getCamera().getPosition() + (engine.getCamera().getLeft() * velocity));
 				bool collide = false;
 				for(const AABB& bound : bounds)
 				{
@@ -213,11 +219,11 @@ void init()
 						collide = true;
 				}
 				if(!collide)
-					engine.getCameraR().getPositionR() = after;
+					engine.getCameraR().setPosition(after);
 			}
 			if(key_listener.isKeyPressed("D"))
 			{
-				Vector3F after = (engine.getCamera().getPosition() + (engine.getCameraR().getRight() * velocity));
+				Vector3F after = (engine.getCamera().getPosition() + (engine.getCamera().getRight() * velocity));
 				bool collide = false;
 				for(const AABB& bound : bounds)
 				{
@@ -225,7 +231,7 @@ void init()
 						collide = true;
 				}
 				if(!collide)
-					engine.getCameraR().getPositionR() = after;
+					engine.getCameraR().setPosition(after);
 			}
 			if(key_listener.isKeyPressed("Space"))
 			{
@@ -237,7 +243,7 @@ void init()
 						collide = true;
 				}
 				if(!collide)
-					engine.getCameraR().getPositionR() = after;
+					engine.getCameraR().setPosition(after);
 			}
 			if(key_listener.isKeyPressed("Z"))
 			{
@@ -249,29 +255,36 @@ void init()
 						collide = true;
 				}
 				if(!collide)
-					engine.getCameraR().getPositionR() = after;
+					engine.getCameraR().setPosition(after);
 			}
 			if(key_listener.isKeyPressed("I"))
-				engine.getCameraR().getRotationR() += (Vector3F(1.0f/360.0f, 0, 0) * multiplier * 5 * engine.getTimeProfiler().getLastDelta());
+				//engine.getCameraR().getRotationR() += (Vector3F(1.0f/360.0f, 0, 0) * multiplier * 5 * engine.getTimeProfiler().getLastDelta());
+				engine.getCameraR().setRotation(engine.getCamera().getRotation() + (Vector3F(1.0f/360.0f, 0, 0) * multiplier * 5 * engine.getTimeProfiler().getLastDelta()));
 			if(key_listener.isKeyPressed("K"))
-				engine.getCameraR().getRotationR() += (Vector3F(-1.0f/360.0f, 0, 0) * multiplier * 5 * engine.getTimeProfiler().getLastDelta());
+				//engine.getCameraR().getRotationR() += (Vector3F(-1.0f/360.0f, 0, 0) * multiplier * 5 * engine.getTimeProfiler().getLastDelta());
+				engine.getCameraR().setRotation(engine.getCamera().getRotation() + (Vector3F(-1.0f/360.0f, 0, 0) * multiplier * 5 * engine.getTimeProfiler().getLastDelta()));
 			if(key_listener.isKeyPressed("J"))
-				engine.getCameraR().getRotationR() += (Vector3F(0, -1.0f/360.0f, 0) * multiplier * 5 * engine.getTimeProfiler().getLastDelta());
+				//engine.getCameraR().getRotationR() += (Vector3F(0, -1.0f/360.0f, 0) * multiplier * 5 * engine.getTimeProfiler().getLastDelta());
+				engine.getCameraR().setRotation(engine.getCamera().getRotation() + (Vector3F(0, -1.0f/360.0f, 0) * multiplier * 5 * engine.getTimeProfiler().getLastDelta()));
 			if(key_listener.isKeyPressed("L"))
-				engine.getCameraR().getRotationR() += (Vector3F(0, 1.0f/360.0f, 0) * multiplier * 5 * engine.getTimeProfiler().getLastDelta());
+				//engine.getCameraR().getRotationR() += (Vector3F(0, 1.0f/360.0f, 0) * multiplier * 5 * engine.getTimeProfiler().getLastDelta());
+				engine.getCameraR().setRotation(engine.getCamera().getRotation() + (Vector3F(0, 1.0f/360.0f, 0) * multiplier * 5 * engine.getTimeProfiler().getLastDelta()));
 			if(key_listener.isKeyPressed("R"))
 			{
-				engine.getCameraR().getPositionR() = engine.getWorldR().getSpawnPoint();
-				engine.getCameraR().getRotationR() = engine.getWorldR().getSpawnOrientation();
+				engine.getCameraR().setPosition(engine.getWorldR().getSpawnPoint());
+				engine.getCameraR().setRotation(engine.getWorldR().getSpawnOrientation());
 			}
 			if(key_listener.catchKeyPressed("Escape"))
 				gui_panel.setHidden(!gui_panel.isHidden());
 			if(mouse_listener.isLeftClicked() && gui_panel.isHidden())
 			{
-				Vector3F& orientation = engine.getCameraR().getRotationR();
 				Vector2F delta = mouse_listener.getMouseDeltaPos();
-				orientation.getYR() += (rotational_speed * delta.getX());
-				orientation.getXR() -= (rotational_speed * delta.getY());
+				Vector3F orientation = engine.getCameraR().getRotation();
+				orientation.setY(orientation.getY() + (rotational_speed * delta.getX()));
+				orientation.setX(orientation.getX() - (rotational_speed * delta.getY()));
+				engine.getCameraR().setRotation(orientation);
+				//orientation.getYR() += (rotational_speed * delta.getX());
+				//orientation.getXR() -= (rotational_speed * delta.getY());
 				mouse_listener.reloadMouseDelta();
 			}
 		}

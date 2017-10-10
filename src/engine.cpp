@@ -24,7 +24,7 @@ void tz::terminate()
 Engine::Engine(Window& wnd, std::string properties_path, unsigned int initial_fps, unsigned int tps): properties(RawFile(properties_path)), resources(RawFile(this->properties.getTag("resources"))), default_shader(this->properties.getTag("default_shader")), default_gui_shader(this->properties.getTag("default_gui_shader")), camera(Camera()), wnd(wnd), world(this->properties.getTag("default_world"), this->properties.getTag("resources")), fps(initial_fps), tps(tps), update_command_executor(), tick_command_executor(), update_due(false)
 {
 	// move the camera to the world's spawn point.
-	this->camera.getPositionR() = this->world.getSpawnPoint();
+	this->camera.setPosition(this->world.getSpawnPoint());
 	// fill all the asset buffers via tz data manager
 	tz::data::Manager(this->properties.getTag("resources")).retrieveAllData(this->meshes, this->textures, this->normal_maps, this->parallax_maps, this->displacement_maps);
 	// read the properties file for any extra shaders specified (gui shader not included in this)

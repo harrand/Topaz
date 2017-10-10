@@ -39,7 +39,7 @@ public:
 	AudioSource(std::string filename, Vector3F position);
 	void update(const Camera& relative_to);
 	const Vector3F& getPosition() const;
-	Vector3F& getPositionR();
+	void setPosition(Vector3F position);
 private:
 	Vector3F position;
 };

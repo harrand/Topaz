@@ -8,17 +8,7 @@ const Vector3F& BoundingSphere::getCentre() const
 	return this->centre;
 }
 
-Vector3F& BoundingSphere::getCentreR()
-{
-	return this->centre;
-}
-
 float BoundingSphere::getRadius() const
-{
-	return this->radius;
-}
-
-float& BoundingSphere::getRadiusR()
 {
 	return this->radius;
 }
@@ -49,17 +39,7 @@ const Vector3F& AABB::getMinimum() const
 	return this->minimum;
 }
 
-Vector3F& AABB::getMinimumR()
-{
-	return this->minimum;
-}
-
 const Vector3F& AABB::getMaximum() const
-{
-	return this->maximum;
-}
-
-Vector3F& AABB::getMaximumR()
 {
 	return this->maximum;
 }
@@ -105,17 +85,7 @@ const Vector3F& BoundingPlane::getNormal() const
 	return this->normal;
 }
 
-Vector3F& BoundingPlane::getNormalR()
-{
-	return this->normal;
-}
-
 float BoundingPlane::getDistance() const
-{
-	return this->distance;
-}
-
-float& BoundingPlane::getDistanceR()
 {
 	return this->distance;
 }

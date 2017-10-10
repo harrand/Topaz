@@ -122,9 +122,9 @@ namespace tz::graphics::model
 			float deltaV2 = texcoords[i2].getY() - texcoords[i0].getY();
 			float f = 1.0f/(deltaU1 * deltaV2 - deltaU2 * deltaV1);
 			Vector3F tangent;
-			tangent.getXR() = f * (deltaV2 * edge1.getX() - deltaV1 * edge2.getX());
-			tangent.getYR() = f * (deltaV2 * edge1.getY() - deltaV1 * edge2.getY());
-			tangent.getZR() = f * (deltaV2 * edge1.getZ() - deltaV1 * edge2.getZ());
+			tangent.setX(f * (deltaV2 * edge1.getX() - deltaV1 * edge2.getX()));
+			tangent.setY(f * (deltaV2 * edge1.getY() - deltaV1 * edge2.getY()));
+			tangent.setZ(f * (deltaV2 * edge1.getZ() - deltaV1 * edge2.getZ()));
 			tangents[i0] += tangent;
 			tangents[i1] += tangent;
 			tangents[i2] += tangent;

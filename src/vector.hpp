@@ -48,6 +48,16 @@ public:
 		return this->y;
 	}
 	
+	inline void setX(T x)
+	{
+		this->x = x;
+	}
+	
+	inline void setY(T y)
+	{
+		this->y = y;
+	}
+	/*
 	inline T& getXR()
 	{
 		return this->x;
@@ -57,6 +67,7 @@ public:
 	{
 		return this->y;
 	}
+	*/
 	
 	inline T length() const
 	{
@@ -150,9 +161,9 @@ public:
 		return this->z;
 	}
 	
-	inline T& getZR()
+	inline void setZ(T z)
 	{
-		return this->z;
+		this->z = z;
 	}
 	
 	inline T length() const 
@@ -263,9 +274,9 @@ public:
 		return this->w;
 	}
 	
-	inline T& getWR()
+	void setW(T w)
 	{
-		return this->w;
+		this->w = w;
 	}
 	
 	inline T length() const
