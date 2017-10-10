@@ -7,19 +7,19 @@ const Vector3F& Light::getPosition() const
 	return this->pos;
 }
 
-Vector3F& Light::getPositionR()
-{
-	return this->pos;
-}
-
 const Vector3F& Light::getColour() const
 {
 	return this->colour;
 }
 
-Vector3F& Light::getColourR()
+void Light::setPosition(Vector3F position)
 {
-	return this->colour;
+	this->pos = position;
+}
+
+void Light::setColour(Vector3F colour)
+{
+	this->colour = colour;
 }
 
 float Light::getPower() const

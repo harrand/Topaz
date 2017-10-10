@@ -8,9 +8,9 @@ const Vector3F& Force::getSize() const
 	return this->size;
 }
 
-Vector3F& Force::getSizeR()
+void Force::setSize(Vector3F size)
 {
-	return this->size;
+	this->size = size;
 }
 
 Force Force::operator+(const Force& other) const

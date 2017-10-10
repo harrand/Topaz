@@ -37,39 +37,39 @@ float Object::getDisplacementFactor() const
 	return this->displacement_factor;
 }
 
-Vector3F& Object::getPositionR()
+void Object::setPosition(Vector3F position)
 {
-	return this->pos;
+	this->pos = position;
 }
 
-Vector3F& Object::getRotationR()
+void Object::setRotation(Vector3F rotation)
 {
-	return this->rot;
+	this->rot = rotation;
 }
 
-Vector3F& Object::getScaleR()
+void Object::setScale(Vector3F scale)
 {
-	return this->scale;
+	this->scale = scale;
 }
 
-unsigned int& Object::getShininessR()
+void Object::setShininess(float shininess)
 {
-	return this->shininess;
+	this->shininess = shininess;
 }
 
-float& Object::getParallaxMapScaleR()
+void Object::setParallaxMapScale(float parallax_map_scale)
 {
-	return this->parallax_map_scale;
+	this->parallax_map_scale = parallax_map_scale;
 }
 
-float& Object::getParallaxMapOffsetR()
+void Object::setParallaxMapOffset(float parallax_map_offset)
 {
-	return this->parallax_map_offset;
+	this->parallax_map_offset = parallax_map_offset;
 }
 
-float& Object::getDisplacementFactorR()
+void Object::setDisplacementFactor(float displacement_factor)
 {
-	return this->displacement_factor;
+	this->displacement_factor = displacement_factor;
 }
 
 const std::string& Object::getMeshLink() const

@@ -15,9 +15,6 @@ public:
 	const std::string& getName() const;
 	const std::string& getDescription() const;
 	const std::string& getUsage() const;
-	std::string& getUsageR();
-	std::string& getNameR();
-	std::string& getDescriptionR();
 	std::size_t getExpectedParameterSize() const;
 	virtual bool operator==(const Command& rhs) const;
 	virtual void operator()(const std::vector<std::string>& args) = 0;
@@ -53,7 +50,6 @@ public:
 	~CommandExecutor() = default;
 	
 	const std::unordered_set<Command*>& getCommands() const;
-	std::unordered_set<Command*>& getCommandsR();
 	void registerCommand(Command* command);
 	void deregisterCommand(Command* command);
 	void deregisterCommand(const std::string& command_name);

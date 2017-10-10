@@ -20,21 +20,6 @@ const std::string& Command::getUsage() const
 	return this->usage;
 }
 
-std::string& Command::getNameR()
-{
-	return this->name;
-}
-
-std::string& Command::getDescriptionR()
-{
-	return this->description;
-}
-
-std::string& Command::getUsageR()
-{
-	return this->usage;
-}
-
 std::size_t Command::getExpectedParameterSize() const
 {
 	// equal to number of spaces in the arguments + 1 because we want the number of words in the sentence including the first argument as that does not equal the command name in Topaz.
@@ -54,11 +39,6 @@ void TrivialCommand::operator()()
 }
 
 const std::unordered_set<Command*>& CommandExecutor::getCommands() const
-{
-	return this->commands;
-}
-
-std::unordered_set<Command*>& CommandExecutor::getCommandsR()
 {
 	return this->commands;
 }

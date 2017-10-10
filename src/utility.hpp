@@ -213,7 +213,6 @@ public:
 	
 	const std::default_random_engine::result_type& getSeed() const;
 	const std::default_random_engine& getEngine() const;
-	std::default_random_engine& getEngineR();
 	int nextInt(int min = 0, int max = std::numeric_limits<int>::max());
 	float nextFloat(float min = 0, float max = std::numeric_limits<float>::max());
 	template <typename Number>
@@ -241,7 +240,6 @@ public:
 	
 	const std::mt19937::result_type& getSeed() const;
 	const std::mt19937& getEngine() const;
-	std::mt19937& getEngineR();
 	int nextInt(int min = 0, int max = std::numeric_limits<int>::max());
 	float nextFloat(float min = 0, float max = std::numeric_limits<float>::max());
 	template <typename Number>

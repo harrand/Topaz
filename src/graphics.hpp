@@ -102,13 +102,10 @@ public:
 	const Vector3F& getPosition() const;
 	const Vector2F& getTextureCoordinate() const;
 	const Vector3F& getNormal() const;
-	Vector3F& getPositionR();
-	Vector2F& getTextureCoordinateR();
-	Vector3F& getNormalR();
 private:
-	Vector3F position;
-	Vector2F texcoord;
-	Vector3F normal;
+	const Vector3F position;
+	const Vector2F texcoord;
+	const Vector3F normal;
 };
 
 class Font
@@ -121,7 +118,6 @@ public:
 	Font& operator=(Font&& rhs); // move assignment operator
 	
 	TTF_Font* getFontHandle() const;
-	TTF_Font*& getFontHandleR();
 private:
 	std::string font_path;
 	int pixel_height;

@@ -21,7 +21,7 @@ void tz::terminate()
 	tz::util::log::message("Terminated Topaz.");
 }
 
-Engine::Engine(Window& wnd, std::string properties_path, unsigned int initial_fps, unsigned int tps): properties(RawFile(properties_path)), resources(RawFile(this->properties.getTag("resources"))), default_shader(this->properties.getTag("default_shader")), default_gui_shader(this->properties.getTag("default_gui_shader")), camera(Camera()), wnd(wnd), world(this->properties.getTag("default_world"), this->properties.getTag("resources")), fps(initial_fps), tps(tps), update_command_executor(), tick_command_executor(), update_due(false)
+Engine::Engine(Window* wnd, std::string properties_path, unsigned int initial_fps, unsigned int tps): properties(RawFile(properties_path)), resources(RawFile(this->properties.getTag("resources"))), default_shader(this->properties.getTag("default_shader")), default_gui_shader(this->properties.getTag("default_gui_shader")), camera(Camera()), wnd(wnd), world(this->properties.getTag("default_world"), this->properties.getTag("resources")), fps(initial_fps), tps(tps), update_command_executor(), tick_command_executor(), update_due(false)
 {
 	// move the camera to the world's spawn point.
 	this->camera.setPosition(this->world.getSpawnPoint());
@@ -42,23 +42,23 @@ void Engine::update(std::size_t shader_index)
 		this->profiler.reset();
 		this->keeper.reload();
 	}
-	this->wnd.setRenderTarget();
+	this->wnd->setRenderTarget();
 	this->profiler.beginFrame();
 	
 	this->keeper.update();
 	ticker.update();
-	this->wnd.clear(0.0f, 0.0f, 0.0f, 1.0f);
+	this->wnd->clear(0.0f, 0.0f, 0.0f, 1.0f);
 	this->profiler.endFrame();
 	
-	this->world.render(this->camera, this->getShader(shader_index), this->wnd.getWidth(), this->wnd.getHeight(), this->meshes, this->textures, this->normal_maps, this->parallax_maps, this->displacement_maps);
+	this->world.render(this->camera, this->getShader(shader_index), this->wnd->getWidth(), this->wnd->getHeight(), this->meshes, this->textures, this->normal_maps, this->parallax_maps, this->displacement_maps);
 	
-	for(auto command : this->update_command_executor.getCommandsR())
+	for(auto command : this->update_command_executor.getCommands())
 		command->operator()({});
 	
 	if(ticker.millisPassed(1000.0f/this->tps))
 	{
 		// update physics engine when the average time of a fixed 'tick' has passed
-		for(auto tick_command : this->tick_command_executor.getCommandsR())
+		for(auto tick_command : this->tick_command_executor.getCommands())
 			tick_command->operator()({});
 		this->world.update(this->tps);
 		ticker.reload();
@@ -66,7 +66,7 @@ void Engine::update(std::size_t shader_index)
 	}
 	else
 		this->update_due = false;
-	this->wnd.update();
+	this->wnd->update();
 	
 	GLenum error;
 		if((error = glGetError()) != GL_NO_ERROR)
@@ -88,17 +88,7 @@ const MDLF& Engine::getProperties() const
 	return this->properties;
 }
 
-MDLF& Engine::getPropertiesR()
-{
-	return this->properties;
-}
-
 const MDLF& Engine::getResources() const
-{
-	return this->resources;
-}
-
-MDLF& Engine::getResourcesR()
 {
 	return this->resources;
 }
@@ -110,12 +100,32 @@ const Camera& Engine::getCamera() const
 
 const Window& Engine::getWindow() const
 {
-	 return this->wnd;
+	 return *(this->wnd);
 }
 
 const World& Engine::getWorld() const
 {
 	return this->world;
+}
+
+void Engine::setCamera(Camera cam)
+{
+	this->camera = cam;
+}
+
+void Engine::setWorld(World world)
+{
+	this->world = world;
+}
+
+void Engine::addToWorld(Object object)
+{
+	this->world.addObject(object);
+}
+
+void Engine::addToWorld(EntityObject entity_object)
+{
+	this->world.addEntityObject(entity_object);
 }
 
 const Shader& Engine::getDefaultShader() const
@@ -126,21 +136,6 @@ const Shader& Engine::getDefaultShader() const
 const Shader& Engine::getDefaultGuiShader() const
 {
 	return this->default_gui_shader;
-}
-
-Camera& Engine::getCameraR()
-{
-	return this->camera;
-}
-
-Window& Engine::getWindowR()
-{
-	return this->wnd;
-}
-
-World& Engine::getWorldR()
-{
-	return this->world;
 }
 
 const std::vector<std::unique_ptr<Mesh>>& Engine::getMeshes() const
@@ -192,19 +187,34 @@ const CommandExecutor& Engine::getUpdateCommandExecutor() const
 	return this->update_command_executor;
 }
 
-CommandExecutor& Engine::getUpdateCommandExecutorR()
-{
-	return this->update_command_executor;
-}
-
 const CommandExecutor& Engine::getTickCommandExecutor() const
 {
 	return this->tick_command_executor;
 }
 
-CommandExecutor& Engine::getTickCommandExecutorR()
+void Engine::addUpdateCommand(Command* cmd)
 {
-	return this->tick_command_executor;
+	this->update_command_executor.registerCommand(cmd);
+}
+
+void Engine::removeUpdateCommand(Command* cmd)
+{
+	this->update_command_executor.deregisterCommand(cmd);
+}
+
+void Engine::addTickCommand(Command* cmd)
+{
+	this->tick_command_executor.registerCommand(cmd);
+}
+
+void Engine::removeTickCommand(Command* cmd)
+{
+	this->tick_command_executor.deregisterCommand(cmd);
+}
+
+void Engine::registerListener(Listener& listener)
+{
+	this->wnd->registerListener(listener);
 }
 
 bool Engine::isUpdateDue() const

@@ -26,21 +26,6 @@ const Vector3F& Vertex::getNormal() const
 	return this->normal;
 }
 
-Vector3F& Vertex::getPositionR()
-{
-	return this->position;
-}
-
-Vector2F& Vertex::getTextureCoordinateR()
-{
-	return this->texcoord;
-}
-
-Vector3F& Vertex::getNormalR()
-{
-	return this->normal;
-}
-
 namespace tz::graphics::model
 {
 	OBJModel::OBJModel(const std::string& file_name): has_uvs(false), has_normals(false)
@@ -447,11 +432,6 @@ Font& Font::operator=(Font&& rhs)
 }
 
 TTF_Font* Font::getFontHandle() const
-{
-	return this->font_handle;
-}
-
-TTF_Font*& Font::getFontHandleR()
 {
 	return this->font_handle;
 }

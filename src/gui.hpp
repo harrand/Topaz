@@ -27,16 +27,15 @@ public:
 	virtual bool isMouseSensitive() const = 0;
 	virtual float getWindowPosX() const = 0;
 	virtual float getWindowPosY() const = 0;
-	const Window* findWindowParent() const;
-	Window* findWindowParentR();
+	Window* findWindowParent() const;
 	bool hasWindowParent() const;
 	const std::optional<std::reference_wrapper<const Shader>> getShader() const;
 	bool hasShader() const;
 	GUIElement* getParent() const;
-	GUIElement*& getParentR();
+	void setParent(GUIElement* parent);
 	const std::unordered_set<GUIElement*>& getChildren() const;
-	std::unordered_set<GUIElement*>& getChildrenR();
 	void addChild(GUIElement* child);
+	void removeChild(GUIElement* child);
 	bool isHidden() const;
 	void setHidden(bool hidden);
 protected:
@@ -70,20 +69,20 @@ public:
 	};
 	int getWidth() const;
 	int getHeight() const;
-	int& getWidthR();
-	int& getHeightR();
+	void setWidth(float width);
+	void setHeight(float height);
 	bool isCloseRequested() const;
 	void setSwapIntervalType(SwapIntervalType type) const;
 	SwapIntervalType getSwapIntervalType() const;
 	void setTitle(const std::string& new_title);
 	void setRenderTarget() const;
 	void clearFocus();
-	SDL_Window*& getWindowHandleR();
+	SDL_Window* getWindowHandle() const;
 	void clear(float r = 1.0f, float g = 1.0f, float b = 1.0f, float a = 1.0f) const;
 	void registerListener(Listener& l);
 	void deregisterListener(Listener& l);
 	GUIElement* getFocusedChild() const;
-	GUIElement*& getFocusedChildR();
+	void setFocusedChild(GUIElement* child);
 private:	
 	std::unordered_map<unsigned int, Listener*> registered_listeners;
 	int w, h;
@@ -105,12 +104,12 @@ public:
 	virtual float getWindowPosY() const override;
 	float getWidth() const;
 	float getHeight() const;
-	float& getXR();
-	float& getYR();
-	float& getWidthR();
-	float& getHeightR();
 	const Vector4F& getColour() const;
-	Vector4F& getColourR();
+	void setX(float x);
+	void setY(float y);
+	void setWidth(float width);
+	void setHeight(float height);
+	void setColour(Vector4F colour);
 	virtual void update() override;
 	virtual void destroy() override;
 	virtual bool focused() const override;
@@ -137,11 +136,11 @@ public:
 	bool hasBackgroundColour() const;
 	bool hasTextBorderColour() const;
 	const Font& getFont() const;
-	Font& getFontR();
+	void setFont(Font font);
 	const std::string& getText() const;
 	void setText(const std::string& new_text);
 	const Texture& getTexture() const;
-	Texture& getTextureR();
+	void setTexture(Texture texture);
 	GLuint getBackgroundColourUniform() const;
 	GLuint getHasBackgroundColourUniform() const;
 	GLuint getHasTextBorderColourUniform() const;
@@ -164,8 +163,8 @@ public:
 	virtual bool isMouseSensitive() const override;
 	Command* getOnMouseOver() const;
 	Command* getOnMouseClick() const;
-	Command*& getOnMouseOverR();
-	Command*& getOnMouseClickR();
+	void setOnMouseOver(Command* cmd);
+	void setOnMouseClick(Command* cmd);
 	bool mousedOver() const;
 	bool clickedOn() const;
 protected:

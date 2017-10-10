@@ -15,7 +15,7 @@ namespace tz
 class Engine
 {
 public:
-	Engine(Window& wnd, std::string properties_path = tz::default_properties_path, unsigned int initial_fps = 60, unsigned int tps = 30);
+	Engine(Window* wnd, std::string properties_path = tz::default_properties_path, unsigned int initial_fps = 60, unsigned int tps = 30);
 	Engine(const Engine& copy) = default;
 	Engine(Engine&& move) = default;
 	Engine& operator=(const Engine& rhs) = default;
@@ -25,17 +25,18 @@ public:
 	const Timer& getTimer() const;
 	const TimeProfiler& getTimeProfiler() const;
 	const MDLF& getProperties() const;
-	MDLF& getPropertiesR();
 	const MDLF& getResources() const;
-	MDLF& getResourcesR();
 	const Camera& getCamera() const;
 	const Window& getWindow() const;
 	const World& getWorld() const;
+	void setCamera(Camera camera);
+	void setWorld(World world);
+	void addToWorld(Object object);
+	void addToWorld(EntityObject entity_object);
+	//void removeFromWorld(Object object);
+	//void removeFromWorld(EntityObject entity_object);
 	const Shader& getDefaultShader() const;
 	const Shader& getDefaultGuiShader() const;
-	Camera& getCameraR();
-	Window& getWindowR();
-	World& getWorldR();
 	const std::vector<std::unique_ptr<Mesh>>& getMeshes() const;
 	const std::vector<std::unique_ptr<Texture>>& getTextures() const;
 	const std::vector<std::unique_ptr<NormalMap>>& getNormalMaps() const;
@@ -45,9 +46,12 @@ public:
 	unsigned int getFPS() const;
 	unsigned int getTPS() const;
 	const CommandExecutor& getUpdateCommandExecutor() const;
-	CommandExecutor& getUpdateCommandExecutorR();
 	const CommandExecutor& getTickCommandExecutor() const;
-	CommandExecutor& getTickCommandExecutorR();
+	void addUpdateCommand(Command* cmd);
+	void removeUpdateCommand(Command* cmd);
+	void addTickCommand(Command* cmd);
+	void removeTickCommand(Command* cmd);
+	void registerListener(Listener& listener);
 	bool isUpdateDue() const;
 private:
 	Timer keeper;
@@ -56,7 +60,7 @@ private:
 	MDLF resources;
 	const Shader default_shader, default_gui_shader;
 	Camera camera;
-	Window& wnd;
+	Window* wnd;
 	World world;
 	std::vector<std::unique_ptr<Mesh>> meshes;
 	std::vector<std::unique_ptr<Texture>> textures;

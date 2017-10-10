@@ -7,24 +7,14 @@ float Entity::getMass() const
 	return this->mass;
 }
 
-void Entity::applyForce(std::string force_name, Force f)
-{
-	this->forces[force_name] = f;
-}
-
-void Entity::removeForce(std::string force_name)
-{
-	this->forces.erase(force_name);
-}
-
 const Vector3F& Entity::getPosition() const
 {
 	return this->position;
 }
 
-Vector3F& Entity::getPositionR()
+void Entity::setPosition(Vector3F position)
 {
-	return this->position;
+	this->position = position;
 }
 
 const Vector3F& Entity::getVelocity() const
@@ -32,9 +22,9 @@ const Vector3F& Entity::getVelocity() const
 	return this->velocity;
 }
 
-Vector3F& Entity::getVelocityR()
+void Entity::setVelocity(Vector3F velocity)
 {
-	return this->velocity;
+	this->velocity = velocity;
 }
 
 Vector3F Entity::getAcceleration() const
@@ -51,9 +41,14 @@ const std::unordered_map<std::string, Force>& Entity::getForces() const
 	return this->forces;
 }
 
-std::unordered_map<std::string, Force>& Entity::getForcesR()
+void Entity::applyForce(std::string force_name, Force f)
 {
-	return this->forces;
+	this->forces[force_name] = f;
+}
+
+void Entity::removeForce(std::string force_name)
+{
+	this->forces.erase(force_name);
 }
 
 void Entity::updateMotion(unsigned int fps)
@@ -70,7 +65,7 @@ const Vector3F& EntityObject::getPosition() const
 	return Object::getPosition();
 }
 
-Vector3F& EntityObject::getPositionR()
+void EntityObject::setPosition(Vector3F position)
 {
-	return Object::getPositionR();
+	Object::setPosition(position);
 }

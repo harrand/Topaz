@@ -25,9 +25,9 @@ public:
 	Light& operator=(const Light& rhs) = default;
 	
 	const Vector3F& getPosition() const;
-	Vector3F& getPositionR();
 	const Vector3F& getColour() const;
-	Vector3F& getColourR();
+	void setPosition(Vector3F position);
+	void setColour(Vector3F colour);
 	float getPower() const;
 	float getDiffuseComponent() const;
 	float getSpecularComponent() const;

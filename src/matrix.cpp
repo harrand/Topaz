@@ -368,11 +368,6 @@ Matrix4x4 Matrix4x4::inverse() const
 Matrix4x4 Matrix4x4::createTranslationMatrix(Vector3F position)
 {
 	Matrix4x4 res(Vector4F(1.0f, 0.0f, 0.0f, position.getX()), Vector4F(0.0f, 1.0f, 0.0f, position.getY()), Vector4F(0.0f, 0.0f, 1.0f, position.getZ()), Vector4F(0.0f, 0.0f, 0.0f, 1.0f));
-	/*
-	res.getRowXR().setW(position.getX());
-	res.getRowYR().setW(position.getY());
-	res.getRowZR().setW(position.getZ());
-	*/
 	return res;
 }
 

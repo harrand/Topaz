@@ -17,11 +17,6 @@ const std::default_random_engine& Random::getEngine() const
 	return this->random_engine;
 }
 
-std::default_random_engine& Random::getEngineR()
-{
-	return this->random_engine;
-}
-
 int Random::nextInt(int min, int max)
 {
 	return std::uniform_int_distribution<>(min, max)(this->random_engine);
@@ -44,10 +39,6 @@ const std::mt19937::result_type& MersenneTwister::getSeed() const
 	return this->seed;
 }
 const std::mt19937& MersenneTwister::getEngine() const
-{
-	return this->mersenne_twister_engine;
-}
-std::mt19937& MersenneTwister::getEngineR()
 {
 	return this->mersenne_twister_engine;
 }

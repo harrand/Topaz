@@ -13,7 +13,7 @@ public:
 	Force& operator=(const Force& rhs) = default;
 	
 	const Vector3F& getSize() const;
-	Vector3F& getSizeR();
+	void setSize(Vector3F size);
 	Force operator+(const Force& other) const;
 	Force operator-(const Force& other) const;
 	Force operator*(float rhs) const;
