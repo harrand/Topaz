@@ -9,12 +9,13 @@ namespace tz
 {
 	void initialise();
 	void terminate();
+	constexpr char default_properties_path[] = "properties.mdl";
 }
 
 class Engine
 {
 public:
-	Engine(Window& wnd, std::string properties_path = "properties.mdl", unsigned int initial_fps = 60, unsigned int tps = 30);
+	Engine(Window& wnd, std::string properties_path = tz::default_properties_path, unsigned int initial_fps = 60, unsigned int tps = 30);
 	Engine(const Engine& copy) = default;
 	Engine(Engine&& move) = default;
 	Engine& operator=(const Engine& rhs) = default;
@@ -43,8 +44,10 @@ public:
 	const Shader& getShader(std::size_t index) const;
 	unsigned int getFPS() const;
 	unsigned int getTPS() const;
-	const CommandExecutor& getCommandExecutor() const;
-	CommandExecutor& getCommandExecutorR();
+	const CommandExecutor& getUpdateCommandExecutor() const;
+	CommandExecutor& getUpdateCommandExecutorR();
+	const CommandExecutor& getTickCommandExecutor() const;
+	CommandExecutor& getTickCommandExecutorR();
 	bool isUpdateDue() const;
 private:
 	Timer keeper;
@@ -63,7 +66,7 @@ private:
 	std::vector<Shader> extra_shaders;
 	unsigned int fps;
 	const unsigned int tps;
-	CommandExecutor command_executor;
+	CommandExecutor update_command_executor, tick_command_executor;
 	bool update_due;
 };
 

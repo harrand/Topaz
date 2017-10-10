@@ -9,14 +9,14 @@ Timer::Timer()
 void Timer::update()
 {
 	// Assign 'after' to the current number of millis past since Epoch.
-	this->after = std::chrono::system_clock::now().time_since_epoch() / std::chrono::milliseconds(1);
+	this->after = tz::time::now();
 }
 
 void Timer::reload()
 {
 	// Assign both to the number of millis past since Epoch, so that the range is zero.
-	this->before = std::chrono::system_clock::now().time_since_epoch() / std::chrono::milliseconds(1);
-	this->after = std::chrono::system_clock::now().time_since_epoch() / std::chrono::milliseconds(1);
+	this->before = tz::time::now();
+	this->after = after;
 }
 
 float Timer::getRange() const

@@ -23,8 +23,13 @@ float& BoundingSphere::getRadiusR()
 	return this->radius;
 }
 
-bool BoundingSphere::intersects(const BoundingSphere& rhs) const // returns true if the total radii is less than the distance between their centres
+bool BoundingSphere::intersects(const BoundingSphere& rhs) const
 {
+	/* returns true if the total radii is less than the distance between their centres
+		** **
+	   *  *  *
+	    ** **
+	*/
 	float radius_distance = this->radius + rhs.getRadius();
 	float centre_distance = (this->centre - rhs.getCentre()).length();
 	return centre_distance < radius_distance;

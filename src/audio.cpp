@@ -65,17 +65,11 @@ void AudioSource::update(const Camera& relative_to)
 	const Vector3F source_position = this->position;
 	const Vector3F listener_position = relative_to.getPosition();
 	const Vector3F forward = relative_to.getForward();
-	const Vector3F up = relative_to.getUp();
-	float proportion_right = (forward.cross(up).normalised().dot((source_position - listener_position).normalised()) + 1) / 2;	//Get how strongly in the right that the audio source is at
-	if(source_position == listener_position)
-		proportion_right = 0.5;
-	float right = proportion_right;
-	float left = 1 - proportion_right;
-	// Split stereo sound such that it reflects where the audio is relative to the player.
-	Mix_SetPanning(this->getChannel(), left * 255, right * 255);
-	float distance = (this->getPosition() - relative_to.getPosition()).length() / 100;
-	// Attenuate audio of course
-	Mix_Volume(this->getChannel(), 128 / (distance + 1));
+	const Vector3F displacement = source_position - listener_position;
+	// a.b = |a||b|*cos(A)
+	// so A = acos(a dot b / |a||b|)
+	float angle = std::acos(forward.dot(displacement) / (forward.length() * displacement.length()));
+	Mix_SetPosition(this->getChannel(), static_cast<Sint16>(angle), static_cast<Uint8>(255 * displacement.length() / relative_to.getFarClip()));
 }
 
 const Vector3F& AudioSource::getPosition() const

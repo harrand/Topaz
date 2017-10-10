@@ -21,7 +21,7 @@ void tz::terminate()
 	tz::util::log::message("Terminated Topaz.");
 }
 
-Engine::Engine(Window& wnd, std::string properties_path, unsigned int initial_fps, unsigned int tps): properties(RawFile(properties_path)), resources(RawFile(this->properties.getTag("resources"))), default_shader(this->properties.getTag("default_shader")), default_gui_shader(this->properties.getTag("default_gui_shader")), camera(Camera()), wnd(wnd), world(this->properties.getTag("default_world"), this->properties.getTag("resources")), fps(initial_fps), tps(tps), command_executor(), update_due(false)
+Engine::Engine(Window& wnd, std::string properties_path, unsigned int initial_fps, unsigned int tps): properties(RawFile(properties_path)), resources(RawFile(this->properties.getTag("resources"))), default_shader(this->properties.getTag("default_shader")), default_gui_shader(this->properties.getTag("default_gui_shader")), camera(Camera()), wnd(wnd), world(this->properties.getTag("default_world"), this->properties.getTag("resources")), fps(initial_fps), tps(tps), update_command_executor(), tick_command_executor(), update_due(false)
 {
 	// move the camera to the world's spawn point.
 	this->camera.getPositionR() = this->world.getSpawnPoint();
@@ -52,12 +52,14 @@ void Engine::update(std::size_t shader_index)
 	
 	this->world.render(this->camera, this->getShader(shader_index), this->wnd.getWidth(), this->wnd.getHeight(), this->meshes, this->textures, this->normal_maps, this->parallax_maps, this->displacement_maps);
 	
-	for(auto command : this->command_executor.getCommandsR())
+	for(auto command : this->update_command_executor.getCommandsR())
 		command->operator()({});
 	
 	if(ticker.millisPassed(1000.0f/this->tps))
 	{
 		// update physics engine when the average time of a fixed 'tick' has passed
+		for(auto tick_command : this->tick_command_executor.getCommandsR())
+			tick_command->operator()({});
 		this->world.update(this->tps);
 		ticker.reload();
 		this->update_due = true;
@@ -185,14 +187,24 @@ unsigned int Engine::getTPS() const
 	return this->tps;
 }
 
-const CommandExecutor& Engine::getCommandExecutor() const
+const CommandExecutor& Engine::getUpdateCommandExecutor() const
 {
-	return this->command_executor;
+	return this->update_command_executor;
 }
 
-CommandExecutor& Engine::getCommandExecutorR()
+CommandExecutor& Engine::getUpdateCommandExecutorR()
 {
-	return this->command_executor;
+	return this->update_command_executor;
+}
+
+const CommandExecutor& Engine::getTickCommandExecutor() const
+{
+	return this->tick_command_executor;
+}
+
+CommandExecutor& Engine::getTickCommandExecutorR()
+{
+	return this->tick_command_executor;
 }
 
 bool Engine::isUpdateDue() const

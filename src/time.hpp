@@ -44,6 +44,10 @@ private:
 
 namespace tz::time
 {
+	inline long long int now()
+	{
+		return std::chrono::system_clock::now().time_since_epoch() / std::chrono::milliseconds(1);
+	}
 	namespace scheduler
 	{
 		template<class ReturnType, class... Args>

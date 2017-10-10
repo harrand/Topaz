@@ -140,7 +140,7 @@ void init()
 	
 	Skybox skybox("../../../res/runtime/models/skybox.obj", skybox_texture);
 	RenderSkyboxCommand render_skybox(skybox, engine.getCameraR(), skybox_shader, engine.getMeshes(), wnd);
-	engine.getCommandExecutorR().registerCommand(&render_skybox);
+	engine.getUpdateCommandExecutorR().registerCommand(&render_skybox);
 	
 	bool on_ground = false;
 	const float a = engine.getWorld().getGravity().length();

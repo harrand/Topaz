@@ -145,7 +145,7 @@ void Window::update()
 			if (evt.window.event == SDL_WINDOWEVENT_RESIZED || evt.window.event == SDL_WINDOWEVENT_SIZE_CHANGED)
 			{
 				SDL_GL_GetDrawableSize(this->sdl_window_pointer, &(this->w), &(this->h));
-				//update the glVievwport, so that OpenGL knows the new window size
+				//update the glViewport, so that OpenGL knows the new window size
 				glViewport(0, 0, this->w, this->h);
 			}
 		}

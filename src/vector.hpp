@@ -3,6 +3,7 @@
 #include <cmath>
 #include <array>
 
+// C-style POD structs so that trivial structs can be passed to OpenGL buffers as the memory is guaranteed to be contiguous
 struct Vector2POD
 {
 	float x, y;

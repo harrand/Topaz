@@ -9,10 +9,20 @@
 #include "SDL_ttf.h"
 #include "utility.hpp"
 
+namespace tz::graphics
+{
+	constexpr unsigned int frame_buffer_default_size = 256;
+	constexpr unsigned int frame_buffer_default_width = frame_buffer_default_size;
+	constexpr unsigned int frame_buffer_default_height = frame_buffer_default_size;
+	constexpr unsigned int depth_texture_default_size = 1024;
+	constexpr unsigned int depth_texture_default_width = depth_texture_default_size;
+	constexpr unsigned int depth_texture_default_height = depth_texture_default_size;
+}
+
 class FrameBuffer
 {
 public:
-	FrameBuffer(unsigned int width = 256, unsigned int height = 256);
+	FrameBuffer(unsigned int width = tz::graphics::frame_buffer_default_width, unsigned int height = tz::graphics::frame_buffer_default_height);
 	FrameBuffer(const FrameBuffer& copy) = delete;
 	FrameBuffer(FrameBuffer&& move) = delete;
 	virtual ~FrameBuffer();
@@ -29,7 +39,7 @@ private:
 
 class DepthTexture: public FrameBuffer
 {
-	DepthTexture(unsigned int width = 1024, unsigned int height = 1024);
+	DepthTexture(unsigned int width = tz::graphics::depth_texture_default_width, unsigned int height = tz::graphics::depth_texture_default_height);
 	DepthTexture(const DepthTexture& copy) = delete;
 	DepthTexture(DepthTexture&& move) = delete;
 	~DepthTexture() = default;
