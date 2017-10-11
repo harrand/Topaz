@@ -29,7 +29,7 @@ public:
 	Mix_Chunk* get_audio_handle() const;
 private:
 	int channel;
-	std::string filename;
+	const std::string filename;
 	Mix_Chunk* audio_handle;
 };
 
@@ -60,7 +60,7 @@ public:
 	Mix_Music* get_audio_handle() const;
 	void play(bool priority = true) const;
 	void set_paused(bool pause = true);
-	void toggle_paused();
+	void toggle();
 private:
 	std::string filename;
 	bool paused;

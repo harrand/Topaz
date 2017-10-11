@@ -17,10 +17,7 @@ void tz::audio::terminate()
 	tz::util::log::message("Terminated tz::audio via SDL_Mixer.");
 }
 
-AudioClip::AudioClip(std::string filename): filename(std::move(filename))
-{
-	this->audio_handle = Mix_LoadWAV(this->filename.c_str());
-}
+AudioClip::AudioClip(std::string filename): filename(std::move(filename)), audio_handle(Mix_LoadWAV(this->filename.c_str())){}
 
 AudioClip::AudioClip(const AudioClip& copy): AudioClip(copy.get_file_name()){}
 
@@ -63,7 +60,7 @@ AudioSource::AudioSource(std::string filename, Vector3F position): AudioClip(fil
 void AudioSource::update(const Camera& relative_to)
 {
 	const Vector3F source_position = this->position;
-	const Vector3F listener_position = relative_to.position;
+	const Vector3F listener_position = relative_to.get_position();
 	const Vector3F forward = relative_to.get_forward();
 	const Vector3F displacement = source_position - listener_position;
 	// a.b = |a||b|*cos(A)
@@ -113,7 +110,7 @@ void AudioMusic::set_paused(bool pause)
 		Mix_ResumeMusic();
 }
 
-void AudioMusic::toggle_paused()
+void AudioMusic::toggle()
 {
 	this->set_paused(!this->paused);
 }
