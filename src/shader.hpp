@@ -64,7 +64,6 @@ public:
 	bool is_linked() const;
 	bool is_validated() const;
 	bool ready() const;
-	void initialise_uniforms();
 	template<class T>
 	void add_uniform(Uniform<T>&& uniform);
 	void remove_uniform(std::string_view uniform_location);
@@ -81,27 +80,15 @@ public:
 	bool has_fragment_shader() const;
 	GLuint get_program_handle() const;
 	void bind() const;
-	void update(const std::array<float, 16>& model_matrix_array, const std::array<float, 16>& view_matrix_array, const std::array<float, 16>& projection_matrix_array, unsigned int shininess, float parallaxmap_scale_constant, float parallaxmap_offset_constant, float displacement_factor) const;
+	void update() const;
 private:
 	static std::string load_shader(const std::string& filename);
 	static void check_shader_error(GLuint shader, GLuint flag, bool is_program, std::string error_message);
 	static GLuint create_shader(std::string source, GLenum shader_type);
-	enum class UniformTypes : std::size_t
-	{
-		MODEL,
-		VIEW,
-		PROJECTION,
-		SHININESS,
-		PARALLAX_MAP_SCALE,
-		PARALLAX_MAP_BIAS,
-		DISPLACEMENT_FACTOR,
-		NUM_UNIFORMS,
-	};
 	std::string filename;
 	bool compiled;
 	GLuint program_handle;
 	std::array<GLuint, tz::graphics::maximum_shaders> shaders;
-	std::array<GLint, static_cast<std::size_t>(UniformTypes::NUM_UNIFORMS)> uniforms;
 	std::unordered_set<std::unique_ptr<UniformImplicit>> uniform_data;
 };
 #include "shader.inl"

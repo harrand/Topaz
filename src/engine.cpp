@@ -29,6 +29,13 @@ Engine::Engine(Window* wnd, std::string properties_path, unsigned int initial_fp
 	tz::data::Manager(this->properties.get_tag("resources")).retrieve_all_data(this->meshes, this->textures, this->normal_maps, this->parallax_maps, this->displacement_maps);
 	//test
 	this->default_shader.add_uniform(Uniform(this->default_shader.get_program_handle(), "variadic_uniform_test", true));
+	this->default_shader.add_uniform<Matrix4x4>(Uniform(this->default_shader.get_program_handle(), "m", Matrix4x4()));
+	this->default_shader.add_uniform<Matrix4x4>(Uniform(this->default_shader.get_program_handle(), "v", Matrix4x4()));
+	this->default_shader.add_uniform<Matrix4x4>(Uniform(this->default_shader.get_program_handle(), "p", Matrix4x4()));
+	this->default_shader.add_uniform<unsigned int>(Uniform(this->default_shader.get_program_handle(), "shininess", tz::graphics::default_shininess));
+	this->default_shader.add_uniform<float>(Uniform(this->default_shader.get_program_handle(), "parallax_map_scale", tz::graphics::default_parallax_map_scale));
+	this->default_shader.add_uniform<float>(Uniform(this->default_shader.get_program_handle(), "parallax_map_bias", tz::graphics::default_parallax_map_scale / 2.0f * (tz::graphics::default_parallax_map_offset - 1)));
+	this->default_shader.add_uniform<float>(Uniform(this->default_shader.get_program_handle(), "displacement_factor", tz::graphics::default_displacement_factor));
 	// read the properties file for any extra shaders specified (gui shader not included in this)
 	for(std::string shader_path : this->properties.get_sequence("extra_shaders"))
 		this->extra_shaders.emplace_back(shader_path);
@@ -159,13 +166,13 @@ const std::vector<std::unique_ptr<DisplacementMap>>& Engine::get_displacement_ma
 	return this->displacement_maps;
 }
 
-const Shader& Engine::get_shader(std::size_t index) const
+Shader& Engine::get_shader(std::size_t index)
 {
 	if(index > this->extra_shaders.size())
 		tz::util::log::error("Could not retrieve shader index ", index, ", retrieving default instead.");
 	else if(index != 0)
 		return this->extra_shaders[index - 1];
-	return this->get_default_shader();
+	return this->default_shader;
 }
 
 unsigned int Engine::get_fps() const

@@ -40,7 +40,7 @@ public:
 	const std::vector<std::unique_ptr<NormalMap>>& get_normal_maps() const;
 	const std::vector<std::unique_ptr<ParallaxMap>>& get_parallax_maps() const;
 	const std::vector<std::unique_ptr<DisplacementMap>>& get_displacement_maps() const;
-	const Shader& get_shader(std::size_t index) const;
+	Shader& get_shader(std::size_t index);
 	unsigned int get_fps() const;
 	unsigned int get_tps() const;
 	const CommandExecutor& get_update_command_executor() const;

@@ -40,7 +40,7 @@ public:
 	void set_displacement_factor(float displacement_factor);
 	const std::string& get_mesh_link() const;
 	const std::vector<std::pair<std::string, Texture::TextureType>> get_textures() const;
-	virtual void render(Mesh* mesh, Texture* tex, NormalMap* nm, ParallaxMap* pm, DisplacementMap* dm, const Camera& cam, const Shader& shad, float width, float height) const;
+	virtual void render(Mesh* mesh, Texture* tex, NormalMap* nm, ParallaxMap* pm, DisplacementMap* dm, const Camera& cam, Shader& shad, float width, float height) const;
 protected:
 	Vector3F pos, rot, scale;
 	unsigned int shininess;

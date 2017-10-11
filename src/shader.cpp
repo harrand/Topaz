@@ -11,8 +11,6 @@ Shader::Shader(std::string filename, bool compile, bool link, bool validate): fi
 		this->link();
 	if(validate)
 		this->validate();
-	if(this->ready())
-		this->initialise_uniforms();
 	tz::util::log::message("Shader with link '", this->filename, "':");
 	tz::util::log::message("\t_has Vertex Shader: ", this->has_vertex_shader());
 	tz::util::log::message("\t_has Tessellation Control Shader: ", this->has_tessellation_control_shader());
@@ -23,18 +21,14 @@ Shader::Shader(std::string filename, bool compile, bool link, bool validate): fi
 
 Shader::Shader(const Shader& copy): Shader(copy.filename){}
 
-Shader::Shader(Shader&& move): filename(move.filename), program_handle(move.program_handle)
+Shader::Shader(Shader&& move): filename(move.filename), program_handle(move.program_handle), uniform_data(move.uniform_data)
 {
 	for(std::size_t i = 0; i < tz::graphics::maximum_shaders; i++)
 	{
 		this->shaders[i] = move.shaders[i];
 		move.shaders[i] = 0;
 	}
-	for(std::size_t i = 0; i < static_cast<std::size_t>(UniformTypes::NUM_UNIFORMS); i++)
-	{
-		this->uniforms[i] = move.uniforms[i];
-		move.uniforms[i] = 0;
-	}
+	move.uniform_data = {};
 	move.program_handle = 0;
 	// Now when destructor of move is invoked, nothing is attempted to be deleted or detached so the shader lives on in this instance.
 }
@@ -115,17 +109,6 @@ bool Shader::ready() const
 	return this->is_compiled() && this->is_linked() && this->is_validated();
 }
 
-void Shader::initialise_uniforms()
-{
-	this->uniforms[static_cast<std::size_t>(UniformTypes::MODEL)] = glGetUniformLocation(this->program_handle, "m");
-	this->uniforms[static_cast<std::size_t>(UniformTypes::VIEW)] = glGetUniformLocation(this->program_handle, "v");
-	this->uniforms[static_cast<std::size_t>(UniformTypes::PROJECTION)] = glGetUniformLocation(this->program_handle, "p");
-	this->uniforms[static_cast<std::size_t>(UniformTypes::SHININESS)] = glGetUniformLocation(this->program_handle, "shininess");
-	this->uniforms[static_cast<std::size_t>(UniformTypes::PARALLAX_MAP_SCALE)] = glGetUniformLocation(this->program_handle, "parallax_multiplier");
-	this->uniforms[static_cast<std::size_t>(UniformTypes::PARALLAX_MAP_BIAS)] = glGetUniformLocation(this->program_handle, "parallax_bias");
-	this->uniforms[static_cast<std::size_t>(UniformTypes::DISPLACEMENT_FACTOR)] = glGetUniformLocation(this->program_handle, "displacement_factor");
-}
-
 void Shader::remove_uniform(std::string_view uniform_location)
 {
 	for(const auto& uniform : this->uniform_data)
@@ -184,11 +167,12 @@ void Shader::bind() const
 	glUseProgram(this->program_handle);
 }
 
-void Shader::update(const std::array<float, 16>& model_matrix_array, const std::array<float, 16>& view_matrix_array, const std::array<float, 16>& projection_matrix_array, unsigned int shininess, float parallaxmap_scale_constant, float parallaxmap_offset_constant, float displacement_factor) const
+void Shader::update() const
 {
 	// literally just update uniforms with the parameters
-	for(const auto& uniform : this->uniform_data)
+	for(const std::unique_ptr<UniformImplicit>& uniform : this->uniform_data)
 		uniform->push();
+	/*
 	glUniformMatrix4fv(this->uniforms[static_cast<unsigned int>(UniformTypes::MODEL)], 1, GL_TRUE, model_matrix_array.data());
 	glUniformMatrix4fv(this->uniforms[static_cast<unsigned int>(UniformTypes::VIEW)], 1, GL_TRUE, view_matrix_array.data());
 	glUniformMatrix4fv(this->uniforms[static_cast<unsigned int>(UniformTypes::PROJECTION)], 1, GL_TRUE, projection_matrix_array.data());
@@ -196,6 +180,7 @@ void Shader::update(const std::array<float, 16>& model_matrix_array, const std::
 	glUniform1f(this->uniforms[static_cast<unsigned int>(UniformTypes::PARALLAX_MAP_SCALE)], parallaxmap_scale_constant);
 	glUniform1f(this->uniforms[static_cast<unsigned int>(UniformTypes::PARALLAX_MAP_BIAS)], parallaxmap_scale_constant / 2.0f * (parallaxmap_offset_constant - 1));
 	glUniform1f(this->uniforms[static_cast<unsigned int>(UniformTypes::DISPLACEMENT_FACTOR)], displacement_factor);
+	*/
 }
 
 std::string Shader::load_shader(const std::string& filename)

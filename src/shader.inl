@@ -69,11 +69,11 @@ void Uniform<T>::push() const
 		glUniform4f(this->uniform_handle, this->value.get_x(), this->value.get_y(), this->value.get_z(), this->value.get_w());
 	//Matrices
 	else if constexpr(std::is_same<decltype(this->value), Matrix2x2>::value)
-		glUniformMatrix2fv(this->uniform_handle, 1, GL_TRUE, this->value.fillData().data());
+		glUniformMatrix2fv(this->uniform_handle, 1, GL_TRUE, this->value.fill_data().data());
 	else if constexpr(std::is_same<decltype(this->value), Matrix3x3>::value)
-		glUniformMatrix3fv(this->uniform_handle, 1, GL_TRUE, this->value.fillData().data());
+		glUniformMatrix3fv(this->uniform_handle, 1, GL_TRUE, this->value.fill_data().data());
 	else if constexpr(std::is_same<decltype(this->value), Matrix4x4>::value)
-		glUniformMatrix4fv(this->uniform_handle, 1, GL_TRUE, this->value.fillData().data());
+		glUniformMatrix4fv(this->uniform_handle, 1, GL_TRUE, this->value.fill_data().data());
 	else
 		static_assert(!std::is_void<decltype(this->value)>::value, "[Topaz]: Uniform has unsupported type. Perhaps your desired version of OpenGL proceeds Topaz's too far by using newer types for uniforms?");
 }
