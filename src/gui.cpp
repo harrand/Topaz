@@ -241,15 +241,15 @@ void Window::clear(float r, float g, float b, float a) const
 
 void Window::register_listener(Listener& l)
 {
-	this->registered_listeners[l.get_i_d()] = &l;
+	this->registered_listeners[l.get_id()] = &l;
 }
 
 void Window::deregister_listener(Listener& l)
 {
 	// Check if it actually exists before trying to remove it.
-	if(this->registered_listeners.find(l.get_i_d()) == this->registered_listeners.end())
+	if(this->registered_listeners.find(l.get_id()) == this->registered_listeners.end())
 		return;
-	this->registered_listeners.erase(l.get_i_d());
+	this->registered_listeners.erase(l.get_id());
 }
 
 GUIElement* Window::get_focused_child() const

@@ -11,7 +11,7 @@ Listener::~Listener()
 	Listener::number_of_listeners--;
 }
 
-unsigned int Listener::get_i_d() const
+unsigned int Listener::get_id() const
 {
 	return this->id;
 }

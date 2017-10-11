@@ -80,11 +80,11 @@ namespace tz
 				IndexedModel to_indexed_model();
 			private:
 				unsigned int find_last_vertex_index(const std::vector<OBJIndex*>& index_lookup, const OBJIndex* current_index, const IndexedModel& result);
-				void create_o_b_j_face(const std::string& line);
+				void create_obj_face(const std::string& line);
 				
-				Vector2F parse_o_b_j_vector_2_f(const std::string& line);
-				Vector3F parse_o_b_j_vector_3_f(const std::string& line);
-				OBJIndex parse_o_b_j_index(const std::string& token, bool* has_uvs, bool* has_normals);
+				Vector2F parse_obj_vector_2f(const std::string& line);
+				Vector3F parse_obj_vector_3f(const std::string& line);
+				OBJIndex parse_obj_index(const std::string& token, bool* has_uvs, bool* has_normals);
 			};
 		}
 	}

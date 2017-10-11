@@ -15,7 +15,7 @@ public:
 	~Listener();
 	
 	virtual void handle_events(SDL_Event& evt) = 0;
-	unsigned int get_i_d() const;
+	unsigned int get_id() const;
 	static unsigned int get_num_listeners();
 private:
 	static unsigned int number_of_listeners;

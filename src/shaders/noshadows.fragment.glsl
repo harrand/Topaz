@@ -14,6 +14,9 @@ uniform sampler2D texture_sampler;
 uniform sampler2D normal_map_sampler;
 uniform sampler2D parallax_map_sampler;
 
+//test
+uniform bool variadic_uniform_test = false;
+
 uniform float parallax_multiplier;
 uniform float parallax_bias;
 
@@ -83,6 +86,8 @@ void main()
 	Light camera_light;
 	camera_light.pos = camera_position_worldspace;
 	camera_light.colour = vec3(1, 1, 1);
+	if(!variadic_uniform_test)
+		camera_light.colour = vec3(1, 0, 0);
 	camera_light.power = 1000;
 	camera_light.diffuse_component = 1.0;
 	camera_light.specular_component = 10.0;

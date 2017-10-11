@@ -3,10 +3,10 @@
 
 namespace tz::graphics::model
 {
-static bool compare_o_b_j_index_pointer(const OBJIndex* a, const OBJIndex* b);
-static inline unsigned int find_next_char(unsigned int start, const char* str, unsigned int length, char token);
-static inline unsigned int parse_o_b_j_index_value(const std::string& token, unsigned int start, unsigned int end);
-static inline float parse_o_b_j_float_value(const std::string& token, unsigned int start, unsigned int end);
+	static bool compare_obj_index_pointer(const OBJIndex* a, const OBJIndex* b);
+	static inline unsigned int find_next_char(unsigned int start, const char* str, unsigned int length, char token);
+	static inline unsigned int parse_obj_index_value(const std::string& token, unsigned int start, unsigned int end);
+	static inline float parse_obj_float_value(const std::string& token, unsigned int start, unsigned int end);
 }
 
 Vertex::Vertex(Vector3F position, Vector2F texcoord, Vector3F normal): position(std::move(position)), texcoord(std::move(texcoord)), normal(std::move(normal)){}
@@ -51,14 +51,14 @@ namespace tz::graphics::model
 				{
 					case 'v':
 						if(line_c_str[1] == 't')
-							this->uvs.push_back(parse_o_b_j_vector_2_f(line));
+							this->uvs.push_back(parse_obj_vector_2f(line));
 						else if(line_c_str[1] == 'n')
-							this->normals.push_back(parse_o_b_j_vector_3_f(line));
+							this->normals.push_back(parse_obj_vector_3f(line));
 						else if(line_c_str[1] == ' ' || line_c_str[1] == '\t')
-							this->vertices.push_back(parse_o_b_j_vector_3_f(line));
+							this->vertices.push_back(parse_obj_vector_3f(line));
 					break;
 					case 'f':
-						create_o_b_j_face(line);
+						create_obj_face(line);
 					break;
 					default: break;
 				};
@@ -128,7 +128,7 @@ namespace tz::graphics::model
 		std::vector<OBJIndex*> index_lookup;
 		for(std::size_t i = 0; i < number_of_indices; i++)
 			index_lookup.push_back(&obj_indices[i]);
-		std::sort(index_lookup.begin(), index_lookup.end(), compare_o_b_j_index_pointer);
+		std::sort(index_lookup.begin(), index_lookup.end(), compare_obj_index_pointer);
 		std::map<OBJIndex, unsigned int> normal_model_index_map;
 		std::map<unsigned int, unsigned int> index_map;
 		for(std::size_t i = 0; i < number_of_indices; i++)
@@ -270,23 +270,23 @@ namespace tz::graphics::model
 		return -1;
 	}
 	
-	void OBJModel::create_o_b_j_face(const std::string& line)
+	void OBJModel::create_obj_face(const std::string& line)
 	{
 		std::vector<std::string> tokens = tz::util::string::split_string(line, ' ');
 	
-		this->obj_indices.push_back(parse_o_b_j_index(tokens[1], &this->has_uvs, &this->has_normals));
-		this->obj_indices.push_back(parse_o_b_j_index(tokens[2], &this->has_uvs, &this->has_normals));
-		this->obj_indices.push_back(parse_o_b_j_index(tokens[3], &this->has_uvs, &this->has_normals));
+		this->obj_indices.push_back(parse_obj_index(tokens[1], &this->has_uvs, &this->has_normals));
+		this->obj_indices.push_back(parse_obj_index(tokens[2], &this->has_uvs, &this->has_normals));
+		this->obj_indices.push_back(parse_obj_index(tokens[3], &this->has_uvs, &this->has_normals));
 	
 		if(tokens.size() > 4)
 		{
-			this->obj_indices.push_back(parse_o_b_j_index(tokens[1], &this->has_uvs, &this->has_normals));
-			this->obj_indices.push_back(parse_o_b_j_index(tokens[3], &this->has_uvs, &this->has_normals));
-			this->obj_indices.push_back(parse_o_b_j_index(tokens[4], &this->has_uvs, &this->has_normals));
+			this->obj_indices.push_back(parse_obj_index(tokens[1], &this->has_uvs, &this->has_normals));
+			this->obj_indices.push_back(parse_obj_index(tokens[3], &this->has_uvs, &this->has_normals));
+			this->obj_indices.push_back(parse_obj_index(tokens[4], &this->has_uvs, &this->has_normals));
 		}
 	}
 	
-	OBJIndex OBJModel::parse_o_b_j_index(const std::string& token, bool* has_uvs, bool* has_normals)
+	OBJIndex OBJModel::parse_obj_index(const std::string& token, bool* has_uvs, bool* has_normals)
 	{
 		std::size_t token_length = token.length();
 		const char* token_c_string = token.c_str();
@@ -295,7 +295,7 @@ namespace tz::graphics::model
 		unsigned int vertex_index_end = find_next_char(vertex_index_start, token_c_string, token_length, '/');
 		
 		OBJIndex result;
-		result.vertex_index = parse_o_b_j_index_value(token, vertex_index_start, vertex_index_end);
+		result.vertex_index = parse_obj_index_value(token, vertex_index_start, vertex_index_end);
 		result.uv_index = 0;
 		result.normal_index = 0;
 		
@@ -305,7 +305,7 @@ namespace tz::graphics::model
 		vertex_index_start = vertex_index_end + 1;
 		vertex_index_end = find_next_char(vertex_index_start, token_c_string, token_length, '/');
 		
-		result.uv_index = parse_o_b_j_index_value(token, vertex_index_start, vertex_index_end);
+		result.uv_index = parse_obj_index_value(token, vertex_index_start, vertex_index_end);
 		*has_uvs = true;
 		
 		if(vertex_index_end >= token_length)
@@ -314,13 +314,13 @@ namespace tz::graphics::model
 		vertex_index_start = vertex_index_end + 1;
 		vertex_index_end = find_next_char(vertex_index_start, token_c_string, token_length, '/');
 		
-		result.normal_index = parse_o_b_j_index_value(token, vertex_index_start, vertex_index_end);
+		result.normal_index = parse_obj_index_value(token, vertex_index_start, vertex_index_end);
 		*has_normals = true;
 		
 		return result;
 	}
 	
-	Vector3F OBJModel::parse_o_b_j_vector_3_f(const std::string& line) 
+	Vector3F OBJModel::parse_obj_vector_3f(const std::string& line) 
 	{
 		std::size_t token_length = line.length();
 		const char* token_c_string = line.c_str();
@@ -336,22 +336,22 @@ namespace tz::graphics::model
 		
 		unsigned int vertex_index_end = find_next_char(vertex_index_start, token_c_string, token_length, ' ');
 		
-		float x = parse_o_b_j_float_value(line, vertex_index_start, vertex_index_end);
+		float x = parse_obj_float_value(line, vertex_index_start, vertex_index_end);
 		
 		vertex_index_start = vertex_index_end + 1;
 		vertex_index_end = find_next_char(vertex_index_start, token_c_string, token_length, ' ');
 		
-		float y = parse_o_b_j_float_value(line, vertex_index_start, vertex_index_end);
+		float y = parse_obj_float_value(line, vertex_index_start, vertex_index_end);
 		
 		vertex_index_start = vertex_index_end + 1;
 		vertex_index_end = find_next_char(vertex_index_start, token_c_string, token_length, ' ');
 		
-		float z = parse_o_b_j_float_value(line, vertex_index_start, vertex_index_end);
+		float z = parse_obj_float_value(line, vertex_index_start, vertex_index_end);
 		
 		return {x,y,z};
 	}
 	
-	Vector2F OBJModel::parse_o_b_j_vector_2_f(const std::string& line)
+	Vector2F OBJModel::parse_obj_vector_2f(const std::string& line)
 	{
 		std::size_t token_length = line.length();
 		const char* token_c_string = line.c_str();
@@ -367,17 +367,17 @@ namespace tz::graphics::model
 		
 		unsigned int vertex_index_end = find_next_char(vertex_index_start, token_c_string, token_length, ' ');
 		
-		float x = parse_o_b_j_float_value(line, vertex_index_start, vertex_index_end);
+		float x = parse_obj_float_value(line, vertex_index_start, vertex_index_end);
 		
 		vertex_index_start = vertex_index_end + 1;
 		vertex_index_end = find_next_char(vertex_index_start, token_c_string, token_length, ' ');
 		
-		float y = parse_o_b_j_float_value(line, vertex_index_start, vertex_index_end);
+		float y = parse_obj_float_value(line, vertex_index_start, vertex_index_end);
 		
 		return {x,y};
 	}
 	
-	static bool compare_o_b_j_index_pointer(const OBJIndex* a, const OBJIndex* b)
+	static bool compare_obj_index_pointer(const OBJIndex* a, const OBJIndex* b)
 	{
 		return a->vertex_index < b->vertex_index;
 	}
@@ -395,12 +395,12 @@ namespace tz::graphics::model
 		return result;
 	}
 	
-	static inline unsigned int parse_o_b_j_index_value(const std::string& token, unsigned int start, unsigned int end)
+	static inline unsigned int parse_obj_index_value(const std::string& token, unsigned int start, unsigned int end)
 	{
 		return atoi(token.substr(start, end - start).c_str()) - 1;
 	}
 	
-	static inline float parse_o_b_j_float_value(const std::string& token, unsigned int start, unsigned int end)
+	static inline float parse_obj_float_value(const std::string& token, unsigned int start, unsigned int end)
 	{
 		return atof(token.substr(start, end - start).c_str());
 	}

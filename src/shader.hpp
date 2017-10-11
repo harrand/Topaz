@@ -4,6 +4,8 @@
 #define GLEW_STATIC
 #endif
 #include <string>
+#include <memory>
+#include <string_view>
 #include "utility.hpp"
 #include "glew.h"
 
@@ -15,6 +17,33 @@ namespace tz
 		constexpr std::size_t maximum_shaders = 5;
 	}
 }
+
+class UniformImplicit
+{
+public:
+	virtual void push() const = 0;
+};
+
+template<class T>
+class Uniform : public UniformImplicit
+{
+public:
+	Uniform<T>(GLuint shader_handle, std::string uniform_location, T value);
+	Uniform<T>(const Uniform<T>& copy) = delete;
+	Uniform<T>(Uniform<T>&& move) = default;
+	~Uniform<T>() = default;
+	
+	GLuint get_shader_handle() const;
+	std::string_view get_uniform_location() const;
+	const T& get_value() const;
+	void set_value(T value);
+	virtual void push() const final;
+private:
+	GLuint shader_handle;
+	std::string uniform_location;
+	T value;
+	GLint uniform_handle;
+};
 
 class Shader
 {
@@ -33,6 +62,8 @@ public:
 	bool is_validated() const;
 	bool ready() const;
 	void initialise_uniforms();
+	template<class T>
+	void add_uniform(Uniform<T>&& uniform);
 	bool has_vertex_shader() const;
 	bool has_tessellation_control_shader() const;
 	bool has_tessellation_evaluation_shader() const;
@@ -61,5 +92,7 @@ private:
 	GLuint program_handle;
 	std::array<GLuint, tz::graphics::maximum_shaders> shaders;
 	std::array<GLint, static_cast<std::size_t>(UniformTypes::NUM_UNIFORMS)> uniforms;
+	std::vector<std::unique_ptr<UniformImplicit>> uniform_data;
 };
+#include "shader.inl"
 #endif

@@ -27,6 +27,7 @@ Engine::Engine(Window* wnd, std::string properties_path, unsigned int initial_fp
 	this->camera.set_position(this->world.get_spawn_point());
 	// fill all the asset buffers via tz data manager
 	tz::data::Manager(this->properties.get_tag("resources")).retrieve_all_data(this->meshes, this->textures, this->normal_maps, this->parallax_maps, this->displacement_maps);
+	this->default_shader.add_uniform(Uniform(this->default_shader.get_program_handle(), "variadic_uniform_test", true));
 	// read the properties file for any extra shaders specified (gui shader not included in this)
 	for(std::string shader_path : this->properties.get_sequence("extra_shaders"))
 		this->extra_shaders.emplace_back(shader_path);

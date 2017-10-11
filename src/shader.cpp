@@ -1,5 +1,4 @@
 #include "shader.hpp"
-#include "matrix.hpp"
 #include <fstream>
 
 Shader::Shader(std::string filename, bool compile, bool link, bool validate): filename(std::move(filename)), compiled(false)
@@ -165,6 +164,8 @@ void Shader::bind() const
 void Shader::update(const std::array<float, 16>& model_matrix_array, const std::array<float, 16>& view_matrix_array, const std::array<float, 16>& projection_matrix_array, unsigned int shininess, float parallaxmap_scale_constant, float parallaxmap_offset_constant, float displacement_factor) const
 {
 	// literally just update uniforms with the parameters
+	for(const auto& uniform : this->uniform_data)
+		uniform->push();
 	glUniformMatrix4fv(this->uniforms[static_cast<unsigned int>(UniformTypes::MODEL)], 1, GL_TRUE, model_matrix_array.data());
 	glUniformMatrix4fv(this->uniforms[static_cast<unsigned int>(UniformTypes::VIEW)], 1, GL_TRUE, view_matrix_array.data());
 	glUniformMatrix4fv(this->uniforms[static_cast<unsigned int>(UniformTypes::PROJECTION)], 1, GL_TRUE, projection_matrix_array.data());
