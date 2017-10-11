@@ -61,7 +61,7 @@ void AudioSource::update(const Camera& relative_to)
 {
 	const Vector3F source_position = this->position;
 	const Vector3F listener_position = relative_to.get_position();
-	const Vector3F forward = relative_to.get_forward();
+	const Vector3F forward = relative_to.forward();
 	const Vector3F displacement = source_position - listener_position;
 	// a.b = |a||b|*cos(A)
 	// so A = acos(a dot b / |a||b|)

@@ -24,8 +24,8 @@ namespace tz
 			Manager& operator=(const Manager& rhs) = default;
 			~Manager() = default;
 			
-			std::string get_resource_link(const std::string& resource_name) const;
-			std::string get_resource_name(const std::string& resource_link) const;
+			std::string resource_link(const std::string& resource_name) const;
+			std::string resource_name(const std::string& resource_link) const;
 			std::unordered_map<std::string, std::string> retrieve_models(const char* sequence_name = tz::data::default_models_sequence_name) const;
 			std::unordered_map<std::string, std::string> retrieve_textures(const char* sequence_name = tz::data::default_textures_sequence_name) const;
 			std::unordered_map<std::string, std::string> retrieve_normal_maps(const char* sequence_name = tz::data::default_normal_maps_sequence_name) const;

@@ -26,10 +26,8 @@ public:
 	const TimeProfiler& get_time_profiler() const;
 	const MDLF& get_properties() const;
 	const MDLF& get_resources() const;
-	const Camera& get_camera() const;
 	const Window& get_window() const;
 	const World& get_world() const;
-	void set_camera(Camera camera);
 	void set_world(World world);
 	void add_to_world(Object object);
 	void add_to_world(EntityObject entity_object);
@@ -43,8 +41,8 @@ public:
 	const std::vector<std::unique_ptr<ParallaxMap>>& get_parallax_maps() const;
 	const std::vector<std::unique_ptr<DisplacementMap>>& get_displacement_maps() const;
 	const Shader& get_shader(std::size_t index) const;
-	unsigned int get_f_p_s() const;
-	unsigned int get_t_p_s() const;
+	unsigned int get_fps() const;
+	unsigned int get_tps() const;
 	const CommandExecutor& get_update_command_executor() const;
 	const CommandExecutor& get_tick_command_executor() const;
 	void add_update_command(Command* cmd);
@@ -53,13 +51,14 @@ public:
 	void remove_tick_command(Command* cmd);
 	void register_listener(Listener& listener);
 	bool is_update_due() const;
+	
+	Camera camera;
 private:
 	Timer keeper;
 	TimeProfiler profiler;
 	MDLF properties;
 	MDLF resources;
 	const Shader default_shader, default_gui_shader;
-	Camera camera;
 	Window* wnd;
 	World world;
 	std::vector<std::unique_ptr<Mesh>> meshes;

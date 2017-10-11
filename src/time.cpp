@@ -66,7 +66,7 @@ float TimeProfiler::get_last_delta() const
 	return this->deltas.back();
 }
 
-unsigned int TimeProfiler::get_f_p_s() const
+unsigned int TimeProfiler::get_fps() const
 {
 	return static_cast<unsigned int>(1000/this->get_delta_average());
 }

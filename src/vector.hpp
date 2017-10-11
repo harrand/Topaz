@@ -40,11 +40,15 @@ public:
 	Vector2<T> operator-(const Vector2<T>& rhs) const;
 	Vector2<T> operator*(T scalar) const;
 	Vector2<T> operator/(T scalar) const;
-	bool operator<(const Vector2<T>& rhs) const;
-	bool operator>(const Vector2<T>& rhs) const;
-	bool operator==(const Vector2<T>& rhs) const;
 	Vector2<T>& operator+=(const Vector2<T>& rhs);
 	Vector2<T>& operator-=(const Vector2<T>& rhs);
+	Vector2<T>& operator*=(T scalar);
+	Vector2<T>& operator/=(T scalar);
+	bool operator<(const Vector2<T>& rhs) const;
+	bool operator>(const Vector2<T>& rhs) const;
+	bool operator<=(const Vector2<T>& rhs) const;
+	bool operator>=(const Vector2<T>& rhs) const;
+	bool operator==(const Vector2<T>& rhs) const;
 protected:
 	T x, y;
 };
@@ -73,13 +77,15 @@ public:
 	Vector3<T> operator-(const Vector3<T>& rhs) const;
 	Vector3<T> operator*(T scalar) const;
 	Vector3<T> operator/(T scalar) const;
+	Vector3<T>& operator+=(const Vector3<T>& rhs);
+	Vector3<T>& operator-=(const Vector3<T>& rhs);
+	Vector3<T>& operator*=(T scalar);
+	Vector3<T>& operator/=(T scalar);
 	bool operator<(const Vector3<T>& rhs) const;
 	bool operator>(const Vector3<T>& rhs) const;
 	bool operator<=(const Vector3<T>& rhs) const;
 	bool operator>=(const Vector3<T>& rhs) const;
 	bool operator==(const Vector3<T>& rhs) const;
-	Vector3<T>& operator+=(const Vector3<T>& rhs);
-	Vector3<T>& operator-=(const Vector3<T>& rhs);
 protected:
 	T z;
 };
@@ -107,11 +113,15 @@ public:
 	Vector4<T> operator-(const Vector4<T>& rhs) const;
 	Vector4<T> operator*(T scalar) const;
 	Vector4<T> operator/(T scalar) const;
-	bool operator<(const Vector4<T>& rhs) const;
-	bool operator>(const Vector4<T>& rhs) const;
-	bool operator==(const Vector4<T>& rhs) const;
 	Vector4<T>& operator+=(const Vector4<T>& rhs);
 	Vector4<T>& operator-=(const Vector4<T>& rhs);
+	Vector4<T>& operator*=(T scalar);
+	Vector4<T>& operator/=(T scalar);
+	bool operator<(const Vector4<T>& rhs) const;
+	bool operator>(const Vector4<T>& rhs) const;
+	bool operator<=(const Vector4<T>& rhs) const;
+	bool operator>=(const Vector4<T>& rhs) const;
+	bool operator==(const Vector4<T>& rhs) const;
 protected:
 	T w;
 };

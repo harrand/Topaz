@@ -95,7 +95,7 @@ void Object::render(Mesh* mesh, Texture* tex, NormalMap* nm, ParallaxMap* pm, Di
 		pm->bind(shad.get_program_handle(), static_cast<unsigned int>(pm->get_texture_type()));
 	if(dm != nullptr)
 		dm->bind(shad.get_program_handle(), static_cast<unsigned int>(dm->get_texture_type()));
-	shad.update(Matrix4x4::create_model_matrix(this->pos, this->rot, this->scale).fill_data(), Matrix4x4::create_view_matrix(cam.get_position(), cam.get_rotation()).fill_data(), Matrix4x4::create_perspective_matrix(cam.get_f_o_v(), width, height, cam.get_near_clip(), cam.get_far_clip()).fill_data(), this->shininess, this->parallax_map_scale, this->parallax_map_offset, this->displacement_factor);
+	shad.update(Matrix4x4::create_model_matrix(this->pos, this->rot, this->scale).fill_data(), Matrix4x4::create_view_matrix(cam.get_position(), cam.get_rotation()).fill_data(), Matrix4x4::create_perspective_matrix(cam.get_fov(), width, height, cam.get_near_clip(), cam.get_far_clip()).fill_data(), this->shininess, this->parallax_map_scale, this->parallax_map_offset, this->displacement_factor);
 	//glFrontFace(GL_CCW);
 	mesh->render(shad.has_tessellation_control_shader());
 	//glFrontFace(GL_CW);
@@ -107,7 +107,7 @@ void Skybox::render(const Camera& cam, const Shader& shad, const std::vector<std
 {
 	shad.bind();
 	this->cm.bind(shad.get_program_handle(), 0);
-	shad.update(Matrix4x4::create_model_matrix(cam.get_position(), Vector3F(), Vector3F(cam.get_far_clip(), cam.get_far_clip(), cam.get_far_clip())).fill_data(), Matrix4x4::create_view_matrix(cam.get_position(), cam.get_rotation()).fill_data(), Matrix4x4::create_perspective_matrix(cam.get_f_o_v(), width, height, cam.get_near_clip(), cam.get_far_clip()).fill_data(), 0, 0, 0, 0);
+	shad.update(Matrix4x4::create_model_matrix(cam.get_position(), Vector3F(), Vector3F(cam.get_far_clip(), cam.get_far_clip(), cam.get_far_clip())).fill_data(), Matrix4x4::create_view_matrix(cam.get_position(), cam.get_rotation()).fill_data(), Matrix4x4::create_perspective_matrix(cam.get_fov(), width, height, cam.get_near_clip(), cam.get_far_clip()).fill_data(), 0, 0, 0, 0);
 	glFrontFace(GL_CW);
 	tz::graphics::find_mesh(this->cube_mesh_link, all_meshes)->render(shad.has_tessellation_control_shader());
 	glFrontFace(GL_CCW);

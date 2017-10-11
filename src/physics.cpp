@@ -69,7 +69,7 @@ BoundingSphere tz::physics::bound_sphere(const Object& object, const std::vector
 	return {mean, *std::max_element(distances.begin(), distances.end())};
 }
 	
-AABB tz::physics::bound_a_a_b_b(const Object& object, const std::vector<std::unique_ptr<Mesh>>& all_meshes)
+AABB tz::physics::bound_aabb(const Object& object, const std::vector<std::unique_ptr<Mesh>>& all_meshes)
 {
 	// once again get positions in worldspace
 	const std::vector<Vector3F>& positions_modelspace = tz::graphics::find_mesh(object.get_mesh_link(), all_meshes)->get_positions();

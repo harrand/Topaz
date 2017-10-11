@@ -36,7 +36,7 @@ public:
 	void reset();
 	float get_delta_average() const;
 	float get_last_delta() const;
-	unsigned int get_f_p_s() const;
+	unsigned int get_fps() const;
 private:
 	std::vector<float> deltas;
 	Timer tk;

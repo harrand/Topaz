@@ -81,6 +81,34 @@ Vector2<T> Vector2<T>::operator/(T scalar) const
 }
 
 template<typename T>
+Vector2<T>& Vector2<T>::operator+=(const Vector2<T>& rhs)
+{
+	(*this) = (*this) + rhs;
+	return (*this);
+}
+
+template<typename T>
+Vector2<T>& Vector2<T>::operator-=(const Vector2<T>& rhs)
+{
+	(*this) = (*this) - rhs;
+	return (*this);
+}
+
+template<typename T>
+Vector2<T>& Vector2<T>::operator*=(T scalar)
+{
+	(*this) = (*this) * scalar;
+	return (*this);
+}
+
+template<typename T>
+Vector2<T>& Vector2<T>::operator/=(T scalar)
+{
+	(*this) = (*this) / scalar;
+	return (*this);
+}
+
+template<typename T>
 bool Vector2<T>::operator<(const Vector2<T>& rhs) const
 {
 	return this->length() < rhs.length();
@@ -93,23 +121,21 @@ bool Vector2<T>::operator>(const Vector2<T>& rhs) const
 }
 
 template<typename T>
+bool Vector2<T>::operator<=(const Vector2<T>& rhs) const
+{
+	return *this < rhs || *this == rhs;
+}
+
+template<typename T>
+bool Vector2<T>::operator>=(const Vector2<T>& rhs) const
+{
+	return *this > rhs || *this == rhs;
+}
+
+template<typename T>
 bool Vector2<T>::operator==(const Vector2<T>& rhs) const
 {
 	return (this->x == rhs.get_x()) && (this->y == rhs.get_y());
-}
-
-template<typename T>
-Vector2<T>& Vector2<T>::operator+=(const Vector2<T>& rhs)
-{
-	(*this) = (*this) + rhs;
-	return (*this);
-}
-
-template<typename T>
-Vector2<T>& Vector2<T>::operator-=(const Vector2<T>& rhs)
-{
-	(*this) = (*this) - rhs;
-	return (*this);
 }
 
 template<typename T>
@@ -188,6 +214,34 @@ Vector3<T> Vector3<T>::operator/(T scalar) const
 }
 
 template<typename T>
+Vector3<T>& Vector3<T>::operator+=(const Vector3<T>& rhs)
+{
+	(*this) = ((*this) + rhs);
+	return *this;
+}
+
+template<typename T>
+Vector3<T>& Vector3<T>::operator-=(const Vector3<T>& rhs)
+{
+	(*this) = ((*this) - rhs);
+	return *this;
+}
+
+template<typename T>
+Vector3<T>& Vector3<T>::operator*=(T scalar)
+{
+	(*this) = ((*this) * scalar);
+	return *this;
+}
+
+template<typename T>
+Vector3<T>& Vector3<T>::operator/=(T scalar)
+{
+	(*this) = ((*this) / scalar);
+	return *this;
+}
+
+template<typename T>
 bool Vector3<T>::operator<(const Vector3<T>& rhs) const
 {
 	return this->length() < rhs.length();
@@ -215,20 +269,6 @@ template<typename T>
 bool Vector3<T>::operator==(const Vector3<T>& rhs) const
 {
 	return (this->x == rhs.get_x()) && (this->y == rhs.get_y()) && (this->z == rhs.get_z());
-}
-
-template<typename T>
-Vector3<T>& Vector3<T>::operator+=(const Vector3<T>& rhs)
-{
-	(*this) = ((*this) + rhs);
-	return *this;
-}
-
-template<typename T>
-Vector3<T>& Vector3<T>::operator-=(const Vector3<T>& rhs)
-{
-	(*this) = ((*this) - rhs);
-	return *this;
 }
 
 template<typename T>
@@ -302,6 +342,34 @@ Vector4<T> Vector4<T>::operator/(T scalar) const
 }
 
 template<typename T>
+Vector4<T>& Vector4<T>::operator+=(const Vector4<T>& rhs)
+{
+	(*this) = (*this) + rhs;
+	return (*this);
+}
+
+template<typename T>
+Vector4<T>& Vector4<T>::operator-=(const Vector4<T>& rhs)
+{
+	(*this) = (*this) - rhs;
+	return (*this);
+}
+
+template<typename T>
+Vector4<T>& Vector4<T>::operator*=(T scalar)
+{
+	(*this) = (*this) * scalar;
+	return (*this);
+}
+
+template<typename T>
+Vector4<T>& Vector4<T>::operator/=(T scalar)
+{
+	(*this) = (*this) / scalar;
+	return (*this);
+}
+
+template<typename T>
 bool Vector4<T>::operator<(const Vector4<T>& rhs) const
 {
 	return this->length() < rhs.length();
@@ -314,21 +382,19 @@ bool Vector4<T>::operator>(const Vector4<T>& rhs) const
 }
 
 template<typename T>
+bool Vector4<T>::operator<=(const Vector4<T>& rhs) const
+{
+	return *this < rhs || *this == rhs;
+}
+
+template<typename T>
+bool Vector4<T>::operator>=(const Vector4<T>& rhs) const
+{
+	return *this > rhs || *this == rhs;
+}
+
+template<typename T>
 bool Vector4<T>::operator==(const Vector4<T>& rhs) const
 {
 	return (this->x == rhs.get_x()) && (this->y == rhs.get_y()) && (this->z == rhs.get_z()) && (this->w == rhs.get_w());
-}
-
-template<typename T>
-Vector4<T>& Vector4<T>::operator+=(const Vector4<T>& rhs)
-{
-	(*this) = (*this) + rhs;
-	return (*this);
-}
-
-template<typename T>
-Vector4<T>& Vector4<T>::operator-=(const Vector4<T>& rhs)
-{
-	(*this) = (*this) - rhs;
-	return (*this);
 }

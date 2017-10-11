@@ -21,7 +21,7 @@ void tz::terminate()
 	tz::util::log::message("Terminated Topaz.");
 }
 
-Engine::Engine(Window* wnd, std::string properties_path, unsigned int initial_fps, unsigned int tps): properties(RawFile(properties_path)), resources(RawFile(this->properties.get_tag("resources"))), default_shader(this->properties.get_tag("default_shader")), default_gui_shader(this->properties.get_tag("default_gui_shader")), camera(Camera()), wnd(wnd), world(this->properties.get_tag("default_world"), this->properties.get_tag("resources")), fps(initial_fps), tps(tps), update_command_executor(), tick_command_executor(), update_due(false)
+Engine::Engine(Window* wnd, std::string properties_path, unsigned int initial_fps, unsigned int tps): camera(Camera()), properties(RawFile(properties_path)), resources(RawFile(this->properties.get_tag("resources"))), default_shader(this->properties.get_tag("default_shader")), default_gui_shader(this->properties.get_tag("default_gui_shader")), wnd(wnd), world(this->properties.get_tag("default_world"), this->properties.get_tag("resources")), fps(initial_fps), tps(tps), update_command_executor(), tick_command_executor(), update_due(false)
 {
 	// move the camera to the world's spawn point.
 	this->camera.set_position(this->world.get_spawn_point());
@@ -38,7 +38,7 @@ void Engine::update(std::size_t shader_index)
 	if(this->keeper.millis_passed(1000))
 	{
 		// update fps every second instead of every frame; suppresses random spikes in performance and reduces runtime overhead slightly
-		this->fps = this->profiler.get_f_p_s();
+		this->fps = this->profiler.get_fps();
 		this->profiler.reset();
 		this->keeper.reload();
 	}
@@ -93,11 +93,6 @@ const MDLF& Engine::get_resources() const
 	return this->resources;
 }
 
-const Camera& Engine::get_camera() const
-{
-	return this->camera;
-}
-
 const Window& Engine::get_window() const
 {
 	 return *(this->wnd);
@@ -106,11 +101,6 @@ const Window& Engine::get_window() const
 const World& Engine::get_world() const
 {
 	return this->world;
-}
-
-void Engine::set_camera(Camera cam)
-{
-	this->camera = cam;
 }
 
 void Engine::set_world(World world)
@@ -172,12 +162,12 @@ const Shader& Engine::get_shader(std::size_t index) const
 	return this->get_default_shader();
 }
 
-unsigned int Engine::get_f_p_s() const
+unsigned int Engine::get_fps() const
 {
 	return this->fps;
 }
 
-unsigned int Engine::get_t_p_s() const
+unsigned int Engine::get_tps() const
 {
 	return this->tps;
 }
