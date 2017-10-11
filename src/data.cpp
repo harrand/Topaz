@@ -30,50 +30,50 @@ std::string tz::data::Manager::get_resource_name(const std::string& resource_lin
 	return std::string(mdl::default_string);
 }
 
-std::unordered_map<std::string, std::string> tz::data::Manager::retrieve_models() const
+std::unordered_map<std::string, std::string> tz::data::Manager::retrieve_models(const char* sequence_name) const
 {
 	std::unordered_map<std::string, std::string> model_map;
-	for(std::string& model : this->data_file.get_sequence("models"))
+	for(std::string& model : this->data_file.get_sequence(sequence_name))
 	{
 		model_map[this->get_resource_link(model)] = this->data_file.get_tag(model + ".name");
 	}
 	return model_map;
 }
 
-std::unordered_map<std::string, std::string> tz::data::Manager::retrieve_textures() const
+std::unordered_map<std::string, std::string> tz::data::Manager::retrieve_textures(const char* sequence_name) const
 {
 	std::unordered_map<std::string, std::string> texture_map;
-	for(const std::string& texture : this->data_file.get_sequence("textures"))
+	for(const std::string& texture : this->data_file.get_sequence(sequence_name))
 	{
 		texture_map[this->get_resource_link(texture)] = this->data_file.get_tag(texture + ".name");
 	}
 	return texture_map;
 }
 
-std::unordered_map<std::string, std::string> tz::data::Manager::retrieve_normal_maps() const
+std::unordered_map<std::string, std::string> tz::data::Manager::retrieve_normal_maps(const char* sequence_name) const
 {
 	std::unordered_map<std::string, std::string> normalmap_map;
-	for(const std::string& normalmap : this->data_file.get_sequence("normalmaps"))
+	for(const std::string& normalmap : this->data_file.get_sequence(sequence_name))
 	{
 		normalmap_map[this->get_resource_link(normalmap)] = this->data_file.get_tag(normalmap + ".name");
 	}
 	return normalmap_map;
 }
 
-std::unordered_map<std::string, std::string> tz::data::Manager::retrieve_parallax_maps() const
+std::unordered_map<std::string, std::string> tz::data::Manager::retrieve_parallax_maps(const char* sequence_name) const
 {
 	std::unordered_map<std::string, std::string> parallaxmap_map;
-	for(const std::string& parallaxmap : this->data_file.get_sequence("parallaxmaps"))
+	for(const std::string& parallaxmap : this->data_file.get_sequence(sequence_name))
 	{
 		parallaxmap_map[this->get_resource_link(parallaxmap)] = this->data_file.get_tag(parallaxmap + ".name");
 	}
 	return parallaxmap_map;
 }
 
-std::unordered_map<std::string, std::string> tz::data::Manager::retrieve_displacement_maps() const
+std::unordered_map<std::string, std::string> tz::data::Manager::retrieve_displacement_maps(const char* sequence_name) const
 {
 	std::unordered_map<std::string, std::string> displacementmap_map;
-	for(const std::string& displacementmap : this->data_file.get_sequence("displacementmaps"))
+	for(const std::string& displacementmap : this->data_file.get_sequence(sequence_name))
 	{
 		displacementmap_map[this->get_resource_link(displacementmap)] = this->data_file.get_tag(displacementmap + ".name");
 	}
