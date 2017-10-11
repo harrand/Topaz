@@ -81,5 +81,19 @@ void Uniform<T>::push() const
 template<class T>
 void Shader::add_uniform(Uniform<T>&& uniform)
 {
-	this->uniform_data.push_back(std::make_unique<Uniform<T>>(std::forward<Uniform<T>>(uniform)));
+	this->uniform_data.insert(std::make_unique<Uniform<T>>(std::forward<Uniform<T>>(uniform)));
+}
+
+template<class T>
+void Shader::set_uniform(std::string_view uniform_location, T value)
+{
+	for(auto& uniform : this->uniform_data)
+		if(uniform->get_uniform_location() == uniform_location)
+			dynamic_cast<Uniform<T>*>(uniform.get())->set_value(value);
+}
+
+template<class T>
+T Shader::get_uniform_value(std::string_view uniform_location) const
+{
+	return dynamic_cast<Uniform<T>*>(this->get_uniform(uniform_location))->get_value();
 }

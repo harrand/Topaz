@@ -6,6 +6,7 @@
 #include <string>
 #include <memory>
 #include <string_view>
+#include <unordered_set>
 #include "utility.hpp"
 #include "glew.h"
 
@@ -21,6 +22,8 @@ namespace tz
 class UniformImplicit
 {
 public:
+	virtual GLuint get_shader_handle() const = 0;
+	virtual std::string_view get_uniform_location() const = 0;
 	virtual void push() const = 0;
 };
 
@@ -34,7 +37,7 @@ public:
 	~Uniform<T>() = default;
 	
 	GLuint get_shader_handle() const;
-	std::string_view get_uniform_location() const;
+	virtual std::string_view get_uniform_location() const final;
 	const T& get_value() const;
 	void set_value(T value);
 	virtual void push() const final;
@@ -64,6 +67,13 @@ public:
 	void initialise_uniforms();
 	template<class T>
 	void add_uniform(Uniform<T>&& uniform);
+	void remove_uniform(std::string_view uniform_location);
+	bool has_uniform(std::string_view uniform_location) const;
+	UniformImplicit* get_uniform(std::string_view uniform_location) const;
+	template<class T>
+	void set_uniform(std::string_view uniform_location, T value);
+	template<class T>
+	T get_uniform_value(std::string_view uniform_location) const;
 	bool has_vertex_shader() const;
 	bool has_tessellation_control_shader() const;
 	bool has_tessellation_evaluation_shader() const;
@@ -92,7 +102,7 @@ private:
 	GLuint program_handle;
 	std::array<GLuint, tz::graphics::maximum_shaders> shaders;
 	std::array<GLint, static_cast<std::size_t>(UniformTypes::NUM_UNIFORMS)> uniforms;
-	std::vector<std::unique_ptr<UniformImplicit>> uniform_data;
+	std::unordered_set<std::unique_ptr<UniformImplicit>> uniform_data;
 };
 #include "shader.inl"
 #endif

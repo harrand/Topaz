@@ -126,6 +126,29 @@ void Shader::initialise_uniforms()
 	this->uniforms[static_cast<std::size_t>(UniformTypes::DISPLACEMENT_FACTOR)] = glGetUniformLocation(this->program_handle, "displacement_factor");
 }
 
+void Shader::remove_uniform(std::string_view uniform_location)
+{
+	for(const auto& uniform : this->uniform_data)
+		if(uniform->get_uniform_location() == uniform_location)
+			this->uniform_data.erase(uniform);
+}
+
+bool Shader::has_uniform(std::string_view uniform_location) const
+{
+	for(const auto& uniform : this->uniform_data)
+		if(uniform->get_uniform_location() == uniform_location)
+			return true;
+	return false;
+}
+
+UniformImplicit* Shader::get_uniform(std::string_view uniform_location) const
+{
+	for(const auto& uniform : this->uniform_data)
+		if(uniform->get_uniform_location() == uniform_location)
+			return uniform.get();
+	return nullptr;
+}
+
 bool Shader::has_vertex_shader() const
 {
 	return this->shaders[0] != 0;
