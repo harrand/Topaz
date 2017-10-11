@@ -12,10 +12,10 @@ public:
 	Command& operator=(const Command& rhs) = default;
 	~Command() = default;
 	
-	const std::string& getName() const;
-	const std::string& getDescription() const;
-	const std::string& getUsage() const;
-	std::size_t getExpectedParameterSize() const;
+	const std::string& get_name() const;
+	const std::string& get_description() const;
+	const std::string& get_usage() const;
+	std::size_t get_expected_parameter_size() const;
 	virtual bool operator==(const Command& rhs) const;
 	virtual void operator()(const std::vector<std::string>& args) = 0;
 private:
@@ -36,8 +36,8 @@ public:
 	virtual void operator()() = 0;
 private:
 	void operator()([[maybe_unused]] const std::vector<std::string>& args) final{operator()();}
-	using Command::getUsage;
-	using Command::getExpectedParameterSize;
+	using Command::get_usage;
+	using Command::get_expected_parameter_size;
 };
 
 class CommandExecutor
@@ -49,10 +49,10 @@ public:
 	CommandExecutor& operator=(const CommandExecutor& rhs) = default;
 	~CommandExecutor() = default;
 	
-	const std::unordered_set<Command*>& getCommands() const;
-	void registerCommand(Command* command);
-	void deregisterCommand(Command* command);
-	void deregisterCommand(const std::string& command_name);
+	const std::unordered_set<Command*>& get_commands() const;
+	void register_command(Command* command);
+	void deregister_command(Command* command);
+	void deregister_command(const std::string& command_name);
 	void operator()(const std::string& name, const std::vector<std::string>& args = std::vector<std::string>());
 private:
 	std::unordered_set<Command*> commands;

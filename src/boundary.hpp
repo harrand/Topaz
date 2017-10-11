@@ -23,8 +23,8 @@ public:
 	~BoundingSphere() = default;
 	BoundingSphere& operator=(const BoundingSphere& rhs) = default;
 
-	const Vector3F& getCentre() const;
-	float getRadius() const;
+	const Vector3F& get_centre() const;
+	float get_radius() const;
 	bool intersects(const BoundingSphere& rhs) const;
 	virtual bool intersects(Boundary* other_boundary) const override;
 private:
@@ -41,8 +41,8 @@ public:
 	~AABB() = default;
 	AABB& operator=(const AABB& rhs) = default;
 	
-	const Vector3F& getMinimum() const;
-	const Vector3F& getMaximum() const;
+	const Vector3F& get_minimum() const;
+	const Vector3F& get_maximum() const;
 	bool intersects(const AABB& rhs) const;
 	bool intersects(const Vector3F& point) const;
 	virtual bool intersects(Boundary* other_boundary) const override;
@@ -59,8 +59,8 @@ public:
 	~BoundingPlane() = default;
 	BoundingPlane& operator=(const BoundingPlane& rhs) = default;
 
-	const Vector3F& getNormal() const;
-	float getDistance() const;
+	const Vector3F& get_normal() const;
+	float get_distance() const;
 	BoundingPlane normalised() const;
 	bool intersects(const BoundingSphere& other) const;
 	virtual bool intersects(Boundary* other_boundary) const override;

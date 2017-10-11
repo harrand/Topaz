@@ -19,26 +19,26 @@ void Timer::reload()
 	this->after = after;
 }
 
-float Timer::getRange() const
+float Timer::get_range() const
 {
 	return (this->after) - (this->before);
 }
 
-bool Timer::millisPassed(float millis) const
+bool Timer::millis_passed(float millis) const
 {
-	return (this->getRange() > millis);
+	return (this->get_range() > millis);
 }
 
 TimeProfiler::TimeProfiler(): tk(Timer()){}
 
-void TimeProfiler::beginFrame()
+void TimeProfiler::begin_frame()
 {
 	this->tk.update();
 }
 
-void TimeProfiler::endFrame()
+void TimeProfiler::end_frame()
 {
-	this->deltas.push_back(this->tk.getRange());
+	this->deltas.push_back(this->tk.get_range());
 	this->tk.reload();
 }
 
@@ -48,7 +48,7 @@ void TimeProfiler::reset()
 	this->tk.reload();
 }
 
-float TimeProfiler::getDeltaAverage() const
+float TimeProfiler::get_delta_average() const
 {
 	float total = 0.0f;
 	for(float delta : this->deltas)
@@ -58,7 +58,7 @@ float TimeProfiler::getDeltaAverage() const
 	return total / deltas.size();
 }
 
-float TimeProfiler::getLastDelta() const
+float TimeProfiler::get_last_delta() const
 {
 	// this is useful for updating physics engine to prevent updates from changing so strongly every second
 	if(this->deltas.empty())
@@ -66,7 +66,7 @@ float TimeProfiler::getLastDelta() const
 	return this->deltas.back();
 }
 
-unsigned int TimeProfiler::getFPS() const
+unsigned int TimeProfiler::get_f_p_s() const
 {
-	return static_cast<unsigned int>(1000/this->getDeltaAverage());
+	return static_cast<unsigned int>(1000/this->get_delta_average());
 }

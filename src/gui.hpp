@@ -23,21 +23,21 @@ public:
 	virtual void update();
 	virtual void destroy();
 	virtual bool focused() const = 0;
-	virtual bool isWindow() const = 0;
-	virtual bool isMouseSensitive() const = 0;
-	virtual float getWindowPosX() const = 0;
-	virtual float getWindowPosY() const = 0;
-	Window* findWindowParent() const;
-	bool hasWindowParent() const;
-	const std::optional<std::reference_wrapper<const Shader>> getShader() const;
-	bool hasShader() const;
-	GUIElement* getParent() const;
-	void setParent(GUIElement* parent);
-	const std::unordered_set<GUIElement*>& getChildren() const;
-	void addChild(GUIElement* child);
-	void removeChild(GUIElement* child);
-	bool isHidden() const;
-	void setHidden(bool hidden);
+	virtual bool is_window() const = 0;
+	virtual bool is_mouse_sensitive() const = 0;
+	virtual float get_window_pos_x() const = 0;
+	virtual float get_window_pos_y() const = 0;
+	Window* find_window_parent() const;
+	bool has_window_parent() const;
+	const std::optional<std::reference_wrapper<const Shader>> get_shader() const;
+	bool has_shader() const;
+	GUIElement* get_parent() const;
+	void set_parent(GUIElement* parent);
+	const std::unordered_set<GUIElement*>& get_children() const;
+	void add_child(GUIElement* child);
+	void remove_child(GUIElement* child);
+	bool is_hidden() const;
+	void set_hidden(bool hidden);
 protected:
 	std::optional<std::reference_wrapper<const Shader>> shader;
 	GUIElement* parent;
@@ -57,37 +57,37 @@ public:
 	virtual void update() override;
 	virtual void destroy() override;
 	virtual bool focused() const override;
-	virtual bool isWindow() const override;
-	virtual bool isMouseSensitive() const override;
-	virtual float getWindowPosX() const override;
-	virtual float getWindowPosY() const override;
+	virtual bool is_window() const override;
+	virtual bool is_mouse_sensitive() const override;
+	virtual float get_window_pos_x() const override;
+	virtual float get_window_pos_y() const override;
 	enum class SwapIntervalType : int
 	{
 		LATE_SWAP_TEARING = -1,
 		IMMEDIATE_UPDATES = 0,
 		VSYNC = 1,
 	};
-	int getWidth() const;
-	int getHeight() const;
-	void setWidth(float width);
-	void setHeight(float height);
-	bool isCloseRequested() const;
-	void setSwapIntervalType(SwapIntervalType type) const;
-	SwapIntervalType getSwapIntervalType() const;
-	void setTitle(const std::string& new_title);
-	void setRenderTarget() const;
-	void clearFocus();
-	SDL_Window* getWindowHandle() const;
+	int get_width() const;
+	int get_height() const;
+	void set_width(float width);
+	void set_height(float height);
+	bool is_close_requested() const;
+	void set_swap_interval_type(SwapIntervalType type) const;
+	SwapIntervalType get_swap_interval_type() const;
+	void set_title(const std::string& new_title);
+	void set_render_target() const;
+	void clear_focus();
+	SDL_Window* get_window_handle() const;
 	void clear(float r = 1.0f, float g = 1.0f, float b = 1.0f, float a = 1.0f) const;
-	void registerListener(Listener& l);
-	void deregisterListener(Listener& l);
-	GUIElement* getFocusedChild() const;
-	void setFocusedChild(GUIElement* child);
+	void register_listener(Listener& l);
+	void deregister_listener(Listener& l);
+	GUIElement* get_focused_child() const;
+	void set_focused_child(GUIElement* child);
 private:	
 	std::unordered_map<unsigned int, Listener*> registered_listeners;
 	int w, h;
 	std::string title;
-	bool is_close_requested;
+	bool close_requested;
 	SDL_Window* sdl_window_pointer;
 	SDL_GLContext sdl_gl_context_handle;
 	GUIElement* focused_child;
@@ -98,25 +98,25 @@ class Panel : public GUIElement
 public:
 	Panel(float x, float y, float width, float height, Vector4F colour, const Shader& shader);
 	
-	float getX() const;
-	float getY() const;
-	virtual float getWindowPosX() const override;
-	virtual float getWindowPosY() const override;
-	float getWidth() const;
-	float getHeight() const;
-	const Vector4F& getColour() const;
-	void setX(float x);
-	void setY(float y);
-	void setWidth(float width);
-	void setHeight(float height);
-	void setColour(Vector4F colour);
+	float get_x() const;
+	float get_y() const;
+	virtual float get_window_pos_x() const override;
+	virtual float get_window_pos_y() const override;
+	float get_width() const;
+	float get_height() const;
+	const Vector4F& get_colour() const;
+	void set_x(float x);
+	void set_y(float y);
+	void set_width(float width);
+	void set_height(float height);
+	void set_colour(Vector4F colour);
 	virtual void update() override;
 	virtual void destroy() override;
 	virtual bool focused() const override;
-	virtual bool isWindow() const override;
-	virtual bool isMouseSensitive() const override;
-	void setUsingProportionalPositioning(bool use_proportional_positioning);
-	bool isUsingProportionalPositioning() const;
+	virtual bool is_window() const override;
+	virtual bool is_mouse_sensitive() const override;
+	void set_using_proportional_positioning(bool use_proportional_positioning);
+	bool is_using_proportional_positioning() const;
 protected:
 	bool use_proportional_positioning;
 	float x, y, width, height;
@@ -131,19 +131,19 @@ public:
 	TextLabel(float x, float y, Vector4F colour, std::optional<Vector4F> background_colour, std::optional<Vector3F> text_border_colour, Font font, const std::string& text, const Shader& shader);
 	
 	virtual void update() override;
-	virtual float getWindowPosX() const override;
-	virtual float getWindowPosY() const override;
-	bool hasBackgroundColour() const;
-	bool hasTextBorderColour() const;
-	const Font& getFont() const;
-	void setFont(Font font);
-	const std::string& getText() const;
-	void setText(const std::string& new_text);
-	const Texture& getTexture() const;
-	void setTexture(Texture texture);
-	GLuint getBackgroundColourUniform() const;
-	GLuint getHasBackgroundColourUniform() const;
-	GLuint getHasTextBorderColourUniform() const;
+	virtual float get_window_pos_x() const override;
+	virtual float get_window_pos_y() const override;
+	bool has_background_colour() const;
+	bool has_text_border_colour() const;
+	const Font& get_font() const;
+	void set_font(Font font);
+	const std::string& get_text() const;
+	void set_text(const std::string& new_text);
+	const Texture& get_texture() const;
+	void set_texture(Texture texture);
+	GLuint get_background_colour_uniform() const;
+	GLuint get_has_background_colour_uniform() const;
+	GLuint get_has_text_border_colour_uniform() const;
 private:
 	std::optional<Vector4F> background_colour;
 	std::optional<Vector3F> text_border_colour;
@@ -160,13 +160,13 @@ public:
 	
 	virtual void update() override;
 	virtual bool focused() const override;
-	virtual bool isMouseSensitive() const override;
-	Command* getOnMouseOver() const;
-	Command* getOnMouseClick() const;
-	void setOnMouseOver(Command* cmd);
-	void setOnMouseClick(Command* cmd);
-	bool mousedOver() const;
-	bool clickedOn() const;
+	virtual bool is_mouse_sensitive() const override;
+	Command* get_on_mouse_over() const;
+	Command* get_on_mouse_click() const;
+	void set_on_mouse_over(Command* cmd);
+	void set_on_mouse_click(Command* cmd);
+	bool moused_over() const;
+	bool clicked_on() const;
 protected:
 	MouseListener& mouse_listener;
 	bool just_clicked, just_moused_over;

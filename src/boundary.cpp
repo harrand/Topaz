@@ -3,12 +3,12 @@
 
 BoundingSphere::BoundingSphere(Vector3F centre, float radius): Boundary(), centre(centre), radius(radius){}
 
-const Vector3F& BoundingSphere::getCentre() const
+const Vector3F& BoundingSphere::get_centre() const
 {
 	return this->centre;
 }
 
-float BoundingSphere::getRadius() const
+float BoundingSphere::get_radius() const
 {
 	return this->radius;
 }
@@ -20,8 +20,8 @@ bool BoundingSphere::intersects(const BoundingSphere& rhs) const
 	   *  *  *
 	    ** **
 	*/
-	float radius_distance = this->radius + rhs.getRadius();
-	float centre_distance = (this->centre - rhs.getCentre()).length();
+	float radius_distance = this->radius + rhs.get_radius();
+	float centre_distance = (this->centre - rhs.get_centre()).length();
 	return centre_distance < radius_distance;
 }
 
@@ -34,12 +34,12 @@ bool BoundingSphere::intersects(Boundary* other_boundary) const
 
 AABB::AABB(Vector3F minimum, Vector3F maximum): Boundary(), minimum(minimum), maximum(maximum){}
 
-const Vector3F& AABB::getMinimum() const
+const Vector3F& AABB::get_minimum() const
 {
 	return this->minimum;
 }
 
-const Vector3F& AABB::getMaximum() const
+const Vector3F& AABB::get_maximum() const
 {
 	return this->maximum;
 }
@@ -52,10 +52,10 @@ bool AABB::intersects(const AABB& rhs) const
 		*--|*  |
 		   *---*
 	*/
-	Vector3F forward_distance = rhs.getMinimum() - this->maximum;
-	Vector3F backward_distance = this->minimum - rhs.getMaximum();
+	Vector3F forward_distance = rhs.get_minimum() - this->maximum;
+	Vector3F backward_distance = this->minimum - rhs.get_maximum();
 	Vector3F distance = std::max(forward_distance, backward_distance);
-	return std::max({distance.getX(), distance.getY(), distance.getZ()}) < 0;
+	return std::max({distance.get_x(), distance.get_y(), distance.get_z()}) < 0;
 }
 
 bool AABB::intersects(const Vector3F& point) const
@@ -65,9 +65,9 @@ bool AABB::intersects(const Vector3F& point) const
 		| * |
 		*---*
 	*/
-	bool meet_x = this->minimum.getX() <= point.getX() && this->maximum.getX() >= point.getX();
-	bool meet_y = this->minimum.getY() <= point.getY() && this->maximum.getY() >= point.getY();
-	bool meet_z = this->minimum.getZ() <= point.getZ() && this->maximum.getZ() >= point.getZ();
+	bool meet_x = this->minimum.get_x() <= point.get_x() && this->maximum.get_x() >= point.get_x();
+	bool meet_y = this->minimum.get_y() <= point.get_y() && this->maximum.get_y() >= point.get_y();
+	bool meet_z = this->minimum.get_z() <= point.get_z() && this->maximum.get_z() >= point.get_z();
 	return meet_x && meet_y && meet_z;
 }
 
@@ -80,12 +80,12 @@ bool AABB::intersects(Boundary* other_boundary) const
 
 BoundingPlane::BoundingPlane(Vector3F normal, float distance): Boundary(), normal(normal), distance(distance){}
 
-const Vector3F& BoundingPlane::getNormal() const
+const Vector3F& BoundingPlane::get_normal() const
 {
 	return this->normal;
 }
 
-float BoundingPlane::getDistance() const
+float BoundingPlane::get_distance() const
 {
 	return this->distance;
 }
@@ -102,7 +102,7 @@ bool BoundingPlane::intersects(const BoundingSphere& rhs) const
 //  	  **/
 //  	 * / *
 //        /**
-	return (std::fabs(this->normal.dot(rhs.getCentre()) + this->distance) - rhs.getRadius()) < 0;
+	return (std::fabs(this->normal.dot(rhs.get_centre()) + this->distance) - rhs.get_radius()) < 0;
 }
 
 bool BoundingPlane::intersects(Boundary* other_boundary) const

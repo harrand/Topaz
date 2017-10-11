@@ -16,8 +16,8 @@ public:
 	
 	void update();
 	void reload();
-	float getRange() const;
-	bool millisPassed(float millis) const;
+	float get_range() const;
+	bool millis_passed(float millis) const;
 private:
 	long long int before, after;
 };
@@ -31,12 +31,12 @@ public:
 	~TimeProfiler() = default;
 	TimeProfiler& operator=(const TimeProfiler& rhs) = default;
 	
-	void beginFrame();
-	void endFrame();
+	void begin_frame();
+	void end_frame();
 	void reset();
-	float getDeltaAverage() const;
-	float getLastDelta() const;
-	unsigned int getFPS() const;
+	float get_delta_average() const;
+	float get_last_delta() const;
+	unsigned int get_f_p_s() const;
 private:
 	std::vector<float> deltas;
 	Timer tk;
@@ -51,15 +51,15 @@ namespace tz::time
 	namespace scheduler
 	{
 		template<class ReturnType, class... Args>
-		inline void syncDelayedTask(unsigned int milliseconds_delay, std::function<ReturnType(Args...)> f, Args... args)
+		inline void sync_delayed_task(unsigned int milliseconds_delay, std::function<ReturnType(Args...)> f, Args... args)
 		{
 			std::this_thread::sleep_for(std::chrono::duration<unsigned int, std::milli>(milliseconds_delay));
 			f(args...);
 		}
 		template<class ReturnType, class... Args>
-		inline void asyncDelayedTask(unsigned int milliseconds_delay, std::function<ReturnType(Args...)> f, Args... args)
+		inline void async_delayed_task(unsigned int milliseconds_delay, std::function<ReturnType(Args...)> f, Args... args)
 		{
-			std::thread(syncDelayedTask<ReturnType, Args...>, milliseconds_delay, f, args...).detach();
+			std::thread(sync_delayed_task<ReturnType, Args...>, milliseconds_delay, f, args...).detach();
 		}
 	}
 }

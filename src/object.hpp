@@ -24,22 +24,22 @@ public:
 	~Object() = default;
 	Object& operator=(const Object& rhs) = default;
 	
-	const Vector3F& getPosition() const;
-	const Vector3F& getRotation() const;
-	const Vector3F& getScale() const;
-	unsigned int getShininess() const;
-	float getParallaxMapScale() const;
-	float getParallaxMapOffset() const;
-	float getDisplacementFactor() const;
-	virtual void setPosition(Vector3F position);
-	void setRotation(Vector3F rotation);
-	void setScale(Vector3F scale);
-	void setShininess(float shininess);
-	void setParallaxMapScale(float parallax_map_scale);
-	void setParallaxMapOffset(float parallax_map_offset);
-	void setDisplacementFactor(float displacement_factor);
-	const std::string& getMeshLink() const;
-	const std::vector<std::pair<std::string, Texture::TextureType>> getTextures() const;
+	const Vector3F& get_position() const;
+	const Vector3F& get_rotation() const;
+	const Vector3F& get_scale() const;
+	unsigned int get_shininess() const;
+	float get_parallax_map_scale() const;
+	float get_parallax_map_offset() const;
+	float get_displacement_factor() const;
+	virtual void set_position(Vector3F position);
+	void set_rotation(Vector3F rotation);
+	void set_scale(Vector3F scale);
+	void set_shininess(float shininess);
+	void set_parallax_map_scale(float parallax_map_scale);
+	void set_parallax_map_offset(float parallax_map_offset);
+	void set_displacement_factor(float displacement_factor);
+	const std::string& get_mesh_link() const;
+	const std::vector<std::pair<std::string, Texture::TextureType>> get_textures() const;
 	virtual void render(Mesh* mesh, Texture* tex, NormalMap* nm, ParallaxMap* pm, DisplacementMap* dm, const Camera& cam, const Shader& shad, float width, float height) const;
 protected:
 	Vector3F pos, rot, scale;

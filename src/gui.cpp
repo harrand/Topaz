@@ -16,63 +16,63 @@ void GUIElement::destroy() // destroys all children
 		child->destroy();
 }
 
-Window* GUIElement::findWindowParent() const
+Window* GUIElement::find_window_parent() const
 {
 	// returns a pointer to the first ancestor which is a window. if there is no such ancestor, return nullptr
-	GUIElement* res = this->getParent();
-	while(res != nullptr && !res->isWindow())
-		res = res->getParent();
+	GUIElement* res = this->get_parent();
+	while(res != nullptr && !res->is_window())
+		res = res->get_parent();
 	return dynamic_cast<Window*>(res);
 }
 
-bool GUIElement::hasWindowParent() const
+bool GUIElement::has_window_parent() const
 {
-	return this->findWindowParent() != nullptr;
+	return this->find_window_parent() != nullptr;
 }
 
-const std::optional<std::reference_wrapper<const Shader>> GUIElement::getShader() const
+const std::optional<std::reference_wrapper<const Shader>> GUIElement::get_shader() const
 {
 	return this->shader;
 }
 
-bool GUIElement::hasShader() const
+bool GUIElement::has_shader() const
 {
 	return this->shader.has_value();
 }
 
-GUIElement* GUIElement::getParent() const
+GUIElement* GUIElement::get_parent() const
 {
 	return this->parent;
 }
 
-void GUIElement::setParent(GUIElement* parent)
+void GUIElement::set_parent(GUIElement* parent)
 {
 	this->parent = parent;
 }
 
-const std::unordered_set<GUIElement*>& GUIElement::getChildren() const
+const std::unordered_set<GUIElement*>& GUIElement::get_children() const
 {
 	return this->children;
 }
 
-void GUIElement::addChild(GUIElement* child)
+void GUIElement::add_child(GUIElement* child)
 {
 	this->children.insert(child);
-	child->setParent(this);
+	child->set_parent(this);
 }
 
-void GUIElement::removeChild(GUIElement* child)
+void GUIElement::remove_child(GUIElement* child)
 {
 	this->children.erase(child);
-	child->setParent(nullptr);
+	child->set_parent(nullptr);
 }
 
-bool GUIElement::isHidden() const
+bool GUIElement::is_hidden() const
 {
 	return this->hidden;
 }
 
-void GUIElement::setHidden(bool hidden)
+void GUIElement::set_hidden(bool hidden)
 {
 	this->hidden = hidden;
 }
@@ -80,7 +80,7 @@ void GUIElement::setHidden(bool hidden)
 bool tz::graphics::initialised = false;
 bool tz::graphics::has_context = false;
 
-Window::Window(int w, int h, std::string title): GUIElement({}), w(w), h(h), title(std::move(title)), is_close_requested(false), focused_child(nullptr)
+Window::Window(int w, int h, std::string title): GUIElement({}), w(w), h(h), title(std::move(title)), close_requested(false), focused_child(nullptr)
 {
 	// setup attributes for the gl_context
 	SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
@@ -96,7 +96,7 @@ Window::Window(int w, int h, std::string title): GUIElement({}), w(w), h(h), tit
 	
 	this->sdl_window_pointer = SDL_CreateWindow((this->title).c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, this->w, this->h, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
 	this->sdl_gl_context_handle = SDL_GL_CreateContext(this->sdl_window_pointer);
-	this->setSwapIntervalType(Window::SwapIntervalType::IMMEDIATE_UPDATES);
+	this->set_swap_interval_type(Window::SwapIntervalType::IMMEDIATE_UPDATES);
 	tz::graphics::has_context = true;
 	if(!tz::graphics::initialised)
 		tz::graphics::initialise();
@@ -111,8 +111,8 @@ Window::Window(const Window& copy): Window(copy.w, copy.h, copy.title){}
 Window::~Window()
 {
 	for(auto pair : registered_listeners)
-		if(pair.first < Listener::getNumListeners()) // checks to make sure the listener hasnt gone out of scope
-			this->deregisterListener(*(pair.second));
+		if(pair.first < Listener::get_num_listeners()) // checks to make sure the listener hasnt gone out of scope
+			this->deregister_listener(*(pair.second));
 	SDL_GL_DeleteContext(this->sdl_gl_context_handle);
 	SDL_DestroyWindow(this->sdl_window_pointer);
 }
@@ -129,10 +129,10 @@ void Window::update()
 	while(SDL_PollEvent(&evt))
 	{
 		for(auto& listener : this->registered_listeners)
-			listener.second->handleEvents(evt);
+			listener.second->handle_events(evt);
 		
 		if(evt.type == SDL_QUIT)
-			this->is_close_requested = true;
+			this->close_requested = true;
 		if(evt.type == SDL_WINDOWEVENT)
 		{
 			if (evt.window.event == SDL_WINDOWEVENT_RESIZED || evt.window.event == SDL_WINDOWEVENT_SIZE_CHANGED)
@@ -148,7 +148,7 @@ void Window::update()
 void Window::destroy()
 {
 	GUIElement::destroy();
-	this->is_close_requested = true;
+	this->close_requested = true;
 }
 
 bool Window::focused() const
@@ -156,79 +156,79 @@ bool Window::focused() const
 	return SDL_GetWindowFlags(this->sdl_window_pointer) | SDL_WINDOW_INPUT_FOCUS | SDL_WINDOW_MOUSE_FOCUS;
 }
 
-bool Window::isWindow() const
+bool Window::is_window() const
 {
 	return true;
 }
 
-bool Window::isMouseSensitive() const
+bool Window::is_mouse_sensitive() const
 {
 	return false;
 }
 
-float Window::getWindowPosX() const
+float Window::get_window_pos_x() const
 {
 	return 0;
 }
 
-float Window::getWindowPosY() const
+float Window::get_window_pos_y() const
 {
 	return 0;
 }
 
-int Window::getWidth() const
+int Window::get_width() const
 {
 	return this->w;
 }
 
-int Window::getHeight() const
+int Window::get_height() const
 {
 	return this->h;
 }
 
-void Window::setWidth(float width)
+void Window::set_width(float width)
 {
 	this->w = width;
 }
 
-void Window::setHeight(float height)
+void Window::set_height(float height)
 {
 	this->h = height;
 }
 
-bool Window::isCloseRequested() const
+bool Window::is_close_requested() const
 {
-	return this->is_close_requested;
+	return this->close_requested;
 }
 
-void Window::setSwapIntervalType(Window::SwapIntervalType type) const
+void Window::set_swap_interval_type(Window::SwapIntervalType type) const
 {
 	SDL_GL_SetSwapInterval(static_cast<int>(type));
 }
 
-Window::SwapIntervalType Window::getSwapIntervalType() const
+Window::SwapIntervalType Window::get_swap_interval_type() const
 {
 	return static_cast<SwapIntervalType>(SDL_GL_GetSwapInterval());
 }
 
-void Window::setTitle(const std::string& new_title)
+void Window::set_title(const std::string& new_title)
 {
 	this->title = new_title;
 	SDL_SetWindowTitle(this->sdl_window_pointer, new_title.c_str());
 }
 
-void Window::setRenderTarget() const
+void Window::set_render_target() const
 {
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 	glViewport(0, 0, this->w, this->h);
 }
 
-void Window::clearFocus()
+void Window::clear_focus()
 {
 	this->focused_child = nullptr;
 }
 
-SDL_Window* Window::getWindowHandle() const
+SDL_Window* Window::get_window_handle() const
 {
 	return this->sdl_window_pointer;
 }
@@ -239,93 +239,93 @@ void Window::clear(float r, float g, float b, float a) const
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void Window::registerListener(Listener& l)
+void Window::register_listener(Listener& l)
 {
-	this->registered_listeners[l.getID()] = &l;
+	this->registered_listeners[l.get_i_d()] = &l;
 }
 
-void Window::deregisterListener(Listener& l)
+void Window::deregister_listener(Listener& l)
 {
 	// Check if it actually exists before trying to remove it.
-	if(this->registered_listeners.find(l.getID()) == this->registered_listeners.end())
+	if(this->registered_listeners.find(l.get_i_d()) == this->registered_listeners.end())
 		return;
-	this->registered_listeners.erase(l.getID());
+	this->registered_listeners.erase(l.get_i_d());
 }
 
-GUIElement* Window::getFocusedChild() const
+GUIElement* Window::get_focused_child() const
 {
 	return this->focused_child;
 }
 
-void Window::setFocusedChild(GUIElement* child)
+void Window::set_focused_child(GUIElement* child)
 {
 	this->focused_child = child;
 }
 
-Panel::Panel(float x, float y, float width, float height, Vector4F colour, const Shader& shader): GUIElement(shader), use_proportional_positioning(false), x(x), y(y), width(width), height(height), colour(colour), quad(tz::graphics::createQuad()), colour_uniform(glGetUniformLocation(this->shader.value().get().getProgramHandle(), "colour")), model_matrix_uniform(glGetUniformLocation(this->shader.value().get().getProgramHandle(), "model_matrix")){}
+Panel::Panel(float x, float y, float width, float height, Vector4F colour, const Shader& shader): GUIElement(shader), use_proportional_positioning(false), x(x), y(y), width(width), height(height), colour(colour), quad(tz::graphics::create_quad()), colour_uniform(glGetUniformLocation(this->shader.value().get().get_program_handle(), "colour")), model_matrix_uniform(glGetUniformLocation(this->shader.value().get().get_program_handle(), "model_matrix")){}
 
-float Panel::getX() const
+float Panel::get_x() const
 {
 	return this->x;
 }
 
-float Panel::getY() const
+float Panel::get_y() const
 {
 	return this->y;
 }
 
-float Panel::getWindowPosX() const
+float Panel::get_window_pos_x() const
 {
 	float offset = 0;
 	if(this->parent != nullptr)
-		offset = this->parent->getWindowPosX(); // recursive. offset = total offsets of all ancestors to get true window pos
+		offset = this->parent->get_window_pos_x(); // recursive. offset = total offsets of all ancestors to get true window pos
 	return offset + (this->x + this->width);
 }
 
-float Panel::getWindowPosY() const
+float Panel::get_window_pos_y() const
 {
 	float offset = 0;
 	if(this->parent != nullptr)
-		offset = this->parent->getWindowPosY(); // recursive. offset = total offsets of all ancestors to get true window pos
+		offset = this->parent->get_window_pos_y(); // recursive. offset = total offsets of all ancestors to get true window pos
 	return offset + (this->y + this->height);
 }
 
-float Panel::getWidth() const
+float Panel::get_width() const
 {
 	return this->width;
 }
 
-float Panel::getHeight() const
+float Panel::get_height() const
 {
 	return this->height;
 }
 
-const Vector4F& Panel::getColour() const
+const Vector4F& Panel::get_colour() const
 {
 	return this->colour;
 }
 
-void Panel::setX(float x)
+void Panel::set_x(float x)
 {
 	this->x = x;
 }
 
-void Panel::setY(float y)
+void Panel::set_y(float y)
 {
 	this->y = y;
 }
 
-void Panel::setWidth(float width)
+void Panel::set_width(float width)
 {
 	this->width = width;
 }
 
-void Panel::setHeight(float height)
+void Panel::set_height(float height)
 {
 	this->height = height;
 }
 
-void Panel::setColour(Vector4F colour)
+void Panel::set_colour(Vector4F colour)
 {
 	this->colour = colour;
 }
@@ -336,16 +336,16 @@ void Panel::update()
 	{
 		//update uniforms & bind & render. THEN update all children (unless the panel is hidden in which case do nothing)
 		this->shader.value().get().bind();
-		glUniform1i(glGetUniformLocation(this->shader.value().get().getProgramHandle(), "has_texture"), false);
-		glUniform1i(glGetUniformLocation(this->shader.value().get().getProgramHandle(), "has_background_colour"), false);
-		glUniform1i(glGetUniformLocation(this->shader.value().get().getProgramHandle(), "has_text_border_colour"), false);
-		glUniform4f(this->colour_uniform, this->colour.getX(), this->colour.getY(), this->colour.getZ(), this->colour.getW());
+		glUniform1i(glGetUniformLocation(this->shader.value().get().get_program_handle(), "has_texture"), false);
+		glUniform1i(glGetUniformLocation(this->shader.value().get().get_program_handle(), "has_background_colour"), false);
+		glUniform1i(glGetUniformLocation(this->shader.value().get().get_program_handle(), "has_text_border_colour"), false);
+		glUniform4f(this->colour_uniform, this->colour.get_x(), this->colour.get_y(), this->colour.get_z(), this->colour.get_w());
 		Matrix4x4 projection;
-		if(this->hasWindowParent() && !this->use_proportional_positioning)
-			projection = Matrix4x4::createOrthographicMatrix(this->findWindowParent()->getWidth(), 0.0f, this->findWindowParent()->getHeight(), 0.0f, -1.0f, 1.0f);
+		if(this->has_window_parent() && !this->use_proportional_positioning)
+			projection = Matrix4x4::create_orthographic_matrix(this->find_window_parent()->get_width(), 0.0f, this->find_window_parent()->get_height(), 0.0f, -1.0f, 1.0f);
 		else
 			projection = Matrix4x4::identity();
-		glUniformMatrix4fv(this->model_matrix_uniform, 1, GL_TRUE, (projection * Matrix4x4::createModelMatrix(Vector3F(this->getWindowPosX(), this->getWindowPosY(), 0.0f), Vector3F(), Vector3F(this->width, this->height, 0.0f))).fillData().data());
+		glUniformMatrix4fv(this->model_matrix_uniform, 1, GL_TRUE, (projection * Matrix4x4::create_model_matrix(Vector3F(this->get_window_pos_x(), this->get_window_pos_y(), 0.0f), Vector3F(), Vector3F(this->width, this->height, 0.0f))).fill_data().data());
 		this->quad.render(false);
 		GUIElement::update();
 	}
@@ -357,7 +357,7 @@ void Panel::destroy()
 	GUIElement::destroy();
 	if(this->parent != nullptr)
 	{
-		this->parent->removeChild(this);
+		this->parent->remove_child(this);
 		this->parent = nullptr;
 	}
 }
@@ -367,31 +367,31 @@ bool Panel::focused() const
 	return false;
 }
 
-bool Panel::isWindow() const
+bool Panel::is_window() const
 {
 	return false;
 }
 
-bool Panel::isMouseSensitive() const
+bool Panel::is_mouse_sensitive() const
 {
 	return false;
 }
 
-void Panel::setUsingProportionalPositioning(bool use_proportional_positioning)
+void Panel::set_using_proportional_positioning(bool use_proportional_positioning)
 {
 	this->use_proportional_positioning = use_proportional_positioning;
 }
 
-bool Panel::isUsingProportionalPositioning() const
+bool Panel::is_using_proportional_positioning() const
 {
 	return this->use_proportional_positioning;
 }
 
-TextLabel::TextLabel(float x, float y, Vector4F colour, std::optional<Vector4F> background_colour, std::optional<Vector3F> text_border_colour, Font font, const std::string& text, const Shader& shader): Panel(x, y, this->text_texture.getWidth(), this->text_texture.getHeight(), colour, shader), background_colour(background_colour), text_border_colour(text_border_colour), font(font), text(text), text_texture(this->font.getFontHandle(), this->text, SDL_Color({static_cast<unsigned char>(this->colour.getX() * 255), static_cast<unsigned char>(this->colour.getY() * 255), static_cast<unsigned char>(this->colour.getZ() * 255), static_cast<unsigned char>(255)})), background_colour_uniform(glGetUniformLocation(this->shader.value().get().getProgramHandle(), "background_colour")), has_background_colour_uniform(glGetUniformLocation(this->shader.value().get().getProgramHandle(), "has_background_colour")), text_border_colour_uniform(glGetUniformLocation(this->shader.value().get().getProgramHandle(), "text_border_colour")), has_text_border_colour_uniform(glGetUniformLocation(this->shader.value().get().getProgramHandle(), "has_text_border_colour"))
+TextLabel::TextLabel(float x, float y, Vector4F colour, std::optional<Vector4F> background_colour, std::optional<Vector3F> text_border_colour, Font font, const std::string& text, const Shader& shader): Panel(x, y, this->text_texture.get_width(), this->text_texture.get_height(), colour, shader), background_colour(background_colour), text_border_colour(text_border_colour), font(font), text(text), text_texture(this->font.get_font_handle(), this->text, SDL_Color({static_cast<unsigned char>(this->colour.get_x() * 255), static_cast<unsigned char>(this->colour.get_y() * 255), static_cast<unsigned char>(this->colour.get_z() * 255), static_cast<unsigned char>(255)})), background_colour_uniform(glGetUniformLocation(this->shader.value().get().get_program_handle(), "background_colour")), has_background_colour_uniform(glGetUniformLocation(this->shader.value().get().get_program_handle(), "has_background_colour")), text_border_colour_uniform(glGetUniformLocation(this->shader.value().get().get_program_handle(), "text_border_colour")), has_text_border_colour_uniform(glGetUniformLocation(this->shader.value().get().get_program_handle(), "has_text_border_colour"))
 {
 	// Not in initialiser list because text_texture MUST be initialised after Panel, and theres no way of initialising it before without a warning so do it here.
-	this->width = text_texture.getWidth();
-	this->height = text_texture.getHeight();
+	this->width = text_texture.get_width();
+	this->height = text_texture.get_height();
 }
 
 void TextLabel::update()
@@ -402,95 +402,95 @@ void TextLabel::update()
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		this->shader.value().get().bind();
-		glUniform1i(glGetUniformLocation(this->shader.value().get().getProgramHandle(), "has_texture"), true);
-		glUniform1i(this->has_background_colour_uniform, this->hasBackgroundColour() ? true : false);
-		glUniform1i(this->has_text_border_colour_uniform, this->hasTextBorderColour() ? true : false);
-		if(this->hasBackgroundColour())
-			glUniform4f(this->background_colour_uniform, this->background_colour.value().getX(), this->background_colour.value().getY(), this->background_colour.value().getZ(), this->background_colour.value().getW());
-		if(this->hasTextBorderColour())
-			glUniform3f(this->text_border_colour_uniform, this->text_border_colour.value().getX(), this->text_border_colour.value().getY(), this->text_border_colour.value().getZ());
+		glUniform1i(glGetUniformLocation(this->shader.value().get().get_program_handle(), "has_texture"), true);
+		glUniform1i(this->has_background_colour_uniform, this->has_background_colour() ? true : false);
+		glUniform1i(this->has_text_border_colour_uniform, this->has_text_border_colour() ? true : false);
+		if(this->has_background_colour())
+			glUniform4f(this->background_colour_uniform, this->background_colour.value().get_x(), this->background_colour.value().get_y(), this->background_colour.value().get_z(), this->background_colour.value().get_w());
+		if(this->has_text_border_colour())
+			glUniform3f(this->text_border_colour_uniform, this->text_border_colour.value().get_x(), this->text_border_colour.value().get_y(), this->text_border_colour.value().get_z());
 		Matrix4x4 projection;
-		if(this->hasWindowParent() && !this->use_proportional_positioning)
-			projection = Matrix4x4::createOrthographicMatrix(this->findWindowParent()->getWidth(), 0.0f, this->findWindowParent()->getHeight(), 0.0f, -1.0f, 1.0f);
+		if(this->has_window_parent() && !this->use_proportional_positioning)
+			projection = Matrix4x4::create_orthographic_matrix(this->find_window_parent()->get_width(), 0.0f, this->find_window_parent()->get_height(), 0.0f, -1.0f, 1.0f);
 		else
 			projection = Matrix4x4::identity();
-		glUniformMatrix4fv(this->model_matrix_uniform, 1, GL_TRUE, (projection * Matrix4x4::createModelMatrix(Vector3F(this->getWindowPosX(), this->getWindowPosY(), 0.0f), Vector3F(), Vector3F(this->width, this->height, 0.0f))).fillData().data());
-		this->text_texture.bind(this->shader.value().get().getProgramHandle(), 0);
+		glUniformMatrix4fv(this->model_matrix_uniform, 1, GL_TRUE, (projection * Matrix4x4::create_model_matrix(Vector3F(this->get_window_pos_x(), this->get_window_pos_y(), 0.0f), Vector3F(), Vector3F(this->width, this->height, 0.0f))).fill_data().data());
+		this->text_texture.bind(this->shader.value().get().get_program_handle(), 0);
 		this->quad.render(false);
 		GUIElement::update();
 	}
 }
 
-float TextLabel::getWindowPosX() const
+float TextLabel::get_window_pos_x() const
 {
 	float offset = 0;
-	if(this->parent != nullptr && !this->parent->isWindow())
-		offset = dynamic_cast<Panel*>(this->parent)->getX();
+	if(this->parent != nullptr && !this->parent->is_window())
+		offset = dynamic_cast<Panel*>(this->parent)->get_x();
 	return offset + (this->x + this->width);
 }
 
-float TextLabel::getWindowPosY() const
+float TextLabel::get_window_pos_y() const
 {
 	float offset = 0;
-	if(this->parent != nullptr && !this->parent->isWindow())
-		offset = dynamic_cast<Panel*>(this->parent)->getY();
+	if(this->parent != nullptr && !this->parent->is_window())
+		offset = dynamic_cast<Panel*>(this->parent)->get_y();
 	return offset + (this->y + this->height);
 }
 
-bool TextLabel::hasBackgroundColour() const
+bool TextLabel::has_background_colour() const
 {
 	return this->background_colour.has_value();
 }
 
-bool TextLabel::hasTextBorderColour() const
+bool TextLabel::has_text_border_colour() const
 {
 	return this->text_border_colour.has_value();
 }
 
-const Font& TextLabel::getFont() const
+const Font& TextLabel::get_font() const
 {
 	return this->font;
 }
 
-void TextLabel::setFont(Font font)
+void TextLabel::set_font(Font font)
 {
 	this->font = std::move(font);
 }
 
-const std::string& TextLabel::getText() const
+const std::string& TextLabel::get_text() const
 {
 	return this->text;
 }
-void TextLabel::setText(const std::string& new_text)
+void TextLabel::set_text(const std::string& new_text)
 {
 	this->text = new_text;
 	// remember texture assignment operator is a move-assignment, so no memory droplet is created
-	this->text_texture = Texture(this->font.getFontHandle(), this->text, SDL_Color({static_cast<unsigned char>(this->colour.getX() * 255), static_cast<unsigned char>(this->colour.getY() * 255), static_cast<unsigned char>(this->colour.getZ() * 255), static_cast<unsigned char>(255)}));
-	this->width = text_texture.getWidth();
-	this->height = text_texture.getHeight();
+	this->text_texture = Texture(this->font.get_font_handle(), this->text, SDL_Color({static_cast<unsigned char>(this->colour.get_x() * 255), static_cast<unsigned char>(this->colour.get_y() * 255), static_cast<unsigned char>(this->colour.get_z() * 255), static_cast<unsigned char>(255)}));
+	this->width = text_texture.get_width();
+	this->height = text_texture.get_height();
 }
 
-const Texture& TextLabel::getTexture() const
+const Texture& TextLabel::get_texture() const
 {
 	return this->text_texture;
 }
 
-void TextLabel::setTexture(Texture texture)
+void TextLabel::set_texture(Texture texture)
 {
 	this->text_texture = std::move(texture);
 }
 
-GLuint TextLabel::getBackgroundColourUniform() const
+GLuint TextLabel::get_background_colour_uniform() const
 {
 	return this->background_colour_uniform;
 }
 
-GLuint TextLabel::getHasBackgroundColourUniform() const
+GLuint TextLabel::get_has_background_colour_uniform() const
 {
 	return this->has_background_colour_uniform;
 }
 
-GLuint TextLabel::getHasTextBorderColourUniform() const
+GLuint TextLabel::get_has_text_border_colour_uniform() const
 {
 	return this->has_text_border_colour_uniform;
 }
@@ -499,66 +499,66 @@ Button::Button(float x, float y, Vector4F colour, std::optional<Vector4F> backgr
 
 void Button::update()
 {
-	if(this->clickedOn() && this->on_mouse_click != nullptr && !this->just_clicked && this->hasWindowParent())
+	if(this->clicked_on() && this->on_mouse_click != nullptr && !this->just_clicked && this->has_window_parent())
 	{
 		// if clicked on properly, run the mouse_click command, set it as just clicked and make it the focus of the window ancestor
-		this->findWindowParent()->setFocusedChild(this);
+		this->find_window_parent()->set_focused_child(this);
 		this->on_mouse_click->operator()({});
 		this->just_clicked = true;
 	}
-	else if(!this->clickedOn())
+	else if(!this->clicked_on())
 		this->just_clicked = false;
 	// if click mouse button is down but this is not moused over, make sure its not focused
-	if(this->mouse_listener.isLeftClicked() && !this->mousedOver() && this->focused())
-		this->findWindowParent()->setFocusedChild(nullptr);
+	if(this->mouse_listener.is_left_clicked() && !this->moused_over() && this->focused())
+		this->find_window_parent()->set_focused_child(nullptr);
 	TextLabel::update();
 }
 
 bool Button::focused() const
 {
-	if(!this->hasWindowParent())
+	if(!this->has_window_parent())
 		return false;
-	return this->findWindowParent()->getFocusedChild() == this;
+	return this->find_window_parent()->get_focused_child() == this;
 }
 
-bool Button::isMouseSensitive() const
+bool Button::is_mouse_sensitive() const
 {
 	return true;
 }
 
-Command* Button::getOnMouseOver() const
+Command* Button::get_on_mouse_over() const
 {
 	return this->on_mouse_over;
 }
 
-Command* Button::getOnMouseClick() const
+Command* Button::get_on_mouse_click() const
 {
 	return this->on_mouse_click;
 }
 
-void Button::setOnMouseOver(Command* cmd)
+void Button::set_on_mouse_over(Command* cmd)
 {
 	this->on_mouse_over = cmd;
 }
 
-void Button::setOnMouseClick(Command* cmd)
+void Button::set_on_mouse_click(Command* cmd)
 {
 	this->on_mouse_click = cmd;
 }
 
-bool Button::mousedOver() const
+bool Button::moused_over() const
 {
-	Vector2F mouse_pos = this->mouse_listener.getMousePos();
-	bool x_aligned = mouse_pos.getX() >= (this->getWindowPosX() - this->width) && mouse_pos.getX() <= (this->getWindowPosX() + this->width);
-	bool y_aligned = mouse_pos.getY() >= (this->findWindowParent()->getHeight() - this->getWindowPosY() - this->height) && mouse_pos.getY() <= ((this->findWindowParent()->getHeight() - this->getWindowPosY() + this->height));
+	Vector2F mouse_pos = this->mouse_listener.get_mouse_pos();
+	bool x_aligned = mouse_pos.get_x() >= (this->get_window_pos_x() - this->width) && mouse_pos.get_x() <= (this->get_window_pos_x() + this->width);
+	bool y_aligned = mouse_pos.get_y() >= (this->find_window_parent()->get_height() - this->get_window_pos_y() - this->height) && mouse_pos.get_y() <= ((this->find_window_parent()->get_height() - this->get_window_pos_y() + this->height));
 	return x_aligned && y_aligned;
 }
 
-bool Button::clickedOn() const
+bool Button::clicked_on() const
 {
 	// need to take into account the location where the left click was pressed to prevent dragging from firing off the button.
-	Vector2F mouse_pos = this->mouse_listener.getLeftClickLocation();
-	bool x_aligned = mouse_pos.getX() >= (this->getWindowPosX() - this->width) && mouse_pos.getX() <= (this->getWindowPosX() + this->width);
-	bool y_aligned = mouse_pos.getY() >= (this->findWindowParent()->getHeight() - this->getWindowPosY() - this->height) && mouse_pos.getY() <= ((this->findWindowParent()->getHeight() - this->getWindowPosY() + this->height));
-	return this->mouse_listener.isLeftClicked() && x_aligned && y_aligned;
+	Vector2F mouse_pos = this->mouse_listener.get_left_click_location();
+	bool x_aligned = mouse_pos.get_x() >= (this->get_window_pos_x() - this->width) && mouse_pos.get_x() <= (this->get_window_pos_x() + this->width);
+	bool y_aligned = mouse_pos.get_y() >= (this->find_window_parent()->get_height() - this->get_window_pos_y() - this->height) && mouse_pos.get_y() <= ((this->find_window_parent()->get_height() - this->get_window_pos_y() + this->height));
+	return this->mouse_listener.is_left_clicked() && x_aligned && y_aligned;
 }

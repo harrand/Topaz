@@ -12,8 +12,8 @@ public:
 	~Force() = default;
 	Force& operator=(const Force& rhs) = default;
 	
-	const Vector3F& getSize() const;
-	void setSize(Vector3F size);
+	const Vector3F& get_size() const;
+	void set_size(Vector3F size);
 	Force operator+(const Force& other) const;
 	Force operator-(const Force& other) const;
 	Force operator*(float rhs) const;
@@ -26,8 +26,8 @@ private:
 
 namespace tz::physics
 {
-	BoundingSphere boundSphere(const Object& object, const std::vector<std::unique_ptr<Mesh>>& all_meshes);
-	AABB boundAABB(const Object& object, const std::vector<std::unique_ptr<Mesh>>& all_meshes);
+	BoundingSphere bound_sphere(const Object& object, const std::vector<std::unique_ptr<Mesh>>& all_meshes);
+	AABB bound_a_a_b_b(const Object& object, const std::vector<std::unique_ptr<Mesh>>& all_meshes);
 }
 
 #endif

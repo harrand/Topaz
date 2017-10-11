@@ -3,25 +3,25 @@
 
 namespace tz::graphics::model
 {
-static bool compareOBJIndexPointer(const OBJIndex* a, const OBJIndex* b);
-static inline unsigned int findNextChar(unsigned int start, const char* str, unsigned int length, char token);
-static inline unsigned int parseOBJIndexValue(const std::string& token, unsigned int start, unsigned int end);
-static inline float parseOBJFloatValue(const std::string& token, unsigned int start, unsigned int end);
+static bool compare_o_b_j_index_pointer(const OBJIndex* a, const OBJIndex* b);
+static inline unsigned int find_next_char(unsigned int start, const char* str, unsigned int length, char token);
+static inline unsigned int parse_o_b_j_index_value(const std::string& token, unsigned int start, unsigned int end);
+static inline float parse_o_b_j_float_value(const std::string& token, unsigned int start, unsigned int end);
 }
 
 Vertex::Vertex(Vector3F position, Vector2F texcoord, Vector3F normal): position(std::move(position)), texcoord(std::move(texcoord)), normal(std::move(normal)){}
 
-const Vector3F& Vertex::getPosition() const
+const Vector3F& Vertex::get_position() const
 {
 	return this->position;
 }
 
-const Vector2F& Vertex::getTextureCoordinate() const
+const Vector2F& Vertex::get_texture_coordinate() const
 {
 	return this->texcoord;
 }
 
-const Vector3F& Vertex::getNormal() const
+const Vector3F& Vertex::get_normal() const
 {
 	return this->normal;
 }
@@ -51,14 +51,14 @@ namespace tz::graphics::model
 				{
 					case 'v':
 						if(line_c_str[1] == 't')
-							this->uvs.push_back(parseOBJVector2F(line));
+							this->uvs.push_back(parse_o_b_j_vector_2_f(line));
 						else if(line_c_str[1] == 'n')
-							this->normals.push_back(parseOBJVector3F(line));
+							this->normals.push_back(parse_o_b_j_vector_3_f(line));
 						else if(line_c_str[1] == ' ' || line_c_str[1] == '\t')
-							this->vertices.push_back(parseOBJVector3F(line));
+							this->vertices.push_back(parse_o_b_j_vector_3_f(line));
 					break;
 					case 'f':
-						createOBJFace(line);
+						create_o_b_j_face(line);
 					break;
 					default: break;
 				};
@@ -70,55 +70,55 @@ namespace tz::graphics::model
 		}
 	}
 	
-	void IndexedModel::calculateNormals()
+	void IndexedModel::calculate_normals()
 	{
 		for(std::size_t i = 0; i < indices.size(); i += 3)
 		{
-			int i0 = indices[i];
-			int i1 = indices[i + 1];
-			int i2 = indices[i + 2];
+			int i_0 = indices[i];
+			int i_1 = indices[i + 1];
+			int i_2 = indices[i + 2];
 	
-			Vector3F v1 = (positions[i1] - positions[i0]);
-			Vector3F v2 = (positions[i2] - positions[i0]);
+			Vector3F v_1 = (positions[i_1] - positions[i_0]);
+			Vector3F v_2 = (positions[i_2] - positions[i_0]);
 			
-			Vector3F normal = (v1.cross(v2)).normalised();//glm::normalize(glm::cross(v1, v2));
+			Vector3F normal = (v_1.cross(v_2)).normalised();//glm::normalize(glm::cross(v_1, v_2));
 				
-			normals[i0] = (normals[i0] + normal);
-			normals[i1] = (normals[i1] + normal);
-			normals[i2] = (normals[i2] + normal);
+			normals[i_0] = (normals[i_0] + normal);
+			normals[i_1] = (normals[i_1] + normal);
+			normals[i_2] = (normals[i_2] + normal);
 		}
 		
 		for(std::size_t i = 0; i < positions.size(); i++)
 			normals[i] = normals[i].normalised();
 	}
 	
-	void IndexedModel::calculateTangents()
+	void IndexedModel::calculate_tangents()
 	{
 		for(std::size_t i = 0; i < indices.size(); i += 3)
 		{
-			int i0 = indices[i];
-			int i1 = indices[i + 1];
-			int i2 = indices[i + 2];
-			Vector3F edge1 = (positions[i1] - positions[i0]);
-			Vector3F edge2 = (positions[i2] - positions[i0]);
-			float deltaU1 = texcoords[i1].getX() - texcoords[i0].getX();
-			float deltaU2 = texcoords[i2].getX() - texcoords[i0].getX();
-			float deltaV1 = texcoords[i1].getY() - texcoords[i0].getY();
-			float deltaV2 = texcoords[i2].getY() - texcoords[i0].getY();
-			float f = 1.0f/(deltaU1 * deltaV2 - deltaU2 * deltaV1);
+			int i_0 = indices[i];
+			int i_1 = indices[i + 1];
+			int i_2 = indices[i + 2];
+			Vector3F edge_1 = (positions[i_1] - positions[i_0]);
+			Vector3F edge_2 = (positions[i_2] - positions[i_0]);
+			float delta_u_1 = texcoords[i_1].get_x() - texcoords[i_0].get_x();
+			float delta_u_2 = texcoords[i_2].get_x() - texcoords[i_0].get_x();
+			float delta_v_1 = texcoords[i_1].get_y() - texcoords[i_0].get_y();
+			float delta_v_2 = texcoords[i_2].get_y() - texcoords[i_0].get_y();
+			float f = 1.0f/(delta_u_1 * delta_v_2 - delta_u_2 * delta_v_1);
 			Vector3F tangent;
-			tangent.setX(f * (deltaV2 * edge1.getX() - deltaV1 * edge2.getX()));
-			tangent.setY(f * (deltaV2 * edge1.getY() - deltaV1 * edge2.getY()));
-			tangent.setZ(f * (deltaV2 * edge1.getZ() - deltaV1 * edge2.getZ()));
-			tangents[i0] += tangent;
-			tangents[i1] += tangent;
-			tangents[i2] += tangent;
+			tangent.set_x(f * (delta_v_2 * edge_1.get_x() - delta_v_1 * edge_2.get_x()));
+			tangent.set_y(f * (delta_v_2 * edge_1.get_y() - delta_v_1 * edge_2.get_y()));
+			tangent.set_z(f * (delta_v_2 * edge_1.get_z() - delta_v_1 * edge_2.get_z()));
+			tangents[i_0] += tangent;
+			tangents[i_1] += tangent;
+			tangents[i_2] += tangent;
 		}
 		for(std::size_t i = 0; i < tangents.size(); i++)
 			tangents[i] = tangents[i].normalised();
 	}
 	
-	IndexedModel OBJModel::toIndexedModel()
+	IndexedModel OBJModel::to_indexed_model()
 	{
 		IndexedModel result;
 		IndexedModel normal_model;
@@ -128,7 +128,7 @@ namespace tz::graphics::model
 		std::vector<OBJIndex*> index_lookup;
 		for(std::size_t i = 0; i < number_of_indices; i++)
 			index_lookup.push_back(&obj_indices[i]);
-		std::sort(index_lookup.begin(), index_lookup.end(), compareOBJIndexPointer);
+		std::sort(index_lookup.begin(), index_lookup.end(), compare_o_b_j_index_pointer);
 		std::map<OBJIndex, unsigned int> normal_model_index_map;
 		std::map<unsigned int, unsigned int> index_map;
 		for(std::size_t i = 0; i < number_of_indices; i++)
@@ -159,7 +159,7 @@ namespace tz::graphics::model
 			}
 			else
 				normal_model_index = it->second;
-			unsigned int previous_vertex_location = findLastVertexIndex(index_lookup, current_index, result);
+			unsigned int previous_vertex_location = find_last_vertex_index(index_lookup, current_index, result);
 			if(previous_vertex_location == static_cast<unsigned int>(-1))
 			{
 				result_model_index = result.positions.size();
@@ -176,18 +176,18 @@ namespace tz::graphics::model
 		}
 		if(!has_normals)
 		{
-			normal_model.calculateNormals();
+			normal_model.calculate_normals();
 			
 			for(std::size_t i = 0; i < result.positions.size(); i++)
 				result.normals[i] = normal_model.normals[index_map[i]];
 		}
-		normal_model.calculateTangents();
+		normal_model.calculate_tangents();
 		for(std::size_t i = 0; i < result.tangents.size(); i++)
 			result.tangents[i] = normal_model.tangents[index_map[i]];
 		return result;
 	}
 	
-	unsigned int OBJModel::findLastVertexIndex(const std::vector<OBJIndex*>& index_lookup, const OBJIndex* current_index, const IndexedModel& result)
+	unsigned int OBJModel::find_last_vertex_index(const std::vector<OBJIndex*>& index_lookup, const OBJIndex* current_index, const IndexedModel& result)
 	{
 		std::size_t start = 0;
 		std::size_t end = index_lookup.size();
@@ -270,32 +270,32 @@ namespace tz::graphics::model
 		return -1;
 	}
 	
-	void OBJModel::createOBJFace(const std::string& line)
+	void OBJModel::create_o_b_j_face(const std::string& line)
 	{
-		std::vector<std::string> tokens = tz::util::string::splitString(line, ' ');
+		std::vector<std::string> tokens = tz::util::string::split_string(line, ' ');
 	
-		this->obj_indices.push_back(parseOBJIndex(tokens[1], &this->has_uvs, &this->has_normals));
-		this->obj_indices.push_back(parseOBJIndex(tokens[2], &this->has_uvs, &this->has_normals));
-		this->obj_indices.push_back(parseOBJIndex(tokens[3], &this->has_uvs, &this->has_normals));
+		this->obj_indices.push_back(parse_o_b_j_index(tokens[1], &this->has_uvs, &this->has_normals));
+		this->obj_indices.push_back(parse_o_b_j_index(tokens[2], &this->has_uvs, &this->has_normals));
+		this->obj_indices.push_back(parse_o_b_j_index(tokens[3], &this->has_uvs, &this->has_normals));
 	
 		if(tokens.size() > 4)
 		{
-			this->obj_indices.push_back(parseOBJIndex(tokens[1], &this->has_uvs, &this->has_normals));
-			this->obj_indices.push_back(parseOBJIndex(tokens[3], &this->has_uvs, &this->has_normals));
-			this->obj_indices.push_back(parseOBJIndex(tokens[4], &this->has_uvs, &this->has_normals));
+			this->obj_indices.push_back(parse_o_b_j_index(tokens[1], &this->has_uvs, &this->has_normals));
+			this->obj_indices.push_back(parse_o_b_j_index(tokens[3], &this->has_uvs, &this->has_normals));
+			this->obj_indices.push_back(parse_o_b_j_index(tokens[4], &this->has_uvs, &this->has_normals));
 		}
 	}
 	
-	OBJIndex OBJModel::parseOBJIndex(const std::string& token, bool* has_uvs, bool* has_normals)
+	OBJIndex OBJModel::parse_o_b_j_index(const std::string& token, bool* has_uvs, bool* has_normals)
 	{
 		std::size_t token_length = token.length();
 		const char* token_c_string = token.c_str();
 		
 		unsigned int vertex_index_start = 0;
-		unsigned int vertex_index_end = findNextChar(vertex_index_start, token_c_string, token_length, '/');
+		unsigned int vertex_index_end = find_next_char(vertex_index_start, token_c_string, token_length, '/');
 		
 		OBJIndex result;
-		result.vertex_index = parseOBJIndexValue(token, vertex_index_start, vertex_index_end);
+		result.vertex_index = parse_o_b_j_index_value(token, vertex_index_start, vertex_index_end);
 		result.uv_index = 0;
 		result.normal_index = 0;
 		
@@ -303,24 +303,24 @@ namespace tz::graphics::model
 			return result;
 		
 		vertex_index_start = vertex_index_end + 1;
-		vertex_index_end = findNextChar(vertex_index_start, token_c_string, token_length, '/');
+		vertex_index_end = find_next_char(vertex_index_start, token_c_string, token_length, '/');
 		
-		result.uv_index = parseOBJIndexValue(token, vertex_index_start, vertex_index_end);
+		result.uv_index = parse_o_b_j_index_value(token, vertex_index_start, vertex_index_end);
 		*has_uvs = true;
 		
 		if(vertex_index_end >= token_length)
 			return result;
 		
 		vertex_index_start = vertex_index_end + 1;
-		vertex_index_end = findNextChar(vertex_index_start, token_c_string, token_length, '/');
+		vertex_index_end = find_next_char(vertex_index_start, token_c_string, token_length, '/');
 		
-		result.normal_index = parseOBJIndexValue(token, vertex_index_start, vertex_index_end);
+		result.normal_index = parse_o_b_j_index_value(token, vertex_index_start, vertex_index_end);
 		*has_normals = true;
 		
 		return result;
 	}
 	
-	Vector3F OBJModel::parseOBJVector3F(const std::string& line) 
+	Vector3F OBJModel::parse_o_b_j_vector_3_f(const std::string& line) 
 	{
 		std::size_t token_length = line.length();
 		const char* token_c_string = line.c_str();
@@ -334,24 +334,24 @@ namespace tz::graphics::model
 			vertex_index_start++;
 		}
 		
-		unsigned int vertex_index_end = findNextChar(vertex_index_start, token_c_string, token_length, ' ');
+		unsigned int vertex_index_end = find_next_char(vertex_index_start, token_c_string, token_length, ' ');
 		
-		float x = parseOBJFloatValue(line, vertex_index_start, vertex_index_end);
-		
-		vertex_index_start = vertex_index_end + 1;
-		vertex_index_end = findNextChar(vertex_index_start, token_c_string, token_length, ' ');
-		
-		float y = parseOBJFloatValue(line, vertex_index_start, vertex_index_end);
+		float x = parse_o_b_j_float_value(line, vertex_index_start, vertex_index_end);
 		
 		vertex_index_start = vertex_index_end + 1;
-		vertex_index_end = findNextChar(vertex_index_start, token_c_string, token_length, ' ');
+		vertex_index_end = find_next_char(vertex_index_start, token_c_string, token_length, ' ');
 		
-		float z = parseOBJFloatValue(line, vertex_index_start, vertex_index_end);
+		float y = parse_o_b_j_float_value(line, vertex_index_start, vertex_index_end);
+		
+		vertex_index_start = vertex_index_end + 1;
+		vertex_index_end = find_next_char(vertex_index_start, token_c_string, token_length, ' ');
+		
+		float z = parse_o_b_j_float_value(line, vertex_index_start, vertex_index_end);
 		
 		return {x,y,z};
 	}
 	
-	Vector2F OBJModel::parseOBJVector2F(const std::string& line)
+	Vector2F OBJModel::parse_o_b_j_vector_2_f(const std::string& line)
 	{
 		std::size_t token_length = line.length();
 		const char* token_c_string = line.c_str();
@@ -365,24 +365,24 @@ namespace tz::graphics::model
 			vertex_index_start++;
 		}
 		
-		unsigned int vertex_index_end = findNextChar(vertex_index_start, token_c_string, token_length, ' ');
+		unsigned int vertex_index_end = find_next_char(vertex_index_start, token_c_string, token_length, ' ');
 		
-		float x = parseOBJFloatValue(line, vertex_index_start, vertex_index_end);
+		float x = parse_o_b_j_float_value(line, vertex_index_start, vertex_index_end);
 		
 		vertex_index_start = vertex_index_end + 1;
-		vertex_index_end = findNextChar(vertex_index_start, token_c_string, token_length, ' ');
+		vertex_index_end = find_next_char(vertex_index_start, token_c_string, token_length, ' ');
 		
-		float y = parseOBJFloatValue(line, vertex_index_start, vertex_index_end);
+		float y = parse_o_b_j_float_value(line, vertex_index_start, vertex_index_end);
 		
 		return {x,y};
 	}
 	
-	static bool compareOBJIndexPointer(const OBJIndex* a, const OBJIndex* b)
+	static bool compare_o_b_j_index_pointer(const OBJIndex* a, const OBJIndex* b)
 	{
 		return a->vertex_index < b->vertex_index;
 	}
 	
-	static inline unsigned int findNextChar(unsigned int start, const char* str, unsigned int length, char token)
+	static inline unsigned int find_next_char(unsigned int start, const char* str, unsigned int length, char token)
 	{
 		unsigned int result = start;
 		while(result < length)
@@ -395,12 +395,12 @@ namespace tz::graphics::model
 		return result;
 	}
 	
-	static inline unsigned int parseOBJIndexValue(const std::string& token, unsigned int start, unsigned int end)
+	static inline unsigned int parse_o_b_j_index_value(const std::string& token, unsigned int start, unsigned int end)
 	{
 		return atoi(token.substr(start, end - start).c_str()) - 1;
 	}
 	
-	static inline float parseOBJFloatValue(const std::string& token, unsigned int start, unsigned int end)
+	static inline float parse_o_b_j_float_value(const std::string& token, unsigned int start, unsigned int end)
 	{
 		return atof(token.substr(start, end - start).c_str());
 	}
@@ -431,7 +431,7 @@ Font& Font::operator=(Font&& rhs)
 	return *this;
 }
 
-TTF_Font* Font::getFontHandle() const
+TTF_Font* Font::get_font_handle() const
 {
 	return this->font_handle;
 }

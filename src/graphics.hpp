@@ -24,9 +24,9 @@ namespace tz
 			tz::util::log::message("OpenGL context detected, initialising tz::graphics...");
 			GLenum status = glewInit();
 			if(status != GLEW_OK)
-				tz::util::log::error("Initialisation of GLEW failed.\n\tInitialisation of tz::graphics unsuccessful!");
+				tz::util::log::error("Initialisation of GLEW failed.\n\t_initialisation of tz::graphics unsuccessful!");
 			else
-				tz::util::log::message("Initialisation of GLEW successful.\n\tInitialised tz::graphics via GLEW (OpenGL).");
+				tz::util::log::message("Initialisation of GLEW successful.\n\t_initialised tz::graphics via GLEW (OpenGL).");
 			if(TTF_Init() == 0)
 				tz::util::log::message("Successfully initialised SDL2_ttf.");
 			else
@@ -61,8 +61,8 @@ namespace tz
 				std::vector<Vector3F> normals;
 				std::vector<Vector3F> tangents;
 				std::vector<unsigned int> indices;
-				void calculateNormals();
-				void calculateTangents();
+				void calculate_normals();
+				void calculate_tangents();
 			};
 			
 			class OBJModel
@@ -77,14 +77,14 @@ namespace tz
 				
 				OBJModel(const std::string& file_name);
 				
-				IndexedModel toIndexedModel();
+				IndexedModel to_indexed_model();
 			private:
-				unsigned int findLastVertexIndex(const std::vector<OBJIndex*>& index_lookup, const OBJIndex* current_index, const IndexedModel& result);
-				void createOBJFace(const std::string& line);
+				unsigned int find_last_vertex_index(const std::vector<OBJIndex*>& index_lookup, const OBJIndex* current_index, const IndexedModel& result);
+				void create_o_b_j_face(const std::string& line);
 				
-				Vector2F parseOBJVector2F(const std::string& line);
-				Vector3F parseOBJVector3F(const std::string& line);
-				OBJIndex parseOBJIndex(const std::string& token, bool* has_uvs, bool* has_normals);
+				Vector2F parse_o_b_j_vector_2_f(const std::string& line);
+				Vector3F parse_o_b_j_vector_3_f(const std::string& line);
+				OBJIndex parse_o_b_j_index(const std::string& token, bool* has_uvs, bool* has_normals);
 			};
 		}
 	}
@@ -99,9 +99,9 @@ public:
 	~Vertex() = default;
 	Vertex& operator=(const Vertex& rhs) = default;
 	
-	const Vector3F& getPosition() const;
-	const Vector2F& getTextureCoordinate() const;
-	const Vector3F& getNormal() const;
+	const Vector3F& get_position() const;
+	const Vector2F& get_texture_coordinate() const;
+	const Vector3F& get_normal() const;
 private:
 	const Vector3F position;
 	const Vector2F texcoord;
@@ -117,7 +117,7 @@ public:
 	~Font();
 	Font& operator=(Font&& rhs); // move assignment operator
 	
-	TTF_Font* getFontHandle() const;
+	TTF_Font* get_font_handle() const;
 private:
 	std::string font_path;
 	int pixel_height;

@@ -28,23 +28,23 @@ public:
 	void compile();
 	void link();
 	void validate();
-	bool isCompiled() const;
-	bool isLinked() const;
-	bool isValidated() const;
+	bool is_compiled() const;
+	bool is_linked() const;
+	bool is_validated() const;
 	bool ready() const;
-	void initialiseUniforms();
-	bool hasVertexShader() const;
-	bool hasTessellationControlShader() const;
-	bool hasTessellationEvaluationShader() const;
-	bool hasGeometryShader() const;
-	bool hasFragmentShader() const;
-	GLuint getProgramHandle() const;
+	void initialise_uniforms();
+	bool has_vertex_shader() const;
+	bool has_tessellation_control_shader() const;
+	bool has_tessellation_evaluation_shader() const;
+	bool has_geometry_shader() const;
+	bool has_fragment_shader() const;
+	GLuint get_program_handle() const;
 	void bind() const;
 	void update(const std::array<float, 16>& model_matrix_array, const std::array<float, 16>& view_matrix_array, const std::array<float, 16>& projection_matrix_array, unsigned int shininess, float parallaxmap_scale_constant, float parallaxmap_offset_constant, float displacement_factor) const;
 private:
-	static std::string loadShader(const std::string& filename);
-	static void checkShaderError(GLuint shader, GLuint flag, bool is_program, std::string error_message);
-	static GLuint createShader(std::string source, GLenum shader_type);
+	static std::string load_shader(const std::string& filename);
+	static void check_shader_error(GLuint shader, GLuint flag, bool is_program, std::string error_message);
+	static GLuint create_shader(std::string source, GLenum shader_type);
 	enum class UniformTypes : std::size_t
 	{
 		MODEL,

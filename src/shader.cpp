@@ -13,13 +13,13 @@ Shader::Shader(std::string filename, bool compile, bool link, bool validate): fi
 	if(validate)
 		this->validate();
 	if(this->ready())
-		this->initialiseUniforms();
+		this->initialise_uniforms();
 	tz::util::log::message("Shader with link '", this->filename, "':");
-	tz::util::log::message("\tHas Vertex Shader: ", this->hasVertexShader());
-	tz::util::log::message("\tHas Tessellation Control Shader: ", this->hasTessellationControlShader());
-	tz::util::log::message("\tHas Tessellation Evaluation Shader: ", this->hasTessellationEvaluationShader());
-	tz::util::log::message("\tHas Geometry Shader: ", this->hasGeometryShader());
-	tz::util::log::message("\tHas Fragment Shader: ", this->hasFragmentShader());
+	tz::util::log::message("\t_has Vertex Shader: ", this->has_vertex_shader());
+	tz::util::log::message("\t_has Tessellation Control Shader: ", this->has_tessellation_control_shader());
+	tz::util::log::message("\t_has Tessellation Evaluation Shader: ", this->has_tessellation_evaluation_shader());
+	tz::util::log::message("\t_has Geometry Shader: ", this->has_geometry_shader());
+	tz::util::log::message("\t_has Fragment Shader: ", this->has_fragment_shader());
 }
 
 Shader::Shader(const Shader& copy): Shader(copy.filename){}
@@ -59,15 +59,15 @@ Shader::~Shader()
 void Shader::compile()
 {
 	// Vertex Shader
-	this->shaders[0] = Shader::createShader(Shader::loadShader(this->filename + ".vertex.glsl"), GL_VERTEX_SHADER);
+	this->shaders[0] = Shader::create_shader(Shader::load_shader(this->filename + ".vertex.glsl"), GL_VERTEX_SHADER);
 	// Tessellation Control Shader
-	this->shaders[1] = Shader::createShader(Shader::loadShader(this->filename + ".tessellation_control.glsl"), GL_TESS_CONTROL_SHADER);
+	this->shaders[1] = Shader::create_shader(Shader::load_shader(this->filename + ".tessellation_control.glsl"), GL_TESS_CONTROL_SHADER);
 	// Tessellation Evalution Shader
-	this->shaders[2] = Shader::createShader(Shader::loadShader(this->filename + ".tessellation_evaluation.glsl"), GL_TESS_EVALUATION_SHADER);
+	this->shaders[2] = Shader::create_shader(Shader::load_shader(this->filename + ".tessellation_evaluation.glsl"), GL_TESS_EVALUATION_SHADER);
 	// Geometry Shader
-	this->shaders[3] = Shader::createShader(Shader::loadShader(this->filename + ".geometry.glsl"), GL_GEOMETRY_SHADER);
+	this->shaders[3] = Shader::create_shader(Shader::load_shader(this->filename + ".geometry.glsl"), GL_GEOMETRY_SHADER);
 	// Fragment Shader
-	this->shaders[4] = Shader::createShader(Shader::loadShader(this->filename + ".fragment.glsl"), GL_FRAGMENT_SHADER);
+	this->shaders[4] = Shader::create_shader(Shader::load_shader(this->filename + ".fragment.glsl"), GL_FRAGMENT_SHADER);
 	for(std::size_t i = 0; i < tz::graphics::maximum_shaders; i++)
 		if(this->shaders[i] != 0)
 			glAttachShader(this->program_handle, this->shaders[i]);
@@ -83,28 +83,28 @@ void Shader::compile()
 void Shader::link()
 {
 	glLinkProgram(this->program_handle);
-	Shader::checkShaderError(this->program_handle, GL_LINK_STATUS, true, "Shader Program Linking Failed:\n");
+	Shader::check_shader_error(this->program_handle, GL_LINK_STATUS, true, "Shader Program Linking Failed:\n");
 }
 
 void Shader::validate()
 {
 	glValidateProgram(this->program_handle);
-	Shader::checkShaderError(this->program_handle, GL_VALIDATE_STATUS, true, "Shader Program Validation Failed:\n");
+	Shader::check_shader_error(this->program_handle, GL_VALIDATE_STATUS, true, "Shader Program Validation Failed:\n");
 }
 
-bool Shader::isCompiled() const
+bool Shader::is_compiled() const
 {
 	return this->compiled;
 }
 
-bool Shader::isLinked() const
+bool Shader::is_linked() const
 {
 	GLint status;
 	glGetProgramiv(this->program_handle, GL_LINK_STATUS, &status);
 	return status == GL_TRUE;
 }
 
-bool Shader::isValidated() const
+bool Shader::is_validated() const
 {
 	GLint status;
 	glGetProgramiv(this->program_handle, GL_VALIDATE_STATUS, &status);
@@ -113,10 +113,10 @@ bool Shader::isValidated() const
 
 bool Shader::ready() const
 {
-	return this->isCompiled() && this->isLinked() && this->isValidated();
+	return this->is_compiled() && this->is_linked() && this->is_validated();
 }
 
-void Shader::initialiseUniforms()
+void Shader::initialise_uniforms()
 {
 	this->uniforms[static_cast<std::size_t>(UniformTypes::MODEL)] = glGetUniformLocation(this->program_handle, "m");
 	this->uniforms[static_cast<std::size_t>(UniformTypes::VIEW)] = glGetUniformLocation(this->program_handle, "v");
@@ -127,32 +127,32 @@ void Shader::initialiseUniforms()
 	this->uniforms[static_cast<std::size_t>(UniformTypes::DISPLACEMENT_FACTOR)] = glGetUniformLocation(this->program_handle, "displacement_factor");
 }
 
-bool Shader::hasVertexShader() const
+bool Shader::has_vertex_shader() const
 {
 	return this->shaders[0] != 0;
 }
 
-bool Shader::hasTessellationControlShader() const
+bool Shader::has_tessellation_control_shader() const
 {
 	return this->shaders[1] != 0;
 }
 
-bool Shader::hasTessellationEvaluationShader() const
+bool Shader::has_tessellation_evaluation_shader() const
 {
 	return this->shaders[2] != 0;
 }
 
-bool Shader::hasGeometryShader() const
+bool Shader::has_geometry_shader() const
 {
 	return this->shaders[3] != 0;
 }
 
-bool Shader::hasFragmentShader() const
+bool Shader::has_fragment_shader() const
 {
 	return this->shaders[4] != 0;
 }
 
-GLuint Shader::getProgramHandle() const
+GLuint Shader::get_program_handle() const
 {
 	return this->program_handle;
 }
@@ -174,16 +174,16 @@ void Shader::update(const std::array<float, 16>& model_matrix_array, const std::
 	glUniform1f(this->uniforms[static_cast<unsigned int>(UniformTypes::DISPLACEMENT_FACTOR)], displacement_factor);
 }
 
-std::string Shader::loadShader(const std::string& filename)
+std::string Shader::load_shader(const std::string& filename)
 {
 	// use MDL rawfile to slurp the entire file and then parse each lines with a newline between each. might be an optimisation to use RawFile slurp function
 	std::string source = "";
-	for(std::string str : RawFile(filename).getLines())
+	for(std::string str : RawFile(filename).get_lines())
 		source += str + "\n";
 	return source;
 }
 
-void Shader::checkShaderError(GLuint shader, GLuint flag, bool is_program, std::string error_message)
+void Shader::check_shader_error(GLuint shader, GLuint flag, bool is_program, std::string error_message)
 {
     GLint success = 0;
     GLchar error[1024] = {0};
@@ -203,7 +203,7 @@ void Shader::checkShaderError(GLuint shader, GLuint flag, bool is_program, std::
 		tz::util::log::error(error_message, std::string(error));
 }
 
-GLuint Shader::createShader(std::string source, GLenum shader_type)
+GLuint Shader::create_shader(std::string source, GLenum shader_type)
 {
 	if(source == "")
 	{
@@ -218,16 +218,16 @@ GLuint Shader::createShader(std::string source, GLenum shader_type)
 	}
 	
 	// opengl has support for multiple shader sources so must pass it an array. we're (meant to be) sane so we only need one source per shader actually thank you very much
-	const GLchar* shaderSources[1];
-	GLint shaderSourceLengths[1];
+	const GLchar* shader_sources[1];
+	GLint shader_source_lengths[1];
 	
-	shaderSources[0] = source.c_str();
-	shaderSourceLengths[0] = source.length();
+	shader_sources[0] = source.c_str();
+	shader_source_lengths[0] = source.length();
 	
-	glShaderSource(shader, 1, shaderSources, shaderSourceLengths);
+	glShaderSource(shader, 1, shader_sources, shader_source_lengths);
 	glCompileShader(shader);
 	
-	Shader::checkShaderError(shader, GL_COMPILE_STATUS, false, "Shader Compilation Failed:\n");
+	Shader::check_shader_error(shader, GL_COMPILE_STATUS, false, "Shader Compilation Failed:\n");
 	
 	return shader;
 }

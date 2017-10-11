@@ -12,10 +12,10 @@ public:
 	~Matrix2x2() = default;
 	Matrix2x2& operator=(const Matrix2x2& rhs) = default;
 	
-	Vector2F getRowX() const;
-	Vector2F getRowY() const;
-	void setRowX(Vector2F row_x);
-	void setRowY(Vector2F row_y);
+	Vector2F get_row_x() const;
+	Vector2F get_row_y() const;
+	void set_row_x(Vector2F row_x);
+	void set_row_y(Vector2F row_y);
 	float determinant() const;
 private:
 	Vector2F x, y;
@@ -30,12 +30,12 @@ public:
 	~Matrix3x3() = default;
 	Matrix3x3& operator=(const Matrix3x3& rhs) = default;
 	
-	Vector3F getRowX() const;
-	Vector3F getRowY() const;
-	Vector3F getRowZ() const;
-	void setRowX(Vector3F row_x);
-	void setRowY(Vector3F row_y);
-	void setRowZ(Vector3F row_z);
+	Vector3F get_row_x() const;
+	Vector3F get_row_y() const;
+	Vector3F get_row_z() const;
+	void set_row_x(Vector3F row_x);
+	void set_row_y(Vector3F row_y);
+	void set_row_z(Vector3F row_z);
 	float determinant() const;
 private:
 	Vector3F x, y, z;
@@ -51,17 +51,17 @@ public:
 	Matrix4x4& operator=(const Matrix4x4& rhs) = default;
 	
 	static Matrix4x4 identity();
-	Vector4F getRowX() const;
-	Vector4F getRowY() const;
-	Vector4F getRowZ() const;
-	Vector4F getRowW() const;
-	void setRowX(Vector4F row_x);
-	void setRowY(Vector4F row_y);
-	void setRowZ(Vector4F row_z);
-	void setRowW(Vector4F row_w);
+	Vector4F get_row_x() const;
+	Vector4F get_row_y() const;
+	Vector4F get_row_z() const;
+	Vector4F get_row_w() const;
+	void set_row_x(Vector4F row_x);
+	void set_row_y(Vector4F row_y);
+	void set_row_z(Vector4F row_z);
+	void set_row_w(Vector4F row_w);
 	Matrix4x4 transposed() const;
-	std::array<float, 16> fillData() const;
-	Matrix3x3 subMatrix(float iterI, float iterJ) const;
+	std::array<float, 16> fill_data() const;
+	Matrix3x3 sub_matrix(float iter_i, float iter_j) const;
 	Matrix4x4 operator+(const Matrix4x4& other) const;
 	Matrix4x4 operator-(const Matrix4x4& other) const;
 	Vector4F operator*(const Vector4F& other) const;
@@ -69,17 +69,17 @@ public:
 	float determinant() const;
 	Matrix4x4 inverse() const;
 	
-	static Matrix4x4 createTranslationMatrix(Vector3F position);
-	static Matrix4x4 createRotationalXMatrix(float eulerX);
-	static Matrix4x4 createRotationalYMatrix(float eulerY);
-	static Matrix4x4 createRotationalZMatrix(float eulerZ);
-	static Matrix4x4 createRotationalMatrix(Vector3F euler_rotation);
-	static Matrix4x4 createScalingMatrix(Vector3F scale);
-	static Matrix4x4 createModelMatrix(Vector3F position, Vector3F euler_rotation, Vector3F scale);
-	static Matrix4x4 createViewMatrix(Vector3F camera_position, Vector3F camera_euler_rotation);
-	static Matrix4x4 createOrthographicMatrix(float right, float left, float top, float bottom, float near, float far);
-	static Matrix4x4 createPerspectiveMatrix(float fov, float aspect_ratio, float nearclip, float farclip);
-	static Matrix4x4 createPerspectiveMatrix(float fov, float width, float height, float nearclip, float farclip);
+	static Matrix4x4 create_translation_matrix(Vector3F position);
+	static Matrix4x4 create_rotational_x_matrix(float euler_x);
+	static Matrix4x4 create_rotational_y_matrix(float euler_y);
+	static Matrix4x4 create_rotational_z_matrix(float euler_z);
+	static Matrix4x4 create_rotational_matrix(Vector3F euler_rotation);
+	static Matrix4x4 create_scaling_matrix(Vector3F scale);
+	static Matrix4x4 create_model_matrix(Vector3F position, Vector3F euler_rotation, Vector3F scale);
+	static Matrix4x4 create_view_matrix(Vector3F camera_position, Vector3F camera_euler_rotation);
+	static Matrix4x4 create_orthographic_matrix(float right, float left, float top, float bottom, float near, float far);
+	static Matrix4x4 create_perspective_matrix(float fov, float aspect_ratio, float nearclip, float farclip);
+	static Matrix4x4 create_perspective_matrix(float fov, float width, float height, float nearclip, float farclip);
 private:
 	Vector4F x, y, z, w;
 };

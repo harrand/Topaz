@@ -11,27 +11,27 @@ Listener::~Listener()
 	Listener::number_of_listeners--;
 }
 
-unsigned int Listener::getID() const
+unsigned int Listener::get_i_d() const
 {
 	return this->id;
 }
 
-unsigned int Listener::getNumListeners()
+unsigned int Listener::get_num_listeners()
 {
 	return Listener::number_of_listeners;
 }
 
 MouseListener::MouseListener(): Listener(){}
 
-void MouseListener::handleEvents(SDL_Event& evt)
+void MouseListener::handle_events(SDL_Event& evt)
 {
-	this->reloadMouseDelta();
+	this->reload_mouse_delta();
 	if(evt.type == SDL_MOUSEMOTION)
 	{
 		int x, y;
 		SDL_GetMouseState(&x, &y);
-		this->mouse_position.setX(x);
-		this->mouse_position.setY(y);
+		this->mouse_position.set_x(x);
+		this->mouse_position.set_y(y);
 	}
 	if(evt.type == SDL_MOUSEBUTTONDOWN)
 	{
@@ -56,44 +56,44 @@ void MouseListener::handleEvents(SDL_Event& evt)
 	}
 }
 
-void MouseListener::reloadMouseDelta()
+void MouseListener::reload_mouse_delta()
 {
 	this->previous_mouse_position = this->mouse_position;
 }
 
-bool MouseListener::isLeftClicked() const
+bool MouseListener::is_left_clicked() const
 {
 	return this->left_click;
 }
 
-bool MouseListener::isRightClicked() const
+bool MouseListener::is_right_clicked() const
 {
 	return this->right_click;
 }
 
-const Vector2F& MouseListener::getMousePos() const
+const Vector2F& MouseListener::get_mouse_pos() const
 {
 	return this->mouse_position;
 }
 
-Vector2F MouseListener::getMouseDeltaPos() const
+Vector2F MouseListener::get_mouse_delta_pos() const
 {
 	return (this->mouse_position - this->previous_mouse_position);
 }
 
-const Vector2F& MouseListener::getLeftClickLocation() const
+const Vector2F& MouseListener::get_left_click_location() const
 {
 	return this->left_click_location;
 }
 
-const Vector2F& MouseListener::getRightClickLocation() const
+const Vector2F& MouseListener::get_right_click_location() const
 {
 	return this->right_click_location;
 }
 
 KeyListener::KeyListener(): Listener(){}
 
-void KeyListener::handleEvents(SDL_Event& evt)
+void KeyListener::handle_events(SDL_Event& evt)
 {
 	switch(evt.type)
 	{
@@ -122,27 +122,27 @@ void KeyListener::handleEvents(SDL_Event& evt)
 	}
 }
 
-bool KeyListener::isKeyPressed(const std::string& keyname) const
+bool KeyListener::is_key_pressed(const std::string& keyname) const
 {
 	return (std::find(this->pressed_keys.begin(), this->pressed_keys.end(), keyname) != this->pressed_keys.end());
 }
 
-bool KeyListener::isKeyReleased(const std::string& keyname) const
+bool KeyListener::is_key_released(const std::string& keyname) const
 {
 	return (std::find(this->released_keys.begin(), this->released_keys.end(), keyname) != this->released_keys.end());
 }
 
-bool KeyListener::catchKeyPressed(const std::string& keyname)
+bool KeyListener::catch_key_pressed(const std::string& keyname)
 {
-	bool pressed = this->isKeyPressed(keyname);
+	bool pressed = this->is_key_pressed(keyname);
 	if(pressed)
 		this->pressed_keys.erase(std::remove(this->pressed_keys.begin(), this->pressed_keys.end(), keyname), this->pressed_keys.end());
 	return pressed;
 }
 
-bool KeyListener::catchKeyReleased(const std::string& keyname)
+bool KeyListener::catch_key_released(const std::string& keyname)
 {
-	bool released = this->isKeyReleased(keyname);
+	bool released = this->is_key_released(keyname);
 	if(released)
 		this->released_keys.erase(std::remove(this->released_keys.begin(), this->released_keys.end(), keyname), this->released_keys.end());
 	return released;

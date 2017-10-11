@@ -4,12 +4,12 @@
 World::World(std::string filename, std::string resources_path): filename(std::move(filename)), resources_path(std::move(resources_path))
 {
 	MDLF input(RawFile(this->filename));
-	std::string spawn_point_string = input.getTag("spawnpoint"), spawn_orientation_string = input.getTag("spawnorientation"), gravity_string = input.getTag("gravity");
+	std::string spawn_point_string = input.get_tag("spawnpoint"), spawn_orientation_string = input.get_tag("spawnorientation"), gravity_string = input.get_tag("gravity");
 	if(spawn_point_string != mdl::default_string && spawn_orientation_string != mdl::default_string && gravity_string != mdl::default_string)
 	{
-		this->spawn_point = tz::util::string::vectoriseList3<float>(tz::util::string::deformat(spawn_point_string));
-		this->spawn_orientation = tz::util::string::vectoriseList3<float>(tz::util::string::deformat(spawn_orientation_string));
-		this->gravity = tz::util::string::vectoriseList3<float>(tz::util::string::deformat(gravity_string));
+		this->spawn_point = tz::util::string::vectorise_list_3<float>(tz::util::string::deformat(spawn_point_string));
+		this->spawn_orientation = tz::util::string::vectorise_list_3<float>(tz::util::string::deformat(spawn_orientation_string));
+		this->gravity = tz::util::string::vectorise_list_3<float>(tz::util::string::deformat(gravity_string));
 	}
 	else
 	{
@@ -17,12 +17,12 @@ World::World(std::string filename, std::string resources_path): filename(std::mo
 		this->spawn_orientation = Vector3F();
 		this->gravity = Vector3F();
 	}
-	std::vector<std::string> object_list = input.getSequence("objects");
-	std::vector<std::string> entity_object_list = input.getSequence("entityobjects");
+	std::vector<std::string> object_list = input.get_sequence("objects");
+	std::vector<std::string> entity_object_list = input.get_sequence("entityobjects");
 	for(std::string object_name : object_list)
-		this->addObject(World::retrieveObjectData(object_name, this->resources_path, input));
+		this->add_object(World::retrieve_object_data(object_name, this->resources_path, input));
 	for(std::string entity_object_name : entity_object_list)
-		this->addEntityObject(World::retrieveEntityObjectData(entity_object_name, this->resources_path, input));
+		this->add_entity_object(World::retrieve_entity_object_data(entity_object_name, this->resources_path, input));
 }
 
 World::World(const World& copy): World(copy.filename){}
@@ -31,72 +31,72 @@ World::World(World&& move): filename(move.filename), resources_path(move.resourc
 
 World::~World()
 {
-	this->killLights();
+	this->kill_lights();
 }
 
-const std::string& World::getFileName() const
+const std::string& World::get_file_name() const
 {
 	return this->filename;
 }
 
-void World::addObject(Object obj)
+void World::add_object(Object obj)
 {
 	this->objects.push_back(std::move(obj));
 }
 
-void World::addEntity(Entity ent)
+void World::add_entity(Entity ent)
 {
-	if(ent.getForces().find("gravity") != ent.getForces().end())
+	if(ent.get_forces().find("gravity") != ent.get_forces().end())
 	{
-		ent.removeForce("gravity");
+		ent.remove_force("gravity");
 	}
-	ent.applyForce("gravity", Force(this->getGravity()));
+	ent.apply_force("gravity", Force(this->get_gravity()));
 	this->entities.push_back(std::move(ent));
 }
 
-void World::addEntityObject(EntityObject eo)
+void World::add_entity_object(EntityObject eo)
 {
-	if(eo.getForces().find("gravity") != eo.getForces().end())
+	if(eo.get_forces().find("gravity") != eo.get_forces().end())
 	{
-		eo.removeForce("gravity");
+		eo.remove_force("gravity");
 	}
-	eo.applyForce("gravity", Force(this->getGravity()));
+	eo.apply_force("gravity", Force(this->get_gravity()));
 	this->entity_objects.push_back(std::move(eo));
 }
 
-void World::addLight(Light light, GLuint shader_program_handle)
+void World::add_light(Light light, GLuint shader_program_handle)
 {
 	while(this->base_lights.size() >= World::MAXIMUM_LIGHTS)
 		this->base_lights.erase(this->base_lights.begin());
-	this->base_lights[light.getUniforms(shader_program_handle, this->base_lights.size())] = light;
+	this->base_lights[light.get_uniforms(shader_program_handle, this->base_lights.size())] = light;
 }
 
-void World::setGravity(Vector3F gravity)
+void World::set_gravity(Vector3F gravity)
 {
 	this->gravity = gravity;
 	for(Entity& ent : this->entities)
 	{
-		ent.removeForce("gravity");
-		ent.applyForce("gravity", Force(this->getGravity()));
+		ent.remove_force("gravity");
+		ent.apply_force("gravity", Force(this->get_gravity()));
 	}
 	for(EntityObject& eo : this->entity_objects)
 	{
-		eo.removeForce("gravity");
-		eo.applyForce("gravity", Force(this->getGravity()));
+		eo.remove_force("gravity");
+		eo.apply_force("gravity", Force(this->get_gravity()));
 	}
 }
 
-void World::setSpawnPoint(Vector3F spawn_point)
+void World::set_spawn_point(Vector3F spawn_point)
 {
 	this->spawn_point = spawn_point;
 }
 
-void World::setSpawnOrientation(Vector3F spawn_orientation)
+void World::set_spawn_orientation(Vector3F spawn_orientation)
 {
 	this->spawn_orientation = spawn_orientation;
 }
 
-void World::killLights()
+void World::kill_lights()
 {
 	for(auto& iter : this->base_lights)
 	{
@@ -110,64 +110,64 @@ void World::killLights()
 	}
 }
 
-void World::exportWorld(const std::string& world_link) const
+void World::export_world(const std::string& world_link) const
 {
 	const tz::data::Manager data_manager(this->resources_path);
 	MDLF output = MDLF(RawFile(world_link));
-	output.getRawFile().clear();
+	output.get_raw_file().clear();
 	std::vector<std::string> object_list;
 	std::vector<std::string> entity_object_list;
-	output.deleteSequence("objects");
-	output.deleteSequence("entityobjects");
+	output.delete_sequence("objects");
+	output.delete_sequence("entityobjects");
 	
-	output.editTag("gravity", tz::util::string::format(tz::util::string::devectoriseList3<float>(this->gravity)));
-	output.editTag("spawnpoint", tz::util::string::format(tz::util::string::devectoriseList3<float>(this->spawn_point)));
-	output.editTag("spawnorientation", tz::util::string::format(tz::util::string::devectoriseList3<float>(this->spawn_orientation)));
+	output.edit_tag("gravity", tz::util::string::format(tz::util::string::devectorise_list_3<float>(this->gravity)));
+	output.edit_tag("spawnpoint", tz::util::string::format(tz::util::string::devectorise_list_3<float>(this->spawn_point)));
+	output.edit_tag("spawnorientation", tz::util::string::format(tz::util::string::devectorise_list_3<float>(this->spawn_orientation)));
 	for(std::size_t i = 0; i < this->objects.size(); i++)
 	{
-		const std::string object_name = "object" + tz::util::cast::toString<float>(i);
+		const std::string object_name = "object" + tz::util::cast::to_string<float>(i);
 		object_list.push_back(object_name);
 		const Object current_object = this->objects[i];
 		
-		output.editTag(object_name + ".mesh", data_manager.getResourceName(current_object.getMeshLink()));
-		for(auto& texture : current_object.getTextures())
+		output.edit_tag(object_name + ".mesh", data_manager.get_resource_name(current_object.get_mesh_link()));
+		for(auto& texture : current_object.get_textures())
 		{
-			output.editTag(object_name + ".texture" + tz::util::cast::toString<unsigned int>(static_cast<unsigned int>(texture.second)), data_manager.getResourceName(texture.first));
+			output.edit_tag(object_name + ".texture" + tz::util::cast::to_string<unsigned int>(static_cast<unsigned int>(texture.second)), data_manager.get_resource_name(texture.first));
 		}
-		output.editTag(object_name + ".pos", tz::util::string::format(tz::util::string::devectoriseList3<float>(current_object.getPosition())));
-		output.editTag(object_name + ".rot", tz::util::string::format(tz::util::string::devectoriseList3<float>(current_object.getRotation())));
-		output.editTag(object_name + ".scale", tz::util::string::format(tz::util::string::devectoriseList3<float>(current_object.getScale())));
-		output.editTag(object_name + ".shininess", tz::util::cast::toString(current_object.getShininess()));
-		output.editTag(object_name + ".parallax_map_scale", tz::util::cast::toString(current_object.getParallaxMapScale()));
-		output.editTag(object_name + ".parallax_map_offset", tz::util::cast::toString(current_object.getParallaxMapOffset()));
-		output.editTag(object_name + ".displacement_factor", tz::util::cast::toString(current_object.getDisplacementFactor()));
+		output.edit_tag(object_name + ".pos", tz::util::string::format(tz::util::string::devectorise_list_3<float>(current_object.get_position())));
+		output.edit_tag(object_name + ".rot", tz::util::string::format(tz::util::string::devectorise_list_3<float>(current_object.get_rotation())));
+		output.edit_tag(object_name + ".scale", tz::util::string::format(tz::util::string::devectorise_list_3<float>(current_object.get_scale())));
+		output.edit_tag(object_name + ".shininess", tz::util::cast::to_string(current_object.get_shininess()));
+		output.edit_tag(object_name + ".parallax_map_scale", tz::util::cast::to_string(current_object.get_parallax_map_scale()));
+		output.edit_tag(object_name + ".parallax_map_offset", tz::util::cast::to_string(current_object.get_parallax_map_offset()));
+		output.edit_tag(object_name + ".displacement_factor", tz::util::cast::to_string(current_object.get_displacement_factor()));
 	}
 	for(std::size_t i = 0; i < this->entity_objects.size(); i++)
 	{
-		const std::string entity_object_name = "eo" + tz::util::cast::toString<float>(i);
+		const std::string entity_object_name = "eo" + tz::util::cast::to_string<float>(i);
 		entity_object_list.push_back(entity_object_name);
 		const EntityObject current_entity_object = this->entity_objects[i];
 
-		output.editTag(entity_object_name + ".mesh", data_manager.getResourceName(current_entity_object.getMeshLink()));
-		for(auto& texture : current_entity_object.getTextures())
+		output.edit_tag(entity_object_name + ".mesh", data_manager.get_resource_name(current_entity_object.get_mesh_link()));
+		for(auto& texture : current_entity_object.get_textures())
 		{
-			output.editTag(entity_object_name + ".texture" + tz::util::cast::toString<unsigned int>(static_cast<unsigned int>(texture.second)), data_manager.getResourceName(texture.first));
+			output.edit_tag(entity_object_name + ".texture" + tz::util::cast::to_string<unsigned int>(static_cast<unsigned int>(texture.second)), data_manager.get_resource_name(texture.first));
 		}
-		output.editTag(entity_object_name + ".mass", tz::util::cast::toString<float>(current_entity_object.getMass()));
-		output.editTag(entity_object_name + ".pos", tz::util::string::format(tz::util::string::devectoriseList3<float>(current_entity_object.getPosition())));
-		output.editTag(entity_object_name + ".rot", tz::util::string::format(tz::util::string::devectoriseList3<float>(current_entity_object.getRotation())));
-		output.editTag(entity_object_name + ".scale", tz::util::string::format(tz::util::string::devectoriseList3<float>(current_entity_object.getScale())));
-		output.editTag(entity_object_name + ".shininess", tz::util::cast::toString(current_entity_object.getShininess()));
-		output.editTag(entity_object_name + ".parallax_map_scale", tz::util::cast::toString(current_entity_object.getParallaxMapScale()));
-		output.editTag(entity_object_name + ".parallax_map_offset", tz::util::cast::toString(current_entity_object.getParallaxMapOffset()));
-		output.editTag(entity_object_name + ".displacement_factor", tz::util::cast::toString(current_entity_object.getDisplacementFactor()));
+		output.edit_tag(entity_object_name + ".mass", tz::util::cast::to_string<float>(current_entity_object.get_mass()));
+		output.edit_tag(entity_object_name + ".pos", tz::util::string::format(tz::util::string::devectorise_list_3<float>(current_entity_object.get_position())));
+		output.edit_tag(entity_object_name + ".rot", tz::util::string::format(tz::util::string::devectorise_list_3<float>(current_entity_object.get_rotation())));
+		output.edit_tag(entity_object_name + ".scale", tz::util::string::format(tz::util::string::devectorise_list_3<float>(current_entity_object.get_scale())));
+		output.edit_tag(entity_object_name + ".shininess", tz::util::cast::to_string(current_entity_object.get_shininess()));
+		output.edit_tag(entity_object_name + ".parallax_map_scale", tz::util::cast::to_string(current_entity_object.get_parallax_map_scale()));
+		output.edit_tag(entity_object_name + ".parallax_map_offset", tz::util::cast::to_string(current_entity_object.get_parallax_map_offset()));
+		output.edit_tag(entity_object_name + ".displacement_factor", tz::util::cast::to_string(current_entity_object.get_displacement_factor()));
 	}
-	output.addSequence("objects", object_list);
-	output.addSequence("entityobjects", entity_object_list);
+	output.add_sequence("objects", object_list);
+	output.add_sequence("entityobjects", entity_object_list);
 }
 void World::save() const
 {
-	this->exportWorld(this->getWorldLink());
+	this->export_world(this->get_world_link());
 }
 
 void World::render(Camera& cam, const Shader& shader, unsigned int widata_managerh, unsigned int height, const std::vector<std::unique_ptr<Mesh>>& all_meshes, const std::vector<std::unique_ptr<Texture>>& all_textures, const std::vector<std::unique_ptr<NormalMap>>& all_normalmaps, const std::vector<std::unique_ptr<ParallaxMap>>& all_parallaxmaps, const std::vector<std::unique_ptr<DisplacementMap>>& all_displacementmaps)
@@ -178,35 +178,35 @@ void World::render(Camera& cam, const Shader& shader, unsigned int widata_manage
 	glCullFace(GL_BACK);
 	for(auto& obj : this->objects)
 	{
-		Mesh* mesh = tz::graphics::findMesh(obj.getMeshLink(), all_meshes);
+		Mesh* mesh = tz::graphics::find_mesh(obj.get_mesh_link(), all_meshes);
 		Texture* tex = nullptr; NormalMap* nm = nullptr; ParallaxMap* pm = nullptr; DisplacementMap* dm = nullptr;
-		for(auto& texture : obj.getTextures())
+		for(auto& texture : obj.get_textures())
 		{
 			if(texture.second == Texture::TextureType::TEXTURE)
-				tex = Texture::getFromLink<Texture>(texture.first, all_textures);
+				tex = Texture::get_from_link<Texture>(texture.first, all_textures);
 			else if(texture.second == Texture::TextureType::NORMAL_MAP)
-				nm = Texture::getFromLink<NormalMap>(texture.first, all_normalmaps);
+				nm = Texture::get_from_link<NormalMap>(texture.first, all_normalmaps);
 			else if(texture.second == Texture::TextureType::PARALLAX_MAP)
-				pm = Texture::getFromLink<ParallaxMap>(texture.first, all_parallaxmaps);
+				pm = Texture::get_from_link<ParallaxMap>(texture.first, all_parallaxmaps);
 			else if(texture.second == Texture::TextureType::DISPLACEMENT_MAP)
-				dm = Texture::getFromLink<DisplacementMap>(texture.first, all_displacementmaps);
+				dm = Texture::get_from_link<DisplacementMap>(texture.first, all_displacementmaps);
 		}
 		obj.render(mesh, tex, nm, pm, dm, cam, shader, widata_managerh, height);
 	}
 	for(auto& eo : this->entity_objects)
 	{
-		Mesh* mesh = tz::graphics::findMesh(eo.getMeshLink(), all_meshes);
+		Mesh* mesh = tz::graphics::find_mesh(eo.get_mesh_link(), all_meshes);
 		Texture* tex = nullptr; NormalMap* nm = nullptr; ParallaxMap* pm = nullptr; DisplacementMap* dm = nullptr;
-		for(auto& texture : eo.getTextures())
+		for(auto& texture : eo.get_textures())
 		{
 			if(texture.second == Texture::TextureType::TEXTURE)
-				tex = Texture::getFromLink<Texture>(texture.first, all_textures);
+				tex = Texture::get_from_link<Texture>(texture.first, all_textures);
 			else if(texture.second == Texture::TextureType::NORMAL_MAP)
-				nm = Texture::getFromLink<NormalMap>(texture.first, all_normalmaps);
+				nm = Texture::get_from_link<NormalMap>(texture.first, all_normalmaps);
 			else if(texture.second == Texture::TextureType::PARALLAX_MAP)
-				pm = Texture::getFromLink<ParallaxMap>(texture.first, all_parallaxmaps);
+				pm = Texture::get_from_link<ParallaxMap>(texture.first, all_parallaxmaps);
 			else if(texture.second == Texture::TextureType::DISPLACEMENT_MAP)
-				dm = Texture::getFromLink<DisplacementMap>(texture.first, all_displacementmaps);
+				dm = Texture::get_from_link<DisplacementMap>(texture.first, all_displacementmaps);
 		}
 		eo.render(mesh, tex, nm, pm, dm, cam, shader, widata_managerh, height);
 	}	
@@ -214,173 +214,173 @@ void World::render(Camera& cam, const Shader& shader, unsigned int widata_manage
 	{
 		Light light = iter.second;
 		std::vector<float> pos, colour;
-		pos.push_back(light.getPosition().getX());
-		pos.push_back(light.getPosition().getY());
-		pos.push_back(light.getPosition().getZ());
-		colour.push_back(light.getColour().getX());
-		colour.push_back(light.getColour().getY());
-		colour.push_back(light.getColour().getZ());
+		pos.push_back(light.get_position().get_x());
+		pos.push_back(light.get_position().get_y());
+		pos.push_back(light.get_position().get_z());
+		colour.push_back(light.get_colour().get_x());
+		colour.push_back(light.get_colour().get_y());
+		colour.push_back(light.get_colour().get_z());
 		glUniform3fv(iter.first.front(), 1, &(pos[0]));
 		glUniform3fv(iter.first[1], 1, &(colour[0]));
-		glUniform1f(iter.first[2], light.getPower());
-		glUniform1f(iter.first[3], light.getDiffuseComponent());
-		glUniform1f(iter.first[4], light.getSpecularComponent());
+		glUniform1f(iter.first[2], light.get_power());
+		glUniform1f(iter.first[3], light.get_diffuse_component());
+		glUniform1f(iter.first[4], light.get_specular_component());
 	}
 }
 
 void World::update(unsigned int tps)
 {
 	for(auto& eo : this->entity_objects)
-		eo.updateMotion(tps);
+		eo.update_motion(tps);
 	for(auto& ent : this->entities)
-		ent.updateMotion(tps);
+		ent.update_motion(tps);
 }
 
-std::size_t World::getSize() const
+std::size_t World::get_size() const
 {
 	return this->objects.size() + this->entities.size() + this->entity_objects.size();
 }
 
-const std::vector<Object>& World::getObjects() const
+const std::vector<Object>& World::get_objects() const
 {
 	return this->objects;
 }
 
-const std::vector<Entity>& World::getEntities() const
+const std::vector<Entity>& World::get_entities() const
 {
 	return this->entities;
 }
 
-const std::vector<EntityObject>& World::getEntityObjects() const
+const std::vector<EntityObject>& World::get_entity_objects() const
 {
 	return this->entity_objects;
 }
 
-std::vector<Object>& World::getObjectsR()
+std::vector<Object>& World::get_objects_r()
 {
 	return this->objects;
 }
 
-std::vector<Entity>& World::getEntitiesR()
+std::vector<Entity>& World::get_entities_r()
 {
 	return this->entities;
 }
 
-std::vector<EntityObject>& World::getEntityObjectsR()
+std::vector<EntityObject>& World::get_entity_objects_r()
 {
 	return this->entity_objects;
 }
 
-const Vector3F& World::getGravity() const
+const Vector3F& World::get_gravity() const
 {
 	return this->gravity;
 }
 
-const Vector3F& World::getSpawnPoint() const
+const Vector3F& World::get_spawn_point() const
 {
 	return this->spawn_point;
 }
 
-const Vector3F& World::getSpawnOrientation() const
+const Vector3F& World::get_spawn_orientation() const
 {
 	return this->spawn_orientation;
 }
 
-Vector3F& World::getGravityR()
+Vector3F& World::get_gravity_r()
 {
 	return this->gravity;
 }
 
-Vector3F& World::getSpawnPointR()
+Vector3F& World::get_spawn_point_r()
 {
 	return this->spawn_point;
 }
 
-Vector3F& World::getSpawnOrientationR()
+Vector3F& World::get_spawn_orientation_r()
 {
 	return this->spawn_orientation;
 }
 
-const std::string& World::getWorldLink() const
+const std::string& World::get_world_link() const
 {
 	return this->filename;
 }
 
-const std::map<std::array<GLint, tz::graphics::light_number_of_uniforms>, Light>& World::getLights() const
+const std::map<std::array<GLint, tz::graphics::light_number_of_uniforms>, Light>& World::get_lights() const
 {
 	return this->base_lights;
 }
 
-std::map<std::array<GLint, tz::graphics::light_number_of_uniforms>, Light>& World::getLightsR()
+std::map<std::array<GLint, tz::graphics::light_number_of_uniforms>, Light>& World::get_lights_r()
 {
 	return this->base_lights;
 }
 
-Object World::retrieveObjectData(const std::string& object_name, std::string resources_path, MDLF& mdlf)
+Object World::retrieve_object_data(const std::string& object_name, std::string resources_path, MDLF& mdlf)
 {
-	std::string mesh_name = mdlf.getTag(object_name + ".mesh");
-	std::string position_string = mdlf.getTag(object_name + ".pos");
-	std::string rotation_string = mdlf.getTag(object_name + ".rot");
-	std::string scale_string = mdlf.getTag(object_name + ".scale");
-	unsigned int shininess = tz::util::cast::fromString<unsigned int>(mdlf.getTag(object_name + ".shininess"));
-	float parallax_map_scale = tz::util::cast::fromString<float>(mdlf.getTag(object_name + ".parallax_map_scale"));
-	float parallax_map_offset = tz::util::cast::fromString<float>(mdlf.getTag(object_name + ".parallax_map_offset"));
-	float displacement_factor = tz::util::cast::fromString<float>(mdlf.getTag(object_name + ".displacement_factor"));
-	if(!mdlf.existsTag(object_name + ".shininess"))
+	std::string mesh_name = mdlf.get_tag(object_name + ".mesh");
+	std::string position_string = mdlf.get_tag(object_name + ".pos");
+	std::string rotation_string = mdlf.get_tag(object_name + ".rot");
+	std::string scale_string = mdlf.get_tag(object_name + ".scale");
+	unsigned int shininess = tz::util::cast::from_string<unsigned int>(mdlf.get_tag(object_name + ".shininess"));
+	float parallax_map_scale = tz::util::cast::from_string<float>(mdlf.get_tag(object_name + ".parallax_map_scale"));
+	float parallax_map_offset = tz::util::cast::from_string<float>(mdlf.get_tag(object_name + ".parallax_map_offset"));
+	float displacement_factor = tz::util::cast::from_string<float>(mdlf.get_tag(object_name + ".displacement_factor"));
+	if(!mdlf.exists_tag(object_name + ".shininess"))
 		shininess = tz::graphics::default_shininess;
-	if(!mdlf.existsTag(object_name + ".parallax_map_scale"))
+	if(!mdlf.exists_tag(object_name + ".parallax_map_scale"))
 		parallax_map_scale = tz::graphics::default_parallax_map_scale;
-	if(!mdlf.existsTag(object_name + ".parallax_map_offset"))
+	if(!mdlf.exists_tag(object_name + ".parallax_map_offset"))
 		parallax_map_offset = tz::graphics::default_parallax_map_offset;
-	if(!mdlf.existsTag(object_name + ".displacement_factor"))
+	if(!mdlf.exists_tag(object_name + ".displacement_factor"))
 		displacement_factor = tz::graphics::default_displacement_factor;
 	tz::data::Manager data_manager(resources_path);
 	
-	std::string mesh_link = data_manager.getResourceLink(mesh_name);
+	std::string mesh_link = data_manager.get_resource_link(mesh_name);
 	std::vector<std::pair<std::string, Texture::TextureType>> textures;
 	for(unsigned int i = 0; i < static_cast<unsigned int>(Texture::TextureType::TEXTURE_TYPES); i++)
 	{
-		std::string texture_name = mdlf.getTag(object_name + ".texture" + tz::util::cast::toString(i));
-		std::string texture_link = data_manager.getResourceLink(texture_name);
+		std::string texture_name = mdlf.get_tag(object_name + ".texture" + tz::util::cast::to_string(i));
+		std::string texture_link = data_manager.get_resource_link(texture_name);
 		textures.emplace_back(texture_link, static_cast<Texture::TextureType>(i));
 	}
-	return {mesh_link, textures, tz::util::string::vectoriseList3<float>(tz::util::string::deformat(position_string)), tz::util::string::vectoriseList3<float>(tz::util::string::deformat(rotation_string)), tz::util::string::vectoriseList3<float>(tz::util::string::deformat(scale_string)), shininess, parallax_map_scale, parallax_map_offset, displacement_factor};
+	return {mesh_link, textures, tz::util::string::vectorise_list_3<float>(tz::util::string::deformat(position_string)), tz::util::string::vectorise_list_3<float>(tz::util::string::deformat(rotation_string)), tz::util::string::vectorise_list_3<float>(tz::util::string::deformat(scale_string)), shininess, parallax_map_scale, parallax_map_offset, displacement_factor};
 }
 
-EntityObject World::retrieveEntityObjectData(const std::string& entity_object_name, std::string resources_path, MDLF& mdlf)
+EntityObject World::retrieve_entity_object_data(const std::string& entity_object_name, std::string resources_path, MDLF& mdlf)
 {
 	// really repeating myself here. bit ugly.
-	std::string mesh_name = mdlf.getTag(entity_object_name + ".mesh");
-	std::string mass_string = mdlf.getTag(entity_object_name + ".mass");
-	std::string position_string = mdlf.getTag(entity_object_name + ".pos");
-	std::string rotation_string = mdlf.getTag(entity_object_name + ".rot");
-	std::string scale_string = mdlf.getTag(entity_object_name + ".scale");
-	float mass = tz::util::cast::fromString<float>(mass_string);
-	unsigned int shininess = tz::util::cast::fromString<unsigned int>(mdlf.getTag(entity_object_name + ".shininess"));
-	float parallax_map_scale = tz::util::cast::fromString<float>(mdlf.getTag(entity_object_name + ".parallax_map_scale"));
-	float parallax_map_offset = tz::util::cast::fromString<float>(mdlf.getTag(entity_object_name + ".parallax_map_offset"));
-	float displacement_factor = tz::util::cast::fromString<float>(mdlf.getTag(entity_object_name + ".displacement_factor"));
-	if(!mdlf.existsTag(entity_object_name + ".mass"))
+	std::string mesh_name = mdlf.get_tag(entity_object_name + ".mesh");
+	std::string mass_string = mdlf.get_tag(entity_object_name + ".mass");
+	std::string position_string = mdlf.get_tag(entity_object_name + ".pos");
+	std::string rotation_string = mdlf.get_tag(entity_object_name + ".rot");
+	std::string scale_string = mdlf.get_tag(entity_object_name + ".scale");
+	float mass = tz::util::cast::from_string<float>(mass_string);
+	unsigned int shininess = tz::util::cast::from_string<unsigned int>(mdlf.get_tag(entity_object_name + ".shininess"));
+	float parallax_map_scale = tz::util::cast::from_string<float>(mdlf.get_tag(entity_object_name + ".parallax_map_scale"));
+	float parallax_map_offset = tz::util::cast::from_string<float>(mdlf.get_tag(entity_object_name + ".parallax_map_offset"));
+	float displacement_factor = tz::util::cast::from_string<float>(mdlf.get_tag(entity_object_name + ".displacement_factor"));
+	if(!mdlf.exists_tag(entity_object_name + ".mass"))
 		mass = tz::physics::default_mass;
-	if(!mdlf.existsTag(entity_object_name + ".shininess"))
+	if(!mdlf.exists_tag(entity_object_name + ".shininess"))
 		shininess = tz::graphics::default_shininess;
-	if(!mdlf.existsTag(entity_object_name + ".parallax_map_scale"))
+	if(!mdlf.exists_tag(entity_object_name + ".parallax_map_scale"))
 		parallax_map_scale = tz::graphics::default_parallax_map_scale;
-	if(!mdlf.existsTag(entity_object_name + ".parallax_map_offset"))
+	if(!mdlf.exists_tag(entity_object_name + ".parallax_map_offset"))
 		parallax_map_offset = tz::graphics::default_parallax_map_offset;
-	if(!mdlf.existsTag(entity_object_name + ".displacement_factor"))
+	if(!mdlf.exists_tag(entity_object_name + ".displacement_factor"))
 		displacement_factor = tz::graphics::default_displacement_factor;
 	
 	tz::data::Manager data_manager(resources_path);
 	
-	std::string mesh_link = data_manager.getResourceLink(mesh_name);
+	std::string mesh_link = data_manager.get_resource_link(mesh_name);
 	std::vector<std::pair<std::string, Texture::TextureType>> textures;
 	for(unsigned int i = 0; i < static_cast<unsigned int>(Texture::TextureType::TEXTURE_TYPES); i++)
 	{
-		std::string texture_name = mdlf.getTag(entity_object_name + ".texture" + tz::util::cast::toString(i));
-		std::string texture_link = data_manager.getResourceLink(texture_name);
+		std::string texture_name = mdlf.get_tag(entity_object_name + ".texture" + tz::util::cast::to_string(i));
+		std::string texture_link = data_manager.get_resource_link(texture_name);
 		textures.emplace_back(texture_link, static_cast<Texture::TextureType>(i));
 	}
 	
-	return {mesh_link, textures, mass, tz::util::string::vectoriseList3<float>(tz::util::string::deformat(position_string)), tz::util::string::vectoriseList3<float>(tz::util::string::deformat(rotation_string)), tz::util::string::vectoriseList3<float>(tz::util::string::deformat(scale_string)), shininess, parallax_map_scale, parallax_map_offset, displacement_factor};
+	return {mesh_link, textures, mass, tz::util::string::vectorise_list_3<float>(tz::util::string::deformat(position_string)), tz::util::string::vectorise_list_3<float>(tz::util::string::deformat(rotation_string)), tz::util::string::vectorise_list_3<float>(tz::util::string::deformat(scale_string)), shininess, parallax_map_scale, parallax_map_offset, displacement_factor};
 }

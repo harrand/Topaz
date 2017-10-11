@@ -24,14 +24,14 @@ public:
 	~Light() = default;
 	Light& operator=(const Light& rhs) = default;
 	
-	const Vector3F& getPosition() const;
-	const Vector3F& getColour() const;
-	void setPosition(Vector3F position);
-	void setColour(Vector3F colour);
-	float getPower() const;
-	float getDiffuseComponent() const;
-	float getSpecularComponent() const;
-	std::array<GLint, tz::graphics::light_number_of_uniforms> getUniforms(GLuint shader_program_handle, std::size_t light_uniform_index) const;
+	const Vector3F& get_position() const;
+	const Vector3F& get_colour() const;
+	void set_position(Vector3F position);
+	void set_colour(Vector3F colour);
+	float get_power() const;
+	float get_diffuse_component() const;
+	float get_specular_component() const;
+	std::array<GLint, tz::graphics::light_number_of_uniforms> get_uniforms(GLuint shader_program_handle, std::size_t light_uniform_index) const;
 private:
 	Vector3F pos;
 	Vector3F colour;

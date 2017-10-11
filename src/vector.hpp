@@ -30,40 +30,40 @@ public:
 	inline ~Vector2<T>() = default;
 	inline Vector2<T>& operator=(const Vector2<T>& rhs) = default;
 	
-	inline Vector2POD toRaw() const
+	inline Vector2POD to_raw() const
 	{
 		Vector2POD raw;
-		raw.x = this->getX();
-		raw.y = this->getY();
+		raw.x = this->get_x();
+		raw.y = this->get_y();
 		return raw;
 	}
 	
-	inline const T& getX() const
+	inline const T& get_x() const
 	{
 		return this->x;
 	}
 	
-	inline const T& getY() const
+	inline const T& get_y() const
 	{
 		return this->y;
 	}
 	
-	inline void setX(T x)
+	inline void set_x(T x)
 	{
 		this->x = x;
 	}
 	
-	inline void setY(T y)
+	inline void set_y(T y)
 	{
 		this->y = y;
 	}
 	/*
-	inline T& getXR()
+	inline T& get_x_r()
 	{
 		return this->x;
 	}
 	
-	inline T& getYR()
+	inline T& get_y_r()
 	{
 		return this->y;
 	}
@@ -76,7 +76,7 @@ public:
 	
 	inline T dot(const Vector2<T>& rhs) const
 	{
-		return (this->x * rhs.getX()) + (this->y * rhs.getY());
+		return (this->x * rhs.get_x()) + (this->y * rhs.get_y());
 	}
 	
 	inline Vector2<T> normalised() const
@@ -86,12 +86,12 @@ public:
 	
 	inline Vector2<T> operator+(const Vector2<T>& rhs) const
 	{
-		return {this->x + rhs.getX(), this->y + rhs.getY()};
+		return {this->x + rhs.get_x(), this->y + rhs.get_y()};
 	}
 	
 	inline Vector2<T> operator-(const Vector2<T>& rhs) const
 	{
-		return {this->x - rhs.getX(), this->y - rhs.getY()};
+		return {this->x - rhs.get_x(), this->y - rhs.get_y()};
 	}
 	
 	inline Vector2<T> operator*(T scalar) const
@@ -116,7 +116,7 @@ public:
 	
 	inline bool operator==(const Vector2<T>& rhs) const
 	{
-		return (this->x == rhs.getX()) && (this->y == rhs.getY());
+		return (this->x == rhs.get_x()) && (this->y == rhs.get_y());
 	}
 	
 	inline Vector2<T>& operator+=(const Vector2<T>& rhs)
@@ -147,21 +147,21 @@ public:
 	inline ~Vector3<T>() = default;
 	inline Vector3<T>& operator=(const Vector3<T>& rhs) = default;
 	
-	inline Vector3POD toRaw() const
+	inline Vector3POD to_raw() const
 	{
 		Vector3POD raw;
-		raw.x = this->getX();
-		raw.y = this->getY();
-		raw.z = this->getZ();
+		raw.x = this->get_x();
+		raw.y = this->get_y();
+		raw.z = this->get_z();
 		return raw;
 	}
 	
-	inline const T& getZ() const
+	inline const T& get_z() const
 	{
 		return this->z;
 	}
 	
-	inline void setZ(T z)
+	inline void set_z(T z)
 	{
 		this->z = z;
 	}
@@ -173,12 +173,12 @@ public:
 	
 	inline T dot(const Vector3<T>& rhs) const
 	{
-		return (this->x * rhs.getX()) + (this->y * rhs.getY()) + (this->z * rhs.getZ());
+		return (this->x * rhs.get_x()) + (this->y * rhs.get_y()) + (this->z * rhs.get_z());
 	}
 	
 	inline Vector3<T> cross(const Vector3<T>& rhs) const
 	{
-		return {(this->y * rhs.getZ()) - (this->z * rhs.getY()), (this->z * rhs.getX()) - (this->x * rhs.getZ()), (this->x * rhs.getY()) - (this->y * rhs.getX())};
+		return {(this->y * rhs.get_z()) - (this->z * rhs.get_y()), (this->z * rhs.get_x()) - (this->x * rhs.get_z()), (this->x * rhs.get_y()) - (this->y * rhs.get_x())};
 	}
 	
 	inline Vector3<T> normalised() const
@@ -188,12 +188,12 @@ public:
 	
 	inline Vector3<T> operator+(const Vector3<T>& rhs) const
 	{
-		return {this->x + rhs.getX(), this->y + rhs.getY(), this->z + rhs.getZ()};
+		return {this->x + rhs.get_x(), this->y + rhs.get_y(), this->z + rhs.get_z()};
 	}
 	
 	inline Vector3<T> operator-(const Vector3<T>& rhs) const
 	{
-		return {this->x - rhs.getX(), this->y - rhs.getY(), this->z - rhs.getZ()};
+		return {this->x - rhs.get_x(), this->y - rhs.get_y(), this->z - rhs.get_z()};
 	}
 	
 	inline Vector3<T> operator*(T scalar) const
@@ -228,7 +228,7 @@ public:
 	
 	inline bool operator==(const Vector3<T>& rhs) const
 	{
-		return (this->x == rhs.getX()) && (this->y == rhs.getY()) && (this->z == rhs.getZ());
+		return (this->x == rhs.get_x()) && (this->y == rhs.get_y()) && (this->z == rhs.get_z());
 	}
 	
 	inline Vector3<T>& operator+=(const Vector3<T>& rhs)
@@ -259,22 +259,22 @@ public:
 	inline ~Vector4<T>() = default;
 	inline Vector4<T>& operator=(const Vector4<T>& rhs) = default;
 	
-	inline Vector4POD toRaw() const
+	inline Vector4POD to_raw() const
 	{
 		Vector4POD raw;
-		raw.x = this->getX();
-		raw.y = this->getY();
-		raw.z = this->getZ();
-		raw.w = this->getW();
+		raw.x = this->get_x();
+		raw.y = this->get_y();
+		raw.z = this->get_z();
+		raw.w = this->get_w();
 		return raw;
 	}
 	
-	inline const T& getW() const
+	inline const T& get_w() const
 	{
 		return this->w;
 	}
 	
-	void setW(T w)
+	void set_w(T w)
 	{
 		this->w = w;
 	}
@@ -286,7 +286,7 @@ public:
 	
 	inline T dot(Vector4<T> rhs) const
 	{
-		return (this->x * rhs.getX()) + (this->y * rhs.getY()) + (this->z * rhs.getZ() + (this->w * rhs.getW()));
+		return (this->x * rhs.get_x()) + (this->y * rhs.get_y()) + (this->z * rhs.get_z() + (this->w * rhs.get_w()));
 	}
 	
 	inline Vector4<T> normalised() const
@@ -296,12 +296,12 @@ public:
 	
 	inline Vector4<T> operator+(const Vector4<T>& rhs) const
 	{
-		return {this->x + rhs.getX(), this->y + rhs.getY(), this->z + rhs.getZ(), this->w + rhs.getW()};
+		return {this->x + rhs.get_x(), this->y + rhs.get_y(), this->z + rhs.get_z(), this->w + rhs.get_w()};
 	}
 	
 	inline Vector4<T> operator-(const Vector4<T>& rhs) const
 	{
-		return {this->x - rhs.getX(), this->y - rhs.getY(), this->z - rhs.getZ(), this->w - rhs.getW()};
+		return {this->x - rhs.get_x(), this->y - rhs.get_y(), this->z - rhs.get_z(), this->w - rhs.get_w()};
 	}
 	
 	inline Vector4<T> operator*(T scalar) const
@@ -326,7 +326,7 @@ public:
 	
 	inline bool operator==(const Vector4<T>& rhs) const
 	{
-		return (this->x == rhs.getX()) && (this->y == rhs.getY()) && (this->z == rhs.getZ()) && (this->w == rhs.getW());
+		return (this->x == rhs.get_x()) && (this->y == rhs.get_y()) && (this->z == rhs.get_z()) && (this->w == rhs.get_w());
 	}
 	
 	inline Vector4<T>& operator+=(const Vector4<T>& rhs)

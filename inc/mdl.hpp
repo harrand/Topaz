@@ -19,12 +19,12 @@ public:
 	~RawFile() = default;
 	RawFile& operator=(const RawFile& rhs) = default;
 	
-	const std::string& getPath() const;
-	std::vector<std::string> getLines() const;
-	std::string getData() const;
+	const std::string& get_path() const;
+	std::vector<std::string> get_lines() const;
+	std::string get_data() const;
 	void clear() const;
 	void write(std::string data, bool clear) const;
-	void writeLine(std::string data, std::size_t line) const;
+	void write_line(std::string data, std::size_t line) const;
 private:
 	std::string path;
 };
@@ -39,19 +39,19 @@ public:
 	~MDLF() = default;
 	MDLF& operator=(const MDLF& rhs) = default;
 	
-	const RawFile& getRawFile() const;
-	bool existsTag(const std::string& tag_name) const;
-	bool existsSequence(const std::string& sequence_name) const;
-	void addTag(std::string tag_name, std::string data);
-	void addSequence(std::string sequence_name, std::vector<std::string> data);
-	void deleteTag(std::string tag_name);
-	void deleteSequence(std::string sequence_name);
-	void editTag(std::string tag_name, std::string data);
-	void editSequence(std::string sequence_name, std::vector<std::string> data);
-	std::string getTag(const std::string& tag_name) const;
-	std::vector<std::string> getSequence(const std::string& sequence_name) const;
-	const std::map<std::string, std::string>& getParsedTags() const;
-	const std::map<std::string, std::vector<std::string>>& getParsedSequences() const;
+	const RawFile& get_raw_file() const;
+	bool exists_tag(const std::string& tag_name) const;
+	bool exists_sequence(const std::string& sequence_name) const;
+	void add_tag(std::string tag_name, std::string data);
+	void add_sequence(std::string sequence_name, std::vector<std::string> data);
+	void delete_tag(std::string tag_name);
+	void delete_sequence(std::string sequence_name);
+	void edit_tag(std::string tag_name, std::string data);
+	void edit_sequence(std::string sequence_name, std::vector<std::string> data);
+	std::string get_tag(const std::string& tag_name) const;
+	std::vector<std::string> get_sequence(const std::string& sequence_name) const;
+	const std::map<std::string, std::string>& get_parsed_tags() const;
+	const std::map<std::string, std::vector<std::string>>& get_parsed_sequences() const;
 	void update();
 private:
 	RawFile raw_file;
@@ -63,21 +63,21 @@ namespace mdl
 {
 	namespace syntax
 	{
-		bool isValid(const MDLF& file);
-		bool isComment(const std::string& line);
-		bool isTag(const std::string& line);
-		bool isSequence(const std::string& line);
-		bool isEndOfSequence(const std::string& line);
+		bool is_valid(const MDLF& file);
+		bool is_comment(const std::string& line);
+		bool is_tag(const std::string& line);
+		bool is_sequence(const std::string& line);
+		bool is_end_of_sequence(const std::string& line);
 	}
 	namespace util
 	{
-		std::vector<std::string> splitString(const std::string& string, const std::string& delimiter);
-		bool endsWith(const std::string& string, const std::string& suffix);
-		bool beginsWith(const std::string& string, const std::string& prefix);
-		std::string findTagName(const std::string& line);
-		std::string findTagValue(const std::string& line);
-		std::string findSequenceName(const std::string& line);
-		std::vector<std::string> findSequenceValues(const std::vector<std::string>& lines, std::size_t index);
+		std::vector<std::string> split_string(const std::string& string, const std::string& delimiter);
+		bool ends_with(const std::string& string, const std::string& suffix);
+		bool begins_with(const std::string& string, const std::string& prefix);
+		std::string find_tag_name(const std::string& line);
+		std::string find_tag_value(const std::string& line);
+		std::string find_sequence_name(const std::string& line);
+		std::vector<std::string> find_sequence_values(const std::vector<std::string>& lines, std::size_t index);
 	}
 }
 

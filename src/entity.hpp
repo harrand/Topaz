@@ -17,16 +17,16 @@ public:
 	Entity(Entity&& move) = default;
 	Entity& operator=(const Entity& rhs) = default;
 	
-	float getMass() const;
-	virtual const Vector3F& getPosition() const;
-	virtual void setPosition(Vector3F position);
-	const Vector3F& getVelocity() const;
-	void setVelocity(Vector3F velocity);
-	Vector3F getAcceleration() const;
-	const std::unordered_map<std::string, Force>& getForces() const;
-	void applyForce(std::string force_name, Force f);
-	void removeForce(std::string force_name);
-	virtual void updateMotion(unsigned int fps);
+	float get_mass() const;
+	virtual const Vector3F& get_position() const;
+	virtual void set_position(Vector3F position);
+	const Vector3F& get_velocity() const;
+	void set_velocity(Vector3F velocity);
+	Vector3F get_acceleration() const;
+	const std::unordered_map<std::string, Force>& get_forces() const;
+	void apply_force(std::string force_name, Force f);
+	void remove_force(std::string force_name);
+	virtual void update_motion(unsigned int fps);
 protected:
 	float mass;
 	Vector3F velocity;
@@ -43,8 +43,8 @@ public:
 	EntityObject(EntityObject&& move) = default;
 	EntityObject& operator=(const EntityObject& rhs) = default;
 	
-	virtual const Vector3F& getPosition() const override;
-	virtual void setPosition(Vector3F position) override;
+	virtual const Vector3F& get_position() const override;
+	virtual void set_position(Vector3F position) override;
 };
 
 #endif

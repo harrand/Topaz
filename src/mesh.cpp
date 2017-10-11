@@ -1,8 +1,8 @@
 #include "mesh.hpp"
 
-Mesh::Mesh(std::string filename): filename(std::move(filename)), model(tz::graphics::model::OBJModel(this->filename).toIndexedModel())
+Mesh::Mesh(std::string filename): filename(std::move(filename)), model(tz::graphics::model::OBJModel(this->filename).to_indexed_model())
 {
-	this->initMesh();
+	this->init_mesh();
 }
 
 Mesh::Mesh(const Vertex* vertices, std::size_t number_of_vertices, const unsigned int* indices, std::size_t number_of_indices)
@@ -11,16 +11,16 @@ Mesh::Mesh(const Vertex* vertices, std::size_t number_of_vertices, const unsigne
 	
 	for(unsigned int i = 0; i < number_of_vertices; i++)
 	{
-		model.positions.push_back(vertices[i].getPosition());
-		model.texcoords.push_back(vertices[i].getTextureCoordinate());
-		model.normals.push_back(vertices[i].getNormal());
+		model.positions.push_back(vertices[i].get_position());
+		model.texcoords.push_back(vertices[i].get_texture_coordinate());
+		model.normals.push_back(vertices[i].get_normal());
 	}
 	
 	for(unsigned int i = 0; i < number_of_indices; i++)
 		model.indices.push_back(indices[i]);
 	
 	this->model = model;
-	this->initMesh();
+	this->init_mesh();
 }
 
 Mesh::Mesh(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices): Mesh(vertices.data(), vertices.size(), indices.data(), indices.size()){}
@@ -30,27 +30,27 @@ Mesh::~Mesh()
 	glDeleteVertexArrays(1, &(this->vertex_array_object));
 }
 
-tz::graphics::model::IndexedModel Mesh::getIndexedModel() const
+tz::graphics::model::IndexedModel Mesh::get_indexed_model() const
 {
 	return this->model;
 }
 
-const std::vector<Vector3F>& Mesh::getPositions() const
+const std::vector<Vector3F>& Mesh::get_positions() const
 {
 	return this->model.positions;
 }
 
-const std::vector<Vector2F>& Mesh::getTexcoords() const
+const std::vector<Vector2F>& Mesh::get_texcoords() const
 {
 	return this->model.texcoords;
 }
 
-const std::vector<Vector3F>& Mesh::getNormals() const
+const std::vector<Vector3F>& Mesh::get_normals() const
 {
 	return this->model.normals;
 }
 
-std::string Mesh::getFileName() const
+std::string Mesh::get_file_name() const
 {
 	return this->filename;
 }
@@ -71,7 +71,7 @@ void Mesh::render(bool patches, GLenum mode) const
 }
 
 //private
-void Mesh::initMesh()
+void Mesh::init_mesh()
 {
 	this->render_count = this->model.indices.size();
 	// Our vector class is not "c-enough" (contains stuff like protected variables which C structs don't support. Therefore we use VectorSXF instead which can work with OpenGL easily.
@@ -85,13 +85,13 @@ void Mesh::initMesh()
 	std::vector<Vector3POD> tangents;
 	tangents.reserve(this->model.tangents.size());
 	for(auto vec : this->model.positions)
-		positions.push_back(vec.toRaw());
+		positions.push_back(vec.to_raw());
 	for(auto vec : this->model.texcoords)
-		texcoords.push_back(vec.toRaw());
+		texcoords.push_back(vec.to_raw());
 	for(auto vec : this->model.normals)
-		normals.push_back(vec.toRaw());
+		normals.push_back(vec.to_raw());
 	for(auto vec : this->model.tangents)
-		tangents.push_back(vec.toRaw());
+		tangents.push_back(vec.to_raw());
 	
 	glGenVertexArrays(1, &(this->vertex_array_object));
 	glBindVertexArray(this->vertex_array_object);
@@ -127,15 +127,15 @@ void Mesh::initMesh()
 	glBindVertexArray(0);
 }
 
-Mesh* tz::graphics::findMesh(const std::string& mesh_link, const std::vector<std::unique_ptr<Mesh>>& all_meshes)
+Mesh* tz::graphics::find_mesh(const std::string& mesh_link, const std::vector<std::unique_ptr<Mesh>>& all_meshes)
 {
 	for(auto& mesh : all_meshes)
-		if(mesh->getFileName() == mesh_link)
+		if(mesh->get_file_name() == mesh_link)
 			return mesh.get();
 	return nullptr;
 }
 
-Mesh tz::graphics::createQuad(float x, float y, float width, float height)
+Mesh tz::graphics::create_quad(float x, float y, float width, float height)
 {
 	std::array<Vertex, 4> vertices({Vertex(Vector3F(x + -1 * width, y + -1 * height, 0), Vector2F(), Vector3F()), Vertex(Vector3F(x + -1 * width, y + 1 * height, 0), Vector2F(0, 1), Vector3F()), Vertex(Vector3F(x + 1 * width, y + 1 * height, 0), Vector2F(1, 1), Vector3F()), Vertex(Vector3F(x + 1 * width, y + -1 * height, 0), Vector2F(1, 0), Vector3F())});
 	std::array<unsigned int, 6> indices({0, 1, 2, 0, 2, 3});

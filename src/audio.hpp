@@ -20,13 +20,13 @@ public:
 	AudioClip(std::string filename);
 	AudioClip(const AudioClip& copy);
 	AudioClip(AudioClip&& move);
-	~AudioClip();
+	virtual ~AudioClip();
 	AudioClip& operator=(const AudioClip& rhs) = delete;
 	
 	void play();
-	int getChannel() const;
-	const std::string& getFileName() const;
-	Mix_Chunk* getAudioHandle() const;
+	int get_channel() const;
+	const std::string& get_file_name() const;
+	Mix_Chunk* get_audio_handle() const;
 private:
 	int channel;
 	std::string filename;
@@ -37,10 +37,13 @@ class AudioSource: public AudioClip
 {
 public:
 	AudioSource(std::string filename, Vector3F position);
+	AudioSource(const AudioSource& copy) = default;
+	AudioSource(AudioSource&& move) = default;
+	~AudioSource() = default;
+	AudioSource& operator=(const AudioSource& rhs) = default;
+	
 	void update(const Camera& relative_to);
-	const Vector3F& getPosition() const;
-	void setPosition(Vector3F position);
-private:
+	
 	Vector3F position;
 };
 
@@ -53,11 +56,11 @@ public:
 	~AudioMusic();
 	AudioMusic& operator=(const AudioMusic& rhs) = delete;
 	
-	const std::string& getFileName() const;
-	Mix_Music* getAudioHandle() const;
+	const std::string& get_file_name() const;
+	Mix_Music* get_audio_handle() const;
 	void play(bool priority = true) const;
-	void setPaused(bool pause = true);
-	void togglePaused();
+	void set_paused(bool pause = true);
+	void toggle_paused();
 private:
 	std::string filename;
 	bool paused;

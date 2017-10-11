@@ -25,8 +25,8 @@ FrameBuffer::FrameBuffer(unsigned int width, unsigned int height): width(width),
 	
 	//Configure framebuffer to use colours
 	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, this->texture_handle, 0);
-	GLenum drawBuffers[1] = {GL_COLOR_ATTACHMENT0};
-	glDrawBuffers(1, drawBuffers);
+	GLenum draw_buffers[1] = {GL_COLOR_ATTACHMENT0};
+	glDrawBuffers(1, draw_buffers);
 	
 	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 	{
@@ -39,7 +39,7 @@ FrameBuffer::~FrameBuffer()
 	glDeleteTextures(1, &(this->texture_handle));
 }
 
-void FrameBuffer::setRenderTarget() const
+void FrameBuffer::set_render_target() const
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, this->framebuffer_handle);
 	glViewport(0, 0, this->width, this->height);
@@ -87,20 +87,20 @@ DepthTexture::DepthTexture(unsigned int width, unsigned int height): FrameBuffer
 	}
 }
 
-unsigned char* Texture::loadTexture()
+unsigned char* Texture::load_texture()
 {
 	return stbi_load((this->filename).c_str(), &(this->width), &(this->height), &(this->components), 4);
 }
 
 // Deleting texture as far as stb_image is concerned (We want to leave it alone when it's gone to the GPU)
-void Texture::deleteTexture(unsigned char* imgdata)
+void Texture::delete_texture(unsigned char* imgdata)
 {
 	stbi_image_free(imgdata);
 }
 
 Texture::Texture(std::string filename, bool gamma_corrected): filename(std::move(filename)), gamma_corrected(gamma_corrected)
 {
-	unsigned char* imgdata = this->loadTexture();
+	unsigned char* imgdata = this->load_texture();
 	if(imgdata == nullptr)
 	{
 		tz::util::log::error("Texture from the path: '", filename, "' could not be loaded.");
@@ -135,7 +135,7 @@ Texture::Texture(std::string filename, bool gamma_corrected): filename(std::move
 	else
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, this->width, this->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, imgdata);
 	
-	this->deleteTexture(imgdata);
+	this->delete_texture(imgdata);
 }
 
 Texture::Texture(TTF_Font* font, const std::string& text, SDL_Color foreground_colour)
@@ -172,9 +172,9 @@ Texture::Texture(TTF_Font* font, const std::string& text, SDL_Color foreground_c
 	SDL_FreeSurface(text_surface);
 }
 
-Texture::Texture(const Texture& copy): Texture(copy.getFileName()){}
+Texture::Texture(const Texture& copy): Texture(copy.get_file_name()){}
 
-Texture::Texture(Texture&& move): filename(move.getFileName()), texture_id(move.texture_id), texture_handle(move.texture_handle), width(move.width), height(move.height), components(move.components)
+Texture::Texture(Texture&& move): filename(move.get_file_name()), texture_id(move.texture_id), texture_handle(move.texture_handle), width(move.width), height(move.height), components(move.components)
 {
 	move.texture_id = 0;
 	move.texture_handle = 0;
@@ -189,7 +189,7 @@ Texture::~Texture()
 Texture& Texture::operator=(Texture&& rhs)
 {
 	glDeleteTextures(1, &(this->texture_handle));
-	this->filename = rhs.getFileName();
+	this->filename = rhs.get_file_name();
 	this->texture_id = rhs.texture_id;
 	this->texture_handle = rhs.texture_handle;
 	this->width = rhs.width;
@@ -215,22 +215,22 @@ void Texture::bind(GLuint shader_program_handle, unsigned int id)
 	glUniform1i(this->texture_id, id);
 }
 
-const std::string& Texture::getFileName() const
+const std::string& Texture::get_file_name() const
 {
 	return this->filename;
 }
 
-int Texture::getWidth() const
+int Texture::get_width() const
 {
 	return this->width;
 }
 
-int Texture::getHeight() const
+int Texture::get_height() const
 {
 	return this->height;
 }
 
-Texture::TextureType Texture::getTextureType()
+Texture::TextureType Texture::get_texture_type()
 {
 	return TextureType::TEXTURE;
 }
@@ -252,7 +252,7 @@ void NormalMap::bind(GLuint shader_program_handle, unsigned int id)
 	glUniform1i(this->texture_id, id);
 }
 
-Texture::TextureType NormalMap::getTextureType()
+Texture::TextureType NormalMap::get_texture_type()
 {
 	return TextureType::NORMAL_MAP;
 }
@@ -274,7 +274,7 @@ void ParallaxMap::bind(GLuint shader_program_handle, unsigned int id)
 	glUniform1i(this->texture_id, id);
 }
 
-Texture::TextureType ParallaxMap::getTextureType()
+Texture::TextureType ParallaxMap::get_texture_type()
 {
 	return TextureType::PARALLAX_MAP;
 }
@@ -296,7 +296,7 @@ void DisplacementMap::bind(GLuint shader_program_handle, unsigned int id)
 	glUniform1i(this->texture_id, id);
 }
 
-Texture::TextureType DisplacementMap::getTextureType()
+Texture::TextureType DisplacementMap::get_texture_type()
 {
 	return TextureType::DISPLACEMENT_MAP;
 }
@@ -305,17 +305,17 @@ CubeMap::CubeMap(std::string right_texture, std::string left_texture, std::strin
 {
 	glGenTextures(1, &(this->texture_handle));
 	glBindTexture(GL_TEXTURE_CUBE_MAP, this->texture_handle);
-	std::vector<unsigned char*> faceData = this->loadTextures();
-	for(GLuint i = 0; i < faceData.size(); i++)
+	std::vector<unsigned char*> face_data = this->load_textures();
+	for(GLuint i = 0; i < face_data.size(); i++)
 	{
-		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGBA, this->width[static_cast<unsigned int>(i)], this->height[static_cast<unsigned int>(i)], 0, GL_RGBA, GL_UNSIGNED_BYTE, faceData[i]);
+		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGBA, this->width[static_cast<unsigned int>(i)], this->height[static_cast<unsigned int>(i)], 0, GL_RGBA, GL_UNSIGNED_BYTE, face_data[i]);
 	}
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-	for(auto& data : faceData)
+	for(auto& data : face_data)
 		stbi_image_free(data);
 }
 
@@ -355,7 +355,7 @@ void CubeMap::bind(GLuint shader_program_handle, unsigned int id)
 	glUniform1i(this->texture_id, id);
 }
 
-std::vector<unsigned char*> CubeMap::loadTextures()
+std::vector<unsigned char*> CubeMap::load_textures()
 {
 	std::vector<unsigned char*> image_data;
 	image_data.reserve(6);

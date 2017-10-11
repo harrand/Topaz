@@ -43,7 +43,7 @@ namespace tz
 		namespace cast
 		{
 			template <typename T>
-			inline std::string toString(T&& obj)
+			inline std::string to_string(T&& obj)
 			{
 				std::ostringstream oss;
 				oss << std::forward<T>(obj);
@@ -51,7 +51,7 @@ namespace tz
 			}
 			
 			template <typename T>
-			inline T fromString(const std::string& s)
+			inline T from_string(const std::string& s)
 			{
 				T ret;
 				std::istringstream ss(s);
@@ -62,26 +62,26 @@ namespace tz
 		
 		namespace string
 		{
-			inline std::string toLower(std::string data)
+			inline std::string to_lower(std::string data)
 			{
 				std::transform(data.begin(), data.end(), data.begin(), ::tolower);
 				return data;
 			}
 		
-			inline std::string toUpper(std::string data)
+			inline std::string to_upper(std::string data)
 			{
 				std::transform(data.begin(), data.end(), data.begin(), ::toupper);
 				return data;
 			}
 		
-			inline bool beginsWith(const std::string& what, const std::string& with_what)
+			inline bool begins_with(const std::string& what, const std::string& with_what)
 			{
-				return mdl::util::beginsWith(what, with_what);
+				return mdl::util::begins_with(what, with_what);
 			}
 		
-			inline bool endsWith(const std::string& what, const std::string& with_what)
+			inline bool ends_with(const std::string& what, const std::string& with_what)
 			{
-				return mdl::util::endsWith(what, with_what);
+				return mdl::util::ends_with(what, with_what);
 			}
 		
 			inline bool contains(const std::string& what, char withwhat)
@@ -93,20 +93,20 @@ namespace tz
 				return false;
 			}
 			
-			inline std::vector<std::string> splitString(const std::string& s, const std::string& delim)
+			inline std::vector<std::string> split_string(const std::string& s, const std::string& delim)
 			{
-				return mdl::util::splitString(s, delim);
+				return mdl::util::split_string(s, delim);
 			}
 			
-			inline std::vector<std::string> splitString(const std::string& s, char delim)
+			inline std::vector<std::string> split_string(const std::string& s, char delim)
 			{
-				return splitString(s, tz::util::cast::toString(delim));
+				return split_string(s, tz::util::cast::to_string(delim));
 			}
 		
-			inline std::string replaceAllChar(const std::string& str, char toreplace, const std::string& replacewith)
+			inline std::string replace_all_char(const std::string& str, char toreplace, const std::string& replacewith)
 			{
 				std::string res;
-				std::vector<std::string> splitdelim = tz::util::string::splitString(str, toreplace);
+				std::vector<std::string> splitdelim = tz::util::string::split_string(str, toreplace);
 				for(std::size_t i = 0; i < splitdelim.size(); i++)
 				{
 					res += splitdelim[i];
@@ -139,25 +139,25 @@ namespace tz
 			
 			inline std::vector<std::string> deformat(const std::string& str)
 			{
-				return tz::util::string::splitString(tz::util::string::replaceAllChar(tz::util::string::replaceAllChar(str, '[', ""), ']', ""), ',');
+				return tz::util::string::split_string(tz::util::string::replace_all_char(tz::util::string::replace_all_char(str, '[', ""), ']', ""), ',');
 			}
 			
 			template<typename T>
-			inline Vector3<T> vectoriseList3(const std::vector<std::string>& list)
+			inline Vector3<T> vectorise_list_3(const std::vector<std::string>& list)
 			{
 				if(list.size() < 3)
 					return {};
-				return {tz::util::cast::fromString<T>(list[0]), tz::util::cast::fromString<T>(list[1]), tz::util::cast::fromString<T>(list[2])};
+				return {tz::util::cast::from_string<T>(list[0]), tz::util::cast::from_string<T>(list[1]), tz::util::cast::from_string<T>(list[2])};
 			}
 			
 			template<typename T>
-			inline std::vector<std::string> devectoriseList3(Vector3<T> v)
+			inline std::vector<std::string> devectorise_list_3(Vector3<T> v)
 			{
 				std::vector<std::string> ret;
 				ret.reserve(3);
-				ret.push_back(tz::util::cast::toString(v.getX()));
-				ret.push_back(tz::util::cast::toString(v.getY()));
-				ret.push_back(tz::util::cast::toString(v.getZ()));
+				ret.push_back(tz::util::cast::to_string(v.get_x()));
+				ret.push_back(tz::util::cast::to_string(v.get_y()));
+				ret.push_back(tz::util::cast::to_string(v.get_z()));
 				return ret;
 			}
 		}
@@ -174,7 +174,7 @@ namespace tz
 				if constexpr(std::is_same<decltype(arg), std::string>::value)
 					std::cout << arg;
 				else
-					std::cout << tz::util::cast::toString(arg);
+					std::cout << tz::util::cast::to_string(arg);
 				tz::util::log::silent(args...);
 			}
 			
@@ -211,18 +211,18 @@ public:
 	~Random() = default;
 	Random& operator=(const Random& rhs) = default;
 	
-	const std::default_random_engine::result_type& getSeed() const;
-	const std::default_random_engine& getEngine() const;
-	int nextInt(int min = 0, int max = std::numeric_limits<int>::max());
-	float nextFloat(float min = 0, float max = std::numeric_limits<float>::max());
+	const std::default_random_engine::result_type& get_seed() const;
+	const std::default_random_engine& get_engine() const;
+	int next_int(int min = 0, int max = std::numeric_limits<int>::max());
+	float next_float(float min = 0, float max = std::numeric_limits<float>::max());
 	template <typename Number>
 	inline Number operator()(Number min, Number max)
 	{
 		static_assert(std::is_same<Number, float>::value || std::is_same<Number, int>::value, "Random::operator() must receive template arguments of float or int.");
 		if(std::is_same<Number, float>::value)
-			return nextFloat(min, max);
+			return next_float(min, max);
 		else if(std::is_same<Number, int>::value)
-			return nextInt(min, max);
+			return next_int(min, max);
 	}
 private:
 	const std::default_random_engine::result_type seed;
@@ -238,18 +238,18 @@ public:
 	~MersenneTwister() = default;
 	MersenneTwister& operator=(const MersenneTwister& rhs) = default;
 	
-	const std::mt19937::result_type& getSeed() const;
-	const std::mt19937& getEngine() const;
-	int nextInt(int min = 0, int max = std::numeric_limits<int>::max());
-	float nextFloat(float min = 0, float max = std::numeric_limits<float>::max());
+	const std::mt19937::result_type& get_seed() const;
+	const std::mt19937& get_engine() const;
+	int next_int(int min = 0, int max = std::numeric_limits<int>::max());
+	float next_float(float min = 0, float max = std::numeric_limits<float>::max());
 	template <typename Number>
 	inline Number operator()(Number min, Number max)
 	{
 		static_assert(std::is_same<Number, float>::value || std::is_same<Number, int>::value, "MersenneTwister::operator() must receive template arguments of float or int.");
 		if(std::is_same<Number, float>::value)
-			return nextFloat(min, max);
+			return next_float(min, max);
 		else if(std::is_same<Number, int>::value)
-			return nextInt(min, max);
+			return next_int(min, max);
 	}
 private:
 	const std::mt19937::result_type seed;

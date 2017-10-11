@@ -28,7 +28,7 @@ public:
 	virtual ~FrameBuffer();
 	FrameBuffer& operator=(const FrameBuffer& rhs) = delete;
 	
-	virtual void setRenderTarget() const;
+	virtual void set_render_target() const;
 	virtual void bind(unsigned int id) const;
 protected:
 	unsigned int width, height;
@@ -57,9 +57,9 @@ public:
 	Texture& operator=(Texture&& rhs);
 	
 	virtual void bind(GLuint shader_program_handle, unsigned int id);
-	const std::string& getFileName() const;
-	int getWidth() const;
-	int getHeight() const;
+	const std::string& get_file_name() const;
+	int get_width() const;
+	int get_height() const;
 	enum class TextureType : unsigned int
 	{
 		TEXTURE,
@@ -68,20 +68,20 @@ public:
 		DISPLACEMENT_MAP,
 		TEXTURE_TYPES,
 	};
-	virtual TextureType getTextureType();
+	virtual TextureType get_texture_type();
 	template<class Tex>
-	static Tex* getFromLink(const std::string& texture_link, const std::vector<std::unique_ptr<Tex>>& all_textures)
+	static Tex* get_from_link(const std::string& texture_link, const std::vector<std::unique_ptr<Tex>>& all_textures)
 	{
 		for(auto& texture : all_textures)
 		{
-			if(texture->getFileName() == texture_link)
+			if(texture->get_file_name() == texture_link)
 				return texture.get();
 		}
 		return nullptr;
 	}
 protected:
-	unsigned char* loadTexture();
-	void deleteTexture(unsigned char* imgdata);
+	unsigned char* load_texture();
+	void delete_texture(unsigned char* imgdata);
 	std::string filename;
 	GLuint texture_id;
 	GLuint texture_handle;
@@ -99,7 +99,7 @@ public:
 	NormalMap& operator=(const NormalMap& rhs) = delete;
 	
 	virtual void bind(GLuint shader_program_handle, unsigned int id) override;
-	TextureType getTextureType();
+	TextureType get_texture_type();
 };
 
 class ParallaxMap: public Texture
@@ -112,7 +112,7 @@ public:
 	ParallaxMap& operator=(const ParallaxMap& rhs) = delete;
 	
 	virtual void bind(GLuint shader_program_handle, unsigned int id) override;
-	TextureType getTextureType();	
+	TextureType get_texture_type();	
 };
 
 class DisplacementMap: public Texture
@@ -125,7 +125,7 @@ public:
 	DisplacementMap& operator=(const DisplacementMap& rhs) = delete;
 	
 	virtual void bind(GLuint shader_program_handle, unsigned int id) override;
-	TextureType getTextureType();
+	TextureType get_texture_type();
 };
 
 class CubeMap
@@ -140,7 +140,7 @@ public:
 	
 	void bind(GLuint shader_program_handle, unsigned int id);
 private:
-	std::vector<unsigned char*> loadTextures();
+	std::vector<unsigned char*> load_textures();
 	GLuint texture_handle, texture_id;
 	const std::string right_texture, left_texture, top_texture, bottom_texture, back_texture, front_texture;
 	static constexpr std::size_t number_of_textures = 6;
