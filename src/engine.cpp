@@ -28,7 +28,6 @@ Engine::Engine(Window* wnd, std::string properties_path, unsigned int initial_fp
 	// fill all the asset buffers via tz data manager
 	tz::data::Manager(this->properties.get_tag("resources")).retrieve_all_data(this->meshes, this->textures, this->normal_maps, this->parallax_maps, this->displacement_maps);
 	//test
-	this->default_shader.add_uniform(Uniform(this->default_shader.get_program_handle(), "variadic_uniform_test", true));
 	this->default_shader.add_uniform<Matrix4x4>(Uniform(this->default_shader.get_program_handle(), "m", Matrix4x4()));
 	this->default_shader.add_uniform<Matrix4x4>(Uniform(this->default_shader.get_program_handle(), "v", Matrix4x4()));
 	this->default_shader.add_uniform<Matrix4x4>(Uniform(this->default_shader.get_program_handle(), "p", Matrix4x4()));
@@ -72,10 +71,6 @@ void Engine::update(std::size_t shader_index)
 		this->world.update(this->tps);
 		ticker.reload();
 		this->update_due = true;
-		
-		//test
-		bool test = this->default_shader.get_uniform_value<bool>("variadic_uniform_test");
-		this->default_shader.set_uniform<bool>("variadic_uniform_test", !test);
 	}
 	else
 		this->update_due = false;

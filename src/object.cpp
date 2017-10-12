@@ -95,6 +95,13 @@ void Object::render(Mesh* mesh, Texture* tex, NormalMap* nm, ParallaxMap* pm, Di
 		pm->bind(shad.get_program_handle(), static_cast<unsigned int>(pm->get_texture_type()));
 	if(dm != nullptr)
 		dm->bind(shad.get_program_handle(), static_cast<unsigned int>(dm->get_texture_type()));
+	shad.set_uniform<Matrix4x4>("m", Matrix4x4::create_model_matrix(this->pos, this->rot, this->scale));
+	shad.set_uniform<Matrix4x4>("v", Matrix4x4::create_view_matrix(cam.get_position(), cam.get_rotation()));
+	shad.set_uniform<Matrix4x4>("p", Matrix4x4::create_perspective_matrix(cam.get_fov(), width, height, cam.get_near_clip(), cam.get_far_clip()));
+	shad.set_uniform<unsigned int>("shininess", this->shininess);
+	shad.set_uniform<float>("parallax_map_scale", this->parallax_map_scale);
+	shad.set_uniform<float>("parallax_map_offset", this->parallax_map_offset);
+	shad.set_uniform<float>("displacement_factor", this->displacement_factor);
 	shad.update();
 	//shad.update(Matrix4x4::create_model_matrix(this->pos, this->rot, this->scale).fill_data(), Matrix4x4::create_view_matrix(cam.get_position(), cam.get_rotation()).fill_data(), Matrix4x4::create_perspective_matrix(cam.get_fov(), width, height, cam.get_near_clip(), cam.get_far_clip()).fill_data(), this->shininess, this->parallax_map_scale, this->parallax_map_offset, this->displacement_factor);
 	//glFrontFace(GL_CCW);
@@ -104,10 +111,17 @@ void Object::render(Mesh* mesh, Texture* tex, NormalMap* nm, ParallaxMap* pm, Di
 
 Skybox::Skybox(std::string cube_mesh_link, CubeMap& cm): cube_mesh_link(cube_mesh_link), cm(cm){}
 
-void Skybox::render(const Camera& cam, const Shader& shad, const std::vector<std::unique_ptr<Mesh>>& all_meshes, float width, float height)
+void Skybox::render(const Camera& cam, Shader& shad, const std::vector<std::unique_ptr<Mesh>>& all_meshes, float width, float height)
 {
 	shad.bind();
 	this->cm.bind(shad.get_program_handle(), 0);
+	shad.set_uniform<Matrix4x4>("m", Matrix4x4::create_model_matrix(cam.get_position(), Vector3F(), Vector3F(cam.get_far_clip(), cam.get_far_clip(), cam.get_far_clip())));
+	shad.set_uniform<Matrix4x4>("v", Matrix4x4::create_view_matrix(cam.get_position(), cam.get_rotation()));
+	shad.set_uniform<Matrix4x4>("p", Matrix4x4::create_perspective_matrix(cam.get_fov(), width, height, cam.get_near_clip(), cam.get_far_clip()));
+	shad.set_uniform<unsigned int>("shininess", 0);
+	shad.set_uniform<float>("parallax_map_scale", 0);
+	shad.set_uniform<float>("parallax_map_offset", 0);
+	shad.set_uniform<float>("displacement_factor", 0);
 	shad.update();
 	//shad.update(Matrix4x4::create_model_matrix(cam.get_position(), Vector3F(), Vector3F(cam.get_far_clip(), cam.get_far_clip(), cam.get_far_clip())).fill_data(), Matrix4x4::create_view_matrix(cam.get_position(), cam.get_rotation()).fill_data(), Matrix4x4::create_perspective_matrix(cam.get_fov(), width, height, cam.get_near_clip(), cam.get_far_clip()).fill_data(), 0, 0, 0, 0);
 	glFrontFace(GL_CW);

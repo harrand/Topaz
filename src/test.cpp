@@ -72,14 +72,14 @@ public:
 class RenderSkyboxCommand : public TrivialCommand
 {
 public:
-	RenderSkyboxCommand(Skybox& skybox, const Camera& camera, const Shader& shader, const std::vector<std::unique_ptr<Mesh>>& all_meshes, Window& wnd): skybox(skybox), camera(camera), shader(shader), all_meshes(all_meshes), wnd(wnd){}
+	RenderSkyboxCommand(Skybox& skybox, const Camera& camera, Shader& shader, const std::vector<std::unique_ptr<Mesh>>& all_meshes, Window& wnd): skybox(skybox), camera(camera), shader(shader), all_meshes(all_meshes), wnd(wnd){}
 	virtual void operator()()
 	{
 		skybox.render(camera, shader, all_meshes, wnd.get_width(), wnd.get_height());
 	}
 	Skybox& skybox;
 	const Camera& camera;
-	const Shader& shader;
+	Shader& shader;
 	const std::vector<std::unique_ptr<Mesh>>& all_meshes;
 	Window& wnd;
 };

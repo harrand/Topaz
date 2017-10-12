@@ -113,7 +113,8 @@ void Shader::remove_uniform(std::string_view uniform_location)
 {
 	for(const auto& uniform : this->uniform_data)
 		if(uniform->get_uniform_location() == uniform_location)
-			this->uniform_data.erase(uniform);
+			//this->uniform_data.erase(uniform);
+			this->uniform_data.erase(std::remove(this->uniform_data.begin(), this->uniform_data.end(), uniform), this->uniform_data.end());
 }
 
 bool Shader::has_uniform(std::string_view uniform_location) const
@@ -170,7 +171,7 @@ void Shader::bind() const
 void Shader::update() const
 {
 	// literally just update uniforms with the parameters
-	for(const std::unique_ptr<UniformImplicit>& uniform : this->uniform_data)
+	for(const auto& uniform : this->uniform_data)
 		uniform->push();
 	/*
 	glUniformMatrix4fv(this->uniforms[static_cast<unsigned int>(UniformTypes::MODEL)], 1, GL_TRUE, model_matrix_array.data());

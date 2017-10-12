@@ -81,12 +81,20 @@ void Uniform<T>::push() const
 template<class T>
 void Shader::add_uniform(Uniform<T>&& uniform)
 {
-	this->uniform_data.insert(std::make_unique<Uniform<T>>(std::forward<Uniform<T>>(uniform)));
+	if(this->has_uniform(uniform.get_uniform_location()))
+		return;
+	this->uniform_data.push_back(std::make_shared<Uniform<T>>(std::forward<Uniform<T>>(uniform)));
 }
 
 template<class T>
 void Shader::set_uniform(std::string_view uniform_location, T value)
 {
+	if(!this->has_uniform(uniform_location))
+	{
+		this->add_uniform(Uniform(this->get_program_handle(), std::string(uniform_location), value));
+		tz::util::log::warning("[Shader]: Tried to set non-existent uniform: '", uniform_location, "', adding as a new uniform instead...");
+		return;
+	}
 	for(auto& uniform : this->uniform_data)
 		if(uniform->get_uniform_location() == uniform_location)
 			dynamic_cast<Uniform<T>*>(uniform.get())->set_value(value);
@@ -95,5 +103,10 @@ void Shader::set_uniform(std::string_view uniform_location, T value)
 template<class T>
 T Shader::get_uniform_value(std::string_view uniform_location) const
 {
+	if(!this->has_uniform(uniform_location))
+	{
+		tz::util::log::error("[Shader]: Tried to retrieve uniform_value for non-existent uniform. Returning default...");
+		return T();
+	}
 	return dynamic_cast<Uniform<T>*>(this->get_uniform(uniform_location))->get_value();
 }
