@@ -89,8 +89,7 @@ private:
 	bool compiled;
 	GLuint program_handle;
 	std::array<GLuint, tz::graphics::maximum_shaders> shaders;
-	//std::unordered_set<std::shared_ptr<UniformImplicit>> uniform_data;
-	std::vector<std::shared_ptr<UniformImplicit>> uniform_data;
+	std::unordered_set<std::shared_ptr<UniformImplicit>> uniform_data;
 };
 #include "shader.inl"
 #endif

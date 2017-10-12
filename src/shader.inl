@@ -83,7 +83,7 @@ void Shader::add_uniform(Uniform<T>&& uniform)
 {
 	if(this->has_uniform(uniform.get_uniform_location()))
 		return;
-	this->uniform_data.push_back(std::make_shared<Uniform<T>>(std::forward<Uniform<T>>(uniform)));
+	this->uniform_data.insert(std::make_shared<Uniform<T>>(std::forward<Uniform<T>>(uniform)));
 }
 
 template<class T>

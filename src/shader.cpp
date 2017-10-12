@@ -113,8 +113,7 @@ void Shader::remove_uniform(std::string_view uniform_location)
 {
 	for(const auto& uniform : this->uniform_data)
 		if(uniform->get_uniform_location() == uniform_location)
-			//this->uniform_data.erase(uniform);
-			this->uniform_data.erase(std::remove(this->uniform_data.begin(), this->uniform_data.end(), uniform), this->uniform_data.end());
+			this->uniform_data.erase(uniform);
 }
 
 bool Shader::has_uniform(std::string_view uniform_location) const
