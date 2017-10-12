@@ -164,7 +164,6 @@ void init()
 			{
 				if(bound.intersects(engine.camera.get_position()))// teleport camera above any object it's inside
 				{
-					//engine.get_camera_r().get_position_r().set_y(bound.get_maximum().get_y());
 					Vector3F position = engine.camera.get_position();
 					position.set_y(bound.get_maximum().get_y());
 					engine.camera.set_position(position);
@@ -179,8 +178,6 @@ void init()
 					speed = 0.0f;
 				else if(engine.get_time_profiler().get_fps() != 0)
 				{
-					//engine.get_camera_r().get_position_r() -= Vector3F(0, speed, 0);
-					//engine.get_camera_r().set_position(engine.camera.get_position() - Vector3F(0, speed, 0));
 					engine.camera.set_position(engine.camera.get_position() - Vector3F(0, speed, 0));
 					speed += a;
 				}
@@ -259,15 +256,12 @@ void init()
 					engine.camera.set_position(after);
 			}
 			if(key_listener.is_key_pressed("I"))
-				//engine.get_camera_r().get_rotation_r() += (Vector3F(1.0f/360.0f, 0, 0) * multiplier * 5 * engine.get_time_profiler().get_last_delta());
 			{
 				engine.camera.set_rotation(engine.camera.get_rotation() + (Vector3F(1.0f/360.0f, 0, 0) * multiplier * 5 * engine.get_time_profiler().get_last_delta()));
-				//engine.get_camera_r().set_rotation(engine.camera.get_rotation() + (Vector3F(1.0f/360.0f, 0, 0) * multiplier * 5 * engine.get_time_profiler().get_last_delta()));
 			}
 			if(key_listener.is_key_pressed("K"))
 			{
 				engine.camera.set_rotation(engine.camera.get_rotation() + (Vector3F(-1.0f/360.0f, 0, 0) * multiplier * 5 * engine.get_time_profiler().get_last_delta()));
-				//engine.get_camera_r().set_rotation(engine.camera.get_rotation() + (Vector3F(1.0f/360.0f, 0, 0) * multiplier * 5 * engine.get_time_profiler().get_last_delta()));
 			}
 			if(key_listener.is_key_pressed("J"))
 			{
@@ -291,8 +285,6 @@ void init()
 				orientation.set_y(orientation.get_y() + (rotational_speed * delta.get_x()));
 				orientation.set_x(orientation.get_x() - (rotational_speed * delta.get_y()));
 				engine.camera.set_rotation(orientation);
-				//orientation.get_y_r() += (rotational_speed * delta.get_x());
-				//orientation.get_x_r() -= (rotational_speed * delta.get_y());
 				mouse_listener.reload_mouse_delta();
 			}
 		}
@@ -303,7 +295,6 @@ void init()
 		engine.update(shader_id);
 	}
 	MDLF(engine.get_resources()).edit_tag("played", tz::util::cast::to_string(seconds));
-	//engine.get_resources().edit_tag("played", tz::util::cast::to_string(seconds));
 }
 
 void test()
@@ -333,6 +324,14 @@ void test()
 	test_wav_moved.play();
 	message("Waiting 5 seconds...");
 	std::this_thread::sleep_for(5s);
+	cls();
+	// test RNG
+	Random rand;
+	MersenneTwister mt;
+	for(unsigned int i = 0; i < 100; i++)
+	{
+		message("Default Random: ", rand.operator()<int>(0, 100), ", MersenneTwister: ", mt.operator()<int>(0, 100));
+	}
 	cls();
 	message("TESTING COMPLETE");
 }

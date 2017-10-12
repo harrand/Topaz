@@ -39,6 +39,46 @@ const std::string& World::get_file_name() const
 	return this->filename;
 }
 
+const Vector3F& World::get_gravity() const
+{
+	return this->gravity;
+}
+
+const Vector3F& World::get_spawn_point() const
+{
+	return this->spawn_point;
+}
+
+const Vector3F& World::get_spawn_orientation() const
+{
+	return this->spawn_orientation;
+}
+
+void World::set_gravity(Vector3F gravity)
+{
+	this->gravity = gravity;
+	for(Entity& ent : this->entities)
+	{
+		ent.remove_force("gravity");
+		ent.apply_force("gravity", Force(this->get_gravity()));
+	}
+	for(EntityObject& eo : this->entity_objects)
+	{
+		eo.remove_force("gravity");
+		eo.apply_force("gravity", Force(this->get_gravity()));
+	}
+}
+
+void World::set_spawn_point(Vector3F spawn_point)
+{
+	this->spawn_point = spawn_point;
+}
+
+void World::set_spawn_orientation(Vector3F spawn_orientation)
+{
+	this->spawn_orientation = spawn_orientation;
+}
+
 void World::add_object(Object obj)
 {
 	this->objects.push_back(std::move(obj));
@@ -71,30 +111,31 @@ void World::add_light(Light light, GLuint shader_program_handle)
 	this->base_lights[light.get_uniforms(shader_program_handle, this->base_lights.size())] = light;
 }
 
-void World::set_gravity(Vector3F gravity)
+const std::vector<Object>& World::get_objects() const
 {
-	this->gravity = gravity;
-	for(Entity& ent : this->entities)
-	{
-		ent.remove_force("gravity");
-		ent.apply_force("gravity", Force(this->get_gravity()));
-	}
-	for(EntityObject& eo : this->entity_objects)
-	{
-		eo.remove_force("gravity");
-		eo.apply_force("gravity", Force(this->get_gravity()));
-	}
+	return this->objects;
 }
 
-void World::set_spawn_point(Vector3F spawn_point)
+const std::vector<Entity>& World::get_entities() const
 {
-	this->spawn_point = spawn_point;
+	return this->entities;
 }
 
-void World::set_spawn_orientation(Vector3F spawn_orientation)
+const std::vector<EntityObject>& World::get_entity_objects() const
 {
-	this->spawn_orientation = spawn_orientation;
+	return this->entity_objects;
 }
+
+std::size_t World::get_size() const
+{
+	return this->objects.size() + this->entities.size() + this->entity_objects.size();
+}
+
+const std::map<std::array<GLint, tz::graphics::light_number_of_uniforms>, Light>& World::get_lights() const
+{
+	return this->base_lights;
+}
+
 
 void World::kill_lights()
 {
@@ -165,9 +206,10 @@ void World::export_world(const std::string& world_link) const
 	output.add_sequence("objects", object_list);
 	output.add_sequence("entityobjects", entity_object_list);
 }
+
 void World::save() const
 {
-	this->export_world(this->get_world_link());
+	this->export_world(this->get_file_name());
 }
 
 void World::render(Camera& cam, Shader& shader, unsigned int widata_managerh, unsigned int height, const std::vector<std::unique_ptr<Mesh>>& all_meshes, const std::vector<std::unique_ptr<Texture>>& all_textures, const std::vector<std::unique_ptr<NormalMap>>& all_normalmaps, const std::vector<std::unique_ptr<ParallaxMap>>& all_parallaxmaps, const std::vector<std::unique_ptr<DisplacementMap>>& all_displacementmaps)
@@ -234,86 +276,6 @@ void World::update(unsigned int tps)
 		eo.update_motion(tps);
 	for(auto& ent : this->entities)
 		ent.update_motion(tps);
-}
-
-std::size_t World::get_size() const
-{
-	return this->objects.size() + this->entities.size() + this->entity_objects.size();
-}
-
-const std::vector<Object>& World::get_objects() const
-{
-	return this->objects;
-}
-
-const std::vector<Entity>& World::get_entities() const
-{
-	return this->entities;
-}
-
-const std::vector<EntityObject>& World::get_entity_objects() const
-{
-	return this->entity_objects;
-}
-
-std::vector<Object>& World::get_objects_r()
-{
-	return this->objects;
-}
-
-std::vector<Entity>& World::get_entities_r()
-{
-	return this->entities;
-}
-
-std::vector<EntityObject>& World::get_entity_objects_r()
-{
-	return this->entity_objects;
-}
-
-const Vector3F& World::get_gravity() const
-{
-	return this->gravity;
-}
-
-const Vector3F& World::get_spawn_point() const
-{
-	return this->spawn_point;
-}
-
-const Vector3F& World::get_spawn_orientation() const
-{
-	return this->spawn_orientation;
-}
-
-Vector3F& World::get_gravity_r()
-{
-	return this->gravity;
-}
-
-Vector3F& World::get_spawn_point_r()
-{
-	return this->spawn_point;
-}
-
-Vector3F& World::get_spawn_orientation_r()
-{
-	return this->spawn_orientation;
-}
-
-const std::string& World::get_world_link() const
-{
-	return this->filename;
-}
-
-const std::map<std::array<GLint, tz::graphics::light_number_of_uniforms>, Light>& World::get_lights() const
-{
-	return this->base_lights;
-}
-
-std::map<std::array<GLint, tz::graphics::light_number_of_uniforms>, Light>& World::get_lights_r()
-{
-	return this->base_lights;
 }
 
 Object World::retrieve_object_data(const std::string& object_name, std::string resources_path, MDLF& mdlf)
