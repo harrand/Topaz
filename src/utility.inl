@@ -159,6 +159,12 @@ namespace tz::util
 			tz::util::log::silent(arg, args...);
 		}
 	}
+	template<typename Number>
+	inline Number random()
+	{
+		static Random rand;
+		return rand.operator()<Number>();
+	}
 }
 
 template<typename Engine, typename EngineResultType>

@@ -212,7 +212,7 @@ void World::save() const
 	this->export_world(this->get_file_name());
 }
 
-void World::render(Camera& cam, Shader& shader, unsigned int widata_managerh, unsigned int height, const std::vector<std::unique_ptr<Mesh>>& all_meshes, const std::vector<std::unique_ptr<Texture>>& all_textures, const std::vector<std::unique_ptr<NormalMap>>& all_normalmaps, const std::vector<std::unique_ptr<ParallaxMap>>& all_parallaxmaps, const std::vector<std::unique_ptr<DisplacementMap>>& all_displacementmaps)
+void World::render(Camera& cam, Shader& shader, unsigned int width, unsigned int height, const std::vector<std::unique_ptr<Mesh>>& all_meshes, const std::vector<std::unique_ptr<Texture>>& all_textures, const std::vector<std::unique_ptr<NormalMap>>& all_normalmaps, const std::vector<std::unique_ptr<ParallaxMap>>& all_parallaxmaps, const std::vector<std::unique_ptr<DisplacementMap>>& all_displacementmaps)
 {
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_DEPTH_CLAMP);
@@ -233,7 +233,7 @@ void World::render(Camera& cam, Shader& shader, unsigned int widata_managerh, un
 			else if(texture.second == Texture::TextureType::DISPLACEMENT_MAP)
 				dm = Texture::get_from_link<DisplacementMap>(texture.first, all_displacementmaps);
 		}
-		obj.render(mesh, tex, nm, pm, dm, cam, shader, widata_managerh, height);
+		obj.render(mesh, tex, nm, pm, dm, cam, shader, width, height);
 	}
 	for(auto& eo : this->entity_objects)
 	{
@@ -250,7 +250,7 @@ void World::render(Camera& cam, Shader& shader, unsigned int widata_managerh, un
 			else if(texture.second == Texture::TextureType::DISPLACEMENT_MAP)
 				dm = Texture::get_from_link<DisplacementMap>(texture.first, all_displacementmaps);
 		}
-		eo.render(mesh, tex, nm, pm, dm, cam, shader, widata_managerh, height);
+		eo.render(mesh, tex, nm, pm, dm, cam, shader, width, height);
 	}	
 	for(auto& iter : this->base_lights)
 	{

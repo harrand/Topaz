@@ -79,6 +79,8 @@ namespace tz
 			template<typename FirstArg = void, typename... Args>
 			inline void error(FirstArg arg, Args... args);
 		}
+		template<typename Number = int>
+		inline Number random();
 	}
 }
 
