@@ -213,16 +213,6 @@ Matrix3x3 Matrix4x4::sub_matrix(float pos_i, float pos_j) const
 	return {x, y, z};
 }
 
-Matrix4x4 Matrix4x4::operator+(const Matrix4x4& other) const
-{
-	return {this->x + other.get_row_x(), this->y + other.get_row_y(), this->z + other.get_row_z(), this->w + other.get_row_w()};
-}
-
-Matrix4x4 Matrix4x4::operator-(const Matrix4x4& other) const
-{
-	return {this->x - other.get_row_x(), this->y - other.get_row_y(), this->z - other.get_row_z(), this->w - other.get_row_w()};
-}
-
 Vector4F Matrix4x4::operator*(const Vector4F& other) const
 {
 	float x = 0.0f, y = 0.0f, z = 0.0f, w = 0.0f;

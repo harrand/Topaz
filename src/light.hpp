@@ -32,6 +32,7 @@ public:
 	float get_diffuse_component() const;
 	float get_specular_component() const;
 	std::array<GLint, tz::graphics::light_number_of_uniforms> get_uniforms(GLuint shader_program_handle, std::size_t light_uniform_index) const;
+	bool operator==(const Light& rhs) const;
 private:
 	Vector3F pos;
 	Vector3F colour;

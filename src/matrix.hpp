@@ -62,8 +62,6 @@ public:
 	Matrix4x4 transposed() const;
 	std::array<float, 16> fill_data() const;
 	Matrix3x3 sub_matrix(float iter_i, float iter_j) const;
-	Matrix4x4 operator+(const Matrix4x4& other) const;
-	Matrix4x4 operator-(const Matrix4x4& other) const;
 	Vector4F operator*(const Vector4F& other) const;
 	Matrix4x4 operator*(const Matrix4x4& other) const;
 	float determinant() const;

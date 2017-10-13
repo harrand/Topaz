@@ -111,6 +111,28 @@ void World::add_light(Light light, GLuint shader_program_handle)
 	this->base_lights[light.get_uniforms(shader_program_handle, this->base_lights.size())] = light;
 }
 
+void World::remove_object(Object obj)
+{
+	this->objects.erase(std::remove(this->objects.begin(), this->objects.end(), obj), this->objects.end());
+}
+
+void World::remove_entity(Entity ent)
+{
+	this->entities.erase(std::remove(this->entities.begin(), this->entities.end(), ent), this->entities.end());
+}
+
+void World::remove_entity_object(EntityObject eo)
+{
+	this->entity_objects.erase(std::remove(this->entity_objects.begin(), this->entity_objects.end(), eo), this->entity_objects.end());
+}
+
+void World::remove_light(Light light)
+{
+	for(auto it : this->base_lights)
+		if(it.second == light)
+			this->base_lights.erase(it.first);
+}
+
 const std::vector<Object>& World::get_objects() const
 {
 	return this->objects;

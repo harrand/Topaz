@@ -20,6 +20,7 @@ public:
 	Force operator/(float rhs) const;
 	Force& operator+=(const Force& other);
 	Force& operator-=(const Force& other);
+	bool operator==(const Force& other) const;
 private:
 	Vector3F size;
 };

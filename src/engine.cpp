@@ -121,9 +121,39 @@ void Engine::add_to_world(Object object)
 	this->world.add_object(object);
 }
 
+void Engine::add_to_world(Entity entity)
+{
+	this->world.add_entity(entity);
+}
+
 void Engine::add_to_world(EntityObject entity_object)
 {
 	this->world.add_entity_object(entity_object);
+}
+
+void Engine::add_to_world(Light light, Shader& shader)
+{
+	this->world.add_light(light, shader.get_program_handle());
+}
+
+void Engine::remove_from_world(Object object)
+{
+	this->world.remove_object(object);
+}
+
+void Engine::remove_from_world(Entity entity)
+{
+	this->world.remove_entity(entity);
+}
+
+void Engine::remove_from_world(EntityObject entity_object)
+{
+	this->world.remove_entity_object(entity_object);
+}
+
+void Engine::remove_from_world(Light light)
+{
+	this->world.remove_light(light);
 }
 
 const Shader& Engine::get_default_shader() const

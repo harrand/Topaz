@@ -109,6 +109,11 @@ void Object::render(Mesh* mesh, Texture* tex, NormalMap* nm, ParallaxMap* pm, Di
 	//glFrontFace(GL_CW);
 }
 
+bool Object::operator==(const Object& rhs) const
+{
+	return this->pos == rhs.pos && this->rot == rhs.rot && this->scale == rhs.scale && this->shininess == rhs.shininess && this->parallax_map_scale == rhs.parallax_map_scale && this->parallax_map_offset == rhs.parallax_map_offset && this->displacement_factor == rhs.displacement_factor && this->mesh_link == rhs.mesh_link && this->textures == rhs.textures;
+}
+
 Skybox::Skybox(std::string cube_mesh_link, CubeMap& cm): cube_mesh_link(cube_mesh_link), cm(cm){}
 
 void Skybox::render(const Camera& cam, Shader& shad, const std::vector<std::unique_ptr<Mesh>>& all_meshes, float width, float height)

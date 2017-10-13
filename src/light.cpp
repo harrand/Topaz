@@ -49,3 +49,8 @@ return
 	glGetUniformLocation(shader_program_handle, ("lights[" + tz::util::cast::to_string(light_uniform_index) + "].specular_component").c_str())
 	};
 }
+
+bool Light::operator==(const Light& rhs) const
+{
+	return this->pos == rhs.pos && this->colour == rhs.colour && this->power == rhs.power && this->diffuse_component == rhs.diffuse_component && this->specular_component == rhs.specular_component;
+}

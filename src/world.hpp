@@ -14,7 +14,7 @@ public:
 	World(World&& move);
 	~World();
 	World& operator=(const World& rhs) = default;
-	
+		
 	const std::string& get_file_name() const;
 	const Vector3F& get_gravity() const;
 	const Vector3F& get_spawn_point() const;
@@ -26,6 +26,10 @@ public:
 	void add_entity(Entity ent);
 	void add_entity_object(EntityObject eo);
 	void add_light(Light light, GLuint shader_program_handle);
+	void remove_object(Object obj);
+	void remove_entity(Entity ent);
+	void remove_entity_object(EntityObject eo);
+	void remove_light(Light light);
 	const std::vector<Object>& get_objects() const;
 	const std::vector<Entity>& get_entities() const;
 	const std::vector<EntityObject>& get_entity_objects() const;

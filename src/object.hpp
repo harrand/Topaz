@@ -41,6 +41,7 @@ public:
 	const std::string& get_mesh_link() const;
 	const std::vector<std::pair<std::string, Texture::TextureType>> get_textures() const;
 	virtual void render(Mesh* mesh, Texture* tex, NormalMap* nm, ParallaxMap* pm, DisplacementMap* dm, const Camera& cam, Shader& shad, float width, float height) const;
+	bool operator==(const Object& rhs) const;
 protected:
 	Vector3F pos, rot, scale;
 	unsigned int shininess;

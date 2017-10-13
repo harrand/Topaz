@@ -27,6 +27,7 @@ public:
 	void apply_force(std::string force_name, Force f);
 	void remove_force(std::string force_name);
 	virtual void update_motion(unsigned int fps);
+	bool operator==(const Entity& rhs) const;
 protected:
 	float mass;
 	Vector3F velocity;
@@ -45,6 +46,7 @@ public:
 	
 	virtual const Vector3F& get_position() const override;
 	virtual void set_position(Vector3F position) override;
+	bool operator==(const EntityObject& rhs) const;
 };
 
 #endif

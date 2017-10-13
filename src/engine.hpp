@@ -30,9 +30,13 @@ public:
 	const World& get_world() const;
 	void set_world(World world);
 	void add_to_world(Object object);
+	void add_to_world(Entity entity);
 	void add_to_world(EntityObject entity_object);
-	//void remove_from_world(Object object);
-	//void remove_from_world(EntityObject entity_object);
+	void add_to_world(Light light, Shader& shader);
+	void remove_from_world(Object object);
+	void remove_from_world(Entity entity);
+	void remove_from_world(EntityObject entity_object);
+	void remove_from_world(Light light);
 	const Shader& get_default_shader() const;
 	const Shader& get_default_gui_shader() const;
 	const std::vector<std::unique_ptr<Mesh>>& get_meshes() const;

@@ -45,6 +45,11 @@ Force& Force::operator-=(const Force& other)
 	return *this;
 }
 
+bool Force::operator==(const Force& rhs) const
+{
+	return this->size == rhs.size;
+}
+
 BoundingSphere tz::physics::bound_sphere(const Object& object, const std::vector<std::unique_ptr<Mesh>>& all_meshes)
 {
 	// get list of positions in world space
