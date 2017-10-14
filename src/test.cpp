@@ -46,7 +46,7 @@ public:
 	SpawnBlockCommand(Engine& engine, std::vector<AABB>& bounds): engine(engine), bounds(bounds){}
 	virtual void operator()()
 	{
-		tz::data::Manager manager(engine.get_resources().get_raw_file().get_path());
+		tz::data::Manager manager(std::string(engine.get_resources().get_raw_file().get_path().data(), engine.get_resources().get_raw_file().get_path().length()));
 		std::vector<std::pair<std::string, Texture::TextureType>> textures;
 		textures.emplace_back(manager.resource_link("bricks"), Texture::TextureType::TEXTURE);
 		textures.emplace_back(manager.resource_link("bricks_normalmap"), Texture::TextureType::NORMAL_MAP);

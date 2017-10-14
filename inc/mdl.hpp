@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <string_view>
 
 namespace mdl
 {
@@ -19,7 +20,7 @@ public:
 	~RawFile() = default;
 	RawFile& operator=(const RawFile& rhs) = default;
 	
-	const std::string& get_path() const;
+	std::string_view get_path() const;
 	std::vector<std::string> get_lines() const;
 	std::string get_data() const;
 	void clear() const;

@@ -113,12 +113,15 @@ namespace tz::util
 		template<typename T>
 		inline std::vector<std::string> devectorise_list_3(Vector3<T> v)
 		{
+			/*
 			std::vector<std::string> ret;
 			ret.reserve(3);
 			ret.push_back(tz::util::cast::to_string(v.get_x()));
 			ret.push_back(tz::util::cast::to_string(v.get_y()));
 			ret.push_back(tz::util::cast::to_string(v.get_z()));
 			return ret;
+			*/
+			return {tz::util::cast::to_string(v.get_x()), tz::util::cast::to_string(v.get_y()), tz::util::cast::to_string(v.get_z())};
 		}	
 	}
 	
