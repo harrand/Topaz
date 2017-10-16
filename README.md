@@ -1,3 +1,4 @@
+![alt text](https://github.com/Harrand/Topaz/blob/master/res/exe/topaz_test.ico "Topaz")
 # Topaz
 
 Topaz is a multimedia engine written in C++ to be used as a cross-platform powerful abstraction to hardware components in a modern computer such as the mouse, keyboard, sound card and graphics card. Topaz can be used to create applications, games or other programs which demand a stable mixture of ease-of-use and optimisation.

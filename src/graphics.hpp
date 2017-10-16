@@ -8,6 +8,24 @@
 #include "SDL_ttf.h"
 #include "utility.hpp"
 
+class Font
+{
+public:
+	Font(const std::string& font_path, int pixel_height);
+	Font(const Font& copy);
+	Font(Font&& move);
+	~Font();
+	Font& operator=(Font&& rhs); // move assignment operator
+	
+	int get_pixel_height() const;
+	std::string_view get_path() const;
+	friend class Texture;
+private:
+	std::string font_path;
+	int pixel_height;
+	TTF_Font* font_handle;
+};
+
 namespace tz
 {
 	namespace graphics
@@ -106,22 +124,6 @@ private:
 	const Vector3F position;
 	const Vector2F texcoord;
 	const Vector3F normal;
-};
-
-class Font
-{
-public:
-	Font(const std::string& font_path, int pixel_height);
-	Font(const Font& copy);
-	Font(Font&& move);
-	~Font();
-	Font& operator=(Font&& rhs); // move assignment operator
-	
-	friend class Texture;
-private:
-	std::string font_path;
-	int pixel_height;
-	TTF_Font* font_handle;
 };
 
 #endif
