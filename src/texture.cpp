@@ -138,11 +138,11 @@ Texture::Texture(std::string filename, bool gamma_corrected): filename(std::move
 	this->delete_texture(imgdata);
 }
 
-Texture::Texture(TTF_Font* font, const std::string& text, SDL_Color foreground_colour)
+Texture::Texture(const Font& font, const std::string& text, SDL_Color foreground_colour)
 {
-	if(font == NULL)
+	if(font.font_handle == NULL)
 		tz::util::log::error("Texture attempted to load from an invalid font. Error: ", TTF_GetError());
-	SDL_Surface* text_surface = TTF_RenderUTF8_Blended(font, text.c_str(), foreground_colour);
+	SDL_Surface* text_surface = TTF_RenderUTF8_Blended(font.font_handle, text.c_str(), foreground_colour);
 	GLint texture_format, bytes_per_pixel = text_surface->format->BytesPerPixel;
 	constexpr long mask = 0x000000ff;
 	this->width = text_surface->w;

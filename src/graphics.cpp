@@ -430,8 +430,3 @@ Font& Font::operator=(Font&& rhs)
 	rhs.font_handle = nullptr;
 	return *this;
 }
-
-TTF_Font* Font::get_font_handle() const
-{
-	return this->font_handle;
-}

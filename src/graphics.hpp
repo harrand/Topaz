@@ -117,7 +117,7 @@ public:
 	~Font();
 	Font& operator=(Font&& rhs); // move assignment operator
 	
-	TTF_Font* get_font_handle() const;
+	friend class Texture;
 private:
 	std::string font_path;
 	int pixel_height;

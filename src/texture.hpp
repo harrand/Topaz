@@ -4,10 +4,7 @@
 #ifndef GLEW_STATIC
 #define GLEW_STATIC
 #endif
-#include "glew.h"
-#include "SDL.h"
-#include "SDL_ttf.h"
-#include "utility.hpp"
+#include "graphics.hpp"
 
 namespace tz::graphics
 {
@@ -50,7 +47,7 @@ class Texture
 {
 public:
 	Texture(std::string filename = "../../../res/runtime/textures/undefined.jpg", bool gamma_corrected = true);
-	Texture(TTF_Font* font, const std::string& text, SDL_Color foreground_colour);
+	Texture(const Font& font, const std::string& text, SDL_Color foreground_colour);
 	Texture(const Texture& copy);
 	Texture(Texture&& move);
 	~Texture();
