@@ -175,6 +175,7 @@ Texture::Texture(const Font& font, const std::string& text, SDL_Color foreground
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexImage2D(GL_TEXTURE_2D, 0, bytes_per_pixel, text_surface->w, text_surface->h, 0, texture_format, GL_UNSIGNED_BYTE, text_surface->pixels);
+	// if ctor parameter said to store the bitmap in RAM, then dewit. otherwise dont bother because it eats lots of ram and its in VRAM anyway
 	if(store_bitmap)
 	{
 		unsigned char* pixel_data = reinterpret_cast<unsigned char*>(text_surface->pixels);

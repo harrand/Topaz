@@ -54,12 +54,6 @@ public:
 	~Texture();
 	Texture& operator=(Texture&& rhs);
 	
-	virtual void bind(GLuint shader_program_handle, unsigned int id);
-	const std::string& get_file_name() const;
-	int get_width() const;
-	int get_height() const;
-	bool has_bitmap() const;
-	Bitmap<PixelRGBA> get_bitmap() const;
 	enum class TextureType : unsigned int
 	{
 		TEXTURE,
@@ -68,17 +62,16 @@ public:
 		DISPLACEMENT_MAP,
 		TEXTURE_TYPES,
 	};
+	
+	virtual void bind(GLuint shader_program_handle, unsigned int id);
+	const std::string& get_file_name() const;
+	int get_width() const;
+	int get_height() const;
+	bool has_bitmap() const;
+	Bitmap<PixelRGBA> get_bitmap() const;
 	virtual TextureType get_texture_type();
-	template<class Tex>
-	static Tex* get_from_link(const std::string& texture_link, const std::vector<std::unique_ptr<Tex>>& all_textures)
-	{
-		for(auto& texture : all_textures)
-		{
-			if(texture->get_file_name() == texture_link)
-				return texture.get();
-		}
-		return nullptr;
-	}
+	template<class T>
+	static T* get_from_link(const std::string& texture_link, const std::vector<std::unique_ptr<T>>& all_textures);
 protected:
 	unsigned char* load_texture();
 	void delete_texture(unsigned char* imgdata);
@@ -147,5 +140,5 @@ private:
 	static constexpr std::size_t number_of_textures = 6;
 	int width[number_of_textures], height[number_of_textures], components[number_of_textures];
 };
-
+#include "texture.inl"
 #endif
