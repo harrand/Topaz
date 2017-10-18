@@ -5,6 +5,7 @@
 #define GLEW_STATIC
 #endif
 #include "graphics.hpp"
+#include <optional>
 
 namespace tz::graphics
 {
@@ -46,8 +47,8 @@ class DepthTexture: public FrameBuffer
 class Texture
 {
 public:
-	Texture(std::string filename = "../../../res/runtime/textures/undefined.jpg", bool gamma_corrected = true);
-	Texture(const Font& font, const std::string& text, SDL_Color foreground_colour);
+	Texture(std::string filename = "../../../res/runtime/textures/undefined.jpg", bool gamma_corrected = true, bool store_bitmap = false);
+	Texture(const Font& font, const std::string& text, SDL_Color foreground_colour, bool store_bitmap = false);
 	Texture(const Texture& copy);
 	Texture(Texture&& move);
 	~Texture();
@@ -57,6 +58,8 @@ public:
 	const std::string& get_file_name() const;
 	int get_width() const;
 	int get_height() const;
+	bool has_bitmap() const;
+	Bitmap<PixelRGBA> get_bitmap() const;
 	enum class TextureType : unsigned int
 	{
 		TEXTURE,
@@ -84,7 +87,7 @@ protected:
 	GLuint texture_handle;
 	int width, height, components;
 	bool gamma_corrected;
-	Bitmap<PixelRGBA> bitmap;
+	std::optional<Bitmap<PixelRGBA>> bitmap;
 };
 
 class NormalMap: public Texture

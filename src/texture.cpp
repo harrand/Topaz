@@ -98,7 +98,7 @@ void Texture::delete_texture(unsigned char* imgdata)
 	stbi_image_free(imgdata);
 }
 
-Texture::Texture(std::string filename, bool gamma_corrected): filename(std::move(filename)), gamma_corrected(gamma_corrected), bitmap()
+Texture::Texture(std::string filename, bool gamma_corrected, bool store_bitmap): filename(std::move(filename)), gamma_corrected(gamma_corrected), bitmap({})
 {
 	unsigned char* imgdata = this->load_texture();
 	if(imgdata == nullptr)
@@ -134,13 +134,17 @@ Texture::Texture(std::string filename, bool gamma_corrected): filename(std::move
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_SRGB_ALPHA, this->width, this->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, imgdata);
 	else
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, this->width, this->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, imgdata);
-	this->bitmap.pixels.reserve(std::abs(this->width * this->height));
-	for(std::size_t i = 3; i < std::abs(this->width * this->height); i += 4)
-		this->bitmap.pixels.emplace_back(PixelRGBA{imgdata[i - 3], imgdata[i - 2], imgdata[i - 1], imgdata[i]});
+	if(store_bitmap)
+	{
+		this->bitmap = Bitmap<PixelRGBA>();
+		this->bitmap.value().pixels.reserve(std::abs(this->width * this->height));
+		for(std::size_t i = 3; i < std::abs(this->width * this->height); i += 4)
+			this->bitmap.value().pixels.emplace_back(PixelRGBA{imgdata[i - 3], imgdata[i - 2], imgdata[i - 1], imgdata[i]});
+	}
 	this->delete_texture(imgdata);
 }
 
-Texture::Texture(const Font& font, const std::string& text, SDL_Color foreground_colour)
+Texture::Texture(const Font& font, const std::string& text, SDL_Color foreground_colour, bool store_bitmap)
 {
 	if(font.font_handle == NULL)
 		tz::util::log::error("Texture attempted to load from an invalid font. Error: ", TTF_GetError());
@@ -171,24 +175,28 @@ Texture::Texture(const Font& font, const std::string& text, SDL_Color foreground
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexImage2D(GL_TEXTURE_2D, 0, bytes_per_pixel, text_surface->w, text_surface->h, 0, texture_format, GL_UNSIGNED_BYTE, text_surface->pixels);
-	unsigned char* pixel_data = reinterpret_cast<unsigned char*>(text_surface->pixels);
-	this->bitmap.pixels.reserve(std::abs(this->width * this->height));
-	for(std::size_t i = 3; i < std::abs(this->width * this->height); i += 4)
-		switch(texture_format)
-		{
-			case GL_RGBA:
-				this->bitmap.pixels.emplace_back(PixelRGBA{pixel_data[i - 3], pixel_data[i - 2], pixel_data[i - 1], pixel_data[i]});
-				break;
-			case GL_BGRA:
-				this->bitmap.pixels.emplace_back(PixelRGBA{pixel_data[i - 1], pixel_data[i - 2], pixel_data[i - 3], pixel_data[i]});
-				break;
-			case GL_RGB:
-				this->bitmap.pixels.emplace_back(PixelRGBA{pixel_data[i - 3], pixel_data[i - 2], pixel_data[i - 1], 255});
-				break;
-			case GL_BGR:
-				this->bitmap.pixels.emplace_back(PixelRGBA{pixel_data[i - 1], pixel_data[i - 2], pixel_data[i - 3], 255});
-				break;
-		}
+	if(store_bitmap)
+	{
+		unsigned char* pixel_data = reinterpret_cast<unsigned char*>(text_surface->pixels);
+		this->bitmap = Bitmap<PixelRGBA>();
+		this->bitmap.value().pixels.reserve(std::abs(this->width * this->height));
+		for(std::size_t i = 3; i < std::abs(this->width * this->height); i += 4)
+			switch(texture_format)
+			{
+				case GL_RGBA:
+					this->bitmap.value().pixels.emplace_back(PixelRGBA{pixel_data[i - 3], pixel_data[i - 2], pixel_data[i - 1], pixel_data[i]});
+					break;
+				case GL_BGRA:
+					this->bitmap.value().pixels.emplace_back(PixelRGBA{pixel_data[i - 1], pixel_data[i - 2], pixel_data[i - 3], pixel_data[i]});
+					break;
+				case GL_RGB:
+					this->bitmap.value().pixels.emplace_back(PixelRGBA{pixel_data[i - 3], pixel_data[i - 2], pixel_data[i - 1], 255});
+					break;
+				case GL_BGR:
+					this->bitmap.value().pixels.emplace_back(PixelRGBA{pixel_data[i - 1], pixel_data[i - 2], pixel_data[i - 3], 255});
+					break;
+			}
+	}
 	SDL_FreeSurface(text_surface);
 }
 
@@ -248,6 +256,16 @@ int Texture::get_width() const
 int Texture::get_height() const
 {
 	return this->height;
+}
+
+bool Texture::has_bitmap() const
+{
+	return this->bitmap.has_value();
+}
+
+Bitmap<PixelRGBA> Texture::get_bitmap() const
+{
+	return this->bitmap.value_or(Bitmap<PixelRGBA>());
 }
 
 Texture::TextureType Texture::get_texture_type()
