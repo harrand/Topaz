@@ -42,19 +42,18 @@ Engine::Engine(Window* wnd, std::string properties_path, unsigned int initial_fp
 
 void Engine::update(std::size_t shader_index)
 {
-	static Timer ticker;
-	if(this->keeper.millis_passed(1000))
+	if(this->seconds_timer.millis_passed(1000))
 	{
 		// update fps every second instead of every frame; suppresses random spikes in performance and reduces runtime overhead slightly
 		this->fps = this->profiler.get_fps();
 		this->profiler.reset();
-		this->keeper.reload();
+		this->seconds_timer.reload();
 	}
 	this->wnd->set_render_target();
 	this->profiler.begin_frame();
 	
-	this->keeper.update();
-	ticker.update();
+	this->seconds_timer.update();
+	this->tick_timer.update();
 	this->wnd->clear(0.0f, 0.0f, 0.0f, 1.0f);
 	this->profiler.end_frame();
 	
@@ -63,13 +62,13 @@ void Engine::update(std::size_t shader_index)
 	for(auto command : this->update_command_executor.get_commands())
 		command->operator()({});
 	
-	if(ticker.millis_passed(1000.0f/this->tps))
+	if(this->tick_timer.millis_passed(1000.0f/this->tps))
 	{
 		// update physics engine when the average time of a fixed 'tick' has passed
 		for(auto tick_command : this->tick_command_executor.get_commands())
 			tick_command->operator()({});
 		this->world.update(this->tps);
-		ticker.reload();
+		this->tick_timer.reload();
 		this->update_due = true;
 	}
 	else
@@ -79,11 +78,6 @@ void Engine::update(std::size_t shader_index)
 	GLenum error;
 		if((error = glGetError()) != GL_NO_ERROR)
 			tz::util::log::error("OpenGL Error: ", error, "\n");
-}
-
-const Timer& Engine::get_timer() const
-{
-	return this->keeper;
 }
 
 const TimeProfiler& Engine::get_time_profiler() const

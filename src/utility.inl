@@ -5,6 +5,10 @@ namespace tz::util
 		template <typename T>
 		inline std::string to_string(T&& obj)
 		{
+			if constexpr(std::is_same<T, int>::value || std::is_same<T, long>::value || std::is_same<T, long long>::value || std::is_same<T, unsigned>::value || std::is_same<T, unsigned long>::value || std::is_same<T, unsigned long long>::value || std::is_same<T, float>::value || std::is_same<T, double>::value || std::is_same<T, long double>::value)
+			{// runs if obj is a valid parameter for std::to_string(...)
+				return std::to_string(std::forward<T>(obj));
+			}
 			std::ostringstream oss;
 			oss << std::forward<T>(obj);
 			return oss.str();
@@ -113,14 +117,6 @@ namespace tz::util
 		template<typename T>
 		inline std::vector<std::string> devectorise_list_3(Vector3<T> v)
 		{
-			/*
-			std::vector<std::string> ret;
-			ret.reserve(3);
-			ret.push_back(tz::util::cast::to_string(v.get_x()));
-			ret.push_back(tz::util::cast::to_string(v.get_y()));
-			ret.push_back(tz::util::cast::to_string(v.get_z()));
-			return ret;
-			*/
 			return {tz::util::cast::to_string(v.get_x()), tz::util::cast::to_string(v.get_y()), tz::util::cast::to_string(v.get_z())};
 		}	
 	}

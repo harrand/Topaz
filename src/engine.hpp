@@ -19,10 +19,9 @@ public:
 	Engine(const Engine& copy) = default;
 	Engine(Engine&& move) = default;
 	Engine& operator=(const Engine& rhs) = default;
-	~Engine(){};
+	~Engine() = default;
 	
 	void update(std::size_t shader_index);
-	const Timer& get_timer() const;
 	const TimeProfiler& get_time_profiler() const;
 	const MDLF& get_properties() const;
 	const MDLF& get_resources() const;
@@ -58,7 +57,7 @@ public:
 	
 	Camera camera;
 private:
-	Timer keeper;
+	Timer seconds_timer, tick_timer;
 	TimeProfiler profiler;
 	MDLF properties;
 	MDLF resources;
