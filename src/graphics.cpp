@@ -36,6 +36,8 @@ std::string_view Font::get_path() const
 	return {this->font_path.c_str(), this->font_path.length()};
 }
 
+PixelRGBA::PixelRGBA(unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha): data(red, green, blue, alpha){}
+
 namespace tz::graphics::model
 {
 	static bool compare_obj_index_pointer(const OBJIndex* a, const OBJIndex* b);

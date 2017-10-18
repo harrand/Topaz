@@ -172,15 +172,6 @@ void Shader::update() const
 	// literally just update uniforms with the parameters
 	for(const auto& uniform : this->uniform_data)
 		uniform->push();
-	/*
-	glUniformMatrix4fv(this->uniforms[static_cast<unsigned int>(UniformTypes::MODEL)], 1, GL_TRUE, model_matrix_array.data());
-	glUniformMatrix4fv(this->uniforms[static_cast<unsigned int>(UniformTypes::VIEW)], 1, GL_TRUE, view_matrix_array.data());
-	glUniformMatrix4fv(this->uniforms[static_cast<unsigned int>(UniformTypes::PROJECTION)], 1, GL_TRUE, projection_matrix_array.data());
-	glUniform1ui(this->uniforms[static_cast<unsigned int>(UniformTypes::SHININESS)], shininess);
-	glUniform1f(this->uniforms[static_cast<unsigned int>(UniformTypes::PARALLAX_MAP_SCALE)], parallaxmap_scale_constant);
-	glUniform1f(this->uniforms[static_cast<unsigned int>(UniformTypes::PARALLAX_MAP_BIAS)], parallaxmap_scale_constant / 2.0f * (parallaxmap_offset_constant - 1));
-	glUniform1f(this->uniforms[static_cast<unsigned int>(UniformTypes::DISPLACEMENT_FACTOR)], displacement_factor);
-	*/
 }
 
 std::string Shader::load_shader(const std::string& filename)

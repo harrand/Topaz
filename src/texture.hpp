@@ -84,6 +84,7 @@ protected:
 	GLuint texture_handle;
 	int width, height, components;
 	bool gamma_corrected;
+	Bitmap<PixelRGBA> bitmap;
 };
 
 class NormalMap: public Texture

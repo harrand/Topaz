@@ -26,6 +26,22 @@ private:
 	TTF_Font* font_handle;
 };
 
+class PixelRGBA
+{
+public:
+	PixelRGBA(unsigned char red = 0, unsigned char green = 0, unsigned char blue = 0, unsigned char alpha = 0);
+	Vector4<unsigned char> data;
+};
+
+template<class Pixel>
+class Bitmap
+{
+public:
+	Bitmap(std::vector<Pixel> pixels = std::vector<Pixel>(), int width = 0, int height = 0): pixels(pixels), width(width), height(height){}
+	std::vector<Pixel> pixels;
+	int width, height;
+};
+
 namespace tz
 {
 	namespace graphics
