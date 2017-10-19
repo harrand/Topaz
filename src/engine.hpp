@@ -1,6 +1,6 @@
 #ifndef ENGINE_HPP
 #define ENGINE_HPP
-#include "gui.hpp"
+#include "gui_display.hpp"
 #include "command.hpp"
 #include "time.hpp"
 #include "audio.hpp"
