@@ -1,9 +1,10 @@
 #include "gui.hpp"
 #include "SDL_mixer.h"
 #include "graphics.hpp"
+#include "boundary.hpp"
 #include <stack>
 
-GUI::GUI(float x, float y, float width, float height, std::optional<std::reference_wrapper<const Shader>> shader): x(x), y(y), width(width), height(height), shader(shader), parent(nullptr), children(std::unordered_set<GUI*>()), hidden(false){}
+GUI::GUI(float x, float y, float width, float height, std::optional<std::reference_wrapper<const Shader>> shader): x(x), y(y), width(width), height(height), shader(shader), parent(nullptr), children(std::deque<GUI*>()), hidden(false), use_proportional_positioning(false){}
 
 void GUI::update() // updates all children
 {
@@ -107,20 +108,20 @@ void GUI::set_parent(GUI* parent)
 	this->parent = parent;
 }
 
-const std::unordered_set<GUI*>& GUI::get_children() const
+const std::deque<GUI*>& GUI::get_children() const
 {
 	return this->children;
 }
 
 void GUI::add_child(GUI* child)
 {
-	this->children.insert(child);
+	this->children.push_back(child);
 	child->set_parent(this);
 }
 
 void GUI::remove_child(GUI* child)
 {
-	this->children.erase(child);
+	this->children.erase(std::remove(this->children.begin(), this->children.end(), child), this->children.end());
 	child->set_parent(nullptr);
 }
 
@@ -132,6 +133,34 @@ bool GUI::is_hidden() const
 void GUI::set_hidden(bool hidden)
 {
 	this->hidden = hidden;
+}
+
+void GUI::set_using_proportional_positioning(bool use_proportional_positioning)
+{
+	this->use_proportional_positioning = use_proportional_positioning;
+}
+
+bool GUI::is_using_proportional_positioning() const
+{
+	return this->use_proportional_positioning;
+}
+
+bool GUI::covered() const
+{
+	if(!this->has_window_parent())
+		return true;
+	Vector2F this_minimum(this->get_window_pos_x(), this->get_window_pos_y());
+	Vector2F this_maximum = this_minimum + Vector2F(this->get_width(), this->get_height());
+	for(GUI* descendant : tz::ui::descendants(this->find_window_parent(), true))
+	{
+		if(descendant == this || descendant->is_hidden())
+			continue;
+		Vector2F descendant_minimum(descendant->get_window_pos_x(), descendant->get_window_pos_y());
+		Vector2F descendant_maximum = descendant_minimum + Vector2F(descendant->get_width() + descendant->get_height());
+		if(this_minimum > descendant_minimum && this_maximum < descendant_maximum)
+			return true;
+	}
+	return false;
 }
 
 bool tz::graphics::initialised = false;
@@ -289,7 +318,7 @@ void Window::set_focused_child(GUI* child)
 
 namespace tz::ui
 {
-	std::set<GUI*> descendants(const GUI* gui)
+	std::set<GUI*> descendants(const GUI* gui, bool visible_only)
 	{
 		// depth-first search through gui child tree.
 		// 
@@ -307,6 +336,8 @@ namespace tz::ui
 		{
 			top = guis.top();
 			guis.pop();
+			if(top->is_hidden() && visible_only)
+				continue;
 			for(GUI* child : top->get_children())
 			{
 				guis.push(child); // O(1)

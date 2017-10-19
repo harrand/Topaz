@@ -1,6 +1,6 @@
 #include "gui_display.hpp"
 
-Panel::Panel(float x, float y, float width, float height, Vector4F colour, const Shader& shader): GUI(x, y, width, height, shader), use_proportional_positioning(false), colour(colour), quad(tz::graphics::create_quad()), colour_uniform(glGetUniformLocation(this->shader.value().get().get_program_handle(), "colour")), model_matrix_uniform(glGetUniformLocation(this->shader.value().get().get_program_handle(), "model_matrix")){}
+Panel::Panel(float x, float y, float width, float height, Vector4F colour, const Shader& shader): GUI(x, y, width, height, shader), colour(colour), quad(tz::graphics::create_quad()), colour_uniform(glGetUniformLocation(this->shader.value().get().get_program_handle(), "colour")), model_matrix_uniform(glGetUniformLocation(this->shader.value().get().get_program_handle(), "model_matrix")){}
 
 const Vector4F& Panel::get_colour() const
 {
@@ -57,21 +57,6 @@ bool Panel::is_window() const
 bool Panel::is_mouse_sensitive() const
 {
 	return false;
-}
-
-bool Panel::covered() const
-{
-	return false;
-}
-
-void Panel::set_using_proportional_positioning(bool use_proportional_positioning)
-{
-	this->use_proportional_positioning = use_proportional_positioning;
-}
-
-bool Panel::is_using_proportional_positioning() const
-{
-	return this->use_proportional_positioning;
 }
 
 TextLabel::TextLabel(float x, float y, Vector4F colour, std::optional<Vector4F> background_colour, std::optional<Vector3F> text_border_colour, Font font, const std::string& text, const Shader& shader): Panel(x, y, this->text_texture.get_width(), this->text_texture.get_height(), colour, shader), background_colour(background_colour), text_border_colour(text_border_colour), font(font), text(text), text_texture(this->font, this->text, SDL_Color({static_cast<unsigned char>(this->colour.get_x() * 255), static_cast<unsigned char>(this->colour.get_y() * 255), static_cast<unsigned char>(this->colour.get_z() * 255), static_cast<unsigned char>(255)})), background_colour_uniform(glGetUniformLocation(this->shader.value().get().get_program_handle(), "background_colour")), has_background_colour_uniform(glGetUniformLocation(this->shader.value().get().get_program_handle(), "has_background_colour")), text_border_colour_uniform(glGetUniformLocation(this->shader.value().get().get_program_handle(), "text_border_colour")), has_text_border_colour_uniform(glGetUniformLocation(this->shader.value().get().get_program_handle(), "has_text_border_colour"))
@@ -170,7 +155,7 @@ Button::Button(float x, float y, Vector4F colour, std::optional<Vector4F> backgr
 
 void Button::update()
 {
-	if(this->clicked_on() && this->on_mouse_click != nullptr && !this->just_clicked && this->has_window_parent())
+	if(this->clicked_on() && this->on_mouse_click != nullptr && !this->just_clicked && this->has_window_parent() && !this->covered())
 	{
 		// if clicked on properly, run the mouse_click command, set it as just clicked and make it the focus of the window ancestor
 		this->find_window_parent()->set_focused_child(this);

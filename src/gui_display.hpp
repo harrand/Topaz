@@ -14,11 +14,7 @@ public:
 	virtual bool focused() const override;
 	virtual bool is_window() const override;
 	virtual bool is_mouse_sensitive() const override;
-	virtual bool covered() const;
-	void set_using_proportional_positioning(bool use_proportional_positioning);
-	bool is_using_proportional_positioning() const;
 protected:
-	bool use_proportional_positioning;
 	Vector4F colour;
 	Mesh quad;
 	GLuint colour_uniform, model_matrix_uniform;

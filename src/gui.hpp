@@ -5,6 +5,7 @@
 #include <string>
 #include <unordered_map>
 #include <set>
+#include <deque>
 #include "graphics.hpp"
 #include "listener.hpp"
 #include "vector.hpp"
@@ -36,17 +37,20 @@ public:
 	bool has_shader() const;
 	GUI* get_parent() const;
 	void set_parent(GUI* parent);
-	const std::unordered_set<GUI*>& get_children() const;
+	const std::deque<GUI*>& get_children() const;
 	void add_child(GUI* child);
 	void remove_child(GUI* child);
 	bool is_hidden() const;
 	void set_hidden(bool hidden);
+	void set_using_proportional_positioning(bool use_proportional_positioning);
+	bool is_using_proportional_positioning() const;
+	bool covered() const;
 protected:
 	float x, y, width, height;
 	std::optional<std::reference_wrapper<const Shader>> shader;
 	GUI* parent;
-	std::unordered_set<GUI*> children;
-	bool hidden;
+	std::deque<GUI*> children;
+	bool hidden, use_proportional_positioning;
 };
 
 class Window : public GUI
@@ -97,7 +101,8 @@ private:
 
 namespace tz::ui
 {
-	std::set<GUI*> descendants(const GUI* gui);
+	// O(n log n) even through depth-first-search is normally O(n) but set insert is O(log n) so yeah
+	std::set<GUI*> descendants(const GUI* gui, bool visible_only = false);
 	// still O(n log n) (assuming range based for loop optimises to not recompute every tz::ui::descendants() (otherwise would go to O(n log^2 n) which is horrific))
 	std::set<GUI*> youngest_descendants(const GUI* gui);
 }
