@@ -139,6 +139,18 @@ bool Vector2<T>::operator==(const Vector2<T>& rhs) const
 }
 
 template<typename T>
+Vector2<T> Vector2<T>::xy() const
+{
+	return {this->x, this->y};
+}
+
+template<typename T>
+Vector2<T> Vector2<T>::yx() const
+{
+	return {this->y, this->x};
+}
+
+template<typename T>
 Vector3<T>::Vector3(T x, T y, T z): Vector2<T>(x, y), z(z){}
 template<typename T>
 constexpr Vector3<T>::Vector3(const std::array<T, 3>& data): Vector2<T>(std::array<T, 2>({data[0], data[1]})), z(data[2]){}
@@ -272,6 +284,42 @@ bool Vector3<T>::operator==(const Vector3<T>& rhs) const
 }
 
 template<typename T>
+Vector3<T> Vector3<T>::xyz() const
+{
+	return {this->x, this->y, this->z};
+}
+
+template<typename T>
+Vector3<T> Vector3<T>::xzy() const
+{
+	return {this->x, this->z, this->y};
+}
+
+template<typename T>
+Vector3<T> Vector3<T>::yxz() const
+{
+	return {this->y, this->x, this->z};
+}
+
+template<typename T>
+Vector3<T> Vector3<T>::yzx() const
+{
+	return {this->y, this->z, this->x};
+}
+
+template<typename T>
+Vector3<T> Vector3<T>::zxy() const
+{
+	return {this->z, this->x, this->y};
+}
+
+template<typename T>
+Vector3<T> Vector3<T>::zyx() const
+{
+	return {this->z, this->y, this->x};
+}
+
+template<typename T>
 Vector4<T>::Vector4(T x, T y, T z, T w): Vector3<T>(x, y, z), w(w){}
 template<typename T>
 constexpr Vector4<T>::Vector4(const std::array<T, 4>& data): Vector3<T>(std::array<T, 3>({data[0], data[1], data[2]})), w(data[3]){}
@@ -397,4 +445,148 @@ template<typename T>
 bool Vector4<T>::operator==(const Vector4<T>& rhs) const
 {
 	return (this->x == rhs.get_x()) && (this->y == rhs.get_y()) && (this->z == rhs.get_z()) && (this->w == rhs.get_w());
+}
+
+template<typename T>
+Vector4<T> Vector4<T>::xyzw() const
+{
+	return {this->x, this->y, this->z, this->w};
+}
+
+template<typename T>
+Vector4<T> Vector4<T>::xywz() const
+{
+	return {this->x, this->y, this->w, this->z};
+}
+
+template<typename T>
+Vector4<T> Vector4<T>::xzyw() const
+{
+	return {this->x, this->z, this->y, this->w};
+}
+
+template<typename T>
+Vector4<T> Vector4<T>::xzwy() const
+{
+	return {this->x, this->z, this->w, this->y};
+}
+
+template<typename T>
+Vector4<T> Vector4<T>::xwyz() const
+{
+	return {this->x, this->w, this->y, this->z};
+}
+
+template<typename T>
+Vector4<T> Vector4<T>::xwzy() const
+{
+	return {this->x, this->w, this->z, this->y};
+}
+
+template<typename T>
+Vector4<T> Vector4<T>::yxzw() const
+{
+	return {this->y, this->x, this->z, this->w};
+}
+
+template<typename T>
+Vector4<T> Vector4<T>::yxwz() const
+{
+	return {this->y, this->x, this->w, this->z};
+}
+
+template<typename T>
+Vector4<T> Vector4<T>::yzxw() const
+{
+	return {this->y, this->z, this->x, this->w};
+}
+
+template<typename T>
+Vector4<T> Vector4<T>::yzwx() const
+{
+	return {this->y, this->z, this->w, this->x};
+}
+
+template<typename T>
+Vector4<T> Vector4<T>::ywxz() const
+{
+	return {this->y, this->w, this->x, this->z};
+}
+
+template<typename T>
+Vector4<T> Vector4<T>::ywzx() const
+{
+	return {this->y, this->w, this->z, this->x};
+}
+
+template<typename T>
+Vector4<T> Vector4<T>::zxyw() const
+{
+	return {this->z, this->x, this->y, this->w};
+}
+
+template<typename T>
+Vector4<T> Vector4<T>::zxwy() const
+{
+	return {this->z, this->x, this->w, this->y};
+}
+
+template<typename T>
+Vector4<T> Vector4<T>::zyxw() const
+{
+	return {this->z, this->y, this->x, this->w};
+}
+
+template<typename T>
+Vector4<T> Vector4<T>::zywx() const
+{
+	return {this->z, this->y, this->w, this->x};
+}
+
+template<typename T>
+Vector4<T> Vector4<T>::zwxy() const
+{
+	return {this->z, this->w, this->x, this->y};
+}
+
+template<typename T>
+Vector4<T> Vector4<T>::zwyx() const
+{
+	return {this->z, this->w, this->y, this->x};
+}
+
+template<typename T>
+Vector4<T> Vector4<T>::wxyz() const
+{
+	return {this->w, this->x, this->y, this->z};
+}
+
+template<typename T>
+Vector4<T> Vector4<T>::wxzy() const
+{
+	return {this->w, this->x, this->z, this->y};
+}
+
+template<typename T>
+Vector4<T> Vector4<T>::wyxz() const
+{
+	return {this->w, this->y, this->x, this->z};
+}
+
+template<typename T>
+Vector4<T> Vector4<T>::wyzx() const
+{
+	return {this->w, this->y, this->z, this->x};
+}
+
+template<typename T>
+Vector4<T> Vector4<T>::wzxy() const
+{
+	return {this->w, this->z, this->x, this->y};
+}
+
+template<typename T>
+Vector4<T> Vector4<T>::wzyx() const
+{
+	return {this->w, this->z, this->y, this->x};
 }

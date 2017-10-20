@@ -49,6 +49,8 @@ public:
 	bool operator<=(const Vector2<T>& rhs) const;
 	bool operator>=(const Vector2<T>& rhs) const;
 	bool operator==(const Vector2<T>& rhs) const;
+	Vector2<T> xy() const;
+	Vector2<T> yx() const;
 protected:
 	T x, y;
 };
@@ -86,6 +88,12 @@ public:
 	bool operator<=(const Vector3<T>& rhs) const;
 	bool operator>=(const Vector3<T>& rhs) const;
 	bool operator==(const Vector3<T>& rhs) const;
+	Vector3<T> xyz() const;
+	Vector3<T> xzy() const;
+	Vector3<T> yxz() const;
+	Vector3<T> yzx() const;
+	Vector3<T> zxy() const;
+	Vector3<T> zyx() const;
 protected:
 	T z;
 };
@@ -122,6 +130,30 @@ public:
 	bool operator<=(const Vector4<T>& rhs) const;
 	bool operator>=(const Vector4<T>& rhs) const;
 	bool operator==(const Vector4<T>& rhs) const;
+	Vector4<T> xyzw() const;
+	Vector4<T> xywz() const;
+	Vector4<T> xzyw() const;
+	Vector4<T> xzwy() const;
+	Vector4<T> xwyz() const;
+	Vector4<T> xwzy() const;
+	Vector4<T> yxzw() const;
+	Vector4<T> yxwz() const;
+	Vector4<T> yzxw() const;
+	Vector4<T> yzwx() const;
+	Vector4<T> ywxz() const;
+	Vector4<T> ywzx() const;
+	Vector4<T> zxyw() const;
+	Vector4<T> zxwy() const;
+	Vector4<T> zyxw() const;
+	Vector4<T> zywx() const;
+	Vector4<T> zwxy() const;
+	Vector4<T> zwyx() const;
+	Vector4<T> wxyz() const;
+	Vector4<T> wxzy() const;
+	Vector4<T> wyxz() const;
+	Vector4<T> wyzx() const;
+	Vector4<T> wzxy() const;
+	Vector4<T> wzyx() const;
 protected:
 	T w;
 };

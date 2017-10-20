@@ -56,42 +56,42 @@ Vector3F Camera::forward() const
 {
 	// put the axis-aligned forward vector into world space with swizzling to cull the w component
 	Vector4F forward_4 = this->camera_matrix() * Vector4F(0, 0, -1, 0);
-	return Vector3F(forward_4.get_x(), forward_4.get_y(), forward_4.get_z()).normalised();
+	return forward_4.xyz().normalised();
 }
 
 Vector3F Camera::backward() const
 {
 	// put the axis-aligned backward vector into world space with swizzling to cull the w component
 	Vector4F backward_4 = this->camera_matrix() * Vector4F(0, 0, 1, 0);
-	return Vector3F(backward_4.get_x(), backward_4.get_y(), backward_4.get_z()).normalised();
+	return backward_4.xyz().normalised();
 }
 
 Vector3F Camera::up() const
 {
 	// put the axis-aligned upward vector into world space with swizzling to cull the w component
 	Vector4F up_4 = this->camera_matrix() * Vector4F(0, 1, 0, 0);
-	return Vector3F(up_4.get_x(), up_4.get_y(), up_4.get_z()).normalised();
+	return up_4.xyz().normalised();
 }
 
 Vector3F Camera::down() const
 {
 	// put the axis-aligned downward vector into world space with swizzling to cull the w component
 	Vector4F down_4 = this->camera_matrix() * Vector4F(0, -1, 0, 0);
-	return Vector3F(down_4.get_x(), down_4.get_y(), down_4.get_z()).normalised();
+	return down_4.xyz().normalised();
 }
 
 Vector3F Camera::left() const
 {
 	// put the axis-aligned left vector into world space with swizzling to cull the w component
 	Vector4F left_4 = this->camera_matrix() * Vector4F(-1, 0, 0, 0);
-	return Vector3F(left_4.get_x(), left_4.get_y(), left_4.get_z()).normalised();
+	return left_4.xyz().normalised();
 }
 
 Vector3F Camera::right() const
 {
 	// put the axis-aligned right vector into world space with swizzling to cull the w component
 	Vector4F right_4 = this->camera_matrix() * Vector4F(1, 0, 0, 0);
-	return Vector3F(right_4.get_x(), right_4.get_y(), right_4.get_z()).normalised();
+	return right_4.xyz().normalised();
 }
 
 Matrix4x4 Camera::camera_matrix() const
