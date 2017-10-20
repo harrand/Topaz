@@ -50,6 +50,11 @@ const std::vector<Vector3F>& Mesh::get_normals() const
 	return this->model.normals;
 }
 
+const std::vector<Vector3F>& Mesh::get_tangents() const
+{
+	return this->model.tangents;
+}
+
 std::string Mesh::get_file_name() const
 {
 	return this->filename;
@@ -124,6 +129,63 @@ void Mesh::init_mesh()
 	glEnableVertexAttribArray(4);
 	glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
+	glBindVertexArray(0);
+}
+
+InstancedMesh::InstancedMesh(Mesh* mesh, std::vector<Vector3F> positions, std::vector<Vector3F> rotations, std::vector<Vector3F> scales): mesh(mesh), positions(positions), rotations(rotations), scales(scales)
+{
+	std::vector<Vector3POD> positions_pod, rotations_pod, scales_pod;
+	for(Vector3F position : this->positions)
+		positions_pod.push_back(position.to_raw());
+	for(Vector3F rotation : this->rotations)
+		rotations_pod.push_back(rotation.to_raw());
+	for(Vector3F scale : this->scales)
+		scales_pod.push_back(scale.to_raw());
+	
+	glGenBuffers(1, &instance_positions_vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, instance_positions_vbo);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(Vector3POD) * this->positions.size(), positions_pod.data(), GL_STATIC_DRAW);
+	
+	glGenBuffers(1, &instance_rotations_vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, instance_rotations_vbo);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(Vector3POD) * this->rotations.size(), rotations_pod.data(), GL_STATIC_DRAW);
+	
+	glGenBuffers(1, &instance_scales_vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, instance_scales_vbo);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(Vector3POD) * this->scales.size(), scales_pod.data(), GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	
+	glEnableVertexAttribArray(5);
+	glBindBuffer(GL_ARRAY_BUFFER, instance_positions_vbo);
+	glVertexAttribPointer(5, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
+	glVertexAttribDivisor(5, 1);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	
+	glEnableVertexAttribArray(6);
+	glBindBuffer(GL_ARRAY_BUFFER, instance_rotations_vbo);
+	glVertexAttribPointer(6, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
+	glVertexAttribDivisor(6, 1);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	
+	glEnableVertexAttribArray(7);
+	glBindBuffer(GL_ARRAY_BUFFER, instance_scales_vbo);
+	glVertexAttribPointer(7, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
+	glVertexAttribDivisor(7, 1);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+void InstancedMesh::render(bool patches, GLenum mode)
+{
+	glBindVertexArray(this->vertex_array_object);
+	if(patches)
+	{
+		glPatchParameteri(GL_PATCH_VERTICES, 3);
+		glDrawElementsInstanced(GL_PATCHES, this->render_count, GL_UNSIGNED_INT, 0, this->positions.size());
+	}
+	else
+	{
+		glDrawElementsInstanced(mode, this->render_count, GL_UNSIGNED_INT, 0, this->positions.size());
+	}
 	glBindVertexArray(0);
 }
 

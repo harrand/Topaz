@@ -101,7 +101,7 @@ private:
 
 namespace tz::ui
 {
-	// O(n log n) even through depth-first-search is normally O(n) but set insert is O(log n) so yeah
+	// O(n log n) even though depth-first-traversal is normally O(n) but set insert is O(log n) so yeah
 	std::set<GUI*> descendants(const GUI* gui, bool visible_only = false);
 	// still O(n log n) (assuming range based for loop optimises to not recompute every tz::ui::descendants() (otherwise would go to O(n log^2 n) which is horrific))
 	std::set<GUI*> youngest_descendants(const GUI* gui);
