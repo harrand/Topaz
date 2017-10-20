@@ -62,6 +62,8 @@ private:
 	using Vector2<T>::normalised;
 public:
 	Vector3<T>(T x = T(), T y = T(), T z = T());
+	Vector3<T>(Vector2<T> xy, T z);
+	Vector3<T>(T x, Vector2<T> yz);
 	constexpr Vector3<T>(const std::array<T, 3>& data);
 	Vector3<T>(const Vector3<T>& copy) = default;
 	Vector3<T>(Vector3<T>&& move) = default;
@@ -105,6 +107,9 @@ private:
 	using Vector3<T>::normalised;
 public:
 	Vector4<T>(T x = T(), T y = T(), T z = T(), T w = T());
+	Vector4<T>(Vector3<T> xyz, T w);
+	Vector4<T>(T x, Vector3<T> yzw);
+	Vector4<T>(Vector2<T> xy, Vector2<T> zw);
 	constexpr Vector4<T>(const std::array<T, 4>& data);
 	Vector4<T>(const Vector4& copy) = default;
 	Vector4<T>(Vector4&& move) = default;

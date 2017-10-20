@@ -153,6 +153,10 @@ Vector2<T> Vector2<T>::yx() const
 template<typename T>
 Vector3<T>::Vector3(T x, T y, T z): Vector2<T>(x, y), z(z){}
 template<typename T>
+Vector3<T>::Vector3(Vector2<T> xy, T z): Vector2<T>(xy), z(z){}
+template<typename T>
+Vector3<T>::Vector3(T x, Vector2<T> yz): Vector2<T>(x, yz.get_x()), z(yz.get_y()){}
+template<typename T>
 constexpr Vector3<T>::Vector3(const std::array<T, 3>& data): Vector2<T>(std::array<T, 2>({data[0], data[1]})), z(data[2]){}
 
 template<typename T>
@@ -321,6 +325,12 @@ Vector3<T> Vector3<T>::zyx() const
 
 template<typename T>
 Vector4<T>::Vector4(T x, T y, T z, T w): Vector3<T>(x, y, z), w(w){}
+template<typename T>
+Vector4<T>::Vector4(Vector3<T> xyz, T w): Vector3<T>(xyz), w(w){}
+template<typename T>
+Vector4<T>::Vector4(T x, Vector3<T> yzw): Vector3<T>(x, yzw.get_x(), yzw.get_y()), w(yzw.get_z()){}
+template<typename T>
+Vector4<T>::Vector4(Vector2<T> xy, Vector2<T> zw): Vector3<T>(xy.get_x(), xy.get_y(), zw.get_x()), w(zw.get_y()){}
 template<typename T>
 constexpr Vector4<T>::Vector4(const std::array<T, 4>& data): Vector3<T>(std::array<T, 3>({data[0], data[1], data[2]})), w(data[3]){}
 
