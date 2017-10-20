@@ -24,7 +24,7 @@ void Panel::update()
 		glUniform4f(this->colour_uniform, this->colour.get_x(), this->colour.get_y(), this->colour.get_z(), this->colour.get_w());
 		Matrix4x4 projection;
 		if(this->has_window_parent() && !this->use_proportional_positioning)
-			projection = Matrix4x4::create_orthographic_matrix(this->find_window_parent()->get_width(), 0.0f, this->find_window_parent()->get_height(), 0.0f, -1.0f, 1.0f);
+			projection = tz::ui::create_orthographic_gui_matrix(this);
 		else
 			projection = Matrix4x4::identity();
 		glUniformMatrix4fv(this->model_matrix_uniform, 1, GL_TRUE, (projection * Matrix4x4::create_model_matrix(Vector3F(this->get_window_pos_x(), this->get_window_pos_y(), 0.0f), Vector3F(), Vector3F(this->width, this->height, 0.0f))).fill_data().data());
@@ -83,7 +83,7 @@ void TextLabel::update()
 			glUniform3f(this->text_border_colour_uniform, this->text_border_colour.value().get_x(), this->text_border_colour.value().get_y(), this->text_border_colour.value().get_z());
 		Matrix4x4 projection;
 		if(this->has_window_parent() && !this->use_proportional_positioning)
-			projection = Matrix4x4::create_orthographic_matrix(this->find_window_parent()->get_width(), 0.0f, this->find_window_parent()->get_height(), 0.0f, -1.0f, 1.0f);
+			projection = tz::ui::create_orthographic_gui_matrix(this);
 		else
 			projection = Matrix4x4::identity();
 		glUniformMatrix4fv(this->model_matrix_uniform, 1, GL_TRUE, (projection * Matrix4x4::create_model_matrix(Vector3F(this->get_window_pos_x(), this->get_window_pos_y(), 0.0f), Vector3F(), Vector3F(this->width, this->height, 0.0f))).fill_data().data());

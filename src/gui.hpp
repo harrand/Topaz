@@ -105,5 +105,6 @@ namespace tz::ui
 	std::set<GUI*> descendants(const GUI* gui, bool visible_only = false);
 	// still O(n log n) (assuming range based for loop optimises to not recompute every tz::ui::descendants() (otherwise would go to O(n log^2 n) which is horrific))
 	std::set<GUI*> youngest_descendants(const GUI* gui);
+	Matrix4x4 create_orthographic_gui_matrix(const GUI* gui);
 }
 #endif
