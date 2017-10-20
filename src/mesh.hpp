@@ -36,27 +36,14 @@ private:
 		POSITION = 0,
 		TEXCOORD = 1,
 		NORMAL = 2,
-		INDEX = 3,
-		TANGENT = 4,
+		TANGENT = 3,
+		INDEX = 4,
 		NUM_BUFFERS = 5
 	};
 	GLuint vertex_array_object; //vao
 	std::array<GLuint, static_cast<std::size_t>(BufferTypes::NUM_BUFFERS)> vbo_buffers;
 	unsigned int render_count;
 };
-
-// InstancedMesh attaches to a currently existing mesh, using its vao handle to render the mesh multiple times using the data in vectors positions, rotations and scales.
-class InstancedMesh
-{
-public:
-	InstancedMesh(Mesh* mesh, std::vector<Vector3F> positions, std::vector<Vector3F> rotations, std::vector<Vector3F> scales);
-	void render(bool patches, GLenum mode = GL_TRIANGLES) const;
-private:
-	Mesh* mesh;
-	std::vector<Vector3F> positions, rotations, scales;
-	GLuint instance_positions_vbo, instance_rotations_vbo, instance_scales_vbo;
-};
-
 namespace tz
 {
 	namespace graphics

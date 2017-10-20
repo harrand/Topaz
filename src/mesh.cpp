@@ -107,85 +107,26 @@ void Mesh::init_mesh()
 	glBindBuffer(GL_ARRAY_BUFFER, this->vbo_buffers[static_cast<unsigned int>(BufferTypes::POSITION)]);
 	glBufferData(GL_ARRAY_BUFFER, positions.size() * sizeof(positions[0]), positions.data(), GL_STATIC_DRAW);
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
 	
 	glBindBuffer(GL_ARRAY_BUFFER, this->vbo_buffers[static_cast<unsigned int>(BufferTypes::TEXCOORD)]);
 	glBufferData(GL_ARRAY_BUFFER, texcoords.size() * sizeof(texcoords[0]), texcoords.data(), GL_STATIC_DRAW);
 	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0);
 	
 	glBindBuffer(GL_ARRAY_BUFFER, this->vbo_buffers[static_cast<unsigned int>(BufferTypes::NORMAL)]);
 	glBufferData(GL_ARRAY_BUFFER, normals.size() * sizeof(normals[0]), normals.data(), GL_STATIC_DRAW);
 	glEnableVertexAttribArray(2);
-	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
-	
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->vbo_buffers[static_cast<unsigned int>(BufferTypes::INDEX)]);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->model.indices.size() * sizeof(this->model.indices[0]), this->model.indices.data(), GL_STATIC_DRAW);
-	glEnableVertexAttribArray(3);
-	glVertexAttribPointer(3, 3, GL_UNSIGNED_INT, GL_FALSE, 0, 0);
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE,  3 * sizeof(float), 0);
 	
 	glBindBuffer(GL_ARRAY_BUFFER, this->vbo_buffers[static_cast<unsigned int>(BufferTypes::TANGENT)]);
 	glBufferData(GL_ARRAY_BUFFER, tangents.size() * sizeof(tangents[0]), tangents.data(), GL_STATIC_DRAW);
 	glEnableVertexAttribArray(4);
-	glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
+	
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->vbo_buffers[static_cast<unsigned int>(BufferTypes::INDEX)]);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->model.indices.size() * sizeof(this->model.indices[0]), this->model.indices.data(), GL_STATIC_DRAW);
 
-	glBindVertexArray(0);
-}
-
-InstancedMesh::InstancedMesh(Mesh* mesh, std::vector<Vector3F> positions, std::vector<Vector3F> rotations, std::vector<Vector3F> scales): mesh(mesh), positions(positions), rotations(rotations), scales(scales)
-{
-	std::vector<Vector3POD> positions_pod, rotations_pod, scales_pod;
-	for(Vector3F position : this->positions)
-		positions_pod.push_back(position.to_raw());
-	for(Vector3F rotation : this->rotations)
-		rotations_pod.push_back(rotation.to_raw());
-	for(Vector3F scale : this->scales)
-		scales_pod.push_back(scale.to_raw());
-	
-	glGenBuffers(1, &instance_positions_vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, instance_positions_vbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(Vector3POD) * this->positions.size(), positions_pod.data(), GL_STATIC_DRAW);
-	
-	glGenBuffers(1, &instance_rotations_vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, instance_rotations_vbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(Vector3POD) * this->rotations.size(), rotations_pod.data(), GL_STATIC_DRAW);
-	
-	glGenBuffers(1, &instance_scales_vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, instance_scales_vbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(Vector3POD) * this->scales.size(), scales_pod.data(), GL_STATIC_DRAW);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	
-	glEnableVertexAttribArray(5);
-	glBindBuffer(GL_ARRAY_BUFFER, instance_positions_vbo);
-	glVertexAttribPointer(5, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
-	glVertexAttribDivisor(5, 1);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	
-	glEnableVertexAttribArray(6);
-	glBindBuffer(GL_ARRAY_BUFFER, instance_rotations_vbo);
-	glVertexAttribPointer(6, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
-	glVertexAttribDivisor(6, 1);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	
-	glEnableVertexAttribArray(7);
-	glBindBuffer(GL_ARRAY_BUFFER, instance_scales_vbo);
-	glVertexAttribPointer(7, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
-	glVertexAttribDivisor(7, 1);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-}
-
-void InstancedMesh::render(bool patches, GLenum mode)
-{
-	glBindVertexArray(this->vertex_array_object);
-	if(patches)
-	{
-		glPatchParameteri(GL_PATCH_VERTICES, 3);
-		glDrawElementsInstanced(GL_PATCHES, this->render_count, GL_UNSIGNED_INT, 0, this->positions.size());
-	}
-	else
-	{
-		glDrawElementsInstanced(mode, this->render_count, GL_UNSIGNED_INT, 0, this->positions.size());
-	}
 	glBindVertexArray(0);
 }
 

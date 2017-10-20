@@ -8,7 +8,7 @@
 #include <string_view>
 #include <unordered_set>
 #include "utility.hpp"
-#include "glew.h"
+#include "GL/glew.h"
 
 namespace tz
 {
