@@ -2,6 +2,7 @@
 #include "listener.hpp"
 #include "physics.hpp"
 #include "data.hpp"
+#include "gui_widget.hpp"
 
 void init();
 void test();
