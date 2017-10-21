@@ -53,6 +53,8 @@ T Vector2<T>::dot(const Vector2<T>& rhs) const
 template<typename T>
 Vector2<T> Vector2<T>::normalised() const
 {
+	if(!std::isfinite(this->x) || !std::isfinite(this->y))
+		return Vector2<T>();
 	return {this->x / this->length(), this->y / this->length()};
 }
 
@@ -202,6 +204,8 @@ Vector3<T> Vector3<T>::cross(const Vector3<T>& rhs) const
 template<typename T>
 Vector3<T> Vector3<T>::normalised() const
 {
+	if(!std::isfinite(this->x) || !std::isfinite(this->y) || !std::isfinite(this->z))
+		return Vector3<T>();
 	return {this->x / this->length(), this->y / this->length(), this->z / this->length()};
 }
 
@@ -372,6 +376,8 @@ T Vector4<T>::dot(Vector4<T> rhs) const
 template<typename T>
 Vector4<T> Vector4<T>::normalised() const
 {
+	if(!std::isfinite(this->x) || !std::isfinite(this->y) || !std::isfinite(this->z) || !std::isfinite(this->w))
+		return Vector4<T>();
 	return {this->x / this->length(), this->y / this->length(), this->z / this->length(), this->w / this->length()};
 }
 
