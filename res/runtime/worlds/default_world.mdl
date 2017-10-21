@@ -63,8 +63,8 @@ object4.parallax_map_offset: -0.5
 object4.displacement_factor: 0.25
 object5.mesh: sphere
 object5.texture0: bricks
-object5.texture1: default_normalmap
-object5.texture2: default_parallaxmap
+object5.texture1: bricks_normalmap
+object5.texture2: bricks_parallaxmap
 object5.texture3: default_displacementmap
 object5.pos: [-50,40,0]
 object5.rot: [0,0,0]

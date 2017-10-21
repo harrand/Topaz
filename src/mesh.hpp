@@ -38,7 +38,7 @@ private:
 		NORMAL = 2,
 		TANGENT = 3,
 		INDEX = 4,
-		NUM_BUFFERS
+		NUM_BUFFERS = 5
 	};
 	GLuint vertex_array_object; //vao
 	std::array<GLuint, static_cast<std::size_t>(BufferTypes::NUM_BUFFERS)> vbo_buffers;

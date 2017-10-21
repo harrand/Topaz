@@ -69,7 +69,7 @@ void Shader::compile()
 	glBindAttribLocation(this->program_handle, 0, "position");
 	glBindAttribLocation(this->program_handle, 1, "texcoord");
 	glBindAttribLocation(this->program_handle, 2, "normal");
-	glBindAttribLocation(this->program_handle, 3, "tangent");
+	glBindAttribLocation(this->program_handle, 4, "tangent");
 	this->compiled = true;
 }
 
@@ -81,17 +81,6 @@ void Shader::link()
 
 void Shader::validate()
 {
-	GLint maximum_vertex_attributes;
-	glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &maximum_vertex_attributes);
-	tz::util::log::message("Maximum vertex attributes = ", maximum_vertex_attributes);
-	tz::util::log::message("Shader Validation Information:");
-	tz::util::log::message("'position' location = ", glGetAttribLocation(this->program_handle, "position"));
-	tz::util::log::message("'texcoord' location = ", glGetAttribLocation(this->program_handle, "texcoord"));
-	tz::util::log::message("'normal' location = ", glGetAttribLocation(this->program_handle, "normal"));
-	tz::util::log::message("'tangent' location = ", glGetAttribLocation(this->program_handle, "tangent"));
-	GLenum error;
-		if((error = glGetError()) != GL_NO_ERROR)
-			tz::util::log::error("OpenGL Error: ", error, "\n");
 	glValidateProgram(this->program_handle);
 	Shader::check_shader_error(this->program_handle, GL_VALIDATE_STATUS, true, "Shader Program Validation Failed:\n");
 }

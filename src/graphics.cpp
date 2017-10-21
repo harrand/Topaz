@@ -152,9 +152,7 @@ namespace tz::graphics::model
 			tangents[i_2] += tangent;
 		}
 		for(std::size_t i = 0; i < tangents.size(); i++)
-		{
 			tangents[i] = tangents[i].normalised();
-		}
 	}
 	
 	IndexedModel OBJModel::to_indexed_model()
