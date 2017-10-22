@@ -41,6 +41,7 @@ public:
 	const std::string& get_mesh_link() const;
 	const std::vector<std::pair<std::string, Texture::TextureType>> get_textures() const;
 	virtual void render(Mesh* mesh, Texture* tex, NormalMap* nm, ParallaxMap* pm, DisplacementMap* dm, const Camera& cam, Shader& shad, float width, float height) const;
+	virtual void render(const std::vector<std::unique_ptr<Mesh>>& all_meshes, const std::vector<std::unique_ptr<Texture>>& all_textures, const std::vector<std::unique_ptr<NormalMap>>& all_normalmaps, const std::vector<std::unique_ptr<ParallaxMap>>& all_parallaxmaps, const std::vector<std::unique_ptr<DisplacementMap>>& all_displacementmaps, const Camera& cam, Shader& shad, float width, float height) const;
 	bool operator==(const Object& rhs) const;
 protected:
 	Vector3F pos, rot, scale;

@@ -113,6 +113,23 @@ void Object::render(Mesh* mesh, Texture* tex, NormalMap* nm, ParallaxMap* pm, Di
 	//glFrontFace(GL_CW);
 }
 
+void Object::render(const std::vector<std::unique_ptr<Mesh>>& all_meshes, const std::vector<std::unique_ptr<Texture>>& all_textures, const std::vector<std::unique_ptr<NormalMap>>& all_normalmaps, const std::vector<std::unique_ptr<ParallaxMap>>& all_parallaxmaps, const std::vector<std::unique_ptr<DisplacementMap>>& all_displacementmaps, const Camera& cam, Shader& shad, float width, float height) const
+{
+	std::string texture_link, normalmap_link, parallaxmap_link, displacementmap_link;
+	for(auto& texture : this->get_textures())
+	{
+		if(texture.second == Texture::TextureType::TEXTURE)
+			texture_link = texture.first;
+		if(texture.second == Texture::TextureType::NORMAL_MAP)
+			normalmap_link = texture.first;
+		if(texture.second == Texture::TextureType::PARALLAX_MAP)
+			parallaxmap_link = texture.first;
+		if(texture.second == Texture::TextureType::DISPLACEMENT_MAP)
+			displacementmap_link = texture.first;
+	}
+	this->render(tz::graphics::find_mesh(this->get_mesh_link(), all_meshes), Texture::get_from_link<Texture>(texture_link, all_textures), Texture::get_from_link<NormalMap>(normalmap_link, all_normalmaps), Texture::get_from_link<ParallaxMap>(parallaxmap_link, all_parallaxmaps), Texture::get_from_link<DisplacementMap>(displacementmap_link, all_displacementmaps), cam, shad, width, height);
+}
+
 bool Object::operator==(const Object& rhs) const
 {
 	return this->pos == rhs.pos && this->rot == rhs.rot && this->scale == rhs.scale && this->shininess == rhs.shininess && this->parallax_map_scale == rhs.parallax_map_scale && this->parallax_map_offset == rhs.parallax_map_offset && this->displacement_factor == rhs.displacement_factor && this->mesh_link == rhs.mesh_link && this->textures == rhs.textures;

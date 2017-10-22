@@ -52,9 +52,13 @@ public:
 	InstancedMesh(std::string filename, std::vector<Vector3F> positions, std::vector<Vector3F> rotations, std::vector<Vector3F> scales);
 	InstancedMesh(const InstancedMesh& copy) = default;
 	InstancedMesh(InstancedMesh&& move) = default;
-	~InstancedMesh() = default;
+	~InstancedMesh();
 	InstancedMesh& operator=(const InstancedMesh& rhs) = default;
 	
+	const std::vector<Vector3F>& get_instance_positions() const;
+	const std::vector<Vector3F>& get_instance_rotations() const;
+	const std::vector<Vector3F>& get_instance_scales() const;
+	std::size_t get_instance_quantity() const;
 	virtual void render(bool patches, GLenum mode = GL_TRIANGLES) const override;
 private:
 	std::vector<Vector3F> positions, rotations, scales;

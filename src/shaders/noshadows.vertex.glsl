@@ -41,7 +41,7 @@ void share()
 	vs_projection_matrix = p;
 	
 	vec3 normal_cameraspace = normalize((v * m * vec4(vs_normal_modelspace, 0.0)).xyz);
-	vec3 tangent_cameraspace = normalize((m * vec4(tangent, 0.0)).xyz);
+	vec3 tangent_cameraspace = normalize((v * m * vec4(tangent, 0.0)).xyz);
 	
 	// Gramm-Schmidt Process
 	tangent_cameraspace = normalize(tangent_cameraspace - dot(tangent_cameraspace, normal_cameraspace) * normal_cameraspace);
@@ -91,11 +91,12 @@ void main()
 	vec4 rw = rotations_instance_w;
 	*/
 	mat4 model = scale(scale_uniform + scales_instance) * rotate(rotation_uniform + rotations_instance) * translate(position_uniform);
+	model = transpose(model);
 	//mat4 rotation_instance = mat4(rotations_instance_x.wzyx, rotations_instance_y.wzyx, rotations_instance_z.wzyx, rotations_instance_w.wzyx);
 	if(is_instanced)
 	{
 		vs_model_matrix = model;
-		gl_Position = p * v * ((transpose(model) * vec4(vs_position_modelspace, 1.0)) + vec4(positions_instance, 0));
+		gl_Position = p * v * (model * vec4(vs_position_modelspace, 1.0) + vec4(positions_instance, 0));
 	}
 	else
 		gl_Position = (p * v * m) * vec4(vs_position_modelspace, 1.0);

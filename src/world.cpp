@@ -241,39 +241,9 @@ void World::render(Camera& cam, Shader& shader, unsigned int width, unsigned int
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
 	for(auto& obj : this->objects)
-	{
-		Mesh* mesh = tz::graphics::find_mesh(obj.get_mesh_link(), all_meshes);
-		Texture* tex = nullptr; NormalMap* nm = nullptr; ParallaxMap* pm = nullptr; DisplacementMap* dm = nullptr;
-		for(auto& texture : obj.get_textures())
-		{
-			if(texture.second == Texture::TextureType::TEXTURE)
-				tex = Texture::get_from_link<Texture>(texture.first, all_textures);
-			else if(texture.second == Texture::TextureType::NORMAL_MAP)
-				nm = Texture::get_from_link<NormalMap>(texture.first, all_normalmaps);
-			else if(texture.second == Texture::TextureType::PARALLAX_MAP)
-				pm = Texture::get_from_link<ParallaxMap>(texture.first, all_parallaxmaps);
-			else if(texture.second == Texture::TextureType::DISPLACEMENT_MAP)
-				dm = Texture::get_from_link<DisplacementMap>(texture.first, all_displacementmaps);
-		}
-		obj.render(mesh, tex, nm, pm, dm, cam, shader, width, height);
-	}
+		obj.render(all_meshes, all_textures, all_normalmaps, all_parallaxmaps, all_displacementmaps, cam, shader, width, height);
 	for(auto& eo : this->entity_objects)
-	{
-		Mesh* mesh = tz::graphics::find_mesh(eo.get_mesh_link(), all_meshes);
-		Texture* tex = nullptr; NormalMap* nm = nullptr; ParallaxMap* pm = nullptr; DisplacementMap* dm = nullptr;
-		for(auto& texture : eo.get_textures())
-		{
-			if(texture.second == Texture::TextureType::TEXTURE)
-				tex = Texture::get_from_link<Texture>(texture.first, all_textures);
-			else if(texture.second == Texture::TextureType::NORMAL_MAP)
-				nm = Texture::get_from_link<NormalMap>(texture.first, all_normalmaps);
-			else if(texture.second == Texture::TextureType::PARALLAX_MAP)
-				pm = Texture::get_from_link<ParallaxMap>(texture.first, all_parallaxmaps);
-			else if(texture.second == Texture::TextureType::DISPLACEMENT_MAP)
-				dm = Texture::get_from_link<DisplacementMap>(texture.first, all_displacementmaps);
-		}
-		eo.render(mesh, tex, nm, pm, dm, cam, shader, width, height);
-	}	
+		eo.render(all_meshes, all_textures, all_normalmaps, all_parallaxmaps, all_displacementmaps, cam, shader, width, height);
 	for(auto& iter : this->base_lights)
 	{
 		Light light = iter.second;

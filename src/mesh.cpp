@@ -27,6 +27,8 @@ Mesh::Mesh(const std::vector<Vertex>& vertices, const std::vector<unsigned int>&
 
 Mesh::~Mesh()
 {
+	for(GLuint& vbo_buffer : this->vbo_buffers)
+		glDeleteBuffers(1, &vbo_buffer);
 	glDeleteVertexArrays(1, &(this->vertex_array_object));
 }
 
@@ -169,6 +171,33 @@ InstancedMesh::InstancedMesh(std::string filename, std::vector<Vector3F> positio
 	glVertexAttribDivisor(7, 1);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
+}
+
+InstancedMesh::~InstancedMesh()
+{
+	glDeleteBuffers(1, &positions_instance_vbo);
+	glDeleteBuffers(1, &rotations_instance_vbo);
+	glDeleteBuffers(1, &scales_instance_vbo);
+}
+
+const std::vector<Vector3F>& InstancedMesh::get_instance_positions() const
+{
+	return this->positions;
+}
+
+const std::vector<Vector3F>& InstancedMesh::get_instance_rotations() const
+{
+	return this->rotations;
+}
+
+const std::vector<Vector3F>& InstancedMesh::get_instance_scales() const
+{
+	return this->scales;
+}
+
+std::size_t InstancedMesh::get_instance_quantity() const
+{
+	return this->instance_quantity;
 }
 
 void InstancedMesh::render(bool patches, GLenum mode) const
