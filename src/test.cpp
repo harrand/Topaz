@@ -150,6 +150,27 @@ void init()
 	RenderSkyboxCommand render_skybox(skybox, engine.camera, skybox_shader, engine.get_meshes(), wnd);
 	engine.add_update_command(&render_skybox);
 	
+	Object test_object("", std::vector<std::pair<std::string, Texture::TextureType>>({std::make_pair<std::string, Texture::TextureType>("../../../res/runtime/textures/sand.jpg", Texture::TextureType::TEXTURE)}), Vector3F(0, 100, 0), Vector3F(), Vector3F(20,20,20), 5, 0, 0, 0);
+	Mesh* typical_mesh = engine.get_meshes()[0].get();
+	std::vector<Vector3F> positions({Vector3F(10, 10, 10), Vector3F(-10, -10, -10), Vector3F(-10, 10, 10), Vector3F(10, -10, -10)});
+	InstancedMesh instanced_cube_2("../../../res/runtime/models/cube_hd.obj", positions, std::vector<Vector3F>(), std::vector<Vector3F>());
+	class Anon : public TrivialCommand
+	{
+	public:
+		Anon(Object& object, Mesh* mesh, const Camera& cam, Shader& shader, float width, float height): object(object), mesh(mesh), cam(cam), shader(shader), width(width), height(height){}
+		virtual void operator()()
+		{
+			tz::util::log::message("rendering test object...");
+			object.render(mesh, nullptr, nullptr, nullptr, nullptr, cam, shader, width, height);
+		}
+		Object& object;
+		Mesh* mesh;
+		const Camera& cam;
+		Shader& shader;
+		float width, height;
+	} anon_instanced_cube_2(test_object, &instanced_cube_2, engine.camera, engine.default_shader, wnd.get_width(), wnd.get_height());
+	engine.add_update_command(&anon_instanced_cube_2);
+	
 	bool on_ground = false;
 	const float a = engine.get_world().get_gravity().length();
 	float speed = 0.0f;
@@ -177,7 +198,7 @@ void init()
 					engine.camera.set_position(position);
 				}
 				if(bound.intersects(engine.camera.get_position() - (Vector3F(0, 1, 0) * (velocity + a))))
-					on_ground = true;
+					on_ground = true; // todo, teleport player right to the edge (otherwise they might just hover above the point which sucks)
 			}
 			engine.camera.set_axis_bound(!noclip);
 			if(!noclip)

@@ -17,7 +17,7 @@ public:
 	Mesh(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices);
 	Mesh(const Mesh& copy) = default;
 	Mesh(Mesh&& move) = default;
-	~Mesh();
+	virtual ~Mesh();
 	Mesh& operator=(const Mesh& rhs) = default;
 	
 	tz::graphics::model::IndexedModel get_indexed_model() const;
@@ -26,8 +26,8 @@ public:
 	const std::vector<Vector3F>& get_normals() const;
 	const std::vector<Vector3F>& get_tangents() const;
 	std::string get_file_name() const;
-	void render(bool patches, GLenum mode = GL_TRIANGLES) const;
-private:
+	virtual void render(bool patches, GLenum mode = GL_TRIANGLES) const;
+protected:
 	const std::string filename;
 	tz::graphics::model::IndexedModel model;
 	void init_mesh();
@@ -44,10 +44,28 @@ private:
 	std::array<GLuint, static_cast<std::size_t>(BufferTypes::NUM_BUFFERS)> vbo_buffers;
 	unsigned int render_count;
 };
+
+class InstancedMesh : public Mesh
+{
+public:
+	InstancedMesh(std::string filename, std::vector<Vector3F> positions, std::vector<Vector3F> rotations, std::vector<Vector3F> scales);
+	InstancedMesh(const InstancedMesh& copy) = default;
+	InstancedMesh(InstancedMesh&& move) = default;
+	~InstancedMesh() = default;
+	InstancedMesh& operator=(const InstancedMesh& rhs) = default;
+	
+	virtual void render(bool patches, GLenum mode = GL_TRIANGLES) const override;
+private:
+	std::vector<Vector3F> positions, rotations, scales;
+	std::size_t instance_quantity;
+	GLuint positions_instance_vbo, rotations_instance_vbo, scales_instance_vbo;
+};
+
 namespace tz
 {
 	namespace graphics
 	{
+		bool is_instanced(const Mesh* mesh);
 		Mesh* find_mesh(const std::string& mesh_link, const std::vector<std::unique_ptr<Mesh>>& all_meshes);
 		Mesh create_quad(float x = 0.0f, float y = 0.0f, float width = 1.0f, float height = -1.0f);
 	}

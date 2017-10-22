@@ -61,7 +61,9 @@ private:
 	TimeProfiler profiler;
 	MDLF properties;
 	MDLF resources;
+public:
 	Shader default_shader, default_gui_shader;
+private:
 	Window* wnd;
 	World world;
 	std::vector<std::unique_ptr<Mesh>> meshes;

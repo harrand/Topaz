@@ -5,6 +5,7 @@ layout(location = 0) in vec3 position;
 layout(location = 1) in vec2 texcoord;
 layout(location = 2) in vec3 normal;
 layout(location = 3) in vec3 tangent;
+layout(location = 5) in vec3 positions_instance;
 
 out vec3 vs_position_modelspace;
 out vec2 vs_texcoord_modelspace;
@@ -19,6 +20,7 @@ uniform mat4 m;
 uniform mat4 v;
 uniform mat4 p;
 uniform float displacement_factor;
+uniform bool is_instanced;
 
 uniform sampler2D displacement_map_sampler;
 
@@ -47,5 +49,8 @@ void share()
 void main()
 {
 	share();
-	gl_Position = (p * v * m) * vec4(vs_position_modelspace, 1.0);
+	if(is_instanced)
+		gl_Position = p * v * ((m * vec4(vs_position_modelspace, 1.0)) + vec4(positions_instance, 0));
+	else
+		gl_Position = (p * v * m) * vec4(vs_position_modelspace, 1.0);
 }

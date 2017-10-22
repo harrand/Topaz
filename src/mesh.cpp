@@ -130,6 +130,44 @@ void Mesh::init_mesh()
 	glBindVertexArray(0);
 }
 
+InstancedMesh::InstancedMesh(std::string filename, std::vector<Vector3F> positions, std::vector<Vector3F> rotations, std::vector<Vector3F> scales): Mesh(filename), positions(positions), rotations(rotations), scales(scales), instance_quantity(std::max({this->positions.size(), this->rotations.size(), this->scales.size()}))
+{
+	glBindVertexArray(this->vertex_array_object);
+	glGenBuffers(1, &this->positions_instance_vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, this->positions_instance_vbo);
+	glBufferData(GL_ARRAY_BUFFER, this->positions.size() * sizeof(this->positions[0]) * this->instance_quantity, this->positions.data(), GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	
+	glEnableVertexAttribArray(5);
+	glBindBuffer(GL_ARRAY_BUFFER, this->positions_instance_vbo);
+	glVertexAttribPointer(5, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);	
+	glVertexAttribDivisor(5, 1);
+	
+	//todo, setup opengl buffers for both rotations and scales.#
+	glBindVertexArray(0);
+}
+
+void InstancedMesh::render(bool patches, GLenum mode) const
+{
+	glBindVertexArray(this->vertex_array_object);
+	if(patches)
+	{
+		glPatchParameteri(GL_PATCH_VERTICES, 3);
+		glDrawElementsInstanced(GL_PATCHES, this->render_count, GL_UNSIGNED_INT, 0, this->instance_quantity);
+	}
+	else
+	{
+		glDrawElementsInstanced(mode, this->render_count, GL_UNSIGNED_INT, 0, this->instance_quantity);
+	}
+	glBindVertexArray(0);
+}
+
+bool tz::graphics::is_instanced(const Mesh* mesh)
+{
+	return dynamic_cast<const InstancedMesh*>(mesh) != nullptr;
+}
+
 Mesh* tz::graphics::find_mesh(const std::string& mesh_link, const std::vector<std::unique_ptr<Mesh>>& all_meshes)
 {
 	for(auto& mesh : all_meshes)
