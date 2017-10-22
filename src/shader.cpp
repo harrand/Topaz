@@ -69,7 +69,7 @@ void Shader::compile()
 	glBindAttribLocation(this->program_handle, 0, "position");
 	glBindAttribLocation(this->program_handle, 1, "texcoord");
 	glBindAttribLocation(this->program_handle, 2, "normal");
-	glBindAttribLocation(this->program_handle, 4, "tangent");
+	glBindAttribLocation(this->program_handle, 3, "tangent");
 	this->compiled = true;
 }
 

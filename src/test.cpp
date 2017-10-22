@@ -49,10 +49,17 @@ public:
 	{
 		tz::data::Manager manager(std::string(engine.get_resources().get_raw_file().get_path().data(), engine.get_resources().get_raw_file().get_path().length()));
 		std::vector<std::pair<std::string, Texture::TextureType>> textures;
-		textures.emplace_back(manager.resource_link("bricks"), Texture::TextureType::TEXTURE);
-		textures.emplace_back(manager.resource_link("bricks_normalmap"), Texture::TextureType::NORMAL_MAP);
-		textures.emplace_back(manager.resource_link("bricks_parallaxmap"), Texture::TextureType::PARALLAX_MAP);
-		textures.emplace_back(manager.resource_link("bricks_displacementmap"), Texture::TextureType::DISPLACEMENT_MAP);
+		std::vector<std::string> texture_links = engine.get_resources().get_sequence("textures");
+		static Random rand;
+		std::size_t random_index = rand.next_int(0, texture_links.size());
+		std::string random_texture_link = manager.resource_link(texture_links[random_index]);
+		std::string random_normalmap_link = manager.resource_link(texture_links[random_index] + "_normalmap");
+		std::string random_parallaxmap_link = manager.resource_link(texture_links[random_index] + "parallaxmap");
+		tz::util::log::message("texture: ", random_texture_link);
+		textures.emplace_back(random_texture_link, Texture::TextureType::TEXTURE);
+		textures.emplace_back(random_normalmap_link, Texture::TextureType::NORMAL_MAP);
+		textures.emplace_back(random_parallaxmap_link, Texture::TextureType::PARALLAX_MAP);
+		textures.emplace_back(manager.resource_link("default_displacementmap"), Texture::TextureType::DISPLACEMENT_MAP);
 		Object obj(manager.resource_link("cube_hd"), textures, engine.camera.get_position(), engine.camera.get_rotation(), Vector3F(40, 20, 40));
 		bounds.push_back(tz::physics::bound_aabb(obj, engine.get_meshes()));
 		engine.add_to_world(obj);
