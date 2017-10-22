@@ -70,7 +70,10 @@ void Shader::compile()
 	glBindAttribLocation(this->program_handle, 1, "texcoord");
 	glBindAttribLocation(this->program_handle, 2, "normal");
 	glBindAttribLocation(this->program_handle, 3, "tangent");
+	
 	glBindAttribLocation(this->program_handle, 5, "positions_instance");
+	glBindAttribLocation(this->program_handle, 6, "rotations_instance");
+	glBindAttribLocation(this->program_handle, 7, "scales_instance");
 	this->compiled = true;
 }
 

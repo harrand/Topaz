@@ -97,6 +97,9 @@ void Object::render(Mesh* mesh, Texture* tex, NormalMap* nm, ParallaxMap* pm, Di
 		dm->bind(shad.get_program_handle(), static_cast<unsigned int>(dm->get_texture_type()));
 	shad.set_uniform<bool>("is_instanced", tz::graphics::is_instanced(mesh));
 	shad.set_uniform<Matrix4x4>("m", Matrix4x4::create_model_matrix(this->pos, this->rot, this->scale));
+	shad.set_uniform<Vector3F>("position_uniform", this->pos);
+	shad.set_uniform<Vector3F>("rotation_uniform", this->rot);
+	shad.set_uniform<Vector3F>("scale_uniform", this->scale);
 	shad.set_uniform<Matrix4x4>("v", Matrix4x4::create_view_matrix(cam.get_position(), cam.get_rotation()));
 	shad.set_uniform<Matrix4x4>("p", Matrix4x4::create_perspective_matrix(cam.get_fov(), width, height, cam.get_near_clip(), cam.get_far_clip()));
 	shad.set_uniform<unsigned int>("shininess", this->shininess);

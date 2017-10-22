@@ -153,7 +153,9 @@ void init()
 	Object test_object("", std::vector<std::pair<std::string, Texture::TextureType>>({std::make_pair<std::string, Texture::TextureType>("../../../res/runtime/textures/sand.jpg", Texture::TextureType::TEXTURE)}), Vector3F(0, 100, 0), Vector3F(), Vector3F(20,20,20), 5, 0, 0, 0);
 	Mesh* typical_mesh = engine.get_meshes()[0].get();
 	std::vector<Vector3F> positions({Vector3F(10, 10, 10), Vector3F(-10, -10, -10), Vector3F(-10, 10, 10), Vector3F(10, -10, -10)});
-	InstancedMesh instanced_cube_2("../../../res/runtime/models/cube_hd.obj", positions, std::vector<Vector3F>(), std::vector<Vector3F>());
+	std::vector<Vector3F> rotations({Vector3F(0,0,0), Vector3F(1,1,1), Vector3F(2,2,2), Vector3F(3,3,3)});
+	std::vector<Vector3F> scales({Vector3F(1,1,1), Vector3F(2,2,2), Vector3F(3,3,3), Vector3F(4,4,4)});
+	InstancedMesh instanced_cube_2("../../../res/runtime/models/cube_hd.obj", positions, rotations, scales);
 	class Anon : public TrivialCommand
 	{
 	public:

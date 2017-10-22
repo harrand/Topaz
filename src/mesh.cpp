@@ -133,6 +133,7 @@ void Mesh::init_mesh()
 InstancedMesh::InstancedMesh(std::string filename, std::vector<Vector3F> positions, std::vector<Vector3F> rotations, std::vector<Vector3F> scales): Mesh(filename), positions(positions), rotations(rotations), scales(scales), instance_quantity(std::max({this->positions.size(), this->rotations.size(), this->scales.size()}))
 {
 	glBindVertexArray(this->vertex_array_object);
+	// Instance Positions
 	glGenBuffers(1, &this->positions_instance_vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, this->positions_instance_vbo);
 	glBufferData(GL_ARRAY_BUFFER, this->positions.size() * sizeof(this->positions[0]) * this->instance_quantity, this->positions.data(), GL_STATIC_DRAW);
@@ -143,8 +144,30 @@ InstancedMesh::InstancedMesh(std::string filename, std::vector<Vector3F> positio
 	glVertexAttribPointer(5, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);	
 	glVertexAttribDivisor(5, 1);
-	
 	//todo, setup opengl buffers for both rotations and scales.#
+	// Instance Rotations
+	glGenBuffers(1, &this->rotations_instance_vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, this->rotations_instance_vbo);
+	glBufferData(GL_ARRAY_BUFFER, this->rotations.size() * sizeof(this->rotations[0]) * this->instance_quantity, this->rotations.data(), GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	// Instance Rotation Attributes (6, 7, 8, 9)
+	glBindBuffer(GL_ARRAY_BUFFER, this->rotations_instance_vbo);
+	
+	glEnableVertexAttribArray(6);
+	glVertexAttribPointer(6, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
+	glVertexAttribDivisor(6, 1);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	
+	glGenBuffers(1, &this->scales_instance_vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, this->scales_instance_vbo);
+	glBufferData(GL_ARRAY_BUFFER, this->scales.size() * sizeof(this->scales[0]) * this->instance_quantity, this->scales.data(), GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	
+	glBindBuffer(GL_ARRAY_BUFFER, this->scales_instance_vbo);
+	glEnableVertexAttribArray(7);
+	glVertexAttribPointer(7, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
+	glVertexAttribDivisor(7, 1);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 }
 

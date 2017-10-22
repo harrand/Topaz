@@ -8,6 +8,7 @@
 #include <memory>
 #include <array>
 #include "graphics.hpp"
+#include "matrix.hpp"
 
 class Mesh
 {
