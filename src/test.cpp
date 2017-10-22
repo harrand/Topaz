@@ -48,18 +48,17 @@ public:
 	virtual void operator()()
 	{
 		tz::data::Manager manager(std::string(engine.get_resources().get_raw_file().get_path().data(), engine.get_resources().get_raw_file().get_path().length()));
-		std::vector<std::pair<std::string, Texture::TextureType>> textures;
+		std::map<Texture::TextureType, std::string> textures;
 		std::vector<std::string> texture_links = engine.get_resources().get_sequence("textures");
 		static Random rand;
 		std::size_t random_index = rand.next_int(0, texture_links.size());
 		std::string random_texture_link = manager.resource_link(texture_links[random_index]);
 		std::string random_normalmap_link = manager.resource_link(texture_links[random_index] + "_normalmap");
 		std::string random_parallaxmap_link = manager.resource_link(texture_links[random_index] + "parallaxmap");
-		tz::util::log::message("texture: ", random_texture_link);
-		textures.emplace_back(random_texture_link, Texture::TextureType::TEXTURE);
-		textures.emplace_back(random_normalmap_link, Texture::TextureType::NORMAL_MAP);
-		textures.emplace_back(random_parallaxmap_link, Texture::TextureType::PARALLAX_MAP);
-		textures.emplace_back(manager.resource_link("default_displacementmap"), Texture::TextureType::DISPLACEMENT_MAP);
+		textures.emplace(Texture::TextureType::TEXTURE, random_texture_link);
+		textures.emplace(Texture::TextureType::NORMAL_MAP, random_normalmap_link);
+		textures.emplace(Texture::TextureType::PARALLAX_MAP, random_parallaxmap_link);
+		textures.emplace(Texture::TextureType::DISPLACEMENT_MAP, manager.resource_link("default_displacementmap"));
 		Object obj(manager.resource_link("cube_hd"), textures, engine.camera.get_position(), engine.camera.get_rotation(), Vector3F(40, 20, 40));
 		bounds.push_back(tz::physics::bound_aabb(obj, engine.get_meshes()));
 		engine.add_to_world(obj);
@@ -150,7 +149,7 @@ void init()
 	RenderSkyboxCommand render_skybox(skybox, engine.camera, skybox_shader, engine.get_meshes(), wnd);
 	engine.add_update_command(&render_skybox);
 	
-	Object test_object("", std::vector<std::pair<std::string, Texture::TextureType>>({std::make_pair<std::string, Texture::TextureType>("../../../res/runtime/textures/sand.jpg", Texture::TextureType::TEXTURE)}), Vector3F(0, 100, 0), Vector3F(), Vector3F(20,20,20), 5, 0, 0, 0);
+	Object test_object("", std::map<Texture::TextureType, std::string>({std::make_pair<Texture::TextureType, std::string>(Texture::TextureType::TEXTURE, "../../../res/runtime/textures/sand.jpg")}), Vector3F(0, 100, 0), Vector3F(), Vector3F(20,20,20), 5, 0, 0, 0);
 	std::vector<Vector3F> positions({Vector3F(10, 10, 10), Vector3F(-10, -10, -10), Vector3F(-10, 10, 10), Vector3F(10, -10, -10)});
 	std::vector<Vector3F> rotations({Vector3F(0,0,0), Vector3F(1,1,1), Vector3F(2,2,2), Vector3F(3,3,3)});
 	std::vector<Vector3F> scales({Vector3F(1,1,1), Vector3F(2,2,2), Vector3F(3,3,3), Vector3F(4,4,4)});
@@ -161,7 +160,6 @@ void init()
 		Anon(Object& object, Mesh* mesh, const Camera& cam, Shader& shader, float width, float height): object(object), mesh(mesh), cam(cam), shader(shader), width(width), height(height){}
 		virtual void operator()()
 		{
-			tz::util::log::message("rendering test object...");
 			object.render(mesh, nullptr, nullptr, nullptr, nullptr, cam, shader, width, height);
 		}
 		Object& object;

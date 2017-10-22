@@ -18,7 +18,7 @@ namespace tz::graphics
 class Object
 {
 public:
-	Object(std::string mesh_link, std::vector<std::pair<std::string, Texture::TextureType>> textures, Vector3F pos, Vector3F rot, Vector3F scale, unsigned int shininess = tz::graphics::default_shininess, float parallax_map_scale = tz::graphics::default_parallax_map_scale, float parallax_map_offset = tz::graphics::default_parallax_map_offset, float displacement_factor = tz::graphics::default_displacement_factor);
+	Object(std::string mesh_link, std::map<Texture::TextureType, std::string> textures, Vector3F pos, Vector3F rot, Vector3F scale, unsigned int shininess = tz::graphics::default_shininess, float parallax_map_scale = tz::graphics::default_parallax_map_scale, float parallax_map_offset = tz::graphics::default_parallax_map_offset, float displacement_factor = tz::graphics::default_displacement_factor);
 	Object(const Object& copy) = default;
 	Object(Object&& move) = default;
 	~Object() = default;
@@ -39,7 +39,7 @@ public:
 	void set_parallax_map_offset(float parallax_map_offset);
 	void set_displacement_factor(float displacement_factor);
 	const std::string& get_mesh_link() const;
-	const std::vector<std::pair<std::string, Texture::TextureType>> get_textures() const;
+	const std::map<Texture::TextureType, std::string> get_textures() const;
 	virtual void render(Mesh* mesh, Texture* tex, NormalMap* nm, ParallaxMap* pm, DisplacementMap* dm, const Camera& cam, Shader& shad, float width, float height) const;
 	virtual void render(const std::vector<std::unique_ptr<Mesh>>& all_meshes, const std::vector<std::unique_ptr<Texture>>& all_textures, const std::vector<std::unique_ptr<NormalMap>>& all_normalmaps, const std::vector<std::unique_ptr<ParallaxMap>>& all_parallaxmaps, const std::vector<std::unique_ptr<DisplacementMap>>& all_displacementmaps, const Camera& cam, Shader& shad, float width, float height) const;
 	bool operator==(const Object& rhs) const;
@@ -48,7 +48,7 @@ protected:
 	unsigned int shininess;
 	float parallax_map_scale, parallax_map_offset, displacement_factor;
 	std::string mesh_link;
-	std::vector<std::pair<std::string, Texture::TextureType>> textures;
+	std::map<Texture::TextureType, std::string> textures;
 };
 
 class Skybox

@@ -1,6 +1,6 @@
 #include "object.hpp"
 
-Object::Object(std::string mesh_link, std::vector<std::pair<std::string, Texture::TextureType>> textures, Vector3F pos, Vector3F rot, Vector3F scale, unsigned int shininess, float parallax_map_scale, float parallax_map_offset, float displacement_factor): pos(std::move(pos)), rot(std::move(rot)), scale(std::move(scale)), shininess(shininess), parallax_map_scale(parallax_map_scale), parallax_map_offset(parallax_map_offset), displacement_factor(displacement_factor), mesh_link(std::move(mesh_link)), textures(std::move(textures)){}
+Object::Object(std::string mesh_link, std::map<Texture::TextureType, std::string> textures, Vector3F pos, Vector3F rot, Vector3F scale, unsigned int shininess, float parallax_map_scale, float parallax_map_offset, float displacement_factor): pos(std::move(pos)), rot(std::move(rot)), scale(std::move(scale)), shininess(shininess), parallax_map_scale(parallax_map_scale), parallax_map_offset(parallax_map_offset), displacement_factor(displacement_factor), mesh_link(std::move(mesh_link)), textures(std::move(textures)){}
 
 const Vector3F& Object::get_position() const
 {
@@ -77,13 +77,14 @@ const std::string& Object::get_mesh_link() const
 	return this->mesh_link;
 }
 
-const std::vector<std::pair<std::string, Texture::TextureType>> Object::get_textures() const
+const std::map<Texture::TextureType, std::string> Object::get_textures() const
 {
 	return this->textures;
 }
 
 void Object::render(Mesh* mesh, Texture* tex, NormalMap* nm, ParallaxMap* pm, DisplacementMap* dm, const Camera& cam, Shader& shad, float width, float height) const
 {
+	// O(1) CPU
 	if(mesh == nullptr)
 		return;
 	shad.bind();
@@ -115,18 +116,27 @@ void Object::render(Mesh* mesh, Texture* tex, NormalMap* nm, ParallaxMap* pm, Di
 
 void Object::render(const std::vector<std::unique_ptr<Mesh>>& all_meshes, const std::vector<std::unique_ptr<Texture>>& all_textures, const std::vector<std::unique_ptr<NormalMap>>& all_normalmaps, const std::vector<std::unique_ptr<ParallaxMap>>& all_parallaxmaps, const std::vector<std::unique_ptr<DisplacementMap>>& all_displacementmaps, const Camera& cam, Shader& shad, float width, float height) const
 {
+	/*
 	std::string texture_link, normalmap_link, parallaxmap_link, displacementmap_link;
 	for(auto& texture : this->get_textures())
 	{
-		if(texture.second == Texture::TextureType::TEXTURE)
-			texture_link = texture.first;
-		if(texture.second == Texture::TextureType::NORMAL_MAP)
-			normalmap_link = texture.first;
-		if(texture.second == Texture::TextureType::PARALLAX_MAP)
-			parallaxmap_link = texture.first;
-		if(texture.second == Texture::TextureType::DISPLACEMENT_MAP)
-			displacementmap_link = texture.first;
+		if(texture.first == Texture::TextureType::TEXTURE)
+			texture_link = texture.second;
+		if(texture.first == Texture::TextureType::NORMAL_MAP)
+			normalmap_link = texture.second;
+		if(texture.first == Texture::TextureType::PARALLAX_MAP)
+			parallaxmap_link = texture.second;
+		if(texture.first == Texture::TextureType::DISPLACEMENT_MAP)
+			displacementmap_link = texture.second;
 	}
+	*/
+	// std::map::operator[] is O(log n) so much better than iterating through map, but it does not have a const overload
+	// however, std::map::at does have a const overload so that can be used in this function (still O(log n))
+	// Texture::get_from_link and tz::graphics::find_mesh are O(n) but n is always going to be very small. As object counts will be far larger, they're considered O(1) amortised. This makes Object::render O(log n) amortised. Optimisation from O(n). This is only as far as the CPU is concerned of course, GPU processing will be massive for obvious reasons.
+	std::string texture_link = this->textures.at(Texture::TextureType::TEXTURE);
+	std::string normalmap_link = this->textures.at(Texture::TextureType::NORMAL_MAP);
+	std::string parallaxmap_link = this->textures.at(Texture::TextureType::PARALLAX_MAP);
+	std::string displacementmap_link = this->textures.at(Texture::TextureType::DISPLACEMENT_MAP);
 	this->render(tz::graphics::find_mesh(this->get_mesh_link(), all_meshes), Texture::get_from_link<Texture>(texture_link, all_textures), Texture::get_from_link<NormalMap>(normalmap_link, all_normalmaps), Texture::get_from_link<ParallaxMap>(parallaxmap_link, all_parallaxmaps), Texture::get_from_link<DisplacementMap>(displacementmap_link, all_displacementmaps), cam, shad, width, height);
 }
 

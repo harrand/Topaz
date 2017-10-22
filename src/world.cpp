@@ -195,7 +195,7 @@ void World::export_world(const std::string& world_link) const
 		output.edit_tag(object_name + ".mesh", data_manager.resource_name(current_object.get_mesh_link()));
 		for(auto& texture : current_object.get_textures())
 		{
-			output.edit_tag(object_name + ".texture" + tz::util::cast::to_string<unsigned int>(static_cast<unsigned int>(texture.second)), data_manager.resource_name(texture.first));
+			output.edit_tag(object_name + ".texture" + tz::util::cast::to_string<unsigned int>(static_cast<unsigned int>(texture.first)), data_manager.resource_name(texture.second));
 		}
 		output.edit_tag(object_name + ".pos", tz::util::string::format(tz::util::string::devectorise_list_3<float>(current_object.get_position())));
 		output.edit_tag(object_name + ".rot", tz::util::string::format(tz::util::string::devectorise_list_3<float>(current_object.get_rotation())));
@@ -214,7 +214,7 @@ void World::export_world(const std::string& world_link) const
 		output.edit_tag(entity_object_name + ".mesh", data_manager.resource_name(current_entity_object.get_mesh_link()));
 		for(auto& texture : current_entity_object.get_textures())
 		{
-			output.edit_tag(entity_object_name + ".texture" + tz::util::cast::to_string<unsigned int>(static_cast<unsigned int>(texture.second)), data_manager.resource_name(texture.first));
+			output.edit_tag(entity_object_name + ".texture" + tz::util::cast::to_string<unsigned int>(static_cast<unsigned int>(texture.first)), data_manager.resource_name(texture.second));
 		}
 		output.edit_tag(entity_object_name + ".mass", tz::util::cast::to_string<float>(current_entity_object.get_mass()));
 		output.edit_tag(entity_object_name + ".pos", tz::util::string::format(tz::util::string::devectorise_list_3<float>(current_entity_object.get_position())));
@@ -291,12 +291,12 @@ Object World::retrieve_object_data(const std::string& object_name, std::string r
 	tz::data::Manager data_manager(resources_path);
 	
 	std::string mesh_link = data_manager.resource_link(mesh_name);
-	std::vector<std::pair<std::string, Texture::TextureType>> textures;
+	std::map<Texture::TextureType, std::string> textures;
 	for(unsigned int i = 0; i < static_cast<unsigned int>(Texture::TextureType::TEXTURE_TYPES); i++)
 	{
 		std::string texture_name = mdlf.get_tag(object_name + ".texture" + tz::util::cast::to_string(i));
 		std::string texture_link = data_manager.resource_link(texture_name);
-		textures.emplace_back(texture_link, static_cast<Texture::TextureType>(i));
+		textures.emplace(static_cast<Texture::TextureType>(i), texture_link);
 	}
 	return {mesh_link, textures, tz::util::string::vectorise_list_3<float>(tz::util::string::deformat(position_string)), tz::util::string::vectorise_list_3<float>(tz::util::string::deformat(rotation_string)), tz::util::string::vectorise_list_3<float>(tz::util::string::deformat(scale_string)), shininess, parallax_map_scale, parallax_map_offset, displacement_factor};
 }
@@ -328,12 +328,12 @@ EntityObject World::retrieve_entity_object_data(const std::string& entity_object
 	tz::data::Manager data_manager(resources_path);
 	
 	std::string mesh_link = data_manager.resource_link(mesh_name);
-	std::vector<std::pair<std::string, Texture::TextureType>> textures;
+	std::map<Texture::TextureType, std::string> textures;
 	for(unsigned int i = 0; i < static_cast<unsigned int>(Texture::TextureType::TEXTURE_TYPES); i++)
 	{
 		std::string texture_name = mdlf.get_tag(entity_object_name + ".texture" + tz::util::cast::to_string(i));
 		std::string texture_link = data_manager.resource_link(texture_name);
-		textures.emplace_back(texture_link, static_cast<Texture::TextureType>(i));
+		textures.emplace(static_cast<Texture::TextureType>(i), texture_link);
 	}
 	
 	return {mesh_link, textures, mass, tz::util::string::vectorise_list_3<float>(tz::util::string::deformat(position_string)), tz::util::string::vectorise_list_3<float>(tz::util::string::deformat(rotation_string)), tz::util::string::vectorise_list_3<float>(tz::util::string::deformat(scale_string)), shininess, parallax_map_scale, parallax_map_offset, displacement_factor};
