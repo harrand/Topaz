@@ -52,15 +52,15 @@ Shader::~Shader()
 void Shader::compile()
 {
 	// Vertex Shader
-	this->shaders[0] = Shader::create_shader(Shader::load_shader(this->filename + ".vertex.glsl"), GL_VERTEX_SHADER);
+	this->shaders[0] = Shader::create_shader(mdl::read(this->filename + ".vertex.glsl"), GL_VERTEX_SHADER);
 	// Tessellation Control Shader
-	this->shaders[1] = Shader::create_shader(Shader::load_shader(this->filename + ".tessellation_control.glsl"), GL_TESS_CONTROL_SHADER);
+	this->shaders[1] = Shader::create_shader(mdl::read(this->filename + ".tessellation_control.glsl"), GL_TESS_CONTROL_SHADER);
 	// Tessellation Evalution Shader
-	this->shaders[2] = Shader::create_shader(Shader::load_shader(this->filename + ".tessellation_evaluation.glsl"), GL_TESS_EVALUATION_SHADER);
+	this->shaders[2] = Shader::create_shader(mdl::read(this->filename + ".tessellation_evaluation.glsl"), GL_TESS_EVALUATION_SHADER);
 	// Geometry Shader
-	this->shaders[3] = Shader::create_shader(Shader::load_shader(this->filename + ".geometry.glsl"), GL_GEOMETRY_SHADER);
+	this->shaders[3] = Shader::create_shader(mdl::read(this->filename + ".geometry.glsl"), GL_GEOMETRY_SHADER);
 	// Fragment Shader
-	this->shaders[4] = Shader::create_shader(Shader::load_shader(this->filename + ".fragment.glsl"), GL_FRAGMENT_SHADER);
+	this->shaders[4] = Shader::create_shader(mdl::read(this->filename + ".fragment.glsl"), GL_FRAGMENT_SHADER);
 	for(std::size_t i = 0; i < tz::graphics::maximum_shaders; i++)
 		if(this->shaders[i] != 0)
 			glAttachShader(this->program_handle, this->shaders[i]);
@@ -176,15 +176,6 @@ void Shader::update() const
 	// literally just update uniforms with the parameters
 	for(const auto& uniform : this->uniform_data)
 		uniform->push();
-}
-
-std::string Shader::load_shader(const std::string& filename)
-{
-	// use MDL rawfile to slurp the entire file and then parse each lines with a newline between each. might be an optimisation to use RawFile slurp function
-	std::string source = "";
-	for(std::string str : RawFile(filename).get_lines())
-		source += str + "\n";
-	return source;
 }
 
 void Shader::check_shader_error(GLuint shader, GLuint flag, bool is_program, std::string error_message)

@@ -62,6 +62,8 @@ private:
 
 namespace mdl
 {
+	std::vector<std::string> read_lines(const std::string& filename);
+	std::string read(const std::string& filename);
 	namespace syntax
 	{
 		bool is_valid(const MDLF& file);

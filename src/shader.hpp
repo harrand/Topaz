@@ -82,7 +82,6 @@ public:
 	void bind() const;
 	void update() const;
 private:
-	static std::string load_shader(const std::string& filename);
 	static void check_shader_error(GLuint shader, GLuint flag, bool is_program, std::string error_message);
 	static GLuint create_shader(std::string source, GLenum shader_type);
 	std::string filename;
