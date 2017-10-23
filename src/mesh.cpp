@@ -146,11 +146,11 @@ InstancedMesh::InstancedMesh(std::string filename, std::vector<Vector3F> positio
 	glBufferData(GL_ARRAY_BUFFER, this->positions.size() * sizeof(this->positions[0]) * this->instance_quantity, this->positions.data(), GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	
-	glEnableVertexAttribArray(5);
+	glEnableVertexAttribArray(4);
 	glBindBuffer(GL_ARRAY_BUFFER, this->positions_instance_vbo);
-	glVertexAttribPointer(5, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
+	glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);	
-	glVertexAttribDivisor(5, 1);
+	glVertexAttribDivisor(4, 1);
 	//todo, setup opengl buffers for both rotations and scales.#
 	// Instance Rotations
 	glGenBuffers(1, &this->rotations_instance_vbo);
@@ -160,9 +160,9 @@ InstancedMesh::InstancedMesh(std::string filename, std::vector<Vector3F> positio
 	// Instance Rotation Attributes (6, 7, 8, 9)
 	glBindBuffer(GL_ARRAY_BUFFER, this->rotations_instance_vbo);
 	
-	glEnableVertexAttribArray(6);
-	glVertexAttribPointer(6, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
-	glVertexAttribDivisor(6, 1);
+	glEnableVertexAttribArray(5);
+	glVertexAttribPointer(5, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
+	glVertexAttribDivisor(5, 1);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	
 	glGenBuffers(1, &this->scales_instance_vbo);
@@ -171,9 +171,9 @@ InstancedMesh::InstancedMesh(std::string filename, std::vector<Vector3F> positio
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	
 	glBindBuffer(GL_ARRAY_BUFFER, this->scales_instance_vbo);
-	glEnableVertexAttribArray(7);
-	glVertexAttribPointer(7, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
-	glVertexAttribDivisor(7, 1);
+	glEnableVertexAttribArray(6);
+	glVertexAttribPointer(6, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
+	glVertexAttribDivisor(6, 1);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 }

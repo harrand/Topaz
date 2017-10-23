@@ -147,9 +147,9 @@ namespace tz::graphics::model
 			tangent.set_x(f * (delta_v_2 * edge_1.get_x() - delta_v_1 * edge_2.get_x()));
 			tangent.set_y(f * (delta_v_2 * edge_1.get_y() - delta_v_1 * edge_2.get_y()));
 			tangent.set_z(f * (delta_v_2 * edge_1.get_z() - delta_v_1 * edge_2.get_z()));
-			tangents[i_0] += tangent;
-			tangents[i_1] += tangent;
-			tangents[i_2] += tangent;
+			tangents[i_0] = tangent;
+			tangents[i_1] = tangent;
+			tangents[i_2] = tangent;
 		}
 		for(std::size_t i = 0; i < tangents.size(); i++)
 		{

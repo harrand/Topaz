@@ -5,9 +5,9 @@ layout(location = 0) in vec3 position;
 layout(location = 1) in vec2 texcoord;
 layout(location = 2) in vec3 normal;
 layout(location = 3) in vec3 tangent;
-layout(location = 5) in vec3 positions_instance;
-layout(location = 6) in vec3 rotations_instance;
-layout(location = 7) in vec3 scales_instance;
+layout(location = 4) in vec3 positions_instance;
+layout(location = 5) in vec3 rotations_instance;
+layout(location = 6) in vec3 scales_instance;
 
 out vec3 vs_position_modelspace;
 out vec2 vs_texcoord_modelspace;
@@ -40,7 +40,7 @@ void share()
 	vs_view_matrix = v;
 	vs_projection_matrix = p;
 	
-	vec3 normal_cameraspace = normalize((v * m * vec4(vs_normal_modelspace, 0.0)).xyz);
+	vec3 normal_cameraspace = normalize((v * m * vec4(normal, 0.0)).xyz);
 	vec3 tangent_cameraspace = normalize((v * m * vec4(tangent, 0.0)).xyz);
 	
 	// Gramm-Schmidt Process
