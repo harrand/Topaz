@@ -26,11 +26,6 @@ bool Button::focused() const
 	return this->find_window_parent()->get_focused_child() == this;
 }
 
-bool Button::is_mouse_sensitive() const
-{
-	return true;
-}
-
 Command* Button::get_on_mouse_over() const
 {
 	return this->on_mouse_over;

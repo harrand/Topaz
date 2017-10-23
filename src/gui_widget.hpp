@@ -13,7 +13,7 @@ public:
 	
 	virtual void update() override;
 	virtual bool focused() const override;
-	virtual bool is_mouse_sensitive() const override;
+	virtual bool is_mouse_sensitive() const override{return true;}
 	Command* get_on_mouse_over() const;
 	Command* get_on_mouse_click() const;
 	void set_on_mouse_over(Command* cmd);

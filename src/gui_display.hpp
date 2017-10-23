@@ -15,9 +15,9 @@ public:
 	void set_colour(Vector4F colour);
 	virtual void update() override;
 	virtual void destroy() override;
-	virtual bool focused() const override;
-	virtual bool is_window() const override;
-	virtual bool is_mouse_sensitive() const override;
+	virtual bool focused() const override{return false;}
+	virtual bool is_window() const override{return false;}
+	virtual bool is_mouse_sensitive() const override{return false;}
 protected:
 	Vector4F colour;
 	Mesh quad;

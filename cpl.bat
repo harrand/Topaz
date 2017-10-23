@@ -43,7 +43,7 @@ xcopy /s "%cd%" %lnkdir%
 color 4
 echo Dependencies copied. Building final executable...
 cd %lnkdir%
-g++ -O3 -o topaz_test_dependent.exe test.o "%scriptdir%\res\exe\topaz_test.res" -L. -L%libdir% -lOpenGL32 -lSDL2 -lSDL2_mixer -lSDL2_ttf -lSDL2main -lmdl -ltopaz
+g++ -O3 -o topaz_test_dependent.exe test.o "%scriptdir%\res\exe\topaz_test.res" -static-libstdc++ -L. -L%libdir% -lOpenGL32 -lSDL2 -lSDL2_mixer -lSDL2_ttf -lSDL2main -lmdl -ltopaz
 move test.o "%cpldir%"
 move libtopazdll.a "%cpldir%"
 color b

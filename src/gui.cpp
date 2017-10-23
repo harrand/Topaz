@@ -251,11 +251,6 @@ bool Window::focused() const
 	return SDL_GetWindowFlags(this->sdl_window_pointer) | SDL_WINDOW_INPUT_FOCUS | SDL_WINDOW_MOUSE_FOCUS;
 }
 
-bool Window::is_window() const
-{
-	return true;
-}
-
 bool Window::is_close_requested() const
 {
 	return this->close_requested;

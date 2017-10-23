@@ -156,7 +156,6 @@ namespace tz::graphics::model
 			if(!std::isfinite(tangents[i].get_x()) || !std::isfinite(tangents[i].get_y()) || !std::isfinite(tangents[i].get_z()))
 				tangents[i] = normals[i];
 			tangents[i] = tangents[i].normalised();
-			//tz::util::log::message(tz::util::string::format(tz::util::string::devectorise_list_3(tangents[i])));
 		}
 	}
 	

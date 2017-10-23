@@ -65,7 +65,7 @@ public:
 	virtual void update() override;
 	virtual void destroy() override;
 	virtual bool focused() const override;
-	virtual bool is_window() const override;
+	virtual bool is_window() const override{return true;}
 	virtual float get_window_pos_x() const override{return 0.0f;}
 	virtual float get_window_pos_y() const override{return 0.0f;}
 	enum class SwapIntervalType : int
