@@ -152,14 +152,19 @@ namespace tz::graphics::model
 			tangents[i_2] += tangent;
 		}
 		for(std::size_t i = 0; i < tangents.size(); i++)
+		{
+			if(!std::isfinite(tangents[i].get_x()) || !std::isfinite(tangents[i].get_y()) || !std::isfinite(tangents[i].get_z()))
+				tangents[i] = normals[i];
 			tangents[i] = tangents[i].normalised();
+			//tz::util::log::message(tz::util::string::format(tz::util::string::devectorise_list_3(tangents[i])));
+		}
 	}
 	
 	IndexedModel OBJModel::to_indexed_model()
 	{
 		IndexedModel result;
 		IndexedModel normal_model;
-		std::size_t number_of_indices = obj_indices.size();
+		std::size_t number_of_indices = this->obj_indices.size();
 		normal_model.tangents.resize(number_of_indices);
 		result.tangents.resize(number_of_indices);
 		std::vector<OBJIndex*> index_lookup;
