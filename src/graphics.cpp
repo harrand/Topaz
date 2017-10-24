@@ -109,6 +109,8 @@ namespace tz::graphics::model
 	
 	void IndexedModel::calculate_normals()
 	{
+		if(indices.size()%3 != 0)
+			tz::util::log::message("indices size % 3 = ", indices.size()%3);
 		for(std::size_t i = 0; i < indices.size(); i += 3)
 		{
 			int i_0 = indices[i];

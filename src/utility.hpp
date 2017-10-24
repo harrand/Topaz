@@ -40,6 +40,7 @@ namespace tz
 	}
 	namespace util
 	{
+		constexpr auto sizeof_element = [](auto element_list)constexpr->std::size_t{return sizeof(typename decltype(element_list)::value_type);};
 		namespace cast
 		{
 			template <typename T>

@@ -29,28 +29,6 @@ uniform bool is_instanced;
 
 uniform sampler2D displacement_map_sampler;
 
-void share()
-{
-	vs_position_modelspace = position;
-	vs_texcoord_modelspace = texcoord;
-	vs_normal_modelspace = normal;
-	vs_position_modelspace += normal * texture2D(displacement_map_sampler, vs_texcoord_modelspace).r * displacement_factor;
-	
-	vs_model_matrix = m;
-	vs_view_matrix = v;
-	vs_projection_matrix = p;
-	
-	vec3 normal_cameraspace = normalize((v * m * vec4(normal, 0.0)).xyz);
-	vec3 tangent_cameraspace = normalize((v * m * vec4(tangent, 0.0)).xyz);
-	
-	// Gramm-Schmidt Process
-	tangent_cameraspace = normalize(tangent_cameraspace - dot(tangent_cameraspace, normal_cameraspace) * normal_cameraspace);
-	
-	vec3 bitangent_cameraspace = cross(tangent_cameraspace, normal_cameraspace);
-	
-	vs_tbn_matrix = transpose(mat3(tangent_cameraspace, bitangent_cameraspace, normal_cameraspace));
-}
-
 mat4 translate(vec3 position)
 {
 	return mat4(vec4(1, 0, 0, position.x), vec4(0, 1, 0, position.y), vec4(0, 0, 1, position.z), vec4(0, 0, 0, 1));
@@ -81,22 +59,39 @@ mat4 scale(vec3 scale)
 	return mat4(vec4(scale.x, 0, 0, 0), vec4(0, scale.y, 0, 0), vec4(0, 0, scale.z, 0), vec4(0, 0, 0, 1));
 }
 
+mat4 model_instanced = transpose(scale(scale_uniform + scales_instance) * rotate(rotation_uniform + rotations_instance) * translate(position_uniform));
+
+void share()
+{
+	vs_position_modelspace = position;
+	vs_texcoord_modelspace = texcoord;
+	vs_normal_modelspace = normal;
+	vs_position_modelspace += normal * texture2D(displacement_map_sampler, vs_texcoord_modelspace).r * displacement_factor;
+	
+	if(is_instanced)
+		vs_model_matrix = model_instanced;
+	else
+		vs_model_matrix = m;
+	vs_view_matrix = v;
+	vs_projection_matrix = p;
+	
+	vec3 normal_cameraspace = normalize((v * m * vec4(normal, 0.0)).xyz);
+	vec3 tangent_cameraspace = normalize((v * m * vec4(tangent, 0.0)).xyz);
+	
+	// Gramm-Schmidt Process
+	tangent_cameraspace = normalize(tangent_cameraspace - dot(tangent_cameraspace, normal_cameraspace) * normal_cameraspace);
+	
+	vec3 bitangent_cameraspace = cross(tangent_cameraspace, normal_cameraspace);
+	
+	vs_tbn_matrix = transpose(mat3(tangent_cameraspace, bitangent_cameraspace, normal_cameraspace));
+}
+
 void main()
 {
 	share();
-	/*
-	vec4 rx = rotations_instance_x;
-	vec4 ry = rotations_instance_y;
-	vec4 rz = rotations_instance_z;
-	vec4 rw = rotations_instance_w;
-	*/
-	mat4 model = scale(scale_uniform + scales_instance) * rotate(rotation_uniform + rotations_instance) * translate(position_uniform);
-	model = transpose(model);
-	//mat4 rotation_instance = mat4(rotations_instance_x.wzyx, rotations_instance_y.wzyx, rotations_instance_z.wzyx, rotations_instance_w.wzyx);
 	if(is_instanced)
 	{
-		vs_model_matrix = model;
-		gl_Position = p * v * (model * vec4(vs_position_modelspace, 1.0) + vec4(positions_instance, 0));
+		gl_Position = p * v * (model_instanced * vec4(vs_position_modelspace, 1.0) + vec4(positions_instance, 0));
 	}
 	else
 		gl_Position = (p * v * m) * vec4(vs_position_modelspace, 1.0);
