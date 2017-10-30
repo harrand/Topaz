@@ -9,14 +9,14 @@ layout(location = 4) in vec3 positions_instance;
 layout(location = 5) in vec3 rotations_instance;
 layout(location = 6) in vec3 scales_instance;
 
-out vec3 vs_position_modelspace;
-out vec2 vs_texcoord_modelspace;
-out vec3 vs_normal_modelspace;
+out vec3 position_modelspace;
+out vec2 texcoord_modelspace;
+out vec3 normal_modelspace;
 
-out mat4 vs_model_matrix;
-out mat4 vs_view_matrix;
-out mat4 vs_projection_matrix;
-out mat3 vs_tbn_matrix;
+out mat4 model_matrix;
+out mat4 view_matrix;
+out mat4 projection_matrix;
+out mat3 tbn_matrix;
 
 uniform vec3 position_uniform;
 uniform vec3 rotation_uniform;
@@ -63,17 +63,17 @@ mat4 model_instanced = transpose(scale(scale_uniform + scales_instance) * rotate
 
 void share()
 {
-	vs_position_modelspace = position;
-	vs_texcoord_modelspace = texcoord;
-	vs_normal_modelspace = normal;
-	vs_position_modelspace += normal * texture2D(displacement_map_sampler, vs_texcoord_modelspace).r * displacement_factor;
+	position_modelspace = position;
+	texcoord_modelspace = texcoord;
+	normal_modelspace = normal;
+	position_modelspace += normal * texture2D(displacement_map_sampler, texcoord_modelspace).r * displacement_factor;
 	
 	if(is_instanced)
-		vs_model_matrix = model_instanced;
+		model_matrix = model_instanced;
 	else
-		vs_model_matrix = m;
-	vs_view_matrix = v;
-	vs_projection_matrix = p;
+		model_matrix = m;
+	view_matrix = v;
+	projection_matrix = p;
 	
 	vec3 normal_cameraspace = normalize((v * m * vec4(normal, 0.0)).xyz);
 	vec3 tangent_cameraspace = normalize((v * m * vec4(tangent, 0.0)).xyz);
@@ -83,7 +83,7 @@ void share()
 	
 	vec3 bitangent_cameraspace = cross(tangent_cameraspace, normal_cameraspace);
 	
-	vs_tbn_matrix = transpose(mat3(tangent_cameraspace, bitangent_cameraspace, normal_cameraspace));
+	tbn_matrix = transpose(mat3(tangent_cameraspace, bitangent_cameraspace, normal_cameraspace));
 }
 
 void main()
@@ -91,8 +91,8 @@ void main()
 	share();
 	if(is_instanced)
 	{
-		gl_Position = p * v * (model_instanced * vec4(vs_position_modelspace, 1.0) + vec4(positions_instance, 0));
+		gl_Position = p * v * (model_instanced * vec4(position_modelspace, 1.0) + vec4(positions_instance, 0));
 	}
 	else
-		gl_Position = (p * v * m) * vec4(vs_position_modelspace, 1.0);
+		gl_Position = (p * v * m) * vec4(position_modelspace, 1.0);
 }
