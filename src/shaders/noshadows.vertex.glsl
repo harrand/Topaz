@@ -11,7 +11,6 @@ layout(location = 6) in vec3 scales_instance;
 
 out vec3 position_modelspace;
 out vec2 texcoord_modelspace;
-out vec3 normal_modelspace;
 
 out mat4 model_matrix;
 out mat4 view_matrix;
@@ -65,7 +64,6 @@ void share()
 {
 	position_modelspace = position;
 	texcoord_modelspace = texcoord;
-	normal_modelspace = normal;
 	position_modelspace += normal * texture2D(displacement_map_sampler, texcoord_modelspace).r * displacement_factor;
 	
 	if(is_instanced)
@@ -75,15 +73,16 @@ void share()
 	view_matrix = v;
 	projection_matrix = p;
 	
-	vec3 normal_cameraspace = normalize((v * m * vec4(normal, 0.0)).xyz);
-	vec3 tangent_cameraspace = normalize((v * m * vec4(tangent, 0.0)).xyz);
+	vec3 bitangent = cross(tangent, normal);
+	
+	vec3 normal_modelspace = normalize((m * vec4(normal, 0.0)).xyz);
+	vec3 tangent_modelspace = normalize((m * vec4(tangent, 0.0)).xyz);
+	vec3 bitangent_modelspace = normalize((m * vec4(bitangent, 0.0)).xyz);
 	
 	// Gramm-Schmidt Process
-	tangent_cameraspace = normalize(tangent_cameraspace - dot(tangent_cameraspace, normal_cameraspace) * normal_cameraspace);
+	tangent_modelspace = normalize(tangent_modelspace - dot(tangent_modelspace, normal_modelspace) * normal_modelspace);
 	
-	vec3 bitangent_cameraspace = cross(tangent_cameraspace, normal_cameraspace);
-	
-	tbn_matrix = transpose(mat3(tangent_cameraspace, bitangent_cameraspace, normal_cameraspace));
+	tbn_matrix = mat3(tangent_modelspace, bitangent_modelspace, normal_modelspace);
 }
 
 void main()

@@ -109,8 +109,6 @@ namespace tz::graphics::model
 	
 	void IndexedModel::calculate_normals()
 	{
-		if(indices.size()%3 != 0)
-			tz::util::log::message("indices size % 3 = ", indices.size()%3);
 		for(std::size_t i = 0; i < indices.size(); i += 3)
 		{
 			int i_0 = indices[i];
@@ -149,13 +147,13 @@ namespace tz::graphics::model
 			tangent.set_x(f * (delta_v_2 * edge_1.get_x() - delta_v_1 * edge_2.get_x()));
 			tangent.set_y(f * (delta_v_2 * edge_1.get_y() - delta_v_1 * edge_2.get_y()));
 			tangent.set_z(f * (delta_v_2 * edge_1.get_z() - delta_v_1 * edge_2.get_z()));
-			tangents[i_0] = tangent;
-			tangents[i_1] = tangent;
-			tangents[i_2] = tangent;
+			tangents[i_0] += tangent;
+			tangents[i_1] += tangent;
+			tangents[i_2] += tangent;
 		}
 		for(std::size_t i = 0; i < tangents.size(); i++)
 		{
-			if(!std::isfinite(tangents[i].get_x()) || !std::isfinite(tangents[i].get_y()) || !std::isfinite(tangents[i].get_z()))
+			if(tangents[i] == Vector3F() || (!std::isfinite(tangents[i].get_x()) || !std::isfinite(tangents[i].get_y()) || !std::isfinite(tangents[i].get_z())))
 				tangents[i] = normals[i];
 			tangents[i] = tangents[i].normalised();
 		}
@@ -166,8 +164,6 @@ namespace tz::graphics::model
 		IndexedModel result;
 		IndexedModel normal_model;
 		std::size_t number_of_indices = this->obj_indices.size();
-		normal_model.tangents.resize(number_of_indices);
-		result.tangents.resize(number_of_indices);
 		std::vector<OBJIndex*> index_lookup;
 		for(std::size_t i = 0; i < number_of_indices; i++)
 			index_lookup.push_back(&obj_indices[i]);
@@ -199,6 +195,7 @@ namespace tz::graphics::model
 				normal_model.positions.push_back(current_position);
 				normal_model.texcoords.push_back(current_texture_coordinate);
 				normal_model.normals.push_back(current_normal);
+				normal_model.tangents.push_back(Vector3F());
 			}
 			else
 				normal_model_index = it->second;
@@ -210,6 +207,7 @@ namespace tz::graphics::model
 				result.positions.push_back(current_position);
 				result.texcoords.push_back(current_texture_coordinate);
 				result.normals.push_back(current_normal);
+				result.tangents.push_back(Vector3F());
 			}
 			else
 				result_model_index = previous_vertex_location;
@@ -224,9 +222,10 @@ namespace tz::graphics::model
 			for(std::size_t i = 0; i < result.positions.size(); i++)
 				result.normals[i] = normal_model.normals[index_map[i]];
 		}
+		// normal model has smooth faces.
 		normal_model.calculate_tangents();
-		for(std::size_t i = 0; i < result.tangents.size(); i++)
-			result.tangents[i] = normal_model.tangents[index_map[i]];
+		for(std::size_t i = 0; i < result.positions.size(); i++)
+				result.tangents[i] += normal_model.tangents[index_map[i]];
 		return result;
 	}
 	
