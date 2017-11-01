@@ -47,7 +47,7 @@ vec4 specular_directional(Light l, vec3 eye_direction_cameraspace, vec3 light_di
 	vec3 towards_the_camera = normalize(eye_direction_cameraspace);
 	vec3 reflection_direction = reflect(-light_direction_worldspace, normal);
 	float cos_alpha = clamp(dot(towards_the_camera, reflection_direction), 0, 1);
-	return l.specular_component * texture_colour * vec4(l.colour, 1) * l.power * pow(cos_alpha, shininess);
+	return l.specular_component * texture_colour * vec4(l.colour, 1) * l.power * pow(cos_alpha, shininess * 1024);
 }
 
 vec4 specular(Light l, vec3 position_worldspace, vec3 eye_direction_cameraspace, vec3 normal, vec4 texture_colour)
@@ -83,13 +83,15 @@ void main()
 	sun.power = 0.1;
 	sun.diffuse_component = 1.0;
 	sun.specular_component = 0.0;
+	/*
 	Light test_light;
 	test_light.pos = vec3(0, 80, 50);
 	test_light.colour = vec3(1, 0, 0);
 	test_light.power = 5000;
 	test_light.diffuse_component = 1.0;
 	test_light.specular_component = 1.0;
+	*/
 	fragment_colour = ambience(sun, texture_colour);
 	fragment_colour += diffuse_directional(sun, position_worldspace, light_direction_worldspace, normal, texture_colour) + specular_directional(sun, eye_direction_cameraspace, light_direction_worldspace, normal, texture_colour);
-	fragment_colour += specular(test_light, position_worldspace, eye_direction_cameraspace, normal, texture_colour);
+	//fragment_colour += specular(test_light, position_worldspace, eye_direction_cameraspace, normal, texture_colour);
 }

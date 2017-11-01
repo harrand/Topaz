@@ -1,5 +1,11 @@
 namespace tz::util
 {
+	template<typename Container>
+	constexpr std::size_t sizeof_element(Container element_list)
+	{
+		return sizeof(typename decltype(element_list)::value_type);
+	}
+	
 	namespace cast
 	{
 		template <typename T>

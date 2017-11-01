@@ -10,6 +10,7 @@ namespace tz
 {
 	namespace data
 	{
+		//  Angelo was here 01/11/2017 <3
 		constexpr char default_models_sequence_name[] = "models";
 		constexpr char default_textures_sequence_name[] = "textures";
 		constexpr char default_normal_maps_sequence_name[] = "normalmaps";
