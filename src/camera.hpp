@@ -10,6 +10,9 @@ namespace tz::graphics
 	constexpr float default_far_clip = 10000.0f;
 }
 
+/*
+	Used to navigate the 3D world such that all objects in the world do not have to be moved in order to achieve motion.
+*/
 class Camera
 {
 public:
@@ -28,12 +31,14 @@ public:
 	void set_fov(float fov);
 	void set_near_clip(float near_clip);
 	void set_far_clip(float far_clip);
+	// Orientation methods.
 	Vector3F forward() const;
 	Vector3F backward() const;
 	Vector3F up() const;
 	Vector3F down() const;
 	Vector3F left() const;
 	Vector3F right() const;
+	// Axis-Bound Camera causes orientation methods to stick to their normal axes. Also prevents rotation in the x and z axis.
 	bool is_axis_bound() const;
 	void set_axis_bound(bool axis_bound);
 private:

@@ -10,6 +10,9 @@
 #include "graphics.hpp"
 #include "matrix.hpp"
 
+/*
+	Lowest-level renderable class that Topaz offers. All renderable Topaz classes such as Object contain these. Holds 3D vertex data, from a Wavefront OBJ model, for example. Use this if you want to render a mesh you made in Blender or something.
+*/
 class Mesh
 {
 public:
@@ -46,6 +49,9 @@ protected:
 	unsigned int render_count;
 };
 
+/*
+	Like a normal mesh, but supports OpenGL instancing. Use this if you want to render the same mesh very many times at once with little attribute changes.
+*/
 class InstancedMesh : public Mesh
 {
 public:

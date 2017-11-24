@@ -19,6 +19,9 @@ namespace tz
 	}
 }
 
+/*
+	Abstract. Not available for non-polymorphic use. I highly doubt you'll need to inherit from this anyway. Consider providing template specialisation to Uniform<T> if you need custom uniforms, which you may need in a later version of OpenGL which supports more primitives, perhaps.
+*/
 class UniformImplicit
 {
 public:
@@ -27,6 +30,11 @@ public:
 	virtual void push() const = 0;
 };
 
+/*
+	Represent an OpenGL uniform in C++. Supports the following Topaz/C++ primitives:
+	bool, int, unsigned int, float, double, Vector2F, Vector3F, Vector4F, Matrix2x2, Matrix3x3, Matrix4x4
+	If the template argument is not any of these types, a static assertation will fail in Uniform<T>::push and emit a compiler error.
+*/
 template<class T>
 class Uniform : public UniformImplicit
 {
@@ -48,6 +56,9 @@ private:
 	GLint uniform_handle;
 };
 
+/*
+	Use this to load, compile, link, run, edit, analyse and even receive transform-feedback from an OpenGL shader written in GLSL.
+*/
 class Shader
 {
 public:

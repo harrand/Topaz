@@ -16,6 +16,10 @@ namespace tz
 		constexpr char default_normal_maps_sequence_name[] = "normalmaps";
 		constexpr char default_parallax_maps_sequence_name[] = "parallaxmaps";
 		constexpr char default_displacement_maps_sequence_name[] = "displacementmaps";
+		
+		/*
+			Essentially an MDL Asset Manager. This is how Topaz handles MDL data files which hold assets such as textures and models.
+		*/
 		class Manager
 		{
 		public:
@@ -25,6 +29,13 @@ namespace tz
 			Manager& operator=(const Manager& rhs) = default;
 			~Manager() = default;
 			
+			/*
+				To help explain what a resource_link and a resource_name is, consider the following example:
+				==example.mdl==
+				lava_texture.path: "./textures/lava.png"
+				==eof==
+				The resource_name is the tag-name until the first '.' ("lava_texture"), and the resource_link is the value of the tag resource_name.path ("./textures/lava.png").
+			*/
 			std::string resource_link(const std::string& resource_name) const;
 			std::string resource_name(const std::string& resource_link) const;
 			std::unordered_map<std::string, std::string> retrieve_models(const char* sequence_name = tz::data::default_models_sequence_name) const;

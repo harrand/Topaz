@@ -2,6 +2,9 @@
 #define GUI_WIDGET_HPP
 #include "gui_display.hpp"
 
+/*
+	Just like a TextLabel (see gui_display.hpp for documentation on TextLabel) but also is mouse-sensitive and pressable to execute a command.
+*/
 class Button : public TextLabel
 {
 public:

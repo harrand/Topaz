@@ -15,6 +15,9 @@ namespace tz::graphics
 	constexpr float default_displacement_factor = 0.25f;
 }
 
+/*
+	Collaboration of a mesh, texture, normal-map, parallax-map and displacement-map. Use this to represent a 3D object completely, including its vertex data, texture, material etc.
+*/
 class Object
 {
 public:
@@ -51,6 +54,9 @@ protected:
 	std::map<Texture::TextureType, std::string> textures;
 };
 
+/*
+	Wraps an OpenGL cubemap via a set of six textures. Use this to render skyboxes in a 3D world easily. Bring your own skybox shader though (Default one provided with Topaz is called 'skybox').
+*/
 class Skybox
 {
 public:

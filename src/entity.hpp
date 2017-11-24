@@ -9,6 +9,9 @@ namespace tz::physics
 	constexpr float default_mass = 1.0f;
 }
 
+/*
+	Something which follows the rules of Newtonian Motion. Attach this to something you want to be able to experience motion and forces, such as gravity or thrust.
+*/
 class Entity
 {
 public:
@@ -36,6 +39,9 @@ private:
 	Vector3F position;
 };
 
+/*
+	Essentially an Entity which has a renderable component in the form of an Object. See Object documentation for additional details.
+*/
 class EntityObject : public Entity, public Object
 {
 public:

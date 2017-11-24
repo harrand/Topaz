@@ -5,6 +5,9 @@
 #include <functional>
 #include <ctime>
 
+/*
+	Use this to schedule, record time or pretty much do anything that requires timing.
+*/
 class Timer
 {
 public:
@@ -22,6 +25,9 @@ private:
 	long long int before, after;
 };
 
+/*
+	Specialised Timer that can be used to calculate FPS during runtime.
+*/
 class TimeProfiler
 {
 public:
@@ -50,6 +56,9 @@ namespace tz::time
 	}
 	namespace scheduler
 	{
+		/*
+			Invokes std::functions synchronously (pretty much just runs a function for you) or asynchronously (runs the function in another thread as to not impede current processing). You may well find this incredibly useful, however it does contain some overhead and therefore is not recommended for small, menial tasks.
+		*/
 		template<class ReturnType, class... Args>
 		inline void sync_delayed_task(unsigned int milliseconds_delay, std::function<ReturnType(Args...)> f, Args... args)
 		{

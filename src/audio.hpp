@@ -5,15 +5,23 @@
 #include "camera.hpp"
 #include "utility.hpp"
 
+/*
+	Initialise and terminate tz audio module. This must be done appropriately to use any of the audio functionality.
+*/
 namespace tz
 {
 	namespace audio
 	{
+		// No audio works until this is executed. tz::initialise will invoke this automatically.
 		void initialise();
+		// Memory droplets will remain until this is executed. Audio will not work after this is invoked. tz::terminate will invoke this automatically.
 		void terminate();
 	}
 }
 
+/*
+	Playable audio file. Use this for short audio segments like sound effects.
+*/
 class AudioClip
 {
 public:
@@ -26,13 +34,15 @@ public:
 	void play();
 	int get_channel() const;
 	const std::string& get_file_name() const;
-	Mix_Chunk* get_audio_handle() const;
 private:
 	int channel;
 	const std::string filename;
 	Mix_Chunk* audio_handle;
 };
 
+/*
+	Playable audio file, but from a position in 3D space. Same properties as AudioClip.
+*/
 class AudioSource: public AudioClip
 {
 public:
@@ -42,11 +52,16 @@ public:
 	~AudioSource() = default;
 	AudioSource& operator=(const AudioSource& rhs) = default;
 	
+	// Should be invoked whenever the camera rotates or moves, or the AudioSource::position member is changed.
 	void update(const Camera& relative_to);
 	
+	// Public member. Can be changed to anything, but invoke AudioSource::update after changing.
 	Vector3F position;
 };
 
+/*
+	Playable audio file. Use this for longer audio segments such as background music.
+*/
 class AudioMusic
 {
 public:
@@ -57,10 +72,11 @@ public:
 	AudioMusic& operator=(const AudioMusic& rhs) = delete;
 	
 	const std::string& get_file_name() const;
-	Mix_Music* get_audio_handle() const;
+	bool is_paused() const;
+	// Play should be invoked only once and not to un-pause music.
 	void play(bool priority = true) const;
+	// Pause/Resume the music.
 	void set_paused(bool pause = true);
-	void toggle();
 private:
 	std::string filename;
 	bool paused;

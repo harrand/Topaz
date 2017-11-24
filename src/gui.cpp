@@ -319,10 +319,10 @@ void Window::set_focused_child(GUI* child)
 
 namespace tz::ui
 {
+	// O(n log n) even though depth-first-traversal is normally O(n) but set insert is O(log n) so yeah
 	std::set<GUI*> descendants(const GUI* gui, bool visible_only)
 	{
 		// depth-first search through gui child tree.
-		// 
 		std::stack<const GUI*> guis;
 		std::set<GUI*> descendants;
 		const GUI* top;
@@ -363,6 +363,8 @@ namespace tz::ui
 	
 	Matrix4x4 create_orthographic_gui_matrix(const GUI* gui)
 	{
+		if(!gui->has_window_parent())
+			return Matrix4x4::identity();
 		return Matrix4x4::create_orthographic_matrix(gui->find_window_parent()->get_width(), 0.0f, gui->find_window_parent()->get_height(), 0.0f, -1.0f, 1.0f);
 	}
 }

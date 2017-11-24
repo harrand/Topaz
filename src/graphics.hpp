@@ -8,6 +8,9 @@
 #include "SDL_ttf.h"
 #include "utility.hpp"
 
+/*
+	Used to render text. Texture has a constructor taking a Font as a parameter. Use this to achieve font-rendering.
+*/
 class Font
 {
 public:
@@ -26,6 +29,9 @@ private:
 	TTF_Font* font_handle;
 };
 
+/*
+	Representation of Pixel Data in RGBA format.
+*/
 class PixelRGBA
 {
 public:
@@ -33,6 +39,9 @@ public:
 	Vector4<unsigned char> data;
 };
 
+/*
+	Bitmap representing Pixel data in any format. Topaz uses PixelRGBA as the template parameter, but you may provide any valid class with a public Vector4<T> called 'data'.
+*/
 template<class Pixel>
 class Bitmap
 {
@@ -46,8 +55,10 @@ namespace tz
 {
 	namespace graphics
 	{
+		// Global Variables. These are handled when the first Window is initialised. Editing these is likely to lead to horrible crashing. Leave these bools alone.
 		extern bool has_context;
 		extern bool initialised;
+		// Window constructor invokes this upon first invocation. If you are not using Topaz windows, you will have to invoke this yourself. If you are, do not touch this.
 		inline void initialise()
 		{
 			if(!tz::graphics::has_context)
@@ -69,6 +80,7 @@ namespace tz
 			glEnable(GL_FRAMEBUFFER_SRGB);
 			glEnable(GL_MULTISAMPLE);
 		}
+		// Much safer to use. tz::terminate will invoke this automatically. Only use this function if you do not wish to use tz::terminate to terminate all features.
 		inline void terminate()
 		{
 			TTF_Quit();
@@ -76,6 +88,9 @@ namespace tz
 			tz::util::log::message("Terminated tz::graphics via GLEW (OpenGL).");
 		}
 		
+		/*
+			Currently used only for Wavefront OBJ Models. To load an OBJ model in Topaz, invoke OBJModel::toIndexedModel to receive an instance of IndexedModel.
+		*/
 		namespace model
 		{
 			class OBJIndex
@@ -124,6 +139,9 @@ namespace tz
 	}
 }
 
+/*
+	Holds vertex data. Essentially a POD if it weren't for the getters.
+*/
 class Vertex
 {
 public:

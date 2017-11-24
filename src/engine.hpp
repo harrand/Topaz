@@ -7,11 +7,16 @@
 
 namespace tz
 {
+	// Invoke this to initialise all Topaz modules and be able to use all features. Note that a Topaz window must have been constructed at least once before the graphics module fully initialises.
 	void initialise();
+	// Invoke this to close all Topaz modules and free corresponding memory to prevent droplets. Once this function is executed, most features will cease to work properly and will likely invoke undefined behaviour.
 	void terminate();
 	constexpr char default_properties_path[] = "properties.mdl";
 }
 
+/*
+	Hulking class holding pretty much everything you'll need to use Topaz. Due to its verbosity, it is only recommended to use this class for hobbyist/non-commercial purposes. Using this essentially provides stabilisers and handholding to using Topaz.
+*/
 class Engine
 {
 public:

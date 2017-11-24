@@ -11,8 +11,16 @@
 #include "vector.hpp"
 #include "mesh.hpp"
 
+/*	Note on Topaz GUI
+
+	Topaz does not use any library for GUI; it completely reinvents the wheel. If you have your own library, Topaz should stay out of your way, as long as you have your own windowing functionality. An importantant note: You won't be able to use Engine to help you develop with Topaz unless you also use this GUI.
+*/
+
 class Window;
 
+/*
+	Abstract. Not available for non-polymorphic use. Inherit from this to create custom Topaz GUI yourself.
+*/
 class GUI
 {
 public:
@@ -53,6 +61,9 @@ protected:
 	bool hidden, use_proportional_positioning;
 };
 
+/*
+	Topaz Windows used to draw on the screen. Topaz's graphics module will not initialise fully until at least one instance of this class is instantiated.
+*/
 class Window : public GUI
 {
 public:
@@ -101,10 +112,11 @@ private:
 
 namespace tz::ui
 {
-	// O(n log n) even though depth-first-traversal is normally O(n) but set insert is O(log n) so yeah
+	// Performs a DFS through the 'gui' child tree to return a set of all children, and all their children's children etc...
 	std::set<GUI*> descendants(const GUI* gui, bool visible_only = false);
-	// still O(n log n) (assuming range based for loop optimises to not recompute every tz::ui::descendants() (otherwise would go to O(n log^2 n) which is horrific))
+	// Performs a DFS similarly to tz::ui::descendants, but only returns a set of all the children which don't have any children themselves i.e the 'youngest' descendants.
 	std::set<GUI*> youngest_descendants(const GUI* gui);
+	// Create an orthographic row-major projection matrix using the gui window parent's dimensions. If the parameter does not have a window parent, returns an identity matrix.
 	Matrix4x4 create_orthographic_gui_matrix(const GUI* gui);
 }
 #endif

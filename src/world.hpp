@@ -6,6 +6,9 @@
 #include "light.hpp"
 #include "mdl.hpp"
 
+/*
+	Contains Objects, EntityObjects and pretty much any Topaz renderable you can think of. Handles all their physics inputs aswell. Takes a filename in its constructor for the MDL data file containing world data.
+*/
 class World
 {
 public:
@@ -14,7 +17,7 @@ public:
 	World(World&& move);
 	~World();
 	World& operator=(const World& rhs) = default;
-		
+
 	const std::string& get_file_name() const;
 	const Vector3F& get_gravity() const;
 	const Vector3F& get_spawn_point() const;

@@ -17,6 +17,9 @@ namespace tz::graphics
 	constexpr unsigned int depth_texture_default_height = depth_texture_default_size;
 }
 
+/*
+	Render into this instead of a Topaz Window to achieve render-to-texture phenomena.
+*/
 class FrameBuffer
 {
 public:
@@ -35,6 +38,9 @@ private:
 	GLuint depth_render_buffer_handle;
 };
 
+/*
+	Just like a FrameBuffer, but will only hold spatial data such as distance away from the camera, and not the colour. Use this to achieve shadow-mapping.
+*/
 class DepthTexture: public FrameBuffer
 {
 	DepthTexture(unsigned int width = tz::graphics::depth_texture_default_width, unsigned int height = tz::graphics::depth_texture_default_height);
@@ -44,6 +50,9 @@ class DepthTexture: public FrameBuffer
 	DepthTexture& operator=(const DepthTexture& rhs) = delete;
 };
 
+/*
+	Holds pixel and colour data and can interact with OpenGL buffers. Bind Textures so that Topaz Meshes do not render monochromoatically.
+*/
 class Texture
 {
 public:
@@ -122,6 +131,9 @@ public:
 	TextureType get_texture_type();
 };
 
+/*
+	Used to construct skyboxes. Requires six textures; for each face of the skybox cube mesh.
+*/
 class CubeMap
 {
 public:

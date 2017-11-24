@@ -3,6 +3,9 @@
 #include <unordered_set>
 #include <vector>
 
+/*
+	Abstract. Not available for non-polymorphic use. Inherit from this to create custom commands (Essential for adding functionality to Engine).
+*/
 class Command
 {
 public:
@@ -24,6 +27,9 @@ private:
 	std::string usage;
 };
 
+/*
+	Exactly the same as Command. However, does not support 'usage' nor command arguments. This is used as a wrapper for an invokable to be used in Engine.
+*/
 class TrivialCommand : public Command
 {
 public:
@@ -40,6 +46,9 @@ private:
 	using Command::get_expected_parameter_size;
 };
 
+/*
+	System used to hold (but not typically own) Commands. Engine uses these to handle command input.
+*/
 class CommandExecutor
 {
 public:

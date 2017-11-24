@@ -15,6 +15,9 @@ namespace tz
 	}
 }
 
+/*
+	Very barebones implementation of a light. Directional/Spot-Light logic, unlike other game engines, is performed in GLSL, not in C++. Hence why there is no SpotLight class, for example.
+*/
 class Light
 {
 public:

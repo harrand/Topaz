@@ -51,11 +51,6 @@ const std::string& AudioClip::get_file_name() const
 	return this->filename;
 }
 
-Mix_Chunk* AudioClip::get_audio_handle() const
-{
-	return this->audio_handle;
-}
-
 AudioSource::AudioSource(std::string filename, Vector3F position): AudioClip(filename), position(std::move(position)){}
 
 void AudioSource::update(const Camera& relative_to)
@@ -91,9 +86,9 @@ const std::string& AudioMusic::get_file_name() const
 	return this->filename;
 }
 
-Mix_Music* AudioMusic::get_audio_handle() const
+bool AudioMusic::is_paused() const
 {
-	return this->audio_handle;
+	return this->paused;
 }
 
 void AudioMusic::play(bool priority) const
@@ -109,9 +104,4 @@ void AudioMusic::set_paused(bool pause)
 		Mix_PauseMusic();
 	else
 		Mix_ResumeMusic();
-}
-
-void AudioMusic::toggle()
-{
-	this->set_paused(!this->paused);
 }
