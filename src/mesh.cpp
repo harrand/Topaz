@@ -11,9 +11,9 @@ Mesh::Mesh(const Vertex* vertices, std::size_t number_of_vertices, const unsigne
 	
 	for(unsigned int i = 0; i < number_of_vertices; i++)
 	{
-		model.positions.push_back(vertices[i].get_position());
-		model.texcoords.push_back(vertices[i].get_texture_coordinate());
-		model.normals.push_back(vertices[i].get_normal());
+		model.positions.push_back(vertices[i].position);
+		model.texcoords.push_back(vertices[i].texture_coordinate);
+		model.normals.push_back(vertices[i].normal);
 	}
 	
 	for(unsigned int i = 0; i < number_of_indices; i++)

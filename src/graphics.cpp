@@ -36,6 +36,8 @@ std::string_view Font::get_path() const
 	return {this->font_path.c_str(), this->font_path.length()};
 }
 
+Vertex::Vertex(Vector3F position, Vector2F texture_coordinate, Vector3F normal): position(std::move(position)), texture_coordinate(std::move(texture_coordinate)), normal(std::move(normal)){}
+
 PixelRGBA::PixelRGBA(unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha): data(red, green, blue, alpha){}
 
 namespace tz::graphics::model
@@ -44,23 +46,6 @@ namespace tz::graphics::model
 	static inline unsigned int find_next_char(unsigned int start, const char* str, unsigned int length, char token);
 	static inline unsigned int parse_obj_index_value(const std::string& token, unsigned int start, unsigned int end);
 	static inline float parse_obj_float_value(const std::string& token, unsigned int start, unsigned int end);
-}
-
-Vertex::Vertex(Vector3F position, Vector2F texcoord, Vector3F normal): position(std::move(position)), texcoord(std::move(texcoord)), normal(std::move(normal)){}
-
-const Vector3F& Vertex::get_position() const
-{
-	return this->position;
-}
-
-const Vector2F& Vertex::get_texture_coordinate() const
-{
-	return this->texcoord;
-}
-
-const Vector3F& Vertex::get_normal() const
-{
-	return this->normal;
 }
 
 namespace tz::graphics::model

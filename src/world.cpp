@@ -248,17 +248,17 @@ void World::render(Camera& cam, Shader& shader, unsigned int width, unsigned int
 	{
 		Light light = iter.second;
 		std::vector<float> pos, colour;
-		pos.push_back(light.get_position().get_x());
-		pos.push_back(light.get_position().get_y());
-		pos.push_back(light.get_position().get_z());
-		colour.push_back(light.get_colour().get_x());
-		colour.push_back(light.get_colour().get_y());
-		colour.push_back(light.get_colour().get_z());
+		pos.push_back(light.position.get_x());
+		pos.push_back(light.position.get_y());
+		pos.push_back(light.position.get_z());
+		colour.push_back(light.colour.get_x());
+		colour.push_back(light.colour.get_y());
+		colour.push_back(light.colour.get_z());
 		glUniform3fv(iter.first.front(), 1, &(pos[0]));
 		glUniform3fv(iter.first[1], 1, &(colour[0]));
-		glUniform1f(iter.first[2], light.get_power());
-		glUniform1f(iter.first[3], light.get_diffuse_component());
-		glUniform1f(iter.first[4], light.get_specular_component());
+		glUniform1f(iter.first[2], light.power);
+		glUniform1f(iter.first[3], light.diffuse_component);
+		glUniform1f(iter.first[4], light.specular_component);
 	}
 }
 

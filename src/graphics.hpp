@@ -30,6 +30,23 @@ private:
 };
 
 /*
+	Holds vertex data. Essentially a POD if it weren't for the getters.
+*/
+class Vertex
+{
+public:
+	Vertex(Vector3F position, Vector2F texture_coordinate, Vector3F normal);
+	Vertex(const Vertex& copy) = default;
+	Vertex(Vertex&& move) = default;
+	~Vertex() = default;
+	Vertex& operator=(const Vertex& rhs) = default;
+	
+	Vector3F position;
+	Vector2F texture_coordinate;
+	Vector3F normal;
+};
+
+/*
 	Representation of Pixel Data in RGBA format.
 */
 class PixelRGBA
@@ -138,26 +155,5 @@ namespace tz
 		}
 	}
 }
-
-/*
-	Holds vertex data. Essentially a POD if it weren't for the getters.
-*/
-class Vertex
-{
-public:
-	Vertex(Vector3F position, Vector2F texcoord, Vector3F normal);
-	Vertex(const Vertex& copy) = default;
-	Vertex(Vertex&& move) = default;
-	~Vertex() = default;
-	Vertex& operator=(const Vertex& rhs) = default;
-	
-	const Vector3F& get_position() const;
-	const Vector2F& get_texture_coordinate() const;
-	const Vector3F& get_normal() const;
-private:
-	const Vector3F position;
-	const Vector2F texcoord;
-	const Vector3F normal;
-};
 
 #endif
