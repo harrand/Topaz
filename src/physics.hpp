@@ -12,8 +12,6 @@ public:
 	~Force() = default;
 	Force& operator=(const Force& rhs) = default;
 	
-	const Vector3F& get_size() const;
-	void set_size(Vector3F size);
 	Force operator+(const Force& other) const;
 	Force operator-(const Force& other) const;
 	Force operator*(float rhs) const;
@@ -21,7 +19,7 @@ public:
 	Force& operator+=(const Force& other);
 	Force& operator-=(const Force& other);
 	bool operator==(const Force& other) const;
-private:
+	
 	Vector3F size;
 };
 

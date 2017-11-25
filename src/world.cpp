@@ -248,12 +248,12 @@ void World::render(Camera& cam, Shader& shader, unsigned int width, unsigned int
 	{
 		Light light = iter.second;
 		std::vector<float> pos, colour;
-		pos.push_back(light.position.get_x());
-		pos.push_back(light.position.get_y());
-		pos.push_back(light.position.get_z());
-		colour.push_back(light.colour.get_x());
-		colour.push_back(light.colour.get_y());
-		colour.push_back(light.colour.get_z());
+		pos.push_back(light.position.x);
+		pos.push_back(light.position.y);
+		pos.push_back(light.position.z);
+		colour.push_back(light.colour.x);
+		colour.push_back(light.colour.y);
+		colour.push_back(light.colour.z);
 		glUniform3fv(iter.first.front(), 1, &(pos[0]));
 		glUniform3fv(iter.first[1], 1, &(colour[0]));
 		glUniform1f(iter.first[2], light.power);

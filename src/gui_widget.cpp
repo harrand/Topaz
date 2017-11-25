@@ -49,8 +49,8 @@ void Button::set_on_mouse_click(Command* cmd)
 bool Button::moused_over() const
 {
 	Vector2F mouse_pos = this->mouse_listener.get_mouse_pos();
-	bool x_aligned = mouse_pos.get_x() >= (this->get_window_pos_x() - this->width) && mouse_pos.get_x() <= (this->get_window_pos_x() + this->width);
-	bool y_aligned = mouse_pos.get_y() >= (this->find_window_parent()->get_height() - this->get_window_pos_y() - this->height) && mouse_pos.get_y() <= ((this->find_window_parent()->get_height() - this->get_window_pos_y() + this->height));
+	bool x_aligned = mouse_pos.x >= (this->get_window_pos_x() - this->width) && mouse_pos.x <= (this->get_window_pos_x() + this->width);
+	bool y_aligned = mouse_pos.y >= (this->find_window_parent()->get_height() - this->get_window_pos_y() - this->height) && mouse_pos.y <= ((this->find_window_parent()->get_height() - this->get_window_pos_y() + this->height));
 	return x_aligned && y_aligned;
 }
 
@@ -58,7 +58,7 @@ bool Button::clicked_on() const
 {
 	// need to take into account the location where the left click was pressed to prevent dragging from firing off the button.
 	Vector2F mouse_pos = this->mouse_listener.get_left_click_location();
-	bool x_aligned = mouse_pos.get_x() >= (this->get_window_pos_x() - this->width) && mouse_pos.get_x() <= (this->get_window_pos_x() + this->width);
-	bool y_aligned = mouse_pos.get_y() >= (this->find_window_parent()->get_height() - this->get_window_pos_y() - this->height) && mouse_pos.get_y() <= ((this->find_window_parent()->get_height() - this->get_window_pos_y() + this->height));
+	bool x_aligned = mouse_pos.x >= (this->get_window_pos_x() - this->width) && mouse_pos.x <= (this->get_window_pos_x() + this->width);
+	bool y_aligned = mouse_pos.y >= (this->find_window_parent()->get_height() - this->get_window_pos_y() - this->height) && mouse_pos.y <= ((this->find_window_parent()->get_height() - this->get_window_pos_y() + this->height));
 	return this->mouse_listener.is_left_clicked() && x_aligned && y_aligned;
 }

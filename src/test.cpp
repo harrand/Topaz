@@ -195,7 +195,7 @@ void init()
 			{
 				if(bound.intersects(engine.camera.position))// teleport camera above any object it's inside
 				{
-					engine.camera.position.set_y(bound.get_maximum().get_y());
+					engine.camera.position.y = bound.get_maximum().y;
 				}
 				if(bound.intersects(engine.camera.position - (Vector3F(0, 1, 0) * (velocity + a))))
 					on_ground = true; // todo, teleport player right to the edge (otherwise they might just hover above the point which sucks)
@@ -322,8 +322,10 @@ void init()
 				orientation.set_x(orientation.get_x() - (rotational_speed * delta.get_y()));
 				engine.camera.set_rotation(orientation);
 				*/
-				engine.camera.rotation.set_y(engine.camera.rotation.get_y() + (rotational_speed * delta.get_x()));
-				engine.camera.rotation.set_x(engine.camera.rotation.get_x() - (rotational_speed * delta.get_y()));
+				//engine.camera.rotation.set_y(engine.camera.rotation.get_y() + (rotational_speed * delta.get_x()));
+				engine.camera.rotation.y += rotational_speed * delta.x;
+				//engine.camera.rotation.set_x(engine.camera.rotation.get_x() - (rotational_speed * delta.get_y()));
+				engine.camera.rotation.x -= rotational_speed * delta.y;
 				mouse_listener.reload_mouse_delta();
 			}
 		}

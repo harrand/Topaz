@@ -12,12 +12,8 @@ public:
 	~Matrix2x2() = default;
 	Matrix2x2& operator=(const Matrix2x2& rhs) = default;
 	
-	Vector2F get_row_x() const;
-	Vector2F get_row_y() const;
-	void set_row_x(Vector2F row_x);
-	void set_row_y(Vector2F row_y);
 	float determinant() const;
-private:
+
 	Vector2F x, y;
 };
 
@@ -30,14 +26,8 @@ public:
 	~Matrix3x3() = default;
 	Matrix3x3& operator=(const Matrix3x3& rhs) = default;
 	
-	Vector3F get_row_x() const;
-	Vector3F get_row_y() const;
-	Vector3F get_row_z() const;
-	void set_row_x(Vector3F row_x);
-	void set_row_y(Vector3F row_y);
-	void set_row_z(Vector3F row_z);
 	float determinant() const;
-private:
+	
 	Vector3F x, y, z;
 };
 
@@ -51,14 +41,6 @@ public:
 	Matrix4x4& operator=(const Matrix4x4& rhs) = default;
 	
 	static Matrix4x4 identity();
-	Vector4F get_row_x() const;
-	Vector4F get_row_y() const;
-	Vector4F get_row_z() const;
-	Vector4F get_row_w() const;
-	void set_row_x(Vector4F row_x);
-	void set_row_y(Vector4F row_y);
-	void set_row_z(Vector4F row_z);
-	void set_row_w(Vector4F row_w);
 	Matrix4x4 transposed() const;
 	std::array<float, 16> fill_data() const;
 	Matrix3x3 sub_matrix(float iter_i, float iter_j) const;
@@ -78,7 +60,7 @@ public:
 	static Matrix4x4 create_orthographic_matrix(float right, float left, float top, float bottom, float near, float far);
 	static Matrix4x4 create_perspective_matrix(float fov, float aspect_ratio, float nearclip, float farclip);
 	static Matrix4x4 create_perspective_matrix(float fov, float width, float height, float nearclip, float farclip);
-private:
+
 	Vector4F x, y, z, w;
 };
 

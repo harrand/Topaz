@@ -62,11 +62,11 @@ void Uniform<T>::push() const
 		glUniform1d(this->uniform_handle, this->value);
 	//Vectors (floating point only)
 	else if constexpr(std::is_same<decltype(this->value), Vector2F>::value)
-		glUniform2f(this->uniform_handle, this->value.get_x(), this->value.get_y());
+		glUniform2f(this->uniform_handle, this->value.x, this->value.y);
 	else if constexpr(std::is_same<decltype(this->value), Vector3F>::value)
-		glUniform3f(this->uniform_handle, this->value.get_x(), this->value.get_y(), this->value.get_z());
+		glUniform3f(this->uniform_handle, this->value.x, this->value.y, this->value.z);
 	else if constexpr(std::is_same<decltype(this->value), Vector4F>::value)
-		glUniform4f(this->uniform_handle, this->value.get_x(), this->value.get_y(), this->value.get_z(), this->value.get_w());
+		glUniform4f(this->uniform_handle, this->value.x, this->value.y, this->value.z, this->value.w);
 	//Matrices
 	else if constexpr(std::is_same<decltype(this->value), Matrix2x2>::value)
 		glUniformMatrix2fv(this->uniform_handle, 1, GL_TRUE, this->value.fill_data().data());

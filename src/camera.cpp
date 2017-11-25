@@ -48,7 +48,7 @@ Matrix4x4 Camera::camera_matrix() const
 {
 	// act as if the camera is an object to put into (camera-perspective) world space. but only apply the y-rotation if axis is bound.
 	if(this->axis_bound)
-		return Matrix4x4::create_model_matrix(this->position, Vector3F(0, this->rotation.get_y(), 0), Vector3F(1, 1, 1));
+		return Matrix4x4::create_model_matrix(this->position, Vector3F(0, this->rotation.y, 0), Vector3F(1, 1, 1));
 	else
 		return Matrix4x4::create_model_matrix(this->position, this->rotation, Vector3F(1, 1, 1));
 }

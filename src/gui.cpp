@@ -25,7 +25,7 @@ float GUI::get_window_pos_x() const
 		offset = this->parent->get_window_pos_x(); // recursive. offset = total offsets of all ancestors to get true window pos
 	float x_total = (this->x + this->width);
 	if(this->is_using_proportional_positioning())
-		x_total = (tz::ui::create_orthographic_gui_matrix(this).inverse() * Vector4F(x_total, 0, 0, 1)).get_x();
+		x_total = (tz::ui::create_orthographic_gui_matrix(this).inverse() * Vector4F(x_total, 0, 0, 1)).x;
 	return offset + x_total;
 }
 
@@ -36,7 +36,7 @@ float GUI::get_window_pos_y() const
 		offset = this->parent->get_window_pos_y(); // recursive. offset = total offsets of all ancestors to get true window pos
 	float y_total = (this->y + this->height);
 	if(this->is_using_proportional_positioning())
-		y_total = (tz::ui::create_orthographic_gui_matrix(this).inverse() * Vector4F(0, y_total, 0, 1)).get_y();
+		y_total = (tz::ui::create_orthographic_gui_matrix(this).inverse() * Vector4F(0, y_total, 0, 1)).y;
 	return offset + y_total;
 }
 

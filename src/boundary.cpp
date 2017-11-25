@@ -55,7 +55,7 @@ bool AABB::intersects(const AABB& rhs) const
 	Vector3F forward_distance = rhs.get_minimum() - this->maximum;
 	Vector3F backward_distance = this->minimum - rhs.get_maximum();
 	Vector3F distance = std::max(forward_distance, backward_distance);
-	return std::max({distance.get_x(), distance.get_y(), distance.get_z()}) < 0;
+	return std::max({distance.x, distance.y, distance.z}) < 0;
 }
 
 bool AABB::intersects(const Vector3F& point) const
@@ -65,9 +65,9 @@ bool AABB::intersects(const Vector3F& point) const
 		| * |
 		*---*
 	*/
-	bool meet_x = this->minimum.get_x() <= point.get_x() && this->maximum.get_x() >= point.get_x();
-	bool meet_y = this->minimum.get_y() <= point.get_y() && this->maximum.get_y() >= point.get_y();
-	bool meet_z = this->minimum.get_z() <= point.get_z() && this->maximum.get_z() >= point.get_z();
+	bool meet_x = this->minimum.x <= point.x && this->maximum.x >= point.x;
+	bool meet_y = this->minimum.y <= point.y && this->maximum.y >= point.y;
+	bool meet_z = this->minimum.z <= point.z && this->maximum.z >= point.z;
 	return meet_x && meet_y && meet_z;
 }
 

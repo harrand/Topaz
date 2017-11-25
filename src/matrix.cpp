@@ -4,68 +4,18 @@
 
 Matrix2x2::Matrix2x2(Vector2F x, Vector2F y): x(std::move(x)), y(std::move(y)){}
 
-Vector2F Matrix2x2::get_row_x() const
-{
-	return this->x;
-}
-
-Vector2F Matrix2x2::get_row_y() const
-{
-	return this->y;
-}
-
-void Matrix2x2::set_row_x(Vector2F row_x)
-{
-	this->x = row_x;
-}
-
-void Matrix2x2::set_row_y(Vector2F row_y)
-{
-	this->y = row_y;
-}
-
 float Matrix2x2::determinant() const
 {
-	return (this->x.get_x() * this->y.get_y()) - (this->x.get_y() * this->y.get_x());
+	return (this->x.x * this->y.y) - (this->x.y * this->y.x);
 }
 
 // Matrix3x3
 
 Matrix3x3::Matrix3x3(Vector3F x, Vector3F y, Vector3F z): x(std::move(x)), y(std::move(y)), z(std::move(z)){}
 
-Vector3F Matrix3x3::get_row_x() const
-{
-	return this->x;
-}
-
-Vector3F Matrix3x3::get_row_y() const
-{
-	return this->y;
-}
-
-Vector3F Matrix3x3::get_row_z() const
-{
-	return this->z;
-}
-
-void Matrix3x3::set_row_x(Vector3F row_x)
-{
-	this->x = row_x;
-}
-
-void Matrix3x3::set_row_y(Vector3F row_y)
-{
-	this->y = row_y;
-}
-
-void Matrix3x3::set_row_z(Vector3F row_z)
-{
-	this->z = row_z;
-}
-
 float Matrix3x3::determinant() const
 {
-	return ((this->x).get_x() * (((this->y).get_y() * (this->z).get_z()) - ((this->y).get_z() * (this->z).get_y()))) - ((this->x).get_y() * (((this->y).get_x() * (this->z).get_z()) - ((this->y).get_z() * (this->z).get_x()))) + ((this->x).get_z() * (((this->y).get_x() * (this->z).get_y()) - ((this->y).get_y() * (this->z).get_x())));
+	return ((this->x).x * (((this->y).y * (this->z).z) - ((this->y).z * (this->z).y))) - ((this->x).y * (((this->y).x * (this->z).z) - ((this->y).z * (this->z).x))) + ((this->x).z * (((this->y).x * (this->z).y) - ((this->y).y * (this->z).x)));
 }
 
 // Matrix4x4
@@ -77,60 +27,20 @@ Matrix4x4 Matrix4x4::identity()
 	return {Vector4F(1, 0, 0, 0), Vector4F(0, 1, 0, 0), Vector4F(0, 0, 1, 0), Vector4F(0, 0, 0, 1)};
 }
 
-Vector4F Matrix4x4::get_row_x() const
-{
-	return this->x;
-}
-
-Vector4F Matrix4x4::get_row_y() const
-{
-	return this->y;
-}
-
-Vector4F Matrix4x4::get_row_z() const
-{
-	return this->z;
-}
-
-Vector4F Matrix4x4::get_row_w() const
-{
-	return this->w;
-}
-
-void Matrix4x4::set_row_x(Vector4F row_x)
-{
-	this->x = row_x;
-}
-
-void Matrix4x4::set_row_y(Vector4F row_y)
-{
-	this->y = row_y;
-}
-
-void Matrix4x4::set_row_z(Vector4F row_z)
-{
-	this->z = row_z;
-}
-
-void Matrix4x4::set_row_w(Vector4F row_w)
-{
-	this->w = row_w;
-}
-
 Matrix4x4 Matrix4x4::transposed() const
 {
 	// optimiser should omit these copies
-	Vector4F tx(this->x.get_x(), this->y.get_x(), this->z.get_x(), this->w.get_x());
-	Vector4F ty(this->x.get_y(), this->y.get_y(), this->z.get_y(), this->w.get_y());
-	Vector4F tz(this->x.get_z(), this->y.get_z(), this->z.get_z(), this->w.get_z());
-	Vector4F tw(this->x.get_w(), this->y.get_w(), this->z.get_w(), this->w.get_w());
+	Vector4F tx(this->x.x, this->y.x, this->z.x, this->w.x);
+	Vector4F ty(this->x.y, this->y.y, this->z.y, this->w.y);
+	Vector4F tz(this->x.z, this->y.z, this->z.z, this->w.z);
+	Vector4F tw(this->x.w, this->y.w, this->z.w, this->w.w);
 	return {tx, ty, tz, tw};
 }
 
 std::array<float, 16> Matrix4x4::fill_data() const
 {
 	// super cheap
-	return {{this->x.get_x(), this->x.get_y(), this->x.get_z(), this->x.get_w(), this->y.get_x(), this->y.get_y(), this->y.get_z(), this->y.get_w(), this->z.get_x(), this->z.get_y(), this->z.get_z(), this->z.get_w(), this->w.get_x(), this->w.get_y(), this->w.get_z(), this->w.get_w()}};
+	return {{this->x.x, this->x.y, this->x.z, this->x.w, this->y.x, this->y.y, this->y.z, this->y.w, this->z.x, this->z.y, this->z.z, this->z.w, this->w.x, this->w.y, this->w.z, this->w.w}};
 }
 
 Matrix3x3 Matrix4x4::sub_matrix(float pos_i, float pos_j) const
@@ -165,13 +75,13 @@ Matrix3x3 Matrix4x4::sub_matrix(float pos_i, float pos_j) const
 			switch(dj)
 			{
 				case 0:
-				pos_3 = &(row_3->get_x());
+				pos_3 = &(row_3->x);
 				break;
 				case 1:
-				pos_3 = &(row_3->get_y());
+				pos_3 = &(row_3->y);
 				break;
 				case 2:
-				pos_3 = &(row_3->get_z());
+				pos_3 = &(row_3->z);
 				break;
 			}
 			
@@ -194,16 +104,16 @@ Matrix3x3 Matrix4x4::sub_matrix(float pos_i, float pos_j) const
 			switch(sj)
 			{
 				case 0:
-				pos_4 = &(row_4->get_x());
+				pos_4 = &(row_4->x);
 				break;
 				case 1:
-				pos_4 = &(row_4->get_y());
+				pos_4 = &(row_4->y);
 				break;
 				case 2:
-				pos_4 = &(row_4->get_z());
+				pos_4 = &(row_4->z);
 				break;
 				case 3:
-				pos_4 = &(row_4->get_w());
+				pos_4 = &(row_4->w);
 				break;
 			}
 			// Not evil; no UB as Vector4F members are non-const but using a const reference getter.
@@ -245,16 +155,16 @@ Vector4F Matrix4x4::operator*(const Vector4F& other) const
 			switch(row_element_iterator)
 			{
 				case 0:
-				*current_result += row.get_x() * other.get_x();
+				*current_result += row.x * other.x;
 				break;
 				case 1:
-				*current_result += row.get_y() * other.get_y();
+				*current_result += row.y * other.y;
 				break;
 				case 2:
-				*current_result += row.get_z() * other.get_z();
+				*current_result += row.z * other.z;
 				break;
 				case 3:
-				*current_result += row.get_w() * other.get_w();
+				*current_result += row.w * other.w;
 				break;
 			}
 		}
@@ -297,7 +207,7 @@ Matrix4x4 Matrix4x4::operator*(const Matrix4x4& other) const
 
 float Matrix4x4::determinant() const
 {
-	return ((this->x).get_x() * (((this->y).get_y() * (this->z).get_z()) - ((this->y).get_z() * (this->z).get_y()))) - ((this->x).get_y() * (((this->y).get_x() * (this->z).get_z()) - ((this->y).get_z() * (this->z).get_x()))) + ((this->x).get_z() * (((this->y).get_x() * (this->z).get_y()) - ((this->y).get_y() * (this->z).get_x())));
+	return ((this->x).x * (((this->y).y * (this->z).z) - ((this->y).z * (this->z).y))) - ((this->x).y * (((this->y).x * (this->z).z) - ((this->y).z * (this->z).x))) + ((this->x).z * (((this->y).x * (this->z).y) - ((this->y).y * (this->z).x)));
 }
 
 Matrix4x4 Matrix4x4::inverse() const
@@ -336,16 +246,16 @@ Matrix4x4 Matrix4x4::inverse() const
 			switch(i)
 			{
 				case 0:
-				pos = &(row->get_x());
+				pos = &(row->x);
 				break;
 				case 1:
-				pos = &(row->get_y());
+				pos = &(row->y);
 				break;
 				case 2:
-				pos = &(row->get_z());
+				pos = &(row->z);
 				break;
 				case 3:
-				pos = &(row->get_w());
+				pos = &(row->w);
 				break;
 			}
 			// Not evil, check Matrix4x4::sub_matrix explanation.
@@ -357,7 +267,7 @@ Matrix4x4 Matrix4x4::inverse() const
 
 Matrix4x4 Matrix4x4::create_translation_matrix(Vector3F position)
 {
-	Matrix4x4 res(Vector4F(1.0f, 0.0f, 0.0f, position.get_x()), Vector4F(0.0f, 1.0f, 0.0f, position.get_y()), Vector4F(0.0f, 0.0f, 1.0f, position.get_z()), Vector4F(0.0f, 0.0f, 0.0f, 1.0f));
+	Matrix4x4 res(Vector4F(1.0f, 0.0f, 0.0f, position.x), Vector4F(0.0f, 1.0f, 0.0f, position.y), Vector4F(0.0f, 0.0f, 1.0f, position.z), Vector4F(0.0f, 0.0f, 0.0f, 1.0f));
 	return res;
 }
 
@@ -378,12 +288,12 @@ Matrix4x4 Matrix4x4::create_rotational_z_matrix(float euler_z)
 
 Matrix4x4 Matrix4x4::create_rotational_matrix(Vector3F euler_rotation)
 {
-	return Matrix4x4::create_rotational_z_matrix(euler_rotation.get_z()) * Matrix4x4::create_rotational_y_matrix(euler_rotation.get_y()) * Matrix4x4::create_rotational_x_matrix(euler_rotation.get_x());
+	return Matrix4x4::create_rotational_z_matrix(euler_rotation.z) * Matrix4x4::create_rotational_y_matrix(euler_rotation.y) * Matrix4x4::create_rotational_x_matrix(euler_rotation.x);
 }
 
 Matrix4x4 Matrix4x4::create_scaling_matrix(Vector3F scale)
 {
-	return {Vector4F(scale.get_x(), 0, 0, 0), Vector4F(0, scale.get_y(), 0, 0), Vector4F(0, 0, scale.get_z(), 0), Vector4F(0, 0, 0, 1)};
+	return {Vector4F(scale.x, 0, 0, 0), Vector4F(0, scale.y, 0, 0), Vector4F(0, 0, scale.z, 0), Vector4F(0, 0, 0, 1)};
 }
 
 Matrix4x4 Matrix4x4::create_model_matrix(Vector3F position, Vector3F euler_rotation, Vector3F scale)

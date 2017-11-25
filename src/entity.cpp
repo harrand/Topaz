@@ -8,7 +8,7 @@ Vector3F Entity::get_acceleration() const
 	Force resultant;
 	for(const auto &ent: this->forces)
 		resultant += ent.second;
-	return (resultant.get_size() / this->mass);
+	return (resultant.size / this->mass);
 }
 
 const std::unordered_map<std::string, Force>& Entity::get_forces() const

@@ -29,10 +29,6 @@ public:
 	~Vector2<T>() = default;
 	Vector2<T>& operator=(const Vector2<T>& rhs) = default;
 	Vector2POD to_raw() const;
-	const T& get_x() const;
-	const T& get_y() const;
-	void set_x(T x);
-	void set_y(T y);
 	T length() const;
 	T dot(const Vector2<T>& rhs) const;
 	Vector2<T> normalised() const;
@@ -51,7 +47,7 @@ public:
 	bool operator==(const Vector2<T>& rhs) const;
 	Vector2<T> xy() const;
 	Vector2<T> yx() const;
-protected:
+
 	T x, y;
 };
 
@@ -71,8 +67,6 @@ public:
 	Vector3<T>& operator=(const Vector3<T>& rhs) = default;
 	
 	Vector3POD to_raw() const;
-	const T& get_z() const;
-	void set_z(T z);
 	T length() const;
 	T dot(const Vector3<T>& rhs) const;
 	Vector3<T> cross(const Vector3<T>& rhs) const;
@@ -96,7 +90,7 @@ public:
 	Vector3<T> yzx() const;
 	Vector3<T> zxy() const;
 	Vector3<T> zyx() const;
-protected:
+
 	T z;
 };
 
@@ -117,8 +111,6 @@ public:
 	Vector4<T>& operator=(const Vector4<T>& rhs) = default;
 	
 	Vector4POD to_raw() const;
-	const T& get_w() const;
-	void set_w(T w);
 	T length() const;
 	T dot(Vector4<T> rhs) const;
 	Vector4<T> normalised() const;
@@ -159,7 +151,7 @@ public:
 	Vector4<T> wyzx() const;
 	Vector4<T> wzxy() const;
 	Vector4<T> wzyx() const;
-protected:
+
 	T w;
 };
 
