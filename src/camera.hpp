@@ -16,7 +16,7 @@ namespace tz::graphics
 class Camera
 {
 public:
-	Camera(Vector3F pos = Vector3F(), Vector3F rot = Vector3F(), float fov = tz::graphics::default_fov, float near_clip = tz::graphics::default_near_clip, float far_clip = tz::graphics::default_far_clip);
+	Camera(Vector3F position = Vector3F(), Vector3F rotation = Vector3F(), float fov = tz::graphics::default_fov, float near_clip = tz::graphics::default_near_clip, float far_clip = tz::graphics::default_far_clip);
 	Camera(const Camera& copy) = default;
 	Camera(Camera&& move) = default;
 	Camera& operator=(const Camera& rhs) = default;

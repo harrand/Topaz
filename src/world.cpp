@@ -197,13 +197,13 @@ void World::export_world(const std::string& world_link) const
 		{
 			output.edit_tag(object_name + ".texture" + tz::util::cast::to_string<unsigned int>(static_cast<unsigned int>(texture.first)), data_manager.resource_name(texture.second));
 		}
-		output.edit_tag(object_name + ".pos", tz::util::string::format(tz::util::string::devectorise_list_3<float>(current_object.get_position())));
-		output.edit_tag(object_name + ".rot", tz::util::string::format(tz::util::string::devectorise_list_3<float>(current_object.get_rotation())));
-		output.edit_tag(object_name + ".scale", tz::util::string::format(tz::util::string::devectorise_list_3<float>(current_object.get_scale())));
-		output.edit_tag(object_name + ".shininess", tz::util::cast::to_string(current_object.get_shininess()));
-		output.edit_tag(object_name + ".parallax_map_scale", tz::util::cast::to_string(current_object.get_parallax_map_scale()));
-		output.edit_tag(object_name + ".parallax_map_offset", tz::util::cast::to_string(current_object.get_parallax_map_offset()));
-		output.edit_tag(object_name + ".displacement_factor", tz::util::cast::to_string(current_object.get_displacement_factor()));
+		output.edit_tag(object_name + ".pos", tz::util::string::format(tz::util::string::devectorise_list_3<float>(current_object.position)));
+		output.edit_tag(object_name + ".rot", tz::util::string::format(tz::util::string::devectorise_list_3<float>(current_object.rotation)));
+		output.edit_tag(object_name + ".scale", tz::util::string::format(tz::util::string::devectorise_list_3<float>(current_object.scale)));
+		output.edit_tag(object_name + ".shininess", tz::util::cast::to_string(current_object.shininess));
+		output.edit_tag(object_name + ".parallax_map_scale", tz::util::cast::to_string(current_object.parallax_map_scale));
+		output.edit_tag(object_name + ".parallax_map_offset", tz::util::cast::to_string(current_object.parallax_map_offset));
+		output.edit_tag(object_name + ".displacement_factor", tz::util::cast::to_string(current_object.displacement_factor));
 	}
 	for(std::size_t i = 0; i < this->entity_objects.size(); i++)
 	{
@@ -216,14 +216,14 @@ void World::export_world(const std::string& world_link) const
 		{
 			output.edit_tag(entity_object_name + ".texture" + tz::util::cast::to_string<unsigned int>(static_cast<unsigned int>(texture.first)), data_manager.resource_name(texture.second));
 		}
-		output.edit_tag(entity_object_name + ".mass", tz::util::cast::to_string<float>(current_entity_object.get_mass()));
-		output.edit_tag(entity_object_name + ".pos", tz::util::string::format(tz::util::string::devectorise_list_3<float>(current_entity_object.get_position())));
-		output.edit_tag(entity_object_name + ".rot", tz::util::string::format(tz::util::string::devectorise_list_3<float>(current_entity_object.get_rotation())));
-		output.edit_tag(entity_object_name + ".scale", tz::util::string::format(tz::util::string::devectorise_list_3<float>(current_entity_object.get_scale())));
-		output.edit_tag(entity_object_name + ".shininess", tz::util::cast::to_string(current_entity_object.get_shininess()));
-		output.edit_tag(entity_object_name + ".parallax_map_scale", tz::util::cast::to_string(current_entity_object.get_parallax_map_scale()));
-		output.edit_tag(entity_object_name + ".parallax_map_offset", tz::util::cast::to_string(current_entity_object.get_parallax_map_offset()));
-		output.edit_tag(entity_object_name + ".displacement_factor", tz::util::cast::to_string(current_entity_object.get_displacement_factor()));
+		output.edit_tag(entity_object_name + ".mass", tz::util::cast::to_string(current_entity_object.mass));
+		output.edit_tag(entity_object_name + ".pos", tz::util::string::format(tz::util::string::devectorise_list_3<float>(current_entity_object.position)));
+		output.edit_tag(entity_object_name + ".rot", tz::util::string::format(tz::util::string::devectorise_list_3<float>(current_entity_object.rotation)));
+		output.edit_tag(entity_object_name + ".scale", tz::util::string::format(tz::util::string::devectorise_list_3<float>(current_entity_object.scale)));
+		output.edit_tag(entity_object_name + ".shininess", tz::util::cast::to_string(current_entity_object.shininess));
+		output.edit_tag(entity_object_name + ".parallax_map_scale", tz::util::cast::to_string(current_entity_object.parallax_map_scale));
+		output.edit_tag(entity_object_name + ".parallax_map_offset", tz::util::cast::to_string(current_entity_object.parallax_map_offset));
+		output.edit_tag(entity_object_name + ".displacement_factor", tz::util::cast::to_string(current_entity_object.displacement_factor));
 	}
 	output.add_sequence("objects", object_list);
 	output.add_sequence("entityobjects", entity_object_list);
