@@ -101,8 +101,8 @@ void Object::render(Mesh* mesh, Texture* tex, NormalMap* nm, ParallaxMap* pm, Di
 	shad.set_uniform<Vector3F>("position_uniform", this->pos);
 	shad.set_uniform<Vector3F>("rotation_uniform", this->rot);
 	shad.set_uniform<Vector3F>("scale_uniform", this->scale);
-	shad.set_uniform<Matrix4x4>("v", Matrix4x4::create_view_matrix(cam.get_position(), cam.get_rotation()));
-	shad.set_uniform<Matrix4x4>("p", Matrix4x4::create_perspective_matrix(cam.get_fov(), width, height, cam.get_near_clip(), cam.get_far_clip()));
+	shad.set_uniform<Matrix4x4>("v", Matrix4x4::create_view_matrix(cam.position, cam.rotation));
+	shad.set_uniform<Matrix4x4>("p", Matrix4x4::create_perspective_matrix(cam.fov, width, height, cam.near_clip, cam.far_clip));
 	shad.set_uniform<unsigned int>("shininess", this->shininess);
 	shad.set_uniform<float>("parallax_map_scale", this->parallax_map_scale);
 	shad.set_uniform<float>("parallax_map_offset", this->parallax_map_offset);
@@ -151,9 +151,9 @@ void Skybox::render(const Camera& cam, Shader& shad, const std::vector<std::uniq
 {
 	shad.bind();
 	this->cm.bind(shad.get_program_handle(), 0);
-	shad.set_uniform<Matrix4x4>("m", Matrix4x4::create_model_matrix(cam.get_position(), Vector3F(), Vector3F(cam.get_far_clip(), cam.get_far_clip(), cam.get_far_clip())));
-	shad.set_uniform<Matrix4x4>("v", Matrix4x4::create_view_matrix(cam.get_position(), cam.get_rotation()));
-	shad.set_uniform<Matrix4x4>("p", Matrix4x4::create_perspective_matrix(cam.get_fov(), width, height, cam.get_near_clip(), cam.get_far_clip()));
+	shad.set_uniform<Matrix4x4>("m", Matrix4x4::create_model_matrix(cam.position, Vector3F(), Vector3F(cam.far_clip, cam.far_clip, cam.far_clip)));
+	shad.set_uniform<Matrix4x4>("v", Matrix4x4::create_view_matrix(cam.position, cam.rotation));
+	shad.set_uniform<Matrix4x4>("p", Matrix4x4::create_perspective_matrix(cam.fov, width, height, cam.near_clip, cam.far_clip));
 	shad.set_uniform<unsigned int>("shininess", 0);
 	shad.set_uniform<float>("parallax_map_scale", 0);
 	shad.set_uniform<float>("parallax_map_offset", 0);

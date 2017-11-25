@@ -1,56 +1,6 @@
 #include "camera.hpp"
 
-Camera::Camera(Vector3F pos, Vector3F rot, float fov, float near_clip, float far_clip): pos(std::move(pos)), rot(std::move(rot)), fov(fov), near_clip(near_clip), far_clip(far_clip){}
-
-const Vector3F& Camera::get_position() const
-{
-	return this->pos;
-}
-
-const Vector3F& Camera::get_rotation() const
-{
-	return this->rot;
-}
-
-void Camera::set_position(Vector3F position)
-{
-	this->pos = position;
-}
-
-void Camera::set_rotation(Vector3F rotation)
-{
-	this->rot = rotation;
-}
-
-float Camera::get_fov() const
-{
-	return this->fov;
-}
-
-float Camera::get_near_clip() const
-{
-	return this->near_clip;
-}
-
-float Camera::get_far_clip() const
-{
-	return this->far_clip;
-}
-
-void Camera::set_fov(float fov)
-{
-	this->fov = fov;
-}
-
-void Camera::set_near_clip(float near_clip)
-{
-	this->near_clip = near_clip;
-}
-
-void Camera::set_far_clip(float far_clip)
-{
-	this->far_clip = far_clip;
-}
+Camera::Camera(Vector3F position, Vector3F rotation, float fov, float near_clip, float far_clip): position(std::move(position)), rotation(std::move(rotation)), fov(fov), near_clip(near_clip), far_clip(far_clip){}
 
 Vector3F Camera::forward() const
 {
@@ -98,9 +48,9 @@ Matrix4x4 Camera::camera_matrix() const
 {
 	// act as if the camera is an object to put into (camera-perspective) world space. but only apply the y-rotation if axis is bound.
 	if(this->axis_bound)
-		return Matrix4x4::create_model_matrix(this->pos, Vector3F(0, this->rot.get_y(), 0), Vector3F(1, 1, 1));
+		return Matrix4x4::create_model_matrix(this->position, Vector3F(0, this->rotation.get_y(), 0), Vector3F(1, 1, 1));
 	else
-		return Matrix4x4::create_model_matrix(this->pos, this->rot, Vector3F(1, 1, 1));
+		return Matrix4x4::create_model_matrix(this->position, this->rotation, Vector3F(1, 1, 1));
 }
 
 bool Camera::is_axis_bound() const

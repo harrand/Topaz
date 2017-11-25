@@ -62,7 +62,7 @@ public:
 		textures.emplace(Texture::TextureType::NORMAL_MAP, random_normalmap_link);
 		textures.emplace(Texture::TextureType::PARALLAX_MAP, random_parallaxmap_link);
 		textures.emplace(Texture::TextureType::DISPLACEMENT_MAP, manager.resource_link("default_displacementmap"));
-		Object obj(manager.resource_link("cube_hd"), textures, engine.camera.get_position(), engine.camera.get_rotation(), Vector3F(40, 20, 40));
+		Object obj(manager.resource_link("cube_hd"), textures, engine.camera.position, engine.camera.rotation, Vector3F(40, 20, 40));
 		bounds.push_back(tz::physics::bound_aabb(obj, engine.get_meshes()));
 		engine.add_to_world(obj);
 	}
@@ -193,13 +193,11 @@ void init()
 		{
 			for(const AABB& bound : bounds)
 			{
-				if(bound.intersects(engine.camera.get_position()))// teleport camera above any object it's inside
+				if(bound.intersects(engine.camera.position))// teleport camera above any object it's inside
 				{
-					Vector3F position = engine.camera.get_position();
-					position.set_y(bound.get_maximum().get_y());
-					engine.camera.set_position(position);
+					engine.camera.position.set_y(bound.get_maximum().get_y());
 				}
-				if(bound.intersects(engine.camera.get_position() - (Vector3F(0, 1, 0) * (velocity + a))))
+				if(bound.intersects(engine.camera.position - (Vector3F(0, 1, 0) * (velocity + a))))
 					on_ground = true; // todo, teleport player right to the edge (otherwise they might just hover above the point which sucks)
 			}
 			engine.camera.set_axis_bound(!noclip);
@@ -209,14 +207,14 @@ void init()
 					speed = 0.0f;
 				else if(engine.get_time_profiler().get_fps() != 0)
 				{
-					engine.camera.set_position(engine.camera.get_position() - Vector3F(0, speed, 0));
+					engine.camera.position -= Vector3F(0, speed, 0);
 					speed += a;
 				}
 			}
 			
 			if(key_listener.is_key_pressed("W"))
 			{
-				Vector3F after = (engine.camera.get_position() + (engine.camera.forward() * velocity));
+				Vector3F after = (engine.camera.position + (engine.camera.forward() * velocity));
 				bool collide = false;
 				for(const AABB& bound : bounds)
 				{
@@ -224,11 +222,11 @@ void init()
 						collide = true;
 				}
 				if(!collide)
-					engine.camera.set_position(after);
+					engine.camera.position = after;
 			}
 			if(key_listener.is_key_pressed("S"))
 			{
-				Vector3F after = (engine.camera.get_position() + (engine.camera.backward() * velocity));
+				Vector3F after = (engine.camera.position + (engine.camera.backward() * velocity));
 				bool collide = false;
 				for(const AABB& bound : bounds)
 				{
@@ -236,11 +234,11 @@ void init()
 						collide = true;
 				}
 				if(!collide)
-					engine.camera.set_position(after);
+					engine.camera.position = after;
 			}
 			if(key_listener.is_key_pressed("A"))
 			{
-				Vector3F after = (engine.camera.get_position() + (engine.camera.left() * velocity));
+				Vector3F after = (engine.camera.position + (engine.camera.left() * velocity));
 				bool collide = false;
 				for(const AABB& bound : bounds)
 				{
@@ -248,11 +246,11 @@ void init()
 						collide = true;
 				}
 				if(!collide)
-					engine.camera.set_position(after);
+					engine.camera.position = after;
 			}
 			if(key_listener.is_key_pressed("D"))
 			{
-				Vector3F after = (engine.camera.get_position() + (engine.camera.right() * velocity));
+				Vector3F after = (engine.camera.position + (engine.camera.right() * velocity));
 				bool collide = false;
 				for(const AABB& bound : bounds)
 				{
@@ -260,11 +258,11 @@ void init()
 						collide = true;
 				}
 				if(!collide)
-					engine.camera.set_position(after);
+					engine.camera.position = after;
 			}
 			if(key_listener.is_key_pressed("Space"))
 			{
-				Vector3F after = (engine.camera.get_position() + (Vector3F(0, 1, 0) * velocity));
+				Vector3F after = (engine.camera.position + (Vector3F(0, 1, 0) * velocity));
 				bool collide = false;
 				for(const AABB& bound : bounds)
 				{
@@ -272,11 +270,11 @@ void init()
 						collide = true;
 				}
 				if(!collide)
-					engine.camera.set_position(after);
+					engine.camera.position = after;
 			}
 			if(key_listener.is_key_pressed("Z"))
 			{
-				Vector3F after = (engine.camera.get_position() + (Vector3F(0, -1, 0) * velocity));
+				Vector3F after = (engine.camera.position + (Vector3F(0, -1, 0) * velocity));
 				bool collide = false;
 				for(const AABB& bound : bounds)
 				{
@@ -284,38 +282,48 @@ void init()
 						collide = true;
 				}
 				if(!collide)
-					engine.camera.set_position(after);
+					engine.camera.position = after;
 			}
 			if(key_listener.is_key_pressed("I"))
 			{
-				engine.camera.set_rotation(engine.camera.get_rotation() + (Vector3F(1.0f/360.0f, 0, 0) * multiplier * 5 * engine.get_time_profiler().get_last_delta()));
+				//engine.camera.set_rotation(engine.camera.get_rotation() + (Vector3F(1.0f/360.0f, 0, 0) * multiplier * 5 * engine.get_time_profiler().get_last_delta()));
+				engine.camera.rotation += (Vector3F(1.0f/360.0f, 0, 0) * multiplier * 5 * engine.get_time_profiler().get_last_delta());
 			}
 			if(key_listener.is_key_pressed("K"))
 			{
-				engine.camera.set_rotation(engine.camera.get_rotation() + (Vector3F(-1.0f/360.0f, 0, 0) * multiplier * 5 * engine.get_time_profiler().get_last_delta()));
+				//engine.camera.set_rotation(engine.camera.get_rotation() + (Vector3F(-1.0f/360.0f, 0, 0) * multiplier * 5 * engine.get_time_profiler().get_last_delta()));
+				engine.camera.rotation += (Vector3F(-1.0f/360.0f, 0, 0) * multiplier * 5 * engine.get_time_profiler().get_last_delta());
 			}
 			if(key_listener.is_key_pressed("J"))
 			{
-				engine.camera.set_rotation(engine.camera.get_rotation() + (Vector3F(0, -1.0f/360.0f, 0) * multiplier * 5 * engine.get_time_profiler().get_last_delta()));
+				//engine.camera.set_rotation(engine.camera.get_rotation() + (Vector3F(0, -1.0f/360.0f, 0) * multiplier * 5 * engine.get_time_profiler().get_last_delta()));
+				engine.camera.rotation += (Vector3F(0, -1.0f/360.0f, 0) * multiplier * 5 * engine.get_time_profiler().get_last_delta());
 			}
 			if(key_listener.is_key_pressed("L"))
 			{
-				engine.camera.set_rotation(engine.camera.get_rotation() + (Vector3F(0, 1.0f/360.0f, 0) * multiplier * 5 * engine.get_time_profiler().get_last_delta()));
+				//engine.camera.set_rotation(engine.camera.get_rotation() + (Vector3F(0, 1.0f/360.0f, 0) * multiplier * 5 * engine.get_time_profiler().get_last_delta()));
+				engine.camera.rotation += (Vector3F(0, 1.0f/360.0f, 0) * multiplier * 5 * engine.get_time_profiler().get_last_delta());
 			}
 			if(key_listener.is_key_pressed("R"))
 			{
-				engine.camera.set_position(engine.get_world().get_spawn_point());
-				engine.camera.set_rotation(engine.get_world().get_spawn_orientation());
+				//engine.camera.set_position(engine.get_world().get_spawn_point());
+				//engine.camera.set_rotation(engine.get_world().get_spawn_orientation());
+				engine.camera.position = engine.get_world().get_spawn_point();
+				engine.camera.rotation = engine.get_world().get_spawn_orientation();
 			}
 			if(key_listener.catch_key_pressed("Escape"))
 				gui_panel.set_hidden(!gui_panel.is_hidden());
 			if(mouse_listener.is_left_clicked() && gui_panel.is_hidden())
 			{
 				Vector2F delta = mouse_listener.get_mouse_delta_pos();
+				/*
 				Vector3F orientation = engine.camera.get_rotation();
 				orientation.set_y(orientation.get_y() + (rotational_speed * delta.get_x()));
 				orientation.set_x(orientation.get_x() - (rotational_speed * delta.get_y()));
 				engine.camera.set_rotation(orientation);
+				*/
+				engine.camera.rotation.set_y(engine.camera.rotation.get_y() + (rotational_speed * delta.get_x()));
+				engine.camera.rotation.set_x(engine.camera.rotation.get_x() - (rotational_speed * delta.get_y()));
 				mouse_listener.reload_mouse_delta();
 			}
 		}

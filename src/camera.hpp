@@ -20,17 +20,7 @@ public:
 	Camera(const Camera& copy) = default;
 	Camera(Camera&& move) = default;
 	Camera& operator=(const Camera& rhs) = default;
-	
-	const Vector3F& get_position() const;
-	const Vector3F& get_rotation() const;
-	void set_position(Vector3F position);
-	void set_rotation(Vector3F rotation);
-	float get_fov() const;
-	float get_near_clip() const;
-	float get_far_clip() const;
-	void set_fov(float fov);
-	void set_near_clip(float near_clip);
-	void set_far_clip(float far_clip);
+
 	// Orientation methods.
 	Vector3F forward() const;
 	Vector3F backward() const;
@@ -41,10 +31,11 @@ public:
 	// Axis-Bound Camera causes orientation methods to stick to their normal axes. Also prevents rotation in the x and z axis.
 	bool is_axis_bound() const;
 	void set_axis_bound(bool axis_bound);
+	
+	Vector3F position, rotation;
+	float fov, near_clip, far_clip;
 private:
 	Matrix4x4 camera_matrix() const;
-	Vector3F pos, rot;
-	float fov, near_clip, far_clip;
 	bool axis_bound;
 };
 

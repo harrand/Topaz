@@ -56,13 +56,13 @@ AudioSource::AudioSource(std::string filename, Vector3F position): AudioClip(fil
 void AudioSource::update(const Camera& relative_to)
 {
 	const Vector3F source_position = this->position;
-	const Vector3F listener_position = relative_to.get_position();
+	const Vector3F listener_position = relative_to.position;
 	const Vector3F forward = relative_to.forward();
 	const Vector3F displacement = source_position - listener_position;
 	// a.b = |a||b|*cos(A)
 	// so A = acos(a dot b / |a||b|)
 	float angle = std::acos(forward.dot(displacement) / (forward.length() * displacement.length()));
-	Mix_SetPosition(this->get_channel(), static_cast<Sint16>(angle), static_cast<Uint8>(255 * displacement.length() / relative_to.get_far_clip()));
+	Mix_SetPosition(this->get_channel(), static_cast<Sint16>(angle), static_cast<Uint8>(255 * displacement.length() / relative_to.far_clip));
 }
 
 AudioMusic::AudioMusic(std::string filename): filename(std::move(filename)), paused(false)
