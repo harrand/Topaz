@@ -8,6 +8,7 @@ namespace tz
 	namespace graphics
 	{
 		constexpr std::size_t light_number_of_uniforms = 5;
+		constexpr std::size_t maximum_lights = 8;
 		constexpr Vector3F light_default_colour(std::array<float, 3>({1.0f, 1.0f, 1.0f}));
 		constexpr float light_default_power = 1.0f;
 		constexpr float light_default_diffuse_component = 1.0f;

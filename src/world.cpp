@@ -106,7 +106,7 @@ void World::add_entity_object(EntityObject eo)
 
 void World::add_light(Light light, GLuint shader_program_handle)
 {
-	while(this->base_lights.size() >= World::MAXIMUM_LIGHTS)
+	while(this->base_lights.size() >= tz::graphics::maximum_lights)
 		this->base_lights.erase(this->base_lights.begin());
 	this->base_lights[light.get_uniforms(shader_program_handle, this->base_lights.size())] = light;
 }

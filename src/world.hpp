@@ -46,7 +46,6 @@ public:
 private:
 	static Object retrieve_object_data(const std::string& object_name, std::string resources_path, MDLF& mdlf);
 	static EntityObject retrieve_entity_object_data(const std::string& entity_object_name, std::string resources_path, MDLF& mdlf);
-	static constexpr unsigned int MAXIMUM_LIGHTS = 8;
 	std::string filename;
 	std::string resources_path;
 	Vector3F gravity, spawn_point, spawn_orientation;
