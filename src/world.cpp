@@ -29,7 +29,7 @@ World::World(std::string filename, std::string resources_path, const std::vector
 
 World::World(const World& copy): World(copy.filename){}
 
-World::World(World&& move): filename(move.filename), resources_path(move.resources_path), gravity(move.gravity), spawn_point(move.spawn_point), spawn_orientation(move.spawn_orientation), objects(move.objects), entities(move.entities), entity_objects(std::move(move.entity_objects)), base_lights(std::move(move.base_lights)){}
+World::World(World&& move): spawn_point(move.spawn_point), spawn_orientation(move.spawn_orientation), filename(move.filename), resources_path(move.resources_path), gravity(move.gravity), objects(move.objects), entities(move.entities), entity_objects(std::move(move.entity_objects)), base_lights(std::move(move.base_lights)){}
 
 const std::string& World::get_file_name() const
 {
@@ -39,16 +39,6 @@ const std::string& World::get_file_name() const
 const Vector3F& World::get_gravity() const
 {
 	return this->gravity;
-}
-
-const Vector3F& World::get_spawn_point() const
-{
-	return this->spawn_point;
-}
-
-const Vector3F& World::get_spawn_orientation() const
-{
-	return this->spawn_orientation;
 }
 
 // Gravity is a force, and must be handled like any other force would. Essentially updates the 'gravity' force in all entities and entity_objects so that they're affected by the new force. It is done like this so that Entity and EntityObject require no reference to World whatsoever.
@@ -65,16 +55,6 @@ void World::set_gravity(Vector3F gravity)
 		eo.remove_force("gravity");
 		eo.apply_force("gravity", Force(this->get_gravity()));
 	}
-}
-
-void World::set_spawn_point(Vector3F spawn_point)
-{
-	this->spawn_point = spawn_point;
-}
-
-void World::set_spawn_orientation(Vector3F spawn_orientation)
-{
-	this->spawn_orientation = spawn_orientation;
 }
 
 void World::add_object(Object obj)

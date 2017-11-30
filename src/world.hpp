@@ -50,12 +50,15 @@ public:
 	void render(const Camera& cam, Shader* shader, unsigned int width, unsigned int height);
 	// Update all elements in the world that obey some form of law of physics. Pass tps as the expected ticks-per-second, not the instantaneous tick per second. This function should be called per 'tick'.
 	void update(unsigned int tps);
+	
+	Vector3F spawn_point, spawn_orientation;
 private:
 	static Object retrieve_object_data(const std::string& object_name, std::string resources_path, MDLF& mdlf, const std::vector<std::unique_ptr<Mesh>>& all_meshes, const std::vector<std::unique_ptr<Texture>>& all_textures, const std::vector<std::unique_ptr<NormalMap>>& all_normal_maps, const std::vector<std::unique_ptr<ParallaxMap>>& all_parallax_maps, const std::vector<std::unique_ptr<DisplacementMap>>& all_displacement_maps);
 	static EntityObject retrieve_entity_object_data(const std::string& entity_object_name, std::string resources_path, MDLF& mdlf, const std::vector<std::unique_ptr<Mesh>>& all_meshes, const std::vector<std::unique_ptr<Texture>>& all_textures, const std::vector<std::unique_ptr<NormalMap>>& all_normal_maps, const std::vector<std::unique_ptr<ParallaxMap>>& all_parallax_maps, const std::vector<std::unique_ptr<DisplacementMap>>& all_displacement_maps);
+	
 	std::string filename;
 	std::string resources_path;
-	Vector3F gravity, spawn_point, spawn_orientation;
+	Vector3F gravity;
 	std::vector<Object> objects;
 	std::vector<Entity> entities;
 	std::vector<EntityObject> entity_objects;

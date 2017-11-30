@@ -27,8 +27,8 @@ Engine::Engine(Window* wnd, std::string properties_path, unsigned int initial_fp
 	tz::data::Manager(this->properties.get_tag("resources")).retrieve_all_data(this->meshes, this->textures, this->normal_maps, this->parallax_maps, this->displacement_maps);
 	this->world = World(this->properties.get_tag("default_world"), this->properties.get_tag("resources"), this->meshes, this->textures, this->normal_maps, this->parallax_maps, this->displacement_maps);
 	// move the camera to the world's spawn point & orientation.
-	this->camera.position = this->world.get_spawn_point();
-	this->camera.rotation = this->world.get_spawn_orientation();
+	this->camera.position = this->world.spawn_point;
+	this->camera.rotation = this->world.spawn_orientation;
 	
 	this->default_shader.add_uniform<Matrix4x4>(Uniform(this->default_shader.get_program_handle(), "m", Matrix4x4()));
 	this->default_shader.add_uniform<Matrix4x4>(Uniform(this->default_shader.get_program_handle(), "v", Matrix4x4()));

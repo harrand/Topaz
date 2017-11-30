@@ -323,6 +323,8 @@ namespace tz::ui
 	std::set<GUI*> descendants(const GUI* gui, bool visible_only)
 	{
 		// depth-first search through gui child tree.
+		if(gui == nullptr)
+			return std::set<GUI*>();
 		std::stack<const GUI*> guis;
 		std::set<GUI*> descendants;
 		const GUI* top;
@@ -363,7 +365,7 @@ namespace tz::ui
 	
 	Matrix4x4 create_orthographic_gui_matrix(const GUI* gui)
 	{
-		if(!gui->has_window_parent())
+		if(gui == nullptr || !gui->has_window_parent())
 			return Matrix4x4::identity();
 		return Matrix4x4::create_orthographic_matrix(gui->find_window_parent()->get_width(), 0.0f, gui->find_window_parent()->get_height(), 0.0f, -1.0f, 1.0f);
 	}

@@ -128,7 +128,7 @@ void init()
 	TextLabel gui_title(0.0f, wnd.get_height() - 50, Vector4F(1, 1, 1, 1), {}, Vector3F(0, 0, 0), example_font, "Main Menu", engine.get_default_gui_shader());
 	Button test_button(0.0f, 2 * text.get_height(), Vector4F(1, 1, 1, 1), Vector4F(0.7, 0.7, 0.7, 1.0), Vector3F(0, 0, 0), example_font, "Hide/Show", engine.get_default_gui_shader(), mouse_listener);
 	Button noclip_toggle(0.0f, 2 * text.get_height() + 2 * test_button.get_height(), Vector4F(1, 1, 1, 1), Vector4F(0.7, 0.7, 0.7, 1.0), Vector3F(0, 0, 0), example_font, "Toggle Flight", engine.get_default_gui_shader(), mouse_listener);
-	Button spawn_block(0.0f, 2 * text.get_height() + 2 * noclip_toggle.get_height() + 2 * test_button.get_height(), Vector4F(1, 1, 1, 1), Vector4F(0.7, 0.5, 0.5, 1.0), Vector3F(), example_font, "THIS BLOCK IS RAW!", engine.get_default_gui_shader(), mouse_listener);
+	Button spawn_block(0.0f, 2 * text.get_height() + 2 * noclip_toggle.get_height() + 2 * test_button.get_height(), Vector4F(1, 1, 1, 1), Vector4F(0.7, 0.5, 0.5, 1.0), Vector3F(), example_font, "Spawn Block", engine.get_default_gui_shader(), mouse_listener);
 	Button exit_gui_button(wnd.get_width() - 50, wnd.get_height() - 50, Vector4F(1, 1, 1, 1), Vector4F(1.0, 0, 0, 1.0), Vector3F(0, 0, 0), example_font, "X", engine.get_default_gui_shader(), mouse_listener);
 	Button save_world_button(0.0f, 2 * text.get_height() + 2 * noclip_toggle.get_height() + 2 * test_button.get_height() + 2 * spawn_block.get_height(), Vector4F(1, 1, 1, 1), Vector4F(0.7, 0.7, 0.7, 1.0), Vector3F(), example_font, "Save World", engine.get_default_gui_shader(), mouse_listener);
 	wnd.add_child(&text);
@@ -285,45 +285,31 @@ void init()
 			}
 			if(key_listener.is_key_pressed("I"))
 			{
-				//engine.camera.set_rotation(engine.camera.get_rotation() + (Vector3F(1.0f/360.0f, 0, 0) * multiplier * 5 * engine.get_time_profiler().get_last_delta()));
 				engine.camera.rotation += (Vector3F(1.0f/360.0f, 0, 0) * multiplier * 5 * engine.get_time_profiler().get_last_delta());
 			}
 			if(key_listener.is_key_pressed("K"))
 			{
-				//engine.camera.set_rotation(engine.camera.get_rotation() + (Vector3F(-1.0f/360.0f, 0, 0) * multiplier * 5 * engine.get_time_profiler().get_last_delta()));
 				engine.camera.rotation += (Vector3F(-1.0f/360.0f, 0, 0) * multiplier * 5 * engine.get_time_profiler().get_last_delta());
 			}
 			if(key_listener.is_key_pressed("J"))
 			{
-				//engine.camera.set_rotation(engine.camera.get_rotation() + (Vector3F(0, -1.0f/360.0f, 0) * multiplier * 5 * engine.get_time_profiler().get_last_delta()));
 				engine.camera.rotation += (Vector3F(0, -1.0f/360.0f, 0) * multiplier * 5 * engine.get_time_profiler().get_last_delta());
 			}
 			if(key_listener.is_key_pressed("L"))
 			{
-				//engine.camera.set_rotation(engine.camera.get_rotation() + (Vector3F(0, 1.0f/360.0f, 0) * multiplier * 5 * engine.get_time_profiler().get_last_delta()));
 				engine.camera.rotation += (Vector3F(0, 1.0f/360.0f, 0) * multiplier * 5 * engine.get_time_profiler().get_last_delta());
 			}
 			if(key_listener.is_key_pressed("R"))
 			{
-				//engine.camera.set_position(engine.get_world().get_spawn_point());
-				//engine.camera.set_rotation(engine.get_world().get_spawn_orientation());
-				engine.camera.position = engine.get_world().get_spawn_point();
-				engine.camera.rotation = engine.get_world().get_spawn_orientation();
+				engine.camera.position = engine.get_world().spawn_point;
+				engine.camera.rotation = engine.get_world().spawn_orientation;
 			}
 			if(key_listener.catch_key_pressed("Escape"))
 				gui_panel.set_hidden(!gui_panel.is_hidden());
 			if(mouse_listener.is_left_clicked() && gui_panel.is_hidden())
 			{
 				Vector2F delta = mouse_listener.get_mouse_delta_pos();
-				/*
-				Vector3F orientation = engine.camera.get_rotation();
-				orientation.set_y(orientation.get_y() + (rotational_speed * delta.get_x()));
-				orientation.set_x(orientation.get_x() - (rotational_speed * delta.get_y()));
-				engine.camera.set_rotation(orientation);
-				*/
-				//engine.camera.rotation.set_y(engine.camera.rotation.get_y() + (rotational_speed * delta.get_x()));
 				engine.camera.rotation.y += rotational_speed * delta.x;
-				//engine.camera.rotation.set_x(engine.camera.rotation.get_x() - (rotational_speed * delta.get_y()));
 				engine.camera.rotation.x -= rotational_speed * delta.y;
 				mouse_listener.reload_mouse_delta();
 			}
