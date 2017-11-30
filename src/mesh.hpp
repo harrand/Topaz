@@ -13,6 +13,20 @@
 /*
 	Lowest-level renderable class that Topaz offers. All renderable Topaz classes such as Object contain these. Holds 3D vertex data, from a Wavefront OBJ model, for example. Use this if you want to render a mesh you made in Blender or something.
 */
+
+namespace tz::graphics
+{
+	enum class BufferTypes : std::size_t
+	{
+		POSITION = 0,
+		TEXCOORD = 1,
+		NORMAL = 2,
+		TANGENT = 3,
+		INDEX = 4,
+		NUM_BUFFERS = 5
+	};
+}
+
 class Mesh
 {
 public:
@@ -35,17 +49,9 @@ protected:
 	const std::string filename;
 	tz::graphics::model::IndexedModel model;
 	void init_mesh();
-	enum class BufferTypes : std::size_t
-	{
-		POSITION = 0,
-		TEXCOORD = 1,
-		NORMAL = 2,
-		TANGENT = 3,
-		INDEX = 4,
-		NUM_BUFFERS = 5
-	};
+	
 	GLuint vertex_array_object; //vao
-	std::array<GLuint, static_cast<std::size_t>(BufferTypes::NUM_BUFFERS)> vbo_buffers;
+	std::array<GLuint, static_cast<std::size_t>(tz::graphics::BufferTypes::NUM_BUFFERS)> vbo_buffers;
 	unsigned int render_count;
 };
 

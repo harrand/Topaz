@@ -80,6 +80,7 @@ void Mesh::render(bool patches, GLenum mode) const
 //private
 void Mesh::init_mesh()
 {
+	using tz::graphics::BufferTypes;
 	this->render_count = this->model.indices.size();
 	// Our vector class is not "c-enough" (contains stuff like protected variables which C structs don't support. Therefore we use VectorSXF instead which can work with OpenGL easily.
 	// However our indices vector from model is fine as-is.

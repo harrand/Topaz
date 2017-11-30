@@ -25,8 +25,8 @@ public:
 
 namespace tz::physics
 {
-	BoundingSphere bound_sphere(const Object& object, const std::vector<std::unique_ptr<Mesh>>& all_meshes);
-	AABB bound_aabb(const Object& object, const std::vector<std::unique_ptr<Mesh>>& all_meshes);
+	BoundingSphere bound_sphere(const Object& object);
+	AABB bound_aabb(const Object& object);
 }
 
 #endif

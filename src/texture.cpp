@@ -269,9 +269,9 @@ Bitmap<PixelRGBA> Texture::get_bitmap() const
 	return this->bitmap.value_or(Bitmap<PixelRGBA>());
 }
 
-Texture::TextureType Texture::get_texture_type()
+tz::graphics::TextureType Texture::get_texture_type()
 {
-	return TextureType::TEXTURE;
+	return tz::graphics::TextureType::TEXTURE;
 }
 
 NormalMap::NormalMap(std::string filename): Texture(filename, false){}
@@ -291,9 +291,9 @@ void NormalMap::bind(GLuint shader_program_handle, unsigned int id)
 	glUniform1i(this->texture_id, id);
 }
 
-Texture::TextureType NormalMap::get_texture_type()
+tz::graphics::TextureType NormalMap::get_texture_type()
 {
-	return TextureType::NORMAL_MAP;
+	return tz::graphics::TextureType::NORMAL_MAP;
 }
 
 ParallaxMap::ParallaxMap(std::string filename): Texture(filename, false){}
@@ -313,9 +313,9 @@ void ParallaxMap::bind(GLuint shader_program_handle, unsigned int id)
 	glUniform1i(this->texture_id, id);
 }
 
-Texture::TextureType ParallaxMap::get_texture_type()
+tz::graphics::TextureType ParallaxMap::get_texture_type()
 {
-	return TextureType::PARALLAX_MAP;
+	return tz::graphics::TextureType::PARALLAX_MAP;
 }
 
 DisplacementMap::DisplacementMap(std::string filename): Texture(filename, false){}
@@ -335,9 +335,9 @@ void DisplacementMap::bind(GLuint shader_program_handle, unsigned int id)
 	glUniform1i(this->texture_id, id);
 }
 
-Texture::TextureType DisplacementMap::get_texture_type()
+tz::graphics::TextureType DisplacementMap::get_texture_type()
 {
-	return TextureType::DISPLACEMENT_MAP;
+	return tz::graphics::TextureType::DISPLACEMENT_MAP;
 }
 
 CubeMap::CubeMap(std::string right_texture, std::string left_texture, std::string top_texture, std::string bottom_texture, std::string back_texture, std::string front_texture): right_texture(std::move(right_texture)), left_texture(std::move(left_texture)), top_texture(std::move(top_texture)), bottom_texture(std::move(bottom_texture)), back_texture(std::move(back_texture)), front_texture(std::move(front_texture))

@@ -12,7 +12,7 @@
 class World
 {
 public:
-	World(std::string filename = "default.world", std::string resources_path = "resources.data");
+	World(std::string filename = "default.world", std::string resources_path = "resources.mdl", const std::vector<std::unique_ptr<Mesh>>& all_meshes = std::vector<std::unique_ptr<Mesh>>(), const std::vector<std::unique_ptr<Texture>>& all_textures = std::vector<std::unique_ptr<Texture>>(), const std::vector<std::unique_ptr<NormalMap>>& all_normal_maps = std::vector<std::unique_ptr<NormalMap>>(), const std::vector<std::unique_ptr<ParallaxMap>>& all_parallax_maps = std::vector<std::unique_ptr<ParallaxMap>>(), const std::vector<std::unique_ptr<DisplacementMap>>& all_displacement_maps = std::vector<std::unique_ptr<DisplacementMap>>());
 	World(const World& copy);
 	World(World&& move);
 	~World();
@@ -41,11 +41,11 @@ public:
 	void kill_lights();
 	void export_world(const std::string& world_link) const;
 	void save() const;
-	void render(Camera& cam, Shader& shader, unsigned int width, unsigned int height, const std::vector<std::unique_ptr<Mesh>>& all_meshes, const std::vector<std::unique_ptr<Texture>>& all_textures, const std::vector<std::unique_ptr<NormalMap>>& all_normalmaps, const std::vector<std::unique_ptr<ParallaxMap>>& all_parallaxmaps, const std::vector<std::unique_ptr<DisplacementMap>>& all_displacementmaps);
+	void render(const Camera& cam, Shader* shader, unsigned int width, unsigned int height);
 	void update(unsigned int tps);
 private:
-	static Object retrieve_object_data(const std::string& object_name, std::string resources_path, MDLF& mdlf);
-	static EntityObject retrieve_entity_object_data(const std::string& entity_object_name, std::string resources_path, MDLF& mdlf);
+	static Object retrieve_object_data(const std::string& object_name, std::string resources_path, MDLF& mdlf, const std::vector<std::unique_ptr<Mesh>>& all_meshes, const std::vector<std::unique_ptr<Texture>>& all_textures, const std::vector<std::unique_ptr<NormalMap>>& all_normal_maps, const std::vector<std::unique_ptr<ParallaxMap>>& all_parallax_maps, const std::vector<std::unique_ptr<DisplacementMap>>& all_displacement_maps);
+	static EntityObject retrieve_entity_object_data(const std::string& entity_object_name, std::string resources_path, MDLF& mdlf, const std::vector<std::unique_ptr<Mesh>>& all_meshes, const std::vector<std::unique_ptr<Texture>>& all_textures, const std::vector<std::unique_ptr<NormalMap>>& all_normal_maps, const std::vector<std::unique_ptr<ParallaxMap>>& all_parallax_maps, const std::vector<std::unique_ptr<DisplacementMap>>& all_displacement_maps);
 	std::string filename;
 	std::string resources_path;
 	Vector3F gravity, spawn_point, spawn_orientation;

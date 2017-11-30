@@ -21,14 +21,15 @@ void tz::terminate()
 	tz::util::log::message("Terminated Topaz.");
 }
 
-Engine::Engine(Window* wnd, std::string properties_path, unsigned int initial_fps, unsigned int tps): camera(Camera()), properties(RawFile(properties_path)), resources(RawFile(this->properties.get_tag("resources"))), default_shader(this->properties.get_tag("default_shader")), default_gui_shader(this->properties.get_tag("default_gui_shader")), wnd(wnd), world(this->properties.get_tag("default_world"), this->properties.get_tag("resources")), fps(initial_fps), tps(tps), update_command_executor(), tick_command_executor(), update_due(false)
+Engine::Engine(Window* wnd, std::string properties_path, unsigned int initial_fps, unsigned int tps): camera(Camera()), properties(RawFile(properties_path)), resources(RawFile(this->properties.get_tag("resources"))), default_shader(this->properties.get_tag("default_shader")), default_gui_shader(this->properties.get_tag("default_gui_shader")), wnd(wnd), fps(initial_fps), tps(tps), update_command_executor(), tick_command_executor(), update_due(false)
 {
+	// fill all the asset buffers via tz data manager
+	tz::data::Manager(this->properties.get_tag("resources")).retrieve_all_data(this->meshes, this->textures, this->normal_maps, this->parallax_maps, this->displacement_maps);
+	this->world = World(this->properties.get_tag("default_world"), this->properties.get_tag("resources"), this->meshes, this->textures, this->normal_maps, this->parallax_maps, this->displacement_maps);
 	// move the camera to the world's spawn point & orientation.
 	this->camera.position = this->world.get_spawn_point();
 	this->camera.rotation = this->world.get_spawn_orientation();
-	// fill all the asset buffers via tz data manager
-	tz::data::Manager(this->properties.get_tag("resources")).retrieve_all_data(this->meshes, this->textures, this->normal_maps, this->parallax_maps, this->displacement_maps);
-	//test
+	
 	this->default_shader.add_uniform<Matrix4x4>(Uniform(this->default_shader.get_program_handle(), "m", Matrix4x4()));
 	this->default_shader.add_uniform<Matrix4x4>(Uniform(this->default_shader.get_program_handle(), "v", Matrix4x4()));
 	this->default_shader.add_uniform<Matrix4x4>(Uniform(this->default_shader.get_program_handle(), "p", Matrix4x4()));
@@ -58,7 +59,8 @@ void Engine::update(std::size_t shader_index)
 	this->wnd->clear(0.0f, 0.0f, 0.0f, 1.0f);
 	this->profiler.end_frame();
 	
-	this->world.render(this->camera, this->get_shader(shader_index), this->wnd->get_width(), this->wnd->get_height(), this->meshes, this->textures, this->normal_maps, this->parallax_maps, this->displacement_maps);
+	this->world.render(this->camera, &(this->get_shader(shader_index)), this->wnd->get_width(), this->wnd->get_height());
+	//this->world.render(this->camera, this->get_shader(shader_index), this->wnd->get_width(), this->wnd->get_height(), this->meshes, this->textures, this->normal_maps, this->parallax_maps, this->displacement_maps);
 	
 	for(auto command : this->update_command_executor.get_commands())
 		command->operator()({});

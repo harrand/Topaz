@@ -15,6 +15,15 @@ namespace tz::graphics
 	constexpr unsigned int depth_texture_default_size = 1024;
 	constexpr unsigned int depth_texture_default_width = depth_texture_default_size;
 	constexpr unsigned int depth_texture_default_height = depth_texture_default_size;
+	
+	enum class TextureType : unsigned int
+	{
+		TEXTURE,
+		NORMAL_MAP,
+		PARALLAX_MAP,
+		DISPLACEMENT_MAP,
+		TEXTURE_TYPES,
+	};
 }
 
 /*
@@ -63,22 +72,13 @@ public:
 	~Texture();
 	Texture& operator=(Texture&& rhs);
 	
-	enum class TextureType : unsigned int
-	{
-		TEXTURE,
-		NORMAL_MAP,
-		PARALLAX_MAP,
-		DISPLACEMENT_MAP,
-		TEXTURE_TYPES,
-	};
-	
 	virtual void bind(GLuint shader_program_handle, unsigned int id);
 	const std::string& get_file_name() const;
 	int get_width() const;
 	int get_height() const;
 	bool has_bitmap() const;
 	Bitmap<PixelRGBA> get_bitmap() const;
-	virtual TextureType get_texture_type();
+	virtual tz::graphics::TextureType get_texture_type();
 	template<class T>
 	static T* get_from_link(const std::string& texture_link, const std::vector<std::unique_ptr<T>>& all_textures);
 protected:
@@ -102,7 +102,7 @@ public:
 	NormalMap& operator=(const NormalMap& rhs) = delete;
 	
 	virtual void bind(GLuint shader_program_handle, unsigned int id) override;
-	TextureType get_texture_type();
+	virtual tz::graphics::TextureType get_texture_type() override;
 };
 
 class ParallaxMap: public Texture
@@ -115,7 +115,7 @@ public:
 	ParallaxMap& operator=(const ParallaxMap& rhs) = delete;
 	
 	virtual void bind(GLuint shader_program_handle, unsigned int id) override;
-	TextureType get_texture_type();	
+	virtual tz::graphics::TextureType get_texture_type() override;	
 };
 
 class DisplacementMap: public Texture
@@ -128,7 +128,7 @@ public:
 	DisplacementMap& operator=(const DisplacementMap& rhs) = delete;
 	
 	virtual void bind(GLuint shader_program_handle, unsigned int id) override;
-	TextureType get_texture_type();
+	virtual tz::graphics::TextureType get_texture_type() override;
 };
 
 /*

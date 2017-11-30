@@ -51,19 +51,19 @@ public:
 	virtual void operator()()
 	{
 		tz::data::Manager manager(std::string(engine.get_resources().get_raw_file().get_path().data(), engine.get_resources().get_raw_file().get_path().length()));
-		std::map<Texture::TextureType, std::string> textures;
+		std::map<tz::graphics::TextureType, Texture*> textures;
 		std::vector<std::string> texture_links = engine.get_resources().get_sequence("textures");
 		static Random rand;
 		std::size_t random_index = rand.next_int(0, texture_links.size());
 		std::string random_texture_link = manager.resource_link(texture_links[random_index]);
 		std::string random_normalmap_link = manager.resource_link(texture_links[random_index] + "_normalmap");
-		std::string random_parallaxmap_link = manager.resource_link(texture_links[random_index] + "parallaxmap");
-		textures.emplace(Texture::TextureType::TEXTURE, random_texture_link);
-		textures.emplace(Texture::TextureType::NORMAL_MAP, random_normalmap_link);
-		textures.emplace(Texture::TextureType::PARALLAX_MAP, random_parallaxmap_link);
-		textures.emplace(Texture::TextureType::DISPLACEMENT_MAP, manager.resource_link("default_displacementmap"));
-		Object obj(manager.resource_link("cube_hd"), textures, engine.camera.position, engine.camera.rotation, Vector3F(40, 20, 40));
-		bounds.push_back(tz::physics::bound_aabb(obj, engine.get_meshes()));
+		std::string random_parallaxmap_link = manager.resource_link(texture_links[random_index] + "_parallaxmap");
+		textures.emplace(tz::graphics::TextureType::TEXTURE, Texture::get_from_link<Texture>(random_texture_link, engine.get_textures()));
+		textures.emplace(tz::graphics::TextureType::NORMAL_MAP, Texture::get_from_link<NormalMap>(random_normalmap_link, engine.get_normal_maps()));
+		textures.emplace(tz::graphics::TextureType::PARALLAX_MAP, Texture::get_from_link<ParallaxMap>(random_parallaxmap_link, engine.get_parallax_maps()));
+		textures.emplace(tz::graphics::TextureType::DISPLACEMENT_MAP, Texture::get_from_link<DisplacementMap>(manager.resource_link("default_displacementmap"), engine.get_displacement_maps()));
+		Object obj(tz::graphics::find_mesh(manager.resource_link("cube_hd"), engine.get_meshes()), textures, engine.camera.position, engine.camera.rotation, Vector3F(40, 20, 40));
+		bounds.push_back(tz::physics::bound_aabb(obj));
 		engine.add_to_world(obj);
 	}
 	Engine& engine;
@@ -116,7 +116,7 @@ void init()
 	std::vector<AABB> bounds;
 	bounds.reserve(engine.get_world().get_objects().size());
 	for(const Object& object : engine.get_world().get_objects())
-		bounds.push_back(tz::physics::bound_aabb(object, engine.get_meshes()));
+		bounds.push_back(tz::physics::bound_aabb(object));
 	
 	Font example_font("../../../res/runtime/fonts/upheaval.ttf", 25);
 	TextLabel text(0.0f, 0.0f, Vector4F(1, 1, 1, 1), {}, Vector3F(0, 0, 0), example_font, "FPS: ...", engine.get_default_gui_shader());
@@ -152,25 +152,24 @@ void init()
 	RenderSkyboxCommand render_skybox(skybox, engine.camera, skybox_shader, engine.get_meshes(), wnd);
 	engine.add_update_command(&render_skybox);
 	
-	Object test_object("", std::map<Texture::TextureType, std::string>({std::make_pair<Texture::TextureType, std::string>(Texture::TextureType::TEXTURE, "../../../res/runtime/textures/sand.jpg")}), Vector3F(0, 100, 0), Vector3F(), Vector3F(20,20,20), 5, 0, 0, 0);
 	std::vector<Vector3F> positions({Vector3F(10, 10, 10), Vector3F(-10, -10, -10), Vector3F(-10, 10, 10), Vector3F(10, -10, -10)});
 	std::vector<Vector3F> rotations({Vector3F(0,0,0), Vector3F(1,1,1), Vector3F(2,2,2), Vector3F(3,3,3)});
 	std::vector<Vector3F> scales({Vector3F(1,1,1), Vector3F(2,2,2), Vector3F(3,3,3), Vector3F(4,4,4)});
 	InstancedMesh instanced_cube_2("../../../res/runtime/models/cube_hd.obj", positions, rotations, scales);
+	Object test_object(&instanced_cube_2, std::map<tz::graphics::TextureType, Texture*>({std::make_pair<tz::graphics::TextureType, Texture*>(tz::graphics::TextureType::TEXTURE, Texture::get_from_link<Texture>("../../../res/runtime/textures/sand.jpg", engine.get_textures()))}), Vector3F(0, 100, 0), Vector3F(), Vector3F(20,20,20), 5, 0, 0, 0);
 	class Anon : public TrivialCommand
 	{
 	public:
-		Anon(Object& object, Mesh* mesh, const Camera& cam, Shader& shader, float width, float height): object(object), mesh(mesh), cam(cam), shader(shader), width(width), height(height){}
+		Anon(Object& object, const Camera& cam, Shader* shader, float width, float height): object(object), cam(cam), shader(shader), width(width), height(height){}
 		virtual void operator()()
 		{
-			object.render(mesh, nullptr, nullptr, nullptr, nullptr, cam, shader, width, height);
+			object.render(cam, shader, width, height);
 		}
 		Object& object;
-		Mesh* mesh;
 		const Camera& cam;
-		Shader& shader;
+		Shader* shader;
 		float width, height;
-	} anon_instanced_cube_2(test_object, &instanced_cube_2, engine.camera, engine.default_shader, wnd.get_width(), wnd.get_height());
+	} anon_instanced_cube_2(test_object, engine.camera, &(engine.default_shader), wnd.get_width(), wnd.get_height());
 	engine.add_update_command(&anon_instanced_cube_2);
 	
 	bool on_ground = false;

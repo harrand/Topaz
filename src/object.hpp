@@ -18,27 +18,32 @@ namespace tz::graphics
 /*
 	Collaboration of a mesh, texture, normal-map, parallax-map and displacement-map. Use this to represent a 3D object completely, including its vertex data, texture, material etc.
 */
+
 class Object
 {
 public:
-	Object(std::string mesh_link, std::map<Texture::TextureType, std::string> textures, Vector3F position, Vector3F rotation, Vector3F scale, unsigned int shininess = tz::graphics::default_shininess, float parallax_map_scale = tz::graphics::default_parallax_map_scale, float parallax_map_offset = tz::graphics::default_parallax_map_offset, float displacement_factor = tz::graphics::default_displacement_factor);
+	//Object(std::string mesh_link, std::map<tz::graphics::TextureType, std::string> textures, Vector3F position, Vector3F rotation, Vector3F scale, unsigned int shininess = tz::graphics::default_shininess, float parallax_map_scale = tz::graphics::default_parallax_map_scale, float parallax_map_offset = tz::graphics::default_parallax_map_offset, float displacement_factor = tz::graphics::default_displacement_factor);
+	Object(const Mesh* mesh, std::map<tz::graphics::TextureType, Texture*> textures, Vector3F position, Vector3F rotation, Vector3F scale, unsigned int shininess = tz::graphics::default_shininess, float parallax_map_scale = tz::graphics::default_parallax_map_scale, float parallax_map_offset = tz::graphics::default_parallax_map_offset, float displacement_factor = tz::graphics::default_displacement_factor);
 	Object(const Object& copy) = default;
 	Object(Object&& move) = default;
 	~Object() = default;
 	Object& operator=(const Object& rhs) = default;
 	
-	const std::string& get_mesh_link() const;
-	const std::map<Texture::TextureType, std::string> get_textures() const;
-	virtual void render(Mesh* mesh, Texture* tex, NormalMap* nm, ParallaxMap* pm, DisplacementMap* dm, const Camera& cam, Shader& shad, float width, float height) const;
-	virtual void render(const std::vector<std::unique_ptr<Mesh>>& all_meshes, const std::vector<std::unique_ptr<Texture>>& all_textures, const std::vector<std::unique_ptr<NormalMap>>& all_normalmaps, const std::vector<std::unique_ptr<ParallaxMap>>& all_parallaxmaps, const std::vector<std::unique_ptr<DisplacementMap>>& all_displacementmaps, const Camera& cam, Shader& shad, float width, float height) const;
+	const Mesh& get_mesh() const;
+	const std::map<tz::graphics::TextureType, Texture*>& get_textures() const;
+	virtual void render(const Camera& cam, Shader* shader, float width, float height);
+	//virtual void render(Mesh* mesh, Texture* tex, NormalMap* nm, ParallaxMap* pm, DisplacementMap* dm, const Camera& cam, Shader& shad, float width, float height) const;
+	//virtual void render(const std::vector<std::unique_ptr<Mesh>>& all_meshes, const std::vector<std::unique_ptr<Texture>>& all_textures, const std::vector<std::unique_ptr<NormalMap>>& all_normalmaps, const std::vector<std::unique_ptr<ParallaxMap>>& all_parallaxmaps, const std::vector<std::unique_ptr<DisplacementMap>>& all_displacementmaps, const Camera& cam, Shader& shad, float width, float height) const;
 	bool operator==(const Object& rhs) const;
 	
 	Vector3F position, rotation, scale;
 	unsigned int shininess;
 	float parallax_map_scale, parallax_map_offset, displacement_factor;
 protected:
-	std::string mesh_link;
-	std::map<Texture::TextureType, std::string> textures;
+	const Mesh* mesh;
+	std::map<tz::graphics::TextureType, Texture*> textures;
+	//std::string mesh_link;
+	//std::map<tz::graphics::TextureType, std::string> textures;
 };
 
 /*
