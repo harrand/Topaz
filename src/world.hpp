@@ -7,15 +7,16 @@
 #include "mdl.hpp"
 
 /*
-	Contains Objects, EntityObjects and pretty much any Topaz renderable you can think of. Handles all their physics inputs aswell. Takes a filename in its constructor for the MDL data file containing world data.
+	Contains Objects, EntityObjects and pretty much any Topaz renderable you can think of. Handles all their physics inputs aswell. Takes a filename in its constructor for the MDL data file containing world data. Use this to store everything you want to draw.
 */
 class World
 {
 public:
+	// Engine cannot initialise World in its initialiser-list, so a default world must be available. It needn't serve any functionality, however. Unfortunately one of the unavoidable drawbacks of C++.
 	World(std::string filename = "default.world", std::string resources_path = "resources.mdl", const std::vector<std::unique_ptr<Mesh>>& all_meshes = std::vector<std::unique_ptr<Mesh>>(), const std::vector<std::unique_ptr<Texture>>& all_textures = std::vector<std::unique_ptr<Texture>>(), const std::vector<std::unique_ptr<NormalMap>>& all_normal_maps = std::vector<std::unique_ptr<NormalMap>>(), const std::vector<std::unique_ptr<ParallaxMap>>& all_parallax_maps = std::vector<std::unique_ptr<ParallaxMap>>(), const std::vector<std::unique_ptr<DisplacementMap>>& all_displacement_maps = std::vector<std::unique_ptr<DisplacementMap>>());
 	World(const World& copy);
 	World(World&& move);
-	~World();
+	~World() = default;
 	World& operator=(const World& rhs) = default;
 
 	const std::string& get_file_name() const;
@@ -29,19 +30,25 @@ public:
 	void add_entity(Entity ent);
 	void add_entity_object(EntityObject eo);
 	void add_light(Light light, GLuint shader_program_handle);
-	void remove_object(Object obj);
-	void remove_entity(Entity ent);
-	void remove_entity_object(EntityObject eo);
-	void remove_light(Light light);
+	void remove_object(const Object& obj);
+	void remove_entity(const Entity& ent);
+	void remove_entity_object(const EntityObject& eo);
+	void remove_light(const Light& light);
 	const std::vector<Object>& get_objects() const;
 	const std::vector<Entity>& get_entities() const;
 	const std::vector<EntityObject>& get_entity_objects() const;
+	// Returns total number of Objects, Entities and EntityObjects in the world.
 	std::size_t get_size() const;
 	const std::map<std::array<GLint, tz::graphics::light_number_of_uniforms>, Light>& get_lights() const;
+	// Updates uniforms to currently bound shader, zeroing light values for all lights.
 	void kill_lights();
+	// Export world data to a MDL file called world_link.
 	void export_world(const std::string& world_link) const;
+	// Export world data to a MDL file with the same name as the file which loaded this world, overwriting it.
 	void save() const;
+	// Render all elements in the world from the perspective of the camera, attaching a shader and updating uniforms in the process. Width and height parameters required to generate projection matrices & correct aspect-ratio. This method should be invoked as often as possible, to smooth gameplay.
 	void render(const Camera& cam, Shader* shader, unsigned int width, unsigned int height);
+	// Update all elements in the world that obey some form of law of physics. Pass tps as the expected ticks-per-second, not the instantaneous tick per second. This function should be called per 'tick'.
 	void update(unsigned int tps);
 private:
 	static Object retrieve_object_data(const std::string& object_name, std::string resources_path, MDLF& mdlf, const std::vector<std::unique_ptr<Mesh>>& all_meshes, const std::vector<std::unique_ptr<Texture>>& all_textures, const std::vector<std::unique_ptr<NormalMap>>& all_normal_maps, const std::vector<std::unique_ptr<ParallaxMap>>& all_parallax_maps, const std::vector<std::unique_ptr<DisplacementMap>>& all_displacement_maps);

@@ -1,6 +1,5 @@
 #include "object.hpp"
 
-//Object::Object(std::string mesh_link, std::map<tz::graphics::TextureType, std::string> textures, Vector3F position, Vector3F rotation, Vector3F scale, unsigned int shininess, float parallax_map_scale, float parallax_map_offset, float displacement_factor): position(std::move(position)), rotation(std::move(rotation)), scale(std::move(scale)), shininess(shininess), parallax_map_scale(parallax_map_scale), parallax_map_offset(parallax_map_offset), displacement_factor(displacement_factor), mesh_link(std::move(mesh_link)), textures(std::move(textures)){}
 Object::Object(const Mesh* mesh, std::map<tz::graphics::TextureType, Texture*> textures, Vector3F position, Vector3F rotation, Vector3F scale, unsigned int shininess, float parallax_map_scale, float parallax_map_offset, float displacement_factor): position(position), rotation(rotation), scale(scale), shininess(shininess), parallax_map_scale(parallax_map_scale), parallax_map_offset(parallax_map_offset), displacement_factor(displacement_factor), mesh(mesh), textures(textures){}
 
 const Mesh& Object::get_mesh() const
@@ -46,54 +45,9 @@ void Object::render(const Camera& cam, Shader* shader, float width, float height
 	shader->set_uniform<float>("parallax_map_offset", this->parallax_map_offset);
 	shader->set_uniform<float>("displacement_factor", this->displacement_factor);
 	shader->update();
-	//shad.update(Matrix4x4::create_model_matrix(this->position, this->rotation, this->scale).fill_data(), Matrix4x4::create_view_matrix(cam.get_position(), cam.get_rotation()).fill_data(), Matrix4x4::create_perspective_matrix(cam.get_fov(), width, height, cam.get_near_clip(), cam.get_far_clip()).fill_data(), this->shininess, this->parallax_map_scale, this->parallax_map_offset, this->displacement_factor);
-	//glFrontFace(GL_CCW);
 	mesh->render(shader->has_tessellation_control_shader());
-	//glFrontFace(GL_CW);
 	
 }
-/*
-void Object::render(Mesh* mesh, Texture* tex, NormalMap* nm, ParallaxMap* pm, DisplacementMap* dm, const Camera& cam, Shader& shad, float width, float height) const
-{
-	// O(1) CPU
-	if(mesh == nullptr)
-		return;
-	shad.bind();
-	if(tex != nullptr)
-		tex->bind(shad.get_program_handle(), static_cast<unsigned int>(tex->get_texture_type()));
-	if(nm != nullptr)
-		nm->bind(shad.get_program_handle(), static_cast<unsigned int>(nm->get_texture_type()));
-	if(pm != nullptr)
-		pm->bind(shad.get_program_handle(), static_cast<unsigned int>(pm->get_texture_type()));
-	if(dm != nullptr)
-		dm->bind(shad.get_program_handle(), static_cast<unsigned int>(dm->get_texture_type()));
-	shad.set_uniform<bool>("is_instanced", tz::graphics::is_instanced(mesh));
-	shad.set_uniform<Matrix4x4>("m", Matrix4x4::create_model_matrix(this->position, this->rotation, this->scale));
-	shad.set_uniform<Vector3F>("position_uniform", this->position);
-	shad.set_uniform<Vector3F>("rotation_uniform", this->rotation);
-	shad.set_uniform<Vector3F>("scale_uniform", this->scale);
-	shad.set_uniform<Matrix4x4>("v", Matrix4x4::create_view_matrix(cam.position, cam.rotation));
-	shad.set_uniform<Matrix4x4>("p", Matrix4x4::create_perspective_matrix(cam.fov, width, height, cam.near_clip, cam.far_clip));
-	shad.set_uniform<unsigned int>("shininess", this->shininess);
-	shad.set_uniform<float>("parallax_map_scale", this->parallax_map_scale);
-	shad.set_uniform<float>("parallax_map_offset", this->parallax_map_offset);
-	shad.set_uniform<float>("displacement_factor", this->displacement_factor);
-	shad.update();
-	//shad.update(Matrix4x4::create_model_matrix(this->position, this->rotation, this->scale).fill_data(), Matrix4x4::create_view_matrix(cam.get_position(), cam.get_rotation()).fill_data(), Matrix4x4::create_perspective_matrix(cam.get_fov(), width, height, cam.get_near_clip(), cam.get_far_clip()).fill_data(), this->shininess, this->parallax_map_scale, this->parallax_map_offset, this->displacement_factor);
-	//glFrontFace(GL_CCW);
-	mesh->render(shad.has_tessellation_control_shader());
-	//glFrontFace(GL_CW);
-}
-
-void Object::render(const std::vector<std::unique_ptr<Mesh>>& all_meshes, const std::vector<std::unique_ptr<Texture>>& all_textures, const std::vector<std::unique_ptr<NormalMap>>& all_normalmaps, const std::vector<std::unique_ptr<ParallaxMap>>& all_parallaxmaps, const std::vector<std::unique_ptr<DisplacementMap>>& all_displacementmaps, const Camera& cam, Shader& shad, float width, float height) const
-{
-	std::string texture_link = this->textures.at(tz::graphics::TextureType::TEXTURE);
-	std::string normalmap_link = this->textures.at(tz::graphics::TextureType::NORMAL_MAP);
-	std::string parallaxmap_link = this->textures.at(tz::graphics::TextureType::PARALLAX_MAP);
-	std::string displacementmap_link = this->textures.at(tz::graphics::TextureType::DISPLACEMENT_MAP);
-	this->render(tz::graphics::find_mesh(this->get_mesh_link(), all_meshes), Texture::get_from_link<Texture>(texture_link, all_textures), Texture::get_from_link<NormalMap>(normalmap_link, all_normalmaps), Texture::get_from_link<ParallaxMap>(parallaxmap_link, all_parallaxmaps), Texture::get_from_link<DisplacementMap>(displacementmap_link, all_displacementmaps), cam, shad, width, height);
-}
-*/
 
 bool Object::operator==(const Object& rhs) const
 {
@@ -114,7 +68,6 @@ void Skybox::render(const Camera& cam, Shader& shad, const std::vector<std::uniq
 	shad.set_uniform<float>("parallax_map_offset", 0);
 	shad.set_uniform<float>("displacement_factor", 0);
 	shad.update();
-	//shad.update(Matrix4x4::create_model_matrix(cam.get_position(), Vector3F(), Vector3F(cam.get_far_clip(), cam.get_far_clip(), cam.get_far_clip())).fill_data(), Matrix4x4::create_view_matrix(cam.get_position(), cam.get_rotation()).fill_data(), Matrix4x4::create_perspective_matrix(cam.get_fov(), width, height, cam.get_near_clip(), cam.get_far_clip()).fill_data(), 0, 0, 0, 0);
 	glFrontFace(GL_CW);
 	tz::graphics::find_mesh(this->cube_mesh_link, all_meshes)->render(shad.has_tessellation_control_shader());
 	glFrontFace(GL_CCW);

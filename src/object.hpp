@@ -22,7 +22,6 @@ namespace tz::graphics
 class Object
 {
 public:
-	//Object(std::string mesh_link, std::map<tz::graphics::TextureType, std::string> textures, Vector3F position, Vector3F rotation, Vector3F scale, unsigned int shininess = tz::graphics::default_shininess, float parallax_map_scale = tz::graphics::default_parallax_map_scale, float parallax_map_offset = tz::graphics::default_parallax_map_offset, float displacement_factor = tz::graphics::default_displacement_factor);
 	Object(const Mesh* mesh, std::map<tz::graphics::TextureType, Texture*> textures, Vector3F position, Vector3F rotation, Vector3F scale, unsigned int shininess = tz::graphics::default_shininess, float parallax_map_scale = tz::graphics::default_parallax_map_scale, float parallax_map_offset = tz::graphics::default_parallax_map_offset, float displacement_factor = tz::graphics::default_displacement_factor);
 	Object(const Object& copy) = default;
 	Object(Object&& move) = default;
@@ -32,8 +31,6 @@ public:
 	const Mesh& get_mesh() const;
 	const std::map<tz::graphics::TextureType, Texture*>& get_textures() const;
 	virtual void render(const Camera& cam, Shader* shader, float width, float height);
-	//virtual void render(Mesh* mesh, Texture* tex, NormalMap* nm, ParallaxMap* pm, DisplacementMap* dm, const Camera& cam, Shader& shad, float width, float height) const;
-	//virtual void render(const std::vector<std::unique_ptr<Mesh>>& all_meshes, const std::vector<std::unique_ptr<Texture>>& all_textures, const std::vector<std::unique_ptr<NormalMap>>& all_normalmaps, const std::vector<std::unique_ptr<ParallaxMap>>& all_parallaxmaps, const std::vector<std::unique_ptr<DisplacementMap>>& all_displacementmaps, const Camera& cam, Shader& shad, float width, float height) const;
 	bool operator==(const Object& rhs) const;
 	
 	Vector3F position, rotation, scale;
@@ -42,8 +39,6 @@ public:
 protected:
 	const Mesh* mesh;
 	std::map<tz::graphics::TextureType, Texture*> textures;
-	//std::string mesh_link;
-	//std::map<tz::graphics::TextureType, std::string> textures;
 };
 
 /*

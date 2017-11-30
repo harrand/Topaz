@@ -5,6 +5,7 @@ World::World(std::string filename, std::string resources_path, const std::vector
 {
 	MDLF input(RawFile(this->filename));
 	std::string spawn_point_string = input.get_tag("spawnpoint"), spawn_orientation_string = input.get_tag("spawnorientation"), gravity_string = input.get_tag("gravity");
+	// Initialise spawn_point, spawn_orientation and gravity to the values specified in filename MDL file. If no such tags could be found & validated, zero them.
 	if(spawn_point_string != mdl::default_string && spawn_orientation_string != mdl::default_string && gravity_string != mdl::default_string)
 	{
 		this->spawn_point = tz::util::string::vectorise_list_3<float>(tz::util::string::deformat(spawn_point_string));
@@ -17,6 +18,7 @@ World::World(std::string filename, std::string resources_path, const std::vector
 		this->spawn_orientation = Vector3F();
 		this->gravity = Vector3F();
 	}
+	// Parse all objects and entity_objects, and add them to the data vectors.
 	std::vector<std::string> object_list = input.get_sequence("objects");
 	std::vector<std::string> entity_object_list = input.get_sequence("entityobjects");
 	for(std::string object_name : object_list)
@@ -28,11 +30,6 @@ World::World(std::string filename, std::string resources_path, const std::vector
 World::World(const World& copy): World(copy.filename){}
 
 World::World(World&& move): filename(move.filename), resources_path(move.resources_path), gravity(move.gravity), spawn_point(move.spawn_point), spawn_orientation(move.spawn_orientation), objects(move.objects), entities(move.entities), entity_objects(std::move(move.entity_objects)), base_lights(std::move(move.base_lights)){}
-
-World::~World()
-{
-	this->kill_lights();
-}
 
 const std::string& World::get_file_name() const
 {
@@ -54,6 +51,7 @@ const Vector3F& World::get_spawn_orientation() const
 	return this->spawn_orientation;
 }
 
+// Gravity is a force, and must be handled like any other force would. Essentially updates the 'gravity' force in all entities and entity_objects so that they're affected by the new force. It is done like this so that Entity and EntityObject require no reference to World whatsoever.
 void World::set_gravity(Vector3F gravity)
 {
 	this->gravity = gravity;
@@ -84,8 +82,10 @@ void World::add_object(Object obj)
 	this->objects.push_back(std::move(obj));
 }
 
+// Add a copy of an entity into this world. It will have this world's gravity instantly applied to it.
 void World::add_entity(Entity ent)
 {
+	// Once we add an entity, make sure the copy has the correct gravity force applying on it.
 	if(ent.get_forces().find("gravity") != ent.get_forces().end())
 	{
 		ent.remove_force("gravity");
@@ -94,6 +94,7 @@ void World::add_entity(Entity ent)
 	this->entities.push_back(std::move(ent));
 }
 
+// See documentation for World::add_entity(Entity).
 void World::add_entity_object(EntityObject eo)
 {
 	if(eo.get_forces().find("gravity") != eo.get_forces().end())
@@ -104,6 +105,7 @@ void World::add_entity_object(EntityObject eo)
 	this->entity_objects.push_back(std::move(eo));
 }
 
+// Adds a light to this world, with the shader handle of the corresponding shader that should handle such lighting.
 void World::add_light(Light light, GLuint shader_program_handle)
 {
 	while(this->base_lights.size() >= tz::graphics::maximum_lights)
@@ -196,7 +198,6 @@ void World::export_world(const std::string& world_link) const
 		for(auto& texture : current_object.get_textures())
 		{
 			output.edit_tag(object_name + ".texture" + tz::util::cast::to_string<unsigned int>(static_cast<unsigned int>(texture.first)), data_manager.resource_name(texture.second->get_file_name()));
-			//output.edit_tag(object_name + ".texture" + tz::util::cast::to_string<unsigned int>(static_cast<unsigned int>(texture.first)), data_manager.resource_name(texture.second));
 		}
 		output.edit_tag(object_name + ".pos", tz::util::string::format(tz::util::string::devectorise_list_3<float>(current_object.position)));
 		output.edit_tag(object_name + ".rot", tz::util::string::format(tz::util::string::devectorise_list_3<float>(current_object.rotation)));
@@ -243,10 +244,8 @@ void World::render(const Camera& cam, Shader* shader, unsigned int width, unsign
 	glCullFace(GL_BACK);
 	for(auto& object : this->objects)
 		object.render(cam, shader, width, height);
-		//obj.render(all_meshes, all_textures, all_normalmaps, all_parallaxmaps, all_displacementmaps, cam, shader, width, height);
 	for(auto& entity_object : this->entity_objects)
 		entity_object.render(cam, shader, width, height);
-		//eo.render(all_meshes, all_textures, all_normalmaps, all_parallaxmaps, all_displacementmaps, cam, shader, width, height);
 	for(auto& iter : this->base_lights)
 	{
 		Light light = iter.second;
@@ -323,46 +322,11 @@ Object World::retrieve_object_data(const std::string& object_name, std::string r
 
 EntityObject World::retrieve_entity_object_data(const std::string& entity_object_name, std::string resources_path, MDLF& mdlf, const std::vector<std::unique_ptr<Mesh>>& all_meshes, const std::vector<std::unique_ptr<Texture>>& all_textures, const std::vector<std::unique_ptr<NormalMap>>& all_normal_maps, const std::vector<std::unique_ptr<ParallaxMap>>& all_parallax_maps, const std::vector<std::unique_ptr<DisplacementMap>>& all_displacement_maps)
 {
+	// No point repeating code from World::retrieve_object_data, so call it to receive a valid Object. Then parse the mass from the data-file, and cobble all the data together to create the final EntityObject. This doesn't really waste memory as Objects are now smaller than before, as pointers << strings.
 	Object object = World::retrieve_object_data(entity_object_name, resources_path, mdlf, all_meshes, all_textures, all_normal_maps, all_parallax_maps, all_displacement_maps);
 	std::string mass_string = mdlf.get_tag(entity_object_name + ".mass");
 	float mass = tz::util::cast::from_string<float>(mass_string);
 	if(!mdlf.exists_tag(entity_object_name + ".mass"))
 		mass = tz::physics::default_mass;
 	return{&(object.get_mesh()), object.get_textures(), mass, object.position, object.rotation, object.scale, object.shininess, object.parallax_map_scale, object.parallax_map_offset, object.displacement_factor};
-	// really repeating myself here. bit ugly.
-	/*
-	std::string mesh_name = mdlf.get_tag(entity_object_name + ".mesh");
-	std::string mass_string = mdlf.get_tag(entity_object_name + ".mass");
-	std::string position_string = mdlf.get_tag(entity_object_name + ".pos");
-	std::string rotation_string = mdlf.get_tag(entity_object_name + ".rot");
-	std::string scale_string = mdlf.get_tag(entity_object_name + ".scale");
-	float mass = tz::util::cast::from_string<float>(mass_string);
-	unsigned int shininess = tz::util::cast::from_string<unsigned int>(mdlf.get_tag(entity_object_name + ".shininess"));
-	float parallax_map_scale = tz::util::cast::from_string<float>(mdlf.get_tag(entity_object_name + ".parallax_map_scale"));
-	float parallax_map_offset = tz::util::cast::from_string<float>(mdlf.get_tag(entity_object_name + ".parallax_map_offset"));
-	float displacement_factor = tz::util::cast::from_string<float>(mdlf.get_tag(entity_object_name + ".displacement_factor"));
-	if(!mdlf.exists_tag(entity_object_name + ".mass"))
-		mass = tz::physics::default_mass;
-	if(!mdlf.exists_tag(entity_object_name + ".shininess"))
-		shininess = tz::graphics::default_shininess;
-	if(!mdlf.exists_tag(entity_object_name + ".parallax_map_scale"))
-		parallax_map_scale = tz::graphics::default_parallax_map_scale;
-	if(!mdlf.exists_tag(entity_object_name + ".parallax_map_offset"))
-		parallax_map_offset = tz::graphics::default_parallax_map_offset;
-	if(!mdlf.exists_tag(entity_object_name + ".displacement_factor"))
-		displacement_factor = tz::graphics::default_displacement_factor;
-	
-	tz::data::Manager data_manager(resources_path);
-	
-	std::string mesh_link = data_manager.resource_link(mesh_name);
-	std::map<tz::graphics::TextureType, std::string> textures;
-	for(unsigned int i = 0; i < static_cast<unsigned int>(tz::graphics::TextureType::TEXTURE_TYPES); i++)
-	{
-		std::string texture_name = mdlf.get_tag(entity_object_name + ".texture" + tz::util::cast::to_string(i));
-		std::string texture_link = data_manager.resource_link(texture_name);
-		textures.emplace(static_cast<tz::graphics::TextureType>(i), texture_link);
-	}
-	
-	return {mesh_link, textures, mass, tz::util::string::vectorise_list_3<float>(tz::util::string::deformat(position_string)), tz::util::string::vectorise_list_3<float>(tz::util::string::deformat(rotation_string)), tz::util::string::vectorise_list_3<float>(tz::util::string::deformat(scale_string)), shininess, parallax_map_scale, parallax_map_offset, displacement_factor};
-	*/
 }
