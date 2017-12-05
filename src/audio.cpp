@@ -51,11 +51,10 @@ const std::string& AudioClip::get_file_name() const
 	return this->filename;
 }
 
-AudioSource::AudioSource(std::string filename, Vector3F position): AudioClip(filename), position(std::move(position)){}
+AudioSource::AudioSource(std::string filename): AudioClip(filename){}
 
-void AudioSource::update(const Camera& relative_to)
+void AudioSource::update(const Vector3F& source_position, const Camera& relative_to)
 {
-	const Vector3F source_position = this->position;
 	const Vector3F listener_position = relative_to.position;
 	const Vector3F forward = relative_to.forward();
 	const Vector3F displacement = source_position - listener_position;

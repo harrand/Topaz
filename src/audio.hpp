@@ -46,17 +46,14 @@ private:
 class AudioSource: public AudioClip
 {
 public:
-	AudioSource(std::string filename, Vector3F position);
+	AudioSource(std::string filename);
 	AudioSource(const AudioSource& copy) = default;
 	AudioSource(AudioSource&& move) = default;
 	~AudioSource() = default;
 	AudioSource& operator=(const AudioSource& rhs) = default;
 	
-	// Should be invoked whenever the camera rotates or moves, or the AudioSource::position member is changed.
-	void update(const Camera& relative_to);
-	
-	// Public member. Can be changed to anything, but invoke AudioSource::update after changing.
-	Vector3F position;
+	// Should be invoked whenever the camera rotates or moves or the AudioSource position is changed.
+	void update(const Vector3F& source_position, const Camera& relative_to);
 };
 
 /*

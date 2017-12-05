@@ -251,6 +251,15 @@ bool Window::focused() const
 	return SDL_GetWindowFlags(this->sdl_window_pointer) | SDL_WINDOW_INPUT_FOCUS | SDL_WINDOW_MOUSE_FOCUS;
 }
 
+void Window::set_hidden(bool hidden)
+{
+	GUI::set_hidden(hidden);
+	if(this->is_hidden())
+		SDL_HideWindow(this->sdl_window_pointer);
+	else
+		SDL_ShowWindow(this->sdl_window_pointer);
+}
+
 bool Window::is_close_requested() const
 {
 	return this->close_requested;

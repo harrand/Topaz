@@ -49,7 +49,7 @@ public:
 	void add_child(GUI* child);
 	void remove_child(GUI* child);
 	bool is_hidden() const;
-	void set_hidden(bool hidden);
+	virtual void set_hidden(bool hidden);
 	void set_using_proportional_positioning(bool use_proportional_positioning);
 	bool is_using_proportional_positioning() const;
 	bool covered() const;
@@ -79,6 +79,7 @@ public:
 	virtual bool is_window() const override{return true;}
 	virtual float get_window_pos_x() const override{return 0.0f;}
 	virtual float get_window_pos_y() const override{return 0.0f;}
+	virtual void set_hidden(bool hidden) override;
 	enum class SwapIntervalType : int
 	{
 		LATE_SWAP_TEARING = -1,
