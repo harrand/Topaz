@@ -40,7 +40,7 @@ class Uniform : public UniformImplicit
 {
 public:
 	Uniform<T>(GLuint shader_handle, std::string uniform_location, T value);
-	Uniform<T>(const Uniform<T>& copy) = delete;
+	Uniform<T>(const Uniform<T>& copy) = delete;	// Delete copy ctor because no uniform_location can have more than one value.
 	Uniform<T>(Uniform<T>&& move) = default;
 	~Uniform<T>() = default;
 	
@@ -77,6 +77,8 @@ public:
 	bool ready() const;
 	template<class T>
 	void add_uniform(Uniform<T>&& uniform);
+	template<class T>
+	void emplace_uniform(std::string uniform_location, T value);
 	void remove_uniform(std::string_view uniform_location);
 	bool has_uniform(std::string_view uniform_location) const;
 	UniformImplicit* get_uniform(std::string_view uniform_location) const;

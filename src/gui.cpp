@@ -292,11 +292,6 @@ void Window::clear_focus()
 	this->focused_child = nullptr;
 }
 
-SDL_Window* Window::get_window_handle() const
-{
-	return this->sdl_window_pointer;
-}
-
 void Window::clear(float r, float g, float b, float a) const
 {
 	glClearColor(r, g, b, a);

@@ -29,14 +29,15 @@ Engine::Engine(Window* wnd, std::string properties_path, unsigned int initial_fp
 	// move the camera to the world's spawn point & orientation.
 	this->camera.position = this->world.spawn_point;
 	this->camera.rotation = this->world.spawn_orientation;
-	
-	this->default_shader.add_uniform<Matrix4x4>(Uniform(this->default_shader.get_program_handle(), "m", Matrix4x4()));
-	this->default_shader.add_uniform<Matrix4x4>(Uniform(this->default_shader.get_program_handle(), "v", Matrix4x4()));
-	this->default_shader.add_uniform<Matrix4x4>(Uniform(this->default_shader.get_program_handle(), "p", Matrix4x4()));
-	this->default_shader.add_uniform<unsigned int>(Uniform(this->default_shader.get_program_handle(), "shininess", tz::graphics::default_shininess));
-	this->default_shader.add_uniform<float>(Uniform(this->default_shader.get_program_handle(), "parallax_map_scale", tz::graphics::default_parallax_map_scale));
-	this->default_shader.add_uniform<float>(Uniform(this->default_shader.get_program_handle(), "parallax_map_bias", tz::graphics::default_parallax_map_scale / 2.0f * (tz::graphics::default_parallax_map_offset - 1)));
-	this->default_shader.add_uniform<float>(Uniform(this->default_shader.get_program_handle(), "displacement_factor", tz::graphics::default_displacement_factor));
+
+	// setup default uniform values.
+	this->default_shader.emplace_uniform<Matrix4x4>("m", Matrix4x4());
+	this->default_shader.emplace_uniform<Matrix4x4>("v", Matrix4x4());
+	this->default_shader.emplace_uniform<Matrix4x4>("p", Matrix4x4());
+	this->default_shader.emplace_uniform<unsigned int>("shininess", tz::graphics::default_shininess);
+	this->default_shader.emplace_uniform<float>("parallax_map_scale", tz::graphics::default_parallax_map_scale);
+	this->default_shader.emplace_uniform<float>("parallax_map_bias", tz::graphics::default_parallax_map_scale / 2.0f * (tz::graphics::default_parallax_map_offset - 1));
+	this->default_shader.emplace_uniform<float>("displacement_factor", tz::graphics::default_displacement_factor);
 	// read the properties file for any extra shaders specified (gui shader not included in this)
 	for(std::string shader_path : this->properties.get_sequence("extra_shaders"))
 		this->extra_shaders.emplace_back(shader_path);

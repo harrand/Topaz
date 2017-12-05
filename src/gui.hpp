@@ -92,7 +92,6 @@ public:
 	void set_title(const std::string& new_title);
 	void set_render_target() const;
 	void clear_focus();
-	SDL_Window* get_window_handle() const;
 	void clear(float r = 1.0f, float g = 1.0f, float b = 1.0f, float a = 1.0f) const;
 	void register_listener(Listener& l);
 	void deregister_listener(Listener& l);

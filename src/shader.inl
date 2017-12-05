@@ -87,11 +87,17 @@ void Shader::add_uniform(Uniform<T>&& uniform)
 }
 
 template<class T>
+void Shader::emplace_uniform(std::string uniform_location, T value)
+{
+	this->add_uniform<T>(Uniform<T>(this->program_handle, uniform_location, value));
+}
+
+template<class T>
 void Shader::set_uniform(std::string_view uniform_location, T value)
 {
 	if(!this->has_uniform(uniform_location))
 	{
-		this->add_uniform(Uniform(this->get_program_handle(), std::string(uniform_location), value));
+		this->emplace_uniform(std::string(uniform_location), value);
 		tz::util::log::warning("[Shader]: Tried to set non-existent uniform: '", uniform_location, "', adding as a new uniform instead...");
 		return;
 	}
