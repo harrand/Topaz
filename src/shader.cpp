@@ -1,22 +1,20 @@
 #include "shader.hpp"
 #include <fstream>
 
-Shader::Shader(std::string filename, bool compile, bool link, bool validate): filename(std::move(filename)), compiled(false), uniform_data({nullptr}), uniform_counter(0)
+Shader::Shader(std::string vertex_source, std::string tessellation_control_source, std::string tessellation_evaluation_source, std::string geometry_source, std::string fragment_source, bool compile, bool link, bool validate): filename(""), compiled(false), program_handle(glCreateProgram()), uniform_data({nullptr}), uniform_counter(0)
 {
-	// Allocate space on GPU memory for shader.
-	this->program_handle = glCreateProgram();
 	if(compile)
-		this->compile();
+		this->compile(vertex_source, tessellation_control_source, tessellation_evaluation_source, geometry_source, fragment_source);
 	if(link)
 		this->link();
 	if(validate)
 		this->validate();
-	tz::util::log::message("Shader with link '", this->filename, "':");
-	tz::util::log::message("\tVertex Shader: ", this->has_vertex_shader());
-	tz::util::log::message("\tTessellation Control Shader: ", this->has_tessellation_control_shader());
-	tz::util::log::message("\tTessellation Evaluation Shader: ", this->has_tessellation_evaluation_shader());
-	tz::util::log::message("\tGeometry Shader: ", this->has_geometry_shader());
-	tz::util::log::message("\tFragment Shader: ", this->has_fragment_shader());
+}
+
+Shader::Shader(std::string filename, bool compile, bool link, bool validate): Shader(mdl::read(filename + ".vertex.glsl"), mdl::read(filename + ".tessellation_control.glsl"), mdl::read(filename + ".tessellation_evaluation.glsl"), mdl::read(filename + ".geometry.glsl"), mdl::read(filename + ".fragment.glsl"), compile, link, validate)
+{
+	// Delegating ctor means cannot initialise any members after, and doing before will just be overwritten so that's why it's being done in this constructor body.
+	this->filename = filename;
 }
 
 Shader::Shader(const Shader& copy): Shader(copy.filename){}
@@ -49,18 +47,18 @@ Shader::~Shader()
 	glDeleteProgram(this->program_handle);
 }
 
-void Shader::compile()
+void Shader::compile(std::string vertex_source, std::string tessellation_control_source, std::string tessellation_evaluation_source, std::string geometry_source, std::string fragment_source)
 {
 	// Vertex Shader
-	this->shaders[0] = Shader::create_shader(mdl::read(this->filename + ".vertex.glsl"), GL_VERTEX_SHADER);
+	this->shaders[0] = Shader::create_shader(vertex_source, GL_VERTEX_SHADER);
 	// Tessellation Control Shader
-	this->shaders[1] = Shader::create_shader(mdl::read(this->filename + ".tessellation_control.glsl"), GL_TESS_CONTROL_SHADER);
+	this->shaders[1] = Shader::create_shader(tessellation_control_source, GL_TESS_CONTROL_SHADER);
 	// Tessellation Evalution Shader
-	this->shaders[2] = Shader::create_shader(mdl::read(this->filename + ".tessellation_evaluation.glsl"), GL_TESS_EVALUATION_SHADER);
+	this->shaders[2] = Shader::create_shader(tessellation_evaluation_source, GL_TESS_EVALUATION_SHADER);
 	// Geometry Shader
-	this->shaders[3] = Shader::create_shader(mdl::read(this->filename + ".geometry.glsl"), GL_GEOMETRY_SHADER);
+	this->shaders[3] = Shader::create_shader(geometry_source, GL_GEOMETRY_SHADER);
 	// Fragment Shader
-	this->shaders[4] = Shader::create_shader(mdl::read(this->filename + ".fragment.glsl"), GL_FRAGMENT_SHADER);
+	this->shaders[4] = Shader::create_shader(fragment_source, GL_FRAGMENT_SHADER);
 	for(std::size_t i = 0; i < tz::graphics::maximum_shaders; i++)
 		if(this->shaders[i] != 0)
 			glAttachShader(this->program_handle, this->shaders[i]);
@@ -190,9 +188,7 @@ void Shader::update() const
 {
 	// literally just update uniforms with the parameters
 	for(std::size_t i = 0; i < this->uniform_counter; i++)
-	{
 		this->uniform_data[i]->push();
-	}
 }
 
 void Shader::check_shader_error(GLuint shader, GLuint flag, bool is_program, std::string error_message)

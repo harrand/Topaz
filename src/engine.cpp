@@ -61,7 +61,6 @@ void Engine::update(std::size_t shader_index)
 	this->profiler.end_frame();
 	
 	this->world.render(this->camera, &(this->get_shader(shader_index)), this->wnd->get_width(), this->wnd->get_height());
-	//this->world.render(this->camera, this->get_shader(shader_index), this->wnd->get_width(), this->wnd->get_height(), this->meshes, this->textures, this->normal_maps, this->parallax_maps, this->displacement_maps);
 	
 	for(auto command : this->update_command_executor.get_commands())
 		command->operator()({});

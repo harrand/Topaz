@@ -63,13 +63,14 @@ private:
 class Shader
 {
 public:
+	Shader(std::string vertex_source, std::string tessellation_control_source, std::string tessellation_evaluation_source, std::string geometry_source, std::string fragment_source, bool compile = true, bool link = true, bool validate = true);
 	Shader(std::string filename, bool compile = true, bool link = true, bool validate = true);
 	Shader(const Shader& copy);
 	Shader(Shader&& move);
 	~Shader();
 	Shader& operator=(const Shader& rhs) = delete;
 	
-	void compile();
+	void compile(std::string vertex_source, std::string tessellation_control_source, std::string tessellation_evaluation_source, std::string geometry_source, std::string fragment_source);
 	void link();
 	void validate();
 	bool is_compiled() const;
