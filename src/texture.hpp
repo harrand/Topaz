@@ -1,9 +1,6 @@
 #ifndef TEXTURE_HPP
 #define TEXTURE_HPP
 #include <memory>
-#ifndef GLEW_STATIC
-#define GLEW_STATIC
-#endif
 #include "graphics.hpp"
 #include <optional>
 

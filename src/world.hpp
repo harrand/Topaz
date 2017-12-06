@@ -4,7 +4,7 @@
 #include <cstddef>
 #include "entity.hpp"
 #include "light.hpp"
-#include "mdl.hpp"
+#include "MDL/mdl.hpp"
 
 /*
 	Contains Objects, EntityObjects and pretty much any Topaz renderable you can think of. Handles all their physics inputs aswell. Takes a filename in its constructor for the MDL data file containing world data. Use this to store everything you want to draw.

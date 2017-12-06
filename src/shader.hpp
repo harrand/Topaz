@@ -1,13 +1,13 @@
 #ifndef SHADER_HPP
 #define SHADER_HPP
-#ifndef GLEW_STATIC
-#define GLEW_STATIC
-#endif
 #include <string>
 #include <memory>
 #include <string_view>
 #include <unordered_set>
 #include "utility.hpp"
+#ifndef GLEW_STATIC
+#define GLEW_STATIC
+#endif
 #include "GL/glew.h"
 
 namespace tz

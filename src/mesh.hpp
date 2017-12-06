@@ -1,8 +1,5 @@
 #ifndef MESH_HPP
 #define MESH_HPP
-#ifndef GLEW_STATIC
-#define GLEW_STATIC
-#endif
 #include <vector>
 #include <string>
 #include <memory>
@@ -48,11 +45,11 @@ public:
 protected:
 	const std::string filename;
 	tz::graphics::model::IndexedModel model;
-	void init_mesh();
-	
 	GLuint vertex_array_object; //vao
 	std::array<GLuint, static_cast<std::size_t>(tz::graphics::BufferTypes::NUM_BUFFERS)> vbo_buffers;
 	unsigned int render_count;
+private:
+	void init_mesh();
 };
 
 /*

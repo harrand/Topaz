@@ -1,7 +1,7 @@
 #ifndef AUDIO_HPP
 #define AUDIO_HPP
 #include <string>
-#include "SDL_mixer.h"
+#include "SDL2/SDL_mixer.h"
 #include "camera.hpp"
 #include "utility.hpp"
 

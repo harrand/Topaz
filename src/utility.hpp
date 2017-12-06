@@ -10,9 +10,9 @@
 #include <typeinfo>
 #include <random>
 #include <utility>
-#include "mdl.hpp"
+#include "MDL/mdl.hpp"
 #include "vector.hpp"
-#include "SDL.h"
+#include "SDL2/SDL.h"
 
 namespace tz
 {	

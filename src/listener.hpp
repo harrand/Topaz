@@ -1,6 +1,6 @@
 #ifndef LISTENER_HPP
 #define LISTENER_HPP
-#include "SDL.h"
+#include "SDL2/SDL.h"
 #include "command.hpp"
 #include "camera.hpp"
 #include "world.hpp"

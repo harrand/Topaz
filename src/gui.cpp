@@ -1,5 +1,4 @@
 #include "gui.hpp"
-#include "SDL_mixer.h"
 #include "graphics.hpp"
 #include "boundary.hpp"
 #include <stack>
