@@ -75,15 +75,23 @@ void Uniform<T>::push() const
 	else if constexpr(std::is_same<decltype(this->value), Matrix4x4>::value)
 		glUniformMatrix4fv(this->uniform_handle, 1, GL_TRUE, this->value.fill_data().data());
 	else
-		static_assert(!std::is_void<decltype(this->value)>::value, "[Topaz]: Uniform has unsupported type. Perhaps your desired version of OpenGL proceeds Topaz's too far by using newer types for uniforms?");
+		static_assert(!std::is_void<decltype(this->value)>::value, "[Topaz Shader]: Uniform has unsupported type. Perhaps your desired version of OpenGL proceeds Topaz's too far by using newer types for uniforms?");
 }
 
 template<class T>
 void Shader::add_uniform(Uniform<T>&& uniform)
 {
 	if(this->has_uniform(uniform.get_uniform_location()))
+	{
+		tz::util::log::warning("[Shader]: Tried to add uniform with location '", uniform.get_uniform_location(), "' to Shader with handle ", this->program_handle, ", of which the location is already occupied.");
 		return;
-	this->uniform_data.insert(std::make_shared<Uniform<T>>(std::forward<Uniform<T>>(uniform)));
+	}
+	if(this->uniform_counter >= tz::graphics::maximum_uniforms)
+	{
+		tz::util::log::error("[Shader]: Tried to add uniform with location '", uniform.get_uniform_location(), "' to Shader with handle ", this->program_handle, ", but it already has the maximum number of uniforms attached (", tz::graphics::maximum_uniforms, ").");
+		return;
+	}
+	this->uniform_data[uniform_counter++] = std::make_unique<Uniform<T>>(std::forward<Uniform<T>>(uniform));
 }
 
 template<class T>
@@ -101,9 +109,9 @@ void Shader::set_uniform(std::string_view uniform_location, T value)
 		tz::util::log::warning("[Shader]: Tried to set non-existent uniform: '", uniform_location, "', adding as a new uniform instead...");
 		return;
 	}
-	for(auto& uniform : this->uniform_data)
-		if(uniform->get_uniform_location() == uniform_location)
-			dynamic_cast<Uniform<T>*>(uniform.get())->set_value(value);
+	for(std::size_t i = 0; i < this->uniform_counter; i++)
+		if(this->uniform_data[i]->get_uniform_location() == uniform_location)
+			dynamic_cast<Uniform<T>*>(this->uniform_data[i].get())->set_value(value);
 }
 
 template<class T>

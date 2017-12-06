@@ -1,7 +1,7 @@
 #include "shader.hpp"
 #include <fstream>
 
-Shader::Shader(std::string filename, bool compile, bool link, bool validate): filename(std::move(filename)), compiled(false)
+Shader::Shader(std::string filename, bool compile, bool link, bool validate): filename(std::move(filename)), compiled(false), uniform_data({nullptr}), uniform_counter(0)
 {
 	// Allocate space on GPU memory for shader.
 	this->program_handle = glCreateProgram();
@@ -12,16 +12,16 @@ Shader::Shader(std::string filename, bool compile, bool link, bool validate): fi
 	if(validate)
 		this->validate();
 	tz::util::log::message("Shader with link '", this->filename, "':");
-	tz::util::log::message("\t_has Vertex Shader: ", this->has_vertex_shader());
-	tz::util::log::message("\t_has Tessellation Control Shader: ", this->has_tessellation_control_shader());
-	tz::util::log::message("\t_has Tessellation Evaluation Shader: ", this->has_tessellation_evaluation_shader());
-	tz::util::log::message("\t_has Geometry Shader: ", this->has_geometry_shader());
-	tz::util::log::message("\t_has Fragment Shader: ", this->has_fragment_shader());
+	tz::util::log::message("\tVertex Shader: ", this->has_vertex_shader());
+	tz::util::log::message("\tTessellation Control Shader: ", this->has_tessellation_control_shader());
+	tz::util::log::message("\tTessellation Evaluation Shader: ", this->has_tessellation_evaluation_shader());
+	tz::util::log::message("\tGeometry Shader: ", this->has_geometry_shader());
+	tz::util::log::message("\tFragment Shader: ", this->has_fragment_shader());
 }
 
 Shader::Shader(const Shader& copy): Shader(copy.filename){}
 
-Shader::Shader(Shader&& move): filename(move.filename), program_handle(move.program_handle), uniform_data(move.uniform_data)
+Shader::Shader(Shader&& move): filename(std::move(move.filename)), program_handle(std::move(move.program_handle)), uniform_data(std::move(move.uniform_data))
 {
 	for(std::size_t i = 0; i < tz::graphics::maximum_shaders; i++)
 	{
@@ -114,25 +114,41 @@ bool Shader::ready() const
 
 void Shader::remove_uniform(std::string_view uniform_location)
 {
-	for(const auto& uniform : this->uniform_data)
-		if(uniform->get_uniform_location() == uniform_location)
-			this->uniform_data.erase(uniform);
+	if(this->uniform_counter == 0)
+	{
+		tz::util::log::warning("[Shader]: Tried to remove uniform location '", uniform_location, "' from Shader with handle ", this->program_handle, ", which does not currently have any attached uniforms.");
+		return;
+	}
+	for(std::size_t i = 0; i < this->uniform_counter; i++)
+	{
+		if(this->uniform_data[i]->get_uniform_location() == uniform_location)
+		{
+			this->uniform_data[i].reset(nullptr);
+			this->uniform_counter--;
+		}
+	}
 }
 
 bool Shader::has_uniform(std::string_view uniform_location) const
 {
-	for(const auto& uniform : this->uniform_data)
-		if(uniform->get_uniform_location() == uniform_location)
+	for(std::size_t i = 0; i < this->uniform_counter; i++)
+		if(this->uniform_data[i]->get_uniform_location() == uniform_location)
 			return true;
 	return false;
 }
 
 UniformImplicit* Shader::get_uniform(std::string_view uniform_location) const
 {
-	for(const auto& uniform : this->uniform_data)
-		if(uniform->get_uniform_location() == uniform_location)
-			return uniform.get();
+	for(std::size_t i = 0; i < this->uniform_counter; i++)
+		if(this->uniform_data[i]->get_uniform_location() == uniform_location)
+			return this->uniform_data[i].get();
+	tz::util::log::warning("[Shader]: Failed to find uniform location '", uniform_location, "' in Shader with handle ", this->program_handle, ".");
 	return nullptr;
+}
+
+std::size_t Shader::number_active_uniforms() const
+{
+	return this->uniform_counter;
 }
 
 bool Shader::has_vertex_shader() const
@@ -173,8 +189,10 @@ void Shader::bind() const
 void Shader::update() const
 {
 	// literally just update uniforms with the parameters
-	for(const auto& uniform : this->uniform_data)
-		uniform->push();
+	for(std::size_t i = 0; i < this->uniform_counter; i++)
+	{
+		this->uniform_data[i]->push();
+	}
 }
 
 void Shader::check_shader_error(GLuint shader, GLuint flag, bool is_program, std::string error_message)

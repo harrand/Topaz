@@ -16,6 +16,7 @@ namespace tz
 	{
 		// vertex, tessellation_control, tessellation_evaluation, geometry, fragment
 		constexpr std::size_t maximum_shaders = 5;
+		constexpr std::size_t maximum_uniforms = GL_MAX_UNIFORM_LOCATIONS;
 	}
 }
 
@@ -86,6 +87,7 @@ public:
 	void set_uniform(std::string_view uniform_location, T value);
 	template<class T>
 	T get_uniform_value(std::string_view uniform_location) const;
+	std::size_t number_active_uniforms() const;
 	bool has_vertex_shader() const;
 	bool has_tessellation_control_shader() const;
 	bool has_tessellation_evaluation_shader() const;
@@ -101,7 +103,8 @@ private:
 	bool compiled;
 	GLuint program_handle;
 	std::array<GLuint, tz::graphics::maximum_shaders> shaders;
-	std::unordered_set<std::shared_ptr<UniformImplicit>> uniform_data;
+	std::array<std::unique_ptr<UniformImplicit>, tz::graphics::maximum_uniforms> uniform_data;
+	std::size_t uniform_counter;
 };
 #include "shader.inl"
 #endif
