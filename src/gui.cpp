@@ -3,7 +3,7 @@
 #include "boundary.hpp"
 #include <stack>
 
-GUI::GUI(float x, float y, float width, float height, std::optional<std::reference_wrapper<const Shader>> shader): x(x), y(y), width(width), height(height), shader(shader), parent(nullptr), children(std::deque<GUI*>()), hidden(false), use_proportional_positioning(false){}
+GUI::GUI(float x, float y, float width, float height, std::optional<std::reference_wrapper<Shader>> shader): x(x), y(y), width(width), height(height), shader(shader), parent(nullptr), children(std::deque<GUI*>()), hidden(false), use_proportional_positioning(false){}
 
 void GUI::update() // updates all children
 {
@@ -93,7 +93,7 @@ bool GUI::has_window_parent() const
 	return this->find_window_parent() != nullptr;
 }
 
-const std::optional<std::reference_wrapper<const Shader>> GUI::get_shader() const
+const std::optional<std::reference_wrapper<Shader>>& GUI::get_shader() const
 {
 	return this->shader;
 }

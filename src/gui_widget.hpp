@@ -8,7 +8,7 @@
 class Button : public TextLabel
 {
 public:
-	Button(float x, float y, Vector4F colour, std::optional<Vector4F> background_colour, std::optional<Vector3F> text_border_colour, Font font, const std::string& text, const Shader& shader, MouseListener& mouse_listener);
+	Button(float x, float y, Vector4F colour, std::optional<Vector4F> background_colour, std::optional<Vector3F> text_border_colour, Font font, const std::string& text, Shader& shader, MouseListener& mouse_listener);
 	Button(const Button& rhs) = default;
 	Button(Button&& move) = default;
 	~Button() = default;

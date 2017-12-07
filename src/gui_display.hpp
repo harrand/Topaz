@@ -8,7 +8,7 @@
 class Panel : public GUI
 {
 public:
-	Panel(float x, float y, float width, float height, Vector4F colour, const Shader& shader);
+	Panel(float x, float y, float width, float height, Vector4F colour, Shader& shader);
 	Panel(const Panel& copy) = default;
 	Panel(Panel&& move) = default;
 	~Panel() = default;
@@ -24,7 +24,6 @@ public:
 protected:
 	Vector4F colour;
 	Mesh quad;
-	GLuint colour_uniform, model_matrix_uniform;
 };
 
 /*
@@ -33,7 +32,7 @@ protected:
 class TextLabel : public Panel
 {
 public:
-	TextLabel(float x, float y, Vector4F colour, std::optional<Vector4F> background_colour, std::optional<Vector3F> text_border_colour, Font font, const std::string& text, const Shader& shader);
+	TextLabel(float x, float y, Vector4F colour, std::optional<Vector4F> background_colour, std::optional<Vector3F> text_border_colour, Font font, const std::string& text, Shader& shader);
 	TextLabel(const TextLabel& copy) = default;
 	TextLabel(TextLabel&& move) = default;
 	~TextLabel() = default;
@@ -48,16 +47,12 @@ public:
 	void set_text(const std::string& new_text);
 	const Texture& get_texture() const;
 	void set_texture(Texture texture);
-	GLuint get_background_colour_uniform() const;
-	GLuint get_has_background_colour_uniform() const;
-	GLuint get_has_text_border_colour_uniform() const;
 private:
 	std::optional<Vector4F> background_colour;
 	std::optional<Vector3F> text_border_colour;
 	Font font;
 	std::string text;
 	Texture text_texture;
-	GLuint background_colour_uniform, has_background_colour_uniform, text_border_colour_uniform, has_text_border_colour_uniform;
 };
 
 

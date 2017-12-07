@@ -24,7 +24,7 @@ class Window;
 class GUI
 {
 public:
-	GUI(float x, float y, float width, float height, std::optional<std::reference_wrapper<const Shader>> shader);
+	GUI(float x, float y, float width, float height, std::optional<std::reference_wrapper<Shader>> shader);
 	GUI(const GUI& copy) = default;
 	GUI(GUI&& move) = default;
 	virtual ~GUI() = default;
@@ -41,7 +41,7 @@ public:
 	void set_x(float x); void set_y(float y); void set_width(float width); void set_height(float height);
 	Window* find_window_parent() const;
 	bool has_window_parent() const;
-	const std::optional<std::reference_wrapper<const Shader>> get_shader() const;
+	const std::optional<std::reference_wrapper<Shader>>& get_shader() const;
 	bool has_shader() const;
 	GUI* get_parent() const;
 	void set_parent(GUI* parent);
@@ -55,7 +55,7 @@ public:
 	bool covered() const;
 protected:
 	float x, y, width, height;
-	std::optional<std::reference_wrapper<const Shader>> shader;
+	std::optional<std::reference_wrapper<Shader>> shader;
 	GUI* parent;
 	std::deque<GUI*> children;
 	bool hidden, use_proportional_positioning;

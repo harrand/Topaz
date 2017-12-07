@@ -7,7 +7,7 @@ void tz::audio::initialise()
 	constexpr Uint16 format = MIX_DEFAULT_FORMAT; // output sample format. MIX_DEFAULT_FORMAT is the same as AUDIO_S16SYS (signed 16-bit samples, in system byte order)
 	// initialise sdl_mixer
 	if(Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, format, channels, chunk_size) == -1)
-		tz::util::log::error("Mix_OpenAudio returned -1: ", Mix_GetError(), "\n\tInitialisation of tz::audio failed.");
+		tz::util::log::error("SDL_Mixer initialisation returned an error: ", Mix_GetError(), "\n\tInitialisation of tz::audio failed.");
 	else
 		tz::util::log::message("Initialised tz::audio via SDL_Mixer.");
 }
@@ -68,6 +68,7 @@ AudioMusic::AudioMusic(std::string filename): filename(std::move(filename)), pau
 {
 	this->audio_handle = Mix_LoadMUS(this->filename.c_str());
 }
+
 AudioMusic::AudioMusic(const AudioMusic& copy): AudioMusic(copy.get_file_name()){}
 
 AudioMusic::AudioMusic(AudioMusic&& move): filename(move.get_file_name()), audio_handle(move.audio_handle)

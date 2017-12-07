@@ -106,7 +106,6 @@ void Shader::set_uniform(std::string_view uniform_location, T value)
 	if(!this->has_uniform(uniform_location))
 	{
 		this->emplace_uniform(std::string(uniform_location), value);
-		tz::util::log::warning("[Shader]: Tried to set non-existent uniform: '", uniform_location, "', adding as a new uniform instead...");
 		return;
 	}
 	for(std::size_t i = 0; i < this->uniform_counter; i++)
