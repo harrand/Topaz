@@ -16,12 +16,17 @@ public:
 
 	const Vector4F& get_colour() const;
 	void set_colour(Vector4F colour);
+	const Texture* get_texture() const;
+	void set_texture(Texture* texture);
+	void disable_texture();
+	bool has_texture() const;
 	virtual void update() override;
 	virtual void destroy() override;
 	virtual bool focused() const override{return false;}
 	virtual bool is_window() const override{return false;}
 	virtual bool is_mouse_sensitive() const override{return false;}
 protected:
+	Texture* texture;
 	Vector4F colour;
 	Mesh quad;
 };
@@ -48,6 +53,10 @@ public:
 	const Texture& get_texture() const;
 	void set_texture(Texture texture);
 private:
+	using Panel::get_texture;
+	using Panel::set_texture;
+	using Panel::disable_texture;
+	using Panel::has_texture;
 	std::optional<Vector4F> background_colour;
 	std::optional<Vector3F> text_border_colour;
 	Font font;

@@ -1,6 +1,6 @@
 #include "gui_display.hpp"
 
-Panel::Panel(float x, float y, float width, float height, Vector4F colour, Shader& shader): GUI(x, y, width, height, shader), colour(colour), quad(tz::graphics::create_quad()){}
+Panel::Panel(float x, float y, float width, float height, Vector4F colour, Shader& shader): GUI(x, y, width, height, shader), texture(nullptr), colour(colour), quad(tz::graphics::create_quad()){}
 
 const Vector4F& Panel::get_colour() const
 {
@@ -12,13 +12,33 @@ void Panel::set_colour(Vector4F colour)
 	this->colour = colour;
 }
 
+const Texture* Panel::get_texture() const
+{
+	return this->texture;
+}
+
+void Panel::set_texture(Texture* texture)
+{
+	this->texture = texture;
+}
+
+void Panel::disable_texture()
+{
+	this->texture = nullptr;
+}
+
+bool Panel::has_texture() const
+{
+	return this->texture != nullptr;
+}
+
 void Panel::update()
 {
 	if(!this->hidden)
 	{
 		//update uniforms & bind & render. THEN update all children (unless the panel is hidden in which case do nothing)
 		this->shader.value().get().bind();
-		this->shader.value().get().set_uniform<bool>("has_texture", false);
+		this->shader.value().get().set_uniform<bool>("has_texture", this->has_texture());
 		this->shader.value().get().set_uniform<bool>("has_background_colour", false);
 		this->shader.value().get().set_uniform<bool>("has_text_border_colour", false);
 		this->shader.value().get().set_uniform<Vector4F>("colour", this->colour);
@@ -29,6 +49,8 @@ void Panel::update()
 		else
 			projection = Matrix4x4::identity();
 		this->shader.value().get().set_uniform<Matrix4x4>("model_matrix", projection * Matrix4x4::create_model_matrix(Vector3F(this->get_window_pos_x(), this->get_window_pos_y(), 0.0f), Vector3F(), Vector3F(this->width, this->height, 0.0f)));
+		if(this->has_texture())
+			this->texture->bind(this->shader.value().get().get_program_handle(), 0);
 		this->shader.value().get().update();
 		this->quad.render(false);
 		GUI::update();

@@ -122,6 +122,7 @@ void init()
 	TextLabel text(0.0f, 0.0f, Vector4F(1, 1, 1, 1), {}, Vector3F(0, 0, 0), example_font, "FPS: ...", engine.default_gui_shader);
 	FPSToggleCommand toggle(text);
 	Panel gui_panel(-1.0f, -1.0f, 1.0f, 1.0f, Vector4F(0.4f, 0.4f, 0.4f, 0.5f), engine.default_gui_shader);
+	gui_panel.set_texture(engine.get_textures().at(0).get());
 	gui_panel.set_using_proportional_positioning(true);
 	gui_panel.set_hidden(true);
 	ExitGuiCommand exit(gui_panel);
