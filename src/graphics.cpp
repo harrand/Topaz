@@ -116,6 +116,30 @@ namespace tz::graphics::model
 	
 	void IndexedModel::calculate_tangents()
 	{
+		tangents.clear();
+		tangents.resize(positions.size());
+		
+		for(std::size_t i = 0; i < indices.size(); i += 3)
+		{
+			int i_0 = indices[i];
+			int i_1 = indices[i + 1];
+			int i_2 = indices[i + 2];
+			Vector3F edge_1 = (positions[i_1] - positions[i_0]);
+			Vector3F edge_2 = (positions[i_2] - positions[i_0]);
+			float delta_u_1 = texcoords[i_1].x - texcoords[i_0].x;
+			float delta_u_2 = texcoords[i_2].x - texcoords[i_0].x;
+			float delta_v_1 = texcoords[i_1].y - texcoords[i_0].y;
+			float delta_v_2 = texcoords[i_2].y - texcoords[i_0].y;
+			float dividend = (delta_u_1 * delta_v_2 - delta_u_2 * delta_v_1);
+			float f = dividend == 0.0f ? 0.0f : 1.0f/dividend;
+			Vector3F tangent(f * (delta_v_2 * edge_1.x - delta_v_1 * edge_2.x), f * (delta_v_2 * edge_1.y - delta_v_1 * edge_2.y), f * (delta_v_2 * edge_1.z - delta_v_1 * edge_2.z));
+			tangents[i_0] += tangent;
+			tangents[i_1] += tangent;
+			tangents[i_2] += tangent;
+		}
+		for(Vector3F& tangent : tangents)
+			tangent = tangent.normalised();
+		/*
 		for(std::size_t i = 0; i < indices.size(); i += 3)
 		{
 			int i_0 = indices[i];
@@ -139,6 +163,7 @@ namespace tz::graphics::model
 				tangents[i] = normals[i];
 			tangents[i] = tangents[i].normalised();
 		}
+		*/
 	}
 	
 	IndexedModel OBJModel::to_indexed_model()

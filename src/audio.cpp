@@ -7,7 +7,7 @@ void tz::audio::initialise()
 	constexpr Uint16 format = MIX_DEFAULT_FORMAT; // output sample format. MIX_DEFAULT_FORMAT is the same as AUDIO_S16SYS (signed 16-bit samples, in system byte order)
 	// initialise sdl_mixer
 	if(Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, format, channels, chunk_size) == -1)
-		tz::util::log::error("Mix_OpenAudio returned -1: ", Mix_GetError(), "\n\t_initialisation of tz::audio failed.");
+		tz::util::log::error("Mix_OpenAudio returned -1: ", Mix_GetError(), "\n\tInitialisation of tz::audio failed.");
 	else
 		tz::util::log::message("Initialised tz::audio via SDL_Mixer.");
 }
