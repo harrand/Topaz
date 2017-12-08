@@ -46,6 +46,16 @@ private:
 	using Command::get_expected_parameter_size;
 };
 
+template<typename Functor>
+class TrivialFunctor : public TrivialCommand
+{
+public:
+	TrivialFunctor(Functor functor);
+	virtual void operator()() override;
+private:
+	Functor functor;
+};
+
 /*
 	System used to hold (but not typically own) Commands. Engine uses these to handle command input.
 */
