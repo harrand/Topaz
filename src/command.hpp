@@ -2,6 +2,7 @@
 #define COMMAND_HPP
 #include <unordered_set>
 #include <vector>
+#include <memory>
 
 /*
 	Abstract. Not available for non-polymorphic use. Inherit from this to create custom commands (Essential for adding functionality to Engine).
@@ -46,6 +47,9 @@ private:
 	using Command::get_expected_parameter_size;
 };
 
+/*
+	TrivialCommand subclass. Templated such that it can take a lambda. Essentially is a lambda-wrapper that can be treated like a command (This is how CommandExecutors can execute lambdas)
+*/
 template<typename Functor>
 class TrivialFunctor : public TrivialCommand
 {
@@ -76,5 +80,7 @@ public:
 private:
 	std::unordered_set<Command*> commands;
 };
+
+#include "command.inl"
 
 #endif

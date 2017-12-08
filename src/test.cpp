@@ -161,6 +161,8 @@ void init()
 	Skybox skybox("../../../res/runtime/models/skybox.obj", skybox_texture);
 	RenderSkyboxCommand render_skybox(skybox, engine.camera, skybox_shader, engine.get_meshes(), wnd);
 	engine.add_update_command(&render_skybox);
+	TrivialFunctor test_functor([](){tz::util::log::message("angelo is ");});
+	engine.add_update_command(&test_functor);
 	
 	std::vector<Vector3F> positions({Vector3F(10, 10, 10), Vector3F(-10, -10, -10), Vector3F(-10, 10, 10), Vector3F(10, -10, -10)});
 	std::vector<Vector3F> rotations({Vector3F(0,0,0), Vector3F(1,1,1), Vector3F(2,2,2), Vector3F(3,3,3)});
