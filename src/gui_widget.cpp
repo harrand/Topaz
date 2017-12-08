@@ -4,15 +4,28 @@ Button::Button(float x, float y, Vector4F colour, std::optional<Vector4F> backgr
 
 void Button::update()
 {
-	if(this->clicked_on() && this->on_mouse_click != nullptr && !this->just_clicked && this->has_window_parent() && !this->covered())
+	if(this->on_mouse_click != nullptr)
 	{
-		// if clicked on properly, run the mouse_click command, set it as just clicked and make it the focus of the window ancestor
-		this->find_window_parent()->set_focused_child(this);
-		this->on_mouse_click->operator()({});
-		this->just_clicked = true;
+		if(this->clicked_on() && this->on_mouse_click != nullptr && !this->just_clicked && this->has_window_parent() && !this->covered())
+		{
+			// if clicked on properly, run the mouse_click command, set it as just clicked and make it the focus of the window ancestor
+			this->find_window_parent()->set_focused_child(this);
+			this->on_mouse_click->operator()({});
+			this->just_clicked = true;
+		}
+		else if(!this->clicked_on())
+			this->just_clicked = false;
 	}
-	else if(!this->clicked_on())
-		this->just_clicked = false;
+	if(this->on_mouse_over != nullptr)
+	{
+		if(this->moused_over() && !this->just_moused_over)
+		{
+			this->on_mouse_over->operator()({});
+			this->just_moused_over = true;
+		}
+		else if(!this->moused_over())
+			this->just_moused_over = false;
+	}
 	// if click mouse button is down but this is not moused over, make sure its not focused
 	if(this->mouse_listener.is_left_clicked() && !this->moused_over() && this->focused())
 		this->find_window_parent()->set_focused_child(nullptr);
