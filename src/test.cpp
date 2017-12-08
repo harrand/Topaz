@@ -15,6 +15,7 @@ int main()
 	tz::initialise();
 	tz::util::log::message("Angelo is awesome!");
 	tz::util::log::message("Angelo endorses this model viewer.");
+	//test();
 	init();
 	tz::terminate();
 	return 0;
@@ -135,9 +136,7 @@ void init()
 	{
 		virtual void operator()()
 		{
-			AudioClip audio("../../../res/runtime/music/test.wav");
-			audio.play();
-			tz::util::log::message("Playing audio file '", audio.get_file_name(), "'.");
+			tz::audio::play_clip_async(AudioClip("../../../res/runtime/music/pop.wav"));
 		}
 	};
 	PlayPopCommand pop_cmd;

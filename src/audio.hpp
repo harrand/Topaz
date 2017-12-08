@@ -6,20 +6,6 @@
 #include "utility.hpp"
 
 /*
-	Initialise and terminate tz audio module. This must be done appropriately to use any of the audio functionality.
-*/
-namespace tz
-{
-	namespace audio
-	{
-		// No audio works until this is executed. tz::initialise will invoke this automatically.
-		void initialise();
-		// Memory droplets will remain until this is executed. Audio will not work after this is invoked. tz::terminate will invoke this automatically.
-		void terminate();
-	}
-}
-
-/*
 	Playable audio file. Use this for short audio segments like sound effects.
 */
 class AudioClip
@@ -33,6 +19,7 @@ public:
 	
 	void play();
 	int get_channel() const;
+	Uint32 get_audio_length() const;
 	const std::string& get_file_name() const;
 private:
 	int channel;
@@ -79,5 +66,21 @@ private:
 	bool paused;
 	Mix_Music* audio_handle;
 };
+
+/*
+	Initialise and terminate tz audio module. This must be done appropriately to use any of the audio functionality.
+*/
+namespace tz
+{
+	namespace audio
+	{
+		// No audio works until this is executed. tz::initialise will invoke this automatically.
+		void initialise();
+		// Memory droplets will remain until this is executed. Audio will not work after this is invoked. tz::terminate will invoke this automatically.
+		void terminate();
+		// Pass by value so can guarantee that a copy will last as long as the thread is alive (const reference might die beforehand). However, this can be passed by cref as the copy happens in a lambda in the function body, not now.
+		void play_clip_async(const AudioClip& clip);
+	}
+}
 
 #endif

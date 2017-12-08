@@ -1,22 +1,6 @@
 #include "audio.hpp"
-
-void tz::audio::initialise()
-{
-	constexpr int channels = 2; // number of sound chanels in output. 2 for stereo, 1 for mono.
-	constexpr int chunk_size = 4096; // bytes used per output sample
-	constexpr Uint16 format = MIX_DEFAULT_FORMAT; // output sample format. MIX_DEFAULT_FORMAT is the same as AUDIO_S16SYS (signed 16-bit samples, in system byte order)
-	// initialise sdl_mixer
-	if(Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, format, channels, chunk_size) == -1)
-		tz::util::log::error("SDL_Mixer initialisation returned an error: ", Mix_GetError(), "\n\tInitialisation of tz::audio failed.");
-	else
-		tz::util::log::message("Initialised tz::audio via SDL_Mixer.");
-}
-
-void tz::audio::terminate()
-{
-	Mix_CloseAudio();
-	tz::util::log::message("Terminated tz::audio via SDL_Mixer.");
-}
+#include <thread>
+#include <chrono>
 
 AudioClip::AudioClip(std::string filename): filename(std::move(filename)), audio_handle(Mix_LoadWAV(this->filename.c_str())){}
 
@@ -44,6 +28,25 @@ void AudioClip::play()
 int AudioClip::get_channel() const
 {
 	return this->channel;
+}
+
+Uint32 AudioClip::get_audio_length() const
+{
+	Uint32 points = 0, frames = 0;
+	int frequency = 0;
+	Uint16 format = 0;
+	int channels;
+	if(!Mix_QuerySpec(&frequency, &format, &channels))
+	{
+		tz::util::log::error("Attempt to query AudioClip yielded invalid query. Is tz::audio initialised?");
+		return 0;
+	}
+	// bytes / sample_size == sample_points
+	points = (this->audio_handle->alen / ((format & 0xFF) / 8));
+	// sample_points / channels = sample_frames
+	frames = points / channels;
+	// sample_frames * 1000 / frequency = audio length in milliseconds
+	return frames * 1000 / frequency;
 }
 
 const std::string& AudioClip::get_file_name() const
@@ -104,4 +107,33 @@ void AudioMusic::set_paused(bool pause)
 		Mix_PauseMusic();
 	else
 		Mix_ResumeMusic();
+}
+
+namespace tz::audio
+{
+	void initialise()
+	{
+		constexpr int channels = 2; // number of sound chanels in output. 2 for stereo, 1 for mono.
+		constexpr int chunk_size = 4096; // bytes used per output sample
+		constexpr Uint16 format = MIX_DEFAULT_FORMAT; // output sample 	format. MIX_DEFAULT_FORMAT is the same as AUDIO_S16SYS (signed 16-bit samples, in system byte order)
+		// initialise sdl_mixer
+		if(Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, format, channels, chunk_size) == -1)
+			tz::util::log::error("SDL_Mixer initialisation returned an error: ", Mix_GetError(), "\n\tInitialisation of tz::audio failed.");
+		else
+			tz::util::log::message("Initialised tz::audio via SDL_Mixer.");
+	}
+
+	void terminate()
+	{
+		Mix_CloseAudio();
+		tz::util::log::message("Terminated tz::audio via SDL_Mixer.");
+	}
+	
+	void play_clip_async(const AudioClip& clip)
+	{
+		using namespace std::chrono_literals;
+		// Play clip for the length of the audio clip plus another 10 milliseconds.
+		auto play_clip = [](AudioClip clip){clip.play(); std::this_thread::sleep_for(operator""ms(static_cast<unsigned long long>(clip.get_audio_length()) + 10ull));};
+		std::thread(play_clip, clip).detach();
+	}
 }
