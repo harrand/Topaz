@@ -82,7 +82,6 @@ protected:
 	unsigned char* load_texture();
 	void delete_texture(unsigned char* imgdata);
 	std::string filename;
-	GLuint texture_id;
 	GLuint texture_handle;
 	int width, height, components;
 	bool gamma_corrected;
@@ -144,7 +143,7 @@ public:
 	void bind(GLuint shader_program_handle, unsigned int id);
 private:
 	std::vector<unsigned char*> load_textures();
-	GLuint texture_handle, texture_id;
+	GLuint texture_handle;
 	const std::string right_texture, left_texture, top_texture, bottom_texture, back_texture, front_texture;
 	static constexpr std::size_t number_of_textures = 6;
 	int width[number_of_textures], height[number_of_textures], components[number_of_textures];

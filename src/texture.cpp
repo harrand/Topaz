@@ -203,9 +203,8 @@ Texture::Texture(const Font& font, const std::string& text, SDL_Color foreground
 
 Texture::Texture(const Texture& copy): Texture(copy.get_file_name()){}
 
-Texture::Texture(Texture&& move): filename(move.get_file_name()), texture_id(move.texture_id), texture_handle(move.texture_handle), width(move.width), height(move.height), components(move.components)
+Texture::Texture(Texture&& move): filename(move.get_file_name()), texture_handle(move.texture_handle), width(move.width), height(move.height), components(move.components)
 {
-	move.texture_id = 0;
 	move.texture_handle = 0;
 }
 
@@ -219,12 +218,10 @@ Texture& Texture::operator=(Texture&& rhs)
 {
 	glDeleteTextures(1, &(this->texture_handle));
 	this->filename = rhs.get_file_name();
-	this->texture_id = rhs.texture_id;
 	this->texture_handle = rhs.texture_handle;
 	this->width = rhs.width;
 	this->height = rhs.height;
 	this->components = rhs.components;
-	rhs.texture_id = 0;
 	rhs.texture_handle = 0;
 	return *this;
 }
@@ -238,10 +235,9 @@ void Texture::bind(GLuint shader_program_handle, unsigned int id)
 	}
 	// this sets which texture we want to bind (id can be from 0 to 31)
 	// GLTEXTURE0 is actually a number, so we can add the id instead of a massive switch statement
-	this->texture_id = glGetUniformLocation(shader_program_handle, "texture_sampler");
 	glActiveTexture(GL_TEXTURE0 + id);
 	glBindTexture(GL_TEXTURE_2D, this->texture_handle);
-	glUniform1i(this->texture_id, id);
+	glUniform1i(glGetUniformLocation(shader_program_handle, "texture_sampler"), id);
 }
 
 const std::string& Texture::get_file_name() const
@@ -285,10 +281,9 @@ void NormalMap::bind(GLuint shader_program_handle, unsigned int id)
 	}
 	// this sets which texture we want to bind (id can be from 0 to 31)
 	// GLTEXTURE0 is actually a number, so we can add the id instead of a massive switch statement
-	this->texture_id = glGetUniformLocation(shader_program_handle, "normal_map_sampler");
 	glActiveTexture(GL_TEXTURE0 + id);
 	glBindTexture(GL_TEXTURE_2D, this->texture_handle);
-	glUniform1i(this->texture_id, id);
+	glUniform1i(glGetUniformLocation(shader_program_handle, "normal_map_sampler"), id);
 }
 
 tz::graphics::TextureType NormalMap::get_texture_type()
@@ -307,10 +302,9 @@ void ParallaxMap::bind(GLuint shader_program_handle, unsigned int id)
 	}
 	// this sets which texture we want to bind (id can be from 0 to 31)
 	// GLTEXTURE0 is actually a number, so we can add the id instead of a massive switch statement
-	this->texture_id = glGetUniformLocation(shader_program_handle, "parallax_map_sampler");
 	glActiveTexture(GL_TEXTURE0 + id);
 	glBindTexture(GL_TEXTURE_2D, this->texture_handle);
-	glUniform1i(this->texture_id, id);
+	glUniform1i(glGetUniformLocation(shader_program_handle, "parallax_map_sampler"), id);
 }
 
 tz::graphics::TextureType ParallaxMap::get_texture_type()
@@ -329,10 +323,9 @@ void DisplacementMap::bind(GLuint shader_program_handle, unsigned int id)
 	}
 	// this sets which texture we want to bind (id can be from 0 to 31)
 	// GLTEXTURE0 is actually a number, so we can add the id instead of a massive switch statement
-	this->texture_id = glGetUniformLocation(shader_program_handle, "displacement_map_sampler");
 	glActiveTexture(GL_TEXTURE0 + id);
 	glBindTexture(GL_TEXTURE_2D, this->texture_handle);
-	glUniform1i(this->texture_id, id);
+	glUniform1i(glGetUniformLocation(shader_program_handle, "displacement_map_sampler"), id);
 }
 
 tz::graphics::TextureType DisplacementMap::get_texture_type()
@@ -362,7 +355,7 @@ CubeMap::CubeMap(std::string texture_directory, std::string skybox_name, std::st
 
 CubeMap::CubeMap(const CubeMap& copy): CubeMap(copy.right_texture, copy.left_texture, copy.top_texture, copy.bottom_texture, copy.back_texture, copy.front_texture){}
 
-CubeMap::CubeMap(CubeMap&& move): texture_handle(move.texture_handle), texture_id(move.texture_id), right_texture(move.right_texture), left_texture(move.left_texture), top_texture(move.top_texture), bottom_texture(move.bottom_texture), back_texture(move.back_texture), front_texture(move.front_texture)
+CubeMap::CubeMap(CubeMap&& move): texture_handle(move.texture_handle), right_texture(move.right_texture), left_texture(move.left_texture), top_texture(move.top_texture), bottom_texture(move.bottom_texture), back_texture(move.back_texture), front_texture(move.front_texture)
 {
 	for(unsigned int i = 0; i < 6; i++)
 	{
@@ -371,7 +364,6 @@ CubeMap::CubeMap(CubeMap&& move): texture_handle(move.texture_handle), texture_i
 		this->components[i] = move.components[i];
 	}
 	move.texture_handle = 0;
-	move.texture_id = 0;
 }
 
 CubeMap::~CubeMap()
@@ -388,10 +380,9 @@ void CubeMap::bind(GLuint shader_program_handle, unsigned int id)
 	}
 	// this sets which texture we want to bind (id can be from 0 to 31)
 	// GLTEXTURE0 is actually a number, so we can add the id instead of a massive switch statement
-	this->texture_id = glGetUniformLocation(shader_program_handle, "cube_map_sampler");
 	glActiveTexture(GL_TEXTURE0 + id);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, this->texture_handle);
-	glUniform1i(this->texture_id, id);
+	glUniform1i(glGetUniformLocation(shader_program_handle, "cube_map_sampler"), id);
 }
 
 std::vector<unsigned char*> CubeMap::load_textures()

@@ -97,8 +97,8 @@ void TextLabel::update()
 		else
 			projection = Matrix4x4::identity();
 		this->shader.value().get().set_uniform<Matrix4x4>("model_matrix", projection * Matrix4x4::create_model_matrix(Vector3F(this->get_window_pos_x(), this->get_window_pos_y(), 0.0f), Vector3F(), Vector3F(this->width, this->height, 0.0f)));
-		this->shader.value().get().update();
 		this->text_texture.bind(this->shader.value().get().get_program_handle(), 0);
+		this->shader.value().get().update();
 		this->quad.render(false);
 		GUI::update();
 	}
