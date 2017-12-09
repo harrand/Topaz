@@ -26,13 +26,13 @@ void Object::render(const Camera& cam, Shader* shader, float width, float height
 	ParallaxMap* parallax_map = dynamic_cast<ParallaxMap*>(this->textures[TextureType::PARALLAX_MAP]);
 	DisplacementMap* displacement_map = dynamic_cast<DisplacementMap*>(this->textures[TextureType::DISPLACEMENT_MAP]);
 	if(texture != nullptr)
-		texture->bind(shader->get_program_handle(), static_cast<unsigned int>(texture->get_texture_type()));
+		texture->bind(shader, static_cast<unsigned int>(texture->get_texture_type()));
 	if(normal_map != nullptr)
-		normal_map->bind(shader->get_program_handle(), static_cast<unsigned int>(normal_map->get_texture_type()));
+		normal_map->bind(shader, static_cast<unsigned int>(normal_map->get_texture_type()));
 	if(parallax_map != nullptr)
-		parallax_map->bind(shader->get_program_handle(), static_cast<unsigned int>(parallax_map->get_texture_type()));
+		parallax_map->bind(shader, static_cast<unsigned int>(parallax_map->get_texture_type()));
 	if(displacement_map != nullptr)
-		displacement_map->bind(shader->get_program_handle(), static_cast<unsigned int>(displacement_map->get_texture_type()));
+		displacement_map->bind(shader, static_cast<unsigned int>(displacement_map->get_texture_type()));
 	shader->set_uniform<bool>("is_instanced", tz::graphics::is_instanced(mesh));
 	shader->set_uniform<Matrix4x4>("m", Matrix4x4::create_model_matrix(this->position, this->rotation, this->scale));
 	shader->set_uniform<Vector3F>("position_uniform", this->position);
@@ -59,7 +59,7 @@ Skybox::Skybox(std::string cube_mesh_link, CubeMap& cm): cube_mesh_link(cube_mes
 void Skybox::render(const Camera& cam, Shader& shad, const std::vector<std::unique_ptr<Mesh>>& all_meshes, float width, float height)
 {
 	shad.bind();
-	this->cm.bind(shad.get_program_handle(), 0);
+	this->cm.bind(&shad, 0);
 	shad.set_uniform<Matrix4x4>("m", Matrix4x4::create_model_matrix(cam.position, Vector3F(), Vector3F(cam.far_clip, cam.far_clip, cam.far_clip)));
 	shad.set_uniform<Matrix4x4>("v", Matrix4x4::create_view_matrix(cam.position, cam.rotation));
 	shad.set_uniform<Matrix4x4>("p", Matrix4x4::create_perspective_matrix(cam.fov, width, height, cam.near_clip, cam.far_clip));

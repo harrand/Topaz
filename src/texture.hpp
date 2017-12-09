@@ -2,6 +2,7 @@
 #define TEXTURE_HPP
 #include <memory>
 #include "graphics.hpp"
+#include "shader.hpp"
 #include <optional>
 
 namespace tz::graphics
@@ -69,7 +70,7 @@ public:
 	~Texture();
 	Texture& operator=(Texture&& rhs);
 	
-	virtual void bind(GLuint shader_program_handle, unsigned int id);
+	virtual void bind(Shader* shader, unsigned int id);
 	const std::string& get_file_name() const;
 	int get_width() const;
 	int get_height() const;
@@ -97,7 +98,7 @@ public:
 	~NormalMap() = default;
 	NormalMap& operator=(const NormalMap& rhs) = delete;
 	
-	virtual void bind(GLuint shader_program_handle, unsigned int id) override;
+	virtual void bind(Shader* shader, unsigned int id) override;
 	virtual tz::graphics::TextureType get_texture_type() override;
 };
 
@@ -110,7 +111,7 @@ public:
 	~ParallaxMap() = default;
 	ParallaxMap& operator=(const ParallaxMap& rhs) = delete;
 	
-	virtual void bind(GLuint shader_program_handle, unsigned int id) override;
+	virtual void bind(Shader* shader, unsigned int id) override;
 	virtual tz::graphics::TextureType get_texture_type() override;	
 };
 
@@ -123,7 +124,7 @@ public:
 	~DisplacementMap() = default;
 	DisplacementMap& operator=(const DisplacementMap& rhs) = delete;
 	
-	virtual void bind(GLuint shader_program_handle, unsigned int id) override;
+	virtual void bind(Shader* shader, unsigned int id) override;
 	virtual tz::graphics::TextureType get_texture_type() override;
 };
 
@@ -140,7 +141,7 @@ public:
 	~CubeMap();
 	CubeMap& operator=(const CubeMap& rhs) = delete;
 	
-	void bind(GLuint shader_program_handle, unsigned int id);
+	void bind(Shader* shader, unsigned int id);
 private:
 	std::vector<unsigned char*> load_textures();
 	GLuint texture_handle;

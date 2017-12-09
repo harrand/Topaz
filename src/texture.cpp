@@ -226,7 +226,7 @@ Texture& Texture::operator=(Texture&& rhs)
 	return *this;
 }
 
-void Texture::bind(GLuint shader_program_handle, unsigned int id)
+void Texture::bind(Shader* shader, unsigned int id)
 {
 	if(id > 31)
 	{
@@ -237,7 +237,7 @@ void Texture::bind(GLuint shader_program_handle, unsigned int id)
 	// GLTEXTURE0 is actually a number, so we can add the id instead of a massive switch statement
 	glActiveTexture(GL_TEXTURE0 + id);
 	glBindTexture(GL_TEXTURE_2D, this->texture_handle);
-	glUniform1i(glGetUniformLocation(shader_program_handle, "texture_sampler"), id);
+	shader->set_uniform<int>("texture_sampler", id);
 }
 
 const std::string& Texture::get_file_name() const
@@ -272,7 +272,7 @@ tz::graphics::TextureType Texture::get_texture_type()
 
 NormalMap::NormalMap(std::string filename): Texture(filename, false){}
 
-void NormalMap::bind(GLuint shader_program_handle, unsigned int id)
+void NormalMap::bind(Shader* shader, unsigned int id)
 {
 	if(id > 31)
 	{
@@ -283,7 +283,7 @@ void NormalMap::bind(GLuint shader_program_handle, unsigned int id)
 	// GLTEXTURE0 is actually a number, so we can add the id instead of a massive switch statement
 	glActiveTexture(GL_TEXTURE0 + id);
 	glBindTexture(GL_TEXTURE_2D, this->texture_handle);
-	glUniform1i(glGetUniformLocation(shader_program_handle, "normal_map_sampler"), id);
+	shader->set_uniform<int>("normal_map_sampler", id);
 }
 
 tz::graphics::TextureType NormalMap::get_texture_type()
@@ -293,7 +293,7 @@ tz::graphics::TextureType NormalMap::get_texture_type()
 
 ParallaxMap::ParallaxMap(std::string filename): Texture(filename, false){}
 
-void ParallaxMap::bind(GLuint shader_program_handle, unsigned int id)
+void ParallaxMap::bind(Shader* shader, unsigned int id)
 {
 	if(id > 31)
 	{
@@ -304,7 +304,7 @@ void ParallaxMap::bind(GLuint shader_program_handle, unsigned int id)
 	// GLTEXTURE0 is actually a number, so we can add the id instead of a massive switch statement
 	glActiveTexture(GL_TEXTURE0 + id);
 	glBindTexture(GL_TEXTURE_2D, this->texture_handle);
-	glUniform1i(glGetUniformLocation(shader_program_handle, "parallax_map_sampler"), id);
+	shader->set_uniform<int>("parallax_map_sampler", id);
 }
 
 tz::graphics::TextureType ParallaxMap::get_texture_type()
@@ -314,7 +314,7 @@ tz::graphics::TextureType ParallaxMap::get_texture_type()
 
 DisplacementMap::DisplacementMap(std::string filename): Texture(filename, false){}
 
-void DisplacementMap::bind(GLuint shader_program_handle, unsigned int id)
+void DisplacementMap::bind(Shader* shader, unsigned int id)
 {
 	if(id > 31)
 	{
@@ -325,7 +325,7 @@ void DisplacementMap::bind(GLuint shader_program_handle, unsigned int id)
 	// GLTEXTURE0 is actually a number, so we can add the id instead of a massive switch statement
 	glActiveTexture(GL_TEXTURE0 + id);
 	glBindTexture(GL_TEXTURE_2D, this->texture_handle);
-	glUniform1i(glGetUniformLocation(shader_program_handle, "displacement_map_sampler"), id);
+	shader->set_uniform<int>("displacement_map_sampler", id);
 }
 
 tz::graphics::TextureType DisplacementMap::get_texture_type()
@@ -371,7 +371,7 @@ CubeMap::~CubeMap()
 	glDeleteTextures(1, &(this->texture_handle));
 }
 
-void CubeMap::bind(GLuint shader_program_handle, unsigned int id)
+void CubeMap::bind(Shader* shader, unsigned int id)
 {
 	if(id > 31)
 	{
@@ -382,7 +382,7 @@ void CubeMap::bind(GLuint shader_program_handle, unsigned int id)
 	// GLTEXTURE0 is actually a number, so we can add the id instead of a massive switch statement
 	glActiveTexture(GL_TEXTURE0 + id);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, this->texture_handle);
-	glUniform1i(glGetUniformLocation(shader_program_handle, "cube_map_sampler"), id);
+	shader->set_uniform<int>("cube_map_sampler", id);
 }
 
 std::vector<unsigned char*> CubeMap::load_textures()
