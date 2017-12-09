@@ -76,7 +76,7 @@ public:
 	int get_height() const;
 	bool has_bitmap() const;
 	Bitmap<PixelRGBA> get_bitmap() const;
-	virtual tz::graphics::TextureType get_texture_type();
+	virtual tz::graphics::TextureType get_texture_type(){return tz::graphics::TextureType::TEXTURE;}
 	template<class T>
 	static T* get_from_link(const std::string& texture_link, const std::vector<std::unique_ptr<T>>& all_textures);
 protected:
@@ -99,7 +99,7 @@ public:
 	NormalMap& operator=(const NormalMap& rhs) = delete;
 	
 	virtual void bind(Shader* shader, unsigned int id) override;
-	virtual tz::graphics::TextureType get_texture_type() override;
+	virtual tz::graphics::TextureType get_texture_type() override{return tz::graphics::TextureType::NORMAL_MAP;}
 };
 
 class ParallaxMap: public Texture
@@ -112,7 +112,7 @@ public:
 	ParallaxMap& operator=(const ParallaxMap& rhs) = delete;
 	
 	virtual void bind(Shader* shader, unsigned int id) override;
-	virtual tz::graphics::TextureType get_texture_type() override;	
+	virtual tz::graphics::TextureType get_texture_type() override{return tz::graphics::TextureType::PARALLAX_MAP;}
 };
 
 class DisplacementMap: public Texture
@@ -125,7 +125,7 @@ public:
 	DisplacementMap& operator=(const DisplacementMap& rhs) = delete;
 	
 	virtual void bind(Shader* shader, unsigned int id) override;
-	virtual tz::graphics::TextureType get_texture_type() override;
+	virtual tz::graphics::TextureType get_texture_type() override{return tz::graphics::TextureType::DISPLACEMENT_MAP;}
 };
 
 /*

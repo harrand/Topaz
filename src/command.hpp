@@ -30,6 +30,7 @@ private:
 
 /*
 	Exactly the same as Command. However, does not support 'usage' nor command arguments. This is used as a wrapper for an invokable to be used in Engine.
+	This is an abstract class. To utilise your own TrivialCommands, create classes which inherit and override virtual void operator()() to provide your desired functionality.
 */
 class TrivialCommand : public Command
 {
