@@ -114,7 +114,7 @@ namespace tz::audio
 	void initialise()
 	{
 		constexpr int channels = 2; // number of sound chanels in output. 2 for stereo, 1 for mono.
-		constexpr int chunk_size = 4096; // bytes used per output sample
+		constexpr int chunk_size = 2048; // bytes used per output sample
 		constexpr Uint16 format = MIX_DEFAULT_FORMAT; // output sample 	format. MIX_DEFAULT_FORMAT is the same as AUDIO_S16SYS (signed 16-bit samples, in system byte order)
 		// initialise sdl_mixer
 		if(Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, format, channels, chunk_size) == -1)

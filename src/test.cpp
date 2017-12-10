@@ -13,8 +13,8 @@ void test();
 int main()
 {
 	tz::initialise();
-	tz::util::log::message("Angelo is awesome!");
-	tz::util::log::message("Angelo endorses this model viewer.");
+	//tz::util::log::message("Angelo is awesome!");
+	//tz::util::log::message("Angelo endorses this model viewer.");
 	//test();
 	init();
 	tz::terminate();
@@ -160,7 +160,7 @@ void init()
 	RenderSkyboxCommand render_skybox(skybox, engine.camera, skybox_shader, engine.get_meshes(), wnd);
 	engine.add_update_command(&render_skybox);
 	
-	std::vector<Vector3F> positions({Vector3F(10, 10, 10), Vector3F(-10, -10, -10), Vector3F(-10, 10, 10), Vector3F(10, -10, -10)});
+	std::vector<Vector3F> positions({Vector3F(2, 2, 2), Vector3F(-2, -2, -2), Vector3F(-2, 2, 2), Vector3F(2, -2, -2)});
 	std::vector<Vector3F> rotations({Vector3F(0,0,0), Vector3F(1,1,1), Vector3F(2,2,2), Vector3F(3,3,3)});
 	std::vector<Vector3F> scales({Vector3F(1,1,1), Vector3F(2,2,2), Vector3F(3,3,3), Vector3F(4,4,4)});
 	InstancedMesh instanced_cube_2("../../../res/runtime/models/cube_hd.obj", positions, rotations, scales);

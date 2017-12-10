@@ -85,6 +85,17 @@ namespace tz::util
 			return res;
 		}
 		
+		inline std::string replace_all(std::string str, const std::string& to_replace, const std::string& replace_with)
+		{
+			std::size_t pos = 0;
+			while ((pos = str.find(to_replace, pos)) != std::string::npos)
+			{
+				str.replace(pos, to_replace.length(), replace_with);
+				pos += replace_with.length();
+			}
+			return str;
+		}
+		
 		inline std::string substring(const std::string& str, unsigned int begin, unsigned int end)
 		{
 			std::size_t strsize = str.length();

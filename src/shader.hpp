@@ -107,5 +107,10 @@ private:
 	std::array<std::unique_ptr<UniformImplicit>, tz::graphics::maximum_uniforms> uniform_data;
 	std::size_t uniform_counter;
 };
+
+namespace tz::graphics::shader
+{
+	Shader pass_through(std::string position_attribute_name = "position_modelspace_attribute", std::string texture_coordinate_attribute_name = "texture_coordinate_attribute", std::string texture_sampler_name = "texture_sampler_uniform");
+}
 #include "shader.inl"
 #endif

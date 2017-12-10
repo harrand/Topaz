@@ -61,6 +61,7 @@ namespace tz
 			inline std::vector<std::string> split_string(const std::string& s, const std::string& delim);
 			inline std::vector<std::string> split_string(const std::string& s, char delim);
 			inline std::string replace_all_char(const std::string& str, char toreplace, const std::string& replacewith);
+			inline std::string replace_all(std::string str, const std::string& to_replace, const std::string& replace_with);
 			inline std::string substring(const std::string& str, unsigned int begin, unsigned int end);
 			inline std::string format(const std::vector<std::string>& split);
 			inline std::vector<std::string> deformat(const std::string& str);

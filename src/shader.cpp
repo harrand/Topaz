@@ -239,3 +239,36 @@ GLuint Shader::create_shader(std::string source, GLenum shader_type)
 	
 	return shader;
 }
+
+Shader tz::graphics::shader::pass_through(std::string position_attribute_name, std::string texture_coordinate_attribute_name, std::string texture_sampler_name)
+{
+	constexpr char vertex_source[] = "#version 430\n\
+\n\
+layout(location = 0) in vec3 %POSITION%;\n\
+layout(location = 1) in vec2 %TEXTURE_COORDINATE%;\n\
+out vec3 position_modelspace;\n\
+out vec2 texture_coordinate_modelspace;\n\
+\n\
+uniform mat4 m;\n\
+uniform mat4 v;\n\
+uniform mat4 p;\n\
+\n\
+void main()\n\
+{\n\
+	gl_Position = (p * v * m) * vec4(%POSITION%, 1.0);\n\
+	position_modelspace = %POSITION%;\n\
+	texture_coordinate_modelspace = %TEXTURE_COORDINATE%;\n\
+}";
+	constexpr char fragment_source[] = "#version 430\n\
+\n\
+layout(location = 0) out vec4 frag_colour;\n\
+\n\
+in vec2 texture_coordinate_modelspace;\n\
+uniform sampler2D %TEXTURE_SAMPLER%;\n\
+\n\
+void main()\n\
+{\n\
+	frag_colour = texture(%TEXTURE_SAMPLER%, texture_coordinate_modelspace);\n\
+}";
+	return {tz::util::string::replace_all(tz::util::string::replace_all(vertex_source, "%POSITION%", position_attribute_name), "%TEXTURE_COORDINATE%", texture_coordinate_attribute_name), "", "", "", tz::util::string::replace_all(fragment_source, "%TEXTURE_SAMPLER%", texture_sampler_name)};
+}
