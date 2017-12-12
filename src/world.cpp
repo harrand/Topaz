@@ -47,11 +47,13 @@ void World::set_gravity(Vector3F gravity)
 	this->gravity = gravity;
 	for(Entity& ent : this->entities)
 	{
+		// Both of these are O(n) Ω(1) ϴ(1), where n = number of existing forces
 		ent.remove_force("gravity");
 		ent.apply_force("gravity", Force(this->get_gravity()));
 	}
 	for(EntityObject& eo : this->entity_objects)
 	{
+		// Both once again O(n) Ω(1) ϴ(1), where n = number of existing forces
 		eo.remove_force("gravity");
 		eo.apply_force("gravity", Force(this->get_gravity()));
 	}
@@ -66,11 +68,15 @@ void World::add_object(Object obj)
 void World::add_entity(Entity ent)
 {
 	// Once we add an entity, make sure the copy has the correct gravity force applying on it.
+	// std::unordered_map::find is O(n) Ω(1) ϴ(1), where n = number of elements
 	if(ent.get_forces().find("gravity") != ent.get_forces().end())
 	{
+		// Entity::remove_force is O(n) Ω(1) ϴ(1), where n = number of existing forces
 		ent.remove_force("gravity");
 	}
+	// Entity::apply_force is O(n) Ω(1) ϴ(1), where n = number of existing forces
 	ent.apply_force("gravity", Force(this->get_gravity()));
+	// O(1) amortised Ω(1) ϴ(1) amortised
 	this->entities.push_back(std::move(ent));
 }
 
@@ -88,6 +94,7 @@ void World::add_entity_object(EntityObject eo)
 // Adds a light to this world, with the shader handle of the corresponding shader that should handle such lighting.
 void World::add_light(Light light, GLuint shader_program_handle)
 {
+	// std::map::operator[] is O(log n) where n is size of map
 	while(this->base_lights.size() >= tz::graphics::maximum_lights)
 		this->base_lights.erase(this->base_lights.begin());
 	this->base_lights[light.get_uniforms(shader_program_handle, this->base_lights.size())] = light;

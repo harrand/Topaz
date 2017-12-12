@@ -18,11 +18,13 @@ const std::unordered_map<std::string, Force>& Entity::get_forces() const
 
 void Entity::apply_force(std::string force_name, Force f)
 {
+	// std::unordered_map::operator[] is O(n) Ω(1) ϴ(1), where n = number of elements
 	this->forces[force_name] = f;
 }
 
 void Entity::remove_force(std::string force_name)
 {
+	// std::unordered_map::erase by value is O(n) Ω(1) ϴ(1), where n = number of elements
 	this->forces.erase(force_name);
 }
 

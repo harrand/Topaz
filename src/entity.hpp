@@ -22,7 +22,9 @@ public:
 	
 	Vector3F get_acceleration() const;
 	const std::unordered_map<std::string, Force>& get_forces() const;
+	// Complexity: O(n) Ω(1) ϴ(1), where n = number of existing forces
 	void apply_force(std::string force_name, Force f);
+	// Complexity: O(n) Ω(1) ϴ(1), where n = number of existing forces
 	void remove_force(std::string force_name);
 	virtual void update_motion(unsigned int fps);
 	bool operator==(const Entity& rhs) const;

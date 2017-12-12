@@ -30,6 +30,7 @@ public:
 	
 	const Mesh& get_mesh() const;
 	const std::map<tz::graphics::TextureType, Texture*>& get_textures() const;
+	// Complexity: O(n) Ω(1) ϴ(n), where n =~ size of mesh data (will not return until GPU finishes processing)
 	virtual void render(const Camera& cam, Shader* shader, float width, float height);
 	bool operator==(const Object& rhs) const;
 	
