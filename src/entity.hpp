@@ -47,6 +47,8 @@ public:
 	EntityObject(EntityObject&& move) = default;
 	EntityObject& operator=(const EntityObject& rhs) = default;
 	
+	virtual void update_motion(unsigned int fps) override;
+	
 	bool operator==(const EntityObject& rhs) const;
 	using Object::position;
 };

@@ -17,6 +17,7 @@ void Object::render(const Camera& cam, Shader* shader, float width, float height
 {
 	if(this->mesh == nullptr)
 	{
+		tz::util::log::error("Attempted to render Object with a null mesh. Aborting render process.");
 		return;
 	}
 	using tz::graphics::TextureType;
