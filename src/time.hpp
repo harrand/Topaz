@@ -54,22 +54,5 @@ namespace tz::time
 	{
 		return std::chrono::system_clock::now().time_since_epoch() / std::chrono::milliseconds(1);
 	}
-	namespace scheduler
-	{
-		/*
-			Invokes std::functions synchronously (pretty much just runs a function for you) or asynchronously (runs the function in another thread as to not impede current processing). You may well find this incredibly useful, however it does contain some overhead and therefore is not recommended for small, menial tasks.
-		*/
-		template<class ReturnType, class... Args>
-		inline void sync_delayed_task(unsigned int milliseconds_delay, std::function<ReturnType(Args...)> f, Args... args)
-		{
-			std::this_thread::sleep_for(std::chrono::duration<unsigned int, std::milli>(milliseconds_delay));
-			f(args...);
-		}
-		template<class ReturnType, class... Args>
-		inline void async_delayed_task(unsigned int milliseconds_delay, std::function<ReturnType(Args...)> f, Args... args)
-		{
-			std::thread(sync_delayed_task<ReturnType, Args...>, milliseconds_delay, f, args...).detach();
-		}
-	}
 }
 #endif

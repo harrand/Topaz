@@ -10,6 +10,8 @@
 #include <typeinfo>
 #include <random>
 #include <utility>
+#include <functional>
+#include <thread>
 #include "MDL/mdl.hpp"
 #include "vector.hpp"
 #include "SDL2/SDL.h"
@@ -83,8 +85,18 @@ namespace tz
 			template<typename FirstArg = void, typename... Args>
 			inline void error(FirstArg arg, Args... args);
 		}
-		template<typename Number = int>
-		inline Number random();
+		
+		namespace scheduler
+		{
+			/*	Invokes std::functions synchronously (pretty much just runs a function for you) or asynchronously (runs the function in another thread as to not impede current processing). You may well find this incredibly useful, however it does contain some overhead and therefore is not recommended for small, menial tasks.
+			*/
+			template<class ReturnType, class... Args>
+			inline void sync_delayed_task(unsigned int milliseconds_delay, std::function<ReturnType(Args...)> f, Args... args);
+			template<class ReturnType, class... Args>
+			inline void async_delayed_task(unsigned int milliseconds_delay, std::function<ReturnType(Args...)> f, Args... args);
+		}
+			template<typename Number = int>
+			inline Number random();
 	}
 }
 

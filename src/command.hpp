@@ -3,6 +3,8 @@
 #include <unordered_set>
 #include <vector>
 #include <memory>
+#include <functional>
+#include <thread>
 
 /*
 	Abstract. Not available for non-polymorphic use. Inherit from this to create custom commands (Essential for adding functionality to Engine).
@@ -81,6 +83,14 @@ public:
 private:
 	std::unordered_set<Command*> commands;
 };
+
+namespace tz::util::scheduler
+{
+	template<typename Functor>
+	inline void sync_delayed_functor(unsigned int millis_delay, TrivialFunctor<Functor> command);
+	template<typename Functor>
+	inline void async_delayed_functor(unsigned int millis_delay, TrivialFunctor<Functor> command);
+}
 
 #include "command.inl"
 

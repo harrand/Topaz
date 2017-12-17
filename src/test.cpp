@@ -183,7 +183,7 @@ void init()
 	bool on_ground = false;
 	const float a = engine.get_world().get_gravity().length();
 	float speed = 0.0f;
-
+	
 	while(!engine.get_window().is_close_requested())
 	{
 		float multiplier = tz::util::cast::from_string<float>(MDLF(RawFile(engine.get_properties().get_tag("resources"))).get_tag("speed"));
