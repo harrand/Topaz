@@ -59,4 +59,14 @@ private:
 	CubeMap& cm;
 };
 
+namespace tz::graphics
+{
+	/*
+		Creates a new Object with InstancedMesh containing all data from the objects parameter.
+		All elements of 'objects' should share the same texture and mesh.
+		This function performs instancification; allowing multiple objects to be rendered with a single draw call, serving as a gargantuan optimisation.
+	*/
+	Object instancify(const std::vector<Object>& objects);
+}
+
 #endif

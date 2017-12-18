@@ -2,7 +2,11 @@
 #include <thread>
 #include <chrono>
 
-AudioClip::AudioClip(std::string filename): filename(std::move(filename)), audio_handle(Mix_LoadWAV(this->filename.c_str())){}
+AudioClip::AudioClip(std::string filename): filename(std::move(filename)), audio_handle(Mix_LoadWAV(this->filename.c_str()))
+{
+	if(this->audio_handle == NULL)
+		tz::util::log::error("AudioClip instantiation caused one or more errors from filename '", filename, "'");
+}
 
 AudioClip::AudioClip(const AudioClip& copy): AudioClip(copy.get_file_name()){}
 
@@ -35,7 +39,7 @@ Uint32 AudioClip::get_audio_length() const
 	Uint32 points = 0, frames = 0;
 	int frequency = 0;
 	Uint16 format = 0;
-	int channels;
+	int channels = 0;
 	if(!Mix_QuerySpec(&frequency, &format, &channels))
 	{
 		tz::util::log::error("Attempt to query AudioClip yielded invalid query. Is tz::audio initialised?");
@@ -67,9 +71,10 @@ void AudioSource::update(const Vector3F& source_position, const Camera& relative
 	Mix_SetPosition(this->get_channel(), static_cast<Sint16>(angle), static_cast<Uint8>(255 * displacement.length() / relative_to.far_clip));
 }
 
-AudioMusic::AudioMusic(std::string filename): filename(std::move(filename)), paused(false)
+AudioMusic::AudioMusic(std::string filename): filename(std::move(filename)), paused(false), audio_handle(Mix_LoadMUS(this->filename.c_str()))
 {
-	this->audio_handle = Mix_LoadMUS(this->filename.c_str());
+	if(this->audio_handle == NULL)
+		tz::util::log::error("AudioClip instantiation caused one or more errors from filename '", filename, "'");
 }
 
 AudioMusic::AudioMusic(const AudioMusic& copy): AudioMusic(copy.get_file_name()){}

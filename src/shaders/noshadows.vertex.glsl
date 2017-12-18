@@ -58,7 +58,7 @@ mat4 scale(vec3 scale)
 	return mat4(vec4(scale.x, 0, 0, 0), vec4(0, scale.y, 0, 0), vec4(0, 0, scale.z, 0), vec4(0, 0, 0, 1));
 }
 
-mat4 model_instanced = transpose(scale(scale_uniform + scales_instance) * rotate(rotation_uniform + rotations_instance) * translate(position_uniform));
+mat4 model_instanced = transpose(scale(scale_uniform + scales_instance) * rotate(rotation_uniform + rotations_instance) * translate(position_uniform + positions_instance));
 
 void share()
 {
@@ -90,7 +90,7 @@ void main()
 	share();
 	if(is_instanced)
 	{
-		gl_Position = p * v * (model_instanced * (vec4(position_modelspace + positions_instance, 1.0)));
+		gl_Position = p * v * /*((model_instanced * (vec4(positions_instance, 1.0))) +*/ (model_instanced * (vec4(position_modelspace, 1.0)))/*)*/;
 	}
 	else
 		gl_Position = (p * v * m) * vec4(position_modelspace, 1.0);

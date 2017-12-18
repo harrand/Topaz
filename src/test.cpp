@@ -184,6 +184,16 @@ void init()
 	const float a = engine.get_world().get_gravity().length();
 	float speed = 0.0f;
 	
+	std::vector<Object> test_objects = engine.get_world().get_objects();
+	for(Object& obj : test_objects)
+		obj.position += Vector3F(0, 50.0f, 0);
+	
+	//TrivialFunctor update_test_objects([&](){for(auto& obj : test_objects)obj.render(engine.camera, &engine.default_shader, wnd.get_width(), wnd.get_height());});
+	//engine.add_update_command(&update_test_objects);
+	Object test_instancified = tz::graphics::instancify(test_objects);
+	TrivialFunctor update_instancified([&](){test_instancified.render(engine.camera, &engine.default_shader, wnd.get_width(), wnd.get_height());});
+	engine.add_update_command(&update_instancified);
+	
 	while(!engine.get_window().is_close_requested())
 	{
 		float multiplier = tz::util::cast::from_string<float>(MDLF(RawFile(engine.get_properties().get_tag("resources"))).get_tag("speed"));

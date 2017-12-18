@@ -73,3 +73,22 @@ void Skybox::render(const Camera& cam, Shader& shad, const std::vector<std::uniq
 	tz::graphics::find_mesh(this->cube_mesh_link, all_meshes)->render(shad.has_tessellation_control_shader());
 	glFrontFace(GL_CCW);
 }
+
+Object tz::graphics::instancify(const std::vector<Object>& objects)
+{
+	std::vector<Vector3F> positions, rotations, scales;
+	Vector3F original_position = objects.front().position;
+	Vector3F original_rotation = objects.front().rotation;
+	Vector3F original_scale = objects.front().scale;
+	for(const Object& object : objects)
+	{
+		positions.push_back(object.position - original_position);
+		rotations.push_back(object.rotation - original_rotation);
+		scales.push_back(object.scale - original_scale);
+	}
+	// this will leak.
+	InstancedMesh* mesh = new InstancedMesh(objects.front().get_mesh().get_file_name(), positions, rotations, scales);
+	tz::util::log::message("instancified result size = ", mesh->get_instance_quantity());
+	tz::util::log::message("detected instanced mesh: ", tz::graphics::is_instanced(mesh));
+	return {mesh, objects.front().get_textures(), original_position, original_rotation, original_scale};
+}
