@@ -64,11 +64,13 @@ public:
 private:
 	static Object retrieve_object_data(const std::string& object_name, std::string resources_path, MDLF& mdlf, const std::vector<std::unique_ptr<Mesh>>& all_meshes, const std::vector<std::unique_ptr<Texture>>& all_textures, const std::vector<std::unique_ptr<NormalMap>>& all_normal_maps, const std::vector<std::unique_ptr<ParallaxMap>>& all_parallax_maps, const std::vector<std::unique_ptr<DisplacementMap>>& all_displacement_maps);
 	static EntityObject retrieve_entity_object_data(const std::string& entity_object_name, std::string resources_path, MDLF& mdlf, const std::vector<std::unique_ptr<Mesh>>& all_meshes, const std::vector<std::unique_ptr<Texture>>& all_textures, const std::vector<std::unique_ptr<NormalMap>>& all_normal_maps, const std::vector<std::unique_ptr<ParallaxMap>>& all_parallax_maps, const std::vector<std::unique_ptr<DisplacementMap>>& all_displacement_maps);
+	void update_instances();
+	std::size_t total_instances() const;
 	
 	std::string filename;
 	std::string resources_path;
 	Vector3F gravity;
-	std::vector<Object> objects;
+	std::vector<Object> objects, instancified_objects;
 	std::vector<Entity> entities;
 	std::vector<EntityObject> entity_objects;
 	std::map<std::array<GLint, tz::graphics::light_number_of_uniforms>, Light> base_lights;

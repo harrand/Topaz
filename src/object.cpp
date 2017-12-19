@@ -108,7 +108,7 @@ std::vector<Object> tz::graphics::instancify_full(const std::vector<Object>& obj
 		mesh_cref_t mesh_read = std::cref(object.get_mesh());
 		textures_cref_t textures_read = std::cref(object.get_textures());
 		asset_mappings.emplace(std::make_pair(mesh_read, textures_read), i);
-		tz::util::log::message("emplaced asset pair to multimap.");
+		//tz::util::log::message("emplaced asset pair to multimap.");
 	}
 	std::vector<Object> instancified_objects;
 	std::vector<Object> duplicates;
@@ -119,14 +119,14 @@ std::vector<Object> tz::graphics::instancify_full(const std::vector<Object>& obj
 		if(pair.first.first.get() == key_cache.first.get() && pair.first.second.get() == key_cache.second.get())
 		{
 			duplicates.push_back(objects[pair.second]);
-			tz::util::log::message("found an element of a cluster.");
+			//tz::util::log::message("found an element of a cluster.");
 			last_ends_cluster = false;
 		}
 		else
 		{
 			key_cache = pair.first;
 			instancified_objects.push_back(tz::graphics::instancify(duplicates));
-			tz::util::log::message("finished cluster, instancifying...");
+			//tz::util::log::message("finished cluster, instancifying...");
 			duplicates.clear();
 			last_ends_cluster = true;
 			// we still need to add the current object to a new duplicates vector though or we'll skip it.
@@ -138,6 +138,7 @@ std::vector<Object> tz::graphics::instancify_full(const std::vector<Object>& obj
 		instancified_objects.push_back(tz::graphics::instancify(duplicates));
 		tz::util::log::message("instancified last cluster!");
 	}
+	/*
 	tz::util::log::message("number of instancified objects = ", instancified_objects.size());
 	tz::util::log::message("number of previously uninstancified objects = ", objects.size());
 	tz::util::log::message("instancification ratio (%) = ", 100.0f * instancified_objects.size() / objects.size(), "%. this also serves as the amount of processing performed as opposed to without instancification.");
@@ -145,5 +146,6 @@ std::vector<Object> tz::graphics::instancify_full(const std::vector<Object>& obj
 	for(const Object& object : instancified_objects)
 		total_instance_count += dynamic_cast<const InstancedMesh*>(&(object.get_mesh()))->get_instance_quantity();
 	tz::util::log::message("original number of objects = ", objects.size(), ", total instances created = ", total_instance_count);
+	*/
 	return instancified_objects;
 }
