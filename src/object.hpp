@@ -5,7 +5,7 @@
 #include "texture.hpp"
 #include "camera.hpp"
 #include "boundary.hpp"
-#include <initializer_list>
+#include <variant>
 
 namespace tz::graphics
 {
@@ -22,7 +22,7 @@ namespace tz::graphics
 class Object
 {
 public:
-	Object(const Mesh* mesh, std::map<tz::graphics::TextureType, Texture*> textures, Vector3F position, Vector3F rotation, Vector3F scale, unsigned int shininess = tz::graphics::default_shininess, float parallax_map_scale = tz::graphics::default_parallax_map_scale, float parallax_map_offset = tz::graphics::default_parallax_map_offset, float displacement_factor = tz::graphics::default_displacement_factor);
+	Object(std::variant<const Mesh*, std::shared_ptr<const Mesh>> mesh, std::map<tz::graphics::TextureType, Texture*> textures, Vector3F position, Vector3F rotation, Vector3F scale, unsigned int shininess = tz::graphics::default_shininess, float parallax_map_scale = tz::graphics::default_parallax_map_scale, float parallax_map_offset = tz::graphics::default_parallax_map_offset, float displacement_factor = tz::graphics::default_displacement_factor);
 	Object(const Object& copy) = default;
 	Object(Object&& move) = default;
 	~Object() = default;
@@ -38,7 +38,7 @@ public:
 	unsigned int shininess;
 	float parallax_map_scale, parallax_map_offset, displacement_factor;
 protected:
-	const Mesh* mesh;
+	std::variant<const Mesh*, std::shared_ptr<const Mesh>> mesh;
 	std::map<tz::graphics::TextureType, Texture*> textures;
 };
 

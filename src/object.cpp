@@ -1,10 +1,16 @@
 #include "object.hpp"
 
-Object::Object(const Mesh* mesh, std::map<tz::graphics::TextureType, Texture*> textures, Vector3F position, Vector3F rotation, Vector3F scale, unsigned int shininess, float parallax_map_scale, float parallax_map_offset, float displacement_factor): position(position), rotation(rotation), scale(scale), shininess(shininess), parallax_map_scale(parallax_map_scale), parallax_map_offset(parallax_map_offset), displacement_factor(displacement_factor), mesh(mesh), textures(textures){}
+Object::Object(std::variant<const Mesh*, std::shared_ptr<const Mesh>> mesh, std::map<tz::graphics::TextureType, Texture*> textures, Vector3F position, Vector3F rotation, Vector3F scale, unsigned int shininess, float parallax_map_scale, float parallax_map_offset, float displacement_factor): position(position), rotation(rotation), scale(scale), shininess(shininess), parallax_map_scale(parallax_map_scale), parallax_map_offset(parallax_map_offset), displacement_factor(displacement_factor), mesh(mesh), textures(textures){}
 
 const Mesh& Object::get_mesh() const
 {
-	return *(this->mesh);
+	try
+	{
+		return *std::get<0>(this->mesh);
+	}catch(std::bad_variant_access&)
+	{
+		return *std::get<1>(this->mesh);
+	}
 }
 
 const std::map<tz::graphics::TextureType, Texture*>& Object::get_textures() const
@@ -15,7 +21,7 @@ const std::map<tz::graphics::TextureType, Texture*>& Object::get_textures() cons
 
 void Object::render(const Camera& cam, Shader* shader, float width, float height)
 {
-	if(this->mesh == nullptr)
+	if(&(this->get_mesh()) == nullptr)
 	{
 		tz::util::log::error("Attempted to render Object with a null mesh. Aborting render process.");
 		return;
@@ -34,7 +40,7 @@ void Object::render(const Camera& cam, Shader* shader, float width, float height
 		parallax_map->bind(shader, static_cast<unsigned int>(parallax_map->get_texture_type()));
 	if(displacement_map != nullptr)
 		displacement_map->bind(shader, static_cast<unsigned int>(displacement_map->get_texture_type()));
-	shader->set_uniform<bool>("is_instanced", tz::graphics::is_instanced(mesh));
+	shader->set_uniform<bool>("is_instanced", tz::graphics::is_instanced(&(this->get_mesh())));
 	shader->set_uniform<Matrix4x4>("m", Matrix4x4::create_model_matrix(this->position, this->rotation, this->scale));
 	shader->set_uniform<Vector3F>("position_uniform", this->position);
 	shader->set_uniform<Vector3F>("rotation_uniform", this->rotation);
@@ -46,7 +52,7 @@ void Object::render(const Camera& cam, Shader* shader, float width, float height
 	shader->set_uniform<float>("parallax_map_offset", this->parallax_map_offset);
 	shader->set_uniform<float>("displacement_factor", this->displacement_factor);
 	shader->update();
-	mesh->render(shader->has_tessellation_control_shader());
+	this->get_mesh().render(shader->has_tessellation_control_shader());
 	
 }
 
@@ -87,8 +93,5 @@ Object tz::graphics::instancify(const std::vector<Object>& objects)
 		scales.push_back(object.scale - original_scale);
 	}
 	// this will leak.
-	InstancedMesh* mesh = new InstancedMesh(objects.front().get_mesh().get_file_name(), positions, rotations, scales);
-	tz::util::log::message("instancified result size = ", mesh->get_instance_quantity());
-	tz::util::log::message("detected instanced mesh: ", tz::graphics::is_instanced(mesh));
-	return {mesh, objects.front().get_textures(), original_position, original_rotation, original_scale};
+	return {std::make_shared<InstancedMesh>(objects.front().get_mesh().get_file_name(), positions, rotations, scales), objects.front().get_textures(), original_position, original_rotation, original_scale};
 }
