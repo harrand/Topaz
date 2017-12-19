@@ -121,6 +121,7 @@ void init()
 	Object& test_obj = engine.world.emplace<Object>(engine.get_meshes().front().get(), engine.get_world().get_objects().front().get_textures(), Vector3F(), Vector3F(), Vector3F(200, 200, 200), 5, 1, 1, 1);
 	
 	test_obj.scale /= 2.0f;
+	//engine.world.emplace<Light>();
 	
 	while(!engine.get_window().is_close_requested())
 	{

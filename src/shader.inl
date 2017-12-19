@@ -75,7 +75,7 @@ void Uniform<T>::push() const
 	else if constexpr(std::is_same<decltype(this->value), Matrix4x4>::value)
 		glUniformMatrix4fv(this->uniform_handle, 1, GL_TRUE, this->value.fill_data().data());
 	else
-		static_assert(!std::is_void<decltype(this->value)>::value, "[Topaz Shader]: Uniform has unsupported type. Perhaps your desired version of OpenGL proceeds Topaz's too far by using newer types for uniforms?");
+		static_assert(std::is_void<decltype(this->value)>::value, "[Topaz Shader]: Uniform has unsupported type. Perhaps your desired version of OpenGL proceeds Topaz's too far by using newer types for uniforms?");
 }
 
 template<class T>

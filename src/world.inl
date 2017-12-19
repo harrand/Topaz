@@ -15,7 +15,7 @@ Element& World::emplace(Args&&... args)
 	}
 	else
 	{
-		static_assert(!std::is_void<Element>::value, "[Topaz World]: World::emplace has unsupported type.");
+		static_assert(std::is_void<Element>::value, "[Topaz World]: World::emplace has unsupported type.");
 		// Do not need to return anything here as a compile-error will be emitted after the static_assertation.
 	}
 }
