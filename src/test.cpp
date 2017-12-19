@@ -21,30 +21,6 @@ int main()
 	return 0;
 }
 
-class FPSToggleCommand : public TrivialCommand
-{
-public:
-	FPSToggleCommand(TextLabel& fps_label): fps_label(fps_label){}
-	virtual void operator()(){fps_label.set_hidden(!fps_label.is_hidden());}
-	TextLabel& fps_label;
-};
-
-class ExitGuiCommand : public TrivialCommand
-{
-public:
-	ExitGuiCommand(Panel& gui_panel): gui_panel(gui_panel){}
-	virtual void operator()(){gui_panel.set_hidden(!gui_panel.is_hidden());}
-	Panel& gui_panel;
-};
-
-class ToggleCommand : public TrivialCommand
-{
-public:
-	ToggleCommand(bool& toggle): toggle(toggle){}
-	virtual void operator()(){toggle = !toggle;}
-	bool& toggle;
-};
-
 class SpawnBlockCommand : public TrivialCommand
 {
 public:
@@ -69,30 +45,6 @@ public:
 	}
 	Engine& engine;
 	std::vector<AABB>& bounds;
-};
-
-class SaveWorldCommand : public TrivialCommand
-{
-public:
-	SaveWorldCommand(World& world): world(world){}
-	virtual void operator()()
-	{world.save();tz::util::log::message("World Saved.");};
-	World& world;
-};
-
-class RenderSkyboxCommand : public TrivialCommand
-{
-public:
-	RenderSkyboxCommand(Skybox& skybox, const Camera& camera, Shader& shader, const std::vector<std::unique_ptr<Mesh>>& all_meshes, Window& wnd): skybox(skybox), camera(camera), shader(shader), all_meshes(all_meshes), wnd(wnd){}
-	virtual void operator()()
-	{
-		skybox.render(camera, shader, all_meshes, wnd.get_width(), wnd.get_height());
-	}
-	Skybox& skybox;
-	const Camera& camera;
-	Shader& shader;
-	const std::vector<std::unique_ptr<Mesh>>& all_meshes;
-	Window& wnd;
 };
 
 void init()
@@ -121,11 +73,13 @@ void init()
 	
 	Font example_font("../../../res/runtime/fonts/upheaval.ttf", 25);
 	TextLabel text(0.0f, 0.0f, Vector4F(1, 1, 1, 1), {}, Vector3F(0, 0, 0), example_font, "FPS: ...", engine.default_gui_shader);
-	FPSToggleCommand toggle(text);
+	//FPSToggleCommand toggle(text);
+	TrivialFunctor toggle([&](){text.set_hidden(!text.is_hidden());});
 	Panel gui_panel(-1.0f, -1.0f, 1.0f, 1.0f, Vector4F(0.4f, 0.4f, 0.4f, 0.5f), engine.default_gui_shader);
 	gui_panel.set_using_proportional_positioning(true);
 	gui_panel.set_hidden(true);
-	ExitGuiCommand exit(gui_panel);
+	//ExitGuiCommand exit(gui_panel);
+	TrivialFunctor exit([&](){gui_panel.set_hidden(!gui_panel.is_hidden());});
 	TextLabel gui_title(0.0f, wnd.get_height() - 50, Vector4F(1, 1, 1, 1), {}, Vector3F(0, 0, 0), example_font, "Main Menu", engine.default_gui_shader);
 	Button test_button(0.0f, 2 * text.get_height(), Vector4F(1, 1, 1, 1), Vector4F(0.7, 0.7, 0.7, 1.0), Vector3F(0, 0, 0), example_font, "Hide/Show", engine.default_gui_shader, mouse_listener);
 	Button noclip_toggle(0.0f, 2 * text.get_height() + 2 * test_button.get_height(), Vector4F(1, 1, 1, 1), Vector4F(0.7, 0.7, 0.7, 1.0), Vector3F(0, 0, 0), example_font, "Toggle Flight", engine.default_gui_shader, mouse_listener);
@@ -142,8 +96,8 @@ void init()
 	gui_panel.add_child(&exit_gui_button);
 	gui_panel.add_child(&noclip_toggle);
 	gui_panel.add_child(&save_world_button);
-	SaveWorldCommand save_world_cmd(const_cast<World&>(engine.get_world()));
-	ToggleCommand toggle_noclip(noclip);
+	TrivialFunctor save_world_cmd([&](){const_cast<World&>(engine.get_world()).save();});
+	TrivialFunctor toggle_noclip([&](){noclip = !noclip;});
 	SpawnBlockCommand spawn_test_cube(engine, bounds);
 	test_button.set_on_mouse_click(&toggle);
 	test_button.set_on_mouse_over(&pop_cmd);
@@ -157,42 +111,12 @@ void init()
 	save_world_button.set_on_mouse_over(&pop_cmd);
 	
 	Skybox skybox("../../../res/runtime/models/skybox.obj", skybox_texture);
-	RenderSkyboxCommand render_skybox(skybox, engine.camera, skybox_shader, engine.get_meshes(), wnd);
+	TrivialFunctor render_skybox([&](){skybox.render(engine.camera, skybox_shader, engine.get_meshes(), wnd.get_width(), wnd.get_height());});
 	engine.add_update_command(&render_skybox);
-	
-	std::vector<Vector3F> positions({Vector3F(2, 2, 2), Vector3F(-2, -2, -2), Vector3F(-2, 2, 2), Vector3F(2, -2, -2)});
-	std::vector<Vector3F> rotations({Vector3F(0,0,0), Vector3F(1,1,1), Vector3F(2,2,2), Vector3F(3,3,3)});
-	std::vector<Vector3F> scales({Vector3F(1,1,1), Vector3F(2,2,2), Vector3F(3,3,3), Vector3F(4,4,4)});
-	InstancedMesh instanced_cube_2("../../../res/runtime/models/cube_hd.obj", positions, rotations, scales);
-	Object test_object(&instanced_cube_2, std::map<tz::graphics::TextureType, Texture*>({std::make_pair<tz::graphics::TextureType, Texture*>(tz::graphics::TextureType::TEXTURE, Texture::get_from_link<Texture>("../../../res/runtime/textures/sand.jpg", engine.get_textures()))}), Vector3F(0, 100, 0), Vector3F(), Vector3F(20,20,20), 5, 0, 0, 0);
-	class Anon : public TrivialCommand
-	{
-	public:
-		Anon(Object& object, const Camera& cam, Shader* shader, float width, float height): object(object), cam(cam), shader(shader), width(width), height(height){}
-		virtual void operator()()
-		{
-			object.render(cam, shader, width, height);
-		}
-		Object& object;
-		const Camera& cam;
-		Shader* shader;
-		float width, height;
-	} anon_instanced_cube_2(test_object, engine.camera, &(engine.default_shader), wnd.get_width(), wnd.get_height());
-	engine.add_update_command(&anon_instanced_cube_2);
 	
 	bool on_ground = false;
 	const float a = engine.get_world().get_gravity().length();
 	float speed = 0.0f;
-	
-	std::vector<Object> test_objects = engine.get_world().get_objects();
-	for(Object& obj : test_objects)
-		obj.position += Vector3F(0, 50.0f, 0);
-	
-	//TrivialFunctor update_test_objects([&](){for(auto& obj : test_objects)obj.render(engine.camera, &engine.default_shader, wnd.get_width(), wnd.get_height());});
-	//engine.add_update_command(&update_test_objects);
-	Object test_instancified = tz::graphics::instancify(test_objects);
-	TrivialFunctor update_instancified([&](){test_instancified.render(engine.camera, &engine.default_shader, wnd.get_width(), wnd.get_height());});
-	engine.add_update_command(&update_instancified);
 	
 	while(!engine.get_window().is_close_requested())
 	{

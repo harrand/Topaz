@@ -47,7 +47,7 @@ vec4 specular_directional(Light l, vec3 eye_direction_cameraspace, vec3 light_di
 	vec3 towards_the_camera = normalize(eye_direction_cameraspace);
 	vec3 reflection_direction = reflect(-light_direction_worldspace, normal);
 	float cos_alpha = clamp(dot(towards_the_camera, reflection_direction), 0, 1);
-	return l.specular_component * texture_colour * vec4(l.colour, 1) * l.power * pow(cos_alpha, shininess * 1024);
+	return l.specular_component * texture_colour * vec4(l.colour, 1) * l.power * pow(cos_alpha, shininess);
 }
 
 vec4 specular(Light l, vec3 position_worldspace, vec3 eye_direction_cameraspace, vec3 normal, vec4 texture_colour)
@@ -71,18 +71,18 @@ void main()
 	vec3 eye_direction_cameraspace = vec3(0, 0, 0) - position_cameraspace;
 	vec3 light_direction_worldspace = vec3(1, 1, -1);
 	vec3 light_direction_tangentspace = transpose(tbn_matrix) * light_direction_worldspace;
-	vec4 texture_colour = texture2D(texture_sampler, parallax_offset(light_direction_tangentspace));
+	vec4 texture_colour = texture(texture_sampler, parallax_offset(light_direction_tangentspace));
 	
 	const vec3 camera_position_cameraspace = vec3(0, 0, 0);
 	const vec3 camera_position_worldspace = (inverse(view_matrix) * vec4(camera_position_cameraspace, 1.0)).xyz;
-	vec3 normal = normalize(texture2D(normal_map_sampler, texcoord_modelspace).xyz * 255.0/128.0 - 1);
+	vec3 normal = normalize(texture(normal_map_sampler, texcoord_modelspace).xyz * 255.0/128.0 - 1);
 	normal = normalize(tbn_matrix * normal);
 	Light sun;
-	sun.pos = camera_position_worldspace;
+	sun.pos = -light_direction_worldspace;
 	sun.colour = vec3(1, 1, 1);
 	sun.power = 0.1;
 	sun.diffuse_component = 1.0;
-	sun.specular_component = 0.0;
+	sun.specular_component = 1.0;
 	/*
 	Light test_light;
 	test_light.pos = vec3(0, 80, 50);
@@ -91,7 +91,8 @@ void main()
 	test_light.diffuse_component = 1.0;
 	test_light.specular_component = 1.0;
 	*/
-	fragment_colour = ambience(sun, texture_colour);
-	fragment_colour += diffuse_directional(sun, position_worldspace, light_direction_worldspace, normal, texture_colour) + specular_directional(sun, eye_direction_cameraspace, light_direction_worldspace, normal, texture_colour);
+	//fragment_colour = ambience(sun, texture_colour);
+	fragment_colour = diffuse_directional(sun, position_worldspace, light_direction_worldspace, normal, texture_colour) + specular_directional(sun, eye_direction_cameraspace, light_direction_worldspace, normal, texture_colour);
 	//fragment_colour += specular(test_light, position_worldspace, eye_direction_cameraspace, normal, texture_colour);
+	fragment_colour.w = 1.0f;
 }
