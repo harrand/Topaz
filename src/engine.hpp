@@ -70,7 +70,9 @@ public:
 	Shader default_shader, default_gui_shader;
 private:
 	Window* wnd;
+public:
 	World world;
+private:
 	std::vector<std::unique_ptr<Mesh>> meshes;
 	std::vector<std::unique_ptr<Texture>> textures;
 	std::vector<std::unique_ptr<NormalMap>> normal_maps;

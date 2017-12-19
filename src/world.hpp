@@ -31,6 +31,14 @@ public:
 	void add_entity_object(EntityObject eo);
 	// Complexity: O(n log n) Ω(log n) ϴ(log n), where n = number of existing lights.
 	void add_light(Light light, GLuint shader_program_handle);
+	template<class Element, typename... Args>
+	Element& emplace(Args&&... args);
+	template<typename... Args>
+	Object& emplace_object(Args&&... args);
+	template<typename... Args>
+	Entity& emplace_entity(Args&&... args);
+	template<typename... Args>
+	EntityObject& emplace_entity_object(Args&&... args);
 	void remove_object(const Object& obj);
 	void remove_entity(const Entity& ent);
 	void remove_entity_object(const EntityObject& eo);
@@ -65,4 +73,7 @@ private:
 	std::vector<EntityObject> entity_objects;
 	std::map<std::array<GLint, tz::graphics::light_number_of_uniforms>, Light> base_lights;
 };
+
+#include "world.inl"
+
 #endif

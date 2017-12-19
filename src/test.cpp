@@ -118,6 +118,10 @@ void init()
 	const float a = engine.get_world().get_gravity().length();
 	float speed = 0.0f;
 	
+	Object& test_obj = engine.world.emplace<Object>(engine.get_meshes().front().get(), engine.get_world().get_objects().front().get_textures(), Vector3F(), Vector3F(), Vector3F(200, 200, 200), 5, 1, 1, 1);
+	
+	test_obj.scale /= 2.0f;
+	
 	while(!engine.get_window().is_close_requested())
 	{
 		float multiplier = tz::util::cast::from_string<float>(MDLF(RawFile(engine.get_properties().get_tag("resources"))).get_tag("speed"));
