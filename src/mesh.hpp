@@ -42,6 +42,7 @@ public:
 	const std::vector<Vector3F>& get_tangents() const;
 	std::string get_file_name() const;
 	virtual void render(bool patches, GLenum mode = GL_TRIANGLES) const;
+	bool operator==(const Mesh& rhs) const;
 protected:
 	const std::string filename;
 	tz::graphics::model::IndexedModel model;

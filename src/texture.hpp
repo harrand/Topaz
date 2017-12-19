@@ -79,6 +79,8 @@ public:
 	virtual tz::graphics::TextureType get_texture_type(){return tz::graphics::TextureType::TEXTURE;}
 	template<class T>
 	static T* get_from_link(const std::string& texture_link, const std::vector<std::unique_ptr<T>>& all_textures);
+	
+	bool operator==(const Texture& rhs);
 protected:
 	unsigned char* load_texture();
 	void delete_texture(unsigned char* imgdata);

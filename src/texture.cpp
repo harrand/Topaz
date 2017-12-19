@@ -265,6 +265,11 @@ Bitmap<PixelRGBA> Texture::get_bitmap() const
 	return this->bitmap.value_or(Bitmap<PixelRGBA>());
 }
 
+bool Texture::operator==(const Texture& rhs)
+{
+	return this->texture_handle == rhs.texture_handle;
+}
+
 NormalMap::NormalMap(std::string filename): Texture(filename, false){}
 
 void NormalMap::bind(Shader* shader, unsigned int id)

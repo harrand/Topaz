@@ -77,6 +77,11 @@ void Mesh::render(bool patches, GLenum mode) const
 	glBindVertexArray(0);
 }
 
+bool Mesh::operator==(const Mesh& rhs) const
+{
+	return this->vertex_array_object == rhs.vertex_array_object;
+}
+
 //private
 void Mesh::init_mesh()
 {
