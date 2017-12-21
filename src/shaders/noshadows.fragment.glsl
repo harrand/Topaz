@@ -11,6 +11,7 @@ in mat3 tbn_matrix;
 uniform sampler2D texture_sampler;
 uniform sampler2D normal_map_sampler;
 uniform sampler2D parallax_map_sampler;
+uniform sampler2D framebuffer_texture_sampler;
 
 uniform uint shininess;
 uniform float parallax_multiplier;
@@ -98,4 +99,6 @@ void main()
 	fragment_colour = diffuse_directional(sun, position_worldspace, light_direction_worldspace, normal, texture_colour) + specular_directional(sun, eye_direction_worldspace, light_direction_worldspace, normal, texture_colour);
 	//fragment_colour += specular(test_light, position_worldspace, eye_direction_cameraspace, normal, texture_colour);
 	fragment_colour.w = 1.0f;
+	float depth_value = texture(framebuffer_texture_sampler, texcoord_modelspace).r;
+	fragment_colour = vec4(vec3(depth_value), 1.0);
 }

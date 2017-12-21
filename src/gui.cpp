@@ -283,6 +283,7 @@ void Window::set_title(const std::string& new_title)
 void Window::set_render_target() const
 {
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glViewport(0, 0, this->get_width(), this->get_height());
 }
 

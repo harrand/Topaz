@@ -21,7 +21,7 @@ void tz::terminate()
 	tz::util::log::message("Terminated Topaz.");
 }
 
-Engine::Engine(Window* wnd, std::string properties_path, unsigned int initial_fps, unsigned int tps): camera(Camera()), properties(RawFile(properties_path)), resources(RawFile(this->properties.get_tag("resources"))), default_shader(this->properties.get_tag("default_shader")), default_gui_shader(this->properties.get_tag("default_gui_shader")), wnd(wnd), fps(initial_fps), tps(tps), update_command_executor(), tick_command_executor(), update_due(false)
+Engine::Engine(Window* wnd, std::string properties_path, unsigned int initial_fps, unsigned int tps): camera(Camera()), properties(RawFile(properties_path)), resources(RawFile(this->properties.get_tag("resources"))), default_shader(this->properties.get_tag("default_shader")), default_gui_shader(this->properties.get_tag("default_gui_shader")), shadow_shader(this->properties.get_tag("shadow_shader")), wnd(wnd), fps(initial_fps), tps(tps), update_command_executor(), tick_command_executor(), update_due(false), shadow_depth_texture()
 {
 	// fill all the asset buffers via tz data manager
 	tz::data::Manager(this->properties.get_tag("resources")).retrieve_all_data(this->meshes, this->textures, this->normal_maps, this->parallax_maps, this->displacement_maps);
@@ -52,14 +52,16 @@ void Engine::update(std::size_t shader_index)
 		this->profiler.reset();
 		this->seconds_timer.reload();
 	}
-	this->wnd->set_render_target();
 	this->profiler.begin_frame();
-	
+	this->shadow_depth_texture.set_render_target();
+	Camera light_camera(Vector3F(0, 0, 0), this->world.spawn_orientation);
+	this->world.render(light_camera, &(this->shadow_shader), this->wnd->get_width(), this->wnd->get_height());
+	this->wnd->set_render_target();
 	this->seconds_timer.update();
 	this->tick_timer.update();
 	this->wnd->clear(0.0f, 0.0f, 0.0f, 1.0f);
 	this->profiler.end_frame();
-	
+	this->shadow_depth_texture.bind(&(this->get_shader(shader_index)), 4);
 	this->world.render(this->camera, &(this->get_shader(shader_index)), this->wnd->get_width(), this->wnd->get_height());
 	
 	for(auto command : this->update_command_executor.get_commands())

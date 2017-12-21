@@ -68,6 +68,7 @@ private:
 	MDLF resources;
 public:
 	Shader default_shader, default_gui_shader;
+	Shader shadow_shader;
 private:
 	Window* wnd;
 public:
@@ -83,6 +84,7 @@ private:
 	const unsigned int tps;
 	CommandExecutor update_command_executor, tick_command_executor;
 	bool update_due;
+	DepthTexture shadow_depth_texture;
 };
 
 #endif

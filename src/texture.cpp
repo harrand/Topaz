@@ -342,7 +342,7 @@ void FrameBuffer::set_render_target() const
 	glClear(GL_DEPTH_BUFFER_BIT);
 }
 
-void FrameBuffer::bind(unsigned int id) const
+void FrameBuffer::bind(Shader* shader, unsigned int id) const
 {
 	// opengl only supports 32 bound textures at a time. magic number should really add a constexpr somewhere in graphics.hpp
 	if(id > 31)
@@ -354,6 +354,7 @@ void FrameBuffer::bind(unsigned int id) const
 	// GLTEXTURE0 is actually a number, so we can add the id instead of a massive switch statement
 	glActiveTexture(GL_TEXTURE0 + id);
 	glBindTexture(GL_TEXTURE_2D, this->texture_handle);
+	shader->set_uniform<int>("framebuffer_texture_sampler", id);
 }
 
 DepthTexture::DepthTexture(unsigned int width, unsigned int height): FrameBuffer(width, height)
@@ -367,8 +368,8 @@ DepthTexture::DepthTexture(unsigned int width, unsigned int height): FrameBuffer
 	//Filtering
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
  
 	//Configure framebuffer
 	glBindFramebuffer(GL_FRAMEBUFFER, this->framebuffer_handle);

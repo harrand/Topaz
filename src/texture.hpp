@@ -132,7 +132,7 @@ public:
 	FrameBuffer& operator=(const FrameBuffer& rhs) = delete;
 	
 	virtual void set_render_target() const;
-	virtual void bind(unsigned int id) const;
+	virtual void bind(Shader* shader, unsigned int id) const;
 protected:
 	unsigned int width, height;
 	GLuint framebuffer_handle, texture_handle;
@@ -145,6 +145,7 @@ private:
 */
 class DepthTexture: public FrameBuffer
 {
+public:
 	DepthTexture(unsigned int width = tz::graphics::depth_texture_default_width, unsigned int height = tz::graphics::depth_texture_default_height);
 	DepthTexture(const DepthTexture& copy) = delete;
 	DepthTexture(DepthTexture&& move) = delete;
