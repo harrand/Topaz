@@ -42,19 +42,19 @@ vec4 diffuse_directional(Light l, vec3 position_worldspace, vec3 light_direction
 	return l.diffuse_component * texture_colour * vec4(l.colour, 1) * l.power * cos_theta;
 }
 
-vec4 specular_directional(Light l, vec3 eye_direction_cameraspace, vec3 light_direction_worldspace, vec3 normal, vec4 texture_colour)
+vec4 specular_directional(Light l, vec3 eye_direction_worldspace, vec3 light_direction_worldspace, vec3 normal, vec4 texture_colour)
 {
-	vec3 towards_the_camera = normalize(eye_direction_cameraspace);
+	vec3 towards_the_camera = normalize(eye_direction_worldspace);
 	vec3 reflection_direction = reflect(-light_direction_worldspace, normal);
 	float cos_alpha = clamp(dot(towards_the_camera, reflection_direction), 0, 1);
 	return l.specular_component * texture_colour * vec4(l.colour, 1) * l.power * pow(cos_alpha, shininess);
 }
 
-vec4 specular(Light l, vec3 position_worldspace, vec3 eye_direction_cameraspace, vec3 normal, vec4 texture_colour)
+vec4 specular(Light l, vec3 position_worldspace, vec3 eye_direction_worldspace, vec3 normal, vec4 texture_colour)
 {
 	vec3 light_direction = l.pos - position_worldspace;
 	float distance = length(light_direction);
-	return specular_directional(l, eye_direction_cameraspace, light_direction, normal, texture_colour) / pow(distance, 2);
+	return specular_directional(l, eye_direction_worldspace, light_direction, normal, texture_colour) / pow(distance, 2);
 }
 
 vec4 ambience(Light directional_light, vec4 texture_colour)
@@ -69,20 +69,23 @@ void main()
 	vec3 position_cameraspace = (view_matrix * vec4(position_worldspace, 1.0)).xyz;
 
 	vec3 eye_direction_cameraspace = vec3(0, 0, 0) - position_cameraspace;
+	vec3 eye_direction_worldspace = (inverse(model_matrix) * vec4(eye_direction_cameraspace, 0.0)).xyz;
 	vec3 light_direction_worldspace = vec3(1, 1, -1);
-	vec3 light_direction_tangentspace = transpose(tbn_matrix) * light_direction_worldspace;
+	vec3 light_direction_tangentspace = transpose(tbn_matrix) * (inverse(model_matrix) * vec4(light_direction_worldspace, 0.0)).xyz;
 	vec4 texture_colour = texture(texture_sampler, parallax_offset(light_direction_tangentspace));
 	
 	const vec3 camera_position_cameraspace = vec3(0, 0, 0);
 	const vec3 camera_position_worldspace = (inverse(view_matrix) * vec4(camera_position_cameraspace, 1.0)).xyz;
-	vec3 normal = normalize(texture(normal_map_sampler, texcoord_modelspace).xyz * 255.0/128.0 - 1);
-	normal = normalize(tbn_matrix * normal);
+	vec3 normal = tbn_matrix * (texture(normal_map_sampler, texcoord_modelspace).xyz * 255.0/128.0 - 1);
+	// tbn_matrix transforms tangent-space -> model-space
+	// normal in model space, turn it to world space
+	normal = normalize((model_matrix * vec4(normal, 0.0)).xyz);
 	Light sun;
 	sun.pos = -light_direction_worldspace;
 	sun.colour = vec3(1, 1, 1);
-	sun.power = 0.1;
+	sun.power = 0.8;
 	sun.diffuse_component = 1.0;
-	sun.specular_component = 1.0;
+	sun.specular_component = 0.5;
 	/*
 	Light test_light;
 	test_light.pos = vec3(0, 80, 50);
@@ -92,7 +95,7 @@ void main()
 	test_light.specular_component = 1.0;
 	*/
 	//fragment_colour = ambience(sun, texture_colour);
-	fragment_colour = diffuse_directional(sun, position_worldspace, light_direction_worldspace, normal, texture_colour) + specular_directional(sun, eye_direction_cameraspace, light_direction_worldspace, normal, texture_colour);
+	fragment_colour = diffuse_directional(sun, position_worldspace, light_direction_worldspace, normal, texture_colour) + specular_directional(sun, eye_direction_worldspace, light_direction_worldspace, normal, texture_colour);
 	//fragment_colour += specular(test_light, position_worldspace, eye_direction_cameraspace, normal, texture_colour);
 	fragment_colour.w = 1.0f;
 }
