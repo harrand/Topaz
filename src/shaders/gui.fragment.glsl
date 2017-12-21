@@ -22,6 +22,11 @@ void main()
 		fragment_colour = colour;
 	if(has_text_border_colour && fragment_colour.w > 0.3 && fragment_colour.w < 0.775)
 		fragment_colour = vec4(text_border_colour, 1.0);
-	if(has_background_colour && fragment_colour.w < (has_text_border_colour ? 0.3 : 0.9))
-			fragment_colour = background_colour;
+	if(has_background_colour && fragment_colour.w < 0.1)
+		fragment_colour = background_colour;
+	else if(has_background_colour)
+	{
+		fragment_colour *= fragment_colour.w;
+		fragment_colour.w = 1.0f;
+	}
 }

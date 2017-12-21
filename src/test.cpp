@@ -71,21 +71,21 @@ void init()
 	for(const Object& object : engine.get_world().get_objects())
 		bounds.push_back(tz::physics::bound_aabb(object));
 	
-	Font example_font("../../../res/runtime/fonts/upheaval.ttf", 25);
-	TextLabel text(0.0f, 0.0f, Vector4F(1, 1, 1, 1), {}, Vector3F(0, 0, 0), example_font, "FPS: ...", engine.default_gui_shader);
-	//FPSToggleCommand toggle(text);
+	Vector4F gui_colour(0.0f, 0.0f, 0.0f, 0.95f);
+	Font example_font("../../../res/runtime/fonts/CaviarDreams.ttf", 26);
+	TextLabel text(0.0f, 0.0f, Vector4F(1, 1, 1, 1), {}, {}, example_font, "FPS: ...", engine.default_gui_shader);
 	TrivialFunctor toggle([&](){text.set_hidden(!text.is_hidden());});
 	Panel gui_panel(-1.0f, -1.0f, 1.0f, 1.0f, Vector4F(0.4f, 0.4f, 0.4f, 0.5f), engine.default_gui_shader);
 	gui_panel.set_using_proportional_positioning(true);
 	gui_panel.set_hidden(true);
 	//ExitGuiCommand exit(gui_panel);
 	TrivialFunctor exit([&](){gui_panel.set_hidden(!gui_panel.is_hidden());});
-	TextLabel gui_title(0.0f, wnd.get_height() - 50, Vector4F(1, 1, 1, 1), {}, Vector3F(0, 0, 0), example_font, "Main Menu", engine.default_gui_shader);
-	Button test_button(0.0f, 2 * text.get_height(), Vector4F(1, 1, 1, 1), Vector4F(0.7, 0.7, 0.7, 1.0), Vector3F(0, 0, 0), example_font, "Hide/Show", engine.default_gui_shader, mouse_listener);
-	Button noclip_toggle(0.0f, 2 * text.get_height() + 2 * test_button.get_height(), Vector4F(1, 1, 1, 1), Vector4F(0.7, 0.7, 0.7, 1.0), Vector3F(0, 0, 0), example_font, "Toggle Flight", engine.default_gui_shader, mouse_listener);
-	Button spawn_block(0.0f, 2 * text.get_height() + 2 * noclip_toggle.get_height() + 2 * test_button.get_height(), Vector4F(1, 1, 1, 1), Vector4F(0.7, 0.5, 0.5, 1.0), Vector3F(), example_font, "Spawn Block", engine.default_gui_shader, mouse_listener);
-	Button exit_gui_button(wnd.get_width() - 50, wnd.get_height() - 50, Vector4F(1, 1, 1, 1), Vector4F(1.0, 0, 0, 1.0), Vector3F(0, 0, 0), example_font, " x ", engine.default_gui_shader, mouse_listener);
-	Button save_world_button(0.0f, 2 * text.get_height() + 2 * noclip_toggle.get_height() + 2 * test_button.get_height() + 2 * spawn_block.get_height(), Vector4F(1, 1, 1, 1), Vector4F(0.7, 0.7, 0.7, 1.0), Vector3F(), example_font, "Save World", engine.default_gui_shader, mouse_listener);
+	TextLabel gui_title(0.0f, wnd.get_height() - 50, Vector4F(1, 1, 1, 1), gui_colour, {}, example_font, "Main Menu", engine.default_gui_shader);
+	Button test_button(0.0f, 2 * text.get_height(), Vector4F(1, 1, 1, 1), gui_colour, {}, example_font, "Hide/Show", engine.default_gui_shader, mouse_listener);
+	Button noclip_toggle(0.0f, 2 * text.get_height() + 2 * test_button.get_height(), Vector4F(1, 1, 1, 1), gui_colour, {}, example_font, "Toggle Flight", engine.default_gui_shader, mouse_listener);
+	Button spawn_block(0.0f, 2 * text.get_height() + 2 * noclip_toggle.get_height() + 2 * test_button.get_height(), Vector4F(1, 1, 1, 1), gui_colour, {}, example_font, "Spawn Block", engine.default_gui_shader, mouse_listener);
+	Button exit_gui_button(wnd.get_width() - 50, wnd.get_height() - 50, Vector4F(1, 1, 1, 1), Vector4F(1.0, 0, 0, 1.0), {}, example_font, " x ", engine.default_gui_shader, mouse_listener);
+	Button save_world_button(0.0f, 2 * text.get_height() + 2 * noclip_toggle.get_height() + 2 * test_button.get_height() + 2 * spawn_block.get_height(), Vector4F(1, 1, 1, 1), gui_colour, {}, example_font, "Save World", engine.default_gui_shader, mouse_listener);
 	
 	TrivialFunctor pop_cmd([](){tz::audio::play_clip_async(AudioClip("../../../res/runtime/music/pop.wav"));});
 	wnd.add_child(&text);
