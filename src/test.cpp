@@ -222,21 +222,22 @@ void init()
 				if(!collide)
 					engine.camera.position = after;
 			}
+			float angular_speed = tz::util::cast::from_string<float>(engine.get_properties().get_tag("rotational_speed"));
 			if(key_listener.is_key_pressed("I"))
 			{
-				engine.camera.rotation += (Vector3F(1.0f/360.0f, 0, 0) * multiplier * 5 * engine.get_time_profiler().get_last_delta());
+				engine.camera.rotation += (Vector3F(1.0f/360.0f, 0, 0) * multiplier * angular_speed * engine.get_time_profiler().get_last_delta());
 			}
 			if(key_listener.is_key_pressed("K"))
 			{
-				engine.camera.rotation += (Vector3F(-1.0f/360.0f, 0, 0) * multiplier * 5 * engine.get_time_profiler().get_last_delta());
+				engine.camera.rotation += (Vector3F(-1.0f/360.0f, 0, 0) * multiplier * angular_speed * engine.get_time_profiler().get_last_delta());
 			}
 			if(key_listener.is_key_pressed("J"))
 			{
-				engine.camera.rotation += (Vector3F(0, -1.0f/360.0f, 0) * multiplier * 5 * engine.get_time_profiler().get_last_delta());
+				engine.camera.rotation += (Vector3F(0, -1.0f/360.0f, 0) * multiplier * angular_speed * engine.get_time_profiler().get_last_delta());
 			}
 			if(key_listener.is_key_pressed("L"))
 			{
-				engine.camera.rotation += (Vector3F(0, 1.0f/360.0f, 0) * multiplier * 5 * engine.get_time_profiler().get_last_delta());
+				engine.camera.rotation += (Vector3F(0, 1.0f/360.0f, 0) * multiplier * angular_speed * engine.get_time_profiler().get_last_delta());
 			}
 			if(key_listener.is_key_pressed("R"))
 			{
