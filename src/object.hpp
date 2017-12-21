@@ -66,11 +66,14 @@ namespace tz::graphics
 		All elements of 'objects' should share the same texture and mesh.
 		This function performs instancification; allowing multiple objects to be rendered with a single draw call, serving as a gargantuan optimisation.
 	*/
-	Object instancify(const std::vector<Object>& objects);
+	template <template <typename> class Collection>
+	Object instancify(const Collection<Object>& objects);
 	/*
 		Creates multiple Objects using instancify (see above). However, the returned map has the first element in which the Object value shares textures and meshes. This can be used on a World object list to instancify ALL elements, organising which Objects share the same asset data.
 	*/
-	std::vector<Object> instancify_full(const std::vector<Object>& objects);
+	template <template <typename> class Collection>
+	std::vector<Object> instancify_full(const Collection<Object>& objects);
 }
 
+#include "object.inl"
 #endif

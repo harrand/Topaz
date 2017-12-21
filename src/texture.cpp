@@ -2,91 +2,6 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
-FrameBuffer::FrameBuffer(unsigned int width, unsigned int height): width(width), height(height), framebuffer_handle(0)
-{
-	// allocate vram for the framebuffer
-	glGenFramebuffers(1, &this->framebuffer_handle);
-	glBindFramebuffer(GL_FRAMEBUFFER, this->framebuffer_handle);
-	
-	glGenTextures(1, &this->texture_handle);
-	glBindTexture(GL_TEXTURE_2D, this->texture_handle);
-	// using normal RGBA colour data with unsigned bytes (as close to raw data as C will allow, can't use c++17 std::byte for obvious reasons)
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, this->width, this->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
-	
-	//Filtering
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	
-	// allocate vram for the depth render buffer and pass dimensions so its the right size and takes the depth component aswell
-	glGenRenderbuffers(1, &this->depth_render_buffer_handle);
-	glBindRenderbuffer(GL_RENDERBUFFER, this->depth_render_buffer_handle);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, this->width, this->height);
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, this->depth_render_buffer_handle);
-	
-	//Configure framebuffer to use colours
-	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, this->texture_handle, 0);
-	GLenum draw_buffers[1] = {GL_COLOR_ATTACHMENT0};
-	glDrawBuffers(1, draw_buffers);
-	
-	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-	{
-		tz::util::log::warning("FrameBuffer invalid; glCheckFramebufferStatus != GL_FRAMEBUFFER_COMPLETE");
-	}
-}
-
-FrameBuffer::~FrameBuffer()
-{
-	glDeleteTextures(1, &(this->texture_handle));
-}
-
-void FrameBuffer::set_render_target() const
-{
-	glBindFramebuffer(GL_FRAMEBUFFER, this->framebuffer_handle);
-	glViewport(0, 0, this->width, this->height);
-	glClear(GL_DEPTH_BUFFER_BIT);
-}
-
-void FrameBuffer::bind(unsigned int id) const
-{
-	// opengl only supports 32 bound textures at a time. magic number should really add a constexpr somewhere in graphics.hpp
-	if(id > 31)
-	{
-		tz::util::log::error("FrameBuffer bind ID ", id, " is invalid. Must be between 1-31");
-		return;
-	}
-	// this sets which texture we want to bind (id can be from 0 to 31)
-	// GLTEXTURE0 is actually a number, so we can add the id instead of a massive switch statement
-	glActiveTexture(GL_TEXTURE0 + id);
-	glBindTexture(GL_TEXTURE_2D, this->texture_handle);
-}
-
-DepthTexture::DepthTexture(unsigned int width, unsigned int height): FrameBuffer(width, height)
-{
-	glGenFramebuffers(1, &this->framebuffer_handle);
-	
-	glGenTextures(1, &this->texture_handle);
-	glBindTexture(GL_TEXTURE_2D, this->texture_handle);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT16, this->width, this->height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
-	
-	//Filtering
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
- 
-	//Configure framebuffer
-	glBindFramebuffer(GL_FRAMEBUFFER, this->framebuffer_handle);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, this->texture_handle, 0);
-	glDrawBuffer(GL_NONE);
-	glReadBuffer(GL_NONE);
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);// no colour buffer drawn to as we only care about depth (would be a huge waste of time and memory to take the colour too)
-	
-	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-	{
-		tz::util::log::warning("DepthTexture invalid; glCheckFramebufferStatus != GL_FRAMEBUFFER_COMPLETE");
-	}
-}
-
 unsigned char* Texture::load_texture()
 {
 	return stbi_load((this->filename).c_str(), &(this->width), &(this->height), &(this->components), 4);
@@ -381,4 +296,89 @@ std::vector<unsigned char*> CubeMap::load_textures()
 	image_data.push_back(stbi_load((this->back_texture).c_str(), &(this->width[4]), &(this->height[4]), &(this->components[4]), 4));
 	image_data.push_back(stbi_load((this->front_texture).c_str(), &(this->width[5]), &(this->height[5]), &(this->components[5]), 4));
 	return image_data;
+}
+
+FrameBuffer::FrameBuffer(unsigned int width, unsigned int height): width(width), height(height), framebuffer_handle(0)
+{
+	// allocate vram for the framebuffer
+	glGenFramebuffers(1, &this->framebuffer_handle);
+	glBindFramebuffer(GL_FRAMEBUFFER, this->framebuffer_handle);
+	
+	glGenTextures(1, &this->texture_handle);
+	glBindTexture(GL_TEXTURE_2D, this->texture_handle);
+	// using normal RGBA colour data with unsigned bytes (as close to raw data as C will allow, can't use c++17 std::byte for obvious reasons)
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, this->width, this->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+	
+	//Filtering
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	
+	// allocate vram for the depth render buffer and pass dimensions so its the right size and takes the depth component aswell
+	glGenRenderbuffers(1, &this->depth_render_buffer_handle);
+	glBindRenderbuffer(GL_RENDERBUFFER, this->depth_render_buffer_handle);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, this->width, this->height);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, this->depth_render_buffer_handle);
+	
+	//Configure framebuffer to use colours
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, this->texture_handle, 0);
+	GLenum draw_buffers[1] = {GL_COLOR_ATTACHMENT0};
+	glDrawBuffers(1, draw_buffers);
+	
+	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+	{
+		tz::util::log::warning("FrameBuffer invalid; glCheckFramebufferStatus != GL_FRAMEBUFFER_COMPLETE");
+	}
+}
+
+FrameBuffer::~FrameBuffer()
+{
+	glDeleteTextures(1, &(this->texture_handle));
+}
+
+void FrameBuffer::set_render_target() const
+{
+	glBindFramebuffer(GL_FRAMEBUFFER, this->framebuffer_handle);
+	glViewport(0, 0, this->width, this->height);
+	glClear(GL_DEPTH_BUFFER_BIT);
+}
+
+void FrameBuffer::bind(unsigned int id) const
+{
+	// opengl only supports 32 bound textures at a time. magic number should really add a constexpr somewhere in graphics.hpp
+	if(id > 31)
+	{
+		tz::util::log::error("FrameBuffer bind ID ", id, " is invalid. Must be between 1-31");
+		return;
+	}
+	// this sets which texture we want to bind (id can be from 0 to 31)
+	// GLTEXTURE0 is actually a number, so we can add the id instead of a massive switch statement
+	glActiveTexture(GL_TEXTURE0 + id);
+	glBindTexture(GL_TEXTURE_2D, this->texture_handle);
+}
+
+DepthTexture::DepthTexture(unsigned int width, unsigned int height): FrameBuffer(width, height)
+{
+	glGenFramebuffers(1, &this->framebuffer_handle);
+	
+	glGenTextures(1, &this->texture_handle);
+	glBindTexture(GL_TEXTURE_2D, this->texture_handle);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT16, this->width, this->height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
+	
+	//Filtering
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+ 
+	//Configure framebuffer
+	glBindFramebuffer(GL_FRAMEBUFFER, this->framebuffer_handle);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, this->texture_handle, 0);
+	glDrawBuffer(GL_NONE);
+	glReadBuffer(GL_NONE);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);// no colour buffer drawn to as we only care about depth (would be a huge waste of time and memory to take the colour too)
+	
+	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+	{
+		tz::util::log::warning("DepthTexture invalid; glCheckFramebufferStatus != GL_FRAMEBUFFER_COMPLETE");
+	}
 }

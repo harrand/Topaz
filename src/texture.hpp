@@ -25,39 +25,6 @@ namespace tz::graphics
 }
 
 /*
-	Render into this instead of a Topaz Window to achieve render-to-texture phenomena.
-*/
-class FrameBuffer
-{
-public:
-	FrameBuffer(unsigned int width = tz::graphics::frame_buffer_default_width, unsigned int height = tz::graphics::frame_buffer_default_height);
-	FrameBuffer(const FrameBuffer& copy) = delete;
-	FrameBuffer(FrameBuffer&& move) = delete;
-	virtual ~FrameBuffer();
-	FrameBuffer& operator=(const FrameBuffer& rhs) = delete;
-	
-	virtual void set_render_target() const;
-	virtual void bind(unsigned int id) const;
-protected:
-	unsigned int width, height;
-	GLuint framebuffer_handle, texture_handle;
-private:
-	GLuint depth_render_buffer_handle;
-};
-
-/*
-	Just like a FrameBuffer, but will only hold spatial data such as distance away from the camera, and not the colour. Use this to achieve shadow-mapping.
-*/
-class DepthTexture: public FrameBuffer
-{
-	DepthTexture(unsigned int width = tz::graphics::depth_texture_default_width, unsigned int height = tz::graphics::depth_texture_default_height);
-	DepthTexture(const DepthTexture& copy) = delete;
-	DepthTexture(DepthTexture&& move) = delete;
-	~DepthTexture() = default;
-	DepthTexture& operator=(const DepthTexture& rhs) = delete;
-};
-
-/*
 	Holds pixel and colour data and can interact with OpenGL buffers. Bind Textures so that Topaz Meshes do not render monochromoatically.
 */
 class Texture
@@ -150,6 +117,39 @@ private:
 	const std::string right_texture, left_texture, top_texture, bottom_texture, back_texture, front_texture;
 	static constexpr std::size_t number_of_textures = 6;
 	int width[number_of_textures], height[number_of_textures], components[number_of_textures];
+};
+
+/*
+	Render into this instead of a Topaz Window to achieve render-to-texture phenomena.
+*/
+class FrameBuffer
+{
+public:
+	FrameBuffer(unsigned int width = tz::graphics::frame_buffer_default_width, unsigned int height = tz::graphics::frame_buffer_default_height);
+	FrameBuffer(const FrameBuffer& copy) = delete;
+	FrameBuffer(FrameBuffer&& move) = delete;
+	virtual ~FrameBuffer();
+	FrameBuffer& operator=(const FrameBuffer& rhs) = delete;
+	
+	virtual void set_render_target() const;
+	virtual void bind(unsigned int id) const;
+protected:
+	unsigned int width, height;
+	GLuint framebuffer_handle, texture_handle;
+private:
+	GLuint depth_render_buffer_handle;
+};
+
+/*
+	Just like a FrameBuffer, but will only hold spatial data such as distance away from the camera, and not the colour. Use this to achieve shadow-mapping.
+*/
+class DepthTexture: public FrameBuffer
+{
+	DepthTexture(unsigned int width = tz::graphics::depth_texture_default_width, unsigned int height = tz::graphics::depth_texture_default_height);
+	DepthTexture(const DepthTexture& copy) = delete;
+	DepthTexture(DepthTexture&& move) = delete;
+	~DepthTexture() = default;
+	DepthTexture& operator=(const DepthTexture& rhs) = delete;
 };
 #include "texture.inl"
 #endif

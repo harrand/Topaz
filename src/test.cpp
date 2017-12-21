@@ -13,9 +13,6 @@ void test();
 int main()
 {
 	tz::initialise();
-	//tz::util::log::message("Angelo is awesome!");
-	//tz::util::log::message("Angelo endorses this model viewer.");
-	//test();
 	init();
 	tz::terminate();
 	return 0;
