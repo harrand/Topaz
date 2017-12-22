@@ -21,26 +21,34 @@ std::vector<Object> tz::graphics::instancify_full(const Collection<Object>& obje
 	using textures_cref_t = std::reference_wrapper<const std::map<tz::graphics::TextureType, Texture*>>;
 	auto useless_comparator = []([[maybe_unused]] auto lhs, [[maybe_unused]] auto rhs){return true;};
 	std::multimap<std::pair<mesh_cref_t, textures_cref_t>, std::size_t, std::function<bool(std::pair<mesh_cref_t, textures_cref_t>, std::pair<mesh_cref_t, textures_cref_t>)>> asset_mappings(useless_comparator);
+	// O(n log n)
 	for(std::size_t i = 0; i < objects.size(); i++)
 	{
 		const Object& object = objects[i];
 		mesh_cref_t mesh_read = std::cref(object.get_mesh());
 		textures_cref_t textures_read = std::cref(object.get_textures());
 		asset_mappings.emplace(std::make_pair(mesh_read, textures_read), i);
+		// std::multimap::emplace is O(log n) where n == std::multimap::size();
 	}
 	std::vector<Object> instancified_objects;
 	std::vector<Object> duplicates;
+	std::size_t maximum_size = objects.size();
+	// This will in all but the absolute worst case allocate more memory than required, but it's better to reserve maximum and then shrink_to_fit whilst guaranteeing no extra allocation as opposed to possibly doing it multiple times in a loop.
+	instancified_objects.reserve(maximum_size);
+	duplicates.reserve(maximum_size);
 	std::pair<mesh_cref_t, textures_cref_t> key_cache = asset_mappings.begin()->first;
 	bool last_ends_cluster = false;
 	for(const auto& pair : asset_mappings)
 	{
 		if(pair.first.first.get() == key_cache.first.get() && pair.first.second.get() == key_cache.second.get())
 		{
+			// O(1) amortised
 			duplicates.push_back(objects[pair.second]);
 			last_ends_cluster = false;
 		}
 		else
 		{
+			// O(1) amortised
 			key_cache = pair.first;
 			instancified_objects.push_back(tz::graphics::instancify(duplicates));
 			duplicates.clear();
@@ -50,5 +58,7 @@ std::vector<Object> tz::graphics::instancify_full(const Collection<Object>& obje
 	}
 	if(!last_ends_cluster)
 		instancified_objects.push_back(tz::graphics::instancify(duplicates));
+	// Could shrink_to_fit the result, but it's really not worth the effort just to trade linear average case time complexity == worst case for average case memory complexity == worst case
+	//instancified_objects.shrink_to_fit();
 	return instancified_objects;
 }
