@@ -30,7 +30,13 @@ namespace tz::graphics
 class Texture
 {
 public:
-	Texture(std::string filename = "../../../res/runtime/textures/undefined.jpg", bool gamma_corrected = true, bool store_bitmap = false);
+	// Creates an uninitialised texture.
+	Texture();
+	// Creates a completely empty texture, but would be ready to be written to, if bound to a framebuffer.
+	Texture(int width, int height);
+	// Loads a texture from a file.
+	Texture(std::string filename, bool gamma_corrected = true, bool store_bitmap = false);
+	// Loads a texture from a font, given text.
 	Texture(const Font& font, const std::string& text, SDL_Color foreground_colour, bool store_bitmap = false);
 	Texture(const Texture& copy);
 	Texture(Texture&& move);
@@ -38,6 +44,7 @@ public:
 	Texture& operator=(Texture&& rhs);
 	
 	virtual void bind(Shader* shader, unsigned int id);
+	bool has_file_name() const;
 	const std::string& get_file_name() const;
 	int get_width() const;
 	int get_height() const;
@@ -51,11 +58,14 @@ public:
 protected:
 	unsigned char* load_texture();
 	void delete_texture(unsigned char* imgdata);
-	std::string filename;
+	
+	std::optional<std::string> filename;
 	GLuint texture_handle;
 	int width, height, components;
 	bool gamma_corrected;
 	std::optional<Bitmap<PixelRGBA>> bitmap;
+private:
+	Texture(int width, int height, bool initialise_handle);
 };
 
 class NormalMap: public Texture
@@ -119,37 +129,5 @@ private:
 	int width[number_of_textures], height[number_of_textures], components[number_of_textures];
 };
 
-/*
-	Render into this instead of a Topaz Window to achieve render-to-texture phenomena.
-*/
-class FrameBuffer
-{
-public:
-	FrameBuffer(unsigned int width = tz::graphics::frame_buffer_default_width, unsigned int height = tz::graphics::frame_buffer_default_height);
-	FrameBuffer(const FrameBuffer& copy) = delete;
-	FrameBuffer(FrameBuffer&& move) = delete;
-	virtual ~FrameBuffer();
-	FrameBuffer& operator=(const FrameBuffer& rhs) = delete;
-	
-	virtual void set_render_target() const;
-	virtual void bind(unsigned int id) const;
-protected:
-	unsigned int width, height;
-	GLuint framebuffer_handle, texture_handle;
-private:
-	GLuint depth_render_buffer_handle;
-};
-
-/*
-	Just like a FrameBuffer, but will only hold spatial data such as distance away from the camera, and not the colour. Use this to achieve shadow-mapping.
-*/
-class DepthTexture: public FrameBuffer
-{
-	DepthTexture(unsigned int width = tz::graphics::depth_texture_default_width, unsigned int height = tz::graphics::depth_texture_default_height);
-	DepthTexture(const DepthTexture& copy) = delete;
-	DepthTexture(DepthTexture&& move) = delete;
-	~DepthTexture() = default;
-	DepthTexture& operator=(const DepthTexture& rhs) = delete;
-};
 #include "texture.inl"
 #endif

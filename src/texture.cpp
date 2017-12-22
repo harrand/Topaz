@@ -2,18 +2,25 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
-unsigned char* Texture::load_texture()
+Texture::Texture():Texture(0, 0, false){}
+
+// This is private, to use this constructor, call it via Texture(int width, int height)
+Texture::Texture(int width, int height, bool initialise_handle): filename({}), texture_handle(0), width(width), height(height), components(0), gamma_corrected(false), bitmap({})
 {
-	return stbi_load((this->filename).c_str(), &(this->width), &(this->height), &(this->components), 4);
+	if(initialise_handle)
+	{
+		// Generates a new texture, and just fills it with zeroes if specified.
+		glGenTextures(1, &(this->texture_handle));
+		glBindTexture(GL_TEXTURE_2D, this->texture_handle);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, this->width, this->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+		// Unbind the texture.
+		glBindTexture(GL_TEXTURE_2D, 0);
+	}
 }
 
-// Deleting texture as far as stb_image is concerned (We want to leave it alone when it's gone to the GPU)
-void Texture::delete_texture(unsigned char* imgdata)
-{
-	stbi_image_free(imgdata);
-}
+Texture::Texture(int width, int height): Texture(width, height, true){}
 
-Texture::Texture(std::string filename, bool gamma_corrected, bool store_bitmap): filename(std::move(filename)), gamma_corrected(gamma_corrected), bitmap({})
+Texture::Texture(std::string filename, bool gamma_corrected, bool store_bitmap): filename(filename), texture_handle(0), width(0), height(0), components(0), gamma_corrected(gamma_corrected), bitmap({})
 {
 	unsigned char* imgdata = this->load_texture();
 	if(imgdata == nullptr)
@@ -21,34 +28,17 @@ Texture::Texture(std::string filename, bool gamma_corrected, bool store_bitmap):
 		tz::util::log::error("Texture from the path: '", filename, "' could not be loaded.");
 	}
 	
-	//Store tex data in the handle
 	glGenTextures(1, &(this->texture_handle));
 	// Let OGL know it's just a 2d texture.
 	glBindTexture(GL_TEXTURE_2D, this->texture_handle);
 	
-	// These both are optional.
-	// Controls texture wrapping. i.e it wraps if dimensions of model is larger than image size.
-	// GL_REPEAT means that we're just going to repeat the beginning of the image for the wrap.
-	// Another is GL_CLAMP, which just fills the remainder with a colour (Probably black)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	
-	// These both are also optional
-	// 512x512 texture for example. We're almost definitely not gonna render exactly 512x512 pixels.
-	// Especially once we use rotational matrices and rotation in general.
-	// MIN is when the texture takes up fewer pixels, MAG is when it takes up more.
-	// GL_LINEAR is when it linearly interpolates the pixels to produce the most accurate.
-	// Another solution is GL_NEAREST which doesnt filter, it just takes the pixel sampled anyway
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	
-	// Like glBufferData, just sends the image data to the GPU
-	// Par2 is mipmapping, when we change the resolution of the image depending on how far we are away from it (i.e higher resolution if we're closer)
-	// Expand upon this later, 0 means that we're not changing anything.
-	if(this->gamma_corrected)
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_SRGB_ALPHA, this->width, this->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, imgdata);
-	else
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, this->width, this->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, imgdata);
+	glTexImage2D(GL_TEXTURE_2D, 0, this->gamma_corrected ? GL_SRGB_ALPHA : GL_RGBA, this->width, this->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, imgdata);
+	
 	if(store_bitmap)
 	{
 		this->bitmap = Bitmap<PixelRGBA>();
@@ -59,7 +49,7 @@ Texture::Texture(std::string filename, bool gamma_corrected, bool store_bitmap):
 	this->delete_texture(imgdata);
 }
 
-Texture::Texture(const Font& font, const std::string& text, SDL_Color foreground_colour, bool store_bitmap)
+Texture::Texture(const Font& font, const std::string& text, SDL_Color foreground_colour, bool store_bitmap): Texture()
 {
 	if(font.font_handle == NULL)
 		tz::util::log::error("Texture attempted to load from an invalid font. Error: ", TTF_GetError());
@@ -125,14 +115,14 @@ Texture::Texture(Texture&& move): filename(move.get_file_name()), texture_handle
 
 Texture::~Texture()
 {
-	// glDeleteTextures silently ignores 0 as a texture_handle so this should not cause problems if just moved.
+	// glDeleteTextures silently ignores 0 as a texture_handle so this should not cause problems if just moved. also due to this reason doesnt crash if the texture used the default constructor
 	glDeleteTextures(1, &(this->texture_handle));
 }
 
 Texture& Texture::operator=(Texture&& rhs)
 {
 	glDeleteTextures(1, &(this->texture_handle));
-	this->filename = rhs.get_file_name();
+	this->filename = rhs.filename;
 	this->texture_handle = rhs.texture_handle;
 	this->width = rhs.width;
 	this->height = rhs.height;
@@ -155,9 +145,14 @@ void Texture::bind(Shader* shader, unsigned int id)
 	shader->set_uniform<int>("texture_sampler", id);
 }
 
+bool Texture::has_file_name() const
+{
+	return this->filename.has_value();
+}
+
 const std::string& Texture::get_file_name() const
 {
-	return this->filename;
+	return this->filename.value();
 }
 
 int Texture::get_width() const
@@ -183,6 +178,20 @@ Bitmap<PixelRGBA> Texture::get_bitmap() const
 bool Texture::operator==(const Texture& rhs)
 {
 	return this->texture_handle == rhs.texture_handle;
+}
+
+unsigned char* Texture::load_texture()
+{
+	if(this->has_file_name())
+		return stbi_load((this->get_file_name()).c_str(), &(this->width), &(this->height), &(this->components), 4);
+	else
+		return nullptr;
+}
+
+// Deleting texture as far as stb_image is concerned (We want to leave it alone when it's gone to the GPU)
+void Texture::delete_texture(unsigned char* imgdata)
+{
+	stbi_image_free(imgdata);
 }
 
 NormalMap::NormalMap(std::string filename): Texture(filename, false){}
@@ -296,89 +305,4 @@ std::vector<unsigned char*> CubeMap::load_textures()
 	image_data.push_back(stbi_load((this->back_texture).c_str(), &(this->width[4]), &(this->height[4]), &(this->components[4]), 4));
 	image_data.push_back(stbi_load((this->front_texture).c_str(), &(this->width[5]), &(this->height[5]), &(this->components[5]), 4));
 	return image_data;
-}
-
-FrameBuffer::FrameBuffer(unsigned int width, unsigned int height): width(width), height(height), framebuffer_handle(0)
-{
-	// allocate vram for the framebuffer
-	glGenFramebuffers(1, &this->framebuffer_handle);
-	glBindFramebuffer(GL_FRAMEBUFFER, this->framebuffer_handle);
-	
-	glGenTextures(1, &this->texture_handle);
-	glBindTexture(GL_TEXTURE_2D, this->texture_handle);
-	// using normal RGBA colour data with unsigned bytes (as close to raw data as C will allow, can't use c++17 std::byte for obvious reasons)
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, this->width, this->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
-	
-	//Filtering
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	
-	// allocate vram for the depth render buffer and pass dimensions so its the right size and takes the depth component aswell
-	glGenRenderbuffers(1, &this->depth_render_buffer_handle);
-	glBindRenderbuffer(GL_RENDERBUFFER, this->depth_render_buffer_handle);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, this->width, this->height);
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, this->depth_render_buffer_handle);
-	
-	//Configure framebuffer to use colours
-	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, this->texture_handle, 0);
-	GLenum draw_buffers[1] = {GL_COLOR_ATTACHMENT0};
-	glDrawBuffers(1, draw_buffers);
-	
-	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-	{
-		tz::util::log::warning("FrameBuffer invalid; glCheckFramebufferStatus != GL_FRAMEBUFFER_COMPLETE");
-	}
-}
-
-FrameBuffer::~FrameBuffer()
-{
-	glDeleteTextures(1, &(this->texture_handle));
-}
-
-void FrameBuffer::set_render_target() const
-{
-	glBindFramebuffer(GL_FRAMEBUFFER, this->framebuffer_handle);
-	glViewport(0, 0, this->width, this->height);
-	glClear(GL_DEPTH_BUFFER_BIT);
-}
-
-void FrameBuffer::bind(unsigned int id) const
-{
-	// opengl only supports 32 bound textures at a time. magic number should really add a constexpr somewhere in graphics.hpp
-	if(id > 31)
-	{
-		tz::util::log::error("FrameBuffer bind ID ", id, " is invalid. Must be between 1-31");
-		return;
-	}
-	// this sets which texture we want to bind (id can be from 0 to 31)
-	// GLTEXTURE0 is actually a number, so we can add the id instead of a massive switch statement
-	glActiveTexture(GL_TEXTURE0 + id);
-	glBindTexture(GL_TEXTURE_2D, this->texture_handle);
-}
-
-DepthTexture::DepthTexture(unsigned int width, unsigned int height): FrameBuffer(width, height)
-{
-	glGenFramebuffers(1, &this->framebuffer_handle);
-	
-	glGenTextures(1, &this->texture_handle);
-	glBindTexture(GL_TEXTURE_2D, this->texture_handle);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT16, this->width, this->height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
-	
-	//Filtering
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
- 
-	//Configure framebuffer
-	glBindFramebuffer(GL_FRAMEBUFFER, this->framebuffer_handle);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, this->texture_handle, 0);
-	glDrawBuffer(GL_NONE);
-	glReadBuffer(GL_NONE);
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);// no colour buffer drawn to as we only care about depth (would be a huge waste of time and memory to take the colour too)
-	
-	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-	{
-		tz::util::log::warning("DepthTexture invalid; glCheckFramebufferStatus != GL_FRAMEBUFFER_COMPLETE");
-	}
 }
