@@ -4,6 +4,7 @@
 #include "graphics.hpp"
 #include "shader.hpp"
 #include <optional>
+#include <variant>
 
 namespace tz::graphics
 {
@@ -55,6 +56,7 @@ public:
 	static T* get_from_link(const std::string& texture_link, const std::vector<std::unique_ptr<T>>& all_textures);
 	
 	bool operator==(const Texture& rhs);
+	friend class FrameBuffer;
 protected:
 	unsigned char* load_texture();
 	void delete_texture(unsigned char* imgdata);
@@ -127,6 +129,54 @@ private:
 	const std::string right_texture, left_texture, top_texture, bottom_texture, back_texture, front_texture;
 	static constexpr std::size_t number_of_textures = 6;
 	int width[number_of_textures], height[number_of_textures], components[number_of_textures];
+};
+
+/*
+	Simple wrapper for an OpenGL RenderBuffer. It's just a POD as they're write-only.
+*/
+class RenderBuffer
+{
+public:
+	RenderBuffer(int width, int height, GLenum internal_format);
+	// OpenGL RenderBuffers are write-only, so cannot possibly read the data in which to copy or move.
+	RenderBuffer(const RenderBuffer& copy) = delete;
+	RenderBuffer(RenderBuffer&& move) = delete;
+	~RenderBuffer();
+	// RenderBuffer::operator= shall act like a pointer-copy; both share the same handle. However, when one dies the other becomes invalid, so this will be deleted too.
+	RenderBuffer& operator=(const RenderBuffer& rhs) = delete;
+	friend class FrameBuffer;
+private:
+	const int width, height;
+	const GLenum internal_format;
+	GLuint renderbuffer_handle;
+};
+
+/*
+	Something to draw to that isn't a window.
+	FrameBuffer attachments can either be a Texture or a RenderBuffer.
+*/
+class FrameBuffer
+{
+public:
+	FrameBuffer(int width, int height);
+	~FrameBuffer();
+	template<class Buffer, typename... Args>
+	Buffer& emplace(GLenum attachment, Args&&... args);
+	template<typename... Args>
+	Texture& emplace_texture(GLenum attachment, Args&&... args);
+	template<typename... Args>
+	RenderBuffer& emplace_renderbuffer(GLenum attachment, Args&&... args);
+	const std::unordered_map<GLenum, std::variant<Texture, RenderBuffer>>& get_attachments() const;
+	bool valid() const;
+	bool has_colour() const;
+	bool has_depth() const;
+	bool has_stencil() const;
+	void set_render_target();
+private:
+	int width, height;
+	GLuint framebuffer_handle;
+	std::unordered_map<GLenum, std::variant<Texture, RenderBuffer>> attachments;
+	// attachments contain either a Texture or a RenderBuffer corresponding to the enum attachment type (such as depth attachment)
 };
 
 #include "texture.inl"

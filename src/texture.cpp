@@ -306,3 +306,61 @@ std::vector<unsigned char*> CubeMap::load_textures()
 	image_data.push_back(stbi_load((this->front_texture).c_str(), &(this->width[5]), &(this->height[5]), &(this->components[5]), 4));
 	return image_data;
 }
+
+RenderBuffer::RenderBuffer(int width, int height, GLenum internal_format): width(width), height(height), internal_format(internal_format), renderbuffer_handle(0)
+{
+	glGenRenderbuffers(1, &(this->renderbuffer_handle));
+	glBindRenderbuffer(GL_RENDERBUFFER, this->renderbuffer_handle);
+	glRenderbufferStorage(GL_RENDERBUFFER, this->internal_format, this->width, this->height);
+	glBindRenderbuffer(GL_RENDERBUFFER, 0);
+}
+
+RenderBuffer::~RenderBuffer()
+{
+	// still silently ignores 0's.
+	glDeleteRenderbuffers(1, &(this->renderbuffer_handle));
+}
+
+FrameBuffer::FrameBuffer(int width, int height): width(width), height(height), framebuffer_handle(0), attachments({})
+{
+	glGenFramebuffers(1, &(this->framebuffer_handle));
+}
+
+FrameBuffer::~FrameBuffer()
+{
+	glDeleteFramebuffers(1, &(this->framebuffer_handle));
+}
+
+const std::unordered_map<GLenum, std::variant<Texture, RenderBuffer>>& FrameBuffer::get_attachments() const
+{
+	return this->attachments;
+}
+
+bool FrameBuffer::valid() const
+{
+	glBindFramebuffer(GL_FRAMEBUFFER, this->framebuffer_handle);
+	bool valid = glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE;
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	return valid;
+}
+
+bool FrameBuffer::has_colour() const
+{
+	return this->get_attachments().find(GL_COLOR_ATTACHMENT0) != this->get_attachments().end();
+}
+
+bool FrameBuffer::has_depth() const
+{
+	return this->get_attachments().find(GL_DEPTH_ATTACHMENT) != this->get_attachments().end();
+}
+
+bool FrameBuffer::has_stencil() const
+{
+	return this->get_attachments().find(GL_STENCIL_ATTACHMENT) != this->get_attachments().end();
+}
+
+void FrameBuffer::set_render_target()
+{
+	glBindFramebuffer(GL_FRAMEBUFFER, this->framebuffer_handle);
+	glViewport(0, 0, this->width, this->height);
+}
