@@ -20,7 +20,7 @@ class Object2D
 public:
 	Object2D(Vector2F position, float rotation, Vector2F scale, Vector4F colour = Vector4F(0.0f, 0.0f, 0.0f, 1.0f));
 	
-	virtual void render(const Camera& cam, Shader* shader, float width, float height);
+	virtual void render(const Camera& cam, Shader* shader, float width, float height) const;
 	
 	Vector2F position, scale;
 	float rotation;
@@ -45,7 +45,7 @@ public:
 	const Mesh& get_mesh() const;
 	const std::map<tz::graphics::TextureType, Texture*>& get_textures() const;
 	// Complexity: O(n) Ω(1) ϴ(n), where n =~ size of mesh data (will not return until GPU finishes processing)
-	virtual void render(const Camera& cam, Shader* shader, float width, float height);
+	virtual void render(const Camera& cam, Shader* shader, float width, float height) const;
 	bool operator==(const Object3D& rhs) const;
 	
 	Vector3F position, rotation, scale;

@@ -44,14 +44,14 @@ public:
 	~Texture();
 	Texture& operator=(Texture&& rhs);
 	
-	virtual void bind(Shader* shader, unsigned int id);
+	virtual void bind(Shader* shader, unsigned int id) const;
 	bool has_file_name() const;
 	const std::string& get_file_name() const;
 	int get_width() const;
 	int get_height() const;
 	bool has_bitmap() const;
 	Bitmap<PixelRGBA> get_bitmap() const;
-	virtual tz::graphics::TextureType get_texture_type(){return tz::graphics::TextureType::TEXTURE;}
+	virtual tz::graphics::TextureType get_texture_type() const{return tz::graphics::TextureType::TEXTURE;}
 	template<class T>
 	static T* get_from_link(const std::string& texture_link, const std::vector<std::unique_ptr<T>>& all_textures);
 	
@@ -79,8 +79,8 @@ public:
 	~NormalMap() = default;
 	NormalMap& operator=(const NormalMap& rhs) = delete;
 	
-	virtual void bind(Shader* shader, unsigned int id) override;
-	virtual tz::graphics::TextureType get_texture_type() override{return tz::graphics::TextureType::NORMAL_MAP;}
+	virtual void bind(Shader* shader, unsigned int id) const override;
+	virtual tz::graphics::TextureType get_texture_type() const override{return tz::graphics::TextureType::NORMAL_MAP;}
 };
 
 class ParallaxMap: public Texture
@@ -92,8 +92,8 @@ public:
 	~ParallaxMap() = default;
 	ParallaxMap& operator=(const ParallaxMap& rhs) = delete;
 	
-	virtual void bind(Shader* shader, unsigned int id) override;
-	virtual tz::graphics::TextureType get_texture_type() override{return tz::graphics::TextureType::PARALLAX_MAP;}
+	virtual void bind(Shader* shader, unsigned int id) const override;
+	virtual tz::graphics::TextureType get_texture_type() const override{return tz::graphics::TextureType::PARALLAX_MAP;}
 };
 
 class DisplacementMap: public Texture
@@ -105,8 +105,8 @@ public:
 	~DisplacementMap() = default;
 	DisplacementMap& operator=(const DisplacementMap& rhs) = delete;
 	
-	virtual void bind(Shader* shader, unsigned int id) override;
-	virtual tz::graphics::TextureType get_texture_type() override{return tz::graphics::TextureType::DISPLACEMENT_MAP;}
+	virtual void bind(Shader* shader, unsigned int id) const override;
+	virtual tz::graphics::TextureType get_texture_type() const override{return tz::graphics::TextureType::DISPLACEMENT_MAP;}
 };
 
 /*
@@ -122,7 +122,7 @@ public:
 	~CubeMap();
 	CubeMap& operator=(const CubeMap& rhs) = delete;
 	
-	void bind(Shader* shader, unsigned int id);
+	void bind(Shader* shader, unsigned int id) const;
 private:
 	std::vector<unsigned char*> load_textures();
 	GLuint texture_handle;

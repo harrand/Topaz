@@ -131,7 +131,7 @@ Texture& Texture::operator=(Texture&& rhs)
 	return *this;
 }
 
-void Texture::bind(Shader* shader, unsigned int id)
+void Texture::bind(Shader* shader, unsigned int id) const
 {
 	if(id > 31)
 	{
@@ -196,7 +196,7 @@ void Texture::delete_texture(unsigned char* imgdata)
 
 NormalMap::NormalMap(std::string filename): Texture(filename, false){}
 
-void NormalMap::bind(Shader* shader, unsigned int id)
+void NormalMap::bind(Shader* shader, unsigned int id) const
 {
 	if(id > 31)
 	{
@@ -212,7 +212,7 @@ void NormalMap::bind(Shader* shader, unsigned int id)
 
 ParallaxMap::ParallaxMap(std::string filename): Texture(filename, false){}
 
-void ParallaxMap::bind(Shader* shader, unsigned int id)
+void ParallaxMap::bind(Shader* shader, unsigned int id) const
 {
 	if(id > 31)
 	{
@@ -228,7 +228,7 @@ void ParallaxMap::bind(Shader* shader, unsigned int id)
 
 DisplacementMap::DisplacementMap(std::string filename): Texture(filename, false){}
 
-void DisplacementMap::bind(Shader* shader, unsigned int id)
+void DisplacementMap::bind(Shader* shader, unsigned int id) const
 {
 	if(id > 31)
 	{
@@ -280,7 +280,7 @@ CubeMap::~CubeMap()
 	glDeleteTextures(1, &(this->texture_handle));
 }
 
-void CubeMap::bind(Shader* shader, unsigned int id)
+void CubeMap::bind(Shader* shader, unsigned int id) const
 {
 	if(id > 31)
 	{

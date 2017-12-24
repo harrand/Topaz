@@ -2,7 +2,7 @@
 
 Object2D::Object2D(Vector2F position, float rotation, Vector2F scale, Vector4F colour): position(position), scale(scale), rotation(rotation), colour(colour), quad(tz::graphics::create_quad()){}
 
-void Object2D::render(const Camera& cam, Shader* shader, float width, float height)
+void Object2D::render(const Camera& cam, Shader* shader, float width, float height) const
 {
 	shader->bind();
 	shader->set_uniform<Matrix4x4>("m", Matrix4x4::create_model_matrix(Vector3F(this->position, 0.0f), Vector3F(0.0f, 0.0f, this->rotation), Vector3F(this->scale, 1.0f)));
@@ -33,7 +33,7 @@ const std::map<tz::graphics::TextureType, Texture*>& Object3D::get_textures() co
 }
 
 
-void Object3D::render(const Camera& cam, Shader* shader, float width, float height)
+void Object3D::render(const Camera& cam, Shader* shader, float width, float height) const
 {
 	if(&(this->get_mesh()) == nullptr)
 	{
@@ -42,10 +42,11 @@ void Object3D::render(const Camera& cam, Shader* shader, float width, float heig
 	}
 	using tz::graphics::TextureType;
 	shader->bind();
-	Texture* texture = this->textures[TextureType::TEXTURE];
-	NormalMap* normal_map = dynamic_cast<NormalMap*>(this->textures[TextureType::NORMAL_MAP]);
-	ParallaxMap* parallax_map = dynamic_cast<ParallaxMap*>(this->textures[TextureType::PARALLAX_MAP]);
-	DisplacementMap* displacement_map = dynamic_cast<DisplacementMap*>(this->textures[TextureType::DISPLACEMENT_MAP]);
+	// Don't need the bounds-checking from std::map::at() but using it because std::map::operator[] has no const overload (which is dumb, but hey. The const correctness should provide a bigger optimisation than the overhead incurred by using std::map::at)
+	Texture* texture = this->textures.at(TextureType::TEXTURE);
+	NormalMap* normal_map = dynamic_cast<NormalMap*>(this->textures.at(TextureType::NORMAL_MAP));
+	ParallaxMap* parallax_map = dynamic_cast<ParallaxMap*>(this->textures.at(TextureType::PARALLAX_MAP));
+	DisplacementMap* displacement_map = dynamic_cast<DisplacementMap*>(this->textures.at(TextureType::DISPLACEMENT_MAP));
 	if(texture != nullptr)
 		texture->bind(shader, static_cast<unsigned int>(texture->get_texture_type()));
 	if(normal_map != nullptr)
