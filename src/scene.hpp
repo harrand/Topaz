@@ -10,7 +10,6 @@ namespace tz::scene
 {
 	constexpr char spawnpoint_tag_name[] = "spawnpoint";
 	constexpr char spawnorientation_tag_name[] = "spawnorientation";
-	constexpr char gravity_tag_name[] = "gravity";
 	constexpr char objects_sequence_name[] = "objects";
 	constexpr char entityobjects_sequence_name[] = "entityobjects";
 }
@@ -32,14 +31,11 @@ public:
 
 	bool has_file_name() const;
 	const std::string& get_file_name() const;
-	const Vector3F& get_gravity() const;
-	// Complexity: O(n*f_n + m*f_m) Ω(n*f_n + m*f_m) ϴ(1) where n = number of entities, f_n = number of forces per entity, m = number of entity_objects, f_m = number of forces per entity_object
-	void set_gravity(Vector3F gravity = Vector3F());
 	// Complexity: O(1) amortised Ω(1) ϴ(1) amortised
 	void add_object(Object3D obj);
-	// Complexity: O(n) Ω(1) ϴ(n), where n = number of existing entity_objects.
+	// Complexity: O(1) amortised Ω(1) ϴ(1) amortised
 	void add_entity(Entity ent);
-	// Complexity: See Scene::add_entity.
+	// // Complexity: O(1) amortised Ω(1) ϴ(1) amortised
 	void add_entity_object(EntityObject3D eo);
 	// Complexity: O(n log n) Ω(log n) ϴ(log n), where n = number of existing lights.
 	void add_light(Light light, GLuint shader_program_handle);
@@ -79,7 +75,6 @@ private:
 	
 	std::optional<std::string> filename;
 	std::optional<std::string> resources_path;
-	Vector3F gravity;
 	std::vector<Object3D> objects;
 	std::vector<Entity> entities;
 	std::vector<EntityObject3D> entity_objects;

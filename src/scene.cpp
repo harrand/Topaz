@@ -1,24 +1,22 @@
 #include "scene.hpp"
 #include "data.hpp"
 
-Scene::Scene(): spawn_point(Vector3F()), spawn_orientation(Vector3F()), filename(""), resources_path(""), gravity(Vector3F()), objects({}), entities({}), entity_objects({}), base_lights({}){}
+Scene::Scene(): spawn_point(Vector3F()), spawn_orientation(Vector3F()), filename({}), resources_path({}), objects({}), entities({}), entity_objects({}), base_lights({}){}
 
 Scene::Scene(std::string filename, std::string resources_path, const std::vector<std::unique_ptr<Mesh>>& all_meshes, const std::vector<std::unique_ptr<Texture>>& all_textures, const std::vector<std::unique_ptr<NormalMap>>& all_normal_maps, const std::vector<std::unique_ptr<ParallaxMap>>& all_parallax_maps, const std::vector<std::unique_ptr<DisplacementMap>>& all_displacement_maps): filename(std::move(filename)), resources_path(std::move(resources_path))
 {
 	MDLF input(RawFile(this->get_file_name()));
-	std::string spawn_point_string = input.get_tag(tz::scene::spawnpoint_tag_name), spawn_orientation_string = input.get_tag(tz::scene::spawnorientation_tag_name), gravity_string = input.get_tag(tz::scene::gravity_tag_name);
+	std::string spawn_point_string = input.get_tag(tz::scene::spawnpoint_tag_name), spawn_orientation_string = input.get_tag(tz::scene::spawnorientation_tag_name);
 	// Initialise spawn_point, spawn_orientation and gravity to the values specified in filename MDL file. If no such tags could be found & validated, zero them.
-	if(spawn_point_string != mdl::default_string && spawn_orientation_string != mdl::default_string && gravity_string != mdl::default_string)
+	if(spawn_point_string != mdl::default_string && spawn_orientation_string != mdl::default_string)
 	{
 		this->spawn_point = tz::util::string::vectorise_list_3<float>(tz::util::string::deformat(spawn_point_string));
 		this->spawn_orientation = tz::util::string::vectorise_list_3<float>(tz::util::string::deformat(spawn_orientation_string));
-		this->gravity = tz::util::string::vectorise_list_3<float>(tz::util::string::deformat(gravity_string));
 	}
 	else
 	{
 		this->spawn_point = Vector3F();
 		this->spawn_orientation = Vector3F();
-		this->gravity = Vector3F();
 	}
 	// Parse all objects and entity_objects, and add them to the data vectors.
 	std::vector<std::string> object_list = input.get_sequence(tz::scene::objects_sequence_name);
@@ -41,29 +39,6 @@ const std::string& Scene::get_file_name() const
 	return this->filename.value();
 }
 
-const Vector3F& Scene::get_gravity() const
-{
-	return this->gravity;
-}
-
-// Gravity is a force, and must be handled like any other force would. Essentially updates the 'gravity' force in all entities and entity_objects so that they're affected by the new force. It is done like this so that Entity and EntityObject3D require no reference to Scene whatsoever.
-void Scene::set_gravity(Vector3F gravity)
-{
-	this->gravity = gravity;
-	for(Entity& ent : this->entities)
-	{
-		// Both of these are O(n) Ω(1) ϴ(1), where n = number of existing forces
-		ent.remove_force(tz::scene::gravity_tag_name);
-		ent.apply_force(tz::scene::gravity_tag_name, Force(this->get_gravity()));
-	}
-	for(EntityObject3D& eo : this->entity_objects)
-	{
-		// Both once again O(n) Ω(1) ϴ(1), where n = number of existing forces
-		eo.remove_force(tz::scene::gravity_tag_name);
-		eo.apply_force(tz::scene::gravity_tag_name, Force(this->get_gravity()));
-	}
-}
-
 void Scene::add_object(Object3D obj)
 {
 	this->objects.push_back(std::move(obj));
@@ -72,15 +47,6 @@ void Scene::add_object(Object3D obj)
 // Add a copy of an entity into this scene. It will have this scene's gravity instantly applied to it.
 void Scene::add_entity(Entity ent)
 {
-	// Once we add an entity, make sure the copy has the correct gravity force applying on it.
-	// std::unordered_map::find is O(n) Ω(1) ϴ(1), where n = number of elements
-	if(ent.get_forces().find(tz::scene::gravity_tag_name) != ent.get_forces().end())
-	{
-		// Entity::remove_force is O(n) Ω(1) ϴ(1), where n = number of existing forces
-		ent.remove_force(tz::scene::gravity_tag_name);
-	}
-	// Entity::apply_force is O(n) Ω(1) ϴ(1), where n = number of existing forces
-	ent.apply_force(tz::scene::gravity_tag_name, Force(this->get_gravity()));
 	// O(1) amortised Ω(1) ϴ(1) amortised
 	this->entities.push_back(std::move(ent));
 }
@@ -88,11 +54,6 @@ void Scene::add_entity(Entity ent)
 // See documentation for Scene::add_entity(Entity).
 void Scene::add_entity_object(EntityObject3D eo)
 {
-	if(eo.get_forces().find(tz::scene::gravity_tag_name) != eo.get_forces().end())
-	{
-		eo.remove_force(tz::scene::gravity_tag_name);
-	}
-	eo.apply_force(tz::scene::gravity_tag_name, Force(this->get_gravity()));
 	this->entity_objects.push_back(std::move(eo));
 }
 
@@ -171,18 +132,17 @@ void Scene::export_scene(const std::string& scene_link) const
 {
 	const tz::data::Manager data_manager(this->resources_path.value());
 	MDLF output = MDLF(RawFile(scene_link));
-	output.get_raw_file().clear();
+	output.get_raw_file().write("# Topaz Auto-Generated Scene File", true);
 	std::vector<std::string> object_list;
 	std::vector<std::string> entity_object_list;
 	output.delete_sequence(tz::scene::objects_sequence_name);
 	output.delete_sequence(tz::scene::entityobjects_sequence_name);
 	
-	output.edit_tag(tz::scene::gravity_tag_name, tz::util::string::format(tz::util::string::devectorise_list_3<float>(this->gravity)));
 	output.edit_tag(tz::scene::spawnpoint_tag_name, tz::util::string::format(tz::util::string::devectorise_list_3<float>(this->spawn_point)));
 	output.edit_tag(tz::scene::spawnorientation_tag_name, tz::util::string::format(tz::util::string::devectorise_list_3<float>(this->spawn_orientation)));
 	for(std::size_t i = 0; i < this->objects.size(); i++)
 	{
-		const std::string object_name = "object" + tz::util::cast::to_string<float>(i);
+		const std::string object_name = "object" + tz::util::cast::to_string<int>(i);
 		object_list.push_back(object_name);
 		const Object3D current_object = this->objects[i];
 		

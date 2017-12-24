@@ -111,13 +111,8 @@ void init()
 	TrivialFunctor render_skybox([&](){skybox.render(engine.camera, skybox_shader, engine.get_meshes(), wnd.get_width(), wnd.get_height());});
 	engine.add_update_command(&render_skybox);
 	
-	Shader shader_2D("../../../src/shaders/2D");
-	Object2D test_2D(Vector2F(), 0.0f, Vector2F(800, 800), Vector4F(1.0f, 0.0f, 1.0f, 1.0f));
-	TrivialFunctor render_2D([&](){test_2D.render(engine.camera, &shader_2D, wnd.get_width(), wnd.get_height());});
-	engine.add_update_command(&render_2D);
-	
 	bool on_ground = false;
-	const float a = engine.get_scene().get_gravity().length();
+	const float a = 0.5f;
 	float speed = 0.0f;
 	
 	while(!engine.get_window().is_close_requested())
