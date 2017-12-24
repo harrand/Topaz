@@ -60,7 +60,7 @@ const std::string& AudioClip::get_file_name() const
 
 AudioSource::AudioSource(std::string filename): AudioClip(filename){}
 
-void AudioSource::update(const Vector3F& source_position, const Camera& relative_to)
+void AudioSource::update(const Vector3F& source_position, const Camera& relative_to) const
 {
 	const Vector3F listener_position = relative_to.position;
 	const Vector3F forward = relative_to.forward();

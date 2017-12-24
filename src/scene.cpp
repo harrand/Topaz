@@ -231,10 +231,7 @@ void Scene::render(const Camera& cam, Shader* shader, unsigned int width, unsign
 	glEnable(GL_DEPTH_CLAMP);
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
-	// If any objects have been added or removed since last render call, update the instancified list of objects before rendering them.
-	if(this->objects.size() != this->total_instances())
-		this->update_instances();
-	for(auto& object : this->instancified_objects)
+	for(auto& object : this->objects)
 		object.render(cam, shader, width, height);
 	for(auto& entity_object : this->entity_objects)
 		entity_object.render(cam, shader, width, height);
@@ -321,18 +318,4 @@ EntityObject3D Scene::retrieve_entity_object_data(const std::string& entity_obje
 	if(!mdlf.exists_tag(entity_object_name + ".mass"))
 		mass = tz::physics::default_mass;
 	return{&(object.get_mesh()), object.get_textures(), mass, object.position, object.rotation, object.scale, object.shininess, object.parallax_map_scale, object.parallax_map_offset, object.displacement_factor};
-}
-
-void Scene::update_instances()
-{
-	this->instancified_objects = tz::graphics::instancify_full(this->objects);
-}
-
-std::size_t Scene::total_instances() const
-{
-	std::size_t quantity = 0;
-	for(const Object3D& object : this->instancified_objects)
-		if(tz::graphics::is_instanced(&(object.get_mesh())))
-			quantity += dynamic_cast<const InstancedMesh*>(&(object.get_mesh()))->get_instance_quantity();
-	return quantity;
 }

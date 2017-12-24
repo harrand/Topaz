@@ -11,9 +11,13 @@
 class AudioClip
 {
 public:
+	// Load AudioClip from existing file (must be wavefront audio .wav)
 	AudioClip(std::string filename);
+	// Construct AudioClip using the filename of copy.
 	AudioClip(const AudioClip& copy);
+	// Construct AudioClip using the same chunk as move. Also copies move's filename.
 	AudioClip(AudioClip&& move);
+	// Deallocate memory from the SDL_Mixer functionality.
 	virtual ~AudioClip();
 	AudioClip& operator=(const AudioClip& rhs) = delete;
 	
@@ -37,10 +41,10 @@ public:
 	AudioSource(const AudioSource& copy) = default;
 	AudioSource(AudioSource&& move) = default;
 	~AudioSource() = default;
-	AudioSource& operator=(const AudioSource& rhs) = default;
+	AudioSource& operator=(const AudioSource& rhs) = delete;
 	
 	// Should be invoked whenever the camera rotates or moves or the AudioSource position is changed.
-	void update(const Vector3F& source_position, const Camera& relative_to);
+	void update(const Vector3F& source_position, const Camera& relative_to) const;
 };
 
 /*
