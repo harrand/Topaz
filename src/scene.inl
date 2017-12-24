@@ -1,5 +1,5 @@
 template<class Element, typename... Args>
-Element& World::emplace(Args&&... args)
+Element& Scene::emplace(Args&&... args)
 {
 	if constexpr(std::is_same<Element, Object>::value)
 	{
@@ -15,25 +15,25 @@ Element& World::emplace(Args&&... args)
 	}
 	else
 	{
-		static_assert(std::is_void<Element>::value, "[Topaz World]: World::emplace has unsupported type.");
+		static_assert(std::is_void<Element>::value, "[Topaz Scene]: Scene::emplace has unsupported type.");
 		// Do not need to return anything here as a compile-error will be emitted after the static_assertation.
 	}
 }
 
 template<typename... Args>
-Object& World::emplace_object(Args&&... args)
+Object& Scene::emplace_object(Args&&... args)
 {
 	return this->objects.emplace_back(std::forward<Args>(args)...);
 }
 
 template<typename... Args>
-Entity& World::emplace_entity(Args&&... args)
+Entity& Scene::emplace_entity(Args&&... args)
 {
 	return this->entities.emplace_back(std::forward<Args>(args)...);
 }
 
 template<typename... Args>
-EntityObject& World::emplace_entity_object(Args&&... args)
+EntityObject& Scene::emplace_entity_object(Args&&... args)
 {
 	return this->entity_objects.emplace_back(std::forward<Args>(args)...);
 }

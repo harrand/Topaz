@@ -3,7 +3,7 @@
 #include "SDL2/SDL.h"
 #include "command.hpp"
 #include "camera.hpp"
-#include "world.hpp"
+#include "scene.hpp"
 
 /*
 	Abstract. Not available for non-polymorphic use. Inherit from this to create custom listeners that a Topaz Window can register. Listeners are essentially wrappers for SDL_Event listening.

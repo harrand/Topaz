@@ -31,16 +31,16 @@ public:
 	const MDLF& get_properties() const;
 	const MDLF& get_resources() const;
 	const Window& get_window() const;
-	const World& get_world() const;
-	void set_world(World world);
-	void add_to_world(Object object);
-	void add_to_world(Entity entity);
-	void add_to_world(EntityObject entity_object);
-	void add_to_world(Light light, Shader& shader);
-	void remove_from_world(Object object);
-	void remove_from_world(Entity entity);
-	void remove_from_world(EntityObject entity_object);
-	void remove_from_world(Light light);
+	const Scene& get_scene() const;
+	void set_scene(Scene scene);
+	void add_to_scene(Object object);
+	void add_to_scene(Entity entity);
+	void add_to_scene(EntityObject entity_object);
+	void add_to_scene(Light light, Shader& shader);
+	void remove_from_scene(Object object);
+	void remove_from_scene(Entity entity);
+	void remove_from_scene(EntityObject entity_object);
+	void remove_from_scene(Light light);
 	const Shader& get_default_shader() const;
 	const Shader& get_default_gui_shader() const;
 	const std::vector<std::unique_ptr<Mesh>>& get_meshes() const;
@@ -71,7 +71,7 @@ public:
 private:
 	Window* wnd;
 public:
-	World world;
+	Scene scene;
 private:
 	std::vector<std::unique_ptr<Mesh>> meshes;
 	std::vector<std::unique_ptr<Texture>> textures;

@@ -1,5 +1,5 @@
 resources: ../../../res/runtime/resources.mdl
-default_world: ../../../res/runtime/worlds/default_world.mdl
+default_scene: ../../../res/runtime/scenes/default_scene.mdl
 default_shader: ../../../src/shaders/noshadows
 default_gui_shader: ../../../src/shaders/gui
 rotational_speed: 0.5

@@ -25,10 +25,10 @@ Engine::Engine(Window* wnd, std::string properties_path, unsigned int initial_fp
 {
 	// fill all the asset buffers via tz data manager
 	tz::data::Manager(this->properties.get_tag("resources")).retrieve_all_data(this->meshes, this->textures, this->normal_maps, this->parallax_maps, this->displacement_maps);
-	this->world = World(this->properties.get_tag("default_world"), this->properties.get_tag("resources"), this->meshes, this->textures, this->normal_maps, this->parallax_maps, this->displacement_maps);
-	// move the camera to the world's spawn point & orientation.
-	this->camera.position = this->world.spawn_point;
-	this->camera.rotation = this->world.spawn_orientation;
+	this->scene = Scene(this->properties.get_tag("default_scene"), this->properties.get_tag("resources"), this->meshes, this->textures, this->normal_maps, this->parallax_maps, this->displacement_maps);
+	// move the camera to the scene's spawn point & orientation.
+	this->camera.position = this->scene.spawn_point;
+	this->camera.rotation = this->scene.spawn_orientation;
 
 	// setup default uniform values.
 	this->default_shader.emplace_uniform<Matrix4x4>("m", Matrix4x4());
@@ -60,7 +60,7 @@ void Engine::update(std::size_t shader_index)
 	this->wnd->clear(0.0f, 0.0f, 0.0f, 1.0f);
 	this->profiler.end_frame();
 	
-	this->world.render(this->camera, &(this->get_shader(shader_index)), this->wnd->get_width(), this->wnd->get_height());
+	this->scene.render(this->camera, &(this->get_shader(shader_index)), this->wnd->get_width(), this->wnd->get_height());
 	
 	for(auto command : this->update_command_executor.get_commands())
 		command->operator()({});
@@ -70,7 +70,7 @@ void Engine::update(std::size_t shader_index)
 		// update physics engine when the average time of a fixed 'tick' has passed
 		for(auto tick_command : this->tick_command_executor.get_commands())
 			tick_command->operator()({});
-		this->world.update(this->tps);
+		this->scene.update(this->tps);
 		this->tick_timer.reload();
 		this->update_due = true;
 	}
@@ -103,54 +103,54 @@ const Window& Engine::get_window() const
 	 return *(this->wnd);
 }
 
-const World& Engine::get_world() const
+const Scene& Engine::get_scene() const
 {
-	return this->world;
+	return this->scene;
 }
 
-void Engine::set_world(World world)
+void Engine::set_scene(Scene scene)
 {
-	this->world = world;
+	this->scene = scene;
 }
 
-void Engine::add_to_world(Object object)
+void Engine::add_to_scene(Object object)
 {
-	this->world.add_object(object);
+	this->scene.add_object(object);
 }
 
-void Engine::add_to_world(Entity entity)
+void Engine::add_to_scene(Entity entity)
 {
-	this->world.add_entity(entity);
+	this->scene.add_entity(entity);
 }
 
-void Engine::add_to_world(EntityObject entity_object)
+void Engine::add_to_scene(EntityObject entity_object)
 {
-	this->world.add_entity_object(entity_object);
+	this->scene.add_entity_object(entity_object);
 }
 
-void Engine::add_to_world(Light light, Shader& shader)
+void Engine::add_to_scene(Light light, Shader& shader)
 {
-	this->world.add_light(light, shader.get_program_handle());
+	this->scene.add_light(light, shader.get_program_handle());
 }
 
-void Engine::remove_from_world(Object object)
+void Engine::remove_from_scene(Object object)
 {
-	this->world.remove_object(object);
+	this->scene.remove_object(object);
 }
 
-void Engine::remove_from_world(Entity entity)
+void Engine::remove_from_scene(Entity entity)
 {
-	this->world.remove_entity(entity);
+	this->scene.remove_entity(entity);
 }
 
-void Engine::remove_from_world(EntityObject entity_object)
+void Engine::remove_from_scene(EntityObject entity_object)
 {
-	this->world.remove_entity_object(entity_object);
+	this->scene.remove_entity_object(entity_object);
 }
 
-void Engine::remove_from_world(Light light)
+void Engine::remove_from_scene(Light light)
 {
-	this->world.remove_light(light);
+	this->scene.remove_light(light);
 }
 
 const Shader& Engine::get_default_shader() const

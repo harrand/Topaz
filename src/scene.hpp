@@ -7,17 +7,17 @@
 #include "MDL/mdl.hpp"
 
 /*
-	Contains Objects, EntityObjects and pretty much any Topaz renderable you can think of. Handles all their physics inputs aswell. Takes a filename in its constructor for the MDL data file containing world data. Use this to store everything you want to draw.
+	Contains Objects, EntityObjects and pretty much any Topaz renderable you can think of. Handles all their physics inputs aswell. Takes a filename in its constructor for the MDL data file containing scene data. Use this to store everything you want to draw.
 */
-class World
+class Scene
 {
 public:
-	// Engine cannot initialise World in its initialiser-list, so a default world must be available. It needn't serve any functionality, however. Unfortunately one of the unavoidable drawbacks of C++.
-	World(std::string filename = "default.world", std::string resources_path = "resources.mdl", const std::vector<std::unique_ptr<Mesh>>& all_meshes = std::vector<std::unique_ptr<Mesh>>(), const std::vector<std::unique_ptr<Texture>>& all_textures = std::vector<std::unique_ptr<Texture>>(), const std::vector<std::unique_ptr<NormalMap>>& all_normal_maps = std::vector<std::unique_ptr<NormalMap>>(), const std::vector<std::unique_ptr<ParallaxMap>>& all_parallax_maps = std::vector<std::unique_ptr<ParallaxMap>>(), const std::vector<std::unique_ptr<DisplacementMap>>& all_displacement_maps = std::vector<std::unique_ptr<DisplacementMap>>());
-	World(const World& copy);
-	World(World&& move);
-	~World() = default;
-	World& operator=(const World& rhs) = default;
+	// Engine cannot initialise Scene in its initialiser-list, so a default scene must be available. It needn't serve any functionality, however. Unfortunately one of the unavoidable drawbacks of C++.
+	Scene(std::string filename = "default.scene", std::string resources_path = "resources.mdl", const std::vector<std::unique_ptr<Mesh>>& all_meshes = std::vector<std::unique_ptr<Mesh>>(), const std::vector<std::unique_ptr<Texture>>& all_textures = std::vector<std::unique_ptr<Texture>>(), const std::vector<std::unique_ptr<NormalMap>>& all_normal_maps = std::vector<std::unique_ptr<NormalMap>>(), const std::vector<std::unique_ptr<ParallaxMap>>& all_parallax_maps = std::vector<std::unique_ptr<ParallaxMap>>(), const std::vector<std::unique_ptr<DisplacementMap>>& all_displacement_maps = std::vector<std::unique_ptr<DisplacementMap>>());
+	Scene(const Scene& copy);
+	Scene(Scene&& move);
+	~Scene() = default;
+	Scene& operator=(const Scene& rhs) = default;
 
 	const std::string& get_file_name() const;
 	const Vector3F& get_gravity() const;
@@ -27,7 +27,7 @@ public:
 	void add_object(Object obj);
 	// Complexity: O(n) Ω(1) ϴ(n), where n = number of existing entity_objects.
 	void add_entity(Entity ent);
-	// Complexity: See World::add_entity.
+	// Complexity: See Scene::add_entity.
 	void add_entity_object(EntityObject eo);
 	// Complexity: O(n log n) Ω(log n) ϴ(log n), where n = number of existing lights.
 	void add_light(Light light, GLuint shader_program_handle);
@@ -46,18 +46,18 @@ public:
 	const std::vector<Object>& get_objects() const;
 	const std::vector<Entity>& get_entities() const;
 	const std::vector<EntityObject>& get_entity_objects() const;
-	// Returns total number of Objects, Entities and EntityObjects in the world.
+	// Returns total number of Objects, Entities and EntityObjects in the scene.
 	std::size_t get_size() const;
 	const std::map<std::array<GLint, tz::graphics::light_number_of_uniforms>, Light>& get_lights() const;
 	// Updates uniforms to currently bound shader, zeroing light values for all lights. Complexity: O(n) Ω(1) ϴ(n), where n = number of lights.
 	void kill_lights();
-	// Export world data to a MDL file called world_link. Complexity: O(n + m) Ω(1) ϴ(n + m), where n = number of objects and m = number of entity_objects.
-	void export_world(const std::string& world_link) const;
-	// Export world data to a MDL file with the same name as the file which loaded this world, overwriting it. Complexity: See World::export_world.
+	// Export scene data to a MDL file called scene_link. Complexity: O(n + m) Ω(1) ϴ(n + m), where n = number of objects and m = number of entity_objects.
+	void export_scene(const std::string& scene_link) const;
+	// Export scene data to a MDL file with the same name as the file which loaded this scene, overwriting it. Complexity: See Scene::export_scene.
 	void save() const;
-	// Render all elements in the world from the perspective of the camera, attaching a shader and updating uniforms in the process. Width and height parameters required to generate projection matrices & correct aspect-ratio. This method should be invoked as often as possible, to smooth gameplay. Complexity: O(n + p + o) Ω(1) ϴ(n + p + o), where n = number of objects, p = number of entity_objects, o = number of lights.
+	// Render all elements in the scene from the perspective of the camera, attaching a shader and updating uniforms in the process. Width and height parameters required to generate projection matrices & correct aspect-ratio. This method should be invoked as often as possible, to smooth gameplay. Complexity: O(n + p + o) Ω(1) ϴ(n + p + o), where n = number of objects, p = number of entity_objects, o = number of lights.
 	void render(const Camera& cam, Shader* shader, unsigned int width, unsigned int height);
-	// Update all elements in the world that obey some form of law of physics. Pass tps as the expected ticks-per-second, not the instantaneous tick per second. This function should be called per 'tick'. Complexity: O(n + m) Ω(1) ϴ(n + m), where n = number of entity_objects, m = number of entities.
+	// Update all elements in the scene that obey some form of law of physics. Pass tps as the expected ticks-per-second, not the instantaneous tick per second. This function should be called per 'tick'. Complexity: O(n + m) Ω(1) ϴ(n + m), where n = number of entity_objects, m = number of entities.
 	void update(unsigned int tps);
 	
 	Vector3F spawn_point, spawn_orientation;
@@ -76,6 +76,6 @@ private:
 	std::map<std::array<GLint, tz::graphics::light_number_of_uniforms>, Light> base_lights;
 };
 
-#include "world.inl"
+#include "scene.inl"
 
 #endif

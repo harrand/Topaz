@@ -38,7 +38,7 @@ public:
 		textures.emplace(tz::graphics::TextureType::DISPLACEMENT_MAP, Texture::get_from_link<DisplacementMap>(manager.resource_link("default_displacementmap"), engine.get_displacement_maps()));
 		Object obj(tz::graphics::find_mesh(manager.resource_link("cube_hd"), engine.get_meshes()), textures, engine.camera.position, engine.camera.rotation, Vector3F(40, 20, 40));
 		bounds.push_back(tz::physics::bound_aabb(obj));
-		engine.add_to_world(obj);
+		engine.add_to_scene(obj);
 	}
 	Engine& engine;
 	std::vector<AABB>& bounds;
@@ -64,8 +64,8 @@ void init()
 	bool noclip = false;
 	
 	std::vector<AABB> bounds;
-	bounds.reserve(engine.get_world().get_objects().size());
-	for(const Object& object : engine.get_world().get_objects())
+	bounds.reserve(engine.get_scene().get_objects().size());
+	for(const Object& object : engine.get_scene().get_objects())
 		bounds.push_back(tz::physics::bound_aabb(object));
 	
 	Vector4F gui_colour(0.0f, 0.0f, 0.0f, 0.95f);
@@ -82,7 +82,7 @@ void init()
 	Button noclip_toggle(0.0f, 2 * text.get_height() + 2 * test_button.get_height(), Vector4F(1, 1, 1, 1), gui_colour, {}, example_font, "Toggle Flight", engine.default_gui_shader, mouse_listener);
 	Button spawn_block(0.0f, 2 * text.get_height() + 2 * noclip_toggle.get_height() + 2 * test_button.get_height(), Vector4F(1, 1, 1, 1), gui_colour, {}, example_font, "Spawn Block", engine.default_gui_shader, mouse_listener);
 	Button exit_gui_button(wnd.get_width() - 50, wnd.get_height() - 50, Vector4F(1, 1, 1, 1), Vector4F(1.0, 0, 0, 1.0), {}, example_font, " x ", engine.default_gui_shader, mouse_listener);
-	Button save_world_button(0.0f, 2 * text.get_height() + 2 * noclip_toggle.get_height() + 2 * test_button.get_height() + 2 * spawn_block.get_height(), Vector4F(1, 1, 1, 1), gui_colour, {}, example_font, "Save World", engine.default_gui_shader, mouse_listener);
+	Button save_scene_button(0.0f, 2 * text.get_height() + 2 * noclip_toggle.get_height() + 2 * test_button.get_height() + 2 * spawn_block.get_height(), Vector4F(1, 1, 1, 1), gui_colour, {}, example_font, "Save Scene", engine.default_gui_shader, mouse_listener);
 	
 	TrivialFunctor pop_cmd([](){tz::audio::play_clip_async(AudioClip("../../../res/runtime/music/pop.wav"));});
 	wnd.add_child(&text);
@@ -92,8 +92,8 @@ void init()
 	gui_panel.add_child(&test_button);
 	gui_panel.add_child(&exit_gui_button);
 	gui_panel.add_child(&noclip_toggle);
-	gui_panel.add_child(&save_world_button);
-	TrivialFunctor save_world_cmd([&](){const_cast<World&>(engine.get_world()).save();});
+	gui_panel.add_child(&save_scene_button);
+	TrivialFunctor save_scene_cmd([&](){const_cast<Scene&>(engine.get_scene()).save();});
 	TrivialFunctor toggle_noclip([&](){noclip = !noclip;});
 	SpawnBlockCommand spawn_test_cube(engine, bounds);
 	test_button.set_on_mouse_click(&toggle);
@@ -104,15 +104,15 @@ void init()
 	noclip_toggle.set_on_mouse_over(&pop_cmd);
 	spawn_block.set_on_mouse_click(&spawn_test_cube);
 	spawn_block.set_on_mouse_over(&pop_cmd);
-	save_world_button.set_on_mouse_click(&save_world_cmd);
-	save_world_button.set_on_mouse_over(&pop_cmd);
+	save_scene_button.set_on_mouse_click(&save_scene_cmd);
+	save_scene_button.set_on_mouse_over(&pop_cmd);
 	
 	Skybox skybox("../../../res/runtime/models/skybox.obj", skybox_texture);
 	TrivialFunctor render_skybox([&](){skybox.render(engine.camera, skybox_shader, engine.get_meshes(), wnd.get_width(), wnd.get_height());});
 	engine.add_update_command(&render_skybox);
 	
 	bool on_ground = false;
-	const float a = engine.get_world().get_gravity().length();
+	const float a = engine.get_scene().get_gravity().length();
 	float speed = 0.0f;
 	
 	while(!engine.get_window().is_close_requested())
@@ -241,8 +241,8 @@ void init()
 			}
 			if(key_listener.is_key_pressed("R"))
 			{
-				engine.camera.position = engine.get_world().spawn_point;
-				engine.camera.rotation = engine.get_world().spawn_orientation;
+				engine.camera.position = engine.get_scene().spawn_point;
+				engine.camera.rotation = engine.get_scene().spawn_orientation;
 			}
 			if(key_listener.catch_key_pressed("Escape"))
 				gui_panel.set_hidden(!gui_panel.is_hidden());

@@ -11,7 +11,7 @@ namespace tz::graphics
 }
 
 /*
-	Used to navigate the 3D world such that all objects in the world do not have to be moved in order to achieve motion.
+	Used to navigate the 3D scene such that all objects in the scene do not have to be moved in order to achieve motion.
 */
 class Camera
 {
