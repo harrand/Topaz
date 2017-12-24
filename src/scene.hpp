@@ -6,6 +6,15 @@
 #include "light.hpp"
 #include "MDL/mdl.hpp"
 
+namespace tz::scene
+{
+	constexpr char spawnpoint_tag_name[] = "spawnpoint";
+	constexpr char spawnorientation_tag_name[] = "spawnorientation";
+	constexpr char gravity_tag_name[] = "gravity";
+	constexpr char objects_sequence_name[] = "objects";
+	constexpr char entityobjects_sequence_name[] = "entityobjects";
+}
+
 /*
 	Contains Objects, EntityObjects and pretty much any Topaz renderable you can think of. Handles all their physics inputs aswell. Takes a filename in its constructor for the MDL data file containing scene data. Use this to store everything you want to draw.
 */
@@ -13,12 +22,15 @@ class Scene
 {
 public:
 	// Engine cannot initialise Scene in its initialiser-list, so a default scene must be available. It needn't serve any functionality, however. Unfortunately one of the unavoidable drawbacks of C++.
-	Scene(std::string filename = "default.scene", std::string resources_path = "resources.mdl", const std::vector<std::unique_ptr<Mesh>>& all_meshes = std::vector<std::unique_ptr<Mesh>>(), const std::vector<std::unique_ptr<Texture>>& all_textures = std::vector<std::unique_ptr<Texture>>(), const std::vector<std::unique_ptr<NormalMap>>& all_normal_maps = std::vector<std::unique_ptr<NormalMap>>(), const std::vector<std::unique_ptr<ParallaxMap>>& all_parallax_maps = std::vector<std::unique_ptr<ParallaxMap>>(), const std::vector<std::unique_ptr<DisplacementMap>>& all_displacement_maps = std::vector<std::unique_ptr<DisplacementMap>>());
-	Scene(const Scene& copy);
-	Scene(Scene&& move);
+	Scene();
+	// Load a scene from an existing MDL file. Takes in all asset vectors. Should probably be replaced with just a const asset manager reference of some kind to read the data without all this verbosity.
+	Scene(std::string filename, std::string resources_path, const std::vector<std::unique_ptr<Mesh>>& all_meshes, const std::vector<std::unique_ptr<Texture>>& all_textures, const std::vector<std::unique_ptr<NormalMap>>& all_normal_maps, const std::vector<std::unique_ptr<ParallaxMap>>& all_parallax_maps, const std::vector<std::unique_ptr<DisplacementMap>>& all_displacement_maps);
+	Scene(const Scene& copy) = default;
+	Scene(Scene&& move) = default;
 	~Scene() = default;
 	Scene& operator=(const Scene& rhs) = default;
 
+	bool has_file_name() const;
 	const std::string& get_file_name() const;
 	const Vector3F& get_gravity() const;
 	// Complexity: O(n*f_n + m*f_m) Ω(n*f_n + m*f_m) ϴ(1) where n = number of entities, f_n = number of forces per entity, m = number of entity_objects, f_m = number of forces per entity_object
@@ -65,8 +77,8 @@ private:
 	static Object3D retrieve_object_data(const std::string& object_name, std::string resources_path, MDLF& mdlf, const std::vector<std::unique_ptr<Mesh>>& all_meshes, const std::vector<std::unique_ptr<Texture>>& all_textures, const std::vector<std::unique_ptr<NormalMap>>& all_normal_maps, const std::vector<std::unique_ptr<ParallaxMap>>& all_parallax_maps, const std::vector<std::unique_ptr<DisplacementMap>>& all_displacement_maps);
 	static EntityObject3D retrieve_entity_object_data(const std::string& entity_object_name, std::string resources_path, MDLF& mdlf, const std::vector<std::unique_ptr<Mesh>>& all_meshes, const std::vector<std::unique_ptr<Texture>>& all_textures, const std::vector<std::unique_ptr<NormalMap>>& all_normal_maps, const std::vector<std::unique_ptr<ParallaxMap>>& all_parallax_maps, const std::vector<std::unique_ptr<DisplacementMap>>& all_displacement_maps);
 	
-	std::string filename;
-	std::string resources_path;
+	std::optional<std::string> filename;
+	std::optional<std::string> resources_path;
 	Vector3F gravity;
 	std::vector<Object3D> objects;
 	std::vector<Entity> entities;

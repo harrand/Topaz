@@ -20,7 +20,7 @@ namespace tz
 class Engine
 {
 public:
-	Engine(Window* wnd, std::string properties_path = tz::default_properties_path, unsigned int initial_fps = 60, unsigned int tps = 30);
+	Engine(Window* wnd, std::string properties_path = tz::default_properties_path, unsigned int initial_fps = 0, unsigned int tps = 30);
 	Engine(const Engine& copy) = default;
 	Engine(Engine&& move) = default;
 	Engine& operator=(const Engine& rhs) = default;

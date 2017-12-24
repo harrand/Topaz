@@ -1,10 +1,12 @@
 #include "scene.hpp"
 #include "data.hpp"
 
+Scene::Scene(): spawn_point(Vector3F()), spawn_orientation(Vector3F()), filename(""), resources_path(""), gravity(Vector3F()), objects({}), entities({}), entity_objects({}), base_lights({}){}
+
 Scene::Scene(std::string filename, std::string resources_path, const std::vector<std::unique_ptr<Mesh>>& all_meshes, const std::vector<std::unique_ptr<Texture>>& all_textures, const std::vector<std::unique_ptr<NormalMap>>& all_normal_maps, const std::vector<std::unique_ptr<ParallaxMap>>& all_parallax_maps, const std::vector<std::unique_ptr<DisplacementMap>>& all_displacement_maps): filename(std::move(filename)), resources_path(std::move(resources_path))
 {
-	MDLF input(RawFile(this->filename));
-	std::string spawn_point_string = input.get_tag("spawnpoint"), spawn_orientation_string = input.get_tag("spawnorientation"), gravity_string = input.get_tag("gravity");
+	MDLF input(RawFile(this->get_file_name()));
+	std::string spawn_point_string = input.get_tag(tz::scene::spawnpoint_tag_name), spawn_orientation_string = input.get_tag(tz::scene::spawnorientation_tag_name), gravity_string = input.get_tag(tz::scene::gravity_tag_name);
 	// Initialise spawn_point, spawn_orientation and gravity to the values specified in filename MDL file. If no such tags could be found & validated, zero them.
 	if(spawn_point_string != mdl::default_string && spawn_orientation_string != mdl::default_string && gravity_string != mdl::default_string)
 	{
@@ -19,23 +21,24 @@ Scene::Scene(std::string filename, std::string resources_path, const std::vector
 		this->gravity = Vector3F();
 	}
 	// Parse all objects and entity_objects, and add them to the data vectors.
-	std::vector<std::string> object_list = input.get_sequence("objects");
-	std::vector<std::string> entity_object_list = input.get_sequence("entityobjects");
+	std::vector<std::string> object_list = input.get_sequence(tz::scene::objects_sequence_name);
+	std::vector<std::string> entity_object_list = input.get_sequence(tz::scene::entityobjects_sequence_name);
 	for(std::string object_name : object_list)
 	{
-		this->add_object(Scene::retrieve_object_data(object_name, this->resources_path, input, all_meshes, all_textures, all_normal_maps, all_parallax_maps, all_displacement_maps));
+		this->add_object(Scene::retrieve_object_data(object_name, this->resources_path.value(), input, all_meshes, all_textures, all_normal_maps, all_parallax_maps, all_displacement_maps));
 	}
 	for(std::string entity_object_name : entity_object_list)
-		this->add_entity_object(Scene::retrieve_entity_object_data(entity_object_name, this->resources_path, input, all_meshes, all_textures, all_normal_maps, all_parallax_maps, all_displacement_maps));
+		this->add_entity_object(Scene::retrieve_entity_object_data(entity_object_name, this->resources_path.value(), input, all_meshes, all_textures, all_normal_maps, all_parallax_maps, all_displacement_maps));
 }
 
-Scene::Scene(const Scene& copy): Scene(copy.filename){}
-
-Scene::Scene(Scene&& move): spawn_point(move.spawn_point), spawn_orientation(move.spawn_orientation), filename(move.filename), resources_path(move.resources_path), gravity(move.gravity), objects(move.objects), entities(move.entities), entity_objects(std::move(move.entity_objects)), base_lights(std::move(move.base_lights)){}
+bool Scene::has_file_name() const
+{
+	return this-filename.has_value();
+}
 
 const std::string& Scene::get_file_name() const
 {
-	return this->filename;
+	return this->filename.value();
 }
 
 const Vector3F& Scene::get_gravity() const
@@ -50,14 +53,14 @@ void Scene::set_gravity(Vector3F gravity)
 	for(Entity& ent : this->entities)
 	{
 		// Both of these are O(n) Ω(1) ϴ(1), where n = number of existing forces
-		ent.remove_force("gravity");
-		ent.apply_force("gravity", Force(this->get_gravity()));
+		ent.remove_force(tz::scene::gravity_tag_name);
+		ent.apply_force(tz::scene::gravity_tag_name, Force(this->get_gravity()));
 	}
 	for(EntityObject3D& eo : this->entity_objects)
 	{
 		// Both once again O(n) Ω(1) ϴ(1), where n = number of existing forces
-		eo.remove_force("gravity");
-		eo.apply_force("gravity", Force(this->get_gravity()));
+		eo.remove_force(tz::scene::gravity_tag_name);
+		eo.apply_force(tz::scene::gravity_tag_name, Force(this->get_gravity()));
 	}
 }
 
@@ -71,13 +74,13 @@ void Scene::add_entity(Entity ent)
 {
 	// Once we add an entity, make sure the copy has the correct gravity force applying on it.
 	// std::unordered_map::find is O(n) Ω(1) ϴ(1), where n = number of elements
-	if(ent.get_forces().find("gravity") != ent.get_forces().end())
+	if(ent.get_forces().find(tz::scene::gravity_tag_name) != ent.get_forces().end())
 	{
 		// Entity::remove_force is O(n) Ω(1) ϴ(1), where n = number of existing forces
-		ent.remove_force("gravity");
+		ent.remove_force(tz::scene::gravity_tag_name);
 	}
 	// Entity::apply_force is O(n) Ω(1) ϴ(1), where n = number of existing forces
-	ent.apply_force("gravity", Force(this->get_gravity()));
+	ent.apply_force(tz::scene::gravity_tag_name, Force(this->get_gravity()));
 	// O(1) amortised Ω(1) ϴ(1) amortised
 	this->entities.push_back(std::move(ent));
 }
@@ -85,11 +88,11 @@ void Scene::add_entity(Entity ent)
 // See documentation for Scene::add_entity(Entity).
 void Scene::add_entity_object(EntityObject3D eo)
 {
-	if(eo.get_forces().find("gravity") != eo.get_forces().end())
+	if(eo.get_forces().find(tz::scene::gravity_tag_name) != eo.get_forces().end())
 	{
-		eo.remove_force("gravity");
+		eo.remove_force(tz::scene::gravity_tag_name);
 	}
-	eo.apply_force("gravity", Force(this->get_gravity()));
+	eo.apply_force(tz::scene::gravity_tag_name, Force(this->get_gravity()));
 	this->entity_objects.push_back(std::move(eo));
 }
 
@@ -166,17 +169,17 @@ void Scene::kill_lights()
 
 void Scene::export_scene(const std::string& scene_link) const
 {
-	const tz::data::Manager data_manager(this->resources_path);
+	const tz::data::Manager data_manager(this->resources_path.value());
 	MDLF output = MDLF(RawFile(scene_link));
 	output.get_raw_file().clear();
 	std::vector<std::string> object_list;
 	std::vector<std::string> entity_object_list;
-	output.delete_sequence("objects");
-	output.delete_sequence("entityobjects");
+	output.delete_sequence(tz::scene::objects_sequence_name);
+	output.delete_sequence(tz::scene::entityobjects_sequence_name);
 	
-	output.edit_tag("gravity", tz::util::string::format(tz::util::string::devectorise_list_3<float>(this->gravity)));
-	output.edit_tag("spawnpoint", tz::util::string::format(tz::util::string::devectorise_list_3<float>(this->spawn_point)));
-	output.edit_tag("spawnorientation", tz::util::string::format(tz::util::string::devectorise_list_3<float>(this->spawn_orientation)));
+	output.edit_tag(tz::scene::gravity_tag_name, tz::util::string::format(tz::util::string::devectorise_list_3<float>(this->gravity)));
+	output.edit_tag(tz::scene::spawnpoint_tag_name, tz::util::string::format(tz::util::string::devectorise_list_3<float>(this->spawn_point)));
+	output.edit_tag(tz::scene::spawnorientation_tag_name, tz::util::string::format(tz::util::string::devectorise_list_3<float>(this->spawn_orientation)));
 	for(std::size_t i = 0; i < this->objects.size(); i++)
 	{
 		const std::string object_name = "object" + tz::util::cast::to_string<float>(i);
@@ -216,8 +219,8 @@ void Scene::export_scene(const std::string& scene_link) const
 		output.edit_tag(entity_object_name + ".parallax_map_offset", tz::util::cast::to_string(current_entity_object.parallax_map_offset));
 		output.edit_tag(entity_object_name + ".displacement_factor", tz::util::cast::to_string(current_entity_object.displacement_factor));
 	}
-	output.add_sequence("objects", object_list);
-	output.add_sequence("entityobjects", entity_object_list);
+	output.add_sequence(tz::scene::objects_sequence_name, object_list);
+	output.add_sequence(tz::scene::entityobjects_sequence_name, entity_object_list);
 }
 
 void Scene::save() const
