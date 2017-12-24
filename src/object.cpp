@@ -1,5 +1,19 @@
 #include "object.hpp"
 
+Object2D::Object2D(Vector2F position, float rotation, Vector2F scale, Vector4F colour): position(position), scale(scale), rotation(rotation), colour(colour), quad(tz::graphics::create_quad()){}
+
+void Object2D::render(const Camera& cam, Shader* shader, float width, float height)
+{
+	shader->bind();
+	shader->set_uniform<Matrix4x4>("m", Matrix4x4::create_model_matrix(Vector3F(this->position, 0.0f), Vector3F(0.0f, 0.0f, this->rotation), Vector3F(this->scale, 1.0f)));
+	shader->set_uniform<Matrix4x4>("v", Matrix4x4::create_view_matrix(cam.position, cam.rotation));
+	shader->set_uniform<Matrix4x4>("p", Matrix4x4::create_orthographic_matrix(width, 0.0f, height, 0.0f, -1.0f, 1.0f));
+	shader->set_uniform<Vector4F>("colour", this->colour);
+	shader->set_uniform<bool>("has_texture", false);
+	shader->update();
+	this->quad.render(false);
+}
+
 Object3D::Object3D(std::variant<const Mesh*, std::shared_ptr<const Mesh>> mesh, std::map<tz::graphics::TextureType, Texture*> textures, Vector3F position, Vector3F rotation, Vector3F scale, unsigned int shininess, float parallax_map_scale, float parallax_map_offset, float displacement_factor): position(position), rotation(rotation), scale(scale), shininess(shininess), parallax_map_scale(parallax_map_scale), parallax_map_offset(parallax_map_offset), displacement_factor(displacement_factor), mesh(mesh), textures(textures){}
 
 const Mesh& Object3D::get_mesh() const

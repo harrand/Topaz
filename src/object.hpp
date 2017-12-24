@@ -15,6 +15,20 @@ namespace tz::graphics
 	constexpr float default_displacement_factor = 0.25f;
 }
 
+class Object2D
+{
+public:
+	Object2D(Vector2F position, float rotation, Vector2F scale, Vector4F colour = Vector4F(0.0f, 0.0f, 0.0f, 1.0f));
+	
+	virtual void render(const Camera& cam, Shader* shader, float width, float height);
+	
+	Vector2F position, scale;
+	float rotation;
+	Vector4F colour;
+private:
+	Mesh quad;
+};
+
 /*
 	Collaboration of a mesh, texture, normal-map, parallax-map and displacement-map. Use this to represent a 3D object completely, including its vertex data, texture, material etc.
 */
