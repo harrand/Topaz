@@ -1,8 +1,8 @@
 #include "object.hpp"
 
-Object::Object(std::variant<const Mesh*, std::shared_ptr<const Mesh>> mesh, std::map<tz::graphics::TextureType, Texture*> textures, Vector3F position, Vector3F rotation, Vector3F scale, unsigned int shininess, float parallax_map_scale, float parallax_map_offset, float displacement_factor): position(position), rotation(rotation), scale(scale), shininess(shininess), parallax_map_scale(parallax_map_scale), parallax_map_offset(parallax_map_offset), displacement_factor(displacement_factor), mesh(mesh), textures(textures){}
+Object3D::Object3D(std::variant<const Mesh*, std::shared_ptr<const Mesh>> mesh, std::map<tz::graphics::TextureType, Texture*> textures, Vector3F position, Vector3F rotation, Vector3F scale, unsigned int shininess, float parallax_map_scale, float parallax_map_offset, float displacement_factor): position(position), rotation(rotation), scale(scale), shininess(shininess), parallax_map_scale(parallax_map_scale), parallax_map_offset(parallax_map_offset), displacement_factor(displacement_factor), mesh(mesh), textures(textures){}
 
-const Mesh& Object::get_mesh() const
+const Mesh& Object3D::get_mesh() const
 {
 	try
 	{
@@ -13,17 +13,17 @@ const Mesh& Object::get_mesh() const
 	}
 }
 
-const std::map<tz::graphics::TextureType, Texture*>& Object::get_textures() const
+const std::map<tz::graphics::TextureType, Texture*>& Object3D::get_textures() const
 {
 	return this->textures;
 }
 
 
-void Object::render(const Camera& cam, Shader* shader, float width, float height)
+void Object3D::render(const Camera& cam, Shader* shader, float width, float height)
 {
 	if(&(this->get_mesh()) == nullptr)
 	{
-		tz::util::log::error("Attempted to render Object with a null mesh. Aborting render process.");
+		tz::util::log::error("Attempted to render Object3D with a null mesh. Aborting render process.");
 		return;
 	}
 	using tz::graphics::TextureType;
@@ -56,7 +56,7 @@ void Object::render(const Camera& cam, Shader* shader, float width, float height
 	
 }
 
-bool Object::operator==(const Object& rhs) const
+bool Object3D::operator==(const Object3D& rhs) const
 {
 	return this->position == rhs.position && this->rotation == rhs.rotation && this->scale == rhs.scale && this->shininess == rhs.shininess && this->parallax_map_scale == rhs.parallax_map_scale && this->parallax_map_offset == rhs.parallax_map_offset && this->displacement_factor == rhs.displacement_factor && this->mesh == rhs.mesh && this->textures == rhs.textures;
 }

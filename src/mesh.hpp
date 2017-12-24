@@ -8,7 +8,7 @@
 #include "matrix.hpp"
 
 /*
-	Lowest-level renderable class that Topaz offers. All renderable Topaz classes such as Object contain these. Holds 3D vertex data, from a Wavefront OBJ model, for example. Use this if you want to render a mesh you made in Blender or something.
+	Lowest-level renderable class that Topaz offers. All renderable Topaz classes such as Object3D contain these. Holds 3D vertex data, from a Wavefront OBJ model, for example. Use this if you want to render a mesh you made in Blender or something.
 */
 
 namespace tz::graphics

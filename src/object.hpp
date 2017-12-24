@@ -19,20 +19,20 @@ namespace tz::graphics
 	Collaboration of a mesh, texture, normal-map, parallax-map and displacement-map. Use this to represent a 3D object completely, including its vertex data, texture, material etc.
 */
 
-class Object
+class Object3D
 {
 public:
-	Object(std::variant<const Mesh*, std::shared_ptr<const Mesh>> mesh, std::map<tz::graphics::TextureType, Texture*> textures, Vector3F position, Vector3F rotation, Vector3F scale, unsigned int shininess = tz::graphics::default_shininess, float parallax_map_scale = tz::graphics::default_parallax_map_scale, float parallax_map_offset = tz::graphics::default_parallax_map_offset, float displacement_factor = tz::graphics::default_displacement_factor);
-	Object(const Object& copy) = default;
-	Object(Object&& move) = default;
-	~Object() = default;
-	Object& operator=(const Object& rhs) = default;
+	Object3D(std::variant<const Mesh*, std::shared_ptr<const Mesh>> mesh, std::map<tz::graphics::TextureType, Texture*> textures, Vector3F position, Vector3F rotation, Vector3F scale, unsigned int shininess = tz::graphics::default_shininess, float parallax_map_scale = tz::graphics::default_parallax_map_scale, float parallax_map_offset = tz::graphics::default_parallax_map_offset, float displacement_factor = tz::graphics::default_displacement_factor);
+	Object3D(const Object3D& copy) = default;
+	Object3D(Object3D&& move) = default;
+	~Object3D() = default;
+	Object3D& operator=(const Object3D& rhs) = default;
 	
 	const Mesh& get_mesh() const;
 	const std::map<tz::graphics::TextureType, Texture*>& get_textures() const;
 	// Complexity: O(n) Ω(1) ϴ(n), where n =~ size of mesh data (will not return until GPU finishes processing)
 	virtual void render(const Camera& cam, Shader* shader, float width, float height);
-	bool operator==(const Object& rhs) const;
+	bool operator==(const Object3D& rhs) const;
 	
 	Vector3F position, rotation, scale;
 	unsigned int shininess;
@@ -62,17 +62,17 @@ private:
 namespace tz::graphics
 {
 	/*
-		Creates a new Object with InstancedMesh containing all data from the objects parameter.
+		Creates a new Object3D with InstancedMesh containing all data from the objects parameter.
 		All elements of 'objects' should share the same texture and mesh.
 		This function performs instancification; allowing multiple objects to be rendered with a single draw call, serving as a gargantuan optimisation.
 	*/
 	template <template <typename> class Collection>
-	Object instancify(const Collection<Object>& objects);
+	Object3D instancify(const Collection<Object3D>& objects);
 	/*
-		Creates multiple Objects using instancify (see above). However, the returned map has the first element in which the Object value shares textures and meshes. This can be used on a World object list to instancify ALL elements, organising which Objects share the same asset data.
+		Creates multiple Objects using instancify (see above). However, the returned map has the first element in which the Object3D value shares textures and meshes. This can be used on a World object list to instancify ALL elements, organising which Objects share the same asset data.
 	*/
 	template <template <typename> class Collection>
-	std::vector<Object> instancify_full(const Collection<Object>& objects);
+	std::vector<Object3D> instancify_full(const Collection<Object3D>& objects);
 }
 
 #include "object.inl"

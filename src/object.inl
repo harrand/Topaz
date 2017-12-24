@@ -1,11 +1,11 @@
 template <template <typename> class Collection>
-Object tz::graphics::instancify(const Collection<Object>& objects)
+Object3D tz::graphics::instancify(const Collection<Object3D>& objects)
 {
 	std::vector<Vector3F> positions, rotations, scales;
 	Vector3F original_position = objects.front().position;
 	Vector3F original_rotation = objects.front().rotation;
 	Vector3F original_scale = objects.front().scale;
-	for(const Object& object : objects)
+	for(const Object3D& object : objects)
 	{
 		positions.push_back(object.position - original_position);
 		rotations.push_back(object.rotation - original_rotation);
@@ -15,7 +15,7 @@ Object tz::graphics::instancify(const Collection<Object>& objects)
 }
 
 template <template <typename> class Collection>
-std::vector<Object> tz::graphics::instancify_full(const Collection<Object>& objects)
+std::vector<Object3D> tz::graphics::instancify_full(const Collection<Object3D>& objects)
 {
 	using mesh_cref_t = std::reference_wrapper<const Mesh>;
 	using textures_cref_t = std::reference_wrapper<const std::map<tz::graphics::TextureType, Texture*>>;
@@ -24,14 +24,14 @@ std::vector<Object> tz::graphics::instancify_full(const Collection<Object>& obje
 	// O(n log n)
 	for(std::size_t i = 0; i < objects.size(); i++)
 	{
-		const Object& object = objects[i];
+		const Object3D& object = objects[i];
 		mesh_cref_t mesh_read = std::cref(object.get_mesh());
 		textures_cref_t textures_read = std::cref(object.get_textures());
 		asset_mappings.emplace(std::make_pair(mesh_read, textures_read), i);
 		// std::multimap::emplace is O(log n) where n == std::multimap::size();
 	}
-	std::vector<Object> instancified_objects;
-	std::vector<Object> duplicates;
+	std::vector<Object3D> instancified_objects;
+	std::vector<Object3D> duplicates;
 	std::size_t maximum_size = objects.size();
 	// This will in all but the absolute worst case allocate more memory than required, but it's better to reserve maximum and then shrink_to_fit whilst guaranteeing no extra allocation as opposed to possibly doing it multiple times in a loop.
 	instancified_objects.reserve(maximum_size);

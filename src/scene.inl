@@ -1,7 +1,7 @@
 template<class Element, typename... Args>
 Element& Scene::emplace(Args&&... args)
 {
-	if constexpr(std::is_same<Element, Object>::value)
+	if constexpr(std::is_same<Element, Object3D>::value)
 	{
 		return emplace_object(std::forward<Args>(args)...);
 	}
@@ -9,7 +9,7 @@ Element& Scene::emplace(Args&&... args)
 	{
 		return emplace_entity(std::forward<Args>(args)...);
 	}
-	else if constexpr(std::is_same<Element, EntityObject>::value)
+	else if constexpr(std::is_same<Element, EntityObject3D>::value)
 	{
 		return emplace_entity_object(std::forward<Args>(args)...);
 	}
@@ -21,7 +21,7 @@ Element& Scene::emplace(Args&&... args)
 }
 
 template<typename... Args>
-Object& Scene::emplace_object(Args&&... args)
+Object3D& Scene::emplace_object(Args&&... args)
 {
 	return this->objects.emplace_back(std::forward<Args>(args)...);
 }
@@ -33,7 +33,7 @@ Entity& Scene::emplace_entity(Args&&... args)
 }
 
 template<typename... Args>
-EntityObject& Scene::emplace_entity_object(Args&&... args)
+EntityObject3D& Scene::emplace_entity_object(Args&&... args)
 {
 	return this->entity_objects.emplace_back(std::forward<Args>(args)...);
 }

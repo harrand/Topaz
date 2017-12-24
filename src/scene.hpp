@@ -24,28 +24,28 @@ public:
 	// Complexity: O(n*f_n + m*f_m) Ω(n*f_n + m*f_m) ϴ(1) where n = number of entities, f_n = number of forces per entity, m = number of entity_objects, f_m = number of forces per entity_object
 	void set_gravity(Vector3F gravity = Vector3F());
 	// Complexity: O(1) amortised Ω(1) ϴ(1) amortised
-	void add_object(Object obj);
+	void add_object(Object3D obj);
 	// Complexity: O(n) Ω(1) ϴ(n), where n = number of existing entity_objects.
 	void add_entity(Entity ent);
 	// Complexity: See Scene::add_entity.
-	void add_entity_object(EntityObject eo);
+	void add_entity_object(EntityObject3D eo);
 	// Complexity: O(n log n) Ω(log n) ϴ(log n), where n = number of existing lights.
 	void add_light(Light light, GLuint shader_program_handle);
 	template<class Element, typename... Args>
 	Element& emplace(Args&&... args);
 	template<typename... Args>
-	Object& emplace_object(Args&&... args);
+	Object3D& emplace_object(Args&&... args);
 	template<typename... Args>
 	Entity& emplace_entity(Args&&... args);
 	template<typename... Args>
-	EntityObject& emplace_entity_object(Args&&... args);
-	void remove_object(const Object& obj);
+	EntityObject3D& emplace_entity_object(Args&&... args);
+	void remove_object(const Object3D& obj);
 	void remove_entity(const Entity& ent);
-	void remove_entity_object(const EntityObject& eo);
+	void remove_entity_object(const EntityObject3D& eo);
 	void remove_light(const Light& light);
-	const std::vector<Object>& get_objects() const;
+	const std::vector<Object3D>& get_objects() const;
 	const std::vector<Entity>& get_entities() const;
-	const std::vector<EntityObject>& get_entity_objects() const;
+	const std::vector<EntityObject3D>& get_entity_objects() const;
 	// Returns total number of Objects, Entities and EntityObjects in the scene.
 	std::size_t get_size() const;
 	const std::map<std::array<GLint, tz::graphics::light_number_of_uniforms>, Light>& get_lights() const;
@@ -62,17 +62,17 @@ public:
 	
 	Vector3F spawn_point, spawn_orientation;
 private:
-	static Object retrieve_object_data(const std::string& object_name, std::string resources_path, MDLF& mdlf, const std::vector<std::unique_ptr<Mesh>>& all_meshes, const std::vector<std::unique_ptr<Texture>>& all_textures, const std::vector<std::unique_ptr<NormalMap>>& all_normal_maps, const std::vector<std::unique_ptr<ParallaxMap>>& all_parallax_maps, const std::vector<std::unique_ptr<DisplacementMap>>& all_displacement_maps);
-	static EntityObject retrieve_entity_object_data(const std::string& entity_object_name, std::string resources_path, MDLF& mdlf, const std::vector<std::unique_ptr<Mesh>>& all_meshes, const std::vector<std::unique_ptr<Texture>>& all_textures, const std::vector<std::unique_ptr<NormalMap>>& all_normal_maps, const std::vector<std::unique_ptr<ParallaxMap>>& all_parallax_maps, const std::vector<std::unique_ptr<DisplacementMap>>& all_displacement_maps);
+	static Object3D retrieve_object_data(const std::string& object_name, std::string resources_path, MDLF& mdlf, const std::vector<std::unique_ptr<Mesh>>& all_meshes, const std::vector<std::unique_ptr<Texture>>& all_textures, const std::vector<std::unique_ptr<NormalMap>>& all_normal_maps, const std::vector<std::unique_ptr<ParallaxMap>>& all_parallax_maps, const std::vector<std::unique_ptr<DisplacementMap>>& all_displacement_maps);
+	static EntityObject3D retrieve_entity_object_data(const std::string& entity_object_name, std::string resources_path, MDLF& mdlf, const std::vector<std::unique_ptr<Mesh>>& all_meshes, const std::vector<std::unique_ptr<Texture>>& all_textures, const std::vector<std::unique_ptr<NormalMap>>& all_normal_maps, const std::vector<std::unique_ptr<ParallaxMap>>& all_parallax_maps, const std::vector<std::unique_ptr<DisplacementMap>>& all_displacement_maps);
 	void update_instances();
 	std::size_t total_instances() const;
 	
 	std::string filename;
 	std::string resources_path;
 	Vector3F gravity;
-	std::vector<Object> objects, instancified_objects;
+	std::vector<Object3D> objects, instancified_objects;
 	std::vector<Entity> entities;
-	std::vector<EntityObject> entity_objects;
+	std::vector<EntityObject3D> entity_objects;
 	std::map<std::array<GLint, tz::graphics::light_number_of_uniforms>, Light> base_lights;
 };
 

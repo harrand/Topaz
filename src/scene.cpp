@@ -43,7 +43,7 @@ const Vector3F& Scene::get_gravity() const
 	return this->gravity;
 }
 
-// Gravity is a force, and must be handled like any other force would. Essentially updates the 'gravity' force in all entities and entity_objects so that they're affected by the new force. It is done like this so that Entity and EntityObject require no reference to Scene whatsoever.
+// Gravity is a force, and must be handled like any other force would. Essentially updates the 'gravity' force in all entities and entity_objects so that they're affected by the new force. It is done like this so that Entity and EntityObject3D require no reference to Scene whatsoever.
 void Scene::set_gravity(Vector3F gravity)
 {
 	this->gravity = gravity;
@@ -53,7 +53,7 @@ void Scene::set_gravity(Vector3F gravity)
 		ent.remove_force("gravity");
 		ent.apply_force("gravity", Force(this->get_gravity()));
 	}
-	for(EntityObject& eo : this->entity_objects)
+	for(EntityObject3D& eo : this->entity_objects)
 	{
 		// Both once again O(n) Ω(1) ϴ(1), where n = number of existing forces
 		eo.remove_force("gravity");
@@ -61,7 +61,7 @@ void Scene::set_gravity(Vector3F gravity)
 	}
 }
 
-void Scene::add_object(Object obj)
+void Scene::add_object(Object3D obj)
 {
 	this->objects.push_back(std::move(obj));
 }
@@ -83,7 +83,7 @@ void Scene::add_entity(Entity ent)
 }
 
 // See documentation for Scene::add_entity(Entity).
-void Scene::add_entity_object(EntityObject eo)
+void Scene::add_entity_object(EntityObject3D eo)
 {
 	if(eo.get_forces().find("gravity") != eo.get_forces().end())
 	{
@@ -102,7 +102,7 @@ void Scene::add_light(Light light, GLuint shader_program_handle)
 	this->base_lights[light.get_uniforms(shader_program_handle, this->base_lights.size())] = light;
 }
 
-void Scene::remove_object(const Object& obj)
+void Scene::remove_object(const Object3D& obj)
 {
 	this->objects.erase(std::remove(this->objects.begin(), this->objects.end(), obj), this->objects.end());
 }
@@ -112,7 +112,7 @@ void Scene::remove_entity(const Entity& ent)
 	this->entities.erase(std::remove(this->entities.begin(), this->entities.end(), ent), this->entities.end());
 }
 
-void Scene::remove_entity_object(const EntityObject& eo)
+void Scene::remove_entity_object(const EntityObject3D& eo)
 {
 	this->entity_objects.erase(std::remove(this->entity_objects.begin(), this->entity_objects.end(), eo), this->entity_objects.end());
 }
@@ -124,7 +124,7 @@ void Scene::remove_light(const Light& light)
 			this->base_lights.erase(it.first);
 }
 
-const std::vector<Object>& Scene::get_objects() const
+const std::vector<Object3D>& Scene::get_objects() const
 {
 	return this->objects;
 }
@@ -134,7 +134,7 @@ const std::vector<Entity>& Scene::get_entities() const
 	return this->entities;
 }
 
-const std::vector<EntityObject>& Scene::get_entity_objects() const
+const std::vector<EntityObject3D>& Scene::get_entity_objects() const
 {
 	return this->entity_objects;
 }
@@ -181,7 +181,7 @@ void Scene::export_scene(const std::string& scene_link) const
 	{
 		const std::string object_name = "object" + tz::util::cast::to_string<float>(i);
 		object_list.push_back(object_name);
-		const Object current_object = this->objects[i];
+		const Object3D current_object = this->objects[i];
 		
 		output.edit_tag(object_name + ".mesh", data_manager.resource_name(current_object.get_mesh().get_file_name()));
 		for(auto& texture : current_object.get_textures())
@@ -200,7 +200,7 @@ void Scene::export_scene(const std::string& scene_link) const
 	{
 		const std::string entity_object_name = "eo" + tz::util::cast::to_string<float>(i);
 		entity_object_list.push_back(entity_object_name);
-		const EntityObject current_entity_object = this->entity_objects[i];
+		const EntityObject3D current_entity_object = this->entity_objects[i];
 
 		output.edit_tag(entity_object_name + ".mesh", data_manager.resource_name(current_entity_object.get_mesh().get_file_name()));
 		for(auto& texture : current_entity_object.get_textures())
@@ -264,7 +264,7 @@ void Scene::update(unsigned int tps)
 		ent.update_motion(tps);
 }
 
-Object Scene::retrieve_object_data(const std::string& object_name, std::string resources_path, MDLF& mdlf, const std::vector<std::unique_ptr<Mesh>>& all_meshes, const std::vector<std::unique_ptr<Texture>>& all_textures, const std::vector<std::unique_ptr<NormalMap>>& all_normal_maps, const std::vector<std::unique_ptr<ParallaxMap>>& all_parallax_maps, const std::vector<std::unique_ptr<DisplacementMap>>& all_displacement_maps)
+Object3D Scene::retrieve_object_data(const std::string& object_name, std::string resources_path, MDLF& mdlf, const std::vector<std::unique_ptr<Mesh>>& all_meshes, const std::vector<std::unique_ptr<Texture>>& all_textures, const std::vector<std::unique_ptr<NormalMap>>& all_normal_maps, const std::vector<std::unique_ptr<ParallaxMap>>& all_parallax_maps, const std::vector<std::unique_ptr<DisplacementMap>>& all_displacement_maps)
 {
 	std::string mesh_name = mdlf.get_tag(object_name + ".mesh");
 	std::string position_string = mdlf.get_tag(object_name + ".pos");
@@ -312,10 +312,10 @@ Object Scene::retrieve_object_data(const std::string& object_name, std::string r
 	return {tz::graphics::find_mesh(mesh_link, all_meshes), textures, tz::util::string::vectorise_list_3<float>(tz::util::string::deformat(position_string)), tz::util::string::vectorise_list_3<float>(tz::util::string::deformat(rotation_string)), tz::util::string::vectorise_list_3<float>(tz::util::string::deformat(scale_string)), shininess, parallax_map_scale, parallax_map_offset, displacement_factor};
 }
 
-EntityObject Scene::retrieve_entity_object_data(const std::string& entity_object_name, std::string resources_path, MDLF& mdlf, const std::vector<std::unique_ptr<Mesh>>& all_meshes, const std::vector<std::unique_ptr<Texture>>& all_textures, const std::vector<std::unique_ptr<NormalMap>>& all_normal_maps, const std::vector<std::unique_ptr<ParallaxMap>>& all_parallax_maps, const std::vector<std::unique_ptr<DisplacementMap>>& all_displacement_maps)
+EntityObject3D Scene::retrieve_entity_object_data(const std::string& entity_object_name, std::string resources_path, MDLF& mdlf, const std::vector<std::unique_ptr<Mesh>>& all_meshes, const std::vector<std::unique_ptr<Texture>>& all_textures, const std::vector<std::unique_ptr<NormalMap>>& all_normal_maps, const std::vector<std::unique_ptr<ParallaxMap>>& all_parallax_maps, const std::vector<std::unique_ptr<DisplacementMap>>& all_displacement_maps)
 {
-	// No point repeating code from Scene::retrieve_object_data, so call it to receive a valid Object. Then parse the mass from the data-file, and cobble all the data together to create the final EntityObject. This doesn't really waste memory as Objects are now smaller than before, as pointers << strings.
-	Object object = Scene::retrieve_object_data(entity_object_name, resources_path, mdlf, all_meshes, all_textures, all_normal_maps, all_parallax_maps, all_displacement_maps);
+	// No point repeating code from Scene::retrieve_object_data, so call it to receive a valid Object3D. Then parse the mass from the data-file, and cobble all the data together to create the final EntityObject3D. This doesn't really waste memory as Objects are now smaller than before, as pointers << strings.
+	Object3D object = Scene::retrieve_object_data(entity_object_name, resources_path, mdlf, all_meshes, all_textures, all_normal_maps, all_parallax_maps, all_displacement_maps);
 	std::string mass_string = mdlf.get_tag(entity_object_name + ".mass");
 	float mass = tz::util::cast::from_string<float>(mass_string);
 	if(!mdlf.exists_tag(entity_object_name + ".mass"))
@@ -331,7 +331,7 @@ void Scene::update_instances()
 std::size_t Scene::total_instances() const
 {
 	std::size_t quantity = 0;
-	for(const Object& object : this->instancified_objects)
+	for(const Object3D& object : this->instancified_objects)
 		if(tz::graphics::is_instanced(&(object.get_mesh())))
 			quantity += dynamic_cast<const InstancedMesh*>(&(object.get_mesh()))->get_instance_quantity();
 	return quantity;

@@ -33,13 +33,13 @@ public:
 	const Window& get_window() const;
 	const Scene& get_scene() const;
 	void set_scene(Scene scene);
-	void add_to_scene(Object object);
+	void add_to_scene(Object3D object);
 	void add_to_scene(Entity entity);
-	void add_to_scene(EntityObject entity_object);
+	void add_to_scene(EntityObject3D entity_object);
 	void add_to_scene(Light light, Shader& shader);
-	void remove_from_scene(Object object);
+	void remove_from_scene(Object3D object);
 	void remove_from_scene(Entity entity);
-	void remove_from_scene(EntityObject entity_object);
+	void remove_from_scene(EntityObject3D entity_object);
 	void remove_from_scene(Light light);
 	const Shader& get_default_shader() const;
 	const Shader& get_default_gui_shader() const;

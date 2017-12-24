@@ -25,8 +25,8 @@ public:
 
 namespace tz::physics
 {
-	BoundingSphere bound_sphere(const Object& object);
-	AABB bound_aabb(const Object& object);
+	BoundingSphere bound_sphere(const Object3D& object);
+	AABB bound_aabb(const Object3D& object);
 }
 
 #endif

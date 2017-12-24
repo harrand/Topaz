@@ -37,20 +37,20 @@ protected:
 };
 
 /*
-	Essentially an Entity which has a renderable component in the form of an Object. See Object documentation for additional details.
+	Essentially an Entity which has a renderable component in the form of an Object3D. See Object3D documentation for additional details.
 */
-class EntityObject : public Entity, public Object
+class EntityObject3D : public Entity, public Object3D
 {
 public:
-	EntityObject(const Mesh* mesh, std::map<tz::graphics::TextureType, Texture*> textures, float mass = tz::physics::default_mass, Vector3F position = Vector3F(), Vector3F rotation = Vector3F(), Vector3F scale = Vector3F(1, 1, 1), unsigned int shininess = tz::graphics::default_shininess, float parallax_map_scale = tz::graphics::default_parallax_map_scale, float parallax_map_offset = tz::graphics::default_parallax_map_offset, float displacement_factor = tz::graphics::default_displacement_factor, Vector3F velocity = Vector3F(), std::unordered_map<std::string, Force> forces = std::unordered_map<std::string, Force>());
-	EntityObject(const EntityObject& copy) = default;
-	EntityObject(EntityObject&& move) = default;
-	EntityObject& operator=(const EntityObject& rhs) = default;
+	EntityObject3D(const Mesh* mesh, std::map<tz::graphics::TextureType, Texture*> textures, float mass = tz::physics::default_mass, Vector3F position = Vector3F(), Vector3F rotation = Vector3F(), Vector3F scale = Vector3F(1, 1, 1), unsigned int shininess = tz::graphics::default_shininess, float parallax_map_scale = tz::graphics::default_parallax_map_scale, float parallax_map_offset = tz::graphics::default_parallax_map_offset, float displacement_factor = tz::graphics::default_displacement_factor, Vector3F velocity = Vector3F(), std::unordered_map<std::string, Force> forces = std::unordered_map<std::string, Force>());
+	EntityObject3D(const EntityObject3D& copy) = default;
+	EntityObject3D(EntityObject3D&& move) = default;
+	EntityObject3D& operator=(const EntityObject3D& rhs) = default;
 	
 	virtual void update_motion(unsigned int fps) override;
 	
-	bool operator==(const EntityObject& rhs) const;
-	using Object::position;
+	bool operator==(const EntityObject3D& rhs) const;
+	using Object3D::position;
 };
 
 #endif

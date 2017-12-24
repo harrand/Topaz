@@ -113,7 +113,7 @@ void Engine::set_scene(Scene scene)
 	this->scene = scene;
 }
 
-void Engine::add_to_scene(Object object)
+void Engine::add_to_scene(Object3D object)
 {
 	this->scene.add_object(object);
 }
@@ -123,7 +123,7 @@ void Engine::add_to_scene(Entity entity)
 	this->scene.add_entity(entity);
 }
 
-void Engine::add_to_scene(EntityObject entity_object)
+void Engine::add_to_scene(EntityObject3D entity_object)
 {
 	this->scene.add_entity_object(entity_object);
 }
@@ -133,7 +133,7 @@ void Engine::add_to_scene(Light light, Shader& shader)
 	this->scene.add_light(light, shader.get_program_handle());
 }
 
-void Engine::remove_from_scene(Object object)
+void Engine::remove_from_scene(Object3D object)
 {
 	this->scene.remove_object(object);
 }
@@ -143,7 +143,7 @@ void Engine::remove_from_scene(Entity entity)
 	this->scene.remove_entity(entity);
 }
 
-void Engine::remove_from_scene(EntityObject entity_object)
+void Engine::remove_from_scene(EntityObject3D entity_object)
 {
 	this->scene.remove_entity_object(entity_object);
 }

@@ -36,7 +36,7 @@ public:
 		textures.emplace(tz::graphics::TextureType::NORMAL_MAP, Texture::get_from_link<NormalMap>(random_normalmap_link, engine.get_normal_maps()));
 		textures.emplace(tz::graphics::TextureType::PARALLAX_MAP, Texture::get_from_link<ParallaxMap>(random_parallaxmap_link, engine.get_parallax_maps()));
 		textures.emplace(tz::graphics::TextureType::DISPLACEMENT_MAP, Texture::get_from_link<DisplacementMap>(manager.resource_link("default_displacementmap"), engine.get_displacement_maps()));
-		Object obj(tz::graphics::find_mesh(manager.resource_link("cube_hd"), engine.get_meshes()), textures, engine.camera.position, engine.camera.rotation, Vector3F(40, 20, 40));
+		Object3D obj(tz::graphics::find_mesh(manager.resource_link("cube_hd"), engine.get_meshes()), textures, engine.camera.position, engine.camera.rotation, Vector3F(40, 20, 40));
 		bounds.push_back(tz::physics::bound_aabb(obj));
 		engine.add_to_scene(obj);
 	}
@@ -65,7 +65,7 @@ void init()
 	
 	std::vector<AABB> bounds;
 	bounds.reserve(engine.get_scene().get_objects().size());
-	for(const Object& object : engine.get_scene().get_objects())
+	for(const Object3D& object : engine.get_scene().get_objects())
 		bounds.push_back(tz::physics::bound_aabb(object));
 	
 	Vector4F gui_colour(0.0f, 0.0f, 0.0f, 0.95f);
