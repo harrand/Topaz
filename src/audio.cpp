@@ -133,12 +133,4 @@ namespace tz::audio
 		Mix_CloseAudio();
 		tz::util::log::message("Terminated tz::audio via SDL_Mixer.");
 	}
-	
-	void play_clip_async(const AudioClip& clip)
-	{
-		using namespace std::chrono_literals;
-		// Play clip for the length of the audio clip plus another 10 milliseconds.
-		auto play_clip = [](AudioClip clip){clip.play(); std::this_thread::sleep_for(operator""ms(static_cast<unsigned long long>(clip.get_audio_length()) + 10ull));};
-		std::thread(play_clip, clip).detach();
-	}
 }

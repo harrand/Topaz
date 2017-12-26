@@ -6,18 +6,26 @@
 #include "utility.hpp"
 
 /*
-	Playable audio file. Use this for short audio segments like sound effects.
+*	Playable audio file. Use this for short audio segments like sound effects.
 */
 class AudioClip
 {
 public:
-	// Load AudioClip from existing file (must be wavefront audio .wav)
+	/**
+	* Load AudioClip from existing file (must be wavefront audio .wav)
+	*/
 	AudioClip(std::string filename);
-	// Construct AudioClip using the filename of copy.
+	/**
+	* Construct AudioClip using the filename of copy.
+	*/
 	AudioClip(const AudioClip& copy);
-	// Construct AudioClip using the same chunk as move. Also copies move's filename.
+	/**
+	* Construct AudioClip using the same chunk as move. Also copies move's filename.
+	*/
 	AudioClip(AudioClip&& move);
-	// Deallocate memory from the SDL_Mixer functionality.
+	/**
+	* Deallocate memory from the SDL_Mixer functionality.
+	*/
 	virtual ~AudioClip();
 	AudioClip& operator=(const AudioClip& rhs) = delete;
 	
@@ -32,7 +40,7 @@ private:
 };
 
 /*
-	Playable audio file, but from a position in 3D space. Same properties as AudioClip.
+*	Playable audio file, but from a position in 3D space. Same properties as AudioClip.
 */
 class AudioSource: public AudioClip
 {
@@ -43,12 +51,14 @@ public:
 	~AudioSource() = default;
 	AudioSource& operator=(const AudioSource& rhs) = delete;
 	
-	// Should be invoked whenever the camera rotates or moves or the AudioSource position is changed.
+	/**
+	* Should be invoked whenever the camera rotates or moves or the AudioSource position is changed.
+	*/
 	void update(const Vector3F& source_position, const Camera& relative_to) const;
 };
 
 /*
-	Playable audio file. Use this for longer audio segments such as background music.
+*	Playable audio file. Use this for longer audio segments such as background music.
 */
 class AudioMusic
 {
@@ -61,9 +71,13 @@ public:
 	
 	const std::string& get_file_name() const;
 	bool is_paused() const;
-	// Play should be invoked only once and not to un-pause music.
+	/**
+	* Play should be invoked only once and not to un-pause music.
+	*/
 	void play(bool priority = true) const;
-	// Pause/Resume the music.
+	/**
+	* Pause/Resume the music.
+	*/
 	void set_paused(bool pause = true);
 private:
 	std::string filename;
@@ -72,19 +86,28 @@ private:
 };
 
 /*
-	Initialise and terminate tz audio module. This must be done appropriately to use any of the audio functionality.
+*	Initialise and terminate tz audio module. This must be done appropriately to use any of the audio functionality.
 */
 namespace tz
 {
 	namespace audio
 	{
-		// No audio works until this is executed. tz::initialise will invoke this automatically.
+		/**
+		* No audio works until this is executed. tz::initialise will invoke this automatically.
+		*/
 		void initialise();
-		// Memory droplets will remain until this is executed. Audio will not work after this is invoked. tz::terminate will invoke this automatically.
+		/**
+		* Memory droplets will remain until this is executed. Audio will not work after this is invoked. tz::terminate will invoke this automatically.
+		*/
 		void terminate();
-		// Pass by value so can guarantee that a copy will last as long as the thread is alive (const reference might die beforehand). However, this can be passed by cref as the copy happens in a lambda in the function body, not now.
-		void play_clip_async(const AudioClip& clip);
+		/**
+		* Play existing Audio asynchronously (Anything that has a play() function). Has much reduced overhead for an r-value reference.
+		*/
+		template<typename Audio>
+		void play_clip_async(Audio&& clip);
 	}
 }
+
+#include "audio.inl"
 
 #endif

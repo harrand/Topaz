@@ -21,7 +21,7 @@ void tz::terminate()
 	tz::util::log::message("Terminated Topaz.");
 }
 
-Engine::Engine(Window* wnd, std::string properties_path, unsigned int initial_fps, unsigned int tps): camera(Camera()), properties(RawFile(properties_path)), resources(RawFile(this->properties.get_tag("resources"))), default_shader(this->properties.get_tag("default_shader")), default_gui_shader(this->properties.get_tag("default_gui_shader")), wnd(wnd), fps(initial_fps), tps(tps), update_command_executor(), tick_command_executor(), update_due(false)
+Engine::Engine(Window* window, std::string properties_path, unsigned int tps): camera(Camera()), scene(), properties(RawFile(properties_path)), resources(RawFile(this->properties.get_tag("resources"))), default_shader(this->properties.get_tag("default_shader")), default_gui_shader(this->properties.get_tag("default_gui_shader")), seconds_timer(), tick_timer(), profiler(), window(window), fps(0), tps(tps), update_command_executor(), tick_command_executor(), update_due(false)
 {
 	// fill all the asset buffers via tz data manager
 	tz::data::Manager(this->properties.get_tag("resources")).retrieve_all_data(this->meshes, this->textures, this->normal_maps, this->parallax_maps, this->displacement_maps);
@@ -52,15 +52,15 @@ void Engine::update(std::size_t shader_index)
 		this->profiler.reset();
 		this->seconds_timer.reload();
 	}
-	this->wnd->set_render_target();
+	this->window->set_render_target();
 	this->profiler.begin_frame();
 	
 	this->seconds_timer.update();
 	this->tick_timer.update();
-	this->wnd->clear(0.0f, 0.0f, 0.0f, 1.0f);
+	this->window->clear(0.0f, 0.0f, 0.0f, 1.0f);
 	this->profiler.end_frame();
 	
-	this->scene.render(this->camera, &(this->get_shader(shader_index)), this->wnd->get_width(), this->wnd->get_height());
+	this->scene.render(this->camera, &(this->get_shader(shader_index)), this->window->get_width(), this->window->get_height());
 	
 	for(auto command : this->update_command_executor.get_commands())
 		command->operator()({});
@@ -76,7 +76,7 @@ void Engine::update(std::size_t shader_index)
 	}
 	else
 		this->update_due = false;
-	this->wnd->update();
+	this->window->update();
 	
 	GLenum error;
 		if((error = glGetError()) != GL_NO_ERROR)
@@ -100,67 +100,7 @@ const MDLF& Engine::get_resources() const
 
 const Window& Engine::get_window() const
 {
-	 return *(this->wnd);
-}
-
-const Scene& Engine::get_scene() const
-{
-	return this->scene;
-}
-
-void Engine::set_scene(Scene scene)
-{
-	this->scene = scene;
-}
-
-void Engine::add_to_scene(Object3D object)
-{
-	this->scene.add_object(object);
-}
-
-void Engine::add_to_scene(Entity entity)
-{
-	this->scene.add_entity(entity);
-}
-
-void Engine::add_to_scene(EntityObject3D entity_object)
-{
-	this->scene.add_entity_object(entity_object);
-}
-
-void Engine::add_to_scene(Light light, Shader& shader)
-{
-	this->scene.add_light(light, shader.get_program_handle());
-}
-
-void Engine::remove_from_scene(Object3D object)
-{
-	this->scene.remove_object(object);
-}
-
-void Engine::remove_from_scene(Entity entity)
-{
-	this->scene.remove_entity(entity);
-}
-
-void Engine::remove_from_scene(EntityObject3D entity_object)
-{
-	this->scene.remove_entity_object(entity_object);
-}
-
-void Engine::remove_from_scene(Light light)
-{
-	this->scene.remove_light(light);
-}
-
-const Shader& Engine::get_default_shader() const
-{
-	return this->default_shader;
-}
-
-const Shader& Engine::get_default_gui_shader() const
-{
-	return this->default_gui_shader;
+	 return *(this->window);
 }
 
 const std::vector<std::unique_ptr<Mesh>>& Engine::get_meshes() const
@@ -239,7 +179,7 @@ void Engine::remove_tick_command(Command* cmd)
 
 void Engine::register_listener(Listener& listener)
 {
-	this->wnd->register_listener(listener);
+	this->window->register_listener(listener);
 }
 
 bool Engine::is_update_due() const

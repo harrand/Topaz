@@ -38,7 +38,7 @@ public:
 		textures.emplace(tz::graphics::TextureType::DISPLACEMENT_MAP, Texture::get_from_link<DisplacementMap>(manager.resource_link("default_displacementmap"), engine.get_displacement_maps()));
 		Object3D obj(tz::graphics::find_mesh(manager.resource_link("cube_hd"), engine.get_meshes()), textures, engine.camera.position, engine.camera.rotation, Vector3F(40, 20, 40));
 		bounds.push_back(tz::physics::bound_aabb(obj));
-		engine.add_to_scene(obj);
+		engine.scene.add_object(obj);
 	}
 	Engine& engine;
 	std::vector<AABB>& bounds;
@@ -64,8 +64,8 @@ void init()
 	bool noclip = false;
 	
 	std::vector<AABB> bounds;
-	bounds.reserve(engine.get_scene().get_objects().size());
-	for(const Object3D& object : engine.get_scene().get_objects())
+	bounds.reserve(engine.scene.get_objects().size());
+	for(const Object3D& object : engine.scene.get_objects())
 		bounds.push_back(tz::physics::bound_aabb(object));
 	
 	Vector4F gui_colour(0.0f, 0.0f, 0.0f, 0.95f);
@@ -93,7 +93,7 @@ void init()
 	gui_panel.add_child(&exit_gui_button);
 	gui_panel.add_child(&noclip_toggle);
 	gui_panel.add_child(&save_scene_button);
-	TrivialFunctor save_scene_cmd([&](){const_cast<Scene&>(engine.get_scene()).save();});
+	TrivialFunctor save_scene_cmd([&](){const_cast<Scene&>(engine.scene).save();});
 	TrivialFunctor toggle_noclip([&](){noclip = !noclip;});
 	SpawnBlockCommand spawn_test_cube(engine, bounds);
 	test_button.set_on_mouse_click(&toggle);
@@ -241,8 +241,8 @@ void init()
 			}
 			if(key_listener.is_key_pressed("R"))
 			{
-				engine.camera.position = engine.get_scene().spawn_point;
-				engine.camera.rotation = engine.get_scene().spawn_orientation;
+				engine.camera.position = engine.scene.spawn_point;
+				engine.camera.rotation = engine.scene.spawn_orientation;
 			}
 			if(key_listener.catch_key_pressed("Escape"))
 				gui_panel.set_hidden(!gui_panel.is_hidden());
