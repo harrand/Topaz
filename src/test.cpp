@@ -13,6 +13,7 @@ void test();
 int main()
 {
 	tz::initialise();
+	//test();
 	init();
 	tz::terminate();
 	return 0;
@@ -84,7 +85,7 @@ void init()
 	Button exit_gui_button(wnd.get_width() - 50, wnd.get_height() - 50, Vector4F(1, 1, 1, 1), Vector4F(1.0, 0, 0, 1.0), {}, example_font, " x ", engine.default_gui_shader, mouse_listener);
 	Button save_scene_button(0.0f, 2 * text.get_height() + 2 * noclip_toggle.get_height() + 2 * test_button.get_height() + 2 * spawn_block.get_height(), Vector4F(1, 1, 1, 1), gui_colour, {}, example_font, "Save Scene", engine.default_gui_shader, mouse_listener);
 	
-	TrivialFunctor pop_cmd([](){tz::audio::play_clip_async(AudioClip("../../../res/runtime/music/pop.wav"));});
+	TrivialFunctor pop_cmd([](){tz::audio::play_async(AudioClip("../../../res/runtime/music/pop.wav"));});
 	wnd.add_child(&text);
 	wnd.add_child(&spawn_block);
 	wnd.add_child(&gui_panel);
@@ -285,7 +286,7 @@ void test()
 	test_wav.play();
 	message("Waiting 5 seconds");
 	cls();
-	AudioClip test_wav_moved(std::move(test_wav));
+	AudioClip test_wav_moved = std::move(test_wav);
 	message("Moved test.wav to a new instance, playing once more...");
 	test_wav_moved.play();
 	message("Waiting 5 seconds...");

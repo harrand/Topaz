@@ -25,19 +25,29 @@ namespace tz::graphics
 	};
 }
 
-/*
-	Holds pixel and colour data and can interact with OpenGL buffers. Bind Textures so that Topaz Meshes do not render monochromoatically.
+/**
+* Holds pixel and colour data and can interact with OpenGL buffers.
+* Bind Textures so that Topaz Meshes do not render monochromoatically.
 */
 class Texture
 {
 public:
-	// Creates an uninitialised texture.
+	/**
+	* Creates an uninitialised texture.
+	* This allocates a texture-handle but nothing else, so is not ready for rendering.
+	*/
 	Texture();
-	// Creates a completely empty texture, but would be ready to be written to, if bound to a framebuffer.
+	/**
+	* Creates a completely empty texture, but would be ready to be written to, if bound to a framebuffer.
+	*/
 	Texture(int width, int height);
-	// Loads a texture from a file.
+	/**
+	* Loads a texture from a file.
+	*/
 	Texture(std::string filename, bool gamma_corrected = true, bool store_bitmap = false);
-	// Loads a texture from a font, given text.
+	/**
+	* Loads a texture from a font, given text.
+	*/
 	Texture(const Font& font, const std::string& text, SDL_Color foreground_colour, bool store_bitmap = false);
 	Texture(const Texture& copy);
 	Texture(Texture&& move);
@@ -160,18 +170,50 @@ class FrameBuffer
 public:
 	FrameBuffer(int width, int height);
 	~FrameBuffer();
+	/**
+	* Build an instance of either Texture or RenderBuffer in-place into the framebuffer.
+	*/
 	template<class Buffer, typename... Args>
 	Buffer& emplace(GLenum attachment, Args&&... args);
+	/**
+	* Build an instance of Texture in-place into the framebuffer.
+	*/
 	template<typename... Args>
 	Texture& emplace_texture(GLenum attachment, Args&&... args);
+	/**
+	* Build an instance of RenderBuffer in-place into the framebuffer.
+	*/
 	template<typename... Args>
 	RenderBuffer& emplace_renderbuffer(GLenum attachment, Args&&... args);
+	/**
+	* Read-only access to all attachments to this framebuffer.
+	*/
 	const std::unordered_map<GLenum, std::variant<Texture, RenderBuffer>>& get_attachments() const;
+	/**
+	* Returns true if OpenGL sees the framebuffer as complete.
+	*/
 	bool valid() const;
+	/**
+	* Returns true if this framebuffer has a Texture or RenderBuffer with the attachment GL_COLOR_ATTACHMENT0.
+	*/
 	bool has_colour() const;
+	/**
+	* Returns true if this framebuffer has a Texture or RenderBuffer with the attachment GL_DEPTH_ATTACHMENT.
+	*/
 	bool has_depth() const;
+	/**
+	* Returns true if this framebuffer has a Texture or RenderBuffer with the attachment GL_STENCIL_ATTACHMENT.
+	*/
 	bool has_stencil() const;
-	void set_render_target();
+	/**
+	* Bind and sets the viewpoint to this framebuffer.
+	* This means that any render calls will apply to this framebuffer.
+	*/
+	void set_render_target() const;
+	/**
+	* Bind all Textures with colour attachments attached to this framebuffer.
+	*/
+	void bind_textures(Shader* shader) const;
 private:
 	int width, height;
 	GLuint framebuffer_handle;

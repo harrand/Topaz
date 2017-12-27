@@ -359,8 +359,18 @@ bool FrameBuffer::has_stencil() const
 	return this->get_attachments().find(GL_STENCIL_ATTACHMENT) != this->get_attachments().end();
 }
 
-void FrameBuffer::set_render_target()
+void FrameBuffer::set_render_target() const
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, this->framebuffer_handle);
 	glViewport(0, 0, this->width, this->height);
+}
+
+void FrameBuffer::bind_textures(Shader* shader) const
+{
+	const auto colour_value = std::get_if<Texture>(&(this->attachments.at(GL_COLOR_ATTACHMENT0)));
+	if(colour_value != nullptr)
+	{
+		// has a texture colour value to bind.
+		colour_value->bind(shader, 4);
+	}
 }

@@ -104,7 +104,7 @@ namespace tz
 		* Play existing Audio asynchronously (Anything that has a play() function). Has much reduced overhead for an r-value reference.
 		*/
 		template<typename Audio>
-		void play_clip_async(Audio&& clip);
+		void play_async(Audio&& clip);
 	}
 }
 

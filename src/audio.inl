@@ -1,7 +1,7 @@
 namespace tz::audio
 {
 	template<typename Audio>
-	void play_clip_async(Audio&& clip)
+	void play_async(Audio&& clip)
 	{
 		using namespace std::chrono_literals;
 		// Play clip for the length of the audio clip plus another 10 milliseconds.
