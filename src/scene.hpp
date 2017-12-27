@@ -1,5 +1,5 @@
-#ifndef WORLD_HPP
-#define WORLD_HPP
+#ifndef SCENE_HPP
+#define SCENE_HPP
 #include <map>
 #include <cstddef>
 #include "entity.hpp"

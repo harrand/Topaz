@@ -1,7 +1,5 @@
 #include "command.hpp"
-#include "time.hpp"
 #include "utility.hpp"
-#include <thread>
 
 Command::Command(std::string name, std::string description, std::string usage): name(std::move(name)), description(std::move(description)), usage(std::move(usage)){}
 

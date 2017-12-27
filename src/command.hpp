@@ -4,7 +4,6 @@
 #include <vector>
 #include <memory>
 #include <functional>
-#include <thread>
 
 /*
 	Abstract. Not available for non-polymorphic use. Inherit from this to create custom commands (Essential for adding functionality to Engine).

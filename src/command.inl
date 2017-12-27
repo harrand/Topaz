@@ -1,3 +1,6 @@
+#include <thread>
+#include <chrono>
+
 template<typename Functor>
 TrivialFunctor<Functor>::TrivialFunctor(Functor functor): functor(functor){}
 
