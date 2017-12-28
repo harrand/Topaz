@@ -18,6 +18,11 @@ namespace tz
 		constexpr std::size_t maximum_shaders = 5;
 		constexpr std::size_t maximum_uniforms = GL_MAX_UNIFORM_LOCATIONS;
 	}
+	namespace util
+	{
+		// Get a label for a shader_type (e.g GL_FRAGMENT_SHADER returns "Fragment")
+		const char* shader_type_string(GLenum shader_type);
+	}
 }
 
 /*

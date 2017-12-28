@@ -189,6 +189,7 @@ public:
 	* Read-only access to all attachments to this framebuffer.
 	*/
 	const std::unordered_map<GLenum, std::variant<Texture, RenderBuffer>>& get_attachments() const;
+	std::unordered_map<GLenum, std::reference_wrapper<const Texture>> get_texture_attachments() const;
 	/**
 	* Returns true if OpenGL sees the framebuffer as complete.
 	*/
@@ -210,10 +211,6 @@ public:
 	* This means that any render calls will apply to this framebuffer.
 	*/
 	void set_render_target() const;
-	/**
-	* Bind all Textures with colour attachments attached to this framebuffer.
-	*/
-	void bind_textures(Shader* shader) const;
 private:
 	int width, height;
 	GLuint framebuffer_handle;

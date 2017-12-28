@@ -336,6 +336,19 @@ const std::unordered_map<GLenum, std::variant<Texture, RenderBuffer>>& FrameBuff
 	return this->attachments;
 }
 
+std::unordered_map<GLenum, std::reference_wrapper<const Texture>> FrameBuffer::get_texture_attachments() const
+{
+	std::unordered_map<GLenum, std::reference_wrapper<const Texture>> result;
+	for(const auto& pair : this->attachments)
+	{
+		auto texture = std::get_if<Texture>(&(pair.second));
+		if(texture == nullptr)
+			continue;
+		result.emplace(pair.first, std::cref(*texture));
+	}
+	return result;
+}
+
 bool FrameBuffer::valid() const
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, this->framebuffer_handle);
@@ -363,14 +376,4 @@ void FrameBuffer::set_render_target() const
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, this->framebuffer_handle);
 	glViewport(0, 0, this->width, this->height);
-}
-
-void FrameBuffer::bind_textures(Shader* shader) const
-{
-	const auto colour_value = std::get_if<Texture>(&(this->attachments.at(GL_COLOR_ATTACHMENT0)));
-	if(colour_value != nullptr)
-	{
-		// has a texture colour value to bind.
-		colour_value->bind(shader, 4);
-	}
 }

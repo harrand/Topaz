@@ -215,7 +215,7 @@ GLuint Shader::create_shader(std::string source, GLenum shader_type)
 {
 	if(source == "")
 	{
-		tz::util::log::message("Shader Source for Type [", shader_type, "] was empty, skipping it.");
+		tz::util::log::message("Shader Source for Type [", tz::util::shader_type_string(shader_type), "] was empty, skipping it.");
 		return 0;
 	}
 	GLuint shader = glCreateShader(shader_type);
@@ -271,4 +271,34 @@ void main()\n\
 	frag_colour = texture(%TEXTURE_SAMPLER%, texture_coordinate_modelspace);\n\
 }";
 	return {tz::util::string::replace_all(tz::util::string::replace_all(vertex_source, "%POSITION%", position_attribute_name), "%TEXTURE_COORDINATE%", texture_coordinate_attribute_name), "", "", "", tz::util::string::replace_all(fragment_source, "%TEXTURE_SAMPLER%", texture_sampler_name)};
+}
+
+const char* tz::util::shader_type_string(GLenum shader_type)
+{
+	const char* shader_type_str;
+	switch(shader_type)
+	{
+	case GL_COMPUTE_SHADER:
+		shader_type_str = "Compute";
+		break;
+	case GL_VERTEX_SHADER:
+		shader_type_str = "Vertex";
+		break;
+	case GL_TESS_CONTROL_SHADER:
+		shader_type_str = "Tessellation Control";
+		break;
+	case GL_TESS_EVALUATION_SHADER:
+		shader_type_str = "Tessellation Evaluation";
+		break;
+	case GL_GEOMETRY_SHADER:
+		shader_type_str = "Geometry";
+		break;
+	case GL_FRAGMENT_SHADER:
+		shader_type_str = "Fragment";
+		break;
+	default:
+		shader_type_str = "Unknown";
+		break;
+	}
+	return shader_type_str;
 }
