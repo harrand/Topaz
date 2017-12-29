@@ -61,7 +61,7 @@ void Object3D::render(const Camera& cam, Shader* shader, float width, float heig
 	shader->set_uniform<Vector3F>("rotation_uniform", this->rotation);
 	shader->set_uniform<Vector3F>("scale_uniform", this->scale);
 	shader->set_uniform<Matrix4x4>("v", Matrix4x4::create_view_matrix(cam.position, cam.rotation));
-	shader->set_uniform<Matrix4x4>("p", Matrix4x4::create_perspective_matrix(cam.fov, width, height, cam.near_clip, cam.far_clip));
+	shader->set_uniform<Matrix4x4>("p", cam.projection(width, height));
 	shader->set_uniform<unsigned int>("shininess", this->shininess);
 	shader->set_uniform<float>("parallax_map_scale", this->parallax_map_scale);
 	shader->set_uniform<float>("parallax_map_offset", this->parallax_map_offset);

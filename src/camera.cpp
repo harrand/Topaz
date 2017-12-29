@@ -1,6 +1,6 @@
 #include "camera.hpp"
 
-Camera::Camera(Vector3F position, Vector3F rotation, float fov, float near_clip, float far_clip): position(std::move(position)), rotation(std::move(rotation)), fov(fov), near_clip(near_clip), far_clip(far_clip){}
+Camera::Camera(Vector3F position, Vector3F rotation, float fov, float near_clip, float far_clip, bool perspective): position(std::move(position)), rotation(std::move(rotation)), fov(fov), near_clip(near_clip), far_clip(far_clip), axis_bound(false), perspective(perspective){}
 
 Vector3F Camera::forward() const
 {
@@ -61,4 +61,29 @@ bool Camera::is_axis_bound() const
 void Camera::set_axis_bound(bool axis_bound)
 {
 	this->axis_bound = axis_bound;
+}
+
+bool Camera::has_perspective_projection() const
+{
+	return this->perspective;
+}
+
+void Camera::set_has_perspective_projection(bool perspective)
+{
+	this->perspective = perspective;
+}
+
+Matrix4x4 Camera::projection(float width, float height) const
+{
+	if(this->perspective)
+		return Matrix4x4::create_perspective_matrix(this->fov, width, height, this->near_clip, this->far_clip);
+	else
+	{
+		float zoom = (width + height) * 0.25f * fov / tz::consts::pi;
+		float aspect_ratio = width / height;
+		if (width >= height)
+			return Matrix4x4::create_orthographic_matrix(zoom * aspect_ratio, -zoom * aspect_ratio, zoom, -zoom, this->near_clip, this->far_clip);
+		else
+			return Matrix4x4::create_orthographic_matrix(zoom, -zoom, zoom / aspect_ratio, -zoom / aspect_ratio, this->near_clip, this->far_clip);
+	}
 }

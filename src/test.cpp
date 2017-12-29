@@ -112,6 +112,12 @@ void init()
 	TrivialFunctor render_skybox([&](){skybox.render(engine.camera, skybox_shader, engine.get_meshes(), wnd.get_width(), wnd.get_height());});
 	engine.add_update_command(&render_skybox);
 	
+	Object3D player_object(engine.get_meshes().back().get(), engine.scene.get_objects().front().get_textures(), Vector3F(), Vector3F(), Vector3F(5,5,5));
+	TrivialFunctor render_player([&](){if(engine.camera.has_perspective_projection()) return;player_object.render(engine.camera, &(engine.default_shader), wnd.get_width(), wnd.get_height());});
+	TrivialFunctor update_player_pos([&](){player_object.position = engine.camera.position;player_object.rotation = engine.camera.rotation;});
+	engine.add_update_command(&render_player);
+	engine.add_tick_command(&update_player_pos);
+	
 	bool on_ground = false;
 	const float a = 0.5f;
 	float speed = 0.0f;
@@ -151,6 +157,8 @@ void init()
 				}
 			}
 			
+			if(key_listener.catch_key_pressed("P"))
+				engine.camera.set_has_perspective_projection(!engine.camera.has_perspective_projection());
 			if(key_listener.is_key_pressed("W"))
 			{
 				Vector3F after = (engine.camera.position + (engine.camera.forward() * velocity));

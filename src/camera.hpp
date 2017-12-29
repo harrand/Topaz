@@ -16,7 +16,7 @@ namespace tz::graphics
 class Camera
 {
 public:
-	Camera(Vector3F position = Vector3F(), Vector3F rotation = Vector3F(), float fov = tz::graphics::default_fov, float near_clip = tz::graphics::default_near_clip, float far_clip = tz::graphics::default_far_clip);
+	Camera(Vector3F position = Vector3F(), Vector3F rotation = Vector3F(), float fov = tz::graphics::default_fov, float near_clip = tz::graphics::default_near_clip, float far_clip = tz::graphics::default_far_clip, bool perspective = true);
 	Camera(const Camera& copy) = default;
 	Camera(Camera&& move) = default;
 	Camera& operator=(const Camera& rhs) = default;
@@ -31,12 +31,15 @@ public:
 	// Axis-Bound Camera causes orientation methods to stick to their normal axes. Also prevents rotation in the x and z axis.
 	bool is_axis_bound() const;
 	void set_axis_bound(bool axis_bound);
+	bool has_perspective_projection() const;
+	void set_has_perspective_projection(bool perspective);
+	Matrix4x4 projection(float width, float height) const;
 	
 	Vector3F position, rotation;
 	float fov, near_clip, far_clip;
 private:
 	Matrix4x4 camera_matrix() const;
-	bool axis_bound;
+	bool axis_bound, perspective;
 };
 
 #endif
