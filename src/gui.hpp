@@ -92,7 +92,7 @@ public:
 	void set_title(const std::string& new_title);
 	void set_render_target() const;
 	void clear_focus();
-	void clear(float r = 1.0f, float g = 1.0f, float b = 1.0f, float a = 1.0f) const;
+	void clear(GLbitfield mask = (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT), float r = 0.0f, float g = 0.0f, float b = 0.0f, float a = 1.0f) const;
 	void register_listener(Listener& l);
 	void deregister_listener(Listener& l);
 	GUI* get_focused_child() const;

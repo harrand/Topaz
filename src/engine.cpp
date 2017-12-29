@@ -57,7 +57,7 @@ void Engine::update(std::size_t shader_index)
 	
 	this->seconds_timer.update();
 	this->tick_timer.update();
-	this->window->clear(0.0f, 0.0f, 0.0f, 1.0f);
+	this->window->clear();
 	this->profiler.end_frame();
 	
 	this->scene.render(this->camera, &(this->get_shader(shader_index)), this->window->get_width(), this->window->get_height());

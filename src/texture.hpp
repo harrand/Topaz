@@ -150,7 +150,7 @@ private:
 class RenderBuffer
 {
 public:
-	RenderBuffer(int width, int height, GLenum internal_format);
+	RenderBuffer(int width, int height, GLenum internal_format = GL_RGBA);
 	// OpenGL RenderBuffers are write-only, so cannot possibly read the data in which to copy or move.
 	RenderBuffer(const RenderBuffer& copy) = delete;
 	RenderBuffer(RenderBuffer&& move) = delete;
@@ -213,6 +213,10 @@ public:
 	* Make the output value of the fragment-shader write to an existing buffer with the corresponding attachment type (e.g specifying GL_COLOR_ATTACHMENT0 will write to the Texture/RenderBuffer applied to GL_COLOR_ATTACHMENT0).
 	*/
 	void set_output_attachment(GLenum attachment) const;
+	/**
+	* Perform an OpenGL clear operation on the framebuffer.
+	*/
+	void clear(GLbitfield mask = (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT), float r = 0.0f, float g = 0.0f, float b = 0.0f, float a = 1.0f) const;
 	/**
 	* Bind and sets the viewpoint to this framebuffer.
 	* This means that any render calls will apply to this framebuffer.

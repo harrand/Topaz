@@ -388,6 +388,14 @@ void FrameBuffer::set_output_attachment(GLenum attachment) const
  	attachment);
 }
 
+void FrameBuffer::clear(GLbitfield mask, float r, float g, float b, float a) const
+{
+	glBindFramebuffer(GL_FRAMEBUFFER, this->framebuffer_handle);
+	glClearColor(r, g, b, a);
+	glClear(mask);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
 void FrameBuffer::set_render_target() const
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, this->framebuffer_handle);
