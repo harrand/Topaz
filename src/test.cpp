@@ -157,6 +157,10 @@ void init()
 				}
 			}
 			
+			if(key_listener.is_key_pressed("Up"))
+				engine.camera.fov -= (tz::consts::pi / 200.0f);
+			if(key_listener.is_key_pressed("Down"))
+				engine.camera.fov += (tz::consts::pi / 200.0f);
 			if(key_listener.catch_key_pressed("P"))
 				engine.camera.set_has_perspective_projection(!engine.camera.has_perspective_projection());
 			if(key_listener.is_key_pressed("W"))
