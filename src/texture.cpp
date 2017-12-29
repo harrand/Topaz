@@ -357,7 +357,7 @@ bool FrameBuffer::valid() const
 	return valid;
 }
 
-bool FrameBuffer::has_colour(std::size_t attachment_index) const
+bool FrameBuffer::has_colour(unsigned int attachment_index) const
 {
 	if(attachment_index > tz::graphics::maximum_framebuffer_attachments)
 	{

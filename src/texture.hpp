@@ -200,7 +200,7 @@ public:
 	/**
 	* Returns true if this framebuffer has a Texture or RenderBuffer with the attachment GL_COLOR_ATTACHMENTx, where x == attachment_index.
 	*/
-	bool has_colour(std::size_t attachment_index = 0) const;
+	bool has_colour(unsigned int attachment_index = 0) const;
 	/**
 	* Returns true if this framebuffer has a Texture or RenderBuffer with the attachment GL_DEPTH_ATTACHMENT.
 	*/
