@@ -195,9 +195,9 @@ public:
 	*/
 	bool valid() const;
 	/**
-	* Returns true if this framebuffer has a Texture or RenderBuffer with the attachment GL_COLOR_ATTACHMENT0.
+	* Returns true if this framebuffer has a Texture or RenderBuffer with the attachment GL_COLOR_ATTACHMENTx, where x == attachment_index.
 	*/
-	bool has_colour() const;
+	bool has_colour(std::size_t attachment_index = 0) const;
 	/**
 	* Returns true if this framebuffer has a Texture or RenderBuffer with the attachment GL_DEPTH_ATTACHMENT.
 	*/
@@ -206,6 +206,10 @@ public:
 	* Returns true if this framebuffer has a Texture or RenderBuffer with the attachment GL_STENCIL_ATTACHMENT.
 	*/
 	bool has_stencil() const;
+	/**
+	* Make the output value of the fragment-shader write to an existing buffer with the corresponding attachment type (e.g specifying GL_COLOR_ATTACHMENT0 will write to the Texture/RenderBuffer applied to GL_COLOR_ATTACHMENT0).
+	*/
+	void set_output_attachment(GLenum attachment) const;
 	/**
 	* Bind and sets the viewpoint to this framebuffer.
 	* This means that any render calls will apply to this framebuffer.

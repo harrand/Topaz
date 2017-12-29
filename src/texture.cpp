@@ -357,9 +357,14 @@ bool FrameBuffer::valid() const
 	return valid;
 }
 
-bool FrameBuffer::has_colour() const
+bool FrameBuffer::has_colour(std::size_t attachment_index) const
 {
-	return this->get_attachments().find(GL_COLOR_ATTACHMENT0) != this->get_attachments().end();
+	if(attachment_index > 31)
+	{
+		tz::util::log::error("FrameBuffer attachment_index query '", attachment_index, "' does not harbour a valid GL_COLOR_ATTACHMENT. Implementation-defined hardware maximum limit is attachment 31 or below.");
+		return false;
+	}
+	return this->get_attachments().find(GL_COLOR_ATTACHMENT0 + attachment_index) != this->get_attachments().end();
 }
 
 bool FrameBuffer::has_depth() const
@@ -370,6 +375,17 @@ bool FrameBuffer::has_depth() const
 bool FrameBuffer::has_stencil() const
 {
 	return this->get_attachments().find(GL_STENCIL_ATTACHMENT) != this->get_attachments().end();
+}
+
+void FrameBuffer::set_output_attachment(GLenum attachment) const
+{
+	if(this->attachments.find(attachment) == this->attachments.end())
+	{
+		tz::util::log::error("FrameBuffer render attachment type has no corresponding attachment; setting to default (which is GL_COLOR_ATTACHMENT0).");
+		attachment = GL_COLOR_ATTACHMENT0;
+	}
+	glNamedFramebufferDrawBuffer(this->framebuffer_handle,
+ 	attachment);
 }
 
 void FrameBuffer::set_render_target() const

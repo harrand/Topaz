@@ -79,7 +79,6 @@ namespace tz
 		inline void initialise();
 		// Much safer to use. tz::terminate will invoke this automatically. Only use this function if you do not wish to use tz::terminate to terminate all features.
 		inline void terminate();
-		
 		/*
 			Currently used only for Wavefront OBJ Models. To load an OBJ model in Topaz, invoke OBJModel::toIndexedModel to receive an instance of IndexedModel.
 		*/
