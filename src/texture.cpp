@@ -359,9 +359,9 @@ bool FrameBuffer::valid() const
 
 bool FrameBuffer::has_colour(std::size_t attachment_index) const
 {
-	if(attachment_index > 31)
+	if(attachment_index > tz::graphics::maximum_framebuffer_attachments)
 	{
-		tz::util::log::error("FrameBuffer attachment_index query '", attachment_index, "' does not harbour a valid GL_COLOR_ATTACHMENT. Implementation-defined hardware maximum limit is attachment 31 or below.");
+		tz::util::log::error("FrameBuffer attachment_index query '", attachment_index, "' does not harbour a valid GL_COLOR_ATTACHMENT. Implementation-defined hardware maximum limit is attachment", tz::graphics::maximum_framebuffer_attachments, "or below.");
 		return false;
 	}
 	return this->get_attachments().find(GL_COLOR_ATTACHMENT0 + attachment_index) != this->get_attachments().end();
