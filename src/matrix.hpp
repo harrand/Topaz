@@ -3,6 +3,9 @@
 #include <array>
 #include "vector.hpp"
 
+/**
+* Represents a two-dimensional square matrix.
+*/
 class Matrix2x2
 {
 public:
@@ -17,6 +20,10 @@ public:
 	Vector2F x, y;
 };
 
+
+/**
+* Represents a three-dimensional square matrix.
+*/
 class Matrix3x3
 {
 public:
@@ -31,6 +38,9 @@ public:
 	Vector3F x, y, z;
 };
 
+/**
+* Represents a four-dimensional square matrix.
+*/
 class Matrix4x4
 {
 public:
@@ -54,16 +64,46 @@ public:
 
 namespace tz::transform
 {
+	/**
+	* Construct a four-dimensional row-major translation matrix.
+	*/
 	Matrix4x4 translate(const Vector3F& position);
+	/**
+	* Construct a four-dimensional row-major rotational matrix in the x-axis (Pitch).
+	*/
 	Matrix4x4 rotate_x(float euler_x);
+	/**
+	* Construct a four-dimensional row-major rotational matrix in the y-axis (Yaw).
+	*/
 	Matrix4x4 rotate_y(float euler_y);
+	/**
+	* Construct a four-dimensional row-major rotational matrix in the x-axis (Roll).
+	*/
 	Matrix4x4 rotate_z(float euler_z);
+	/**
+	* Construct a four-dimensional row-major rotational matrix using XYZ rotations (Pitch, Yaw, Roll in Euler-angles).
+	*/
 	Matrix4x4 rotate(const Vector3F& euler_rotation);
+	/**
+	* Construct a four-dimensional row-major scaling matrix.
+	*/
 	Matrix4x4 scale(const Vector3F& scale);
 	
+	/**
+	* Construct a row-major model matrix using the functions above.
+	*/
 	Matrix4x4 model(const Vector3F& position, const Vector3F& euler_rotation, const Vector3F& scale);
+	/**
+	* Construct a row-major view matrix using the functions above. Works similarly to gluLookAt(...)
+	*/
 	Matrix4x4 view(const Vector3F& camera_position, const Vector3F& camera_euler_rotation);
+	/**
+	* Construct a row-major projection matrix to create an orthographic projection.
+	*/
 	Matrix4x4 orthographic_projection(float right, float left, float top, float bottom, float near, float far);
+	/**
+	* Construct a row-major projection matrix to create a perspective projection. Use this to simulate 3D with a "camera".
+	*/
 	Matrix4x4 perspective_projection(float fov, float width, float height, float near_clip, float far_clip);
 }
 
