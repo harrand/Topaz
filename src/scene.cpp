@@ -1,7 +1,7 @@
 #include "scene.hpp"
 #include "data.hpp"
 
-Scene::Scene(): spawn_point(Vector3F()), spawn_orientation(Vector3F()), filename({}), resources_path({}), objects({}), entities({}), entity_objects({}), base_lights({}){}
+Scene::Scene(): spawn_point(Vector3F()), spawn_orientation(Vector3F()), filename({}), resources_path({}), objects({}), entities({}), entity_objects({}){}
 
 Scene::Scene(std::string filename, std::string resources_path, const std::vector<std::unique_ptr<Mesh>>& all_meshes, const std::vector<std::unique_ptr<Texture>>& all_textures, const std::vector<std::unique_ptr<NormalMap>>& all_normal_maps, const std::vector<std::unique_ptr<ParallaxMap>>& all_parallax_maps, const std::vector<std::unique_ptr<DisplacementMap>>& all_displacement_maps): filename(std::move(filename)), resources_path(std::move(resources_path))
 {
@@ -57,15 +57,6 @@ void Scene::add_entity_object(EntityObject3D eo)
 	this->entity_objects.push_back(std::move(eo));
 }
 
-// Adds a light to this scene, with the shader handle of the corresponding shader that should handle such lighting.
-void Scene::add_light(Light light, GLuint shader_program_handle)
-{
-	// std::map::operator[] is O(log n) where n is size of map
-	while(this->base_lights.size() >= tz::graphics::maximum_lights)
-		this->base_lights.erase(this->base_lights.begin());
-	this->base_lights[light.get_uniforms(shader_program_handle, this->base_lights.size())] = light;
-}
-
 void Scene::remove_object(const Object3D& obj)
 {
 	this->objects.erase(std::remove(this->objects.begin(), this->objects.end(), obj), this->objects.end());
@@ -79,13 +70,6 @@ void Scene::remove_entity(const Entity& ent)
 void Scene::remove_entity_object(const EntityObject3D& eo)
 {
 	this->entity_objects.erase(std::remove(this->entity_objects.begin(), this->entity_objects.end(), eo), this->entity_objects.end());
-}
-
-void Scene::remove_light(const Light& light)
-{
-	for(auto it : this->base_lights)
-		if(it.second == light)
-			this->base_lights.erase(it.first);
 }
 
 const std::vector<Object3D>& Scene::get_objects() const
@@ -108,26 +92,6 @@ std::size_t Scene::get_size() const
 	return this->objects.size() + this->entities.size() + this->entity_objects.size();
 }
 
-const std::map<std::array<GLint, tz::graphics::light_number_of_uniforms>, Light>& Scene::get_lights() const
-{
-	return this->base_lights;
-}
-
-
-void Scene::kill_lights()
-{
-	for(auto& iter : this->base_lights)
-	{
-		// Kill all the lights in the shader before losing all the data by zeroing their corresponding uniforms
-		std::vector<float> pos({0.0f, 0.0f, 0.0f}), colour({0.0f, 0.0f, 0.0f});
-		glUniform3fv(iter.first.front(), 1, &(pos[0]));
-		glUniform3fv(iter.first[1], 1, &(colour[0]));
-		glUniform1f(iter.first[2], 0);
-		glUniform1f(iter.first[3], 0);
-		glUniform1f(iter.first[4], 0);
-	}
-}
-
 void Scene::export_scene(const std::string& scene_link) const
 {
 	const tz::data::Manager data_manager(this->resources_path.value());
@@ -142,7 +106,7 @@ void Scene::export_scene(const std::string& scene_link) const
 	output.edit_tag(tz::scene::spawnorientation_tag_name, tz::util::string::format(tz::util::string::devectorise_list_3<float>(this->spawn_orientation)));
 	for(std::size_t i = 0; i < this->objects.size(); i++)
 	{
-		const std::string object_name = "object" + tz::util::cast::to_string<int>(i);
+		const std::string object_name = tz::scene::object_tag_prefix + tz::util::cast::to_string<int>(i);
 		object_list.push_back(object_name);
 		const Object3D current_object = this->objects[i];
 		
@@ -161,7 +125,7 @@ void Scene::export_scene(const std::string& scene_link) const
 	}
 	for(std::size_t i = 0; i < this->entity_objects.size(); i++)
 	{
-		const std::string entity_object_name = "eo" + tz::util::cast::to_string<float>(i);
+		const std::string entity_object_name = tz::scene::entity_object_tag_prefix + tz::util::cast::to_string<float>(i);
 		entity_object_list.push_back(entity_object_name);
 		const EntityObject3D current_entity_object = this->entity_objects[i];
 
@@ -198,22 +162,6 @@ void Scene::render(const Camera& cam, Shader* shader, unsigned int width, unsign
 		object.render(cam, shader, width, height);
 	for(auto& entity_object : this->entity_objects)
 		entity_object.render(cam, shader, width, height);
-	for(auto& iter : this->base_lights)
-	{
-		Light light = iter.second;
-		std::vector<float> pos, colour;
-		pos.push_back(light.position.x);
-		pos.push_back(light.position.y);
-		pos.push_back(light.position.z);
-		colour.push_back(light.colour.x);
-		colour.push_back(light.colour.y);
-		colour.push_back(light.colour.z);
-		glUniform3fv(iter.first.front(), 1, &(pos[0]));
-		glUniform3fv(iter.first[1], 1, &(colour[0]));
-		glUniform1f(iter.first[2], light.power);
-		glUniform1f(iter.first[3], light.diffuse_component);
-		glUniform1f(iter.first[4], light.specular_component);
-	}
 }
 
 void Scene::update(unsigned int tps)

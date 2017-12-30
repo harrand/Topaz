@@ -3,7 +3,6 @@
 #include <map>
 #include <cstddef>
 #include "entity.hpp"
-#include "light.hpp"
 #include "MDL/mdl.hpp"
 
 namespace tz::scene
@@ -12,6 +11,9 @@ namespace tz::scene
 	constexpr char spawnorientation_tag_name[] = "spawnorientation";
 	constexpr char objects_sequence_name[] = "objects";
 	constexpr char entityobjects_sequence_name[] = "entityobjects";
+	
+	constexpr char object_tag_prefix[] = "object";
+	constexpr char entity_object_tag_prefix[] = "entity_object";
 }
 
 /*
@@ -37,8 +39,6 @@ public:
 	void add_entity(Entity ent);
 	// // Complexity: O(1) amortised Ω(1) ϴ(1) amortised
 	void add_entity_object(EntityObject3D eo);
-	// Complexity: O(n log n) Ω(log n) ϴ(log n), where n = number of existing lights.
-	void add_light(Light light, GLuint shader_program_handle);
 	template<class Element, typename... Args>
 	Element& emplace(Args&&... args);
 	template<typename... Args>
@@ -50,15 +50,11 @@ public:
 	void remove_object(const Object3D& obj);
 	void remove_entity(const Entity& ent);
 	void remove_entity_object(const EntityObject3D& eo);
-	void remove_light(const Light& light);
 	const std::vector<Object3D>& get_objects() const;
 	const std::vector<Entity>& get_entities() const;
 	const std::vector<EntityObject3D>& get_entity_objects() const;
 	// Returns total number of Objects, Entities and EntityObjects in the scene.
 	std::size_t get_size() const;
-	const std::map<std::array<GLint, tz::graphics::light_number_of_uniforms>, Light>& get_lights() const;
-	// Updates uniforms to currently bound shader, zeroing light values for all lights. Complexity: O(n) Ω(1) ϴ(n), where n = number of lights.
-	void kill_lights();
 	// Export scene data to a MDL file called scene_link. Complexity: O(n + m) Ω(1) ϴ(n + m), where n = number of objects and m = number of entity_objects.
 	void export_scene(const std::string& scene_link) const;
 	// Export scene data to a MDL file with the same name as the file which loaded this scene, overwriting it. Complexity: See Scene::export_scene.
@@ -78,7 +74,6 @@ private:
 	std::vector<Object3D> objects;
 	std::vector<Entity> entities;
 	std::vector<EntityObject3D> entity_objects;
-	std::map<std::array<GLint, tz::graphics::light_number_of_uniforms>, Light> base_lights;
 };
 
 #include "scene.inl"
