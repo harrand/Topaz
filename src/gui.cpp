@@ -370,6 +370,6 @@ namespace tz::ui
 	{
 		if(gui == nullptr || !gui->has_window_parent())
 			return Matrix4x4::identity();
-		return Matrix4x4::create_orthographic_matrix(gui->find_window_parent()->get_width(), 0.0f, gui->find_window_parent()->get_height(), 0.0f, -1.0f, 1.0f);
+		return tz::transform::orthographic_projection(gui->find_window_parent()->get_width(), 0.0f, gui->find_window_parent()->get_height(), 0.0f, -1.0f, 1.0f);
 	}
 }

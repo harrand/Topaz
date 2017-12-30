@@ -48,7 +48,7 @@ void Panel::update()
 			projection = tz::ui::create_orthographic_gui_matrix(this);
 		else
 			projection = Matrix4x4::identity();
-		this->shader.value().get().set_uniform<Matrix4x4>("model_matrix", projection * Matrix4x4::create_model_matrix(Vector3F(this->get_window_pos_x(), this->get_window_pos_y(), 0.0f), Vector3F(), Vector3F(this->width, this->height, 0.0f)));
+		this->shader.value().get().set_uniform<Matrix4x4>("model_matrix", projection * tz::transform::model(Vector3F(this->get_window_pos_x(), this->get_window_pos_y(), 0.0f), Vector3F(), Vector3F(this->width, this->height, 0.0f)));
 		if(this->has_texture())
 			this->texture->bind(&(this->shader.value().get()), 0);
 		this->shader.value().get().update();
@@ -96,7 +96,7 @@ void TextLabel::update()
 			projection = tz::ui::create_orthographic_gui_matrix(this);
 		else
 			projection = Matrix4x4::identity();
-		this->shader.value().get().set_uniform<Matrix4x4>("model_matrix", projection * Matrix4x4::create_model_matrix(Vector3F(this->get_window_pos_x(), this->get_window_pos_y(), 0.0f), Vector3F(), Vector3F(this->width, this->height, 0.0f)));
+		this->shader.value().get().set_uniform<Matrix4x4>("model_matrix", projection * tz::transform::model(Vector3F(this->get_window_pos_x(), this->get_window_pos_y(), 0.0f), Vector3F(), Vector3F(this->width, this->height, 0.0f)));
 		this->text_texture.bind(&(this->shader.value().get()), 0);
 		this->shader.value().get().update();
 		this->quad.render(false);

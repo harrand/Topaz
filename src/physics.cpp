@@ -50,7 +50,7 @@ BoundingSphere tz::physics::bound_sphere(const Object3D& object)
 	for(Vector3F position_modelspace : positions_modelspace)
 	{
 		Vector4F position_modelspace_homogeneous(position_modelspace.x, position_modelspace.y, position_modelspace.z, 1.0f);
-		Vector4F position_worldspace_homogeneous = Matrix4x4::create_model_matrix(object.position, object.rotation, object.scale) * position_modelspace_homogeneous;
+		Vector4F position_worldspace_homogeneous = tz::transform::model(object.position, object.rotation, object.scale) * position_modelspace_homogeneous;
 		positions_worldspace.emplace_back(position_worldspace_homogeneous.x, position_worldspace_homogeneous.y, position_worldspace_homogeneous.z);
 	}
 	// Objects are static so don't need to worry about updating this ever again. Best solution is O(n) which is to find the average position and use that as centre, and then find maximum distance and make that the distance
@@ -74,7 +74,7 @@ AABB tz::physics::bound_aabb(const Object3D& object)
 	for(Vector3F position_modelspace : positions_modelspace)
 	{
 		Vector4F position_modelspace_homogeneous(position_modelspace.x, position_modelspace.y, position_modelspace.z, 1.0f);
-		Vector4F position_worldspace_homogeneous = Matrix4x4::create_model_matrix(object.position, object.rotation, object.scale) * position_modelspace_homogeneous;
+		Vector4F position_worldspace_homogeneous = tz::transform::model(object.position, object.rotation, object.scale) * position_modelspace_homogeneous;
 		positions_worldspace.emplace_back(position_worldspace_homogeneous.x, position_worldspace_homogeneous.y, position_worldspace_homogeneous.z);
 	}
 	constexpr float float_min = std::numeric_limits<float>::lowest();

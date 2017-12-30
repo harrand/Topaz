@@ -265,77 +265,81 @@ Matrix4x4 Matrix4x4::inverse() const
 	return {x, y, z, w};
 }
 
-Matrix4x4 Matrix4x4::create_translation_matrix(Vector3F position)
+namespace tz::transform
 {
-	Matrix4x4 res(Vector4F(1.0f, 0.0f, 0.0f, position.x), Vector4F(0.0f, 1.0f, 0.0f, position.y), Vector4F(0.0f, 0.0f, 1.0f, position.z), Vector4F(0.0f, 0.0f, 0.0f, 1.0f));
-	return res;
-}
-
-Matrix4x4 Matrix4x4::create_rotational_x_matrix(float euler_x)
-{
-	return {Vector4F(1, 0, 0, 0), Vector4F(0, cos(euler_x), -sin(euler_x), 0), Vector4F(0, sin(euler_x), cos(euler_x), 0), Vector4F(0, 0, 0, 1)};
-}
-
-Matrix4x4 Matrix4x4::create_rotational_y_matrix(float euler_y)
-{
-	return {Vector4F(cos(euler_y), 0, -sin(euler_y), 0), Vector4F(0, 1, 0, 0), Vector4F(sin(euler_y), 0, cos(euler_y), 0), Vector4F(0, 0, 0, 1)};
-}
-
-Matrix4x4 Matrix4x4::create_rotational_z_matrix(float euler_z)
-{
-	return {Vector4F(cos(euler_z), -sin(euler_z), 0, 0), Vector4F(sin(euler_z), cos(euler_z), 0, 0), Vector4F(0, 0, 1, 0), Vector4F(0, 0, 0, 1)};
-}
-
-Matrix4x4 Matrix4x4::create_rotational_matrix(Vector3F euler_rotation)
-{
-	return Matrix4x4::create_rotational_z_matrix(euler_rotation.z) * Matrix4x4::create_rotational_y_matrix(euler_rotation.y) * Matrix4x4::create_rotational_x_matrix(euler_rotation.x);
-}
-
-Matrix4x4 Matrix4x4::create_scaling_matrix(Vector3F scale)
-{
-	return {Vector4F(scale.x, 0, 0, 0), Vector4F(0, scale.y, 0, 0), Vector4F(0, 0, scale.z, 0), Vector4F(0, 0, 0, 1)};
-}
-
-Matrix4x4 Matrix4x4::create_model_matrix(Vector3F position, Vector3F euler_rotation, Vector3F scale)
-{
-	return Matrix4x4::create_translation_matrix(position) * Matrix4x4::create_rotational_matrix(euler_rotation) * Matrix4x4::create_scaling_matrix(scale);
-}
-
-Matrix4x4 Matrix4x4::create_view_matrix(Vector3F camera_position, Vector3F camera_euler_rotation)
-{
-	return Matrix4x4::create_model_matrix(camera_position, camera_euler_rotation, Vector3F(1, 1, 1)).inverse();
-}
-
-Matrix4x4 Matrix4x4::create_orthographic_matrix(float right, float left, float top, float bottom, float near, float far)
-{
-	/* just following algorithm in row major:
+	Matrix4x4 translate(const Vector3F& position)
+	{
+		Matrix4x4 res(Vector4F(1.0f, 0.0f, 0.0f, position.x), Vector4F(0.0f, 1.0f, 0.0f, position.y), Vector4F(0.0f, 0.0f, 1.0f, position.z), Vector4F(0.0f, 0.0f, 0.0f, 1.0f));
+		return res;
+	}
 	
-	|2/(r-l)		0		0		-(r+l)/(r-l)|
-	|	0	 	 2/(t-b)	0		-(t+b)/(t-b)|
-	|	0			0	-2/(f-n)	-(f+n)/(f-n)|
-	|	0			0		0				1	|
+	Matrix4x4 rotate_x(float euler_x)
+	{
+		return {Vector4F(1, 0, 0, 0), Vector4F(0, cos(euler_x), -sin(euler_x), 0), Vector4F(0, sin(euler_x), cos(euler_x), 0), Vector4F(0, 0, 0, 1)};
+	}
 	
-	*/
-	Vector4F x(2 / (right - left), 0, 0, -1 * ((right + left)/(right - left))), y(0, 2 / (top - bottom), 0, -1 * ((top + bottom)/(top - bottom))), z(0, 0, -2 / (far - near), -1 * ((far + near)/(far - near))), w(0, 0, 0, 1);
-	return {x, y, z, w};
-}
-
-Matrix4x4 Matrix4x4::create_perspective_matrix(float fov, float aspect_ratio, float nearclip, float farclip)
-{
-	/* just following algorithm in row major:
+	Matrix4x4 rotate_y(float euler_y)
+	{
+		return {Vector4F(cos(euler_y), 0, -sin(euler_y), 0), Vector4F(0, 1, 0, 0), Vector4F(sin(euler_y), 0, cos(euler_y), 0), Vector4F(0, 0, 0, 1)};
+	}
 	
-	|1/(w/h*tan(fov/2))			0		0				0	 |
-	|			0		1/tan(fov/2)	0				0	 |
-	|			0				0	(f+n)/(n-f) (2*f*n)/(n-f)|
-	|			0				0	  -1.0				0	 |
+	Matrix4x4 rotate_z(float euler_z)
+	{
+		return {Vector4F(cos(euler_z), -sin(euler_z), 0, 0), Vector4F(sin(euler_z), cos(euler_z), 0, 0), Vector4F(0, 0, 1, 0), Vector4F(0, 0, 0, 1)};
+	}
 	
-	*/
-	float thf = tan(fov / 2);
-	Vector4F x(1/(aspect_ratio * thf), 0, 0, 0), y(0, 1/thf, 0, 0), z(0, 0, (farclip + nearclip)/(nearclip - farclip), (2 * farclip * nearclip)/(nearclip - farclip)), w(0, 0, -1.0f, 0);
-	return {x, y, z, w};
-}
-
-Matrix4x4 Matrix4x4::create_perspective_matrix(float fov, float width, float height, float nearclip, float farclip)
-{
-	return Matrix4x4::create_perspective_matrix(fov, width/height, nearclip, farclip);
+	Matrix4x4 rotate(const Vector3F& euler_rotation)
+	{
+		using namespace tz::transform;
+		return rotate_z(euler_rotation.z) * rotate_y(euler_rotation.y) * rotate_x(euler_rotation.x);
+	}
+	
+	Matrix4x4 scale(const Vector3F& scale)
+	{
+		return {Vector4F(scale.x, 0, 0, 0), Vector4F(0, scale.y, 0, 0), Vector4F(0, 0, scale.z, 0), Vector4F(0, 0, 0, 1)};
+	}
+	
+	Matrix4x4 model(const Vector3F& position, const Vector3F& euler_rotation, const Vector3F& scale)
+	{
+		using namespace tz::transform;
+		return translate(position) * rotate(euler_rotation) * tz::transform::scale(scale);
+	}
+	
+	Matrix4x4 view(const Vector3F& camera_position, const Vector3F& camera_euler_rotation)
+	{
+		using namespace tz::transform;
+		return model(camera_position, camera_euler_rotation, Vector3F(1, 1, 1)).inverse();
+	}
+	
+	Matrix4x4 orthographic_projection(float right, float left, float top, float bottom, float near, float far)
+	{
+		using namespace tz::transform;
+		/* just following algorithm in row major:
+		
+		|2/(r-l)		0		0		-(r+l)/(r-l)|
+		|	0	 	 2/(t-b)	0		-(t+b)/(t-b)|
+		|	0			0	-2/(f-n)	-(f+n)/(f-n)|
+		|	0			0		0				1	|
+		
+		*/
+		Vector4F x(2 / (right - left), 0, 0, -1 * ((right + left)/(right - left))), y(0, 2 / (top - bottom), 0, -1 * ((top + bottom)/(top - bottom))), z(0, 0, -2 / (far - near), -1 * ((far + near)/(far - near))), w(0, 0, 0, 1);
+		return {x, y, z, w};
+	}
+	
+	Matrix4x4 perspective_projection(float fov, float width, float height, float nearclip, float farclip)
+	{
+		float aspect_ratio = width / height;
+		using namespace tz::transform;
+		/* just following algorithm in row major:
+		
+		|1/(w/h*tan(fov/2))			0		0				0	 |
+		|			0		1/tan(fov/2)	0				0	 |
+		|			0				0	(f+n)/(n-f) (2*f*n)/(n-f)|
+		|			0				0	  -1.0				0	 |
+		
+		*/
+		float thf = tan(fov / 2);
+		Vector4F x(1/(aspect_ratio * thf), 0, 0, 0), y(0, 1/thf, 0, 0), z(0, 0, (farclip + nearclip)/(nearclip - farclip), (2 * farclip * nearclip)/(nearclip - farclip)), w(0, 0, -1.0f, 0);
+		return {x, y, z, w};
+	}
 }

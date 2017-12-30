@@ -48,20 +48,23 @@ public:
 	Matrix4x4 operator*(const Matrix4x4& other) const;
 	float determinant() const;
 	Matrix4x4 inverse() const;
-	
-	static Matrix4x4 create_translation_matrix(Vector3F position);
-	static Matrix4x4 create_rotational_x_matrix(float euler_x);
-	static Matrix4x4 create_rotational_y_matrix(float euler_y);
-	static Matrix4x4 create_rotational_z_matrix(float euler_z);
-	static Matrix4x4 create_rotational_matrix(Vector3F euler_rotation);
-	static Matrix4x4 create_scaling_matrix(Vector3F scale);
-	static Matrix4x4 create_model_matrix(Vector3F position, Vector3F euler_rotation, Vector3F scale);
-	static Matrix4x4 create_view_matrix(Vector3F camera_position, Vector3F camera_euler_rotation);
-	static Matrix4x4 create_orthographic_matrix(float right, float left, float top, float bottom, float near, float far);
-	static Matrix4x4 create_perspective_matrix(float fov, float aspect_ratio, float nearclip, float farclip);
-	static Matrix4x4 create_perspective_matrix(float fov, float width, float height, float nearclip, float farclip);
 
 	Vector4F x, y, z, w;
 };
+
+namespace tz::transform
+{
+	Matrix4x4 translate(const Vector3F& position);
+	Matrix4x4 rotate_x(float euler_x);
+	Matrix4x4 rotate_y(float euler_y);
+	Matrix4x4 rotate_z(float euler_z);
+	Matrix4x4 rotate(const Vector3F& euler_rotation);
+	Matrix4x4 scale(const Vector3F& scale);
+	
+	Matrix4x4 model(const Vector3F& position, const Vector3F& euler_rotation, const Vector3F& scale);
+	Matrix4x4 view(const Vector3F& camera_position, const Vector3F& camera_euler_rotation);
+	Matrix4x4 orthographic_projection(float right, float left, float top, float bottom, float near, float far);
+	Matrix4x4 perspective_projection(float fov, float width, float height, float near_clip, float far_clip);
+}
 
 #endif
