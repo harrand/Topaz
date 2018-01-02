@@ -7,10 +7,6 @@
 #include "graphics.hpp"
 #include "matrix.hpp"
 
-/*
-	Lowest-level renderable class that Topaz offers. All renderable Topaz classes such as Object3D contain these. Holds 3D vertex data, from a Wavefront OBJ model, for example. Use this if you want to render a mesh you made in Blender or something.
-*/
-
 namespace tz::graphics
 {
 	enum class BufferTypes : std::size_t
@@ -24,6 +20,12 @@ namespace tz::graphics
 	};
 }
 
+/**
+* Lowest-level renderable class that Topaz offers.
+* All renderable Topaz classes such as Object3D contain these.
+* Holds 3D vertex data, from a Wavefront OBJ model, for example.
+* Use this if you have an existing shader you can use to draw manually.
+*/
 class Mesh
 {
 public:
@@ -53,8 +55,10 @@ private:
 	void init_mesh();
 };
 
-/*
-	Like a normal mesh, but supports OpenGL instancing. Use this if you want to render the same mesh very many times at once with little attribute changes.
+/**
+* Like a normal mesh, but supports OpenGL instancing.
+* Use this if you want to render the same mesh very many times at once with little attribute changes.
+* This class is abstracted away by tz::graphics::instancify in object.hpp.
 */
 class InstancedMesh : public Mesh
 {

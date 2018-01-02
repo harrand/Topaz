@@ -8,8 +8,8 @@
 #include "SDL2/SDL_ttf.h"
 #include "utility.hpp"
 
-/*
-	Used to render text. Texture has a constructor taking a Font as a parameter. Use this to achieve font-rendering.
+/**
+* Used to render text. Texture has a constructor taking a Font as a parameter. Use this to achieve font-rendering.
 */
 class Font
 {
@@ -18,7 +18,7 @@ public:
 	Font(const Font& copy);
 	Font(Font&& move);
 	~Font();
-	Font& operator=(Font&& rhs); // move assignment operator
+	Font& operator=(Font&& rhs);
 	
 	int get_pixel_height() const;
 	std::string_view get_path() const;
@@ -29,8 +29,8 @@ private:
 	TTF_Font* font_handle;
 };
 
-/*
-	Holds vertex data. Essentially a POD if it weren't for the getters.
+/**
+* Holds vertex data as POD.
 */
 class Vertex
 {
@@ -46,8 +46,8 @@ public:
 	Vector3F normal;
 };
 
-/*
-	Representation of Pixel Data in RGBA format.
+/**
+* Representation of Pixel Data in RGBA format.
 */
 class PixelRGBA
 {
@@ -56,10 +56,11 @@ public:
 	Vector4<unsigned char> data;
 };
 
-/*
-	Bitmap representing Pixel data in any format. Topaz uses PixelRGBA as the template parameter, but you may provide any valid class with a public Vector4<T> called 'data'.
+/**
+* Bitmap representing Pixel data in any format.
+* Topaz uses PixelRGBA as the template parameter, but you may provide any valid class with a public Vector4<T> called 'data'.
 */
-template<class Pixel>
+template<class Pixel = PixelRGBA>
 class Bitmap
 {
 public:
@@ -72,15 +73,26 @@ namespace tz
 {
 	namespace graphics
 	{
-		// Global Variables. These are handled when the first Window is initialised. Editing these is likely to lead to horrible crashing. Leave these bools alone.
+		/**
+		* Global Variables. These are handled when the first Window is initialised. Editing these is likely to lead to horrible crashing. Leave these bools alone.
+		*/
 		extern bool has_context;
 		extern bool initialised;
-		// Window constructor invokes this upon first invocation. If you are not using Topaz windows, you will have to invoke this yourself. If you are, do not touch this.
+		/**
+		* Initialises the graphics component of Topaz. An OpenGL window-context MUST exist before this is executed.
+		* Topaz Window constructor invokes this upon first invocation.
+		* If you are not using Topaz windows, you will have to invoke this yourself.
+		* If you are using Topaz windows, DO NOT TOUCH THIS.
+		*/
 		inline void initialise();
-		// Much safer to use. tz::terminate will invoke this automatically. Only use this function if you do not wish to use tz::terminate to terminate all features.
+		/**
+		* Terminates and destroys all graphics components of Topaz. tz::terminate will invoke this automatically.
+		* Only use this function if you do not wish to use tz::terminate to terminate all features, but instead cherry-pick components like graphics.
+		*/
 		inline void terminate();
-		/*
-			Currently used only for Wavefront OBJ Models. To load an OBJ model in Topaz, invoke OBJModel::toIndexedModel to receive an instance of IndexedModel.
+		/**
+		* Currently used only for Wavefront OBJ Models. To load an OBJ model in Topaz, invoke OBJModel::toIndexedModel to receive an instance of IndexedModel.
+		* A Topaz Mesh constructor can take an IndexedModel as a parameter.
 		*/
 		namespace model
 		{
@@ -131,5 +143,4 @@ namespace tz
 }
 
 #include "graphics.inl"
-
 #endif

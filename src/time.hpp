@@ -5,8 +5,8 @@
 #include <functional>
 #include <ctime>
 
-/*
-	Use this to schedule, record time or pretty much do anything that requires timing.
+/**
+* Use this to schedule, record time or pretty much do anything that requires timing.
 */
 class Timer
 {
@@ -25,8 +25,8 @@ private:
 	long long int before, after;
 };
 
-/*
-	Specialised Timer that can be used to calculate FPS during runtime.
+/**
+* Specialised Timer that can be used to calculate FPS during runtime.
 */
 class TimeProfiler
 {
@@ -50,6 +50,9 @@ private:
 
 namespace tz::time
 {
+	/**
+	* Returns the current local time.
+	*/
 	inline long long int now()
 	{
 		return std::chrono::system_clock::now().time_since_epoch() / std::chrono::milliseconds(1);

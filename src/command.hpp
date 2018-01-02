@@ -5,8 +5,11 @@
 #include <memory>
 #include <functional>
 
-/*
-	Abstract. Not available for non-polymorphic use. Inherit from this to create custom commands (Essential for adding functionality to Engine).
+/**
+* Abstract. Not available for non-polymorphic use.
+* Represents a hard-coded functor with string arguments.
+* Inherit from this to create custom commands (Essential for adding functionality to Engine).
+* For simpler functions with no parameters, use a TrivialCommand instead (see lower down this source file).
 */
 class Command
 {
@@ -29,9 +32,10 @@ private:
 	std::string usage;
 };
 
-/*
-	Exactly the same as Command. However, does not support 'usage' nor command arguments. This is used as a wrapper for an invokable to be used in Engine.
-	This is an abstract class. To utilise your own TrivialCommands, create classes which inherit and override virtual void operator()() to provide your desired functionality.
+/**
+* Exactly the same as Command. However, does not support 'usage' nor command arguments.
+* This is used as a wrapper for an invokable to be used in Engine.
+* This is an abstract class. To utilise your own TrivialCommands, create classes which inherit and override virtual void operator()() to provide your desired functionality.
 */
 class TrivialCommand : public Command
 {
@@ -49,8 +53,9 @@ private:
 	using Command::get_expected_parameter_size;
 };
 
-/*
-	TrivialCommand subclass. Templated such that it can take a lambda. Essentially is a lambda-wrapper that can be treated like a command (This is how CommandExecutors can execute lambdas)
+/**
+* TrivialCommand subclass. Templated such that it can take a lambda.
+* Essentially is a lambda-wrapper that can be treated like a command (This is how CommandExecutors can execute lambdas)
 */
 template<typename Functor>
 class TrivialFunctor : public TrivialCommand
@@ -62,8 +67,9 @@ private:
 	Functor functor;
 };
 
-/*
-	System used to hold (but not typically own) Commands. Engine uses these to handle command input.
+/**
+* System used to hold (but not typically own) Commands.
+* Engine uses these to handle command input.
 */
 class CommandExecutor
 {
@@ -85,8 +91,15 @@ private:
 
 namespace tz::util::scheduler
 {
+	/**
+	* Run a functor in the same thread after a specified delay.
+	* Note that this does indeed make the thread sleep, so use this on an empty thread or use tz::util::scheduler::async_delayed_functor.
+	*/
 	template<typename Functor>
 	inline void sync_delayed_functor(unsigned int millis_delay, TrivialFunctor<Functor> command);
+	/**
+	* Sleep in a new thread for a specified delay, and then execute a functor.
+	*/
 	template<typename Functor>
 	inline void async_delayed_functor(unsigned int millis_delay, TrivialFunctor<Functor> command);
 }

@@ -5,8 +5,10 @@
 #include "camera.hpp"
 #include "scene.hpp"
 
-/*
-	Abstract. Not available for non-polymorphic use. Inherit from this to create custom listeners that a Topaz Window can register. Listeners are essentially wrappers for SDL_Event listening.
+/**
+* Wrapper for an SDL_Event listener.
+* Abstract. Not available for non-polymorphic use.
+* Inherit from this to create custom listeners that a Topaz Window can register.
 */
 class Listener
 {
@@ -25,8 +27,9 @@ private:
 	unsigned int id;
 };
 
-/*
-	How Topaz handles mouse input. Register this to a Topaz Window to use properly.
+/**
+* How Topaz handles mouse input.
+* Register this to a Topaz Window to use properly.
 */
 class MouseListener: public Listener
 {
@@ -51,8 +54,9 @@ private:
 	Vector2F previous_mouse_position, mouse_position;
 };
 
-/*
-	How Topaz handles keyboard input. Register this to a Topaz Window to use properly.
+/**
+* How Topaz handles keyboard input.
+* Register this to a Topaz Window to use properly.
 */
 class KeyListener: public Listener
 {

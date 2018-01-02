@@ -10,8 +10,8 @@ namespace tz::graphics
 	constexpr float default_far_clip = 10000.0f;
 }
 
-/*
-	Used to navigate the 3D scene such that all objects in the scene do not have to be moved in order to achieve motion.
+/**
+* Used to navigate the 3D scene such that all objects in the scene do not have to be moved in order to achieve motion.
 */
 class Camera
 {
@@ -21,14 +21,18 @@ public:
 	Camera(Camera&& move) = default;
 	Camera& operator=(const Camera& rhs) = default;
 
-	// Orientation methods.
+	/**
+	* Orientation methods.
+	*/
 	Vector3F forward() const;
 	Vector3F backward() const;
 	Vector3F up() const;
 	Vector3F down() const;
 	Vector3F left() const;
 	Vector3F right() const;
-	// Axis-Bound Camera causes orientation methods to stick to their normal axes. Also prevents rotation in the x and z axis.
+	/**
+	* Axis-Bound Camera causes orientation methods to stick to their normal axes. Also prevents rotation in the x and z axis.
+	*/
 	bool is_axis_bound() const;
 	void set_axis_bound(bool axis_bound);
 	bool has_perspective_projection() const;

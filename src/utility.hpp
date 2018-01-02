@@ -25,19 +25,36 @@ namespace tz
 	}
 	namespace literals
 	{
-		// to encourage sticking to SI units and radians
-		inline long double operator""_lb(long double mass)// return angle in kilograms
+		/**
+		* Convert a mass in metric kilograms (kg) to imperial pounds (lb).
+		*/
+		inline long double operator""_lb(long double mass)
 		{
 			return mass * 0.45359237;
 		}
-		inline long double operator""_st(long double mass)// return angle in kilograms
+		/**
+		* Convert a mass in metric kilograms(kg) to imperial stone (st).
+		*/
+		inline long double operator""_st(long double mass)
 		{
 			using namespace tz::literals;
 			return operator""_lb(mass * 14.0);
 		}
-		inline long double operator""_deg(long double angle)// return angle in radians
+		/**
+		* Convert an angle in degrees to an angle in radians.
+		* i.e: 180_deg = π
+		*/
+		inline long double operator""_deg(long double angle)
 		{
 			return angle * tz::consts::pi / 180.0;
+		}
+		/**
+		* Convert an angle in radians to an angle in degrees.
+		* i.e: π_rad = 180
+		*/
+		inline long double operator""_rad(long double angle)
+		{
+			return angle * 180.0 / tz::consts::pi;
 		}
 	}
 	namespace util
@@ -47,12 +64,21 @@ namespace tz
 		
 		namespace cast
 		{
+			/**
+			* Convert anything that can be converted into an std::string, into an std::string.
+			*/
 			template <typename T>
 			inline std::string to_string(T&& obj);
+			/**
+			* Convert an std::string to any value, if it can.
+			*/
 			template <typename T>
 			inline T from_string(const std::string& s);
 		}
 		
+		/**
+		* Perform processing on std::strings with these utility functions.
+		*/
 		namespace string
 		{
 			inline std::string to_lower(std::string data);
@@ -73,6 +99,10 @@ namespace tz
 			inline std::vector<std::string> devectorise_list_3(Vector3<T> v);
 		}
 		
+		/**
+		* Log to the console variadically.
+		* Like printf, but without the formatting and with type-safety.
+		*/
 		namespace log
 		{
 			inline void silent();
@@ -88,7 +118,10 @@ namespace tz
 		
 		namespace scheduler
 		{
-			/*	Invokes std::functions synchronously (pretty much just runs a function for you) or asynchronously (runs the function in another thread as to not impede current processing). You may well find this incredibly useful, however it does contain some overhead and therefore is not recommended for small, menial tasks.
+			/**
+			* Invokes std::functions synchronously (pretty much just runs a function for you) or asynchronously (runs the function in another thread as to not impede current processing).
+			* You may well find this incredibly useful, however it does contain some overhead and therefore is not recommended for small, menial tasks.
+			* For smaller and simpler tasks, it is highly recommended that you instead use tz::util::scheduler::[a]sync_delayed_functor(TrivialFunctor), in command.hpp.
 			*/
 			template<class ReturnType, class... Args>
 			inline void sync_delayed_task(unsigned int milliseconds_delay, std::function<ReturnType(Args...)> f, Args... args);
@@ -100,6 +133,10 @@ namespace tz
 	}
 }
 
+/**
+* Generate a random number using any of the C++ standard library random engines.
+* Using default template arguments yields implementation-defined behaviour, but normally is a linear-congruentional engine.
+*/
 template<typename Engine = std::default_random_engine, typename EngineResultType = std::default_random_engine::result_type>
 class Random
 {
@@ -121,6 +158,10 @@ private:
 	Engine random_engine;
 };
 
+/**
+* Template specialisation of Random, using the C++ mersenne-twister functionality.
+* More expensive than a linear-congruentional approach, but does provide higher-quality pseudorandomness.
+*/
 using MersenneTwister = Random<std::mt19937, std::mt19937::result_type>;
 #include "utility.inl"
 #endif

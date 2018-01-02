@@ -15,7 +15,9 @@ namespace tz::graphics
 	constexpr unsigned int depth_texture_default_width = depth_texture_default_size;
 	constexpr unsigned int depth_texture_default_height = depth_texture_default_size;
 	
-	// Minimum of implementation and 32. This is because if hardware allows 64 attachments, OpenGL headers currently dont even specify 32+ attachments (it goes to GL_DEPTH_ATTACHMENT). For this reason, it is the minimum of the two, for a fair compromise.
+	/**
+	* Minimum of implementation and 32. This is because if hardware allows 64 attachments, OpenGL headers currently dont even specify 32+ attachments (it goes to GL_DEPTH_ATTACHMENT). For this reason, it is the minimum of the two, for a fair compromise.
+	*/
 	constexpr unsigned int maximum_framebuffer_attachments = std::min(GL_MAX_COLOR_ATTACHMENTS, 32);
 	
 	enum class TextureType : unsigned int
@@ -122,8 +124,8 @@ public:
 	virtual tz::graphics::TextureType get_texture_type() const override{return tz::graphics::TextureType::DISPLACEMENT_MAP;}
 };
 
-/*
-	Used to construct skyboxes. Requires six textures; for each face of the skybox cube mesh.
+/**
+* Used to construct skyboxes. Requires six textures; for each face of the skybox cube mesh.
 */
 class CubeMap
 {
@@ -144,18 +146,22 @@ private:
 	int width[number_of_textures], height[number_of_textures], components[number_of_textures];
 };
 
-/*
-	Simple wrapper for an OpenGL RenderBuffer. It's just a POD as they're write-only.
+/**
+* Simple wrapper for an OpenGL RenderBuffer. It's just a POD as they're write-only.
 */
 class RenderBuffer
 {
 public:
 	RenderBuffer(int width, int height, GLenum internal_format = GL_RGBA);
-	// OpenGL RenderBuffers are write-only, so cannot possibly read the data in which to copy or move.
+	/**
+	* OpenGL RenderBuffers are write-only, so cannot possibly read the data in which to copy or move.
+	*/
 	RenderBuffer(const RenderBuffer& copy) = delete;
 	RenderBuffer(RenderBuffer&& move) = delete;
 	~RenderBuffer();
-	// RenderBuffer::operator= shall act like a pointer-copy; both share the same handle. However, when one dies the other becomes invalid, so this will be deleted too.
+	/**
+	* RenderBuffer::operator= shall act like a pointer-copy; both share the same handle. However, when one dies the other becomes invalid, so this will be deleted too.
+	*/
 	RenderBuffer& operator=(const RenderBuffer& rhs) = delete;
 	friend class FrameBuffer;
 private:
@@ -164,9 +170,9 @@ private:
 	GLuint renderbuffer_handle;
 };
 
-/*
-	Something to draw to that isn't a window.
-	FrameBuffer attachments can either be a Texture or a RenderBuffer.
+/**
+* Something to draw to that isn't a window.
+* FrameBuffer attachments can either be a Texture or a RenderBuffer.
 */
 class FrameBuffer
 {
@@ -226,7 +232,6 @@ private:
 	int width, height;
 	GLuint framebuffer_handle;
 	std::unordered_map<GLenum, std::variant<Texture, RenderBuffer>> attachments;
-	// attachments contain either a Texture or a RenderBuffer corresponding to the enum attachment type (such as depth attachment)
 };
 
 #include "texture.inl"

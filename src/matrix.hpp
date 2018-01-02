@@ -62,6 +62,9 @@ public:
 	Vector4F x, y, z, w;
 };
 
+/**
+* Topaz transformation matrices are always in row-major format.
+*/
 namespace tz::transform
 {
 	/**
@@ -94,7 +97,8 @@ namespace tz::transform
 	*/
 	Matrix4x4 model(const Vector3F& position, const Vector3F& euler_rotation, const Vector3F& scale);
 	/**
-	* Construct a row-major view matrix using the functions above. Works similarly to gluLookAt(...)
+	* Construct a row-major view matrix using the functions above.
+	* Works similarly to gluLookAt(...)
 	*/
 	Matrix4x4 view(const Vector3F& camera_position, const Vector3F& camera_euler_rotation);
 	/**
@@ -102,7 +106,8 @@ namespace tz::transform
 	*/
 	Matrix4x4 orthographic_projection(float right, float left, float top, float bottom, float near, float far);
 	/**
-	* Construct a row-major projection matrix to create a perspective projection. Use this to simulate 3D with a "camera".
+	* Construct a row-major projection matrix to create a perspective projection.
+	* Use this to simulate 3D with a "camera".
 	*/
 	Matrix4x4 perspective_projection(float fov, float width, float height, float near_clip, float far_clip);
 }

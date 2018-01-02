@@ -2,8 +2,9 @@
 #define GUI_DISPLAY_HPP
 #include "gui.hpp"
 
-/*
-	A 2D plane rendered on the screen. Can contain any other gui element in its own region. Can also be given colour to easily show the region it encompasses.
+/**
+* A 2D plane rendered on the screen.
+* Can contain any other gui element in its own region.
 */
 class Panel : public GUI
 {
@@ -31,8 +32,9 @@ protected:
 	Mesh quad;
 };
 
-/*
-	Very similar to a Panel, but has additional font-rendering applied. Use this to write text to the screen.
+/**
+* Very similar to a Panel, but has additional font-rendering applied.
+* Use this to write text to the screen.
 */
 class TextLabel : public Panel
 {
@@ -63,6 +65,5 @@ private:
 	std::string text;
 	Texture text_texture;
 };
-
 
 #endif

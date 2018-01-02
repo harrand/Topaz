@@ -14,19 +14,25 @@ namespace tz
 {
 	namespace graphics
 	{
-		// vertex, tessellation_control, tessellation_evaluation, geometry, fragment
+		/**
+		* Vertex, Tessellation Control, Tessellation Evaluation, Geometry, Fragment.
+		*/
 		constexpr std::size_t maximum_shaders = 5;
 		constexpr std::size_t maximum_uniforms = GL_MAX_UNIFORM_LOCATIONS;
 	}
 	namespace util
 	{
-		// Get a label for a shader_type (e.g GL_FRAGMENT_SHADER returns "Fragment")
+		/**
+		* Get a label for a shader_type (e.g GL_FRAGMENT_SHADER returns "Fragment")
+		*/
 		const char* shader_type_string(GLenum shader_type);
 	}
 }
 
 /*
-	Abstract. Not available for non-polymorphic use. I highly doubt you'll need to inherit from this anyway. Consider providing template specialisation to Uniform<T> if you need custom uniforms, which you may need in a later version of OpenGL which supports more primitives, perhaps.
+* Abstract. Not available for non-polymorphic use.
+* I highly doubt you'll need to inherit from this anyway.
+* Consider providing template specialisation to Uniform<T> if you need custom uniforms, which you may need in a later version of OpenGL which supports more primitives, perhaps.
 */
 class UniformImplicit
 {
@@ -36,17 +42,17 @@ public:
 	virtual void push() const = 0;
 };
 
-/*
-	Represent an OpenGL uniform in C++. Supports the following Topaz/C++ primitives:
-	bool, int, unsigned int, float, double, Vector2F, Vector3F, Vector4F, Matrix2x2, Matrix3x3, Matrix4x4
-	If the template argument is not any of these types, a static assertation will fail in Uniform<T>::push and emit a compiler error.
+/**
+* Represent an OpenGL uniform in C++. Supports the following Topaz/C++ primitives:
+* bool, int, unsigned int, float, double, Vector2F, Vector3F, Vector4F, Matrix2x2, Matrix3x3, and Matrix4x4.
+* If the template argument is not any of these types, a static assertation will fail in Uniform<T>::push and emit a compiler error.
 */
 template<class T>
 class Uniform : public UniformImplicit
 {
 public:
 	Uniform<T>(GLuint shader_handle, std::string uniform_location, T value);
-	Uniform<T>(const Uniform<T>& copy) = delete;	// Delete copy ctor because no uniform_location can have more than one value.
+	Uniform<T>(const Uniform<T>& copy) = delete;
 	Uniform<T>(Uniform<T>&& move) = default;
 	~Uniform<T>() = default;
 	
@@ -62,8 +68,8 @@ private:
 	GLint uniform_handle;
 };
 
-/*
-	Use this to load, compile, link, run, edit, analyse and even receive transform-feedback from an OpenGL shader written in GLSL.
+/**
+* Use this to load, compile, link, run, edit, analyse and even receive transform-feedback from an OpenGL shader written in GLSL.
 */
 class Shader
 {
@@ -113,6 +119,9 @@ private:
 	std::size_t uniform_counter;
 };
 
+/**
+* If your application is so simple that only the simplest matrix transformations are needed with no fancy effects, use this.
+*/
 namespace tz::graphics::shader
 {
 	Shader pass_through(std::string position_attribute_name = "position_modelspace_attribute", std::string texture_coordinate_attribute_name = "texture_coordinate_attribute", std::string texture_sampler_name = "texture_sampler_uniform");

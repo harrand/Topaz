@@ -5,7 +5,7 @@
 #include "camera.hpp"
 #include "utility.hpp"
 
-/*
+/**
 *	Playable audio file. Use this for short audio segments like sound effects.
 */
 class AudioClip
@@ -39,7 +39,7 @@ private:
 	Mix_Chunk* audio_handle;
 };
 
-/*
+/**
 *	Playable audio file, but from a position in 3D space. Same properties as AudioClip.
 */
 class AudioSource: public AudioClip
@@ -57,7 +57,7 @@ public:
 	void update(const Vector3F& source_position, const Camera& relative_to) const;
 };
 
-/*
+/**
 *	Playable audio file. Use this for longer audio segments such as background music.
 */
 class AudioMusic
@@ -85,7 +85,7 @@ private:
 	Mix_Music* audio_handle;
 };
 
-/*
+/**
 *	Initialise and terminate tz audio module. This must be done appropriately to use any of the audio functionality.
 */
 namespace tz
@@ -109,5 +109,4 @@ namespace tz
 }
 
 #include "audio.inl"
-
 #endif

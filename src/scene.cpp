@@ -3,7 +3,7 @@
 
 Scene::Scene(): spawn_point(Vector3F()), spawn_orientation(Vector3F()), filename({}), resources_path({}), objects({}), entities({}), entity_objects({}){}
 
-Scene::Scene(std::string filename, std::string resources_path, const std::vector<std::unique_ptr<Mesh>>& all_meshes, const std::vector<std::unique_ptr<Texture>>& all_textures, const std::vector<std::unique_ptr<NormalMap>>& all_normal_maps, const std::vector<std::unique_ptr<ParallaxMap>>& all_parallax_maps, const std::vector<std::unique_ptr<DisplacementMap>>& all_displacement_maps): filename(std::move(filename)), resources_path(std::move(resources_path))
+Scene::Scene(std::string filename, std::string resources_path, const std::vector<std::unique_ptr<Mesh>>& all_meshes, const std::vector<std::unique_ptr<Texture>>& all_textures, const std::vector<std::unique_ptr<NormalMap>>& all_normal_maps, const std::vector<std::unique_ptr<ParallaxMap>>& all_parallax_maps, const std::vector<std::unique_ptr<DisplacementMap>>& all_displacement_maps, bool instancify): filename(std::move(filename)), resources_path(std::move(resources_path))
 {
 	MDLF input(RawFile(this->get_file_name()));
 	std::string spawn_point_string = input.get_tag(tz::scene::spawnpoint_tag_name), spawn_orientation_string = input.get_tag(tz::scene::spawnorientation_tag_name);
@@ -21,12 +21,13 @@ Scene::Scene(std::string filename, std::string resources_path, const std::vector
 	// Parse all objects and entity_objects, and add them to the data vectors.
 	std::vector<std::string> object_list = input.get_sequence(tz::scene::objects_sequence_name);
 	std::vector<std::string> entity_object_list = input.get_sequence(tz::scene::entityobjects_sequence_name);
-	for(std::string object_name : object_list)
-	{
+	this->objects.reserve(object_list.size());
+	for(const auto& object_name : object_list)
 		this->add_object(Scene::retrieve_object_data(object_name, this->resources_path.value(), input, all_meshes, all_textures, all_normal_maps, all_parallax_maps, all_displacement_maps));
-	}
 	for(std::string entity_object_name : entity_object_list)
 		this->add_entity_object(Scene::retrieve_entity_object_data(entity_object_name, this->resources_path.value(), input, all_meshes, all_textures, all_normal_maps, all_parallax_maps, all_displacement_maps));
+	if(instancify)
+		this->objects = std::move(tz::graphics::instancify_full(this->objects));
 }
 
 bool Scene::has_file_name() const

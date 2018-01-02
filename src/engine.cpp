@@ -25,7 +25,7 @@ Engine::Engine(Window* window, std::string properties_path, unsigned int tps): c
 {
 	// fill all the asset buffers via tz data manager
 	tz::data::Manager(this->properties.get_tag("resources")).retrieve_all_data(this->meshes, this->textures, this->normal_maps, this->parallax_maps, this->displacement_maps);
-	this->scene = Scene(this->properties.get_tag("default_scene"), this->properties.get_tag("resources"), this->meshes, this->textures, this->normal_maps, this->parallax_maps, this->displacement_maps);
+	this->scene = Scene(this->properties.get_tag("default_scene"), this->properties.get_tag("resources"), this->meshes, this->textures, this->normal_maps, this->parallax_maps, this->displacement_maps, true);
 	// move the camera to the scene's spawn point & orientation.
 	this->camera.position = this->scene.spawn_point;
 	this->camera.rotation = this->scene.spawn_orientation;

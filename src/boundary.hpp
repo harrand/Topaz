@@ -2,8 +2,9 @@
 #define BOUNDARY_HPP
 #include "vector.hpp"
 
-/*
-	Abstract. Not available for non-polymorphic use. Inherit from this to create custom boundaries.
+/**
+* Abstract. Not available for non-polymorphic use. Inherit from this to create custom boundaries.
+* Represents a simple boundary in space.
 */
 class Boundary
 {
@@ -14,12 +15,14 @@ public:
 	~Boundary() = default;
 	Boundary& operator=(const Boundary& rhs) = default;
 	
-	// Pure virtual. Override this if you want to make your own Boundaries.
+	/**
+	* Pure virtual. Override this if you want to make your own Boundaries.
+	*/
 	virtual bool intersects(Boundary* other_boundary) const = 0;
 };
 
-/*
-	Used to bound physical spherical shapes in 3D space.
+/**
+* Used to bound physical spherical shapes in 3D space.
 */
 class BoundingSphere : public Boundary
 {
@@ -39,8 +42,9 @@ private:
 	const float radius;
 };
 
-/*
-	Axis-Aligned Bounding-Box. Very lightweight but is a very limited and minimalistic box-shaped boundary for an object. Use if performance > precision.
+/**
+* Axis-Aligned Bounding-Box. Very lightweight but is a very limited and minimalistic box-shaped boundary for an object.
+* Use if performance > precision.
 */
 class AABB : public Boundary
 {
@@ -60,8 +64,8 @@ private:
 	const Vector3F minimum, maximum;
 };
 
-/*
-	Used to bound planes. Useful for objects such as walls or floors.
+/**
+* Used to bound planes. Useful for objects such as walls or floors.
 */
 class BoundingPlane : public Boundary
 {

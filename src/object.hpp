@@ -15,6 +15,9 @@ namespace tz::graphics
 	constexpr float default_displacement_factor = 0.25f;
 }
 
+/**
+* Simple plane mesh with a colour to represent a simple-sprite.
+*/
 class Object2D
 {
 public:
@@ -29,8 +32,9 @@ private:
 	Mesh quad;
 };
 
-/*
-	Collaboration of a mesh, texture, normal-map, parallax-map and displacement-map. Use this to represent a 3D object completely, including its vertex data, texture, material etc.
+/**
+* Collaboration of a mesh, texture, normal-map, parallax-map and displacement-map
+* Use this to represent a 3D object, including its vertex data, texture, material etc.
 */
 
 class Object3D
@@ -44,7 +48,9 @@ public:
 	
 	const Mesh& get_mesh() const;
 	const std::map<tz::graphics::TextureType, Texture*>& get_textures() const;
-	// Complexity: O(n) Ω(1) ϴ(n), where n =~ size of mesh data (will not return until GPU finishes processing)
+	/**
+	* Complexity: O(n) Ω(1) ϴ(n), where n =~ size of mesh data (will not return until GPU finishes processing)
+	*/
 	virtual void render(const Camera& cam, Shader* shader, float width, float height) const;
 	bool operator==(const Object3D& rhs) const;
 	
@@ -56,8 +62,9 @@ protected:
 	std::map<tz::graphics::TextureType, Texture*> textures;
 };
 
-/*
-	Wraps an OpenGL cubemap via a set of six textures. Use this to render skyboxes in a 3D world easily. Bring your own skybox shader though (Default one provided with Topaz is called 'skybox').
+/**
+* Wraps an OpenGL cubemap via a set of six textures.
+* Use this to render skyboxes in a 3D world easily. Bring your own skybox shader though (Default one provided with Topaz is called 'skybox').
 */
 class Skybox
 {
@@ -75,15 +82,17 @@ private:
 
 namespace tz::graphics
 {
-	/*
-		Creates a new Object3D with InstancedMesh containing all data from the objects parameter.
-		All elements of 'objects' should share the same texture and mesh.
-		This function performs instancification; allowing multiple objects to be rendered with a single draw call, serving as a gargantuan optimisation.
+	/**
+	* Creates a new Object3D with InstancedMesh containing all data from the objects parameter.
+	* All elements of 'objects' should share the same texture and mesh.
+	* This function performs instancification; allowing multiple objects to be rendered with a single draw call, serving as a gargantuan optimisation under the right conditions.
 	*/
 	template <template <typename> class Collection>
 	Object3D instancify(const Collection<Object3D>& objects);
-	/*
-		Creates multiple Objects using instancify (see above). However, the returned map has the first element in which the Object3D value shares textures and meshes. This can be used on a World object list to instancify ALL elements, organising which Objects share the same asset data.
+	/**
+	* Creates multiple Objects using instancify (see above).
+	* However, the returned map has the first element in which the Object3D value shares textures and meshes.
+	* This can be used on a World object list to instancify ALL elements, organising which objects share the same asset data.
 	*/
 	template <template <typename> class Collection>
 	std::vector<Object3D> instancify_full(const Collection<Object3D>& objects);

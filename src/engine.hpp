@@ -27,10 +27,10 @@ class Engine
 {
 public:
 	/**
-	*	Constructs the Engine. Should be invoked after tz::initialise and Window construction.
-	*	window = Address of the Topaz window to render into.
-	*	properties_path = The absolute path to the Topaz properties file (normally called properties.mdl)
-	*	tps = Number of tick updates per second (this affects runtime of physics etc, not rendering). Default is 30, although you can use less or more, depending on how precise you need physics etc to run at.
+	* Constructs the Engine. Should be invoked after tz::initialise and Window construction.
+	* window = Address of the Topaz window to render into.
+	* properties_path = The absolute path to the Topaz properties file (normally called properties.mdl)
+	* tps = Number of tick updates per second (this affects runtime of physics etc, not rendering). Default is 30, although you can use less or more, depending on how precise you need physics etc to run at.
 	*/
 	Engine(Window* window, std::string properties_path = tz::default_properties_path, unsigned int tps = 30);
 	Engine(const Engine& copy) = default;
@@ -108,7 +108,7 @@ public:
 	* Returns true if a physics update will occur next update. Use-cases for this mainly include when you need to synchronise your own functionality with the physics updates (which you should really use add_tick_command(Command*) for.)
 	*/
 	bool is_update_due() const;
-	/*
+	/**
 	* Editing fields of these public members is well-defined. But as far as Topaz is concerned, re-assigning them is unspecified behaviour.
 	*/
 	Camera camera;

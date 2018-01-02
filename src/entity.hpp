@@ -9,8 +9,9 @@ namespace tz::physics
 	constexpr float default_mass = 1.0f;
 }
 
-/*
-	Something which follows the rules of Newtonian Motion. Attach this to something you want to be able to experience motion and forces, such as gravity or thrust.
+/**
+* Something which follows the rules of Newtonian Motion.
+* Attach this to something you want to be able to experience motion and forces, such as gravity or thrust.
 */
 class Entity
 {
@@ -22,9 +23,15 @@ public:
 	
 	Vector3F get_acceleration() const;
 	const std::unordered_map<std::string, Force>& get_forces() const;
-	// Complexity: O(n) Ω(1) ϴ(1), where n = number of existing forces
+	/**
+	* Apply a force on this object, provided a name.
+	* Complexity: O(n) Ω(1) ϴ(1), where n = number of existing forces.
+	*/
 	void apply_force(std::string force_name, Force f);
-	// Complexity: O(n) Ω(1) ϴ(1), where n = number of existing forces
+	/**
+	* Remove the force on this object with the specified name.
+	* Complexity: O(n) Ω(1) ϴ(1), where n = number of existing forces
+	*/
 	void remove_force(std::string force_name);
 	virtual void update_motion(unsigned int fps);
 	bool operator==(const Entity& rhs) const;
@@ -36,8 +43,8 @@ protected:
 	std::unordered_map<std::string, Force> forces;
 };
 
-/*
-	Essentially an Entity which has a renderable component in the form of an Object3D. See Object3D documentation for additional details.
+/**
+* Essentially an Entity which has a renderable component in the form of an Object3D. See Object3D documentation for additional details.
 */
 class EntityObject3D : public Entity, public Object3D
 {

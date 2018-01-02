@@ -7,7 +7,7 @@ void Object2D::render(const Camera& cam, Shader* shader, float width, float heig
 	shader->bind();
 	shader->set_uniform<Matrix4x4>("m", tz::transform::model(Vector3F(this->position, 0.0f), Vector3F(0.0f, 0.0f, this->rotation), Vector3F(this->scale, 1.0f)));
 	shader->set_uniform<Matrix4x4>("v", tz::transform::view(cam.position, cam.rotation));
-	shader->set_uniform<Matrix4x4>("p", tz::transform::orthographic_projection(width, 0.0f, height, 0.0f, -1.0f, 1.0f));
+	shader->set_uniform<Matrix4x4>("p", cam.projection(width, height));
 	shader->set_uniform<Vector4F>("colour", this->colour);
 	shader->set_uniform<bool>("has_texture", false);
 	shader->update();

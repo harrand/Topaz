@@ -17,8 +17,8 @@ namespace tz
 		constexpr char default_parallax_maps_sequence_name[] = "parallaxmaps";
 		constexpr char default_displacement_maps_sequence_name[] = "displacementmaps";
 		
-		/*
-			Essentially an MDL Asset Manager. This is how Topaz handles MDL data files which hold assets such as textures and models.
+		/**
+		* Essentially an MDL Asset Manager. This is how Topaz handles MDL data files which hold assets such as textures and models.
 		*/
 		class Manager
 		{
