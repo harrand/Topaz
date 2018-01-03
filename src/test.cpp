@@ -130,14 +130,10 @@ void init()
 	TrivialFunctor render_2d([&](){test_plane.render(engine.camera, &(shader_2d), wnd.get_width(), wnd.get_height());});
 	engine.add_update_command(&render_2d);
 	
-	tz::util::log::message("instantiating buffer...");
 	FrameBuffer plane_texture_buffer(512, 512);
-	tz::util::log::message("emplacing empty texture in buffer...");
 	Texture& plane_texture = plane_texture_buffer.emplace_texture(GL_COLOR_ATTACHMENT0, 512, 512);
 	plane_texture_buffer.emplace_renderbuffer(GL_DEPTH_ATTACHMENT, 512, 512, GL_DEPTH_COMPONENT);
-	tz::util::log::message("setting framebuffer output attachment to color.");
 	plane_texture_buffer.set_output_attachment(GL_COLOR_ATTACHMENT0);
-	tz::util::log::message("ready to werk!");
 	while(!engine.get_window().is_close_requested())
 	{
 		float multiplier = tz::util::cast::from_string<float>(MDLF(RawFile(engine.get_properties().get_tag("resources"))).get_tag("speed"));
@@ -154,10 +150,7 @@ void init()
 		}
 		
 		plane_texture_buffer.clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, 0.0f, 0.0f, 0.0f, 0.0f);
-		//static bool goyim = false;
 		plane_texture_buffer.set_render_target();
-		//if(goyim = !goyim)
-		tz::util::log::message("clearing the renderbuffer.");
 		engine.scene.render(engine.camera, &(engine.default_shader), wnd.get_width(), wnd.get_height());
 		test_plane = Sprite(Vector2F(0.0f, 300.0f), tz::consts::pi, Vector2F(100, 100), &plane_texture);
 		
