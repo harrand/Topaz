@@ -157,7 +157,7 @@ public:
 	* OpenGL RenderBuffers are write-only, so cannot possibly read the data in which to copy or move.
 	*/
 	RenderBuffer(const RenderBuffer& copy) = delete;
-	RenderBuffer(RenderBuffer&& move) = delete;
+	RenderBuffer(RenderBuffer&& move);
 	~RenderBuffer();
 	/**
 	* RenderBuffer::operator= shall act like a pointer-copy; both share the same handle. However, when one dies the other becomes invalid, so this will be deleted too.

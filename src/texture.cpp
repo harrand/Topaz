@@ -325,6 +325,11 @@ RenderBuffer::RenderBuffer(int width, int height, GLenum internal_format): width
 	glBindRenderbuffer(GL_RENDERBUFFER, 0);
 }
 
+RenderBuffer::RenderBuffer(RenderBuffer&& move): width(move.width), height(move.height), internal_format(move.internal_format), renderbuffer_handle(move.renderbuffer_handle)
+{
+	move.renderbuffer_handle = 0;
+}
+
 RenderBuffer::~RenderBuffer()
 {
 	// still silently ignores 0's.
