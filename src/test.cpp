@@ -72,6 +72,7 @@ void init()
 	Vector4F gui_colour(0.0f, 0.0f, 0.0f, 0.95f);
 	Font example_font("../../../res/runtime/fonts/CaviarDreams.ttf", 26);
 	TextLabel text(0.0f, 0.0f, Vector4F(1, 1, 1, 1), {}, {}, example_font, "FPS: ...", engine.default_gui_shader);
+	TextLabel pos_text(text.get_width(), 0.0f, Vector4F(1, 1, 1, 1), {}, {}, example_font, "Loading...", engine.default_gui_shader);
 	TrivialFunctor toggle([&](){text.set_hidden(!text.is_hidden());});
 	Panel gui_panel(-1.0f, -1.0f, 1.0f, 1.0f, Vector4F(0.4f, 0.4f, 0.4f, 0.5f), engine.default_gui_shader);
 	gui_panel.set_using_proportional_positioning(true);
@@ -87,6 +88,7 @@ void init()
 	
 	TrivialFunctor pop_cmd([](){tz::audio::play_async(AudioClip("../../../res/runtime/music/pop.wav"));});
 	wnd.add_child(&text);
+	wnd.add_child(&pos_text);
 	wnd.add_child(&spawn_block);
 	wnd.add_child(&gui_panel);
 	gui_panel.add_child(&gui_title);
@@ -122,6 +124,12 @@ void init()
 	const float a = 0.5f;
 	float speed = 0.0f;
 	
+	Shader shader_2d("../../../src/shaders/2D");
+	
+	Object2D test_plane(Vector2F(0.0f, 50.0f), 0.0f, Vector2F(10, 10), Vector4F(0.0f, 1.0f, 0.0f, 1.0f));
+	TrivialFunctor render_2d([&](){test_plane.render(engine.camera, &(shader_2d), wnd.get_width(), wnd.get_height());});
+	engine.add_update_command(&render_2d);
+	
 	while(!engine.get_window().is_close_requested())
 	{
 		float multiplier = tz::util::cast::from_string<float>(MDLF(RawFile(engine.get_properties().get_tag("resources"))).get_tag("speed"));
@@ -130,6 +138,9 @@ void init()
 		if(updater.millis_passed(1000))
 		{
 			text.set_text("FPS: " + tz::util::cast::to_string(engine.get_fps()));
+			pos_text.set_x(text.get_width() * 4);
+			Vector3<int> pos_int(engine.camera.position.x, engine.camera.position.y, engine.camera.position.z);
+			pos_text.set_text(tz::util::string::format(tz::util::string::devectorise_list_3(Vector3F(pos_int.x, pos_int.y, pos_int.z))));
 			updater.reload();
 			seconds++;
 		}
