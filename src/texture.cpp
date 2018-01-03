@@ -12,6 +12,10 @@ Texture::Texture(int width, int height, bool initialise_handle): filename({}), t
 		// Generates a new texture, and just fills it with zeroes if specified.
 		glGenTextures(1, &(this->texture_handle));
 		glBindTexture(GL_TEXTURE_2D, this->texture_handle);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, this->width, this->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 		// Unbind the texture.
 		glBindTexture(GL_TEXTURE_2D, 0);
@@ -106,9 +110,15 @@ Texture::Texture(const Font& font, const std::string& text, SDL_Color foreground
 	SDL_FreeSurface(text_surface);
 }
 
-Texture::Texture(const Texture& copy): Texture(copy.get_file_name()){}
+Texture::Texture(const Texture& copy)
+{
+	if(copy.has_file_name())
+		(*this) = Texture(copy.get_file_name());
+	else
+		(*this) = Texture(copy.width, copy.height);
+}
 
-Texture::Texture(Texture&& move): filename(move.get_file_name()), texture_handle(move.texture_handle), width(move.width), height(move.height), components(move.components)
+Texture::Texture(Texture&& move): filename(move.filename), texture_handle(move.texture_handle), width(move.width), height(move.height), components(move.components)
 {
 	move.texture_handle = 0;
 }
@@ -384,8 +394,9 @@ void FrameBuffer::set_output_attachment(GLenum attachment) const
 		tz::util::log::error("FrameBuffer render attachment type has no corresponding attachment; setting to default (which is GL_COLOR_ATTACHMENT0).");
 		attachment = GL_COLOR_ATTACHMENT0;
 	}
-	glNamedFramebufferDrawBuffer(this->framebuffer_handle,
- 	attachment);
+	glBindFramebuffer(GL_FRAMEBUFFER, this->framebuffer_handle);
+	glDrawBuffer(attachment);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void FrameBuffer::clear(GLbitfield mask, float r, float g, float b, float a) const

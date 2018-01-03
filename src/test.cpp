@@ -130,6 +130,13 @@ void init()
 	TrivialFunctor render_2d([&](){test_plane.render(engine.camera, &(shader_2d), wnd.get_width(), wnd.get_height());});
 	engine.add_update_command(&render_2d);
 	
+	tz::util::log::message("instantiating buffer...");
+	FrameBuffer plane_texture_buffer(512, 512);
+	tz::util::log::message("emplacing empty texture in buffer...");
+	Texture& plane_texture = plane_texture_buffer.emplace_texture(GL_COLOR_ATTACHMENT0, 512, 512);
+	tz::util::log::message("setting framebuffer output attachment to color.");
+	plane_texture_buffer.set_output_attachment(GL_COLOR_ATTACHMENT0);
+	tz::util::log::message("ready to werk!");
 	while(!engine.get_window().is_close_requested())
 	{
 		float multiplier = tz::util::cast::from_string<float>(MDLF(RawFile(engine.get_properties().get_tag("resources"))).get_tag("speed"));
@@ -137,10 +144,19 @@ void init()
 		on_ground = false;
 		if(updater.millis_passed(1000))
 		{
+			tz::util::log::message("balls.");
+			tz::util::log::message("is framebuffer ready? ", plane_texture_buffer.valid());
+			tz::util::log::message("setting render target");
+			plane_texture_buffer.set_render_target();
+			tz::util::log::message("clearing the renderbuffer.");
+			engine.scene.render(engine.camera, &(engine.default_shader), wnd.get_width(), wnd.get_height());
+			
 			text.set_text("FPS: " + tz::util::cast::to_string(engine.get_fps()));
 			pos_text.set_x(text.get_width() * 4);
 			Vector3<int> pos_int(engine.camera.position.x, engine.camera.position.y, engine.camera.position.z);
 			pos_text.set_text(tz::util::string::format(tz::util::string::devectorise_list_3(Vector3F(pos_int.x, pos_int.y, pos_int.z))));
+			test_plane = Sprite(Vector2F(0.0f, 50.0f), 0.0f, Vector2F(10, 10), &plane_texture);
+			plane_texture_buffer.clear();
 			updater.reload();
 			seconds++;
 		}

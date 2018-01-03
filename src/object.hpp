@@ -22,6 +22,7 @@ class Object2D
 {
 public:
 	Object2D(Vector2F position, float rotation, Vector2F scale, Vector4F colour = Vector4F(0.0f, 0.0f, 0.0f, 1.0f));
+	Object2D& operator=(const Object2D& copy);
 	
 	virtual void render(const Camera& cam, Shader* shader, float width, float height) const;
 	
@@ -39,6 +40,7 @@ class Sprite : public Object2D
 {
 public:
 	Sprite(Vector2F position, float rotation, Vector2F scale, Texture* texture);
+	Sprite& operator=(const Sprite& copy);
 	virtual void render(const Camera& cam, Shader* shader, float width, float height) const override;
 private:
 	Texture* texture;

@@ -222,7 +222,7 @@ public:
 	/**
 	* Perform an OpenGL clear operation on the framebuffer.
 	*/
-	void clear(GLbitfield mask = (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT), float r = 0.0f, float g = 0.0f, float b = 0.0f, float a = 1.0f) const;
+	void clear(GLbitfield mask = (GL_COLOR_BUFFER_BIT), float r = 0.0f, float g = 0.0f, float b = 0.0f, float a = 1.0f) const;
 	/**
 	* Bind and sets the viewpoint to this framebuffer.
 	* This means that any render calls will apply to this framebuffer.

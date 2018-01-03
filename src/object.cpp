@@ -2,6 +2,15 @@
 
 Object2D::Object2D(Vector2F position, float rotation, Vector2F scale, Vector4F colour): position(position), scale(scale), rotation(rotation), colour(colour), quad(tz::graphics::create_quad()){}
 
+Object2D& Object2D::operator=(const Object2D& copy)
+{
+	this->position = copy.position;
+	this->scale = copy.scale;
+	this->rotation = copy.rotation;
+	this->colour = copy.colour;
+	return *this;
+}
+
 void Object2D::render(const Camera& cam, Shader* shader, float width, float height) const
 {
 	shader->bind();
@@ -15,6 +24,16 @@ void Object2D::render(const Camera& cam, Shader* shader, float width, float heig
 }
 
 Sprite::Sprite(Vector2F position, float rotation, Vector2F scale, Texture* texture): Object2D(position, rotation, scale, Vector4F(0.0f, 0.0f, 0.0f, 1.0f)), texture(texture){}
+
+Sprite& Sprite::operator=(const Sprite& copy)
+{
+	this->position = copy.position;
+	this->scale = copy.scale;
+	this->rotation = copy.rotation;
+	this->colour = copy.colour;
+	this->texture = copy.texture;
+	return *this;
+}
 
 void Sprite::render(const Camera& cam, Shader* shader, float width, float height) const
 {

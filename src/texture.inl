@@ -29,8 +29,15 @@ Buffer& FrameBuffer::emplace(GLenum attachment, Args&&... args)
 template<typename... Args>
 Texture& FrameBuffer::emplace_texture(GLenum attachment, Args&&... args)
 {
-	Texture& texture = *(this->attachments.emplace(attachment, std::forward<Args>(args)...));
-	glBindFramebuffer(GL_FRAMEBUFFER, &(this->framebuffer_handle));
+	tz::util::log::message("creating the pair");
+	auto pair = this->attachments.insert(std::make_pair(attachment, Texture(std::forward<Args>(args)...)));
+	tz::util::log::message("creating the iterator...");
+	auto iterator = (pair.first);
+	tz::util::log::message("finally creating the variant");
+	auto& variant = (*iterator).second;
+	tz::util::log::message("variant didnt throw, std::get does.");
+	Texture& texture = std::get<Texture>(variant);
+	glBindFramebuffer(GL_FRAMEBUFFER, this->framebuffer_handle);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, attachment, GL_TEXTURE_2D, texture.texture_handle, 0);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	return texture;
@@ -39,8 +46,8 @@ Texture& FrameBuffer::emplace_texture(GLenum attachment, Args&&... args)
 template<typename... Args>
 RenderBuffer& FrameBuffer::emplace_renderbuffer(GLenum attachment, Args&&... args)
 {
-	RenderBuffer& render_buffer = this->attachments.emplace(attachment, std::forward<Args>(args)...);
-	glBindFramebuffer(GL_FRAMEBUFFER, &(this->framebuffer_handle));
+	RenderBuffer& render_buffer = std::get<RenderBuffer>((*(this->attachments.emplace(attachment, std::forward<Args>(args)...).first)).second);
+	glBindFramebuffer(GL_FRAMEBUFFER, this->framebuffer_handle);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, attachment, GL_RENDERBUFFER, render_buffer.renderbuffer_handle);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	return render_buffer;
