@@ -28,8 +28,20 @@ public:
 	Vector2F position, scale;
 	float rotation;
 	Vector4F colour;
-private:
+protected:
 	Mesh quad;
+};
+
+/**
+* Like a normal Object2D, but has a texture bound.
+*/
+class Sprite : public Object2D
+{
+public:
+	Sprite(Vector2F position, float rotation, Vector2F scale, Texture* texture);
+	virtual void render(const Camera& cam, Shader* shader, float width, float height) const override;
+private:
+	Texture* texture;
 };
 
 /**
