@@ -75,6 +75,7 @@ public:
 protected:
 	unsigned char* load_texture();
 	void delete_texture(unsigned char* imgdata);
+	void bind_with_string(Shader* shader, unsigned int id, const std::string& sampler_uniform_name) const;
 	
 	std::optional<std::string> filename;
 	GLuint texture_handle;
@@ -88,39 +89,24 @@ private:
 class NormalMap: public Texture
 {
 public:
-	NormalMap(std::string filename = "../../../res/runtime/normalmaps/default_normalmap.jpg");
-	NormalMap(const NormalMap& copy) = default;
-	NormalMap(NormalMap&& move) = default;
-	~NormalMap() = default;
-	NormalMap& operator=(const NormalMap& rhs) = delete;
-	
-	virtual void bind(Shader* shader, unsigned int id) const override;
+	NormalMap(std::string filename = "../../../res/runtime/normalmaps/default_normalmap.jpg"): Texture(filename, false){};
+	virtual void bind(Shader* shader, unsigned int id) const override{this->bind_with_string(shader, id, "normal_map_sampler");}
 	virtual tz::graphics::TextureType get_texture_type() const override{return tz::graphics::TextureType::NORMAL_MAP;}
 };
 
 class ParallaxMap: public Texture
 {
 public:
-	ParallaxMap(std::string filename = "../../../res/runtime/parallaxmaps/default_parallax.png");
-	ParallaxMap(const ParallaxMap& copy) = default;
-	ParallaxMap(ParallaxMap&& move) = default;
-	~ParallaxMap() = default;
-	ParallaxMap& operator=(const ParallaxMap& rhs) = delete;
-	
-	virtual void bind(Shader* shader, unsigned int id) const override;
+	ParallaxMap(std::string filename = "../../../res/runtime/parallaxmaps/default_parallax.png"): Texture(filename, false){};
+	virtual void bind(Shader* shader, unsigned int id) const override{this->bind_with_string(shader, id, "parallax_map_sampler");}
 	virtual tz::graphics::TextureType get_texture_type() const override{return tz::graphics::TextureType::PARALLAX_MAP;}
 };
 
 class DisplacementMap: public Texture
 {
 public:
-	DisplacementMap(std::string filename = "../../../res/runtime/displacementmaps/default_displacement.png");
-	DisplacementMap(const DisplacementMap& copy) = default;
-	DisplacementMap(DisplacementMap&& move) = default;
-	~DisplacementMap() = default;
-	DisplacementMap& operator=(const DisplacementMap& rhs) = delete;
-	
-	virtual void bind(Shader* shader, unsigned int id) const override;
+	DisplacementMap(std::string filename = "../../../res/runtime/displacementmaps/default_displacement.png"): Texture(filename, false){};
+	virtual void bind(Shader* shader, unsigned int id) const override{this->bind_with_string(shader, id, "displacement_map_sampler");}
 	virtual tz::graphics::TextureType get_texture_type() const override{return tz::graphics::TextureType::DISPLACEMENT_MAP;}
 };
 

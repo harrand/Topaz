@@ -143,16 +143,7 @@ Texture& Texture::operator=(Texture&& rhs)
 
 void Texture::bind(Shader* shader, unsigned int id) const
 {
-	if(id > 31)
-	{
-		tz::util::log::error("FrameBuffer bind ID ", id, " is invalid. Must be between 1-31");
-		return;
-	}
-	// this sets which texture we want to bind (id can be from 0 to 31)
-	// GLTEXTURE0 is actually a number, so we can add the id instead of a massive switch statement
-	glActiveTexture(GL_TEXTURE0 + id);
-	glBindTexture(GL_TEXTURE_2D, this->texture_handle);
-	shader->set_uniform<int>("texture_sampler", id);
+	this->bind_with_string(shader, id, "texture_sampler");
 }
 
 bool Texture::has_file_name() const
@@ -204,9 +195,7 @@ void Texture::delete_texture(unsigned char* imgdata)
 	stbi_image_free(imgdata);
 }
 
-NormalMap::NormalMap(std::string filename): Texture(filename, false){}
-
-void NormalMap::bind(Shader* shader, unsigned int id) const
+void Texture::bind_with_string(Shader* shader, unsigned int id, const std::string& sampler_uniform_name) const
 {
 	if(id > 31)
 	{
@@ -217,39 +206,7 @@ void NormalMap::bind(Shader* shader, unsigned int id) const
 	// GLTEXTURE0 is actually a number, so we can add the id instead of a massive switch statement
 	glActiveTexture(GL_TEXTURE0 + id);
 	glBindTexture(GL_TEXTURE_2D, this->texture_handle);
-	shader->set_uniform<int>("normal_map_sampler", id);
-}
-
-ParallaxMap::ParallaxMap(std::string filename): Texture(filename, false){}
-
-void ParallaxMap::bind(Shader* shader, unsigned int id) const
-{
-	if(id > 31)
-	{
-		tz::util::log::error("FrameBuffer bind ID ", id, " is invalid. Must be between 1-31");
-		return;
-	}
-	// this sets which texture we want to bind (id can be from 0 to 31)
-	// GLTEXTURE0 is actually a number, so we can add the id instead of a massive switch statement
-	glActiveTexture(GL_TEXTURE0 + id);
-	glBindTexture(GL_TEXTURE_2D, this->texture_handle);
-	shader->set_uniform<int>("parallax_map_sampler", id);
-}
-
-DisplacementMap::DisplacementMap(std::string filename): Texture(filename, false){}
-
-void DisplacementMap::bind(Shader* shader, unsigned int id) const
-{
-	if(id > 31)
-	{
-		tz::util::log::error("FrameBuffer bind ID ", id, " is invalid. Must be between 1-31");
-		return;
-	}
-	// this sets which texture we want to bind (id can be from 0 to 31)
-	// GLTEXTURE0 is actually a number, so we can add the id instead of a massive switch statement
-	glActiveTexture(GL_TEXTURE0 + id);
-	glBindTexture(GL_TEXTURE_2D, this->texture_handle);
-	shader->set_uniform<int>("displacement_map_sampler", id);
+	shader->set_uniform<int>(sampler_uniform_name, id);
 }
 
 CubeMap::CubeMap(std::string right_texture, std::string left_texture, std::string top_texture, std::string bottom_texture, std::string back_texture, std::string front_texture): right_texture(std::move(right_texture)), left_texture(std::move(left_texture)), top_texture(std::move(top_texture)), bottom_texture(std::move(bottom_texture)), back_texture(std::move(back_texture)), front_texture(std::move(front_texture))
