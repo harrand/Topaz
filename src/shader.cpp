@@ -19,7 +19,7 @@ Shader::Shader(std::string filename, bool compile, bool link, bool validate): Sh
 
 Shader::Shader(const Shader& copy): Shader(copy.filename){}
 
-Shader::Shader(Shader&& move): filename(std::move(move.filename)), program_handle(std::move(move.program_handle)), uniform_data(std::move(move.uniform_data))
+Shader::Shader(Shader&& move): filename(std::move(move.filename)), program_handle(std::move(move.program_handle)), uniform_data(std::move(move.uniform_data)), attribute_locations(std::move(move.attribute_locations))
 {
 	for(std::size_t i = 0; i < tz::graphics::maximum_shaders; i++)
 	{
@@ -27,6 +27,7 @@ Shader::Shader(Shader&& move): filename(std::move(move.filename)), program_handl
 		move.shaders[i] = 0;
 	}
 	move.uniform_data = {};
+	move.attribute_locations = {};
 	move.program_handle = 0;
 	// Now when destructor of move is invoked, nothing is attempted to be deleted or detached so the shader lives on in this instance.
 }
@@ -64,6 +65,19 @@ void Shader::compile(std::string vertex_source, std::string tessellation_control
 			glAttachShader(this->program_handle, this->shaders[i]);
 	
 	// bind the attributes needed normally
+	// TODO: Improve this to be actually flexible.
+	this->attribute_locations[0] = "position";
+	this->attribute_locations[1] = "texcoord";
+	this->attribute_locations[2] = "normal";
+	this->attribute_locations[3] = "tangent";
+	this->attribute_locations[4] = "positions_instance";
+	this->attribute_locations[5] = "rotations_instance";
+	this->attribute_locations[6] = "scales_instance";
+	for(auto [id, location] : this->attribute_locations)
+	{
+		glBindAttribLocation(this->program_handle, id, location.c_str());
+	}
+	/*
 	glBindAttribLocation(this->program_handle, 0, "position");
 	glBindAttribLocation(this->program_handle, 1, "texcoord");
 	glBindAttribLocation(this->program_handle, 2, "normal");
@@ -71,6 +85,7 @@ void Shader::compile(std::string vertex_source, std::string tessellation_control
 	glBindAttribLocation(this->program_handle, 4, "positions_instance");
 	glBindAttribLocation(this->program_handle, 5, "rotations_instance");
 	glBindAttribLocation(this->program_handle, 6, "scales_instance");
+	*/
 	this->compiled = true;
 }
 
@@ -147,6 +162,16 @@ UniformImplicit* Shader::get_uniform(std::string_view uniform_location) const
 std::size_t Shader::number_active_uniforms() const
 {
 	return this->uniform_counter;
+}
+
+const std::string& Shader::get_attribute_location(std::size_t attribute_id) const
+{
+	return this->attribute_locations.at(attribute_id);
+}
+
+void Shader::register_attribute(std::size_t attribute_id, std::string attribute_location)
+{
+	this->attribute_locations[attribute_id] = attribute_location;
 }
 
 bool Shader::has_vertex_shader() const
@@ -240,6 +265,36 @@ GLuint Shader::create_shader(std::string source, GLenum shader_type)
 	return shader;
 }
 
+const char* tz::util::shader_type_string(GLenum shader_type)
+{
+	const char* shader_type_str;
+	switch(shader_type)
+	{
+	case GL_COMPUTE_SHADER:
+		shader_type_str = "Compute";
+		break;
+	case GL_VERTEX_SHADER:
+		shader_type_str = "Vertex";
+		break;
+	case GL_TESS_CONTROL_SHADER:
+		shader_type_str = "Tessellation Control";
+		break;
+	case GL_TESS_EVALUATION_SHADER:
+		shader_type_str = "Tessellation Evaluation";
+		break;
+	case GL_GEOMETRY_SHADER:
+		shader_type_str = "Geometry";
+		break;
+	case GL_FRAGMENT_SHADER:
+		shader_type_str = "Fragment";
+		break;
+	default:
+		shader_type_str = "Unknown";
+		break;
+	}
+	return shader_type_str;
+}
+
 Shader tz::graphics::shader::pass_through(std::string position_attribute_name, std::string texture_coordinate_attribute_name, std::string texture_sampler_name)
 {
 	constexpr char vertex_source[] = "#version 430\n\
@@ -271,34 +326,4 @@ void main()\n\
 	frag_colour = texture(%TEXTURE_SAMPLER%, texture_coordinate_modelspace);\n\
 }";
 	return {tz::util::string::replace_all(tz::util::string::replace_all(vertex_source, "%POSITION%", position_attribute_name), "%TEXTURE_COORDINATE%", texture_coordinate_attribute_name), "", "", "", tz::util::string::replace_all(fragment_source, "%TEXTURE_SAMPLER%", texture_sampler_name)};
-}
-
-const char* tz::util::shader_type_string(GLenum shader_type)
-{
-	const char* shader_type_str;
-	switch(shader_type)
-	{
-	case GL_COMPUTE_SHADER:
-		shader_type_str = "Compute";
-		break;
-	case GL_VERTEX_SHADER:
-		shader_type_str = "Vertex";
-		break;
-	case GL_TESS_CONTROL_SHADER:
-		shader_type_str = "Tessellation Control";
-		break;
-	case GL_TESS_EVALUATION_SHADER:
-		shader_type_str = "Tessellation Evaluation";
-		break;
-	case GL_GEOMETRY_SHADER:
-		shader_type_str = "Geometry";
-		break;
-	case GL_FRAGMENT_SHADER:
-		shader_type_str = "Fragment";
-		break;
-	default:
-		shader_type_str = "Unknown";
-		break;
-	}
-	return shader_type_str;
 }

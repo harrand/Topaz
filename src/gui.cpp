@@ -201,9 +201,9 @@ Window::Window(const Window& copy): Window(copy.get_width(), copy.get_height(), 
 
 Window::~Window()
 {
-	for(auto pair : registered_listeners)
-		if(pair.first < Listener::get_num_listeners()) // checks to make sure the listener hasnt gone out of scope
-			this->deregister_listener(*(pair.second));
+	for(auto [id, listener] : registered_listeners)
+		if(id < Listener::get_num_listeners()) // checks to make sure the listener hasnt gone out of scope
+			this->deregister_listener(*listener);
 	SDL_GL_DeleteContext(this->sdl_gl_context_handle);
 	SDL_DestroyWindow(this->sdl_window_pointer);
 }

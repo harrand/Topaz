@@ -87,6 +87,9 @@ public:
 	bool is_compiled() const;
 	bool is_linked() const;
 	bool is_validated() const;
+	/**
+	* Returns true if the Shader is compiled, linked and validated and therefore ready to be bound.
+	*/
 	bool ready() const;
 	template<class T>
 	void add_uniform(Uniform<T>&& uniform);
@@ -100,6 +103,8 @@ public:
 	template<class T>
 	T get_uniform_value(std::string_view uniform_location) const;
 	std::size_t number_active_uniforms() const;
+	const std::string& get_attribute_location(std::size_t attribute_id) const;
+	void register_attribute(std::size_t attribute_id, std::string attribute_location);
 	bool has_vertex_shader() const;
 	bool has_tessellation_control_shader() const;
 	bool has_tessellation_evaluation_shader() const;
@@ -116,6 +121,7 @@ private:
 	GLuint program_handle;
 	std::array<GLuint, tz::graphics::maximum_shaders> shaders;
 	std::array<std::unique_ptr<UniformImplicit>, tz::graphics::maximum_uniforms> uniform_data;
+	std::map<std::size_t, std::string> attribute_locations;
 	std::size_t uniform_counter;
 };
 

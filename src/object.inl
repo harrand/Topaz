@@ -38,22 +38,22 @@ std::vector<Object3D> tz::graphics::instancify_full(const Collection<Object3D>& 
 	duplicates.reserve(maximum_size);
 	std::pair<mesh_cref_t, textures_cref_t> key_cache = asset_mappings.begin()->first;
 	bool last_ends_cluster = false;
-	for(const auto& pair : asset_mappings)
+	for(const auto& [asset_pair, index] : asset_mappings)
 	{
-		if(pair.first.first.get() == key_cache.first.get() && pair.first.second.get() == key_cache.second.get())
+		if(asset_pair.first.get() == key_cache.first.get() && asset_pair.second.get() == key_cache.second.get())
 		{
 			// O(1) amortised
-			duplicates.push_back(objects[pair.second]);
+			duplicates.push_back(objects[index]);
 			last_ends_cluster = false;
 		}
 		else
 		{
 			// O(1) amortised
-			key_cache = pair.first;
+			key_cache = asset_pair;
 			instancified_objects.push_back(tz::graphics::instancify(duplicates));
 			duplicates.clear();
 			last_ends_cluster = true;
-			duplicates.push_back(objects[pair.second]);
+			duplicates.push_back(objects[index]);
 		}
 	}
 	if(!last_ends_cluster)

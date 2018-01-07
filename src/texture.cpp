@@ -311,12 +311,12 @@ const std::unordered_map<GLenum, std::variant<Texture, RenderBuffer>>& FrameBuff
 std::unordered_map<GLenum, std::reference_wrapper<const Texture>> FrameBuffer::get_texture_attachments() const
 {
 	std::unordered_map<GLenum, std::reference_wrapper<const Texture>> result;
-	for(const auto& pair : this->attachments)
+	for(const auto& [attachment_type, variant] : this->attachments)
 	{
-		auto texture = std::get_if<Texture>(&(pair.second));
+		auto texture = std::get_if<Texture>(&variant);
 		if(texture == nullptr)
 			continue;
-		result.emplace(pair.first, std::cref(*texture));
+		result.emplace(attachment_type, std::cref(*texture));
 	}
 	return result;
 }
