@@ -92,9 +92,16 @@ public:
 		VSYNC = 1,
 	};
 	bool is_close_requested() const;
-	void set_swap_interval_type(SwapIntervalType type) const;
 	SwapIntervalType get_swap_interval_type() const;
+	void set_swap_interval_type(SwapIntervalType type) const;
 	void set_title(const std::string& new_title);
+	enum class FullscreenType : Uint32
+	{
+		VIDEO_MODE = SDL_WINDOW_FULLSCREEN,
+		DESKTOP_MODE = SDL_WINDOW_FULLSCREEN_DESKTOP,
+		WINDOWED_MODE = 0,
+	};
+	void set_fullscreen(FullscreenType type) const;
 	void set_render_target() const;
 	void clear_focus();
 	void clear(GLbitfield mask = (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT), float r = 0.0f, float g = 0.0f, float b = 0.0f, float a = 1.0f) const;

@@ -264,20 +264,25 @@ bool Window::is_close_requested() const
 	return this->close_requested;
 }
 
-void Window::set_swap_interval_type(Window::SwapIntervalType type) const
-{
-	SDL_GL_SetSwapInterval(static_cast<int>(type));
-}
-
 Window::SwapIntervalType Window::get_swap_interval_type() const
 {
 	return static_cast<SwapIntervalType>(SDL_GL_GetSwapInterval());
+}
+
+void Window::set_swap_interval_type(Window::SwapIntervalType type) const
+{
+	SDL_GL_SetSwapInterval(static_cast<int>(type));
 }
 
 void Window::set_title(const std::string& new_title)
 {
 	this->title = new_title;
 	SDL_SetWindowTitle(this->sdl_window_pointer, new_title.c_str());
+}
+
+void Window::set_fullscreen(Window::FullscreenType type) const
+{
+	SDL_SetWindowFullscreen(this->sdl_window_pointer, static_cast<Uint32>(type));
 }
 
 void Window::set_render_target() const
