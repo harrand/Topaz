@@ -280,6 +280,31 @@ void Window::set_title(const std::string& new_title)
 	SDL_SetWindowTitle(this->sdl_window_pointer, new_title.c_str());
 }
 
+bool Window::is_fullscreen() const
+{
+	switch(this->get_fullscreen())
+	{
+		case Window::FullscreenType::VIDEO_MODE:
+		case Window::FullscreenType::DESKTOP_MODE:
+			return true;
+			break;
+		default:
+			return false;
+			break;
+	}
+}
+
+Window::FullscreenType Window::get_fullscreen() const
+{
+	Uint32 flags = SDL_GetWindowFlags(this->sdl_window_pointer);
+	if(flags & SDL_WINDOW_FULLSCREEN)
+		return Window::FullscreenType::VIDEO_MODE;
+	else if(flags & SDL_WINDOW_FULLSCREEN_DESKTOP)
+		return Window::FullscreenType::DESKTOP_MODE;
+	else
+		return Window::FullscreenType::WINDOWED_MODE;
+}
+
 void Window::set_fullscreen(Window::FullscreenType type) const
 {
 	SDL_SetWindowFullscreen(this->sdl_window_pointer, static_cast<Uint32>(type));

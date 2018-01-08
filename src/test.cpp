@@ -146,6 +146,7 @@ void init()
 			Vector3<int> pos_int(engine.camera.position.x, engine.camera.position.y, engine.camera.position.z);
 			pos_text.set_text(tz::util::string::format(tz::util::string::devectorise_list_3(Vector3F(pos_int.x, pos_int.y, pos_int.z))));
 			updater.reload();
+			tz::util::log::message("Window fullscreen: ", wnd.is_fullscreen());
 			seconds++;
 		}
 		
@@ -183,6 +184,8 @@ void init()
 				engine.camera.fov += (tz::consts::pi / 200.0f);
 			if(key_listener.catch_key_pressed("P"))
 				engine.camera.set_has_perspective_projection(!engine.camera.has_perspective_projection());
+			if(key_listener.catch_key_pressed("F"))
+				wnd.set_fullscreen(!wnd.is_fullscreen() ? Window::FullscreenType::DESKTOP_MODE : Window::FullscreenType::WINDOWED_MODE);
 			if(key_listener.is_key_pressed("W"))
 			{
 				Vector3F after = (engine.camera.position + (engine.camera.forward() * velocity));

@@ -15,7 +15,7 @@
 * Note on Topaz GUI
 * Topaz does not use any library for GUI; it completely reinvents the wheel.
 * If you have your own library for GUI, Topaz should stay out of your way, as long as you have your own windowing functionality.
-* An importantant note: You won't be able to use Engine to help you develop with Topaz unless you also use this GUI.
+* An important note: You won't be able to use Engine to help you develop with Topaz unless you also use this GUI. If you are not using Topaz Windows but wish to use Engine anyway, consider writing your own subclass of Engine.
 */
 
 class Window;
@@ -41,7 +41,7 @@ public:
 	virtual bool is_mouse_sensitive() const{return false;}
 	virtual float get_window_pos_x() const;
 	virtual float get_window_pos_y() const;
-	float get_x() const; float get_y() const; float get_width() const; float get_height() const;
+	float get_x() const; float get_y() const; virtual float get_width() const; virtual float get_height() const;
 	void set_x(float x); void set_y(float y); void set_width(float width); void set_height(float height);
 	Window* find_window_parent() const;
 	bool has_window_parent() const;
@@ -84,6 +84,8 @@ public:
 	virtual bool is_window() const override{return true;}
 	virtual float get_window_pos_x() const override{return 0.0f;}
 	virtual float get_window_pos_y() const override{return 0.0f;}
+	//virtual float get_width() const override;
+	//virtual float get_height() const override;
 	virtual void set_hidden(bool hidden) override;
 	enum class SwapIntervalType : int
 	{
@@ -101,6 +103,8 @@ public:
 		DESKTOP_MODE = SDL_WINDOW_FULLSCREEN_DESKTOP,
 		WINDOWED_MODE = 0,
 	};
+	bool is_fullscreen() const;
+	FullscreenType get_fullscreen() const;
 	void set_fullscreen(FullscreenType type) const;
 	void set_render_target() const;
 	void clear_focus();
