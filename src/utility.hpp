@@ -124,7 +124,7 @@ namespace tz
 			* For smaller and simpler tasks, it is highly recommended that you instead use tz::util::scheduler::[a]sync_delayed_functor(TrivialFunctor), in command.hpp.
 			*/
 			template<class ReturnType, class... Args>
-			inline void sync_delayed_task(unsigned int milliseconds_delay, std::function<ReturnType(Args...)> f, Args... args);
+			inline void sync_delayed_function(unsigned int milliseconds_delay, std::function<ReturnType(Args...)> f, Args... args);
 			template<class ReturnType, class... Args>
 			inline void async_delayed_task(unsigned int milliseconds_delay, std::function<ReturnType(Args...)> f, Args... args);
 		}

@@ -146,7 +146,6 @@ void init()
 			Vector3<int> pos_int(engine.camera.position.x, engine.camera.position.y, engine.camera.position.z);
 			pos_text.set_text(tz::util::string::format(tz::util::string::devectorise_list_3(Vector3F(pos_int.x, pos_int.y, pos_int.z))));
 			updater.reload();
-			tz::util::log::message("Window fullscreen: ", wnd.is_fullscreen());
 			seconds++;
 		}
 		

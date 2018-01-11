@@ -84,8 +84,6 @@ public:
 	virtual bool is_window() const override{return true;}
 	virtual float get_window_pos_x() const override{return 0.0f;}
 	virtual float get_window_pos_y() const override{return 0.0f;}
-	//virtual float get_width() const override;
-	//virtual float get_height() const override;
 	virtual void set_hidden(bool hidden) override;
 	enum class SwapIntervalType : int
 	{
