@@ -127,7 +127,9 @@ void init()
 	Shader shader_2d("../../../src/shaders/2D");
 	
 	Sprite test_plane(Vector2F(0.0f, 50.0f), 0.0f, Vector2F(10, 10), engine.scene.get_objects().front().get_textures().at(tz::graphics::TextureType::TEXTURE));
-	TrivialFunctor render_2d([&](){test_plane.render(engine.camera, &(shader_2d), wnd.get_width(), wnd.get_height());});
+	TrivialFunctor render_2d([&](){
+		test_plane.render(engine.camera, &(shader_2d), wnd.get_width(), wnd.get_height());
+		});
 	engine.add_update_command(&render_2d);
 	
 	FrameBuffer plane_texture_buffer(512, 512);
@@ -151,8 +153,10 @@ void init()
 		
 		plane_texture_buffer.clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, 0.0f, 0.0f, 0.0f, 0.0f);
 		plane_texture_buffer.set_render_target();
-		engine.scene.render(engine.camera, &(engine.default_shader), wnd.get_width(), wnd.get_height());
-		test_plane = Sprite(Vector2F(0.0f, 300.0f), tz::consts::pi, Vector2F(100, 100), &plane_texture);
+		Camera behind = engine.camera;
+		behind.rotation.y = tz::consts::pi - behind.rotation.y;
+		engine.scene.render(behind, &(engine.default_shader), wnd.get_width(), wnd.get_height());
+		test_plane = Sprite(Vector2F(0.0f, 300.0f), tz::consts::pi, Vector2F(100, 100 / wnd.get_width() * wnd.get_height()), &plane_texture);
 		
 		if(engine.is_update_due())
 		{
