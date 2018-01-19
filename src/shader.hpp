@@ -74,11 +74,28 @@ private:
 class Shader
 {
 public:
+	/**
+	* Constructs a shader from the given shader-sources.
+	* Invalid shader sources will emit errors via tz::util::log::error.
+	* Valid shader sources will yield desired shaders.
+	* Empty shader sources will yield a lack of corresponding shaders (e.g if geometry_source is "", there shall be no geometry shader).
+	*/
 	Shader(std::string vertex_source, std::string tessellation_control_source, std::string tessellation_evaluation_source, std::string geometry_source, std::string fragment_source, bool compile = true, bool link = true, bool validate = true);
+	/**
+	* Constructs a shader from a given filename, comprised of:
+	* Vertex shader from the path '@filename.vertex.glsl',
+	* Tessellation-Control shader from the path '@filename.tessellation_control.glsl',
+	* Tessellation-Evaluation shader from the path '@filename.tessellation_evaluation.glsl',
+	* Geometry shader from the path '@filename.geometry.glsl',
+	* and Fragment shader from the path '@filename.fragment.glsl'.
+	*/
 	Shader(std::string filename, bool compile = true, bool link = true, bool validate = true);
 	Shader(const Shader& copy);
 	Shader(Shader&& move);
 	~Shader();
+	/**
+	* Until transform feedback and other compilation options are implemented, the idea of copy-constructing Shaders is meaningless.
+	*/
 	Shader& operator=(const Shader& rhs) = delete;
 	
 	void compile(std::string vertex_source, std::string tessellation_control_source, std::string tessellation_evaluation_source, std::string geometry_source, std::string fragment_source);
@@ -126,6 +143,7 @@ private:
 };
 
 /**
+* Factory functions for Shaders that need no special source code; simply pass-through shaders and the ability to render 3D geometry, with some plain old textures.
 * If your application is so simple that only the simplest matrix transformations are needed with no fancy effects, use this.
 */
 namespace tz::graphics::shader

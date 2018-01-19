@@ -29,6 +29,11 @@ public:
 	virtual ~AudioClip();
 	AudioClip& operator=(const AudioClip& rhs) = delete;
 	
+	/**
+	* Plays the audio. 
+	* The audio will play until either the destructor is called or the audio is finished; whichever takes place first.
+	* Note: Invoking tz::audio::play_async on an instance of AudioClip will extend the lifetime of the instance such that the audio clip is guaranteed to be fully played.
+	*/
 	void play();
 	int get_channel() const;
 	Uint32 get_audio_length() const;
