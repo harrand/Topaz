@@ -149,6 +149,8 @@ void init()
 			pos_text.set_text(tz::util::string::format(tz::util::string::devectorise_list_3(Vector3F(pos_int.x, pos_int.y, pos_int.z))));
 			updater.reload();
 			seconds++;
+			tz::util::log::message("Should be false: ", plane_texture.has_mipmap());
+			tz::util::log::message("Should be true: ", engine.get_textures().front()->has_mipmap());
 		}
 		
 		plane_texture_buffer.clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, 0.0f, 0.0f, 0.0f, 0.0f);

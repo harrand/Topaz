@@ -65,6 +65,16 @@ public:
 	int get_width() const;
 	int get_height() const;
 	bool has_bitmap() const;
+	enum class MipmapType : GLint
+	{
+		NEAREST = GL_NEAREST_MIPMAP_NEAREST,
+		LINEAR = GL_LINEAR_MIPMAP_NEAREST,
+		NEAREST_MULTIPLE = GL_NEAREST_MIPMAP_LINEAR,
+		LINEAR_MULTIPLE = GL_LINEAR_MIPMAP_LINEAR,
+		NONE,
+	};
+	MipmapType get_mipmap_type() const;
+	bool has_mipmap() const;
 	Bitmap<PixelRGBA> get_bitmap() const;
 	virtual tz::graphics::TextureType get_texture_type() const{return tz::graphics::TextureType::TEXTURE;}
 	template<class T>

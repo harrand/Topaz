@@ -172,6 +172,37 @@ bool Texture::has_bitmap() const
 	return this->bitmap.has_value();
 }
 
+Texture::MipmapType Texture::get_mipmap_type() const
+{
+	GLint flag;
+	glBindTexture(GL_TEXTURE_2D, this->texture_handle);
+	glGetTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, &flag);
+	glBindTexture(GL_TEXTURE_2D, 0);
+	switch(flag)
+	{
+		case static_cast<GLint>(Texture::MipmapType::NEAREST):
+			return Texture::MipmapType::NEAREST;
+			break;
+		case static_cast<GLint>(Texture::MipmapType::LINEAR):
+			return Texture::MipmapType::LINEAR;
+			break;
+		case static_cast<GLint>(Texture::MipmapType::NEAREST_MULTIPLE):
+			return Texture::MipmapType::NEAREST_MULTIPLE;
+			break;
+		case static_cast<GLint>(Texture::MipmapType::LINEAR_MULTIPLE):
+			return Texture::MipmapType::LINEAR_MULTIPLE;
+			break;
+		default:
+			return Texture::MipmapType::NONE;
+			break;
+	}
+}
+
+bool Texture::has_mipmap() const
+{	
+	return this->get_mipmap_type() != Texture::MipmapType::NONE;
+}
+
 Bitmap<PixelRGBA> Texture::get_bitmap() const
 {
 	return this->bitmap.value_or(Bitmap<PixelRGBA>());
