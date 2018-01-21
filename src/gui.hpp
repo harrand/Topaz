@@ -127,11 +127,11 @@ private:
 namespace tz::ui
 {
 	/**
-	* Performs a DFS through the 'gui' child tree to return a set of all children, and all their children's children etc...
+	* Performs a depth-first-traversal (DFT) through the 'gui' child tree to return a set of all children, and all their children's children etc...
 	*/
 	std::set<GUI*> descendants(const GUI* gui, bool visible_only = false);
 	/**
-	* Performs a DFS similarly to tz::ui::descendants, but only returns a set of all the children which don't have any children themselves i.e the 'youngest' descendants.
+	* Performs a DFT similarly to tz::ui::descendants, but only the children whom do not have any children themselves i.e the 'youngest' descendants.
 	*/
 	std::set<GUI*> youngest_descendants(const GUI* gui);
 	/**
