@@ -76,22 +76,8 @@ bool Button::clicked_on() const
 	return this->mouse_listener.is_left_clicked() && x_aligned && y_aligned;
 }
 
-BoolBox::BoolBox(float x, float y, float width, float height, Vector4F colour_on, Vector4F colour_off, Shader& shader, MouseListener& mouse_listener, bool ticked): Panel(x, y, width, height, colour_off, shader), value(ticked), colour_on(colour_on), colour_off(colour_off), mouse_listener(mouse_listener){}
+BoolBox::BoolBox(float x, float y, float width, float height, Vector4F colour_on, Vector4F colour_off, Shader& shader, MouseListener& mouse_listener, bool ticked): Panel(x, y, width, height, colour_off, shader), value(ticked), colour_on(colour_on), colour_off(colour_off), mouse_listener(mouse_listener), choice_parent(nullptr){}
 
-const Vector4F& BoolBox::get_colour_on() const
-{
-	return this->colour_on;
-}
-
-const Vector4F& BoolBox::get_colour_off() const
-{
-	return this->colour_off;
-}
-
-Vector4F BoolBox::get_colour() const
-{
-	return value ? this->colour_on : this->colour_off;
-}
 
 void BoolBox::update()
 {
@@ -103,7 +89,10 @@ void BoolBox::update()
 			// if clicked on properly, run the mouse_click command, set it as just clicked and make it the focus of the window ancestor
 			this->find_window_parent()->set_focused_child(this);
 			this->just_clicked = true;
-			this->value = !this->value;
+			if(this->is_choice())
+				this->choice_parent->set_choice(this);
+			else
+				this->value = !this->value;
 		}
 		else if(!this->clicked_on())
 			this->just_clicked = false;
@@ -132,6 +121,85 @@ bool BoolBox::moused_over() const
 bool BoolBox::clicked_on() const
 {
 	return tz::ui::left_clicked(this, this->mouse_listener);
+}
+
+const Vector4F& BoolBox::get_colour_on() const
+{
+	return this->colour_on;
+}
+
+const Vector4F& BoolBox::get_colour_off() const
+{
+	return this->colour_off;
+}
+
+Vector4F BoolBox::get_colour() const
+{
+	return value ? this->colour_on : this->colour_off;
+}
+
+bool BoolBox::is_choice() const
+{
+	return this->choice_parent != nullptr;
+}
+
+BoolBoxChoice::BoolBoxChoice(std::initializer_list<BoolBox*> boxes, BoolBox* initial_choice): boxes(boxes), choice(nullptr)
+{
+	for(auto& box : this->boxes)
+		box->choice_parent = this;
+	this->set_all(false);
+	this->set_choice(initial_choice);
+}
+
+BoolBoxChoice::BoolBoxChoice(std::initializer_list<std::reference_wrapper<BoolBox>> boxes, BoolBox* initial_choice): boxes(), choice(nullptr)
+{
+	for(auto& reference_wrapper : boxes)
+	{
+		reference_wrapper.get().choice_parent = this;
+		this->boxes.insert(&(reference_wrapper.get()));
+	}
+	this->set_all(false);
+	this->set_choice(initial_choice);
+}
+
+bool BoolBoxChoice::has_choice() const
+{
+	if(this->choice == nullptr)
+		return false;
+	return this->choice_in_scope(this->choice);
+}
+
+BoolBox* BoolBoxChoice::get_choice() const
+{
+	return this->choice;
+}
+
+void BoolBoxChoice::set_choice(BoolBox* choice)
+{
+	if(!this->choice_in_scope(choice))
+	{
+		tz::util::log::error("Tried to set a BoolBoxChoice to a BoolBox not belonging to the set.");
+		return;
+	}
+	this->choice = choice;
+	this->set_all(false);
+	this->choice->value = true;
+}
+
+const std::unordered_set<BoolBox*>& BoolBoxChoice::get_bool_boxes() const
+{
+	return this->boxes;
+}
+
+bool BoolBoxChoice::choice_in_scope(BoolBox* choice) const
+{
+	return this->boxes.find(choice) != this->boxes.end();
+}
+
+void BoolBoxChoice::set_all(bool value)
+{
+	for(auto& box : this->boxes)
+		box->value = value;
 }
 
 namespace tz::ui
