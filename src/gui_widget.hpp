@@ -57,4 +57,11 @@ protected:
 	bool just_clicked, just_moused_over;
 };
 
+namespace tz::ui
+{
+	bool moused_over(const GUI* gui, Vector2F mouse_position);
+	bool left_clicked(const GUI* gui, const MouseListener& mouse_listener);
+	bool right_clicked(const GUI* gui, const MouseListener& mouse_listener);
+}
+
 #endif

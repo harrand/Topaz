@@ -126,17 +126,30 @@ bool BoolBox::focused() const
 
 bool BoolBox::moused_over() const
 {
-	Vector2F mouse_pos = this->mouse_listener.get_mouse_pos();
-	bool x_aligned = mouse_pos.x >= (this->get_window_pos_x() - this->width) && mouse_pos.x <= (this->get_window_pos_x() + this->width);
-	bool y_aligned = mouse_pos.y >= (this->find_window_parent()->get_height() - this->get_window_pos_y() - this->height) && mouse_pos.y <= ((this->find_window_parent()->get_height() - this->get_window_pos_y() + this->height));
-	return x_aligned && y_aligned;
+	return tz::ui::moused_over(this, this->mouse_listener.get_mouse_pos());
 }
 
 bool BoolBox::clicked_on() const
 {
-	// need to take into account the location where the left click was pressed to prevent dragging from firing off the button.
-	Vector2F mouse_pos = this->mouse_listener.get_left_click_location();
-	bool x_aligned = mouse_pos.x >= (this->get_window_pos_x() - this->width) && mouse_pos.x <= (this->get_window_pos_x() + this->width);
-	bool y_aligned = mouse_pos.y >= (this->find_window_parent()->get_height() - this->get_window_pos_y() - this->height) && mouse_pos.y <= ((this->find_window_parent()->get_height() - this->get_window_pos_y() + this->height));
-	return this->mouse_listener.is_left_clicked() && x_aligned && y_aligned;
+	return tz::ui::left_clicked(this, this->mouse_listener);
+}
+
+namespace tz::ui
+{
+	bool moused_over(const GUI* gui, Vector2F mouse_position)
+	{
+		bool x_aligned = mouse_position.x >= (gui->get_window_pos_x() - gui->get_width()) && mouse_position.x <= (gui->get_window_pos_x() + gui->get_width());
+		bool y_aligned = mouse_position.y >= (gui->find_window_parent()->get_height() - gui->get_window_pos_y() - gui->get_height()) && mouse_position.y <= ((gui->find_window_parent()->get_height() - gui->get_window_pos_y() + gui->get_height()));
+		return x_aligned && y_aligned;
+	}
+	
+	bool left_clicked(const GUI* gui, const MouseListener& mouse_listener)
+	{
+		return tz::ui::moused_over(gui, mouse_listener.get_left_click_location()) && mouse_listener.is_left_clicked();
+	}
+	
+	bool right_clicked(const GUI* gui, const MouseListener& mouse_listener)
+	{
+		return tz::ui::moused_over(gui, mouse_listener.get_right_click_location()) && mouse_listener.is_right_clicked();
+	}
 }
