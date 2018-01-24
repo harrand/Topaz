@@ -28,7 +28,7 @@ public:
 	virtual bool is_window() const override{return false;}
 	virtual bool is_mouse_sensitive() const override{return false;}
 protected:
-	void render_panel(Vector4F colour);
+	void render_panel(Vector4F colour, bool update = true);
 
 	Texture* texture;
 	Vector4F colour;

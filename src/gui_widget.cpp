@@ -76,10 +76,10 @@ bool Button::clicked_on() const
 	return this->mouse_listener.is_left_clicked() && x_aligned && y_aligned;
 }
 
-BoolBox::BoolBox(float x, float y, float width, float height, Vector4F colour_on, Vector4F colour_off, Shader& shader, MouseListener& mouse_listener, bool ticked): Panel(x, y, width, height, colour_off, shader), value(ticked), colour_on(colour_on), colour_off(colour_off), mouse_listener(mouse_listener), choice_parent(nullptr){}
+CheckBox::CheckBox(float x, float y, float width, float height, Vector4F colour_on, Vector4F colour_off, Shader& shader, MouseListener& mouse_listener, bool ticked): Panel(x, y, width, height, colour_off, shader), value(ticked), colour_on(colour_on), colour_off(colour_off), mouse_listener(mouse_listener), just_clicked(false), just_moused_over(false), choice_parent(nullptr){}
 
 
-void BoolBox::update()
+void CheckBox::update()
 {
 	if(!this->hidden)
 	{
@@ -106,44 +106,107 @@ void BoolBox::update()
 	}
 }
 
-bool BoolBox::focused() const
+bool CheckBox::focused() const
 {
 	if(!this->has_window_parent())
 		return false;
 	return this->find_window_parent()->get_focused_child() == this;
 }
 
-bool BoolBox::moused_over() const
+bool CheckBox::moused_over() const
 {
 	return tz::ui::moused_over(this, this->mouse_listener.get_mouse_pos());
 }
 
-bool BoolBox::clicked_on() const
+bool CheckBox::clicked_on() const
 {
 	return tz::ui::left_clicked(this, this->mouse_listener);
 }
 
-const Vector4F& BoolBox::get_colour_on() const
+const Vector4F& CheckBox::get_colour_on() const
 {
 	return this->colour_on;
 }
 
-const Vector4F& BoolBox::get_colour_off() const
+const Vector4F& CheckBox::get_colour_off() const
 {
 	return this->colour_off;
 }
 
-Vector4F BoolBox::get_colour() const
+Vector4F CheckBox::get_colour() const
 {
 	return value ? this->colour_on : this->colour_off;
 }
 
-bool BoolBox::is_choice() const
+bool CheckBox::is_choice() const
 {
 	return this->choice_parent != nullptr;
 }
 
-BoolBoxChoice::BoolBoxChoice(std::initializer_list<BoolBox*> boxes, BoolBox* initial_choice): boxes(boxes), choice(nullptr)
+Slider::Slider(float x, float y, float width, float height, Vector4F slider_colour, Vector4F background_colour, Vector2F slider_size, Shader& shader, MouseListener& mouse_listener): Panel(x, y, width, height, background_colour, shader), position(0.0), slider_colour(slider_colour), slider_size(slider_size), mouse_listener(mouse_listener), just_clicked(false), just_moused_over(false){}
+
+void Slider::update()
+{
+	if(!this->hidden)
+	{
+		this->render_panel(this->get_colour(), false);
+		// Render bar of slider
+		this->shader.value().get().bind();
+		this->shader.value().get().set_uniform<bool>("has_texture", false);
+		this->shader.value().get().set_uniform<bool>("has_background_colour", false);
+		this->shader.value().get().set_uniform<bool>("has_text_border_colour", false);
+		this->shader.value().get().set_uniform<Vector4F>("colour", this->slider_colour);
+		Matrix4x4 projection;
+		if(this->has_window_parent() && !this->use_proportional_positioning)
+			projection = tz::ui::create_orthographic_gui_matrix(this);
+		else
+			projection = Matrix4x4::identity();
+		this->shader.value().get().set_uniform<Matrix4x4>("model_matrix", projection * tz::transform::model(Vector3F(this->get_x() + (this->slider_size.x / 2) + (2.0f * this->position * this->get_width()), this->get_window_pos_y(), 0.0f), Vector3F(), Vector3F(this->slider_size, 0.0f)));
+		this->shader.value().get().update();
+		this->quad.render(false);
+		GUI::update();
+		
+		if(this->clicked_on() && !this->just_clicked && this->has_window_parent() && !this->covered())
+		{
+			// if clicked on properly, run the mouse_click command, set it as just clicked and make it the focus of the window ancestor
+			this->find_window_parent()->set_focused_child(this);
+			this->just_clicked = true;
+			// do stuff on click here.
+			float mouse_distance = this->mouse_listener.get_left_click_location().x - this->get_x();
+			position = 0.5f * mouse_distance / this->get_width();
+			position = std::clamp(position, 0.0, 1.0);
+			tz::util::log::message("slider position = ", static_cast<unsigned int>(position * 100), "%");
+		}
+		else if(!this->clicked_on())
+			this->just_clicked = false;
+		if(this->moused_over() && !this->just_moused_over)
+			this->just_moused_over = true;
+		else if(!this->moused_over())
+			this->just_moused_over = false;
+		// if click mouse button is down but this is not moused over, make sure its not focused
+		if(this->mouse_listener.is_left_clicked() && !this->moused_over() && this->focused())
+			this->find_window_parent()->set_focused_child(nullptr);
+	}
+}
+
+bool Slider::focused() const
+{
+	if(!this->has_window_parent())
+		return false;
+	return this->find_window_parent()->get_focused_child() == this;
+}
+
+bool Slider::moused_over() const
+{
+	return tz::ui::moused_over(this, this->mouse_listener.get_mouse_pos());
+}
+
+bool Slider::clicked_on() const
+{
+	return tz::ui::left_clicked(this, this->mouse_listener);
+}
+
+CheckBoxChoice::CheckBoxChoice(std::initializer_list<CheckBox*> boxes, CheckBox* initial_choice): boxes(boxes), choice(nullptr)
 {
 	for(auto& box : this->boxes)
 		box->choice_parent = this;
@@ -151,7 +214,7 @@ BoolBoxChoice::BoolBoxChoice(std::initializer_list<BoolBox*> boxes, BoolBox* ini
 	this->set_choice(initial_choice);
 }
 
-BoolBoxChoice::BoolBoxChoice(std::initializer_list<std::reference_wrapper<BoolBox>> boxes, BoolBox* initial_choice): boxes(), choice(nullptr)
+CheckBoxChoice::CheckBoxChoice(std::initializer_list<std::reference_wrapper<CheckBox>> boxes, CheckBox* initial_choice): boxes(), choice(nullptr)
 {
 	for(auto& reference_wrapper : boxes)
 	{
@@ -162,23 +225,23 @@ BoolBoxChoice::BoolBoxChoice(std::initializer_list<std::reference_wrapper<BoolBo
 	this->set_choice(initial_choice);
 }
 
-bool BoolBoxChoice::has_choice() const
+bool CheckBoxChoice::has_choice() const
 {
 	if(this->choice == nullptr)
 		return false;
 	return this->choice_in_scope(this->choice);
 }
 
-BoolBox* BoolBoxChoice::get_choice() const
+CheckBox* CheckBoxChoice::get_choice() const
 {
 	return this->choice;
 }
 
-void BoolBoxChoice::set_choice(BoolBox* choice)
+void CheckBoxChoice::set_choice(CheckBox* choice)
 {
 	if(!this->choice_in_scope(choice))
 	{
-		tz::util::log::error("Tried to set a BoolBoxChoice to a BoolBox not belonging to the set.");
+		tz::util::log::error("Tried to set a CheckBoxChoice to a CheckBox not belonging to the set.");
 		return;
 	}
 	this->choice = choice;
@@ -186,17 +249,17 @@ void BoolBoxChoice::set_choice(BoolBox* choice)
 	this->choice->value = true;
 }
 
-const std::unordered_set<BoolBox*>& BoolBoxChoice::get_bool_boxes() const
+const std::unordered_set<CheckBox*>& CheckBoxChoice::get_bool_boxes() const
 {
 	return this->boxes;
 }
 
-bool BoolBoxChoice::choice_in_scope(BoolBox* choice) const
+bool CheckBoxChoice::choice_in_scope(CheckBox* choice) const
 {
 	return this->boxes.find(choice) != this->boxes.end();
 }
 
-void BoolBoxChoice::set_all(bool value)
+void CheckBoxChoice::set_all(bool value)
 {
 	for(auto& box : this->boxes)
 		box->value = value;

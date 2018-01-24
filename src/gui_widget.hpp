@@ -31,16 +31,16 @@ private:
 	Command* on_mouse_click;
 };
 
-class BoolBoxChoice;
+class CheckBoxChoice;
 
-class BoolBox : public Panel
+class CheckBox : public Panel
 {
 public:
-	BoolBox(float x, float y, float width, float height, Vector4F colour_on, Vector4F colour_off, Shader& shader, MouseListener& mouse_listener, bool ticked = false);
-	BoolBox(const BoolBox& copy) = default;
-	BoolBox(BoolBox&& move) = default;
-	~BoolBox() = default;
-	BoolBox& operator=(const BoolBox& rhs) = default;
+	CheckBox(float x, float y, float width, float height, Vector4F colour_on, Vector4F colour_off, Shader& shader, MouseListener& mouse_listener, bool ticked = false);
+	CheckBox(const CheckBox& copy) = default;
+	CheckBox(CheckBox&& move) = default;
+	~CheckBox() = default;
+	CheckBox& operator=(const CheckBox& rhs) = default;
 	
 	virtual void update() override;
 	virtual bool focused() const override;
@@ -52,7 +52,7 @@ public:
 	const Vector4F& get_colour_off() const;
 	Vector4F get_colour() const;
 	
-	friend class BoolBoxChoice;
+	friend class CheckBoxChoice;
 	
 	bool value;
 protected:
@@ -62,55 +62,78 @@ protected:
 	MouseListener& mouse_listener;
 	bool just_clicked, just_moused_over;
 	/**
-	* choice_parent is handled purely by the friend-class BoolBoxChoice.
+	* choice_parent is handled purely by the friend-class CheckBoxChoice.
 	*/
-	BoolBoxChoice* choice_parent;
+	CheckBoxChoice* choice_parent;
+};
+
+class Slider : public Panel
+{
+public:
+	Slider(float x, float y, float width, float height, Vector4F slider_colour, Vector4F background_colour, Vector2F slider_size, Shader& shader, MouseListener& mouse_listener);
+	Slider(const Slider& copy) = default;
+	Slider(Slider&& move) = default;
+	~Slider() = default;
+	Slider& operator=(const Slider& rhs) = default;
+	
+	virtual void update() override;
+	virtual bool focused() const override;
+	virtual bool is_mouse_sensitive() const override{return true;}
+	bool moused_over() const;
+	bool clicked_on() const;
+	
+	double position;
+private:
+	Vector4F slider_colour;
+	Vector2F slider_size;
+	MouseListener& mouse_listener;
+	bool just_clicked, just_moused_over;
 };
 
 /**
-* Non-owning helper class to manage multiple BoolBoxes.
+* Non-owning helper class to manage multiple CheckBoxes.
 */
-class BoolBoxChoice
+class CheckBoxChoice
 {
 public:
 	/**
 	* Non-owning pointer initialisation.
 	*/
-	BoolBoxChoice(std::initializer_list<BoolBox*> boxes, BoolBox* initial_choice = nullptr);
+	CheckBoxChoice(std::initializer_list<CheckBox*> boxes, CheckBox* initial_choice = nullptr);
 	/**
 	* Non-owning reference initialisation.
 	*/
-	BoolBoxChoice(std::initializer_list<std::reference_wrapper<BoolBox>> boxes, BoolBox* initial_choice = nullptr);
+	CheckBoxChoice(std::initializer_list<std::reference_wrapper<CheckBox>> boxes, CheckBox* initial_choice = nullptr);
 	/**
 	* Copy constructor deleted.
-	* This is because any two BoolBoxChoices may not share a single element, or "choice-fighting" will occur.
-	* Choice-fighting is the phenomenon such that multiple BoolBoxChoices choose different boxes to truthify, causing the latter to always invalidate the former.
+	* This is because any two CheckBoxChoices may not share a single element, or "choice-fighting" will occur.
+	* Choice-fighting is the phenomenon such that multiple CheckBoxChoices choose different boxes to truthify, causing the latter to always invalidate the former.
 	*/
-	BoolBoxChoice(const BoolBoxChoice& copy) = delete;
+	CheckBoxChoice(const CheckBoxChoice& copy) = delete;
 	/**
 	* Move constructor implies the rvalue-reference parameter is about to go out-of-scope, meaning that it will not be available to cause choice-fighting.
 	* For this reason, the move constructor is available.
 	*/
-	BoolBoxChoice(BoolBoxChoice&& move) = default;
-	~BoolBoxChoice() = default;
+	CheckBoxChoice(CheckBoxChoice&& move) = default;
+	~CheckBoxChoice() = default;
 	/**
 	* Copy assignment operator is also deleted for the same reason; choice-fighting.
 	*/
-	BoolBoxChoice& operator=(const BoolBoxChoice& rhs) = delete;
+	CheckBoxChoice& operator=(const CheckBoxChoice& rhs) = delete;
 	/**
 	* Similarly to the move constructor, the move assignment-operator cannot induce choice-fighting so remains available for use.
 	*/
-	BoolBoxChoice& operator=(BoolBoxChoice&& rhs) = default;
+	CheckBoxChoice& operator=(CheckBoxChoice&& rhs) = default;
 	
 	bool has_choice() const;
-	BoolBox* get_choice() const;
-	void set_choice(BoolBox* choice);
-	const std::unordered_set<BoolBox*>& get_bool_boxes() const;
+	CheckBox* get_choice() const;
+	void set_choice(CheckBox* choice);
+	const std::unordered_set<CheckBox*>& get_bool_boxes() const;
 private:
-	bool choice_in_scope(BoolBox* choice) const;
+	bool choice_in_scope(CheckBox* choice) const;
 	void set_all(bool value);
-	std::unordered_set<BoolBox*> boxes;
-	BoolBox* choice;
+	std::unordered_set<CheckBox*> boxes;
+	CheckBox* choice;
 };
 
 namespace tz::ui

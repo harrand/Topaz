@@ -85,9 +85,10 @@ void init()
 	Button spawn_block(0.0f, 2 * text.get_height() + 2 * noclip_toggle.get_height() + 2 * test_button.get_height(), Vector4F(1, 1, 1, 1), gui_colour, {}, example_font, "Spawn Block", engine.default_gui_shader, mouse_listener);
 	Button exit_gui_button(wnd.get_width() - 50, wnd.get_height() - 50, Vector4F(1, 1, 1, 1), Vector4F(1.0, 0, 0, 1.0), {}, example_font, " x ", engine.default_gui_shader, mouse_listener);
 	Button save_scene_button(0.0f, 2 * text.get_height() + 2 * noclip_toggle.get_height() + 2 * test_button.get_height() + 2 * spawn_block.get_height(), Vector4F(1, 1, 1, 1), gui_colour, {}, example_font, "Save Scene", engine.default_gui_shader, mouse_listener);
-	BoolBox test_tick(0.0f, save_scene_button.get_y() + (2 * save_scene_button.get_height()), save_scene_button.get_height(), save_scene_button.get_height(), Vector4F(1, 0, 0, 1), Vector4F(0, 0, 1, 1), engine.default_gui_shader, mouse_listener);
-	BoolBox test_tick2(0.0f, test_tick.get_y() + (2 * test_tick.get_height()), test_tick.get_width(), test_tick.get_height(), Vector4F(1, 0, 0, 1), Vector4F(0, 0, 1, 1), engine.default_gui_shader, mouse_listener);
-	BoolBoxChoice chooser({test_tick, test_tick2}, &test_tick2);
+	CheckBox test_tick(0.0f, save_scene_button.get_y() + (2 * save_scene_button.get_height()), save_scene_button.get_height(), save_scene_button.get_height(), Vector4F(1, 0, 0, 1), Vector4F(0, 0, 1, 1), engine.default_gui_shader, mouse_listener);
+	CheckBox test_tick2(0.0f, test_tick.get_y() + (2 * test_tick.get_height()), test_tick.get_width(), test_tick.get_height(), Vector4F(1, 0, 0, 1), Vector4F(0, 0, 1, 1), engine.default_gui_shader, mouse_listener);
+	CheckBoxChoice chooser({test_tick, test_tick2}, &test_tick2);
+	Slider test_slider(0.0f, test_tick2.get_y() + (2 * test_tick2.get_height()), 400, test_tick2.get_height(), Vector4F(1, 0, 0, 1), gui_colour, Vector2F(40, test_tick2.get_height()), engine.default_gui_shader, mouse_listener);
 	
 	TrivialFunctor pop_cmd([](){tz::audio::play_async(AudioClip("../../../res/runtime/music/pop.wav"));});
 	wnd.add_child(&text);
@@ -101,6 +102,7 @@ void init()
 	gui_panel.add_child(&save_scene_button);
 	gui_panel.add_child(&test_tick);
 	gui_panel.add_child(&test_tick2);
+	gui_panel.add_child(&test_slider);
 	TrivialFunctor save_scene_cmd([&](){const_cast<Scene&>(engine.scene).save();});
 	TrivialFunctor toggle_noclip([&](){noclip = !noclip;});
 	SpawnBlockCommand spawn_test_cube(engine, bounds);
