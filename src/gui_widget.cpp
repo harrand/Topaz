@@ -76,10 +76,10 @@ bool Button::clicked_on() const
 	return this->mouse_listener.is_left_clicked() && x_aligned && y_aligned;
 }
 
-CheckBox::CheckBox(float x, float y, float width, float height, Vector4F colour_on, Vector4F colour_off, Shader& shader, MouseListener& mouse_listener, bool ticked): Panel(x, y, width, height, colour_off, shader), value(ticked), colour_on(colour_on), colour_off(colour_off), mouse_listener(mouse_listener), just_clicked(false), just_moused_over(false), choice_parent(nullptr){}
+Checkbox::Checkbox(float x, float y, float width, float height, Vector4F colour_on, Vector4F colour_off, Shader& shader, MouseListener& mouse_listener, bool ticked): Panel(x, y, width, height, colour_off, shader), value(ticked), colour_on(colour_on), colour_off(colour_off), mouse_listener(mouse_listener), just_clicked(false), just_moused_over(false), choice_parent(nullptr){}
 
 
-void CheckBox::update()
+void Checkbox::update()
 {
 	if(!this->hidden)
 	{
@@ -106,39 +106,39 @@ void CheckBox::update()
 	}
 }
 
-bool CheckBox::focused() const
+bool Checkbox::focused() const
 {
 	if(!this->has_window_parent())
 		return false;
 	return this->find_window_parent()->get_focused_child() == this;
 }
 
-bool CheckBox::moused_over() const
+bool Checkbox::moused_over() const
 {
 	return tz::ui::moused_over(this, this->mouse_listener.get_mouse_pos());
 }
 
-bool CheckBox::clicked_on() const
+bool Checkbox::clicked_on() const
 {
 	return tz::ui::left_clicked(this, this->mouse_listener);
 }
 
-const Vector4F& CheckBox::get_colour_on() const
+const Vector4F& Checkbox::get_colour_on() const
 {
 	return this->colour_on;
 }
 
-const Vector4F& CheckBox::get_colour_off() const
+const Vector4F& Checkbox::get_colour_off() const
 {
 	return this->colour_off;
 }
 
-Vector4F CheckBox::get_colour() const
+Vector4F Checkbox::get_colour() const
 {
 	return value ? this->colour_on : this->colour_off;
 }
 
-bool CheckBox::is_choice() const
+bool Checkbox::is_choice() const
 {
 	return this->choice_parent != nullptr;
 }
@@ -175,7 +175,6 @@ void Slider::update()
 			float mouse_distance = this->mouse_listener.get_left_click_location().x - this->get_x();
 			position = 0.5f * mouse_distance / this->get_width();
 			position = std::clamp(position, 0.0, 1.0);
-			tz::util::log::message("slider position = ", static_cast<unsigned int>(position * 100), "%");
 		}
 		else if(!this->clicked_on())
 			this->just_clicked = false;
@@ -206,7 +205,7 @@ bool Slider::clicked_on() const
 	return tz::ui::left_clicked(this, this->mouse_listener);
 }
 
-CheckBoxChoice::CheckBoxChoice(std::initializer_list<CheckBox*> boxes, CheckBox* initial_choice): boxes(boxes), choice(nullptr)
+CheckboxChoice::CheckboxChoice(std::initializer_list<Checkbox*> boxes, Checkbox* initial_choice): boxes(boxes), choice(nullptr)
 {
 	for(auto& box : this->boxes)
 		box->choice_parent = this;
@@ -214,7 +213,7 @@ CheckBoxChoice::CheckBoxChoice(std::initializer_list<CheckBox*> boxes, CheckBox*
 	this->set_choice(initial_choice);
 }
 
-CheckBoxChoice::CheckBoxChoice(std::initializer_list<std::reference_wrapper<CheckBox>> boxes, CheckBox* initial_choice): boxes(), choice(nullptr)
+CheckboxChoice::CheckboxChoice(std::initializer_list<std::reference_wrapper<Checkbox>> boxes, Checkbox* initial_choice): boxes(), choice(nullptr)
 {
 	for(auto& reference_wrapper : boxes)
 	{
@@ -225,23 +224,23 @@ CheckBoxChoice::CheckBoxChoice(std::initializer_list<std::reference_wrapper<Chec
 	this->set_choice(initial_choice);
 }
 
-bool CheckBoxChoice::has_choice() const
+bool CheckboxChoice::has_choice() const
 {
 	if(this->choice == nullptr)
 		return false;
 	return this->choice_in_scope(this->choice);
 }
 
-CheckBox* CheckBoxChoice::get_choice() const
+Checkbox* CheckboxChoice::get_choice() const
 {
 	return this->choice;
 }
 
-void CheckBoxChoice::set_choice(CheckBox* choice)
+void CheckboxChoice::set_choice(Checkbox* choice)
 {
 	if(!this->choice_in_scope(choice))
 	{
-		tz::util::log::error("Tried to set a CheckBoxChoice to a CheckBox not belonging to the set.");
+		tz::util::log::error("Tried to set a CheckboxChoice to a Checkbox not belonging to the set.");
 		return;
 	}
 	this->choice = choice;
@@ -249,17 +248,17 @@ void CheckBoxChoice::set_choice(CheckBox* choice)
 	this->choice->value = true;
 }
 
-const std::unordered_set<CheckBox*>& CheckBoxChoice::get_bool_boxes() const
+const std::unordered_set<Checkbox*>& CheckboxChoice::get_bool_boxes() const
 {
 	return this->boxes;
 }
 
-bool CheckBoxChoice::choice_in_scope(CheckBox* choice) const
+bool CheckboxChoice::choice_in_scope(Checkbox* choice) const
 {
 	return this->boxes.find(choice) != this->boxes.end();
 }
 
-void CheckBoxChoice::set_all(bool value)
+void CheckboxChoice::set_all(bool value)
 {
 	for(auto& box : this->boxes)
 		box->value = value;

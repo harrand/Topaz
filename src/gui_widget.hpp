@@ -17,9 +17,23 @@ public:
 	virtual void update() override;
 	virtual bool focused() const override;
 	virtual bool is_mouse_sensitive() const override{return true;}
+	/**
+	* Read-only access to the command executed when the Button is moused-over.
+	*/
 	Command* get_on_mouse_over() const;
+	/**
+	* Read-only access to the command executed when the Button is pressed.
+	*/
 	Command* get_on_mouse_click() const;
+	/**
+	* Change what happens when the button is moused-over.
+	* Inputting 'nullptr' will mean that nothing happens.
+	*/
 	void set_on_mouse_over(Command* cmd);
+	/**
+	* Change what happens when the button is left-clicked.
+	* Inputting 'nullptr' will mean that nothing happens.
+	*/
 	void set_on_mouse_click(Command* cmd);
 	bool moused_over() const;
 	bool clicked_on() const;
@@ -31,16 +45,20 @@ private:
 	Command* on_mouse_click;
 };
 
-class CheckBoxChoice;
+class CheckboxChoice;
 
-class CheckBox : public Panel
+/**
+* Graphical representation of a mutable boolean.
+* Use this to enable user-input for toggling booleans.
+*/
+class Checkbox : public Panel
 {
 public:
-	CheckBox(float x, float y, float width, float height, Vector4F colour_on, Vector4F colour_off, Shader& shader, MouseListener& mouse_listener, bool ticked = false);
-	CheckBox(const CheckBox& copy) = default;
-	CheckBox(CheckBox&& move) = default;
-	~CheckBox() = default;
-	CheckBox& operator=(const CheckBox& rhs) = default;
+	Checkbox(float x, float y, float width, float height, Vector4F colour_on, Vector4F colour_off, Shader& shader, MouseListener& mouse_listener, bool ticked = false);
+	Checkbox(const Checkbox& copy) = default;
+	Checkbox(Checkbox&& move) = default;
+	~Checkbox() = default;
+	Checkbox& operator=(const Checkbox& rhs) = default;
 	
 	virtual void update() override;
 	virtual bool focused() const override;
@@ -48,11 +66,21 @@ public:
 	bool moused_over() const;
 	bool clicked_on() const;
 	
+	/**
+	* Get colour of the checkbox when the value is true.
+	*/
 	const Vector4F& get_colour_on() const;
+	/**
+	* Get colour of the checkbox when the value is false.
+	*/
 	const Vector4F& get_colour_off() const;
+	/**
+	* Retrieve the colour of the checkbox.
+	* The colour depends on whether the value is true or false.
+	*/
 	Vector4F get_colour() const;
 	
-	friend class CheckBoxChoice;
+	friend class CheckboxChoice;
 	
 	bool value;
 protected:
@@ -62,11 +90,15 @@ protected:
 	MouseListener& mouse_listener;
 	bool just_clicked, just_moused_over;
 	/**
-	* choice_parent is handled purely by the friend-class CheckBoxChoice.
+	* choice_parent is handled purely by the friend-class CheckboxChoice.
 	*/
-	CheckBoxChoice* choice_parent;
+	CheckboxChoice* choice_parent;
 };
 
+/**
+* Graphical representation of a mutable double.
+* Use this to enable user-input for editing continuous data.
+*/
 class Slider : public Panel
 {
 public:
@@ -91,49 +123,50 @@ private:
 };
 
 /**
-* Non-owning helper class to manage multiple CheckBoxes.
+* Non-owning helper class to manage multiple Checkboxes.
+* Use this to allow multiple checkboxes to only have one truthy at a time.
 */
-class CheckBoxChoice
+class CheckboxChoice
 {
 public:
 	/**
 	* Non-owning pointer initialisation.
 	*/
-	CheckBoxChoice(std::initializer_list<CheckBox*> boxes, CheckBox* initial_choice = nullptr);
+	CheckboxChoice(std::initializer_list<Checkbox*> boxes, Checkbox* initial_choice = nullptr);
 	/**
 	* Non-owning reference initialisation.
 	*/
-	CheckBoxChoice(std::initializer_list<std::reference_wrapper<CheckBox>> boxes, CheckBox* initial_choice = nullptr);
+	CheckboxChoice(std::initializer_list<std::reference_wrapper<Checkbox>> boxes, Checkbox* initial_choice = nullptr);
 	/**
 	* Copy constructor deleted.
-	* This is because any two CheckBoxChoices may not share a single element, or "choice-fighting" will occur.
-	* Choice-fighting is the phenomenon such that multiple CheckBoxChoices choose different boxes to truthify, causing the latter to always invalidate the former.
+	* This is because any two CheckboxChoices may not share a single element, or "choice-fighting" will occur.
+	* Choice-fighting is the phenomenon such that multiple CheckboxChoices choose different boxes to truthify, causing the latter to always invalidate the former.
 	*/
-	CheckBoxChoice(const CheckBoxChoice& copy) = delete;
+	CheckboxChoice(const CheckboxChoice& copy) = delete;
 	/**
 	* Move constructor implies the rvalue-reference parameter is about to go out-of-scope, meaning that it will not be available to cause choice-fighting.
 	* For this reason, the move constructor is available.
 	*/
-	CheckBoxChoice(CheckBoxChoice&& move) = default;
-	~CheckBoxChoice() = default;
+	CheckboxChoice(CheckboxChoice&& move) = default;
+	~CheckboxChoice() = default;
 	/**
 	* Copy assignment operator is also deleted for the same reason; choice-fighting.
 	*/
-	CheckBoxChoice& operator=(const CheckBoxChoice& rhs) = delete;
+	CheckboxChoice& operator=(const CheckboxChoice& rhs) = delete;
 	/**
 	* Similarly to the move constructor, the move assignment-operator cannot induce choice-fighting so remains available for use.
 	*/
-	CheckBoxChoice& operator=(CheckBoxChoice&& rhs) = default;
+	CheckboxChoice& operator=(CheckboxChoice&& rhs) = default;
 	
 	bool has_choice() const;
-	CheckBox* get_choice() const;
-	void set_choice(CheckBox* choice);
-	const std::unordered_set<CheckBox*>& get_bool_boxes() const;
+	Checkbox* get_choice() const;
+	void set_choice(Checkbox* choice);
+	const std::unordered_set<Checkbox*>& get_bool_boxes() const;
 private:
-	bool choice_in_scope(CheckBox* choice) const;
+	bool choice_in_scope(Checkbox* choice) const;
 	void set_all(bool value);
-	std::unordered_set<CheckBox*> boxes;
-	CheckBox* choice;
+	std::unordered_set<Checkbox*> boxes;
+	Checkbox* choice;
 };
 
 namespace tz::ui
