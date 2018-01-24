@@ -85,7 +85,7 @@ void init()
 	Button spawn_block(0.0f, 2 * text.get_height() + 2 * noclip_toggle.get_height() + 2 * test_button.get_height(), Vector4F(1, 1, 1, 1), gui_colour, {}, example_font, "Spawn Block", engine.default_gui_shader, mouse_listener);
 	Button exit_gui_button(wnd.get_width() - 50, wnd.get_height() - 50, Vector4F(1, 1, 1, 1), Vector4F(1.0, 0, 0, 1.0), {}, example_font, " x ", engine.default_gui_shader, mouse_listener);
 	Button save_scene_button(0.0f, 2 * text.get_height() + 2 * noclip_toggle.get_height() + 2 * test_button.get_height() + 2 * spawn_block.get_height(), Vector4F(1, 1, 1, 1), gui_colour, {}, example_font, "Save Scene", engine.default_gui_shader, mouse_listener);
-	Tickbox test_tick(0.0f, save_scene_button.get_y() + (2 * save_scene_button.get_height()), save_scene_button.get_height(), save_scene_button.get_height(), Vector4F(1, 0, 0, 1), Vector4F(0, 0, 1, 1), engine.default_gui_shader, mouse_listener);
+	BoolBox test_tick(0.0f, save_scene_button.get_y() + (2 * save_scene_button.get_height()), save_scene_button.get_height(), save_scene_button.get_height(), Vector4F(1, 0, 0, 1), Vector4F(0, 0, 1, 1), engine.default_gui_shader, mouse_listener);
 	
 	TrivialFunctor pop_cmd([](){tz::audio::play_async(AudioClip("../../../res/runtime/music/pop.wav"));});
 	wnd.add_child(&text);

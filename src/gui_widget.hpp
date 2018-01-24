@@ -31,14 +31,14 @@ private:
 	Command* on_mouse_click;
 };
 
-class Tickbox : public Panel
+class BoolBox : public Panel
 {
 public:
-	Tickbox(float x, float y, float width, float height, Vector4F colour_on, Vector4F colour_off, Shader& shader, MouseListener& mouse_listener, bool ticked = false);
-	Tickbox(const Tickbox& copy) = default;
-	Tickbox(Tickbox&& move) = default;
-	~Tickbox() = default;
-	Tickbox& operator=(const Tickbox& rhs) = default;
+	BoolBox(float x, float y, float width, float height, Vector4F colour_on, Vector4F colour_off, Shader& shader, MouseListener& mouse_listener, bool ticked = false);
+	BoolBox(const BoolBox& copy) = default;
+	BoolBox(BoolBox&& move) = default;
+	~BoolBox() = default;
+	BoolBox& operator=(const BoolBox& rhs) = default;
 	
 	virtual void update() override;
 	virtual bool focused() const override;

@@ -76,24 +76,24 @@ bool Button::clicked_on() const
 	return this->mouse_listener.is_left_clicked() && x_aligned && y_aligned;
 }
 
-Tickbox::Tickbox(float x, float y, float width, float height, Vector4F colour_on, Vector4F colour_off, Shader& shader, MouseListener& mouse_listener, bool ticked): Panel(x, y, width, height, colour_off, shader), value(ticked), colour_on(colour_on), colour_off(colour_off), mouse_listener(mouse_listener){}
+BoolBox::BoolBox(float x, float y, float width, float height, Vector4F colour_on, Vector4F colour_off, Shader& shader, MouseListener& mouse_listener, bool ticked): Panel(x, y, width, height, colour_off, shader), value(ticked), colour_on(colour_on), colour_off(colour_off), mouse_listener(mouse_listener){}
 
-const Vector4F& Tickbox::get_colour_on() const
+const Vector4F& BoolBox::get_colour_on() const
 {
 	return this->colour_on;
 }
 
-const Vector4F& Tickbox::get_colour_off() const
+const Vector4F& BoolBox::get_colour_off() const
 {
 	return this->colour_off;
 }
 
-Vector4F Tickbox::get_colour() const
+Vector4F BoolBox::get_colour() const
 {
 	return value ? this->colour_on : this->colour_off;
 }
 
-void Tickbox::update()
+void BoolBox::update()
 {
 	if(!this->hidden)
 	{
@@ -103,7 +103,6 @@ void Tickbox::update()
 			// if clicked on properly, run the mouse_click command, set it as just clicked and make it the focus of the window ancestor
 			this->find_window_parent()->set_focused_child(this);
 			this->just_clicked = true;
-			tz::util::log::message("click");
 			this->value = !this->value;
 		}
 		else if(!this->clicked_on())
@@ -118,14 +117,14 @@ void Tickbox::update()
 	}
 }
 
-bool Tickbox::focused() const
+bool BoolBox::focused() const
 {
 	if(!this->has_window_parent())
 		return false;
 	return this->find_window_parent()->get_focused_child() == this;
 }
 
-bool Tickbox::moused_over() const
+bool BoolBox::moused_over() const
 {
 	Vector2F mouse_pos = this->mouse_listener.get_mouse_pos();
 	bool x_aligned = mouse_pos.x >= (this->get_window_pos_x() - this->width) && mouse_pos.x <= (this->get_window_pos_x() + this->width);
@@ -133,7 +132,7 @@ bool Tickbox::moused_over() const
 	return x_aligned && y_aligned;
 }
 
-bool Tickbox::clicked_on() const
+bool BoolBox::clicked_on() const
 {
 	// need to take into account the location where the left click was pressed to prevent dragging from firing off the button.
 	Vector2F mouse_pos = this->mouse_listener.get_left_click_location();
