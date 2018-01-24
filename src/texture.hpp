@@ -49,7 +49,7 @@ public:
 	/**
 	* Loads a texture from a file.
 	*/
-	Texture(std::string filename, bool gamma_corrected = true, bool store_bitmap = false);
+	Texture(std::string filename, bool mipmapping = true, bool gamma_corrected = true, bool store_bitmap = false);
 	/**
 	* Loads a texture from a font, given text.
 	*/
@@ -99,7 +99,7 @@ private:
 class NormalMap: public Texture
 {
 public:
-	NormalMap(std::string filename = "../../../res/runtime/normalmaps/default_normalmap.jpg"): Texture(filename, false){};
+	NormalMap(std::string filename = "../../../res/runtime/normalmaps/default_normalmap.jpg"): Texture(filename, false, false, false){};
 	virtual void bind(Shader* shader, unsigned int id) const override{this->bind_with_string(shader, id, "normal_map_sampler");}
 	virtual tz::graphics::TextureType get_texture_type() const override{return tz::graphics::TextureType::NORMAL_MAP;}
 };
@@ -107,7 +107,7 @@ public:
 class ParallaxMap: public Texture
 {
 public:
-	ParallaxMap(std::string filename = "../../../res/runtime/parallaxmaps/default_parallax.png"): Texture(filename, false){};
+	ParallaxMap(std::string filename = "../../../res/runtime/parallaxmaps/default_parallax.png"): Texture(filename, false, false, false){};
 	virtual void bind(Shader* shader, unsigned int id) const override{this->bind_with_string(shader, id, "parallax_map_sampler");}
 	virtual tz::graphics::TextureType get_texture_type() const override{return tz::graphics::TextureType::PARALLAX_MAP;}
 };
@@ -115,7 +115,7 @@ public:
 class DisplacementMap: public Texture
 {
 public:
-	DisplacementMap(std::string filename = "../../../res/runtime/displacementmaps/default_displacement.png"): Texture(filename, false){};
+	DisplacementMap(std::string filename = "../../../res/runtime/displacementmaps/default_displacement.png"): Texture(filename, false, false, false){};
 	virtual void bind(Shader* shader, unsigned int id) const override{this->bind_with_string(shader, id, "displacement_map_sampler");}
 	virtual tz::graphics::TextureType get_texture_type() const override{return tz::graphics::TextureType::DISPLACEMENT_MAP;}
 };

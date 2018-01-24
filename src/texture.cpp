@@ -24,7 +24,7 @@ Texture::Texture(int width, int height, bool initialise_handle): filename({}), t
 
 Texture::Texture(int width, int height): Texture(width, height, true){}
 
-Texture::Texture(std::string filename, bool gamma_corrected, bool store_bitmap): filename(filename), texture_handle(0), width(0), height(0), components(0), gamma_corrected(gamma_corrected), bitmap({})
+Texture::Texture(std::string filename, bool mipmapping, bool gamma_corrected, bool store_bitmap): filename(filename), texture_handle(0), width(0), height(0), components(0), gamma_corrected(gamma_corrected), bitmap({})
 {
 	unsigned char* imgdata = this->load_texture();
 	if(imgdata == nullptr)
@@ -38,11 +38,15 @@ Texture::Texture(std::string filename, bool gamma_corrected, bool store_bitmap):
 	
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	if(mipmapping)
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	else
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	
 	glTexImage2D(GL_TEXTURE_2D, 0, this->gamma_corrected ? GL_SRGB_ALPHA : GL_RGBA, this->width, this->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, imgdata);
-	glGenerateMipmap(GL_TEXTURE_2D);
+	if(mipmapping)
+		glGenerateMipmap(GL_TEXTURE_2D);
 	
 	if(store_bitmap)
 	{
