@@ -5,6 +5,7 @@
 /**
 * A 2D plane rendered on the screen.
 * Can contain any other gui element in its own region.
+* Can have a texture bound, but does not by default.
 */
 class Panel : public GUI
 {
@@ -27,6 +28,8 @@ public:
 	virtual bool is_window() const override{return false;}
 	virtual bool is_mouse_sensitive() const override{return false;}
 protected:
+	void render_panel(Vector4F colour);
+
 	Texture* texture;
 	Vector4F colour;
 	Mesh quad;

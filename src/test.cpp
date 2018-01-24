@@ -85,6 +85,7 @@ void init()
 	Button spawn_block(0.0f, 2 * text.get_height() + 2 * noclip_toggle.get_height() + 2 * test_button.get_height(), Vector4F(1, 1, 1, 1), gui_colour, {}, example_font, "Spawn Block", engine.default_gui_shader, mouse_listener);
 	Button exit_gui_button(wnd.get_width() - 50, wnd.get_height() - 50, Vector4F(1, 1, 1, 1), Vector4F(1.0, 0, 0, 1.0), {}, example_font, " x ", engine.default_gui_shader, mouse_listener);
 	Button save_scene_button(0.0f, 2 * text.get_height() + 2 * noclip_toggle.get_height() + 2 * test_button.get_height() + 2 * spawn_block.get_height(), Vector4F(1, 1, 1, 1), gui_colour, {}, example_font, "Save Scene", engine.default_gui_shader, mouse_listener);
+	Tickbox test_tick(0.0f, save_scene_button.get_y() + (2 * save_scene_button.get_height()), save_scene_button.get_height(), save_scene_button.get_height(), Vector4F(1, 0, 0, 1), Vector4F(0, 0, 1, 1), engine.default_gui_shader, mouse_listener);
 	
 	TrivialFunctor pop_cmd([](){tz::audio::play_async(AudioClip("../../../res/runtime/music/pop.wav"));});
 	wnd.add_child(&text);
@@ -96,6 +97,7 @@ void init()
 	gui_panel.add_child(&exit_gui_button);
 	gui_panel.add_child(&noclip_toggle);
 	gui_panel.add_child(&save_scene_button);
+	gui_panel.add_child(&test_tick);
 	TrivialFunctor save_scene_cmd([&](){const_cast<Scene&>(engine.scene).save();});
 	TrivialFunctor toggle_noclip([&](){noclip = !noclip;});
 	SpawnBlockCommand spawn_test_cube(engine, bounds);
@@ -149,8 +151,6 @@ void init()
 			pos_text.set_text(tz::util::string::format(tz::util::string::devectorise_list_3(Vector3F(pos_int.x, pos_int.y, pos_int.z))));
 			updater.reload();
 			seconds++;
-			tz::util::log::message("Should be false: ", plane_texture.has_mipmap());
-			tz::util::log::message("Should be true: ", engine.get_textures().front()->has_mipmap());
 		}
 		
 		plane_texture_buffer.clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, 0.0f, 0.0f, 0.0f, 0.0f);

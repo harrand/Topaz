@@ -89,13 +89,13 @@ Vector2<T>& Vector2<T>::operator/=(T scalar)
 template<typename T>
 bool Vector2<T>::operator<(const Vector2<T>& rhs) const
 {
-	return this->length() < rhs.length();
+	return this->x < rhs.x && this->y < rhs.y;
 }
 
 template<typename T>
 bool Vector2<T>::operator>(const Vector2<T>& rhs) const
 {
-	return this->length() > rhs.length();
+	return this->x > rhs.x && this->y > rhs.y;
 }
 
 template<typename T>

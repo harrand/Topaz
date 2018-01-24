@@ -150,10 +150,10 @@ bool GUI::is_using_proportional_positioning() const
 	return this->use_proportional_positioning;
 }
 
-bool GUI::covered() const
+GUI* GUI::covered_by() const
 {
 	if(!this->has_window_parent())
-		return true;
+		return nullptr;
 	Vector2F this_minimum(this->get_window_pos_x(), this->get_window_pos_y());
 	Vector2F this_maximum = this_minimum + Vector2F(this->get_width(), this->get_height());
 	for(GUI* descendant : tz::ui::descendants(this->find_window_parent(), true))
@@ -162,10 +162,16 @@ bool GUI::covered() const
 			continue;
 		Vector2F descendant_minimum(descendant->get_window_pos_x(), descendant->get_window_pos_y());
 		Vector2F descendant_maximum = descendant_minimum + Vector2F(descendant->get_width() + descendant->get_height());
+		
 		if(this_minimum > descendant_minimum && this_maximum < descendant_maximum)
-			return true;
+			return descendant;
 	}
-	return false;
+	return nullptr;
+}
+
+bool GUI::covered() const
+{
+	return this->covered_by() != nullptr && this->has_window_parent();
 }
 
 bool tz::graphics::initialised = false;

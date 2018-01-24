@@ -56,6 +56,7 @@ public:
 	virtual void set_hidden(bool hidden);
 	void set_using_proportional_positioning(bool use_proportional_positioning);
 	bool is_using_proportional_positioning() const;
+	GUI* covered_by() const;
 	bool covered() const;
 protected:
 	float x, y, width, height;

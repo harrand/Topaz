@@ -31,4 +31,30 @@ private:
 	Command* on_mouse_click;
 };
 
+class Tickbox : public Panel
+{
+public:
+	Tickbox(float x, float y, float width, float height, Vector4F colour_on, Vector4F colour_off, Shader& shader, MouseListener& mouse_listener, bool ticked = false);
+	Tickbox(const Tickbox& copy) = default;
+	Tickbox(Tickbox&& move) = default;
+	~Tickbox() = default;
+	Tickbox& operator=(const Tickbox& rhs) = default;
+	
+	virtual void update() override;
+	virtual bool focused() const override;
+	virtual bool is_mouse_sensitive() const override{return true;}
+	bool moused_over() const;
+	bool clicked_on() const;
+	
+	const Vector4F& get_colour_on() const;
+	const Vector4F& get_colour_off() const;
+	Vector4F get_colour() const;
+	
+	bool value;
+protected:
+	Vector4F colour_on, colour_off;
+	MouseListener& mouse_listener;
+	bool just_clicked, just_moused_over;
+};
+
 #endif

@@ -36,24 +36,7 @@ void Panel::update()
 {
 	if(!this->hidden)
 	{
-		//update uniforms & bind & render. THEN update all children (unless the panel is hidden in which case do nothing)
-		this->shader.value().get().bind();
-		this->shader.value().get().set_uniform<bool>("has_texture", this->has_texture());
-		this->shader.value().get().set_uniform<bool>("has_background_colour", false);
-		this->shader.value().get().set_uniform<bool>("has_text_border_colour", false);
-		this->shader.value().get().set_uniform<Vector4F>("colour", this->colour);
-
-		Matrix4x4 projection;
-		if(this->has_window_parent() && !this->use_proportional_positioning)
-			projection = tz::ui::create_orthographic_gui_matrix(this);
-		else
-			projection = Matrix4x4::identity();
-		this->shader.value().get().set_uniform<Matrix4x4>("model_matrix", projection * tz::transform::model(Vector3F(this->get_window_pos_x(), this->get_window_pos_y(), 0.0f), Vector3F(), Vector3F(this->width, this->height, 0.0f)));
-		if(this->has_texture())
-			this->texture->bind(&(this->shader.value().get()), 0);
-		this->shader.value().get().update();
-		this->quad.render(false);
-		GUI::update();
+		this->render_panel(this->colour);
 	}
 }
 
@@ -66,6 +49,28 @@ void Panel::destroy()
 		this->parent->remove_child(this);
 		this->parent = nullptr;
 	}
+}
+
+void Panel::render_panel(Vector4F colour)
+{
+	//update uniforms & bind & render. THEN update all children (unless the panel is hidden in which case do nothing)
+	this->shader.value().get().bind();
+	this->shader.value().get().set_uniform<bool>("has_texture", this->has_texture());
+	this->shader.value().get().set_uniform<bool>("has_background_colour", false);
+	this->shader.value().get().set_uniform<bool>("has_text_border_colour", false);
+	this->shader.value().get().set_uniform<Vector4F>("colour", colour);
+
+	Matrix4x4 projection;
+	if(this->has_window_parent() && !this->use_proportional_positioning)
+		projection = tz::ui::create_orthographic_gui_matrix(this);
+	else
+		projection = Matrix4x4::identity();
+	this->shader.value().get().set_uniform<Matrix4x4>("model_matrix", projection * tz::transform::model(Vector3F(this->get_window_pos_x(), this->get_window_pos_y(), 0.0f), Vector3F(), Vector3F(this->width, this->height, 0.0f)));
+	if(this->has_texture())
+		this->texture->bind(&(this->shader.value().get()), 0);
+	this->shader.value().get().update();
+	this->quad.render(false);
+	GUI::update();
 }
 
 TextLabel::TextLabel(float x, float y, Vector4F colour, std::optional<Vector4F> background_colour, std::optional<Vector3F> text_border_colour, Font font, const std::string& text, Shader& shader): Panel(x, y, this->text_texture.get_width(), this->text_texture.get_height(), colour, shader), background_colour(background_colour), text_border_colour(text_border_colour), font(font), text(text), text_texture(this->font, this->text, SDL_Color({static_cast<unsigned char>(this->colour.x * 255), static_cast<unsigned char>(this->colour.y * 255), static_cast<unsigned char>(this->colour.z * 255), static_cast<unsigned char>(255)}))
