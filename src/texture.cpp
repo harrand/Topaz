@@ -120,7 +120,11 @@ Texture::Texture(const Texture& copy)
 	if(copy.has_file_name())
 		(*this) = Texture(copy.get_file_name());
 	else
+	{
 		(*this) = Texture(copy.width, copy.height);
+		this->bitmap = copy.bitmap;
+		glCopyImageSubData(copy.texture_handle, GL_TEXTURE_2D, 0, 0, 0, 0, this->texture_handle, GL_TEXTURE_2D, 0, 0, 0, 0, copy.width, copy.height, 1);
+	}
 }
 
 Texture::Texture(Texture&& move): filename(move.filename), texture_handle(move.texture_handle), width(move.width), height(move.height), components(move.components)
@@ -176,7 +180,7 @@ bool Texture::has_bitmap() const
 	return this->bitmap.has_value();
 }
 
-Texture::MipmapType Texture::get_mipmap_type() const
+tz::graphics::MipmapType Texture::get_mipmap_type() const
 {
 	GLint flag;
 	glBindTexture(GL_TEXTURE_2D, this->texture_handle);
@@ -184,27 +188,27 @@ Texture::MipmapType Texture::get_mipmap_type() const
 	glBindTexture(GL_TEXTURE_2D, 0);
 	switch(flag)
 	{
-		case static_cast<GLint>(Texture::MipmapType::NEAREST):
-			return Texture::MipmapType::NEAREST;
+		case static_cast<GLint>(tz::graphics::MipmapType::NEAREST):
+			return tz::graphics::MipmapType::NEAREST;
 			break;
-		case static_cast<GLint>(Texture::MipmapType::LINEAR):
-			return Texture::MipmapType::LINEAR;
+		case static_cast<GLint>(tz::graphics::MipmapType::LINEAR):
+			return tz::graphics::MipmapType::LINEAR;
 			break;
-		case static_cast<GLint>(Texture::MipmapType::NEAREST_MULTIPLE):
-			return Texture::MipmapType::NEAREST_MULTIPLE;
+		case static_cast<GLint>(tz::graphics::MipmapType::NEAREST_MULTIPLE):
+			return tz::graphics::MipmapType::NEAREST_MULTIPLE;
 			break;
-		case static_cast<GLint>(Texture::MipmapType::LINEAR_MULTIPLE):
-			return Texture::MipmapType::LINEAR_MULTIPLE;
+		case static_cast<GLint>(tz::graphics::MipmapType::LINEAR_MULTIPLE):
+			return tz::graphics::MipmapType::LINEAR_MULTIPLE;
 			break;
 		default:
-			return Texture::MipmapType::NONE;
+			return tz::graphics::MipmapType::NONE;
 			break;
 	}
 }
 
 bool Texture::has_mipmap() const
 {	
-	return this->get_mipmap_type() != Texture::MipmapType::NONE;
+	return this->get_mipmap_type() != tz::graphics::MipmapType::NONE;
 }
 
 Bitmap<PixelRGBA> Texture::get_bitmap() const
