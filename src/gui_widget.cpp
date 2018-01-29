@@ -205,6 +205,16 @@ bool Slider::clicked_on() const
 	return tz::ui::left_clicked(this, this->mouse_listener);
 }
 
+const Vector4F& Slider::get_slider_colour() const
+{
+	return this->slider_colour;
+}
+
+const Vector2F& Slider::get_slider_size() const
+{
+	return this->slider_size;
+}
+
 CheckboxChoice::CheckboxChoice(std::initializer_list<Checkbox*> boxes, Checkbox* initial_choice): boxes(boxes), choice(nullptr)
 {
 	for(auto& box : this->boxes)

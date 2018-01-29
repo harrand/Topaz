@@ -77,4 +77,10 @@ private:
 	std::vector<std::string> released_keys;
 };
 
+namespace tz::listener
+{
+	bool is_mouse(const Listener* listener);
+	bool is_keyboard(const Listener* listener);
+}
+
 #endif
