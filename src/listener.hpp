@@ -3,7 +3,7 @@
 #include "SDL2/SDL.h"
 #include "command.hpp"
 #include "camera.hpp"
-#include "scene.hpp"
+#include "graphics/scene.hpp"
 
 /**
 * Wrapper for an SDL_Event listener.

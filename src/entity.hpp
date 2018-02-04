@@ -1,7 +1,7 @@
 #ifndef ENTITY_HPP
 #define ENTITY_HPP
-#include "physics.hpp"
-#include "object.hpp"
+#include "physics/physics.hpp"
+#include "graphics/object.hpp"
 #include <memory>
 
 namespace tz::physics

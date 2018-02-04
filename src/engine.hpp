@@ -1,9 +1,9 @@
 #ifndef ENGINE_HPP
 #define ENGINE_HPP
-#include "gui.hpp"
+#include "graphics/gui.hpp"
 #include "command.hpp"
 #include "time.hpp"
-#include "audio.hpp"
+#include "audio/audio.hpp"
 
 namespace tz
 {

@@ -4,7 +4,7 @@
 #include "shader.hpp"
 #include "texture.hpp"
 #include "camera.hpp"
-#include "boundary.hpp"
+#include "physics/boundary.hpp"
 #include <variant>
 
 namespace tz::graphics

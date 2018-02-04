@@ -1,5 +1,4 @@
 #include "listener.hpp"
-#include <algorithm>
 
 // static objects need to be initialised like this. really annoying.
 unsigned int Listener::number_of_listeners = 0;

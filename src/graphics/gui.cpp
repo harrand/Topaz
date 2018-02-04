@@ -1,6 +1,6 @@
 #include "gui.hpp"
 #include "graphics.hpp"
-#include "boundary.hpp"
+#include "physics/boundary.hpp"
 #include <stack>
 
 GUI::GUI(float x, float y, float width, float height, std::optional<std::reference_wrapper<Shader>> shader): x(x), y(y), width(width), height(height), shader(shader), parent(nullptr), children(std::deque<GUI*>()), hidden(false), use_proportional_positioning(false){}

@@ -1,5 +1,4 @@
 #include "time.hpp"
-#include <chrono>
 
 Timer::Timer()
 {

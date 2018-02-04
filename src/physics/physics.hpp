@@ -1,7 +1,7 @@
 #ifndef PHYSICS_HPP
 #define PHYSICS_HPP
-#include "boundary.hpp"
-#include "object.hpp"
+#include "physics/boundary.hpp"
+#include "graphics/object.hpp"
 
 /**
 * Represent a physical force in three-dimensions.
