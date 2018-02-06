@@ -1,5 +1,4 @@
 #include "listener.hpp"
-#include <algorithm>
 
 // static objects need to be initialised like this. really annoying.
 unsigned int Listener::number_of_listeners = 0;
@@ -146,4 +145,17 @@ bool KeyListener::catch_key_released(const std::string& keyname)
 	if(released)
 		this->released_keys.erase(std::remove(this->released_keys.begin(), this->released_keys.end(), keyname), this->released_keys.end());
 	return released;
+}
+
+namespace tz::listener
+{
+	bool is_mouse(const Listener* listener)
+	{
+		return dynamic_cast<const MouseListener*>(listener) != nullptr;
+	}
+	
+	bool is_keyboard(const Listener* listener)
+	{
+		return dynamic_cast<const KeyListener*>(listener) != nullptr;
+	}
 }

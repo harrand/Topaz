@@ -114,6 +114,9 @@ public:
 	bool moused_over() const;
 	bool clicked_on() const;
 	
+	const Vector4F& get_slider_colour() const;
+	const Vector2F& get_slider_size() const;
+	
 	double position;
 private:
 	Vector4F slider_colour;

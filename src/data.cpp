@@ -1,5 +1,4 @@
 #include "data.hpp"
-#include "utility.hpp"
 
 tz::data::Manager::Manager(std::string datafilename): datafilename(std::move(datafilename)), data_file(RawFile(this->datafilename)){}
 

@@ -1,7 +1,7 @@
 #ifndef DATA_HPP
 #define DATA_HPP
-#include "mesh.hpp"
-#include "texture.hpp"
+#include "graphics/mesh.hpp"
+#include "graphics/texture.hpp"
 #include "MDL/mdl.hpp"
 #include <unordered_map>
 #include <memory>

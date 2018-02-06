@@ -3,7 +3,7 @@
 #ifndef GLEW_STATIC
 #define GLEW_STATIC
 #endif
-#include "GL/glew.h"
+#include <GL/glew.h>
 #include "SDL2/SDL.h"
 #include "SDL2/SDL_ttf.h"
 #include "utility.hpp"

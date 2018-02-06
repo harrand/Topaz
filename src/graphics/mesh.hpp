@@ -4,7 +4,7 @@
 #include <string>
 #include <memory>
 #include <array>
-#include "graphics.hpp"
+#include "graphics/graphics.hpp"
 #include "matrix.hpp"
 
 namespace tz::graphics

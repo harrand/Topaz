@@ -1,5 +1,4 @@
 #include "engine.hpp"
-#include "graphics.hpp"
 #include "data.hpp"
 
 void tz::initialise()
@@ -21,7 +20,7 @@ void tz::terminate()
 	tz::util::log::message("Terminated Topaz.");
 }
 
-Engine::Engine(Window* window, std::string properties_path, unsigned int tps): camera(Camera()), scene(), properties(RawFile(properties_path)), resources(RawFile(this->properties.get_tag("resources"))), default_shader(this->properties.get_tag("default_shader")), default_gui_shader(this->properties.get_tag("default_gui_shader")), seconds_timer(), tick_timer(), profiler(), window(window), fps(0), tps(tps), update_command_executor(), tick_command_executor(), update_due(false)
+Engine::Engine(Window* window, std::string properties_path, unsigned int tps): camera(Camera()), scene(), properties(RawFile(std::move(properties_path))), resources(RawFile(this->properties.get_tag("resources"))), default_shader(this->properties.get_tag("default_shader")), default_gui_shader(this->properties.get_tag("default_gui_shader")), seconds_timer(), tick_timer(), profiler(), window(window), fps(0), tps(tps), update_command_executor(), tick_command_executor(), update_due(false)
 {
 	// fill all the asset buffers via tz data manager
 	tz::data::Manager(this->properties.get_tag("resources")).retrieve_all_data(this->meshes, this->textures, this->normal_maps, this->parallax_maps, this->displacement_maps);
@@ -60,7 +59,7 @@ void Engine::update(std::size_t shader_index)
 	this->window->clear();
 	this->profiler.end_frame();
 	
-	this->scene.render(this->camera, &(this->get_shader(shader_index)), this->window->get_width(), this->window->get_height());
+	this->scene.render(this->camera, &(this->get_shader(shader_index)), static_cast<unsigned int>(this->window->get_width()), static_cast<unsigned int>(this->window->get_height()));
 	
 	for(auto command : this->update_command_executor.get_commands())
 		command->operator()({});
