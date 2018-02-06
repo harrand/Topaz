@@ -146,7 +146,7 @@ void init()
 	while(!engine.get_window().is_close_requested())
 	{
 		float multiplier = tz::util::cast::from_string<float>(MDLF(RawFile(engine.get_properties().get_tag("resources"))).get_tag("speed"));
-		float velocity = multiplier;
+		float velocity = multiplier * test_slider.position;
 		on_ground = false;
 		if(updater.millis_passed(1000))
 		{	

@@ -90,7 +90,7 @@ namespace tz
 			inline std::vector<std::string> split_string(const std::string& s, char delim);
 			inline std::string replace_all_char(const std::string& str, char toreplace, const std::string& replacewith);
 			inline std::string replace_all(std::string str, const std::string& to_replace, const std::string& replace_with);
-			inline std::string substring(const std::string& str, unsigned int begin, unsigned int end);
+			inline std::string substring(const std::string& str, std::size_t begin, std::size_t end);
 			inline std::string format(const std::vector<std::string>& split);
 			inline std::vector<std::string> deformat(const std::string& str);
 			template<typename T>
@@ -98,7 +98,7 @@ namespace tz
 			template<typename T>
 			inline std::vector<std::string> devectorise_list_3(Vector3<T> v);
 		}
-		
+
 		/**
 		* Log to the console variadically.
 		* Like printf, but without the formatting and with type-safety.

@@ -96,7 +96,7 @@ namespace tz::util
 			return str;
 		}
 		
-		inline std::string substring(const std::string& str, unsigned int begin, unsigned int end)
+		inline std::string substring(const std::string& str, std::size_t begin, std::size_t end)
 		{
 			std::size_t strsize = str.length();
 			if(end > strsize)

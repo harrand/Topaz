@@ -35,8 +35,17 @@ public:
 	*/
 	Quaternion operator-() const;
 	/**
+	* Quaternion functor returns the Matrix (via Quaternion::to_matrix())
+	*/
+	Matrix4x4 operator()() const;
+	/**
+	* Enable implicit/explicit conversion to the Matrix4x4 component (via Quaternion::to_matrix())
+	*/
+	operator Matrix4x4() const;
+	/**
 	* Combine quaternion rotations.
-	*/Quaternion operator*(const Quaternion& rhs) const;
+	*/
+	Quaternion operator*(const Quaternion& rhs) const;
 	/**
 	* Rotate a vector by a quaternion. Does not work for homogeneous coordinates; convert to a rotational matrix if you need to do that.
 	*/

@@ -98,11 +98,21 @@ Quaternion Quaternion::inverse() const
 
 Quaternion Quaternion::operator-() const
 {
-	Vector4F cpy = *this;
-	cpy.x = -cpy.x;
-	cpy.y = -cpy.y;
-	cpy.z = -cpy.z;
-	return {cpy};
+	Vector4F copy = *this;
+	cpy.x = -copy.x;
+	cpy.y = -copy.y;
+	cpy.z = -copy.z;
+	return {copy};
+}
+
+Matrix4x4 Quaternion::operator()() const
+{
+	return this->to_matrix();
+}
+
+Quaternion::operator Matrix4x4() const
+{
+	return this->to_matrix();
 }
 
 Quaternion Quaternion::operator*(const Quaternion& rhs) const
