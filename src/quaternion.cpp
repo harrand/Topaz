@@ -99,9 +99,9 @@ Quaternion Quaternion::inverse() const
 Quaternion Quaternion::operator-() const
 {
 	Vector4F copy = *this;
-	cpy.x = -copy.x;
-	cpy.y = -copy.y;
-	cpy.z = -copy.z;
+	copy.x = -copy.x;
+	copy.y = -copy.y;
+	copy.z = -copy.z;
 	return {copy};
 }
 
@@ -118,6 +118,13 @@ Quaternion::operator Matrix4x4() const
 Quaternion Quaternion::operator*(const Quaternion& rhs) const
 {
 	return {Vector4F(this->w * rhs.x + this->x + rhs.w + this->y * rhs.z - this->z * rhs.y, this->w * rhs.y + this->y * rhs.w + this->z * rhs.x - this->x * rhs.z, this->w * rhs.z + this->z * rhs.w + this->x * rhs.y - this->y * rhs.x, this->w * rhs.w - this->x * rhs.x - this->y * rhs.y - this->z * rhs.z)};
+}
+
+Quaternion Quaternion::operator*(float scalar) const
+{
+	if(this->length() == 0)
+		return {};
+	return {Vector4F(this->x / this->length(), this->y / this->length(), this->z / this->length(), this->w / this->length())};
 }
 
 Vector4F Quaternion::operator*(const Vector3F& vector) const
