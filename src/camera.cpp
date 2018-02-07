@@ -1,6 +1,6 @@
 #include "camera.hpp"
 
-Camera::Camera(Vector3F position, Vector3F rotation, float fov, float near_clip, float far_clip, bool perspective): position(std::move(position)), rotation(std::move(rotation)), fov(fov), near_clip(near_clip), far_clip(far_clip), axis_bound(false), perspective(perspective){}
+Camera::Camera(Vector3F position, Vector3F rotation, float fov, float near_clip, float far_clip, bool perspective): position(position), rotation(rotation), fov(fov), near_clip(near_clip), far_clip(far_clip), axis_bound(false), perspective(perspective){}
 
 Vector3F Camera::forward() const
 {
@@ -79,7 +79,7 @@ Matrix4x4 Camera::projection(float width, float height) const
 		return tz::transform::perspective_projection(this->fov, width, height, this->near_clip, this->far_clip);
 	else
 	{
-		float zoom = (width + height) * 0.25f * fov / tz::consts::pi;
+		float zoom = (width + height) * 0.25f * this->fov / tz::consts::pi;
 		float aspect_ratio = width / height;
 		if (width >= height)
 			return tz::transform::orthographic_projection(zoom * aspect_ratio, -zoom * aspect_ratio, zoom, -zoom, this->near_clip, this->far_clip);

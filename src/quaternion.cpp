@@ -1,15 +1,15 @@
 #include "quaternion.hpp"
 
-Quaternion::Quaternion(Vector3F rotation_axis, float angle): Vector4F(rotation_axis.x * sin(angle / 2.0f), rotation_axis.y * sin(angle / 2.0f), rotation_axis.z * sin(angle / 2.0f), cos(angle / 2.0f)){}
+Quaternion::Quaternion(Vector3F rotation_axis, float angle): Vector4F(rotation_axis.x * std::sin(angle / 2.0f), rotation_axis.y * std::sin(angle / 2.0f), rotation_axis.z * std::sin(angle / 2.0f), std::cos(angle / 2.0f)){}
 
 Quaternion::Quaternion(Vector3F euler_rotation)
 {
-	const float sin_pitch(sin(euler_rotation.x / 2.0f));
-	const float cos_pitch(cos(euler_rotation.x / 2.0f));
-	const float sin_yaw(sin(euler_rotation.y / 2.0f));
-	const float cos_yaw(cos(euler_rotation.y / 2.0f));
-	const float sin_roll(sin(euler_rotation.z / 2.0f));
-	const float cos_roll(cos(euler_rotation.z / 2.0f));
+	const float sin_pitch(std::sin(euler_rotation.x / 2.0f));
+	const float cos_pitch(std::cos(euler_rotation.x / 2.0f));
+	const float sin_yaw(std::sin(euler_rotation.y / 2.0f));
+	const float cos_yaw(std::cos(euler_rotation.y / 2.0f));
+	const float sin_roll(std::sin(euler_rotation.z / 2.0f));
+	const float cos_roll(std::cos(euler_rotation.z / 2.0f));
 	const float cos_pitch_cos_yaw(cos_pitch*cos_yaw);
 	const float sin_pitch_sin_yaw(sin_pitch*sin_yaw);
 
@@ -66,13 +66,13 @@ Quaternion::Quaternion(Vector4F xyzw): Vector4F(xyzw){}
 
 float Quaternion::get_angle() const
 {
-	return acos(this->w) * 2.0f;
+	return std::acos(this->w) * 2.0f;
 }
 
 Vector3F Quaternion::get_rotation_axis() const
 {
-	float sin_a = std::sqrt(1.0f - pow(this->w, 2));
-	if(std::fabs(sin_a) < 0.0005f)
+	float sin_a = std::sqrt(1.0f - std::pow(this->w, 2));
+	if(std::abs(sin_a) < 0.0005f)
 		sin_a = 1.0f;
 	return {this->x / sin_a, this->y / sin_a, this->z / sin_a};
 }
@@ -80,9 +80,9 @@ Vector3F Quaternion::get_rotation_axis() const
 Matrix4x4 Quaternion::to_matrix() const
 {
 	return Matrix4x4(
-	Vector4F(1 - (2 * pow(this->y, 2) + 2 * pow(this->z, 2)), 2 * this->x * this->y + 2 * this->z * this->w, 2 * this->x * this->z - 2 * this->y * this->w, 0),
-	Vector4F(2 * this->x * this->y - 2 * this->z * this->w, 1 - (2 * pow(this->x, 2) + 2 * pow(this->z, 2)), 2 * this->y * this->z + 2 * this->x * this->w, 0),
-	Vector4F(2 * this->x * this->z + 2 * this->y * this->w, 2 * this->y * this->z - 2 * this->x * this->w, 1 - (2 * pow(this->x, 2) + 2 * pow(this->y, 2)), 0.0f),
+	Vector4F(1 - (2 * std::pow(this->y, 2) + 2 * std::pow(this->z, 2)), 2 * this->x * this->y + 2 * this->z * this->w, 2 * this->x * this->z - 2 * this->y * this->w, 0),
+	Vector4F(2 * this->x * this->y - 2 * this->z * this->w, 1 - (2 * std::pow(this->x, 2) + 2 * std::pow(this->z, 2)), 2 * this->y * this->z + 2 * this->x * this->w, 0),
+	Vector4F(2 * this->x * this->z + 2 * this->y * this->w, 2 * this->y * this->z - 2 * this->x * this->w, 1 - (2 * std::pow(this->x, 2) + 2 * std::pow(this->y, 2)), 0.0f),
 	Vector4F(0.0f, 0.0f, 0.0f, 1.0f)).transposed();
 }
 
@@ -124,7 +124,12 @@ Quaternion Quaternion::operator*(float scalar) const
 {
 	if(this->length() == 0)
 		return {};
-	return {Vector4F(this->x / this->length(), this->y / this->length(), this->z / this->length(), this->w / this->length())};
+	return {Vector4F(this->x * scalar, this->y * scalar, this->z * scalar, this->w * scalar)};
+}
+
+Quaternion Quaternion::operator/(float scalar) const
+{
+    return (*this) * (1.0f / scalar);
 }
 
 Vector4F Quaternion::operator*(const Vector3F& vector) const

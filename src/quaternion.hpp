@@ -47,6 +47,7 @@ public:
 	*/
 	Quaternion operator*(const Quaternion& rhs) const;
     Quaternion operator*(float scalar) const;
+    Quaternion operator/(float scalar) const;
 	/**
 	* Rotate a vector by a quaternion. Does not work for homogeneous coordinates; convert to a rotational matrix if you need to do that.
 	*/

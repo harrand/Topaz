@@ -1,6 +1,4 @@
 #include "audio.hpp"
-#include <thread>
-#include <chrono>
 
 AudioClip::AudioClip(std::string filename): filename(std::move(filename)), audio_handle(Mix_LoadWAV(this->filename.c_str()))
 {

@@ -14,9 +14,9 @@ class Listener
 {
 public:
 	Listener();
-	Listener(const Listener& copy) = delete;
-	Listener(Listener&& move) = delete;
-	Listener& operator=(const Listener& rhs) = delete;
+	Listener(const Listener& copy) = default;
+	Listener(Listener&& move) = default;
+	Listener& operator=(const Listener& rhs) = default;
 	~Listener();
 	
 	virtual void handle_events(SDL_Event& evt) = 0;
