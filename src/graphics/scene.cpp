@@ -40,7 +40,7 @@ const std::string& Scene::get_file_name() const
 	return this->filename.value();
 }
 
-void Scene::add_object(Object3D obj)
+void Scene::add_object(Object obj)
 {
 	this->objects.push_back(std::move(obj));
 }
@@ -58,7 +58,7 @@ void Scene::add_entity_object(EntityObject3D eo)
 	this->entity_objects.push_back(std::move(eo));
 }
 
-void Scene::remove_object(const Object3D& obj)
+void Scene::remove_object(const Object& obj)
 {
 	this->objects.erase(std::remove(this->objects.begin(), this->objects.end(), obj), this->objects.end());
 }
@@ -73,7 +73,7 @@ void Scene::remove_entity_object(const EntityObject3D& eo)
 	this->entity_objects.erase(std::remove(this->entity_objects.begin(), this->entity_objects.end(), eo), this->entity_objects.end());
 }
 
-const std::vector<Object3D>& Scene::get_objects() const
+const std::vector<Object>& Scene::get_objects() const
 {
 	return this->objects;
 }
@@ -109,7 +109,7 @@ void Scene::export_scene(const std::string& scene_link) const
 	{
 		const std::string object_name = tz::scene::object_tag_prefix + tz::util::cast::to_string<int>(i);
 		object_list.push_back(object_name);
-		const Object3D current_object = this->objects[i];
+		const Object current_object = this->objects[i];
 		
 		output.edit_tag(object_name + ".mesh", data_manager.resource_name(current_object.get_mesh().get_file_name()));
 		for(auto& texture : current_object.get_textures())
@@ -173,7 +173,7 @@ void Scene::update(unsigned int tps)
 		ent.update_motion(tps);
 }
 
-Object3D Scene::retrieve_object_data(const std::string& object_name, std::string resources_path, MDLF& mdlf, const std::vector<std::unique_ptr<Mesh>>& all_meshes, const std::vector<std::unique_ptr<Texture>>& all_textures, const std::vector<std::unique_ptr<NormalMap>>& all_normal_maps, const std::vector<std::unique_ptr<ParallaxMap>>& all_parallax_maps, const std::vector<std::unique_ptr<DisplacementMap>>& all_displacement_maps)
+Object Scene::retrieve_object_data(const std::string& object_name, std::string resources_path, MDLF& mdlf, const std::vector<std::unique_ptr<Mesh>>& all_meshes, const std::vector<std::unique_ptr<Texture>>& all_textures, const std::vector<std::unique_ptr<NormalMap>>& all_normal_maps, const std::vector<std::unique_ptr<ParallaxMap>>& all_parallax_maps, const std::vector<std::unique_ptr<DisplacementMap>>& all_displacement_maps)
 {
 	std::string mesh_name = mdlf.get_tag(object_name + ".mesh");
 	std::string position_string = mdlf.get_tag(object_name + ".pos");
@@ -223,8 +223,8 @@ Object3D Scene::retrieve_object_data(const std::string& object_name, std::string
 
 EntityObject3D Scene::retrieve_entity_object_data(const std::string& entity_object_name, std::string resources_path, MDLF& mdlf, const std::vector<std::unique_ptr<Mesh>>& all_meshes, const std::vector<std::unique_ptr<Texture>>& all_textures, const std::vector<std::unique_ptr<NormalMap>>& all_normal_maps, const std::vector<std::unique_ptr<ParallaxMap>>& all_parallax_maps, const std::vector<std::unique_ptr<DisplacementMap>>& all_displacement_maps)
 {
-	// No point repeating code from Scene::retrieve_object_data, so call it to receive a valid Object3D. Then parse the mass from the data-file, and cobble all the data together to create the final EntityObject3D. This doesn't really waste memory as Objects are now smaller than before, as pointers << strings.
-	Object3D object = Scene::retrieve_object_data(entity_object_name, resources_path, mdlf, all_meshes, all_textures, all_normal_maps, all_parallax_maps, all_displacement_maps);
+	// No point repeating code from Scene::retrieve_object_data, so call it to receive a valid Object. Then parse the mass from the data-file, and cobble all the data together to create the final EntityObject3D. This doesn't really waste memory as Objects are now smaller than before, as pointers << strings.
+	Object object = Scene::retrieve_object_data(entity_object_name, resources_path, mdlf, all_meshes, all_textures, all_normal_maps, all_parallax_maps, all_displacement_maps);
 	std::string mass_string = mdlf.get_tag(entity_object_name + ".mass");
 	float mass = tz::util::cast::from_string<float>(mass_string);
 	if(!mdlf.exists_tag(entity_object_name + ".mass"))

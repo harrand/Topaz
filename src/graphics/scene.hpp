@@ -45,7 +45,7 @@ public:
 	*/
 	const std::string& get_file_name() const;
 	// Add a copy of an object to the scene. Complexity: O(1) amortised Ω(1) ϴ(1) amortised
-	void add_object(Object3D obj);
+	void add_object(Object obj);
 	// Add a copy of an entity to the scene. Complexity: O(1) amortised Ω(1) ϴ(1) amortised
 	void add_entity(Entity ent);
 	// Add a copy of an entity-object to the scene. Complexity: O(1) amortised Ω(1) ϴ(1) amortised
@@ -59,7 +59,7 @@ public:
 	* Construct an Object3D in-place and add it to the scene.
 	*/
 	template<typename... Args>
-	Object3D& emplace_object(Args&&... args);
+	Object& emplace_object(Args&&... args);
 	/**
 	* Construct an Entity in-place and add it to the scene.
 	*/
@@ -73,7 +73,7 @@ public:
 	/**
 	* Remove an existing Object3D from the scene.
 	*/
-	void remove_object(const Object3D& obj);
+	void remove_object(const Object& obj);
 	/**
 	* Remove an existing Entity from the scene.
 	*/
@@ -85,7 +85,7 @@ public:
 	/**
 	* Access all Object3D elements in the scene (Read-only).
 	*/
-	const std::vector<Object3D>& get_objects() const;
+	const std::vector<Object>& get_objects() const;
 	/**
 	* Access all Entity elements in the scene (Read-only).
 	*/
@@ -123,12 +123,12 @@ public:
 	
 	Vector3F spawn_point, spawn_orientation;
 private:
-	static Object3D retrieve_object_data(const std::string& object_name, std::string resources_path, MDLF& mdlf, const std::vector<std::unique_ptr<Mesh>>& all_meshes, const std::vector<std::unique_ptr<Texture>>& all_textures, const std::vector<std::unique_ptr<NormalMap>>& all_normal_maps, const std::vector<std::unique_ptr<ParallaxMap>>& all_parallax_maps, const std::vector<std::unique_ptr<DisplacementMap>>& all_displacement_maps);
+	static Object retrieve_object_data(const std::string& object_name, std::string resources_path, MDLF& mdlf, const std::vector<std::unique_ptr<Mesh>>& all_meshes, const std::vector<std::unique_ptr<Texture>>& all_textures, const std::vector<std::unique_ptr<NormalMap>>& all_normal_maps, const std::vector<std::unique_ptr<ParallaxMap>>& all_parallax_maps, const std::vector<std::unique_ptr<DisplacementMap>>& all_displacement_maps);
 	static EntityObject3D retrieve_entity_object_data(const std::string& entity_object_name, std::string resources_path, MDLF& mdlf, const std::vector<std::unique_ptr<Mesh>>& all_meshes, const std::vector<std::unique_ptr<Texture>>& all_textures, const std::vector<std::unique_ptr<NormalMap>>& all_normal_maps, const std::vector<std::unique_ptr<ParallaxMap>>& all_parallax_maps, const std::vector<std::unique_ptr<DisplacementMap>>& all_displacement_maps);
 	
 	std::optional<std::string> filename;
 	std::optional<std::string> resources_path;
-	std::vector<Object3D> objects;
+	std::vector<Object> objects;
 	std::vector<Entity> entities;
 	std::vector<EntityObject3D> entity_objects;
 };

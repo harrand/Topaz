@@ -32,12 +32,12 @@ namespace tz::physics
 	* Given an Object3D, creates a well-fitted sphere-boundary around the vertices of the object.
 	* The BoundingSphere remains valid for the entire lifetime of the object.
 	*/
-	BoundingSphere bound_sphere(const Object3D& object);
+	BoundingSphere bound_sphere(const Object& object);
 	/**
 	* Given an Object3D, creates a well-fitted axis-aligned-bounding-box around the vertices of the object.
 	* The AABB remains valid for the entire lifetime of the object.
 	*/
-	AABB bound_aabb(const Object3D& object);
+	AABB bound_aabb(const Object& object);
 }
 
 #endif

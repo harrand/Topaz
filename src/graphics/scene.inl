@@ -1,7 +1,7 @@
 template<class Element, typename... Args>
 Element& Scene::emplace(Args&&... args)
 {
-	if constexpr(std::is_same<Element, Object3D>::value)
+	if constexpr(std::is_same<Element, Object>::value)
 	{
 		return emplace_object(std::forward<Args>(args)...);
 	}
@@ -21,7 +21,7 @@ Element& Scene::emplace(Args&&... args)
 }
 
 template<typename... Args>
-Object3D& Scene::emplace_object(Args&&... args)
+Object& Scene::emplace_object(Args&&... args)
 {
 	return this->objects.emplace_back(std::forward<Args>(args)...);
 }

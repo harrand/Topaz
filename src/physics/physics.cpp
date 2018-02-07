@@ -1,5 +1,4 @@
 #include "physics.hpp"
-#include <limits>
 
 Force::Force(Vector3F size): size(std::move(size)){}
 
@@ -41,7 +40,7 @@ bool Force::operator==(const Force& rhs) const
 	return this->size == rhs.size;
 }
 
-BoundingSphere tz::physics::bound_sphere(const Object3D& object)
+BoundingSphere tz::physics::bound_sphere(const Object& object)
 {
 	// get list of positions in world space
 	std::vector<Vector3F> positions_worldspace;
@@ -65,7 +64,7 @@ BoundingSphere tz::physics::bound_sphere(const Object3D& object)
 	return {mean, *std::max_element(distances.begin(), distances.end())};
 }
 	
-AABB tz::physics::bound_aabb(const Object3D& object)
+AABB tz::physics::bound_aabb(const Object& object)
 {
 	// once again get positions in worldspace
 	const std::vector<Vector3F>& positions_modelspace = object.get_mesh().get_positions();

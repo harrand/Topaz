@@ -46,7 +46,7 @@ protected:
 /**
 * Essentially an Entity which has a renderable component in the form of an Object3D. See Object3D documentation for additional details.
 */
-class EntityObject3D : public Entity, public Object3D
+class EntityObject3D : public Entity, public Object
 {
 public:
 	EntityObject3D(const Mesh* mesh, std::map<tz::graphics::TextureType, Texture*> textures, float mass = tz::physics::default_mass, Vector3F position = Vector3F(), Vector3F rotation = Vector3F(), Vector3F scale = Vector3F(1, 1, 1), unsigned int shininess = tz::graphics::default_shininess, float parallax_map_scale = tz::graphics::default_parallax_map_scale, float parallax_map_offset = tz::graphics::default_parallax_map_offset, float displacement_factor = tz::graphics::default_displacement_factor, Vector3F velocity = Vector3F(), std::unordered_map<std::string, Force> forces = std::unordered_map<std::string, Force>());
@@ -57,7 +57,7 @@ public:
 	virtual void update_motion(unsigned int fps) override;
 	
 	bool operator==(const EntityObject3D& rhs) const;
-	using Object3D::position;
+	using Object::position;
 };
 
 #endif

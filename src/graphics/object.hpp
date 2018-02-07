@@ -51,14 +51,14 @@ private:
 * Use this to represent a 3D object, including its vertex data, texture, material etc.
 */
 
-class Object3D
+class Object
 {
 public:
-	Object3D(std::variant<const Mesh*, std::shared_ptr<const Mesh>> mesh, std::map<tz::graphics::TextureType, Texture*> textures, Vector3F position, Vector3F rotation, Vector3F scale, unsigned int shininess = tz::graphics::default_shininess, float parallax_map_scale = tz::graphics::default_parallax_map_scale, float parallax_map_offset = tz::graphics::default_parallax_map_offset, float displacement_factor = tz::graphics::default_displacement_factor);
-	Object3D(const Object3D& copy) = default;
-	Object3D(Object3D&& move) = default;
-	~Object3D() = default;
-	Object3D& operator=(const Object3D& rhs) = default;
+	Object(std::variant<const Mesh*, std::shared_ptr<const Mesh>> mesh, std::map<tz::graphics::TextureType, Texture*> textures, Vector3F position, Vector3F rotation, Vector3F scale, unsigned int shininess = tz::graphics::default_shininess, float parallax_map_scale = tz::graphics::default_parallax_map_scale, float parallax_map_offset = tz::graphics::default_parallax_map_offset, float displacement_factor = tz::graphics::default_displacement_factor);
+	Object(const Object& copy) = default;
+	Object(Object&& move) = default;
+	~Object() = default;
+	Object& operator=(const Object& rhs) = default;
 	
 	const Mesh& get_mesh() const;
 	const std::map<tz::graphics::TextureType, Texture*>& get_textures() const;
@@ -66,7 +66,7 @@ public:
 	* Complexity: O(n) Ω(1) ϴ(n), where n =~ size of mesh data (will not return until GPU finishes processing)
 	*/
 	virtual void render(const Camera& cam, Shader* shader, float width, float height) const;
-	bool operator==(const Object3D& rhs) const;
+	bool operator==(const Object& rhs) const;
 	
 	Vector3F position, rotation, scale;
 	unsigned int shininess;
@@ -102,14 +102,14 @@ namespace tz::graphics
 	* This function performs instancification; allowing multiple objects to be rendered with a single draw call, serving as a gargantuan optimisation under the right conditions.
 	*/
 	template <template <typename> class Collection>
-	Object3D instancify(const Collection<Object3D>& objects);
+	Object instancify(const Collection<Object>& objects);
 	/**
 	* Creates multiple Objects using instancify (see above).
 	* However, the returned map has the first element in which the Object3D value shares textures and meshes.
 	* This can be used on a World object list to instancify ALL elements, organising which objects share the same asset data.
 	*/
 	template <template <typename> class Collection>
-	std::vector<Object3D> instancify_full(const Collection<Object3D>& objects);
+	std::vector<Object> instancify_full(const Collection<Object>& objects);
 }
 
 #include "object.inl"
