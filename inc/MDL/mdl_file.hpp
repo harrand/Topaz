@@ -1,46 +1,19 @@
-#ifndef MDL_HPP
-#define MDL_HPP
-#include <cstddef>
-#include <string>
-#include <vector>
+#ifndef MDL_FILE_HPP
+#define MDL_FILE_HPP
+#include "file.hpp"
 #include <map>
-#include <string_view>
 
-namespace mdl
-{
-	constexpr char default_string[] = "0";
-}
-
-class RawFile
+class MDLFile
 {
 public:
-	RawFile(std::string path = mdl::default_string);
-	RawFile(const RawFile& copy) = default;
-	RawFile(RawFile&& move) = default;
-	~RawFile() = default;
-	RawFile& operator=(const RawFile& rhs) = default;
+	explicit MDLFile(std::string file_path);
+	explicit MDLFile(File raw_file = File());
+	MDLFile(const MDLFile& copy) = default;
+	MDLFile(MDLFile&& move) = default;
+	~MDLFile() = default;
+	MDLFile& operator=(const MDLFile& rhs) = default;
 	
-	std::string_view get_path() const;
-	std::vector<std::string> get_lines() const;
-	std::string get_data() const;
-	void clear() const;
-	void write(std::string data, bool clear) const;
-	void write_line(std::string data, std::size_t line) const;
-private:
-	std::string path;
-};
-
-class MDLF
-{
-public:
-	MDLF(std::string file_path = mdl::default_string);
-	MDLF(RawFile raw_file);
-	MDLF(const MDLF& copy) = default;
-	MDLF(MDLF&& move) = default;
-	~MDLF() = default;
-	MDLF& operator=(const MDLF& rhs) = default;
-	
-	const RawFile& get_raw_file() const;
+	const File& get_raw_file() const;
 	bool exists_tag(const std::string& tag_name) const;
 	bool exists_sequence(const std::string& sequence_name) const;
 	void add_tag(std::string tag_name, std::string data);
@@ -55,7 +28,7 @@ public:
 	const std::map<std::string, std::vector<std::string>>& get_parsed_sequences() const;
 	void update();
 private:
-	RawFile raw_file;
+	File raw_file;
 	std::map<std::string, std::string> parsed_tags;
 	std::map<std::string, std::vector<std::string>> parsed_sequences;	
 };
@@ -66,7 +39,7 @@ namespace mdl
 	std::string read(const std::string& filename);
 	namespace syntax
 	{
-		bool is_valid(const MDLF& file);
+		bool is_valid(const MDLFile& file);
 		bool is_comment(const std::string& line);
 		bool is_tag(const std::string& line);
 		bool is_sequence(const std::string& line);

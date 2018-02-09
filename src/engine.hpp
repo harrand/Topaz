@@ -47,11 +47,11 @@ public:
 	/**
 	* Read/Edit the properties file.
 	*/
-	const MDLF& get_properties() const;
+	const MDLFile& get_properties() const;
 	/**
 	* Read/Edit the resources file.
 	*/
-	const MDLF& get_resources() const;
+	const MDLFile& get_resources() const;
 	/**
 	* Access the window that the Engine instance currently is hooked to.
 	*/
@@ -114,7 +114,7 @@ public:
 	Camera camera;
 	Scene scene;
 private:
-	MDLF properties, resources;
+	MDLFile properties, resources;
 public:
 	Shader default_shader, default_gui_shader;
 private:

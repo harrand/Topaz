@@ -1,4 +1,4 @@
-
+@echo off
 echo Setting compilation variables...
 set scriptdir=%cd%
 set incdir="%scriptdir%\inc"

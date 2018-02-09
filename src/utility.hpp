@@ -12,7 +12,7 @@
 #include <utility>
 #include <functional>
 #include <thread>
-#include "MDL/mdl.hpp"
+#include "MDL/mdl_file.hpp"
 #include "vector.hpp"
 #include "SDL2/SDL.h"
 

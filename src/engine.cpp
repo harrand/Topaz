@@ -20,7 +20,7 @@ void tz::terminate()
 	tz::util::log::message("Terminated Topaz.");
 }
 
-Engine::Engine(Window* window, std::string properties_path, unsigned int tps): camera(Camera()), scene(), properties(RawFile(std::move(properties_path))), resources(RawFile(this->properties.get_tag("resources"))), default_shader(this->properties.get_tag("default_shader")), default_gui_shader(this->properties.get_tag("default_gui_shader")), seconds_timer(), tick_timer(), profiler(), window(window), fps(0), tps(tps), update_command_executor(), tick_command_executor(), update_due(false)
+Engine::Engine(Window* window, std::string properties_path, unsigned int tps): camera(Camera()), scene(), properties(File(std::move(properties_path))), resources(File(this->properties.get_tag("resources"))), default_shader(this->properties.get_tag("default_shader")), default_gui_shader(this->properties.get_tag("default_gui_shader")), seconds_timer(), tick_timer(), profiler(), window(window), fps(0), tps(tps), update_command_executor(), tick_command_executor(), update_due(false)
 {
 	// fill all the asset buffers via tz data manager
 	tz::data::Manager(this->properties.get_tag("resources")).retrieve_all_data(this->meshes, this->textures, this->normal_maps, this->parallax_maps, this->displacement_maps);
@@ -87,12 +87,12 @@ const TimeProfiler& Engine::get_time_profiler() const
 	return this->profiler;
 }
 
-const MDLF& Engine::get_properties() const
+const MDLFile& Engine::get_properties() const
 {
 	return this->properties;
 }
 
-const MDLF& Engine::get_resources() const
+const MDLFile& Engine::get_resources() const
 {
 	return this->resources;
 }

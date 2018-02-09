@@ -1,6 +1,6 @@
 #include "data.hpp"
 
-tz::data::Manager::Manager(std::string datafilename): datafilename(std::move(datafilename)), data_file(RawFile(this->datafilename)){}
+tz::data::Manager::Manager(std::string datafilename): datafilename(std::move(datafilename)), data_file(File(this->datafilename)){}
 
 std::string tz::data::Manager::resource_link(const std::string& resource_name) const
 {

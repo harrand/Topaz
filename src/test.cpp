@@ -37,7 +37,7 @@ public:
 		textures.emplace(tz::graphics::TextureType::NORMAL_MAP, Texture::get_from_link<NormalMap>(random_normalmap_link, engine.get_normal_maps()));
 		textures.emplace(tz::graphics::TextureType::PARALLAX_MAP, Texture::get_from_link<ParallaxMap>(random_parallaxmap_link, engine.get_parallax_maps()));
 		textures.emplace(tz::graphics::TextureType::DISPLACEMENT_MAP, Texture::get_from_link<DisplacementMap>(manager.resource_link("default_displacementmap"), engine.get_displacement_maps()));
-		Object3D obj(tz::graphics::find_mesh(manager.resource_link("cube_hd"), engine.get_meshes()), textures, engine.camera.position, engine.camera.rotation, Vector3F(40, 20, 40));
+		Object obj(tz::graphics::find_mesh(manager.resource_link("cube_hd"), engine.get_meshes()), textures, engine.camera.position, engine.camera.rotation, Vector3F(40, 20, 40));
 		bounds.push_back(tz::physics::bound_aabb(obj));
 		engine.scene.add_object(obj);
 	}
@@ -66,7 +66,7 @@ void init()
 	
 	std::vector<AABB> bounds;
 	bounds.reserve(engine.scene.get_objects().size());
-	for(const Object3D& object : engine.scene.get_objects())
+	for(const Object& object : engine.scene.get_objects())
 		bounds.push_back(tz::physics::bound_aabb(object));
 	
 	Vector4F gui_colour(0.0f, 0.0f, 0.0f, 0.95f);
@@ -121,7 +121,7 @@ void init()
 	TrivialFunctor render_skybox([&](){skybox.render(engine.camera, skybox_shader, engine.get_meshes(), wnd.get_width(), wnd.get_height());});
 	engine.add_update_command(&render_skybox);
 	
-	Object3D player_object(engine.get_meshes().back().get(), engine.scene.get_objects().front().get_textures(), Vector3F(), Vector3F(), Vector3F(5,5,5));
+	Object player_object(engine.get_meshes().back().get(), engine.scene.get_objects().front().get_textures(), Vector3F(), Vector3F(), Vector3F(5,5,5));
 	TrivialFunctor render_player([&](){if(engine.camera.has_perspective_projection()) return;player_object.render(engine.camera, &(engine.default_shader), wnd.get_width(), wnd.get_height());});
 	TrivialFunctor update_player_pos([&](){player_object.position = engine.camera.position;player_object.rotation = engine.camera.rotation;});
 	engine.add_update_command(&render_player);
@@ -145,7 +145,7 @@ void init()
 	plane_texture_buffer.set_output_attachment(GL_COLOR_ATTACHMENT0);
 	while(!engine.get_window().is_close_requested())
 	{
-		float multiplier = tz::util::cast::from_string<float>(MDLF(RawFile(engine.get_properties().get_tag("resources"))).get_tag("speed"));
+		float multiplier = tz::util::cast::from_string<float>(MDLFile(File(engine.get_properties().get_tag("resources"))).get_tag("speed"));
 		float velocity = multiplier * test_slider.position;
 		on_ground = false;
 		if(updater.millis_passed(1000))
@@ -306,7 +306,7 @@ void init()
 		updater.update();
 		engine.update(shader_id);
 	}
-	MDLF(engine.get_resources()).edit_tag("played", tz::util::cast::to_string(seconds));
+	MDLFile(engine.get_resources()).edit_tag("played", tz::util::cast::to_string(seconds));
 }
 
 void test()

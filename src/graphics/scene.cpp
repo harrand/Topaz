@@ -5,7 +5,7 @@ Scene::Scene(): spawn_point(Vector3F()), spawn_orientation(Vector3F()), filename
 
 Scene::Scene(std::string filename, std::string resources_path, const std::vector<std::unique_ptr<Mesh>>& all_meshes, const std::vector<std::unique_ptr<Texture>>& all_textures, const std::vector<std::unique_ptr<NormalMap>>& all_normal_maps, const std::vector<std::unique_ptr<ParallaxMap>>& all_parallax_maps, const std::vector<std::unique_ptr<DisplacementMap>>& all_displacement_maps, bool instancify): filename(std::move(filename)), resources_path(std::move(resources_path))
 {
-	MDLF input(RawFile(this->get_file_name()));
+	MDLFile input(File(this->get_file_name()));
 	std::string spawn_point_string = input.get_tag(tz::scene::spawnpoint_tag_name), spawn_orientation_string = input.get_tag(tz::scene::spawnorientation_tag_name);
 	// Initialise spawn_point, spawn_orientation and gravity to the values specified in filename MDL file. If no such tags could be found & validated, zero them.
 	if(spawn_point_string != mdl::default_string && spawn_orientation_string != mdl::default_string)
@@ -96,7 +96,7 @@ std::size_t Scene::get_size() const
 void Scene::export_scene(const std::string& scene_link) const
 {
 	const tz::data::Manager data_manager(this->resources_path.value());
-	MDLF output = MDLF(RawFile(scene_link));
+	MDLFile output = MDLFile(scene_link);
 	output.get_raw_file().write("# Topaz Auto-Generated Scene File", true);
 	std::vector<std::string> object_list;
 	std::vector<std::string> entity_object_list;
@@ -173,7 +173,7 @@ void Scene::update(unsigned int tps)
 		ent.update_motion(tps);
 }
 
-Object Scene::retrieve_object_data(const std::string& object_name, std::string resources_path, MDLF& mdlf, const std::vector<std::unique_ptr<Mesh>>& all_meshes, const std::vector<std::unique_ptr<Texture>>& all_textures, const std::vector<std::unique_ptr<NormalMap>>& all_normal_maps, const std::vector<std::unique_ptr<ParallaxMap>>& all_parallax_maps, const std::vector<std::unique_ptr<DisplacementMap>>& all_displacement_maps)
+Object Scene::retrieve_object_data(const std::string& object_name, std::string resources_path, MDLFile& mdlf, const std::vector<std::unique_ptr<Mesh>>& all_meshes, const std::vector<std::unique_ptr<Texture>>& all_textures, const std::vector<std::unique_ptr<NormalMap>>& all_normal_maps, const std::vector<std::unique_ptr<ParallaxMap>>& all_parallax_maps, const std::vector<std::unique_ptr<DisplacementMap>>& all_displacement_maps)
 {
 	std::string mesh_name = mdlf.get_tag(object_name + ".mesh");
 	std::string position_string = mdlf.get_tag(object_name + ".pos");
@@ -221,7 +221,7 @@ Object Scene::retrieve_object_data(const std::string& object_name, std::string r
 	return {tz::graphics::find_mesh(mesh_link, all_meshes), textures, tz::util::string::vectorise_list_3<float>(tz::util::string::deformat(position_string)), tz::util::string::vectorise_list_3<float>(tz::util::string::deformat(rotation_string)), tz::util::string::vectorise_list_3<float>(tz::util::string::deformat(scale_string)), shininess, parallax_map_scale, parallax_map_offset, displacement_factor};
 }
 
-EntityObject3D Scene::retrieve_entity_object_data(const std::string& entity_object_name, std::string resources_path, MDLF& mdlf, const std::vector<std::unique_ptr<Mesh>>& all_meshes, const std::vector<std::unique_ptr<Texture>>& all_textures, const std::vector<std::unique_ptr<NormalMap>>& all_normal_maps, const std::vector<std::unique_ptr<ParallaxMap>>& all_parallax_maps, const std::vector<std::unique_ptr<DisplacementMap>>& all_displacement_maps)
+EntityObject3D Scene::retrieve_entity_object_data(const std::string& entity_object_name, std::string resources_path, MDLFile& mdlf, const std::vector<std::unique_ptr<Mesh>>& all_meshes, const std::vector<std::unique_ptr<Texture>>& all_textures, const std::vector<std::unique_ptr<NormalMap>>& all_normal_maps, const std::vector<std::unique_ptr<ParallaxMap>>& all_parallax_maps, const std::vector<std::unique_ptr<DisplacementMap>>& all_displacement_maps)
 {
 	// No point repeating code from Scene::retrieve_object_data, so call it to receive a valid Object. Then parse the mass from the data-file, and cobble all the data together to create the final EntityObject3D. This doesn't really waste memory as Objects are now smaller than before, as pointers << strings.
 	Object object = Scene::retrieve_object_data(entity_object_name, resources_path, mdlf, all_meshes, all_textures, all_normal_maps, all_parallax_maps, all_displacement_maps);

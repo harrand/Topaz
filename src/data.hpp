@@ -2,7 +2,7 @@
 #define DATA_HPP
 #include "graphics/mesh.hpp"
 #include "graphics/texture.hpp"
-#include "MDL/mdl.hpp"
+#include "MDL/mdl_file.hpp"
 #include <unordered_map>
 #include <memory>
 
@@ -46,7 +46,7 @@ namespace tz
 			unsigned int retrieve_all_data(std::vector<std::unique_ptr<Mesh>>& all_meshes, std::vector<std::unique_ptr<Texture>>& all_textures, std::vector<std::unique_ptr<NormalMap>>& all_normalmaps, std::vector<std::unique_ptr<ParallaxMap>>& all_parallaxmaps, std::vector<std::unique_ptr<DisplacementMap>>& all_displacementmaps) const;
 		private:
 			const std::string datafilename;
-			const MDLF data_file;
+			const MDLFile data_file;
 		};
 	}
 }
