@@ -58,7 +58,7 @@ private:
 /**
 * Like a normal mesh, but supports OpenGL instancing.
 * Use this if you want to render the same mesh very many times at once with little attribute changes.
-* This class is abstracted away by tz::graphics::instancify in object.hpp.
+* This class is abstracted away by tz::graphics::batch in object.hpp.
 */
 class InstancedMesh : public Mesh
 {

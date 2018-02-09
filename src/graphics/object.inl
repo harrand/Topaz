@@ -1,5 +1,5 @@
 template <template <typename> class Collection>
-Object tz::graphics::instancify(const Collection<Object>& objects)
+Object tz::graphics::batch(const Collection<Object>& objects)
 {
 	std::vector<Vector3F> positions, rotations, scales;
 	Vector3F original_position = objects.front().position;
@@ -15,7 +15,7 @@ Object tz::graphics::instancify(const Collection<Object>& objects)
 }
 
 template <template <typename> class Collection>
-std::vector<Object> tz::graphics::instancify_full(const Collection<Object>& objects)
+std::vector<Object> tz::graphics::batch_full(const Collection<Object>& objects)
 {
 	using mesh_cref_t = std::reference_wrapper<const Mesh>;
 	using textures_cref_t = std::reference_wrapper<const std::map<tz::graphics::TextureType, Texture*>>;
@@ -50,14 +50,14 @@ std::vector<Object> tz::graphics::instancify_full(const Collection<Object>& obje
 		{
 			// O(1) amortised
 			key_cache = asset_pair;
-			instancified_objects.push_back(tz::graphics::instancify(duplicates));
+			instancified_objects.push_back(tz::graphics::batch(duplicates));
 			duplicates.clear();
 			last_ends_cluster = true;
 			duplicates.push_back(objects[index]);
 		}
 	}
 	if(!last_ends_cluster)
-		instancified_objects.push_back(tz::graphics::instancify(duplicates));
+		instancified_objects.push_back(tz::graphics::batch(duplicates));
 	// Could shrink_to_fit the result, but it's really not worth the effort just to trade linear average case time complexity == worst case for average case memory complexity == worst case
 	//instancified_objects.shrink_to_fit();
 	return instancified_objects;

@@ -102,14 +102,14 @@ namespace tz::graphics
 	* This function performs instancification; allowing multiple objects to be rendered with a single draw call, serving as a gargantuan optimisation under the right conditions.
 	*/
 	template <template <typename> class Collection>
-	Object instancify(const Collection<Object>& objects);
+	Object batch(const Collection<Object>& objects);
 	/**
-	* Creates multiple Objects using instancify (see above).
+	* Creates multiple Objects using batch (see above).
 	* However, the returned map has the first element in which the Object3D value shares textures and meshes.
-	* This can be used on a World object list to instancify ALL elements, organising which objects share the same asset data.
+	* This can be used on a World object list to batch ALL elements, organising which objects share the same asset data.
 	*/
 	template <template <typename> class Collection>
-	std::vector<Object> instancify_full(const Collection<Object>& objects);
+	std::vector<Object> batch_full(const Collection<Object>& objects);
 }
 
 #include "object.inl"
