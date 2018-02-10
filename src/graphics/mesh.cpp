@@ -68,11 +68,11 @@ void Mesh::render(bool patches, GLenum mode) const
 	if(patches)
 	{
 		glPatchParameteri(GL_PATCH_VERTICES, 3);
-		glDrawElements(GL_PATCHES, this->render_count, GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_PATCHES, this->render_count, GL_UNSIGNED_INT, NULL);
 	}
 	else
 	{
-		glDrawElements(mode, this->render_count, GL_UNSIGNED_INT, 0);
+		glDrawElements(mode, this->render_count, GL_UNSIGNED_INT, NULL);
 	}
 	glBindVertexArray(0);
 }
@@ -115,25 +115,25 @@ void Mesh::init_mesh()
 	glBindBuffer(GL_ARRAY_BUFFER, this->vbo_buffers[static_cast<unsigned int>(BufferTypes::POSITION)]);
 	glBufferData(GL_ARRAY_BUFFER, positions.size() * tz::util::sizeof_element(positions), positions.data(), GL_STATIC_DRAW);
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), NULL);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	
 	glBindBuffer(GL_ARRAY_BUFFER, this->vbo_buffers[static_cast<unsigned int>(BufferTypes::TEXCOORD)]);
 	glBufferData(GL_ARRAY_BUFFER, texcoords.size() * tz::util::sizeof_element(texcoords), texcoords.data(), GL_STATIC_DRAW);
 	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), NULL);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	
 	glBindBuffer(GL_ARRAY_BUFFER, this->vbo_buffers[static_cast<unsigned int>(BufferTypes::NORMAL)]);
 	glBufferData(GL_ARRAY_BUFFER, normals.size() * tz::util::sizeof_element(normals), normals.data(), GL_STATIC_DRAW);
 	glEnableVertexAttribArray(2);
-	glVertexAttribPointer(2, 3, GL_FLOAT, GL_TRUE,  3 * sizeof(float), 0);
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_TRUE,  3 * sizeof(float), NULL);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	
 	glBindBuffer(GL_ARRAY_BUFFER, this->vbo_buffers[static_cast<unsigned int>(BufferTypes::TANGENT)]);
 	glBufferData(GL_ARRAY_BUFFER, tangents.size() * tz::util::sizeof_element(tangents), tangents.data(), GL_STATIC_DRAW);
 	glEnableVertexAttribArray(3);
-	glVertexAttribPointer(3, 3, GL_FLOAT, GL_TRUE, 3 * sizeof(float), 0);
+	glVertexAttribPointer(3, 3, GL_FLOAT, GL_TRUE, 3 * sizeof(float), NULL);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->vbo_buffers[static_cast<unsigned int>(BufferTypes::INDEX)]);
@@ -153,7 +153,7 @@ InstancedMesh::InstancedMesh(std::string filename, std::vector<Vector3F> positio
 	
 	glEnableVertexAttribArray(4);
 	glBindBuffer(GL_ARRAY_BUFFER, this->positions_instance_vbo);
-	glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
+	glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), NULL);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);	
 	glVertexAttribDivisor(4, 1);
 	// Instance Rotations
@@ -164,7 +164,7 @@ InstancedMesh::InstancedMesh(std::string filename, std::vector<Vector3F> positio
 
 	glBindBuffer(GL_ARRAY_BUFFER, this->rotations_instance_vbo);	
 	glEnableVertexAttribArray(5);
-	glVertexAttribPointer(5, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
+	glVertexAttribPointer(5, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), NULL);
 	glVertexAttribDivisor(5, 1);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	
@@ -175,7 +175,7 @@ InstancedMesh::InstancedMesh(std::string filename, std::vector<Vector3F> positio
 	
 	glBindBuffer(GL_ARRAY_BUFFER, this->scales_instance_vbo);
 	glEnableVertexAttribArray(6);
-	glVertexAttribPointer(6, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
+	glVertexAttribPointer(6, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), NULL);
 	glVertexAttribDivisor(6, 1);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);

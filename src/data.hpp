@@ -45,7 +45,6 @@ namespace tz
 			std::unordered_map<std::string, std::string> retrieve_displacement_maps(const char* sequence_name = tz::data::default_displacement_maps_sequence_name) const;
 			unsigned int retrieve_all_data(std::vector<std::unique_ptr<Mesh>>& all_meshes, std::vector<std::unique_ptr<Texture>>& all_textures, std::vector<std::unique_ptr<NormalMap>>& all_normalmaps, std::vector<std::unique_ptr<ParallaxMap>>& all_parallaxmaps, std::vector<std::unique_ptr<DisplacementMap>>& all_displacementmaps) const;
 		private:
-			const std::string datafilename;
 			const MDLFile data_file;
 		};
 	}

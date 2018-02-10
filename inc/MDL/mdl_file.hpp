@@ -3,17 +3,15 @@
 #include "file.hpp"
 #include <map>
 
-class MDLFile
+class MDLFile : public File
 {
 public:
 	explicit MDLFile(std::string file_path);
-	explicit MDLFile(File raw_file = File());
 	MDLFile(const MDLFile& copy) = default;
 	MDLFile(MDLFile&& move) = default;
-	~MDLFile() = default;
+	~MDLFile() override = default;
 	MDLFile& operator=(const MDLFile& rhs) = default;
 	
-	const File& get_raw_file() const;
 	bool exists_tag(const std::string& tag_name) const;
 	bool exists_sequence(const std::string& sequence_name) const;
 	void add_tag(std::string tag_name, std::string data);
@@ -28,7 +26,6 @@ public:
 	const std::map<std::string, std::vector<std::string>>& get_parsed_sequences() const;
 	void update();
 private:
-	File raw_file;
 	std::map<std::string, std::string> parsed_tags;
 	std::map<std::string, std::vector<std::string>> parsed_sequences;	
 };

@@ -1,6 +1,4 @@
 #include "gui.hpp"
-#include "graphics.hpp"
-#include "physics/boundary.hpp"
 #include <stack>
 
 GUI::GUI(float x, float y, float width, float height, std::optional<std::reference_wrapper<Shader>> shader): x(x), y(y), width(width), height(height), shader(shader), parent(nullptr), children(std::deque<GUI*>()), hidden(false), use_proportional_positioning(false){}
@@ -370,7 +368,7 @@ namespace tz::ui
 		const GUI* end;
 		// std::prev is O(n) on bidirectional iterators (which set::end() is). so this clause is O(n) where n = total number of children
 		GUI* final_child = *std::prev(gui->get_children().end(), 1);
-		while(final_child->get_children().size() > 0)
+		while(!final_child->get_children().empty())
 			final_child = *std::prev(final_child->get_children().end(), 1);
 		end = final_child;
 		guis.push(gui);
@@ -383,7 +381,7 @@ namespace tz::ui
 			for(GUI* child : top->get_children())
 			{
 				guis.push(child); // O(1)
-				descendants.insert(const_cast<GUI*>(child)); // O(log n)
+				descendants.insert(child); // O(log n)
 				if(child == end)
 					break;
 			}
@@ -391,17 +389,17 @@ namespace tz::ui
 		}
 		return descendants;
 	}
-	
+
 	// still O(n log n) (assuming range based for loop optimises to not recompute every tz::ui::descendants() (otherwise would go to O(n log^2 n) which is horrific))
 	std::set<GUI*> youngest_descendants(const GUI* gui)
 	{
 		std::set<GUI*> youngs;
 		for(GUI* descendant : tz::ui::descendants(gui))
-			if(descendant->get_children().size() == 0) // add to youngs if the descendant has no children
+			if(descendant->get_children().empty()) // add to youngs if the descendant has no children
 				youngs.insert(descendant);
 		return youngs;
 	}
-	
+
 	Matrix4x4 create_orthographic_gui_matrix(const GUI* gui)
 	{
 		if(gui == nullptr || !gui->has_window_parent())

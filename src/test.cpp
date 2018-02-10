@@ -25,7 +25,7 @@ public:
 	SpawnBlockCommand(Engine& engine, std::vector<AABB>& bounds): engine(engine), bounds(bounds){}
 	virtual void operator()()
 	{
-		tz::data::Manager manager(std::string(engine.get_resources().get_raw_file().get_path().data(), engine.get_resources().get_raw_file().get_path().length()));
+		tz::data::Manager manager(std::string(engine.get_resources().get_path().data(), engine.get_resources().get_path().length()));
 		std::map<tz::graphics::TextureType, Texture*> textures;
 		std::vector<std::string> texture_links = engine.get_resources().get_sequence("textures");
 		static Random rand;
@@ -145,7 +145,7 @@ void init()
 	plane_texture_buffer.set_output_attachment(GL_COLOR_ATTACHMENT0);
 	while(!engine.get_window().is_close_requested())
 	{
-		float multiplier = tz::util::cast::from_string<float>(MDLFile(File(engine.get_properties().get_tag("resources"))).get_tag("speed"));
+		float multiplier = tz::util::cast::from_string<float>(MDLFile(engine.get_properties().get_tag("resources")).get_tag("speed"));
 		float velocity = multiplier * test_slider.position;
 		on_ground = false;
 		if(updater.millis_passed(1000))

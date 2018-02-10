@@ -99,7 +99,7 @@ namespace tz::graphics
 	/**
 	* Creates a new Object3D with InstancedMesh containing all data from the objects parameter.
 	* All elements of 'objects' should share the same texture and mesh.
-	* This function performs instancification; allowing multiple objects to be rendered with a single draw call, serving as a gargantuan optimisation under the right conditions.
+	* This function performs batching; allowing multiple objects to be rendered with a single draw call, serving as a gargantuan optimisation under the right conditions.
 	*/
 	template <template <typename> class Collection>
 	Object batch(const Collection<Object>& objects);

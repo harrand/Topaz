@@ -5,7 +5,7 @@ Scene::Scene(): spawn_point(Vector3F()), spawn_orientation(Vector3F()), filename
 
 Scene::Scene(std::string filename, std::string resources_path, const std::vector<std::unique_ptr<Mesh>>& all_meshes, const std::vector<std::unique_ptr<Texture>>& all_textures, const std::vector<std::unique_ptr<NormalMap>>& all_normal_maps, const std::vector<std::unique_ptr<ParallaxMap>>& all_parallax_maps, const std::vector<std::unique_ptr<DisplacementMap>>& all_displacement_maps, bool batch): filename(std::move(filename)), resources_path(std::move(resources_path))
 {
-	MDLFile input(File(this->get_file_name()));
+	MDLFile input(this->get_file_name());
 	std::string spawn_point_string = input.get_tag(tz::scene::spawnpoint_tag_name), spawn_orientation_string = input.get_tag(tz::scene::spawnorientation_tag_name);
 	// Initialise spawn_point, spawn_orientation and gravity to the values specified in filename MDL file. If no such tags could be found & validated, zero them.
 	if(spawn_point_string != mdl::default_string && spawn_orientation_string != mdl::default_string)
@@ -97,7 +97,7 @@ void Scene::export_scene(const std::string& scene_link) const
 {
 	const tz::data::Manager data_manager(this->resources_path.value());
 	MDLFile output = MDLFile(scene_link);
-	output.get_raw_file().write("# Topaz Auto-Generated Scene File", true);
+	output.write("# Topaz Auto-Generated Scene File", true);
 	std::vector<std::string> object_list;
 	std::vector<std::string> entity_object_list;
 	output.delete_sequence(tz::scene::objects_sequence_name);

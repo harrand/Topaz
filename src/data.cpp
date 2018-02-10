@@ -1,6 +1,6 @@
 #include "data.hpp"
 
-tz::data::Manager::Manager(std::string datafilename): datafilename(std::move(datafilename)), data_file(File(this->datafilename)){}
+tz::data::Manager::Manager(std::string datafilename): data_file(datafilename) {}
 
 std::string tz::data::Manager::resource_link(const std::string& resource_name) const
 {
@@ -11,7 +11,7 @@ std::string tz::data::Manager::resource_link(const std::string& resource_name) c
 std::string tz::data::Manager::resource_name(const std::string& resource_link) const
 {
 	// basically removes .path from the end of the tag which has resource_link as a value
-	std::vector<std::string> lines = this->data_file.get_raw_file().get_lines();
+	std::vector<std::string> lines = this->data_file.get_lines();
 	for(std::string& line : lines)
 	{
 		std::vector<std::string> line_split = tz::util::string::split_string(line, ':');
