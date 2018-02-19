@@ -99,6 +99,7 @@ Texture::Texture(const Font& font, const std::string& text, SDL_Color foreground
 			switch(texture_format)
 			{
 				case GL_RGBA:
+				default:
 					this->bitmap.value().pixels.emplace_back(PixelRGBA{pixel_data[i - 3], pixel_data[i - 2], pixel_data[i - 1], pixel_data[i]});
 					break;
 				case GL_BGRA:
@@ -190,19 +191,14 @@ tz::graphics::MipmapType Texture::get_mipmap_type() const
 	{
 		case static_cast<GLint>(tz::graphics::MipmapType::NEAREST):
 			return tz::graphics::MipmapType::NEAREST;
-			break;
 		case static_cast<GLint>(tz::graphics::MipmapType::LINEAR):
 			return tz::graphics::MipmapType::LINEAR;
-			break;
 		case static_cast<GLint>(tz::graphics::MipmapType::NEAREST_MULTIPLE):
 			return tz::graphics::MipmapType::NEAREST_MULTIPLE;
-			break;
 		case static_cast<GLint>(tz::graphics::MipmapType::LINEAR_MULTIPLE):
 			return tz::graphics::MipmapType::LINEAR_MULTIPLE;
-			break;
 		default:
 			return tz::graphics::MipmapType::NONE;
-			break;
 	}
 }
 
@@ -376,22 +372,22 @@ bool FrameBuffer::has_colour(unsigned int attachment_index) const
 		tz::util::log::error("FrameBuffer attachment_index query '", attachment_index, "' does not harbour a valid GL_COLOR_ATTACHMENT. Implementation-defined hardware maximum limit is attachment", tz::graphics::maximum_framebuffer_attachments, "or below.");
 		return false;
 	}
-	return this->get_attachments().find(GL_COLOR_ATTACHMENT0 + attachment_index) != this->get_attachments().end();
+	return this->get_attachments().find(GL_COLOR_ATTACHMENT0 + attachment_index) != this->get_attachments().cend();
 }
 
 bool FrameBuffer::has_depth() const
 {
-	return this->get_attachments().find(GL_DEPTH_ATTACHMENT) != this->get_attachments().end();
+	return this->get_attachments().find(GL_DEPTH_ATTACHMENT) != this->get_attachments().cend();
 }
 
 bool FrameBuffer::has_stencil() const
 {
-	return this->get_attachments().find(GL_STENCIL_ATTACHMENT) != this->get_attachments().end();
+	return this->get_attachments().find(GL_STENCIL_ATTACHMENT) != this->get_attachments().cend();
 }
 
 void FrameBuffer::set_output_attachment(GLenum attachment) const
 {
-	if(this->attachments.find(attachment) == this->attachments.end())
+	if(this->attachments.find(attachment) == this->attachments.cend())
 	{
 		tz::util::log::error("FrameBuffer render attachment type has no corresponding attachment; setting to default (which is GL_COLOR_ATTACHMENT0).");
 		attachment = GL_COLOR_ATTACHMENT0;

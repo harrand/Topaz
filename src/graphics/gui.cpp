@@ -291,10 +291,8 @@ bool Window::is_fullscreen() const
 		case Window::FullscreenType::VIDEO_MODE:
 		case Window::FullscreenType::DESKTOP_MODE:
 			return true;
-			break;
 		default:
 			return false;
-			break;
 	}
 }
 

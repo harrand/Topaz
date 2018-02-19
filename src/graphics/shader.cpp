@@ -1,5 +1,4 @@
 #include "shader.hpp"
-#include <fstream>
 
 Shader::Shader(std::string vertex_source, std::string tessellation_control_source, std::string tessellation_evaluation_source, std::string geometry_source, std::string fragment_source, bool compile, bool link, bool validate): filename(""), compiled(false), program_handle(glCreateProgram()), uniform_data({nullptr}), uniform_counter(0)
 {
@@ -15,6 +14,7 @@ Shader::Shader(std::string filename, bool compile, bool link, bool validate): Sh
 {
 	// Delegating ctor means cannot initialise any members after, and doing before will just be overwritten so that's why it's being done in this constructor body.
 	this->filename = filename;
+	tz::util::log::message("finished setting up shader with path ", this->filename);
 }
 
 Shader::Shader(const Shader& copy): Shader(copy.filename){}

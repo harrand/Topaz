@@ -102,7 +102,7 @@ protected:
 class Slider : public Panel
 {
 public:
-	Slider(float x, float y, float width, float height, Vector4F slider_colour, Vector4F background_colour, Vector2F slider_size, Shader& shader, MouseListener& mouse_listener);
+	Slider(float x, float y, float width, float height, Vector4F slider_colour, Vector4F background_colour, Vector2F slider_size, Shader& shader, MouseListener& mouse_listener, float position = 0.0f);
 	Slider(const Slider& copy) = default;
 	Slider(Slider&& move) = default;
 	~Slider() = default;

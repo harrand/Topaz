@@ -88,7 +88,7 @@ void init()
 	Checkbox test_tick(0.0f, save_scene_button.get_y() + (2 * save_scene_button.get_height()), save_scene_button.get_height(), save_scene_button.get_height(), Vector4F(1, 0, 0, 1), Vector4F(0, 0, 1, 1), engine.default_gui_shader, mouse_listener);
 	Checkbox test_tick2(0.0f, test_tick.get_y() + (2 * test_tick.get_height()), test_tick.get_width(), test_tick.get_height(), Vector4F(1, 0, 0, 1), Vector4F(0, 0, 1, 1), engine.default_gui_shader, mouse_listener);
 	CheckboxChoice chooser({test_tick, test_tick2}, &test_tick2);
-	Slider test_slider(0.0f, test_tick2.get_y() + (2 * test_tick2.get_height()), 400, test_tick2.get_height(), Vector4F(1, 0, 0, 1), gui_colour, Vector2F(40, test_tick2.get_height()), engine.default_gui_shader, mouse_listener);
+	Slider test_slider(0.0f, test_tick2.get_y() + (2 * test_tick2.get_height()), 400, test_tick2.get_height(), Vector4F(1, 0, 0, 1), gui_colour, Vector2F(40, test_tick2.get_height()), engine.default_gui_shader, mouse_listener, 1.0f);
 	
 	TrivialFunctor pop_cmd([](){tz::audio::play_async(AudioClip("../../../res/runtime/music/pop.wav"));});
 	wnd.add_child(&text);

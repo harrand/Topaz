@@ -143,7 +143,7 @@ bool Checkbox::is_choice() const
 	return this->choice_parent != nullptr;
 }
 
-Slider::Slider(float x, float y, float width, float height, Vector4F slider_colour, Vector4F background_colour, Vector2F slider_size, Shader& shader, MouseListener& mouse_listener): Panel(x, y, width, height, background_colour, shader), position(0.0), slider_colour(slider_colour), slider_size(slider_size), mouse_listener(mouse_listener), just_clicked(false), just_moused_over(false){}
+Slider::Slider(float x, float y, float width, float height, Vector4F slider_colour, Vector4F background_colour, Vector2F slider_size, Shader& shader, MouseListener& mouse_listener, float position): Panel(x, y, width, height, background_colour, shader), position(position), slider_colour(slider_colour), slider_size(slider_size), mouse_listener(mouse_listener), just_clicked(false), just_moused_over(false){}
 
 void Slider::update()
 {
