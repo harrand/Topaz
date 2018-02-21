@@ -49,7 +49,7 @@ void init()
 {
 	Window wnd(800, 600, "Topaz Development Window");
 	Engine engine(&wnd, "../../../res/runtime/properties.mdl");
-	
+
 	unsigned int seconds = tz::util::cast::from_string<unsigned int>(engine.get_resources().get_tag("played"));
 	float rotational_speed = tz::util::cast::from_string<float>(engine.get_resources().get_tag("rotational_speed"));
 	constexpr std::size_t shader_id = 0;

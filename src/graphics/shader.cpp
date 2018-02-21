@@ -14,7 +14,6 @@ Shader::Shader(std::string filename, bool compile, bool link, bool validate): Sh
 {
 	// Delegating ctor means cannot initialise any members after, and doing before will just be overwritten so that's why it's being done in this constructor body.
 	this->filename = filename;
-	tz::util::log::message("finished setting up shader with path ", this->filename);
 }
 
 Shader::Shader(const Shader& copy): Shader(copy.filename){}

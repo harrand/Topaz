@@ -15,7 +15,7 @@ echo Compiled test.cpp...
 move test.o %lnkdir%
 echo Copying over all dependencies...
 cd "%scriptdir%\res\dep"
-xcopy /s /I "%cd%" %lnkdir%
+xcopy /s /I /Y "%cd%" %lnkdir%
 color 4
 echo Dependencies copied. Building final executable...
 cd %lnkdir%
@@ -23,5 +23,3 @@ g++ -O3 -o topaz_test.exe test.o "%scriptdir%\res\exe\topaz_test.res" -static-li
 move test.o "%cpldir%"
 color b
 echo Topaz building complete, opening link directory...
-explorer %lnkdir%
-pause
