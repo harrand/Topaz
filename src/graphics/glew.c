@@ -31,6 +31,9 @@
 */
 
 #ifndef GLEW_INCLUDE
+#ifndef GLEW_STATIC
+#define GLEW_STATIC
+#endif
 #include <GL/glew.h>
 #else
 #include GLEW_INCLUDE
