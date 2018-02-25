@@ -34,19 +34,6 @@ protected:
 };
 
 /**
-* Like a normal Object2D, but has a texture bound.
-*/
-class Sprite : public Object2D
-{
-public:
-	Sprite(Vector2F position, float rotation, Vector2F scale, Texture* texture);
-	Sprite& operator=(const Sprite& copy);
-	virtual void render(const Camera& cam, Shader* shader, float width, float height) const override;
-private:
-	Texture* texture;
-};
-
-/**
 * Collaboration of a mesh, texture, normal-map, parallax-map and displacement-map
 * Use this to represent a 3D object, including its vertex data, texture, material etc.
 */

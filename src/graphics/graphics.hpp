@@ -21,7 +21,7 @@ public:
 	Font& operator=(Font&& rhs);
 	
 	int get_pixel_height() const;
-	std::string_view get_path() const;
+	const std::string& get_path() const;
 	friend class Texture;
 private:
 	std::string font_path;

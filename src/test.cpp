@@ -1,4 +1,5 @@
 #include "engine.hpp"
+#include "sprite.hpp"
 #include "listener.hpp"
 #include "physics/physics.hpp"
 #include "data.hpp"

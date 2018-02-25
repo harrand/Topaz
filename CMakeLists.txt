@@ -57,12 +57,12 @@ add_library(topaz SHARED
         src/matrix.hpp
         src/quaternion.cpp
         src/quaternion.hpp
-        src/stb_image.h
+        src/graphics/stb_image.h
         src/time.cpp
         src/time.hpp
         src/utility.hpp
         src/utility.inl
         src/vector.hpp
         src/vector.inl
-)
+        src/graphics/sprite.cpp src/graphics/sprite.hpp)
 target_link_libraries(topaz OpenGL32 SDL2 SDL2_mixer SDL2_ttf SDL2main mdl)

@@ -30,9 +30,9 @@ int Font::get_pixel_height() const
 	return this->pixel_height;
 }
 
-std::string_view Font::get_path() const
+const std::string& Font::get_path() const
 {
-	return {this->font_path.c_str(), this->font_path.length()};
+	return this->font_path;
 }
 
 Vertex::Vertex(Vector3F position, Vector2F texture_coordinate, Vector3F normal): position(std::move(position)), texture_coordinate(std::move(texture_coordinate)), normal(std::move(normal)){}

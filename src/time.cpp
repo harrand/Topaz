@@ -61,7 +61,7 @@ float TimeProfiler::get_last_delta() const
 {
 	// this is useful for updating physics engine to prevent updates from changing so strongly every second
 	if(this->deltas.empty())
-		return 5.0f/3.0f;
+		return 0.0f;
 	return this->deltas.back();
 }
 
