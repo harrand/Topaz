@@ -242,3 +242,13 @@ inline Number Random<Engine, EngineResultType>::operator()(Number min, Number ma
 	else if(std::is_same<Number, int>::value)
 		return next_int(min, max);
 }
+
+template<typename FunctorT>
+Functor<FunctorT>::Functor(FunctorT functor): functor(functor){}
+
+template<typename FunctorT>
+template<typename... FunctorParameters>
+void Functor<FunctorT>::operator()(FunctorParameters... parameters)
+{
+	this->functor(parameters...);
+}

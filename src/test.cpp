@@ -1,9 +1,9 @@
 #include "engine.hpp"
-#include "sprite.hpp"
 #include "listener.hpp"
 #include "physics/physics.hpp"
 #include "data.hpp"
 #include "gui_widget.hpp"
+#include "sprite.hpp"
 
 void init();
 void test();
@@ -139,7 +139,7 @@ void init()
 		test_plane.render(engine.camera, &(shader_2d), wnd.get_width(), wnd.get_height());
 		});
 	engine.add_update_command(&render_2d);
-	
+
 	FrameBuffer plane_texture_buffer(512, 512);
 	Texture& plane_texture = plane_texture_buffer.emplace_texture(GL_COLOR_ATTACHMENT0, 512, 512);
 	plane_texture_buffer.emplace_renderbuffer(GL_DEPTH_ATTACHMENT, 512, 512, GL_DEPTH_COMPONENT);

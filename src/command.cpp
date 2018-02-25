@@ -1,7 +1,7 @@
 #include "command.hpp"
 #include "utility.hpp"
 
-Command::Command(std::string name, std::string description, std::string usage): name(std::move(name)), description(std::move(description)), usage(std::move(usage)){}
+Command::Command(std::string name, std::string description, std::string usage): name(std::move(name)), description(std::move(description)), usage(std::move(usage)), is_trivial(false){}
 
 const std::string& Command::get_name() const
 {

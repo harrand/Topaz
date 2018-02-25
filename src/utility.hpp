@@ -163,5 +163,19 @@ private:
 * More expensive than a linear-congruentional approach, but does provide higher-quality pseudorandomness.
 */
 using MersenneTwister = Random<std::mt19937, std::mt19937::result_type>;
+
+/**
+ * Wrapper for a function with variadic arguments. Unlike TrivialFunctor, cannot be inserted into a CommandExecutor.
+ */
+template<typename FunctorT>
+class Functor
+{
+public:
+	Functor(FunctorT functor);
+	template<typename... FunctorParameters>
+	void operator()(FunctorParameters... parameters);
+private:
+	FunctorT functor;
+};
 #include "utility.inl"
 #endif

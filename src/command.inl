@@ -7,7 +7,7 @@ TrivialFunctor<Functor>::TrivialFunctor(Functor functor): functor(functor){}
 template<typename Functor>
 void TrivialFunctor<Functor>::operator()()
 {
-	this->functor();
+    this->functor();
 }
 
 namespace tz::util::scheduler

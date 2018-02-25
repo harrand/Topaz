@@ -30,6 +30,8 @@ private:
 	std::string name;
 	std::string description;
 	std::string usage;
+protected:
+	bool is_trivial;
 };
 
 /**
@@ -53,18 +55,14 @@ private:
 	using Command::get_expected_parameter_size;
 };
 
-/**
-* TrivialCommand subclass. Templated such that it can take a lambda.
-* Essentially is a lambda-wrapper that can be treated like a command (This is how CommandExecutors can execute lambdas)
-*/
 template<typename Functor>
 class TrivialFunctor : public TrivialCommand
 {
 public:
-	TrivialFunctor(Functor functor);
-	virtual void operator()() override;
+    TrivialFunctor(Functor functor);
+    virtual void operator()() override;
 private:
-	Functor functor;
+    Functor functor;
 };
 
 /**
