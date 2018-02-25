@@ -2,12 +2,24 @@
 #include <chrono>
 
 template<typename Functor>
-TrivialFunctor<Functor>::TrivialFunctor(Functor functor): functor(functor){}
+TrivialFunctor<Functor>::TrivialFunctor(Functor&& functor): functor(std::forward<Functor>(functor)){}
 
 template<typename Functor>
 void TrivialFunctor<Functor>::operator()()
 {
     this->functor();
+}
+
+// Perform perfect variadic forwarding to prevent reference collapsing into invalidity.
+// std::forward_as_tuple is misleading. Silly old C++17
+template<typename Functor, typename... FunctorParameters>
+StaticFunctor<Functor, FunctorParameters...>::StaticFunctor(Functor&& functor, FunctorParameters&&... parameters): functor(std::forward<Functor>(functor)), parameters(std::tie(std::forward<FunctorParameters>(parameters)...)){}
+
+template<typename Functor, typename... FunctorParameters>
+void StaticFunctor<Functor, FunctorParameters...>::operator()()
+{
+    // std::apply can unpack the std::tuple (parameters) into the template parameter pack to pass into the functor parameters. It's a C++17 feature.
+    std::apply(this->functor, this->parameters);
 }
 
 namespace tz::util::scheduler

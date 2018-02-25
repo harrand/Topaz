@@ -20,32 +20,6 @@ int main()
 	return 0;
 }
 
-class SpawnBlockCommand : public TrivialCommand
-{
-public:
-	SpawnBlockCommand(Engine& engine, std::vector<AABB>& bounds): engine(engine), bounds(bounds){}
-	virtual void operator()()
-	{
-		tz::data::Manager manager(std::string(engine.get_resources().get_path().data(), engine.get_resources().get_path().length()));
-		std::map<tz::graphics::TextureType, Texture*> textures;
-		std::vector<std::string> texture_links = engine.get_resources().get_sequence("textures");
-		static Random rand;
-		std::size_t random_index = rand.next_int(0, texture_links.size());
-		std::string random_texture_link = manager.resource_link(texture_links[random_index]);
-		std::string random_normalmap_link = manager.resource_link(texture_links[random_index] + "_normalmap");
-		std::string random_parallaxmap_link = manager.resource_link(texture_links[random_index] + "_parallaxmap");
-		textures.emplace(tz::graphics::TextureType::TEXTURE, Texture::get_from_link<Texture>(random_texture_link, engine.get_textures()));
-		textures.emplace(tz::graphics::TextureType::NORMAL_MAP, Texture::get_from_link<NormalMap>(random_normalmap_link, engine.get_normal_maps()));
-		textures.emplace(tz::graphics::TextureType::PARALLAX_MAP, Texture::get_from_link<ParallaxMap>(random_parallaxmap_link, engine.get_parallax_maps()));
-		textures.emplace(tz::graphics::TextureType::DISPLACEMENT_MAP, Texture::get_from_link<DisplacementMap>(manager.resource_link("default_displacementmap"), engine.get_displacement_maps()));
-		Object obj(tz::graphics::find_mesh(manager.resource_link("cube_hd"), engine.get_meshes()), textures, engine.camera.position, engine.camera.rotation, Vector3F(40, 20, 40));
-		bounds.push_back(tz::physics::bound_aabb(obj));
-		engine.scene.add_object(obj);
-	}
-	Engine& engine;
-	std::vector<AABB>& bounds;
-};
-
 void init()
 {
 	Window wnd(800, 600, "Topaz Development Window");
@@ -106,7 +80,25 @@ void init()
 	gui_panel.add_child(&test_slider);
 	TrivialFunctor save_scene_cmd([&](){const_cast<Scene&>(engine.scene).save();});
 	TrivialFunctor toggle_noclip([&](){noclip = !noclip;});
-	SpawnBlockCommand spawn_test_cube(engine, bounds);
+	//SpawnBlockCommand spawn_test_cube(engine, bounds);
+    StaticFunctor spawn_test_cube([&](Engine& engine, std::vector<AABB>& bounds)
+    {
+        tz::data::Manager manager(std::string(engine.get_resources().get_path().data(), engine.get_resources().get_path().length()));
+        std::map<tz::graphics::TextureType, Texture*> textures;
+        std::vector<std::string> texture_links = engine.get_resources().get_sequence("textures");
+        static Random rand;
+        std::size_t random_index = rand.next_int(0, texture_links.size());
+        std::string random_texture_link = manager.resource_link(texture_links[random_index]);
+        std::string random_normalmap_link = manager.resource_link(texture_links[random_index] + "_normalmap");
+        std::string random_parallaxmap_link = manager.resource_link(texture_links[random_index] + "_parallaxmap");
+        textures.emplace(tz::graphics::TextureType::TEXTURE, Texture::get_from_link<Texture>(random_texture_link, engine.get_textures()));
+        textures.emplace(tz::graphics::TextureType::NORMAL_MAP, Texture::get_from_link<NormalMap>(random_normalmap_link, engine.get_normal_maps()));
+        textures.emplace(tz::graphics::TextureType::PARALLAX_MAP, Texture::get_from_link<ParallaxMap>(random_parallaxmap_link, engine.get_parallax_maps()));
+        textures.emplace(tz::graphics::TextureType::DISPLACEMENT_MAP, Texture::get_from_link<DisplacementMap>(manager.resource_link("default_displacementmap"), engine.get_displacement_maps()));
+        Object obj(tz::graphics::find_mesh(manager.resource_link("cube_hd"), engine.get_meshes()), textures, engine.camera.position, engine.camera.rotation, Vector3F(40, 20, 40));
+        bounds.push_back(tz::physics::bound_aabb(obj));
+        engine.scene.add_object(obj);
+    }, engine, bounds);
 	test_button.set_on_mouse_click(&toggle);
 	test_button.set_on_mouse_over(&pop_cmd);
 	exit_gui_button.set_on_mouse_click(&exit);

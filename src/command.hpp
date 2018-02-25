@@ -59,10 +59,21 @@ template<typename Functor>
 class TrivialFunctor : public TrivialCommand
 {
 public:
-    TrivialFunctor(Functor functor);
+    TrivialFunctor(Functor&& functor);
     virtual void operator()() override;
-private:
+protected:
     Functor functor;
+};
+
+template<typename Functor, typename... FunctorParameters>
+class StaticFunctor : public TrivialCommand
+{
+public:
+    StaticFunctor(Functor&&, FunctorParameters&&... parameters);
+    virtual void operator()() override;
+protected:
+    Functor functor;
+    std::tuple<FunctorParameters...> parameters;
 };
 
 /**
