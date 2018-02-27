@@ -14,7 +14,7 @@
 class Command
 {
 public:
-	Command(std::string name = "", std::string description = "", std::string usage = "");
+	Command(std::string name = "", std::string description = "", std::string usage = "", bool trivial = true);
 	Command(const Command& copy) = default;
 	Command(Command&& move) = default;
 	Command& operator=(const Command& rhs) = default;
@@ -26,12 +26,13 @@ public:
 	std::size_t get_expected_parameter_size() const;
 	virtual bool operator==(const Command& rhs) const;
 	virtual void operator()(const std::vector<std::string>& args) = 0;
+    bool is_trivial() const;
 private:
 	std::string name;
 	std::string description;
 	std::string usage;
 protected:
-	bool is_trivial;
+	bool trivial;
 };
 
 /**
@@ -105,12 +106,12 @@ namespace tz::util::scheduler
 	* Note that this does indeed make the thread sleep, so use this on an empty thread or use tz::util::scheduler::async_delayed_functor.
 	*/
 	template<typename Functor>
-	inline void sync_delayed_functor(unsigned int millis_delay, TrivialFunctor<Functor> command);
+	inline void sync_delayed_functor(unsigned int millis_delay, const TrivialFunctor<Functor>& command);
 	/**
 	* Sleep in a new thread for a specified delay, and then execute a functor.
 	*/
 	template<typename Functor>
-	inline void async_delayed_functor(unsigned int millis_delay, TrivialFunctor<Functor> command);
+	inline void async_delayed_functor(unsigned int millis_delay, const TrivialFunctor<Functor>& command);
 }
 
 #include "command.inl"

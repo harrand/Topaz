@@ -1,7 +1,7 @@
 #include "command.hpp"
 #include "utility.hpp"
 
-Command::Command(std::string name, std::string description, std::string usage): name(std::move(name)), description(std::move(description)), usage(std::move(usage)), is_trivial(false){}
+Command::Command(std::string name, std::string description, std::string usage, bool trivial): name(std::move(name)), description(std::move(description)), usage(std::move(usage)), trivial(trivial){}
 
 const std::string& Command::get_name() const
 {
@@ -28,6 +28,11 @@ bool Command::operator==(const Command& rhs) const
 {
 	// is a shallow equality operator, default works the same
 	return this->name == rhs.get_name() && this->description == rhs.get_description() && this->usage == rhs.get_usage();
+}
+
+bool Command::is_trivial() const
+{
+    return this->trivial;
 }
 
 void TrivialCommand::operator()()

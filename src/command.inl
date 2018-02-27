@@ -11,7 +11,6 @@ void TrivialFunctor<Functor>::operator()()
 }
 
 // Perform perfect variadic forwarding to prevent reference collapsing into invalidity.
-// std::forward_as_tuple is misleading. Silly old C++17
 template<typename Functor, typename... FunctorParameters>
 StaticFunctor<Functor, FunctorParameters...>::StaticFunctor(Functor&& functor, FunctorParameters&&... parameters): functor(std::forward<Functor>(functor)), parameters(std::tie(std::forward<FunctorParameters>(parameters)...)){}
 
@@ -25,14 +24,14 @@ void StaticFunctor<Functor, FunctorParameters...>::operator()()
 namespace tz::util::scheduler
 {
 	template<typename Functor>
-	inline void sync_delayed_functor(unsigned int millis_delay, TrivialFunctor<Functor> command)
+	inline void sync_delayed_functor(unsigned int millis_delay, const TrivialFunctor<Functor>& command)
 	{
 		std::this_thread::sleep_for(std::chrono::duration<unsigned int, std::milli>(millis_delay));
 		command();
 	}
 	
 	template<typename Functor>
-	inline void async_delayed_functor(unsigned int millis_delay, TrivialFunctor<Functor> command)
+	inline void async_delayed_functor(unsigned int millis_delay, const TrivialFunctor<Functor>& command)
 	{
 		std::thread(tz::util::scheduler::sync_delayed_functor<Functor>, millis_delay, command).detach();
 	}
