@@ -42,7 +42,7 @@ public:
 	* Invoke this in your main application loop.
 	* For clarification of 'shader_index', see documentation for Engine::get_shader(std::size_t).
 	*/
-	void update(std::size_t shader_index);
+	void update(std::size_t shader_index = 0);
 	const TimeProfiler& get_time_profiler() const;
 	/**
 	* Read/Edit the properties file.
@@ -65,7 +65,7 @@ public:
 	const std::vector<std::unique_ptr<ParallaxMap>>& get_parallax_maps() const;
 	const std::vector<std::unique_ptr<DisplacementMap>>& get_displacement_maps() const;
 	/**
-	* Get shader by index. If index = 1, will return the default shader.
+	* Get shader by index. If index = 0 or is out of range of extra-shaders, will return the default shader. Otherwise, it shall return the extra shader at that index.
 	*/
 	Shader& get_shader(std::size_t index);
 	/**
@@ -100,10 +100,6 @@ public:
 	* Remove a command from the tick command executor.
 	*/
 	void remove_tick_command(Command* cmd);
-	/**
-	* Register a listener to the Engine instance. Use this to easily integrate keyboard/mouse input the engine with your application.
-	*/
-	void register_listener(Listener& listener);
 	/**
 	* Returns true if a physics update will occur next update. Use-cases for this mainly include when you need to synchronise your own functionality with the physics updates (which you should really use add_tick_command(Command*) for.)
 	*/

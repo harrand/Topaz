@@ -23,7 +23,7 @@ void Object2D::render(const Camera& cam, Shader* shader, float width, float heig
 	this->quad.render(false);
 }
 
-Object::Object(std::variant<const Mesh*, std::shared_ptr<const Mesh>> mesh, std::map<tz::graphics::TextureType, Texture*> textures, Vector3F position, Vector3F rotation, Vector3F scale, unsigned int shininess, float parallax_map_scale, float parallax_map_offset, float displacement_factor): position(position), rotation(rotation), scale(scale), shininess(shininess), parallax_map_scale(parallax_map_scale), parallax_map_offset(parallax_map_offset), displacement_factor(displacement_factor), mesh(mesh), textures(textures){}
+Object::Object(std::variant<const Mesh*, std::shared_ptr<const Mesh>> mesh, std::map<tz::graphics::TextureType, Texture*> textures, Vector3F position, Vector3F rotation, Vector3F scale): position(position), rotation(rotation), scale(scale), mesh(mesh), textures(textures){}
 
 const Mesh& Object::get_mesh() const
 {
@@ -71,10 +71,12 @@ void Object::render(const Camera& cam, Shader* shader, float width, float height
 	shader->set_uniform<Vector3F>("scale_uniform", this->scale);
 	shader->set_uniform<Matrix4x4>("v", tz::transform::view(cam.position, cam.rotation));
 	shader->set_uniform<Matrix4x4>("p", cam.projection(width, height));
+	/*
 	shader->set_uniform<unsigned int>("shininess", this->shininess);
 	shader->set_uniform<float>("parallax_map_scale", this->parallax_map_scale);
 	shader->set_uniform<float>("parallax_map_offset", this->parallax_map_offset);
 	shader->set_uniform<float>("displacement_factor", this->displacement_factor);
+	 */
 	shader->update();
 	this->get_mesh().render(shader->has_tessellation_control_shader());
 	
@@ -82,7 +84,7 @@ void Object::render(const Camera& cam, Shader* shader, float width, float height
 
 bool Object::operator==(const Object& rhs) const
 {
-	return this->position == rhs.position && this->rotation == rhs.rotation && this->scale == rhs.scale && this->shininess == rhs.shininess && this->parallax_map_scale == rhs.parallax_map_scale && this->parallax_map_offset == rhs.parallax_map_offset && this->displacement_factor == rhs.displacement_factor && this->mesh == rhs.mesh && this->textures == rhs.textures;
+	return this->position == rhs.position && this->rotation == rhs.rotation && this->scale == rhs.scale && this->mesh == rhs.mesh && this->textures == rhs.textures;
 }
 
 Skybox::Skybox(std::string cube_mesh_link, CubeMap& cm): cube_mesh_link(cube_mesh_link), cm(cm){}

@@ -41,7 +41,7 @@ protected:
 class Object
 {
 public:
-	Object(std::variant<const Mesh*, std::shared_ptr<const Mesh>> mesh, std::map<tz::graphics::TextureType, Texture*> textures, Vector3F position, Vector3F rotation, Vector3F scale, unsigned int shininess = tz::graphics::default_shininess, float parallax_map_scale = tz::graphics::default_parallax_map_scale, float parallax_map_offset = tz::graphics::default_parallax_map_offset, float displacement_factor = tz::graphics::default_displacement_factor);
+	Object(std::variant<const Mesh*, std::shared_ptr<const Mesh>> mesh, std::map<tz::graphics::TextureType, Texture*> textures, Vector3F position, Vector3F rotation, Vector3F scale);
 	Object(const Object& copy) = default;
 	Object(Object&& move) = default;
 	~Object() = default;
@@ -56,8 +56,6 @@ public:
 	bool operator==(const Object& rhs) const;
 	
 	Vector3F position, rotation, scale;
-	unsigned int shininess;
-	float parallax_map_scale, parallax_map_offset, displacement_factor;
 protected:
 	std::variant<const Mesh*, std::shared_ptr<const Mesh>> mesh;
 	std::map<tz::graphics::TextureType, Texture*> textures;

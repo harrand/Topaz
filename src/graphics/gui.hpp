@@ -10,6 +10,7 @@
 #include "listener.hpp"
 #include "vector.hpp"
 #include "mesh.hpp"
+#include "shader.hpp"
 
 /**
 * Note on Topaz GUI
@@ -19,6 +20,7 @@
 */
 
 class Window;
+class Listener;
 
 /**
 * Represents a Topaz GUI element.

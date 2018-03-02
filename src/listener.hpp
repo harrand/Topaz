@@ -1,10 +1,13 @@
 #ifndef LISTENER_HPP
 #define LISTENER_HPP
+
+#include <graphics/gui.hpp>
 #include "SDL2/SDL.h"
 #include "command.hpp"
 #include "camera.hpp"
 #include "graphics/scene.hpp"
 
+class Window;
 /**
 * Wrapper for an SDL_Event listener.
 * Abstract. Not available for non-polymorphic use.
@@ -35,6 +38,7 @@ class MouseListener: public Listener
 {
 public:
 	MouseListener();
+	MouseListener(Window& window);
 	MouseListener(const MouseListener& copy) = default;
 	MouseListener(MouseListener&& move) = default;
 	~MouseListener() = default;
@@ -62,6 +66,7 @@ class KeyListener: public Listener
 {
 public:
 	KeyListener();
+	KeyListener(Window& window);
 	KeyListener(const KeyListener& copy) = default;
 	KeyListener(KeyListener&& move) = default;
 	~KeyListener() = default;

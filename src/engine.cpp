@@ -176,11 +176,6 @@ void Engine::remove_tick_command(Command* cmd)
 	this->tick_command_executor.deregister_command(cmd);
 }
 
-void Engine::register_listener(Listener& listener)
-{
-	this->window->register_listener(listener);
-}
-
 bool Engine::is_update_due() const
 {
 	return this->update_due;

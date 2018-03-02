@@ -138,7 +138,7 @@ private:
 	GLuint program_handle;
 	std::array<GLuint, tz::graphics::maximum_shaders> shaders;
 	std::array<std::unique_ptr<UniformImplicit>, tz::graphics::maximum_uniforms> uniform_data;
-	std::map<std::size_t, std::string> attribute_locations;
+	std::map<GLuint, std::string> attribute_locations;
 	std::size_t uniform_counter;
 };
 

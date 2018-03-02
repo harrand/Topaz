@@ -53,7 +53,7 @@ void Scene::add_entity(Entity ent)
 }
 
 // See documentation for Scene::add_entity(Entity).
-void Scene::add_entity_object(EntityObject3D eo)
+void Scene::add_entity_object(EntityObject eo)
 {
 	this->entity_objects.push_back(std::move(eo));
 }
@@ -68,7 +68,7 @@ void Scene::remove_entity(const Entity& ent)
 	this->entities.erase(std::remove(this->entities.begin(), this->entities.end(), ent), this->entities.end());
 }
 
-void Scene::remove_entity_object(const EntityObject3D& eo)
+void Scene::remove_entity_object(const EntityObject& eo)
 {
 	this->entity_objects.erase(std::remove(this->entity_objects.begin(), this->entity_objects.end(), eo), this->entity_objects.end());
 }
@@ -83,7 +83,7 @@ const std::vector<Entity>& Scene::get_entities() const
 	return this->entities;
 }
 
-const std::vector<EntityObject3D>& Scene::get_entity_objects() const
+const std::vector<EntityObject>& Scene::get_entity_objects() const
 {
 	return this->entity_objects;
 }
@@ -119,16 +119,18 @@ void Scene::export_scene(const std::string& scene_link) const
 		output.edit_tag(object_name + ".pos", tz::util::string::format(tz::util::string::devectorise_list_3<float>(current_object.position)));
 		output.edit_tag(object_name + ".rot", tz::util::string::format(tz::util::string::devectorise_list_3<float>(current_object.rotation)));
 		output.edit_tag(object_name + ".scale", tz::util::string::format(tz::util::string::devectorise_list_3<float>(current_object.scale)));
+		/*
 		output.edit_tag(object_name + ".shininess", tz::util::cast::to_string(current_object.shininess));
 		output.edit_tag(object_name + ".parallax_map_scale", tz::util::cast::to_string(current_object.parallax_map_scale));
 		output.edit_tag(object_name + ".parallax_map_offset", tz::util::cast::to_string(current_object.parallax_map_offset));
 		output.edit_tag(object_name + ".displacement_factor", tz::util::cast::to_string(current_object.displacement_factor));
+		 */
 	}
 	for(std::size_t i = 0; i < this->entity_objects.size(); i++)
 	{
 		const std::string entity_object_name = tz::scene::entity_object_tag_prefix + tz::util::cast::to_string(i);
 		entity_object_list.push_back(entity_object_name);
-		const EntityObject3D current_entity_object = this->entity_objects[i];
+		const EntityObject current_entity_object = this->entity_objects[i];
 
 		output.edit_tag(entity_object_name + ".mesh", data_manager.resource_name(current_entity_object.get_mesh().get_file_name()));
 		for(auto& texture : current_entity_object.get_textures())
@@ -139,10 +141,12 @@ void Scene::export_scene(const std::string& scene_link) const
 		output.edit_tag(entity_object_name + ".pos", tz::util::string::format(tz::util::string::devectorise_list_3<float>(current_entity_object.position)));
 		output.edit_tag(entity_object_name + ".rot", tz::util::string::format(tz::util::string::devectorise_list_3<float>(current_entity_object.rotation)));
 		output.edit_tag(entity_object_name + ".scale", tz::util::string::format(tz::util::string::devectorise_list_3<float>(current_entity_object.scale)));
+		/*
 		output.edit_tag(entity_object_name + ".shininess", tz::util::cast::to_string(current_entity_object.shininess));
 		output.edit_tag(entity_object_name + ".parallax_map_scale", tz::util::cast::to_string(current_entity_object.parallax_map_scale));
 		output.edit_tag(entity_object_name + ".parallax_map_offset", tz::util::cast::to_string(current_entity_object.parallax_map_offset));
 		output.edit_tag(entity_object_name + ".displacement_factor", tz::util::cast::to_string(current_entity_object.displacement_factor));
+		 */
 	}
 	output.add_sequence(tz::scene::objects_sequence_name, object_list);
 	output.add_sequence(tz::scene::entityobjects_sequence_name, entity_object_list);
@@ -179,6 +183,7 @@ Object Scene::retrieve_object_data(const std::string& object_name, const std::st
 	std::string position_string = mdlf.get_tag(object_name + ".pos");
 	std::string rotation_string = mdlf.get_tag(object_name + ".rot");
 	std::string scale_string = mdlf.get_tag(object_name + ".scale");
+	/*
 	unsigned int shininess = tz::util::cast::from_string<unsigned int>(mdlf.get_tag(object_name + ".shininess"));
 	float parallax_map_scale = tz::util::cast::from_string<float>(mdlf.get_tag(object_name + ".parallax_map_scale"));
 	float parallax_map_offset = tz::util::cast::from_string<float>(mdlf.get_tag(object_name + ".parallax_map_offset"));
@@ -191,6 +196,7 @@ Object Scene::retrieve_object_data(const std::string& object_name, const std::st
 		parallax_map_offset = tz::graphics::default_parallax_map_offset;
 	if(!mdlf.exists_tag(object_name + ".displacement_factor"))
 		displacement_factor = tz::graphics::default_displacement_factor;
+	 */
 	tz::data::Manager data_manager(resources_path);
 	
 	std::string mesh_link = data_manager.resource_link(mesh_name);
@@ -218,16 +224,16 @@ Object Scene::retrieve_object_data(const std::string& object_name, const std::st
 		}
 		textures.emplace(static_cast<tz::graphics::TextureType>(i), tex);
 	}
-	return {tz::graphics::find_mesh(mesh_link, all_meshes), textures, tz::util::string::vectorise_list_3<float>(tz::util::string::deformat(position_string)), tz::util::string::vectorise_list_3<float>(tz::util::string::deformat(rotation_string)), tz::util::string::vectorise_list_3<float>(tz::util::string::deformat(scale_string)), shininess, parallax_map_scale, parallax_map_offset, displacement_factor};
+	return {tz::graphics::find_mesh(mesh_link, all_meshes), textures, tz::util::string::vectorise_list_3<float>(tz::util::string::deformat(position_string)), tz::util::string::vectorise_list_3<float>(tz::util::string::deformat(rotation_string)), tz::util::string::vectorise_list_3<float>(tz::util::string::deformat(scale_string))};
 }
 
-EntityObject3D Scene::retrieve_entity_object_data(const std::string& entity_object_name, const std::string& resources_path, MDLFile& mdlf, const std::vector<std::unique_ptr<Mesh>>& all_meshes, const std::vector<std::unique_ptr<Texture>>& all_textures, const std::vector<std::unique_ptr<NormalMap>>& all_normal_maps, const std::vector<std::unique_ptr<ParallaxMap>>& all_parallax_maps, const std::vector<std::unique_ptr<DisplacementMap>>& all_displacement_maps)
+EntityObject Scene::retrieve_entity_object_data(const std::string& entity_object_name, const std::string& resources_path, MDLFile& mdlf, const std::vector<std::unique_ptr<Mesh>>& all_meshes, const std::vector<std::unique_ptr<Texture>>& all_textures, const std::vector<std::unique_ptr<NormalMap>>& all_normal_maps, const std::vector<std::unique_ptr<ParallaxMap>>& all_parallax_maps, const std::vector<std::unique_ptr<DisplacementMap>>& all_displacement_maps)
 {
-	// No point repeating code from Scene::retrieve_object_data, so call it to receive a valid Object. Then parse the mass from the data-file, and cobble all the data together to create the final EntityObject3D. This doesn't really waste memory as Objects are now smaller than before, as pointers << strings.
+	// No point repeating code from Scene::retrieve_object_data, so call it to receive a valid Object. Then parse the mass from the data-file, and cobble all the data together to create the final EntityObject. This doesn't really waste memory as Objects are now smaller than before, as pointers << strings.
 	Object object = Scene::retrieve_object_data(entity_object_name, resources_path, mdlf, all_meshes, all_textures, all_normal_maps, all_parallax_maps, all_displacement_maps);
 	std::string mass_string = mdlf.get_tag(entity_object_name + ".mass");
 	float mass = tz::util::cast::from_string<float>(mass_string);
 	if(!mdlf.exists_tag(entity_object_name + ".mass"))
 		mass = tz::physics::default_mass;
-	return{&(object.get_mesh()), object.get_textures(), mass, object.position, object.rotation, object.scale, object.shininess, object.parallax_map_scale, object.parallax_map_offset, object.displacement_factor};
+	return{&(object.get_mesh()), object.get_textures(), mass, object.position, object.rotation, object.scale};
 }

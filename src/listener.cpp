@@ -22,6 +22,11 @@ unsigned int Listener::get_num_listeners()
 
 MouseListener::MouseListener(): Listener(){}
 
+MouseListener::MouseListener(Window& window): MouseListener()
+{
+	window.register_listener(*this);
+}
+
 void MouseListener::handle_events(SDL_Event& evt)
 {
 	this->reload_mouse_delta();
@@ -91,6 +96,11 @@ const Vector2F& MouseListener::get_right_click_location() const
 }
 
 KeyListener::KeyListener(): Listener(){}
+
+KeyListener::KeyListener(Window& window) : KeyListener()
+{
+	window.register_listener(*this);
+}
 
 void KeyListener::handle_events(SDL_Event& evt)
 {

@@ -53,7 +53,7 @@ void Shader::compile(std::string vertex_source, std::string tessellation_control
 	this->shaders[0] = Shader::create_shader(vertex_source, GL_VERTEX_SHADER);
 	// Tessellation Control Shader
 	this->shaders[1] = Shader::create_shader(tessellation_control_source, GL_TESS_CONTROL_SHADER);
-	// Tessellation Evalution Shader
+	// Tessellation Evaluation Shader
 	this->shaders[2] = Shader::create_shader(tessellation_evaluation_source, GL_TESS_EVALUATION_SHADER);
 	// Geometry Shader
 	this->shaders[3] = Shader::create_shader(geometry_source, GL_GEOMETRY_SHADER);
@@ -205,6 +205,11 @@ GLuint Shader::get_program_handle() const
 
 void Shader::bind() const
 {
+    if(!this->ready())
+    {
+        tz::util::log::error("Attempted to bind Shader that is not ready.");
+        return;
+    }
 	glUseProgram(this->program_handle);
 }
 

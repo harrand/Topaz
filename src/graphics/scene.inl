@@ -9,7 +9,7 @@ Element& Scene::emplace(Args&&... args)
 	{
 		return emplace_entity(std::forward<Args>(args)...);
 	}
-	else if constexpr(std::is_same<Element, EntityObject3D>::value)
+	else if constexpr(std::is_same<Element, EntityObject>::value)
 	{
 		return emplace_entity_object(std::forward<Args>(args)...);
 	}
@@ -33,7 +33,7 @@ Entity& Scene::emplace_entity(Args&&... args)
 }
 
 template<typename... Args>
-EntityObject3D& Scene::emplace_entity_object(Args&&... args)
+EntityObject& Scene::emplace_entity_object(Args&&... args)
 {
 	return this->entity_objects.emplace_back(std::forward<Args>(args)...);
 }

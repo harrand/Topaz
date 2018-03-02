@@ -29,10 +29,9 @@ void init()
 	float rotational_speed = tz::util::cast::from_string<float>(engine.get_resources().get_tag("rotational_speed"));
 	constexpr std::size_t shader_id = 0;
 	
-	KeyListener key_listener;
-	MouseListener mouse_listener;
-	engine.register_listener(key_listener);
-	engine.register_listener(mouse_listener);
+	KeyListener key_listener(wnd);
+	MouseListener mouse_listener(wnd);
+
 	CubeMap skybox_texture("../../../res/runtime/textures/skybox/", "greenhaze", ".png");
 	Shader skybox_shader("../../../src/shaders/skybox");
 	
