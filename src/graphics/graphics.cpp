@@ -37,8 +37,6 @@ const std::string& Font::get_path() const
 
 Vertex::Vertex(Vector3F position, Vector2F texture_coordinate, Vector3F normal): position(std::move(position)), texture_coordinate(std::move(texture_coordinate)), normal(std::move(normal)){}
 
-PixelRGBA::PixelRGBA(unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha): data(red, green, blue, alpha){}
-
 namespace tz::graphics::model
 {
 	static bool compare_obj_index_pointer(const OBJIndex* a, const OBJIndex* b);

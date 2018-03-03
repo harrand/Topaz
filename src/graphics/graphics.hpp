@@ -52,7 +52,7 @@ public:
 class PixelRGBA
 {
 public:
-	PixelRGBA(unsigned char red = 0, unsigned char green = 0, unsigned char blue = 0, unsigned char alpha = 0);
+	constexpr PixelRGBA(unsigned char red = 0, unsigned char green = 0, unsigned char blue = 0, unsigned char alpha = 0): data(std::array<unsigned char, 4>({red, green, blue, alpha})){}
 	Vector4<unsigned char> data;
 };
 

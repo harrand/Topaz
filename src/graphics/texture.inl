@@ -1,3 +1,25 @@
+#include <type_traits>
+
+template<class Pixel>
+Texture::Texture(Bitmap<Pixel> pixel_data): Texture(pixel_data.width, pixel_data.height, false)
+{
+	// handle not generated, do it.
+	// Generates a new texture, and just fills it with zeroes if specified.
+	glGenTextures(1, &(this->texture_handle));
+	glBindTexture(GL_TEXTURE_2D, this->texture_handle);
+	std::vector<unsigned char> image_data;
+	for(const auto& pixel : pixel_data.pixels)
+	{
+		image_data.push_back(pixel.data.x);
+		image_data.push_back(pixel.data.y);
+		image_data.push_back(pixel.data.z);
+		image_data.push_back(pixel.data.w);
+	}
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, this->width, this->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image_data.data());
+	// Unbind the texture.
+	glBindTexture(GL_TEXTURE_2D, 0);
+}
+
 template<class T>
 T* Texture::get_from_link(const std::string& texture_link, const std::vector<std::unique_ptr<T>>& all_textures)
 {

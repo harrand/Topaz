@@ -19,7 +19,15 @@ namespace tz::graphics
 	* Minimum of implementation and 32. This is because if hardware allows 64 attachments, OpenGL headers currently dont even specify 32+ attachments (it goes to GL_DEPTH_ATTACHMENT). For this reason, it is the minimum of the two, for a fair compromise.
 	*/
 	constexpr unsigned int maximum_framebuffer_attachments = std::min(GL_MAX_COLOR_ATTACHMENTS, 32);
-	
+
+    constexpr Vector4<unsigned char> default_normal_map_colour = Vector4<unsigned char>(std::array<unsigned char, 4>({128, 128, 255, 255}));
+    constexpr Vector4<unsigned char> default_parallax_map_colour = Vector4<unsigned char>(std::array<unsigned char, 4>({128, 128, 128, 255}));
+    constexpr Vector4<unsigned char> default_displacement_map_colour = Vector4<unsigned char>(std::array<unsigned char, 4>({0, 0, 0, 255}));
+
+    constexpr PixelRGBA default_normal_map_pixel = PixelRGBA(128, 128, 255, 255);
+    constexpr PixelRGBA default_parallax_map_pixel = PixelRGBA(128, 128, 128, 255);
+    constexpr PixelRGBA default_displacement_map_pixel = PixelRGBA(0, 0, 0, 255);
+
 	enum class TextureType : unsigned int
 	{
 		TEXTURE,
@@ -59,6 +67,11 @@ public:
 	* Loads a texture from a file.
 	*/
 	Texture(std::string filename, bool mipmapping = true, bool gamma_corrected = true, bool store_bitmap = false);
+    /**
+     * Loads a texture from existing Pixel Data
+     */
+    template<class Pixel>
+    Texture(Bitmap<Pixel> pixel_data);
 	/**
 	* Loads a texture from a font, given text.
 	*/
@@ -100,24 +113,27 @@ private:
 class NormalMap: public Texture
 {
 public:
-	NormalMap(std::string filename = "../../../res/runtime/normalmaps/default_normalmap.jpg"): Texture(filename, false, false, false){};
-	virtual void bind(Shader* shader, unsigned int id) const override{this->bind_with_string(shader, id, "normal_map_sampler");}
+	NormalMap(std::string filename): Texture(filename, false, false, false){};
+	NormalMap(): Texture(Bitmap<PixelRGBA>({tz::graphics::default_normal_map_pixel}, 1, 1)){}
+    virtual void bind(Shader* shader, unsigned int id) const override{this->bind_with_string(shader, id, "normal_map_sampler");}
 	virtual tz::graphics::TextureType get_texture_type() const override{return tz::graphics::TextureType::NORMAL_MAP;}
 };
 
 class ParallaxMap: public Texture
 {
 public:
-	ParallaxMap(std::string filename = "../../../res/runtime/parallaxmaps/default_parallax.png"): Texture(filename, false, false, false){};
-	virtual void bind(Shader* shader, unsigned int id) const override{this->bind_with_string(shader, id, "parallax_map_sampler");}
+	ParallaxMap(std::string filename): Texture(filename, false, false, false){};
+    ParallaxMap(): Texture(Bitmap<PixelRGBA>({tz::graphics::default_parallax_map_pixel}, 1, 1)){}
+    virtual void bind(Shader* shader, unsigned int id) const override{this->bind_with_string(shader, id, "parallax_map_sampler");}
 	virtual tz::graphics::TextureType get_texture_type() const override{return tz::graphics::TextureType::PARALLAX_MAP;}
 };
 
 class DisplacementMap: public Texture
 {
 public:
-	DisplacementMap(std::string filename = "../../../res/runtime/displacementmaps/default_displacement.png"): Texture(filename, false, false, false){};
-	virtual void bind(Shader* shader, unsigned int id) const override{this->bind_with_string(shader, id, "displacement_map_sampler");}
+	DisplacementMap(std::string filename): Texture(filename, false, false, false){};
+    DisplacementMap(): Texture(Bitmap<PixelRGBA>({tz::graphics::default_displacement_map_pixel}, 1, 1)){}
+    virtual void bind(Shader* shader, unsigned int id) const override{this->bind_with_string(shader, id, "displacement_map_sampler");}
 	virtual tz::graphics::TextureType get_texture_type() const override{return tz::graphics::TextureType::DISPLACEMENT_MAP;}
 };
 
@@ -230,6 +246,13 @@ private:
 	GLuint framebuffer_handle;
 	std::unordered_map<GLenum, std::variant<Texture, RenderBuffer>> attachments;
 };
+
+namespace tz::graphics::texture
+{
+    const NormalMap default_normal_map;
+    const ParallaxMap default_parallax_map;
+    const DisplacementMap default_displacement_map;
+}
 
 #include "texture.inl"
 #endif

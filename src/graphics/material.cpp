@@ -68,10 +68,16 @@ void Material::bind(Shader& shader) const
         this->texture->bind(&shader, 0);
     if(this->has_normal_map())
         this->normal_map->bind(&shader, 1);
+    else
+        tz::graphics::texture::default_normal_map.bind(&shader, 1);
     if(this->has_parallax_map())
         this->parallax_map->bind(&shader, 2);
+    else
+        tz::graphics::texture::default_parallax_map.bind(&shader, 2);
     if(this->has_displacement_map())
         this->displacement_map->bind(&shader, 3);
+    else
+        tz::graphics::texture::default_displacement_map.bind(&shader, 3);
 }
 
 bool Material::operator==(const Material& rhs) const
