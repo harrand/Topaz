@@ -7,8 +7,8 @@
 #include <set>
 #include <deque>
 #include "graphics.hpp"
-#include "listener.hpp"
-#include "vector.hpp"
+#include "../listener.hpp"
+#include "../vector.hpp"
 #include "mesh.hpp"
 #include "shader.hpp"
 

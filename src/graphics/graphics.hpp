@@ -6,7 +6,7 @@
 #include <GL/glew.h>
 #include "SDL2/SDL.h"
 #include "SDL2/SDL_ttf.h"
-#include "utility.hpp"
+#include "../utility.hpp"
 
 /**
 * Used to render text. Texture has a constructor taking a Font as a parameter. Use this to achieve font-rendering.

@@ -2,7 +2,7 @@
 #define SCENE_HPP
 #include <map>
 #include <cstddef>
-#include "entity.hpp"
+#include "../entity.hpp"
 #include "MDL/mdl_file.hpp"
 
 namespace tz::scene

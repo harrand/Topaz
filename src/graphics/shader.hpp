@@ -4,7 +4,7 @@
 #include <memory>
 #include <string_view>
 #include <unordered_set>
-#include "utility.hpp"
+#include "../utility.hpp"
 #ifndef GLEW_STATIC
 #define GLEW_STATIC
 #endif

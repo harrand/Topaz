@@ -2,8 +2,8 @@
 #define AUDIO_HPP
 #include <string>
 #include "SDL2/SDL_mixer.h"
-#include "camera.hpp"
-#include "utility.hpp"
+#include "../camera.hpp"
+#include "../utility.hpp"
 
 /**
 *	Playable audio file. Use this for short audio segments like sound effects.

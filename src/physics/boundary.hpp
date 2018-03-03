@@ -1,6 +1,6 @@
 #ifndef BOUNDARY_HPP
 #define BOUNDARY_HPP
-#include "vector.hpp"
+#include "../vector.hpp"
 
 /**
 * Abstract. Not available for non-polymorphic use. Inherit from this to create custom boundaries.

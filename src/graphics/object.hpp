@@ -3,8 +3,8 @@
 #include "mesh.hpp"
 #include "shader.hpp"
 #include "material.hpp"
-#include "camera.hpp"
-#include "physics/boundary.hpp"
+#include "../camera.hpp"
+#include "../physics/boundary.hpp"
 #include <variant>
 
 namespace tz::graphics
