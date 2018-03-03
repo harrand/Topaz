@@ -92,3 +92,17 @@ AABB tz::physics::bound_aabb(const Object& object)
 	// get minimum and maximum values for all three dimensions. use the minimums and maximums to construct the AABB
 	return {Vector3F(min_x, min_y, min_z), Vector3F(max_x, max_y, max_z)};
 }
+
+AABB tz::physics::bound_aabb_batch(const std::vector<Object>& objects)
+{
+	std::vector<AABB> bounds;
+	bounds.reserve(objects.size());
+	std::for_each(objects.begin(), objects.end(), [&](const Object& object){bounds.push_back(tz::physics::bound_aabb(object));});
+	Vector3F min = bounds.front().get_minimum(), max = bounds.front().get_maximum();
+	for(const auto& bound : bounds)
+	{
+		min = std::min(min, bound.get_minimum());
+		max = std::max(max, bound.get_maximum());
+	}
+	return {min, max};
+}

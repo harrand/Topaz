@@ -35,9 +35,13 @@ namespace tz::physics
 	BoundingSphere bound_sphere(const Object& object);
 	/**
 	* Given an Object3D, creates a well-fitted axis-aligned-bounding-box around the vertices of the object.
-	* The AABB remains valid for the entire lifetime of the object.
 	*/
 	AABB bound_aabb(const Object& object);
+	/**
+	 * Given multiple Objects, creates a single well-fitted axis-aligned-bounding-box as tightly as possible around all the objects.
+	 * Perfect to be used on the result of a tz::graphics::batch(...) call to bound the entirety of the batch.
+	 */
+	AABB bound_aabb_batch(const std::vector<Object>& objects);
 }
 
 #endif

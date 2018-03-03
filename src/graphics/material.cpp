@@ -1,7 +1,3 @@
-//
-// Created by Harrand on 02-Mar-18.
-//
-
 #include "material.hpp"
 
 Material::Material(Texture* texture, NormalMap* normal_map, ParallaxMap* parallax_map, DisplacementMap* displacement_map): texture(texture), normal_map(normal_map), parallax_map(parallax_map), displacement_map(displacement_map){}
