@@ -19,8 +19,7 @@ Scene::Scene(std::string filename, std::string resources_path, const std::vector
 		this->spawn_orientation = Vector3F();
 	}
 	// Parse all objects and entity_objects, and add them to the data vectors.
-	std::vector<std::string> object_list = input.get_sequence(tz::scene::objects_sequence_name);
-	std::vector<std::string> entity_object_list = input.get_sequence(tz::scene::entityobjects_sequence_name);
+	std::vector<std::string> object_list = input.get_sequence(tz::scene::objects_sequence_name), entity_object_list = input.get_sequence(tz::scene::entityobjects_sequence_name);
 	this->objects.reserve(object_list.size());
 	for(const auto& object_name : object_list)
 		this->add_object(Scene::retrieve_object_data(object_name, this->resources_path.value(), input, all_meshes, all_textures, all_normal_maps, all_parallax_maps, all_displacement_maps));
@@ -95,11 +94,15 @@ std::size_t Scene::get_size() const
 
 void Scene::export_scene(const std::string& scene_link) const
 {
+	if(!this->resources_path.has_value())
+	{
+		tz::util::log::error("Tried to export scene but the scene had no resources_path attached to it.");
+		return;
+	}
 	const tz::data::Manager data_manager(this->resources_path.value());
 	MDLFile output = MDLFile(scene_link);
 	output.write("# Topaz Auto-Generated Scene File", true);
-	std::vector<std::string> object_list;
-	std::vector<std::string> entity_object_list;
+	std::vector<std::string> object_list, entity_object_list;
 	output.delete_sequence(tz::scene::objects_sequence_name);
 	output.delete_sequence(tz::scene::entityobjects_sequence_name);
 	
@@ -121,21 +124,9 @@ void Scene::export_scene(const std::string& scene_link) const
             output.edit_tag(object_name + ".texture2", data_manager.resource_name(current_object.get_material().get_parallax_map()->get_file_name()));
         if(current_object.get_material().has_displacement_map())
             output.edit_tag(object_name + ".texture3", data_manager.resource_name(current_object.get_material().get_displacement_map()->get_file_name()));
-        /*
-		for(auto& texture : current_object.get_textures())
-		{
-			output.edit_tag(object_name + ".texture" + tz::util::cast::to_string(static_cast<unsigned int>(texture.first)), data_manager.resource_name(texture.second->get_file_name()));
-		}
-         */
 		output.edit_tag(object_name + ".pos", tz::util::string::format(tz::util::string::devectorise_list_3<float>(current_object.position)));
 		output.edit_tag(object_name + ".rot", tz::util::string::format(tz::util::string::devectorise_list_3<float>(current_object.rotation)));
 		output.edit_tag(object_name + ".scale", tz::util::string::format(tz::util::string::devectorise_list_3<float>(current_object.scale)));
-		/*
-		output.edit_tag(object_name + ".shininess", tz::util::cast::to_string(current_object.shininess));
-		output.edit_tag(object_name + ".parallax_map_scale", tz::util::cast::to_string(current_object.parallax_map_scale));
-		output.edit_tag(object_name + ".parallax_map_offset", tz::util::cast::to_string(current_object.parallax_map_offset));
-		output.edit_tag(object_name + ".displacement_factor", tz::util::cast::to_string(current_object.displacement_factor));
-		 */
 	}
 	for(std::size_t i = 0; i < this->entity_objects.size(); i++)
 	{
@@ -158,12 +149,6 @@ void Scene::export_scene(const std::string& scene_link) const
 		output.edit_tag(entity_object_name + ".pos", tz::util::string::format(tz::util::string::devectorise_list_3<float>(current_entity_object.position)));
 		output.edit_tag(entity_object_name + ".rot", tz::util::string::format(tz::util::string::devectorise_list_3<float>(current_entity_object.rotation)));
 		output.edit_tag(entity_object_name + ".scale", tz::util::string::format(tz::util::string::devectorise_list_3<float>(current_entity_object.scale)));
-		/*
-		output.edit_tag(entity_object_name + ".shininess", tz::util::cast::to_string(current_entity_object.shininess));
-		output.edit_tag(entity_object_name + ".parallax_map_scale", tz::util::cast::to_string(current_entity_object.parallax_map_scale));
-		output.edit_tag(entity_object_name + ".parallax_map_offset", tz::util::cast::to_string(current_entity_object.parallax_map_offset));
-		output.edit_tag(entity_object_name + ".displacement_factor", tz::util::cast::to_string(current_entity_object.displacement_factor));
-		 */
 	}
 	output.add_sequence(tz::scene::objects_sequence_name, object_list);
 	output.add_sequence(tz::scene::entityobjects_sequence_name, entity_object_list);
@@ -200,49 +185,9 @@ Object Scene::retrieve_object_data(const std::string& object_name, const std::st
 	std::string position_string = mdlf.get_tag(object_name + ".pos");
 	std::string rotation_string = mdlf.get_tag(object_name + ".rot");
 	std::string scale_string = mdlf.get_tag(object_name + ".scale");
-	/*
-	unsigned int shininess = tz::util::cast::from_string<unsigned int>(mdlf.get_tag(object_name + ".shininess"));
-	float parallax_map_scale = tz::util::cast::from_string<float>(mdlf.get_tag(object_name + ".parallax_map_scale"));
-	float parallax_map_offset = tz::util::cast::from_string<float>(mdlf.get_tag(object_name + ".parallax_map_offset"));
-	float displacement_factor = tz::util::cast::from_string<float>(mdlf.get_tag(object_name + ".displacement_factor"));
-	if(!mdlf.exists_tag(object_name + ".shininess"))
-		shininess = tz::graphics::default_shininess;
-	if(!mdlf.exists_tag(object_name + ".parallax_map_scale"))
-		parallax_map_scale = tz::graphics::default_parallax_map_scale;
-	if(!mdlf.exists_tag(object_name + ".parallax_map_offset"))
-		parallax_map_offset = tz::graphics::default_parallax_map_offset;
-	if(!mdlf.exists_tag(object_name + ".displacement_factor"))
-		displacement_factor = tz::graphics::default_displacement_factor;
-	 */
 	tz::data::Manager data_manager(resources_path);
 	
 	std::string mesh_link = data_manager.resource_link(mesh_name);
-    /*
-	std::map<tz::graphics::TextureType, Texture*> textures;
-	for(unsigned int i = 0; i < static_cast<unsigned int>(tz::graphics::TextureType::TEXTURE_TYPES); i++)
-	{
-		std::string texture_name = mdlf.get_tag(object_name + ".texture" + tz::util::cast::to_string(i));
-		std::string texture_link = data_manager.resource_link(texture_name);
-		Texture* tex = nullptr;
-		switch(static_cast<tz::graphics::TextureType>(i))
-		{
-			case tz::graphics::TextureType::TEXTURE:
-			default:
-				tex = Texture::get_from_link<Texture>(texture_link, all_textures);
-				break;
-			case tz::graphics::TextureType::NORMAL_MAP:
-				tex = Texture::get_from_link<NormalMap>(texture_link, all_normal_maps);
-				break;
-			case tz::graphics::TextureType::PARALLAX_MAP:
-				tex = Texture::get_from_link<ParallaxMap>(texture_link, all_parallax_maps);
-				break;
-			case tz::graphics::TextureType::DISPLACEMENT_MAP:
-				tex = Texture::get_from_link<DisplacementMap>(texture_link, all_displacement_maps);
-				break;
-		}
-		textures.emplace(static_cast<tz::graphics::TextureType>(i), tex);
-	}
-     */
     Texture* texture = Texture::get_from_link<Texture>(data_manager.resource_link(mdlf.get_tag(object_name + ".texture0")), all_textures);
     NormalMap* normal_map = Texture::get_from_link<NormalMap>(data_manager.resource_link(mdlf.get_tag(object_name + ".texture1")), all_normal_maps);
     ParallaxMap* parallax_map = Texture::get_from_link<ParallaxMap>(data_manager.resource_link(mdlf.get_tag(object_name + ".texture2")), all_parallax_maps);
