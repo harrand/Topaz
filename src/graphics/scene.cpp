@@ -112,10 +112,21 @@ void Scene::export_scene(const std::string& scene_link) const
 		const Object current_object = this->objects[i];
 		
 		output.edit_tag(object_name + ".mesh", data_manager.resource_name(current_object.get_mesh().get_file_name()));
+
+        if(current_object.get_material().has_texture())
+            output.edit_tag(object_name + ".texture0", data_manager.resource_name(current_object.get_material().get_texture()->get_file_name()));
+        if(current_object.get_material().has_normal_map())
+            output.edit_tag(object_name + ".texture1", data_manager.resource_name(current_object.get_material().get_normal_map()->get_file_name()));
+        if(current_object.get_material().has_parallax_map())
+            output.edit_tag(object_name + ".texture2", data_manager.resource_name(current_object.get_material().get_parallax_map()->get_file_name()));
+        if(current_object.get_material().has_displacement_map())
+            output.edit_tag(object_name + ".texture3", data_manager.resource_name(current_object.get_material().get_displacement_map()->get_file_name()));
+        /*
 		for(auto& texture : current_object.get_textures())
 		{
 			output.edit_tag(object_name + ".texture" + tz::util::cast::to_string(static_cast<unsigned int>(texture.first)), data_manager.resource_name(texture.second->get_file_name()));
 		}
+         */
 		output.edit_tag(object_name + ".pos", tz::util::string::format(tz::util::string::devectorise_list_3<float>(current_object.position)));
 		output.edit_tag(object_name + ".rot", tz::util::string::format(tz::util::string::devectorise_list_3<float>(current_object.rotation)));
 		output.edit_tag(object_name + ".scale", tz::util::string::format(tz::util::string::devectorise_list_3<float>(current_object.scale)));
@@ -133,10 +144,16 @@ void Scene::export_scene(const std::string& scene_link) const
 		const EntityObject current_entity_object = this->entity_objects[i];
 
 		output.edit_tag(entity_object_name + ".mesh", data_manager.resource_name(current_entity_object.get_mesh().get_file_name()));
-		for(auto& texture : current_entity_object.get_textures())
-		{
-			output.edit_tag(entity_object_name + ".texture" + tz::util::cast::to_string<unsigned int>(static_cast<unsigned int>(texture.first)), data_manager.resource_name(texture.second->get_file_name()));
-		}
+
+        if(current_entity_object.get_material().has_texture())
+            output.edit_tag(entity_object_name + ".texture0", data_manager.resource_name(current_entity_object.get_material().get_texture()->get_file_name()));
+        if(current_entity_object.get_material().has_normal_map())
+            output.edit_tag(entity_object_name + ".texture1", data_manager.resource_name(current_entity_object.get_material().get_normal_map()->get_file_name()));
+        if(current_entity_object.get_material().has_parallax_map())
+            output.edit_tag(entity_object_name + ".texture2", data_manager.resource_name(current_entity_object.get_material().get_parallax_map()->get_file_name()));
+        if(current_entity_object.get_material().has_displacement_map())
+            output.edit_tag(entity_object_name + ".texture3", data_manager.resource_name(current_entity_object.get_material().get_displacement_map()->get_file_name()));
+
 		output.edit_tag(entity_object_name + ".mass", tz::util::cast::to_string(current_entity_object.mass));
 		output.edit_tag(entity_object_name + ".pos", tz::util::string::format(tz::util::string::devectorise_list_3<float>(current_entity_object.position)));
 		output.edit_tag(entity_object_name + ".rot", tz::util::string::format(tz::util::string::devectorise_list_3<float>(current_entity_object.rotation)));
@@ -200,6 +217,7 @@ Object Scene::retrieve_object_data(const std::string& object_name, const std::st
 	tz::data::Manager data_manager(resources_path);
 	
 	std::string mesh_link = data_manager.resource_link(mesh_name);
+    /*
 	std::map<tz::graphics::TextureType, Texture*> textures;
 	for(unsigned int i = 0; i < static_cast<unsigned int>(tz::graphics::TextureType::TEXTURE_TYPES); i++)
 	{
@@ -224,7 +242,13 @@ Object Scene::retrieve_object_data(const std::string& object_name, const std::st
 		}
 		textures.emplace(static_cast<tz::graphics::TextureType>(i), tex);
 	}
-	return {tz::graphics::find_mesh(mesh_link, all_meshes), textures, tz::util::string::vectorise_list_3<float>(tz::util::string::deformat(position_string)), tz::util::string::vectorise_list_3<float>(tz::util::string::deformat(rotation_string)), tz::util::string::vectorise_list_3<float>(tz::util::string::deformat(scale_string))};
+     */
+    Texture* texture = Texture::get_from_link<Texture>(data_manager.resource_link(mdlf.get_tag(object_name + ".texture0")), all_textures);
+    NormalMap* normal_map = Texture::get_from_link<NormalMap>(data_manager.resource_link(mdlf.get_tag(object_name + ".texture1")), all_normal_maps);
+    ParallaxMap* parallax_map = Texture::get_from_link<ParallaxMap>(data_manager.resource_link(mdlf.get_tag(object_name + ".texture2")), all_parallax_maps);
+    DisplacementMap* displacement_map = Texture::get_from_link<DisplacementMap>(data_manager.resource_link(mdlf.get_tag(object_name + ".texture3")), all_displacement_maps);
+    Material material(texture, normal_map, parallax_map, displacement_map);
+	return {tz::graphics::find_mesh(mesh_link, all_meshes), material, tz::util::string::vectorise_list_3<float>(tz::util::string::deformat(position_string)), tz::util::string::vectorise_list_3<float>(tz::util::string::deformat(rotation_string)), tz::util::string::vectorise_list_3<float>(tz::util::string::deformat(scale_string))};
 }
 
 EntityObject Scene::retrieve_entity_object_data(const std::string& entity_object_name, const std::string& resources_path, MDLFile& mdlf, const std::vector<std::unique_ptr<Mesh>>& all_meshes, const std::vector<std::unique_ptr<Texture>>& all_textures, const std::vector<std::unique_ptr<NormalMap>>& all_normal_maps, const std::vector<std::unique_ptr<ParallaxMap>>& all_parallax_maps, const std::vector<std::unique_ptr<DisplacementMap>>& all_displacement_maps)
@@ -235,5 +259,5 @@ EntityObject Scene::retrieve_entity_object_data(const std::string& entity_object
 	float mass = tz::util::cast::from_string<float>(mass_string);
 	if(!mdlf.exists_tag(entity_object_name + ".mass"))
 		mass = tz::physics::default_mass;
-	return{&(object.get_mesh()), object.get_textures(), mass, object.position, object.rotation, object.scale};
+	return{&(object.get_mesh()), object.get_material(), mass, object.position, object.rotation, object.scale};
 }

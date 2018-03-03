@@ -23,7 +23,7 @@ void Object2D::render(const Camera& cam, Shader* shader, float width, float heig
 	this->quad.render(false);
 }
 
-Object::Object(std::variant<const Mesh*, std::shared_ptr<const Mesh>> mesh, std::map<tz::graphics::TextureType, Texture*> textures, Vector3F position, Vector3F rotation, Vector3F scale): position(position), rotation(rotation), scale(scale), mesh(mesh), textures(textures){}
+Object::Object(std::variant<const Mesh*, std::shared_ptr<const Mesh>> mesh, Material material, Vector3F position, Vector3F rotation, Vector3F scale): position(position), rotation(rotation), scale(scale), mesh(mesh), material(std::move(material)){}
 
 const Mesh& Object::get_mesh() const
 {
@@ -36,9 +36,9 @@ const Mesh& Object::get_mesh() const
 	}
 }
 
-const std::map<tz::graphics::TextureType, Texture*>& Object::get_textures() const
+const Material& Object::get_material() const
 {
-	return this->textures;
+    return this->material;
 }
 
 
@@ -51,19 +51,7 @@ void Object::render(const Camera& cam, Shader* shader, float width, float height
 	}
 	using tz::graphics::TextureType;
 	shader->bind();
-	// Don't need the bounds-checking from std::map::at() but using it because std::map::operator[] has no const overload (which is dumb, but hey. The const correctness should provide a bigger optimisation than the overhead incurred by using std::map::at)
-	Texture* texture = this->textures.at(TextureType::TEXTURE);
-	NormalMap* normal_map = dynamic_cast<NormalMap*>(this->textures.at(TextureType::NORMAL_MAP));
-	ParallaxMap* parallax_map = dynamic_cast<ParallaxMap*>(this->textures.at(TextureType::PARALLAX_MAP));
-	DisplacementMap* displacement_map = dynamic_cast<DisplacementMap*>(this->textures.at(TextureType::DISPLACEMENT_MAP));
-	if(texture != nullptr)
-		texture->bind(shader, static_cast<unsigned int>(texture->get_texture_type()));
-	if(normal_map != nullptr)
-		normal_map->bind(shader, static_cast<unsigned int>(normal_map->get_texture_type()));
-	if(parallax_map != nullptr)
-		parallax_map->bind(shader, static_cast<unsigned int>(parallax_map->get_texture_type()));
-	if(displacement_map != nullptr)
-		displacement_map->bind(shader, static_cast<unsigned int>(displacement_map->get_texture_type()));
+	this->material.bind(*shader);
 	shader->set_uniform<bool>("is_instanced", tz::graphics::is_instanced(&(this->get_mesh())));
 	shader->set_uniform<Matrix4x4>("m", tz::transform::model(this->position, this->rotation, this->scale));
 	shader->set_uniform<Vector3F>("position_uniform", this->position);
@@ -84,7 +72,7 @@ void Object::render(const Camera& cam, Shader* shader, float width, float height
 
 bool Object::operator==(const Object& rhs) const
 {
-	return this->position == rhs.position && this->rotation == rhs.rotation && this->scale == rhs.scale && this->mesh == rhs.mesh && this->textures == rhs.textures;
+	return this->position == rhs.position && this->rotation == rhs.rotation && this->scale == rhs.scale && this->mesh == rhs.mesh && this->material == rhs.material;
 }
 
 Skybox::Skybox(std::string cube_mesh_link, CubeMap& cm): cube_mesh_link(cube_mesh_link), cm(cm){}

@@ -40,9 +40,9 @@ bool Entity::operator==(const Entity& rhs) const
 	return this->mass == rhs.mass && this->velocity == rhs.velocity && this->forces == rhs.forces && this->position == rhs.position;
 }
 
-EntityObject::EntityObject(const Mesh* mesh, std::map<tz::graphics::TextureType, Texture*> textures, float mass, Vector3F position, Vector3F rotation, Vector3F scale, Vector3F velocity, std::unordered_map<std::string, Force> forces): Entity(mass, position, velocity, forces), Object(mesh, textures, position, rotation, scale){}
+EntityObject::EntityObject(const Mesh* mesh, Material material, float mass, Vector3F position, Vector3F rotation, Vector3F scale, Vector3F velocity, std::unordered_map<std::string, Force> forces): Entity(mass, position, velocity, forces), Object(mesh, std::move(material), position, rotation, scale){}
 
-EntityObject::EntityObject(const Object& static_object, float mass) : EntityObject(&static_object.get_mesh(), static_object.get_textures(), mass) {}
+EntityObject::EntityObject(const Object& static_object, float mass) : EntityObject(&static_object.get_mesh(), static_object.get_material(), mass) {}
 
 void EntityObject::update_motion(unsigned int fps)
 {

@@ -60,7 +60,7 @@ public:
      * @param velocity
      * @param forces
      */
-	EntityObject(const Mesh* mesh, std::map<tz::graphics::TextureType, Texture*> textures, float mass = tz::physics::default_mass, Vector3F position = Vector3F(), Vector3F rotation = Vector3F(), Vector3F scale = Vector3F(1, 1, 1), Vector3F velocity = Vector3F(), std::unordered_map<std::string, Force> forces = std::unordered_map<std::string, Force>());
+	EntityObject(const Mesh* mesh, Material material, float mass = tz::physics::default_mass, Vector3F position = Vector3F(), Vector3F rotation = Vector3F(), Vector3F scale = Vector3F(1, 1, 1), Vector3F velocity = Vector3F(), std::unordered_map<std::string, Force> forces = std::unordered_map<std::string, Force>());
 	EntityObject(const Object& static_object, float mass);
 	EntityObject(const EntityObject& copy) = default;
 	EntityObject(EntityObject&& move) = default;

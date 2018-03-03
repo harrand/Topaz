@@ -83,18 +83,25 @@ void init()
     StaticFunctor spawn_test_cube([&](Engine& engine, std::vector<AABB>& bounds)
     {
         tz::data::Manager manager(std::string(engine.get_resources().get_path().data(), engine.get_resources().get_path().length()));
-        std::map<tz::graphics::TextureType, Texture*> textures;
+        //std::map<tz::graphics::TextureType, Texture*> textures;
         std::vector<std::string> texture_links = engine.get_resources().get_sequence("textures");
         static Random rand;
         std::size_t random_index = rand.next_int(0, texture_links.size());
-        std::string random_texture_link = manager.resource_link(texture_links[random_index]);
-        std::string random_normalmap_link = manager.resource_link(texture_links[random_index] + "_normalmap");
-        std::string random_parallaxmap_link = manager.resource_link(texture_links[random_index] + "_parallaxmap");
+		std::string random_texture_link = manager.resource_link(texture_links[random_index]);
+		std::string random_normalmap_link = manager.resource_link(texture_links[random_index] + "_normalmap");
+		std::string random_parallaxmap_link = manager.resource_link(texture_links[random_index] + "_parallaxmap");
+		Texture* texture = Texture::get_from_link<Texture>(random_texture_link, engine.get_textures());
+		NormalMap* normal_map = Texture::get_from_link<NormalMap>(random_normalmap_link, engine.get_normal_maps());
+		ParallaxMap* parallax_map = Texture::get_from_link<ParallaxMap>(random_parallaxmap_link, engine.get_parallax_maps());
+		DisplacementMap* displacement_map = Texture::get_from_link<DisplacementMap>(manager.resource_link("default_displacementmap"), engine.get_displacement_maps());
+		Material material(texture, normal_map, parallax_map, displacement_map);
+		/*
         textures.emplace(tz::graphics::TextureType::TEXTURE, Texture::get_from_link<Texture>(random_texture_link, engine.get_textures()));
         textures.emplace(tz::graphics::TextureType::NORMAL_MAP, Texture::get_from_link<NormalMap>(random_normalmap_link, engine.get_normal_maps()));
         textures.emplace(tz::graphics::TextureType::PARALLAX_MAP, Texture::get_from_link<ParallaxMap>(random_parallaxmap_link, engine.get_parallax_maps()));
         textures.emplace(tz::graphics::TextureType::DISPLACEMENT_MAP, Texture::get_from_link<DisplacementMap>(manager.resource_link("default_displacementmap"), engine.get_displacement_maps()));
-        Object obj(tz::graphics::find_mesh(manager.resource_link("cube_hd"), engine.get_meshes()), textures, engine.camera.position, engine.camera.rotation, Vector3F(40, 20, 40));
+        */
+        Object obj(tz::graphics::find_mesh(manager.resource_link("cube_hd"), engine.get_meshes()), material, engine.camera.position, engine.camera.rotation, Vector3F(40, 20, 40));
         bounds.push_back(tz::physics::bound_aabb(obj));
         engine.scene.add_object(obj);
     }, engine, bounds);
@@ -113,7 +120,7 @@ void init()
 	TrivialFunctor render_skybox([&](){skybox.render(engine.camera, skybox_shader, engine.get_meshes(), wnd.get_width(), wnd.get_height());});
 	engine.add_update_command(&render_skybox);
 	
-	Object player_object(engine.get_meshes().back().get(), engine.scene.get_objects().front().get_textures(), Vector3F(), Vector3F(), Vector3F(5,5,5));
+	Object player_object(engine.get_meshes().back().get(), engine.scene.get_objects().front().get_material(), Vector3F(), Vector3F(), Vector3F(5,5,5));
 	TrivialFunctor render_player([&](){if(engine.camera.has_perspective_projection()) return;player_object.render(engine.camera, &(engine.default_shader), wnd.get_width(), wnd.get_height());});
 	TrivialFunctor update_player_pos([&](){player_object.position = engine.camera.position;player_object.rotation = engine.camera.rotation;});
 	engine.add_update_command(&render_player);
@@ -125,7 +132,7 @@ void init()
 	
 	Shader shader_2d("../../../src/shaders/2D");
 	
-	Sprite test_plane(Vector2F(0.0f, 50.0f), 0.0f, Vector2F(10, 10), engine.scene.get_objects().front().get_textures().at(tz::graphics::TextureType::TEXTURE));
+	Sprite test_plane(Vector2F(0.0f, 50.0f), 0.0f, Vector2F(10, 10), const_cast<Texture*>(engine.scene.get_objects().front().get_material().get_texture()));
 	TrivialFunctor render_2d([&](){
 		test_plane.render(engine.camera, &(shader_2d), wnd.get_width(), wnd.get_height());
 		});

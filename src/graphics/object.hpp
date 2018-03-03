@@ -2,7 +2,7 @@
 #define OBJECT_HPP
 #include "mesh.hpp"
 #include "shader.hpp"
-#include "texture.hpp"
+#include "material.hpp"
 #include "camera.hpp"
 #include "physics/boundary.hpp"
 #include <variant>
@@ -41,14 +41,15 @@ protected:
 class Object
 {
 public:
-	Object(std::variant<const Mesh*, std::shared_ptr<const Mesh>> mesh, std::map<tz::graphics::TextureType, Texture*> textures, Vector3F position, Vector3F rotation, Vector3F scale);
+	Object(std::variant<const Mesh*, std::shared_ptr<const Mesh>> mesh, Material material, Vector3F position, Vector3F rotation, Vector3F scale);
 	Object(const Object& copy) = default;
 	Object(Object&& move) = default;
 	~Object() = default;
 	Object& operator=(const Object& rhs) = default;
 	
 	const Mesh& get_mesh() const;
-	const std::map<tz::graphics::TextureType, Texture*>& get_textures() const;
+	//const std::map<tz::graphics::TextureType, Texture*>& get_textures() const;
+	const Material& get_material() const;
 	/**
 	* Complexity: O(n) Ω(1) ϴ(n), where n =~ size of mesh data (will not return until GPU finishes processing)
 	*/
@@ -58,7 +59,7 @@ public:
 	Vector3F position, rotation, scale;
 protected:
 	std::variant<const Mesh*, std::shared_ptr<const Mesh>> mesh;
-	std::map<tz::graphics::TextureType, Texture*> textures;
+	Material material;
 };
 
 /**

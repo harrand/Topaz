@@ -11,14 +11,14 @@ Object tz::graphics::batch(const Collection<Object>& objects)
 		rotations.push_back(object.rotation - original_rotation);
 		scales.push_back(object.scale - original_scale);
 	}
-	return {std::make_shared<InstancedMesh>(objects.front().get_mesh().get_file_name(), positions, rotations, scales), objects.front().get_textures(), original_position, original_rotation, original_scale};
+	return {std::make_shared<InstancedMesh>(objects.front().get_mesh().get_file_name(), positions, rotations, scales), objects.front().get_material(), original_position, original_rotation, original_scale};
 }
 
 template <template <typename> class Collection>
 std::vector<Object> tz::graphics::batch_full(const Collection<Object>& objects)
 {
 	using mesh_cref_t = std::reference_wrapper<const Mesh>;
-	using textures_cref_t = std::reference_wrapper<const std::map<tz::graphics::TextureType, Texture*>>;
+	using textures_cref_t = std::reference_wrapper<const Material>;
 	auto useless_comparator = []([[maybe_unused]] auto lhs, [[maybe_unused]] auto rhs){return true;};
 	std::multimap<std::pair<mesh_cref_t, textures_cref_t>, std::size_t, std::function<bool(std::pair<mesh_cref_t, textures_cref_t>, std::pair<mesh_cref_t, textures_cref_t>)>> asset_mappings(useless_comparator);
 	// O(n log n)
@@ -26,7 +26,7 @@ std::vector<Object> tz::graphics::batch_full(const Collection<Object>& objects)
 	{
 		const Object& object = objects[i];
 		mesh_cref_t mesh_read = std::cref(object.get_mesh());
-		textures_cref_t textures_read = std::cref(object.get_textures());
+		textures_cref_t textures_read = std::cref(object.get_material());
 		asset_mappings.emplace(std::make_pair(mesh_read, textures_read), i);
 		// std::multimap::emplace is O(log n) where n == std::multimap::size();
 	}
