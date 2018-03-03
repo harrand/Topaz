@@ -66,6 +66,11 @@ void Material::bind(Shader& shader) const
 {
     if(this->has_texture())
         this->texture->bind(&shader, 0);
+    else
+    {
+        tz::util::log::error("Tried to bind a Material without a Texture. Materials MUST at least have a Texture applied.");
+        return;
+    }
     if(this->has_normal_map())
         this->normal_map->bind(&shader, 1);
     else

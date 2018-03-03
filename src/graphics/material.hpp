@@ -5,7 +5,7 @@
 class Material
 {
 public:
-    Material(Texture* texture, NormalMap* normal_map, ParallaxMap* parallax_map, DisplacementMap* displacement_map);
+    Material(Texture* texture, NormalMap* normal_map = nullptr, ParallaxMap* parallax_map = nullptr, DisplacementMap* displacement_map = nullptr);
     bool has_texture() const;
     const Texture* get_texture() const;
     bool has_normal_map() const;
