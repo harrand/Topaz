@@ -68,8 +68,14 @@ void Material::bind(Shader& shader) const
         this->texture->bind(&shader, 0);
     else
     {
-        tz::util::log::error("Tried to bind a Material without a Texture. Materials MUST at least have a Texture applied.");
-        return;
+        tz::util::log::warning("Tried to bind a Material without a Texture, attempting to use the default...");
+        if(tz::graphics::texture::default_texture != nullptr)
+                tz::graphics::texture::default_texture->bind(&shader, 0);
+        else
+        {
+            tz::util::log::error("Default Texture is not available, must abort this render call. Have you invoked tz::graphics::initialise() yet?");
+            return;
+        }
     }
     if(this->has_normal_map())
         this->normal_map->bind(&shader, 1);
