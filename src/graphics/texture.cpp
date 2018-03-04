@@ -31,11 +31,11 @@ Texture::Texture(std::string filename, bool mipmapping, bool gamma_corrected, bo
 	{
 		tz::util::log::error("Texture from the path: '", filename, "' could not be loaded.");
 	}
-	
+
 	glGenTextures(1, &(this->texture_handle));
 	// Let OGL know it's just a 2d texture.
 	glBindTexture(GL_TEXTURE_2D, this->texture_handle);
-	
+
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	if(mipmapping)
@@ -43,11 +43,11 @@ Texture::Texture(std::string filename, bool mipmapping, bool gamma_corrected, bo
 	else
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	
+
 	glTexImage2D(GL_TEXTURE_2D, 0, this->gamma_corrected ? GL_SRGB_ALPHA : GL_RGBA, this->width, this->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, imgdata);
 	if(mipmapping)
 		glGenerateMipmap(GL_TEXTURE_2D);
-	
+
 	if(store_bitmap)
 	{
 		this->bitmap = Bitmap<PixelRGBA>();
@@ -212,7 +212,7 @@ Bitmap<PixelRGBA> Texture::get_bitmap() const
 	return this->bitmap.value_or(Bitmap<PixelRGBA>());
 }
 
-bool Texture::operator==(const Texture& rhs)
+bool Texture::operator==(const Texture& rhs) const
 {
 	return this->texture_handle == rhs.texture_handle;
 }

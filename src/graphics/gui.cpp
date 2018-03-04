@@ -174,6 +174,10 @@ bool GUI::covered() const
 
 bool tz::graphics::initialised = false;
 bool tz::graphics::has_context = false;
+std::shared_ptr<Texture> tz::graphics::texture::default_texture = nullptr;
+std::shared_ptr<NormalMap> tz::graphics::texture::default_normal_map = nullptr;
+std::shared_ptr<ParallaxMap> tz::graphics::texture::default_parallax_map = nullptr;
+std::shared_ptr<DisplacementMap> tz::graphics::texture::default_displacement_map = nullptr;
 
 Window::Window(int w, int h, std::string title): GUI(0, 0, w, h, {}), title(std::move(title)), close_requested(false), focused_child(nullptr)
 {
@@ -195,6 +199,10 @@ Window::Window(int w, int h, std::string title): GUI(0, 0, w, h, {}), title(std:
 	tz::graphics::has_context = true;
 	if(!tz::graphics::initialised)
 		tz::graphics::initialise();
+	tz::graphics::texture::default_texture = std::make_shared<Texture>(Bitmap<PixelRGBA>(std::vector<PixelRGBA>({tz::graphics::default_texture_pixel, PixelRGBA(0, 0, 0, 255), PixelRGBA(0, 0, 0, 255), tz::graphics::default_texture_pixel}), 2, 2));
+	tz::graphics::texture::default_normal_map = std::make_shared<NormalMap>();
+	tz::graphics::texture::default_parallax_map = std::make_shared<ParallaxMap>();
+	tz::graphics::texture::default_displacement_map = std::make_shared<DisplacementMap>();
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_DEPTH_CLAMP);
 	glEnable(GL_CULL_FACE);

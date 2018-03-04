@@ -1,6 +1,6 @@
 #include "sprite.hpp"
 
-Sprite::Sprite(Vector2F position, float rotation, Vector2F scale, Texture* texture): Object2D(position, rotation, scale, Vector4F(0.0f, 0.0f, 0.0f, 1.0f)), texture(texture){}
+Sprite::Sprite(Vector2F position, float rotation, Vector2F scale, const Texture* texture): Object2D(position, rotation, scale, Vector4F(0.0f, 0.0f, 0.0f, 1.0f)), texture(texture){}
 
 Sprite::Sprite(Vector2F position, float rotation, Vector2F scale, Vector4F colour): Object2D(position, rotation, scale, colour), texture(nullptr){}
 

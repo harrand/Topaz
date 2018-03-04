@@ -15,6 +15,10 @@ Texture::Texture(Bitmap<Pixel> pixel_data): Texture(pixel_data.width, pixel_data
 		image_data.push_back(pixel.data.z);
 		image_data.push_back(pixel.data.w);
 	}
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, this->width, this->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image_data.data());
 	// Unbind the texture.
 	glBindTexture(GL_TEXTURE_2D, 0);
@@ -28,6 +32,7 @@ T* Texture::get_from_link(const std::string& texture_link, const std::vector<std
 		if(texture->get_file_name() == texture_link)
 			return texture.get();
 	}
+	tz::util::log::error("Texture link \"", texture_link, "\" could not be located. Anything using this texture will not render.");
 	return nullptr;
 }
 

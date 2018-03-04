@@ -127,6 +127,11 @@ private:
 	const unsigned int tps;
 	CommandExecutor update_command_executor, tick_command_executor;
 	bool update_due;
+public:
+	const Texture default_texture;
+	const NormalMap default_normal_map;
+	const ParallaxMap default_parallax_map;
+	const DisplacementMap default_displacement_map;
 };
 
 #endif

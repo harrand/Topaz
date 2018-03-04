@@ -20,10 +20,12 @@ namespace tz::graphics
 	*/
 	constexpr unsigned int maximum_framebuffer_attachments = std::min(GL_MAX_COLOR_ATTACHMENTS, 32);
 
+	constexpr Vector4<unsigned char> default_texture_colour = Vector4<unsigned char>(std::array<unsigned char, 4>({255, 0, 255, 255}));
     constexpr Vector4<unsigned char> default_normal_map_colour = Vector4<unsigned char>(std::array<unsigned char, 4>({128, 128, 255, 255}));
     constexpr Vector4<unsigned char> default_parallax_map_colour = Vector4<unsigned char>(std::array<unsigned char, 4>({128, 128, 128, 255}));
     constexpr Vector4<unsigned char> default_displacement_map_colour = Vector4<unsigned char>(std::array<unsigned char, 4>({0, 0, 0, 255}));
 
+	constexpr PixelRGBA default_texture_pixel = PixelRGBA(255, 0, 255, 255);
     constexpr PixelRGBA default_normal_map_pixel = PixelRGBA(128, 128, 255, 255);
     constexpr PixelRGBA default_parallax_map_pixel = PixelRGBA(128, 128, 128, 255);
     constexpr PixelRGBA default_displacement_map_pixel = PixelRGBA(0, 0, 0, 255);
@@ -94,7 +96,7 @@ public:
 	template<class T>
 	static T* get_from_link(const std::string& texture_link, const std::vector<std::unique_ptr<T>>& all_textures);
 	
-	bool operator==(const Texture& rhs);
+	bool operator==(const Texture& rhs) const;
 	friend class FrameBuffer;
 protected:
 	unsigned char* load_texture();
@@ -249,9 +251,10 @@ private:
 
 namespace tz::graphics::texture
 {
-    const NormalMap default_normal_map;
-    const ParallaxMap default_parallax_map;
-    const DisplacementMap default_displacement_map;
+	extern std::shared_ptr<Texture> default_texture;
+    extern std::shared_ptr<NormalMap> default_normal_map;
+    extern std::shared_ptr<ParallaxMap> default_parallax_map;
+    extern std::shared_ptr<DisplacementMap> default_displacement_map;
 }
 
 #include "texture.inl"

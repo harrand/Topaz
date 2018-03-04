@@ -132,10 +132,8 @@ void init()
 	
 	Shader shader_2d("../../../src/shaders/2D");
 	
-	Sprite test_plane(Vector2F(0.0f, 50.0f), 0.0f, Vector2F(10, 10), const_cast<Texture*>(engine.scene.get_objects().front().get_material().get_texture()));
-    Bitmap<PixelRGBA> single_green_pixel({tz::graphics::default_normal_map_pixel}, 1, 1);
-    Texture green_texture(single_green_pixel);
-	Sprite another_test_plane(Vector2F(0.0f, 50.0f), 0.0f, Vector2F(10, 10), &green_texture);
+	Sprite test_plane(Vector2F(0.0f, 50.0f), 0.0f, Vector2F(10, 10), engine.scene.get_objects().front().get_material().get_texture());
+	Sprite another_test_plane(Vector2F(0.0f, 50.0f), 0.0f, Vector2F(10, 10), tz::graphics::texture::default_texture.get());
 	TrivialFunctor render_2d([&](){
 		test_plane.render(engine.camera, &(shader_2d), wnd.get_width(), wnd.get_height());
         another_test_plane.render(engine.camera, &(shader_2d), wnd.get_width(), wnd.get_height());
