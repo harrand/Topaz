@@ -1,11 +1,23 @@
-#ifndef TOPAZ_MATERIAL_HPP
-#define TOPAZ_MATERIAL_HPP
+#ifndef MATERIAL_HPP
+#define MATERIAL_HPP
 #include "texture.hpp"
 
+/**
+ * Non-owning container for a tuple of Texture, NormalMap, ParallaxMap and DisplacementMap.
+ * Objects contain one of these for simplity's sake.
+ */
 class Material
 {
 public:
+    /*
+     * Constructs a Material referencing the parameters. All are optional, except from Texture. If nullptr is passed for Texture, the default texture will be used.
+     * If nullptr is used for any of the other parameters, default-variants shall be used.
+     */
     Material(Texture* texture, NormalMap* normal_map = nullptr, ParallaxMap* parallax_map = nullptr, DisplacementMap* displacement_map = nullptr);
+    /**
+     * Returns true if the texture component is not null.
+     * Note: This will return false if the default-texture was manually passed into the constructor, but true if nullptr was passed and the default-texture was inferred.
+     */
     bool has_texture() const;
     const Texture* get_texture() const;
     bool has_normal_map() const;
