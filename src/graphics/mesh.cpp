@@ -148,7 +148,7 @@ InstancedMesh::InstancedMesh(std::string filename, std::vector<Vector3F> positio
 	// Instance Positions
 	glGenBuffers(1, &this->positions_instance_vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, this->positions_instance_vbo);
-	glBufferData(GL_ARRAY_BUFFER, this->positions.size() * tz::util::sizeof_element(this->positions) * this->instance_quantity, this->positions.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, this->positions.size() * tz::util::sizeof_element(this->positions), this->positions.data(), GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	
 	glEnableVertexAttribArray(4);
@@ -159,7 +159,7 @@ InstancedMesh::InstancedMesh(std::string filename, std::vector<Vector3F> positio
 	// Instance Rotations
 	glGenBuffers(1, &this->rotations_instance_vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, this->rotations_instance_vbo);
-	glBufferData(GL_ARRAY_BUFFER, this->rotations.size() * tz::util::sizeof_element(this->rotations) * this->instance_quantity, this->rotations.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, this->rotations.size() * tz::util::sizeof_element(this->rotations), this->rotations.data(), GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	glBindBuffer(GL_ARRAY_BUFFER, this->rotations_instance_vbo);	
@@ -170,7 +170,7 @@ InstancedMesh::InstancedMesh(std::string filename, std::vector<Vector3F> positio
 	
 	glGenBuffers(1, &this->scales_instance_vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, this->scales_instance_vbo);
-	glBufferData(GL_ARRAY_BUFFER, this->scales.size() * tz::util::sizeof_element(this->scales) * this->instance_quantity, this->scales.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, this->scales.size() * tz::util::sizeof_element(this->scales), this->scales.data(), GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	
 	glBindBuffer(GL_ARRAY_BUFFER, this->scales_instance_vbo);
