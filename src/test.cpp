@@ -145,7 +145,7 @@ void init()
 	plane_texture_buffer.emplace_renderbuffer(GL_DEPTH_ATTACHMENT, 512, 512, GL_DEPTH_COMPONENT);
 	plane_texture_buffer.set_output_attachment(GL_COLOR_ATTACHMENT0);
 
-	engine.emplace_trivial_update_command([&](){if(key_listener.catch_key_pressed("H"))tz::util::log::message("harrapelord!");});
+	engine.emplace_trivial_tick_command([&](){if(key_listener.catch_key_pressed("H"))tz::util::log::message("harrapelord!");});
 	while(!engine.get_window().is_close_requested())
 	{
 		float multiplier = tz::util::cast::from_string<float>(MDLFile(engine.get_properties().get_tag("resources")).get_tag("speed"));

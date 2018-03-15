@@ -100,6 +100,10 @@ public:
 	*/
 	void add_tick_command(Command* cmd);
     //todo
+	template<typename Functor>
+	TrivialFunctor<Functor>* emplace_trivial_tick_command(Functor&& functor);
+	template<typename Functor, typename... FunctorParameters>
+	StaticFunctor<Functor, FunctorParameters...>* emplace_static_tick_command(Functor&& functor, FunctorParameters&&... parameters);
 	/**
 	* Remove a command from the tick command executor.
 	*/

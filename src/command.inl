@@ -29,6 +29,13 @@ TrivialFunctor<Functor>* CommandExecutor::emplace_trivial_command(Functor&& func
     return dynamic_cast<TrivialFunctor<Functor>*>(this->owned_commands.back().get());
 }
 
+template<typename Functor, typename... FunctorParameters>
+StaticFunctor<Functor, FunctorParameters...>* CommandExecutor::emplace_static_command(Functor&& functor, FunctorParameters&&... parameters)
+{
+	this->owned_commands.push_back(std::make_unique<StaticFunctor<Functor, FunctorParameters...>>(std::forward<Functor>(functor), std::forward<FunctorParameters>(parameters)...));
+	return dynamic_cast<StaticFunctor<Functor, FunctorParameters...>*>(this->owned_commands.back().get());
+}
+
 namespace tz::util::scheduler
 {
 	template<typename Functor>

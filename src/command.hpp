@@ -95,6 +95,8 @@ public:
 	//todo
     template<typename Functor>
     TrivialFunctor<Functor>* emplace_trivial_command(Functor&& functor);
+    template<typename Functor, typename... FunctorParameters>
+    StaticFunctor<Functor, FunctorParameters...>* emplace_static_command(Functor&& functor, FunctorParameters&&... parameters);
 	void deregister_command(Command* command);
 	void deregister_command(const std::string& command_name);
 	void operator()(const std::string& name, const std::vector<std::string>& args = std::vector<std::string>());
