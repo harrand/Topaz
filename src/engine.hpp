@@ -88,10 +88,11 @@ public:
 	* Add a custom command to the update comand executor.
 	*/
 	void add_update_command(Command* cmd);
-    //todo
     template<typename Functor>
     TrivialFunctor<Functor>* emplace_trivial_update_command(Functor&& functor);
-	/**
+    template<typename Functor, typename... FunctorParameters>
+    StaticFunctor<Functor, FunctorParameters...>* emplace_static_update_command(Functor&& functor, FunctorParameters&&... parameters);
+    /**
 	* Remove a command from the update command executor.
 	*/
 	void remove_update_command(Command* cmd);
@@ -99,7 +100,6 @@ public:
 	* Add a custom command to the tick command executor.
 	*/
 	void add_tick_command(Command* cmd);
-    //todo
 	template<typename Functor>
 	TrivialFunctor<Functor>* emplace_trivial_tick_command(Functor&& functor);
 	template<typename Functor, typename... FunctorParameters>

@@ -21,7 +21,6 @@ void StaticFunctor<Functor, FunctorParameters...>::operator()()
     std::apply(this->functor, this->parameters);
 }
 
-//todo
 template<typename Functor>
 TrivialFunctor<Functor>* CommandExecutor::emplace_trivial_command(Functor&& functor)
 {
