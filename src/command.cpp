@@ -41,9 +41,13 @@ void TrivialCommand::operator()()
 	this->operator()(std::vector<std::string>());
 }
 
-const std::unordered_set<Command*>& CommandExecutor::get_commands() const
+std::unordered_set<Command*> CommandExecutor::get_commands() const
 {
-	return this->commands;
+	// not simply return this->commands because we also want to include the owned commmands.
+	std::unordered_set<Command*> all_commands = this->commands;
+	for(auto& owned_cmd : this->owned_commands)
+		all_commands.insert(owned_cmd.get());
+	return all_commands;
 }
 
 void CommandExecutor::register_command(Command* command)
@@ -66,6 +70,9 @@ void CommandExecutor::deregister_command(const std::string& command_name)
 void CommandExecutor::operator()(const std::string& name, const std::vector<std::string>& args)
 {
 	for(auto command : this->commands)
+		if(command->get_name() == name)
+			(*command)(args);
+	for(auto& command : this->owned_commands)
 		if(command->get_name() == name)
 			(*command)(args);
 }

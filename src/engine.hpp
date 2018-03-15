@@ -88,6 +88,9 @@ public:
 	* Add a custom command to the update comand executor.
 	*/
 	void add_update_command(Command* cmd);
+    //todo
+    template<typename Functor>
+    TrivialFunctor<Functor>* emplace_trivial_update_command(Functor&& functor);
 	/**
 	* Remove a command from the update command executor.
 	*/
@@ -96,6 +99,7 @@ public:
 	* Add a custom command to the tick command executor.
 	*/
 	void add_tick_command(Command* cmd);
+    //todo
 	/**
 	* Remove a command from the tick command executor.
 	*/
@@ -133,5 +137,7 @@ public:
 	const ParallaxMap default_parallax_map;
 	const DisplacementMap default_displacement_map;
 };
+
+#include "engine.inl"
 
 #endif

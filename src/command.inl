@@ -21,6 +21,14 @@ void StaticFunctor<Functor, FunctorParameters...>::operator()()
     std::apply(this->functor, this->parameters);
 }
 
+//todo
+template<typename Functor>
+TrivialFunctor<Functor>* CommandExecutor::emplace_trivial_command(Functor&& functor)
+{
+    this->owned_commands.push_back(std::make_unique<TrivialFunctor<Functor>>(std::forward<Functor>(functor)));
+    return dynamic_cast<TrivialFunctor<Functor>*>(this->owned_commands.back().get());
+}
+
 namespace tz::util::scheduler
 {
 	template<typename Functor>

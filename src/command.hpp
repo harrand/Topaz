@@ -90,13 +90,17 @@ public:
 	CommandExecutor& operator=(const CommandExecutor& rhs) = default;
 	~CommandExecutor() = default;
 	
-	const std::unordered_set<Command*>& get_commands() const;
+	std::unordered_set<Command*> get_commands() const;
 	void register_command(Command* command);
+	//todo
+    template<typename Functor>
+    TrivialFunctor<Functor>* emplace_trivial_command(Functor&& functor);
 	void deregister_command(Command* command);
 	void deregister_command(const std::string& command_name);
 	void operator()(const std::string& name, const std::vector<std::string>& args = std::vector<std::string>());
 private:
 	std::unordered_set<Command*> commands;
+	std::vector<std::unique_ptr<Command>> owned_commands;
 };
 
 namespace tz::util::scheduler
