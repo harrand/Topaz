@@ -95,12 +95,6 @@ void init()
 		ParallaxMap* parallax_map = Texture::get_from_link<ParallaxMap>(random_parallaxmap_link, engine.get_parallax_maps());
 		DisplacementMap* displacement_map = Texture::get_from_link<DisplacementMap>(manager.resource_link("default_displacementmap"), engine.get_displacement_maps());
 		Material material(texture, normal_map, parallax_map, displacement_map);
-		/*
-        textures.emplace(tz::graphics::TextureType::TEXTURE, Texture::get_from_link<Texture>(random_texture_link, engine.get_textures()));
-        textures.emplace(tz::graphics::TextureType::NORMAL_MAP, Texture::get_from_link<NormalMap>(random_normalmap_link, engine.get_normal_maps()));
-        textures.emplace(tz::graphics::TextureType::PARALLAX_MAP, Texture::get_from_link<ParallaxMap>(random_parallaxmap_link, engine.get_parallax_maps()));
-        textures.emplace(tz::graphics::TextureType::DISPLACEMENT_MAP, Texture::get_from_link<DisplacementMap>(manager.resource_link("default_displacementmap"), engine.get_displacement_maps()));
-        */
         Object obj(tz::graphics::find_mesh(manager.resource_link("cube_hd"), engine.get_meshes()), material, engine.camera.position, engine.camera.rotation, Vector3F(40, 20, 40));
         bounds.push_back(tz::physics::bound_aabb(obj));
         engine.scene.add_object(obj);
@@ -117,14 +111,11 @@ void init()
 	save_scene_button.set_on_mouse_over(&pop_cmd);
 	
 	Skybox skybox("../../../res/runtime/models/skybox.obj", skybox_texture);
-	TrivialFunctor render_skybox([&](){skybox.render(engine.camera, skybox_shader, engine.get_meshes(), wnd.get_width(), wnd.get_height());});
-	engine.add_update_command(&render_skybox);
+	engine.emplace_trivial_update_command([&](){skybox.render(engine.camera, skybox_shader, engine.get_meshes(), wnd.get_width(), wnd.get_height());});
 	
 	Object player_object(engine.get_meshes().back().get(), engine.scene.get_objects().front().get_material(), Vector3F(), Vector3F(), Vector3F(5,5,5));
-	TrivialFunctor render_player([&](){if(engine.camera.has_perspective_projection()) return;player_object.render(engine.camera, &(engine.default_shader), wnd.get_width(), wnd.get_height());});
-	TrivialFunctor update_player_pos([&](){player_object.position = engine.camera.position;player_object.rotation = engine.camera.rotation;});
-	engine.add_update_command(&render_player);
-	engine.add_tick_command(&update_player_pos);
+	engine.emplace_trivial_update_command([&](){if(engine.camera.has_perspective_projection()) return;player_object.render(engine.camera, &(engine.default_shader), wnd.get_width(), wnd.get_height());});
+	engine.emplace_trivial_tick_command([&](){player_object.position = engine.camera.position;player_object.rotation = engine.camera.rotation;});
 	
 	bool on_ground = false;
 	const float a = 0.5f;
@@ -134,11 +125,10 @@ void init()
 	
 	Sprite test_plane(Vector2F(0.0f, 50.0f), 0.0f, Vector2F(10, 10), engine.scene.get_objects().front().get_material().get_texture());
 	Sprite another_test_plane(Vector2F(0.0f, 50.0f), 0.0f, Vector2F(10, 10), tz::graphics::texture::default_texture.get());
-	TrivialFunctor render_2d([&](){
-		test_plane.render(engine.camera, &(shader_2d), wnd.get_width(), wnd.get_height());
+	engine.emplace_trivial_update_command([&]() {
+        test_plane.render(engine.camera, &(shader_2d), wnd.get_width(), wnd.get_height());
         another_test_plane.render(engine.camera, &(shader_2d), wnd.get_width(), wnd.get_height());
-		});
-	engine.add_update_command(&render_2d);
+    });
 
 	FrameBuffer plane_texture_buffer(512, 512);
 	Texture& plane_texture = plane_texture_buffer.emplace_texture(GL_COLOR_ATTACHMENT0, 512, 512);
