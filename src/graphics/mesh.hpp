@@ -29,7 +29,7 @@ namespace tz::graphics
 class Mesh
 {
 public:
-	Mesh(std::string filename = "undefined.obj");
+	Mesh(std::string filename);
 	Mesh(const Vertex* vertices, std::size_t number_of_vertices, const unsigned int* indices, std::size_t number_of_indices);
 	Mesh(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices);
 	Mesh(const Mesh& copy) = default;

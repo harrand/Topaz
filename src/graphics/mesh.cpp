@@ -238,7 +238,7 @@ Mesh* tz::graphics::find_mesh(const std::string& mesh_link, const std::vector<st
 
 Mesh tz::graphics::create_quad(float x, float y, float width, float height)
 {
-	std::array<Vertex, 4> vertices({Vertex(Vector3F(x + -1 * width, y + -1 * height, 0), Vector2F(), Vector3F()), Vertex(Vector3F(x + -1 * width, y + 1 * height, 0), Vector2F(0, 1), Vector3F()), Vertex(Vector3F(x + 1 * width, y + 1 * height, 0), Vector2F(1, 1), Vector3F()), Vertex(Vector3F(x + 1 * width, y + -1 * height, 0), Vector2F(1, 0), Vector3F())});
+	std::array<Vertex, 4> vertices({Vertex({x - width, y - height, 0}, {}, {}), Vertex({x - width, y + height, 0}, {0, 1}, {}), Vertex({x + width, y + height, 0}, {1, 1}, {}), Vertex({x + width, y - height, 0}, {1, 0}, {})});
 	std::array<unsigned int, 6> indices({0, 1, 2, 0, 2, 3});
 	return {vertices.data(), vertices.size(), indices.data(), indices.size()};
 }
