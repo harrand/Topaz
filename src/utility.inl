@@ -61,11 +61,7 @@ namespace tz::util
 		
 		inline bool contains(const std::string& what, char withwhat)
 		{
-			const char* whatcstr = what.c_str();
-			for(std::size_t i = 0; i < what.length(); i++)
-				if(whatcstr[i] == withwhat)
-					return true;
-			return false;
+			return what.find(withwhat) != std::string::npos;
 		}
 		
 		inline std::vector<std::string> split_string(const std::string& s, const std::string& delim)

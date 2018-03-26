@@ -157,7 +157,8 @@ void init()
 		Camera behind = engine.camera;
 		behind.rotation.y = tz::consts::pi - behind.rotation.y;
 		engine.scene.render(behind, &(engine.default_shader), wnd.get_width(), wnd.get_height());
-		test_plane = Sprite(Vector2F(0.0f, 300.0f), tz::consts::pi, Vector2F(100, 100 / wnd.get_width() * wnd.get_height()), &plane_texture);
+        // placement-new re-alloc instead of re-assigning
+		new (&test_plane) Sprite(Vector2F(0.0f, 300.0f), tz::consts::pi, Vector2F(100, 100 / wnd.get_width() * wnd.get_height()), &plane_texture);
 		
 		if(engine.is_update_due())
 		{
