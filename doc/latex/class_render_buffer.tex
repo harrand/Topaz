@@ -1,0 +1,52 @@
+\hypertarget{class_render_buffer}{}\section{Render\+Buffer Class Reference}
+\label{class_render_buffer}\index{Render\+Buffer@{Render\+Buffer}}
+
+
+{\ttfamily \#include $<$texture.\+hpp$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_render_buffer_ad72813870de0738efd5d20ee9b7b221c}\label{class_render_buffer_ad72813870de0738efd5d20ee9b7b221c}} 
+{\bfseries Render\+Buffer} (int width, int height, G\+Lenum internal\+\_\+format=G\+L\+\_\+\+R\+G\+BA)
+\item 
+\mbox{\hyperlink{class_render_buffer_a697b503edabdcc004635382712ea3d22}{Render\+Buffer}} (const \mbox{\hyperlink{class_render_buffer}{Render\+Buffer}} \&copy)=delete
+\item 
+\mbox{\Hypertarget{class_render_buffer_aba3f5a8b6a083064f9e78eeb1f096d63}\label{class_render_buffer_aba3f5a8b6a083064f9e78eeb1f096d63}} 
+{\bfseries Render\+Buffer} (\mbox{\hyperlink{class_render_buffer}{Render\+Buffer}} \&\&move)
+\item 
+\mbox{\hyperlink{class_render_buffer}{Render\+Buffer}} \& \mbox{\hyperlink{class_render_buffer_a423e4e2601fdda62d63c8fc6a0bb791c}{operator=}} (const \mbox{\hyperlink{class_render_buffer}{Render\+Buffer}} \&rhs)=delete
+\end{DoxyCompactItemize}
+\subsection*{Friends}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_render_buffer_a7e815028687ed9f9e9e25851d8a17b27}\label{class_render_buffer_a7e815028687ed9f9e9e25851d8a17b27}} 
+class {\bfseries Frame\+Buffer}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Simple wrapper for an Open\+GL \mbox{\hyperlink{class_render_buffer}{Render\+Buffer}}. It\textquotesingle{}s just a P\+OD as they\textquotesingle{}re write-\/only. 
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{class_render_buffer_a697b503edabdcc004635382712ea3d22}\label{class_render_buffer_a697b503edabdcc004635382712ea3d22}} 
+\index{Render\+Buffer@{Render\+Buffer}!Render\+Buffer@{Render\+Buffer}}
+\index{Render\+Buffer@{Render\+Buffer}!Render\+Buffer@{Render\+Buffer}}
+\subsubsection{\texorpdfstring{Render\+Buffer()}{RenderBuffer()}}
+{\footnotesize\ttfamily Render\+Buffer\+::\+Render\+Buffer (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{class_render_buffer}{Render\+Buffer}} \&}]{copy }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [delete]}}
+
+Open\+GL Render\+Buffers are write-\/only, so cannot possibly read the data in which to copy or move. 
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_render_buffer_a423e4e2601fdda62d63c8fc6a0bb791c}\label{class_render_buffer_a423e4e2601fdda62d63c8fc6a0bb791c}} 
+\index{Render\+Buffer@{Render\+Buffer}!operator=@{operator=}}
+\index{operator=@{operator=}!Render\+Buffer@{Render\+Buffer}}
+\subsubsection{\texorpdfstring{operator=()}{operator=()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{class_render_buffer}{Render\+Buffer}}\& Render\+Buffer\+::operator= (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{class_render_buffer}{Render\+Buffer}} \&}]{rhs }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [delete]}}
+
+\mbox{\hyperlink{class_render_buffer_a423e4e2601fdda62d63c8fc6a0bb791c}{Render\+Buffer\+::operator=}} shall act like a pointer-\/copy; both share the same handle. However, when one dies the other becomes invalid, so this will be deleted too. 
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+src/graphics/texture.\+hpp\item 
+src/graphics/texture.\+cpp\end{DoxyCompactItemize}

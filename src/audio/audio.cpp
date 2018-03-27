@@ -3,7 +3,7 @@
 AudioClip::AudioClip(std::string filename): filename(std::move(filename)), audio_handle(Mix_LoadWAV(this->filename.c_str()))
 {
 	if(this->audio_handle == NULL)
-		tz::util::log::error("AudioClip instantiation caused one or more errors from filename '", filename, "'");
+		tz::util::log::error("AudioClip instantiation caused one or more errors from filename '", this->filename, "'");
 }
 
 AudioClip::AudioClip(const AudioClip& copy): AudioClip(copy.get_file_name()){}

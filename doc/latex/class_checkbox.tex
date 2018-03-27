@@ -1,0 +1,125 @@
+\hypertarget{class_checkbox}{}\section{Checkbox Class Reference}
+\label{class_checkbox}\index{Checkbox@{Checkbox}}
+
+
+{\ttfamily \#include $<$gui\+\_\+widget.\+hpp$>$}
+
+Inheritance diagram for Checkbox\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=3.000000cm]{class_checkbox}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_checkbox_aef583c2ed2cc9004aec3330f9b9d02a3}\label{class_checkbox_aef583c2ed2cc9004aec3330f9b9d02a3}} 
+{\bfseries Checkbox} (float x, float y, float width, float height, \mbox{\hyperlink{class_vector4}{Vector4F}} colour\+\_\+on, \mbox{\hyperlink{class_vector4}{Vector4F}} colour\+\_\+off, \mbox{\hyperlink{class_shader}{Shader}} \&shader, \mbox{\hyperlink{class_mouse_listener}{Mouse\+Listener}} \&mouse\+\_\+listener, bool ticked=false)
+\item 
+\mbox{\Hypertarget{class_checkbox_aeb1ef0bb330434f54a24ceb526b3d5cb}\label{class_checkbox_aeb1ef0bb330434f54a24ceb526b3d5cb}} 
+{\bfseries Checkbox} (const \mbox{\hyperlink{class_checkbox}{Checkbox}} \&copy)=default
+\item 
+\mbox{\Hypertarget{class_checkbox_aed2e4a8517f294ac7c4b0e7e6724a276}\label{class_checkbox_aed2e4a8517f294ac7c4b0e7e6724a276}} 
+{\bfseries Checkbox} (\mbox{\hyperlink{class_checkbox}{Checkbox}} \&\&move)=default
+\item 
+\mbox{\Hypertarget{class_checkbox_af3942086e15ceff6bf5ac59bef5fa4b7}\label{class_checkbox_af3942086e15ceff6bf5ac59bef5fa4b7}} 
+\mbox{\hyperlink{class_checkbox}{Checkbox}} \& {\bfseries operator=} (const \mbox{\hyperlink{class_checkbox}{Checkbox}} \&rhs)=default
+\item 
+\mbox{\Hypertarget{class_checkbox_a69c9fb9ce334fc8ff76c49447f1e002d}\label{class_checkbox_a69c9fb9ce334fc8ff76c49447f1e002d}} 
+virtual void {\bfseries update} () override
+\item 
+\mbox{\Hypertarget{class_checkbox_a2a2c82a9e8c95ad868ce85a60ba07292}\label{class_checkbox_a2a2c82a9e8c95ad868ce85a60ba07292}} 
+virtual bool {\bfseries focused} () const override
+\item 
+\mbox{\Hypertarget{class_checkbox_a63fc27bae94d81d4dee8cd2d0e474d2b}\label{class_checkbox_a63fc27bae94d81d4dee8cd2d0e474d2b}} 
+virtual bool {\bfseries is\+\_\+mouse\+\_\+sensitive} () const override
+\item 
+\mbox{\Hypertarget{class_checkbox_a6780c6fb30c8b7cec8b55943ec31f1f4}\label{class_checkbox_a6780c6fb30c8b7cec8b55943ec31f1f4}} 
+bool {\bfseries moused\+\_\+over} () const
+\item 
+\mbox{\Hypertarget{class_checkbox_a67e81d283ae9ead851c902572096bd99}\label{class_checkbox_a67e81d283ae9ead851c902572096bd99}} 
+bool {\bfseries clicked\+\_\+on} () const
+\item 
+const \mbox{\hyperlink{class_vector4}{Vector4F}} \& \mbox{\hyperlink{class_checkbox_accb44cc4cde3fe6ad7a88b27831fa37a}{get\+\_\+colour\+\_\+on}} () const
+\item 
+const \mbox{\hyperlink{class_vector4}{Vector4F}} \& \mbox{\hyperlink{class_checkbox_ac99d837db8754756bcaa417e96162844}{get\+\_\+colour\+\_\+off}} () const
+\item 
+\mbox{\hyperlink{class_vector4}{Vector4F}} \mbox{\hyperlink{class_checkbox_ada05d14b0502bc3534c83478b7bad8fb}{get\+\_\+colour}} () const
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_checkbox_ac423af3bf4b58bc68ce79392ce11b291}\label{class_checkbox_ac423af3bf4b58bc68ce79392ce11b291}} 
+bool {\bfseries value}
+\end{DoxyCompactItemize}
+\subsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_checkbox_a7d468fd5e0d9be7eeb498f511fa23f16}\label{class_checkbox_a7d468fd5e0d9be7eeb498f511fa23f16}} 
+bool {\bfseries is\+\_\+choice} () const
+\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_checkbox_adf8806f2b48dfe1d415d108f3ef5bc8c}\label{class_checkbox_adf8806f2b48dfe1d415d108f3ef5bc8c}} 
+\mbox{\hyperlink{class_vector4}{Vector4F}} {\bfseries colour\+\_\+on}
+\item 
+\mbox{\Hypertarget{class_checkbox_a09f7af816849a1b505af2e746847fcc4}\label{class_checkbox_a09f7af816849a1b505af2e746847fcc4}} 
+\mbox{\hyperlink{class_vector4}{Vector4F}} {\bfseries colour\+\_\+off}
+\item 
+\mbox{\Hypertarget{class_checkbox_a7cf00bf1e5b41dcf590e7e836e937ead}\label{class_checkbox_a7cf00bf1e5b41dcf590e7e836e937ead}} 
+\mbox{\hyperlink{class_mouse_listener}{Mouse\+Listener}} \& {\bfseries mouse\+\_\+listener}
+\item 
+\mbox{\Hypertarget{class_checkbox_af3cb6394e0b1d37a504ff4eaca946aa8}\label{class_checkbox_af3cb6394e0b1d37a504ff4eaca946aa8}} 
+bool {\bfseries just\+\_\+clicked}
+\item 
+\mbox{\Hypertarget{class_checkbox_afbbde2ae6d330fb75a26210642407b1f}\label{class_checkbox_afbbde2ae6d330fb75a26210642407b1f}} 
+bool {\bfseries just\+\_\+moused\+\_\+over}
+\item 
+\mbox{\hyperlink{class_checkbox_choice}{Checkbox\+Choice}} $\ast$ \mbox{\hyperlink{class_checkbox_adf30cd14778fdae212e6c97ec456a700}{choice\+\_\+parent}}
+\end{DoxyCompactItemize}
+\subsection*{Friends}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_checkbox_a4b620fd2be6bc41e03130fc79d3ee6a3}\label{class_checkbox_a4b620fd2be6bc41e03130fc79d3ee6a3}} 
+class {\bfseries Checkbox\+Choice}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Graphical representation of a mutable boolean. Use this to enable user-\/input for toggling booleans. 
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_checkbox_ada05d14b0502bc3534c83478b7bad8fb}\label{class_checkbox_ada05d14b0502bc3534c83478b7bad8fb}} 
+\index{Checkbox@{Checkbox}!get\+\_\+colour@{get\+\_\+colour}}
+\index{get\+\_\+colour@{get\+\_\+colour}!Checkbox@{Checkbox}}
+\subsubsection{\texorpdfstring{get\+\_\+colour()}{get\_colour()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{class_vector4}{Vector4F}} Checkbox\+::get\+\_\+colour (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+Retrieve the colour of the checkbox. The colour depends on whether the value is true or false. \mbox{\Hypertarget{class_checkbox_ac99d837db8754756bcaa417e96162844}\label{class_checkbox_ac99d837db8754756bcaa417e96162844}} 
+\index{Checkbox@{Checkbox}!get\+\_\+colour\+\_\+off@{get\+\_\+colour\+\_\+off}}
+\index{get\+\_\+colour\+\_\+off@{get\+\_\+colour\+\_\+off}!Checkbox@{Checkbox}}
+\subsubsection{\texorpdfstring{get\+\_\+colour\+\_\+off()}{get\_colour\_off()}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{class_vector4}{Vector4F}} \& Checkbox\+::get\+\_\+colour\+\_\+off (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+Get colour of the checkbox when the value is false. \mbox{\Hypertarget{class_checkbox_accb44cc4cde3fe6ad7a88b27831fa37a}\label{class_checkbox_accb44cc4cde3fe6ad7a88b27831fa37a}} 
+\index{Checkbox@{Checkbox}!get\+\_\+colour\+\_\+on@{get\+\_\+colour\+\_\+on}}
+\index{get\+\_\+colour\+\_\+on@{get\+\_\+colour\+\_\+on}!Checkbox@{Checkbox}}
+\subsubsection{\texorpdfstring{get\+\_\+colour\+\_\+on()}{get\_colour\_on()}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{class_vector4}{Vector4F}} \& Checkbox\+::get\+\_\+colour\+\_\+on (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+Get colour of the checkbox when the value is true. 
+
+\subsection{Member Data Documentation}
+\mbox{\Hypertarget{class_checkbox_adf30cd14778fdae212e6c97ec456a700}\label{class_checkbox_adf30cd14778fdae212e6c97ec456a700}} 
+\index{Checkbox@{Checkbox}!choice\+\_\+parent@{choice\+\_\+parent}}
+\index{choice\+\_\+parent@{choice\+\_\+parent}!Checkbox@{Checkbox}}
+\subsubsection{\texorpdfstring{choice\+\_\+parent}{choice\_parent}}
+{\footnotesize\ttfamily \mbox{\hyperlink{class_checkbox_choice}{Checkbox\+Choice}}$\ast$ Checkbox\+::choice\+\_\+parent\hspace{0.3cm}{\ttfamily [protected]}}
+
+choice\+\_\+parent is handled purely by the friend-\/class \mbox{\hyperlink{class_checkbox_choice}{Checkbox\+Choice}}. 
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+src/graphics/gui\+\_\+widget.\+hpp\item 
+src/graphics/gui\+\_\+widget.\+cpp\end{DoxyCompactItemize}

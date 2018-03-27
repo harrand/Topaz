@@ -1,0 +1,47 @@
+\hypertarget{namespacetz}{}\section{tz Namespace Reference}
+\label{namespacetz}\index{tz@{tz}}
+\subsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+ \mbox{\hyperlink{namespacetz_1_1transform}{transform}}
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{namespacetz_aeb2530fee0e452e5ba5f4d0d0ebaa797}{initialise}} ()
+\item 
+void \mbox{\hyperlink{namespacetz_a0a5d1e375e7e82fcd12a8b74b8012bae}{terminate}} ()
+\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{namespacetz_ad65b104d9b1d4740bf069e7d33a2da1d}\label{namespacetz_ad65b104d9b1d4740bf069e7d33a2da1d}} 
+constexpr char {\bfseries default\+\_\+properties\+\_\+path} \mbox{[}$\,$\mbox{]} = \char`\"{}properties.\+mdl\char`\"{}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Initialise and terminate tz audio module. This must be done appropriately to use any of the audio functionality. 
+
+\subsection{Function Documentation}
+\mbox{\Hypertarget{namespacetz_aeb2530fee0e452e5ba5f4d0d0ebaa797}\label{namespacetz_aeb2530fee0e452e5ba5f4d0d0ebaa797}} 
+\index{tz@{tz}!initialise@{initialise}}
+\index{initialise@{initialise}!tz@{tz}}
+\subsubsection{\texorpdfstring{initialise()}{initialise()}}
+{\footnotesize\ttfamily void tz\+::initialise (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+Invoke this to initialise all Topaz modules and be able to use all features. Note that a Topaz window must have been constructed at least once before the graphics module fully initialises.
+
+No audio works until this is executed. \mbox{\hyperlink{namespacetz_aeb2530fee0e452e5ba5f4d0d0ebaa797}{tz\+::initialise}} will invoke this automatically.
+
+Initialises the graphics component of Topaz. An Open\+GL window-\/context M\+U\+ST exist before this is executed. Topaz \mbox{\hyperlink{class_window}{Window}} constructor invokes this upon first invocation. If you are not using Topaz windows, you will have to invoke this yourself. If you are using Topaz windows, DO N\+OT T\+O\+U\+CH T\+H\+IS. \mbox{\Hypertarget{namespacetz_a0a5d1e375e7e82fcd12a8b74b8012bae}\label{namespacetz_a0a5d1e375e7e82fcd12a8b74b8012bae}} 
+\index{tz@{tz}!terminate@{terminate}}
+\index{terminate@{terminate}!tz@{tz}}
+\subsubsection{\texorpdfstring{terminate()}{terminate()}}
+{\footnotesize\ttfamily void tz\+::terminate (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+Invoke this to close all Topaz modules and free corresponding memory to prevent droplets Once this function is executed, most features will cease to work properly and will likely invoke undefined behaviour.
+
+Memory droplets will remain until this is executed. Audio will not work after this is invoked. \mbox{\hyperlink{namespacetz_a0a5d1e375e7e82fcd12a8b74b8012bae}{tz\+::terminate}} will invoke this automatically.
+
+Terminates and destroys all graphics components of Topaz. \mbox{\hyperlink{namespacetz_a0a5d1e375e7e82fcd12a8b74b8012bae}{tz\+::terminate}} will invoke this automatically. Only use this function if you do not wish to use \mbox{\hyperlink{namespacetz_a0a5d1e375e7e82fcd12a8b74b8012bae}{tz\+::terminate}} to terminate all features, but instead cherry-\/pick components like graphics. 

@@ -1,0 +1,94 @@
+\hypertarget{class_camera}{}\section{Camera Class Reference}
+\label{class_camera}\index{Camera@{Camera}}
+
+
+{\ttfamily \#include $<$camera.\+hpp$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_camera_a2041d5828822b4e012237cda28affb8f}\label{class_camera_a2041d5828822b4e012237cda28affb8f}} 
+{\bfseries Camera} (\mbox{\hyperlink{class_vector3}{Vector3F}} position=\mbox{\hyperlink{class_vector3}{Vector3F}}(), \mbox{\hyperlink{class_vector3}{Vector3F}} rotation=\mbox{\hyperlink{class_vector3}{Vector3F}}(), float fov=tz\+::graphics\+::default\+\_\+fov, float near\+\_\+clip=tz\+::graphics\+::default\+\_\+near\+\_\+clip, float far\+\_\+clip=tz\+::graphics\+::default\+\_\+far\+\_\+clip, bool perspective=true)
+\item 
+\mbox{\Hypertarget{class_camera_a621f4f13d34bc9d0c855c3acc46f9d5d}\label{class_camera_a621f4f13d34bc9d0c855c3acc46f9d5d}} 
+{\bfseries Camera} (const \mbox{\hyperlink{class_camera}{Camera}} \&copy)=default
+\item 
+\mbox{\Hypertarget{class_camera_a55c8441cefa78a68563aa2007bd8d922}\label{class_camera_a55c8441cefa78a68563aa2007bd8d922}} 
+{\bfseries Camera} (\mbox{\hyperlink{class_camera}{Camera}} \&\&move)=default
+\item 
+\mbox{\Hypertarget{class_camera_ac17030e12c64388e1234e9818de54fd8}\label{class_camera_ac17030e12c64388e1234e9818de54fd8}} 
+\mbox{\hyperlink{class_camera}{Camera}} \& {\bfseries operator=} (const \mbox{\hyperlink{class_camera}{Camera}} \&rhs)=default
+\item 
+\mbox{\hyperlink{class_vector3}{Vector3F}} \mbox{\hyperlink{class_camera_a862269b762daf00f14a5926d77331ec9}{forward}} () const
+\item 
+\mbox{\Hypertarget{class_camera_afe69d158ab2f83ed2a4376d031efc80b}\label{class_camera_afe69d158ab2f83ed2a4376d031efc80b}} 
+\mbox{\hyperlink{class_vector3}{Vector3F}} {\bfseries backward} () const
+\item 
+\mbox{\Hypertarget{class_camera_adc0b6b6acc31e820f499733a8b242fd6}\label{class_camera_adc0b6b6acc31e820f499733a8b242fd6}} 
+\mbox{\hyperlink{class_vector3}{Vector3F}} {\bfseries up} () const
+\item 
+\mbox{\Hypertarget{class_camera_aac84f1893c5e9d6fba4b808d28a76560}\label{class_camera_aac84f1893c5e9d6fba4b808d28a76560}} 
+\mbox{\hyperlink{class_vector3}{Vector3F}} {\bfseries down} () const
+\item 
+\mbox{\Hypertarget{class_camera_a5321fe15cd196021eea531de71f41e14}\label{class_camera_a5321fe15cd196021eea531de71f41e14}} 
+\mbox{\hyperlink{class_vector3}{Vector3F}} {\bfseries left} () const
+\item 
+\mbox{\Hypertarget{class_camera_a04a615c03274f5a4c7af4164032b24e8}\label{class_camera_a04a615c03274f5a4c7af4164032b24e8}} 
+\mbox{\hyperlink{class_vector3}{Vector3F}} {\bfseries right} () const
+\item 
+bool \mbox{\hyperlink{class_camera_a2c0432bd7e7e47d0e90d0fdf7d99a798}{is\+\_\+axis\+\_\+bound}} () const
+\item 
+\mbox{\Hypertarget{class_camera_a9f003408eb5324f88cca52221d825c8b}\label{class_camera_a9f003408eb5324f88cca52221d825c8b}} 
+void {\bfseries set\+\_\+axis\+\_\+bound} (bool axis\+\_\+bound)
+\item 
+\mbox{\Hypertarget{class_camera_a0faf690094effa7365ada339b6cb1751}\label{class_camera_a0faf690094effa7365ada339b6cb1751}} 
+bool {\bfseries has\+\_\+perspective\+\_\+projection} () const
+\item 
+\mbox{\Hypertarget{class_camera_af88ca0b5be539ddf342dbdd0e2fb0f78}\label{class_camera_af88ca0b5be539ddf342dbdd0e2fb0f78}} 
+void {\bfseries set\+\_\+has\+\_\+perspective\+\_\+projection} (bool perspective)
+\item 
+\mbox{\Hypertarget{class_camera_a97d7719189209c7f3976e838bf2bd6a7}\label{class_camera_a97d7719189209c7f3976e838bf2bd6a7}} 
+\mbox{\hyperlink{class_matrix4x4}{Matrix4x4}} {\bfseries projection} (float width, float height) const
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_camera_a24e0a32af9643efb3e81306e184417ea}\label{class_camera_a24e0a32af9643efb3e81306e184417ea}} 
+\mbox{\hyperlink{class_vector3}{Vector3F}} {\bfseries position}
+\item 
+\mbox{\Hypertarget{class_camera_a573539a21c05976f45ca9d1d1fab937d}\label{class_camera_a573539a21c05976f45ca9d1d1fab937d}} 
+\mbox{\hyperlink{class_vector3}{Vector3F}} {\bfseries rotation}
+\item 
+\mbox{\Hypertarget{class_camera_aff7393c9cfbccd7e369091f00008da93}\label{class_camera_aff7393c9cfbccd7e369091f00008da93}} 
+float {\bfseries fov}
+\item 
+\mbox{\Hypertarget{class_camera_a1a1001125f472d5aff8ca9b27c04675c}\label{class_camera_a1a1001125f472d5aff8ca9b27c04675c}} 
+float {\bfseries near\+\_\+clip}
+\item 
+\mbox{\Hypertarget{class_camera_af93067b3c46c4525dfdf1d192457c277}\label{class_camera_af93067b3c46c4525dfdf1d192457c277}} 
+float {\bfseries far\+\_\+clip}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Used to navigate the 3D scene such that all objects in the scene do not have to be moved in order to achieve motion. 
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_camera_a862269b762daf00f14a5926d77331ec9}\label{class_camera_a862269b762daf00f14a5926d77331ec9}} 
+\index{Camera@{Camera}!forward@{forward}}
+\index{forward@{forward}!Camera@{Camera}}
+\subsubsection{\texorpdfstring{forward()}{forward()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{class_vector3}{Vector3F}} Camera\+::forward (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+Orientation methods. \mbox{\Hypertarget{class_camera_a2c0432bd7e7e47d0e90d0fdf7d99a798}\label{class_camera_a2c0432bd7e7e47d0e90d0fdf7d99a798}} 
+\index{Camera@{Camera}!is\+\_\+axis\+\_\+bound@{is\+\_\+axis\+\_\+bound}}
+\index{is\+\_\+axis\+\_\+bound@{is\+\_\+axis\+\_\+bound}!Camera@{Camera}}
+\subsubsection{\texorpdfstring{is\+\_\+axis\+\_\+bound()}{is\_axis\_bound()}}
+{\footnotesize\ttfamily bool Camera\+::is\+\_\+axis\+\_\+bound (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+Axis-\/\+Bound \mbox{\hyperlink{class_camera}{Camera}} causes orientation methods to stick to their normal axes. Also prevents rotation in the x and z axis. 
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+src/camera.\+hpp\item 
+src/camera.\+cpp\end{DoxyCompactItemize}

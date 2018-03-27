@@ -1,0 +1,44 @@
+\hypertarget{class_trivial_functor}{}\section{Trivial\+Functor$<$ Functor $>$ Class Template Reference}
+\label{class_trivial_functor}\index{Trivial\+Functor$<$ Functor $>$@{Trivial\+Functor$<$ Functor $>$}}
+
+
+{\ttfamily \#include $<$command.\+hpp$>$}
+
+Inheritance diagram for Trivial\+Functor$<$ Functor $>$\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=3.000000cm]{class_trivial_functor}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_trivial_functor_ab5798bb2ea9fcdb5bf910662ac49c34c}\label{class_trivial_functor_ab5798bb2ea9fcdb5bf910662ac49c34c}} 
+{\bfseries Trivial\+Functor} (\mbox{\hyperlink{class_functor}{Functor}} \&\&functor)
+\item 
+\mbox{\Hypertarget{class_trivial_functor_a5f9b8d18c11a057c2b3e97703262d1e9}\label{class_trivial_functor_a5f9b8d18c11a057c2b3e97703262d1e9}} 
+virtual void {\bfseries operator()} () override
+\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_trivial_functor_a293617a9f9c35365e37237183c7e6fac}\label{class_trivial_functor_a293617a9f9c35365e37237183c7e6fac}} 
+\mbox{\hyperlink{class_functor}{Functor}} {\bfseries functor}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+\subsubsection*{template$<$typename Functor$>$\newline
+class Trivial\+Functor$<$ Functor $>$}
+
+Wrapper for a trivially-\/invokable object. Trivially-\/invokable objects contain a definition of \textquotesingle{}operator() const\textquotesingle{} taking no arguments. If the functor is not trivially invokable, you must use either a \mbox{\hyperlink{class_static_functor}{Static\+Functor}} or the \mbox{\hyperlink{class_functor}{Functor}} class. 
+\begin{DoxyTemplParams}{Template Parameters}
+{\em \mbox{\hyperlink{class_functor}{Functor}}} & -\/ \mbox{\hyperlink{class_functor}{Functor}} type, normally an anonymous class (lambda) \\
+\hline
+\end{DoxyTemplParams}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+src/command.\+hpp\item 
+src/command.\+inl\end{DoxyCompactItemize}

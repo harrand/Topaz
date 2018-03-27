@@ -1,0 +1,84 @@
+\hypertarget{class_mesh}{}\section{Mesh Class Reference}
+\label{class_mesh}\index{Mesh@{Mesh}}
+
+
+{\ttfamily \#include $<$mesh.\+hpp$>$}
+
+Inheritance diagram for Mesh\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_mesh}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_mesh_a921d7db7d2bd9bfd47db709b2bdd6b5c}\label{class_mesh_a921d7db7d2bd9bfd47db709b2bdd6b5c}} 
+{\bfseries Mesh} (std\+::string filename)
+\item 
+\mbox{\Hypertarget{class_mesh_ab432ad94f37ef92e72f13927cc44ecc1}\label{class_mesh_ab432ad94f37ef92e72f13927cc44ecc1}} 
+{\bfseries Mesh} (const \mbox{\hyperlink{class_vertex}{Vertex}} $\ast$vertices, std\+::size\+\_\+t number\+\_\+of\+\_\+vertices, const unsigned int $\ast$indices, std\+::size\+\_\+t number\+\_\+of\+\_\+indices)
+\item 
+\mbox{\Hypertarget{class_mesh_a1bfd1eb4e2530fe0fe46bf798a8b7ecd}\label{class_mesh_a1bfd1eb4e2530fe0fe46bf798a8b7ecd}} 
+{\bfseries Mesh} (const std\+::vector$<$ \mbox{\hyperlink{class_vertex}{Vertex}} $>$ \&vertices, const std\+::vector$<$ unsigned int $>$ \&indices)
+\item 
+\mbox{\Hypertarget{class_mesh_a3687e73537a656b1ada92df6f9930206}\label{class_mesh_a3687e73537a656b1ada92df6f9930206}} 
+{\bfseries Mesh} (const \mbox{\hyperlink{class_mesh}{Mesh}} \&copy)=default
+\item 
+\mbox{\Hypertarget{class_mesh_aa3e0309c79938d016646e14ae4406009}\label{class_mesh_aa3e0309c79938d016646e14ae4406009}} 
+{\bfseries Mesh} (\mbox{\hyperlink{class_mesh}{Mesh}} \&\&move)=default
+\item 
+\mbox{\Hypertarget{class_mesh_aa152c24d58ab422b6d6b24ad9be88a71}\label{class_mesh_aa152c24d58ab422b6d6b24ad9be88a71}} 
+\mbox{\hyperlink{class_mesh}{Mesh}} \& {\bfseries operator=} (const \mbox{\hyperlink{class_mesh}{Mesh}} \&rhs)=default
+\item 
+\mbox{\Hypertarget{class_mesh_afa09e7ec4e4b2b8846c462bc7f9a3a3e}\label{class_mesh_afa09e7ec4e4b2b8846c462bc7f9a3a3e}} 
+\mbox{\hyperlink{classtz_1_1graphics_1_1model_1_1_indexed_model}{tz\+::graphics\+::model\+::\+Indexed\+Model}} {\bfseries get\+\_\+indexed\+\_\+model} () const
+\item 
+\mbox{\Hypertarget{class_mesh_a613ac182bb9f0034dd51ddcbf00988f2}\label{class_mesh_a613ac182bb9f0034dd51ddcbf00988f2}} 
+const std\+::vector$<$ \mbox{\hyperlink{class_vector3}{Vector3F}} $>$ \& {\bfseries get\+\_\+positions} () const
+\item 
+\mbox{\Hypertarget{class_mesh_a902ec7b814fccfb3a15b94606a5fa9df}\label{class_mesh_a902ec7b814fccfb3a15b94606a5fa9df}} 
+const std\+::vector$<$ \mbox{\hyperlink{class_vector2}{Vector2F}} $>$ \& {\bfseries get\+\_\+texcoords} () const
+\item 
+\mbox{\Hypertarget{class_mesh_aa572cef8bcca33c5eb0240be4c83421d}\label{class_mesh_aa572cef8bcca33c5eb0240be4c83421d}} 
+const std\+::vector$<$ \mbox{\hyperlink{class_vector3}{Vector3F}} $>$ \& {\bfseries get\+\_\+normals} () const
+\item 
+\mbox{\Hypertarget{class_mesh_a4fcfee8b20fbd534bfeeb2c67a06c4df}\label{class_mesh_a4fcfee8b20fbd534bfeeb2c67a06c4df}} 
+const std\+::vector$<$ \mbox{\hyperlink{class_vector3}{Vector3F}} $>$ \& {\bfseries get\+\_\+tangents} () const
+\item 
+\mbox{\Hypertarget{class_mesh_ade35393b24319722a76fdfa608e33928}\label{class_mesh_ade35393b24319722a76fdfa608e33928}} 
+std\+::string {\bfseries get\+\_\+file\+\_\+name} () const
+\item 
+\mbox{\Hypertarget{class_mesh_a7efc4ae895a9fac0deda8c5c945c9497}\label{class_mesh_a7efc4ae895a9fac0deda8c5c945c9497}} 
+virtual void {\bfseries render} (bool patches, G\+Lenum mode=G\+L\+\_\+\+T\+R\+I\+A\+N\+G\+L\+ES) const
+\item 
+\mbox{\Hypertarget{class_mesh_a60ab059d5837a5a7bdf4beac14c19b55}\label{class_mesh_a60ab059d5837a5a7bdf4beac14c19b55}} 
+bool {\bfseries operator==} (const \mbox{\hyperlink{class_mesh}{Mesh}} \&rhs) const
+\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_mesh_acd6d79d8a54c6f310cbeccbd5726b942}\label{class_mesh_acd6d79d8a54c6f310cbeccbd5726b942}} 
+const std\+::string {\bfseries filename}
+\item 
+\mbox{\Hypertarget{class_mesh_a9cabf6b1628f877e6c37f55238c01cce}\label{class_mesh_a9cabf6b1628f877e6c37f55238c01cce}} 
+\mbox{\hyperlink{classtz_1_1graphics_1_1model_1_1_indexed_model}{tz\+::graphics\+::model\+::\+Indexed\+Model}} {\bfseries model}
+\item 
+\mbox{\Hypertarget{class_mesh_a5e3901e2d45063e199b701088b28a19c}\label{class_mesh_a5e3901e2d45063e199b701088b28a19c}} 
+G\+Luint {\bfseries vertex\+\_\+array\+\_\+object}
+\item 
+\mbox{\Hypertarget{class_mesh_aded7c34208b8999adf036b587c9aab1a}\label{class_mesh_aded7c34208b8999adf036b587c9aab1a}} 
+std\+::array$<$ G\+Luint, static\+\_\+cast$<$ std\+::size\+\_\+t $>$tz\+::graphics\+::\+Buffer\+Types\+::\+N\+U\+M\+\_\+\+B\+U\+F\+F\+E\+RS)$>$ {\bfseries vbo\+\_\+buffers}
+\item 
+\mbox{\Hypertarget{class_mesh_a426c8e3e3f8b0f11fc0edcf46e39f87b}\label{class_mesh_a426c8e3e3f8b0f11fc0edcf46e39f87b}} 
+unsigned int {\bfseries render\+\_\+count}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Lowest-\/level renderable class that Topaz offers. All renderable Topaz classes such as Object3D contain these. Holds 3D vertex data, from a Wavefront O\+BJ model, for example. Use this if you have an existing shader you can use to draw manually. 
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+src/graphics/mesh.\+hpp\item 
+src/graphics/mesh.\+cpp\end{DoxyCompactItemize}

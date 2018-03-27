@@ -1,0 +1,63 @@
+\hypertarget{class_bounding_plane}{}\section{Bounding\+Plane Class Reference}
+\label{class_bounding_plane}\index{Bounding\+Plane@{Bounding\+Plane}}
+
+
+{\ttfamily \#include $<$boundary.\+hpp$>$}
+
+Inheritance diagram for Bounding\+Plane\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_bounding_plane}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_bounding_plane_a8d0f14beb814c929ed3322b22f662917}\label{class_bounding_plane_a8d0f14beb814c929ed3322b22f662917}} 
+{\bfseries Bounding\+Plane} (\mbox{\hyperlink{class_vector3}{Vector3F}} normal, float distance)
+\item 
+\mbox{\Hypertarget{class_bounding_plane_a007cc683824c23bc818b2f3584ce5386}\label{class_bounding_plane_a007cc683824c23bc818b2f3584ce5386}} 
+{\bfseries Bounding\+Plane} (const \mbox{\hyperlink{class_bounding_plane}{Bounding\+Plane}} \&copy)=default
+\item 
+\mbox{\Hypertarget{class_bounding_plane_af1db7dfae2ab49d62f73eb7db3f39e29}\label{class_bounding_plane_af1db7dfae2ab49d62f73eb7db3f39e29}} 
+{\bfseries Bounding\+Plane} (\mbox{\hyperlink{class_bounding_plane}{Bounding\+Plane}} \&\&move)=default
+\item 
+\mbox{\Hypertarget{class_bounding_plane_adbb48a97748ef40bb761a2018f1d2473}\label{class_bounding_plane_adbb48a97748ef40bb761a2018f1d2473}} 
+\mbox{\hyperlink{class_bounding_plane}{Bounding\+Plane}} \& {\bfseries operator=} (const \mbox{\hyperlink{class_bounding_plane}{Bounding\+Plane}} \&rhs)=default
+\item 
+\mbox{\Hypertarget{class_bounding_plane_a7c656534126a09de2768bffe9cdc5964}\label{class_bounding_plane_a7c656534126a09de2768bffe9cdc5964}} 
+const \mbox{\hyperlink{class_vector3}{Vector3F}} \& {\bfseries get\+\_\+normal} () const
+\item 
+\mbox{\Hypertarget{class_bounding_plane_ac34d406c0f223d599a7b7aad49d4cb54}\label{class_bounding_plane_ac34d406c0f223d599a7b7aad49d4cb54}} 
+float {\bfseries get\+\_\+distance} () const
+\item 
+\mbox{\Hypertarget{class_bounding_plane_aa271e305ed07117a8c82eedf1fd0f037}\label{class_bounding_plane_aa271e305ed07117a8c82eedf1fd0f037}} 
+\mbox{\hyperlink{class_bounding_plane}{Bounding\+Plane}} {\bfseries normalised} () const
+\item 
+\mbox{\Hypertarget{class_bounding_plane_af55931eb0667bcfaa91db85abcddc7a6}\label{class_bounding_plane_af55931eb0667bcfaa91db85abcddc7a6}} 
+bool {\bfseries intersects} (const \mbox{\hyperlink{class_bounding_sphere}{Bounding\+Sphere}} \&other) const
+\item 
+virtual bool \mbox{\hyperlink{class_bounding_plane_a3d956121121f32384cab3cab34544d6e}{intersects}} (\mbox{\hyperlink{class_boundary}{Boundary}} $\ast$other\+\_\+boundary) const override
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Used to bound planes. Useful for objects such as walls or floors. 
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_bounding_plane_a3d956121121f32384cab3cab34544d6e}\label{class_bounding_plane_a3d956121121f32384cab3cab34544d6e}} 
+\index{Bounding\+Plane@{Bounding\+Plane}!intersects@{intersects}}
+\index{intersects@{intersects}!Bounding\+Plane@{Bounding\+Plane}}
+\subsubsection{\texorpdfstring{intersects()}{intersects()}}
+{\footnotesize\ttfamily virtual bool Bounding\+Plane\+::intersects (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_boundary}{Boundary}} $\ast$}]{other\+\_\+boundary }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+Pure virtual. Override this if you want to make your own Boundaries. 
+
+Implements \mbox{\hyperlink{class_boundary_a364909bdfa4a4945f974c34a39e198cc}{Boundary}}.
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+src/physics/boundary.\+hpp\item 
+src/physics/boundary.\+cpp\end{DoxyCompactItemize}

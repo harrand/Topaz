@@ -1,0 +1,126 @@
+\hypertarget{class_quaternion}{}\section{Quaternion Class Reference}
+\label{class_quaternion}\index{Quaternion@{Quaternion}}
+
+
+{\ttfamily \#include $<$quaternion.\+hpp$>$}
+
+Inheritance diagram for Quaternion\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=4.000000cm]{class_quaternion}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_quaternion_a2f9345c4e4ea54370b26cce4d5b075c2}{Quaternion}} (\mbox{\hyperlink{class_vector3}{Vector3F}} rotation\+\_\+axis=\mbox{\hyperlink{class_vector3}{Vector3F}}(), float angle=0.\+0f)
+\item 
+\mbox{\hyperlink{class_quaternion_a51e4c3b86a987b3c4b3172dac812369f}{Quaternion}} (\mbox{\hyperlink{class_vector3}{Vector3F}} euler\+\_\+rotation)
+\item 
+\mbox{\hyperlink{class_quaternion_a2d6a1e75c5e91321c0afef7e3ed1b354}{Quaternion}} (\mbox{\hyperlink{class_matrix4x4}{Matrix4x4}} rotational\+\_\+matrix)
+\item 
+\mbox{\Hypertarget{class_quaternion_aca6deeefa6b6de44aa8e8dd124c6d1ab}\label{class_quaternion_aca6deeefa6b6de44aa8e8dd124c6d1ab}} 
+float {\bfseries get\+\_\+angle} () const
+\item 
+\mbox{\Hypertarget{class_quaternion_ac39a2d53becfbfffe19e374acb33279d}\label{class_quaternion_ac39a2d53becfbfffe19e374acb33279d}} 
+\mbox{\hyperlink{class_vector3}{Vector3F}} {\bfseries get\+\_\+rotation\+\_\+axis} () const
+\item 
+\mbox{\hyperlink{class_matrix4x4}{Matrix4x4}} \mbox{\hyperlink{class_quaternion_ae0309902fc8b7d8aa1f4075a73fee928}{to\+\_\+matrix}} () const
+\item 
+\mbox{\Hypertarget{class_quaternion_a17008499e6d53e974ee4de8bbbe0cd93}\label{class_quaternion_a17008499e6d53e974ee4de8bbbe0cd93}} 
+\mbox{\hyperlink{class_quaternion}{Quaternion}} {\bfseries normalised} () const
+\item 
+\mbox{\hyperlink{class_quaternion}{Quaternion}} \mbox{\hyperlink{class_quaternion_a38f69dc61e527847ab14b5b6aea5364a}{inverse}} () const
+\item 
+\mbox{\hyperlink{class_quaternion}{Quaternion}} \mbox{\hyperlink{class_quaternion_aff7a0a5aeea4a3fe860cb90a649e389c}{operator-\/}} () const
+\item 
+\mbox{\hyperlink{class_matrix4x4}{Matrix4x4}} \mbox{\hyperlink{class_quaternion_afe406f4a387794c924b0459b9514c68d}{operator()}} () const
+\item 
+\mbox{\hyperlink{class_quaternion_a31f2b4a704b8ba5b677d0cf7ecec163d}{operator Matrix4x4}} () const
+\item 
+\mbox{\hyperlink{class_quaternion}{Quaternion}} \mbox{\hyperlink{class_quaternion_a7cc9bf508bfd8d521a0d246a2cb47194}{operator$\ast$}} (const \mbox{\hyperlink{class_quaternion}{Quaternion}} \&rhs) const
+\item 
+\mbox{\Hypertarget{class_quaternion_af19d7a5554539ad967b8c913939dacb6}\label{class_quaternion_af19d7a5554539ad967b8c913939dacb6}} 
+\mbox{\hyperlink{class_quaternion}{Quaternion}} {\bfseries operator$\ast$} (float scalar) const
+\item 
+\mbox{\Hypertarget{class_quaternion_abf1b9fe3ab980e5c97ff0f89c7da9a76}\label{class_quaternion_abf1b9fe3ab980e5c97ff0f89c7da9a76}} 
+\mbox{\hyperlink{class_quaternion}{Quaternion}} {\bfseries operator/} (float scalar) const
+\item 
+\mbox{\hyperlink{class_vector4}{Vector4F}} \mbox{\hyperlink{class_quaternion_af0ec7fb0212b1761149d9bd36bf87455}{operator$\ast$}} (const \mbox{\hyperlink{class_vector3}{Vector3F}} \&vector) const
+\end{DoxyCompactItemize}
+\subsection*{Additional Inherited Members}
+
+
+\subsection{Detailed Description}
+Represents 3D rotations. Implicitly convertible to a \mbox{\hyperlink{class_matrix4x4}{Matrix4x4}} representing a rotational-\/matrix. 
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{class_quaternion_a2f9345c4e4ea54370b26cce4d5b075c2}\label{class_quaternion_a2f9345c4e4ea54370b26cce4d5b075c2}} 
+\index{Quaternion@{Quaternion}!Quaternion@{Quaternion}}
+\index{Quaternion@{Quaternion}!Quaternion@{Quaternion}}
+\subsubsection{\texorpdfstring{Quaternion()}{Quaternion()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
+{\footnotesize\ttfamily Quaternion\+::\+Quaternion (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_vector3}{Vector3F}}}]{rotation\+\_\+axis = {\ttfamily \mbox{\hyperlink{class_vector3}{Vector3F}}()},  }\item[{float}]{angle = {\ttfamily 0.0f} }\end{DoxyParamCaption})}
+
+Construct \mbox{\hyperlink{class_quaternion}{Quaternion}} from a rotation axis and an angle about the axis. \mbox{\Hypertarget{class_quaternion_a51e4c3b86a987b3c4b3172dac812369f}\label{class_quaternion_a51e4c3b86a987b3c4b3172dac812369f}} 
+\index{Quaternion@{Quaternion}!Quaternion@{Quaternion}}
+\index{Quaternion@{Quaternion}!Quaternion@{Quaternion}}
+\subsubsection{\texorpdfstring{Quaternion()}{Quaternion()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
+{\footnotesize\ttfamily Quaternion\+::\+Quaternion (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_vector3}{Vector3F}}}]{euler\+\_\+rotation }\end{DoxyParamCaption})}
+
+Construct \mbox{\hyperlink{class_quaternion}{Quaternion}} from three rotations in euler angles about the three spatial dimensions. \mbox{\Hypertarget{class_quaternion_a2d6a1e75c5e91321c0afef7e3ed1b354}\label{class_quaternion_a2d6a1e75c5e91321c0afef7e3ed1b354}} 
+\index{Quaternion@{Quaternion}!Quaternion@{Quaternion}}
+\index{Quaternion@{Quaternion}!Quaternion@{Quaternion}}
+\subsubsection{\texorpdfstring{Quaternion()}{Quaternion()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
+{\footnotesize\ttfamily Quaternion\+::\+Quaternion (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_matrix4x4}{Matrix4x4}}}]{rotational\+\_\+matrix }\end{DoxyParamCaption})}
+
+Construct \mbox{\hyperlink{class_quaternion}{Quaternion}} from an existing rotational matrix. 
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_quaternion_a38f69dc61e527847ab14b5b6aea5364a}\label{class_quaternion_a38f69dc61e527847ab14b5b6aea5364a}} 
+\index{Quaternion@{Quaternion}!inverse@{inverse}}
+\index{inverse@{inverse}!Quaternion@{Quaternion}}
+\subsubsection{\texorpdfstring{inverse()}{inverse()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{class_quaternion}{Quaternion}} Quaternion\+::inverse (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+Just the same as the conjugate of the normalised. \mbox{\Hypertarget{class_quaternion_a31f2b4a704b8ba5b677d0cf7ecec163d}\label{class_quaternion_a31f2b4a704b8ba5b677d0cf7ecec163d}} 
+\index{Quaternion@{Quaternion}!operator Matrix4x4@{operator Matrix4x4}}
+\index{operator Matrix4x4@{operator Matrix4x4}!Quaternion@{Quaternion}}
+\subsubsection{\texorpdfstring{operator Matrix4x4()}{operator Matrix4x4()}}
+{\footnotesize\ttfamily Quaternion\+::operator \mbox{\hyperlink{class_matrix4x4}{Matrix4x4}} (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+Enable implicit/explicit conversion to the \mbox{\hyperlink{class_matrix4x4}{Matrix4x4}} component (via \mbox{\hyperlink{class_quaternion_ae0309902fc8b7d8aa1f4075a73fee928}{Quaternion\+::to\+\_\+matrix()}}) \mbox{\Hypertarget{class_quaternion_afe406f4a387794c924b0459b9514c68d}\label{class_quaternion_afe406f4a387794c924b0459b9514c68d}} 
+\index{Quaternion@{Quaternion}!operator()@{operator()}}
+\index{operator()@{operator()}!Quaternion@{Quaternion}}
+\subsubsection{\texorpdfstring{operator()()}{operator()()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{class_matrix4x4}{Matrix4x4}} Quaternion\+::operator() (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+\mbox{\hyperlink{class_quaternion}{Quaternion}} functor returns the Matrix (via \mbox{\hyperlink{class_quaternion_ae0309902fc8b7d8aa1f4075a73fee928}{Quaternion\+::to\+\_\+matrix()}}) \mbox{\Hypertarget{class_quaternion_a7cc9bf508bfd8d521a0d246a2cb47194}\label{class_quaternion_a7cc9bf508bfd8d521a0d246a2cb47194}} 
+\index{Quaternion@{Quaternion}!operator$\ast$@{operator$\ast$}}
+\index{operator$\ast$@{operator$\ast$}!Quaternion@{Quaternion}}
+\subsubsection{\texorpdfstring{operator$\ast$()}{operator*()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{class_quaternion}{Quaternion}} Quaternion\+::operator$\ast$ (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{class_quaternion}{Quaternion}} \&}]{rhs }\end{DoxyParamCaption}) const}
+
+Combine quaternion rotations. \mbox{\Hypertarget{class_quaternion_af0ec7fb0212b1761149d9bd36bf87455}\label{class_quaternion_af0ec7fb0212b1761149d9bd36bf87455}} 
+\index{Quaternion@{Quaternion}!operator$\ast$@{operator$\ast$}}
+\index{operator$\ast$@{operator$\ast$}!Quaternion@{Quaternion}}
+\subsubsection{\texorpdfstring{operator$\ast$()}{operator*()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{class_vector4}{Vector4F}} Quaternion\+::operator$\ast$ (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{class_vector3}{Vector3F}} \&}]{vector }\end{DoxyParamCaption}) const}
+
+Rotate a vector by a quaternion. Does not work for homogeneous coordinates; convert to a rotational matrix if you need to do that. \mbox{\Hypertarget{class_quaternion_aff7a0a5aeea4a3fe860cb90a649e389c}\label{class_quaternion_aff7a0a5aeea4a3fe860cb90a649e389c}} 
+\index{Quaternion@{Quaternion}!operator-\/@{operator-\/}}
+\index{operator-\/@{operator-\/}!Quaternion@{Quaternion}}
+\subsubsection{\texorpdfstring{operator-\/()}{operator-()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{class_quaternion}{Quaternion}} Quaternion\+::operator-\/ (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+Unary operator-\/ is the same as getting the conjugate of the \mbox{\hyperlink{class_quaternion}{Quaternion}} (reversing the polarity A\+KA getting opposite direction of the original rotation axis) \mbox{\Hypertarget{class_quaternion_ae0309902fc8b7d8aa1f4075a73fee928}\label{class_quaternion_ae0309902fc8b7d8aa1f4075a73fee928}} 
+\index{Quaternion@{Quaternion}!to\+\_\+matrix@{to\+\_\+matrix}}
+\index{to\+\_\+matrix@{to\+\_\+matrix}!Quaternion@{Quaternion}}
+\subsubsection{\texorpdfstring{to\+\_\+matrix()}{to\_matrix()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{class_matrix4x4}{Matrix4x4}} Quaternion\+::to\+\_\+matrix (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+Convert the \mbox{\hyperlink{class_quaternion}{Quaternion}} to a row-\/major rotational matrix. 
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+src/quaternion.\+hpp\item 
+src/quaternion.\+cpp\end{DoxyCompactItemize}

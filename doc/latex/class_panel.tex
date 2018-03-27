@@ -1,0 +1,87 @@
+\hypertarget{class_panel}{}\section{Panel Class Reference}
+\label{class_panel}\index{Panel@{Panel}}
+
+
+{\ttfamily \#include $<$gui\+\_\+display.\+hpp$>$}
+
+Inheritance diagram for Panel\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=4.000000cm]{class_panel}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_panel_aafa4aa5f39fb3f832e2f1585ecbce0e9}\label{class_panel_aafa4aa5f39fb3f832e2f1585ecbce0e9}} 
+{\bfseries Panel} (float x, float y, float width, float height, \mbox{\hyperlink{class_vector4}{Vector4F}} colour, \mbox{\hyperlink{class_shader}{Shader}} \&shader)
+\item 
+\mbox{\Hypertarget{class_panel_a84ba0db4d814ef07d1ee0fb23b616936}\label{class_panel_a84ba0db4d814ef07d1ee0fb23b616936}} 
+{\bfseries Panel} (const \mbox{\hyperlink{class_panel}{Panel}} \&copy)=default
+\item 
+\mbox{\Hypertarget{class_panel_a94a994d69720e94a80e20a1a49acf073}\label{class_panel_a94a994d69720e94a80e20a1a49acf073}} 
+{\bfseries Panel} (\mbox{\hyperlink{class_panel}{Panel}} \&\&move)=default
+\item 
+\mbox{\Hypertarget{class_panel_a1280c41ee69aaf8ce9c36c10f691bbda}\label{class_panel_a1280c41ee69aaf8ce9c36c10f691bbda}} 
+\mbox{\hyperlink{class_panel}{Panel}} \& {\bfseries operator=} (const \mbox{\hyperlink{class_panel}{Panel}} \&rhs)=default
+\item 
+\mbox{\Hypertarget{class_panel_ace1342ef6e7c0f73a44e380356ce5e28}\label{class_panel_ace1342ef6e7c0f73a44e380356ce5e28}} 
+const \mbox{\hyperlink{class_vector4}{Vector4F}} \& {\bfseries get\+\_\+colour} () const
+\item 
+\mbox{\Hypertarget{class_panel_af23b45cbf03066f1a1d884486ca00712}\label{class_panel_af23b45cbf03066f1a1d884486ca00712}} 
+void {\bfseries set\+\_\+colour} (\mbox{\hyperlink{class_vector4}{Vector4F}} colour)
+\item 
+\mbox{\Hypertarget{class_panel_a938f8a6b4038c5ebd43468ff7c6279c6}\label{class_panel_a938f8a6b4038c5ebd43468ff7c6279c6}} 
+const \mbox{\hyperlink{class_texture}{Texture}} $\ast$ {\bfseries get\+\_\+texture} () const
+\item 
+\mbox{\Hypertarget{class_panel_aecd67bfb730ba8e0afd331b5c25c0e83}\label{class_panel_aecd67bfb730ba8e0afd331b5c25c0e83}} 
+void {\bfseries set\+\_\+texture} (\mbox{\hyperlink{class_texture}{Texture}} $\ast$texture)
+\item 
+\mbox{\Hypertarget{class_panel_a126b9ac55e35e3530f01614f285e0eea}\label{class_panel_a126b9ac55e35e3530f01614f285e0eea}} 
+void {\bfseries disable\+\_\+texture} ()
+\item 
+\mbox{\Hypertarget{class_panel_a3df9165a8d21073e92090937122a790b}\label{class_panel_a3df9165a8d21073e92090937122a790b}} 
+bool {\bfseries has\+\_\+texture} () const
+\item 
+\mbox{\Hypertarget{class_panel_a9e9c0608cf3139833cde6b73dc3ba443}\label{class_panel_a9e9c0608cf3139833cde6b73dc3ba443}} 
+virtual void {\bfseries update} () override
+\item 
+\mbox{\Hypertarget{class_panel_ac21884693c47ee069feb9e963f00e9af}\label{class_panel_ac21884693c47ee069feb9e963f00e9af}} 
+virtual void {\bfseries destroy} () override
+\item 
+\mbox{\Hypertarget{class_panel_ace2217419ea5c2e98a38678c6e2012e1}\label{class_panel_ace2217419ea5c2e98a38678c6e2012e1}} 
+virtual bool {\bfseries focused} () const override
+\item 
+\mbox{\Hypertarget{class_panel_a9a30fff40fad1f0845c0c7aa2786f772}\label{class_panel_a9a30fff40fad1f0845c0c7aa2786f772}} 
+virtual bool {\bfseries is\+\_\+window} () const override
+\item 
+\mbox{\Hypertarget{class_panel_a607fe6e1be6fd056f199fa817a4dedda}\label{class_panel_a607fe6e1be6fd056f199fa817a4dedda}} 
+virtual bool {\bfseries is\+\_\+mouse\+\_\+sensitive} () const override
+\end{DoxyCompactItemize}
+\subsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_panel_a9f81e58fd5b3d441a145d3aa5e222293}\label{class_panel_a9f81e58fd5b3d441a145d3aa5e222293}} 
+void {\bfseries render\+\_\+panel} (\mbox{\hyperlink{class_vector4}{Vector4F}} colour, bool update=true)
+\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_panel_a682c2d8747451954095eb567b45d3fbd}\label{class_panel_a682c2d8747451954095eb567b45d3fbd}} 
+\mbox{\hyperlink{class_texture}{Texture}} $\ast$ {\bfseries texture}
+\item 
+\mbox{\Hypertarget{class_panel_a7c38e08ad80eb9972428450fb639bf66}\label{class_panel_a7c38e08ad80eb9972428450fb639bf66}} 
+\mbox{\hyperlink{class_vector4}{Vector4F}} {\bfseries colour}
+\item 
+\mbox{\Hypertarget{class_panel_a3567eff819cd864ee8b6cbce5c01b274}\label{class_panel_a3567eff819cd864ee8b6cbce5c01b274}} 
+\mbox{\hyperlink{class_mesh}{Mesh}} {\bfseries quad}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+A 2D plane rendered on the screen. Can contain any other gui element in its own region. Can have a texture bound, but does not by default. 
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+src/graphics/gui\+\_\+display.\+hpp\item 
+src/graphics/gui\+\_\+display.\+cpp\end{DoxyCompactItemize}

@@ -1,0 +1,115 @@
+\hypertarget{class_window}{}\section{Window Class Reference}
+\label{class_window}\index{Window@{Window}}
+
+
+{\ttfamily \#include $<$gui.\+hpp$>$}
+
+Inheritance diagram for Window\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_window}
+\end{center}
+\end{figure}
+\subsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_window_a2ca5739e956b8f5fec8f4e8a9fb1dd92}\label{class_window_a2ca5739e956b8f5fec8f4e8a9fb1dd92}} 
+enum {\bfseries Swap\+Interval\+Type} \+: int \{ {\bfseries L\+A\+T\+E\+\_\+\+S\+W\+A\+P\+\_\+\+T\+E\+A\+R\+I\+NG} = -\/1, 
+{\bfseries I\+M\+M\+E\+D\+I\+A\+T\+E\+\_\+\+U\+P\+D\+A\+T\+ES} = 0, 
+{\bfseries V\+S\+Y\+NC} = 1
+ \}
+\item 
+\mbox{\Hypertarget{class_window_a124fc3e2e9aaf01b362fac1f8896e532}\label{class_window_a124fc3e2e9aaf01b362fac1f8896e532}} 
+enum {\bfseries Fullscreen\+Type} \+: Uint32 \{ {\bfseries V\+I\+D\+E\+O\+\_\+\+M\+O\+DE} = S\+D\+L\+\_\+\+W\+I\+N\+D\+O\+W\+\_\+\+F\+U\+L\+L\+S\+C\+R\+E\+EN, 
+{\bfseries D\+E\+S\+K\+T\+O\+P\+\_\+\+M\+O\+DE} = S\+D\+L\+\_\+\+W\+I\+N\+D\+O\+W\+\_\+\+F\+U\+L\+L\+S\+C\+R\+E\+E\+N\+\_\+\+D\+E\+S\+K\+T\+OP, 
+{\bfseries W\+I\+N\+D\+O\+W\+E\+D\+\_\+\+M\+O\+DE} = 0
+ \}
+\end{DoxyCompactItemize}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_window_a0799cc50a89cc6d5e1cd98e71791200d}\label{class_window_a0799cc50a89cc6d5e1cd98e71791200d}} 
+{\bfseries Window} (int w=800, int h=600, std\+::string title=\char`\"{}Untitled\char`\"{})
+\item 
+\mbox{\Hypertarget{class_window_a8ffc0093a40fa9c91f060818444ce4a1}\label{class_window_a8ffc0093a40fa9c91f060818444ce4a1}} 
+{\bfseries Window} (const \mbox{\hyperlink{class_window}{Window}} \&copy)
+\item 
+\mbox{\Hypertarget{class_window_aa4086debceb557ecb6443cce32b41f9b}\label{class_window_aa4086debceb557ecb6443cce32b41f9b}} 
+{\bfseries Window} (\mbox{\hyperlink{class_window}{Window}} \&\&move)=delete
+\item 
+\mbox{\Hypertarget{class_window_a96e2d69af0539f4a45c04cf54803f5ec}\label{class_window_a96e2d69af0539f4a45c04cf54803f5ec}} 
+\mbox{\hyperlink{class_window}{Window}} \& {\bfseries operator=} (const \mbox{\hyperlink{class_window}{Window}} \&rhs)=delete
+\item 
+\mbox{\Hypertarget{class_window_aa63a9a2404cebe562174a851f2dc8a01}\label{class_window_aa63a9a2404cebe562174a851f2dc8a01}} 
+virtual void {\bfseries update} () override
+\item 
+\mbox{\Hypertarget{class_window_ac11084e8bd2b61ba1a45266a9a4a0b57}\label{class_window_ac11084e8bd2b61ba1a45266a9a4a0b57}} 
+virtual void {\bfseries destroy} () override
+\item 
+\mbox{\Hypertarget{class_window_af79c5fde03ed3825e0459a267ea01dee}\label{class_window_af79c5fde03ed3825e0459a267ea01dee}} 
+virtual bool {\bfseries focused} () const override
+\item 
+\mbox{\Hypertarget{class_window_a43a34a3321d0a9bd30dbba747af14c6a}\label{class_window_a43a34a3321d0a9bd30dbba747af14c6a}} 
+virtual bool {\bfseries is\+\_\+window} () const override
+\item 
+\mbox{\Hypertarget{class_window_ab2af2ee909ac87876fd043acfe7611ca}\label{class_window_ab2af2ee909ac87876fd043acfe7611ca}} 
+virtual float {\bfseries get\+\_\+window\+\_\+pos\+\_\+x} () const override
+\item 
+\mbox{\Hypertarget{class_window_a950ef0cfbccf484315041162942c4ecc}\label{class_window_a950ef0cfbccf484315041162942c4ecc}} 
+virtual float {\bfseries get\+\_\+window\+\_\+pos\+\_\+y} () const override
+\item 
+\mbox{\Hypertarget{class_window_ae70c9e2fddb5224f884291b6d8225fe4}\label{class_window_ae70c9e2fddb5224f884291b6d8225fe4}} 
+virtual void {\bfseries set\+\_\+hidden} (bool hidden) override
+\item 
+\mbox{\Hypertarget{class_window_a95d3193d85c5f8ffed21eeef995602f7}\label{class_window_a95d3193d85c5f8ffed21eeef995602f7}} 
+bool {\bfseries is\+\_\+close\+\_\+requested} () const
+\item 
+\mbox{\Hypertarget{class_window_a73b7959b6435d574d5ddbb6115153724}\label{class_window_a73b7959b6435d574d5ddbb6115153724}} 
+Swap\+Interval\+Type {\bfseries get\+\_\+swap\+\_\+interval\+\_\+type} () const
+\item 
+\mbox{\Hypertarget{class_window_a86607cca316a63361a8e0546d7461496}\label{class_window_a86607cca316a63361a8e0546d7461496}} 
+void {\bfseries set\+\_\+swap\+\_\+interval\+\_\+type} (Swap\+Interval\+Type type) const
+\item 
+\mbox{\Hypertarget{class_window_a56c2030999233ae438cb86229bbf1fa8}\label{class_window_a56c2030999233ae438cb86229bbf1fa8}} 
+void {\bfseries set\+\_\+title} (const std\+::string \&new\+\_\+title)
+\item 
+\mbox{\Hypertarget{class_window_a2b9672924d8048d74098deeb4202dc76}\label{class_window_a2b9672924d8048d74098deeb4202dc76}} 
+bool {\bfseries is\+\_\+fullscreen} () const
+\item 
+\mbox{\Hypertarget{class_window_aba76e9ee7a1fc05a26340154244bd967}\label{class_window_aba76e9ee7a1fc05a26340154244bd967}} 
+Fullscreen\+Type {\bfseries get\+\_\+fullscreen} () const
+\item 
+\mbox{\Hypertarget{class_window_ae2ed6e396cf3dd2eb2636951192949cf}\label{class_window_ae2ed6e396cf3dd2eb2636951192949cf}} 
+void {\bfseries set\+\_\+fullscreen} (Fullscreen\+Type type) const
+\item 
+\mbox{\Hypertarget{class_window_a4d69ff4818898cd74241214183f404f9}\label{class_window_a4d69ff4818898cd74241214183f404f9}} 
+void {\bfseries set\+\_\+render\+\_\+target} () const
+\item 
+\mbox{\Hypertarget{class_window_a0df947eae50ea0565b4b5d826b94a394}\label{class_window_a0df947eae50ea0565b4b5d826b94a394}} 
+void {\bfseries clear\+\_\+focus} ()
+\item 
+\mbox{\Hypertarget{class_window_a8ad58be4ce5aec15ad590ce151d4776a}\label{class_window_a8ad58be4ce5aec15ad590ce151d4776a}} 
+void {\bfseries clear} (G\+Lbitfield mask=(G\+L\+\_\+\+C\+O\+L\+O\+R\+\_\+\+B\+U\+F\+F\+E\+R\+\_\+\+B\+IT$\vert$G\+L\+\_\+\+D\+E\+P\+T\+H\+\_\+\+B\+U\+F\+F\+E\+R\+\_\+\+B\+IT$\vert$G\+L\+\_\+\+S\+T\+E\+N\+C\+I\+L\+\_\+\+B\+U\+F\+F\+E\+R\+\_\+\+B\+IT), float r=0.\+0f, float g=0.\+0f, float b=0.\+0f, float a=1.\+0f) const
+\item 
+\mbox{\Hypertarget{class_window_ac5636a14c1078143a869821a07498cd5}\label{class_window_ac5636a14c1078143a869821a07498cd5}} 
+void {\bfseries register\+\_\+listener} (\mbox{\hyperlink{class_listener}{Listener}} \&l)
+\item 
+\mbox{\Hypertarget{class_window_a184dd18eea525b2d4f85a42e33681951}\label{class_window_a184dd18eea525b2d4f85a42e33681951}} 
+void {\bfseries deregister\+\_\+listener} (\mbox{\hyperlink{class_listener}{Listener}} \&l)
+\item 
+\mbox{\Hypertarget{class_window_af2f8beb54b28dc32d93f6b5f403d2152}\label{class_window_af2f8beb54b28dc32d93f6b5f403d2152}} 
+\mbox{\hyperlink{class_g_u_i}{G\+UI}} $\ast$ {\bfseries get\+\_\+focused\+\_\+child} () const
+\item 
+\mbox{\Hypertarget{class_window_abed0ae68fac68c8d2191d4c7d7a82497}\label{class_window_abed0ae68fac68c8d2191d4c7d7a82497}} 
+void {\bfseries set\+\_\+focused\+\_\+child} (\mbox{\hyperlink{class_g_u_i}{G\+UI}} $\ast$child)
+\end{DoxyCompactItemize}
+\subsection*{Additional Inherited Members}
+
+
+\subsection{Detailed Description}
+Topaz Windows used to draw on the screen. Topaz\textquotesingle{}s graphics module will not initialise fully until at least one instance of this class is instantiated. 
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+src/graphics/gui.\+hpp\item 
+src/graphics/gui.\+cpp\end{DoxyCompactItemize}

@@ -1,0 +1,72 @@
+\hypertarget{class_matrix4x4}{}\section{Matrix4x4 Class Reference}
+\label{class_matrix4x4}\index{Matrix4x4@{Matrix4x4}}
+
+
+{\ttfamily \#include $<$matrix.\+hpp$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_matrix4x4_a39b2fece91eb5a25334e107ea782b1ba}\label{class_matrix4x4_a39b2fece91eb5a25334e107ea782b1ba}} 
+{\bfseries Matrix4x4} (\mbox{\hyperlink{class_vector4}{Vector4F}} x=\mbox{\hyperlink{class_vector4}{Vector4F}}(1.\+0f, 0.\+0f, 0.\+0f, 0.\+0f), Vector4\+F y=\+Vector4\+F(0.\+0f, 1.\+0f, 0.\+0f, 0.\+0f), Vector4\+F z=\+Vector4\+F(0.\+0f, 0.\+0f, 1.\+0f, 0.\+0f), Vector4\+F w=\+Vector4\+F(0.\+0f, 0.\+0f, 0.\+0f, 1.\+0f))
+\item 
+\mbox{\Hypertarget{class_matrix4x4_aae4a405c8eb50e755a05394bc9533ce1}\label{class_matrix4x4_aae4a405c8eb50e755a05394bc9533ce1}} 
+{\bfseries Matrix4x4} (const \mbox{\hyperlink{class_matrix4x4}{Matrix4x4}} \&copy)=default
+\item 
+\mbox{\Hypertarget{class_matrix4x4_a8254f94aef2225780b45990b9ad7a70e}\label{class_matrix4x4_a8254f94aef2225780b45990b9ad7a70e}} 
+{\bfseries Matrix4x4} (\mbox{\hyperlink{class_matrix4x4}{Matrix4x4}} \&\&move)=default
+\item 
+\mbox{\Hypertarget{class_matrix4x4_a4d50c1b0b7fcec8bb2cc748ae07a845b}\label{class_matrix4x4_a4d50c1b0b7fcec8bb2cc748ae07a845b}} 
+\mbox{\hyperlink{class_matrix4x4}{Matrix4x4}} \& {\bfseries operator=} (const \mbox{\hyperlink{class_matrix4x4}{Matrix4x4}} \&rhs)=default
+\item 
+\mbox{\Hypertarget{class_matrix4x4_a55a81c0c40a8ff637066cfd570f8bc3b}\label{class_matrix4x4_a55a81c0c40a8ff637066cfd570f8bc3b}} 
+\mbox{\hyperlink{class_matrix4x4}{Matrix4x4}} {\bfseries transposed} () const
+\item 
+\mbox{\Hypertarget{class_matrix4x4_a4f0f6e979fc19b3c145eed59ed68b6b5}\label{class_matrix4x4_a4f0f6e979fc19b3c145eed59ed68b6b5}} 
+std\+::array$<$ float, 16 $>$ {\bfseries fill\+\_\+data} () const
+\item 
+\mbox{\Hypertarget{class_matrix4x4_a1e7d1651d27e62b343ac76eee98ca3c4}\label{class_matrix4x4_a1e7d1651d27e62b343ac76eee98ca3c4}} 
+\mbox{\hyperlink{class_matrix3x3}{Matrix3x3}} {\bfseries sub\+\_\+matrix} (float iter\+\_\+i, float iter\+\_\+j) const
+\item 
+\mbox{\Hypertarget{class_matrix4x4_a3bfd662ab8ee24edbc9ad36b9158f9a7}\label{class_matrix4x4_a3bfd662ab8ee24edbc9ad36b9158f9a7}} 
+\mbox{\hyperlink{class_vector4}{Vector4F}} {\bfseries operator$\ast$} (const \mbox{\hyperlink{class_vector4}{Vector4F}} \&other) const
+\item 
+\mbox{\Hypertarget{class_matrix4x4_a1c687b90d224b7fac251d8539b8d1a57}\label{class_matrix4x4_a1c687b90d224b7fac251d8539b8d1a57}} 
+\mbox{\hyperlink{class_matrix4x4}{Matrix4x4}} {\bfseries operator$\ast$} (const \mbox{\hyperlink{class_matrix4x4}{Matrix4x4}} \&other) const
+\item 
+\mbox{\Hypertarget{class_matrix4x4_abd0390638fe8759c08a18f7f52082465}\label{class_matrix4x4_abd0390638fe8759c08a18f7f52082465}} 
+float {\bfseries determinant} () const
+\item 
+\mbox{\Hypertarget{class_matrix4x4_a76a41615d1de48989018a70017b8dda5}\label{class_matrix4x4_a76a41615d1de48989018a70017b8dda5}} 
+\mbox{\hyperlink{class_matrix4x4}{Matrix4x4}} {\bfseries inverse} () const
+\end{DoxyCompactItemize}
+\subsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_matrix4x4_ad640d4c2c13d920072e09f902c971d6e}\label{class_matrix4x4_ad640d4c2c13d920072e09f902c971d6e}} 
+static \mbox{\hyperlink{class_matrix4x4}{Matrix4x4}} {\bfseries identity} ()
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_matrix4x4_a6dadbe63abfeccf9dbfbcee2de0cb1e2}\label{class_matrix4x4_a6dadbe63abfeccf9dbfbcee2de0cb1e2}} 
+\mbox{\hyperlink{class_vector4}{Vector4F}} {\bfseries x}
+\item 
+\mbox{\Hypertarget{class_matrix4x4_a04eacde50cf5ef6755f393b37c44e80a}\label{class_matrix4x4_a04eacde50cf5ef6755f393b37c44e80a}} 
+\mbox{\hyperlink{class_vector4}{Vector4F}} {\bfseries y}
+\item 
+\mbox{\Hypertarget{class_matrix4x4_ae7044ae3cff00d00e162a6ddcd6e6cf7}\label{class_matrix4x4_ae7044ae3cff00d00e162a6ddcd6e6cf7}} 
+\mbox{\hyperlink{class_vector4}{Vector4F}} {\bfseries z}
+\item 
+\mbox{\Hypertarget{class_matrix4x4_a8eee8245b290735528321150b0187565}\label{class_matrix4x4_a8eee8245b290735528321150b0187565}} 
+\mbox{\hyperlink{class_vector4}{Vector4F}} {\bfseries w}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Represents a four-\/dimensional square matrix. 
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+src/matrix.\+hpp\item 
+src/matrix.\+cpp\end{DoxyCompactItemize}

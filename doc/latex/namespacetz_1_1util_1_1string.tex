@@ -1,0 +1,51 @@
+\hypertarget{namespacetz_1_1util_1_1string}{}\section{tz\+:\+:util\+:\+:string Namespace Reference}
+\label{namespacetz_1_1util_1_1string}\index{tz\+::util\+::string@{tz\+::util\+::string}}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{namespacetz_1_1util_1_1string_ac8875376eab8973295be717f97a024ff}\label{namespacetz_1_1util_1_1string_ac8875376eab8973295be717f97a024ff}} 
+std\+::string {\bfseries to\+\_\+lower} (std\+::string data)
+\item 
+\mbox{\Hypertarget{namespacetz_1_1util_1_1string_a126d6261c5efc70e045675fe0ae06bdc}\label{namespacetz_1_1util_1_1string_a126d6261c5efc70e045675fe0ae06bdc}} 
+std\+::string {\bfseries to\+\_\+upper} (std\+::string data)
+\item 
+\mbox{\Hypertarget{namespacetz_1_1util_1_1string_a484fedf11818c514d04e78080d163f6a}\label{namespacetz_1_1util_1_1string_a484fedf11818c514d04e78080d163f6a}} 
+bool {\bfseries begins\+\_\+with} (const std\+::string \&what, const std\+::string \&with\+\_\+what)
+\item 
+\mbox{\Hypertarget{namespacetz_1_1util_1_1string_a4514a8c01cb6b4899c45d267913a9371}\label{namespacetz_1_1util_1_1string_a4514a8c01cb6b4899c45d267913a9371}} 
+bool {\bfseries ends\+\_\+with} (const std\+::string \&what, const std\+::string \&with\+\_\+what)
+\item 
+\mbox{\Hypertarget{namespacetz_1_1util_1_1string_a940088296a967680d6d6282b5ac18f86}\label{namespacetz_1_1util_1_1string_a940088296a967680d6d6282b5ac18f86}} 
+bool {\bfseries contains} (const std\+::string \&what, char withwhat)
+\item 
+\mbox{\Hypertarget{namespacetz_1_1util_1_1string_aa023cee141a4590ef58d194661b36290}\label{namespacetz_1_1util_1_1string_aa023cee141a4590ef58d194661b36290}} 
+std\+::vector$<$ std\+::string $>$ {\bfseries split\+\_\+string} (const std\+::string \&s, const std\+::string \&delim)
+\item 
+\mbox{\Hypertarget{namespacetz_1_1util_1_1string_a2c900dcefbe22c77f810dc3413bc44ba}\label{namespacetz_1_1util_1_1string_a2c900dcefbe22c77f810dc3413bc44ba}} 
+std\+::vector$<$ std\+::string $>$ {\bfseries split\+\_\+string} (const std\+::string \&s, char delim)
+\item 
+\mbox{\Hypertarget{namespacetz_1_1util_1_1string_a754d2ba5c06962dcce54fd88c20eb44c}\label{namespacetz_1_1util_1_1string_a754d2ba5c06962dcce54fd88c20eb44c}} 
+std\+::string {\bfseries replace\+\_\+all\+\_\+char} (const std\+::string \&str, char toreplace, const std\+::string \&replacewith)
+\item 
+\mbox{\Hypertarget{namespacetz_1_1util_1_1string_a724fdb88fd3bc3f47861b316ff29f93b}\label{namespacetz_1_1util_1_1string_a724fdb88fd3bc3f47861b316ff29f93b}} 
+std\+::string {\bfseries replace\+\_\+all} (std\+::string str, const std\+::string \&to\+\_\+replace, const std\+::string \&replace\+\_\+with)
+\item 
+\mbox{\Hypertarget{namespacetz_1_1util_1_1string_a56172e6a9438e266c85b2d6b6f07ada7}\label{namespacetz_1_1util_1_1string_a56172e6a9438e266c85b2d6b6f07ada7}} 
+std\+::string {\bfseries substring} (const std\+::string \&str, std\+::size\+\_\+t begin, std\+::size\+\_\+t end)
+\item 
+\mbox{\Hypertarget{namespacetz_1_1util_1_1string_a6490a647a538e71ee68ac82288f46e8a}\label{namespacetz_1_1util_1_1string_a6490a647a538e71ee68ac82288f46e8a}} 
+std\+::string {\bfseries format} (const std\+::vector$<$ std\+::string $>$ \&split)
+\item 
+\mbox{\Hypertarget{namespacetz_1_1util_1_1string_a1bce2252d670d54953f43951cf95c17c}\label{namespacetz_1_1util_1_1string_a1bce2252d670d54953f43951cf95c17c}} 
+std\+::vector$<$ std\+::string $>$ {\bfseries deformat} (const std\+::string \&str)
+\item 
+\mbox{\Hypertarget{namespacetz_1_1util_1_1string_a43ab2bd5eb60aea425868b1775e35061}\label{namespacetz_1_1util_1_1string_a43ab2bd5eb60aea425868b1775e35061}} 
+{\footnotesize template$<$typename T $>$ }\\\mbox{\hyperlink{class_vector3}{Vector3}}$<$ T $>$ {\bfseries vectorise\+\_\+list\+\_\+3} (const std\+::vector$<$ std\+::string $>$ \&list)
+\item 
+\mbox{\Hypertarget{namespacetz_1_1util_1_1string_ae41719b325e61db27cb0eeec76e39653}\label{namespacetz_1_1util_1_1string_ae41719b325e61db27cb0eeec76e39653}} 
+{\footnotesize template$<$typename T $>$ }\\std\+::vector$<$ std\+::string $>$ {\bfseries devectorise\+\_\+list\+\_\+3} (\mbox{\hyperlink{class_vector3}{Vector3}}$<$ T $>$ v)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Perform processing on std\+::strings with these utility functions. 

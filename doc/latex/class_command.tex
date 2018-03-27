@@ -1,0 +1,63 @@
+\hypertarget{class_command}{}\section{Command Class Reference}
+\label{class_command}\index{Command@{Command}}
+
+
+{\ttfamily \#include $<$command.\+hpp$>$}
+
+Inheritance diagram for Command\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=3.000000cm]{class_command}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_command_a3cf1e15c821380f4a12e8bd9da620da9}\label{class_command_a3cf1e15c821380f4a12e8bd9da620da9}} 
+{\bfseries Command} (std\+::string name=\char`\"{}\char`\"{}, std\+::string description=\char`\"{}\char`\"{}, std\+::string usage=\char`\"{}\char`\"{}, bool trivial=true)
+\item 
+\mbox{\Hypertarget{class_command_a3d073078862b0cae3b4402f1e4c3b66e}\label{class_command_a3d073078862b0cae3b4402f1e4c3b66e}} 
+{\bfseries Command} (const \mbox{\hyperlink{class_command}{Command}} \&copy)=default
+\item 
+\mbox{\Hypertarget{class_command_a4d99c9b56882eb7f9294ac9ba8e986f2}\label{class_command_a4d99c9b56882eb7f9294ac9ba8e986f2}} 
+{\bfseries Command} (\mbox{\hyperlink{class_command}{Command}} \&\&move)=default
+\item 
+\mbox{\Hypertarget{class_command_ac482b3ec7da68a7173173e41410b3858}\label{class_command_ac482b3ec7da68a7173173e41410b3858}} 
+\mbox{\hyperlink{class_command}{Command}} \& {\bfseries operator=} (const \mbox{\hyperlink{class_command}{Command}} \&rhs)=default
+\item 
+\mbox{\Hypertarget{class_command_afc03c74d1f90127326015faa8f5f4866}\label{class_command_afc03c74d1f90127326015faa8f5f4866}} 
+const std\+::string \& {\bfseries get\+\_\+name} () const
+\item 
+\mbox{\Hypertarget{class_command_a6352942f26bc7f233584ee707ac46eb1}\label{class_command_a6352942f26bc7f233584ee707ac46eb1}} 
+const std\+::string \& {\bfseries get\+\_\+description} () const
+\item 
+\mbox{\Hypertarget{class_command_a0a07c4f1b9b78074268653129bbd6cbb}\label{class_command_a0a07c4f1b9b78074268653129bbd6cbb}} 
+const std\+::string \& {\bfseries get\+\_\+usage} () const
+\item 
+\mbox{\Hypertarget{class_command_ae1e1b915dfc4bbb2633c1b5e331f83e1}\label{class_command_ae1e1b915dfc4bbb2633c1b5e331f83e1}} 
+std\+::size\+\_\+t {\bfseries get\+\_\+expected\+\_\+parameter\+\_\+size} () const
+\item 
+\mbox{\Hypertarget{class_command_a264fd55e96d28e7687a42108539bd9cf}\label{class_command_a264fd55e96d28e7687a42108539bd9cf}} 
+virtual bool {\bfseries operator==} (const \mbox{\hyperlink{class_command}{Command}} \&rhs) const
+\item 
+\mbox{\Hypertarget{class_command_a325860d97ad7b70553e3097321ee9952}\label{class_command_a325860d97ad7b70553e3097321ee9952}} 
+virtual void {\bfseries operator()} (const std\+::vector$<$ std\+::string $>$ \&args)=0
+\item 
+\mbox{\Hypertarget{class_command_a2b9c29afe3b2fd50ef1c8664eec56aec}\label{class_command_a2b9c29afe3b2fd50ef1c8664eec56aec}} 
+bool {\bfseries is\+\_\+trivial} () const
+\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_command_ad6a6005f8236039804a33e9b85dcb7b3}\label{class_command_ad6a6005f8236039804a33e9b85dcb7b3}} 
+bool {\bfseries trivial}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Abstract. Not available for non-\/polymorphic use. Represents a hard-\/coded functor with string arguments. Inherit from this to create custom commands (Essential for adding functionality to \mbox{\hyperlink{class_engine}{Engine}}). For simpler functions with no parameters, use a \mbox{\hyperlink{class_trivial_command}{Trivial\+Command}} instead (see lower down this source file). 
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+src/command.\+hpp\item 
+src/command.\+cpp\end{DoxyCompactItemize}

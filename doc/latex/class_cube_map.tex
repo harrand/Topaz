@@ -1,0 +1,36 @@
+\hypertarget{class_cube_map}{}\section{Cube\+Map Class Reference}
+\label{class_cube_map}\index{Cube\+Map@{Cube\+Map}}
+
+
+{\ttfamily \#include $<$texture.\+hpp$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_cube_map_a2894dc1765bf0a0534b84b6ac00320c9}\label{class_cube_map_a2894dc1765bf0a0534b84b6ac00320c9}} 
+{\bfseries Cube\+Map} (std\+::string right\+\_\+texture, std\+::string left\+\_\+texture, std\+::string top\+\_\+texture, std\+::string bottom\+\_\+texture, std\+::string back\+\_\+texture, std\+::string front\+\_\+texture)
+\item 
+\mbox{\Hypertarget{class_cube_map_a0d383d15339d920042a6b7c4209f8ab6}\label{class_cube_map_a0d383d15339d920042a6b7c4209f8ab6}} 
+{\bfseries Cube\+Map} (std\+::string texture\+\_\+directory=\char`\"{}./\char`\"{}, std\+::string skybox\+\_\+name=\char`\"{}skybox\char`\"{}, std\+::string skybox\+\_\+image\+\_\+file\+\_\+extension=\char`\"{}.png\char`\"{})
+\item 
+\mbox{\Hypertarget{class_cube_map_a687da9c791db37544c3aab73210b1135}\label{class_cube_map_a687da9c791db37544c3aab73210b1135}} 
+{\bfseries Cube\+Map} (const \mbox{\hyperlink{class_cube_map}{Cube\+Map}} \&copy)
+\item 
+\mbox{\Hypertarget{class_cube_map_a72a09700337e9eabfb3f88bb0bae768e}\label{class_cube_map_a72a09700337e9eabfb3f88bb0bae768e}} 
+{\bfseries Cube\+Map} (\mbox{\hyperlink{class_cube_map}{Cube\+Map}} \&\&move)
+\item 
+\mbox{\Hypertarget{class_cube_map_a847365d5a2e986c553d46bece2a004ad}\label{class_cube_map_a847365d5a2e986c553d46bece2a004ad}} 
+\mbox{\hyperlink{class_cube_map}{Cube\+Map}} \& {\bfseries operator=} (const \mbox{\hyperlink{class_cube_map}{Cube\+Map}} \&rhs)=delete
+\item 
+\mbox{\Hypertarget{class_cube_map_a5d022a37c170ed6f7acb2354a6cae45d}\label{class_cube_map_a5d022a37c170ed6f7acb2354a6cae45d}} 
+void {\bfseries bind} (\mbox{\hyperlink{class_shader}{Shader}} $\ast$shader, unsigned int id) const
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Used to construct skyboxes. Requires six textures; for each face of the skybox cube mesh. 
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+src/graphics/texture.\+hpp\item 
+src/graphics/texture.\+cpp\end{DoxyCompactItemize}

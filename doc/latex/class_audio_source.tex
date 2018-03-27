@@ -1,0 +1,47 @@
+\hypertarget{class_audio_source}{}\section{Audio\+Source Class Reference}
+\label{class_audio_source}\index{Audio\+Source@{Audio\+Source}}
+
+
+{\ttfamily \#include $<$audio.\+hpp$>$}
+
+Inheritance diagram for Audio\+Source\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_audio_source}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_audio_source_a0cb3b38b2e113d9b8b86b4d9fd8046d8}\label{class_audio_source_a0cb3b38b2e113d9b8b86b4d9fd8046d8}} 
+{\bfseries Audio\+Source} (std\+::string filename)
+\item 
+\mbox{\Hypertarget{class_audio_source_a238c56998543c1bbe08d67467957e050}\label{class_audio_source_a238c56998543c1bbe08d67467957e050}} 
+{\bfseries Audio\+Source} (const \mbox{\hyperlink{class_audio_source}{Audio\+Source}} \&copy)=default
+\item 
+\mbox{\Hypertarget{class_audio_source_a9ff96d14841ecd4aef40918cf8348464}\label{class_audio_source_a9ff96d14841ecd4aef40918cf8348464}} 
+{\bfseries Audio\+Source} (\mbox{\hyperlink{class_audio_source}{Audio\+Source}} \&\&move)=default
+\item 
+\mbox{\Hypertarget{class_audio_source_aa73e35b3259f93e55a897b4c42e198d8}\label{class_audio_source_aa73e35b3259f93e55a897b4c42e198d8}} 
+\mbox{\hyperlink{class_audio_source}{Audio\+Source}} \& {\bfseries operator=} (const \mbox{\hyperlink{class_audio_source}{Audio\+Source}} \&rhs)=delete
+\item 
+void \mbox{\hyperlink{class_audio_source_acc045186f5f7516c3b71598f0b65b0c5}{update}} (const \mbox{\hyperlink{class_vector3}{Vector3F}} \&source\+\_\+position, const \mbox{\hyperlink{class_camera}{Camera}} \&relative\+\_\+to) const
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Playable audio file, but from a position in 3D space. Same properties as \mbox{\hyperlink{class_audio_clip}{Audio\+Clip}}. 
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_audio_source_acc045186f5f7516c3b71598f0b65b0c5}\label{class_audio_source_acc045186f5f7516c3b71598f0b65b0c5}} 
+\index{Audio\+Source@{Audio\+Source}!update@{update}}
+\index{update@{update}!Audio\+Source@{Audio\+Source}}
+\subsubsection{\texorpdfstring{update()}{update()}}
+{\footnotesize\ttfamily void Audio\+Source\+::update (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{class_vector3}{Vector3F}} \&}]{source\+\_\+position,  }\item[{const \mbox{\hyperlink{class_camera}{Camera}} \&}]{relative\+\_\+to }\end{DoxyParamCaption}) const}
+
+Should be invoked whenever the camera rotates or moves or the \mbox{\hyperlink{class_audio_source}{Audio\+Source}} position is changed. 
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+src/audio/audio.\+hpp\item 
+src/audio/audio.\+cpp\end{DoxyCompactItemize}

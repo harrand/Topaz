@@ -1,0 +1,79 @@
+\hypertarget{class_entity_object}{}\section{Entity\+Object Class Reference}
+\label{class_entity_object}\index{Entity\+Object@{Entity\+Object}}
+
+
+{\ttfamily \#include $<$entity.\+hpp$>$}
+
+Inheritance diagram for Entity\+Object\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_entity_object}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_entity_object_a61a11b3d675a49b17b9f9a0b6130f015}{Entity\+Object}} (const \mbox{\hyperlink{class_mesh}{Mesh}} $\ast$mesh, \mbox{\hyperlink{class_material}{Material}} material, float mass=tz\+::physics\+::default\+\_\+mass, \mbox{\hyperlink{class_vector3}{Vector3F}} position=\mbox{\hyperlink{class_vector3}{Vector3F}}(), \mbox{\hyperlink{class_vector3}{Vector3F}} rotation=\mbox{\hyperlink{class_vector3}{Vector3F}}(), \mbox{\hyperlink{class_vector3}{Vector3F}} scale=\mbox{\hyperlink{class_vector3}{Vector3F}}(1, 1, 1), \mbox{\hyperlink{class_vector3}{Vector3F}} velocity=\mbox{\hyperlink{class_vector3}{Vector3F}}(), std\+::unordered\+\_\+map$<$ std\+::string, \mbox{\hyperlink{class_force}{Force}} $>$ forces=std\+::unordered\+\_\+map$<$ std\+::string, \mbox{\hyperlink{class_force}{Force}} $>$())
+\item 
+\mbox{\Hypertarget{class_entity_object_a9fad56777e7006ab1af94693543b0792}\label{class_entity_object_a9fad56777e7006ab1af94693543b0792}} 
+{\bfseries Entity\+Object} (const \mbox{\hyperlink{class_object}{Object}} \&static\+\_\+object, float mass)
+\item 
+\mbox{\Hypertarget{class_entity_object_a2971da030ade2f29e3e25643a416fcb0}\label{class_entity_object_a2971da030ade2f29e3e25643a416fcb0}} 
+{\bfseries Entity\+Object} (const \mbox{\hyperlink{class_entity_object}{Entity\+Object}} \&copy)=default
+\item 
+\mbox{\Hypertarget{class_entity_object_a86b26f07e950c0416946e82cbab47ab6}\label{class_entity_object_a86b26f07e950c0416946e82cbab47ab6}} 
+{\bfseries Entity\+Object} (\mbox{\hyperlink{class_entity_object}{Entity\+Object}} \&\&move)=default
+\item 
+\mbox{\Hypertarget{class_entity_object_a38bc800d3f77b7c029e00e055695f896}\label{class_entity_object_a38bc800d3f77b7c029e00e055695f896}} 
+\mbox{\hyperlink{class_entity_object}{Entity\+Object}} \& {\bfseries operator=} (const \mbox{\hyperlink{class_entity_object}{Entity\+Object}} \&rhs)=default
+\item 
+\mbox{\Hypertarget{class_entity_object_a29150d60d661b8f2b11b374bd3f9b812}\label{class_entity_object_a29150d60d661b8f2b11b374bd3f9b812}} 
+virtual void {\bfseries update\+\_\+motion} (unsigned int fps) override
+\item 
+\mbox{\Hypertarget{class_entity_object_a254dd086ab31866648e6337004804fdc}\label{class_entity_object_a254dd086ab31866648e6337004804fdc}} 
+bool {\bfseries operator==} (const \mbox{\hyperlink{class_entity_object}{Entity\+Object}} \&rhs) const
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_entity_object_a45eaeffd7566fa587d51d47c5c96bdb9}\label{class_entity_object_a45eaeffd7566fa587d51d47c5c96bdb9}} 
+\mbox{\hyperlink{class_vector3}{Vector3F}} {\bfseries position}
+\end{DoxyCompactItemize}
+\subsection*{Additional Inherited Members}
+
+
+\subsection{Detailed Description}
+Essentially an \mbox{\hyperlink{class_entity}{Entity}} which has a renderable component in the form of an Object3D. See Object3D documentation for additional details. 
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{class_entity_object_a61a11b3d675a49b17b9f9a0b6130f015}\label{class_entity_object_a61a11b3d675a49b17b9f9a0b6130f015}} 
+\index{Entity\+Object@{Entity\+Object}!Entity\+Object@{Entity\+Object}}
+\index{Entity\+Object@{Entity\+Object}!Entity\+Object@{Entity\+Object}}
+\subsubsection{\texorpdfstring{Entity\+Object()}{EntityObject()}}
+{\footnotesize\ttfamily Entity\+Object\+::\+Entity\+Object (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{class_mesh}{Mesh}} $\ast$}]{mesh,  }\item[{\mbox{\hyperlink{class_material}{Material}}}]{material,  }\item[{float}]{mass = {\ttfamily tz\+:\+:physics\+:\+:default\+\_\+mass},  }\item[{\mbox{\hyperlink{class_vector3}{Vector3F}}}]{position = {\ttfamily \mbox{\hyperlink{class_vector3}{Vector3F}}()},  }\item[{\mbox{\hyperlink{class_vector3}{Vector3F}}}]{rotation = {\ttfamily \mbox{\hyperlink{class_vector3}{Vector3F}}()},  }\item[{\mbox{\hyperlink{class_vector3}{Vector3F}}}]{scale = {\ttfamily \mbox{\hyperlink{class_vector3}{Vector3F}}(1,~1,~1)},  }\item[{\mbox{\hyperlink{class_vector3}{Vector3F}}}]{velocity = {\ttfamily \mbox{\hyperlink{class_vector3}{Vector3F}}()},  }\item[{std\+::unordered\+\_\+map$<$ std\+::string, \mbox{\hyperlink{class_force}{Force}} $>$}]{forces = {\ttfamily std\+:\+:unordered\+\_\+map$<$std\+:\+:string,~\mbox{\hyperlink{class_force}{Force}}$>$()} }\end{DoxyParamCaption})}
+
+Manual construction of a new \mbox{\hyperlink{class_entity_object}{Entity\+Object}}. 
+\begin{DoxyParams}{Parameters}
+{\em mesh} & -\/ Pointer to read-\/only \mbox{\hyperlink{class_mesh}{Mesh}}. This must outlive the \mbox{\hyperlink{class_entity_object}{Entity\+Object}} or UB will be invoked. \\
+\hline
+{\em textures} & -\/ Map of each texture-\/type to the corresponding pointer to \mbox{\hyperlink{class_texture}{Texture}}. All must outlive the \mbox{\hyperlink{class_entity_object}{Entity\+Object}} or UB will be invoked. \\
+\hline
+{\em mass} & -\/ Desired mass of the \mbox{\hyperlink{class_entity_object}{Entity\+Object}}. \\
+\hline
+{\em position} & -\/ Position of the \mbox{\hyperlink{class_entity_object}{Entity\+Object}}, in world-\/space. \\
+\hline
+{\em rotation} & -\/ Rotation of the \mbox{\hyperlink{class_entity_object}{Entity\+Object}}, in euler-\/angles. \\
+\hline
+{\em scale} & -\/ Scale of the \mbox{\hyperlink{class_entity_object}{Entity\+Object}}. \\
+\hline
+{\em velocity} & \\
+\hline
+{\em forces} & \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+src/entity.\+hpp\item 
+src/entity.\+cpp\end{DoxyCompactItemize}
