@@ -20,11 +20,11 @@ void tz::terminate()
 	tz::util::log::message("Terminated Topaz.");
 }
 
-Engine::Engine(Window* window, std::string properties_path, unsigned int tps): camera(Camera()), scene(), properties(properties_path), resources(this->properties.get_tag("resources")), default_shader(this->properties.get_tag("default_shader")), default_gui_shader(this->properties.get_tag("default_gui_shader")), seconds_timer(), tick_timer(), profiler(), window(window), fps(0), tps(tps), update_command_executor(), tick_command_executor(), update_due(false), default_texture(Bitmap<PixelRGBA>(std::vector<PixelRGBA>({tz::graphics::default_texture_pixel, PixelRGBA(0, 0, 0, 255), PixelRGBA(0, 0, 0, 255), tz::graphics::default_texture_pixel}), 2, 2)), default_normal_map(), default_parallax_map(), default_displacement_map()
+Engine::Engine(Window* window, std::string properties_path, unsigned int tps): camera(Camera()), scene(), meta(properties_path), default_shader(this->meta.get_properties().get_tag("default_shader")), default_gui_shader(this->meta.get_properties().get_tag("default_gui_shader")), seconds_timer(), tick_timer(), profiler(), window(window), fps(0), tps(tps), update_command_executor(), tick_command_executor(), update_due(false), default_texture(Bitmap<PixelRGBA>(std::vector<PixelRGBA>({tz::graphics::default_texture_pixel, PixelRGBA(0, 0, 0, 255), PixelRGBA(0, 0, 0, 255), tz::graphics::default_texture_pixel}), 2, 2)), default_normal_map(), default_parallax_map(), default_displacement_map()
 {
 	// fill all the asset buffers via tz data manager
-	tz::data::Manager(this->properties.get_tag("resources")).retrieve_all_data(this->meshes, this->textures, this->normal_maps, this->parallax_maps, this->displacement_maps);
-	this->scene = Scene(this->properties.get_tag("default_scene"), this->properties.get_tag("resources"), this->meshes, this->textures, this->normal_maps, this->parallax_maps, this->displacement_maps, false);
+	tz::data::Manager(this->meta.get_properties().get_tag("resources")).retrieve_all_data(this->meshes, this->textures, this->normal_maps, this->parallax_maps, this->displacement_maps);
+	this->scene = Scene(this->meta.get_properties().get_tag("default_scene"), this->meta.get_properties().get_tag("resources"), this->meshes, this->textures, this->normal_maps, this->parallax_maps, this->displacement_maps, false);
 	// move the camera to the scene's spawn point & orientation.
 	this->camera.position = this->scene.spawn_point;
 	this->camera.rotation = this->scene.spawn_orientation;
@@ -38,7 +38,7 @@ Engine::Engine(Window* window, std::string properties_path, unsigned int tps): c
 	this->default_shader.emplace_uniform<float>("parallax_map_bias", tz::graphics::default_parallax_map_scale / 2.0f * (tz::graphics::default_parallax_map_offset - 1));
 	this->default_shader.emplace_uniform<float>("displacement_factor", tz::graphics::default_displacement_factor);
 	// read the properties file for any extra shaders specified (gui shader not included in this)
-	for(std::string shader_path : this->properties.get_sequence("extra_shaders"))
+	for(std::string shader_path : this->meta.get_properties().get_sequence("extra_shaders"))
 		this->extra_shaders.emplace_back(shader_path);
 }
 
@@ -87,14 +87,9 @@ const TimeProfiler& Engine::get_time_profiler() const
 	return this->profiler;
 }
 
-const MDLFile& Engine::get_properties() const
+const EngineMeta& Engine::get_meta() const
 {
-	return this->properties;
-}
-
-const MDLFile& Engine::get_resources() const
-{
-	return this->resources;
+	return this->meta;
 }
 
 const Window& Engine::get_window() const

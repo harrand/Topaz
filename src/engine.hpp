@@ -4,6 +4,7 @@
 #include "command.hpp"
 #include "time.hpp"
 #include "audio/audio.hpp"
+#include "engine_meta.hpp"
 
 namespace tz
 {
@@ -44,14 +45,7 @@ public:
 	*/
 	void update(std::size_t shader_index = 0);
 	const TimeProfiler& get_time_profiler() const;
-	/**
-	* Read/Edit the properties file.
-	*/
-	const MDLFile& get_properties() const;
-	/**
-	* Read/Edit the resources file.
-	*/
-	const MDLFile& get_resources() const;
+	const EngineMeta& get_meta() const;
 	/**
 	* Access the window that the Engine instance currently is hooked to.
 	*/
@@ -118,7 +112,8 @@ public:
 	Camera camera;
 	Scene scene;
 private:
-	MDLFile properties, resources;
+	//MDLFile properties, resources;
+	EngineMeta meta;
 public:
 	Shader default_shader, default_gui_shader;
 private:

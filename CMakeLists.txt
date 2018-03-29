@@ -64,5 +64,5 @@ add_library(topaz SHARED
         src/utility.inl
         src/vector.hpp
         src/vector.inl
-        src/graphics/sprite.cpp src/graphics/sprite.hpp src/graphics/material.cpp src/graphics/material.hpp)
+        src/graphics/sprite.cpp src/graphics/sprite.hpp src/graphics/material.cpp src/graphics/material.hpp src/engine_meta.cpp src/engine_meta.hpp)
 target_link_libraries(topaz OpenGL32 SDL2 SDL2_mixer SDL2_ttf SDL2main mdl)

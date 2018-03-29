@@ -24,9 +24,10 @@ void init()
 {
 	Window wnd(800, 600, "Topaz Development Window");
 	Engine engine(&wnd, "../../../res/runtime/properties.mdl");
+    const EngineMeta& meta = engine.get_meta();
 
-	unsigned int seconds = tz::util::cast::from_string<unsigned int>(engine.get_resources().get_tag("played"));
-	float rotational_speed = tz::util::cast::from_string<float>(engine.get_resources().get_tag("rotational_speed"));
+	unsigned int seconds = tz::util::cast::from_string<unsigned int>(meta.get_resources().get_tag("played"));
+	float rotational_speed = tz::util::cast::from_string<float>(meta.get_resources().get_tag("rotational_speed"));
 	constexpr std::size_t shader_id = 0;
 	
 	KeyListener key_listener(wnd);
@@ -82,9 +83,9 @@ void init()
 	//SpawnBlockCommand spawn_test_cube(engine, bounds);
     StaticFunctor spawn_test_cube([&](Engine& engine, std::vector<AABB>& bounds)
     {
-        tz::data::Manager manager(std::string(engine.get_resources().get_path().data(), engine.get_resources().get_path().length()));
+        tz::data::Manager manager(std::string(meta.get_resources().get_path().data(), meta.get_resources().get_path().length()));
         //std::map<tz::graphics::TextureType, Texture*> textures;
-        std::vector<std::string> texture_links = engine.get_resources().get_sequence("textures");
+        std::vector<std::string> texture_links = meta.get_resources().get_sequence("textures");
         static Random rand;
         std::size_t random_index = rand.next_int(0, texture_links.size());
 		std::string random_texture_link = manager.resource_link(texture_links[random_index]);
@@ -139,7 +140,7 @@ void init()
 
 	while(!engine.get_window().is_close_requested())
 	{
-		float multiplier = tz::util::cast::from_string<float>(MDLFile(engine.get_properties().get_tag("resources")).get_tag("speed"));
+		float multiplier = tz::util::cast::from_string<float>(MDLFile(meta.get_properties().get_tag("resources")).get_tag("speed"));
 		float velocity = multiplier * test_slider.position;
 		on_ground = false;
 		if(updater.millis_passed(1000))
@@ -263,7 +264,7 @@ void init()
 				if(!collide)
 					engine.camera.position = after;
 			}
-			float angular_speed = tz::util::cast::from_string<float>(engine.get_properties().get_tag("rotational_speed"));
+			float angular_speed = tz::util::cast::from_string<float>(meta.get_properties().get_tag("rotational_speed"));
 			if(key_listener.is_key_pressed("I"))
 			{
 				engine.camera.rotation += (Vector3F(1.0f/360.0f, 0, 0) * multiplier * angular_speed * engine.get_time_profiler().get_last_delta());
@@ -301,7 +302,7 @@ void init()
 		updater.update();
 		engine.update(shader_id);
 	}
-	MDLFile(engine.get_resources()).edit_tag("played", tz::util::cast::to_string(seconds));
+	MDLFile(meta.get_resources()).edit_tag("played", tz::util::cast::to_string(seconds));
 }
 
 void test()
