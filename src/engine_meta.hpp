@@ -8,7 +8,18 @@ namespace tz::meta
     constexpr char default_external_resources_filename[] = "resources.mdl";
     constexpr char default_inline_resources_filename[] = "inline";
     constexpr char resources_tag[] = "resources";
+
+    constexpr char default_shader_tag_name[] = "default_shader";
+    constexpr char default_gui_shader_tag_name[] = "default_gui_shader";
+    constexpr char default_scene_tag_name[] = "default_scene";
 }
+
+enum class StandardProperty
+{
+    DEFAULT_SHADER,
+    DEFAULT_GUI_SHADER,
+    DEFAULT_SCENE,
+};
 
 class PropertiesFile : public MDLFile
 {
@@ -21,6 +32,7 @@ public:
      * @return - Whether the Properties has inline Resources declared.
      */
     bool has_inline_resources() const;
+    std::string get_path(StandardProperty property) const;
 private:
 };
 

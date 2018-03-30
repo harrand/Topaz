@@ -10,6 +10,22 @@ bool PropertiesFile::has_inline_resources() const
     return !this->exists_tag(tz::meta::resources_tag) || this->get_tag(tz::meta::resources_tag) == "this";
 }
 
+std::string PropertiesFile::get_path(StandardProperty property) const
+{
+    switch(property)
+    {
+        case StandardProperty::DEFAULT_SCENE:
+            return this->get_tag(tz::meta::default_scene_tag_name);
+            break;
+        case StandardProperty::DEFAULT_SHADER:
+            return this->get_tag(tz::meta::default_shader_tag_name);
+            break;
+        case StandardProperty::DEFAULT_GUI_SHADER:
+            return this->get_tag(tz::meta::default_gui_shader_tag_name);
+            break;
+    }
+}
+
 ResourcesFile::ResourcesFile(std::string resources_path): MDLFile(resources_path)
 {
 
