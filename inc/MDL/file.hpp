@@ -21,7 +21,7 @@ public:
 	 * This means that even if 'path' does not point to a valid File, it shall not be created.
 	 * @param path : Absolute path of the desired File.
 	 */
-	explicit File(std::string path = mdl::default_string);
+	explicit File(std::string path);
 	File(const File& copy) = default;
 	File(File&& move) = default;
 	virtual ~File() = default;
@@ -30,7 +30,7 @@ public:
 	/**
 	 * Retrieve the absolute path of the File.
 	 */
-	std::string_view get_path() const;
+	std::string get_path() const;
 	/**
 	 * Find out if the File currently exists in the file-system.
 	 */

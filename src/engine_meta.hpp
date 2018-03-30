@@ -32,7 +32,7 @@ public:
      * @return - Whether the Properties has inline Resources declared.
      */
     bool has_inline_resources() const;
-    std::string get_path(StandardProperty property) const;
+    std::string get_property_path(StandardProperty property) const;
 private:
 };
 

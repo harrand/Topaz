@@ -10,7 +10,7 @@ bool PropertiesFile::has_inline_resources() const
     return !this->exists_tag(tz::meta::resources_tag) || this->get_tag(tz::meta::resources_tag) == "this";
 }
 
-std::string PropertiesFile::get_path(StandardProperty property) const
+std::string PropertiesFile::get_property_path(StandardProperty property) const
 {
     switch(property)
     {
@@ -26,10 +26,7 @@ std::string PropertiesFile::get_path(StandardProperty property) const
     }
 }
 
-ResourcesFile::ResourcesFile(std::string resources_path): MDLFile(resources_path)
-{
-
-}
+ResourcesFile::ResourcesFile(std::string resources_path): MDLFile(resources_path) {}
 
 EngineMeta::EngineMeta(): properties(tz::meta::default_properties_filename), resources({})
 {
@@ -42,7 +39,7 @@ EngineMeta::EngineMeta(): properties(tz::meta::default_properties_filename), res
 EngineMeta::EngineMeta(const std::string& properties_path): properties(properties_path), resources({})
 {
     if(!this->properties.has_inline_resources())
-        this->resources = ResourcesFile(this->properties.get_tag(tz::meta::default_external_resources_filename));
+        this->resources = ResourcesFile(this->properties.get_tag(tz::meta::resources_tag));
 }
 
 const PropertiesFile& EngineMeta::get_properties() const
