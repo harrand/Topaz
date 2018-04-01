@@ -72,9 +72,14 @@ void Scene::remove_entity_object(const EntityObject& eo)
 	this->entity_objects.erase(std::remove(this->entity_objects.begin(), this->entity_objects.end(), eo), this->entity_objects.end());
 }
 
-const std::vector<Object>& Scene::get_objects() const
+std::vector<std::reference_wrapper<const Object>> Scene::get_objects() const
 {
-	return this->objects;
+	std::vector<std::reference_wrapper<const Object>> object_crefs;
+	for(const Object& object_cref : this->objects)
+		object_crefs.push_back(std::cref(object_cref));
+	for(const std::shared_ptr<Object>& object_ptr : this->heap_objects)
+		object_crefs.push_back(std::cref(*object_ptr));
+	return object_crefs;
 }
 
 const std::vector<Entity>& Scene::get_entities() const
@@ -167,6 +172,8 @@ void Scene::render(const Camera& cam, Shader* shader, unsigned int width, unsign
 	glCullFace(GL_BACK);
 	for(auto& object : this->objects)
 		object.render(cam, shader, width, height);
+    for(auto& heap_object : this->heap_objects)
+        heap_object->render(cam, shader, width, height);
 	for(auto& entity_object : this->entity_objects)
 		entity_object.render(cam, shader, width, height);
 }

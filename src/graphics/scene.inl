@@ -3,7 +3,16 @@ Element& Scene::emplace(Args&&... args)
 {
 	if constexpr(std::is_same<Element, Object>::value)
 	{
+		tz::util::log::message("emplaced normal object.");
 		return emplace_object(std::forward<Args>(args)...);
+	}
+	else if constexpr(std::is_base_of_v<Object, Element>)
+	{
+		/// Element is inherited from Object so should be emplaced via heap
+		tz::util::log::message("emplaced polymorphic object.");
+		//std::unique_ptr<Element> ptr = ;
+		this->heap_objects.push_back(std::make_shared<Element>(std::forward<Args>(args)...));
+		return *(dynamic_cast<Element*>(this->heap_objects.back().get()));
 	}
 	else if constexpr(std::is_same<Element, Entity>::value)
 	{

@@ -2,6 +2,7 @@
 #define SCENE_HPP
 #include <map>
 #include <cstddef>
+//#include <functional>
 #include "../entity.hpp"
 #include "MDL/mdl_file.hpp"
 
@@ -83,9 +84,9 @@ public:
 	*/
 	void remove_entity_object(const EntityObject& eo);
 	/**
-	* Access all Object3D elements in the scene (Read-only).
+	* Access all Object elements in the scene (Read-only).
 	*/
-	const std::vector<Object>& get_objects() const;
+	std::vector<std::reference_wrapper<const Object>> get_objects() const;
 	/**
 	* Access all Entity elements in the scene (Read-only).
 	*/
@@ -128,7 +129,11 @@ private:
 	
 	std::optional<std::string> filename;
 	std::optional<std::string> resources_path;
+    /// Used to store Objects
 	std::vector<Object> objects;
+    /// Used to store Object sub-classes to prevent object slicing.
+    /// Needs a shared-ptr because Scenes are copyable and SHOULD be copyable
+    std::vector<std::shared_ptr<Object>> heap_objects;
 	std::vector<Entity> entities;
 	std::vector<EntityObject> entity_objects;
 };

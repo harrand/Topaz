@@ -114,7 +114,7 @@ void init()
 	Skybox skybox("../../../res/runtime/models/skybox.obj", skybox_texture);
 	engine.emplace_trivial_update_command([&](){skybox.render(engine.camera, skybox_shader, engine.get_meshes(), wnd.get_width(), wnd.get_height());});
 	
-	Object player_object(engine.get_meshes().back().get(), engine.scene.get_objects().front().get_material(), Vector3F(), Vector3F(), Vector3F(5,5,5));
+	Object player_object(engine.get_meshes().back().get(), engine.scene.get_objects().front().get().get_material(), Vector3F(), Vector3F(), Vector3F(5,5,5));
 	engine.emplace_trivial_update_command([&](){if(engine.camera.has_perspective_projection()) return;player_object.render(engine.camera, &(engine.default_shader), wnd.get_width(), wnd.get_height());});
 	engine.emplace_trivial_tick_command([&](){player_object.position = engine.camera.position;player_object.rotation = engine.camera.rotation;});
 	
@@ -124,7 +124,7 @@ void init()
 	
 	Shader shader_2d("../../../src/shaders/2D");
 	
-	Sprite test_plane(Vector2F(0.0f, 50.0f), 0.0f, Vector2F(10, 10), engine.scene.get_objects().front().get_material().get_texture());
+	Sprite test_plane(Vector2F(0.0f, 50.0f), 0.0f, Vector2F(10, 10), engine.scene.get_objects().front().get().get_material().get_texture());
 	Sprite another_test_plane(Vector2F(0.0f, 50.0f), 0.0f, Vector2F(10, 10), tz::graphics::texture::default_texture.get());
 	engine.emplace_trivial_update_command([&]() {
         test_plane.render(engine.camera, &(shader_2d), wnd.get_width(), wnd.get_height());

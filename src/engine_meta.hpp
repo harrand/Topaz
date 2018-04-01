@@ -84,5 +84,4 @@ private:
     std::optional<ResourcesFile> resources;
 };
 
-
 #endif //ENGINE_META_HPP
