@@ -14,14 +14,6 @@ Element& Scene::emplace(Args&&... args)
 		this->heap_objects.push_back(std::make_shared<Element>(std::forward<Args>(args)...));
 		return *(dynamic_cast<Element*>(this->heap_objects.back().get()));
 	}
-	else if constexpr(std::is_same<Element, Entity>::value)
-	{
-		return emplace_entity(std::forward<Args>(args)...);
-	}
-	else if constexpr(std::is_same<Element, EntityObject>::value)
-	{
-		return emplace_entity_object(std::forward<Args>(args)...);
-	}
 	else
 	{
 		static_assert(std::is_void<Element>::value, "[Topaz Scene]: Scene::emplace has unsupported type.");
@@ -33,16 +25,4 @@ template<typename... Args>
 Object& Scene::emplace_object(Args&&... args)
 {
 	return this->objects.emplace_back(std::forward<Args>(args)...);
-}
-
-template<typename... Args>
-Entity& Scene::emplace_entity(Args&&... args)
-{
-	return this->entities.emplace_back(std::forward<Args>(args)...);
-}
-
-template<typename... Args>
-EntityObject& Scene::emplace_entity_object(Args&&... args)
-{
-	return this->entity_objects.emplace_back(std::forward<Args>(args)...);
 }

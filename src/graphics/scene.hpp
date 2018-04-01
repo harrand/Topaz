@@ -3,7 +3,7 @@
 #include <map>
 #include <cstddef>
 //#include <functional>
-#include "../entity.hpp"
+#include "object.hpp"
 #include "MDL/mdl_file.hpp"
 
 namespace tz::scene
@@ -11,10 +11,8 @@ namespace tz::scene
 	constexpr char spawnpoint_tag_name[] = "spawnpoint";
 	constexpr char spawnorientation_tag_name[] = "spawnorientation";
 	constexpr char objects_sequence_name[] = "objects";
-	constexpr char entityobjects_sequence_name[] = "entityobjects";
-	
+
 	constexpr char object_tag_prefix[] = "object";
-	constexpr char entity_object_tag_prefix[] = "entity_object";
 }
 
 /**
@@ -47,10 +45,6 @@ public:
 	const std::string& get_file_name() const;
 	// Add a copy of an object to the scene. Complexity: O(1) amortised Ω(1) ϴ(1) amortised
 	void add_object(Object obj);
-	// Add a copy of an entity to the scene. Complexity: O(1) amortised Ω(1) ϴ(1) amortised
-	void add_entity(Entity ent);
-	// Add a copy of an entity-object to the scene. Complexity: O(1) amortised Ω(1) ϴ(1) amortised
-	void add_entity_object(EntityObject eo);
 	/**
 	* Construct an Object3D, Entity or EntityObject3D in-place and add it to the scene.
 	*/
@@ -64,37 +58,14 @@ public:
 	/**
 	* Construct an Entity in-place and add it to the scene.
 	*/
-	template<typename... Args>
-	Entity& emplace_entity(Args&&... args);
-	/**
-	* Construct an EntityObject3D in-place and add it to the scene.
-	*/
-	template<typename... Args>
-	EntityObject& emplace_entity_object(Args&&... args);
 	/**
 	* Remove an existing Object3D from the scene.
 	*/
 	void remove_object(const Object& obj);
 	/**
-	* Remove an existing Entity from the scene.
-	*/
-	void remove_entity(const Entity& ent);
-	/**
-	* Remove an existing EntityObject3D from the scene.
-	*/
-	void remove_entity_object(const EntityObject& eo);
-	/**
 	* Access all Object elements in the scene (Read-only).
 	*/
 	std::vector<std::reference_wrapper<const Object>> get_objects() const;
-	/**
-	* Access all Entity elements in the scene (Read-only).
-	*/
-	const std::vector<Entity>& get_entities() const;
-	/**
-	* Access all EntityObject3D elements in the scene (Read-only).
-	*/
-	const std::vector<EntityObject>& get_entity_objects() const;
 	/**
 	* Returns total number of Object3Ds, Entities and EntityObject3Ds in the scene.
 	*/
@@ -115,18 +86,11 @@ public:
 	* Complexity: O(n + p) Ω(1) ϴ(n + p), where n = number of objects, p = number of entity_objects.
 	*/
 	void render(const Camera& cam, Shader* shader, unsigned int width, unsigned int height);
-	/**
-	* Update all elements in the scene that obey some form of law of physics.
-	* Pass tps as the expected ticks-per-second, not the instantaneous tick per second. This function should be called per 'tick'.
-	* Complexity: O(n + m) Ω(1) ϴ(n + m), where n = number of entity_objects, m = number of entities.
-	*/
-	void update(unsigned int tps);
-	
+
 	Vector3F spawn_point, spawn_orientation;
 private:
 	static Object retrieve_object_data(const std::string& object_name, const std::string& resources_path, MDLFile& mdlf, const std::vector<std::unique_ptr<Mesh>>& all_meshes, const std::vector<std::unique_ptr<Texture>>& all_textures, const std::vector<std::unique_ptr<NormalMap>>& all_normal_maps, const std::vector<std::unique_ptr<ParallaxMap>>& all_parallax_maps, const std::vector<std::unique_ptr<DisplacementMap>>& all_displacement_maps);
-	static EntityObject retrieve_entity_object_data(const std::string& entity_object_name, const std::string& resources_path, MDLFile& mdlf, const std::vector<std::unique_ptr<Mesh>>& all_meshes, const std::vector<std::unique_ptr<Texture>>& all_textures, const std::vector<std::unique_ptr<NormalMap>>& all_normal_maps, const std::vector<std::unique_ptr<ParallaxMap>>& all_parallax_maps, const std::vector<std::unique_ptr<DisplacementMap>>& all_displacement_maps);
-	
+
 	std::optional<std::string> filename;
 	std::optional<std::string> resources_path;
     /// Used to store Objects
@@ -134,8 +98,6 @@ private:
     /// Used to store Object sub-classes to prevent object slicing.
     /// Needs a shared-ptr because Scenes are copyable and SHOULD be copyable
     std::vector<std::shared_ptr<Object>> heap_objects;
-	std::vector<Entity> entities;
-	std::vector<EntityObject> entity_objects;
 };
 
 #include "scene.inl"

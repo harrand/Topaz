@@ -69,7 +69,7 @@ void Engine::update(std::size_t shader_index)
 		// update physics engine when the average time of a fixed 'tick' has passed
 		for(auto tick_command : this->tick_command_executor.get_commands())
 			tick_command->operator()({});
-		this->scene.update(this->tps);
+		//this->scene.update(this->tps);
 		this->tick_timer.reload();
 		this->update_due = true;
 	}
