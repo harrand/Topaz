@@ -1,6 +1,8 @@
 #ifndef VECTOR_HPP
 #define VECTOR_HPP
 #include <array>
+#include <functional>
+#include <cmath>
 
 /**
 *C-style POD struct for a Vector2F
@@ -34,12 +36,13 @@ public:
 	Vector(const Vector<N, T>& copy);
 	Vector(Vector<N, T>&& move);
 	Vector<N, T>& operator=(const Vector<N, T>& rhs);
+	T length(std::function<T(T)> sqrt_function = std::sqrt) const;
 
 	std::array<T, N> data;
 };
 
 template<typename T>
-class Vector2 : Vector<2, T>
+class Vector2 : protected Vector<2, T>
 {
 public:
 	constexpr Vector2<T>(T x = T(), T y = T());
@@ -74,7 +77,7 @@ public:
 };
 
 template<typename T>
-class Vector3: public Vector<3, T>
+class Vector3: protected Vector<3, T>
 {
 public:
 	constexpr Vector3<T>(T x = T(), T y = T(), T z = T());
@@ -120,7 +123,7 @@ public:
 };
 
 template<typename T>
-class Vector4: public Vector<4, T>
+class Vector4: protected Vector<4, T>
 {
 public:
 	/// None of these constructors are marked constexpr because the x, y, z, w variables are references, which are not constexpr.

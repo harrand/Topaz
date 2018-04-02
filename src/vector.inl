@@ -16,6 +16,15 @@ Vector<N, T>& Vector<N, T>::operator=(const Vector<N, T>& rhs)
 	return *(this);
 }
 
+template<unsigned int N, typename T>
+T Vector<N, T>::length(std::function<T(T)> sqrt_function) const
+{
+	T squared_total = T();
+	for(const auto& value : this->data)
+		squared_total += value * value;
+	return sqrt_function(squared_total);
+}
+
 template<typename T>
 constexpr Vector2<T>::Vector2(T x, T y): Vector<2, T>({x, y}), x(this->data[0]), y(this->data[1]){}
 template<typename T>
