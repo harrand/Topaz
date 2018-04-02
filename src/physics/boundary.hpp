@@ -1,6 +1,6 @@
 #ifndef BOUNDARY_HPP
 #define BOUNDARY_HPP
-#include "../vector.hpp"
+#include "../camera.hpp"
 
 /**
 * Abstract. Not available for non-polymorphic use. Inherit from this to create custom boundaries.
@@ -70,7 +70,14 @@ private:
 class BoundingPlane : public Boundary
 {
 public:
-	BoundingPlane(Vector3F normal, float distance);
+    /**
+     * Construct a BoundingPlane from a normal and distance from origin.
+     * Defaults are provided only due to use in BoundingFrustum.
+     * @param normal - Normal of the plane
+     * @param distance - Distance from the origin
+     */
+	BoundingPlane(Vector3F normal = {}, float distance = 0.0f);
+	BoundingPlane(Vector3F a, Vector3F b, Vector3F c);
 	BoundingPlane(const BoundingPlane& copy) = default;
 	BoundingPlane(BoundingPlane&& move) = default;
 	~BoundingPlane() = default;
@@ -78,12 +85,34 @@ public:
 
 	const Vector3F& get_normal() const;
 	float get_distance() const;
+    float distance_from(const Vector3F& point) const;
 	BoundingPlane normalised() const;
 	bool intersects(const BoundingSphere& other) const;
 	virtual bool intersects(Boundary* other_boundary) const override;
 private:
-	const Vector3F normal;
-	const float distance;
+	Vector3F normal;
+	float distance;
+};
+
+class Frustum
+{
+public:
+	/**
+	 * Construct a Bounding Frustum from attributes of a perspective matrix.
+	 */
+	Frustum(Vector3F camera_position, Vector3F camera_view, float fov, float aspect_ratio, float near_clip, float far_clip);
+	/**
+	 * Construct a Bounding Frustum directly from a camera.
+	 * Note: Camera::has_perspective_projection has no effect here; we always assume we're using perspective projection.
+	 */
+	Frustum(const Camera& camera, float aspect_ratio);
+    bool contains(const Vector3F& point) const;
+private:
+	Vector3F camera_position, camera_view;
+	float fov, aspect_ratio, near_clip, far_clip;
+	Vector2F near_plane_size, far_plane_size;
+	/// Plane array format: top, bottom, left, right, near, far.
+	std::array<BoundingPlane, 6> planes;
 };
 
 #endif

@@ -143,6 +143,7 @@ void init()
 		float multiplier = tz::util::cast::from_string<float>(MDLFile(meta.get_properties().get_tag("resources")).get_tag("speed"));
 		float velocity = multiplier * test_slider.position;
 		on_ground = false;
+
 		if(updater.millis_passed(1000))
 		{	
 			text.set_text("FPS: " + tz::util::cast::to_string(engine.get_fps()));

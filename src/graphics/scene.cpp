@@ -112,10 +112,12 @@ void Scene::render(const Camera& cam, Shader* shader, unsigned int width, unsign
 	glEnable(GL_DEPTH_CLAMP);
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
-	for(auto& object : this->objects)
-		object.render(cam, shader, width, height);
-    for(auto& heap_object : this->heap_objects)
-        heap_object->render(cam, shader, width, height);
+	Frustum view_frustum(cam, static_cast<float>(width) / height);
+	for(const auto& object : this->get_objects())
+	{
+		if(!cam.has_perspective_projection() || view_frustum.contains(object.get().position))
+			object.get().render(cam, shader, width, height);
+	}
 }
 Object Scene::retrieve_object_data(const std::string& object_name, const std::string& resources_path, MDLFile& mdlf, const std::vector<std::unique_ptr<Mesh>>& all_meshes, const std::vector<std::unique_ptr<Texture>>& all_textures, const std::vector<std::unique_ptr<NormalMap>>& all_normal_maps, const std::vector<std::unique_ptr<ParallaxMap>>& all_parallax_maps, const std::vector<std::unique_ptr<DisplacementMap>>& all_displacement_maps)
 {

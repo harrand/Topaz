@@ -1,5 +1,4 @@
 #include "boundary.hpp"
-#include <algorithm>
 
 BoundingSphere::BoundingSphere(Vector3F centre, float radius): Boundary(), centre(centre), radius(radius){}
 
@@ -80,6 +79,8 @@ bool AABB::intersects(Boundary* other_boundary) const
 
 BoundingPlane::BoundingPlane(Vector3F normal, float distance): Boundary(), normal(normal), distance(distance){}
 
+BoundingPlane::BoundingPlane(Vector3F a, Vector3F b, Vector3F c): normal((b - a).cross(c - a).normalised()), distance(-this->normal.dot(a)) {}
+
 const Vector3F& BoundingPlane::get_normal() const
 {
 	return this->normal;
@@ -88,6 +89,11 @@ const Vector3F& BoundingPlane::get_normal() const
 float BoundingPlane::get_distance() const
 {
 	return this->distance;
+}
+
+float BoundingPlane::distance_from(const Vector3F& point) const
+{
+    return ((this->normal.x * point.x) + (this->normal.y * point.y) + (this->normal.z * point.z) + this->distance) / this->normal.length();
 }
 
 BoundingPlane BoundingPlane::normalised() const
@@ -110,4 +116,49 @@ bool BoundingPlane::intersects(Boundary* other_boundary) const
 	if(dynamic_cast<BoundingSphere*>(other_boundary) == nullptr)
 		return false;
 	return this->intersects(*dynamic_cast<BoundingSphere*>(other_boundary));
+}
+
+Frustum::Frustum(Vector3F camera_position, Vector3F camera_view, float fov, float aspect_ratio, float near_clip, float far_clip): camera_position(camera_position), camera_view(camera_view), fov(fov), aspect_ratio(aspect_ratio), near_clip(near_clip), far_clip(far_clip), near_plane_size(), far_plane_size()
+{
+	this->near_plane_size.x = 2.0f * std::tan(this->fov / 2.0f) * this->near_clip;
+	this->near_plane_size.y = this->near_plane_size.x * this->aspect_ratio;
+	this->far_plane_size.x = 2.0f * std::tan(this->fov / 2.0f) * this->far_clip;
+	this->far_plane_size.y = this->far_plane_size.x * this->aspect_ratio;
+	Camera temporary_camera(this->camera_position, this->camera_view, this->fov, this->near_clip, this->far_clip);
+	/// Camera axes:
+	Vector3F Z = temporary_camera.backward();
+	Vector3F X = temporary_camera.right();
+    Vector3F Y = temporary_camera.up();
+    /// Compute centre of near_plane and far_plane.
+    Vector3F near_centre = temporary_camera.position + (temporary_camera.forward() * temporary_camera.near_clip);
+    Vector3F far_centre = temporary_camera.position + (temporary_camera.forward() * temporary_camera.far_clip);
+    /// Compute corners of near_plane and far_plane
+    Vector3F ntl = near_centre + Y * this->near_plane_size.y - X * this->far_plane_size.x;
+    Vector3F ntr = near_centre + Y * this->near_plane_size.y + X * this->far_plane_size.x;
+    Vector3F nbl = near_centre - Y * this->near_plane_size.y - X * this->near_plane_size.x;
+    Vector3F nbr = near_centre - Y * this->near_plane_size.y + X * this->near_plane_size.x;
+
+    Vector3F ftl = far_centre + Y * this->far_plane_size.y - X * this->far_plane_size.x;
+    Vector3F ftr = far_centre + Y * this->far_plane_size.y + X * this->far_plane_size.x;
+    Vector3F fbl = far_centre - Y * this->far_plane_size.y - X * this->far_plane_size.x;
+    Vector3F fbr = far_centre - Y * this->far_plane_size.y + X * this->far_plane_size.x;
+
+    this->planes[0] = {ntr, ntl, ftl};
+    this->planes[1] = {nbl, nbr, fbr};
+    this->planes[2] = {ntl, nbl, fbl};
+    this->planes[3] = {nbr, ntr, fbr};
+    this->planes[4] = {ntl, ntr, nbr};
+    this->planes[5] = {ftr, ftl, fbl};
+}
+
+Frustum::Frustum(const Camera& camera, float aspect_ratio): Frustum(camera.position, camera.rotation, camera.fov, aspect_ratio, camera.near_clip, camera.far_clip){}
+
+bool Frustum::contains(const Vector3F& point) const
+{
+    for(const BoundingPlane& plane : this->planes)
+    {
+        if(plane.distance_from(point) < 0.0f)
+            return false;
+    }
+    return true;
 }
