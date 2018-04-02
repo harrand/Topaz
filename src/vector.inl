@@ -1,9 +1,39 @@
 #include <cmath>
 
+template<unsigned int N, typename T>
+constexpr Vector<N, T>::Vector(std::array<T, N> data): data(data){}
+
+template<unsigned int N, typename T>
+Vector<N, T>::Vector(const Vector<N, T>& copy): data(copy.data){}
+
+template<unsigned int N, typename T>
+Vector<N, T>::Vector(Vector<N, T>&& move): data(std::move(move.data)){}
+
+template<unsigned int N, typename T>
+Vector<N, T>& Vector<N, T>::operator=(const Vector<N, T>& rhs)
+{
+	this->data = rhs.data;
+	return *(this);
+}
+
 template<typename T>
-Vector2<T>::Vector2(T x, T y): x(x), y(y){}
+constexpr Vector2<T>::Vector2(T x, T y): Vector<2, T>({x, y}), x(this->data[0]), y(this->data[1]){}
 template<typename T>
-constexpr Vector2<T>::Vector2(const std::array<T, 2>& data): x(data[0]), y(data[1]){}
+constexpr Vector2<T>::Vector2(const std::array<T, 2>& data): Vector2<T>(data[0], data[1]){}
+
+template<typename T>
+Vector2<T>::Vector2(const Vector2<T>& copy): Vector2<T>(copy.x, copy.y){}
+
+template<typename T>
+Vector2<T>::Vector2(Vector2<T>&& move): Vector<2, T>(std::move(move.data)), x(this->data[0]), y(this->data[1]){}
+
+template<typename T>
+Vector2<T>& Vector2<T>::operator=(const Vector2<T>& rhs)
+{
+	/// this->x and this->y should still refer to this->data[0] and this->data[1] respectively.
+	this->data = rhs.data;
+	return *(this);
+}
 
 template<typename T>
 Vector2POD Vector2<T>::to_raw() const
@@ -129,13 +159,27 @@ Vector2<T> Vector2<T>::yx() const
 }
 
 template<typename T>
-Vector3<T>::Vector3(T x, T y, T z): Vector2<T>(x, y), z(z){}
+constexpr Vector3<T>::Vector3(T x, T y, T z): Vector<3, T>({x, y, z}), x(this->data[0]), y(this->data[1]), z(this->data[2]){}
 template<typename T>
-Vector3<T>::Vector3(Vector2<T> xy, T z): Vector2<T>(xy), z(z){}
+constexpr Vector3<T>::Vector3(Vector2<T> xy, T z): Vector3<T>(xy.x, xy.y, z){}
 template<typename T>
-Vector3<T>::Vector3(T x, Vector2<T> yz): Vector2<T>(x, yz.x), z(yz.y){}
+constexpr Vector3<T>::Vector3(T x, Vector2<T> yz): Vector3<T>(x, yz.x, yz.y){}
 template<typename T>
-constexpr Vector3<T>::Vector3(const std::array<T, 3>& data): Vector2<T>(std::array<T, 2>({data[0], data[1]})), z(data[2]){}
+constexpr Vector3<T>::Vector3(const std::array<T, 3>& data): Vector3<T>(std::array<T, 2>({data[0], data[1]}), data[2]){}
+
+template<typename T>
+Vector3<T>::Vector3(const Vector3<T>& copy): Vector3<T>(copy.x, copy.y, copy.z){}
+
+template<typename T>
+Vector3<T>::Vector3(Vector3<T>&& move): Vector<3, T>(std::move(move.data)), x(this->data[0]), y(this->data[1]), z(this->data[2]){}
+
+template<typename T>
+Vector3<T>& Vector3<T>::operator=(const Vector3<T>& rhs)
+{
+	/// this->x and this->y should still refer to this->data[0] and this->data[1] respectively.
+	this->data = rhs.data;
+	return *(this);
+}
 
 template<typename T>
 Vector3POD Vector3<T>::to_raw() const
@@ -256,6 +300,18 @@ bool Vector3<T>::operator==(const Vector3<T>& rhs) const
 }
 
 template<typename T>
+Vector2<T> Vector3<T>::xy() const
+{
+	return {this->x, this->y};
+}
+
+template<typename T>
+Vector2<T> Vector3<T>::yx() const
+{
+	return {this->y, this->x};
+}
+
+template<typename T>
 Vector3<T> Vector3<T>::xyz() const
 {
 	return {this->x, this->y, this->z};
@@ -292,15 +348,28 @@ Vector3<T> Vector3<T>::zyx() const
 }
 
 template<typename T>
-Vector4<T>::Vector4(T x, T y, T z, T w): Vector3<T>(x, y, z), w(w){}
+constexpr Vector4<T>::Vector4(T x, T y, T z, T w): Vector<4, T>({x, y, z, w}), x(this->data[0]), y(this->data[1]), z(this->data[2]), w(this->data[3]){}
 template<typename T>
-Vector4<T>::Vector4(Vector3<T> xyz, T w): Vector3<T>(xyz), w(w){}
+constexpr Vector4<T>::Vector4(Vector3<T> xyz, T w): Vector4<T>(xyz.x, xyz.y, xyz.z, w){}
 template<typename T>
-Vector4<T>::Vector4(T x, Vector3<T> yzw): Vector3<T>(x, yzw.x, yzw.y), w(yzw.z){}
+constexpr Vector4<T>::Vector4(T x, Vector3<T> yzw): Vector4<T>(x, yzw.x, yzw.y, yzw.z){}
 template<typename T>
-Vector4<T>::Vector4(Vector2<T> xy, Vector2<T> zw): Vector3<T>(xy.x, xy.y, zw.x), w(zw.y){}
+constexpr Vector4<T>::Vector4(Vector2<T> xy, Vector2<T> zw): Vector4<T>(xy.x, xy.y, zw.x, zw.y){}
 template<typename T>
-constexpr Vector4<T>::Vector4(const std::array<T, 4>& data): Vector3<T>(std::array<T, 3>({data[0], data[1], data[2]})), w(data[3]){}
+constexpr Vector4<T>::Vector4(const std::array<T, 4>& data): Vector4<T>(std::array<T, 3>({data[0], data[1], data[2]}), data[3]){}
+
+template<typename T>
+Vector4<T>::Vector4(const Vector4<T>& copy): Vector4<T>(copy.x, copy.y, copy.z, copy.w){}
+
+template<typename T>
+Vector4<T>::Vector4(Vector4<T>&& move): Vector<4, T>(std::move(move.data)), x(this->data[0]), y(this->data[1]), z(this->data[2]), w(this->data[3]){}
+
+template<typename T>
+Vector4<T>& Vector4<T>::operator=(const Vector4<T>& rhs)
+{
+	this->data = rhs.data;
+	return *(this);
+}
 
 template<typename T>
 Vector4POD Vector4<T>::to_raw() const
@@ -413,6 +482,54 @@ template<typename T>
 bool Vector4<T>::operator==(const Vector4<T>& rhs) const
 {
 	return (this->x == rhs.x) && (this->y == rhs.y) && (this->z == rhs.z) && (this->w == rhs.w);
+}
+
+template<typename T>
+Vector2<T> Vector4<T>::xy() const
+{
+	return {this->x, this->y};
+}
+
+template<typename T>
+Vector2<T> Vector4<T>::yx() const
+{
+	return {this->y, this->x};
+}
+
+template<typename T>
+Vector3<T> Vector4<T>::xyz() const
+{
+	return {this->x, this->y, this->z};
+}
+
+template<typename T>
+Vector3<T> Vector4<T>::xzy() const
+{
+	return {this->x, this->z, this->y};
+}
+
+template<typename T>
+Vector3<T> Vector4<T>::yxz() const
+{
+	return {this->y, this->x, this->z};
+}
+
+template<typename T>
+Vector3<T> Vector4<T>::yzx() const
+{
+	return {this->y, this->z, this->x};
+}
+
+template<typename T>
+Vector3<T> Vector4<T>::zxy() const
+{
+	return {this->z, this->x, this->y};
+}
+
+template<typename T>
+Vector3<T> Vector4<T>::zyx() const
+{
+	return {this->z, this->y, this->x};
 }
 
 template<typename T>

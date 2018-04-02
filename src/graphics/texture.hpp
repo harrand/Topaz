@@ -18,7 +18,7 @@ namespace tz::graphics
 	/**
 	* Minimum of implementation and 32. This is because if hardware allows 64 attachments, OpenGL headers currently dont even specify 32+ attachments (it goes to GL_DEPTH_ATTACHMENT). For this reason, it is the minimum of the two, for a fair compromise.
 	*/
-	constexpr unsigned int maximum_framebuffer_attachments = std::min(GL_MAX_COLOR_ATTACHMENTS, 32);
+	constexpr int maximum_framebuffer_attachments = std::min(GL_MAX_COLOR_ATTACHMENTS, 32);
 
 	constexpr Vector4<unsigned char> default_texture_colour = Vector4<unsigned char>(std::array<unsigned char, 4>({255, 0, 255, 255}));
     constexpr Vector4<unsigned char> default_normal_map_colour = Vector4<unsigned char>(std::array<unsigned char, 4>({128, 128, 255, 255}));

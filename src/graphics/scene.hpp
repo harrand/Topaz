@@ -43,23 +43,25 @@ public:
 	* Throws a std::bad_optional_access exception if this->has_file_name() returns false.
 	*/
 	const std::string& get_file_name() const;
-	// Add a copy of an object to the scene. Complexity: O(1) amortised Ω(1) ϴ(1) amortised
+	/**
+	 * 	Add a copy of an object to the scene.
+	 *  Complexity: O(1) amortised Ω(1) amortised ϴ(1) amortised.
+	 */
 	void add_object(Object obj);
 	/**
-	* Construct an Object3D, Entity or EntityObject3D in-place and add it to the scene.
+	* Construct an Object or any subclass of Object in-place and add it to the scene.
+	* Complexity: O(1) amortised Ω(1) amortised ϴ(1) amortised.
 	*/
 	template<class Element, typename... Args>
 	Element& emplace(Args&&... args);
 	/**
-	* Construct an Object3D in-place and add it to the scene.
+	* Construct an Object in-place and add it to the scene. Object-slicing will affect the parameter. Use Scene::emplace instead to prevent slicing.
+	* Complexity: O(1) amortised Ω(1) amortised ϴ(1) amortised.
 	*/
 	template<typename... Args>
 	Object& emplace_object(Args&&... args);
 	/**
-	* Construct an Entity in-place and add it to the scene.
-	*/
-	/**
-	* Remove an existing Object3D from the scene.
+	* Remove an existing Object from the scene.
 	*/
 	void remove_object(const Object& obj);
 	/**
@@ -67,7 +69,7 @@ public:
 	*/
 	std::vector<std::reference_wrapper<const Object>> get_objects() const;
 	/**
-	* Returns total number of Object3Ds, Entities and EntityObject3Ds in the scene.
+	* Returns total number of Objects in the scene.
 	*/
 	std::size_t get_size() const;
 	/**

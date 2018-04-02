@@ -45,6 +45,7 @@ void Scene::add_object(Object obj)
 void Scene::remove_object(const Object& obj)
 {
 	this->objects.erase(std::remove(this->objects.begin(), this->objects.end(), obj), this->objects.end());
+	this->heap_objects.erase(std::remove_if(this->heap_objects.begin(), this->heap_objects.end(), [&obj](auto const& ptr){return *ptr == obj;}), this->heap_objects.end());
 }
 
 std::vector<std::reference_wrapper<const Object>> Scene::get_objects() const
