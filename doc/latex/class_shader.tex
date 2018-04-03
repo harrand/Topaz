@@ -1,0 +1,135 @@
+\hypertarget{class_shader}{}\section{Shader Class Reference}
+\label{class_shader}\index{Shader@{Shader}}
+
+
+{\ttfamily \#include $<$shader.\+hpp$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_shader_ad70a8439144aba347eea228df7a3357b}{Shader}} (std\+::string vertex\+\_\+source, std\+::string tessellation\+\_\+control\+\_\+source, std\+::string tessellation\+\_\+evaluation\+\_\+source, std\+::string geometry\+\_\+source, std\+::string fragment\+\_\+source, bool compile=true, bool link=true, bool validate=true)
+\item 
+\mbox{\hyperlink{class_shader_adecfdceb03c6d56bbba99e9f49855a4a}{Shader}} (std\+::string filename, bool compile=true, bool link=true, bool validate=true)
+\item 
+\mbox{\Hypertarget{class_shader_a055d46d84b983cd53162a07a1878a5cf}\label{class_shader_a055d46d84b983cd53162a07a1878a5cf}} 
+{\bfseries Shader} (const \mbox{\hyperlink{class_shader}{Shader}} \&copy)
+\item 
+\mbox{\Hypertarget{class_shader_ad4e6b6f732bb803e8a5b5338ede2e2e7}\label{class_shader_ad4e6b6f732bb803e8a5b5338ede2e2e7}} 
+{\bfseries Shader} (\mbox{\hyperlink{class_shader}{Shader}} \&\&move)
+\item 
+\mbox{\hyperlink{class_shader}{Shader}} \& \mbox{\hyperlink{class_shader_a4aa4dab7fa6e0cb0dd12df61b471e6f0}{operator=}} (const \mbox{\hyperlink{class_shader}{Shader}} \&rhs)=delete
+\item 
+\mbox{\Hypertarget{class_shader_afc1d919ec1b4227bb9fec3010719913e}\label{class_shader_afc1d919ec1b4227bb9fec3010719913e}} 
+void {\bfseries compile} (std\+::string vertex\+\_\+source, std\+::string tessellation\+\_\+control\+\_\+source, std\+::string tessellation\+\_\+evaluation\+\_\+source, std\+::string geometry\+\_\+source, std\+::string fragment\+\_\+source)
+\item 
+\mbox{\Hypertarget{class_shader_a35e35ddc1d24cae176cc310bd3b7b96f}\label{class_shader_a35e35ddc1d24cae176cc310bd3b7b96f}} 
+void {\bfseries link} ()
+\item 
+\mbox{\Hypertarget{class_shader_a63abb0b416f458680586b5606d8a4826}\label{class_shader_a63abb0b416f458680586b5606d8a4826}} 
+void {\bfseries validate} ()
+\item 
+\mbox{\Hypertarget{class_shader_a7d734904868dd336e52071d92230bbeb}\label{class_shader_a7d734904868dd336e52071d92230bbeb}} 
+bool {\bfseries is\+\_\+compiled} () const
+\item 
+\mbox{\Hypertarget{class_shader_a9eb0765e36b74d8dcd4afb62df04d024}\label{class_shader_a9eb0765e36b74d8dcd4afb62df04d024}} 
+bool {\bfseries is\+\_\+linked} () const
+\item 
+\mbox{\Hypertarget{class_shader_a731afb1a870977aa3eb91168f752b2e8}\label{class_shader_a731afb1a870977aa3eb91168f752b2e8}} 
+bool {\bfseries is\+\_\+validated} () const
+\item 
+bool \mbox{\hyperlink{class_shader_a8053fc5d01642d3d985e233835065e13}{ready}} () const
+\item 
+\mbox{\Hypertarget{class_shader_a2f7b0cd2bd3226c76ea2f766a59fbb58}\label{class_shader_a2f7b0cd2bd3226c76ea2f766a59fbb58}} 
+{\footnotesize template$<$class T $>$ }\\void {\bfseries add\+\_\+uniform} (\mbox{\hyperlink{class_uniform}{Uniform}}$<$ T $>$ \&\&uniform)
+\item 
+\mbox{\Hypertarget{class_shader_ae34ad0d3352ed22322dcbe1d1ef0740b}\label{class_shader_ae34ad0d3352ed22322dcbe1d1ef0740b}} 
+{\footnotesize template$<$class T $>$ }\\void {\bfseries emplace\+\_\+uniform} (std\+::string uniform\+\_\+location, T value)
+\item 
+\mbox{\Hypertarget{class_shader_a46dbb0b323be10d61496452cde5aa756}\label{class_shader_a46dbb0b323be10d61496452cde5aa756}} 
+void {\bfseries remove\+\_\+uniform} (std\+::string\+\_\+view uniform\+\_\+location)
+\item 
+\mbox{\Hypertarget{class_shader_a370621cc5d76a859ee9a610dc8b27d82}\label{class_shader_a370621cc5d76a859ee9a610dc8b27d82}} 
+bool {\bfseries has\+\_\+uniform} (std\+::string\+\_\+view uniform\+\_\+location) const
+\item 
+\mbox{\Hypertarget{class_shader_a00310ce243076cdf51e84d1107142abf}\label{class_shader_a00310ce243076cdf51e84d1107142abf}} 
+\mbox{\hyperlink{class_uniform_implicit}{Uniform\+Implicit}} $\ast$ {\bfseries get\+\_\+uniform} (std\+::string\+\_\+view uniform\+\_\+location) const
+\item 
+\mbox{\Hypertarget{class_shader_abeb49b89007eae2e82a7d95192e326e4}\label{class_shader_abeb49b89007eae2e82a7d95192e326e4}} 
+{\footnotesize template$<$class T $>$ }\\void {\bfseries set\+\_\+uniform} (std\+::string\+\_\+view uniform\+\_\+location, T value)
+\item 
+\mbox{\Hypertarget{class_shader_abe853f6bf34c1bd33f00226256441a4f}\label{class_shader_abe853f6bf34c1bd33f00226256441a4f}} 
+{\footnotesize template$<$class T $>$ }\\T {\bfseries get\+\_\+uniform\+\_\+value} (std\+::string\+\_\+view uniform\+\_\+location) const
+\item 
+\mbox{\Hypertarget{class_shader_a220b3e1f3e5a5ddd0ebec6d29a226b1c}\label{class_shader_a220b3e1f3e5a5ddd0ebec6d29a226b1c}} 
+std\+::size\+\_\+t {\bfseries number\+\_\+active\+\_\+uniforms} () const
+\item 
+\mbox{\Hypertarget{class_shader_af097dd4e2fa1b4de25653b5664df2d90}\label{class_shader_af097dd4e2fa1b4de25653b5664df2d90}} 
+const std\+::string \& {\bfseries get\+\_\+attribute\+\_\+location} (std\+::size\+\_\+t attribute\+\_\+id) const
+\item 
+\mbox{\Hypertarget{class_shader_a0d447622b2992d6afb9ecffb03001010}\label{class_shader_a0d447622b2992d6afb9ecffb03001010}} 
+void {\bfseries register\+\_\+attribute} (std\+::size\+\_\+t attribute\+\_\+id, std\+::string attribute\+\_\+location)
+\item 
+\mbox{\Hypertarget{class_shader_a12c6e9080d0bb7724f74fada01ba15a4}\label{class_shader_a12c6e9080d0bb7724f74fada01ba15a4}} 
+bool {\bfseries has\+\_\+vertex\+\_\+shader} () const
+\item 
+\mbox{\Hypertarget{class_shader_a2fda1d97a463c555bcab9a73f0beb50d}\label{class_shader_a2fda1d97a463c555bcab9a73f0beb50d}} 
+bool {\bfseries has\+\_\+tessellation\+\_\+control\+\_\+shader} () const
+\item 
+\mbox{\Hypertarget{class_shader_a3d27c58417eb3ecec859dffeca8fe97d}\label{class_shader_a3d27c58417eb3ecec859dffeca8fe97d}} 
+bool {\bfseries has\+\_\+tessellation\+\_\+evaluation\+\_\+shader} () const
+\item 
+\mbox{\Hypertarget{class_shader_aea8532f5a9ceda124eaebc71c3b1cf51}\label{class_shader_aea8532f5a9ceda124eaebc71c3b1cf51}} 
+bool {\bfseries has\+\_\+geometry\+\_\+shader} () const
+\item 
+\mbox{\Hypertarget{class_shader_a4ee397617c153c826fd3e0b168409362}\label{class_shader_a4ee397617c153c826fd3e0b168409362}} 
+bool {\bfseries has\+\_\+fragment\+\_\+shader} () const
+\item 
+\mbox{\Hypertarget{class_shader_a08d212f84d03990079f2e11a1f744f26}\label{class_shader_a08d212f84d03990079f2e11a1f744f26}} 
+G\+Luint {\bfseries get\+\_\+program\+\_\+handle} () const
+\item 
+\mbox{\Hypertarget{class_shader_aadbc0ca0d899238d547f87f19461dfeb}\label{class_shader_aadbc0ca0d899238d547f87f19461dfeb}} 
+void {\bfseries bind} () const
+\item 
+\mbox{\Hypertarget{class_shader_a52b26fbffa9c135cae1ee81b553c1ad4}\label{class_shader_a52b26fbffa9c135cae1ee81b553c1ad4}} 
+void {\bfseries update} () const
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Use this to load, compile, link, run, edit, analyse and even receive transform-\/feedback from an Open\+GL shader written in G\+L\+SL. 
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{class_shader_ad70a8439144aba347eea228df7a3357b}\label{class_shader_ad70a8439144aba347eea228df7a3357b}} 
+\index{Shader@{Shader}!Shader@{Shader}}
+\index{Shader@{Shader}!Shader@{Shader}}
+\subsubsection{\texorpdfstring{Shader()}{Shader()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily Shader\+::\+Shader (\begin{DoxyParamCaption}\item[{std\+::string}]{vertex\+\_\+source,  }\item[{std\+::string}]{tessellation\+\_\+control\+\_\+source,  }\item[{std\+::string}]{tessellation\+\_\+evaluation\+\_\+source,  }\item[{std\+::string}]{geometry\+\_\+source,  }\item[{std\+::string}]{fragment\+\_\+source,  }\item[{bool}]{compile = {\ttfamily true},  }\item[{bool}]{link = {\ttfamily true},  }\item[{bool}]{validate = {\ttfamily true} }\end{DoxyParamCaption})}
+
+Constructs a shader from the given shader-\/sources. Invalid shader sources will emit errors via tz\+::util\+::log\+::error. Valid shader sources will yield desired shaders. Empty shader sources will yield a lack of corresponding shaders (e.\+g if geometry\+\_\+source is \char`\"{}\char`\"{}, there shall be no geometry shader). \mbox{\Hypertarget{class_shader_adecfdceb03c6d56bbba99e9f49855a4a}\label{class_shader_adecfdceb03c6d56bbba99e9f49855a4a}} 
+\index{Shader@{Shader}!Shader@{Shader}}
+\index{Shader@{Shader}!Shader@{Shader}}
+\subsubsection{\texorpdfstring{Shader()}{Shader()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily Shader\+::\+Shader (\begin{DoxyParamCaption}\item[{std\+::string}]{filename,  }\item[{bool}]{compile = {\ttfamily true},  }\item[{bool}]{link = {\ttfamily true},  }\item[{bool}]{validate = {\ttfamily true} }\end{DoxyParamCaption})}
+
+Constructs a shader from a given filename, comprised of\+: \mbox{\hyperlink{class_vertex}{Vertex}} shader from the path \textquotesingle{}.vertex.\+glsl\textquotesingle{}, Tessellation-\/\+Control shader from the path \textquotesingle{}.tessellation\+\_\+control.\+glsl\textquotesingle{}, Tessellation-\/\+Evaluation shader from the path \textquotesingle{}.tessellation\+\_\+evaluation.\+glsl\textquotesingle{}, Geometry shader from the path \textquotesingle{}.geometry.\+glsl\textquotesingle{}, and Fragment shader from the path \textquotesingle{}.fragment.\+glsl\textquotesingle{}. 
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_shader_a4aa4dab7fa6e0cb0dd12df61b471e6f0}\label{class_shader_a4aa4dab7fa6e0cb0dd12df61b471e6f0}} 
+\index{Shader@{Shader}!operator=@{operator=}}
+\index{operator=@{operator=}!Shader@{Shader}}
+\subsubsection{\texorpdfstring{operator=()}{operator=()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{class_shader}{Shader}}\& Shader\+::operator= (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{class_shader}{Shader}} \&}]{rhs }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [delete]}}
+
+Until transform feedback and other compilation options are implemented, the idea of copy-\/constructing Shaders is meaningless. \mbox{\Hypertarget{class_shader_a8053fc5d01642d3d985e233835065e13}\label{class_shader_a8053fc5d01642d3d985e233835065e13}} 
+\index{Shader@{Shader}!ready@{ready}}
+\index{ready@{ready}!Shader@{Shader}}
+\subsubsection{\texorpdfstring{ready()}{ready()}}
+{\footnotesize\ttfamily bool Shader\+::ready (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+Returns true if the \mbox{\hyperlink{class_shader}{Shader}} is compiled, linked and validated and therefore ready to be bound. 
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+src/graphics/shader.\+hpp\item 
+src/graphics/shader.\+cpp\item 
+src/graphics/shader.\+inl\end{DoxyCompactItemize}

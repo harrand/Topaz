@@ -1,0 +1,37 @@
+\hypertarget{class_sprite}{}\section{Sprite Class Reference}
+\label{class_sprite}\index{Sprite@{Sprite}}
+
+
+{\ttfamily \#include $<$sprite.\+hpp$>$}
+
+Inheritance diagram for Sprite\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_sprite}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_sprite_a555482129461dfe0f4f296ea2e78f153}\label{class_sprite_a555482129461dfe0f4f296ea2e78f153}} 
+{\bfseries Sprite} (\mbox{\hyperlink{class_vector2}{Vector2F}} position, float rotation, \mbox{\hyperlink{class_vector2}{Vector2F}} scale, const \mbox{\hyperlink{class_texture}{Texture}} $\ast$texture)
+\item 
+\mbox{\Hypertarget{class_sprite_ac32f104ca4bc443adbdfc53bec082a34}\label{class_sprite_ac32f104ca4bc443adbdfc53bec082a34}} 
+{\bfseries Sprite} (\mbox{\hyperlink{class_vector2}{Vector2F}} position, float rotation, \mbox{\hyperlink{class_vector2}{Vector2F}} scale, \mbox{\hyperlink{class_vector4}{Vector4F}} colour)
+\item 
+\mbox{\Hypertarget{class_sprite_a2937195112c58787f249689324456c9f}\label{class_sprite_a2937195112c58787f249689324456c9f}} 
+\mbox{\hyperlink{class_sprite}{Sprite}} \& {\bfseries operator=} (const \mbox{\hyperlink{class_sprite}{Sprite}} \&copy)
+\item 
+\mbox{\Hypertarget{class_sprite_a93a83d6c6941cff4036c50110d1b1ec4}\label{class_sprite_a93a83d6c6941cff4036c50110d1b1ec4}} 
+virtual void {\bfseries render} (const \mbox{\hyperlink{class_camera}{Camera}} \&cam, \mbox{\hyperlink{class_shader}{Shader}} $\ast$shader, float width, float height) const override
+\end{DoxyCompactItemize}
+\subsection*{Additional Inherited Members}
+
+
+\subsection{Detailed Description}
+Like a normal \mbox{\hyperlink{class_object2_d}{Object2D}}, but has a texture bound. 
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+src/graphics/sprite.\+hpp\item 
+src/graphics/sprite.\+cpp\end{DoxyCompactItemize}

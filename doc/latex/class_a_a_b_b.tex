@@ -1,0 +1,63 @@
+\hypertarget{class_a_a_b_b}{}\section{A\+A\+BB Class Reference}
+\label{class_a_a_b_b}\index{A\+A\+BB@{A\+A\+BB}}
+
+
+{\ttfamily \#include $<$boundary.\+hpp$>$}
+
+Inheritance diagram for A\+A\+BB\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_a_a_b_b}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_a_a_b_b_a12dd0a1fb58f12ee747de9783fcc159f}\label{class_a_a_b_b_a12dd0a1fb58f12ee747de9783fcc159f}} 
+{\bfseries A\+A\+BB} (\mbox{\hyperlink{class_vector3}{Vector3F}} minimum, \mbox{\hyperlink{class_vector3}{Vector3F}} maximum)
+\item 
+\mbox{\Hypertarget{class_a_a_b_b_ab75eda9fd4f38373f45b7cf7220e2601}\label{class_a_a_b_b_ab75eda9fd4f38373f45b7cf7220e2601}} 
+{\bfseries A\+A\+BB} (const \mbox{\hyperlink{class_a_a_b_b}{A\+A\+BB}} \&copy)=default
+\item 
+\mbox{\Hypertarget{class_a_a_b_b_a72cb5a605e743890dcbd31f6bf32fd1e}\label{class_a_a_b_b_a72cb5a605e743890dcbd31f6bf32fd1e}} 
+{\bfseries A\+A\+BB} (\mbox{\hyperlink{class_a_a_b_b}{A\+A\+BB}} \&\&move)=default
+\item 
+\mbox{\Hypertarget{class_a_a_b_b_a5dbdefebe25321ec24ac97d163898596}\label{class_a_a_b_b_a5dbdefebe25321ec24ac97d163898596}} 
+\mbox{\hyperlink{class_a_a_b_b}{A\+A\+BB}} \& {\bfseries operator=} (const \mbox{\hyperlink{class_a_a_b_b}{A\+A\+BB}} \&rhs)=default
+\item 
+\mbox{\Hypertarget{class_a_a_b_b_a4d2bc2fc98412ad6160c4104f0aeb983}\label{class_a_a_b_b_a4d2bc2fc98412ad6160c4104f0aeb983}} 
+const \mbox{\hyperlink{class_vector3}{Vector3F}} \& {\bfseries get\+\_\+minimum} () const
+\item 
+\mbox{\Hypertarget{class_a_a_b_b_a79e383c8e3010cdd1134aca704de030b}\label{class_a_a_b_b_a79e383c8e3010cdd1134aca704de030b}} 
+const \mbox{\hyperlink{class_vector3}{Vector3F}} \& {\bfseries get\+\_\+maximum} () const
+\item 
+\mbox{\Hypertarget{class_a_a_b_b_a9c1cca9c55355340fffd6b4f707dd70d}\label{class_a_a_b_b_a9c1cca9c55355340fffd6b4f707dd70d}} 
+bool {\bfseries intersects} (const \mbox{\hyperlink{class_a_a_b_b}{A\+A\+BB}} \&rhs) const
+\item 
+\mbox{\Hypertarget{class_a_a_b_b_ad517489d4c7a73d99ca28b126283daf0}\label{class_a_a_b_b_ad517489d4c7a73d99ca28b126283daf0}} 
+bool {\bfseries intersects} (const \mbox{\hyperlink{class_vector3}{Vector3F}} \&point) const
+\item 
+virtual bool \mbox{\hyperlink{class_a_a_b_b_ab427a4455732a16802103e06ed4af02a}{intersects}} (\mbox{\hyperlink{class_boundary}{Boundary}} $\ast$other\+\_\+boundary) const override
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Axis-\/\+Aligned Bounding-\/\+Box. Very lightweight but is a very limited and minimalistic box-\/shaped boundary for an object. Use if performance $>$ precision. 
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_a_a_b_b_ab427a4455732a16802103e06ed4af02a}\label{class_a_a_b_b_ab427a4455732a16802103e06ed4af02a}} 
+\index{A\+A\+BB@{A\+A\+BB}!intersects@{intersects}}
+\index{intersects@{intersects}!A\+A\+BB@{A\+A\+BB}}
+\subsubsection{\texorpdfstring{intersects()}{intersects()}}
+{\footnotesize\ttfamily bool A\+A\+B\+B\+::intersects (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_boundary}{Boundary}} $\ast$}]{other\+\_\+boundary }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+Pure virtual. Override this if you want to make your own Boundaries. 
+
+Implements \mbox{\hyperlink{class_boundary_a364909bdfa4a4945f974c34a39e198cc}{Boundary}}.
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+src/physics/boundary.\+hpp\item 
+src/physics/boundary.\+cpp\end{DoxyCompactItemize}

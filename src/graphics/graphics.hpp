@@ -14,13 +14,26 @@
 class Font
 {
 public:
+	/**
+	 * Construct a font from an existing font-file.
+	 * @param font_path - Path to the supported font-file.
+	 * @param pixel_height - Height of the glyphs, in pixels.
+	 */
 	Font(const std::string& font_path, int pixel_height);
 	Font(const Font& copy);
 	Font(Font&& move);
 	~Font();
 	Font& operator=(Font&& rhs);
-	
+
+	/**
+	 * Get the height of glyphs, in pixels.
+	 * @return - Height of glyphs, in pixels.
+	 */
 	int get_pixel_height() const;
+	/**
+	 * Retrieve the filename of the file used to load this Font.
+	 * @return - Filename of the source font.
+	 */
 	const std::string& get_path() const;
 	friend class Texture;
 private:
@@ -35,6 +48,12 @@ private:
 class Vertex
 {
 public:
+	/**
+	 * Construct a Vertex directly from a 3-dimensional position, a 2-dimensional texture-coordinate (UV) and a 3-dimensional normal Vector.
+	 * @param position
+	 * @param texture_coordinate
+	 * @param normal
+	 */
 	Vertex(Vector3F position, Vector2F texture_coordinate, Vector3F normal);
 	Vertex(const Vertex& copy) = default;
 	Vertex(Vertex&& move) = default;
@@ -52,6 +71,13 @@ public:
 class PixelRGBA
 {
 public:
+	/**
+	 * Construct an RGBA-coded pixel directly from colour data.
+	 * @param red - Intensity of the red colour, from 0-255.
+	 * @param green - Intensity of the green colour, from 0-255.
+	 * @param blue - Intensity of the blue colour, from 0-255.
+	 * @param alpha - Intensity of the alpha component (typically transparency), from 0-255.
+	 */
 	constexpr PixelRGBA(unsigned char red = 0, unsigned char green = 0, unsigned char blue = 0, unsigned char alpha = 0): data(std::array<unsigned char, 4>({red, green, blue, alpha})){}
 	Vector<4, unsigned char> data;
 };
@@ -64,6 +90,12 @@ template<class Pixel = PixelRGBA>
 class Bitmap
 {
 public:
+	/**
+	 * Construct a Bitmap directly from a vector of Pixels.
+	 * @param pixels - Pixel data to construct the bitmap.
+	 * @param width - Width of the bitmap, in pixels.
+	 * @param height - Height of the bitmap, in pixels.
+	 */
 	Bitmap(std::vector<Pixel> pixels = std::vector<Pixel>(), int width = 0, int height = 0): pixels(pixels), width(width), height(height){}
 	std::vector<Pixel> pixels;
 	int width, height;
@@ -96,6 +128,9 @@ namespace tz
 		*/
 		namespace model
 		{
+		    /**
+		     * Representation of indices for a vertex, texture-coordinate and normal.
+		     */
 			class OBJIndex
 			{
 			public:
@@ -104,7 +139,9 @@ namespace tz
 				unsigned int normal_index;
 				bool operator<(const OBJIndex& rhs) const { return vertex_index < rhs.vertex_index; }
 			};
-			
+			/**
+			 * Barebones representation of a 3D model.
+			 */
 			class IndexedModel
 			{
 			public:
@@ -126,7 +163,12 @@ namespace tz
 				std::vector<Vector3F> normals;
 				bool has_uvs;
 				bool has_normals;
-				
+
+				/**
+				 * Load an existing OBJ file.
+				 * @param file_name - Path to the existing OBJ-formatted 3D model.
+				 * The model must have triangular faces. OBJ Materials (mtl files) are not supported.
+				 */
 				OBJModel(const std::string& file_name);
 				
 				IndexedModel to_indexed_model();

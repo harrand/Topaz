@@ -112,6 +112,9 @@ private:
 	Texture(int width, int height, bool initialise_handle);
 };
 
+/**
+ * Representation of a normal-map. It's like a texture, but each pixel represents a normal vector for a texel, not colour.
+ */
 class NormalMap: public Texture
 {
 public:
@@ -121,6 +124,9 @@ public:
 	virtual tz::graphics::TextureType get_texture_type() const override{return tz::graphics::TextureType::NORMAL_MAP;}
 };
 
+/**
+ * Representation of a parallax-map. It's like a texture, but each pixel represents a texture-coordinate displacement scalar for a texel, not colour.
+ */
 class ParallaxMap: public Texture
 {
 public:
@@ -130,6 +136,9 @@ public:
 	virtual tz::graphics::TextureType get_texture_type() const override{return tz::graphics::TextureType::PARALLAX_MAP;}
 };
 
+/**
+ * Representation of a displacement-map. It's like a texture, but each pixel represents an actual displacement vector for a texel, not colour.
+ */
 class DisplacementMap: public Texture
 {
 public:

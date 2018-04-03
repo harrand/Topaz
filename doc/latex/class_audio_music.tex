@@ -1,0 +1,55 @@
+\hypertarget{class_audio_music}{}\section{Audio\+Music Class Reference}
+\label{class_audio_music}\index{Audio\+Music@{Audio\+Music}}
+
+
+{\ttfamily \#include $<$audio.\+hpp$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_audio_music_a260b6ddf241e3f1e865a49309aa12572}\label{class_audio_music_a260b6ddf241e3f1e865a49309aa12572}} 
+{\bfseries Audio\+Music} (std\+::string filename)
+\item 
+\mbox{\Hypertarget{class_audio_music_a742e8a6822342b8de08175e3948e5830}\label{class_audio_music_a742e8a6822342b8de08175e3948e5830}} 
+{\bfseries Audio\+Music} (const \mbox{\hyperlink{class_audio_music}{Audio\+Music}} \&copy)
+\item 
+\mbox{\Hypertarget{class_audio_music_a55779c2cc75a89cf808d92e313d80ae8}\label{class_audio_music_a55779c2cc75a89cf808d92e313d80ae8}} 
+{\bfseries Audio\+Music} (\mbox{\hyperlink{class_audio_music}{Audio\+Music}} \&\&move)
+\item 
+\mbox{\Hypertarget{class_audio_music_a9487a5b790ede77cc96efd6e70322253}\label{class_audio_music_a9487a5b790ede77cc96efd6e70322253}} 
+\mbox{\hyperlink{class_audio_music}{Audio\+Music}} \& {\bfseries operator=} (const \mbox{\hyperlink{class_audio_music}{Audio\+Music}} \&rhs)=delete
+\item 
+\mbox{\Hypertarget{class_audio_music_a794b5133068bacd9d5954316c466e781}\label{class_audio_music_a794b5133068bacd9d5954316c466e781}} 
+const std\+::string \& {\bfseries get\+\_\+file\+\_\+name} () const
+\item 
+\mbox{\Hypertarget{class_audio_music_a103d6a71de74441ad5b63fec5f50d656}\label{class_audio_music_a103d6a71de74441ad5b63fec5f50d656}} 
+bool {\bfseries is\+\_\+paused} () const
+\item 
+void \mbox{\hyperlink{class_audio_music_a9867971e26b4d081936287af1923fd1a}{play}} (bool priority=true) const
+\item 
+void \mbox{\hyperlink{class_audio_music_a5de1c2fc9f565af444c48b85b56d7c8f}{set\+\_\+paused}} (bool pause=true)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Playable audio file. Use this for longer audio segments such as background music. 
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_audio_music_a9867971e26b4d081936287af1923fd1a}\label{class_audio_music_a9867971e26b4d081936287af1923fd1a}} 
+\index{Audio\+Music@{Audio\+Music}!play@{play}}
+\index{play@{play}!Audio\+Music@{Audio\+Music}}
+\subsubsection{\texorpdfstring{play()}{play()}}
+{\footnotesize\ttfamily void Audio\+Music\+::play (\begin{DoxyParamCaption}\item[{bool}]{priority = {\ttfamily true} }\end{DoxyParamCaption}) const}
+
+Play should be invoked only once and not to un-\/pause music. \mbox{\Hypertarget{class_audio_music_a5de1c2fc9f565af444c48b85b56d7c8f}\label{class_audio_music_a5de1c2fc9f565af444c48b85b56d7c8f}} 
+\index{Audio\+Music@{Audio\+Music}!set\+\_\+paused@{set\+\_\+paused}}
+\index{set\+\_\+paused@{set\+\_\+paused}!Audio\+Music@{Audio\+Music}}
+\subsubsection{\texorpdfstring{set\+\_\+paused()}{set\_paused()}}
+{\footnotesize\ttfamily void Audio\+Music\+::set\+\_\+paused (\begin{DoxyParamCaption}\item[{bool}]{pause = {\ttfamily true} }\end{DoxyParamCaption})}
+
+Pause/\+Resume the music. 
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+src/audio/audio.\+hpp\item 
+src/audio/audio.\+cpp\end{DoxyCompactItemize}

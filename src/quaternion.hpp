@@ -2,6 +2,9 @@
 #define QUATERNION_HPP
 #include "matrix.hpp"
 
+/**
+ * Specialised 4-dimensional Vector to represent rotations in 3-dimensional space.
+ */
 class Quaternion : protected Vector4F
 {
 public:

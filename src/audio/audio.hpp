@@ -12,20 +12,12 @@ class AudioClip
 {
 public:
 	/**
-	* Load AudioClip from existing file (must be wavefront audio .wav)
-	*/
+	 * Construct an audioclip from an existing file with supported format.
+	 * @param filename - Path of the filename.
+	 */
 	AudioClip(std::string filename);
-	/**
-	* Construct AudioClip using the filename of copy.
-	*/
 	AudioClip(const AudioClip& copy);
-	/**
-	* Construct AudioClip using the same chunk as move. Also copies move's filename.
-	*/
 	AudioClip(AudioClip&& move);
-	/**
-	* Deallocate memory from the SDL_Mixer functionality.
-	*/
 	virtual ~AudioClip();
 	AudioClip& operator=(const AudioClip& rhs) = delete;
 	
@@ -35,8 +27,20 @@ public:
 	* Note: Invoking tz::audio::play_async on an instance of AudioClip will extend the lifetime of the instance such that the audio clip is guaranteed to be fully played.
 	*/
 	void play();
+	/**
+	 * Get the channel that this AudioClip is currently playing on.
+	 * @return - Channel that the clip is playing on
+	 */
 	int get_channel() const;
+	/**
+	 * Estimate the length of the AudioClip, in milliseconds.
+	 * @return - Length of the clip, in milliseconds.
+	 */
 	Uint32 get_audio_length() const;
+	/**
+	 * Retrieve the filename of the file used to load this AudioClip.
+	 * @return - Filename of the source audio.
+	 */
 	const std::string& get_file_name() const;
 private:
 	int channel;
@@ -45,20 +49,27 @@ private:
 };
 
 /**
-*	Playable audio file, but from a position in 3D space. Same properties as AudioClip.
+*	Playable audio file, but from a position in 3-dimensional space. Same properties as AudioClip.
 */
 class AudioSource: public AudioClip
 {
 public:
+	/**
+	 * Construct an audioclip from an existing file with supported format.
+	 * @param filename - Path of the filename.
+	 */
 	AudioSource(std::string filename);
 	AudioSource(const AudioSource& copy) = default;
 	AudioSource(AudioSource&& move) = default;
 	~AudioSource() = default;
 	AudioSource& operator=(const AudioSource& rhs) = delete;
-	
+
 	/**
-	* Should be invoked whenever the camera rotates or moves or the AudioSource position is changed.
-	*/
+	 * Invoke whenever the orientation of the camera changes.
+	 * This can also be invoked to change where the position of the audio-source should be.
+	 * @param source_position - The position in 3-dimensional space of the audio's source.
+	 * @param relative_to - The camera representing the listener's properties.
+	 */
 	void update(const Vector3F& source_position, const Camera& relative_to) const;
 };
 
@@ -68,21 +79,35 @@ public:
 class AudioMusic
 {
 public:
+	/**
+	 * Construct an audioclip from an existing file with supported format.
+	 * @param filename - Path of the filename.
+	 */
 	AudioMusic(std::string filename);
 	AudioMusic(const AudioMusic& copy);
 	AudioMusic(AudioMusic&& move);
 	~AudioMusic();
 	AudioMusic& operator=(const AudioMusic& rhs) = delete;
-	
+
+	/**
+	 * Retrieve the filename of the file used to load this AudioClip.
+	 * @return - Filename of the source audio.
+	 */
 	const std::string& get_file_name() const;
+	/**
+	 * Query whether this AudioMusic is paused or not.
+	 * @return - True if the music is paused. False otherwise.
+	 */
 	bool is_paused() const;
 	/**
-	* Play should be invoked only once and not to un-pause music.
-	*/
+	 * Play the AudioMusic, specifying priority.
+	 * @param priority - Whether the AudioMusic should stop any other AudioMusic from playing or not.
+	 */
 	void play(bool priority = true) const;
 	/**
-	* Pause/Resume the music.
-	*/
+	 * Pause/resume the music.
+	 * @param pause - Whether to pause or resume the music.
+	 */
 	void set_paused(bool pause = true);
 private:
 	std::string filename;
@@ -106,8 +131,11 @@ namespace tz
 		*/
 		void terminate();
 		/**
-		* Play existing Audio asynchronously (Anything that has a play() function). Has much reduced overhead for an r-value reference.
-		*/
+		 * Play any type of supported audio, asynchronously.
+		 * Returns as soon as the audio starts playing.
+		 * @tparam Audio - The type of audio to play.
+		 * @param clip - The audio which should be played.
+		 */
 		template<typename Audio>
 		void play_async(Audio&& clip);
 	}

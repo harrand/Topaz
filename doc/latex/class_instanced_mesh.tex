@@ -1,0 +1,52 @@
+\hypertarget{class_instanced_mesh}{}\section{Instanced\+Mesh Class Reference}
+\label{class_instanced_mesh}\index{Instanced\+Mesh@{Instanced\+Mesh}}
+
+
+{\ttfamily \#include $<$mesh.\+hpp$>$}
+
+Inheritance diagram for Instanced\+Mesh\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_instanced_mesh}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_instanced_mesh_a21071278154b9446677016224861bffd}\label{class_instanced_mesh_a21071278154b9446677016224861bffd}} 
+{\bfseries Instanced\+Mesh} (std\+::string filename, std\+::vector$<$ \mbox{\hyperlink{class_vector3}{Vector3F}} $>$ positions, std\+::vector$<$ \mbox{\hyperlink{class_vector3}{Vector3F}} $>$ rotations, std\+::vector$<$ \mbox{\hyperlink{class_vector3}{Vector3F}} $>$ scales)
+\item 
+\mbox{\Hypertarget{class_instanced_mesh_a3457a47b5d850fbdae6b49a8d4bfadd1}\label{class_instanced_mesh_a3457a47b5d850fbdae6b49a8d4bfadd1}} 
+{\bfseries Instanced\+Mesh} (const \mbox{\hyperlink{class_instanced_mesh}{Instanced\+Mesh}} \&copy)=default
+\item 
+\mbox{\Hypertarget{class_instanced_mesh_abdc6da71131053efc82bd3377aabc1ac}\label{class_instanced_mesh_abdc6da71131053efc82bd3377aabc1ac}} 
+{\bfseries Instanced\+Mesh} (\mbox{\hyperlink{class_instanced_mesh}{Instanced\+Mesh}} \&\&move)=default
+\item 
+\mbox{\Hypertarget{class_instanced_mesh_afce42cfdb1ff1abcd70c418fd0dd0503}\label{class_instanced_mesh_afce42cfdb1ff1abcd70c418fd0dd0503}} 
+\mbox{\hyperlink{class_instanced_mesh}{Instanced\+Mesh}} \& {\bfseries operator=} (const \mbox{\hyperlink{class_instanced_mesh}{Instanced\+Mesh}} \&rhs)=default
+\item 
+\mbox{\Hypertarget{class_instanced_mesh_afe65a816eab00c2d6217f8cd4f8d7749}\label{class_instanced_mesh_afe65a816eab00c2d6217f8cd4f8d7749}} 
+const std\+::vector$<$ \mbox{\hyperlink{class_vector3}{Vector3F}} $>$ \& {\bfseries get\+\_\+instance\+\_\+positions} () const
+\item 
+\mbox{\Hypertarget{class_instanced_mesh_a0618a1d06d7f63edfd7d76f9d51c10de}\label{class_instanced_mesh_a0618a1d06d7f63edfd7d76f9d51c10de}} 
+const std\+::vector$<$ \mbox{\hyperlink{class_vector3}{Vector3F}} $>$ \& {\bfseries get\+\_\+instance\+\_\+rotations} () const
+\item 
+\mbox{\Hypertarget{class_instanced_mesh_a6f3e0e63ec4dbcf7715bdb44bc83ecaa}\label{class_instanced_mesh_a6f3e0e63ec4dbcf7715bdb44bc83ecaa}} 
+const std\+::vector$<$ \mbox{\hyperlink{class_vector3}{Vector3F}} $>$ \& {\bfseries get\+\_\+instance\+\_\+scales} () const
+\item 
+\mbox{\Hypertarget{class_instanced_mesh_af35eca32f1270f3f996f508e7cc9d01d}\label{class_instanced_mesh_af35eca32f1270f3f996f508e7cc9d01d}} 
+std\+::size\+\_\+t {\bfseries get\+\_\+instance\+\_\+quantity} () const
+\item 
+\mbox{\Hypertarget{class_instanced_mesh_aab465896e76ef3c0b203cde8cd196e12}\label{class_instanced_mesh_aab465896e76ef3c0b203cde8cd196e12}} 
+virtual void {\bfseries render} (bool patches, G\+Lenum mode=G\+L\+\_\+\+T\+R\+I\+A\+N\+G\+L\+ES) const override
+\end{DoxyCompactItemize}
+\subsection*{Additional Inherited Members}
+
+
+\subsection{Detailed Description}
+Like a normal mesh, but supports Open\+GL instancing. Use this if you want to render the same mesh very many times at once with little attribute changes. This class is abstracted away by tz\+::graphics\+::batch in \mbox{\hyperlink{object_8hpp_source}{object.\+hpp}}. 
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+src/graphics/mesh.\+hpp\item 
+src/graphics/mesh.\+cpp\end{DoxyCompactItemize}

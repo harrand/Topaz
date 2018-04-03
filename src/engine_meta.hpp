@@ -21,6 +21,11 @@ enum class StandardProperty
     DEFAULT_SCENE,
 };
 
+/**
+ * Properties is a file which contains metadata about the Topaz implementation.
+ * Specifications such as the default-shader, the default-gui-shader and the Resources location are made here.
+ * Properties are normally defined by the filename 'properties.mdl'
+ */
 class PropertiesFile : public MDLFile
 {
 public:
@@ -36,6 +41,14 @@ public:
 private:
 };
 
+/**
+* Resources is a file which specifies all internal assets.
+* Assets can be any file used in a Topaz project, like textures or 3D models.
+* Internal assets are instantiated upon initialisation of Topaz, and are available for use at any time.
+* External assets are files which are not specified in Resources and thus are not tracked or handled by Topaz; you must handle them yourself.
+* Although external assets can be used for all actions, internal assets are recommended.
+* Resources are normally defined either inline in Properties or externally by the filename 'resources.mdl'. The path to the Resources should always be specified in Properties.
+*/
 class ResourcesFile : public MDLFile
 {
 public:
@@ -45,19 +58,7 @@ public:
 /**
  * EngineMeta is contains two elements:
  * Properties and Resources.
- *
- * Properties is a file which contains metadata about the Topaz implementation.
- * Specifications such as the default-shader, the default-gui-shader and the Resources location are made here.
- * Properties are normally defined by the filename 'properties.mdl'
- *
- * Resources is a file which specifies all internal assets.
- * Assets can be any file used in a Topaz project, like textures or 3D models.
- * Internal assets are instantiated upon initialisation of Topaz, and are available for use at any time.
- * External assets are files which are not specified in Resources and thus are not tracked or handled by Topaz; you must handle them yourself.
- * Although external assets can be used for all actions, internal assets are recommended.
- * Resources are normally defined either inline in Properties or externally by the filename 'resources.mdl'. The path to the Resources should always be specified in Properties.
- *
- * Footnote: Any relative-path specifications made in Properties and Resources should be relative to the file, not the binary file.
+ * Footnote: Any relative-path specifications made in Properties and Resources should be relative to the binary executable running this process, not the actual file.
  */
 class EngineMeta
 {

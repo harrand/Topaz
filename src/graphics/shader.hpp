@@ -29,7 +29,7 @@ namespace tz
 	}
 }
 
-/*
+/**
 * Abstract. Not available for non-polymorphic use.
 * I highly doubt you'll need to inherit from this anyway.
 * Consider providing template specialisation to Uniform<T> if you need custom uniforms, which you may need in a later version of OpenGL which supports more primitives, perhaps.

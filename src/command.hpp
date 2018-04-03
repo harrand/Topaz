@@ -56,6 +56,10 @@ private:
 	using Command::get_expected_parameter_size;
 };
 
+/**
+ * Represent a Functor without arguments.
+ * @tparam Functor - Type of the underlying functor.
+ */
 template<typename Functor>
 class TrivialFunctor : public TrivialCommand
 {
@@ -66,6 +70,11 @@ protected:
     Functor functor;
 };
 
+/**
+ * Represent a Functor storing all its arguments upon construction.
+ * @tparam Functor - Type of the underlying functor.
+ * @tparam FunctorParameters - Template parameter pack representing argument types.
+ */
 template<typename Functor, typename... FunctorParameters>
 class StaticFunctor : public TrivialCommand
 {

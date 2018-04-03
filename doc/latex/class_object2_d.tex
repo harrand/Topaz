@@ -1,0 +1,54 @@
+\hypertarget{class_object2_d}{}\section{Object2D Class Reference}
+\label{class_object2_d}\index{Object2D@{Object2D}}
+
+
+{\ttfamily \#include $<$object.\+hpp$>$}
+
+Inheritance diagram for Object2D\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_object2_d}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_object2_d_a7d116f8ebc5760f7362e59651d70a6b1}\label{class_object2_d_a7d116f8ebc5760f7362e59651d70a6b1}} 
+{\bfseries Object2D} (\mbox{\hyperlink{class_vector2}{Vector2F}} position, float rotation, \mbox{\hyperlink{class_vector2}{Vector2F}} scale, \mbox{\hyperlink{class_vector4}{Vector4F}} colour=\mbox{\hyperlink{class_vector4}{Vector4F}}(0.\+0f, 0.\+0f, 0.\+0f, 1.\+0f))
+\item 
+\mbox{\Hypertarget{class_object2_d_a2d0b0a3ca540db7062753b858719f288}\label{class_object2_d_a2d0b0a3ca540db7062753b858719f288}} 
+\mbox{\hyperlink{class_object2_d}{Object2D}} \& {\bfseries operator=} (const \mbox{\hyperlink{class_object2_d}{Object2D}} \&copy)
+\item 
+\mbox{\Hypertarget{class_object2_d_a49808683be9af9b5e73da7bc3b37dffd}\label{class_object2_d_a49808683be9af9b5e73da7bc3b37dffd}} 
+virtual void {\bfseries render} (const \mbox{\hyperlink{class_camera}{Camera}} \&cam, \mbox{\hyperlink{class_shader}{Shader}} $\ast$shader, float width, float height) const
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_object2_d_a93ebae14cceff7ad9aaf0086c7aefb0b}\label{class_object2_d_a93ebae14cceff7ad9aaf0086c7aefb0b}} 
+\mbox{\hyperlink{class_vector2}{Vector2F}} {\bfseries position}
+\item 
+\mbox{\Hypertarget{class_object2_d_adec86c792f1497768570792078c35bc2}\label{class_object2_d_adec86c792f1497768570792078c35bc2}} 
+\mbox{\hyperlink{class_vector2}{Vector2F}} {\bfseries scale}
+\item 
+\mbox{\Hypertarget{class_object2_d_a757b9c0a38f349c8057821dbe2bd14ab}\label{class_object2_d_a757b9c0a38f349c8057821dbe2bd14ab}} 
+float {\bfseries rotation}
+\item 
+\mbox{\Hypertarget{class_object2_d_a27ed9bb852339b71f61a7f79d36dae86}\label{class_object2_d_a27ed9bb852339b71f61a7f79d36dae86}} 
+\mbox{\hyperlink{class_vector4}{Vector4F}} {\bfseries colour}
+\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_object2_d_a7a6d4867eecdb4342b178c9625b4cd67}\label{class_object2_d_a7a6d4867eecdb4342b178c9625b4cd67}} 
+\mbox{\hyperlink{class_mesh}{Mesh}} {\bfseries quad}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Simple plane mesh with a colour to represent a simple-\/sprite. 
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+src/graphics/object.\+hpp\item 
+src/graphics/object.\+cpp\end{DoxyCompactItemize}

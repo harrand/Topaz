@@ -1,0 +1,99 @@
+\hypertarget{class_button}{}\section{Button Class Reference}
+\label{class_button}\index{Button@{Button}}
+
+
+{\ttfamily \#include $<$gui\+\_\+widget.\+hpp$>$}
+
+Inheritance diagram for Button\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=4.000000cm]{class_button}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_button_a228b18e1d494f3d443d9a42ad16d5568}\label{class_button_a228b18e1d494f3d443d9a42ad16d5568}} 
+{\bfseries Button} (float x, float y, \mbox{\hyperlink{class_vector4}{Vector4F}} colour, std\+::optional$<$ \mbox{\hyperlink{class_vector4}{Vector4F}} $>$ background\+\_\+colour, std\+::optional$<$ \mbox{\hyperlink{class_vector3}{Vector3F}} $>$ text\+\_\+border\+\_\+colour, \mbox{\hyperlink{class_font}{Font}} font, const std\+::string \&text, \mbox{\hyperlink{class_shader}{Shader}} \&shader, \mbox{\hyperlink{class_mouse_listener}{Mouse\+Listener}} \&mouse\+\_\+listener)
+\item 
+\mbox{\Hypertarget{class_button_a0e6f3b5eaf1fa5516d3108642bf0352d}\label{class_button_a0e6f3b5eaf1fa5516d3108642bf0352d}} 
+{\bfseries Button} (const \mbox{\hyperlink{class_button}{Button}} \&rhs)=default
+\item 
+\mbox{\Hypertarget{class_button_a37df30404c7b99d1eaddc71d92416b04}\label{class_button_a37df30404c7b99d1eaddc71d92416b04}} 
+{\bfseries Button} (\mbox{\hyperlink{class_button}{Button}} \&\&move)=default
+\item 
+\mbox{\Hypertarget{class_button_a5f79d527c2668a28cacd28a2b5fb3761}\label{class_button_a5f79d527c2668a28cacd28a2b5fb3761}} 
+\mbox{\hyperlink{class_button}{Button}} \& {\bfseries operator=} (const \mbox{\hyperlink{class_button}{Button}} \&rhs)=default
+\item 
+\mbox{\Hypertarget{class_button_abda97f1ae8e081da3dbd0b77a27cad9d}\label{class_button_abda97f1ae8e081da3dbd0b77a27cad9d}} 
+virtual void {\bfseries update} () override
+\item 
+\mbox{\Hypertarget{class_button_a2c1b0adeb2920b394fe4f38354ae6604}\label{class_button_a2c1b0adeb2920b394fe4f38354ae6604}} 
+virtual bool {\bfseries focused} () const override
+\item 
+\mbox{\Hypertarget{class_button_aa2b16ae30fe74f215aa79c699bbf8510}\label{class_button_aa2b16ae30fe74f215aa79c699bbf8510}} 
+virtual bool {\bfseries is\+\_\+mouse\+\_\+sensitive} () const override
+\item 
+\mbox{\hyperlink{class_command}{Command}} $\ast$ \mbox{\hyperlink{class_button_a3f9b964049bde58b8f39170ce8b6fa2e}{get\+\_\+on\+\_\+mouse\+\_\+over}} () const
+\item 
+\mbox{\hyperlink{class_command}{Command}} $\ast$ \mbox{\hyperlink{class_button_ac2a5c2151dc48940ac2e9c5f07c8dd6a}{get\+\_\+on\+\_\+mouse\+\_\+click}} () const
+\item 
+void \mbox{\hyperlink{class_button_a6133f9b42ae1192df54babd19dec9b80}{set\+\_\+on\+\_\+mouse\+\_\+over}} (\mbox{\hyperlink{class_command}{Command}} $\ast$cmd)
+\item 
+void \mbox{\hyperlink{class_button_a7b60123b8609254c811e3c3cc9d50d07}{set\+\_\+on\+\_\+mouse\+\_\+click}} (\mbox{\hyperlink{class_command}{Command}} $\ast$cmd)
+\item 
+\mbox{\Hypertarget{class_button_a683998d86b16a7bf4196f3f59b134f95}\label{class_button_a683998d86b16a7bf4196f3f59b134f95}} 
+bool {\bfseries moused\+\_\+over} () const
+\item 
+\mbox{\Hypertarget{class_button_a650782c10937ce67bb99aed737cd4ba1}\label{class_button_a650782c10937ce67bb99aed737cd4ba1}} 
+bool {\bfseries clicked\+\_\+on} () const
+\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_button_aab6aafaa6740925acb9c69c62f68aa7e}\label{class_button_aab6aafaa6740925acb9c69c62f68aa7e}} 
+\mbox{\hyperlink{class_mouse_listener}{Mouse\+Listener}} \& {\bfseries mouse\+\_\+listener}
+\item 
+\mbox{\Hypertarget{class_button_a004237b359d7783fdfa3c7fc132dcd11}\label{class_button_a004237b359d7783fdfa3c7fc132dcd11}} 
+bool {\bfseries just\+\_\+clicked}
+\item 
+\mbox{\Hypertarget{class_button_a14e3262785a4dea5cded2c6542c09f2b}\label{class_button_a14e3262785a4dea5cded2c6542c09f2b}} 
+bool {\bfseries just\+\_\+moused\+\_\+over}
+\end{DoxyCompactItemize}
+\subsection*{Additional Inherited Members}
+
+
+\subsection{Detailed Description}
+Just like a \mbox{\hyperlink{class_text_label}{Text\+Label}}, but also is mouse-\/sensitive and pressable to execute a command. 
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_button_ac2a5c2151dc48940ac2e9c5f07c8dd6a}\label{class_button_ac2a5c2151dc48940ac2e9c5f07c8dd6a}} 
+\index{Button@{Button}!get\+\_\+on\+\_\+mouse\+\_\+click@{get\+\_\+on\+\_\+mouse\+\_\+click}}
+\index{get\+\_\+on\+\_\+mouse\+\_\+click@{get\+\_\+on\+\_\+mouse\+\_\+click}!Button@{Button}}
+\subsubsection{\texorpdfstring{get\+\_\+on\+\_\+mouse\+\_\+click()}{get\_on\_mouse\_click()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{class_command}{Command}} $\ast$ Button\+::get\+\_\+on\+\_\+mouse\+\_\+click (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+Read-\/only access to the command executed when the \mbox{\hyperlink{class_button}{Button}} is pressed. \mbox{\Hypertarget{class_button_a3f9b964049bde58b8f39170ce8b6fa2e}\label{class_button_a3f9b964049bde58b8f39170ce8b6fa2e}} 
+\index{Button@{Button}!get\+\_\+on\+\_\+mouse\+\_\+over@{get\+\_\+on\+\_\+mouse\+\_\+over}}
+\index{get\+\_\+on\+\_\+mouse\+\_\+over@{get\+\_\+on\+\_\+mouse\+\_\+over}!Button@{Button}}
+\subsubsection{\texorpdfstring{get\+\_\+on\+\_\+mouse\+\_\+over()}{get\_on\_mouse\_over()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{class_command}{Command}} $\ast$ Button\+::get\+\_\+on\+\_\+mouse\+\_\+over (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+Read-\/only access to the command executed when the \mbox{\hyperlink{class_button}{Button}} is moused-\/over. \mbox{\Hypertarget{class_button_a7b60123b8609254c811e3c3cc9d50d07}\label{class_button_a7b60123b8609254c811e3c3cc9d50d07}} 
+\index{Button@{Button}!set\+\_\+on\+\_\+mouse\+\_\+click@{set\+\_\+on\+\_\+mouse\+\_\+click}}
+\index{set\+\_\+on\+\_\+mouse\+\_\+click@{set\+\_\+on\+\_\+mouse\+\_\+click}!Button@{Button}}
+\subsubsection{\texorpdfstring{set\+\_\+on\+\_\+mouse\+\_\+click()}{set\_on\_mouse\_click()}}
+{\footnotesize\ttfamily void Button\+::set\+\_\+on\+\_\+mouse\+\_\+click (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_command}{Command}} $\ast$}]{cmd }\end{DoxyParamCaption})}
+
+Change what happens when the button is left-\/clicked. Inputting \textquotesingle{}nullptr\textquotesingle{} will mean that nothing happens. \mbox{\Hypertarget{class_button_a6133f9b42ae1192df54babd19dec9b80}\label{class_button_a6133f9b42ae1192df54babd19dec9b80}} 
+\index{Button@{Button}!set\+\_\+on\+\_\+mouse\+\_\+over@{set\+\_\+on\+\_\+mouse\+\_\+over}}
+\index{set\+\_\+on\+\_\+mouse\+\_\+over@{set\+\_\+on\+\_\+mouse\+\_\+over}!Button@{Button}}
+\subsubsection{\texorpdfstring{set\+\_\+on\+\_\+mouse\+\_\+over()}{set\_on\_mouse\_over()}}
+{\footnotesize\ttfamily void Button\+::set\+\_\+on\+\_\+mouse\+\_\+over (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_command}{Command}} $\ast$}]{cmd }\end{DoxyParamCaption})}
+
+Change what happens when the button is moused-\/over. Inputting \textquotesingle{}nullptr\textquotesingle{} will mean that nothing happens. 
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+src/graphics/gui\+\_\+widget.\+hpp\item 
+src/graphics/gui\+\_\+widget.\+cpp\end{DoxyCompactItemize}

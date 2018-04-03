@@ -1,0 +1,52 @@
+\hypertarget{class_key_listener}{}\section{Key\+Listener Class Reference}
+\label{class_key_listener}\index{Key\+Listener@{Key\+Listener}}
+
+
+{\ttfamily \#include $<$listener.\+hpp$>$}
+
+Inheritance diagram for Key\+Listener\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_key_listener}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_key_listener_ab916f7cf930c921ab0a7979fa7234056}\label{class_key_listener_ab916f7cf930c921ab0a7979fa7234056}} 
+{\bfseries Key\+Listener} (\mbox{\hyperlink{class_window}{Window}} \&window)
+\item 
+\mbox{\Hypertarget{class_key_listener_a77e112bbf7e34dfb9c4d65ad96496389}\label{class_key_listener_a77e112bbf7e34dfb9c4d65ad96496389}} 
+{\bfseries Key\+Listener} (const \mbox{\hyperlink{class_key_listener}{Key\+Listener}} \&copy)=default
+\item 
+\mbox{\Hypertarget{class_key_listener_aebb1bc88efca72921f3740911c20fa30}\label{class_key_listener_aebb1bc88efca72921f3740911c20fa30}} 
+{\bfseries Key\+Listener} (\mbox{\hyperlink{class_key_listener}{Key\+Listener}} \&\&move)=default
+\item 
+\mbox{\Hypertarget{class_key_listener_a95a92bca7d105dd906be81613798cdd2}\label{class_key_listener_a95a92bca7d105dd906be81613798cdd2}} 
+\mbox{\hyperlink{class_key_listener}{Key\+Listener}} \& {\bfseries operator=} (const \mbox{\hyperlink{class_key_listener}{Key\+Listener}} \&rhs)=default
+\item 
+\mbox{\Hypertarget{class_key_listener_a2a7de72fe731c72f125560060db2c765}\label{class_key_listener_a2a7de72fe731c72f125560060db2c765}} 
+virtual void {\bfseries handle\+\_\+events} (S\+D\+L\+\_\+\+Event \&evt) override
+\item 
+\mbox{\Hypertarget{class_key_listener_ab83113043164890f27fea24bca103dd6}\label{class_key_listener_ab83113043164890f27fea24bca103dd6}} 
+bool {\bfseries is\+\_\+key\+\_\+pressed} (const std\+::string \&keyname) const
+\item 
+\mbox{\Hypertarget{class_key_listener_ad2a4b0a94d69949b2bb8d83b3e937d80}\label{class_key_listener_ad2a4b0a94d69949b2bb8d83b3e937d80}} 
+bool {\bfseries is\+\_\+key\+\_\+released} (const std\+::string \&keyname) const
+\item 
+\mbox{\Hypertarget{class_key_listener_a55024ee26dd4ca72d4ce0b0c3b381235}\label{class_key_listener_a55024ee26dd4ca72d4ce0b0c3b381235}} 
+bool {\bfseries catch\+\_\+key\+\_\+pressed} (const std\+::string \&keyname)
+\item 
+\mbox{\Hypertarget{class_key_listener_a01406b86c1607891068a0b2f65305048}\label{class_key_listener_a01406b86c1607891068a0b2f65305048}} 
+bool {\bfseries catch\+\_\+key\+\_\+released} (const std\+::string \&keyname)
+\end{DoxyCompactItemize}
+\subsection*{Additional Inherited Members}
+
+
+\subsection{Detailed Description}
+How Topaz handles keyboard input. Register this to a Topaz \mbox{\hyperlink{class_window}{Window}} to use properly. 
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+src/listener.\+hpp\item 
+src/listener.\+cpp\end{DoxyCompactItemize}
