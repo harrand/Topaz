@@ -9,12 +9,6 @@
 class Boundary
 {
 public:
-	Boundary() = default;
-	Boundary(const Boundary& copy) = default;
-	Boundary(Boundary&& move) = default;
-	~Boundary() = default;
-	Boundary& operator=(const Boundary& rhs) = default;
-	
 	/**
 	* Pure virtual. Override this if you want to make your own Boundaries.
 	*/
@@ -33,10 +27,6 @@ public:
 	 * @param radius - The desired radius of the sphere.
 	 */
 	BoundingSphere(Vector3F centre, float radius);
-	BoundingSphere(const BoundingSphere& copy) = default;
-	BoundingSphere(BoundingSphere&& move) = default;
-	~BoundingSphere() = default;
-	BoundingSphere& operator=(const BoundingSphere& rhs) = default;
 
 	/**
 	 * Retrieve the centre of the sphere.
@@ -61,7 +51,9 @@ public:
 	 */
 	virtual bool intersects(Boundary* other_boundary) const override;
 private:
+	/// Centre of the sphere, in world-space.
 	Vector3F centre;
+	/// Radius of the sphere.
 	float radius;
 };
 
@@ -78,10 +70,6 @@ public:
 	 * @param maximum - The maximum point
 	 */
 	AABB(Vector3F minimum, Vector3F maximum);
-	AABB(const AABB& copy) = default;
-	AABB(AABB&& move) = default;
-	~AABB() = default;
-	AABB& operator=(const AABB& rhs) = default;
 
 	/**
 	 * Retrieve the minimum of this AABB.
@@ -112,7 +100,10 @@ public:
 	 */
 	virtual bool intersects(Boundary* other_boundary) const override;
 private:
-	Vector3F minimum, maximum;
+	/// Minimum 3-dimensional position of the AABB, in world-space.
+	Vector3F minimum;
+	/// Maximum 3-dimensional positon of the AABB, in world-space.
+	Vector3F maximum;
 };
 
 /**
@@ -135,11 +126,6 @@ public:
 	 * @param c - Another point in 3-dimensional space that belongs on the plane.
 	 */
 	BoundingPlane(Vector3F a, Vector3F b, Vector3F c);
-	BoundingPlane(const BoundingPlane& copy) = default;
-	BoundingPlane(BoundingPlane&& move) = default;
-	~BoundingPlane() = default;
-	BoundingPlane& operator=(const BoundingPlane& rhs) = default;
-
 	/**
 	 * Retrieve the 3-dimensional normal vector of the plane.
 	 * @return - The normal of the plane.
@@ -174,7 +160,9 @@ public:
 	 */
 	virtual bool intersects(Boundary* other_boundary) const override;
 private:
+	/// The normal Vector to the plane.
 	Vector3F normal;
+	/// Geometric distance from the plane to the origin [0, 0, 0] in world-space.
 	float distance;
 };
 
@@ -201,10 +189,23 @@ public:
 	 */
     bool contains(const Vector3F& point) const;
 private:
-	Vector3F camera_position, camera_view;
-	float fov, aspect_ratio, near_clip, far_clip;
-	Vector2F near_plane_size, far_plane_size;
-	/// Plane array format: top, bottom, left, right, near, far.
+	/// Position of the camera, in world-space.
+	Vector3F camera_position;
+	/// Directional vector representing camera view.
+	Vector3F camera_view;
+	/// Field-of-view in radians.
+	float fov;
+	/// Aspect-ratio of the camera's perspective.
+	float aspect_ratio;
+	/// Minimum distance from the camera for objects to render.
+	float near_clip;
+	/// Maximum distance from the camera for objects to render.
+	float far_clip;
+	/// 2-dimensional size of the near-plane.
+	Vector2F near_plane_size;
+	/// 2-dimensional size of the far-plane.
+	Vector2F far_plane_size;
+	/// Frustum is contrained by six planes. Plane array format: top, bottom, left, right, near, far.
 	std::array<BoundingPlane, 6> planes;
 };
 

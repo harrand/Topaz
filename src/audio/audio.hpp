@@ -16,9 +16,25 @@ public:
 	 * @param filename - Path of the filename.
 	 */
 	AudioClip(std::string filename);
+	/**
+	 * Construct an audioclip from an existing AudioClip's source file.
+	 * @param copy - The existing AudioClip whose source file should be used.
+	 */
 	AudioClip(const AudioClip& copy);
+	/**
+	 * Construct an audioclip, taking control of an existing AudioClip's audio data.
+	 * @param move - The existing AudioClip whose audio data should be taken from.
+	 */
 	AudioClip(AudioClip&& move);
+	/**
+	 * Dispose of audio data sensibly.
+	 */
 	virtual ~AudioClip();
+	/**
+	 * AudioClips cannot be re-assigned, they must be reconstructed.
+	 * @param rhs - N/A
+	 * @return - N/A
+	 */
 	AudioClip& operator=(const AudioClip& rhs) = delete;
 	
 	/**
@@ -43,8 +59,11 @@ public:
 	 */
 	const std::string& get_file_name() const;
 private:
+	/// Channel that the AudioClip is currently playing on.
 	int channel;
+	/// Path to the file used to load this AudioClip's data.
 	const std::string filename;
+	/// SDL_Mixer audio data handle.
 	Mix_Chunk* audio_handle;
 };
 
@@ -59,9 +78,11 @@ public:
 	 * @param filename - Path of the filename.
 	 */
 	AudioSource(std::string filename);
-	AudioSource(const AudioSource& copy) = default;
-	AudioSource(AudioSource&& move) = default;
-	~AudioSource() = default;
+	/**
+	 * Similarly to AudioClip, AudioSources are also not re-assignable. Reconstruct if necessary instead.
+	 * @param rhs - N/A
+	 * @return - N/A
+	 */
 	AudioSource& operator=(const AudioSource& rhs) = delete;
 
 	/**
@@ -84,11 +105,26 @@ public:
 	 * @param filename - Path of the filename.
 	 */
 	AudioMusic(std::string filename);
+	/**
+	 * Construct an audioclip from an existing AudioClip's source file.
+	 * @param copy - The existing AudioClip whose source file should be used.
+	 */
 	AudioMusic(const AudioMusic& copy);
+	/**
+	 * Construct an audioclip, taking control of an existing AudioClip's audio data.
+	 * @param move - The existing AudioClip whose audio data should be taken from.
+	 */
 	AudioMusic(AudioMusic&& move);
+	/**
+	 * Dispose of audio data sensibly.
+	 */
 	~AudioMusic();
+	/**
+	 * AudioMusics are not re-assignable. Reconstruct if necessary.
+	 * @param rhs - N/A
+	 * @return - N/A
+	 */
 	AudioMusic& operator=(const AudioMusic& rhs) = delete;
-
 	/**
 	 * Retrieve the filename of the file used to load this AudioClip.
 	 * @return - Filename of the source audio.
@@ -110,8 +146,11 @@ public:
 	 */
 	void set_paused(bool pause = true);
 private:
+	/// Path to the file used to load this AudioClip's data.
 	std::string filename;
+	/// Controls whether the music is paused or playing.
 	bool paused;
+	/// SDL_Mixer audio data handle.
 	Mix_Music* audio_handle;
 };
 

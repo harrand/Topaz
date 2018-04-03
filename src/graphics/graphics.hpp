@@ -20,11 +20,26 @@ public:
 	 * @param pixel_height - Height of the glyphs, in pixels.
 	 */
 	Font(const std::string& font_path, int pixel_height);
+	/**
+	 * Construct a Font from another Font's font-file.
+	 * @param copy - The Font whose font-file should be used.
+	 */
 	Font(const Font& copy);
+	/**
+	 * Construct a Font, taking control of an existing Font's font-data.
+	 * @param move - The Font whose font-data should be taken.
+	 */
 	Font(Font&& move);
+	/**
+	 * Safely dispose of font-data.
+	 */
 	~Font();
+	/**
+	 * Trivial move-assignment.
+	 * @param rhs - Font whose data members should be taken.
+	 * @return - The resultant font.
+	 */
 	Font& operator=(Font&& rhs);
-
 	/**
 	 * Get the height of glyphs, in pixels.
 	 * @return - Height of glyphs, in pixels.
@@ -37,8 +52,11 @@ public:
 	const std::string& get_path() const;
 	friend class Texture;
 private:
+	/// Path to the font-file containing font-data.
 	std::string font_path;
+	/// Height of glyphs, in pixels.
 	int pixel_height;
+	/// SDL_ttf graphical font-data.
 	TTF_Font* font_handle;
 };
 
@@ -55,13 +73,12 @@ public:
 	 * @param normal
 	 */
 	Vertex(Vector3F position, Vector2F texture_coordinate, Vector3F normal);
-	Vertex(const Vertex& copy) = default;
-	Vertex(Vertex&& move) = default;
-	~Vertex() = default;
-	Vertex& operator=(const Vertex& rhs) = default;
-	
+
+	/// Position of the Vertex, in model-space.
 	Vector3F position;
+	/// Texture coordinate of the Vertex (UV).
 	Vector2F texture_coordinate;
+	/// Normal Vector of the Vertex.
 	Vector3F normal;
 };
 
@@ -79,6 +96,7 @@ public:
 	 * @param alpha - Intensity of the alpha component (typically transparency), from 0-255.
 	 */
 	constexpr PixelRGBA(unsigned char red = 0, unsigned char green = 0, unsigned char blue = 0, unsigned char alpha = 0): data(std::array<unsigned char, 4>({red, green, blue, alpha})){}
+	/// 4-dimensional Vector containing the RGBA colour intensities.
 	Vector<4, unsigned char> data;
 };
 
@@ -97,8 +115,12 @@ public:
 	 * @param height - Height of the bitmap, in pixels.
 	 */
 	Bitmap(std::vector<Pixel> pixels = std::vector<Pixel>(), int width = 0, int height = 0): pixels(pixels), width(width), height(height){}
+	/// Container for all pixels.
 	std::vector<Pixel> pixels;
-	int width, height;
+	/// Width of the Bitmap, in pixels.
+	int width;
+	/// Height of the Bitmap, in pixels.
+	int height;
 };
 
 namespace tz
@@ -134,9 +156,17 @@ namespace tz
 			class OBJIndex
 			{
 			public:
+				/// Index of the Vertex position.
 				unsigned int vertex_index;
+				/// Index of the Vertex texture-coordinate.
 				unsigned int uv_index;
+				/// Index of the Vertex normal Vector.
 				unsigned int normal_index;
+				/**
+				 * Compare this OBJIndex to another, via index of the Vertex position.
+				 * @param rhs - The OBJIndex to be compared with.
+				 * @return - True if the index of this Vertex position is greater than the parameter's index.
+				 */
 				bool operator<(const OBJIndex& rhs) const { return vertex_index < rhs.vertex_index; }
 			};
 			/**
@@ -145,23 +175,43 @@ namespace tz
 			class IndexedModel
 			{
 			public:
+				/// Container for all Vertex positions. Each position is in model-space.
 				std::vector<Vector3F> positions;
+				/// Container for all Vertex texture-coordinates (UVs).
 				std::vector<Vector2F> texcoords;
+				/// Container for all Vertex normal Vectors.
 				std::vector<Vector3F> normals;
+				/// Container for all Vertex tangent Vectors.
 				std::vector<Vector3F> tangents;
+				/// Container for all Vertex indices.
 				std::vector<unsigned int> indices;
+				/**
+				 * Calculate and populate the container for all Vertex normal Vectors.
+				 */
 				void calculate_normals();
+				/**
+				 * Calculate the populate the container for all Vertex tangent Vectors.
+				 */
 				void calculate_tangents();
 			};
-			
+
+            /**
+             * Imported OBJ wavefront 3D model structure.
+             */
 			class OBJModel
 			{
 			public:
+				/// Container for all the Vertices' indices of the model.
 				std::vector<OBJIndex> obj_indices;
+				/// Container for all the Vertex positions, each in model-space.
 				std::vector<Vector3F> vertices;
+				/// Container for all the Vertex texture-coordinates.
 				std::vector<Vector2F> uvs;
+				/// Container for all the Vertex normal Vectors.
 				std::vector<Vector3F> normals;
+				/// Stores whether this OBJModel is storing texture-coordinates.
 				bool has_uvs;
+				/// Stores whether this OBJModel is storing normal Vectors.
 				bool has_normals;
 
 				/**
@@ -170,14 +220,20 @@ namespace tz
 				 * The model must have triangular faces. OBJ Materials (mtl files) are not supported.
 				 */
 				OBJModel(const std::string& file_name);
-				
+
+				/// Collaborate data and create the barebones IndexedModel.
 				IndexedModel to_indexed_model();
 			private:
+				/// Helper function.
 				unsigned int find_last_vertex_index(const std::vector<OBJIndex*>& index_lookup, const OBJIndex* current_index, const IndexedModel& result);
+				/// Helper function.
 				void create_obj_face(const std::string& line);
-				
+
+				/// Helper function.
 				Vector2F parse_obj_vector_2f(const std::string& line);
+				/// Helper function.
 				Vector3F parse_obj_vector_3f(const std::string& line);
+				/// Helper function.
 				OBJIndex parse_obj_index(const std::string& token, bool* has_uvs, bool* has_normals);
 			};
 		}
