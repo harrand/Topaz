@@ -21,11 +21,6 @@ public:
 	 * @param mouse_listener - The mouse-listener responsible for providing button-press and mouse-over events
 	 */
 	Button(float x, float y, Vector4F colour, std::optional<Vector4F> background_colour, std::optional<Vector3F> text_border_colour, Font font, const std::string& text, Shader& shader, MouseListener& mouse_listener);
-	Button(const Button& rhs) = default;
-	Button(Button&& move) = default;
-	~Button() = default;
-	Button& operator=(const Button& rhs) = default;
-
 	/**
 	 * Render the button and check for mouse-overs and button-presses. Also updates all children.
 	 */
@@ -71,10 +66,16 @@ public:
 	 */
 	bool clicked_on() const;
 protected:
+	/// MouseListener to control mouse events.
 	MouseListener& mouse_listener;
-	bool just_clicked, just_moused_over;
+	/// Stores whether the Button was clicked last frame.
+	bool just_clicked;
+	/// Stores whether the Button was moused-over last frame.
+	bool just_moused_over;
 private:
+	/// The Command to be executed when the Button is moused-over. If nullptr, nothing happens.
 	Command* on_mouse_over;
+	/// The Command to be executed when the Buttin is clicked. If nullptr, nothing happens.
 	Command* on_mouse_click;
 };
 
@@ -100,11 +101,6 @@ public:
 	 * @param ticked - Whether the checkbox should initially be checked or not.
 	 */
 	Checkbox(float x, float y, float width, float height, Vector4F colour_on, Vector4F colour_off, Shader& shader, MouseListener& mouse_listener, bool ticked = false);
-	Checkbox(const Checkbox& copy) = default;
-	Checkbox(Checkbox&& move) = default;
-	~Checkbox() = default;
-	Checkbox& operator=(const Checkbox& rhs) = default;
-
 	/**
 	 * Render and update all children.
 	 */
@@ -146,14 +142,25 @@ public:
 	Vector4F get_colour() const;
 	
 	friend class CheckboxChoice;
-	
+	/// Stores whether the Checkbox is checked or not.
 	bool value;
 protected:
+	/**
+	 * Queries the CheckboxChoice parent whether this is the chosen Checkbox.
+	 * @return - True if there exists a CheckboxChoice parent, and it specifies this Checkbox as the selected box. False otherwise
+	 */
 	bool is_choice() const;
 
-	Vector4F colour_on, colour_off;
+	/// The colour of the Checkbox foreground when the box is checked.
+	Vector4F colour_on;
+	/// The colour of the Checkbox foreground when the box is unchecked.
+	Vector4F colour_off;
+	/// MouseListener to control mouse events.
 	MouseListener& mouse_listener;
-	bool just_clicked, just_moused_over;
+	/// Stores whether the Button was clicked last frame.
+	bool just_clicked;
+	/// Stores whether the Button was moused-over last frame.
+	bool just_moused_over;
 	/**
 	* choice_parent is handled purely by the friend-class CheckboxChoice.
 	*/
@@ -181,11 +188,6 @@ public:
 	 * @param position - Current position of the slider wedge, clamped between 0.0 and 1.0
 	 */
 	Slider(float x, float y, float width, float height, Vector4F slider_colour, Vector4F background_colour, Vector2F slider_size, Shader& shader, MouseListener& mouse_listener, float position = 0.0f);
-	Slider(const Slider& copy) = default;
-	Slider(Slider&& move) = default;
-	~Slider() = default;
-	Slider& operator=(const Slider& rhs) = default;
-
 	/**
 	 * Render and update all children.
 	 */
@@ -220,13 +222,20 @@ public:
 	 * @return - 2-dimensional Vector representing the size of the wedge of the slider.
 	 */
 	const Vector2F& get_slider_size() const;
-	
+
+	/// Position of the slider wedge on the slider. Clamped between 0.0 and 1.0.
 	double position;
 private:
+	/// Colour of the slider wedge.
 	Vector4F slider_colour;
+	/// 2-dimensional Vector representing the size of the slider wedge.
 	Vector2F slider_size;
+	/// MouseListener to control mouse events.
 	MouseListener& mouse_listener;
-	bool just_clicked, just_moused_over;
+	/// Stores whether the Button was clicked last frame.
+	bool just_clicked;
+	/// Stores whether the Button was moused-over last frame.
+	bool just_moused_over;
 };
 
 /**
@@ -259,7 +268,6 @@ public:
 	* For this reason, the move constructor is available.
 	*/
 	CheckboxChoice(CheckboxChoice&& move) = default;
-	~CheckboxChoice() = default;
 	/**
 	* Copy assignment operator is also deleted for the same reason; choice-fighting.
 	*/
@@ -289,9 +297,20 @@ public:
 	 */
 	const std::unordered_set<Checkbox*>& get_bool_boxes() const;
 private:
+	/**
+	 * Queries whether a Checkbox is part of a CheckboxChoice.
+	 * @param choice - The Checkbox to query whether belongs to this choice or not
+	 * @return - True if the Checkbox belongs to this choice. False otherwise
+	 */
 	bool choice_in_scope(Checkbox* choice) const;
+	/**
+	 * Sets all the Checkboxes in the choice to a certain check-state.
+	 * @param value - The state to set all checkboxes.
+	 */
 	void set_all(bool value);
+	/// Container of all the Checkboxes in this choice.
 	std::unordered_set<Checkbox*> boxes;
+	/// Pointer to the Checkbox which is checked.
 	Checkbox* choice;
 };
 
