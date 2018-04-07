@@ -1,0 +1,119 @@
+\hypertarget{class_a_a_b_b}{}\section{A\+A\+BB Class Reference}
+\label{class_a_a_b_b}\index{A\+A\+BB@{A\+A\+BB}}
+
+
+{\ttfamily \#include $<$boundary.\+hpp$>$}
+
+Inheritance diagram for A\+A\+BB\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_a_a_b_b}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_a_a_b_b_a12dd0a1fb58f12ee747de9783fcc159f}{A\+A\+BB}} (\mbox{\hyperlink{class_vector3}{Vector3F}} minimum, \mbox{\hyperlink{class_vector3}{Vector3F}} maximum)
+\item 
+const \mbox{\hyperlink{class_vector3}{Vector3F}} \& \mbox{\hyperlink{class_a_a_b_b_a4d2bc2fc98412ad6160c4104f0aeb983}{get\+\_\+minimum}} () const
+\item 
+const \mbox{\hyperlink{class_vector3}{Vector3F}} \& \mbox{\hyperlink{class_a_a_b_b_a79e383c8e3010cdd1134aca704de030b}{get\+\_\+maximum}} () const
+\item 
+bool \mbox{\hyperlink{class_a_a_b_b_a9c1cca9c55355340fffd6b4f707dd70d}{intersects}} (const \mbox{\hyperlink{class_a_a_b_b}{A\+A\+BB}} \&rhs) const
+\item 
+bool \mbox{\hyperlink{class_a_a_b_b_ad517489d4c7a73d99ca28b126283daf0}{intersects}} (const \mbox{\hyperlink{class_vector3}{Vector3F}} \&point) const
+\item 
+virtual bool \mbox{\hyperlink{class_a_a_b_b_ab427a4455732a16802103e06ed4af02a}{intersects}} (\mbox{\hyperlink{class_boundary}{Boundary}} $\ast$other\+\_\+boundary) const override
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Axis-\/\+Aligned Bounding-\/\+Box. Very lightweight but is a very limited and minimalistic box-\/shaped boundary for an object. Use if performance $>$ precision. 
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{class_a_a_b_b_a12dd0a1fb58f12ee747de9783fcc159f}\label{class_a_a_b_b_a12dd0a1fb58f12ee747de9783fcc159f}} 
+\index{A\+A\+BB@{A\+A\+BB}!A\+A\+BB@{A\+A\+BB}}
+\index{A\+A\+BB@{A\+A\+BB}!A\+A\+BB@{A\+A\+BB}}
+\subsubsection{\texorpdfstring{A\+A\+B\+B()}{AABB()}}
+{\footnotesize\ttfamily A\+A\+B\+B\+::\+A\+A\+BB (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_vector3}{Vector3F}}}]{minimum,  }\item[{\mbox{\hyperlink{class_vector3}{Vector3F}}}]{maximum }\end{DoxyParamCaption})}
+
+Construct an \mbox{\hyperlink{class_a_a_b_b}{A\+A\+BB}} from a minimum and maximum point in 3-\/dimensional space. 
+\begin{DoxyParams}{Parameters}
+{\em minimum} & -\/ The minimum point \\
+\hline
+{\em maximum} & -\/ The maximum point \\
+\hline
+\end{DoxyParams}
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_a_a_b_b_a79e383c8e3010cdd1134aca704de030b}\label{class_a_a_b_b_a79e383c8e3010cdd1134aca704de030b}} 
+\index{A\+A\+BB@{A\+A\+BB}!get\+\_\+maximum@{get\+\_\+maximum}}
+\index{get\+\_\+maximum@{get\+\_\+maximum}!A\+A\+BB@{A\+A\+BB}}
+\subsubsection{\texorpdfstring{get\+\_\+maximum()}{get\_maximum()}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{class_vector3}{Vector3F}} \& A\+A\+B\+B\+::get\+\_\+maximum (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+Retrieve the maximum of this \mbox{\hyperlink{class_a_a_b_b}{A\+A\+BB}}. \begin{DoxyReturn}{Returns}
+-\/ The maximum point in 3-\/dimensional space. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_a_a_b_b_a4d2bc2fc98412ad6160c4104f0aeb983}\label{class_a_a_b_b_a4d2bc2fc98412ad6160c4104f0aeb983}} 
+\index{A\+A\+BB@{A\+A\+BB}!get\+\_\+minimum@{get\+\_\+minimum}}
+\index{get\+\_\+minimum@{get\+\_\+minimum}!A\+A\+BB@{A\+A\+BB}}
+\subsubsection{\texorpdfstring{get\+\_\+minimum()}{get\_minimum()}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{class_vector3}{Vector3F}} \& A\+A\+B\+B\+::get\+\_\+minimum (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+Retrieve the minimum of this \mbox{\hyperlink{class_a_a_b_b}{A\+A\+BB}}. \begin{DoxyReturn}{Returns}
+-\/ The minimum point in 3-\/dimensional space. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_a_a_b_b_a9c1cca9c55355340fffd6b4f707dd70d}\label{class_a_a_b_b_a9c1cca9c55355340fffd6b4f707dd70d}} 
+\index{A\+A\+BB@{A\+A\+BB}!intersects@{intersects}}
+\index{intersects@{intersects}!A\+A\+BB@{A\+A\+BB}}
+\subsubsection{\texorpdfstring{intersects()}{intersects()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
+{\footnotesize\ttfamily bool A\+A\+B\+B\+::intersects (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{class_a_a_b_b}{A\+A\+BB}} \&}]{rhs }\end{DoxyParamCaption}) const}
+
+Checks whether this \mbox{\hyperlink{class_a_a_b_b}{A\+A\+BB}} intersects another \mbox{\hyperlink{class_a_a_b_b}{A\+A\+BB}}. 
+\begin{DoxyParams}{Parameters}
+{\em rhs} & -\/ The other \mbox{\hyperlink{class_a_a_b_b}{A\+A\+BB}} to check whether this intersects with. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+-\/ True if this \mbox{\hyperlink{class_a_a_b_b}{A\+A\+BB}} intersects the parameter. False otherwise. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_a_a_b_b_ad517489d4c7a73d99ca28b126283daf0}\label{class_a_a_b_b_ad517489d4c7a73d99ca28b126283daf0}} 
+\index{A\+A\+BB@{A\+A\+BB}!intersects@{intersects}}
+\index{intersects@{intersects}!A\+A\+BB@{A\+A\+BB}}
+\subsubsection{\texorpdfstring{intersects()}{intersects()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
+{\footnotesize\ttfamily bool A\+A\+B\+B\+::intersects (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{class_vector3}{Vector3F}} \&}]{point }\end{DoxyParamCaption}) const}
+
+Checks whether this \mbox{\hyperlink{class_a_a_b_b}{A\+A\+BB}} contains a 3-\/dimensional point. 
+\begin{DoxyParams}{Parameters}
+{\em point} & -\/ The 3-\/dimensional point to query whether is contained or not. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+-\/ True if the parameter is in the \mbox{\hyperlink{class_a_a_b_b}{A\+A\+BB}}. False otherwose. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_a_a_b_b_ab427a4455732a16802103e06ed4af02a}\label{class_a_a_b_b_ab427a4455732a16802103e06ed4af02a}} 
+\index{A\+A\+BB@{A\+A\+BB}!intersects@{intersects}}
+\index{intersects@{intersects}!A\+A\+BB@{A\+A\+BB}}
+\subsubsection{\texorpdfstring{intersects()}{intersects()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
+{\footnotesize\ttfamily bool A\+A\+B\+B\+::intersects (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_boundary}{Boundary}} $\ast$}]{other\+\_\+boundary }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+Checks whether this \mbox{\hyperlink{class_a_a_b_b}{A\+A\+BB}} intersects the polymorphic boundary provided. 
+\begin{DoxyParams}{Parameters}
+{\em other\+\_\+boundary} & -\/ The polymorphic boundary to check whether this intersects with. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+-\/ True if this \mbox{\hyperlink{class_a_a_b_b}{A\+A\+BB}} intersects the boundary. False otherwise. 
+\end{DoxyReturn}
+
+
+Implements \mbox{\hyperlink{class_boundary_a364909bdfa4a4945f974c34a39e198cc}{Boundary}}.
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+src/physics/boundary.\+hpp\item 
+src/physics/boundary.\+cpp\end{DoxyCompactItemize}

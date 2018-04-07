@@ -1,0 +1,168 @@
+\hypertarget{class_text_label}{}\section{Text\+Label Class Reference}
+\label{class_text_label}\index{Text\+Label@{Text\+Label}}
+
+
+{\ttfamily \#include $<$gui\+\_\+display.\+hpp$>$}
+
+Inheritance diagram for Text\+Label\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=4.000000cm]{class_text_label}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_text_label_a8736731b5c5f1a8cffa984cfc332a859}{Text\+Label}} (float \mbox{\hyperlink{class_g_u_i_a7fa193a8ffb27bbb3bcc225e36f6d54d}{x}}, float \mbox{\hyperlink{class_g_u_i_a98f204f99ffc5ff6cffc9340bbb8c29b}{y}}, \mbox{\hyperlink{class_vector4}{Vector4F}} \mbox{\hyperlink{class_panel_a7c38e08ad80eb9972428450fb639bf66}{colour}}, std\+::optional$<$ \mbox{\hyperlink{class_vector4}{Vector4F}} $>$ background\+\_\+colour, std\+::optional$<$ \mbox{\hyperlink{class_vector3}{Vector3F}} $>$ text\+\_\+border\+\_\+colour, \mbox{\hyperlink{class_font}{Font}} font, const std\+::string \&text, \mbox{\hyperlink{class_shader}{Shader}} \&\mbox{\hyperlink{class_g_u_i_a64b007b31d0ec8a8704f9ab3bb2a7d3d}{shader}})
+\item 
+virtual void \mbox{\hyperlink{class_text_label_a350a9edc23e4d2a53374fddc5ddc61cc}{update}} () override
+\item 
+bool \mbox{\hyperlink{class_text_label_a551d9e453aed5769c47bf815f3954b87}{has\+\_\+background\+\_\+colour}} () const
+\item 
+bool \mbox{\hyperlink{class_text_label_a3ebd1440ba16deddd630f59e32def63e}{has\+\_\+text\+\_\+border\+\_\+colour}} () const
+\item 
+const \mbox{\hyperlink{class_font}{Font}} \& \mbox{\hyperlink{class_text_label_a9cf910ea092dd7b72c53a028e9ae3998}{get\+\_\+font}} () const
+\item 
+void \mbox{\hyperlink{class_text_label_a899b24fdb8ce8adf213cb70461aa1d91}{set\+\_\+font}} (\mbox{\hyperlink{class_font}{Font}} font)
+\item 
+const std\+::string \& \mbox{\hyperlink{class_text_label_a3594731b87e5c98a5d574e554e4ebcf0}{get\+\_\+text}} () const
+\item 
+void \mbox{\hyperlink{class_text_label_ad8d83bed9697b2f53249218f560fe1a8}{set\+\_\+text}} (const std\+::string \&new\+\_\+text)
+\item 
+const \mbox{\hyperlink{class_texture}{Texture}} \& \mbox{\hyperlink{class_text_label_ab8af6195b3e568d5f8a83024818b6d80}{get\+\_\+texture}} () const
+\item 
+void \mbox{\hyperlink{class_text_label_ae39dffa6e09e0ef03f2ef8f980e47076}{set\+\_\+texture}} (\mbox{\hyperlink{class_texture}{Texture}} \mbox{\hyperlink{class_panel_a682c2d8747451954095eb567b45d3fbd}{texture}})
+\end{DoxyCompactItemize}
+\subsection*{Additional Inherited Members}
+
+
+\subsection{Detailed Description}
+Very similar to a \mbox{\hyperlink{class_panel}{Panel}}, but has additional font-\/rendering applied. Use this to write text to the screen. 
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{class_text_label_a8736731b5c5f1a8cffa984cfc332a859}\label{class_text_label_a8736731b5c5f1a8cffa984cfc332a859}} 
+\index{Text\+Label@{Text\+Label}!Text\+Label@{Text\+Label}}
+\index{Text\+Label@{Text\+Label}!Text\+Label@{Text\+Label}}
+\subsubsection{\texorpdfstring{Text\+Label()}{TextLabel()}}
+{\footnotesize\ttfamily Text\+Label\+::\+Text\+Label (\begin{DoxyParamCaption}\item[{float}]{x,  }\item[{float}]{y,  }\item[{\mbox{\hyperlink{class_vector4}{Vector4F}}}]{colour,  }\item[{std\+::optional$<$ \mbox{\hyperlink{class_vector4}{Vector4F}} $>$}]{background\+\_\+colour,  }\item[{std\+::optional$<$ \mbox{\hyperlink{class_vector3}{Vector3F}} $>$}]{text\+\_\+border\+\_\+colour,  }\item[{\mbox{\hyperlink{class_font}{Font}}}]{font,  }\item[{const std\+::string \&}]{text,  }\item[{\mbox{\hyperlink{class_shader}{Shader}} \&}]{shader }\end{DoxyParamCaption})}
+
+Construct a \mbox{\hyperlink{class_text_label}{Text\+Label}} with all specifications. 
+\begin{DoxyParams}{Parameters}
+{\em x} & -\/ X-\/coordinate of the \mbox{\hyperlink{class_text_label}{Text\+Label}}. \\
+\hline
+{\em y} & -\/ Y-\/coordinate of the \mbox{\hyperlink{class_text_label}{Text\+Label}}. \\
+\hline
+{\em colour} & -\/ Colour of the text of the \mbox{\hyperlink{class_text_label}{Text\+Label}}. \\
+\hline
+{\em background\+\_\+colour} & -\/ Optional background colour of the label. \\
+\hline
+{\em text\+\_\+border\+\_\+colour} & -\/ Optional border colour of the text of the \mbox{\hyperlink{class_text_label}{Text\+Label}}. \\
+\hline
+{\em font} & -\/ \mbox{\hyperlink{class_font}{Font}} with which to render the text of the \mbox{\hyperlink{class_text_label}{Text\+Label}}. \\
+\hline
+{\em text} & -\/ String representing the text to be displayed on the label. \\
+\hline
+{\em shader} & -\/ \mbox{\hyperlink{class_shader}{Shader}} with which to render the \mbox{\hyperlink{class_text_label}{Text\+Label}}. \\
+\hline
+\end{DoxyParams}
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_text_label_a9cf910ea092dd7b72c53a028e9ae3998}\label{class_text_label_a9cf910ea092dd7b72c53a028e9ae3998}} 
+\index{Text\+Label@{Text\+Label}!get\+\_\+font@{get\+\_\+font}}
+\index{get\+\_\+font@{get\+\_\+font}!Text\+Label@{Text\+Label}}
+\subsubsection{\texorpdfstring{get\+\_\+font()}{get\_font()}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{class_font}{Font}} \& Text\+Label\+::get\+\_\+font (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+Read the \mbox{\hyperlink{class_font}{Font}} being used to render the text of the \mbox{\hyperlink{class_text_label}{Text\+Label}}. \begin{DoxyReturn}{Returns}
+-\/ \mbox{\hyperlink{class_font}{Font}} being utilised currently 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_text_label_a3594731b87e5c98a5d574e554e4ebcf0}\label{class_text_label_a3594731b87e5c98a5d574e554e4ebcf0}} 
+\index{Text\+Label@{Text\+Label}!get\+\_\+text@{get\+\_\+text}}
+\index{get\+\_\+text@{get\+\_\+text}!Text\+Label@{Text\+Label}}
+\subsubsection{\texorpdfstring{get\+\_\+text()}{get\_text()}}
+{\footnotesize\ttfamily const std\+::string \& Text\+Label\+::get\+\_\+text (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+Read the text of the \mbox{\hyperlink{class_text_label}{Text\+Label}}. \begin{DoxyReturn}{Returns}
+-\/ String representing the text of the \mbox{\hyperlink{class_text_label}{Text\+Label}}. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_text_label_ab8af6195b3e568d5f8a83024818b6d80}\label{class_text_label_ab8af6195b3e568d5f8a83024818b6d80}} 
+\index{Text\+Label@{Text\+Label}!get\+\_\+texture@{get\+\_\+texture}}
+\index{get\+\_\+texture@{get\+\_\+texture}!Text\+Label@{Text\+Label}}
+\subsubsection{\texorpdfstring{get\+\_\+texture()}{get\_texture()}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{class_texture}{Texture}} \& Text\+Label\+::get\+\_\+texture (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+Get the texture, representing the text of the \mbox{\hyperlink{class_text_label}{Text\+Label}}. \begin{DoxyReturn}{Returns}
+-\/ \mbox{\hyperlink{class_texture}{Texture}}, representing the text of the \mbox{\hyperlink{class_text_label}{Text\+Label}}. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_text_label_a551d9e453aed5769c47bf815f3954b87}\label{class_text_label_a551d9e453aed5769c47bf815f3954b87}} 
+\index{Text\+Label@{Text\+Label}!has\+\_\+background\+\_\+colour@{has\+\_\+background\+\_\+colour}}
+\index{has\+\_\+background\+\_\+colour@{has\+\_\+background\+\_\+colour}!Text\+Label@{Text\+Label}}
+\subsubsection{\texorpdfstring{has\+\_\+background\+\_\+colour()}{has\_background\_colour()}}
+{\footnotesize\ttfamily bool Text\+Label\+::has\+\_\+background\+\_\+colour (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+Query whether this \mbox{\hyperlink{class_text_label}{Text\+Label}} has a background colour or not. \begin{DoxyReturn}{Returns}
+-\/ True if the \mbox{\hyperlink{class_text_label}{Text\+Label}} has a background colour specified. Otherwise false 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_text_label_a3ebd1440ba16deddd630f59e32def63e}\label{class_text_label_a3ebd1440ba16deddd630f59e32def63e}} 
+\index{Text\+Label@{Text\+Label}!has\+\_\+text\+\_\+border\+\_\+colour@{has\+\_\+text\+\_\+border\+\_\+colour}}
+\index{has\+\_\+text\+\_\+border\+\_\+colour@{has\+\_\+text\+\_\+border\+\_\+colour}!Text\+Label@{Text\+Label}}
+\subsubsection{\texorpdfstring{has\+\_\+text\+\_\+border\+\_\+colour()}{has\_text\_border\_colour()}}
+{\footnotesize\ttfamily bool Text\+Label\+::has\+\_\+text\+\_\+border\+\_\+colour (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+Query whether this \mbox{\hyperlink{class_text_label}{Text\+Label}} has a text-\/border colour or not. \begin{DoxyReturn}{Returns}
+-\/ True if the \mbox{\hyperlink{class_text_label}{Text\+Label}} has a text-\/border colour specified. Otherwise false 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_text_label_a899b24fdb8ce8adf213cb70461aa1d91}\label{class_text_label_a899b24fdb8ce8adf213cb70461aa1d91}} 
+\index{Text\+Label@{Text\+Label}!set\+\_\+font@{set\+\_\+font}}
+\index{set\+\_\+font@{set\+\_\+font}!Text\+Label@{Text\+Label}}
+\subsubsection{\texorpdfstring{set\+\_\+font()}{set\_font()}}
+{\footnotesize\ttfamily void Text\+Label\+::set\+\_\+font (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_font}{Font}}}]{font }\end{DoxyParamCaption})}
+
+Specify a new \mbox{\hyperlink{class_font}{Font}} to be used to render the text of the \mbox{\hyperlink{class_text_label}{Text\+Label}}. 
+\begin{DoxyParams}{Parameters}
+{\em font} & -\/ \mbox{\hyperlink{class_font}{Font}} to be utilised from now on \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_text_label_ad8d83bed9697b2f53249218f560fe1a8}\label{class_text_label_ad8d83bed9697b2f53249218f560fe1a8}} 
+\index{Text\+Label@{Text\+Label}!set\+\_\+text@{set\+\_\+text}}
+\index{set\+\_\+text@{set\+\_\+text}!Text\+Label@{Text\+Label}}
+\subsubsection{\texorpdfstring{set\+\_\+text()}{set\_text()}}
+{\footnotesize\ttfamily void Text\+Label\+::set\+\_\+text (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{new\+\_\+text }\end{DoxyParamCaption})}
+
+Specify the new text of the \mbox{\hyperlink{class_text_label}{Text\+Label}}. 
+\begin{DoxyParams}{Parameters}
+{\em new\+\_\+text} & -\/ String to represent the text of the \mbox{\hyperlink{class_text_label}{Text\+Label}}. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_text_label_ae39dffa6e09e0ef03f2ef8f980e47076}\label{class_text_label_ae39dffa6e09e0ef03f2ef8f980e47076}} 
+\index{Text\+Label@{Text\+Label}!set\+\_\+texture@{set\+\_\+texture}}
+\index{set\+\_\+texture@{set\+\_\+texture}!Text\+Label@{Text\+Label}}
+\subsubsection{\texorpdfstring{set\+\_\+texture()}{set\_texture()}}
+{\footnotesize\ttfamily void Text\+Label\+::set\+\_\+texture (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_texture}{Texture}}}]{texture }\end{DoxyParamCaption})}
+
+Specify a new \mbox{\hyperlink{class_texture}{Texture}} to be used, instead of the normal text texture. 
+\begin{DoxyParams}{Parameters}
+{\em texture} & -\/ New texture to be rendered on the foreground of the \mbox{\hyperlink{class_text_label}{Text\+Label}}. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_text_label_a350a9edc23e4d2a53374fddc5ddc61cc}\label{class_text_label_a350a9edc23e4d2a53374fddc5ddc61cc}} 
+\index{Text\+Label@{Text\+Label}!update@{update}}
+\index{update@{update}!Text\+Label@{Text\+Label}}
+\subsubsection{\texorpdfstring{update()}{update()}}
+{\footnotesize\ttfamily void Text\+Label\+::update (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+Render the \mbox{\hyperlink{class_text_label}{Text\+Label}}, and update all children. 
+
+Reimplemented from \mbox{\hyperlink{class_panel_a9e9c0608cf3139833cde6b73dc3ba443}{Panel}}.
+
+
+
+Reimplemented in \mbox{\hyperlink{class_button_abda97f1ae8e081da3dbd0b77a27cad9d}{Button}}.
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+src/graphics/gui\+\_\+display.\+hpp\item 
+src/graphics/gui\+\_\+display.\+cpp\end{DoxyCompactItemize}

@@ -1,0 +1,117 @@
+\hypertarget{class_font}{}\section{Font Class Reference}
+\label{class_font}\index{Font@{Font}}
+
+
+{\ttfamily \#include $<$graphics.\+hpp$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_font_a42440c9f8cbae982974288d28d65816a}{Font}} (const std\+::string \&font\+\_\+path, int pixel\+\_\+height)
+\item 
+\mbox{\hyperlink{class_font_a90f63d6bc3c7813ec94906b2305d270e}{Font}} (const \mbox{\hyperlink{class_font}{Font}} \&copy)
+\item 
+\mbox{\hyperlink{class_font_ac7ae7201a9874e59f332e264885ec686}{Font}} (\mbox{\hyperlink{class_font}{Font}} \&\&move)
+\item 
+\mbox{\hyperlink{class_font_a134aaa2f78af0c12d3ce504957169768}{$\sim$\+Font}} ()
+\item 
+\mbox{\hyperlink{class_font}{Font}} \& \mbox{\hyperlink{class_font_afeea92cfdfe189b73a34f074482fe5dd}{operator=}} (\mbox{\hyperlink{class_font}{Font}} \&\&rhs)
+\item 
+int \mbox{\hyperlink{class_font_a8d59ee5734bff61e6de70de065d13260}{get\+\_\+pixel\+\_\+height}} () const
+\item 
+const std\+::string \& \mbox{\hyperlink{class_font_a891af996fb417492d9390620c957e5f3}{get\+\_\+path}} () const
+\end{DoxyCompactItemize}
+\subsection*{Friends}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_font_af7f909106d08e36cd50aa58e36f9bf47}\label{class_font_af7f909106d08e36cd50aa58e36f9bf47}} 
+class {\bfseries Texture}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Used to render text. \mbox{\hyperlink{class_texture}{Texture}} has a constructor taking a \mbox{\hyperlink{class_font}{Font}} as a parameter. Use this to achieve font-\/rendering. 
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{class_font_a42440c9f8cbae982974288d28d65816a}\label{class_font_a42440c9f8cbae982974288d28d65816a}} 
+\index{Font@{Font}!Font@{Font}}
+\index{Font@{Font}!Font@{Font}}
+\subsubsection{\texorpdfstring{Font()}{Font()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
+{\footnotesize\ttfamily Font\+::\+Font (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{font\+\_\+path,  }\item[{int}]{pixel\+\_\+height }\end{DoxyParamCaption})}
+
+Construct a font from an existing font-\/file. 
+\begin{DoxyParams}{Parameters}
+{\em font\+\_\+path} & -\/ Path to the supported font-\/file. \\
+\hline
+{\em pixel\+\_\+height} & -\/ Height of the glyphs, in pixels. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_font_a90f63d6bc3c7813ec94906b2305d270e}\label{class_font_a90f63d6bc3c7813ec94906b2305d270e}} 
+\index{Font@{Font}!Font@{Font}}
+\index{Font@{Font}!Font@{Font}}
+\subsubsection{\texorpdfstring{Font()}{Font()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
+{\footnotesize\ttfamily Font\+::\+Font (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{class_font}{Font}} \&}]{copy }\end{DoxyParamCaption})}
+
+Construct a \mbox{\hyperlink{class_font}{Font}} from another \mbox{\hyperlink{class_font}{Font}}\textquotesingle{}s font-\/file. 
+\begin{DoxyParams}{Parameters}
+{\em copy} & -\/ The \mbox{\hyperlink{class_font}{Font}} whose font-\/file should be used. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_font_ac7ae7201a9874e59f332e264885ec686}\label{class_font_ac7ae7201a9874e59f332e264885ec686}} 
+\index{Font@{Font}!Font@{Font}}
+\index{Font@{Font}!Font@{Font}}
+\subsubsection{\texorpdfstring{Font()}{Font()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
+{\footnotesize\ttfamily Font\+::\+Font (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_font}{Font}} \&\&}]{move }\end{DoxyParamCaption})}
+
+Construct a \mbox{\hyperlink{class_font}{Font}}, taking control of an existing \mbox{\hyperlink{class_font}{Font}}\textquotesingle{}s font-\/data. 
+\begin{DoxyParams}{Parameters}
+{\em move} & -\/ The \mbox{\hyperlink{class_font}{Font}} whose font-\/data should be taken. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_font_a134aaa2f78af0c12d3ce504957169768}\label{class_font_a134aaa2f78af0c12d3ce504957169768}} 
+\index{Font@{Font}!````~Font@{$\sim$\+Font}}
+\index{````~Font@{$\sim$\+Font}!Font@{Font}}
+\subsubsection{\texorpdfstring{$\sim$\+Font()}{~Font()}}
+{\footnotesize\ttfamily Font\+::$\sim$\+Font (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+Safely dispose of font-\/data. 
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_font_a891af996fb417492d9390620c957e5f3}\label{class_font_a891af996fb417492d9390620c957e5f3}} 
+\index{Font@{Font}!get\+\_\+path@{get\+\_\+path}}
+\index{get\+\_\+path@{get\+\_\+path}!Font@{Font}}
+\subsubsection{\texorpdfstring{get\+\_\+path()}{get\_path()}}
+{\footnotesize\ttfamily const std\+::string \& Font\+::get\+\_\+path (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+Retrieve the filename of the file used to load this \mbox{\hyperlink{class_font}{Font}}. \begin{DoxyReturn}{Returns}
+-\/ Filename of the source font. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_font_a8d59ee5734bff61e6de70de065d13260}\label{class_font_a8d59ee5734bff61e6de70de065d13260}} 
+\index{Font@{Font}!get\+\_\+pixel\+\_\+height@{get\+\_\+pixel\+\_\+height}}
+\index{get\+\_\+pixel\+\_\+height@{get\+\_\+pixel\+\_\+height}!Font@{Font}}
+\subsubsection{\texorpdfstring{get\+\_\+pixel\+\_\+height()}{get\_pixel\_height()}}
+{\footnotesize\ttfamily int Font\+::get\+\_\+pixel\+\_\+height (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+Get the height of glyphs, in pixels. \begin{DoxyReturn}{Returns}
+-\/ Height of glyphs, in pixels. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_font_afeea92cfdfe189b73a34f074482fe5dd}\label{class_font_afeea92cfdfe189b73a34f074482fe5dd}} 
+\index{Font@{Font}!operator=@{operator=}}
+\index{operator=@{operator=}!Font@{Font}}
+\subsubsection{\texorpdfstring{operator=()}{operator=()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{class_font}{Font}} \& Font\+::operator= (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_font}{Font}} \&\&}]{rhs }\end{DoxyParamCaption})}
+
+Trivial move-\/assignment. 
+\begin{DoxyParams}{Parameters}
+{\em rhs} & -\/ \mbox{\hyperlink{class_font}{Font}} whose data members should be taken. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+-\/ The resultant font. 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+src/graphics/graphics.\+hpp\item 
+src/graphics/graphics.\+cpp\end{DoxyCompactItemize}

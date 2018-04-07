@@ -1,0 +1,154 @@
+\hypertarget{class_slider}{}\section{Slider Class Reference}
+\label{class_slider}\index{Slider@{Slider}}
+
+
+{\ttfamily \#include $<$gui\+\_\+widget.\+hpp$>$}
+
+Inheritance diagram for Slider\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=3.000000cm]{class_slider}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_slider_ad9bceb3f462c084a91bfe910065fe94f}{Slider}} (float \mbox{\hyperlink{class_g_u_i_a7fa193a8ffb27bbb3bcc225e36f6d54d}{x}}, float \mbox{\hyperlink{class_g_u_i_a98f204f99ffc5ff6cffc9340bbb8c29b}{y}}, float \mbox{\hyperlink{class_g_u_i_aee5d8766834f6f743f0d8b8c16e47155}{width}}, float \mbox{\hyperlink{class_g_u_i_a70b578c36323a45cac88ccff3bced933}{height}}, \mbox{\hyperlink{class_vector4}{Vector4F}} slider\+\_\+colour, \mbox{\hyperlink{class_vector4}{Vector4F}} background\+\_\+colour, \mbox{\hyperlink{class_vector2}{Vector2F}} slider\+\_\+size, \mbox{\hyperlink{class_shader}{Shader}} \&\mbox{\hyperlink{class_g_u_i_a64b007b31d0ec8a8704f9ab3bb2a7d3d}{shader}}, \mbox{\hyperlink{class_mouse_listener}{Mouse\+Listener}} \&mouse\+\_\+listener, float \mbox{\hyperlink{class_slider_ad699d9f4196d57dc18d1bdfd4d74bf67}{position}}=0.\+0f)
+\item 
+virtual void \mbox{\hyperlink{class_slider_a4ebd527db54ea263c7d0efe4d1f94e1b}{update}} () override
+\item 
+virtual bool \mbox{\hyperlink{class_slider_a30b01348a5d214f3078e22516c60a763}{focused}} () const override
+\item 
+virtual bool \mbox{\hyperlink{class_slider_a8d7d12aa4bc5d26de46790b43116bcc1}{is\+\_\+mouse\+\_\+sensitive}} () const override
+\item 
+bool \mbox{\hyperlink{class_slider_a736d0f12de097fa94f1b1b718f4f76a7}{moused\+\_\+over}} () const
+\item 
+bool \mbox{\hyperlink{class_slider_a59e849b069f0a02451e93a63884555c4}{clicked\+\_\+on}} () const
+\item 
+const \mbox{\hyperlink{class_vector4}{Vector4F}} \& \mbox{\hyperlink{class_slider_a660889686a2d0b9d73fb25cfb9eaff9a}{get\+\_\+slider\+\_\+colour}} () const
+\item 
+const \mbox{\hyperlink{class_vector2}{Vector2F}} \& \mbox{\hyperlink{class_slider_a235e764dfafeacc678b77f5300f44dba}{get\+\_\+slider\+\_\+size}} () const
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_slider_ad699d9f4196d57dc18d1bdfd4d74bf67}\label{class_slider_ad699d9f4196d57dc18d1bdfd4d74bf67}} 
+double \mbox{\hyperlink{class_slider_ad699d9f4196d57dc18d1bdfd4d74bf67}{position}}
+\begin{DoxyCompactList}\small\item\em Position of the slider wedge on the slider. Clamped between 0.\+0 and 1.\+0. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Additional Inherited Members}
+
+
+\subsection{Detailed Description}
+Graphical representation of a mutable double. Use this to enable user-\/input for editing continuous data. 
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{class_slider_ad9bceb3f462c084a91bfe910065fe94f}\label{class_slider_ad9bceb3f462c084a91bfe910065fe94f}} 
+\index{Slider@{Slider}!Slider@{Slider}}
+\index{Slider@{Slider}!Slider@{Slider}}
+\subsubsection{\texorpdfstring{Slider()}{Slider()}}
+{\footnotesize\ttfamily Slider\+::\+Slider (\begin{DoxyParamCaption}\item[{float}]{x,  }\item[{float}]{y,  }\item[{float}]{width,  }\item[{float}]{height,  }\item[{\mbox{\hyperlink{class_vector4}{Vector4F}}}]{slider\+\_\+colour,  }\item[{\mbox{\hyperlink{class_vector4}{Vector4F}}}]{background\+\_\+colour,  }\item[{\mbox{\hyperlink{class_vector2}{Vector2F}}}]{slider\+\_\+size,  }\item[{\mbox{\hyperlink{class_shader}{Shader}} \&}]{shader,  }\item[{\mbox{\hyperlink{class_mouse_listener}{Mouse\+Listener}} \&}]{mouse\+\_\+listener,  }\item[{float}]{position = {\ttfamily 0.0f} }\end{DoxyParamCaption})}
+
+Construct a \mbox{\hyperlink{class_slider}{Slider}} with all specifications. 
+\begin{DoxyParams}{Parameters}
+{\em x} & -\/ Position of the slider on the x-\/axis, in pixels \\
+\hline
+{\em y} & -\/ Position of the slider on the y-\/axis, in pixels \\
+\hline
+{\em width} & -\/ Width of the slider, in pixels \\
+\hline
+{\em height} & -\/ Height of the slider, in pixels \\
+\hline
+{\em slider\+\_\+colour} & -\/ Colour of the slider\textquotesingle{}s wedge. \\
+\hline
+{\em background\+\_\+colour} & -\/ Background colour of the slider body. \\
+\hline
+{\em slider\+\_\+size} & -\/ 2-\/dimensional \mbox{\hyperlink{class_vector}{Vector}} representing the size of the slider\textquotesingle{}s wedge. \\
+\hline
+{\em shader} & -\/ The shader with which to render the slider. \\
+\hline
+{\em mouse\+\_\+listener} & -\/ The mouse-\/listener with which to query whether the slider needs to have its wedge dragged \\
+\hline
+{\em position} & -\/ Current position of the slider wedge, clamped between 0.\+0 and 1.\+0 \\
+\hline
+\end{DoxyParams}
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_slider_a59e849b069f0a02451e93a63884555c4}\label{class_slider_a59e849b069f0a02451e93a63884555c4}} 
+\index{Slider@{Slider}!clicked\+\_\+on@{clicked\+\_\+on}}
+\index{clicked\+\_\+on@{clicked\+\_\+on}!Slider@{Slider}}
+\subsubsection{\texorpdfstring{clicked\+\_\+on()}{clicked\_on()}}
+{\footnotesize\ttfamily bool Slider\+::clicked\+\_\+on (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+Query whether the slider is currently being clicked on. \begin{DoxyReturn}{Returns}
+-\/ True if the slider is being clicked on. False otherwise 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_slider_a30b01348a5d214f3078e22516c60a763}\label{class_slider_a30b01348a5d214f3078e22516c60a763}} 
+\index{Slider@{Slider}!focused@{focused}}
+\index{focused@{focused}!Slider@{Slider}}
+\subsubsection{\texorpdfstring{focused()}{focused()}}
+{\footnotesize\ttfamily bool Slider\+::focused (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+Query whether the slider is currently focused. \begin{DoxyReturn}{Returns}
+-\/ True if the slider is focused. False otherwise 
+\end{DoxyReturn}
+
+
+Reimplemented from \mbox{\hyperlink{class_panel_ace2217419ea5c2e98a38678c6e2012e1}{Panel}}.
+
+\mbox{\Hypertarget{class_slider_a660889686a2d0b9d73fb25cfb9eaff9a}\label{class_slider_a660889686a2d0b9d73fb25cfb9eaff9a}} 
+\index{Slider@{Slider}!get\+\_\+slider\+\_\+colour@{get\+\_\+slider\+\_\+colour}}
+\index{get\+\_\+slider\+\_\+colour@{get\+\_\+slider\+\_\+colour}!Slider@{Slider}}
+\subsubsection{\texorpdfstring{get\+\_\+slider\+\_\+colour()}{get\_slider\_colour()}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{class_vector4}{Vector4F}} \& Slider\+::get\+\_\+slider\+\_\+colour (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+Get the R\+G\+B\+A-\/coded colour of the slider wedge. \begin{DoxyReturn}{Returns}
+-\/ Colour of the slider wegde. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_slider_a235e764dfafeacc678b77f5300f44dba}\label{class_slider_a235e764dfafeacc678b77f5300f44dba}} 
+\index{Slider@{Slider}!get\+\_\+slider\+\_\+size@{get\+\_\+slider\+\_\+size}}
+\index{get\+\_\+slider\+\_\+size@{get\+\_\+slider\+\_\+size}!Slider@{Slider}}
+\subsubsection{\texorpdfstring{get\+\_\+slider\+\_\+size()}{get\_slider\_size()}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{class_vector2}{Vector2F}} \& Slider\+::get\+\_\+slider\+\_\+size (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+Get the dimensions of the slider. \begin{DoxyReturn}{Returns}
+-\/ 2-\/dimensional \mbox{\hyperlink{class_vector}{Vector}} representing the size of the wedge of the slider. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_slider_a8d7d12aa4bc5d26de46790b43116bcc1}\label{class_slider_a8d7d12aa4bc5d26de46790b43116bcc1}} 
+\index{Slider@{Slider}!is\+\_\+mouse\+\_\+sensitive@{is\+\_\+mouse\+\_\+sensitive}}
+\index{is\+\_\+mouse\+\_\+sensitive@{is\+\_\+mouse\+\_\+sensitive}!Slider@{Slider}}
+\subsubsection{\texorpdfstring{is\+\_\+mouse\+\_\+sensitive()}{is\_mouse\_sensitive()}}
+{\footnotesize\ttfamily virtual bool Slider\+::is\+\_\+mouse\+\_\+sensitive (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}
+
+Sliders are mouse-\/sensitive. \begin{DoxyReturn}{Returns}
+-\/ True 
+\end{DoxyReturn}
+
+
+Reimplemented from \mbox{\hyperlink{class_panel_a607fe6e1be6fd056f199fa817a4dedda}{Panel}}.
+
+\mbox{\Hypertarget{class_slider_a736d0f12de097fa94f1b1b718f4f76a7}\label{class_slider_a736d0f12de097fa94f1b1b718f4f76a7}} 
+\index{Slider@{Slider}!moused\+\_\+over@{moused\+\_\+over}}
+\index{moused\+\_\+over@{moused\+\_\+over}!Slider@{Slider}}
+\subsubsection{\texorpdfstring{moused\+\_\+over()}{moused\_over()}}
+{\footnotesize\ttfamily bool Slider\+::moused\+\_\+over (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+Query whether the slider is currently being moused-\/over. \begin{DoxyReturn}{Returns}
+-\/ True if the slider is moused-\/over. False otherwise 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_slider_a4ebd527db54ea263c7d0efe4d1f94e1b}\label{class_slider_a4ebd527db54ea263c7d0efe4d1f94e1b}} 
+\index{Slider@{Slider}!update@{update}}
+\index{update@{update}!Slider@{Slider}}
+\subsubsection{\texorpdfstring{update()}{update()}}
+{\footnotesize\ttfamily void Slider\+::update (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+Render and update all children. 
+
+Reimplemented from \mbox{\hyperlink{class_panel_a9e9c0608cf3139833cde6b73dc3ba443}{Panel}}.
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+src/graphics/gui\+\_\+widget.\+hpp\item 
+src/graphics/gui\+\_\+widget.\+cpp\end{DoxyCompactItemize}

@@ -1,0 +1,132 @@
+\hypertarget{class_checkbox_choice}{}\section{Checkbox\+Choice Class Reference}
+\label{class_checkbox_choice}\index{Checkbox\+Choice@{Checkbox\+Choice}}
+
+
+{\ttfamily \#include $<$gui\+\_\+widget.\+hpp$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_checkbox_choice_aef739358c920959f7158498af135d261}{Checkbox\+Choice}} (std\+::initializer\+\_\+list$<$ \mbox{\hyperlink{class_checkbox}{Checkbox}} $\ast$$>$ boxes, \mbox{\hyperlink{class_checkbox}{Checkbox}} $\ast$initial\+\_\+choice=nullptr)
+\item 
+\mbox{\hyperlink{class_checkbox_choice_acbbc8db19fa53fc73c913780e0fb2b89}{Checkbox\+Choice}} (std\+::initializer\+\_\+list$<$ std\+::reference\+\_\+wrapper$<$ \mbox{\hyperlink{class_checkbox}{Checkbox}} $>$$>$ boxes, \mbox{\hyperlink{class_checkbox}{Checkbox}} $\ast$initial\+\_\+choice=nullptr)
+\item 
+\mbox{\hyperlink{class_checkbox_choice_a1434699c2e3295b5037010403cbab6c9}{Checkbox\+Choice}} (const \mbox{\hyperlink{class_checkbox_choice}{Checkbox\+Choice}} \&copy)=delete
+\item 
+\mbox{\hyperlink{class_checkbox_choice_a907edd806c8e5a7ef45fdc64c013f4eb}{Checkbox\+Choice}} (\mbox{\hyperlink{class_checkbox_choice}{Checkbox\+Choice}} \&\&move)=default
+\item 
+\mbox{\hyperlink{class_checkbox_choice}{Checkbox\+Choice}} \& \mbox{\hyperlink{class_checkbox_choice_a8e99359a312be66fed6837c768e9e184}{operator=}} (const \mbox{\hyperlink{class_checkbox_choice}{Checkbox\+Choice}} \&rhs)=delete
+\item 
+\mbox{\hyperlink{class_checkbox_choice}{Checkbox\+Choice}} \& \mbox{\hyperlink{class_checkbox_choice_a8afcd170a63e030912620c18b0527fe8}{operator=}} (\mbox{\hyperlink{class_checkbox_choice}{Checkbox\+Choice}} \&\&rhs)=default
+\item 
+bool \mbox{\hyperlink{class_checkbox_choice_a6fd60881829607567eac28ba82c6a5b4}{has\+\_\+choice}} () const
+\item 
+\mbox{\hyperlink{class_checkbox}{Checkbox}} $\ast$ \mbox{\hyperlink{class_checkbox_choice_a61b7eedbf1aa28060ac22b47039b060a}{get\+\_\+choice}} () const
+\item 
+void \mbox{\hyperlink{class_checkbox_choice_a02298a96989fb9c74de92e3094a51466}{set\+\_\+choice}} (\mbox{\hyperlink{class_checkbox}{Checkbox}} $\ast$choice)
+\item 
+const std\+::unordered\+\_\+set$<$ \mbox{\hyperlink{class_checkbox}{Checkbox}} $\ast$ $>$ \& \mbox{\hyperlink{class_checkbox_choice_a76ea2985a33d1b48b637d049f55c2443}{get\+\_\+bool\+\_\+boxes}} () const
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Non-\/owning helper class to manage multiple Checkboxes. Use this to allow multiple checkboxes to only have one truthy at a time. 
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{class_checkbox_choice_aef739358c920959f7158498af135d261}\label{class_checkbox_choice_aef739358c920959f7158498af135d261}} 
+\index{Checkbox\+Choice@{Checkbox\+Choice}!Checkbox\+Choice@{Checkbox\+Choice}}
+\index{Checkbox\+Choice@{Checkbox\+Choice}!Checkbox\+Choice@{Checkbox\+Choice}}
+\subsubsection{\texorpdfstring{Checkbox\+Choice()}{CheckboxChoice()}\hspace{0.1cm}{\footnotesize\ttfamily [1/4]}}
+{\footnotesize\ttfamily Checkbox\+Choice\+::\+Checkbox\+Choice (\begin{DoxyParamCaption}\item[{std\+::initializer\+\_\+list$<$ \mbox{\hyperlink{class_checkbox}{Checkbox}} $\ast$$>$}]{boxes,  }\item[{\mbox{\hyperlink{class_checkbox}{Checkbox}} $\ast$}]{initial\+\_\+choice = {\ttfamily nullptr} }\end{DoxyParamCaption})}
+
+Construct a \mbox{\hyperlink{class_checkbox_choice}{Checkbox\+Choice}} from existing Check\+Boxes. Does not own any of the Check\+Boxes. 
+\begin{DoxyParams}{Parameters}
+{\em boxes} & -\/ List of all the Check\+Boxes in the choice. \\
+\hline
+{\em initial\+\_\+choice} & -\/ Initial Check\+Box in the list that should be checked. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_checkbox_choice_acbbc8db19fa53fc73c913780e0fb2b89}\label{class_checkbox_choice_acbbc8db19fa53fc73c913780e0fb2b89}} 
+\index{Checkbox\+Choice@{Checkbox\+Choice}!Checkbox\+Choice@{Checkbox\+Choice}}
+\index{Checkbox\+Choice@{Checkbox\+Choice}!Checkbox\+Choice@{Checkbox\+Choice}}
+\subsubsection{\texorpdfstring{Checkbox\+Choice()}{CheckboxChoice()}\hspace{0.1cm}{\footnotesize\ttfamily [2/4]}}
+{\footnotesize\ttfamily Checkbox\+Choice\+::\+Checkbox\+Choice (\begin{DoxyParamCaption}\item[{std\+::initializer\+\_\+list$<$ std\+::reference\+\_\+wrapper$<$ \mbox{\hyperlink{class_checkbox}{Checkbox}} $>$$>$}]{boxes,  }\item[{\mbox{\hyperlink{class_checkbox}{Checkbox}} $\ast$}]{initial\+\_\+choice = {\ttfamily nullptr} }\end{DoxyParamCaption})}
+
+Construct a \mbox{\hyperlink{class_checkbox_choice}{Checkbox\+Choice}} from existing Check\+Boxes. Does not own any of the Check\+Boxes. 
+\begin{DoxyParams}{Parameters}
+{\em boxes} & -\/ List of all the Check\+Boxes in the choice. \\
+\hline
+{\em initial\+\_\+choice} & -\/ Initial Check\+Box in the list that should be checked. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_checkbox_choice_a1434699c2e3295b5037010403cbab6c9}\label{class_checkbox_choice_a1434699c2e3295b5037010403cbab6c9}} 
+\index{Checkbox\+Choice@{Checkbox\+Choice}!Checkbox\+Choice@{Checkbox\+Choice}}
+\index{Checkbox\+Choice@{Checkbox\+Choice}!Checkbox\+Choice@{Checkbox\+Choice}}
+\subsubsection{\texorpdfstring{Checkbox\+Choice()}{CheckboxChoice()}\hspace{0.1cm}{\footnotesize\ttfamily [3/4]}}
+{\footnotesize\ttfamily Checkbox\+Choice\+::\+Checkbox\+Choice (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{class_checkbox_choice}{Checkbox\+Choice}} \&}]{copy }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [delete]}}
+
+Copy constructor deleted. This is because any two Checkbox\+Choices may not share a single element, or \char`\"{}choice-\/fighting\char`\"{} will occur. Choice-\/fighting is the phenomenon such that multiple Checkbox\+Choices choose different boxes to truthify, causing the latter to always invalidate the former. \mbox{\Hypertarget{class_checkbox_choice_a907edd806c8e5a7ef45fdc64c013f4eb}\label{class_checkbox_choice_a907edd806c8e5a7ef45fdc64c013f4eb}} 
+\index{Checkbox\+Choice@{Checkbox\+Choice}!Checkbox\+Choice@{Checkbox\+Choice}}
+\index{Checkbox\+Choice@{Checkbox\+Choice}!Checkbox\+Choice@{Checkbox\+Choice}}
+\subsubsection{\texorpdfstring{Checkbox\+Choice()}{CheckboxChoice()}\hspace{0.1cm}{\footnotesize\ttfamily [4/4]}}
+{\footnotesize\ttfamily Checkbox\+Choice\+::\+Checkbox\+Choice (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_checkbox_choice}{Checkbox\+Choice}} \&\&}]{move }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [default]}}
+
+Move constructor implies the rvalue-\/reference parameter is about to go out-\/of-\/scope, meaning that it will not be available to cause choice-\/fighting. For this reason, the move constructor is available. 
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_checkbox_choice_a76ea2985a33d1b48b637d049f55c2443}\label{class_checkbox_choice_a76ea2985a33d1b48b637d049f55c2443}} 
+\index{Checkbox\+Choice@{Checkbox\+Choice}!get\+\_\+bool\+\_\+boxes@{get\+\_\+bool\+\_\+boxes}}
+\index{get\+\_\+bool\+\_\+boxes@{get\+\_\+bool\+\_\+boxes}!Checkbox\+Choice@{Checkbox\+Choice}}
+\subsubsection{\texorpdfstring{get\+\_\+bool\+\_\+boxes()}{get\_bool\_boxes()}}
+{\footnotesize\ttfamily const std\+::unordered\+\_\+set$<$ \mbox{\hyperlink{class_checkbox}{Checkbox}} $\ast$ $>$ \& Checkbox\+Choice\+::get\+\_\+bool\+\_\+boxes (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+Get all the checkboxes in the choice. \begin{DoxyReturn}{Returns}
+-\/ All the checkboxes 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_checkbox_choice_a61b7eedbf1aa28060ac22b47039b060a}\label{class_checkbox_choice_a61b7eedbf1aa28060ac22b47039b060a}} 
+\index{Checkbox\+Choice@{Checkbox\+Choice}!get\+\_\+choice@{get\+\_\+choice}}
+\index{get\+\_\+choice@{get\+\_\+choice}!Checkbox\+Choice@{Checkbox\+Choice}}
+\subsubsection{\texorpdfstring{get\+\_\+choice()}{get\_choice()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{class_checkbox}{Checkbox}} $\ast$ Checkbox\+Choice\+::get\+\_\+choice (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+Get the \mbox{\hyperlink{class_checkbox}{Checkbox}} which is currently checked in the choice. \begin{DoxyReturn}{Returns}
+-\/ Pointer to the checkbox which is chosen. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_checkbox_choice_a6fd60881829607567eac28ba82c6a5b4}\label{class_checkbox_choice_a6fd60881829607567eac28ba82c6a5b4}} 
+\index{Checkbox\+Choice@{Checkbox\+Choice}!has\+\_\+choice@{has\+\_\+choice}}
+\index{has\+\_\+choice@{has\+\_\+choice}!Checkbox\+Choice@{Checkbox\+Choice}}
+\subsubsection{\texorpdfstring{has\+\_\+choice()}{has\_choice()}}
+{\footnotesize\ttfamily bool Checkbox\+Choice\+::has\+\_\+choice (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+Queries whether there is a discernible choice made. \begin{DoxyReturn}{Returns}
+-\/ True if there is a choice. False otherwise 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_checkbox_choice_a8e99359a312be66fed6837c768e9e184}\label{class_checkbox_choice_a8e99359a312be66fed6837c768e9e184}} 
+\index{Checkbox\+Choice@{Checkbox\+Choice}!operator=@{operator=}}
+\index{operator=@{operator=}!Checkbox\+Choice@{Checkbox\+Choice}}
+\subsubsection{\texorpdfstring{operator=()}{operator=()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{class_checkbox_choice}{Checkbox\+Choice}}\& Checkbox\+Choice\+::operator= (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{class_checkbox_choice}{Checkbox\+Choice}} \&}]{rhs }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [delete]}}
+
+Copy assignment operator is also deleted for the same reason; choice-\/fighting. \mbox{\Hypertarget{class_checkbox_choice_a8afcd170a63e030912620c18b0527fe8}\label{class_checkbox_choice_a8afcd170a63e030912620c18b0527fe8}} 
+\index{Checkbox\+Choice@{Checkbox\+Choice}!operator=@{operator=}}
+\index{operator=@{operator=}!Checkbox\+Choice@{Checkbox\+Choice}}
+\subsubsection{\texorpdfstring{operator=()}{operator=()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{class_checkbox_choice}{Checkbox\+Choice}}\& Checkbox\+Choice\+::operator= (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_checkbox_choice}{Checkbox\+Choice}} \&\&}]{rhs }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [default]}}
+
+Similarly to the move constructor, the move assignment-\/operator cannot induce choice-\/fighting so remains available for use. \mbox{\Hypertarget{class_checkbox_choice_a02298a96989fb9c74de92e3094a51466}\label{class_checkbox_choice_a02298a96989fb9c74de92e3094a51466}} 
+\index{Checkbox\+Choice@{Checkbox\+Choice}!set\+\_\+choice@{set\+\_\+choice}}
+\index{set\+\_\+choice@{set\+\_\+choice}!Checkbox\+Choice@{Checkbox\+Choice}}
+\subsubsection{\texorpdfstring{set\+\_\+choice()}{set\_choice()}}
+{\footnotesize\ttfamily void Checkbox\+Choice\+::set\+\_\+choice (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_checkbox}{Checkbox}} $\ast$}]{choice }\end{DoxyParamCaption})}
+
+Check the selected choice. 
+\begin{DoxyParams}{Parameters}
+{\em choice} & -\/ The checkbox to be checked. This will uncheck all the other checkboxes in the choice \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+src/graphics/gui\+\_\+widget.\+hpp\item 
+src/graphics/gui\+\_\+widget.\+cpp\end{DoxyCompactItemize}

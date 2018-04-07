@@ -176,11 +176,6 @@ int Texture::get_height() const
 	return this->height;
 }
 
-bool Texture::has_bitmap() const
-{
-	return this->bitmap.has_value();
-}
-
 tz::graphics::MipmapType Texture::get_mipmap_type() const
 {
 	GLint flag;
@@ -205,6 +200,11 @@ tz::graphics::MipmapType Texture::get_mipmap_type() const
 bool Texture::has_mipmap() const
 {	
 	return this->get_mipmap_type() != tz::graphics::MipmapType::NONE;
+}
+
+bool Texture::has_bitmap() const
+{
+	return this->bitmap.has_value();
 }
 
 Bitmap<PixelRGBA> Texture::get_bitmap() const

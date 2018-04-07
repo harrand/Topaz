@@ -1,0 +1,38 @@
+\hypertarget{class_boundary}{}\section{Boundary Class Reference}
+\label{class_boundary}\index{Boundary@{Boundary}}
+
+
+{\ttfamily \#include $<$boundary.\+hpp$>$}
+
+Inheritance diagram for Boundary\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_boundary}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+virtual bool \mbox{\hyperlink{class_boundary_a364909bdfa4a4945f974c34a39e198cc}{intersects}} (\mbox{\hyperlink{class_boundary}{Boundary}} $\ast$other\+\_\+boundary) const =0
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Abstract. Not available for non-\/polymorphic use. Inherit from this to create custom boundaries. Represents a simple boundary in space. 
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_boundary_a364909bdfa4a4945f974c34a39e198cc}\label{class_boundary_a364909bdfa4a4945f974c34a39e198cc}} 
+\index{Boundary@{Boundary}!intersects@{intersects}}
+\index{intersects@{intersects}!Boundary@{Boundary}}
+\subsubsection{\texorpdfstring{intersects()}{intersects()}}
+{\footnotesize\ttfamily virtual bool Boundary\+::intersects (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_boundary}{Boundary}} $\ast$}]{other\+\_\+boundary }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+Pure virtual. Override this if you want to make your own Boundaries. 
+
+Implemented in \mbox{\hyperlink{class_bounding_plane_a3d956121121f32384cab3cab34544d6e}{Bounding\+Plane}}, \mbox{\hyperlink{class_a_a_b_b_ab427a4455732a16802103e06ed4af02a}{A\+A\+BB}}, and \mbox{\hyperlink{class_bounding_sphere_aab64d759fac6a9835ac24d6fca8530d6}{Bounding\+Sphere}}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+src/physics/boundary.\+hpp\end{DoxyCompactItemize}

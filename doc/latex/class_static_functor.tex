@@ -1,0 +1,78 @@
+\hypertarget{class_static_functor}{}\section{Static\+Functor$<$ Functor, Functor\+Parameters $>$ Class Template Reference}
+\label{class_static_functor}\index{Static\+Functor$<$ Functor, Functor\+Parameters $>$@{Static\+Functor$<$ Functor, Functor\+Parameters $>$}}
+
+
+{\ttfamily \#include $<$command.\+hpp$>$}
+
+Inheritance diagram for Static\+Functor$<$ Functor, Functor\+Parameters $>$\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=3.000000cm]{class_static_functor}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_static_functor_a61ee85704ebc97245006d4d8801fd58f}{Static\+Functor}} (\mbox{\hyperlink{class_functor}{Functor}} \&\&\mbox{\hyperlink{class_static_functor_aea8563c235a2dea8474da84504c51b58}{functor}}, Functor\+Parameters \&\&... \mbox{\hyperlink{class_static_functor_aaa5d69cb0c000ea6c4846296de2c7f7f}{parameters}})
+\item 
+virtual void \mbox{\hyperlink{class_static_functor_a1d8fe0ec2f9965c5f95ad182a8df510b}{operator()}} () override
+\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_static_functor_aea8563c235a2dea8474da84504c51b58}\label{class_static_functor_aea8563c235a2dea8474da84504c51b58}} 
+\mbox{\hyperlink{class_functor}{Functor}} \mbox{\hyperlink{class_static_functor_aea8563c235a2dea8474da84504c51b58}{functor}}
+\begin{DoxyCompactList}\small\item\em The underlying functor. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_static_functor_aaa5d69cb0c000ea6c4846296de2c7f7f}\label{class_static_functor_aaa5d69cb0c000ea6c4846296de2c7f7f}} 
+std\+::tuple$<$ Functor\+Parameters... $>$ \mbox{\hyperlink{class_static_functor_aaa5d69cb0c000ea6c4846296de2c7f7f}{parameters}}
+\begin{DoxyCompactList}\small\item\em Tuple containing all the parameters to be used when the functor is executed. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+\subsubsection*{template$<$typename Functor, typename... Functor\+Parameters$>$\newline
+class Static\+Functor$<$ Functor, Functor\+Parameters $>$}
+
+Represent a \mbox{\hyperlink{class_functor}{Functor}} storing all its arguments upon construction. 
+\begin{DoxyTemplParams}{Template Parameters}
+{\em \mbox{\hyperlink{class_functor}{Functor}}} & -\/ Type of the underlying functor. \\
+\hline
+{\em Functor\+Parameters} & -\/ Template parameter pack representing argument types. \\
+\hline
+\end{DoxyTemplParams}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{class_static_functor_a61ee85704ebc97245006d4d8801fd58f}\label{class_static_functor_a61ee85704ebc97245006d4d8801fd58f}} 
+\index{Static\+Functor@{Static\+Functor}!Static\+Functor@{Static\+Functor}}
+\index{Static\+Functor@{Static\+Functor}!Static\+Functor@{Static\+Functor}}
+\subsubsection{\texorpdfstring{Static\+Functor()}{StaticFunctor()}}
+{\footnotesize\ttfamily template$<$typename Functor , typename... Functor\+Parameters$>$ \\
+\mbox{\hyperlink{class_static_functor}{Static\+Functor}}$<$ \mbox{\hyperlink{class_functor}{Functor}}, Functor\+Parameters $>$\+::\mbox{\hyperlink{class_static_functor}{Static\+Functor}} (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_functor}{Functor}} \&\&}]{functor,  }\item[{Functor\+Parameters \&\&...}]{parameters }\end{DoxyParamCaption})}
+
+Construct a \mbox{\hyperlink{class_static_functor}{Static\+Functor}} from an underlying functor and all the parameters it requires. 
+\begin{DoxyParams}{Parameters}
+{\em functor} & -\/ The underlying functor \\
+\hline
+{\em parameters} & -\/ Variadic parameters representing parameters of the \mbox{\hyperlink{class_static_functor}{Static\+Functor}}. These are stored in the \mbox{\hyperlink{class_static_functor}{Static\+Functor}}. \\
+\hline
+\end{DoxyParams}
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_static_functor_a1d8fe0ec2f9965c5f95ad182a8df510b}\label{class_static_functor_a1d8fe0ec2f9965c5f95ad182a8df510b}} 
+\index{Static\+Functor@{Static\+Functor}!operator()@{operator()}}
+\index{operator()@{operator()}!Static\+Functor@{Static\+Functor}}
+\subsubsection{\texorpdfstring{operator()()}{operator()()}}
+{\footnotesize\ttfamily template$<$typename Functor , typename... Functor\+Parameters$>$ \\
+void \mbox{\hyperlink{class_static_functor}{Static\+Functor}}$<$ \mbox{\hyperlink{class_functor}{Functor}}, Functor\+Parameters $>$\+::operator() (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+Invoked when the \mbox{\hyperlink{class_static_functor}{Static\+Functor}} is executed. Runs the underlying functor with all variadic parameters. 
+
+Implements \mbox{\hyperlink{class_trivial_command_aa61a3e5fd78d3a2dec6fcf6dcb2e5189}{Trivial\+Command}}.
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+src/command.\+hpp\item 
+src/command.\+inl\end{DoxyCompactItemize}

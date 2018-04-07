@@ -1,0 +1,231 @@
+\hypertarget{class_panel}{}\section{Panel Class Reference}
+\label{class_panel}\index{Panel@{Panel}}
+
+
+{\ttfamily \#include $<$gui\+\_\+display.\+hpp$>$}
+
+Inheritance diagram for Panel\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=4.000000cm]{class_panel}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_panel_aafa4aa5f39fb3f832e2f1585ecbce0e9}{Panel}} (float \mbox{\hyperlink{class_g_u_i_a7fa193a8ffb27bbb3bcc225e36f6d54d}{x}}, float \mbox{\hyperlink{class_g_u_i_a98f204f99ffc5ff6cffc9340bbb8c29b}{y}}, float \mbox{\hyperlink{class_g_u_i_aee5d8766834f6f743f0d8b8c16e47155}{width}}, float \mbox{\hyperlink{class_g_u_i_a70b578c36323a45cac88ccff3bced933}{height}}, \mbox{\hyperlink{class_vector4}{Vector4F}} \mbox{\hyperlink{class_panel_a7c38e08ad80eb9972428450fb639bf66}{colour}}, \mbox{\hyperlink{class_shader}{Shader}} \&\mbox{\hyperlink{class_g_u_i_a64b007b31d0ec8a8704f9ab3bb2a7d3d}{shader}})
+\item 
+const \mbox{\hyperlink{class_vector4}{Vector4F}} \& \mbox{\hyperlink{class_panel_ace1342ef6e7c0f73a44e380356ce5e28}{get\+\_\+colour}} () const
+\item 
+void \mbox{\hyperlink{class_panel_af23b45cbf03066f1a1d884486ca00712}{set\+\_\+colour}} (\mbox{\hyperlink{class_vector4}{Vector4F}} \mbox{\hyperlink{class_panel_a7c38e08ad80eb9972428450fb639bf66}{colour}})
+\item 
+const \mbox{\hyperlink{class_texture}{Texture}} $\ast$ \mbox{\hyperlink{class_panel_a938f8a6b4038c5ebd43468ff7c6279c6}{get\+\_\+texture}} () const
+\item 
+void \mbox{\hyperlink{class_panel_aecd67bfb730ba8e0afd331b5c25c0e83}{set\+\_\+texture}} (\mbox{\hyperlink{class_texture}{Texture}} $\ast$\mbox{\hyperlink{class_panel_a682c2d8747451954095eb567b45d3fbd}{texture}})
+\item 
+void \mbox{\hyperlink{class_panel_a126b9ac55e35e3530f01614f285e0eea}{disable\+\_\+texture}} ()
+\item 
+bool \mbox{\hyperlink{class_panel_a3df9165a8d21073e92090937122a790b}{has\+\_\+texture}} () const
+\item 
+virtual void \mbox{\hyperlink{class_panel_a9e9c0608cf3139833cde6b73dc3ba443}{update}} () override
+\item 
+virtual void \mbox{\hyperlink{class_panel_ac21884693c47ee069feb9e963f00e9af}{destroy}} () override
+\item 
+virtual bool \mbox{\hyperlink{class_panel_ace2217419ea5c2e98a38678c6e2012e1}{focused}} () const override
+\item 
+virtual bool \mbox{\hyperlink{class_panel_a9a30fff40fad1f0845c0c7aa2786f772}{is\+\_\+window}} () const override
+\item 
+virtual bool \mbox{\hyperlink{class_panel_a607fe6e1be6fd056f199fa817a4dedda}{is\+\_\+mouse\+\_\+sensitive}} () const override
+\end{DoxyCompactItemize}
+\subsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{class_panel_a9f81e58fd5b3d441a145d3aa5e222293}{render\+\_\+panel}} (\mbox{\hyperlink{class_vector4}{Vector4F}} \mbox{\hyperlink{class_panel_a7c38e08ad80eb9972428450fb639bf66}{colour}}, bool \mbox{\hyperlink{class_panel_a9e9c0608cf3139833cde6b73dc3ba443}{update}}=true)
+\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_panel_a682c2d8747451954095eb567b45d3fbd}\label{class_panel_a682c2d8747451954095eb567b45d3fbd}} 
+\mbox{\hyperlink{class_texture}{Texture}} $\ast$ \mbox{\hyperlink{class_panel_a682c2d8747451954095eb567b45d3fbd}{texture}}
+\begin{DoxyCompactList}\small\item\em Pointer to the texture which should be displayed on the \mbox{\hyperlink{class_panel}{Panel}} foreground. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_panel_a7c38e08ad80eb9972428450fb639bf66}\label{class_panel_a7c38e08ad80eb9972428450fb639bf66}} 
+\mbox{\hyperlink{class_vector4}{Vector4F}} \mbox{\hyperlink{class_panel_a7c38e08ad80eb9972428450fb639bf66}{colour}}
+\begin{DoxyCompactList}\small\item\em Colour of the \mbox{\hyperlink{class_panel}{Panel}} foreground, if no texture is being displayed. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_panel_a3567eff819cd864ee8b6cbce5c01b274}\label{class_panel_a3567eff819cd864ee8b6cbce5c01b274}} 
+\mbox{\hyperlink{class_mesh}{Mesh}} \mbox{\hyperlink{class_panel_a3567eff819cd864ee8b6cbce5c01b274}{quad}}
+\begin{DoxyCompactList}\small\item\em \mbox{\hyperlink{class_mesh}{Mesh}} representing the quad model of this \mbox{\hyperlink{class_panel}{Panel}}. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+A 2D plane rendered on the screen. Can contain any other gui element in its own region. Can have a texture bound, but does not by default. 
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{class_panel_aafa4aa5f39fb3f832e2f1585ecbce0e9}\label{class_panel_aafa4aa5f39fb3f832e2f1585ecbce0e9}} 
+\index{Panel@{Panel}!Panel@{Panel}}
+\index{Panel@{Panel}!Panel@{Panel}}
+\subsubsection{\texorpdfstring{Panel()}{Panel()}}
+{\footnotesize\ttfamily Panel\+::\+Panel (\begin{DoxyParamCaption}\item[{float}]{x,  }\item[{float}]{y,  }\item[{float}]{width,  }\item[{float}]{height,  }\item[{\mbox{\hyperlink{class_vector4}{Vector4F}}}]{colour,  }\item[{\mbox{\hyperlink{class_shader}{Shader}} \&}]{shader }\end{DoxyParamCaption})}
+
+Construct a \mbox{\hyperlink{class_panel}{Panel}} with all specifications. 
+\begin{DoxyParams}{Parameters}
+{\em x} & -\/ X-\/coordinate of the \mbox{\hyperlink{class_panel}{Panel}}. \\
+\hline
+{\em y} & -\/ Y-\/coordinate of the \mbox{\hyperlink{class_panel}{Panel}}. \\
+\hline
+{\em width} & -\/ Width of the \mbox{\hyperlink{class_panel}{Panel}}. \\
+\hline
+{\em height} & -\/ Height of the \mbox{\hyperlink{class_panel}{Panel}}. \\
+\hline
+{\em colour} & -\/ Colour of the \mbox{\hyperlink{class_panel}{Panel}} foreground. \\
+\hline
+{\em shader} & -\/ The shader with which to render the \mbox{\hyperlink{class_panel}{Panel}}. \\
+\hline
+\end{DoxyParams}
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_panel_ac21884693c47ee069feb9e963f00e9af}\label{class_panel_ac21884693c47ee069feb9e963f00e9af}} 
+\index{Panel@{Panel}!destroy@{destroy}}
+\index{destroy@{destroy}!Panel@{Panel}}
+\subsubsection{\texorpdfstring{destroy()}{destroy()}}
+{\footnotesize\ttfamily void Panel\+::destroy (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+Destroy the \mbox{\hyperlink{class_panel}{Panel}}, and kill all of its children. 
+
+Reimplemented from \mbox{\hyperlink{class_g_u_i_a2abe7f08a1da35af8ae006fbecea94e0}{G\+UI}}.
+
+\mbox{\Hypertarget{class_panel_a126b9ac55e35e3530f01614f285e0eea}\label{class_panel_a126b9ac55e35e3530f01614f285e0eea}} 
+\index{Panel@{Panel}!disable\+\_\+texture@{disable\+\_\+texture}}
+\index{disable\+\_\+texture@{disable\+\_\+texture}!Panel@{Panel}}
+\subsubsection{\texorpdfstring{disable\+\_\+texture()}{disable\_texture()}}
+{\footnotesize\ttfamily void Panel\+::disable\+\_\+texture (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+Stop displaying a texture on this \mbox{\hyperlink{class_panel}{Panel}} and display the foreground-\/colour instead. \mbox{\Hypertarget{class_panel_ace2217419ea5c2e98a38678c6e2012e1}\label{class_panel_ace2217419ea5c2e98a38678c6e2012e1}} 
+\index{Panel@{Panel}!focused@{focused}}
+\index{focused@{focused}!Panel@{Panel}}
+\subsubsection{\texorpdfstring{focused()}{focused()}}
+{\footnotesize\ttfamily virtual bool Panel\+::focused (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}
+
+Panels cannot be focused. \begin{DoxyReturn}{Returns}
+-\/ False 
+\end{DoxyReturn}
+
+
+Implements \mbox{\hyperlink{class_g_u_i_ad2a7c1ae3938ba1d6dea0142f16d6c2b}{G\+UI}}.
+
+
+
+Reimplemented in \mbox{\hyperlink{class_slider_a30b01348a5d214f3078e22516c60a763}{Slider}}, \mbox{\hyperlink{class_checkbox_a2a2c82a9e8c95ad868ce85a60ba07292}{Checkbox}}, and \mbox{\hyperlink{class_button_a2c1b0adeb2920b394fe4f38354ae6604}{Button}}.
+
+\mbox{\Hypertarget{class_panel_ace1342ef6e7c0f73a44e380356ce5e28}\label{class_panel_ace1342ef6e7c0f73a44e380356ce5e28}} 
+\index{Panel@{Panel}!get\+\_\+colour@{get\+\_\+colour}}
+\index{get\+\_\+colour@{get\+\_\+colour}!Panel@{Panel}}
+\subsubsection{\texorpdfstring{get\+\_\+colour()}{get\_colour()}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{class_vector4}{Vector4F}} \& Panel\+::get\+\_\+colour (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+Get the R\+G\+B\+A-\/encoded colour of the \mbox{\hyperlink{class_panel}{Panel}}\textquotesingle{}s foreground. \begin{DoxyReturn}{Returns}
+-\/ Colour of the \mbox{\hyperlink{class_panel}{Panel}} foreground 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_panel_a938f8a6b4038c5ebd43468ff7c6279c6}\label{class_panel_a938f8a6b4038c5ebd43468ff7c6279c6}} 
+\index{Panel@{Panel}!get\+\_\+texture@{get\+\_\+texture}}
+\index{get\+\_\+texture@{get\+\_\+texture}!Panel@{Panel}}
+\subsubsection{\texorpdfstring{get\+\_\+texture()}{get\_texture()}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{class_texture}{Texture}} $\ast$ Panel\+::get\+\_\+texture (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+\mbox{\hyperlink{class_texture}{Texture}} pointer that should be displayed on the \mbox{\hyperlink{class_panel}{Panel}}\textquotesingle{}s foreground. \begin{DoxyReturn}{Returns}
+-\/ Pointer to the texture used. If no texture is being used, nullptr is returned 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_panel_a3df9165a8d21073e92090937122a790b}\label{class_panel_a3df9165a8d21073e92090937122a790b}} 
+\index{Panel@{Panel}!has\+\_\+texture@{has\+\_\+texture}}
+\index{has\+\_\+texture@{has\+\_\+texture}!Panel@{Panel}}
+\subsubsection{\texorpdfstring{has\+\_\+texture()}{has\_texture()}}
+{\footnotesize\ttfamily bool Panel\+::has\+\_\+texture (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+Query whether this \mbox{\hyperlink{class_panel}{Panel}} is displaying a texture on its foreground. \begin{DoxyReturn}{Returns}
+-\/ True if a texture is being displayed. Otherwise false. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_panel_a607fe6e1be6fd056f199fa817a4dedda}\label{class_panel_a607fe6e1be6fd056f199fa817a4dedda}} 
+\index{Panel@{Panel}!is\+\_\+mouse\+\_\+sensitive@{is\+\_\+mouse\+\_\+sensitive}}
+\index{is\+\_\+mouse\+\_\+sensitive@{is\+\_\+mouse\+\_\+sensitive}!Panel@{Panel}}
+\subsubsection{\texorpdfstring{is\+\_\+mouse\+\_\+sensitive()}{is\_mouse\_sensitive()}}
+{\footnotesize\ttfamily virtual bool Panel\+::is\+\_\+mouse\+\_\+sensitive (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}
+
+Panels are mouse-\/insensitive. \begin{DoxyReturn}{Returns}
+-\/ False 
+\end{DoxyReturn}
+
+
+Reimplemented from \mbox{\hyperlink{class_g_u_i_aff34edd65faff6f3e908070a2060f6b8}{G\+UI}}.
+
+
+
+Reimplemented in \mbox{\hyperlink{class_slider_a8d7d12aa4bc5d26de46790b43116bcc1}{Slider}}, \mbox{\hyperlink{class_checkbox_a63fc27bae94d81d4dee8cd2d0e474d2b}{Checkbox}}, and \mbox{\hyperlink{class_button_aa2b16ae30fe74f215aa79c699bbf8510}{Button}}.
+
+\mbox{\Hypertarget{class_panel_a9a30fff40fad1f0845c0c7aa2786f772}\label{class_panel_a9a30fff40fad1f0845c0c7aa2786f772}} 
+\index{Panel@{Panel}!is\+\_\+window@{is\+\_\+window}}
+\index{is\+\_\+window@{is\+\_\+window}!Panel@{Panel}}
+\subsubsection{\texorpdfstring{is\+\_\+window()}{is\_window()}}
+{\footnotesize\ttfamily virtual bool Panel\+::is\+\_\+window (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}
+
+Panels are not Windows. \begin{DoxyReturn}{Returns}
+-\/ False 
+\end{DoxyReturn}
+
+
+Implements \mbox{\hyperlink{class_g_u_i_a7ef5287aaa630a8d1146f0d5a35b6683}{G\+UI}}.
+
+\mbox{\Hypertarget{class_panel_a9f81e58fd5b3d441a145d3aa5e222293}\label{class_panel_a9f81e58fd5b3d441a145d3aa5e222293}} 
+\index{Panel@{Panel}!render\+\_\+panel@{render\+\_\+panel}}
+\index{render\+\_\+panel@{render\+\_\+panel}!Panel@{Panel}}
+\subsubsection{\texorpdfstring{render\+\_\+panel()}{render\_panel()}}
+{\footnotesize\ttfamily void Panel\+::render\+\_\+panel (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_vector4}{Vector4F}}}]{colour,  }\item[{bool}]{update = {\ttfamily true} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}}
+
+Render the \mbox{\hyperlink{class_panel}{Panel}} with the specified colour. 
+\begin{DoxyParams}{Parameters}
+{\em colour} & -\/ Colour to render the foreground of the \mbox{\hyperlink{class_panel}{Panel}} as. \\
+\hline
+{\em update} & -\/ Whether to update all the \mbox{\hyperlink{class_panel}{Panel}}\textquotesingle{}s children or not. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_panel_af23b45cbf03066f1a1d884486ca00712}\label{class_panel_af23b45cbf03066f1a1d884486ca00712}} 
+\index{Panel@{Panel}!set\+\_\+colour@{set\+\_\+colour}}
+\index{set\+\_\+colour@{set\+\_\+colour}!Panel@{Panel}}
+\subsubsection{\texorpdfstring{set\+\_\+colour()}{set\_colour()}}
+{\footnotesize\ttfamily void Panel\+::set\+\_\+colour (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_vector4}{Vector4F}}}]{colour }\end{DoxyParamCaption})}
+
+Specify the colour of the \mbox{\hyperlink{class_panel}{Panel}}\textquotesingle{}s foreground. 
+\begin{DoxyParams}{Parameters}
+{\em colour} & -\/ Desired R\+G\+B\+A-\/encoded colour of the \mbox{\hyperlink{class_panel}{Panel}}\textquotesingle{}s foreground \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_panel_aecd67bfb730ba8e0afd331b5c25c0e83}\label{class_panel_aecd67bfb730ba8e0afd331b5c25c0e83}} 
+\index{Panel@{Panel}!set\+\_\+texture@{set\+\_\+texture}}
+\index{set\+\_\+texture@{set\+\_\+texture}!Panel@{Panel}}
+\subsubsection{\texorpdfstring{set\+\_\+texture()}{set\_texture()}}
+{\footnotesize\ttfamily void Panel\+::set\+\_\+texture (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_texture}{Texture}} $\ast$}]{texture }\end{DoxyParamCaption})}
+
+Set which existing texture should be displayed on the \mbox{\hyperlink{class_panel}{Panel}}\textquotesingle{}s foreground. 
+\begin{DoxyParams}{Parameters}
+{\em texture} & -\/ Pointer to the texture which should be used. If nullptr is specified, no texture will be used and the foreground colour will be used instead \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_panel_a9e9c0608cf3139833cde6b73dc3ba443}\label{class_panel_a9e9c0608cf3139833cde6b73dc3ba443}} 
+\index{Panel@{Panel}!update@{update}}
+\index{update@{update}!Panel@{Panel}}
+\subsubsection{\texorpdfstring{update()}{update()}}
+{\footnotesize\ttfamily void Panel\+::update (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+Render the \mbox{\hyperlink{class_panel}{Panel}}, and update all children. 
+
+Reimplemented from \mbox{\hyperlink{class_g_u_i_a947e568bf884a8798e3e368417f662c7}{G\+UI}}.
+
+
+
+Reimplemented in \mbox{\hyperlink{class_slider_a4ebd527db54ea263c7d0efe4d1f94e1b}{Slider}}, \mbox{\hyperlink{class_text_label_a350a9edc23e4d2a53374fddc5ddc61cc}{Text\+Label}}, \mbox{\hyperlink{class_checkbox_a69c9fb9ce334fc8ff76c49447f1e002d}{Checkbox}}, and \mbox{\hyperlink{class_button_abda97f1ae8e081da3dbd0b77a27cad9d}{Button}}.
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+src/graphics/gui\+\_\+display.\+hpp\item 
+src/graphics/gui\+\_\+display.\+cpp\end{DoxyCompactItemize}

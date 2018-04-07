@@ -1,0 +1,457 @@
+\hypertarget{class_g_u_i}{}\section{G\+UI Class Reference}
+\label{class_g_u_i}\index{G\+UI@{G\+UI}}
+
+
+{\ttfamily \#include $<$gui.\+hpp$>$}
+
+Inheritance diagram for G\+UI\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=4.000000cm]{class_g_u_i}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_g_u_i_a7af10a4c97e3e2c7f59134458ce36d6f}{G\+UI}} (float \mbox{\hyperlink{class_g_u_i_a7fa193a8ffb27bbb3bcc225e36f6d54d}{x}}, float \mbox{\hyperlink{class_g_u_i_a98f204f99ffc5ff6cffc9340bbb8c29b}{y}}, float \mbox{\hyperlink{class_g_u_i_aee5d8766834f6f743f0d8b8c16e47155}{width}}, float \mbox{\hyperlink{class_g_u_i_a70b578c36323a45cac88ccff3bced933}{height}}, std\+::optional$<$ std\+::reference\+\_\+wrapper$<$ \mbox{\hyperlink{class_shader}{Shader}} $>$$>$ \mbox{\hyperlink{class_g_u_i_a64b007b31d0ec8a8704f9ab3bb2a7d3d}{shader}})
+\item 
+virtual void \mbox{\hyperlink{class_g_u_i_a947e568bf884a8798e3e368417f662c7}{update}} ()
+\item 
+virtual void \mbox{\hyperlink{class_g_u_i_a2abe7f08a1da35af8ae006fbecea94e0}{destroy}} ()
+\item 
+virtual bool \mbox{\hyperlink{class_g_u_i_ad2a7c1ae3938ba1d6dea0142f16d6c2b}{focused}} () const =0
+\item 
+virtual bool \mbox{\hyperlink{class_g_u_i_a7ef5287aaa630a8d1146f0d5a35b6683}{is\+\_\+window}} () const =0
+\item 
+virtual bool \mbox{\hyperlink{class_g_u_i_aff34edd65faff6f3e908070a2060f6b8}{is\+\_\+mouse\+\_\+sensitive}} () const
+\item 
+virtual float \mbox{\hyperlink{class_g_u_i_abbad56adda65a7176a4e0c7e260d9449}{get\+\_\+window\+\_\+pos\+\_\+x}} () const
+\item 
+virtual float \mbox{\hyperlink{class_g_u_i_a34753a0119188e4b17b4b5209c795c3a}{get\+\_\+window\+\_\+pos\+\_\+y}} () const
+\item 
+float \mbox{\hyperlink{class_g_u_i_a933b6bc6c5288f785d50e2621ead2193}{get\+\_\+x}} () const
+\item 
+float \mbox{\hyperlink{class_g_u_i_a6a33d5bbe2d6b57b7fd2d9dc141cc3ae}{get\+\_\+y}} () const
+\item 
+virtual float \mbox{\hyperlink{class_g_u_i_a3606efd6a6db43f9751110d41ec195a3}{get\+\_\+width}} () const
+\item 
+virtual float \mbox{\hyperlink{class_g_u_i_a4e427bc7271c6478d98f2215349dce07}{get\+\_\+height}} () const
+\item 
+void \mbox{\hyperlink{class_g_u_i_a677bae0d1184e72deaf25fac052a8f95}{set\+\_\+x}} (float \mbox{\hyperlink{class_g_u_i_a7fa193a8ffb27bbb3bcc225e36f6d54d}{x}})
+\item 
+void \mbox{\hyperlink{class_g_u_i_aad88f8d97f43cd47a4245d5dc5a49e45}{set\+\_\+y}} (float \mbox{\hyperlink{class_g_u_i_a98f204f99ffc5ff6cffc9340bbb8c29b}{y}})
+\item 
+void \mbox{\hyperlink{class_g_u_i_afca3eaa048f1c0f0d0348b6882480196}{set\+\_\+width}} (float \mbox{\hyperlink{class_g_u_i_aee5d8766834f6f743f0d8b8c16e47155}{width}})
+\item 
+void \mbox{\hyperlink{class_g_u_i_a10a086b9e69595a9d6da48eb6d20dbc1}{set\+\_\+height}} (float \mbox{\hyperlink{class_g_u_i_a70b578c36323a45cac88ccff3bced933}{height}})
+\item 
+\mbox{\hyperlink{class_window}{Window}} $\ast$ \mbox{\hyperlink{class_g_u_i_a62d14b39a25ab4de6ccd5c8df6dd8624}{find\+\_\+window\+\_\+parent}} () const
+\item 
+bool \mbox{\hyperlink{class_g_u_i_aacd4d5cfd38dbec244929deabf26b010}{has\+\_\+window\+\_\+parent}} () const
+\item 
+const std\+::optional$<$ std\+::reference\+\_\+wrapper$<$ \mbox{\hyperlink{class_shader}{Shader}} $>$ $>$ \& \mbox{\hyperlink{class_g_u_i_a4c8efe5f6b75a644ada33b438560baa9}{get\+\_\+shader}} () const
+\item 
+bool \mbox{\hyperlink{class_g_u_i_a3e5c5758569b0a6f7f8a0763ac5f2d56}{has\+\_\+shader}} () const
+\item 
+\mbox{\hyperlink{class_g_u_i}{G\+UI}} $\ast$ \mbox{\hyperlink{class_g_u_i_af134d9b5a265ad8996d1bea642fd06b9}{get\+\_\+parent}} () const
+\item 
+void \mbox{\hyperlink{class_g_u_i_a5d14a0bdad4c542b854951d3092bcea2}{set\+\_\+parent}} (\mbox{\hyperlink{class_g_u_i}{G\+UI}} $\ast$\mbox{\hyperlink{class_g_u_i_ac9c33263556b3c9997f9c7b360f06a93}{parent}})
+\item 
+const std\+::deque$<$ \mbox{\hyperlink{class_g_u_i}{G\+UI}} $\ast$ $>$ \& \mbox{\hyperlink{class_g_u_i_a680f20f016eadb403939f14dd5a820dc}{get\+\_\+children}} () const
+\item 
+void \mbox{\hyperlink{class_g_u_i_a05ceaea0a9ae997ad62f5115b32dd287}{add\+\_\+child}} (\mbox{\hyperlink{class_g_u_i}{G\+UI}} $\ast$child)
+\item 
+void \mbox{\hyperlink{class_g_u_i_a8db69179e2a985c144c94803eddb245e}{remove\+\_\+child}} (\mbox{\hyperlink{class_g_u_i}{G\+UI}} $\ast$child)
+\item 
+bool \mbox{\hyperlink{class_g_u_i_a39a7e284ade3ed1cb65c6d22f55a80a2}{is\+\_\+hidden}} () const
+\item 
+virtual void \mbox{\hyperlink{class_g_u_i_a6400061907f3bba6fa465238e4d94ed1}{set\+\_\+hidden}} (bool \mbox{\hyperlink{class_g_u_i_a270e03faf2f4612883700dc89ec7e0d0}{hidden}})
+\item 
+void \mbox{\hyperlink{class_g_u_i_abb013debfa5f24e41990869f6684c228}{set\+\_\+using\+\_\+proportional\+\_\+positioning}} (bool \mbox{\hyperlink{class_g_u_i_a6b75b1bd88f2e04e919a4a9f2333f634}{use\+\_\+proportional\+\_\+positioning}})
+\item 
+bool \mbox{\hyperlink{class_g_u_i_a82dd699bec9d845e5bde59f515858f50}{is\+\_\+using\+\_\+proportional\+\_\+positioning}} () const
+\item 
+\mbox{\hyperlink{class_g_u_i}{G\+UI}} $\ast$ \mbox{\hyperlink{class_g_u_i_a9f8f70693f5ea986fbbdfe0686f6b30d}{covered\+\_\+by}} () const
+\item 
+bool \mbox{\hyperlink{class_g_u_i_a824033514dfb2c193a5c22370a3b8fb1}{covered}} () const
+\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_g_u_i_a7fa193a8ffb27bbb3bcc225e36f6d54d}\label{class_g_u_i_a7fa193a8ffb27bbb3bcc225e36f6d54d}} 
+float \mbox{\hyperlink{class_g_u_i_a7fa193a8ffb27bbb3bcc225e36f6d54d}{x}}
+\begin{DoxyCompactList}\small\item\em X-\/coordinate of the \mbox{\hyperlink{class_g_u_i}{G\+UI}} element. In pixels, or between 0.\+0-\/1.\+0 if proportional-\/positioning is enabled. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_g_u_i_a98f204f99ffc5ff6cffc9340bbb8c29b}\label{class_g_u_i_a98f204f99ffc5ff6cffc9340bbb8c29b}} 
+float \mbox{\hyperlink{class_g_u_i_a98f204f99ffc5ff6cffc9340bbb8c29b}{y}}
+\begin{DoxyCompactList}\small\item\em Y-\/coordinate of the \mbox{\hyperlink{class_g_u_i}{G\+UI}} element. In pixels, or between 0.\+0-\/1.\+0 if proportional-\/positioning is enabled. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_g_u_i_aee5d8766834f6f743f0d8b8c16e47155}\label{class_g_u_i_aee5d8766834f6f743f0d8b8c16e47155}} 
+float \mbox{\hyperlink{class_g_u_i_aee5d8766834f6f743f0d8b8c16e47155}{width}}
+\begin{DoxyCompactList}\small\item\em Width of the \mbox{\hyperlink{class_g_u_i}{G\+UI}} element. In pixels, or between 0.\+0-\/1.\+0 if proportional-\/positioning is enabled. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_g_u_i_a70b578c36323a45cac88ccff3bced933}\label{class_g_u_i_a70b578c36323a45cac88ccff3bced933}} 
+float \mbox{\hyperlink{class_g_u_i_a70b578c36323a45cac88ccff3bced933}{height}}
+\begin{DoxyCompactList}\small\item\em Width of the \mbox{\hyperlink{class_g_u_i}{G\+UI}} element. In pixels, or between 0.\+0-\/1.\+0 if proportional-\/positioning is enabled. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_g_u_i_a64b007b31d0ec8a8704f9ab3bb2a7d3d}\label{class_g_u_i_a64b007b31d0ec8a8704f9ab3bb2a7d3d}} 
+std\+::optional$<$ std\+::reference\+\_\+wrapper$<$ \mbox{\hyperlink{class_shader}{Shader}} $>$ $>$ \mbox{\hyperlink{class_g_u_i_a64b007b31d0ec8a8704f9ab3bb2a7d3d}{shader}}
+\begin{DoxyCompactList}\small\item\em Reference to a \mbox{\hyperlink{class_shader}{Shader}}, which may or may not exist. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_g_u_i_ac9c33263556b3c9997f9c7b360f06a93}\label{class_g_u_i_ac9c33263556b3c9997f9c7b360f06a93}} 
+\mbox{\hyperlink{class_g_u_i}{G\+UI}} $\ast$ \mbox{\hyperlink{class_g_u_i_ac9c33263556b3c9997f9c7b360f06a93}{parent}}
+\begin{DoxyCompactList}\small\item\em Pointer to the \mbox{\hyperlink{class_g_u_i}{G\+UI}} element which has this registered as a child. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_g_u_i_a2ff82067e32c06d5ba9b6aa4d860666a}\label{class_g_u_i_a2ff82067e32c06d5ba9b6aa4d860666a}} 
+std\+::deque$<$ \mbox{\hyperlink{class_g_u_i}{G\+UI}} $\ast$ $>$ \mbox{\hyperlink{class_g_u_i_a2ff82067e32c06d5ba9b6aa4d860666a}{children}}
+\begin{DoxyCompactList}\small\item\em Container of all children. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_g_u_i_a270e03faf2f4612883700dc89ec7e0d0}\label{class_g_u_i_a270e03faf2f4612883700dc89ec7e0d0}} 
+bool \mbox{\hyperlink{class_g_u_i_a270e03faf2f4612883700dc89ec7e0d0}{hidden}}
+\begin{DoxyCompactList}\small\item\em Stores whether this \mbox{\hyperlink{class_g_u_i}{G\+UI}} element is currently hidden. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_g_u_i_a6b75b1bd88f2e04e919a4a9f2333f634}\label{class_g_u_i_a6b75b1bd88f2e04e919a4a9f2333f634}} 
+bool \mbox{\hyperlink{class_g_u_i_a6b75b1bd88f2e04e919a4a9f2333f634}{use\+\_\+proportional\+\_\+positioning}}
+\begin{DoxyCompactList}\small\item\em Stores whether this \mbox{\hyperlink{class_g_u_i}{G\+UI}} element is currently set to be using proportional-\/positioning. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Represents a Topaz \mbox{\hyperlink{class_g_u_i}{G\+UI}} element. Abstract. Not available for non-\/polymorphic use. Inherit from this to create custom Topaz \mbox{\hyperlink{class_g_u_i}{G\+UI}} yourself.
+
+Note on Topaz \mbox{\hyperlink{class_g_u_i}{G\+UI}} Topaz does not use any library for \mbox{\hyperlink{class_g_u_i}{G\+UI}}; it completely reinvents the wheel. If you have your own library for \mbox{\hyperlink{class_g_u_i}{G\+UI}}, Topaz should stay out of your way, as long as you have your own windowing functionality. An important note\+: You won\textquotesingle{}t be able to use \mbox{\hyperlink{class_engine}{Engine}} to help you develop with Topaz unless you also use this \mbox{\hyperlink{class_g_u_i}{G\+UI}}. If you are not using Topaz Windows but wish to use \mbox{\hyperlink{class_engine}{Engine}} anyway, consider writing your own subclass of \mbox{\hyperlink{class_engine}{Engine}}. 
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{class_g_u_i_a7af10a4c97e3e2c7f59134458ce36d6f}\label{class_g_u_i_a7af10a4c97e3e2c7f59134458ce36d6f}} 
+\index{G\+UI@{G\+UI}!G\+UI@{G\+UI}}
+\index{G\+UI@{G\+UI}!G\+UI@{G\+UI}}
+\subsubsection{\texorpdfstring{G\+U\+I()}{GUI()}}
+{\footnotesize\ttfamily G\+U\+I\+::\+G\+UI (\begin{DoxyParamCaption}\item[{float}]{x,  }\item[{float}]{y,  }\item[{float}]{width,  }\item[{float}]{height,  }\item[{std\+::optional$<$ std\+::reference\+\_\+wrapper$<$ \mbox{\hyperlink{class_shader}{Shader}} $>$$>$}]{shader }\end{DoxyParamCaption})}
+
+Construct a \mbox{\hyperlink{class_g_u_i}{G\+UI}} element with all specifications. 
+\begin{DoxyParams}{Parameters}
+{\em x} & -\/ Position of the element on the x-\/axis. \\
+\hline
+{\em y} & -\/ Position of the element on the y-\/axis. \\
+\hline
+{\em width} & -\/ Width of the element, in pixels. \\
+\hline
+{\em height} & -\/ Height of the element, in pixels. \\
+\hline
+{\em shader} & -\/ \mbox{\hyperlink{class_shader}{Shader}} with which to render the \mbox{\hyperlink{class_g_u_i}{G\+UI}} element. \\
+\hline
+\end{DoxyParams}
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_g_u_i_a05ceaea0a9ae997ad62f5115b32dd287}\label{class_g_u_i_a05ceaea0a9ae997ad62f5115b32dd287}} 
+\index{G\+UI@{G\+UI}!add\+\_\+child@{add\+\_\+child}}
+\index{add\+\_\+child@{add\+\_\+child}!G\+UI@{G\+UI}}
+\subsubsection{\texorpdfstring{add\+\_\+child()}{add\_child()}}
+{\footnotesize\ttfamily void G\+U\+I\+::add\+\_\+child (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_g_u_i}{G\+UI}} $\ast$}]{child }\end{DoxyParamCaption})}
+
+Add an existing \mbox{\hyperlink{class_g_u_i}{G\+UI}} element as a child. 
+\begin{DoxyParams}{Parameters}
+{\em child} & -\/ The \mbox{\hyperlink{class_g_u_i}{G\+UI}} element to become a child of this element. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_g_u_i_a824033514dfb2c193a5c22370a3b8fb1}\label{class_g_u_i_a824033514dfb2c193a5c22370a3b8fb1}} 
+\index{G\+UI@{G\+UI}!covered@{covered}}
+\index{covered@{covered}!G\+UI@{G\+UI}}
+\subsubsection{\texorpdfstring{covered()}{covered()}}
+{\footnotesize\ttfamily bool G\+U\+I\+::covered (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+Queries whether this \mbox{\hyperlink{class_g_u_i}{G\+UI}} element is being covered by another \mbox{\hyperlink{class_g_u_i}{G\+UI}} element in the \mbox{\hyperlink{class_window}{Window}}. \begin{DoxyReturn}{Returns}
+-\/ True if there exists a \mbox{\hyperlink{class_g_u_i}{G\+UI}} element covering this up. False otherwise 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_g_u_i_a9f8f70693f5ea986fbbdfe0686f6b30d}\label{class_g_u_i_a9f8f70693f5ea986fbbdfe0686f6b30d}} 
+\index{G\+UI@{G\+UI}!covered\+\_\+by@{covered\+\_\+by}}
+\index{covered\+\_\+by@{covered\+\_\+by}!G\+UI@{G\+UI}}
+\subsubsection{\texorpdfstring{covered\+\_\+by()}{covered\_by()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{class_g_u_i}{G\+UI}} $\ast$ G\+U\+I\+::covered\+\_\+by (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+Find the \mbox{\hyperlink{class_g_u_i}{G\+UI}} element that is responsible for covering this element. \begin{DoxyReturn}{Returns}
+-\/ The \mbox{\hyperlink{class_g_u_i}{G\+UI}} element covering this element. If nothing is covering this, then nullptr is returned 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_g_u_i_a2abe7f08a1da35af8ae006fbecea94e0}\label{class_g_u_i_a2abe7f08a1da35af8ae006fbecea94e0}} 
+\index{G\+UI@{G\+UI}!destroy@{destroy}}
+\index{destroy@{destroy}!G\+UI@{G\+UI}}
+\subsubsection{\texorpdfstring{destroy()}{destroy()}}
+{\footnotesize\ttfamily void G\+U\+I\+::destroy (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+Destroy all children, and then itself. 
+
+Reimplemented in \mbox{\hyperlink{class_window_ac11084e8bd2b61ba1a45266a9a4a0b57}{Window}}, and \mbox{\hyperlink{class_panel_ac21884693c47ee069feb9e963f00e9af}{Panel}}.
+
+\mbox{\Hypertarget{class_g_u_i_a62d14b39a25ab4de6ccd5c8df6dd8624}\label{class_g_u_i_a62d14b39a25ab4de6ccd5c8df6dd8624}} 
+\index{G\+UI@{G\+UI}!find\+\_\+window\+\_\+parent@{find\+\_\+window\+\_\+parent}}
+\index{find\+\_\+window\+\_\+parent@{find\+\_\+window\+\_\+parent}!G\+UI@{G\+UI}}
+\subsubsection{\texorpdfstring{find\+\_\+window\+\_\+parent()}{find\_window\_parent()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{class_window}{Window}} $\ast$ G\+U\+I\+::find\+\_\+window\+\_\+parent (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+Find the \mbox{\hyperlink{class_window}{Window}} that contains this \mbox{\hyperlink{class_g_u_i}{G\+UI}} element. \begin{DoxyReturn}{Returns}
+-\/ Pointer to the \mbox{\hyperlink{class_window}{Window}} containing this element. If there is no such window, nullptr is returned 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_g_u_i_ad2a7c1ae3938ba1d6dea0142f16d6c2b}\label{class_g_u_i_ad2a7c1ae3938ba1d6dea0142f16d6c2b}} 
+\index{G\+UI@{G\+UI}!focused@{focused}}
+\index{focused@{focused}!G\+UI@{G\+UI}}
+\subsubsection{\texorpdfstring{focused()}{focused()}}
+{\footnotesize\ttfamily virtual bool G\+U\+I\+::focused (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+Pure virtual. \begin{DoxyReturn}{Returns}
+-\/ N/A 
+\end{DoxyReturn}
+
+
+Implemented in \mbox{\hyperlink{class_window_af79c5fde03ed3825e0459a267ea01dee}{Window}}, \mbox{\hyperlink{class_slider_a30b01348a5d214f3078e22516c60a763}{Slider}}, \mbox{\hyperlink{class_checkbox_a2a2c82a9e8c95ad868ce85a60ba07292}{Checkbox}}, \mbox{\hyperlink{class_panel_ace2217419ea5c2e98a38678c6e2012e1}{Panel}}, and \mbox{\hyperlink{class_button_a2c1b0adeb2920b394fe4f38354ae6604}{Button}}.
+
+\mbox{\Hypertarget{class_g_u_i_a680f20f016eadb403939f14dd5a820dc}\label{class_g_u_i_a680f20f016eadb403939f14dd5a820dc}} 
+\index{G\+UI@{G\+UI}!get\+\_\+children@{get\+\_\+children}}
+\index{get\+\_\+children@{get\+\_\+children}!G\+UI@{G\+UI}}
+\subsubsection{\texorpdfstring{get\+\_\+children()}{get\_children()}}
+{\footnotesize\ttfamily const std\+::deque$<$ \mbox{\hyperlink{class_g_u_i}{G\+UI}} $\ast$ $>$ \& G\+U\+I\+::get\+\_\+children (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+Read the container of all of this \mbox{\hyperlink{class_g_u_i}{G\+UI}} element\textquotesingle{}s children. \begin{DoxyReturn}{Returns}
+-\/ Container of all children 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_g_u_i_a4e427bc7271c6478d98f2215349dce07}\label{class_g_u_i_a4e427bc7271c6478d98f2215349dce07}} 
+\index{G\+UI@{G\+UI}!get\+\_\+height@{get\+\_\+height}}
+\index{get\+\_\+height@{get\+\_\+height}!G\+UI@{G\+UI}}
+\subsubsection{\texorpdfstring{get\+\_\+height()}{get\_height()}}
+{\footnotesize\ttfamily float G\+U\+I\+::get\+\_\+height (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [virtual]}}
+
+Read the height of the \mbox{\hyperlink{class_g_u_i}{G\+UI}} element, in pixels. \begin{DoxyReturn}{Returns}
+-\/ Height, in pixels. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_g_u_i_af134d9b5a265ad8996d1bea642fd06b9}\label{class_g_u_i_af134d9b5a265ad8996d1bea642fd06b9}} 
+\index{G\+UI@{G\+UI}!get\+\_\+parent@{get\+\_\+parent}}
+\index{get\+\_\+parent@{get\+\_\+parent}!G\+UI@{G\+UI}}
+\subsubsection{\texorpdfstring{get\+\_\+parent()}{get\_parent()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{class_g_u_i}{G\+UI}} $\ast$ G\+U\+I\+::get\+\_\+parent (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+Query the \mbox{\hyperlink{class_window}{Window}} for the \mbox{\hyperlink{class_g_u_i}{G\+UI}} element which has this as a child. \begin{DoxyReturn}{Returns}
+-\/ Pointer to the \mbox{\hyperlink{class_g_u_i}{G\+UI}} element if there is a \mbox{\hyperlink{class_window}{Window}} parent and this parent exists. Otherwise, nullptr is returned 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_g_u_i_a4c8efe5f6b75a644ada33b438560baa9}\label{class_g_u_i_a4c8efe5f6b75a644ada33b438560baa9}} 
+\index{G\+UI@{G\+UI}!get\+\_\+shader@{get\+\_\+shader}}
+\index{get\+\_\+shader@{get\+\_\+shader}!G\+UI@{G\+UI}}
+\subsubsection{\texorpdfstring{get\+\_\+shader()}{get\_shader()}}
+{\footnotesize\ttfamily const std\+::optional$<$ std\+::reference\+\_\+wrapper$<$ \mbox{\hyperlink{class_shader}{Shader}} $>$ $>$ \& G\+U\+I\+::get\+\_\+shader (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+Read the optional reference for the \mbox{\hyperlink{class_shader}{Shader}} used to render this element. \begin{DoxyReturn}{Returns}
+-\/ Read-\/only optional reference-\/wrapper for a \mbox{\hyperlink{class_shader}{Shader}}. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_g_u_i_a3606efd6a6db43f9751110d41ec195a3}\label{class_g_u_i_a3606efd6a6db43f9751110d41ec195a3}} 
+\index{G\+UI@{G\+UI}!get\+\_\+width@{get\+\_\+width}}
+\index{get\+\_\+width@{get\+\_\+width}!G\+UI@{G\+UI}}
+\subsubsection{\texorpdfstring{get\+\_\+width()}{get\_width()}}
+{\footnotesize\ttfamily float G\+U\+I\+::get\+\_\+width (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [virtual]}}
+
+Read the width of the \mbox{\hyperlink{class_g_u_i}{G\+UI}} element, in pixels. \begin{DoxyReturn}{Returns}
+-\/ Width, in pixels. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_g_u_i_abbad56adda65a7176a4e0c7e260d9449}\label{class_g_u_i_abbad56adda65a7176a4e0c7e260d9449}} 
+\index{G\+UI@{G\+UI}!get\+\_\+window\+\_\+pos\+\_\+x@{get\+\_\+window\+\_\+pos\+\_\+x}}
+\index{get\+\_\+window\+\_\+pos\+\_\+x@{get\+\_\+window\+\_\+pos\+\_\+x}!G\+UI@{G\+UI}}
+\subsubsection{\texorpdfstring{get\+\_\+window\+\_\+pos\+\_\+x()}{get\_window\_pos\_x()}}
+{\footnotesize\ttfamily float G\+U\+I\+::get\+\_\+window\+\_\+pos\+\_\+x (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [virtual]}}
+
+Get the position of the left-\/most of the \mbox{\hyperlink{class_g_u_i}{G\+UI}} element, including parental offsets. \begin{DoxyReturn}{Returns}
+-\/ Left position of the element. 
+\end{DoxyReturn}
+
+
+Reimplemented in \mbox{\hyperlink{class_window_ab2af2ee909ac87876fd043acfe7611ca}{Window}}.
+
+\mbox{\Hypertarget{class_g_u_i_a34753a0119188e4b17b4b5209c795c3a}\label{class_g_u_i_a34753a0119188e4b17b4b5209c795c3a}} 
+\index{G\+UI@{G\+UI}!get\+\_\+window\+\_\+pos\+\_\+y@{get\+\_\+window\+\_\+pos\+\_\+y}}
+\index{get\+\_\+window\+\_\+pos\+\_\+y@{get\+\_\+window\+\_\+pos\+\_\+y}!G\+UI@{G\+UI}}
+\subsubsection{\texorpdfstring{get\+\_\+window\+\_\+pos\+\_\+y()}{get\_window\_pos\_y()}}
+{\footnotesize\ttfamily float G\+U\+I\+::get\+\_\+window\+\_\+pos\+\_\+y (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [virtual]}}
+
+Get the position of the bottom-\/most of the \mbox{\hyperlink{class_g_u_i}{G\+UI}} element, including parental offsets. \begin{DoxyReturn}{Returns}
+-\/ Bottom position of the element. 
+\end{DoxyReturn}
+
+
+Reimplemented in \mbox{\hyperlink{class_window_a950ef0cfbccf484315041162942c4ecc}{Window}}.
+
+\mbox{\Hypertarget{class_g_u_i_a933b6bc6c5288f785d50e2621ead2193}\label{class_g_u_i_a933b6bc6c5288f785d50e2621ead2193}} 
+\index{G\+UI@{G\+UI}!get\+\_\+x@{get\+\_\+x}}
+\index{get\+\_\+x@{get\+\_\+x}!G\+UI@{G\+UI}}
+\subsubsection{\texorpdfstring{get\+\_\+x()}{get\_x()}}
+{\footnotesize\ttfamily float G\+U\+I\+::get\+\_\+x (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+Read the x-\/coordinate of the \mbox{\hyperlink{class_g_u_i}{G\+UI}} element. \begin{DoxyReturn}{Returns}
+-\/ X-\/coordinate of the element. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_g_u_i_a6a33d5bbe2d6b57b7fd2d9dc141cc3ae}\label{class_g_u_i_a6a33d5bbe2d6b57b7fd2d9dc141cc3ae}} 
+\index{G\+UI@{G\+UI}!get\+\_\+y@{get\+\_\+y}}
+\index{get\+\_\+y@{get\+\_\+y}!G\+UI@{G\+UI}}
+\subsubsection{\texorpdfstring{get\+\_\+y()}{get\_y()}}
+{\footnotesize\ttfamily float G\+U\+I\+::get\+\_\+y (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+Read the y-\/coordinate of the \mbox{\hyperlink{class_g_u_i}{G\+UI}} element. \begin{DoxyReturn}{Returns}
+-\/ Y-\/coordinate of the element. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_g_u_i_a3e5c5758569b0a6f7f8a0763ac5f2d56}\label{class_g_u_i_a3e5c5758569b0a6f7f8a0763ac5f2d56}} 
+\index{G\+UI@{G\+UI}!has\+\_\+shader@{has\+\_\+shader}}
+\index{has\+\_\+shader@{has\+\_\+shader}!G\+UI@{G\+UI}}
+\subsubsection{\texorpdfstring{has\+\_\+shader()}{has\_shader()}}
+{\footnotesize\ttfamily bool G\+U\+I\+::has\+\_\+shader (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+Queries whether there exists a \mbox{\hyperlink{class_shader}{Shader}} contained in this \mbox{\hyperlink{class_g_u_i}{G\+UI}} element. \begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_g_u_i_aacd4d5cfd38dbec244929deabf26b010}\label{class_g_u_i_aacd4d5cfd38dbec244929deabf26b010}} 
+\index{G\+UI@{G\+UI}!has\+\_\+window\+\_\+parent@{has\+\_\+window\+\_\+parent}}
+\index{has\+\_\+window\+\_\+parent@{has\+\_\+window\+\_\+parent}!G\+UI@{G\+UI}}
+\subsubsection{\texorpdfstring{has\+\_\+window\+\_\+parent()}{has\_window\_parent()}}
+{\footnotesize\ttfamily bool G\+U\+I\+::has\+\_\+window\+\_\+parent (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+Existential quantifier for this \mbox{\hyperlink{class_g_u_i}{G\+UI}} element being contained within a \mbox{\hyperlink{class_window}{Window}}. \begin{DoxyReturn}{Returns}
+-\/ True if a \mbox{\hyperlink{class_window}{Window}} contains this element. False otherwise 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_g_u_i_a39a7e284ade3ed1cb65c6d22f55a80a2}\label{class_g_u_i_a39a7e284ade3ed1cb65c6d22f55a80a2}} 
+\index{G\+UI@{G\+UI}!is\+\_\+hidden@{is\+\_\+hidden}}
+\index{is\+\_\+hidden@{is\+\_\+hidden}!G\+UI@{G\+UI}}
+\subsubsection{\texorpdfstring{is\+\_\+hidden()}{is\_hidden()}}
+{\footnotesize\ttfamily bool G\+U\+I\+::is\+\_\+hidden (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+Query whether this \mbox{\hyperlink{class_g_u_i}{G\+UI}} element is currently hidden. \begin{DoxyReturn}{Returns}
+-\/ True if the \mbox{\hyperlink{class_g_u_i}{G\+UI}} element is hidden. False otherwise 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_g_u_i_aff34edd65faff6f3e908070a2060f6b8}\label{class_g_u_i_aff34edd65faff6f3e908070a2060f6b8}} 
+\index{G\+UI@{G\+UI}!is\+\_\+mouse\+\_\+sensitive@{is\+\_\+mouse\+\_\+sensitive}}
+\index{is\+\_\+mouse\+\_\+sensitive@{is\+\_\+mouse\+\_\+sensitive}!G\+UI@{G\+UI}}
+\subsubsection{\texorpdfstring{is\+\_\+mouse\+\_\+sensitive()}{is\_mouse\_sensitive()}}
+{\footnotesize\ttfamily virtual bool G\+U\+I\+::is\+\_\+mouse\+\_\+sensitive (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [virtual]}}
+
+Abstract \mbox{\hyperlink{class_g_u_i}{G\+UI}} elements are mouse-\/insensitive. \begin{DoxyReturn}{Returns}
+-\/ False 
+\end{DoxyReturn}
+
+
+Reimplemented in \mbox{\hyperlink{class_slider_a8d7d12aa4bc5d26de46790b43116bcc1}{Slider}}, \mbox{\hyperlink{class_checkbox_a63fc27bae94d81d4dee8cd2d0e474d2b}{Checkbox}}, \mbox{\hyperlink{class_panel_a607fe6e1be6fd056f199fa817a4dedda}{Panel}}, and \mbox{\hyperlink{class_button_aa2b16ae30fe74f215aa79c699bbf8510}{Button}}.
+
+\mbox{\Hypertarget{class_g_u_i_a82dd699bec9d845e5bde59f515858f50}\label{class_g_u_i_a82dd699bec9d845e5bde59f515858f50}} 
+\index{G\+UI@{G\+UI}!is\+\_\+using\+\_\+proportional\+\_\+positioning@{is\+\_\+using\+\_\+proportional\+\_\+positioning}}
+\index{is\+\_\+using\+\_\+proportional\+\_\+positioning@{is\+\_\+using\+\_\+proportional\+\_\+positioning}!G\+UI@{G\+UI}}
+\subsubsection{\texorpdfstring{is\+\_\+using\+\_\+proportional\+\_\+positioning()}{is\_using\_proportional\_positioning()}}
+{\footnotesize\ttfamily bool G\+U\+I\+::is\+\_\+using\+\_\+proportional\+\_\+positioning (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+Query whether this \mbox{\hyperlink{class_g_u_i}{G\+UI}} element is set to be using proportional-\/positioning. \begin{DoxyReturn}{Returns}
+-\/ True if this \mbox{\hyperlink{class_g_u_i}{G\+UI}} element uses proportional-\/positioning. False otherwise 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_g_u_i_a7ef5287aaa630a8d1146f0d5a35b6683}\label{class_g_u_i_a7ef5287aaa630a8d1146f0d5a35b6683}} 
+\index{G\+UI@{G\+UI}!is\+\_\+window@{is\+\_\+window}}
+\index{is\+\_\+window@{is\+\_\+window}!G\+UI@{G\+UI}}
+\subsubsection{\texorpdfstring{is\+\_\+window()}{is\_window()}}
+{\footnotesize\ttfamily virtual bool G\+U\+I\+::is\+\_\+window (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+Pure virtual \begin{DoxyReturn}{Returns}
+-\/ N/A 
+\end{DoxyReturn}
+
+
+Implemented in \mbox{\hyperlink{class_window_a43a34a3321d0a9bd30dbba747af14c6a}{Window}}, and \mbox{\hyperlink{class_panel_a9a30fff40fad1f0845c0c7aa2786f772}{Panel}}.
+
+\mbox{\Hypertarget{class_g_u_i_a8db69179e2a985c144c94803eddb245e}\label{class_g_u_i_a8db69179e2a985c144c94803eddb245e}} 
+\index{G\+UI@{G\+UI}!remove\+\_\+child@{remove\+\_\+child}}
+\index{remove\+\_\+child@{remove\+\_\+child}!G\+UI@{G\+UI}}
+\subsubsection{\texorpdfstring{remove\+\_\+child()}{remove\_child()}}
+{\footnotesize\ttfamily void G\+U\+I\+::remove\+\_\+child (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_g_u_i}{G\+UI}} $\ast$}]{child }\end{DoxyParamCaption})}
+
+Remove an existing \mbox{\hyperlink{class_g_u_i}{G\+UI}} element child. Does not destroy the child, just de-\/registers it as a child of this element. 
+\begin{DoxyParams}{Parameters}
+{\em child} & -\/ The existing \mbox{\hyperlink{class_g_u_i}{G\+UI}} element child to de-\/register. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_g_u_i_a10a086b9e69595a9d6da48eb6d20dbc1}\label{class_g_u_i_a10a086b9e69595a9d6da48eb6d20dbc1}} 
+\index{G\+UI@{G\+UI}!set\+\_\+height@{set\+\_\+height}}
+\index{set\+\_\+height@{set\+\_\+height}!G\+UI@{G\+UI}}
+\subsubsection{\texorpdfstring{set\+\_\+height()}{set\_height()}}
+{\footnotesize\ttfamily void G\+U\+I\+::set\+\_\+height (\begin{DoxyParamCaption}\item[{float}]{height }\end{DoxyParamCaption})}
+
+Assign the height of the \mbox{\hyperlink{class_g_u_i}{G\+UI}} element, in pixels. 
+\begin{DoxyParams}{Parameters}
+{\em height} & -\/ Desired height, in pixels. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_g_u_i_a6400061907f3bba6fa465238e4d94ed1}\label{class_g_u_i_a6400061907f3bba6fa465238e4d94ed1}} 
+\index{G\+UI@{G\+UI}!set\+\_\+hidden@{set\+\_\+hidden}}
+\index{set\+\_\+hidden@{set\+\_\+hidden}!G\+UI@{G\+UI}}
+\subsubsection{\texorpdfstring{set\+\_\+hidden()}{set\_hidden()}}
+{\footnotesize\ttfamily void G\+U\+I\+::set\+\_\+hidden (\begin{DoxyParamCaption}\item[{bool}]{hidden }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+Specify whether this \mbox{\hyperlink{class_g_u_i}{G\+UI}} element should be hidden. 
+\begin{DoxyParams}{Parameters}
+{\em hidden} & -\/ Desired hidden state. \\
+\hline
+\end{DoxyParams}
+
+
+Reimplemented in \mbox{\hyperlink{class_window_ae70c9e2fddb5224f884291b6d8225fe4}{Window}}.
+
+\mbox{\Hypertarget{class_g_u_i_a5d14a0bdad4c542b854951d3092bcea2}\label{class_g_u_i_a5d14a0bdad4c542b854951d3092bcea2}} 
+\index{G\+UI@{G\+UI}!set\+\_\+parent@{set\+\_\+parent}}
+\index{set\+\_\+parent@{set\+\_\+parent}!G\+UI@{G\+UI}}
+\subsubsection{\texorpdfstring{set\+\_\+parent()}{set\_parent()}}
+{\footnotesize\ttfamily void G\+U\+I\+::set\+\_\+parent (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_g_u_i}{G\+UI}} $\ast$}]{parent }\end{DoxyParamCaption})}
+
+Prompt the \mbox{\hyperlink{class_window}{Window}} to assign this to be a child of a specified \mbox{\hyperlink{class_g_u_i}{G\+UI}} element 
+\begin{DoxyParams}{Parameters}
+{\em parent} & -\/ The \mbox{\hyperlink{class_g_u_i}{G\+UI}} element who should have this element as a child. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_g_u_i_abb013debfa5f24e41990869f6684c228}\label{class_g_u_i_abb013debfa5f24e41990869f6684c228}} 
+\index{G\+UI@{G\+UI}!set\+\_\+using\+\_\+proportional\+\_\+positioning@{set\+\_\+using\+\_\+proportional\+\_\+positioning}}
+\index{set\+\_\+using\+\_\+proportional\+\_\+positioning@{set\+\_\+using\+\_\+proportional\+\_\+positioning}!G\+UI@{G\+UI}}
+\subsubsection{\texorpdfstring{set\+\_\+using\+\_\+proportional\+\_\+positioning()}{set\_using\_proportional\_positioning()}}
+{\footnotesize\ttfamily void G\+U\+I\+::set\+\_\+using\+\_\+proportional\+\_\+positioning (\begin{DoxyParamCaption}\item[{bool}]{use\+\_\+proportional\+\_\+positioning }\end{DoxyParamCaption})}
+
+Specify whether this \mbox{\hyperlink{class_g_u_i}{G\+UI}} element should use proportional positioning. Proportional positioning enabled means x, y, width and height should be clamped between 0.\+0-\/1.\+0 instead of in pixels. 
+\begin{DoxyParams}{Parameters}
+{\em use\+\_\+proportional\+\_\+positioning} & -\/ Desired proportional-\/positioning state. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_g_u_i_afca3eaa048f1c0f0d0348b6882480196}\label{class_g_u_i_afca3eaa048f1c0f0d0348b6882480196}} 
+\index{G\+UI@{G\+UI}!set\+\_\+width@{set\+\_\+width}}
+\index{set\+\_\+width@{set\+\_\+width}!G\+UI@{G\+UI}}
+\subsubsection{\texorpdfstring{set\+\_\+width()}{set\_width()}}
+{\footnotesize\ttfamily void G\+U\+I\+::set\+\_\+width (\begin{DoxyParamCaption}\item[{float}]{width }\end{DoxyParamCaption})}
+
+Assign the width of the \mbox{\hyperlink{class_g_u_i}{G\+UI}} element, in pixels. 
+\begin{DoxyParams}{Parameters}
+{\em width} & -\/ Desired width, in pixels. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_g_u_i_a677bae0d1184e72deaf25fac052a8f95}\label{class_g_u_i_a677bae0d1184e72deaf25fac052a8f95}} 
+\index{G\+UI@{G\+UI}!set\+\_\+x@{set\+\_\+x}}
+\index{set\+\_\+x@{set\+\_\+x}!G\+UI@{G\+UI}}
+\subsubsection{\texorpdfstring{set\+\_\+x()}{set\_x()}}
+{\footnotesize\ttfamily void G\+U\+I\+::set\+\_\+x (\begin{DoxyParamCaption}\item[{float}]{x }\end{DoxyParamCaption})}
+
+Assign the x-\/coordinate of the \mbox{\hyperlink{class_g_u_i}{G\+UI}} element. 
+\begin{DoxyParams}{Parameters}
+{\em x} & -\/ Desired x-\/coordinate. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_g_u_i_aad88f8d97f43cd47a4245d5dc5a49e45}\label{class_g_u_i_aad88f8d97f43cd47a4245d5dc5a49e45}} 
+\index{G\+UI@{G\+UI}!set\+\_\+y@{set\+\_\+y}}
+\index{set\+\_\+y@{set\+\_\+y}!G\+UI@{G\+UI}}
+\subsubsection{\texorpdfstring{set\+\_\+y()}{set\_y()}}
+{\footnotesize\ttfamily void G\+U\+I\+::set\+\_\+y (\begin{DoxyParamCaption}\item[{float}]{y }\end{DoxyParamCaption})}
+
+Assign the y-\/coordinate of the \mbox{\hyperlink{class_g_u_i}{G\+UI}} element. 
+\begin{DoxyParams}{Parameters}
+{\em y} & -\/ Desired y-\/coordinate. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_g_u_i_a947e568bf884a8798e3e368417f662c7}\label{class_g_u_i_a947e568bf884a8798e3e368417f662c7}} 
+\index{G\+UI@{G\+UI}!update@{update}}
+\index{update@{update}!G\+UI@{G\+UI}}
+\subsubsection{\texorpdfstring{update()}{update()}}
+{\footnotesize\ttfamily void G\+U\+I\+::update (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+Update this \mbox{\hyperlink{class_g_u_i}{G\+UI}} element and all their children. 
+
+Reimplemented in \mbox{\hyperlink{class_window_aa63a9a2404cebe562174a851f2dc8a01}{Window}}, \mbox{\hyperlink{class_slider_a4ebd527db54ea263c7d0efe4d1f94e1b}{Slider}}, \mbox{\hyperlink{class_text_label_a350a9edc23e4d2a53374fddc5ddc61cc}{Text\+Label}}, \mbox{\hyperlink{class_checkbox_a69c9fb9ce334fc8ff76c49447f1e002d}{Checkbox}}, \mbox{\hyperlink{class_panel_a9e9c0608cf3139833cde6b73dc3ba443}{Panel}}, and \mbox{\hyperlink{class_button_abda97f1ae8e081da3dbd0b77a27cad9d}{Button}}.
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+src/graphics/gui.\+hpp\item 
+src/graphics/gui.\+cpp\end{DoxyCompactItemize}

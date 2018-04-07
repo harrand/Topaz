@@ -67,7 +67,7 @@ private:
 	/// Usage of the Command parameters.
 	std::string usage;
 protected:
-	// Stores whether the Command requires parameters or not.
+	/// Stores whether the Command requires parameters or not.
 	bool trivial;
 };
 

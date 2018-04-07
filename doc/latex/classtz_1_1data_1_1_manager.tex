@@ -1,0 +1,54 @@
+\hypertarget{classtz_1_1data_1_1_manager}{}\section{tz\+:\+:data\+:\+:Manager Class Reference}
+\label{classtz_1_1data_1_1_manager}\index{tz\+::data\+::\+Manager@{tz\+::data\+::\+Manager}}
+
+
+{\ttfamily \#include $<$data.\+hpp$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classtz_1_1data_1_1_manager_a193453bb8103989bc0470c0bc92aaacc}\label{classtz_1_1data_1_1_manager_a193453bb8103989bc0470c0bc92aaacc}} 
+{\bfseries Manager} (std\+::string datafilename)
+\item 
+\mbox{\Hypertarget{classtz_1_1data_1_1_manager_a0ff2e0652aff2156ffefe0407c3de01a}\label{classtz_1_1data_1_1_manager_a0ff2e0652aff2156ffefe0407c3de01a}} 
+{\bfseries Manager} (const \mbox{\hyperlink{classtz_1_1data_1_1_manager}{Manager}} \&copy)=default
+\item 
+\mbox{\Hypertarget{classtz_1_1data_1_1_manager_a4d643fbbf4567894eab938269d8b8018}\label{classtz_1_1data_1_1_manager_a4d643fbbf4567894eab938269d8b8018}} 
+{\bfseries Manager} (\mbox{\hyperlink{classtz_1_1data_1_1_manager}{Manager}} \&\&move)=default
+\item 
+\mbox{\Hypertarget{classtz_1_1data_1_1_manager_a941a0cdd736b9d0baebf2ce69f6164bd}\label{classtz_1_1data_1_1_manager_a941a0cdd736b9d0baebf2ce69f6164bd}} 
+\mbox{\hyperlink{classtz_1_1data_1_1_manager}{Manager}} \& {\bfseries operator=} (const \mbox{\hyperlink{classtz_1_1data_1_1_manager}{Manager}} \&rhs)=default
+\item 
+\mbox{\Hypertarget{classtz_1_1data_1_1_manager_a2e8da95d6b61f144b27e385c4d5d6e19}\label{classtz_1_1data_1_1_manager_a2e8da95d6b61f144b27e385c4d5d6e19}} 
+std\+::string {\bfseries resource\+\_\+link} (const std\+::string \&resource\+\_\+name) const
+\item 
+\mbox{\Hypertarget{classtz_1_1data_1_1_manager_a5282c9de3f5363f64ff370545b5dc37d}\label{classtz_1_1data_1_1_manager_a5282c9de3f5363f64ff370545b5dc37d}} 
+std\+::string {\bfseries resource\+\_\+name} (const std\+::string \&resource\+\_\+link) const
+\item 
+\mbox{\Hypertarget{classtz_1_1data_1_1_manager_a84a45f4d8a495b3d9e73fb65ecb9bdbd}\label{classtz_1_1data_1_1_manager_a84a45f4d8a495b3d9e73fb65ecb9bdbd}} 
+std\+::unordered\+\_\+map$<$ std\+::string, std\+::string $>$ {\bfseries retrieve\+\_\+models} (const char $\ast$sequence\+\_\+name=tz\+::data\+::default\+\_\+models\+\_\+sequence\+\_\+name) const
+\item 
+\mbox{\Hypertarget{classtz_1_1data_1_1_manager_a34794eeba3213538092c71493ef42dda}\label{classtz_1_1data_1_1_manager_a34794eeba3213538092c71493ef42dda}} 
+std\+::unordered\+\_\+map$<$ std\+::string, std\+::string $>$ {\bfseries retrieve\+\_\+textures} (const char $\ast$sequence\+\_\+name=tz\+::data\+::default\+\_\+textures\+\_\+sequence\+\_\+name) const
+\item 
+\mbox{\Hypertarget{classtz_1_1data_1_1_manager_a223bf9e1245c4ed253be667086fd7165}\label{classtz_1_1data_1_1_manager_a223bf9e1245c4ed253be667086fd7165}} 
+std\+::unordered\+\_\+map$<$ std\+::string, std\+::string $>$ {\bfseries retrieve\+\_\+normal\+\_\+maps} (const char $\ast$sequence\+\_\+name=tz\+::data\+::default\+\_\+normal\+\_\+maps\+\_\+sequence\+\_\+name) const
+\item 
+\mbox{\Hypertarget{classtz_1_1data_1_1_manager_a27a9b4cd6d382f43729b7672e3ffdd99}\label{classtz_1_1data_1_1_manager_a27a9b4cd6d382f43729b7672e3ffdd99}} 
+std\+::unordered\+\_\+map$<$ std\+::string, std\+::string $>$ {\bfseries retrieve\+\_\+parallax\+\_\+maps} (const char $\ast$sequence\+\_\+name=tz\+::data\+::default\+\_\+parallax\+\_\+maps\+\_\+sequence\+\_\+name) const
+\item 
+\mbox{\Hypertarget{classtz_1_1data_1_1_manager_a8ea220b62bc50df0cad8ecf4a2c8102f}\label{classtz_1_1data_1_1_manager_a8ea220b62bc50df0cad8ecf4a2c8102f}} 
+std\+::unordered\+\_\+map$<$ std\+::string, std\+::string $>$ {\bfseries retrieve\+\_\+displacement\+\_\+maps} (const char $\ast$sequence\+\_\+name=tz\+::data\+::default\+\_\+displacement\+\_\+maps\+\_\+sequence\+\_\+name) const
+\item 
+\mbox{\Hypertarget{classtz_1_1data_1_1_manager_a22fe43e7c985db9adbadc2be1c6ab5cd}\label{classtz_1_1data_1_1_manager_a22fe43e7c985db9adbadc2be1c6ab5cd}} 
+unsigned int {\bfseries retrieve\+\_\+all\+\_\+data} (std\+::vector$<$ std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{class_mesh}{Mesh}} $>$$>$ \&all\+\_\+meshes, std\+::vector$<$ std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{class_texture}{Texture}} $>$$>$ \&all\+\_\+textures, std\+::vector$<$ std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{class_normal_map}{Normal\+Map}} $>$$>$ \&all\+\_\+normalmaps, std\+::vector$<$ std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{class_parallax_map}{Parallax\+Map}} $>$$>$ \&all\+\_\+parallaxmaps, std\+::vector$<$ std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{class_displacement_map}{Displacement\+Map}} $>$$>$ \&all\+\_\+displacementmaps) const
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Essentially an M\+DL Asset \mbox{\hyperlink{classtz_1_1data_1_1_manager}{Manager}}. This is how Topaz handles M\+DL data files which hold assets such as textures and models. 
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+src/data.\+hpp\item 
+src/data.\+cpp\end{DoxyCompactItemize}

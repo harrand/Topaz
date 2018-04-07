@@ -1,0 +1,135 @@
+\hypertarget{class_audio_music}{}\section{Audio\+Music Class Reference}
+\label{class_audio_music}\index{Audio\+Music@{Audio\+Music}}
+
+
+{\ttfamily \#include $<$audio.\+hpp$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_audio_music_a260b6ddf241e3f1e865a49309aa12572}{Audio\+Music}} (std\+::string filename)
+\item 
+\mbox{\hyperlink{class_audio_music_a742e8a6822342b8de08175e3948e5830}{Audio\+Music}} (const \mbox{\hyperlink{class_audio_music}{Audio\+Music}} \&copy)
+\item 
+\mbox{\hyperlink{class_audio_music_a55779c2cc75a89cf808d92e313d80ae8}{Audio\+Music}} (\mbox{\hyperlink{class_audio_music}{Audio\+Music}} \&\&move)
+\item 
+\mbox{\hyperlink{class_audio_music_ab2d3d7df8441d2cca3933a34b1d49e8e}{$\sim$\+Audio\+Music}} ()
+\item 
+\mbox{\hyperlink{class_audio_music}{Audio\+Music}} \& \mbox{\hyperlink{class_audio_music_a9487a5b790ede77cc96efd6e70322253}{operator=}} (const \mbox{\hyperlink{class_audio_music}{Audio\+Music}} \&rhs)=delete
+\item 
+const std\+::string \& \mbox{\hyperlink{class_audio_music_a794b5133068bacd9d5954316c466e781}{get\+\_\+file\+\_\+name}} () const
+\item 
+bool \mbox{\hyperlink{class_audio_music_a103d6a71de74441ad5b63fec5f50d656}{is\+\_\+paused}} () const
+\item 
+void \mbox{\hyperlink{class_audio_music_a9867971e26b4d081936287af1923fd1a}{play}} (bool priority=true) const
+\item 
+void \mbox{\hyperlink{class_audio_music_a5de1c2fc9f565af444c48b85b56d7c8f}{set\+\_\+paused}} (bool pause=true)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Playable audio file. Use this for longer audio segments such as background music. 
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{class_audio_music_a260b6ddf241e3f1e865a49309aa12572}\label{class_audio_music_a260b6ddf241e3f1e865a49309aa12572}} 
+\index{Audio\+Music@{Audio\+Music}!Audio\+Music@{Audio\+Music}}
+\index{Audio\+Music@{Audio\+Music}!Audio\+Music@{Audio\+Music}}
+\subsubsection{\texorpdfstring{Audio\+Music()}{AudioMusic()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
+{\footnotesize\ttfamily Audio\+Music\+::\+Audio\+Music (\begin{DoxyParamCaption}\item[{std\+::string}]{filename }\end{DoxyParamCaption})}
+
+Construct an audioclip from an existing file with supported format. 
+\begin{DoxyParams}{Parameters}
+{\em filename} & -\/ Path of the filename. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_audio_music_a742e8a6822342b8de08175e3948e5830}\label{class_audio_music_a742e8a6822342b8de08175e3948e5830}} 
+\index{Audio\+Music@{Audio\+Music}!Audio\+Music@{Audio\+Music}}
+\index{Audio\+Music@{Audio\+Music}!Audio\+Music@{Audio\+Music}}
+\subsubsection{\texorpdfstring{Audio\+Music()}{AudioMusic()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
+{\footnotesize\ttfamily Audio\+Music\+::\+Audio\+Music (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{class_audio_music}{Audio\+Music}} \&}]{copy }\end{DoxyParamCaption})}
+
+Construct an audioclip from an existing \mbox{\hyperlink{class_audio_clip}{Audio\+Clip}}\textquotesingle{}s source file. 
+\begin{DoxyParams}{Parameters}
+{\em copy} & -\/ The existing \mbox{\hyperlink{class_audio_clip}{Audio\+Clip}} whose source file should be used. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_audio_music_a55779c2cc75a89cf808d92e313d80ae8}\label{class_audio_music_a55779c2cc75a89cf808d92e313d80ae8}} 
+\index{Audio\+Music@{Audio\+Music}!Audio\+Music@{Audio\+Music}}
+\index{Audio\+Music@{Audio\+Music}!Audio\+Music@{Audio\+Music}}
+\subsubsection{\texorpdfstring{Audio\+Music()}{AudioMusic()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
+{\footnotesize\ttfamily Audio\+Music\+::\+Audio\+Music (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_audio_music}{Audio\+Music}} \&\&}]{move }\end{DoxyParamCaption})}
+
+Construct an audioclip, taking control of an existing \mbox{\hyperlink{class_audio_clip}{Audio\+Clip}}\textquotesingle{}s audio data. 
+\begin{DoxyParams}{Parameters}
+{\em move} & -\/ The existing \mbox{\hyperlink{class_audio_clip}{Audio\+Clip}} whose audio data should be taken from. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_audio_music_ab2d3d7df8441d2cca3933a34b1d49e8e}\label{class_audio_music_ab2d3d7df8441d2cca3933a34b1d49e8e}} 
+\index{Audio\+Music@{Audio\+Music}!````~Audio\+Music@{$\sim$\+Audio\+Music}}
+\index{````~Audio\+Music@{$\sim$\+Audio\+Music}!Audio\+Music@{Audio\+Music}}
+\subsubsection{\texorpdfstring{$\sim$\+Audio\+Music()}{~AudioMusic()}}
+{\footnotesize\ttfamily Audio\+Music\+::$\sim$\+Audio\+Music (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+Dispose of audio data sensibly. 
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_audio_music_a794b5133068bacd9d5954316c466e781}\label{class_audio_music_a794b5133068bacd9d5954316c466e781}} 
+\index{Audio\+Music@{Audio\+Music}!get\+\_\+file\+\_\+name@{get\+\_\+file\+\_\+name}}
+\index{get\+\_\+file\+\_\+name@{get\+\_\+file\+\_\+name}!Audio\+Music@{Audio\+Music}}
+\subsubsection{\texorpdfstring{get\+\_\+file\+\_\+name()}{get\_file\_name()}}
+{\footnotesize\ttfamily const std\+::string \& Audio\+Music\+::get\+\_\+file\+\_\+name (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+Retrieve the filename of the file used to load this \mbox{\hyperlink{class_audio_clip}{Audio\+Clip}}. \begin{DoxyReturn}{Returns}
+-\/ Filename of the source audio. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_audio_music_a103d6a71de74441ad5b63fec5f50d656}\label{class_audio_music_a103d6a71de74441ad5b63fec5f50d656}} 
+\index{Audio\+Music@{Audio\+Music}!is\+\_\+paused@{is\+\_\+paused}}
+\index{is\+\_\+paused@{is\+\_\+paused}!Audio\+Music@{Audio\+Music}}
+\subsubsection{\texorpdfstring{is\+\_\+paused()}{is\_paused()}}
+{\footnotesize\ttfamily bool Audio\+Music\+::is\+\_\+paused (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+Query whether this \mbox{\hyperlink{class_audio_music}{Audio\+Music}} is paused or not. \begin{DoxyReturn}{Returns}
+-\/ True if the music is paused. False otherwise. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_audio_music_a9487a5b790ede77cc96efd6e70322253}\label{class_audio_music_a9487a5b790ede77cc96efd6e70322253}} 
+\index{Audio\+Music@{Audio\+Music}!operator=@{operator=}}
+\index{operator=@{operator=}!Audio\+Music@{Audio\+Music}}
+\subsubsection{\texorpdfstring{operator=()}{operator=()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{class_audio_music}{Audio\+Music}}\& Audio\+Music\+::operator= (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{class_audio_music}{Audio\+Music}} \&}]{rhs }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [delete]}}
+
+Audio\+Musics are not re-\/assignable. Reconstruct if necessary. 
+\begin{DoxyParams}{Parameters}
+{\em rhs} & -\/ N/A \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+-\/ N/A 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_audio_music_a9867971e26b4d081936287af1923fd1a}\label{class_audio_music_a9867971e26b4d081936287af1923fd1a}} 
+\index{Audio\+Music@{Audio\+Music}!play@{play}}
+\index{play@{play}!Audio\+Music@{Audio\+Music}}
+\subsubsection{\texorpdfstring{play()}{play()}}
+{\footnotesize\ttfamily void Audio\+Music\+::play (\begin{DoxyParamCaption}\item[{bool}]{priority = {\ttfamily true} }\end{DoxyParamCaption}) const}
+
+Play the \mbox{\hyperlink{class_audio_music}{Audio\+Music}}, specifying priority. 
+\begin{DoxyParams}{Parameters}
+{\em priority} & -\/ Whether the \mbox{\hyperlink{class_audio_music}{Audio\+Music}} should stop any other \mbox{\hyperlink{class_audio_music}{Audio\+Music}} from playing or not. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_audio_music_a5de1c2fc9f565af444c48b85b56d7c8f}\label{class_audio_music_a5de1c2fc9f565af444c48b85b56d7c8f}} 
+\index{Audio\+Music@{Audio\+Music}!set\+\_\+paused@{set\+\_\+paused}}
+\index{set\+\_\+paused@{set\+\_\+paused}!Audio\+Music@{Audio\+Music}}
+\subsubsection{\texorpdfstring{set\+\_\+paused()}{set\_paused()}}
+{\footnotesize\ttfamily void Audio\+Music\+::set\+\_\+paused (\begin{DoxyParamCaption}\item[{bool}]{pause = {\ttfamily true} }\end{DoxyParamCaption})}
+
+Pause/resume the music. 
+\begin{DoxyParams}{Parameters}
+{\em pause} & -\/ Whether to pause or resume the music. \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+src/audio/audio.\+hpp\item 
+src/audio/audio.\+cpp\end{DoxyCompactItemize}

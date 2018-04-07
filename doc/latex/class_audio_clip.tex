@@ -1,0 +1,134 @@
+\hypertarget{class_audio_clip}{}\section{Audio\+Clip Class Reference}
+\label{class_audio_clip}\index{Audio\+Clip@{Audio\+Clip}}
+
+
+{\ttfamily \#include $<$audio.\+hpp$>$}
+
+Inheritance diagram for Audio\+Clip\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_audio_clip}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_audio_clip_a92cb3dceab020f54290b05b1ae5de974}{Audio\+Clip}} (std\+::string filename)
+\item 
+\mbox{\hyperlink{class_audio_clip_ac5664fc84d17e5e31c1daacdec89b3cf}{Audio\+Clip}} (const \mbox{\hyperlink{class_audio_clip}{Audio\+Clip}} \&copy)
+\item 
+\mbox{\hyperlink{class_audio_clip_a0a4d351823548e0f54625c37db221c82}{Audio\+Clip}} (\mbox{\hyperlink{class_audio_clip}{Audio\+Clip}} \&\&move)
+\item 
+virtual \mbox{\hyperlink{class_audio_clip_ab929796e463c51c50f2ad4e9acec35da}{$\sim$\+Audio\+Clip}} ()
+\item 
+\mbox{\hyperlink{class_audio_clip}{Audio\+Clip}} \& \mbox{\hyperlink{class_audio_clip_ac1466d6ec65150fa8beb08611cda995c}{operator=}} (const \mbox{\hyperlink{class_audio_clip}{Audio\+Clip}} \&rhs)=delete
+\item 
+void \mbox{\hyperlink{class_audio_clip_a615c3e8e6da9cdf8b98c1682135c2a75}{play}} ()
+\item 
+int \mbox{\hyperlink{class_audio_clip_a86486cb3622e9056d4d5f580889f9f16}{get\+\_\+channel}} () const
+\item 
+Uint32 \mbox{\hyperlink{class_audio_clip_ae4ff05317126ce507a64c836f524ca4f}{get\+\_\+audio\+\_\+length}} () const
+\item 
+const std\+::string \& \mbox{\hyperlink{class_audio_clip_aadb9a7b1a085647f61f0120953734ca0}{get\+\_\+file\+\_\+name}} () const
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Playable audio file. Use this for short audio segments like sound effects. 
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{class_audio_clip_a92cb3dceab020f54290b05b1ae5de974}\label{class_audio_clip_a92cb3dceab020f54290b05b1ae5de974}} 
+\index{Audio\+Clip@{Audio\+Clip}!Audio\+Clip@{Audio\+Clip}}
+\index{Audio\+Clip@{Audio\+Clip}!Audio\+Clip@{Audio\+Clip}}
+\subsubsection{\texorpdfstring{Audio\+Clip()}{AudioClip()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
+{\footnotesize\ttfamily Audio\+Clip\+::\+Audio\+Clip (\begin{DoxyParamCaption}\item[{std\+::string}]{filename }\end{DoxyParamCaption})}
+
+Construct an audioclip from an existing file with supported format. 
+\begin{DoxyParams}{Parameters}
+{\em filename} & -\/ Path of the filename. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_audio_clip_ac5664fc84d17e5e31c1daacdec89b3cf}\label{class_audio_clip_ac5664fc84d17e5e31c1daacdec89b3cf}} 
+\index{Audio\+Clip@{Audio\+Clip}!Audio\+Clip@{Audio\+Clip}}
+\index{Audio\+Clip@{Audio\+Clip}!Audio\+Clip@{Audio\+Clip}}
+\subsubsection{\texorpdfstring{Audio\+Clip()}{AudioClip()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
+{\footnotesize\ttfamily Audio\+Clip\+::\+Audio\+Clip (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{class_audio_clip}{Audio\+Clip}} \&}]{copy }\end{DoxyParamCaption})}
+
+Construct an audioclip from an existing \mbox{\hyperlink{class_audio_clip}{Audio\+Clip}}\textquotesingle{}s source file. 
+\begin{DoxyParams}{Parameters}
+{\em copy} & -\/ The existing \mbox{\hyperlink{class_audio_clip}{Audio\+Clip}} whose source file should be used. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_audio_clip_a0a4d351823548e0f54625c37db221c82}\label{class_audio_clip_a0a4d351823548e0f54625c37db221c82}} 
+\index{Audio\+Clip@{Audio\+Clip}!Audio\+Clip@{Audio\+Clip}}
+\index{Audio\+Clip@{Audio\+Clip}!Audio\+Clip@{Audio\+Clip}}
+\subsubsection{\texorpdfstring{Audio\+Clip()}{AudioClip()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
+{\footnotesize\ttfamily Audio\+Clip\+::\+Audio\+Clip (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_audio_clip}{Audio\+Clip}} \&\&}]{move }\end{DoxyParamCaption})}
+
+Construct an audioclip, taking control of an existing \mbox{\hyperlink{class_audio_clip}{Audio\+Clip}}\textquotesingle{}s audio data. 
+\begin{DoxyParams}{Parameters}
+{\em move} & -\/ The existing \mbox{\hyperlink{class_audio_clip}{Audio\+Clip}} whose audio data should be taken from. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_audio_clip_ab929796e463c51c50f2ad4e9acec35da}\label{class_audio_clip_ab929796e463c51c50f2ad4e9acec35da}} 
+\index{Audio\+Clip@{Audio\+Clip}!````~Audio\+Clip@{$\sim$\+Audio\+Clip}}
+\index{````~Audio\+Clip@{$\sim$\+Audio\+Clip}!Audio\+Clip@{Audio\+Clip}}
+\subsubsection{\texorpdfstring{$\sim$\+Audio\+Clip()}{~AudioClip()}}
+{\footnotesize\ttfamily Audio\+Clip\+::$\sim$\+Audio\+Clip (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+Dispose of audio data sensibly. 
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_audio_clip_ae4ff05317126ce507a64c836f524ca4f}\label{class_audio_clip_ae4ff05317126ce507a64c836f524ca4f}} 
+\index{Audio\+Clip@{Audio\+Clip}!get\+\_\+audio\+\_\+length@{get\+\_\+audio\+\_\+length}}
+\index{get\+\_\+audio\+\_\+length@{get\+\_\+audio\+\_\+length}!Audio\+Clip@{Audio\+Clip}}
+\subsubsection{\texorpdfstring{get\+\_\+audio\+\_\+length()}{get\_audio\_length()}}
+{\footnotesize\ttfamily Uint32 Audio\+Clip\+::get\+\_\+audio\+\_\+length (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+Estimate the length of the \mbox{\hyperlink{class_audio_clip}{Audio\+Clip}}, in milliseconds. \begin{DoxyReturn}{Returns}
+-\/ Length of the clip, in milliseconds. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_audio_clip_a86486cb3622e9056d4d5f580889f9f16}\label{class_audio_clip_a86486cb3622e9056d4d5f580889f9f16}} 
+\index{Audio\+Clip@{Audio\+Clip}!get\+\_\+channel@{get\+\_\+channel}}
+\index{get\+\_\+channel@{get\+\_\+channel}!Audio\+Clip@{Audio\+Clip}}
+\subsubsection{\texorpdfstring{get\+\_\+channel()}{get\_channel()}}
+{\footnotesize\ttfamily int Audio\+Clip\+::get\+\_\+channel (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+Get the channel that this \mbox{\hyperlink{class_audio_clip}{Audio\+Clip}} is currently playing on. \begin{DoxyReturn}{Returns}
+-\/ Channel that the clip is playing on 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_audio_clip_aadb9a7b1a085647f61f0120953734ca0}\label{class_audio_clip_aadb9a7b1a085647f61f0120953734ca0}} 
+\index{Audio\+Clip@{Audio\+Clip}!get\+\_\+file\+\_\+name@{get\+\_\+file\+\_\+name}}
+\index{get\+\_\+file\+\_\+name@{get\+\_\+file\+\_\+name}!Audio\+Clip@{Audio\+Clip}}
+\subsubsection{\texorpdfstring{get\+\_\+file\+\_\+name()}{get\_file\_name()}}
+{\footnotesize\ttfamily const std\+::string \& Audio\+Clip\+::get\+\_\+file\+\_\+name (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+Retrieve the filename of the file used to load this \mbox{\hyperlink{class_audio_clip}{Audio\+Clip}}. \begin{DoxyReturn}{Returns}
+-\/ Filename of the source audio. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_audio_clip_ac1466d6ec65150fa8beb08611cda995c}\label{class_audio_clip_ac1466d6ec65150fa8beb08611cda995c}} 
+\index{Audio\+Clip@{Audio\+Clip}!operator=@{operator=}}
+\index{operator=@{operator=}!Audio\+Clip@{Audio\+Clip}}
+\subsubsection{\texorpdfstring{operator=()}{operator=()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{class_audio_clip}{Audio\+Clip}}\& Audio\+Clip\+::operator= (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{class_audio_clip}{Audio\+Clip}} \&}]{rhs }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [delete]}}
+
+Audio\+Clips cannot be re-\/assigned, they must be reconstructed. 
+\begin{DoxyParams}{Parameters}
+{\em rhs} & -\/ N/A \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+-\/ N/A 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_audio_clip_a615c3e8e6da9cdf8b98c1682135c2a75}\label{class_audio_clip_a615c3e8e6da9cdf8b98c1682135c2a75}} 
+\index{Audio\+Clip@{Audio\+Clip}!play@{play}}
+\index{play@{play}!Audio\+Clip@{Audio\+Clip}}
+\subsubsection{\texorpdfstring{play()}{play()}}
+{\footnotesize\ttfamily void Audio\+Clip\+::play (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+Plays the audio. The audio will play until either the destructor is called or the audio is finished; whichever takes place first. Note\+: Invoking tz\+::audio\+::play\+\_\+async on an instance of \mbox{\hyperlink{class_audio_clip}{Audio\+Clip}} will extend the lifetime of the instance such that the audio clip is guaranteed to be fully played. 
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+src/audio/audio.\+hpp\item 
+src/audio/audio.\+cpp\end{DoxyCompactItemize}
