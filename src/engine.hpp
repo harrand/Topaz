@@ -28,112 +28,190 @@ class Engine
 {
 public:
 	/**
-	* Constructs the Engine. Should be invoked after tz::initialise and Window construction.
-	* window = Address of the Topaz window to render into.
-	* properties_path = The absolute path to the Topaz properties file (normally called properties.mdl)
-	* tps = Number of tick updates per second (this affects runtime of physics etc, not rendering). Default is 30, although you can use less or more, depending on how precise you need physics etc to run at.
-	*/
+	 * Constructs an Engine with all specifications.
+	 * @param window - Pointer to the Window to be bound to
+	 * @param properties_path - Path to the Properties File
+	 * @param tps - Desired number of application-ticks per second
+	 */
 	Engine(Window* window, std::string properties_path = tz::default_properties_path, unsigned int tps = 30);
-	Engine(const Engine& copy) = default;
-	Engine(Engine&& move) = default;
-	Engine& operator=(const Engine& rhs) = default;
-	~Engine() = default;
 	
 	/**
-	* Invoke this in your main application loop.
-	* For clarification of 'shader_index', see documentation for Engine::get_shader(std::size_t).
-	*/
+	 * This should be invoked in your application's game loop.
+	 * @param shader_index - The shader index to be used to decide which Shader to use. Defaults to zero, which selects the default_shader
+	 */
 	void update(std::size_t shader_index = 0);
+	/**
+	 * Read-only access to the time-profiler.
+	 * @return - Underlying time-profiler
+	 */
 	const TimeProfiler& get_time_profiler() const;
+	/**
+	 * Read-only access to the EngineMeta.
+	 * @return - Underlying engine-meta
+	 */
 	const EngineMeta& get_meta() const;
 	/**
-	* Access the window that the Engine instance currently is hooked to.
-	*/
+	 * Access the Window that this Engine is attached to.
+	 * @return - Reference to the Window that the Engine is attached to
+	 */
 	const Window& get_window() const;
 	/**
-	* Access lists of all assets.
-	*/
+	 * Access list of Mesh assets.
+	 * @return - Container of Mesh assets.
+	 */
 	const std::vector<std::unique_ptr<Mesh>>& get_meshes() const;
+	/**
+	 * Access list of Texture assets.
+	 * @return - Container of Texture assets.
+	 */
 	const std::vector<std::unique_ptr<Texture>>& get_textures() const;
+	/**
+	 * Access list of NormalMap assets.
+	 * @return - Container of NormalMap assets.
+	 */
 	const std::vector<std::unique_ptr<NormalMap>>& get_normal_maps() const;
+	/**
+	 * Access list of ParallaxMap assets.
+	 * @return - Container of ParallaxMap assets.
+	 */
 	const std::vector<std::unique_ptr<ParallaxMap>>& get_parallax_maps() const;
+	/**
+	 * Access list of DisplacementMap assets.
+	 * @return - Container of DisplacementMap assets.
+	 */
 	const std::vector<std::unique_ptr<DisplacementMap>>& get_displacement_maps() const;
 	/**
-	* Get shader by index. If index = 0 or is out of range of extra-shaders, will return the default shader. Otherwise, it shall return the extra shader at that index.
-	*/
+	 * Get shader by index.
+	 * @param index - Shader index to sub into. If index = 0 or is out of range of extra-shaders, will return the default shader. Otherwise, it shall return the extra shader at that index
+	 * @return - Reference to the desired Shader
+	 */
 	Shader& get_shader(std::size_t index);
 	/**
-	* Get instantaneous fps
-	*/
+	 * Get the FPS.
+	 * @return - Instantaneous fps
+	 */
 	unsigned int get_fps() const;
 	/**
-	* Get the specified number of ticks per second back when the instance was constructed.
-	*/
+	 * Get the specified number of ticks per second back when the instance was constructed.
+	 * @return - TPS
+	 */
 	unsigned int get_tps() const;
 	/**
-	* Read the update command executor (for rendering etc)
-	*/
+	 * Read-only access to the update CommandExecutor.
+	 * @return - Reference to the update CommandExecutor
+	 */
 	const CommandExecutor& get_update_command_executor() const;
 	/**
-	* Read the tick command executor (for physics updates etc)
-	*/
+	 * Read-only access to the tick CommandExecutor.
+	 * @return - Reference to the tick CommandExecutor
+	 */
 	const CommandExecutor& get_tick_command_executor() const;
 	/**
-	* Add a custom command to the update comand executor.
-	*/
+	 * Add an existing Command to the update CommandExecutor.
+	 * @param cmd - Existing Command to be added to the update CommandExecutor
+	 */
 	void add_update_command(Command* cmd);
+	/**
+	 * Construct in-place a trivial command into the update CommandExecutor.
+	 * @tparam Functor - Type of the functor (should be deduced)
+	 * @param functor - The functor value
+	 * @return - Pointer to the constructed trivial command
+	 */
     template<typename Functor>
     TrivialFunctor<Functor>* emplace_trivial_update_command(Functor&& functor);
+    /**
+     * Construct in-place a static command into the update CommandExecutor.
+     * @tparam Functor - Type of the functor (should be deduced)
+     * @tparam FunctorParameters - Types of the functor parameters (may require explicity)
+     * @param functor - The functor value
+     * @param parameters - The parameter values
+     * @return - Pointer to the constructed static command
+     */
     template<typename Functor, typename... FunctorParameters>
     StaticFunctor<Functor, FunctorParameters...>* emplace_static_update_command(Functor&& functor, FunctorParameters&&... parameters);
     /**
-	* Remove a command from the update command executor.
-	*/
+     * Remove an existing Command from the update CommandExecutor.
+     * @param cmd - The existing Command to be removed
+     */
 	void remove_update_command(Command* cmd);
 	/**
-	* Add a custom command to the tick command executor.
-	*/
+	 * Add an existing Command to the tick CommandExecutor.
+	 * @param cmd - Existing Command to be added to the tick CommandExecutor
+	 */
 	void add_tick_command(Command* cmd);
+	/**
+	 * Construct in-place a trivial command into the tick CommandExecutor.
+	 * @tparam Functor - Type of the functor (should be deduced)
+	 * @param functor - The functor value
+	 * @return - Pointer to the constructed trivial command
+	 */
 	template<typename Functor>
 	TrivialFunctor<Functor>* emplace_trivial_tick_command(Functor&& functor);
+	/**
+     * Construct in-place a static command into the tick CommandExecutor.
+     * @tparam Functor - Type of the functor (should be deduced)
+     * @tparam FunctorParameters - Types of the functor parameters (may require explicity)
+     * @param functor - The functor value
+     * @param parameters - The parameter values
+     * @return - Pointer to the constructed static command
+     */
 	template<typename Functor, typename... FunctorParameters>
 	StaticFunctor<Functor, FunctorParameters...>* emplace_static_tick_command(Functor&& functor, FunctorParameters&&... parameters);
 	/**
-	* Remove a command from the tick command executor.
-	*/
+     * Remove an existing Command from the tick CommandExecutor.
+     * @param cmd - The existing Command to be removed
+     */
 	void remove_tick_command(Command* cmd);
 	/**
-	* Returns true if a physics update will occur next update. Use-cases for this mainly include when you need to synchronise your own functionality with the physics updates (which you should really use add_tick_command(Command*) for.)
-	*/
+	 * Query whether an Engine update is expected to happen this tick.
+	 * @return - True if an update is expected. False otherwise
+	 */
 	bool is_update_due() const;
-	/**
-	* Editing fields of these public members is well-defined. But as far as Topaz is concerned, re-assigning them is unspecified behaviour.
-	*/
+	/// Public access to the Camera used to view this Engine's Scene.
 	Camera camera;
+	/// Public access to this Engine's Scene.
 	Scene scene;
 private:
-	//MDLFile properties, resources;
+	/// Engine Meta object.
 	EngineMeta meta;
 public:
+	/// Public access to the default-shader and default-gui-shader.
 	Shader default_shader, default_gui_shader;
 private:
+	/// The timers used in this Engine's scheduling.
 	Timer seconds_timer, tick_timer;
+	/// The profiler used to calculate FPS readings.
 	TimeProfiler profiler;
+	/// Pointer to the bound Window.
 	Window* window;
+	/// Container of Mesh assets.
 	std::vector<std::unique_ptr<Mesh>> meshes;
+	/// Container of Texture assets.
 	std::vector<std::unique_ptr<Texture>> textures;
+	/// Container of NormalMap assets.
 	std::vector<std::unique_ptr<NormalMap>> normal_maps;
+	/// Container of ParallaxMap assets.
 	std::vector<std::unique_ptr<ParallaxMap>> parallax_maps;
+	/// Container of DisplacementMap assets.
 	std::vector<std::unique_ptr<DisplacementMap>> displacement_maps;
+	/// Container of all extra-shaders.
 	std::vector<Shader> extra_shaders;
+	/// FPS cache.
 	unsigned int fps;
+	/// Read-only TPS specification.
 	const unsigned int tps;
+	/// Engine underlying CommandExecutors.
 	CommandExecutor update_command_executor, tick_command_executor;
+	/// Stores whether an Engine update is due this tick.
 	bool update_due;
 public:
+	/// Default Texture asset.
 	const Texture default_texture;
+	/// Default NormalMap asset.
 	const NormalMap default_normal_map;
+	/// Default ParallaxMap asset.
 	const ParallaxMap default_parallax_map;
+	/// Default DisplacementMap asset.
 	const DisplacementMap default_displacement_map;
 };
 

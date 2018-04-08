@@ -9,7 +9,10 @@
 */
 struct Vector2POD
 {
-	float x, y;
+	/// x-component
+	float x;
+	/// y-component
+	float y;
 };
 
 /**
@@ -17,7 +20,12 @@ struct Vector2POD
  */
 struct Vector3POD
 {
-	float x, y, z;
+	/// x-component
+	float x;
+	/// y-component
+	float y;
+	/// z-component
+	float z;
 };
 
 /**
@@ -25,7 +33,10 @@ struct Vector3POD
  */
 struct Vector4POD
 {
-	float x, y, z, w;
+	float x;
+	float y;
+	float z;
+	float w;
 };
 
 /**
@@ -42,9 +53,6 @@ public:
 	 * @param data - The data to be copied into the vector.
 	 */
 	constexpr Vector(std::array<T, N> data);
-	Vector(const Vector<N, T>& copy);
-	Vector(Vector<N, T>&& move);
-	Vector<N, T>& operator=(const Vector<N, T>& rhs);
 	/**
 	 * Return magnitude of the Vector.
 	 * @param sqrt_function - The function to use to perform a square-root on the type T. If none is provided, the default std::sqrt will be used.
@@ -119,13 +127,13 @@ public:
 	 * @param scalar - The scalar to multiply this Vector by.
 	 * @return - this * the scalar.
 	 */
-	Vector2<T> operator*(T scalar) const;
+	Vector2<T> operator*(const T& scalar) const;
 	/**
 	 * Divide this 2-dimensional Vector by a scalar of the same underlying type. Return a copy of the result.
 	 * @param scalar - The scalar to divide this Vector by.
 	 * @return - this ÷ the parameter.
 	 */
-	Vector2<T> operator/(T scalar) const;
+	Vector2<T> operator/(const T& scalar) const;
 	/**
 	 * Assign this 2-dimensional Vector to the addition of this and another 2-dimensional Vector.
 	 * @param rhs - The other 2-dimensional Vector to perform the addition with.
@@ -143,13 +151,13 @@ public:
 	 * @param rhs - The scalar to perform the multiplication with.
 	 * @return - this, where 'this = this * the parameter'.
 	 */
-	Vector2<T>& operator*=(T scalar);
+	Vector2<T>& operator*=(const T& scalar);
 	/**
 	 * Assign this 2-dimensional Vector to the division of this and a scalar with the same underlying type.
 	 * @param rhs - The scalar to perform the division with.
 	 * @return - this, where 'this = this ÷ the parameter'.
 	 */
-	Vector2<T>& operator/=(T scalar);
+	Vector2<T>& operator/=(const T& scalar);
 	/**
 	 * Compare this to another 2-dimensional Vector.
 	 * @param rhs - The other 2-dimensional Vector to compare this to.
@@ -278,13 +286,13 @@ public:
 	 * @param scalar - The scalar to multiply this Vector by.
 	 * @return - this * the scalar.
 	 */
-	Vector3<T> operator*(T scalar) const;
+	Vector3<T> operator*(const T& scalar) const;
 	/**
 	 * Divide this 3-dimensional Vector by a scalar of the same underlying type. Return a copy of the result.
 	 * @param scalar - The scalar to divide this Vector by.
 	 * @return - this ÷ the parameter.
 	 */
-	Vector3<T> operator/(T scalar) const;
+	Vector3<T> operator/(const T& scalar) const;
 	/**
 	 * Assign this 3-dimensional Vector to the addition of this and another 3-dimensional Vector.
 	 * @param rhs - The other 3-dimensional Vector to perform the addition with.
@@ -302,13 +310,13 @@ public:
 	 * @param rhs - The scalar to perform the multiplication with.
 	 * @return - this, where 'this = this * the parameter'.
 	 */
-	Vector3<T>& operator*=(T scalar);
+	Vector3<T>& operator*=(const T& scalar);
 	/**
 	 * Assign this 3-dimensional Vector to the division of this and a scalar with the same underlying type.
 	 * @param rhs - The scalar to perform the division with.
 	 * @return - this, where 'this = this ÷ the parameter'.
 	 */
-	Vector3<T>& operator/=(T scalar);
+	Vector3<T>& operator/=(const T& scalar);
 	/**
 	 * Compare this to another 3-dimensional Vector.
 	 * @param rhs - The other 3-dimensional Vector to compare this to.
@@ -469,13 +477,13 @@ public:
 	 * @param rhs - The scalar to perform the multiplication with.
 	 * @return - this, where 'this = this * the parameter'.
 	 */
-	Vector4<T> operator*(T scalar) const;
+	Vector4<T> operator*(const T& scalar) const;
 	/**
 	 * Assign this 4-dimensional Vector to the division of this and a scalar with the same underlying type.
 	 * @param rhs - The scalar to perform the division with.
 	 * @return - this, where 'this = this ÷ the parameter'.
 	 */
-	Vector4<T> operator/(T scalar) const;
+	Vector4<T> operator/(const T& scalar) const;
 	/**
 	 * Assign this 4-dimensional Vector to the addition of this and another 4-dimensional Vector.
 	 * @param rhs - The other 4-dimensional Vector to perform the addition with.
@@ -493,13 +501,13 @@ public:
 	 * @param rhs - The scalar to perform the multiplication with.
 	 * @return - this, where 'this = this * the parameter'.
 	 */
-	Vector4<T>& operator*=(T scalar);
+	Vector4<T>& operator*=(const T& scalar);
 	/**
 	 * Assign this 4-dimensional Vector to the division of this and a scalar with the same underlying type.
 	 * @param rhs - The scalar to perform the division with.
 	 * @return - this, where 'this = this ÷ the parameter'.
 	 */
-	Vector4<T>& operator/=(T scalar);
+	Vector4<T>& operator/=(const T& scalar);
 	/**
 	 * Compare this to another 4-dimensional Vector.
 	 * @param rhs - The other 4-dimensional Vector to compare this to.

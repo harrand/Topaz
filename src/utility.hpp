@@ -20,7 +20,9 @@ namespace tz
 {	
 	namespace consts
 	{
+		/// 3.14159...
 		constexpr double pi = 4 * std::atan(1);
+		/// 2.17...
 		constexpr double e = std::exp(1);
 	}
 	namespace literals
@@ -59,6 +61,12 @@ namespace tz
 	}
 	namespace util
 	{
+		/**
+		 * Given a container, find the size, in bytes, of an element in the container.
+		 * @tparam Container - Container type.
+		 * @param element_list - Container of elements.
+		 * @return
+		 */
 		template<typename Container>
 		constexpr std::size_t sizeof_element(Container element_list);
 		
