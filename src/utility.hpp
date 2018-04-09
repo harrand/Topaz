@@ -73,13 +73,19 @@ namespace tz
 		namespace cast
 		{
 			/**
-			* Convert anything that can be converted into an std::string, into an std::string.
-			*/
+			 * (Attempt to) Convert an object to a std::string.
+			 * @tparam T - Type of the object to convert
+			 * @param obj - The object to convert
+			 * @return - The object, converted to a string
+			 */
 			template <typename T>
 			inline std::string to_string(T&& obj);
 			/**
-			* Convert an std::string to any value, if it can.
-			*/
+			 * (Attempt to) Convert an std::string to an object of specified type.
+			 * @tparam T - Type of the object to convert to
+			 * @param s - The object to convert to
+			 * @return - The object that the string was converted to
+			 */
 			template <typename T>
 			inline T from_string(const std::string& s);
 		}
@@ -89,20 +95,104 @@ namespace tz
 		*/
 		namespace string
 		{
+		    /**
+		     * Convert the input string to lower-case.
+		     * @param data - The string to convert to lower-case
+		     * @return - data, in lower-case
+		     */
 			inline std::string to_lower(std::string data);
+            /**
+             * Convert the input string to upper-case.
+             * @param data - The string to convert to upper-case
+             * @return - data, in upper-case
+             */
 			inline std::string to_upper(std::string data);
+			/**
+			 * Query whether an existing string begins with another.
+			 * @param what - The string to query
+			 * @param with_what - The prefix to equate
+			 * @return - True if with starts with with_what. False otherwise
+			 */
 			inline bool begins_with(const std::string& what, const std::string& with_what);
+            /**
+             * Query whether an existing string ends with another.
+             * @param what - The string to query
+             * @param with_what - The suffix to equate
+             * @return - True if with ends with with_what. False otherwise
+             */
 			inline bool ends_with(const std::string& what, const std::string& with_what);
+			/**
+			 * Query whether an existing string contains another substring.
+			 * @param what - The string to query
+			 * @param withwhat - The substring to query for containment
+			 * @return - True if what contains the substring withwhat. False otherwise
+			 */
 			inline bool contains(const std::string& what, char withwhat);
+			/**
+			 * Split an existing string with a specified delimiter.
+			 * @param s - The string to perform on
+			 * @param delim - The delimiter to use
+			 * @return - Container of strings, split from the source string via the specified delimiter
+			 */
 			inline std::vector<std::string> split_string(const std::string& s, const std::string& delim);
+            /**
+             * Split an existing string with a specified delimiter.
+             * @param s - The string to perform on
+             * @param delim - The delimiter to use
+             * @return - Container of strings, split from the source string via the specified delimiter
+             */
 			inline std::vector<std::string> split_string(const std::string& s, char delim);
+			/**
+			 * Replace all instances of a character in a specified string with a replacement string.
+			 * @param str - The specified string
+			 * @param toreplace - The character to be replaced
+			 * @param replacewith - The replacement string
+			 * @return - The edited source string
+			 */
 			inline std::string replace_all_char(const std::string& str, char toreplace, const std::string& replacewith);
+			/**
+			 * Replace all instances of a string in a specified string with a replacement string.
+			 * @param str - The specified string
+			 * @param to_replace - The string to be replaced
+			 * @param replace_with - The replacement string
+			 * @return - The edited source string
+			 */
 			inline std::string replace_all(std::string str, const std::string& to_replace, const std::string& replace_with);
+			/**
+			 * Construct a substring from an existing string between two indices.
+			 * @param str - The source string
+			 * @param begin - The first index
+			 * @param end - The second index
+			 * @return - The substring
+			 */
 			inline std::string substring(const std::string& str, std::size_t begin, std::size_t end);
+			/**
+			 * Emplace all elements of a container of strings within the following string:
+			 * [element0, element1, etc...]
+			 * @param split - The container of strings to format
+			 * @return - The formatted container of strings
+			 */
 			inline std::string format(const std::vector<std::string>& split);
+			/**
+			 * Given a formatted string, extract all the elements contained within the formatted string.
+			 * @param str - The formatted string
+			 * @return - Container of the strings in the formatted string
+			 */
 			inline std::vector<std::string> deformat(const std::string& str);
+			/**
+			 * Convert the first three elements of a container of strings into the type T, and place into a 3-dimensional Vector.
+			 * @tparam T - The type to store into the 3-dimensional Vector
+			 * @param list - The container of strings
+			 * @return - The resultant 3-dimensional Vector
+			 */
 			template<typename T>
 			inline Vector3<T> vectorise_list_3(const std::vector<std::string>& list);
+			/**
+			 * Given a 3-dimensional Vector containing types T, convert them into a string and place within a container.
+			 * @tparam T - Type of the elements in the 3-dimensional Vector
+			 * @param v - The 3-dimensional Vector to extract from
+			 * @return - The resultant container of strings
+			 */
 			template<typename T>
 			inline std::vector<std::string> devectorise_list_3(Vector3<T> v);
 		}
@@ -113,13 +203,45 @@ namespace tz
 		*/
 		namespace log
 		{
+		    /// Base-case for log::silent, log::message, log::warning and log::error.
 			inline void silent();
+			/**
+			 * Essentially a printf but without formatting. Prints the parameters to the standard output.
+			 * @tparam FirstArg - Type of the first argument
+			 * @tparam Args - Type of the remaining arguments
+			 * @param arg - The first argument
+			 * @param args - The remaining arguments
+			 */
 			template<typename FirstArg, typename... Args>
 			inline void silent(FirstArg arg, Args... args);
+			/**
+			 * Print the parameters with Topaz-formatting to the standard output.
+			 * Output: [Message]: parameters
+			 * @tparam FirstArg - Type of the first argument
+			 * @tparam Args - Type of the remaining arguments
+			 * @param arg - The first argument
+			 * @param args - The remaining arguments
+			 */
 			template<typename FirstArg = void, typename... Args>
 			inline void message(FirstArg arg, Args... args);
+            /**
+             * Print the parameters with Topaz-formatting to the standard output.
+             * Output: [Warning]: parameters
+             * @tparam FirstArg - Type of the first argument
+             * @tparam Args - Type of the remaining arguments
+             * @param arg - The first argument
+             * @param args - The remaining arguments
+             */
 			template<typename FirstArg = void, typename... Args>
 			inline void warning(FirstArg arg, Args... args);
+            /**
+             * Print the parameters with Topaz-formatting to the standard output.
+             * Output: [Error]: parameters
+             * @tparam FirstArg - Type of the first argument
+             * @tparam Args - Type of the remaining arguments
+             * @param arg - The first argument
+             * @param args - The remaining arguments
+             */
 			template<typename FirstArg = void, typename... Args>
 			inline void error(FirstArg arg, Args... args);
 		}
@@ -127,42 +249,94 @@ namespace tz
 		namespace scheduler
 		{
 			/**
-			* Invokes std::functions synchronously (pretty much just runs a function for you) or asynchronously (runs the function in another thread as to not impede current processing).
-			* You may well find this incredibly useful, however it does contain some overhead and therefore is not recommended for small, menial tasks.
-			* For smaller and simpler tasks, it is highly recommended that you instead use tz::util::scheduler::[a]sync_delayed_functor(TrivialFunctor), in command.hpp.
-			*/
+			 * Invokes a function synchronously with specified arguments after a specified delay.
+			 * @tparam ReturnType - Return type of the function
+			 * @tparam Args - Argument types of the function
+			 * @param milliseconds_delay - Number of milliseconds to elapse before executing the function.
+			 * @param f - The function to execute
+			 * @param args - Arguments to emplace into the function invocation
+			 */
 			template<class ReturnType, class... Args>
 			inline void sync_delayed_function(unsigned int milliseconds_delay, std::function<ReturnType(Args...)> f, Args... args);
+            /**
+             * Invokes a function asynchronously with specified arguments after a specified delay.
+             * @tparam ReturnType - Return type of the function
+             * @tparam Args - Argument types of the function
+             * @param milliseconds_delay - Number of milliseconds to elapse before executing the function.
+             * @param f - The function to execute
+             * @param args - Arguments to emplace into the function invocation
+             */
 			template<class ReturnType, class... Args>
 			inline void async_delayed_function(unsigned int milliseconds_delay, std::function<ReturnType(Args...)> f, Args... args);
 		}
-			template<typename Number = int>
-			inline Number random();
+
+		/**
+		 * Generate a random number.
+		 * @tparam Number - Type of the number
+		 * @return - The random number generated
+		 */
+		template<typename Number = int>
+        inline Number random();
 	}
 }
 
 /**
-* Generate a random number using any of the C++ standard library random engines.
-* Using default template arguments yields implementation-defined behaviour, but normally is a linear-congruentional engine.
-*/
+ * Object to generate random numbers with a given RNG-engine.
+ * @tparam Engine - Random engine device
+ * @tparam EngineResultType - Return type of the engine's productions
+ */
 template<typename Engine = std::default_random_engine, typename EngineResultType = std::default_random_engine::result_type>
 class Random
 {
 public:
+    /**
+     * Generate a Random from a seed.
+     * @param seed - The seed for the RNG engine
+     */
 	Random<Engine, EngineResultType>(EngineResultType seed = std::random_device()());
+	/**
+	 * Construct a Random from an existing, using their seed and engine.
+	 * @param copy - Random object to copy the seed and engine from.
+	 */
 	Random<Engine, EngineResultType>(const Random<Engine, EngineResultType>& copy);
-	Random<Engine, EngineResultType>(Random<Engine, EngineResultType>&& move) = default;
-	~Random<Engine, EngineResultType>() = default;
-	Random<Engine, EngineResultType>& operator=(const Random<Engine, EngineResultType>& rhs) = default;
-	
+
+	/**
+	 * Get the value of the seed to this engine.
+	 * @return - The seed value
+	 */
 	const EngineResultType& get_seed() const;
+	/**
+	 * Read-only access to the underlying random engine.
+	 * @return - The random engine being used
+	 */
 	const Engine& get_engine() const;
+	/**
+	 * Generate a random signed integer between specified limits.
+	 * @param min - The minimum result of the integer
+	 * @param max - The maximum result of the integer
+	 * @return
+	 */
 	int next_int(int min = 0, int max = std::numeric_limits<int>::max());
+    /**
+     * Generate a random float between specified limits.
+     * @param min - The minimum result of the float
+     * @param max - The maximum result of the float
+     * @return
+     */
 	float next_float(float min = 0, float max = std::numeric_limits<float>::max());
+    /**
+     * Generate a random number between specified limits.
+     * @tparam Number - The type of value to generate
+     * @param min - The minimum result of the number
+     * @param max - The maximum result of the number
+     * @return
+     */
 	template <typename Number = int>
 	inline Number operator()(Number min = Number(), Number max = std::numeric_limits<Number>::max());
 private:
+    /// Stores the seed used for this Random object.
 	const EngineResultType seed;
+    /// Stores the underlying RNG engine for this Random object.
 	Engine random_engine;
 };
 
@@ -173,16 +347,27 @@ private:
 using MersenneTwister = Random<std::mt19937, std::mt19937::result_type>;
 
 /**
- * Wrapper for a function with variadic arguments. Unlike TrivialFunctor, cannot be inserted into a CommandExecutor.
+ * Wrapper for a Functor, using variadic arguments.
+ * @tparam FunctorT - Type of the functor
  */
 template<typename FunctorT>
 class Functor
 {
 public:
+    /**
+     * Generate a Functor directly from a callable type.
+     * @param functor - The functor value
+     */
 	Functor(FunctorT functor);
+	/**
+	 * Execute the functor, providing all parameter values
+	 * @tparam FunctorParameters - Types of the functor parameters
+	 * @param parameters - Values of the functor parameters
+	 */
 	template<typename... FunctorParameters>
 	void operator()(FunctorParameters... parameters);
 private:
+    /// The underlying functor.
 	FunctorT functor;
 };
 #include "utility.inl"
