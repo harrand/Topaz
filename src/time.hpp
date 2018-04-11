@@ -11,11 +11,8 @@
 class Timer
 {
 public:
+	/// Construct and synchronise the Timer.
 	Timer();
-	Timer(const Timer& copy) = default;
-	Timer(Timer&& move) = default;
-	~Timer() = default;
-	Timer& operator=(const Timer& rhs) = default;
 
 	/**
 	 * Invoke every frame, so that Timer::get_range and Timer::millis_passed return accurate values.
@@ -26,14 +23,18 @@ public:
 	 */
 	void reload();
 	/**
-	 * Returns the time taken between the last invocation of Timer::update and Timer::reload.
+	 * Returns the duration since the last reload.
+	 * @return - Time taken between the last invocation of Timer::update and Timer::reload, in milliseconds
 	 */
 	float get_range() const;
 	/**
-	 * Returns whether Timer::get_range returns a time >= the @param millis.
+	 * Query whether a specified duration has passed since the last reload.
+	 * @param millis - Number of milliseconds in the specified duration
+	 * @return - True if the duration has passed. False otherwise
 	 */
 	bool millis_passed(float millis) const;
 private:
+	/// Times in milliseconds.
 	long long int before, after;
 };
 
@@ -43,11 +44,8 @@ private:
 class TimeProfiler
 {
 public:
+	/// Construct the underlying Timer.
 	TimeProfiler();
-	TimeProfiler(const TimeProfiler& copy) = default;
-	TimeProfiler(TimeProfiler&& move) = default;
-	~TimeProfiler() = default;
-	TimeProfiler& operator=(const TimeProfiler& rhs) = default;
 
 	/**
 	 * Invoke this at the beginning of your frame construction in the game-loop.
@@ -62,27 +60,33 @@ public:
 	 */
 	void reset();
 	/**
-	 * Returns the average time taken between each frame.
+	 * Get the average frame-delta.
+	 * @return - Average time taken between each frame, in milliseconds.
 	 */
 	float get_delta_average() const;
 	/**
-	 * Returns the time taken for the most recent frame.
+	 * Get the time taken for the last frame, in milliseconds.
+	 * @return - Time taken since the last frame, in milliseconds.
 	 */
 	float get_last_delta() const;
 	/**
-	 * Returns the average number of frames processed per second.
+	 * Get the average FPS.
+	 * @return - Average number of frames processed per second
 	 */
 	unsigned int get_fps() const;
 private:
+	/// Container of all the time-deltas, in milliseconds.
 	std::vector<float> deltas;
+	/// Underlying Timer object.
 	Timer tk;
 };
 
 namespace tz::time
 {
 	/**
-	* Returns the current local time.
-	*/
+	 * Returns the current local time.
+	 * @return - Current local-time
+	 */
 	inline long long int now()
 	{
 		return std::chrono::system_clock::now().time_since_epoch() / std::chrono::milliseconds(1);

@@ -29,29 +29,91 @@ namespace tz::graphics
 class Mesh
 {
 public:
+	/**
+	 * Construct a Mesh from an existing 3D model file (.obj).
+	 * @param filename - Path to the external 3D model file
+	 */
 	Mesh(std::string filename);
+	/**
+	 * Construct a Mesh from C-style arrays.
+	 * @param vertices - Pointer to the first element of the Vertex array
+	 * @param number_of_vertices  - Size of the Vertex array, in elements
+	 * @param indices - Pointer to the first element of the index array
+	 * @param number_of_indices - Size of the index array, in elements
+	 */
 	Mesh(const Vertex* vertices, std::size_t number_of_vertices, const unsigned int* indices, std::size_t number_of_indices);
+	/**
+	 * Construct a Mesh from containers of vertices and indices respectively.
+	 * @param vertices - The container of vertices
+	 * @param indices - The container of indices
+	 */
 	Mesh(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices);
+	/// TODO: Implement properly
 	Mesh(const Mesh& copy) = default;
+	/// TODO: Implement properly
 	Mesh(Mesh&& move) = default;
+	/**
+	 * Safely dispose of loaded Mesh data.
+	 */
 	virtual ~Mesh();
+	/// TODO: Implement properly
 	Mesh& operator=(const Mesh& rhs) = default;
-	
+
+	/**
+	 * Obtain the IndexedModel object, containing vertex data.
+	 * @return - Structure containing all vertex data
+	 */
 	tz::graphics::model::IndexedModel get_indexed_model() const;
+	/**
+	 * Get a container of 3-dimensional Vectors representing the position of each Vertex, in model-space.
+	 * @return - Container of Vertex positions
+	 */
 	const std::vector<Vector3F>& get_positions() const;
+	/**
+	 * Get a container of 2-dimensional Vectors representing the texture-coordinate of each Vertex (UV).
+	 * @return - Container of Vertex texture-coordinates
+	 */
 	const std::vector<Vector2F>& get_texcoords() const;
+	/**
+	 * Get a container of 3-dimensional Vectors representing the normal Vector of each Vertex, in model-space.
+	 * @return - Container of Vertex normal Vectors
+	 */
 	const std::vector<Vector3F>& get_normals() const;
+	/**
+	 * Get a container of 3-dimensional Vectors representing the tangent Vector of each Vertex, in model-space.
+	 * @return - Container of Vertex tangent Vectors
+	 */
 	const std::vector<Vector3F>& get_tangents() const;
+	/**
+	 * Obtain the path to the external 3D model file used to load this Mesh.
+	 * @return - Path to the source file. If no source file was used, returns ""
+	 */
 	std::string get_file_name() const;
+	/**
+	 * Render the Mesh, using the currently-bound Shader.
+	 * @param patches - Whether to use Patches as the OpenGL primitive or not
+	 * @param mode - Which primitive to use (if patches is true, uses patches with the same number of vertices as this polygon)
+	 */
 	virtual void render(bool patches, GLenum mode = GL_TRIANGLES) const;
+	/**
+	 * Equate this Mesh with another.
+	 * @param rhs - The other Mesh to compare to
+	 * @return - True if the Meshes are equal. False otherwise
+	 */
 	bool operator==(const Mesh& rhs) const;
 protected:
+	/// Path to the external 3D model file used to construct this Mesh.
 	const std::string filename;
+	/// Underlying mesh data container.
 	tz::graphics::model::IndexedModel model;
-	GLuint vertex_array_object; //vao
+	/// OpenGL VAO handle.
+	GLuint vertex_array_object;
+	/// Array of OpenGL Vertex Buffer Object buffers
 	std::array<GLuint, static_cast<std::size_t>(tz::graphics::BufferTypes::NUM_BUFFERS)> vbo_buffers;
+	/// Equal to the number of indices.
 	unsigned int render_count;
 private:
+	/// Initialise the underlying mesh data container.
 	void init_mesh();
 };
 
@@ -63,20 +125,57 @@ private:
 class InstancedMesh : public Mesh
 {
 public:
+	/**
+	 * Construct an InstancedMesh from an external 3D model file (.obj format).
+	 * @param filename - Path to the external 3D model file
+	 * @param positions - Container of 3-dimensional Vectors representing instance position offsets, in world-space
+	 * @param rotations - Container of 3-dimensional Vectors representing instance rotation offsets, in euler-angles
+	 * @param scales - Container of 3-dimensional Vectors representing instance rotation offsets, in the three spatial dimensions XYZ
+	 */
 	InstancedMesh(std::string filename, std::vector<Vector3F> positions, std::vector<Vector3F> rotations, std::vector<Vector3F> scales);
+	/// TODO: Implement properly.
 	InstancedMesh(const InstancedMesh& copy) = default;
+	/// TODO: Implement properly.
 	InstancedMesh(InstancedMesh&& move) = default;
-	~InstancedMesh();
+	/**
+	 * Safely dispose of loaded InstancedMesh data.
+	 */
+	virtual ~InstancedMesh();
+	/// TODO: Implement properly.
 	InstancedMesh& operator=(const InstancedMesh& rhs) = default;
-	
+
+	/**
+	 * Get a container of all the 3-dimensional Vectors representing instance position offsets, in world-space.
+	 * @return - Container of instance position offsets
+	 */
 	const std::vector<Vector3F>& get_instance_positions() const;
+	/**
+	 * Get a container of all the 3-dimensional Vectors representing instance rotation offsets, in euler-angles.
+	 * @return - Container of instance rotation offsets
+	 */
 	const std::vector<Vector3F>& get_instance_rotations() const;
+	/**
+	 * Get a container of all the 3-dimensional Vectors representing instance scale offsets, in the three spatial dimensions XYZ.
+	 * @return - Container of instance scale offsets
+	 */
 	const std::vector<Vector3F>& get_instance_scales() const;
+	/**
+	 * Get the number of additional instances (excluding the normal mesh).
+	 * @return - Number of instances
+	 */
 	std::size_t get_instance_quantity() const;
+	/**
+	 * Render the Mesh, using the currently-bound Shader.
+	 * @param patches - Whether to use Patches as the OpenGL primitive or not
+	 * @param mode - Which primitive to use (if patches is true, uses patches with the same number of vertices as this polygon)
+	 */
 	virtual void render(bool patches, GLenum mode = GL_TRIANGLES) const override;
 private:
+	/// Instance offsets.
 	std::vector<Vector3F> positions, rotations, scales;
+	/// Number of instances.
 	std::size_t instance_quantity;
+	/// Underlying OpenGL VBO handles.
 	GLuint positions_instance_vbo, rotations_instance_vbo, scales_instance_vbo;
 };
 
@@ -84,8 +183,34 @@ namespace tz
 {
 	namespace graphics
 	{
+		/**
+		 * Query whether the specified Mesh is an InstancedMesh.
+		 * @param mesh - The Mesh to query
+		 * @return - True if the Mesh is an InstancedMesh. Otherwise false
+		 */
 		bool is_instanced(const Mesh* mesh);
+		/**
+		 * Retrieve a pointer to the existing Mesh in the specified Mesh asset-container, via the specified link.
+		 * @param mesh_link - Link of the Mesh to retrieve
+		 * @param all_meshes - Container of Mesh assets
+		 * @return - Pointer to the Mesh with the link equal to the parameter. If it does not exist, nullptr is returned
+		 */
 		Mesh* find_mesh(const std::string& mesh_link, const std::vector<std::unique_ptr<Mesh>>& all_meshes);
+		/**
+		 * Create a single Quad, like so:
+		 * *--------* [x + width, y + height]
+		 * |		|
+		 * |	*	|
+		 * | [x, y] |
+		 * *--------*
+		 * [x - width, y - height]
+		 *
+		 * @param x - X-position of the Quad centre, in model-space
+		 * @param y - Y-position of the Quad centre, in model-space
+		 * @param width - Distance between Quad centre to left/right of Quad, in model-space
+		 * @param height - Distance between Quad centre to top/bottom of Quad, in model-space
+		 * @return - The constructed Quad mesh
+		 */
 		Mesh create_quad(float x = 0.0f, float y = 0.0f, float width = 1.0f, float height = -1.0f);
 	}
 }

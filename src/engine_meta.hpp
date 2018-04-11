@@ -29,6 +29,10 @@ enum class StandardProperty
 class PropertiesFile : public MDLFile
 {
 public:
+    /**
+     * Construct a PropertiesFile from an existing external properties-file.
+     * @param properties_path - Path to the external properties-file
+     */
     explicit PropertiesFile(std::string properties_path);
     /**
      * Returns true if any of the following are true:
@@ -37,6 +41,11 @@ public:
      * @return - Whether the Properties has inline Resources declared.
      */
     bool has_inline_resources() const;
+    /**
+     * Retrieve the path to the specified standard-property.
+     * @param property - The property type to specify
+     * @return - Path to the specified property
+     */
     std::string get_property_path(StandardProperty property) const;
 private:
 };
@@ -52,6 +61,10 @@ private:
 class ResourcesFile : public MDLFile
 {
 public:
+    /**
+     * Construct a ResourcesFile from an existing external resources-file.
+     * @param resources_path - Path to the external resources-file
+     */
     explicit ResourcesFile(std::string resources_path);
 };
 
@@ -74,6 +87,10 @@ public:
      * @param properties_path - Path to an existing Properties file.
      */
     EngineMeta(const std::string& properties_path);
+    /**
+     * Get the Properties.
+     * @return - Const-reference to the Properties MDLFile.
+     */
     const PropertiesFile& get_properties() const;
     /**
      * Get the Resources, regardless whether it is external or inline.
@@ -81,7 +98,9 @@ public:
      */
     const ResourcesFile& get_resources() const;
 private:
+    /// Underlying properties-file.
     PropertiesFile properties;
+    /// Underlying resources-file, which may or may not be present.
     std::optional<ResourcesFile> resources;
 };
 

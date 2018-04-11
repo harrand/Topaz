@@ -33,9 +33,13 @@ struct Vector3POD
  */
 struct Vector4POD
 {
-	float x;
-	float y;
-	float z;
+    /// x-component
+    float x;
+    /// y-component
+    float y;
+    /// z-component
+    float z;
+    /// w-component
 	float w;
 };
 
@@ -60,6 +64,7 @@ public:
 	 */
 	T length(std::function<T(T)> sqrt_function = std::sqrt) const;
 
+	/// Array representing the underlying data.
 	std::array<T, N> data;
 };
 
@@ -83,9 +88,21 @@ public:
 	 * @param data - The array to be copied.
 	 */
 	constexpr Vector2<T>(const std::array<T, 2>& data);
+	/**
+	 * Construct a 2-dimensional Vector, copying attributes from an existing 2-dimensional Vector.
+	 * @param copy - The existing 2-dimensional Vector to copy attributes from
+	 */
 	Vector2<T>(const Vector2<T>& copy);
+    /**
+     * Construct a 2-dimensional Vector, moving attributes from an existing 2-dimensional Vector.
+     * @param move - The existing 2-dimensional Vector to move attributes from
+     */
 	Vector2<T>(Vector2<T>&& move);
-	~Vector2<T>() = default;
+	/**
+	 * Assign the data members of this 2-dimensional Vector to be equal to another.
+	 * @param rhs - The 2-dimensional Vector to copy from
+	 * @return - This, after assignment
+	 */
 	Vector2<T>& operator=(const Vector2<T>& rhs);
 
 	/**
@@ -148,13 +165,13 @@ public:
 	Vector2<T>& operator-=(const Vector2<T>& rhs);
 	/**
 	 * Assign this 2-dimensional Vector to the multiplication of this and a scalar with the same underlying type.
-	 * @param rhs - The scalar to perform the multiplication with.
+	 * @param scalar - The scalar to perform the multiplication with.
 	 * @return - this, where 'this = this * the parameter'.
 	 */
 	Vector2<T>& operator*=(const T& scalar);
 	/**
 	 * Assign this 2-dimensional Vector to the division of this and a scalar with the same underlying type.
-	 * @param rhs - The scalar to perform the division with.
+	 * @param scalar - The scalar to perform the division with.
 	 * @return - this, where 'this = this ÷ the parameter'.
 	 */
 	Vector2<T>& operator/=(const T& scalar);
@@ -199,7 +216,9 @@ public:
 	 */
 	Vector2<T> yx() const;
 
+	/// References the first element in the data array.
 	T& x;
+    /// References the second element in the data array.
 	T& y;
 };
 
@@ -236,9 +255,21 @@ public:
 	 * @param data - The array to be copied.
 	 */
 	constexpr Vector3<T>(const std::array<T, 3>& data);
+    /**
+     * Construct a 3-dimensional Vector, copying attributes from an existing 3-dimensional Vector.
+     * @param copy - The existing 3-dimensional Vector to copy attributes from
+     */
 	Vector3<T>(const Vector3<T>& copy);
+    /**
+     * Construct a 3-dimensional Vector, moving attributes from an existing 3-dimensional Vector.
+     * @param move - The existing 3-dimensional Vector to move attributes from
+     */
 	Vector3<T>(Vector3<T>&& move);
-	~Vector3<T>() = default;
+    /**
+     * Assign the data members of this 3-dimensional Vector to be equal to another.
+     * @param rhs - The 3-dimensional Vector to copy from
+     * @return - This, after assignment
+     */
 	Vector3<T>& operator=(const Vector3<T>& rhs);
 
 	/**
@@ -307,13 +338,13 @@ public:
 	Vector3<T>& operator-=(const Vector3<T>& rhs);
 	/**
 	 * Assign this 3-dimensional Vector to the multiplication of this and a scalar with the same underlying type.
-	 * @param rhs - The scalar to perform the multiplication with.
+	 * @param scalar - The scalar to perform the multiplication with.
 	 * @return - this, where 'this = this * the parameter'.
 	 */
 	Vector3<T>& operator*=(const T& scalar);
 	/**
 	 * Assign this 3-dimensional Vector to the division of this and a scalar with the same underlying type.
-	 * @param rhs - The scalar to perform the division with.
+	 * @param scalar - The scalar to perform the division with.
 	 * @return - this, where 'this = this ÷ the parameter'.
 	 */
 	Vector3<T>& operator/=(const T& scalar);
@@ -388,9 +419,12 @@ public:
 	 */
 	Vector3<T> zyx() const;
 
-	T& x;
-	T& y;
-	T& z;
+    /// References the first element in the data array.
+    T& x;
+    /// References the second element in the data array.
+    T& y;
+    /// References the third element in the data array.
+    T& z;
 };
 
 /**
@@ -433,9 +467,21 @@ public:
 	 * @param data - The array to be copied.
 	 */
 	constexpr Vector4<T>(const std::array<T, 4>& data);
+    /**
+     * Construct a 4-dimensional Vector, copying attributes from an existing 4-dimensional Vector.
+     * @param copy - The existing 4-dimensional Vector to copy attributes from
+     */
 	Vector4<T>(const Vector4<T>& copy);
+    /**
+     * Construct a 4-dimensional Vector, moving attributes from an existing 4-dimensional Vector.
+     * @param move - The existing 4-dimensional Vector to move attributes from
+     */
 	Vector4<T>(Vector4<T>&& move);
-	~Vector4<T>() = default;
+    /**
+     * Assign the data members of this 4-dimensional Vector to be equal to another.
+     * @param rhs - The 4-dimensional Vector to copy from
+     * @return - This, after assignment
+     */
 	Vector4<T>& operator=(const Vector4<T>& rhs);
 
 	/**
@@ -474,13 +520,13 @@ public:
 	Vector4<T> operator-(const Vector4<T>& rhs) const;
 	/**
 	 * Assign this 4-dimensional Vector to the multiplication of this and a scalar with the same underlying type.
-	 * @param rhs - The scalar to perform the multiplication with.
+	 * @param scalar - The scalar to perform the multiplication with.
 	 * @return - this, where 'this = this * the parameter'.
 	 */
 	Vector4<T> operator*(const T& scalar) const;
 	/**
 	 * Assign this 4-dimensional Vector to the division of this and a scalar with the same underlying type.
-	 * @param rhs - The scalar to perform the division with.
+	 * @param scalar - The scalar to perform the division with.
 	 * @return - this, where 'this = this ÷ the parameter'.
 	 */
 	Vector4<T> operator/(const T& scalar) const;
@@ -498,13 +544,13 @@ public:
 	Vector4<T>& operator-=(const Vector4<T>& rhs);
 	/**
 	 * Assign this 4-dimensional Vector to the multiplication of this and a scalar with the same underlying type.
-	 * @param rhs - The scalar to perform the multiplication with.
+	 * @param scalar - The scalar to perform the multiplication with.
 	 * @return - this, where 'this = this * the parameter'.
 	 */
 	Vector4<T>& operator*=(const T& scalar);
 	/**
 	 * Assign this 4-dimensional Vector to the division of this and a scalar with the same underlying type.
-	 * @param rhs - The scalar to perform the division with.
+	 * @param scalar - The scalar to perform the division with.
 	 * @return - this, where 'this = this ÷ the parameter'.
 	 */
 	Vector4<T>& operator/=(const T& scalar);
@@ -699,9 +745,13 @@ public:
 	 */
 	Vector4<T> wzyx() const;
 
-	T& x;
-	T& y;
-	T& z;
+    /// References the first element in the data array.
+    T& x;
+    /// References the second element in the data array.
+    T& y;
+    /// References the third element in the data array.
+    T& z;
+    /// References the fourth element in the data array.
 	T& w;
 };
 

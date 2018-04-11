@@ -175,8 +175,10 @@ private:
 	/// Engine Meta object.
 	EngineMeta meta;
 public:
-	/// Public access to the default-shader and default-gui-shader.
-	Shader default_shader, default_gui_shader;
+	/// Public access to the default-shader.
+	Shader default_shader;
+	/// Public access to the default-gui-shader.
+	Shader default_gui_shader;
 private:
 	/// The timers used in this Engine's scheduling.
 	Timer seconds_timer, tick_timer;
