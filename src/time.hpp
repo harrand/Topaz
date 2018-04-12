@@ -18,7 +18,7 @@ public:
 	 * Invoke every frame, so that Timer::get_range and Timer::millis_passed return accurate values.
 	 */
 	void update();
-	/*
+	/**
 	 * Invoke whenever the Timer::get_range should return 0.0f.
 	 */
 	void reload();

@@ -30,10 +30,6 @@ public:
 	* Load a scene from an existing MDL file. Takes in all asset vectors. Should probably be replaced with just a const asset manager reference of some kind to read the data without all this verbosity.
 	*/
 	Scene(std::string filename, std::string resources_path, const std::vector<std::unique_ptr<Mesh>>& all_meshes, const std::vector<std::unique_ptr<Texture>>& all_textures, const std::vector<std::unique_ptr<NormalMap>>& all_normal_maps, const std::vector<std::unique_ptr<ParallaxMap>>& all_parallax_maps, const std::vector<std::unique_ptr<DisplacementMap>>& all_displacement_maps, bool batch = true);
-	Scene(const Scene& copy) = default;
-	Scene(Scene&& move) = default;
-	~Scene() = default;
-	Scene& operator=(const Scene& rhs) = default;
 	
 	/**
 	* Returns true if the scene was loaded from an external file.
@@ -89,16 +85,22 @@ public:
 	*/
 	void render(const Camera& cam, Shader* shader, unsigned int width, unsigned int height);
 
-	Vector3F spawn_point, spawn_orientation;
+	/// Default position of the Camera, in world-space.
+	Vector3F spawn_point;
+	/// Default orientation of the Camera, in euler-angles.
+	Vector3F spawn_orientation;
 private:
 	static Object retrieve_object_data(const std::string& object_name, const std::string& resources_path, MDLFile& mdlf, const std::vector<std::unique_ptr<Mesh>>& all_meshes, const std::vector<std::unique_ptr<Texture>>& all_textures, const std::vector<std::unique_ptr<NormalMap>>& all_normal_maps, const std::vector<std::unique_ptr<ParallaxMap>>& all_parallax_maps, const std::vector<std::unique_ptr<DisplacementMap>>& all_displacement_maps);
 
+	/// Optional path to the external file used to construct this Scene.
 	std::optional<std::string> filename;
+	/// Optional path to the external resources file used to reference the Scene's Objects.
 	std::optional<std::string> resources_path;
     /// Used to store Objects
 	std::vector<Object> objects;
-    /// Used to store Object sub-classes to prevent object slicing.
-    /// Needs a shared-ptr because Scenes are copyable and SHOULD be copyable
+    /** Used to store Object sub-classes to prevent object slicing.
+     * Needs a shared-ptr because Scenes are copyable and SHOULD be copyable
+     */
     std::vector<std::shared_ptr<Object>> heap_objects;
 };
 

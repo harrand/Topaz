@@ -17,6 +17,7 @@ namespace tz
 	* Once this function is executed, most features will cease to work properly and will likely invoke undefined behaviour.
 	*/
 	void terminate();
+	/// String representing the default path to a PropertiesFile.
 	constexpr char default_properties_path[] = "properties.mdl";
 }
 

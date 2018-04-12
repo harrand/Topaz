@@ -276,6 +276,9 @@ public:
 	 * @return - State of the Window being hidden.
 	 */
 	virtual void set_hidden(bool hidden) override;
+	/**
+	 * Represents which technique for Window buffer-swapping can be used.
+	 */
 	enum class SwapIntervalType : int
 	{
 		LATE_SWAP_TEARING = -1,
@@ -302,6 +305,9 @@ public:
 	 * @param new_title - The new title of the Window.
 	 */
 	void set_title(const std::string& new_title);
+	/**
+	 * Represents which type of Fullscreen states are available for a Window.
+	 */
 	enum class FullscreenType : Uint32
 	{
 		VIDEO_MODE = SDL_WINDOW_FULLSCREEN,
