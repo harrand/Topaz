@@ -1,4 +1,5 @@
 #include <cmath>
+#include <iostream>
 
 template<unsigned int N, typename T>
 constexpr Vector<N, T>::Vector(std::array<T, N> data): data(data){}
@@ -10,6 +11,20 @@ T Vector<N, T>::length(std::function<T(T)> sqrt_function) const
 	for(const auto& value : this->data)
 		squared_total += value * value;
 	return sqrt_function(squared_total);
+}
+
+template<unsigned int N, typename T>
+std::ostream& operator<<(std::ostream& os, const Vector<N, T>& vector)
+{
+	os << "[";
+	for(unsigned int i = 0; i < N; i++)
+	{
+		os << vector.data[i];
+		if(i != N - 1)
+			os << ", ";
+	}
+	os << "]";
+	return os;
 }
 
 template<typename T>

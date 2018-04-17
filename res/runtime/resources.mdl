@@ -124,4 +124,4 @@ house.path: ../../../res/runtime/models/house.obj
 house.name: House Model with uniform UVs
 speed: 5.0
 rotational_speed: 0.03
-played: 422132
+played: 422189

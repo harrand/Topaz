@@ -68,13 +68,17 @@ public:
 	std::array<T, N> data;
 };
 
+
+template<unsigned int N, typename T>
+std::ostream& operator<<(std::ostream& os, const Vector<N, T>& vector);
+
 /**
  * Spatial 2-dimensional Vector.
  * Subclass of a partial specialisation of Vector.
  * @tparam T - Type of element
  */
 template<typename T>
-class Vector2 : protected Vector<2, T>
+class Vector2 : public Vector<2, T>
 {
 public:
 	/**
@@ -220,6 +224,8 @@ public:
 	T& x;
     /// References the second element in the data array.
 	T& y;
+private:
+    using Vector<2, T>::data;
 };
 
 /**
@@ -228,7 +234,7 @@ public:
  * @tparam T - Type of element
  */
 template<typename T>
-class Vector3: protected Vector<3, T>
+class Vector3: public Vector<3, T>
 {
 public:
 	/**
@@ -425,6 +431,8 @@ public:
     T& y;
     /// References the third element in the data array.
     T& z;
+private:
+    using Vector<3, T>::data;
 };
 
 /**
@@ -433,7 +441,7 @@ public:
  * @tparam T - Type of element
  */
 template<typename T>
-class Vector4: protected Vector<4, T>
+class Vector4: public Vector<4, T>
 {
 public:
 	/**
@@ -753,6 +761,8 @@ public:
     T& z;
     /// References the fourth element in the data array.
 	T& w;
+private:
+    using Vector<4, T>::data;
 };
 
 #include "vector.inl"
