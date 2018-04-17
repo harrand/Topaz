@@ -63,6 +63,11 @@ public:
 	 * @return - Magnitude of the Vector.
 	 */
 	T length(std::function<T(T)> sqrt_function = std::sqrt) const;
+	/**
+	 * Explicitly convert to a string.
+	 * @return String in the following format: "[d0, d1, ...]"
+	 */
+	explicit operator std::string() const;
 
 	/// Array representing the underlying data.
 	std::array<T, N> data;

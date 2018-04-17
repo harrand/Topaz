@@ -14,16 +14,23 @@ T Vector<N, T>::length(std::function<T(T)> sqrt_function) const
 }
 
 template<unsigned int N, typename T>
+Vector<N, T>::operator std::string() const
+{
+    std::string res = "[";
+    for(unsigned int i = 0; i < N; i++)
+    {
+        res += this->data[i];
+        if(i != N - 1)
+            res += ", ";
+    }
+    res += "]";
+    return res;
+}
+
+template<unsigned int N, typename T>
 std::ostream& operator<<(std::ostream& os, const Vector<N, T>& vector)
 {
-	os << "[";
-	for(unsigned int i = 0; i < N; i++)
-	{
-		os << vector.data[i];
-		if(i != N - 1)
-			os << ", ";
-	}
-	os << "]";
+	os << static_cast<std::string>(vector);
 	return os;
 }
 
