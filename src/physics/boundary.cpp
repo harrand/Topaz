@@ -77,6 +77,13 @@ bool AABB::intersects(Boundary* other_boundary) const
 	return this->intersects(*dynamic_cast<AABB*>(other_boundary));
 }
 
+AABB AABB::operator*(const Matrix4x4& rhs) const
+{
+    Vector4F minimum_homogeneous = {this->minimum, 1.0f};
+    Vector4F maximum_homogeneous = {this->maximum, 1.0f};
+    return {(rhs * minimum_homogeneous).xyz(), (rhs * maximum_homogeneous).xyz()};
+}
+
 BoundingPlane::BoundingPlane(Vector3F normal, float distance): Boundary(), normal(normal), distance(distance){}
 
 BoundingPlane::BoundingPlane(Vector3F a, Vector3F b, Vector3F c): normal((b - a).cross(c - a).normalised()), distance(-this->normal.dot(a)) {}
@@ -161,4 +168,52 @@ bool Frustum::contains(const Vector3F& point) const
             return false;
     }
     return true;
+}
+
+bool Frustum::contains(const AABB& box) const
+{
+    float sum = 0.0f;
+    for(const BoundingPlane& plane : this->planes)
+    {
+        if (plane.get_normal().x > 0)
+            sum = plane.get_normal().x * box.get_maximum().x;
+        else
+            sum = plane.get_normal().x * box.get_minimum().x;
+
+        if (plane.get_normal().y > 0)
+            sum += plane.get_normal().y * box.get_maximum().y;
+        else
+            sum += plane.get_normal().y * box.get_minimum().y;
+
+        if (plane.get_normal().z > 0)
+            sum += plane.get_normal().z * box.get_maximum().z;
+        else
+            sum += plane.get_normal().z * box.get_minimum().z;
+
+        if (sum <= -plane.get_distance())
+            return false;
+    }
+    return true;
+	/*
+	 for(i = 0; i < LAST_PLANE; i++)
+	{
+		if (plane.x > 0)
+			sum = plane.x * max.x;
+		else
+			sum = plane.x * min.x;
+
+		if (plane.y > 0)
+			sum += plane.y * max.y;
+		else
+			sum += plane.y * min.y;
+
+		if (plane.z > 0)
+			sum += plane.z * max.z;
+		else
+			sum += plane.z * min.z;
+
+		if (sum <= -plane.d)
+			return false;
+	}
+	 */
 }

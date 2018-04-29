@@ -99,6 +99,8 @@ public:
 	 * @return - True if this AABB intersects the boundary. False otherwise.
 	 */
 	virtual bool intersects(Boundary* other_boundary) const override;
+
+    AABB operator*(const Matrix4x4& rhs) const;
 private:
 	/// Minimum 3-dimensional position of the AABB, in world-space.
 	Vector3F minimum;
@@ -188,6 +190,12 @@ public:
 	 * @return - True if the point is in this frustum. False otherwise.
 	 */
     bool contains(const Vector3F& point) const;
+    /**
+	 * Query whether an AABB is inside this frustum.
+	 * @param box - The AABB to query whether is contained in this frustum.
+	 * @return - True if the box is in this frustum. False otherwise.
+	 */
+    bool contains(const AABB& box) const;
 private:
 	/// Position of the camera, in world-space.
 	Vector3F camera_position;

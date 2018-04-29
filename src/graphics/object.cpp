@@ -23,7 +23,7 @@ void Object2D::render(const Camera& cam, Shader* shader, float width, float heig
 	this->quad.render(false);
 }
 
-Object::Object(std::variant<const Mesh*, std::shared_ptr<const Mesh>> mesh, Material material, Vector3F position, Vector3F rotation, Vector3F scale): position(position), rotation(rotation), scale(scale), mesh(mesh), material(std::move(material)){}
+Object::Object(std::variant<const Mesh*, std::shared_ptr<const Mesh>> mesh, Material material, Vector3F position, Vector3F rotation, Vector3F scale): position(position), rotation(rotation), scale(scale), mesh(mesh), material(std::move(material)), boundary_modelspace(tz::physics::bound_aabb(this->get_mesh())){}
 
 const Mesh& Object::get_mesh() const
 {

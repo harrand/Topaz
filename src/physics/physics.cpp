@@ -40,8 +40,16 @@ bool Force::operator==(const Force& rhs) const
 	return this->size == rhs.size;
 }
 
-BoundingSphere tz::physics::bound_sphere(const Object& object)
+BoundingSphere tz::physics::bound_sphere(const Mesh& mesh)
 {
+	Vector3F mean_modelspace = std::accumulate(mesh.get_positions().begin(), mesh.get_positions().end(), Vector3F(), [](const Vector3F& a, const Vector3F& b) -> Vector3F{return a + b;}) / mesh.get_positions().size();
+	std::vector<Vector3F> positions_modelspace = mesh.get_positions();
+	std::transform(positions_modelspace.begin(), positions_modelspace.end(), positions_modelspace.begin(), [&mean_modelspace](const Vector3F& position) -> Vector3F{return mean_modelspace - position;});
+	float max_distance = 0.0f;
+	for(const auto& displacement : positions_modelspace)
+		max_distance = std::max(displacement.length(), max_distance);
+	return {mean_modelspace, max_distance};
+	/*
 	// get list of positions in world space
 	std::vector<Vector3F> positions_worldspace;
 	const std::vector<Vector3F>& positions_modelspace = object.get_mesh().get_positions();
@@ -62,10 +70,26 @@ BoundingSphere tz::physics::bound_sphere(const Object& object)
 	for(auto displacement : positions_worldspace)
 		distances.push_back(std::fabs(displacement.length()));
 	return {mean, *std::max_element(distances.begin(), distances.end())};
+	 */
 }
 	
-AABB tz::physics::bound_aabb(const Object& object)
+AABB tz::physics::bound_aabb(const Mesh& mesh)
 {
+	constexpr float float_min = std::numeric_limits<float>::lowest();
+	constexpr float float_max = std::numeric_limits<float>::max();
+	float min_x = float_max, min_y = float_max, min_z = float_max;
+	float max_x = float_min, max_y = float_min, max_z = float_min;
+	for(const Vector3F& position_modelspace : mesh.get_positions())
+	{
+		min_x = std::min(position_modelspace.x, min_x);
+		min_y = std::min(position_modelspace.y, min_y);
+		min_z = std::min(position_modelspace.z, min_z);
+		max_x = std::max(position_modelspace.x, max_x);
+		max_y = std::max(position_modelspace.y, max_y);
+		max_z = std::max(position_modelspace.z, max_z);
+	}
+	return {Vector3F(min_x, min_y, min_z), Vector3F(max_x, max_y, max_z)};
+	/*
 	// once again get positions in worldspace
 	const std::vector<Vector3F>& positions_modelspace = object.get_mesh().get_positions();
 	std::vector<Vector3F> positions_worldspace;
@@ -91,13 +115,15 @@ AABB tz::physics::bound_aabb(const Object& object)
 	}
 	// get minimum and maximum values for all three dimensions. use the minimums and maximums to construct the AABB
 	return {Vector3F(min_x, min_y, min_z), Vector3F(max_x, max_y, max_z)};
+	 */
 }
 
 AABB tz::physics::bound_aabb_batch(const std::vector<Object>& objects)
 {
 	std::vector<AABB> bounds;
 	bounds.reserve(objects.size());
-	std::for_each(objects.begin(), objects.end(), [&](const Object& object){bounds.push_back(tz::physics::bound_aabb(object));});
+	for(const Object& object : objects)
+		bounds.push_back(tz::physics::bound_aabb(object.get_mesh()) * tz::transform::model(object.position, object.rotation, object.scale));
 	Vector3F min = bounds.front().get_minimum(), max = bounds.front().get_maximum();
 	for(const auto& bound : bounds)
 	{

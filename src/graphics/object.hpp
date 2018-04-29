@@ -4,7 +4,7 @@
 #include "shader.hpp"
 #include "material.hpp"
 #include "../camera.hpp"
-#include "../physics/boundary.hpp"
+#include "../physics/physics.hpp"
 #include <variant>
 
 namespace tz::graphics
@@ -112,6 +112,8 @@ protected:
 	std::variant<const Mesh*, std::shared_ptr<const Mesh>> mesh;
 	/// Material used by the Object.
 	Material material;
+	/// Bounding Box, in model-space.
+	AABB boundary_modelspace;
 };
 
 /**

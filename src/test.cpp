@@ -39,11 +39,6 @@ void init()
 	Timer updater;
 	bool noclip = false;
 	
-	std::vector<AABB> bounds;
-	bounds.reserve(engine.scene.get_objects().size());
-	for(const Object& object : engine.scene.get_objects())
-		bounds.push_back(tz::physics::bound_aabb(object));
-	
 	Vector4F gui_colour(0.0f, 0.0f, 0.0f, 0.95f);
 	Font example_font("../../../res/runtime/fonts/CaviarDreams.ttf", 26);
 	TextLabel text(0.0f, 0.0f, Vector4F(1, 1, 1, 1), {}, {}, example_font, "FPS: ...", engine.default_gui_shader);
@@ -81,7 +76,7 @@ void init()
 	TrivialFunctor save_scene_cmd([&](){const_cast<Scene&>(engine.scene).save();});
 	TrivialFunctor toggle_noclip([&](){noclip = !noclip;});
 	//SpawnBlockCommand spawn_test_cube(engine, bounds);
-    StaticFunctor spawn_test_cube([&](Engine& engine, std::vector<AABB>& bounds)
+    StaticFunctor spawn_test_cube([&](Engine& engine)
     {
         tz::data::Manager manager(std::string(meta.get_resources().get_path().data(), meta.get_resources().get_path().length()));
         //std::map<tz::graphics::TextureType, Texture*> textures;
@@ -97,9 +92,9 @@ void init()
 		DisplacementMap* displacement_map = Texture::get_from_link<DisplacementMap>(manager.resource_link("default_displacementmap"), engine.get_displacement_maps());
 		Material material(texture, normal_map, parallax_map, displacement_map);
         Object obj(tz::graphics::find_mesh(manager.resource_link("cube_hd"), engine.get_meshes()), material, engine.camera.position, engine.camera.rotation, Vector3F(40, 20, 40));
-        bounds.push_back(tz::physics::bound_aabb(obj));
+        //bounds.push_back(tz::physics::bound_aabb(obj.ge));
         engine.scene.add_object(obj);
-    }, engine, bounds);
+    }, engine);
 	test_button.set_on_mouse_click(&toggle);
 	test_button.set_on_mouse_over(&pop_cmd);
 	exit_gui_button.set_on_mouse_click(&exit);
@@ -117,10 +112,6 @@ void init()
 	Object player_object(engine.get_meshes().back().get(), engine.scene.get_objects().front().get().get_material(), Vector3F(), Vector3F(), Vector3F(5,5,5));
 	engine.emplace_trivial_update_command([&](){if(engine.camera.has_perspective_projection()) return;player_object.render(engine.camera, &(engine.default_shader), wnd.get_width(), wnd.get_height());});
 	engine.emplace_trivial_tick_command([&](){player_object.position = engine.camera.position;player_object.rotation = engine.camera.rotation;});
-	
-	bool on_ground = false;
-	const float a = 0.5f;
-	float speed = 0.0f;
 	
 	Shader shader_2d("../../../src/shaders/2D");
 	
@@ -153,7 +144,7 @@ void init()
 			updater.reload();
 			seconds++;
 		}
-		
+
 		plane_texture_buffer.clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, 0.0f, 0.0f, 0.0f, 0.0f);
 		plane_texture_buffer.set_render_target();
 		Camera behind = engine.camera;
@@ -164,27 +155,6 @@ void init()
 		
 		if(engine.is_update_due())
 		{
-			for(const AABB& bound : bounds)
-			{
-				if(bound.intersects(engine.camera.position))// teleport camera above any object it's inside
-				{
-					engine.camera.position.y = bound.get_maximum().y;
-				}
-				if(bound.intersects(engine.camera.position - (Vector3F(0, 1, 0) * (velocity + a))))
-					on_ground = true; // todo, teleport player right to the edge (otherwise they might just hover above the point which sucks)
-			}
-			engine.camera.set_axis_bound(!noclip);
-			if(!noclip)
-			{
-				if(on_ground)
-					speed = 0.0f;
-				else if(engine.get_time_profiler().get_fps() != 0)
-				{
-					engine.camera.position -= Vector3F(0, speed, 0);
-					speed += a;
-				}
-			}
-			
 			if(key_listener.is_key_pressed("Up"))
 				engine.camera.fov -= (tz::consts::pi / 200.0f);
 			if(key_listener.is_key_pressed("Down"))
@@ -195,75 +165,27 @@ void init()
 				wnd.set_fullscreen(!wnd.is_fullscreen() ? Window::FullscreenType::DESKTOP_MODE : Window::FullscreenType::WINDOWED_MODE);
 			if(key_listener.is_key_pressed("W"))
 			{
-				Vector3F after = (engine.camera.position + (engine.camera.forward() * velocity));
-				bool collide = false;
-				for(const AABB& bound : bounds)
-				{
-					if(bound.intersects(after))
-						collide = true;
-				}
-				if(!collide)
-					engine.camera.position = after;
+				engine.camera.position += (engine.camera.forward() * velocity);
 			}
 			if(key_listener.is_key_pressed("S"))
 			{
-				Vector3F after = (engine.camera.position + (engine.camera.backward() * velocity));
-				bool collide = false;
-				for(const AABB& bound : bounds)
-				{
-					if(bound.intersects(after))
-						collide = true;
-				}
-				if(!collide)
-					engine.camera.position = after;
+				engine.camera.position += (engine.camera.backward() * velocity);
 			}
 			if(key_listener.is_key_pressed("A"))
 			{
-				Vector3F after = (engine.camera.position + (engine.camera.left() * velocity));
-				bool collide = false;
-				for(const AABB& bound : bounds)
-				{
-					if(bound.intersects(after))
-						collide = true;
-				}
-				if(!collide)
-					engine.camera.position = after;
+				engine.camera.position += (engine.camera.left() * velocity);
 			}
 			if(key_listener.is_key_pressed("D"))
 			{
-				Vector3F after = (engine.camera.position + (engine.camera.right() * velocity));
-				bool collide = false;
-				for(const AABB& bound : bounds)
-				{
-					if(bound.intersects(after))
-						collide = true;
-				}
-				if(!collide)
-					engine.camera.position = after;
+				engine.camera.position += (engine.camera.right() * velocity);
 			}
 			if(key_listener.is_key_pressed("Space"))
 			{
-				Vector3F after = (engine.camera.position + (Vector3F(0, 1, 0) * velocity));
-				bool collide = false;
-				for(const AABB& bound : bounds)
-				{
-					if(bound.intersects(after))
-						collide = true;
-				}
-				if(!collide)
-					engine.camera.position = after;
+				engine.camera.position += (Vector3F{0.0f, 1.0f, 0.0f} * velocity);
 			}
 			if(key_listener.is_key_pressed("Z"))
 			{
-				Vector3F after = (engine.camera.position + (Vector3F(0, -1, 0) * velocity));
-				bool collide = false;
-				for(const AABB& bound : bounds)
-				{
-					if(bound.intersects(after))
-						collide = true;
-				}
-				if(!collide)
-					engine.camera.position = after;
+				engine.camera.position += (Vector3F{0.0f, -1.0f, 0.0f} * velocity);
 			}
 			float angular_speed = tz::util::cast::from_string<float>(meta.get_properties().get_tag("rotational_speed"));
 			if(key_listener.is_key_pressed("I"))

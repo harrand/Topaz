@@ -62,17 +62,21 @@ public:
 	Vector3F size;
 };
 
+/// Pre-define the Object class.
+class Object;
+
 namespace tz::physics
 {
 	/**
-	* Given an Object3D, creates a well-fitted sphere-boundary around the vertices of the object.
-	* The BoundingSphere remains valid for the entire lifetime of the object.
+	* Given a Mesh, creates a well-fitted sphere-boundary around the vertices of a mesh.
+	* The BoundingSphere is bound in model-space.
 	*/
-	BoundingSphere bound_sphere(const Object& object);
+	BoundingSphere bound_sphere(const Mesh& mesh);
 	/**
-	* Given an Object3D, creates a well-fitted axis-aligned-bounding-box around the vertices of the object.
-	*/
-	AABB bound_aabb(const Object& object);
+	 * Given a Mesh, creates a well-fitted axis-aligned-bounding-box around the vertices of a mesh.
+	 * The AABB is bound in model-space.
+	 */
+	AABB bound_aabb(const Mesh& mesh);
 	/**
 	 * Given multiple Objects, creates a single well-fitted axis-aligned-bounding-box as tightly as possible around all the objects.
 	 * Perfect to be used on the result of a tz::graphics::batch(...) call to bound the entirety of the batch.
