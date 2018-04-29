@@ -1,6 +1,6 @@
 #include "boundary.hpp"
 
-BoundingSphere::BoundingSphere(Vector3F centre, float radius): Boundary(), centre(centre), radius(radius){}
+BoundingSphere::BoundingSphere(Vector3F centre, float radius): centre(centre), radius(radius){}
 
 const Vector3F& BoundingSphere::get_centre() const
 {
@@ -24,14 +24,7 @@ bool BoundingSphere::intersects(const BoundingSphere& rhs) const
 	return centre_distance < radius_distance;
 }
 
-bool BoundingSphere::intersects(Boundary* other_boundary) const
-{
-	if(dynamic_cast<BoundingSphere*>(other_boundary) == nullptr)
-		return false;
-	return this->intersects(*dynamic_cast<BoundingSphere*>(other_boundary));
-}
-
-AABB::AABB(Vector3F minimum, Vector3F maximum): Boundary(), minimum(minimum), maximum(maximum){}
+AABB::AABB(Vector3F minimum, Vector3F maximum): minimum(minimum), maximum(maximum){}
 
 const Vector3F& AABB::get_minimum() const
 {
@@ -70,13 +63,6 @@ bool AABB::intersects(const Vector3F& point) const
 	return meet_x && meet_y && meet_z;
 }
 
-bool AABB::intersects(Boundary* other_boundary) const
-{
-	if(dynamic_cast<AABB*>(other_boundary) == nullptr)
-		return false;
-	return this->intersects(*dynamic_cast<AABB*>(other_boundary));
-}
-
 AABB AABB::operator*(const Matrix4x4& rhs) const
 {
     Vector4F minimum_homogeneous = {this->minimum, 1.0f};
@@ -84,7 +70,7 @@ AABB AABB::operator*(const Matrix4x4& rhs) const
     return {(rhs * minimum_homogeneous).xyz(), (rhs * maximum_homogeneous).xyz()};
 }
 
-BoundingPlane::BoundingPlane(Vector3F normal, float distance): Boundary(), normal(normal), distance(distance){}
+BoundingPlane::BoundingPlane(Vector3F normal, float distance): normal(normal), distance(distance){}
 
 BoundingPlane::BoundingPlane(Vector3F a, Vector3F b, Vector3F c): normal((b - a).cross(c - a).normalised()), distance(-this->normal.dot(a)) {}
 
@@ -116,13 +102,6 @@ bool BoundingPlane::intersects(const BoundingSphere& rhs) const
 //  	 * / *
 //        /**
 	return (std::fabs(this->normal.dot(rhs.get_centre()) + this->distance) - rhs.get_radius()) < 0;
-}
-
-bool BoundingPlane::intersects(Boundary* other_boundary) const
-{
-	if(dynamic_cast<BoundingSphere*>(other_boundary) == nullptr)
-		return false;
-	return this->intersects(*dynamic_cast<BoundingSphere*>(other_boundary));
 }
 
 Frustum::Frustum(Vector3F camera_position, Vector3F camera_view, float fov, float aspect_ratio, float near_clip, float far_clip): camera_position(camera_position), camera_view(camera_view), fov(fov), aspect_ratio(aspect_ratio), near_clip(near_clip), far_clip(far_clip), near_plane_size(), far_plane_size()
@@ -194,26 +173,4 @@ bool Frustum::contains(const AABB& box) const
             return false;
     }
     return true;
-	/*
-	 for(i = 0; i < LAST_PLANE; i++)
-	{
-		if (plane.x > 0)
-			sum = plane.x * max.x;
-		else
-			sum = plane.x * min.x;
-
-		if (plane.y > 0)
-			sum += plane.y * max.y;
-		else
-			sum += plane.y * min.y;
-
-		if (plane.z > 0)
-			sum += plane.z * max.z;
-		else
-			sum += plane.z * min.z;
-
-		if (sum <= -plane.d)
-			return false;
-	}
-	 */
 }

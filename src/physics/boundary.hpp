@@ -3,22 +3,9 @@
 #include "../camera.hpp"
 
 /**
-* Abstract. Not available for non-polymorphic use. Inherit from this to create custom boundaries.
-* Represents a simple boundary in space.
-*/
-class Boundary
-{
-public:
-	/**
-	* Pure virtual. Override this if you want to make your own Boundaries.
-	*/
-	virtual bool intersects(Boundary* other_boundary) const = 0;
-};
-
-/**
 * Used to bound physical spherical shapes in 3D space.
 */
-class BoundingSphere : public Boundary
+class BoundingSphere
 {
 public:
 	/**
@@ -44,12 +31,6 @@ public:
 	 * @return - True if the spheres intersect. False otherwise.
 	 */
 	bool intersects(const BoundingSphere& rhs) const;
-	/**
-	 * Checks whether this BoundingSphere intersects the polymorphic boundary provided.
-	 * @param other_boundary - The polymorphic boundary to check whether this intersects with.
-	 * @return - True if this BoundingSphere intersects the boundary. False otherwise.
-	 */
-	virtual bool intersects(Boundary* other_boundary) const override;
 private:
 	/// Centre of the sphere, in world-space.
 	Vector3F centre;
@@ -57,11 +38,7 @@ private:
 	float radius;
 };
 
-/**
-* Axis-Aligned Bounding-Box. Very lightweight but is a very limited and minimalistic box-shaped boundary for an object.
-* Use if performance > precision.
-*/
-class AABB : public Boundary
+class AABB
 {
 public:
 	/**
@@ -93,13 +70,6 @@ public:
 	 * @return - True if the parameter is in the AABB. False otherwose.
 	 */
 	bool intersects(const Vector3F& point) const;
-	/**
-	 * Checks whether this AABB intersects the polymorphic boundary provided.
-	 * @param other_boundary - The polymorphic boundary to check whether this intersects with.
-	 * @return - True if this AABB intersects the boundary. False otherwise.
-	 */
-	virtual bool intersects(Boundary* other_boundary) const override;
-
     AABB operator*(const Matrix4x4& rhs) const;
 private:
 	/// Minimum 3-dimensional position of the AABB, in world-space.
@@ -111,7 +81,7 @@ private:
 /**
 * Used to represent planes in 3-dimensional space. Useful for objects such as walls or floors. Also used to comprise a Frustum.
 */
-class BoundingPlane : public Boundary
+class BoundingPlane
 {
 public:
     /**
@@ -155,12 +125,6 @@ public:
 	 * @return - True if this plane intersects the sphere. False otherwise.
 	 */
 	bool intersects(const BoundingSphere& other) const;
-	/**
-	 * Checks whether this BoundingPlane intersects the polymorphic boundary provided.
-	 * @param other_boundary - The polymorphic boundary to check whether this intersects with.
-	 * @return - True if this BoundingPlane intersects the boundary. False otherwise.
-	 */
-	virtual bool intersects(Boundary* other_boundary) const override;
 private:
 	/// The normal Vector to the plane.
 	Vector3F normal;
