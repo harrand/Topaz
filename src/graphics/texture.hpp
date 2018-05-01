@@ -44,13 +44,18 @@ namespace tz::graphics
     /// Pixel of the default-displacement-map.
     constexpr PixelRGBA default_displacement_map_pixel = PixelRGBA(0, 0, 0, 255);
 
+	enum class TextureComponent : unsigned int
+	{
+		COLOUR_TEXTURE,
+		DEPTH_TEXTURE
+	};
+
 	enum class TextureType : unsigned int
 	{
 		TEXTURE,
 		NORMAL_MAP,
 		PARALLAX_MAP,
 		DISPLACEMENT_MAP,
-		TEXTURE_TYPES,
 	};
 	
 	enum class MipmapType : GLint
@@ -76,11 +81,11 @@ public:
 	*/
 	Texture();
 	/**
-	 * Creates a completely empty texture, but would be ready to be written to, if bound to a framebuffer.
+	 * Creates a completely empty colour-texture, but would be ready to be written to, if bound to a framebuffer.
 	 * @param width - Width of the Texture.
 	 * @param height - Width of the Texture.
 	 */
-	Texture(int width, int height);
+	Texture(int width, int height, tz::graphics::TextureComponent component = tz::graphics::TextureComponent::COLOUR_TEXTURE);
 	/**
 	 * Loads a texture from a file.
 	 * @param filename - Path to the image file.
@@ -222,6 +227,8 @@ protected:
 	int height;
 	/// Which components formulate the image data.
 	int components;
+	/// Stores the component type stored in this Texture (e.g a normal colour-texture or a depth-texture)
+	tz::graphics::TextureComponent texture_component;
 	/// Stores whether gamma-correction was specified for this texture.
 	bool gamma_corrected;
 	/// Optional storage for a local Bitmap of this texture's image data.
@@ -233,7 +240,7 @@ private:
 	 * @param height - N/A
 	 * @param initialise_handle - N/A
 	 */
-	Texture(int width, int height, bool initialise_handle);
+	Texture(int width, int height, bool initialise_handle, tz::graphics::TextureComponent texture_component = tz::graphics::TextureComponent::COLOUR_TEXTURE);
 };
 
 /**

@@ -5,24 +5,36 @@
 Texture::Texture():Texture(0, 0, false){}
 
 // This is private, to use this constructor, call it via Texture(int width, int height)
-Texture::Texture(int width, int height, bool initialise_handle): filename({}), texture_handle(0), width(width), height(height), components(0), gamma_corrected(false), bitmap({})
+Texture::Texture(int width, int height, bool initialise_handle, tz::graphics::TextureComponent texture_component): filename({}), texture_handle(0), width(width), height(height), components(0), texture_component(texture_component), gamma_corrected(false), bitmap({})
 {
 	if(initialise_handle)
 	{
 		// Generates a new texture, and just fills it with zeroes if specified.
 		glGenTextures(1, &(this->texture_handle));
 		glBindTexture(GL_TEXTURE_2D, this->texture_handle);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, this->width, this->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+		switch(this->texture_component)
+		{
+			case tz::graphics::TextureComponent::COLOUR_TEXTURE:
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, this->width, this->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+				break;
+			case tz::graphics::TextureComponent::DEPTH_TEXTURE:
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+				glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, this->width, this->height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+				break;
+		}
 		// Unbind the texture.
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 }
 
-Texture::Texture(int width, int height): Texture(width, height, true){}
+Texture::Texture(int width, int height, tz::graphics::TextureComponent texture_component): Texture(width, height, true, texture_component){}
 
 Texture::Texture(std::string filename, bool mipmapping, bool gamma_corrected, bool store_bitmap): filename(filename), texture_handle(0), width(0), height(0), components(0), gamma_corrected(gamma_corrected), bitmap({})
 {
@@ -387,13 +399,14 @@ bool FrameBuffer::has_stencil() const
 
 void FrameBuffer::set_output_attachment(GLenum attachment) const
 {
-	if(this->attachments.find(attachment) == this->attachments.cend())
+	if(this->attachments.find(attachment) == this->attachments.cend() && attachment != GL_NONE)
 	{
 		tz::util::log::error("FrameBuffer render attachment type has no corresponding attachment; setting to default (which is GL_COLOR_ATTACHMENT0).");
 		attachment = GL_COLOR_ATTACHMENT0;
 	}
 	glBindFramebuffer(GL_FRAMEBUFFER, this->framebuffer_handle);
 	glDrawBuffer(attachment);
+    glReadBuffer(attachment);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 

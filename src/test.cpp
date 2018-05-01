@@ -114,6 +114,7 @@ void init()
 	engine.emplace_trivial_tick_command([&](){player_object.position = engine.camera.position;player_object.rotation = engine.camera.rotation;});
 	
 	Shader shader_2d("../../../src/shaders/2D");
+    Shader shadow_shader("../../../src/shaders/shadow");
 	
 	Sprite test_plane(Vector2F(0.0f, 50.0f), 0.0f, Vector2F(10, 10), engine.scene.get_objects().front().get().get_material().get_texture());
 	Sprite another_test_plane(Vector2F(0.0f, 50.0f), 0.0f, Vector2F(10, 10), tz::graphics::texture::default_texture.get());
@@ -123,9 +124,9 @@ void init()
     });
 
 	FrameBuffer plane_texture_buffer(512, 512);
-	Texture& plane_texture = plane_texture_buffer.emplace_texture(GL_COLOR_ATTACHMENT0, 512, 512);
-	plane_texture_buffer.emplace_renderbuffer(GL_DEPTH_ATTACHMENT, 512, 512, GL_DEPTH_COMPONENT);
-	plane_texture_buffer.set_output_attachment(GL_COLOR_ATTACHMENT0);
+	Texture& plane_texture = plane_texture_buffer.emplace_texture(GL_DEPTH_ATTACHMENT, 512, 512, tz::graphics::TextureComponent::DEPTH_TEXTURE);
+	//plane_texture_buffer.emplace_renderbuffer(GL_COLOR_ATTACHMENT0, 512, 512, GL_RGBA);
+	plane_texture_buffer.set_output_attachment(GL_NONE);
 
 	engine.emplace_trivial_tick_command([&](){if(key_listener.catch_key_pressed("H"))tz::util::log::message("harrapelord!");});
 
@@ -144,11 +145,12 @@ void init()
 			seconds++;
 		}
 
-		plane_texture_buffer.clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, 0.0f, 0.0f, 0.0f, 0.0f);
+		plane_texture_buffer.clear(GL_DEPTH_BUFFER_BIT, 0.0f, 0.0f, 0.0f, 0.0f);
 		plane_texture_buffer.set_render_target();
 		Camera behind = engine.camera;
 		behind.rotation.y = tz::consts::pi - behind.rotation.y;
-		engine.scene.render(behind, &(engine.default_shader), wnd.get_width(), wnd.get_height());
+        behind.set_has_perspective_projection(false);
+		engine.scene.render(behind, &(shadow_shader), wnd.get_width(), wnd.get_height());
         // placement-new re-alloc instead of re-assigning
 		new (&test_plane) Sprite(Vector2F(0.0f, 300.0f), tz::consts::pi, Vector2F(100, 100 / wnd.get_width() * wnd.get_height()), &plane_texture);
 		
