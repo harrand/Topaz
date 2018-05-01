@@ -114,7 +114,7 @@ void init()
 	engine.emplace_trivial_tick_command([&](){player_object.position = engine.camera.position;player_object.rotation = engine.camera.rotation;});
 	
 	Shader shader_2d("../../../src/shaders/2D");
-    Shader shadow_shader("../../../src/shaders/shadow");
+    Shader shadow_shader("../../../src/shaders/depth");
 	
 	Sprite test_plane(Vector2F(0.0f, 50.0f), 0.0f, Vector2F(10, 10), engine.scene.get_objects().front().get().get_material().get_texture());
 	Sprite another_test_plane(Vector2F(0.0f, 50.0f), 0.0f, Vector2F(10, 10), tz::graphics::texture::default_texture.get());
