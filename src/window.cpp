@@ -1,0 +1,256 @@
+#include "window.hpp"
+
+bool tz::graphics::initialised = false;
+bool tz::graphics::has_context = false;
+std::shared_ptr<Texture> tz::graphics::texture::default_texture = nullptr;
+std::shared_ptr<NormalMap> tz::graphics::texture::default_normal_map = nullptr;
+std::shared_ptr<ParallaxMap> tz::graphics::texture::default_parallax_map = nullptr;
+std::shared_ptr<DisplacementMap> tz::graphics::texture::default_displacement_map = nullptr;
+
+Window::Window(std::string title, int x_pixels, int y_pixels, int width_pixels, int height_pixels): Window(title, {x_pixels, y_pixels}, {width_pixels, height_pixels}){}
+
+Window::Window(std::string title, const Vector2<int>& position_pixel_space, const Vector2<int>& dimensions_pixel_space): registered_listeners{}, title(title), position_pixel_space(tz::util::gui::clamp_pixel_screen_space(position_pixel_space)), dimensions_pixel_space(tz::util::gui::clamp_pixel_screen_space(dimensions_pixel_space)), sdl_window(nullptr), close_requested(false)
+{
+    SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
+    SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
+    SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
+    SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
+    SDL_GL_SetAttribute(SDL_GL_BUFFER_SIZE, 32); // number of bits per pixel (should be total of rgba size)
+    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24); // 24-bit depth-buffer. was originally using 16-bit but i found that it's not quite enough for my liking. 24 bits is plenty.
+    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+    // msaa, one buffer, 4 samples
+    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
+    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 4);
+
+    this->sdl_window = SDL_CreateWindow((this->title).c_str(), this->position_pixel_space.x, this->position_pixel_space.y, this->dimensions_pixel_space.x, this->dimensions_pixel_space.y, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+    this->sdl_gl_context = SDL_GL_CreateContext(this->sdl_window);
+    this->set_swap_interval_type(Window::SwapIntervalType::IMMEDIATE_UPDATES);
+    tz::graphics::has_context = true;
+    if(!tz::graphics::initialised)
+        tz::graphics::initialise();
+    tz::graphics::texture::default_texture = std::make_shared<Texture>(Bitmap<PixelRGBA>(std::vector<PixelRGBA>({tz::graphics::default_texture_pixel, PixelRGBA(0, 0, 0, 255), PixelRGBA(0, 0, 0, 255), tz::graphics::default_texture_pixel}), 2, 2));
+    tz::graphics::texture::default_normal_map = std::make_shared<NormalMap>();
+    tz::graphics::texture::default_parallax_map = std::make_shared<ParallaxMap>();
+    tz::graphics::texture::default_displacement_map = std::make_shared<DisplacementMap>();
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_DEPTH_CLAMP);
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
+}
+
+Window::~Window()
+{
+    for(auto [id, listener] : registered_listeners)
+        if(id < Listener::get_num_listeners()) // checks to make sure the listener hasnt gone out of scope
+            this->deregister_listener(*listener);
+    SDL_GL_DeleteContext(this->sdl_gl_context);
+    SDL_DestroyWindow(this->sdl_window);
+}
+
+void Window::update()
+{
+    /*
+    glDisable(GL_DEPTH_TEST);
+    glDisable(GL_DEPTH_CLAMP);
+    glDisable(GL_CULL_FACE);
+    GUI::update();
+     */
+    SDL_GL_SwapWindow(this->sdl_window);
+    SDL_Event evt;
+    while(SDL_PollEvent(&evt))
+    {
+        for(auto& listener : this->registered_listeners)
+            listener.second->handle_events(evt);
+
+        if(evt.type == SDL_QUIT)
+            this->close_requested = true;
+        if(evt.type == SDL_WINDOWEVENT)
+        {
+            if (evt.window.event == SDL_WINDOWEVENT_RESIZED || evt.window.event == SDL_WINDOWEVENT_SIZE_CHANGED)
+            {
+                int w, h;
+                SDL_GL_GetDrawableSize(this->sdl_window, &(this->dimensions_pixel_space.x), &(this->dimensions_pixel_space.y));
+                //update the glViewport, so that OpenGL knows the new window size
+                glViewport(0, 0, this->get_width(), this->get_height());
+            }
+        }
+    }
+}
+
+std::variant<Vector2<int>, Vector2F> Window::get_position(tz::gui::ScreenSpace screen_space) const
+{
+    //return screen_space == tz::gui::ScreenSpace::PIXELS ? this->position_pixel_space : tz::util::gui::to_normalised_screen_space(this->position_pixel_space);
+    using namespace tz::gui;
+    switch(screen_space)
+    {
+        case ScreenSpace::PIXELS:
+            return this->position_pixel_space;
+        case ScreenSpace::NORMALISED:
+            return tz::util::gui::to_normalised_screen_space(this->position_pixel_space);
+    }
+}
+
+Vector2<int> Window::get_position_pixels() const
+{
+    return this->position_pixel_space;
+}
+
+void Window::set_position(std::variant<Vector2<int>, Vector2F> position, tz::gui::ScreenSpace screen_space)
+{
+    if(screen_space == tz::gui::ScreenSpace::NORMALISED && std::holds_alternative<Vector2F>(position))
+        this->position_pixel_space = tz::util::gui::to_pixel_screen_space(std::get<Vector2F>(position));
+    else if(screen_space == tz::gui::ScreenSpace::PIXELS && std::holds_alternative<Vector2<int>>(position))
+        this->position_pixel_space = std::get<Vector2<int>>(position);
+    SDL_SetWindowPosition(this->sdl_window, this->position_pixel_space.x, this->position_pixel_space.y);
+}
+
+void Window::set_position_pixels(Vector2<int> position_pixels)
+{
+    this->position_pixel_space = position_pixels;
+}
+
+void Window::centre_position(const Vector2<bool>& mask)
+{
+    SDL_SetWindowPosition(this->sdl_window, mask.x ? SDL_WINDOWPOS_CENTERED : this->position_pixel_space.x, mask.y ? SDL_WINDOWPOS_CENTERED : this->position_pixel_space.y);
+}
+
+std::variant<Vector2<int>, Vector2F> Window::get_dimensions(tz::gui::ScreenSpace screen_space) const
+{
+    //return screen_space == tz::gui::ScreenSpace::PIXELS ? this->dimensions_pixel_space : tz::util::gui::to_normalised_screen_space(this->dimensions_pixel_space);
+    using namespace tz::gui;
+    switch(screen_space)
+    {
+        case ScreenSpace::PIXELS:
+            return this->dimensions_pixel_space;
+        case ScreenSpace::NORMALISED:
+            return tz::util::gui::to_normalised_screen_space(this->dimensions_pixel_space);
+    }
+}
+
+Vector2<int> Window::get_dimensions_pixels() const
+{
+    return this->dimensions_pixel_space;
+}
+
+int Window::get_width() const
+{
+    return this->dimensions_pixel_space.x;
+}
+
+int Window::get_height() const
+{
+    return this->dimensions_pixel_space.y;
+}
+
+bool Window::is_close_requested() const
+{
+    return this->close_requested;
+}
+
+// needle
+
+Window::SwapIntervalType Window::get_swap_interval_type() const
+{
+    return static_cast<SwapIntervalType>(SDL_GL_GetSwapInterval());
+}
+
+void Window::set_swap_interval_type(Window::SwapIntervalType type) const
+{
+    SDL_GL_SetSwapInterval(static_cast<int>(type));
+}
+
+void Window::set_title(const std::string& new_title)
+{
+    this->title = new_title;
+    SDL_SetWindowTitle(this->sdl_window, new_title.c_str());
+}
+
+bool Window::is_fullscreen() const
+{
+    switch(this->get_fullscreen())
+    {
+        case Window::FullscreenType::VIDEO_MODE:
+        case Window::FullscreenType::DESKTOP_MODE:
+            return true;
+        default:
+            return false;
+    }
+}
+
+Window::FullscreenType Window::get_fullscreen() const
+{
+    Uint32 flags = SDL_GetWindowFlags(this->sdl_window);
+    if(flags & SDL_WINDOW_FULLSCREEN)
+        return Window::FullscreenType::VIDEO_MODE;
+    else if(flags & SDL_WINDOW_FULLSCREEN_DESKTOP)
+        return Window::FullscreenType::DESKTOP_MODE;
+    else
+        return Window::FullscreenType::WINDOWED_MODE;
+}
+
+void Window::set_fullscreen(Window::FullscreenType type) const
+{
+    SDL_SetWindowFullscreen(this->sdl_window, static_cast<Uint32>(type));
+}
+
+void Window::set_render_target() const
+{
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+    glViewport(0, 0, this->dimensions_pixel_space.x, this->dimensions_pixel_space.y);
+}
+
+void Window::clear(GLbitfield mask, float r, float g, float b, float a) const
+{
+    glClearColor(r, g, b, a);
+    glClear(mask);
+}
+
+void Window::register_listener(Listener& l)
+{
+    this->registered_listeners[l.get_id()] = &l;
+}
+
+void Window::deregister_listener(Listener& l)
+{
+    // Check if it actually exists before trying to remove it.
+    if(this->registered_listeners.find(l.get_id()) == this->registered_listeners.end())
+        return;
+    this->registered_listeners.erase(l.get_id());
+}
+
+namespace tz::util::gui
+{
+    namespace display
+    {
+        Vector2<int> resolution()
+        {
+            /// Returns dimensions of native display mode. So if the full=screen video-mode is activated, it will still return the desktop mode.
+            SDL_DisplayMode display_mode;
+            SDL_GetDesktopDisplayMode(0, &display_mode);
+            return {display_mode.w, display_mode.h};
+        }
+
+        int refresh_rate()
+        {
+            /// Returns dimensions of native display mode. So if the full-screen video-mode is activated, it will still return the desktop mode.
+            SDL_DisplayMode display_mode;
+            SDL_GetDesktopDisplayMode(0, &display_mode);
+            return display_mode.refresh_rate;
+        }
+    }
+
+    Vector2<int> to_pixel_screen_space(const Vector2F& normalised_screen_space, const Vector2<int>& resolution)
+    {
+        return {static_cast<int>(std::round(normalised_screen_space.x * resolution.x)), static_cast<int>(std::round(normalised_screen_space.y * resolution.y))};
+    }
+
+    Vector2F to_normalised_screen_space(const Vector2<int>& pixel_screen_space, const Vector2<int>& resolution)
+    {
+        return {static_cast<float>(pixel_screen_space.x) / resolution.x, static_cast<float>(pixel_screen_space.y) / resolution.y};
+    }
+
+    Vector2<int> clamp_pixel_screen_space(const Vector2<int>& pixel_screen_space, const Vector2<int>& resolution)
+    {
+        return {std::clamp(pixel_screen_space.x, 0, resolution.x), std::clamp(pixel_screen_space.y, 0, resolution.y)};
+    }
+}

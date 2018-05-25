@@ -1,10 +1,14 @@
 #ifndef ENGINE_HPP
 #define ENGINE_HPP
-#include "graphics/gui.hpp"
+#include "window.hpp"
 #include "command.hpp"
 #include "time.hpp"
 #include "audio/audio.hpp"
 #include "engine_meta.hpp"
+#include "graphics/mesh.hpp"
+#include "graphics/shader.hpp"
+#include "graphics/texture.hpp"
+#include "graphics/scene.hpp"
 
 namespace tz
 {

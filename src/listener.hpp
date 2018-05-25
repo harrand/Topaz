@@ -1,8 +1,7 @@
 #ifndef LISTENER_HPP
 #define LISTENER_HPP
 
-#include "graphics/gui.hpp"
-#include "SDL2/SDL.h"
+#include "window.hpp"
 #include "command.hpp"
 #include "camera.hpp"
 #include "graphics/scene.hpp"

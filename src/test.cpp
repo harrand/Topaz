@@ -2,7 +2,6 @@
 #include "listener.hpp"
 #include "physics/physics.hpp"
 #include "data.hpp"
-#include "gui_widget.hpp"
 #include "sprite.hpp"
 
 void init();
@@ -22,7 +21,8 @@ int main()
 
 void init()
 {
-	Window wnd(800, 600, "Topaz Development Window");
+	Window wnd("Topaz Development Window", 0, 0, 800, 600);
+    wnd.centre_position({false, true});
 	Engine engine(&wnd, "../../../res/runtime/properties.mdl");
     const EngineMeta& meta = engine.get_meta();
 
@@ -38,73 +38,6 @@ void init()
 	
 	Timer updater;
 	bool noclip = false;
-	
-	Vector4F gui_colour(0.0f, 0.0f, 0.0f, 0.95f);
-	Font example_font("../../../res/runtime/fonts/CaviarDreams.ttf", 26);
-	TextLabel text(0.0f, 0.0f, Vector4F(1, 1, 1, 1), {}, {}, example_font, "FPS: ...", engine.default_gui_shader);
-	TextLabel pos_text(text.get_width(), 0.0f, Vector4F(1, 1, 1, 1), {}, {}, example_font, "Loading...", engine.default_gui_shader);
-	TrivialFunctor toggle([&](){text.set_hidden(!text.is_hidden());});
-	Panel gui_panel(-1.0f, -1.0f, 1.0f, 1.0f, Vector4F(0.4f, 0.4f, 0.4f, 0.5f), engine.default_gui_shader);
-	gui_panel.set_using_proportional_positioning(true);
-	gui_panel.set_hidden(true);
-	//ExitGuiCommand exit(gui_panel);
-	TrivialFunctor exit([&](){gui_panel.set_hidden(!gui_panel.is_hidden());});
-	TextLabel gui_title(0.0f, wnd.get_height() - 50, Vector4F(1, 1, 1, 1), gui_colour, {}, example_font, "Main Menu", engine.default_gui_shader);
-	Button test_button(0.0f, 2 * text.get_height(), Vector4F(1, 1, 1, 1), gui_colour, {}, example_font, "Hide/Show", engine.default_gui_shader, mouse_listener);
-	Button noclip_toggle(0.0f, 2 * text.get_height() + 2 * test_button.get_height(), Vector4F(1, 1, 1, 1), gui_colour, {}, example_font, "Toggle Flight", engine.default_gui_shader, mouse_listener);
-	Button spawn_block(0.0f, 2 * text.get_height() + 2 * noclip_toggle.get_height() + 2 * test_button.get_height(), Vector4F(1, 1, 1, 1), gui_colour, {}, example_font, "Spawn Block", engine.default_gui_shader, mouse_listener);
-	Button exit_gui_button(wnd.get_width() - 50, wnd.get_height() - 50, Vector4F(1, 1, 1, 1), Vector4F(1.0, 0, 0, 1.0), {}, example_font, " x ", engine.default_gui_shader, mouse_listener);
-	Button save_scene_button(0.0f, 2 * text.get_height() + 2 * noclip_toggle.get_height() + 2 * test_button.get_height() + 2 * spawn_block.get_height(), Vector4F(1, 1, 1, 1), gui_colour, {}, example_font, "Save Scene", engine.default_gui_shader, mouse_listener);
-	Checkbox test_tick(0.0f, save_scene_button.get_y() + (2 * save_scene_button.get_height()), save_scene_button.get_height(), save_scene_button.get_height(), Vector4F(1, 0, 0, 1), Vector4F(0, 0, 1, 1), engine.default_gui_shader, mouse_listener);
-	Checkbox test_tick2(0.0f, test_tick.get_y() + (2 * test_tick.get_height()), test_tick.get_width(), test_tick.get_height(), Vector4F(1, 0, 0, 1), Vector4F(0, 0, 1, 1), engine.default_gui_shader, mouse_listener);
-	CheckboxChoice chooser({test_tick, test_tick2}, &test_tick2);
-	Slider test_slider(0.0f, test_tick2.get_y() + (2 * test_tick2.get_height()), 400, test_tick2.get_height(), Vector4F(1, 0, 0, 1), gui_colour, Vector2F(40, test_tick2.get_height()), engine.default_gui_shader, mouse_listener, 1.0f);
-	
-	TrivialFunctor pop_cmd([](){tz::audio::play_async(AudioClip("../../../res/runtime/music/pop.wav"));});
-	wnd.add_child(&text);
-	wnd.add_child(&pos_text);
-	wnd.add_child(&spawn_block);
-	wnd.add_child(&gui_panel);
-	gui_panel.add_child(&gui_title);
-	gui_panel.add_child(&test_button);
-	gui_panel.add_child(&exit_gui_button);
-	gui_panel.add_child(&noclip_toggle);
-	gui_panel.add_child(&save_scene_button);
-	gui_panel.add_child(&test_tick);
-	gui_panel.add_child(&test_tick2);
-	gui_panel.add_child(&test_slider);
-	TrivialFunctor save_scene_cmd([&](){const_cast<Scene&>(engine.scene).save();});
-	TrivialFunctor toggle_noclip([&](){noclip = !noclip;});
-	//SpawnBlockCommand spawn_test_cube(engine, bounds);
-    StaticFunctor spawn_test_cube([&](Engine& engine)
-    {
-        tz::data::Manager manager(std::string(meta.get_resources().get_path().data(), meta.get_resources().get_path().length()));
-        //std::map<tz::graphics::TextureType, Texture*> textures;
-        std::vector<std::string> texture_links = meta.get_resources().get_sequence("textures");
-        static Random rand;
-        std::size_t random_index = rand.next_int(0, texture_links.size());
-		std::string random_texture_link = manager.resource_link(texture_links[random_index]);
-		std::string random_normalmap_link = manager.resource_link(texture_links[random_index] + "_normalmap");
-		std::string random_parallaxmap_link = manager.resource_link(texture_links[random_index] + "_parallaxmap");
-		Texture* texture = Texture::get_from_link<Texture>(random_texture_link, engine.get_textures());
-		NormalMap* normal_map = Texture::get_from_link<NormalMap>(random_normalmap_link, engine.get_normal_maps());
-		ParallaxMap* parallax_map = Texture::get_from_link<ParallaxMap>(random_parallaxmap_link, engine.get_parallax_maps());
-		DisplacementMap* displacement_map = Texture::get_from_link<DisplacementMap>(manager.resource_link("default_displacementmap"), engine.get_displacement_maps());
-		Material material(texture, normal_map, parallax_map, displacement_map);
-        Object obj(tz::graphics::find_mesh(manager.resource_link("cube_hd"), engine.get_meshes()), material, engine.camera.position, engine.camera.rotation, Vector3F(40, 20, 40));
-        //bounds.push_back(tz::physics::bound_aabb(obj.ge));
-        engine.scene.add_object(obj);
-    }, engine);
-	test_button.set_on_mouse_click(&toggle);
-	test_button.set_on_mouse_over(&pop_cmd);
-	exit_gui_button.set_on_mouse_click(&exit);
-	exit_gui_button.set_on_mouse_over(&pop_cmd);
-	noclip_toggle.set_on_mouse_click(&toggle_noclip);
-	noclip_toggle.set_on_mouse_over(&pop_cmd);
-	spawn_block.set_on_mouse_click(&spawn_test_cube);
-	spawn_block.set_on_mouse_over(&pop_cmd);
-	save_scene_button.set_on_mouse_click(&save_scene_cmd);
-	save_scene_button.set_on_mouse_over(&pop_cmd);
 	
 	Skybox skybox("../../../res/runtime/models/skybox.obj", skybox_texture);
 	engine.emplace_trivial_update_command([&](){skybox.render(engine.camera, skybox_shader, engine.get_meshes(), wnd.get_width(), wnd.get_height());});
@@ -133,14 +66,14 @@ void init()
 	while(!engine.get_window().is_close_requested())
 	{
 		float multiplier = tz::util::cast::from_string<float>(MDLFile(meta.get_properties().get_tag("resources")).get_tag("speed"));
-		float velocity = multiplier * test_slider.position;
+		float velocity = multiplier;// * test_slider.position;
 
 		if(updater.millis_passed(1000))
 		{	
-			text.set_text("FPS: " + tz::util::cast::to_string(engine.get_fps()));
-			pos_text.set_x(text.get_width() * 4);
-			Vector3<int> pos_int(engine.camera.position.x, engine.camera.position.y, engine.camera.position.z);
-			pos_text.set_text(tz::util::string::format(tz::util::string::devectorise_list_3(Vector3F(pos_int.x, pos_int.y, pos_int.z))));
+			//text.set_text("FPS: " + tz::util::cast::to_string(engine.get_fps()));
+			//pos_text.set_x(text.get_width() * 4);
+			//Vector3<int> pos_int(engine.camera.position.x, engine.camera.position.y, engine.camera.position.z);
+			//pos_text.set_text(tz::util::string::format(tz::util::string::devectorise_list_3(Vector3F(pos_int.x, pos_int.y, pos_int.z))));
 			updater.reload();
 			seconds++;
 		}
@@ -210,9 +143,9 @@ void init()
 				engine.camera.position = engine.scene.spawn_point;
 				engine.camera.rotation = engine.scene.spawn_orientation;
 			}
-			if(key_listener.catch_key_pressed("Escape"))
-				gui_panel.set_hidden(!gui_panel.is_hidden());
-			if(mouse_listener.is_left_clicked() && gui_panel.is_hidden())
+			//if(key_listener.catch_key_pressed("Escape"))
+			//	gui_panel.set_hidden(!gui_panel.is_hidden());
+			if(mouse_listener.is_left_clicked() /*&& gui_panel.is_hidden()*/)
 			{
 				Vector2F delta = mouse_listener.get_mouse_delta_pos();
 				engine.camera.rotation.y += rotational_speed * delta.x;
@@ -220,9 +153,9 @@ void init()
 				mouse_listener.reload_mouse_delta();
 			}
 		}
-		exit_gui_button.set_x(wnd.get_width() - (exit_gui_button.get_width() * 2));
-		exit_gui_button.set_y(wnd.get_height() - (exit_gui_button.get_height() * 2));
-		gui_title.set_y(wnd.get_height() - (gui_title.get_height() * 2));
+		//exit_gui_button.set_x(wnd.get_width() - (exit_gui_button.get_width() * 2));
+		//exit_gui_button.set_y(wnd.get_height() - (exit_gui_button.get_height() * 2));
+		//gui_title.set_y(wnd.get_height() - (gui_title.get_height() * 2));
 		updater.update();
 		engine.update(shader_id);
 	}

@@ -14,12 +14,6 @@ add_library(topaz SHARED
         src/graphics/graphics.cpp
         src/graphics/graphics.hpp
         src/graphics/graphics.inl
-        src/graphics/gui.cpp
-        src/graphics/gui.hpp
-        src/graphics/gui_display.cpp
-        src/graphics/gui_display.hpp
-        src/graphics/gui_widget.cpp
-        src/graphics/gui_widget.hpp
         src/graphics/material.cpp
         src/graphics/material.hpp
         src/graphics/mesh.cpp
@@ -68,5 +62,5 @@ add_library(topaz SHARED
         src/utility.hpp
         src/utility.inl
         src/vector.hpp
-        src/vector.inl)
+        src/vector.inl src/window.cpp src/window.hpp)
 target_link_libraries(topaz OpenGL32 SDL2 SDL2_mixer SDL2_ttf SDL2main mdl)
