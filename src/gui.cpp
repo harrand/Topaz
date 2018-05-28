@@ -1,6 +1,12 @@
 #include "gui.hpp"
 
-GUI::GUI(Vector2<int> position_local_pixel_space, Vector2<int> dimensions_local_pixel_space, GUI* parent, std::initializer_list<GUI*> children): position_local_pixel_space(position_local_pixel_space), dimensions_local_pixel_space(dimensions_local_pixel_space), parent(parent), children(children){}
+GUI::GUI(Vector2<int> position_local_pixel_space, Vector2<int> dimensions_local_pixel_space, GUI* parent, std::initializer_list<GUI*> children): position_local_pixel_space(position_local_pixel_space), dimensions_local_pixel_space(dimensions_local_pixel_space), parent(parent), children(children), mesh(tz::util::gui::gui_quad()){}
+
+void GUI::render(Shader& shader, int window_width_pixels, int window_height_pixels) const
+{
+    for(const GUI* child : this->children)
+        child->render(shader, window_width_pixels, window_height_pixels);
+}
 
 int GUI::get_x() const
 {
@@ -171,5 +177,6 @@ namespace tz::util::gui
          * width = height = 0.5f
          */
         return tz::graphics::create_quad(0.5f, 0.5f, 0.5f, 0.5f);
+        //return tz::graphics::create_quad();
     }
 }

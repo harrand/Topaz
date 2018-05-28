@@ -5,6 +5,8 @@
 #include <memory>
 #include <variant>
 #include "graphics/mesh.hpp"
+#include "graphics/shader.hpp"
+#include "camera.hpp"
 
 namespace tz::gui
 {
@@ -32,7 +34,9 @@ namespace tz::gui
 class GUI
 {
 public:
+    friend class Window;
     GUI(Vector2<int> position_local_pixel_space, Vector2<int> dimensions_local_pixel_space, GUI* parent = nullptr, std::initializer_list<GUI*> children = {});
+    virtual void render(Shader& shader, int window_width_pixels, int window_height_pixels) const;
     /**
      * Get the x-coordinate of the top-left of this GUI element on the screen.
      * @return - X-coordinate of the GUI on the screen
@@ -69,7 +73,7 @@ public:
     template<class GUIType, typename... Args>
     GUIType* emplace_child(Args&&... args);
     bool add_child(GUI* gui);
-private:
+protected:
     /**
      * Get the local-position (relative to the parent, or screen if there isn't one) of the top-left of the GUI, depending on what screen-space is specified.
      * @param screen_space - The specified screen-space to format the return value as
@@ -86,6 +90,7 @@ private:
     GUI* parent;
     std::unordered_set<GUI*> children;
     std::unordered_set<std::shared_ptr<GUI>> heap_children;
+    Mesh mesh;
 };
 
 /**

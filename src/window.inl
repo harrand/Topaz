@@ -8,6 +8,6 @@ GUIType* Window::emplace_child(Args&&... args)
         std::cerr << "Attempt to emplace child into GUI element failed.\n";
         return nullptr;
     }
-    result_pair.first->get()->parent = this;
+    result_pair.first->get()->parent = nullptr;
     return dynamic_cast<GUIType*>((*result_pair.first).get());
 }

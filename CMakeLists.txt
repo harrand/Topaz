@@ -50,6 +50,9 @@ add_library(topaz SHARED
         src/engine.inl
         src/engine_meta.cpp
         src/engine_meta.hpp
+        src/gui.cpp
+        src/gui.hpp
+        src/gui.inl
         src/listener.cpp
         src/listener.hpp
         src/matrix.cpp
@@ -62,5 +65,8 @@ add_library(topaz SHARED
         src/utility.hpp
         src/utility.inl
         src/vector.hpp
-        src/vector.inl src/window.cpp src/window.hpp src/gui.cpp src/gui.hpp)
+        src/vector.inl
+        src/window.cpp
+        src/window.hpp
+        src/window.inl src/gui_display.cpp src/gui_display.hpp)
 target_link_libraries(topaz OpenGL32 SDL2 SDL2_mixer SDL2_ttf SDL2main mdl)

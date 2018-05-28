@@ -75,7 +75,7 @@ void Engine::update(std::size_t shader_index)
 	}
 	else
 		this->update_due = false;
-	this->window->update();
+	this->window->update(this->default_gui_shader);
 	
 	GLenum error;
 		if((error = glGetError()) != GL_NO_ERROR)

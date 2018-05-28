@@ -47,14 +47,13 @@ Window::~Window()
     SDL_DestroyWindow(this->sdl_window);
 }
 
-void Window::update()
+void Window::update(Shader& gui_shader)
 {
-    /*
     glDisable(GL_DEPTH_TEST);
     glDisable(GL_DEPTH_CLAMP);
     glDisable(GL_CULL_FACE);
-    GUI::update();
-     */
+    for(const GUI* child : this->get_children())
+        child->render(gui_shader, this->get_width(), this->get_height());
     SDL_GL_SwapWindow(this->sdl_window);
     SDL_Event evt;
     while(SDL_PollEvent(&evt))

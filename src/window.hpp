@@ -47,7 +47,7 @@ public:
     /**
 	 * Update (and render) the window.
 	 */
-    void update();
+    void update(Shader& gui_shader);
     /**
      * Get the position of the top-left of the Window, depending on what screen-space is specified.
      * @param screen_space - The specified screen-space to format the return value as
