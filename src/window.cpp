@@ -9,7 +9,7 @@ std::shared_ptr<DisplacementMap> tz::graphics::texture::default_displacement_map
 
 Window::Window(std::string title, int x_pixels, int y_pixels, int width_pixels, int height_pixels): Window(title, {x_pixels, y_pixels}, {width_pixels, height_pixels}){}
 
-Window::Window(std::string title, const Vector2<int>& position_pixel_space, const Vector2<int>& dimensions_pixel_space): registered_listeners{}, title(title), position_pixel_space(tz::util::gui::clamp_pixel_screen_space(position_pixel_space)), dimensions_pixel_space(tz::util::gui::clamp_pixel_screen_space(dimensions_pixel_space)), sdl_window(nullptr), close_requested(false)
+Window::Window(std::string title, const Vector2<int>& position_pixel_space, const Vector2<int>& dimensions_pixel_space): registered_listeners{}, title(title), position_pixel_space(tz::util::gui::clamp_pixel_screen_space(position_pixel_space)), dimensions_pixel_space(tz::util::gui::clamp_pixel_screen_space(dimensions_pixel_space)), sdl_window(nullptr), close_requested(false), children({})
 {
     SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
     SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
@@ -266,46 +266,24 @@ void Window::deregister_listener(Listener& l)
     this->registered_listeners.erase(l.get_id());
 }
 
+std::unordered_set<GUI*> Window::get_children() const
+{
+    std::unordered_set<GUI*> set = this->children;
+    for(const auto& heap_child : this->heap_children)
+        set.insert(heap_child.get());
+    return set;
+}
+
+bool Window::add_child(GUI* gui)
+{
+    if(gui == nullptr)
+        return false;
+    return this->children.insert(gui).second;
+}
+
 MessageBox::MessageBox(tz::gui::MessageBoxType type, std::string title, std::string message, Window* parent): type(type), title(title), message(message), parent(parent){}
 
 bool MessageBox::display() const
 {
     return SDL_ShowSimpleMessageBox(static_cast<Uint32>(this->type), this->title.c_str(), this->message.c_str(), this->parent != nullptr ? this->parent->sdl_window : nullptr) == 0;
-}
-
-namespace tz::util::gui
-{
-    namespace display
-    {
-        Vector2<int> resolution()
-        {
-            /// Returns dimensions of native display mode. So if the full=screen video-mode is activated, it will still return the desktop mode.
-            SDL_DisplayMode display_mode;
-            SDL_GetDesktopDisplayMode(0, &display_mode);
-            return {display_mode.w, display_mode.h};
-        }
-
-        int refresh_rate()
-        {
-            /// Returns dimensions of native display mode. So if the full-screen video-mode is activated, it will still return the desktop mode.
-            SDL_DisplayMode display_mode;
-            SDL_GetDesktopDisplayMode(0, &display_mode);
-            return display_mode.refresh_rate;
-        }
-    }
-
-    Vector2<int> to_pixel_screen_space(const Vector2F& normalised_screen_space, const Vector2<int>& resolution)
-    {
-        return {static_cast<int>(std::round(normalised_screen_space.x * resolution.x)), static_cast<int>(std::round(normalised_screen_space.y * resolution.y))};
-    }
-
-    Vector2F to_normalised_screen_space(const Vector2<int>& pixel_screen_space, const Vector2<int>& resolution)
-    {
-        return {static_cast<float>(pixel_screen_space.x) / resolution.x, static_cast<float>(pixel_screen_space.y) / resolution.y};
-    }
-
-    Vector2<int> clamp_pixel_screen_space(const Vector2<int>& pixel_screen_space, const Vector2<int>& resolution)
-    {
-        return {std::clamp(pixel_screen_space.x, 0, resolution.x), std::clamp(pixel_screen_space.y, 0, resolution.y)};
-    }
 }

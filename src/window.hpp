@@ -4,11 +4,9 @@
 #define GLEW_STATIC
 #endif
 #include <GL/glew.h>
-#include <SDL2/SDL.h>
 #include <string>
-#include <variant>
-#include "vector.hpp"
 #include "listener.hpp"
+#include "gui.hpp"
 
 namespace tz
 {
@@ -16,25 +14,6 @@ namespace tz
     constexpr auto centred_window = SDL_WINDOWPOS_CENTERED;
     namespace gui
     {
-        /**
-         * Consider a 800x600 pixel screen:
-         * for ScreenSpace::PIXELS:
-         * +------------+
-         * |            |   ^
-         * |            |  600
-         * |            |   v
-         * +------------+
-         *     < 800 >
-         *
-         * for ScreenSpace::NORMALISED:
-         * +------------+
-         * |            |   ^
-         * |            |   1
-         * |            |   v
-         * +------------+
-         *     < 1 >
-         */
-        enum class ScreenSpace : unsigned int {PIXELS, NORMALISED};
         enum class MessageBoxType : Uint32{ERROR = SDL_MESSAGEBOX_ERROR, WARNING = SDL_MESSAGEBOX_WARNING, INFO = SDL_MESSAGEBOX_INFORMATION};
     }
 }
@@ -224,6 +203,10 @@ public:
      * @param l - The listener which should be de-registered
      */
     void deregister_listener(Listener& l);
+    std::unordered_set<GUI*> get_children() const;
+    template<class GUIType, typename... Args>
+    GUIType* emplace_child(Args&&... args);
+    bool add_child(GUI* gui);
 
 private:
     /// Container of all registered polymorphic listeners.
@@ -233,6 +216,8 @@ private:
     SDL_Window* sdl_window;
     SDL_GLContext sdl_gl_context;
     bool close_requested;
+    std::unordered_set<GUI*> children;
+    std::unordered_set<std::shared_ptr<GUI>> heap_children;
 };
 
 class MessageBox
@@ -246,51 +231,6 @@ private:
     Window* parent;
 };
 
-/**
- * Common gui helper functions, such as space-conversions.
- */
-namespace tz::util::gui
-{
-    /**
-     * Utility functions specific to the screen display.
-     */
-    namespace display
-    {
-        /**
-         * Get the resolution of the current display.
-         * @return - {w, h} in pixels
-         */
-        Vector2<int> resolution();
-        /**
-         * Get the refresh rate of the current display.
-         * @return - Refresh-rate, in hertz (Hz)
-         */
-        int refresh_rate();
-    }
-    /**
-     * Convert a normalised-screen-space position into a pixel-screen-space position.
-     * @param normalised_screen_space - The position between {0, 0} and {1.0f, 1.0f}
-     * @param resolution - Resolution through which to convert
-     * @return - The transformed position in pixel-screen-space
-     */
-    Vector2<int> to_pixel_screen_space(const Vector2F& normalised_screen_space, const Vector2<int>& resolution = display::resolution());
-    /**
-     * Convert a pixel-screen-space position into a normalised-screen-space position.
-     * @param pixel_screen_space - The pixel position, such as {800, 600}
-     * @param resolution - Resolution through which to convert
-     * @return - The transformed position in normalised-screen-space (between {0, 0} and {1.0f, 1.0f})
-     */
-    Vector2F to_normalised_screen_space(const Vector2<int>& pixel_screen_space, const Vector2<int>& resolution = display::resolution());
-    /**
-     * Clamp a pixel-screen-space position, to ensure that it is valid. See the following example:
-     *      Example Resolution = 800x600
-     *      Input = {900, 1024} (isn't on the screen)
-     *      Output = {800, 600} (clamps to maximum)
-     * @param pixel_screen_space
-     * @param resolution
-     * @return
-     */
-    Vector2<int> clamp_pixel_screen_space(const Vector2<int>& pixel_screen_space, const Vector2<int>& resolution = display::resolution());
-}
+#include "window.inl"
 
 #endif //TOPAZ_WINDOW_HPP

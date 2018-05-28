@@ -63,6 +63,20 @@ void init()
 
 	engine.emplace_trivial_tick_command([&](){if(key_listener.catch_key_pressed("H"))tz::util::log::message("harrapelord!");});
 
+    GUI test_gui({10, 10}, {100, 100});
+    const GUI& test_child = *test_gui.emplace_child<GUI>(Vector2<int>{0, 0}, Vector2<int>{50, 50}, &test_gui, std::initializer_list<GUI*>{});
+
+    GUI test_copy = test_gui;
+    std::cout << "test gui position: " << test_gui.get_x() << ", " << test_gui.get_y() << "\n";
+    std::cout << "test gui address = " << &test_gui << ", number of children = " << test_gui.get_children().size() << "\n";
+    std::cout << "test copy address = " << &test_copy << ", number of children = " << test_copy.get_children().size() << "\n";
+    std::cout << "test child parent address = " << test_child.get_parent() << "\n";
+    std::cout << "test child position: " << test_child.get_x() << ", " << test_child.get_y() << "\n";
+    std::cout << "test child dimensions: " << test_child.get_width() << ", " << test_child.get_height() << "\n";
+    std::cout << "screen width = " << tz::util::gui::display::resolution().x << ", height = " << tz::util::gui::display::resolution().y << "\n";
+    std::cout << "test child screen width%: " << test_child.get_normalised_screen_width() << "\n";
+    std::cout << "test child screen height%: " << test_child.get_normalised_screen_height() << "\n";
+
 	while(!engine.get_window().is_close_requested())
 	{
 		float multiplier = tz::util::cast::from_string<float>(MDLFile(meta.get_properties().get_tag("resources")).get_tag("speed"));
