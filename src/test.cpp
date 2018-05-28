@@ -22,7 +22,7 @@ int main()
 void init()
 {
 	Window wnd("Topaz Development Window", 0, 0, 800, 600);
-    wnd.centre_position({false, true});
+    wnd.centre_position();
 	Engine engine(&wnd, "../../../res/runtime/properties.mdl");
     const EngineMeta& meta = engine.get_meta();
 
@@ -69,11 +69,7 @@ void init()
 		float velocity = multiplier;// * test_slider.position;
 
 		if(updater.millis_passed(1000))
-		{	
-			//text.set_text("FPS: " + tz::util::cast::to_string(engine.get_fps()));
-			//pos_text.set_x(text.get_width() * 4);
-			//Vector3<int> pos_int(engine.camera.position.x, engine.camera.position.y, engine.camera.position.z);
-			//pos_text.set_text(tz::util::string::format(tz::util::string::devectorise_list_3(Vector3F(pos_int.x, pos_int.y, pos_int.z))));
+		{
 			updater.reload();
 			seconds++;
 		}

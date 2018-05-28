@@ -10,7 +10,10 @@ namespace tz::graphics
 		tz::util::log::message("OpenGL context detected, initialising tz::graphics...");
 		GLenum status = glewInit();
 		if(status != GLEW_OK)
+		{
 			tz::util::log::error("Initialisation of GLEW failed.\n\tInitialisation of tz::graphics unsuccessful!");
+            SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Topaz Error", (std::string("Topaz graphics module (tz::graphics) failed to initialise.\nError message:\n ") + std::string(SDL_GetError())).c_str(), NULL);
+        }
 		else
 			tz::util::log::message("Initialisation of GLEW successful.\n\tInitialised tz::graphics via GLEW (OpenGL).");
 		if(TTF_Init() == 0)

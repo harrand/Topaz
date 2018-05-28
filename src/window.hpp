@@ -35,6 +35,7 @@ namespace tz
          *     < 1 >
          */
         enum class ScreenSpace : unsigned int {PIXELS, NORMALISED};
+        enum class MessageBoxType : Uint32{ERROR = SDL_MESSAGEBOX_ERROR, WARNING = SDL_MESSAGEBOX_WARNING, INFO = SDL_MESSAGEBOX_INFORMATION};
     }
 }
 
@@ -43,6 +44,7 @@ class Listener;
 class Window
 {
 public:
+    friend class MessageBox;
     /**
      * Constructs a Window from all parameters.
      * @param title - Title of the Window bar
@@ -142,6 +144,11 @@ public:
      */
     void set_swap_interval_type(SwapIntervalType type) const;
     /**
+     * Get the title of this Window.
+     * @return - Title of the Window
+     */
+    std::string get_title() const;
+    /**
 	 * Change the string shown on the Window title.
 	 * @param new_title - The new title of the Window.
 	 */
@@ -170,6 +177,30 @@ public:
      * @param type - FullscreenType the Window should be in.
      */
     void set_fullscreen(FullscreenType type) const;
+    /**
+     * Query whether the window is currently minimised.
+     * @return - True if Window is minimised. Otherwise false
+     */
+    bool is_minimised() const;
+    /**
+     * Set whether the window is minimised or not.
+     * @param minimised - Whether the Window should be minimised or not
+     */
+    void set_minimised(bool minimised);
+    /**
+     * Query whether the Window has a border or not.
+     * @return - True if the Window has a border. False otherwise
+     */
+    bool has_border() const;
+    /**
+     * Set whether the Window has a border or not.
+     * @param has_border - Whether the Window should have a border
+     */
+    void set_has_border(bool has_border);
+    bool focused() const;
+    void focus() const;
+    bool mouse_inside() const;
+    bool mouse_trapped() const;
     /**
      * Ensure that all OpenGL render calls in the future render to this Window's framebuffer.
      */
@@ -202,6 +233,17 @@ private:
     SDL_Window* sdl_window;
     SDL_GLContext sdl_gl_context;
     bool close_requested;
+};
+
+class MessageBox
+{
+public:
+    MessageBox(tz::gui::MessageBoxType type, std::string title, std::string message, Window* parent);
+    bool display() const;
+private:
+    tz::gui::MessageBoxType type;
+    std::string title, message;
+    Window* parent;
 };
 
 /**

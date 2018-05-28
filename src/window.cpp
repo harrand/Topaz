@@ -159,6 +159,11 @@ void Window::set_swap_interval_type(Window::SwapIntervalType type) const
     SDL_GL_SetSwapInterval(static_cast<int>(type));
 }
 
+std::string Window::get_title() const
+{
+    return this->title;
+}
+
 void Window::set_title(const std::string& new_title)
 {
     this->title = new_title;
@@ -193,6 +198,49 @@ void Window::set_fullscreen(Window::FullscreenType type) const
     SDL_SetWindowFullscreen(this->sdl_window, static_cast<Uint32>(type));
 }
 
+bool Window::is_minimised() const
+{
+    return static_cast<bool>(SDL_GetWindowFlags(this->sdl_window) & SDL_WINDOW_MINIMIZED);
+}
+
+void Window::set_minimised(bool minimised)
+{
+    if(minimised)
+        SDL_MinimizeWindow(this->sdl_window);
+    else
+        SDL_MaximizeWindow(this->sdl_window);
+}
+
+bool Window::has_border() const
+{
+    return !static_cast<bool>(SDL_GetWindowFlags(this->sdl_window) & SDL_WINDOW_BORDERLESS);
+}
+
+void Window::set_has_border(bool has_border)
+{
+    SDL_SetWindowBordered(this->sdl_window, has_border ? SDL_TRUE : SDL_FALSE);
+}
+
+bool Window::focused() const
+{
+    return static_cast<bool>(SDL_GetWindowFlags(this->sdl_window) & SDL_WINDOW_INPUT_FOCUS);
+}
+
+void Window::focus() const
+{
+    SDL_RaiseWindow(this->sdl_window);
+}
+
+bool Window::mouse_inside() const
+{
+    return static_cast<bool>(SDL_GetWindowFlags(this->sdl_window) & SDL_WINDOW_MOUSE_FOCUS);
+}
+
+bool Window::mouse_trapped() const
+{
+    return static_cast<bool>(SDL_GetWindowFlags(this->sdl_window) & SDL_WINDOW_INPUT_GRABBED);
+}
+
 void Window::set_render_target() const
 {
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
@@ -216,6 +264,13 @@ void Window::deregister_listener(Listener& l)
     if(this->registered_listeners.find(l.get_id()) == this->registered_listeners.end())
         return;
     this->registered_listeners.erase(l.get_id());
+}
+
+MessageBox::MessageBox(tz::gui::MessageBoxType type, std::string title, std::string message, Window* parent): type(type), title(title), message(message), parent(parent){}
+
+bool MessageBox::display() const
+{
+    return SDL_ShowSimpleMessageBox(static_cast<Uint32>(this->type), this->title.c_str(), this->message.c_str(), this->parent != nullptr ? this->parent->sdl_window : nullptr) == 0;
 }
 
 namespace tz::util::gui
