@@ -73,6 +73,13 @@ public:
     template<class GUIType, typename... Args>
     GUIType* emplace_child(Args&&... args);
     bool add_child(GUI* gui);
+    GUI* get_root() const;
+    std::unordered_set<GUI*> get_descendants() const;
+    std::unordered_set<GUI*> get_youngest_descendants() const;
+    template<template<typename> class Container>
+    std::unordered_set<GUI*> get_occluders(const Container<GUI*>& gui_elements);
+    template<template<typename> class Container>
+    bool is_occluded_by(const Container<GUI*>& gui_elements);
 protected:
     /**
      * Get the local-position (relative to the parent, or screen if there isn't one) of the top-left of the GUI, depending on what screen-space is specified.

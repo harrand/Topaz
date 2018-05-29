@@ -35,6 +35,12 @@ public:
 	 */
 	~Font();
 	/**
+	 * Copy-and-swap idiom copy-assignment.
+	 * @param rhs - Font whose data should be copied
+	 * @return - The resultant font
+	 */
+	Font& operator=(Font rhs);
+	/**
 	 * Trivial move-assignment.
 	 * @param rhs - Font whose data members should be taken.
 	 * @return - The resultant font.
@@ -144,6 +150,8 @@ namespace tz
 		* Only use this function if you do not wish to use tz::terminate to terminate all features, but instead cherry-pick components like graphics.
 		*/
 		inline void terminate();
+		inline void scene_render_mode();
+		inline void gui_render_mode();
 		/**
 		* Currently used only for Wavefront OBJ Models. To load an OBJ model in Topaz, invoke OBJModel::toIndexedModel to receive an instance of IndexedModel.
 		* A Topaz Mesh constructor can take an IndexedModel as a parameter.

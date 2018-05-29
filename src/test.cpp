@@ -38,8 +38,7 @@ void init()
 	Shader skybox_shader("../../../src/shaders/skybox");
 	
 	Timer updater;
-	bool noclip = false;
-	
+
 	Skybox skybox("../../../res/runtime/models/skybox.obj", skybox_texture);
 	engine.emplace_trivial_update_command([&](){skybox.render(engine.camera, skybox_shader, engine.get_meshes(), wnd.get_width(), wnd.get_height());});
 	
@@ -50,20 +49,20 @@ void init()
 	Shader shader_2d("../../../src/shaders/2D");
     Shader shadow_shader("../../../src/shaders/depth");
 	
-	Sprite test_plane(Vector2F(0.0f, 50.0f), 0.0f, Vector2F(10, 10), engine.scene.get_objects().front().get().get_material().get_texture());
 	Sprite another_test_plane(Vector2F(0.0f, 50.0f), 0.0f, Vector2F(10, 10), tz::graphics::texture::default_texture.get());
 	engine.emplace_trivial_update_command([&]() {
-        test_plane.render(engine.camera, &(shader_2d), wnd.get_width(), wnd.get_height());
         another_test_plane.render(engine.camera, &(shader_2d), wnd.get_width(), wnd.get_height());
     });
 
+    /*
 	FrameBuffer plane_texture_buffer(512, 512);
 	Texture& plane_texture = plane_texture_buffer.emplace_texture(GL_DEPTH_ATTACHMENT, 512, 512, tz::graphics::TextureComponent::DEPTH_TEXTURE);
 	//plane_texture_buffer.emplace_renderbuffer(GL_COLOR_ATTACHMENT0, 512, 512, GL_RGBA);
 	plane_texture_buffer.set_output_attachment(GL_NONE);
+     */
 
-    Panel& another_panel = *wnd.emplace_child<Panel>(Vector2<int>{100, 0}, Vector2<int>{100, 100}, Vector4F{1, 0, 1, 1}, nullptr, std::initializer_list<GUI*>{});
-    Panel& test_panel = *wnd.emplace_child<Panel>(Vector2<int>{0, 100}, Vector2<int>{100, 100}, Vector4F{0, 1, 0, 1}, nullptr, std::initializer_list<GUI*>{});
+    Font font("../../../res/runtime/fonts/CaviarDreams.ttf", 32);
+    Label& fps_label = *wnd.emplace_child<Label>(Vector2<int>{0, 0}, font, Vector3F{0.2f, 0.0f, 0.0f}, "FPS: ?");
 
 	while(!engine.get_window().is_close_requested())
 	{
@@ -73,9 +72,11 @@ void init()
 		if(updater.millis_passed(1000))
 		{
 			updater.reload();
+            fps_label.set_text("FPS: " + std::to_string(engine.get_fps()));
 			seconds++;
 		}
 
+        /*
 		plane_texture_buffer.clear(GL_DEPTH_BUFFER_BIT, 0.0f, 0.0f, 0.0f, 0.0f);
 		plane_texture_buffer.set_render_target();
 		Camera behind = engine.camera;
@@ -84,6 +85,7 @@ void init()
 		engine.scene.render(behind, &(shadow_shader), wnd.get_width(), wnd.get_height());
         // placement-new re-alloc instead of re-assigning
 		new (&test_plane) Sprite(Vector2F(0.0f, 300.0f), tz::consts::pi, Vector2F(100, 100 / wnd.get_width() * wnd.get_height()), &plane_texture);
+         */
 		
 		if(engine.is_update_due())
 		{

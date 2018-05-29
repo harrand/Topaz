@@ -108,10 +108,6 @@ void Scene::save() const
 
 void Scene::render(const Camera& cam, Shader* shader, unsigned int width, unsigned int height)
 {
-	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_DEPTH_CLAMP);
-	glEnable(GL_CULL_FACE);
-	glCullFace(GL_BACK);
 	Frustum view_frustum(cam, static_cast<float>(width) / height);
 	for(const auto& object : this->get_objects())
 	{

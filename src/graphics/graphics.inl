@@ -31,4 +31,21 @@ namespace tz::graphics
 		tz::util::log::message("Terminated SDL2_ttf");
 		tz::util::log::message("Terminated tz::graphics via GLEW (OpenGL).");
 	}
+
+	inline void scene_render_mode()
+	{
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glEnable(GL_DEPTH_TEST);
+		glEnable(GL_DEPTH_CLAMP);
+		glEnable(GL_CULL_FACE);
+		glCullFace(GL_BACK);
+	}
+
+	inline void gui_render_mode()
+	{
+		glDisable(GL_DEPTH_TEST);
+		glDisable(GL_DEPTH_CLAMP);
+		glDisable(GL_CULL_FACE);
+	}
 }

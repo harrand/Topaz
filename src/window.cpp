@@ -49,9 +49,7 @@ Window::~Window()
 
 void Window::update(Shader& gui_shader)
 {
-    glDisable(GL_DEPTH_TEST);
-    glDisable(GL_DEPTH_CLAMP);
-    glDisable(GL_CULL_FACE);
+    tz::graphics::gui_render_mode();
     for(const GUI* child : this->get_children())
         child->render(gui_shader, this->get_width(), this->get_height());
     SDL_GL_SwapWindow(this->sdl_window);
@@ -74,6 +72,7 @@ void Window::update(Shader& gui_shader)
             }
         }
     }
+    tz::graphics::scene_render_mode();
 }
 
 std::variant<Vector2<int>, Vector2F> Window::get_position(tz::gui::ScreenSpace screen_space) const

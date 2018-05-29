@@ -1,10 +1,11 @@
 #include "gui.hpp"
+#include <stack>
 
 GUI::GUI(Vector2<int> position_local_pixel_space, Vector2<int> dimensions_local_pixel_space, GUI* parent, std::initializer_list<GUI*> children): position_local_pixel_space(position_local_pixel_space), dimensions_local_pixel_space(dimensions_local_pixel_space), parent(parent), children(children), mesh(tz::util::gui::gui_quad()){}
 
 void GUI::render(Shader& shader, int window_width_pixels, int window_height_pixels) const
 {
-    for(const GUI* child : this->children)
+    for(const GUI* child : this->get_children())
         child->render(shader, window_width_pixels, window_height_pixels);
 }
 
@@ -115,6 +116,51 @@ Vector2F GUI::get_screen_position_normalised_space() const
     return std::get<Vector2F>(this->get_screen_position(tz::gui::ScreenSpace::NORMALISED));
 }
 
+GUI* GUI::get_root() const
+{
+    GUI* root = this->get_parent();
+    while(root != nullptr && root->get_parent() != nullptr)
+        root = root->get_parent();
+    return root;
+}
+
+std::unordered_set<GUI*> GUI::get_descendants() const
+{
+    std::stack<const GUI*> guis;
+    std::unordered_set<GUI*> descendants;
+    const GUI* top;
+    const GUI* end;
+    // std::prev is O(n) on bidirectional iterators (which set::end() is). so this clause is O(n) where n = total number of children
+    GUI* final_child = *std::prev(this->get_children().end(), 1);
+    while(!final_child->get_children().empty())
+        final_child = *std::prev(final_child->get_children().end(), 1);
+    end = final_child;
+    guis.push(this);
+    while(!guis.empty())
+    {
+        top = guis.top();
+        guis.pop();
+        for(GUI* child : top->get_children())
+        {
+            guis.push(child); // O(1)
+            descendants.insert(child); // O(log n)
+            if(child == end)
+                break;
+        }
+        // so this clause is O(n log n)
+    }
+    return descendants;
+}
+
+std::unordered_set<GUI*> GUI::get_youngest_descendants() const
+{
+    std::unordered_set<GUI*> youngs;
+    for(GUI* descendant : this->get_descendants())
+        if(descendant->get_children().empty()) // add to youngs if the descendant has no children
+            youngs.insert(descendant);
+    return youngs;
+}
+
 namespace tz::util::gui
 {
     namespace display
@@ -177,6 +223,5 @@ namespace tz::util::gui
          * width = height = 0.5f
          */
         return tz::graphics::create_quad(0.5f, 0.5f, 0.5f, 0.5f);
-        //return tz::graphics::create_quad();
     }
 }

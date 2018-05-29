@@ -16,6 +16,13 @@ Font::~Font()
 	this->font_handle = nullptr;
 }
 
+Font& Font::operator=(Font rhs)
+{
+	std::swap(this->font_path, rhs.font_path);
+	std::swap(this->pixel_height, rhs.pixel_height);
+	std::swap(this->font_handle, rhs.font_handle);
+}
+
 Font& Font::operator=(Font&& rhs)
 {
 	this->font_path = rhs.font_path;
