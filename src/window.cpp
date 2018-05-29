@@ -1,7 +1,9 @@
 #include "window.hpp"
+#include "graphics/texture.hpp"
 
 bool tz::graphics::initialised = false;
 bool tz::graphics::has_context = false;
+
 std::shared_ptr<Texture> tz::graphics::texture::default_texture = nullptr;
 std::shared_ptr<NormalMap> tz::graphics::texture::default_normal_map = nullptr;
 std::shared_ptr<ParallaxMap> tz::graphics::texture::default_parallax_map = nullptr;

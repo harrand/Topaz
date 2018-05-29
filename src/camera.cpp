@@ -73,6 +73,11 @@ void Camera::set_has_perspective_projection(bool perspective)
 	this->perspective = perspective;
 }
 
+Matrix4x4 Camera::view() const
+{
+	return tz::transform::view(this->position, this->rotation);
+}
+
 Matrix4x4 Camera::projection(float width, float height) const
 {
 	if(this->perspective)

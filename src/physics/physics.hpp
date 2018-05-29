@@ -1,7 +1,7 @@
 #ifndef PHYSICS_HPP
 #define PHYSICS_HPP
 #include "boundary.hpp"
-#include "../graphics/object.hpp"
+#include "../scene_object.hpp"
 
 /**
 * Represent a physical force in three-dimensions.
@@ -81,6 +81,6 @@ namespace tz::physics
 	 * Given multiple Objects, creates a single well-fitted axis-aligned-bounding-box as tightly as possible around all the objects.
 	 * Perfect to be used on the result of a tz::graphics::batch(...) call to bound the entirety of the batch.
 	 */
-	AABB bound_aabb_batch(const std::vector<Object>& objects);
+	//AABB bound_aabb_batch(const std::vector<SceneObject>& objects);
 }
 #endif

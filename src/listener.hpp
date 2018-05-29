@@ -4,7 +4,6 @@
 #include "window.hpp"
 #include "command.hpp"
 #include "camera.hpp"
-#include "graphics/scene.hpp"
 
 class Window;
 /**

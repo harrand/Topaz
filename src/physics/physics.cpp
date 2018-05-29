@@ -118,6 +118,7 @@ AABB tz::physics::bound_aabb(const Mesh& mesh)
 	 */
 }
 
+/*
 AABB tz::physics::bound_aabb_batch(const std::vector<Object>& objects)
 {
 	std::vector<AABB> bounds;
@@ -132,3 +133,4 @@ AABB tz::physics::bound_aabb_batch(const std::vector<Object>& objects)
 	}
 	return {min, max};
 }
+ */

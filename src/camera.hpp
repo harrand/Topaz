@@ -79,6 +79,7 @@ public:
 	 * @param perspective - State representing whether the Camera should use a perspective projection or not
 	 */
 	void set_has_perspective_projection(bool perspective);
+	Matrix4x4 view() const;
 	/**
 	 * Create the Camera's projection matrix, given an aspect ratio which is (width / height).
 	 * @param width - Width of the viewport.

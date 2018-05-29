@@ -98,5 +98,6 @@ void main()
 	fragment_colour = diffuse_directional(sun, position_worldspace, light_direction_worldspace, normal, texture_colour) + specular_directional(sun, eye_direction_worldspace, light_direction_worldspace, normal, texture_colour);
 	//fragment_colour += specular(test_light, position_worldspace, eye_direction_cameraspace, normal, texture_colour);
 	fragment_colour.w = 1.0f;
+	fragment_colour = texture_colour;
 	//gl_FragDepth = gl_FragCoord.z;
 }

@@ -14,21 +14,11 @@ add_library(topaz SHARED
         src/graphics/graphics.cpp
         src/graphics/graphics.hpp
         src/graphics/graphics.inl
-        src/graphics/material.cpp
-        src/graphics/material.hpp
         src/graphics/mesh.cpp
         src/graphics/mesh.hpp
-        src/graphics/object.cpp
-        src/graphics/object.hpp
-        src/graphics/object.inl
-        src/graphics/scene.cpp
-        src/graphics/scene.hpp
-        src/graphics/scene.inl
         src/graphics/shader.cpp
         src/graphics/shader.hpp
         src/graphics/shader.inl
-        src/graphics/sprite.cpp
-        src/graphics/sprite.hpp
         src/graphics/texture.cpp
         src/graphics/texture.hpp
         src/graphics/texture.inl
@@ -45,11 +35,6 @@ add_library(topaz SHARED
         src/command.inl
         src/data.cpp
         src/data.hpp
-        src/engine.cpp
-        src/engine.hpp
-        src/engine.inl
-        src/engine_meta.cpp
-        src/engine_meta.hpp
         src/gui.cpp
         src/gui.hpp
         src/gui.inl
@@ -68,5 +53,5 @@ add_library(topaz SHARED
         src/vector.inl
         src/window.cpp
         src/window.hpp
-        src/window.inl src/gui_display.cpp src/gui_display.hpp)
+        src/window.inl src/gui_display.cpp src/gui_display.hpp src/scene.cpp src/scene.hpp src/scene_object.cpp src/scene_object.hpp src/transform.cpp src/transform.hpp)
 target_link_libraries(topaz OpenGL32 SDL2 SDL2_mixer SDL2_ttf SDL2main mdl)
