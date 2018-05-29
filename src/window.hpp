@@ -216,8 +216,7 @@ private:
     SDL_Window* sdl_window;
     SDL_GLContext sdl_gl_context;
     bool close_requested;
-    std::unordered_set<GUI*> children;
-    std::unordered_set<std::shared_ptr<GUI>> heap_children;
+    GUI window_gui_element;
 };
 
 class MessageBox

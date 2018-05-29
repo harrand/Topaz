@@ -1,6 +1,6 @@
 #include "gui_display.hpp"
 
-Panel::Panel(Vector2<int> position_local_pixel_space, Vector2<int> dimensions_local_pixel_space, std::variant<Vector4F, Texture*> background, GUI* parent, std::initializer_list<GUI*> children): GUI(position_local_pixel_space, dimensions_local_pixel_space, parent, children), background(background){}
+Panel::Panel(Vector2<int> position_local_pixel_space, Vector2<int> dimensions_local_pixel_space, std::variant<Vector4F, Texture*> background, GUI* parent, std::initializer_list<GUI*> children): GUI(position_local_pixel_space, dimensions_local_pixel_space, parent, children), background(background), mesh(tz::util::gui::gui_quad()){}
 
 void Panel::render(Shader& shader, int window_width_pixels, int window_height_pixels) const
 {
@@ -58,7 +58,7 @@ Texture* Panel::get_texture() const
         return nullptr;
 }
 
-Label::Label(Vector2<int> position_local_pixel_space, Font font, Vector3F text_colour, std::string text, GUI* parent, std::initializer_list<GUI*> children): GUI(position_local_pixel_space, {}, parent, children), font(font), text(text), text_colour(text_colour)
+Label::Label(Vector2<int> position_local_pixel_space, Font font, Vector3F text_colour, std::string text, GUI* parent, std::initializer_list<GUI*> children): GUI(position_local_pixel_space, {}, parent, children), font(font), text(text), text_colour(text_colour), mesh(tz::util::gui::gui_quad())
 {
     this->set_text(this->text);
 }

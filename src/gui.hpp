@@ -47,6 +47,10 @@ public:
      * @return - Y-coordinate of the GUI on the screen
      */
     int get_y() const;
+    void set_x(int x);
+    void set_y(int y);
+    void set_local_position_pixel_space(Vector2<int> position_local_pixel_space);
+    void set_local_position_normalised_space(Vector2F position_local_normalised_space);
     /**
      * Get the width of this GUI, in pixels.
      * @return - Width of GUI in pixels.
@@ -97,7 +101,6 @@ protected:
     GUI* parent;
     std::unordered_set<GUI*> children;
     std::unordered_set<std::shared_ptr<GUI>> heap_children;
-    Mesh mesh;
 };
 
 /**

@@ -9,7 +9,7 @@ std::shared_ptr<DisplacementMap> tz::graphics::texture::default_displacement_map
 
 Window::Window(std::string title, int x_pixels, int y_pixels, int width_pixels, int height_pixels): Window(title, {x_pixels, y_pixels}, {width_pixels, height_pixels}){}
 
-Window::Window(std::string title, const Vector2<int>& position_pixel_space, const Vector2<int>& dimensions_pixel_space): registered_listeners{}, title(title), position_pixel_space(tz::util::gui::clamp_pixel_screen_space(position_pixel_space)), dimensions_pixel_space(tz::util::gui::clamp_pixel_screen_space(dimensions_pixel_space)), sdl_window(nullptr), close_requested(false), children({})
+Window::Window(std::string title, const Vector2<int>& position_pixel_space, const Vector2<int>& dimensions_pixel_space): registered_listeners{}, title(title), position_pixel_space(tz::util::gui::clamp_pixel_screen_space(position_pixel_space)), dimensions_pixel_space(tz::util::gui::clamp_pixel_screen_space(dimensions_pixel_space)), sdl_window(nullptr), close_requested(false), window_gui_element({0, 0}, {this->get_width(), this->get_height()}, nullptr, {})
 {
     SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
     SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
@@ -32,6 +32,7 @@ Window::Window(std::string title, const Vector2<int>& position_pixel_space, cons
     tz::graphics::texture::default_normal_map = std::make_shared<NormalMap>();
     tz::graphics::texture::default_parallax_map = std::make_shared<ParallaxMap>();
     tz::graphics::texture::default_displacement_map = std::make_shared<DisplacementMap>();
+    //this->add_child(&this->window_gui_element);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_DEPTH_CLAMP);
     glEnable(GL_CULL_FACE);
@@ -50,6 +51,7 @@ Window::~Window()
 void Window::update(Shader& gui_shader)
 {
     tz::graphics::gui_render_mode();
+    this->window_gui_element.dimensions_local_pixel_space = this->dimensions_pixel_space;
     for(const GUI* child : this->get_children())
         child->render(gui_shader, this->get_width(), this->get_height());
     SDL_GL_SwapWindow(this->sdl_window);
@@ -266,8 +268,8 @@ void Window::deregister_listener(Listener& l)
 
 std::unordered_set<GUI*> Window::get_children() const
 {
-    std::unordered_set<GUI*> set = this->children;
-    for(const auto& heap_child : this->heap_children)
+    std::unordered_set<GUI*> set = this->window_gui_element.children;
+    for(const auto& heap_child : this->window_gui_element.heap_children)
         set.insert(heap_child.get());
     return set;
 }
@@ -276,7 +278,12 @@ bool Window::add_child(GUI* gui)
 {
     if(gui == nullptr)
         return false;
-    return this->children.insert(gui).second;
+    auto pair = this->window_gui_element.children.insert(gui);
+    if(gui != &this->window_gui_element)
+        gui->parent = &this->window_gui_element;
+    else
+        gui->parent = nullptr;
+    return pair.second;
 }
 
 MessageBox::MessageBox(tz::gui::MessageBoxType type, std::string title, std::string message, Window* parent): type(type), title(title), message(message), parent(parent){}

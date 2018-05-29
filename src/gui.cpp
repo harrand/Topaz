@@ -1,7 +1,7 @@
 #include "gui.hpp"
 #include <stack>
 
-GUI::GUI(Vector2<int> position_local_pixel_space, Vector2<int> dimensions_local_pixel_space, GUI* parent, std::initializer_list<GUI*> children): position_local_pixel_space(position_local_pixel_space), dimensions_local_pixel_space(dimensions_local_pixel_space), parent(parent), children(children), mesh(tz::util::gui::gui_quad()){}
+GUI::GUI(Vector2<int> position_local_pixel_space, Vector2<int> dimensions_local_pixel_space, GUI* parent, std::initializer_list<GUI*> children): position_local_pixel_space(position_local_pixel_space), dimensions_local_pixel_space(dimensions_local_pixel_space), parent(parent), children(children){}
 
 void GUI::render(Shader& shader, int window_width_pixels, int window_height_pixels) const
 {
@@ -17,6 +17,33 @@ int GUI::get_x() const
 int GUI::get_y() const
 {
     return this->get_screen_position_pixel_space().y;
+}
+
+void GUI::set_x(int x)
+{
+    if(this->parent == nullptr)
+        this->position_local_pixel_space.x = x;
+    else
+        this->position_local_pixel_space.x = x - this->parent->get_x();
+}
+
+void GUI::set_y(int y)
+{
+    if(this->parent == nullptr)
+        this->position_local_pixel_space.y = y;
+    else
+        this->position_local_pixel_space.y = y - this->parent->get_y();
+}
+
+void GUI::set_local_position_pixel_space(Vector2<int> position_local_pixel_space)
+{
+    this->position_local_pixel_space = position_local_pixel_space;
+}
+
+void GUI::set_local_position_normalised_space(Vector2F position_local_normalised_space)
+{
+    Vector2<int> resolution = this->parent != nullptr ? this->parent->dimensions_local_pixel_space : tz::util::gui::display::resolution();
+    this->position_local_pixel_space = tz::util::gui::to_pixel_screen_space(position_local_normalised_space, resolution);
 }
 
 int GUI::get_width() const

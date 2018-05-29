@@ -16,6 +16,7 @@ public:
     Texture* get_texture() const;
 private:
     std::variant<Vector4F, Texture*> background;
+    Mesh mesh;
 };
 
 class Label : public GUI
@@ -32,6 +33,7 @@ private:
     std::string text;
     Vector3F text_colour;
     std::unique_ptr<Texture> text_render_texture;
+    Mesh mesh;
 };
 
 #endif //TOPAZ_GUI_DISPLAY_HPP
