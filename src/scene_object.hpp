@@ -2,7 +2,7 @@
 #define TOPAZ_SCENE_OBJECT_HPP
 
 #include <graphics/mesh.hpp>
-#include "data.hpp"
+#include "asset.hpp"
 #include "camera.hpp"
 #include "transform.hpp"
 

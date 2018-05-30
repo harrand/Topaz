@@ -86,18 +86,6 @@ void main()
 	sun.power = 0.8;
 	sun.diffuse_component = 1.0;
 	sun.specular_component = 0.5;
-	/*
-	Light test_light;
-	test_light.pos = vec3(0, 80, 50);
-	test_light.colour = vec3(1, 0, 0);
-	test_light.power = 5000;
-	test_light.diffuse_component = 1.0;
-	test_light.specular_component = 1.0;
-	*/
-	//fragment_colour = ambience(sun, texture_colour);
 	fragment_colour = diffuse_directional(sun, position_worldspace, light_direction_worldspace, normal, texture_colour) + specular_directional(sun, eye_direction_worldspace, light_direction_worldspace, normal, texture_colour);
-	//fragment_colour += specular(test_light, position_worldspace, eye_direction_cameraspace, normal, texture_colour);
 	fragment_colour.w = 1.0f;
-	fragment_colour = texture_colour;
-	//gl_FragDepth = gl_FragCoord.z;
 }
