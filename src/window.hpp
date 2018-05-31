@@ -205,7 +205,7 @@ public:
     void deregister_listener(Listener& l);
     std::unordered_set<GUI*> get_children() const;
     template<class GUIType, typename... Args>
-    GUIType* emplace_child(Args&&... args);
+    GUIType& emplace_child(Args&&... args);
     bool add_child(GUI* gui);
 
 private:

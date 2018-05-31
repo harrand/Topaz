@@ -31,9 +31,6 @@ add_library(topaz SHARED
 
         src/camera.cpp
         src/camera.hpp
-        src/command.cpp
-        src/command.hpp
-        src/command.inl
         src/asset.cpp
         src/asset.hpp
         src/gui.cpp
@@ -53,6 +50,7 @@ add_library(topaz SHARED
         src/scene_object.hpp
         src/time.cpp
         src/time.hpp
+        src/topaz.hpp
         src/transform.cpp
         src/transform.hpp
         src/utility.hpp
@@ -61,5 +59,5 @@ add_library(topaz SHARED
         src/vector.inl
         src/window.cpp
         src/window.hpp
-        src/window.inl src/topaz.hpp)
+        src/window.inl src/graphics/skybox.cpp src/graphics/skybox.hpp)
 target_link_libraries(topaz OpenGL32 SDL2 SDL2_mixer SDL2_ttf SDL2main mdl)

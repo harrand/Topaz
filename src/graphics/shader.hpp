@@ -15,7 +15,7 @@ namespace tz
 	namespace graphics
 	{
 		constexpr std::size_t texture_sampler_id = 0;
-		constexpr std::size_t texture_cubemap_sampler_id = 1;
+		constexpr std::size_t texture_cubemap_sampler_id = 0;
 		constexpr std::size_t normal_map_sampler_id = 1;
 		constexpr std::size_t parallax_map_sampler_id = 2;
 		constexpr std::size_t displacement_map_sampler_id = 3;

@@ -3,6 +3,7 @@
 #include "asset.hpp"
 #include "gui_display.hpp"
 #include "scene.hpp"
+#include "graphics/skybox.hpp"
 #include "topaz.hpp"
 
 void init();
@@ -18,9 +19,9 @@ int main()
 void init()
 {
 	Window wnd("Topaz Development Window", 0, 30, 800, 600);
-    Font font("../../../res/runtime/fonts/CaviarDreams.ttf", 32);
-    Label& label = *wnd.emplace_child<Label>(Vector2<int>{0, 0}, font, Vector3F{0.0f, 0.3f, 0.0f}, "hello, world.");
-    label.set_local_position_normalised_space({0.5f, 0.5f});
+    Font font("../../../res/runtime/fonts/CaviarDreams.ttf", 36);
+    Label& label = wnd.emplace_child<Label>(Vector2<int>{0, 0}, font, Vector3F{0.0f, 0.3f, 0.0f}, "hello, world");
+    label.set_text(label.get_text() + ". BOBS");
 
     KeyListener key_listener(wnd);
     MouseListener mouse_listener(wnd);
@@ -28,16 +29,26 @@ void init()
 	Shader render_shader("../../../src/shaders/3D_FullAssets");
 	Shader gui_shader("../../../src/shaders/gui");
     Camera camera;
-
     Scene scene;
-    AssetBuffer assets({std::make_shared<Mesh>("../../../res/runtime/models/cube_hd.obj")}, {std::make_shared<Texture>("../../../res/runtime/textures/bricks.jpg")}, {std::make_shared<NormalMap>("../../../res/runtime/normalmaps/bricks_normalmap.jpg")}, {std::make_shared<ParallaxMap>("../../../res/runtime/parallaxmaps/bricks_parallax.jpg")}, {std::make_shared<DisplacementMap>("../../../res/runtime/displacementmaps/bricks_displacement.png")});
+
+    AssetBuffer assets({std::make_shared<Mesh>("../../../res/runtime/models/cube_hd.obj"), std::make_shared<Mesh>("../../../res/runtime/models/skybox.obj")}, {std::make_shared<Texture>("../../../res/runtime/textures/bricks.jpg")}, {std::make_shared<NormalMap>("../../../res/runtime/normalmaps/bricks_normalmap.jpg")}, {std::make_shared<ParallaxMap>("../../../res/runtime/parallaxmaps/bricks_parallax.jpg")}, {std::make_shared<DisplacementMap>("../../../res/runtime/displacementmaps/bricks_displacement.png")});
     Asset asset(assets.meshes.front(), assets.textures.front(), assets.normal_maps.front(), assets.parallax_maps.front(), assets.displacement_maps.front());
     SceneObject& test_object = scene.emplace_object(Transform{{0, 0, 0}, {}, {10, 10, 10}}, asset);
+
+    CubeMap skybox_texture("../../../res/runtime/textures/skybox/", "greenhaze", ".png");
+    Shader skybox_shader("../../../src/shaders/skybox");
+    Skybox skybox("../../../res/runtime/models/skybox.obj", skybox_texture);
+
 	while(!wnd.is_close_requested())
     {
         wnd.set_render_target();
         wnd.clear();
+
         scene.render(render_shader, camera, {wnd.get_width(), wnd.get_height()});
+
+        // assets.meshes[1] is the skybox mesh.
+        skybox.render(camera, skybox_shader, *assets.meshes[1].get(), wnd.get_width(), wnd.get_height());
+
         wnd.update(gui_shader);
         if(mouse_listener.is_left_clicked() /*&& gui_panel.is_hidden()*/)
         {

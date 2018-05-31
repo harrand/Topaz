@@ -2,8 +2,8 @@
 #define LISTENER_HPP
 
 #include "window.hpp"
-#include "command.hpp"
-#include "camera.hpp"
+#include "vector.hpp"
+#include <SDL2/SDL.h>
 
 class Window;
 /**

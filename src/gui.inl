@@ -1,17 +1,17 @@
 #include <utility>
 
 template<class GUIType, typename... Args>
-GUIType* GUI::emplace_child(Args&&... args)
+GUIType& GUI::emplace_child(Args&&... args)
 {
     // result_pair is <iterator, bool>
     auto result_pair = this->heap_children.emplace(std::make_shared<GUIType>(std::forward<Args>(args)...));
     if(!result_pair.second)
     {
-        std::cerr << "Attempt to emplace child into GUI element failed.\n";
-        return nullptr;
+        std::cerr << "GUI element already contained this child, returning that instead of inserting a duplicate.\n";
+        return *dynamic_cast<GUIType*>((*result_pair.first).get());
     }
     result_pair.first->get()->parent = this;
-    return dynamic_cast<GUIType*>((*result_pair.first).get());
+    return *dynamic_cast<GUIType*>((*result_pair.first).get());
 }
 
 template<template<typename> class Container>
