@@ -19,7 +19,7 @@ xcopy /s /I /Y "%cd%" %lnkdir%
 color 4
 echo Dependencies copied. Building final executable...
 cd %lnkdir%
-g++ -O3 -o topaz_test.exe test.o "%scriptdir%\res\exe\topaz_test.res" -static-libstdc++ -L. -L%libdir% -L%scriptdir%\cmake-build-debug -lOpenGL32 -lSDL2 -lSDL2_mixer -lSDL2_ttf -lSDL2main -lmdl -ltopaz.dll
+g++ -O3 -o topaz_test.exe test.o "%scriptdir%\res\exe\topaz_test.res" -static-libstdc++ -L. -L%libdir% -L%scriptdir%\cmake-build-debug -lOpenGL32 -lSDL2 -lSDL2_mixer -lSDL2_ttf -lSDL2main -ltopaz.dll
 move test.o "%cpldir%"
 color b
 echo Topaz building complete, opening link directory...

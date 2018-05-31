@@ -34,6 +34,16 @@ namespace tz::util
 			return ret;
 		}
 	}
+
+	namespace file
+	{
+		std::string read(const std::string& path)
+		{
+			std::stringstream string_stream;
+			string_stream << std::ifstream(path.c_str()).rdbuf();
+			return string_stream.str();
+		}
+	}
 	
 	namespace string
 	{
@@ -51,12 +61,15 @@ namespace tz::util
 	
 		inline bool begins_with(const std::string& what, const std::string& with_what)
 		{
-			return mdl::util::begins_with(what, with_what);
+			return what.compare(0, with_what.length(), with_what) == 0;
 		}
 		
 		inline bool ends_with(const std::string& what, const std::string& with_what)
 		{
-			return mdl::util::ends_with(what, with_what);
+			if(what.length() >= with_what.length())
+				return (0 == what.compare(what.length() - with_what.length(), with_what.length(), with_what));
+			else
+				return false;
 		}
 		
 		inline bool contains(const std::string& what, char withwhat)
@@ -64,9 +77,24 @@ namespace tz::util
 			return what.find(withwhat) != std::string::npos;
 		}
 		
-		inline std::vector<std::string> split_string(const std::string& s, const std::string& delim)
+		inline std::vector<std::string> split_string(const std::string& string, const std::string& delimiter)
 		{
-			return mdl::util::split_string(s, delim);
+			std::vector<std::string> v;
+			// Start of an element.
+			std::size_t element_start = 0;
+			// We start searching from the end of the previous element, which
+			// initially is the start of the string.
+			std::size_t element_end = 0;
+			// Find the first non-delim, i.e. the start of an element, after the end of the previous element.
+			while((element_start = string.find_first_not_of(delimiter, element_end)) != std::string::npos)
+			{
+				// Find the first delem, i.e. the end of the element (or if this fails it is the end of the string).
+				element_end = string.find_first_of(delimiter, element_start);
+				// Add it.
+				v.emplace_back(string, element_start, element_end == std::string::npos ? std::string::npos : element_end - element_start);
+			}
+			// When there are no more non-spaces, we are done.
+			return v;
 		}
 			
 		inline std::vector<std::string> split_string(const std::string& s, char delim)

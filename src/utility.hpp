@@ -12,7 +12,6 @@
 #include <utility>
 #include <functional>
 #include <thread>
-#include "MDL/mdl_file.hpp"
 #include "vector.hpp"
 #include "SDL2/SDL.h"
 
@@ -89,6 +88,14 @@ namespace tz
 			template <typename T>
 			inline T from_string(const std::string& s);
 		}
+
+		/** Perform simple file-io
+		 *
+		 */
+		namespace file
+		{
+			inline std::string read(const std::string& path);
+		}
 		
 		/**
 		* Perform processing on std::strings with these utility functions.
@@ -134,7 +141,7 @@ namespace tz
 			 * @param delim - The delimiter to use
 			 * @return - Container of strings, split from the source string via the specified delimiter
 			 */
-			inline std::vector<std::string> split_string(const std::string& s, const std::string& delim);
+			inline std::vector<std::string> split_string(const std::string& string, const std::string& delimiter);
             /**
              * Split an existing string with a specified delimiter.
              * @param s - The string to perform on

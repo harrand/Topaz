@@ -9,7 +9,6 @@ Topaz is a multimedia engine written in C++ to be used as a cross-platform abstr
 * [SDL2](https://www.libsdl.org/) - Simple DirectMedia Layer, cross-platform library used for windowing.
 * [SDL2_mixer 2.0](https://www.libsdl.org/projects/SDL_mixer/) - SDL2 Plugin used to load audio files (.wav, .ogg files etc...)
 * [SDL_ttf 2.0](https://www.libsdl.org/projects/SDL_ttf/) - SDL2 Plugin used to load TrueType fonts (.ttf files)
-* [MDL](https://github.com/Harrand/MDL) - Minimalist Data Language, to handle data-storage trivially as opposed to other formats such as JSON.
 
 ### License
 

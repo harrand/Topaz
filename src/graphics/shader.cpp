@@ -10,7 +10,7 @@ Shader::Shader(std::string vertex_source, std::string tessellation_control_sourc
 		this->validate();
 }
 
-Shader::Shader(std::string filename, bool compile, bool link, bool validate): Shader(mdl::read(filename + ".vertex.glsl"), mdl::read(filename + ".tessellation_control.glsl"), mdl::read(filename + ".tessellation_evaluation.glsl"), mdl::read(filename + ".geometry.glsl"), mdl::read(filename + ".fragment.glsl"), compile, link, validate)
+Shader::Shader(std::string filename, bool compile, bool link, bool validate): Shader(tz::util::file::read(filename + ".vertex.glsl"), tz::util::file::read(filename + ".tessellation_control.glsl"), tz::util::file::read(filename + ".tessellation_evaluation.glsl"), tz::util::file::read(filename + ".geometry.glsl"), tz::util::file::read(filename + ".fragment.glsl"), compile, link, validate)
 {
 	// Delegating ctor means cannot initialise any members after, and doing before will just be overwritten so that's why it's being done in this constructor body.
 	this->filename = filename;

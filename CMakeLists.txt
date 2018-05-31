@@ -60,4 +60,4 @@ add_library(topaz SHARED
         src/window.cpp
         src/window.hpp
         src/window.inl src/graphics/skybox.cpp src/graphics/skybox.hpp)
-target_link_libraries(topaz OpenGL32 SDL2 SDL2_mixer SDL2_ttf SDL2main mdl)
+target_link_libraries(topaz OpenGL32 SDL2 SDL2_mixer SDL2_ttf SDL2main)

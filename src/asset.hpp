@@ -2,7 +2,6 @@
 #define DATA_HPP
 #include "graphics/mesh.hpp"
 #include "graphics/texture.hpp"
-#include "MDL/mdl_file.hpp"
 #include <unordered_map>
 #include <memory>
 #include <initializer_list>
@@ -10,6 +9,18 @@
 struct AssetBuffer
 {
     AssetBuffer(std::vector<std::shared_ptr<Mesh>> meshes, std::vector<std::shared_ptr<Texture>> textures, std::vector<std::shared_ptr<NormalMap>> normal_maps = {}, std::vector<std::shared_ptr<ParallaxMap>> parallax_maps = {}, std::vector<std::shared_ptr<DisplacementMap>> displacement_maps = {});
+	template<typename AssetType, typename... Args>
+	AssetType& emplace(Args&&... args);
+	template<typename... Args>
+	Mesh& emplace_mesh(Args&&... args);
+	template<typename... Args>
+	Texture& emplace_texture(Args&&... args);
+	template<typename... Args>
+	NormalMap& emplace_normalmap(Args&&... args);
+	template<typename... Args>
+	ParallaxMap& emplace_parallaxmap(Args&&... args);
+	template<typename... Args>
+	DisplacementMap& emplace_displacementmap(Args&&... args);
 	/// Container of Mesh assets.
 	std::vector<std::shared_ptr<Mesh>> meshes;
 	/// Container of Texture assets.
@@ -49,5 +60,7 @@ namespace tz
         }
 	}
 }
+
+#include "asset.inl"
 
 #endif
