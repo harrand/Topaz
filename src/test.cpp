@@ -30,8 +30,8 @@ void init()
     Camera camera;
 
     Scene scene;
-    AssetBuffer assets({std::make_shared<Mesh>("../../../res/runtime/models/cube_hd.obj")}, {std::make_shared<Texture>("../../../res/runtime/textures/bricks.jpg")}, {std::make_shared<NormalMap>("../../../res/runtime/normalmaps/bricks_normalmap.jpg")});
-    Asset asset(assets.meshes.front(), assets.textures.front());
+    AssetBuffer assets({std::make_shared<Mesh>("../../../res/runtime/models/cube_hd.obj")}, {std::make_shared<Texture>("../../../res/runtime/textures/bricks.jpg")}, {std::make_shared<NormalMap>("../../../res/runtime/normalmaps/bricks_normalmap.jpg")}, {std::make_shared<ParallaxMap>("../../../res/runtime/parallaxmaps/bricks_parallax.jpg")}, {std::make_shared<DisplacementMap>("../../../res/runtime/displacementmaps/bricks_displacement.png")});
+    Asset asset(assets.meshes.front(), assets.textures.front(), assets.normal_maps.front(), assets.parallax_maps.front(), assets.displacement_maps.front());
     SceneObject& test_object = scene.emplace_object(Transform{{0, 0, 0}, {}, {10, 10, 10}}, asset);
 	while(!wnd.is_close_requested())
     {

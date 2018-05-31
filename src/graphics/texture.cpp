@@ -257,6 +257,25 @@ void Texture::bind_with_string(Shader* shader, unsigned int id, const std::strin
 	shader->set_uniform<int>(sampler_uniform_name, id);
 }
 
+ParallaxMap::ParallaxMap(std::string filename, float multiplier, float bias): Texture(filename, false, false, false), multiplier(multiplier), bias(bias){}
+ParallaxMap::ParallaxMap(): Texture(Bitmap<PixelRGBA>({tz::graphics::default_parallax_map_pixel}, 1, 1)), multiplier(tz::graphics::asset::default_parallax_map_scale), bias(this->multiplier / 2.0f * (tz::graphics::asset::default_parallax_map_offset)){}
+
+void ParallaxMap::bind(Shader* shader, unsigned int id) const
+{
+    this->bind_with_string(shader, id, "parallax_map_sampler");
+    shader->set_uniform<float>("parallax_multiplier", this->multiplier);
+    shader->set_uniform<float>("parallax_bias", this->bias);
+}
+
+DisplacementMap::DisplacementMap(std::string filename, float displacement_factor): Texture(filename, false, false, false), displacement_factor(displacement_factor){}
+DisplacementMap::DisplacementMap(): Texture(Bitmap<PixelRGBA>({tz::graphics::default_displacement_map_pixel}, 1, 1)), displacement_factor(tz::graphics::asset::default_displacement_factor){}
+
+void DisplacementMap::bind(Shader* shader, unsigned int id) const
+{
+    this->bind_with_string(shader, id, "displacement_map_sampler");
+    shader->set_uniform<float>("displacement_factor", this->displacement_factor);
+}
+
 CubeMap::CubeMap(std::string right_texture, std::string left_texture, std::string top_texture, std::string bottom_texture, std::string back_texture, std::string front_texture): right_texture(std::move(right_texture)), left_texture(std::move(left_texture)), top_texture(std::move(top_texture)), bottom_texture(std::move(bottom_texture)), back_texture(std::move(back_texture)), front_texture(std::move(front_texture))
 {
 	glGenTextures(1, &(this->texture_handle));

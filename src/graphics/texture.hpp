@@ -44,6 +44,13 @@ namespace tz::graphics
     /// Pixel of the default-displacement-map.
     constexpr PixelRGBA default_displacement_map_pixel = PixelRGBA(0, 0, 0, 255);
 
+	namespace asset
+	{
+		constexpr float default_parallax_map_scale = 0.04f;
+		constexpr float default_parallax_map_offset = -0.5f;
+		constexpr float default_displacement_factor = 0.25f;
+	}
+
 	enum class TextureComponent : unsigned int
 	{
 		COLOUR_TEXTURE,
@@ -281,22 +288,24 @@ public:
 	 * Load a parallax-map from an existing parallax-map image file.
 	 * @param filename - Path to the existing parallax-map image file
 	 */
-	ParallaxMap(std::string filename): Texture(filename, false, false, false){};
+	ParallaxMap(std::string filename, float multiplier = tz::graphics::asset::default_parallax_map_scale, float bias = tz::graphics::asset::default_parallax_map_scale / 2.0f * (tz::graphics::asset::default_parallax_map_offset));
 	/**
 	 * Construct the default-parallax-map.
 	 */
-    ParallaxMap(): Texture(Bitmap<PixelRGBA>({tz::graphics::default_parallax_map_pixel}, 1, 1)){}
+    ParallaxMap();
 	/**
 	* Bind this normal-map to a specified Shader.
 	* @param shader - The Shader to be bound with.
 	* @param id - Sampler-ID of this normal-map.
 	*/
-    virtual void bind(Shader* shader, unsigned int id) const override{this->bind_with_string(shader, id, "parallax_map_sampler");}
+    virtual void bind(Shader* shader, unsigned int id) const override;
 	/**
 	 * This is a parallax-map Texture.
 	 * @return - TextureType::PARALLAX_MAP
 	 */
     virtual tz::graphics::TextureType get_texture_type() const override{return tz::graphics::TextureType::PARALLAX_MAP;}
+private:
+	float multiplier, bias;
 };
 
 /**
@@ -309,22 +318,24 @@ public:
 	 * Load a displacement-map from an existing displacement-map image file.
 	 * @param filename - Path to the existing displacement-map image file
 	 */
-	DisplacementMap(std::string filename): Texture(filename, false, false, false){};
+	DisplacementMap(std::string filename, float displacement_factor = tz::graphics::asset::default_displacement_factor);
 	/**
 	 * Construct the default-displacement-map.
 	 */
-    DisplacementMap(): Texture(Bitmap<PixelRGBA>({tz::graphics::default_displacement_map_pixel}, 1, 1)){}
+    DisplacementMap();
 	/**
 	* Bind this normal-map to a specified Shader.
 	* @param shader - The Shader to be bound with.
 	* @param id - Sampler-ID of this normal-map.
 	*/
-    virtual void bind(Shader* shader, unsigned int id) const override{this->bind_with_string(shader, id, "displacement_map_sampler");}
+    virtual void bind(Shader* shader, unsigned int id) const override;
 	/**
 	 * This is a displacement-map Texture.
 	 * @return - TextureType::DISPLACEMENT_MAP
 	 */
     virtual tz::graphics::TextureType get_texture_type() const override{return tz::graphics::TextureType::DISPLACEMENT_MAP;}
+private:
+	float displacement_factor;
 };
 
 /**
