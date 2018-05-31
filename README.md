@@ -27,5 +27,5 @@ See `CMakeLists.txt` in the root directory.
 
 If you do not, see the windows batch files (.bat) included in the root folder to aid with compilation. If you are not on Windows nor currently have CMake, then you must [install CMake](https://cmake.org/) to use this library.
 
-##Documentation
+## Documentation
 See the [wiki](https://github.com/Harrand/Topaz/wiki).

@@ -8,6 +8,8 @@ layout(location = 3) in vec3 tangent;
 
 out vec3 position_modelspace;
 out vec2 texcoord_modelspace;
+out vec3 eye_direction_cameraspace;
+out vec3 light_direction_cameraspace;
 
 out mat4 model_matrix;
 out mat4 view_matrix;
@@ -31,19 +33,26 @@ void share()
 	position_modelspace += normal * texture2D(displacement_map_sampler, texcoord_modelspace).r * displacement_factor;
 
 	model_matrix = m;
-	view_matrix = v;
-	projection_matrix = p;
+    view_matrix = v;
+    projection_matrix = p;
+
+    vec3 position_cameraspace = (view_matrix * model_matrix * vec4(position_modelspace, 1.0)).xyz;
+    eye_direction_cameraspace = vec3(0, 0, 0) - position_cameraspace;
+
+    // edit this as you wish
+    const vec3 light_position_cameraspace = vec3(0, 0, 0);
+    light_direction_cameraspace = light_position_cameraspace + eye_direction_cameraspace;
 	
 	vec3 bitangent = cross(tangent, normal);
 	
-	vec3 normal_modelspace = normalize((m * vec4(normal, 0.0)).xyz);
-	vec3 tangent_modelspace = normalize((m * vec4(tangent, 0.0)).xyz);
-	vec3 bitangent_modelspace = normalize((m * vec4(bitangent, 0.0)).xyz);
+	vec3 normal_cameraspace = normalize((v * m * vec4(normal, 0.0)).xyz);
+	vec3 tangent_cameraspace = normalize((v * m * vec4(tangent, 0.0)).xyz);
+	vec3 bitangent_cameraspace = normalize((v * m * vec4(bitangent, 0.0)).xyz);
 	
 	// Gramm-Schmidt Process
-	tangent_modelspace = normalize(tangent_modelspace - dot(tangent_modelspace, normal_modelspace) * normal_modelspace);
+	tangent_cameraspace = normalize(tangent_cameraspace - dot(tangent_cameraspace, normal_cameraspace) * normal_cameraspace);
 	
-	tbn_matrix = mat3(tangent_modelspace, bitangent_modelspace, normal_modelspace);
+	tbn_matrix = transpose(mat3(tangent_cameraspace, bitangent_cameraspace, normal_cameraspace));
 }
 
 void main()
