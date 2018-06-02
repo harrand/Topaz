@@ -20,13 +20,13 @@ void init()
 {
 	Window wnd("Topaz Development Window", 0, 30, 800, 600);
     Font font("../../../res/runtime/fonts/CaviarDreams.ttf", 36);
-    Label& label = wnd.emplace_child<Label>(Vector2<int>{0, 0}, font, Vector3F{0.0f, 0.3f, 0.0f}, "hello, world");
+    Label& label = wnd.emplace_child<Label>(Vector2<int>{0, 0}, font, Vector3F{0.0f, 0.3f, 0.0f}, "hello there");
     label.set_local_position_normalised_space({0.5f, 0.5f});
 
     KeyListener key_listener(wnd);
     MouseListener mouse_listener(wnd);
 
-	Shader render_shader("../../../src/shaders/3D");
+	Shader render_shader("../../../src/shaders/3D_FullAssets");
 	Shader gui_shader("../../../src/shaders/gui");
     Camera camera;
     Scene scene;
@@ -47,7 +47,6 @@ void init()
 
         scene.render(render_shader, camera, {wnd.get_width(), wnd.get_height()});
 
-        // assets.meshes[1] is the skybox mesh.
         skybox.render(camera, skybox_shader, skybox_mesh, wnd.get_width(), wnd.get_height());
 
         wnd.update(gui_shader);
