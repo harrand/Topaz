@@ -14,7 +14,6 @@ uniform sampler2D texture_sampler;
 uniform sampler2D normal_map_sampler;
 uniform sampler2D parallax_map_sampler;
 
-uniform uint shininess;
 uniform float parallax_multiplier;
 uniform float parallax_bias;
 
@@ -79,17 +78,26 @@ vec3 specular(PointLight light, vec3 specular_colour, vec3 normal_cameraspace, v
     return specular_directional(directional, specular_colour, normal_cameraspace) / pow(distance, 2);
 }
 
+vec2 parallax_offset()
+{
+    // MUST normalize this, or everything goes a bit weird.
+    vec3 eye_direction_tangentspace = normalize(tbn_matrix * eye_direction_cameraspace);
+	return texcoord_modelspace + eye_direction_tangentspace.xy * (texture2D(parallax_map_sampler, texcoord_modelspace).r * parallax_multiplier + parallax_bias);
+}
+
 void main()
 {
+    vec2 parallaxed_texcoord = parallax_offset();
     // TBN matrix goes from cameraspace to tangentspace
     vec3 position_cameraspace = (view_matrix * model_matrix * vec4(position_modelspace, 1.0)).xyz;
 	vec3 normal_cameraspace = transpose(tbn_matrix) * (texture(normal_map_sampler, texcoord_modelspace).xyz * 255.0/128.0 - 1);
-	vec3 texture_colour = texture(texture_sampler, texcoord_modelspace).xyz;
 	 // Directional Component.
     DirectionalLight cam_light;
     cam_light.colour = vec3(1, 1, 1);
     cam_light.direction = vec3(0, 0, 0) + eye_direction_cameraspace;
     cam_light.power = 0.5f;
+    vec3 light_direction_tangentspace = tbn_matrix * cam_light.direction;
+    vec3 texture_colour = texture(texture_sampler, parallaxed_texcoord).xyz;
     fragment_colour = vec4(diffuse_directional(cam_light, texture_colour, normal_cameraspace) + specular_directional(cam_light, texture_colour, normal_cameraspace), 1.0);
     /*
     // Non-Directional Component.

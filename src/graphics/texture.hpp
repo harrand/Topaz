@@ -288,7 +288,7 @@ public:
 	 * Load a parallax-map from an existing parallax-map image file.
 	 * @param filename - Path to the existing parallax-map image file
 	 */
-	ParallaxMap(std::string filename, float multiplier = tz::graphics::asset::default_parallax_map_scale, float bias = tz::graphics::asset::default_parallax_map_scale / 2.0f * (tz::graphics::asset::default_parallax_map_offset));
+	ParallaxMap(std::string filename, float multiplier = tz::graphics::asset::default_parallax_map_scale, float offset = tz::graphics::asset::default_parallax_map_offset);
 	/**
 	 * Construct the default-parallax-map.
 	 */

@@ -16,13 +16,10 @@ out mat4 view_matrix;
 out mat4 projection_matrix;
 out mat3 tbn_matrix;
 
-uniform vec3 position_uniform;
-uniform vec3 rotation_uniform;
-uniform vec3 scale_uniform;
 uniform mat4 m;
 uniform mat4 v;
 uniform mat4 p;
-uniform float displacement_factor;
+uniform float displacement_factor = 0.0f;
 
 uniform sampler2D displacement_map_sampler;
 

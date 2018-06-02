@@ -257,7 +257,7 @@ void Texture::bind_with_string(Shader* shader, unsigned int id, const std::strin
 	shader->set_uniform<int>(sampler_uniform_name, id);
 }
 
-ParallaxMap::ParallaxMap(std::string filename, float multiplier, float bias): Texture(filename, false, false, false), multiplier(multiplier), bias(bias){}
+ParallaxMap::ParallaxMap(std::string filename, float multiplier, float offset): Texture(filename, false, false, false), multiplier(multiplier), bias(this->multiplier / 2.0f * offset){}
 ParallaxMap::ParallaxMap(): Texture(Bitmap<PixelRGBA>({tz::graphics::default_parallax_map_pixel}, 1, 1)), multiplier(tz::graphics::asset::default_parallax_map_scale), bias(this->multiplier / 2.0f * (tz::graphics::asset::default_parallax_map_offset)){}
 
 void ParallaxMap::bind(Shader* shader, unsigned int id) const
