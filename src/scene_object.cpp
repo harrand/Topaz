@@ -12,12 +12,20 @@ void SceneObject::render(Shader& render_shader, const Camera& camera, const Vect
     render_shader.bind();
     if(this->asset.valid_texture())
         this->asset.texture.lock()->bind(&render_shader, tz::graphics::texture_sampler_id);
+    else
+        tz::graphics::asset::unbind_texture();
     if(this->asset.valid_normal_map())
         this->asset.normal_map.lock()->bind(&render_shader, tz::graphics::normal_map_sampler_id);
+    else
+        tz::graphics::asset::unbind_normal_map(render_shader);
     if(this->asset.valid_parallax_map())
         this->asset.parallax_map.lock()->bind(&render_shader, tz::graphics::parallax_map_sampler_id);
+    else
+        tz::graphics::asset::unbind_parallax_map(render_shader);
     if(this->asset.valid_displacement_map())
         this->asset.displacement_map.lock()->bind(&render_shader, tz::graphics::displacement_map_sampler_id);
+    else
+        tz::graphics::asset::unbind_displacement_map(render_shader);
     render_shader.set_uniform<bool>("is_instanced", false);
     render_shader.set_uniform<Matrix4x4>(tz::graphics::render_shader_model_uniform_name, this->transform.model());
     render_shader.set_uniform<Matrix4x4>(tz::graphics::render_shader_view_uniform_name, camera.view());

@@ -13,6 +13,7 @@ int main()
 	tz::initialise();
     init();
 	tz::terminate();
+    std::cout << "end.\n";
 	return 0;
 }
 
@@ -29,12 +30,19 @@ void init()
 	Shader render_shader("../../../src/shaders/3D_FullAssets");
 	Shader gui_shader("../../../src/shaders/gui");
     Camera camera;
+    camera.position = {0, 0, -50};
     Scene scene;
 
     AssetBuffer assets({std::make_shared<Mesh>("../../../res/runtime/models/cube_hd.obj")}, {std::make_shared<Texture>("../../../res/runtime/textures/bricks.jpg")}, {std::make_shared<NormalMap>("../../../res/runtime/normalmaps/bricks_normalmap.jpg")}, {std::make_shared<ParallaxMap>("../../../res/runtime/parallaxmaps/bricks_parallax.jpg", 0.04f, -0.5f)}, {std::make_shared<DisplacementMap>("../../../res/runtime/displacementmaps/bricks_displacement.png")});
     Mesh skybox_mesh = assets.emplace<Mesh>(std::string("../../../res/runtime/models/skybox.obj"));
-    Asset asset(assets.meshes.front(), assets.textures.front(), assets.normal_maps.front(), assets.parallax_maps.front(), assets.displacement_maps.front());
-    SceneObject& test_object = scene.emplace_object(Transform{{0, 0, 0}, {}, {10, 10, 10}}, asset);
+    Asset asset0(assets.meshes.front(), assets.textures.front(), assets.normal_maps.front(), assets.parallax_maps.front(), assets.displacement_maps.front());
+    Asset asset1(assets.meshes.front(), assets.textures.front(), assets.normal_maps.front(), assets.parallax_maps.front());
+    Asset asset2(assets.meshes.front(), assets.textures.front(), assets.normal_maps.front());
+    Asset asset3(assets.meshes.front(), assets.textures.front());
+    SceneObject& test_object0 = scene.emplace_object(Transform{Vector3F{-50, 0, 0}, Vector3F{0, 0, 0}, Vector3F{10, 10, 10}}, asset0);
+    SceneObject& test_object1 = scene.emplace_object(Transform{Vector3F{-25, 0, 0}, Vector3F{0, 0, 0}, Vector3F{5, 5, 5}}, asset1);
+    SceneObject& test_object2 = scene.emplace_object(Transform{Vector3F{0, 0, 0}, Vector3F{0, 0, 0}, Vector3F{7, 7, 7}}, asset2);
+    SceneObject& test_object3 = scene.emplace_object(Transform{{25}, {}, {10, 10, 10}}, asset3);
 
     CubeMap skybox_texture("../../../res/runtime/textures/skybox/", "cwd", ".jpg");
     Shader skybox_shader("../../../src/shaders/skybox");
@@ -58,7 +66,11 @@ void init()
             mouse_listener.reload_mouse_delta();
         }
         static int x = 0;
-        test_object.transform.position.z = 100 * std::sin(++x / 20000.0f);
-        test_object.transform.rotation.y = tz::consts::pi * std::sin(x / 1000.0f);
+        x++;
+        float rot = tz::consts::pi * std::sin(x / 1000.0f);
+        test_object0.transform.rotation.y = rot;
+        test_object1.transform.rotation.y = rot;
+        test_object2.transform.rotation.y = rot;
+        test_object3.transform.rotation.y = rot;
     }
 }

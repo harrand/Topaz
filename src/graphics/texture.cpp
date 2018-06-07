@@ -257,12 +257,22 @@ void Texture::bind_with_string(Shader* shader, unsigned int id, const std::strin
 	shader->set_uniform<int>(sampler_uniform_name, id);
 }
 
+NormalMap::NormalMap(std::string filename): Texture(filename, false, false, false){}
+NormalMap::NormalMap(): Texture(Bitmap<PixelRGBA>({tz::graphics::default_normal_map_pixel}, 1, 1)){}
+
+void NormalMap::bind(Shader* shader, unsigned int id) const
+{
+	this->bind_with_string(shader, id, "normal_map_sampler");
+	shader->set_uniform<bool>("has_normal_map", true);
+}
+
 ParallaxMap::ParallaxMap(std::string filename, float multiplier, float offset): Texture(filename, false, false, false), multiplier(multiplier), bias(this->multiplier / 2.0f * offset){}
 ParallaxMap::ParallaxMap(): Texture(Bitmap<PixelRGBA>({tz::graphics::default_parallax_map_pixel}, 1, 1)), multiplier(tz::graphics::asset::default_parallax_map_scale), bias(this->multiplier / 2.0f * (tz::graphics::asset::default_parallax_map_offset)){}
 
 void ParallaxMap::bind(Shader* shader, unsigned int id) const
 {
     this->bind_with_string(shader, id, "parallax_map_sampler");
+	shader->set_uniform<bool>("has_parallax_map", true);
     shader->set_uniform<float>("parallax_multiplier", this->multiplier);
     shader->set_uniform<float>("parallax_bias", this->bias);
 }
@@ -273,6 +283,7 @@ DisplacementMap::DisplacementMap(): Texture(Bitmap<PixelRGBA>({tz::graphics::def
 void DisplacementMap::bind(Shader* shader, unsigned int id) const
 {
     this->bind_with_string(shader, id, "displacement_map_sampler");
+	shader->set_uniform<bool>("has_displacement_map", true);
     shader->set_uniform<float>("displacement_factor", this->displacement_factor);
 }
 

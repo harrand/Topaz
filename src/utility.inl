@@ -132,39 +132,6 @@ namespace tz::util
 				return "_";
 			return str.substr((begin - 1), (end-begin) + 1);
 		}
-			
-		inline std::string format(const std::vector<std::string>& split)
-		{
-			std::string ret = "[";
-			for(std::size_t i = 0; i < split.size(); i++)
-			{
-				ret += split[i];
-				if(i < (split.size() - 1))
-					ret += ",";
-				else
-					ret += "]";
-			}
-			return ret;
-		}
-			
-		inline std::vector<std::string> deformat(const std::string& str)
-		{
-			return tz::util::string::split_string(tz::util::string::replace_all_char(tz::util::string::replace_all_char(str, '[', ""), ']', ""), ',');
-		}
-			
-		template<typename T>
-		inline Vector3<T> vectorise_list_3(const std::vector<std::string>& list)
-		{
-			if(list.size() < 3)
-				return {};
-			return {tz::util::cast::from_string<T>(list[0]), tz::util::cast::from_string<T>(list[1]), tz::util::cast::from_string<T>(list[2])};
-		}
-			
-		template<typename T>
-		inline std::vector<std::string> devectorise_list_3(Vector3<T> v)
-		{
-			return {tz::util::cast::to_string(v.x), tz::util::cast::to_string(v.y), tz::util::cast::to_string(v.z)};
-		}	
 	}
 	
 	namespace log

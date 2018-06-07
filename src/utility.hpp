@@ -12,7 +12,6 @@
 #include <utility>
 #include <functional>
 #include <thread>
-#include "vector.hpp"
 #include "SDL2/SDL.h"
 
 namespace tz
@@ -173,35 +172,6 @@ namespace tz
 			 * @return - The substring
 			 */
 			inline std::string substring(const std::string& str, std::size_t begin, std::size_t end);
-			/**
-			 * Emplace all elements of a container of strings within the following string:
-			 * [element0, element1, etc...]
-			 * @param split - The container of strings to format
-			 * @return - The formatted container of strings
-			 */
-			inline std::string format(const std::vector<std::string>& split);
-			/**
-			 * Given a formatted string, extract all the elements contained within the formatted string.
-			 * @param str - The formatted string
-			 * @return - Container of the strings in the formatted string
-			 */
-			inline std::vector<std::string> deformat(const std::string& str);
-			/**
-			 * Convert the first three elements of a container of strings into the type T, and place into a 3-dimensional Vector.
-			 * @tparam T - The type to store into the 3-dimensional Vector
-			 * @param list - The container of strings
-			 * @return - The resultant 3-dimensional Vector
-			 */
-			template<typename T>
-			inline Vector3<T> vectorise_list_3(const std::vector<std::string>& list);
-			/**
-			 * Given a 3-dimensional Vector containing types T, convert them into a string and place within a container.
-			 * @tparam T - Type of the elements in the 3-dimensional Vector
-			 * @param v - The 3-dimensional Vector to extract from
-			 * @return - The resultant container of strings
-			 */
-			template<typename T>
-			inline std::vector<std::string> devectorise_list_3(Vector3<T> v);
 		}
 
 		/**

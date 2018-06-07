@@ -1,5 +1,43 @@
 #include <type_traits>
 
+namespace tz::graphics::asset
+{
+	inline void unbind_texture()
+	{
+		glActiveTexture(GL_TEXTURE0 + tz::graphics::texture_sampler_id);
+		glBindTexture(GL_TEXTURE_2D, 0);
+	}
+
+	inline void unbind_normal_map(Shader& render_shader)
+	{
+		glActiveTexture(GL_TEXTURE0 + tz::graphics::normal_map_sampler_id);
+		glBindTexture(GL_TEXTURE_2D, 0);
+		render_shader.set_uniform<bool>("has_normal_map", false);
+	}
+
+	inline void unbind_parallax_map(Shader& render_shader)
+	{
+		glActiveTexture(GL_TEXTURE0 + tz::graphics::parallax_map_sampler_id);
+		glBindTexture(GL_TEXTURE_2D, 0);
+		render_shader.set_uniform<bool>("has_parallax_map", false);
+	}
+
+	inline void unbind_displacement_map(Shader& render_shader)
+	{
+		glActiveTexture(GL_TEXTURE0 + tz::graphics::displacement_map_sampler_id);
+		glBindTexture(GL_TEXTURE_2D, 0);
+		render_shader.set_uniform<bool>("has_displacement_map", false);
+	}
+
+	inline void unbind_all_textures(Shader& render_shader)
+	{
+		unbind_texture();
+		unbind_normal_map(render_shader);
+		unbind_parallax_map(render_shader);
+		unbind_displacement_map(render_shader);
+	}
+}
+
 template<class Pixel>
 Texture::Texture(Bitmap<Pixel> pixel_data): Texture(pixel_data.width, pixel_data.height, false)
 {

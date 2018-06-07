@@ -20,5 +20,6 @@ Element& Scene::emplace(Args&&... args)
 template<typename... Args>
 SceneObject& Scene::emplace_object(Args&&... args)
 {
-    return this->stack_objects.emplace_back(std::forward<Args>(args)...);
+    this->heap_objects.push_back(std::make_shared<SceneObject>(std::forward<Args>(args)...));
+    return *(this->heap_objects.back().get());
 }

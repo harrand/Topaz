@@ -49,6 +49,11 @@ namespace tz::graphics
 		constexpr float default_parallax_map_scale = 0.04f;
 		constexpr float default_parallax_map_offset = -0.5f;
 		constexpr float default_displacement_factor = 0.25f;
+        inline void unbind_texture();
+        inline void unbind_normal_map(Shader& render_shader);
+        inline void unbind_parallax_map(Shader& render_shader);
+        inline void unbind_displacement_map(Shader& render_shader);
+        inline void unbind_all_textures(Shader& render_shader);
 	}
 
 	enum class TextureComponent : unsigned int
@@ -260,17 +265,17 @@ public:
 	 * Load a normal-map from an existing normal-map image file.
 	 * @param filename - Path to the existing normal-map image file
 	 */
-	NormalMap(std::string filename): Texture(filename, false, false, false){};
+	NormalMap(std::string filename);
 	/**
 	 * Construct the default-normal-map.
 	 */
-	NormalMap(): Texture(Bitmap<PixelRGBA>({tz::graphics::default_normal_map_pixel}, 1, 1)){}
+	NormalMap();
 	/**
 	 * Bind this normal-map to a specified Shader.
 	 * @param shader - The Shader to be bound with.
 	 * @param id - Sampler-ID of this normal-map.
 	 */
-    virtual void bind(Shader* shader, unsigned int id) const override{this->bind_with_string(shader, id, "normal_map_sampler");}
+    virtual void bind(Shader* shader, unsigned int id) const override;
 	/**
 	 * This is a normal-map Texture.
 	 * @return TextureType::NORMAL_MAP

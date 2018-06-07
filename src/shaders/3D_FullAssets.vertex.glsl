@@ -8,6 +8,7 @@ layout(location = 3) in vec3 tangent;
 
 out vec3 position_modelspace;
 out vec2 texcoord_modelspace;
+out vec3 normal_modelspace;
 out vec3 eye_direction_cameraspace;
 out vec3 light_direction_cameraspace;
 
@@ -20,6 +21,7 @@ uniform mat4 m;
 uniform mat4 v;
 uniform mat4 p;
 uniform float displacement_factor = 0.0f;
+uniform bool has_displacement_map = false;
 
 uniform sampler2D displacement_map_sampler;
 
@@ -27,7 +29,9 @@ void share()
 {
 	position_modelspace = position;
 	texcoord_modelspace = texcoord;
-	position_modelspace += normal * texture2D(displacement_map_sampler, texcoord_modelspace).r * displacement_factor;
+	normal_modelspace = normal;
+	if(has_displacement_map)
+	    position_modelspace += normal * texture2D(displacement_map_sampler, texcoord_modelspace).r * displacement_factor;
 
 	model_matrix = m;
     view_matrix = v;

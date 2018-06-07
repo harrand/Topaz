@@ -3,6 +3,7 @@
 
 in vec3 position_modelspace;
 in vec2 texcoord_modelspace;
+in vec3 normal_modelspace;
 in vec3 eye_direction_cameraspace;
 in vec3 light_direction_cameraspace;
 
@@ -13,6 +14,9 @@ in mat3 tbn_matrix;
 uniform sampler2D texture_sampler;
 uniform sampler2D normal_map_sampler;
 uniform sampler2D parallax_map_sampler;
+
+uniform bool has_normal_map = false;
+uniform bool has_parallax_map = false;
 
 uniform float parallax_multiplier;
 uniform float parallax_bias;
@@ -87,10 +91,18 @@ vec2 parallax_offset()
 
 void main()
 {
-    vec2 parallaxed_texcoord = parallax_offset();
+    vec2 parallaxed_texcoord;
+    if(has_parallax_map)
+        parallaxed_texcoord = parallax_offset();
+    else
+        parallaxed_texcoord = texcoord_modelspace;
     // TBN matrix goes from cameraspace to tangentspace
     vec3 position_cameraspace = (view_matrix * model_matrix * vec4(position_modelspace, 1.0)).xyz;
-	vec3 normal_cameraspace = transpose(tbn_matrix) * (texture(normal_map_sampler, texcoord_modelspace).xyz * 255.0/128.0 - 1);
+    vec3 normal_cameraspace;
+    if(has_normal_map)
+	    normal_cameraspace = transpose(tbn_matrix) * (texture(normal_map_sampler, texcoord_modelspace).xyz * 255.0/128.0 - 1);
+	else
+	    normal_cameraspace = normalize((view_matrix * model_matrix * vec4(normal_modelspace, 0.0)).xyz);
 	 // Directional Component.
     DirectionalLight cam_light;
     cam_light.colour = vec3(1, 1, 1);

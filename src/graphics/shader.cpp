@@ -69,9 +69,6 @@ void Shader::compile(std::string vertex_source, std::string tessellation_control
 	this->attribute_locations[1] = "texcoord";
 	this->attribute_locations[2] = "normal";
 	this->attribute_locations[3] = "tangent";
-	this->attribute_locations[4] = "positions_instance";
-	this->attribute_locations[5] = "rotations_instance";
-	this->attribute_locations[6] = "scales_instance";
 	for(auto [id, location] : this->attribute_locations)
 	{
 		glBindAttribLocation(this->program_handle, id, location.c_str());
