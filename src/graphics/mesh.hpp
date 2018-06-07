@@ -4,6 +4,7 @@
 #include <string>
 #include <memory>
 #include <array>
+#include <set>
 #include "graphics.hpp"
 #include "../matrix.hpp"
 
@@ -58,32 +59,31 @@ public:
 	virtual ~Mesh();
 	/// TODO: Implement properly
 	Mesh& operator=(const Mesh& rhs) = default;
-
-	/**
-	 * Obtain the IndexedModel object, containing vertex data.
-	 * @return - Structure containing all vertex data
-	 */
-	tz::graphics::model::IndexedModel get_indexed_model() const;
 	/**
 	 * Get a container of 3-dimensional Vectors representing the position of each Vertex, in model-space.
 	 * @return - Container of Vertex positions
 	 */
-	const std::vector<Vector3F>& get_positions() const;
+	std::vector<Vector3F> get_positions() const;
 	/**
 	 * Get a container of 2-dimensional Vectors representing the texture-coordinate of each Vertex (UV).
 	 * @return - Container of Vertex texture-coordinates
 	 */
-	const std::vector<Vector2F>& get_texcoords() const;
+	std::vector<Vector2F> get_texcoords() const;
 	/**
 	 * Get a container of 3-dimensional Vectors representing the normal Vector of each Vertex, in model-space.
 	 * @return - Container of Vertex normal Vectors
 	 */
-	const std::vector<Vector3F>& get_normals() const;
+	std::vector<Vector3F> get_normals() const;
 	/**
 	 * Get a container of 3-dimensional Vectors representing the tangent Vector of each Vertex, in model-space.
 	 * @return - Container of Vertex tangent Vectors
 	 */
-	const std::vector<Vector3F>& get_tangents() const;
+	std::vector<Vector3F> get_tangents() const;
+	/**
+	 * Get a container of unsigned integers representing the indices of all vertices.
+	 * @return - Indices of the Vertices
+	 */
+	const std::vector<unsigned int>& get_indices() const;
 	/**
 	 * Obtain the path to the external 3D model file used to load this Mesh.
 	 * @return - Path to the source file. If no source file was used, returns ""
@@ -104,14 +104,13 @@ public:
 protected:
 	/// Path to the external 3D model file used to construct this Mesh.
 	const std::string filename;
-	/// Underlying mesh data container.
-	tz::graphics::model::IndexedModel model;
+    /// List of all vertex-data.
+	std::vector<Vertex> vertices;
 	/// OpenGL VAO handle.
 	GLuint vertex_array_object;
 	/// Array of OpenGL Vertex Buffer Object buffers
 	std::array<GLuint, static_cast<std::size_t>(tz::graphics::BufferTypes::NUM_BUFFERS)> vbo_buffers;
-	/// Equal to the number of indices.
-	unsigned int render_count;
+    std::vector<unsigned int> indices;
 private:
 	/// Initialise the underlying mesh data container.
 	void init_mesh();

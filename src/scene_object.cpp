@@ -2,6 +2,11 @@
 
 SceneObject::SceneObject(Transform transform, Asset asset): transform(transform), asset(asset){}
 
+const Asset& SceneObject::get_asset() const
+{
+    return this->asset;
+}
+
 void SceneObject::render(Shader& render_shader, const Camera& camera, const Vector2<int>& viewport_dimensions) const
 {
     if(!this->asset.valid_mesh())

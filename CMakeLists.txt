@@ -19,6 +19,8 @@ add_library(topaz SHARED
         src/graphics/shader.cpp
         src/graphics/shader.hpp
         src/graphics/shader.inl
+        src/graphics/skybox.cpp
+        src/graphics/skybox.hpp
         src/graphics/stb_image.h
         src/graphics/texture.cpp
         src/graphics/texture.hpp
@@ -59,5 +61,5 @@ add_library(topaz SHARED
         src/vector.inl
         src/window.cpp
         src/window.hpp
-        src/window.inl src/graphics/skybox.cpp src/graphics/skybox.hpp)
-target_link_libraries(topaz OpenGL32 SDL2 SDL2_mixer SDL2_ttf SDL2main)
+        src/window.inl)
+target_link_libraries(topaz OpenGL32 SDL2 SDL2_mixer SDL2_ttf SDL2main assimp)

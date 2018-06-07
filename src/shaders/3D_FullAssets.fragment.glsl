@@ -82,25 +82,25 @@ vec3 specular(PointLight light, vec3 specular_colour, vec3 normal_cameraspace, v
     return specular_directional(directional, specular_colour, normal_cameraspace) / pow(distance, 2);
 }
 
-vec2 parallax_offset()
+vec2 parallax_offset(vec2 texcoord)
 {
     // MUST normalize this, or everything goes a bit weird.
     vec3 eye_direction_tangentspace = normalize(tbn_matrix * eye_direction_cameraspace);
-	return texcoord_modelspace + eye_direction_tangentspace.xy * (texture2D(parallax_map_sampler, texcoord_modelspace).r * parallax_multiplier + parallax_bias);
+	return texcoord_modelspace + eye_direction_tangentspace.xy * (texture2D(parallax_map_sampler, texcoord).r * parallax_multiplier + parallax_bias);
 }
 
 void main()
 {
     vec2 parallaxed_texcoord;
     if(has_parallax_map)
-        parallaxed_texcoord = parallax_offset();
+        parallaxed_texcoord = parallax_offset(texcoord_modelspace);
     else
         parallaxed_texcoord = texcoord_modelspace;
     // TBN matrix goes from cameraspace to tangentspace
     vec3 position_cameraspace = (view_matrix * model_matrix * vec4(position_modelspace, 1.0)).xyz;
     vec3 normal_cameraspace;
     if(has_normal_map)
-	    normal_cameraspace = transpose(tbn_matrix) * (texture(normal_map_sampler, texcoord_modelspace).xyz * 255.0/128.0 - 1);
+	    normal_cameraspace = transpose(tbn_matrix) * (texture(normal_map_sampler, parallaxed_texcoord).xyz * 255.0/128.0 - 1);
 	else
 	    normal_cameraspace = normalize((view_matrix * model_matrix * vec4(normal_modelspace, 0.0)).xyz);
 	 // Directional Component.

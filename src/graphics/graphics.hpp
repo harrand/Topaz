@@ -79,7 +79,8 @@ public:
 	 * @param texture_coordinate
 	 * @param normal
 	 */
-	Vertex(Vector3F position, Vector2F texture_coordinate, Vector3F normal);
+	Vertex(Vector3F position, Vector2F texture_coordinate, Vector3F normal, Vector3F tangent = {});
+    bool operator==(const Vertex& rhs) const;
 
 	/// Position of the Vertex, in model-space.
 	Vector3F position;
@@ -87,6 +88,8 @@ public:
 	Vector2F texture_coordinate;
 	/// Normal Vector of the Vertex.
 	Vector3F normal;
+	/// Tangent Vector of the Vertex.
+	Vector3F tangent;
 };
 
 /**
@@ -153,99 +156,6 @@ namespace tz
 		inline void terminate();
 		inline void scene_render_mode();
 		inline void gui_render_mode();
-		/**
-		* Currently used only for Wavefront OBJ Models. To load an OBJ model in Topaz, invoke OBJModel::toIndexedModel to receive an instance of IndexedModel.
-		* A Topaz Mesh constructor can take an IndexedModel as a parameter.
-		*/
-		namespace model
-		{
-		    /**
-		     * Representation of indices for a vertex, texture-coordinate and normal.
-		     */
-			class OBJIndex
-			{
-			public:
-				/// Index of the Vertex position.
-				unsigned int vertex_index;
-				/// Index of the Vertex texture-coordinate.
-				unsigned int uv_index;
-				/// Index of the Vertex normal Vector.
-				unsigned int normal_index;
-				/**
-				 * Compare this OBJIndex to another, via index of the Vertex position.
-				 * @param rhs - The OBJIndex to be compared with.
-				 * @return - True if the index of this Vertex position is greater than the parameter's index.
-				 */
-				bool operator<(const OBJIndex& rhs) const { return vertex_index < rhs.vertex_index; }
-			};
-			/**
-			 * Barebones representation of a 3D model.
-			 */
-			class IndexedModel
-			{
-			public:
-				/// Container for all Vertex positions. Each position is in model-space.
-				std::vector<Vector3F> positions;
-				/// Container for all Vertex texture-coordinates (UVs).
-				std::vector<Vector2F> texcoords;
-				/// Container for all Vertex normal Vectors.
-				std::vector<Vector3F> normals;
-				/// Container for all Vertex tangent Vectors.
-				std::vector<Vector3F> tangents;
-				/// Container for all Vertex indices.
-				std::vector<unsigned int> indices;
-				/**
-				 * Calculate and populate the container for all Vertex normal Vectors.
-				 */
-				void calculate_normals();
-				/**
-				 * Calculate the populate the container for all Vertex tangent Vectors.
-				 */
-				void calculate_tangents();
-			};
-
-            /**
-             * Imported OBJ wavefront 3D model structure.
-             */
-			class OBJModel
-			{
-			public:
-				/// Container for all the Vertices' indices of the model.
-				std::vector<OBJIndex> obj_indices;
-				/// Container for all the Vertex positions, each in model-space.
-				std::vector<Vector3F> vertices;
-				/// Container for all the Vertex texture-coordinates.
-				std::vector<Vector2F> uvs;
-				/// Container for all the Vertex normal Vectors.
-				std::vector<Vector3F> normals;
-				/// Stores whether this OBJModel is storing texture-coordinates.
-				bool has_uvs;
-				/// Stores whether this OBJModel is storing normal Vectors.
-				bool has_normals;
-
-				/**
-				 * Load an existing OBJ file.
-				 * @param file_name - Path to the existing OBJ-formatted 3D model.
-				 * The model must have triangular faces. OBJ Materials (mtl files) are not supported.
-				 */
-				OBJModel(const std::string& file_name);
-
-				/// Collaborate data and create the barebones IndexedModel.
-				IndexedModel to_indexed_model();
-			private:
-				/// Helper function.
-				unsigned int find_last_vertex_index(const std::vector<OBJIndex*>& index_lookup, const OBJIndex* current_index, const IndexedModel& result);
-				/// Helper function.
-				void create_obj_face(const std::string& line);
-
-				/// Helper function.
-				Vector2F parse_obj_vector_2f(const std::string& line);
-				/// Helper function.
-				Vector3F parse_obj_vector_3f(const std::string& line);
-				/// Helper function.
-				OBJIndex parse_obj_index(const std::string& token, bool* has_uvs, bool* has_normals);
-			};
-		}
 	}
 }
 

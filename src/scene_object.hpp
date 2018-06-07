@@ -14,6 +14,7 @@ class SceneObject
 {
 public:
     SceneObject(Transform transform, Asset asset);
+    const Asset& get_asset() const;
     virtual void render(Shader& render_shader, const Camera& camera, const Vector2<int>& viewport_dimensions) const;
     Transform transform;
 private:

@@ -101,7 +101,6 @@ public:
      * @return - True if the Window should be closed. False otherwise
      */
     bool is_close_requested() const;
-
     /**
      * Specifies which techniques a Window will use each frame to update its buffers.
      */
@@ -111,7 +110,6 @@ public:
         IMMEDIATE_UPDATES = 0,
         VSYNC = 1,
     };
-
     /**
 	 * Query which SwapIntervalType is being used for this Window.
 	 * @return - The SwapIntervalType this Window is using
@@ -176,9 +174,24 @@ public:
      * @param has_border - Whether the Window should have a border
      */
     void set_has_border(bool has_border);
+    /**
+     * Query whether the Window is currently focused.
+     * @return - True if the Window is in focus. False otherwise
+     */
     bool focused() const;
+    /**
+     * Set the Window to be focused.
+     */
     void focus() const;
+    /**
+     * Query whether the mouse-pointer lies inside the rectangle bounded by the Window.
+     * @return - True if the mouse is in the Window. False otherwise
+     */
     bool mouse_inside() const;
+    /**
+     * Query whether the Window has taken control from the mouse and trapped it.
+     * @return - True if the mouse is trapped. False otherwise
+     */
     bool mouse_trapped() const;
     /**
      * Ensure that all OpenGL render calls in the future render to this Window's framebuffer.
@@ -203,30 +216,73 @@ public:
      * @param l - The listener which should be de-registered
      */
     void deregister_listener(Listener& l);
+    /**
+     * Get a container of all the GUI elements that are direct children of this Window.
+     * @return - Container of all children
+     */
     std::unordered_set<GUI*> get_children() const;
+    /**
+     * Construct a GUI element in-place to be a child of this Window.
+     * @tparam GUIType - The type of the GUI element (e.g Panel)
+     * @tparam Args - Template parameter pack representing constructor parameters
+     * @param args - The GUIType's constructor parameters
+     * @return - Reference to the constructed child
+     */
     template<class GUIType, typename... Args>
     GUIType& emplace_child(Args&&... args);
+    /**
+     * Set an existing GUI element to be a child of this Window.
+     * @param gui - The GUI element whose parent should be this Window
+     * @return - True if the GUI element successfully became a child of this Window
+     */
     bool add_child(GUI* gui);
 
 private:
     /// Container of all registered polymorphic listeners.
     std::unordered_map<unsigned int, Listener*> registered_listeners;
+    /// String representing the title of the Window.
     std::string title;
-    Vector2<int> position_pixel_space, dimensions_pixel_space;
+    /// Position of the top-left corner of the Window, in pixels.
+    Vector2<int> position_pixel_space;
+    /// Dimensions of the Window (width and height), in pixels.
+    Vector2<int> dimensions_pixel_space;
+    /// Underlying SDL2 window handle.
     SDL_Window* sdl_window;
+    /// Underlying SDL2 GLContext handle.
     SDL_GLContext sdl_gl_context;
+    /// Stores whether this Window has been requested to close.
     bool close_requested;
+    /// The GUI element proxy held by this Window.
     GUI window_gui_element;
 };
 
+/**
+ * Creates a displayable message-box.
+ */
 class MessageBox
 {
 public:
+    /**
+     * Construct a MessageBox with all specifications.
+     * @param type - The type of this message-box, e.g error, warning
+     * @param title - The title of the message-box
+     * @param message - The message of the message-box
+     * @param parent - The parent Window of this message-box. If nullptr is passed, no parent is assumed
+     */
     MessageBox(tz::gui::MessageBoxType type, std::string title, std::string message, Window* parent);
+    /**
+     * Display the message-box.
+     * @return - True if the message-box was successfully displayed. False otherwise
+     */
     bool display() const;
 private:
+    /// Stores a subject for this message-box (e.g error)
     tz::gui::MessageBoxType type;
-    std::string title, message;
+    /// Title of the message-box.
+    std::string title;
+    /// Message of the message-box.
+    std::string message;
+    /// Optional Window parent of the message-box.
     Window* parent;
 };
 

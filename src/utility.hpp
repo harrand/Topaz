@@ -319,7 +319,7 @@ private:
 
 /**
 * Template specialisation of Random, using the C++ mersenne-twister functionality.
-* More expensive than a linear-congruentional approach, but does provide higher-quality pseudorandomness.
+* More expensive than a linear-congruential approach, but does provide higher-quality pseudorandomness.
 */
 using MersenneTwister = Random<std::mt19937, std::mt19937::result_type>;
 

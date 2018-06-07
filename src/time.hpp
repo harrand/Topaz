@@ -84,7 +84,7 @@ private:
 namespace tz::time
 {
 	/**
-	 * Returns the current local time.
+	 * Returns the current local time, in milliseconds.
 	 * @return - Current local-time
 	 */
 	inline long long int now()

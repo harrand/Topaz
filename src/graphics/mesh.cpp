@@ -1,25 +1,62 @@
 #include "mesh.hpp"
+#include <assimp/cimport.h>
+#include <assimp/postprocess.h>
+#include <assimp/scene.h>
+#include <map>
+#include <unordered_set>
 
-Mesh::Mesh(std::string filename): filename(std::move(filename)), model(tz::graphics::model::OBJModel(this->filename).to_indexed_model())
+Mesh::Mesh(std::string filename): filename(std::move(filename))
 {
-	this->init_mesh();
+	const aiScene* scene = aiImportFile(this->filename.c_str(), aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_CalcTangentSpace | aiProcess_JoinIdenticalVertices | aiProcess_TransformUVCoords);
+	if(scene == nullptr)
+    {
+        std::cerr << "Error: Mesh import failed:\n" << aiGetErrorString() << "\n";
+        return;
+    }
+    aiMesh* assimp_mesh = scene->mMeshes[0];
+	/* things to assign:
+	 * position (vec3)
+	 * texcoord (vec2)
+	 * normal (vec3)
+	 * tangent (vec3)
+	 * render_count (uint)
+	 */
+	// Right now, we don't know number of indices. We will find that out after we perform indexing.
+	this->vertices.reserve(assimp_mesh->mNumVertices);
+	for(std::size_t i = 0; i < assimp_mesh->mNumVertices; i++)
+	{
+		Vector3F position{assimp_mesh->mVertices[i].x, assimp_mesh->mVertices[i].y, assimp_mesh->mVertices[i].z};
+        Vector2F texcoord = {};
+        if(assimp_mesh->HasTextureCoords(0))
+        {
+            const aiVector3D* assimp_texcoord = &assimp_mesh->mTextureCoords[0][i];
+            texcoord = {assimp_texcoord->x, assimp_texcoord->y};
+        }
+        Vector3F normal = {};
+		if(assimp_mesh->HasNormals())
+            normal = Vector3F{assimp_mesh->mNormals[i].x, assimp_mesh->mNormals[i].y, assimp_mesh->mNormals[i].z}.normalised();
+        Vector3F tangent = {};
+        if(assimp_mesh->HasTangentsAndBitangents())
+		    tangent = Vector3F{assimp_mesh->mTangents[i].x, assimp_mesh->mTangents[i].y, assimp_mesh->mTangents[i].z}.normalised();
+		this->vertices.emplace_back(position, texcoord, normal, tangent);
+	}
+    for(std::size_t i = 0; i < assimp_mesh->mNumFaces; i++)
+    {
+        const aiFace& face = assimp_mesh->mFaces[i];
+        this->indices.push_back(face.mIndices[0]);
+        this->indices.push_back(face.mIndices[1]);
+        this->indices.push_back(face.mIndices[2]);
+    }
+	aiReleaseImport(scene);
+    this->init_mesh();
 }
 
 Mesh::Mesh(const Vertex* vertices, std::size_t number_of_vertices, const unsigned int* indices, std::size_t number_of_indices)
 {
-	tz::graphics::model::IndexedModel model;
-	
 	for(unsigned int i = 0; i < number_of_vertices; i++)
-	{
-		model.positions.push_back(vertices[i].position);
-		model.texcoords.push_back(vertices[i].texture_coordinate);
-		model.normals.push_back(vertices[i].normal);
-	}
-	
+        this->vertices.push_back(vertices[i]);
 	for(unsigned int i = 0; i < number_of_indices; i++)
-		model.indices.push_back(indices[i]);
-	
-	this->model = model;
+		this->indices.push_back(indices[i]);
 	this->init_mesh();
 }
 
@@ -32,29 +69,45 @@ Mesh::~Mesh()
 	glDeleteVertexArrays(1, &(this->vertex_array_object));
 }
 
-tz::graphics::model::IndexedModel Mesh::get_indexed_model() const
+std::vector<Vector3F> Mesh::get_positions() const
 {
-	return this->model;
+	std::vector<Vector3F> positions;
+	positions.reserve(this->vertices.size());
+	for(const auto& vertex : this->vertices)
+		positions.push_back(vertex.position);
+	return positions;
 }
 
-const std::vector<Vector3F>& Mesh::get_positions() const
+std::vector<Vector2F> Mesh::get_texcoords() const
 {
-	return this->model.positions;
+	std::vector<Vector2F> texture_coordinates;
+	texture_coordinates.reserve(this->vertices.size());
+	for(const auto& vertex : this->vertices)
+		texture_coordinates.push_back(vertex.texture_coordinate);
+	return texture_coordinates;
 }
 
-const std::vector<Vector2F>& Mesh::get_texcoords() const
+std::vector<Vector3F> Mesh::get_normals() const
 {
-	return this->model.texcoords;
+	std::vector<Vector3F> normals;
+	normals.reserve(this->vertices.size());
+	for(const auto& vertex : this->vertices)
+		normals.push_back(vertex.normal);
+	return normals;
 }
 
-const std::vector<Vector3F>& Mesh::get_normals() const
+std::vector<Vector3F> Mesh::get_tangents() const
 {
-	return this->model.normals;
+	std::vector<Vector3F> tangents;
+	tangents.reserve(this->vertices.size());
+	for(const auto& vertex : this->vertices)
+		tangents.push_back(vertex.tangent);
+	return tangents;
 }
 
-const std::vector<Vector3F>& Mesh::get_tangents() const
+const std::vector<unsigned int>& Mesh::get_indices() const
 {
-	return this->model.tangents;
+	return this->indices;
 }
 
 std::string Mesh::get_file_name() const
@@ -68,11 +121,11 @@ void Mesh::render(bool patches, GLenum mode) const
 	if(patches)
 	{
 		glPatchParameteri(GL_PATCH_VERTICES, 3);
-		glDrawElements(GL_PATCHES, this->render_count, GL_UNSIGNED_INT, NULL);
+		glDrawElements(GL_PATCHES, this->indices.size(), GL_UNSIGNED_INT, NULL);
 	}
 	else
 	{
-		glDrawElements(mode, this->render_count, GL_UNSIGNED_INT, NULL);
+		glDrawElements(mode, this->indices.size(), GL_UNSIGNED_INT, NULL);
 	}
 	glBindVertexArray(0);
 }
@@ -86,25 +139,26 @@ bool Mesh::operator==(const Mesh& rhs) const
 void Mesh::init_mesh()
 {
 	using tz::graphics::BufferTypes;
-	this->render_count = this->model.indices.size();
 	// Our vector class is not "c-enough" (contains stuff like protected variables which C structs don't support. Therefore we use VectorSXF instead which can work with OpenGL easily.
 	// However our indices vector from model is fine as-is.
 	std::vector<Vector3POD> positions;
-	positions.reserve(this->model.positions.size());
+	positions.reserve(this->get_positions().size());
     std::vector<Vector2POD> texcoords;
-	texcoords.reserve(this->model.texcoords.size());
+	texcoords.reserve(this->get_texcoords().size());
     std::vector<Vector3POD> normals;
-	normals.reserve(this->model.normals.size());
+	normals.reserve(this->get_normals().size());
 	std::vector<Vector3POD> tangents;
-	tangents.reserve(this->model.tangents.size());
-	for(auto vec : this->model.positions)
+	tangents.reserve(this->get_tangents().size());
+	for(auto vec : this->get_positions())
 		positions.push_back(vec.to_raw());
-	for(auto vec : this->model.texcoords)
+	for(auto vec : this->get_texcoords())
 		texcoords.push_back(vec.to_raw());
-	for(auto vec : this->model.normals)
+	for(auto vec : this->get_normals())
 		normals.push_back(vec.to_raw());
-	for(auto vec : this->model.tangents)
+	for(auto vec : this->get_tangents())
 		tangents.push_back(vec.to_raw());
+
+    std::cout << this->filename << " has " << this->get_indices().size() << " indices.\n";
 	
 	glGenVertexArrays(1, &(this->vertex_array_object));
 	glBindVertexArray(this->vertex_array_object);
@@ -135,9 +189,9 @@ void Mesh::init_mesh()
 	glEnableVertexAttribArray(3);
 	glVertexAttribPointer(3, 3, GL_FLOAT, GL_TRUE, 3 * sizeof(float), NULL);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	
+
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->vbo_buffers[static_cast<unsigned int>(BufferTypes::INDEX)]);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->model.indices.size() * tz::util::sizeof_element(this->model.indices), this->model.indices.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->indices.size() * tz::util::sizeof_element(this->indices), this->indices.data(), GL_STATIC_DRAW);
 	
 	glBindVertexArray(0);
 }
@@ -214,11 +268,11 @@ void InstancedMesh::render(bool patches, GLenum mode) const
 	if(patches)
 	{
 		glPatchParameteri(GL_PATCH_VERTICES, 3);
-		glDrawElementsInstanced(GL_PATCHES, this->render_count, GL_UNSIGNED_INT, 0, this->instance_quantity);
+		glDrawElementsInstanced(GL_PATCHES, this->indices.size(), GL_UNSIGNED_INT, nullptr, this->instance_quantity);
 	}
 	else
 	{
-		glDrawElementsInstanced(mode, this->render_count, GL_UNSIGNED_INT, 0, this->instance_quantity);
+		glDrawElementsInstanced(mode, this->indices.size(), GL_UNSIGNED_INT, nullptr, this->instance_quantity);
 	}
 	glBindVertexArray(0);
 }
