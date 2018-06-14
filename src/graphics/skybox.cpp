@@ -4,9 +4,9 @@
 
 #include "skybox.hpp"
 
-Skybox::Skybox(std::string cube_mesh_link, CubeMap& cm): cube_mesh_link(cube_mesh_link), cm(cm){}
+Skybox::Skybox(std::string cube_mesh_link, CubeMap& cm): cube_mesh_link(cube_mesh_link), cm(cm), cube(tz::graphics::create_cube()){}
 
-void Skybox::render(const Camera& cam, Shader& shad, const Mesh& skybox_mesh, float width, float height)
+void Skybox::render(const Camera& cam, Shader& shad, float width, float height, const std::optional<Mesh>& skybox_mesh)
 {
     shad.bind();
     this->cm.bind(&shad, tz::graphics::texture_cubemap_sampler_id);
@@ -19,6 +19,9 @@ void Skybox::render(const Camera& cam, Shader& shad, const Mesh& skybox_mesh, fl
     shad.set_uniform<float>("displacement_factor", 0);
     shad.update();
     glFrontFace(GL_CW);
-    skybox_mesh.render(shad.has_tessellation_control_shader());
+    if(skybox_mesh.has_value())
+        skybox_mesh.value().render(shad.has_tessellation_control_shader());
+    else
+        this->cube.render(shad.has_tessellation_control_shader());
     glFrontFace(GL_CCW);
 }

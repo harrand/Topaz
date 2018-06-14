@@ -31,12 +31,14 @@ public:
      * @param width - Width of the viewport, in any unit proportional to pixels
      * @param height - Height of the viewport, in any unit proportional to pixels
      */
-    void render(const Camera& cam, Shader& shad, const Mesh& skybox_mesh, float width, float height);
+    void render(const Camera& cam, Shader& shad, float width, float height, const std::optional<Mesh>& skybox_mesh = std::nullopt);
 private:
     /// Path to the cube-map Mesh being used by this Skybox.
     std::string cube_mesh_link;
     /// Underlying CubeMap.
     CubeMap& cm;
+    /// Simple cube for the Skybox to use by default.
+    Mesh cube;
 };
 
 

@@ -48,8 +48,6 @@ void init()
     Shader skybox_shader("../../../src/shaders/skybox");
     Skybox skybox("../../../res/runtime/models/skybox.obj", skybox_texture);
 
-    Mesh cube = tz::graphics::create_cube();
-
     long long int time = tz::time::now();
     Timer second_timer;
     TimeProfiler profiler;
@@ -74,7 +72,7 @@ void init()
 
         scene.render(render_shader, camera, {wnd.get_width(), wnd.get_height()});
 
-        skybox.render(camera, skybox_shader, cube, wnd.get_width(), wnd.get_height());
+        skybox.render(camera, skybox_shader, wnd.get_width(), wnd.get_height());
 
         wnd.update(gui_shader);
         if(mouse_listener.is_left_clicked() /*&& gui_panel.is_hidden()*/)
