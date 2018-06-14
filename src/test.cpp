@@ -35,7 +35,6 @@ void init()
     Scene scene;
 
     AssetBuffer assets({std::make_shared<Mesh>("../../../res/runtime/models/cube_hd.obj")}, {std::make_shared<Texture>("../../../res/runtime/textures/bricks.jpg")}, {std::make_shared<NormalMap>("../../../res/runtime/normalmaps/bricks_normalmap.jpg")}, {std::make_shared<ParallaxMap>("../../../res/runtime/parallaxmaps/bricks_parallax.jpg", 0.04f, 0.2f)}, {std::make_shared<DisplacementMap>("../../../res/runtime/displacementmaps/bricks_displacement.png")});
-    Mesh skybox_mesh = assets.emplace<Mesh>(std::string("../../../res/runtime/models/skybox.obj"));
     Asset asset0(assets.meshes.front(), assets.textures.front(), assets.normal_maps.front(), assets.parallax_maps.front(), assets.displacement_maps.front());
     Asset asset1(assets.meshes.front(), assets.textures.front(), assets.normal_maps.front(), assets.parallax_maps.front());
     Asset asset2(assets.meshes.front(), assets.textures.front(), assets.normal_maps.front());
@@ -73,7 +72,7 @@ void init()
 
         scene.render(render_shader, camera, {wnd.get_width(), wnd.get_height()});
 
-        skybox.render(camera, skybox_shader, skybox_mesh, wnd.get_width(), wnd.get_height());
+        skybox.render(camera, skybox_shader, *assets.meshes.front(), wnd.get_width(), wnd.get_height());
 
         wnd.update(gui_shader);
         if(mouse_listener.is_left_clicked() /*&& gui_panel.is_hidden()*/)
