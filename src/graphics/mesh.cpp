@@ -296,3 +296,38 @@ Mesh tz::graphics::create_quad(float x, float y, float width, float height)
 	std::array<unsigned int, 6> indices({0, 1, 2, 0, 2, 3});
 	return {vertices.data(), vertices.size(), indices.data(), indices.size()};
 }
+
+Mesh tz::graphics::create_cube()
+{
+	std::vector<Vertex> vertices;
+	vertices.emplace_back(Vector3F(-1, -1, -1), Vector2F(1, 0), Vector3F(0, 0, -1));
+	vertices.emplace_back(Vector3F(-1, 1, -1), Vector2F(0, 0), Vector3F(0, 0, -1));
+	vertices.emplace_back(Vector3F(1, 1, -1), Vector2F(0, 1), Vector3F(0, 0, -1));
+	vertices.emplace_back(Vector3F(1, -1, -1), Vector2F(1, 1), Vector3F(0, 0, -1));
+
+	vertices.emplace_back(Vector3F(-1, -1, 1), Vector2F(1, 0), Vector3F(0, 0, 1));
+	vertices.emplace_back(Vector3F(-1, 1, 1), Vector2F(0, 0), Vector3F(0, 0, 1));
+	vertices.emplace_back(Vector3F(1, 1, 1), Vector2F(0, 1), Vector3F(0, 0, 1));
+	vertices.emplace_back(Vector3F(1, -1, 1), Vector2F(1, 1), Vector3F(0, 0, 1));
+
+	vertices.emplace_back(Vector3F(-1, -1, -1), Vector2F(0, 1), Vector3F(0, -1, 0));
+	vertices.emplace_back(Vector3F(-1, -1, 1), Vector2F(1, 1), Vector3F(0, -1, 0));
+	vertices.emplace_back(Vector3F(1, -1, 1), Vector2F(1, 0), Vector3F(0, -1, 0));
+	vertices.emplace_back(Vector3F(1, -1, -1), Vector2F(0, 0), Vector3F(0, -1, 0));
+
+	vertices.emplace_back(Vector3F(-1, 1, -1), Vector2F(0, 1), Vector3F(0, 1, 0));
+	vertices.emplace_back(Vector3F(-1, 1, 1), Vector2F(1, 1), Vector3F(0, 1, 0));
+	vertices.emplace_back(Vector3F(1, 1, 1), Vector2F(1, 0), Vector3F(0, 1, 0));
+	vertices.emplace_back(Vector3F(1, 1, -1), Vector2F(0, 0), Vector3F(0, 1, 0));
+
+	vertices.emplace_back(Vector3F(-1, -1, -1), Vector2F(1, 1), Vector3F(-1, 0, 0));
+	vertices.emplace_back(Vector3F(-1, -1, 1), Vector2F(1, 0), Vector3F(-1, 0, 0));
+	vertices.emplace_back(Vector3F(-1, 1, 1), Vector2F(0, 0), Vector3F(-1, 0, 0));
+	vertices.emplace_back(Vector3F(-1, 1, -1), Vector2F(0, 1), Vector3F(-1, 0, 0));
+
+	vertices.emplace_back(Vector3F(1, -1, -1), Vector2F(1, 1), Vector3F(1, 0, 0));
+	vertices.emplace_back(Vector3F(1, -1, 1), Vector2F(1, 0), Vector3F(1, 0, 0));
+	vertices.emplace_back(Vector3F(1, 1, 1), Vector2F(0, 0), Vector3F(1, 0, 0));
+	vertices.emplace_back(Vector3F(1, 1, -1), Vector2F(0, 1), Vector3F(1, 0, 0));
+	return {vertices, {0, 1, 2, 0, 2, 3, 6, 5, 4, 7, 6, 4, 10, 9, 8, 11, 10, 8, 12, 13, 14, 12, 14, 15, 16, 17, 18, 16, 18, 19, 22, 21, 20, 23, 22, 20}};
+}

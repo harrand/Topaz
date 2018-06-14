@@ -211,6 +211,11 @@ namespace tz
 		 * @return - The constructed Quad mesh
 		 */
 		Mesh create_quad(float x = 0.0f, float y = 0.0f, float width = 1.0f, float height = -1.0f);
+		/**
+		 * Create a simple cube mesh.
+		 * @return - A cube mesh
+		 */
+		Mesh create_cube();
 	}
 }
 
