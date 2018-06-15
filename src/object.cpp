@@ -39,13 +39,11 @@ void StaticObject::render(Shader& render_shader, const Camera& camera, const Vec
     this->asset.mesh.lock()->render(render_shader.has_tessellation_control_shader());
 }
 
-DynamicObject::DynamicObject(float mass, Transform transform, Asset asset, Vector3F velocity, std::initializer_list<Vector3F> forces): StaticObject(transform, asset), PhysicsObject(mass, velocity, forces){}
+DynamicObject::DynamicObject(float mass, Transform transform, Asset asset, Vector3F velocity, Vector3F angular_velocity, std::initializer_list<Vector3F> forces): StaticObject(transform, asset), PhysicsObject(mass, velocity, angular_velocity, forces){}
 
 void DynamicObject::update(float delta_time)
 {
     PhysicsObject::update(delta_time);
-    std::cout << "velocity = " << this->velocity;
-    Vector3F delta = (this->velocity * delta_time);
-    this->transform.position += delta;
-    std::cout << "delta = " << delta << "\n";
+    this->transform.position += (this->velocity * delta_time);
+    this->transform.rotation += (this->angular_velocity * delta_time);
 }

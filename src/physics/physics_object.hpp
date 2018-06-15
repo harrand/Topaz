@@ -6,7 +6,7 @@
 class PhysicsObject
 {
 public:
-    PhysicsObject(float mass, Vector3F velocity = {}, std::initializer_list<Vector3F> forces = {});
+    PhysicsObject(float mass, Vector3F velocity = {}, Vector3F angular_velocity = {}, std::initializer_list<Vector3F> forces = {});
     /**
      * Get the net-force acting on this PhysicsObject.
      * @return - The net-force, in kilograms world-units per second squared (kg w s^(-2)).
@@ -28,6 +28,8 @@ public:
     float mass;
     /// Velocity, in world-units per second.
     Vector3F velocity;
+    /// Angular-velocity, in radians per second.
+    Vector3F angular_velocity;
 protected:
     /// Container of all the forces acting upon the PhysicsObject.
     std::vector<Vector3F> forces;

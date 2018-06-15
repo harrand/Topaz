@@ -39,12 +39,13 @@ void init()
     Asset asset1(assets.meshes.front(), assets.textures.front(), assets.normal_maps.front(), assets.parallax_maps.front());
     Asset asset2(assets.meshes.front(), assets.textures.front(), assets.normal_maps.front());
     Asset asset3(assets.meshes.front(), assets.textures.front());
-    StaticObject& test_object0 = scene.emplace_object(Transform{Vector3F{-50, 0, 0}, Vector3F{0, 0, 0}, Vector3F{10, 10, 10}}, asset0);
-    StaticObject& test_object1 = scene.emplace_object(Transform{Vector3F{-25, 0, 0}, Vector3F{0, 0, 0}, Vector3F{5, 5, 5}}, asset1);
-    StaticObject& test_object2 = scene.emplace_object(Transform{Vector3F{0, 0, 0}, Vector3F{0, 0, 0}, Vector3F{7, 7, 7}}, asset2);
-    StaticObject& test_object3 = scene.emplace_object(Transform{{25}, {}, {10, 10, 10}}, asset3);
+    scene.emplace_object(Transform{Vector3F{-50, 0, 0}, Vector3F{0, 0, 0}, Vector3F{10, 10, 10}}, asset0);
+    scene.emplace_object(Transform{Vector3F{-25, 0, 0}, Vector3F{0, 0, 0}, Vector3F{5, 5, 5}}, asset1);
+    scene.emplace_object(Transform{Vector3F{0, 0, 0}, Vector3F{0, 0, 0}, Vector3F{7, 7, 7}}, asset2);
+    scene.emplace_object(Transform{{25}, {}, {10, 10, 10}}, asset3);
     DynamicObject& test_dynamic = scene.emplace<DynamicObject>(1.0f, Transform{{}, {}, {20, 20, 20}}, asset0);
     test_dynamic.add_force({0.0f, -9.81f, 0.0f});
+    test_dynamic.angular_velocity = {0.0f, 2.0f * tz::consts::pi, 0.2f};
 
     CubeMap skybox_texture("../../../res/runtime/textures/skybox/", "cwd", ".jpg");
     Shader skybox_shader("../../../src/shaders/skybox");
@@ -93,12 +94,5 @@ void init()
             camera.position += camera.left() * delta_time * speed;
         if(key_listener.is_key_pressed("D"))
             camera.position += camera.right() * delta_time * speed;
-        static int x = 0;
-        x++;
-        float rot = tz::consts::pi * std::sin(x / 1000.0f);
-        test_object0.transform.rotation.y = rot;
-        test_object1.transform.rotation.y = rot;
-        test_object2.transform.rotation.y = rot;
-        test_object3.transform.rotation.y = rot;
     }
 }
