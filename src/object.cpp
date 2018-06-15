@@ -1,13 +1,13 @@
-#include "scene_object.hpp"
+#include "object.hpp"
 
-SceneObject::SceneObject(Transform transform, Asset asset): transform(transform), asset(asset){}
+StaticObject::StaticObject(Transform transform, Asset asset): transform(transform), asset(asset){}
 
-const Asset& SceneObject::get_asset() const
+const Asset& StaticObject::get_asset() const
 {
     return this->asset;
 }
 
-void SceneObject::render(Shader& render_shader, const Camera& camera, const Vector2<int>& viewport_dimensions) const
+void StaticObject::render(Shader& render_shader, const Camera& camera, const Vector2<int>& viewport_dimensions) const
 {
     if(!this->asset.valid_mesh())
     {
@@ -37,4 +37,15 @@ void SceneObject::render(Shader& render_shader, const Camera& camera, const Vect
     render_shader.set_uniform<Matrix4x4>(tz::graphics::render_shader_projection_uniform_name, camera.projection(viewport_dimensions.x, viewport_dimensions.y));
     render_shader.update();
     this->asset.mesh.lock()->render(render_shader.has_tessellation_control_shader());
+}
+
+DynamicObject::DynamicObject(float mass, Transform transform, Asset asset, Vector3F velocity, std::initializer_list<Vector3F> forces): StaticObject(transform, asset), PhysicsObject(mass, velocity, forces){}
+
+void DynamicObject::update(float delta_time)
+{
+    PhysicsObject::update(delta_time);
+    std::cout << "velocity = " << this->velocity;
+    Vector3F delta = (this->velocity * delta_time);
+    this->transform.position += delta;
+    std::cout << "delta = " << delta << "\n";
 }

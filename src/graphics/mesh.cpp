@@ -158,8 +158,6 @@ void Mesh::init_mesh()
 	for(auto vec : this->get_tangents())
 		tangents.push_back(vec.to_raw());
 
-    std::cout << this->filename << " has " << this->get_indices().size() << " indices.\n";
-	
 	glGenVertexArrays(1, &(this->vertex_array_object));
 	glBindVertexArray(this->vertex_array_object);
 	

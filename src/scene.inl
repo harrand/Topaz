@@ -1,11 +1,11 @@
 template<class Element, typename... Args>
 Element& Scene::emplace(Args&&... args)
 {
-    if constexpr(std::is_same<Element, SceneObject>::value)
+    if constexpr(std::is_same<Element, StaticObject>::value)
     {
         return emplace_object(std::forward<Args>(args)...);
     }
-    else if constexpr(std::is_base_of_v<SceneObject, Element>)
+    else if constexpr(std::is_base_of_v<StaticObject, Element>)
     {
         this->heap_objects.push_back(std::make_shared<Element>(std::forward<Args>(args)...));
         return *(dynamic_cast<Element*>(this->heap_objects.back().get()));
@@ -18,8 +18,8 @@ Element& Scene::emplace(Args&&... args)
 }
 
 template<typename... Args>
-SceneObject& Scene::emplace_object(Args&&... args)
+StaticObject& Scene::emplace_object(Args&&... args)
 {
-    this->heap_objects.push_back(std::make_shared<SceneObject>(std::forward<Args>(args)...));
+    this->heap_objects.push_back(std::make_shared<StaticObject>(std::forward<Args>(args)...));
     return *(this->heap_objects.back().get());
 }

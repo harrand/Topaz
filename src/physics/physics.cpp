@@ -1,45 +1,5 @@
 #include "physics.hpp"
 
-Force::Force(Vector3F size): size(std::move(size)){}
-
-Force Force::operator+(const Force& other) const
-{
-	return (this->size + other.size);
-}
-
-Force Force::operator-(const Force& other) const
-{
-	return (this->size - other.size);
-}
-
-Force Force::operator*(float rhs) const
-{
-	return (this->size * rhs);
-}
-
-Force Force::operator/(float rhs) const
-{
-	return (this->size / rhs);
-}
-
-Force& Force::operator+=(const Force& other)
-{
-	this->size += other.size;
-	return *this;
-}
-
-Force& Force::operator-=(const Force& other)
-{
-	this->size -= other.size;
-	this->size -= other.size;
-	return *this;
-}
-
-bool Force::operator==(const Force& rhs) const
-{
-	return this->size == rhs.size;
-}
-
 BoundingSphere tz::physics::bound_sphere(const Mesh& mesh)
 {
 	Vector3F mean_modelspace = std::accumulate(mesh.get_positions().begin(), mesh.get_positions().end(), Vector3F(), [](const Vector3F& a, const Vector3F& b) -> Vector3F{return a + b;}) / mesh.get_positions().size();

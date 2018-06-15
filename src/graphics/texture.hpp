@@ -44,24 +44,46 @@ namespace tz::graphics
     /// Pixel of the default-displacement-map.
     constexpr PixelRGBA default_displacement_map_pixel = PixelRGBA(0, 0, 0, 255);
 
+	/// Contains constants and helper functions about Assets used, such as textures and normal-maps.
 	namespace asset
 	{
 		constexpr float default_parallax_map_scale = 0.04f;
 		constexpr float default_parallax_map_offset = -0.5f;
 		constexpr float default_displacement_factor = 0.25f;
+		/**
+		 * Unbind any existing Textures.
+		 */
         inline void unbind_texture();
+		/**
+		 * Unbind any existing normal-maps, and notify the render-shader that a normal-map isn't being used.
+		 * @param render_shader - The render-shader to notify of this change
+		 */
         inline void unbind_normal_map(Shader& render_shader);
+		/**
+		 * Unbind any existing parallax-maps, and notify the render-shader that a parallax-map isn't being used.
+		 * @param render_shader - The render-shader to notify of this change
+		 */
         inline void unbind_parallax_map(Shader& render_shader);
+		/**
+		 * Unbind any existing displacement-maps, and notify the render-shader that a displacement-map isn't being used.
+		 * @param render_shader - The render-shader to notify of this change
+		 */
         inline void unbind_displacement_map(Shader& render_shader);
+		/**
+		 * Unbind any existing textures, normal-maps, parallax-maps and displacement-maps and notify the render-shader that none of them are being used.
+		 * @param render_shader - The render-shader to notify of these changes
+		 */
         inline void unbind_all_textures(Shader& render_shader);
 	}
 
+	/// What kind of data should the Texture's bitmap store? e.g a depth-texture.
 	enum class TextureComponent : unsigned int
 	{
 		COLOUR_TEXTURE,
 		DEPTH_TEXTURE
 	};
 
+	/// What is the texture? e.g a normal-map.
 	enum class TextureType : unsigned int
 	{
 		TEXTURE,
@@ -69,7 +91,8 @@ namespace tz::graphics
 		PARALLAX_MAP,
 		DISPLACEMENT_MAP,
 	};
-	
+
+	/// What type of mipmapping should be used? e.g nearest.
 	enum class MipmapType : GLint
 	{
 		NEAREST = GL_NEAREST_MIPMAP_NEAREST,
@@ -82,7 +105,7 @@ namespace tz::graphics
 
 /**
 * Holds pixel and colour data and can interact with OpenGL buffers.
-* Bind Textures so that Topaz Meshes do not render monochromoatically.
+* Bind Textures so that Topaz Meshes do not render monochromatically.
 */
 class Texture
 {
@@ -141,7 +164,6 @@ public:
 	 * @return - This modified Texture.
 	 */
 	Texture& operator=(Texture&& rhs);
-
 	/**
 	 * Bind this texture to the specified shader, with the uniform sampler-id specified.
 	 * @param shader - Shader with which to render this Texture.

@@ -39,10 +39,12 @@ void init()
     Asset asset1(assets.meshes.front(), assets.textures.front(), assets.normal_maps.front(), assets.parallax_maps.front());
     Asset asset2(assets.meshes.front(), assets.textures.front(), assets.normal_maps.front());
     Asset asset3(assets.meshes.front(), assets.textures.front());
-    SceneObject& test_object0 = scene.emplace_object(Transform{Vector3F{-50, 0, 0}, Vector3F{0, 0, 0}, Vector3F{10, 10, 10}}, asset0);
-    SceneObject& test_object1 = scene.emplace_object(Transform{Vector3F{-25, 0, 0}, Vector3F{0, 0, 0}, Vector3F{5, 5, 5}}, asset1);
-    SceneObject& test_object2 = scene.emplace_object(Transform{Vector3F{0, 0, 0}, Vector3F{0, 0, 0}, Vector3F{7, 7, 7}}, asset2);
-    SceneObject& test_object3 = scene.emplace_object(Transform{{25}, {}, {10, 10, 10}}, asset3);
+    StaticObject& test_object0 = scene.emplace_object(Transform{Vector3F{-50, 0, 0}, Vector3F{0, 0, 0}, Vector3F{10, 10, 10}}, asset0);
+    StaticObject& test_object1 = scene.emplace_object(Transform{Vector3F{-25, 0, 0}, Vector3F{0, 0, 0}, Vector3F{5, 5, 5}}, asset1);
+    StaticObject& test_object2 = scene.emplace_object(Transform{Vector3F{0, 0, 0}, Vector3F{0, 0, 0}, Vector3F{7, 7, 7}}, asset2);
+    StaticObject& test_object3 = scene.emplace_object(Transform{{25}, {}, {10, 10, 10}}, asset3);
+    DynamicObject& test_dynamic = scene.emplace<DynamicObject>(1.0f, Transform{{}, {}, {20, 20, 20}}, asset0);
+    test_dynamic.add_force({0.0f, -9.81f, 0.0f});
 
     CubeMap skybox_texture("../../../res/runtime/textures/skybox/", "cwd", ".jpg");
     Shader skybox_shader("../../../src/shaders/skybox");
@@ -71,6 +73,7 @@ void init()
         profiler.end_frame();
 
         scene.render(render_shader, camera, {wnd.get_width(), wnd.get_height()});
+        scene.update(delta_time / 1000.0f);
 
         skybox.render(camera, skybox_shader, wnd.get_width(), wnd.get_height());
 
