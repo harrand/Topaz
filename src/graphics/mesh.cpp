@@ -194,50 +194,86 @@ void Mesh::init_mesh()
 	glBindVertexArray(0);
 }
 
-InstancedMesh::InstancedMesh(std::string filename, std::vector<Vector3F> positions, std::vector<Vector3F> rotations, std::vector<Vector3F> scales): Mesh(filename), positions(positions), rotations(rotations), scales(scales), instance_quantity(std::max({this->positions.size(), this->rotations.size(), this->scales.size()}))
+InstancedMesh::InstancedMesh(std::string filename, std::vector<Vector3F> positions, std::vector<Vector3F> rotations, std::vector<Vector3F> scales): Mesh(filename), positions(positions), rotations(rotations), scales(scales), models({}), instance_quantity(std::max({this->positions.size(), this->rotations.size(), this->scales.size()}))
 {
-	glBindVertexArray(this->vertex_array_object);
-	// Instance Positions
-	glGenBuffers(1, &this->positions_instance_vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, this->positions_instance_vbo);
-	glBufferData(GL_ARRAY_BUFFER, this->positions.size() * tz::util::sizeof_element(this->positions), this->positions.data(), GL_STATIC_DRAW);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	
-	glEnableVertexAttribArray(4);
-	glBindBuffer(GL_ARRAY_BUFFER, this->positions_instance_vbo);
-	glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), NULL);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);	
-	glVertexAttribDivisor(4, 1);
-	// Instance Rotations
-	glGenBuffers(1, &this->rotations_instance_vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, this->rotations_instance_vbo);
-	glBufferData(GL_ARRAY_BUFFER, this->rotations.size() * tz::util::sizeof_element(this->rotations), this->rotations.data(), GL_STATIC_DRAW);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
+    // Build all of the model matrices.
+    std::size_t number_of_matrices = positions.size();
+    this->models.reserve(number_of_matrices);
+    for(std::size_t i = 0; i < number_of_matrices; i++)
+    {
+        Vector3F position = this->positions[i];
+        // Rotation and Scale aren't guaranteed to exist, so double check and default if not exist.
+        Vector3F rotation, scale;
+        try
+        {
+            rotation = this->rotations.at(i);
+            scale = this->scales.at(i);
+        }catch(const std::out_of_range& oor){rotation = {}; scale = {1, 1, 1};}
+        this->models.push_back(tz::transform::model(position, rotation, scale));
+    }
 
-	glBindBuffer(GL_ARRAY_BUFFER, this->rotations_instance_vbo);	
-	glEnableVertexAttribArray(5);
-	glVertexAttribPointer(5, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), NULL);
-	glVertexAttribDivisor(5, 1);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	
-	glGenBuffers(1, &this->scales_instance_vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, this->scales_instance_vbo);
-	glBufferData(GL_ARRAY_BUFFER, this->scales.size() * tz::util::sizeof_element(this->scales), this->scales.data(), GL_STATIC_DRAW);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	
-	glBindBuffer(GL_ARRAY_BUFFER, this->scales_instance_vbo);
-	glEnableVertexAttribArray(6);
-	glVertexAttribPointer(6, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), NULL);
-	glVertexAttribDivisor(6, 1);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
+    // Foreach model matrix, populate each row so they can be individually sent to VRAM.
+    std::vector<Vector4POD> xs, ys, zs, ws;
+    for(Matrix4x4 model : this->models)
+    {
+        xs.push_back(model.x.to_raw());
+        ys.push_back(model.y.to_raw());
+        zs.push_back(model.z.to_raw());
+        ws.push_back(model.w.to_raw());
+    }
+
+    // Populate Mesh::vertex_array_object with additional vbo buffers.
+	glBindVertexArray(this->vertex_array_object);
+    // Row X (attribute 4)
+    glGenBuffers(1, &this->model_matrix_x_vbo);
+    glBindBuffer(GL_ARRAY_BUFFER, this->model_matrix_x_vbo);
+    glBufferData(GL_ARRAY_BUFFER, xs.size() * tz::util::sizeof_element(xs), xs.data(), GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glEnableVertexAttribArray(4);
+    glBindBuffer(GL_ARRAY_BUFFER, this->model_matrix_x_vbo);
+    glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), NULL);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glVertexAttribDivisor(4, 1);
+    // Row Y (attribute 5)
+    glGenBuffers(1, &this->model_matrix_y_vbo);
+    glBindBuffer(GL_ARRAY_BUFFER, this->model_matrix_y_vbo);
+    glBufferData(GL_ARRAY_BUFFER, ys.size() * tz::util::sizeof_element(ys), ys.data(), GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ARRAY_BUFFER, this->model_matrix_y_vbo);
+    glEnableVertexAttribArray(5);
+    glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), NULL);
+    glVertexAttribDivisor(5, 1);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    // Row Z (attribute 6)
+    glGenBuffers(1, &this->model_matrix_z_vbo);
+    glBindBuffer(GL_ARRAY_BUFFER, this->model_matrix_z_vbo);
+    glBufferData(GL_ARRAY_BUFFER, zs.size() * tz::util::sizeof_element(zs), zs.data(), GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ARRAY_BUFFER, this->model_matrix_z_vbo);
+    glEnableVertexAttribArray(6);
+    glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), NULL);
+    glVertexAttribDivisor(6, 1);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    // Row W (attribute 7)
+    glGenBuffers(1, &this->model_matrix_w_vbo);
+    glBindBuffer(GL_ARRAY_BUFFER, this->model_matrix_w_vbo);
+    glBufferData(GL_ARRAY_BUFFER, ws.size() * tz::util::sizeof_element(ws), ws.data(), GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ARRAY_BUFFER, this->model_matrix_w_vbo);
+    glEnableVertexAttribArray(7);
+    glVertexAttribPointer(7, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), NULL);
+    glVertexAttribDivisor(7, 1);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    // Finish working with our new vao.
 	glBindVertexArray(0);
 }
 
 InstancedMesh::~InstancedMesh()
 {
-	glDeleteBuffers(1, &positions_instance_vbo);
-	glDeleteBuffers(1, &rotations_instance_vbo);
-	glDeleteBuffers(1, &scales_instance_vbo);
+	glDeleteBuffers(1, &(this->model_matrix_x_vbo));
+    glDeleteBuffers(1, &(this->model_matrix_y_vbo));
+    glDeleteBuffers(1, &(this->model_matrix_z_vbo));
+    glDeleteBuffers(1, &(this->model_matrix_w_vbo));
 }
 
 const std::vector<Vector3F>& InstancedMesh::get_instance_positions() const
@@ -253,6 +289,11 @@ const std::vector<Vector3F>& InstancedMesh::get_instance_rotations() const
 const std::vector<Vector3F>& InstancedMesh::get_instance_scales() const
 {
 	return this->scales;
+}
+
+const std::vector<Matrix4x4>& InstancedMesh::get_model_matrices() const
+{
+    return this->models;
 }
 
 std::size_t InstancedMesh::get_instance_quantity() const

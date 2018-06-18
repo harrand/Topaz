@@ -158,6 +158,11 @@ public:
 	 * @return - Container of instance scale offsets
 	 */
 	const std::vector<Vector3F>& get_instance_scales() const;
+    /**
+     * Get a container of all the 4-dimensional square-matrices representing each corresponding model-matrix.
+     * @return - Container of all model-matrices
+     */
+    const std::vector<Matrix4x4>& get_model_matrices() const;
 	/**
 	 * Get the number of additional instances (excluding the normal mesh).
 	 * @return - Number of instances
@@ -172,10 +177,12 @@ public:
 private:
 	/// Instance offsets.
 	std::vector<Vector3F> positions, rotations, scales;
+    /// Model Matrices.
+    std::vector<Matrix4x4> models;
 	/// Number of instances.
 	std::size_t instance_quantity;
 	/// Underlying OpenGL VBO handles.
-	GLuint positions_instance_vbo, rotations_instance_vbo, scales_instance_vbo;
+	GLuint model_matrix_x_vbo, model_matrix_y_vbo, model_matrix_z_vbo, model_matrix_w_vbo;
 };
 
 namespace tz

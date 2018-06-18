@@ -69,6 +69,11 @@ void Shader::compile(std::string vertex_source, std::string tessellation_control
 	this->attribute_locations[1] = "texcoord";
 	this->attribute_locations[2] = "normal";
 	this->attribute_locations[3] = "tangent";
+	// extras for instancing purposes.
+	this->attribute_locations[4] = "instancing_model_x";
+	this->attribute_locations[5] = "instancing_model_y";
+	this->attribute_locations[6] = "instancing_model_z";
+	this->attribute_locations[7] = "instancing_model_w";
 	for(auto [id, location] : this->attribute_locations)
 	{
 		glBindAttribLocation(this->program_handle, id, location.c_str());

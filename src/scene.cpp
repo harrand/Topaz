@@ -13,7 +13,7 @@ void Scene::render(Shader& render_shader, const Camera& camera, const Vector2<in
     for(auto object_cref : this->get_objects())
     {
         AABB object_box = tz::physics::bound_aabb(*(object_cref.get().get_asset().mesh.lock()));
-        if(camera_frustum.contains(object_box * object_cref.get().transform.model()))
+        if(camera_frustum.contains(object_box * object_cref.get().transform.model()) || tz::graphics::is_instanced(object_cref.get().get_asset().mesh.lock().get()))
             object_cref.get().render(render_shader, camera, viewport_dimensions);
     }
 }

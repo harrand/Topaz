@@ -18,8 +18,19 @@ public:
     const Asset& get_asset() const;
     virtual void render(Shader& render_shader, const Camera& camera, const Vector2<int>& viewport_dimensions) const;
     Transform transform;
+
+    friend class InstancedStaticObject;
 protected:
     Asset asset;
+};
+
+class InstancedStaticObject : public StaticObject
+{
+public:
+    InstancedStaticObject(const std::vector<StaticObject>& objects);
+    virtual void render(Shader& instanced_render_shader, const Camera& camera, const Vector2<int>& viewport_dimensions) const override;
+private:
+    std::shared_ptr<InstancedMesh> instanced_mesh;
 };
 
 class DynamicObject : public StaticObject, public PhysicsObject

@@ -28,7 +28,7 @@ void init()
     MouseListener mouse_listener(wnd);
 
     constexpr float speed = 0.5f;
-	Shader render_shader("../../../src/shaders/3D_FullAssets");
+	Shader render_shader("../../../src/shaders/3D_FullAssetsInstanced");
 	Shader gui_shader("../../../src/shaders/gui");
     Camera camera;
     camera.position = {0, 0, -50};
@@ -50,6 +50,24 @@ void init()
     CubeMap skybox_texture("../../../res/runtime/textures/skybox/", "cwd", ".jpg");
     Shader skybox_shader("../../../src/shaders/skybox");
     Skybox skybox("../../../res/runtime/models/skybox.obj", skybox_texture);
+
+    /*
+    for(float i = 0; i < 200; i += 1.0f)
+    {
+        scene.emplace_object(Transform{{(float)((int)i % 20), i, (float)((int)i % 30)}, {}, {5, 5, 5}}, asset3);
+    }
+    */
+
+    ///*
+    std::vector<StaticObject> objects;
+    for(float i = 0; i < 200; i += 1.0f)
+    {
+        objects.emplace_back(Transform{{(float)((int)i % 20), i, (float)((int)i % 30)}, {}, {5, 5, 5}}, asset3);
+    }
+    scene.emplace<InstancedStaticObject>(objects);
+    //*/
+
+    std::cout << "number of objects in scene = " << scene.get_objects().size() << "\n";
 
     long long int time = tz::time::now();
     Timer second_timer;
