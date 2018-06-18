@@ -8,29 +8,37 @@
 
 struct AssetBuffer
 {
-    AssetBuffer(std::vector<std::shared_ptr<Mesh>> meshes, std::vector<std::shared_ptr<Texture>> textures, std::vector<std::shared_ptr<NormalMap>> normal_maps = {}, std::vector<std::shared_ptr<ParallaxMap>> parallax_maps = {}, std::vector<std::shared_ptr<DisplacementMap>> displacement_maps = {});
+    AssetBuffer(std::unordered_map<std::string, std::shared_ptr<Mesh>> meshes, std::unordered_map<std::string, std::shared_ptr<Texture>> textures, std::unordered_map<std::string, std::shared_ptr<NormalMap>> normal_maps = {}, std::unordered_map<std::string, std::shared_ptr<ParallaxMap>> parallax_maps = {}, std::unordered_map<std::string, std::shared_ptr<DisplacementMap>> displacement_maps = {});
 	template<typename AssetType, typename... Args>
-	AssetType& emplace(Args&&... args);
+	AssetType& emplace(const std::string& asset_name, Args&&... args);
 	template<typename... Args>
-	Mesh& emplace_mesh(Args&&... args);
+	Mesh& emplace_mesh(const std::string& asset_name, Args&&... args);
 	template<typename... Args>
-	Texture& emplace_texture(Args&&... args);
+	Texture& emplace_texture(const std::string& asset_name, Args&&... args);
 	template<typename... Args>
-	NormalMap& emplace_normalmap(Args&&... args);
+	NormalMap& emplace_normalmap(const std::string& asset_name, Args&&... args);
 	template<typename... Args>
-	ParallaxMap& emplace_parallaxmap(Args&&... args);
+	ParallaxMap& emplace_parallaxmap(const std::string& asset_name, Args&&... args);
 	template<typename... Args>
-	DisplacementMap& emplace_displacementmap(Args&&... args);
-	/// Container of Mesh assets.
-	std::vector<std::shared_ptr<Mesh>> meshes;
+	DisplacementMap& emplace_displacementmap(const std::string& asset_name, Args&&... args);
+    template<class AssetType>
+    std::shared_ptr<AssetType> find(const std::string& asset_name);
+    std::shared_ptr<Mesh> find_mesh(const std::string& mesh_name);
+    std::shared_ptr<Texture> find_texture(const std::string& texture_name);
+    std::shared_ptr<NormalMap> find_normal_map(const std::string& normal_map_name);
+    std::shared_ptr<ParallaxMap> find_parallax_map(const std::string& parallax_map_name);
+    std::shared_ptr<DisplacementMap> find_displacement_map(const std::string& displacement_map_name);
+
+    /// Container of Mesh assets.
+	std::unordered_map<std::string, std::shared_ptr<Mesh>> meshes;
 	/// Container of Texture assets.
-	std::vector<std::shared_ptr<Texture>> textures;
+	std::unordered_map<std::string, std::shared_ptr<Texture>> textures;
 	/// Container of NormalMap assets.
-	std::vector<std::shared_ptr<NormalMap>> normal_maps;
+	std::unordered_map<std::string, std::shared_ptr<NormalMap>> normal_maps;
 	/// Container of ParallaxMap assets.
-	std::vector<std::shared_ptr<ParallaxMap>> parallax_maps;
+	std::unordered_map<std::string, std::shared_ptr<ParallaxMap>> parallax_maps;
 	/// Container of DisplacementMap assets.
-	std::vector<std::shared_ptr<DisplacementMap>> displacement_maps;
+	std::unordered_map<std::string, std::shared_ptr<DisplacementMap>> displacement_maps;
 };
 
 struct Asset

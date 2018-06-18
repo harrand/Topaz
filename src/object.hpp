@@ -1,7 +1,7 @@
 #ifndef TOPAZ_SCENE_OBJECT_HPP
 #define TOPAZ_SCENE_OBJECT_HPP
 
-#include <graphics/mesh.hpp>
+#include "graphics/mesh.hpp"
 #include "asset.hpp"
 #include "camera.hpp"
 #include "transform.hpp"
@@ -18,7 +18,7 @@ public:
     const Asset& get_asset() const;
     virtual void render(Shader& render_shader, const Camera& camera, const Vector2<int>& viewport_dimensions) const;
     Transform transform;
-private:
+protected:
     Asset asset;
 };
 

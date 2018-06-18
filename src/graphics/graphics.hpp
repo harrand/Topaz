@@ -4,7 +4,7 @@
 #define GLEW_STATIC
 #endif
 #include <GL/glew.h>
-#include <vector.hpp>
+#include "../vector.hpp"
 #include "SDL2/SDL.h"
 #include "SDL2/SDL_ttf.h"
 #include "../utility.hpp"

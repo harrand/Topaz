@@ -34,11 +34,11 @@ void init()
     camera.position = {0, 0, -50};
     Scene scene;
 
-    AssetBuffer assets({std::make_shared<Mesh>("../../../res/runtime/models/cube_hd.obj")}, {std::make_shared<Texture>("../../../res/runtime/textures/bricks.jpg")}, {std::make_shared<NormalMap>("../../../res/runtime/normalmaps/bricks_normalmap.jpg")}, {std::make_shared<ParallaxMap>("../../../res/runtime/parallaxmaps/bricks_parallax.jpg", 0.04f, 0.2f)}, {std::make_shared<DisplacementMap>("../../../res/runtime/displacementmaps/bricks_displacement.png")});
-    Asset asset0(assets.meshes.front(), assets.textures.front(), assets.normal_maps.front(), assets.parallax_maps.front(), assets.displacement_maps.front());
-    Asset asset1(assets.meshes.front(), assets.textures.front(), assets.normal_maps.front(), assets.parallax_maps.front());
-    Asset asset2(assets.meshes.front(), assets.textures.front(), assets.normal_maps.front());
-    Asset asset3(assets.meshes.front(), assets.textures.front());
+    AssetBuffer assets({{"cube", std::make_shared<Mesh>("../../../res/runtime/models/cube_hd.obj")}}, {{"bricks", std::make_shared<Texture>("../../../res/runtime/textures/bricks.jpg")}}, {{"bricks_normal", std::make_shared<NormalMap>("../../../res/runtime/normalmaps/bricks_normalmap.jpg")}}, {{"bricks_parallax", std::make_shared<ParallaxMap>("../../../res/runtime/parallaxmaps/bricks_parallax.jpg", 0.04f, 0.2f)}}, {{"bricks_displacement", std::make_shared<DisplacementMap>("../../../res/runtime/displacementmaps/bricks_displacement.png")}});
+    Asset asset0(assets.find<Mesh>("cube"), assets.find_texture("bricks"), assets.find_normal_map("bricks_normal"), assets.find_parallax_map("bricks_parallax"), assets.find_displacement_map("bricks_displacement"));
+    Asset asset1(assets.find_mesh("cube"), assets.find_texture("bricks"), assets.find_normal_map("bricks_normal"), assets.find_parallax_map("bricks_parallax"));
+    Asset asset2(assets.find_mesh("cube"), assets.find_texture("bricks"), assets.find_normal_map("bricks_normal"));
+    Asset asset3(assets.find_mesh("cube"), assets.find_texture("bricks"));
     scene.emplace_object(Transform{Vector3F{-50, 0, 0}, Vector3F{0, 0, 0}, Vector3F{10, 10, 10}}, asset0);
     scene.emplace_object(Transform{Vector3F{-25, 0, 0}, Vector3F{0, 0, 0}, Vector3F{5, 5, 5}}, asset1);
     scene.emplace_object(Transform{Vector3F{0, 0, 0}, Vector3F{0, 0, 0}, Vector3F{7, 7, 7}}, asset2);

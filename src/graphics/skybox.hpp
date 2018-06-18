@@ -5,7 +5,7 @@
 #ifndef TOPAZ_SKYBOX_HPP
 #define TOPAZ_SKYBOX_HPP
 
-#include <camera.hpp>
+#include "../camera.hpp"
 #include "shader.hpp"
 #include "mesh.hpp"
 #include "texture.hpp"
