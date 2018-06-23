@@ -17,9 +17,11 @@ int main()
 	return 0;
 }
 
+
 void init()
 {
 	Window wnd("Topaz Development Window", 0, 30, 800, 600);
+    // During init, enable debug output
     Font font("../../../res/runtime/fonts/CaviarDreams.ttf", 36);
     Label& label = wnd.emplace_child<Label>(Vector2<int>{0, 0}, font, Vector3F{0.0f, 0.3f, 0.0f}, " ");
     //label.set_local_position_normalised_space({0.5f, 0.5f});
@@ -28,7 +30,7 @@ void init()
     MouseListener mouse_listener(wnd);
 
     constexpr float speed = 0.5f;
-	Shader render_shader("../../../src/shaders/3D_FullAssetsInstanced");
+	Shader render_shader("../../../src/shaders/3D_Instanced");
 	Shader gui_shader("../../../src/shaders/gui");
     Camera camera;
     camera.position = {0, 0, -50};
@@ -39,6 +41,7 @@ void init()
     Asset asset1(assets.find_mesh("cube"), assets.find_texture("bricks"), assets.find_normal_map("bricks_normal"), assets.find_parallax_map("bricks_parallax"));
     Asset asset2(assets.find_mesh("cube"), assets.find_texture("bricks"), assets.find_normal_map("bricks_normal"));
     Asset asset3(assets.find_mesh("cube"), assets.find_texture("bricks"));
+    /*
     scene.emplace_object(Transform{Vector3F{-50, 0, 0}, Vector3F{0, 0, 0}, Vector3F{10, 10, 10}}, asset0);
     scene.emplace_object(Transform{Vector3F{-25, 0, 0}, Vector3F{0, 0, 0}, Vector3F{5, 5, 5}}, asset1);
     scene.emplace_object(Transform{Vector3F{0, 0, 0}, Vector3F{0, 0, 0}, Vector3F{7, 7, 7}}, asset2);
@@ -46,28 +49,19 @@ void init()
     DynamicObject& test_dynamic = scene.emplace<DynamicObject>(1.0f, Transform{{}, {}, {20, 20, 20}}, asset0);
     test_dynamic.add_force({0.0f, -9.81f, 0.0f});
     test_dynamic.angular_velocity = {0.0f, 2.0f * tz::consts::pi, 0.2f};
-
+    */
     CubeMap skybox_texture("../../../res/runtime/textures/skybox/", "cwd", ".jpg");
     Shader skybox_shader("../../../src/shaders/skybox");
     Skybox skybox("../../../res/runtime/models/skybox.obj", skybox_texture);
 
-    /*
-    for(float i = 0; i < 200; i += 1.0f)
-    {
-        scene.emplace_object(Transform{{(float)((int)i % 20), i, (float)((int)i % 30)}, {}, {5, 5, 5}}, asset3);
-    }
-    */
-
     ///*
     std::vector<StaticObject> objects;
-    for(float i = 0; i < 200; i += 1.0f)
+    for(float i = 0; i < 500; i += 1.0f)
     {
-        objects.emplace_back(Transform{{(float)((int)i % 20), i, (float)((int)i % 30)}, {}, {5, 5, 5}}, asset3);
+        objects.emplace_back(Transform{Vector3F{(float)((int)i % 20), i / 10.0f, (float)((int)i % 30)} * 10.0f, {}, {5, 5, 5}}, asset1);
     }
     scene.emplace<InstancedStaticObject>(objects);
     //*/
-
-    std::cout << "number of objects in scene = " << scene.get_objects().size() << "\n";
 
     long long int time = tz::time::now();
     Timer second_timer;

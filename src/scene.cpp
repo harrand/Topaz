@@ -5,17 +5,16 @@
 #include <physics/physics.hpp>
 #include "scene.hpp"
 
-Scene::Scene(const std::initializer_list<StaticObject> stack_objects, const std::initializer_list<std::shared_ptr<StaticObject>> heap_objects): stack_objects(stack_objects), heap_objects(heap_objects){}
+Scene::Scene(const std::initializer_list<StaticObject>& stack_objects, const std::initializer_list<std::shared_ptr<StaticObject>>& heap_objects): stack_objects(stack_objects), heap_objects(heap_objects){}
 
 void Scene::render(Shader& render_shader, const Camera& camera, const Vector2<int>& viewport_dimensions) const
 {
     Frustum camera_frustum(camera, viewport_dimensions.x / viewport_dimensions.y);
-    for(auto object_cref : this->get_objects())
-    {
-        AABB object_box = tz::physics::bound_aabb(*(object_cref.get().get_asset().mesh.lock()));
-        if(camera_frustum.contains(object_box * object_cref.get().transform.model()) || tz::graphics::is_instanced(object_cref.get().get_asset().mesh.lock().get()))
-            object_cref.get().render(render_shader, camera, viewport_dimensions);
-    }
+    auto render_if_visible = [&](const StaticObject& object){AABB object_box = tz::physics::bound_aabb(*(object.get_asset().mesh.lock())); if(camera_frustum.contains(object_box * object.transform.model()) || tz::graphics::is_instanced(object.get_asset().mesh.lock().get())) object.render(render_shader, camera, viewport_dimensions);};
+    for(const StaticObject& stack_object : this->stack_objects)
+        render_if_visible(stack_object);
+    for(std::shared_ptr<StaticObject> heap_object : this->heap_objects)
+        render_if_visible(*heap_object);
 }
 
 void Scene::update(float delta_time)
