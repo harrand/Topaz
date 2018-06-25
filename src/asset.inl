@@ -16,35 +16,35 @@ AssetType& AssetBuffer::emplace(const std::string& asset_name, Args&&... args)
 template<typename... Args>
 Mesh& AssetBuffer::emplace_mesh(const std::string& asset_name, Args&&... args)
 {
-    std::shared_ptr<Mesh>& mesh_ptr = this->meshes.insert({asset_name, std::make_shared<Mesh>(std::forward<Args>(args)...)});
+    std::shared_ptr<Mesh>& mesh_ptr = (*(this->meshes.insert({asset_name, std::make_shared<Mesh>(std::forward<Args>(args)...)}).first)).second;
     return *mesh_ptr.get();
 }
 
 template<typename... Args>
 Texture& AssetBuffer::emplace_texture(const std::string& asset_name, Args&&... args)
 {
-    std::shared_ptr<Texture>& texture_ptr = this->textures.insert({asset_name, std::make_shared<Texture>(std::forward<Args>(args)...)});
+    std::shared_ptr<Texture>& texture_ptr = (*(this->textures.insert({asset_name, std::make_shared<Texture>(std::forward<Args>(args)...)}).first)).second;
     return *texture_ptr.get();
 }
 
 template<typename... Args>
 NormalMap& AssetBuffer::emplace_normalmap(const std::string& asset_name, Args&&... args)
 {
-    std::shared_ptr<NormalMap>& normal_map_ptr = this->normal_maps.insert({asset_name, std::make_shared<NormalMap>(std::forward<Args>(args)...)});
+    std::shared_ptr<NormalMap>& normal_map_ptr = (*(this->normal_maps.insert({asset_name, std::make_shared<NormalMap>(std::forward<Args>(args)...)}).first)).second;
     return *normal_map_ptr.get();
 }
 
 template<typename... Args>
 ParallaxMap& AssetBuffer::emplace_parallaxmap(const std::string& asset_name, Args&&... args)
 {
-    std::shared_ptr<ParallaxMap>& parallax_map_ptr = this->parallax_maps.insert({asset_name, std::make_shared<ParallaxMap>(std::forward<Args>(args)...)});
+    std::shared_ptr<ParallaxMap>& parallax_map_ptr = (*(this->parallax_maps.insert({asset_name, std::make_shared<ParallaxMap>(std::forward<Args>(args)...)}).first)).second;
     return *parallax_map_ptr.get();
 }
 
 template<typename... Args>
 DisplacementMap& AssetBuffer::emplace_displacementmap(const std::string& asset_name, Args&&... args)
 {
-    std::shared_ptr<DisplacementMap>& displacement_map_ptr = this->displacement_maps.insert({asset_name, std::make_shared<DisplacementMap>(std::forward<Args>(args)...)});
+    std::shared_ptr<DisplacementMap>& displacement_map_ptr = (*(this->displacement_maps.insert({asset_name, std::make_shared<DisplacementMap>(std::forward<Args>(args)...)}).first)).second;
     return *displacement_map_ptr.get();
 }
 

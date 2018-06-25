@@ -11,7 +11,7 @@
 class TestFailureException : public std::exception
 {
 public:
-    TestFailureException(const std::string& msg);
+    TestFailureException(std::string msg);
     virtual const char* what() const throw() override;
 private:
     std::string msg;

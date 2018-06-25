@@ -19,4 +19,3 @@ echo Compilation complete, moving DLL over.
 xcopy /Y libtopaz.dll "%lnkdir%"
 goto run_test
 :eof
-echo Done

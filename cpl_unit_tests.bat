@@ -11,8 +11,8 @@ cd src
 cd test
 cd lib
 g++ -std=c++17 -Wall -Wextra -pedantic-errors -O3 -c *.cpp -I%incdir% -I%scriptdir%\src -I%scriptdir%\src\graphics -I%scriptdir%\src\physics -I%scriptdir%\src\audio
-ar crf unit_test_lib.a *.o
-move unit_test_lib.a ../
+ar crf libunit_test.a *.o
+move libunit_test.a %libdir%
 cd ..
 g++ -std=c++17 -Wall -Wextra -pedantic-errors -O3 -c *.cpp -I%incdir% -I%scriptdir%\src -I%scriptdir%\src\graphics -I%scriptdir%\src\physics -I%scriptdir%\src\audio
 if not exist %lnkdir% mkdir %lnkdir%
@@ -26,7 +26,7 @@ color 4
 echo Dependencies copied. Building final executable...
 cd %lnkdir%
 for %%f in (*.o) do (
-    g++ -O3 -o %%~nf.exe %%~nf.o -static-libstdc++ -L. -L%libdir% -L%scriptdir%\cmake-build-debug -lOpenGL32 -lSDL2 -lSDL2_mixer -lSDL2_ttf -lSDL2main -ltopaz.dll
+    g++ -O3 -o %%~nf.exe %%~nf.o -static-libstdc++ -L. -L%libdir% -L%scriptdir%\cmake-build-debug -lOpenGL32 -lSDL2 -lSDL2_mixer -lSDL2_ttf -lSDL2main -ltopaz.dll -lunit_test
     move %%~nf.o "%cpldir%"
 )
 color b
