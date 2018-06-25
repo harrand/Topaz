@@ -9,6 +9,7 @@ bin/
 .idea
 # I don't want any libs in my source directory (from unit tests) to leak through either.
 src/test/unit_test_lib.a
+src/test/lib/*.o
 
 
 # User-specific stuff:
