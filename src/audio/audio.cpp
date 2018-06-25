@@ -114,21 +114,22 @@ void AudioMusic::set_paused(bool pause)
 
 namespace tz::audio
 {
-	void initialise()
+	void initialise(bool print_progress)
 	{
 		constexpr int channels = 2; // number of sound chanels in output. 2 for stereo, 1 for mono.
 		constexpr int chunk_size = 2048; // bytes used per output sample
 		constexpr Uint16 format = MIX_DEFAULT_FORMAT; // output sample 	format. MIX_DEFAULT_FORMAT is the same as AUDIO_S16SYS (signed 16-bit samples, in system byte order)
 		// initialise sdl_mixer
-		if(Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, format, channels, chunk_size) == -1)
+		if(Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, format, channels, chunk_size) == -1 && print_progress)
 			tz::util::log::error("SDL_Mixer initialisation returned an error: ", Mix_GetError(), "\n\tInitialisation of tz::audio failed.");
-		else
+		else if(print_progress)
 			tz::util::log::message("Initialised tz::audio via SDL_Mixer.");
 	}
 
-	void terminate()
+	void terminate(bool print_progress)
 	{
 		Mix_CloseAudio();
-		tz::util::log::message("Terminated tz::audio via SDL_Mixer.");
+		if(print_progress)
+			tz::util::log::message("Terminated tz::audio via SDL_Mixer.");
 	}
 }

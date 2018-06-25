@@ -30,11 +30,14 @@ add_library(topaz SHARED
         src/physics/boundary.hpp
         src/physics/physics.cpp
         src/physics/physics.hpp
+        src/physics/physics_object.cpp
+        src/physics/physics_object.hpp
 
         src/camera.cpp
         src/camera.hpp
         src/asset.cpp
         src/asset.hpp
+        src/asset.inl
         src/gui.cpp
         src/gui.hpp
         src/gui.inl
@@ -48,6 +51,7 @@ add_library(topaz SHARED
         src/quaternion.hpp
         src/scene.cpp
         src/scene.hpp
+        src/scene.inl
         src/object.cpp
         src/object.hpp
         src/time.cpp
@@ -61,5 +65,5 @@ add_library(topaz SHARED
         src/vector.inl
         src/window.cpp
         src/window.hpp
-        src/window.inl src/physics/physics_object.cpp src/physics/physics_object.hpp)
+        src/window.inl)
 target_link_libraries(topaz OpenGL32 SDL2 SDL2_mixer SDL2_ttf SDL2main assimp)

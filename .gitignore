@@ -7,6 +7,9 @@ bin/
 
 # I don't want the idea directory in my repo at all
 .idea
+# I don't want any libs in my source directory (from unit tests) to leak through either.
+src/test/unit_test_lib.a
+
 
 # User-specific stuff:
 .idea/**/workspace.xml

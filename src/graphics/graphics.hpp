@@ -148,12 +148,12 @@ namespace tz
 		* If you are not using Topaz windows, you will have to invoke this yourself.
 		* If you are using Topaz windows, DO NOT TOUCH THIS.
 		*/
-		inline void initialise();
+		inline void initialise(bool print_progress = false);
 		/**
 		* Terminates and destroys all graphics components of Topaz. tz::terminate will invoke this automatically.
 		* Only use this function if you do not wish to use tz::terminate to terminate all features, but instead cherry-pick components like graphics.
 		*/
-		inline void terminate();
+		inline void terminate(bool print_progress = false);
 		inline void scene_render_mode();
 		inline void gui_render_mode();
 	}
