@@ -17,7 +17,7 @@ namespace tz::assert
     inline void equal(long double a, long double b)
     {
         if(a != b)
-            throw TestFailureException("tz::assert::equal(a, b) assertion failed: rhs = " + std::to_string(a) + ", lhs = " + std::to_string(b));
+            throw TestFailureException("tz::assert::equal(a, b) assertion failed: lhs = " + std::to_string(a) + ", rhs = " + std::to_string(b));
     }
 }
 

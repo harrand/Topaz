@@ -28,7 +28,7 @@ struct AssetBuffer
     std::shared_ptr<NormalMap> find_normal_map(const std::string& normal_map_name);
     std::shared_ptr<ParallaxMap> find_parallax_map(const std::string& parallax_map_name);
     std::shared_ptr<DisplacementMap> find_displacement_map(const std::string& displacement_map_name);
-
+private:
     /// Container of Mesh assets.
 	std::unordered_map<std::string, std::shared_ptr<Mesh>> meshes;
 	/// Container of Texture assets.
