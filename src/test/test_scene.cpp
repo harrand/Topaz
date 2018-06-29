@@ -1,6 +1,6 @@
-#include "../scene.hpp"
-#include "../topaz.hpp"
-#include "../window.hpp"
+#include "core/scene.hpp"
+#include "core/topaz.hpp"
+#include "core/window.hpp"
 #include "lib/test_util.hpp"
 
 void test();

@@ -1,5 +1,5 @@
-#include "../topaz.hpp"
-#include "../vector.hpp"
+#include "core/topaz.hpp"
+#include "data/vector.hpp"
 #include "lib/test_util.hpp"
 
 void test();

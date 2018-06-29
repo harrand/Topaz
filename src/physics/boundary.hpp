@@ -1,6 +1,6 @@
 #ifndef BOUNDARY_HPP
 #define BOUNDARY_HPP
-#include "../camera.hpp"
+#include "graphics/camera.hpp"
 
 /**
 * Used to bound physical spherical shapes in 3D space.

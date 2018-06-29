@@ -1,10 +1,10 @@
-#include "listener.hpp"
+#include "core/listener.hpp"
 #include "physics/physics.hpp"
-#include "asset.hpp"
-#include "gui_display.hpp"
-#include "scene.hpp"
+#include "graphics/asset.hpp"
+#include "graphics/gui_display.hpp"
+#include "core/scene.hpp"
 #include "graphics/skybox.hpp"
-#include "topaz.hpp"
+#include "core/topaz.hpp"
 #include "utility/time.hpp"
 
 void init();

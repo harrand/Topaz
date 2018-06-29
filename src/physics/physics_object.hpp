@@ -1,4 +1,4 @@
-#include "../vector.hpp"
+#include "data/vector.hpp"
 
 #ifndef TOPAZ_PHYSICS_OBJECT_HPP
 #define TOPAZ_PHYSICS_OBJECT_HPP

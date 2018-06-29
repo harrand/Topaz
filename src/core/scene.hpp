@@ -1,6 +1,6 @@
 #ifndef TOPAZ_SCENE_HPP
 #define TOPAZ_SCENE_HPP
-#include "object.hpp"
+#include "physics/dynamic_object.hpp"
 
 class Scene
 {

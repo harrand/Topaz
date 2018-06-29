@@ -6,7 +6,7 @@
 #include <array>
 #include <set>
 #include "graphics.hpp"
-#include "../matrix.hpp"
+#include "data/matrix.hpp"
 
 namespace tz::graphics
 {

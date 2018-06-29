@@ -10,10 +10,39 @@ add_library(topaz SHARED
         src/audio/audio.hpp
         src/audio/audio.inl
 
+        src/core/listener.cpp
+        src/core/listener.hpp
+        src/core/scene.cpp
+        src/core/scene.hpp
+        src/core/scene.inl
+        src/core/topaz.hpp
+        src/core/window.cpp
+        src/core/window.hpp
+        src/core/window.inl
+        src/data/vector.hpp
+        src/data/vector.inl
+
+        src/data/matrix.cpp
+        src/data/matrix.hpp
+        src/data/quaternion.cpp
+        src/data/quaternion.hpp
+        src/data/transform.cpp
+        src/data/transform.hpp
+
+        src/graphics/asset.cpp
+        src/graphics/asset.hpp
+        src/graphics/asset.inl
+        src/graphics/camera.cpp
+        src/graphics/camera.hpp
         src/graphics/glew.c
         src/graphics/graphics.cpp
         src/graphics/graphics.hpp
         src/graphics/graphics.inl
+        src/graphics/gui.cpp
+        src/graphics/gui.hpp
+        src/graphics/gui.inl
+        src/graphics/gui_display.cpp
+        src/graphics/gui_display.hpp
         src/graphics/mesh.cpp
         src/graphics/mesh.hpp
         src/graphics/shader.cpp
@@ -21,6 +50,8 @@ add_library(topaz SHARED
         src/graphics/shader.inl
         src/graphics/skybox.cpp
         src/graphics/skybox.hpp
+        src/graphics/static_object.cpp
+        src/graphics/static_object.hpp
         src/graphics/stb_image.h
         src/graphics/texture.cpp
         src/graphics/texture.hpp
@@ -28,40 +59,12 @@ add_library(topaz SHARED
 
         src/physics/boundary.cpp
         src/physics/boundary.hpp
+        src/physics/dynamic_object.cpp
+        src/physics/dynamic_object.hpp
         src/physics/physics.cpp
         src/physics/physics.hpp
         src/physics/physics_object.cpp
         src/physics/physics_object.hpp
-
-        src/camera.cpp
-        src/camera.hpp
-        src/asset.cpp
-        src/asset.hpp
-        src/asset.inl
-        src/gui.cpp
-        src/gui.hpp
-        src/gui.inl
-        src/gui_display.cpp
-        src/gui_display.hpp
-        src/listener.cpp
-        src/listener.hpp
-        src/matrix.cpp
-        src/matrix.hpp
-        src/quaternion.cpp
-        src/quaternion.hpp
-        src/scene.cpp
-        src/scene.hpp
-        src/scene.inl
-        src/object.cpp
-        src/object.hpp
-        src/topaz.hpp
-        src/transform.cpp
-        src/transform.hpp
-        src/vector.hpp
-        src/vector.inl
-        src/window.cpp
-        src/window.hpp
-        src/window.inl
 
         src/utility/file.cpp
         src/utility/file.hpp

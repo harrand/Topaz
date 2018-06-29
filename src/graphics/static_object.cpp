@@ -1,4 +1,4 @@
-#include "object.hpp"
+#include "static_object.hpp"
 
 StaticObject::StaticObject(Transform transform, Asset asset): transform(transform), asset(asset){}
 
@@ -63,13 +63,4 @@ void InstancedStaticObject::render(Shader& instanced_render_shader, const Camera
     instanced_render_shader.set_uniform<bool>("is_instanced", true);
     instanced_render_shader.update();
     StaticObject::render(instanced_render_shader, camera, viewport_dimensions);
-}
-
-DynamicObject::DynamicObject(float mass, Transform transform, Asset asset, Vector3F velocity, Vector3F angular_velocity, std::initializer_list<Vector3F> forces): StaticObject(transform, asset), PhysicsObject(mass, velocity, angular_velocity, forces){}
-
-void DynamicObject::update(float delta_time)
-{
-    PhysicsObject::update(delta_time);
-    this->transform.position += (this->velocity * delta_time);
-    this->transform.rotation += (this->angular_velocity * delta_time);
 }

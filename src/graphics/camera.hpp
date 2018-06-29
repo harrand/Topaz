@@ -1,6 +1,6 @@
 #ifndef CAMERA_HPP
 #define CAMERA_HPP
-#include "matrix.hpp"
+#include "data/matrix.hpp"
 #include "utility/numeric.hpp"
 
 namespace tz::graphics

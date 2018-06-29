@@ -1,4 +1,4 @@
-#include "../matrix.hpp"
+#include "data/matrix.hpp"
 
 template<class T>
 Uniform<T>::Uniform(GLuint shader_handle, std::string uniform_location, T value): shader_handle(shader_handle), uniform_location(uniform_location), value(value), uniform_handle(glGetUniformLocation(this->shader_handle, uniform_location.c_str())){}

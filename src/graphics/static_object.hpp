@@ -2,9 +2,9 @@
 #define TOPAZ_SCENE_OBJECT_HPP
 
 #include "graphics/mesh.hpp"
-#include "asset.hpp"
+#include "graphics/asset.hpp"
 #include "camera.hpp"
-#include "transform.hpp"
+#include "data/transform.hpp"
 #include "physics/physics_object.hpp"
 
 /**
@@ -31,13 +31,6 @@ public:
     virtual void render(Shader& instanced_render_shader, const Camera& camera, const Vector2<int>& viewport_dimensions) const override;
 private:
     std::shared_ptr<InstancedMesh> instanced_mesh;
-};
-
-class DynamicObject : public StaticObject, public PhysicsObject
-{
-public:
-    DynamicObject(float mass, Transform transform, Asset asset, Vector3F velocity = {}, Vector3F angular_velocity = {}, std::initializer_list<Vector3F> forces = {});
-    virtual void update(float delta_time) override;
 };
 
 #endif //TOPAZ_SCENE_OBJECT_HPP
