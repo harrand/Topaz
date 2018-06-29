@@ -5,7 +5,7 @@
 #include "scene.hpp"
 #include "graphics/skybox.hpp"
 #include "topaz.hpp"
-#include "time.hpp"
+#include "utility/time.hpp"
 
 void init();
 
@@ -48,7 +48,8 @@ void init()
     scene.emplace_object(Transform{{25}, {}, {10, 10, 10}}, asset3);
     DynamicObject& test_dynamic = scene.emplace<DynamicObject>(1.0f, Transform{{}, {}, {20, 20, 20}}, asset0);
     test_dynamic.add_force({0.0f, -9.81f, 0.0f});
-    test_dynamic.angular_velocity = {0.0f, 2.0f * tz::consts::pi, 0.2f};
+    using namespace tz::utility::numeric;
+    test_dynamic.angular_velocity = {0.0f, 2.0f * consts::pi, 0.2f};
     CubeMap skybox_texture("../../../res/runtime/textures/skybox/", "cwd", ".jpg");
     Shader skybox_shader("../../../src/shaders/skybox");
     Skybox skybox("../../../res/runtime/models/skybox.obj", skybox_texture);
@@ -68,7 +69,7 @@ void init()
     scene.emplace<InstancedStaticObject>(objects);
 
 
-    long long int time = tz::time::now();
+    long long int time = tz::utility::time::now();
     Timer second_timer;
     TimeProfiler profiler;
 	while(!wnd.is_close_requested())
@@ -77,13 +78,13 @@ void init()
         second_timer.update();
         if(second_timer.millis_passed(1000.0f))
         {
-            using namespace tz::util::cast;
+            using namespace tz::utility::generic::cast;
             label.set_text(to_string(profiler.get_delta_average()) + " ms (" + to_string(profiler.get_fps()) + " fps)");
             second_timer.reload();
             profiler.reset();
         }
-        long long int delta_time = tz::time::now() - time;
-        time = tz::time::now();
+        long long int delta_time = tz::utility::time::now() - time;
+        time = tz::utility::time::now();
 
         wnd.set_render_target();
         wnd.clear();

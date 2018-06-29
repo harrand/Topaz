@@ -84,7 +84,7 @@ Matrix4x4 Camera::projection(float width, float height) const
 		return tz::transform::perspective_projection(this->fov, width, height, this->near_clip, this->far_clip);
 	else
 	{
-		float zoom = (width + height) * 0.25f * this->fov / tz::consts::pi;
+		float zoom = (width + height) * 0.25f * this->fov / tz::utility::numeric::consts::pi;
 		float aspect_ratio = width / height;
 		if (width >= height)
 			return tz::transform::orthographic_projection(zoom * aspect_ratio, -zoom * aspect_ratio, zoom, -zoom, this->near_clip, this->far_clip);

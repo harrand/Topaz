@@ -1,3 +1,4 @@
+#include <utility/file.hpp>
 #include "shader.hpp"
 
 Shader::Shader(std::string vertex_source, std::string tessellation_control_source, std::string tessellation_evaluation_source, std::string geometry_source, std::string fragment_source, bool compile, bool link, bool validate): filename(""), compiled(false), program_handle(glCreateProgram()), uniform_data({nullptr}), uniform_counter(0)
@@ -10,7 +11,7 @@ Shader::Shader(std::string vertex_source, std::string tessellation_control_sourc
 		this->validate();
 }
 
-Shader::Shader(std::string filename, bool compile, bool link, bool validate): Shader(tz::util::file::read(filename + ".vertex.glsl"), tz::util::file::read(filename + ".tessellation_control.glsl"), tz::util::file::read(filename + ".tessellation_evaluation.glsl"), tz::util::file::read(filename + ".geometry.glsl"), tz::util::file::read(filename + ".fragment.glsl"), compile, link, validate)
+Shader::Shader(std::string filename, bool compile, bool link, bool validate): Shader(tz::utility::file::read(filename + ".vertex.glsl"), tz::utility::file::read(filename + ".tessellation_control.glsl"), tz::utility::file::read(filename + ".tessellation_evaluation.glsl"), tz::utility::file::read(filename + ".geometry.glsl"), tz::utility::file::read(filename + ".fragment.glsl"), compile, link, validate)
 {
 	// Delegating ctor means cannot initialise any members after, and doing before will just be overwritten so that's why it's being done in this constructor body.
 	this->filename = filename;
@@ -130,7 +131,7 @@ void Shader::remove_uniform(std::string_view uniform_location)
 {
 	if(this->uniform_counter == 0)
 	{
-		tz::util::log::warning("[Shader]: Tried to remove uniform location '", uniform_location, "' from Shader with handle ", this->program_handle, ", which does not currently have any attached uniforms.");
+		std::cerr << "[Shader]: Tried to remove uniform location '" << uniform_location << "' from Shader with handle " << this->program_handle << ", which does not currently have any attached uniforms.\n";
 		return;
 	}
 	for(std::size_t i = 0; i < this->uniform_counter; i++)
@@ -156,7 +157,7 @@ UniformImplicit* Shader::get_uniform(std::string_view uniform_location) const
 	for(std::size_t i = 0; i < this->uniform_counter; i++)
 		if(this->uniform_data[i]->get_uniform_location() == uniform_location)
 			return this->uniform_data[i].get();
-	tz::util::log::warning("[Shader]: Failed to find uniform location '", uniform_location, "' in Shader with handle ", this->program_handle, ".");
+	std::cerr << "[Shader]: Failed to find uniform location '" << uniform_location << "' in Shader with handle " << this->program_handle << ".\n";
 	return nullptr;
 }
 
@@ -209,7 +210,7 @@ void Shader::bind() const
 {
     if(!this->ready())
     {
-        tz::util::log::error("Attempted to bind Shader that is not ready.");
+        std::cerr << "Attempted to bind Shader that is not ready.\n";
         return;
     }
 	glUseProgram(this->program_handle);
@@ -237,22 +238,22 @@ void Shader::check_shader_error(GLuint shader, GLuint flag, bool is_program, std
 	else
 		glGetShaderInfoLog(shader, sizeof(error), NULL, error);
 	if(success == GL_TRUE && std::string(error) != "")
-		tz::util::log::message("Success, Log:\n", std::string(error));
+		std::cout << "Success, Log:\n" << std::string(error) << "\n";
 	else if(success != GL_TRUE)
-		tz::util::log::error(error_message, std::string(error));
+		std::cerr << error_message << std::string(error) << "\n";
 }
 
 GLuint Shader::create_shader(std::string source, GLenum shader_type)
 {
 	if(source == "")
 	{
-		tz::util::log::message("Shader Source for Type [", tz::util::shader_type_string(shader_type), "] was empty, skipping it.");
+		std::cout << "Shader Source for Type [" << tz::util::shader_type_string(shader_type) << "] was empty, skipping it.\n";
 		return 0;
 	}
 	GLuint shader = glCreateShader(shader_type);
 	if(shader == 0)
 	{
-		tz::util::log::error("Fatal Error: Shader Creation failed (Perhaps out of memory?)");
+		std::cerr << "Fatal Error: Shader Creation failed (Perhaps out of memory?).\n";
 		return 0;
 	}
 	
@@ -331,5 +332,6 @@ void main()\n\
 {\n\
 	frag_colour = texture(%TEXTURE_SAMPLER%, texture_coordinate_modelspace);\n\
 }";
-	return {tz::util::string::replace_all(tz::util::string::replace_all(vertex_source, "%POSITION%", position_attribute_name), "%TEXTURE_COORDINATE%", texture_coordinate_attribute_name), "", "", "", tz::util::string::replace_all(fragment_source, "%TEXTURE_SAMPLER%", texture_sampler_name)};
+	using namespace tz::utility; // tz::utility::string
+	return {string::replace_all(string::replace_all(vertex_source, "%POSITION%", position_attribute_name), "%TEXTURE_COORDINATE%", texture_coordinate_attribute_name), "", "", "", string::replace_all(fragment_source, "%TEXTURE_SAMPLER%", texture_sampler_name)};
 }

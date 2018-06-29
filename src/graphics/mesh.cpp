@@ -163,33 +163,34 @@ void Mesh::init_mesh()
 	
 	glGenBuffers(static_cast<unsigned int>(BufferTypes::NUM_BUFFERS), this->vbo_buffers.data());
 	// 0 = Vertices, 1 = Texture Coordinates, 2 = Internal Normals, 3 = Indices, 4 = Tangents
-	
+
+	using namespace tz::utility; // tz::utility::generic::sizeof_element
 	glBindBuffer(GL_ARRAY_BUFFER, this->vbo_buffers[static_cast<unsigned int>(BufferTypes::POSITION)]);
-	glBufferData(GL_ARRAY_BUFFER, positions.size() * tz::util::sizeof_element(positions), positions.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, positions.size() * generic::sizeof_element(positions), positions.data(), GL_STATIC_DRAW);
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), NULL);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	
 	glBindBuffer(GL_ARRAY_BUFFER, this->vbo_buffers[static_cast<unsigned int>(BufferTypes::TEXCOORD)]);
-	glBufferData(GL_ARRAY_BUFFER, texcoords.size() * tz::util::sizeof_element(texcoords), texcoords.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, texcoords.size() * generic::sizeof_element(texcoords), texcoords.data(), GL_STATIC_DRAW);
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), NULL);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	
 	glBindBuffer(GL_ARRAY_BUFFER, this->vbo_buffers[static_cast<unsigned int>(BufferTypes::NORMAL)]);
-	glBufferData(GL_ARRAY_BUFFER, normals.size() * tz::util::sizeof_element(normals), normals.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, normals.size() * generic::sizeof_element(normals), normals.data(), GL_STATIC_DRAW);
 	glEnableVertexAttribArray(2);
 	glVertexAttribPointer(2, 3, GL_FLOAT, GL_TRUE,  3 * sizeof(float), NULL);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	
 	glBindBuffer(GL_ARRAY_BUFFER, this->vbo_buffers[static_cast<unsigned int>(BufferTypes::TANGENT)]);
-	glBufferData(GL_ARRAY_BUFFER, tangents.size() * tz::util::sizeof_element(tangents), tangents.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, tangents.size() * generic::sizeof_element(tangents), tangents.data(), GL_STATIC_DRAW);
 	glEnableVertexAttribArray(3);
 	glVertexAttribPointer(3, 3, GL_FLOAT, GL_TRUE, 3 * sizeof(float), NULL);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->vbo_buffers[static_cast<unsigned int>(BufferTypes::INDEX)]);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->indices.size() * tz::util::sizeof_element(this->indices), this->indices.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->indices.size() * generic::sizeof_element(this->indices), this->indices.data(), GL_STATIC_DRAW);
 	
 	glBindVertexArray(0);
 }
@@ -222,12 +223,13 @@ InstancedMesh::InstancedMesh(std::string filename, std::vector<Vector3F> positio
         ws.push_back(model.w.to_raw());
     }
 
+	using namespace tz::utility; // tz::utility::generic::sizeof_element
     // Populate Mesh::vertex_array_object with additional vbo buffers.
 	glBindVertexArray(this->vertex_array_object);
     // Row X (attribute 4)
     glGenBuffers(1, &this->model_matrix_x_vbo);
     glBindBuffer(GL_ARRAY_BUFFER, this->model_matrix_x_vbo);
-    glBufferData(GL_ARRAY_BUFFER, xs.size() * tz::util::sizeof_element(xs), xs.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, xs.size() * generic::sizeof_element(xs), xs.data(), GL_STATIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glEnableVertexAttribArray(4);
     glBindBuffer(GL_ARRAY_BUFFER, this->model_matrix_x_vbo);
@@ -237,7 +239,7 @@ InstancedMesh::InstancedMesh(std::string filename, std::vector<Vector3F> positio
     // Row Y (attribute 5)
     glGenBuffers(1, &this->model_matrix_y_vbo);
     glBindBuffer(GL_ARRAY_BUFFER, this->model_matrix_y_vbo);
-    glBufferData(GL_ARRAY_BUFFER, ys.size() * tz::util::sizeof_element(ys), ys.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, ys.size() * generic::sizeof_element(ys), ys.data(), GL_STATIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ARRAY_BUFFER, this->model_matrix_y_vbo);
     glEnableVertexAttribArray(5);
@@ -247,7 +249,7 @@ InstancedMesh::InstancedMesh(std::string filename, std::vector<Vector3F> positio
     // Row Z (attribute 6)
     glGenBuffers(1, &this->model_matrix_z_vbo);
     glBindBuffer(GL_ARRAY_BUFFER, this->model_matrix_z_vbo);
-    glBufferData(GL_ARRAY_BUFFER, zs.size() * tz::util::sizeof_element(zs), zs.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, zs.size() * generic::sizeof_element(zs), zs.data(), GL_STATIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ARRAY_BUFFER, this->model_matrix_z_vbo);
     glEnableVertexAttribArray(6);
@@ -257,7 +259,7 @@ InstancedMesh::InstancedMesh(std::string filename, std::vector<Vector3F> positio
     // Row W (attribute 7)
     glGenBuffers(1, &this->model_matrix_w_vbo);
     glBindBuffer(GL_ARRAY_BUFFER, this->model_matrix_w_vbo);
-    glBufferData(GL_ARRAY_BUFFER, ws.size() * tz::util::sizeof_element(ws), ws.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, ws.size() * generic::sizeof_element(ws), ws.data(), GL_STATIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ARRAY_BUFFER, this->model_matrix_w_vbo);
     glEnableVertexAttribArray(7);

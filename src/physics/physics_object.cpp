@@ -1,8 +1,5 @@
-//
-// Created by Harrand on 15/06/2018.
-//
-
 #include "physics_object.hpp"
+
 
 PhysicsObject::PhysicsObject(float mass, Vector3F velocity, Vector3F angular_velocity, std::initializer_list<Vector3F> forces): mass(mass), velocity(velocity), angular_velocity(angular_velocity), forces(forces){}
 

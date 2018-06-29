@@ -1,10 +1,10 @@
 #ifndef SHADER_HPP
 #define SHADER_HPP
-#include "../utility.hpp"
 #ifndef GLEW_STATIC
 #define GLEW_STATIC
 #endif
 #include "GL/glew.h"
+#include "utility/string.hpp"
 #include <string>
 #include <memory>
 #include <string_view>

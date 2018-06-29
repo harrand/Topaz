@@ -54,16 +54,26 @@ add_library(topaz SHARED
         src/scene.inl
         src/object.cpp
         src/object.hpp
-        src/time.cpp
-        src/time.hpp
         src/topaz.hpp
         src/transform.cpp
         src/transform.hpp
-        src/utility.hpp
-        src/utility.inl
         src/vector.hpp
         src/vector.inl
         src/window.cpp
         src/window.hpp
-        src/window.inl)
+        src/window.inl
+
+        src/utility/file.cpp
+        src/utility/file.hpp
+        src/utility/generic.cpp
+        src/utility/generic.hpp
+        src/utility/generic.inl
+        src/utility/numeric.cpp
+        src/utility/numeric.hpp
+        src/utility/numeric.inl
+        src/utility/string.cpp
+        src/utility/string.hpp
+        src/utility/time.cpp
+        src/utility/time.hpp
+        src/utility/time.inl)
 target_link_libraries(topaz OpenGL32 SDL2 SDL2_mixer SDL2_ttf SDL2main assimp)

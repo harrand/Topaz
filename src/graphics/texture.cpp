@@ -41,7 +41,7 @@ Texture::Texture(std::string filename, bool mipmapping, bool gamma_corrected, bo
 	unsigned char* imgdata = this->load_texture();
 	if(imgdata == nullptr)
 	{
-		tz::util::log::error("Texture from the path: '", filename, "' could not be loaded.");
+		std::cerr << "Texture from the path: '" << filename << "' could not be loaded.\n";
 	}
 
 	glGenTextures(1, &(this->texture_handle));
@@ -73,7 +73,7 @@ Texture::Texture(std::string filename, bool mipmapping, bool gamma_corrected, bo
 Texture::Texture(const Font& font, const std::string& text, SDL_Color foreground_colour, bool store_bitmap): Texture()
 {
 	if(font.font_handle == NULL)
-		tz::util::log::error("Texture attempted to load from an invalid font. Error: ", TTF_GetError());
+		std::cerr << "Texture attempted to load from an invalid font. Error: \"" << TTF_GetError() << "\".\n";
 	SDL_Surface* text_surface = TTF_RenderUTF8_Blended(font.font_handle, text.c_str(), foreground_colour);
 	GLint texture_format, bytes_per_pixel = text_surface->format->BytesPerPixel;
 	constexpr long mask = 0x000000ff;
@@ -247,7 +247,7 @@ void Texture::bind_with_string(Shader* shader, unsigned int id, const std::strin
 {
 	if(id > 31)
 	{
-		tz::util::log::error("FrameBuffer bind ID ", id, " is invalid. Must be between 1-31");
+		std::cerr << "FrameBuffer bind ID " << id << " is invalid. Must be between 1-31\n";
 		return;
 	}
 	// this sets which texture we want to bind (id can be from 0 to 31)
@@ -329,7 +329,7 @@ void CubeMap::bind(Shader* shader, unsigned int id) const
 {
 	if(id > 31)
 	{
-		tz::util::log::error("FrameBuffer bind ID ", id, " is invalid. Must be between 1-31");
+		std::cerr << "FrameBuffer bind ID " << id << " is invalid. Must be between 1-31.\n";
 		return;
 	}
 	// this sets which texture we want to bind (id can be from 0 to 31)
@@ -411,7 +411,7 @@ bool FrameBuffer::has_colour(unsigned int attachment_index) const
 {
 	if(attachment_index > tz::graphics::maximum_framebuffer_attachments)
 	{
-		tz::util::log::error("FrameBuffer attachment_index query '", attachment_index, "' does not harbour a valid GL_COLOR_ATTACHMENT. Implementation-defined hardware maximum limit is attachment", tz::graphics::maximum_framebuffer_attachments, "or below.");
+		std::cerr << "FrameBuffer attachment_index query '" << attachment_index << "' does not harbour a valid GL_COLOR_ATTACHMENT. Implementation-defined hardware maximum limit is attachment" << tz::graphics::maximum_framebuffer_attachments << "or below.\n";
 		return false;
 	}
 	return this->get_attachments().find(GL_COLOR_ATTACHMENT0 + attachment_index) != this->get_attachments().cend();
@@ -431,7 +431,7 @@ void FrameBuffer::set_output_attachment(GLenum attachment) const
 {
 	if(this->attachments.find(attachment) == this->attachments.cend() && attachment != GL_NONE)
 	{
-		tz::util::log::error("FrameBuffer render attachment type has no corresponding attachment; setting to default (which is GL_COLOR_ATTACHMENT0).");
+		std::cerr << "FrameBuffer render attachment type has no corresponding attachment; setting to default (which is GL_COLOR_ATTACHMENT0).\n";
 		attachment = GL_COLOR_ATTACHMENT0;
 	}
 	glBindFramebuffer(GL_FRAMEBUFFER, this->framebuffer_handle);

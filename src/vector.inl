@@ -1,6 +1,6 @@
 #include <cmath>
 #include <iostream>
-#include "utility.hpp"
+#include "utility/generic.hpp"
 
 template<unsigned int N, typename T>
 constexpr Vector<N, T>::Vector(std::array<T, N> data): data(data){}
@@ -20,7 +20,7 @@ Vector<N, T>::operator std::string() const
     std::string res = "[";
     for(unsigned int i = 0; i < N; i++)
     {
-        res += tz::util::cast::to_string(this->data[i]);
+        res += tz::utility::generic::cast::to_string(this->data[i]);
         if(i != N - 1)
             res += ", ";
     }

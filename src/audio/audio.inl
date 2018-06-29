@@ -1,3 +1,6 @@
+#include <chrono>
+#include <thread>
+
 namespace tz::audio
 {
 	template<typename Audio>

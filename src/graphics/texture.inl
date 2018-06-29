@@ -70,7 +70,7 @@ T* Texture::get_from_link(const std::string& texture_link, const std::vector<std
 		if(texture->get_file_name() == texture_link)
 			return texture.get();
 	}
-	tz::util::log::error("Texture link \"", texture_link, "\" could not be located. Anything using this texture will not render.");
+	std::cerr << "Texture link \"" << texture_link << "\" could not be located. Anything using this texture will not render.\n";
 	return nullptr;
 }
 

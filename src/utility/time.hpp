@@ -1,9 +1,7 @@
 #ifndef TIME_HPP
 #define TIME_HPP
 #include <vector>
-#include <thread>
 #include <functional>
-#include <ctime>
 
 /**
 * Use this to schedule, record time or pretty much do anything that requires timing.
@@ -81,15 +79,39 @@ private:
 	Timer tk;
 };
 
-namespace tz::time
+namespace tz::utility::time
 {
 	/**
 	 * Returns the current local time, in milliseconds.
 	 * @return - Current local-time
 	 */
-	inline long long int now()
-	{
-		return std::chrono::system_clock::now().time_since_epoch() / std::chrono::milliseconds(1);
-	}
+	long long int now();
+
+    namespace scheduler
+    {
+        /**
+         * Invokes a function synchronously with specified arguments after a specified delay.
+         * @tparam ReturnType - Return type of the function
+         * @tparam Args - Argument types of the function
+         * @param milliseconds_delay - Number of milliseconds to elapse before executing the function.
+         * @param f - The function to execute
+         * @param args - Arguments to emplace into the function invocation
+         */
+        template<class ReturnType, class... Args>
+        void sync_delayed_function(unsigned int milliseconds_delay, std::function<ReturnType(Args...)> f, Args... args);
+        /**
+         * Invokes a function asynchronously with specified arguments after a specified delay.
+         * @tparam ReturnType - Return type of the function
+         * @tparam Args - Argument types of the function
+         * @param milliseconds_delay - Number of milliseconds to elapse before executing the function.
+         * @param f - The function to execute
+         * @param args - Arguments to emplace into the function invocation
+         */
+        template<class ReturnType, class... Args>
+        void async_delayed_function(unsigned int milliseconds_delay, std::function<ReturnType(Args...)> f, Args... args);
+    }
 }
+
+#include "time.inl"
+
 #endif

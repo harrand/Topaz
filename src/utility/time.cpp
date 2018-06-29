@@ -8,13 +8,13 @@ Timer::Timer()
 void Timer::update()
 {
 	// Assign 'after' to the current number of millis past since Epoch.
-	this->after = tz::time::now();
+	this->after = tz::utility::time::now();
 }
 
 void Timer::reload()
 {
 	// Assign both to the number of millis past since Epoch, so that the range is zero.
-	this->before = tz::time::now();
+	this->before = tz::utility::time::now();
 	this->after = after;
 }
 
@@ -68,4 +68,12 @@ float TimeProfiler::get_last_delta() const
 unsigned int TimeProfiler::get_fps() const
 {
 	return static_cast<unsigned int>(1000/this->get_delta_average());
+}
+
+namespace tz::utility::time
+{
+    long long int now()
+    {
+        return std::chrono::system_clock::now().time_since_epoch() / std::chrono::milliseconds(1);
+    }
 }

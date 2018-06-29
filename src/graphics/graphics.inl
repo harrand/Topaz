@@ -5,24 +5,24 @@ namespace tz::graphics
 		if(!tz::graphics::has_context)
 		{
 			if(print_progress)
-				tz::util::log::warning("Initialisation of tz::graphics aborted: No OpenGL context has been setup yet.");
+				std::cerr << "Initialisation of tz::graphics aborted: No OpenGL context has been setup yet.\n";
 			return;
 		}
 		if(print_progress)
-			tz::util::log::message("OpenGL context detected, initialising tz::graphics...");
+			std::cout << "OpenGL context detected, initialising tz::graphics...\n";
 		GLenum status = glewInit();
 		if(status != GLEW_OK)
 		{
 			if(print_progress)
-				tz::util::log::error("Initialisation of GLEW failed.\n\tInitialisation of tz::graphics unsuccessful!");
+				std::cerr << "Initialisation of GLEW failed.\n\tInitialisation of tz::graphics unsuccessful!\n";
             SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Topaz Error", (std::string("Topaz graphics module (tz::graphics) failed to initialise.\nError message:\n ") + std::string(SDL_GetError())).c_str(), NULL);
         }
 		else if(print_progress)
-			tz::util::log::message("Initialisation of GLEW successful.\n\tInitialised tz::graphics via GLEW (OpenGL).");
+			std::cout << "Initialisation of GLEW successful.\n\tInitialised tz::graphics via GLEW (OpenGL).\n";
 		if(TTF_Init() == 0 && print_progress)
-			tz::util::log::message("Successfully initialised SDL2_ttf.");
+			std::cout << "Successfully initialised SDL2_ttf.\n";
 		else if(print_progress)
-			tz::util::log::error("Initialisation of SDL2_ttf failed.");
+			std::cout << "Initialisation of SDL2_ttf failed.\n";
 		tz::graphics::initialised = true;
 		glEnable(GL_FRAMEBUFFER_SRGB);
 		glEnable(GL_MULTISAMPLE);
@@ -33,8 +33,8 @@ namespace tz::graphics
 		TTF_Quit();
 		if(print_progress)
 		{
-			tz::util::log::message("Terminated SDL2_ttf");
-			tz::util::log::message("Terminated tz::graphics via GLEW (OpenGL).");
+			std::cout << "Terminated SDL2_ttf\n";
+			std::cout << "Terminated tz::graphics via GLEW (OpenGL).\n";
 		}
 	}
 

@@ -83,12 +83,12 @@ void Shader::add_uniform(Uniform<T>&& uniform)
 {
 	if(this->has_uniform(uniform.get_uniform_location()))
 	{
-		tz::util::log::warning("[Shader]: Tried to add uniform with location '", uniform.get_uniform_location(), "' to Shader with handle ", this->program_handle, ", of which the location is already occupied.");
+		std::cerr << "[Shader]: Tried to add uniform with location '" << uniform.get_uniform_location() << "' to Shader with handle " << this->program_handle << ", of which the location is already occupied.\n";
 		return;
 	}
 	if(this->uniform_counter >= tz::graphics::maximum_uniforms)
 	{
-		tz::util::log::error("[Shader]: Tried to add uniform with location '", uniform.get_uniform_location(), "' to Shader with handle ", this->program_handle, ", but it already has the maximum number of uniforms attached (", tz::graphics::maximum_uniforms, ").");
+		std::cerr << "[Shader]: Tried to add uniform with location '" << uniform.get_uniform_location() << "' to Shader with handle " << this->program_handle << ", but it already has the maximum number of uniforms attached (" << tz::graphics::maximum_uniforms << ").\n";
 		return;
 	}
 	this->uniform_data[uniform_counter++] = std::make_unique<Uniform<T>>(std::forward<Uniform<T>>(uniform));
@@ -118,7 +118,7 @@ T Shader::get_uniform_value(std::string_view uniform_location) const
 {
 	if(!this->has_uniform(uniform_location))
 	{
-		tz::util::log::error("[Shader]: Tried to retrieve uniform_value for non-existent uniform. Returning default...");
+		std::cerr << "[Shader]: Tried to retrieve uniform_value for non-existent uniform. Returning default...\n";
 		return T();
 	}
 	return dynamic_cast<Uniform<T>*>(this->get_uniform(uniform_location))->get_value();

@@ -1,12 +1,12 @@
 #ifndef CAMERA_HPP
 #define CAMERA_HPP
 #include "matrix.hpp"
-#include "utility.hpp"
+#include "utility/numeric.hpp"
 
 namespace tz::graphics
 {
 	/// FOV of a Camera if none is specified.
-	constexpr float default_fov = tz::consts::pi / 2.0f;
+	constexpr float default_fov = tz::utility::numeric::consts::pi / 2.0f;
 	/// Near-clip of a Camera if none is specified.
 	constexpr float default_near_clip = 0.1f;
 	/// Far-clip of a Camera if none is specified.
