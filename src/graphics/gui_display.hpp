@@ -6,7 +6,7 @@
 class Panel : public GUI
 {
 public:
-    Panel(Vector2<int> position_local_pixel_space, Vector2<int> dimensions_local_pixel_space, std::variant<Vector4F, Texture*> background, GUI* parent = nullptr, std::initializer_list<GUI*> children = {});
+    Panel(Vector2I position_local_pixel_space, Vector2I dimensions_local_pixel_space, std::variant<Vector4F, Texture*> background, GUI* parent = nullptr, std::initializer_list<GUI*> children = {});
     virtual void render(Shader& shader, int window_width_pixels, int window_height_pixels) const override;
     bool has_colour() const;
     void set_colour(Vector4F colour);
@@ -22,7 +22,7 @@ private:
 class Label : public GUI
 {
 public:
-    Label(Vector2<int> position_local_pixel_space, Font font, Vector3F text_colour, std::string text, std::optional<Vector3F> highlight_colour = {}, GUI* parent = nullptr, std::initializer_list<GUI*> children = {});
+    Label(Vector2I position_local_pixel_space, Font font, Vector3F text_colour, std::string text, std::optional<Vector3F> highlight_colour = {}, GUI* parent = nullptr, std::initializer_list<GUI*> children = {});
     virtual void render(Shader& shader, int window_width_pixels, int window_height_pixels) const override;
     const std::string& get_text() const;
     void set_text(std::string text);
@@ -42,6 +42,19 @@ private:
     std::optional<Vector3F> highlight_colour;
     std::unique_ptr<Texture> text_render_texture;
     Mesh mesh;
+};
+
+class ProgressBar : public GUI
+{
+public:
+    ProgressBar(Vector2I position_local_pixel_space, Vector2I dimensions_local_pixel_space, Vector3F background_colour = {0.3f, 0.3f, 0.3f}, float progress = 0.0f, GUI* parent = nullptr, std::initializer_list<GUI*> children = {});
+    virtual void render(Shader& shader, int window_width_pixels, int window_height_pixels) const override;
+    float get_progress() const;
+    void set_progress(float progress);
+private:
+    Vector3F background_colour;
+    float progress;
+    Panel background, progress_bar;
 };
 
 #endif //TOPAZ_GUI_DISPLAY_HPP

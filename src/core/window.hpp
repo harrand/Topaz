@@ -39,7 +39,7 @@ public:
      * @param position_pixel_space - 2-dimensional Vector representing the position of the top-left of the Window on the screen, in pixels
      * @param dimensions_pixel_space - 2-dimensional Vector representing the corresponding width and height of the Windo on the screen, in pixels
      */
-    Window(std::string title, const Vector2<int>& position_pixel_space, const Vector2<int>& dimensions_pixel_space);
+    Window(std::string title, const Vector2I& position_pixel_space, const Vector2I& dimensions_pixel_space);
     /**
      * Safely dispose of all SDL components and allow any subclasses to also have this behaviour.
      */
@@ -53,23 +53,23 @@ public:
      * @param screen_space - The specified screen-space to format the return value as
      * @return - A Vector2I if ScreenSpace::PIXELS is passed, or a Vector2F if ScreenSpace::NORMALISED is passed
      */
-    std::variant<Vector2<int>, Vector2F> get_position(tz::gui::ScreenSpace screen_space) const;
+    std::variant<Vector2I, Vector2F> get_position(tz::gui::ScreenSpace screen_space) const;
     /**
      * Get the position of the top-left of the Window, in pixels.
      * @return - 2-dimensional Vector corresponding to the x and y coordinates of the top-left of the Window
      */
-    Vector2<int> get_position_pixels() const;
+    Vector2I get_position_pixels() const;
     /**
      * Set the position of the top-left of the Window, depending on what screen-space is specified.
      * @param position - Either a Vector2I representing the pixel-coordinate (should be done if ScreenSpace::PIXELS is passed), or a Vector2F representing the normalised-screen-space coordinate (should be done if ScreenSpace::NORMALISED is passed)
      * @param screen_space - The specified screen-space to interpret the input as
      */
-    void set_position(std::variant<Vector2<int>, Vector2F> position, tz::gui::ScreenSpace screen_space);
+    void set_position(std::variant<Vector2I, Vector2F> position, tz::gui::ScreenSpace screen_space);
     /**
      * Set the position of the top-left of the Window, in pixel-screen-space.
      * @param position_pixels - 2-dimensional Vector representing the position of the top-left of the Window, in pixels
      */
-    void set_position_pixels(Vector2<int> position_pixels);
+    void set_position_pixels(Vector2I position_pixels);
     /**
      * Set the position of the Window such that it sits directly in the middle of the display.
      * @param mask - Mask of which dimensions to apply the centering on (e.g, passing {true, false} performs centering only on the horizontal-axis)
@@ -80,12 +80,12 @@ public:
      * @param screen_space - The specified screen-space to format the return value as
      * @return - A Vector2I if ScreenSpace::PIXELS is passed, or a Vector2F if ScreenSpace::NORMALISED is passed
      */
-    std::variant<Vector2<int>, Vector2F> get_dimensions(tz::gui::ScreenSpace screen_space) const;
+    std::variant<Vector2I, Vector2F> get_dimensions(tz::gui::ScreenSpace screen_space) const;
     /**
      * Get the dimensions of the Window, in pixels.
      * @return - 2-dimensional Vector corresponding to the x and y coordinates of the top-left of the Window
      */
-    Vector2<int> get_dimensions_pixels() const;
+    Vector2I get_dimensions_pixels() const;
     /**
      * Get the width of the Window, in pixels.
      * @return - Number of pixels wide for this Window
@@ -243,9 +243,9 @@ private:
     /// String representing the title of the Window.
     std::string title;
     /// Position of the top-left corner of the Window, in pixels.
-    Vector2<int> position_pixel_space;
+    Vector2I position_pixel_space;
     /// Dimensions of the Window (width and height), in pixels.
-    Vector2<int> dimensions_pixel_space;
+    Vector2I dimensions_pixel_space;
     /// Underlying SDL2 window handle.
     SDL_Window* sdl_window;
     /// Underlying SDL2 GLContext handle.

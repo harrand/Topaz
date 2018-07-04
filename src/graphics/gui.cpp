@@ -1,7 +1,7 @@
 #include "gui.hpp"
 #include <stack>
 
-GUI::GUI(Vector2<int> position_local_pixel_space, Vector2<int> dimensions_local_pixel_space, GUI* parent, std::initializer_list<GUI*> children): position_local_pixel_space(position_local_pixel_space), dimensions_local_pixel_space(dimensions_local_pixel_space), parent(parent), children(children){}
+GUI::GUI(Vector2I position_local_pixel_space, Vector2I dimensions_local_pixel_space, GUI* parent, std::initializer_list<GUI*> children): position_local_pixel_space(position_local_pixel_space), dimensions_local_pixel_space(dimensions_local_pixel_space), parent(parent), children(children){}
 
 void GUI::render(Shader& shader, int window_width_pixels, int window_height_pixels) const
 {
@@ -35,15 +35,26 @@ void GUI::set_y(int y)
         this->position_local_pixel_space.y = y - this->parent->get_y();
 }
 
-void GUI::set_local_position_pixel_space(Vector2<int> position_local_pixel_space)
+void GUI::set_local_position_pixel_space(Vector2I position_local_pixel_space)
 {
     this->position_local_pixel_space = position_local_pixel_space;
 }
 
 void GUI::set_local_position_normalised_space(Vector2F position_local_normalised_space)
 {
-    Vector2<int> resolution = this->parent != nullptr ? this->parent->dimensions_local_pixel_space : tz::util::gui::display::resolution();
+    Vector2I resolution = this->parent != nullptr ? this->parent->dimensions_local_pixel_space : tz::util::gui::display::resolution();
     this->position_local_pixel_space = tz::util::gui::to_pixel_screen_space(position_local_normalised_space, resolution);
+}
+
+void GUI::set_local_dimensions_pixel_space(Vector2I dimensions_local_pixel_space)
+{
+    this->dimensions_local_pixel_space = dimensions_local_pixel_space;
+}
+
+void GUI::set_local_dimensions_normalised_space(Vector2F dimensions_local_normalised_space)
+{
+    Vector2I resolution = this->parent != nullptr ? this->parent->dimensions_local_pixel_space : tz::util::gui::display::resolution();
+    this->dimensions_local_pixel_space = tz::util::gui::to_pixel_screen_space(dimensions_local_normalised_space, resolution);
 }
 
 int GUI::get_width() const
@@ -95,10 +106,10 @@ bool GUI::add_child(GUI* gui)
 }
 
 // private helpers
-std::variant<Vector2<int>, Vector2F> GUI::get_local_position(tz::gui::ScreenSpace screen_space) const
+std::variant<Vector2I, Vector2F> GUI::get_local_position(tz::gui::ScreenSpace screen_space) const
 {
     using namespace tz::gui;
-    Vector2<int> resolution = this->parent == nullptr ? tz::util::gui::display::resolution() : this->parent->dimensions_local_pixel_space;
+    Vector2I resolution = this->parent == nullptr ? tz::util::gui::display::resolution() : this->parent->dimensions_local_pixel_space;
     switch(screen_space)
     {
         case ScreenSpace::PIXELS:
@@ -108,9 +119,9 @@ std::variant<Vector2<int>, Vector2F> GUI::get_local_position(tz::gui::ScreenSpac
     }
 }
 
-Vector2<int> GUI::get_local_position_pixel_space() const
+Vector2I GUI::get_local_position_pixel_space() const
 {
-    return std::get<Vector2<int>>(this->get_local_position(tz::gui::ScreenSpace::PIXELS));
+    return std::get<Vector2I>(this->get_local_position(tz::gui::ScreenSpace::PIXELS));
 }
 
 Vector2F GUI::get_local_position_normalised_space() const
@@ -118,7 +129,7 @@ Vector2F GUI::get_local_position_normalised_space() const
     return std::get<Vector2F>(this->get_local_position(tz::gui::ScreenSpace::NORMALISED));
 }
 
-std::variant<Vector2<int>, Vector2F> GUI::get_screen_position(tz::gui::ScreenSpace screen_space) const
+std::variant<Vector2I, Vector2F> GUI::get_screen_position(tz::gui::ScreenSpace screen_space) const
 {
     if(this->parent == nullptr)
         return this->get_local_position(screen_space);
@@ -127,15 +138,15 @@ std::variant<Vector2<int>, Vector2F> GUI::get_screen_position(tz::gui::ScreenSpa
     switch(screen_space)
     {
         case tz::gui::ScreenSpace::PIXELS:
-            return std::get<Vector2<int>>(this->parent->get_screen_position(screen_space)) + std::get<Vector2<int>>(this->get_local_position(screen_space));
+            return std::get<Vector2I>(this->parent->get_screen_position(screen_space)) + std::get<Vector2I>(this->get_local_position(screen_space));
         case tz::gui::ScreenSpace::NORMALISED:
             return std::get<Vector2F>(this->parent->get_screen_position(screen_space)) + std::get<Vector2F>(this->get_local_position(screen_space));
     }
 }
 
-Vector2<int> GUI::get_screen_position_pixel_space() const
+Vector2I GUI::get_screen_position_pixel_space() const
 {
-    return std::get<Vector2<int>>(this->get_screen_position(tz::gui::ScreenSpace::PIXELS));
+    return std::get<Vector2I>(this->get_screen_position(tz::gui::ScreenSpace::PIXELS));
 }
 
 Vector2F GUI::get_screen_position_normalised_space() const
@@ -192,7 +203,7 @@ namespace tz::util::gui
 {
     namespace display
     {
-        Vector2<int> resolution()
+        Vector2I resolution()
         {
             /// Returns dimensions of native display mode. So if the full=screen video-mode is activated, it will still return the desktop mode.
             SDL_DisplayMode display_mode;
@@ -209,17 +220,17 @@ namespace tz::util::gui
         }
     }
 
-    Vector2<int> to_pixel_screen_space(const Vector2F& normalised_screen_space, const Vector2<int>& resolution)
+    Vector2I to_pixel_screen_space(const Vector2F& normalised_screen_space, const Vector2I& resolution)
     {
         return {static_cast<int>(std::round(normalised_screen_space.x * resolution.x)), static_cast<int>(std::round(normalised_screen_space.y * resolution.y))};
     }
 
-    Vector2F to_normalised_screen_space(const Vector2<int>& pixel_screen_space, const Vector2<int>& resolution)
+    Vector2F to_normalised_screen_space(const Vector2I& pixel_screen_space, const Vector2I& resolution)
     {
         return {static_cast<float>(pixel_screen_space.x) / resolution.x, static_cast<float>(pixel_screen_space.y) / resolution.y};
     }
 
-    Vector2<int> clamp_pixel_screen_space(const Vector2<int>& pixel_screen_space, const Vector2<int>& resolution)
+    Vector2I clamp_pixel_screen_space(const Vector2I& pixel_screen_space, const Vector2I& resolution)
     {
         return {std::clamp(pixel_screen_space.x, 0, resolution.x), std::clamp(pixel_screen_space.y, 0, resolution.y)};
     }

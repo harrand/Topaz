@@ -6,7 +6,7 @@ class Scene
 {
 public:
     Scene(const std::initializer_list<StaticObject>& stack_objects = {}, const std::initializer_list<std::shared_ptr<StaticObject>>& heap_objects = {});
-    virtual void render(Shader& render_shader, const Camera& camera, const Vector2<int>& viewport_dimensions) const;
+    virtual void render(Shader& render_shader, const Camera& camera, const Vector2I& viewport_dimensions) const;
     virtual void update(float delta_time);
     std::vector<std::reference_wrapper<const StaticObject>> get_objects() const;
     void add_object(StaticObject scene_object);

@@ -1,6 +1,6 @@
 #include "gui_display.hpp"
 
-Panel::Panel(Vector2<int> position_local_pixel_space, Vector2<int> dimensions_local_pixel_space, std::variant<Vector4F, Texture*> background, GUI* parent, std::initializer_list<GUI*> children): GUI(position_local_pixel_space, dimensions_local_pixel_space, parent, children), background(background), mesh(tz::util::gui::gui_quad()){}
+Panel::Panel(Vector2I position_local_pixel_space, Vector2I dimensions_local_pixel_space, std::variant<Vector4F, Texture*> background, GUI* parent, std::initializer_list<GUI*> children): GUI(position_local_pixel_space, dimensions_local_pixel_space, parent, children), background(background), mesh(tz::util::gui::gui_quad()){}
 
 void Panel::render(Shader& shader, int window_width_pixels, int window_height_pixels) const
 {
@@ -57,7 +57,7 @@ Texture* Panel::get_texture() const
         return nullptr;
 }
 
-Label::Label(Vector2<int> position_local_pixel_space, Font font, Vector3F text_colour, std::string text, std::optional<Vector3F> highlight_colour, GUI* parent, std::initializer_list<GUI*> children): GUI(position_local_pixel_space, {}, parent, children), font(font), text(text), text_colour(text_colour), highlight_colour(highlight_colour), mesh(tz::util::gui::gui_quad())
+Label::Label(Vector2I position_local_pixel_space, Font font, Vector3F text_colour, std::string text, std::optional<Vector3F> highlight_colour, GUI* parent, std::initializer_list<GUI*> children): GUI(position_local_pixel_space, {}, parent, children), font(font), text(text), text_colour(text_colour), highlight_colour(highlight_colour), mesh(tz::util::gui::gui_quad())
 {
     this->set_text(this->text);
 }
@@ -137,4 +137,38 @@ void Label::update_texture()
 {
     this->text_render_texture = std::make_unique<Texture>(this->font, this->text, SDL_Color({static_cast<unsigned char>(this->text_colour.x * 255), static_cast<unsigned char>(this->text_colour.y * 255), static_cast<unsigned char>(this->text_colour.z * 255), static_cast<unsigned char>(255)}));
     this->dimensions_local_pixel_space = {this->text_render_texture->get_width(), this->text_render_texture->get_height()};
+}
+
+ProgressBar::ProgressBar(Vector2I position_local_pixel_space, Vector2I dimensions_local_pixel_space, Vector3F background_colour, float progress, GUI* parent, std::initializer_list<GUI*> children): GUI(position_local_pixel_space, dimensions_local_pixel_space, parent, children), background_colour(background_colour), progress(progress), background(position_local_pixel_space, dimensions_local_pixel_space, Vector4F{this->background_colour, 1.0f}, this), progress_bar({5, 5}, {}, Vector4F{1.0f, 0.0f, 0.0f, 1.0f}, &this->background)
+{
+    this->add_child(&this->background);
+    this->background.add_child(&this->progress_bar);
+    this->progress_bar.set_local_position_normalised_space({0.05f, 0.05f});
+    // set local proportional dimensions to be equal to progress percentage.
+    this->set_progress(progress);
+}
+
+void ProgressBar::render(Shader& shader, int window_width_pixels, int window_height_pixels) const
+{
+    this->background.render(shader, window_width_pixels, window_height_pixels);
+    this->progress_bar.render(shader, window_width_pixels, window_height_pixels);
+    GUI::render(shader, window_width_pixels, window_height_pixels);
+}
+
+float ProgressBar::get_progress() const
+{
+    return this->progress;
+}
+
+void ProgressBar::set_progress(float progress)
+{
+    this->progress = std::clamp(progress, 0.0f, 1.0f);
+    this->progress_bar.set_local_dimensions_normalised_space({this->progress * 0.9f, 0.9f});
+    // Sort out colour matching.
+    if(this->progress > 0.5f)
+        this->progress_bar.set_colour({0.0f, 1.0f, 0.0f, 1.0f});
+    else if(this->progress > 0.25f)
+        this->progress_bar.set_colour({1.0f, 1.0f, 0.0f, 1.0f});
+    else
+        this->progress_bar.set_colour({1.0f, 0.0f, 0.0f, 1.0f});
 }

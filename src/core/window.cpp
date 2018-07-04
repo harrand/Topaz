@@ -11,7 +11,7 @@ std::shared_ptr<DisplacementMap> tz::graphics::texture::default_displacement_map
 
 Window::Window(std::string title, int x_pixels, int y_pixels, int width_pixels, int height_pixels): Window(title, {x_pixels, y_pixels}, {width_pixels, height_pixels}){}
 
-Window::Window(std::string title, const Vector2<int>& position_pixel_space, const Vector2<int>& dimensions_pixel_space): registered_listeners{}, title(title), position_pixel_space(tz::util::gui::clamp_pixel_screen_space(position_pixel_space)), dimensions_pixel_space(tz::util::gui::clamp_pixel_screen_space(dimensions_pixel_space)), sdl_window(nullptr), close_requested(false), window_gui_element({0, 0}, {this->get_width(), this->get_height()}, nullptr, {})
+Window::Window(std::string title, const Vector2I& position_pixel_space, const Vector2I& dimensions_pixel_space): registered_listeners{}, title(title), position_pixel_space(tz::util::gui::clamp_pixel_screen_space(position_pixel_space)), dimensions_pixel_space(tz::util::gui::clamp_pixel_screen_space(dimensions_pixel_space)), sdl_window(nullptr), close_requested(false), window_gui_element({0, 0}, {this->get_width(), this->get_height()}, nullptr, {})
 {
     SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
     SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
@@ -79,7 +79,7 @@ void Window::update(Shader& gui_shader)
     tz::graphics::scene_render_mode();
 }
 
-std::variant<Vector2<int>, Vector2F> Window::get_position(tz::gui::ScreenSpace screen_space) const
+std::variant<Vector2I, Vector2F> Window::get_position(tz::gui::ScreenSpace screen_space) const
 {
     //return screen_space == tz::gui::ScreenSpace::PIXELS ? this->position_pixel_space : tz::util::gui::to_normalised_screen_space(this->position_pixel_space);
     using namespace tz::gui;
@@ -92,21 +92,21 @@ std::variant<Vector2<int>, Vector2F> Window::get_position(tz::gui::ScreenSpace s
     }
 }
 
-Vector2<int> Window::get_position_pixels() const
+Vector2I Window::get_position_pixels() const
 {
     return this->position_pixel_space;
 }
 
-void Window::set_position(std::variant<Vector2<int>, Vector2F> position, tz::gui::ScreenSpace screen_space)
+void Window::set_position(std::variant<Vector2I, Vector2F> position, tz::gui::ScreenSpace screen_space)
 {
     if(screen_space == tz::gui::ScreenSpace::NORMALISED && std::holds_alternative<Vector2F>(position))
         this->position_pixel_space = tz::util::gui::to_pixel_screen_space(std::get<Vector2F>(position));
-    else if(screen_space == tz::gui::ScreenSpace::PIXELS && std::holds_alternative<Vector2<int>>(position))
-        this->position_pixel_space = std::get<Vector2<int>>(position);
+    else if(screen_space == tz::gui::ScreenSpace::PIXELS && std::holds_alternative<Vector2I>(position))
+        this->position_pixel_space = std::get<Vector2I>(position);
     SDL_SetWindowPosition(this->sdl_window, this->position_pixel_space.x, this->position_pixel_space.y);
 }
 
-void Window::set_position_pixels(Vector2<int> position_pixels)
+void Window::set_position_pixels(Vector2I position_pixels)
 {
     this->position_pixel_space = position_pixels;
 }
@@ -116,7 +116,7 @@ void Window::centre_position(const Vector2<bool>& mask)
     SDL_SetWindowPosition(this->sdl_window, mask.x ? SDL_WINDOWPOS_CENTERED : this->position_pixel_space.x, mask.y ? SDL_WINDOWPOS_CENTERED : this->position_pixel_space.y);
 }
 
-std::variant<Vector2<int>, Vector2F> Window::get_dimensions(tz::gui::ScreenSpace screen_space) const
+std::variant<Vector2I, Vector2F> Window::get_dimensions(tz::gui::ScreenSpace screen_space) const
 {
     //return screen_space == tz::gui::ScreenSpace::PIXELS ? this->dimensions_pixel_space : tz::util::gui::to_normalised_screen_space(this->dimensions_pixel_space);
     using namespace tz::gui;
@@ -129,7 +129,7 @@ std::variant<Vector2<int>, Vector2F> Window::get_dimensions(tz::gui::ScreenSpace
     }
 }
 
-Vector2<int> Window::get_dimensions_pixels() const
+Vector2I Window::get_dimensions_pixels() const
 {
     return this->dimensions_pixel_space;
 }

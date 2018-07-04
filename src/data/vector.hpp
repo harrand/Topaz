@@ -771,8 +771,22 @@ private:
 };
 
 #include "vector.inl"
+
 /**
- * Represents a 2-dimensional Vector of floats.
+ * Represents a 2-dimensional Vector of ints.
+ */
+using Vector2I = Vector2<int>;
+/**
+ * Represents a 3-dimensional Vector of ints.
+ */
+using Vector3I = Vector3<int>;
+/**
+ * Represents a 4-dimensional Vector of ints.
+ */
+using Vector4I = Vector4<int>;
+
+/**
+ * Represents a 2-dimensional Vector of ints.
  */
 using Vector2F = Vector2<float>;
 /**

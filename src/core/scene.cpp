@@ -7,7 +7,7 @@
 
 Scene::Scene(const std::initializer_list<StaticObject>& stack_objects, const std::initializer_list<std::shared_ptr<StaticObject>>& heap_objects): stack_objects(stack_objects), heap_objects(heap_objects){}
 
-void Scene::render(Shader& render_shader, const Camera& camera, const Vector2<int>& viewport_dimensions) const
+void Scene::render(Shader& render_shader, const Camera& camera, const Vector2I& viewport_dimensions) const
 {
     Frustum camera_frustum(camera, viewport_dimensions.x / viewport_dimensions.y);
     auto render_if_visible = [&](const StaticObject& object){AABB object_box = tz::physics::bound_aabb(*(object.get_asset().mesh.lock())); if(camera_frustum.contains(object_box * object.transform.model()) || tz::graphics::is_instanced(object.get_asset().mesh.lock().get())) object.render(render_shader, camera, viewport_dimensions);};

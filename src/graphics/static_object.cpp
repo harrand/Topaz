@@ -7,7 +7,7 @@ const Asset& StaticObject::get_asset() const
     return this->asset;
 }
 
-void StaticObject::render(Shader& render_shader, const Camera& camera, const Vector2<int>& viewport_dimensions) const
+void StaticObject::render(Shader& render_shader, const Camera& camera, const Vector2I& viewport_dimensions) const
 {
     if(!this->asset.valid_mesh())
     {
@@ -57,7 +57,7 @@ InstancedStaticObject::InstancedStaticObject(const std::vector<StaticObject>& ob
     this->asset.mesh = this->instanced_mesh;
 }
 
-void InstancedStaticObject::render(Shader& instanced_render_shader, const Camera& camera, const Vector2<int>& viewport_dimensions) const
+void InstancedStaticObject::render(Shader& instanced_render_shader, const Camera& camera, const Vector2I& viewport_dimensions) const
 {
     instanced_render_shader.bind();
     instanced_render_shader.set_uniform<bool>("is_instanced", true);

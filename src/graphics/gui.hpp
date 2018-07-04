@@ -35,7 +35,7 @@ class GUI
 {
 public:
     friend class Window;
-    GUI(Vector2<int> position_local_pixel_space, Vector2<int> dimensions_local_pixel_space, GUI* parent = nullptr, std::initializer_list<GUI*> children = {});
+    GUI(Vector2I position_local_pixel_space, Vector2I dimensions_local_pixel_space, GUI* parent = nullptr, std::initializer_list<GUI*> children = {});
     virtual void render(Shader& shader, int window_width_pixels, int window_height_pixels) const;
     /**
      * Get the x-coordinate of the top-left of this GUI element on the screen.
@@ -49,8 +49,21 @@ public:
     int get_y() const;
     void set_x(int x);
     void set_y(int y);
-    void set_local_position_pixel_space(Vector2<int> position_local_pixel_space);
+    /**
+     * Get the local-position (relative to the parent, or screen if there isn't one) of the top-left of the GUI, depending on what screen-space is specified.
+     * @param screen_space - The specified screen-space to format the return value as
+     * @return - A Vector2I if ScreenSpace::PIXELS is passed, or a Vector2F if ScreenSpace::NORMALISED is passed
+     */
+    std::variant<Vector2I, Vector2F> get_local_position(tz::gui::ScreenSpace screen_space) const;
+    Vector2I get_local_position_pixel_space() const;
+    Vector2F get_local_position_normalised_space() const;
+    std::variant<Vector2I, Vector2F> get_screen_position(tz::gui::ScreenSpace screen_space) const;
+    Vector2I get_screen_position_pixel_space() const;
+    Vector2F get_screen_position_normalised_space() const;
+    void set_local_position_pixel_space(Vector2I position_local_pixel_space);
     void set_local_position_normalised_space(Vector2F position_local_normalised_space);
+    void set_local_dimensions_pixel_space(Vector2I dimensions_local_pixel_space);
+    void set_local_dimensions_normalised_space(Vector2F dimensions_local_normalised_space);
     /**
      * Get the width of this GUI, in pixels.
      * @return - Width of GUI in pixels.
@@ -85,19 +98,7 @@ public:
     template<template<typename> class Container>
     bool is_occluded_by(const Container<GUI*>& gui_elements);
 protected:
-    /**
-     * Get the local-position (relative to the parent, or screen if there isn't one) of the top-left of the GUI, depending on what screen-space is specified.
-     * @param screen_space - The specified screen-space to format the return value as
-     * @return - A Vector2I if ScreenSpace::PIXELS is passed, or a Vector2F if ScreenSpace::NORMALISED is passed
-     */
-    std::variant<Vector2<int>, Vector2F> get_local_position(tz::gui::ScreenSpace screen_space) const;
-    Vector2<int> get_local_position_pixel_space() const;
-    Vector2F get_local_position_normalised_space() const;
-    std::variant<Vector2<int>, Vector2F> get_screen_position(tz::gui::ScreenSpace screen_space) const;
-    Vector2<int> get_screen_position_pixel_space() const;
-    Vector2F get_screen_position_normalised_space() const;
-
-    Vector2<int> position_local_pixel_space, dimensions_local_pixel_space;
+    Vector2I position_local_pixel_space, dimensions_local_pixel_space;
     GUI* parent;
     std::unordered_set<GUI*> children;
     std::unordered_set<std::shared_ptr<GUI>> heap_children;
@@ -117,7 +118,7 @@ namespace tz::util::gui
          * Get the resolution of the current display.
          * @return - {w, h} in pixels
          */
-        Vector2<int> resolution();
+        Vector2I resolution();
         /**
          * Get the refresh rate of the current display.
          * @return - Refresh-rate, in hertz (Hz)
@@ -130,14 +131,14 @@ namespace tz::util::gui
      * @param resolution - Resolution through which to convert
      * @return - The transformed position in pixel-screen-space
      */
-    Vector2<int> to_pixel_screen_space(const Vector2F& normalised_screen_space, const Vector2<int>& resolution = display::resolution());
+    Vector2I to_pixel_screen_space(const Vector2F& normalised_screen_space, const Vector2I& resolution = display::resolution());
     /**
      * Convert a pixel-screen-space position into a normalised-screen-space position.
      * @param pixel_screen_space - The pixel position, such as {800, 600}
      * @param resolution - Resolution through which to convert
      * @return - The transformed position in normalised-screen-space (between {0, 0} and {1.0f, 1.0f})
      */
-    Vector2F to_normalised_screen_space(const Vector2<int>& pixel_screen_space, const Vector2<int>& resolution = display::resolution());
+    Vector2F to_normalised_screen_space(const Vector2I& pixel_screen_space, const Vector2I& resolution = display::resolution());
     /**
      * Clamp a pixel-screen-space position, to ensure that it is valid. See the following example:
      *      Example Resolution = 800x600
@@ -147,7 +148,7 @@ namespace tz::util::gui
      * @param resolution
      * @return
      */
-    Vector2<int> clamp_pixel_screen_space(const Vector2<int>& pixel_screen_space, const Vector2<int>& resolution = display::resolution());
+    Vector2I clamp_pixel_screen_space(const Vector2I& pixel_screen_space, const Vector2I& resolution = display::resolution());
     /**
      * Generate the expected GUI quad (where {0, 0} modelspace is the bottom-left of the quad, instead of the middle)
      * @return - OpenGL quad, in a slightly manipulated format designed to make GUI simpler.

@@ -21,10 +21,12 @@ int main()
 void init()
 {
 	Window wnd("Topaz Development Window", 0, 30, 800, 600);
-    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     // During init, enable debug output
     Font font("../../../res/runtime/fonts/CaviarDreams.ttf", 36);
-    Label& label = wnd.emplace_child<Label>(Vector2<int>{0, 0}, font, Vector3F{0.0f, 0.3f, 0.0f}, " ");
+    Label& label = wnd.emplace_child<Label>(Vector2I{0, 0}, font, Vector3F{0.0f, 0.3f, 0.0f}, " ");
+    Label& progress_label = wnd.emplace_child<Label>(Vector2I(0, 150), font, Vector3F(1.0f, 1.0f, 1.0f), "progress:");
+    ProgressBar& progress = wnd.emplace_child<ProgressBar>(Vector2I(0, 50), Vector2I{progress_label.get_width(), progress_label.get_height()}, Vector3F(0.3f, 0.3f, 0.3f));
     //label.set_local_position_normalised_space({0.5f, 0.5f});
 
     KeyListener key_listener(wnd);
@@ -54,17 +56,11 @@ void init()
     Shader skybox_shader("../../../src/shaders/skybox");
     Skybox skybox("../../../res/runtime/models/skybox.obj", skybox_texture);
 
-    /*
-    for(float i = 0; i < 50000; i += 1.0f)
-    {
-        scene.emplace_object(Transform{Vector3F{(float)((int)(i / 100) % 500), (float)((int)i % 20), (float)((int)(i / 100) % 500)} * 10.0f, {}, {5, 5, 5}}, asset2);
-    }
-     */
-
+    Random rand;
     std::vector<StaticObject> objects;
     for(float i = 0; i < 50000; i += 1.0f)
     {
-        objects.emplace_back(Transform{Vector3F{(float)((int)(i / 100) % 500), (float)((int)i % 20), (float)((int)(i / 100) % 500)} * 10.0f, {}, {5, 5, 5}}, asset2);
+        objects.emplace_back(Transform{Vector3F{rand.next_float(-1.0f, 1.0f), rand.next_float(-1.0f, 1.0f), rand.next_float(-1.0f, 1.0f)} * 5000.0f, {}, {5, 5, 5}}, asset2);
     }
     scene.emplace<InstancedStaticObject>(objects);
 
@@ -82,6 +78,8 @@ void init()
             label.set_text(to_string(profiler.get_delta_average()) + " ms (" + to_string(profiler.get_fps()) + " fps)");
             second_timer.reload();
             profiler.reset();
+            progress.set_progress(progress.get_progress() + 0.1f);
+            std::cout << "progress = " << progress.get_progress() * 100 << "%\n";
         }
         long long int delta_time = tz::utility::time::now() - time;
         time = tz::utility::time::now();
