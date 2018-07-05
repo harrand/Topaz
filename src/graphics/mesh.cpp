@@ -7,7 +7,7 @@
 
 Mesh::Mesh(std::string filename): filename(std::move(filename))
 {
-	const aiScene* scene = aiImportFile(this->filename.c_str(), aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_CalcTangentSpace | aiProcess_JoinIdenticalVertices | aiProcess_TransformUVCoords);
+	const aiScene* scene = aiImportFile(this->filename.c_str(), aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_CalcTangentSpace | aiProcess_JoinIdenticalVertices | aiProcess_TransformUVCoords | aiProcess_OptimizeMeshes | aiProcess_OptimizeGraph);
 	if(scene == nullptr)
     {
         std::cerr << "Error: Mesh import failed:\n" << aiGetErrorString() << "\n";

@@ -21,7 +21,7 @@ int main()
 void init()
 {
 	Window wnd("Topaz Development Window", 0, 30, 800, 600);
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     // During init, enable debug output
     Font font("../../../res/runtime/fonts/CaviarDreams.ttf", 36);
     Label& label = wnd.emplace_child<Label>(Vector2I{0, 0}, font, Vector3F{0.0f, 0.3f, 0.0f}, " ");
@@ -51,7 +51,8 @@ void init()
     DynamicObject& test_dynamic = scene.emplace<DynamicObject>(1.0f, Transform{{}, {}, {20, 20, 20}}, asset0);
     test_dynamic.add_force({0.0f, -9.81f, 0.0f});
     using namespace tz::utility::numeric;
-    test_dynamic.angular_velocity = {0.0f, 2.0f * consts::pi, 0.2f};
+    test_dynamic.add_torque({0.0f, 0.2f * consts::pi, 0.1f});
+    //test_dynamic.angular_velocity = {0.0f, 2.0f * consts::pi, 0.2f};
     CubeMap skybox_texture("../../../res/runtime/textures/skybox/", "cwd", ".jpg");
     Shader skybox_shader("../../../src/shaders/skybox");
     Skybox skybox("../../../res/runtime/models/skybox.obj", skybox_texture);
@@ -78,8 +79,6 @@ void init()
             label.set_text(to_string(profiler.get_delta_average()) + " ms (" + to_string(profiler.get_fps()) + " fps)");
             second_timer.reload();
             profiler.reset();
-            progress.set_progress(progress.get_progress() + 0.1f);
-            std::cout << "progress = " << progress.get_progress() * 100 << "%\n";
         }
         long long int delta_time = tz::utility::time::now() - time;
         time = tz::utility::time::now();
@@ -110,5 +109,7 @@ void init()
             camera.position += camera.left() * delta_time * speed;
         if(key_listener.is_key_pressed("D"))
             camera.position += camera.right() * delta_time * speed;
+        float distance_from_dynamic_object = (camera.position - test_dynamic.transform.position).length();
+        progress.set_progress(distance_from_dynamic_object / camera.far_clip);
     }
 }

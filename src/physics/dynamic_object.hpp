@@ -6,7 +6,7 @@
 class DynamicObject : public StaticObject, public PhysicsObject
 {
 public:
-    DynamicObject(float mass, Transform transform, Asset asset, Vector3F velocity = {}, Vector3F angular_velocity = {}, std::initializer_list<Vector3F> forces = {});
+    DynamicObject(float mass, Transform transform, Asset asset, Vector3F velocity = {}, float moment_of_inertia = 1.0f, Vector3F angular_velocity = {}, std::initializer_list<Vector3F> forces = {});
     virtual void update(float delta_time) override;
 };
 

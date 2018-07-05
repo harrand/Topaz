@@ -143,7 +143,9 @@ ProgressBar::ProgressBar(Vector2I position_local_pixel_space, Vector2I dimension
 {
     this->add_child(&this->background);
     this->background.add_child(&this->progress_bar);
-    this->progress_bar.set_local_position_normalised_space({0.05f, 0.05f});
+    this->progress_bar.set_local_position_normalised_space({0.0f, 0.05f});
+    int pixels = this->progress_bar.get_local_position_pixel_space().y;
+    this->progress_bar.set_local_position_pixel_space({pixels, pixels});
     // set local proportional dimensions to be equal to progress percentage.
     this->set_progress(progress);
 }
@@ -163,7 +165,7 @@ float ProgressBar::get_progress() const
 void ProgressBar::set_progress(float progress)
 {
     this->progress = std::clamp(progress, 0.0f, 1.0f);
-    this->progress_bar.set_local_dimensions_normalised_space({this->progress * 0.9f, 0.9f});
+    this->progress_bar.set_local_dimensions_normalised_space({this->progress * 0.97f, 0.90f});
     // Sort out colour matching.
     if(this->progress > 0.5f)
         this->progress_bar.set_colour({0.0f, 1.0f, 0.0f, 1.0f});
