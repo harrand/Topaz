@@ -86,5 +86,5 @@ add_library(topaz SHARED
         src/utility/string.hpp
         src/utility/time.cpp
         src/utility/time.hpp
-        src/utility/time.inl)
+        src/utility/time.inl src/graphics/gui/textfield.cpp src/graphics/gui/textfield.hpp)
 target_link_libraries(topaz OpenGL32 SDL2 SDL2_mixer SDL2_ttf SDL2main assimp)

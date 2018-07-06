@@ -2,7 +2,7 @@
 #include "physics/physics.hpp"
 #include "graphics/asset.hpp"
 #include "graphics/gui/button.hpp"
-#include "graphics/gui/display.hpp"
+#include "graphics/gui/textfield.hpp"
 #include "core/scene.hpp"
 #include "graphics/skybox.hpp"
 #include "core/topaz.hpp"
@@ -32,6 +32,7 @@ void init()
     MouseListener mouse_listener(wnd);
 
     Button& test_button = wnd.emplace_child<Button>(Vector2I{0, 200}, Vector2I{100, 50}, font, Vector3F{}, "press me", Vector3F{0.1f, 0.1f, 0.1f}, Vector3F{0.8f, 0.8f, 0.8f});
+    TextField& test_field = wnd.emplace_child<TextField>(Vector2I{0, 300}, Vector2I{100, 50}, font, Vector3F{0.2f, 0.2f, 0.2f}, "Text...", Vector3F{0.1f, 0.1f, 0.1f});
 
     constexpr float speed = 0.5f;
 	Shader render_shader("../../../src/shaders/3D_FullAssetsInstanced");
