@@ -261,6 +261,7 @@ void Window::clear(GLbitfield mask, float r, float g, float b, float a) const
 void Window::register_listener(Listener& l)
 {
     this->registered_listeners[l.get_id()] = &l;
+    l.window = this;
 }
 
 void Window::deregister_listener(Listener& l)

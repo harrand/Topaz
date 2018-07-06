@@ -24,7 +24,7 @@ public:
     friend class Window;
     friend class GUIWidgetKeyListener;
 
-    virtual void update() override final;
+    virtual void update() override;
     virtual bool key_sensitive() const override;
     virtual bool mouse_sensitive() const override;
     virtual void on_mouse_enter(){}

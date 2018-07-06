@@ -261,10 +261,10 @@ namespace tz::util::gui
 		 * *--------*
 		 * [0, 0]
          * thus:
-         * x + width, y + height = 1
-         * x - width, x - height = 0
+         * x + width/2, y + height/2 = 1
+         * x - width/2, x - height/2 = 0
          * x = y = 0.5f
-         * width = height = 0.5f
+         * width = height = 1.0f
          */
         return tz::graphics::create_quad(0.5f, 0.5f, 0.5f, 0.5f);
     }

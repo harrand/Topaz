@@ -1,5 +1,5 @@
 #include <physics/boundary.hpp>
-#include "gui_widget.hpp"
+#include "widget.hpp"
 
 GUIWidgetKeyListener::GUIWidgetKeyListener(GUIWidget& widget): KeyListener(), widget(widget){}
 GUIWidgetKeyListener::GUIWidgetKeyListener(GUIWidget& widget, Window& window): KeyListener(window), widget(widget){}
@@ -64,10 +64,6 @@ void GUIWidget::update()
             this->mouse_inside = false;
         }
 
-    }
-    if(this->key_sensitive())
-    {
-        // handle key events.
     }
 }
 

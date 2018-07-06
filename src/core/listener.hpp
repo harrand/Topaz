@@ -19,6 +19,8 @@ public:
 	/// Semi-trivial destruction
 	virtual ~Listener();
 
+	friend class Window;
+
 	/**
 	 * Pure virtual.
 	 * @param evt - N/A
@@ -34,6 +36,8 @@ public:
 	 * @return - Number of Listeners in-use
 	 */
 	static unsigned int get_num_listeners();
+protected:
+	Window* window;
 private:
 	/// Stores the active number of listeners.
 	static unsigned int number_of_listeners;

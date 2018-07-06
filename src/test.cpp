@@ -1,8 +1,8 @@
 #include "core/listener.hpp"
 #include "physics/physics.hpp"
 #include "graphics/asset.hpp"
-#include "graphics/gui_widget.hpp"
-#include "graphics/gui_display.hpp"
+#include "graphics/gui/button.hpp"
+#include "graphics/gui/display.hpp"
 #include "core/scene.hpp"
 #include "graphics/skybox.hpp"
 #include "core/topaz.hpp"
@@ -26,11 +26,12 @@ void init()
     // During init, enable debug output
     Font font("../../../res/runtime/fonts/CaviarDreams.ttf", 36);
     Label& label = wnd.emplace_child<Label>(Vector2I{0, 0}, font, Vector3F{0.0f, 0.3f, 0.0f}, " ");
+    ProgressBar& progress = wnd.emplace_child<ProgressBar>(Vector2I{0, 50}, Vector2I{100, 50}, Vector3F{0.3f, 0.3f, 0.3f}, 0.5f);
 
     KeyListener key_listener(wnd);
     MouseListener mouse_listener(wnd);
 
-    wnd.emplace_child<GUIWidget>(Vector2I{0, 0}, Vector2I{400, 400}, true, true);
+    wnd.emplace_child<Button>(Vector2I{0, 200}, Vector2I{100, 50}, font, Vector3F{}, "press me", Vector3F{0.1f, 0.1f, 0.1f}, Vector3F{0.8f, 0.8f, 0.8f});
 
     constexpr float speed = 0.5f;
 	Shader render_shader("../../../src/shaders/3D_FullAssetsInstanced");
@@ -64,6 +65,8 @@ void init()
     TimeProfiler profiler;
 	while(!wnd.is_close_requested())
     {
+        static float x = 0;
+        progress.set_progress(std::abs(std::sin(x += 0.001)));
         profiler.begin_frame();
         second_timer.update();
         if(second_timer.millis_passed(1000.0f))
@@ -91,7 +94,7 @@ void init()
         {
             Vector2F delta = mouse_listener.get_mouse_delta_position();
             camera.rotation.y += 0.03 * delta.x;
-            camera.rotation.x -= 0.03 * delta.y;
+            camera.rotation.x += 0.03 * delta.y;
             mouse_listener.reload_mouse_delta();
         }
         if(key_listener.is_key_pressed("W"))

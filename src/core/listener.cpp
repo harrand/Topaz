@@ -3,7 +3,7 @@
 // static objects need to be initialised like this. really annoying.
 unsigned int Listener::number_of_listeners = 0;
 
-Listener::Listener(): id(Listener::number_of_listeners++){}
+Listener::Listener(): id(Listener::number_of_listeners++), window(nullptr){}
 
 Listener::~Listener()
 {
@@ -35,7 +35,7 @@ void MouseListener::handle_events(SDL_Event& evt)
 		int x, y;
 		SDL_GetMouseState(&x, &y);
 		this->mouse_position.x = x;
-		this->mouse_position.y = y;
+		this->mouse_position.y = this->window->get_height() - y;
 	}
 	if(evt.type == SDL_MOUSEBUTTONDOWN)
 	{

@@ -48,7 +48,6 @@ class ProgressBar : public GUI
 {
 public:
     ProgressBar(Vector2I position_local_pixel_space, Vector2I dimensions_local_pixel_space, Vector3F background_colour = {0.3f, 0.3f, 0.3f}, float progress = 0.0f, GUI* parent = nullptr, std::initializer_list<GUI*> children = {});
-    virtual void render(Shader& shader, int window_width_pixels, int window_height_pixels) const override;
     float get_progress() const;
     void set_progress(float progress);
 private:

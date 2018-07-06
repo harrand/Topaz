@@ -1,4 +1,4 @@
-#include "gui_display.hpp"
+#include "display.hpp"
 
 Panel::Panel(Vector2I position_local_pixel_space, Vector2I dimensions_local_pixel_space, std::variant<Vector4F, Texture*> background, GUI* parent, std::initializer_list<GUI*> children): GUI(position_local_pixel_space, dimensions_local_pixel_space, parent, children), background(background), mesh(tz::util::gui::gui_quad()){}
 
@@ -8,7 +8,7 @@ void Panel::render(Shader& shader, int window_width_pixels, int window_height_pi
     shader.set_uniform<bool>("has_texture", this->has_texture());
     shader.set_uniform<bool>("has_background_colour", this->has_colour());
     Matrix4x4 projection = tz::transform::orthographic_projection(window_width_pixels, 0.0f, window_height_pixels, 0.0f, -1.0f, 1.0f);
-    Matrix4x4 model = projection * tz::transform::model(Vector3F(this->get_x(), this->get_y(), 0.0f), Vector3F(), Vector3F(this->get_width(), this->get_height(), 0.0f));
+    Matrix4x4 model = projection * tz::transform::model(Vector3F(this->get_x(), this->get_y(), 0.0f) * 0.5f, Vector3F(), Vector3F(this->get_width(), this->get_height(), 0.0f));
     shader.set_uniform<Matrix4x4>("model_matrix", model);
     if(this->has_colour())
         shader.set_uniform<Vector4F>("colour", this->get_colour().value());
@@ -143,18 +143,11 @@ ProgressBar::ProgressBar(Vector2I position_local_pixel_space, Vector2I dimension
 {
     this->add_child(&this->background);
     this->background.add_child(&this->progress_bar);
-    this->progress_bar.set_local_position_normalised_space({0.0f, 0.05f});
+    this->progress_bar.set_local_position_normalised_space({0.0f, 0.1f});
     int pixels = this->progress_bar.get_local_position_pixel_space().y;
     this->progress_bar.set_local_position_pixel_space({pixels, pixels});
     // set local proportional dimensions to be equal to progress percentage.
     this->set_progress(progress);
-}
-
-void ProgressBar::render(Shader& shader, int window_width_pixels, int window_height_pixels) const
-{
-    this->background.render(shader, window_width_pixels, window_height_pixels);
-    this->progress_bar.render(shader, window_width_pixels, window_height_pixels);
-    GUI::render(shader, window_width_pixels, window_height_pixels);
 }
 
 float ProgressBar::get_progress() const
@@ -165,7 +158,7 @@ float ProgressBar::get_progress() const
 void ProgressBar::set_progress(float progress)
 {
     this->progress = std::clamp(progress, 0.0f, 1.0f);
-    this->progress_bar.set_local_dimensions_normalised_space({this->progress * 0.97f, 0.90f});
+    this->progress_bar.set_local_dimensions_normalised_space({this->progress * 0.95f, 0.90f});
     // Sort out colour matching.
     if(this->progress > 0.5f)
         this->progress_bar.set_colour({0.0f, 1.0f, 0.0f, 1.0f});

@@ -6,7 +6,7 @@
 #include <variant>
 #include "graphics/mesh.hpp"
 #include "graphics/shader.hpp"
-#include "camera.hpp"
+#include "graphics/camera.hpp"
 
 namespace tz::gui
 {
