@@ -3,6 +3,12 @@
 
 GUI::GUI(Vector2I position_local_pixel_space, Vector2I dimensions_local_pixel_space, GUI* parent, std::initializer_list<GUI*> children): position_local_pixel_space(position_local_pixel_space), dimensions_local_pixel_space(dimensions_local_pixel_space), parent(parent), children(children){}
 
+void GUI::update()
+{
+    for(GUI* child : this->children)
+        child->update();
+}
+
 void GUI::render(Shader& shader, int window_width_pixels, int window_height_pixels) const
 {
     for(const GUI* child : this->get_children())

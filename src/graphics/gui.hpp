@@ -36,6 +36,9 @@ class GUI
 public:
     friend class Window;
     GUI(Vector2I position_local_pixel_space, Vector2I dimensions_local_pixel_space, GUI* parent = nullptr, std::initializer_list<GUI*> children = {});
+    virtual void update();
+    virtual bool key_sensitive() const{return false;}
+    virtual bool mouse_sensitive() const{return false;}
     virtual void render(Shader& shader, int window_width_pixels, int window_height_pixels) const;
     /**
      * Get the x-coordinate of the top-left of this GUI element on the screen.

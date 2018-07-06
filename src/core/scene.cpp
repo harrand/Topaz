@@ -21,6 +21,15 @@ void Scene::update(float delta_time)
 {
     for(std::reference_wrapper<DynamicObject> dynamic_ref : this->get_dynamic_objects())
         dynamic_ref.get().update(delta_time);
+    std::vector<std::reference_wrapper<PhysicsObject>> physics_objects;
+    for(auto& object : this->get_static_objects())
+    {
+        auto physics_component = dynamic_cast<PhysicsObject*>(&object.get());
+        if(physics_component != nullptr)
+            physics_objects.push_back(*physics_component);
+    }
+    for(auto& physics_ref : physics_objects)
+        physics_ref.get().handle_collisions(physics_objects);
 }
 
 std::vector<std::reference_wrapper<const StaticObject>> Scene::get_objects() const

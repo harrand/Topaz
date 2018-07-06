@@ -38,3 +38,13 @@ void PhysicsObject::add_torque(Vector3F torque)
 {
     this->torques.push_back(torque);
 }
+
+void PhysicsObject::handle_collisions(const std::vector<std::reference_wrapper<PhysicsObject>>& physics_objects)
+{
+    for(auto ref : physics_objects)
+    {
+        auto& physics_object = ref.get();
+        if(this->get_boundary().intersects(physics_object.get_boundary()) && this != &physics_object)
+            this->on_collision(physics_object);
+    }
+}

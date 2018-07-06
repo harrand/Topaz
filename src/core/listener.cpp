@@ -75,12 +75,12 @@ bool MouseListener::is_right_clicked() const
 	return this->right_click;
 }
 
-const Vector2F& MouseListener::get_mouse_pos() const
+const Vector2F& MouseListener::get_mouse_position() const
 {
 	return this->mouse_position;
 }
 
-Vector2F MouseListener::get_mouse_delta_pos() const
+Vector2F MouseListener::get_mouse_delta_position() const
 {
 	return (this->mouse_position - this->previous_mouse_position);
 }
@@ -107,6 +107,7 @@ void KeyListener::handle_events(SDL_Event& evt)
 	switch(evt.type)
 	{
 		case SDL_KEYDOWN:
+			this->on_key_pressed(SDL_GetKeyName(evt.key.keysym.sym));
 			if(std::find(this->released_keys.begin(), this->released_keys.end(), SDL_GetKeyName(evt.key.keysym.sym)) != this->released_keys.end())
 			{
 				this->released_keys.erase(std::remove(this->released_keys.begin(), this->released_keys.end(), SDL_GetKeyName(evt.key.keysym.sym)), this->released_keys.end());
@@ -118,6 +119,7 @@ void KeyListener::handle_events(SDL_Event& evt)
 			}
 		break;
 		case SDL_KEYUP:
+			this->on_key_released(SDL_GetKeyName(evt.key.keysym.sym));
 			if(std::find(this->released_keys.begin(), this->released_keys.end(), SDL_GetKeyName(evt.key.keysym.sym)) == this->released_keys.end())
 			{
 				this->released_keys.push_back(SDL_GetKeyName(evt.key.keysym.sym));

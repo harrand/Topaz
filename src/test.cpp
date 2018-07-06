@@ -1,6 +1,7 @@
 #include "core/listener.hpp"
 #include "physics/physics.hpp"
 #include "graphics/asset.hpp"
+#include "graphics/gui_widget.hpp"
 #include "graphics/gui_display.hpp"
 #include "core/scene.hpp"
 #include "graphics/skybox.hpp"
@@ -25,12 +26,11 @@ void init()
     // During init, enable debug output
     Font font("../../../res/runtime/fonts/CaviarDreams.ttf", 36);
     Label& label = wnd.emplace_child<Label>(Vector2I{0, 0}, font, Vector3F{0.0f, 0.3f, 0.0f}, " ");
-    Label& progress_label = wnd.emplace_child<Label>(Vector2I(0, 150), font, Vector3F(1.0f, 1.0f, 1.0f), "progress:");
-    ProgressBar& progress = wnd.emplace_child<ProgressBar>(Vector2I(0, 50), Vector2I{progress_label.get_width(), progress_label.get_height()}, Vector3F(0.3f, 0.3f, 0.3f));
-    //label.set_local_position_normalised_space({0.5f, 0.5f});
 
     KeyListener key_listener(wnd);
     MouseListener mouse_listener(wnd);
+
+    wnd.emplace_child<GUIWidget>(Vector2I{0, 0}, Vector2I{400, 400}, true, true);
 
     constexpr float speed = 0.5f;
 	Shader render_shader("../../../src/shaders/3D_FullAssetsInstanced");
@@ -44,20 +44,13 @@ void init()
     Asset asset1(assets.find_mesh("cube_lq"), assets.find_texture("bricks"), assets.find_normal_map("bricks_normal"), assets.find_parallax_map("bricks_parallax"));
     Asset asset2(assets.find_mesh("cube_lq"), assets.find_texture("bricks"), assets.find_normal_map("bricks_normal"));
     Asset asset3(assets.find_mesh("cube_lq"), assets.find_texture("bricks"));
-    scene.emplace_object(Transform{Vector3F{-50, 0, 0}, Vector3F{0, 0, 0}, Vector3F{10, 10, 10}}, asset0);
-    scene.emplace_object(Transform{Vector3F{-25, 0, 0}, Vector3F{0, 0, 0}, Vector3F{5, 5, 5}}, asset1);
-    scene.emplace_object(Transform{Vector3F{0, 0, 0}, Vector3F{0, 0, 0}, Vector3F{7, 7, 7}}, asset2);
-    scene.emplace_object(Transform{{25}, {}, {10, 10, 10}}, asset3);
-    DynamicObject& test_dynamic = scene.emplace<DynamicObject>(1.0f, Transform{{}, {}, {20, 20, 20}}, asset0);
-    test_dynamic.add_force({0.0f, -9.81f, 0.0f});
-    using namespace tz::utility::numeric;
-    test_dynamic.add_torque({0.0f, 0.2f * consts::pi, 0.1f});
-    //test_dynamic.angular_velocity = {0.0f, 2.0f * consts::pi, 0.2f};
+
     CubeMap skybox_texture("../../../res/runtime/textures/skybox/", "cwd", ".jpg");
     Shader skybox_shader("../../../src/shaders/skybox");
     Skybox skybox("../../../res/runtime/models/skybox.obj", skybox_texture);
 
     Random rand;
+
     std::vector<StaticObject> objects;
     for(float i = 0; i < 50000; i += 1.0f)
     {
@@ -96,7 +89,7 @@ void init()
         wnd.update(gui_shader);
         if(mouse_listener.is_left_clicked() /*&& gui_panel.is_hidden()*/)
         {
-            Vector2F delta = mouse_listener.get_mouse_delta_pos();
+            Vector2F delta = mouse_listener.get_mouse_delta_position();
             camera.rotation.y += 0.03 * delta.x;
             camera.rotation.x -= 0.03 * delta.y;
             mouse_listener.reload_mouse_delta();
@@ -109,7 +102,5 @@ void init()
             camera.position += camera.left() * delta_time * speed;
         if(key_listener.is_key_pressed("D"))
             camera.position += camera.right() * delta_time * speed;
-        float distance_from_dynamic_object = (camera.position - test_dynamic.transform.position).length();
-        progress.set_progress(distance_from_dynamic_object / camera.far_clip);
     }
 }

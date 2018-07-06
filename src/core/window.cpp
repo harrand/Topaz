@@ -54,8 +54,11 @@ void Window::update(Shader& gui_shader)
 {
     tz::graphics::gui_render_mode();
     this->window_gui_element.dimensions_local_pixel_space = this->dimensions_pixel_space;
-    for(const GUI* child : this->get_children())
+    for(GUI* child : this->get_children())
+    {
         child->render(gui_shader, this->get_width(), this->get_height());
+        child->update();
+    }
     SDL_GL_SwapWindow(this->sdl_window);
     SDL_Event evt;
     while(SDL_PollEvent(&evt))

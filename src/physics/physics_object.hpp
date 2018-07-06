@@ -1,4 +1,5 @@
 #include "data/vector.hpp"
+#include "boundary.hpp"
 
 #ifndef TOPAZ_PHYSICS_OBJECT_HPP
 #define TOPAZ_PHYSICS_OBJECT_HPP
@@ -32,8 +33,13 @@ public:
      */
     virtual void update(float delta_time);
 
+    virtual AABB get_boundary() const = 0;
+    virtual void on_collision(PhysicsObject& collided) = 0;
+
     void add_force(Vector3F force);
     void add_torque(Vector3F torque);
+
+    friend class Scene;
 
     /// Mass, in kilograms.
     float mass;
@@ -48,6 +54,8 @@ protected:
     std::vector<Vector3F> forces;
     /// Container of all the torques (rotational forces) acting upon the PhysicsObject.
     std::vector<Vector3F> torques;
+
+    void handle_collisions(const std::vector<std::reference_wrapper<PhysicsObject>>& physics_objects);
 };
 
 

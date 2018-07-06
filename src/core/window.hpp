@@ -19,6 +19,8 @@ namespace tz
 }
 
 class Listener;
+class MouseListener;
+class KeyListener;
 
 class Window
 {
@@ -238,6 +240,8 @@ public:
     bool add_child(GUI* gui);
 
 private:
+    template<class GUIType>
+    void conditionally_register_additional_listeners([[maybe_unused]] GUIType* gui_type);
     /// Container of all registered polymorphic listeners.
     std::unordered_map<unsigned int, Listener*> registered_listeners;
     /// String representing the title of the Window.

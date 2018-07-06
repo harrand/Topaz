@@ -79,12 +79,12 @@ public:
 	 * Get a 2-dimensional Vector representing the mouse-position on the screen, in pixels.
 	 * @return - Mouse-position in pixels
 	 */
-	const Vector2F& get_mouse_pos() const;
+	const Vector2F& get_mouse_position() const;
 	/**
 	 * Get a 2-dimensional Vector representing the change in mouse-position on the screen since the last event-poll, in pixels
 	 * @return - Mouse-delta in pixels
 	 */
-	Vector2F get_mouse_delta_pos() const;
+	Vector2F get_mouse_delta_position() const;
 	/**
 	 * Get a 2-dimensional Vector representing the position on the screen that the most recent left-click took place, in pixels.
 	 * @return - Last left-click position on the screen
@@ -150,6 +150,8 @@ public:
 	 * @return - True if the key is being released. Otherwise false
 	 */
 	bool catch_key_released(const std::string& keyname);
+    virtual void on_key_pressed([[maybe_unused]] const std::string& keyname){}
+    virtual void on_key_released([[maybe_unused]] const std::string& keyname){}
 private:
 	/// Container of all the keys being pressed.
 	std::vector<std::string> pressed_keys;
