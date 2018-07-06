@@ -3,6 +3,7 @@
 
 #include "widget.hpp"
 #include "display.hpp"
+#include "../../utility/functional.hpp"
 
 class Button : public GUIWidget
 {
@@ -17,6 +18,8 @@ public:
     // These functions are necessary and MUST remain public so that EVIL sfinae hackery in window.inl works properly. This is the most disgusting practice used in the code base.
     Listener* get_key_listener(){return GUIWidget::get_key_listener();}
     Listener* get_mouse_listener(){return GUIWidget::get_mouse_listener();}
+    void set_callback(tz::utility::functional::ButtonCallbackFunction callback);
+    const tz::utility::functional::ButtonCallbackFunction& get_callback() const;
 private:
     Panel drop_shadow;
     Panel background;
@@ -24,6 +27,7 @@ private:
     Vector3F default_colour;
     Vector3F pressed_colour;
     int drop_shadow_size;
+    tz::utility::functional::ButtonCallbackFunction callback;
 };
 
 

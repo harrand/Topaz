@@ -38,11 +38,6 @@ add_library(topaz SHARED
         src/graphics/graphics.cpp
         src/graphics/graphics.hpp
         src/graphics/graphics.inl
-        src/graphics/gui/gui.cpp
-        src/graphics/gui/gui.hpp
-        src/graphics/gui/gui.inl
-        src/graphics/gui/display.cpp
-        src/graphics/gui/display.hpp
         src/graphics/mesh.cpp
         src/graphics/mesh.hpp
         src/graphics/shader.cpp
@@ -57,6 +52,16 @@ add_library(topaz SHARED
         src/graphics/texture.hpp
         src/graphics/texture.inl
 
+        src/graphics/gui/button.cpp
+        src/graphics/gui/button.hpp
+        src/graphics/gui/display.cpp
+        src/graphics/gui/display.hpp
+        src/graphics/gui/gui.cpp
+        src/graphics/gui/gui.hpp
+        src/graphics/gui/gui.inl
+        src/graphics/gui/widget.cpp
+        src/graphics/gui/widget.hpp
+
         src/physics/boundary.cpp
         src/physics/boundary.hpp
         src/physics/dynamic_object.cpp
@@ -68,6 +73,9 @@ add_library(topaz SHARED
 
         src/utility/file.cpp
         src/utility/file.hpp
+        src/utility/functional.cpp
+        src/utility/functional.hpp
+        src/utility/functional.inl
         src/utility/generic.cpp
         src/utility/generic.hpp
         src/utility/generic.inl
@@ -78,5 +86,5 @@ add_library(topaz SHARED
         src/utility/string.hpp
         src/utility/time.cpp
         src/utility/time.hpp
-        src/utility/time.inl src/graphics/gui/widget.cpp src/graphics/gui/widget.hpp src/graphics/gui/button.cpp src/graphics/gui/button.hpp)
+        src/utility/time.inl)
 target_link_libraries(topaz OpenGL32 SDL2 SDL2_mixer SDL2_ttf SDL2main assimp)

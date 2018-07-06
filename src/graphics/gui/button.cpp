@@ -1,6 +1,6 @@
 #include "button.hpp"
 
-Button::Button(Vector2I position_local_pixel_space, Vector2I dimensions_local_pixel_space, Font font, Vector3F text_colour, std::string text, Vector3F default_colour, Vector3F pressed_colour, int drop_shadow_size, GUI* parent, std::initializer_list<GUI*> children): GUIWidget(position_local_pixel_space, dimensions_local_pixel_space, true, false, parent, children), drop_shadow(position_local_pixel_space, dimensions_local_pixel_space, Vector4F{default_colour * 0.25f, 1.0f}, this), background({}, {}, Vector4F{default_colour, 1.0f}, &this->drop_shadow), text(Vector2I{}, font, text_colour, text, {}, &this->background), default_colour(default_colour), pressed_colour(pressed_colour), drop_shadow_size(drop_shadow_size)
+Button::Button(Vector2I position_local_pixel_space, Vector2I dimensions_local_pixel_space, Font font, Vector3F text_colour, std::string text, Vector3F default_colour, Vector3F pressed_colour, int drop_shadow_size, GUI* parent, std::initializer_list<GUI*> children): GUIWidget(position_local_pixel_space, dimensions_local_pixel_space, true, false, parent, children), drop_shadow(position_local_pixel_space, dimensions_local_pixel_space, Vector4F{default_colour * 0.25f, 1.0f}, this), background({}, {}, Vector4F{default_colour, 1.0f}, &this->drop_shadow), text(Vector2I{}, font, text_colour, text, {}, &this->background), default_colour(default_colour), pressed_colour(pressed_colour), drop_shadow_size(drop_shadow_size), callback(nullptr)
 {
     this->add_child(&this->drop_shadow);
     this->drop_shadow.add_child(&this->text);
@@ -22,6 +22,8 @@ void Button::update()
 void Button::on_mouse_click()
 {
     this->background.set_colour({this->pressed_colour, 1.0f});
+    if(this->callback != nullptr)
+        this->callback();
 }
 
 void Button::on_mouse_release()
@@ -31,10 +33,22 @@ void Button::on_mouse_release()
 
 void Button::on_mouse_enter()
 {
-    this->background.set_colour({this->default_colour * 1.2f, 1.0f});
+    this->background.set_colour({this->default_colour * 1.5f, 1.0f});
 }
 
 void Button::on_mouse_leave()
 {
     this->background.set_colour({this->default_colour, 1.0f});
+}
+
+using namespace tz::utility::functional;
+
+void Button::set_callback(ButtonCallbackFunction callback)
+{
+    this->callback = callback;
+}
+
+const ButtonCallbackFunction& Button::get_callback() const
+{
+    return this->callback;
 }

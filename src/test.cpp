@@ -31,7 +31,7 @@ void init()
     KeyListener key_listener(wnd);
     MouseListener mouse_listener(wnd);
 
-    wnd.emplace_child<Button>(Vector2I{0, 200}, Vector2I{100, 50}, font, Vector3F{}, "press me", Vector3F{0.1f, 0.1f, 0.1f}, Vector3F{0.8f, 0.8f, 0.8f});
+    Button& test_button = wnd.emplace_child<Button>(Vector2I{0, 200}, Vector2I{100, 50}, font, Vector3F{}, "press me", Vector3F{0.1f, 0.1f, 0.1f}, Vector3F{0.8f, 0.8f, 0.8f});
 
     constexpr float speed = 0.5f;
 	Shader render_shader("../../../src/shaders/3D_FullAssetsInstanced");
@@ -51,13 +51,17 @@ void init()
     Skybox skybox("../../../res/runtime/models/skybox.obj", skybox_texture);
 
     Random rand;
+    test_button.set_callback([&scene, &camera, &asset1]()
+                             {
+                                 scene.emplace_object(Transform{camera.position, {}, {10, 10, 10}}, asset1);
+                             });
 
     std::vector<StaticObject> objects;
     for(float i = 0; i < 50000; i += 1.0f)
     {
         objects.emplace_back(Transform{Vector3F{rand.next_float(-1.0f, 1.0f), rand.next_float(-1.0f, 1.0f), rand.next_float(-1.0f, 1.0f)} * 5000.0f, {}, {5, 5, 5}}, asset2);
     }
-    scene.emplace<InstancedStaticObject>(objects);
+   scene.emplace<InstancedStaticObject>(objects);
 
 
     long long int time = tz::utility::time::now();
