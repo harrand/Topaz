@@ -14,10 +14,8 @@ class Window;
 class Listener
 {
 public:
-	/// Semi-trivial construction.
+	/// Trivial construction.
 	Listener();
-	/// Semi-trivial destruction
-	virtual ~Listener();
 
 	friend class Window;
 
@@ -26,23 +24,8 @@ public:
 	 * @param evt - N/A
 	 */
 	virtual void handle_events(SDL_Event& evt) = 0;
-	/**
-	 * Get the ID of this particular Listener.
-	 * @return - The ID of this Listener
-	 */
-	unsigned int get_id() const;
-	/**
-	 * Get the total number of active Listeners.
-	 * @return - Number of Listeners in-use
-	 */
-	static unsigned int get_num_listeners();
 protected:
 	Window* window;
-private:
-	/// Stores the active number of listeners.
-	static unsigned int number_of_listeners;
-	/// Stores the ID of this Listener.
-	unsigned int id;
 };
 
 /**

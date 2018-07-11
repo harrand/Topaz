@@ -243,7 +243,7 @@ private:
     template<class GUIType>
     void conditionally_register_additional_listeners([[maybe_unused]] GUIType* gui_type);
     /// Container of all registered polymorphic listeners.
-    std::unordered_map<unsigned int, Listener*> registered_listeners;
+    std::vector<Listener*> registered_listeners;
     /// String representing the title of the Window.
     std::string title;
     /// Position of the top-left corner of the Window, in pixels.

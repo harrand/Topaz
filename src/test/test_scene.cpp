@@ -29,12 +29,12 @@ void test()
     // create an empty scene.
     Scene scene;
     // ensure there are no objects in the scene.
-    tz::assert::equal(scene.get_objects().size(), 0);
+    tz::assert::equal<int, int>(scene.get_objects().size(), 0);
     // now emplace some pointless object.
     scene.emplace<StaticObject>(Transform{{}, {}, {}}, Asset{{}, {}});
     // now we expect the scene to have a size of 1.
-    tz::assert::equal(scene.get_objects().size(), 1);
+    tz::assert::equal<int, int>(scene.get_objects().size(), 1);
     // now add another pointless object.
     scene.add_object(StaticObject{Transform{{}, {}, {}}, Asset{{}, {}}});
-    tz::assert::equal(scene.get_objects().size(), 2);
+    tz::assert::equal<int, int>(scene.get_objects().size(), 2);
 }

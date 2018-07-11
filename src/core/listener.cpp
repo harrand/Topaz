@@ -1,24 +1,6 @@
 #include "listener.hpp"
 
-// static objects need to be initialised like this. really annoying.
-unsigned int Listener::number_of_listeners = 0;
-
-Listener::Listener(): id(Listener::number_of_listeners++), window(nullptr){}
-
-Listener::~Listener()
-{
-	Listener::number_of_listeners--;
-}
-
-unsigned int Listener::get_id() const
-{
-	return this->id;
-}
-
-unsigned int Listener::get_num_listeners()
-{
-	return Listener::number_of_listeners;
-}
+Listener::Listener(): window(nullptr){}
 
 MouseListener::MouseListener(): Listener(){}
 

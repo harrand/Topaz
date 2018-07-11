@@ -29,10 +29,11 @@ void init()
     ProgressBar& progress = wnd.emplace_child<ProgressBar>(Vector2I{0, 50}, Vector2I{100, 50}, Vector3F{0.3f, 0.3f, 0.3f}, 0.5f);
 
     KeyListener key_listener(wnd);
-    MouseListener mouse_listener(wnd);
+    MouseListener mouse_listener;
 
     Button& test_button = wnd.emplace_child<Button>(Vector2I{0, 200}, Vector2I{100, 50}, font, Vector3F{}, "press me", Vector3F{0.1f, 0.1f, 0.1f}, Vector3F{0.8f, 0.8f, 0.8f});
-    TextField& test_field = wnd.emplace_child<TextField>(Vector2I{0, 300}, Vector2I{100, 50}, font, Vector3F{0.2f, 0.2f, 0.2f}, "Text...", Vector3F{0.1f, 0.1f, 0.1f});
+    wnd.emplace_child<Button>(Vector2I{test_button.get_width() * 2, 200}, Vector2I{100, 50}, font, Vector3F{}, "press me too.", Vector3F{0.1f, 0.1f, 0.1f}, Vector3F{0.8f, 0.8f, 0.8f});
+    //wnd.emplace_child<TextField>(Vector2I{0, 300}, Vector2I{100, 50}, font, Vector3F{0.2f, 0.2f, 0.2f}, "Text...", Vector3F{0.1f, 0.1f, 0.1f});
 
     constexpr float speed = 0.5f;
 	Shader render_shader("../../../src/shaders/3D_FullAssetsInstanced");
@@ -63,7 +64,6 @@ void init()
         objects.emplace_back(Transform{Vector3F{rand.next_float(-1.0f, 1.0f), rand.next_float(-1.0f, 1.0f), rand.next_float(-1.0f, 1.0f)} * 5000.0f, {}, {5, 5, 5}}, asset2);
     }
    scene.emplace<InstancedStaticObject>(objects);
-
 
     long long int time = tz::utility::time::now();
     Timer second_timer;

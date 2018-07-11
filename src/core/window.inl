@@ -51,13 +51,13 @@ void Window::conditionally_register_additional_listeners([[maybe_unused]] GUITyp
     if constexpr(tz::detail::HasGetKeyListener<GUIType>::value)
     {
         if(gui_type->key_sensitive())
-            this->register_listener(gui_type->key_listener.value());
+            this->register_listener(*gui_type->get_key_listener());
     }
 
     if constexpr(tz::detail::HasGetMouseListener<GUIType>::value)
     {
         if(gui_type->mouse_sensitive())
-            this->register_listener(gui_type->mouse_listener.value());
+            this->register_listener(*gui_type->get_mouse_listener());
     }
 
 }

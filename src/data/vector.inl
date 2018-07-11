@@ -268,7 +268,7 @@ template<typename T>
 Vector3<T> Vector3<T>::operator/(const T& scalar) const
 {
     Vector3<T> copy = *this;
-    return copy *= scalar;
+    return copy /= scalar;
 }
 
 template<typename T>

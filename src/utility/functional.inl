@@ -1,3 +1,8 @@
+namespace tz::utility::functional
+{
+
+}
+
 template<typename FunctorT>
 Functor<FunctorT>::Functor(FunctorT functor): functor(functor){}
 

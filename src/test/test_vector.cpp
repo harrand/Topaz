@@ -59,6 +59,31 @@ void test_swizzle_2D()
     tz::assert::equal(sey.y, 0);
 }
 
+void test_methods_2D()
+{
+    Vector2F a{1, 2};
+    // test Vector2F::normalised();
+    Vector2F normal = a.normalised();
+    tz::assert::equal(std::round(normal.length()), 1);
+    // normalise (1, 2) = 1/sqrt5, 2/sqrt5
+    float inverse_sqrt5 = 1.0f / std::sqrt(5.0f);
+    // test Vector2F::length()
+    tz::assert::equal(normal.x, inverse_sqrt5);
+    tz::assert::equal(normal.y, 2.0f * inverse_sqrt5);
+    tz::assert::equal(a.length(), std::sqrt(5.0f));
+
+    // [1, 2] . [2, 1] = 1*2 + 2*1 = 4
+    tz::assert::equal(a.dot(Vector2F{2, 1}), 4.0f);
+    // operators.
+    tz::assert::equal((a + Vector2F{1, 0}), Vector2F{2, 2});
+    tz::assert::equal((a - Vector2F{1, 2}), Vector2F{});
+    tz::assert::equal((a * 2.0f), Vector2F{2, 4});
+    tz::assert::equal((a / 2.0f), Vector2F{0.5f, 1.0f});
+    tz::assert::that(a < Vector2F{2, 3});
+    tz::assert::that(a > Vector2F{0, 1});
+    tz::assert::that((a <= Vector2F{1, 2}) && (a >= Vector2F{1, 2}));
+}
+
 void test_initialisation_3D()
 {
     // test normal construction:
@@ -131,6 +156,32 @@ void test_swizzle_3D()
     tz::assert::equal(sye.x, 3);
     tz::assert::equal(sye.y, 1);
     tz::assert::equal(sye.z, 2);
+}
+
+void test_methods_3D()
+{
+    Vector3F a{1, 2, 3};
+    // test Vector2F::normalised();
+    Vector3F normal = a.normalised();
+    tz::assert::equal(std::round(normal.length()), 1);
+    // normalise (1, 2, 3) = 1/sqrt14, 2/sqrt14
+    float inverse_sqrt14 = 1.0f / std::sqrt(14.0f);
+    // test Vector2F::length()
+    tz::assert::equal(normal.x, inverse_sqrt14);
+    tz::assert::equal(normal.y, 2.0f * inverse_sqrt14);
+    tz::assert::equal(normal.z, 3.0f * inverse_sqrt14);
+    tz::assert::equal(a.length(), std::sqrt(14.0f));
+
+    // [1, 2, 3] . [3, 2, 1] = 1*3 + 2*2 + 3*1 = 3 + 4 + 3 = 10
+    tz::assert::equal(a.dot(Vector3F{3, 2, 1}), 10.0f);
+    // operators.
+    tz::assert::equal((a + Vector3F{1, 0, -1}), Vector3F{2, 2, 2});
+    tz::assert::equal((a - Vector3F{1, 2, 3}), Vector3F{});
+    tz::assert::equal((a * 2.0f), Vector3F{2, 4, 6});
+    tz::assert::equal((a / 2.0f), Vector3F{0.5f, 1.0f, 1.5f});
+    tz::assert::that(a < Vector3F{2, 3, 4});
+    tz::assert::that(a > Vector3F{0, 1, 2});
+    tz::assert::that((a <= Vector3F{1, 2, 3}) && (a >= Vector3F{1, 2, 3}));
 }
 
 void test_initialisation_4D()
@@ -317,16 +368,31 @@ void test_swizzle_4D()
     tz::assert::equal(wzyx.w, 1);
 }
 
-void test_methods_2D()
+void test_methods_4D()
 {
-    Vector2F a{1, 2};
-    Vector2F normal = a.normalised();
+    Vector4F a{1, 2, 3, 4};
+    // test Vector2F::normalised();
+    Vector4F normal = a.normalised();
     tz::assert::equal(std::round(normal.length()), 1);
-    // normalise (1, 2) = 1/sqrt5, 2/sqrt5
-    float inverse_sqrt5 = 1.0f / std::sqrt(5.0f);
-    tz::assert::equal(normal.x, inverse_sqrt5);
-    tz::assert::equal(normal.y, 2.0f * inverse_sqrt5);
-    tz::assert::equal(a.length(), std::sqrt(5.0f));
+    // length [1, 2, 3, 4] = 1 + 4 + 9 + 16 = 30
+    float inverse_sqrt30 = 1.0f / std::sqrt(30.0f);
+    // test Vector2F::length()
+    tz::assert::equal(normal.x, inverse_sqrt30);
+    tz::assert::equal(normal.y, 2.0f * inverse_sqrt30);
+    tz::assert::equal(std::floor(normal.z), std::floor(3.0f * inverse_sqrt30));
+    tz::assert::equal(normal.w, 4.0f * inverse_sqrt30);
+    tz::assert::equal(a.length(), std::sqrt(30.0f));
+
+    // [1, 2, 3, 4] . [4, 3, 2, 1] = 4 + 6 + 6 + 4 = 20
+    tz::assert::equal(a.dot(Vector4F{4, 3, 2, 1}), 20.0f);
+    // operators.
+    tz::assert::equal((a + Vector4F{1, 0, -1, -2}), Vector4F{2, 2, 2, 2});
+    tz::assert::equal((a - Vector4F{1, 2, 3, 4}), Vector4F{});
+    tz::assert::equal((a * 2.0f), Vector4F{2, 4, 6, 8});
+    tz::assert::equal((a / 2.0f), Vector4F{0.5f, 1.0f, 1.5f, 2.0f});
+    tz::assert::that(a < Vector4F{2, 3, 4, 5});
+    tz::assert::that(a > Vector4F{0, 1, 2, 3});
+    tz::assert::that((a <= Vector4F{1, 2, 3, 4}) && (a >= Vector4F{1, 2, 3, 4}));
 }
 
 void test()
@@ -341,6 +407,8 @@ void test()
     test_methods_2D();
     test_initialisation_3D();
     test_swizzle_3D();
+    test_methods_3D();
     test_initialisation_4D();
     test_swizzle_4D();
+    test_methods_4D();
 }

@@ -43,9 +43,8 @@ Window::Window(std::string title, const Vector2I& position_pixel_space, const Ve
 
 Window::~Window()
 {
-    for(auto [id, listener] : registered_listeners)
-        if(id < Listener::get_num_listeners()) // checks to make sure the listener hasnt gone out of scope
-            this->deregister_listener(*listener);
+    for(auto listener : registered_listeners)
+        this->deregister_listener(*listener);
     SDL_GL_DeleteContext(this->sdl_gl_context);
     SDL_DestroyWindow(this->sdl_window);
 }
@@ -63,9 +62,8 @@ void Window::update(Shader& gui_shader)
     SDL_Event evt;
     while(SDL_PollEvent(&evt))
     {
-        for(auto& listener : this->registered_listeners)
-            listener.second->handle_events(evt);
-
+        for(auto listener : this->registered_listeners)
+            listener->handle_events(evt);
         if(evt.type == SDL_QUIT)
             this->close_requested = true;
         if(evt.type == SDL_WINDOWEVENT)
@@ -260,16 +258,13 @@ void Window::clear(GLbitfield mask, float r, float g, float b, float a) const
 
 void Window::register_listener(Listener& l)
 {
-    this->registered_listeners[l.get_id()] = &l;
+    this->registered_listeners.push_back(&l);
     l.window = this;
 }
 
 void Window::deregister_listener(Listener& l)
 {
-    // Check if it actually exists before trying to remove it.
-    if(this->registered_listeners.find(l.get_id()) == this->registered_listeners.end())
-        return;
-    this->registered_listeners.erase(l.get_id());
+    this->registered_listeners.erase(std::remove(this->registered_listeners.begin(), this->registered_listeners.end(), &l), this->registered_listeners.end());
 }
 
 std::unordered_set<GUI*> Window::get_children() const
