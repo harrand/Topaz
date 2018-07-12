@@ -9,6 +9,21 @@ void GUI::update()
         child->update();
 }
 
+void GUI::destroy()
+{
+    if(this->parent->children.erase(this) > 0)
+        return;
+    for(auto& heap_child_shared : this->parent->heap_children)
+    {
+        GUI* heap_child = heap_child_shared.get();
+        if (heap_child == this)
+        {
+            this->parent->heap_children.erase(heap_child_shared);
+            return;
+        }
+    }
+}
+
 void GUI::render(Shader& shader, int window_width_pixels, int window_height_pixels) const
 {
     for(const GUI* child : this->get_children())
@@ -168,35 +183,25 @@ GUI* GUI::get_root() const
     return root;
 }
 
-std::unordered_set<GUI*> GUI::get_descendants() const
+std::unordered_set<GUI*> GUI::get_descendants()
 {
-    std::stack<const GUI*> guis;
+    std::stack<GUI*> gui_stack;
     std::unordered_set<GUI*> descendants;
-    const GUI* top;
-    const GUI* end;
-    // std::prev is O(n) on bidirectional iterators (which set::end() is). so this clause is O(n) where n = total number of children
-    GUI* final_child = *std::prev(this->get_children().end(), 1);
-    while(!final_child->get_children().empty())
-        final_child = *std::prev(final_child->get_children().end(), 1);
-    end = final_child;
-    guis.push(this);
-    while(!guis.empty())
+    gui_stack.push(this);
+    while(!gui_stack.empty())
     {
-        top = guis.top();
-        guis.pop();
-        for(GUI* child : top->get_children())
+        GUI* current = gui_stack.top();
+        gui_stack.pop();
+        for(GUI* child : current->get_children())
         {
-            guis.push(child); // O(1)
-            descendants.insert(child); // O(log n)
-            if(child == end)
-                break;
+            gui_stack.push(child);
+            descendants.insert({child});
         }
-        // so this clause is O(n log n)
     }
     return descendants;
 }
 
-std::unordered_set<GUI*> GUI::get_youngest_descendants() const
+std::unordered_set<GUI*> GUI::get_youngest_descendants()
 {
     std::unordered_set<GUI*> youngs;
     for(GUI* descendant : this->get_descendants())

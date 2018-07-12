@@ -238,7 +238,8 @@ public:
      * @return - True if the GUI element successfully became a child of this Window
      */
     bool add_child(GUI* gui);
-
+    template<typename GUIType>
+    void dispose_child(GUIType* gui);
 private:
     template<class GUIType>
     void conditionally_register_additional_listeners([[maybe_unused]] GUIType* gui_type);

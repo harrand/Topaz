@@ -17,6 +17,7 @@ public:
     StaticObject(Transform transform, Asset asset);
     const Asset& get_asset() const;
     virtual void render(Shader& render_shader, const Camera& camera, const Vector2I& viewport_dimensions) const;
+
     Transform transform;
 
     friend class InstancedStaticObject;

@@ -1,7 +1,7 @@
 #include "dynamic_object.hpp"
 #include "physics.hpp"
 
-DynamicObject::DynamicObject(float mass, Transform transform, Asset asset, Vector3F velocity, float moment_of_inertia, Vector3F angular_velocity, std::initializer_list<Vector3F> forces): StaticObject(transform, asset), PhysicsObject(mass, velocity, moment_of_inertia, angular_velocity, forces), bound_modelspace(tz::physics::bound_aabb(*this->asset.mesh.lock())){}
+DynamicObject::DynamicObject(float mass, Transform transform, Asset asset, Vector3F velocity, float moment_of_inertia, Vector3F angular_velocity, std::initializer_list<Vector3F> forces): StaticObject(transform, asset), PhysicsObject(mass, velocity, moment_of_inertia, angular_velocity, forces), bound_modelspace(tz::physics::bound_aabb(*this->asset.mesh)){}
 
 void DynamicObject::update(float delta_time)
 {

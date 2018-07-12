@@ -18,12 +18,13 @@ public:
 	Listener();
 
 	friend class Window;
+	friend class GUIWidget;
 
 	/**
 	 * Pure virtual.
 	 * @param evt - N/A
 	 */
-	virtual void handle_events(SDL_Event& evt) = 0;
+	virtual void handle_events(const SDL_Event& evt) = 0;
 protected:
 	Window* window;
 };
@@ -47,7 +48,7 @@ public:
 	 * Invoked when the parent Window polls all pending events.
 	 * @param evt - The SDL Event object passed from the Window event-poll
 	 */
-	virtual void handle_events(SDL_Event& evt) override;
+	virtual void handle_events(const SDL_Event& evt) override;
 	/**
 	 * Clear previously-stored mouse-position information.
 	 */
@@ -110,7 +111,7 @@ public:
 	 * Invoked when the parent Window polls all pending events.
 	 * @param evt - The SDL Event object passed from the Window event-poll
 	 */
-	virtual void handle_events(SDL_Event& evt) override;
+	virtual void handle_events(const SDL_Event& evt) override;
 	/**
 	 * Query whether the keyboard-key with the specified name is currently pressed.
 	 * @param keyname - Name of the specified key, such as "K" or "Enter"

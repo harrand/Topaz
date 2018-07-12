@@ -9,7 +9,6 @@ Button::Button(Vector2I position_local_pixel_space, Vector2I dimensions_local_pi
 
 void Button::update()
 {
-    GUIWidget::update();
     int text_height_pixels = this->text.get_height();
     this->text.set_local_position_pixel_space((this->drop_shadow.get_local_position_pixel_space() * -1) + Vector2I(0, (this->drop_shadow.get_height() - text_height_pixels) / 2));
     this->set_local_dimensions_pixel_space({this->text.get_width(), this->text.get_height()});
@@ -17,6 +16,7 @@ void Button::update()
     this->drop_shadow.set_local_dimensions_pixel_space({this->drop_shadow.get_width() + this->drop_shadow_size, this->drop_shadow.get_height() + this->drop_shadow_size});
     this->background.set_local_position_pixel_space({0, this->drop_shadow_size * 2});
     this->background.set_local_dimensions_pixel_space(Vector2I{this->drop_shadow.get_width(), this->drop_shadow.get_height()} - Vector2I{this->drop_shadow_size, this->drop_shadow_size});
+    GUIWidget::update();
 }
 
 void Button::on_mouse_click()

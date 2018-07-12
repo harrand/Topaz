@@ -5,15 +5,15 @@
 #include <physics/physics.hpp>
 #include "scene.hpp"
 
-Scene::Scene(const std::initializer_list<StaticObject>& stack_objects, const std::initializer_list<std::shared_ptr<StaticObject>>& heap_objects): stack_objects(stack_objects), heap_objects(heap_objects){}
+Scene::Scene(const std::initializer_list<StaticObject>& stack_objects, std::vector<std::unique_ptr<StaticObject>> heap_objects): stack_objects(stack_objects), heap_objects(std::move(heap_objects)){}
 
 void Scene::render(Shader& render_shader, const Camera& camera, const Vector2I& viewport_dimensions) const
 {
     Frustum camera_frustum(camera, viewport_dimensions.x / viewport_dimensions.y);
-    auto render_if_visible = [&](const StaticObject& object){AABB object_box = tz::physics::bound_aabb(*(object.get_asset().mesh.lock())); if(camera_frustum.contains(object_box * object.transform.model()) || tz::graphics::is_instanced(object.get_asset().mesh.lock().get())) object.render(render_shader, camera, viewport_dimensions);};
+    auto render_if_visible = [&](const StaticObject& object){AABB object_box = tz::physics::bound_aabb(*(object.get_asset().mesh)); if(camera_frustum.contains(object_box * object.transform.model()) || tz::graphics::is_instanced(object.get_asset().mesh)) object.render(render_shader, camera, viewport_dimensions);};
     for(const StaticObject& stack_object : this->stack_objects)
         render_if_visible(stack_object);
-    for(std::shared_ptr<StaticObject> heap_object : this->heap_objects)
+    for(const auto& heap_object : this->heap_objects)
         render_if_visible(*heap_object);
 }
 
@@ -37,7 +37,7 @@ std::vector<std::reference_wrapper<const StaticObject>> Scene::get_objects() con
     std::vector<std::reference_wrapper<const StaticObject>> object_crefs;
     for(const StaticObject& object_cref : this->stack_objects)
         object_crefs.push_back(std::cref(object_cref));
-    for(const std::shared_ptr<StaticObject>& object_ptr : this->heap_objects)
+    for(const std::unique_ptr<StaticObject>& object_ptr : this->heap_objects)
         object_crefs.push_back(std::cref(*object_ptr));
     return object_crefs;
 }
@@ -52,7 +52,7 @@ std::vector<std::reference_wrapper<StaticObject>> Scene::get_static_objects()
     std::vector<std::reference_wrapper<StaticObject>> object_refs;
     for(StaticObject& object_ref : this->stack_objects)
         object_refs.push_back(std::ref(object_ref));
-    for(std::shared_ptr<StaticObject>& object_ptr : this->heap_objects)
+    for(std::unique_ptr<StaticObject>& object_ptr : this->heap_objects)
         object_refs.push_back(std::ref(*object_ptr));
     return object_refs;
 }

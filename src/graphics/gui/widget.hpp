@@ -21,6 +21,7 @@ class GUIWidget : public GUI
 {
 public:
     GUIWidget(Vector2I position_local_pixel_space, Vector2I dimensions_local_pixel_space, bool mouse_sensitive, bool key_sensitive, GUI* parent = nullptr, std::initializer_list<GUI*> children = {});
+    ~GUIWidget();
     friend class Window;
     friend class GUIWidgetKeyListener;
 

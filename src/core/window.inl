@@ -45,6 +45,22 @@ namespace tz::detail
     };
 }
 
+template<typename GUIType>
+void Window::dispose_child([[maybe_unused]] GUIType *gui)
+{
+    if constexpr(tz::detail::HasGetKeyListener<GUIType>::value)
+    {
+        if(gui->key_sensitive())
+            this->deregister_listener(*gui->get_key_listener());
+    }
+
+    if constexpr(tz::detail::HasGetMouseListener<GUIType>::value)
+    {
+        if(gui->mouse_sensitive())
+            this->deregister_listener(*gui->get_mouse_listener());
+    }
+}
+
 template<class GUIType>
 void Window::conditionally_register_additional_listeners([[maybe_unused]] GUIType *gui_type)
 {

@@ -23,6 +23,18 @@ GUIWidget::GUIWidget(Vector2I position_local_pixel_space, Vector2I dimensions_lo
         this->key_listener = std::nullopt;
 }
 
+GUIWidget::~GUIWidget()
+{
+    if(this->mouse_sensitive())
+    {
+        this->get_mouse_listener()->window->dispose_child(this);
+    }
+    if(this->key_sensitive())
+    {
+        this->get_key_listener()->window->dispose_child(this);
+    }
+}
+
 void GUIWidget::update()
 {
     GUI::update();
@@ -42,26 +54,30 @@ void GUIWidget::update()
             {
                 if(!this->mouse_just_clicked)
                 {
-                    this->on_mouse_click();
                     this->mouse_just_clicked = true;
+                    this->on_mouse_click();
+                    return;
                 }
             }
             else if(this->mouse_just_clicked)
             {
-                this->on_mouse_release();
                 this->mouse_just_clicked = false;
+                this->on_mouse_release();
+                return;
             }
             // if it previously wasn't, then invoke GUIWidget::on_mouse_enter()
             if(!this->mouse_inside)
             {
-                this->on_mouse_enter();
                 this->mouse_inside = true;
+                this->on_mouse_enter();
+                return;
             }
         }
         else if(this->mouse_inside)
         {
-            this->on_mouse_leave();
             this->mouse_inside = false;
+            this->on_mouse_leave();
+            return;
         }
 
     }
@@ -95,12 +111,10 @@ Listener* GUIWidget::get_mouse_listener()
 
 void GUIWidget::on_key_typed_unconditional(const std::string& keyname)
 {
-    if(this->mouse_inside)
-        this->on_key_down(keyname);
+    this->on_key_down(keyname);
 }
 
 void GUIWidget::on_key_released_unconditional(const std::string& keyname)
 {
-    if(this->mouse_inside)
-        this->on_key_up(keyname);
+    this->on_key_up(keyname);
 }

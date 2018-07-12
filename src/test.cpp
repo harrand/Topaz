@@ -29,11 +29,11 @@ void init()
     ProgressBar& progress = wnd.emplace_child<ProgressBar>(Vector2I{0, 50}, Vector2I{100, 50}, Vector3F{0.3f, 0.3f, 0.3f}, 0.5f);
 
     KeyListener key_listener(wnd);
-    MouseListener mouse_listener;
+    MouseListener mouse_listener(wnd);
 
     Button& test_button = wnd.emplace_child<Button>(Vector2I{0, 200}, Vector2I{100, 50}, font, Vector3F{}, "press me", Vector3F{0.1f, 0.1f, 0.1f}, Vector3F{0.8f, 0.8f, 0.8f});
-    wnd.emplace_child<Button>(Vector2I{test_button.get_width() * 2, 200}, Vector2I{100, 50}, font, Vector3F{}, "press me too.", Vector3F{0.1f, 0.1f, 0.1f}, Vector3F{0.8f, 0.8f, 0.8f});
-    //wnd.emplace_child<TextField>(Vector2I{0, 300}, Vector2I{100, 50}, font, Vector3F{0.2f, 0.2f, 0.2f}, "Text...", Vector3F{0.1f, 0.1f, 0.1f});
+    Button& suicide = wnd.emplace_child<Button>(Vector2I{test_button.get_width() * 2, 200}, Vector2I{100, 50}, font, Vector3F{}, "press me too.", Vector3F{0.1f, 0.1f, 0.1f}, Vector3F{0.8f, 0.8f, 0.8f});
+    suicide.set_callback([&suicide](){suicide.destroy();});
 
     constexpr float speed = 0.5f;
 	Shader render_shader("../../../src/shaders/3D_FullAssetsInstanced");
@@ -42,7 +42,13 @@ void init()
     camera.position = {0, 0, -50};
     Scene scene;
 
-    AssetBuffer assets({{"cube_lq", std::make_shared<Mesh>("../../../res/runtime/models/cube.obj")}, {"cube", std::make_shared<Mesh>("../../../res/runtime/models/cube_hd.obj")}}, {{"bricks", std::make_shared<Texture>("../../../res/runtime/textures/bricks.jpg")}}, {{"bricks_normal", std::make_shared<NormalMap>("../../../res/runtime/normalmaps/bricks_normalmap.jpg")}}, {{"bricks_parallax", std::make_shared<ParallaxMap>("../../../res/runtime/parallaxmaps/bricks_parallax.jpg", 0.04f, 0.2f)}}, {{"bricks_displacement", std::make_shared<DisplacementMap>("../../../res/runtime/displacementmaps/bricks_displacement.png")}});
+    AssetBuffer assets;
+    assets.emplace<Mesh>("cube_lq", "../../../res/runtime/models/cube.obj");
+    assets.emplace<Mesh>("cube", "../../../res/runtime/models/cube_hd.obj");
+    assets.emplace<Texture>("bricks", "../../../res/runtime/textures/bricks.jpg");
+    assets.emplace<NormalMap>("bricks_normal", "../../../res/runtime/normalmaps/bricks_normalmap.jpg");
+    assets.emplace<ParallaxMap>("bricks_parallax", "../../../res/runtime/parallaxmaps/bricks_parallax.jpg");
+    assets.emplace<DisplacementMap>("bricks_displacement", "../../../res/runtime/displacementmaps/bricks_displacement.png");
     Asset asset0(assets.find<Mesh>("cube"), assets.find_texture("bricks"), assets.find_normal_map("bricks_normal"), assets.find_parallax_map("bricks_parallax"), assets.find_displacement_map("bricks_displacement"));
     Asset asset1(assets.find_mesh("cube_lq"), assets.find_texture("bricks"), assets.find_normal_map("bricks_normal"), assets.find_parallax_map("bricks_parallax"));
     Asset asset2(assets.find_mesh("cube_lq"), assets.find_texture("bricks"), assets.find_normal_map("bricks_normal"));
@@ -57,6 +63,7 @@ void init()
                              {
                                  scene.emplace_object(Transform{camera.position, {}, {10, 10, 10}}, asset1);
                              });
+
 
     std::vector<StaticObject> objects;
     for(float i = 0; i < 50000; i += 1.0f)

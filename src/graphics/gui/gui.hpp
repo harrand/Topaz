@@ -37,6 +37,7 @@ public:
     friend class Window;
     GUI(Vector2I position_local_pixel_space, Vector2I dimensions_local_pixel_space, GUI* parent = nullptr, std::initializer_list<GUI*> children = {});
     virtual void update();
+    virtual void destroy();
     virtual bool key_sensitive() const{return false;}
     virtual bool mouse_sensitive() const{return false;}
     virtual void render(Shader& shader, int window_width_pixels, int window_height_pixels) const;
@@ -94,8 +95,8 @@ public:
     GUIType& emplace_child(Args&&... args);
     bool add_child(GUI* gui);
     GUI* get_root() const;
-    std::unordered_set<GUI*> get_descendants() const;
-    std::unordered_set<GUI*> get_youngest_descendants() const;
+    std::unordered_set<GUI*> get_descendants();
+    std::unordered_set<GUI*> get_youngest_descendants();
     template<template<typename> class Container>
     std::unordered_set<GUI*> get_occluders(const Container<GUI*>& gui_elements);
     template<template<typename> class Container>

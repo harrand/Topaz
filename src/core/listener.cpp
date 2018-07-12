@@ -9,7 +9,7 @@ MouseListener::MouseListener(Window& window): MouseListener()
 	window.register_listener(*this);
 }
 
-void MouseListener::handle_events(SDL_Event& evt)
+void MouseListener::handle_events(const SDL_Event& evt)
 {
 	this->reload_mouse_delta();
 	if(evt.type == SDL_MOUSEMOTION)
@@ -84,7 +84,7 @@ KeyListener::KeyListener(Window& window) : KeyListener()
 	window.register_listener(*this);
 }
 
-void KeyListener::handle_events(SDL_Event& evt)
+void KeyListener::handle_events(const SDL_Event& evt)
 {
 	switch(evt.type)
 	{
