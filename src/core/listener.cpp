@@ -2,7 +2,7 @@
 
 Listener::Listener(): window(nullptr){}
 
-MouseListener::MouseListener(): Listener(){}
+MouseListener::MouseListener(): Listener(), left_click(false), right_click(false), left_click_location(), right_click_location(), previous_mouse_position(), mouse_position(){}
 
 MouseListener::MouseListener(Window& window): MouseListener()
 {
