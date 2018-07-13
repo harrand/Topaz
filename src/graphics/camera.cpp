@@ -1,4 +1,4 @@
-#include "camera.hpp"
+#include "graphics/camera.hpp"
 
 Camera::Camera(Vector3F position, Vector3F rotation, float fov, float near_clip, float far_clip, bool perspective): position(position), rotation(rotation), fov(fov), near_clip(near_clip), far_clip(far_clip), axis_bound(false), perspective(perspective){}
 

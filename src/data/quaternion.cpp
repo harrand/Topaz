@@ -1,4 +1,4 @@
-#include "quaternion.hpp"
+#include "data/quaternion.hpp"
 
 Quaternion::Quaternion(Vector3F rotation_axis, float angle): Vector4F(rotation_axis.x * std::sin(angle / 2.0f), rotation_axis.y * std::sin(angle / 2.0f), rotation_axis.z * std::sin(angle / 2.0f), std::cos(angle / 2.0f)){}
 

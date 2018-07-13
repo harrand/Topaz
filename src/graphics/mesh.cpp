@@ -1,4 +1,4 @@
-#include "mesh.hpp"
+#include "graphics/mesh.hpp"
 #include <assimp/cimport.h>
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>

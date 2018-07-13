@@ -1,9 +1,5 @@
-//
-// Created by Harrand on 29/05/2018.
-//
-
-#include <physics/physics.hpp>
-#include "scene.hpp"
+#include "core/scene.hpp"
+#include "physics/physics.hpp"
 
 Scene::Scene(const std::initializer_list<StaticObject>& stack_objects, std::vector<std::unique_ptr<StaticObject>> heap_objects): stack_objects(stack_objects), heap_objects(std::move(heap_objects)){}
 

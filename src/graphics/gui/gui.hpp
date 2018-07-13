@@ -1,12 +1,12 @@
 #ifndef TOPAZ_GUI_HPP
 #define TOPAZ_GUI_HPP
+#include "graphics/mesh.hpp"
+#include "graphics/shader.hpp"
+#include "graphics/camera.hpp"
 #include <SDL2/SDL.h>
 #include <unordered_set>
 #include <memory>
 #include <variant>
-#include "graphics/mesh.hpp"
-#include "graphics/shader.hpp"
-#include "graphics/camera.hpp"
 
 namespace tz::gui
 {

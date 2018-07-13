@@ -1,4 +1,4 @@
-#include "boundary.hpp"
+#include "physics/boundary.hpp"
 
 BoundingSphere::BoundingSphere(Vector3F centre, float radius): centre(centre), radius(radius){}
 

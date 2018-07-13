@@ -1,12 +1,12 @@
 #ifndef MESH_HPP
 #define MESH_HPP
+#include "graphics/graphics.hpp"
+#include "data/matrix.hpp"
 #include <vector>
 #include <string>
 #include <memory>
 #include <array>
 #include <set>
-#include "graphics.hpp"
-#include "data/matrix.hpp"
 
 namespace tz::graphics
 {

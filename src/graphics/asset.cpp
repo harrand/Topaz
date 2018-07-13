@@ -1,4 +1,4 @@
-#include "asset.hpp"
+#include "graphics/asset.hpp"
 
 AssetBuffer::AssetBuffer(std::unordered_map<std::string, std::unique_ptr<Mesh>> meshes, std::unordered_map<std::string, std::unique_ptr<Texture>> textures, std::unordered_map<std::string, std::unique_ptr<NormalMap>> normal_maps, std::unordered_map<std::string, std::unique_ptr<ParallaxMap>> parallax_maps, std::unordered_map<std::string, std::unique_ptr<DisplacementMap>> displacement_maps): meshes(std::move(meshes)), textures(std::move(textures)), normal_maps(std::move(normal_maps)), parallax_maps(std::move(parallax_maps)), displacement_maps(std::move(displacement_maps)){}
 

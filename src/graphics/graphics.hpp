@@ -155,6 +155,7 @@ namespace tz
 		inline void terminate(bool print_progress = false);
 		inline void scene_render_mode();
 		inline void gui_render_mode();
+		inline void enable_wireframe_render(bool wireframes);
 	}
 }
 

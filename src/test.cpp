@@ -22,7 +22,6 @@ int main()
 void init()
 {
 	Window wnd("Topaz Development Window", 0, 30, 800, 600);
-    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     // During init, enable debug output
     Font font("../../../res/runtime/fonts/CaviarDreams.ttf", 36);
     Label& label = wnd.emplace_child<Label>(Vector2I{0, 0}, font, Vector3F{0.0f, 0.3f, 0.0f}, " ");
@@ -32,8 +31,8 @@ void init()
     MouseListener mouse_listener(wnd);
 
     Button& test_button = wnd.emplace_child<Button>(Vector2I{0, 200}, Vector2I{100, 50}, font, Vector3F{}, "press me", Vector3F{0.1f, 0.1f, 0.1f}, Vector3F{0.8f, 0.8f, 0.8f});
-    Button& suicide = wnd.emplace_child<Button>(Vector2I{test_button.get_width() * 2, 200}, Vector2I{100, 50}, font, Vector3F{}, "press me too.", Vector3F{0.1f, 0.1f, 0.1f}, Vector3F{0.8f, 0.8f, 0.8f});
-    suicide.set_callback([&suicide](){suicide.destroy();});
+    Button& wireframe_button = wnd.emplace_child<Button>(Vector2I{test_button.get_width() * 2, 200}, Vector2I{100, 50}, font, Vector3F{}, "toggle wireframe", Vector3F{0.1f, 0.1f, 0.1f}, Vector3F{0.8f, 0.8f, 0.8f});
+    wireframe_button.set_callback([](){static bool wireframe = false;wireframe = !wireframe;tz::graphics::enable_wireframe_render(wireframe);});
 
     constexpr float speed = 0.5f;
 	Shader render_shader("../../../src/shaders/3D_FullAssetsInstanced");

@@ -1,8 +1,8 @@
-#include "data/vector.hpp"
-#include "boundary.hpp"
-
 #ifndef TOPAZ_PHYSICS_OBJECT_HPP
 #define TOPAZ_PHYSICS_OBJECT_HPP
+
+#include "data/vector.hpp"
+#include "physics/boundary.hpp"
 
 class PhysicsObject
 {

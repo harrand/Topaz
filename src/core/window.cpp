@@ -1,4 +1,4 @@
-#include "window.hpp"
+#include "core/window.hpp"
 #include "graphics/texture.hpp"
 
 bool tz::graphics::initialised = false;

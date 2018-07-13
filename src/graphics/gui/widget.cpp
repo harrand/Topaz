@@ -1,5 +1,5 @@
-#include <physics/boundary.hpp>
-#include "widget.hpp"
+#include "physics/boundary.hpp"
+#include "graphics/gui/widget.hpp"
 
 GUIWidgetKeyListener::GUIWidgetKeyListener(GUIWidget& widget): KeyListener(), widget(widget){}
 GUIWidgetKeyListener::GUIWidgetKeyListener(GUIWidget& widget, Window& window): KeyListener(window), widget(widget){}

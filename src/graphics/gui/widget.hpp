@@ -1,8 +1,8 @@
 #ifndef TOPAZ_GUI_WIDGET_HPP
 #define TOPAZ_GUI_WIDGET_HPP
 
-#include <core/listener.hpp>
-#include "gui.hpp"
+#include "core/listener.hpp"
+#include "graphics/gui/gui.hpp"
 
 class GUIWidget;
 

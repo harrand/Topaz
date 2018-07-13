@@ -5,7 +5,7 @@
 #endif
 #include <GL/glew.h>
 #include <string>
-#include "listener.hpp"
+#include "core/listener.hpp"
 #include "graphics/gui/gui.hpp"
 
 namespace tz

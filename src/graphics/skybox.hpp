@@ -1,14 +1,10 @@
-//
-// Created by Harrand on 31/05/2018.
-//
-
 #ifndef TOPAZ_SKYBOX_HPP
 #define TOPAZ_SKYBOX_HPP
 
-#include "camera.hpp"
-#include "shader.hpp"
-#include "mesh.hpp"
-#include "texture.hpp"
+#include "graphics/camera.hpp"
+#include "graphics/shader.hpp"
+#include "graphics/mesh.hpp"
+#include "graphics/texture.hpp"
 
 /**
 * Wraps an OpenGL cubemap via a set of six textures.

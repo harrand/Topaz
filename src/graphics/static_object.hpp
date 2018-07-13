@@ -3,7 +3,7 @@
 
 #include "graphics/mesh.hpp"
 #include "graphics/asset.hpp"
-#include "camera.hpp"
+#include "graphics/camera.hpp"
 #include "data/transform.hpp"
 #include "physics/physics_object.hpp"
 

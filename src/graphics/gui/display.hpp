@@ -1,6 +1,6 @@
 #ifndef TOPAZ_GUI_DISPLAY_HPP
 #define TOPAZ_GUI_DISPLAY_HPP
-#include "gui.hpp"
+#include "graphics/gui/gui.hpp"
 #include "graphics/texture.hpp"
 
 class Panel : public GUI

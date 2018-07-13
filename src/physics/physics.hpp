@@ -1,7 +1,7 @@
 #ifndef PHYSICS_HPP
 #define PHYSICS_HPP
-#include "boundary.hpp"
-#include "../graphics/mesh.hpp"
+#include "physics/boundary.hpp"
+#include "graphics/mesh.hpp"
 
 /// Pre-define the Object class.
 class Object;

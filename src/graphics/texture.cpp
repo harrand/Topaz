@@ -1,6 +1,6 @@
-#include "texture.hpp"
+#include "graphics/texture.hpp"
 #define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
+#include "graphics/stb_image.h"
 
 Texture::Texture():Texture(0, 0, false){}
 

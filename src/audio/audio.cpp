@@ -1,4 +1,4 @@
-#include "audio.hpp"
+#include "audio/audio.hpp"
 
 AudioClip::AudioClip(std::string filename): filename(std::move(filename)), audio_handle(Mix_LoadWAV(this->filename.c_str()))
 {

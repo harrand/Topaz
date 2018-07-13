@@ -1,5 +1,5 @@
 #include <thread>
-#include "textfield.hpp"
+#include "graphics/gui/textfield.hpp"
 
 TextField::TextField(Vector2I position_local_pixel_space, Vector2I dimensions_local_pixel_space, Font font, Vector3F text_colour, std::string text, Vector3F background_colour, GUI* parent, std::initializer_list<GUI*> children): GUIWidget(position_local_pixel_space, dimensions_local_pixel_space, false, true, parent, children), background(position_local_pixel_space, dimensions_local_pixel_space, Vector4F{background_colour, 1.0f}, this), text(Vector2I{}, font, text_colour, text, {}, &this->background), background_colour(background_colour), text_colour(text_colour)
 {

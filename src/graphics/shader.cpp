@@ -1,5 +1,5 @@
-#include <utility/file.hpp>
-#include "shader.hpp"
+#include "graphics/shader.hpp"
+#include "utility/file.hpp"
 
 Shader::Shader(std::string vertex_source, std::string tessellation_control_source, std::string tessellation_evaluation_source, std::string geometry_source, std::string fragment_source, bool compile, bool link, bool validate): filename(""), compiled(false), program_handle(glCreateProgram()), uniform_data({nullptr}), uniform_counter(0)
 {

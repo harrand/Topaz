@@ -1,8 +1,4 @@
-//
-// Created by Harrand on 31/05/2018.
-//
-
-#include "skybox.hpp"
+#include "graphics/skybox.hpp"
 
 Skybox::Skybox(std::string cube_mesh_link, CubeMap& cm): cube_mesh_link(cube_mesh_link), cm(cm), cube(tz::graphics::create_cube()){}
 

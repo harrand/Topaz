@@ -1,8 +1,8 @@
 #ifndef TEXTURE_HPP
 #define TEXTURE_HPP
+#include "graphics/graphics.hpp"
+#include "graphics/shader.hpp"
 #include <memory>
-#include "graphics.hpp"
-#include "shader.hpp"
 #include <optional>
 #include <variant>
 

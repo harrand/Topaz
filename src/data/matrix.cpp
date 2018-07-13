@@ -1,5 +1,4 @@
-#include "matrix.hpp"
-
+#include "data/matrix.hpp"
 // Matrix2x2
 
 Matrix2x2::Matrix2x2(Vector2F x, Vector2F y): x(std::move(x)), y(std::move(y)){}

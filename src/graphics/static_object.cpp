@@ -1,4 +1,4 @@
-#include "static_object.hpp"
+#include "graphics/static_object.hpp"
 
 StaticObject::StaticObject(Transform transform, Asset asset): transform(transform), asset(asset){}
 

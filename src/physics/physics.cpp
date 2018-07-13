@@ -1,4 +1,4 @@
-#include "physics.hpp"
+#include "physics/physics.hpp"
 
 BoundingSphere tz::physics::bound_sphere(const Mesh& mesh)
 {

@@ -1,4 +1,4 @@
-#include "graphics.hpp"
+#include "graphics/graphics.hpp"
 #include <map>
 
 Font::Font(const std::string& font_path, int pixel_height): font_path(font_path), pixel_height(pixel_height), font_handle(TTF_OpenFont(this->font_path.c_str(), this->pixel_height)){}

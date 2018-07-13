@@ -1,5 +1,3 @@
-#include <type_traits>
-
 namespace tz::graphics::asset
 {
 	inline void unbind_texture()

@@ -1,8 +1,6 @@
 #ifndef TOPAZ_TRANSFORM_HPP
 #define TOPAZ_TRANSFORM_HPP
-
-#include "vector.hpp"
-#include "matrix.hpp"
+#include "data/matrix.hpp"
 
 class Transform
 {

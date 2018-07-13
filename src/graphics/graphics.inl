@@ -54,4 +54,9 @@ namespace tz::graphics
 		glDisable(GL_DEPTH_CLAMP);
 		glDisable(GL_CULL_FACE);
 	}
+
+	inline void enable_wireframe_render(bool wireframes)
+	{
+		glPolygonMode(GL_FRONT_AND_BACK, wireframes ? GL_LINE : GL_FILL);
+	}
 }

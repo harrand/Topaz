@@ -1,7 +1,7 @@
 #ifndef TOPAZ_TEXTFIELD_HPP
 #define TOPAZ_TEXTFIELD_HPP
-#include "display.hpp"
-#include "widget.hpp"
+#include "graphics/gui/display.hpp"
+#include "graphics/gui/widget.hpp"
 
 class TextField : public GUIWidget
 {

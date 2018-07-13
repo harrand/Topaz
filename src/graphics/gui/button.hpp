@@ -1,9 +1,9 @@
 #ifndef TOPAZ_BUTTON_HPP
 #define TOPAZ_BUTTON_HPP
 
-#include "widget.hpp"
-#include "display.hpp"
-#include "../../utility/functional.hpp"
+#include "graphics/gui/widget.hpp"
+#include "graphics/gui/display.hpp"
+#include "utility/functional.hpp"
 
 class Button : public GUIWidget
 {

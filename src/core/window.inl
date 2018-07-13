@@ -1,4 +1,3 @@
-
 template<class GUIType, typename... Args>
 GUIType& Window::emplace_child(Args&&... args)
 {

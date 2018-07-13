@@ -1,7 +1,6 @@
 #ifndef MATRIX_HPP
 #define MATRIX_HPP
-#include <array>
-#include "vector.hpp"
+#include "data/vector.hpp"
 
 /**
 * Represents a two-dimensional square matrix.
