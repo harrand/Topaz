@@ -1,6 +1,37 @@
 #include "graphics/shader.hpp"
 #include "utility/file.hpp"
 
+UniformImplicit::UniformImplicit(GLuint shader_handle, std::string uniform_location): shader_handle(shader_handle), uniform_location(uniform_location){}
+
+GLuint UniformImplicit::get_shader_handle() const
+{
+	return this->shader_handle;
+}
+
+std::string_view UniformImplicit::get_uniform_location() const
+{
+	return {this->uniform_location};
+}
+
+Uniform<DirectionalLight>::Uniform(GLuint shader_handle, std::string uniform_location, DirectionalLight value): UniformImplicit(shader_handle, uniform_location), value(value), direction_uniform_handle(glGetUniformLocation(this->shader_handle, (uniform_location + ".direction").c_str())), colour_uniform_handle(glGetUniformLocation(this->shader_handle, (uniform_location + ".colour").c_str())), power_uniform_handle(glGetUniformLocation(this->shader_handle, (uniform_location + ".power").c_str())){}
+
+const DirectionalLight& Uniform<DirectionalLight>::get_value() const
+{
+	return this->value;
+}
+
+void Uniform<DirectionalLight>::set_value(DirectionalLight value)
+{
+	this->value = value;
+}
+
+void Uniform<DirectionalLight>::push() const
+{
+	glUniform3f(this->direction_uniform_handle, this->value.get_direction().x, this->value.get_direction().y, this->value.get_direction().z);
+	glUniform3f(this->colour_uniform_handle, this->value.get_colour().x, this->value.get_colour().y, this->value.get_colour().z);
+	glUniform1f(this->power_uniform_handle, this->value.get_power());
+}
+
 Shader::Shader(std::string vertex_source, std::string tessellation_control_source, std::string tessellation_evaluation_source, std::string geometry_source, std::string fragment_source, bool compile, bool link, bool validate): filename(""), compiled(false), program_handle(glCreateProgram()), uniform_data({nullptr}), uniform_counter(0)
 {
 	if(compile)

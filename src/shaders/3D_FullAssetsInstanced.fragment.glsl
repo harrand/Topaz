@@ -33,6 +33,10 @@ struct DirectionalLight
     float power;
 };
 
+// Unlike hard-coded DirectionalLight, we expect the attributes to be in worldspace, NOT cameraspace.
+const uint num_directional_lights = 8;
+uniform DirectionalLight directional_lights[num_directional_lights];
+
 struct PointLight
 {
     // Position is in cameraspace.
@@ -111,6 +115,13 @@ void main()
     vec3 light_direction_tangentspace = tbn_matrix * cam_light.direction;
     vec3 texture_colour = texture(texture_sampler, parallaxed_texcoord).xyz;
     fragment_colour = vec4(diffuse_directional(cam_light, texture_colour, normal_cameraspace) + specular_directional(cam_light, texture_colour, normal_cameraspace), 1.0);
+	for(uint i = 0; i < num_directional_lights; i++)
+	{
+	    DirectionalLight light = directional_lights[i];
+	    // convert attribute(s) to cameraspace, then perform the processing.
+	    light.direction = (view_matrix * vec4(light.direction, 0.0)).xyz;
+	    fragment_colour += vec4(diffuse_directional(light, texture_colour, normal_cameraspace) + specular_directional(light, texture_colour, normal_cameraspace), 1.0);
+	}
 	/*
     // Non-Directional Component.
     PointLight cam_light;

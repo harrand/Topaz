@@ -1,19 +1,7 @@
 #include "data/matrix.hpp"
 
 template<class T>
-Uniform<T>::Uniform(GLuint shader_handle, std::string uniform_location, T value): shader_handle(shader_handle), uniform_location(uniform_location), value(value), uniform_handle(glGetUniformLocation(this->shader_handle, uniform_location.c_str())){}
-
-template<class T>
-GLuint Uniform<T>::get_shader_handle() const
-{
-	return this->shader_handle;
-}
-
-template<class T>
-std::string_view Uniform<T>::get_uniform_location() const
-{
-	return {this->uniform_location};
-}
+Uniform<T>::Uniform(GLuint shader_handle, std::string uniform_location, T value): UniformImplicit(shader_handle, uniform_location), value(value), uniform_handle(glGetUniformLocation(this->shader_handle, uniform_location.c_str())){}
 
 template<class T>
 const T& Uniform<T>::get_value() const
@@ -48,6 +36,10 @@ void Uniform<T>::push() const
 		matrices (floating point):
 			matnxm
 			matn
+
+		TZ Extras (handled by template specialisations):
+	 	DirectionalLight(direction, colour, power)
+	 	PointLight(position, colour, power)
 	*/
 	// Scalars
 	if constexpr(std::is_same<decltype(this->value), bool>::value)

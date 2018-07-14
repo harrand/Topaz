@@ -36,6 +36,10 @@ void init()
 
     constexpr float speed = 0.5f;
 	Shader render_shader("../../../src/shaders/3D_FullAssetsInstanced");
+	render_shader.bind();
+    render_shader.set_uniform<DirectionalLight>("directional_lights[0]", DirectionalLight{Vector3F{0, -1, 0}, Vector3F{0, 1, 0}, 1.0f});
+    render_shader.update();
+
 	Shader gui_shader("../../../src/shaders/gui");
     Camera camera;
     camera.position = {0, 0, -50};
@@ -80,6 +84,7 @@ void init()
         progress.set_progress(std::abs(std::sin(x += 0.001)));
         profiler.begin_frame();
         second_timer.update();
+
         if(second_timer.millis_passed(1000.0f))
         {
             using namespace tz::utility::generic::cast;
