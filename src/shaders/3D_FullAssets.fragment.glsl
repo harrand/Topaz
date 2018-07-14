@@ -111,12 +111,4 @@ void main()
     vec3 light_direction_tangentspace = tbn_matrix * cam_light.direction;
     vec3 texture_colour = texture(texture_sampler, parallaxed_texcoord).xyz;
     fragment_colour = vec4(diffuse_directional(cam_light, texture_colour, normal_cameraspace) + specular_directional(cam_light, texture_colour, normal_cameraspace), 1.0);
-    /*
-    // Non-Directional Component.
-    PointLight cam_light;
-    cam_light.colour = vec3(1, 1, 1);
-    cam_light.position = vec3(0, 0, 0);
-    cam_light.power = 20.0f;
-    fragment_colour = vec4(diffuse(cam_light, texture_colour, normal_cameraspace, position_cameraspace) + specular(cam_light, texture_colour, normal_cameraspace, position_cameraspace), 1.0);
-    */
 }

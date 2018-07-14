@@ -18,7 +18,7 @@ public:
      * @param cube_mesh_link - Path to the cube-map Mesh being used
      * @param cm - Existing CubeMap to utilise for this Skybox
      */
-    Skybox(std::string cube_mesh_link, CubeMap& cm);
+    Skybox(std::string cube_mesh_link, CubeMap& cm, Vector3F rotation = {});
     /**
      * Render this Skybox, given the container of Mesh assets containing the Skybox
      * @param cam - Camera through which to view the Skybox
@@ -33,6 +33,10 @@ private:
     std::string cube_mesh_link;
     /// Underlying CubeMap.
     CubeMap& cm;
+public:
+    /// Rotation of the Skybox.
+    Vector3F rotation;
+private:
     /// Simple cube for the Skybox to use by default.
     Mesh cube;
 };
