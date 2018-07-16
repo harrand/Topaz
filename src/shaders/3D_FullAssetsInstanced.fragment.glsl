@@ -45,6 +45,9 @@ struct PointLight
     float power;
 };
 
+const uint num_point_lights = 8;
+uniform PointLight point_lights[num_point_lights];
+
 vec3 diffuse_directional(DirectionalLight light, vec3 diffuse_colour, vec3 normal_cameraspace)
 {
     float cos_theta = clamp(dot(normal_cameraspace, light.direction), 0.0, 1.0);
@@ -122,6 +125,13 @@ void main()
 	    light.direction = (view_matrix * vec4(light.direction, 0.0)).xyz;
 	    fragment_colour += vec4(diffuse_directional(light, texture_colour, normal_cameraspace) + specular_directional(light, texture_colour, normal_cameraspace), 1.0);
 	}
+	for(uint i = 0; i < num_point_lights; i++)
+    {
+    	PointLight light = point_lights[i];
+    	// convert attribute(s) to cameraspace, then perform the processing.
+    	light.position = (view_matrix * vec4(light.position, 1.0)).xyz;
+    	fragment_colour += vec4(diffuse(light, texture_colour, normal_cameraspace, position_cameraspace) + specular(light, texture_colour, normal_cameraspace, position_cameraspace), 1.0);
+    }
 	/*
     // Non-Directional Component.
     PointLight cam_light;

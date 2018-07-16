@@ -32,6 +32,25 @@ void Uniform<DirectionalLight>::push() const
 	glUniform1f(this->power_uniform_handle, this->value.get_power());
 }
 
+Uniform<PointLight>::Uniform(GLuint shader_handle, std::string uniform_location, PointLight value): UniformImplicit(shader_handle, uniform_location), value(value), position_uniform_handle(glGetUniformLocation(this->shader_handle, (uniform_location + ".position").c_str())), colour_uniform_handle(glGetUniformLocation(this->shader_handle, (uniform_location + ".colour").c_str())), power_uniform_handle(glGetUniformLocation(this->shader_handle, (uniform_location + ".power").c_str())){}
+
+const PointLight& Uniform<PointLight>::get_value() const
+{
+	return this->value;
+}
+
+void Uniform<PointLight>::set_value(PointLight value)
+{
+	this->value = value;
+}
+
+void Uniform<PointLight>::push() const
+{
+	glUniform3f(this->position_uniform_handle, this->value.position.x, this->value.position.y, this->value.position.z);
+	glUniform3f(this->colour_uniform_handle, this->value.get_colour().x, this->value.get_colour().y, this->value.get_colour().z);
+	glUniform1f(this->power_uniform_handle, this->value.get_power());
+}
+
 Shader::Shader(std::string vertex_source, std::string tessellation_control_source, std::string tessellation_evaluation_source, std::string geometry_source, std::string fragment_source, bool compile, bool link, bool validate): filename(""), compiled(false), program_handle(glCreateProgram()), uniform_data({nullptr}), uniform_counter(0)
 {
 	if(compile)

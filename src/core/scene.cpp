@@ -1,7 +1,7 @@
 #include "core/scene.hpp"
 #include "physics/physics.hpp"
 
-Scene::Scene(const std::initializer_list<StaticObject>& stack_objects, std::vector<std::unique_ptr<StaticObject>> heap_objects): stack_objects(stack_objects), heap_objects(std::move(heap_objects)){}
+Scene::Scene(const std::initializer_list<StaticObject>& stack_objects, std::vector<std::unique_ptr<StaticObject>> heap_objects): stack_objects(stack_objects), heap_objects(std::move(heap_objects)), directional_lights{}/*, point_lights{}*/{}
 
 void Scene::render(Shader& render_shader, const Camera& camera, const Vector2I& viewport_dimensions) const
 {
@@ -11,6 +11,18 @@ void Scene::render(Shader& render_shader, const Camera& camera, const Vector2I& 
         render_if_visible(stack_object);
     for(const auto& heap_object : this->heap_objects)
         render_if_visible(*heap_object);
+    for(std::size_t i = 0; i < this->directional_lights.size(); i++)
+    {
+        render_shader.bind();
+        render_shader.set_uniform<DirectionalLight>(std::string("directional_lights[") + std::to_string(i) + "]", this->directional_lights[i]);
+        render_shader.update();
+    }
+    for(std::size_t i = 0; i < this->point_lights.size(); i++)
+    {
+        render_shader.bind();
+        render_shader.set_uniform<PointLight>(std::string("point_lights[") + std::to_string(i) + "]", this->point_lights[i]);
+        render_shader.update();
+    }
 }
 
 void Scene::update(float delta_time)
@@ -41,6 +53,54 @@ std::vector<std::reference_wrapper<const StaticObject>> Scene::get_objects() con
 void Scene::add_object(StaticObject scene_object)
 {
     this->stack_objects.push_back(scene_object);
+}
+
+std::optional<DirectionalLight> Scene::get_directional_light(std::size_t light_id) const
+{
+    try
+    {
+        return {this->directional_lights.at(light_id)};
+    }
+    catch(const std::out_of_range& range_exception)
+    {
+        return {};
+    }
+}
+
+void Scene::set_directional_light(std::size_t light_id, DirectionalLight light)
+{
+    if(light_id >= this->directional_lights.size())
+        this->directional_lights.resize(light_id + 1);
+    this->directional_lights.at(light_id) = light;
+}
+
+void Scene::add_directional_light(DirectionalLight light)
+{
+    this->directional_lights.push_back(std::move(light));
+}
+
+std::optional<PointLight> Scene::get_point_light(std::size_t light_id) const
+{
+    try
+    {
+        return {this->point_lights.at(light_id)};
+    }
+    catch(const std::out_of_range& range_exception)
+    {
+        return {};
+    }
+}
+
+void Scene::set_point_light(std::size_t light_id, PointLight light)
+{
+    if(light_id >= this->point_lights.size())
+        this->point_lights.resize(light_id + 1);
+    this->point_lights.at(light_id) = light;
+}
+
+void Scene::add_point_light(PointLight light)
+{
+    this->point_lights.push_back(std::move(light));
 }
 
 std::vector<std::reference_wrapper<StaticObject>> Scene::get_static_objects()

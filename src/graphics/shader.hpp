@@ -146,14 +146,54 @@ public:
 	 */
 	virtual void push() const final;
 private:
-	/// Underlying OpenGL shader-handle.
-	GLuint shader_handle;
-	/// OpenGL uniform-location (name of the variable in GLSL).
-	std::string uniform_location;
 	/// Underlying value.
 	DirectionalLight value;
 	/// DirectionalLight is (direction, colour, power) so each needs their own uniform.
 	GLint direction_uniform_handle;
+	GLint colour_uniform_handle;
+	GLint power_uniform_handle;
+};
+
+template<>
+class Uniform<PointLight> : public UniformImplicit
+{
+public:
+	/**
+	 * Construct a PointLight Uniform from all specifications.
+	 * @param shader_handle - The OpenGL shader-handle referring to the Shader which this Uniform should belong to
+	 * @param uniform_location - OpenGL uniform-location (i.e name of the Uniform)
+	 * @param value - Value of the Uniform
+	 */
+	Uniform<PointLight>(GLuint shader_handle, std::string uniform_location, PointLight value);
+	/**
+	 * Uniforms are not copyable.
+	 * @param copy - N/A
+	 */
+	Uniform<PointLight>(const Uniform<PointLight>& copy) = delete;
+	/**
+	 * Construct a Uniform from an existing Uniform.
+	 * @param move - The existing Uniform to move from.
+	 */
+	Uniform<PointLight>(Uniform<PointLight>&& move) = default;
+	/**
+	 * Read-only access to the underlying Uniform's value.
+	 * @return - Value of the Uniform
+	 */
+	const PointLight& get_value() const;
+	/**
+	 * Assign the value of the Uniform.
+	 * @param value - Desired new value of the Uniform
+	 */
+	void set_value(PointLight value);
+	/**
+	 * Update all Uniform changes and have them affect all subsequent render-passes.
+	 */
+	virtual void push() const final;
+private:
+	/// Underlying value.
+	PointLight value;
+	/// DirectionalLight is (direction, colour, power) so each needs their own uniform.
+	GLint position_uniform_handle;
 	GLint colour_uniform_handle;
 	GLint power_uniform_handle;
 };

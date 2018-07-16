@@ -14,12 +14,20 @@ public:
     Element& emplace(Args&&... args);
     template<typename... Args>
     StaticObject& emplace_object(Args&&... args);
+    std::optional<DirectionalLight> get_directional_light(std::size_t light_id) const;
+    void set_directional_light(std::size_t light_id, DirectionalLight light);
+    void add_directional_light(DirectionalLight light);
+    std::optional<PointLight> get_point_light(std::size_t light_id) const;
+    void set_point_light(std::size_t light_id, PointLight light);
+    void add_point_light(PointLight light);
 protected:
     std::vector<std::reference_wrapper<StaticObject>> get_static_objects();
     std::vector<std::reference_wrapper<DynamicObject>> get_dynamic_objects();
 private:
     std::vector<StaticObject> stack_objects;
     std::vector<std::unique_ptr<StaticObject>> heap_objects;
+    std::vector<DirectionalLight> directional_lights;
+    std::vector<PointLight> point_lights;
 };
 
 #include "scene.inl"

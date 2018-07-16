@@ -19,7 +19,7 @@ private:
 class DirectionalLight : public Light
 {
 public:
-    DirectionalLight(Vector3F direction, Vector3F colour = {1, 1, 1}, float power = 1.0f);
+    DirectionalLight(Vector3F direction = {}, Vector3F colour = {1, 1, 1}, float power = 1.0f);
     const Vector3F& get_direction() const;
     void set_direction(Vector3F direction);
 private:
@@ -29,7 +29,7 @@ private:
 class PointLight : public Light
 {
 public:
-    PointLight(Vector3F position, Vector3F colour = {1, 1, 1}, float power = 1.0f);
+    PointLight(Vector3F position = {}, Vector3F colour = {1, 1, 1}, float power = 1.0f);
     Vector3F position;
 };
 
