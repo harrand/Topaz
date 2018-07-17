@@ -37,11 +37,12 @@ void init()
     constexpr float speed = 0.5f;
 	Shader render_shader("../../../src/shaders/3D_FullAssetsInstanced");
 
-	Shader gui_shader("../../../src/shaders/gui");
+	Shader gui_shader("../../../src/shaders/Gui");
     Camera camera;
     camera.position = {0, 0, -50};
     Scene scene;
-    scene.add_point_light({{0, 0, 0}, {0, 1, 0}, 5000000.0f});
+    //scene.add_point_light({{0, 0, 0}, {0, 1, 0}, 5000000.0f});
+    scene.add_directional_light({{0, 0, -1}, {0, 0, 1}, 5.0f});
 
     AssetBuffer assets;
     assets.emplace<Mesh>("cube_lq", "../../../res/runtime/models/cube.obj");
@@ -56,8 +57,15 @@ void init()
     Asset asset3(assets.find_mesh("cube_lq"), assets.find_texture("bricks"));
 
     CubeMap skybox_texture("../../../res/runtime/textures/skybox/", "cwd", ".jpg");
-    Shader skybox_shader("../../../src/shaders/skybox");
+    Shader skybox_shader("../../../src/shaders/Skybox");
     Skybox skybox("../../../res/runtime/models/skybox.obj", skybox_texture);
+
+    Shader depth_shader("../../../src/shaders/Depth_Instanced");
+    FrameBuffer depth_framebuffer{1024, 1024};
+    Texture& depth_texture = depth_framebuffer.emplace_texture(GL_DEPTH_ATTACHMENT, 1024, 1024, tz::graphics::TextureComponent::DEPTH_TEXTURE);
+    //plane_texture_buffer.emplace_renderbuffer(GL_COLOR_ATTACHMENT0, 512, 512, GL_RGBA);
+    depth_framebuffer.set_output_attachment(GL_NONE);
+    Panel& image_panel = wnd.emplace_child<Panel>(Vector2I{0, 400}, Vector2I{400, 400}, &depth_texture);
 
     Random rand;
     test_button.set_callback([&scene, &camera, &asset1]()
@@ -79,15 +87,10 @@ void init()
 	while(!wnd.is_close_requested())
     {
         static float x = 0;
-        progress.set_progress(std::abs(std::sin(x += 0.001)));
+        progress.set_progress((1 + std::sin(x += 0.01)) / 2.0f);
+        //scene.set_point_light(0, {{0, 0, 0}, {0, progress.get_progress(), 1 - progress.get_progress()}, 50000000.0f});
         profiler.begin_frame();
         second_timer.update();
-
-        /*
-        render_shader.bind();
-        render_shader.set_uniform<DirectionalLight>("directional_lights[0]", DirectionalLight{{0, -1, 0}, {0.2, 0.2, 1}, 50.0f});
-        render_shader.update();
-         */
 
         if(second_timer.millis_passed(1000.0f))
         {
@@ -98,6 +101,12 @@ void init()
         }
         long long int delta_time = tz::utility::time::now() - time;
         time = tz::utility::time::now();
+
+        depth_framebuffer.clear(GL_DEPTH_BUFFER_BIT);
+        depth_framebuffer.set_render_target();
+
+        Camera light_view = scene.get_directional_light(0).value().get_view();
+        scene.render(depth_shader, light_view, {wnd.get_width(), wnd.get_height()});
 
         wnd.set_render_target();
         wnd.clear();

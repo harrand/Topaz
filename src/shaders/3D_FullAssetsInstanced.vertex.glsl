@@ -73,10 +73,7 @@ void main()
 {
 	share();
 	if(is_instanced)
-	{
 		gl_Position = p * v * (model_instanced * vec4(position_modelspace, 1.0));
-	}
 	else
 		gl_Position = (p * v * m) * vec4(position_modelspace, 1.0);
-
 }

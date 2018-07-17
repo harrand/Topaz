@@ -41,4 +41,10 @@ void DirectionalLight::set_direction(Vector3F direction)
     this->direction = direction.normalised();
 }
 
+Camera DirectionalLight::get_view() const
+{
+    //	Camera(Vector3F position = Vector3F(), Vector3F rotation = Vector3F(), float fov = tz::graphics::default_fov, float near_clip = tz::graphics::default_near_clip, float far_clip = tz::graphics::default_far_clip, bool perspective = true);
+    return {{}, this->direction, tz::graphics::default_fov, tz::graphics::default_near_clip, tz::graphics::default_far_clip, false};
+}
+
 PointLight::PointLight(Vector3F position, Vector3F colour, float power): Light(colour, power), position(position) {}
