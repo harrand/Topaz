@@ -25,7 +25,7 @@ out vec4 position_lightspace;
 uniform mat4 m;
 uniform mat4 v;
 uniform mat4 p;
-uniform mat4 light_view;
+uniform mat4 light_viewprojection;
 uniform float displacement_factor = 0.0f;
 uniform bool has_displacement_map = false;
 
@@ -77,12 +77,11 @@ void main()
 	if(is_instanced)
 	{
 		gl_Position = p * v * (model_instanced * vec4(position_modelspace, 1.0));
-		position_lightspace = light_view * model_instanced * vec4(position_modelspace, 1.0);
+		position_lightspace = light_viewprojection * model_instanced * vec4(position_modelspace, 1.0);
 	}
 	else
 	{
 		gl_Position = (p * v * m) * vec4(position_modelspace, 1.0);
-		position_lightspace = light_view * m * vec4(position_modelspace, 1.0);
+		position_lightspace = light_viewprojection * m * vec4(position_modelspace, 1.0);
 	}
-	//position_lightspace = light_view * vec4(gl_Position.xyz, 1.0);
 }

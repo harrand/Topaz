@@ -292,11 +292,52 @@ namespace tz::transform
 		using namespace tz::transform;
 		return rotate_z(euler_rotation.z) * rotate_y(euler_rotation.y) * rotate_x(euler_rotation.x);
 	}
-	
-	Matrix4x4 scale(const Vector3F& scale)
+
+    Vector3F decompose_rotation(const Matrix4x4 rotational_matrix)
+    {
+    	float sin_pitch = -rotational_matrix.x.z;
+    	float cos_pitch = static_cast<float>(std::sqrt(1 - std::pow(sin_pitch, 2)));
+    	float sin_roll, cos_roll, sin_yaw, cos_yaw;
+		if (std::abs(cos_pitch) <= std::numeric_limits<float>::epsilon())
+		{
+			sin_roll = -rotational_matrix.z.y;
+			cos_roll = rotational_matrix.y.y;
+			sin_yaw = 0.0f;
+			cos_yaw = 1.0f;
+		}
+		else
+		{
+			sin_roll = rotational_matrix.y.z / cos_pitch;
+			cos_roll = rotational_matrix.z.z / cos_pitch;
+			sin_yaw = rotational_matrix.x.y / cos_pitch;
+			cos_yaw = rotational_matrix.x.x / cos_pitch;
+		}
+		return {static_cast<float>(std::atan2(sin_pitch, cos_pitch))
+			  , static_cast<float>(std::atan2(sin_yaw, cos_yaw))
+			  , static_cast<float>(std::atan2(sin_roll, cos_roll))};
+    }
+
+    Matrix4x4 scale(const Vector3F& scale)
 	{
 		return {Vector4F(scale.x, 0, 0, 0), Vector4F(0, scale.y, 0, 0), Vector4F(0, 0, scale.z, 0), Vector4F(0, 0, 0, 1)};
 	}
+
+    Matrix4x4 look_at(const Vector3F& position, const Vector3F& target, const Vector3F& up)
+    {
+		Vector3F f = (target - position).normalised();
+		Vector3F u = up.normalised();
+		Vector3F s = f.cross(u).normalised();
+		u = s.cross(f);
+
+		Matrix4x4 result;
+		result.x = {s, 0};
+		result.y = {u, 0};
+		result.z = {f * -1.0f, 0};
+		result.w.x = s.dot(position) * -1.0f;//-dot(s, eye);
+		result.w.y = u.dot(position) * -1.0f;//-dot(u, eye);
+		result.w.z = f.dot(position);//dot(f, eye);
+		return result.transposed();
+    }
 	
 	Matrix4x4 model(const Vector3F& position, const Vector3F& euler_rotation, const Vector3F& scale)
 	{

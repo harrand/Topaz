@@ -165,13 +165,14 @@ namespace tz::transform
 	 * @return - The resultant rotational matrix
 	 */
 	Matrix4x4 rotate(const Vector3F& euler_rotation);
+	Vector3F decompose_rotation(const Matrix4x4 rotational_matrix);
 	/**
 	 * Construct a four-dimensional row-major scaling matrix.
 	 * @param scale - 3-dimensional Vector representing the scale factor in each spatial dimension
 	 * @return - The resultant scaling matrix
 	 */
 	Matrix4x4 scale(const Vector3F& scale);
-	
+	Matrix4x4 look_at(const Vector3F& position, const Vector3F& target, const Vector3F& up = {0, 1, 0});
 	/**
 	 * Construct a row-major model matrix.
 	 * @param position - 3-dimensional Vector representing position

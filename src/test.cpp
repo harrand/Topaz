@@ -42,11 +42,12 @@ void init()
     camera.position = {0, 0, -50};
     Scene scene;
     //scene.add_point_light({{0, 0, 0}, {0, 1, 0}, 5000000.0f});
-    scene.add_directional_light({{0, 0, -1}, {0, 0, 1}, 5.0f});
+    scene.add_directional_light({{0, 1, 0}, {1, 1, 1}, 5.0f});
 
     AssetBuffer assets;
     assets.emplace<Mesh>("cube_lq", "../../../res/runtime/models/cube.obj");
     assets.emplace<Mesh>("cube", "../../../res/runtime/models/cube_hd.obj");
+    assets.emplace<Mesh>("monkey", "../../../res/runtime/models/monkeyhead.obj");
     assets.emplace<Texture>("bricks", "../../../res/runtime/textures/bricks.jpg");
     assets.emplace<NormalMap>("bricks_normal", "../../../res/runtime/normalmaps/bricks_normalmap.jpg");
     assets.emplace<ParallaxMap>("bricks_parallax", "../../../res/runtime/parallaxmaps/bricks_parallax.jpg");
@@ -55,6 +56,7 @@ void init()
     Asset asset1(assets.find_mesh("cube_lq"), assets.find_texture("bricks"), assets.find_normal_map("bricks_normal"), assets.find_parallax_map("bricks_parallax"));
     Asset asset2(assets.find_mesh("cube_lq"), assets.find_texture("bricks"), assets.find_normal_map("bricks_normal"));
     Asset asset3(assets.find_mesh("cube_lq"), assets.find_texture("bricks"));
+    Asset monkey_asset(assets.find_mesh("monkey"), assets.find_texture("bricks"));
 
     CubeMap skybox_texture("../../../res/runtime/textures/skybox/", "cwd", ".jpg");
     Shader skybox_shader("../../../src/shaders/Skybox");
@@ -65,7 +67,8 @@ void init()
     Texture& depth_texture = depth_framebuffer.emplace_texture(GL_DEPTH_ATTACHMENT, 1024, 1024, tz::graphics::TextureComponent::DEPTH_TEXTURE);
     //plane_texture_buffer.emplace_renderbuffer(GL_COLOR_ATTACHMENT0, 512, 512, GL_RGBA);
     depth_framebuffer.set_output_attachment(GL_NONE);
-    Panel& image_panel = wnd.emplace_child<Panel>(Vector2I{0, 400}, Vector2I{400, 400}, &depth_texture);
+    // Uncomment this to render the depth texture.
+    //wnd.emplace_child<Panel>(Vector2I{0, 400}, Vector2I{400, 400}, &depth_texture);
 
     Random rand;
     test_button.set_callback([&scene, &camera, &asset1]()
@@ -81,7 +84,9 @@ void init()
     }
     scene.emplace<InstancedStaticObject>(objects);
 
-    scene.emplace_object(Transform{{-1000, -1000, -1000}, {}, {1000, 1000, 1}}, asset3);
+    scene.emplace_object(Transform{{}, {}, {100, 100, 100}}, monkey_asset);
+
+    scene.emplace_object(Transform{{-1000, -1000, 1000}, {}, {1000, 1, 1000}}, asset1);
 
     long long int time = tz::utility::time::now();
     Timer second_timer;
@@ -108,7 +113,7 @@ void init()
         depth_framebuffer.set_render_target();
 
         Camera light_view = scene.get_directional_light(0).value().get_view();
-        render_shader.set_uniform<Matrix4x4>("light_view", light_view.projection(wnd.get_width(), wnd.get_height()) * light_view.view());
+        render_shader.set_uniform<Matrix4x4>("light_viewprojection", light_view.projection(wnd.get_width() * 2, wnd.get_height() * 2) * light_view.view());
         scene.render(depth_shader, light_view, {wnd.get_width(), wnd.get_height()});
 
         wnd.set_render_target();

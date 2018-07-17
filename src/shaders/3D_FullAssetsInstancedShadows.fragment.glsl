@@ -101,8 +101,7 @@ vec2 parallax_offset(vec2 texcoord)
 bool in_shadow()
 {
     vec3 projection_coords = position_lightspace.xyz / position_lightspace.w;
-    // projection_coords in range [-1, 1]. we want in range [0, 1] so perform the transformation:
-    projection_coords = projection_coords * 0.5 + 0.5;
+    projection_coords = projection_coords * 0.5f + 0.5f;
 
     float closest_depth = texture(depth_map_sampler, projection_coords.xy).r;
     float current_depth = projection_coords.z;
