@@ -35,7 +35,7 @@ void init()
     wireframe_button.set_callback([](){static bool wireframe = false;wireframe = !wireframe;tz::graphics::enable_wireframe_render(wireframe);});
 
     constexpr float speed = 0.5f;
-	Shader render_shader("../../../src/shaders/3D_FullAssetsInstanced");
+	Shader render_shader("../../../src/shaders/3D_FullAssetsInstancedShadows");
 
 	Shader gui_shader("../../../src/shaders/Gui");
     Camera camera;
@@ -79,7 +79,9 @@ void init()
     {
         objects.emplace_back(Transform{Vector3F{rand.next_float(-1.0f, 1.0f), rand.next_float(-1.0f, 1.0f), rand.next_float(-1.0f, 1.0f)} * 5000.0f, {}, {5, 5, 5}}, asset2);
     }
-   scene.emplace<InstancedStaticObject>(objects);
+    scene.emplace<InstancedStaticObject>(objects);
+
+    scene.emplace_object(Transform{{-1000, -1000, -1000}, {}, {1000, 1000, 1}}, asset3);
 
     long long int time = tz::utility::time::now();
     Timer second_timer;
@@ -106,6 +108,7 @@ void init()
         depth_framebuffer.set_render_target();
 
         Camera light_view = scene.get_directional_light(0).value().get_view();
+        render_shader.set_uniform<Matrix4x4>("light_view", light_view.projection(wnd.get_width(), wnd.get_height()) * light_view.view());
         scene.render(depth_shader, light_view, {wnd.get_width(), wnd.get_height()});
 
         wnd.set_render_target();
@@ -113,6 +116,7 @@ void init()
 
         profiler.end_frame();
 
+        depth_texture.bind(&render_shader, 5, "depth_map_sampler");
         scene.render(render_shader, camera, {wnd.get_width(), wnd.get_height()});
         scene.update(delta_time / 1000.0f);
 

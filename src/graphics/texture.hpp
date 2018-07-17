@@ -169,7 +169,7 @@ public:
 	 * @param shader - Shader with which to render this Texture.
 	 * @param id - Sampler-ID for the Shader to use.
 	 */
-	virtual void bind(Shader* shader, unsigned int id) const;
+	virtual void bind(Shader* shader, unsigned int id, const std::string& sampler_name = "texture_sampler") const;
 	/**
 	 * Query whether this Texture was loaded from an external image file.
 	 * @return - True if this Texture was loaded from an external image file. False otherwise
@@ -297,7 +297,7 @@ public:
 	 * @param shader - The Shader to be bound with.
 	 * @param id - Sampler-ID of this normal-map.
 	 */
-    virtual void bind(Shader* shader, unsigned int id) const override;
+    virtual void bind(Shader* shader, unsigned int id, const std::string& sampler_name = "normal_map_sampler") const override;
 	/**
 	 * This is a normal-map Texture.
 	 * @return TextureType::NORMAL_MAP
@@ -325,7 +325,7 @@ public:
 	* @param shader - The Shader to be bound with.
 	* @param id - Sampler-ID of this normal-map.
 	*/
-    virtual void bind(Shader* shader, unsigned int id) const override;
+    virtual void bind(Shader* shader, unsigned int id, const std::string& sampler_name = "parallax_map_sampler") const override;
 	/**
 	 * This is a parallax-map Texture.
 	 * @return - TextureType::PARALLAX_MAP
@@ -355,7 +355,7 @@ public:
 	* @param shader - The Shader to be bound with.
 	* @param id - Sampler-ID of this normal-map.
 	*/
-    virtual void bind(Shader* shader, unsigned int id) const override;
+    virtual void bind(Shader* shader, unsigned int id, const std::string& sampler_name = "displacement_map_sampler") const override;
 	/**
 	 * This is a displacement-map Texture.
 	 * @return - TextureType::DISPLACEMENT_MAP
