@@ -46,10 +46,7 @@ Camera DirectionalLight::get_view() const
     //	Camera(Vector3F position = Vector3F(), Vector3F rotation = Vector3F(), float fov = tz::graphics::default_fov, float near_clip = tz::graphics::default_near_clip, float far_clip = tz::graphics::default_far_clip, bool perspective = true);
     Vector3F inverse_direction = this->direction * -1.0f;
     Matrix4x4 view = tz::transform::look_at(inverse_direction, {});
-
-    Camera camera = {inverse_direction, tz::transform::decompose_rotation(view).zyx(), tz::graphics::default_fov, tz::graphics::default_near_clip, tz::graphics::default_far_clip, false};
-    std::cout << "camera rotation = " << camera.rotation << "\n";
-    return camera;
+    return {inverse_direction, tz::transform::decompose_rotation(view).zyx(), tz::graphics::default_fov, tz::graphics::default_near_clip, tz::graphics::default_far_clip, false};
 }
 
 PointLight::PointLight(Vector3F position, Vector3F colour, float power): Light(colour, power), position(position) {}

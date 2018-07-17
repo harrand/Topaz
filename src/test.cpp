@@ -84,9 +84,10 @@ void init()
     }
     scene.emplace<InstancedStaticObject>(objects);
 
-    scene.emplace_object(Transform{{}, {}, {100, 100, 100}}, monkey_asset);
+    StaticObject& monkey = scene.emplace_object(Transform{{}, {}, {100, 100, 100}}, monkey_asset);
 
-    scene.emplace_object(Transform{{-1000, -1000, 1000}, {}, {1000, 1, 1000}}, asset1);
+    scene.emplace_object(Transform{{-100, -700, 100}, {}, {100, 1, 100}}, asset1);
+    scene.emplace_object(Transform{{-200, -1000, 200}, {}, {200, 1, 200}}, asset1);
 
     long long int time = tz::utility::time::now();
     Timer second_timer;
@@ -95,6 +96,7 @@ void init()
     {
         static float x = 0;
         progress.set_progress((1 + std::sin(x += 0.01)) / 2.0f);
+        monkey.transform.rotation.y = x;
         //scene.set_point_light(0, {{0, 0, 0}, {0, progress.get_progress(), 1 - progress.get_progress()}, 50000000.0f});
         profiler.begin_frame();
         second_timer.update();
@@ -113,7 +115,7 @@ void init()
         depth_framebuffer.set_render_target();
 
         Camera light_view = scene.get_directional_light(0).value().get_view();
-        render_shader.set_uniform<Matrix4x4>("light_viewprojection", light_view.projection(wnd.get_width() * 2, wnd.get_height() * 2) * light_view.view());
+        render_shader.set_uniform<Matrix4x4>("light_viewprojection", light_view.projection(wnd.get_width(), wnd.get_height()) * light_view.view());
         scene.render(depth_shader, light_view, {wnd.get_width(), wnd.get_height()});
 
         wnd.set_render_target();
