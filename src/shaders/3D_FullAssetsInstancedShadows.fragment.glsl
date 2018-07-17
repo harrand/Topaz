@@ -106,7 +106,8 @@ bool in_shadow()
 
     float closest_depth = texture(depth_map_sampler, projection_coords.xy).r;
     float current_depth = projection_coords.z;
-    return current_depth > closest_depth;
+    const float bias = 0.005f;
+    return current_depth - bias > closest_depth;
 }
 
 void main()
