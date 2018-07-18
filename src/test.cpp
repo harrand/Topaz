@@ -64,16 +64,15 @@ void init()
     Skybox skybox("../../../res/runtime/models/skybox.obj", skybox_texture);
 
     Shader depth_shader("../../../src/shaders/Depth_Instanced");
-    ShadowMap depth_framebuffer{1024, 1024};
+    ShadowMap depth_framebuffer{512, 512};
     // Uncomment this to render the depth texture.
-    //wnd.emplace_child<Panel>(Vector2I{0, 400}, Vector2I{400, 400}, &depth_texture);
+    //wnd.emplace_child<Panel>(Vector2I{0, 400}, Vector2I{400, 400}, &depth_framebuffer.get_depth_texture());
 
     Random rand;
     test_button.set_callback([&scene, &camera, &asset1]()
                              {
                                  scene.emplace_object(Transform{camera.position, {}, {10, 10, 10}}, asset1);
                              });
-
 
     std::vector<StaticObject> objects;
     for(float i = 0; i < 50000; i += 1.0f)

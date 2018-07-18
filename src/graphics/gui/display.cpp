@@ -1,6 +1,6 @@
 #include "graphics/gui/display.hpp"
 
-Panel::Panel(Vector2I position_local_pixel_space, Vector2I dimensions_local_pixel_space, std::variant<Vector4F, Texture*> background, GUI* parent, std::initializer_list<GUI*> children): GUI(position_local_pixel_space, dimensions_local_pixel_space, parent, children), background(background), mesh(tz::util::gui::gui_quad()){}
+Panel::Panel(Vector2I position_local_pixel_space, Vector2I dimensions_local_pixel_space, std::variant<Vector4F, const Texture*> background, GUI* parent, std::initializer_list<GUI*> children): GUI(position_local_pixel_space, dimensions_local_pixel_space, parent, children), background(background), mesh(tz::util::gui::gui_quad()){}
 
 void Panel::render(Shader& shader, int window_width_pixels, int window_height_pixels) const
 {
@@ -33,10 +33,10 @@ void Panel::set_colour(Vector4F colour)
 
 bool Panel::has_texture() const
 {
-    return std::holds_alternative<Texture*>(this->background);
+    return std::holds_alternative<const Texture*>(this->background);
 }
 
-void Panel::set_texture(Texture* texture)
+void Panel::set_texture(const Texture* texture)
 {
     this->background = texture;
 }
@@ -49,10 +49,10 @@ std::optional<Vector4F> Panel::get_colour() const
         return {};
 }
 
-Texture* Panel::get_texture() const
+const Texture* Panel::get_texture() const
 {
-    if(std::holds_alternative<Texture*>(this->background))
-        return std::get<Texture*>(this->background);
+    if(std::holds_alternative<const Texture*>(this->background))
+        return std::get<const Texture*>(this->background);
     else
         return nullptr;
 }

@@ -6,16 +6,16 @@
 class Panel : public GUI
 {
 public:
-    Panel(Vector2I position_local_pixel_space, Vector2I dimensions_local_pixel_space, std::variant<Vector4F, Texture*> background, GUI* parent = nullptr, std::initializer_list<GUI*> children = {});
+    Panel(Vector2I position_local_pixel_space, Vector2I dimensions_local_pixel_space, std::variant<Vector4F, const Texture*> background, GUI* parent = nullptr, std::initializer_list<GUI*> children = {});
     virtual void render(Shader& shader, int window_width_pixels, int window_height_pixels) const override;
     bool has_colour() const;
     void set_colour(Vector4F colour);
     bool has_texture() const;
-    void set_texture(Texture* texture);
+    void set_texture(const Texture* texture);
     std::optional<Vector4F> get_colour() const;
-    Texture* get_texture() const;
+    const Texture* get_texture() const;
 private:
-    std::variant<Vector4F, Texture*> background;
+    std::variant<Vector4F, const Texture*> background;
     Mesh mesh;
 };
 
