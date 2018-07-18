@@ -56,10 +56,7 @@ void Window::update(Shader& gui_shader, Shader* hdr_gui_shader)
     for(GUI* child : this->get_children())
     {
         if(child->uses_hdr && hdr_gui_shader != nullptr)
-        {
-            std::cout << "rendering with hdr!\n";
             child->render(*hdr_gui_shader, this->get_width(), this->get_height());
-        }
         else
             child->render(gui_shader, this->get_width(), this->get_height());
         child->update();
