@@ -38,7 +38,7 @@ void init()
     constexpr float speed = 0.5f;
 	Shader render_shader("../../../src/shaders/3D_FullAssetsInstancedShadows");
 
-	Shader gui_shader("../../../src/shaders/Gui");
+	Shader gui_shader("../../../src/shaders/Gui_HDR");
     Camera camera;
     camera.position = {0, 0, -50};
     Scene scene;
