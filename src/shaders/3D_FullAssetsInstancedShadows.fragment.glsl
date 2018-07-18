@@ -149,6 +149,8 @@ void main()
     }
     if(in_shadow())
         fragment_colour.xyz /= 2.0f;
+    // For some reason, HDR textures have weird w-components (which i assume just fall low as hell, so ensure there is no transparency.)
+    fragment_colour.w = 1.0f;
 	/*
     // Non-Directional Component.
     PointLight cam_light;

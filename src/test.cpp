@@ -32,7 +32,7 @@ void init()
     MouseListener mouse_listener(wnd);
 
     Button& test_button = wnd.emplace_child<Button>(Vector2I{0, 200}, Vector2I{100, 50}, font, Vector3F{}, "press me", Vector3F{0.1f, 0.1f, 0.1f}, Vector3F{0.8f, 0.8f, 0.8f});
-    Button& wireframe_button = wnd.emplace_child<Button>(Vector2I{test_button.get_width() * 2, 200}, Vector2I{100, 50}, font, Vector3F{}, "toggle wireframe", Vector3F{0.1f, 0.1f, 0.1f}, Vector3F{0.8f, 0.8f, 0.8f});
+    Button& wireframe_button = wnd.emplace_child<Button>(Vector2I{0, 100}, Vector2I{100, 50}, font, Vector3F{}, "toggle wireframe", Vector3F{0.1f, 0.1f, 0.1f}, Vector3F{0.8f, 0.8f, 0.8f});
     wireframe_button.set_callback([](){static bool wireframe = false;wireframe = !wireframe;tz::graphics::enable_wireframe_render(wireframe);});
 
     constexpr float speed = 0.5f;
@@ -64,10 +64,14 @@ void init()
     Skybox skybox("../../../res/runtime/models/skybox.obj", skybox_texture);
 
     Shader depth_shader("../../../src/shaders/Depth_Instanced");
+    FrameBuffer hdr_buffer{wnd.get_width(), wnd.get_height()};
+    hdr_buffer.emplace_renderbuffer(GL_DEPTH_ATTACHMENT, 512, 512, GL_DEPTH_COMPONENT);
+    Texture& hdr_texture = hdr_buffer.emplace_texture(GL_COLOR_ATTACHMENT0, wnd.get_width(), wnd.get_height(), tz::graphics::TextureComponent::HDR_COLOUR_TEXTURE);
+    hdr_buffer.set_output_attachment(GL_COLOR_ATTACHMENT0);
+    wnd.emplace_child<Panel>(Vector2I{600, 0}, Vector2I{wnd.get_width(), wnd.get_height()}, &hdr_texture);
     ShadowMap depth_framebuffer{512, 512};
     // Uncomment this to render the depth texture.
     wnd.emplace_child<Panel>(Vector2I{0, 600}, Vector2I{300, 300}, &depth_framebuffer.get_depth_texture());
-    wnd.emplace_child<Label>(Vector2I{0, 250}, font, Vector3F{0.1, 0.6, 0.1}, "Depth Texture", Vector3F{});
 
     Random rand;
     test_button.set_callback([&scene, &camera, &asset1]()
@@ -116,8 +120,10 @@ void init()
         render_shader.set_uniform<Matrix4x4>("light_viewprojection", light_view.projection(wnd.get_width(), wnd.get_height()) * light_view.view());
         scene.render(depth_shader, light_view, {wnd.get_width(), wnd.get_height()});
 
-        wnd.set_render_target();
-        wnd.clear();
+        hdr_buffer.clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, 0.0f, 0.0f, 0.0f, 0.0f);
+        hdr_buffer.set_render_target();
+        //wnd.set_render_target();
+        //wnd.clear();
 
         profiler.end_frame();
 
@@ -127,6 +133,8 @@ void init()
 
         skybox.render(camera, skybox_shader, wnd.get_width(), wnd.get_height());
 
+        wnd.set_render_target();
+        wnd.clear();
         wnd.update(gui_shader);
         if(mouse_listener.is_left_clicked() /*&& gui_panel.is_hidden()*/)
         {

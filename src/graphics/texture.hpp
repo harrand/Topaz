@@ -80,6 +80,7 @@ namespace tz::graphics
 	enum class TextureComponent : unsigned int
 	{
 		COLOUR_TEXTURE,
+		HDR_COLOUR_TEXTURE,
 		DEPTH_TEXTURE
 	};
 
