@@ -38,7 +38,8 @@ void init()
     constexpr float speed = 0.5f;
 	Shader render_shader("../../../src/shaders/3D_FullAssetsInstancedShadows");
 
-	Shader gui_shader("../../../src/shaders/Gui_HDR");
+	Shader gui_shader("../../../src/shaders/Gui");
+    Shader hdr_gui_shader("../../../src/shaders/Gui_HDR");
     Camera camera;
     camera.position = {0, 0, -50};
     Scene scene;
@@ -68,7 +69,8 @@ void init()
     hdr_buffer.emplace_renderbuffer(GL_DEPTH_ATTACHMENT, 512, 512, GL_DEPTH_COMPONENT);
     Texture& hdr_texture = hdr_buffer.emplace_texture(GL_COLOR_ATTACHMENT0, wnd.get_width(), wnd.get_height(), tz::graphics::TextureComponent::HDR_COLOUR_TEXTURE);
     hdr_buffer.set_output_attachment(GL_COLOR_ATTACHMENT0);
-    wnd.emplace_child<Panel>(Vector2I{600, 0}, Vector2I{wnd.get_width(), wnd.get_height()}, &hdr_texture);
+    Panel& hdr_panel = wnd.emplace_child<Panel>(Vector2I{600, 0}, Vector2I{wnd.get_width(), wnd.get_height()}, &hdr_texture);
+    hdr_panel.uses_hdr = true;
     ShadowMap depth_framebuffer{512, 512};
     // Uncomment this to render the depth texture.
     wnd.emplace_child<Panel>(Vector2I{0, 600}, Vector2I{300, 300}, &depth_framebuffer.get_depth_texture());
@@ -135,7 +137,7 @@ void init()
 
         wnd.set_render_target();
         wnd.clear();
-        wnd.update(gui_shader);
+        wnd.update(gui_shader, &hdr_gui_shader);
         if(mouse_listener.is_left_clicked() /*&& gui_panel.is_hidden()*/)
         {
             Vector2F delta = mouse_listener.get_mouse_delta_position();

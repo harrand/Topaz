@@ -217,6 +217,7 @@ public:
 	 * @return - TextureType::TEXTURE
 	 */
 	virtual tz::graphics::TextureType get_texture_type() const{return tz::graphics::TextureType::TEXTURE;}
+	tz::graphics::TextureComponent get_texture_component() const;
 	/**
 	 * Given a list of all Texture assets, find the Texture loaded from the path specified.
 	 * @tparam T - The type of Texture required.

@@ -49,13 +49,19 @@ Window::~Window()
     SDL_DestroyWindow(this->sdl_window);
 }
 
-void Window::update(Shader& gui_shader)
+void Window::update(Shader& gui_shader, Shader* hdr_gui_shader)
 {
     tz::graphics::gui_render_mode();
     this->window_gui_element.dimensions_local_pixel_space = this->dimensions_pixel_space;
     for(GUI* child : this->get_children())
     {
-        child->render(gui_shader, this->get_width(), this->get_height());
+        if(child->uses_hdr && hdr_gui_shader != nullptr)
+        {
+            std::cout << "rendering with hdr!\n";
+            child->render(*hdr_gui_shader, this->get_width(), this->get_height());
+        }
+        else
+            child->render(gui_shader, this->get_width(), this->get_height());
         child->update();
     }
     SDL_GL_SwapWindow(this->sdl_window);

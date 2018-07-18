@@ -39,6 +39,24 @@ bool Panel::has_texture() const
 void Panel::set_texture(const Texture* texture)
 {
     this->background = texture;
+    this->uses_hdr = texture->get_texture_component() == tz::graphics::TextureComponent::HDR_COLOUR_TEXTURE;
+    using namespace tz::graphics;
+    std::cout << "texture component is: ";
+    switch(texture->get_texture_component())
+    {
+        case TextureComponent::COLOUR_TEXTURE:
+            std::cout << "colour texture.\n";
+            break;
+        case TextureComponent::HDR_COLOUR_TEXTURE:
+            std::cout << "hdr!\n";
+            break;
+        case TextureComponent::DEPTH_TEXTURE:
+            std::cout << "depth texture.\n";
+            break;
+        default:
+            std::cout << "i don't know.\n";
+            break;
+    }
 }
 
 std::optional<Vector4F> Panel::get_colour() const

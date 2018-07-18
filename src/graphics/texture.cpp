@@ -231,6 +231,11 @@ Bitmap<PixelRGBA> Texture::get_bitmap() const
 	return this->bitmap.value_or(Bitmap<PixelRGBA>());
 }
 
+tz::graphics::TextureComponent Texture::get_texture_component() const
+{
+	return this->texture_component;
+}
+
 bool Texture::operator==(const Texture& rhs) const
 {
 	return this->texture_handle == rhs.texture_handle;
