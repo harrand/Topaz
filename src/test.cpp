@@ -7,6 +7,7 @@
 #include "graphics/skybox.hpp"
 #include "core/topaz.hpp"
 #include "utility/time.hpp"
+#include "graphics/frame_buffer.hpp"
 
 void init();
 
@@ -63,10 +64,7 @@ void init()
     Skybox skybox("../../../res/runtime/models/skybox.obj", skybox_texture);
 
     Shader depth_shader("../../../src/shaders/Depth_Instanced");
-    FrameBuffer depth_framebuffer{1024, 1024};
-    Texture& depth_texture = depth_framebuffer.emplace_texture(GL_DEPTH_ATTACHMENT, 1024, 1024, tz::graphics::TextureComponent::DEPTH_TEXTURE);
-    //plane_texture_buffer.emplace_renderbuffer(GL_COLOR_ATTACHMENT0, 512, 512, GL_RGBA);
-    depth_framebuffer.set_output_attachment(GL_NONE);
+    ShadowMap depth_framebuffer{1024, 1024};
     // Uncomment this to render the depth texture.
     //wnd.emplace_child<Panel>(Vector2I{0, 400}, Vector2I{400, 400}, &depth_texture);
 
@@ -123,7 +121,7 @@ void init()
 
         profiler.end_frame();
 
-        depth_texture.bind(&render_shader, 5, "depth_map_sampler");
+        depth_framebuffer.get_depth_texture().bind(&render_shader, 5, "depth_map_sampler");
         scene.render(render_shader, camera, {wnd.get_width(), wnd.get_height()});
         scene.update(delta_time / 1000.0f);
 

@@ -34,10 +34,15 @@ add_library(topaz SHARED
         src/graphics/asset.inl
         src/graphics/camera.cpp
         src/graphics/camera.hpp
+        src/graphics/frame_buffer.cpp
+        src/graphics/frame_buffer.hpp
+        src/graphics/frame_buffer.inl
         src/graphics/glew.c
         src/graphics/graphics.cpp
         src/graphics/graphics.hpp
         src/graphics/graphics.inl
+        src/graphics/light.cpp
+        src/graphics/light.hpp
         src/graphics/mesh.cpp
         src/graphics/mesh.hpp
         src/graphics/shader.cpp
@@ -59,6 +64,8 @@ add_library(topaz SHARED
         src/graphics/gui/gui.cpp
         src/graphics/gui/gui.hpp
         src/graphics/gui/gui.inl
+        src/graphics/gui/textfield.cpp
+        src/graphics/gui/textfield.hpp
         src/graphics/gui/widget.cpp
         src/graphics/gui/widget.hpp
 
@@ -86,5 +93,5 @@ add_library(topaz SHARED
         src/utility/string.hpp
         src/utility/time.cpp
         src/utility/time.hpp
-        src/utility/time.inl src/graphics/gui/textfield.cpp src/graphics/gui/textfield.hpp src/graphics/light.cpp src/graphics/light.hpp)
+        src/utility/time.inl)
 target_link_libraries(topaz OpenGL32 SDL2 SDL2_mixer SDL2_ttf SDL2main assimp)
