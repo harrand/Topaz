@@ -66,7 +66,8 @@ void init()
     Shader depth_shader("../../../src/shaders/Depth_Instanced");
     ShadowMap depth_framebuffer{512, 512};
     // Uncomment this to render the depth texture.
-    //wnd.emplace_child<Panel>(Vector2I{0, 400}, Vector2I{400, 400}, &depth_framebuffer.get_depth_texture());
+    wnd.emplace_child<Panel>(Vector2I{0, 600}, Vector2I{300, 300}, &depth_framebuffer.get_depth_texture());
+    wnd.emplace_child<Label>(Vector2I{0, 250}, font, Vector3F{0.1, 0.6, 0.1}, "Depth Texture", Vector3F{});
 
     Random rand;
     test_button.set_callback([&scene, &camera, &asset1]()

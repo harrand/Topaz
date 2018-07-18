@@ -123,14 +123,16 @@ void main()
 	    normal_cameraspace = transpose(tbn_matrix) * (texture(normal_map_sampler, parallaxed_texcoord).xyz * 255.0/128.0 - 1);
 	else
 	    normal_cameraspace = normalize((view_matrix * model_matrix * vec4(normal_modelspace, 0.0)).xyz);
-	 // Directional Component.
+	vec3 texture_colour = texture(texture_sampler, parallaxed_texcoord).xyz;
+	// Directional Component. disabled by default.
+	/*
     DirectionalLight cam_light;
     cam_light.colour = vec3(1, 1, 1);
     cam_light.direction = vec3(0, 0, 0) + eye_direction_cameraspace;
     cam_light.power = 0.5f;
     vec3 light_direction_tangentspace = tbn_matrix * cam_light.direction;
-    vec3 texture_colour = texture(texture_sampler, parallaxed_texcoord).xyz;
     fragment_colour = vec4(diffuse_directional(cam_light, texture_colour, normal_cameraspace) + specular_directional(cam_light, texture_colour, normal_cameraspace), 1.0);
+    */
     for(uint i = 0; i < num_directional_lights; i++)
     {
         DirectionalLight light = directional_lights[i];
