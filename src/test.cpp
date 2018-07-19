@@ -52,7 +52,7 @@ void init()
     assets.emplace<Mesh>("monkey", "../../../res/runtime/models/monkeyhead.obj");
     assets.emplace<Texture>("bricks", "../../../res/runtime/textures/bricks.jpg");
     assets.emplace<NormalMap>("bricks_normal", "../../../res/runtime/normalmaps/bricks_normalmap.jpg");
-    assets.emplace<ParallaxMap>("bricks_parallax", "../../../res/runtime/parallaxmaps/bricks_parallax.jpg");
+    assets.emplace<ParallaxMap>("bricks_parallax", "../../../res/runtime/parallaxmaps/bricks_parallax.jpg", 0.05f, -0.5f);
     assets.emplace<DisplacementMap>("bricks_displacement", "../../../res/runtime/displacementmaps/bricks_displacement.png");
     Asset asset0(assets.find<Mesh>("cube"), assets.find_texture("bricks"), assets.find_normal_map("bricks_normal"), assets.find_parallax_map("bricks_parallax"), assets.find_displacement_map("bricks_displacement"));
     Asset asset1(assets.find_mesh("cube_lq"), assets.find_texture("bricks"), assets.find_normal_map("bricks_normal"), assets.find_parallax_map("bricks_parallax"));
@@ -65,15 +65,17 @@ void init()
     Skybox skybox("../../../res/runtime/models/skybox.obj", skybox_texture);
 
     Shader depth_shader("../../../src/shaders/Depth_Instanced");
+    /*
     FrameBuffer hdr_buffer{wnd.get_width(), wnd.get_height()};
     hdr_buffer.emplace_renderbuffer(GL_DEPTH_ATTACHMENT, 512, 512, GL_DEPTH_COMPONENT);
-    Texture& hdr_texture = hdr_buffer.emplace_texture(GL_COLOR_ATTACHMENT0, wnd.get_width(), wnd.get_height(), tz::graphics::TextureComponent::HDR_COLOUR_TEXTURE);
+    Texture& hdr_texture = hdr_buffer.emplace_texture(GL_COLOR_ATTACHMENT0, 512, 512, tz::graphics::TextureComponent::HDR_COLOUR_TEXTURE);
     hdr_buffer.set_output_attachment(GL_COLOR_ATTACHMENT0);
-    Panel& hdr_panel = wnd.emplace_child<Panel>(Vector2I{600, 0}, Vector2I{wnd.get_width(), wnd.get_height()}, &hdr_texture);
+    Panel& hdr_panel = wnd.emplace_child<Panel>(Vector2I{0, 0}, Vector2I{wnd.get_width(), wnd.get_height}, &hdr_texture);
     hdr_panel.uses_hdr = true;
+     */
     ShadowMap depth_framebuffer{512, 512};
     // Uncomment this to render the depth texture.
-    wnd.emplace_child<Panel>(Vector2I{0, 600}, Vector2I{300, 300}, &depth_framebuffer.get_depth_texture());
+    //wnd.emplace_child<Panel>(Vector2I{0, 600}, Vector2I{300, 300}, &depth_framebuffer.get_depth_texture());
 
     Random rand;
     test_button.set_callback([&scene, &camera, &asset1]()
@@ -122,10 +124,10 @@ void init()
         render_shader.set_uniform<Matrix4x4>("light_viewprojection", light_view.projection(wnd.get_width(), wnd.get_height()) * light_view.view());
         scene.render(depth_shader, light_view, {wnd.get_width(), wnd.get_height()});
 
-        hdr_buffer.clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, 0.0f, 0.0f, 0.0f, 0.0f);
-        hdr_buffer.set_render_target();
-        //wnd.set_render_target();
-        //wnd.clear();
+        //hdr_buffer.clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, 0.0f, 0.0f, 0.0f, 0.0f);
+        //hdr_buffer.set_render_target();
+        wnd.set_render_target();
+        wnd.clear();
 
         profiler.end_frame();
 
@@ -135,8 +137,8 @@ void init()
 
         skybox.render(camera, skybox_shader, wnd.get_width(), wnd.get_height());
 
-        wnd.set_render_target();
-        wnd.clear();
+        //wnd.set_render_target();
+        //wnd.clear();
         wnd.update(gui_shader, &hdr_gui_shader);
         if(mouse_listener.is_left_clicked() /*&& gui_panel.is_hidden()*/)
         {

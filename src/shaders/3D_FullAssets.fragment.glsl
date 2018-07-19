@@ -93,7 +93,9 @@ vec2 parallax_offset(vec2 texcoord)
 {
     // MUST normalize this, or everything goes a bit weird.
     vec3 eye_direction_tangentspace = normalize(tbn_matrix * eye_direction_cameraspace);
-	return texcoord_modelspace + eye_direction_tangentspace.xy * (texture2D(parallax_map_sampler, texcoord).r * parallax_multiplier + parallax_bias);
+    vec2 texcoord_offset = eye_direction_tangentspace.xy * (texture2D(parallax_map_sampler, texcoord).r * parallax_multiplier + parallax_bias);
+    texcoord_offset.y = -texcoord_offset.y;
+    return texcoord_modelspace + texcoord_offset;
 }
 
 void main()

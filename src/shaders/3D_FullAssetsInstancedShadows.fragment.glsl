@@ -95,11 +95,16 @@ vec2 parallax_offset(vec2 texcoord)
 {
     // MUST normalize this, or everything goes a bit weird.
     vec3 eye_direction_tangentspace = normalize(tbn_matrix * eye_direction_cameraspace);
-	return texcoord_modelspace + eye_direction_tangentspace.xy * (texture2D(parallax_map_sampler, texcoord).r * parallax_multiplier + parallax_bias);
+    vec2 texcoord_offset = eye_direction_tangentspace.xy * (texture2D(parallax_map_sampler, texcoord).r * parallax_multiplier + parallax_bias);
+	texcoord_offset.y = -texcoord_offset.y;
+	return texcoord_modelspace + texcoord_offset;
 }
 
-bool in_shadow()
+bool in_shadow(vec3 normal_cameraspace)
 {
+    vec3 light_direction = directional_lights[0].direction;
+    if(dot(normal_cameraspace, light_direction) <= 0.0f)
+        return true;
     vec3 projection_coords = position_lightspace.xyz / position_lightspace.w;
     projection_coords = projection_coords * 0.5f + 0.5f;
 
@@ -147,7 +152,7 @@ void main()
     	light.position = (view_matrix * vec4(light.position, 1.0)).xyz;
     	fragment_colour += vec4(diffuse(light, texture_colour, normal_cameraspace, position_cameraspace) + specular(light, texture_colour, normal_cameraspace, position_cameraspace), 1.0);
     }
-    if(in_shadow())
+    if(in_shadow(normal_cameraspace))
         fragment_colour.xyz /= 2.0f;
     // For some reason, HDR textures have weird w-components (which i assume just fall low as hell, so ensure there is no transparency.)
     fragment_colour.w = 1.0f;
