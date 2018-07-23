@@ -122,7 +122,7 @@ public:
      * Specify which existing attachment should be connected to the output of the Fragment Shader.
      * @param attachment - The attachment to be given data.
      */
-    void set_output_attachment(GLenum attachment) const;
+    void set_output_attachment(std::initializer_list<GLenum> attachments) const;
     /**
      * Perform an OpenGL clear operation.
      * @param mask - Mask of all desired buffer-bits

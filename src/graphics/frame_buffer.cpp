@@ -75,16 +75,25 @@ bool FrameBuffer::has_stencil() const
     return this->get_attachments().find(GL_STENCIL_ATTACHMENT) != this->get_attachments().cend();
 }
 
-void FrameBuffer::set_output_attachment(GLenum attachment) const
+void FrameBuffer::set_output_attachment(std::initializer_list<GLenum> attachments) const
 {
-    if(this->attachments.find(attachment) == this->attachments.cend() && attachment != GL_NONE)
+    if(attachments.size() == 0)
     {
-        std::cerr << "FrameBuffer render attachment type has no corresponding attachment; setting to default (which is GL_COLOR_ATTACHMENT0).\n";
-        attachment = GL_COLOR_ATTACHMENT0;
+        this->set_output_attachment({GL_NONE});
+        return;
     }
+    for(GLenum attachment : attachments)
+    {
+        if (this->attachments.find(attachment) == this->attachments.cend() && attachment != GL_NONE) {
+            std::cerr
+                    << "FrameBuffer render attachment type has no corresponding attachment; setting to default (which is GL_COLOR_ATTACHMENT0).\n";
+            attachment = GL_COLOR_ATTACHMENT0;
+        }
+    }
+    std::vector<GLenum> attachment_vector{attachments};
     glBindFramebuffer(GL_FRAMEBUFFER, this->framebuffer_handle);
-    glDrawBuffer(attachment);
-    glReadBuffer(attachment);
+    glDrawBuffers(attachment_vector.size(), attachment_vector.data());
+    glReadBuffer(attachment_vector.front());
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
@@ -104,7 +113,7 @@ void FrameBuffer::set_render_target() const
 
 ShadowMap::ShadowMap(int width, int height): FrameBuffer(width, height), depth_texture(this->emplace_texture(GL_DEPTH_ATTACHMENT, width, height, tz::graphics::TextureComponent::DEPTH_TEXTURE))
 {
-    this->set_output_attachment(GL_NONE);
+    this->set_output_attachment({GL_NONE});
 }
 
 const Texture& ShadowMap::get_depth_texture() const
