@@ -43,22 +43,32 @@ void init()
     Camera camera;
     camera.position = {0, 0, -50};
     Scene scene;
-    //scene.add_point_light({{0, 0, 0}, {0, 1, 0}, 5000000.0f});
-    scene.add_directional_light({{0, 1, 0}, {1, 1, 1}, 10.0f});
+    scene.add_directional_light({{-0.2, 1, 0.2}, {1, 1, 1}, 2.0f});
+    scene.add_point_light({{100, 400, 0}, {1, 0, 0}, 50000.0f});
 
     AssetBuffer assets;
     assets.emplace<Mesh>("cube_lq", "../../../res/runtime/models/cube.obj");
     assets.emplace<Mesh>("cube", "../../../res/runtime/models/cube_hd.obj");
     assets.emplace<Mesh>("monkey", "../../../res/runtime/models/monkeyhead.obj");
+    assets.emplace<Mesh>("cylinder", "../../../res/runtime/models/cylinder.obj");
+    assets.emplace<Mesh>("sphere", "../../../res/runtime/models/sphere.obj");
     assets.emplace<Texture>("bricks", "../../../res/runtime/textures/bricks.jpg");
+    assets.emplace<Texture>("stone", "../../../res/runtime/textures/stone.jpg");
+    assets.emplace<Texture>("wood", "../../../res/runtime/textures/wood.jpg");
     assets.emplace<NormalMap>("bricks_normal", "../../../res/runtime/normalmaps/bricks_normalmap.jpg");
+    assets.emplace<NormalMap>("stone_normal", "../../../res/runtime/normalmaps/stone_normalmap.jpg");
+    assets.emplace<NormalMap>("wood_normal", "../../../res/runtime/normalmaps/wood_normalmap.jpg");
     assets.emplace<ParallaxMap>("bricks_parallax", "../../../res/runtime/parallaxmaps/bricks_parallax.jpg");
+    assets.emplace<ParallaxMap>("stone_parallax", "../../../res/runtime/parallaxmaps/stone_parallax.png", 0.06f, -0.5f);
+    assets.emplace<ParallaxMap>("wood_parallax", "../../../res/runtime/parallaxmaps/wood_parallax.jpg");
     assets.emplace<DisplacementMap>("bricks_displacement", "../../../res/runtime/displacementmaps/bricks_displacement.png");
     Asset asset0(assets.find<Mesh>("cube"), assets.find_texture("bricks"), assets.find_normal_map("bricks_normal"), assets.find_parallax_map("bricks_parallax"), assets.find_displacement_map("bricks_displacement"));
     Asset asset1(assets.find_mesh("cube_lq"), assets.find_texture("bricks"), assets.find_normal_map("bricks_normal"), assets.find_parallax_map("bricks_parallax"));
     Asset asset2(assets.find_mesh("cube_lq"), assets.find_texture("bricks"), assets.find_normal_map("bricks_normal"));
     Asset asset3(assets.find_mesh("cube_lq"), assets.find_texture("bricks"));
-    Asset monkey_asset(assets.find_mesh("monkey"), assets.find_texture("bricks"));
+    Asset stone_floor(assets.find_mesh("cube_lq"), assets.find_texture("stone"), assets.find_normal_map("stone_normal"), assets.find_parallax_map("stone_parallax"));
+    Asset wooden_sphere(assets.find_mesh("sphere"), assets.find_texture("wood"), assets.find_normal_map("wood_normal"), assets.find_parallax_map("wood_parallax"));
+    Asset wooden_cylinder(assets.find_mesh("cylinder"), assets.find_texture("wood"), assets.find_normal_map("wood_normal"), assets.find_parallax_map("wood_parallax"));
 
     Shader gaussian_blur_shader("../../../src/shaders/GaussianBlur");
     Shader gui_bloom_shader("../../../src/shaders/Gui_HDRBloom");
@@ -91,25 +101,31 @@ void init()
     final_framebuffer.set_output_attachment({GL_COLOR_ATTACHMENT0});
 
     // This is the final panel.
-    wnd.emplace_child<Panel>(Vector2I{0, 0}, Vector2I{static_cast<int>(800.0f * (4.0f / 3.0f)), 800}, &output_texture);
+    Panel& window_panel = wnd.emplace_child<Panel>(Vector2I{0, 0}, Vector2I{static_cast<int>(800.0f * (4.0f / 3.0f)), 800}, &output_texture);
+    window_panel.set_local_dimensions_normalised_space({1.0f, 1.0f});
 
     Random rand;
     test_button.set_callback([&scene, &camera, &asset1]()
                              {
                                  scene.emplace_object(Transform{camera.position, {}, {10, 10, 10}}, asset1);
                              });
-
-    std::vector<StaticObject> objects;
-    for(float i = 0; i < 50000; i += 1.0f)
+    std::vector<StaticObject> floor_objects;
+    for(float i = 0; i < 36; i++)
     {
-        objects.emplace_back(Transform{Vector3F{rand.next_float(-1.0f, 1.0f), rand.next_float(-1.0f, 1.0f), rand.next_float(-1.0f, 1.0f)} * 5000.0f, {}, {5, 5, 5}}, asset2);
+        int index = static_cast<int>(i);
+        int dimensions = std::sqrt(36);
+        int row    = index / dimensions;
+        int column = index % dimensions;
+        const Vector3F scale{20, 1, 20};
+        const Vector3F offset{scale * dimensions};
+        floor_objects.emplace_back(Transform{Vector3F{(scale.x * row * 2), -100, (scale.z * column * 2)} - offset,
+                                       {},
+                                       scale}, stone_floor);
     }
-    scene.emplace<InstancedStaticObject>(objects);
-
-    StaticObject& monkey = scene.emplace_object(Transform{{}, {}, {100, 100, 100}}, monkey_asset);
-
-    scene.emplace_object(Transform{{-100, -700, 100}, {}, {100, 1, 100}}, asset1);
-    scene.emplace_object(Transform{{-200, -1000, 200}, {}, {200, 1, 200}}, asset1);
+    scene.emplace<InstancedStaticObject>(floor_objects);
+    scene.emplace<StaticObject>(Transform{{0, 0, 0}, {}, {15, 15, 15}}, wooden_sphere);
+    scene.emplace<StaticObject>(Transform{{100, 0, 0}, {}, {200, 200, 200}}, wooden_cylinder);
+    scene.emplace<StaticObject>(Transform{{0, -50, -70}, {}, {20, 20, 20}}, asset1);
 
     long long int time = tz::utility::time::now();
     Timer second_timer;
@@ -121,7 +137,6 @@ void init()
         // play with the HDR exposure and gamma.
         //hdr_gui_shader.set_uniform<float>("exposure", (1.1f + std::sin(x)));
         //hdr_gui_shader.set_uniform<float>("gamma", 1.0f);
-        monkey.transform.rotation.y = x;
         //scene.set_point_light(0, {{0, 0, 0}, {0, progress.get_progress(), 1 - progress.get_progress()}, 50000000.0f});
         profiler.begin_frame();
         second_timer.update();
