@@ -125,6 +125,7 @@ void main()
 	else
 	    normal_cameraspace = normalize((view_matrix * model_matrix * vec4(normal_modelspace, 0.0)).xyz);
 	vec3 texture_colour = texture(texture_sampler, parallaxed_texcoord).xyz;
+	fragment_colour = vec4(0.0f, 0.0f, 0.0f, 0.0f);
 	 // Directional Component camera light. disabled by default.
 	 /*
     DirectionalLight cam_light;

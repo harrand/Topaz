@@ -44,7 +44,7 @@ void init()
     camera.position = {0, 0, -50};
     Scene scene;
     //scene.add_point_light({{0, 0, 0}, {0, 1, 0}, 5000000.0f});
-    scene.add_directional_light({{0, 1, 0}, {1, 1, 1}, 5.0f});
+    scene.add_directional_light({{0, 1, 0}, {1, 1, 1}, 10.0f});
 
     AssetBuffer assets;
     assets.emplace<Mesh>("cube_lq", "../../../res/runtime/models/cube.obj");
@@ -61,6 +61,7 @@ void init()
     Asset monkey_asset(assets.find_mesh("monkey"), assets.find_texture("bricks"));
 
     Shader gaussian_blur_shader("../../../src/shaders/GaussianBlur");
+    Shader gui_bloom_shader("../../../src/shaders/Gui_HDRBloom");
     CubeMap skybox_texture("../../../res/runtime/textures/skybox/", "cwd", ".jpg");
     Shader skybox_shader("../../../src/shaders/Skybox");
     Skybox skybox("../../../res/runtime/models/skybox.obj", skybox_texture);
@@ -71,17 +72,25 @@ void init()
     Texture& hdr_texture = hdr_buffer.emplace_texture(GL_COLOR_ATTACHMENT0, wnd.get_width(), wnd.get_height(), tz::graphics::TextureComponent::HDR_COLOUR_TEXTURE);
     Texture& bloom_texture = hdr_buffer.emplace_texture(GL_COLOR_ATTACHMENT1, wnd.get_width(), wnd.get_height(), tz::graphics::TextureComponent::HDR_COLOUR_TEXTURE);
     hdr_buffer.set_output_attachment({GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1});
-    Panel& hdr_panel = wnd.emplace_child<Panel>(Vector2I{600, 0}, Vector2I{wnd.get_width(), wnd.get_height()}, &hdr_texture);
-    hdr_panel.uses_hdr = true;
+    //Panel& hdr_panel = wnd.emplace_child<Panel>(Vector2I{600, 0}, Vector2I{wnd.get_width(), wnd.get_height()}, &hdr_texture);
+    //hdr_panel.uses_hdr = true;
     ShadowMap depth_framebuffer{512, 512};
     // Uncomment this to render the depth texture.
     //wnd.emplace_child<Panel>(Vector2I{0, 600}, Vector2I{300, 300}, &depth_framebuffer.get_depth_texture());
     FrameBuffer bloom_buffer{wnd.get_width(), wnd.get_height()};
     bloom_buffer.emplace_renderbuffer(GL_DEPTH_ATTACHMENT, 512, 512, GL_DEPTH_COMPONENT);
-    Texture& blurred_bloom_texture = bloom_buffer.emplace_texture(GL_COLOR_ATTACHMENT0, wnd.get_width(), wnd.get_height(), tz::graphics::TextureComponent::HDR_COLOUR_TEXTURE);
+    Texture& blurred_bloom_texture = bloom_buffer.emplace_texture(GL_COLOR_ATTACHMENT0, wnd.get_width(), wnd.get_height(), tz::graphics::TextureComponent::COLOUR_TEXTURE);
+    bloom_buffer.set_output_attachment({GL_COLOR_ATTACHMENT0});
     // Uncomment this to render the bloom texture.
     //wnd.emplace_child<Panel>(Vector2I{0, 600}, Vector2I{300, 300}, &bloom_texture);
-    wnd.emplace_child<Panel>(Vector2I{0, 600}, Vector2I{300, 300}, &bloom_texture);
+    //Panel& blur_panel = wnd.emplace_child<Panel>(Vector2I{0, 600}, Vector2I{100, 100}, &blurred_bloom_texture);
+
+    FrameBuffer final_framebuffer{wnd.get_width(), wnd.get_height()};
+    final_framebuffer.emplace_renderbuffer(GL_DEPTH_ATTACHMENT, 512, 512, GL_DEPTH_COMPONENT);
+    Texture& output_texture = final_framebuffer.emplace_texture(GL_COLOR_ATTACHMENT0, wnd.get_width(), wnd.get_height(), tz::graphics::TextureComponent::COLOUR_TEXTURE);
+    final_framebuffer.set_output_attachment({GL_COLOR_ATTACHMENT0});
+
+    Panel& final_panel = wnd.emplace_child<Panel>(Vector2I{0, 0}, Vector2I{static_cast<int>(800.0f * (4.0f / 3.0f)), 800}, &output_texture);
 
     Random rand;
     test_button.set_callback([&scene, &camera, &asset1]()
@@ -148,11 +157,23 @@ void init()
         // dont render the skybox for now.
         //skybox.render(camera, skybox_shader, wnd.get_width(), wnd.get_height());
 
-        bloom_buffer.clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, 0.0f, 0.0f, 0.0f, 0.0f);
+        bloom_buffer.clear(GL_COLOR_BUFFER_BIT, 0.0f, 0.0f, 0.0f, 0.0f);
         bloom_buffer.set_render_target();
         // now render a simple quad using the unblurred bloom texture with the gaussian blur shader to blur the bright parts.
+        tz::graphics::gui_render_mode();
         Panel render_panel{Vector2I{0, 0}, Vector2I{wnd.get_width(), wnd.get_height()}, &bloom_texture};
-        render_panel.render(gaussian_blur_shader, wnd.get_width(), wnd.get_height());
+        for(std::size_t i = 0; i < 5; i++)
+        {
+            if(i == 1)
+                render_panel.set_texture(&blurred_bloom_texture);
+            render_panel.render(gaussian_blur_shader, wnd.get_width(), wnd.get_height());
+        }
+        final_framebuffer.clear(GL_COLOR_BUFFER_BIT, 0.0f, 0.0f, 0.1f, 0.0f);
+        final_framebuffer.set_render_target();
+        tz::graphics::gui_render_mode();
+        Panel another_render_panel{Vector2I{0, 0}, Vector2I{wnd.get_width(), wnd.get_height()}, &hdr_texture};
+        blurred_bloom_texture.bind(&gui_bloom_shader, 5, "bright_sampler");
+        another_render_panel.render(gui_bloom_shader, wnd.get_width(), wnd.get_height());
         wnd.set_render_target();
         wnd.clear();
         wnd.update(gui_shader, &hdr_gui_shader);

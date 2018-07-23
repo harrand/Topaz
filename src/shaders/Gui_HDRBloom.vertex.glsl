@@ -10,17 +10,15 @@ out vec3 vs_normal_modelspace;
 
 uniform mat4 model_matrix = mat4(1.0);
 
-void share();
-
-void main()
-{
-	share();
-	gl_Position = model_matrix * vec4(position, 1.0);
-}
-
 void share()
 {
 	vs_position_modelspace = position;
 	vs_texcoord_modelspace = texcoord;
 	vs_normal_modelspace = normal;
+}
+
+void main()
+{
+	share();
+	gl_Position = model_matrix * vec4(position, 1.0);
 }

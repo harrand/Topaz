@@ -32,4 +32,6 @@ void main()
         }
     }
     fragment_colour = vec4(result, 1.0);
+    //fragment_colour = texture(texture_sampler, vs_texcoord_modelspace);
+    //fragment_colour = vec4(1, 0, 0, 1);
 }
