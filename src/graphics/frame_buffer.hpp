@@ -87,6 +87,12 @@ public:
      */
     template<typename... Args>
     RenderBuffer& emplace_renderbuffer(GLenum attachment, Args&&... args);
+    int get_width() const;
+    int get_height() const;
+    Vector2I get_dimensions() const;
+    void set_width(int width);
+    void set_height(int height);
+    void set_dimensions(Vector2I dimensions);
     /**
     * Read-only access to all attachments to this FrameBuffer.
     * @return - Container of all attachments and the Texture/RenderBuffer serving the attachment

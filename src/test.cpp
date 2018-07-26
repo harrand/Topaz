@@ -19,7 +19,6 @@ int main()
     return 0;
 }
 
-
 void init()
 {
     Window wnd("Topaz Development Window", 0, 30, 800, 600);
@@ -44,7 +43,6 @@ void init()
     camera.position = {0, 0, -50};
     Scene scene;
     scene.add_directional_light({{-0.2, 1, 0.2}, {1, 1, 1}, 2.0f});
-    scene.add_point_light({{100, 400, 0}, {1, 0, 0}, 50000.0f});
 
     AssetBuffer assets;
     assets.emplace<Mesh>("cube_lq", "../../../res/runtime/models/cube.obj");
@@ -71,24 +69,24 @@ void init()
     Asset wooden_cylinder(assets.find_mesh("cylinder"), assets.find_texture("wood"), assets.find_normal_map("wood_normal"), assets.find_parallax_map("wood_parallax"));
 
     Shader gaussian_blur_shader("../../../src/shaders/GaussianBlur");
-    Shader gui_bloom_shader("../../../src/shaders/Gui_HDRBloom");
+    Shader gui_bloom_shader("../../../src/shaders/Gui_Bloom");
     CubeMap skybox_texture("../../../res/runtime/textures/skybox/", "cwd", ".jpg");
     Shader skybox_shader("../../../src/shaders/Skybox");
     Skybox skybox("../../../res/runtime/models/skybox.obj", skybox_texture);
 
     Shader depth_shader("../../../src/shaders/Depth_Instanced");
     FrameBuffer hdr_buffer{wnd.get_width(), wnd.get_height()};
-    hdr_buffer.emplace_renderbuffer(GL_DEPTH_ATTACHMENT, 512, 512, GL_DEPTH_COMPONENT);
+    hdr_buffer.emplace_renderbuffer(GL_DEPTH_ATTACHMENT, wnd.get_width(), wnd.get_height(), GL_DEPTH_COMPONENT);
     Texture& hdr_texture = hdr_buffer.emplace_texture(GL_COLOR_ATTACHMENT0, wnd.get_width(), wnd.get_height(), tz::graphics::TextureComponent::HDR_COLOUR_TEXTURE);
     Texture& bloom_texture = hdr_buffer.emplace_texture(GL_COLOR_ATTACHMENT1, wnd.get_width(), wnd.get_height(), tz::graphics::TextureComponent::HDR_COLOUR_TEXTURE);
     hdr_buffer.set_output_attachment({GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1});
     //Panel& hdr_panel = wnd.emplace_child<Panel>(Vector2I{600, 0}, Vector2I{wnd.get_width(), wnd.get_height()}, &hdr_texture);
     //hdr_panel.uses_hdr = true;
-    ShadowMap depth_framebuffer{512, 512};
+    ShadowMap depth_framebuffer{wnd.get_width(), wnd.get_height()};
     // Uncomment this to render the depth texture.
     //wnd.emplace_child<Panel>(Vector2I{0, 600}, Vector2I{300, 300}, &depth_framebuffer.get_depth_texture());
     FrameBuffer bloom_buffer{wnd.get_width(), wnd.get_height()};
-    bloom_buffer.emplace_renderbuffer(GL_DEPTH_ATTACHMENT, 512, 512, GL_DEPTH_COMPONENT);
+    bloom_buffer.emplace_renderbuffer(GL_DEPTH_ATTACHMENT, wnd.get_width(), wnd.get_height(), GL_DEPTH_COMPONENT);
     Texture& blurred_bloom_texture = bloom_buffer.emplace_texture(GL_COLOR_ATTACHMENT0, wnd.get_width(), wnd.get_height(), tz::graphics::TextureComponent::COLOUR_TEXTURE);
     bloom_buffer.set_output_attachment({GL_COLOR_ATTACHMENT0});
     // Uncomment this to render the bloom texture.
@@ -96,12 +94,12 @@ void init()
     //Panel& blur_panel = wnd.emplace_child<Panel>(Vector2I{0, 600}, Vector2I{100, 100}, &blurred_bloom_texture);
 
     FrameBuffer final_framebuffer{wnd.get_width(), wnd.get_height()};
-    final_framebuffer.emplace_renderbuffer(GL_DEPTH_ATTACHMENT, 512, 512, GL_DEPTH_COMPONENT);
+    final_framebuffer.emplace_renderbuffer(GL_DEPTH_ATTACHMENT, wnd.get_width(), wnd.get_height(), GL_DEPTH_COMPONENT);
     Texture& output_texture = final_framebuffer.emplace_texture(GL_COLOR_ATTACHMENT0, wnd.get_width(), wnd.get_height(), tz::graphics::TextureComponent::COLOUR_TEXTURE);
     final_framebuffer.set_output_attachment({GL_COLOR_ATTACHMENT0});
 
     // This is the final panel.
-    Panel& window_panel = wnd.emplace_child<Panel>(Vector2I{0, 0}, Vector2I{static_cast<int>(800.0f * (4.0f / 3.0f)), 800}, &output_texture);
+    Panel& window_panel = wnd.emplace_child<Panel>(Vector2I{0, 0}, Vector2I{wnd.get_width(), wnd.get_height()}, &output_texture);
     window_panel.set_local_dimensions_normalised_space({1.0f, 1.0f});
 
     Random rand;
@@ -110,10 +108,11 @@ void init()
                                  scene.emplace_object(Transform{camera.position, {}, {10, 10, 10}}, asset1);
                              });
     std::vector<StaticObject> floor_objects;
-    for(float i = 0; i < 36; i++)
+    constexpr int floor_size = 10000;
+    for(float i = 0; i < floor_size; i++)
     {
         int index = static_cast<int>(i);
-        int dimensions = std::sqrt(36);
+        int dimensions = std::sqrt(floor_size);
         int row    = index / dimensions;
         int column = index % dimensions;
         const Vector3F scale{20, 1, 20};

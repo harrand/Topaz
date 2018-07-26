@@ -15,6 +15,7 @@ Texture::Texture(int width, int height, bool initialise_handle, tz::graphics::Te
 		switch(this->texture_component)
 		{
 			case tz::graphics::TextureComponent::COLOUR_TEXTURE:
+			    this->components = 4;
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -22,6 +23,7 @@ Texture::Texture(int width, int height, bool initialise_handle, tz::graphics::Te
 				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, this->width, this->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 				break;
 			case tz::graphics::TextureComponent::HDR_COLOUR_TEXTURE:
+			    this->components = 4;
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -29,6 +31,7 @@ Texture::Texture(int width, int height, bool initialise_handle, tz::graphics::Te
 				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, this->width, this->height, 0, GL_RGBA, GL_FLOAT, NULL);
 				break;
 			case tz::graphics::TextureComponent::DEPTH_TEXTURE:
+			    this->components = 1;
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -228,7 +231,19 @@ bool Texture::has_bitmap() const
 
 Bitmap<PixelRGBA> Texture::get_bitmap() const
 {
-	return this->bitmap.value_or(Bitmap<PixelRGBA>());
+	if(this->bitmap.has_value())
+		return this->bitmap.value();
+	else
+	{
+		std::vector<PixelRGBA> pixels;
+		std::vector<GLubyte> pixel_data;
+		pixel_data.resize(this->components * this->width * this->height);
+		pixels.reserve(pixel_data.size());
+        glGetTextureImage(this->texture_handle, 0, GL_RGBA, GL_UNSIGNED_BYTE, sizeof(GLubyte) * pixel_data.size(), pixel_data.data());
+        for(std::size_t i = 0; i < pixel_data.size(); i += 4)
+			pixels.emplace_back(pixel_data[i], pixel_data[i + 1], pixel_data[i + 2], pixel_data[i + 3]);
+		return {pixels, this->width, this->height};
+	}
 }
 
 tz::graphics::TextureComponent Texture::get_texture_component() const

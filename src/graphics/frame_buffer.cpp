@@ -29,6 +29,37 @@ FrameBuffer::~FrameBuffer()
     glDeleteFramebuffers(1, &(this->framebuffer_handle));
 }
 
+int FrameBuffer::get_width() const
+{
+    return this->width;
+}
+
+int FrameBuffer::get_height() const
+{
+    return this->height;
+}
+
+Vector2I FrameBuffer::get_dimensions() const
+{
+    return {this->get_width(), this->get_height()};
+}
+
+void FrameBuffer::set_width(int width)
+{
+    this->width = width;
+}
+
+void FrameBuffer::set_height(int height)
+{
+    this->height = height;
+}
+
+void FrameBuffer::set_dimensions(Vector2I dimensions)
+{
+    this->set_width(dimensions.x);
+    this->set_height(dimensions.y);
+}
+
 const std::unordered_map<GLenum, std::variant<Texture, RenderBuffer>>& FrameBuffer::get_attachments() const
 {
     return this->attachments;

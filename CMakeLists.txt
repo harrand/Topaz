@@ -5,6 +5,7 @@ set(CMAKE_CXX_STANDARD 17)
 include_directories(topaz ${PROJECT_SOURCE_DIR}/inc)
 include_directories(topaz ${PROJECT_SOURCE_DIR}/src)
 link_directories(${PROJECT_SOURCE_DIR}/lib)
+add_definitions( -O3 )
 add_library(topaz SHARED
         src/audio/audio.cpp
         src/audio/audio.hpp
