@@ -222,7 +222,7 @@ public:
      * Get a container of all the GUI elements that are direct children of this Window.
      * @return - Container of all children
      */
-    std::unordered_set<GUI*> get_children() const;
+    std::vector<GUI*> get_children() const;
     /**
      * Construct a GUI element in-place to be a child of this Window.
      * @tparam GUIType - The type of the GUI element (e.g Panel)

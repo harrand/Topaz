@@ -5,20 +5,26 @@ GUI::GUI(Vector2I position_local_pixel_space, Vector2I dimensions_local_pixel_sp
 
 void GUI::update()
 {
+    for(auto i = this->children.rbegin(); i != this->children.rend(); i++)
+        (*i)->update();
+    /*
     for(GUI* child : this->children)
         child->update();
+    */
 }
 
 void GUI::destroy()
 {
-    if(this->parent->children.erase(this) > 0)
+    bool contained_stack = std::find(this->parent->children.begin(), this->parent->children.end(), this) != this->parent->children.end();
+    this->parent->children.erase(std::find(this->parent->children.begin(), this->parent->children.end(), this));
+    if(contained_stack)
         return;
     for(auto& heap_child_shared : this->parent->heap_children)
     {
         GUI* heap_child = heap_child_shared.get();
         if (heap_child == this)
         {
-            this->parent->heap_children.erase(heap_child_shared);
+            this->parent->heap_children.erase(std::find(this->parent->heap_children.begin(), this->parent->heap_children.end(), heap_child_shared));
             return;
         }
     }
@@ -26,8 +32,13 @@ void GUI::destroy()
 
 void GUI::render(Shader& shader, int window_width_pixels, int window_height_pixels) const
 {
+    auto children = this->get_children();
+    for(auto i = children.crbegin(); i != children.crend(); i++)
+        (*i)->render(shader, window_width_pixels, window_height_pixels);
+    /*
     for(const GUI* child : this->get_children())
         child->render(shader, window_width_pixels, window_height_pixels);
+    */
 }
 
 int GUI::get_x() const
@@ -108,14 +119,14 @@ void GUI::set_parent(GUI* new_parent)
 {
     GUI* old_parent = this->parent;
     this->parent = new_parent;
-    old_parent->children.erase(this);
+    old_parent->children.erase(std::find(old_parent->children.begin(), old_parent->children.end(), this));
 }
 
-std::unordered_set<GUI*> GUI::get_children() const
+std::vector<GUI*> GUI::get_children() const
 {
-    std::unordered_set<GUI*> set = this->children;
+    std::vector<GUI*> set = this->children;
     for(const auto& heap_child : this->heap_children)
-        set.insert(heap_child.get());
+        set.push_back(heap_child.get());
     return set;
 }
 
@@ -123,7 +134,8 @@ bool GUI::add_child(GUI* gui)
 {
     if(gui == nullptr)
         return false;
-    return this->children.insert(gui).second;
+    this->children.push_back(gui);
+    return std::find(this->children.begin(), this->children.end(), gui) != this->children.end();
 }
 
 // private helpers
@@ -183,10 +195,10 @@ GUI* GUI::get_root() const
     return root;
 }
 
-std::unordered_set<GUI*> GUI::get_descendants()
+std::vector<GUI*> GUI::get_descendants()
 {
     std::stack<GUI*> gui_stack;
-    std::unordered_set<GUI*> descendants;
+    std::vector<GUI*> descendants;
     gui_stack.push(this);
     while(!gui_stack.empty())
     {
@@ -195,18 +207,18 @@ std::unordered_set<GUI*> GUI::get_descendants()
         for(GUI* child : current->get_children())
         {
             gui_stack.push(child);
-            descendants.insert({child});
+            descendants.push_back(child);
         }
     }
     return descendants;
 }
 
-std::unordered_set<GUI*> GUI::get_youngest_descendants()
+std::vector<GUI*> GUI::get_youngest_descendants()
 {
-    std::unordered_set<GUI*> youngs;
+    std::vector<GUI*> youngs;
     for(GUI* descendant : this->get_descendants())
         if(descendant->get_children().empty()) // add to youngs if the descendant has no children
-            youngs.insert(descendant);
+            youngs.push_back(descendant);
     return youngs;
 }
 

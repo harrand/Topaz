@@ -4,7 +4,7 @@
 #include "graphics/shader.hpp"
 #include "graphics/camera.hpp"
 #include <SDL2/SDL.h>
-#include <unordered_set>
+#include <set>
 #include <memory>
 #include <variant>
 
@@ -90,13 +90,13 @@ public:
     float get_normalised_screen_height() const;
     GUI* get_parent() const;
     void set_parent(GUI* new_parent);
-    std::unordered_set<GUI*> get_children() const;
+    std::vector<GUI*> get_children() const;
     template<class GUIType, typename... Args>
     GUIType& emplace_child(Args&&... args);
     bool add_child(GUI* gui);
     GUI* get_root() const;
-    std::unordered_set<GUI*> get_descendants();
-    std::unordered_set<GUI*> get_youngest_descendants();
+    std::vector<GUI*> get_descendants();
+    std::vector<GUI*> get_youngest_descendants();
     template<template<typename> class Container>
     std::unordered_set<GUI*> get_occluders(const Container<GUI*>& gui_elements);
     template<template<typename> class Container>
@@ -105,8 +105,8 @@ public:
 protected:
     Vector2I position_local_pixel_space, dimensions_local_pixel_space;
     GUI* parent;
-    std::unordered_set<GUI*> children;
-    std::unordered_set<std::shared_ptr<GUI>> heap_children;
+    std::vector<GUI*> children;
+    std::vector<std::shared_ptr<GUI>> heap_children;
 };
 
 /**

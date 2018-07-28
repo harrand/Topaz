@@ -22,6 +22,7 @@ int main()
 void init()
 {
     Window wnd("Topaz Development Window", 0, 30, 800, 600);
+    wnd.set_swap_interval_type(Window::SwapIntervalType::VSYNC);
     // During init, enable debug output
     Font font("../../../res/runtime/fonts/CaviarDreams.ttf", 36);
     Label& label = wnd.emplace_child<Label>(Vector2I{0, 0}, font, Vector3F{0.0f, 0.3f, 0.0f}, " ");

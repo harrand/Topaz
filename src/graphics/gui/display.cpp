@@ -79,6 +79,7 @@ void Label::render(Shader& shader, int window_width_pixels, int window_height_pi
     shader.update();
     this->mesh.render(false);
     GUI::render(shader, window_width_pixels, window_height_pixels);
+
 }
 
 const std::string& Label::get_text() const

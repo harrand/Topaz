@@ -53,6 +53,17 @@ void Window::update(Shader& gui_shader, Shader* hdr_gui_shader)
 {
     tz::graphics::gui_render_mode();
     this->window_gui_element.dimensions_local_pixel_space = this->dimensions_pixel_space;
+    auto children = this->get_children();
+    for(auto i = children.crbegin(); i != children.crend(); i++)
+    {
+        auto child = *i;
+        if (child->uses_hdr && hdr_gui_shader != nullptr)
+            child->render(*hdr_gui_shader, this->get_width(), this->get_height());
+        else
+            child->render(gui_shader, this->get_width(), this->get_height());
+        child->update();
+    }
+    /*
     for(GUI* child : this->get_children())
     {
         if(child->uses_hdr && hdr_gui_shader != nullptr)
@@ -61,6 +72,7 @@ void Window::update(Shader& gui_shader, Shader* hdr_gui_shader)
             child->render(gui_shader, this->get_width(), this->get_height());
         child->update();
     }
+     */
     SDL_GL_SwapWindow(this->sdl_window);
     SDL_Event evt;
     while(SDL_PollEvent(&evt))
@@ -270,11 +282,11 @@ void Window::deregister_listener(Listener& l)
     this->registered_listeners.erase(std::remove(this->registered_listeners.begin(), this->registered_listeners.end(), &l), this->registered_listeners.end());
 }
 
-std::unordered_set<GUI*> Window::get_children() const
+std::vector<GUI*> Window::get_children() const
 {
-    std::unordered_set<GUI*> set = this->window_gui_element.children;
+    std::vector<GUI*> set = this->window_gui_element.children;
     for(const auto& heap_child : this->window_gui_element.heap_children)
-        set.insert(heap_child.get());
+        set.push_back(heap_child.get());
     return set;
 }
 
@@ -282,12 +294,12 @@ bool Window::add_child(GUI* gui)
 {
     if(gui == nullptr)
         return false;
-    auto pair = this->window_gui_element.children.insert(gui);
+    this->window_gui_element.children.push_back(gui);
     if(gui != &this->window_gui_element)
         gui->parent = &this->window_gui_element;
     else
         gui->parent = nullptr;
-    return pair.second;
+    return std::find(this->window_gui_element.children.begin(), this->window_gui_element.children.end(), gui) != this->window_gui_element.children.end();
 }
 
 MessageBox::MessageBox(tz::gui::MessageBoxType type, std::string title, std::string message, Window* parent): type(type), title(title), message(message), parent(parent){}
