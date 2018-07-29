@@ -3,15 +3,21 @@
 #include "utility/generic.hpp"
 
 template<unsigned int N, typename T>
-constexpr Vector<N, T>::Vector(std::array<T, N> data): data(data){}
+constexpr Vector<N, T>::Vector(std::array<T, N> underlying_data): underlying_data(underlying_data){}
 
 template<unsigned int N, typename T>
 T Vector<N, T>::length(std::function<T(T)> sqrt_function) const
 {
 	T squared_total = T();
-	for(const auto& value : this->data)
+	for(const auto& value : this->underlying_data)
 		squared_total += value * value;
 	return sqrt_function(squared_total);
+}
+
+template<unsigned int N, typename T>
+const std::array<T, N>& Vector<N, T>::data() const
+{
+    return this->underlying_data;
 }
 
 template<unsigned int N, typename T>
@@ -20,7 +26,7 @@ Vector<N, T>::operator std::string() const
     std::string res = "[";
     for(unsigned int i = 0; i < N; i++)
     {
-        res += tz::utility::generic::cast::to_string(this->data[i]);
+        res += tz::utility::generic::cast::to_string(this->underlying_data[i]);
         if(i != N - 1)
             res += ", ";
     }
@@ -36,7 +42,7 @@ std::ostream& operator<<(std::ostream& os, const Vector<N, T>& vector)
 }
 
 template<typename T>
-constexpr Vector2<T>::Vector2(T x, T y): Vector<2, T>({x, y}), x(this->data[0]), y(this->data[1]){}
+constexpr Vector2<T>::Vector2(T x, T y): Vector<2, T>({x, y}), x(this->underlying_data[0]), y(this->underlying_data[1]){}
 template<typename T>
 constexpr Vector2<T>::Vector2(const std::array<T, 2>& data): Vector2<T>(data[0], data[1]){}
 
@@ -44,23 +50,14 @@ template<typename T>
 Vector2<T>::Vector2(const Vector2<T>& copy): Vector2<T>(copy.x, copy.y){}
 
 template<typename T>
-Vector2<T>::Vector2(Vector2<T>&& move): Vector<2, T>(std::move(move.data)), x(this->data[0]), y(this->data[1]){}
+Vector2<T>::Vector2(Vector2<T>&& move): Vector<2, T>(std::move(move.underlying_data)), x(this->underlying_data[0]), y(this->underlying_data[1]){}
 
 template<typename T>
 Vector2<T>& Vector2<T>::operator=(const Vector2<T>& rhs)
 {
 	/// this->x and this->y should still refer to this->data[0] and this->data[1] respectively.
-	this->data = rhs.data;
+	this->underlying_data = rhs.underlying_data;
 	return *(this);
-}
-
-template<typename T>
-Vector2POD Vector2<T>::to_raw() const
-{
-	Vector2POD raw;
-	raw.x = this->x;
-	raw.y = this->y;
-	return raw;
 }
 
 template<typename T>
@@ -186,7 +183,7 @@ Vector2<T> Vector2<T>::yx() const
 }
 
 template<typename T>
-constexpr Vector3<T>::Vector3(T x, T y, T z): Vector<3, T>({x, y, z}), x(this->data[0]), y(this->data[1]), z(this->data[2]){}
+constexpr Vector3<T>::Vector3(T x, T y, T z): Vector<3, T>({x, y, z}), x(this->underlying_data[0]), y(this->underlying_data[1]), z(this->underlying_data[2]){}
 template<typename T>
 constexpr Vector3<T>::Vector3(Vector2<T> xy, T z): Vector3<T>(xy.x, xy.y, z){}
 template<typename T>
@@ -198,24 +195,14 @@ template<typename T>
 Vector3<T>::Vector3(const Vector3<T>& copy): Vector3<T>(copy.x, copy.y, copy.z){}
 
 template<typename T>
-Vector3<T>::Vector3(Vector3<T>&& move): Vector<3, T>(std::move(move.data)), x(this->data[0]), y(this->data[1]), z(this->data[2]){}
+Vector3<T>::Vector3(Vector3<T>&& move): Vector<3, T>(std::move(move.underlying_data)), x(this->underlying_data[0]), y(this->underlying_data[1]), z(this->underlying_data[2]){}
 
 template<typename T>
 Vector3<T>& Vector3<T>::operator=(const Vector3<T>& rhs)
 {
 	/// this->x and this->y should still refer to this->data[0] and this->data[1] respectively.
-	this->data = rhs.data;
+	this->underlying_data = rhs.underlying_data;
 	return *(this);
-}
-
-template<typename T>
-Vector3POD Vector3<T>::to_raw() const
-{
-	Vector3POD raw;
-	raw.x = this->x;
-	raw.y = this->y;
-	raw.z = this->z;
-	return raw;
 }
 
 template<typename T>
@@ -386,7 +373,7 @@ Vector3<T> Vector3<T>::zyx() const
 }
 
 template<typename T>
-constexpr Vector4<T>::Vector4(T x, T y, T z, T w): Vector<4, T>({x, y, z, w}), x(this->data[0]), y(this->data[1]), z(this->data[2]), w(this->data[3]){}
+constexpr Vector4<T>::Vector4(T x, T y, T z, T w): Vector<4, T>({x, y, z, w}), x(this->underlying_data[0]), y(this->underlying_data[1]), z(this->underlying_data[2]), w(this->underlying_data[3]){}
 template<typename T>
 constexpr Vector4<T>::Vector4(Vector3<T> xyz, T w): Vector4<T>(xyz.x, xyz.y, xyz.z, w){}
 template<typename T>
@@ -400,24 +387,13 @@ template<typename T>
 Vector4<T>::Vector4(const Vector4<T>& copy): Vector4<T>(copy.x, copy.y, copy.z, copy.w){}
 
 template<typename T>
-Vector4<T>::Vector4(Vector4<T>&& move): Vector<4, T>(std::move(move.data)), x(this->data[0]), y(this->data[1]), z(this->data[2]), w(this->data[3]){}
+Vector4<T>::Vector4(Vector4<T>&& move): Vector<4, T>(std::move(move.underlying_data)), x(this->underlying_data[0]), y(this->underlying_data[1]), z(this->underlying_data[2]), w(this->underlying_data[3]){}
 
 template<typename T>
 Vector4<T>& Vector4<T>::operator=(const Vector4<T>& rhs)
 {
-	this->data = rhs.data;
+	this->underlying_data = rhs.underlying_data;
 	return *(this);
-}
-
-template<typename T>
-Vector4POD Vector4<T>::to_raw() const
-{
-	Vector4POD raw;
-	raw.x = this->x;
-	raw.y = this->y;
-	raw.z = this->z;
-	raw.w = this->w;
-	return raw;
 }
 
 template<typename T>

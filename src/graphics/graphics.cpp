@@ -22,6 +22,7 @@ Font& Font::operator=(Font rhs)
 	std::swap(this->font_path, rhs.font_path);
 	std::swap(this->pixel_height, rhs.pixel_height);
 	std::swap(this->font_handle, rhs.font_handle);
+	return *this;
 }
 
 Font& Font::operator=(Font&& rhs)

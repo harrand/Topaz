@@ -40,7 +40,7 @@ void TextField::on_key_down(const std::string& keyname)
         this->text.set_text(this->text.get_text() + key);
 }
 
-void TextField::on_key_up(const std::string& keyname)
+void TextField::on_key_up([[maybe_unused]] const std::string& keyname)
 {
 
 }

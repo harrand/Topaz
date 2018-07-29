@@ -83,7 +83,7 @@ void init()
     hdr_buffer.set_output_attachment({GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1});
     //Panel& hdr_panel = wnd.emplace_child<Panel>(Vector2I{600, 0}, Vector2I{wnd.get_width(), wnd.get_height()}, &hdr_texture);
     //hdr_panel.uses_hdr = true;
-    ShadowMap depth_framebuffer{wnd.get_width(), wnd.get_height()};
+    ShadowMap depth_framebuffer{1024, 1024};
     // Uncomment this to render the depth texture.
     //wnd.emplace_child<Panel>(Vector2I{0, 600}, Vector2I{300, 300}, &depth_framebuffer.get_depth_texture());
     FrameBuffer bloom_buffer{wnd.get_width(), wnd.get_height()};

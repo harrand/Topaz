@@ -150,6 +150,7 @@ std::variant<Vector2I, Vector2F> GUI::get_local_position(tz::gui::ScreenSpace sc
         case ScreenSpace::NORMALISED:
             return tz::util::gui::to_normalised_screen_space(this->position_local_pixel_space, resolution);
     }
+    return this->position_local_pixel_space;
 }
 
 Vector2I GUI::get_local_position_pixel_space() const
@@ -175,6 +176,7 @@ std::variant<Vector2I, Vector2F> GUI::get_screen_position(tz::gui::ScreenSpace s
         case tz::gui::ScreenSpace::NORMALISED:
             return std::get<Vector2F>(this->parent->get_screen_position(screen_space)) + std::get<Vector2F>(this->get_local_position(screen_space));
     }
+    return std::get<Vector2I>(this->parent->get_screen_position(screen_space)) + std::get<Vector2I>(this->get_local_position(screen_space));
 }
 
 Vector2I GUI::get_screen_position_pixel_space() const

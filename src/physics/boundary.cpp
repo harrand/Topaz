@@ -111,7 +111,6 @@ Frustum::Frustum(Vector3F camera_position, Vector3F camera_view, float fov, floa
 	this->far_plane_size.y = this->far_plane_size.x * this->aspect_ratio;
 	Camera temporary_camera(this->camera_position, this->camera_view, this->fov, this->near_clip, this->far_clip);
 	/// Camera axes:
-	Vector3F Z = temporary_camera.backward();
 	Vector3F X = temporary_camera.right();
     Vector3F Y = temporary_camera.up();
     /// Compute centre of near_plane and far_plane.

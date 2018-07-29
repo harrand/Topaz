@@ -5,45 +5,6 @@
 #include <cmath>
 
 /**
-*C-style POD struct for a Vector2F
-*/
-struct Vector2POD
-{
-	/// x-component
-	float x;
-	/// y-component
-	float y;
-};
-
-/**
- * C-style POD struct for a Vector3F
- */
-struct Vector3POD
-{
-	/// x-component
-	float x;
-	/// y-component
-	float y;
-	/// z-component
-	float z;
-};
-
-/**
- * C-style POD struct for a Vector4F
- */
-struct Vector4POD
-{
-    /// x-component
-    float x;
-    /// y-component
-    float y;
-    /// z-component
-    float z;
-    /// w-component
-	float w;
-};
-
-/**
  * Vector to hold a quantity of some value. It's a glorified array.
  * @tparam N - Number of elements
  * @tparam T - Type of element
@@ -56,13 +17,14 @@ public:
 	 * Construct a Vector directly from an array.
 	 * @param data - The data to be copied into the vector.
 	 */
-	constexpr Vector(std::array<T, N> data);
+	constexpr Vector(std::array<T, N> underlying_data);
 	/**
 	 * Return magnitude of the Vector.
 	 * @param sqrt_function - The function to use to perform a square-root on the type T. If none is provided, the default std::sqrt will be used.
 	 * @return - Magnitude of the Vector.
 	 */
 	T length(std::function<T(T)> sqrt_function = std::sqrt) const;
+	const std::array<T, N>& data() const;
 	/**
 	 * Explicitly convert to a string.
 	 * @return String in the following format: "[d0, d1, ...]"
@@ -70,7 +32,7 @@ public:
 	explicit operator std::string() const;
 
 	/// Array representing the underlying data.
-	std::array<T, N> data;
+	std::array<T, N> underlying_data;
 };
 
 
@@ -113,13 +75,6 @@ public:
 	 * @return - This, after assignment
 	 */
 	Vector2<T>& operator=(const Vector2<T>& rhs);
-
-	/**
-	 * Converts the Vector2 to a POD type (if convertible).
-	 * This is useful because sizeof(Vector2<T>) != 2 * sizeof(T)
-	 * @return - The POD type packed only with the data.
-	 */
-	Vector2POD to_raw() const;
 	/**
 	 * Find the magnitude of the 2-dimensional Vector.
 	 * @return - Magnitude of the 2-dimensional Vector.
@@ -230,7 +185,7 @@ public:
     /// References the second element in the data array.
 	T& y;
 private:
-    using Vector<2, T>::data;
+    using Vector<2, T>::underlying_data;
 };
 
 /**
@@ -282,13 +237,6 @@ public:
      * @return - This, after assignment
      */
 	Vector3<T>& operator=(const Vector3<T>& rhs);
-
-	/**
-	 * Converts the Vector3 to a POD type (if convertible).
-	 * This is useful because sizeof(Vector3<T>) != 3 * sizeof(T)
-	 * @return - The POD type packed only with the data.
-	 */
-	Vector3POD to_raw() const;
 	/**
 	 * Find the magnitude of the 3-dimensional Vector.
 	 * @return - Magnitude of the 3-dimensional Vector.
@@ -437,7 +385,7 @@ public:
     /// References the third element in the data array.
     T& z;
 private:
-    using Vector<3, T>::data;
+    using Vector<3, T>::underlying_data;
 };
 
 /**
@@ -496,13 +444,6 @@ public:
      * @return - This, after assignment
      */
 	Vector4<T>& operator=(const Vector4<T>& rhs);
-
-	/**
-	 * Converts the Vector4 to a POD type (if convertible).
-	 * This is useful because sizeof(Vector4<T>) != 4 * sizeof(T)
-	 * @return - The POD type packed only with the data.
-	 */
-	Vector4POD to_raw() const;
 	/**
 	 * Find the magnitude of the 4-dimensional Vector.
 	 * @return - Magnitude of the 4-dimensional Vector.
@@ -767,7 +708,7 @@ public:
     /// References the fourth element in the data array.
 	T& w;
 private:
-    using Vector<4, T>::data;
+    using Vector<4, T>::underlying_data;
 };
 
 #include "vector.inl"

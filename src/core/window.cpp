@@ -85,7 +85,6 @@ void Window::update(Shader& gui_shader, Shader* hdr_gui_shader)
         {
             if (evt.window.event == SDL_WINDOWEVENT_RESIZED || evt.window.event == SDL_WINDOWEVENT_SIZE_CHANGED)
             {
-                int w, h;
                 SDL_GL_GetDrawableSize(this->sdl_window, &(this->dimensions_pixel_space.x), &(this->dimensions_pixel_space.y));
                 //update the glViewport, so that OpenGL knows the new window size
                 glViewport(0, 0, this->get_width(), this->get_height());
@@ -106,6 +105,7 @@ std::variant<Vector2I, Vector2F> Window::get_position(tz::gui::ScreenSpace scree
         case ScreenSpace::NORMALISED:
             return tz::util::gui::to_normalised_screen_space(this->position_pixel_space);
     }
+    return this->position_pixel_space;
 }
 
 Vector2I Window::get_position_pixels() const
@@ -143,6 +143,7 @@ std::variant<Vector2I, Vector2F> Window::get_dimensions(tz::gui::ScreenSpace scr
         case ScreenSpace::NORMALISED:
             return tz::util::gui::to_normalised_screen_space(this->dimensions_pixel_space);
     }
+    return this->dimensions_pixel_space;
 }
 
 Vector2I Window::get_dimensions_pixels() const

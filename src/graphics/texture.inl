@@ -46,10 +46,10 @@ Texture::Texture(Bitmap<Pixel> pixel_data): Texture(pixel_data.width, pixel_data
 	std::vector<unsigned char> image_data;
 	for(const auto& pixel : pixel_data.pixels)
 	{
-		image_data.push_back(pixel.data.data[0]);
-		image_data.push_back(pixel.data.data[1]);
-		image_data.push_back(pixel.data.data[2]);
-		image_data.push_back(pixel.data.data[3]);
+		image_data.push_back(pixel.data.underlying_data[0]);
+		image_data.push_back(pixel.data.underlying_data[1]);
+		image_data.push_back(pixel.data.underlying_data[2]);
+		image_data.push_back(pixel.data.underlying_data[3]);
 	}
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);

@@ -141,22 +141,22 @@ void Mesh::init_mesh()
 	using tz::graphics::BufferTypes;
 	// Our vector class is not "c-enough" (contains stuff like protected variables which C structs don't support. Therefore we use VectorSXF instead which can work with OpenGL easily.
 	// However our indices vector from model is fine as-is.
-	std::vector<Vector3POD> positions;
+	std::vector<std::array<float, 3>> positions;
 	positions.reserve(this->get_positions().size());
-    std::vector<Vector2POD> texcoords;
+    std::vector<std::array<float, 2>> texcoords;
 	texcoords.reserve(this->get_texcoords().size());
-    std::vector<Vector3POD> normals;
+    std::vector<std::array<float, 3>> normals;
 	normals.reserve(this->get_normals().size());
-	std::vector<Vector3POD> tangents;
+	std::vector<std::array<float, 3>> tangents;
 	tangents.reserve(this->get_tangents().size());
 	for(auto vec : this->get_positions())
-		positions.push_back(vec.to_raw());
+		positions.push_back(vec.data());
 	for(auto vec : this->get_texcoords())
-		texcoords.push_back(vec.to_raw());
+		texcoords.push_back(vec.data());
 	for(auto vec : this->get_normals())
-		normals.push_back(vec.to_raw());
+		normals.push_back(vec.data());
 	for(auto vec : this->get_tangents())
-		tangents.push_back(vec.to_raw());
+		tangents.push_back(vec.data());
 
 	glGenVertexArrays(1, &(this->vertex_array_object));
 	glBindVertexArray(this->vertex_array_object);
@@ -214,13 +214,13 @@ InstancedMesh::InstancedMesh(std::string filename, std::vector<Vector3F> positio
     }
 
     // Foreach model matrix, populate each row so they can be individually sent to VRAM.
-    std::vector<Vector4POD> xs, ys, zs, ws;
+    std::vector<std::array<float, 4>> xs, ys, zs, ws;
     for(Matrix4x4 model : this->models)
     {
-        xs.push_back(model.x.to_raw());
-        ys.push_back(model.y.to_raw());
-        zs.push_back(model.z.to_raw());
-        ws.push_back(model.w.to_raw());
+        xs.push_back(model.x.data());
+        ys.push_back(model.y.data());
+        zs.push_back(model.z.data());
+        ws.push_back(model.w.data());
     }
 
 	using namespace tz::utility; // tz::utility::generic::sizeof_element
