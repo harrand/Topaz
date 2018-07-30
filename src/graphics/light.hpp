@@ -3,6 +3,7 @@
 
 #include "data/matrix.hpp"
 #include "graphics/camera.hpp"
+#include "physics/boundary.hpp"
 
 class Light
 {
@@ -23,7 +24,7 @@ public:
     DirectionalLight(Vector3F direction = {}, Vector3F colour = {1, 1, 1}, float power = 1.0f);
     const Vector3F& get_direction() const;
     void set_direction(Vector3F direction);
-    Camera get_view() const;
+    Camera get_view(const AABB& scene_boundary) const;
 private:
     Vector3F direction;
 };

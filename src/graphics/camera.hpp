@@ -74,11 +74,7 @@ public:
 	 * @return - True if the Camera has a perspective projection. False otherwise
 	 */
 	bool has_perspective_projection() const;
-	/**
-	 * Specify whether the Camera should use a perspective projection or not.
-	 * @param perspective - State representing whether the Camera should use a perspective projection or not
-	 */
-	void set_has_perspective_projection(bool perspective);
+	void set_orthographic(float right, float left, float top, float bottom, float near, float far);
 	Matrix4x4 view() const;
 	/**
 	 * Create the Camera's projection matrix, given an aspect ratio which is (width / height).
@@ -100,6 +96,11 @@ public:
 	float far_clip;
 private:
 	/**
+	 * Specify whether the Camera should use a perspective projection or not.
+	 * @param perspective - State representing whether the Camera should use a perspective projection or not
+	 */
+	void set_has_perspective_projection(bool perspective);
+	/**
 	 * Generate a model-matrix as if the Camera was an Object. The view matrix is equal to the inverse of this matrix.
 	 * @return - Row-Major model-matrix of the Camera.
 	 */
@@ -108,6 +109,7 @@ private:
 	bool axis_bound;
 	/// Stores whether the Camera is using a perspective projection as opposed to an orthographic projection.
 	bool perspective;
+	float ortho_right, ortho_left, ortho_top, ortho_bottom, ortho_near, ortho_far;
 };
 
 #endif

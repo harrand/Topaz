@@ -50,6 +50,25 @@ std::vector<std::reference_wrapper<const StaticObject>> Scene::get_objects() con
     return object_crefs;
 }
 
+AABB Scene::get_boundary() const
+{
+    auto objects = this->get_objects();
+    if(objects.size() == 0)
+        return {{}, {}};
+    Vector3F min = objects.front().get().transform.position, max = objects.front().get().transform.position;
+    for(const StaticObject& object : objects)
+    {
+        min.x = std::min(min.x, object.transform.position.x);
+        min.y = std::min(min.y, object.transform.position.y);
+        min.z = std::min(min.z, object.transform.position.z);
+
+        max.x = std::max(max.x, object.transform.position.x);
+        max.y = std::max(max.y, object.transform.position.y);
+        max.z = std::max(max.z, object.transform.position.z);
+    }
+    return {min, max};
+}
+
 void Scene::add_object(StaticObject scene_object)
 {
     this->stack_objects.push_back(scene_object);

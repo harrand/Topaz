@@ -266,10 +266,10 @@ void Window::set_render_target() const
     glViewport(0, 0, this->dimensions_pixel_space.x, this->dimensions_pixel_space.y);
 }
 
-void Window::clear(GLbitfield mask, float r, float g, float b, float a) const
+void Window::clear(tz::graphics::BufferBit buffer_bit, float r, float g, float b, float a) const
 {
     glClearColor(r, g, b, a);
-    glClear(mask);
+    glClear(static_cast<GLbitfield>(buffer_bit));
 }
 
 void Window::register_listener(Listener& l)

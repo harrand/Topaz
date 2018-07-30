@@ -45,7 +45,6 @@ void GUIWidget::update()
         Vector3F dimensions_floating{static_cast<float>(this->dimensions_local_pixel_space.x), static_cast<float>(this->dimensions_local_pixel_space.y), 0.0f};
         AABB pixel_boundary{position_floating, position_floating + dimensions_floating};
         Vector3F mouse_position{this->mouse_listener->get_mouse_position(), 0.0f};
-        //std::cout << "mouse pos = " << mouse_position << "\n";
         if(pixel_boundary.intersects(mouse_position))
         {
             // the mouse is inside this GUI element, invoke GUIWidget::on_mouse_reside().

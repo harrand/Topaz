@@ -1,10 +1,16 @@
 #include "graphics/static_object.hpp"
+#include "physics/physics.hpp"
 
 StaticObject::StaticObject(Transform transform, Asset asset): transform(transform), asset(asset){}
 
 const Asset& StaticObject::get_asset() const
 {
     return this->asset;
+}
+
+AABB StaticObject::get_boundary() const
+{
+    return tz::physics::bound_aabb(*this->asset.mesh) * this->transform.model();
 }
 
 void StaticObject::render(Shader& render_shader, const Camera& camera, const Vector2I& viewport_dimensions) const

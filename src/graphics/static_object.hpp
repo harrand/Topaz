@@ -16,6 +16,7 @@ class StaticObject
 public:
     StaticObject(Transform transform, Asset asset);
     const Asset& get_asset() const;
+    AABB get_boundary() const;
     virtual void render(Shader& render_shader, const Camera& camera, const Vector2I& viewport_dimensions) const;
 
     Transform transform;

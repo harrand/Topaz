@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.9)
-project(topaz VERSION 0.6.0 DESCRIPTION "Cross-Platform Multimedia Engine")
+project(topaz VERSION 0.7.0 DESCRIPTION "Cross-Platform Multimedia Engine")
 set(CMAKE_BUILD_TYPE Release)
 set(CMAKE_CXX_STANDARD 17)
 set(TZ_COMPILE_FLAGS "-Wall -Wextra -pedantic-errors -O3")

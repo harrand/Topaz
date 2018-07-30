@@ -44,6 +44,11 @@ Vector3F Camera::right() const
 	return right_4.xyz().normalised();
 }
 
+void Camera::set_has_perspective_projection(bool perspective)
+{
+	this->perspective = perspective;
+}
+
 Matrix4x4 Camera::camera_matrix() const
 {
 	// act as if the camera is an object to put into (camera-perspective) world space. but only apply the y-rotation if axis is bound.
@@ -68,10 +73,17 @@ bool Camera::has_perspective_projection() const
 	return this->perspective;
 }
 
-void Camera::set_has_perspective_projection(bool perspective)
+void Camera::set_orthographic(float right, float left, float top, float bottom, float near, float far)
 {
-	this->perspective = perspective;
+	this->set_has_perspective_projection(false);
+	this->ortho_right = right;
+	this->ortho_left = left;
+	this->ortho_top = top;
+	this->ortho_bottom = bottom;
+	this->ortho_near = near;
+	this->ortho_far = far;
 }
+
 
 Matrix4x4 Camera::view() const
 {
@@ -83,12 +95,5 @@ Matrix4x4 Camera::projection(float width, float height) const
 	if(this->perspective)
 		return tz::transform::perspective_projection(this->fov, width, height, this->near_clip, this->far_clip);
 	else
-	{
-		float zoom = (width + height) * 0.25f * this->fov / tz::utility::numeric::consts::pi;
-		float aspect_ratio = width / height;
-		if (width >= height)
-			return tz::transform::orthographic_projection(zoom * aspect_ratio, -zoom * aspect_ratio, zoom, -zoom, this->near_clip, this->far_clip);
-		else
-			return tz::transform::orthographic_projection(zoom, -zoom, zoom / aspect_ratio, -zoom / aspect_ratio, this->near_clip, this->far_clip);
-	}
+		return tz::transform::orthographic_projection(this->ortho_right, this->ortho_left, this->ortho_top, this->ortho_bottom, this->ortho_near, this->ortho_far);
 }

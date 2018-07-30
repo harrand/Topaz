@@ -137,7 +137,7 @@ public:
      * @param b - Blue component of the clear-colour
      * @param a - Alpha component of the clear-colour
      */
-    void clear(GLbitfield mask = (GL_COLOR_BUFFER_BIT), float r = 0.0f, float g = 0.0f, float b = 0.0f, float a = 1.0f) const;
+    void clear(tz::graphics::BufferBit buffer_bit, float r = 0.0f, float g = 0.0f, float b = 0.0f, float a = 1.0f) const;
     /**
      * Bind and sets the viewpoint to this framebuffer.
      * This means that any render calls will apply to this framebuffer.
@@ -164,5 +164,4 @@ private:
 };
 
 #include "graphics/frame_buffer.inl"
-
 #endif //TOPAZ_FRAME_BUFFER_HPP

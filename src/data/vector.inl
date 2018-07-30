@@ -297,13 +297,13 @@ Vector3<T>& Vector3<T>::operator/=(const T& scalar)
 template<typename T>
 bool Vector3<T>::operator<(const Vector3<T>& rhs) const
 {
-	return this->length() < rhs.length();
+	return this->x < rhs.x && this->y < rhs.y && this->z < rhs.z;
 }
 
 template<typename T>
 bool Vector3<T>::operator>(const Vector3<T>& rhs) const
 {
-	return this->length() > rhs.length();
+	return this->x > rhs.x && this->y > rhs.y && this->z > rhs.z;
 }
 
 template<typename T>

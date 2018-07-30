@@ -118,7 +118,7 @@ void FrameBuffer::set_output_attachment(std::initializer_list<GLenum> attachment
         if (this->attachments.find(attachment) == this->attachments.cend() && attachment != GL_NONE) {
             std::cerr
                     << "FrameBuffer render attachment type has no corresponding attachment; setting to default (which is GL_COLOR_ATTACHMENT0).\n";
-            attachment = GL_COLOR_ATTACHMENT0;
+            attachments = {GL_COLOR_ATTACHMENT0};
         }
     }
     std::vector<GLenum> attachment_vector{attachments};
@@ -128,11 +128,11 @@ void FrameBuffer::set_output_attachment(std::initializer_list<GLenum> attachment
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void FrameBuffer::clear(GLbitfield mask, float r, float g, float b, float a) const
+void FrameBuffer::clear(tz::graphics::BufferBit buffer_bit, float r, float g, float b, float a) const
 {
     glBindFramebuffer(GL_FRAMEBUFFER, this->framebuffer_handle);
     glClearColor(r, g, b, a);
-    glClear(mask);
+    glClear(static_cast<GLbitfield>(buffer_bit));
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 

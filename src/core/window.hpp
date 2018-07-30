@@ -207,7 +207,7 @@ public:
 	 * @param b - Blueness of the background colour, between 0.0 and 1.0
 	 * @param a - Alpha intensity of the background colour, between 0.0 and 1.0
 	 */
-    void clear(GLbitfield mask = (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT), float r = 0.0f, float g = 0.0f, float b = 0.0f, float a = 1.0f) const;
+    void clear(tz::graphics::BufferBit buffer_bit = tz::graphics::BufferBit::COLOUR_AND_DEPTH, float r = 0.0f, float g = 0.0f, float b = 0.0f, float a = 1.0f) const;
     /**
      * Register an existing listener to this Window.
      * @param l - The polymorphic listener that this Window should administrate

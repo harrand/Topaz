@@ -9,6 +9,7 @@ public:
     virtual void render(Shader& render_shader, const Camera& camera, const Vector2I& viewport_dimensions) const;
     virtual void update(float delta_time);
     std::vector<std::reference_wrapper<const StaticObject>> get_objects() const;
+    AABB get_boundary() const;
     void add_object(StaticObject scene_object);
     template<class Element, typename... Args>
     Element& emplace(Args&&... args);
