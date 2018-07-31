@@ -5,7 +5,7 @@
 Texture::Texture():Texture(0, 0, false){}
 
 // This is private, to use this constructor, call it via Texture(int width, int height)
-Texture::Texture(int width, int height, bool initialise_handle, tz::graphics::TextureComponent texture_component): filename({}), texture_handle(0), width(width), height(height), components(0), texture_component(texture_component), gamma_corrected(false), bitmap({})
+Texture::Texture(int width, int height, bool initialise_handle, tz::graphics::TextureComponent texture_component): texture_handle(0), width(width), height(height), components(0), texture_component(texture_component), gamma_corrected(false), bitmap({})
 {
 	if(initialise_handle)
 	{
@@ -46,9 +46,9 @@ Texture::Texture(int width, int height, bool initialise_handle, tz::graphics::Te
 
 Texture::Texture(int width, int height, tz::graphics::TextureComponent texture_component): Texture(width, height, true, texture_component){}
 
-Texture::Texture(std::string filename, bool mipmapping, bool gamma_corrected, bool store_bitmap): filename(filename), texture_handle(0), width(0), height(0), components(0), gamma_corrected(gamma_corrected), bitmap({})
+Texture::Texture(std::string filename, bool mipmapping, bool gamma_corrected): texture_handle(0), width(0), height(0), components(0), gamma_corrected(gamma_corrected), bitmap({})
 {
-	unsigned char* imgdata = this->load_texture();
+	unsigned char* imgdata = this->load_texture(filename.c_str());
 	if(imgdata == nullptr)
 	{
 		std::cerr << "Texture from the path: '" << filename << "' could not be loaded.\n";
@@ -70,13 +70,10 @@ Texture::Texture(std::string filename, bool mipmapping, bool gamma_corrected, bo
 	if(mipmapping)
 		glGenerateMipmap(GL_TEXTURE_2D);
 
-	if(store_bitmap)
-	{
-		this->bitmap = Bitmap<PixelRGBA>();
-		this->bitmap.value().pixels.reserve(std::abs(this->width * this->height));
-		for(std::size_t i = 3; i < std::abs(this->width * this->height); i += 4)
-			this->bitmap.value().pixels.emplace_back(PixelRGBA{imgdata[i - 3], imgdata[i - 2], imgdata[i - 1], imgdata[i]});
-	}
+	this->bitmap = Bitmap<PixelRGBA>();
+	this->bitmap.pixels.reserve(static_cast<std::size_t>(std::abs(this->width * this->height)));
+	for(std::size_t i = 3; i < std::abs(this->width * this->height); i += 4)
+		this->bitmap.pixels.emplace_back(PixelRGBA{imgdata[i - 3], imgdata[i - 2], imgdata[i - 1], imgdata[i]});
 	this->delete_texture(imgdata);
 }
 
@@ -85,7 +82,7 @@ Texture::Texture(const Font& font, const std::string& text, SDL_Color foreground
 	if(font.font_handle == NULL)
 		std::cerr << "Texture attempted to load from an invalid font. Error: \"" << TTF_GetError() << "\".\n";
 	SDL_Surface* text_surface = TTF_RenderUTF8_Blended(font.font_handle, text.c_str(), foreground_colour);
-	GLint texture_format, bytes_per_pixel = text_surface->format->BytesPerPixel;
+	GLenum texture_format, bytes_per_pixel = text_surface->format->BytesPerPixel;
 	constexpr long mask = 0x000000ff;
 	this->width = text_surface->w;
 	this->height = text_surface->h;
@@ -114,43 +111,38 @@ Texture::Texture(const Font& font, const std::string& text, SDL_Color foreground
 	// if ctor parameter said to store the bitmap in RAM, then dewit. otherwise dont bother because it eats lots of ram and its in VRAM anyway
 	if(store_bitmap)
 	{
-		unsigned char* pixel_data = reinterpret_cast<unsigned char*>(text_surface->pixels);
+		auto pixel_data = reinterpret_cast<unsigned char*>(text_surface->pixels);
 		this->bitmap = Bitmap<PixelRGBA>();
-		this->bitmap.value().pixels.reserve(std::abs(this->width * this->height));
+		this->bitmap.pixels.reserve(static_cast<std::size_t>(std::abs(this->width * this->height)));
 		for(std::size_t i = 3; i < std::abs(this->width * this->height); i += 4)
 			switch(texture_format)
 			{
 				case GL_RGBA:
 				default:
-					this->bitmap.value().pixels.emplace_back(PixelRGBA{pixel_data[i - 3], pixel_data[i - 2], pixel_data[i - 1], pixel_data[i]});
+					this->bitmap.pixels.emplace_back(PixelRGBA{pixel_data[i - 3], pixel_data[i - 2], pixel_data[i - 1], pixel_data[i]});
 					break;
 				case GL_BGRA:
-					this->bitmap.value().pixels.emplace_back(PixelRGBA{pixel_data[i - 1], pixel_data[i - 2], pixel_data[i - 3], pixel_data[i]});
+					this->bitmap.pixels.emplace_back(PixelRGBA{pixel_data[i - 1], pixel_data[i - 2], pixel_data[i - 3], pixel_data[i]});
 					break;
 				case GL_RGB:
-					this->bitmap.value().pixels.emplace_back(PixelRGBA{pixel_data[i - 3], pixel_data[i - 2], pixel_data[i - 1], 255});
+					this->bitmap.pixels.emplace_back(PixelRGBA{pixel_data[i - 3], pixel_data[i - 2], pixel_data[i - 1], 255});
 					break;
 				case GL_BGR:
-					this->bitmap.value().pixels.emplace_back(PixelRGBA{pixel_data[i - 1], pixel_data[i - 2], pixel_data[i - 3], 255});
+					this->bitmap.pixels.emplace_back(PixelRGBA{pixel_data[i - 1], pixel_data[i - 2], pixel_data[i - 3], 255});
 					break;
 			}
 	}
 	SDL_FreeSurface(text_surface);
 }
 
-Texture::Texture(const Texture& copy)
+Texture::Texture(const Texture& copy): Texture(copy.width, copy.height, copy.get_texture_component())
 {
-	if(copy.has_file_name())
-		(*this) = Texture(copy.get_file_name());
-	else
-	{
-		(*this) = Texture(copy.width, copy.height);
-		this->bitmap = copy.bitmap;
-		glCopyImageSubData(copy.texture_handle, GL_TEXTURE_2D, 0, 0, 0, 0, this->texture_handle, GL_TEXTURE_2D, 0, 0, 0, 0, copy.width, copy.height, 1);
-	}
+	this->components = copy.components;
+	this->bitmap = copy.bitmap;
+	glCopyImageSubData(copy.texture_handle, GL_TEXTURE_2D, 0, 0, 0, 0, this->texture_handle, GL_TEXTURE_2D, 0, 0, 0, 0, copy.width, copy.height, 1);
 }
 
-Texture::Texture(Texture&& move): filename(move.filename), texture_handle(move.texture_handle), width(move.width), height(move.height), components(move.components)
+Texture::Texture(Texture&& move): texture_handle(move.texture_handle), width(move.width), height(move.height), components(move.components)
 {
 	move.texture_handle = 0;
 }
@@ -164,11 +156,13 @@ Texture::~Texture()
 Texture& Texture::operator=(Texture&& rhs)
 {
 	glDeleteTextures(1, &(this->texture_handle));
-	this->filename = rhs.filename;
 	this->texture_handle = rhs.texture_handle;
 	this->width = rhs.width;
 	this->height = rhs.height;
 	this->components = rhs.components;
+	this->texture_component = rhs.texture_component;
+	this->gamma_corrected = rhs.gamma_corrected;
+	this->bitmap = rhs.bitmap;
 	rhs.texture_handle = 0;
 	return *this;
 }
@@ -176,16 +170,6 @@ Texture& Texture::operator=(Texture&& rhs)
 void Texture::bind(Shader* shader, unsigned int id, const std::string& sampler_name) const
 {
 	this->bind_with_string(shader, id, sampler_name);
-}
-
-bool Texture::has_file_name() const
-{
-	return this->filename.has_value();
-}
-
-const std::string& Texture::get_file_name() const
-{
-	return this->filename.value();
 }
 
 int Texture::get_width() const
@@ -224,13 +208,10 @@ bool Texture::has_mipmap() const
 	return this->get_mipmap_type() != tz::graphics::MipmapType::NONE;
 }
 
-bool Texture::has_bitmap() const
+const Bitmap<PixelRGBA>& Texture::get_bitmap() const
 {
-	return this->bitmap.has_value();
-}
-
-Bitmap<PixelRGBA> Texture::get_bitmap() const
-{
+	return this->bitmap;
+	/*
 	if(this->bitmap.has_value())
 		return this->bitmap.value();
 	else
@@ -244,6 +225,7 @@ Bitmap<PixelRGBA> Texture::get_bitmap() const
 			pixels.emplace_back(pixel_data[i], pixel_data[i + 1], pixel_data[i + 2], pixel_data[i + 3]);
 		return {pixels, this->width, this->height};
 	}
+	*/
 }
 
 tz::graphics::TextureComponent Texture::get_texture_component() const
@@ -256,12 +238,9 @@ bool Texture::operator==(const Texture& rhs) const
 	return this->texture_handle == rhs.texture_handle;
 }
 
-unsigned char* Texture::load_texture()
+unsigned char* Texture::load_texture(const char* file_name)
 {
-	if(this->has_file_name())
-		return stbi_load((this->get_file_name()).c_str(), &(this->width), &(this->height), &(this->components), 4);
-	else
-		return nullptr;
+	return stbi_load(file_name, &(this->width), &(this->height), &(this->components), 4);
 }
 
 // Deleting texture as far as stb_image is concerned (We want to leave it alone when it's gone to the GPU)
@@ -284,7 +263,7 @@ void Texture::bind_with_string(Shader* shader, unsigned int id, const std::strin
 	shader->set_uniform<int>(sampler_uniform_name, id);
 }
 
-NormalMap::NormalMap(std::string filename): Texture(filename, false, false, false){}
+NormalMap::NormalMap(std::string filename): Texture(filename, false, false){}
 NormalMap::NormalMap(): Texture(Bitmap<PixelRGBA>({tz::graphics::default_normal_map_pixel}, 1, 1)){}
 
 void NormalMap::bind(Shader* shader, unsigned int id, const std::string& sampler_name) const
@@ -293,7 +272,7 @@ void NormalMap::bind(Shader* shader, unsigned int id, const std::string& sampler
 	shader->set_uniform<bool>("has_normal_map", true);
 }
 
-ParallaxMap::ParallaxMap(std::string filename, float multiplier, float offset): Texture(filename, false, false, false), multiplier(multiplier), bias(this->multiplier / 2.0f * offset){}
+ParallaxMap::ParallaxMap(std::string filename, float multiplier, float offset): Texture(filename, false, false), multiplier(multiplier), bias(this->multiplier / 2.0f * offset){}
 ParallaxMap::ParallaxMap(): Texture(Bitmap<PixelRGBA>({tz::graphics::default_parallax_map_pixel}, 1, 1)), multiplier(tz::graphics::asset::default_parallax_map_scale), bias(this->multiplier / 2.0f * (tz::graphics::asset::default_parallax_map_offset)){}
 
 void ParallaxMap::bind(Shader* shader, unsigned int id, const std::string& sampler_name) const
@@ -304,7 +283,7 @@ void ParallaxMap::bind(Shader* shader, unsigned int id, const std::string& sampl
     shader->set_uniform<float>("parallax_bias", this->bias);
 }
 
-DisplacementMap::DisplacementMap(std::string filename, float displacement_factor): Texture(filename, false, false, false), displacement_factor(displacement_factor){}
+DisplacementMap::DisplacementMap(std::string filename, float displacement_factor): Texture(filename, false, false), displacement_factor(displacement_factor){}
 DisplacementMap::DisplacementMap(): Texture(Bitmap<PixelRGBA>({tz::graphics::default_displacement_map_pixel}, 1, 1)), displacement_factor(tz::graphics::asset::default_displacement_factor){}
 
 void DisplacementMap::bind(Shader* shader, unsigned int id, const std::string& sampler_name) const

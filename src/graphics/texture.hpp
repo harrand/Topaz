@@ -129,7 +129,7 @@ public:
 	 * @param gamma_corrected - Whether gamma-correction should be applied to this Texture.
 	 * @param store_bitmap - Whether the internal image-data should be stored in a local Bitmap.
 	 */
-	Texture(std::string filename, bool mipmapping = true, bool gamma_corrected = true, bool store_bitmap = false);
+	Texture(std::string filename, bool mipmapping = true, bool gamma_corrected = true);
     /**
      * Loads a texture from existing Pixel Data
      * @tparam Pixel - The type of Pixel to store in the Bitmap.
@@ -172,17 +172,6 @@ public:
 	 */
 	virtual void bind(Shader* shader, unsigned int id, const std::string& sampler_name = "texture_sampler") const;
 	/**
-	 * Query whether this Texture was loaded from an external image file.
-	 * @return - True if this Texture was loaded from an external image file. False otherwise
-	 */
-	bool has_file_name() const;
-	/**
-	 * Get the path of the external image file used to load this Texture.
-	 * If no external image file was used, throws a std::bad_optional_access exception.
-	 * @return - The path to the source image file
-	 */
-	const std::string& get_file_name() const;
-	/**
 	 * Get the width of the Texture.
 	 * @return - The width of this Texture, in pixels.
 	 */
@@ -203,31 +192,16 @@ public:
 	 */
 	bool has_mipmap() const;
 	/**
-	 * Query whether this Texture stores a local Bitmap.
-	 * @return - True if the Texture stores a local Bitmap. False otherwise
-	 */
-	bool has_bitmap() const;
-	/**
 	 * Get the local Bitmap created during Texture construction.
 	 * @return - The Bitmap created during construction. If no Bitmap was created, returns an empty Bitmap
 	 */
-	Bitmap<PixelRGBA> get_bitmap() const;
+	const Bitmap<PixelRGBA>& get_bitmap() const;
 	/**
 	 * This is a normal Texture.
 	 * @return - TextureType::TEXTURE
 	 */
 	virtual tz::graphics::TextureType get_texture_type() const{return tz::graphics::TextureType::TEXTURE;}
 	tz::graphics::TextureComponent get_texture_component() const;
-	/**
-	 * Given a list of all Texture assets, find the Texture loaded from the path specified.
-	 * @tparam T - The type of Texture required.
-	 * @param texture_link - String representing the path of the image file used to construct the Texture.
-	 * @param all_textures - Container of all Texture assets.
-	 * @return - Pointer to the Texture object with the specified external image path. If none exists, returns nullptr
-	 */
-	template<class T>
-	static T* get_from_link(const std::string& texture_link, const std::vector<std::unique_ptr<T>>& all_textures);
-
 	/**
 	 * Equate this Texture with another.
 	 * @param rhs - The other Texture to equate with
@@ -239,7 +213,7 @@ protected:
 	/**
 	 * Retrieve the image data of the external image file specified by this->filename.
 	 */
-	unsigned char* load_texture();
+	unsigned char* load_texture(const char* file_name);
 	/**
 	 * Destroy the image data loaded previously from Texture::load_texture().
 	 * @param imgdata - The existing image data to be destroyed
@@ -253,8 +227,6 @@ protected:
 	 */
 	void bind_with_string(Shader* shader, unsigned int id, const std::string& sampler_uniform_name) const;
 
-	/// Optional path referencing the image file used to load this Texture.
-	std::optional<std::string> filename;
 	/// Underlying OpenGL texture-handle.
 	GLuint texture_handle;
 	/// Width of the texture, in pixels.
@@ -268,7 +240,7 @@ protected:
 	/// Stores whether gamma-correction was specified for this texture.
 	bool gamma_corrected;
 	/// Optional storage for a local Bitmap of this texture's image data.
-	std::optional<Bitmap<PixelRGBA>> bitmap;
+	Bitmap<PixelRGBA> bitmap;
 private:
 	/**
 	 * Do not use.

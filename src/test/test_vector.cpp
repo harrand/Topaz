@@ -399,7 +399,8 @@ void test()
 {
     // test base vector class.
     Vector<10, int> vector10i{{0, 0, 0, 0, 0, 0, 0, 0, 0, 0}};
-    for (int x : vector10i.data)
+    std::array<int, 10> vector_data = vector10i.data();
+    for (int x : vector_data)
         tz::assert::equal(x, 0);
     // test the default subclasses Vector2F, Vector3F and Vector4F and their swizzles.
     test_initialisation_2D();

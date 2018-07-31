@@ -104,9 +104,20 @@ public:
 	 * @param blue - Intensity of the blue colour, from 0-255.
 	 * @param alpha - Intensity of the alpha component (typically transparency), from 0-255.
 	 */
-	constexpr PixelRGBA(unsigned char red = 0, unsigned char green = 0, unsigned char blue = 0, unsigned char alpha = 0): data(std::array<unsigned char, 4>({red, green, blue, alpha})){}
+	constexpr PixelRGBA(unsigned char red = 0, unsigned char green = 0, unsigned char blue = 0, unsigned char alpha = 255): data(std::array<unsigned char, 4>({red, green, blue, alpha})){}
 	/// 4-dimensional Vector containing the RGBA colour intensities.
 	Vector<4, unsigned char> data;
+};
+
+class PixelDepth
+{
+public:
+	/**
+	 * Construst a Pixel storing a depth value. Used in depth-textures.
+	 * @param depth - Depth of the pixel, from 0.0-1.0
+	 */
+	constexpr PixelDepth(float depth): data(std::array<float, 1>({depth})){}
+	Vector<1, float> data;
 };
 
 /**

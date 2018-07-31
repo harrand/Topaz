@@ -37,13 +37,18 @@ namespace tz::graphics::asset
 }
 
 template<class Pixel>
-Texture::Texture(Bitmap<Pixel> pixel_data): Texture(pixel_data.width, pixel_data.height, false)
+Texture::Texture(Bitmap<Pixel> pixel_data): Texture(pixel_data.width, pixel_data.height, false, tz::graphics::TextureComponent::COLOUR_TEXTURE)
 {
+	// If the pixel type is actually a depth pixel, then we're making a depth texture and need to do it properly.
+	if constexpr(std::is_same_v<Pixel, PixelDepth>)
+	{
+		this->texture_component = tz::graphics::TextureComponent::DEPTH_TEXTURE;
+	}
 	// handle not generated, do it.
 	// Generates a new texture, and just fills it with zeroes if specified.
 	glGenTextures(1, &(this->texture_handle));
 	glBindTexture(GL_TEXTURE_2D, this->texture_handle);
-	std::vector<unsigned char> image_data;
+	std::vector<std::remove_reference_t<decltype(std::declval<Pixel>().data.underlying_data[0])>> image_data;
 	for(const auto& pixel : pixel_data.pixels)
 	{
 		image_data.push_back(pixel.data.underlying_data[0]);
@@ -51,23 +56,33 @@ Texture::Texture(Bitmap<Pixel> pixel_data): Texture(pixel_data.width, pixel_data
 		image_data.push_back(pixel.data.underlying_data[2]);
 		image_data.push_back(pixel.data.underlying_data[3]);
 	}
+	switch(this->texture_component)
+	{
+		default:
+		case tz::graphics::TextureComponent::COLOUR_TEXTURE:
+			this->components = 4;
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, this->width, this->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image_data.data());
+			break;
+		case tz::graphics::TextureComponent::DEPTH_TEXTURE:
+			this->components = 1;
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32, this->width, this->height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, image_data.data());
+			break;
+	}
+	/*
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, this->width, this->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image_data.data());
+	 */
 	// Unbind the texture.
 	glBindTexture(GL_TEXTURE_2D, 0);
-}
-
-template<class T>
-T* Texture::get_from_link(const std::string& texture_link, const std::vector<std::unique_ptr<T>>& all_textures)
-{
-	for(auto& texture : all_textures)
-	{
-		if(texture->get_file_name() == texture_link)
-			return texture.get();
-	}
-	std::cerr << "Texture link \"" << texture_link << "\" could not be located. Anything using this texture will not render.\n";
-	return nullptr;
 }
