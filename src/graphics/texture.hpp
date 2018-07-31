@@ -160,6 +160,12 @@ public:
 	 */
 	~Texture();
 	/**
+	 * Copy-assignment from an existing Texture
+	 * @param rhs - The copy to assign this Texture to be.
+	 * @return - This modified Texture.
+	 */
+	Texture& operator=(Texture rhs);
+	/**
 	 * Move-assignment from an existing Texture.
 	 * @param rhs - The Texture whos OpenGL handle should be taken.
 	 * @return - This modified Texture.
@@ -249,6 +255,7 @@ private:
 	 * @param initialise_handle - N/A
 	 */
 	Texture(int width, int height, bool initialise_handle, tz::graphics::TextureComponent texture_component = tz::graphics::TextureComponent::COLOUR_TEXTURE);
+	static void swap(Texture& lhs, Texture& rhs);
 };
 
 /**
@@ -411,12 +418,15 @@ private:
 	int components[number_of_textures];
 };
 
-namespace tz::graphics::texture
+namespace tz::graphics
 {
-	extern std::shared_ptr<Texture> default_texture;
-    extern std::shared_ptr<NormalMap> default_normal_map;
-    extern std::shared_ptr<ParallaxMap> default_parallax_map;
-    extern std::shared_ptr<DisplacementMap> default_displacement_map;
+	namespace texture
+	{
+		extern std::shared_ptr<Texture> default_texture;
+		extern std::shared_ptr<NormalMap> default_normal_map;
+		extern std::shared_ptr<ParallaxMap> default_parallax_map;
+		extern std::shared_ptr<DisplacementMap> default_displacement_map;
+	}
 }
 
 #include "texture.inl"

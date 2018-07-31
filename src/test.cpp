@@ -153,7 +153,6 @@ void init()
 
         depth_framebuffer.clear(BufferBit::DEPTH);
         depth_framebuffer.set_render_target();
-        std::cout << "player position = " << camera.position << "\n";
 
         Camera light_view = scene.get_directional_light(0).value().get_view(scene.get_boundary());
         render_shader.set_uniform<Matrix4x4>("light_viewprojection", light_view.projection(wnd.get_width(), wnd.get_height()) * light_view.view());

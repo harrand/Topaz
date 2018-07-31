@@ -153,6 +153,12 @@ Texture::~Texture()
 	glDeleteTextures(1, &(this->texture_handle));
 }
 
+Texture& Texture::operator=(Texture rhs)
+{
+	Texture::swap(*this, rhs);
+	return *this;
+}
+
 Texture& Texture::operator=(Texture&& rhs)
 {
 	glDeleteTextures(1, &(this->texture_handle));
@@ -261,6 +267,17 @@ void Texture::bind_with_string(Shader* shader, unsigned int id, const std::strin
 	glActiveTexture(GL_TEXTURE0 + id);
 	glBindTexture(GL_TEXTURE_2D, this->texture_handle);
 	shader->set_uniform<int>(sampler_uniform_name, id);
+}
+
+void Texture::swap(Texture& lhs, Texture& rhs)
+{
+	std::swap(lhs.texture_handle, rhs.texture_handle);
+	std::swap(lhs.width, rhs.width);
+	std::swap(lhs.height, rhs.height);
+	std::swap(lhs.components, rhs.components);
+	std::swap(lhs.texture_component, rhs.texture_component);
+	std::swap(lhs.gamma_corrected, rhs.gamma_corrected);
+	std::swap(lhs.bitmap, rhs.bitmap);
 }
 
 NormalMap::NormalMap(std::string filename): Texture(filename, false, false){}

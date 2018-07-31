@@ -109,6 +109,13 @@ public:
 	Vector<4, unsigned char> data;
 };
 
+class PixelRGBAHDR
+{
+public:
+	constexpr PixelRGBAHDR(float red = 0.0f, float green = 0.0f, float blue = 0.0f, float alpha = 255.0f): data(std::array<float, 4>({red, green, blue, alpha})){}
+	Vector<4, float> data;
+};
+
 class PixelDepth
 {
 public:
