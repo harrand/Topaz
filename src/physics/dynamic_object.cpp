@@ -21,8 +21,7 @@ AABB DynamicObject::get_boundary() const
 
 void DynamicObject::on_collision(PhysicsObject &collided)
 {
-    this->velocity *= -1.1f;
-    collided.velocity *= -1.1f;
+
 }
 
 InstancedDynamicObject::InstancedDynamicObject(const std::vector<DynamicObject>& objects): DynamicObject(0.0f, Transform{{}, {}, {}}, Asset{{}, {}}), instanced_mesh(nullptr), objects(objects)
@@ -38,7 +37,7 @@ InstancedDynamicObject::InstancedDynamicObject(const std::vector<DynamicObject>&
         scales.push_back(object.transform.scale);
     }
     this->transform = {original_position, original_rotation, original_scale};
-    this->instanced_mesh = std::make_shared<InstancedMesh>(objects.front().asset.mesh->get_file_name(), positions, rotations, scales);
+    this->instanced_mesh = std::make_shared<InstancedMesh>(objects.front().asset.mesh->get_file_name(), positions, rotations, scales, true);
     this->asset = objects.front().asset;
     this->asset.mesh = this->instanced_mesh.get();
 }
@@ -49,12 +48,9 @@ void InstancedDynamicObject::update(float delta_time)
     {
         auto& dynamic_object = this->objects[instance_id];
         dynamic_object.update(delta_time);
-        bool pos_changed = false, rot_changed = false, scale_changed = false;
-        pos_changed = this->instanced_mesh->set_instance_position(instance_id, dynamic_object.transform.position);
-        rot_changed = this->instanced_mesh->set_instance_rotation(instance_id, dynamic_object.transform.rotation);
-        scale_changed = this->instanced_mesh->set_instance_scale(instance_id, dynamic_object.transform.scale);
-        //std::cout << "changes: " << std::boolalpha << pos_changed << ", " << rot_changed << ", " << scale_changed << "\n";
-        //std::cout << "new scale = " << dynamic_object.transform.scale << "\n";
+        this->instanced_mesh->set_instance_position(instance_id, dynamic_object.transform.position);
+        this->instanced_mesh->set_instance_rotation(instance_id, dynamic_object.transform.rotation);
+        this->instanced_mesh->set_instance_scale(instance_id, dynamic_object.transform.scale);
     }
 }
 

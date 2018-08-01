@@ -195,7 +195,7 @@ void Mesh::init_mesh()
 	glBindVertexArray(0);
 }
 
-InstancedMesh::InstancedMesh(std::string filename, std::vector<Vector3F> positions, std::vector<Vector3F> rotations, std::vector<Vector3F> scales): Mesh(filename), positions(positions), rotations(rotations), scales(scales), models({}), instance_quantity(std::max({this->positions.size(), this->rotations.size(), this->scales.size()}))
+InstancedMesh::InstancedMesh(std::string filename, std::vector<Vector3F> positions, std::vector<Vector3F> rotations, std::vector<Vector3F> scales, bool dynamic_transform): Mesh(filename), positions(positions), rotations(rotations), scales(scales), models({}), instance_quantity(std::max({this->positions.size(), this->rotations.size(), this->scales.size()}))
 {
     // Build all of the model matrices.
     std::size_t number_of_matrices = positions.size();
@@ -224,12 +224,15 @@ InstancedMesh::InstancedMesh(std::string filename, std::vector<Vector3F> positio
     }
 
 	using namespace tz::utility; // tz::utility::generic::sizeof_element
+	GLenum usage = GL_STATIC_DRAW;
+	if(dynamic_transform)
+		usage = GL_DYNAMIC_DRAW;
     // Populate Mesh::vertex_array_object with additional vbo buffers.
 	glBindVertexArray(this->vertex_array_object);
     // Row X (attribute 4)
     glGenBuffers(1, &this->model_matrix_x_vbo);
     glBindBuffer(GL_ARRAY_BUFFER, this->model_matrix_x_vbo);
-    glBufferData(GL_ARRAY_BUFFER, xs.size() * generic::sizeof_element(xs), xs.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, xs.size() * generic::sizeof_element(xs), xs.data(), usage);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glEnableVertexAttribArray(4);
     glBindBuffer(GL_ARRAY_BUFFER, this->model_matrix_x_vbo);
@@ -239,7 +242,7 @@ InstancedMesh::InstancedMesh(std::string filename, std::vector<Vector3F> positio
     // Row Y (attribute 5)
     glGenBuffers(1, &this->model_matrix_y_vbo);
     glBindBuffer(GL_ARRAY_BUFFER, this->model_matrix_y_vbo);
-    glBufferData(GL_ARRAY_BUFFER, ys.size() * generic::sizeof_element(ys), ys.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, ys.size() * generic::sizeof_element(ys), ys.data(), usage);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ARRAY_BUFFER, this->model_matrix_y_vbo);
     glEnableVertexAttribArray(5);
@@ -249,7 +252,7 @@ InstancedMesh::InstancedMesh(std::string filename, std::vector<Vector3F> positio
     // Row Z (attribute 6)
     glGenBuffers(1, &this->model_matrix_z_vbo);
     glBindBuffer(GL_ARRAY_BUFFER, this->model_matrix_z_vbo);
-    glBufferData(GL_ARRAY_BUFFER, zs.size() * generic::sizeof_element(zs), zs.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, zs.size() * generic::sizeof_element(zs), zs.data(), usage);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ARRAY_BUFFER, this->model_matrix_z_vbo);
     glEnableVertexAttribArray(6);
@@ -259,7 +262,7 @@ InstancedMesh::InstancedMesh(std::string filename, std::vector<Vector3F> positio
     // Row W (attribute 7)
     glGenBuffers(1, &this->model_matrix_w_vbo);
     glBindBuffer(GL_ARRAY_BUFFER, this->model_matrix_w_vbo);
-    glBufferData(GL_ARRAY_BUFFER, ws.size() * generic::sizeof_element(ws), ws.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, ws.size() * generic::sizeof_element(ws), ws.data(), usage);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ARRAY_BUFFER, this->model_matrix_w_vbo);
     glEnableVertexAttribArray(7);

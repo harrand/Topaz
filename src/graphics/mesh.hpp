@@ -131,7 +131,7 @@ public:
 	 * @param rotations - Container of 3-dimensional Vectors representing instance rotation offsets, in euler-angles
 	 * @param scales - Container of 3-dimensional Vectors representing instance rotation offsets, in the three spatial dimensions XYZ
 	 */
-	InstancedMesh(std::string filename, std::vector<Vector3F> positions, std::vector<Vector3F> rotations, std::vector<Vector3F> scales);
+	InstancedMesh(std::string filename, std::vector<Vector3F> positions, std::vector<Vector3F> rotations, std::vector<Vector3F> scales, bool dynamic_transform = false);
 	/// TODO: Implement properly.
 	InstancedMesh(const InstancedMesh& copy) = default;
 	/// TODO: Implement properly.

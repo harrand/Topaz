@@ -110,7 +110,7 @@ void init()
                              });
     std::vector<StaticObject> floor_objects;
     std::vector<DynamicObject> falling_objects;
-    constexpr int floor_size = 10000;
+    constexpr int floor_size = 9025;
     for(float i = 0; i < floor_size; i++)
     {
         int index = static_cast<int>(i);
@@ -123,9 +123,10 @@ void init()
                                        {},
                                        scale}, stone_floor);
         DynamicObject& object = falling_objects.emplace_back(1.0f, Transform{Vector3F{(scale.x * row * 2), -100, (scale.z * column * 2)} - offset,
-                                                     {},
-                                                     scale}, stone_floor, Vector3F{0, rand.next_float(10, 500), 0});
-        object.angular_velocity = {0, rand.next_float(0, tz::utility::numeric::consts::pi)};
+                                                     {}, scale}, stone_floor);
+        float sine_id = std::abs(std::sin(i / 10));
+        object.add_force(Vector3F{0, sine_id, 0});
+        object.add_torque({0, rand.next_float(-tz::utility::numeric::consts::pi, tz::utility::numeric::consts::pi) / 100.0f, 0});
     }
     scene.emplace<InstancedStaticObject>(floor_objects);
     scene.emplace<InstancedDynamicObject>(falling_objects);

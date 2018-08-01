@@ -47,7 +47,7 @@ Camera DirectionalLight::get_view(const AABB& scene_boundary) const
     Vector3F inverse_direction = this->direction * -1.0f;
     Matrix4x4 view = tz::transform::look_at(inverse_direction, {});
     Camera camera = {inverse_direction, tz::transform::decompose_rotation(view).zyx(), tz::utility::numeric::consts::pi * 1.1f, tz::graphics::default_near_clip, tz::graphics::default_far_clip};
-    Vector3F delta = (scene_boundary.get_maximum() - scene_boundary.get_minimum()) / 2.0f;
+    Vector3F delta = (scene_boundary.get_maximum() - scene_boundary.get_minimum());
     float size = std::max(std::initializer_list<float>{delta.x, delta.y, delta.z});
     camera.set_orthographic(size, -size, size, -size, -size, size);
     return camera;
