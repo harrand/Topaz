@@ -31,7 +31,7 @@ public:
 	 */
 	explicit operator std::string() const;
 	bool operator==(const Vector<N, T>& rhs) const;
-
+	bool operator!=(const Vector<N, T>& rhs) const;
 	/// Array representing the underlying data.
 	std::array<T, N> underlying_data;
 };

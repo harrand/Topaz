@@ -158,6 +158,9 @@ public:
 	 * @return - Container of instance scale offsets
 	 */
 	const std::vector<Vector3F>& get_instance_scales() const;
+	bool set_instance_position(std::size_t instance_id, Vector3F position);
+	bool set_instance_rotation(std::size_t instance_id, Vector3F rotation);
+	bool set_instance_scale(std::size_t instance_id, Vector3F scale);
     /**
      * Get a container of all the 4-dimensional square-matrices representing each corresponding model-matrix.
      * @return - Container of all model-matrices
@@ -175,6 +178,7 @@ public:
 	 */
 	virtual void render(bool patches, GLenum mode = GL_TRIANGLES) const override;
 private:
+	void update_instance(std::size_t instance_id);
 	/// Instance offsets.
 	std::vector<Vector3F> positions, rotations, scales;
     /// Model Matrices.

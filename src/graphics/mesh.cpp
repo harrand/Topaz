@@ -293,6 +293,49 @@ const std::vector<Vector3F>& InstancedMesh::get_instance_scales() const
 	return this->scales;
 }
 
+bool InstancedMesh::set_instance_position(std::size_t instance_id, Vector3F position)
+{
+    //std::cout << "editing position of instance id " << instance_id << " to be " << position << "\n";
+	try
+	{
+		this->positions[instance_id] = position;
+		this->update_instance(instance_id);
+		return true;
+	}
+	catch(const std::out_of_range& out_of_range)
+	{
+		return false;
+	}
+}
+
+bool InstancedMesh::set_instance_rotation(std::size_t instance_id, Vector3F rotation)
+{
+	try
+	{
+		this->rotations[instance_id] = rotation;
+		this->update_instance(instance_id);
+		return true;
+	}
+	catch(const std::out_of_range& out_of_range)
+	{
+		return false;
+	}
+}
+
+bool InstancedMesh::set_instance_scale(std::size_t instance_id, Vector3F scale)
+{
+	try
+	{
+		this->scales[instance_id] = scale;
+		this->update_instance(instance_id);
+		return true;
+	}
+	catch(const std::out_of_range& out_of_range)
+	{
+		return false;
+	}
+}
+
 const std::vector<Matrix4x4>& InstancedMesh::get_model_matrices() const
 {
     return this->models;
@@ -316,6 +359,48 @@ void InstancedMesh::render(bool patches, GLenum mode) const
 		glDrawElementsInstanced(mode, this->indices.size(), GL_UNSIGNED_INT, nullptr, this->instance_quantity);
 	}
 	glBindVertexArray(0);
+}
+
+void InstancedMesh::update_instance(std::size_t instance_id)
+{
+	Matrix4x4 old_model = this->models[instance_id];
+	this->models[instance_id] = tz::transform::model(this->positions[instance_id], this->rotations[instance_id], this->scales[instance_id]);
+	Matrix4x4 new_model = this->models[instance_id];
+	bool x_change, y_change, z_change, w_change;
+	x_change = old_model.x != new_model.x;
+	y_change = old_model.y != new_model.y;
+	z_change = old_model.z != new_model.z;
+	w_change = old_model.w != new_model.w;
+	bool any_change = x_change || y_change || z_change || w_change;
+	if(any_change)
+		glBindVertexArray(this->vertex_array_object);
+	using namespace tz::utility;
+	if(x_change)
+	{
+		std::array<float, 4> row_data = new_model.x.data();
+		std::size_t array_size_bytes = row_data.size() * generic::sizeof_element(row_data);
+        glNamedBufferSubData(this->model_matrix_x_vbo, instance_id * array_size_bytes, array_size_bytes, row_data.data());
+	}
+	if(y_change)
+	{
+		std::array<float, 4> row_data = new_model.y.data();
+        std::size_t array_size_bytes = row_data.size() * generic::sizeof_element(row_data);
+        glNamedBufferSubData(this->model_matrix_y_vbo, instance_id * array_size_bytes, array_size_bytes, row_data.data());
+	}
+	if(z_change)
+	{
+		std::array<float, 4> row_data = new_model.z.data();
+        std::size_t array_size_bytes = row_data.size() * generic::sizeof_element(row_data);
+        glNamedBufferSubData(this->model_matrix_z_vbo, instance_id * array_size_bytes, array_size_bytes, row_data.data());
+	}
+	if(w_change)
+	{
+		std::array<float, 4> row_data = new_model.w.data();
+        std::size_t array_size_bytes = row_data.size() * generic::sizeof_element(row_data);
+        glNamedBufferSubData(this->model_matrix_w_vbo, instance_id * array_size_bytes, array_size_bytes, row_data.data());
+	}
+	if(any_change)
+		glBindVertexArray(0);
 }
 
 bool tz::graphics::is_instanced(const Mesh* mesh)

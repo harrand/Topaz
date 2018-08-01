@@ -27,6 +27,12 @@ bool Vector<N, T>::operator==(const Vector<N, T>& rhs) const
 }
 
 template<unsigned int N, typename T>
+bool Vector<N, T>::operator!=(const Vector<N, T>& rhs) const
+{
+	return this->underlying_data != rhs.underlying_data;
+}
+
+template<unsigned int N, typename T>
 Vector<N, T>::operator std::string() const
 {
     std::string res = "[";

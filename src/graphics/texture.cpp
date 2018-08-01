@@ -217,21 +217,6 @@ bool Texture::has_mipmap() const
 const Bitmap<PixelRGBA>& Texture::get_bitmap() const
 {
 	return this->bitmap;
-	/*
-	if(this->bitmap.has_value())
-		return this->bitmap.value();
-	else
-	{
-		std::vector<PixelRGBA> pixels;
-		std::vector<GLubyte> pixel_data;
-		pixel_data.resize(this->components * this->width * this->height);
-		pixels.reserve(pixel_data.size());
-        glGetTextureImage(this->texture_handle, 0, GL_RGBA, GL_UNSIGNED_BYTE, sizeof(GLubyte) * pixel_data.size(), pixel_data.data());
-        for(std::size_t i = 0; i < pixel_data.size(); i += 4)
-			pixels.emplace_back(pixel_data[i], pixel_data[i + 1], pixel_data[i + 2], pixel_data[i + 3]);
-		return {pixels, this->width, this->height};
-	}
-	*/
 }
 
 tz::graphics::TextureComponent Texture::get_texture_component() const
@@ -281,7 +266,6 @@ void Texture::swap(Texture& lhs, Texture& rhs)
 }
 
 NormalMap::NormalMap(std::string filename): Texture(filename, false, false){}
-NormalMap::NormalMap(): Texture(Bitmap<PixelRGBA>({tz::graphics::default_normal_map_pixel}, 1, 1)){}
 
 void NormalMap::bind(Shader* shader, unsigned int id, const std::string& sampler_name) const
 {
@@ -290,7 +274,6 @@ void NormalMap::bind(Shader* shader, unsigned int id, const std::string& sampler
 }
 
 ParallaxMap::ParallaxMap(std::string filename, float multiplier, float offset): Texture(filename, false, false), multiplier(multiplier), bias(this->multiplier / 2.0f * offset){}
-ParallaxMap::ParallaxMap(): Texture(Bitmap<PixelRGBA>({tz::graphics::default_parallax_map_pixel}, 1, 1)), multiplier(tz::graphics::asset::default_parallax_map_scale), bias(this->multiplier / 2.0f * (tz::graphics::asset::default_parallax_map_offset)){}
 
 void ParallaxMap::bind(Shader* shader, unsigned int id, const std::string& sampler_name) const
 {
@@ -301,7 +284,6 @@ void ParallaxMap::bind(Shader* shader, unsigned int id, const std::string& sampl
 }
 
 DisplacementMap::DisplacementMap(std::string filename, float displacement_factor): Texture(filename, false, false), displacement_factor(displacement_factor){}
-DisplacementMap::DisplacementMap(): Texture(Bitmap<PixelRGBA>({tz::graphics::default_displacement_map_pixel}, 1, 1)), displacement_factor(tz::graphics::asset::default_displacement_factor){}
 
 void DisplacementMap::bind(Shader* shader, unsigned int id, const std::string& sampler_name) const
 {

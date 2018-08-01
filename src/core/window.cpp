@@ -30,10 +30,6 @@ Window::Window(std::string title, const Vector2I& position_pixel_space, const Ve
     tz::graphics::has_context = true;
     if(!tz::graphics::initialised)
         tz::graphics::initialise();
-    tz::graphics::texture::default_texture = std::make_shared<Texture>(Bitmap<PixelRGBA>(std::vector<PixelRGBA>({tz::graphics::default_texture_pixel, PixelRGBA(0, 0, 0, 255), PixelRGBA(0, 0, 0, 255), tz::graphics::default_texture_pixel}), 2, 2));
-    tz::graphics::texture::default_normal_map = std::make_shared<NormalMap>();
-    tz::graphics::texture::default_parallax_map = std::make_shared<ParallaxMap>();
-    tz::graphics::texture::default_displacement_map = std::make_shared<DisplacementMap>();
     //this->add_child(&this->window_gui_element);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_DEPTH_CLAMP);

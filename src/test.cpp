@@ -85,7 +85,7 @@ void init()
     //hdr_panel.uses_hdr = true;
     ShadowMap depth_framebuffer{8192, 8192};
     // Uncomment this to render the depth texture.
-    wnd.emplace_child<Panel>(Vector2I{0, 600}, Vector2I{300, 300}, &depth_framebuffer.get_depth_texture());
+    //wnd.emplace_child<Panel>(Vector2I{0, 600}, Vector2I{300, 300}, &depth_framebuffer.get_depth_texture());
     FrameBuffer bloom_buffer{wnd.get_width(), wnd.get_height()};
     bloom_buffer.emplace_renderbuffer(GL_DEPTH_ATTACHMENT, wnd.get_width(), wnd.get_height(), GL_DEPTH_COMPONENT);
     Texture& blurred_bloom_texture = bloom_buffer.emplace_texture(GL_COLOR_ATTACHMENT0, wnd.get_width(), wnd.get_height(), tz::graphics::TextureComponent::COLOUR_TEXTURE);
@@ -109,6 +109,7 @@ void init()
                                  scene.emplace_object(Transform{camera.position, {}, {10, 10, 10}}, asset1);
                              });
     std::vector<StaticObject> floor_objects;
+    std::vector<DynamicObject> falling_objects;
     constexpr int floor_size = 10000;
     for(float i = 0; i < floor_size; i++)
     {
@@ -121,8 +122,13 @@ void init()
         floor_objects.emplace_back(Transform{Vector3F{(scale.x * row * 2), -100, (scale.z * column * 2)} - offset,
                                        {},
                                        scale}, stone_floor);
+        DynamicObject& object = falling_objects.emplace_back(1.0f, Transform{Vector3F{(scale.x * row * 2), -100, (scale.z * column * 2)} - offset,
+                                                     {},
+                                                     scale}, stone_floor, Vector3F{0, rand.next_float(10, 500), 0});
+        object.angular_velocity = {0, rand.next_float(0, tz::utility::numeric::consts::pi)};
     }
     scene.emplace<InstancedStaticObject>(floor_objects);
+    scene.emplace<InstancedDynamicObject>(falling_objects);
     scene.emplace<StaticObject>(Transform{{0, 0, 0}, {}, {15, 15, 15}}, wooden_sphere);
     scene.emplace<StaticObject>(Transform{{100, 0, 0}, {}, {200, 200, 200}}, wooden_cylinder);
     scene.emplace<StaticObject>(Transform{{0, -50, -70}, {}, {20, 20, 20}}, asset1);

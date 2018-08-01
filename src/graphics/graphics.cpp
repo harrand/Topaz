@@ -48,9 +48,9 @@ Vertex::Vertex(Vector3F position, Vector2F texture_coordinate, Vector3F normal, 
 
 bool Vertex::operator==(const Vertex& rhs) const
 {
-    return
-            this->position == rhs.position &&
-            this->texture_coordinate == rhs.texture_coordinate &&
-            this->normal == rhs.normal &&
-            this->tangent == rhs.tangent;
+	return
+		this->position == rhs.position &&
+		this->texture_coordinate == rhs.texture_coordinate &&
+		this->normal == rhs.normal &&
+		this->tangent == rhs.tangent;
 }

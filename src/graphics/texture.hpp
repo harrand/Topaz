@@ -8,41 +8,10 @@
 
 namespace tz::graphics
 {
-    /// Default width and height of the framebuffer.
-	constexpr unsigned int frame_buffer_default_size = 256;
-	/// Default width of the framebuffer.
-	constexpr unsigned int frame_buffer_default_width = frame_buffer_default_size;
-	/// Default height of the framebuffer.
-	constexpr unsigned int frame_buffer_default_height = frame_buffer_default_size;
-	/// Default width and height of the depth-texture.
-	constexpr unsigned int depth_texture_default_size = 1024;
-	/// Default width of the depth-texture.
-	constexpr unsigned int depth_texture_default_width = depth_texture_default_size;
-	/// Default height of the depth-texture.
-	constexpr unsigned int depth_texture_default_height = depth_texture_default_size;
-	
 	/**
 	* Minimum of implementation and 32. This is because if hardware allows 64 attachments, OpenGL headers currently dont even specify 32+ attachments (it goes to GL_DEPTH_ATTACHMENT). For this reason, it is the minimum of the two, for a fair compromise.
 	*/
 	constexpr int maximum_framebuffer_attachments = std::min(GL_MAX_COLOR_ATTACHMENTS, 32);
-
-	/// Colour of the default-texture's non-black component.
-	constexpr Vector4<unsigned char> default_texture_colour = Vector4<unsigned char>(std::array<unsigned char, 4>({255, 0, 255, 255}));
-    /// Colour of the default-normal-map. Represents a normal-map which applies no normal Vector offsets.
-	constexpr Vector4<unsigned char> default_normal_map_colour = Vector4<unsigned char>(std::array<unsigned char, 4>({128, 128, 255, 255}));
-    /// Colour of the default-parallax-map. Represents a parallax-map which applies no texture-coordinate angular offset.
-	constexpr Vector4<unsigned char> default_parallax_map_colour = Vector4<unsigned char>(std::array<unsigned char, 4>({128, 128, 128, 255}));
-    /// Colour of the default-displacement-map. Represents a displacement-map which applies no displacement to a vertex position.
-	constexpr Vector4<unsigned char> default_displacement_map_colour = Vector4<unsigned char>(std::array<unsigned char, 4>({0, 0, 0, 255}));
-
-	/// Pixel of the default-texture that is non-black.
-	constexpr PixelRGBA default_texture_pixel = PixelRGBA(255, 0, 255, 255);
-	/// Pixel of the default-normal-map.
-    constexpr PixelRGBA default_normal_map_pixel = PixelRGBA(128, 128, 255, 255);
-    /// Pixel of the default-parallax-map.
-    constexpr PixelRGBA default_parallax_map_pixel = PixelRGBA(128, 128, 128, 255);
-    /// Pixel of the default-displacement-map.
-    constexpr PixelRGBA default_displacement_map_pixel = PixelRGBA(0, 0, 0, 255);
 
 	/// Contains constants and helper functions about Assets used, such as textures and normal-maps.
 	namespace asset
@@ -270,10 +239,6 @@ public:
 	 */
 	NormalMap(std::string filename);
 	/**
-	 * Construct the default-normal-map.
-	 */
-	NormalMap();
-	/**
 	 * Bind this normal-map to a specified Shader.
 	 * @param shader - The Shader to be bound with.
 	 * @param id - Sampler-ID of this normal-map.
@@ -297,10 +262,6 @@ public:
 	 * @param filename - Path to the existing parallax-map image file
 	 */
 	ParallaxMap(std::string filename, float multiplier = tz::graphics::asset::default_parallax_map_scale, float offset = tz::graphics::asset::default_parallax_map_offset);
-	/**
-	 * Construct the default-parallax-map.
-	 */
-    ParallaxMap();
 	/**
 	* Bind this normal-map to a specified Shader.
 	* @param shader - The Shader to be bound with.
@@ -327,10 +288,6 @@ public:
 	 * @param filename - Path to the existing displacement-map image file
 	 */
 	DisplacementMap(std::string filename, float displacement_factor = tz::graphics::asset::default_displacement_factor);
-	/**
-	 * Construct the default-displacement-map.
-	 */
-    DisplacementMap();
 	/**
 	* Bind this normal-map to a specified Shader.
 	* @param shader - The Shader to be bound with.
