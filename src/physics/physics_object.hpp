@@ -33,7 +33,7 @@ public:
      */
     virtual void update(float delta_time);
 
-    virtual AABB get_boundary() const = 0;
+    virtual std::optional<AABB> get_boundary() const = 0;
     virtual void on_collision(PhysicsObject& collided) = 0;
 
     void add_force(Vector3F force);

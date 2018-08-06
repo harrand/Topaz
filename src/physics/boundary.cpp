@@ -62,6 +62,19 @@ bool AABB::intersects(const Vector3F& point) const
 	return meet_x && meet_y && meet_z;
 }
 
+AABB AABB::expand_to(const AABB &other) const
+{
+    Vector3F min = this->minimum, max = this->maximum;
+    min.x = std::min(min.x, other.minimum.x);
+    min.y = std::min(min.y, other.minimum.y);
+    min.z = std::min(min.z, other.minimum.z);
+
+    max.x = std::max(max.x, other.maximum.x);
+    max.y = std::max(max.y, other.maximum.y);
+    max.z = std::max(max.z, other.maximum.z);
+    return {min, max};
+}
+
 AABB AABB::operator*(const Matrix4x4& rhs) const
 {
     Vector4F minimum_homogeneous = {this->minimum, 1.0f};

@@ -236,6 +236,19 @@ Vector3<T> Vector3<T>::cross(const Vector3<T>& rhs) const
 }
 
 template<typename T>
+Vector3<T> Vector3<T>::reflect(const Vector3<T>& rhs) const
+{
+	return (*this) - (rhs * 2.0f * this->dot(rhs));
+}
+
+/*
+genType glm::core::function::geometric::reflect	(	genType const & 	I,
+														genType const & 	N
+)
+For the incident vector I and surface orientation N, returns the reflection direction : result = I - 2.0 * dot(N, I) * N.
+*/
+
+template<typename T>
 Vector3<T> Vector3<T>::normalised() const
 {
 	if(this->length() == 0)

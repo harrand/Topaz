@@ -43,7 +43,15 @@ void PhysicsObject::handle_collisions(const std::vector<std::reference_wrapper<P
     for(auto ref : physics_objects)
     {
         auto& physics_object = ref.get();
-        if(this->get_boundary().intersects(physics_object.get_boundary()) && this != &physics_object)
-            this->on_collision(physics_object);
+        if(this == &physics_object)
+            continue;
+        using OptAABB = std::optional<AABB>;
+        OptAABB this_bound = this->get_boundary();
+        OptAABB other_bound = physics_object.get_boundary();
+        if(this_bound.has_value() && other_bound.has_value())
+        {
+            if(this_bound->intersects(other_bound.value()))
+                this->on_collision(physics_object);
+        }
     }
 }

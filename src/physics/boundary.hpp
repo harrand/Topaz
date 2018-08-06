@@ -70,6 +70,7 @@ public:
 	 * @return - True if the parameter is in the AABB. False otherwose.
 	 */
 	bool intersects(const Vector3F& point) const;
+	AABB expand_to(const AABB& other) const;
     AABB operator*(const Matrix4x4& rhs) const;
 private:
 	/// Minimum 3-dimensional position of the AABB, in world-space.

@@ -255,6 +255,7 @@ public:
 	 * @return - Cross product of this and the parameter.
 	 */
 	Vector3<T> cross(const Vector3<T>& rhs) const;
+	Vector3<T> reflect(const Vector3<T>& rhs) const;
 	/**
 	 * Divide all data members by the magnitude, and return the copy.
 	 * @return - Normalised version of this 3-dimensional Vector.

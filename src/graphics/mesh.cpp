@@ -5,7 +5,7 @@
 #include <map>
 #include <unordered_set>
 
-Mesh::Mesh(std::string filename): filename(std::move(filename))
+Mesh::Mesh(std::string filename, std::size_t scene_index): filename(std::move(filename))
 {
 	const aiScene* scene = aiImportFile(this->filename.c_str(), aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_CalcTangentSpace | aiProcess_JoinIdenticalVertices | aiProcess_TransformUVCoords | aiProcess_OptimizeMeshes | aiProcess_OptimizeGraph);
 	if(scene == nullptr)
@@ -13,7 +13,7 @@ Mesh::Mesh(std::string filename): filename(std::move(filename))
         std::cerr << "Error: Mesh import failed:\n" << aiGetErrorString() << "\n";
         return;
     }
-    aiMesh* assimp_mesh = scene->mMeshes[0];
+    aiMesh* assimp_mesh = scene->mMeshes[scene_index];
 	/* things to assign:
 	 * position (vec3)
 	 * texcoord (vec2)
@@ -404,6 +404,22 @@ void InstancedMesh::update_instance(std::size_t instance_id)
 	}
 	if(any_change)
 		glBindVertexArray(0);
+}
+
+std::vector<Mesh> tz::graphics::load_all_meshes(const std::string& filename)
+{
+	std::vector<Mesh> meshes;
+	const aiScene* scene = aiImportFile(filename.c_str(), aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_CalcTangentSpace | aiProcess_JoinIdenticalVertices | aiProcess_TransformUVCoords | aiProcess_OptimizeMeshes | aiProcess_OptimizeGraph);
+	if(scene == nullptr)
+	{
+		std::cerr << "Error: Mesh import failed:\n" << aiGetErrorString() << "\n";
+		return {};
+	}
+	unsigned int num_meshes = scene->mNumMeshes;
+	aiReleaseImport(scene);
+	for(unsigned int i = 0; i < num_meshes; i++)
+		meshes.emplace_back(filename, i);
+	return meshes;
 }
 
 bool tz::graphics::is_instanced(const Mesh* mesh)

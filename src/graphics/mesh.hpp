@@ -33,8 +33,10 @@ public:
 	/**
 	 * Construct a Mesh from an existing 3D model file (.obj).
 	 * @param filename - Path to the external 3D model file
+	 * @param scene_index - The index of the mesh in the scene to load.
+	 * Note: To load all meshes from a file, use tz::graphics::load_all_meshes(filename) instead.
 	 */
-	Mesh(std::string filename);
+	Mesh(std::string filename, std::size_t scene_index = 0);
 	/**
 	 * Construct a Mesh from C-style arrays.
 	 * @param vertices - Pointer to the first element of the Vertex array
@@ -126,7 +128,7 @@ class InstancedMesh : public Mesh
 public:
 	/**
 	 * Construct an InstancedMesh from an external 3D model file (.obj format).
-	 * @param filename - Path to the external 3D model file
+	 * @param filename - Path to the external 3D model file. This mesh will store the first mesh in the file.
 	 * @param positions - Container of 3-dimensional Vectors representing instance position offsets, in world-space
 	 * @param rotations - Container of 3-dimensional Vectors representing instance rotation offsets, in euler-angles
 	 * @param scales - Container of 3-dimensional Vectors representing instance rotation offsets, in the three spatial dimensions XYZ
@@ -193,6 +195,7 @@ namespace tz
 {
 	namespace graphics
 	{
+		std::vector<Mesh> load_all_meshes(const std::string& filename);
 		/**
 		 * Query whether the specified Mesh is an InstancedMesh.
 		 * @param mesh - The Mesh to query

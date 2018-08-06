@@ -8,9 +8,12 @@ const Asset& StaticObject::get_asset() const
     return this->asset;
 }
 
-AABB StaticObject::get_boundary() const
+std::optional<AABB> StaticObject::get_boundary() const
 {
-    return tz::physics::bound_aabb(*this->asset.mesh) * this->transform.model();
+    if(this->asset.valid_mesh())
+        return tz::physics::bound_aabb(*this->asset.mesh) * this->transform.model();
+    else
+        return std::nullopt;
 }
 
 void StaticObject::render(Shader& render_shader, const Camera& camera, const Vector2I& viewport_dimensions) const

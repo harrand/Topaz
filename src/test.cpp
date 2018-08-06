@@ -31,7 +31,7 @@ void init()
     KeyListener key_listener(wnd);
     MouseListener mouse_listener(wnd);
 
-    Button& test_button = wnd.emplace_child<Button>(Vector2I{0, 200}, Vector2I{100, 50}, font, Vector3F{}, "press me", Vector3F{0.1f, 0.1f, 0.1f}, Vector3F{0.8f, 0.8f, 0.8f});
+    Button& test_button = wnd.emplace_child<Button>(Vector2I{0, 150}, Vector2I{100, 50}, font, Vector3F{}, "press me", Vector3F{0.1f, 0.1f, 0.1f}, Vector3F{0.8f, 0.8f, 0.8f});
     Button& wireframe_button = wnd.emplace_child<Button>(Vector2I{0, 100}, Vector2I{100, 50}, font, Vector3F{}, "toggle wireframe", Vector3F{0.1f, 0.1f, 0.1f}, Vector3F{0.8f, 0.8f, 0.8f});
     wireframe_button.set_callback([](){static bool wireframe = false;wireframe = !wireframe;tz::graphics::enable_wireframe_render(wireframe);});
 
@@ -83,7 +83,7 @@ void init()
     hdr_buffer.set_output_attachment({GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1});
     //Panel& hdr_panel = wnd.emplace_child<Panel>(Vector2I{600, 0}, Vector2I{wnd.get_width(), wnd.get_height()}, &hdr_texture);
     //hdr_panel.uses_hdr = true;
-    ShadowMap depth_framebuffer{8192, 8192};
+    ShadowMap depth_framebuffer{1024, 1024};
     // Uncomment this to render the depth texture.
     //wnd.emplace_child<Panel>(Vector2I{0, 600}, Vector2I{300, 300}, &depth_framebuffer.get_depth_texture());
     FrameBuffer bloom_buffer{wnd.get_width(), wnd.get_height()};
@@ -92,7 +92,7 @@ void init()
     bloom_buffer.set_output_attachment({GL_COLOR_ATTACHMENT0});
     // Uncomment this to render the bloom texture.
     //wnd.emplace_child<Panel>(Vector2I{0, 600}, Vector2I{300, 300}, &bloom_texture);
-    //Panel& blur_panel = wnd.emplace_child<Panel>(Vector2I{0, 600}, Vector2I{100, 100}, &blurred_bloom_texture);
+    //wnd.emplace_child<Panel>(Vector2I{0, 600}, Vector2I{300, 300}, &blurred_bloom_texture);
 
     FrameBuffer final_framebuffer{wnd.get_width(), wnd.get_height()};
     final_framebuffer.emplace_renderbuffer(GL_DEPTH_ATTACHMENT, wnd.get_width(), wnd.get_height(), GL_DEPTH_COMPONENT);
@@ -110,7 +110,7 @@ void init()
                              });
     std::vector<StaticObject> floor_objects;
     std::vector<DynamicObject> falling_objects;
-    constexpr int floor_size = 9025;
+    constexpr int floor_size = 925;
     for(float i = 0; i < floor_size; i++)
     {
         int index = static_cast<int>(i);
@@ -125,8 +125,9 @@ void init()
         DynamicObject& object = falling_objects.emplace_back(1.0f, Transform{Vector3F{(scale.x * row * 2), -100, (scale.z * column * 2)} - offset,
                                                      {}, scale}, stone_floor);
         float sine_id = std::abs(std::sin(i / 10));
-        object.add_force(Vector3F{0, sine_id, 0});
-        object.add_torque({0, rand.next_float(-tz::utility::numeric::consts::pi, tz::utility::numeric::consts::pi) / 100.0f, 0});
+        object.add_force(Vector3F{0, sine_id * 1.5f, 0});
+        constexpr auto pi = tz::utility::numeric::consts::pi;
+        object.add_torque({0, rand.next_float(-pi, pi) / 10.0f, 0});
     }
     scene.emplace<InstancedStaticObject>(floor_objects);
     scene.emplace<InstancedDynamicObject>(falling_objects);
@@ -143,8 +144,8 @@ void init()
         static float x = 0;
         progress.set_progress((1 + std::sin(x += 0.01)) / 2.0f);
         // play with the HDR exposure and gamma.
-        //hdr_gui_shader.set_uniform<float>("exposure", (1.1f + std::sin(x)));
-        //hdr_gui_shader.set_uniform<float>("gamma", 1.0f);
+        hdr_gui_shader.set_uniform<float>("exposure", (1.1f + std::sin(x)));
+        hdr_gui_shader.set_uniform<float>("gamma", 1.0f);
         //scene.set_point_light(0, {{0, 0, 0}, {0, progress.get_progress(), 1 - progress.get_progress()}, 50000000.0f});
         profiler.begin_frame();
         second_timer.update();

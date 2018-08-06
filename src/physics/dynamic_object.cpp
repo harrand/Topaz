@@ -14,15 +14,12 @@ void DynamicObject::update(float delta_time)
     this->transform.rotation += (this->angular_velocity * delta_time);
 }
 
-AABB DynamicObject::get_boundary() const
+std::optional<AABB> DynamicObject::get_boundary() const
 {
-    return this->bound_modelspace * this->transform.model();
+    return StaticObject::get_boundary();
 }
 
-void DynamicObject::on_collision(PhysicsObject &collided)
-{
-
-}
+void DynamicObject::on_collision([[maybe_unused]] PhysicsObject &collided) {}
 
 InstancedDynamicObject::InstancedDynamicObject(const std::vector<DynamicObject>& objects): DynamicObject(0.0f, Transform{{}, {}, {}}, Asset{{}, {}}), instanced_mesh(nullptr), objects(objects)
 {
@@ -40,6 +37,14 @@ InstancedDynamicObject::InstancedDynamicObject(const std::vector<DynamicObject>&
     this->instanced_mesh = std::make_shared<InstancedMesh>(objects.front().asset.mesh->get_file_name(), positions, rotations, scales, true);
     this->asset = objects.front().asset;
     this->asset.mesh = this->instanced_mesh.get();
+}
+
+float InstancedDynamicObject::get_mass() const
+{
+    float mass = 0.0f;
+    for(const DynamicObject& object : this->objects)
+        mass += object.mass;
+    return mass;
 }
 
 void InstancedDynamicObject::update(float delta_time)
@@ -61,3 +66,22 @@ void InstancedDynamicObject::render(Shader& instanced_render_shader, const Camer
     instanced_render_shader.update();
     DynamicObject::render(instanced_render_shader, camera, viewport_dimensions);
 }
+
+std::optional<AABB> InstancedDynamicObject::get_boundary() const
+{
+    using OptAABB = std::optional<AABB>;
+    OptAABB this_bound = DynamicObject::get_boundary();
+    if(!this_bound.has_value())
+        return std::nullopt;
+    for(const DynamicObject& object : this->objects)
+    {
+        OptAABB bound = object.get_boundary();
+        if(!bound.has_value())
+            continue;
+        AABB just_bound = bound.value();
+        this_bound = this_bound->expand_to(just_bound);
+    }
+    return this_bound;
+}
+
+void InstancedDynamicObject::on_collision([[maybe_unused]] PhysicsObject &collided){}
