@@ -1,14 +1,14 @@
 #include "audio/audio.hpp"
 
-AudioClip::AudioClip(std::string filename): filename(std::move(filename)), audio_handle(Mix_LoadWAV(this->filename.c_str()))
+AudioClip::AudioClip(std::string filename): channel(tz::audio::unused_channel), filename(std::move(filename)), audio_handle(Mix_LoadWAV(this->filename.c_str()))
 {
 	if(this->audio_handle == NULL)
-		std::cerr << "AudioClip instantiation caused one or more errors from filename '" << this->filename << "'.\n";
+		std::cerr << "AudioClip instantiation caused one or more errors from filename '" << this->filename << "': " << Mix_GetError() << "\n";
 }
 
 AudioClip::AudioClip(const AudioClip& copy): AudioClip(copy.get_file_name()){}
 
-AudioClip::AudioClip(AudioClip&& move): filename(move.get_file_name()), audio_handle(move.audio_handle)
+AudioClip::AudioClip(AudioClip&& move): channel(tz::audio::unused_channel), filename(move.get_file_name()), audio_handle(move.audio_handle)
 {
 	move.audio_handle = nullptr;
 }
@@ -18,6 +18,21 @@ AudioClip::~AudioClip()
 	// Cannot guarantee that Mix_FreeChunk(nullptr) doesn't lead to UB (this happens if this instance was moved to another) so put a check in here to prevent crashing
 	if(this->audio_handle != nullptr)
 		Mix_FreeChunk(this->audio_handle);
+}
+
+AudioClip& AudioClip::operator=(AudioClip&& rhs)
+{
+    this->channel = rhs.channel;
+    this->filename = std::move(rhs.filename);
+    this->audio_handle = rhs.audio_handle;
+    rhs.audio_handle = nullptr;
+    return *this;
+}
+
+AudioClip& AudioClip::operator=(AudioClip rhs)
+{
+	AudioClip::swap(*this, rhs);
+	return *this;
 }
 
 void AudioClip::play()
@@ -56,7 +71,32 @@ const std::string& AudioClip::get_file_name() const
 	return this->filename;
 }
 
+void AudioClip::swap(AudioClip& lhs, AudioClip& rhs)
+{
+	std::swap(lhs.channel, rhs.channel);
+	std::swap(lhs.filename, rhs.filename);
+	std::swap(lhs.audio_handle, rhs.audio_handle);
+}
+
 AudioSource::AudioSource(std::string filename): AudioClip(filename){}
+
+AudioSource::AudioSource(const AudioSource& copy): AudioSource(copy.filename){}
+AudioSource::AudioSource(AudioSource&& move): AudioClip(move){}
+
+AudioSource& AudioSource::operator=(AudioSource&& rhs)
+{
+	this->channel = rhs.channel;
+	this->filename = std::move(rhs.filename);
+	this->audio_handle = rhs.audio_handle;
+	rhs.audio_handle = nullptr;
+	return *this;
+}
+
+AudioSource& AudioSource::operator=(AudioSource rhs)
+{
+	AudioClip::swap(*this, rhs);
+	return *this;
+}
 
 void AudioSource::update(const Vector3F& source_position, const Camera& relative_to) const
 {
@@ -77,14 +117,30 @@ AudioMusic::AudioMusic(std::string filename): filename(std::move(filename)), pau
 
 AudioMusic::AudioMusic(const AudioMusic& copy): AudioMusic(copy.get_file_name()){}
 
-AudioMusic::AudioMusic(AudioMusic&& move): filename(move.get_file_name()), audio_handle(move.audio_handle)
+AudioMusic::AudioMusic(AudioMusic&& move): filename(move.get_file_name()), paused(move.paused), audio_handle(move.audio_handle)
 {
 	move.audio_handle = nullptr;
 }
 
 AudioMusic::~AudioMusic()
 {
-	Mix_FreeMusic(this->audio_handle);
+	if(this->audio_handle != nullptr)
+		Mix_FreeMusic(this->audio_handle);
+}
+
+AudioMusic& AudioMusic::operator=(AudioMusic&& rhs)
+{
+	this->filename = std::move(rhs.filename);
+	this->paused = rhs.paused;
+	this->audio_handle = rhs.audio_handle;
+	rhs.audio_handle = nullptr;
+	return *this;
+}
+
+AudioMusic& AudioMusic::operator=(AudioMusic rhs)
+{
+	AudioMusic::swap(*this, rhs);
+	return *this;
 }
 
 const std::string& AudioMusic::get_file_name() const
@@ -110,6 +166,13 @@ void AudioMusic::set_paused(bool pause)
 		Mix_PauseMusic();
 	else
 		Mix_ResumeMusic();
+}
+
+void AudioMusic::swap(AudioMusic& lhs, AudioMusic& rhs)
+{
+	std::swap(lhs.filename, rhs.filename);
+	std::swap(lhs.paused, rhs.paused);
+	std::swap(lhs.audio_handle, rhs.audio_handle);
 }
 
 namespace tz::audio

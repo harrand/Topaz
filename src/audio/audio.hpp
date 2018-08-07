@@ -4,6 +4,10 @@
 #include "SDL2/SDL_mixer.h"
 #include "graphics/camera.hpp"
 
+namespace tz::audio
+{
+    constexpr int unused_channel = -1;
+}
 
 /**
 *	Playable audio file. Use this for short audio segments like sound effects.
@@ -30,13 +34,10 @@ public:
 	 * Dispose of audio data sensibly.
 	 */
 	virtual ~AudioClip();
-	/**
-	 * AudioClips cannot be re-assigned, they must be reconstructed.
-	 * @param rhs - N/A
-	 * @return - N/A
-	 */
-	AudioClip& operator=(const AudioClip& rhs) = delete;
-	
+	/// Rule of Five
+	AudioClip& operator=(AudioClip&& rhs);
+	/// Rule of Five
+	AudioClip& operator=(AudioClip rhs);
 	/**
 	* Plays the audio. 
 	* The audio will play until either the destructor is called or the audio is finished; whichever takes place first.
@@ -58,11 +59,12 @@ public:
 	 * @return - Filename of the source audio.
 	 */
 	const std::string& get_file_name() const;
-private:
-	/// Channel that the AudioClip is currently playing on.
+protected:
+    static void swap(AudioClip& lhs, AudioClip& rhs);
+    /// Channel that the AudioClip is currently playing on.
 	int channel;
 	/// Path to the file used to load this AudioClip's data.
-	const std::string filename;
+	std::string filename;
 	/// SDL_Mixer audio data handle.
 	Mix_Chunk* audio_handle;
 };
@@ -78,12 +80,11 @@ public:
 	 * @param filename - Path of the filename.
 	 */
 	AudioSource(std::string filename);
-	/**
-	 * Similarly to AudioClip, AudioSources are also not re-assignable. Reconstruct if necessary instead.
-	 * @param rhs - N/A
-	 * @return - N/A
-	 */
-	AudioSource& operator=(const AudioSource& rhs) = delete;
+	AudioSource(const AudioSource& copy);
+	AudioSource(AudioSource&& move);
+	/// Destructor is same as AudioClip, so not included here. I will not write an empty one just to satisfy the Ro5.
+	AudioSource& operator=(AudioSource&& rhs);
+	AudioSource& operator=(AudioSource rhs);
 
 	/**
 	 * Invoke whenever the orientation of the camera changes.
@@ -119,12 +120,8 @@ public:
 	 * Dispose of audio data sensibly.
 	 */
 	~AudioMusic();
-	/**
-	 * AudioMusics are not re-assignable. Reconstruct if necessary.
-	 * @param rhs - N/A
-	 * @return - N/A
-	 */
-	AudioMusic& operator=(const AudioMusic& rhs) = delete;
+	AudioMusic& operator=(AudioMusic&& rhs);
+	AudioMusic& operator=(AudioMusic rhs);
 	/**
 	 * Retrieve the filename of the file used to load this AudioClip.
 	 * @return - Filename of the source audio.
@@ -145,7 +142,8 @@ public:
 	 * @param pause - Whether to pause or resume the music.
 	 */
 	void set_paused(bool pause = true);
-private:
+protected:
+    void swap(AudioMusic& lhs, AudioMusic& rhs);
 	/// Path to the file used to load this AudioClip's data.
 	std::string filename;
 	/// Controls whether the music is paused or playing.

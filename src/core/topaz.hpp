@@ -16,11 +16,10 @@ namespace tz
             std::cout << "Initialising Topaz...\n";
         SDL_Init(SDL_INIT_EVERYTHING);
         if(print_progress)
-        {
             std::cout << "Initialised SDL2.\n";
-            tz::audio::initialise(print_progress);
+        tz::audio::initialise(print_progress);
+        if(print_progress)
             std::cout << "Initialised Topaz. Ready to receive OpenGL context...\n";
-        }
     }
 
     void terminate(bool print_progress = false)
