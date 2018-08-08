@@ -111,9 +111,8 @@ public:
 	 * @param font - The Font containing the desired glyphs.
 	 * @param text - String representing the text to be rendered into a texture.
 	 * @param foreground_colour - Colour of the text.
-	 * @param store_bitmap - Whether the internal image-data should be stored in a local Bitmap.
 	 */
-	Texture(const Font& font, const std::string& text, SDL_Color foreground_colour, bool store_bitmap = false);
+	Texture(const Font& font, const std::string& text, SDL_Color foreground_colour);
 	/**
 	 * Copy a Texture by filename. If the texture was not loaded from an external file, perform image-data copy instead.
 	 * @param copy - The Texture which data to copy from.

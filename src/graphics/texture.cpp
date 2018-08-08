@@ -77,10 +77,14 @@ Texture::Texture(std::string filename, bool mipmapping, bool gamma_corrected): t
 	this->delete_texture(imgdata);
 }
 
-Texture::Texture(const Font& font, const std::string& text, SDL_Color foreground_colour, bool store_bitmap): Texture()
+Texture::Texture(const Font& font, const std::string& text, SDL_Color foreground_colour): Texture()
 {
 	if(font.font_handle == NULL)
+	{
 		std::cerr << "Texture attempted to load from an invalid font. Error: \"" << TTF_GetError() << "\".\n";
+		this->bitmap = {};
+		return;
+	}
 	SDL_Surface* text_surface = TTF_RenderUTF8_Blended(font.font_handle, text.c_str(), foreground_colour);
 	GLenum texture_format, bytes_per_pixel = text_surface->format->BytesPerPixel;
 	constexpr long mask = 0x000000ff;
@@ -109,28 +113,31 @@ Texture::Texture(const Font& font, const std::string& text, SDL_Color foreground
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexImage2D(GL_TEXTURE_2D, 0, bytes_per_pixel, text_surface->w, text_surface->h, 0, texture_format, GL_UNSIGNED_BYTE, text_surface->pixels);
 	// if ctor parameter said to store the bitmap in RAM, then dewit. otherwise dont bother because it eats lots of ram and its in VRAM anyway
-	if(store_bitmap)
-	{
-		auto pixel_data = reinterpret_cast<unsigned char*>(text_surface->pixels);
-		this->bitmap = Bitmap<PixelRGBA>();
-		this->bitmap.pixels.reserve(static_cast<std::size_t>(std::abs(this->width * this->height)));
-		for(std::size_t i = 3; i < std::abs(this->width * this->height); i += 4)
-			switch(texture_format)
-			{
-				case GL_RGBA:
-				default:
-					this->bitmap.pixels.emplace_back(PixelRGBA{pixel_data[i - 3], pixel_data[i - 2], pixel_data[i - 1], pixel_data[i]});
-					break;
-				case GL_BGRA:
-					this->bitmap.pixels.emplace_back(PixelRGBA{pixel_data[i - 1], pixel_data[i - 2], pixel_data[i - 3], pixel_data[i]});
-					break;
-				case GL_RGB:
-					this->bitmap.pixels.emplace_back(PixelRGBA{pixel_data[i - 3], pixel_data[i - 2], pixel_data[i - 1], 255});
-					break;
-				case GL_BGR:
-					this->bitmap.pixels.emplace_back(PixelRGBA{pixel_data[i - 1], pixel_data[i - 2], pixel_data[i - 3], 255});
-					break;
-			}
+	// Store necessary data in this bitmap.
+	auto pixel_data = reinterpret_cast<unsigned char*>(text_surface->pixels);
+	this->bitmap = Bitmap<PixelRGBA>();
+	this->bitmap.pixels.reserve(static_cast<std::size_t>(std::abs(this->width * this->height)));
+	for(std::size_t i = 3; i < std::abs(this->width * this->height); i += 4) {
+		switch (texture_format)
+		{
+			case GL_RGBA:
+			default:
+				this->bitmap.pixels.emplace_back(
+						PixelRGBA{pixel_data[i - 3], pixel_data[i - 2], pixel_data[i - 1], pixel_data[i]});
+				break;
+			case GL_BGRA:
+				this->bitmap.pixels.emplace_back(
+						PixelRGBA{pixel_data[i - 1], pixel_data[i - 2], pixel_data[i - 3], pixel_data[i]});
+				break;
+			case GL_RGB:
+				this->bitmap.pixels.emplace_back(
+						PixelRGBA{pixel_data[i - 3], pixel_data[i - 2], pixel_data[i - 1], 255});
+				break;
+			case GL_BGR:
+				this->bitmap.pixels.emplace_back(
+						PixelRGBA{pixel_data[i - 1], pixel_data[i - 2], pixel_data[i - 3], 255});
+				break;
+		}
 	}
 	SDL_FreeSurface(text_surface);
 }

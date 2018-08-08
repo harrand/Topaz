@@ -44,6 +44,31 @@ const std::string& Font::get_path() const
 	return this->font_path;
 }
 
+Font::Style Font::get_style() const
+{
+	return static_cast<Font::Style>(TTF_GetFontStyle(this->font_handle));
+}
+
+void Font::set_style(Font::Style style)
+{
+	TTF_SetFontStyle(this->font_handle, static_cast<int>(style));
+}
+
+bool Font::has_outline() const
+{
+	return this->get_outline_size() == 0;
+}
+
+int Font::get_outline_size() const
+{
+	return TTF_GetFontOutline(this->font_handle);
+}
+
+void Font::set_outline_size(int outline)
+{
+	TTF_SetFontOutline(this->font_handle, outline);
+}
+
 Vertex::Vertex(Vector3F position, Vector2F texture_coordinate, Vector3F normal, Vector3F tangent): position(std::move(position)), texture_coordinate(std::move(texture_coordinate)), normal(std::move(normal)), tangent(std::move(tangent)){}
 
 bool Vertex::operator==(const Vertex& rhs) const

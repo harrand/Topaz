@@ -14,6 +14,14 @@
 class Font
 {
 public:
+	enum class Style : int
+	{
+		NORMAL = TTF_STYLE_NORMAL,
+		BOLD = TTF_STYLE_BOLD,
+		ITALIC = TTF_STYLE_ITALIC,
+		UNDERLINE = TTF_STYLE_UNDERLINE,
+		STRIKED = TTF_STYLE_STRIKETHROUGH,
+	};
 	/**
 	 * Construct a font from an existing font-file.
 	 * @param font_path - Path to the supported font-file.
@@ -56,6 +64,11 @@ public:
 	 * @return - Filename of the source font.
 	 */
 	const std::string& get_path() const;
+	Font::Style get_style() const;
+	void set_style(Font::Style style);
+	bool has_outline() const;
+	int get_outline_size() const;
+	void set_outline_size(int outline);
 	friend class Texture;
 private:
 	/// Path to the font-file containing font-data.
