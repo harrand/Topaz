@@ -292,6 +292,8 @@ void ParallaxMap::bind(Shader* shader, unsigned int id, const std::string& sampl
 
 DisplacementMap::DisplacementMap(std::string filename, float displacement_factor): Texture(filename, false, false), displacement_factor(displacement_factor){}
 
+DisplacementMap::DisplacementMap(Bitmap<PixelDepth> height_map, float displacement_factor): Texture(height_map), displacement_factor(displacement_factor){}
+
 void DisplacementMap::bind(Shader* shader, unsigned int id, const std::string& sampler_name) const
 {
     this->bind_with_string(shader, id, sampler_name);
@@ -362,4 +364,35 @@ std::vector<unsigned char*> CubeMap::load_textures()
 	image_data.push_back(stbi_load((this->back_texture).c_str(), &(this->width[4]), &(this->height[4]), &(this->components[4]), 4));
 	image_data.push_back(stbi_load((this->front_texture).c_str(), &(this->width[5]), &(this->height[5]), &(this->components[5]), 4));
 	return image_data;
+}
+
+namespace tz::graphics::height_map
+{
+	DisplacementMap generate_smooth_noise(int width, int height, float displacement_factor, SmoothNoise noise_function)
+	{
+		std::vector<PixelDepth> pixels;
+		pixels.resize(static_cast<std::size_t>(width * height), PixelDepth{0.0f});
+		for(int x = 0; x < width; x++)
+		{
+			for(int y = 0; y < height; y++)
+			{
+				auto& pixel = pixels[x + y * height];
+				pixel.data.underlying_data = {noise_function(x, y)};
+			}
+		}
+		return {Bitmap<PixelDepth>{pixels, width, height}, displacement_factor};
+	}
+
+    DisplacementMap generate_cosine_noise(int width, int height, float displacement_factor, CosineNoise noise_function)
+    {
+        std::vector<PixelDepth> pixels;
+        pixels.resize(width * height, PixelDepth{0.0f});
+        for(int i = 0; i < width * height; i++)
+        {
+            int row = i / width;
+            int column = i % width;
+            pixels[i].data.underlying_data = {noise_function(column, row)};
+        }
+        return {Bitmap<PixelDepth>{pixels, width, height}, displacement_factor};
+    }
 }

@@ -4,11 +4,6 @@
 bool tz::graphics::initialised = false;
 bool tz::graphics::has_context = false;
 
-std::shared_ptr<Texture> tz::graphics::texture::default_texture = nullptr;
-std::shared_ptr<NormalMap> tz::graphics::texture::default_normal_map = nullptr;
-std::shared_ptr<ParallaxMap> tz::graphics::texture::default_parallax_map = nullptr;
-std::shared_ptr<DisplacementMap> tz::graphics::texture::default_displacement_map = nullptr;
-
 Window::Window(std::string title, int x_pixels, int y_pixels, int width_pixels, int height_pixels): Window(title, {x_pixels, y_pixels}, {width_pixels, height_pixels}){}
 
 Window::Window(std::string title, const Vector2I& position_pixel_space, const Vector2I& dimensions_pixel_space): registered_listeners{}, title(title), position_pixel_space(tz::util::gui::clamp_pixel_screen_space(position_pixel_space)), dimensions_pixel_space(tz::util::gui::clamp_pixel_screen_space(dimensions_pixel_space)), sdl_window(nullptr), close_requested(false), window_gui_element({0, 0}, {this->get_width(), this->get_height()}, nullptr, {})

@@ -5,6 +5,8 @@
 
 namespace tz::utility::numeric
 {
+    float cosine_interpolate(float a, float b, float blend_factor);
+    constexpr float default_smoothness = 3.0f;
     namespace consts
     {
         /// 3.14159...
@@ -74,11 +76,35 @@ private:
     Engine random_engine;
 };
 
+using LocalRandom = Random<>;
 /**
 * Template specialisation of Random, using the C++ mersenne-twister functionality.
 * More expensive than a linear-congruential approach, but does provide higher-quality pseudorandomness.
 */
 using MersenneTwister = Random<std::mt19937, std::mt19937::result_type>;
+
+class SmoothNoise
+{
+public:
+    SmoothNoise(int seed);
+    float operator()(int x, int z);
+protected:
+    float base_noise(int x, int z);
+    float smooth_noise(int x, int z);
+private:
+    int seed;
+    LocalRandom random;
+};
+
+class CosineNoise : protected SmoothNoise
+{
+public:
+    CosineNoise(int seed);
+    float operator()(int x, int z, float smoothness = tz::utility::numeric::default_smoothness);
+    float cosine_noise(int x, int z, float smoothness = tz::utility::numeric::default_smoothness);
+protected:
+    using SmoothNoise::operator();
+};
 
 #include "numeric.inl"
 

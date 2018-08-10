@@ -51,6 +51,7 @@ void init()
     assets.emplace<Mesh>("monkey", "../../../res/runtime/models/monkeyhead.obj");
     assets.emplace<Mesh>("cylinder", "../../../res/runtime/models/cylinder.obj");
     assets.emplace<Mesh>("sphere", "../../../res/runtime/models/sphere.obj");
+    assets.emplace<Mesh>("plane_hd", "../../../res/runtime/models/plane_hd.obj");
     assets.emplace<Texture>("bricks", "../../../res/runtime/textures/bricks.jpg");
     assets.emplace<Texture>("stone", "../../../res/runtime/textures/stone.jpg");
     assets.emplace<Texture>("wood", "../../../res/runtime/textures/wood.jpg");
@@ -61,7 +62,9 @@ void init()
     assets.emplace<ParallaxMap>("stone_parallax", "../../../res/runtime/parallaxmaps/stone_parallax.png", 0.06f, -0.5f);
     assets.emplace<ParallaxMap>("wood_parallax", "../../../res/runtime/parallaxmaps/wood_parallax.jpg");
     assets.emplace<DisplacementMap>("bricks_displacement", "../../../res/runtime/displacementmaps/bricks_displacement.png");
+    assets.emplace<DisplacementMap>("noise_displacement", tz::graphics::height_map::generate_cosine_noise(512, 512, 10.0f));
     Asset asset0(assets.find<Mesh>("cube"), assets.find_texture("bricks"), assets.find_normal_map("bricks_normal"), assets.find_parallax_map("bricks_parallax"), assets.find_displacement_map("bricks_displacement"));
+    Asset noise_asset(assets.find<Mesh>("plane_hd"), assets.find_texture("bricks"), assets.find_normal_map("bricks_normal"), nullptr, assets.find_displacement_map("noise_displacement"));
     Asset asset1(assets.find_mesh("cube_lq"), assets.find_texture("bricks"), assets.find_normal_map("bricks_normal"), assets.find_parallax_map("bricks_parallax"));
     Asset asset2(assets.find_mesh("cube_lq"), assets.find_texture("bricks"), assets.find_normal_map("bricks_normal"));
     Asset asset3(assets.find_mesh("cube_lq"), assets.find_texture("bricks"));
@@ -126,15 +129,18 @@ void init()
         DynamicObject& object = falling_objects.emplace_back(1.0f, Transform{Vector3F{(scale.x * row * 2), -100, (scale.z * column * 2)} - offset,
                                                      {}, scale}, stone_floor);
         float sine_id = std::abs(std::sin(i / 10));
-        object.add_force(Vector3F{0, sine_id * 1.5f, 0});
-        constexpr auto pi = tz::utility::numeric::consts::pi;
-        object.add_torque({0, rand.next_float(-pi, pi) / 10.0f, 0});
+        float pi = tz::utility::numeric::consts::pi;
+        object.add_force({0, -981.0f, 0});
+        object.velocity = {rand(-200.0f, 200.0f), rand(1000.0f, 2500.0f), rand(-200.0f, 200.0f)};
+        //object.add_force(Vector3F{0, sine_id * 1.5f, 0});
+        object.angular_velocity = {rand(-pi, pi) * 0.1f, rand(-pi, pi) * 0.1f, rand(-pi, pi) * 0.1f};
     }
     scene.emplace<InstancedStaticObject>(floor_objects);
     scene.emplace<InstancedDynamicObject>(falling_objects);
     scene.emplace<StaticObject>(Transform{{0, 0, 0}, {}, {15, 15, 15}}, wooden_sphere);
     scene.emplace<StaticObject>(Transform{{100, 0, 0}, {}, {200, 200, 200}}, wooden_cylinder);
     scene.emplace<StaticObject>(Transform{{0, -50, -70}, {}, {20, 20, 20}}, asset1);
+    scene.emplace<StaticObject>(Transform{{0, -400, 0}, {}, {4000, 40, 4000}}, noise_asset);
 
     long long int time = tz::utility::time::now();
     Timer second_timer;

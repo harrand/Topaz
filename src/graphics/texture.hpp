@@ -287,6 +287,7 @@ public:
 	 * @param filename - Path to the existing displacement-map image file
 	 */
 	DisplacementMap(std::string filename, float displacement_factor = tz::graphics::asset::default_displacement_factor);
+	DisplacementMap(Bitmap<PixelDepth> height_map, float displacement_factor = tz::graphics::asset::default_displacement_factor);
 	/**
 	* Bind this normal-map to a specified Shader.
 	* @param shader - The Shader to be bound with.
@@ -376,13 +377,13 @@ private:
 
 namespace tz::graphics
 {
-	namespace texture
-	{
-		extern std::shared_ptr<Texture> default_texture;
-		extern std::shared_ptr<NormalMap> default_normal_map;
-		extern std::shared_ptr<ParallaxMap> default_parallax_map;
-		extern std::shared_ptr<DisplacementMap> default_displacement_map;
-	}
+    namespace height_map
+    {
+        template<typename Engine = std::default_random_engine, typename EngineResultType = std::default_random_engine::result_type>
+        DisplacementMap generate_random_noise(int width, int height, float displacement_factor, Random<Engine, EngineResultType> noise_function = {});
+        DisplacementMap generate_smooth_noise(int width, int height, float displacement_factor, SmoothNoise noise_function = {Random{}.next_int()});
+        DisplacementMap generate_cosine_noise(int width, int height, float displacement_factor, CosineNoise noise_function = Random{}.next_int());
+    }
 }
 
 #include "texture.inl"

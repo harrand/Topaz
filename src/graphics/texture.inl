@@ -86,3 +86,13 @@ Texture::Texture(Bitmap<Pixel> pixel_data): Texture(pixel_data.width, pixel_data
 	// Unbind the texture.
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
+
+template<typename Engine, typename EngineResultType>
+DisplacementMap tz::graphics::height_map::generate_random_noise(int width, int height, float displacement_factor, Random<Engine, EngineResultType> noise_function)
+{
+    std::vector<PixelDepth> pixels;
+    pixels.resize(static_cast<std::size_t>(width * height), PixelDepth{0.0f});
+    for(auto& pixel : pixels)
+        pixel.data.underlying_data = {noise_function.next_float(-1.0f, 1.0f)};
+    return {Bitmap<PixelDepth>{pixels, width, height}, displacement_factor};
+}

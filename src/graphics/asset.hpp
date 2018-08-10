@@ -9,6 +9,15 @@
 struct AssetBuffer
 {
     AssetBuffer(std::unordered_map<std::string, std::unique_ptr<Mesh>> meshes = {}, std::unordered_map<std::string, std::unique_ptr<Texture>> textures = {}, std::unordered_map<std::string, std::unique_ptr<NormalMap>> normal_maps = {}, std::unordered_map<std::string, std::unique_ptr<ParallaxMap>> parallax_maps = {}, std::unordered_map<std::string, std::unique_ptr<DisplacementMap>> displacement_maps = {});
+    /// AssetBuffers are non-copyable.
+    AssetBuffer(const AssetBuffer& copy) = delete;
+    /// AssetBuffers are non-copyable.
+    AssetBuffer& operator=(const AssetBuffer& rhs) = delete;
+    bool sink_mesh(const std::string& asset_name, std::unique_ptr<Mesh> sunken_mesh);
+    bool sink_texture(const std::string& asset_name, std::unique_ptr<Texture> sunken_texture);
+    bool sink_normalmap(const std::string& asset_name, std::unique_ptr<NormalMap> sunken_normalmap);
+    bool sink_parallaxmap(const std::string& asset_name, std::unique_ptr<ParallaxMap> sunken_parallaxmap);
+    bool sink_displacementmap(const std::string& asset_name, std::unique_ptr<DisplacementMap> sunken_displacementmap);
 	template<typename AssetType, typename... Args>
 	AssetType& emplace(const std::string& asset_name, Args&&... args);
 	template<typename... Args>
@@ -28,6 +37,11 @@ struct AssetBuffer
     NormalMap* find_normal_map(const std::string& normal_map_name);
     ParallaxMap* find_parallax_map(const std::string& parallax_map_name);
     DisplacementMap* find_displacement_map(const std::string& displacement_map_name);
+    std::unique_ptr<Mesh> take_mesh(const std::string& mesh_name);
+    std::unique_ptr<Texture> take_texture(const std::string& texture_name);
+    std::unique_ptr<NormalMap> take_normalmap(const std::string& normalmap_name);
+    std::unique_ptr<ParallaxMap> take_parallaxmap(const std::string& parallaxmap_name);
+    std::unique_ptr<DisplacementMap> take_displacementmap(const std::string& displacementmap_name);
 private:
     /// Container of Mesh assets.
 	std::unordered_map<std::string, std::unique_ptr<Mesh>> meshes;
