@@ -25,6 +25,7 @@ public:
 	 */
 	T length(std::function<T(T)> sqrt_function = std::sqrt) const;
 	const std::array<T, N>& data() const;
+	Vector<N, T> lerp(const Vector<N, T>& rhs, double proportion) const;
 	/**
 	 * Explicitly convert to a string.
 	 * @return String in the following format: "[d0, d1, ...]"
@@ -76,6 +77,12 @@ public:
 	 * @return - This, after assignment
 	 */
 	Vector2<T>& operator=(const Vector2<T>& rhs);
+	/**
+	 * Assign the data members of this 3-dimensional Vector to be equal to an existing base-vector.
+	 * @param rhs - The 3-dimensional Vector to copy from
+	 * @return - This, after assignment
+	 */
+	Vector2<T>& operator=(const Vector<2, T>& rhs);
 	/**
 	 * Find the magnitude of the 2-dimensional Vector.
 	 * @return - Magnitude of the 2-dimensional Vector.
@@ -238,6 +245,12 @@ public:
      * @return - This, after assignment
      */
 	Vector3<T>& operator=(const Vector3<T>& rhs);
+	/**
+	 * Assign the data members of this 3-dimensional Vector to be equal to an existing base-vector.
+	 * @param rhs - The 3-dimensional Vector to copy from
+	 * @return - This, after assignment
+	 */
+	Vector3<T>& operator=(const Vector<3, T>& rhs);
 	/**
 	 * Find the magnitude of the 3-dimensional Vector.
 	 * @return - Magnitude of the 3-dimensional Vector.
@@ -446,6 +459,12 @@ public:
      * @return - This, after assignment
      */
 	Vector4<T>& operator=(const Vector4<T>& rhs);
+	/**
+	 * Assign the data members of this 3-dimensional Vector to be equal to an existing base-vector.
+	 * @param rhs - The 3-dimensional Vector to copy from
+	 * @return - This, after assignment
+	 */
+	Vector4<T>& operator=(const Vector<4, T>& rhs);
 	/**
 	 * Find the magnitude of the 4-dimensional Vector.
 	 * @return - Magnitude of the 4-dimensional Vector.

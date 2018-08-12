@@ -21,6 +21,16 @@ const std::array<T, N>& Vector<N, T>::data() const
 }
 
 template<unsigned int N, typename T>
+Vector<N, T> Vector<N, T>::lerp(const Vector<N, T>& rhs, double proportion) const
+{
+	Vector<N, T> result{std::array<T, N>{T{}}};
+	using namespace tz::utility;
+	for(std::size_t i = 0; i < N; i++)
+		result.underlying_data[i] = numeric::linear_interpolate(this->data()[i], rhs.data()[i], proportion);
+	return result;
+}
+
+template<unsigned int N, typename T>
 bool Vector<N, T>::operator==(const Vector<N, T>& rhs) const
 {
 	return this->underlying_data == rhs.underlying_data;
@@ -70,6 +80,13 @@ Vector2<T>& Vector2<T>::operator=(const Vector2<T>& rhs)
 	/// this->x and this->y should still refer to this->data[0] and this->data[1] respectively.
 	this->underlying_data = rhs.underlying_data;
 	return *(this);
+}
+
+template<typename T>
+Vector2<T>& Vector2<T>::operator=(const Vector<2, T>& rhs)
+{
+    this->underlying_data = rhs.underlying_data;
+    return *(this);
 }
 
 template<typename T>
@@ -215,6 +232,13 @@ Vector3<T>& Vector3<T>::operator=(const Vector3<T>& rhs)
 	/// this->x and this->y should still refer to this->data[0] and this->data[1] respectively.
 	this->underlying_data = rhs.underlying_data;
 	return *(this);
+}
+
+template<typename T>
+Vector3<T>& Vector3<T>::operator=(const Vector<3, T>& rhs)
+{
+    this->underlying_data = rhs.underlying_data;
+    return *(this);
 }
 
 template<typename T>
@@ -419,6 +443,13 @@ Vector4<T>& Vector4<T>::operator=(const Vector4<T>& rhs)
 {
 	this->underlying_data = rhs.underlying_data;
 	return *(this);
+}
+
+template<typename T>
+Vector4<T>& Vector4<T>::operator=(const Vector<4, T>& rhs)
+{
+    this->underlying_data = rhs.underlying_data;
+    return *(this);
 }
 
 template<typename T>

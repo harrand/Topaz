@@ -383,7 +383,7 @@ namespace tz::graphics::height_map
 		return {Bitmap<PixelDepth>{pixels, width, height}, displacement_factor};
 	}
 
-    DisplacementMap generate_cosine_noise(int width, int height, float displacement_factor, CosineNoise noise_function)
+    DisplacementMap generate_cosine_noise(int width, int height, float displacement_factor, CosineNoise noise_function, float smoothness)
     {
         std::vector<PixelDepth> pixels;
         pixels.resize(width * height, PixelDepth{0.0f});
@@ -391,7 +391,7 @@ namespace tz::graphics::height_map
         {
             int row = i / width;
             int column = i % width;
-            pixels[i].data.underlying_data = {noise_function(column, row)};
+            pixels[i].data.underlying_data = {noise_function(column, row, smoothness)};
         }
         return {Bitmap<PixelDepth>{pixels, width, height}, displacement_factor};
     }

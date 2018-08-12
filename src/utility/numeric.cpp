@@ -2,12 +2,16 @@
 
 namespace tz::utility::numeric
 {
+    float linear_interpolate(float a, float b, float blend_factor)
+    {
+        return a * (1.0f - blend_factor) + b * blend_factor;
+    }
+
     float cosine_interpolate(float a, float b, float blend_factor)
     {
         float theta = blend_factor * static_cast<float>(tz::utility::numeric::consts::pi);
-        // get a value between 0-1
-        float value = (1.0f - std::cos(theta)) * 0.5f;
-        return a * (1.0f - value) + b * value;
+        // get a value between 0-1, then pass that into a simple linear-interpolation.
+        return tz::utility::numeric::linear_interpolate(a, b, 1.0f - std::cos(theta) * 0.5f);
     }
 }
 
@@ -20,7 +24,7 @@ float SmoothNoise::operator()(int x, int z)
 
 float SmoothNoise::base_noise(int x, int z)
 {
-    LocalRandom random_copy = {static_cast<std::default_random_engine::result_type>(this->seed + x + z)};
+    LocalRandom random_copy = {static_cast<std::default_random_engine::result_type>(this->seed + x * 34589897 + z * 9999999999)};
     return random_copy.next_float(-1.0f, 1.0f);
 }
 

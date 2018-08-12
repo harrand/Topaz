@@ -22,7 +22,8 @@ int main()
 void init()
 {
     Window wnd("Topaz Development Window", 0, 30, 800, 600);
-    wnd.set_swap_interval_type(Window::SwapIntervalType::VSYNC);
+    wnd.set_swap_interval_type(Window::SwapIntervalType::LATE_SWAP_TEARING);
+
     // During init, enable debug output
     Font font("../../../res/runtime/fonts/CaviarDreams.ttf", 36);
     Label& label = wnd.emplace_child<Label>(Vector2I{0, 0}, font, Vector3F{0.0f, 0.3f, 0.0f}, " ");
@@ -33,7 +34,8 @@ void init()
 
     Button& test_button = wnd.emplace_child<Button>(Vector2I{0, 150}, Vector2I{100, 50}, font, Vector3F{}, "press me", Vector3F{0.1f, 0.1f, 0.1f}, Vector3F{0.8f, 0.8f, 0.8f});
     Button& wireframe_button = wnd.emplace_child<Button>(Vector2I{0, 100}, Vector2I{100, 50}, font, Vector3F{}, "toggle wireframe", Vector3F{0.1f, 0.1f, 0.1f}, Vector3F{0.8f, 0.8f, 0.8f});
-    wireframe_button.set_callback([](){static bool wireframe = false;wireframe = !wireframe;tz::graphics::enable_wireframe_render(wireframe);});
+    bool wireframe = false;
+    wireframe_button.set_callback([&wireframe](){wireframe = !wireframe;});
 
     constexpr float speed = 0.5f;
     Shader render_shader("../../../src/shaders/3D_FullAssetsInstancedShadowsBloom");
@@ -62,7 +64,7 @@ void init()
     assets.emplace<ParallaxMap>("stone_parallax", "../../../res/runtime/parallaxmaps/stone_parallax.png", 0.06f, -0.5f);
     assets.emplace<ParallaxMap>("wood_parallax", "../../../res/runtime/parallaxmaps/wood_parallax.jpg");
     assets.emplace<DisplacementMap>("bricks_displacement", "../../../res/runtime/displacementmaps/bricks_displacement.png");
-    assets.emplace<DisplacementMap>("noise_displacement", tz::graphics::height_map::generate_cosine_noise(512, 512, 10.0f));
+    assets.emplace<DisplacementMap>("noise_displacement", tz::graphics::height_map::generate_cosine_noise(2048, 2048, 100.0f));
     Asset asset0(assets.find<Mesh>("cube"), assets.find_texture("bricks"), assets.find_normal_map("bricks_normal"), assets.find_parallax_map("bricks_parallax"), assets.find_displacement_map("bricks_displacement"));
     Asset noise_asset(assets.find<Mesh>("plane_hd"), assets.find_texture("bricks"), assets.find_normal_map("bricks_normal"), nullptr, assets.find_displacement_map("noise_displacement"));
     Asset asset1(assets.find_mesh("cube_lq"), assets.find_texture("bricks"), assets.find_normal_map("bricks_normal"), assets.find_parallax_map("bricks_parallax"));
@@ -91,7 +93,7 @@ void init()
     //wnd.emplace_child<Panel>(Vector2I{0, 600}, Vector2I{300, 300}, &depth_framebuffer.get_depth_texture());
     FrameBuffer bloom_buffer{wnd.get_width(), wnd.get_height()};
     bloom_buffer.emplace_renderbuffer(GL_DEPTH_ATTACHMENT, wnd.get_width(), wnd.get_height(), GL_DEPTH_COMPONENT);
-    Texture& blurred_bloom_texture = bloom_buffer.emplace_texture(GL_COLOR_ATTACHMENT0, wnd.get_width(), wnd.get_height(), tz::graphics::TextureComponent::COLOUR_TEXTURE);
+    Texture& blurred_bloom_texture = bloom_buffer.emplace_texture(GL_COLOR_ATTACHMENT0, wnd.get_width(), wnd.get_height(), tz::graphics::TextureComponent::HDR_COLOUR_TEXTURE);
     bloom_buffer.set_output_attachment({GL_COLOR_ATTACHMENT0});
     // Uncomment this to render the bloom texture.
     //wnd.emplace_child<Panel>(Vector2I{0, 600}, Vector2I{300, 300}, &bloom_texture);
@@ -99,11 +101,12 @@ void init()
 
     FrameBuffer final_framebuffer{wnd.get_width(), wnd.get_height()};
     final_framebuffer.emplace_renderbuffer(GL_DEPTH_ATTACHMENT, wnd.get_width(), wnd.get_height(), GL_DEPTH_COMPONENT);
-    Texture& output_texture = final_framebuffer.emplace_texture(GL_COLOR_ATTACHMENT0, wnd.get_width(), wnd.get_height(), tz::graphics::TextureComponent::COLOUR_TEXTURE);
+    Texture& output_texture = final_framebuffer.emplace_texture(GL_COLOR_ATTACHMENT0, wnd.get_width(), wnd.get_height(), tz::graphics::TextureComponent::HDR_COLOUR_TEXTURE);
     final_framebuffer.set_output_attachment({GL_COLOR_ATTACHMENT0});
 
     // This is the final panel.
     Panel& window_panel = wnd.emplace_child<Panel>(Vector2I{0, 0}, Vector2I{wnd.get_width(), wnd.get_height()}, &output_texture);
+    window_panel.uses_hdr = true;
     window_panel.set_local_dimensions_normalised_space({1.0f, 1.0f});
 
     Random rand;
@@ -128,19 +131,19 @@ void init()
                                        scale}, stone_floor);
         DynamicObject& object = falling_objects.emplace_back(1.0f, Transform{Vector3F{(scale.x * row * 2), -100, (scale.z * column * 2)} - offset,
                                                      {}, scale}, stone_floor);
-        float sine_id = std::abs(std::sin(i / 10));
+        //float sine_id = std::abs(std::sin(i / 10));
         float pi = tz::utility::numeric::consts::pi;
-        object.add_force({0, -981.0f, 0});
+        object.add_force({0, -400.0f, 0});
         object.velocity = {rand(-200.0f, 200.0f), rand(1000.0f, 2500.0f), rand(-200.0f, 200.0f)};
         //object.add_force(Vector3F{0, sine_id * 1.5f, 0});
         object.angular_velocity = {rand(-pi, pi) * 0.1f, rand(-pi, pi) * 0.1f, rand(-pi, pi) * 0.1f};
     }
     scene.emplace<InstancedStaticObject>(floor_objects);
-    scene.emplace<InstancedDynamicObject>(falling_objects);
+    //scene.emplace<InstancedDynamicObject>(falling_objects);
     scene.emplace<StaticObject>(Transform{{0, 0, 0}, {}, {15, 15, 15}}, wooden_sphere);
     scene.emplace<StaticObject>(Transform{{100, 0, 0}, {}, {200, 200, 200}}, wooden_cylinder);
     scene.emplace<StaticObject>(Transform{{0, -50, -70}, {}, {20, 20, 20}}, asset1);
-    scene.emplace<StaticObject>(Transform{{0, -400, 0}, {}, {4000, 40, 4000}}, noise_asset);
+    scene.emplace<StaticObject>(Transform{{0, -1000, 0}, {}, {40000, 40, 40000}}, noise_asset);
 
     long long int time = tz::utility::time::now();
     Timer second_timer;
@@ -151,8 +154,8 @@ void init()
         static float x = 0;
         progress.set_progress((1 + std::sin(x += 0.01)) / 2.0f);
         // play with the HDR exposure and gamma.
-        hdr_gui_shader.set_uniform<float>("exposure", (1.1f + std::sin(x)));
-        hdr_gui_shader.set_uniform<float>("gamma", 1.0f);
+        hdr_gui_shader.set_uniform<float>("exposure", 0.4f);
+        hdr_gui_shader.set_uniform<float>("gamma", 0.5f);
         //scene.set_point_light(0, {{0, 0, 0}, {0, progress.get_progress(), 1 - progress.get_progress()}, 50000000.0f});
         profiler.begin_frame();
         second_timer.update();
@@ -183,9 +186,13 @@ void init()
         profiler.end_frame();
 
         // render into the hdr buffer.
+        if(wireframe)
+            tz::graphics::enable_wireframe_render(true);
         depth_framebuffer.get_depth_texture().bind(&render_shader, 5, "depth_map_sampler");
         scene.render(render_shader, camera, {wnd.get_width(), wnd.get_height()});
         scene.update(delta_time / 1000.0f);
+        if(wireframe)
+            tz::graphics::enable_wireframe_render(false);
 
         // dont render the skybox for now.
         //skybox.render(camera, skybox_shader, wnd.get_width(), wnd.get_height());

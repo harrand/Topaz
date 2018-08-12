@@ -5,14 +5,17 @@
 
 namespace tz::utility::numeric
 {
+    float linear_interpolate(float a, float b, float blend_factor);
     float cosine_interpolate(float a, float b, float blend_factor);
-    constexpr float default_smoothness = 3.0f;
+    constexpr float default_smoothness = 8.0f;
     namespace consts
     {
         /// 3.14159...
-        constexpr double pi = 4 * std::atan(1);
+        constexpr double pi = 3.14159265359;
+        /// 2pi...
+        constexpr double tau = 2.0 * pi;
         /// 2.17...
-        constexpr double e = std::exp(1);
+        constexpr double e = 2.71828182845;
     }
 }
 
@@ -93,7 +96,7 @@ protected:
     float smooth_noise(int x, int z);
 private:
     int seed;
-    LocalRandom random;
+    MersenneTwister random;
 };
 
 class CosineNoise : protected SmoothNoise
@@ -107,5 +110,4 @@ protected:
 };
 
 #include "numeric.inl"
-
 #endif //NUMERIC_UTILITY_HPP
