@@ -168,3 +168,8 @@ bool Asset::valid_displacement_map() const
 {
 	return this->displacement_map != nullptr;
 }
+
+bool Asset::operator==(const Asset &rhs) const
+{
+    return this->mesh == rhs.mesh && this->texture == rhs.texture && this->normal_map == rhs.normal_map && this->parallax_map == rhs.parallax_map && this->displacement_map == rhs.displacement_map;
+}

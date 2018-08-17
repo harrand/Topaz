@@ -1,9 +1,9 @@
 #include "core/scene.hpp"
 #include "physics/physics.hpp"
 
-Scene::Scene(const std::initializer_list<StaticObject>& stack_objects, std::vector<std::unique_ptr<StaticObject>> heap_objects): stack_objects(stack_objects), heap_objects(std::move(heap_objects)), directional_lights{}/*, point_lights{}*/{}
+Scene::Scene(const std::initializer_list<StaticObject>& stack_objects, std::vector<std::unique_ptr<StaticObject>> heap_objects): stack_objects(stack_objects), heap_objects(std::move(heap_objects)), stack_sprites{}, heap_sprites{}, directional_lights{}, point_lights{}{}
 
-void Scene::render(Shader& render_shader, const Camera& camera, const Vector2I& viewport_dimensions) const
+void Scene::render(Shader& render_shader, Shader* sprite_shader, const Camera& camera, const Vector2I& viewport_dimensions) const
 {
     Frustum camera_frustum(camera, viewport_dimensions.x / viewport_dimensions.y);
     auto render_if_visible = [&](const StaticObject& object){AABB object_box = tz::physics::bound_aabb(*(object.get_asset().mesh)); if(camera_frustum.contains(object_box * object.transform.model()) || tz::graphics::is_instanced(object.get_asset().mesh)) object.render(render_shader, camera, viewport_dimensions);};
@@ -11,6 +11,13 @@ void Scene::render(Shader& render_shader, const Camera& camera, const Vector2I& 
         render_if_visible(stack_object);
     for(const auto& heap_object : this->heap_objects)
         render_if_visible(*heap_object);
+    if(sprite_shader != nullptr)
+    {
+        for (const auto &stack_sprite : this->stack_sprites)
+            stack_sprite.render(*sprite_shader, viewport_dimensions);
+        for (const auto &heap_sprite : this->heap_sprites)
+            heap_sprite->render(*sprite_shader, viewport_dimensions);
+    }
     for(std::size_t i = 0; i < this->directional_lights.size(); i++)
     {
         render_shader.bind();
@@ -58,13 +65,17 @@ AABB Scene::get_boundary() const
     Vector3F min = objects.front().get().transform.position, max = objects.front().get().transform.position;
     for(const StaticObject& object : objects)
     {
-        min.x = std::min(min.x, object.transform.position.x);
-        min.y = std::min(min.y, object.transform.position.y);
-        min.z = std::min(min.z, object.transform.position.z);
+        auto boundary_optional = object.get_boundary();
+        if(!boundary_optional.has_value())
+            continue;
+        const AABB& boundary = boundary_optional.value();
+        min.x = std::min(min.x, boundary.get_minimum().x);
+        min.y = std::min(min.y, boundary.get_minimum().y);
+        min.z = std::min(min.z, boundary.get_minimum().z);
 
-        max.x = std::max(max.x, object.transform.position.x);
-        max.y = std::max(max.y, object.transform.position.y);
-        max.z = std::max(max.z, object.transform.position.z);
+        max.x = std::max(max.x, boundary.get_maximum().x);
+        max.y = std::max(max.y, boundary.get_maximum().y);
+        max.z = std::max(max.z, boundary.get_maximum().z);
     }
     return {min, max};
 }
@@ -72,6 +83,42 @@ AABB Scene::get_boundary() const
 void Scene::add_object(StaticObject scene_object)
 {
     this->stack_objects.push_back(scene_object);
+}
+
+bool Scene::remove_object(const StaticObject &object)
+{
+    bool removed = false;
+    auto stack_iterator = std::remove(this->stack_objects.begin(), this->stack_objects.end(), object);
+    if(stack_iterator != this->stack_objects.end())
+    {
+        this->stack_objects.erase(stack_iterator);
+        removed = true;
+    }
+    auto heap_iterator = std::remove_if(this->heap_objects.begin(), this->heap_objects.end(), [&](const auto& object_ptr){return object_ptr.get() == &object;});
+    if(heap_iterator != this->heap_objects.end())
+    {
+        this->heap_objects.erase(heap_iterator);
+        removed = true;
+    }
+    return removed;
+}
+
+bool Scene::remove_sprite(const Sprite& sprite)
+{
+    bool removed = false;
+    auto stack_iterator = std::remove(this->stack_sprites.begin(), this->stack_sprites.end(), sprite);
+    if(stack_iterator != this->stack_sprites.end())
+    {
+        this->stack_sprites.erase(stack_iterator);
+        removed = true;
+    }
+    auto heap_iterator = std::remove_if(this->heap_sprites.begin(), this->heap_sprites.end(), [&](const auto& sprite_ptr){return sprite_ptr.get() == &sprite;});
+    if(heap_iterator != this->heap_sprites.end())
+    {
+        this->heap_sprites.erase(heap_iterator);
+        removed = true;
+    }
+    return removed;
 }
 
 std::optional<DirectionalLight> Scene::get_directional_light(std::size_t light_id) const

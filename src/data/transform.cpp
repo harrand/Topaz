@@ -6,3 +6,8 @@ Matrix4x4 Transform::model() const
 {
     return tz::transform::model(this->position, this->rotation, this->scale);
 }
+
+bool Transform::operator==(const Transform &rhs) const
+{
+    return this->position == rhs.position && this->rotation == rhs.rotation && this->scale == rhs.scale;
+}

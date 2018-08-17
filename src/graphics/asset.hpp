@@ -63,6 +63,7 @@ struct Asset
     bool valid_normal_map() const;
     bool valid_parallax_map() const;
     bool valid_displacement_map() const;
+    bool operator==(const Asset& rhs) const;
 
     Mesh* mesh;
     Texture* texture;

@@ -105,7 +105,7 @@ public:
 	bool operator==(const Mesh& rhs) const;
 protected:
 	/// Path to the external 3D model file used to construct this Mesh.
-	const std::string filename;
+	std::string filename;
     /// List of all vertex-data.
 	std::vector<Vertex> vertices;
 	/// OpenGL VAO handle.

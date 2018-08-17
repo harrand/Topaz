@@ -24,14 +24,14 @@ float SmoothNoise::operator()(int x, int z)
 
 float SmoothNoise::base_noise(int x, int z)
 {
-    LocalRandom random_copy = {static_cast<std::default_random_engine::result_type>(this->seed + x * 34589897 + z * 9999999999)};
-    return random_copy.next_float(-1.0f, 1.0f);
+    this->random = {static_cast<typename decltype(this->random)::seed_type>(this->seed + x + z)};
+    return this->random.next_float(-1.0f, 1.0f);
 }
 
 float SmoothNoise::smooth_noise(int x, int z)
 {
-    float corners = (this->base_noise(x - 1, z - 1) + this->base_noise(x + 1, z - 1) + this->base_noise(x + 1, z + 1) + this->base_noise(x - 1, z + 1)) / 16.0f;
-    float sides = (this->base_noise(x - 1, z) + this->base_noise(x + 1, z) + this->base_noise(x, z + 1) + this->base_noise(x, z - 1)) / 8.0f;
+    float corners = (this->base_noise(x - 1, z - 1) + this->base_noise(x + 1, z - 1) + this->base_noise(x + 1, z + 1) + this->base_noise(x - 1, z + 1)) / 12.0f;
+    float sides = (this->base_noise(x - 1, z) + this->base_noise(x + 1, z) + this->base_noise(x, z + 1) + this->base_noise(x, z - 1)) / 12.0f;
     float centre = this->base_noise(x, z) / 4.0f;
     return corners + sides + centre;
 }

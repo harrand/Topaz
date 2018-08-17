@@ -1,13 +1,14 @@
 #ifndef TOPAZ_SCENE_HPP
 #define TOPAZ_SCENE_HPP
 #include "physics/dynamic_object.hpp"
+#include "graphics/sprite.hpp"
 
 class Scene
 {
 public:
     Scene(const std::initializer_list<StaticObject>& stack_objects = {}, std::vector<std::unique_ptr<StaticObject>> heap_objects = {});
 
-    virtual void render(Shader& render_shader, const Camera& camera, const Vector2I& viewport_dimensions) const;
+    virtual void render(Shader& render_shader, Shader* sprite_shader, const Camera& camera, const Vector2I& viewport_dimensions) const;
     virtual void update(float delta_time);
     std::vector<std::reference_wrapper<const StaticObject>> get_objects() const;
     AABB get_boundary() const;
@@ -16,6 +17,10 @@ public:
     Element& emplace(Args&&... args);
     template<typename... Args>
     StaticObject& emplace_object(Args&&... args);
+    template<typename... Args>
+    Sprite& emplace_sprite(Args&&... args);
+    bool remove_object(const StaticObject& object);
+    bool remove_sprite(const Sprite& sprite);
     std::optional<DirectionalLight> get_directional_light(std::size_t light_id) const;
     void set_directional_light(std::size_t light_id, DirectionalLight light);
     void add_directional_light(DirectionalLight light);
@@ -28,6 +33,8 @@ protected:
 private:
     std::vector<StaticObject> stack_objects;
     std::vector<std::unique_ptr<StaticObject>> heap_objects;
+    std::vector<Sprite> stack_sprites;
+    std::vector<std::unique_ptr<Sprite>> heap_sprites;
     std::vector<DirectionalLight> directional_lights;
     std::vector<PointLight> point_lights;
 };

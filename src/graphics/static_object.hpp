@@ -16,11 +16,12 @@ class StaticObject
 public:
     StaticObject(Transform transform, Asset asset);
     const Asset& get_asset() const;
-    std::optional<AABB> get_boundary() const;
+    virtual std::optional<AABB> get_boundary() const;
     virtual void render(Shader& render_shader, const Camera& camera, const Vector2I& viewport_dimensions) const;
 
     Transform transform;
 
+    bool operator==(const StaticObject& rhs) const;
     friend class InstancedStaticObject;
 protected:
     Asset asset;

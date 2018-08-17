@@ -48,6 +48,11 @@ void StaticObject::render(Shader& render_shader, const Camera& camera, const Vec
     this->asset.mesh->render(render_shader.has_tessellation_control_shader());
 }
 
+bool  StaticObject::operator==(const StaticObject &rhs) const
+{
+    return this->transform == rhs.transform && this->asset == rhs.asset;
+}
+
 InstancedStaticObject::InstancedStaticObject(const std::vector<StaticObject>& objects): StaticObject(Transform{{}, {}, {}}, {{}, {}, {}})
 {
     std::vector<Vector3F> positions, rotations, scales;

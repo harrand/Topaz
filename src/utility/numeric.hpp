@@ -28,6 +28,8 @@ template<typename Engine = std::default_random_engine, typename EngineResultType
 class Random
 {
 public:
+    typedef EngineResultType seed_type;
+    typedef Engine engine_type;
     /**
      * Generate a Random from a seed.
      * @param seed - The seed for the RNG engine
@@ -74,7 +76,7 @@ public:
     inline Number operator()(Number min = Number(), Number max = std::numeric_limits<Number>::max());
 private:
     /// Stores the seed used for this Random object.
-    const EngineResultType seed;
+    EngineResultType seed;
     /// Stores the underlying RNG engine for this Random object.
     Engine random_engine;
 };
@@ -96,7 +98,7 @@ protected:
     float smooth_noise(int x, int z);
 private:
     int seed;
-    MersenneTwister random;
+    LocalRandom random;
 };
 
 class CosineNoise : protected SmoothNoise
