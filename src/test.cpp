@@ -96,9 +96,12 @@ void init()
     bloom_buffer.emplace_renderbuffer(GL_DEPTH_ATTACHMENT, wnd.get_width(), wnd.get_height(), GL_DEPTH_COMPONENT);
     Texture& blurred_bloom_texture = bloom_buffer.emplace_texture(GL_COLOR_ATTACHMENT0, wnd.get_width(), wnd.get_height(), tz::graphics::TextureComponent::HDR_COLOUR_TEXTURE);
     bloom_buffer.set_output_attachment({GL_COLOR_ATTACHMENT0});
+    FrameBuffer bloom_buffer2{wnd.get_width(), wnd.get_height()};
+    bloom_buffer2.emplace_renderbuffer(GL_DEPTH_ATTACHMENT, wnd.get_width(), wnd.get_height(), GL_DEPTH_COMPONENT);
+    Texture& blurred_bloom_texture2 = bloom_buffer2.emplace_texture(GL_COLOR_ATTACHMENT0, wnd.get_width(), wnd.get_height());
     // Uncomment this to render the bloom texture.
     //wnd.emplace_child<Panel>(Vector2I{0, 600}, Vector2I{300, 300}, &bloom_texture);
-    //wnd.emplace_child<Panel>(Vector2I{0, 600}, Vector2I{300, 300}, &blurred_bloom_texture);
+    wnd.emplace_child<Panel>(Vector2I{0, 600}, Vector2I{300, 300}, &blurred_bloom_texture);
 
     FrameBuffer final_framebuffer{wnd.get_width(), wnd.get_height()};
     final_framebuffer.emplace_renderbuffer(GL_DEPTH_ATTACHMENT, wnd.get_width(), wnd.get_height(), GL_DEPTH_COMPONENT);
@@ -208,15 +211,27 @@ void init()
         // dont render the skybox for now.
         //skybox.render(camera, skybox_shader, wnd.get_width(), wnd.get_height());
 
-        bloom_buffer.clear(BufferBit::COLOUR, 0.0f, 0.0f, 0.0f, 0.0f);
-        bloom_buffer.set_render_target();
         // now render a simple quad using the unblurred bloom texture with the gaussian blur shader to blur the bright parts.
         tz::graphics::gui_render_mode();
         Panel render_panel{Vector2I{0, 0}, Vector2I{wnd.get_width(), wnd.get_height()}, &bloom_texture};
-        for(std::size_t i = 0; i < 5; i++)
+        constexpr std::size_t blur_factor = 5;
+        for(std::size_t i = 0; i < blur_factor; i++)
         {
-            if(i == 1)
-                render_panel.set_texture(&blurred_bloom_texture);
+            bool currently_horizontal = gaussian_blur_shader.get_uniform_value<bool>("horizontal");
+            if(currently_horizontal)
+            {
+                bloom_buffer.set_render_target();
+                if(i > 0)
+                    render_panel.set_texture(&blurred_bloom_texture2);
+                gaussian_blur_shader.set_uniform<bool>("horizontal", false);
+            }
+            else
+            {
+                bloom_buffer2.set_render_target();
+                if(i > 0)
+                    render_panel.set_texture(&blurred_bloom_texture);
+                gaussian_blur_shader.set_uniform<bool>("horizontal", true);
+            }
             render_panel.render(gaussian_blur_shader, wnd.get_width(), wnd.get_height());
         }
         final_framebuffer.clear(BufferBit::COLOUR, 0.0f, 0.0f, 0.1f, 0.0f);
