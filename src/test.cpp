@@ -214,7 +214,7 @@ void init()
         // now render a simple quad using the unblurred bloom texture with the gaussian blur shader to blur the bright parts.
         tz::graphics::gui_render_mode();
         Panel render_panel{Vector2I{0, 0}, Vector2I{wnd.get_width(), wnd.get_height()}, &bloom_texture};
-        constexpr std::size_t blur_factor = 5;
+        constexpr std::size_t blur_factor = 6;
         for(std::size_t i = 0; i < blur_factor; i++)
         {
             bool currently_horizontal = gaussian_blur_shader.get_uniform_value<bool>("horizontal");

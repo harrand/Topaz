@@ -16,6 +16,10 @@ namespace tz::utility::numeric
         constexpr double tau = 2.0 * pi;
         /// 2.17...
         constexpr double e = 2.71828182845;
+        ///  1 / (2 - cbrt(2))
+        constexpr double forest_ruth_coefficient = 1.35120719196;
+        ///  1 - (2 * forest_ruth_coefficient)
+        constexpr double forest_ruth_complement = -1.70241438392;
     }
 }
 

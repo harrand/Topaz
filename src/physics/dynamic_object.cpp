@@ -9,9 +9,21 @@ DynamicObject::DynamicObject(float mass, Transform transform, Asset asset, Vecto
 
 void DynamicObject::update(float delta_time)
 {
-    PhysicsObject::update(delta_time);
-    this->transform.position += (this->velocity * delta_time);
-    this->transform.rotation += (this->angular_velocity * delta_time);
+    // This lambda performs verlet-integration. This is cheaper than forest-ruth but is slightly less accurate.
+    auto verlet_integration = [&](float delta)
+            {
+                float half_delta = delta * 0.5f;
+                this->transform.position += (this->velocity * half_delta);
+                this->transform.rotation += (this->angular_velocity * half_delta);
+                PhysicsObject::update(delta_time);
+                this->transform.position += (this->velocity * half_delta);
+                this->transform.rotation += (this->angular_velocity * half_delta);
+            };
+    // Perform forest-ruth motion integration. It utilises verlet-integration, so it more expensive but yields more accurate results.
+    using namespace tz::utility::numeric;
+    verlet_integration(delta_time * static_cast<float>(consts::forest_ruth_coefficient));
+    verlet_integration(delta_time * static_cast<float>(consts::forest_ruth_complement));
+    verlet_integration(delta_time * static_cast<float>(consts::forest_ruth_coefficient));
 }
 
 std::optional<AABB> DynamicObject::get_boundary() const
