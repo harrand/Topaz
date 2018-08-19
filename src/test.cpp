@@ -91,7 +91,7 @@ void init()
     //hdr_panel.uses_hdr = true;
     ShadowMap depth_framebuffer{8192, 8192};
     // Uncomment this to render the depth texture.
-    //wnd.emplace_child<Panel>(Vector2I{0, 600}, Vector2I{300, 300}, &depth_framebuffer.get_depth_texture());
+    //wnd.emplace_child<Panel>(Vector2I{0, 300}, Vector2I{300, 300}, &depth_framebuffer.get_depth_texture());
     FrameBuffer bloom_buffer{wnd.get_width(), wnd.get_height()};
     bloom_buffer.emplace_renderbuffer(GL_DEPTH_ATTACHMENT, wnd.get_width(), wnd.get_height(), GL_DEPTH_COMPONENT);
     Texture& blurred_bloom_texture = bloom_buffer.emplace_texture(GL_COLOR_ATTACHMENT0, wnd.get_width(), wnd.get_height(), tz::graphics::TextureComponent::HDR_COLOUR_TEXTURE);
@@ -100,8 +100,8 @@ void init()
     bloom_buffer2.emplace_renderbuffer(GL_DEPTH_ATTACHMENT, wnd.get_width(), wnd.get_height(), GL_DEPTH_COMPONENT);
     Texture& blurred_bloom_texture2 = bloom_buffer2.emplace_texture(GL_COLOR_ATTACHMENT0, wnd.get_width(), wnd.get_height());
     // Uncomment this to render the bloom texture.
-    //wnd.emplace_child<Panel>(Vector2I{0, 600}, Vector2I{300, 300}, &bloom_texture);
-    wnd.emplace_child<Panel>(Vector2I{0, 600}, Vector2I{300, 300}, &blurred_bloom_texture);
+    //wnd.emplace_child<Panel>(Vector2I{0, 300}, Vector2I{300, 300}, &bloom_texture);
+    //wnd.emplace_child<Panel>(Vector2I{0, 300}, Vector2I{300, 300}, &blurred_bloom_texture);
 
     FrameBuffer final_framebuffer{wnd.get_width(), wnd.get_height()};
     final_framebuffer.emplace_renderbuffer(GL_DEPTH_ATTACHMENT, wnd.get_width(), wnd.get_height(), GL_DEPTH_COMPONENT);
@@ -159,7 +159,7 @@ void init()
     {
         static float x = 0;
         progress.set_progress((1 + std::sin(x += 0.01)) / 2.0f);
-        example_sprite.set_rotation(x);
+        //example_sprite.set_rotation(x);
         // play with the HDR exposure and gamma.
         hdr_gui_shader.set_uniform<float>("exposure", 0.4f);
         hdr_gui_shader.set_uniform<float>("gamma", 0.5f);
@@ -214,7 +214,7 @@ void init()
         // now render a simple quad using the unblurred bloom texture with the gaussian blur shader to blur the bright parts.
         tz::graphics::gui_render_mode();
         Panel render_panel{Vector2I{0, 0}, Vector2I{wnd.get_width(), wnd.get_height()}, &bloom_texture};
-        constexpr std::size_t blur_factor = 6;
+        constexpr std::size_t blur_factor = 4;
         for(std::size_t i = 0; i < blur_factor; i++)
         {
             bool currently_horizontal = gaussian_blur_shader.get_uniform_value<bool>("horizontal");
@@ -258,5 +258,13 @@ void init()
             camera.position += camera.left() * delta_time * speed;
         if(key_listener.is_key_pressed("D"))
             camera.position += camera.right() * delta_time * speed;
+        if(key_listener.is_key_pressed("Up"))
+            example_sprite.position_screenspace.y += 3;
+        if(key_listener.is_key_pressed("Down"))
+            example_sprite.position_screenspace.y -= 3;
+        if(key_listener.is_key_pressed("Left"))
+            example_sprite.position_screenspace.x -= 3;
+        if(key_listener.is_key_pressed("Right"))
+            example_sprite.position_screenspace.x += 3;
     }
 }

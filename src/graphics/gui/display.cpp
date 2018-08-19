@@ -8,7 +8,7 @@ void Panel::render(Shader& shader, int window_width_pixels, int window_height_pi
     shader.set_uniform<bool>("has_texture", this->has_texture());
     shader.set_uniform<bool>("has_background_colour", this->has_colour());
     Matrix4x4 projection = tz::transform::orthographic_projection(window_width_pixels, 0.0f, window_height_pixels, 0.0f, -1.0f, 1.0f);
-    Matrix4x4 model = projection * tz::transform::model(Vector3F(this->get_x(), this->get_y(), 0.0f) * 0.5f, Vector3F(), Vector3F(this->get_width(), this->get_height(), 0.0f));
+    Matrix4x4 model = projection * tz::transform::model(Vector3F(this->get_x(), this->get_y(), 0.0f), Vector3F(), Vector3F(this->get_width(), this->get_height(), 0.0f));
     shader.set_uniform<Matrix4x4>("model_matrix", model);
     if(this->has_colour())
         shader.set_uniform<Vector4F>("colour", this->get_colour().value());
@@ -79,7 +79,6 @@ void Label::render(Shader& shader, int window_width_pixels, int window_height_pi
     shader.update();
     this->mesh.render(false);
     GUI::render(shader, window_width_pixels, window_height_pixels);
-
 }
 
 const std::string& Label::get_text() const
@@ -141,11 +140,11 @@ void Label::update_texture()
     this->dimensions_local_pixel_space = {this->text_render_texture->get_width(), this->text_render_texture->get_height()};
 }
 
-ProgressBar::ProgressBar(Vector2I position_local_pixel_space, Vector2I dimensions_local_pixel_space, Vector3F background_colour, float progress, GUI* parent, std::initializer_list<GUI*> children): GUI(position_local_pixel_space, dimensions_local_pixel_space, parent, children), background_colour(background_colour), progress(progress), background(position_local_pixel_space, dimensions_local_pixel_space, Vector4F{this->background_colour, 1.0f}, this), progress_bar({5, 5}, {}, Vector4F{1.0f, 0.0f, 0.0f, 1.0f}, &this->background)
+ProgressBar::ProgressBar(Vector2I position_local_pixel_space, Vector2I dimensions_local_pixel_space, Vector3F background_colour, float progress, GUI* parent, std::initializer_list<GUI*> children): GUI(position_local_pixel_space, dimensions_local_pixel_space, parent, children), background_colour(background_colour), progress(progress), background({}, dimensions_local_pixel_space, Vector4F{this->background_colour, 1.0f}, this), progress_bar({5, 5}, {}, Vector4F{1.0f, 0.0f, 0.0f, 1.0f}, &this->background)
 {
     this->add_child(&this->background);
     this->background.add_child(&this->progress_bar);
-    this->progress_bar.set_local_position_normalised_space({0.0f, 0.1f});
+    this->progress_bar.set_local_position_normalised_space({0.0f, 0.05f});
     int pixels = this->progress_bar.get_local_position_pixel_space().y;
     this->progress_bar.set_local_position_pixel_space({pixels, pixels});
     // set local proportional dimensions to be equal to progress percentage.

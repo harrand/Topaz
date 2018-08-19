@@ -30,5 +30,4 @@ private:
     tz::utility::functional::ButtonCallbackFunction callback;
 };
 
-
 #endif //TOPAZ_BUTTON_HPP
