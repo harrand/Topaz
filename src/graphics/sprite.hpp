@@ -6,11 +6,13 @@
 class Sprite
 {
 public:
-    Sprite(Vector2I position_screenspace, float rotation, Vector2F scale, Texture* texture);
+    Sprite(Vector2I position_screenspace, float rotation, Vector2F scale, const Texture* texture);
 
     virtual void render(Shader& sprite_shader, const Vector2I& viewport_dimensions) const;
     float get_rotation() const;
     void set_rotation(float radians);
+    const Texture* get_texture() const;
+    void set_texture(const Texture* texture);
 
     bool operator==(const Sprite& rhs) const;
     Vector2I position_screenspace;
@@ -19,7 +21,7 @@ private:
 public:
     Vector2F scale;
 private:
-    Texture* texture;
+    const Texture* texture;
     Mesh mesh;
 };
 

@@ -5,7 +5,7 @@
 #include "sprite.hpp"
 #include "graphics/gui/gui.hpp"
 
-Sprite::Sprite(Vector2I position_screenspace, float rotation, Vector2F scale, Texture* texture): position_screenspace(position_screenspace), rotation(rotation), scale(scale), texture(texture), mesh(tz::util::gui::gui_quad())
+Sprite::Sprite(Vector2I position_screenspace, float rotation, Vector2F scale, const Texture* texture): position_screenspace(position_screenspace), rotation(rotation), scale(scale), texture(texture), mesh(tz::util::gui::gui_quad())
 {
     this->set_rotation(this->rotation);
 }
@@ -55,6 +55,16 @@ void Sprite::set_rotation(float radians)
     else if(tau_divisor < -1)
         radians += (consts::tau * tau_divisor);
     this->rotation = radians;
+}
+
+const Texture* Sprite::get_texture() const
+{
+    return this->texture;
+}
+
+void Sprite::set_texture(const Texture* texture)
+{
+    this->texture = texture;
 }
 
 bool Sprite::operator==(const Sprite &rhs) const

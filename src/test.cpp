@@ -173,6 +173,7 @@ void init()
             label.set_text(to_string(profiler.get_delta_average()) + " ms (" + to_string(profiler.get_fps()) + " fps)");
             second_timer.reload();
             profiler.reset();
+            example_sprite.set_texture(assets.find_texture("stone"));
         }
         long long int delta_time = tz::utility::time::now() - time;
         time = tz::utility::time::now();
