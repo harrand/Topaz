@@ -149,7 +149,7 @@ void init()
     scene.emplace<StaticObject>(Transform{{0, -50, -70}, {}, {20, 20, 20}}, asset1);
     scene.emplace<StaticObject>(Transform{{0, -1000, 0}, {}, {4000, 40, 4000}}, noise_asset);
 
-    Sprite& example_sprite = scene.emplace<Sprite>(Vector2I{200, 200}, 0.0f, Vector2F{100.0f, 100.0f}, assets.find_texture("bricks"));
+    Sprite& example_sprite = scene.emplace<Sprite>(Vector2I{}, 0.0f, Vector2F{100.0f, 100.0f}, assets.find_texture("bricks"));
 
     long long int time = tz::utility::time::now();
     Timer second_timer, tick_timer;

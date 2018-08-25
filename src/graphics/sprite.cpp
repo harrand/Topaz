@@ -3,9 +3,8 @@
 //
 
 #include "sprite.hpp"
-#include "graphics/gui/gui.hpp"
 
-Sprite::Sprite(Vector2I position_screenspace, float rotation, Vector2F scale, const Texture* texture): position_screenspace(position_screenspace), rotation(rotation), scale(scale), texture(texture), mesh(tz::util::gui::gui_quad())
+Sprite::Sprite(Vector2I position_screenspace, float rotation, Vector2F scale, const Texture* texture): position_screenspace(position_screenspace), rotation(rotation), scale(scale), texture(texture), mesh(tz::graphics::create_quad(0.0f, 0.0f, 0.5f, -0.5f))
 {
     this->set_rotation(this->rotation);
 }
