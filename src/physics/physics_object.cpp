@@ -1,6 +1,6 @@
 #include "physics/physics_object.hpp"
 
-PhysicsObject::PhysicsObject(float mass, Vector3F velocity, float moment_of_inertia, Vector3F angular_velocity, std::initializer_list<Vector3F> forces, std::initializer_list<Vector3F> torques): mass(mass), velocity(velocity), moment_of_inertia(moment_of_inertia), angular_velocity(angular_velocity), forces(forces), torques(torques){}
+PhysicsObject::PhysicsObject(float mass, Vector3F velocity, float moment_of_inertia, Vector3F angular_velocity, std::initializer_list<Vector3F> forces, std::initializer_list<Vector3F> torques): mass(mass), velocity(velocity), moment_of_inertia(moment_of_inertia), angular_velocity(angular_velocity), forces(forces), torques(torques), colliding_with(){}
 
 Vector3F PhysicsObject::net_force() const
 {
@@ -60,8 +60,13 @@ void PhysicsObject::handle_collisions(const std::vector<std::reference_wrapper<P
         OptAABB other_bound = physics_object.get_boundary();
         if(this_bound.has_value() && other_bound.has_value())
         {
-            if(this_bound->intersects(other_bound.value()))
+            if(this_bound->intersects(other_bound.value()) && std::find(this->colliding_with.begin(), this->colliding_with.end(), &physics_object) == this->colliding_with.end())
+            {
+                this->colliding_with.push_back(&physics_object);
                 this->on_collision(physics_object);
+            }
+            else if(!this_bound->intersects(other_bound.value()) && std::find(this->colliding_with.begin(), this->colliding_with.end(), &physics_object) != this->colliding_with.end())
+                this->colliding_with.erase(std::remove(this->colliding_with.begin(), this->colliding_with.end(), &physics_object), this->colliding_with.end());
         }
     }
 }

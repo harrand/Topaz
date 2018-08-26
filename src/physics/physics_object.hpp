@@ -56,6 +56,8 @@ protected:
     std::vector<Vector3F> forces;
     /// Container of all the torques (rotational forces) acting upon the PhysicsObject.
     std::vector<Vector3F> torques;
+private:
+    std::vector<PhysicsObject*> colliding_with;
 
     void handle_collisions(const std::vector<std::reference_wrapper<PhysicsObject>>& physics_objects);
 };
