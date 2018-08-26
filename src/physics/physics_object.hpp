@@ -38,6 +38,8 @@ public:
 
     void add_force(Vector3F force);
     void add_torque(Vector3F torque);
+    void clear_forces();
+    void clear_torques();
 
     friend class Scene;
 

@@ -38,6 +38,16 @@ void PhysicsObject::add_torque(Vector3F torque)
     this->torques.push_back(torque);
 }
 
+void PhysicsObject::clear_forces()
+{
+    this->forces.clear();
+}
+
+void PhysicsObject::clear_torques()
+{
+    this->torques.clear();
+}
+
 void PhysicsObject::handle_collisions(const std::vector<std::reference_wrapper<PhysicsObject>>& physics_objects)
 {
     for(auto ref : physics_objects)

@@ -36,15 +36,26 @@ void Scene::update(float delta_time)
 {
     for(std::reference_wrapper<DynamicObject> dynamic_ref : this->get_dynamic_objects())
         dynamic_ref.get().update(delta_time);
+    for(std::reference_wrapper<DynamicSprite> dynamic_sprite_ref : this->get_mutable_dynamic_sprites())
+        dynamic_sprite_ref.get().update(delta_time);
     std::vector<std::reference_wrapper<PhysicsObject>> physics_objects;
+    std::vector<std::reference_wrapper<PhysicsObject>> physics_sprites;
     for(auto& object : this->get_static_objects())
     {
         auto physics_component = dynamic_cast<PhysicsObject*>(&object.get());
         if(physics_component != nullptr)
-            physics_objects.push_back(*physics_component);
+            physics_objects.push_back(std::ref(*physics_component));
+    }
+    for(auto& sprite : this->get_mutable_sprites())
+    {
+        auto physics_component = dynamic_cast<PhysicsObject*>(&sprite.get());
+        if(physics_component != nullptr)
+            physics_sprites.push_back(std::ref(*physics_component));
     }
     for(auto& physics_ref : physics_objects)
         physics_ref.get().handle_collisions(physics_objects);
+    for(auto& physics_sprite_ref : physics_sprites)
+        physics_sprite_ref.get().handle_collisions(physics_sprites);
 }
 
 std::vector<std::reference_wrapper<const StaticObject>> Scene::get_objects() const
@@ -55,6 +66,16 @@ std::vector<std::reference_wrapper<const StaticObject>> Scene::get_objects() con
     for(const std::unique_ptr<StaticObject>& object_ptr : this->heap_objects)
         object_crefs.push_back(std::cref(*object_ptr));
     return object_crefs;
+}
+
+std::vector<std::reference_wrapper<const Sprite>> Scene::get_sprites() const
+{
+    std::vector<std::reference_wrapper<const Sprite>> sprite_crefs;
+    for(const Sprite& sprite_cref : this->stack_sprites)
+        sprite_crefs.push_back(std::cref(sprite_cref));
+    for(const std::unique_ptr<Sprite>& sprite_ptr : this->heap_sprites)
+        sprite_crefs.push_back(std::cref(*sprite_ptr));
+    return sprite_crefs;
 }
 
 AABB Scene::get_boundary() const
@@ -189,4 +210,26 @@ std::vector<std::reference_wrapper<DynamicObject>> Scene::get_dynamic_objects()
             object_refs.push_back(std::ref(*dynamic_ref));
     }
     return object_refs;
+}
+
+std::vector<std::reference_wrapper<Sprite>> Scene::get_mutable_sprites()
+{
+    std::vector<std::reference_wrapper<Sprite>> sprite_refs;
+    for(Sprite& sprite_cref : this->stack_sprites)
+        sprite_refs.push_back(std::ref(sprite_cref));
+    for(std::unique_ptr<Sprite>& sprite_ptr : this->heap_sprites)
+        sprite_refs.push_back(std::ref(*sprite_ptr));
+    return sprite_refs;
+}
+
+std::vector<std::reference_wrapper<DynamicSprite>> Scene::get_mutable_dynamic_sprites()
+{
+    std::vector<std::reference_wrapper<DynamicSprite>> dyn_sprite_refs;
+    for(std::reference_wrapper<Sprite> static_ref : this->get_mutable_sprites())
+    {
+        DynamicSprite* dynamic_component = dynamic_cast<DynamicSprite*>(&static_ref.get());
+        if(dynamic_component != nullptr)
+            dyn_sprite_refs.push_back(std::ref(*dynamic_component));
+    }
+    return dyn_sprite_refs;
 }

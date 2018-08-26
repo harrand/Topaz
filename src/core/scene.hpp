@@ -1,7 +1,7 @@
 #ifndef TOPAZ_SCENE_HPP
 #define TOPAZ_SCENE_HPP
 #include "physics/dynamic_object.hpp"
-#include "graphics/sprite.hpp"
+#include "physics/dynamic_sprite.hpp"
 
 class Scene
 {
@@ -11,6 +11,7 @@ public:
     virtual void render(Shader& render_shader, Shader* sprite_shader, const Camera& camera, const Vector2I& viewport_dimensions) const;
     virtual void update(float delta_time);
     std::vector<std::reference_wrapper<const StaticObject>> get_objects() const;
+    std::vector<std::reference_wrapper<const Sprite>> get_sprites() const;
     AABB get_boundary() const;
     void add_object(StaticObject scene_object);
     template<class Element, typename... Args>
@@ -30,7 +31,9 @@ public:
 protected:
     std::vector<std::reference_wrapper<StaticObject>> get_static_objects();
     std::vector<std::reference_wrapper<DynamicObject>> get_dynamic_objects();
-private:
+    std::vector<std::reference_wrapper<Sprite>> get_mutable_sprites();
+    std::vector<std::reference_wrapper<DynamicSprite>> get_mutable_dynamic_sprites();
+protected:
     std::vector<StaticObject> stack_objects;
     std::vector<std::unique_ptr<StaticObject>> heap_objects;
     std::vector<Sprite> stack_sprites;
