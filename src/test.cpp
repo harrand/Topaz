@@ -117,7 +117,7 @@ void init()
     test_button.set_callback([&scene, &camera, &asset1]()
                              {
                                  scene.emplace_object(Transform{camera.position, {}, {10, 10, 10}}, asset1);
-                                 tz::audio::play_async(AudioClip{"../../../res/runtime/music/tulips.wav"});
+                                 tz::audio::play_async(AudioClip{"../../../res/runtime/music/tulips.wav"}, 1000.0f);
                              });
     std::vector<StaticObject> floor_objects;
     std::vector<DynamicObject> falling_objects;

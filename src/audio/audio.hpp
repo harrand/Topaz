@@ -50,6 +50,12 @@ public:
 	 */
 	int get_channel() const;
 	/**
+	 * Gets the volume of the audio.
+	 * @return - Volume of the audio
+	 */
+	float get_volume() const;
+	void set_volume(float volume);
+	/**
 	 * Estimate the length of the AudioClip, in milliseconds.
 	 * @return - Length of the clip, in milliseconds.
 	 */
@@ -174,7 +180,7 @@ namespace tz
 		 * @param clip - The audio which should be played.
 		 */
 		template<typename Audio>
-		void play_async(Audio&& clip);
+		void play_async(Audio&& clip, float volume);
 	}
 }
 

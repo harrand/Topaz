@@ -47,6 +47,18 @@ int AudioClip::get_channel() const
 	return this->channel;
 }
 
+float AudioClip::get_volume() const
+{
+	// Mix_Volume gets volume between 0 and 128
+	return Mix_Volume(this->get_channel(), -1) / 128.0f;
+}
+
+void AudioClip::set_volume(float volume)
+{
+	volume = std::clamp(volume, 0.0f, 1.0f);
+	Mix_Volume(this->get_channel(), static_cast<int>(std::round(volume * 128.0f)));
+}
+
 Uint32 AudioClip::get_audio_length() const
 {
 	Uint32 points = 0, frames = 0;
