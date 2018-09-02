@@ -1,4 +1,5 @@
 #include "time.hpp"
+#include <cmath>
 
 Timer::Timer()
 {
@@ -68,6 +69,57 @@ float TimeProfiler::get_last_delta() const
 unsigned int TimeProfiler::get_fps() const
 {
 	return static_cast<unsigned int>(1000/this->get_delta_average());
+}
+
+FrameScheduler::FrameScheduler(unsigned int number_of_frames, unsigned int fps, bool loop): time(0.0f), number_of_frames(number_of_frames), fps(fps), loop(loop){}
+
+void FrameScheduler::to_beginning()
+{
+	this->time = 0.0f;
+}
+
+void FrameScheduler::to_end()
+{
+	this->time = this->get_end_time();
+}
+
+void FrameScheduler::to_frame(unsigned int frame)
+{
+	unsigned int expected_frame = std::clamp<unsigned int>(frame, 0, this->number_of_frames);
+	this->time = static_cast<float>(expected_frame) / this->fps;
+}
+
+void FrameScheduler::update(float delta_millis)
+{
+	// this->time is in seconds, so divide by 1000.
+	this->time += delta_millis / 1000.0f;
+    if(this->time > this->get_end_time())
+        this->time -= this->get_end_time();
+}
+
+void FrameScheduler::set_number_of_frames(unsigned int number_of_frames)
+{
+	this->number_of_frames = number_of_frames;
+}
+
+unsigned int FrameScheduler::get_number_of_frames() const
+{
+	return this->number_of_frames;
+}
+
+unsigned int FrameScheduler::get_current_frame() const
+{
+	return std::clamp<unsigned int>(static_cast<unsigned int>(std::round(this->time * this->fps)), 0, this->get_number_of_frames() - 1);
+}
+
+bool FrameScheduler::finished() const
+{
+	return this->time >= (this->number_of_frames / this->fps);
+}
+
+float FrameScheduler::get_end_time() const
+{
+    return static_cast<float>(this->number_of_frames) / this->fps;
 }
 
 namespace tz::utility::time

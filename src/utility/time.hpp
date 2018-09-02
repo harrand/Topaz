@@ -79,6 +79,26 @@ private:
 	Timer tk;
 };
 
+class FrameScheduler
+{
+public:
+	FrameScheduler(unsigned int number_of_frames, unsigned int fps, bool loop = true);
+	void to_beginning();
+	void to_end();
+	void to_frame(unsigned int frame);
+	void update(float delta_millis);
+	void set_number_of_frames(unsigned int number_of_frames);
+	unsigned int get_number_of_frames() const;
+	unsigned int get_current_frame() const;
+	bool finished() const;
+private:
+    float get_end_time() const;
+	float time;
+	unsigned int number_of_frames;
+	unsigned int fps;
+    bool loop;
+};
+
 namespace tz::utility::time
 {
 	/**

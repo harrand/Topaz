@@ -8,6 +8,7 @@
 #include "core/topaz.hpp"
 #include "utility/time.hpp"
 #include "graphics/frame_buffer.hpp"
+#include "graphics/animated_texture.hpp"
 
 void init();
 
@@ -46,6 +47,16 @@ void init()
     camera.position = {0, 0, -50};
     Scene scene;
     scene.add_directional_light({{0, 1, 0}, {1, 1, 1}, 2.0f});
+
+    Texture red_texture{Bitmap<PixelRGBA>{{PixelRGBA{255, 0, 0, 255}}, 1, 1}};
+    Texture green_texture{Bitmap<PixelRGBA>{{PixelRGBA{0, 255, 0, 255}}, 1, 1}};
+    Texture blue_texture{Bitmap<PixelRGBA>{{PixelRGBA{0, 0, 255, 255}}, 1, 1}};
+    /*
+    PolyFrameTexture test_animation{{{0, red_texture}, {1, green_texture}}};
+    test_animation.set_frame(10, blue_texture);
+     */
+    AnimatedTexture test_animation{{{0, red_texture}, {1, green_texture}, {2, blue_texture}}, 60};
+    Panel& flashing_panel = wnd.emplace_child<Panel>(Vector2I{200, 200}, Vector2I{100, 100}, Vector4F{0.0f, 1.0f, 0.0f, 1.0f});
 
     AssetBuffer assets;
     assets.emplace<Mesh>("cube_lq", "../../../res/runtime/models/cube.obj");
@@ -117,7 +128,7 @@ void init()
     test_button.set_callback([&scene, &camera, &asset1]()
                              {
                                  scene.emplace_object(Transform{camera.position, {}, {10, 10, 10}}, asset1);
-                                 tz::audio::play_async(AudioClip{"../../../res/runtime/music/tulips.wav"}, 1000.0f);
+                                 tz::audio::play_async(AudioClip{"../../../res/runtime/music/tulips.wav"});
                              });
     std::vector<StaticObject> floor_objects;
     std::vector<DynamicObject> falling_objects;
@@ -143,7 +154,7 @@ void init()
         object.angular_velocity = {rand(-pi, pi) * 0.1f, rand(-pi, pi) * 0.1f, rand(-pi, pi) * 0.1f};
     }
     scene.emplace<InstancedStaticObject>(floor_objects);
-    scene.emplace<InstancedDynamicObject>(falling_objects);
+    //scene.emplace<InstancedDynamicObject>(falling_objects);
     scene.emplace<StaticObject>(Transform{{0, 0, 0}, {}, {15, 15, 15}}, wooden_sphere);
     scene.emplace<StaticObject>(Transform{{100, 0, 0}, {}, {200, 200, 200}}, wooden_cylinder);
     scene.emplace<StaticObject>(Transform{{0, -50, -70}, {}, {20, 20, 20}}, asset1);
@@ -180,6 +191,7 @@ void init()
         long long int delta_time = tz::utility::time::now() - time;
         time = tz::utility::time::now();
 
+        test_animation.update(delta_time);
         depth_framebuffer.clear(BufferBit::DEPTH);
         depth_framebuffer.set_render_target();
 
@@ -243,6 +255,7 @@ void init()
         Panel another_render_panel{Vector2I{0, 0}, Vector2I{wnd.get_width(), wnd.get_height()}, &hdr_texture};
         blurred_bloom_texture.bind(&gui_bloom_shader, 5, "bright_sampler");
         another_render_panel.render(gui_bloom_shader, wnd.get_width(), wnd.get_height());
+        flashing_panel.set_texture(&test_animation.get_frame_texture());
         wnd.set_render_target();
         wnd.clear();
         wnd.update(gui_shader, &hdr_gui_shader);

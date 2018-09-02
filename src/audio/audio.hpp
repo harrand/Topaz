@@ -180,7 +180,7 @@ namespace tz
 		 * @param clip - The audio which should be played.
 		 */
 		template<typename Audio>
-		void play_async(Audio&& clip, float volume);
+		void play_async(Audio&& clip);
 	}
 }
 
