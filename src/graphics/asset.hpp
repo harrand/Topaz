@@ -1,14 +1,14 @@
 #ifndef DATA_HPP
 #define DATA_HPP
 #include "graphics/mesh.hpp"
-#include "graphics/texture.hpp"
+#include "graphics/animated_texture.hpp"
 #include <unordered_map>
 #include <memory>
 #include <initializer_list>
 
 struct AssetBuffer
 {
-    AssetBuffer(std::unordered_map<std::string, std::unique_ptr<Mesh>> meshes = {}, std::unordered_map<std::string, std::unique_ptr<Texture>> textures = {}, std::unordered_map<std::string, std::unique_ptr<NormalMap>> normal_maps = {}, std::unordered_map<std::string, std::unique_ptr<ParallaxMap>> parallax_maps = {}, std::unordered_map<std::string, std::unique_ptr<DisplacementMap>> displacement_maps = {});
+    AssetBuffer(std::unordered_map<std::string, std::unique_ptr<Mesh>> meshes = {}, std::unordered_map<std::string, std::unique_ptr<Texture>> textures = {}, std::unordered_map<std::string, std::unique_ptr<NormalMap>> normal_maps = {}, std::unordered_map<std::string, std::unique_ptr<ParallaxMap>> parallax_maps = {}, std::unordered_map<std::string, std::unique_ptr<DisplacementMap>> displacement_maps = {}, std::unordered_map<std::string, AnimatedTexture> animated_textures = {});
     /// AssetBuffers are non-copyable.
     AssetBuffer(const AssetBuffer& copy) = delete;
     /// AssetBuffers are non-copyable.
@@ -30,6 +30,7 @@ struct AssetBuffer
 	ParallaxMap& emplace_parallaxmap(const std::string& asset_name, Args&&... args);
 	template<typename... Args>
 	DisplacementMap& emplace_displacementmap(const std::string& asset_name, Args&&... args);
+	AnimatedTexture& emplace_animated_texture(const std::string& animation_name, std::map<std::size_t, Texture> frames, unsigned int fps);
     template<class AssetType>
     AssetType* find(const std::string& asset_name);
     Mesh* find_mesh(const std::string& mesh_name);
@@ -37,6 +38,7 @@ struct AssetBuffer
     NormalMap* find_normal_map(const std::string& normal_map_name);
     ParallaxMap* find_parallax_map(const std::string& parallax_map_name);
     DisplacementMap* find_displacement_map(const std::string& displacement_map_name);
+    AnimatedTexture* find_animated_texture(const std::string& animation_name);
     std::unique_ptr<Mesh> take_mesh(const std::string& mesh_name);
     std::unique_ptr<Texture> take_texture(const std::string& texture_name);
     std::unique_ptr<NormalMap> take_normalmap(const std::string& normalmap_name);
@@ -53,6 +55,8 @@ private:
 	std::unordered_map<std::string, std::unique_ptr<ParallaxMap>> parallax_maps;
 	/// Container of DisplacementMap assets.
 	std::unordered_map<std::string, std::unique_ptr<DisplacementMap>> displacement_maps;
+	/// Container of AnimatedTexture mappings.
+	std::unordered_map<std::string, AnimatedTexture> animated_textures;
 };
 
 struct Asset

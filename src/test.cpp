@@ -55,10 +55,13 @@ void init()
     PolyFrameTexture test_animation{{{0, red_texture}, {1, green_texture}}};
     test_animation.set_frame(10, blue_texture);
      */
-    AnimatedTexture test_animation{{{0, red_texture}, {1, green_texture}, {2, blue_texture}}, 60};
+    //AnimatedTexture test_animation{{{0, red_texture}, {1, green_texture}, {2, blue_texture}}, 1};
     Panel& flashing_panel = wnd.emplace_child<Panel>(Vector2I{200, 200}, Vector2I{100, 100}, Vector4F{0.0f, 1.0f, 0.0f, 1.0f});
 
     AssetBuffer assets;
+    assets.emplace_animated_texture("test_animation0", {{0, blue_texture}, {1, red_texture}, {2, green_texture}}, 5);
+    assets.emplace_animated_texture("test_animation", {{0, red_texture}, {1, green_texture}, {2, blue_texture}}, 1);
+    AnimatedTexture& test_animation = *assets.find_animated_texture("test_animation");
     assets.emplace<Mesh>("cube_lq", "../../../res/runtime/models/cube.obj");
     assets.emplace<Mesh>("cube", "../../../res/runtime/models/cube_hd.obj");
     assets.emplace<Mesh>("monkey", "../../../res/runtime/models/monkeyhead.obj");

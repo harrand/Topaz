@@ -109,7 +109,7 @@ unsigned int FrameScheduler::get_number_of_frames() const
 
 unsigned int FrameScheduler::get_current_frame() const
 {
-	return std::clamp<unsigned int>(static_cast<unsigned int>(std::round(this->time * this->fps)), 0, this->get_number_of_frames() - 1);
+	return std::clamp<unsigned int>(static_cast<unsigned int>(std::floor(this->time * this->fps)), 0, this->get_number_of_frames() - 1);
 }
 
 bool FrameScheduler::finished() const
