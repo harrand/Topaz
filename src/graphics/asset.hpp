@@ -30,7 +30,7 @@ struct AssetBuffer
 	ParallaxMap& emplace_parallaxmap(const std::string& asset_name, Args&&... args);
 	template<typename... Args>
 	DisplacementMap& emplace_displacementmap(const std::string& asset_name, Args&&... args);
-	AnimatedTexture& emplace_animated_texture(const std::string& animation_name, std::map<std::size_t, Texture> frames, unsigned int fps);
+	AnimatedTexture& emplace_animated_texture(const std::string& animation_name, PolyFrameTexture::FrameMap frames, unsigned int fps);
     template<class AssetType>
     AssetType* find(const std::string& asset_name);
     Mesh* find_mesh(const std::string& mesh_name);

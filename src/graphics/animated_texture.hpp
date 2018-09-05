@@ -10,9 +10,10 @@
 class PolyFrameTexture
 {
 public:
+    using FrameMap = std::map<std::size_t, Texture>;
     //PolyFrameTexture(const std::string& animated_texture_filename);
     PolyFrameTexture();
-    PolyFrameTexture(std::map<std::size_t, Texture> frames);
+    PolyFrameTexture(FrameMap frames);
 
     class iterator
     {
@@ -54,7 +55,7 @@ private:
 class AnimatedTexture : public PolyFrameTexture, public FrameScheduler
 {
 public:
-    AnimatedTexture(std::map<std::size_t, Texture> frames, unsigned int fps);
+    AnimatedTexture(PolyFrameTexture::FrameMap frames, unsigned int fps);
     const Texture& get_frame_texture() const;
 private:
     using FrameScheduler::get_number_of_frames;

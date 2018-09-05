@@ -11,6 +11,8 @@ AssetType& AssetBuffer::emplace(const std::string& asset_name, Args&&... args)
         return this->emplace_parallaxmap(asset_name, std::forward<Args>(args)...);
     else if constexpr(std::is_same_v<AssetType, DisplacementMap>)
         return this->emplace_displacementmap(asset_name, std::forward<Args>(args)...);
+    else if constexpr(std::is_same_v<AssetType, AnimatedTexture>)
+        return this->emplace_animated_texture(asset_name, std::forward<Args>(args)...);
 }
 
 template<typename... Args>
@@ -61,4 +63,6 @@ AssetType* AssetBuffer::find(const std::string& asset_name)
         return this->find_parallax_map(asset_name);
     else if constexpr(std::is_same_v<AssetType, DisplacementMap>)
         return this->find_displacement_map(asset_name);
+    else if constexpr(std::is_same_v<AssetType, AnimatedTexture>)
+        return this->find_animated_texture(asset_name);
 }

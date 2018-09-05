@@ -42,7 +42,7 @@ bool AssetBuffer::sink_displacementmap(const std::string& asset_name, std::uniqu
     return true;
 }
 
-AnimatedTexture& AssetBuffer::emplace_animated_texture(const std::string& animation_name, std::map<std::size_t, Texture> frames, unsigned int fps)
+AnimatedTexture& AssetBuffer::emplace_animated_texture(const std::string& animation_name, PolyFrameTexture::FrameMap frames, unsigned int fps)
 {
     auto pair_return = this->animated_textures.emplace(animation_name, AnimatedTexture{frames, fps});
     return (*pair_return.first).second;

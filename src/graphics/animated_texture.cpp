@@ -6,7 +6,7 @@
 
 //PolyFrameTexture::PolyFrameTexture(const std::string &animated_texture_filename){}
 PolyFrameTexture::PolyFrameTexture(): frames(){}
-PolyFrameTexture::PolyFrameTexture(std::map<std::size_t, Texture> frames): frames(frames){}
+PolyFrameTexture::PolyFrameTexture(PolyFrameTexture::FrameMap frames): frames(frames){}
 
 PolyFrameTexture::iterator::iterator(PolyFrameTexture& animation, std::size_t index): animation(animation), index(index){}
 
@@ -110,7 +110,7 @@ std::size_t PolyFrameTexture::get_number_of_frames() const
     return this->frames.size();
 }
 
-AnimatedTexture::AnimatedTexture(std::map<std::size_t, Texture> frames, unsigned int fps): PolyFrameTexture(frames), FrameScheduler(PolyFrameTexture::get_number_of_frames(), fps){}
+AnimatedTexture::AnimatedTexture(PolyFrameTexture::FrameMap frames, unsigned int fps): PolyFrameTexture(frames), FrameScheduler(PolyFrameTexture::get_number_of_frames(), fps){}
 
 const Texture& AnimatedTexture::get_frame_texture() const
 {
