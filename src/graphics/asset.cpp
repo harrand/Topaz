@@ -1,6 +1,6 @@
 #include "graphics/asset.hpp"
 
-AssetBuffer::AssetBuffer(std::unordered_map<std::string, std::unique_ptr<Mesh>> meshes, std::unordered_map<std::string, std::unique_ptr<Texture>> textures, std::unordered_map<std::string, std::unique_ptr<NormalMap>> normal_maps, std::unordered_map<std::string, std::unique_ptr<ParallaxMap>> parallax_maps, std::unordered_map<std::string, std::unique_ptr<DisplacementMap>> displacement_maps, std::unordered_map<std::string, AnimatedTexture> animated_textures): meshes(std::move(meshes)), textures(std::move(textures)), normal_maps(std::move(normal_maps)), parallax_maps(std::move(parallax_maps)), displacement_maps(std::move(displacement_maps)), animated_textures(std::move(animated_textures)){}
+AssetBuffer::AssetBuffer(std::unordered_map<std::string, std::unique_ptr<Mesh>> meshes, std::unordered_map<std::string, std::unique_ptr<Texture>> textures, std::unordered_map<std::string, std::unique_ptr<NormalMap>> normal_maps, std::unordered_map<std::string, std::unique_ptr<ParallaxMap>> parallax_maps, std::unordered_map<std::string, std::unique_ptr<DisplacementMap>> displacement_maps, std::unordered_map<std::string, std::unique_ptr<AnimatedTexture>> animated_textures): meshes(std::move(meshes)), textures(std::move(textures)), normal_maps(std::move(normal_maps)), parallax_maps(std::move(parallax_maps)), displacement_maps(std::move(displacement_maps)), animated_textures(std::move(animated_textures)){}
 
 bool AssetBuffer::sink_mesh(const std::string& asset_name, std::unique_ptr<Mesh> sunken_mesh)
 {
@@ -44,8 +44,8 @@ bool AssetBuffer::sink_displacementmap(const std::string& asset_name, std::uniqu
 
 AnimatedTexture& AssetBuffer::emplace_animated_texture(const std::string& animation_name, PolyFrameTexture::FrameMap frames, unsigned int fps)
 {
-    auto pair_return = this->animated_textures.emplace(animation_name, AnimatedTexture{frames, fps});
-    return (*pair_return.first).second;
+    auto pair_return = this->animated_textures.emplace(animation_name, std::make_unique<AnimatedTexture>(frames, fps));
+    return *(*pair_return.first).second;
 }
 
 Mesh* AssetBuffer::find_mesh(const std::string& mesh_name)
@@ -107,7 +107,7 @@ AnimatedTexture* AssetBuffer::find_animated_texture(const std::string& animation
 {
     try
     {
-        return &this->animated_textures.at(animation_name);
+        return this->animated_textures.at(animation_name).get();
     }catch(const std::out_of_range& exception)
     {
         return nullptr;

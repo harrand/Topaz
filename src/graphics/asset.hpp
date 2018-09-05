@@ -8,7 +8,7 @@
 
 struct AssetBuffer
 {
-    AssetBuffer(std::unordered_map<std::string, std::unique_ptr<Mesh>> meshes = {}, std::unordered_map<std::string, std::unique_ptr<Texture>> textures = {}, std::unordered_map<std::string, std::unique_ptr<NormalMap>> normal_maps = {}, std::unordered_map<std::string, std::unique_ptr<ParallaxMap>> parallax_maps = {}, std::unordered_map<std::string, std::unique_ptr<DisplacementMap>> displacement_maps = {}, std::unordered_map<std::string, AnimatedTexture> animated_textures = {});
+    AssetBuffer(std::unordered_map<std::string, std::unique_ptr<Mesh>> meshes = {}, std::unordered_map<std::string, std::unique_ptr<Texture>> textures = {}, std::unordered_map<std::string, std::unique_ptr<NormalMap>> normal_maps = {}, std::unordered_map<std::string, std::unique_ptr<ParallaxMap>> parallax_maps = {}, std::unordered_map<std::string, std::unique_ptr<DisplacementMap>> displacement_maps = {}, std::unordered_map<std::string, std::unique_ptr<AnimatedTexture>> animated_textures = {});
     /// AssetBuffers are non-copyable.
     AssetBuffer(const AssetBuffer& copy) = delete;
     /// AssetBuffers are non-copyable.
@@ -56,7 +56,7 @@ private:
 	/// Container of DisplacementMap assets.
 	std::unordered_map<std::string, std::unique_ptr<DisplacementMap>> displacement_maps;
 	/// Container of AnimatedTexture mappings.
-	std::unordered_map<std::string, AnimatedTexture> animated_textures;
+	std::unordered_map<std::string, std::unique_ptr<AnimatedTexture>> animated_textures;
 };
 
 struct Asset

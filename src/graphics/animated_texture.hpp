@@ -58,9 +58,7 @@ public:
     AnimatedTexture(PolyFrameTexture::FrameMap frames, unsigned int fps);
     const Texture& get_frame_texture() const;
 private:
-    using FrameScheduler::get_number_of_frames;
     using FrameScheduler::set_number_of_frames;
-    using FrameScheduler::get_current_frame;
 };
 
 
