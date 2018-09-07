@@ -69,7 +69,7 @@ void init()
     assets.emplace<Texture>("stone", "../../../res/runtime/textures/stone.jpg");
     assets.emplace<Texture>("wood", "../../../res/runtime/textures/wood.jpg");
 
-    assets.emplace<AnimatedTexture>("test_animation0", PolyFrameTexture::FrameMap{{0, *assets.find_texture("bricks")}, {1, red_texture}, {2, green_texture}}, 5);
+    assets.emplace<AnimatedTexture>("test_animation0", PolyFrameTexture::FrameMap{{0, *assets.find_texture("bricks")}, {1, red_texture}, {2, green_texture}, {3, *assets.find_texture("wood")}}, 1);
     assets.emplace_animated_texture("test_animation", {{0, red_texture}, {1, green_texture}, {2, blue_texture}}, 1);
     AnimatedTexture& test_animation = *assets.find<AnimatedTexture>("test_animation0");
 
@@ -191,8 +191,8 @@ void init()
             label.set_text(to_string(profiler.get_delta_average()) + " ms (" + to_string(profiler.get_fps()) + " fps)");
             second_timer.reload();
             profiler.reset();
-            example_sprite.set_texture(assets.find_texture("stone"));
         }
+
         long long int delta_time = tz::utility::time::now() - time;
         time = tz::utility::time::now();
 
@@ -260,7 +260,10 @@ void init()
         Panel another_render_panel{Vector2I{0, 0}, Vector2I{wnd.get_width(), wnd.get_height()}, &hdr_texture};
         blurred_bloom_texture.bind(&gui_bloom_shader, 5, "bright_sampler");
         another_render_panel.render(gui_bloom_shader, wnd.get_width(), wnd.get_height());
-        flashing_panel.set_texture(&test_animation.get_frame_texture());
+        const Texture* texture = &test_animation.get_frame_texture();
+        //std::cout << "texture width = " << texture->get_width() << "\n";
+        flashing_panel.set_texture(texture);
+        //example_sprite.set_texture(&assets.find_animated_texture("test_animation0")->get_frame_texture());
         wnd.set_render_target();
         wnd.clear();
         wnd.update(gui_shader, &hdr_gui_shader);

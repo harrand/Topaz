@@ -5,7 +5,7 @@
 Texture::Texture():Texture(0, 0, false){}
 
 // This is private, to use this constructor, call it via Texture(int width, int height)
-Texture::Texture(int width, int height, bool initialise_handle, tz::graphics::TextureComponent texture_component): texture_handle(0), width(width), height(height), components(0), texture_component(texture_component), gamma_corrected(false), bitmap({})
+Texture::Texture(int width, int height, bool initialise_handle, tz::graphics::TextureComponent texture_component, bool gamma_corrected): texture_handle(0), width(width), height(height), components(0), texture_component(texture_component), gamma_corrected(gamma_corrected), bitmap({})
 {
 	if(initialise_handle)
 	{
@@ -14,13 +14,14 @@ Texture::Texture(int width, int height, bool initialise_handle, tz::graphics::Te
 		glBindTexture(GL_TEXTURE_2D, this->texture_handle);
 		switch(this->texture_component)
 		{
+            default:
 			case tz::graphics::TextureComponent::COLOUR_TEXTURE:
 			    this->components = 4;
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, this->width, this->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+				glTexImage2D(GL_TEXTURE_2D, 0, this->gamma_corrected ? GL_SRGB8_ALPHA8 : GL_RGBA8, this->width, this->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 				break;
 			case tz::graphics::TextureComponent::HDR_COLOUR_TEXTURE:
 			    this->components = 4;
@@ -44,7 +45,7 @@ Texture::Texture(int width, int height, bool initialise_handle, tz::graphics::Te
 	}
 }
 
-Texture::Texture(int width, int height, tz::graphics::TextureComponent texture_component): Texture(width, height, true, texture_component){}
+Texture::Texture(int width, int height, tz::graphics::TextureComponent texture_component, bool gamma_corrected): Texture(width, height, true, texture_component, gamma_corrected){}
 
 Texture::Texture(std::string filename, bool mipmapping, bool gamma_corrected): texture_handle(0), width(0), height(0), components(0), gamma_corrected(gamma_corrected), bitmap({})
 {
@@ -66,7 +67,7 @@ Texture::Texture(std::string filename, bool mipmapping, bool gamma_corrected): t
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-	glTexImage2D(GL_TEXTURE_2D, 0, this->gamma_corrected ? GL_SRGB_ALPHA : GL_RGBA, this->width, this->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, imgdata);
+	glTexImage2D(GL_TEXTURE_2D, 0, this->gamma_corrected ? GL_SRGB8_ALPHA8 : GL_RGBA8, this->width, this->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, imgdata);
 	if(mipmapping)
 		glGenerateMipmap(GL_TEXTURE_2D);
 
@@ -93,7 +94,7 @@ Texture::Texture(const Font& font, const std::string& text, SDL_Color foreground
 	if(bytes_per_pixel == 4) // alpha
 	{
 		if(text_surface->format->Rmask == mask)
-			texture_format = GL_RGBA;
+			texture_format = GL_RGBA8;
 		else
 			texture_format = GL_BGRA;
 	}
@@ -120,7 +121,7 @@ Texture::Texture(const Font& font, const std::string& text, SDL_Color foreground
 	for(std::size_t i = 3; i < std::abs(this->width * this->height); i += 4) {
 		switch (texture_format)
 		{
-			case GL_RGBA:
+			case GL_RGBA8:
 			default:
 				this->bitmap.pixels.emplace_back(
 						PixelRGBA{pixel_data[i - 3], pixel_data[i - 2], pixel_data[i - 1], pixel_data[i]});
@@ -142,14 +143,27 @@ Texture::Texture(const Font& font, const std::string& text, SDL_Color foreground
 	SDL_FreeSurface(text_surface);
 }
 
-Texture::Texture(const Texture& copy): Texture(copy.width, copy.height, copy.get_texture_component())
+Texture::Texture(const Texture& copy): Texture(copy.width, copy.height, copy.get_texture_component(), copy.gamma_corrected)
 {
 	this->components = copy.components;
 	this->bitmap = copy.bitmap;
-	glCopyImageSubData(copy.texture_handle, GL_TEXTURE_2D, 0, 0, 0, 0, this->texture_handle, GL_TEXTURE_2D, 0, 0, 0, 0, copy.width, copy.height, 1);
+    tz::graphics::asset::unbind_texture();
+	/*
+    std::cout << "width difference = " << this->width - copy.width << ", height diference = " << this->height - copy.height << "\n";
+    std::cout << "error before copy: " << glGetError() << "\n";
+    GLint format;
+    glBindTexture(GL_TEXTURE_2D, this->texture_handle);
+    glGetTexLevelParameteriv(GL_TEXTURE_2D, 0 ,GL_TEXTURE_INTERNAL_FORMAT, &format);
+    std::cout << "copy-to internal format = " << format << "\n";
+    glBindTexture(GL_TEXTURE_2D, copy.texture_handle);
+    glGetTexLevelParameteriv(GL_TEXTURE_2D, 0 ,GL_TEXTURE_INTERNAL_FORMAT, &format);
+    std::cout << "copy-from internal format = " << format << "\n";
+    */
+    glCopyImageSubData(copy.texture_handle, GL_TEXTURE_2D, 0, 0, 0, 0, this->texture_handle, GL_TEXTURE_2D, 0, 0, 0, 0, copy.width, copy.height, 1);
+    //std::cout << "texture copy error: " << glGetError() << "\n";
 }
 
-Texture::Texture(Texture&& move): texture_handle(move.texture_handle), width(move.width), height(move.height), components(move.components)
+Texture::Texture(Texture&& move): texture_handle(move.texture_handle), width(move.width), height(move.height), components(move.components), gamma_corrected(move.gamma_corrected)
 {
 	move.texture_handle = 0;
 }
@@ -162,6 +176,7 @@ Texture::~Texture()
 
 Texture& Texture::operator=(Texture rhs)
 {
+	glDeleteTextures(1, &(this->texture_handle));
 	Texture::swap(*this, rhs);
 	return *this;
 }
@@ -217,7 +232,7 @@ tz::graphics::MipmapType Texture::get_mipmap_type() const
 }
 
 bool Texture::has_mipmap() const
-{	
+{
 	return this->get_mipmap_type() != tz::graphics::MipmapType::NONE;
 }
 
@@ -308,7 +323,7 @@ CubeMap::CubeMap(std::string right_texture, std::string left_texture, std::strin
 	std::vector<unsigned char*> face_data = this->load_textures();
 	for(GLuint i = 0; i < face_data.size(); i++)
 	{
-		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGBA, this->width[static_cast<unsigned int>(i)], this->height[static_cast<unsigned int>(i)], 0, GL_RGBA, GL_UNSIGNED_BYTE, face_data[i]);
+		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGBA8, this->width[static_cast<unsigned int>(i)], this->height[static_cast<unsigned int>(i)], 0, GL_RGBA, GL_UNSIGNED_BYTE, face_data[i]);
 	}
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);

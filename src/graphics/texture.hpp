@@ -90,7 +90,7 @@ public:
 	 * @param width - Width of the Texture.
 	 * @param height - Width of the Texture.
 	 */
-	Texture(int width, int height, tz::graphics::TextureComponent component = tz::graphics::TextureComponent::COLOUR_TEXTURE);
+	Texture(int width, int height, tz::graphics::TextureComponent component = tz::graphics::TextureComponent::COLOUR_TEXTURE, bool gamma_corrected = false);
 	/**
 	 * Loads a texture from a file.
 	 * @param filename - Path to the image file.
@@ -222,7 +222,7 @@ private:
 	 * @param height - N/A
 	 * @param initialise_handle - N/A
 	 */
-	Texture(int width, int height, bool initialise_handle, tz::graphics::TextureComponent texture_component = tz::graphics::TextureComponent::COLOUR_TEXTURE);
+	Texture(int width, int height, bool initialise_handle, tz::graphics::TextureComponent texture_component = tz::graphics::TextureComponent::COLOUR_TEXTURE, bool gamma_corrected = false);
 	static void swap(Texture& lhs, Texture& rhs);
 };
 

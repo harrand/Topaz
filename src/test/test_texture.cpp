@@ -27,22 +27,25 @@ void test()
     PixelRGBA red_pixel{255, 0, 0, 255};
     PixelRGBA blue_pixel{0, 0, 255, 255};
     Bitmap<PixelRGBA> example_bitmap{std::vector<PixelRGBA>{red_pixel, blue_pixel, red_pixel, blue_pixel}, 2, 2};
-    Bitmap<PixelRGBA> example_bitmap2{std::vector<PixelRGBA>{blue_pixel, blue_pixel, red_pixel, red_pixel}, 2, 2};
 
     Window wnd("Test Texture - Requires Manual Input", 0, 30, 800, 600);
     Shader gui_shader("../../../src/shaders/Gui");
     Font font("../../../res/runtime/fonts/CaviarDreams.ttf", 36);
     Texture example_texture{example_bitmap};
     Texture example_copy{example_texture};
-    Texture example_texture2{example_bitmap2};
+    Texture example_copy_copy{example_copy};
+    Texture example_texture2{"../../../res/runtime/textures/wood.jpg"};
     Texture example_copy2{example_copy};
     example_copy2 = example_texture2;
+    Texture example_copy2_copy{example_copy2};
     // bottom row
     wnd.emplace_child<Panel>(Vector2I{}, Vector2I{100, 100}, &example_texture);
     wnd.emplace_child<Panel>(Vector2I{300, 0}, Vector2I{100, 100}, &example_copy);
+    wnd.emplace_child<Panel>(Vector2I{600, 0}, Vector2I{100, 100}, &example_copy_copy);
     // top row
     wnd.emplace_child<Panel>(Vector2I{0, 500}, Vector2I{100, 100}, &example_texture2);
     wnd.emplace_child<Panel>(Vector2I{300, 500}, Vector2I{100, 100}, &example_copy2);
+    wnd.emplace_child<Panel>(Vector2I{600, 500}, Vector2I{100, 100}, &example_copy2_copy);
     bool worked = false;
     Button& confirm = wnd.emplace_child<Button>(Vector2I{0, 200}, Vector2I{200, 20}, font, Vector3F{}, "Click me if the images are the same.", Vector3F{0.2f, 0.2f, 0.2f}, Vector3F{0.6f, 0.6f, 0.6f});
     confirm.set_callback([&worked](){worked = true;});
