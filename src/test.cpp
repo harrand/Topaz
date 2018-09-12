@@ -22,6 +22,7 @@ int main()
 
 void init()
 {
+    std::cout << "variance = " << tz::utility::numeric::variance(std::vector<float>{6.0, 3.0, 8.0, 5.0, 3.0}) << "\n";
     Window wnd("Topaz Development Window", 0, 30, 800, 600);
     wnd.set_swap_interval_type(Window::SwapIntervalType::LATE_SWAP_TEARING);
 
@@ -164,6 +165,15 @@ void init()
     scene.emplace<StaticObject>(Transform{{100, 0, 0}, {}, {200, 200, 200}}, wooden_cylinder);
     scene.emplace<StaticObject>(Transform{{0, -50, -70}, {}, {20, 20, 20}}, asset1);
     scene.emplace<StaticObject>(Transform{{0, -1000, 0}, {}, {4000, 40, 4000}}, noise_asset);
+
+    scene.emplace<DynamicObject>(1.0f, Transform{{0, 100, 0}, {}, {50, 50, 50}}, wooden_cylinder);
+
+    scene.emplace<DynamicObject>(1.0f, Transform{{10, 100, 0}, {}, {100, 50, 50}}, wooden_cylinder);
+
+    scene.emplace<DynamicObject>(1.0f, Transform{{20, 100, 0}, {}, {50, 50, 50}}, wooden_cylinder);
+
+    scene.emplace<DynamicObject>(1.0f, Transform{{40, 100, 0}, {}, {50, 50, 50}}, wooden_cylinder);
+
 
     Sprite& example_sprite = scene.emplace<Sprite>(Vector2F{}, 0.0f, Vector2F{100.0f, 100.0f}, assets.find_texture("bricks"));
     DynamicSprite& ex1 = scene.emplace<DynamicSprite>(1.0f, Vector2F{200, 200}, 0.0f, Vector2F{100.0f, 100.0f}, assets.find_texture("bricks"), Vector2F{10.0f, 0.0f});

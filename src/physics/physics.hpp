@@ -8,6 +8,16 @@ class Object;
 
 namespace tz::physics
 {
+	enum class Axis2D : unsigned int
+	{
+		X = 0, Y = 1
+	};
+
+	enum class Axis3D : unsigned int
+	{
+		X = 0, Y = 1, Z = 2
+	};
+
 	/**
 	* Given a Mesh, creates a well-fitted sphere-boundary around the vertices of a mesh.
 	* The BoundingSphere is bound in model-space.
@@ -24,4 +34,8 @@ namespace tz::physics
 	 */
 	//AABB bound_aabb_batch(const std::vector<SceneObject>& objects);
 }
+
+std::ostream& operator<<(std::ostream& stream, const tz::physics::Axis2D& axis);
+std::ostream& operator<<(std::ostream& stream, const tz::physics::Axis3D& axis);
+
 #endif

@@ -28,3 +28,42 @@ AABB tz::physics::bound_aabb(const Mesh& mesh)
 	}
 	return {Vector3F(min_x, min_y, min_z), Vector3F(max_x, max_y, max_z)};
 }
+
+std::ostream& operator<<(std::ostream& stream, const tz::physics::Axis2D& axis)
+{
+	using namespace tz::physics;
+	switch(axis)
+	{
+		case Axis2D::X:
+			stream << "X";
+			break;
+		case Axis2D::Y:
+			stream << "Y";
+			break;
+		default:
+			stream << "Not an Axis";
+			break;
+	}
+	return stream;
+}
+
+std::ostream& operator<<(std::ostream& stream, const tz::physics::Axis3D& axis)
+{
+	using namespace tz::physics;
+	switch(axis)
+	{
+		case Axis3D::X:
+			stream << "X";
+			break;
+		case Axis3D::Y:
+			stream << "Y";
+			break;
+		case Axis3D::Z:
+			stream << "Z";
+			break;
+		default:
+			stream << "Not an Axis";
+			break;
+	}
+	return stream;
+}

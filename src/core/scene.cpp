@@ -1,5 +1,4 @@
 #include "core/scene.hpp"
-#include "physics/physics.hpp"
 
 Scene::Scene(const std::initializer_list<StaticObject>& stack_objects, std::vector<std::unique_ptr<StaticObject>> heap_objects): stack_objects(stack_objects), heap_objects(std::move(heap_objects)), stack_sprites{}, heap_sprites{}, directional_lights{}, point_lights{}, objects_to_delete{}, sprites_to_delete{}{}
 
@@ -58,11 +57,40 @@ void Scene::update(float delta_time)
         if(physics_component != nullptr)
             physics_sprites.push_back(std::ref(*physics_component));
     }
+    /* old code without sort and sweep
     for(auto& physics_ref : physics_objects)
         physics_ref.get().handle_collisions(physics_objects);
     for(auto& physics_sprite_ref : physics_sprites)
         physics_sprite_ref.get().handle_collisions(physics_sprites);
+    */
+    // new code starts here. using sort and sweep for non-ridiculously-slow physics interations.
+    std::multimap<float, std::reference_wrapper<PhysicsObject>> physics_objects_sweeped;
+    for(auto& [value, dynamic_object_ref] : this->get_mutable_dynamic_objects_sorted_by_variance_axis())
+    {
+        DynamicObject& dynamic_object = dynamic_object_ref.get();
+        physics_objects_sweeped.emplace(value, *dynamic_cast<PhysicsObject*>(&dynamic_object));
+    }
+    std::cout << "begin handle collisions.\n";
+    for(PhysicsObject& object : physics_objects)
+        object.handle_collisions_sort_and_sweep(this->get_highest_variance_axis_objects(), physics_objects_sweeped);
+    std::cout << "end handle collisions.\n";
+
     this->handle_deletions();
+}
+
+std::size_t Scene::get_number_of_objects() const
+{
+    return this->get_objects().size();
+}
+
+std::size_t Scene::get_number_of_sprites() const
+{
+    return this->get_sprites().size();
+}
+
+std::size_t Scene::get_number_of_elements() const
+{
+    return this->get_number_of_objects() + this->get_number_of_sprites();
 }
 
 std::vector<std::reference_wrapper<const StaticObject>> Scene::get_objects() const
@@ -217,6 +245,18 @@ std::vector<std::reference_wrapper<DynamicObject>> Scene::get_mutable_dynamic_ob
     return object_refs;
 }
 
+std::vector<std::reference_wrapper<const DynamicSprite>> Scene::get_dynamic_sprites() const
+{
+    std::vector<std::reference_wrapper<const DynamicSprite>> dyn_sprites;
+    for(const Sprite& sprite : this->get_sprites())
+    {
+        const DynamicSprite* dynamic_component = dynamic_cast<const DynamicSprite*>(&sprite);
+        if(dynamic_component != nullptr)
+            dyn_sprites.push_back(std::cref(*dynamic_component));
+    }
+    return dyn_sprites;
+}
+
 std::vector<std::reference_wrapper<Sprite>> Scene::get_mutable_sprites()
 {
     std::vector<std::reference_wrapper<Sprite>> sprite_refs;
@@ -237,6 +277,110 @@ std::vector<std::reference_wrapper<DynamicSprite>> Scene::get_mutable_dynamic_sp
             dyn_sprite_refs.push_back(std::ref(*dynamic_component));
     }
     return dyn_sprite_refs;
+}
+
+std::multimap<float, std::reference_wrapper<DynamicObject>> Scene::get_mutable_dynamic_objects_sorted_by_variance_axis()
+{
+    std::multimap<float, std::reference_wrapper<DynamicObject>> sorted_dyn_objects;
+    using namespace tz::physics;
+    Axis3D highest_variance_axis = this->get_highest_variance_axis_objects();
+    for(DynamicObject& object : this->get_mutable_dynamic_objects())
+    {
+        if(object.get_boundary().has_value())
+        {
+            AABB bound = object.get_boundary().value();
+            float value;
+            switch(highest_variance_axis)
+            {
+                case Axis3D::X:
+                default:
+                    value = bound.get_minimum().x;
+                    break;
+                case Axis3D::Y:
+                    value = bound.get_minimum().y;
+                    break;
+                case Axis3D::Z:
+                    value = bound.get_minimum().z;
+                    break;
+            }
+            sorted_dyn_objects.emplace(value, std::ref(object));
+        }
+    }
+    return sorted_dyn_objects;
+}
+
+std::multimap<float, std::reference_wrapper<DynamicSprite>> Scene::get_mutable_dynamic_sprites_sorted_by_variance_axis()
+{
+    std::multimap<float, std::reference_wrapper<DynamicSprite>> sorted_dyn_sprites;
+    using namespace tz::physics;
+    Axis2D highest_variance_axis = this->get_highest_variance_axis_sprites();
+    for(DynamicSprite& sprite : this->get_mutable_dynamic_sprites())
+    {
+        if(sprite.get_boundary().has_value())
+        {
+            AABB bound = sprite.get_boundary().value();
+            float value;
+            switch(highest_variance_axis)
+            {
+                case Axis2D::X:
+                default:
+                    value = bound.get_minimum().x;
+                    break;
+                case Axis2D::Y:
+                    value = bound.get_minimum().y;
+                    break;
+            }
+            sorted_dyn_sprites.emplace(value, std::ref(sprite));
+        }
+    }
+    return sorted_dyn_sprites;
+}
+
+tz::physics::Axis3D Scene::get_highest_variance_axis_objects() const
+{
+    std::vector<float> values_x, values_y, values_z;
+    for(const DynamicObject& object : this->get_dynamic_objects())
+    {
+        if(object.get_boundary().has_value())
+        {
+            AABB bound = object.get_boundary().value();
+            values_x.push_back(bound.get_minimum().x);
+            values_y.push_back(bound.get_minimum().y);
+            values_z.push_back(bound.get_minimum().z);
+        }
+    }
+    using namespace tz::utility;
+    using namespace tz::physics;
+    float sigma_x = numeric::variance(values_x), sigma_y = numeric::variance(values_y), sigma_z = numeric::variance(values_z);
+    if(sigma_x >= sigma_y && sigma_x >= sigma_z)
+        return Axis3D::X;
+    else if(sigma_y >= sigma_x && sigma_y >= sigma_z)
+        return Axis3D::Y;
+    else if(sigma_z >= sigma_x && sigma_z >= sigma_y)
+        return Axis3D::Z;
+    else
+        return Axis3D::X;
+}
+
+tz::physics::Axis2D Scene::get_highest_variance_axis_sprites() const
+{
+    std::vector<float> values_x, values_y;
+    for(const DynamicSprite& sprite : this->get_dynamic_sprites())
+    {
+        if(sprite.get_boundary().has_value())
+        {
+            AABB bound = sprite.get_boundary().value();
+            values_x.push_back(bound.get_minimum().x);
+            values_y.push_back(bound.get_minimum().y);
+        }
+    }
+    using namespace tz::utility;
+    using namespace tz::physics;
+    float sigma_x = numeric::variance(values_x), sigma_y = numeric::variance(values_y);
+    if(sigma_x >= sigma_y)
+        return Axis2D::X;
+    else
+        return Axis2D::Y;
 }
 
 void Scene::erase_object(StaticObject* to_delete)

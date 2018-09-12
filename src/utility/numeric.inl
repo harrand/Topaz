@@ -1,3 +1,22 @@
+template<template <typename> class Container>
+float tz::utility::numeric::variance(Container<float> values)
+{
+    if(values.size() == 1)
+        return values.front();
+    else if(values.size() == 0)
+        return 0.0f;
+    auto n = values.size();
+    float sum = std::accumulate(values.begin(), values.end(), 0.0f);
+    float mean = sum / n;
+    for(float& value : values)
+    {
+        value -= mean;
+        value = std::pow(value, 2);
+    }
+    float sigma_mew_squared = std::accumulate(values.begin(), values.end(), 0.0f);
+    return sigma_mew_squared / (n - 1);
+}
+
 template<typename Engine, typename EngineResultType>
 Random<Engine, EngineResultType>::Random(EngineResultType seed): seed(seed)
 {

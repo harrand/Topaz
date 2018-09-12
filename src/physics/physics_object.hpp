@@ -3,6 +3,8 @@
 
 #include "data/vector.hpp"
 #include "physics/boundary.hpp"
+#include "physics.hpp"
+#include <map>
 
 class PhysicsObject
 {
@@ -60,6 +62,7 @@ private:
     std::vector<PhysicsObject*> colliding_with;
 
     void handle_collisions(const std::vector<std::reference_wrapper<PhysicsObject>>& physics_objects);
+    void handle_collisions_sort_and_sweep(tz::physics::Axis3D highest_variance_axis, const std::multimap<float, std::reference_wrapper<PhysicsObject>>& physics_objects_sorted);
 };
 
 

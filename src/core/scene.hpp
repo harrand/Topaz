@@ -2,6 +2,8 @@
 #define TOPAZ_SCENE_HPP
 #include "physics/dynamic_object.hpp"
 #include "physics/dynamic_sprite.hpp"
+#include "physics/physics.hpp"
+#include <map>
 
 class Scene
 {
@@ -10,6 +12,9 @@ public:
 
     virtual void render(Shader& render_shader, Shader* sprite_shader, const Camera& camera, const Vector2I& viewport_dimensions) const;
     virtual void update(float delta_time);
+    std::size_t get_number_of_objects() const;
+    std::size_t get_number_of_sprites() const;
+    std::size_t get_number_of_elements() const;
     std::vector<std::reference_wrapper<const StaticObject>> get_objects() const;
     std::vector<std::reference_wrapper<const Sprite>> get_sprites() const;
     AABB get_boundary() const;
@@ -33,8 +38,13 @@ protected:
     std::vector<std::reference_wrapper<const DynamicObject>> get_dynamic_objects() const;
     std::vector<std::reference_wrapper<StaticObject>> get_mutable_static_objects();
     std::vector<std::reference_wrapper<DynamicObject>> get_mutable_dynamic_objects();
+    std::vector<std::reference_wrapper<const DynamicSprite>> get_dynamic_sprites() const;
     std::vector<std::reference_wrapper<Sprite>> get_mutable_sprites();
     std::vector<std::reference_wrapper<DynamicSprite>> get_mutable_dynamic_sprites();
+    std::multimap<float, std::reference_wrapper<DynamicObject>> get_mutable_dynamic_objects_sorted_by_variance_axis();
+    std::multimap<float, std::reference_wrapper<DynamicSprite>> get_mutable_dynamic_sprites_sorted_by_variance_axis();
+    tz::physics::Axis3D get_highest_variance_axis_objects() const;
+    tz::physics::Axis2D get_highest_variance_axis_sprites() const;
 protected:
     std::vector<StaticObject> stack_objects;
     std::vector<std::unique_ptr<StaticObject>> heap_objects;
