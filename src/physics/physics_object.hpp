@@ -62,6 +62,7 @@ private:
     std::vector<PhysicsObject*> colliding_with;
 
     void handle_collisions(const std::vector<std::reference_wrapper<PhysicsObject>>& physics_objects);
+    void handle_collisions_sort_and_sweep(tz::physics::Axis2D highest_variance_axis, const std::multimap<float, std::reference_wrapper<PhysicsObject>>& physics_objects_sorted);
     void handle_collisions_sort_and_sweep(tz::physics::Axis3D highest_variance_axis, const std::multimap<float, std::reference_wrapper<PhysicsObject>>& physics_objects_sorted);
 };
 

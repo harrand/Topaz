@@ -175,7 +175,7 @@ void init()
     scene.emplace<DynamicObject>(1.0f, Transform{{40, 100, 0}, {}, {50, 50, 50}}, wooden_cylinder);
 
 
-    Sprite& example_sprite = scene.emplace<Sprite>(Vector2F{}, 0.0f, Vector2F{100.0f, 100.0f}, assets.find_texture("bricks"));
+    DynamicSprite& example_sprite = scene.emplace<DynamicSprite>(1.0f, Vector2F{}, 0.0f, Vector2F{100.0f, 100.0f}, assets.find_texture("bricks"));
     DynamicSprite& ex1 = scene.emplace<DynamicSprite>(1.0f, Vector2F{200, 200}, 0.0f, Vector2F{100.0f, 100.0f}, assets.find_texture("bricks"), Vector2F{10.0f, 0.0f});
     ex1.add_force({0.0f, 10.0f});
 

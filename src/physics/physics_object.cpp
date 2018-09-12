@@ -50,11 +50,9 @@ void PhysicsObject::clear_torques()
 
 void PhysicsObject::handle_collisions(const std::vector<std::reference_wrapper<PhysicsObject>>& physics_objects)
 {
-    std::cout << "hi i am a physicsobject " << this << " and i can possibly collide with " << physics_objects.size() << " other physicsobjects. they are:\n";
     for(auto ref : physics_objects)
     {
         auto& physics_object = ref.get();
-        std::cout << "pointer: " << &physics_object << "\n";
         if(this == &physics_object)
             continue;
         using OptAABB = std::optional<AABB>;
@@ -70,6 +68,21 @@ void PhysicsObject::handle_collisions(const std::vector<std::reference_wrapper<P
             else if(!this_bound->intersects(other_bound.value()) && std::find(this->colliding_with.begin(), this->colliding_with.end(), &physics_object) != this->colliding_with.end())
                 this->colliding_with.erase(std::remove(this->colliding_with.begin(), this->colliding_with.end(), &physics_object), this->colliding_with.end());
         }
+    }
+}
+
+void PhysicsObject::handle_collisions_sort_and_sweep(tz::physics::Axis2D highest_variance_axis, const std::multimap<float, std::reference_wrapper<PhysicsObject>>& physics_objects_sorted)
+{
+    using namespace tz::physics;
+    switch(highest_variance_axis)
+    {
+        case Axis2D::X:
+        default:
+            this->handle_collisions_sort_and_sweep(Axis3D::X, physics_objects_sorted);
+            break;
+        case Axis2D::Y:
+            this->handle_collisions_sort_and_sweep(Axis3D::Y, physics_objects_sorted);
+            break;
     }
 }
 
@@ -108,7 +121,6 @@ void PhysicsObject::handle_collisions_sort_and_sweep(tz::physics::Axis3D highest
             break;
     }
     std::ptrdiff_t offset = 0;
-
     while(next_possible_collidee_iter != physics_objects_sorted.cend())
     {
         // lol good luck understanding this.
@@ -122,13 +134,23 @@ void PhysicsObject::handle_collisions_sort_and_sweep(tz::physics::Axis3D highest
          */
         //next_possible_collidee_iter = physics_objects_sorted.upper_bound(current_min_value);
         std::pair iter_pair = physics_objects_sorted.equal_range(current_min_value);
+        if(iter_pair.first == physics_objects_sorted.end())
+            break;
         auto iter_begin = std::next(iter_pair.first, ++offset);
+        if(iter_begin == physics_objects_sorted.end())
+            break;
         next_possible_collidee_iter = iter_begin;
         if(iter_begin == iter_pair.second)
             offset = 0;
         PhysicsObject& next_possible_collidee = next_possible_collidee_iter->second.get();
         bool should_break = false;
         AABB next_possible_collidee_bound = next_possible_collidee.get_boundary().value();
+        auto ensure_not_colliding = [&]()
+        {
+            should_break = true;
+            if(std::find(this->colliding_with.begin(), this->colliding_with.end(), &next_possible_collidee) != this->colliding_with.end())
+                this->colliding_with.erase(std::remove(this->colliding_with.begin(), this->colliding_with.end(), &next_possible_collidee));
+        };
         switch(highest_variance_axis)
         {
             case Axis3D::X:
@@ -137,21 +159,21 @@ void PhysicsObject::handle_collisions_sort_and_sweep(tz::physics::Axis3D highest
                 if(current_min_value <= this_boundary.get_maximum().x)
                     possible_colliders.push_back(std::ref(next_possible_collidee));
                 else
-                    should_break = true;
+                    ensure_not_colliding();
                 break;
             case Axis3D::Y:
                 current_min_value = next_possible_collidee_bound.get_minimum().y;
                 if(current_min_value <= this_boundary.get_maximum().y)
                     possible_colliders.push_back(std::ref(next_possible_collidee));
                 else
-                    should_break = true;
+                    ensure_not_colliding();
                 break;
             case Axis3D::Z:
                 current_min_value = next_possible_collidee_bound.get_minimum().z;
                 if(current_min_value <= this_boundary.get_maximum().z)
                     possible_colliders.push_back(std::ref(next_possible_collidee));
                 else
-                    should_break = true;
+                    ensure_not_colliding();
                 break;
         }
         if(should_break)

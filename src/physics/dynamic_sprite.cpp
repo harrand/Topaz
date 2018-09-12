@@ -3,7 +3,6 @@
 //
 
 #include "dynamic_sprite.hpp"
-#include "physics/physics.hpp"
 
 DynamicSprite::DynamicSprite(float mass, Vector2F position_screenspace, float rotation, Vector2F scale, const Texture* texture, Vector2F velocity, float moment_of_inertia, float angular_velocity, std::initializer_list<Vector3F> forces): Sprite(position_screenspace, rotation, scale, texture), PhysicsObject(mass, {velocity, 0.0f}, moment_of_inertia, {0.0f, 0.0f, angular_velocity}, forces)
 {
@@ -35,4 +34,4 @@ std::optional<AABB> DynamicSprite::get_boundary() const
     return tz::physics::bound_aabb(this->mesh) * tz::transform::model({position_screenspace.x, position_screenspace.y, 0.0f}, {0.0f, 0.0f, this->get_rotation()}, {this->scale, 0.0f});
 }
 
-void DynamicSprite::on_collision([[maybe_unused]] PhysicsObject& other) {}
+void DynamicSprite::on_collision([[maybe_unused]] PhysicsObject& other){}

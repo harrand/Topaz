@@ -70,10 +70,18 @@ void Scene::update(float delta_time)
         DynamicObject& dynamic_object = dynamic_object_ref.get();
         physics_objects_sweeped.emplace(value, *dynamic_cast<PhysicsObject*>(&dynamic_object));
     }
-    std::cout << "begin handle collisions.\n";
+    std::multimap<float, std::reference_wrapper<PhysicsObject>> physics_sprites_sweeped;
+    for(auto& [value, dynamic_sprite_ref] : this->get_mutable_dynamic_sprites_sorted_by_variance_axis())
+    {
+        DynamicSprite& dynamic_sprite = dynamic_sprite_ref.get();
+        physics_sprites_sweeped.emplace(value, *dynamic_cast<PhysicsObject*>(&dynamic_sprite));
+    }
+    //std::cout << "begin handle collisions.\n";
     for(PhysicsObject& object : physics_objects)
         object.handle_collisions_sort_and_sweep(this->get_highest_variance_axis_objects(), physics_objects_sweeped);
-    std::cout << "end handle collisions.\n";
+    for(PhysicsObject& sprite_object : physics_sprites)
+        sprite_object.handle_collisions_sort_and_sweep(this->get_highest_variance_axis_sprites(), physics_sprites_sweeped);//sprite_object.handle_collisions(physics_sprites);
+    //std::cout << "end handle collisions.\n";
 
     this->handle_deletions();
 }
