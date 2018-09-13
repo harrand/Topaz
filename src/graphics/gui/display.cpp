@@ -4,6 +4,8 @@ Panel::Panel(Vector2I position_local_pixel_space, Vector2I dimensions_local_pixe
 
 void Panel::render(Shader& shader, int window_width_pixels, int window_height_pixels) const
 {
+    if(!this->is_visible())
+        return;
     shader.bind();
     shader.set_uniform<bool>("has_texture", this->has_texture());
     shader.set_uniform<bool>("has_background_colour", this->has_colour());
@@ -65,6 +67,8 @@ Label::Label(Vector2I position_local_pixel_space, Font font, Vector3F text_colou
 
 void Label::render(Shader& shader, int window_width_pixels, int window_height_pixels) const
 {
+    if(!this->is_visible())
+        return;
     shader.bind();
     shader.set_uniform<bool>("has_texture", true);
     shader.set_uniform<bool>("has_background_colour", true);

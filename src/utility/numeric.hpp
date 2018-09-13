@@ -9,6 +9,8 @@ namespace tz::utility::numeric
     float cosine_interpolate(float a, float b, float blend_factor);
     template<template <typename> class Container>
     float variance(Container<float> values);
+    template<template <typename> class Container>
+    float standard_deviation(Container<float> values);
     constexpr float default_smoothness = 8.0f;
     namespace consts
     {

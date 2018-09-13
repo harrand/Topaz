@@ -22,7 +22,6 @@ int main()
 
 void init()
 {
-    std::cout << "variance = " << tz::utility::numeric::variance(std::vector<float>{6.0, 3.0, 8.0, 5.0, 3.0}) << "\n";
     Window wnd("Topaz Development Window", 0, 30, 800, 600);
     wnd.set_swap_interval_type(Window::SwapIntervalType::LATE_SWAP_TEARING);
 
@@ -52,13 +51,6 @@ void init()
     Texture red_texture{Bitmap<PixelRGBA>{{PixelRGBA{255, 0, 0, 255}}, 1, 1}};
     Texture green_texture{Bitmap<PixelRGBA>{{PixelRGBA{0, 255, 0, 255}}, 1, 1}};
     Texture blue_texture{Bitmap<PixelRGBA>{{PixelRGBA{0, 0, 255, 255}}, 1, 1}};
-    /*
-    PolyFrameTexture test_animation{{{0, red_texture}, {1, green_texture}}};
-    test_animation.set_frame(10, blue_texture);
-     */
-    //AnimatedTexture test_animation{{{0, red_texture}, {1, green_texture}, {2, blue_texture}}, 1};
-    Panel& flashing_panel = wnd.emplace_child<Panel>(Vector2I{200, 200}, Vector2I{100, 100}, Vector4F{0.0f, 1.0f, 0.0f, 1.0f});
-
     AssetBuffer assets;
     assets.emplace<Mesh>("cube_lq", "../../../res/runtime/models/cube.obj");
     assets.emplace<Mesh>("cube", "../../../res/runtime/models/cube_hd.obj");
@@ -69,11 +61,6 @@ void init()
     assets.emplace<Texture>("bricks", "../../../res/runtime/textures/bricks.jpg");
     assets.emplace<Texture>("stone", "../../../res/runtime/textures/stone.jpg");
     assets.emplace<Texture>("wood", "../../../res/runtime/textures/wood.jpg");
-
-    assets.emplace<AnimatedTexture>("test_animation0", PolyFrameTexture::FrameMap{{0, *assets.find_texture("bricks")}, {1, red_texture}, {2, green_texture}, {3, *assets.find_texture("wood")}}, 1);
-    assets.emplace_animated_texture("test_animation", {{0, red_texture}, {1, green_texture}, {2, blue_texture}}, 1);
-    AnimatedTexture& test_animation = *assets.find<AnimatedTexture>("test_animation0");
-
     assets.emplace<NormalMap>("bricks_normal", "../../../res/runtime/normalmaps/bricks_normalmap.jpg");
     assets.emplace<NormalMap>("stone_normal", "../../../res/runtime/normalmaps/stone_normalmap.jpg");
     assets.emplace<NormalMap>("wood_normal", "../../../res/runtime/normalmaps/wood_normalmap.jpg");
@@ -160,11 +147,11 @@ void init()
         object.angular_velocity = {rand(-pi, pi) * 0.1f, rand(-pi, pi) * 0.1f, rand(-pi, pi) * 0.1f};
     }
     scene.emplace<InstancedStaticObject>(floor_objects);
-    //scene.emplace<InstancedDynamicObject>(falling_objects);
+    scene.emplace<InstancedDynamicObject>(falling_objects);
     scene.emplace<StaticObject>(Transform{{0, 0, 0}, {}, {15, 15, 15}}, wooden_sphere);
     scene.emplace<StaticObject>(Transform{{100, 0, 0}, {}, {200, 200, 200}}, wooden_cylinder);
     scene.emplace<StaticObject>(Transform{{0, -50, -70}, {}, {20, 20, 20}}, asset1);
-    scene.emplace<StaticObject>(Transform{{0, -1000, 0}, {}, {4000, 40, 4000}}, noise_asset);
+    //scene.emplace<StaticObject>(Transform{{0, -1000, 0}, {}, {4000, 40, 4000}}, noise_asset);
 
     scene.emplace<DynamicObject>(1.0f, Transform{{0, 100, 0}, {}, {50, 50, 50}}, wooden_cylinder);
 
@@ -201,19 +188,19 @@ void init()
             label.set_text(to_string(profiler.get_delta_average()) + " ms (" + to_string(profiler.get_fps()) + " fps)");
             second_timer.reload();
             profiler.reset();
+            progress.set_visible(!progress.is_visible());
         }
 
         long long int delta_time = tz::utility::time::now() - time;
         time = tz::utility::time::now();
 
-        test_animation.update(delta_time);
         depth_framebuffer.clear(BufferBit::DEPTH);
         depth_framebuffer.set_render_target();
 
         Camera light_view = scene.get_directional_light(0).value().get_view(scene.get_boundary());
         render_shader.set_uniform<Matrix4x4>("light_viewprojection", light_view.projection(wnd.get_width(), wnd.get_height()) * light_view.view());
         glCullFace(GL_FRONT);
-        scene.render(depth_shader, nullptr, light_view, {wnd.get_width(), wnd.get_height()});
+        scene.render(&depth_shader, nullptr, light_view, {wnd.get_width(), wnd.get_height()});
         glCullFace(GL_BACK);
 
         hdr_buffer.clear(BufferBit::COLOUR_AND_DEPTH, 0.0f, 0.0f, 0.0f, 0.0f);
@@ -227,8 +214,8 @@ void init()
         if(wireframe)
             tz::graphics::enable_wireframe_render(true);
         depth_framebuffer.get_depth_texture().bind(&render_shader, 5, "depth_map_sampler");
-        scene.render(render_shader, &gui_shader, camera, {wnd.get_width(), wnd.get_height()});
-        constexpr int tps = 50;
+        scene.render(&render_shader, &gui_shader, camera, {wnd.get_width(), wnd.get_height()});
+        constexpr int tps = 60;
         constexpr float tick_delta = 1000.0f / tps;
         if(tick_timer.millis_passed(tick_delta))
         {
@@ -270,10 +257,6 @@ void init()
         Panel another_render_panel{Vector2I{0, 0}, Vector2I{wnd.get_width(), wnd.get_height()}, &hdr_texture};
         blurred_bloom_texture.bind(&gui_bloom_shader, 5, "bright_sampler");
         another_render_panel.render(gui_bloom_shader, wnd.get_width(), wnd.get_height());
-        const Texture* texture = &test_animation.get_frame_texture();
-        //std::cout << "texture width = " << texture->get_width() << "\n";
-        flashing_panel.set_texture(texture);
-        //example_sprite.set_texture(&assets.find_animated_texture("test_animation0")->get_frame_texture());
         wnd.set_render_target();
         wnd.clear();
         wnd.update(gui_shader, &hdr_gui_shader);

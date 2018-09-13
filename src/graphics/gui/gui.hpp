@@ -88,6 +88,8 @@ public:
      * @return - Float value between 0.0 and 1.0f
      */
     float get_normalised_screen_height() const;
+    bool is_visible() const;
+    void set_visible(bool visible, bool affect_children = true);
     GUI* get_parent() const;
     void set_parent(GUI* new_parent);
     std::vector<GUI*> get_children() const;
@@ -107,6 +109,7 @@ protected:
     GUI* parent;
     std::vector<GUI*> children;
     std::vector<std::shared_ptr<GUI>> heap_children;
+    bool visible;
 };
 
 /**

@@ -1,7 +1,7 @@
 #include "graphics/gui/gui.hpp"
 #include <stack>
 
-GUI::GUI(Vector2I position_local_pixel_space, Vector2I dimensions_local_pixel_space, GUI* parent, std::initializer_list<GUI*> children, bool hdr): uses_hdr(hdr), position_local_pixel_space(position_local_pixel_space), dimensions_local_pixel_space(dimensions_local_pixel_space), parent(parent), children(children){}
+GUI::GUI(Vector2I position_local_pixel_space, Vector2I dimensions_local_pixel_space, GUI* parent, std::initializer_list<GUI*> children, bool hdr): uses_hdr(hdr), position_local_pixel_space(position_local_pixel_space), dimensions_local_pixel_space(dimensions_local_pixel_space), parent(parent), children(children), visible(true){}
 
 void GUI::update()
 {
@@ -35,10 +35,6 @@ void GUI::render(Shader& shader, int window_width_pixels, int window_height_pixe
     auto children = this->get_children();
     for(auto i = children.crbegin(); i != children.crend(); i++)
         (*i)->render(shader, window_width_pixels, window_height_pixels);
-    /*
-    for(const GUI* child : this->get_children())
-        child->render(shader, window_width_pixels, window_height_pixels);
-    */
 }
 
 int GUI::get_x() const
@@ -109,6 +105,21 @@ float GUI::get_normalised_screen_height() const
     return tz::util::gui::to_normalised_screen_space(this->dimensions_local_pixel_space).y;
 }
 
+bool GUI::is_visible() const
+{
+    return this->visible;
+}
+
+void GUI::set_visible(bool visible, bool affect_children)
+{
+    this->visible = visible;
+    if(affect_children)
+    {
+        for (GUI *child : this->get_children())
+            child->set_visible(visible, affect_children);
+    }
+
+}
 
 GUI* GUI::get_parent() const
 {

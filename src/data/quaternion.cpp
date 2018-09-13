@@ -24,7 +24,7 @@ Quaternion::Quaternion(Matrix4x4 rotational_matrix)
 	// takes a row-major matrix.
 	float trace = 1 + rotational_matrix.x.x + rotational_matrix.y.y + rotational_matrix.z.z;
 	float s;
-	if(trace > 0.000001)
+	if(trace > 0.000001f)
 	{
 		// perform an instant calculation.
 		s = std::sqrt(trace) * 2.0f;

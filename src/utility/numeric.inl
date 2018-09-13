@@ -17,6 +17,12 @@ float tz::utility::numeric::variance(Container<float> values)
     return sigma_mew_squared / (n - 1);
 }
 
+template<template <typename> class Container>
+float tz::utility::numeric::standard_deviation(Container<float> values)
+{
+    return std::sqrt(tz::utility::numeric::variance(values));
+}
+
 template<typename Engine, typename EngineResultType>
 Random<Engine, EngineResultType>::Random(EngineResultType seed): seed(seed)
 {

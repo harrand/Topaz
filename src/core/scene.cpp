@@ -2,15 +2,18 @@
 
 Scene::Scene(const std::initializer_list<StaticObject>& stack_objects, std::vector<std::unique_ptr<StaticObject>> heap_objects): stack_objects(stack_objects), heap_objects(std::move(heap_objects)), stack_sprites{}, heap_sprites{}, directional_lights{}, point_lights{}, objects_to_delete{}, sprites_to_delete{}{}
 
-void Scene::render(Shader& render_shader, Shader* sprite_shader, const Camera& camera, const Vector2I& viewport_dimensions) const
+void Scene::render(Shader* render_shader, Shader* sprite_shader, const Camera& camera, const Vector2I& viewport_dimensions) const
 {
     Frustum camera_frustum(camera, viewport_dimensions.x / viewport_dimensions.y);
-    auto render_if_visible = [&](const StaticObject& object){AABB object_box = tz::physics::bound_aabb(*(object.get_asset().mesh)); if(camera_frustum.contains(object_box * object.transform.model()) || tz::graphics::is_instanced(object.get_asset().mesh)) object.render(render_shader, camera, viewport_dimensions);};
-    for(const auto& static_object : this->get_static_objects())
+    auto render_if_visible = [&](const StaticObject& object){AABB object_box = tz::physics::bound_aabb(*(object.get_asset().mesh)); if(camera_frustum.contains(object_box * object.transform.model()) || tz::graphics::is_instanced(object.get_asset().mesh)) object.render(*render_shader, camera, viewport_dimensions);};
+    if(render_shader != nullptr)
     {
-        if(std::find(this->objects_to_delete.begin(), this->objects_to_delete.end(), &static_object.get()) != this->objects_to_delete.end())
-            continue;
-        render_if_visible(static_object.get());
+        for (const auto &static_object : this->get_static_objects())
+        {
+            if (std::find(this->objects_to_delete.begin(), this->objects_to_delete.end(), &static_object.get()) != this->objects_to_delete.end())
+                continue;
+            render_if_visible(static_object.get());
+        }
     }
     if(sprite_shader != nullptr)
     {
@@ -21,18 +24,19 @@ void Scene::render(Shader& render_shader, Shader* sprite_shader, const Camera& c
             sprite.get().render(*sprite_shader, viewport_dimensions);
         }
     }
+    if(render_shader == nullptr)
+        return;
     for(std::size_t i = 0; i < this->directional_lights.size(); i++)
     {
-        render_shader.bind();
-        render_shader.set_uniform<DirectionalLight>(std::string("directional_lights[") + std::to_string(i) + "]", this->directional_lights[i]);
-        render_shader.update();
+        render_shader->bind();
+        render_shader->set_uniform<DirectionalLight>(std::string("directional_lights[") + std::to_string(i) + "]", this->directional_lights[i]);
     }
     for(std::size_t i = 0; i < this->point_lights.size(); i++)
     {
-        render_shader.bind();
-        render_shader.set_uniform<PointLight>(std::string("point_lights[") + std::to_string(i) + "]", this->point_lights[i]);
-        render_shader.update();
+        render_shader->bind();
+        render_shader->set_uniform<PointLight>(std::string("point_lights[") + std::to_string(i) + "]", this->point_lights[i]);
     }
+    render_shader->update();
 }
 
 void Scene::update(float delta_time)
@@ -57,13 +61,6 @@ void Scene::update(float delta_time)
         if(physics_component != nullptr)
             physics_sprites.push_back(std::ref(*physics_component));
     }
-    /* old code without sort and sweep
-    for(auto& physics_ref : physics_objects)
-        physics_ref.get().handle_collisions(physics_objects);
-    for(auto& physics_sprite_ref : physics_sprites)
-        physics_sprite_ref.get().handle_collisions(physics_sprites);
-    */
-    // new code starts here. using sort and sweep for non-ridiculously-slow physics interations.
     std::multimap<float, std::reference_wrapper<PhysicsObject>> physics_objects_sweeped;
     for(auto& [value, dynamic_object_ref] : this->get_mutable_dynamic_objects_sorted_by_variance_axis())
     {
@@ -76,19 +73,16 @@ void Scene::update(float delta_time)
         DynamicSprite& dynamic_sprite = dynamic_sprite_ref.get();
         physics_sprites_sweeped.emplace(value, *dynamic_cast<PhysicsObject*>(&dynamic_sprite));
     }
-    //std::cout << "begin handle collisions.\n";
     for(PhysicsObject& object : physics_objects)
         object.handle_collisions_sort_and_sweep(this->get_highest_variance_axis_objects(), physics_objects_sweeped);
     for(PhysicsObject& sprite_object : physics_sprites)
-        sprite_object.handle_collisions_sort_and_sweep(this->get_highest_variance_axis_sprites(), physics_sprites_sweeped);//sprite_object.handle_collisions(physics_sprites);
-    //std::cout << "end handle collisions.\n";
-
+        sprite_object.handle_collisions_sort_and_sweep(this->get_highest_variance_axis_sprites(), physics_sprites_sweeped);
     this->handle_deletions();
 }
 
-std::size_t Scene::get_number_of_objects() const
+std::size_t Scene::get_number_of_static_objects() const
 {
-    return this->get_objects().size();
+    return this->get_static_objects().size();
 }
 
 std::size_t Scene::get_number_of_sprites() const
@@ -98,14 +92,14 @@ std::size_t Scene::get_number_of_sprites() const
 
 std::size_t Scene::get_number_of_elements() const
 {
-    return this->get_number_of_objects() + this->get_number_of_sprites();
+    return this->get_number_of_static_objects() + this->get_number_of_sprites();
 }
 
-std::vector<std::reference_wrapper<const StaticObject>> Scene::get_objects() const
+std::vector<std::reference_wrapper<const StaticObject>> Scene::get_static_objects() const
 {
     std::vector<std::reference_wrapper<const StaticObject>> object_crefs;
-    for(const StaticObject& object_cref : this->stack_objects)
-        object_crefs.push_back(std::cref(object_cref));
+    for(const StaticObject& object_ref : this->stack_objects)
+        object_crefs.push_back(std::cref(object_ref));
     for(const std::unique_ptr<StaticObject>& object_ptr : this->heap_objects)
         object_crefs.push_back(std::cref(*object_ptr));
     return object_crefs;
@@ -123,7 +117,7 @@ std::vector<std::reference_wrapper<const Sprite>> Scene::get_sprites() const
 
 AABB Scene::get_boundary() const
 {
-    auto objects = this->get_objects();
+    auto objects = this->get_static_objects();
     if(objects.size() == 0)
         return {{}, {}};
     Vector3F min = objects.front().get().transform.position, max = objects.front().get().transform.position;
@@ -149,11 +143,15 @@ void Scene::add_object(StaticObject scene_object)
     this->stack_objects.push_back(scene_object);
 }
 
-// add remove sprite and remove object here
 
 void Scene::remove_object(StaticObject& object)
 {
     this->objects_to_delete.push_back(&object);
+}
+
+void Scene::add_sprite(Sprite sprite)
+{
+    this->stack_sprites.push_back(sprite);
 }
 
 void Scene::remove_sprite(Sprite& sprite)
@@ -207,16 +205,6 @@ void Scene::set_point_light(std::size_t light_id, PointLight light)
 void Scene::add_point_light(PointLight light)
 {
     this->point_lights.push_back(std::move(light));
-}
-
-std::vector<std::reference_wrapper<const StaticObject>> Scene::get_static_objects() const
-{
-    std::vector<std::reference_wrapper<const StaticObject>> object_crefs;
-    for(const StaticObject& object_ref : this->stack_objects)
-        object_crefs.push_back(std::cref(object_ref));
-    for(const std::unique_ptr<StaticObject>& object_ptr : this->heap_objects)
-        object_crefs.push_back(std::cref(*object_ptr));
-    return object_crefs;
 }
 
 std::vector<std::reference_wrapper<const DynamicObject>> Scene::get_dynamic_objects() const
