@@ -144,7 +144,31 @@ void Label::update_texture()
     this->dimensions_local_pixel_space = {this->text_render_texture->get_width(), this->text_render_texture->get_height()};
 }
 
-ProgressBar::ProgressBar(Vector2I position_local_pixel_space, Vector2I dimensions_local_pixel_space, Vector3F background_colour, float progress, GUI* parent, std::initializer_list<GUI*> children): GUI(position_local_pixel_space, dimensions_local_pixel_space, parent, children), background_colour(background_colour), progress(progress), background({}, dimensions_local_pixel_space, Vector4F{this->background_colour, 1.0f}, this), progress_bar({5, 5}, {}, Vector4F{1.0f, 0.0f, 0.0f, 1.0f}, &this->background)
+namespace tz::gui::theme::progress_bar
+{
+    Vector3F zero_to_twenty_five(){return {1.0f, 0.0f, 0.0f};}
+    Vector3F twenty_five_to_fifty(){return {1.0f, 1.0f, 0.0f};}
+    Vector3F fifty_to_hundred(){return {0.0f, 1.0f, 0.0f};}
+    Vector3F default_background_colour(){return {0.3f, 0.3f, 0.3f};}
+}
+
+ProgressBarTheme::ProgressBarTheme(ProgressBarTheme::mapping_type mapping, Vector3F background_colour): progress_to_colour(mapping), background_colour(background_colour)
+{
+    if(this->progress_to_colour.empty())
+        this->progress_to_colour = ProgressBarTheme{}.progress_to_colour;
+}
+
+const Vector3F& ProgressBarTheme::get_colour(float progress) const
+{
+    return this->progress_to_colour.lower_bound(progress)->second;
+}
+
+const Vector3F& ProgressBarTheme::get_background_colour() const
+{
+    return this->background_colour;
+}
+
+ProgressBar::ProgressBar(Vector2I position_local_pixel_space, Vector2I dimensions_local_pixel_space, ProgressBarTheme theme, float progress, GUI* parent, std::initializer_list<GUI*> children): GUI(position_local_pixel_space, dimensions_local_pixel_space, parent, children), theme(theme), progress(progress), background({}, dimensions_local_pixel_space, Vector4F{this->theme.get_background_colour(), 1.0f}, this), progress_bar({5, 5}, {}, Vector4F{1.0f, 0.0f, 0.0f, 1.0f}, &this->background)
 {
     this->add_child(&this->background);
     this->background.add_child(&this->progress_bar);
@@ -165,10 +189,13 @@ void ProgressBar::set_progress(float progress)
     this->progress = std::clamp(progress, 0.0f, 1.0f);
     this->progress_bar.set_local_dimensions_normalised_space({this->progress * 0.95f, 0.90f});
     // Sort out colour matching.
+    this->progress_bar.set_colour({this->theme.get_colour(this->progress), 1.0f});
+    /*
     if(this->progress > 0.5f)
         this->progress_bar.set_colour({0.0f, 1.0f, 0.0f, 1.0f});
     else if(this->progress > 0.25f)
         this->progress_bar.set_colour({1.0f, 1.0f, 0.0f, 1.0f});
     else
         this->progress_bar.set_colour({1.0f, 0.0f, 0.0f, 1.0f});
+    */
 }

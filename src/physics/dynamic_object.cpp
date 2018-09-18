@@ -1,5 +1,4 @@
 #include "physics/dynamic_object.hpp"
-#include "physics/physics.hpp"
 
 DynamicObject::DynamicObject(float mass, Transform transform, Asset asset, Vector3F velocity, float moment_of_inertia, Vector3F angular_velocity, std::initializer_list<Vector3F> forces): StaticObject(transform, asset), PhysicsObject(mass, velocity, moment_of_inertia, angular_velocity, forces), bound_modelspace({}, {})
 {
@@ -46,7 +45,7 @@ InstancedDynamicObject::InstancedDynamicObject(const std::vector<DynamicObject>&
         scales.push_back(object.transform.scale);
     }
     this->transform = {original_position, original_rotation, original_scale};
-    this->instanced_mesh = std::make_shared<InstancedMesh>(objects.front().asset.mesh->get_file_name(), positions, rotations, scales, true);
+    this->instanced_mesh = std::make_shared<InstancedMesh>(*objects.front().asset.mesh, positions, rotations, scales, true);
     this->asset = objects.front().asset;
     this->asset.mesh = this->instanced_mesh.get();
 }

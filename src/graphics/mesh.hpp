@@ -51,16 +51,14 @@ public:
 	 * @param indices - The container of indices
 	 */
 	Mesh(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices);
-	/// TODO: Implement properly
-	Mesh(const Mesh& copy) = default;
-	/// TODO: Implement properly
-	Mesh(Mesh&& move) = default;
+	/// Performs a deep-VRAM-copy. If shared ownership is needed, consider using an AssetBuffer.
+	Mesh(const Mesh& copy);
+	Mesh(Mesh&& move);
 	/**
 	 * Safely dispose of loaded Mesh data.
 	 */
 	virtual ~Mesh();
-	/// TODO: Implement properly
-	Mesh& operator=(const Mesh& rhs) = default;
+	Mesh& operator=(Mesh rhs);
 	/**
 	 * Get a container of 3-dimensional Vectors representing the position of each Vertex, in model-space.
 	 * @return - Container of Vertex positions
@@ -87,11 +85,6 @@ public:
 	 */
 	const std::vector<unsigned int>& get_indices() const;
 	/**
-	 * Obtain the path to the external 3D model file used to load this Mesh.
-	 * @return - Path to the source file. If no source file was used, returns ""
-	 */
-	std::string get_file_name() const;
-	/**
 	 * Render the Mesh, using the currently-bound Shader.
 	 * @param patches - Whether to use Patches as the OpenGL primitive or not
 	 * @param mode - Which primitive to use (if patches is true, uses patches with the same number of vertices as this polygon)
@@ -104,8 +97,7 @@ public:
 	 */
 	bool operator==(const Mesh& rhs) const;
 protected:
-	/// Path to the external 3D model file used to construct this Mesh.
-	std::string filename;
+    static void swap(Mesh& lhs, Mesh& rhs);
     /// List of all vertex-data.
 	std::vector<Vertex> vertices;
 	/// OpenGL VAO handle.
@@ -134,16 +126,14 @@ public:
 	 * @param scales - Container of 3-dimensional Vectors representing instance rotation offsets, in the three spatial dimensions XYZ
 	 */
 	InstancedMesh(std::string filename, std::vector<Vector3F> positions, std::vector<Vector3F> rotations, std::vector<Vector3F> scales, bool dynamic_transform = false);
-	/// TODO: Implement properly.
-	InstancedMesh(const InstancedMesh& copy) = default;
-	/// TODO: Implement properly.
-	InstancedMesh(InstancedMesh&& move) = default;
+	InstancedMesh(const Mesh& uninstanced_copy, std::vector<Vector3F> positions, std::vector<Vector3F> rotations, std::vector<Vector3F> scales, bool dynamic_transform = false);
+	InstancedMesh(const InstancedMesh& copy);
+	InstancedMesh(InstancedMesh&& move);
 	/**
 	 * Safely dispose of loaded InstancedMesh data.
 	 */
 	virtual ~InstancedMesh();
-	/// TODO: Implement properly.
-	InstancedMesh& operator=(const InstancedMesh& rhs) = default;
+	InstancedMesh& operator=(InstancedMesh rhs);
 
 	/**
 	 * Get a container of all the 3-dimensional Vectors representing instance position offsets, in world-space.
@@ -181,12 +171,14 @@ public:
 	virtual void render(bool patches, GLenum mode = GL_TRIANGLES) const override;
 private:
 	void update_instance(std::size_t instance_id);
+    static void swap(InstancedMesh& lhs, InstancedMesh& rhs);
 	/// Instance offsets.
 	std::vector<Vector3F> positions, rotations, scales;
     /// Model Matrices.
     std::vector<Matrix4x4> models;
 	/// Number of instances.
 	std::size_t instance_quantity;
+    bool dynamic_transform;
 	/// Underlying OpenGL VBO handles.
 	GLuint model_matrix_x_vbo, model_matrix_y_vbo, model_matrix_z_vbo, model_matrix_w_vbo;
 };
@@ -202,13 +194,6 @@ namespace tz
 		 * @return - True if the Mesh is an InstancedMesh. Otherwise false
 		 */
 		bool is_instanced(const Mesh* mesh);
-		/**
-		 * Retrieve a pointer to the existing Mesh in the specified Mesh asset-container, via the specified link.
-		 * @param mesh_link - Link of the Mesh to retrieve
-		 * @param all_meshes - Container of Mesh assets
-		 * @return - Pointer to the Mesh with the link equal to the parameter. If it does not exist, nullptr is returned
-		 */
-		Mesh* find_mesh(const std::string& mesh_link, const std::vector<std::unique_ptr<Mesh>>& all_meshes);
 		/**
 		 * Create a single Quad, like so:
 		 * *--------* [x + width, y + height]

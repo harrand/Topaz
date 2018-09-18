@@ -1,5 +1,4 @@
 #include "graphics/static_object.hpp"
-#include "physics/physics.hpp"
 
 StaticObject::StaticObject(Transform transform, Asset asset): transform(transform), asset(asset){}
 
@@ -66,7 +65,7 @@ InstancedStaticObject::InstancedStaticObject(const std::vector<StaticObject>& ob
         scales.push_back(object.transform.scale);
     }
     this->transform = {original_position, original_rotation, original_scale};
-    this->instanced_mesh = std::make_shared<InstancedMesh>(objects.front().asset.mesh->get_file_name(), positions, rotations, scales);
+    this->instanced_mesh = std::make_shared<InstancedMesh>(*objects.front().asset.mesh, positions, rotations, scales);
     this->asset = objects.front().asset;
     this->asset.mesh = this->instanced_mesh.get();
 }

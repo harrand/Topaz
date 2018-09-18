@@ -44,14 +44,34 @@ private:
     Mesh mesh;
 };
 
+namespace tz::gui::theme::progress_bar
+{
+    Vector3F zero_to_twenty_five();
+    Vector3F twenty_five_to_fifty();
+    Vector3F fifty_to_hundred();
+    Vector3F default_background_colour();
+}
+
+class ProgressBarTheme
+{
+public:
+    using mapping_type = std::map<float, Vector3F>;
+    ProgressBarTheme(mapping_type mapping = {{0.25f, tz::gui::theme::progress_bar::zero_to_twenty_five()}, {0.5f, tz::gui::theme::progress_bar::twenty_five_to_fifty()}, {1.0f, tz::gui::theme::progress_bar::fifty_to_hundred()}}, Vector3F background_colour = tz::gui::theme::progress_bar::default_background_colour());
+    const Vector3F& get_colour(float progress) const;
+    const Vector3F& get_background_colour() const;
+private:
+    mapping_type progress_to_colour;
+    Vector3F background_colour;
+};
+
 class ProgressBar : public GUI
 {
 public:
-    ProgressBar(Vector2I position_local_pixel_space, Vector2I dimensions_local_pixel_space, Vector3F background_colour = {0.3f, 0.3f, 0.3f}, float progress = 0.0f, GUI* parent = nullptr, std::initializer_list<GUI*> children = {});
+    ProgressBar(Vector2I position_local_pixel_space, Vector2I dimensions_local_pixel_space, ProgressBarTheme theme = {}, float progress = 0.0f, GUI* parent = nullptr, std::initializer_list<GUI*> children = {});
     float get_progress() const;
     void set_progress(float progress);
 private:
-    Vector3F background_colour;
+    ProgressBarTheme theme;
     float progress;
     Panel background, progress_bar;
 };

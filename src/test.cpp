@@ -28,7 +28,7 @@ void init()
     // During init, enable debug output
     Font font("../../../res/runtime/fonts/Comfortaa-Regular.ttf", 36);
     Label& label = wnd.emplace_child<Label>(Vector2I{0, 0}, font, Vector3F{0.0f, 0.3f, 0.0f}, " ");
-    ProgressBar& progress = wnd.emplace_child<ProgressBar>(Vector2I{0, 50}, Vector2I{100, 50}, Vector3F{0.3f, 0.3f, 0.3f}, 0.5f);
+    ProgressBar& progress = wnd.emplace_child<ProgressBar>(Vector2I{0, 50}, Vector2I{100, 50}, ProgressBarTheme{{{0.5f, {0.0f, 0.0f, 1.0f}}, {1.0f, {1.0f, 0.0f, 1.0f}}}, {0.1f, 0.1f, 0.1f}}, 0.5f);
 
     KeyListener key_listener(wnd);
     MouseListener mouse_listener(wnd);
@@ -188,7 +188,7 @@ void init()
             label.set_text(to_string(profiler.get_delta_average()) + " ms (" + to_string(profiler.get_fps()) + " fps)");
             second_timer.reload();
             profiler.reset();
-            progress.set_visible(!progress.is_visible());
+            //progress.set_visible(!progress.is_visible());
         }
 
         long long int delta_time = tz::utility::time::now() - time;
