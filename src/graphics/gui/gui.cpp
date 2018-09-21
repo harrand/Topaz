@@ -1,10 +1,20 @@
 #include "graphics/gui/gui.hpp"
 #include <stack>
 
-GUI::GUI(Vector2I position_local_pixel_space, Vector2I dimensions_local_pixel_space, GUI* parent, std::initializer_list<GUI*> children, bool hdr): uses_hdr(hdr), position_local_pixel_space(position_local_pixel_space), dimensions_local_pixel_space(dimensions_local_pixel_space), parent(parent), children(children), visible(true){}
+GUI::GUI(Vector2I position_local_pixel_space, Vector2I dimensions_local_pixel_space, GUI* parent, std::initializer_list<GUI*> children, bool hdr): uses_hdr(hdr), position_local_pixel_space(position_local_pixel_space), dimensions_local_pixel_space(dimensions_local_pixel_space), parent(parent), children(children), visible(true), position_normalised_space(std::nullopt), dimensions_normalised_space(std::nullopt){}
 
 void GUI::update()
 {
+    if(this->position_normalised_space.has_value())
+    {
+        Vector2I resolution = this->parent != nullptr ? this->parent->dimensions_local_pixel_space : tz::util::gui::display::resolution();
+        this->position_local_pixel_space = tz::util::gui::to_pixel_screen_space(this->position_normalised_space.value(), resolution);
+    }
+    if(this->dimensions_normalised_space.has_value())
+    {
+        Vector2I resolution = this->parent != nullptr ? this->parent->dimensions_local_pixel_space : tz::util::gui::display::resolution();
+        this->dimensions_local_pixel_space = tz::util::gui::to_pixel_screen_space(this->dimensions_normalised_space.value(), resolution);
+    }
     for(auto i = this->children.rbegin(); i != this->children.rend(); i++)
         (*i)->update();
     /*
@@ -66,23 +76,31 @@ void GUI::set_y(int y)
 void GUI::set_local_position_pixel_space(Vector2I position_local_pixel_space)
 {
     this->position_local_pixel_space = position_local_pixel_space;
+    this->position_normalised_space = std::nullopt;
 }
 
 void GUI::set_local_position_normalised_space(Vector2F position_local_normalised_space)
 {
+    this->position_normalised_space = position_local_normalised_space;
+    /*
     Vector2I resolution = this->parent != nullptr ? this->parent->dimensions_local_pixel_space : tz::util::gui::display::resolution();
     this->position_local_pixel_space = tz::util::gui::to_pixel_screen_space(position_local_normalised_space, resolution);
+     */
 }
 
 void GUI::set_local_dimensions_pixel_space(Vector2I dimensions_local_pixel_space)
 {
     this->dimensions_local_pixel_space = dimensions_local_pixel_space;
+    this->dimensions_normalised_space = std::nullopt;
 }
 
 void GUI::set_local_dimensions_normalised_space(Vector2F dimensions_local_normalised_space)
 {
+    this->dimensions_normalised_space = dimensions_local_normalised_space;
+    /*
     Vector2I resolution = this->parent != nullptr ? this->parent->dimensions_local_pixel_space : tz::util::gui::display::resolution();
     this->dimensions_local_pixel_space = tz::util::gui::to_pixel_screen_space(dimensions_local_normalised_space, resolution);
+     */
 }
 
 int GUI::get_width() const

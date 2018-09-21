@@ -8,7 +8,7 @@
 class Button : public GUIWidget
 {
 public:
-    Button(Vector2I position_local_pixel_space, Vector2I dimensions_local_pixel_space, Font font, Vector3F text_colour, std::string text, Vector3F default_colour, Vector3F pressed_colour, int drop_shadow_size = 4, GUI* parent = nullptr, std::initializer_list<GUI*> children = {});
+    Button(Vector2I position_local_pixel_space, Vector2I dimensions_local_pixel_space, Font font, Vector3F text_colour, std::string text, Vector3F default_colour, Vector3F pressed_colour, float drop_shadow_size = 0.02f, GUI* parent = nullptr, std::initializer_list<GUI*> children = {});
     virtual void update() override;
     virtual void on_mouse_click() override;
     virtual void on_mouse_release() override;
@@ -26,7 +26,7 @@ private:
     Label text;
     Vector3F default_colour;
     Vector3F pressed_colour;
-    int drop_shadow_size;
+    float drop_shadow_size;
     tz::utility::functional::ButtonCallbackFunction callback;
 };
 

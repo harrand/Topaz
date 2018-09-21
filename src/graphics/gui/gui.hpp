@@ -110,6 +110,7 @@ protected:
     std::vector<GUI*> children;
     std::vector<std::shared_ptr<GUI>> heap_children;
     bool visible;
+    std::optional<Vector2F> position_normalised_space, dimensions_normalised_space;
 };
 
 /**

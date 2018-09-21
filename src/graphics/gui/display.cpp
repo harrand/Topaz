@@ -171,6 +171,7 @@ const Vector3F& ProgressBarTheme::get_background_colour() const
 ProgressBar::ProgressBar(Vector2I position_local_pixel_space, Vector2I dimensions_local_pixel_space, ProgressBarTheme theme, float progress, GUI* parent, std::initializer_list<GUI*> children): GUI(position_local_pixel_space, dimensions_local_pixel_space, parent, children), theme(theme), progress(progress), background({}, dimensions_local_pixel_space, Vector4F{this->theme.get_background_colour(), 1.0f}, this), progress_bar({5, 5}, {}, Vector4F{1.0f, 0.0f, 0.0f, 1.0f}, &this->background)
 {
     this->add_child(&this->background);
+    this->background.set_local_dimensions_normalised_space({1.0f, 1.0f});
     this->background.add_child(&this->progress_bar);
     this->progress_bar.set_local_position_normalised_space({0.0f, 0.05f});
     int pixels = this->progress_bar.get_local_position_pixel_space().y;
