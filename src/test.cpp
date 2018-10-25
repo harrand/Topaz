@@ -268,6 +268,8 @@ void init()
             camera.rotation.x += 0.03 * delta.y;
             mouse_listener.reload_mouse_delta();
         }
+        if(key_listener.is_key_pressed("Escape"))
+            break;
         if(key_listener.is_key_pressed("W"))
             camera.position += camera.forward() * delta_time * speed;
         if(key_listener.is_key_pressed("S"))
