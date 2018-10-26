@@ -105,12 +105,19 @@ void GUI::set_local_dimensions_normalised_space(Vector2F dimensions_local_normal
 
 int GUI::get_width() const
 {
-    return this->dimensions_local_pixel_space.x;
+    return this->get_size().x;
 }
 
 int GUI::get_height() const
 {
-    return this->dimensions_local_pixel_space.y;
+    return this->get_size().y;
+}
+
+Vector2I GUI::get_size() const
+{
+    if(this->dimensions_normalised_space.has_value() && this->get_parent() != nullptr)
+        return {static_cast<int>(this->dimensions_normalised_space.value().x * this->get_parent()->get_size().x), static_cast<int>(this->dimensions_normalised_space.value().y * this->get_parent()->get_size().y)};
+    return this->dimensions_local_pixel_space;
 }
 
 float GUI::get_normalised_screen_width() const

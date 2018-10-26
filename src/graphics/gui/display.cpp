@@ -168,16 +168,20 @@ const Vector3F& ProgressBarTheme::get_background_colour() const
     return this->background_colour;
 }
 
-ProgressBar::ProgressBar(Vector2I position_local_pixel_space, Vector2I dimensions_local_pixel_space, ProgressBarTheme theme, float progress, GUI* parent, std::initializer_list<GUI*> children): GUI(position_local_pixel_space, dimensions_local_pixel_space, parent, children), theme(theme), progress(progress), background({}, dimensions_local_pixel_space, Vector4F{this->theme.get_background_colour(), 1.0f}, this), progress_bar({5, 5}, {}, Vector4F{1.0f, 0.0f, 0.0f, 1.0f}, &this->background)
+ProgressBar::ProgressBar(Vector2I position_local_pixel_space, Vector2I dimensions_local_pixel_space, ProgressBarTheme theme, float progress, GUI* parent, std::initializer_list<GUI*> children): GUI(position_local_pixel_space, dimensions_local_pixel_space, parent, children), theme(theme), progress(progress), background({}, dimensions_local_pixel_space, Vector4F{this->theme.get_background_colour(), 1.0f}, this), progress_bar({}, {}, Vector4F{1.0f, 0.0f, 0.0f, 1.0f}, &this->background)
 {
     this->add_child(&this->background);
     this->background.set_local_dimensions_normalised_space({1.0f, 1.0f});
     this->background.add_child(&this->progress_bar);
+    /*
     this->progress_bar.set_local_position_normalised_space({0.0f, 0.05f});
     int pixels = this->progress_bar.get_local_position_pixel_space().y;
     this->progress_bar.set_local_position_pixel_space({pixels, pixels});
+     */
+    float full_width_size = this->background.get_width() * 0.95f;
     // set local proportional dimensions to be equal to progress percentage.
     this->set_progress(progress);
+    this->progress_bar.set_local_position_pixel_space((this->background.get_size() - Vector2I{static_cast<int>(full_width_size), this->progress_bar.get_height()}) / 2);
 }
 
 float ProgressBar::get_progress() const

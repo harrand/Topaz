@@ -24,7 +24,7 @@ void init()
 {
     Window wnd("Topaz Development Window", 0, 30, 1920, 1080);
     wnd.set_fullscreen(Window::FullscreenType::DESKTOP_MODE);
-    wnd.set_swap_interval_type(Window::SwapIntervalType::LATE_SWAP_TEARING);
+    wnd.set_swap_interval_type(Window::SwapIntervalType::VSYNC);
 
     // During init, enable debug output
     Font font("../../../res/runtime/fonts/Comfortaa-Regular.ttf", 36);
@@ -126,7 +126,7 @@ void init()
                              });
     std::vector<StaticObject> floor_objects;
     std::vector<DynamicObject> falling_objects;
-    constexpr int floor_size = 925;
+    constexpr int floor_size = 1500;
     for(float i = 0; i < floor_size; i++)
     {
         int index = static_cast<int>(i);
@@ -148,7 +148,7 @@ void init()
         object.angular_velocity = {rand(-pi, pi) * 0.1f, rand(-pi, pi) * 0.1f, rand(-pi, pi) * 0.1f};
     }
     scene.emplace<InstancedStaticObject>(floor_objects);
-    scene.emplace<InstancedDynamicObject>(falling_objects);
+    //scene.emplace<InstancedDynamicObject>(falling_objects);
     scene.emplace<StaticObject>(Transform{{0, 0, 0}, {}, {15, 15, 15}}, wooden_sphere);
     scene.emplace<StaticObject>(Transform{{100, 0, 0}, {}, {200, 200, 200}}, wooden_cylinder);
     scene.emplace<StaticObject>(Transform{{0, -50, -70}, {}, {20, 20, 20}}, asset1);
@@ -216,7 +216,7 @@ void init()
             tz::graphics::enable_wireframe_render(true);
         depth_framebuffer.get_depth_texture().bind(&render_shader, 5, "depth_map_sampler");
         scene.render(&render_shader, &gui_shader, camera, {wnd.get_width(), wnd.get_height()});
-        constexpr int tps = 60;
+        constexpr int tps = 120;
         constexpr float tick_delta = 1000.0f / tps;
         if(tick_timer.millis_passed(tick_delta))
         {

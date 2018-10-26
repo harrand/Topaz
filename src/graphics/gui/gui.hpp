@@ -79,6 +79,11 @@ public:
      */
     int get_height() const;
     /**
+     * Get the width and height of this GUI, in pixels.
+     * @return - Size of the GUI in pixels.
+     */
+    Vector2I get_size() const;
+    /**
      * Get proportion of the screen that the width of this GUI takes up.
      * @return - Float value between 0.0 and 1.0f
      */
