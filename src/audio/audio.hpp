@@ -126,7 +126,9 @@ public:
 	 * Dispose of audio data sensibly.
 	 */
 	~AudioMusic();
+	/// Move-assignment Operator
 	AudioMusic& operator=(AudioMusic&& rhs);
+	/// Copy-assignment Operator
 	AudioMusic& operator=(AudioMusic rhs);
 	/**
 	 * Retrieve the filename of the file used to load this AudioClip.

@@ -10,6 +10,10 @@
 namespace tz
 {
 
+    /**
+     * Initialise all Topaz modules. tz::graphics is only partially initialised and won't fully initialise until the first Window is instantiated.
+     * @param print_progress - Whether to print out initialisation progress or not
+     */
     void initialise(bool print_progress = false)
     {
         if(print_progress)
@@ -22,6 +26,10 @@ namespace tz
             std::cout << "Initialised Topaz. Ready to receive OpenGL context...\n";
     }
 
+    /**
+     * Terminate all Topaz modules.
+     * @param print_progress - Whether to print out termination progress or not
+     */
     void terminate(bool print_progress = false)
     {
         if(print_progress)

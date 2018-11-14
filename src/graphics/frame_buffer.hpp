@@ -87,11 +87,35 @@ public:
      */
     template<typename... Args>
     RenderBuffer& emplace_renderbuffer(GLenum attachment, Args&&... args);
+    /**
+     * Get the width of the FrameBuffer, in pixels.
+     * @return - Width in pixels
+     */
     int get_width() const;
+    /**
+     * Get the height of the FrameBuffer, in pixels.
+     * @return - Height in pixels
+     */
     int get_height() const;
+    /**
+     * Get the width and height of the FrameBuffer, in pixels.
+     * @return - [Width, Height] in pixels
+     */
     Vector2I get_dimensions() const;
+    /**
+     * Set the width of the FrameBuffer, in pixels.
+     * @param width - Desired width, in pixels.
+     */
     void set_width(int width);
+    /**
+     * Set the height of the FrameBuffer, in pixels.
+     * @param height - Desired height, in pixels.
+     */
     void set_height(int height);
+    /**
+     * Set the width and height of the FrameBuffer, in pixels.
+     * @param dimensions - Desired [Width, Height], in pixels.
+     */
     void set_dimensions(Vector2I dimensions);
     /**
     * Read-only access to all attachments to this FrameBuffer.
@@ -152,14 +176,27 @@ private:
     std::unordered_map<GLenum, std::variant<Texture, RenderBuffer>> attachments;
 };
 
+/**
+ * A specialised FrameBuffer dedicated to serving shadow-mapping.
+ */
 class ShadowMap : protected FrameBuffer
 {
 public:
+    /**
+     * Construct a ShadowMap with given dimensions.
+     * @param width - Desired width, in pixels
+     * @param height - Desired height, in pixels
+     */
     ShadowMap(int width, int height);
+    /**
+     * Get the underlying depth-texture of this Shadow Map.
+     * @return - Constant-reference to the Texture representing this Shadow Map
+     */
     const Texture& get_depth_texture() const;
     using FrameBuffer::set_render_target;
     using FrameBuffer::clear;
 private:
+    /// The underlying depth-texture.
     Texture& depth_texture;
 };
 

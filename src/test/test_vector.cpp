@@ -402,6 +402,10 @@ void test()
     std::array<int, 10> vector_data = vector10i.data();
     for (int x : vector_data)
         tz::assert::equal(x, 0);
+    // test converting operator
+    Vector<5, float> vector10f{{1.5f, 2.5f, 3.5f, 4.5f, 5.5f}};
+    auto vector_converted = static_cast<Vector<5, int>>(vector10f);
+    tz::assert::equal(vector_converted.data()[0], 1);
     // test the default subclasses Vector2F, Vector3F and Vector4F and their swizzles.
     test_initialisation_2D();
     test_swizzle_2D();

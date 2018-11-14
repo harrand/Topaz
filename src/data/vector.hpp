@@ -26,6 +26,8 @@ public:
 	T length(std::function<T(T)> sqrt_function = std::sqrt) const;
 	const std::array<T, N>& data() const;
 	Vector<N, T> lerp(const Vector<N, T>& rhs, double proportion) const;
+	template <typename TT>
+	explicit operator Vector<N, TT>();
 	/**
 	 * Explicitly convert to a string.
 	 * @return String in the following format: "[d0, d1, ...]"

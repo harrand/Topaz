@@ -172,6 +172,14 @@ namespace tz::transform
 	 * @return - The resultant scaling matrix
 	 */
 	Matrix4x4 scale(const Vector3F& scale);
+	/**
+	 * Construct a four-dimensional look-at matrix.
+	 * Equivalent to lookat() from similar matrix libraries such as GLM.
+	 * @param position - Position to look from
+	 * @param target - Target to look at
+	 * @param up - Which direction 'up' is
+	 * @return - The resultant matrix
+	 */
 	Matrix4x4 look_at(const Vector3F& position, const Vector3F& target, const Vector3F& up = {0, 1, 0});
 	/**
 	 * Construct a row-major model matrix.

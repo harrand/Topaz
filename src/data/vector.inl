@@ -43,6 +43,16 @@ bool Vector<N, T>::operator!=(const Vector<N, T>& rhs) const
 }
 
 template<unsigned int N, typename T>
+template<typename TT>
+Vector<N, T>::operator Vector<N, TT>()
+{
+	std::array<TT, N> converted_data;
+	for(std::size_t i = 0; i < N; i++)
+		converted_data[i] = static_cast<TT>(this->underlying_data[i]);
+	return {converted_data};
+}
+
+template<unsigned int N, typename T>
 Vector<N, T>::operator std::string() const
 {
     std::string res = "[";

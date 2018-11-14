@@ -138,7 +138,15 @@ public:
 	 * @return - True if the key is being released. Otherwise false
 	 */
 	bool catch_key_released(const std::string& keyname);
+	/**
+	 * This should be overridden by custom subclasses of Listener. This method is to be invoked when a specific key is pressed.
+	 * @param keyname - Name of the specified key, such as "K" or "Enter"
+	 */
     virtual void on_key_pressed([[maybe_unused]] const std::string& keyname){}
+	/**
+	 * This should be overridden by custom subclasses of Listener. This method is to be invoked when a specific key is released.
+	 * @param keyname - Name of the specified key, such as "K" or "Enter"
+	 */
     virtual void on_key_released([[maybe_unused]] const std::string& keyname){}
 private:
 	/// Container of all the keys being pressed.
