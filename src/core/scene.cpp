@@ -4,7 +4,7 @@ Scene::Scene(const std::initializer_list<StaticObject>& stack_objects, std::vect
 
 void Scene::render(Shader* render_shader, Shader* sprite_shader, const Camera& camera, const Vector2I& viewport_dimensions) const
 {
-    Frustum camera_frustum(camera, viewport_dimensions.x / viewport_dimensions.y);
+    BoundingPyramidalFrustum camera_frustum(camera, viewport_dimensions.x / viewport_dimensions.y);
     auto render_if_visible = [&](const StaticObject& object){AABB object_box = tz::physics::bound_aabb(*(object.get_asset().mesh)); if(camera_frustum.contains(object_box * object.transform.model()) || tz::graphics::is_instanced(object.get_asset().mesh)) object.render(*render_shader, camera, viewport_dimensions);};
     if(render_shader != nullptr)
     {

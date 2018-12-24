@@ -118,6 +118,5 @@ public:
 protected:
     using SmoothNoise::operator();
 };
-
 #include "numeric.inl"
 #endif //NUMERIC_UTILITY_HPP

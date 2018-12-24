@@ -1,11 +1,12 @@
 #ifndef BOUNDARY_HPP
 #define BOUNDARY_HPP
 #include "graphics/camera.hpp"
+#include "utility/geometry.hpp"
 
 /**
 * Used to bound physical spherical shapes in 3D space.
 */
-class BoundingSphere
+class BoundingSphere : public Sphere
 {
 public:
 	/**
@@ -21,11 +22,6 @@ public:
 	 */
 	const Vector3F& get_centre() const;
 	/**
-	 * Retrieve the radius of the sphere.
-	 * @return - Radius of the sphere.
-	 */
-	float get_radius() const;
-	/**
 	 * Query whether this sphere intersects another sphere.
 	 * @param rhs - The other BoundingSphere to query whether intersects with this sphere.
 	 * @return - True if the spheres intersect. False otherwise.
@@ -34,11 +30,9 @@ public:
 private:
 	/// Centre of the sphere, in world-space.
 	Vector3F centre;
-	/// Radius of the sphere.
-	float radius;
 };
 
-class AABB
+class AABB : public Cuboid
 {
 public:
 	/**
@@ -80,14 +74,14 @@ private:
 };
 
 /**
-* Used to represent planes in 3-dimensional space. Useful for objects such as walls or floors. Also used to comprise a Frustum.
+* Used to represent planes in 3-dimensional space. Useful for objects such as walls or floors. Also used to comprise a BoundingPyramidalFrustum.
 */
-class BoundingPlane
+class BoundingPlane : public Plane
 {
 public:
     /**
      * Construct a BoundingPlane from a normal and distance from origin.
-     * Defaults are provided only due to use in BoundingFrustum.
+     * Defaults are provided only due to use in BoundingBoundingPyramidalFrustum.
      * @param normal - Normal of the plane
      * @param distance - Distance from the origin
      */
@@ -127,38 +121,37 @@ public:
 	 */
 	bool intersects(const BoundingSphere& other) const;
 private:
-	/// The normal Vector to the plane.
-	Vector3F normal;
+	using Plane::normal;
 	/// Geometric distance from the plane to the origin [0, 0, 0] in world-space.
 	float distance;
 };
 
 /**
- * Represent a Frustum-shape to model a perspective-projection matrix.
+ * Represent a BoundingPyramidalFrustum-shape to model a perspective-projection matrix.
  * Does not currently support orthographic projection matrix.
  */
-class Frustum
+class BoundingPyramidalFrustum
 {
 public:
 	/**
-	 * Construct a Bounding Frustum from attributes of a perspective matrix.
+	 * Construct a Bounding BoundingPyramidalFrustum from attributes of a perspective matrix.
 	 */
-	Frustum(Vector3F camera_position, Vector3F camera_view, float fov, float aspect_ratio, float near_clip, float far_clip);
+	BoundingPyramidalFrustum(Vector3F camera_position, Vector3F camera_view, float fov, float aspect_ratio, float near_clip, float far_clip);
 	/**
-	 * Construct a Bounding Frustum directly from a camera.
+	 * Construct a Bounding BoundingPyramidalFrustum directly from a camera.
 	 * Note: Camera::has_perspective_projection has no effect here; we always assume we're using perspective projection.
 	 */
-	Frustum(const Camera& camera, float aspect_ratio);
+	BoundingPyramidalFrustum(const Camera& camera, float aspect_ratio);
 	/**
-	 * Query whether a 3-dimensional point is inside this frustum.
-	 * @param point - The 3-dimensional point to query whether is contained in this frustum.
-	 * @return - True if the point is in this frustum. False otherwise.
+	 * Query whether a 3-dimensional point is inside this BoundingPyramidalFrustum.
+	 * @param point - The 3-dimensional point to query whether is contained in this BoundingPyramidalFrustum.
+	 * @return - True if the point is in this BoundingPyramidalFrustum. False otherwise.
 	 */
     bool contains(const Vector3F& point) const;
     /**
-	 * Query whether an AABB is inside this frustum.
-	 * @param box - The AABB to query whether is contained in this frustum.
-	 * @return - True if the box is in this frustum. False otherwise.
+	 * Query whether an AABB is inside this BoundingPyramidalFrustum.
+	 * @param box - The AABB to query whether is contained in this BoundingPyramidalFrustum.
+	 * @return - True if the box is in this BoundingPyramidalFrustum. False otherwise.
 	 */
     bool contains(const AABB& box) const;
 private:
@@ -178,7 +171,7 @@ private:
 	Vector2F near_plane_size;
 	/// 2-dimensional size of the far-plane.
 	Vector2F far_plane_size;
-	/// Frustum is contrained by six planes. Plane array format: top, bottom, left, right, near, far.
+	/// BoundingPyramidalFrustum is contrained by six planes. Plane array format: top, bottom, left, right, near, far.
 	std::array<BoundingPlane, 6> planes;
 };
 

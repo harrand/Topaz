@@ -1,15 +1,10 @@
 #include "physics/boundary.hpp"
 
-BoundingSphere::BoundingSphere(Vector3F centre, float radius): centre(centre), radius(radius){}
+BoundingSphere::BoundingSphere(Vector3F centre, float radius): Sphere(radius), centre(centre){}
 
 const Vector3F& BoundingSphere::get_centre() const
 {
 	return this->centre;
-}
-
-float BoundingSphere::get_radius() const
-{
-	return this->radius;
 }
 
 bool BoundingSphere::intersects(const BoundingSphere& rhs) const
@@ -24,7 +19,7 @@ bool BoundingSphere::intersects(const BoundingSphere& rhs) const
 	return centre_distance < radius_distance;
 }
 
-AABB::AABB(Vector3F minimum, Vector3F maximum): minimum(minimum), maximum(maximum){}
+AABB::AABB(Vector3F minimum, Vector3F maximum): Cuboid(maximum - minimum), minimum(minimum), maximum(maximum){}
 
 const Vector3F& AABB::get_minimum() const
 {
@@ -82,9 +77,9 @@ AABB AABB::operator*(const Matrix4x4& rhs) const
     return {(rhs * minimum_homogeneous).xyz(), (rhs * maximum_homogeneous).xyz()};
 }
 
-BoundingPlane::BoundingPlane(Vector3F normal, float distance): normal(normal), distance(distance){}
+BoundingPlane::BoundingPlane(Vector3F normal, float distance): Plane(normal), distance(distance){}
 
-BoundingPlane::BoundingPlane(Vector3F a, Vector3F b, Vector3F c): normal((b - a).cross(c - a).normalised()), distance(-this->normal.dot(a)) {}
+BoundingPlane::BoundingPlane(Vector3F a, Vector3F b, Vector3F c): Plane((b - a).cross(c - a).normalised()), distance(-this->normal.dot(a)) {}
 
 const Vector3F& BoundingPlane::get_normal() const
 {
@@ -116,7 +111,7 @@ bool BoundingPlane::intersects(const BoundingSphere& rhs) const
 	return (std::fabs(this->normal.dot(rhs.get_centre()) + this->distance) - rhs.get_radius()) < 0;
 }
 
-Frustum::Frustum(Vector3F camera_position, Vector3F camera_view, float fov, float aspect_ratio, float near_clip, float far_clip): camera_position(camera_position), camera_view(camera_view), fov(fov), aspect_ratio(aspect_ratio), near_clip(near_clip), far_clip(far_clip), near_plane_size(), far_plane_size()
+BoundingPyramidalFrustum::BoundingPyramidalFrustum(Vector3F camera_position, Vector3F camera_view, float fov, float aspect_ratio, float near_clip, float far_clip): camera_position(camera_position), camera_view(camera_view), fov(fov), aspect_ratio(aspect_ratio), near_clip(near_clip), far_clip(far_clip), near_plane_size(), far_plane_size()
 {
 	this->near_plane_size.x = 2.0f * std::tan(this->fov / 2.0f) * this->near_clip;
 	this->near_plane_size.y = this->near_plane_size.x * this->aspect_ratio;
@@ -148,9 +143,9 @@ Frustum::Frustum(Vector3F camera_position, Vector3F camera_view, float fov, floa
     this->planes[5] = {ftr, ftl, fbl};
 }
 
-Frustum::Frustum(const Camera& camera, float aspect_ratio): Frustum(camera.position, camera.rotation, camera.fov, aspect_ratio, camera.near_clip, camera.far_clip){}
+BoundingPyramidalFrustum::BoundingPyramidalFrustum(const Camera& camera, float aspect_ratio): BoundingPyramidalFrustum(camera.position, camera.rotation, camera.fov, aspect_ratio, camera.near_clip, camera.far_clip){}
 
-bool Frustum::contains(const Vector3F& point) const
+bool BoundingPyramidalFrustum::contains(const Vector3F& point) const
 {
     for(const BoundingPlane& plane : this->planes)
     {
@@ -160,7 +155,7 @@ bool Frustum::contains(const Vector3F& point) const
     return true;
 }
 
-bool Frustum::contains(const AABB& box) const
+bool BoundingPyramidalFrustum::contains(const AABB& box) const
 {
     float sum = 0.0f;
     for(const BoundingPlane& plane : this->planes)
