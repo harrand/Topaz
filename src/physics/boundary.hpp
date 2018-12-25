@@ -3,6 +3,10 @@
 #include "graphics/camera.hpp"
 #include "utility/geometry.hpp"
 
+class AABB;
+class BoundingPlane;
+class BoundingPyramidalFrustum;
+
 /**
 * Used to bound physical spherical shapes in 3D space.
 */
@@ -22,11 +26,35 @@ public:
 	 */
 	const Vector3F& get_centre() const;
 	/**
+	 * Query whether this sphere intersects (contains) a point.
+	 * @param point - The 3D position vector representing the given point
+	 * @return - True if the sphere contains the point. False otherwise
+	 */
+	bool intersects(const Vector3F& point) const;
+	/**
 	 * Query whether this sphere intersects another sphere.
-	 * @param rhs - The other BoundingSphere to query whether intersects with this sphere.
-	 * @return - True if the spheres intersect. False otherwise.
+	 * @param rhs - The other BoundingSphere to query whether intersects with this sphere
+	 * @return - True if the spheres intersect. False otherwise
 	 */
 	bool intersects(const BoundingSphere& rhs) const;
+	/**
+	 * Query whether this sphere intersects a box.
+	 * @param rhs - The box to query whether intersects with this sphere
+	 * @return - True if the sphere intersecs the box. False otherwise
+	 */
+	bool intersects(const AABB& rhs) const;
+	/**
+	 * Query whether this sphere intersects a given infinite plane.
+	 * @param rhs - The plane to query whether intersects with this sphere
+	 * @return - True if the plane intersects this sphere. False otherwise
+	 */
+	bool intersects(const BoundingPlane& rhs) const;
+	/**
+	 * Query whether this sphere intersects a given pyramidal frustum.
+	 * @param rhs - The frustum to query whether intersects with this sphere
+	 * @return - True if the frustum intersects this sphere. False otherwise
+	 */
+	bool intersects(const BoundingPyramidalFrustum& rhs) const;
 private:
 	/// Centre of the sphere, in world-space.
 	Vector3F centre;
@@ -53,17 +81,35 @@ public:
 	 */
 	const Vector3F& get_maximum() const;
 	/**
+	 * Checks whether this AABB contains a 3-dimensional point.
+	 * @param point - The 3-dimensional point to query whether is contained or not
+	 * @return - True if the parameter is in the AABB. False otherwise
+	 */
+	bool intersects(const Vector3F& point) const;
+	/**
+	 * Checks whether this AABB intersects a sphere.
+	 * @param rhs - The sphere to check whether this box intersects with
+	 * @return - True if this AABB intersects the sphere. False otherwise
+	 */
+	bool intersects(const BoundingSphere& rhs) const;
+	/**
 	 * Checks whether this AABB intersects another AABB.
-	 * @param rhs - The other AABB to check whether this intersects with.
-	 * @return - True if this AABB intersects the parameter. False otherwise.
+	 * @param rhs - The other AABB to check whether this intersects with
+	 * @return - True if this AABB intersects the parameter. False otherwise
 	 */
 	bool intersects(const AABB& rhs) const;
 	/**
-	 * Checks whether this AABB contains a 3-dimensional point.
-	 * @param point - The 3-dimensional point to query whether is contained or not.
-	 * @return - True if the parameter is in the AABB. False otherwose.
+	 * Checks whether this AABB intersects a plane.
+	 * @param rhs - The plane to check whether this box intersects with
+	 * @return - True if this AABB intersects the plane. False otherwise
 	 */
-	bool intersects(const Vector3F& point) const;
+	bool intersects(const BoundingPlane& rhs) const;
+	/**
+	 * Checks whether this AABB intersects a pyramidal frustum.
+	 * @param rhs - The pyramidal frustum to check whether this box intersects with
+	 * @return - True if this AABB intersects the pyramidal frustum. False otherwise
+	 */
+	bool intersects(const BoundingPyramidalFrustum& rhs) const;
 	AABB expand_to(const AABB& other) const;
     AABB operator*(const Matrix4x4& rhs) const;
 private:
@@ -115,11 +161,35 @@ public:
 	 */
 	BoundingPlane normalised() const;
 	/**
-	 * Checks whether this plane intersects with a sphere.
-	 * @param other - The BoundingSphere to query whether this intersects.
-	 * @return - True if this plane intersects the sphere. False otherwise.
+	 * Checks whether this plane contains a given point.
+	 * @param point - 3D position vector representing the given point
+	 * @return - True if the point is encompassed by the plane. False otherwise
 	 */
-	bool intersects(const BoundingSphere& other) const;
+	bool intersects(const Vector3F& point) const;
+	/**
+	 * Checks whether this plane intersects with a sphere.
+	 * @param other - The BoundingSphere to query whether this intersects with
+	 * @return - True if this plane intersects the sphere. False otherwise
+	 */
+	bool intersects(const BoundingSphere& rhs) const;
+	/**
+	 * Checks whether this plane intersects with a box.
+	 * @param rhs - The AABB to query whether this intersects with
+	 * @return - True if this plane intersects the box. False otherwise
+	 */
+	bool intersects(const AABB& rhs) const;
+	/**
+	 * Checks whether this plane intersects another plane.
+	 * @param rhs - The other plane to query whether this intersects with
+	 * @return - True if the planes intersect. False otherwise
+	 */
+	bool intersects(const BoundingPlane& rhs) const;
+	/**
+	 * Checks whether this plane intersects with a pyramidal frustum.
+	 * @param rhs - The pyramidal frustum to query whether this intersects with
+	 * @return - True if the plane intersects the frustum. False otherwise
+	 */
+	bool intersects(const BoundingPyramidalFrustum& rhs) const;
 private:
 	using Plane::normal;
 	/// Geometric distance from the plane to the origin [0, 0, 0] in world-space.
@@ -133,6 +203,7 @@ private:
 class BoundingPyramidalFrustum
 {
 public:
+	using BoundingPlaneSextet = std::array<BoundingPlane, 6>;
 	/**
 	 * Construct a Bounding BoundingPyramidalFrustum from attributes of a perspective matrix.
 	 */
@@ -143,11 +214,41 @@ public:
 	 */
 	BoundingPyramidalFrustum(const Camera& camera, float aspect_ratio);
 	/**
+	 * Get the planes constituting this pyramidal frustum in the following order:
+	 * Top, Bottom, Left, Right, Near, Far
+	 * @return - Ordered array of planes
+	 */
+	const BoundingPlaneSextet& get_planes() const;
+	/**
 	 * Query whether a 3-dimensional point is inside this BoundingPyramidalFrustum.
 	 * @param point - The 3-dimensional point to query whether is contained in this BoundingPyramidalFrustum.
 	 * @return - True if the point is in this BoundingPyramidalFrustum. False otherwise.
 	 */
-    bool contains(const Vector3F& point) const;
+    bool intersects(const Vector3F& point) const;
+    /**
+     * Query whether this pyramidal frustum intersects with a sphere.
+     * @param rhs - The given sphere
+     * @return - True if the frustum intersects the sphere. False otherwise
+     */
+    bool intersects(const BoundingSphere& rhs) const;
+	/**
+     * Query whether this pyramidal frustum intersects with a box.
+     * @param rhs - The given AABB
+     * @return - True if the frustum intersects the box. False otherwise
+     */
+    bool intersects(const AABB& rhs) const;
+	/**
+     * Query whether this pyramidal frustum intersects with a plane.
+     * @param rhs - The given plane
+     * @return - True if the frustum intersects the plane. False otherwise
+     */
+    bool intersects(const BoundingPlane& rhs) const;
+	/**
+     * Query whether this pyramidal frustum intersects with another pyramidal frustum.
+     * @param rhs - The given frustum
+     * @return - True if the frustum intersects the other. False otherwise
+     */
+    bool intersects(const BoundingPyramidalFrustum& rhs) const;
     /**
 	 * Query whether an AABB is inside this BoundingPyramidalFrustum.
 	 * @param box - The AABB to query whether is contained in this BoundingPyramidalFrustum.

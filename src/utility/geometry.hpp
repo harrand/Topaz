@@ -8,6 +8,7 @@
 #include "data/vector.hpp"
 #include <memory>
 
+/// Abstract 2D shape
 class Polygon
 {
 public:
@@ -39,7 +40,7 @@ protected:
     float radius;
 };
 
-/// 3D Shapes do not all have positions. An example of this is infinite 3D planes.
+/// Abstract 3D shape
 class Polyhedron
 {
 public:

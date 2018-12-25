@@ -23,7 +23,7 @@ int main()
 void init()
 {
     Window wnd("Topaz Development Window", 0, 30, 1920, 1080);
-    wnd.set_fullscreen(Window::FullscreenType::DESKTOP_MODE);
+    wnd.set_fullscreen(Window::FullscreenType::WINDOWED_MODE);
     wnd.set_swap_interval_type(Window::SwapIntervalType::VSYNC);
 
     // During init, enable debug output
