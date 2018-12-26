@@ -73,6 +73,7 @@ add_library(topaz SHARED
 
         src/physics/boundary.cpp
         src/physics/boundary.hpp
+        src/physics/boundary.inl
         src/physics/dynamic_object.cpp
         src/physics/dynamic_object.hpp
         src/physics/physics.cpp

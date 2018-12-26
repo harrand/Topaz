@@ -57,6 +57,11 @@ bool BoundingSphere::intersects(const BoundingPyramidalFrustum &rhs) const
     return true;
 }
 
+bool BoundingSphere::intersects(const BoundaryCluster& rhs) const
+{
+    return rhs.intersects(*this);
+}
+
 AABB::AABB(Vector3F minimum, Vector3F maximum): Cuboid(maximum - minimum), minimum(minimum), maximum(maximum){}
 
 const Vector3F& AABB::get_minimum() const
@@ -117,6 +122,11 @@ bool AABB::intersects(const BoundingPyramidalFrustum &rhs) const
         if(!this->intersects(plane))
             return false;
     return true;
+}
+
+bool AABB::intersects(const BoundaryCluster& rhs) const
+{
+    return rhs.intersects(*this);
 }
 
 AABB AABB::expand_to(const AABB &other) const
@@ -197,6 +207,11 @@ bool BoundingPlane::intersects(const BoundingPyramidalFrustum& rhs) const
     return true;
 }
 
+bool BoundingPlane::intersects(const BoundaryCluster& rhs) const
+{
+    return rhs.intersects(*this);
+}
+
 BoundingPyramidalFrustum::BoundingPyramidalFrustum(Vector3F camera_position, Vector3F camera_view, float fov, float aspect_ratio, float near_clip, float far_clip): camera_position(camera_position), camera_view(camera_view), fov(fov), aspect_ratio(aspect_ratio), near_clip(near_clip), far_clip(far_clip), near_plane_size(), far_plane_size()
 {
 	this->near_plane_size.x = 2.0f * std::tan(this->fov / 2.0f) * this->near_clip;
@@ -269,6 +284,11 @@ bool BoundingPyramidalFrustum::intersects([[maybe_unused]] const BoundingPyramid
     return false;
 }
 
+bool BoundingPyramidalFrustum::intersects(const BoundaryCluster& rhs) const
+{
+    return rhs.intersects(*this);
+}
+
 bool BoundingPyramidalFrustum::contains(const AABB& box) const
 {
     float sum = 0.0f;
@@ -293,4 +313,122 @@ bool BoundingPyramidalFrustum::contains(const AABB& box) const
             return false;
     }
     return true;
+}
+
+BoundaryCluster::BoundaryCluster(std::vector<BoundaryCluster::ClusterComponent>&& components): components(std::move(components)){}
+BoundaryCluster::BoundaryCluster(): components(){}
+
+BoundaryCluster::BoundaryCluster(const BoundaryCluster& copy): components()
+{
+    for(const auto& [integration, boundary_ptr] : copy.components)
+    {
+        auto sphere_component = dynamic_cast<BoundingSphere*>(boundary_ptr.get());
+        auto box_component = dynamic_cast<AABB*>(boundary_ptr.get());
+        auto plane_component = dynamic_cast<BoundingPlane*>(boundary_ptr.get());
+        auto frustum_component = dynamic_cast<BoundingPyramidalFrustum*>(boundary_ptr.get());
+        auto cluster_component = dynamic_cast<BoundaryCluster*>(boundary_ptr.get());
+        std::unique_ptr<Boundary> payload = nullptr;
+        if(sphere_component != nullptr)
+            payload = std::make_unique<BoundingSphere>(*sphere_component);
+        else if(box_component != nullptr)
+            payload = std::make_unique<AABB>(*box_component);
+        else if(plane_component != nullptr)
+            payload = std::make_unique<BoundingPlane>(*plane_component);
+        else if(frustum_component != nullptr)
+            payload = std::make_unique<BoundingPyramidalFrustum>(*frustum_component);
+        else if(cluster_component != nullptr)
+            payload = std::make_unique<BoundaryCluster>(*cluster_component);
+        this->components.push_back(std::make_pair(integration, std::move(payload)));
+    }
+}
+
+BoundaryCluster::BoundaryCluster(BoundaryCluster&& move): components(std::move(move.components))
+{
+    move.components.clear();
+}
+
+BoundaryCluster& BoundaryCluster::operator=(BoundaryCluster rhs)
+{
+    BoundaryCluster::swap(*this, rhs);
+    return *this;
+}
+
+BoundaryCluster& BoundaryCluster::operator=(BoundaryCluster&& rhs)
+{
+    this->components = std::move(rhs.components);
+    return *this;
+}
+
+std::size_t BoundaryCluster::get_cluster_size() const
+{
+    return this->components.size();
+}
+
+std::optional<BoundaryCluster::NonOwningClusterComponent> BoundaryCluster::get_boundary_at_index(std::size_t index) const
+{
+    if(index >= this->get_cluster_size())
+        return std::nullopt;
+    const BoundaryCluster::ClusterComponent& this_component = this->components[index];
+    return {BoundaryCluster::NonOwningClusterComponent{this_component.first, *this_component.second}};
+}
+
+bool BoundaryCluster::set_boundary_at_index(std::size_t index, BoundaryCluster::ClusterIntegration integration, std::unique_ptr<Boundary> boundary)
+{
+    bool needed_resizing = false;
+    while(this->get_cluster_size() <= index)
+    {
+        this->components.emplace_back(BoundaryCluster::ClusterIntegration::UNION, nullptr);
+        needed_resizing = true;
+    }
+    this->components[index].first = integration;
+    this->components[index].second = std::move(boundary);
+    return needed_resizing;
+}
+
+bool BoundaryCluster::intersects(const Vector3F& point) const
+{
+    return this->intersects_impl<Vector3F>(point);
+}
+
+bool BoundaryCluster::intersects(const BoundingSphere& rhs) const
+{
+    return this->intersects_impl<BoundingSphere>(rhs);
+}
+
+bool BoundaryCluster::intersects(const AABB& rhs) const
+{
+    return this->intersects_impl<AABB>(rhs);
+}
+
+bool BoundaryCluster::intersects(const BoundingPlane& rhs) const
+{
+    return this->intersects_impl<BoundingPlane>(rhs);
+}
+
+bool BoundaryCluster::intersects(const BoundingPyramidalFrustum& rhs) const
+{
+    return this->intersects_impl<BoundingPyramidalFrustum>(rhs);
+}
+
+bool BoundaryCluster::intersects(const BoundaryCluster& rhs) const
+{
+    bool current_fail_flag = false;
+    for(const auto& [integration, boundary_ptr] : this->components)
+    {
+        switch(integration)
+        {
+            case BoundaryCluster::ClusterIntegration::INTERSECTION:
+                current_fail_flag = current_fail_flag && boundary_ptr->intersects(rhs);
+                break;
+            case BoundaryCluster::ClusterIntegration::UNION:
+                current_fail_flag = current_fail_flag || boundary_ptr->intersects(rhs);
+                break;
+        }
+    }
+    return current_fail_flag;
+}
+
+void BoundaryCluster::swap(BoundaryCluster& a, BoundaryCluster& b)
+{
+    std::swap(a.components, b.components);
 }

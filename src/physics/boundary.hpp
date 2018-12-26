@@ -3,14 +3,26 @@
 #include "graphics/camera.hpp"
 #include "utility/geometry.hpp"
 
+class BoundingSphere;
 class AABB;
 class BoundingPlane;
 class BoundingPyramidalFrustum;
+class BoundaryCluster;
 
+class Boundary
+{
+public:
+    virtual bool intersects(const Vector3F& rhs) const = 0;
+    virtual bool intersects(const BoundingSphere& rhs) const = 0;
+    virtual bool intersects(const AABB& rhs) const = 0;
+    virtual bool intersects(const BoundingPlane& rhs) const = 0;
+    virtual bool intersects(const BoundingPyramidalFrustum& rhs) const = 0;
+    virtual bool intersects(const BoundaryCluster& rhs) const = 0;
+};
 /**
 * Used to bound physical spherical shapes in 3D space.
 */
-class BoundingSphere : public Sphere
+class BoundingSphere : public Sphere, public Boundary
 {
 public:
 	/**
@@ -30,37 +42,43 @@ public:
 	 * @param point - The 3D position vector representing the given point
 	 * @return - True if the sphere contains the point. False otherwise
 	 */
-	bool intersects(const Vector3F& point) const;
+	virtual bool intersects(const Vector3F& point) const override;
 	/**
 	 * Query whether this sphere intersects another sphere.
 	 * @param rhs - The other BoundingSphere to query whether intersects with this sphere
 	 * @return - True if the spheres intersect. False otherwise
 	 */
-	bool intersects(const BoundingSphere& rhs) const;
+	virtual bool intersects(const BoundingSphere& rhs) const override;
 	/**
 	 * Query whether this sphere intersects a box.
 	 * @param rhs - The box to query whether intersects with this sphere
 	 * @return - True if the sphere intersecs the box. False otherwise
 	 */
-	bool intersects(const AABB& rhs) const;
+	virtual bool intersects(const AABB& rhs) const override;
 	/**
 	 * Query whether this sphere intersects a given infinite plane.
 	 * @param rhs - The plane to query whether intersects with this sphere
 	 * @return - True if the plane intersects this sphere. False otherwise
 	 */
-	bool intersects(const BoundingPlane& rhs) const;
+	virtual bool intersects(const BoundingPlane& rhs) const override;
 	/**
 	 * Query whether this sphere intersects a given pyramidal frustum.
 	 * @param rhs - The frustum to query whether intersects with this sphere
 	 * @return - True if the frustum intersects this sphere. False otherwise
 	 */
-	bool intersects(const BoundingPyramidalFrustum& rhs) const;
+	virtual bool intersects(const BoundingPyramidalFrustum& rhs) const override;
+	/**
+	 * Query whether this sphere intersects a given cluster of boundaries.
+	 * @param rhs - The cluster of boundary to query whether intersects with this sphere
+	 * @return - True if the cluster intersects this sphere. False otherwise
+	 */
+	virtual bool intersects(const BoundaryCluster& rhs) const override;
 private:
 	/// Centre of the sphere, in world-space.
 	Vector3F centre;
 };
 
-class AABB : public Cuboid
+class AABB : public Cuboid, public Boundary
 {
 public:
 	/**
@@ -85,31 +103,37 @@ public:
 	 * @param point - The 3-dimensional point to query whether is contained or not
 	 * @return - True if the parameter is in the AABB. False otherwise
 	 */
-	bool intersects(const Vector3F& point) const;
+	virtual bool intersects(const Vector3F& point) const override;
 	/**
 	 * Checks whether this AABB intersects a sphere.
 	 * @param rhs - The sphere to check whether this box intersects with
 	 * @return - True if this AABB intersects the sphere. False otherwise
 	 */
-	bool intersects(const BoundingSphere& rhs) const;
+	virtual bool intersects(const BoundingSphere& rhs) const override;
 	/**
 	 * Checks whether this AABB intersects another AABB.
 	 * @param rhs - The other AABB to check whether this intersects with
 	 * @return - True if this AABB intersects the parameter. False otherwise
 	 */
-	bool intersects(const AABB& rhs) const;
+	virtual bool intersects(const AABB& rhs) const override;
 	/**
 	 * Checks whether this AABB intersects a plane.
 	 * @param rhs - The plane to check whether this box intersects with
 	 * @return - True if this AABB intersects the plane. False otherwise
 	 */
-	bool intersects(const BoundingPlane& rhs) const;
+	virtual bool intersects(const BoundingPlane& rhs) const override;
 	/**
 	 * Checks whether this AABB intersects a pyramidal frustum.
 	 * @param rhs - The pyramidal frustum to check whether this box intersects with
 	 * @return - True if this AABB intersects the pyramidal frustum. False otherwise
 	 */
-	bool intersects(const BoundingPyramidalFrustum& rhs) const;
+	virtual bool intersects(const BoundingPyramidalFrustum& rhs) const override;
+	/**
+	 * Checks whether this AABB intersects a cluster of boundaries.
+	 * @param rhs - The cluster of boundaries to check whether this box interacts with
+	 * @return - True if this AABB intersects the cluster. False otherwise
+	 */
+	virtual bool intersects(const BoundaryCluster& rhs) const override;
 	AABB expand_to(const AABB& other) const;
     AABB operator*(const Matrix4x4& rhs) const;
 private:
@@ -122,7 +146,7 @@ private:
 /**
 * Used to represent planes in 3-dimensional space. Useful for objects such as walls or floors. Also used to comprise a BoundingPyramidalFrustum.
 */
-class BoundingPlane : public Plane
+class BoundingPlane : public Plane, public Boundary
 {
 public:
     /**
@@ -165,31 +189,37 @@ public:
 	 * @param point - 3D position vector representing the given point
 	 * @return - True if the point is encompassed by the plane. False otherwise
 	 */
-	bool intersects(const Vector3F& point) const;
+	virtual bool intersects(const Vector3F& point) const override;
 	/**
 	 * Checks whether this plane intersects with a sphere.
 	 * @param other - The BoundingSphere to query whether this intersects with
 	 * @return - True if this plane intersects the sphere. False otherwise
 	 */
-	bool intersects(const BoundingSphere& rhs) const;
+	virtual bool intersects(const BoundingSphere& rhs) const override;
 	/**
 	 * Checks whether this plane intersects with a box.
 	 * @param rhs - The AABB to query whether this intersects with
 	 * @return - True if this plane intersects the box. False otherwise
 	 */
-	bool intersects(const AABB& rhs) const;
+	virtual bool intersects(const AABB& rhs) const override;
 	/**
 	 * Checks whether this plane intersects another plane.
 	 * @param rhs - The other plane to query whether this intersects with
 	 * @return - True if the planes intersect. False otherwise
 	 */
-	bool intersects(const BoundingPlane& rhs) const;
+	virtual bool intersects(const BoundingPlane& rhs) const override;
 	/**
 	 * Checks whether this plane intersects with a pyramidal frustum.
 	 * @param rhs - The pyramidal frustum to query whether this intersects with
 	 * @return - True if the plane intersects the frustum. False otherwise
 	 */
-	bool intersects(const BoundingPyramidalFrustum& rhs) const;
+	virtual bool intersects(const BoundingPyramidalFrustum& rhs) const override;
+	/**
+	 * Checks whether this plane intersects with a cluster of boundaries.
+	 * @param rhs - The cluster of boundaries to query whether this intersects with
+	 * @return - True if the plane intersects the cluster. False otherwise
+	 */
+	virtual bool intersects(const BoundaryCluster& rhs) const override;
 private:
 	using Plane::normal;
 	/// Geometric distance from the plane to the origin [0, 0, 0] in world-space.
@@ -200,7 +230,7 @@ private:
  * Represent a BoundingPyramidalFrustum-shape to model a perspective-projection matrix.
  * Does not currently support orthographic projection matrix.
  */
-class BoundingPyramidalFrustum
+class BoundingPyramidalFrustum : public Boundary
 {
 public:
 	using BoundingPlaneSextet = std::array<BoundingPlane, 6>;
@@ -224,31 +254,37 @@ public:
 	 * @param point - The 3-dimensional point to query whether is contained in this BoundingPyramidalFrustum.
 	 * @return - True if the point is in this BoundingPyramidalFrustum. False otherwise.
 	 */
-    bool intersects(const Vector3F& point) const;
+    virtual bool intersects(const Vector3F& point) const override;
     /**
      * Query whether this pyramidal frustum intersects with a sphere.
      * @param rhs - The given sphere
      * @return - True if the frustum intersects the sphere. False otherwise
      */
-    bool intersects(const BoundingSphere& rhs) const;
+    virtual bool intersects(const BoundingSphere& rhs) const override;
 	/**
      * Query whether this pyramidal frustum intersects with a box.
      * @param rhs - The given AABB
      * @return - True if the frustum intersects the box. False otherwise
      */
-    bool intersects(const AABB& rhs) const;
+    virtual bool intersects(const AABB& rhs) const override;
 	/**
      * Query whether this pyramidal frustum intersects with a plane.
      * @param rhs - The given plane
      * @return - True if the frustum intersects the plane. False otherwise
      */
-    bool intersects(const BoundingPlane& rhs) const;
+    virtual bool intersects(const BoundingPlane& rhs) const override;
 	/**
      * Query whether this pyramidal frustum intersects with another pyramidal frustum.
      * @param rhs - The given frustum
      * @return - True if the frustum intersects the other. False otherwise
      */
-    bool intersects(const BoundingPyramidalFrustum& rhs) const;
+    virtual bool intersects(const BoundingPyramidalFrustum& rhs) const override;
+    /**
+     * Query whether this pyramidal frustum intersects with a given cluster of boundaries.
+     * @param rhs - The given cluster of boundaries
+     * @return - True if the frustum intersects the cluster. False otherwise
+     */
+    virtual bool intersects(const BoundaryCluster& rhs) const override;
     /**
 	 * Query whether an AABB is inside this BoundingPyramidalFrustum.
 	 * @param box - The AABB to query whether is contained in this BoundingPyramidalFrustum.
@@ -275,5 +311,53 @@ private:
 	/// BoundingPyramidalFrustum is contrained by six planes. Plane array format: top, bottom, left, right, near, far.
 	std::array<BoundingPlane, 6> planes;
 };
+
+class BoundaryCluster : public Boundary
+{
+public:
+    enum class ClusterIntegration
+    {
+        UNION, INTERSECTION
+    };
+    using ClusterComponent = std::pair<ClusterIntegration, std::unique_ptr<Boundary>>;
+    using NonOwningClusterComponent = std::pair<ClusterIntegration, const Boundary&>;
+
+    BoundaryCluster(std::vector<ClusterComponent>&& components);
+    BoundaryCluster();
+    BoundaryCluster(const BoundaryCluster& copy);
+    BoundaryCluster(BoundaryCluster&& move);
+    BoundaryCluster& operator=(BoundaryCluster rhs);
+    BoundaryCluster& operator=(BoundaryCluster&& rhs);
+
+    std::size_t get_cluster_size() const;
+    std::optional<NonOwningClusterComponent> get_boundary_at_index(std::size_t index) const;
+    bool set_boundary_at_index(std::size_t index, ClusterIntegration integration, std::unique_ptr<Boundary> boundary);
+    template<class BoundaryType, typename... Args>
+    BoundaryType& emplace(ClusterIntegration integration, Args&&... args);
+    template<typename... Args>
+    BoundingSphere& emplace_sphere(ClusterIntegration integration, Args&&... args);
+    template<typename... Args>
+    AABB& emplace_box(ClusterIntegration integration, Args&&... args);
+    template<typename... Args>
+    BoundingPlane& emplace_plane(ClusterIntegration integration, Args&&... args);
+    template<typename... Args>
+    BoundingPyramidalFrustum& emplace_frustum(ClusterIntegration integration, Args&&... args);
+    template<typename... Args>
+    BoundaryCluster& emplace_cluster(ClusterIntegration integration, Args&&... args);
+
+    virtual bool intersects(const Vector3F& point) const override;
+    virtual bool intersects(const BoundingSphere& rhs) const override;
+    virtual bool intersects(const AABB& rhs) const override;
+    virtual bool intersects(const BoundingPlane& rhs) const override;
+    virtual bool intersects(const BoundingPyramidalFrustum& rhs) const override;
+    virtual bool intersects(const BoundaryCluster& rhs) const override;
+private:
+    template<class BoundaryType>
+    bool intersects_impl(const BoundaryType& boundary) const;
+    static void swap(BoundaryCluster& a, BoundaryCluster& b);
+    std::vector<ClusterComponent> components;
+};
+
+#include "physics/boundary.inl"
 
 #endif

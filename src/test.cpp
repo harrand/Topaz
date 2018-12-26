@@ -167,6 +167,13 @@ void init()
     DynamicSprite& ex1 = scene.emplace<DynamicSprite>(1.0f, Vector2F{200, 200}, 0.0f, Vector2F{100.0f, 100.0f}, assets.find_texture("bricks"), Vector2F{10.0f, 0.0f});
     ex1.add_force({0.0f, 10.0f});
 
+    /*// BoundaryCluster test...
+    BoundaryCluster cluster;
+    cluster.emplace_sphere(BoundaryCluster::ClusterIntegration::INTERSECTION, Vector3F{}, 50.0f);
+    cluster.emplace_box(BoundaryCluster::ClusterIntegration::UNION, Vector3F{}, Vector3F{100.0f, 100.0f, 100.0f});*/
+
+    std::cout << "does the cluster include point [50, 50, 50]: " << std::boolalpha << cluster.intersects(Vector3F{50.0f, 50.0f, 50.0f}) << "\n";
+
     long long int time = tz::utility::time::now();
     Timer second_timer, tick_timer;
     TimeProfiler profiler;
