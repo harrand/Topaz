@@ -28,7 +28,7 @@ void init()
 
     // During init, enable debug output
     Font font("../../../res/runtime/fonts/Comfortaa-Regular.ttf", 36);
-    Label& label = wnd.emplace_child<Label>(Vector2I{0, 0}, font, Vector3F{0.0f, 0.3f, 0.0f}, " ");
+    Label& label = wnd.emplace_child<Label>(Vector2I{100, 50}, font, Vector3F{0.0f, 0.3f, 0.0f}, " ");
     ProgressBar& progress = wnd.emplace_child<ProgressBar>(Vector2I{0, 50}, Vector2I{100, 50}, ProgressBarTheme{{{0.5f, {0.0f, 0.0f, 1.0f}}, {1.0f, {1.0f, 0.0f, 1.0f}}}, {0.1f, 0.1f, 0.1f}}, 0.5f);
 
     KeyListener key_listener(wnd);
@@ -170,9 +170,9 @@ void init()
     /*// BoundaryCluster test...
     BoundaryCluster cluster;
     cluster.emplace_sphere(BoundaryCluster::ClusterIntegration::INTERSECTION, Vector3F{}, 50.0f);
-    cluster.emplace_box(BoundaryCluster::ClusterIntegration::UNION, Vector3F{}, Vector3F{100.0f, 100.0f, 100.0f});*/
+    cluster.emplace_box(BoundaryCluster::ClusterIntegration::UNION, Vector3F{}, Vector3F{100.0f, 100.0f, 100.0f});
 
-    std::cout << "does the cluster include point [50, 50, 50]: " << std::boolalpha << cluster.intersects(Vector3F{50.0f, 50.0f, 50.0f}) << "\n";
+    std::cout << "does the cluster include point [50, 50, 50]: " << std::boolalpha << cluster.intersects(Vector3F{50.0f, 50.0f, 50.0f}) << "\n";*/
 
     long long int time = tz::utility::time::now();
     Timer second_timer, tick_timer;

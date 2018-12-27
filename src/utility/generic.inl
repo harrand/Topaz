@@ -8,6 +8,12 @@ namespace tz::utility::generic
         return sizeof(typename decltype(element_list)::value_type);
     }
 
+    template<template<typename> typename Container, typename T>
+    constexpr bool contains(const Container<T>& container, const T& value)
+    {
+        return std::find(container.begin(), container.end(), value) != container.end();
+    }
+
     namespace cast
     {
         template <typename T>

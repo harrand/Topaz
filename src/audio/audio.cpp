@@ -1,9 +1,10 @@
 #include "audio/audio.hpp"
+#include "core/topaz.hpp"
 
 AudioClip::AudioClip(std::string filename): channel(tz::audio::unused_channel), filename(std::move(filename)), audio_handle(Mix_LoadWAV(this->filename.c_str()))
 {
 	if(this->audio_handle == NULL)
-		std::cerr << "AudioClip instantiation caused one or more errors from filename '" << this->filename << "': " << Mix_GetError() << "\n";
+		tz::debug::print("AudioClip instantiation caused one or more errors from filename '", this->filename, "': ", Mix_GetError(), "\n");
 }
 
 AudioClip::AudioClip(const AudioClip& copy): AudioClip(copy.get_file_name()){}
@@ -67,7 +68,7 @@ Uint32 AudioClip::get_audio_length() const
 	int channels = 0;
 	if(!Mix_QuerySpec(&frequency, &format, &channels))
 	{
-		std::cerr << "Attempt to query AudioClip yielded invalid query. Is tz::audio initialised?\n";
+		tz::debug::print("Attempt to query AudioClip yielded invalid query. Is tz::audio initialised?\n");
 		return 0;
 	}
 	// bytes / sample_size == sample_points
@@ -124,7 +125,7 @@ void AudioSource::update(const Vector3F& source_position, const Camera& relative
 AudioMusic::AudioMusic(std::string filename): filename(std::move(filename)), paused(false), audio_handle(Mix_LoadMUS(this->filename.c_str()))
 {
 	if(this->audio_handle == NULL)
-		std::cerr << "AudioClip instantiation caused one or more errors from filename '" << filename << "'\n";
+		tz::debug::print("AudioClip instantiation caused one or more errors from filename '", filename, "'\n");
 }
 
 AudioMusic::AudioMusic(const AudioMusic& copy): AudioMusic(copy.get_file_name()){}
@@ -189,22 +190,21 @@ void AudioMusic::swap(AudioMusic& lhs, AudioMusic& rhs)
 
 namespace tz::audio
 {
-	void initialise(bool print_progress)
+	void initialise()
 	{
 		constexpr int channels = 2; // number of sound chanels in output. 2 for stereo, 1 for mono.
 		constexpr int chunk_size = 2048; // bytes used per output sample
 		constexpr Uint16 format = MIX_DEFAULT_FORMAT; // output sample 	format. MIX_DEFAULT_FORMAT is the same as AUDIO_S16SYS (signed 16-bit samples, in system byte order)
 		// initialise sdl_mixer
-		if(Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, format, channels, chunk_size) == -1 && print_progress)
-			std::cerr << "SDL_Mixer initialisation returned an error: " << Mix_GetError() << "\n\tInitialisation of tz::audio failed.\n";
-		else if(print_progress)
-			std::cout << "Initialised tz::audio via SDL_Mixer.\n";
+		if(Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, format, channels, chunk_size) == -1)
+			tz::debug::print("SDL_Mixer initialisation returned an error: ", Mix_GetError(), "\n\tInitialisation of tz::audio failed.\n");
+		else
+			tz::debug::print("Initialised tz::audio via SDL_Mixer.\n");
 	}
 
-	void terminate(bool print_progress)
+	void terminate()
 	{
 		Mix_CloseAudio();
-		if(print_progress)
-			std::cout << "Terminated tz::audio via SDL_Mixer.\n";
+		tz::debug::print("Terminated tz::audio via SDL_Mixer.\n");
 	}
 }

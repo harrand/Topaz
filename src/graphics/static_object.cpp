@@ -19,7 +19,7 @@ void StaticObject::render(Shader& render_shader, const Camera& camera, const Vec
 {
     if(!this->asset.valid_mesh())
     {
-        std::cerr << "SceneObject attempted to be rendered with an invalid mesh. Aborted this draw-call.\n";
+        tz::debug::print("SceneObject attempted to be rendered with an invalid mesh. Aborted this draw-call.\n");
         return;
     }
     render_shader.bind();

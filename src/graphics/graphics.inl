@@ -1,41 +1,37 @@
+#include "utility/log.hpp"
+
 namespace tz::graphics
 {
-	inline void initialise(bool print_progress)
+	inline void initialise()
 	{
 		if(!tz::graphics::has_context)
 		{
-			if(print_progress)
-				std::cerr << "Initialisation of tz::graphics aborted: No OpenGL context has been setup yet.\n";
+			tz::debug::print("Initialisation of tz::graphics aborted: No OpenGL context has been setup yet.\n");
 			return;
 		}
-		if(print_progress)
-			std::cout << "OpenGL context detected, initialising tz::graphics...\n";
+		tz::debug::print("OpenGL context detected, initialising tz::graphics...\n");
 		GLenum status = glewInit();
 		if(status != GLEW_OK)
 		{
-			if(print_progress)
-				std::cerr << "Initialisation of GLEW failed.\n\tInitialisation of tz::graphics unsuccessful!\n";
-            SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Topaz Error", (std::string("Topaz graphics module (tz::graphics) failed to initialise.\nError message:\n ") + std::string(SDL_GetError())).c_str(), NULL);
+			tz::debug::print("Initialisation of GLEW failed.\n\tInitialisation of tz::graphics unsuccessful!\n");
+            //SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Topaz Error", (std::string("Topaz graphics module (tz::graphics) failed to initialise.\nError message:\n ") + std::string(SDL_GetError())).c_str(), NULL);
         }
-		else if(print_progress)
-			std::cout << "Initialisation of GLEW successful.\n\tInitialised tz::graphics via GLEW (OpenGL).\n";
-		if(TTF_Init() == 0 && print_progress)
-			std::cout << "Successfully initialised SDL2_ttf.\n";
-		else if(print_progress)
-			std::cout << "Initialisation of SDL2_ttf failed.\n";
+		else
+			tz::debug::print("Initialisation of GLEW successful.\n\tInitialised tz::graphics via GLEW (OpenGL).\n");
+		if(TTF_Init() == 0)
+			tz::debug::print("Successfully initialised SDL2_ttf.\n");
+		else
+			tz::debug::print("Initialisation of SDL2_ttf failed.\n");
 		tz::graphics::initialised = true;
 		glEnable(GL_FRAMEBUFFER_SRGB);
 		glEnable(GL_MULTISAMPLE);
 	}
 	
-	inline void terminate(bool print_progress)
+	inline void terminate()
 	{
 		TTF_Quit();
-		if(print_progress)
-		{
-			std::cout << "Terminated SDL2_ttf\n";
-			std::cout << "Terminated tz::graphics via GLEW (OpenGL).\n";
-		}
+		tz::debug::print("Terminated SDL2_ttf\n");
+		tz::debug::print("Terminated tz::graphics via GLEW (OpenGL).\n");
 	}
 
 	inline void scene_render_mode()

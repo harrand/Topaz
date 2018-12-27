@@ -8,7 +8,7 @@ set libdir="%scriptdir%\lib"
 set lnkdir="%cpldir%\lnk"
 cd %scriptdir%
 cd src
-g++ -std=c++17 -Wall -Wextra -pedantic-errors -O3 -c test.cpp -I%incdir% -I%scriptdir%\src
+g++ -std=c++17 -Wall -Wextra -pedantic-errors -O3 -DTOPAZ_DEBUG -c test.cpp -I%incdir% -I%scriptdir%\src
 if not exist %lnkdir% mkdir %lnkdir%
 color 5
 echo Compiled test.cpp...

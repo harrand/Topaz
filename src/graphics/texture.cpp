@@ -52,7 +52,7 @@ Texture::Texture(std::string filename, bool mipmapping, bool gamma_corrected): t
 	unsigned char* imgdata = this->load_texture(filename.c_str());
 	if(imgdata == nullptr)
 	{
-		std::cerr << "Texture from the path: '" << filename << "' could not be loaded.\n";
+		tz::debug::print("Texture from the path: '", filename, "' could not be loaded.\n");
 	}
 
 	glGenTextures(1, &(this->texture_handle));
@@ -82,7 +82,7 @@ Texture::Texture(const Font& font, const std::string& text, SDL_Color foreground
 {
 	if(font.font_handle == NULL)
 	{
-		std::cerr << "Texture attempted to load from an invalid font. Error: \"" << TTF_GetError() << "\".\n";
+		tz::debug::print("Texture attempted to load from an invalid font. Error: \"", TTF_GetError(), "\".\n");
 		this->bitmap = {};
 		return;
 	}
@@ -266,7 +266,7 @@ void Texture::bind_with_string(Shader* shader, unsigned int id, const std::strin
 {
 	if(id > 31)
 	{
-		std::cerr << "FrameBuffer bind ID " << id << " is invalid. Must be between 1-31\n";
+		tz::debug::print("FrameBuffer bind ID ", id, " is invalid. Must be between 1-31\n");
 		return;
 	}
 	// this sets which texture we want to bind (id can be from 0 to 31)
@@ -358,7 +358,7 @@ void CubeMap::bind(Shader* shader, unsigned int id) const
 {
 	if(id > 31)
 	{
-		std::cerr << "FrameBuffer bind ID " << id << " is invalid. Must be between 1-31.\n";
+		tz::debug::print("FrameBuffer bind ID ", id, " is invalid. Must be between 1-31.\n");
 		return;
 	}
 	// this sets which texture we want to bind (id can be from 0 to 31)

@@ -46,6 +46,7 @@ bool BoundaryCluster::intersects_impl(const BoundaryType& boundary) const
     bool current_fail_flag;
     switch(this->components.front().first)
     {
+        default:
         case BoundaryCluster::ClusterIntegration::UNION:
             current_fail_flag = false;
             break;

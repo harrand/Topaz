@@ -1,4 +1,5 @@
 #include "graphics/mesh.hpp"
+#include "utility/functional.hpp"
 #include <assimp/cimport.h>
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
@@ -10,7 +11,7 @@ Mesh::Mesh(std::string filename, std::size_t scene_index)
 	const aiScene* scene = aiImportFile(filename.c_str(), aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_CalcTangentSpace | aiProcess_JoinIdenticalVertices | aiProcess_TransformUVCoords | aiProcess_OptimizeMeshes | aiProcess_OptimizeGraph);
 	if(scene == nullptr)
     {
-        std::cerr << "Error: Mesh import failed:\n" << aiGetErrorString() << "\n";
+        tz::debug::print("Error: Mesh import failed:\n", aiGetErrorString(), "\n");
         return;
     }
     aiMesh* assimp_mesh = scene->mMeshes[scene_index];
@@ -461,7 +462,7 @@ std::vector<Mesh> tz::graphics::load_all_meshes(const std::string& filename)
 	const aiScene* scene = aiImportFile(filename.c_str(), aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_CalcTangentSpace | aiProcess_JoinIdenticalVertices | aiProcess_TransformUVCoords | aiProcess_OptimizeMeshes | aiProcess_OptimizeGraph);
 	if(scene == nullptr)
 	{
-		std::cerr << "Error: Mesh import failed:\n" << aiGetErrorString() << "\n";
+		tz::debug::print("Error: Mesh import failed:\n", aiGetErrorString(), "\n");
 		return {};
 	}
 	unsigned int num_meshes = scene->mNumMeshes;
@@ -473,11 +474,12 @@ std::vector<Mesh> tz::graphics::load_all_meshes(const std::string& filename)
 
 bool tz::graphics::is_instanced(const Mesh* mesh)
 {
-	return dynamic_cast<const InstancedMesh*>(mesh) != nullptr;
+	return tz::utility::functional::is_a<const InstancedMesh>(*mesh);
 }
 
 Mesh tz::graphics::create_quad(float x, float y, float width, float height)
 {
+	// Just create a very simple quad.
 	std::array<Vertex, 4> vertices({Vertex({x - width, y - height, 0}, {}, {}), Vertex({x - width, y + height, 0}, {0, 1}, {}), Vertex({x + width, y + height, 0}, {1, 1}, {}), Vertex({x + width, y - height, 0}, {1, 0}, {})});
 	std::array<unsigned int, 6> indices({0, 1, 2, 0, 2, 3});
 	return {vertices.data(), vertices.size(), indices.data(), indices.size()};

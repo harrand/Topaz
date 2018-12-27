@@ -1,4 +1,5 @@
 #include "core/listener.hpp"
+#include "utility/functional.hpp"
 
 Listener::Listener(): window(nullptr){}
 
@@ -86,30 +87,32 @@ KeyListener::KeyListener(Window& window) : KeyListener()
 
 void KeyListener::handle_events(const SDL_Event& evt)
 {
-	switch(evt.type)
+	using namespace tz::utility;
+    std::string key_name = {SDL_GetKeyName(evt.key.keysym.sym)};
+    switch(evt.type)
 	{
 		case SDL_KEYDOWN:
-			this->on_key_pressed(SDL_GetKeyName(evt.key.keysym.sym));
-			if(std::find(this->released_keys.begin(), this->released_keys.end(), SDL_GetKeyName(evt.key.keysym.sym)) != this->released_keys.end())
+			this->on_key_pressed(key_name);
+			if(generic::contains(this->released_keys, key_name))
 			{
-				this->released_keys.erase(std::remove(this->released_keys.begin(), this->released_keys.end(), SDL_GetKeyName(evt.key.keysym.sym)), this->released_keys.end());
+				this->released_keys.erase(std::remove(this->released_keys.begin(), this->released_keys.end(), key_name), this->released_keys.end());
 			}
-			if(std::find(pressed_keys.begin(), pressed_keys.end(), SDL_GetKeyName(evt.key.keysym.sym)) == pressed_keys.end())
+			if(!generic::contains(this->pressed_keys, key_name))
 			{
 				// doesnt yet contain it.
-				this->pressed_keys.push_back(SDL_GetKeyName(evt.key.keysym.sym));
+				this->pressed_keys.push_back(key_name);
 			}
 		break;
 		case SDL_KEYUP:
-			this->on_key_released(SDL_GetKeyName(evt.key.keysym.sym));
-			if(std::find(this->released_keys.begin(), this->released_keys.end(), SDL_GetKeyName(evt.key.keysym.sym)) == this->released_keys.end())
+			this->on_key_released(key_name);
+			if(!generic::contains(this->released_keys, key_name))
 			{
-				this->released_keys.push_back(SDL_GetKeyName(evt.key.keysym.sym));
+				this->released_keys.push_back(key_name);
 			}
-			if(std::find(this->pressed_keys.begin(), this->pressed_keys.end(), SDL_GetKeyName(evt.key.keysym.sym)) != this->pressed_keys.end())
+			if(generic::contains(this->pressed_keys, key_name))
 			{
 				// does actually contain it
-				this->pressed_keys.erase(std::remove(this->pressed_keys.begin(), this->pressed_keys.end(), SDL_GetKeyName(evt.key.keysym.sym)), this->pressed_keys.end());
+				this->pressed_keys.erase(std::remove(this->pressed_keys.begin(), this->pressed_keys.end(), key_name), this->pressed_keys.end());
 			}
 		break;
 	}
@@ -117,12 +120,12 @@ void KeyListener::handle_events(const SDL_Event& evt)
 
 bool KeyListener::is_key_pressed(const std::string& keyname) const
 {
-	return (std::find(this->pressed_keys.begin(), this->pressed_keys.end(), keyname) != this->pressed_keys.end());
+	return tz::utility::generic::contains(this->pressed_keys, keyname);
 }
 
 bool KeyListener::is_key_released(const std::string& keyname) const
 {
-	return (std::find(this->released_keys.begin(), this->released_keys.end(), keyname) != this->released_keys.end());
+	return tz::utility::generic::contains(this->released_keys, keyname);
 }
 
 bool KeyListener::catch_key_pressed(const std::string& keyname)
@@ -145,11 +148,11 @@ namespace tz::listener
 {
 	bool is_mouse(const Listener* listener)
 	{
-		return dynamic_cast<const MouseListener*>(listener) != nullptr;
+		return tz::utility::functional::is_a<const MouseListener>(*listener);//dynamic_cast<const MouseListener*>(listener) != nullptr;
 	}
 	
 	bool is_keyboard(const Listener* listener)
 	{
-		return dynamic_cast<const KeyListener*>(listener) != nullptr;
+		return tz::utility::functional::is_a<const KeyListener>(*listener);//dynamic_cast<const KeyListener*>(listener) != nullptr;
 	}
 }

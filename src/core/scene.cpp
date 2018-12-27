@@ -115,8 +115,16 @@ std::vector<std::reference_wrapper<const Sprite>> Scene::get_sprites() const
     return sprite_crefs;
 }
 
-AABB Scene::get_boundary() const
+AABB Scene::get_boundary(std::optional<std::pair<const Camera&, Vector2I>> frustum_culling) const
 {
+    auto is_visible = [&](const StaticObject& object) -> bool
+    {
+        if(!frustum_culling.has_value())
+            return true;
+        BoundingPyramidalFrustum camera_frustum(frustum_culling.value().first, frustum_culling.value().second.x / frustum_culling.value().second.y);
+        AABB object_box = tz::physics::bound_aabb(*(object.get_asset().mesh));
+        return camera_frustum.contains(object_box) || tz::graphics::is_instanced(object.get_asset().mesh);
+    };
     auto objects = this->get_static_objects();
     if(objects.size() == 0)
         return {{}, {}};
@@ -124,7 +132,7 @@ AABB Scene::get_boundary() const
     for(const StaticObject& object : objects)
     {
         auto boundary_optional = object.get_boundary();
-        if(!boundary_optional.has_value())
+        if(!boundary_optional.has_value() || !is_visible(object))
             continue;
         const AABB& boundary = boundary_optional.value();
         min.x = std::min(min.x, boundary.get_minimum().x);

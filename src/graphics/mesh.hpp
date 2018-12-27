@@ -178,6 +178,7 @@ private:
     std::vector<Matrix4x4> models;
 	/// Number of instances.
 	std::size_t instance_quantity;
+	/// Used for optimisation. Stores whether we expect instances to have their values changed often.
     bool dynamic_transform;
 	/// Underlying OpenGL VBO handles.
 	GLuint model_matrix_x_vbo, model_matrix_y_vbo, model_matrix_z_vbo, model_matrix_w_vbo;

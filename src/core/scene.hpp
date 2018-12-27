@@ -58,9 +58,10 @@ public:
     std::vector<std::reference_wrapper<const Sprite>> get_sprites() const;
     /**
      * Obtain an AABB engulfing all 3D objects in the Scene.
+     * @param frustum_culling_camera - Optional camera to frustum-cull the scene before bounding it.
      * @return - AABB containing the whole Scene
      */
-    AABB get_boundary() const;
+    AABB get_boundary(std::optional<std::pair<const Camera&, Vector2I>> frustum_culling = std::nullopt) const;
     /**
      * Given any element type, construct such an element in-place into this Scene.
      * Note: This will always invoke a heap-allocation.

@@ -170,11 +170,11 @@ namespace tz
 		/**
 		* No audio works until this is executed. tz::initialise will invoke this automatically.
 		*/
-		void initialise(bool print_progress = false);
+		void initialise();
 		/**
 		* Memory droplets will remain until this is executed. Audio will not work after this is invoked. tz::terminate will invoke this automatically.
 		*/
-		void terminate(bool print_progress = false);
+		void terminate();
 		/**
 		 * Play any type of supported audio, asynchronously.
 		 * Returns as soon as the audio starts playing.

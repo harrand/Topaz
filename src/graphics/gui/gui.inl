@@ -7,7 +7,7 @@ GUIType& GUI::emplace_child(Args&&... args)
     auto result_pair = this->heap_children.emplace(std::make_shared<GUIType>(std::forward<Args>(args)...));
     if(!result_pair.second)
     {
-        std::cerr << "GUI element already contained this child, returning that instead of inserting a duplicate.\n";
+        tz::debug::print("GUI element already contained this child, returning that instead of inserting a duplicate.\n");
         return *dynamic_cast<GUIType*>((*result_pair.first).get());
     }
     result_pair.first->get()->parent = this;

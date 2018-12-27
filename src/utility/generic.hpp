@@ -16,6 +16,9 @@ namespace tz::utility::generic
     template<typename Container>
     constexpr std::size_t sizeof_element(Container element_list);
 
+    template<template<typename> typename Container, typename T>
+    constexpr bool contains(const Container<T>& container, const T& value);
+
     namespace literals
     {
         /**

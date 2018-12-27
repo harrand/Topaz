@@ -5,6 +5,10 @@
 namespace tz::utility::functional
 {
     using ButtonCallbackFunction = std::function<void()>;
+    template<typename A, typename B>
+    constexpr bool is();
+    template<typename Base, typename Derived>
+    constexpr bool is_a(const Derived& derived);
 }
 
 /**
