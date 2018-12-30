@@ -49,6 +49,14 @@ bool BoundingSphere::intersects(const BoundingPlane& rhs) const
     return rhs.intersects(*this);
 }
 
+bool BoundingSphere::intersects(const BoundingLine& rhs) const
+{
+    Vector3F q = this->centre - rhs.offset;
+    float c = q.length();
+    float v = q.dot(rhs.direction);
+    return (std::pow(this->radius, 2) - (std::pow(c, 2) - std::pow(v, 2))) >= 0.0f;
+}
+
 bool BoundingSphere::intersects(const BoundingPyramidalFrustum &rhs) const
 {
     for(const BoundingPlane& plane : rhs.get_planes())
@@ -122,6 +130,21 @@ bool AABB::intersects(const BoundingPyramidalFrustum &rhs) const
         if(!this->intersects(plane))
             return false;
     return true;
+}
+
+bool AABB::intersects(const BoundingLine& rhs) const
+{
+    auto dir = rhs.direction;
+    Vector3F line_normal{1.0f / dir.x, 1.0f / dir.y, 1.0f / dir.z};
+    float t1 = (this->get_minimum().x - rhs.offset.x) * line_normal.x;
+    float t2 = (this->get_maximum().x - rhs.offset.x) * line_normal.x;
+    float t3 = (this->get_minimum().y - rhs.offset.y) * line_normal.y;
+    float t4 = (this->get_maximum().y - rhs.offset.y) * line_normal.y;
+    float t5 = (this->get_minimum().z - rhs.offset.z) * line_normal.z;
+    float t6 = (this->get_maximum().z - rhs.offset.z) * line_normal.z;
+    float tmin = std::max(std::max(std::min(t1, t2), std::min(t3, t4)), std::min(t5, t6));
+    float tmax = std::min(std::min(std::max(t1, t2), std::max(t3, t4)), std::max(t5, t6));
+    return tmax >= 0 && tmin <= tmax;
 }
 
 bool AABB::intersects(const BoundaryCluster& rhs) const
@@ -207,6 +230,12 @@ bool BoundingPlane::intersects(const BoundingPyramidalFrustum& rhs) const
     return true;
 }
 
+bool BoundingPlane::intersects(const BoundingLine& rhs) const
+{
+    // if plane normal and line direction are perpendicular then they will never intersect
+    return rhs.direction.dot(this->get_normal()) != 0;
+}
+
 bool BoundingPlane::intersects(const BoundaryCluster& rhs) const
 {
     return rhs.intersects(*this);
@@ -284,6 +313,12 @@ bool BoundingPyramidalFrustum::intersects([[maybe_unused]] const BoundingPyramid
     return false;
 }
 
+bool BoundingPyramidalFrustum::intersects([[maybe_unused]] const BoundingLine& rhs) const
+{
+    // TODO: Implement when not so tired.
+    return false;
+}
+
 bool BoundingPyramidalFrustum::intersects(const BoundaryCluster& rhs) const
 {
     return rhs.intersects(*this);
@@ -313,6 +348,49 @@ bool BoundingPyramidalFrustum::contains(const AABB& box) const
             return false;
     }
     return true;
+}
+
+BoundingLine::BoundingLine(Vector3F offset, Vector3F direction): offset(offset), direction(direction){}
+
+bool BoundingLine::intersects(const Vector3F& point) const
+{
+    // line.p + line.d(?) = p
+    // amount = (point - line.p) / line.d
+    Vector3F delta = point - this->offset;
+    float ax = delta.x / this->direction.x;
+    float ay = delta.y / this->direction.y;
+    float az = delta.z / this->direction.z;
+    return ax != ay || ay != az || ax != az;
+}
+
+bool BoundingLine::intersects(const BoundingSphere& rhs) const
+{
+    return rhs.intersects(*this);
+}
+
+bool BoundingLine::intersects(const AABB& rhs) const
+{
+    return rhs.intersects(*this);
+}
+
+bool BoundingLine::intersects(const BoundingPlane& rhs) const
+{
+    return rhs.intersects(*this);
+}
+
+bool BoundingLine::intersects(const BoundingPyramidalFrustum& rhs) const
+{
+    return rhs.intersects(*this);
+}
+
+bool BoundingLine::intersects(const BoundingLine& rhs) const
+{
+    return rhs.intersects(*this);
+}
+
+bool BoundingLine::intersects(const BoundaryCluster& rhs) const
+{
+    return rhs.intersects(*this);
 }
 
 BoundaryCluster::BoundaryCluster(std::vector<BoundaryCluster::ClusterComponent>&& components): components(std::move(components)){}
@@ -408,6 +486,11 @@ bool BoundaryCluster::intersects(const BoundingPlane& rhs) const
 bool BoundaryCluster::intersects(const BoundingPyramidalFrustum& rhs) const
 {
     return this->intersects_impl<BoundingPyramidalFrustum>(rhs);
+}
+
+bool BoundaryCluster::intersects(const BoundingLine& rhs) const
+{
+    return this->intersects_impl<BoundingLine>(rhs);
 }
 
 bool BoundaryCluster::intersects(const BoundaryCluster& rhs) const

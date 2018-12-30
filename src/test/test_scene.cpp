@@ -1,25 +1,7 @@
-#include "core/scene.hpp"
-#include "core/topaz.hpp"
-#include "core/window.hpp"
+#define UNIT_TEST "Scene"
 #include "lib/test_util.hpp"
-
-void test();
-
-int main()
-{
-    tz::initialise();
-    std::cerr << "Scene Test Results: " << std::endl;
-    try
-    {
-        test();
-        std::cerr << "PASS\n";
-    }catch(const TestFailureException& fail)
-    {
-        std::cerr << "FAIL: " << fail.what() << "\n";
-    }
-    tz::terminate();
-    return 0;
-}
+#include "core/scene.hpp"
+#include "core/window.hpp"
 
 void test_constructor()
 {

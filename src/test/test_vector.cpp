@@ -1,23 +1,6 @@
-#include "core/topaz.hpp"
-#include "data/vector.hpp"
+#define UNIT_TEST "Vector"
 #include "lib/test_util.hpp"
-
-void test();
-
-int main()
-{
-    // we need not tz::initialise and terminate here.
-    std::cerr << "Vector Test Results: " << std::endl;
-    try
-    {
-        test();
-        std::cerr << "PASS\n";
-    }catch(const TestFailureException& fail)
-    {
-        std::cerr << "FAIL: " << fail.what() << "\n";
-    }
-    return 0;
-}
+#include "data/vector.hpp"
 
 void test_initialisation_2D()
 {

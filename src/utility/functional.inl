@@ -18,7 +18,7 @@ Functor<FunctorT>::Functor(FunctorT functor): functor(functor){}
 
 template<typename FunctorT>
 template<typename... FunctorParameters>
-void Functor<FunctorT>::operator()(FunctorParameters... parameters)
+auto Functor<FunctorT>::operator()(FunctorParameters&&... parameters) const
 {
-    this->functor(parameters...);
+    return this->functor(std::forward<FunctorParameters>(parameters)...);
 }

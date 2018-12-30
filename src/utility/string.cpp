@@ -60,32 +60,38 @@ namespace tz::utility::string
 
     std::string replace_all_char(const std::string& str, char toreplace, const std::string& replacewith)
     {
-        std::string res;
-        std::vector<std::string> splitdelim = tz::utility::string::split_string(str, toreplace);
-        for(std::size_t i = 0; i < splitdelim.size(); i++)
-        {
-            res += splitdelim[i];
-            res += replacewith;
-        }
-        return res;
+        return replace_all(str, std::string{toreplace}, replacewith);
     }
 
     std::string replace_all(std::string str, const std::string& to_replace, const std::string& replace_with)
     {
-        std::size_t pos = 0;
-        while ((pos = str.find(to_replace, pos)) != std::string::npos)
+        size_t pos = 0;
+        size_t cursor = 0;
+        std::size_t rep_len = to_replace.length();
+        std::stringstream builder;
+        do
         {
-            str.replace(pos, to_replace.length(), replace_with);
-            pos += replace_with.length();
+            pos = str.find(to_replace, cursor);
+            if (std::string::npos != pos)
+            {
+                //copy up to the match, then append the replacement
+                builder << str.substr(cursor, pos - cursor);
+                builder << replace_with;
+                // skip past the match
+                cursor = pos + rep_len;
+            }
         }
-        return str;
+        while (std::string::npos != pos);
+        //copy the remainder
+        builder << str.substr(cursor);
+        return (builder.str());
     }
 
     std::string substring(const std::string& str, std::size_t begin, std::size_t end)
     {
         std::size_t strsize = str.length();
-        if(end > strsize)
-            return "_";
-        return str.substr((begin - 1), (end-begin) + 1);
+        if(end >= strsize || begin >= strsize)
+            return "";
+        return str.substr((begin), (end-begin) + 1);
     }
 }

@@ -3,7 +3,7 @@
 #ifndef GLEW_STATIC
 #define GLEW_STATIC
 #endif
-#include <GL/glew.h>
+#include "GL/glew.h"
 #include "data/vector.hpp"
 #include "SDL2/SDL.h"
 #include "SDL2/SDL_ttf.h"
@@ -168,12 +168,11 @@ namespace tz
 	namespace graphics
 	{
 		enum class BufferBit : GLbitfield
-		{
-			COLOUR = GL_COLOR_BUFFER_BIT,
-			DEPTH = GL_DEPTH_BUFFER_BIT,
-			STENCIL = GL_STENCIL_BUFFER_BIT,
-			COLOUR_AND_DEPTH = (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT),
-		};
+        {
+            COLOUR = GL_COLOR_BUFFER_BIT,
+            DEPTH = GL_DEPTH_BUFFER_BIT,
+            COLOUR_AND_DEPTH = GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT,
+        };
 		/**
 		* Global Variables. These are handled when the first Window is initialised. Editing these is likely to lead to horrible crashing. Leave these bools alone.
 		*/

@@ -8,6 +8,7 @@ class AABB;
 class BoundingPlane;
 class BoundingPyramidalFrustum;
 class BoundaryCluster;
+class BoundingLine;
 
 class Boundary
 {
@@ -18,6 +19,7 @@ public:
     virtual bool intersects(const BoundingPlane& rhs) const = 0;
     virtual bool intersects(const BoundingPyramidalFrustum& rhs) const = 0;
     virtual bool intersects(const BoundaryCluster& rhs) const = 0;
+    virtual bool intersects(const BoundingLine& rhs) const = 0;
 };
 /**
 * Used to bound physical spherical shapes in 3D space.
@@ -67,6 +69,12 @@ public:
 	 * @return - True if the frustum intersects this sphere. False otherwise
 	 */
 	virtual bool intersects(const BoundingPyramidalFrustum& rhs) const override;
+	/**
+	 * Query whether this sphere intersects a given line.
+	 * @param rhs - The line to query whether intersects with this sphere
+	 * @return - True if the line intersects this sphere. False otherwise
+	 */
+	virtual bool intersects(const BoundingLine& rhs) const override;
 	/**
 	 * Query whether this sphere intersects a given cluster of boundaries.
 	 * @param rhs - The cluster of boundary to query whether intersects with this sphere
@@ -128,6 +136,12 @@ public:
 	 * @return - True if this AABB intersects the pyramidal frustum. False otherwise
 	 */
 	virtual bool intersects(const BoundingPyramidalFrustum& rhs) const override;
+	/**
+	 * Checks whether this AABB intersects a line.
+	 * @param rhs - THe line to check whether this both intersects with
+	 * @return - True if this AABB intersects the line. False otherwise
+	 */
+	virtual bool intersects(const BoundingLine& rhs) const override;
 	/**
 	 * Checks whether this AABB intersects a cluster of boundaries.
 	 * @param rhs - The cluster of boundaries to check whether this box interacts with
@@ -215,6 +229,12 @@ public:
 	 */
 	virtual bool intersects(const BoundingPyramidalFrustum& rhs) const override;
 	/**
+	 * Checks whether this plane intersects with a line.
+	 * @param rhs - The line to query whether this intersects with
+	 * @return - True if the plane intersects the line. False otherwise
+	 */
+	virtual bool intersects(const BoundingLine& rhs) const override;
+	/**
 	 * Checks whether this plane intersects with a cluster of boundaries.
 	 * @param rhs - The cluster of boundaries to query whether this intersects with
 	 * @return - True if the plane intersects the cluster. False otherwise
@@ -280,6 +300,12 @@ public:
      */
     virtual bool intersects(const BoundingPyramidalFrustum& rhs) const override;
     /**
+     * Query whether this pyramidal frustum intersects with a line.
+     * @param rhs - THe given line
+     * @return - True if the frustum intersects the line. False otherwise
+     */
+    virtual bool intersects(const BoundingLine& rhs) const override;
+    /**
      * Query whether this pyramidal frustum intersects with a given cluster of boundaries.
      * @param rhs - The given cluster of boundaries
      * @return - True if the frustum intersects the cluster. False otherwise
@@ -310,6 +336,24 @@ private:
 	Vector2F far_plane_size;
 	/// BoundingPyramidalFrustum is contrained by six planes. Plane array format: top, bottom, left, right, near, far.
 	std::array<BoundingPlane, 6> planes;
+};
+
+class BoundingLine : public Boundary
+{
+public:
+	BoundingLine(Vector3F offset, Vector3F direction);
+	virtual bool intersects(const Vector3F& point) const override;
+	virtual bool intersects(const BoundingSphere& rhs) const override;
+	virtual bool intersects(const AABB& rhs) const override;
+	virtual bool intersects(const BoundingPlane& rhs) const override;
+	virtual bool intersects(const BoundingPyramidalFrustum& rhs) const override;
+	virtual bool intersects(const BoundingLine& rhs) const override;
+	virtual bool intersects(const BoundaryCluster& rhs) const override;
+
+	/// Offset of the line from the origin.
+	Vector3F offset;
+	/// Directional vector representing the line.
+	Vector3F direction;
 };
 
 class BoundaryCluster : public Boundary
@@ -350,6 +394,7 @@ public:
     virtual bool intersects(const AABB& rhs) const override;
     virtual bool intersects(const BoundingPlane& rhs) const override;
     virtual bool intersects(const BoundingPyramidalFrustum& rhs) const override;
+    virtual bool intersects(const BoundingLine& rhs) const override;
     virtual bool intersects(const BoundaryCluster& rhs) const override;
 private:
     template<class BoundaryType>

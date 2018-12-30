@@ -1,25 +1,8 @@
-#include "core/topaz.hpp"
+#define UNIT_TEST "Asset"
+#include "lib/test_util.hpp"
 #include "core/window.hpp"
 #include "graphics/asset.hpp"
-#include "lib/test_util.hpp"
 
-void test();
-
-int main()
-{
-    tz::initialise();
-    std::cerr << "Asset Test Results: " << std::endl;
-    try
-    {
-        test();
-        std::cerr << "PASS\n";
-    }catch(const TestFailureException& fail)
-    {
-        std::cerr << "FAIL: " << fail.what() << "\n";
-    }
-    tz::terminate();
-    return 0;
-}
 
 void test()
 {

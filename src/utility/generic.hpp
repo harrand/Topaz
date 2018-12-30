@@ -47,11 +47,11 @@ namespace tz::utility::generic
     namespace cast
     {
         /**
-			 * (Attempt to) Convert an object to a std::string.
-			 * @tparam T - Type of the object to convert
-			 * @param obj - The object to convert
-			 * @return - The object, converted to a string
-			 */
+		* (Attempt to) Convert an object to a std::string.
+		* @tparam T - Type of the object to convert
+		* @param obj - The object to convert
+		* @return - The object, converted to a string
+		*/
         template <typename T>
         std::string to_string(T&& obj);
         /**

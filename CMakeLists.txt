@@ -59,6 +59,8 @@ add_library(topaz SHARED
         src/graphics/texture.hpp
         src/graphics/texture.inl
 
+        src/graphics/animated_texture.cpp
+        src/graphics/animated_texture.hpp
         src/graphics/gui/button.cpp
         src/graphics/gui/button.hpp
         src/graphics/gui/display.cpp
@@ -66,6 +68,8 @@ add_library(topaz SHARED
         src/graphics/gui/gui.cpp
         src/graphics/gui/gui.hpp
         src/graphics/gui/gui.inl
+        src/graphics/sprite.cpp
+        src/graphics/sprite.hpp
         src/graphics/gui/textfield.cpp
         src/graphics/gui/textfield.hpp
         src/graphics/gui/widget.cpp
@@ -76,6 +80,8 @@ add_library(topaz SHARED
         src/physics/boundary.inl
         src/physics/dynamic_object.cpp
         src/physics/dynamic_object.hpp
+        src/physics/dynamic_sprite.cpp
+        src/physics/dynamic_sprite.hpp
         src/physics/physics.cpp
         src/physics/physics.hpp
         src/physics/physics_object.cpp
@@ -89,6 +95,9 @@ add_library(topaz SHARED
         src/utility/generic.cpp
         src/utility/generic.hpp
         src/utility/generic.inl
+        src/utility/geometry.cpp
+        src/utility/geometry.hpp
+        src/utility/log.hpp
         src/utility/numeric.cpp
         src/utility/numeric.hpp
         src/utility/numeric.inl
@@ -96,5 +105,5 @@ add_library(topaz SHARED
         src/utility/string.hpp
         src/utility/time.cpp
         src/utility/time.hpp
-        src/utility/time.inl src/graphics/sprite.cpp src/graphics/sprite.hpp src/physics/dynamic_sprite.cpp src/physics/dynamic_sprite.hpp src/graphics/animated_texture.cpp src/graphics/animated_texture.hpp src/utility/geometry.cpp src/utility/geometry.hpp src/utility/log.hpp)
+        src/utility/time.inl)
 target_link_libraries(topaz OpenGL32 SDL2 SDL2_mixer SDL2_ttf SDL2main assimp)

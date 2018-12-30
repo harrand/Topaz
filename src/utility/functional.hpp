@@ -30,11 +30,13 @@ public:
      * @param parameters - Values of the functor parameters
      */
     template<typename... FunctorParameters>
-    void operator()(FunctorParameters... parameters);
+    auto operator()(FunctorParameters&&... parameters) const;
 private:
     /// The underlying functor.
     FunctorT functor;
 };
+
+using Runnable = Functor<std::function<void()>>;
 
 #include "functional.inl"
 #endif //TOPAZ_FUNCTIONAL_HPP
