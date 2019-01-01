@@ -2,13 +2,10 @@
 #include "physics/physics.hpp"
 #include "graphics/asset.hpp"
 #include "graphics/gui/button.hpp"
-#include "graphics/gui/textfield.hpp"
 #include "core/scene.hpp"
 #include "graphics/skybox.hpp"
 #include "core/topaz.hpp"
-#include "utility/time.hpp"
 #include "graphics/frame_buffer.hpp"
-#include "graphics/animated_texture.hpp"
 
 void init();
 
@@ -27,7 +24,7 @@ void init()
     wnd.set_swap_interval_type(Window::SwapIntervalType::VSYNC);
 
     // During init, enable debug output
-    Font font("../../../res/runtime/fonts/Comfortaa-Regular.ttf", 36);
+    Font font("../res/runtime/fonts/Comfortaa-Regular.ttf", 36);
     Label& label = wnd.emplace_child<Label>(Vector2I{100, 50}, font, Vector3F{0.0f, 0.3f, 0.0f}, " ");
     ProgressBar& progress = wnd.emplace_child<ProgressBar>(Vector2I{0, 50}, Vector2I{100, 50}, ProgressBarTheme{{{0.5f, {0.0f, 0.0f, 1.0f}}, {1.0f, {1.0f, 0.0f, 1.0f}}}, {0.1f, 0.1f, 0.1f}}, 0.5f);
 
@@ -40,10 +37,10 @@ void init()
     wireframe_button.set_callback([&wireframe](){wireframe = !wireframe;});
 
     constexpr float speed = 0.5f;
-    Shader render_shader("../../../src/shaders/3D_FullAssetsInstancedShadowsBloom");
+    Shader render_shader("../src/shaders/3D_FullAssetsInstancedShadowsBloom");
 
-    Shader gui_shader("../../../src/shaders/Gui");
-    Shader hdr_gui_shader("../../../src/shaders/Gui_HDR");
+    Shader gui_shader("../src/shaders/Gui");
+    Shader hdr_gui_shader("../src/shaders/Gui_HDR");
     Camera camera;
     camera.position = {0, 0, -50};
     Scene scene;
@@ -53,22 +50,22 @@ void init()
     Texture green_texture{Bitmap<PixelRGBA>{{PixelRGBA{0, 255, 0, 255}}, 1, 1}};
     Texture blue_texture{Bitmap<PixelRGBA>{{PixelRGBA{0, 0, 255, 255}}, 1, 1}};
     AssetBuffer assets;
-    assets.emplace<Mesh>("cube_lq", "../../../res/runtime/models/cube.obj");
-    assets.emplace<Mesh>("cube", "../../../res/runtime/models/cube_hd.obj");
-    assets.emplace<Mesh>("monkey", "../../../res/runtime/models/monkeyhead.obj");
-    assets.emplace<Mesh>("cylinder", "../../../res/runtime/models/cylinder.obj");
-    assets.emplace<Mesh>("sphere", "../../../res/runtime/models/sphere.obj");
-    assets.emplace<Mesh>("plane_hd", "../../../res/runtime/models/plane_hd.obj");
-    assets.emplace<Texture>("bricks", "../../../res/runtime/textures/bricks.jpg");
-    assets.emplace<Texture>("stone", "../../../res/runtime/textures/stone.jpg");
-    assets.emplace<Texture>("wood", "../../../res/runtime/textures/wood.jpg");
-    assets.emplace<NormalMap>("bricks_normal", "../../../res/runtime/normalmaps/bricks_normalmap.jpg");
-    assets.emplace<NormalMap>("stone_normal", "../../../res/runtime/normalmaps/stone_normalmap.jpg");
-    assets.emplace<NormalMap>("wood_normal", "../../../res/runtime/normalmaps/wood_normalmap.jpg");
-    assets.emplace<ParallaxMap>("bricks_parallax", "../../../res/runtime/parallaxmaps/bricks_parallax.jpg");
-    assets.emplace<ParallaxMap>("stone_parallax", "../../../res/runtime/parallaxmaps/stone_parallax.png", 0.06f, -0.5f);
-    assets.emplace<ParallaxMap>("wood_parallax", "../../../res/runtime/parallaxmaps/wood_parallax.jpg");
-    assets.emplace<DisplacementMap>("bricks_displacement", "../../../res/runtime/displacementmaps/bricks_displacement.png");
+    assets.emplace<Mesh>("cube_lq", "../res/runtime/models/cube.obj");
+    assets.emplace<Mesh>("cube", "../res/runtime/models/cube_hd.obj");
+    assets.emplace<Mesh>("monkey", "../res/runtime/models/monkeyhead.obj");
+    assets.emplace<Mesh>("cylinder", "../res/runtime/models/cylinder.obj");
+    assets.emplace<Mesh>("sphere", "../res/runtime/models/sphere.obj");
+    assets.emplace<Mesh>("plane_hd", "../res/runtime/models/plane_hd.obj");
+    assets.emplace<Texture>("bricks", "../res/runtime/textures/bricks.jpg");
+    assets.emplace<Texture>("stone", "../res/runtime/textures/stone.jpg");
+    assets.emplace<Texture>("wood", "../res/runtime/textures/wood.jpg");
+    assets.emplace<NormalMap>("bricks_normal", "../res/runtime/normalmaps/bricks_normalmap.jpg");
+    assets.emplace<NormalMap>("stone_normal", "../res/runtime/normalmaps/stone_normalmap.jpg");
+    assets.emplace<NormalMap>("wood_normal", "../res/runtime/normalmaps/wood_normalmap.jpg");
+    assets.emplace<ParallaxMap>("bricks_parallax", "../res/runtime/parallaxmaps/bricks_parallax.jpg");
+    assets.emplace<ParallaxMap>("stone_parallax", "../res/runtime/parallaxmaps/stone_parallax.png", 0.06f, -0.5f);
+    assets.emplace<ParallaxMap>("wood_parallax", "../res/runtime/parallaxmaps/wood_parallax.jpg");
+    assets.emplace<DisplacementMap>("bricks_displacement", "../res/runtime/displacementmaps/bricks_displacement.png");
     assets.emplace<DisplacementMap>("noise_displacement", tz::graphics::height_map::generate_cosine_noise(256, 256, 100.0f));
     // render noisemap:
     Asset asset0(assets.find<Mesh>("cube"), assets.find_texture("bricks"), assets.find_normal_map("bricks_normal"), assets.find_parallax_map("bricks_parallax"), assets.find_displacement_map("bricks_displacement"));
@@ -80,13 +77,13 @@ void init()
     Asset wooden_sphere(assets.find_mesh("sphere"), assets.find_texture("wood"), assets.find_normal_map("wood_normal"), assets.find_parallax_map("wood_parallax"));
     Asset wooden_cylinder(assets.find_mesh("cylinder"), assets.find_texture("wood"), assets.find_normal_map("wood_normal"), assets.find_parallax_map("wood_parallax"));
 
-    Shader gaussian_blur_shader("../../../src/shaders/GaussianBlur");
-    Shader gui_bloom_shader("../../../src/shaders/Gui_Bloom");
-    CubeMap skybox_texture("../../../res/runtime/textures/skybox/", "cwd", ".jpg");
-    Shader skybox_shader("../../../src/shaders/Skybox");
-    Skybox skybox("../../../res/runtime/models/skybox.obj", skybox_texture);
+    Shader gaussian_blur_shader("../src/shaders/GaussianBlur");
+    Shader gui_bloom_shader("../src/shaders/Gui_Bloom");
+    CubeMap skybox_texture("../res/runtime/textures/skybox/", "cwd", ".jpg");
+    Shader skybox_shader("../src/shaders/Skybox");
+    Skybox skybox("../res/runtime/models/skybox.obj", skybox_texture);
 
-    Shader depth_shader("../../../src/shaders/Depth_Instanced");
+    Shader depth_shader("../src/shaders/Depth_Instanced");
     FrameBuffer hdr_buffer{wnd.get_width(), wnd.get_height()};
     hdr_buffer.emplace_renderbuffer(GL_DEPTH_ATTACHMENT, wnd.get_width(), wnd.get_height(), GL_DEPTH_COMPONENT);
     Texture& hdr_texture = hdr_buffer.emplace_texture(GL_COLOR_ATTACHMENT0, wnd.get_width(), wnd.get_height(), tz::graphics::TextureComponent::HDR_COLOUR_TEXTURE);
@@ -96,7 +93,7 @@ void init()
     //hdr_panel.uses_hdr = true;
     ShadowMap depth_framebuffer{8192, 8192};
     // Uncomment this to render the depth texture.
-    wnd.emplace_child<Panel>(Vector2I{0, 300}, Vector2I{300, 300}, &depth_framebuffer.get_depth_texture());
+    //wnd.emplace_child<Panel>(Vector2I{0, 300}, Vector2I{300, 300}, &depth_framebuffer.get_depth_texture());
     FrameBuffer bloom_buffer{wnd.get_width(), wnd.get_height()};
     bloom_buffer.emplace_renderbuffer(GL_DEPTH_ATTACHMENT, wnd.get_width(), wnd.get_height(), GL_DEPTH_COMPONENT);
     Texture& blurred_bloom_texture = bloom_buffer.emplace_texture(GL_COLOR_ATTACHMENT0, wnd.get_width(), wnd.get_height(), tz::graphics::TextureComponent::HDR_COLOUR_TEXTURE);
@@ -105,7 +102,7 @@ void init()
     bloom_buffer2.emplace_renderbuffer(GL_DEPTH_ATTACHMENT, wnd.get_width(), wnd.get_height(), GL_DEPTH_COMPONENT);
     Texture& blurred_bloom_texture2 = bloom_buffer2.emplace_texture(GL_COLOR_ATTACHMENT0, wnd.get_width(), wnd.get_height());
     // Uncomment this to render the bloom texture.
-    //wnd.emplace_child<Panel>(Vector2I{0, 300}, Vector2I{300, 300}, &bloom_texture);
+    wnd.emplace_child<Panel>(Vector2I{0, 300}, Vector2I{300, 300}, &bloom_texture);
     //wnd.emplace_child<Panel>(Vector2I{0, 300}, Vector2I{300, 300}, &blurred_bloom_texture);
 
     FrameBuffer final_framebuffer{wnd.get_width(), wnd.get_height()};
@@ -122,7 +119,7 @@ void init()
     test_button.set_callback([&scene, &camera, &asset1]()
                              {
                                  scene.emplace_object(Transform{camera.position, {}, {10, 10, 10}}, asset1);
-                                 tz::audio::play_async(AudioClip{"../../../res/runtime/music/tulips.wav"});
+                                 tz::audio::play_async(AudioClip{"../res/runtime/music/tulips.wav"});
                              });
     std::vector<StaticObject> floor_objects;
     std::vector<DynamicObject> falling_objects;
@@ -148,7 +145,7 @@ void init()
         object.angular_velocity = {rand(-pi, pi) * 0.1f, rand(-pi, pi) * 0.1f, rand(-pi, pi) * 0.1f};
     }
     scene.emplace<InstancedStaticObject>(floor_objects);
-    scene.emplace<InstancedDynamicObject>(falling_objects);
+    //scene.emplace<InstancedDynamicObject>(falling_objects);
     scene.emplace<StaticObject>(Transform{{0, 0, 0}, {}, {15, 15, 15}}, wooden_sphere);
     scene.emplace<StaticObject>(Transform{{100, 0, 0}, {}, {200, 200, 200}}, wooden_cylinder);
     scene.emplace<StaticObject>(Transform{{0, -50, -70}, {}, {20, 20, 20}}, asset1);

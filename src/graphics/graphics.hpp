@@ -7,6 +7,7 @@
 #include "data/vector.hpp"
 #include "SDL2/SDL.h"
 #include "SDL2/SDL_ttf.h"
+#include <mutex>
 
 /**
 * Used to render text. Texture has a constructor taking a Font as a parameter. Use this to achieve font-rendering.

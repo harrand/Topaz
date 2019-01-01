@@ -2,11 +2,12 @@ cmake_minimum_required(VERSION 3.9)
 project(topaz VERSION 0.7.0 DESCRIPTION "Cross-Platform Multimedia Engine")
 set(CMAKE_BUILD_TYPE Release)
 set(CMAKE_CXX_STANDARD 17)
-set(TZ_COMPILE_FLAGS "-Wall -Wextra -pedantic-errors -O3")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${TZ_COMPILE_FLAGS}")
-include_directories(topaz ${PROJECT_SOURCE_DIR}/inc)
-include_directories(topaz ${PROJECT_SOURCE_DIR}/src)
+#set(TZ_COMPILE_FLAGS "-Wall -Wextra -pedantic-errors -O3")
+# add_compile_options are global flags. They are used everywhere, not just in particular modules.
+add_compile_options(-Wall -Wextra -pedantic-errors -O3)
+# once again this is not modular
 link_directories(${PROJECT_SOURCE_DIR}/lib)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${TZ_COMPILE_FLAGS}")
 add_library(topaz SHARED
         src/audio/audio.cpp
         src/audio/audio.hpp
@@ -106,4 +107,32 @@ add_library(topaz SHARED
         src/utility/time.cpp
         src/utility/time.hpp
         src/utility/time.inl)
+# this is not modular design. we want modular design.
+#include_directories(topaz ${PROJECT_SOURCE_DIR}/inc)
+#include_directories(topaz ${PROJECT_SOURCE_DIR}/src)
+# here we express in terms of modules, not just build flags
+target_include_directories(topaz PUBLIC ${PROJECT_SOURCE_DIR}/inc)
+target_include_directories(topaz PRIVATE ${PROJECT_SOURCE_DIR}/src)
+# public is for interface dependencies which we have, but no specific implementation dependencies that games wont need
 target_link_libraries(topaz OpenGL32 SDL2 SDL2_mixer SDL2_ttf SDL2main assimp)
+
+#add_subdirectory(${PROJECT_SOURCE_DIR}/src/test ${PROJECT_BINARY_DIR})
+
+add_library(unit_testing_utility src/test/lib/test_failure_exception.cpp)
+
+#[[
+file(GLOB UNIT_TEST_SOURCES RELATIVE ${PROJECT_SOURCE_DIR}/src *.cpp)
+foreach(unit_test_source ${UNIT_TEST_SOURCES})
+    # simply cut off the cpp
+    string(REPLACE ".cpp" "" unit_test_name ${unit_test_source})
+    message("found module: " ${unit_test_name})
+    add_executable(${unit_test_name} ${unit_test_source})
+    target_include_directories(${unit_test_name} PRIVATE ${PROJECT_SOURCE_DIR}/src)
+    target_link_libraries(${unit_test_name} topaz unit_testing_utility)
+endforeach()
+]]#
+
+# For the demo executable
+add_executable(topaz_demo src/test.cpp)
+target_include_directories(topaz_demo PRIVATE ${PROJECT_SOURCE_DIR}/src)
+target_link_libraries(topaz_demo topaz)
