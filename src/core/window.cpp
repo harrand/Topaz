@@ -1,5 +1,4 @@
 #include "core/window.hpp"
-#include "graphics/texture.hpp"
 
 bool tz::graphics::initialised = false;
 bool tz::graphics::has_context = false;
@@ -147,9 +146,21 @@ int Window::get_width() const
     return this->dimensions_pixel_space.x;
 }
 
+void Window::set_width(int width)
+{
+    this->dimensions_pixel_space.x = width;
+    SDL_SetWindowSize(this->sdl_window, this->dimensions_pixel_space.x, this->dimensions_pixel_space.y);
+}
+
 int Window::get_height() const
 {
     return this->dimensions_pixel_space.y;
+}
+
+void Window::set_height(int height)
+{
+    this->dimensions_pixel_space.y = height;
+    SDL_SetWindowSize(this->sdl_window, this->dimensions_pixel_space.x, this->dimensions_pixel_space.y);
 }
 
 bool Window::is_close_requested() const

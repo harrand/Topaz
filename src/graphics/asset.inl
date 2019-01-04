@@ -13,6 +13,8 @@ AssetType& AssetBuffer::emplace(const std::string& asset_name, Args&&... args)
         return this->emplace_displacementmap(asset_name, std::forward<Args>(args)...);
     else if constexpr(std::is_same_v<AssetType, AnimatedTexture>)
         return this->emplace_animated_texture(asset_name, std::forward<Args>(args)...);
+    else if constexpr(std::is_same_v<AssetType, Model>)
+        return this->emplace_model(asset_name, std::forward<Args>(args)...);
 }
 
 template<typename... Args>
@@ -50,6 +52,13 @@ DisplacementMap& AssetBuffer::emplace_displacementmap(const std::string& asset_n
     return *displacement_map_ptr.get();
 }
 
+template<typename... Args>
+Model& AssetBuffer::emplace_model(const std::string& asset_name, Args&&... args)
+{
+    std::unique_ptr<Model>& model_ptr = (*(this->models.insert(std::make_pair(asset_name, std::make_unique<Model>(std::forward<Args>(args)...))).first)).second;
+    return *model_ptr.get();
+}
+
 template<class AssetType>
 AssetType* AssetBuffer::find(const std::string& asset_name)
 {
@@ -65,4 +74,6 @@ AssetType* AssetBuffer::find(const std::string& asset_name)
         return this->find_displacement_map(asset_name);
     else if constexpr(std::is_same_v<AssetType, AnimatedTexture>)
         return this->find_animated_texture(asset_name);
+    else if constexpr(std::is_same_v<AssetType, Model>)
+        return this->find_model(asset_name);
 }

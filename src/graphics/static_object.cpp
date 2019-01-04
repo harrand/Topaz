@@ -17,34 +17,44 @@ std::optional<AABB> StaticObject::get_boundary() const
 
 void StaticObject::render(Shader& render_shader, const Camera& camera, const Vector2I& viewport_dimensions) const
 {
-    if(!this->asset.valid_mesh())
+    if(!this->asset.valid_mesh() && !this->asset.valid_model())
     {
-        tz::debug::print("SceneObject attempted to be rendered with an invalid mesh. Aborted this draw-call.\n");
+        tz::debug::print("SceneObject attempted to be rendered with neither valid mesh nor model. Aborted this draw-call.\n");
         return;
     }
     render_shader.bind();
-    if(this->asset.valid_texture())
+    render_shader.set_uniform<bool>("is_instanced", this->get_asset().valid_mesh() && tz::graphics::is_instanced(this->asset.mesh));
+    render_shader.set_uniform<Matrix4x4>(tz::graphics::render_shader_model_uniform_name, this->transform.model());
+    render_shader.set_uniform<Matrix4x4>(tz::graphics::render_shader_view_uniform_name, camera.view());
+    render_shader.set_uniform<Matrix4x4>(tz::graphics::render_shader_projection_uniform_name,
+                                         camera.projection(viewport_dimensions.x, viewport_dimensions.y));
+    tz::graphics::asset::unbind_all_extra_textures(render_shader);
+    if (this->asset.valid_texture())
         this->asset.texture->bind(&render_shader, tz::graphics::texture_sampler_id);
     else
         tz::graphics::asset::unbind_texture();
-    if(this->asset.valid_normal_map())
+    if (this->asset.valid_normal_map())
         this->asset.normal_map->bind(&render_shader, tz::graphics::normal_map_sampler_id);
     else
         tz::graphics::asset::unbind_normal_map(render_shader);
-    if(this->asset.valid_parallax_map())
+    if (this->asset.valid_parallax_map())
         this->asset.parallax_map->bind(&render_shader, tz::graphics::parallax_map_sampler_id);
     else
         tz::graphics::asset::unbind_parallax_map(render_shader);
-    if(this->asset.valid_displacement_map())
+    if (this->asset.valid_displacement_map())
         this->asset.displacement_map->bind(&render_shader, tz::graphics::displacement_map_sampler_id);
     else
         tz::graphics::asset::unbind_displacement_map(render_shader);
-    render_shader.set_uniform<bool>("is_instanced", tz::graphics::is_instanced(this->asset.mesh));
-    render_shader.set_uniform<Matrix4x4>(tz::graphics::render_shader_model_uniform_name, this->transform.model());
-    render_shader.set_uniform<Matrix4x4>(tz::graphics::render_shader_view_uniform_name, camera.view());
-    render_shader.set_uniform<Matrix4x4>(tz::graphics::render_shader_projection_uniform_name, camera.projection(viewport_dimensions.x, viewport_dimensions.y));
     render_shader.update();
-    this->asset.mesh->render(render_shader.has_tessellation_control_shader());
+    if(!this->asset.valid_model())
+    {
+        this->asset.mesh->render(render_shader.has_tessellation_control_shader());
+    }
+    else
+    {
+        Model* model = this->asset.model;
+        model->render(&render_shader);
+    }
 }
 
 bool  StaticObject::operator==(const StaticObject &rhs) const

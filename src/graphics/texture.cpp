@@ -176,11 +176,11 @@ Texture::~Texture()
 
 Texture& Texture::operator=(Texture rhs)
 {
-	glDeleteTextures(1, &(this->texture_handle));
 	Texture::swap(*this, rhs);
 	return *this;
 }
 
+/*
 Texture& Texture::operator=(Texture&& rhs)
 {
 	glDeleteTextures(1, &(this->texture_handle));
@@ -194,6 +194,7 @@ Texture& Texture::operator=(Texture&& rhs)
 	rhs.texture_handle = 0;
 	return *this;
 }
+ */
 
 void Texture::bind(Shader* shader, unsigned int id, const std::string& sampler_name) const
 {
@@ -274,6 +275,38 @@ void Texture::bind_with_string(Shader* shader, unsigned int id, const std::strin
 	glActiveTexture(GL_TEXTURE0 + id);
 	glBindTexture(GL_TEXTURE_2D, this->texture_handle);
 	shader->set_uniform<int>(sampler_uniform_name, id);
+}
+
+Texture::Texture(aiTexture* texture): Texture()
+{
+	Bitmap<PixelRGBA> bitmap;
+	if(texture->mHeight == 0 && texture->mWidth != 0)
+    {
+        // texture is compressed JPG.
+        unsigned int compressed_data_size = texture->mWidth;
+        int comps;
+        stbi_uc* image_data = stbi_load_from_memory(reinterpret_cast<stbi_uc*>(texture->pcData), compressed_data_size, &bitmap.width, &bitmap.height, &comps, 3);
+        bitmap.pixels.reserve(static_cast<std::size_t>(std::abs(bitmap.width * bitmap.height)));
+        // guaranteed to be a multiple of 3
+        for(std::size_t i = 2; i <= 3 * std::abs(bitmap.width * bitmap.height) - 2; i += 3)
+            bitmap.pixels.emplace_back(PixelRGBA{image_data[i - 2], image_data[i - 1], image_data[i], 255});
+        this->delete_texture(image_data);
+        tz::debug::print("number of pixels in the ", bitmap.width, "x", bitmap.height, " texture = ", bitmap.pixels.size());
+    }
+    else
+    {
+        bitmap.width = texture->mWidth;
+        bitmap.height = texture->mHeight;
+        for (int i = 0; i < bitmap.width * bitmap.height; i++)
+        {
+            const aiTexel &texel = texture->pcData[i];
+            bitmap.pixels.emplace_back(texel.r, texel.g, texel.b, texel.a);
+        }
+    }
+	tz::debug::print("bitmap size = ", bitmap.width, ", ", bitmap.height, "\n");
+	tz::debug::print("number of pixels = ", bitmap.pixels.size(), "\n");
+	*this = Texture{bitmap};
+	tz::debug::print("hello there\n");
 }
 
 void Texture::swap(Texture& lhs, Texture& rhs)

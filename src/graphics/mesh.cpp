@@ -6,7 +6,7 @@
 #include <map>
 #include <unordered_set>
 
-Mesh::Mesh(std::string filename, std::size_t scene_index)
+Mesh::Mesh(std::string filename, std::size_t scene_index): Mesh()
 {
 	const aiScene* scene = aiImportFile(filename.c_str(), aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_CalcTangentSpace | aiProcess_JoinIdenticalVertices | aiProcess_TransformUVCoords | aiProcess_OptimizeMeshes | aiProcess_OptimizeGraph);
 	if(scene == nullptr)
@@ -15,44 +15,12 @@ Mesh::Mesh(std::string filename, std::size_t scene_index)
         return;
     }
     aiMesh* assimp_mesh = scene->mMeshes[scene_index];
-	/* things to assign:
-	 * position (vec3)
-	 * texcoord (vec2)
-	 * normal (vec3)
-	 * tangent (vec3)
-	 * render_count (uint)
-	 */
-	// Right now, we don't know number of indices. We will find that out after we perform indexing.
-	this->vertices.reserve(assimp_mesh->mNumVertices);
-	for(std::size_t i = 0; i < assimp_mesh->mNumVertices; i++)
-	{
-		Vector3F position{assimp_mesh->mVertices[i].x, assimp_mesh->mVertices[i].y, assimp_mesh->mVertices[i].z};
-        Vector2F texcoord = {};
-        if(assimp_mesh->HasTextureCoords(0))
-        {
-            const aiVector3D* assimp_texcoord = &assimp_mesh->mTextureCoords[0][i];
-            texcoord = {assimp_texcoord->x, assimp_texcoord->y};
-        }
-        Vector3F normal = {};
-		if(assimp_mesh->HasNormals())
-            normal = Vector3F{assimp_mesh->mNormals[i].x, assimp_mesh->mNormals[i].y, assimp_mesh->mNormals[i].z}.normalised();
-        Vector3F tangent = {};
-        if(assimp_mesh->HasTangentsAndBitangents())
-		    tangent = Vector3F{assimp_mesh->mTangents[i].x, assimp_mesh->mTangents[i].y, assimp_mesh->mTangents[i].z}.normalised();
-		this->vertices.emplace_back(position, texcoord, normal, tangent);
-	}
-    for(std::size_t i = 0; i < assimp_mesh->mNumFaces; i++)
-    {
-        const aiFace& face = assimp_mesh->mFaces[i];
-        this->indices.push_back(face.mIndices[0]);
-        this->indices.push_back(face.mIndices[1]);
-        this->indices.push_back(face.mIndices[2]);
-    }
+	Mesh to_assign{assimp_mesh};
 	aiReleaseImport(scene);
-    this->init_mesh();
+    *this = std::move(to_assign);
 }
 
-Mesh::Mesh(const Vertex* vertices, std::size_t number_of_vertices, const unsigned int* indices, std::size_t number_of_indices)
+Mesh::Mesh(const Vertex* vertices, std::size_t number_of_vertices, const unsigned int* indices, std::size_t number_of_indices): Mesh()
 {
 	for(unsigned int i = 0; i < number_of_vertices; i++)
         this->vertices.push_back(vertices[i]);
@@ -143,6 +111,46 @@ void Mesh::render(bool patches, GLenum mode) const
 bool Mesh::operator==(const Mesh& rhs) const
 {
 	return this->vertex_array_object == rhs.vertex_array_object;
+}
+
+Mesh::Mesh(): vertices(), vertex_array_object(0), vbo_buffers(), indices() {}
+
+Mesh::Mesh(const aiMesh* assimp_mesh): Mesh()
+{
+	/* things to assign:
+	 * position (vec3)
+	 * texcoord (vec2)
+	 * normal (vec3)
+	 * tangent (vec3)
+	 * render_count (uint)
+	 */
+	// Right now, we don't know number of indices. We will find that out after we perform indexing.
+	this->vertices.reserve(assimp_mesh->mNumVertices);
+	for(std::size_t i = 0; i < assimp_mesh->mNumVertices; i++)
+	{
+		Vector3F position{assimp_mesh->mVertices[i].x, assimp_mesh->mVertices[i].y, assimp_mesh->mVertices[i].z};
+		Vector2F texcoord = {};
+		if(assimp_mesh->HasTextureCoords(0))
+		{
+			const aiVector3D* assimp_texcoord = &assimp_mesh->mTextureCoords[0][i];
+			texcoord = {assimp_texcoord->x, assimp_texcoord->y};
+		}
+		Vector3F normal = {};
+		if(assimp_mesh->HasNormals())
+			normal = Vector3F{assimp_mesh->mNormals[i].x, assimp_mesh->mNormals[i].y, assimp_mesh->mNormals[i].z}.normalised();
+		Vector3F tangent = {};
+		if(assimp_mesh->HasTangentsAndBitangents())
+			tangent = Vector3F{assimp_mesh->mTangents[i].x, assimp_mesh->mTangents[i].y, assimp_mesh->mTangents[i].z}.normalised();
+		this->vertices.emplace_back(position, texcoord, normal, tangent);
+	}
+	for(std::size_t i = 0; i < assimp_mesh->mNumFaces; i++)
+	{
+		const aiFace& face = assimp_mesh->mFaces[i];
+		this->indices.push_back(face.mIndices[0]);
+		this->indices.push_back(face.mIndices[1]);
+		this->indices.push_back(face.mIndices[2]);
+	}
+	this->init_mesh();
 }
 
 void Mesh::swap(Mesh& lhs, Mesh& rhs)

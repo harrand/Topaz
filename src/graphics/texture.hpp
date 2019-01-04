@@ -5,6 +5,7 @@
 #include <memory>
 #include <optional>
 #include <variant>
+#include "assimp/texture.h"
 
 namespace tz::graphics
 {
@@ -43,6 +44,17 @@ namespace tz::graphics
 		 * @param render_shader - The render-shader to notify of these changes
 		 */
         inline void unbind_all_textures(Shader& render_shader);
+        /**
+         * Unbind an extra shader.
+         * @param render_shader - The render-shader to notify of these changes
+         * @param extra_shader_id - The ID of the extra shader to notify
+         */
+        inline void unbind_extra_texture(Shader& render_shader, std::size_t extra_shader_id);
+        /**
+         * Unbind all 8 extra textures.
+         * @param render_shader - The render-shader to notify of these changes
+         */
+        inline void unbind_all_extra_texture(Shader& render_shader);
 	}
 
 	/// What kind of data should the Texture's bitmap store? e.g a depth-texture.
@@ -134,12 +146,6 @@ public:
 	 */
 	Texture& operator=(Texture rhs);
 	/**
-	 * Move-assignment from an existing Texture.
-	 * @param rhs - The Texture whos OpenGL handle should be taken.
-	 * @return - This modified Texture.
-	 */
-	Texture& operator=(Texture&& rhs);
-	/**
 	 * Bind this texture to the specified shader, with the uniform sampler-id specified.
 	 * @param shader - Shader with which to render this Texture.
 	 * @param id - Sampler-ID for the Shader to use.
@@ -183,6 +189,7 @@ public:
 	 */
 	bool operator==(const Texture& rhs) const;
 	friend class FrameBuffer;
+	friend class Model;
 protected:
 	/**
 	 * Retrieve the image data of the external image file specified by this->filename.
@@ -223,6 +230,7 @@ private:
 	 * @param initialise_handle - N/A
 	 */
 	Texture(int width, int height, bool initialise_handle, tz::graphics::TextureComponent texture_component = tz::graphics::TextureComponent::COLOUR_TEXTURE, bool gamma_corrected = false);
+	Texture(aiTexture* assimp_texture);
 	static void swap(Texture& lhs, Texture& rhs);
 };
 

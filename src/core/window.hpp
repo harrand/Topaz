@@ -3,10 +3,11 @@
 #ifndef GLEW_STATIC
 #define GLEW_STATIC
 #endif
-#include <GL/glew.h>
 #include <string>
+#include "GL/glew.h"
 #include "core/listener.hpp"
 #include "graphics/gui/gui.hpp"
+#include "graphics/texture.hpp"
 
 namespace tz
 {
@@ -94,10 +95,20 @@ public:
      */
     int get_width() const;
     /**
+     * Set the width of the Window, in pixels.
+     * @param width - Desired number of pixels representing the width of the window
+     */
+    void set_width(int width);
+    /**
      * Get the height of the Window, in pixels.
      * @return - Number of pixels high for this Window
      */
     int get_height() const;
+    /**
+     * Set the height of the Window, in pixels.
+     * @param height - Desired number of pixels representing the height of the window
+     */
+    void set_height(int height);
     /**
      * Get whether the Window has been requested to close.
      * @return - True if the Window should be closed. False otherwise

@@ -7,6 +7,7 @@
 #include <memory>
 #include <array>
 #include <set>
+#include "assimp/mesh.h"
 
 namespace tz::graphics
 {
@@ -96,7 +97,11 @@ public:
 	 * @return - True if the Meshes are equal. False otherwise
 	 */
 	bool operator==(const Mesh& rhs) const;
+
+	friend class Model;
 protected:
+	Mesh();
+	Mesh(const aiMesh* assimp_mesh);
     static void swap(Mesh& lhs, Mesh& rhs);
     /// List of all vertex-data.
 	std::vector<Vertex> vertices;

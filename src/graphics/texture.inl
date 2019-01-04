@@ -34,6 +34,22 @@ namespace tz::graphics::asset
 		unbind_parallax_map(render_shader);
 		unbind_displacement_map(render_shader);
 	}
+
+	inline void unbind_extra_texture(Shader& render_shader, std::size_t extra_shader_id)
+    {
+        glActiveTexture(GL_TEXTURE0 + tz::graphics::initial_extra_texture_sampler_id);
+        glBindTexture(GL_TEXTURE_2D, 0);
+        render_shader.set_uniform<bool>(std::string("extra_texture") + std::to_string(extra_shader_id) + "_exists", false);
+    }
+
+	inline void unbind_all_extra_textures(Shader& render_shader)
+    {
+        std::size_t id = tz::graphics::initial_extra_texture_sampler_id;
+        for(std::size_t i = 0; i < 8; i++)
+        {
+            tz::graphics::asset::unbind_extra_texture(render_shader, id++);
+        }
+    }
 }
 
 template<class Pixel>

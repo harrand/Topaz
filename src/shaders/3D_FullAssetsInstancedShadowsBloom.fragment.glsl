@@ -17,6 +17,23 @@ uniform sampler2D normal_map_sampler;
 uniform sampler2D parallax_map_sampler;
 uniform sampler2D depth_map_sampler;
 
+uniform sampler2D extra_texture_sampler0;
+uniform bool extra_texture0_exists = false;
+uniform sampler2D extra_texture_sampler1;
+uniform bool extra_texture1_exists = false;
+uniform sampler2D extra_texture_sampler2;
+uniform bool extra_texture2_exists = false;
+uniform sampler2D extra_texture_sampler3;
+uniform bool extra_texture3_exists = false;
+uniform sampler2D extra_texture_sampler4;
+uniform bool extra_texture4_exists = false;
+uniform sampler2D extra_texture_sampler5;
+uniform bool extra_texture5_exists = false;
+uniform sampler2D extra_texture_sampler6;
+uniform bool extra_texture6_exists = false;
+uniform sampler2D extra_texture_sampler7;
+uniform bool extra_texture7_exists = false;
+
 uniform bool has_normal_map = false;
 uniform bool has_parallax_map = false;
 
@@ -101,6 +118,28 @@ vec2 parallax_offset(vec2 texcoord)
     return texcoord_modelspace + texcoord_offset;
 }
 
+vec3 full_texture_colour(vec2 texcoord)
+{
+	vec3 texture_colour = texture(texture_sampler, texcoord).xyz;
+	if(extra_texture0_exists)
+	    texture_colour += texture(extra_texture_sampler0, texcoord).xyz;
+	if(extra_texture1_exists)
+	    texture_colour += texture(extra_texture_sampler1, texcoord).xyz;
+	if(extra_texture2_exists)
+        texture_colour += texture(extra_texture_sampler2, texcoord).xyz;
+    if(extra_texture3_exists)
+        texture_colour += texture(extra_texture_sampler3, texcoord).xyz;
+    if(extra_texture4_exists)
+        texture_colour += texture(extra_texture_sampler4, texcoord).xyz;
+    if(extra_texture5_exists)
+        texture_colour += texture(extra_texture_sampler5, texcoord).xyz;
+    if(extra_texture6_exists)
+        texture_colour += texture(extra_texture_sampler6, texcoord).xyz;
+    if(extra_texture7_exists)
+        texture_colour += texture(extra_texture_sampler7, texcoord).xyz;
+    return texture_colour;
+}
+
 bool in_range(float value)
 {
     return value >= 0.0f && value <= 1.0f;
@@ -132,7 +171,7 @@ void main()
 	    normal_cameraspace = transpose(tbn_matrix) * (texture(normal_map_sampler, parallaxed_texcoord).xyz * 255.0/128.0 - 1);
 	else
 	    normal_cameraspace = normalize((view_matrix * model_matrix * vec4(normal_modelspace, 0.0)).xyz);
-	vec3 texture_colour = texture(texture_sampler, parallaxed_texcoord).xyz;
+	vec3 texture_colour = full_texture_colour(parallaxed_texcoord);
 	fragment_colour = vec4(0.0f, 0.0f, 0.0f, 0.0f);
 	 // Directional Component camera light. disabled by default.
 	 /*

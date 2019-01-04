@@ -1,6 +1,6 @@
 #ifndef DATA_HPP
 #define DATA_HPP
-#include "graphics/mesh.hpp"
+#include "graphics/model.hpp"
 #include "graphics/animated_texture.hpp"
 #include <unordered_map>
 #include <memory>
@@ -27,7 +27,7 @@ struct AssetBuffer
 	 * @param displacement_maps - A map of Displacement Map names to their corresponding Displacement Map objects
 	 * @param animated_textures - A map of Animated-Texture names to their corresponding Animated-Texture objects
 	 */
-    AssetBuffer(std::unordered_map<std::string, std::unique_ptr<Mesh>> meshes = {}, std::unordered_map<std::string, std::unique_ptr<Texture>> textures = {}, std::unordered_map<std::string, std::unique_ptr<NormalMap>> normal_maps = {}, std::unordered_map<std::string, std::unique_ptr<ParallaxMap>> parallax_maps = {}, std::unordered_map<std::string, std::unique_ptr<DisplacementMap>> displacement_maps = {}, std::unordered_map<std::string, std::unique_ptr<AnimatedTexture>> animated_textures = {});
+    AssetBuffer(std::unordered_map<std::string, std::unique_ptr<Mesh>> meshes = {}, std::unordered_map<std::string, std::unique_ptr<Texture>> textures = {}, std::unordered_map<std::string, std::unique_ptr<NormalMap>> normal_maps = {}, std::unordered_map<std::string, std::unique_ptr<ParallaxMap>> parallax_maps = {}, std::unordered_map<std::string, std::unique_ptr<DisplacementMap>> displacement_maps = {}, std::unordered_map<std::string, std::unique_ptr<AnimatedTexture>> animated_textures = {}, std::unordered_map<std::string, std::unique_ptr<Model>> models = {});
     /// AssetBuffers are non-copyable.
     AssetBuffer(const AssetBuffer& copy) = delete;
     /// AssetBuffers are non-copyable.
@@ -72,6 +72,14 @@ struct AssetBuffer
 	 * @return - True if the AssetBuffer took control of the asset from elsewhere. False if the AssetBuffer already had control (and thus no change in control occurred)
 	 */
     bool sink_displacementmap(const std::string& asset_name, std::unique_ptr<DisplacementMap> sunken_displacementmap);
+    /**
+     * Relinquish control of an existing Animated Textures asset to this AssetBuffer.
+     * @param animation_name - The name of this animation
+     * @param sunken_animation - The existing mesh asset whose lifetime should be controlled by thid AssetBuffer
+     * @return
+     */
+    bool sink_animated_texture(const std::string& animation_name, std::unique_ptr<AnimatedTexture> sunken_animation);
+    bool sink_model(const std::string& asset_name, std::unique_ptr<Model> sunken_model);
 	/**
 	 * Construct some asset in-place into this AssetBuffer.
 	 * @tparam AssetType - The type of asset to emplace. E.g Mesh or Texture
@@ -141,6 +149,8 @@ struct AssetBuffer
 	 * @return - The constructed Animated Texture.
 	 */
 	AnimatedTexture& emplace_animated_texture(const std::string& animation_name, PolyFrameTexture::FrameMap frames, unsigned int fps);
+	template<typename... Args>
+	Model& emplace_model(const std::string& asset_name, Args&&... args);
 	/**
 	 * Find an asset with the given name.
 	 * @tparam AssetType - The type of asset to query
@@ -185,6 +195,7 @@ struct AssetBuffer
 	 * @return - A pointer to the Animated Texture if it was found. If it was not found, nullptr is returned.
 	 */
     AnimatedTexture* find_animated_texture(const std::string& animation_name);
+    Model* find_model(const std::string& model_name);
 	/**
 	 * Query the AssetBuffer to relinquish control of an existing Mesh. The lifetime of the asset shall no longer be controlled by the AssetBuffer.
 	 * @param mesh_name - The name of the Mesh to take control of
@@ -215,6 +226,8 @@ struct AssetBuffer
 	 * @return - The Displacement Map asset smart-pointer. If no such asset was found, nullptr is returned.
 	 */
     std::unique_ptr<DisplacementMap> take_displacementmap(const std::string& displacementmap_name);
+    std::unique_ptr<AnimatedTexture> take_animated_texture(const std::string& animation_name);
+    std::unique_ptr<Model> take_model(const std::string& model_name);
 private:
     /// Container of Mesh assets.
 	std::unordered_map<std::string, std::unique_ptr<Mesh>> meshes;
@@ -228,6 +241,8 @@ private:
 	std::unordered_map<std::string, std::unique_ptr<DisplacementMap>> displacement_maps;
 	/// Container of AnimatedTexture mappings.
 	std::unordered_map<std::string, std::unique_ptr<AnimatedTexture>> animated_textures;
+	/// Container of Model assets.
+	std::unordered_map<std::string, std::unique_ptr<Model>> models;
 };
 
 /**
@@ -237,6 +252,7 @@ private:
  * - Normal Map
  * - Parallax Map
  * - Displacement Map
+ * - Model
  */
 struct Asset
 {
@@ -248,8 +264,9 @@ struct Asset
 	 * @param normal_map - The Normal Map component
 	 * @param parallax_map - The Parallax Map component
 	 * @param displacement_map - The Displacement Map component
+	 * @param model - The Model component
 	 */
-    Asset(Mesh* mesh, Texture* texture, NormalMap* normal_map = nullptr, ParallaxMap* parallax_map = nullptr, DisplacementMap* displacement_map = nullptr);
+    Asset(Mesh* mesh, Texture* texture, NormalMap* normal_map = nullptr, ParallaxMap* parallax_map = nullptr, DisplacementMap* displacement_map = nullptr, Model* model = nullptr);
 	/**
 	 * Query as to whether there is a valid Mesh component.
 	 * @return - True if there is a Mesh, false otherwise
@@ -275,6 +292,7 @@ struct Asset
 	 * @return - True if there is a Displacement Map, false otherwise
 	 */
     bool valid_displacement_map() const;
+    bool valid_model() const;
 	/// Equate Assets. Returns true if the assets share the exact same asset elements.
     bool operator==(const Asset& rhs) const;
 
@@ -288,6 +306,8 @@ struct Asset
     ParallaxMap* parallax_map;
 	/// The Displacement Map component.
     DisplacementMap* displacement_map;
+    /// The Model component
+    Model* model;
 };
 
 #include "asset.inl"

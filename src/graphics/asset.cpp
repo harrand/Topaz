@@ -1,6 +1,6 @@
 #include "graphics/asset.hpp"
 
-AssetBuffer::AssetBuffer(std::unordered_map<std::string, std::unique_ptr<Mesh>> meshes, std::unordered_map<std::string, std::unique_ptr<Texture>> textures, std::unordered_map<std::string, std::unique_ptr<NormalMap>> normal_maps, std::unordered_map<std::string, std::unique_ptr<ParallaxMap>> parallax_maps, std::unordered_map<std::string, std::unique_ptr<DisplacementMap>> displacement_maps, std::unordered_map<std::string, std::unique_ptr<AnimatedTexture>> animated_textures): meshes(std::move(meshes)), textures(std::move(textures)), normal_maps(std::move(normal_maps)), parallax_maps(std::move(parallax_maps)), displacement_maps(std::move(displacement_maps)), animated_textures(std::move(animated_textures)){}
+AssetBuffer::AssetBuffer(std::unordered_map<std::string, std::unique_ptr<Mesh>> meshes, std::unordered_map<std::string, std::unique_ptr<Texture>> textures, std::unordered_map<std::string, std::unique_ptr<NormalMap>> normal_maps, std::unordered_map<std::string, std::unique_ptr<ParallaxMap>> parallax_maps, std::unordered_map<std::string, std::unique_ptr<DisplacementMap>> displacement_maps, std::unordered_map<std::string, std::unique_ptr<AnimatedTexture>> animated_textures, std::unordered_map<std::string, std::unique_ptr<Model>> models): meshes(std::move(meshes)), textures(std::move(textures)), normal_maps(std::move(normal_maps)), parallax_maps(std::move(parallax_maps)), displacement_maps(std::move(displacement_maps)), animated_textures(std::move(animated_textures)), models(std::move(models)){}
 
 bool AssetBuffer::sink_mesh(const std::string& asset_name, std::unique_ptr<Mesh> sunken_mesh)
 {
@@ -39,6 +39,22 @@ bool AssetBuffer::sink_displacementmap(const std::string& asset_name, std::uniqu
     if(this->displacement_maps.find(asset_name) != this->displacement_maps.end())
         return false;
     this->displacement_maps[asset_name] = std::move(sunken_displacementmap);
+    return true;
+}
+
+bool AssetBuffer::sink_animated_texture(const std::string &animation_name, std::unique_ptr<AnimatedTexture> sunken_animation)
+{
+    if(this->animated_textures.find(animation_name) != this->animated_textures.end())
+        return false;
+    this->animated_textures[animation_name] = std::move(sunken_animation);
+    return true;
+}
+
+bool AssetBuffer::sink_model(const std::string& asset_name, std::unique_ptr<Model> sunken_model)
+{
+    if(this->models.find(asset_name) != this->models.end())
+        return false;
+    this->models[asset_name] = std::move(sunken_model);
     return true;
 }
 
@@ -114,6 +130,17 @@ AnimatedTexture* AssetBuffer::find_animated_texture(const std::string& animation
     }
 }
 
+Model* AssetBuffer::find_model(const std::string& model_name)
+{
+    try
+    {
+        return this->models.at(model_name).get();
+    }catch(const std::out_of_range& exception)
+    {
+        return nullptr;
+    }
+}
+
 std::unique_ptr<Mesh> AssetBuffer::take_mesh(const std::string& mesh_name)
 {
     if(this->meshes.find(mesh_name) == this->meshes.end())
@@ -159,7 +186,25 @@ std::unique_ptr<DisplacementMap> AssetBuffer::take_displacementmap(const std::st
     return displacementmap;
 }
 
-Asset::Asset(Mesh* mesh, Texture* texture, NormalMap* normal_map, ParallaxMap* parallax_map, DisplacementMap* displacement_map): mesh(mesh), texture(texture), normal_map(normal_map), parallax_map(parallax_map), displacement_map(displacement_map){}
+std::unique_ptr<AnimatedTexture> AssetBuffer::take_animated_texture(const std::string& animation_name)
+{
+    if(this->animated_textures.find(animation_name) == this->animated_textures.end())
+        return nullptr;
+    std::unique_ptr<AnimatedTexture> animation = std::move(this->animated_textures[animation_name]);
+    this->animated_textures.erase(animation_name);
+    return animation;
+}
+
+std::unique_ptr<Model> AssetBuffer::take_model(const std::string& model_name)
+{
+    if(this->models.find(model_name) == this->models.end())
+        return nullptr;
+    std::unique_ptr<Model> model = std::move(this->models[model_name]);
+    this->models.erase(model_name);
+    return model;
+}
+
+Asset::Asset(Mesh* mesh, Texture* texture, NormalMap* normal_map, ParallaxMap* parallax_map, DisplacementMap* displacement_map, Model* model): mesh(mesh), texture(texture), normal_map(normal_map), parallax_map(parallax_map), displacement_map(displacement_map), model(model){}
 
 bool Asset::valid_mesh() const
 {
@@ -184,6 +229,11 @@ bool Asset::valid_parallax_map() const
 bool Asset::valid_displacement_map() const
 {
 	return this->displacement_map != nullptr;
+}
+
+bool Asset::valid_model() const
+{
+    return this->model != nullptr;
 }
 
 bool Asset::operator==(const Asset &rhs) const

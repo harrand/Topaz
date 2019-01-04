@@ -2,12 +2,9 @@ cmake_minimum_required(VERSION 3.9)
 project(topaz VERSION 0.7.0 DESCRIPTION "Cross-Platform Multimedia Engine")
 set(CMAKE_BUILD_TYPE Release)
 set(CMAKE_CXX_STANDARD 17)
-#set(TZ_COMPILE_FLAGS "-Wall -Wextra -pedantic-errors -O3")
 # add_compile_options are global flags. They are used everywhere, not just in particular modules.
 add_compile_options(-Wall -Wextra -pedantic-errors -O3)
-# once again this is not modular
-link_directories(${PROJECT_SOURCE_DIR}/lib)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${TZ_COMPILE_FLAGS}")
+
 add_library(topaz SHARED
         src/audio/audio.cpp
         src/audio/audio.hpp
@@ -106,15 +103,22 @@ add_library(topaz SHARED
         src/utility/string.hpp
         src/utility/time.cpp
         src/utility/time.hpp
-        src/utility/time.inl)
-# this is not modular design. we want modular design.
-#include_directories(topaz ${PROJECT_SOURCE_DIR}/inc)
-#include_directories(topaz ${PROJECT_SOURCE_DIR}/src)
+        src/utility/time.inl
+        src/graphics/model.cpp src/graphics/model.hpp)
 # here we express in terms of modules, not just build flags
 target_include_directories(topaz PUBLIC ${PROJECT_SOURCE_DIR}/inc)
 target_include_directories(topaz PRIVATE ${PROJECT_SOURCE_DIR}/src)
+
+find_library(LIB_ASSIMP assimp PATHS ${PROJECT_SOURCE_DIR}/lib)
+find_library(LIB_SDL2 SDL2 PATHS ${PROJECT_SOURCE_DIR}/lib)
+find_library(LIB_SDL2_MIXER SDL2_mixer PATHS ${PROJECT_SOURCE_DIR}/lib)
+find_library(LIB_SDL2_TTF SDL2_ttf PATHS ${PROJECT_SOURCE_DIR}/lib)
+find_library(LIB_SDL2_MAIN SDL2main PATHS ${PROJECT_SOURCE_DIR}/lib)
+find_library(LIB_OPENGL OpenGL32)
+
+target_compile_definitions(topaz PRIVATE TOPAZ_DEBUG)
 # public is for interface dependencies which we have, but no specific implementation dependencies that games wont need
-target_link_libraries(topaz OpenGL32 SDL2 SDL2_mixer SDL2_ttf SDL2main assimp)
+target_link_libraries(topaz PUBLIC ${LIB_SDL2} ${LIB_SDL2_MIXER} ${LIB_SDL2_TTF} ${LIB_SDL2_MAIN} ${LIB_ASSIMP} OpenGL32)
 
 #add_subdirectory(${PROJECT_SOURCE_DIR}/src/test ${PROJECT_BINARY_DIR})
 
@@ -134,5 +138,6 @@ endforeach()
 
 # For the demo executable
 add_executable(topaz_demo src/test.cpp)
+target_compile_definitions(topaz_demo PRIVATE TOPAZ_DEBUG)
 target_include_directories(topaz_demo PRIVATE ${PROJECT_SOURCE_DIR}/src)
 target_link_libraries(topaz_demo topaz)
