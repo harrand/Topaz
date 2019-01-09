@@ -15,7 +15,7 @@ Model::Model(std::string filename): meshes(), material_textures()
     std::string directory = filename.substr(0, filename.find_last_of('/'));
     if(scene == nullptr)
     {
-        tz::debug::print("Error: Model import failed:\n", aiGetErrorString(), "\n");
+        tz::debug::print("Model::Model(filename): Error: Model import failed:\n", aiGetErrorString(), "\n");
         return;
     }
     for(unsigned int i = 0; i < scene->mNumMeshes; i++)
@@ -30,8 +30,7 @@ Model::Model(std::string filename): meshes(), material_textures()
         aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
         std::vector<std::string> diffuse_maps, specular_maps;
         diffuse_maps = Model::load_material_texture_references(material, aiTextureType_DIFFUSE);
-        // TODO: Implement SpecularMap before re-adding this feature to Model.
-        //specular_maps = Model::load_material_texture_references(material, aiTextureType_SPECULAR);
+        specular_maps = Model::load_material_texture_references(material, aiTextureType_SPECULAR);
         auto is_embedded = [&scene](const std::string& texture_reference)->bool
         {
             return tz::utility::string::begins_with(texture_reference, "*");
@@ -48,40 +47,34 @@ Model::Model(std::string filename): meshes(), material_textures()
             if(!is_embedded(reference))
             {
                 std::string appended_reference = directory + "/" + reference;
-                tz::debug::print("Extracting model texture by file: \"", appended_reference, "\"\n");
-                this->material_textures.insert({i, Texture{appended_reference}});
+                tz::debug::print("Model::Model(filename): Extracting model texture by file: \"", appended_reference, "\"\n");
+                this->material_textures.emplace(i, std::make_unique<Texture>(appended_reference));
             }
             else
             {
                 std::size_t mat_id = get_texture_id(reference);
-                tz::debug::print("Extracting model texture by embedded material: ", mat_id, "\n");
+                tz::debug::print("Model::Model(filename): Extracting model texture by embedded material: ", mat_id, "\n");
                 aiTexture *embedded_texture = scene->mTextures[mat_id];
-                this->material_textures.insert({i, Texture{embedded_texture}});
+                this->material_textures.emplace(i, std::make_unique<Texture>(embedded_texture));
             }
         }
-        /*
+
         for(const std::string& reference : specular_maps)
         {
-            aiTexture* embedded_texture = scene->mTextures[get_texture_id(reference)];
-            this->material_textures.insert({i, Texture{embedded_texture}});
+            if(!is_embedded(reference))
+            {
+                std::string appended_reference = directory + "/" + reference;
+                tz::debug::print("Model::Model(filename): Extracting model texture by file: \"", appended_reference, "\"\n");
+                this->material_textures.emplace(i, std::make_unique<SpecularMap>(appended_reference));
+            }
+            else
+            {
+                std::size_t mat_id = get_texture_id(reference);
+                tz::debug::print("Model::Model(filename): Extracting model texture by embedded material: ", mat_id, "\n");
+                aiTexture *embedded_texture = scene->mTextures[mat_id];
+                this->material_textures.emplace(i, std::make_unique<SpecularMap>(embedded_texture));
+            }
         }
-         */
-        /*
-        for(const std::string& reference : diffuse_maps)
-        {
-            this->material_textures.insert({i, {directory + '/' + reference}});
-        }
-        for(const std::string& reference : specular_maps)
-        {
-            this->material_textures.insert({i, {directory + '/' + reference}});
-        }
-         */
-        /*
-        for(Texture& diffuse_map : diffuse_maps)
-            this->material_textures.insert({i, std::move(diffuse_map)});
-        for(Texture& specular_map : specular_maps)
-            this->material_textures.insert({i, std::move(specular_map)});
-            */
     }
     aiReleaseImport(scene);
 }
@@ -109,7 +102,7 @@ std::vector<std::reference_wrapper<const Texture>> Model::get_textures_in_mesh(s
     std::vector<std::reference_wrapper<const Texture>> texture_refs;
     auto range = this->material_textures.equal_range(mesh_id);
     for(auto i = range.first; i != range.second; i++)
-        texture_refs.push_back(std::cref(i->second));
+        texture_refs.push_back(std::cref(*i->second));
     return texture_refs;
 }
 
@@ -125,12 +118,15 @@ void Model::render(Shader& shader, GLenum mode) const
             /* topaz shader attribs are *not* sequential. it's something a little like this:
              * 0 = texture_sampler
              * ...
-             * 4 = extra_texture_sampler0
-             * 5 = extra_texture_sampler1
+             * 16 = extra_texture_sampler0
+             * 17 = extra_texture_sampler1
              * and so on...
              */
+            Texture* current_texture = i->second.get();
             auto sampler_name = [](std::size_t id) -> std::string
             {
+                if(id == tz::graphics::specular_map_sampler_id)
+                    return "specular_map_sampler";
                 if(id == tz::graphics::texture_sampler_id)
                     return "texture_sampler";
                 else if(id >= tz::graphics::initial_extra_texture_sampler_id)
@@ -140,13 +136,22 @@ void Model::render(Shader& shader, GLenum mode) const
                 }
                 else
                 {
-                    tz::debug::print("Model has created an illegal sampler ID...");
+                    tz::debug::print("Model::render(...): Model has created an illegal sampler ID...");
                     return "";
                 }
             };
 
-            // bind each texture in the model
-            i->second.bind(&shader, texture_id, sampler_name(texture_id));
+            // bind each texture in the model. note that only ONE specular map is allowed per map, unlike textures which can have upto 8.
+            switch(current_texture->get_texture_type())
+            {
+                case tz::graphics::TextureType::SPECULAR_MAP:
+                    current_texture->bind(&shader, tz::graphics::specular_map_sampler_id);
+                    break;
+                case tz::graphics::TextureType::TEXTURE:
+                default:
+                    current_texture->bind(&shader, texture_id, sampler_name(texture_id));
+                    break;
+            }
             // ensure texture_id is updated properly, because as stated previous, topaz sampler ids are NOT sequential
             if(texture_id == tz::graphics::texture_sampler_id)
                 texture_id = tz::graphics::initial_extra_texture_sampler_id;
@@ -154,7 +159,6 @@ void Model::render(Shader& shader, GLenum mode) const
             {
                 std::size_t diff = texture_id - tz::graphics::initial_extra_texture_sampler_id;
                 std::string uniform_name = std::string("extra_texture") + std::to_string(diff) + "_exists";
-                // TODO: Enable Specular Maps
                 shader.set_uniform<bool>(uniform_name, true);
                 texture_id++;
             }

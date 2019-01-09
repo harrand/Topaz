@@ -21,11 +21,11 @@ namespace tz
      */
     void initialise()
     {
-        tz::debug::print("Initialising Topaz...\n");
+        tz::debug::print("tz::initialise(): Initialising Topaz...\n");
         SDL_Init(SDL_INIT_EVERYTHING);
-        tz::debug::print("Initialised SDL2.\n");
+        tz::debug::print("tz::initialise(): Initialised SDL2.\n");
         tz::audio::initialise();
-        tz::debug::print("Initialised Topaz. Ready to receive OpenGL context...\n");
+        tz::debug::print("tz::initialise(): Initialised Topaz. Ready to receive OpenGL context...\n");
     }
 
     /**
@@ -34,12 +34,12 @@ namespace tz
      */
     void terminate()
     {
-        tz::debug::print("Terminating Topaz...\n");
+        tz::debug::print("tz::terminate(): Terminating Topaz...\n");
         tz::graphics::terminate();
         tz::audio::terminate();
         SDL_Quit();
-        tz::debug::print("Terminated SDL2.\n");
-        tz::debug::print("Terminated Topaz.\n");
+        tz::debug::print("tz::terminate(): Terminated SDL2.\n");
+        tz::debug::print("tz::terminate(): Terminated Topaz.\n");
     }
 }
 

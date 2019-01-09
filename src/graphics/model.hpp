@@ -59,8 +59,8 @@ private:
     static std::vector<std::string> load_material_texture_references(aiMaterial* material, aiTextureType type);
     /// Container of all meshes comprising the model.
     std::vector<Mesh> meshes;
-    /// Map of mesh IDs and all their corresponding extracted textures.
-    std::multimap<unsigned int, Texture> material_textures;
+    /// Map of mesh IDs and all their corresponding extracted textures. Textures can be subclasses too, such as NormalMaps.
+    std::multimap<unsigned int, std::unique_ptr<Texture>> material_textures;
 };
 
 #endif //TOPAZ_MODEL_HPP

@@ -17,10 +17,11 @@ int main()
     return 0;
 }
 
+#undef TOPAZ_DEBUG
 void init()
 {
     Window wnd("Topaz Development Window", 0, 30, 1920, 1080);
-    tz::debug::print("OpenGL debugging enabled: ", wnd.is_opengl_debugging_enabled(), "\n");
+    std::cout << "OpenGL debugging enabled: " << wnd.is_opengl_debugging_enabled() << "\n";
     wnd.set_debug_callback();
     wnd.set_fullscreen(Window::FullscreenType::WINDOWED_MODE);
     wnd.set_swap_interval_type(Window::SwapIntervalType::VSYNC);
@@ -46,9 +47,9 @@ void init()
     Camera camera;
     camera.position = {0, 0, -50};
     Scene scene;
-    scene.add_directional_light({{0, 1, 0}, {1, 1, 1}, 2.0f});
+    scene.add_directional_light({{0, 1, 0}, {1, 1, 1}, 1.0f});
 
-    glDebugMessageInsert(GL_DEBUG_SOURCE_APPLICATION, GL_DEBUG_TYPE_ERROR, 0, GL_DEBUG_SEVERITY_MEDIUM, -1, "Hi there, this is a fake error. haha got you!");
+    glDebugMessageInsert(GL_DEBUG_SOURCE_APPLICATION, GL_DEBUG_TYPE_ERROR, 0, GL_DEBUG_SEVERITY_NOTIFICATION, -1, "Well met.");
 
     Texture red_texture{Bitmap<PixelRGBA>{{PixelRGBA{255, 0, 0, 255}}, 1, 1}};
     Texture green_texture{Bitmap<PixelRGBA>{{PixelRGBA{0, 255, 0, 255}}, 1, 1}};
@@ -158,7 +159,7 @@ void init()
     tz::debug::print("Does maul have a valid model? ", maul.valid_model(), "\n");
     StaticObject& darth_maul = scene.emplace<StaticObject>(Transform{{0, -135, 100}, {}, {50, 50, 50}}, maul);
     scene.emplace<StaticObject>(Transform{{50, -135, 100}, {}, {7, 7, 7}}, nanosuit);
-    //scene.add_point_light(PointLight{{0, 0, 125}, {1, 1, 1}, 2000.0f});
+    scene.add_point_light(PointLight{{0, 0, 125}, {1, 1, 1}, 9000.0f});
     scene.emplace<StaticObject>(Transform{{0, 0, 0}, {}, {15, 15, 15}}, wooden_sphere);
     scene.emplace<StaticObject>(Transform{{100, 0, 0}, {}, {200, 200, 200}}, wooden_cylinder);
     scene.emplace<StaticObject>(Transform{{0, -50, -70}, {}, {20, 20, 20}}, asset1);

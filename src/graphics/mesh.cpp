@@ -11,7 +11,7 @@ Mesh::Mesh(std::string filename, std::size_t scene_index): Mesh()
 	const aiScene* scene = aiImportFile(filename.c_str(), aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_CalcTangentSpace | aiProcess_JoinIdenticalVertices | aiProcess_TransformUVCoords | aiProcess_OptimizeMeshes | aiProcess_OptimizeGraph);
 	if(scene == nullptr)
     {
-        tz::debug::print("Error: Mesh import failed:\n", aiGetErrorString(), "\n");
+        tz::debug::print("Mesh::Mesh(filename, ...): Error: Mesh import failed:\n", aiGetErrorString(), "\n");
         return;
     }
     aiMesh* assimp_mesh = scene->mMeshes[scene_index];
@@ -462,7 +462,7 @@ std::vector<Mesh> tz::graphics::load_all_meshes(const std::string& filename)
 	const aiScene* scene = aiImportFile(filename.c_str(), aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_CalcTangentSpace | aiProcess_JoinIdenticalVertices | aiProcess_TransformUVCoords | aiProcess_OptimizeMeshes | aiProcess_OptimizeGraph);
 	if(scene == nullptr)
 	{
-		tz::debug::print("Error: Mesh import failed:\n", aiGetErrorString(), "\n");
+		tz::debug::print("tz::graphics::load_all_meshes(filename): Error: Mesh import failed:\n", aiGetErrorString(), "\n");
 		return {};
 	}
 	unsigned int num_meshes = scene->mNumMeshes;

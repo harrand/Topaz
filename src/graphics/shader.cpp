@@ -181,7 +181,7 @@ void Shader::remove_uniform(std::string_view uniform_location)
 {
 	if(this->uniform_counter == 0)
 	{
-		tz::debug::print("[Shader]: Tried to remove uniform location '", uniform_location, "' from Shader with handle ", this->program_handle, ", which does not currently have any attached uniforms.\n");
+		tz::debug::print("Shader::remove_uniform(...): Error: Tried to remove uniform location '", uniform_location, "' from Shader with handle ", this->program_handle, ", which does not currently have any attached uniforms.\n");
 		return;
 	}
 	for(std::size_t i = 0; i < this->uniform_counter; i++)
@@ -207,7 +207,7 @@ UniformImplicit* Shader::get_uniform(std::string_view uniform_location) const
 	for(std::size_t i = 0; i < this->uniform_counter; i++)
 		if(this->uniform_data[i]->get_uniform_location() == uniform_location)
 			return this->uniform_data[i].get();
-	tz::debug::print("[Shader]: Failed to find uniform location '", uniform_location, "' in Shader with handle ", this->program_handle, ".\n");
+	tz::debug::print("Shader::get_uniform(...): Failed to find uniform location '", uniform_location, "' in Shader with handle ", this->program_handle, ".\n");
 	return nullptr;
 }
 
@@ -260,7 +260,7 @@ void Shader::bind() const
 {
     if(!this->ready())
     {
-        tz::debug::print("Attempted to bind Shader that is not ready.\n");
+        tz::debug::print("Shader::bind(): Error: Attempted to bind Shader that is not ready.\n");
         return;
     }
 	glUseProgram(this->program_handle);
@@ -288,7 +288,7 @@ void Shader::check_shader_error(GLuint shader, GLuint flag, bool is_program, std
 	else
 		glGetShaderInfoLog(shader, sizeof(error), NULL, error);
 	if(success == GL_TRUE && std::string(error) != "")
-		tz::debug::print("Success, Log:\n", error, "\n");
+		tz::debug::print("Shader::check_shader_error(...): Success, Log:\n", error, "\n");
 	else if(success != GL_TRUE)
 		tz::debug::print(error_message, error, "\n");
 }
@@ -297,13 +297,13 @@ GLuint Shader::create_shader(std::string source, GLenum shader_type)
 {
 	if(source == "")
 	{
-		tz::debug::print("Shader Source for Type [", tz::util::shader_type_string(shader_type), "] was empty, skipping it.\n");
+		tz::debug::print("Shader::create_shader(...): Shader Source for Type [", tz::util::shader_type_string(shader_type), "] was empty, skipping it.\n");
 		return 0;
 	}
 	GLuint shader = glCreateShader(shader_type);
 	if(shader == 0)
 	{
-		tz::debug::print("Fatal Error: Shader Creation failed (Perhaps out of memory?).\n");
+		tz::debug::print("Shader::create_shader(...): Error: Shader Creation failed (Perhaps out of memory?).\n");
 		return 0;
 	}
 	

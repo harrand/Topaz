@@ -39,6 +39,11 @@ namespace tz::graphics
 		 * @param render_shader - The render-shader to notify of this change
 		 */
         inline void unbind_displacement_map(Shader& render_shader);
+        /**
+         * Unbind any existing specular-maps, and notify the render-shader that a specular-map isn't being used.
+         * @param render_shader - The render-shader to notify of this change
+         */
+        inline void unbind_specular_map(Shader& render_shader);
 		/**
 		 * Unbind any existing textures, normal-maps, parallax-maps and displacement-maps and notify the render-shader that none of them are being used.
 		 * @param render_shader - The render-shader to notify of these changes
@@ -72,6 +77,7 @@ namespace tz::graphics
 		NORMAL_MAP,
 		PARALLAX_MAP,
 		DISPLACEMENT_MAP,
+		SPECULAR_MAP
 	};
 
 	/// What type of mipmapping should be used? e.g nearest.
@@ -125,6 +131,7 @@ public:
 	 * @param foreground_colour - Colour of the text.
 	 */
 	Texture(const Font& font, const std::string& text, SDL_Color foreground_colour);
+	Texture(aiTexture* assimp_texture);
 	/**
 	 * Copy a Texture by filename. If the texture was not loaded from an external file, perform image-data copy instead.
 	 * @param copy - The Texture which data to copy from.
@@ -230,7 +237,6 @@ private:
 	 * @param initialise_handle - N/A
 	 */
 	Texture(int width, int height, bool initialise_handle, tz::graphics::TextureComponent texture_component = tz::graphics::TextureComponent::COLOUR_TEXTURE, bool gamma_corrected = false);
-	Texture(aiTexture* assimp_texture);
 	static void swap(Texture& lhs, Texture& rhs);
 };
 
@@ -309,6 +315,15 @@ public:
     virtual tz::graphics::TextureType get_texture_type() const override{return tz::graphics::TextureType::DISPLACEMENT_MAP;}
 private:
 	float displacement_factor;
+};
+
+class SpecularMap : public Texture
+{
+public:
+	SpecularMap(std::string filename);
+	SpecularMap(aiTexture* assimp_texture);
+	virtual void bind(Shader* shader, unsigned int id, const std::string& sampler_name = "specular_map_sampler") const override;
+	virtual tz::graphics::TextureType get_texture_type() const override{return tz::graphics::TextureType::SPECULAR_MAP;}
 };
 
 /**

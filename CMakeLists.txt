@@ -116,7 +116,7 @@ find_library(LIB_SDL2_TTF SDL2_ttf PATHS ${PROJECT_SOURCE_DIR}/lib)
 find_library(LIB_SDL2_MAIN SDL2main PATHS ${PROJECT_SOURCE_DIR}/lib)
 find_library(LIB_OPENGL OpenGL32)
 
-target_compile_definitions(topaz PRIVATE TOPAZ_DEBUG)
+target_compile_definitions(topaz PUBLIC TOPAZ_DEBUG)
 # public is for interface dependencies which we have, but no specific implementation dependencies that games wont need
 target_link_libraries(topaz PUBLIC ${LIB_SDL2} ${LIB_SDL2_MIXER} ${LIB_SDL2_TTF} ${LIB_SDL2_MAIN} ${LIB_ASSIMP} OpenGL32)
 
@@ -138,6 +138,5 @@ endforeach()
 
 # For the demo executable
 add_executable(topaz_demo src/test.cpp)
-target_compile_definitions(topaz_demo PRIVATE TOPAZ_DEBUG)
 target_include_directories(topaz_demo PRIVATE ${PROJECT_SOURCE_DIR}/src)
 target_link_libraries(topaz_demo topaz)

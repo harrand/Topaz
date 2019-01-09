@@ -21,7 +21,9 @@ namespace tz
 		constexpr std::size_t normal_map_sampler_id = 1;
 		constexpr std::size_t parallax_map_sampler_id = 2;
 		constexpr std::size_t displacement_map_sampler_id = 3;
-		constexpr std::size_t initial_extra_texture_sampler_id = 4;
+		constexpr std::size_t specular_map_sampler_id = 4;
+		// Allow a few more ids for extra assets which could appear in the future.
+		constexpr std::size_t initial_extra_texture_sampler_id = 16;
 
         constexpr char render_shader_model_uniform_name[] = "m";
         constexpr char render_shader_view_uniform_name[] = "v";

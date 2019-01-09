@@ -4,7 +4,7 @@
 AudioClip::AudioClip(std::string filename): channel(tz::audio::unused_channel), filename(std::move(filename)), audio_handle(Mix_LoadWAV(this->filename.c_str()))
 {
 	if(this->audio_handle == NULL)
-		tz::debug::print("AudioClip instantiation caused one or more errors from filename '", this->filename, "': ", Mix_GetError(), "\n");
+		tz::debug::print("AudioClip::AudioClip(filename): Error: AudioClip instantiation caused one or more errors from filename '", this->filename, "': ", Mix_GetError(), "\n");
 }
 
 AudioClip::AudioClip(const AudioClip& copy): AudioClip(copy.get_file_name()){}
@@ -68,7 +68,7 @@ Uint32 AudioClip::get_audio_length() const
 	int channels = 0;
 	if(!Mix_QuerySpec(&frequency, &format, &channels))
 	{
-		tz::debug::print("Attempt to query AudioClip yielded invalid query. Is tz::audio initialised?\n");
+		tz::debug::print("AudioClip::get_audio_length(): Error: Attempt to query AudioClip yielded invalid query. Is tz::audio initialised?\n");
 		return 0;
 	}
 	// bytes / sample_size == sample_points
@@ -125,7 +125,7 @@ void AudioSource::update(const Vector3F& source_position, const Camera& relative
 AudioMusic::AudioMusic(std::string filename): filename(std::move(filename)), paused(false), audio_handle(Mix_LoadMUS(this->filename.c_str()))
 {
 	if(this->audio_handle == NULL)
-		tz::debug::print("AudioClip instantiation caused one or more errors from filename '", filename, "'\n");
+		tz::debug::print("AudioMusic::AudioMusic(filename): AudioMusic instantiation caused one or more errors from filename '", filename, "'\n");
 }
 
 AudioMusic::AudioMusic(const AudioMusic& copy): AudioMusic(copy.get_file_name()){}
@@ -197,14 +197,14 @@ namespace tz::audio
 		constexpr Uint16 format = MIX_DEFAULT_FORMAT; // output sample 	format. MIX_DEFAULT_FORMAT is the same as AUDIO_S16SYS (signed 16-bit samples, in system byte order)
 		// initialise sdl_mixer
 		if(Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, format, channels, chunk_size) == -1)
-			tz::debug::print("SDL_Mixer initialisation returned an error: ", Mix_GetError(), "\n\tInitialisation of tz::audio failed.\n");
+			tz::debug::print("tz::audio::initialise(): Fatal Error: SDL_Mixer initialisation returned an error: ", Mix_GetError(), "\n\tInitialisation of tz::audio failed.\n");
 		else
-			tz::debug::print("Initialised tz::audio via SDL_Mixer.\n");
+			tz::debug::print("tz::audio::initialise(): Initialised tz::audio via SDL_Mixer.\n");
 	}
 
 	void terminate()
 	{
 		Mix_CloseAudio();
-		tz::debug::print("Terminated tz::audio via SDL_Mixer.\n");
+		tz::debug::print("tz::audio::terminate(): Terminated tz::audio via SDL_Mixer.\n");
 	}
 }

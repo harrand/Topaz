@@ -52,7 +52,7 @@ Texture::Texture(std::string filename, bool mipmapping, bool gamma_corrected): t
 	unsigned char* imgdata = this->load_texture(filename.c_str());
 	if(imgdata == nullptr)
 	{
-		tz::debug::print("Texture from the path: '", filename, "' could not be loaded.\n");
+		tz::debug::print("Texture::Texture(std::string, bool, bool): Error: Texture from the path: '", filename, "' could not be loaded.\n");
 	}
 
 	glGenTextures(1, &(this->texture_handle));
@@ -82,7 +82,7 @@ Texture::Texture(const Font& font, const std::string& text, SDL_Color foreground
 {
 	if(font.font_handle == NULL)
 	{
-		tz::debug::print("Texture attempted to load from an invalid font. Error: \"", TTF_GetError(), "\".\n");
+		tz::debug::print("Texture::Texture(Font, ...): Error: Texture attempted to load from an invalid font. Error: \"", TTF_GetError(), "\".\n");
 		this->bitmap = {};
 		return;
 	}
@@ -141,6 +141,38 @@ Texture::Texture(const Font& font, const std::string& text, SDL_Color foreground
 		}
 	}
 	SDL_FreeSurface(text_surface);
+}
+
+Texture::Texture(aiTexture* texture): Texture()
+{
+	Bitmap<PixelRGBA> bitmap;
+	if(texture->mHeight == 0 && texture->mWidth != 0)
+	{
+		// texture is compressed
+		//tz::debug::print("aiTexture format = ", texture->achFormatHint, "\n");
+		unsigned int compressed_data_size = texture->mWidth;
+		int comps;
+		stbi_uc* image_data = stbi_load_from_memory(reinterpret_cast<stbi_uc*>(texture->pcData), compressed_data_size, &bitmap.width, &bitmap.height, &comps, STBI_rgb_alpha);
+		bitmap.pixels.reserve(static_cast<std::size_t>(std::abs(bitmap.width * bitmap.height)));
+		// guaranteed to be a multiple of 4
+		for(std::size_t i = 3; i <= (4 * std::abs(bitmap.width * bitmap.height)); i += 4)
+		{
+			bitmap.pixels.emplace_back(PixelRGBA{image_data[i - 3], image_data[i - 2], image_data[i - 1], image_data[i]});
+		}
+		this->delete_texture(image_data);
+		tz::debug::print("Texture::Texture(aiTexture*): number of pixels in the ", bitmap.width, "x", bitmap.height, " assimp texture = ", bitmap.pixels.size(), "\n");
+	}
+	else
+	{
+		bitmap.width = texture->mWidth;
+		bitmap.height = texture->mHeight;
+		for (int i = 0; i < bitmap.width * bitmap.height; i++)
+		{
+			const aiTexel &texel = texture->pcData[i];
+			bitmap.pixels.emplace_back(texel.r, texel.g, texel.b, texel.a);
+		}
+	}
+	*this = Texture{bitmap};
 }
 
 Texture::Texture(const Texture& copy): Texture(copy.width, copy.height, copy.get_texture_component(), copy.gamma_corrected)
@@ -267,7 +299,7 @@ void Texture::bind_with_string(Shader* shader, unsigned int id, const std::strin
 {
 	if(id > 31)
 	{
-		tz::debug::print("FrameBuffer bind ID ", id, " is invalid. Must be between 1-31\n");
+		tz::debug::print("Texture::bind_with_string(...): Error: Texture bind ID ", id, " is invalid. Must be between 1-31\n");
 		return;
 	}
 	// this sets which texture we want to bind (id can be from 0 to 31)
@@ -275,41 +307,6 @@ void Texture::bind_with_string(Shader* shader, unsigned int id, const std::strin
 	glActiveTexture(GL_TEXTURE0 + id);
 	glBindTexture(GL_TEXTURE_2D, this->texture_handle);
 	shader->set_uniform<int>(sampler_uniform_name, id);
-}
-
-Texture::Texture(aiTexture* texture): Texture()
-{
-	Bitmap<PixelRGBA> bitmap;
-	if(texture->mHeight == 0 && texture->mWidth != 0)
-    {
-        // texture is compressed
-		//tz::debug::print("aiTexture format = ", texture->achFormatHint, "\n");
-        unsigned int compressed_data_size = texture->mWidth;
-        int comps;
-        stbi_uc* image_data = stbi_load_from_memory(reinterpret_cast<stbi_uc*>(texture->pcData), compressed_data_size, &bitmap.width, &bitmap.height, &comps, STBI_rgb_alpha);
-        bitmap.pixels.reserve(static_cast<std::size_t>(std::abs(bitmap.width * bitmap.height)));
-        // guaranteed to be a multiple of 4
-        for(std::size_t i = 3; i <= (4 * std::abs(bitmap.width * bitmap.height)); i += 4)
-        {
-			bitmap.pixels.emplace_back(PixelRGBA{image_data[i - 3], image_data[i - 2], image_data[i - 1], image_data[i]});
-		}
-        this->delete_texture(image_data);
-        tz::debug::print("number of pixels in the ", bitmap.width, "x", bitmap.height, " texture = ", bitmap.pixels.size());
-    }
-    else
-    {
-        bitmap.width = texture->mWidth;
-        bitmap.height = texture->mHeight;
-        for (int i = 0; i < bitmap.width * bitmap.height; i++)
-        {
-            const aiTexel &texel = texture->pcData[i];
-            bitmap.pixels.emplace_back(texel.r, texel.g, texel.b, texel.a);
-        }
-    }
-	tz::debug::print("bitmap size = ", bitmap.width, ", ", bitmap.height, "\n");
-	tz::debug::print("number of pixels = ", bitmap.pixels.size(), "\n");
-	*this = Texture{bitmap};
-	tz::debug::print("hello there\n");
 }
 
 void Texture::swap(Texture& lhs, Texture& rhs)
@@ -350,6 +347,15 @@ void DisplacementMap::bind(Shader* shader, unsigned int id, const std::string& s
     this->bind_with_string(shader, id, sampler_name);
 	shader->set_uniform<bool>("has_displacement_map", true);
     shader->set_uniform<float>("displacement_factor", this->displacement_factor);
+}
+
+SpecularMap::SpecularMap(std::string filename): Texture(filename, false, false){}
+SpecularMap::SpecularMap(aiTexture* assimp_texture): Texture(assimp_texture){}
+
+void SpecularMap::bind(Shader* shader, unsigned int id, const std::string& sampler_name) const
+{
+	this->bind_with_string(shader, id, sampler_name);
+	shader->set_uniform<bool>("has_specular_map", true);
 }
 
 CubeMap::CubeMap(std::string right_texture, std::string left_texture, std::string top_texture, std::string bottom_texture, std::string back_texture, std::string front_texture): right_texture(std::move(right_texture)), left_texture(std::move(left_texture)), top_texture(std::move(top_texture)), bottom_texture(std::move(bottom_texture)), back_texture(std::move(back_texture)), front_texture(std::move(front_texture))
@@ -394,7 +400,7 @@ void CubeMap::bind(Shader* shader, unsigned int id) const
 {
 	if(id > 31)
 	{
-		tz::debug::print("FrameBuffer bind ID ", id, " is invalid. Must be between 1-31.\n");
+		tz::debug::print("CubeMap::bind(...): Error: CubeMap bind ID ", id, " is invalid. Must be between 1-31.\n");
 		return;
 	}
 	// this sets which texture we want to bind (id can be from 0 to 31)

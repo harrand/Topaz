@@ -16,6 +16,7 @@ uniform sampler2D texture_sampler;
 uniform sampler2D normal_map_sampler;
 uniform sampler2D parallax_map_sampler;
 uniform sampler2D depth_map_sampler;
+uniform sampler2D specular_map_sampler;
 
 uniform sampler2D extra_texture_sampler0;
 uniform bool extra_texture0_exists = false;
@@ -36,6 +37,7 @@ uniform bool extra_texture7_exists = false;
 
 uniform bool has_normal_map = false;
 uniform bool has_parallax_map = false;
+uniform bool has_specular_map = false;
 
 uniform float parallax_multiplier;
 uniform float parallax_bias;
@@ -68,6 +70,15 @@ struct PointLight
 const uint num_point_lights = 8;
 uniform PointLight point_lights[num_point_lights];
 
+vec2 parallax_offset(vec2 texcoord)
+{
+    // MUST normalize this, or everything goes a bit weird.
+    vec3 eye_direction_tangentspace = normalize(tbn_matrix * eye_direction_cameraspace);
+    vec2 texcoord_offset = eye_direction_tangentspace.xy * (texture2D(parallax_map_sampler, texcoord).r * parallax_multiplier + parallax_bias);
+    texcoord_offset.y = -texcoord_offset.y;
+    return texcoord_modelspace + texcoord_offset;
+}
+
 vec3 diffuse_directional(DirectionalLight light, vec3 diffuse_colour, vec3 normal_cameraspace)
 {
     float cos_theta = clamp(dot(normal_cameraspace, light.direction), 0.0, 1.0);
@@ -93,7 +104,10 @@ vec3 specular_directional(DirectionalLight light, vec3 specular_colour, vec3 nor
     */
 
     //blinn-phong specular
-    const float shininess = 5;
+    const float default_shininess = 5;
+    float shininess = default_shininess;
+    if(has_specular_map)
+        shininess = texture(specular_map_sampler, parallax_offset(texcoord_modelspace)).r;
     vec3 halfway_direction = normalize(light.direction + eye_direction_cameraspace);
     float specular_component = pow(max(dot(normal_cameraspace, halfway_direction), 0.0), shininess);
     return specular_colour * light.colour * light.power * specular_component;
@@ -107,15 +121,6 @@ vec3 specular(PointLight light, vec3 specular_colour, vec3 normal_cameraspace, v
     directional.colour = light.colour;
     directional.power = light.power;
     return specular_directional(directional, specular_colour, normal_cameraspace) / pow(distance, 2);
-}
-
-vec2 parallax_offset(vec2 texcoord)
-{
-    // MUST normalize this, or everything goes a bit weird.
-    vec3 eye_direction_tangentspace = normalize(tbn_matrix * eye_direction_cameraspace);
-    vec2 texcoord_offset = eye_direction_tangentspace.xy * (texture2D(parallax_map_sampler, texcoord).r * parallax_multiplier + parallax_bias);
-    texcoord_offset.y = -texcoord_offset.y;
-    return texcoord_modelspace + texcoord_offset;
 }
 
 vec3 full_texture_colour(vec2 texcoord)

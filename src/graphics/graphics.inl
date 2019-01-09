@@ -6,22 +6,22 @@ namespace tz::graphics
 	{
 		if(!tz::graphics::has_context)
 		{
-			tz::debug::print("Initialisation of tz::graphics aborted: No OpenGL context has been setup yet.\n");
+			tz::debug::print("tz::graphics::initialise(): Error: Initialisation of tz::graphics aborted: No OpenGL context has been setup yet.\n");
 			return;
 		}
-		tz::debug::print("OpenGL context detected, initialising tz::graphics...\n");
+		tz::debug::print("tz::graphics::initialise(): OpenGL context detected, initialising tz::graphics...\n");
 		GLenum status = glewInit();
 		if(status != GLEW_OK)
 		{
-			tz::debug::print("Initialisation of GLEW failed.\n\tInitialisation of tz::graphics unsuccessful!\n");
+			tz::debug::print("tz::graphics::initialise(): Fatal Error: Initialisation of GLEW failed.\n\tInitialisation of tz::graphics unsuccessful!\n");
             //SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Topaz Error", (std::string("Topaz graphics module (tz::graphics) failed to initialise.\nError message:\n ") + std::string(SDL_GetError())).c_str(), NULL);
         }
 		else
-			tz::debug::print("Initialisation of GLEW successful.\n\tInitialised tz::graphics via GLEW (OpenGL).\n");
+			tz::debug::print("tz::graphics::initialise(): Initialisation of GLEW successful.\n\tInitialised tz::graphics via GLEW (OpenGL).\n");
 		if(TTF_Init() == 0)
-			tz::debug::print("Successfully initialised SDL2_ttf.\n");
+			tz::debug::print("tz::graphics::initialise(): Successfully initialised SDL2_ttf.\n");
 		else
-			tz::debug::print("Initialisation of SDL2_ttf failed.\n");
+			tz::debug::print("tz::graphics::initialise(): Fatal Error: Initialisation of SDL2_ttf failed.\n");
 		tz::graphics::initialised = true;
 		glEnable(GL_FRAMEBUFFER_SRGB);
 		glEnable(GL_MULTISAMPLE);
@@ -30,8 +30,8 @@ namespace tz::graphics
 	inline void terminate()
 	{
 		TTF_Quit();
-		tz::debug::print("Terminated SDL2_ttf\n");
-		tz::debug::print("Terminated tz::graphics via GLEW (OpenGL).\n");
+		tz::debug::print("tz::graphics::terminate(): Terminated SDL2_ttf\n");
+		tz::debug::print("tz::graphics::terminate(): Terminated tz::graphics via GLEW (OpenGL).\n");
 	}
 
 	inline void scene_render_mode()

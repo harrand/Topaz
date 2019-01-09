@@ -19,7 +19,7 @@ void StaticObject::render(Shader& render_shader, const Camera& camera, const Vec
 {
     if(!this->asset.valid_mesh() && !this->asset.valid_model())
     {
-        tz::debug::print("SceneObject attempted to be rendered with neither valid mesh nor model. Aborted this draw-call.\n");
+        tz::debug::print("StaticObject::render(...): Error: StaticObject attempted to be rendered with neither valid mesh nor model. Aborted this draw-call.\n");
         return;
     }
     render_shader.bind();
@@ -29,6 +29,7 @@ void StaticObject::render(Shader& render_shader, const Camera& camera, const Vec
     render_shader.set_uniform<Matrix4x4>(tz::graphics::render_shader_projection_uniform_name,
                                          camera.projection(viewport_dimensions.x, viewport_dimensions.y));
     tz::graphics::asset::unbind_all_extra_textures(render_shader);
+    tz::graphics::asset::unbind_specular_map(render_shader);
     if (this->asset.valid_texture())
         this->asset.texture->bind(&render_shader, tz::graphics::texture_sampler_id);
     else

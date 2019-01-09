@@ -90,7 +90,7 @@ bool FrameBuffer::has_colour(unsigned int attachment_index) const
 {
     if(attachment_index > tz::graphics::maximum_framebuffer_attachments)
     {
-        tz::debug::print("FrameBuffer attachment_index query '", attachment_index, "' does not harbour a valid GL_COLOR_ATTACHMENT. Implementation-defined hardware maximum limit is attachment", tz::graphics::maximum_framebuffer_attachments, "or below.\n");
+        tz::debug::print("FrameBuffer::has_colour(...): FrameBuffer attachment_index query '", attachment_index, "' does not harbour a valid GL_COLOR_ATTACHMENT. Implementation-defined hardware maximum limit is attachment", tz::graphics::maximum_framebuffer_attachments, "or below.\n");
         return false;
     }
     return this->get_attachments().find(GL_COLOR_ATTACHMENT0 + attachment_index) != this->get_attachments().cend();
@@ -116,7 +116,7 @@ void FrameBuffer::set_output_attachment(std::initializer_list<GLenum> attachment
     for(GLenum attachment : attachments)
     {
         if (this->attachments.find(attachment) == this->attachments.cend() && attachment != GL_NONE) {
-            tz::debug::print("FrameBuffer render attachment type has no corresponding attachment; setting to default (which is GL_COLOR_ATTACHMENT0).\n");
+            tz::debug::print("FrameBuffer::set_output_attachment(...): FrameBuffer render attachment type has no corresponding attachment; setting to default (which is GL_COLOR_ATTACHMENT0).\n");
             attachments = {GL_COLOR_ATTACHMENT0};
         }
     }

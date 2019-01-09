@@ -27,6 +27,13 @@ namespace tz::graphics::asset
 		render_shader.set_uniform<bool>("has_displacement_map", false);
 	}
 
+	inline void unbind_specular_map(Shader& render_shader)
+	{
+		glActiveTexture(GL_TEXTURE0 + tz::graphics::specular_map_sampler_id);
+		glBindTexture(GL_TEXTURE_2D, 0);
+		render_shader.set_uniform<bool>("has_specular_map", false);
+	}
+
 	inline void unbind_all_textures(Shader& render_shader)
 	{
 		unbind_texture();
