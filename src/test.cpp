@@ -20,6 +20,8 @@ int main()
 void init()
 {
     Window wnd("Topaz Development Window", 0, 30, 1920, 1080);
+    tz::debug::print("OpenGL debugging enabled: ", wnd.is_opengl_debugging_enabled(), "\n");
+    wnd.set_debug_callback();
     wnd.set_fullscreen(Window::FullscreenType::WINDOWED_MODE);
     wnd.set_swap_interval_type(Window::SwapIntervalType::VSYNC);
 
@@ -46,10 +48,13 @@ void init()
     Scene scene;
     scene.add_directional_light({{0, 1, 0}, {1, 1, 1}, 2.0f});
 
+    glDebugMessageInsert(GL_DEBUG_SOURCE_APPLICATION, GL_DEBUG_TYPE_ERROR, 0, GL_DEBUG_SEVERITY_MEDIUM, -1, "Hi there, this is a fake error. haha got you!");
+
     Texture red_texture{Bitmap<PixelRGBA>{{PixelRGBA{255, 0, 0, 255}}, 1, 1}};
     Texture green_texture{Bitmap<PixelRGBA>{{PixelRGBA{0, 255, 0, 255}}, 1, 1}};
     Texture blue_texture{Bitmap<PixelRGBA>{{PixelRGBA{0, 0, 255, 255}}, 1, 1}};
     AssetBuffer assets;
+    assets.emplace<Model>("darth_maul", "../res/runtime/models/maul/source/Darth Maul/Darth Maul.dae");
     assets.emplace<Model>("nanosuit", "../res/runtime/models/nanosuit.fbx");
     assets.emplace<Mesh>("cube_lq", "../res/runtime/models/cube.obj");
     assets.emplace<Mesh>("cube", "../res/runtime/models/cube_hd.obj");
@@ -69,6 +74,7 @@ void init()
     assets.emplace<DisplacementMap>("bricks_displacement", "../res/runtime/displacementmaps/bricks_displacement.png");
     assets.emplace<DisplacementMap>("noise_displacement", tz::graphics::height_map::generate_cosine_noise(256, 256, 100.0f));
     // render noisemap:
+    Asset maul(nullptr, nullptr, nullptr, nullptr, nullptr, assets.find<Model>("darth_maul"));
     Asset nanosuit(nullptr, nullptr, nullptr, nullptr, nullptr, assets.find<Model>("nanosuit"));
     Asset asset0(assets.find<Mesh>("cube"), assets.find_texture("bricks"), assets.find_normal_map("bricks_normal"), assets.find_parallax_map("bricks_parallax"), assets.find_displacement_map("bricks_displacement"));
     Asset noise_asset(assets.find<Mesh>("plane_hd"), assets.find_texture("bricks"), assets.find_normal_map("bricks_normal"), nullptr, assets.find_displacement_map("noise_displacement"));
@@ -148,10 +154,11 @@ void init()
     }
     scene.emplace<InstancedStaticObject>(floor_objects);
     //scene.emplace<InstancedDynamicObject>(falling_objects);
-    // add the nanosuit object
-    tz::debug::print("Does nanosuit have a valid model? ", nanosuit.valid_model(), "\n");
-    StaticObject& nanosuit_object = scene.emplace<StaticObject>(Transform{{0, -135, 100}, {}, {5, 5, 5}}, nanosuit);
-    //scene.add_point_light(PointLight{{0, -100, 125}, {1, 0, 1}, 1000.0f});
+    // add the model objects
+    tz::debug::print("Does maul have a valid model? ", maul.valid_model(), "\n");
+    StaticObject& darth_maul = scene.emplace<StaticObject>(Transform{{0, -135, 100}, {}, {50, 50, 50}}, maul);
+    scene.emplace<StaticObject>(Transform{{50, -135, 100}, {}, {7, 7, 7}}, nanosuit);
+    //scene.add_point_light(PointLight{{0, 0, 125}, {1, 1, 1}, 2000.0f});
     scene.emplace<StaticObject>(Transform{{0, 0, 0}, {}, {15, 15, 15}}, wooden_sphere);
     scene.emplace<StaticObject>(Transform{{100, 0, 0}, {}, {200, 200, 200}}, wooden_cylinder);
     scene.emplace<StaticObject>(Transform{{0, -50, -70}, {}, {20, 20, 20}}, asset1);
@@ -297,6 +304,6 @@ void init()
             example_sprite.position_screenspace.x -= 3;
         if(key_listener.is_key_pressed("Right"))
             example_sprite.position_screenspace.x += 3;
-        //nanosuit_object.transform.rotation.y += 0.01f;
+        darth_maul.transform.rotation.y += 0.01f;
     }
 }

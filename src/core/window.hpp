@@ -15,7 +15,93 @@ namespace tz
     constexpr auto centred_window = SDL_WINDOWPOS_CENTERED;
     namespace gui
     {
-        enum class MessageBoxType : Uint32{ERROR = SDL_MESSAGEBOX_ERROR, WARNING = SDL_MESSAGEBOX_WARNING, INFO = SDL_MESSAGEBOX_INFORMATION};
+        enum class MessageBoxType : Uint32
+        {
+            ERROR = SDL_MESSAGEBOX_ERROR, WARNING = SDL_MESSAGEBOX_WARNING, INFO = SDL_MESSAGEBOX_INFORMATION
+        };
+    }
+    namespace debug
+    {
+        inline void default_ogl_debug_output(GLenum source, GLenum type, GLuint id, GLenum severity, [[maybe_unused]] GLsizei length, const GLchar *message, [[maybe_unused]] const void *user_parameters)
+        {
+            // ignore non-significant error/warning codes
+            if (id == 131169 || id == 131185 || id == 131218 || id == 131204) return;
+
+            std::cout << "---------------" << std::endl;
+            std::cout << "Debug message (" << id << "): " << message << std::endl;
+
+            switch (source)
+            {
+                case GL_DEBUG_SOURCE_API:
+                    std::cout << "Source: API";
+                    break;
+                case GL_DEBUG_SOURCE_WINDOW_SYSTEM:
+                    std::cout << "Source: Window System";
+                    break;
+                case GL_DEBUG_SOURCE_SHADER_COMPILER:
+                    std::cout << "Source: Shader Compiler";
+                    break;
+                case GL_DEBUG_SOURCE_THIRD_PARTY:
+                    std::cout << "Source: Third Party";
+                    break;
+                case GL_DEBUG_SOURCE_APPLICATION:
+                    std::cout << "Source: Application";
+                    break;
+                case GL_DEBUG_SOURCE_OTHER:
+                    std::cout << "Source: Other";
+                    break;
+            }
+            std::cout << std::endl;
+
+            switch (type)
+            {
+                case GL_DEBUG_TYPE_ERROR:
+                    std::cout << "Type: Error";
+                    break;
+                case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR:
+                    std::cout << "Type: Deprecated Behaviour";
+                    break;
+                case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:
+                    std::cout << "Type: Undefined Behaviour";
+                    break;
+                case GL_DEBUG_TYPE_PORTABILITY:
+                    std::cout << "Type: Portability";
+                    break;
+                case GL_DEBUG_TYPE_PERFORMANCE:
+                    std::cout << "Type: Performance";
+                    break;
+                case GL_DEBUG_TYPE_MARKER:
+                    std::cout << "Type: Marker";
+                    break;
+                case GL_DEBUG_TYPE_PUSH_GROUP:
+                    std::cout << "Type: Push Group";
+                    break;
+                case GL_DEBUG_TYPE_POP_GROUP:
+                    std::cout << "Type: Pop Group";
+                    break;
+                case GL_DEBUG_TYPE_OTHER:
+                    std::cout << "Type: Other";
+                    break;
+            }
+            std::cout << std::endl;
+            switch (severity)
+            {
+                case GL_DEBUG_SEVERITY_HIGH:
+                    std::cout << "Severity: high";
+                    break;
+                case GL_DEBUG_SEVERITY_MEDIUM:
+                    std::cout << "Severity: medium";
+                    break;
+                case GL_DEBUG_SEVERITY_LOW:
+                    std::cout << "Severity: low";
+                    break;
+                case GL_DEBUG_SEVERITY_NOTIFICATION:
+                    std::cout << "Severity: notification";
+                    break;
+            }
+            std::cout << std::endl;
+            std::cout << std::endl;
+        }
     }
 }
 
@@ -26,6 +112,8 @@ class KeyListener;
 class Window
 {
 public:
+    //using OpenGLDebugCallbackFunction = std::function<void(GLenum, GLenum, GLuint, GLenum, GLsizei, const GLchar*, void*)>;
+    typedef void (*OpenGLDebugCallbackFunction)(GLenum, GLenum, GLuint, GLenum, GLsizei, const GLchar*, const void*);
     friend class MessageBox;
     /**
      * Constructs a Window from all parameters.
@@ -133,6 +221,16 @@ public:
      * @param type - The SwapIntervalType the Window should use
      */
     void set_swap_interval_type(SwapIntervalType type) const;
+    /**
+     * Get whether this window has an OpenGL debug context.
+     * This should be true if TOPAZ_DEBUG is defined.
+     * @return - True if the OpenGL context is a debug context. False otherwise
+     */
+    bool is_opengl_debugging_enabled() const;
+    /**
+     * Set
+     */
+    void set_debug_callback(Window::OpenGLDebugCallbackFunction debug_callback = tz::debug::default_ogl_debug_output) const;
     /**
      * Get the title of this Window.
      * @return - Title of the Window

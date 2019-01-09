@@ -261,9 +261,7 @@ InstancedMesh::InstancedMesh(const Mesh& uninstanced_copy, std::vector<Vector3F>
 	glGenBuffers(1, &this->model_matrix_x_vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, this->model_matrix_x_vbo);
 	glBufferData(GL_ARRAY_BUFFER, xs.size() * generic::sizeof_element(xs), xs.data(), usage);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glEnableVertexAttribArray(4);
-	glBindBuffer(GL_ARRAY_BUFFER, this->model_matrix_x_vbo);
 	glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), NULL);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glVertexAttribDivisor(4, 1);
@@ -271,8 +269,6 @@ InstancedMesh::InstancedMesh(const Mesh& uninstanced_copy, std::vector<Vector3F>
 	glGenBuffers(1, &this->model_matrix_y_vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, this->model_matrix_y_vbo);
 	glBufferData(GL_ARRAY_BUFFER, ys.size() * generic::sizeof_element(ys), ys.data(), usage);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindBuffer(GL_ARRAY_BUFFER, this->model_matrix_y_vbo);
 	glEnableVertexAttribArray(5);
 	glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), NULL);
 	glVertexAttribDivisor(5, 1);
@@ -281,8 +277,6 @@ InstancedMesh::InstancedMesh(const Mesh& uninstanced_copy, std::vector<Vector3F>
 	glGenBuffers(1, &this->model_matrix_z_vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, this->model_matrix_z_vbo);
 	glBufferData(GL_ARRAY_BUFFER, zs.size() * generic::sizeof_element(zs), zs.data(), usage);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindBuffer(GL_ARRAY_BUFFER, this->model_matrix_z_vbo);
 	glEnableVertexAttribArray(6);
 	glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), NULL);
 	glVertexAttribDivisor(6, 1);
@@ -291,8 +285,6 @@ InstancedMesh::InstancedMesh(const Mesh& uninstanced_copy, std::vector<Vector3F>
 	glGenBuffers(1, &this->model_matrix_w_vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, this->model_matrix_w_vbo);
 	glBufferData(GL_ARRAY_BUFFER, ws.size() * generic::sizeof_element(ws), ws.data(), usage);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindBuffer(GL_ARRAY_BUFFER, this->model_matrix_w_vbo);
 	glEnableVertexAttribArray(7);
 	glVertexAttribPointer(7, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), NULL);
 	glVertexAttribDivisor(7, 1);

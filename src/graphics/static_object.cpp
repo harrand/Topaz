@@ -53,7 +53,7 @@ void StaticObject::render(Shader& render_shader, const Camera& camera, const Vec
     else
     {
         Model* model = this->asset.model;
-        model->render(&render_shader);
+        model->render(render_shader);
     }
 }
 

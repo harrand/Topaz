@@ -10,6 +10,11 @@
 
 namespace tz
 {
+    #ifdef TOPAZ_DEBUG
+        constexpr bool is_debug_mode = true;
+    #else
+        constexpr bool is_debug_mode = false;
+    #endif
     /**
      * Initialise all Topaz modules. tz::graphics is only partially initialised and won't fully initialise until the first Window is instantiated.
      * @param print_progress - Whether to print out initialisation progress or not

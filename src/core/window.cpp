@@ -17,6 +17,8 @@ Window::Window(std::string title, const Vector2I& position_pixel_space, const Ve
     // msaa, one buffer, 4 samples
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 4);
+    // if we're debugging, then enable debug output for opengl
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
 
     this->sdl_window = SDL_CreateWindow((this->title).c_str(), this->position_pixel_space.x, this->position_pixel_space.y, this->dimensions_pixel_space.x, this->dimensions_pixel_space.y, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
     this->sdl_gl_context = SDL_GL_CreateContext(this->sdl_window);
@@ -178,6 +180,21 @@ Window::SwapIntervalType Window::get_swap_interval_type() const
 void Window::set_swap_interval_type(Window::SwapIntervalType type) const
 {
     SDL_GL_SetSwapInterval(static_cast<int>(type));
+}
+
+bool Window::is_opengl_debugging_enabled() const
+{
+    GLint flags;
+    glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
+    return flags & GL_CONTEXT_FLAG_DEBUG_BIT;
+}
+
+void Window::set_debug_callback(Window::OpenGLDebugCallbackFunction debug_callback) const
+{
+    glEnable(GL_DEBUG_OUTPUT);
+    glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+    glDebugMessageCallback(debug_callback, nullptr);
+    glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
 }
 
 std::string Window::get_title() const

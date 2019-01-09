@@ -282,14 +282,17 @@ Texture::Texture(aiTexture* texture): Texture()
 	Bitmap<PixelRGBA> bitmap;
 	if(texture->mHeight == 0 && texture->mWidth != 0)
     {
-        // texture is compressed JPG.
+        // texture is compressed
+		//tz::debug::print("aiTexture format = ", texture->achFormatHint, "\n");
         unsigned int compressed_data_size = texture->mWidth;
         int comps;
-        stbi_uc* image_data = stbi_load_from_memory(reinterpret_cast<stbi_uc*>(texture->pcData), compressed_data_size, &bitmap.width, &bitmap.height, &comps, 3);
+        stbi_uc* image_data = stbi_load_from_memory(reinterpret_cast<stbi_uc*>(texture->pcData), compressed_data_size, &bitmap.width, &bitmap.height, &comps, STBI_rgb_alpha);
         bitmap.pixels.reserve(static_cast<std::size_t>(std::abs(bitmap.width * bitmap.height)));
-        // guaranteed to be a multiple of 3
-        for(std::size_t i = 2; i <= 3 * std::abs(bitmap.width * bitmap.height) - 2; i += 3)
-            bitmap.pixels.emplace_back(PixelRGBA{image_data[i - 2], image_data[i - 1], image_data[i], 255});
+        // guaranteed to be a multiple of 4
+        for(std::size_t i = 3; i <= (4 * std::abs(bitmap.width * bitmap.height)); i += 4)
+        {
+			bitmap.pixels.emplace_back(PixelRGBA{image_data[i - 3], image_data[i - 2], image_data[i - 1], image_data[i]});
+		}
         this->delete_texture(image_data);
         tz::debug::print("number of pixels in the ", bitmap.width, "x", bitmap.height, " texture = ", bitmap.pixels.size());
     }

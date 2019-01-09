@@ -9,7 +9,9 @@
 
 Model::Model(std::string filename): meshes(), material_textures()
 {
-    const aiScene* scene = aiImportFile(filename.c_str(), aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_CalcTangentSpace | aiProcess_JoinIdenticalVertices | aiProcess_TransformUVCoords | aiProcess_OptimizeMeshes | aiProcess_OptimizeGraph | aiProcess_FlipUVs);
+    /// Assimp imports the scene...
+    const aiScene* scene = aiImportFile(filename.c_str(), aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_CalcTangentSpace | aiProcess_TransformUVCoords | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices | aiProcess_RemoveRedundantMaterials | aiProcess_FindInvalidData | aiProcess_OptimizeMeshes | aiProcess_OptimizeGraph);
+    /// Get the directory containing the model file. This is used later.
     std::string directory = filename.substr(0, filename.find_last_of('/'));
     if(scene == nullptr)
     {
@@ -28,24 +30,42 @@ Model::Model(std::string filename): meshes(), material_textures()
         aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
         std::vector<std::string> diffuse_maps, specular_maps;
         diffuse_maps = Model::load_material_texture_references(material, aiTextureType_DIFFUSE);
+        // TODO: Implement SpecularMap before re-adding this feature to Model.
         //specular_maps = Model::load_material_texture_references(material, aiTextureType_SPECULAR);
+        auto is_embedded = [&scene](const std::string& texture_reference)->bool
+        {
+            return tz::utility::string::begins_with(texture_reference, "*");
+        };
+
         auto get_texture_id = [&scene](const std::string& texture_reference)->std::size_t
                 {
                     std::string removed_asterisk = tz::utility::string::replace_all_char(texture_reference, '*', "");
-                    tz::debug::print("assimp scene texture id found = \"", removed_asterisk, "\"\n");
                     std::size_t assimp_texture_id = tz::utility::generic::cast::from_string<std::size_t>(removed_asterisk);
                     return assimp_texture_id;
                 };
         for(const std::string& reference : diffuse_maps)
         {
-            aiTexture* embedded_texture = scene->mTextures[get_texture_id(reference)];
-            this->material_textures.insert({i, Texture{embedded_texture}});
+            if(!is_embedded(reference))
+            {
+                std::string appended_reference = directory + "/" + reference;
+                tz::debug::print("Extracting model texture by file: \"", appended_reference, "\"\n");
+                this->material_textures.insert({i, Texture{appended_reference}});
+            }
+            else
+            {
+                std::size_t mat_id = get_texture_id(reference);
+                tz::debug::print("Extracting model texture by embedded material: ", mat_id, "\n");
+                aiTexture *embedded_texture = scene->mTextures[mat_id];
+                this->material_textures.insert({i, Texture{embedded_texture}});
+            }
         }
+        /*
         for(const std::string& reference : specular_maps)
         {
             aiTexture* embedded_texture = scene->mTextures[get_texture_id(reference)];
             this->material_textures.insert({i, Texture{embedded_texture}});
         }
+         */
         /*
         for(const std::string& reference : diffuse_maps)
         {
@@ -71,15 +91,44 @@ std::size_t Model::get_number_of_meshes() const
     return this->meshes.size();
 }
 
-void Model::render(Shader* shader, GLenum mode) const
+const Mesh* Model::get_mesh_by_id(std::size_t mesh_id) const
 {
-    bool patches = shader->has_tessellation_control_shader();
+    try
+    {
+        return &this->meshes.at(mesh_id);
+    }catch(const std::out_of_range&){return nullptr;}
+}
+
+std::size_t Model::get_number_of_textures() const
+{
+    return this->material_textures.size();
+}
+
+std::vector<std::reference_wrapper<const Texture>> Model::get_textures_in_mesh(std::size_t mesh_id) const
+{
+    std::vector<std::reference_wrapper<const Texture>> texture_refs;
+    auto range = this->material_textures.equal_range(mesh_id);
+    for(auto i = range.first; i != range.second; i++)
+        texture_refs.push_back(std::cref(i->second));
+    return texture_refs;
+}
+
+void Model::render(Shader& shader, GLenum mode) const
+{
+    bool patches = shader.has_tessellation_control_shader();
     for(unsigned int i = 0; i < this->meshes.size(); i++)
     {
         auto range = this->material_textures.equal_range(i);
         std::size_t texture_id = tz::graphics::texture_sampler_id;
         for(auto i = range.first; i != range.second; i++)
         {
+            /* topaz shader attribs are *not* sequential. it's something a little like this:
+             * 0 = texture_sampler
+             * ...
+             * 4 = extra_texture_sampler0
+             * 5 = extra_texture_sampler1
+             * and so on...
+             */
             auto sampler_name = [](std::size_t id) -> std::string
             {
                 if(id == tz::graphics::texture_sampler_id)
@@ -96,7 +145,9 @@ void Model::render(Shader* shader, GLenum mode) const
                 }
             };
 
-            i->second.bind(shader, texture_id, sampler_name(texture_id));
+            // bind each texture in the model
+            i->second.bind(&shader, texture_id, sampler_name(texture_id));
+            // ensure texture_id is updated properly, because as stated previous, topaz sampler ids are NOT sequential
             if(texture_id == tz::graphics::texture_sampler_id)
                 texture_id = tz::graphics::initial_extra_texture_sampler_id;
             else
@@ -104,7 +155,7 @@ void Model::render(Shader* shader, GLenum mode) const
                 std::size_t diff = texture_id - tz::graphics::initial_extra_texture_sampler_id;
                 std::string uniform_name = std::string("extra_texture") + std::to_string(diff) + "_exists";
                 // TODO: Enable Specular Maps
-                shader->set_uniform<bool>(uniform_name, false);
+                shader.set_uniform<bool>(uniform_name, true);
                 texture_id++;
             }
         }
