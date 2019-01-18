@@ -57,6 +57,7 @@ void init()
     AssetBuffer assets;
     assets.emplace<Model>("darth_maul", "../res/runtime/models/maul/source/Darth Maul/Darth Maul.dae");
     assets.emplace<Model>("nanosuit", "../res/runtime/models/nanosuit.fbx");
+    assets.emplace<Model>("illidan", "../res/runtime/models/illidan/IllidanLegion.obj");
     assets.emplace<Mesh>("cube_lq", "../res/runtime/models/cube.obj");
     assets.emplace<Mesh>("cube", "../res/runtime/models/cube_hd.obj");
     assets.emplace<Mesh>("monkey", "../res/runtime/models/monkeyhead.obj");
@@ -77,6 +78,7 @@ void init()
     // render noisemap:
     Asset maul(nullptr, nullptr, nullptr, nullptr, nullptr, assets.find<Model>("darth_maul"));
     Asset nanosuit(nullptr, nullptr, nullptr, nullptr, nullptr, assets.find<Model>("nanosuit"));
+    Asset illidan(nullptr, nullptr, nullptr, nullptr, nullptr, assets.find<Model>("illidan"));
     Asset asset0(assets.find<Mesh>("cube"), assets.find_texture("bricks"), assets.find_normal_map("bricks_normal"), assets.find_parallax_map("bricks_parallax"), assets.find_displacement_map("bricks_displacement"));
     Asset noise_asset(assets.find<Mesh>("plane_hd"), assets.find_texture("bricks"), assets.find_normal_map("bricks_normal"), nullptr, assets.find_displacement_map("noise_displacement"));
     Asset asset1(assets.find_mesh("cube_lq"), assets.find_texture("bricks"), assets.find_normal_map("bricks_normal"), assets.find_parallax_map("bricks_parallax"));
@@ -142,10 +144,10 @@ void init()
         const Vector3F scale{20, 1, 20};
         const Vector3F offset{scale * dimensions};
         floor_objects.emplace_back(Transform{Vector3F{(scale.x * row * 2), -100, (scale.z * column * 2)} - offset,
-                                       {},
-                                       scale}, stone_floor);
+                                             {},
+                                             scale}, stone_floor);
         DynamicObject& object = falling_objects.emplace_back(1.0f, Transform{Vector3F{(scale.x * row * 2), -50, (scale.z * column * 2)} - offset,
-                                                     {}, scale}, stone_floor);
+                                                                             {}, scale}, stone_floor);
         //float sine_id = std::abs(std::sin(i / 10));
         float pi = tz::utility::numeric::consts::pi;
         object.add_force({0, -400.0f, 0});
@@ -159,6 +161,7 @@ void init()
     tz::debug::print("Does maul have a valid model? ", maul.valid_model(), "\n");
     StaticObject& darth_maul = scene.emplace<StaticObject>(Transform{{0, -135, 100}, {}, {50, 50, 50}}, maul);
     scene.emplace<StaticObject>(Transform{{50, -135, 100}, {}, {7, 7, 7}}, nanosuit);
+    scene.emplace<StaticObject>(Transform{{-75, -135, 100}, {}, {15, 15, 15}}, illidan);
     scene.add_point_light(PointLight{{0, 0, 125}, {1, 1, 1}, 9000.0f});
     scene.emplace<StaticObject>(Transform{{0, 0, 0}, {}, {15, 15, 15}}, wooden_sphere);
     scene.emplace<StaticObject>(Transform{{100, 0, 0}, {}, {200, 200, 200}}, wooden_cylinder);

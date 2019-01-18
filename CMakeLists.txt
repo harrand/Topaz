@@ -66,6 +66,8 @@ add_library(topaz SHARED
         src/graphics/gui/gui.cpp
         src/graphics/gui/gui.hpp
         src/graphics/gui/gui.inl
+        src/graphics/model.cpp
+        src/graphics/model.hpp
         src/graphics/sprite.cpp
         src/graphics/sprite.hpp
         src/graphics/gui/textfield.cpp
@@ -103,8 +105,7 @@ add_library(topaz SHARED
         src/utility/string.hpp
         src/utility/time.cpp
         src/utility/time.hpp
-        src/utility/time.inl
-        src/graphics/model.cpp src/graphics/model.hpp)
+        src/utility/time.inl)
 # here we express in terms of modules, not just build flags
 target_include_directories(topaz PUBLIC ${PROJECT_SOURCE_DIR}/inc)
 target_include_directories(topaz PRIVATE ${PROJECT_SOURCE_DIR}/src)
