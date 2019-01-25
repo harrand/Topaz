@@ -29,6 +29,37 @@ AABB tz::physics::bound_aabb(const Mesh& mesh)
 	return {Vector3F(min_x, min_y, min_z), Vector3F(max_x, max_y, max_z)};
 }
 
+std::optional<AABB> tz::physics::bound_aabb(const Model& model)
+{
+	if(model.get_number_of_meshes() == 0)
+		return {};
+	AABB box = tz::physics::bound_aabb(*model.get_mesh_by_id(0));
+	for(std::size_t i = 0; i < model.get_number_of_meshes(); i++)
+	{
+		box.expand_to(tz::physics::bound_aabb(*model.get_mesh_by_id(i)));
+	}
+	return {box};
+}
+
+std::optional<AABB> tz::physics::bound_aabb(const Asset& asset)
+{
+    if(asset.valid_mesh())
+    {
+        AABB mesh_box = tz::physics::bound_aabb(*asset.mesh);
+        if(asset.valid_model())
+        {
+            std::optional<AABB> box = tz::physics::bound_aabb(*asset.model);
+            if(box.has_value())
+                mesh_box.expand_to(box.value());
+        }
+        return {mesh_box};
+    }
+    else if(asset.valid_model())
+        return tz::physics::bound_aabb(*asset.model);
+    else
+        return std::nullopt;
+}
+
 std::ostream& operator<<(std::ostream& stream, const tz::physics::Axis2D& axis)
 {
 	using namespace tz::physics;

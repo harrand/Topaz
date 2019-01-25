@@ -122,8 +122,8 @@ AABB Scene::get_boundary(std::optional<std::pair<const Camera&, Vector2I>> frust
         if(!frustum_culling.has_value())
             return true;
         BoundingPyramidalFrustum camera_frustum(frustum_culling.value().first, frustum_culling.value().second.x / frustum_culling.value().second.y);
-        AABB object_box = tz::physics::bound_aabb(*(object.get_asset().mesh));
-        return camera_frustum.contains(object_box) || tz::graphics::is_instanced(object.get_asset().mesh);
+        std::optional<AABB> object_box = tz::physics::bound_aabb(object.get_asset());
+        return (object_box.has_value() && camera_frustum.contains(object_box.value())) || tz::graphics::is_instanced(object.get_asset().mesh);
     };
     auto objects = this->get_static_objects();
     if(objects.size() == 0)

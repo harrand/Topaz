@@ -1,7 +1,7 @@
 #ifndef PHYSICS_HPP
 #define PHYSICS_HPP
 #include "physics/boundary.hpp"
-#include "graphics/mesh.hpp"
+#include "graphics/asset.hpp"
 
 /// Pre-define the Object class.
 class Object;
@@ -28,6 +28,18 @@ namespace tz::physics
 	 * The AABB is bound in model-space.
 	 */
 	AABB bound_aabb(const Mesh& mesh);
+    /**
+     * Given a Model, creates a well-fitted axis-aligned-bounding-box around all vertices of all meshes in the model.
+     * @param model - The model to bound
+     * @return - AABB containing the model, in model-space if the model contained at least one mesh. If no meshes were contained, nullopt is returned
+     */
+	std::optional<AABB> bound_aabb(const Model& model);
+    /**
+     * Given an asset, creates a well-fitted AABB around any meshes or models that the asset contains.
+     * @param asset - The asset to bound
+     * @return - AABB containing all vertices of any mesh/model in the asset. If none exist/contain no vertices, nullopt is returned
+     */
+    std::optional<AABB> bound_aabb(const Asset& asset);
 	/**
 	 * Given multiple Objects, creates a single well-fitted axis-aligned-bounding-box as tightly as possible around all the objects.
 	 * Perfect to be used on the result of a tz::graphics::batch(...) call to bound the entirety of the batch.

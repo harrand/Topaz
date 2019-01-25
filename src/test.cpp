@@ -1,6 +1,5 @@
 #include "core/listener.hpp"
 #include "physics/physics.hpp"
-#include "graphics/asset.hpp"
 #include "graphics/gui/button.hpp"
 #include "core/scene.hpp"
 #include "graphics/skybox.hpp"
@@ -58,6 +57,7 @@ void init()
     assets.emplace<Model>("darth_maul", "../res/runtime/models/maul/source/Darth Maul/Darth Maul.dae");
     assets.emplace<Model>("nanosuit", "../res/runtime/models/nanosuit.fbx");
     assets.emplace<Model>("illidan", "../res/runtime/models/illidan/IllidanLegion.obj");
+    assets.emplace<Model>("deathwing", "../res/runtime/models/deathwing/Deathwing.fbx");
     assets.emplace<Mesh>("cube_lq", "../res/runtime/models/cube.obj");
     assets.emplace<Mesh>("cube", "../res/runtime/models/cube_hd.obj");
     assets.emplace<Mesh>("monkey", "../res/runtime/models/monkeyhead.obj");
@@ -79,6 +79,7 @@ void init()
     Asset maul(nullptr, nullptr, nullptr, nullptr, nullptr, assets.find<Model>("darth_maul"));
     Asset nanosuit(nullptr, nullptr, nullptr, nullptr, nullptr, assets.find<Model>("nanosuit"));
     Asset illidan(nullptr, nullptr, nullptr, nullptr, nullptr, assets.find<Model>("illidan"));
+    Asset deathwing_asset(nullptr, nullptr, nullptr, nullptr, nullptr, assets.find<Model>("deathwing"));
     Asset asset0(assets.find<Mesh>("cube"), assets.find_texture("bricks"), assets.find_normal_map("bricks_normal"), assets.find_parallax_map("bricks_parallax"), assets.find_displacement_map("bricks_displacement"));
     Asset noise_asset(assets.find<Mesh>("plane_hd"), assets.find_texture("bricks"), assets.find_normal_map("bricks_normal"), nullptr, assets.find_displacement_map("noise_displacement"));
     Asset asset1(assets.find_mesh("cube_lq"), assets.find_texture("bricks"), assets.find_normal_map("bricks_normal"), assets.find_parallax_map("bricks_parallax"));
@@ -159,9 +160,10 @@ void init()
     //scene.emplace<InstancedDynamicObject>(falling_objects);
     // add the model objects
     tz::debug::print("Does maul have a valid model? ", maul.valid_model(), "\n");
-    StaticObject& darth_maul = scene.emplace<StaticObject>(Transform{{0, -135, 100}, {}, {50, 50, 50}}, maul);
+    scene.emplace<StaticObject>(Transform{{0, -135, 100}, {}, {50, 50, 50}}, maul);
     scene.emplace<StaticObject>(Transform{{50, -135, 100}, {}, {7, 7, 7}}, nanosuit);
     scene.emplace<StaticObject>(Transform{{-75, -135, 100}, {}, {15, 15, 15}}, illidan);
+    StaticObject& deathwing = scene.emplace<StaticObject>(Transform{{0, 200, 0}, {0, 0, 0}, {50, 50, 50}}, deathwing_asset);
     scene.add_point_light(PointLight{{0, 0, 125}, {1, 1, 1}, 9000.0f});
     scene.emplace<StaticObject>(Transform{{0, 0, 0}, {}, {15, 15, 15}}, wooden_sphere);
     scene.emplace<StaticObject>(Transform{{100, 0, 0}, {}, {200, 200, 200}}, wooden_cylinder);
@@ -186,7 +188,7 @@ void init()
     cluster.emplace_sphere(BoundaryCluster::ClusterIntegration::INTERSECTION, Vector3F{}, 50.0f);
     cluster.emplace_box(BoundaryCluster::ClusterIntegration::UNION, Vector3F{}, Vector3F{100.0f, 100.0f, 100.0f});
 
-    std::cout << "does the cluster include point [50, 50, 50]: " << std::boolalpha << cluster.intersects(Vector3F{50.0f, 50.0f, 50.0f}) << "\n";*/
+    tz::debug::print("does the cluster include point [50, 50, 50]: ", std::boolalpha, cluster.intersects(Vector3F{50.0f, 50.0f, 50.0f}), "\n")*/
 
     long long int time = tz::utility::time::now();
     Timer second_timer, tick_timer;
@@ -200,7 +202,7 @@ void init()
         // play with the HDR exposure and gamma.
         hdr_gui_shader.set_uniform<float>("exposure", 0.4f);
         hdr_gui_shader.set_uniform<float>("gamma", 0.5f);
-        //scene.set_point_light(0, {{0, 0, 0}, {0, progress.get_progress(), 1 - progress.get_progress()}, 50000000.0f});
+    	//scene.set_point_light(0, {{0, 0, 0}, {0, progress.get_progress(), 1 - progress.get_progress()}, 50000000.0f});
         profiler.begin_frame();
         second_timer.update();
         tick_timer.update();
@@ -301,13 +303,11 @@ void init()
         if(key_listener.is_key_pressed("D"))
             camera.position += camera.right() * delta_time * speed;
         if(key_listener.is_key_pressed("Up"))
-            example_sprite.position_screenspace.y += 3;
-        if(key_listener.is_key_pressed("Down"))
             example_sprite.position_screenspace.y -= 3;
         if(key_listener.is_key_pressed("Left"))
             example_sprite.position_screenspace.x -= 3;
         if(key_listener.is_key_pressed("Right"))
             example_sprite.position_screenspace.x += 3;
-        darth_maul.transform.rotation.y += 0.01f;
+        deathwing.transform.rotation.y += 0.01f;
     }
 }

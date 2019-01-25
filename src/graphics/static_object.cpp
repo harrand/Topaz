@@ -9,10 +9,20 @@ const Asset& StaticObject::get_asset() const
 
 std::optional<AABB> StaticObject::get_boundary() const
 {
+    std::optional<AABB> box = tz::physics::bound_aabb(this->asset);
+    if(!box.has_value())
+        return box;
+    else
+    {
+        box.value() = box.value() * this->transform.model();
+        return box;
+    }
+    /*
     if(this->asset.valid_mesh())
-        return tz::physics::bound_aabb(*this->asset.mesh) * this->transform.model();
+        return tz::physics::bound_aabb(this->asset).value() * this->transform.model();
     else
         return std::nullopt;
+    */
 }
 
 void StaticObject::render(Shader& render_shader, const Camera& camera, const Vector2I& viewport_dimensions) const
