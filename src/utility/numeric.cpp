@@ -17,18 +17,18 @@ namespace tz::utility::numeric
 
 SmoothNoise::SmoothNoise(int seed): seed(seed), random(seed){}
 
-float SmoothNoise::operator()(int x, int z)
+float SmoothNoise::operator()(std::size_t x, std::size_t z)
 {
     return this->smooth_noise(x, z);
 }
 
-float SmoothNoise::base_noise(int x, int z)
+float SmoothNoise::base_noise(std::size_t x, std::size_t z)
 {
     this->random = {static_cast<typename decltype(this->random)::seed_type>(this->seed + x + z)};
     return this->random.next_float(-1.0f, 1.0f);
 }
 
-float SmoothNoise::smooth_noise(int x, int z)
+float SmoothNoise::smooth_noise(std::size_t x, std::size_t z)
 {
     float corners = (this->base_noise(x - 1, z - 1) + this->base_noise(x + 1, z - 1) + this->base_noise(x + 1, z + 1) + this->base_noise(x - 1, z + 1)) / 12.0f;
     float sides = (this->base_noise(x - 1, z) + this->base_noise(x + 1, z) + this->base_noise(x, z + 1) + this->base_noise(x, z - 1)) / 12.0f;
@@ -38,12 +38,12 @@ float SmoothNoise::smooth_noise(int x, int z)
 
 CosineNoise::CosineNoise(int seed): SmoothNoise(seed){}
 
-float CosineNoise::operator()(int x, int z, float smoothness)
+float CosineNoise::operator()(std::size_t x, std::size_t z, float smoothness)
 {
     return this->cosine_noise(x, z, smoothness);
 }
 
-float CosineNoise::cosine_noise(int x, int z, float smoothness)
+float CosineNoise::cosine_noise(std::size_t x, std::size_t z, float smoothness)
 {
     float dx = x / smoothness, dz = z / smoothness;
     auto integer_x = static_cast<int>(dx);

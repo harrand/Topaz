@@ -4,83 +4,12 @@
 
 #include "animated_texture.hpp"
 
-//PolyFrameTexture::PolyFrameTexture(const std::string &animated_texture_filename){}
 PolyFrameTexture::PolyFrameTexture(): frames(){}
 PolyFrameTexture::PolyFrameTexture(PolyFrameTexture::FrameMap frames)
 {
     for(std::size_t i = 0; i < frames.size(); i++)
         this->set_frame(i, frames.at(i));
 }
-
-/*
-PolyFrameTexture::iterator::iterator(PolyFrameTexture& animation, std::size_t index): animation(animation), index(index){}
-
-Texture& PolyFrameTexture::iterator::operator*() const
-{
-    return this->animation.frames.at(this->index);
-}
-
-bool PolyFrameTexture::iterator::operator!=(const iterator &rhs) const
-{
-    return &this->animation != &rhs.animation || this->index != rhs.index;
-}
-
-PolyFrameTexture::iterator& PolyFrameTexture::iterator::operator++()
-{
-    this->index++;
-    return *this;
-}
-
-PolyFrameTexture::iterator& PolyFrameTexture::iterator::operator--()
-{
-    this->index--;
-    return *this;
-}
-
-PolyFrameTexture::const_iterator::const_iterator(const PolyFrameTexture& animation, std::size_t index): animation(animation), index(index){}
-
-const Texture& PolyFrameTexture::const_iterator::operator*() const
-{
-    return this->animation.frames.at(this->index);
-}
-
-bool PolyFrameTexture::const_iterator::operator!=(const const_iterator &rhs) const
-{
-    return &this->animation != &rhs.animation || this->index != rhs.index;
-}
-
-PolyFrameTexture::const_iterator& PolyFrameTexture::const_iterator::operator++()
-{
-    this->index++;
-    return *this;
-}
-
-PolyFrameTexture::const_iterator& PolyFrameTexture::const_iterator::operator--()
-{
-    this->index--;
-    return *this;
-}
-
-PolyFrameTexture::iterator PolyFrameTexture::begin()
-{
-    return {*this, 0};
-}
-
-PolyFrameTexture::const_iterator PolyFrameTexture::cbegin() const
-{
-    return {*this, 0};
-}
-
-PolyFrameTexture::iterator PolyFrameTexture::end()
-{
-    return {*this, this->frames.size() - 1};
-}
-
-PolyFrameTexture::const_iterator PolyFrameTexture::cend() const
-{
-    return {*this, this->frames.size() - 1};
-}
- */
 
 PolyFrameTexture::iterator PolyFrameTexture::begin()
 {

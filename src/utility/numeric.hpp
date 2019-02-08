@@ -23,7 +23,7 @@ namespace tz::utility::numeric
         ///  1 / (2 - cbrt(2))
         constexpr double forest_ruth_coefficient = 1.35120719196;
         ///  1 - (2 * forest_ruth_coefficient)
-        constexpr double forest_ruth_complement = -1.70241438392;
+        constexpr double forest_ruth_complement = 1.0 - (2.0 * forest_ruth_coefficient);
     }
 }
 
@@ -100,10 +100,10 @@ class SmoothNoise
 {
 public:
     SmoothNoise(int seed);
-    float operator()(int x, int z);
+    float operator()(std::size_t x, std::size_t z);
 protected:
-    float base_noise(int x, int z);
-    float smooth_noise(int x, int z);
+    float base_noise(std::size_t x, std::size_t z);
+    float smooth_noise(std::size_t x, std::size_t z);
 private:
     int seed;
     LocalRandom random;
@@ -113,8 +113,8 @@ class CosineNoise : protected SmoothNoise
 {
 public:
     CosineNoise(int seed);
-    float operator()(int x, int z, float smoothness = tz::utility::numeric::default_smoothness);
-    float cosine_noise(int x, int z, float smoothness = tz::utility::numeric::default_smoothness);
+    float operator()(std::size_t x, std::size_t z, float smoothness = tz::utility::numeric::default_smoothness);
+    float cosine_noise(std::size_t x, std::size_t z, float smoothness = tz::utility::numeric::default_smoothness);
 protected:
     using SmoothNoise::operator();
 };

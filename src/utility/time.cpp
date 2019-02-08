@@ -33,13 +33,13 @@ TimeProfiler::TimeProfiler(): tk(Timer()){}
 
 void TimeProfiler::begin_frame()
 {
-	this->tk.update();
+	this->tk.reload();
 }
 
 void TimeProfiler::end_frame()
 {
+	this->tk.update();
 	this->deltas.push_back(this->tk.get_range());
-	this->tk.reload();
 }
 
 void TimeProfiler::reset()

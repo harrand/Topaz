@@ -23,7 +23,7 @@ void init()
     std::cout << "OpenGL debugging enabled: " << wnd.is_opengl_debugging_enabled() << "\n";
     wnd.set_debug_callback();
     wnd.set_fullscreen(Window::FullscreenType::WINDOWED_MODE);
-    wnd.set_swap_interval_type(Window::SwapIntervalType::VSYNC);
+    wnd.set_swap_interval_type(Window::SwapIntervalType::LATE_SWAP_TEARING);
 
     // During init, enable debug output
     Font font("../res/runtime/fonts/Comfortaa-Regular.ttf", 36);
@@ -163,7 +163,7 @@ void init()
     scene.emplace<StaticObject>(Transform{{0, -135, 100}, {}, {50, 50, 50}}, maul);
     scene.emplace<StaticObject>(Transform{{50, -135, 100}, {}, {7, 7, 7}}, nanosuit);
     scene.emplace<StaticObject>(Transform{{-75, -135, 100}, {}, {15, 15, 15}}, illidan);
-    StaticObject& deathwing = scene.emplace<StaticObject>(Transform{{0, 200, 0}, {0, 0, 0}, {50, 50, 50}}, deathwing_asset);
+    StaticObject& deathwing = scene.emplace<StaticObject>(Transform{{0, 200, -2500}, {0, 0, 0}, {50, 50, 50}}, deathwing_asset);
     scene.add_point_light(PointLight{{0, 0, 125}, {1, 1, 1}, 9000.0f});
     scene.emplace<StaticObject>(Transform{{0, 0, 0}, {}, {15, 15, 15}}, wooden_sphere);
     scene.emplace<StaticObject>(Transform{{100, 0, 0}, {}, {200, 200, 200}}, wooden_cylinder);
@@ -196,6 +196,7 @@ void init()
     using namespace tz::graphics;
     while(!wnd.is_close_requested())
     {
+        profiler.begin_frame();
         static float x = 0;
         progress.set_progress((1 + std::sin(x += 0.01)) / 2.0f);
         //example_sprite.set_rotation(x);
@@ -203,7 +204,6 @@ void init()
         hdr_gui_shader.set_uniform<float>("exposure", 0.4f);
         hdr_gui_shader.set_uniform<float>("gamma", 0.5f);
     	//scene.set_point_light(0, {{0, 0, 0}, {0, progress.get_progress(), 1 - progress.get_progress()}, 50000000.0f});
-        profiler.begin_frame();
         second_timer.update();
         tick_timer.update();
         if(second_timer.millis_passed(1000.0f))
@@ -232,9 +232,6 @@ void init()
         hdr_buffer.set_render_target();
         //wnd.set_render_target();
         //wnd.clear();
-
-        profiler.end_frame();
-
         // render into the hdr buffer.
         if(wireframe)
             tz::graphics::enable_wireframe_render(true);
@@ -309,5 +306,6 @@ void init()
         if(key_listener.is_key_pressed("Right"))
             example_sprite.position_screenspace.x += 3;
         deathwing.transform.rotation.y += 0.01f;
+        profiler.end_frame();
     }
 }

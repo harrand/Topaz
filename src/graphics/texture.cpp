@@ -152,10 +152,13 @@ Texture::Texture(aiTexture* texture): Texture()
 		//tz::debug::print("aiTexture format = ", texture->achFormatHint, "\n");
 		unsigned int compressed_data_size = texture->mWidth;
 		int comps;
-		stbi_uc* image_data = stbi_load_from_memory(reinterpret_cast<stbi_uc*>(texture->pcData), compressed_data_size, &bitmap.width, &bitmap.height, &comps, STBI_rgb_alpha);
-		bitmap.pixels.reserve(static_cast<std::size_t>(std::abs(bitmap.width * bitmap.height)));
+		int w, h;
+		stbi_uc* image_data = stbi_load_from_memory(reinterpret_cast<stbi_uc*>(texture->pcData), compressed_data_size, &w, &h, &comps, STBI_rgb_alpha);
+		bitmap.width = w;
+		bitmap.height = h;
+		bitmap.pixels.reserve(bitmap.width * bitmap.height);
 		// guaranteed to be a multiple of 4
-		for(std::size_t i = 3; i <= (4 * std::abs(bitmap.width * bitmap.height)); i += 4)
+		for(std::size_t i = 3; i <= (4 * bitmap.width * bitmap.height); i += 4)
 		{
 			bitmap.pixels.emplace_back(PixelRGBA{image_data[i - 3], image_data[i - 2], image_data[i - 1], image_data[i]});
 		}
@@ -166,7 +169,7 @@ Texture::Texture(aiTexture* texture): Texture()
 	{
 		bitmap.width = texture->mWidth;
 		bitmap.height = texture->mHeight;
-		for (int i = 0; i < bitmap.width * bitmap.height; i++)
+		for (std::size_t i = 0; i < bitmap.width * bitmap.height; i++)
 		{
 			const aiTexel &texel = texture->pcData[i];
 			bitmap.pixels.emplace_back(texel.r, texel.g, texel.b, texel.a);
@@ -425,13 +428,13 @@ std::vector<unsigned char*> CubeMap::load_textures()
 
 namespace tz::graphics::height_map
 {
-	DisplacementMap generate_smooth_noise(int width, int height, float displacement_factor, SmoothNoise noise_function)
+	DisplacementMap generate_smooth_noise(std::size_t width, std::size_t height, float displacement_factor, SmoothNoise noise_function)
 	{
 		std::vector<PixelDepth> pixels;
-		pixels.resize(static_cast<std::size_t>(width * height), PixelDepth{0.0f});
-		for(int x = 0; x < width; x++)
+		pixels.resize(width * height, PixelDepth{0.0f});
+		for(std::size_t x = 0; x < width; x++)
 		{
-			for(int y = 0; y < height; y++)
+			for(std::size_t y = 0; y < height; y++)
 			{
 				auto& pixel = pixels[x + y * height];
 				pixel.data.underlying_data = {noise_function(x, y)};
@@ -440,14 +443,14 @@ namespace tz::graphics::height_map
 		return {Bitmap<PixelDepth>{pixels, width, height}, displacement_factor};
 	}
 
-    DisplacementMap generate_cosine_noise(int width, int height, float displacement_factor, float smoothness, CosineNoise noise_function)
+    DisplacementMap generate_cosine_noise(std::size_t width, std::size_t height, float displacement_factor, float smoothness, CosineNoise noise_function)
     {
         std::vector<PixelDepth> pixels;
         pixels.resize(width * height, PixelDepth{0.0f});
-        for(int i = 0; i < width * height; i++)
+        for(std::size_t i = 0; i < width * height; i++)
         {
-            int row = i / width;
-            int column = i % width;
+            std::size_t row = i / width;
+            std::size_t column = i % width;
             pixels[i].data.underlying_data = {noise_function(column, row, smoothness)};
         }
         return {Bitmap<PixelDepth>{pixels, width, height}, displacement_factor};

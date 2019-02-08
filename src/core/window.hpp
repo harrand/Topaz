@@ -326,7 +326,7 @@ public:
      * Deregister a listener that is currently being administrated by this Window.
      * @param l - The listener which should be de-registered
      */
-    void deregister_listener(Listener& l);
+    void deregister_listener(const Listener& l);
     /**
      * Get a container of all the GUI elements that are direct children of this Window.
      * @return - Container of all children

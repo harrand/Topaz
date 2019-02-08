@@ -750,7 +750,33 @@ using Vector3I = Vector3<int>;
 using Vector4I = Vector4<int>;
 
 /**
- * Represents a 2-dimensional Vector of ints.
+ * Represents a 2-dimensional Vector of unsigned ints.
+ */
+using Vector2UI = Vector2<unsigned int>;
+/**
+ * Represents a 3-dimensional Vector of unsigned ints.
+ */
+using Vector3UI = Vector3<unsigned int>;
+/**
+ * Represents a 4-dimensional Vector of unsigned ints.
+ */
+using Vector4UI = Vector4<unsigned int>;
+
+/**
+ * Represents a 2-dimensional Vector of size types.
+ */
+using Vector2S = Vector2<std::size_t>;
+/**
+ * Represents a 3-dimensional Vector of size types.
+ */
+using Vector3S = Vector3<std::size_t>;
+/**
+ * Represents a 4-dimensional Vector of size types.
+ */
+using Vector4S = Vector4<std::size_t>;
+
+/**
+ * Represents a 2-dimensional Vector of floats.
  */
 using Vector2F = Vector2<float>;
 /**

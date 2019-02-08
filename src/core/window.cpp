@@ -301,7 +301,7 @@ void Window::register_listener(Listener& l)
     l.window = this;
 }
 
-void Window::deregister_listener(Listener& l)
+void Window::deregister_listener(const Listener& l)
 {
     this->registered_listeners.erase(std::remove(this->registered_listeners.begin(), this->registered_listeners.end(), &l), this->registered_listeners.end());
 }

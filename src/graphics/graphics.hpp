@@ -119,6 +119,8 @@ public:
 	 * @param alpha - Intensity of the alpha component (typically transparency), from 0-255.
 	 */
 	constexpr PixelRGBA(unsigned char red = 0, unsigned char green = 0, unsigned char blue = 0, unsigned char alpha = 255): data(std::array<unsigned char, 4>({red, green, blue, alpha})){}
+
+	PixelRGBA& operator=(const Vector<4, unsigned char>& data);
 	/// 4-dimensional Vector containing the RGBA colour intensities.
 	Vector<4, unsigned char> data;
 };
@@ -127,6 +129,7 @@ class PixelRGBAHDR
 {
 public:
 	constexpr PixelRGBAHDR(float red = 0.0f, float green = 0.0f, float blue = 0.0f, float alpha = 255.0f): data(std::array<float, 4>({red, green, blue, alpha})){}
+	PixelRGBAHDR& operator=(const Vector<4, float>& data);
 	Vector<4, float> data;
 };
 
@@ -137,7 +140,8 @@ public:
 	 * Construst a Pixel storing a depth value. Used in depth-textures.
 	 * @param depth - Depth of the pixel, from 0.0-1.0
 	 */
-	constexpr PixelDepth(float depth): data(std::array<float, 1>({depth})){}
+	constexpr PixelDepth(float depth): data(std::array<float, 1>({std::clamp(0.0f, 1.0f, depth)})){}
+	PixelDepth& operator=(float depth);
 	Vector<1, float> data;
 };
 
@@ -155,13 +159,21 @@ public:
 	 * @param width - Width of the bitmap, in pixels.
 	 * @param height - Height of the bitmap, in pixels.
 	 */
-	Bitmap(std::vector<Pixel> pixels = std::vector<Pixel>(), int width = 0, int height = 0): pixels(pixels), width(width), height(height){}
+	Bitmap(std::vector<Pixel> pixels = std::vector<Pixel>(), std::size_t width = 0, std::size_t height = 0);
+	/**
+	 * Resize the bitmap to a new size.
+	 * @param width - New width of the bitmap
+	 * @param height - New height of the bitmap
+	 */
+	void resize(std::size_t width, std::size_t height);
+	const Pixel& get(const Vector2S& coordinate) const;
+	void set(const Vector2S& coordinate, Pixel pixel);
 	/// Container for all pixels.
 	std::vector<Pixel> pixels;
 	/// Width of the Bitmap, in pixels.
-	int width;
+	std::size_t width;
 	/// Height of the Bitmap, in pixels.
-	int height;
+	std::size_t height;
 };
 
 namespace tz

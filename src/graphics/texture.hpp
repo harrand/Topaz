@@ -403,9 +403,9 @@ namespace tz::graphics
     namespace height_map
     {
         template<typename Engine = std::default_random_engine, typename EngineResultType = std::default_random_engine::result_type>
-        DisplacementMap generate_random_noise(int width, int height, float displacement_factor, Random<Engine, EngineResultType> noise_function = {});
-        DisplacementMap generate_smooth_noise(int width, int height, float displacement_factor, SmoothNoise noise_function = {Random{}.next_int()});
-        DisplacementMap generate_cosine_noise(int width, int height, float displacement_factor, float smoothness = tz::utility::numeric::default_smoothness, CosineNoise noise_function = Random{}.next_int());
+        DisplacementMap generate_random_noise(std::size_t width, std::size_t height, float displacement_factor, Random<Engine, EngineResultType> noise_function = {});
+        DisplacementMap generate_smooth_noise(std::size_t width, std::size_t height, float displacement_factor, SmoothNoise noise_function = {Random{}.next_int()});
+        DisplacementMap generate_cosine_noise(std::size_t width, std::size_t height, float displacement_factor, float smoothness = tz::utility::numeric::default_smoothness, CosineNoise noise_function = Random{}.next_int());
     }
 }
 
