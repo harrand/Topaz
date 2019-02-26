@@ -159,7 +159,6 @@ void init()
     scene.emplace<InstancedStaticObject>(floor_objects);
     //scene.emplace<InstancedDynamicObject>(falling_objects);
     // add the model objects
-    tz::debug::print("Does maul have a valid model? ", maul.valid_model(), "\n");
     scene.emplace<StaticObject>(Transform{{0, -135, 100}, {}, {50, 50, 50}}, maul);
     scene.emplace<StaticObject>(Transform{{50, -135, 100}, {}, {7, 7, 7}}, nanosuit);
     scene.emplace<StaticObject>(Transform{{-75, -135, 100}, {}, {15, 15, 15}}, illidan);

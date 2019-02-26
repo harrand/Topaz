@@ -4,12 +4,12 @@ Quaternion::Quaternion(Vector3F rotation_axis, float angle): Vector4F(rotation_a
 
 Quaternion::Quaternion(Vector3F euler_rotation)
 {
-	const float sin_pitch(std::sin(euler_rotation.x / 2.0f));
-	const float cos_pitch(std::cos(euler_rotation.x / 2.0f));
-	const float sin_yaw(std::sin(euler_rotation.y / 2.0f));
-	const float cos_yaw(std::cos(euler_rotation.y / 2.0f));
-	const float sin_roll(std::sin(euler_rotation.z / 2.0f));
-	const float cos_roll(std::cos(euler_rotation.z / 2.0f));
+	const float sin_pitch(std::sin(euler_rotation.y / 2.0f));
+	const float cos_pitch(std::cos(euler_rotation.y / 2.0f));
+	const float sin_yaw(std::sin(euler_rotation.z / 2.0f));
+	const float cos_yaw(std::cos(euler_rotation.z / 2.0f));
+	const float sin_roll(std::sin(euler_rotation.x / 2.0f));
+	const float cos_roll(std::cos(euler_rotation.x / 2.0f));
 	const float cos_pitch_cos_yaw(cos_pitch*cos_yaw);
 	const float sin_pitch_sin_yaw(sin_pitch*sin_yaw);
 
@@ -86,9 +86,16 @@ Matrix4x4 Quaternion::to_matrix() const
 	Vector4F(0.0f, 0.0f, 0.0f, 1.0f)).transposed();
 }
 
+void Quaternion::normalise()
+{
+    *this /= this->length();
+}
+
 Quaternion Quaternion::normalised() const
 {
-	return {(*this) / this->length()};
+	Quaternion copy = *this;
+    copy.normalise();
+    return copy;
 }
 
 Quaternion Quaternion::inverse() const
@@ -117,14 +124,13 @@ Quaternion::operator Matrix4x4() const
 
 Quaternion Quaternion::operator*(const Quaternion& rhs) const
 {
-	return {Vector4F(this->w * rhs.x + this->x + rhs.w + this->y * rhs.z - this->z * rhs.y, this->w * rhs.y + this->y * rhs.w + this->z * rhs.x - this->x * rhs.z, this->w * rhs.z + this->z * rhs.w + this->x * rhs.y - this->y * rhs.x, this->w * rhs.w - this->x * rhs.x - this->y * rhs.y - this->z * rhs.z)};
+	return Quaternion{Vector4F(this->w * rhs.x + this->x + rhs.w + this->y * rhs.z - this->z * rhs.y, this->w * rhs.y + this->y * rhs.w + this->z * rhs.x - this->x * rhs.z, this->w * rhs.z + this->z * rhs.w + this->x * rhs.y - this->y * rhs.x, this->w * rhs.w - this->x * rhs.x - this->y * rhs.y - this->z * rhs.z)}.normalised();
 }
 
 Quaternion Quaternion::operator*(float scalar) const
 {
-	if(this->length() == 0)
-		return {};
-	return {Vector4F(this->x * scalar, this->y * scalar, this->z * scalar, this->w * scalar)};
+	Quaternion copy = *this;
+	return copy *= scalar;
 }
 
 Quaternion Quaternion::operator/(float scalar) const
@@ -135,4 +141,26 @@ Quaternion Quaternion::operator/(float scalar) const
 Vector4F Quaternion::operator*(const Vector3F& vector) const
 {
 	return (*this) * Quaternion(vector, 0.0f);
+}
+
+Quaternion& Quaternion::operator*=(float scalar)
+{
+	if(this->length() == 0)
+		return *this;
+	this->x *= scalar;
+	this->y *= scalar;
+	this->z *= scalar;
+	this->w *= scalar;
+	return *this;
+}
+
+Quaternion& Quaternion::operator/=(float scalar)
+{
+	return *this *= (1.0f / scalar);
+}
+
+Matrix4x4 tz::transform::quaternion::model(const Vector3F &position, const Quaternion &rotation, const Vector3F &scale)
+{
+	using namespace tz::transform;
+	return translate(position) * rotation() * tz::transform::scale(scale);
 }

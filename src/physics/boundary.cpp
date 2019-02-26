@@ -70,7 +70,10 @@ bool BoundingSphere::intersects(const BoundaryCluster& rhs) const
     return rhs.intersects(*this);
 }
 
-AABB::AABB(Vector3F minimum, Vector3F maximum): Cuboid(maximum - minimum), minimum(minimum), maximum(maximum){}
+AABB::AABB(Vector3F minimum, Vector3F maximum): Cuboid(maximum - minimum), minimum(minimum), maximum(maximum)
+{
+    this->validate();
+}
 
 const Vector3F& AABB::get_minimum() const
 {
@@ -169,7 +172,19 @@ AABB AABB::operator*(const Matrix4x4& rhs) const
 {
     Vector4F minimum_homogeneous = {this->minimum, 1.0f};
     Vector4F maximum_homogeneous = {this->maximum, 1.0f};
-    return {(rhs * minimum_homogeneous).xyz(), (rhs * maximum_homogeneous).xyz()};
+    AABB box{(rhs * minimum_homogeneous).xyz(), (rhs * maximum_homogeneous).xyz()};
+    box.validate();
+    return box;
+}
+
+void AABB::validate()
+{
+    if(minimum.x > maximum.x)
+        std::swap(minimum.x, maximum.x);
+    if(minimum.y > maximum.y)
+        std::swap(minimum.y, maximum.y);
+    if(minimum.z > maximum.z)
+        std::swap(minimum.z, maximum.z);
 }
 
 BoundingPlane::BoundingPlane(Vector3F normal, float distance): Plane(normal), distance(distance){}

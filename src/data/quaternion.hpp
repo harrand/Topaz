@@ -13,12 +13,12 @@ public:
 	 * @param rotation_axis - 3-dimensional Vector representing the rotation-axis, in euler-angles
 	 * @param angle - The rotation angle, in radians
 	 */
-	Quaternion(Vector3F rotation_axis = Vector3F(), float angle = 0.0f);
+	Quaternion(Vector3F rotation_axis, float angle);
 	/**
 	 * Construct Quaternion from three rotations in euler angles about the three spatial dimensions.
 	 * @param euler_rotation - 3-dimensional Vector representing the angle of rotation in each axis, in radians
 	 */
-	Quaternion(Vector3F euler_rotation);
+	Quaternion(Vector3F euler_rotation = {});
 	/**
 	 * Construct Quaternion from an existing rotational-matrix.
 	 * @param rotational_matrix - The existing rotational-matrix
@@ -41,6 +41,10 @@ public:
 	 * @return - Row-major rotational matrix
 	 */
 	Matrix4x4 to_matrix() const;
+    /**
+     * Normalise this Quaternion.
+     */
+    void normalise();
 	/**
 	 * Get a normalised copy of this Quaternion.
 	 * @return - Copy of this Quaternion, but normalised
@@ -90,6 +94,8 @@ public:
 	 * @return - The 3-dimensional Vector parameter, but rotated by this Quaternion
 	 */
 	Vector4F operator*(const Vector3F& vector) const;
+	Quaternion& operator*=(float scalar);
+	Quaternion& operator/=(float scalar);
 private:
     /**
      * Construct a Quaternion directly from x, y, z and w components.
@@ -97,5 +103,10 @@ private:
      */
 	Quaternion(Vector4F xyzw);
 };
+
+namespace tz::transform::quaternion
+{
+    Matrix4x4 model(const Vector3F& position, const Quaternion& rotation, const Vector3F& scale);
+}
 
 #endif
