@@ -70,12 +70,13 @@ void InstancedDynamicObject::update(float delta_time)
     }
 }
 
-void InstancedDynamicObject::render(Shader& instanced_render_shader, const Camera& camera, const Vector2I& viewport_dimensions) const
+void InstancedDynamicObject::render(RenderPass render_pass) const
 {
+    Shader& instanced_render_shader = *render_pass.get_render_context().object_shader;
     instanced_render_shader.bind();
     instanced_render_shader.set_uniform<bool>("is_instanced", true);
     instanced_render_shader.update();
-    DynamicObject::render(instanced_render_shader, camera, viewport_dimensions);
+    DynamicObject::render(render_pass);
 }
 
 std::optional<AABB> InstancedDynamicObject::get_boundary() const

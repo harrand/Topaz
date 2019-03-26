@@ -2,10 +2,14 @@
 
 Scene::Scene(const std::initializer_list<StaticObject>& stack_objects, std::vector<std::unique_ptr<StaticObject>> heap_objects): stack_objects(stack_objects), heap_objects(std::move(heap_objects)), stack_sprites{}, heap_sprites{}, directional_lights{}, point_lights{}, objects_to_delete{}, sprites_to_delete{}{}
 
-void Scene::render(Shader* render_shader, Shader* sprite_shader, const Camera& camera, const Vector2I& viewport_dimensions) const
+void Scene::render(RenderPass render_pass) const
 {
+    Shader* render_shader = render_pass.get_render_context().object_shader;
+    Shader* sprite_shader = render_pass.get_render_context().sprite_shader;
+    const Camera& camera = render_pass.get_camera();
+    Vector2I viewport_dimensions = {render_pass.get_window().get_width(), render_pass.get_window().get_height()};
     BoundingPyramidalFrustum camera_frustum(camera, viewport_dimensions.x / viewport_dimensions.y);
-    auto render_if_visible = [&](const StaticObject& object){if(object.get_asset().valid_model()){object.render(*render_shader, camera, viewport_dimensions);return;} AABB object_box = tz::physics::bound_aabb(*(object.get_asset().mesh)); if(camera_frustum.contains(object_box * object.transform.model()) || tz::graphics::is_instanced(object.get_asset().mesh)) object.render(*render_shader, camera, viewport_dimensions);};
+    auto render_if_visible = [&](const StaticObject& object){if(object.get_asset().valid_model()){object.render(render_pass);return;} AABB object_box = tz::physics::bound_aabb(*(object.get_asset().mesh)); if(camera_frustum.contains(object_box * object.transform.model()) || tz::graphics::is_instanced(object.get_asset().mesh)) object.render(render_pass);};
     if(render_shader != nullptr)
     {
         for (const auto &static_object : this->get_static_objects())

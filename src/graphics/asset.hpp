@@ -267,6 +267,7 @@ struct Asset
 	 * @param model - The Model component
 	 */
     Asset(Mesh* mesh, Texture* texture, NormalMap* normal_map = nullptr, ParallaxMap* parallax_map = nullptr, DisplacementMap* displacement_map = nullptr, Model* model = nullptr);
+	Asset(Model* model);
 	/**
 	 * Query as to whether there is a valid Mesh component.
 	 * @return - True if there is a Mesh, false otherwise

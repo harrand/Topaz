@@ -3,9 +3,9 @@
 
 #include "graphics/mesh.hpp"
 #include "graphics/asset.hpp"
-#include "graphics/camera.hpp"
 #include "data/transform.hpp"
 #include "physics/physics_object.hpp"
+#include "graphics/render_pass.hpp"
 
 /**
  * StaticObjects do NOT own the assets that they use.
@@ -17,7 +17,7 @@ public:
     StaticObject(Transform transform, Asset asset);
     const Asset& get_asset() const;
     virtual std::optional<AABB> get_boundary() const;
-    virtual void render(Shader& render_shader, const Camera& camera, const Vector2I& viewport_dimensions) const;
+    virtual void render(RenderPass render_pass) const;
 
     Transform transform;
 
@@ -31,7 +31,7 @@ class InstancedStaticObject : public StaticObject
 {
 public:
     InstancedStaticObject(const std::vector<StaticObject>& objects);
-    virtual void render(Shader& instanced_render_shader, const Camera& camera, const Vector2I& viewport_dimensions) const override;
+    virtual void render(RenderPass render_pass) const override;
 private:
     std::shared_ptr<InstancedMesh> instanced_mesh;
 };

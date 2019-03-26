@@ -25,7 +25,7 @@ public:
      * @param camera - The Camera whose perspective should be used in rendering the Scene
      * @param viewport_dimensions - The dimensions (width and height) of the currently-bound FrameBuffer's viewport
      */
-    virtual void render(Shader* render_shader, Shader* sprite_shader, const Camera& camera, const Vector2I& viewport_dimensions) const;
+    virtual void render(RenderPass render_pass) const;
     /**
      * Invoke all tick-based (Physics) updates for all objects in the Scene.
      * @param delta_time - The time taken, in seconds, since the last update invocation

@@ -206,6 +206,8 @@ std::unique_ptr<Model> AssetBuffer::take_model(const std::string& model_name)
 
 Asset::Asset(Mesh* mesh, Texture* texture, NormalMap* normal_map, ParallaxMap* parallax_map, DisplacementMap* displacement_map, Model* model): mesh(mesh), texture(texture), normal_map(normal_map), parallax_map(parallax_map), displacement_map(displacement_map), model(model){}
 
+Asset::Asset(Model* model): Asset(nullptr, nullptr, nullptr, nullptr, nullptr, model){}
+
 bool Asset::valid_mesh() const
 {
 	return this->mesh != nullptr;

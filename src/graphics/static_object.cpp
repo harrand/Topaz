@@ -25,13 +25,16 @@ std::optional<AABB> StaticObject::get_boundary() const
     */
 }
 
-void StaticObject::render(Shader& render_shader, const Camera& camera, const Vector2I& viewport_dimensions) const
+void StaticObject::render(RenderPass render_pass) const
 {
     if(!this->asset.valid_mesh() && !this->asset.valid_model())
     {
         tz::debug::print("StaticObject::render(...): Error: StaticObject attempted to be rendered with neither valid mesh nor model. Aborted this draw-call.\n");
         return;
     }
+    Shader& render_shader = *render_pass.get_render_context().object_shader;
+    const Camera& camera = render_pass.get_camera();
+    Vector2I viewport_dimensions = {render_pass.get_window().get_width(), render_pass.get_window().get_height()};
     render_shader.bind();
     render_shader.set_uniform<bool>("is_instanced", this->get_asset().valid_mesh() && tz::graphics::is_instanced(this->asset.mesh));
     render_shader.set_uniform<Matrix4x4>(tz::graphics::render_shader_model_uniform_name, this->transform.model());
@@ -91,10 +94,11 @@ InstancedStaticObject::InstancedStaticObject(const std::vector<StaticObject>& ob
     this->asset.mesh = this->instanced_mesh.get();
 }
 
-void InstancedStaticObject::render(Shader& instanced_render_shader, const Camera& camera, const Vector2I& viewport_dimensions) const
+void InstancedStaticObject::render(RenderPass render_pass) const
 {
+    Shader& instanced_render_shader = *render_pass.get_render_context().object_shader;
     instanced_render_shader.bind();
     instanced_render_shader.set_uniform<bool>("is_instanced", true);
     instanced_render_shader.update();
-    StaticObject::render(instanced_render_shader, camera, viewport_dimensions);
+    StaticObject::render(render_pass);
 }

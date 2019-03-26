@@ -76,10 +76,10 @@ void init()
     assets.emplace<DisplacementMap>("bricks_displacement", "../res/runtime/displacementmaps/bricks_displacement.png");
     assets.emplace<DisplacementMap>("noise_displacement", tz::graphics::height_map::generate_cosine_noise(256, 256, 100.0f));
     // render noisemap:
-    Asset maul(nullptr, nullptr, nullptr, nullptr, nullptr, assets.find<Model>("darth_maul"));
-    Asset nanosuit(nullptr, nullptr, nullptr, nullptr, nullptr, assets.find<Model>("nanosuit"));
-    Asset illidan(nullptr, nullptr, nullptr, nullptr, nullptr, assets.find<Model>("illidan"));
-    Asset deathwing_asset(nullptr, nullptr, nullptr, nullptr, nullptr, assets.find<Model>("deathwing"));
+    Asset maul(assets.find<Model>("darth_maul"));
+    Asset nanosuit(assets.find<Model>("nanosuit"));
+    Asset illidan(assets.find<Model>("illidan"));
+    Asset deathwing_asset(assets.find<Model>("deathwing"));
     Asset asset0(assets.find<Mesh>("cube"), assets.find_texture("bricks"), assets.find_normal_map("bricks_normal"), assets.find_parallax_map("bricks_parallax"), assets.find_displacement_map("bricks_displacement"));
     Asset noise_asset(assets.find<Mesh>("plane_hd"), assets.find_texture("bricks"), assets.find_normal_map("bricks_normal"), nullptr, assets.find_displacement_map("noise_displacement"));
     Asset asset1(assets.find_mesh("cube_lq"), assets.find_texture("bricks"), assets.find_normal_map("bricks_normal"), assets.find_parallax_map("bricks_parallax"));
@@ -189,6 +189,9 @@ void init()
 
     tz::debug::print("does the cluster include point [50, 50, 50]: ", std::boolalpha, cluster.intersects(Vector3F{50.0f, 50.0f, 50.0f}), "\n")*/
 
+    RenderPass main_pass{wnd, {render_shader, gui_shader}, camera};
+    RenderPass depth_pass{wnd, {depth_shader}, camera};
+
     long long int time = tz::utility::time::now();
     Timer second_timer, tick_timer;
     TimeProfiler profiler;
@@ -224,7 +227,8 @@ void init()
         Camera light_view = scene.get_directional_light(0).value().get_view(AABB{boundary.get_minimum() / 2.0f, boundary.get_maximum() / 2.0f});
         render_shader.set_uniform<Matrix4x4>("light_viewprojection", light_view.projection(wnd.get_width(), wnd.get_height()) * light_view.view());
         glCullFace(GL_FRONT);
-        scene.render(&depth_shader, nullptr, light_view, {wnd.get_width(), wnd.get_height()});
+        depth_pass.set_camera(light_view);
+        scene.render(depth_pass);
         glCullFace(GL_BACK);
 
         hdr_buffer.clear(BufferBit::COLOUR_AND_DEPTH, 0.0f, 0.0f, 0.0f, 0.0f);
@@ -235,7 +239,7 @@ void init()
         if(wireframe)
             tz::graphics::enable_wireframe_render(true);
         depth_framebuffer.get_depth_texture().bind(&render_shader, 5, "depth_map_sampler");
-        scene.render(&render_shader, &gui_shader, camera, {wnd.get_width(), wnd.get_height()});
+        scene.render(main_pass);
         constexpr int tps = 120;
         constexpr float tick_delta = 1000.0f / tps;
         if(tick_timer.millis_passed(tick_delta))

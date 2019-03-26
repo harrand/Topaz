@@ -22,7 +22,7 @@ public:
     InstancedDynamicObject(const std::vector<DynamicObject>& objects);
     float get_mass() const;
     virtual void update(float delta_time) override;
-    virtual void render(Shader& instanced_render_shader, const Camera& camera, const Vector2I& viewport_dimensions) const override;
+    virtual void render(RenderPass render_pass) const override;
     virtual std::optional<AABB> get_boundary() const override;
     virtual void on_collision(PhysicsObject& collided) override;
 private:
