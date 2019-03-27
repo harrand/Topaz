@@ -251,6 +251,7 @@ public:
 	 * @param filename - Path to the existing normal-map image file
 	 */
 	NormalMap(std::string filename);
+	NormalMap(aiTexture* assimp_texture);
 	/**
 	 * Bind this normal-map to a specified Shader.
 	 * @param shader - The Shader to be bound with.
@@ -302,6 +303,7 @@ public:
 	 */
 	DisplacementMap(std::string filename, float displacement_factor = tz::graphics::asset::default_displacement_factor);
 	DisplacementMap(Bitmap<PixelDepth> height_map, float displacement_factor = tz::graphics::asset::default_displacement_factor);
+	DisplacementMap(aiTexture* assimp_texture);
 	/**
 	* Bind this normal-map to a specified Shader.
 	* @param shader - The Shader to be bound with.

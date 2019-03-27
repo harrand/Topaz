@@ -324,6 +324,7 @@ void Texture::swap(Texture& lhs, Texture& rhs)
 }
 
 NormalMap::NormalMap(std::string filename): Texture(filename, false, false){}
+NormalMap::NormalMap(aiTexture* assimp_texture): Texture(assimp_texture){}
 
 void NormalMap::bind(Shader* shader, unsigned int id, const std::string& sampler_name) const
 {
@@ -342,8 +343,8 @@ void ParallaxMap::bind(Shader* shader, unsigned int id, const std::string& sampl
 }
 
 DisplacementMap::DisplacementMap(std::string filename, float displacement_factor): Texture(filename, false, false), displacement_factor(displacement_factor){}
-
 DisplacementMap::DisplacementMap(Bitmap<PixelDepth> height_map, float displacement_factor): Texture(height_map), displacement_factor(displacement_factor){}
+DisplacementMap::DisplacementMap(aiTexture* assimp_texture): Texture(assimp_texture){}
 
 void DisplacementMap::bind(Shader* shader, unsigned int id, const std::string& sampler_name) const
 {

@@ -104,7 +104,7 @@ vec3 specular_directional(DirectionalLight light, vec3 specular_colour, vec3 nor
     */
 
     //blinn-phong specular
-    const float default_shininess = 5;
+    const float default_shininess = 2;
     float shininess = default_shininess;
     if(has_specular_map)
         shininess = texture(specular_map_sampler, parallax_offset(texcoord_modelspace)).r;

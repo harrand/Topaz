@@ -162,7 +162,7 @@ void init()
     scene.emplace<StaticObject>(Transform{{0, -135, 100}, {}, {50, 50, 50}}, maul);
     scene.emplace<StaticObject>(Transform{{50, -135, 100}, {}, {7, 7, 7}}, nanosuit);
     scene.emplace<StaticObject>(Transform{{-75, -135, 100}, {}, {15, 15, 15}}, illidan);
-    StaticObject& deathwing = scene.emplace<StaticObject>(Transform{{0, 200, -2500}, {0, 0, 0}, {50, 50, 50}}, deathwing_asset);
+    StaticObject& deathwing = scene.emplace<StaticObject>(Transform{{0, 200, 0}, {0, 0, 0}, {50, 50, 50}}, deathwing_asset);
     scene.add_point_light(PointLight{{0, 0, 125}, {1, 1, 1}, 9000.0f});
     scene.emplace<StaticObject>(Transform{{0, 0, 0}, {}, {15, 15, 15}}, wooden_sphere);
     scene.emplace<StaticObject>(Transform{{100, 0, 0}, {}, {200, 200, 200}}, wooden_cylinder);
