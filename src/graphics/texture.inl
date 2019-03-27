@@ -34,12 +34,21 @@ namespace tz::graphics::asset
 		render_shader.set_uniform<bool>("has_specular_map", false);
 	}
 
+	inline void unbind_emissive_map(Shader& render_shader)
+	{
+		glActiveTexture(GL_TEXTURE0 + tz::graphics::emissive_map_sampler_id);
+		glBindTexture(GL_TEXTURE_2D, 0);
+		render_shader.set_uniform<bool>("has_emissive_map", false);
+	}
+
 	inline void unbind_all_textures(Shader& render_shader)
 	{
 		unbind_texture();
 		unbind_normal_map(render_shader);
 		unbind_parallax_map(render_shader);
 		unbind_displacement_map(render_shader);
+        unbind_specular_map(render_shader);
+        unbind_emissive_map(render_shader);
 	}
 
 	inline void unbind_extra_texture(Shader& render_shader, std::size_t extra_shader_id)

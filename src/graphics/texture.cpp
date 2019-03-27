@@ -362,6 +362,15 @@ void SpecularMap::bind(Shader* shader, unsigned int id, const std::string& sampl
 	shader->set_uniform<bool>("has_specular_map", true);
 }
 
+EmissiveMap::EmissiveMap(std::string filename): Texture(filename, false, false){}
+EmissiveMap::EmissiveMap(aiTexture* assimp_texture): Texture(assimp_texture){}
+
+void EmissiveMap::bind(Shader* shader, unsigned int id, const std::string& sampler_name) const
+{
+    this->bind_with_string(shader, id, sampler_name);
+    shader->set_uniform<bool>("has_emissive_map", true);
+}
+
 CubeMap::CubeMap(std::string right_texture, std::string left_texture, std::string top_texture, std::string bottom_texture, std::string back_texture, std::string front_texture): right_texture(std::move(right_texture)), left_texture(std::move(left_texture)), top_texture(std::move(top_texture)), bottom_texture(std::move(bottom_texture)), back_texture(std::move(back_texture)), front_texture(std::move(front_texture))
 {
 	glGenTextures(1, &(this->texture_handle));

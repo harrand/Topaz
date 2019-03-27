@@ -17,6 +17,7 @@ uniform sampler2D normal_map_sampler;
 uniform sampler2D parallax_map_sampler;
 uniform sampler2D depth_map_sampler;
 uniform sampler2D specular_map_sampler;
+uniform sampler2D emissive_map_sampler;
 
 uniform sampler2D extra_texture_sampler0;
 uniform bool extra_texture0_exists = false;
@@ -38,6 +39,7 @@ uniform bool extra_texture7_exists = false;
 uniform bool has_normal_map = false;
 uniform bool has_parallax_map = false;
 uniform bool has_specular_map = false;
+uniform bool has_emissive_map = false;
 
 uniform float parallax_multiplier;
 uniform float parallax_bias;
@@ -211,6 +213,11 @@ void main()
         bright_colour = vec4(fragment_colour.xyz, 1);
     else
         bright_colour = vec4(0, 0, 0, 1);
+    if(has_emissive_map)
+    {
+        fragment_colour = texture(emissive_map_sampler, parallaxed_texcoord);
+        bright_colour = fragment_colour;
+    }
 	/*
     // Non-Directional Component.
     PointLight cam_light;

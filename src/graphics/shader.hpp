@@ -22,6 +22,7 @@ namespace tz
 		constexpr std::size_t parallax_map_sampler_id = 2;
 		constexpr std::size_t displacement_map_sampler_id = 3;
 		constexpr std::size_t specular_map_sampler_id = 4;
+        constexpr std::size_t emissive_map_sampler_id = 5;
 		// Allow a few more ids for extra assets which could appear in the future.
 		constexpr std::size_t initial_extra_texture_sampler_id = 16;
 

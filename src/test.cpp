@@ -46,7 +46,7 @@ void init()
     Camera camera;
     camera.position = {0, 0, -50};
     Scene scene;
-    scene.add_directional_light({{0, 1, 0}, {1, 1, 1}, 1.0f});
+    scene.add_directional_light({{0, 1, 0}, {1, 1, 1}, 0.5f});
 
     glDebugMessageInsert(GL_DEBUG_SOURCE_APPLICATION, GL_DEBUG_TYPE_ERROR, 0, GL_DEBUG_SEVERITY_NOTIFICATION, -1, "Well met.");
 
@@ -203,7 +203,7 @@ void init()
         progress.set_progress((1 + std::sin(x += 0.01)) / 2.0f);
         //example_sprite.set_rotation(x);
         // play with the HDR exposure and gamma.
-        hdr_gui_shader.set_uniform<float>("exposure", 0.4f);
+        hdr_gui_shader.set_uniform<float>("exposure", 0.7f);
         hdr_gui_shader.set_uniform<float>("gamma", 0.5f);
     	//scene.set_point_light(0, {{0, 0, 0}, {0, progress.get_progress(), 1 - progress.get_progress()}, 50000000.0f});
         second_timer.update();
@@ -238,7 +238,7 @@ void init()
         // render into the hdr buffer.
         if(wireframe)
             tz::graphics::enable_wireframe_render(true);
-        depth_framebuffer.get_depth_texture().bind(&render_shader, 5, "depth_map_sampler");
+        depth_framebuffer.get_depth_texture().bind(&render_shader, 15, "depth_map_sampler");
         scene.render(main_pass);
         constexpr int tps = 120;
         constexpr float tick_delta = 1000.0f / tps;

@@ -43,6 +43,7 @@ void StaticObject::render(RenderPass render_pass) const
                                          camera.projection(viewport_dimensions.x, viewport_dimensions.y));
     tz::graphics::asset::unbind_all_extra_textures(render_shader);
     tz::graphics::asset::unbind_specular_map(render_shader);
+    tz::graphics::asset::unbind_emissive_map(render_shader);
     if (this->asset.valid_texture())
         this->asset.texture->bind(&render_shader, tz::graphics::texture_sampler_id);
     else

@@ -30,21 +30,24 @@ Model::Model(std::string filename): meshes(), material_textures()
 
         // Sort out materials
         aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
-        std::vector<std::string> diffuse_maps, specular_maps, normal_maps;
+        std::vector<std::string> diffuse_maps, normal_maps, displacement_maps, specular_maps, emissive_maps;
         diffuse_maps = Model::load_material_texture_references(material, aiTextureType_DIFFUSE);
-        specular_maps = Model::load_material_texture_references(material, aiTextureType_SPECULAR);
         normal_maps = Model::load_material_texture_references(material, aiTextureType_NORMALS);
+        specular_maps = Model::load_material_texture_references(material, aiTextureType_SPECULAR);
+        displacement_maps = Model::load_material_texture_references(material, aiTextureType_DISPLACEMENT);
+        emissive_maps = Model::load_material_texture_references(material, aiTextureType_EMISSIVE);
+
         auto is_embedded = [&scene](const std::string& texture_reference)->bool
         {
             return tz::utility::string::begins_with(texture_reference, "*");
         };
 
         auto get_texture_id = [&scene](const std::string& texture_reference)->std::size_t
-                {
-                    std::string removed_asterisk = tz::utility::string::replace_all_char(texture_reference, '*', "");
-                    std::size_t assimp_texture_id = tz::utility::generic::cast::from_string<std::size_t>(removed_asterisk);
-                    return assimp_texture_id;
-                };
+        {
+            std::string removed_asterisk = tz::utility::string::replace_all_char(texture_reference, '*', "");
+            std::size_t assimp_texture_id = tz::utility::generic::cast::from_string<std::size_t>(removed_asterisk);
+            return assimp_texture_id;
+        };
         for(const std::string& reference : diffuse_maps)
         {
             if(!is_embedded(reference))
@@ -61,6 +64,40 @@ Model::Model(std::string filename): meshes(), material_textures()
                 this->material_textures.emplace(i, std::make_unique<Texture>(embedded_texture));
             }
         }
+
+        for(const std::string& reference : normal_maps)
+        {
+            if(!is_embedded(reference))
+            {
+                std::string appended_reference = directory + "/" + reference;
+                tz::debug::print("Model::Model(filename): Extracting model normal map by file: \"", appended_reference, "\"\n");
+                this->material_textures.emplace(i, std::make_unique<NormalMap>(appended_reference));
+            }
+            else
+            {
+                std::size_t mat_id = get_texture_id(reference);
+                tz::debug::print("Model::Model(filename): Extracting model normal map by embedded material: ", mat_id, "\n");
+                aiTexture *embedded_texture = scene->mTextures[mat_id];
+                this->material_textures.emplace(i, std::make_unique<NormalMap>(embedded_texture));
+            }
+        }
+        for(const std::string& reference : displacement_maps)
+        {
+            if(!is_embedded(reference))
+            {
+                std::string appended_reference = directory + "/" + reference;
+                tz::debug::print("Model::Model(filename): Extracting model displacement map by file: \"", appended_reference, "\"\n");
+                this->material_textures.emplace(i, std::make_unique<DisplacementMap>(appended_reference));
+            }
+            else
+            {
+                std::size_t mat_id = get_texture_id(reference);
+                tz::debug::print("Model::Model(filename): Extracting model displacement map by embedded material: ", mat_id, "\n");
+                aiTexture *embedded_texture = scene->mTextures[mat_id];
+                this->material_textures.emplace(i, std::make_unique<DisplacementMap>(embedded_texture));
+            }
+        }
+
 
         for(const std::string& reference : specular_maps)
         {
@@ -79,20 +116,20 @@ Model::Model(std::string filename): meshes(), material_textures()
             }
         }
 
-        for(const std::string& reference : normal_maps)
+        for(const std::string& reference : emissive_maps)
         {
             if(!is_embedded(reference))
             {
                 std::string appended_reference = directory + "/" + reference;
-                tz::debug::print("Model::Model(filename): Extracting model normal map by file: \"", appended_reference, "\"\n");
-                this->material_textures.emplace(i, std::make_unique<NormalMap>(appended_reference));
+                tz::debug::print("Model::Model(filename): Extracting model emissive map by file: \"", appended_reference, "\"\n");
+                this->material_textures.emplace(i, std::make_unique<EmissiveMap>(appended_reference));
             }
             else
             {
                 std::size_t mat_id = get_texture_id(reference);
-                tz::debug::print("Model::Model(filename): Extracting model normal map by embedded material: ", mat_id, "\n");
+                tz::debug::print("Model::Model(filename): Extracting model emissive map by embedded material: ", mat_id, "\n");
                 aiTexture *embedded_texture = scene->mTextures[mat_id];
-                this->material_textures.emplace(i, std::make_unique<NormalMap>(embedded_texture));
+                this->material_textures.emplace(i, std::make_unique<EmissiveMap>(embedded_texture));
             }
         }
     }
@@ -147,12 +184,14 @@ void Model::render(Shader& shader, GLenum mode) const
             Texture* current_texture = j->second.get();
             auto sampler_name = [](std::size_t id) -> std::string
             {
-                if(id == tz::graphics::specular_map_sampler_id)
-                    return "specular_map_sampler";
                 if(id == tz::graphics::texture_sampler_id)
                     return "texture_sampler";
                 if(id == tz::graphics::normal_map_sampler_id)
                     return "normal_map_sampler";
+                if(id == tz::graphics::specular_map_sampler_id)
+                    return "specular_map_sampler";
+                if(id == tz::graphics::emissive_map_sampler_id)
+                    return "emissive_map_sampler";
                 else if(id >= tz::graphics::initial_extra_texture_sampler_id)
                 {
                     std::size_t diff = id - tz::graphics::initial_extra_texture_sampler_id;
@@ -168,15 +207,18 @@ void Model::render(Shader& shader, GLenum mode) const
             // bind each texture in the model. note that only ONE specular map is allowed per map, unlike textures which can have upto 8.
             switch(current_texture->get_texture_type())
             {
+                case tz::graphics::TextureType::TEXTURE:
+                default:
+                    current_texture->bind(&shader, texture_id, sampler_name(texture_id));
+                    break;
                 case tz::graphics::TextureType::NORMAL_MAP:
                     current_texture->bind(&shader, tz::graphics::normal_map_sampler_id, sampler_name(tz::graphics::normal_map_sampler_id));
                     break;
                 case tz::graphics::TextureType::SPECULAR_MAP:
                     current_texture->bind(&shader, tz::graphics::specular_map_sampler_id, sampler_name(tz::graphics::specular_map_sampler_id));
                     break;
-                case tz::graphics::TextureType::TEXTURE:
-                default:
-                    current_texture->bind(&shader, texture_id, sampler_name(texture_id));
+                case tz::graphics::TextureType::EMISSIVE_MAP:
+                    current_texture->bind(&shader, tz::graphics::emissive_map_sampler_id, sampler_name(tz::graphics::emissive_map_sampler_id));
                     break;
             }
             // ensure texture_id is updated properly, because as stated previous, topaz sampler ids are NOT sequential
