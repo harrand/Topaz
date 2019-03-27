@@ -31,6 +31,7 @@ class InstancedStaticObject : public StaticObject
 {
 public:
     InstancedStaticObject(const std::vector<StaticObject>& objects);
+    const InstancedMesh& get_instanced_mesh() const;
     virtual void render(RenderPass render_pass) const override;
 private:
     std::shared_ptr<InstancedMesh> instanced_mesh;

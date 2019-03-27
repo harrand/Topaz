@@ -58,6 +58,11 @@ float InstancedDynamicObject::get_mass() const
     return mass;
 }
 
+const InstancedMesh& InstancedDynamicObject::get_instanced_mesh() const
+{
+    return *this->instanced_mesh;
+}
+
 void InstancedDynamicObject::update(float delta_time)
 {
     for(std::size_t instance_id = 0; instance_id < this->objects.size(); instance_id++)

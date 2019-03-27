@@ -22,6 +22,16 @@ namespace tz
     }
     namespace debug
     {
+        /**
+         * This is the default OpenGLDebugCallbackFunction in Window.
+         * @param source - Which subsystem of OpenGL has lead to this callback invocation
+         * @param type - Reason for the invocation (e.g error, undefined behaviour)
+         * @param id - Error/Warning Code. Non-significant error and warning codes shall be silently ignored by this callback
+         * @param severity - Severity of the error; notification, low, medium, or high
+         * @param length - Unused
+         * @param message - The debug message
+         * @param user_parameters - Unused
+         */
         inline void default_ogl_debug_output(GLenum source, GLenum type, GLuint id, GLenum severity, [[maybe_unused]] GLsizei length, const GLchar *message, [[maybe_unused]] const void *user_parameters)
         {
             // ignore non-significant error/warning codes
@@ -128,7 +138,7 @@ public:
      * Constructs a Window from compact parameters.
      * @param title - Title of the Window bar
      * @param position_pixel_space - 2-dimensional Vector representing the position of the top-left of the Window on the screen, in pixels
-     * @param dimensions_pixel_space - 2-dimensional Vector representing the corresponding width and height of the Windo on the screen, in pixels
+     * @param dimensions_pixel_space - 2-dimensional Vector representing the corresponding width and height of the Window on the screen, in pixels
      */
     Window(std::string title, const Vector2I& position_pixel_space, const Vector2I& dimensions_pixel_space);
     /**

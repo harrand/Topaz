@@ -21,6 +21,7 @@ class InstancedDynamicObject : public DynamicObject
 public:
     InstancedDynamicObject(const std::vector<DynamicObject>& objects);
     float get_mass() const;
+    const InstancedMesh& get_instanced_mesh() const;
     virtual void update(float delta_time) override;
     virtual void render(RenderPass render_pass) const override;
     virtual std::optional<AABB> get_boundary() const override;

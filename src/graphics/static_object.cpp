@@ -94,6 +94,11 @@ InstancedStaticObject::InstancedStaticObject(const std::vector<StaticObject>& ob
     this->asset.mesh = this->instanced_mesh.get();
 }
 
+const InstancedMesh& InstancedStaticObject::get_instanced_mesh() const
+{
+    return *this->instanced_mesh;
+}
+
 void InstancedStaticObject::render(RenderPass render_pass) const
 {
     Shader& instanced_render_shader = *render_pass.get_render_context().object_shader;

@@ -80,14 +80,14 @@ void init()
     Asset nanosuit(assets.find<Model>("nanosuit"));
     Asset illidan(assets.find<Model>("illidan"));
     Asset deathwing_asset(assets.find<Model>("deathwing"));
-    Asset asset0(assets.find<Mesh>("cube"), assets.find_texture("bricks"), assets.find_normal_map("bricks_normal"), assets.find_parallax_map("bricks_parallax"), assets.find_displacement_map("bricks_displacement"));
-    Asset noise_asset(assets.find<Mesh>("plane_hd"), assets.find_texture("bricks"), assets.find_normal_map("bricks_normal"), nullptr, assets.find_displacement_map("noise_displacement"));
-    Asset asset1(assets.find_mesh("cube_lq"), assets.find_texture("bricks"), assets.find_normal_map("bricks_normal"), assets.find_parallax_map("bricks_parallax"));
-    Asset asset2(assets.find_mesh("cube_lq"), assets.find_texture("bricks"), assets.find_normal_map("bricks_normal"));
+    Asset asset0(assets.find<Mesh>("cube"), assets.find_texture("bricks"), assets.find<NormalMap>("bricks_normal"), assets.find<ParallaxMap>("bricks_parallax"), assets.find<DisplacementMap>("bricks_displacement"));
+    Asset noise_asset(assets.find<Mesh>("plane_hd"), assets.find_texture("bricks"), assets.find<NormalMap>("bricks_normal"), nullptr, assets.find<DisplacementMap>("noise_displacement"));
+    Asset asset1(assets.find_mesh("cube_lq"), assets.find_texture("bricks"), assets.find<NormalMap>("bricks_normal"), assets.find<ParallaxMap>("bricks_parallax"));
+    Asset asset2(assets.find_mesh("cube_lq"), assets.find_texture("bricks"), assets.find<NormalMap>("bricks_normal"));
     Asset asset3(assets.find_mesh("cube_lq"), assets.find_texture("bricks"));
-    Asset stone_floor(assets.find_mesh("cube_lq"), assets.find_texture("stone"), assets.find_normal_map("stone_normal"), assets.find_parallax_map("stone_parallax"));
-    Asset wooden_sphere(assets.find_mesh("sphere"), assets.find_texture("wood"), assets.find_normal_map("wood_normal"), assets.find_parallax_map("wood_parallax"));
-    Asset wooden_cylinder(assets.find_mesh("cylinder"), assets.find_texture("wood"), assets.find_normal_map("wood_normal"), assets.find_parallax_map("wood_parallax"));
+    Asset stone_floor(assets.find_mesh("cube_lq"), assets.find_texture("stone"), assets.find<NormalMap>("stone_normal"), assets.find<ParallaxMap>("stone_parallax"));
+    Asset wooden_sphere(assets.find_mesh("sphere"), assets.find_texture("wood"), assets.find<NormalMap>("wood_normal"), assets.find<ParallaxMap>("wood_parallax"));
+    Asset wooden_cylinder(assets.find_mesh("cylinder"), assets.find_texture("wood"), assets.find<NormalMap>("wood_normal"), assets.find<ParallaxMap>("wood_parallax"));
 
     Shader gaussian_blur_shader("../src/shaders/GaussianBlur");
     Shader gui_bloom_shader("../src/shaders/Gui_Bloom");
@@ -157,7 +157,7 @@ void init()
         object.angular_velocity = {rand(-pi, pi) * 0.1f, rand(-pi, pi) * 0.1f, rand(-pi, pi) * 0.1f};
     }
     scene.emplace<InstancedStaticObject>(floor_objects);
-    //scene.emplace<InstancedDynamicObject>(falling_objects);
+    scene.emplace<InstancedDynamicObject>(falling_objects);
     // add the model objects
     scene.emplace<StaticObject>(Transform{{0, -135, 100}, {}, {50, 50, 50}}, maul);
     scene.emplace<StaticObject>(Transform{{50, -135, 100}, {}, {7, 7, 7}}, nanosuit);

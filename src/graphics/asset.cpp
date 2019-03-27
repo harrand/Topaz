@@ -1,6 +1,6 @@
 #include "graphics/asset.hpp"
 
-AssetBuffer::AssetBuffer(std::unordered_map<std::string, std::unique_ptr<Mesh>> meshes, std::unordered_map<std::string, std::unique_ptr<Texture>> textures, std::unordered_map<std::string, std::unique_ptr<NormalMap>> normal_maps, std::unordered_map<std::string, std::unique_ptr<ParallaxMap>> parallax_maps, std::unordered_map<std::string, std::unique_ptr<DisplacementMap>> displacement_maps, std::unordered_map<std::string, std::unique_ptr<AnimatedTexture>> animated_textures, std::unordered_map<std::string, std::unique_ptr<Model>> models): meshes(std::move(meshes)), textures(std::move(textures)), normal_maps(std::move(normal_maps)), parallax_maps(std::move(parallax_maps)), displacement_maps(std::move(displacement_maps)), animated_textures(std::move(animated_textures)), models(std::move(models)){}
+AssetBuffer::AssetBuffer(std::unordered_map<std::string, std::unique_ptr<Mesh>> meshes, std::unordered_map<std::string, std::unique_ptr<Texture>> textures, std::unordered_map<std::string, std::unique_ptr<AnimatedTexture>> animated_textures, std::unordered_map<std::string, std::unique_ptr<Model>> models): meshes(std::move(meshes)), textures(std::move(textures)), animated_textures(std::move(animated_textures)), models(std::move(models)){}
 
 bool AssetBuffer::sink_mesh(const std::string& asset_name, std::unique_ptr<Mesh> sunken_mesh)
 {
@@ -15,30 +15,6 @@ bool AssetBuffer::sink_texture(const std::string& asset_name, std::unique_ptr<Te
     if(this->textures.find(asset_name) != this->textures.end())
         return false;
     this->textures[asset_name] = std::move(sunken_texture);
-    return true;
-}
-
-bool AssetBuffer::sink_normalmap(const std::string& asset_name, std::unique_ptr<NormalMap> sunken_normalmap)
-{
-    if(this->normal_maps.find(asset_name) != this->normal_maps.end())
-        return false;
-    this->normal_maps[asset_name] = std::move(sunken_normalmap);
-    return true;
-}
-
-bool AssetBuffer::sink_parallaxmap(const std::string& asset_name, std::unique_ptr<ParallaxMap> sunken_parallaxmap)
-{
-    if(this->parallax_maps.find(asset_name) != this->parallax_maps.end())
-        return false;
-    this->parallax_maps[asset_name] = std::move(sunken_parallaxmap);
-    return true;
-}
-
-bool AssetBuffer::sink_displacementmap(const std::string& asset_name, std::unique_ptr<DisplacementMap> sunken_displacementmap)
-{
-    if(this->displacement_maps.find(asset_name) != this->displacement_maps.end())
-        return false;
-    this->displacement_maps[asset_name] = std::move(sunken_displacementmap);
     return true;
 }
 
@@ -86,39 +62,6 @@ Texture* AssetBuffer::find_texture(const std::string& texture_name)
     }
 }
 
-NormalMap* AssetBuffer::find_normal_map(const std::string& normal_map_name)
-{
-    try
-    {
-        return this->normal_maps.at(normal_map_name).get();
-    }catch(const std::out_of_range& exception)
-    {
-        return nullptr;
-    }
-}
-
-ParallaxMap* AssetBuffer::find_parallax_map(const std::string& parallax_map_name)
-{
-    try
-    {
-        return this->parallax_maps.at(parallax_map_name).get();
-    }catch(const std::out_of_range& exception)
-    {
-        return nullptr;
-    }
-}
-
-DisplacementMap* AssetBuffer::find_displacement_map(const std::string& displacement_map_name)
-{
-    try
-    {
-        return this->displacement_maps.at(displacement_map_name).get();
-    }catch(const std::out_of_range& exception)
-    {
-        return nullptr;
-    }
-}
-
 AnimatedTexture* AssetBuffer::find_animated_texture(const std::string& animation_name)
 {
     try
@@ -159,33 +102,6 @@ std::unique_ptr<Texture> AssetBuffer::take_texture(const std::string& texture_na
     return texture;
 }
 
-std::unique_ptr<NormalMap> AssetBuffer::take_normalmap(const std::string& normalmap_name)
-{
-    if(this->normal_maps.find(normalmap_name) == this->normal_maps.end())
-        return nullptr;
-    std::unique_ptr<NormalMap> normalmap = std::move(this->normal_maps[normalmap_name]);
-    this->normal_maps.erase(normalmap_name);
-    return normalmap;
-}
-
-std::unique_ptr<ParallaxMap> AssetBuffer::take_parallaxmap(const std::string& parallaxmap_name)
-{
-    if(this->parallax_maps.find(parallaxmap_name) == this->parallax_maps.end())
-        return nullptr;
-    std::unique_ptr<ParallaxMap> parallaxmap = std::move(this->parallax_maps[parallaxmap_name]);
-    this->parallax_maps.erase(parallaxmap_name);
-    return parallaxmap;
-}
-
-std::unique_ptr<DisplacementMap> AssetBuffer::take_displacementmap(const std::string& displacementmap_name)
-{
-    if(this->displacement_maps.find(displacementmap_name) == this->displacement_maps.end())
-        return nullptr;
-    std::unique_ptr<DisplacementMap> displacementmap = std::move(this->displacement_maps[displacementmap_name]);
-    this->displacement_maps.erase(displacementmap_name);
-    return displacementmap;
-}
-
 std::unique_ptr<AnimatedTexture> AssetBuffer::take_animated_texture(const std::string& animation_name)
 {
     if(this->animated_textures.find(animation_name) == this->animated_textures.end())
@@ -206,6 +122,11 @@ std::unique_ptr<Model> AssetBuffer::take_model(const std::string& model_name)
 
 Asset::Asset(Mesh* mesh, Texture* texture, NormalMap* normal_map, ParallaxMap* parallax_map, DisplacementMap* displacement_map, Model* model): mesh(mesh), texture(texture), normal_map(normal_map), parallax_map(parallax_map), displacement_map(displacement_map), model(model){}
 
+Asset::Asset(Mesh* mesh): Asset(mesh, nullptr){}
+Asset::Asset(Texture* texture): Asset(nullptr, texture){}
+Asset::Asset(NormalMap* normal_map): Asset(nullptr, nullptr, normal_map){}
+Asset::Asset(ParallaxMap* parallax_map): Asset(nullptr, nullptr, nullptr, parallax_map){}
+Asset::Asset(DisplacementMap* displacement_map): Asset(nullptr, nullptr, nullptr, nullptr, displacement_map){}
 Asset::Asset(Model* model): Asset(nullptr, nullptr, nullptr, nullptr, nullptr, model){}
 
 bool Asset::valid_mesh() const
@@ -236,6 +157,11 @@ bool Asset::valid_displacement_map() const
 bool Asset::valid_model() const
 {
     return this->model != nullptr;
+}
+
+bool Asset::is_renderable() const
+{
+    return this->valid_mesh() || this->valid_model();
 }
 
 bool Asset::operator==(const Asset &rhs) const
