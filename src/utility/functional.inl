@@ -7,9 +7,28 @@ namespace tz::utility::functional
     }
 
     template<typename Base, typename Derived>
-    constexpr bool is_a(const Derived& derived)
+    constexpr bool is_a(const Base& base)
     {
-        return dynamic_cast<Base*>(&derived) != nullptr;
+        return dynamic_cast<const Derived*>(&base) != nullptr;
+    }
+
+    template<typename T>
+    std::reference_wrapper<T> build_reference(T& t)
+    {
+        if constexpr(std::is_const_v<T>)
+            return std::cref(t);
+        else
+            return std::ref(t);
+    }
+
+    template<typename Base, typename Derived, template<typename> typename ReferenceWrapper = std::reference_wrapper>
+    std::vector<ReferenceWrapper<Derived>> get_subclasses(const std::vector<ReferenceWrapper<Base>>& container, const std::function<ReferenceWrapper<Derived>(Derived&)>& wrapper_generator)
+    {
+        std::vector<ReferenceWrapper<Derived>> subclasses;
+        for(Base& base : container)
+            if(dynamic_cast<Derived*>(&base) != nullptr)
+                subclasses.push_back(wrapper_generator(dynamic_cast<Derived&>(base)));
+        return subclasses;
     }
 }
 

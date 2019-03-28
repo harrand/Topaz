@@ -148,11 +148,11 @@ namespace tz::listener
 {
 	bool is_mouse(const Listener* listener)
 	{
-		return tz::utility::functional::is_a<const MouseListener>(*listener);//dynamic_cast<const MouseListener*>(listener) != nullptr;
+		return tz::utility::functional::is_a<const Listener, const MouseListener>(*listener);//dynamic_cast<const MouseListener*>(listener) != nullptr;
 	}
 	
 	bool is_keyboard(const Listener* listener)
 	{
-		return tz::utility::functional::is_a<const KeyListener>(*listener);//dynamic_cast<const KeyListener*>(listener) != nullptr;
+		return tz::utility::functional::is_a<const Listener, const KeyListener>(*listener);//dynamic_cast<const KeyListener*>(listener) != nullptr;
 	}
 }

@@ -474,7 +474,7 @@ std::vector<Mesh> tz::graphics::load_all_meshes(const std::string& filename)
 
 bool tz::graphics::is_instanced(const Mesh* mesh)
 {
-	return tz::utility::functional::is_a<const InstancedMesh>(*mesh);
+	return tz::utility::functional::is_a<const Mesh, const InstancedMesh>(*mesh);
 }
 
 Mesh tz::graphics::create_quad(float x, float y, float width, float height)

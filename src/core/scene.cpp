@@ -221,14 +221,7 @@ void Scene::add_point_light(PointLight light)
 
 std::vector<std::reference_wrapper<const DynamicObject>> Scene::get_dynamic_objects() const
 {
-    std::vector<std::reference_wrapper<const DynamicObject>> object_crefs;
-    for(std::reference_wrapper<const StaticObject> static_ref : this->get_static_objects())
-    {
-        const DynamicObject* dynamic_ref = dynamic_cast<const DynamicObject*>(&static_ref.get());
-        if(dynamic_ref != nullptr)
-            object_crefs.push_back(std::cref(*dynamic_ref));
-    }
-    return object_crefs;
+    return tz::utility::functional::get_subclasses<const StaticObject, const DynamicObject>(this->get_static_objects());
 }
 
 std::vector<std::reference_wrapper<StaticObject>> Scene::get_mutable_static_objects()
@@ -243,26 +236,12 @@ std::vector<std::reference_wrapper<StaticObject>> Scene::get_mutable_static_obje
 
 std::vector<std::reference_wrapper<DynamicObject>> Scene::get_mutable_dynamic_objects()
 {
-    std::vector<std::reference_wrapper<DynamicObject>> object_refs;
-    for(std::reference_wrapper<StaticObject> static_ref : this->get_mutable_static_objects())
-    {
-        DynamicObject* dynamic_ref = dynamic_cast<DynamicObject*>(&static_ref.get());
-        if(dynamic_ref != nullptr)
-            object_refs.push_back(std::ref(*dynamic_ref));
-    }
-    return object_refs;
+    return tz::utility::functional::get_subclasses<StaticObject, DynamicObject>(this->get_mutable_static_objects());
 }
 
 std::vector<std::reference_wrapper<const DynamicSprite>> Scene::get_dynamic_sprites() const
 {
-    std::vector<std::reference_wrapper<const DynamicSprite>> dyn_sprites;
-    for(const Sprite& sprite : this->get_sprites())
-    {
-        const DynamicSprite* dynamic_component = dynamic_cast<const DynamicSprite*>(&sprite);
-        if(dynamic_component != nullptr)
-            dyn_sprites.push_back(std::cref(*dynamic_component));
-    }
-    return dyn_sprites;
+    return tz::utility::functional::get_subclasses<const Sprite, const DynamicSprite>(this->get_sprites());
 }
 
 std::vector<std::reference_wrapper<Sprite>> Scene::get_mutable_sprites()
@@ -277,14 +256,7 @@ std::vector<std::reference_wrapper<Sprite>> Scene::get_mutable_sprites()
 
 std::vector<std::reference_wrapper<DynamicSprite>> Scene::get_mutable_dynamic_sprites()
 {
-    std::vector<std::reference_wrapper<DynamicSprite>> dyn_sprite_refs;
-    for(std::reference_wrapper<Sprite> static_ref : this->get_mutable_sprites())
-    {
-        DynamicSprite* dynamic_component = dynamic_cast<DynamicSprite*>(&static_ref.get());
-        if(dynamic_component != nullptr)
-            dyn_sprite_refs.push_back(std::ref(*dynamic_component));
-    }
-    return dyn_sprite_refs;
+    return tz::utility::functional::get_subclasses<Sprite, DynamicSprite>(this->get_mutable_sprites());
 }
 
 std::multimap<float, std::reference_wrapper<DynamicObject>> Scene::get_mutable_dynamic_objects_sorted_by_variance_axis()
