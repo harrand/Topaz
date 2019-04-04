@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.9)
 project(topaz VERSION 0.7.0 DESCRIPTION "Cross-Platform Multimedia Engine")
 set(CMAKE_BUILD_TYPE Release)
 set(CMAKE_CXX_STANDARD 17)
+set(UNDERLYING_GRAPHICS_API "TOPAZ_OPENGL")
+#set(UNDERLYING_GRAPHICS_API "TOPAZ_VULKAN")
 # add_compile_options are global flags. They are used everywhere, not just in particular modules.
 add_compile_options(-Wall -Wextra -pedantic-errors -O3)
 
@@ -105,7 +107,7 @@ add_library(topaz SHARED
         src/utility/string.hpp
         src/utility/time.cpp
         src/utility/time.hpp
-        src/utility/time.inl src/graphics/render_pass.cpp src/graphics/render_pass.hpp)
+        src/utility/time.inl src/graphics/render_pass.cpp src/graphics/render_pass.hpp src/platform_specific/vertex_buffer.cpp src/platform_specific/vertex_buffer.hpp)
 # here we express in terms of modules, not just build flags
 target_include_directories(topaz PUBLIC ${PROJECT_SOURCE_DIR}/inc)
 target_include_directories(topaz PRIVATE ${PROJECT_SOURCE_DIR}/src)
@@ -117,7 +119,7 @@ find_library(LIB_SDL2_TTF SDL2_ttf PATHS ${PROJECT_SOURCE_DIR}/lib)
 find_library(LIB_SDL2_MAIN SDL2main PATHS ${PROJECT_SOURCE_DIR}/lib)
 find_library(LIB_OPENGL OpenGL32)
 
-target_compile_definitions(topaz PUBLIC TOPAZ_DEBUG)
+target_compile_definitions(topaz PUBLIC TOPAZ_DEBUG ${UNDERLYING_GRAPHICS_API})
 # public is for interface dependencies which we have, but no specific implementation dependencies that games wont need
 target_link_libraries(topaz PUBLIC ${LIB_SDL2} ${LIB_SDL2_MIXER} ${LIB_SDL2_TTF} ${LIB_SDL2_MAIN} ${LIB_ASSIMP} OpenGL32)
 
