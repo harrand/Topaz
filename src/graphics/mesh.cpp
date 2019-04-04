@@ -36,11 +36,6 @@ OGLMesh::OGLMesh(const OGLMesh& copy): OGLMesh(copy.vertices, copy.indices){}
 
 OGLMesh::OGLMesh(OGLMesh&& move): vertices(std::move(move.vertices)), vertex_array(std::move(move.vertex_array)), indices(std::move(move.indices)) {}
 
-OGLMesh::~OGLMesh()
-{
-	// Should be done for us
-}
-
 OGLMesh& OGLMesh::operator=(OGLMesh rhs)
 {
 	OGLMesh::swap(*this, rhs);
@@ -88,21 +83,9 @@ const std::vector<unsigned int>& OGLMesh::get_indices() const
 	return this->indices;
 }
 
-void OGLMesh::render(bool patches, GLenum mode) const
+void OGLMesh::render(bool patches) const
 {
-	this->vertex_array.bind();
-	//glBindVertexArray(this->vertex_array_object);
-	if(patches)
-	{
-		glPatchParameteri(GL_PATCH_VERTICES, 3);
-		glDrawElements(GL_PATCHES, this->indices.size(), GL_UNSIGNED_INT, NULL);
-	}
-	else
-	{
-		glDrawElements(mode, this->indices.size(), GL_UNSIGNED_INT, NULL);
-	}
-	this->vertex_array.unbind();
-	//glBindVertexArray(0);
+    this->vertex_array.render(patches);
 }
 
 bool OGLMesh::operator==(const OGLMesh& rhs) const
@@ -180,22 +163,11 @@ void OGLMesh::init_mesh()
 	for(auto vec : this->get_tangents())
 		tangents.push_back(vec.data());
 
-	//glGenVertexArrays(1, &(this->vertex_array_object));
-	//glBindVertexArray(this->vertex_array_object);
 	this->vertex_array.bind();
 
-	//glGenBuffers(static_cast<unsigned int>(BufferTypes::NUM_BUFFERS), this->vbo_buffers.data());
 	// 0 = Vertices, 1 = Texture Coordinates, 2 = Internal Normals, 3 = Indices, 4 = Tangents
-
 	using namespace tz::platform;
 	using namespace tz::utility; // tz::utility::generic::sizeof_element
-	/*
-	glBindBuffer(GL_ARRAY_BUFFER, this->vbo_buffers[static_cast<unsigned int>(BufferTypes::POSITION)]);
-	glBufferData(GL_ARRAY_BUFFER, positions.size() * generic::sizeof_element(positions), positions.data(), GL_STATIC_DRAW);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), NULL);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	*/
 	OGLVertexBuffer& position_buffer = this->vertex_array.emplace_vertex_buffer(OGLVertexBufferTarget::ARRAY);
 	auto default_usage = OGLVertexBufferUsage{OGLVertexBufferFrequency::STATIC, OGLVertexBufferNature::DRAW};
 	position_buffer.insert(positions, default_usage);
@@ -203,57 +175,24 @@ void OGLMesh::init_mesh()
 	position_attribute.define<float>(3, GL_FALSE, 3 * sizeof(float));
     position_buffer.unbind();
 
-    /*
-    glBindBuffer(GL_ARRAY_BUFFER, this->vbo_buffers[static_cast<unsigned int>(BufferTypes::TEXCOORD)]);
-    glBufferData(GL_ARRAY_BUFFER, texcoords.size() * generic::sizeof_element(texcoords), texcoords.data(), GL_STATIC_DRAW);
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), NULL);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    */
 	OGLVertexBuffer& texcoord_buffer = this->vertex_array.emplace_vertex_buffer(OGLVertexBufferTarget::ARRAY);
 	texcoord_buffer.insert(texcoords, default_usage);
 	OGLVertexAttribute& texcoord_attribute = this->vertex_array.emplace_vertex_attribute(1);
 	texcoord_attribute.define<float>(2, GL_FALSE, 2 * sizeof(float));
     texcoord_buffer.unbind();
 
-	/*
-	glBindBuffer(GL_ARRAY_BUFFER, this->vbo_buffers[static_cast<unsigned int>(BufferTypes::NORMAL)]);
-	glBufferData(GL_ARRAY_BUFFER, normals.size() * generic::sizeof_element(normals), normals.data(), GL_STATIC_DRAW);
-	glEnableVertexAttribArray(2);
-	glVertexAttribPointer(2, 3, GL_FLOAT, GL_TRUE,  3 * sizeof(float), NULL);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	*/
 	OGLVertexBuffer& normal_buffer = this->vertex_array.emplace_vertex_buffer(OGLVertexBufferTarget::ARRAY);
 	normal_buffer.insert(normals, default_usage);
 	OGLVertexAttribute& normal_attribute = this->vertex_array.emplace_vertex_attribute(2);
 	normal_attribute.define<float>(3, GL_TRUE, 3 * sizeof(float));
     normal_buffer.unbind();
-    // Equivalent to:
-    //glbindvertexarray
-    //glgenbuffers
-    //glbindbuffer
-    //glbufferdata
-    //glenablevertexattribarray(2)
-    //glattribpointer(2, 3 float, gl-true, 3 * sizeof(float))
-    //glbindbuffer(0)
 
-	/*
-	glBindBuffer(GL_ARRAY_BUFFER, this->vbo_buffers[static_cast<unsigned int>(BufferTypes::TANGENT)]);
-	glBufferData(GL_ARRAY_BUFFER, tangents.size() * generic::sizeof_element(tangents), tangents.data(), GL_STATIC_DRAW);
-	glEnableVertexAttribArray(3);
-	glVertexAttribPointer(3, 3, GL_FLOAT, GL_TRUE, 3 * sizeof(float), NULL);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	*/
 	OGLVertexBuffer& tangent_buffer = this->vertex_array.emplace_vertex_buffer(OGLVertexBufferTarget::ARRAY);
 	tangent_buffer.insert(tangents, default_usage);
 	OGLVertexAttribute& tangent_attribute = this->vertex_array.emplace_vertex_attribute(3);
 	tangent_attribute.define<float>(3, GL_TRUE, 3 * sizeof(float));
     tangent_buffer.unbind();
 
-	/*
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->vbo_buffers[static_cast<unsigned int>(BufferTypes::INDEX)]);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->indices.size() * generic::sizeof_element(this->indices), this->indices.data(), GL_STATIC_DRAW);
-	*/
 	OGLVertexBuffer& index_buffer = this->vertex_array.emplace_vertex_buffer(OGLVertexBufferTarget::ELEMENT_ARRAY);
 	index_buffer.insert(this->indices, default_usage);
 
@@ -262,7 +201,6 @@ void OGLMesh::init_mesh()
     normal_attribute.enable();
     tangent_attribute.enable();
 
-    //glBindVertexArray(0);
 	this->vertex_array.unbind();
 }
 
@@ -298,27 +236,11 @@ OGLInstancedMesh::OGLInstancedMesh(const OGLMesh& uninstanced_copy, std::vector<
 
     using namespace tz::platform;
     using namespace tz::utility; // tz::utility::generic::sizeof_element
-    /*
-    GLenum usage = GL_STATIC_DRAW;
-    if(dynamic_transform)
-        usage = GL_DYNAMIC_DRAW;
-    */
     OGLVertexBufferUsage usage{OGLVertexBufferFrequency::STATIC, OGLVertexBufferNature::DRAW};
     if(dynamic_transform)
         usage = {OGLVertexBufferFrequency::DYNAMIC, OGLVertexBufferNature::DRAW};
-    // Populate OGLMesh::vertex_array_object with additional vbo buffers.
-    //glBindVertexArray(this->vertex_array_object);
     this->vertex_array.bind();
     // Row X (attribute 4)
-    /*
-    glGenBuffers(1, &this->model_matrix_x_vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, this->model_matrix_x_vbo);
-    glBufferData(GL_ARRAY_BUFFER, xs.size() * generic::sizeof_element(xs), xs.data(), usage);
-    glEnableVertexAttribArray(4);
-    glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), NULL);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glVertexAttribDivisor(4, 1);
-    */
     this->model_matrix_x_vbo = &this->vertex_array.emplace_vertex_buffer(OGLVertexBufferTarget::ARRAY);
     this->model_matrix_x_vbo->insert(xs, usage);
     OGLVertexAttribute& model_matrix_x_attribute = this->vertex_array.emplace_vertex_attribute(4);
@@ -326,15 +248,6 @@ OGLInstancedMesh::OGLInstancedMesh(const OGLMesh& uninstanced_copy, std::vector<
     model_matrix_x_vbo->unbind();
     model_matrix_x_attribute.instanced_define(1);
     // Row Y (attribute 5)
-    /*
-    glGenBuffers(1, &this->model_matrix_y_vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, this->model_matrix_y_vbo);
-    glBufferData(GL_ARRAY_BUFFER, ys.size() * generic::sizeof_element(ys), ys.data(), usage);
-    glEnableVertexAttribArray(5);
-    glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), NULL);
-    glVertexAttribDivisor(5, 1);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    */
     this->model_matrix_y_vbo = &this->vertex_array.emplace_vertex_buffer(OGLVertexBufferTarget::ARRAY);
     this->model_matrix_y_vbo->insert(ys, usage);
     OGLVertexAttribute& model_matrix_y_attribute = this->vertex_array.emplace_vertex_attribute(5);
@@ -342,15 +255,6 @@ OGLInstancedMesh::OGLInstancedMesh(const OGLMesh& uninstanced_copy, std::vector<
     model_matrix_y_vbo->unbind();
     model_matrix_y_attribute.instanced_define(1);
     // Row Z (attribute 6)
-    /*
-    glGenBuffers(1, &this->model_matrix_z_vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, this->model_matrix_z_vbo);
-    glBufferData(GL_ARRAY_BUFFER, zs.size() * generic::sizeof_element(zs), zs.data(), usage);
-    glEnableVertexAttribArray(6);
-    glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), NULL);
-    glVertexAttribDivisor(6, 1);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    */
     this->model_matrix_z_vbo = &this->vertex_array.emplace_vertex_buffer(OGLVertexBufferTarget::ARRAY);
     this->model_matrix_z_vbo->insert(zs, usage);
     OGLVertexAttribute& model_matrix_z_attribute = this->vertex_array.emplace_vertex_attribute(6);
@@ -358,15 +262,6 @@ OGLInstancedMesh::OGLInstancedMesh(const OGLMesh& uninstanced_copy, std::vector<
     model_matrix_z_vbo->unbind();
     model_matrix_z_attribute.instanced_define(1);
     // Row W (attribute 7)
-    /*
-    glGenBuffers(1, &this->model_matrix_w_vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, this->model_matrix_w_vbo);
-    glBufferData(GL_ARRAY_BUFFER, ws.size() * generic::sizeof_element(ws), ws.data(), usage);
-    glEnableVertexAttribArray(7);
-    glVertexAttribPointer(7, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), NULL);
-    glVertexAttribDivisor(7, 1);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    */
     this->model_matrix_w_vbo = &this->vertex_array.emplace_vertex_buffer(OGLVertexBufferTarget::ARRAY);
     this->model_matrix_w_vbo->insert(ws, usage);
     OGLVertexAttribute& model_matrix_w_attribute = this->vertex_array.emplace_vertex_attribute(7);
@@ -379,30 +274,12 @@ OGLInstancedMesh::OGLInstancedMesh(const OGLMesh& uninstanced_copy, std::vector<
     model_matrix_z_attribute.enable();
     model_matrix_w_attribute.enable();
     // Finish working with our new vao.
-    //glBindVertexArray(0);
-
     this->vertex_array.unbind();
 }
 
 OGLInstancedMesh::OGLInstancedMesh(const OGLInstancedMesh& copy): OGLInstancedMesh(copy, copy.positions, copy.rotations, copy.scales, copy.dynamic_transform){}
 
-OGLInstancedMesh::OGLInstancedMesh(OGLInstancedMesh&& move): OGLMesh(move), positions(std::move(move.positions)), rotations(std::move(move.rotations)), scales(std::move(move.scales)), models(std::move(move.models)), instance_quantity(std::move(move.instance_quantity)), dynamic_transform(std::move(move.dynamic_transform)), model_matrix_x_vbo(std::move(move.model_matrix_x_vbo)), model_matrix_y_vbo(std::move(move.model_matrix_y_vbo)), model_matrix_z_vbo(std::move(move.model_matrix_z_vbo)), model_matrix_w_vbo(std::move(move.model_matrix_w_vbo))
-{
-    move.model_matrix_x_vbo = 0;
-    move.model_matrix_y_vbo = 0;
-    move.model_matrix_z_vbo = 0;
-    move.model_matrix_w_vbo = 0;
-}
-
-OGLInstancedMesh::~OGLInstancedMesh()
-{
-    /*
-    glDeleteBuffers(1, &(this->model_matrix_x_vbo));
-    glDeleteBuffers(1, &(this->model_matrix_y_vbo));
-    glDeleteBuffers(1, &(this->model_matrix_z_vbo));
-    glDeleteBuffers(1, &(this->model_matrix_w_vbo));
-    */
-}
+OGLInstancedMesh::OGLInstancedMesh(OGLInstancedMesh&& move): OGLMesh(move), positions(std::move(move.positions)), rotations(std::move(move.rotations)), scales(std::move(move.scales)), models(std::move(move.models)), instance_quantity(std::move(move.instance_quantity)), dynamic_transform(std::move(move.dynamic_transform)), model_matrix_x_vbo(std::move(move.model_matrix_x_vbo)), model_matrix_y_vbo(std::move(move.model_matrix_y_vbo)), model_matrix_z_vbo(std::move(move.model_matrix_z_vbo)), model_matrix_w_vbo(std::move(move.model_matrix_w_vbo)) {}
 
 OGLInstancedMesh& OGLInstancedMesh::operator=(OGLInstancedMesh rhs)
 {
@@ -478,21 +355,9 @@ std::size_t OGLInstancedMesh::get_instance_quantity() const
     return this->instance_quantity;
 }
 
-void OGLInstancedMesh::render(bool patches, GLenum mode) const
+void OGLInstancedMesh::render(bool patches) const
 {
-    //glBindVertexArray(this->vertex_array_object);
-    this->vertex_array.bind();
-    if(patches)
-    {
-        glPatchParameteri(GL_PATCH_VERTICES, 3);
-        glDrawElementsInstanced(GL_PATCHES, this->indices.size(), GL_UNSIGNED_INT, nullptr, this->instance_quantity);
-    }
-    else
-    {
-        glDrawElementsInstanced(mode, this->indices.size(), GL_UNSIGNED_INT, nullptr, this->instance_quantity);
-    }
-    //glBindVertexArray(0);
-    this->vertex_array.unbind();
+    this->vertex_array.render(patches, this->instance_quantity);
 }
 
 void OGLInstancedMesh::update_instance(std::size_t instance_id)

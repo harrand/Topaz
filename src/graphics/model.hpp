@@ -48,7 +48,7 @@ public:
      * @param shader - Shader with which to render the model
      * @param mode - Render primitive mode with which to render the model. This is triangular by default. As imported Models are always triangular, this should remain its default value unless non-triangular models are constructed manually
      */
-    virtual void render(Shader& shader, GLenum mode = GL_TRIANGLES) const;
+    virtual void render(Shader& shader) const;
 private:
     /**
      * For a given assimp material, extract all filesystem paths referencing corresponding textures comprising the material.

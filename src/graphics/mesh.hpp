@@ -54,7 +54,7 @@ public:
 	/**
 	 * Safely dispose of loaded Mesh data.
 	 */
-	virtual ~OGLMesh();
+	virtual ~OGLMesh() = default;
 	OGLMesh& operator=(OGLMesh rhs);
 	/**
 	 * Get a container of 3-dimensional Vectors representing the position of each Vertex, in model-space.
@@ -86,7 +86,7 @@ public:
 	 * @param patches - Whether to use Patches as the OpenGL primitive or not
 	 * @param mode - Which primitive to use (if patches is true, uses patches with the same number of vertices as this polygon)
 	 */
-	virtual void render(bool patches, GLenum mode = GL_TRIANGLES) const;
+	virtual void render(bool patches) const;
 	/**
 	 * Equate this Mesh with another.
 	 * @param rhs - The other Mesh to compare to
@@ -101,9 +101,9 @@ protected:
 	static void swap(OGLMesh& lhs, OGLMesh& rhs);
 	/// List of all vertex-data.
 	std::vector<Vertex> vertices;
-	/// OpenGL VAO handle.
+	/// OpenGL-specific VAO.
 	tz::platform::OGLVertexArray vertex_array;
-	//GLuint vertex_array_object;
+    /// Element Array Buffer, essentially.
 	std::vector<unsigned int> indices;
 private:
 	/// Initialise the underlying mesh data container.
@@ -132,7 +132,7 @@ public:
     /**
      * Safely dispose of loaded OGLInstancedMesh data.
      */
-    virtual ~OGLInstancedMesh();
+    virtual ~OGLInstancedMesh() = default;
     OGLInstancedMesh& operator=(OGLInstancedMesh rhs);
 
     /**
@@ -168,7 +168,7 @@ public:
      * @param patches - Whether to use Patches as the OpenGL primitive or not
      * @param mode - Which primitive to use (if patches is true, uses patches with the same number of vertices as this polygon)
      */
-    virtual void render(bool patches, GLenum mode = GL_TRIANGLES) const override;
+    virtual void render(bool patches) const override;
 private:
     void update_instance(std::size_t instance_id);
     static void swap(OGLInstancedMesh& lhs, OGLInstancedMesh& rhs);
@@ -181,7 +181,6 @@ private:
     /// Used for optimisation. Stores whether we expect instances to have their values changed often.
     bool dynamic_transform;
     /// Underlying OpenGL VBO handles.
-    //GLuint model_matrix_x_vbo, model_matrix_y_vbo, model_matrix_z_vbo, model_matrix_w_vbo;
     tz::platform::OGLVertexBuffer *model_matrix_x_vbo, *model_matrix_y_vbo, *model_matrix_z_vbo, *model_matrix_w_vbo;
 };
 

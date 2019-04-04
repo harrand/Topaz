@@ -59,6 +59,11 @@ namespace tz::platform
         glDeleteBuffers(1, &this->vbo_handle);
     }
 
+    const OGLVertexBufferTarget& OGLVertexBuffer::get_target() const
+    {
+        return this->target;
+    }
+
     std::size_t OGLVertexBuffer::get_size() const
     {
         GLint size;
@@ -92,6 +97,11 @@ namespace tz::platform
     }
 
     OGLVertexAttribute::OGLVertexAttribute(GLuint attribute_id): attribute_id(attribute_id){}
+
+    GLuint OGLVertexAttribute::get_id() const
+    {
+        return this->attribute_id;
+    }
 
     void OGLVertexAttribute::enable() const
     {
@@ -151,6 +161,22 @@ namespace tz::platform
     void OGLVertexArray::unbind() const
     {
         glBindVertexArray(0);
+    }
+
+    const OGLVertexAttribute* OGLVertexArray::get_attribute(GLuint attribute_id) const
+    {
+        for(const std::unique_ptr<OGLVertexAttribute>& attrib_ptr : this->vertex_attributes)
+            if(attrib_ptr->get_id() == attribute_id)
+                return attrib_ptr.get();
+        return nullptr;
+    }
+
+    const OGLVertexBuffer* OGLVertexArray::get_element_array_buffer() const
+    {
+        for(const std::unique_ptr<OGLVertexBuffer>& buffer_ptr : this->vertex_buffers)
+            if(buffer_ptr->get_target() == OGLVertexBufferTarget::ELEMENT_ARRAY)
+                return buffer_ptr.get();
+        return nullptr;
     }
 
     bool OGLVertexArray::operator==(const OGLVertexArray& rhs) const

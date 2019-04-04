@@ -163,7 +163,7 @@ std::vector<std::reference_wrapper<const Texture>> Model::get_textures_in_mesh(s
     return texture_refs;
 }
 
-void Model::render(Shader& shader, GLenum mode) const
+void Model::render(Shader& shader) const
 {
     using namespace tz::utility::functional;
     bool patches = shader.has_tessellation_control_shader();
@@ -233,7 +233,7 @@ void Model::render(Shader& shader, GLenum mode) const
             }
         }
         shader.update();
-        this->meshes[i].render(patches, mode);
+        this->meshes[i].render(patches);
     }
 }
 

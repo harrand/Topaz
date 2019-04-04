@@ -43,6 +43,7 @@ namespace tz::platform
     public:
         OGLVertexBuffer(OGLVertexBufferTarget target);
         ~OGLVertexBuffer();
+        const OGLVertexBufferTarget& get_target() const;
         std::size_t get_size() const;
         bool empty() const;
         void allocate_memory(std::size_t size, const OGLVertexBufferUsage& usage) const;
@@ -72,6 +73,7 @@ namespace tz::platform
     {
     public:
         OGLVertexAttribute(GLuint attribute_id);
+        GLuint get_id() const;
         void enable() const;
         void disable() const;
         template<typename T>
@@ -96,6 +98,10 @@ namespace tz::platform
         OGLVertexBuffer& emplace_vertex_buffer(Args&&... args);
         template<typename... Args>
         OGLVertexAttribute& emplace_vertex_attribute(Args&&... args);
+        template<template<typename> typename Container = std::vector, typename Index = unsigned int>
+        void render(bool tessellation = false, std::size_t instance_count = 0, Container<Index>* indices = nullptr) const;
+        const OGLVertexAttribute* get_attribute(GLuint attribute_id) const;
+        const OGLVertexBuffer* get_element_array_buffer() const;
         bool operator==(const OGLVertexArray& rhs) const;
 
         static void swap(OGLVertexArray& lhs, OGLVertexArray& rhs);

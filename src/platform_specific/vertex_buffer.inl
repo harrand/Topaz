@@ -5,7 +5,7 @@ namespace tz::platform
     void OGLVertexBuffer::insert(const Container<POD>& data, const OGLVertexBufferUsage& usage) const
     {
         this->bind();
-        std::size_t size = data.size() * tz::utility::generic::sizeof_element(data);
+        std::size_t size = data.size() * ::tz::utility::generic::sizeof_element(data);
         glNamedBufferData(this->vbo_handle, size, data.data(), usage());
     }
 
@@ -25,7 +25,7 @@ namespace tz::platform
     template<typename T>
     void OGLVertexAttribute::define(GLint size, GLboolean normalised, GLsizei stride) const
     {
-        using namespace tz::platform;
+        using namespace ::tz::platform;
         if constexpr(std::is_same_v<T, short>)
         {
             this->direct_define(size, OGLVertexAttributeType::SHORT, normalised, stride);
@@ -70,6 +70,40 @@ namespace tz::platform
         this->bind();
         this->vertex_attributes.push_back(std::make_unique<OGLVertexAttribute>(std::forward<Args>(args)...));
         return *(this->vertex_attributes.back().get());
+    }
+
+    template<template<typename> typename Container, typename Index>
+    void OGLVertexArray::render(bool tessellation, std::size_t instance_count, Container<Index>* indices) const
+    {
+        this->bind();
+        auto draw = [&](std::size_t num, const void* data)
+        {
+            if(tessellation)
+            {
+                glPatchParameteri(GL_PATCH_VERTICES, 3);
+                if(instance_count > 0)
+                    glDrawElementsInstanced(GL_PATCHES, num, GL_UNSIGNED_INT, data, instance_count);
+                else
+                    glDrawElements(GL_PATCHES, num, GL_UNSIGNED_INT, data);
+            }
+            else
+            {
+                if(instance_count > 0)
+                    glDrawElementsInstanced(GL_TRIANGLES, num, GL_UNSIGNED_INT, data, instance_count);
+                glDrawElements(GL_TRIANGLES, num, GL_UNSIGNED_INT, data);
+            }
+        };
+
+        // if indices == nullptr, then we assume the element array is filled.
+        if(indices == nullptr)
+        {
+            const OGLVertexBuffer* element_array_buffer = this->get_element_array_buffer();
+            std::size_t number_of_elements = element_array_buffer->get_size();
+            draw(number_of_elements, nullptr);
+        }
+        else
+            draw(indices->size(), indices->data());
+        this->unbind();
     }
 }
 #endif
