@@ -2,6 +2,7 @@
 #define TOPAZ_GUI_DISPLAY_HPP
 #include "graphics/gui/gui.hpp"
 #include "graphics/texture.hpp"
+#include <map>
 
 class Panel : public GUI
 {

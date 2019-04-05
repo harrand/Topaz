@@ -6,6 +6,7 @@
 #define TOPAZ_ANIMATED_TEXTURE_HPP
 #include "graphics/texture.hpp"
 #include "utility/time.hpp"
+#include <map>
 
 /**
  * A container for a collection of frames. Each frame is represented by a Texture object.

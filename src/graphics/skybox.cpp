@@ -16,8 +16,8 @@ void Skybox::render(const Camera& cam, Shader& shad, float width, float height, 
     shad.update();
     glFrontFace(GL_CW);
     if(skybox_mesh.has_value())
-        skybox_mesh.value().render(shad.has_tessellation_control_shader());
+        skybox_mesh.value().render(shad.get_can_tessellate());
     else
-        this->cube.render(shad.has_tessellation_control_shader());
+        this->cube.render(shad.get_can_tessellate());
     glFrontFace(GL_CCW);
 }

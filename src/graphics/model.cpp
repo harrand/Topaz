@@ -4,6 +4,7 @@
 
 #include "model.hpp"
 #include "utility/functional.hpp"
+#include "utility/string.hpp"
 #include "assimp/postprocess.h"
 #include "assimp/cimport.h"
 #include "assimp/scene.h"
@@ -166,7 +167,7 @@ std::vector<std::reference_wrapper<const Texture>> Model::get_textures_in_mesh(s
 void Model::render(Shader& shader) const
 {
     using namespace tz::utility::functional;
-    bool patches = shader.has_tessellation_control_shader();
+    bool patches = shader.get_can_tessellate();
     for(unsigned int i = 0; i < this->meshes.size(); i++)
     {
         tz::graphics::asset::unbind_all_textures(shader);

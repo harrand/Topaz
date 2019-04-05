@@ -3,7 +3,6 @@
 #include "graphics/gui/button.hpp"
 #include "core/scene.hpp"
 #include "graphics/skybox.hpp"
-#include "core/topaz.hpp"
 #include "graphics/frame_buffer.hpp"
 
 void init();
@@ -259,7 +258,10 @@ void init()
         constexpr std::size_t blur_factor = 4;
         for(std::size_t i = 0; i < blur_factor; i++)
         {
-            bool currently_horizontal = gaussian_blur_shader.get_uniform_value<bool>("horizontal");
+            const bool* currently_horizontal_ptr = gaussian_blur_shader.get_uniform_value<bool>("horizontal");
+            bool currently_horizontal = false;
+            if(currently_horizontal_ptr != nullptr)
+                currently_horizontal = *currently_horizontal_ptr;
             if(currently_horizontal)
             {
                 bloom_buffer.set_render_target();

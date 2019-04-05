@@ -63,7 +63,7 @@ void StaticObject::render(RenderPass render_pass) const
     render_shader.update();
     if(!this->asset.valid_model())
     {
-        this->asset.mesh->render(render_shader.has_tessellation_control_shader());
+        this->asset.mesh->render(render_shader.get_can_tessellate());
     }
     else
     {

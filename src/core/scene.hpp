@@ -3,6 +3,7 @@
 #include "physics/dynamic_object.hpp"
 #include "physics/dynamic_sprite.hpp"
 #include "physics/physics.hpp"
+#include "graphics/light.hpp"
 #include <map>
 
 /**

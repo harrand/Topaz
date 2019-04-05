@@ -49,7 +49,6 @@ add_library(topaz SHARED
         src/graphics/mesh.hpp
         src/graphics/shader.cpp
         src/graphics/shader.hpp
-        src/graphics/shader.inl
         src/graphics/skybox.cpp
         src/graphics/skybox.hpp
         src/graphics/static_object.cpp

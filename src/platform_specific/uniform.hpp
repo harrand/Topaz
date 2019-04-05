@@ -8,25 +8,26 @@
 #include "core/topaz.hpp"
 
 #ifdef TOPAZ_OPENGL
-namespace tz::platform {
-/**
-* Abstract. Not available for non-polymorphic use.
-* I highly doubt you'll need to inherit from this anyway.
-* Consider providing template specialisation to Uniform<T> if you need custom uniforms, which you may need in a later version of OpenGL which supports more primitives, perhaps.
-*/
+namespace tz::platform
+{
+    class OGLShaderProgram;
+    /**
+    * Abstract. Not available for non-polymorphic use.
+    * I highly doubt you'll need to inherit from this anyway.
+    * Consider providing template specialisation to Uniform<T> if you need custom uniforms, which you may need in a later version of OpenGL which supports more primitives, perhaps.
+    */
     class UniformImplicit
     {
     public:
-        UniformImplicit(GLuint shader_handle, std::string uniform_location);
-        virtual GLuint get_shader_handle() const;
-        virtual std::string_view get_uniform_location() const;
+        UniformImplicit(const OGLShaderProgram* shader_program, std::string uniform_location);
+        const std::string& get_uniform_location() const;
         /**
          * Pure Virtual
          */
         virtual void push() const = 0;
     protected:
         /// Underlying OpenGL shader-handle.
-        GLuint shader_handle;
+        const OGLShaderProgram* shader_program;
         /// OpenGL uniform-location (name of the variable in GLSL).
         std::string uniform_location;
     };
@@ -47,7 +48,7 @@ namespace tz::platform {
          * @param uniform_location - OpenGL uniform-location (i.e name of the Uniform)
          * @param value - Value of the Uniform
          */
-        Uniform<T>(GLuint shader_handle, std::string uniform_location, T value);
+        Uniform<T>(const OGLShaderProgram* shader_program, std::string uniform_location, T value);
         /**
          * Uniforms are not copyable.
          * @param copy - N/A
@@ -89,7 +90,7 @@ namespace tz::platform {
          * @param uniform_location - OpenGL uniform-location (i.e name of the Uniform)
          * @param value - Value of the Uniform
          */
-        Uniform<DirectionalLight>(GLuint shader_handle, std::string uniform_location, DirectionalLight value);
+        Uniform<DirectionalLight>(const OGLShaderProgram* shader_program, std::string uniform_location, DirectionalLight value);
         /**
          * Uniforms are not copyable.
          * @param copy - N/A
@@ -133,7 +134,7 @@ namespace tz::platform {
          * @param uniform_location - OpenGL uniform-location (i.e name of the Uniform)
          * @param value - Value of the Uniform
          */
-        Uniform<PointLight>(GLuint shader_handle, std::string uniform_location, PointLight value);
+        Uniform<PointLight>(const OGLShaderProgram* shader_program, std::string uniform_location, PointLight value);
         /**
          * Uniforms are not copyable.
          * @param copy - N/A
@@ -154,10 +155,12 @@ namespace tz::platform {
          * @param value - Desired new value of the Uniform
          */
         void set_value(PointLight value);
+
         /**
          * Update all Uniform changes and have them affect all subsequent render-passes.
          */
         virtual void push() const final;
+
     private:
         /// Underlying value.
         PointLight value;
@@ -166,9 +169,8 @@ namespace tz::platform {
         GLint colour_uniform_handle;
         GLint power_uniform_handle;
     };
-
-#endif
 }
+#endif
 #include "platform_specific/uniform.inl"
 
 #endif //TOPAZ_UNIFORM_HPP

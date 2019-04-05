@@ -9,6 +9,7 @@
 #include "graphics/texture.hpp"
 #include "assimp/material.h"
 #include "graphics/shader.hpp"
+#include <map>
 
 class Model
 {

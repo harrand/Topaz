@@ -7,6 +7,7 @@
 #include <set>
 #include <memory>
 #include <variant>
+#include <unordered_set>
 
 namespace tz::gui
 {
