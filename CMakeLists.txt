@@ -107,7 +107,7 @@ add_library(topaz SHARED
         src/utility/string.hpp
         src/utility/time.cpp
         src/utility/time.hpp
-        src/utility/time.inl src/graphics/render_pass.cpp src/graphics/render_pass.hpp src/platform_specific/vertex_buffer.cpp src/platform_specific/vertex_buffer.hpp src/platform_specific/uniform.hpp src/platform_specific/uniform.cpp src/platform_specific/uniform.inl )
+        src/utility/time.inl src/graphics/render_pass.cpp src/graphics/render_pass.hpp src/platform_specific/vertex_buffer.cpp src/platform_specific/vertex_buffer.hpp src/platform_specific/uniform.hpp src/platform_specific/uniform.cpp src/platform_specific/uniform.inl src/platform_specific/shader_program.cpp src/platform_specific/shader_program.hpp)
 # here we express in terms of modules, not just build flags
 target_include_directories(topaz PUBLIC ${PROJECT_SOURCE_DIR}/inc)
 target_include_directories(topaz PRIVATE ${PROJECT_SOURCE_DIR}/src)
