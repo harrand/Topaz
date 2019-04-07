@@ -339,16 +339,59 @@ private:
 	std::array<BoundingPlane, 6> planes;
 };
 
+/**
+ * Represent a line in 3D space (a ray)
+ */
 class BoundingLine : public Boundary
 {
 public:
+	/**
+	 * Construct a line, given an intercept position and a directional vector
+	 * @param offset - Offset position (like a y-intercept in cartesian coordinates)
+	 * @param direction - Direction of the vector. -direction produces the same results as +direction
+	 */
 	BoundingLine(Vector3F offset, Vector3F direction);
+	/**
+	 * Query whether a 3-dimensional point is inside this BoundingLine.
+	 * @param point - The 3-dimensional point to query whether is contained in this BoundingLine.
+	 * @return - True if the point is in this BoundingLine. False otherwise.
+	 */
 	virtual bool intersects(const Vector3F& point) const override;
+	/**
+     * Query whether this line intersects with a sphere.
+     * @param rhs - The given sphere
+     * @return - True if the line intersects the sphere. False otherwise
+     */
 	virtual bool intersects(const BoundingSphere& rhs) const override;
+	/**
+     * Query whether this line intersects with a box.
+     * @param rhs - The given AABB
+     * @return - True if the line intersects the box. False otherwise
+     */
 	virtual bool intersects(const AABB& rhs) const override;
+	/**
+     * Query whether this line intersects with a plane.
+     * @param rhs - The given plane
+     * @return - True if the line intersects the plane. False otherwise
+     */
 	virtual bool intersects(const BoundingPlane& rhs) const override;
+	/**
+     * Query whether this line intersects with a pyramidal frustum.
+     * @param rhs - The given frustum
+     * @return - True if the line intersects the frustum. False otherwise
+     */
 	virtual bool intersects(const BoundingPyramidalFrustum& rhs) const override;
+	/**
+     * Query whether this line intersects with another line.
+     * @param rhs - THe given line
+     * @return - True if the line intersects the other line. False otherwise
+     */
 	virtual bool intersects(const BoundingLine& rhs) const override;
+	/**
+     * Query whether this line intersects with a given cluster of boundaries.
+     * @param rhs - The given cluster of boundaries
+     * @return - True if the line intersects the cluster. False otherwise
+     */
 	virtual bool intersects(const BoundaryCluster& rhs) const override;
 
 	/// Offset of the line from the origin.
@@ -360,6 +403,11 @@ public:
 class BoundaryCluster : public Boundary
 {
 public:
+	/**
+	 * The method in which the current cluster element is integrated with the remainder of the cluster.
+	 * UNION means that it can be collided with either the remainder of the cluster, or this new section.
+	 * INTERSECTION means that it can be collided with only if both the remainder and this new section are collided with.
+	 */
     enum class ClusterIntegration
     {
         UNION, INTERSECTION
@@ -367,40 +415,171 @@ public:
     using ClusterComponent = std::pair<ClusterIntegration, std::unique_ptr<Boundary>>;
     using NonOwningClusterComponent = std::pair<ClusterIntegration, const Boundary&>;
 
+	/**
+	 * Construct a BoundaryCluster based upon a given set of existing components.
+	 * @param components - Components to construct, in order
+	 */
     BoundaryCluster(std::vector<ClusterComponent>&& components);
+	/**
+	 * Construct an empty cluster.
+	 */
     BoundaryCluster();
+	/**
+	 * Construct a BoundaryCluster to be identical to an existing BoundaryCluster.
+	 * @param copy - The cluster to copy from
+	 */
     BoundaryCluster(const BoundaryCluster& copy);
+	/**
+	 * Construct a BoundaryCluster to take ownership of the components of the given BoundaryCluster.
+	 * @param move - The BoundaryCluster whose elements shall be taken
+	 */
     BoundaryCluster(BoundaryCluster&& move);
+	/**
+	 * Copy assignment.
+	 * @param rhs - The cluster to copy from
+	 * @return - The resultant cluster
+	 */
     BoundaryCluster& operator=(BoundaryCluster rhs);
+	/**
+	 * Move assignment.
+	 * @param rhs - The cluster to move from
+	 * @return - The resultant cluster
+	 */
     BoundaryCluster& operator=(BoundaryCluster&& rhs);
 
+	/**
+	 * Obtain the number of components in this cluster.
+	 * @return - Number of components in the cluster
+	 */
     std::size_t get_cluster_size() const;
+	/**
+	 * Retrieve information at a given index of the cluster, if a component exists at that index.
+	 * @param index - The index corresponding to which component to retrieve
+	 * @return - Information about the chosen cluster component if it exists, otherwise null
+	 */
     std::optional<NonOwningClusterComponent> get_boundary_at_index(std::size_t index) const;
+	/**
+	 * Take ownership of an existing Boundary in this cluster at the given index.
+	 * @param index - Index to set this boundary component to
+	 * @param integration - The method in which this component integrates with the initial cluster
+	 * @param boundary - The Boundary to take ownership of and move into the given index
+	 * @return - True if the underlying cluster increased in size, false otherwise
+	 */
     bool set_boundary_at_index(std::size_t index, ClusterIntegration integration, std::unique_ptr<Boundary> boundary);
+	/**
+	 * Emplace any Boundary at the end of the cluster.
+	 * @tparam BoundaryType - Type of the boundary to emplace, such as BoundingSphere or AABB
+	 * @tparam Args - Types of the arguments used to construct the boundary
+	 * @param integration - Method in which this component integrates with the initial cluster
+	 * @param args - Values used to construct the component in-place
+	 * @return - Reference to the constructed cluster component
+	 */
     template<class BoundaryType, typename... Args>
     BoundaryType& emplace(ClusterIntegration integration, Args&&... args);
+	/**
+	 * Emplace a sphere at the end of the cluster
+	 * @tparam Args - Types of the arguments used to construct the sphere
+	 * @param integration - Method in which this component integrates with the initial cluster
+	 * @param args - Values used to construct the sphere in-place
+	 * @return - Reference to the constructed sphere
+	 */
     template<typename... Args>
     BoundingSphere& emplace_sphere(ClusterIntegration integration, Args&&... args);
+	/**
+	 * Emplace an AABB at the end of the cluster
+	 * @tparam Args - Types of the arguments used to construct the box
+	 * @param integration - Method in which this component integrates with the initial cluster
+	 * @param args - Values used to construct the box in-place
+	 * @return - Reference to the constructed AABB
+	 */
     template<typename... Args>
     AABB& emplace_box(ClusterIntegration integration, Args&&... args);
+	/**
+	 * Emplace a plane at the end of the cluster
+	 * @tparam Args - Types of the arguments used to construct the plane
+	 * @param integration - Method in which this component integrates with the initial cluster
+	 * @param args - Values used to construct the plane in-place
+	 * @return - Reference to the constructed plane
+	 */
     template<typename... Args>
     BoundingPlane& emplace_plane(ClusterIntegration integration, Args&&... args);
+	/**
+	* Emplace a frustum at the end of the cluster
+	* @tparam Args - Types of the arguments used to construct the frustum
+	* @param integration - Method in which this component integrates with the initial cluster
+	* @param args - Values used to construct the frustum in-place
+	* @return - Reference to the constructed frustum
+	*/
     template<typename... Args>
     BoundingPyramidalFrustum& emplace_frustum(ClusterIntegration integration, Args&&... args);
+	/**
+	 * Emplace another cluster at the end of the cluster
+	 * @tparam Args - Types of the arguments used to construct the cluster
+	 * @param integration - Method in which this component integrates with the initial cluster
+	 * @param args - Values used to construct the cluster in-place
+	 * @return - Reference to the constructed cluster
+	 */
     template<typename... Args>
     BoundaryCluster& emplace_cluster(ClusterIntegration integration, Args&&... args);
 
-    virtual bool intersects(const Vector3F& point) const override;
-    virtual bool intersects(const BoundingSphere& rhs) const override;
-    virtual bool intersects(const AABB& rhs) const override;
-    virtual bool intersects(const BoundingPlane& rhs) const override;
-    virtual bool intersects(const BoundingPyramidalFrustum& rhs) const override;
-    virtual bool intersects(const BoundingLine& rhs) const override;
-    virtual bool intersects(const BoundaryCluster& rhs) const override;
+	/**
+     * Query whether a 3-dimensional point is inside this cluster.
+     * @param point - The 3-dimensional point to query whether is contained in this cluster.
+     * @return - True if the point is in this cluster. False otherwise.
+     */
+	virtual bool intersects(const Vector3F& point) const override;
+	/**
+     * Query whether this cluster intersects with a sphere.
+     * @param rhs - The given sphere
+     * @return - True if the cluster intersects the sphere. False otherwise
+     */
+	virtual bool intersects(const BoundingSphere& rhs) const override;
+	/**
+     * Query whether this cluster intersects with a box.
+     * @param rhs - The given AABB
+     * @return - True if the cluster intersects the box. False otherwise
+     */
+	virtual bool intersects(const AABB& rhs) const override;
+	/**
+     * Query whether this cluster intersects with a plane.
+     * @param rhs - The given plane
+     * @return - True if the cluster intersects the plane. False otherwise
+     */
+	virtual bool intersects(const BoundingPlane& rhs) const override;
+	/**
+     * Query whether this cluster intersects with a pyramidal frustum.
+     * @param rhs - The given frustum
+     * @return - True if the cluster intersects the frustum. False otherwise
+     */
+	virtual bool intersects(const BoundingPyramidalFrustum& rhs) const override;
+	/**
+     * Query whether this cluster intersects with the given line.
+     * @param rhs - The given line
+     * @return - True if the cluster intersects the line. False otherwise
+     */
+	virtual bool intersects(const BoundingLine& rhs) const override;
+	/**
+     * Query whether this cluster intersects with another given cluster of boundaries.
+     * @param rhs - The given cluster of boundaries
+     * @return - True if the cluster intersects the other cluster. False otherwise
+     */
+	virtual bool intersects(const BoundaryCluster& rhs) const override;
 private:
+	/**
+	 * Implicit intersection detection between any type of boundary with this cluster.
+	 * @tparam BoundaryType - The type of boundary to query
+	 * @param boundary - The boundary itself with which to query intersection
+	 * @return - True if this cluster intersects with the given boundary, otherwise false
+	 */
     template<class BoundaryType>
     bool intersects_impl(const BoundaryType& boundary) const;
+	/**
+	 * Swap one cluster with another
+	 * @param a - Left hand side
+	 * @param b - Right hand side
+	 */
     static void swap(BoundaryCluster& a, BoundaryCluster& b);
+	/// Container of all components, in order.
     std::vector<ClusterComponent> components;
 };
 

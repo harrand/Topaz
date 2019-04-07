@@ -137,6 +137,10 @@ public:
 	 * @param foreground_colour - Colour of the text.
 	 */
 	Texture(const Font& font, const std::string& text, SDL_Color foreground_colour);
+	/**
+	 * Construct a Texture based upon an existing Assimp texture.
+	 * @param assimp_texture - The assimp texture whose data should be used to construct this Texture
+	 */
 	Texture(aiTexture* assimp_texture);
 	/**
 	 * Copy a Texture by filename. If the texture was not loaded from an external file, perform image-data copy instead.
@@ -194,6 +198,10 @@ public:
 	 * @return - TextureType::TEXTURE
 	 */
 	virtual tz::graphics::TextureType get_texture_type() const{return tz::graphics::TextureType::TEXTURE;}
+	/**
+	 * Get the component used in each pixel in this texture, such as DEPTH_TEXTURE or HDR_COLOUR_TEXTURE
+	 * @return - The component of a pixel in this texture
+	 */
 	tz::graphics::TextureComponent get_texture_component() const;
 	/**
 	 * Equate this Texture with another.
@@ -257,6 +265,10 @@ public:
 	 * @param filename - Path to the existing normal-map image file
 	 */
 	NormalMap(std::string filename);
+	/**
+	 * Construct a NormalMap based upon an existing Assimp texture.
+	 * @param assimp_texture - The assimp texture whose data should be used to construct this NormalMap
+	 */
 	NormalMap(aiTexture* assimp_texture);
 	/**
 	 * Bind this normal-map to a specified Shader.
@@ -308,7 +320,16 @@ public:
 	 * @param filename - Path to the existing displacement-map image file
 	 */
 	DisplacementMap(std::string filename, float displacement_factor = tz::graphics::asset::default_displacement_factor);
+	/**
+	 * Construct a DisplacementMap based upon a given height-map and factor.
+	 * @param height_map - Heightmap used to construct the displacement map
+	 * @param displacement_factor - The multiplier used on each value in the height map
+	 */
 	DisplacementMap(Bitmap<PixelDepth> height_map, float displacement_factor = tz::graphics::asset::default_displacement_factor);
+	/**
+	 * Construct a DisplacementMap based upon an existing Assimp texture.
+	 * @param assimp_texture - The assimp texture whose data should be used to construct this DisplacementMap
+	 */
 	DisplacementMap(aiTexture* assimp_texture);
 	/**
 	* Bind this normal-map to a specified Shader.
@@ -322,24 +343,59 @@ public:
 	 */
     virtual tz::graphics::TextureType get_texture_type() const override{return tz::graphics::TextureType::DISPLACEMENT_MAP;}
 private:
+	/// Underlying displacement factor.
 	float displacement_factor;
 };
 
 class SpecularMap : public Texture
 {
 public:
+	/**
+	 * Load a SpecularMap from an existing file.
+	 * @param filename - Path to the file
+	 */
 	SpecularMap(std::string filename);
+	/**
+	 * Construct a SpecularMap based upon an existing Assimp texture.
+	 * @param assimp_texture - The assimp texture whose data should be used to construct this SpecularMap
+	 */
 	SpecularMap(aiTexture* assimp_texture);
+	/**
+	* Bind this specular-map to a specified Shader.
+	* @param shader - The Shader to be bound with.
+	* @param id - Sampler-ID of this specular-map.
+	*/
 	virtual void bind(Shader* shader, unsigned int id, const std::string& sampler_name = "specular_map_sampler") const override;
+	/**
+	 * This is a specular-map texture.
+	 * @return - TextureType::SPECULAR_MAP
+	 */
 	virtual tz::graphics::TextureType get_texture_type() const override{return tz::graphics::TextureType::SPECULAR_MAP;}
 };
 
 class EmissiveMap : public Texture
 {
 public:
+	/**
+	 * Load an EmissiveMap from an existing file.
+	 * @param filename - Path to the file
+	 */
     EmissiveMap(std::string filename);
+	/**
+	 * Construct an EmissiveMap based upon an existing Assimp texture.
+	 * @param assimp_texture - The assimp texture whose data should be used to construct this EmissiveMap
+	 */
     EmissiveMap(aiTexture* assimp_texture);
+	/**
+	* Bind this emissive-map to a specified Shader.
+	* @param shader - The Shader to be bound with.
+	* @param id - Sampler-ID of this emissive-map.
+	*/
     virtual void bind(Shader* shader, unsigned int id, const std::string& sampler_name = "emissive_map_sampler") const override;
+	/**
+	 * This is a emissive-map texture.
+	 * @return - TextureType::EMISSIVE_MAP
+	 */
     virtual tz::graphics::TextureType get_texture_type() const override{return tz::graphics::TextureType::EMISSIVE_MAP;}
 };
 

@@ -340,4 +340,3 @@ namespace tz::platform
 #include "platform_specific/shader_program.inl"
 
 #endif //TOPAZ_SHADER_PROGRAM_HPP
-

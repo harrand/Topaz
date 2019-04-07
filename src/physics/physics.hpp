@@ -3,9 +3,6 @@
 #include "physics/boundary.hpp"
 #include "graphics/asset.hpp"
 
-/// Pre-define the Object class.
-class Object;
-
 namespace tz::physics
 {
 	enum class Axis2D : unsigned int

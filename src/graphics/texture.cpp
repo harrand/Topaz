@@ -73,7 +73,7 @@ Texture::Texture(std::string filename, bool mipmapping, bool gamma_corrected): t
 
 	this->bitmap = Bitmap<PixelRGBA>();
 	this->bitmap.pixels.reserve(static_cast<std::size_t>(std::abs(this->width * this->height)));
-	for(std::size_t i = 3; i < std::abs(this->width * this->height); i += 4)
+	for(std::size_t i = 3; i < static_cast<std::size_t>(std::abs(this->width * this->height)); i += 4)
 		this->bitmap.pixels.emplace_back(PixelRGBA{imgdata[i - 3], imgdata[i - 2], imgdata[i - 1], imgdata[i]});
 	this->delete_texture(imgdata);
 }
@@ -118,7 +118,7 @@ Texture::Texture(const Font& font, const std::string& text, SDL_Color foreground
 	auto pixel_data = reinterpret_cast<unsigned char*>(text_surface->pixels);
 	this->bitmap = Bitmap<PixelRGBA>();
 	this->bitmap.pixels.reserve(static_cast<std::size_t>(std::abs(this->width * this->height)));
-	for(std::size_t i = 3; i < std::abs(this->width * this->height); i += 4) {
+	for(std::size_t i = 3; i < static_cast<std::size_t>(std::abs(this->width * this->height)); i += 4) {
 		switch (texture_format)
 		{
 			case GL_RGBA8:
