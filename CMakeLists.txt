@@ -1,11 +1,20 @@
 cmake_minimum_required(VERSION 3.9)
 project(topaz VERSION 0.7.0 DESCRIPTION "Cross-Platform Multimedia Engine")
-set(CMAKE_BUILD_TYPE Release)
+set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_CXX_STANDARD 17)
 set(UNDERLYING_GRAPHICS_API "TOPAZ_OPENGL")
 #set(UNDERLYING_GRAPHICS_API "TOPAZ_VULKAN")
 # add_compile_options are global flags. They are used everywhere, not just in particular modules.
-add_compile_options(-Wall -Wextra -pedantic-errors -O3)
+message("CMAKE_BUILD_TYPE = ${CMAKE_BUILD_TYPE}")
+if(CMAKE_BUILD_TYPE MATCHES Release)
+    message(STATUS "Compilation set on Release mode.")
+    add_compile_options(-Wall -Wextra -pedantic-errors -O3)
+elseif(CMAKE_BUILD_TYPE MATCHES Debug)
+    message(STATUS "Compilation set to Debug mode.")
+    add_compile_options(-Wall -Wextra -pedantic-errors -O0)
+else()
+    message(FATAL_ERROR "Neither 'Release' nor 'Debug' specified for CMAKE_BUILD_TYPE. You must choose one.")
+endif()
 
 add_library(topaz SHARED
         src/audio/audio.cpp
@@ -47,6 +56,8 @@ add_library(topaz SHARED
         src/graphics/light.hpp
         src/graphics/mesh.cpp
         src/graphics/mesh.hpp
+        src/graphics/render_pass.cpp
+        src/graphics/render_pass.hpp
         src/graphics/shader.cpp
         src/graphics/shader.hpp
         src/graphics/skybox.cpp
@@ -88,6 +99,16 @@ add_library(topaz SHARED
         src/physics/physics_object.cpp
         src/physics/physics_object.hpp
 
+        src/platform_specific/shader_program.cpp
+        src/platform_specific/shader_program.hpp
+        src/platform_specific/shader_program.inl
+        src/platform_specific/uniform.cpp
+        src/platform_specific/uniform.hpp
+        src/platform_specific/uniform.inl
+        src/platform_specific/vertex_buffer.cpp
+        src/platform_specific/vertex_buffer.hpp
+        src/platform_specific/vertex_buffer.inl
+
         src/utility/file.cpp
         src/utility/file.hpp
         src/utility/functional.cpp
@@ -106,7 +127,7 @@ add_library(topaz SHARED
         src/utility/string.hpp
         src/utility/time.cpp
         src/utility/time.hpp
-        src/utility/time.inl src/graphics/render_pass.cpp src/graphics/render_pass.hpp src/platform_specific/vertex_buffer.cpp src/platform_specific/vertex_buffer.hpp src/platform_specific/uniform.hpp src/platform_specific/uniform.cpp src/platform_specific/uniform.inl src/platform_specific/shader_program.cpp src/platform_specific/shader_program.hpp)
+        src/utility/time.inl)
 # here we express in terms of modules, not just build flags
 target_include_directories(topaz PUBLIC ${PROJECT_SOURCE_DIR}/inc)
 target_include_directories(topaz PRIVATE ${PROJECT_SOURCE_DIR}/src)
@@ -118,7 +139,13 @@ find_library(LIB_SDL2_TTF SDL2_ttf PATHS ${PROJECT_SOURCE_DIR}/lib)
 find_library(LIB_SDL2_MAIN SDL2main PATHS ${PROJECT_SOURCE_DIR}/lib)
 find_library(LIB_OPENGL OpenGL32)
 
-target_compile_definitions(topaz PUBLIC TOPAZ_DEBUG ${UNDERLYING_GRAPHICS_API})
+if(CMAKE_BUILD_TYPE MATCHES Debug)
+    message("Enabled TOPAZ_DEBUG.")
+    target_compile_definitions(topaz PUBLIC TOPAZ_DEBUG ${UNDERLYING_GRAPHICS_API})
+else()
+    message("Disabled TOPAZ_DEBUG")
+    target_compile_definitions(topaz PUBLIC ${UNDERLYING_GRAPHICS_API})
+endif()
 # public is for interface dependencies which we have, but no specific implementation dependencies that games wont need
 target_link_libraries(topaz PUBLIC ${LIB_SDL2} ${LIB_SDL2_MIXER} ${LIB_SDL2_TTF} ${LIB_SDL2_MAIN} ${LIB_ASSIMP} OpenGL32)
 

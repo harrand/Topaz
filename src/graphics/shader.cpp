@@ -1,5 +1,6 @@
 #include "graphics/shader.hpp"
 #include "utility/file.hpp"
+#include "mesh.hpp"
 
 #ifdef TOPAZ_OPENGL
 namespace tz::platform
@@ -19,22 +20,27 @@ namespace tz::platform
         }
         if(compile && link)
         {
-            this->bind_attribute_location(0, "position");
-            this->bind_attribute_location(1, "texcoord");
-            this->bind_attribute_location(2, "normal");
-            this->bind_attribute_location(3, "tangent");
-            this->bind_attribute_location(4, "instancing_model_x");
-            this->bind_attribute_location(5, "instancing_model_y");
-            this->bind_attribute_location(6, "instancing_model_z");
-            this->bind_attribute_location(7, "instancing_model_w");
-
-            this->link().report(std::cout);
+            this->setup_standard_attributes();
+            this->link().report_if_fail(std::cout);
         }
         if(compile && link && validate)
-            this->validate().report(std::cout);
+            this->validate().report_if_fail(std::cout);
     }
 
     OGLShader::OGLShader(std::string path, bool compile, bool link, bool validate): OGLShader(::tz::utility::file::read(path + ".vertex.glsl"), ::tz::utility::file::read(path + ".tessellation_control.glsl"), ::tz::utility::file::read(path + ".tessellation_evaluation.glsl"), ::tz::utility::file::read(path + ".geometry.glsl"), ::tz::utility::file::read(path + ".fragment.glsl"), compile, link, validate) {}
+
+    void OGLShader::setup_standard_attributes() const
+    {
+        using namespace tz::platform;
+        this->bind_attribute_location(static_cast<GLuint>(StandardAttribute::POSITION), mesh_attribute::position_attribute);
+        this->bind_attribute_location(static_cast<GLuint>(StandardAttribute::TEXCOORD), mesh_attribute::texcoord_attribute);
+        this->bind_attribute_location(static_cast<GLuint>(StandardAttribute::NORMAL), mesh_attribute::normal_attribute);
+        this->bind_attribute_location(static_cast<GLuint>(StandardAttribute::TANGENT), mesh_attribute::tangent_attribute);
+        this->bind_attribute_location(static_cast<GLuint>(StandardAttribute::INSTANCE_MODEL_X_ROW), mesh_attribute::instance_model_x_attribute);
+        this->bind_attribute_location(static_cast<GLuint>(StandardAttribute::INSTANCE_MODEL_Y_ROW), mesh_attribute::instance_model_y_attribute);
+        this->bind_attribute_location(static_cast<GLuint>(StandardAttribute::INSTANCE_MODEL_Z_ROW), mesh_attribute::instance_model_z_attribute);
+        this->bind_attribute_location(static_cast<GLuint>(StandardAttribute::INSTANCE_MODEL_W_ROW), mesh_attribute::instance_model_w_attribute);
+    }
 }
 #endif
 const char* tz::util::shader_type_string(GLenum shader_type)

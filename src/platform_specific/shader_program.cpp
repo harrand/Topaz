@@ -10,11 +10,13 @@ namespace tz::platform
     OGLShaderComponentCompileResult::OGLShaderComponentCompileResult(const OGLShaderComponent& component): success(false), error_message(std::nullopt)
     {
         GLint success = 0;
+        // Query compile status
         glGetShaderiv(component.shader_handle, GL_COMPILE_STATUS, &success);
         if(success == GL_TRUE)
             this->success = true;
         else
         {
+            // If we failed, try and retrieve an error message from the driver.
             this->success = false;
             std::string error_message_buffer;
             error_message_buffer.resize(4096);
@@ -118,9 +120,14 @@ namespace tz::platform
         return this->get_uniform(uniform_name) != nullptr;
     }
 
-    void OGLShaderProgram::bind_attribute_location(GLuint index, const std::string& name)
+    void OGLShaderProgram::bind_attribute_location(GLuint index, const std::string& name) const
     {
         glBindAttribLocation(this->program_handle, index, name.c_str());
+    }
+
+    void OGLShaderProgram::bind_attribute(const OGLVertexAttribute& attribute, const std::string& name) const
+    {
+        this->bind_attribute_location(attribute.get_id(), name);
     }
 
     bool OGLShaderProgram::is_fully_compiled() const
@@ -161,6 +168,12 @@ namespace tz::platform
         if(!this->get_link_result().was_successful())
             return {};
         return {*this};
+    }
+
+    void OGLShaderProgram::set_output_feedback(const std::string& output_name, bool interleaved) const
+    {
+        const GLchar* outputs[] = {output_name.c_str()};
+        glTransformFeedbackVaryings(this->program_handle, 1, outputs, interleaved ? GL_INTERLEAVED_ATTRIBS : GL_SEPARATE_ATTRIBS);
     }
 
     void OGLShaderProgram::bind() const
