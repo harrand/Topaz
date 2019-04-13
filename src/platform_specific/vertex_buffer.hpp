@@ -288,6 +288,15 @@ namespace tz::platform
          */
         void unbind() const;
         /**
+         * Construct a new object in-place attached to this VertexArray.
+         * @tparam OGLArrayType - Type of the object to attach to this array
+         * @tparam Args - Types of the arguments used to construct the object
+         * @param args - Argument values used to construct the object
+         * @return - The created object
+         */
+        template<typename OGLArrayType, typename... Args>
+        OGLArrayType& emplace(Args&&... args);
+        /**
          * Construct a new vertex-buffer in-place attached to this VertexArray.
          * @tparam Args - Types of the arguments perfectly-forwarded to the VertexBuffer constructor
          * @param args - Argument values used to construct the VertexBuffer
@@ -312,7 +321,7 @@ namespace tz::platform
          * @param indices - Container holding all the indices of the vertices. If there exists a VertexBuffer with the target ELEMENT_ARRAY, then this can be omitted in-place of that
          */
         template<template<typename> typename Container = std::vector, typename Index = unsigned int>
-        void render(bool tessellation = false, std::size_t instance_count = 0, Container<Index>* indices = nullptr) const;
+        void render(bool tessellation = false, GLsizei instance_count = 0, Container<Index>* indices = nullptr) const;
         /**
          * Retrieve an attribute by ID, if it exists.
          * @param attribute_id - ID of the desired attribute

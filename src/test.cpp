@@ -4,6 +4,7 @@
 #include "core/scene.hpp"
 #include "graphics/skybox.hpp"
 #include "graphics/frame_buffer.hpp"
+#include "utility/render.hpp"
 
 void init();
 
@@ -22,7 +23,7 @@ void init()
     std::cout << "OpenGL debugging enabled: " << wnd.is_opengl_debugging_enabled() << "\n";
     wnd.set_debug_callback();
     wnd.set_fullscreen(Window::FullscreenType::WINDOWED_MODE);
-    wnd.set_swap_interval_type(Window::SwapIntervalType::LATE_SWAP_TEARING);
+    wnd.set_swap_interval_type(Window::SwapIntervalType::IMMEDIATE_UPDATES);
 
     // During init, enable debug output
     Font font("../res/runtime/fonts/Comfortaa-Regular.ttf", 36);
@@ -57,8 +58,8 @@ void init()
     assets.emplace<Model>("nanosuit", "../res/runtime/models/nanosuit.fbx");
     assets.emplace<Model>("illidan", "../res/runtime/models/illidan/IllidanLegion.obj");
     assets.emplace<Model>("deathwing", "../res/runtime/models/deathwing/Deathwing.fbx");
-    assets.emplace<Mesh>("cube_lq", "../res/runtime/models/cube.obj");
-    assets.emplace<Mesh>("cube", "../res/runtime/models/cube_hd.obj");
+    assets.emplace<Mesh>("cube", "../res/runtime/models/cube.obj");
+    assets.emplace<Mesh>("cube_hd", "../res/runtime/models/cube_hd.obj");
     assets.emplace<Mesh>("monkey", "../res/runtime/models/monkeyhead.obj");
     assets.emplace<Mesh>("cylinder", "../res/runtime/models/cylinder.obj");
     assets.emplace<Mesh>("sphere", "../res/runtime/models/sphere.obj");
@@ -72,19 +73,19 @@ void init()
     assets.emplace<ParallaxMap>("bricks_parallax", "../res/runtime/parallaxmaps/bricks_parallax.jpg");
     assets.emplace<ParallaxMap>("stone_parallax", "../res/runtime/parallaxmaps/stone_parallax.png", 0.06f, -0.5f);
     assets.emplace<ParallaxMap>("wood_parallax", "../res/runtime/parallaxmaps/wood_parallax.jpg");
-    assets.emplace<DisplacementMap>("bricks_displacement", "../res/runtime/displacementmaps/bricks_displacement.png");
+    assets.emplace<DisplacementMap>("bricks_displacement", "../res/runtime/displacementmaps/bricks_displacement.png", 0.1f);
     assets.emplace<DisplacementMap>("noise_displacement", tz::graphics::height_map::generate_cosine_noise(256, 256, 100.0f));
     // render noisemap:
     Asset maul(assets.find<Model>("darth_maul"));
     Asset nanosuit(assets.find<Model>("nanosuit"));
     Asset illidan(assets.find<Model>("illidan"));
     Asset deathwing_asset(assets.find<Model>("deathwing"));
-    Asset asset0(assets.find<Mesh>("cube"), assets.find_texture("bricks"), assets.find<NormalMap>("bricks_normal"), assets.find<ParallaxMap>("bricks_parallax"), assets.find<DisplacementMap>("bricks_displacement"));
+    Asset asset0(assets.find<Mesh>("cube_hd"), assets.find_texture("bricks"), assets.find<NormalMap>("bricks_normal"), assets.find<ParallaxMap>("bricks_parallax"), assets.find<DisplacementMap>("bricks_displacement"));
     Asset noise_asset(assets.find<Mesh>("plane_hd"), assets.find_texture("bricks"), assets.find<NormalMap>("bricks_normal"), nullptr, assets.find<DisplacementMap>("noise_displacement"));
-    Asset asset1(assets.find_mesh("cube_lq"), assets.find_texture("bricks"), assets.find<NormalMap>("bricks_normal"), assets.find<ParallaxMap>("bricks_parallax"));
-    Asset asset2(assets.find_mesh("cube_lq"), assets.find_texture("bricks"), assets.find<NormalMap>("bricks_normal"));
-    Asset asset3(assets.find_mesh("cube_lq"), assets.find_texture("bricks"));
-    Asset stone_floor(assets.find_mesh("cube_lq"), assets.find_texture("stone"), assets.find<NormalMap>("stone_normal"), assets.find<ParallaxMap>("stone_parallax"));
+    Asset asset1(assets.find_mesh("cube"), assets.find_texture("bricks"), assets.find<NormalMap>("bricks_normal"), assets.find<ParallaxMap>("bricks_parallax"));
+    Asset asset2(assets.find_mesh("cube"), assets.find_texture("bricks"), assets.find<NormalMap>("bricks_normal"));
+    Asset asset3(assets.find_mesh("cube"), assets.find_texture("bricks"));
+    Asset stone_floor(assets.find_mesh("cube"), assets.find_texture("stone"), assets.find<NormalMap>("stone_normal"), assets.find<ParallaxMap>("stone_parallax"));
     Asset wooden_sphere(assets.find_mesh("sphere"), assets.find_texture("wood"), assets.find<NormalMap>("wood_normal"), assets.find<ParallaxMap>("wood_parallax"));
     Asset wooden_cylinder(assets.find_mesh("cylinder"), assets.find_texture("wood"), assets.find<NormalMap>("wood_normal"), assets.find<ParallaxMap>("wood_parallax"));
 
@@ -113,7 +114,7 @@ void init()
     bloom_buffer2.emplace_renderbuffer(GL_DEPTH_ATTACHMENT, wnd.get_width(), wnd.get_height(), GL_DEPTH_COMPONENT);
     Texture& blurred_bloom_texture2 = bloom_buffer2.emplace_texture(GL_COLOR_ATTACHMENT0, wnd.get_width(), wnd.get_height());
     // Uncomment this to render the bloom texture.
-    wnd.emplace_child<Panel>(Vector2I{0, 300}, Vector2I{300, 300}, &bloom_texture);
+    //wnd.emplace_child<Panel>(Vector2I{0, 300}, Vector2I{300, 300}, &bloom_texture);
     //wnd.emplace_child<Panel>(Vector2I{0, 300}, Vector2I{300, 300}, &blurred_bloom_texture);
 
     FrameBuffer final_framebuffer{wnd.get_width(), wnd.get_height()};
@@ -127,9 +128,9 @@ void init()
     window_panel.set_local_dimensions_normalised_space({1.0f, 1.0f});
 
     Random rand;
-    test_button.set_callback([&scene, &camera, &asset1]()
+    test_button.set_callback([&scene, &camera, &asset0]()
                              {
-                                 scene.emplace_object(Transform{camera.position, {}, {10, 10, 10}}, asset1);
+                                 scene.emplace_object(Transform{camera.position, {}, {10, 10, 10}}, asset0);
                                  tz::audio::play_async(AudioClip{"../res/runtime/music/tulips.wav"});
                              });
     std::vector<StaticObject> floor_objects;
@@ -160,8 +161,9 @@ void init()
     // add the model objects
     scene.emplace<StaticObject>(Transform{{0, -135, 100}, {}, {50, 50, 50}}, maul);
     scene.emplace<StaticObject>(Transform{{50, -135, 100}, {}, {7, 7, 7}}, nanosuit);
-    scene.emplace<StaticObject>(Transform{{-75, -135, 100}, {}, {15, 15, 15}}, illidan);
+    StaticObject& illidan_object = scene.emplace<StaticObject>(Transform{{-75, -135, 100}, {}, {15, 15, 15}}, illidan);
     StaticObject& deathwing = scene.emplace<StaticObject>(Transform{{0, 200, 0}, {0, 0, 0}, {50, 50, 50}}, deathwing_asset);
+    StaticObject& illidan_boundary = scene.emplace<RenderableBoundingBox>(tz::utility::render::see_aabb(assets, illidan_object.get_boundary().value(), {1.0f, 0.0f, 0.0f}));
     scene.add_point_light(PointLight{{0, 0, 125}, {1, 1, 1}, 9000.0f});
     scene.emplace<StaticObject>(Transform{{0, 0, 0}, {}, {15, 15, 15}}, wooden_sphere);
     scene.emplace<StaticObject>(Transform{{100, 0, 0}, {}, {200, 200, 200}}, wooden_cylinder);
@@ -175,12 +177,6 @@ void init()
     scene.emplace<DynamicObject>(1.0f, Transform{{20, 100, 0}, {}, {50, 50, 50}}, wooden_cylinder);
 
     scene.emplace<DynamicObject>(1.0f, Transform{{40, 100, 0}, {}, {50, 50, 50}}, wooden_cylinder);
-
-
-    DynamicSprite& example_sprite = scene.emplace<DynamicSprite>(1.0f, Vector2F{}, 0.0f, Vector2F{100.0f, 100.0f}, assets.find_texture("bricks"));
-    DynamicSprite& ex1 = scene.emplace<DynamicSprite>(1.0f, Vector2F{200, 200}, 0.0f, Vector2F{100.0f, 100.0f}, assets.find_texture("bricks"), Vector2F{10.0f, 0.0f});
-    ex1.add_force({0.0f, 10.0f});
-
     /*// BoundaryCluster test...
     BoundaryCluster cluster;
     cluster.emplace_sphere(BoundaryCluster::ClusterIntegration::INTERSECTION, Vector3F{}, 50.0f);
@@ -222,7 +218,7 @@ void init()
         depth_framebuffer.clear(BufferBit::DEPTH);
         depth_framebuffer.set_render_target();
 
-        auto boundary = scene.get_boundary();
+        auto boundary = AABB{{-1000, -1000, -1000}, {1000, 1000, 1000}};//scene.get_boundary();
         Camera light_view = scene.get_directional_light(0).value().get_view(AABB{boundary.get_minimum() / 2.0f, boundary.get_maximum() / 2.0f});
         render_shader.set_uniform<Matrix4x4>("light_viewprojection", light_view.projection(wnd.get_width(), wnd.get_height()) * light_view.view());
         glCullFace(GL_FRONT);
@@ -245,6 +241,7 @@ void init()
         {
             scene.update(tick_delta / 1000.0f);
             tick_timer.reload();
+            illidan_boundary = tz::utility::render::see_aabb(assets, illidan_object.get_boundary().value(), {1.0f, 0.0f, 0.0f});
         }
         if(wireframe)
             tz::graphics::enable_wireframe_render(false);
@@ -304,13 +301,8 @@ void init()
             camera.position += camera.left() * delta_time * speed;
         if(key_listener.is_key_pressed("D"))
             camera.position += camera.right() * delta_time * speed;
-        if(key_listener.is_key_pressed("Up"))
-            example_sprite.position_screenspace.y -= 3;
-        if(key_listener.is_key_pressed("Left"))
-            example_sprite.position_screenspace.x -= 3;
-        if(key_listener.is_key_pressed("Right"))
-            example_sprite.position_screenspace.x += 3;
         deathwing.transform.rotation.y += 0.01f;
+        illidan_object.transform.rotation.y -= 0.01f;
         profiler.end_frame();
     }
 }

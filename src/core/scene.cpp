@@ -9,7 +9,7 @@ void Scene::render(RenderPass render_pass) const
     const Camera& camera = render_pass.get_camera();
     Vector2I viewport_dimensions = {render_pass.get_window().get_width(), render_pass.get_window().get_height()};
     BoundingPyramidalFrustum camera_frustum(camera, viewport_dimensions.x / viewport_dimensions.y);
-    auto render_if_visible = [&](const StaticObject& object){if(object.get_asset().valid_model()){object.render(render_pass);return;} AABB object_box = tz::physics::bound_aabb(*(object.get_asset().mesh)); if(camera_frustum.contains(object_box * object.transform.model()) || tz::graphics::is_instanced(object.get_asset().mesh)) object.render(render_pass);};
+    auto render_if_visible = [&](const StaticObject& object){if(object.get_asset().valid_model()){object.render(render_pass);return;} AABB object_box = tz::physics::bound_aabb(object.get_asset()).value(); if(camera_frustum.contains(object_box * object.transform.model()) || tz::graphics::is_instanced(object.get_asset().mesh)) object.render(render_pass);};
     if(render_shader != nullptr)
     {
         for (const auto &static_object : this->get_static_objects())

@@ -6,6 +6,12 @@ namespace tz::utility::functional
         return std::is_same_v<A, B>;
     }
 
+    template<typename A, typename B>
+    constexpr bool is_related()
+    {
+        return is<A, B>() || std::is_base_of_v<B, A>;
+    }
+
     template<typename Base, typename Derived>
     constexpr bool is_a(const Base& base)
     {

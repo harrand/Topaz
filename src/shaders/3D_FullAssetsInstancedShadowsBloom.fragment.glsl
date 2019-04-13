@@ -215,8 +215,12 @@ void main()
         bright_colour = vec4(0, 0, 0, 1);
     if(has_emissive_map)
     {
-        fragment_colour = texture(emissive_map_sampler, parallaxed_texcoord);
-        bright_colour = fragment_colour;
+        vec4 emissive_colour = texture(emissive_map_sampler, parallaxed_texcoord);
+        if(emissive_colour.a > 0.0)
+        {
+            fragment_colour = mix(fragment_colour, emissive_colour, vec4(0.5, 0.5, 0.5, 1.0));
+            bright_colour = fragment_colour;
+        }
     }
 	/*
     // Non-Directional Component.

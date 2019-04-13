@@ -120,14 +120,16 @@ std::unique_ptr<Model> AssetBuffer::take_model(const std::string& model_name)
     return model;
 }
 
-Asset::Asset(Mesh* mesh, Texture* texture, NormalMap* normal_map, ParallaxMap* parallax_map, DisplacementMap* displacement_map, Model* model): mesh(mesh), texture(texture), normal_map(normal_map), parallax_map(parallax_map), displacement_map(displacement_map), model(model){}
+Asset::Asset(Mesh* mesh, Texture* texture, NormalMap* normal_map, ParallaxMap* parallax_map, DisplacementMap* displacement_map, SpecularMap* specular_map, EmissiveMap* emissive_map, Model* model): mesh(mesh), texture(texture), normal_map(normal_map), parallax_map(parallax_map), displacement_map(displacement_map), specular_map(specular_map), emissive_map(emissive_map), model(model){}
 
 Asset::Asset(Mesh* mesh): Asset(mesh, nullptr){}
 Asset::Asset(Texture* texture): Asset(nullptr, texture){}
 Asset::Asset(NormalMap* normal_map): Asset(nullptr, nullptr, normal_map){}
 Asset::Asset(ParallaxMap* parallax_map): Asset(nullptr, nullptr, nullptr, parallax_map){}
 Asset::Asset(DisplacementMap* displacement_map): Asset(nullptr, nullptr, nullptr, nullptr, displacement_map){}
-Asset::Asset(Model* model): Asset(nullptr, nullptr, nullptr, nullptr, nullptr, model){}
+Asset::Asset(SpecularMap* specular_map): Asset(nullptr, nullptr, nullptr, nullptr, nullptr, specular_map){}
+Asset::Asset(EmissiveMap* emissive_map): Asset(nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, emissive_map){}
+Asset::Asset(Model* model): Asset(nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, model){}
 
 bool Asset::valid_mesh() const
 {
@@ -154,6 +156,16 @@ bool Asset::valid_displacement_map() const
 	return this->displacement_map != nullptr;
 }
 
+bool Asset::valid_specular_map() const
+{
+    return this->specular_map != nullptr;
+}
+
+bool Asset::valid_emissive_map() const
+{
+    return this->emissive_map != nullptr;
+}
+
 bool Asset::valid_model() const
 {
     return this->model != nullptr;
@@ -166,5 +178,5 @@ bool Asset::is_renderable() const
 
 bool Asset::operator==(const Asset &rhs) const
 {
-    return this->mesh == rhs.mesh && this->texture == rhs.texture && this->normal_map == rhs.normal_map && this->parallax_map == rhs.parallax_map && this->displacement_map == rhs.displacement_map;
+    return this->mesh == rhs.mesh && this->texture == rhs.texture && this->normal_map == rhs.normal_map && this->parallax_map == rhs.parallax_map && this->specular_map == rhs.specular_map && this->emissive_map == rhs.emissive_map && this->displacement_map == rhs.displacement_map;
 }

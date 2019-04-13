@@ -170,12 +170,14 @@ struct Asset
 	 * @param displacement_map - The Displacement Map component
 	 * @param model - The Model component
 	 */
-    Asset(Mesh* mesh, Texture* texture, NormalMap* normal_map = nullptr, ParallaxMap* parallax_map = nullptr, DisplacementMap* displacement_map = nullptr, Model* model = nullptr);
+    Asset(Mesh* mesh, Texture* texture, NormalMap* normal_map = nullptr, ParallaxMap* parallax_map = nullptr, DisplacementMap* displacement_map = nullptr, SpecularMap* specular_map = nullptr, EmissiveMap* emissive_map = nullptr, Model* model = nullptr);
 	Asset(Mesh* mesh);
 	Asset(Texture* texture);
 	Asset(NormalMap* normal_map);
 	Asset(ParallaxMap* parallax_map);
 	Asset(DisplacementMap* displacement_map);
+	Asset(SpecularMap* specular_map);
+	Asset(EmissiveMap* emissive_map);
 	Asset(Model* model);
 	/**
 	 * Query as to whether there is a valid Mesh component.
@@ -202,6 +204,8 @@ struct Asset
 	 * @return - True if there is a Displacement Map, false otherwise
 	 */
     bool valid_displacement_map() const;
+	bool valid_specular_map() const;
+	bool valid_emissive_map() const;
     bool valid_model() const;
 	bool is_renderable() const;
 	/// Equate Assets. Returns true if the assets share the exact same asset elements.
@@ -217,6 +221,8 @@ struct Asset
     ParallaxMap* parallax_map;
 	/// The Displacement Map component.
     DisplacementMap* displacement_map;
+	SpecularMap* specular_map;
+	EmissiveMap* emissive_map;
     /// The Model component
     Model* model;
 };

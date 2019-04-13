@@ -1,3 +1,4 @@
+#include "utility/functional.hpp"
 #ifdef TOPAZ_OPENGL
 namespace tz::platform
 {
@@ -56,27 +57,42 @@ namespace tz::platform
         }
     }
 
+    template<typename OGLArrayType, typename... Args>
+    OGLArrayType& OGLVertexArray::emplace(Args&&... args)
+    {
+        this->bind();
+        using namespace tz::utility::functional;
+        if constexpr(is_related<OGLVertexBuffer, OGLArrayType>())
+        {
+            this->vertex_buffers.push_back(std::make_unique<OGLArrayType>(std::forward<Args>(args)...));
+            return *dynamic_cast<OGLArrayType*>(this->vertex_buffers.back().get());
+        }
+        else if constexpr(is_related<OGLVertexAttribute, OGLArrayType>())
+        {
+            this->vertex_attributes.push_back(std::make_unique<OGLArrayType>(std::forward<Args>(args)...));
+            return *dynamic_cast<OGLArrayType*>(this->vertex_attributes.back().get());
+        }
+        else
+            static_assert(std::is_void<OGLArrayType>::value, "OGLVertexArray::emplace<T, Args...>: OGLArrayType has unsupported type. Must be either a subclass or equivalent to OGLVertexBuffer or OGLVertexAttribute.");
+    }
+
     template<typename... Args>
     OGLVertexBuffer& OGLVertexArray::emplace_vertex_buffer(Args&&... args)
     {
-        this->bind();
-        this->vertex_buffers.push_back(std::make_unique<OGLVertexBuffer>(std::forward<Args>(args)...));
-        return *(this->vertex_buffers.back().get());
+        return this->emplace<OGLVertexBuffer>(std::forward<Args>(args)...);
     }
 
     template<typename... Args>
     OGLVertexAttribute& OGLVertexArray::emplace_vertex_attribute(Args&&... args)
     {
-        this->bind();
-        this->vertex_attributes.push_back(std::make_unique<OGLVertexAttribute>(std::forward<Args>(args)...));
-        return *(this->vertex_attributes.back().get());
+        return this->emplace<OGLVertexAttribute>(std::forward<Args>(args)...);
     }
 
     template<template<typename> typename Container, typename Index>
-    void OGLVertexArray::render(bool tessellation, std::size_t instance_count, Container<Index>* indices) const
+    void OGLVertexArray::render(bool tessellation, GLsizei instance_count, Container<Index>* indices) const
     {
         this->bind();
-        auto draw = [&](std::size_t num, const void* data)
+        auto draw = [&](GLsizei num, const void* data)
         {
             if(tessellation)
             {
@@ -98,7 +114,7 @@ namespace tz::platform
         if(indices == nullptr)
         {
             const OGLVertexBuffer* element_array_buffer = this->get_element_array_buffer();
-            std::size_t number_of_elements = element_array_buffer->get_size();
+            auto number_of_elements = static_cast<GLsizei>(element_array_buffer->get_size());
             draw(number_of_elements, nullptr);
         }
         else

@@ -15,6 +15,14 @@ namespace tz::utility::functional
     template<typename A, typename B>
     constexpr bool is();
     /**
+     * Verifies type equality or inheritance
+     * @tparam A - Type A
+     * @tparam B - Type B
+     * @return - True if A is equivalent to B or is a parent class of B. False otherwise
+     */
+    template<typename A, typename B>
+    constexpr bool is_related();
+    /**
      * Verifies that a given base-class instance is also an instance of a given subclass.
      * @tparam Base - The base type and type of the parameter
      * @tparam Derived - The specific type deriving from Base

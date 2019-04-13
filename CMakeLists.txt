@@ -3,9 +3,11 @@ project(topaz VERSION 0.7.0 DESCRIPTION "Cross-Platform Multimedia Engine")
 set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_CXX_STANDARD 17)
 set(UNDERLYING_GRAPHICS_API "TOPAZ_OPENGL")
+set(TOPAZ_PROFILING TRUE)
 #set(UNDERLYING_GRAPHICS_API "TOPAZ_VULKAN")
 # add_compile_options are global flags. They are used everywhere, not just in particular modules.
 message("CMAKE_BUILD_TYPE = ${CMAKE_BUILD_TYPE}")
+set(COMPILE_OPTIONS -Wall -Wextra -pedantic-errors)
 if(CMAKE_BUILD_TYPE MATCHES Release)
     message(STATUS "Compilation set on Release mode.")
     add_compile_options(-Wall -Wextra -pedantic-errors -O3)
@@ -127,7 +129,7 @@ add_library(topaz SHARED
         src/utility/string.hpp
         src/utility/time.cpp
         src/utility/time.hpp
-        src/utility/time.inl)
+        src/utility/time.inl src/utility/render.hpp src/utility/render.cpp)
 # here we express in terms of modules, not just build flags
 target_include_directories(topaz PUBLIC ${PROJECT_SOURCE_DIR}/inc)
 target_include_directories(topaz PRIVATE ${PROJECT_SOURCE_DIR}/src)

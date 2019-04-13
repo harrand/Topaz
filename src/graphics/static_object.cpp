@@ -9,20 +9,7 @@ const Asset& StaticObject::get_asset() const
 
 std::optional<AABB> StaticObject::get_boundary() const
 {
-    std::optional<AABB> box = tz::physics::bound_aabb(this->asset);
-    if(!box.has_value())
-        return box;
-    else
-    {
-        box.value() = box.value() * this->transform.model();
-        return box;
-    }
-    /*
-    if(this->asset.valid_mesh())
-        return tz::physics::bound_aabb(this->asset).value() * this->transform.model();
-    else
-        return std::nullopt;
-    */
+    return tz::physics::bound_object(*this);
 }
 
 void StaticObject::render(RenderPass render_pass) const
@@ -60,6 +47,14 @@ void StaticObject::render(RenderPass render_pass) const
         this->asset.displacement_map->bind(&render_shader, tz::graphics::displacement_map_sampler_id);
     else
         tz::graphics::asset::unbind_displacement_map(render_shader);
+    if(this->asset.valid_specular_map())
+        this->asset.specular_map->bind(&render_shader, tz::graphics::specular_map_sampler_id);
+    else
+        tz::graphics::asset::unbind_specular_map(render_shader);
+    if(this->asset.valid_emissive_map())
+        this->asset.emissive_map->bind(&render_shader, tz::graphics::emissive_map_sampler_id);
+    else
+        tz::graphics::asset::unbind_emissive_map(render_shader);
     render_shader.update();
     if(!this->asset.valid_model())
     {
