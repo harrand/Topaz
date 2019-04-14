@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.9)
 project(topaz VERSION 0.7.0 DESCRIPTION "Cross-Platform Multimedia Engine")
-set(CMAKE_BUILD_TYPE Debug)
+set(CMAKE_BUILD_TYPE Release)
 set(CMAKE_CXX_STANDARD 17)
 set(UNDERLYING_GRAPHICS_API "TOPAZ_OPENGL")
 set(TOPAZ_PROFILING TRUE)
@@ -129,7 +129,7 @@ add_library(topaz SHARED
         src/utility/string.hpp
         src/utility/time.cpp
         src/utility/time.hpp
-        src/utility/time.inl src/utility/render.hpp src/utility/render.cpp)
+        src/utility/time.inl src/utility/render.hpp src/utility/render.cpp src/graphics/renderable.cpp src/graphics/renderable.hpp)
 # here we express in terms of modules, not just build flags
 target_include_directories(topaz PUBLIC ${PROJECT_SOURCE_DIR}/inc)
 target_include_directories(topaz PRIVATE ${PROJECT_SOURCE_DIR}/src)

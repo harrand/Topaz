@@ -2,11 +2,12 @@
 #define TOPAZ_SPRITE_HPP
 #include "graphics/mesh.hpp"
 #include "graphics/texture.hpp"
+#include "graphics/renderable.hpp"
 
 /**
  * Similar to StaticObject, but always has a trivial plane for its mesh. Used to represent 2D sprites.
  */
-class Sprite
+class Sprite : public Renderable
 {
 public:
     /**
@@ -19,10 +20,9 @@ public:
     Sprite(Vector2F position_screenspace, float rotation, Vector2F scale, const Texture* texture);
     /**
      * Issue a render-call to draw the sprite.
-     * @param sprite_shader - The shader used to render the sprite
-     * @param viewport_dimensions - The width and height of the viewport, respectively
+     * @param render_pass - The parameters of this specific rendering call.
      */
-    virtual void render(Shader& sprite_shader, const Vector2I& viewport_dimensions) const;
+    virtual void render(RenderPass render_pass) const override;
     /**
      * Retrieve the clockwise rotation of the sprite, in radians.
      * @return - Rotation in radians

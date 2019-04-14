@@ -22,6 +22,7 @@ public:
     void set_sprite_shader(Shader& sprite_shader);
     void disable_sprite_shader();
     friend class StaticObject;
+    friend class Sprite;
     friend class InstancedStaticObject;
     friend class InstancedDynamicObject;
     friend class Scene;

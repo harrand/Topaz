@@ -19,6 +19,12 @@ namespace tz::utility::generic
     template<template<typename> typename Container, typename T>
     constexpr bool contains(const Container<T>& container, const T& value);
 
+    template<typename T>
+    std::size_t tree_size(T& tree);
+
+    template<typename T>
+    std::vector<T*> depth_first_search(T& tree);
+
     namespace literals
     {
         /**

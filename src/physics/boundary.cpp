@@ -155,6 +155,11 @@ bool AABB::intersects(const BoundaryCluster& rhs) const
     return rhs.intersects(*this);
 }
 
+bool AABB::contains(const AABB& rhs) const
+{
+    return this->minimum <= rhs.get_minimum() && this->maximum >= rhs.get_maximum();
+}
+
 AABB AABB::expand_to(const AABB &other) const
 {
     Vector3F min = this->minimum, max = this->maximum;

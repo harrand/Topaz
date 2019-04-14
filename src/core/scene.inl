@@ -1,23 +1,18 @@
 template<class Element, typename... Args>
 Element& Scene::emplace(Args&&... args)
 {
-    if constexpr(std::is_same<Element, StaticObject>::value)
+    if constexpr(std::is_same<Element, Renderable>::value)
     {
-        return emplace_object(std::forward<Args>(args)...);
+        Element& result = emplace_object(std::forward<Args>(args)...);
+        this->octree.enqueue_object(&result);
+        return result;
     }
-    else if constexpr(std::is_base_of_v<StaticObject, Element>)
+    else if constexpr(std::is_base_of_v<Renderable, Element>)
     {
-        this->heap_objects.push_back(std::make_unique<Element>(std::forward<Args>(args)...));
-        return *(dynamic_cast<Element*>(this->heap_objects.back().get()));
-    }
-    else if constexpr(std::is_same<Element, Sprite>::value)
-    {
-        return emplace_sprite(std::forward<Args>(args)...);
-    }
-    else if constexpr(std::is_base_of_v<Sprite, Element>)
-    {
-        this->heap_sprites.push_back(std::make_unique<Element>(std::forward<Args>(args)...));
-        return *(dynamic_cast<Element*>(this->heap_sprites.back().get()));
+        this->objects.push_back(std::make_unique<Element>(std::forward<Args>(args)...));
+        Element* result = dynamic_cast<Element*>(this->objects.back().get());
+        this->octree.enqueue_object(result);
+        return *result;
     }
     else
     {
@@ -30,13 +25,17 @@ template<typename... Args>
 StaticObject& Scene::emplace_object(Args&&... args)
 {
     //return this->stack_objects.emplace_back(std::forward<Args>(args)...);
-    this->heap_objects.push_back(std::make_unique<StaticObject>(std::forward<Args>(args)...));
-    return *(this->heap_objects.back().get());
+    this->objects.push_back(std::make_unique<StaticObject>(std::forward<Args>(args)...));
+    return dynamic_cast<StaticObject&>(*(this->objects.back().get()));
 }
 
 template<typename... Args>
 Sprite& Scene::emplace_sprite(Args&&... args)
 {
+    this->objects.push_back(std::make_unique<Sprite>(std::forward<Args>(args)...));
+    return dynamic_cast<Sprite&>(*(this->objects.back().get()));
+    /*
     this->heap_sprites.push_back(std::make_unique<Sprite>(std::forward<Args>(args)...));
     return *(this->heap_sprites.back().get());
+     */
 }

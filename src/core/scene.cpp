@@ -1,9 +1,276 @@
 #include "core/scene.hpp"
 
-Scene::Scene(const std::initializer_list<StaticObject>& stack_objects, std::vector<std::unique_ptr<StaticObject>> heap_objects): stack_objects(stack_objects), heap_objects(std::move(heap_objects)), stack_sprites{}, heap_sprites{}, directional_lights{}, point_lights{}, objects_to_delete{}, sprites_to_delete{}{}
+ScenePartitionNode::ScenePartitionNode(Scene* scene, AABB region, std::vector<Renderable*> enclosed_objects): scene(scene), parent(nullptr), region(region), children({nullptr}), pending_insertion(), enclosed_objects(enclosed_objects), child_mask(0x00), fully_built(false), ready(false){}
+
+void ScenePartitionNode::enqueue_object(Renderable *object)
+{
+    this->pending_insertion.push(object);
+}
+
+const std::vector<std::reference_wrapper<const Renderable>> ScenePartitionNode::get_enclosed_renderables() const
+{
+    std::vector<std::reference_wrapper<const Renderable>> renderable_crefs;
+    for(auto* renderable_ptr : this->enclosed_objects)
+        renderable_crefs.push_back(std::cref(*renderable_ptr));
+    return renderable_crefs;
+}
+
+BoundaryCluster ScenePartitionNode::bound_objects() const
+{
+    BoundaryCluster cluster;
+    for(const auto* renderable : this->enclosed_objects)
+        if(renderable->get_boundary().has_value())
+            cluster.emplace_box(BoundaryCluster::ClusterIntegration::UNION, renderable->get_boundary().value());
+    return cluster;
+}
+
+const AABB& ScenePartitionNode::get_region() const
+{
+    return this->region;
+}
+
+const ScenePartitionNode* ScenePartitionNode::get_child(std::size_t child_id) const
+{
+    return this->children[child_id].get();
+}
+
+std::vector<ScenePartitionNode*> ScenePartitionNode::get_children() const
+{
+    std::vector<ScenePartitionNode*> children;
+    for(auto& child_ptr : this->children)
+        if(child_ptr != nullptr)
+            children.push_back(child_ptr.get());
+    return children;
+}
+
+bool ScenePartitionNode::has_children() const
+{
+    for(std::size_t i = 0; i < 8; i++)
+        if(this->get_child(i) != nullptr)
+            return true;
+    return false;
+}
+
+const ScenePartitionNode* ScenePartitionNode::get_node_containing(Renderable* object) const
+{
+    if(object == nullptr)
+        return nullptr;
+    // Check if this node contains it first.
+    auto check_directly = [&](const ScenePartitionNode* node)->const ScenePartitionNode*{for(const auto* renderable_ptr : node->enclosed_objects)if(renderable_ptr == object)return this;return nullptr;};
+
+    if(check_directly(this) != nullptr)
+        return this;
+    // If not, check each child.
+    for(const auto& child_ptr : this->children)
+    {
+        if(child_ptr == nullptr)
+            continue;
+        auto container = child_ptr->get_node_containing(object);
+        if(container != nullptr)
+            return container;
+    }
+    return nullptr;
+}
+
+std::unique_ptr<ScenePartitionNode> ScenePartitionNode::create_node(AABB region, std::vector<Renderable*> enclosed_objects)
+{
+    if(enclosed_objects.empty())
+        return nullptr;
+    std::unique_ptr<ScenePartitionNode> child = std::make_unique<ScenePartitionNode>(this->scene, region, enclosed_objects);
+    child->parent = this;
+    return child;
+}
+
+void ScenePartitionNode::find_enclosing_cube()
+{
+    auto min = scene->get_boundary().get_minimum() * 2.0f;
+    auto max = scene->get_boundary().get_maximum() * 2.0f;
+    this->region = {min, max};
+}
+
+void ScenePartitionNode::update()
+{
+    if(!this->fully_built)
+    {
+        while(!this->pending_insertion.empty())
+        {
+            tz::debug::print("ScenePartitionNode::update(): Inserting Renderable (ID ", this->pending_insertion.front(), ") into unfinished octree...\n");
+            this->enclosed_objects.push_back(this->pending_insertion.front());
+            this->pending_insertion.pop();
+        }
+        this->build();
+    }
+    else
+    {
+        while(!this->pending_insertion.empty())
+        {
+            tz::debug::print("ScenePartitionNode::update(): Inserting Renderable (ID ", this->pending_insertion.front(), ") into finished octree...\n");
+            this->insert(this->pending_insertion.front());
+            this->pending_insertion.pop();
+        }
+    }
+    this->ready = true;
+}
+
+void ScenePartitionNode::build()
+{
+    // If we're a leaf-node, stop recursing.
+    if(this->enclosed_objects.empty())
+    {
+        tz::debug::print("ScenePartitionNode::build(): Invoked, but there are no enclosed objects...\n");
+        return;
+    }
+    Vector3F dimensions = this->region.get_maximum() - this->region.get_minimum();
+    if(dimensions.x == 0.0f && dimensions.y == 0.0f && dimensions.z == 0.0f)
+    {
+        // If our region is empty, do this (?)
+        this->find_enclosing_cube();
+        dimensions = this->region.get_maximum() - this->region.get_minimum();
+        tz::debug::print("ScenePartitionNode::build(): Invoked, but the dimensions of the region were empty, so giving it a default size...\b");
+    }
+
+    // Are our dimensions smaller than the minimum allowed size?
+    if(dimensions <= tz::scene::minimum_node_size)
+        return;
+
+    Vector3F half_dimensions = dimensions / 2.0f;
+    Vector3F centre = this->region.get_minimum() + half_dimensions;
+
+    std::array<AABB, 8> octants{AABB{Vector3F{}, Vector3F{}}, AABB{Vector3F{}, Vector3F{}}, AABB{Vector3F{}, Vector3F{}}, AABB{Vector3F{}, Vector3F{}}, AABB{Vector3F{}, Vector3F{}}, AABB{Vector3F{}, Vector3F{}}, AABB{Vector3F{}, Vector3F{}}, AABB{Vector3F{}, Vector3F{}}};
+    // Create subdivided regions for each octant
+    octants[0] = {this->region.get_minimum(), centre};
+    octants[1] = {Vector3F{centre.x, this->region.get_minimum().y, this->region.get_minimum().z}, Vector3F{this->region.get_maximum().x, centre.y, centre.z}};
+    octants[2] = {Vector3F{centre.x, this->region.get_minimum().y, centre.z}, Vector3F{this->region.get_maximum().x, centre.y, this->region.get_maximum().z}};
+    octants[3] = {Vector3F{this->region.get_minimum().x, this->region.get_minimum().y, centre.z}, Vector3F{centre.x, centre.y, this->region.get_maximum().z}};
+    octants[4] = {Vector3F{this->region.get_minimum().x, centre.y, this->region.get_minimum().z}, Vector3F{centre.x, this->region.get_maximum().y, centre.z}};
+    octants[5] = {Vector3F{centre.x, centre.y, this->region.get_minimum().z}, Vector3F{this->region.get_maximum().x, this->region.get_maximum().y, centre.z}};
+    octants[6] = {centre, this->region.get_maximum()};
+    octants[7] = {Vector3F{this->region.get_minimum().x, centre.y, centre.z}, Vector3F{centre.x, this->region.get_maximum().y, this->region.get_maximum().z}};
+
+    std::array<std::vector<Renderable*>, 8> octant_list;
+    std::vector<Renderable*> delisted_objects;
+    for(Renderable* object : this->enclosed_objects)
+    {
+        // If the enclosed object has no value, then we don't care about partitioning it anyway.
+        if(!object->get_boundary().has_value())
+            continue;
+        AABB bound = object->get_boundary().value();
+        if(bound.get_minimum() != bound.get_maximum())
+        {
+            // If the bound has non-negligible size:
+            for(std::size_t i = 0; i < 8; i++)
+            {
+                if(octants[i].contains(bound)) // Might have to fully contain the AABB instead of just intersecting.
+                {
+                    octant_list[i].push_back(object);
+                    delisted_objects.push_back(object);
+                    break;
+                }
+            }
+        }
+        // Check here for other boundary types. (Or use a generic boundary if you can)
+    }
+
+    // For every object marked as de-listed, actually remove them.
+    for(Renderable* to_delist : delisted_objects)
+    {
+        this->enclosed_objects.erase(std::remove(this->enclosed_objects.begin(), this->enclosed_objects.end(), to_delist));
+    }
+
+    for(std::size_t i = 0; i < 8; i++)
+    {
+        if(!octant_list[i].empty())
+        {
+            this->children[i] = this->create_node(octants[i], octant_list[i]);
+            this->child_mask |= (1 << i);
+            this->children[i]->build();
+        }
+    }
+
+    this->fully_built = true;
+    this->ready = true;
+}
+
+bool ScenePartitionNode::insert(Renderable* object)
+{
+    if(object == nullptr || !object->get_boundary().has_value()) // If our object is invalid in anyway, don't do anything with it.
+        return false;
+    // We already have a tree, let's insert something without having to rebuild the whole thing.
+    if(this->enclosed_objects.empty()) // No structure anyway, so can trivially add it.
+    {
+        this->enclosed_objects.push_back(object);
+        return true;
+    }
+
+    // Are the dimensions greater than the minimum dimensions?
+    Vector3F dimensions = this->region.get_maximum() - this->region.get_minimum();
+    if(dimensions <= tz::scene::minimum_node_size)
+    {
+        this->enclosed_objects.push_back(object);
+        return true;
+    }
+
+    // Object won't fit into the current region, so it's not going to fit in any children. So let's try and push it upwards in the tree. If we're the root, then we're going to have to resize the whole thing.
+    if(this->region.contains(object->get_boundary().value()))
+    {
+        if(this->parent != nullptr)
+            return this->parent->insert(object);
+        else
+            return false;
+    }
+
+    // If we get here, then we know this region can contain the object BUT there are child nodes. Time to find out if it fits in a sub-region.
+    Vector3F half_dimensions = dimensions / 2.0f;
+    Vector3F centre = this->region.get_minimum() + half_dimensions;
+
+    std::array<AABB, 8> child_octants{AABB{Vector3F{}, Vector3F{}}, AABB{Vector3F{}, Vector3F{}}, AABB{Vector3F{}, Vector3F{}}, AABB{Vector3F{}, Vector3F{}}, AABB{Vector3F{}, Vector3F{}}, AABB{Vector3F{}, Vector3F{}}, AABB{Vector3F{}, Vector3F{}}, AABB{Vector3F{}, Vector3F{}}};
+    child_octants[0] = (this->children[0] != nullptr) ? this->children[0]->region : AABB(region.get_minimum(), centre);
+    child_octants[1] = (this->children[1] != nullptr) ? this->children[1]->region : AABB(Vector3F(centre.x, region.get_minimum().y, region.get_minimum().z), Vector3F(region.get_maximum().x, centre.y, centre.z));
+    child_octants[2] = (this->children[2] != nullptr) ? this->children[2]->region : AABB(Vector3F(centre.x, region.get_minimum().y, centre.z), Vector3F(region.get_maximum().x, centre.y, region.get_maximum().z));
+    child_octants[3] = (this->children[3] != nullptr) ? this->children[3]->region : AABB(Vector3F(region.get_minimum().x, region.get_minimum().y, centre.z), Vector3F(centre.x, centre.y, region.get_maximum().z));
+    child_octants[4] = (this->children[4] != nullptr) ? this->children[4]->region : AABB(Vector3F(region.get_minimum().x, centre.y, region.get_minimum().z), Vector3F(centre.x, region.get_maximum().y, centre.z));
+    child_octants[5] = (this->children[5] != nullptr) ? this->children[5]->region : AABB(Vector3F(centre.x, centre.y, region.get_minimum().z), Vector3F(region.get_maximum().x, region.get_maximum().y, centre.z));
+    child_octants[6] = (this->children[6] != nullptr) ? this->children[6]->region : AABB(centre, region.get_maximum());
+    child_octants[7] = (this->children[7] != nullptr) ? this->children[7]->region : AABB(Vector3F(region.get_minimum().x, centre.y, centre.z), Vector3F(centre.x, region.get_maximum().y, region.get_maximum().z));
+
+    // Is the object completely within the root box?
+    auto box = object->get_boundary().value();
+    if(box.get_maximum() != box.get_minimum() && this->region.contains(box))
+    {
+        bool found = false;
+        for(std::size_t i = 0; i < 8; i++)
+        {
+            // is the object fully within an octant?
+            if(child_octants[i].contains(box))
+            {
+                if(this->children[i] != nullptr)
+                    return this->children[i]->insert(object); // Make the child deal with it.
+                else
+                {
+                    this->children[i] = this->create_node(child_octants[i], {object});
+                    this->child_mask |= (1 << i);
+                }
+                found = true;
+            }
+        }
+
+        // We couldn't fit the object in a child, so it's going in here.
+        if(!found)
+        {
+            this->enclosed_objects.push_back(object);
+            return true;
+        }
+    }
+    // handle other boundaries here... if necessary.
+    // otherwise, the object lies either outside of the enclosed box or is intersecting it. for each case, we do need to rebuild the entire tree.
+    return false;
+}
+
+Scene::Scene(): objects{}, directional_lights{}, point_lights{}, objects_to_delete{}, octree{this}{}
 
 void Scene::render(RenderPass render_pass) const
 {
+    using namespace tz::utility;
     Shader* render_shader = render_pass.get_render_context().object_shader;
     Shader* sprite_shader = render_pass.get_render_context().sprite_shader;
     const Camera& camera = render_pass.get_camera();
@@ -12,20 +279,20 @@ void Scene::render(RenderPass render_pass) const
     auto render_if_visible = [&](const StaticObject& object){if(object.get_asset().valid_model()){object.render(render_pass);return;} AABB object_box = tz::physics::bound_aabb(object.get_asset()).value(); if(camera_frustum.contains(object_box * object.transform.model()) || tz::graphics::is_instanced(object.get_asset().mesh)) object.render(render_pass);};
     if(render_shader != nullptr)
     {
-        for (const auto &static_object : this->get_static_objects())
+        for (auto &static_object : this->get_static_objects())
         {
-            if (std::find(this->objects_to_delete.begin(), this->objects_to_delete.end(), &static_object.get()) != this->objects_to_delete.end())
+            if (generic::contains(this->objects_to_delete, const_cast<Renderable*>(dynamic_cast<const Renderable*>(&static_object.get()))))
                 continue;
             render_if_visible(static_object.get());
         }
     }
     if(sprite_shader != nullptr)
     {
-        for(const auto& sprite : this->get_sprites())
+        for(auto& sprite : this->get_sprites())
         {
-            if(std::find(this->sprites_to_delete.begin(), this->sprites_to_delete.end(), &sprite.get()) != this->sprites_to_delete.end())
+            if(generic::contains(this->objects_to_delete, const_cast<Renderable*>(dynamic_cast<const Renderable*>(&sprite.get()))))
                 continue;
-            sprite.get().render(*sprite_shader, viewport_dimensions);
+            sprite.get().render(render_pass);
         }
     }
     if(render_shader == nullptr)
@@ -45,19 +312,36 @@ void Scene::render(RenderPass render_pass) const
 
 void Scene::update(float delta_time)
 {
+    this->octree.update();
     for(std::reference_wrapper<DynamicObject> dynamic_ref : this->get_mutable_dynamic_objects())
         dynamic_ref.get().update(delta_time);
     for(std::reference_wrapper<DynamicSprite> dynamic_sprite_ref : this->get_mutable_dynamic_sprites())
         dynamic_sprite_ref.get().update(delta_time);
-    std::vector<std::reference_wrapper<PhysicsObject>> physics_objects;
     std::vector<std::reference_wrapper<PhysicsObject>> physics_sprites;
+    using namespace tz::utility;
     for(auto& object : this->get_mutable_static_objects())
     {
+        std::vector<std::reference_wrapper<PhysicsObject>> physics_objects;
         if(std::find(this->objects_to_delete.begin(), this->objects_to_delete.end(), &object.get()) != this->objects_to_delete.end())
             continue;
         auto physics_component = dynamic_cast<PhysicsObject*>(&object.get());
         if(physics_component != nullptr)
-            physics_objects.push_back(std::ref(*physics_component));
+        {
+            // this object has a physics component, so check for it in its own node.
+            const ScenePartitionNode* enclosed_node = this->octree.get_node_containing(&object.get());
+            // we have the node containing this object, now we get all the PhysicsObjects in this node and handle collisions on it.
+            for(const Renderable& renderable_cref : enclosed_node->get_enclosed_renderables())
+            {
+                Renderable* fixed = const_cast<Renderable*>(&renderable_cref);
+                if(functional::is_a<Renderable, DynamicObject>(*fixed))
+                {
+                    DynamicObject* fixed_dyno = dynamic_cast<DynamicObject*>(fixed);
+                    physics_objects.push_back(std::ref(*dynamic_cast<PhysicsObject*>(fixed_dyno)));
+                }
+            }
+            //tz::debug::print("Scene::update(...): Handling collision of node of size ", physics_objects.size(), "...\n");
+            physics_component->handle_collisions(physics_objects);
+        }
     }
     for(auto& sprite : this->get_mutable_sprites())
     {
@@ -65,6 +349,7 @@ void Scene::update(float delta_time)
         if(physics_component != nullptr)
             physics_sprites.push_back(std::ref(*physics_component));
     }
+    /*
     std::multimap<float, std::reference_wrapper<PhysicsObject>> physics_objects_sweeped;
     for(auto& [value, dynamic_object_ref] : this->get_mutable_dynamic_objects_sorted_by_variance_axis())
     {
@@ -81,6 +366,7 @@ void Scene::update(float delta_time)
         object.handle_collisions_sort_and_sweep(this->get_highest_variance_axis_objects(), physics_objects_sweeped);
     for(PhysicsObject& sprite_object : physics_sprites)
         sprite_object.handle_collisions_sort_and_sweep(this->get_highest_variance_axis_sprites(), physics_sprites_sweeped);
+    */
     this->handle_deletions();
 }
 
@@ -102,20 +388,24 @@ std::size_t Scene::get_number_of_elements() const
 std::vector<std::reference_wrapper<const StaticObject>> Scene::get_static_objects() const
 {
     std::vector<std::reference_wrapper<const StaticObject>> object_crefs;
-    for(const StaticObject& object_ref : this->stack_objects)
-        object_crefs.push_back(std::cref(object_ref));
-    for(const std::unique_ptr<StaticObject>& object_ptr : this->heap_objects)
-        object_crefs.push_back(std::cref(*object_ptr));
+    for(const auto& renderable_ptr : this->objects)
+    {
+        auto static_ptr = dynamic_cast<const StaticObject*>(renderable_ptr.get());
+        if(static_ptr != nullptr)
+            object_crefs.push_back(std::cref(*static_ptr));
+    }
     return object_crefs;
 }
 
 std::vector<std::reference_wrapper<const Sprite>> Scene::get_sprites() const
 {
     std::vector<std::reference_wrapper<const Sprite>> sprite_crefs;
-    for(const Sprite& sprite_cref : this->stack_sprites)
-        sprite_crefs.push_back(std::cref(sprite_cref));
-    for(const std::unique_ptr<Sprite>& sprite_ptr : this->heap_sprites)
-        sprite_crefs.push_back(std::cref(*sprite_ptr));
+    for(const auto& renderable_ptr : this->objects)
+    {
+        auto sprite_ptr = dynamic_cast<const Sprite*>(renderable_ptr.get());
+        if(sprite_ptr != nullptr)
+            sprite_crefs.push_back(std::cref(*sprite_ptr));
+    }
     return sprite_crefs;
 }
 
@@ -150,25 +440,15 @@ AABB Scene::get_boundary(std::optional<std::pair<const Camera&, Vector2I>> frust
     return {min, max};
 }
 
-void Scene::add_object(StaticObject scene_object)
-{
-    this->stack_objects.push_back(scene_object);
-}
-
 
 void Scene::remove_object(StaticObject& object)
 {
     this->objects_to_delete.push_back(&object);
 }
 
-void Scene::add_sprite(Sprite sprite)
-{
-    this->stack_sprites.push_back(sprite);
-}
-
 void Scene::remove_sprite(Sprite& sprite)
 {
-    this->sprites_to_delete.push_back(&sprite);
+    this->objects_to_delete.push_back(&sprite);
 }
 
 std::optional<DirectionalLight> Scene::get_directional_light(std::size_t light_id) const
@@ -219,6 +499,11 @@ void Scene::add_point_light(PointLight light)
     this->point_lights.push_back(std::move(light));
 }
 
+const ScenePartitionNode& Scene::get_octree_root() const
+{
+    return this->octree;
+}
+
 std::vector<std::reference_wrapper<const DynamicObject>> Scene::get_dynamic_objects() const
 {
     return tz::utility::functional::get_subclasses<const StaticObject, const DynamicObject>(this->get_static_objects());
@@ -227,10 +512,12 @@ std::vector<std::reference_wrapper<const DynamicObject>> Scene::get_dynamic_obje
 std::vector<std::reference_wrapper<StaticObject>> Scene::get_mutable_static_objects()
 {
     std::vector<std::reference_wrapper<StaticObject>> object_refs;
-    for(StaticObject& object_ref : this->stack_objects)
-        object_refs.push_back(std::ref(object_ref));
-    for(std::unique_ptr<StaticObject>& object_ptr : this->heap_objects)
-        object_refs.push_back(std::ref(*object_ptr));
+    for(auto& renderable_ptr : this->objects)
+    {
+        auto static_ptr = dynamic_cast<StaticObject*>(renderable_ptr.get());
+        if(static_ptr != nullptr)
+            object_refs.push_back(std::ref(*static_ptr));
+    }
     return object_refs;
 }
 
@@ -247,10 +534,12 @@ std::vector<std::reference_wrapper<const DynamicSprite>> Scene::get_dynamic_spri
 std::vector<std::reference_wrapper<Sprite>> Scene::get_mutable_sprites()
 {
     std::vector<std::reference_wrapper<Sprite>> sprite_refs;
-    for(Sprite& sprite_cref : this->stack_sprites)
-        sprite_refs.push_back(std::ref(sprite_cref));
-    for(std::unique_ptr<Sprite>& sprite_ptr : this->heap_sprites)
-        sprite_refs.push_back(std::ref(*sprite_ptr));
+    for(auto& renderable_ptr : this->objects)
+    {
+        auto sprite_ptr = dynamic_cast<Sprite*>(renderable_ptr.get());
+        if(sprite_ptr != nullptr)
+            sprite_refs.push_back(std::ref(*sprite_ptr));
+    }
     return sprite_refs;
 }
 
@@ -363,6 +652,14 @@ tz::physics::Axis2D Scene::get_highest_variance_axis_sprites() const
         return Axis2D::Y;
 }
 
+void Scene::erase_object(Renderable* to_delete)
+{
+    auto renderable_iterator = std::remove_if(this->objects.begin(), this->objects.end(), [&](const auto& renderable_ptr){return renderable_ptr.get() == to_delete;});
+    if(renderable_iterator != this->objects.end())
+        this->objects.erase(renderable_iterator);
+}
+
+/*
 void Scene::erase_object(StaticObject* to_delete)
 {
     auto stack_iterator = std::remove(this->stack_objects.begin(), this->stack_objects.end(), *to_delete);
@@ -390,13 +687,19 @@ void Scene::erase_sprite(Sprite* to_delete)
         this->heap_sprites.erase(heap_iterator);
     }
 }
+ */
 
 void Scene::handle_deletions()
 {
+    for(Renderable* deletion : this->objects_to_delete)
+        this->erase_object(deletion);
+    this->objects_to_delete.clear();
+    /*
     for(StaticObject* deletion : this->objects_to_delete)
         this->erase_object(deletion);
     this->objects_to_delete.clear();
     for(Sprite* deletion : this->sprites_to_delete)
         this->erase_sprite(deletion);
     this->sprites_to_delete.clear();
+     */
 }

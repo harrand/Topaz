@@ -5,6 +5,44 @@
 #include "physics/physics.hpp"
 #include "graphics/light.hpp"
 #include <map>
+#include <queue>
+
+namespace tz::scene
+{
+    constexpr Vector3<float> minimum_node_size = {1.0f, 1.0f, 1.0f};
+}
+
+class Scene;
+
+class ScenePartitionNode// : public Boundary        Not until we can test all intersection types.
+{
+public:
+    ScenePartitionNode(Scene* scene, AABB region = {{}, {}}, std::vector<Renderable*> enclosed_objects = {});
+    void enqueue_object(Renderable* object);
+    const std::vector<std::reference_wrapper<const Renderable>> get_enclosed_renderables() const;
+    BoundaryCluster bound_objects() const;
+    const AABB& get_region() const;
+    const ScenePartitionNode* get_child(std::size_t child_id) const;
+    std::vector<ScenePartitionNode*> get_children() const;
+    bool has_children() const;
+    const ScenePartitionNode* get_node_containing(Renderable* object) const;
+    friend class Scene;
+private:
+    std::unique_ptr<ScenePartitionNode> create_node(AABB region, std::vector<Renderable*> enclosed_objects);
+    void find_enclosing_cube();
+    void update();
+    void build();
+    bool insert(Renderable* object);
+    Scene* scene;
+    ScenePartitionNode* parent;
+    AABB region;
+    std::array<std::unique_ptr<ScenePartitionNode>, 8> children;
+    std::queue<Renderable*> pending_insertion;
+    std::vector<Renderable*> enclosed_objects;
+    std::uint8_t child_mask;
+    bool fully_built;
+    bool ready;
+};
 
 /**
  * Container of all renderable objects in a given scene. Provides support for StaticObjects and DynamicObjects (3D) and Sprites and DynamicSprites (2D).
@@ -13,11 +51,9 @@ class Scene
 {
 public:
     /**
-     * Given a container of StaticObjects for the stack and the heap, initialise this scene with such objects.
-     * @param stack_objects - Container of StaticObjects intended for the stack (Fast but non-polymorphic)
-     * @param heap_objects - Container of StaticObjects intended for the heap (Slower, but polymorphic)
+     * Initialise an empty scene.
      */
-    Scene(const std::initializer_list<StaticObject>& stack_objects = {}, std::vector<std::unique_ptr<StaticObject>> heap_objects = {});
+    Scene();
 
     /**
      * Render the scene into the currently-bound FrameBuffer.
@@ -74,12 +110,6 @@ public:
     template<class Element, typename... Args>
     Element& emplace(Args&&... args);
     /**
-     * Given a StaticObject, add a copy of it into the Scene.
-     * Note: This will always invoke a stack-allocation.
-     * @param scene_object - The StaticObject to add to the Scene
-     */
-    void add_object(StaticObject scene_object);
-    /**
      * Construct a StaticObject in-place into this Scene.
      * Note: This will always invoke a heap-allocation.
      * Note: This is equivalent to 'Scene::emplace<StaticObject>(args...)'.
@@ -99,12 +129,6 @@ public:
      * @param object - The object to delete from this Scene.
      */
     void remove_object(StaticObject& object);
-    /**
-     * Given a Sprite, add a copy of it into the Scene.
-     * Note: This will always invoke a stack-allocation.
-     * @param sprite - The Sprite to add to the Scene
-     */
-    void add_sprite(Sprite sprite);
     /**
      * Construct a Sprite in-place into this Scene.
      * Note: This will always invoke a heap-allocation.
@@ -165,6 +189,11 @@ public:
      * @param light - The PointLight to add to the Scene.
      */
     void add_point_light(PointLight light);
+    /**
+     * Get the root node in the octree partitioning the renderables in the scene.
+     * @return - Octree node
+     */
+    const ScenePartitionNode& get_octree_root() const;
 protected:
     /**
      * Protected.
@@ -232,41 +261,28 @@ protected:
     tz::physics::Axis2D get_highest_variance_axis_sprites() const;
     /**
      * Protected.
-     * Erase the given StaticObject from the Scene instantly.
-     * Note: This retains the difference in behaviour mentioned in Scene::remove_object(StaticObject&).
-     * @param to_delete - The StaticObject to erase from the Scene
+     * Erase the given Renderable from the Scene instantly.
+     * Note: This retains the difference in behaviour mentioned in Scene::remove_object(Renderable&).
+     * @param to_delete - The Renderable to erase from the Scene
      */
-    void erase_object(StaticObject* to_delete);
-    /**
-     * Protected.
-     * Erase the given Sprite from the Scene instantly.
-     * Note: This retains the difference in behaviour mentioned in Scene::remove_sprite(Sprite&).
-     * @param to_delete - The Sprite to erase from the Scene
-     */
-    void erase_sprite(Sprite* to_delete);
+    void erase_object(Renderable* to_delete);
     /**
      * Protected.
      * Handle all of the queued deletion requests made by Scene::remove_object(StaticObject&) and Scene::remove_sprite(Sprite&).
-     * Note: If you are using Scene::erase_object(StaticObject*) and Scene::erase_sprite(Sprite*) instead, then this method is unneeded.
+     * Note: If you are using Scene::erase_object(Renderable*) instead, then this method is unneeded.
      */
     void handle_deletions();
 
-    /// Container of all stack-allocated StaticObjects.
-    std::vector<StaticObject> stack_objects;
-    /// Container of all heap-allocated StaticObjects and all given subclasses, including DynamicObject.
-    std::vector<std::unique_ptr<StaticObject>> heap_objects;
-    /// Container of all stack-allocated Sprites.
-    std::vector<Sprite> stack_sprites;
-    /// Container of all heap-allocated Sprites and all given subclasses, including DynamciSprite.
-    std::vector<std::unique_ptr<Sprite>> heap_sprites;
+    /// Container of all objects in the scene which can be rendered.
+    std::vector<std::unique_ptr<Renderable>> objects;
     /// Container of all DirectionalLights in the Scene.
     std::vector<DirectionalLight> directional_lights;
     /// Container of all PointLights in the Scene.
     std::vector<PointLight> point_lights;
-    /// Container of all 3D objects that have been requested for deletion in the next Scene::update() invocation.
-    std::vector<StaticObject*> objects_to_delete;
-    /// Container of all 2D objects that have been requested for deletion in the next Scene::update() invocation.
-    std::vector<Sprite*> sprites_to_delete;
+    /// Container of all objects that have been requested for deletion in the next Scene::update() invocation.
+    std::vector<Renderable*> objects_to_delete;
+    /// Octree for nodes.
+    ScenePartitionNode octree;
 };
 
 #include "scene.inl"

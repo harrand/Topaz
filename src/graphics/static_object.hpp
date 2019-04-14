@@ -5,13 +5,13 @@
 #include "graphics/asset.hpp"
 #include "data/transform.hpp"
 #include "physics/physics_object.hpp"
-#include "graphics/render_pass.hpp"
+#include "graphics/renderable.hpp"
 
 /**
  * StaticObjects do NOT own the assets that they use.
  * The assets provided MUST have a lifetime greater than or equal to the StaticObject.
  */
-class StaticObject
+class StaticObject : public Renderable
 {
 public:
     /**
@@ -29,12 +29,12 @@ public:
      * Retrieve an AABB bounding the StaticObject, if it has a valid mesh or model.
      * @return - Boundary bounding the StaticObject if geometry exists, null otherwise
      */
-    virtual std::optional<AABB> get_boundary() const;
+    virtual std::optional<AABB> get_boundary() const override;
     /**
      * Issue a render-call to draw the object.
      * @param render_pass - The parameters with which to render the object
      */
-    virtual void render(RenderPass render_pass) const;
+    virtual void render(RenderPass render_pass) const override;
 
     /// Underlying transform of the object. Can be edited by anyone at any time
     Transform transform;

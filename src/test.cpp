@@ -169,13 +169,9 @@ void init()
     scene.emplace<StaticObject>(Transform{{100, 0, 0}, {}, {200, 200, 200}}, wooden_cylinder);
     scene.emplace<StaticObject>(Transform{{0, -50, -70}, {}, {20, 20, 20}}, asset1);
     //scene.emplace<StaticObject>(Transform{{0, -1000, 0}, {}, {4000, 40, 4000}}, noise_asset);
-
     scene.emplace<DynamicObject>(1.0f, Transform{{0, 100, 0}, {}, {50, 50, 50}}, wooden_cylinder);
-
     scene.emplace<DynamicObject>(1.0f, Transform{{10, 100, 0}, {}, {100, 50, 50}}, wooden_cylinder);
-
     scene.emplace<DynamicObject>(1.0f, Transform{{20, 100, 0}, {}, {50, 50, 50}}, wooden_cylinder);
-
     scene.emplace<DynamicObject>(1.0f, Transform{{40, 100, 0}, {}, {50, 50, 50}}, wooden_cylinder);
     /*// BoundaryCluster test...
     BoundaryCluster cluster;
@@ -242,6 +238,13 @@ void init()
             scene.update(tick_delta / 1000.0f);
             tick_timer.reload();
             illidan_boundary = tz::utility::render::see_aabb(assets, illidan_object.get_boundary().value(), {1.0f, 0.0f, 0.0f});
+            static bool done = false;
+            for(const ScenePartitionNode* node : tz::utility::generic::depth_first_search(scene.get_octree_root()))
+            {
+                if(!done)
+                    scene.emplace<RenderableBoundingBox>(tz::utility::render::see_aabb(assets, node->get_region()));
+            }
+            done = true;
         }
         if(wireframe)
             tz::graphics::enable_wireframe_render(false);

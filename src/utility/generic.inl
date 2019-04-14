@@ -1,4 +1,5 @@
 #include <sstream>
+#include <stack>
 
 namespace tz::utility::generic
 {
@@ -12,6 +13,31 @@ namespace tz::utility::generic
     constexpr bool contains(const Container<T>& container, const T& value)
     {
         return std::find(container.begin(), container.end(), value) != container.end();
+    }
+
+    template<typename T>
+    std::size_t tree_size(T& tree)
+    {
+        return depth_first_search(tree).size();
+    }
+
+    template<typename T>
+    std::vector<T*> depth_first_search(T& tree)
+    {
+        std::stack<T*> gui_stack;
+        std::vector<T*> descendants;
+        gui_stack.push(&tree);
+        while(!gui_stack.empty())
+        {
+            T* current = gui_stack.top();
+            gui_stack.pop();
+            for(T* child : current->get_children())
+            {
+                gui_stack.push(child);
+                descendants.push_back(child);
+            }
+        }
+        return descendants;
     }
 
     namespace cast

@@ -9,9 +9,13 @@ Sprite::Sprite(Vector2F position_screenspace, float rotation, Vector2F scale, co
     this->set_rotation(this->rotation);
 }
 
-void Sprite::render(Shader &sprite_shader, const Vector2I &viewport_dimensions) const
+void Sprite::render(RenderPass render_pass) const
 {
+    if(render_pass.get_render_context().get_sprite_shader() == nullptr)
+        return;
     tz::graphics::gui_render_mode();
+    Shader& sprite_shader = *render_pass.get_render_context().sprite_shader;
+    const Vector2I viewport_dimensions = render_pass.get_window().get_dimensions_pixels();
     sprite_shader.bind();
     sprite_shader.set_uniform<bool>("has_texture", true);
     sprite_shader.set_uniform<bool>("has_background_colour", false);

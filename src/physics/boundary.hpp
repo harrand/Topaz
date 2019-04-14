@@ -148,6 +148,7 @@ public:
 	 * @return - True if this AABB intersects the cluster. False otherwise
 	 */
 	virtual bool intersects(const BoundaryCluster& rhs) const override;
+	bool contains(const AABB& rhs) const;
 	AABB expand_to(const AABB& other) const;
     AABB operator*(const Matrix4x4& rhs) const;
 private:
