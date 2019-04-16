@@ -39,7 +39,7 @@ std::optional<AABB> tz::physics::bound_aabb(const Model& model, const Matrix4x4&
 	AABB box = tz::physics::bound_aabb(*model.get_mesh_by_id(0), transform);
 	for(std::size_t i = 0; i < model.get_number_of_meshes(); i++)
 	{
-		box.expand_to(tz::physics::bound_aabb(*model.get_mesh_by_id(i), transform));
+		box = box.expand_to(tz::physics::bound_aabb(*model.get_mesh_by_id(i), transform));
 	}
 	return {box};
 }
@@ -48,7 +48,7 @@ std::optional<AABB> tz::physics::bound_aabb(const Asset& asset, const Matrix4x4&
 {
     if(asset.valid_mesh())
     {
-        AABB mesh_box = tz::physics::bound_aabb(*asset.mesh);
+        AABB mesh_box = tz::physics::bound_aabb(*asset.mesh, transform);
         if(asset.valid_model())
         {
             std::optional<AABB> box = tz::physics::bound_aabb(*asset.model, transform);

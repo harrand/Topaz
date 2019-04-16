@@ -95,6 +95,20 @@ const InstancedMesh& InstancedStaticObject::get_instanced_mesh() const
     return *this->instanced_mesh;
 }
 
+std::optional<AABB> InstancedStaticObject::get_boundary() const
+{
+    std::optional<AABB> bound = StaticObject::get_boundary();
+    if(!bound.has_value())
+        return std::nullopt;
+    for(const Matrix4x4& model_matrix : this->instanced_mesh->get_model_matrices())
+    {
+        std::optional<AABB> boundary = tz::physics::bound_aabb(*this->instanced_mesh, model_matrix);
+        if(boundary.has_value())
+            bound.value() = bound.value().expand_to(boundary.value());
+    }
+    return bound;
+}
+
 void InstancedStaticObject::render(RenderPass render_pass) const
 {
     Shader& instanced_render_shader = *render_pass.get_render_context().object_shader;

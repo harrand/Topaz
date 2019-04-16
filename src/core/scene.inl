@@ -4,7 +4,6 @@ Element& Scene::emplace(Args&&... args)
     if constexpr(std::is_same<Element, Renderable>::value)
     {
         Element& result = emplace_object(std::forward<Args>(args)...);
-        this->octree.enqueue_object(&result);
         return result;
     }
     else if constexpr(std::is_base_of_v<Renderable, Element>)
@@ -26,7 +25,9 @@ StaticObject& Scene::emplace_object(Args&&... args)
 {
     //return this->stack_objects.emplace_back(std::forward<Args>(args)...);
     this->objects.push_back(std::make_unique<StaticObject>(std::forward<Args>(args)...));
-    return dynamic_cast<StaticObject&>(*(this->objects.back().get()));
+    StaticObject* result = dynamic_cast<StaticObject*>(this->objects.back().get());
+    this->octree.enqueue_object(result);
+    return *result;
 }
 
 template<typename... Args>

@@ -69,6 +69,11 @@ public:
      */
     const InstancedMesh& get_instanced_mesh() const;
     /**
+     * Retrieve an AABB bounding all StaticObjects.
+     * @return - Boundary bounding all objects in the instanced object
+     */
+    virtual std::optional<AABB> get_boundary() const override;
+    /**
      * Render the StaticObject instances in a single render-call.
      * @param render_pass - Render properties of the render-call
      */

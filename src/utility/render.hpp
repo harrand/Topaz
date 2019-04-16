@@ -18,12 +18,14 @@ public:
      * @param transform - The position, rotation, and scale of the object
      * @param asset - The asset used to render the object
      */
-    RenderableBoundingBox(Transform transform, Asset asset);
+    RenderableBoundingBox(Transform transform, Asset asset, float wireframe_width = 1.0f);
     /**
      * Issue a render-call to draw the object.
      * @param render_pass - The parameters with which to render the object
      */
     virtual void render(RenderPass render_pass) const override;
+private:
+    float wire_width;
 };
 
 namespace tz::utility::render
@@ -36,7 +38,7 @@ namespace tz::utility::render
      * @param colour - Colour of the renderable AABB
      * @return - The StaticObject equivalent of the given AABB
      */
-    RenderableBoundingBox see_aabb(AssetBuffer& buffer, const AABB& box, const Vector3F& colour = {1.0f, 1.0f, 1.0f});
+    RenderableBoundingBox see_aabb(AssetBuffer& buffer, const AABB& box, const Vector3F& colour = {1.0f, 1.0f, 1.0f}, float wire_width = 1.0f);
 }
 
 #endif //TOPAZ_RENDER_HPP

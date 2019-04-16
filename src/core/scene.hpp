@@ -4,43 +4,114 @@
 #include "physics/dynamic_sprite.hpp"
 #include "physics/physics.hpp"
 #include "graphics/light.hpp"
+#include "data/tree.hpp"
 #include <map>
 #include <queue>
 
 namespace tz::scene
 {
-    constexpr Vector3<float> minimum_node_size = {1.0f, 1.0f, 1.0f};
+    /// Minimum region of each ScenePartitionNode. Decreasing this increases precision of space partitioning, but at increased overhead.
+    constexpr Vector3F minimum_node_size = {0.1f, 0.1f, 0.1f};
 }
 
 class Scene;
 
-class ScenePartitionNode// : public Boundary        Not until we can test all intersection types.
+/**
+ * Node of an Octree used in the Scene space partition.
+ */
+class ScenePartitionNode : public Octree<ScenePartitionNode>// : public Boundary        Not until we can test all intersection types.
 {
 public:
-    ScenePartitionNode(Scene* scene, AABB region = {{}, {}}, std::vector<Renderable*> enclosed_objects = {});
-    void enqueue_object(Renderable* object);
+    /**
+     * Construct a Scene octree node based upon a parent scene, a region, and all objects enclosing it.
+     * @param scene - Scene containing this octree node
+     * @param region - Region of this specific node
+     * @param enclosed_objects - All renderable objects within this node
+     */
+    ScenePartitionNode(Scene* scene, AABB region = {{}, {}}, std::vector<const Renderable*> enclosed_objects = {});
+    /**
+     * Queue an object into the Octree to be added to the tree during the next ScenePartitionNode::update() invocation.
+     * This will be invoked automatically by the parent Scene::update(...).
+     * @param object - Object to insert into the tree
+     */
+    void enqueue_object(const Renderable* object);
+    /**
+     * Retrieve a container of all renderable objects contained within this specific tree node
+     * @return - List of all renderables in this node or children
+     */
     const std::vector<std::reference_wrapper<const Renderable>> get_enclosed_renderables() const;
+    /**
+     * Construct a cluster bounding all physical renderables in this specific tree node
+     * @return - Cluster of all objects in this node
+     */
     BoundaryCluster bound_objects() const;
+    /**
+     * Retrieve the region binding this tree node
+     * @return - Region comprising this node
+     */
     const AABB& get_region() const;
-    const ScenePartitionNode* get_child(std::size_t child_id) const;
+    /**
+     * Retrieve a container of all direct children of this node.
+     * @return - Children of this node
+     */
     std::vector<ScenePartitionNode*> get_children() const;
+    /**
+     * Query as to whether this node contains any children.
+     * If it has no children, it is a leaf-node.
+     * @return - True if node contains at least one child. Otherwise false
+     */
     bool has_children() const;
-    const ScenePartitionNode* get_node_containing(Renderable* object) const;
+    /**
+     * Retrieve the node containing the given object, if one exists.
+     * Note that this checks the current node and all its children, it does NOT check the parent node(s).
+     * @param object - Object whose node to retrieve
+     * @return - Pointer to constant node containing the given renderable if it exists. Otherwise nullptr
+     */
+    const ScenePartitionNode* get_node_containing(const Renderable* object) const;
     friend class Scene;
 private:
-    std::unique_ptr<ScenePartitionNode> create_node(AABB region, std::vector<Renderable*> enclosed_objects);
+    /**
+     * Construct a node regarding the same scene as this node.
+     * @param region - Region bounding the node
+     * @param enclosed_objects - All objects which the node encloses
+     * @return - Owning pointer to the created node
+     */
+    std::unique_ptr<ScenePartitionNode> create_node(AABB region, std::vector<const Renderable*> enclosed_objects);
+    /**
+     * Force this node's region to be equal to double the size of the parent scene's bounding region (maximum size)
+     */
     void find_enclosing_cube();
+    /**
+     * Update the tree, causing all queued insertions to take effect.
+     */
     void update();
+    /**
+     * Build the tree from scratch.
+     */
     void build();
-    bool insert(Renderable* object);
+    /**
+     * Attempt to insert a given object into the tree without attempting to re-build the whole thing.
+     * @param object - Object to insert into the tree
+     * @return - True if the insertion failed. Otherwise false. If false, then a re-build is required to insert the object
+     */
+    bool insert(const Renderable* object);
+    /// Parent scene.
     Scene* scene;
+    /// Parent node (if this is the root node, this is nullptr).
     ScenePartitionNode* parent;
+    /// Region bounding this node.
     AABB region;
+    /// Container of all children. Any can be nullptr.
     std::array<std::unique_ptr<ScenePartitionNode>, 8> children;
-    std::queue<Renderable*> pending_insertion;
-    std::vector<Renderable*> enclosed_objects;
+    /// Queue of all renderables which await insertion. This is cleared every update(...) invocation.
+    std::queue<const Renderable*> pending_insertion;
+    /// Container of all objects enclosed within this node.
+    std::vector<const Renderable*> enclosed_objects;
+    /// Mask containing information about which child is currently being used.
     std::uint8_t child_mask;
+    /// Stores if the tree fully resembles an octree structure.
     bool fully_built;
+    /// Stores if the tree has no more objects waiting to be inserted before it is complete.
     bool ready;
 };
 
@@ -54,7 +125,6 @@ public:
      * Initialise an empty scene.
      */
     Scene();
-
     /**
      * Render the scene into the currently-bound FrameBuffer.
      * @param render_shader - The Shader with which to render all of the 3D objects in this Scene
@@ -194,6 +264,12 @@ public:
      * @return - Octree node
      */
     const ScenePartitionNode& get_octree_root() const;
+    /**
+     * Simulate a raycast from the given point on the screen.
+     * @param screen_position - Position on the screen to emit a ray from
+     * @return - Set of pointers to collided objects, if any exist.
+     */
+    std::unordered_set<const Renderable*> raycast(Vector2I screen_position, RenderPass render_pass) const;
 protected:
     /**
      * Protected.

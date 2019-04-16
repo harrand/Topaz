@@ -3,19 +3,21 @@
 //
 #include "utility/render.hpp"
 
-RenderableBoundingBox::RenderableBoundingBox(Transform transform, Asset asset): StaticObject(transform, asset){}
+RenderableBoundingBox::RenderableBoundingBox(Transform transform, Asset asset, float wireframe_width): StaticObject(transform, asset), wire_width(wireframe_width){}
 
 void RenderableBoundingBox::render(RenderPass render_pass) const
 {
-    tz::graphics::enable_wireframe_render(true);
+    glDisable(GL_CULL_FACE);
+    tz::graphics::enable_wireframe_render(true, this->wire_width);
     StaticObject::render(render_pass);
     tz::graphics::enable_wireframe_render(false);
+    glEnable(GL_CULL_FACE);
 }
 
 namespace tz::utility::render
 {
 
-    RenderableBoundingBox see_aabb(AssetBuffer& buffer, const AABB& box, const Vector3F& colour)
+    RenderableBoundingBox see_aabb(AssetBuffer& buffer, const AABB& box, const Vector3F& colour, float wire_width)
     {
         Mesh* cube_mesh = buffer.find_mesh("bounding_box");
         if(cube_mesh == nullptr)
@@ -27,6 +29,6 @@ namespace tz::utility::render
         if(colour_texture == nullptr)
             colour_texture = &buffer.emplace_texture(texture_name, colour_bitmap);
         // Definitely have a mesh now. Let's use it.
-        return {Transform{{(box.get_minimum() + box.get_maximum()) / 2.0f}, {}, box.get_dimensions() / 2.0f}, Asset{cube_mesh, colour_texture}};
+        return {Transform{{(box.get_minimum() + box.get_maximum()) / 2.0f}, {}, box.get_dimensions() / 2.0f}, Asset{cube_mesh, colour_texture}, wire_width};
     }
 }

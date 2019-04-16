@@ -74,8 +74,10 @@ namespace tz::graphics
 		glDisable(GL_CULL_FACE);
 	}
 
-	inline void enable_wireframe_render(bool wireframes)
+	inline void enable_wireframe_render(bool wireframes, float wireframe_width)
 	{
 		glPolygonMode(GL_FRONT_AND_BACK, wireframes ? GL_LINE : GL_FILL);
+		if(wireframes)
+			glLineWidth(wireframes ? wireframe_width : 1.0f);
 	}
 }

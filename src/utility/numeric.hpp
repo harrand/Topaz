@@ -15,15 +15,15 @@ namespace tz::utility::numeric
     namespace consts
     {
         /// 3.14159...
-        constexpr double pi = 3.14159265359;
+        constexpr float pi = 3.141593;
         /// 2pi...
-        constexpr double tau = 2.0 * pi;
+        constexpr float tau = 2.0f * pi;
         /// 2.17...
-        constexpr double e = 2.71828182845;
+        constexpr float e = 2.718282;
         ///  1 / (2 - cbrt(2))
-        constexpr double forest_ruth_coefficient = 1.35120719196;
+        constexpr float forest_ruth_coefficient = 1.351207;
         ///  1 - (2 * forest_ruth_coefficient)
-        constexpr double forest_ruth_complement = 1.0 - (2.0 * forest_ruth_coefficient);
+        constexpr float forest_ruth_complement = 1.0f - (2.0f * forest_ruth_coefficient);
     }
 }
 

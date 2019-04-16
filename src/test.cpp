@@ -46,7 +46,7 @@ void init()
     Camera camera;
     camera.position = {0, 0, -50};
     Scene scene;
-    scene.add_directional_light({{0, 1, 0}, {1, 1, 1}, 0.5f});
+    scene.add_directional_light({{0, 1, 0}, {1, 1, 1}, 0.8f});
 
     glDebugMessageInsert(GL_DEBUG_SOURCE_APPLICATION, GL_DEBUG_TYPE_ERROR, 0, GL_DEBUG_SEVERITY_NOTIFICATION, -1, "Well met.");
 
@@ -162,10 +162,8 @@ void init()
     scene.emplace<StaticObject>(Transform{{0, -135, 100}, {}, {50, 50, 50}}, maul);
     scene.emplace<StaticObject>(Transform{{50, -135, 100}, {}, {7, 7, 7}}, nanosuit);
     StaticObject& illidan_object = scene.emplace<StaticObject>(Transform{{-75, -135, 100}, {}, {15, 15, 15}}, illidan);
-    StaticObject& deathwing = scene.emplace<StaticObject>(Transform{{0, 200, 0}, {0, 0, 0}, {50, 50, 50}}, deathwing_asset);
-    StaticObject& illidan_boundary = scene.emplace<RenderableBoundingBox>(tz::utility::render::see_aabb(assets, illidan_object.get_boundary().value(), {1.0f, 0.0f, 0.0f}));
-    scene.add_point_light(PointLight{{0, 0, 125}, {1, 1, 1}, 9000.0f});
-    scene.emplace<StaticObject>(Transform{{0, 0, 0}, {}, {15, 15, 15}}, wooden_sphere);
+    StaticObject& deathwing = scene.emplace<StaticObject>(Transform{{0, 200, 0}, {0, 0, 0}, {5, 5, 5}}, deathwing_asset);
+    //scene.add_point_light(PointLight{{0, 0, 125}, {1, 1, 1}, 9000.0f});
     scene.emplace<StaticObject>(Transform{{100, 0, 0}, {}, {200, 200, 200}}, wooden_cylinder);
     scene.emplace<StaticObject>(Transform{{0, -50, -70}, {}, {20, 20, 20}}, asset1);
     //scene.emplace<StaticObject>(Transform{{0, -1000, 0}, {}, {4000, 40, 4000}}, noise_asset);
@@ -182,6 +180,15 @@ void init()
 
     RenderPass main_pass{wnd, {render_shader, gui_shader}, camera};
     RenderPass depth_pass{wnd, {depth_shader}, camera};
+
+    /*
+    for(const StaticObject& object : scene.get_static_objects())
+    {
+        if(object.get_boundary().has_value())
+            scene.emplace<RenderableBoundingBox>(tz::utility::render::see_aabb(assets, object.get_boundary().value(), {0.0f, 1.0f, 0.0f}));
+    }
+     */
+    scene.emplace<RenderableBoundingBox>(tz::utility::render::see_aabb(assets, scene.get_boundary(), {0.0f, 0.0f, 1.0f}));
 
     long long int time = tz::utility::time::now();
     Timer second_timer, tick_timer;
@@ -237,12 +244,15 @@ void init()
         {
             scene.update(tick_delta / 1000.0f);
             tick_timer.reload();
-            illidan_boundary = tz::utility::render::see_aabb(assets, illidan_object.get_boundary().value(), {1.0f, 0.0f, 0.0f});
-            static bool done = false;
+            static bool done = true;
+            static auto rand = LocalRandom{};
             for(const ScenePartitionNode* node : tz::utility::generic::depth_first_search(scene.get_octree_root()))
             {
                 if(!done)
-                    scene.emplace<RenderableBoundingBox>(tz::utility::render::see_aabb(assets, node->get_region()));
+                {
+                    Vector3F rand_colour = {rand.next_float(0.0f, 1.0f), rand.next_float(0.0f, 1.0f), rand.next_float(0.0f, 1.0f)};
+                    scene.emplace<RenderableBoundingBox>(tz::utility::render::see_aabb(assets, node->get_region(), rand_colour, 7.5f));
+                }
             }
             done = true;
         }
@@ -293,6 +303,20 @@ void init()
             camera.rotation.y += 0.03 * delta.x;
             camera.rotation.x += 0.03 * delta.y;
             mouse_listener.reload_mouse_delta();
+        }
+        if(mouse_listener.is_right_clicked())
+        {
+            Vector2F position = mouse_listener.get_mouse_position();
+            Vector2I position_i{static_cast<int>(position.x), static_cast<int>(position.y)};
+            auto found_objects = scene.raycast(position_i, main_pass);
+            if(!found_objects.empty())
+            {
+                std::cout << "found at least one object! there were " << found_objects.size() << "\n";
+                std::cout << "rendering its boxes...\n";
+                for(const Renderable* found_object : found_objects)
+                    if(found_object->get_boundary().has_value())
+                        scene.emplace<RenderableBoundingBox>(tz::utility::render::see_aabb(assets, found_object->get_boundary().value()));
+            }
         }
         if(key_listener.is_key_pressed("Escape"))
             break;
