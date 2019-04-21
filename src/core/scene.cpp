@@ -272,7 +272,7 @@ bool ScenePartitionNode::insert(const Renderable* object)
     return false;
 }
 
-Scene::Scene(): objects{}, directional_lights{}, point_lights{}, objects_to_delete{}, octree{this}{}
+Scene::Scene(): objects{}, inheritance_map{}, directional_lights{}, point_lights{}, objects_to_delete{}, octree{this}{}
 
 void Scene::render(RenderPass render_pass) const
 {
@@ -321,24 +321,24 @@ void Scene::update(float delta_time)
     // Update the octree, ensuring that any enqueued objects are inserted properly.
     this->octree.update();
     // Invoke update functions on all dynamic objects and sprites.
-    for(std::reference_wrapper<DynamicObject> dynamic_ref : this->get_mutable_dynamic_objects())
-        dynamic_ref.get().update(delta_time);
-    for(std::reference_wrapper<DynamicSprite> dynamic_sprite_ref : this->get_mutable_dynamic_sprites())
-        dynamic_sprite_ref.get().update(delta_time);
+    for(DynamicObject* dynamic_ref : this->get_renderables_by_type<DynamicObject>())
+        dynamic_ref->update(delta_time);
+    for(DynamicSprite* dynamic_sprite_ref : this->get_renderables_by_type<DynamicSprite>())
+        dynamic_sprite_ref->update(delta_time);
     std::vector<std::reference_wrapper<PhysicsObject>> physics_sprites;
     using namespace tz::utility;
     // For each static object, get all those who are also PhysicsObjects.
     // from those PhysicsObjects, get the octree node containing this object, and handle collisions with all of those.
-    for(auto& object : this->get_mutable_static_objects())
+    for(auto* object : this->get_renderables_by_type<StaticObject>())
     {
         std::vector<std::reference_wrapper<PhysicsObject>> physics_objects;
-        if(std::find(this->objects_to_delete.begin(), this->objects_to_delete.end(), &object.get()) != this->objects_to_delete.end())
+        if(std::find(this->objects_to_delete.begin(), this->objects_to_delete.end(), object) != this->objects_to_delete.end())
             continue;
-        auto physics_component = dynamic_cast<PhysicsObject*>(&object.get());
+        auto physics_component = dynamic_cast<PhysicsObject*>(object);
         if(physics_component != nullptr)
         {
             // this object has a physics component, so check for it in its own node.
-            const ScenePartitionNode* enclosed_node = this->octree.get_node_containing(&object.get());
+            const ScenePartitionNode* enclosed_node = this->octree.get_node_containing(object);
             // we have the node containing this object, now we get all the PhysicsObjects in this node and handle collisions on it.
             for(const Renderable& renderable_cref : enclosed_node->get_enclosed_renderables())
             {
@@ -353,9 +353,9 @@ void Scene::update(float delta_time)
             physics_component->handle_collisions(physics_objects);
         }
     }
-    for(auto& sprite : this->get_mutable_sprites())
+    for(auto* sprite : this->get_renderables_by_type<Sprite>())
     {
-        auto physics_component = dynamic_cast<PhysicsObject*>(&sprite.get());
+        auto physics_component = dynamic_cast<PhysicsObject*>(sprite);
         if(physics_component != nullptr)
             physics_sprites.push_back(std::ref(*physics_component));
     }
@@ -566,153 +566,32 @@ std::unordered_set<const Renderable*> Scene::raycast(Vector2I screen_position, R
     return collided;
 }
 
-std::vector<std::reference_wrapper<const DynamicObject>> Scene::get_dynamic_objects() const
+const Renderable* Scene::get_renderable_by_id(std::size_t index) const
 {
-    return tz::utility::functional::get_subclasses<const StaticObject, const DynamicObject>(this->get_static_objects());
-}
-
-std::vector<std::reference_wrapper<StaticObject>> Scene::get_mutable_static_objects()
-{
-    std::vector<std::reference_wrapper<StaticObject>> object_refs;
-    for(auto& renderable_ptr : this->objects)
+    const Renderable* ret;
+    try
     {
-        auto static_ptr = dynamic_cast<StaticObject*>(renderable_ptr.get());
-        if(static_ptr != nullptr)
-            object_refs.push_back(std::ref(*static_ptr));
+        ret = this->objects.at(index).get();
     }
-    return object_refs;
-}
-
-std::vector<std::reference_wrapper<DynamicObject>> Scene::get_mutable_dynamic_objects()
-{
-    return tz::utility::functional::get_subclasses<StaticObject, DynamicObject>(this->get_mutable_static_objects());
-}
-
-std::vector<std::reference_wrapper<const DynamicSprite>> Scene::get_dynamic_sprites() const
-{
-    return tz::utility::functional::get_subclasses<const Sprite, const DynamicSprite>(this->get_sprites());
-}
-
-std::vector<std::reference_wrapper<Sprite>> Scene::get_mutable_sprites()
-{
-    std::vector<std::reference_wrapper<Sprite>> sprite_refs;
-    for(auto& renderable_ptr : this->objects)
+    catch(...)
     {
-        auto sprite_ptr = dynamic_cast<Sprite*>(renderable_ptr.get());
-        if(sprite_ptr != nullptr)
-            sprite_refs.push_back(std::ref(*sprite_ptr));
+        ret = nullptr;
     }
-    return sprite_refs;
+    return ret;
 }
 
-std::vector<std::reference_wrapper<DynamicSprite>> Scene::get_mutable_dynamic_sprites()
+Renderable* Scene::get_renderable_by_id(std::size_t index)
 {
-    return tz::utility::functional::get_subclasses<Sprite, DynamicSprite>(this->get_mutable_sprites());
-}
-
-std::multimap<float, std::reference_wrapper<DynamicObject>> Scene::get_mutable_dynamic_objects_sorted_by_variance_axis()
-{
-    std::multimap<float, std::reference_wrapper<DynamicObject>> sorted_dyn_objects;
-    using namespace tz::physics;
-    Axis3D highest_variance_axis = this->get_highest_variance_axis_objects();
-    // Using the highest variance axis, sort the objects by their position, in ascending order.
-    for(DynamicObject& object : this->get_mutable_dynamic_objects())
+    Renderable* ret;
+    try
     {
-        if(object.get_boundary().has_value())
-        {
-            AABB bound = object.get_boundary().value();
-            float value;
-            switch(highest_variance_axis)
-            {
-                case Axis3D::X:
-                default:
-                    value = bound.get_minimum().x;
-                    break;
-                case Axis3D::Y:
-                    value = bound.get_minimum().y;
-                    break;
-                case Axis3D::Z:
-                    value = bound.get_minimum().z;
-                    break;
-            }
-            sorted_dyn_objects.emplace(value, std::ref(object));
-        }
+        ret = this->objects.at(index).get();
     }
-    return sorted_dyn_objects;
-}
-
-std::multimap<float, std::reference_wrapper<DynamicSprite>> Scene::get_mutable_dynamic_sprites_sorted_by_variance_axis()
-{
-    std::multimap<float, std::reference_wrapper<DynamicSprite>> sorted_dyn_sprites;
-    using namespace tz::physics;
-    Axis2D highest_variance_axis = this->get_highest_variance_axis_sprites();
-    for(DynamicSprite& sprite : this->get_mutable_dynamic_sprites())
+    catch(...)
     {
-        if(sprite.get_boundary().has_value())
-        {
-            AABB bound = sprite.get_boundary().value();
-            float value;
-            switch(highest_variance_axis)
-            {
-                case Axis2D::X:
-                default:
-                    value = bound.get_minimum().x;
-                    break;
-                case Axis2D::Y:
-                    value = bound.get_minimum().y;
-                    break;
-            }
-            sorted_dyn_sprites.emplace(value, std::ref(sprite));
-        }
+        ret = nullptr;
     }
-    return sorted_dyn_sprites;
-}
-
-tz::physics::Axis3D Scene::get_highest_variance_axis_objects() const
-{
-    std::vector<float> values_x, values_y, values_z;
-    for(const DynamicObject& object : this->get_dynamic_objects())
-    {
-        if(object.get_boundary().has_value())
-        {
-            AABB bound = object.get_boundary().value();
-            values_x.push_back(bound.get_minimum().x);
-            values_y.push_back(bound.get_minimum().y);
-            values_z.push_back(bound.get_minimum().z);
-        }
-    }
-    using namespace tz::utility;
-    using namespace tz::physics;
-    float sigma_x = numeric::variance(values_x), sigma_y = numeric::variance(values_y), sigma_z = numeric::variance(values_z);
-    if(sigma_x >= sigma_y && sigma_x >= sigma_z)
-        return Axis3D::X;
-    else if(sigma_y >= sigma_x && sigma_y >= sigma_z)
-        return Axis3D::Y;
-    else if(sigma_z >= sigma_x && sigma_z >= sigma_y)
-        return Axis3D::Z;
-    else
-        return Axis3D::X;
-}
-
-tz::physics::Axis2D Scene::get_highest_variance_axis_sprites() const
-{
-    std::vector<float> values_x, values_y;
-    for(const DynamicSprite& sprite : this->get_dynamic_sprites())
-    {
-        if(sprite.get_boundary().has_value())
-        {
-            AABB bound = sprite.get_boundary().value();
-            values_x.push_back(bound.get_minimum().x);
-            values_y.push_back(bound.get_minimum().y);
-        }
-    }
-    using namespace tz::utility;
-    using namespace tz::physics;
-    float sigma_x = numeric::variance(values_x), sigma_y = numeric::variance(values_y);
-    if(sigma_x >= sigma_y)
-        return Axis2D::X;
-    else
-        return Axis2D::Y;
+    return ret;
 }
 
 void Scene::erase_object(Renderable* to_delete)

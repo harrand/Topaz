@@ -213,6 +213,11 @@ void init()
             second_timer.reload();
             profiler.reset();
             //progress.set_visible(!progress.is_visible());
+            std::cout << "total number of objects = " << scene.get_number_of<Renderable>() << "\n";
+            std::cout << "number of static objects = " << scene.get_number_of<StaticObject>() << "\n";
+            std::cout << "number of dynamic objects = " << scene.get_number_of<DynamicObject>() << "\n";
+            std::cout << "number of instanced static objects = " << scene.get_number_of<InstancedStaticObject>() << "\n";
+            std::cout << "number of renderable bounding boxes = " << scene.get_number_of<RenderableBoundingBox>() << "\n";
         }
 
         long long int delta_time = tz::utility::time::now() - time;

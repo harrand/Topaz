@@ -7,6 +7,7 @@
 #include "data/tree.hpp"
 #include <map>
 #include <queue>
+#include <typeindex>
 
 namespace tz::scene
 {
@@ -114,6 +115,9 @@ private:
     /// Stores if the tree has no more objects waiting to be inserted before it is complete.
     bool ready;
 };
+
+template<typename T>
+class SceneSection;
 
 /**
  * Container of all renderable objects in a given scene. Provides support for StaticObjects and DynamicObjects (3D) and Sprites and DynamicSprites (2D).
@@ -270,71 +274,47 @@ public:
      * @return - Set of pointers to collided objects, if any exist.
      */
     std::unordered_set<const Renderable*> raycast(Vector2I screen_position, RenderPass render_pass) const;
+    /**
+     * Given an index into the Renderable vector, return the Renderable at that index, if one exists.
+     * @param index - Index of the Renderable to return.
+     * @return - Pointer to the desired Renderable if it exists. Otherwise nullptr
+     */
+    const Renderable* get_renderable_by_id(std::size_t index) const;
+    /**
+     * Given an index into the Renderable vector, return the Renderable at that index, if one exists.
+     * @param index - Index of the Renderable to return.
+     * @return - Pointer to the desired Renderable if it exists. Otherwise nullptr
+     */
+    Renderable* get_renderable_by_id(std::size_t index);
+    /**
+     * Retrieve a section of the scene which can be iterated through. The section contains all elements of the scene which are both sub-type of Renderable and is equal to the given template parameter. Note: This does not include sub-types of the parameter.
+     * Note: This has average constant time complexity.
+     * Note: If you want a given type and all its sub-types, you must go through all Renderables and use tz::functional::is_a<Renderable, RenderableType>(renderable_ptr) instead, which would have average linear time complexity
+     * @tparam RenderableType - Type of the Renderable sub-type to search for
+     * @return - Iterable section containing all scene renderables of type RenderableType
+     */
+    template<class RenderableType>
+    SceneSection<RenderableType> get_renderables_by_type();
+    /**
+     * Retrieve a section of the scene which can be iterated through. The section contains all elements of the scene which are both sub-type of Renderable and is equal to the given template parameter. Note: This does not include sub-types of the parameter.
+     * Note: This has average constant time complexity.
+     * Note: If you want a given type and all its sub-types, you must go through all Renderables and use tz::functional::is_a<Renderable, RenderableType>(renderable_ptr) instead, which would have average linear time complexity
+     * @tparam RenderableType - Type of the Renderable sub-type to search for
+     * @return - Iterable section containing all scene renderables of type RenderableType
+     */
+    template<class RenderableType>
+    SceneSection<const RenderableType> get_renderables_by_type() const;
+    /**
+     * Retrieve the number of renderables in the scene exactly matching the given type.
+     * Note: This will not include sub-types of the given type.
+     * @tparam RenderableType - Type of renderable to retrieve the quantity of
+     * @return - Number of Renderables in the scene whose type exactly matches RenderableType (such as StaticObject)
+     */
+    template<class RenderableType = Renderable>
+    std::size_t get_number_of() const;
+    template<typename T>
+    friend class SceneSection;
 protected:
-    /**
-     * Protected.
-     * Obtain a container of constant-references to all DynamicObjects and any utilised subclasses of this in the Scene.
-     * @return - Container of constant-references to all 3D DynamicObjects in the Scene
-     */
-    std::vector<std::reference_wrapper<const DynamicObject>> get_dynamic_objects() const;
-    /**
-     * Protected.
-     * Obtain a container of non-constant-references to all StaticObjects, DynamicObjects and any utilised subclasses of either of these in the Scene.
-     * @return - Container of non-constant-references to all 3D objects in the Scene
-     */
-    std::vector<std::reference_wrapper<StaticObject>> get_mutable_static_objects();
-    /**
-     * Protected.
-     * Obtain a container of non-constant-references to all DynamicObjects and any utilised subclasses of this in the Scene.
-     * @return - Container of non-constant-references to all 3D DynamicObjects in the Scene
-     */
-    std::vector<std::reference_wrapper<DynamicObject>> get_mutable_dynamic_objects();
-    /**
-     * Protected.
-     * Obtain a container of constant-references to all DynamicSprites and any utilised subclasses of this in the Scene.
-     * @return - Container of constant-references to all 2D DynamicSprites in the Scene
-     */
-    std::vector<std::reference_wrapper<const DynamicSprite>> get_dynamic_sprites() const;
-    /**
-     * Protected.
-     * Obtain a container of non-constant-references to all Sprites, DynamicObjects and any utilised subclasses of either of these in the Scene.
-     * @return - Container of non-constant-references to all 2D objects in the Scene
-     */
-    std::vector<std::reference_wrapper<Sprite>> get_mutable_sprites();
-    /**
-     * Protected.
-     * Obtain a container of non-constant-references to all DynamicSprites and any utilised subclasses of this in the Scene.
-     * @return - Container of non-constant-references to all 2D DynamicSprites in the Scene
-     */
-    std::vector<std::reference_wrapper<DynamicSprite>> get_mutable_dynamic_sprites();
-    /**
-     * Protected.
-     * Obtain a container of non-constant-references to all DynamicObjects and any utilised subclasses of this in the Scene.
-     * Note: These DynamicObjects are sorted in order relative to the most variant spatial-axis in the Scene.
-     * - To retrieve which axis that is, Scene::get_highest_variance_axis_objects() const is available.
-     * @return - Container of non-constant-references to all 2D DynamicObjects in the Scene
-     */
-    std::multimap<float, std::reference_wrapper<DynamicObject>> get_mutable_dynamic_objects_sorted_by_variance_axis();
-    /**
-     * Protected.
-     * Obtain a container of non-constant-references to all DynamicSprites and any utilised subclasses of this in the Scene.
-     * Note: These DynamicSprites are sorted in order relative to the most variant spatial-axis in the Scene.
-     * - To retrieve which axis that is, Scene::get_highest_variance_axis_sprites() const is available.
-     * @return - Container of non-constant-references to all 2D DynamicSprites in the Scene
-     */
-    std::multimap<float, std::reference_wrapper<DynamicSprite>> get_mutable_dynamic_sprites_sorted_by_variance_axis();
-    /**
-     * Protected.
-     * Retrieve the spatial-axis which has the largest range for all 3D objects in the Scene.
-     * @return - The most variant spatial-axis
-     */
-    tz::physics::Axis3D get_highest_variance_axis_objects() const;
-    /**
-     * Protected.
-     * Retrieve the spatial-axis which has the largest range for all 2D objects in the Scene.
-     * @return - The most variant spatial-axis
-     */
-    tz::physics::Axis2D get_highest_variance_axis_sprites() const;
     /**
      * Protected.
      * Erase the given Renderable from the Scene instantly.
@@ -351,6 +331,8 @@ protected:
 
     /// Container of all objects in the scene which can be rendered.
     std::vector<std::unique_ptr<Renderable>> objects;
+    /// Stores Renderable* referring to all possible sub-types of Renderable. E.g all StaticObjects will be in the same range, without having to do it in O(n) time checking through every renderable in the scene.
+    std::unordered_multimap<std::type_index, Renderable*> inheritance_map;
     /// Container of all DirectionalLights in the Scene.
     std::vector<DirectionalLight> directional_lights;
     /// Container of all PointLights in the Scene.
@@ -359,6 +341,46 @@ protected:
     std::vector<Renderable*> objects_to_delete;
     /// Octree for nodes.
     ScenePartitionNode octree;
+};
+
+template<class RenderableType>
+class SceneSection
+{
+public:
+    using IteratorType = typename decltype(std::declval<Scene>().inheritance_map)::iterator;
+    using ConstIteratorType = typename decltype(std::declval<Scene>().inheritance_map)::const_iterator;
+    using Range = std::pair<IteratorType, IteratorType>;
+    using ConstRnage = std::pair<ConstIteratorType, ConstIteratorType>;
+    using ValueType = RenderableType*;
+    using ConstValueType = const RenderableType*;
+    class iterator : public std::iterator<std::forward_iterator_tag, ValueType>
+    {
+    public:
+        iterator(IteratorType iterator);
+        iterator& operator++();
+        ValueType operator*();
+        bool operator!=(const iterator& rhs) const;
+    private:
+        IteratorType iter;
+    };
+    class const_iterator : public std::iterator<std::forward_iterator_tag, ConstValueType>
+    {
+    public:
+        const_iterator(ConstIteratorType iterator);
+        const_iterator& operator++();
+        ConstValueType operator*() const;
+        bool operator!=(const const_iterator& rhs) const;
+    private:
+        ConstIteratorType iter;
+    };
+    SceneSection(IteratorType begin, IteratorType end);
+    std::size_t size() const;
+    iterator begin();
+    const_iterator cbegin() const;
+    iterator end();
+    const_iterator cend() const;
+private:
+    Range range;
 };
 
 #include "scene.inl"
