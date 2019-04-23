@@ -17,7 +17,7 @@ T Vector<N, T>::length(std::function<T(T)> sqrt_function) const
 template<unsigned int N, typename T>
 const std::array<T, N>& Vector<N, T>::data() const
 {
-    return this->underlying_data;
+	return this->underlying_data;
 }
 
 template<unsigned int N, typename T>
@@ -55,15 +55,15 @@ Vector<N, T>::operator Vector<N, TT>()
 template<unsigned int N, typename T>
 Vector<N, T>::operator std::string() const
 {
-    std::string res = "[";
-    for(unsigned int i = 0; i < N; i++)
-    {
-        res += tz::utility::generic::cast::to_string(this->underlying_data[i]);
-        if(i != N - 1)
-            res += ", ";
-    }
-    res += "]";
-    return res;
+	std::string res = "[";
+	for(unsigned int i = 0; i < N; i++)
+	{
+		res += tz::utility::generic::cast::to_string(this->underlying_data[i]);
+		if(i != N - 1)
+			res += ", ";
+	}
+	res += "]";
+	return res;
 }
 
 template<unsigned int N, typename T>
@@ -95,8 +95,8 @@ Vector2<T>& Vector2<T>::operator=(const Vector2<T>& rhs)
 template<typename T>
 Vector2<T>& Vector2<T>::operator=(const Vector<2, T>& rhs)
 {
-    this->underlying_data = rhs.underlying_data;
-    return *(this);
+	this->underlying_data = rhs.underlying_data;
+	return *(this);
 }
 
 template<typename T>
@@ -122,8 +122,8 @@ Vector2<T> Vector2<T>::normalised() const
 template<typename T>
 Vector2<T> Vector2<T>::operator+(const Vector2<T>& rhs) const
 {
-    Vector2<T> copy = *this;
-    return copy += rhs;
+	Vector2<T> copy = *this;
+	return copy += rhs;
 }
 
 template<typename T>
@@ -143,16 +143,16 @@ Vector2<T> Vector2<T>::operator*(const T& scalar) const
 template<typename T>
 Vector2<T> Vector2<T>::operator/(const T& scalar) const
 {
-    Vector2<T> copy = *this;
-    return copy /= scalar;
+	Vector2<T> copy = *this;
+	return copy /= scalar;
 }
 
 template<typename T>
 Vector2<T>& Vector2<T>::operator+=(const Vector2<T>& rhs)
 {
-    this->x += rhs.x;
-    this->y += rhs.y;
-    return *this;
+	this->x += rhs.x;
+	this->y += rhs.y;
+	return *this;
 }
 
 template<typename T>
@@ -174,9 +174,9 @@ Vector2<T>& Vector2<T>::operator*=(const T& scalar)
 template<typename T>
 Vector2<T>& Vector2<T>::operator/=(const T& scalar)
 {
-    this->x /= scalar;
-    this->y /= scalar;
-    return *this;
+	this->x /= scalar;
+	this->y /= scalar;
+	return *this;
 }
 
 template<typename T>
@@ -247,8 +247,8 @@ Vector3<T>& Vector3<T>::operator=(const Vector3<T>& rhs)
 template<typename T>
 Vector3<T>& Vector3<T>::operator=(const Vector<3, T>& rhs)
 {
-    this->underlying_data = rhs.underlying_data;
-    return *(this);
+	this->underlying_data = rhs.underlying_data;
+	return *(this);
 }
 
 template<typename T>
@@ -293,64 +293,64 @@ Vector3<T> Vector3<T>::normalised() const
 template<typename T>
 Vector3<T> Vector3<T>::operator+(const Vector3<T>& rhs) const
 {
-    Vector3<T> copy = *this;
-    return copy += rhs;
+	Vector3<T> copy = *this;
+	return copy += rhs;
 }
 
 template<typename T>
 Vector3<T> Vector3<T>::operator-(const Vector3<T>& rhs) const
 {
-    Vector3<T> copy = *this;
-    return copy -= rhs;}
+	Vector3<T> copy = *this;
+	return copy -= rhs;}
 
 template<typename T>
 Vector3<T> Vector3<T>::operator*(const T& scalar) const
 {
-    Vector3<T> copy = *this;
-    return copy *= scalar;
+	Vector3<T> copy = *this;
+	return copy *= scalar;
 }
 
 template<typename T>
 Vector3<T> Vector3<T>::operator/(const T& scalar) const
 {
-    Vector3<T> copy = *this;
-    return copy /= scalar;
+	Vector3<T> copy = *this;
+	return copy /= scalar;
 }
 
 template<typename T>
 Vector3<T>& Vector3<T>::operator+=(const Vector3<T>& rhs)
 {
 	this->x += rhs.x;
-    this->y += rhs.y;
-    this->z += rhs.z;
-    return *this;
+	this->y += rhs.y;
+	this->z += rhs.z;
+	return *this;
 }
 
 template<typename T>
 Vector3<T>& Vector3<T>::operator-=(const Vector3<T>& rhs)
 {
-    this->x -= rhs.x;
-    this->y -= rhs.y;
-    this->z -= rhs.z;
-    return *this;
+	this->x -= rhs.x;
+	this->y -= rhs.y;
+	this->z -= rhs.z;
+	return *this;
 }
 
 template<typename T>
 Vector3<T>& Vector3<T>::operator*=(const T& scalar)
 {
-    this->x *= scalar;
-    this->y *= scalar;
-    this->z *= scalar;
-    return *this;
+	this->x *= scalar;
+	this->y *= scalar;
+	this->z *= scalar;
+	return *this;
 }
 
 template<typename T>
 Vector3<T>& Vector3<T>::operator/=(const T& scalar)
 {
-    this->x /= scalar;
-    this->y /= scalar;
-    this->z /= scalar;
-    return *this;
+	this->x /= scalar;
+	this->y /= scalar;
+	this->z /= scalar;
+	return *this;
 }
 
 template<typename T>
@@ -458,8 +458,8 @@ Vector4<T>& Vector4<T>::operator=(const Vector4<T>& rhs)
 template<typename T>
 Vector4<T>& Vector4<T>::operator=(const Vector<4, T>& rhs)
 {
-    this->underlying_data = rhs.underlying_data;
-    return *(this);
+	this->underlying_data = rhs.underlying_data;
+	return *(this);
 }
 
 template<typename T>

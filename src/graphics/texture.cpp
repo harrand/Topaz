@@ -14,9 +14,9 @@ Texture::Texture(int width, int height, bool initialise_handle, tz::graphics::Te
 		glBindTexture(GL_TEXTURE_2D, this->texture_handle);
 		switch(this->texture_component)
 		{
-            default:
+			default:
 			case tz::graphics::TextureComponent::COLOUR_TEXTURE:
-			    this->components = 4;
+				this->components = 4;
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -24,7 +24,7 @@ Texture::Texture(int width, int height, bool initialise_handle, tz::graphics::Te
 				glTexImage2D(GL_TEXTURE_2D, 0, this->gamma_corrected ? GL_SRGB8_ALPHA8 : GL_RGBA8, this->width, this->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 				break;
 			case tz::graphics::TextureComponent::HDR_COLOUR_TEXTURE:
-			    this->components = 4;
+				this->components = 4;
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -32,7 +32,7 @@ Texture::Texture(int width, int height, bool initialise_handle, tz::graphics::Te
 				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, this->width, this->height, 0, GL_RGBA, GL_FLOAT, NULL);
 				break;
 			case tz::graphics::TextureComponent::DEPTH_TEXTURE:
-			    this->components = 1;
+				this->components = 1;
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -109,9 +109,9 @@ Texture::Texture(const Font& font, const std::string& text, SDL_Color foreground
 	// Let OGL know it's just a 2d texture.
 	glBindTexture(GL_TEXTURE_2D, this->texture_handle);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexImage2D(GL_TEXTURE_2D, 0, bytes_per_pixel, text_surface->w, text_surface->h, 0, texture_format, GL_UNSIGNED_BYTE, text_surface->pixels);
 	// if ctor parameter said to store the bitmap in RAM, then dewit. otherwise dont bother because it eats lots of ram and its in VRAM anyway
 	// Store necessary data in this bitmap.
@@ -182,20 +182,20 @@ Texture::Texture(const Texture& copy): Texture(copy.width, copy.height, copy.get
 {
 	this->components = copy.components;
 	this->bitmap = copy.bitmap;
-    tz::graphics::asset::unbind_texture();
+	tz::graphics::asset::unbind_texture();
 	/*
-    std::cout << "width difference = " << this->width - copy.width << ", height diference = " << this->height - copy.height << "\n";
-    std::cout << "error before copy: " << glGetError() << "\n";
-    GLint format;
-    glBindTexture(GL_TEXTURE_2D, this->texture_handle);
-    glGetTexLevelParameteriv(GL_TEXTURE_2D, 0 ,GL_TEXTURE_INTERNAL_FORMAT, &format);
-    std::cout << "copy-to internal format = " << format << "\n";
-    glBindTexture(GL_TEXTURE_2D, copy.texture_handle);
-    glGetTexLevelParameteriv(GL_TEXTURE_2D, 0 ,GL_TEXTURE_INTERNAL_FORMAT, &format);
-    std::cout << "copy-from internal format = " << format << "\n";
-    */
-    glCopyImageSubData(copy.texture_handle, GL_TEXTURE_2D, 0, 0, 0, 0, this->texture_handle, GL_TEXTURE_2D, 0, 0, 0, 0, copy.width, copy.height, 1);
-    //std::cout << "texture copy error: " << glGetError() << "\n";
+	std::cout << "width difference = " << this->width - copy.width << ", height diference = " << this->height - copy.height << "\n";
+	std::cout << "error before copy: " << glGetError() << "\n";
+	GLint format;
+	glBindTexture(GL_TEXTURE_2D, this->texture_handle);
+	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0 ,GL_TEXTURE_INTERNAL_FORMAT, &format);
+	std::cout << "copy-to internal format = " << format << "\n";
+	glBindTexture(GL_TEXTURE_2D, copy.texture_handle);
+	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0 ,GL_TEXTURE_INTERNAL_FORMAT, &format);
+	std::cout << "copy-from internal format = " << format << "\n";
+	*/
+	glCopyImageSubData(copy.texture_handle, GL_TEXTURE_2D, 0, 0, 0, 0, this->texture_handle, GL_TEXTURE_2D, 0, 0, 0, 0, copy.width, copy.height, 1);
+	//std::cout << "texture copy error: " << glGetError() << "\n";
 }
 
 Texture::Texture(Texture&& move): texture_handle(move.texture_handle), width(move.width), height(move.height), components(move.components), gamma_corrected(move.gamma_corrected)
@@ -336,10 +336,10 @@ ParallaxMap::ParallaxMap(std::string filename, float multiplier, float offset): 
 
 void ParallaxMap::bind(Shader* shader, unsigned int id, const std::string& sampler_name) const
 {
-    this->bind_with_string(shader, id, sampler_name);
+	this->bind_with_string(shader, id, sampler_name);
 	shader->set_uniform<bool>("has_parallax_map", true);
-    shader->set_uniform<float>("parallax_multiplier", this->multiplier);
-    shader->set_uniform<float>("parallax_bias", this->bias);
+	shader->set_uniform<float>("parallax_multiplier", this->multiplier);
+	shader->set_uniform<float>("parallax_bias", this->bias);
 }
 
 DisplacementMap::DisplacementMap(std::string filename, float displacement_factor): Texture(filename, false, false), displacement_factor(displacement_factor){}
@@ -348,9 +348,9 @@ DisplacementMap::DisplacementMap(aiTexture* assimp_texture): Texture(assimp_text
 
 void DisplacementMap::bind(Shader* shader, unsigned int id, const std::string& sampler_name) const
 {
-    this->bind_with_string(shader, id, sampler_name);
+	this->bind_with_string(shader, id, sampler_name);
 	shader->set_uniform<bool>("has_displacement_map", true);
-    shader->set_uniform<float>("displacement_factor", this->displacement_factor);
+	shader->set_uniform<float>("displacement_factor", this->displacement_factor);
 }
 
 SpecularMap::SpecularMap(std::string filename): Texture(filename, false, false){}
@@ -367,8 +367,8 @@ EmissiveMap::EmissiveMap(aiTexture* assimp_texture): Texture(assimp_texture){}
 
 void EmissiveMap::bind(Shader* shader, unsigned int id, const std::string& sampler_name) const
 {
-    this->bind_with_string(shader, id, sampler_name);
-    shader->set_uniform<bool>("has_emissive_map", true);
+	this->bind_with_string(shader, id, sampler_name);
+	shader->set_uniform<bool>("has_emissive_map", true);
 }
 
 CubeMap::CubeMap(std::string right_texture, std::string left_texture, std::string top_texture, std::string bottom_texture, std::string back_texture, std::string front_texture): right_texture(std::move(right_texture)), left_texture(std::move(left_texture)), top_texture(std::move(top_texture)), bottom_texture(std::move(bottom_texture)), back_texture(std::move(back_texture)), front_texture(std::move(front_texture))
@@ -453,16 +453,16 @@ namespace tz::graphics::height_map
 		return {Bitmap<PixelDepth>{pixels, width, height}, displacement_factor};
 	}
 
-    DisplacementMap generate_cosine_noise(std::size_t width, std::size_t height, float displacement_factor, float smoothness, CosineNoise noise_function)
-    {
-        std::vector<PixelDepth> pixels;
-        pixels.resize(width * height, PixelDepth{0.0f});
-        for(std::size_t i = 0; i < width * height; i++)
-        {
-            std::size_t row = i / width;
-            std::size_t column = i % width;
-            pixels[i].data.underlying_data = {noise_function(column, row, smoothness)};
-        }
-        return {Bitmap<PixelDepth>{pixels, width, height}, displacement_factor};
-    }
+	DisplacementMap generate_cosine_noise(std::size_t width, std::size_t height, float displacement_factor, float smoothness, CosineNoise noise_function)
+	{
+		std::vector<PixelDepth> pixels;
+		pixels.resize(width * height, PixelDepth{0.0f});
+		for(std::size_t i = 0; i < width * height; i++)
+		{
+			std::size_t row = i / width;
+			std::size_t column = i % width;
+			pixels[i].data.underlying_data = {noise_function(column, row, smoothness)};
+		}
+		return {Bitmap<PixelDepth>{pixels, width, height}, displacement_factor};
+	}
 }

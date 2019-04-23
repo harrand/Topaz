@@ -27,11 +27,11 @@ struct AssetBuffer
 	 * @param displacement_maps - A map of Displacement Map names to their corresponding Displacement Map objects
 	 * @param animated_textures - A map of Animated-Texture names to their corresponding Animated-Texture objects
 	 */
-    AssetBuffer(std::unordered_map<std::string, std::unique_ptr<Mesh>> meshes = {}, std::unordered_map<std::string, std::unique_ptr<Texture>> textures = {}, std::unordered_map<std::string, std::unique_ptr<AnimatedTexture>> animated_textures = {}, std::unordered_map<std::string, std::unique_ptr<Model>> models = {});
-    /// AssetBuffers are non-copyable.
-    AssetBuffer(const AssetBuffer& copy) = delete;
-    /// AssetBuffers are non-copyable.
-    AssetBuffer& operator=(const AssetBuffer& rhs) = delete;
+	AssetBuffer(std::unordered_map<std::string, std::unique_ptr<Mesh>> meshes = {}, std::unordered_map<std::string, std::unique_ptr<Texture>> textures = {}, std::unordered_map<std::string, std::unique_ptr<AnimatedTexture>> animated_textures = {}, std::unordered_map<std::string, std::unique_ptr<Model>> models = {});
+	/// AssetBuffers are non-copyable.
+	AssetBuffer(const AssetBuffer& copy) = delete;
+	/// AssetBuffers are non-copyable.
+	AssetBuffer& operator=(const AssetBuffer& rhs) = delete;
 	/**
 	 * Relinquish control of an existing Mesh asset to this AssetBuffer.
 	 * After invocation, this AssetBuffer shall now be responsible for the lifetime of the Mesh asset.
@@ -39,7 +39,7 @@ struct AssetBuffer
 	 * @param sunken_mesh - The existing mesh asset whose lifetime should be controlled by this AssetBuffer
 	 * @return - True if the AssetBuffer took control of the asset from elsewhere. False if the AssetBuffer already had control (and thus no change in control occurred)
 	 */
-    bool sink_mesh(const std::string& asset_name, std::unique_ptr<Mesh> sunken_mesh);
+	bool sink_mesh(const std::string& asset_name, std::unique_ptr<Mesh> sunken_mesh);
 	/**
 	 * Relinquish control of an existing Texture asset to this AssetBuffer.
 	 * After invocation, this AssetBuffer shall now be responsible for the lifetime of the Texture asset.
@@ -47,15 +47,15 @@ struct AssetBuffer
 	 * @param sunken_mesh - The existing mesh asset whose lifetime should be controlled by this AssetBuffer
 	 * @return - True if the AssetBuffer took control of the asset from elsewhere. False if the AssetBuffer already had control (and thus no change in control occurred)
 	 */
-    bool sink_texture(const std::string& asset_name, std::unique_ptr<Texture> sunken_texture);
-    /**
-     * Relinquish control of an existing Animated Textures asset to this AssetBuffer.
-     * @param animation_name - The name of this animation
-     * @param sunken_animation - The existing mesh asset whose lifetime should be controlled by thid AssetBuffer
-     * @return
-     */
-    bool sink_animated_texture(const std::string& animation_name, std::unique_ptr<AnimatedTexture> sunken_animation);
-    bool sink_model(const std::string& asset_name, std::unique_ptr<Model> sunken_model);
+	bool sink_texture(const std::string& asset_name, std::unique_ptr<Texture> sunken_texture);
+	/**
+	 * Relinquish control of an existing Animated Textures asset to this AssetBuffer.
+	 * @param animation_name - The name of this animation
+	 * @param sunken_animation - The existing mesh asset whose lifetime should be controlled by thid AssetBuffer
+	 * @return
+	 */
+	bool sink_animated_texture(const std::string& animation_name, std::unique_ptr<AnimatedTexture> sunken_animation);
+	bool sink_model(const std::string& asset_name, std::unique_ptr<Model> sunken_model);
 	/**
 	 * Construct some asset in-place into this AssetBuffer.
 	 * @tparam AssetType - The type of asset to emplace. E.g Mesh or Texture
@@ -103,43 +103,43 @@ struct AssetBuffer
 	 * @param asset_name - The name of the asset to retrieve
 	 * @return - A pointer to the asset if it was found. If it was not found, nullptr is returned
 	 */
-    template<class AssetType>
-    AssetType* find(const std::string& asset_name);
+	template<class AssetType>
+	AssetType* find(const std::string& asset_name);
 	/**
 	 * Find a Mesh asset with the given name
 	 * @param mesh_name - The name of the Mesh to query
 	 * @return - A pointer to the Mesh if it was found. If it was not found, nullptr is returned.
 	 */
-    Mesh* find_mesh(const std::string& mesh_name);
+	Mesh* find_mesh(const std::string& mesh_name);
 	/**
 	 * Find a Texture asset with the given name
 	 * @param texture_name - The name of the Texture to query
 	 * @return - A pointer to the Texture if it was found. If it was not found, nullptr is returned.
 	 */
-    Texture* find_texture(const std::string& texture_name);
+	Texture* find_texture(const std::string& texture_name);
 	/**
 	 * Find an Animated Texture asset with the given name
 	 * @param animation_name - The name of the Animated Texture to query
 	 * @return - A pointer to the Animated Texture if it was found. If it was not found, nullptr is returned.
 	 */
-    AnimatedTexture* find_animated_texture(const std::string& animation_name);
-    Model* find_model(const std::string& model_name);
+	AnimatedTexture* find_animated_texture(const std::string& animation_name);
+	Model* find_model(const std::string& model_name);
 	/**
 	 * Query the AssetBuffer to relinquish control of an existing Mesh. The lifetime of the asset shall no longer be controlled by the AssetBuffer.
 	 * @param mesh_name - The name of the Mesh to take control of
 	 * @return - The Mesh asset smart-pointer. If no such asset was found, nullptr is returned.
 	 */
-    std::unique_ptr<Mesh> take_mesh(const std::string& mesh_name);
+	std::unique_ptr<Mesh> take_mesh(const std::string& mesh_name);
 	/**
 	 * Query the AssetBuffer to relinquish control of an existing Texture. The lifetime of the asset shall no longer be controlled by the AssetBuffer.
 	 * @param texture_name - The name of the Texture to take control of
 	 * @return - The Texture asset smart-pointer. If no such asset was found, nullptr is returned.
 	 */
-    std::unique_ptr<Texture> take_texture(const std::string& texture_name);
-    std::unique_ptr<AnimatedTexture> take_animated_texture(const std::string& animation_name);
-    std::unique_ptr<Model> take_model(const std::string& model_name);
+	std::unique_ptr<Texture> take_texture(const std::string& texture_name);
+	std::unique_ptr<AnimatedTexture> take_animated_texture(const std::string& animation_name);
+	std::unique_ptr<Model> take_model(const std::string& model_name);
 private:
-    /// Container of Mesh assets.
+	/// Container of Mesh assets.
 	std::unordered_map<std::string, std::unique_ptr<Mesh>> meshes;
 	/// Container of Texture assets.
 	std::unordered_map<std::string, std::unique_ptr<Texture>> textures;
@@ -170,7 +170,7 @@ struct Asset
 	 * @param displacement_map - The Displacement Map component
 	 * @param model - The Model component
 	 */
-    Asset(Mesh* mesh, Texture* texture, NormalMap* normal_map = nullptr, ParallaxMap* parallax_map = nullptr, DisplacementMap* displacement_map = nullptr, SpecularMap* specular_map = nullptr, EmissiveMap* emissive_map = nullptr, Model* model = nullptr);
+	Asset(Mesh* mesh, Texture* texture, NormalMap* normal_map = nullptr, ParallaxMap* parallax_map = nullptr, DisplacementMap* displacement_map = nullptr, SpecularMap* specular_map = nullptr, EmissiveMap* emissive_map = nullptr, Model* model = nullptr);
 	Asset(Mesh* mesh);
 	Asset(Texture* texture);
 	Asset(NormalMap* normal_map);
@@ -183,48 +183,48 @@ struct Asset
 	 * Query as to whether there is a valid Mesh component.
 	 * @return - True if there is a Mesh, false otherwise
 	 */
-    bool valid_mesh() const;
+	bool valid_mesh() const;
 	/**
 	 * Query as to whether there is a valid Texture component.
 	 * @return - True if there is a Texture, false otherwise
 	 */
-    bool valid_texture() const;
+	bool valid_texture() const;
 	/**
 	 * Query as to whether there is a valid Normal Map component.
 	 * @return - True if there is a Normal Map, false otherwise
 	 */
-    bool valid_normal_map() const;
+	bool valid_normal_map() const;
 	/**
 	 * Query as to whether there is a valid Parallax Map component.
 	 * @return - True if there is a Parallax Map, false otherwise
 	 */
-    bool valid_parallax_map() const;
+	bool valid_parallax_map() const;
 	/**
 	 * Query as to whether there is a valid Displacement Map component.
 	 * @return - True if there is a Displacement Map, false otherwise
 	 */
-    bool valid_displacement_map() const;
+	bool valid_displacement_map() const;
 	bool valid_specular_map() const;
 	bool valid_emissive_map() const;
-    bool valid_model() const;
+	bool valid_model() const;
 	bool is_renderable() const;
 	/// Equate Assets. Returns true if the assets share the exact same asset elements.
-    bool operator==(const Asset& rhs) const;
+	bool operator==(const Asset& rhs) const;
 
 	/// The Mesh component.
-    Mesh* mesh;
+	Mesh* mesh;
 	/// The Texture component.
-    Texture* texture;
+	Texture* texture;
 	/// The Normal Map component.
-    NormalMap* normal_map;
+	NormalMap* normal_map;
 	/// The Parallax Map component.
-    ParallaxMap* parallax_map;
+	ParallaxMap* parallax_map;
 	/// The Displacement Map component.
-    DisplacementMap* displacement_map;
+	DisplacementMap* displacement_map;
 	SpecularMap* specular_map;
 	EmissiveMap* emissive_map;
-    /// The Model component
-    Model* model;
+	/// The Model component
+	Model* model;
 };
 
 #include "asset.inl"

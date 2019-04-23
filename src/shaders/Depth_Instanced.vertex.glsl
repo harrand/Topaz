@@ -40,10 +40,10 @@ void share()
 
 	model_instanced = transpose(mat4(instancing_model_x, instancing_model_y, instancing_model_z, instancing_model_w));
 
-        if(is_instanced)
-        	model_matrix = model_instanced;
-        else
-        	model_matrix = m;
+		if(is_instanced)
+			model_matrix = model_instanced;
+		else
+			model_matrix = m;
 	view_matrix = v;
 	projection_matrix = p;
 
@@ -63,7 +63,7 @@ void main()
 {
 	share();
 	if(is_instanced)
-    	gl_Position = p * v * (model_instanced * vec4(position_modelspace, 1.0));
-    else
-    	gl_Position = (p * v * m) * vec4(position_modelspace, 1.0);
+		gl_Position = p * v * (model_instanced * vec4(position_modelspace, 1.0));
+	else
+		gl_Position = (p * v * m) * vec4(position_modelspace, 1.0);
 }

@@ -6,7 +6,7 @@
 
 namespace tz::audio
 {
-    constexpr int unused_channel = -1;
+	constexpr int unused_channel = -1;
 }
 
 /**
@@ -66,8 +66,8 @@ public:
 	 */
 	const std::string& get_file_name() const;
 protected:
-    static void swap(AudioClip& lhs, AudioClip& rhs);
-    /// Channel that the AudioClip is currently playing on.
+	static void swap(AudioClip& lhs, AudioClip& rhs);
+	/// Channel that the AudioClip is currently playing on.
 	int channel;
 	/// Path to the file used to load this AudioClip's data.
 	std::string filename;
@@ -151,7 +151,7 @@ public:
 	 */
 	void set_paused(bool pause = true);
 protected:
-    void swap(AudioMusic& lhs, AudioMusic& rhs);
+	void swap(AudioMusic& lhs, AudioMusic& rhs);
 	/// Path to the file used to load this AudioClip's data.
 	std::string filename;
 	/// Controls whether the music is paused or playing.

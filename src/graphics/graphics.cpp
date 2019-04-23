@@ -83,20 +83,20 @@ bool Vertex::operator==(const Vertex& rhs) const
 PixelRGBA& PixelRGBA::operator=(const Vector<4, unsigned char>& data)
 {
 	this->data = data;
-    for(auto& data_element : this->data.underlying_data)
-    {
-        data_element = std::clamp<unsigned char>(0, 255, data_element);
-    }
+	for(auto& data_element : this->data.underlying_data)
+	{
+		data_element = std::clamp<unsigned char>(0, 255, data_element);
+	}
 	return *this;
 }
 
 PixelRGBAHDR& PixelRGBAHDR::operator=(const Vector<4, float>& data)
 {
 	this->data = data;
-    for(auto& data_element : this->data.underlying_data)
-    {
-        data_element = std::clamp<float>(0.0f, 255.0f, data_element);
-    }
+	for(auto& data_element : this->data.underlying_data)
+	{
+		data_element = std::clamp<float>(0.0f, 255.0f, data_element);
+	}
 	return *this;
 }
 

@@ -1,5 +1,4 @@
 #include "core/listener.hpp"
-#include "utility/functional.hpp"
 
 Listener::Listener(): window(nullptr){}
 
@@ -88,8 +87,8 @@ KeyListener::KeyListener(Window& window) : KeyListener()
 void KeyListener::handle_events(const SDL_Event& evt)
 {
 	using namespace tz::utility;
-    std::string key_name = {SDL_GetKeyName(evt.key.keysym.sym)};
-    switch(evt.type)
+	std::string key_name = {SDL_GetKeyName(evt.key.keysym.sym)};
+	switch(evt.type)
 	{
 		case SDL_KEYDOWN:
 			this->on_key_pressed(key_name);

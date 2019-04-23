@@ -23,11 +23,11 @@ AudioClip::~AudioClip()
 
 AudioClip& AudioClip::operator=(AudioClip&& rhs)
 {
-    this->channel = rhs.channel;
-    this->filename = std::move(rhs.filename);
-    this->audio_handle = rhs.audio_handle;
-    rhs.audio_handle = nullptr;
-    return *this;
+	this->channel = rhs.channel;
+	this->filename = std::move(rhs.filename);
+	this->audio_handle = rhs.audio_handle;
+	rhs.audio_handle = nullptr;
+	return *this;
 }
 
 AudioClip& AudioClip::operator=(AudioClip rhs)

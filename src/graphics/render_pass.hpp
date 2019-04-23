@@ -15,36 +15,36 @@
 class RenderContext
 {
 public:
-    RenderContext(Shader& object_shader, std::optional<std::reference_wrapper<Shader>> sprite_shader = std::nullopt);
-    const Shader& get_object_shader() const;
-    void set_object_shader(Shader& object_shader);
-    const Shader* get_sprite_shader() const;
-    void set_sprite_shader(Shader& sprite_shader);
-    void disable_sprite_shader();
-    friend class StaticObject;
-    friend class Sprite;
-    friend class InstancedStaticObject;
-    friend class InstancedDynamicObject;
-    friend class Scene;
+	RenderContext(Shader& object_shader, std::optional<std::reference_wrapper<Shader>> sprite_shader = std::nullopt);
+	const Shader& get_object_shader() const;
+	void set_object_shader(Shader& object_shader);
+	const Shader* get_sprite_shader() const;
+	void set_sprite_shader(Shader& sprite_shader);
+	void disable_sprite_shader();
+	friend class StaticObject;
+	friend class Sprite;
+	friend class InstancedStaticObject;
+	friend class InstancedDynamicObject;
+	friend class Scene;
 private:
-    Shader* object_shader;
-    Shader* sprite_shader;
+	Shader* object_shader;
+	Shader* sprite_shader;
 };
 
 class RenderPass
 {
 public:
-    RenderPass(const Window& window, RenderContext context, const Camera& camera);
-    const Window& get_window() const;
-    void set_window(const Window& window);
-    const RenderContext& get_render_context() const;
-    void set_render_context(RenderContext context);
-    const Camera& get_camera() const;
-    void set_camera(const Camera& camera);
+	RenderPass(const Window& window, RenderContext context, const Camera& camera);
+	const Window& get_window() const;
+	void set_window(const Window& window);
+	const RenderContext& get_render_context() const;
+	void set_render_context(RenderContext context);
+	const Camera& get_camera() const;
+	void set_camera(const Camera& camera);
 private:
-    const Window* window;
-    RenderContext context;
-    const Camera* camera;
+	const Window* window;
+	RenderContext context;
+	const Camera* camera;
 };
 
 

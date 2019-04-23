@@ -23,48 +23,48 @@ namespace tz::graphics
 		/**
 		 * Unbind any existing Textures.
 		 */
-        inline void unbind_texture();
+		inline void unbind_texture();
 		/**
 		 * Unbind any existing normal-maps, and notify the render-shader that a normal-map isn't being used.
 		 * @param render_shader - The render-shader to notify of this change
 		 */
-        inline void unbind_normal_map(Shader& render_shader);
+		inline void unbind_normal_map(Shader& render_shader);
 		/**
 		 * Unbind any existing parallax-maps, and notify the render-shader that a parallax-map isn't being used.
 		 * @param render_shader - The render-shader to notify of this change
 		 */
-        inline void unbind_parallax_map(Shader& render_shader);
+		inline void unbind_parallax_map(Shader& render_shader);
 		/**
 		 * Unbind any existing displacement-maps, and notify the render-shader that a displacement-map isn't being used.
 		 * @param render_shader - The render-shader to notify of this change
 		 */
-        inline void unbind_displacement_map(Shader& render_shader);
-        /**
-         * Unbind any existing specular-maps, and notify the render-shader that a specular-map isn't being used.
-         * @param render_shader - The render-shader to notify of this change
-         */
-        inline void unbind_specular_map(Shader& render_shader);
-        /**
-         * Unbind any existing emissive-maps, and notify the render-shader that a emissive-map isn't being used.
-         * @param render_shader - The render-shader to notify of this change
-         */
-        inline void unbind_emissive_map(Shader& render_shader);
+		inline void unbind_displacement_map(Shader& render_shader);
+		/**
+		 * Unbind any existing specular-maps, and notify the render-shader that a specular-map isn't being used.
+		 * @param render_shader - The render-shader to notify of this change
+		 */
+		inline void unbind_specular_map(Shader& render_shader);
+		/**
+		 * Unbind any existing emissive-maps, and notify the render-shader that a emissive-map isn't being used.
+		 * @param render_shader - The render-shader to notify of this change
+		 */
+		inline void unbind_emissive_map(Shader& render_shader);
 		/**
 		 * Unbind any existing textures, normal-maps, parallax-maps and displacement-maps and notify the render-shader that none of them are being used.
 		 * @param render_shader - The render-shader to notify of these changes
 		 */
-        inline void unbind_all_textures(Shader& render_shader);
-        /**
-         * Unbind an extra shader.
-         * @param render_shader - The render-shader to notify of these changes
-         * @param extra_shader_id - The ID of the extra shader to notify
-         */
-        inline void unbind_extra_texture(Shader& render_shader, std::size_t extra_shader_id);
-        /**
-         * Unbind all 8 extra textures.
-         * @param render_shader - The render-shader to notify of these changes
-         */
-        inline void unbind_all_extra_texture(Shader& render_shader);
+		inline void unbind_all_textures(Shader& render_shader);
+		/**
+		 * Unbind an extra shader.
+		 * @param render_shader - The render-shader to notify of these changes
+		 * @param extra_shader_id - The ID of the extra shader to notify
+		 */
+		inline void unbind_extra_texture(Shader& render_shader, std::size_t extra_shader_id);
+		/**
+		 * Unbind all 8 extra textures.
+		 * @param render_shader - The render-shader to notify of these changes
+		 */
+		inline void unbind_all_extra_texture(Shader& render_shader);
 	}
 
 	/// What kind of data should the Texture's bitmap store? e.g a depth-texture.
@@ -83,7 +83,7 @@ namespace tz::graphics
 		PARALLAX_MAP,
 		DISPLACEMENT_MAP,
 		SPECULAR_MAP,
-        EMISSIVE_MAP
+		EMISSIVE_MAP
 	};
 
 	/// What type of mipmapping should be used? e.g nearest.
@@ -123,13 +123,13 @@ public:
 	 * @param store_bitmap - Whether the internal image-data should be stored in a local Bitmap.
 	 */
 	Texture(std::string filename, bool mipmapping = true, bool gamma_corrected = true);
-    /**
-     * Loads a texture from existing Pixel Data
-     * @tparam Pixel - The type of Pixel to store in the Bitmap.
-     * @param pixel_data - The bitmap from which to create a new Texture.
-     */
-    template<class Pixel>
-    Texture(Bitmap<Pixel> pixel_data);
+	/**
+	 * Loads a texture from existing Pixel Data
+	 * @tparam Pixel - The type of Pixel to store in the Bitmap.
+	 * @param pixel_data - The bitmap from which to create a new Texture.
+	 */
+	template<class Pixel>
+	Texture(Bitmap<Pixel> pixel_data);
 	/**
 	 * Loads a texture from a font, given text.
 	 * @param font - The Font containing the desired glyphs.
@@ -275,12 +275,12 @@ public:
 	 * @param shader - The Shader to be bound with.
 	 * @param id - Sampler-ID of this normal-map.
 	 */
-    virtual void bind(Shader* shader, unsigned int id, const std::string& sampler_name = "normal_map_sampler") const override;
+	virtual void bind(Shader* shader, unsigned int id, const std::string& sampler_name = "normal_map_sampler") const override;
 	/**
 	 * This is a normal-map Texture.
 	 * @return TextureType::NORMAL_MAP
 	 */
-    virtual tz::graphics::TextureType get_texture_type() const override{return tz::graphics::TextureType::NORMAL_MAP;}
+	virtual tz::graphics::TextureType get_texture_type() const override{return tz::graphics::TextureType::NORMAL_MAP;}
 };
 
 /**
@@ -299,12 +299,12 @@ public:
 	* @param shader - The Shader to be bound with.
 	* @param id - Sampler-ID of this normal-map.
 	*/
-    virtual void bind(Shader* shader, unsigned int id, const std::string& sampler_name = "parallax_map_sampler") const override;
+	virtual void bind(Shader* shader, unsigned int id, const std::string& sampler_name = "parallax_map_sampler") const override;
 	/**
 	 * This is a parallax-map Texture.
 	 * @return - TextureType::PARALLAX_MAP
 	 */
-    virtual tz::graphics::TextureType get_texture_type() const override{return tz::graphics::TextureType::PARALLAX_MAP;}
+	virtual tz::graphics::TextureType get_texture_type() const override{return tz::graphics::TextureType::PARALLAX_MAP;}
 private:
 	float multiplier, bias;
 };
@@ -336,12 +336,12 @@ public:
 	* @param shader - The Shader to be bound with.
 	* @param id - Sampler-ID of this normal-map.
 	*/
-    virtual void bind(Shader* shader, unsigned int id, const std::string& sampler_name = "displacement_map_sampler") const override;
+	virtual void bind(Shader* shader, unsigned int id, const std::string& sampler_name = "displacement_map_sampler") const override;
 	/**
 	 * This is a displacement-map Texture.
 	 * @return - TextureType::DISPLACEMENT_MAP
 	 */
-    virtual tz::graphics::TextureType get_texture_type() const override{return tz::graphics::TextureType::DISPLACEMENT_MAP;}
+	virtual tz::graphics::TextureType get_texture_type() const override{return tz::graphics::TextureType::DISPLACEMENT_MAP;}
 private:
 	/// Underlying displacement factor.
 	float displacement_factor;
@@ -380,23 +380,23 @@ public:
 	 * Load an EmissiveMap from an existing file.
 	 * @param filename - Path to the file
 	 */
-    EmissiveMap(std::string filename);
+	EmissiveMap(std::string filename);
 	/**
 	 * Construct an EmissiveMap based upon an existing Assimp texture.
 	 * @param assimp_texture - The assimp texture whose data should be used to construct this EmissiveMap
 	 */
-    EmissiveMap(aiTexture* assimp_texture);
+	EmissiveMap(aiTexture* assimp_texture);
 	/**
 	* Bind this emissive-map to a specified Shader.
 	* @param shader - The Shader to be bound with.
 	* @param id - Sampler-ID of this emissive-map.
 	*/
-    virtual void bind(Shader* shader, unsigned int id, const std::string& sampler_name = "emissive_map_sampler") const override;
+	virtual void bind(Shader* shader, unsigned int id, const std::string& sampler_name = "emissive_map_sampler") const override;
 	/**
 	 * This is a emissive-map texture.
 	 * @return - TextureType::EMISSIVE_MAP
 	 */
-    virtual tz::graphics::TextureType get_texture_type() const override{return tz::graphics::TextureType::EMISSIVE_MAP;}
+	virtual tz::graphics::TextureType get_texture_type() const override{return tz::graphics::TextureType::EMISSIVE_MAP;}
 };
 
 /**
@@ -473,13 +473,13 @@ private:
 
 namespace tz::graphics
 {
-    namespace height_map
-    {
-        template<typename Engine = std::default_random_engine, typename EngineResultType = std::default_random_engine::result_type>
-        DisplacementMap generate_random_noise(std::size_t width, std::size_t height, float displacement_factor, Random<Engine, EngineResultType> noise_function = {});
-        DisplacementMap generate_smooth_noise(std::size_t width, std::size_t height, float displacement_factor, SmoothNoise noise_function = {Random{}.next_int()});
-        DisplacementMap generate_cosine_noise(std::size_t width, std::size_t height, float displacement_factor, float smoothness = tz::utility::numeric::default_smoothness, CosineNoise noise_function = Random{}.next_int());
-    }
+	namespace height_map
+	{
+		template<typename Engine = std::default_random_engine, typename EngineResultType = std::default_random_engine::result_type>
+		DisplacementMap generate_random_noise(std::size_t width, std::size_t height, float displacement_factor, Random<Engine, EngineResultType> noise_function = {});
+		DisplacementMap generate_smooth_noise(std::size_t width, std::size_t height, float displacement_factor, SmoothNoise noise_function = {Random{}.next_int()});
+		DisplacementMap generate_cosine_noise(std::size_t width, std::size_t height, float displacement_factor, float smoothness = tz::utility::numeric::default_smoothness, CosineNoise noise_function = Random{}.next_int());
+	}
 }
 
 #include "texture.inl"

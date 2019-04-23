@@ -93,7 +93,7 @@ public:
 	 * @param normal
 	 */
 	Vertex(Vector3F position, Vector2F texture_coordinate, Vector3F normal, Vector3F tangent = {});
-    bool operator==(const Vertex& rhs) const;
+	bool operator==(const Vertex& rhs) const;
 
 	/// Position of the Vertex, in model-space.
 	Vector3F position;
@@ -181,11 +181,11 @@ namespace tz
 	namespace graphics
 	{
 		enum class BufferBit : GLbitfield
-        {
-            COLOUR = GL_COLOR_BUFFER_BIT,
-            DEPTH = GL_DEPTH_BUFFER_BIT,
-            COLOUR_AND_DEPTH = GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT,
-        };
+		{
+			COLOUR = GL_COLOR_BUFFER_BIT,
+			DEPTH = GL_DEPTH_BUFFER_BIT,
+			COLOUR_AND_DEPTH = GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT,
+		};
 		/**
 		* Global Variables. These are handled when the first Window is initialised. Editing these is likely to lead to horrible crashing. Leave these bools alone.
 		*/

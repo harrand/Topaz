@@ -8,11 +8,11 @@
 class Matrix2x2
 {
 public:
-    /**
-     * Construct a 2-dimensional Matrix row-by-row.
-     * @param x - 2-dimensional Vector representing the first row
-     * @param y - 2-dimensional Vector representing the second row
-     */
+	/**
+	 * Construct a 2-dimensional Matrix row-by-row.
+	 * @param x - 2-dimensional Vector representing the first row
+	 * @param y - 2-dimensional Vector representing the second row
+	 */
 	Matrix2x2(Vector2F x = Vector2F(1.0f, 0.0f), Vector2F y = Vector2F(0.0f, 1.0f));
 
 	/**
@@ -34,26 +34,26 @@ public:
 class Matrix3x3
 {
 public:
-    /**
-     * Construct a 3-dimensional Matrix row-by-row.
-     * @param x - 3-dimensional Vector representing the first row
-     * @param y - 3-dimensional Vector representing the second row
-     * @param z - 3-dimensional Vector representing the third row
-     */
+	/**
+	 * Construct a 3-dimensional Matrix row-by-row.
+	 * @param x - 3-dimensional Vector representing the first row
+	 * @param y - 3-dimensional Vector representing the second row
+	 * @param z - 3-dimensional Vector representing the third row
+	 */
 	Matrix3x3(Vector3F x = Vector3F(1.0f, 0.0f, 0.0f), Vector3F y = Vector3F(0.0f, 1.0f, 0.0f), Vector3F z = Vector3F(0.0f, 0.0f, 1.0f));
 
-    /**
-     * Find the determinant of the 3-dimensional Matrix.
-     * @return - Determinant of the Matrix
-     */
-    float determinant() const;
+	/**
+	 * Find the determinant of the 3-dimensional Matrix.
+	 * @return - Determinant of the Matrix
+	 */
+	float determinant() const;
 
-    /// First row.
-    Vector3F x;
-    /// Second row.
-    Vector3F y;
-    /// Third row.
-    Vector3F z;
+	/// First row.
+	Vector3F x;
+	/// Second row.
+	Vector3F y;
+	/// Third row.
+	Vector3F z;
 };
 
 /**
@@ -62,13 +62,13 @@ public:
 class Matrix4x4
 {
 public:
-    /**
-     * Construct a 4-dimensional Matrix row-by-row.
-     * @param x - 4-dimensional Vector representing the first row
-     * @param y - 4-dimensional Vector representing the second row
-     * @param z - 4-dimensional Vector representing the third row
-     * @param w - 4-dimensional Vector representing the fourth row
-     */
+	/**
+	 * Construct a 4-dimensional Matrix row-by-row.
+	 * @param x - 4-dimensional Vector representing the first row
+	 * @param y - 4-dimensional Vector representing the second row
+	 * @param z - 4-dimensional Vector representing the third row
+	 * @param w - 4-dimensional Vector representing the fourth row
+	 */
 	Matrix4x4(Vector4F x = Vector4F(1.0f, 0.0f, 0.0f, 0.0f), Vector4F y = Vector4F(0.0f, 1.0f, 0.0f, 0.0f), Vector4F z = Vector4F(0.0f, 0.0f, 1.0f, 0.0f), Vector4F w = Vector4F(0.0f, 0.0f, 0.0f, 1.0f));
 
 	/**
@@ -109,25 +109,25 @@ public:
 	 * @return - Combination of this and the other Matrix
 	 */
 	Matrix4x4 operator*(const Matrix4x4& other) const;
-    /**
-     * Find the determinant of the 4-dimensional Matrix.
-     * @return - Determinant of the Matrix
-     */
-    float determinant() const;
-    /**
-     * Get the inverse of this Matrix.
-     * @return - Copy of this, but inversed
-     */
+	/**
+	 * Find the determinant of the 4-dimensional Matrix.
+	 * @return - Determinant of the Matrix
+	 */
+	float determinant() const;
+	/**
+	 * Get the inverse of this Matrix.
+	 * @return - Copy of this, but inversed
+	 */
 	Matrix4x4 inverse() const;
 
-    /// First row.
-    Vector4F x;
-    /// Second row.
-    Vector4F y;
-    /// Third row.
-    Vector4F z;
-    /// Fourth row.
-    Vector4F w;
+	/// First row.
+	Vector4F x;
+	/// Second row.
+	Vector4F y;
+	/// Third row.
+	Vector4F z;
+	/// Fourth row.
+	Vector4F w;
 };
 
 /**
@@ -147,17 +147,17 @@ namespace tz::transform
 	 * @return - The resultant rotational matrix
 	 */
 	Matrix4x4 rotate_x(float euler_x);
-    /**
-     * Construct a four-dimensional row-major rotational matrix in the y-axis (Yaw).
-     * @param euler_y - The yaw
-     * @return - The resultant rotational matrix
-     */
+	/**
+	 * Construct a four-dimensional row-major rotational matrix in the y-axis (Yaw).
+	 * @param euler_y - The yaw
+	 * @return - The resultant rotational matrix
+	 */
 	Matrix4x4 rotate_y(float euler_y);
-    /**
-     * Construct a four-dimensional row-major rotational matrix in the z-axis (Roll).
-     * @param euler_z - The roll
-     * @return - The resultant rotational matrix
-     */
+	/**
+	 * Construct a four-dimensional row-major rotational matrix in the z-axis (Roll).
+	 * @param euler_z - The roll
+	 * @return - The resultant rotational matrix
+	 */
 	Matrix4x4 rotate_z(float euler_z);
 	/**
 	 * Construct a four-dimensional row-major rotational matrix using XYZ rotations (Pitch, Yaw, Roll in euler-angles).

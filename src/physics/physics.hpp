@@ -26,18 +26,18 @@ namespace tz::physics
 	 * The AABB is bound in model-space.
 	 */
 	AABB bound_aabb(const Mesh& mesh, const Matrix4x4& transform = Matrix4x4::identity());
-    /**
-     * Given a Model, creates a well-fitted axis-aligned-bounding-box around all vertices of all meshes in the model.
-     * @param model - The model to bound
-     * @return - AABB containing the model, in model-space if the model contained at least one mesh. If no meshes were contained, nullopt is returned
-     */
+	/**
+	 * Given a Model, creates a well-fitted axis-aligned-bounding-box around all vertices of all meshes in the model.
+	 * @param model - The model to bound
+	 * @return - AABB containing the model, in model-space if the model contained at least one mesh. If no meshes were contained, nullopt is returned
+	 */
 	std::optional<AABB> bound_aabb(const Model& model, const Matrix4x4& transform = Matrix4x4::identity());
-    /**
-     * Given an asset, creates a well-fitted AABB around any meshes or models that the asset contains.
-     * @param asset - The asset to bound
-     * @return - AABB containing all vertices of any mesh/model in the asset. If none exist/contain no vertices, nullopt is returned
-     */
-    std::optional<AABB> bound_aabb(const Asset& asset, const Matrix4x4& transform = Matrix4x4::identity());
+	/**
+	 * Given an asset, creates a well-fitted AABB around any meshes or models that the asset contains.
+	 * @param asset - The asset to bound
+	 * @return - AABB containing all vertices of any mesh/model in the asset. If none exist/contain no vertices, nullopt is returned
+	 */
+	std::optional<AABB> bound_aabb(const Asset& asset, const Matrix4x4& transform = Matrix4x4::identity());
 	std::optional<AABB> bound_object(const StaticObject& object);
 	/**
 	 * Given multiple Objects, creates a single well-fitted axis-aligned-bounding-box as tightly as possible around all the objects.

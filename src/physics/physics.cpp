@@ -46,21 +46,21 @@ std::optional<AABB> tz::physics::bound_aabb(const Model& model, const Matrix4x4&
 
 std::optional<AABB> tz::physics::bound_aabb(const Asset& asset, const Matrix4x4& transform)
 {
-    if(asset.valid_mesh())
-    {
-        AABB mesh_box = tz::physics::bound_aabb(*asset.mesh, transform);
-        if(asset.valid_model())
-        {
-            std::optional<AABB> box = tz::physics::bound_aabb(*asset.model, transform);
-            if(box.has_value())
-                mesh_box.expand_to(box.value());
-        }
-        return {mesh_box};
-    }
-    else if(asset.valid_model())
-        return tz::physics::bound_aabb(*asset.model, transform);
-    else
-        return std::nullopt;
+	if(asset.valid_mesh())
+	{
+		AABB mesh_box = tz::physics::bound_aabb(*asset.mesh, transform);
+		if(asset.valid_model())
+		{
+			std::optional<AABB> box = tz::physics::bound_aabb(*asset.model, transform);
+			if(box.has_value())
+				mesh_box.expand_to(box.value());
+		}
+		return {mesh_box};
+	}
+	else if(asset.valid_model())
+		return tz::physics::bound_aabb(*asset.model, transform);
+	else
+		return std::nullopt;
 }
 
 std::optional<AABB> tz::physics::bound_object(const StaticObject& object)

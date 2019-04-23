@@ -88,14 +88,14 @@ Matrix4x4 Quaternion::to_matrix() const
 
 void Quaternion::normalise()
 {
-    *this /= this->length();
+	*this /= this->length();
 }
 
 Quaternion Quaternion::normalised() const
 {
 	Quaternion copy = *this;
-    copy.normalise();
-    return copy;
+	copy.normalise();
+	return copy;
 }
 
 Quaternion Quaternion::inverse() const
@@ -135,7 +135,7 @@ Quaternion Quaternion::operator*(float scalar) const
 
 Quaternion Quaternion::operator/(float scalar) const
 {
-    return (*this) * (1.0f / scalar);
+	return (*this) * (1.0f / scalar);
 }
 
 Vector4F Quaternion::operator*(const Vector3F& vector) const

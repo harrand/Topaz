@@ -5,26 +5,26 @@
 
 namespace tz::utility::numeric
 {
-    float linear_interpolate(float a, float b, float blend_factor);
-    float cosine_interpolate(float a, float b, float blend_factor);
-    template<template <typename> class Container>
-    float variance(Container<float> values);
-    template<template <typename> class Container>
-    float standard_deviation(Container<float> values);
-    constexpr float default_smoothness = 8.0f;
-    namespace consts
-    {
-        /// 3.14159...
-        constexpr float pi = 3.141593;
-        /// 2pi...
-        constexpr float tau = 2.0f * pi;
-        /// 2.17...
-        constexpr float e = 2.718282;
-        ///  1 / (2 - cbrt(2))
-        constexpr float forest_ruth_coefficient = 1.351207;
-        ///  1 - (2 * forest_ruth_coefficient)
-        constexpr float forest_ruth_complement = 1.0f - (2.0f * forest_ruth_coefficient);
-    }
+	float linear_interpolate(float a, float b, float blend_factor);
+	float cosine_interpolate(float a, float b, float blend_factor);
+	template<template <typename> class Container>
+	float variance(Container<float> values);
+	template<template <typename> class Container>
+	float standard_deviation(Container<float> values);
+	constexpr float default_smoothness = 8.0f;
+	namespace consts
+	{
+		/// 3.14159...
+		constexpr float pi = 3.141593;
+		/// 2pi...
+		constexpr float tau = 2.0f * pi;
+		/// 2.17...
+		constexpr float e = 2.718282;
+		///  1 / (2 - cbrt(2))
+		constexpr float forest_ruth_coefficient = 1.351207;
+		///  1 - (2 * forest_ruth_coefficient)
+		constexpr float forest_ruth_complement = 1.0f - (2.0f * forest_ruth_coefficient);
+	}
 }
 
 /**
@@ -36,57 +36,57 @@ template<typename Engine = std::default_random_engine, typename EngineResultType
 class Random
 {
 public:
-    typedef EngineResultType seed_type;
-    typedef Engine engine_type;
-    /**
-     * Generate a Random from a seed.
-     * @param seed - The seed for the RNG engine
-     */
-    Random<Engine, EngineResultType>(EngineResultType seed = std::random_device()());
-    /**
-     * Construct a Random from an existing, using their seed and engine.
-     * @param copy - Random object to copy the seed and engine from.
-     */
-    Random<Engine, EngineResultType>(const Random<Engine, EngineResultType>& copy);
+	typedef EngineResultType seed_type;
+	typedef Engine engine_type;
+	/**
+	 * Generate a Random from a seed.
+	 * @param seed - The seed for the RNG engine
+	 */
+	Random<Engine, EngineResultType>(EngineResultType seed = std::random_device()());
+	/**
+	 * Construct a Random from an existing, using their seed and engine.
+	 * @param copy - Random object to copy the seed and engine from.
+	 */
+	Random<Engine, EngineResultType>(const Random<Engine, EngineResultType>& copy);
 
-    /**
-     * Get the value of the seed to this engine.
-     * @return - The seed value
-     */
-    const EngineResultType& get_seed() const;
-    /**
-     * Read-only access to the underlying random engine.
-     * @return - The random engine being used
-     */
-    const Engine& get_engine() const;
-    /**
-     * Generate a random signed integer between specified limits.
-     * @param min - The minimum result of the integer
-     * @param max - The maximum result of the integer
-     * @return
-     */
-    int next_int(int min = 0, int max = std::numeric_limits<int>::max());
-    /**
-     * Generate a random float between specified limits.
-     * @param min - The minimum result of the float
-     * @param max - The maximum result of the float
-     * @return
-     */
-    float next_float(float min = 0, float max = std::numeric_limits<float>::max());
-    /**
-     * Generate a random number between specified limits.
-     * @tparam Number - The type of value to generate
-     * @param min - The minimum result of the number
-     * @param max - The maximum result of the number
-     * @return
-     */
-    template <typename Number = int>
-    inline Number operator()(Number min = Number(), Number max = std::numeric_limits<Number>::max());
+	/**
+	 * Get the value of the seed to this engine.
+	 * @return - The seed value
+	 */
+	const EngineResultType& get_seed() const;
+	/**
+	 * Read-only access to the underlying random engine.
+	 * @return - The random engine being used
+	 */
+	const Engine& get_engine() const;
+	/**
+	 * Generate a random signed integer between specified limits.
+	 * @param min - The minimum result of the integer
+	 * @param max - The maximum result of the integer
+	 * @return
+	 */
+	int next_int(int min = 0, int max = std::numeric_limits<int>::max());
+	/**
+	 * Generate a random float between specified limits.
+	 * @param min - The minimum result of the float
+	 * @param max - The maximum result of the float
+	 * @return
+	 */
+	float next_float(float min = 0, float max = std::numeric_limits<float>::max());
+	/**
+	 * Generate a random number between specified limits.
+	 * @tparam Number - The type of value to generate
+	 * @param min - The minimum result of the number
+	 * @param max - The maximum result of the number
+	 * @return
+	 */
+	template <typename Number = int>
+	inline Number operator()(Number min = Number(), Number max = std::numeric_limits<Number>::max());
 private:
-    /// Stores the seed used for this Random object.
-    EngineResultType seed;
-    /// Stores the underlying RNG engine for this Random object.
-    Engine random_engine;
+	/// Stores the seed used for this Random object.
+	EngineResultType seed;
+	/// Stores the underlying RNG engine for this Random object.
+	Engine random_engine;
 };
 
 using LocalRandom = Random<>;
@@ -99,24 +99,24 @@ using MersenneTwister = Random<std::mt19937, std::mt19937::result_type>;
 class SmoothNoise
 {
 public:
-    SmoothNoise(int seed);
-    float operator()(std::size_t x, std::size_t z);
+	SmoothNoise(int seed);
+	float operator()(std::size_t x, std::size_t z);
 protected:
-    float base_noise(std::size_t x, std::size_t z);
-    float smooth_noise(std::size_t x, std::size_t z);
+	float base_noise(std::size_t x, std::size_t z);
+	float smooth_noise(std::size_t x, std::size_t z);
 private:
-    int seed;
-    LocalRandom random;
+	int seed;
+	LocalRandom random;
 };
 
 class CosineNoise : protected SmoothNoise
 {
 public:
-    CosineNoise(int seed);
-    float operator()(std::size_t x, std::size_t z, float smoothness = tz::utility::numeric::default_smoothness);
-    float cosine_noise(std::size_t x, std::size_t z, float smoothness = tz::utility::numeric::default_smoothness);
+	CosineNoise(int seed);
+	float operator()(std::size_t x, std::size_t z, float smoothness = tz::utility::numeric::default_smoothness);
+	float cosine_noise(std::size_t x, std::size_t z, float smoothness = tz::utility::numeric::default_smoothness);
 protected:
-    using SmoothNoise::operator();
+	using SmoothNoise::operator();
 };
 #include "numeric.inl"
 #endif //NUMERIC_UTILITY_HPP

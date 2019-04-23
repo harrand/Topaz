@@ -18,26 +18,26 @@ template<typename T, std::size_t dimension>
 class Tree
 {
 public:
-    /**
-     * Construct an empty tree.
-     */
-    Tree();
-    /**
-     * Retrieve the parent node, if there is one.
-     * @return - Pointer to parent node if it exists. Otherwise nullptr
-     */
-    const T* get_parent() const;
-    /**
-     * Retrieve a child node at the given index, if there is one.
-     * @param child_index - Index of the child to edit (should be between 0-7)
-     * @return - Pointer to given child node, if there is one. Otherwise nullptr
-     */
-    const T* get_child(std::size_t child_index) const;
+	/**
+	 * Construct an empty tree.
+	 */
+	Tree();
+	/**
+	 * Retrieve the parent node, if there is one.
+	 * @return - Pointer to parent node if it exists. Otherwise nullptr
+	 */
+	const T* get_parent() const;
+	/**
+	 * Retrieve a child node at the given index, if there is one.
+	 * @param child_index - Index of the child to edit (should be between 0-7)
+	 * @return - Pointer to given child node, if there is one. Otherwise nullptr
+	 */
+	const T* get_child(std::size_t child_index) const;
 protected:
-    /// Stores the location of the parent (non-owning).
-    T* parent;
-    /// Stores all child nodes (owning).
-    std::array<std::unique_ptr<T>, dimension> children;
+	/// Stores the location of the parent (non-owning).
+	T* parent;
+	/// Stores all child nodes (owning).
+	std::array<std::unique_ptr<T>, dimension> children;
 };
 
 template<typename T>

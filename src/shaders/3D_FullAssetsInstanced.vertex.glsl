@@ -39,7 +39,7 @@ void share()
 	texcoord_modelspace = texcoord;
 	normal_modelspace = normal;
 	if(has_displacement_map)
-	    position_modelspace += normal * texture2D(displacement_map_sampler, texcoord_modelspace).r * displacement_factor;
+		position_modelspace += normal * texture2D(displacement_map_sampler, texcoord_modelspace).r * displacement_factor;
 
 	model_instanced = transpose(mat4(instancing_model_x, instancing_model_y, instancing_model_z, instancing_model_w));
 
@@ -47,15 +47,15 @@ void share()
 		model_matrix = model_instanced;
 	else
 		model_matrix = m;
-    view_matrix = v;
-    projection_matrix = p;
+	view_matrix = v;
+	projection_matrix = p;
 
-    vec3 position_cameraspace = (view_matrix * model_matrix * vec4(position_modelspace, 1.0)).xyz;
-    eye_direction_cameraspace = vec3(0, 0, 0) - position_cameraspace;
+	vec3 position_cameraspace = (view_matrix * model_matrix * vec4(position_modelspace, 1.0)).xyz;
+	eye_direction_cameraspace = vec3(0, 0, 0) - position_cameraspace;
 
-    // edit this as you wish
-    const vec3 light_position_cameraspace = vec3(0, 0, 0);
-    light_direction_cameraspace = light_position_cameraspace + eye_direction_cameraspace;
+	// edit this as you wish
+	const vec3 light_position_cameraspace = vec3(0, 0, 0);
+	light_direction_cameraspace = light_position_cameraspace + eye_direction_cameraspace;
 	
 	vec3 bitangent = cross(tangent, normal);
 	

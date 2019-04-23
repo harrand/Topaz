@@ -20,12 +20,12 @@ void main()
 	{
 		vec3 hdr_colour = texture2D(texture_sampler, vs_texcoord_modelspace).rgb;
 		// perform reinhard tone mapping
-        //vec3 mapped = hdr_colour / (hdr_colour + vec3(1.0));
-        // perform exposure tone mapping
-        vec3 mapped = vec3(1.0) - exp(-hdr_colour * exposure);
-        // gamma correction
-        mapped = pow(mapped, vec3(1.0 / gamma));
-        fragment_colour = vec4(mapped, 1.0);
+		//vec3 mapped = hdr_colour / (hdr_colour + vec3(1.0));
+		// perform exposure tone mapping
+		vec3 mapped = vec3(1.0) - exp(-hdr_colour * exposure);
+		// gamma correction
+		mapped = pow(mapped, vec3(1.0 / gamma));
+		fragment_colour = vec4(mapped, 1.0);
 	}
 	else
 		fragment_colour = colour;

@@ -41,10 +41,10 @@ public:
 	 * @return - Row-major rotational matrix
 	 */
 	Matrix4x4 to_matrix() const;
-    /**
-     * Normalise this Quaternion.
-     */
-    void normalise();
+	/**
+	 * Normalise this Quaternion.
+	 */
+	void normalise();
 	/**
 	 * Get a normalised copy of this Quaternion.
 	 * @return - Copy of this Quaternion, but normalised
@@ -81,13 +81,13 @@ public:
 	 * @param scalar - Scalar to multiply by
 	 * @return - Copy of this, but all attributes multiplied by the scalar
 	 */
-    Quaternion operator*(float scalar) const;
-    /**
+	Quaternion operator*(float scalar) const;
+	/**
 	 * Divide the magnitude of this Quaternion by a scalar.
 	 * @param scalar - Scalar to divide by
 	 * @return - Copy of this, but all attributes divide by the scalar
 	 */
-    Quaternion operator/(float scalar) const;
+	Quaternion operator/(float scalar) const;
 	/**
 	 * Rotate a vector by a quaternion. Does not work for homogeneous coordinates; convert to a rotational matrix if you need to do that.
 	 * @param vector - 3-dimensional Vector to be rotated by this Quaternion
@@ -97,16 +97,16 @@ public:
 	Quaternion& operator*=(float scalar);
 	Quaternion& operator/=(float scalar);
 private:
-    /**
-     * Construct a Quaternion directly from x, y, z and w components.
-     * @param xyzw - Direct components
-     */
+	/**
+	 * Construct a Quaternion directly from x, y, z and w components.
+	 * @param xyzw - Direct components
+	 */
 	Quaternion(Vector4F xyzw);
 };
 
 namespace tz::transform::quaternion
 {
-    Matrix4x4 model(const Vector3F& position, const Quaternion& rotation, const Vector3F& scale);
+	Matrix4x4 model(const Vector3F& position, const Quaternion& rotation, const Vector3F& scale);
 }
 
 #endif

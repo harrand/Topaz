@@ -92,11 +92,11 @@ public:
 	unsigned int get_current_frame() const;
 	bool finished() const;
 private:
-    float get_end_time() const;
+	float get_end_time() const;
 	float time;
 	unsigned int number_of_frames;
 	unsigned int fps;
-    bool loop;
+	bool loop;
 };
 
 namespace tz::utility::time
@@ -107,29 +107,29 @@ namespace tz::utility::time
 	 */
 	long long int now();
 
-    namespace scheduler
-    {
-        /**
-         * Invokes a function synchronously with specified arguments after a specified delay.
-         * @tparam ReturnType - Return type of the function
-         * @tparam Args - Argument types of the function
-         * @param milliseconds_delay - Number of milliseconds to elapse before executing the function.
-         * @param f - The function to execute
-         * @param args - Arguments to emplace into the function invocation
-         */
-        template<class ReturnType, class... Args>
-        void sync_delayed_function(unsigned int milliseconds_delay, std::function<ReturnType(Args...)> f, Args... args);
-        /**
-         * Invokes a function asynchronously with specified arguments after a specified delay.
-         * @tparam ReturnType - Return type of the function
-         * @tparam Args - Argument types of the function
-         * @param milliseconds_delay - Number of milliseconds to elapse before executing the function.
-         * @param f - The function to execute
-         * @param args - Arguments to emplace into the function invocation
-         */
-        template<class ReturnType, class... Args>
-        void async_delayed_function(unsigned int milliseconds_delay, std::function<ReturnType(Args...)> f, Args... args);
-    }
+	namespace scheduler
+	{
+		/**
+		 * Invokes a function synchronously with specified arguments after a specified delay.
+		 * @tparam ReturnType - Return type of the function
+		 * @tparam Args - Argument types of the function
+		 * @param milliseconds_delay - Number of milliseconds to elapse before executing the function.
+		 * @param f - The function to execute
+		 * @param args - Arguments to emplace into the function invocation
+		 */
+		template<class ReturnType, class... Args>
+		void sync_delayed_function(unsigned int milliseconds_delay, std::function<ReturnType(Args...)> f, Args... args);
+		/**
+		 * Invokes a function asynchronously with specified arguments after a specified delay.
+		 * @tparam ReturnType - Return type of the function
+		 * @tparam Args - Argument types of the function
+		 * @param milliseconds_delay - Number of milliseconds to elapse before executing the function.
+		 * @param f - The function to execute
+		 * @param args - Arguments to emplace into the function invocation
+		 */
+		template<class ReturnType, class... Args>
+		void async_delayed_function(unsigned int milliseconds_delay, std::function<ReturnType(Args...)> f, Args... args);
+	}
 }
 
 #include "time.inl"

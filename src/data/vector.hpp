@@ -68,10 +68,10 @@ public:
 	 * @param copy - The existing 2-dimensional Vector to copy attributes from
 	 */
 	Vector2<T>(const Vector2<T>& copy);
-    /**
-     * Construct a 2-dimensional Vector, moving attributes from an existing 2-dimensional Vector.
-     * @param move - The existing 2-dimensional Vector to move attributes from
-     */
+	/**
+	 * Construct a 2-dimensional Vector, moving attributes from an existing 2-dimensional Vector.
+	 * @param move - The existing 2-dimensional Vector to move attributes from
+	 */
 	Vector2<T>(Vector2<T>&& move);
 	/**
 	 * Assign the data members of this 2-dimensional Vector to be equal to another.
@@ -192,10 +192,10 @@ public:
 
 	/// References the first element in the data array.
 	T& x;
-    /// References the second element in the data array.
+	/// References the second element in the data array.
 	T& y;
 private:
-    using Vector<2, T>::underlying_data;
+	using Vector<2, T>::underlying_data;
 };
 
 /**
@@ -231,21 +231,21 @@ public:
 	 * @param data - The array to be copied.
 	 */
 	constexpr Vector3<T>(const std::array<T, 3>& data);
-    /**
-     * Construct a 3-dimensional Vector, copying attributes from an existing 3-dimensional Vector.
-     * @param copy - The existing 3-dimensional Vector to copy attributes from
-     */
+	/**
+	 * Construct a 3-dimensional Vector, copying attributes from an existing 3-dimensional Vector.
+	 * @param copy - The existing 3-dimensional Vector to copy attributes from
+	 */
 	Vector3<T>(const Vector3<T>& copy);
-    /**
-     * Construct a 3-dimensional Vector, moving attributes from an existing 3-dimensional Vector.
-     * @param move - The existing 3-dimensional Vector to move attributes from
-     */
+	/**
+	 * Construct a 3-dimensional Vector, moving attributes from an existing 3-dimensional Vector.
+	 * @param move - The existing 3-dimensional Vector to move attributes from
+	 */
 	Vector3<T>(Vector3<T>&& move);
-    /**
-     * Assign the data members of this 3-dimensional Vector to be equal to another.
-     * @param rhs - The 3-dimensional Vector to copy from
-     * @return - This, after assignment
-     */
+	/**
+	 * Assign the data members of this 3-dimensional Vector to be equal to another.
+	 * @param rhs - The 3-dimensional Vector to copy from
+	 * @return - This, after assignment
+	 */
 	Vector3<T>& operator=(const Vector3<T>& rhs);
 	/**
 	 * Assign the data members of this 3-dimensional Vector to be equal to an existing base-vector.
@@ -395,14 +395,14 @@ public:
 	 */
 	Vector3<T> zyx() const;
 
-    /// References the first element in the data array.
-    T& x;
-    /// References the second element in the data array.
-    T& y;
-    /// References the third element in the data array.
-    T& z;
+	/// References the first element in the data array.
+	T& x;
+	/// References the second element in the data array.
+	T& y;
+	/// References the third element in the data array.
+	T& z;
 private:
-    using Vector<3, T>::underlying_data;
+	using Vector<3, T>::underlying_data;
 };
 
 /**
@@ -445,21 +445,21 @@ public:
 	 * @param data - The array to be copied.
 	 */
 	constexpr Vector4<T>(const std::array<T, 4>& data);
-    /**
-     * Construct a 4-dimensional Vector, copying attributes from an existing 4-dimensional Vector.
-     * @param copy - The existing 4-dimensional Vector to copy attributes from
-     */
+	/**
+	 * Construct a 4-dimensional Vector, copying attributes from an existing 4-dimensional Vector.
+	 * @param copy - The existing 4-dimensional Vector to copy attributes from
+	 */
 	Vector4<T>(const Vector4<T>& copy);
-    /**
-     * Construct a 4-dimensional Vector, moving attributes from an existing 4-dimensional Vector.
-     * @param move - The existing 4-dimensional Vector to move attributes from
-     */
+	/**
+	 * Construct a 4-dimensional Vector, moving attributes from an existing 4-dimensional Vector.
+	 * @param move - The existing 4-dimensional Vector to move attributes from
+	 */
 	Vector4<T>(Vector4<T>&& move);
-    /**
-     * Assign the data members of this 4-dimensional Vector to be equal to another.
-     * @param rhs - The 4-dimensional Vector to copy from
-     * @return - This, after assignment
-     */
+	/**
+	 * Assign the data members of this 4-dimensional Vector to be equal to another.
+	 * @param rhs - The 4-dimensional Vector to copy from
+	 * @return - This, after assignment
+	 */
 	Vector4<T>& operator=(const Vector4<T>& rhs);
 	/**
 	 * Assign the data members of this 3-dimensional Vector to be equal to an existing base-vector.
@@ -722,16 +722,16 @@ public:
 	 */
 	Vector4<T> wzyx() const;
 
-    /// References the first element in the data array.
-    T& x;
-    /// References the second element in the data array.
-    T& y;
-    /// References the third element in the data array.
-    T& z;
-    /// References the fourth element in the data array.
+	/// References the first element in the data array.
+	T& x;
+	/// References the second element in the data array.
+	T& y;
+	/// References the third element in the data array.
+	T& z;
+	/// References the fourth element in the data array.
 	T& w;
 private:
-    using Vector<4, T>::underlying_data;
+	using Vector<4, T>::underlying_data;
 };
 
 #include "vector.inl"

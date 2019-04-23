@@ -4,7 +4,7 @@
 
 namespace tz::utility::file
 {
-    std::string read(const std::string& path);
+	std::string read(const std::string& path);
 }
 
 

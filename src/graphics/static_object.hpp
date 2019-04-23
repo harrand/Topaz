@@ -14,42 +14,42 @@
 class StaticObject : public Renderable
 {
 public:
-    /**
-     * Construct a StaticObject based upon a transform and asset.
-     * @param transform - The position, rotation, and scale of the object
-     * @param asset - The asset used to render the object
-     */
-    StaticObject(Transform transform, Asset asset);
-    /**
-     * Get the underlying asset used to render this object
-     * @return - The objects asset
-     */
-    const Asset& get_asset() const;
-    /**
-     * Retrieve an AABB bounding the StaticObject, if it has a valid mesh or model.
-     * @return - Boundary bounding the StaticObject if geometry exists, null otherwise
-     */
-    virtual std::optional<AABB> get_boundary() const override;
-    /**
-     * Issue a render-call to draw the object.
-     * @param render_pass - The parameters with which to render the object
-     */
-    virtual void render(RenderPass render_pass) const override;
+	/**
+	 * Construct a StaticObject based upon a transform and asset.
+	 * @param transform - The position, rotation, and scale of the object
+	 * @param asset - The asset used to render the object
+	 */
+	StaticObject(Transform transform, Asset asset);
+	/**
+	 * Get the underlying asset used to render this object
+	 * @return - The objects asset
+	 */
+	const Asset& get_asset() const;
+	/**
+	 * Retrieve an AABB bounding the StaticObject, if it has a valid mesh or model.
+	 * @return - Boundary bounding the StaticObject if geometry exists, null otherwise
+	 */
+	virtual std::optional<AABB> get_boundary() const override;
+	/**
+	 * Issue a render-call to draw the object.
+	 * @param render_pass - The parameters with which to render the object
+	 */
+	virtual void render(RenderPass render_pass) const override;
 
-    /// Underlying transform of the object. Can be edited by anyone at any time
-    Transform transform;
+	/// Underlying transform of the object. Can be edited by anyone at any time
+	Transform transform;
 
-    /**
-     * Shallow equality check between this object and another.
-     * This means that equality will succeed if and only if they have the exact same position, rotation, scale, and same elements in the same AssetBuffer.
-     * @param rhs - The object to compare to
-     * @return - True if the objects are shallowly equal, otherwise false
-     */
-    bool operator==(const StaticObject& rhs) const;
-    friend class InstancedStaticObject;
+	/**
+	 * Shallow equality check between this object and another.
+	 * This means that equality will succeed if and only if they have the exact same position, rotation, scale, and same elements in the same AssetBuffer.
+	 * @param rhs - The object to compare to
+	 * @return - True if the objects are shallowly equal, otherwise false
+	 */
+	bool operator==(const StaticObject& rhs) const;
+	friend class InstancedStaticObject;
 protected:
-    /// Underlying asset.
-    Asset asset;
+	/// Underlying asset.
+	Asset asset;
 };
 
 /**
@@ -58,29 +58,29 @@ protected:
 class InstancedStaticObject : public StaticObject
 {
 public:
-    /**
-     * Construct an InstancedStaticObject based upon an existing set of objects
-     * @param objects - StaticObjects to batch an instance of
-     */
-    InstancedStaticObject(const std::vector<StaticObject>& objects);
-    /**
-     * Retrieve the underlying InstancedMesh.
-     * @return - Instanced mesh
-     */
-    const InstancedMesh& get_instanced_mesh() const;
-    /**
-     * Retrieve an AABB bounding all StaticObjects.
-     * @return - Boundary bounding all objects in the instanced object
-     */
-    virtual std::optional<AABB> get_boundary() const override;
-    /**
-     * Render the StaticObject instances in a single render-call.
-     * @param render_pass - Render properties of the render-call
-     */
-    virtual void render(RenderPass render_pass) const override;
+	/**
+	 * Construct an InstancedStaticObject based upon an existing set of objects
+	 * @param objects - StaticObjects to batch an instance of
+	 */
+	InstancedStaticObject(const std::vector<StaticObject>& objects);
+	/**
+	 * Retrieve the underlying InstancedMesh.
+	 * @return - Instanced mesh
+	 */
+	const InstancedMesh& get_instanced_mesh() const;
+	/**
+	 * Retrieve an AABB bounding all StaticObjects.
+	 * @return - Boundary bounding all objects in the instanced object
+	 */
+	virtual std::optional<AABB> get_boundary() const override;
+	/**
+	 * Render the StaticObject instances in a single render-call.
+	 * @param render_pass - Render properties of the render-call
+	 */
+	virtual void render(RenderPass render_pass) const override;
 private:
-    /// Underlying InstancedMesh.
-    std::shared_ptr<InstancedMesh> instanced_mesh;
+	/// Underlying InstancedMesh.
+	std::shared_ptr<InstancedMesh> instanced_mesh;
 };
 
 #endif //TOPAZ_SCENE_OBJECT_HPP
