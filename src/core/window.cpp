@@ -123,7 +123,7 @@ void Window::set_position_pixels(Vector2I position_pixels)
 
 void Window::centre_position(const Vector2<bool>& mask)
 {
-	SDL_SetWindowPosition(this->sdl_window, mask.x ? SDL_WINDOWPOS_CENTERED : this->position_pixel_space.x, mask.y ? SDL_WINDOWPOS_CENTERED : this->position_pixel_space.y);
+	SDL_SetWindowPosition(this->sdl_window, mask.x ? tz::consts::core::window::centred_window : this->position_pixel_space.x, mask.y ? tz::consts::core::window::centred_window : this->position_pixel_space.y);
 }
 
 std::variant<Vector2I, Vector2F> Window::get_dimensions(tz::gui::ScreenSpace screen_space) const

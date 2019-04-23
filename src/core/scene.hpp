@@ -9,12 +9,6 @@
 #include <queue>
 #include <typeindex>
 
-namespace tz::scene
-{
-	/// Minimum region of each ScenePartitionNode. Decreasing this increases precision of space partitioning, but at increased overhead.
-	constexpr Vector3F minimum_node_size = {0.1f, 0.1f, 0.1f};
-}
-
 class Scene;
 
 /**

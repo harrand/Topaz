@@ -9,7 +9,7 @@ namespace tz::utility::numeric
 
 	float cosine_interpolate(float a, float b, float blend_factor)
 	{
-		float theta = blend_factor * static_cast<float>(tz::utility::numeric::consts::pi);
+		float theta = blend_factor * tz::consts::numeric::pi;
 		// get a value between 0-1, then pass that into a simple linear-interpolation.
 		return tz::utility::numeric::linear_interpolate(a, b, 1.0f - std::cos(theta) * 0.5f);
 	}

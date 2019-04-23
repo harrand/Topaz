@@ -4,11 +4,6 @@
 #include "SDL2/SDL_mixer.h"
 #include "graphics/camera.hpp"
 
-namespace tz::audio
-{
-	constexpr int unused_channel = -1;
-}
-
 /**
 *	Playable audio file. Use this for short audio segments like sound effects.
 */

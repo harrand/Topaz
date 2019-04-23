@@ -169,9 +169,10 @@ void Model::render(Shader& shader) const
 	bool patches = shader.get_can_tessellate();
 	for(unsigned int i = 0; i < this->meshes.size(); i++)
 	{
+		using namespace tz::consts::graphics::shader;
 		tz::graphics::asset::unbind_all_textures(shader);
 		auto range = this->material_textures.equal_range(i);
-		std::size_t texture_id = tz::graphics::texture_sampler_id;
+		std::size_t texture_id = sampler::texture_id;
 		for(auto j = range.first; j != range.second; j++)
 		{
 			/* topaz shader attribs are *not* sequential. it's something a little like this:
@@ -184,18 +185,18 @@ void Model::render(Shader& shader) const
 			Texture* current_texture = j->second.get();
 			auto sampler_name = [](std::size_t id) -> std::string
 			{
-				if(id == tz::graphics::texture_sampler_id)
-					return "texture_sampler";
-				if(id == tz::graphics::normal_map_sampler_id)
-					return "normal_map_sampler";
-				if(id == tz::graphics::specular_map_sampler_id)
-					return "specular_map_sampler";
-				if(id == tz::graphics::emissive_map_sampler_id)
-					return "emissive_map_sampler";
-				else if(id >= tz::graphics::initial_extra_texture_sampler_id)
+				if(id == sampler::texture_id)
+					return sampler::texture_name;
+				if(id == sampler::normal_map_id)
+					return sampler::normal_map_name;
+				if(id == sampler::specular_map_id)
+					return sampler::specular_map_name;
+				if(id == sampler::emissive_map_id)
+					return sampler::emissive_map_name;
+				else if(id >= sampler::initial_extra_texture_id)
 				{
-					std::size_t diff = id - tz::graphics::initial_extra_texture_sampler_id;
-					return std::string("extra_texture_sampler") + std::to_string(diff);
+					std::size_t diff = id - sampler::initial_extra_texture_id;
+					return std::string(sampler::extra_texture_sampler_prefix) + std::to_string(diff);
 				}
 				else
 				{
@@ -212,21 +213,21 @@ void Model::render(Shader& shader) const
 					current_texture->bind(&shader, texture_id, sampler_name(texture_id));
 					break;
 				case tz::graphics::TextureType::NORMAL_MAP:
-					current_texture->bind(&shader, tz::graphics::normal_map_sampler_id, sampler_name(tz::graphics::normal_map_sampler_id));
+					current_texture->bind(&shader, sampler::normal_map_id, sampler_name(sampler::normal_map_id));
 					break;
 				case tz::graphics::TextureType::SPECULAR_MAP:
-					current_texture->bind(&shader, tz::graphics::specular_map_sampler_id, sampler_name(tz::graphics::specular_map_sampler_id));
+					current_texture->bind(&shader, sampler::specular_map_id, sampler_name(sampler::specular_map_id));
 					break;
 				case tz::graphics::TextureType::EMISSIVE_MAP:
-					current_texture->bind(&shader, tz::graphics::emissive_map_sampler_id, sampler_name(tz::graphics::emissive_map_sampler_id));
+					current_texture->bind(&shader, sampler::emissive_map_id, sampler_name(sampler::emissive_map_id));
 					break;
 			}
 			// ensure texture_id is updated properly, because as stated previous, topaz sampler ids are NOT sequential
-			if(texture_id == tz::graphics::texture_sampler_id)
-				texture_id = tz::graphics::initial_extra_texture_sampler_id;
+			if(texture_id == sampler::texture_id)
+				texture_id = sampler::initial_extra_texture_id;
 			else
 			{
-				std::size_t diff = texture_id - tz::graphics::initial_extra_texture_sampler_id;
+				std::size_t diff = texture_id - sampler::initial_extra_texture_id;
 				std::string uniform_name = std::string("extra_texture") + std::to_string(diff) + "_exists";
 				shader.set_uniform<bool>(uniform_name, true);
 				texture_id++;

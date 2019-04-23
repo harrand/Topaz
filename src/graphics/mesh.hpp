@@ -27,18 +27,6 @@ namespace tz::graphics
 class Model;
 namespace tz::platform
 {
-	namespace mesh_attribute
-	{
-		constexpr char position_attribute[] = "position";
-		constexpr char texcoord_attribute[] = "texcoord";
-		constexpr char normal_attribute[] = "normal";
-		constexpr char tangent_attribute[] = "tangent";
-		constexpr char instance_model_x_attribute[] = "instancing_model_x";
-		constexpr char instance_model_y_attribute[] = "instancing_model_y";
-		constexpr char instance_model_z_attribute[] = "instancing_model_z";
-		constexpr char instance_model_w_attribute[] = "instancing_model_w";
-	}
-
 	enum class StandardAttribute : GLuint
 	{
 		POSITION = 0,

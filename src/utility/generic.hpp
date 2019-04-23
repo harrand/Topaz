@@ -1,9 +1,10 @@
 #ifndef GENERIC_UTILITY_HPP
 #define GENERIC_UTILITY_HPP
 
+#include "utility/constants.hpp"
+#include <vector>
 #include <string>
 #include <cstddef>
-#include "numeric.hpp"
 
 namespace tz::utility::generic
 {
@@ -46,7 +47,7 @@ namespace tz::utility::generic
 		*/
 		inline long double operator""_rad(long double angle)
 		{
-			return angle * 180.0 / tz::utility::numeric::consts::pi;
+			return angle * 180.0 / tz::consts::numeric::pi;
 		}
 	}
 

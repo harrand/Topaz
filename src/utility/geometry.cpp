@@ -44,12 +44,12 @@ void Circle::set_radius(float radius)
 
 float Circle::get_area() const
 {
-	return static_cast<float>(tz::utility::numeric::consts::pi * std::pow(this->radius, 2));
+	return static_cast<float>(tz::consts::numeric::pi * std::pow(this->radius, 2));
 }
 
 float Circle::get_circumference() const
 {
-	return static_cast<float>(2.0 * tz::utility::numeric::consts::pi * this->radius);
+	return static_cast<float>(2.0 * tz::consts::numeric::pi * this->radius);
 }
 
 Cuboid::Cuboid(Vector3F dimensions): dimensions(dimensions)
@@ -96,12 +96,12 @@ void Sphere::set_radius(float radius)
 
 float Sphere::get_surface_area() const
 {
-	return static_cast<float>(4.0 * tz::utility::numeric::consts::pi * std::pow(this->radius, 2));
+	return static_cast<float>(4.0 * tz::consts::numeric::pi * std::pow(this->radius, 2));
 }
 
 float Sphere::get_volume() const
 {
-	return static_cast<float>(4.0 / 3.0 * tz::utility::numeric::consts::pi * std::pow(this->radius, 3));
+	return static_cast<float>(4.0 / 3.0 * tz::consts::numeric::pi * std::pow(this->radius, 3));
 }
 
 Plane::Plane(Vector3F normal, std::optional<Vector2F> finite_dimensions): normal(normal), finite_dimensions(finite_dimensions){}

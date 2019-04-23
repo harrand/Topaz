@@ -1,6 +1,7 @@
 #include <cmath>
 #include <iostream>
 #include "utility/generic.hpp"
+#include "utility/numeric.hpp"
 
 template<unsigned int N, typename T>
 constexpr Vector<N, T>::Vector(std::array<T, N> underlying_data): underlying_data(underlying_data){}

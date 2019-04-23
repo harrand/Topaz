@@ -2,16 +2,7 @@
 #define CAMERA_HPP
 #include "data/matrix.hpp"
 #include "utility/numeric.hpp"
-
-namespace tz::graphics
-{
-	/// FOV of a Camera if none is specified.
-	constexpr float default_fov = tz::utility::numeric::consts::pi / 2.0f;
-	/// Near-clip of a Camera if none is specified.
-	constexpr float default_near_clip = 0.1f;
-	/// Far-clip of a Camera if none is specified.
-	constexpr float default_far_clip = 10000.0f;
-}
+#include "utility/constants.hpp"
 
 /**
 * Used to navigate the 3D scene such that all objects in the scene do not have to be moved in order to achieve motion.
@@ -28,7 +19,7 @@ public:
 	 * @param far_clip - Distance from the Camera to the far-plane
 	 * @param perspective - Whether the Camera should use a perspective projection
 	 */
-	Camera(Vector3F position = Vector3F(), Vector3F rotation = Vector3F(), float fov = tz::graphics::default_fov, float near_clip = tz::graphics::default_near_clip, float far_clip = tz::graphics::default_far_clip, bool perspective = true);
+	Camera(Vector3F position = Vector3F(), Vector3F rotation = Vector3F(), float fov = tz::consts::graphics::camera::default_fov, float near_clip = tz::consts::graphics::camera::default_near_clip, float far_clip = tz::consts::graphics::camera::default_far_clip, bool perspective = true);
 	/**
 	 * Get the forward orientation.
 	 * @return - Normalised 3-dimensional Vector representing 'forward' for the Camera

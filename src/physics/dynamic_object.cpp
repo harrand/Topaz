@@ -19,10 +19,10 @@ void DynamicObject::update(float delta_time)
 				this->transform.rotation += (this->angular_velocity * half_delta);
 			};
 	// Perform forest-ruth motion integration. It utilises verlet-integration, so it more expensive but yields more accurate results.
-	using namespace tz::utility::numeric;
-	verlet_integration(delta_time * static_cast<float>(consts::forest_ruth_coefficient));
-	verlet_integration(delta_time * static_cast<float>(consts::forest_ruth_complement));
-	verlet_integration(delta_time * static_cast<float>(consts::forest_ruth_coefficient));
+	using namespace tz::consts;
+	verlet_integration(delta_time * numeric::forest_ruth_coefficient);
+	verlet_integration(delta_time * numeric::forest_ruth_complement);
+	verlet_integration(delta_time * numeric::forest_ruth_coefficient);
 }
 
 std::optional<AABB> DynamicObject::get_boundary() const

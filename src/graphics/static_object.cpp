@@ -24,35 +24,35 @@ void StaticObject::render(RenderPass render_pass) const
 	Vector2I viewport_dimensions = {render_pass.get_window().get_width(), render_pass.get_window().get_height()};
 	render_shader.bind();
 	render_shader.set_uniform<bool>("is_instanced", this->get_asset().valid_mesh() && tz::graphics::is_instanced(this->asset.mesh));
-	render_shader.set_uniform<Matrix4x4>(tz::graphics::render_shader_model_uniform_name, this->transform.model());
-	render_shader.set_uniform<Matrix4x4>(tz::graphics::render_shader_view_uniform_name, camera.view());
-	render_shader.set_uniform<Matrix4x4>(tz::graphics::render_shader_projection_uniform_name,
+	render_shader.set_uniform<Matrix4x4>(tz::consts::graphics::shader::render_shader_model_uniform_name, this->transform.model());
+	render_shader.set_uniform<Matrix4x4>(tz::consts::graphics::shader::render_shader_view_uniform_name, camera.view());
+	render_shader.set_uniform<Matrix4x4>(tz::consts::graphics::shader::render_shader_projection_uniform_name,
 										 camera.projection(viewport_dimensions.x, viewport_dimensions.y));
 	tz::graphics::asset::unbind_all_extra_textures(render_shader);
 	tz::graphics::asset::unbind_specular_map(render_shader);
 	tz::graphics::asset::unbind_emissive_map(render_shader);
 	if (this->asset.valid_texture())
-		this->asset.texture->bind(&render_shader, tz::graphics::texture_sampler_id);
+		this->asset.texture->bind(&render_shader, tz::consts::graphics::shader::sampler::texture_id);
 	else
 		tz::graphics::asset::unbind_texture();
 	if (this->asset.valid_normal_map())
-		this->asset.normal_map->bind(&render_shader, tz::graphics::normal_map_sampler_id);
+		this->asset.normal_map->bind(&render_shader, tz::consts::graphics::shader::sampler::normal_map_id);
 	else
 		tz::graphics::asset::unbind_normal_map(render_shader);
 	if (this->asset.valid_parallax_map())
-		this->asset.parallax_map->bind(&render_shader, tz::graphics::parallax_map_sampler_id);
+		this->asset.parallax_map->bind(&render_shader, tz::consts::graphics::shader::sampler::parallax_map_id);
 	else
 		tz::graphics::asset::unbind_parallax_map(render_shader);
 	if (this->asset.valid_displacement_map())
-		this->asset.displacement_map->bind(&render_shader, tz::graphics::displacement_map_sampler_id);
+		this->asset.displacement_map->bind(&render_shader, tz::consts::graphics::shader::sampler::displacement_map_id);
 	else
 		tz::graphics::asset::unbind_displacement_map(render_shader);
 	if(this->asset.valid_specular_map())
-		this->asset.specular_map->bind(&render_shader, tz::graphics::specular_map_sampler_id);
+		this->asset.specular_map->bind(&render_shader, tz::consts::graphics::shader::sampler::specular_map_id);
 	else
 		tz::graphics::asset::unbind_specular_map(render_shader);
 	if(this->asset.valid_emissive_map())
-		this->asset.emissive_map->bind(&render_shader, tz::graphics::emissive_map_sampler_id);
+		this->asset.emissive_map->bind(&render_shader, tz::consts::graphics::shader::sampler::emissive_map_id);
 	else
 		tz::graphics::asset::unbind_emissive_map(render_shader);
 	render_shader.update();

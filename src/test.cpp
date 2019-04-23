@@ -150,7 +150,7 @@ void init()
 		DynamicObject& object = falling_objects.emplace_back(1.0f, Transform{Vector3F{(scale.x * row * 2), -50, (scale.z * column * 2)} - offset,
 																			 {}, scale}, stone_floor);
 		//float sine_id = std::abs(std::sin(i / 10));
-		float pi = tz::utility::numeric::consts::pi;
+		using namespace tz::consts::numeric;
 		object.add_force({0, -400.0f, 0});
 		object.velocity = {rand(-1000.0f, 1000.0f), rand(1000.0f, 2500.0f), rand(-1000.0f, 1000.0f)};
 		//object.add_force(Vector3F{0, sine_id * 1.5f, 0});

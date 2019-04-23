@@ -2,6 +2,7 @@
 #define NUMERIC_UTILITY_HPP
 #include <cmath>
 #include <random>
+#include "utility/constants.hpp"
 
 namespace tz::utility::numeric
 {
@@ -11,20 +12,6 @@ namespace tz::utility::numeric
 	float variance(Container<float> values);
 	template<template <typename> class Container>
 	float standard_deviation(Container<float> values);
-	constexpr float default_smoothness = 8.0f;
-	namespace consts
-	{
-		/// 3.14159...
-		constexpr float pi = 3.141593;
-		/// 2pi...
-		constexpr float tau = 2.0f * pi;
-		/// 2.17...
-		constexpr float e = 2.718282;
-		///  1 / (2 - cbrt(2))
-		constexpr float forest_ruth_coefficient = 1.351207;
-		///  1 - (2 * forest_ruth_coefficient)
-		constexpr float forest_ruth_complement = 1.0f - (2.0f * forest_ruth_coefficient);
-	}
 }
 
 /**
@@ -113,8 +100,8 @@ class CosineNoise : protected SmoothNoise
 {
 public:
 	CosineNoise(int seed);
-	float operator()(std::size_t x, std::size_t z, float smoothness = tz::utility::numeric::default_smoothness);
-	float cosine_noise(std::size_t x, std::size_t z, float smoothness = tz::utility::numeric::default_smoothness);
+	float operator()(std::size_t x, std::size_t z, float smoothness = tz::consts::numeric::default_smoothness);
+	float cosine_noise(std::size_t x, std::size_t z, float smoothness = tz::consts::numeric::default_smoothness);
 protected:
 	using SmoothNoise::operator();
 };

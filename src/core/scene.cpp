@@ -136,7 +136,8 @@ void ScenePartitionNode::build()
 	}
 
 	// Are our dimensions smaller than the minimum allowed size?
-	if(dimensions <= tz::scene::minimum_node_size)
+	using namespace tz::consts::core::scene;
+	if(dimensions <= Vector3F{octree::minimum_node_size_x, octree::minimum_node_size_y, octree::minimum_node_size_z})
 		return;
 
 	Vector3F half_dimensions = dimensions / 2.0f;
@@ -210,7 +211,8 @@ bool ScenePartitionNode::insert(const Renderable* object)
 
 	// Are the dimensions greater than the minimum dimensions?
 	Vector3F dimensions = this->region.get_maximum() - this->region.get_minimum();
-	if(dimensions <= tz::scene::minimum_node_size)
+	using namespace tz::consts::core::scene;
+	if(dimensions <= Vector3F{octree::minimum_node_size_x, octree::minimum_node_size_y, octree::minimum_node_size_z})
 	{
 		this->enclosed_objects.push_back(object);
 		return true;

@@ -11,8 +11,6 @@
 
 namespace tz
 {
-	/// Window-centre flag. Use this to centre a Window.
-	constexpr auto centred_window = SDL_WINDOWPOS_CENTERED;
 	namespace gui
 	{
 		enum class MessageBoxType : Uint32

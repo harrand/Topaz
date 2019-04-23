@@ -32,14 +32,15 @@ namespace tz::platform
 	void OGLShader::setup_standard_attributes() const
 	{
 		using namespace tz::platform;
-		this->bind_attribute_location(static_cast<GLuint>(StandardAttribute::POSITION), mesh_attribute::position_attribute);
-		this->bind_attribute_location(static_cast<GLuint>(StandardAttribute::TEXCOORD), mesh_attribute::texcoord_attribute);
-		this->bind_attribute_location(static_cast<GLuint>(StandardAttribute::NORMAL), mesh_attribute::normal_attribute);
-		this->bind_attribute_location(static_cast<GLuint>(StandardAttribute::TANGENT), mesh_attribute::tangent_attribute);
-		this->bind_attribute_location(static_cast<GLuint>(StandardAttribute::INSTANCE_MODEL_X_ROW), mesh_attribute::instance_model_x_attribute);
-		this->bind_attribute_location(static_cast<GLuint>(StandardAttribute::INSTANCE_MODEL_Y_ROW), mesh_attribute::instance_model_y_attribute);
-		this->bind_attribute_location(static_cast<GLuint>(StandardAttribute::INSTANCE_MODEL_Z_ROW), mesh_attribute::instance_model_z_attribute);
-		this->bind_attribute_location(static_cast<GLuint>(StandardAttribute::INSTANCE_MODEL_W_ROW), mesh_attribute::instance_model_w_attribute);
+		using namespace tz::consts::graphics::mesh;
+		this->bind_attribute_location(static_cast<GLuint>(StandardAttribute::POSITION), attribute::position_attribute);
+		this->bind_attribute_location(static_cast<GLuint>(StandardAttribute::TEXCOORD), attribute::texcoord_attribute);
+		this->bind_attribute_location(static_cast<GLuint>(StandardAttribute::NORMAL), attribute::normal_attribute);
+		this->bind_attribute_location(static_cast<GLuint>(StandardAttribute::TANGENT), attribute::tangent_attribute);
+		this->bind_attribute_location(static_cast<GLuint>(StandardAttribute::INSTANCE_MODEL_X_ROW), attribute::instance_model_x_attribute);
+		this->bind_attribute_location(static_cast<GLuint>(StandardAttribute::INSTANCE_MODEL_Y_ROW), attribute::instance_model_y_attribute);
+		this->bind_attribute_location(static_cast<GLuint>(StandardAttribute::INSTANCE_MODEL_Z_ROW), attribute::instance_model_z_attribute);
+		this->bind_attribute_location(static_cast<GLuint>(StandardAttribute::INSTANCE_MODEL_W_ROW), attribute::instance_model_w_attribute);
 	}
 }
 #endif

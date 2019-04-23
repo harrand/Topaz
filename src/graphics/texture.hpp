@@ -9,17 +9,10 @@
 
 namespace tz::graphics
 {
-	/**
-	* Minimum of implementation and 32. This is because if hardware allows 64 attachments, OpenGL headers currently dont even specify 32+ attachments (it goes to GL_DEPTH_ATTACHMENT). For this reason, it is the minimum of the two, for a fair compromise.
-	*/
-	constexpr int maximum_framebuffer_attachments = std::min(GL_MAX_COLOR_ATTACHMENTS, 32);
 
 	/// Contains constants and helper functions about Assets used, such as textures and normal-maps.
 	namespace asset
 	{
-		constexpr float default_parallax_map_scale = 0.04f;
-		constexpr float default_parallax_map_offset = -0.5f;
-		constexpr float default_displacement_factor = 0.25f;
 		/**
 		 * Unbind any existing Textures.
 		 */
@@ -293,7 +286,7 @@ public:
 	 * Load a parallax-map from an existing parallax-map image file.
 	 * @param filename - Path to the existing parallax-map image file
 	 */
-	ParallaxMap(std::string filename, float multiplier = tz::graphics::asset::default_parallax_map_scale, float offset = tz::graphics::asset::default_parallax_map_offset);
+	ParallaxMap(std::string filename, float multiplier = tz::consts::graphics::texture::default_parallax_map_scale, float offset = tz::consts::graphics::texture::default_parallax_map_offset);
 	/**
 	* Bind this normal-map to a specified Shader.
 	* @param shader - The Shader to be bound with.
@@ -319,13 +312,13 @@ public:
 	 * Load a displacement-map from an existing displacement-map image file.
 	 * @param filename - Path to the existing displacement-map image file
 	 */
-	DisplacementMap(std::string filename, float displacement_factor = tz::graphics::asset::default_displacement_factor);
+	DisplacementMap(std::string filename, float displacement_factor = tz::consts::graphics::texture::default_displacement_factor);
 	/**
 	 * Construct a DisplacementMap based upon a given height-map and factor.
 	 * @param height_map - Heightmap used to construct the displacement map
 	 * @param displacement_factor - The multiplier used on each value in the height map
 	 */
-	DisplacementMap(Bitmap<PixelDepth> height_map, float displacement_factor = tz::graphics::asset::default_displacement_factor);
+	DisplacementMap(Bitmap<PixelDepth> height_map, float displacement_factor = tz::consts::graphics::texture::default_displacement_factor);
 	/**
 	 * Construct a DisplacementMap based upon an existing Assimp texture.
 	 * @param assimp_texture - The assimp texture whose data should be used to construct this DisplacementMap
@@ -478,7 +471,7 @@ namespace tz::graphics
 		template<typename Engine = std::default_random_engine, typename EngineResultType = std::default_random_engine::result_type>
 		DisplacementMap generate_random_noise(std::size_t width, std::size_t height, float displacement_factor, Random<Engine, EngineResultType> noise_function = {});
 		DisplacementMap generate_smooth_noise(std::size_t width, std::size_t height, float displacement_factor, SmoothNoise noise_function = {Random{}.next_int()});
-		DisplacementMap generate_cosine_noise(std::size_t width, std::size_t height, float displacement_factor, float smoothness = tz::utility::numeric::default_smoothness, CosineNoise noise_function = Random{}.next_int());
+		DisplacementMap generate_cosine_noise(std::size_t width, std::size_t height, float displacement_factor, float smoothness = tz::consts::numeric::default_smoothness, CosineNoise noise_function = Random{}.next_int());
 	}
 }
 

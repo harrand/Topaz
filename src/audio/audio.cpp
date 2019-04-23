@@ -1,7 +1,7 @@
 #include "audio/audio.hpp"
 #include "core/topaz.hpp"
 
-AudioClip::AudioClip(std::string filename): channel(tz::audio::unused_channel), filename(std::move(filename)), audio_handle(Mix_LoadWAV(this->filename.c_str()))
+AudioClip::AudioClip(std::string filename): channel(tz::consts::audio::unused_channel), filename(std::move(filename)), audio_handle(Mix_LoadWAV(this->filename.c_str()))
 {
 	if(this->audio_handle == NULL)
 		tz::debug::print("AudioClip::AudioClip(filename): Error: AudioClip instantiation caused one or more errors from filename '", this->filename, "': ", Mix_GetError(), "\n");
@@ -9,7 +9,7 @@ AudioClip::AudioClip(std::string filename): channel(tz::audio::unused_channel), 
 
 AudioClip::AudioClip(const AudioClip& copy): AudioClip(copy.get_file_name()){}
 
-AudioClip::AudioClip(AudioClip&& move): channel(tz::audio::unused_channel), filename(move.get_file_name()), audio_handle(move.audio_handle)
+AudioClip::AudioClip(AudioClip&& move): channel(tz::consts::audio::unused_channel), filename(move.get_file_name()), audio_handle(move.audio_handle)
 {
 	move.audio_handle = nullptr;
 }

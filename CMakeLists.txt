@@ -135,7 +135,7 @@ add_library(topaz SHARED
         src/utility/string.hpp
         src/utility/time.cpp
         src/utility/time.hpp
-        src/utility/time.inl)
+        src/utility/time.inl src/utility/constants.hpp)
 # here we express in terms of modules, not just build flags
 target_include_directories(topaz PUBLIC ${PROJECT_SOURCE_DIR}/inc)
 target_include_directories(topaz PRIVATE ${PROJECT_SOURCE_DIR}/src)

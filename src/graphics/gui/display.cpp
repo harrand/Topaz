@@ -75,8 +75,8 @@ void Label::render(Shader& shader, int window_width_pixels, int window_height_pi
 	Vector3F background_rgb = this->highlight_colour.value_or(Vector3F{});
 	shader.set_uniform<Vector4F>("background_colour", {background_rgb, this->highlight_colour.has_value() ? 1.0f : 0.0f});
 	Matrix4x4 projection = tz::transform::orthographic_projection(window_width_pixels, 0.0f, window_height_pixels, 0.0f, -1.0f, 1.0f);
-	using namespace tz::utility::numeric;
-	Matrix4x4 model = projection * tz::transform::model(Vector3F(this->get_x(), this->get_y() + (this->get_height() * 0.875f), 0.0f), Vector3F(0, consts::pi, consts::pi), Vector3F(this->get_width(), this->get_height(), 0.0f));
+	using namespace tz::consts;
+	Matrix4x4 model = projection * tz::transform::model(Vector3F(this->get_x(), this->get_y() + (this->get_height() * 0.875f), 0.0f), Vector3F(0, numeric::pi, numeric::pi), Vector3F(this->get_width(), this->get_height(), 0.0f));
 	shader.set_uniform<Matrix4x4>("model_matrix", model);
 	shader.set_uniform<Vector4F>("colour", {this->text_colour, 1.0f});
 	this->text_render_texture->bind(&shader, 0);

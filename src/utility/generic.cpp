@@ -17,7 +17,7 @@ namespace tz::utility::generic
 
 		inline long double operator""_deg(long double angle)
 		{
-			return angle * tz::utility::numeric::consts::pi / 180.0;
+			return angle * tz::consts::numeric::pi / 180.0;
 		}
 	}
 }
