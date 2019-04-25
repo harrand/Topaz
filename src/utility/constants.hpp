@@ -18,7 +18,7 @@ namespace tz::consts
 		constexpr float default_smoothness = 8.0f;
 		/// 3.14159...
 		constexpr float pi = 3.141593;
-		/// 2pi...
+		/// 2pi
 		constexpr float tau = 2.0f * pi;
 		/// 2.17...
 		constexpr float e = 2.718282;
@@ -46,7 +46,7 @@ namespace tz::consts
 		namespace window
 		{
 			/// Window-centre flag. Use this to centre a Window.
-			constexpr auto centred_window = SDL_WINDOWPOS_CENTERED;
+			constexpr int centred_window = SDL_WINDOWPOS_CENTERED;
 		}
 	}
 
@@ -83,7 +83,8 @@ namespace tz::consts
 				constexpr std::size_t displacement_map_id = 3;
 				constexpr std::size_t specular_map_id = 4;
 				constexpr std::size_t emissive_map_id = 5;
-				// Allow a few more ids for extra assets which could appear in the future.
+				// ID from 6-15 inclusive are available for future/custom general-purpose usage.
+				/// Meshes using multiple textures should store additional textures in the initial ID and above.
 				constexpr std::size_t initial_extra_texture_id = 16;
 
 				constexpr char texture_name[] = "texture_sampler";
@@ -106,7 +107,7 @@ namespace tz::consts
 		namespace framebuffer
 		{
 			/**
-			* Minimum of implementation and 32. This is because if hardware allows 64 attachments, OpenGL headers currently dont even specify 32+ attachments (it goes to GL_DEPTH_ATTACHMENT). For this reason, it is the minimum of the two, for a fair compromise.
+			* Minimum of implementation and 32. This is because if hardware allows 64 attachments, OpenGL headers currently don't even specify 32+ attachments (it goes to GL_DEPTH_ATTACHMENT). For this reason, it is the minimum of the two, for a fair compromise.
 			*/
 			constexpr int maximum_attachments = std::min(GL_MAX_COLOR_ATTACHMENTS, 32);
 		}
