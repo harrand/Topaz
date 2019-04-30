@@ -55,17 +55,10 @@ public:
 	 * @return - Length of the clip, in milliseconds.
 	 */
 	Uint32 get_audio_length() const;
-	/**
-	 * Retrieve the filename of the file used to load this AudioClip.
-	 * @return - Filename of the source audio.
-	 */
-	const std::string& get_file_name() const;
 protected:
 	static void swap(AudioClip& lhs, AudioClip& rhs);
 	/// Channel that the AudioClip is currently playing on.
 	int channel;
-	/// Path to the file used to load this AudioClip's data.
-	std::string filename;
 	/// SDL_Mixer audio data handle.
 	Mix_Chunk* audio_handle;
 };
@@ -177,7 +170,15 @@ namespace tz
 		 * @param clip - The audio which should be played.
 		 */
 		template<typename Audio>
-		void play_async(Audio&& clip);
+		void play_async(const Audio& clip);
+		/**
+		 * Play any type of supported audio, synchronously.
+		 * Returns after the audio finishes playing.
+		 * @tparam Audio - The type of audio to play.
+		 * @param clip - The audio which should be played.
+		 */
+		template<typename Audio>
+		void play_sync(Audio clip);
 	}
 }
 

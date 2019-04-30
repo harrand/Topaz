@@ -67,7 +67,12 @@ void StaticObject::render(RenderPass render_pass) const
 	}
 }
 
-bool  StaticObject::operator==(const StaticObject &rhs) const
+std::unique_ptr<Renderable> StaticObject::unique_clone() const
+{
+	return std::make_unique<StaticObject>(*this);
+}
+
+bool StaticObject::operator==(const StaticObject &rhs) const
 {
 	return this->transform == rhs.transform && this->asset == rhs.asset;
 }
@@ -116,4 +121,9 @@ void InstancedStaticObject::render(RenderPass render_pass) const
 	instanced_render_shader.set_uniform<bool>("is_instanced", true);
 	instanced_render_shader.update();
 	StaticObject::render(render_pass);
+}
+
+std::unique_ptr<Renderable> InstancedStaticObject::unique_clone() const
+{
+	return std::make_unique<InstancedStaticObject>(*this);
 }

@@ -16,6 +16,8 @@ class Listener
 public:
 	/// Trivial construction.
 	Listener();
+	Listener(Window& window);
+	virtual ~Listener();
 
 	friend class Window;
 	friend class GUIWidget;
@@ -43,7 +45,8 @@ public:
 	 * @param window - The Window to attach this Listener to
 	 */
 	MouseListener(Window& window);
-
+	MouseListener(const MouseListener& copy);
+	MouseListener(MouseListener&& move);
 	/**
 	 * Invoked when the parent Window polls all pending events.
 	 * @param evt - The SDL Event object passed from the Window event-poll
@@ -106,7 +109,8 @@ public:
 	 * @param window - The Window to attach this Listener to
 	 */
 	KeyListener(Window& window);
-
+	KeyListener(const KeyListener& copy);
+	KeyListener(KeyListener&& move);
 	/**
 	 * Invoked when the parent Window polls all pending events.
 	 * @param evt - The SDL Event object passed from the Window event-poll

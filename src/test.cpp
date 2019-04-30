@@ -16,7 +16,6 @@ int main()
 	return 0;
 }
 
-#undef TOPAZ_DEBUG
 void init()
 {
 	Window wnd("Topaz Development Window", 0, 30, 1920, 1080);
@@ -47,7 +46,6 @@ void init()
 	camera.position = {0, 0, -50};
 	Scene scene;
 	scene.add_directional_light({{0, 1, 0}, {1, 1, 1}, 0.8f});
-
 	glDebugMessageInsert(GL_DEBUG_SOURCE_APPLICATION, GL_DEBUG_TYPE_ERROR, 0, GL_DEBUG_SEVERITY_NOTIFICATION, -1, "Well met.");
 
 	Texture red_texture{Bitmap<PixelRGBA>{{PixelRGBA{255, 0, 0, 255}}, 1, 1}};
@@ -213,11 +211,13 @@ void init()
 			second_timer.reload();
 			profiler.reset();
 			//progress.set_visible(!progress.is_visible());
+			/*
 			std::cout << "total number of objects = " << scene.get_number_of<Renderable>() << "\n";
 			std::cout << "number of static objects = " << scene.get_number_of<StaticObject>() << "\n";
 			std::cout << "number of dynamic objects = " << scene.get_number_of<DynamicObject>() << "\n";
 			std::cout << "number of instanced static objects = " << scene.get_number_of<InstancedStaticObject>() << "\n";
 			std::cout << "number of renderable bounding boxes = " << scene.get_number_of<RenderableBoundingBox>() << "\n";
+			*/
 		}
 
 		long long int delta_time = tz::utility::time::now() - time;

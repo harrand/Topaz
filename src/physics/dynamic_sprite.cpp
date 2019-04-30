@@ -34,4 +34,10 @@ std::optional<AABB> DynamicSprite::get_boundary() const
 	return tz::physics::bound_aabb(this->mesh) * tz::transform::model({position_screenspace.x, position_screenspace.y, 0.0f}, {0.0f, 0.0f, this->get_rotation()}, {this->scale, 0.0f});
 }
 
+std::unique_ptr<Renderable> DynamicSprite::unique_clone() const
+{
+	return std::make_unique<DynamicSprite>(*this);
+}
+
+
 void DynamicSprite::on_collision([[maybe_unused]] PhysicsObject& other){}

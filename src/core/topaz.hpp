@@ -3,6 +3,7 @@
 #include "audio/audio.hpp"
 #include "graphics/graphics.hpp"
 #include "utility/generic.hpp"
+#include <cassert>
 
 #ifdef main
 #undef main
@@ -15,6 +16,15 @@ namespace tz
 	#else
 		constexpr bool is_debug_mode = false;
 	#endif
+
+	inline void assert_that([[maybe_unused]] bool expression, [[maybe_unused]] const std::string& msg_on_failure)
+	{
+		if(!expression)
+		{
+			std::cerr << "tz::assert_that(...) failed: " << msg_on_failure << "\n";
+			std::abort();
+		}
+	}
 
 	enum class GraphicsAPI
 	{

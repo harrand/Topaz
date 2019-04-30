@@ -2,6 +2,31 @@
 
 ScenePartitionNode::ScenePartitionNode(Scene* scene, AABB region, std::vector<const Renderable*> enclosed_objects): scene(scene), parent(nullptr), region(region), children({nullptr}), pending_insertion(), enclosed_objects(enclosed_objects), child_mask(0x00), fully_built(false), ready(false){}
 
+ScenePartitionNode::ScenePartitionNode(ScenePartitionNode&& move): scene(move.scene), parent(nullptr), region(move.region), children(std::move(move.children)), pending_insertion(std::move(move.pending_insertion)), enclosed_objects(std::move(move.enclosed_objects)), child_mask(move.child_mask), fully_built(move.fully_built), ready(move.ready)
+{
+	tz::assert_that(move.parent == nullptr, "ScenePartitionNode(ScenePartitionNode&&): Move constructor invoked on a non root-node. This is strictly forbidden.");
+	for(auto& child_ptr : this->children)
+		if(child_ptr != nullptr)
+			child_ptr->parent = this;
+}
+
+ScenePartitionNode& ScenePartitionNode::operator=(ScenePartitionNode&& rhs)
+{
+	tz::assert_that(rhs.parent == nullptr && this->parent == nullptr, "ScenePartitionNode::operator=(ScenePartitionNode&&): Move assignment operator invoked, but either lhs or rhs is not a root node. Both sides MUST be a root node.");
+	this->scene = rhs.scene;
+	this->region = rhs.region;
+	this->children = std::move(rhs.children);
+	for(auto& child_ptr : this->children)
+		if(child_ptr != nullptr)
+			child_ptr->parent = this;
+	this->pending_insertion = std::move(rhs.pending_insertion);
+	this->enclosed_objects = std::move(rhs.enclosed_objects);
+	this->child_mask = rhs.child_mask;
+	this->fully_built = rhs.fully_built;
+	this->ready = rhs.ready;
+	return *this;
+}
+
 void ScenePartitionNode::enqueue_object(const Renderable *object)
 {
 	this->pending_insertion.push(object);
@@ -275,6 +300,43 @@ bool ScenePartitionNode::insert(const Renderable* object)
 }
 
 Scene::Scene(): objects{}, inheritance_map{}, directional_lights{}, point_lights{}, objects_to_delete{}, octree{this}{}
+
+Scene::Scene(const Scene& copy): objects{}, inheritance_map{}, directional_lights{copy.directional_lights}, point_lights{copy.point_lights}, objects_to_delete{}, octree{this}
+{
+	for(auto& renderable_ptr : copy.objects)
+	{
+		this->objects.push_back(renderable_ptr->unique_clone());
+		Renderable* deep_copied = this->objects.back().get();
+		if(!tz::utility::functional::is_a<Renderable, Sprite>(*deep_copied))
+			this->octree.enqueue_object(deep_copied);
+		this->inheritance_map.insert({typeid(*deep_copied), deep_copied});
+		std::cout << "Scene::Scene(const Scene& copy): Copied scene element of type " << typeid(*deep_copied).name() << ".\n";
+	}
+}
+
+Scene::Scene(Scene&& move): objects(std::move(move.objects)), inheritance_map(std::move(move.inheritance_map)), directional_lights(std::move(move.directional_lights)), point_lights(std::move(move.point_lights)), objects_to_delete{}, octree(std::move(move.octree))
+{
+	// Delete all pending deletions now.
+	for(Renderable* to_delete : move.objects_to_delete)
+		this->erase_object(to_delete);
+}
+
+Scene& Scene::operator=(Scene rhs)
+{
+	Scene::swap(*this, rhs);
+	return *this;
+}
+
+Scene& Scene::operator=(Scene&& rhs)
+{
+	this->objects = std::move(rhs.objects);
+	this->inheritance_map = std::move(rhs.inheritance_map);
+	this->directional_lights = std::move(rhs.directional_lights);
+	this->point_lights = std::move(rhs.point_lights);
+	this->objects_to_delete = std::move(rhs.objects_to_delete);
+	this->octree = std::move(rhs.octree);
+	return *this;
+}
 
 void Scene::render(RenderPass render_pass) const
 {
@@ -594,6 +656,16 @@ Renderable* Scene::get_renderable_by_id(std::size_t index)
 		ret = nullptr;
 	}
 	return ret;
+}
+
+void Scene::swap(Scene& lhs, Scene& rhs)
+{
+	std::swap(lhs.objects, rhs.objects);
+	std::swap(lhs.inheritance_map, rhs.inheritance_map);
+	std::swap(lhs.directional_lights, rhs.directional_lights);
+	std::swap(lhs.point_lights, rhs.point_lights);
+	std::swap(lhs.objects_to_delete, rhs.objects_to_delete);
+	std::swap(lhs.octree, rhs.octree);
 }
 
 void Scene::erase_object(Renderable* to_delete)

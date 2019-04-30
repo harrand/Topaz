@@ -13,6 +13,8 @@ public:
 	Renderable();
 	virtual std::optional<AABB> get_boundary() const = 0;
 	virtual void render(RenderPass render_pass) const = 0;
+
+	virtual std::unique_ptr<Renderable> unique_clone() const = 0;
 private:
 };
 

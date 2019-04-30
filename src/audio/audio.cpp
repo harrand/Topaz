@@ -1,15 +1,19 @@
 #include "audio/audio.hpp"
 #include "core/topaz.hpp"
 
-AudioClip::AudioClip(std::string filename): channel(tz::consts::audio::unused_channel), filename(std::move(filename)), audio_handle(Mix_LoadWAV(this->filename.c_str()))
+AudioClip::AudioClip(std::string filename): channel(tz::consts::audio::unused_channel), audio_handle(Mix_LoadWAV(filename.c_str()))
 {
 	if(this->audio_handle == NULL)
-		tz::debug::print("AudioClip::AudioClip(filename): Error: AudioClip instantiation caused one or more errors from filename '", this->filename, "': ", Mix_GetError(), "\n");
+		tz::debug::print("AudioClip::AudioClip(filename): Error: AudioClip instantiation caused one or more errors from filename '", filename, "': ", Mix_GetError(), "\n");
 }
 
-AudioClip::AudioClip(const AudioClip& copy): AudioClip(copy.get_file_name()){}
+AudioClip::AudioClip(const AudioClip& copy): channel(copy.channel), audio_handle(nullptr)
+{
+	// Deep-copy
+	this->audio_handle = Mix_QuickLoad_RAW(copy.audio_handle->abuf, copy.audio_handle->alen);
+}
 
-AudioClip::AudioClip(AudioClip&& move): channel(tz::consts::audio::unused_channel), filename(move.get_file_name()), audio_handle(move.audio_handle)
+AudioClip::AudioClip(AudioClip&& move): channel(tz::consts::audio::unused_channel), audio_handle(move.audio_handle)
 {
 	move.audio_handle = nullptr;
 }
@@ -24,7 +28,6 @@ AudioClip::~AudioClip()
 AudioClip& AudioClip::operator=(AudioClip&& rhs)
 {
 	this->channel = rhs.channel;
-	this->filename = std::move(rhs.filename);
 	this->audio_handle = rhs.audio_handle;
 	rhs.audio_handle = nullptr;
 	return *this;
@@ -79,27 +82,21 @@ Uint32 AudioClip::get_audio_length() const
 	return frames * 1000 / frequency;
 }
 
-const std::string& AudioClip::get_file_name() const
-{
-	return this->filename;
-}
-
 void AudioClip::swap(AudioClip& lhs, AudioClip& rhs)
 {
 	std::swap(lhs.channel, rhs.channel);
-	std::swap(lhs.filename, rhs.filename);
 	std::swap(lhs.audio_handle, rhs.audio_handle);
 }
 
 AudioSource::AudioSource(std::string filename): AudioClip(filename){}
 
-AudioSource::AudioSource(const AudioSource& copy): AudioSource(copy.filename){}
+AudioSource::AudioSource(const AudioSource& copy): AudioClip(copy) {}
+
 AudioSource::AudioSource(AudioSource&& move): AudioClip(move){}
 
 AudioSource& AudioSource::operator=(AudioSource&& rhs)
 {
 	this->channel = rhs.channel;
-	this->filename = std::move(rhs.filename);
 	this->audio_handle = rhs.audio_handle;
 	rhs.audio_handle = nullptr;
 	return *this;

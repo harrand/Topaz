@@ -4,11 +4,20 @@
 namespace tz::audio
 {
 	template<typename Audio>
-	void play_async(Audio&& clip)
+	void play_async(const Audio& clip)
 	{
 		using namespace std::chrono_literals;
 		// Play clip for the length of the audio clip plus another 10 milliseconds.
-		auto play_clip = [](auto clip){clip.play(); std::this_thread::sleep_for(operator""ms(static_cast<unsigned long long>(clip.get_audio_length()) + 10ull));};
+		auto play_clip = [](Audio clip){clip.play(); std::this_thread::sleep_for(operator""ms(static_cast<unsigned long long>(clip.get_audio_length()) + 10ull));};
 		std::thread(play_clip, clip).detach();
+	}
+
+	template<typename Audio>
+	void play_sync(Audio clip)
+	{
+		using namespace std::chrono_literals;
+		// Play clip for the length of the audio clip plus another 10 milliseconds.
+		auto play_clip = [&](){clip.play(); std::this_thread::sleep_for(operator""ms(static_cast<unsigned long long>(clip.get_audio_length()) + 10ull));};
+		std::thread(play_clip).join();
 	}
 }

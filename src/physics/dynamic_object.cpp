@@ -30,6 +30,11 @@ std::optional<AABB> DynamicObject::get_boundary() const
 	return StaticObject::get_boundary();
 }
 
+std::unique_ptr<Renderable> DynamicObject::unique_clone() const
+{
+	return std::make_unique<DynamicObject>(*this);
+}
+
 void DynamicObject::on_collision([[maybe_unused]] PhysicsObject &collided) {}
 
 InstancedDynamicObject::InstancedDynamicObject(const std::vector<DynamicObject>& objects): DynamicObject(0.0f, Transform{{}, {}, {}}, Asset{{}, {}}), instanced_mesh(nullptr), objects(objects)
@@ -82,6 +87,11 @@ void InstancedDynamicObject::render(RenderPass render_pass) const
 	instanced_render_shader.set_uniform<bool>("is_instanced", true);
 	instanced_render_shader.update();
 	DynamicObject::render(render_pass);
+}
+
+std::unique_ptr<Renderable> InstancedDynamicObject::unique_clone() const
+{
+	return std::make_unique<InstancedDynamicObject>(*this);
 }
 
 std::optional<AABB> InstancedDynamicObject::get_boundary() const

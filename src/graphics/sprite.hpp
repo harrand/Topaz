@@ -18,11 +18,13 @@ public:
 	 * @param texture - Texture attached to the sprite for rendering
 	 */
 	Sprite(Vector2F position_screenspace, float rotation, Vector2F scale, const Texture* texture);
+	virtual std::optional<AABB> get_boundary() const override{return {std::nullopt};}
 	/**
 	 * Issue a render-call to draw the sprite.
 	 * @param render_pass - The parameters of this specific rendering call.
 	 */
 	virtual void render(RenderPass render_pass) const override;
+	virtual std::unique_ptr<Renderable> unique_clone() const override;
 	/**
 	 * Retrieve the clockwise rotation of the sprite, in radians.
 	 * @return - Rotation in radians

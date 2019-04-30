@@ -30,6 +30,7 @@ public:
 	 * @return - AABB bounding the object if geometry exists, otherwise null
 	 */
 	virtual std::optional<AABB> get_boundary() const override;
+	virtual std::unique_ptr<Renderable> unique_clone() const override;
 	/**
 	 * Callback function, invoked when a collision is detected between this object and another PhysicsObject.
 	 * @param collided - The PhysicsObject that collided with this object
@@ -73,6 +74,7 @@ public:
 	 * @param render_pass - Render properties of the render-call
 	 */
 	virtual void render(RenderPass render_pass) const override;
+	virtual std::unique_ptr<Renderable> unique_clone() const override;
 	/**
 	 * Retrieve an AABB bounding ALL DynamicObject instances
 	 * @return - Mass boundary of instances

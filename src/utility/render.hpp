@@ -24,6 +24,7 @@ public:
 	 * @param render_pass - The parameters with which to render the object
 	 */
 	virtual void render(RenderPass render_pass) const override;
+	virtual std::unique_ptr<Renderable> unique_clone() const override;
 private:
 	float wire_width;
 };

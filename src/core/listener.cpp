@@ -2,11 +2,39 @@
 
 Listener::Listener(): window(nullptr){}
 
+Listener::Listener(Window& window): window(&window)
+{
+	this->window->register_listener(*this);
+}
+
+Listener::~Listener()
+{
+	if(this->window != nullptr)
+		this->window->register_listener(*this);
+}
+
 MouseListener::MouseListener(): Listener(), left_click(false), right_click(false), left_click_location(), right_click_location(), previous_mouse_position(), mouse_position(){}
 
-MouseListener::MouseListener(Window& window): MouseListener()
+MouseListener::MouseListener(Window& window): Listener(window), left_click(false), right_click(false), left_click_location(), right_click_location(), previous_mouse_position(), mouse_position(){}
+
+MouseListener::MouseListener(const MouseListener& copy): MouseListener()
 {
-	window.register_listener(*this);
+	if(copy.window != nullptr)
+	{
+		copy.window->register_listener(*this);
+		this->window = copy.window;
+	}
+}
+
+MouseListener::MouseListener(MouseListener&& move): MouseListener()
+{
+	Window* wnd = move.window;
+	if(wnd != nullptr)
+	{
+		wnd->deregister_listener(move);
+		wnd->register_listener(*this);
+		this->window = wnd;
+	}
 }
 
 void MouseListener::handle_events(const SDL_Event& evt)
@@ -84,6 +112,26 @@ KeyListener::KeyListener(Window& window) : KeyListener()
 	window.register_listener(*this);
 }
 
+KeyListener::KeyListener(const KeyListener& copy): KeyListener()
+{
+	if(copy.window != nullptr)
+	{
+		copy.window->register_listener(*this);
+		this->window = copy.window;
+	}
+}
+
+KeyListener::KeyListener(KeyListener&& move): KeyListener()
+{
+	Window* wnd = move.window;
+	if(wnd != nullptr)
+	{
+		wnd->deregister_listener(move);
+		wnd->register_listener(*this);
+		this->window = move.window;
+	}
+}
+
 void KeyListener::handle_events(const SDL_Event& evt)
 {
 	using namespace tz::utility;
@@ -147,11 +195,11 @@ namespace tz::listener
 {
 	bool is_mouse(const Listener* listener)
 	{
-		return tz::utility::functional::is_a<const Listener, const MouseListener>(*listener);//dynamic_cast<const MouseListener*>(listener) != nullptr;
+		return tz::utility::functional::is_a<const Listener, const MouseListener>(*listener);
 	}
 	
 	bool is_keyboard(const Listener* listener)
 	{
-		return tz::utility::functional::is_a<const Listener, const KeyListener>(*listener);//dynamic_cast<const KeyListener*>(listener) != nullptr;
+		return tz::utility::functional::is_a<const Listener, const KeyListener>(*listener);
 	}
 }

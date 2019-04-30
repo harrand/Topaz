@@ -44,6 +44,11 @@ void Sprite::render(RenderPass render_pass) const
 	 */
 }
 
+std::unique_ptr<Renderable> Sprite::unique_clone() const
+{
+	return std::make_unique<Sprite>(*this);
+}
+
 float Sprite::get_rotation() const
 {
 	return this->rotation;

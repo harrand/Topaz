@@ -24,6 +24,14 @@ public:
 	 * @param enclosed_objects - All renderable objects within this node
 	 */
 	ScenePartitionNode(Scene* scene, AABB region = {{}, {}}, std::vector<const Renderable*> enclosed_objects = {});
+	ScenePartitionNode(const ScenePartitionNode& copy) = delete;
+	/**
+	 * Move constructor is usable for root nodes only.
+	 * If the parent of this node MUST be nullptr, or an assertation will fail.
+	 * @param move - Node to move from. This node must be a root node
+	 */
+	ScenePartitionNode(ScenePartitionNode&& move);
+	ScenePartitionNode& operator=(ScenePartitionNode&& rhs);
 	/**
 	 * Queue an object into the Octree to be added to the tree during the next ScenePartitionNode::update() invocation.
 	 * This will be invoked automatically by the parent Scene::update(...).
@@ -102,6 +110,7 @@ private:
 	std::queue<const Renderable*> pending_insertion;
 	/// Container of all objects enclosed within this node.
 	std::vector<const Renderable*> enclosed_objects;
+public:
 	/// Mask containing information about which child is currently being used.
 	std::uint8_t child_mask;
 	/// Stores if the tree fully resembles an octree structure.
@@ -123,6 +132,10 @@ public:
 	 * Initialise an empty scene.
 	 */
 	Scene();
+	Scene(const Scene& copy);
+	Scene(Scene&& move);
+	Scene& operator=(Scene rhs);
+	Scene& operator=(Scene&& rhs);
 	/**
 	 * Render the scene into the currently-bound FrameBuffer.
 	 * @param render_shader - The Shader with which to render all of the 3D objects in this Scene
@@ -309,6 +322,7 @@ public:
 	template<typename T>
 	friend class SceneSection;
 protected:
+	static void swap(Scene& lhs, Scene& rhs);
 	/**
 	 * Protected.
 	 * Erase the given Renderable from the Scene instantly.
@@ -334,6 +348,7 @@ protected:
 	/// Container of all objects that have been requested for deletion in the next Scene::update() invocation.
 	std::vector<Renderable*> objects_to_delete;
 	/// Octree for nodes.
+public:
 	ScenePartitionNode octree;
 };
 

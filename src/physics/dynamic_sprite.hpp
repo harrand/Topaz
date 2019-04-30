@@ -36,6 +36,7 @@ public:
 	 * @return - AABB bounding this sprite
 	 */
 	virtual std::optional<AABB> get_boundary() const override;
+	virtual std::unique_ptr<Renderable> unique_clone() const override;
 	/**
 	 * Callback function, invoked when a collision is detected between this sprite and another PhysicsObject.
 	 * @param collided - The PhysicsObject that collided with this sprite

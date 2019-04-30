@@ -14,9 +14,13 @@ void RenderableBoundingBox::render(RenderPass render_pass) const
 	glEnable(GL_CULL_FACE);
 }
 
+std::unique_ptr<Renderable> RenderableBoundingBox::unique_clone() const
+{
+	return std::make_unique<RenderableBoundingBox>(*this);
+}
+
 namespace tz::utility::render
 {
-
 	RenderableBoundingBox see_aabb(AssetBuffer& buffer, const AABB& box, const Vector3F& colour, float wire_width)
 	{
 		Mesh* cube_mesh = buffer.find_mesh("bounding_box");

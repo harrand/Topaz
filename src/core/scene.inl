@@ -14,7 +14,7 @@ Element& Scene::emplace(Args&&... args)
 		Element* result = dynamic_cast<Element*>(this->objects.back().get());
 		if(!tz::utility::functional::is_related<Element, Sprite>())
 			this->octree.enqueue_object(result);
-		this->inheritance_map.insert({typeid(result), dynamic_cast<Renderable*>(result)});
+		this->inheritance_map.insert({typeid(*result), dynamic_cast<Renderable*>(result)});
 		return *result;
 	}
 	else
@@ -31,7 +31,7 @@ StaticObject& Scene::emplace_object(Args&&... args)
 	this->objects.push_back(std::make_unique<StaticObject>(std::forward<Args>(args)...));
 	StaticObject* result = dynamic_cast<StaticObject*>(this->objects.back().get());
 	this->octree.enqueue_object(result);
-	this->inheritance_map.insert({typeid(result), dynamic_cast<Renderable*>(result)});
+	this->inheritance_map.insert({typeid(*result), dynamic_cast<Renderable*>(result)});
 	return *result;
 }
 
@@ -49,7 +49,7 @@ Sprite& Scene::emplace_sprite(Args&&... args)
 template<class RenderableType>
 std::size_t Scene::get_number_of() const
 {
-	auto range = this->inheritance_map.equal_range(typeid(RenderableType*));
+	auto range = this->inheritance_map.equal_range(typeid(RenderableType));
 	return static_cast<std::size_t>(std::abs(std::distance(range.first, range.second)));
 }
 

@@ -35,6 +35,7 @@ public:
 	 * @param render_pass - The parameters with which to render the object
 	 */
 	virtual void render(RenderPass render_pass) const override;
+	virtual std::unique_ptr<Renderable> unique_clone() const override;
 
 	/// Underlying transform of the object. Can be edited by anyone at any time
 	Transform transform;
@@ -78,6 +79,7 @@ public:
 	 * @param render_pass - Render properties of the render-call
 	 */
 	virtual void render(RenderPass render_pass) const override;
+	virtual std::unique_ptr<Renderable> unique_clone() const override;
 private:
 	/// Underlying InstancedMesh.
 	std::shared_ptr<InstancedMesh> instanced_mesh;
