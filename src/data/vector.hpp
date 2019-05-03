@@ -734,8 +734,6 @@ private:
 	using Vector<4, T>::underlying_data;
 };
 
-#include "vector.inl"
-
 /**
  * Represents a 2-dimensional Vector of ints.
  */
@@ -787,4 +785,6 @@ using Vector3F = Vector3<float>;
  * Represents a 4-dimensional Vector of floats.
  */
 using Vector4F = Vector4<float>;
+
+#include "vector.inl"
 #endif

@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.9)
 project(topaz VERSION 0.7.0 DESCRIPTION "Cross-Platform Multimedia Engine")
-set(CMAKE_BUILD_TYPE Release)
+set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_CXX_STANDARD 17)
 set(UNDERLYING_GRAPHICS_API "TOPAZ_OPENGL")
 set(TOPAZ_PROFILING TRUE)

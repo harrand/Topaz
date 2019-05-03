@@ -12,8 +12,8 @@ Element& Scene::emplace(Args&&... args)
 	{
 		this->objects.push_back(std::make_unique<Element>(std::forward<Args>(args)...));
 		Element* result = dynamic_cast<Element*>(this->objects.back().get());
-		if(!tz::utility::functional::is_related<Element, Sprite>())
-			this->octree.enqueue_object(result);
+		if(!tz::utility::functional::is_related<Element, Sprite>() && this->octree.has_value())
+			this->octree.value().enqueue_object(result);
 		this->inheritance_map.insert({typeid(*result), dynamic_cast<Renderable*>(result)});
 		return *result;
 	}
@@ -30,7 +30,8 @@ StaticObject& Scene::emplace_object(Args&&... args)
 	//return this->stack_objects.emplace_back(std::forward<Args>(args)...);
 	this->objects.push_back(std::make_unique<StaticObject>(std::forward<Args>(args)...));
 	StaticObject* result = dynamic_cast<StaticObject*>(this->objects.back().get());
-	this->octree.enqueue_object(result);
+	if(this->octree.has_value())
+		this->octree.value().enqueue_object(result);
 	this->inheritance_map.insert({typeid(*result), dynamic_cast<Renderable*>(result)});
 	return *result;
 }

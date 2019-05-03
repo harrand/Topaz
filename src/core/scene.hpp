@@ -11,6 +11,12 @@
 
 class Scene;
 
+enum class ScenePartitionType
+{
+	OCTREE,
+	NONE
+};
+
 /**
  * Node of an Octree used in the Scene space partition.
  */
@@ -131,7 +137,7 @@ public:
 	/**
 	 * Initialise an empty scene.
 	 */
-	Scene();
+	Scene(ScenePartitionType type = ScenePartitionType::OCTREE);
 	Scene(const Scene& copy);
 	Scene(Scene&& move);
 	Scene& operator=(Scene rhs);
@@ -271,10 +277,15 @@ public:
 	 */
 	void add_point_light(PointLight light);
 	/**
-	 * Get the root node in the octree partitioning the renderables in the scene.
-	 * @return - Octree node
+	 * Query as to whether this scene uses an octree for its space partitioning.
+	 * @return - True if an octree is used. Otherwise false
 	 */
-	const ScenePartitionNode& get_octree_root() const;
+	bool contains_octree() const;
+	/**
+	 * Get the root node in the octree partitioning the renderables in the scene, if it exists.
+	 * @return - Pointer to octree node if it exists. Otherwise nullptr
+	 */
+	const ScenePartitionNode* get_octree_root() const;
 	/**
 	 * Simulate a raycast from the given point on the screen.
 	 * @param screen_position - Position on the screen to emit a ray from
@@ -348,8 +359,7 @@ protected:
 	/// Container of all objects that have been requested for deletion in the next Scene::update() invocation.
 	std::vector<Renderable*> objects_to_delete;
 	/// Octree for nodes.
-public:
-	ScenePartitionNode octree;
+	std::optional<ScenePartitionNode> octree;
 };
 
 template<class RenderableType>

@@ -45,7 +45,7 @@ void init()
 	Camera camera;
 	camera.position = {0, 0, -50};
 	Scene scene;
-	scene.add_directional_light({{0, 1, 0}, {1, 1, 1}, 0.8f});
+	scene.add_directional_light({{0.5f, 1.0f, 0.0f}, {1, 1, 1}, 0.8f});
 	glDebugMessageInsert(GL_DEBUG_SOURCE_APPLICATION, GL_DEBUG_TYPE_ERROR, 0, GL_DEBUG_SEVERITY_NOTIFICATION, -1, "Well met.");
 
 	Texture red_texture{Bitmap<PixelRGBA>{{PixelRGBA{255, 0, 0, 255}}, 1, 1}};
@@ -54,8 +54,8 @@ void init()
 	AssetBuffer assets;
 	assets.emplace<Model>("darth_maul", "../res/runtime/models/maul/source/Darth Maul/Darth Maul.dae");
 	assets.emplace<Model>("nanosuit", "../res/runtime/models/nanosuit.fbx");
-	assets.emplace<Model>("illidan", "../res/runtime/models/illidan/IllidanLegion.obj");
 	assets.emplace<Model>("deathwing", "../res/runtime/models/deathwing/Deathwing.fbx");
+	assets.emplace<Model>("illidan", "../res/runtime/models/illidan/IllidanLegion.obj");
 	assets.emplace<Mesh>("cube", "../res/runtime/models/cube.obj");
 	assets.emplace<Mesh>("cube_hd", "../res/runtime/models/cube_hd.obj");
 	assets.emplace<Mesh>("monkey", "../res/runtime/models/monkeyhead.obj");
@@ -188,6 +188,12 @@ void init()
 	 */
 	scene.emplace<RenderableBoundingBox>(tz::utility::render::see_aabb(assets, scene.get_boundary(), {0.0f, 0.0f, 1.0f}));
 
+	/*
+	Scene scene_copy{scene};
+	scene_copy.update(0);
+	ScenePartitionNode illegal{std::move(*const_cast<ScenePartitionNode*>(scene_copy.get_octree_root())->get_children()[0])};
+	 */
+
 	long long int time = tz::utility::time::now();
 	Timer second_timer, tick_timer;
 	TimeProfiler profiler;
@@ -251,7 +257,7 @@ void init()
 			tick_timer.reload();
 			static bool done = true;
 			static auto rand = LocalRandom{};
-			for(const ScenePartitionNode* node : tz::utility::generic::depth_first_search(scene.get_octree_root()))
+			for(const ScenePartitionNode* node : tz::utility::generic::depth_first_search(*scene.get_octree_root()))
 			{
 				if(!done)
 				{

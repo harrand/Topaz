@@ -4,7 +4,7 @@ ScenePartitionNode::ScenePartitionNode(Scene* scene, AABB region, std::vector<co
 
 ScenePartitionNode::ScenePartitionNode(ScenePartitionNode&& move): scene(move.scene), parent(nullptr), region(move.region), children(std::move(move.children)), pending_insertion(std::move(move.pending_insertion)), enclosed_objects(std::move(move.enclosed_objects)), child_mask(move.child_mask), fully_built(move.fully_built), ready(move.ready)
 {
-	tz::assert_that(move.parent == nullptr, "ScenePartitionNode(ScenePartitionNode&&): Move constructor invoked on a non root-node. This is strictly forbidden.");
+	topaz_assert(move.parent == nullptr, "ScenePartitionNode(ScenePartitionNode&&): Move constructor invoked on a non root-node. move.parent == ", move.parent, " but should be 0x00 (nullptr).");
 	for(auto& child_ptr : this->children)
 		if(child_ptr != nullptr)
 			child_ptr->parent = this;
@@ -12,7 +12,7 @@ ScenePartitionNode::ScenePartitionNode(ScenePartitionNode&& move): scene(move.sc
 
 ScenePartitionNode& ScenePartitionNode::operator=(ScenePartitionNode&& rhs)
 {
-	tz::assert_that(rhs.parent == nullptr && this->parent == nullptr, "ScenePartitionNode::operator=(ScenePartitionNode&&): Move assignment operator invoked, but either lhs or rhs is not a root node. Both sides MUST be a root node.");
+	topaz_assert(rhs.parent == nullptr && this->parent == nullptr, "ScenePartitionNode::operator=(ScenePartitionNode&&): Move assignment operator invoked, but either lhs or rhs is not a root node. Both sides MUST be a root node.");
 	this->scene = rhs.scene;
 	this->region = rhs.region;
 	this->children = std::move(rhs.children);
@@ -157,7 +157,7 @@ void ScenePartitionNode::build()
 		// If our region is empty, do this (?)
 		this->find_enclosing_cube();
 		dimensions = this->region.get_maximum() - this->region.get_minimum();
-		tz::debug::print("ScenePartitionNode::build(): Invoked, but the dimensions of the region were empty, so giving it a default size...\b");
+		tz::debug::print("ScenePartitionNode::build(): Invoked, but the dimensions of the region were empty, so giving it a default size...\ni");
 	}
 
 	// Are our dimensions smaller than the minimum allowed size?
@@ -299,7 +299,19 @@ bool ScenePartitionNode::insert(const Renderable* object)
 	return false;
 }
 
-Scene::Scene(): objects{}, inheritance_map{}, directional_lights{}, point_lights{}, objects_to_delete{}, octree{this}{}
+Scene::Scene(ScenePartitionType type): objects{}, inheritance_map{}, directional_lights{}, point_lights{}, objects_to_delete{}, octree{std::nullopt}
+{
+	switch(type)
+	{
+		case ScenePartitionType::OCTREE:
+			this->octree = {ScenePartitionNode{this}};
+			break;
+		default:
+		case ScenePartitionType::NONE:
+			this->octree = {std::nullopt};
+			break;
+	}
+}
 
 Scene::Scene(const Scene& copy): objects{}, inheritance_map{}, directional_lights{copy.directional_lights}, point_lights{copy.point_lights}, objects_to_delete{}, octree{this}
 {
@@ -307,8 +319,8 @@ Scene::Scene(const Scene& copy): objects{}, inheritance_map{}, directional_light
 	{
 		this->objects.push_back(renderable_ptr->unique_clone());
 		Renderable* deep_copied = this->objects.back().get();
-		if(!tz::utility::functional::is_a<Renderable, Sprite>(*deep_copied))
-			this->octree.enqueue_object(deep_copied);
+		if(!tz::utility::functional::is_a<Renderable, Sprite>(*deep_copied) && this->octree.has_value())
+			this->octree.value().enqueue_object(deep_copied);
 		this->inheritance_map.insert({typeid(*deep_copied), deep_copied});
 		std::cout << "Scene::Scene(const Scene& copy): Copied scene element of type " << typeid(*deep_copied).name() << ".\n";
 	}
@@ -383,7 +395,8 @@ void Scene::render(RenderPass render_pass) const
 void Scene::update(float delta_time)
 {
 	// Update the octree, ensuring that any enqueued objects are inserted properly.
-	this->octree.update();
+	if(this->octree.has_value())
+		this->octree.value().update();
 	// Invoke update functions on all dynamic objects and sprites.
 	for(DynamicObject* dynamic_ref : this->get_renderables_by_type<DynamicObject>())
 		dynamic_ref->update(delta_time);
@@ -401,17 +414,25 @@ void Scene::update(float delta_time)
 		auto physics_component = dynamic_cast<PhysicsObject*>(object);
 		if(physics_component != nullptr)
 		{
-			// this object has a physics component, so check for it in its own node.
-			const ScenePartitionNode* enclosed_node = this->octree.get_node_containing(object);
-			// we have the node containing this object, now we get all the PhysicsObjects in this node and handle collisions on it.
-			for(const Renderable& renderable_cref : enclosed_node->get_enclosed_renderables())
+			if(this->octree.has_value())
 			{
-				auto* fixed = const_cast<Renderable*>(&renderable_cref);
-				if(functional::is_a<Renderable, DynamicObject>(*fixed))
+				// this object has a physics component, so check for it in its own node.
+				const ScenePartitionNode *enclosed_node = this->octree.value().get_node_containing(object);
+				// we have the node containing this object, now we get all the PhysicsObjects in this node and handle collisions on it.
+				for (const Renderable &renderable_cref : enclosed_node->get_enclosed_renderables())
 				{
-					auto* fixed_dyno = dynamic_cast<DynamicObject*>(fixed);
-					physics_objects.push_back(std::ref(*dynamic_cast<PhysicsObject*>(fixed_dyno)));
+					auto *fixed = const_cast<Renderable *>(&renderable_cref);
+					if (functional::is_a<Renderable, DynamicObject>(*fixed))
+					{
+						auto *fixed_dyno = dynamic_cast<DynamicObject *>(fixed);
+						physics_objects.push_back(std::ref(*dynamic_cast<PhysicsObject *>(fixed_dyno)));
+					}
 				}
+			}
+			else
+			{
+				for(const auto dyn_object_ptr : this->get_renderables_by_type<DynamicObject>())
+					physics_objects.push_back(std::ref(*dynamic_cast<PhysicsObject*>(dyn_object_ptr)));
 			}
 			//tz::debug::print("Scene::update(...): Handling collision of node of size ", physics_objects.size(), "...\n");
 			physics_component->handle_collisions(physics_objects);
@@ -575,9 +596,17 @@ void Scene::add_point_light(PointLight light)
 	this->point_lights.push_back(std::move(light));
 }
 
-const ScenePartitionNode& Scene::get_octree_root() const
+bool Scene::contains_octree() const
 {
-	return this->octree;
+	return this->octree.has_value();
+}
+
+const ScenePartitionNode* Scene::get_octree_root() const
+{
+	if(this->octree.has_value())
+		return &this->octree.value();
+	else
+		return nullptr;
 }
 
 std::unordered_set<const Renderable*> Scene::raycast(Vector2I screen_position, RenderPass render_pass) const
@@ -592,13 +621,15 @@ std::unordered_set<const Renderable*> Scene::raycast(Vector2I screen_position, R
 	Vector3F ray_world_space = (camera.view().inverse() * ray_camera_space).xyz().normalised();
 	// Construct a BoundingLine (the ray itself) from the camera position and with the computed direction
 	BoundingLine ray{camera.position, ray_world_space};
-	/* // This ignores the octree entirely and does it naively.
-	for(const auto& object_ptr : this->objects)
-		if(object_ptr->get_boundary().has_value() && object_ptr->get_boundary().value().intersects(ray))
-			collided.insert(object_ptr.get());
-	return collided;
-	*/
-	const auto* node = &this->octree;
+	// This ignores the octree entirely and does it naively.
+	if(!this->octree.has_value())
+	{
+		for (const auto &object_ptr : this->objects)
+			if (object_ptr->get_boundary().has_value() && object_ptr->get_boundary().value().intersects(ray))
+				collided.insert(object_ptr.get());
+		return collided;
+	}
+	const auto* node = &this->octree.value();
 	bool early_exit = false;
 	// Get the smallest node whose region intersects this ray.
 	// The resultant set shall contain all objects within this smallest region that actually collide with the ray.
