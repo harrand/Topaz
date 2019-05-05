@@ -7,182 +7,28 @@
 #ifdef TOPAZ_OPENGL
 namespace tz::platform
 {
-	OGLVertexBufferUsage::OGLVertexBufferUsage(OGLVertexBufferFrequency frequency, OGLVertexBufferNature nature): frequency(frequency), nature(nature) {}
+	OGLVertexBuffer::OGLVertexBuffer(): OGLGenericBuffer<OGLBufferType::ARRAY>(){}
 
-	OGLVertexBufferUsage::OGLVertexBufferUsage(const GLenum& usage): frequency(OGLVertexBufferFrequency::STATIC), nature(OGLVertexBufferNature::DRAW)
-	{
-		switch(usage)
-		{
-			default:
-			case GL_STREAM_DRAW:
-				this->frequency = OGLVertexBufferFrequency::STREAM;
-				this->nature = OGLVertexBufferNature::DRAW;
-				break;
-			case GL_STREAM_READ:
-				this->frequency = OGLVertexBufferFrequency::STREAM;
-				this->nature = OGLVertexBufferNature::READ;
-				break;
-			case GL_STREAM_COPY:
-				this->frequency = OGLVertexBufferFrequency::STREAM;
-				this->nature = OGLVertexBufferNature::COPY;
-				break;
-			case GL_STATIC_DRAW:
-				this->frequency = OGLVertexBufferFrequency::STATIC;
-				this->nature = OGLVertexBufferNature::DRAW;
-				break;
-			case GL_STATIC_READ:
-				this->frequency = OGLVertexBufferFrequency::STATIC;
-				this->nature = OGLVertexBufferNature::READ;
-				break;
-			case GL_STATIC_COPY:
-				this->frequency = OGLVertexBufferFrequency::STATIC;
-				this->nature = OGLVertexBufferNature::COPY;
-				break;
-			case GL_DYNAMIC_DRAW:
-				this->frequency = OGLVertexBufferFrequency::DYNAMIC;
-				this->nature = OGLVertexBufferNature::DRAW;
-				break;
-			case GL_DYNAMIC_READ:
-				this->frequency = OGLVertexBufferFrequency::DYNAMIC;
-				this->nature = OGLVertexBufferNature::READ;
-				break;
-			case GL_DYNAMIC_COPY:
-				this->frequency = OGLVertexBufferFrequency::DYNAMIC;
-				this->nature = OGLVertexBufferNature::COPY;
-				break;
-		}
-	}
-
-	GLenum OGLVertexBufferUsage::operator()() const
-	{
-		// Nested switches, basically just multiplexing
-		using namespace tz::platform;
-		switch(this->frequency)
-		{
-		case OGLVertexBufferFrequency::STREAM:
-			switch(this->nature)
-			{
-				case OGLVertexBufferNature::DRAW:
-					return GL_STREAM_DRAW;
-				case OGLVertexBufferNature::READ:
-					return GL_STREAM_READ;
-				case OGLVertexBufferNature::COPY:
-					return GL_STREAM_COPY;
-			}
-		case OGLVertexBufferFrequency::STATIC:
-			switch(this->nature)
-			{
-				case OGLVertexBufferNature::DRAW:
-					return GL_STATIC_DRAW;
-				case OGLVertexBufferNature::READ:
-					return GL_STATIC_READ;
-				case OGLVertexBufferNature::COPY:
-					return GL_STATIC_COPY;
-			}
-		case OGLVertexBufferFrequency::DYNAMIC:
-			switch(this->nature)
-			{
-				case OGLVertexBufferNature::DRAW:
-					return GL_DYNAMIC_DRAW;
-				case OGLVertexBufferNature::READ:
-					return GL_DYNAMIC_READ;
-				case OGLVertexBufferNature::COPY:
-					return GL_DYNAMIC_COPY;
-			}
-		}
-		// If the enums are ill-formed, default to static draw.
-		return GL_STATIC_DRAW;
-	}
-
-	OGLVertexBuffer::OGLVertexBuffer(OGLVertexBufferTarget target): target(target), vbo_handle(0)
-	{
-		glGenBuffers(1, &this->vbo_handle);
-	}
-
-	OGLVertexBuffer::OGLVertexBuffer(const OGLVertexBuffer& copy): OGLVertexBuffer(copy.target)
+	OGLVertexBuffer::OGLVertexBuffer(const OGLVertexBuffer& copy): OGLVertexBuffer()
 	{
 		std::optional<std::vector<std::byte>> generic_data = copy.query_all_data<std::vector, std::byte>();
-		std::optional<OGLVertexBufferUsage> generic_usage = copy.query_current_usage();
+		std::optional<tz::platform::OGLBufferUsage> generic_usage = copy.query_current_usage();
 		if(generic_data.has_value() && generic_usage.has_value())
 		{
 			this->insert(generic_data.value(), generic_usage.value());
 		}
 	}
 
-	OGLVertexBuffer::OGLVertexBuffer(OGLVertexBuffer&& move): target(move.target), vbo_handle(move.vbo_handle)
-	{
-		move.vbo_handle = 0;
-	}
+	OGLIndexBuffer::OGLIndexBuffer(): OGLGenericBuffer<OGLBufferType::INDEX>(){}
 
-	OGLVertexBuffer::~OGLVertexBuffer()
-	{
-		glDeleteBuffers(1, &this->vbo_handle);
-	}
+	OGLIndexBuffer::OGLIndexBuffer(const tz::platform::OGLIndexBuffer& copy): OGLGenericBuffer<OGLBufferType::INDEX>(copy){}
 
-	OGLVertexBuffer& OGLVertexBuffer::operator=(OGLVertexBuffer rhs)
-	{
-		OGLVertexBuffer::swap(*this, rhs);
-		return *this;
-	}
-
-	const OGLVertexBufferTarget& OGLVertexBuffer::get_target() const
-	{
-		return this->target;
-	}
-
-	std::size_t OGLVertexBuffer::get_size() const
-	{
-		GLint size;
-		glGetNamedBufferParameteriv(this->vbo_handle, GL_BUFFER_SIZE, &size);
-		return static_cast<std::size_t>(size);
-	}
-
-	bool OGLVertexBuffer::empty() const
-	{
-		return this->get_size() == 0;
-	}
-
-	void OGLVertexBuffer::allocate_memory(std::size_t size, const OGLVertexBufferUsage& usage) const
-	{
-		glNamedBufferData(this->vbo_handle, size, nullptr, usage());
-	}
-
-	void OGLVertexBuffer::update(GLintptr offset, GLsizeiptr size, const void* data) const
-	{
-		glNamedBufferSubData(this->vbo_handle, offset, size, data);
-	}
-
-	std::optional<OGLVertexBufferUsage> OGLVertexBuffer::query_current_usage() const
-	{
-		if(this->empty())
-			return std::nullopt;
-		GLint usage;
-		glGetNamedBufferParameteriv(this->vbo_handle, GL_BUFFER_USAGE, &usage);
-		return {OGLVertexBufferUsage{static_cast<const GLenum>(usage)}};
-	}
-
-	void OGLVertexBuffer::bind() const
-	{
-		glBindBuffer(static_cast<GLenum>(this->target), this->vbo_handle);
-	}
-
-	void OGLVertexBuffer::unbind() const
-	{
-		glBindBuffer(static_cast<GLenum>(this->target), 0);
-	}
-
-	void OGLVertexBuffer::swap(OGLVertexBuffer& lhs, OGLVertexBuffer& rhs)
-	{
-		std::swap(lhs.vbo_handle, rhs.vbo_handle);
-		std::swap(lhs.target, rhs.target);
-	}
-
-	OGLVertexTransformFeedbackBuffer::OGLVertexTransformFeedbackBuffer(OGLVertexBufferTarget target, GLuint output_id): OGLVertexBuffer(target), output_id(output_id){}
+	OGLVertexTransformFeedbackBuffer::OGLVertexTransformFeedbackBuffer(GLuint output_id): OGLGenericBuffer<OGLBufferType::TRANSFORM_FEEDBACK>(), output_id(output_id){}
 
 	void OGLVertexTransformFeedbackBuffer::bind() const
 	{
-		OGLVertexBuffer::bind();
-		glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, this->output_id, this->vbo_handle);
+		OGLGenericBuffer<OGLBufferType::TRANSFORM_FEEDBACK>::bind();
+		glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, this->output_id, this->buffer_handle);
 	}
 
 	OGLVertexAttribute::OGLVertexAttribute(GLuint attribute_id): attribute_id(attribute_id){}
@@ -212,7 +58,7 @@ namespace tz::platform
 		glVertexAttribDivisor(this->attribute_id, divisor);
 	}
 
-	OGLVertexArray::OGLVertexArray(): vao_handle(0), vertex_buffers(), vertex_attributes()
+	OGLVertexArray::OGLVertexArray(): vao_handle(0), vertex_buffers(), index_buffer(nullptr), vertex_attributes()
 	{
 		glGenVertexArrays(1, &this->vao_handle);
 	}
@@ -222,11 +68,13 @@ namespace tz::platform
 		// Emplace copies of all attributes and buffers.
 		for(const std::unique_ptr<OGLVertexAttribute>& attrib_ptr : copy.vertex_attributes)
 			this->emplace_vertex_attribute(*attrib_ptr);
+		if(copy.index_buffer != nullptr)
+			this->index_buffer = std::make_unique<OGLIndexBuffer>(*copy.index_buffer);
 		for(const std::unique_ptr<OGLVertexBuffer>& buffer_ptr : copy.vertex_buffers)
 			this->emplace_vertex_buffer(*buffer_ptr);
 	}
 
-	OGLVertexArray::OGLVertexArray(OGLVertexArray&& move): vao_handle(move.vao_handle), vertex_buffers(std::move(move.vertex_buffers)), vertex_attributes(std::move(move.vertex_attributes))
+	OGLVertexArray::OGLVertexArray(OGLVertexArray&& move): vao_handle(move.vao_handle), vertex_buffers(std::move(move.vertex_buffers)), index_buffer(std::move(move.index_buffer)), vertex_attributes(std::move(move.vertex_attributes))
 	{
 		move.vao_handle = 0;
 	}
@@ -261,12 +109,9 @@ namespace tz::platform
 		return nullptr;
 	}
 
-	const OGLVertexBuffer* OGLVertexArray::get_element_array_buffer() const
+	const OGLIndexBuffer* OGLVertexArray::get_element_array_buffer() const
 	{
-		for(const std::unique_ptr<OGLVertexBuffer>& buffer_ptr : this->vertex_buffers)
-			if(buffer_ptr->get_target() == OGLVertexBufferTarget::ELEMENT_ARRAY)
-				return buffer_ptr.get();
-		return nullptr;
+		return this->index_buffer.get();
 	}
 
 	bool OGLVertexArray::operator==(const OGLVertexArray& rhs) const
@@ -278,6 +123,7 @@ namespace tz::platform
 	{
 		std::swap(lhs.vao_handle, rhs.vao_handle);
 		std::swap(lhs.vertex_buffers, rhs.vertex_buffers);
+		std::swap(lhs.index_buffer, rhs.index_buffer);
 		std::swap(lhs.vertex_attributes, rhs.vertex_attributes);
 	}
 }

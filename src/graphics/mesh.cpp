@@ -155,13 +155,13 @@ namespace tz::platform
 		normals.reserve(this->get_normals().size());
 		std::vector<std::array<float, 3>> tangents;
 		tangents.reserve(this->get_tangents().size());
-		for (auto vec : this->get_positions())
+		for (const auto& vec : this->get_positions())
 			positions.push_back(vec.data());
-		for (auto vec : this->get_texcoords())
+		for (const auto& vec : this->get_texcoords())
 			texcoords.push_back(vec.data());
-		for (auto vec : this->get_normals())
+		for (const auto& vec : this->get_normals())
 			normals.push_back(vec.data());
-		for (auto vec : this->get_tangents())
+		for (const auto& vec : this->get_tangents())
 			tangents.push_back(vec.data());
 
 		this->vertex_array.bind();
@@ -169,32 +169,32 @@ namespace tz::platform
 		// 0 = Vertices, 1 = Texture Coordinates, 2 = Internal Normals, 3 = Indices, 4 = Tangents
 		using namespace tz::platform;
 		using namespace tz::utility; // tz::utility::generic::sizeof_element
-		OGLVertexBuffer &position_buffer = this->vertex_array.emplace_vertex_buffer(OGLVertexBufferTarget::ARRAY);
-		auto default_usage = OGLVertexBufferUsage{OGLVertexBufferFrequency::STATIC, OGLVertexBufferNature::DRAW};
+		OGLVertexBuffer &position_buffer = this->vertex_array.emplace_vertex_buffer();
+		auto default_usage = OGLBufferUsage{OGLBufferFrequency::STATIC, OGLBufferNature::DRAW};
 		position_buffer.insert(positions, default_usage);
 		OGLVertexAttribute &position_attribute = this->vertex_array.emplace_vertex_attribute(0);
 		position_attribute.define<float>(3, GL_FALSE, 3 * sizeof(float));
 		position_buffer.unbind();
 
-		OGLVertexBuffer &texcoord_buffer = this->vertex_array.emplace_vertex_buffer(OGLVertexBufferTarget::ARRAY);
+		OGLVertexBuffer &texcoord_buffer = this->vertex_array.emplace_vertex_buffer();
 		texcoord_buffer.insert(texcoords, default_usage);
 		OGLVertexAttribute &texcoord_attribute = this->vertex_array.emplace_vertex_attribute(1);
 		texcoord_attribute.define<float>(2, GL_FALSE, 2 * sizeof(float));
 		texcoord_buffer.unbind();
 
-		OGLVertexBuffer &normal_buffer = this->vertex_array.emplace_vertex_buffer(OGLVertexBufferTarget::ARRAY);
+		OGLVertexBuffer &normal_buffer = this->vertex_array.emplace_vertex_buffer();
 		normal_buffer.insert(normals, default_usage);
 		OGLVertexAttribute &normal_attribute = this->vertex_array.emplace_vertex_attribute(2);
 		normal_attribute.define<float>(3, GL_TRUE, 3 * sizeof(float));
 		normal_buffer.unbind();
 
-		OGLVertexBuffer &tangent_buffer = this->vertex_array.emplace_vertex_buffer(OGLVertexBufferTarget::ARRAY);
+		OGLVertexBuffer &tangent_buffer = this->vertex_array.emplace_vertex_buffer();
 		tangent_buffer.insert(tangents, default_usage);
 		OGLVertexAttribute &tangent_attribute = this->vertex_array.emplace_vertex_attribute(3);
 		tangent_attribute.define<float>(3, GL_TRUE, 3 * sizeof(float));
 		tangent_buffer.unbind();
 
-		OGLVertexBuffer &index_buffer = this->vertex_array.emplace_vertex_buffer(OGLVertexBufferTarget::ELEMENT_ARRAY);
+		OGLIndexBuffer &index_buffer = this->vertex_array.emplace_index_buffer();
 		index_buffer.insert(this->indices, default_usage);
 
 		position_attribute.enable();
@@ -242,33 +242,33 @@ namespace tz::platform
 
 		using namespace tz::platform;
 		using namespace tz::utility; // tz::utility::generic::sizeof_element
-		OGLVertexBufferUsage usage{OGLVertexBufferFrequency::STATIC, OGLVertexBufferNature::DRAW};
+		OGLBufferUsage usage{OGLBufferFrequency::STATIC, OGLBufferNature::DRAW};
 		if (dynamic_transform)
-			usage = {OGLVertexBufferFrequency::DYNAMIC, OGLVertexBufferNature::DRAW};
+			usage = {OGLBufferFrequency::DYNAMIC, OGLBufferNature::DRAW};
 		this->vertex_array.bind();
 		// Row X (attribute 4)
-		this->model_matrix_x_vbo = &this->vertex_array.emplace_vertex_buffer(OGLVertexBufferTarget::ARRAY);
+		this->model_matrix_x_vbo = &this->vertex_array.emplace_vertex_buffer();
 		this->model_matrix_x_vbo->insert(xs, usage);
 		OGLVertexAttribute &model_matrix_x_attribute = this->vertex_array.emplace_vertex_attribute(4);
 		model_matrix_x_attribute.define<float>(4, GL_FALSE, 4 * sizeof(float));
 		model_matrix_x_vbo->unbind();
 		model_matrix_x_attribute.instanced_define(1);
 		// Row Y (attribute 5)
-		this->model_matrix_y_vbo = &this->vertex_array.emplace_vertex_buffer(OGLVertexBufferTarget::ARRAY);
+		this->model_matrix_y_vbo = &this->vertex_array.emplace_vertex_buffer();
 		this->model_matrix_y_vbo->insert(ys, usage);
 		OGLVertexAttribute &model_matrix_y_attribute = this->vertex_array.emplace_vertex_attribute(5);
 		model_matrix_y_attribute.define<float>(4, GL_FALSE, 4 * sizeof(float));
 		model_matrix_y_vbo->unbind();
 		model_matrix_y_attribute.instanced_define(1);
 		// Row Z (attribute 6)
-		this->model_matrix_z_vbo = &this->vertex_array.emplace_vertex_buffer(OGLVertexBufferTarget::ARRAY);
+		this->model_matrix_z_vbo = &this->vertex_array.emplace_vertex_buffer();
 		this->model_matrix_z_vbo->insert(zs, usage);
 		OGLVertexAttribute &model_matrix_z_attribute = this->vertex_array.emplace_vertex_attribute(6);
 		model_matrix_z_attribute.define<float>(4, GL_FALSE, 4 * sizeof(float));
 		model_matrix_z_vbo->unbind();
 		model_matrix_z_attribute.instanced_define(1);
 		// Row W (attribute 7)
-		this->model_matrix_w_vbo = &this->vertex_array.emplace_vertex_buffer(OGLVertexBufferTarget::ARRAY);
+		this->model_matrix_w_vbo = &this->vertex_array.emplace_vertex_buffer();
 		this->model_matrix_w_vbo->insert(ws, usage);
 		OGLVertexAttribute &model_matrix_w_attribute = this->vertex_array.emplace_vertex_attribute(7);
 		model_matrix_w_attribute.define<float>(4, GL_FALSE, 4 * sizeof(float));
