@@ -22,9 +22,6 @@ namespace tz::platform
 	}
 
 	template<OGLBufferType T>
-	OGLGenericBuffer<T>::OGLGenericBuffer(): OGLGenericBufferImplicit() {}
-
-	template<OGLBufferType T>
 	void OGLGenericBuffer<T>::bind() const
 	{
 		glBindBuffer(static_cast<GLenum>(T), this->buffer_handle);

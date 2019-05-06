@@ -20,6 +20,11 @@ public:
 	 * @param asset - The asset used to render the object
 	 */
 	StaticObject(Transform transform, Asset asset);
+	StaticObject(const StaticObject& copy) = default;
+	StaticObject(StaticObject&& move) = default;
+	virtual ~StaticObject() = default;
+	StaticObject& operator=(const StaticObject& rhs) = default;
+	StaticObject& operator=(StaticObject&& rhs) = default;
 	/**
 	 * Get the underlying asset used to render this object
 	 * @return - The objects asset

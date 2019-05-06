@@ -25,7 +25,10 @@ namespace tz::platform
 		 * Pure Virtual
 		 */
 		virtual void push() const = 0;
+		virtual std::unique_ptr<UniformImplicit> partial_unique_clone() const = 0;
+		friend class OGLShaderProgram;
 	protected:
+		virtual void retarget(const OGLShaderProgram* program);
 		/// Underlying OpenGL shader-handle.
 		const OGLShaderProgram* shader_program;
 		/// OpenGL uniform-location (name of the variable in GLSL).
@@ -50,11 +53,6 @@ namespace tz::platform
 		 */
 		Uniform<T>(const OGLShaderProgram* shader_program, std::string uniform_location, T value);
 		/**
-		 * Uniforms are not copyable.
-		 * @param copy - N/A
-		 */
-		Uniform<T>(const Uniform<T> &copy) = delete;
-		/**
 		 * Construct a Uniform from an existing Uniform.
 		 * @param move - The existing Uniform to move from.
 		 */
@@ -69,11 +67,15 @@ namespace tz::platform
 		 * @param value - Desired new value of the Uniform
 		 */
 		void set_value(T value);
+		virtual std::unique_ptr<UniformImplicit> partial_unique_clone() const override;
 		/**
 		 * Update all Uniform changes and have them affect all subsequent render-passes.
 		 */
 		virtual void push() const final;
-	private:
+		friend class OGLShaderProgram;
+	protected:
+		Uniform<T>(const Uniform<T>& copy);
+		virtual void retarget(const OGLShaderProgram* program) override;
 		/// Underlying value.
 		T value;
 		/// Underlying OpenGL handle for this Uniform.
@@ -92,11 +94,6 @@ namespace tz::platform
 		 */
 		Uniform<DirectionalLight>(const OGLShaderProgram* shader_program, std::string uniform_location, DirectionalLight value);
 		/**
-		 * Uniforms are not copyable.
-		 * @param copy - N/A
-		 */
-		Uniform<DirectionalLight>(const Uniform<DirectionalLight> &copy) = delete;
-		/**
 		 * Construct a Uniform from an existing Uniform.
 		 * @param move - The existing Uniform to move from.
 		 */
@@ -105,7 +102,7 @@ namespace tz::platform
 		 * Read-only access to the underlying Uniform's value.
 		 * @return - Value of the Uniform
 		 */
-		const DirectionalLight &get_value() const;
+		const DirectionalLight& get_value() const;
 		/**
 		 * Assign the value of the Uniform.
 		 * @param value - Desired new value of the Uniform
@@ -115,7 +112,12 @@ namespace tz::platform
 		 * Update all Uniform changes and have them affect all subsequent render-passes.
 		 */
 		virtual void push() const final;
+		virtual std::unique_ptr<UniformImplicit> partial_unique_clone() const override;
+		virtual void retarget(const OGLShaderProgram* program) override;
+
+		friend class OGLShaderProgram;
 	private:
+		Uniform<DirectionalLight>(const Uniform<DirectionalLight>& copy);
 		/// Underlying value.
 		DirectionalLight value;
 		/// DirectionalLight is (direction, colour, power) so each needs their own uniform.
@@ -136,11 +138,6 @@ namespace tz::platform
 		 */
 		Uniform<PointLight>(const OGLShaderProgram* shader_program, std::string uniform_location, PointLight value);
 		/**
-		 * Uniforms are not copyable.
-		 * @param copy - N/A
-		 */
-		Uniform<PointLight>(const Uniform<PointLight> &copy) = delete;
-		/**
 		 * Construct a Uniform from an existing Uniform.
 		 * @param move - The existing Uniform to move from.
 		 */
@@ -160,8 +157,11 @@ namespace tz::platform
 		 * Update all Uniform changes and have them affect all subsequent render-passes.
 		 */
 		virtual void push() const final;
-
+		virtual std::unique_ptr<UniformImplicit> partial_unique_clone() const override;
+		virtual void retarget(const OGLShaderProgram* program) override;
+		friend class OGLShaderProgram;
 	private:
+		Uniform<PointLight>(const Uniform<PointLight>& copy);
 		/// Underlying value.
 		PointLight value;
 		/// DirectionalLight is (direction, colour, power) so each needs their own uniform.

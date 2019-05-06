@@ -1,3 +1,4 @@
+
 #ifndef TOPAZ_SPRITE_HPP
 #define TOPAZ_SPRITE_HPP
 #include "graphics/mesh.hpp"
@@ -18,6 +19,12 @@ public:
 	 * @param texture - Texture attached to the sprite for rendering
 	 */
 	Sprite(Vector2F position_screenspace, float rotation, Vector2F scale, const Texture* texture);
+	Sprite(const Sprite& copy) = default;
+	Sprite(Sprite&& move) = default;
+	virtual ~Sprite() = default;
+	Sprite& operator=(const Sprite& rhs) = default;
+	Sprite& operator=(Sprite&& rhs) = default;
+
 	virtual std::optional<AABB> get_boundary() const override{return {std::nullopt};}
 	/**
 	 * Issue a render-call to draw the sprite.

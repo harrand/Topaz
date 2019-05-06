@@ -10,30 +10,8 @@
 #ifdef TOPAZ_OPENGL
 namespace tz::platform
 {
-	/**
-	 * Wrapper for an OpenGL vertex-buffer-object (VBO)
-	 */
-	class OGLVertexBuffer : public OGLGenericBuffer<OGLBufferType::ARRAY>
-	{
-	public:
-		/**
-		 * Construct an empty VBO with a given target.
-		 * @param target - Target describing how this VBO is to be interpreted by OpenGL
-		 */
-		OGLVertexBuffer();
-		/**
-		 * Deep-copy from an existing OGLVertexBuffer. This means that it shall not be attached to the same OGLVertexArray unless done so via OGLVertexArray::emplace_vertex_buffer(...).
-		 * @param copy - The OGLVertexBuffer to copy from
-		 */
-		OGLVertexBuffer(const OGLVertexBuffer& copy);
-	};
-
-	class OGLIndexBuffer : public OGLGenericBuffer<OGLBufferType::INDEX>
-	{
-	public:
-		OGLIndexBuffer();
-		OGLIndexBuffer(const OGLIndexBuffer& copy);
-	};
+	using OGLVertexBuffer = OGLGenericBuffer<OGLBufferType::ARRAY>;
+	using OGLIndexBuffer = OGLGenericBuffer<OGLBufferType::INDEX>;
 
 	/**
 	 * Like OGLVertexBuffer, but has additional functionality to support transform feedback.
@@ -46,6 +24,7 @@ namespace tz::platform
 		 * @param output_id - Expected output ID of the corresponding variable from the fragment shader.
 		 */
 		OGLVertexTransformFeedbackBuffer(GLuint output_id);
+		virtual ~OGLVertexTransformFeedbackBuffer() = default;
 		/**
 		 * Bind this VBO manually.
 		 */

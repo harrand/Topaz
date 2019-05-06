@@ -11,7 +11,6 @@ class Timer
 public:
 	/// Construct and synchronise the Timer.
 	Timer();
-
 	/**
 	 * Invoke every frame, so that Timer::get_range and Timer::millis_passed return accurate values.
 	 */

@@ -98,9 +98,31 @@ namespace tz::platform
 		glGenBuffers(1, &this->buffer_handle);
 	}
 
+	OGLGenericBufferImplicit::OGLGenericBufferImplicit(const OGLGenericBufferImplicit& copy): OGLGenericBufferImplicit()
+	{
+		glCopyNamedBufferSubData(copy.buffer_handle, this->buffer_handle, 0, 0, copy.get_size());
+	}
+
+	OGLGenericBufferImplicit::OGLGenericBufferImplicit(OGLGenericBufferImplicit&& move): buffer_handle(move.buffer_handle)
+	{
+		move.buffer_handle = 0;
+	}
+
 	OGLGenericBufferImplicit::~OGLGenericBufferImplicit()
 	{
 		glDeleteBuffers(1, &this->buffer_handle);
+	}
+
+	OGLGenericBufferImplicit& OGLGenericBufferImplicit::operator=(const OGLGenericBufferImplicit& rhs)
+	{
+		glCopyNamedBufferSubData(rhs.buffer_handle, this->buffer_handle, 0, 0, rhs.get_size());
+		return *this;
+	}
+
+	OGLGenericBufferImplicit& OGLGenericBufferImplicit::operator=(OGLGenericBufferImplicit&& rhs)
+	{
+		std::swap(this->buffer_handle, rhs.buffer_handle);
+		return *this;
 	}
 
 	bool OGLGenericBufferImplicit::is_mutable() const

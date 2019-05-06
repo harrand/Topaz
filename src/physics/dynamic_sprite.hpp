@@ -26,6 +26,11 @@ public:
 	 * @param forces - Container of forces applied to the sprite, if any
 	 */
 	DynamicSprite(float mass, Vector2F position_screenspace, float rotation, Vector2F scale, const Texture* texture, Vector2F velocity = {}, float moment_of_inertia = 1.0f, float angular_velocity = 0.0f, std::initializer_list<Vector3F> forces = {});
+	DynamicSprite(const DynamicSprite& copy) = default;
+	DynamicSprite(DynamicSprite&& move) = default;
+	virtual ~DynamicSprite() = default;
+	DynamicSprite& operator=(const DynamicSprite& rhs) = default;
+	DynamicSprite& operator=(DynamicSprite&& rhs) = default;
 	/**
 	 * Perform an update. This should be invoked once per tick.
 	 * @param delta_time - Time passed since the previous tick, in seconds

@@ -76,6 +76,10 @@ namespace tz::platform
 		 * @param source - Source code of the shader, if it is provided now. It can be provided and compiled later if preferred
 		 */
 		OGLShaderComponent(OGLShaderComponentType type, const std::optional<std::string>& source = std::nullopt);
+		OGLShaderComponent(const OGLShaderComponent& copy);
+		OGLShaderComponent(OGLShaderComponent&& move);
+		virtual ~OGLShaderComponent();
+		OGLShaderComponent& operator=(OGLShaderComponent rhs);
 		/**
 		 * Retrieve the type of this ShaderComponent.
 		 * @return - Type of the shader
@@ -100,6 +104,7 @@ namespace tz::platform
 		friend class OGLShaderComponentCompileResult;
 		friend class OGLShaderProgram;
 	private:
+		static void swap(OGLShaderComponent& lhs, OGLShaderComponent& rhs);
 		/// Underlying OpenGL handle.
 		GLuint shader_handle;
 		/// Type of this shader.
@@ -123,6 +128,10 @@ namespace tz::platform
 		 * Declare a ShaderProgram.
 		 */
 		OGLShaderProgram();
+		OGLShaderProgram(const OGLShaderProgram& copy);
+		OGLShaderProgram(OGLShaderProgram&& move);
+		~OGLShaderProgram();
+		OGLShaderProgram& operator=(OGLShaderProgram rhs);
 		/**
 		 * Query as to whether this program supports tessellation. This will return true if there is a component that is of type TESSELLATION_CONTROL.
 		 * @return - True if tessellation is supported, otherwise false
@@ -243,6 +252,7 @@ namespace tz::platform
 		friend class OGLShaderProgramLinkResult;
 		friend class OGLShaderProgramValidateResult;
 	private:
+		static void swap(OGLShaderProgram& lhs, OGLShaderProgram& rhs);
 		/// Underlying OpenGL program handle.
 		GLuint program_handle;
 		/// Container of all attached ShaderComponents.

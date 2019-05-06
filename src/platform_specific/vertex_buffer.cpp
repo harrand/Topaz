@@ -7,22 +7,6 @@
 #ifdef TOPAZ_OPENGL
 namespace tz::platform
 {
-	OGLVertexBuffer::OGLVertexBuffer(): OGLGenericBuffer<OGLBufferType::ARRAY>(){}
-
-	OGLVertexBuffer::OGLVertexBuffer(const OGLVertexBuffer& copy): OGLVertexBuffer()
-	{
-		std::optional<std::vector<std::byte>> generic_data = copy.query_all_data<std::vector, std::byte>();
-		std::optional<tz::platform::OGLBufferUsage> generic_usage = copy.query_current_usage();
-		if(generic_data.has_value() && generic_usage.has_value())
-		{
-			this->insert(generic_data.value(), generic_usage.value());
-		}
-	}
-
-	OGLIndexBuffer::OGLIndexBuffer(): OGLGenericBuffer<OGLBufferType::INDEX>(){}
-
-	OGLIndexBuffer::OGLIndexBuffer(const tz::platform::OGLIndexBuffer& copy): OGLGenericBuffer<OGLBufferType::INDEX>(copy){}
-
 	OGLVertexTransformFeedbackBuffer::OGLVertexTransformFeedbackBuffer(GLuint output_id): OGLGenericBuffer<OGLBufferType::TRANSFORM_FEEDBACK>(), output_id(output_id){}
 
 	void OGLVertexTransformFeedbackBuffer::bind() const

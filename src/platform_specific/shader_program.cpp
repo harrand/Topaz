@@ -62,6 +62,40 @@ namespace tz::platform
 		}
 	}
 
+	OGLShaderComponent::OGLShaderComponent(const OGLShaderComponent& copy): OGLShaderComponent(copy.type, std::nullopt)
+	{
+		GLint source_length;
+		glGetShaderiv(copy.shader_handle, GL_SHADER_SOURCE_LENGTH, &source_length);
+		if(source_length == 0) // If no code is in the parameter, then don't bother copying it.
+			return;
+		std::vector<GLchar> source_string;
+		source_string.resize(static_cast<std::size_t>(source_length));
+		glGetShaderSource(copy.shader_handle, source_length, nullptr, source_string.data());
+		std::string source;
+		for(GLchar glchar : source_string)
+			source += static_cast<char>(glchar);
+		this->upload_source(source);
+		// If the parameter hasn't yet been successfully compiled, don't bother trying now.
+		if(copy.get_compile_result().was_successful())
+			this->compile();
+	}
+
+	OGLShaderComponent::OGLShaderComponent(OGLShaderComponent&& move): shader_handle(move.shader_handle), type(move.type)
+	{
+		move.shader_handle = 0;
+	}
+
+	OGLShaderComponent::~OGLShaderComponent()
+	{
+		glDeleteShader(this->shader_handle);
+	}
+
+	OGLShaderComponent& OGLShaderComponent::operator=(OGLShaderComponent rhs)
+	{
+		OGLShaderComponent::swap(*this, rhs);
+		return *this;
+	}
+
 	const OGLShaderComponentType& OGLShaderComponent::get_type() const
 	{
 		return this->type;
@@ -85,7 +119,49 @@ namespace tz::platform
 		return {*this};
 	}
 
+	void OGLShaderComponent::swap(OGLShaderComponent& lhs, OGLShaderComponent& rhs)
+	{
+		std::swap(lhs.shader_handle, rhs.shader_handle);
+		std::swap(lhs.type, rhs.type);
+	}
+
 	OGLShaderProgram::OGLShaderProgram(): program_handle(glCreateProgram()), components(), uniforms(){}
+
+	OGLShaderProgram::OGLShaderProgram(const OGLShaderProgram& copy): OGLShaderProgram()
+	{
+		for(auto& component_ptr : copy.components)
+			if(component_ptr != nullptr)
+				this->emplace_shader_component(*component_ptr);
+		for(auto& implicit_uniform_ptr : copy.uniforms)
+		{
+			if(implicit_uniform_ptr == nullptr)
+				continue;
+			std::unique_ptr<UniformImplicit> partial_clone = implicit_uniform_ptr->partial_unique_clone();
+			// Re-target, making the partial clone into a full clone. This is because 2 identical uniforms cannot ever target the same shader.
+			partial_clone->retarget(this);
+			this->uniforms.push_back(std::move(partial_clone));
+		}
+	}
+
+	OGLShaderProgram::OGLShaderProgram(OGLShaderProgram&& move): program_handle(move.program_handle), components(std::move(move.components)), uniforms(std::move(move.uniforms))
+	{
+		move.program_handle = 0;
+		components.clear();
+		uniforms.clear();
+	}
+
+	OGLShaderProgram::~OGLShaderProgram()
+	{
+		for(auto& component_ptr : this->components)
+			glDetachShader(this->program_handle, component_ptr->shader_handle);
+		glDeleteProgram(this->program_handle);
+	}
+
+	OGLShaderProgram& OGLShaderProgram::operator=(OGLShaderProgram rhs)
+	{
+		OGLShaderProgram::swap(*this, rhs);
+		return *this;
+	}
 
 	bool OGLShaderProgram::get_can_tessellate() const
 	{
@@ -185,6 +261,13 @@ namespace tz::platform
 	{
 		for(auto& uniform_ptr : this->uniforms)
 			uniform_ptr->push();
+	}
+
+	void OGLShaderProgram::swap(OGLShaderProgram& lhs, OGLShaderProgram& rhs)
+	{
+		std::swap(lhs.program_handle, rhs.program_handle);
+		std::swap(lhs.components, rhs.components);
+		std::swap(lhs.uniforms, rhs.uniforms);
 	}
 
 	OGLShaderProgramLinkResult::OGLShaderProgramLinkResult(const OGLShaderProgram& shader_program): was_attempted(true), success(false), error_message(std::nullopt)

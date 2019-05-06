@@ -20,6 +20,12 @@ namespace tz::platform
 	}
 
 	template<class T>
+	std::unique_ptr<UniformImplicit> Uniform<T>::partial_unique_clone() const
+	{
+		return std::unique_ptr<Uniform<T>>{new Uniform<T>(*this)};
+	}
+
+	template<class T>
 	void Uniform<T>::push() const
 	{
 		/*
@@ -72,6 +78,16 @@ namespace tz::platform
 			glUniformMatrix4fv(this->uniform_handle, 1, GL_TRUE, this->value.fill_data().data());
 		else
 				static_assert(std::is_void<decltype(this->value)>::value, "[Topaz Shader]: Uniform has unsupported type. Perhaps your desired version of OpenGL proceeds Topaz's too far by using newer types for uniforms?");
+	}
+
+	template<class T>
+	Uniform<T>::Uniform(const Uniform<T>& copy): UniformImplicit(0, copy.uniform_location), value(copy.value), uniform_handle(-1){}
+
+	template<class T>
+	void Uniform<T>::retarget(const tz::platform::OGLShaderProgram *program)
+	{
+		UniformImplicit::retarget(program);
+		this->uniform_handle = program->get_uniform_location(this->uniform_location).value_or(-1);
 	}
 }
 #endif

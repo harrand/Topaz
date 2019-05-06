@@ -84,7 +84,6 @@ add_library(topaz SHARED
         src/graphics/gui/gui.inl
         src/graphics/model.cpp
         src/graphics/model.hpp
-        src/graphics/renderable.cpp
         src/graphics/renderable.hpp
         src/graphics/sprite.cpp
         src/graphics/sprite.hpp

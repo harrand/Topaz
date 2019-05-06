@@ -19,6 +19,11 @@ public:
 	 * @param torques - Initial set of torques apply on the object, if any, in newton world-units
 	 */
 	PhysicsObject(float mass, Vector3F velocity = {}, float moment_of_inertia = 1.0f, Vector3F angular_velocity = {}, std::initializer_list<Vector3F> forces = {}, std::initializer_list<Vector3F> torques = {});
+	PhysicsObject(const PhysicsObject& copy) = default;
+	PhysicsObject(PhysicsObject&& move) = default;
+	virtual ~PhysicsObject() = default;
+	PhysicsObject& operator=(const PhysicsObject& rhs) = default;
+	PhysicsObject& operator=(PhysicsObject&& rhs) = default;
 	/**
 	 * Get the net-force acting on this PhysicsObject.
 	 * @return - The net-force, in kilograms world-units per second squared (kg w s^(-2)).

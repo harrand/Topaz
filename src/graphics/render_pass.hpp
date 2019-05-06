@@ -47,5 +47,4 @@ private:
 	const Camera* camera;
 };
 
-
 #endif //TOPAZ_RENDER_PASS_HPP

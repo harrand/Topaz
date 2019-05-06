@@ -105,7 +105,11 @@ namespace tz::platform
 	{
 	public:
 		OGLGenericBufferImplicit();
+		OGLGenericBufferImplicit(const OGLGenericBufferImplicit& copy);
+		OGLGenericBufferImplicit(OGLGenericBufferImplicit&& move);
 		virtual ~OGLGenericBufferImplicit();
+		OGLGenericBufferImplicit& operator=(const OGLGenericBufferImplicit& rhs);
+		OGLGenericBufferImplicit& operator=(OGLGenericBufferImplicit&& rhs);
 
 		virtual void bind() const = 0;
 		virtual void unbind() const = 0;
@@ -148,7 +152,8 @@ namespace tz::platform
 	class OGLGenericBuffer : public OGLGenericBufferImplicit
 	{
 	public:
-		OGLGenericBuffer();
+		OGLGenericBuffer() = default;
+		virtual ~OGLGenericBuffer() = default;
 
 		virtual void bind() const override;
 		virtual void unbind() const override;

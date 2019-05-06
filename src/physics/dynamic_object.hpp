@@ -20,6 +20,11 @@ public:
 	 * @param forces - Container of forces applied to the object, if any
 	 */
 	DynamicObject(float mass, Transform transform, Asset asset, Vector3F velocity = {}, float moment_of_inertia = 1.0f, Vector3F angular_velocity = {}, std::initializer_list<Vector3F> forces = {});
+	DynamicObject(const DynamicObject& copy) = default;
+	DynamicObject(DynamicObject&& move) = default;
+	virtual ~DynamicObject() = default;
+	DynamicObject& operator=(const DynamicObject& rhs) = default;
+	DynamicObject& operator=(DynamicObject&& rhs) = default;
 	/**
 	 * Perform an update. This should be invoked once per tick.
 	 * @param delta_time - Time passed since the previous tick, in seconds
@@ -38,9 +43,6 @@ public:
 	virtual void on_collision(PhysicsObject& collided) override;
 
 	friend class InstancedDynamicObject;
-private:
-	/// Boundary bounding the object, in model-space
-	AABB bound_modelspace;
 };
 
 /**
