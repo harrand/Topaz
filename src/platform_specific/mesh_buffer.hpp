@@ -5,8 +5,7 @@
 #ifndef TOPAZ_MESH_BUFFER_HPP
 #define TOPAZ_MESH_BUFFER_HPP
 #include "platform_specific/vertex_buffer.hpp"
-#include "assimp/mesh.h"
-#include "graphics/graphics.hpp"
+#include "graphics/mesh.hpp"
 
 namespace tz::platform
 {
@@ -15,6 +14,7 @@ namespace tz::platform
 	public:
 		OGLMeshElement(std::string filename);
 		OGLMeshElement(const aiMesh* assimp_mesh);
+		OGLMeshElement(const OGLMesh& mesh);
 		friend class OGLMeshBuffer;
 	private:
 		OGLMeshElement();
@@ -32,6 +32,7 @@ namespace tz::platform
 		template<typename... Args>
 		OGLMeshElement& emplace_mesh(Args&&... args);
 		void render() const;
+		std::size_t get_size() const;
 	private:
 		void integrate_mesh(const OGLMeshElement& mesh) const;
 		OGLVertexArray vao;

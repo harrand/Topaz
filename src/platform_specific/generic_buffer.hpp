@@ -6,6 +6,7 @@
 #define TOPAZ_GENERIC_BUFFER_HPP
 
 #include "core/topaz.hpp"
+#include "utility/memory.hpp"
 
 namespace tz::platform
 {
@@ -166,6 +167,8 @@ namespace tz::platform
 		 */
 		template<template<typename> typename Container, typename POD>
 		void insert(const Container<POD>& data, const OGLBufferUsage& usage) const;
+		template<typename POD>
+		MemoryPool<POD> persistently_map(std::size_t pod_count, bool retrieve_current_data) const;
 	};
 }
 

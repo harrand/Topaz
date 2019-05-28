@@ -20,6 +20,19 @@ void init()
 {
 	Window wnd("Topaz Development Window", 0, 30, 1920, 1080);
 	std::cout << "OpenGL debugging enabled: " << wnd.is_opengl_debugging_enabled() << "\n";
+
+	/*
+	std::vector<int> ints;
+	for(std::size_t i = 0; i < 100; i++)
+		ints.push_back(i);
+	MemoryPool<int> int_pool{ints};
+	for(int i : int_pool)
+		std::cout << i << "\n";
+	int_pool.default_all();
+	for(int i : int_pool)
+		std::cout << i << "\n";
+	 */
+
 	wnd.set_debug_callback();
 	wnd.set_fullscreen(Window::FullscreenType::WINDOWED_MODE);
 	wnd.set_swap_interval_type(Window::SwapIntervalType::IMMEDIATE_UPDATES);

@@ -60,6 +60,15 @@ namespace tz::platform
 		}
 	}
 
+	OGLMeshElement::OGLMeshElement(const OGLMesh& mesh): OGLMeshElement()
+	{
+		std::size_t vertex_count = mesh.get_positions().size();
+		this->vertices.reserve(vertex_count);
+		for(std::size_t i = 0; i < vertex_count; i++)
+			this->vertices.emplace_back(mesh.get_positions()[i], mesh.get_texcoords()[i], mesh.get_normals()[i], mesh.get_tangents()[i]);
+		this->indices = mesh.get_indices();
+	}
+
 	OGLMeshElement::OGLMeshElement(): parent_array(nullptr), vertices(), indices(){}
 
 	OGLMeshBuffer::OGLMeshBuffer(): vao(), position_buffer(vao.emplace_vertex_buffer()), texcoord_buffer(vao.emplace_vertex_buffer()), normal_buffer(vao.emplace_vertex_buffer()), tangent_buffer(vao.emplace_vertex_buffer()), index_buffer(vao.emplace_index_buffer()), position_attribute(nullptr), texcoord_attribute(nullptr), normal_attribute(nullptr), tangent_attribute(nullptr), meshes()
@@ -154,5 +163,10 @@ namespace tz::platform
 
 		// we run into the problem: how are we going to upload our uniforms? and how do we know which uniform belongs to who?
 		// also this code is untested and might not even work.
+	}
+
+	std::size_t OGLMeshBuffer::get_size() const
+	{
+		return this->index_counts.size();
 	}
 }
