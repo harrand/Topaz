@@ -74,6 +74,11 @@ namespace tz::platform
 		return OGLMesh{this->vertices, this->indices};
 	}
 
+	bool OGLMeshElement::operator==(const OGLMeshElement& rhs) const
+	{
+		return this->vertices == rhs.vertices && this->indices == rhs.indices;
+	}
+
 	OGLMeshElement::OGLMeshElement(): parent_array(nullptr), vertices(), indices(){}
 
 	OGLMeshBuffer::OGLMeshBuffer(): vao(), position_buffer(vao.emplace_vertex_buffer()), texcoord_buffer(vao.emplace_vertex_buffer()), normal_buffer(vao.emplace_vertex_buffer()), tangent_buffer(vao.emplace_vertex_buffer()), index_buffer(vao.emplace_index_buffer()), position_attribute(nullptr), texcoord_attribute(nullptr), normal_attribute(nullptr), tangent_attribute(nullptr), meshes()
@@ -173,5 +178,13 @@ namespace tz::platform
 	std::size_t OGLMeshBuffer::get_size() const
 	{
 		return this->index_counts.size();
+	}
+
+	bool OGLMeshBuffer::contains(const OGLMeshElement& mesh) const
+	{
+		for(const auto& mesh_ptr : this->meshes)
+			if(*mesh_ptr == mesh)
+				return true;
+		return false;
 	}
 }

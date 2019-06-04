@@ -22,6 +22,12 @@ namespace tz::platform
 	}
 
 	template<OGLBufferType T>
+	OGLGenericBuffer<T>::OGLGenericBuffer(): OGLGenericBufferImplicit()
+	{
+		this->bind();
+	}
+
+	template<OGLBufferType T>
 	void OGLGenericBuffer<T>::bind() const
 	{
 		glBindBuffer(static_cast<GLenum>(T), this->buffer_handle);
@@ -54,5 +60,11 @@ namespace tz::platform
 			data = this->query_all_data<std::vector, POD>().value().data();
 		glNamedBufferStorage(this->buffer_handle, size_bytes, data, flags);
 		return {glMapNamedBufferRange(this->buffer_handle, 0, size_bytes, flags), pod_count};
+	}
+
+	template<OGLBufferType T>
+	DynamicVariadicMemoryPool OGLGenericBuffer<T>::persistently_map_variadic(std::size_t byte_count, bool retrieve_current_data) const
+	{
+		return dynamic_cast<DynamicVariadicMemoryPool>(this->persistently_map<char>(byte_count, retrieve_current_data));
 	}
 }

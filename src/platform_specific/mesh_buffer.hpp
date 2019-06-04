@@ -16,6 +16,7 @@ namespace tz::platform
 		OGLMeshElement(const aiMesh* assimp_mesh);
 		OGLMeshElement(const OGLMesh& mesh);
 		explicit operator OGLMesh() const;
+        bool operator==(const OGLMeshElement& rhs) const;
 		friend class OGLMeshBuffer;
 	private:
 		OGLMeshElement();
@@ -34,6 +35,7 @@ namespace tz::platform
 		OGLMeshElement& emplace_mesh(Args&&... args);
 		void render() const;
 		std::size_t get_size() const;
+        bool contains(const OGLMeshElement& mesh) const;
 	private:
 		void integrate_mesh(const OGLMeshElement& mesh) const;
 		OGLVertexArray vao;

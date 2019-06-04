@@ -153,7 +153,7 @@ namespace tz::platform
 	class OGLGenericBuffer : public OGLGenericBufferImplicit
 	{
 	public:
-		OGLGenericBuffer() = default;
+		OGLGenericBuffer();
 		virtual ~OGLGenericBuffer() = default;
 
 		virtual void bind() const override;
@@ -169,6 +169,7 @@ namespace tz::platform
 		void insert(const Container<POD>& data, const OGLBufferUsage& usage) const;
 		template<typename POD>
 		MemoryPool<POD> persistently_map(std::size_t pod_count, bool retrieve_current_data) const;
+		DynamicVariadicMemoryPool persistently_map_variadic(std::size_t byte_count, bool retrieve_current_data) const;
 	};
 }
 

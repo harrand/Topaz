@@ -5,6 +5,7 @@
 #include "graphics/skybox.hpp"
 #include "graphics/frame_buffer.hpp"
 #include "utility/render.hpp"
+#include "graphics/renderable_buffer.hpp"
 
 void init();
 
@@ -225,6 +226,13 @@ void init()
 	ScenePartitionNode illegal{std::move(*const_cast<ScenePartitionNode*>(scene_copy.get_octree_root())->get_children()[0])};
 	 */
 
+	// Try using MDI here.
+	RenderableBuffer<StaticObject> static_buffer{0};
+	StaticObject deathwing2 = deathwing;
+	deathwing2.transform.position.y += 100.0f;
+    static_buffer.insert(deathwing2);
+	// But just with one object.
+
 	long long int time = tz::utility::time::now();
 	Timer second_timer, tick_timer;
 	TimeProfiler profiler;
@@ -280,6 +288,7 @@ void init()
 			tz::graphics::enable_wireframe_render(true);
 		depth_framebuffer.get_depth_texture().bind(&render_shader, 15, "depth_map_sampler");
 		scene.render(main_pass);
+		static_buffer.render(main_pass);
 		constexpr int tps = 120;
 		constexpr float tick_delta = 1000.0f / tps;
 		if(tick_timer.millis_passed(tick_delta))
