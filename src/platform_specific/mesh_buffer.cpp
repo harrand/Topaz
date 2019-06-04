@@ -69,6 +69,11 @@ namespace tz::platform
 		this->indices = mesh.get_indices();
 	}
 
+	OGLMeshElement::operator OGLMesh() const
+	{
+		return OGLMesh{this->vertices, this->indices};
+	}
+
 	OGLMeshElement::OGLMeshElement(): parent_array(nullptr), vertices(), indices(){}
 
 	OGLMeshBuffer::OGLMeshBuffer(): vao(), position_buffer(vao.emplace_vertex_buffer()), texcoord_buffer(vao.emplace_vertex_buffer()), normal_buffer(vao.emplace_vertex_buffer()), tangent_buffer(vao.emplace_vertex_buffer()), index_buffer(vao.emplace_index_buffer()), position_attribute(nullptr), texcoord_attribute(nullptr), normal_attribute(nullptr), tangent_attribute(nullptr), meshes()

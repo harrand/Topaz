@@ -134,7 +134,7 @@ add_library(topaz SHARED
         src/utility/string.hpp
         src/utility/time.cpp
         src/utility/time.hpp
-        src/utility/time.inl src/utility/constants.hpp src/platform_specific/generic_buffer.cpp src/platform_specific/generic_buffer.hpp src/platform_specific/shader_storage_buffer.cpp src/platform_specific/shader_storage_buffer.hpp src/platform_specific/mesh_buffer.cpp src/platform_specific/mesh_buffer.hpp src/utility/memory.hpp)
+        src/utility/time.inl src/utility/constants.hpp src/platform_specific/generic_buffer.cpp src/platform_specific/generic_buffer.hpp src/platform_specific/shader_storage_buffer.cpp src/platform_specific/shader_storage_buffer.hpp src/platform_specific/mesh_buffer.cpp src/platform_specific/mesh_buffer.hpp src/utility/memory.hpp src/utility/memory.cpp)
 # here we express in terms of modules, not just build flags
 target_include_directories(topaz PUBLIC ${PROJECT_SOURCE_DIR}/inc)
 target_include_directories(topaz PRIVATE ${PROJECT_SOURCE_DIR}/src)

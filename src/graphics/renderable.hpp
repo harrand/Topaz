@@ -16,5 +16,4 @@ public:
 private:
 };
 
-
 #endif //TOPAZ_RENDERABLE_HPP

@@ -33,6 +33,24 @@ void init()
 		std::cout << i << "\n";
 	 */
 
+	/*
+	AutomaticMemoryPool<int> ints1(10);
+	for(int i = 0; i < 10; i++)
+		ints1[i] = i;
+	for(auto n : ints1)
+		std::cout << n << "\n";
+	 */
+
+	std::cout << "sizeof(char) == " << sizeof(char) << "\n";
+	AutomaticDynamicVariadicMemoryPool var_pool{1024};
+	var_pool.push_back<int>(7898);
+	var_pool.push_back<double>(1.2049875);
+	std::cout << "type at index 0 = " << var_pool.get_type_at_index(0).name() << "\n";
+	std::cout << "int at index 0 = " << var_pool.at<int>(0) << "\n";
+	std::cout << "type at index 1 = " << var_pool.get_type_at_index(1).name() << "\n";
+	std::cout << "double at index 1 = " << var_pool.at<double>(1) << "\n";
+	std::cout << var_pool.get_byte_usage() << "/" << var_pool.get_byte_capacity() << " bytes used.\n";
+
 	wnd.set_debug_callback();
 	wnd.set_fullscreen(Window::FullscreenType::WINDOWED_MODE);
 	wnd.set_swap_interval_type(Window::SwapIntervalType::IMMEDIATE_UPDATES);

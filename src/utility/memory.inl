@@ -1,4 +1,5 @@
 #include <cstring>
+#include "core/topaz.hpp"
 
 template<typename T>
 MemoryPool<T>::iterator::iterator(std::size_t index, T* value): index(index), value(value){}
@@ -126,4 +127,36 @@ void MemoryPool<T>::default_all()
 {
 	for(T& t : *this)
 		t = T{};
+}
+
+template<typename T>
+AutomaticMemoryPool<T>::AutomaticMemoryPool(std::size_t pool_size): MemoryPool<T>(std::malloc(sizeof(T) * pool_size), pool_size){}
+
+template<typename T>
+AutomaticMemoryPool<T>::~AutomaticMemoryPool()
+{
+	std::free(this->first);
+}
+
+template<typename T>
+void DynamicVariadicMemoryPool::push_back(T value)
+{
+	std::type_index index = typeid(value);
+	this->type_format.push_back(index);
+	if(this->type_size_map.find(index) == this->type_size_map.end())
+		this->type_size_map[index] = sizeof(T);
+	// Actually put it in the pool
+	*reinterpret_cast<T*>(this->get_current_offset()) = value;
+}
+
+template<typename T>
+T& DynamicVariadicMemoryPool::at(std::size_t index)
+{
+	return *reinterpret_cast<T*>(this->get_offset_to_index(index));
+}
+
+template<typename T>
+const T& DynamicVariadicMemoryPool::at(std::size_t index) const
+{
+	return *reinterpret_cast<T*>(this->get_offset_to_index(index));
 }

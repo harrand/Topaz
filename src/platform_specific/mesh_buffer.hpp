@@ -15,6 +15,7 @@ namespace tz::platform
 		OGLMeshElement(std::string filename);
 		OGLMeshElement(const aiMesh* assimp_mesh);
 		OGLMeshElement(const OGLMesh& mesh);
+		explicit operator OGLMesh() const;
 		friend class OGLMeshBuffer;
 	private:
 		OGLMeshElement();
