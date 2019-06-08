@@ -10,16 +10,23 @@
 #include <map>
 
 // Assume each object has its own unique mesh. And no duplicate objects.
+// This limit should be removed after the proof-of-concept is complete.
 
 template<class ObjectType>
 class RenderableBuffer
 {
 public:
     RenderableBuffer(GLuint layout_qualifier_id);
+    RenderableBuffer(const RenderableBuffer& copy);
     std::size_t insert(ObjectType object);
+    template<class ObjectSubType, typename... Args>
+    ObjectSubType& emplace(Args&&... args);
     void render(RenderPass pass);
     static constexpr std::size_t capacity = 1024;
+    friend class Scene;
 private:
+    Renderable* take_object(std::unique_ptr<Renderable> object);
+
     std::map<std::size_t, std::unique_ptr<ObjectType>> objects;
     tz::platform::OGLMeshBuffer mesh_buffer;
     tz::platform::OGLShaderStorageBuffer data_ssbo;

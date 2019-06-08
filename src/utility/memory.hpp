@@ -42,7 +42,17 @@ public:
 		std::size_t index;
 		const T* value;
 	};
+    /**
+     * Construct a MemoryPool to manage a pre-allocated contiguous range of addresses.
+     * @param begin_address - First address in the contiguous range
+     * @param pool_size - Number of elements (sizeof T's) that the MemoryPool should accommodate
+     */
 	MemoryPool(void* begin_address, std::size_t pool_size);
+    /**
+     * Construct a MemoryPool to manage the data of an existing contiguous container, such as an std::vector. The container retains ownership of the memory, this pool simply can read and write to it.
+     * @tparam ContiguousContainer - Template class for the contiguous container. The container must be contiguous. So std::vector is fine, but std::set is not.
+     * @param data - Container value to manage memory of
+     */
 	template<template<typename> typename ContiguousContainer>
 	MemoryPool(ContiguousContainer<T>& data);
 	iterator begin();
@@ -51,21 +61,47 @@ public:
 	const_iterator cend() const;
 	T& operator[](std::size_t index);
 	const T& operator[](std::size_t index) const;
+    /**
+     * Obtain the maximum number of elements that this pool can store. It is guaranteed to be equal to the pool_size given to the constructor.
+     * @return - Number of elements available in the pool
+     */
 	std::size_t get_element_capacity() const;
+    /**
+     * Obtain the size (in chars) of this pool.
+     * @return - Number of chars that could be stored in this pool
+     */
 	std::size_t get_byte_capacity() const;
+    /**
+     * Zero all memory in this pool. Essentially equal to memset.
+     */
 	virtual void zero_all();
+    /**
+     * Sets all elements in this pool to be equal to its default value (from a default constructor).
+     */
 	void default_all();
 protected:
+    /// First address in the pool.
 	T* first;
+    /// Last address in the pool.
 	T* last;
+    /// Number of elements available in the pool.
 	std::size_t pool_size;
 };
 
+/**
+ * Identical to MemoryPool, but is responsible for allocating and de-allocating the memory. Do not use if the memory is pre-allocated, or it will corrupt the heap.
+ * @tparam T - Type of element in the pool.
+ */
 template<typename T>
 class AutomaticMemoryPool : public MemoryPool<T>
 {
 public:
+    /**
+     * Construct an automatic memory pool of fixed size.
+     * @param pool_size - Number of elements in the pool
+     */
 	AutomaticMemoryPool(std::size_t pool_size);
+    /// Deallocates all memory in the pool
 	virtual ~AutomaticMemoryPool();
 };
 

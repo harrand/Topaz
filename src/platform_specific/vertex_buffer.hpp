@@ -196,6 +196,7 @@ namespace tz::platform
 		 * @param rhs - Right hand side
 		 */
 		static void swap(OGLVertexArray& lhs, OGLVertexArray& rhs);
+		friend class OGLMeshBuffer;
 	private:
 		/// Underlying OpenGL VAO handle.
 		GLuint vao_handle;

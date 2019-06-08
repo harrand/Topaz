@@ -97,6 +97,14 @@ namespace tz::platform
 		this->tangent_attribute->define<float>(3, GL_TRUE, 3 * sizeof(float));
 	}
 
+	OGLMeshBuffer::OGLMeshBuffer(const OGLMeshBuffer& copy): OGLMeshBuffer()
+	{
+		for(const auto& mesh_element_ptr : copy.meshes)
+			this->emplace_mesh(*mesh_element_ptr);
+	}
+
+	OGLMeshBuffer::OGLMeshBuffer(OGLMeshBuffer&& move): vao(std::move(move.vao)), position_buffer(*vao.vertex_buffers[0]), texcoord_buffer(*vao.vertex_buffers[1]), normal_buffer(*vao.vertex_buffers[2]), tangent_buffer(*vao.vertex_buffers[3]), index_buffer(*vao.index_buffer), position_attribute(vao.vertex_attributes[0].get()), texcoord_attribute(vao.vertex_attributes[1].get()), normal_attribute(vao.vertex_attributes[2].get()), tangent_attribute(vao.vertex_attributes[3].get()), meshes(std::move(move.meshes)), index_counts(std::move(move.index_counts)) {}
+
 	void OGLMeshBuffer::integrate_mesh(const OGLMeshElement& mesh) const
 	{
 		std::size_t vertex_count = mesh.vertices.size();
