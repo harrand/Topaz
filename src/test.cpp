@@ -5,7 +5,6 @@
 #include "graphics/skybox.hpp"
 #include "graphics/frame_buffer.hpp"
 #include "utility/render.hpp"
-#include "graphics/renderable_buffer.hpp"
 
 void init();
 
@@ -71,6 +70,8 @@ void init()
 
 	constexpr float speed = 0.5f;
 	Shader render_shader("../src/shaders/3D_FullAssetsInstancedShadowsBloom");
+	// MDI
+	//Shader render_shader("../src/shaders/mdi");
 
 	Shader gui_shader("../src/shaders/Gui");
 	Shader hdr_gui_shader("../src/shaders/Gui_HDR");

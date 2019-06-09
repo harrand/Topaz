@@ -2,7 +2,7 @@
 // Created by Harrand on 05/04/2019.
 //
 
-#include "shader_program.hpp"
+#include "platform_specific/shader_program.hpp"
 
 #ifdef TOPAZ_OPENGL
 namespace tz::platform
@@ -125,29 +125,76 @@ namespace tz::platform
 		std::swap(lhs.type, rhs.type);
 	}
 
-	OGLShaderProgram::OGLShaderProgram(): program_handle(glCreateProgram()), components(), uniforms(){}
+	UniformState::UniformState(const OGLShaderProgram* target): data(), target(target) {}
+
+	UniformState::UniformState(const UniformState& copy): data(), target(copy.target)
+	{
+		for(const auto&[location, uniform_ptr] : copy.data)
+		{
+			std::unique_ptr<UniformImplicit> clone = uniform_ptr->partial_unique_clone();
+			clone->retarget(this->target);
+			this->data[location] = std::move(clone);
+		}
+	}
+
+	UniformState::UniformState(UniformState&& move): data(std::move(move.data)), target(move.target){}
+
+	UniformState& UniformState::operator=(UniformState rhs)
+	{
+		UniformState::swap(*this, rhs);
+		return *this;
+	}
+
+	std::size_t UniformState::size() const
+	{
+		return this->data.size();
+	}
+
+	void UniformState::clear()
+	{
+		this->data.clear();
+	}
+
+	bool UniformState::has_location(const std::string& location) const
+	{
+		return this->data.find(location) != this->data.cend();
+	}
+
+	void UniformState::retarget(const OGLShaderProgram* target)
+	{
+		this->target = target;
+		for(auto& pair: this->data)
+			pair.second->retarget(target);
+	}
+
+	void UniformState::push_all() const
+	{
+		for(auto& pair : this->data)
+			pair.second->push();
+	}
+
+	void UniformState::swap(UniformState& lhs, UniformState& rhs)
+	{
+		std::swap(lhs.data, rhs.data);
+		std::swap(lhs.target, rhs.target);
+	}
+
+	OGLShaderProgram::OGLShaderProgram(): program_handle(glCreateProgram()), components(), state(){}
 
 	OGLShaderProgram::OGLShaderProgram(const OGLShaderProgram& copy): OGLShaderProgram()
 	{
 		for(auto& component_ptr : copy.components)
 			if(component_ptr != nullptr)
 				this->emplace_shader_component(*component_ptr);
-		for(auto& implicit_uniform_ptr : copy.uniforms)
-		{
-			if(implicit_uniform_ptr == nullptr)
-				continue;
-			std::unique_ptr<UniformImplicit> partial_clone = implicit_uniform_ptr->partial_unique_clone();
-			// Re-target, making the partial clone into a full clone. This is because 2 identical uniforms cannot ever target the same shader.
-			partial_clone->retarget(this);
-			this->uniforms.push_back(std::move(partial_clone));
-		}
+		this->state = copy.state;
+		this->state.retarget(this);
 	}
 
-	OGLShaderProgram::OGLShaderProgram(OGLShaderProgram&& move): program_handle(move.program_handle), components(std::move(move.components)), uniforms(std::move(move.uniforms))
+	OGLShaderProgram::OGLShaderProgram(OGLShaderProgram&& move): program_handle(move.program_handle), components(std::move(move.components)), state(std::move(move.state))
 	{
 		move.program_handle = 0;
 		components.clear();
-		uniforms.clear();
+		state.clear();
 	}
 
 	OGLShaderProgram::~OGLShaderProgram()
@@ -183,17 +230,9 @@ namespace tz::platform
 		return std::nullopt; // Can't get uniforms if the shader isn't linked yet.
 	}
 
-	const UniformImplicit* OGLShaderProgram::get_uniform(const std::string& uniform_location) const
-	{
-		for(const auto& uniform_ptr : this->uniforms)
-			if(uniform_ptr->get_uniform_location() == uniform_location)
-				return uniform_ptr.get();
-		return nullptr;
-	}
-
 	bool OGLShaderProgram::has_uniform(const std::string &uniform_name) const
 	{
-		return this->get_uniform(uniform_name) != nullptr;
+		return this->state.has_location(uniform_name);
 	}
 
 	void OGLShaderProgram::bind_attribute_location(GLuint index, const std::string& name) const
@@ -205,6 +244,19 @@ namespace tz::platform
 	{
 		this->bind_attribute_location(attribute.get_id(), name);
 	}
+
+	void OGLShaderProgram::bind_uniform_block(const OGLUniformBuffer& uniform_buffer, const std::string& name) const
+	{
+		GLuint block_index = glGetUniformBlockIndex(this->program_handle, name.c_str());
+		glUniformBlockBinding(this->program_handle, block_index, uniform_buffer.binding_id);
+	}
+
+    void OGLShaderProgram::bind_shader_storage_block(const OGLShaderStorageBuffer& storage_buffer, const std::string& name) const
+    {
+        GLuint block_index = glGetProgramResourceIndex(this->program_handle, GL_SHADER_STORAGE_BLOCK, name.c_str());
+        glShaderStorageBlockBinding(this->program_handle, block_index, storage_buffer.layout_qualifier_id);
+    }
+
 
 	bool OGLShaderProgram::is_fully_compiled() const
 	{
@@ -259,15 +311,14 @@ namespace tz::platform
 
 	void OGLShaderProgram::update()
 	{
-		for(auto& uniform_ptr : this->uniforms)
-			uniform_ptr->push();
+		this->state.push_all();
 	}
 
 	void OGLShaderProgram::swap(OGLShaderProgram& lhs, OGLShaderProgram& rhs)
 	{
 		std::swap(lhs.program_handle, rhs.program_handle);
 		std::swap(lhs.components, rhs.components);
-		std::swap(lhs.uniforms, rhs.uniforms);
+		std::swap(lhs.state, rhs.state);
 	}
 
 	OGLShaderProgramLinkResult::OGLShaderProgramLinkResult(const OGLShaderProgram& shader_program): was_attempted(true), success(false), error_message(std::nullopt)

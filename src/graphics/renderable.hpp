@@ -5,7 +5,7 @@
 #ifndef TOPAZ_RENDERABLE_HPP
 #define TOPAZ_RENDERABLE_HPP
 #include "graphics/render_pass.hpp"
-
+#include "physics/boundary.hpp"
 
 class Renderable
 {

@@ -13,6 +13,7 @@ namespace tz::platform
 	public:
 		OGLShaderStorageBuffer(GLuint layout_qualifier_id);
 		virtual void bind() const override;
+		friend class OGLShaderProgram;
 	private:
 		GLuint layout_qualifier_id;
 	};

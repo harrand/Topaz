@@ -299,7 +299,7 @@ bool ScenePartitionNode::insert(const Renderable* object)
 	return false;
 }
 
-Scene::Scene(ScenePartitionType type): objects{}, inheritance_map{}, directional_lights{}, point_lights{}, objects_to_delete{}, octree{std::nullopt}
+Scene::Scene(ScenePartitionType type): object_buffer{0}, objects{}, inheritance_map{}, directional_lights{}, point_lights{}, objects_to_delete{}, octree{std::nullopt}
 {
 	switch(type)
 	{
@@ -313,12 +313,14 @@ Scene::Scene(ScenePartitionType type): objects{}, inheritance_map{}, directional
 	}
 }
 
-Scene::Scene(const Scene& copy): objects{}, inheritance_map{}, directional_lights{copy.directional_lights}, point_lights{copy.point_lights}, objects_to_delete{}, octree{this}
+Scene::Scene(const Scene& copy): object_buffer{0}, objects{}, inheritance_map{}, directional_lights{copy.directional_lights}, point_lights{copy.point_lights}, objects_to_delete{}, octree{this}
 {
 	for(auto& renderable_ptr : copy.objects)
 	{
-		this->objects.push_back(renderable_ptr->unique_clone());
-		Renderable* deep_copied = this->objects.back().get();
+		//this->objects.push_back(renderable_ptr->unique_clone());
+		//Renderable* deep_copied = this->objects.back().get();
+        Renderable* deep_copied = this->object_buffer.take_object(renderable_ptr->unique_clone());
+        this->objects.push_back(deep_copied);
 		if(!tz::utility::functional::is_a<Renderable, Sprite>(*deep_copied) && this->octree.has_value())
 			this->octree.value().enqueue_object(deep_copied);
 		this->inheritance_map.insert({typeid(*deep_copied), deep_copied});
@@ -326,7 +328,7 @@ Scene::Scene(const Scene& copy): objects{}, inheritance_map{}, directional_light
 	}
 }
 
-Scene::Scene(Scene&& move): objects(std::move(move.objects)), inheritance_map(std::move(move.inheritance_map)), directional_lights(std::move(move.directional_lights)), point_lights(std::move(move.point_lights)), objects_to_delete{}, octree(std::move(move.octree))
+Scene::Scene(Scene&& move): object_buffer(std::move(move.object_buffer)), objects(std::move(move.objects)), inheritance_map(std::move(move.inheritance_map)), directional_lights(std::move(move.directional_lights)), point_lights(std::move(move.point_lights)), objects_to_delete{}, octree(std::move(move.octree))
 {
 	// Delete all pending deletions now.
 	for(Renderable* to_delete : move.objects_to_delete)
@@ -341,6 +343,7 @@ Scene& Scene::operator=(Scene rhs)
 
 Scene& Scene::operator=(Scene&& rhs)
 {
+    this->object_buffer = std::move(rhs.object_buffer);
 	this->objects = std::move(rhs.objects);
 	this->inheritance_map = std::move(rhs.inheritance_map);
 	this->directional_lights = std::move(rhs.directional_lights);
@@ -361,12 +364,18 @@ void Scene::render(RenderPass render_pass) const
 	auto render_if_visible = [&](const StaticObject& object){if(object.get_asset().valid_model()){object.render(render_pass);return;} AABB object_box = tz::physics::bound_aabb(object.get_asset()).value(); if(camera_frustum.contains(object_box * object.transform.model()) || tz::graphics::is_instanced(object.get_asset().mesh)) object.render(render_pass);};
 	if(render_shader != nullptr)
 	{
+		// MDI Disabled
 		for (auto &static_object : this->get_static_objects())
 		{
 			if (generic::contains(this->objects_to_delete, const_cast<Renderable*>(dynamic_cast<const Renderable*>(&static_object.get()))))
 				continue;
 			render_if_visible(static_object.get());
 		}
+
+		/*
+		// MDI Enabled.
+		this->object_buffer.render(render_pass);
+		 */
 	}
 	if(sprite_shader != nullptr)
 	{
@@ -485,7 +494,7 @@ std::vector<std::reference_wrapper<const StaticObject>> Scene::get_static_object
 	std::vector<std::reference_wrapper<const StaticObject>> object_crefs;
 	for(const auto& renderable_ptr : this->objects)
 	{
-		auto static_ptr = dynamic_cast<const StaticObject*>(renderable_ptr.get());
+		auto static_ptr = dynamic_cast<const StaticObject*>(renderable_ptr);
 		if(static_ptr != nullptr)
 			object_crefs.push_back(std::cref(*static_ptr));
 	}
@@ -497,7 +506,7 @@ std::vector<std::reference_wrapper<const Sprite>> Scene::get_sprites() const
 	std::vector<std::reference_wrapper<const Sprite>> sprite_crefs;
 	for(const auto& renderable_ptr : this->objects)
 	{
-		auto sprite_ptr = dynamic_cast<const Sprite*>(renderable_ptr.get());
+		auto sprite_ptr = dynamic_cast<const Sprite*>(renderable_ptr);
 		if(sprite_ptr != nullptr)
 			sprite_crefs.push_back(std::cref(*sprite_ptr));
 	}
@@ -626,7 +635,7 @@ std::unordered_set<const Renderable*> Scene::raycast(Vector2I screen_position, R
 	{
 		for (const auto &object_ptr : this->objects)
 			if (object_ptr->get_boundary().has_value() && object_ptr->get_boundary().value().intersects(ray))
-				collided.insert(object_ptr.get());
+				collided.insert(object_ptr);
 		return collided;
 	}
 	const auto* node = &this->octree.value();
@@ -666,7 +675,7 @@ const Renderable* Scene::get_renderable_by_id(std::size_t index) const
 	const Renderable* ret;
 	try
 	{
-		ret = this->objects.at(index).get();
+		ret = this->objects.at(index);
 	}
 	catch(...)
 	{
@@ -680,7 +689,7 @@ Renderable* Scene::get_renderable_by_id(std::size_t index)
 	Renderable* ret;
 	try
 	{
-		ret = this->objects.at(index).get();
+		ret = this->objects.at(index);
 	}
 	catch(...)
 	{
@@ -701,7 +710,7 @@ void Scene::swap(Scene& lhs, Scene& rhs)
 
 void Scene::erase_object(Renderable* to_delete)
 {
-	auto renderable_iterator = std::remove_if(this->objects.begin(), this->objects.end(), [&](const auto& renderable_ptr){return renderable_ptr.get() == to_delete;});
+	auto renderable_iterator = std::remove_if(this->objects.begin(), this->objects.end(), [&](const auto& renderable_ptr){return renderable_ptr == to_delete;});
 	if(renderable_iterator != this->objects.end())
 		this->objects.erase(renderable_iterator);
 }

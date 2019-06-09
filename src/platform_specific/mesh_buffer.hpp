@@ -67,6 +67,7 @@ namespace tz::platform
          * @param move - Mesh buffer to move from
          */
 		OGLMeshBuffer(OGLMeshBuffer&& move);
+		OGLMeshBuffer& operator=(OGLMeshBuffer&& rhs);
         /**
          * Construct a mesh element in-place of this buffer and receive the resultant mesh element.
          * @tparam Args - Argument types to construct the mesh element
@@ -99,15 +100,15 @@ namespace tz::platform
         /// VAO to store all mesh data.
 		OGLVertexArray vao;
         /// Vertex buffer containing all position data of every mesh.
-		OGLVertexBuffer& position_buffer;
+		OGLVertexBuffer* position_buffer;
         /// Vertex buffer containing all texture coordinates of every mesh.
-		OGLVertexBuffer& texcoord_buffer;
+		OGLVertexBuffer* texcoord_buffer;
         /// Vertex buffer containing all normals of every mesh.
-		OGLVertexBuffer& normal_buffer;
+		OGLVertexBuffer* normal_buffer;
         /// Vertex buffer containing all tangents of every mesh.
-		OGLVertexBuffer& tangent_buffer;
+		OGLVertexBuffer* tangent_buffer;
         /// Index buffer containing all indices of each mesh.
-		OGLIndexBuffer& index_buffer;
+		OGLIndexBuffer* index_buffer;
         /// Pointer to the position vertex attribute.
 		OGLVertexAttribute* position_attribute;
         /// Pointer to the texture coordinate vertex attribute.

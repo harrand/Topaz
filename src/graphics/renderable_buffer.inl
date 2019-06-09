@@ -1,3 +1,5 @@
+#include "graphics/static_object.hpp"
+
 template<class ObjectType>
 RenderableBuffer<ObjectType>::RenderableBuffer(GLuint layout_qualifier_id): objects(), mesh_buffer(), data_ssbo(layout_qualifier_id), matrix_pool(this->data_ssbo.persistently_map<Matrix4x4>(RenderableBuffer::capacity, false)){}
 
@@ -7,6 +9,19 @@ RenderableBuffer<ObjectType>::RenderableBuffer(const RenderableBuffer<ObjectType
     // Just copy all objects individually.
     for(const auto&[id, object_ptr] : copy.objects)
         this->objects[id] = std::make_unique<ObjectType>(*object_ptr);
+}
+
+template<class ObjectType>
+RenderableBuffer<ObjectType>::RenderableBuffer(RenderableBuffer<ObjectType>&& move): objects(std::move(move.objects)), mesh_buffer(std::move(move.mesh_buffer)), data_ssbo(std::move(move.data_ssbo)), matrix_pool(move.matrix_pool.first, move.matrix_pool.pool_size){}
+
+template<class ObjectType>
+RenderableBuffer<ObjectType>& RenderableBuffer<ObjectType>::operator=(RenderableBuffer<ObjectType>&& rhs)
+{
+    this->objects = std::move(rhs.objects);
+    this->mesh_buffer = std::move(rhs.mesh_buffer);
+    this->data_ssbo = std::move(rhs.data_ssbo);
+    this->matrix_pool = rhs.matrix_pool;
+    return *this;
 }
 
 template<class ObjectType>
@@ -27,7 +42,7 @@ ObjectSubType& RenderableBuffer<ObjectType>::emplace(Args&&... args)
 }
 
 template<class ObjectType>
-void RenderableBuffer<ObjectType>::render(RenderPass pass)
+void RenderableBuffer<ObjectType>::render(RenderPass pass) const
 {
     // Update the mvp matrix pool. Write "uniform" data.
     for(const auto&[id, object_ptr] : this->objects)
@@ -37,6 +52,7 @@ void RenderableBuffer<ObjectType>::render(RenderPass pass)
         matrix_pool[id+2] = pass.get_camera().projection(pass.get_window().get_width(), pass.get_window().get_height());
     }
     // After the pool is updated. bind the SSBO and initiate one render call.
+    pass.get_render_context().get_object_shader().bind();
     this->data_ssbo.bind();
     this->mesh_buffer.render();
 }

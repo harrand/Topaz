@@ -63,6 +63,9 @@ template<typename T>
 MemoryPool<T>::MemoryPool(void *begin_address, std::size_t pool_size): first(reinterpret_cast<T*>(begin_address)), last(reinterpret_cast<T*>(begin_address) + pool_size - 1), pool_size(pool_size){}
 
 template<typename T>
+MemoryPool<T>::MemoryPool(const MemoryPool<T>& pool): MemoryPool<T>(pool.begin_address, pool.pool_size){}
+
+template<typename T>
 template<template<typename> typename ContiguousContainer>
 MemoryPool<T>::MemoryPool(ContiguousContainer<T>& data): MemoryPool(data.data(), data.size()){}
 

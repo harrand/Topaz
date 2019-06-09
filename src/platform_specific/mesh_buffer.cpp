@@ -81,18 +81,18 @@ namespace tz::platform
 
 	OGLMeshElement::OGLMeshElement(): parent_array(nullptr), vertices(), indices(){}
 
-	OGLMeshBuffer::OGLMeshBuffer(): vao(), position_buffer(vao.emplace_vertex_buffer()), texcoord_buffer(vao.emplace_vertex_buffer()), normal_buffer(vao.emplace_vertex_buffer()), tangent_buffer(vao.emplace_vertex_buffer()), index_buffer(vao.emplace_index_buffer()), position_attribute(nullptr), texcoord_attribute(nullptr), normal_attribute(nullptr), tangent_attribute(nullptr), meshes()
+	OGLMeshBuffer::OGLMeshBuffer(): vao(), position_buffer(&vao.emplace_vertex_buffer()), texcoord_buffer(&vao.emplace_vertex_buffer()), normal_buffer(&vao.emplace_vertex_buffer()), tangent_buffer(&vao.emplace_vertex_buffer()), index_buffer(&vao.emplace_index_buffer()), position_attribute(nullptr), texcoord_attribute(nullptr), normal_attribute(nullptr), tangent_attribute(nullptr), meshes()
 	{
-		this->position_buffer.bind();
+		this->position_buffer->bind();
 		this->position_attribute = &this->vao.emplace_vertex_attribute(0);
 		this->position_attribute->define<float>(3, GL_FALSE, 3 * sizeof(float));
-		this->texcoord_buffer.bind();
+		this->texcoord_buffer->bind();
 		this->texcoord_attribute = &this->vao.emplace_vertex_attribute(1);
 		this->texcoord_attribute->define<float>(2, GL_FALSE, 2 * sizeof(float));
-		this->normal_buffer.bind();
+		this->normal_buffer->bind();
 		this->normal_attribute = &this->vao.emplace_vertex_attribute(2);
 		this->normal_attribute->define<float>(3, GL_TRUE, 3 * sizeof(float));
-		this->tangent_buffer.bind();
+		this->tangent_buffer->bind();
 		this->tangent_attribute = &this->vao.emplace_vertex_attribute(3);
 		this->tangent_attribute->define<float>(3, GL_TRUE, 3 * sizeof(float));
 	}
@@ -103,7 +103,28 @@ namespace tz::platform
 			this->emplace_mesh(*mesh_element_ptr);
 	}
 
-	OGLMeshBuffer::OGLMeshBuffer(OGLMeshBuffer&& move): vao(std::move(move.vao)), position_buffer(*vao.vertex_buffers[0]), texcoord_buffer(*vao.vertex_buffers[1]), normal_buffer(*vao.vertex_buffers[2]), tangent_buffer(*vao.vertex_buffers[3]), index_buffer(*vao.index_buffer), position_attribute(vao.vertex_attributes[0].get()), texcoord_attribute(vao.vertex_attributes[1].get()), normal_attribute(vao.vertex_attributes[2].get()), tangent_attribute(vao.vertex_attributes[3].get()), meshes(std::move(move.meshes)), index_counts(std::move(move.index_counts)) {}
+	OGLMeshBuffer::OGLMeshBuffer(OGLMeshBuffer&& move): vao(std::move(move.vao)), position_buffer(vao.vertex_buffers[0].get()), texcoord_buffer(vao.vertex_buffers[1].get()), normal_buffer(vao.vertex_buffers[2].get()), tangent_buffer(vao.vertex_buffers[3].get()), index_buffer(vao.index_buffer.get()), position_attribute(vao.vertex_attributes[0].get()), texcoord_attribute(vao.vertex_attributes[1].get()), normal_attribute(vao.vertex_attributes[2].get()), tangent_attribute(vao.vertex_attributes[3].get()), meshes(std::move(move.meshes)), index_counts(std::move(move.index_counts))
+	{
+		for(auto& mesh_ptr : this->meshes)
+			mesh_ptr->parent_array = &this->vao;
+	}
+
+	OGLMeshBuffer& OGLMeshBuffer::operator=(OGLMeshBuffer&& rhs)
+	{
+		this->vao = std::move(rhs.vao);
+		this->position_buffer = vao.vertex_buffers[0].get();
+		this->texcoord_buffer = vao.vertex_buffers[1].get();
+		this->normal_buffer = vao.vertex_buffers[2].get();
+		this->tangent_buffer = vao.vertex_buffers[3].get();
+		this->index_buffer = vao.index_buffer.get();
+		this->position_attribute = vao.vertex_attributes[0].get();
+		this->texcoord_attribute = vao.vertex_attributes[1].get();
+		this->normal_attribute = vao.vertex_attributes[2].get();
+		this->tangent_attribute = vao.vertex_attributes[3].get();
+		this->meshes = std::move(rhs.meshes);
+		this->index_counts = std::move(rhs.index_counts);
+		return *this;
+	}
 
 	void OGLMeshBuffer::integrate_mesh(const OGLMeshElement& mesh) const
 	{
@@ -126,10 +147,10 @@ namespace tz::platform
 		
 		// Upload to necessary buffers.
 		// First we retrieve any existing buffer information.
-		std::optional<decltype(positions)> current_positions = this->position_buffer.query_all_data<std::vector, decltype(positions)::value_type>();
-		std::optional<decltype(texcoords)> current_texcoords = this->texcoord_buffer.query_all_data<std::vector, decltype(texcoords)::value_type>();
-		std::optional<decltype(normals)> current_normals = this->normal_buffer.query_all_data<std::vector, decltype(normals)::value_type>();
-		std::optional<decltype(tangents)> current_tangents = this->tangent_buffer.query_all_data<std::vector, decltype(tangents)::value_type>();
+		std::optional<decltype(positions)> current_positions = this->position_buffer->query_all_data<std::vector, decltype(positions)::value_type>();
+		std::optional<decltype(texcoords)> current_texcoords = this->texcoord_buffer->query_all_data<std::vector, decltype(texcoords)::value_type>();
+		std::optional<decltype(normals)> current_normals = this->normal_buffer->query_all_data<std::vector, decltype(normals)::value_type>();
+		std::optional<decltype(tangents)> current_tangents = this->tangent_buffer->query_all_data<std::vector, decltype(tangents)::value_type>();
 		if(current_positions.has_value())
 		{
 			for(auto i = current_positions.value().rbegin(); i != current_positions.value().rend(); i++)
@@ -152,14 +173,14 @@ namespace tz::platform
 		}
 		auto default_usage = OGLBufferUsage{OGLBufferFrequency::STATIC, OGLBufferNature::DRAW};
 		// Then re-upload the whole thing.
-		this->position_buffer.insert(positions, default_usage);
-		this->texcoord_buffer.insert(texcoords, default_usage);
-		this->normal_buffer.insert(normals, default_usage);
-		this->tangent_buffer.insert(tangents, default_usage);
+		this->position_buffer->insert(positions, default_usage);
+		this->texcoord_buffer->insert(texcoords, default_usage);
+		this->normal_buffer->insert(normals, default_usage);
+		this->tangent_buffer->insert(tangents, default_usage);
 
 		std::vector<unsigned int> indices = mesh.indices;
 		// Now append indices.
-		std::optional<std::vector<unsigned int>> current_indices = this->index_buffer.query_all_data<std::vector, unsigned int>();
+		std::optional<std::vector<unsigned int>> current_indices = this->index_buffer->query_all_data<std::vector, unsigned int>();
 		if(current_indices.has_value())
 		{
 			auto max_current_index = *std::max_element(current_indices.value().begin(), current_indices.value().end());
@@ -168,7 +189,7 @@ namespace tz::platform
 			for(auto i = current_indices.value().rbegin(); i != current_indices.value().rend(); i++)
 				indices.insert(indices.begin(), *i);
 		}
-		this->index_buffer.insert(indices, default_usage);
+		this->index_buffer->insert(indices, default_usage);
 	}
 
 	void OGLMeshBuffer::render() const

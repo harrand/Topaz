@@ -10,6 +10,9 @@
 #include <typeinfo>
 #include <unordered_map>
 
+template<class ObjectType>
+class RenderableBuffer;
+
 /**
  * Manages a pre-allocated but currently unmanaged pool of memory. Although the memory is managed by the class, it does not ever attempt to free the memory; that responsibility remains with the caller.
  * @tparam T - The type of data used in this pool. For pools supporting more than one type, consider a DynamicVariadicMemoryPool.
@@ -48,6 +51,7 @@ public:
      * @param pool_size - Number of elements (sizeof T's) that the MemoryPool should accommodate
      */
 	MemoryPool(void* begin_address, std::size_t pool_size);
+    MemoryPool(const MemoryPool<T>& pool);
     /**
      * Construct a MemoryPool to manage the data of an existing contiguous container, such as an std::vector. The container retains ownership of the memory, this pool simply can read and write to it.
      * @tparam ContiguousContainer - Template class for the contiguous container. The container must be contiguous. So std::vector is fine, but std::set is not.
@@ -79,6 +83,9 @@ public:
      * Sets all elements in this pool to be equal to its default value (from a default constructor).
      */
 	void default_all();
+
+    template<class ObjectType>
+    friend class ::RenderableBuffer;
 protected:
     /// First address in the pool.
 	T* first;

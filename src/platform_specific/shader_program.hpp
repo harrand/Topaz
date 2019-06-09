@@ -6,6 +6,8 @@
 #define TOPAZ_SHADER_PROGRAM_HPP
 
 #include "platform_specific/vertex_buffer.hpp"
+#include "platform_specific/uniform_buffer.hpp"
+#include "platform_specific/shader_storage_buffer.hpp"
 
 #ifdef TOPAZ_OPENGL
 namespace tz::platform
@@ -117,6 +119,33 @@ namespace tz::platform
 	class UniformImplicit;
 	template<typename T>
 	class Uniform;
+	class OGLShaderProgram;
+
+    class UniformState
+    {
+    public:
+        UniformState(const OGLShaderProgram* target = nullptr);
+        UniformState(const UniformState& copy);
+        UniformState(UniformState&& move);
+        UniformState& operator=(UniformState rhs);
+
+        template<typename T, typename... Args>
+        Uniform<T>& emplace(Args&&... args);
+        std::size_t size() const;
+        void clear();
+        template<typename T>
+        Uniform<T>* at(const std::string& location);
+        template<typename T>
+        const Uniform<T>* at(const std::string& location) const;
+        bool has_location(const std::string& location) const;
+        void retarget(const OGLShaderProgram* program);
+        void push_all() const;
+    private:
+        static void swap(UniformState& lhs, UniformState& rhs);
+
+        std::unordered_map<std::string, std::unique_ptr<UniformImplicit>> data;
+        const OGLShaderProgram* target;
+    };
 
 	/**
 	 * OpenGL GLSL shader program wrapper.
@@ -176,12 +205,6 @@ namespace tz::platform
 		template<typename T>
 		void set_uniform(const std::string& uniform_location, T value);
 		/**
-		 * Retrieve a pointer to the abstract class representing the uniform with the given name, if it exists (weakly-typed).
-		 * @param uniform_location - Name of the uniform to retrieve
-		 * @return - Pointer to the weakly-typed uniform if it exists, otherwise nullptr
-		 */
-		const UniformImplicit* get_uniform(const std::string& uniform_location) const;
-		/**
 		 * Retrieve the current value of the uniform with the given name.
 		 * @tparam T - Underlying type of the uniform
 		 * @param uniform_location - Name of the uniform
@@ -208,7 +231,21 @@ namespace tz::platform
 		 * @param name - Name of the attribute
 		 */
 		void bind_attribute(const OGLVertexAttribute& attribute, const std::string& name) const;
-		/**
+        /**
+         * Bind the ID of a given uniform buffer to this shader, making it available for use in the shader code.
+         * Note: The storage block can instead be hardcoded in the shader source. If this is the case, this method is not required.
+         * Example: Shader source containing the line: 'layout (std140) uniform my_uniform_buffer' needs an explicit bind (using this method). But 'layout (std140) uniform Matrices'
+         * @param uniform_buffer - Buffer whose binding ID to make available for this shader
+         * @param name - Uniform buffer name to be used in the shader code
+         */
+		void bind_uniform_block(const OGLUniformBuffer& uniform_buffer, const std::string& name) const;
+        /**
+         * Bind the layout qualifier id of the given SSBO to this shader, allowing it to be read/written from in the shader.
+         * @param storage_buffer - Buffer whose layout qualifier ID to make available for this shader
+         * @param name - Shader storage buffer name to be used in the shader code
+         */
+        void bind_shader_storage_block(const OGLShaderStorageBuffer& storage_buffer, const std::string& name) const;
+        /**
 		 * Query as to whether all attached ShaderComponents have been compiled successfully.
 		 * @return - True if all ShaderComponents are properly compiled, otherwise false
 		 */
@@ -257,8 +294,8 @@ namespace tz::platform
 		GLuint program_handle;
 		/// Container of all attached ShaderComponents.
 		std::vector<std::unique_ptr<OGLShaderComponent>> components;
-		/// Container of all attached polymorphic Uniforms.
-		std::vector<std::unique_ptr<UniformImplicit>> uniforms;
+		/// Store the current uniform state.
+		UniformState state;
 	};
 
 	/**
@@ -348,5 +385,4 @@ namespace tz::platform
 }
 #endif
 #include "platform_specific/shader_program.inl"
-
 #endif //TOPAZ_SHADER_PROGRAM_HPP

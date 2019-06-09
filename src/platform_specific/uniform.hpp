@@ -6,6 +6,7 @@
 #define TOPAZ_UNIFORM_HPP
 #include "graphics/light.hpp"
 #include "core/topaz.hpp"
+#include <unordered_map>
 
 #ifdef TOPAZ_OPENGL
 namespace tz::platform
@@ -27,6 +28,7 @@ namespace tz::platform
 		virtual void push() const = 0;
 		virtual std::unique_ptr<UniformImplicit> partial_unique_clone() const = 0;
 		friend class OGLShaderProgram;
+        friend class UniformState;
 	protected:
 		virtual void retarget(const OGLShaderProgram* program);
 		/// Underlying OpenGL shader-handle.
@@ -38,7 +40,7 @@ namespace tz::platform
 	/**
 	* Represent an OpenGL uniform in C++. Supports the following Topaz/C++ primitives:
 	* bool, int, unsigned int, float, double, Vector2F, Vector3F, Vector4F, Matrix2x2, Matrix3x3, and Matrix4x4.
-	* If the template argument is not any of these types, a static assertation will fail in Uniform<T>::push and emit a compiler error.
+	* If the template argument is not any of these types, a static assertion will fail in Uniform<T>::push and emit a compiler error.
 	* @tparam T - Type of the Uniform value
 	*/
 	template<class T>
@@ -73,6 +75,7 @@ namespace tz::platform
 		 */
 		virtual void push() const final;
 		friend class OGLShaderProgram;
+        friend class UniformState;
 	protected:
 		Uniform<T>(const Uniform<T>& copy);
 		virtual void retarget(const OGLShaderProgram* program) override;
@@ -160,6 +163,7 @@ namespace tz::platform
 		virtual std::unique_ptr<UniformImplicit> partial_unique_clone() const override;
 		virtual void retarget(const OGLShaderProgram* program) override;
 		friend class OGLShaderProgram;
+        friend class UniformState;
 	private:
 		Uniform<PointLight>(const Uniform<PointLight>& copy);
 		/// Underlying value.

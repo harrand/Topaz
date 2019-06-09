@@ -1,5 +1,6 @@
 #ifndef TOPAZ_SCENE_HPP
 #define TOPAZ_SCENE_HPP
+#include "graphics/renderable_buffer.hpp"
 #include "physics/dynamic_object.hpp"
 #include "physics/dynamic_sprite.hpp"
 #include "physics/physics.hpp"
@@ -348,8 +349,9 @@ protected:
 	 */
 	void handle_deletions();
 
+    RenderableBuffer<StaticObject> object_buffer;
 	/// Container of all objects in the scene which can be rendered.
-	std::vector<std::unique_ptr<Renderable>> objects;
+	std::vector<Renderable*> objects;
 	/// Stores Renderable* referring to all possible sub-types of Renderable. E.g all StaticObjects will be in the same range, without having to do it in O(n) time checking through every renderable in the scene.
 	std::unordered_multimap<std::type_index, Renderable*> inheritance_map;
 	/// Container of all DirectionalLights in the Scene.
