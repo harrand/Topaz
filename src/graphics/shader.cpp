@@ -1,4 +1,5 @@
 #include "graphics/shader.hpp"
+#include "utility/string.hpp"
 #include "utility/file.hpp"
 #include "mesh.hpp"
 
@@ -27,7 +28,7 @@ namespace tz::platform
 			this->validate().report_if_fail(std::cout);
 	}
 
-	OGLShader::OGLShader(std::string path, bool compile, bool link, bool validate): OGLShader(::tz::utility::file::read(path + ".vertex.glsl"), ::tz::utility::file::read(path + ".tessellation_control.glsl"), ::tz::utility::file::read(path + ".tessellation_evaluation.glsl"), ::tz::utility::file::read(path + ".geometry.glsl"), ::tz::utility::file::read(path + ".fragment.glsl"), compile, link, validate) {}
+	OGLShader::OGLShader(std::string path, bool compile, bool link, bool validate): OGLShader(this->include_headers(path, ::tz::utility::file::read(path + ".vertex.glsl")), this->include_headers(path, ::tz::utility::file::read(path + ".tessellation_control.glsl")), this->include_headers(path, ::tz::utility::file::read(path + ".tessellation_evaluation.glsl")), this->include_headers(path, ::tz::utility::file::read(path + ".geometry.glsl")), this->include_headers(path, ::tz::utility::file::read(path + ".fragment.glsl")), compile, link, validate) {}
 
 	void OGLShader::setup_standard_attributes() const
 	{
@@ -41,6 +42,28 @@ namespace tz::platform
 		this->bind_attribute_location(static_cast<GLuint>(StandardAttribute::INSTANCE_MODEL_Y_ROW), attribute::instance_model_y_attribute);
 		this->bind_attribute_location(static_cast<GLuint>(StandardAttribute::INSTANCE_MODEL_Z_ROW), attribute::instance_model_z_attribute);
 		this->bind_attribute_location(static_cast<GLuint>(StandardAttribute::INSTANCE_MODEL_W_ROW), attribute::instance_model_w_attribute);
+	}
+
+	std::string OGLShader::include_headers(const std::string& path, const std::string& source) const
+	{
+		std::vector<std::string> source_lines = tz::utility::string::split_string(source, '\n');
+		std::string parsed_source;
+		for(auto& line : source_lines)
+		{
+			//tz::debug::print(line, "\n");
+			if(tz::utility::string::begins_with(line, "#include"))
+			{
+				// Need to handle include. Includes must be relative to the PROGRAM LOCATION.
+				tz::debug::print("OGLShaderComponent::include_headers(string&): Detected header include:\n");
+				std::string include_path = path.substr(0, path.find_last_of("/\\")) + "/" + tz::utility::string::substring(line, 10, line.size() - 2);
+				tz::debug::print("\tInclude path (relative to directory containing this shader) = \"", include_path, "\"\n");
+				std::string include_source = tz::utility::file::read(include_path);
+				tz::debug::print("\tShader Source:\n", include_source);
+				line = include_source;
+			}
+			parsed_source += line + "\n";
+		}
+		return parsed_source;
 	}
 }
 #endif

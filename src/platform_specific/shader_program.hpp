@@ -8,6 +8,7 @@
 #include "platform_specific/vertex_buffer.hpp"
 #include "platform_specific/uniform_buffer.hpp"
 #include "platform_specific/shader_storage_buffer.hpp"
+#include <unordered_set>
 
 #ifdef TOPAZ_OPENGL
 namespace tz::platform
@@ -91,7 +92,7 @@ namespace tz::platform
 		 * Upload the shader source code to VRAM. This alone does not compile the source code.
 		 * @param source - Source code of the shader
 		 */
-		void upload_source(const std::string& source) const;
+		void upload_source(std::string source) const;
 		/**
 		 * Compile the previously uploaded shader source code.
 		 * @return - CompileResult containing information about this compilation attempt

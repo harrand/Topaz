@@ -101,8 +101,9 @@ namespace tz::platform
 		return this->type;
 	}
 
-	void OGLShaderComponent::upload_source(const std::string &source) const
+	void OGLShaderComponent::upload_source(std::string source) const
 	{
+        tz::debug::print("OGLShaderComponent::upload_source(string): Checking for headers...\n");
 		auto length = static_cast<GLint>(source.length());
 		const GLchar* source_data = source.c_str();
 		glShaderSource(this->shader_handle, 1, &source_data, &length);
