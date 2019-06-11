@@ -69,12 +69,12 @@ public:
      * Obtain the maximum number of elements that this pool can store. It is guaranteed to be equal to the pool_size given to the constructor.
      * @return - Number of elements available in the pool
      */
-	std::size_t get_element_capacity() const;
+	virtual std::size_t get_element_capacity() const;
     /**
      * Obtain the size (in chars) of this pool.
      * @return - Number of chars that could be stored in this pool
      */
-	std::size_t get_byte_capacity() const;
+	virtual std::size_t get_byte_capacity() const;
     /**
      * Zero all memory in this pool. Essentially equal to memset.
      */
@@ -82,7 +82,7 @@ public:
     /**
      * Sets all elements in this pool to be equal to its default value (from a default constructor).
      */
-	void default_all();
+	virtual void default_all();
 
     template<class ObjectType>
     friend class ::RenderableBuffer;
@@ -110,6 +110,32 @@ public:
 	AutomaticMemoryPool(std::size_t pool_size);
     /// Deallocates all memory in the pool
 	virtual ~AutomaticMemoryPool();
+};
+
+template<typename... Ts>
+class StaticVariadicMemoryPool : public MemoryPool<char>
+{
+public:
+	StaticVariadicMemoryPool(void* begin_address);
+	StaticVariadicMemoryPool(void* begin_address, Ts&&... ts);
+    virtual std::size_t get_element_capacity() const override;
+	virtual std::size_t get_byte_capacity() const override;
+	template<typename T>
+	T& get();
+	template<typename T>
+	const T& get() const;
+	virtual void default_all() override;
+private:
+	using MemoryPool<char>::operator[];
+};
+
+template<typename... Ts>
+class AutomaticStaticVariadicMemoryPool : public StaticVariadicMemoryPool<Ts...>
+{
+public:
+    AutomaticStaticVariadicMemoryPool();
+    AutomaticStaticVariadicMemoryPool(Ts&&... ts);
+    virtual ~AutomaticStaticVariadicMemoryPool();
 };
 
 class DynamicVariadicMemoryPool : public MemoryPool<char>

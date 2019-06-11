@@ -51,6 +51,9 @@ void init()
 	std::cout << "double at index 1 = " << var_pool.at<double>(1) << "\n";
 	std::cout << var_pool.get_byte_usage() << "/" << var_pool.get_byte_capacity() << " bytes used.\n";
 
+    AutomaticStaticVariadicMemoryPool<float, int, char> s_var_pool{5.0f, 20, 'c'};
+    std::cout << s_var_pool.get<float>() << ", " << s_var_pool.get<char>() << "\n";
+
 	wnd.set_debug_callback();
 	wnd.set_fullscreen(Window::FullscreenType::WINDOWED_MODE);
 	wnd.set_swap_interval_type(Window::SwapIntervalType::IMMEDIATE_UPDATES);

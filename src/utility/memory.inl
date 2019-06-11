@@ -141,6 +141,60 @@ AutomaticMemoryPool<T>::~AutomaticMemoryPool()
 	std::free(this->first);
 }
 
+template<typename... Ts>
+StaticVariadicMemoryPool<Ts...>::StaticVariadicMemoryPool(void* begin_address): MemoryPool<char>(begin_address, this->get_byte_capacity()){}
+
+template<typename... Ts>
+StaticVariadicMemoryPool<Ts...>::StaticVariadicMemoryPool(void* begin_address, Ts&&... ts): StaticVariadicMemoryPool<Ts...>(begin_address)
+{
+	*reinterpret_cast<std::tuple<Ts...>*>(this->first) = {std::forward<Ts>(ts)...};
+}
+
+template<typename... Ts>
+std::size_t StaticVariadicMemoryPool<Ts...>::get_element_capacity() const
+{
+	return sizeof...(Ts);
+}
+
+template<typename... Ts>
+std::size_t StaticVariadicMemoryPool<Ts...>::get_byte_capacity() const
+{
+	return (sizeof(Ts) + ...);
+}
+
+template<typename... Ts>
+template<typename T>
+T& StaticVariadicMemoryPool<Ts...>::get()
+{
+	return std::get<T>(*reinterpret_cast<std::tuple<Ts...>*>(this->first));
+}
+
+template<typename... Ts>
+template<typename T>
+const T& StaticVariadicMemoryPool<Ts...>::get() const
+{
+	return std::get<T>(*reinterpret_cast<std::tuple<Ts...>*>(this->first));
+}
+
+template<typename... Ts>
+void StaticVariadicMemoryPool<Ts...>::default_all()
+{
+	// Need to value initialise all objects
+	*reinterpret_cast<std::tuple<Ts...>*>(this->first) = {};
+}
+
+template<typename... Ts>
+AutomaticStaticVariadicMemoryPool<Ts...>::AutomaticStaticVariadicMemoryPool(): StaticVariadicMemoryPool<Ts...>(std::malloc(this->get_byte_capacity())){}
+
+template<typename... Ts>
+AutomaticStaticVariadicMemoryPool<Ts...>::AutomaticStaticVariadicMemoryPool(Ts&&... ts): StaticVariadicMemoryPool<Ts...>(std::malloc(this->get_byte_capacity()), std::forward<Ts>(ts)...){}
+
+template<typename... Ts>
+AutomaticStaticVariadicMemoryPool<Ts...>::~AutomaticStaticVariadicMemoryPool()
+{
+	std::free(this->first);
+}
+
 template<typename T>
 void DynamicVariadicMemoryPool::push_back(T value)
 {

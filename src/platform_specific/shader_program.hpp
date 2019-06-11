@@ -122,6 +122,9 @@ namespace tz::platform
 	class Uniform;
 	class OGLShaderProgram;
 
+    /**
+     * Stores the current state of a set of uniforms.
+     */
     class UniformState
     {
     public:
