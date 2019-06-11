@@ -6,6 +6,7 @@
 #include "data/transform.hpp"
 #include "physics/physics_object.hpp"
 #include "graphics/renderable.hpp"
+#include "platform_specific/uniform_buffer.hpp"
 
 /**
  * StaticObjects do NOT own the assets that they use.

@@ -6,6 +6,7 @@
 #define TOPAZ_RENDER_HPP
 #include "graphics/static_object.hpp"
 #include "physics/boundary.hpp"
+#include "platform_specific/uniform_buffer.hpp"
 
 /**
  * Like any other StaticObject, but always toggles wireframe-mode between render calls so that the box is transparent.
@@ -40,6 +41,8 @@ namespace tz::utility::render
 	 * @return - The StaticObject equivalent of the given AABB
 	 */
 	RenderableBoundingBox see_aabb(AssetBuffer& buffer, const AABB& box, const Vector3F& colour = {1.0f, 1.0f, 1.0f}, float wire_width = 1.0f);
+
+	tz::platform::OGLUniformBuffer pack_mvp(GLuint uniform_binding_id, Matrix4x4 model, Matrix4x4 view, Matrix4x4 projection);
 }
 
 #endif //TOPAZ_RENDER_HPP

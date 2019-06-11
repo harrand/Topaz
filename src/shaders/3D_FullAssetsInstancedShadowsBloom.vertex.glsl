@@ -1,6 +1,8 @@
 // Vertex Shader version 4.30
 #version 430
 
+#include "transform_utility.header.glsl"
+
 layout(location = 0) in vec3 position;
 layout(location = 1) in vec2 texcoord;
 layout(location = 2) in vec3 normal;
@@ -10,18 +12,20 @@ layout(location = 5) in vec4 instancing_model_y;
 layout(location = 6) in vec4 instancing_model_z;
 layout(location = 7) in vec4 instancing_model_w;
 
-out vec3 position_modelspace;
-out vec2 texcoord_modelspace;
-out vec3 normal_modelspace;
-out vec3 eye_direction_cameraspace;
-out vec3 light_direction_cameraspace;
+out MeshData
+{
+    vec3 position_modelspace;
+    vec4 position_lightspace;
+    vec2 texcoord_modelspace;
+    vec3 normal_modelspace;
+} output_mesh_data;
 
-/*
-out mat4 model_matrix;
-out mat4 view_matrix;
-out mat4 projection_matrix;
-out mat3 tbn_matrix;
-*/
+out CameraData
+{
+    vec3 eye_direction_cameraspace;
+    vec3 light_direction_cameraspace;
+} output_camera_data;
+
 out MatrixBlock
 {
     mat4 model;
@@ -29,8 +33,6 @@ out MatrixBlock
     mat4 projection;
     mat3 tbn;
 } output_matrices;
-
-out vec4 position_lightspace;
 
 uniform mat4 m;
 uniform mat4 v;
@@ -47,11 +49,11 @@ mat4 model_instanced;
 
 void share()
 {
-	position_modelspace = position;
-	texcoord_modelspace = texcoord;
-	normal_modelspace = normal;
+	output_mesh_data.position_modelspace = position;
+	output_mesh_data.texcoord_modelspace = texcoord;
+	output_mesh_data.normal_modelspace = normal;
 	if(has_displacement_map)
-		position_modelspace += normal * texture2D(displacement_map_sampler, texcoord_modelspace).r * displacement_factor;
+		output_mesh_data.position_modelspace += normal * texture2D(displacement_map_sampler, texcoord).r * displacement_factor;
 
 	model_instanced = transpose(mat4(instancing_model_x, instancing_model_y, instancing_model_z, instancing_model_w));
 
@@ -62,12 +64,12 @@ void share()
 	output_matrices.view = v;
 	output_matrices.projection = p;
 
-	vec3 position_cameraspace = (output_matrices.view * output_matrices.model * vec4(position_modelspace, 1.0)).xyz;
-	eye_direction_cameraspace = vec3(0, 0, 0) - position_cameraspace;
+	vec3 position_cameraspace = transform3f(output_mesh_data.position_modelspace, output_matrices.view * output_matrices.model, true);
+	output_camera_data.eye_direction_cameraspace = vec3(0, 0, 0) - position_cameraspace;
 
 	// edit this as you wish
 	const vec3 light_position_cameraspace = vec3(0, 0, 0);
-	light_direction_cameraspace = light_position_cameraspace + eye_direction_cameraspace;
+	output_camera_data.light_direction_cameraspace = light_position_cameraspace + output_camera_data.eye_direction_cameraspace;
 	
 	vec3 bitangent = cross(tangent, normal);
 	
@@ -86,12 +88,12 @@ void main()
 	share();
 	if(is_instanced)
 	{
-		gl_Position = p * v * (model_instanced * vec4(position_modelspace, 1.0));
-		position_lightspace = light_viewprojection * model_instanced * vec4(position_modelspace, 1.0);
+		gl_Position = p * v * (model_instanced * vec4(output_mesh_data.position_modelspace, 1.0));
+		output_mesh_data.position_lightspace = light_viewprojection * model_instanced * vec4(output_mesh_data.position_modelspace, 1.0);
 	}
 	else
 	{
-		gl_Position = (p * v * m) * vec4(position_modelspace, 1.0);
-		position_lightspace = light_viewprojection * m * vec4(position_modelspace, 1.0);
+		gl_Position = (p * v * m) * vec4(output_mesh_data.position_modelspace, 1.0);
+		output_mesh_data.position_lightspace = light_viewprojection * m * vec4(output_mesh_data.position_modelspace, 1.0);
 	}
 }

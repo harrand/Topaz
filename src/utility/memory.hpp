@@ -54,10 +54,10 @@ public:
     MemoryPool(const MemoryPool<T>& pool);
     /**
      * Construct a MemoryPool to manage the data of an existing contiguous container, such as an std::vector. The container retains ownership of the memory, this pool simply can read and write to it.
-     * @tparam ContiguousContainer - Template class for the contiguous container. The container must be contiguous. So std::vector is fine, but std::set is not.
+     * @tparam ContiguousContainer - Template class for the contiguous container. The container must be contiguous. So std::vector is fine, but std::set is not. SFINAE is used to prevent this constructor from ever being selected over the MemoryPool copy constructor (as MemoryPool<T> substitutes into ContiguousContainer<T>).
      * @param data - Container value to manage memory of
      */
-	template<template<typename> typename ContiguousContainer>
+	template<template<typename> typename ContiguousContainer, typename = typename std::enable_if_t<!std::is_same_v<ContiguousContainer<T>, MemoryPool<T>>>>
 	MemoryPool(ContiguousContainer<T>& data);
 	iterator begin();
 	const_iterator cbegin() const;

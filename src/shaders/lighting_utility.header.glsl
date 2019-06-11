@@ -80,3 +80,15 @@ bool in_range(float value)
 {
 	return value >= 0.0f && value <= 1.0f;
 }
+
+bool in_shadow(vec4 position_lightspace, sampler2D shadow_map_sampler)
+{
+    vec3 projection_coords = position_lightspace.xyz / position_lightspace.w;
+    projection_coords = projection_coords * 0.5f + 0.5f;
+    if(!in_range(projection_coords.x) || !in_range(projection_coords.y))
+    	return false;
+    float closest_depth = texture(shadow_map_sampler, projection_coords.xy).r;
+    float current_depth = projection_coords.z;
+    const float bias = 0.005f;
+    return current_depth - bias > closest_depth;
+}
