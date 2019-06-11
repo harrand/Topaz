@@ -1,15 +1,28 @@
 // Fragment Shader version 4.30
 #version 430
 
+#include "lighting_utility.header.glsl"
+// This shader works primarily in camera-space.
+
 in vec3 position_modelspace;
 in vec2 texcoord_modelspace;
 in vec3 normal_modelspace;
 in vec3 eye_direction_cameraspace;
 in vec3 light_direction_cameraspace;
 
+/*
 in mat4 model_matrix;
 in mat4 view_matrix;
 in mat3 tbn_matrix;
+*/
+in MatrixBlock
+{
+    mat4 model;
+    mat4 view;
+    mat4 projection;
+    mat3 tbn;
+} input_matrices;
+
 in vec4 position_lightspace;
 
 uniform sampler2D texture_sampler;
@@ -47,32 +60,13 @@ uniform float parallax_bias;
 layout(location = 0) out vec4 fragment_colour;
 layout(location = 1) out vec4 bright_colour;
 
-// This shader works primarily in camera-space.
-
-struct DirectionalLight
-{
-	// Direction is in cameraspace.
-	vec3 direction;
-	vec3 colour;
-	float power;
-};
-
 // Unlike hard-coded DirectionalLight, we expect the attributes to be in worldspace, NOT cameraspace.
 const uint num_directional_lights = 8;
 uniform DirectionalLight directional_lights[num_directional_lights];
 
-struct PointLight
-{
-	// Position is in cameraspace.
-	vec3 position;
-	vec3 colour;
-	float power;
-};
-
 const uint num_point_lights = 8;
 uniform PointLight point_lights[num_point_lights];
 
-#include "utility.header.glsl"
 
 vec3 full_texture_colour(vec2 texcoord)
 {
@@ -112,16 +106,16 @@ void main()
 {
 	vec2 parallaxed_texcoord;
 	if(has_parallax_map)
-		parallaxed_texcoord = parallax_offset(texcoord_modelspace);
+		parallaxed_texcoord = parallax_offset(normalize(input_matrices.tbn * eye_direction_cameraspace), parallax_map_sampler, texcoord_modelspace, parallax_multiplier, parallax_bias);
 	else
 		parallaxed_texcoord = texcoord_modelspace;
 	// TBN matrix goes from cameraspace to tangentspace
-	vec3 position_cameraspace = (view_matrix * model_matrix * vec4(position_modelspace, 1.0)).xyz;
+	vec3 position_cameraspace = (input_matrices.view * input_matrices.model * vec4(position_modelspace, 1.0)).xyz;
 	vec3 normal_cameraspace;
 	if(has_normal_map)
-		normal_cameraspace = transpose(tbn_matrix) * (texture(normal_map_sampler, parallaxed_texcoord).xyz * 255.0/128.0 - 1);
+		normal_cameraspace = transpose(input_matrices.tbn) * (texture(normal_map_sampler, parallaxed_texcoord).xyz * 255.0/128.0 - 1);
 	else
-		normal_cameraspace = normalize((view_matrix * model_matrix * vec4(normal_modelspace, 0.0)).xyz);
+		normal_cameraspace = normalize((input_matrices.view * input_matrices.model * vec4(normal_modelspace, 0.0)).xyz);
 	vec3 texture_colour = full_texture_colour(parallaxed_texcoord);
 	fragment_colour = vec4(0.0f, 0.0f, 0.0f, 0.0f);
 	 // Directional Component camera light. disabled by default.
@@ -137,15 +131,15 @@ void main()
 	{
 		DirectionalLight light = directional_lights[i];
 		// convert attribute(s) to cameraspace, then perform the processing.
-		light.direction = (view_matrix * vec4(light.direction, 0.0)).xyz;
-		fragment_colour += vec4(diffuse_directional(light, texture_colour, normal_cameraspace) + specular_directional(light, texture_colour, normal_cameraspace), 1.0);
+		light.direction = (input_matrices.view * vec4(light.direction, 0.0)).xyz;
+		fragment_colour += vec4(diffuse_directional(light, texture_colour, normal_cameraspace) + specular_directional(light, texture_colour, normal_cameraspace, eye_direction_cameraspace, OptionalSampler(has_specular_map, specular_map_sampler), texcoord_modelspace), 1.0);
 	}
 	for(uint i = 0; i < num_point_lights; i++)
 	{
 		PointLight light = point_lights[i];
 		// convert attribute(s) to cameraspace, then perform the processing.
-		light.position = (view_matrix * vec4(light.position, 1.0)).xyz;
-		fragment_colour += vec4(diffuse(light, texture_colour, normal_cameraspace, position_cameraspace) + specular(light, texture_colour, normal_cameraspace, position_cameraspace), 1.0);
+		light.position = (input_matrices.view * vec4(light.position, 1.0)).xyz;
+		fragment_colour += vec4(diffuse(light, texture_colour, normal_cameraspace, position_cameraspace, eye_direction_cameraspace) + specular(light, texture_colour, normal_cameraspace, position_cameraspace, eye_direction_cameraspace, OptionalSampler(has_specular_map, specular_map_sampler), texcoord_modelspace), 1.0);
 	}
 	if(in_shadow())
 		fragment_colour.xyz /= 2.0f;

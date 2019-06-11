@@ -16,10 +16,20 @@ out vec3 normal_modelspace;
 out vec3 eye_direction_cameraspace;
 out vec3 light_direction_cameraspace;
 
+/*
 out mat4 model_matrix;
 out mat4 view_matrix;
 out mat4 projection_matrix;
 out mat3 tbn_matrix;
+*/
+out MatrixBlock
+{
+    mat4 model;
+    mat4 view;
+    mat4 projection;
+    mat3 tbn;
+} output_matrices;
+
 out vec4 position_lightspace;
 
 uniform mat4 m;
@@ -46,13 +56,13 @@ void share()
 	model_instanced = transpose(mat4(instancing_model_x, instancing_model_y, instancing_model_z, instancing_model_w));
 
 	if(is_instanced)
-		model_matrix = model_instanced;
+		output_matrices.model = model_instanced;
 	else
-		model_matrix = m;
-	view_matrix = v;
-	projection_matrix = p;
+		output_matrices.model = m;
+	output_matrices.view = v;
+	output_matrices.projection = p;
 
-	vec3 position_cameraspace = (view_matrix * model_matrix * vec4(position_modelspace, 1.0)).xyz;
+	vec3 position_cameraspace = (output_matrices.view * output_matrices.model * vec4(position_modelspace, 1.0)).xyz;
 	eye_direction_cameraspace = vec3(0, 0, 0) - position_cameraspace;
 
 	// edit this as you wish
@@ -68,7 +78,7 @@ void share()
 	// Gramm-Schmidt Process
 	tangent_cameraspace = normalize(tangent_cameraspace - dot(tangent_cameraspace, normal_cameraspace) * normal_cameraspace);
 	
-	tbn_matrix = transpose(mat3(tangent_cameraspace, bitangent_cameraspace, normal_cameraspace));
+	output_matrices.tbn = transpose(mat3(tangent_cameraspace, bitangent_cameraspace, normal_cameraspace));
 }
 
 void main()
