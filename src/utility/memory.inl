@@ -71,7 +71,7 @@ MemoryPool<T>::MemoryPool(ContiguousContainer<T>& data): MemoryPool(data.data(),
 
 template<typename T>
 template<template<typename> typename ContiguousContainer, typename>
-MemoryPool<T>& MemoryPool<T>::operator=(ContiguousContainer<T>& data)
+MemoryPool<T>& MemoryPool<T>::operator=(const ContiguousContainer<T>& data)
 {
 	topaz_assert(data.size() <= this->get_element_capacity(), "MemoryPool<T>& MemoryPool<T>::operator=(...): Assigning from ContiguousContainer failed, because the ContiguousContainer size (", data.size(), ") is larger than this allocated pool (", this->get_element_capacity(), ").");
 	for(std::size_t i = 0; i < data.size(); i++)

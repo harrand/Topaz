@@ -167,10 +167,41 @@ namespace tz::platform
 		 */
 		template<template<typename> typename Container, typename POD>
 		void insert(const Container<POD>& data, const OGLBufferUsage& usage) const;
+		/**
+		 * Relevant OpenGL reference: https://www.khronos.org/opengl/wiki/Buffer_Object#Persistent_mapping
+		 * Map this generic buffer persistently, wrapping the buffer data into a single MemoryPool of a given type.
+		 * This is incredibly useful if you intend to store instances of only one type into this buffer.
+		 * Note: It is UB to invoke either insert(...), persistently_map(...) or persistently_map_variadic(...) on this class again after this invocation.
+		 * @tparam POD - Type of object to store in the buffer
+		 * @param pod_count - Maximum number of objects allowed in the buffer
+		 * @param retrieve_current_data - Whether previous data should be preserved. Otherwise, will overwrite all existing data
+		 * @return - MemoryPool managing the buffer's memory
+		 */
 		template<typename POD>
 		MemoryPool<POD> persistently_map(std::size_t pod_count, bool retrieve_current_data) const;
+		/**
+		 * Relevant OpenGL reference: https://www.khronos.org/opengl/wiki/Buffer_Object#Persistent_mapping
+		 * Map this generic buffer persistently around an SVMPool of known composition.
+		 * This is incredibly useful if you wish to treat this buffer essentially as a struct.
+		 * Example: Say you want to store a float, an int, and then a Vector3F in a generic buffer.
+		 * persistently_map_variadic<float, int, Vector3F> returns a MemoryPool which allows you to read/write from it easily.
+		 * Note: It is UB to invoke either insert(...), persistently_map(...) or persistently_map_variadic(...) on this class again after this invocation.
+		 * @tparam Ts - Template arguments comprising the objects in the buffer
+		 * @param retrieve_current_data - Whether previous data should be preserved. Otherwise, will overwrite all existing data
+		 * @return - SVMPool managing the buffer's memory
+		 */
 		template<typename... Ts>
 		SVMPool<Ts...> persistently_map_variadic(bool retrieve_current_data) const;
+		/**
+		 * Relevant OpenGL reference: https://www.khronos.org/opengl/wiki/Buffer_Object#Persistent_mapping
+		 * Map this generic buffer persisently around a DVMPool of any composition.
+		 * This is incredibly useful if you wish to be able to easily insert whatever you want into the buffer.
+		 * Consider the example for an SVMPool, but you do not know the type composition at compile time. In this case, returning a DVMPool is superior.
+		 * Note: It is UB to invoke either insert(...), persistently_map(...) or persistently_map_variadic(...) on this class again after this invocation.
+		 * @param byte_count - Capacity of the pool, in bytes
+		 * @param retrieve_current_data - Whether previous data should be preserved. Otherwise, will overwrite all existing data
+		 * @return - DVMPool managing the buffer's memory
+		 */
 		DVMPool persistently_map_variadic(std::size_t byte_count, bool retrieve_current_data) const;
 	};
 }
