@@ -63,8 +63,17 @@ namespace tz::platform
 	}
 
 	template<OGLBufferType T>
-	DynamicVariadicMemoryPool OGLGenericBuffer<T>::persistently_map_variadic(std::size_t byte_count, bool retrieve_current_data) const
+	template<typename... Ts>
+	SVMPool<Ts...> OGLGenericBuffer<T>::persistently_map_variadic(bool retrieve_current_data) const
 	{
-		return dynamic_cast<DynamicVariadicMemoryPool>(this->persistently_map<char>(byte_count, retrieve_current_data));
+		std::size_t byte_size = (sizeof(Ts) + ...);
+		auto pool = this->persistently_map<char>(byte_size, retrieve_current_data);
+		return {std::move(pool)};
+	}
+
+	template<OGLBufferType T>
+	DVMPool OGLGenericBuffer<T>::persistently_map_variadic(std::size_t byte_count, bool retrieve_current_data) const
+	{
+		return {this->persistently_map<char>(byte_count, retrieve_current_data), 0};
 	}
 }

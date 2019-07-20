@@ -59,6 +59,8 @@ public:
      */
 	template<template<typename> typename ContiguousContainer, typename = typename std::enable_if_t<!std::is_same_v<ContiguousContainer<T>, MemoryPool<T>>>>
 	MemoryPool(ContiguousContainer<T>& data);
+	template<template<typename> typename ContiguousContainer, typename = typename std::enable_if_t<!std::is_same_v<ContiguousContainer<T>, MemoryPool<T>>>>
+	MemoryPool<T>& operator=(ContiguousContainer<T>&);
 	iterator begin();
 	const_iterator cbegin() const;
 	iterator end();
@@ -112,22 +114,33 @@ public:
 	virtual ~AutomaticMemoryPool();
 };
 
+template<typename T>
+using AMPool = AutomaticMemoryPool<T>;
+
 template<typename... Ts>
 class StaticVariadicMemoryPool : public MemoryPool<char>
 {
 public:
 	StaticVariadicMemoryPool(void* begin_address);
 	StaticVariadicMemoryPool(void* begin_address, Ts&&... ts);
+	StaticVariadicMemoryPool(MemoryPool<char>&& fixed_pool);
     virtual std::size_t get_element_capacity() const override;
 	virtual std::size_t get_byte_capacity() const override;
 	template<typename T>
 	T& get();
 	template<typename T>
 	const T& get() const;
+	template<std::size_t I>
+	decltype(auto) get();
+	template<std::size_t I>
+	decltype(auto) get() const;
 	virtual void default_all() override;
 private:
 	using MemoryPool<char>::operator[];
 };
+
+template<typename... Ts>
+using SVMPool = StaticVariadicMemoryPool<Ts...>;
 
 template<typename... Ts>
 class AutomaticStaticVariadicMemoryPool : public StaticVariadicMemoryPool<Ts...>
@@ -138,10 +151,15 @@ public:
     virtual ~AutomaticStaticVariadicMemoryPool();
 };
 
+template<typename... Ts>
+using ASVMPool = AutomaticStaticVariadicMemoryPool<Ts...>;
+
 class DynamicVariadicMemoryPool : public MemoryPool<char>
 {
 public:
 	DynamicVariadicMemoryPool(void* begin_address, std::size_t byte_size);
+    template<typename T>
+    DynamicVariadicMemoryPool(MemoryPool<T>&& pool, std::size_t inserted_size);
 	template<typename T>
 	void push_back(T value);
 	std::size_t get_size() const;
@@ -163,12 +181,16 @@ private:
 	std::unordered_map<std::type_index, std::size_t> type_size_map;
 };
 
+using DVMPool = DynamicVariadicMemoryPool;
+
 class AutomaticDynamicVariadicMemoryPool : public DynamicVariadicMemoryPool
 {
 public:
 	AutomaticDynamicVariadicMemoryPool(std::size_t byte_size);
 	virtual ~AutomaticDynamicVariadicMemoryPool();
 };
+
+using ADVMPool = AutomaticDynamicVariadicMemoryPool;
 
 #include "utility/memory.inl"
 #endif //TOPAZ_MEMORY_HPP

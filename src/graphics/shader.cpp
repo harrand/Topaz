@@ -54,7 +54,7 @@ namespace tz::platform
 			if(tz::utility::string::begins_with(line, "#include"))
 			{
 				// Need to handle include. Includes must be relative to the PROGRAM LOCATION.
-				tz::debug::print("OGLShaderComponent::include_headers(string&): Detected header include:\n");
+				tz::debug::print("OGLShader::include_headers(string&): Detected header include:\n");
 				std::string include_path = path.substr(0, path.find_last_of("/\\")) + "/" + tz::utility::string::substring(line, 10, line.size() - 2);
 				tz::debug::print("\tInclude path (relative to directory containing this shader) = \"", include_path, "\"\n");
 				std::string include_source = tz::utility::file::read(include_path);

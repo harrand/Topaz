@@ -23,28 +23,22 @@ void Bitmap<Pixel>::set(const Vector2S& coordinate, Pixel pixel)
 	this->pixels.at(coordinate.x + this->width * coordinate.y) = pixel;
 }
 
+#ifndef topaz_assert
+#define topaz_assert(x, y)
+#endif
+
 namespace tz::graphics
 {
 	inline void initialise()
 	{
-		if(!tz::graphics::has_context)
-		{
-			tz::debug::print("tz::graphics::initialise(): Error: Initialisation of tz::graphics aborted: No OpenGL context has been setup yet.\n");
-			return;
-		}
+		topaz_assert(tz::graphics::has_context, "tz::graphics::initialise(): Error: Initialisation of tz::graphics aborted: No OpenGL context has been setup yet.");
 		tz::debug::print("tz::graphics::initialise(): OpenGL context detected, initialising tz::graphics...\n");
-		GLenum status = glewInit();
-		if(status != GLEW_OK)
-		{
-			tz::debug::print("tz::graphics::initialise(): Fatal Error: Initialisation of GLEW failed.\n\tInitialisation of tz::graphics unsuccessful!\n");
-			//SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Topaz Error", (std::string("Topaz graphics module (tz::graphics) failed to initialise.\nError message:\n ") + std::string(SDL_GetError())).c_str(), NULL);
-		}
-		else
-			tz::debug::print("tz::graphics::initialise(): Initialisation of GLEW successful.\n\tInitialised tz::graphics via GLEW (OpenGL).\n");
-		if(TTF_Init() == 0)
-			tz::debug::print("tz::graphics::initialise(): Successfully initialised SDL2_ttf.\n");
-		else
-			tz::debug::print("tz::graphics::initialise(): Fatal Error: Initialisation of SDL2_ttf failed.\n");
+		[[maybe_unused]] GLenum status = glewInit();
+		topaz_assert(status == GLEW_OK, "tz::graphics::initialise(): Fatal Error: Initialisation of GLEW failed.\n\tInitialisation of tz::graphics unsuccessful!");
+		tz::debug::print("tz::graphics::initialise(): Initialisation of GLEW successful.\n\tInitialised tz::graphics via GLEW (OpenGL).\n");
+		[[maybe_unused]] int ttf_init_result = TTF_Init();
+		topaz_assert(ttf_init_result == 0, "tz::graphics::initialise(): Fatal Error: Initialisation of SDL2_ttf failed.");
+		tz::debug::print("tz::graphics::initialise(): Successfully initialised SDL2_ttf.\n");
 		tz::graphics::initialised = true;
 		glEnable(GL_FRAMEBUFFER_SRGB);
 		glEnable(GL_MULTISAMPLE);

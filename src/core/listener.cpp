@@ -39,6 +39,7 @@ MouseListener::MouseListener(MouseListener&& move): MouseListener()
 
 void MouseListener::handle_events(const SDL_Event& evt)
 {
+	topaz_assert(this->window != nullptr, "MouseListener::handle_events(...): Invoked without an attached window.");
 	this->reload_mouse_delta();
 	if(evt.type == SDL_MOUSEMOTION)
 	{

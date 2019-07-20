@@ -17,6 +17,9 @@ namespace tz
 		constexpr bool is_debug_mode = false;
 	#endif
 
+	#ifdef topaz_assert
+		#undef topaz_assert
+    #endif
 	#define topaz_assert(EXPRESSION, ... ) ((EXPRESSION) ? \
 (void)0 : tz::assert_message(std::cerr, \
 "Assertion failure: ", #EXPRESSION, "\nIn file: ", __FILE__, \
@@ -26,6 +29,7 @@ namespace tz
 	{
 		if constexpr(tz::is_debug_mode)
 		{
+			std::flush(out);
 			(out << ... << args) << std::endl;
 			std::abort();
 		}

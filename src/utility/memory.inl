@@ -70,6 +70,16 @@ template<template<typename> typename ContiguousContainer, typename>
 MemoryPool<T>::MemoryPool(ContiguousContainer<T>& data): MemoryPool(data.data(), data.size()){}
 
 template<typename T>
+template<template<typename> typename ContiguousContainer, typename>
+MemoryPool<T>& MemoryPool<T>::operator=(ContiguousContainer<T>& data)
+{
+	topaz_assert(data.size() <= this->get_element_capacity(), "MemoryPool<T>& MemoryPool<T>::operator=(...): Assigning from ContiguousContainer failed, because the ContiguousContainer size (", data.size(), ") is larger than this allocated pool (", this->get_element_capacity(), ").");
+	for(std::size_t i = 0; i < data.size(); i++)
+		(*this)[i] = data[i];
+	return *this;
+}
+
+template<typename T>
 typename MemoryPool<T>::iterator MemoryPool<T>::begin()
 {
 	return {0, this->first};
@@ -151,6 +161,12 @@ StaticVariadicMemoryPool<Ts...>::StaticVariadicMemoryPool(void* begin_address, T
 }
 
 template<typename... Ts>
+StaticVariadicMemoryPool<Ts...>::StaticVariadicMemoryPool(MemoryPool<char>&& fixed_pool): StaticVariadicMemoryPool<Ts...>(&*fixed_pool.begin())
+{
+	topaz_assert(fixed_pool.get_byte_capacity() == this->get_byte_capacity(), "StaticVariadicMemoryPool<Ts...>::StaticVariadicMemoryPool(MemoryPool<char>&&): The byte-pool provided was of size ", fixed_pool.get_byte_capacity(), ", which does not fit properly into an SVMPool of this format of size ", this->get_byte_capacity(), ".");
+}
+
+template<typename... Ts>
 std::size_t StaticVariadicMemoryPool<Ts...>::get_element_capacity() const
 {
 	return sizeof...(Ts);
@@ -177,6 +193,20 @@ const T& StaticVariadicMemoryPool<Ts...>::get() const
 }
 
 template<typename... Ts>
+template<std::size_t I>
+decltype(auto) StaticVariadicMemoryPool<Ts...>::get()
+{
+	return std::get<I>(*reinterpret_cast<std::tuple<Ts...>*>(this->first));
+}
+
+template<typename... Ts>
+template<std::size_t I>
+decltype(auto) StaticVariadicMemoryPool<Ts...>::get() const
+{
+	return std::get<I>(*reinterpret_cast<std::tuple<Ts...>*>(this->first));
+}
+
+template<typename... Ts>
 void StaticVariadicMemoryPool<Ts...>::default_all()
 {
 	// Need to value initialise all objects
@@ -196,24 +226,45 @@ AutomaticStaticVariadicMemoryPool<Ts...>::~AutomaticStaticVariadicMemoryPool()
 }
 
 template<typename T>
+DynamicVariadicMemoryPool::DynamicVariadicMemoryPool(MemoryPool<T>&& pool, std::size_t inserted_size): DynamicVariadicMemoryPool(reinterpret_cast<char*>(&*pool.begin()), pool.get_byte_capacity())
+{
+	std::type_index index = typeid(T);
+	for(std::size_t i = 0; i < inserted_size; i++)
+		this->type_format.push_back(index);
+	this->type_size_map[index] = sizeof(T);
+}
+
+template<typename T>
 void DynamicVariadicMemoryPool::push_back(T value)
 {
 	std::type_index index = typeid(value);
 	this->type_format.push_back(index);
 	if(this->type_size_map.find(index) == this->type_size_map.end())
 		this->type_size_map[index] = sizeof(T);
-	// Actually put it in the pool
-	*reinterpret_cast<T*>(this->get_current_offset()) = value;
+	// Actually put it in the pool. Assert first that we can do so.
+	void* current_offset = this->get_current_offset();
+    if constexpr(tz::is_debug_mode)
+    {
+        auto last_ptr = reinterpret_cast<void*>(this->last);
+        auto after_push_offset = reinterpret_cast<void*>(reinterpret_cast<char*>(current_offset) + sizeof(T));
+        auto diff = 1 + reinterpret_cast<std::ptrdiff_t>(reinterpret_cast<char*>(last_ptr) - reinterpret_cast<char*>(after_push_offset));
+        topaz_assert(diff >= 0, "DynamicVariadicMemoryPool::push_back(...): Attempted to push back when doing so would go out of bounds:\nBoundary = ", last_ptr, "\nCurrent End = ", current_offset, "\nEnd after push_back = ", after_push_offset, "\nDiff = ", diff, " (" , -diff, " bytes out of bounds)\n");
+    }
+	*reinterpret_cast<T*>(current_offset) = value;
 }
 
 template<typename T>
 T& DynamicVariadicMemoryPool::at(std::size_t index)
 {
+    topaz_assert(this->get_size() > index, "DynamicVariadicMemoryPool::at<T>(...): Index passed (", index, ") is out of range for the pool of size ", this->get_size(), ", it must be between 0-", this->get_size() - 1, ".\n");
+    topaz_assert(std::type_index(typeid(T)) == this->get_type_at_index(index), "DynamicVariadicMemoryPool::at<T>(...): Template argument T (", typeid(T).name(), ") does not match the actual type at index ", index, " (which is ", this->get_type_at_index(index).name(), ")\n");
 	return *reinterpret_cast<T*>(this->get_offset_to_index(index));
 }
 
 template<typename T>
 const T& DynamicVariadicMemoryPool::at(std::size_t index) const
 {
+	topaz_assert(this->get_size() > index, "DynamicVariadicMemoryPool::at<T>(...): Index passed (", index, ") is out of range for the pool of size ", this->get_size(), ", it must be between 0-", this->get_size() - 1, ".\n");
+	topaz_assert(std::type_index(typeid(T)) == this->get_type_at_index(index), "DynamicVariadicMemoryPool::at<T>(...): Template argument T (", typeid(T).name(), ") does not match the actual type at index ", index, " (which is ", this->get_type_at_index(index).name(), ")\n");
 	return *reinterpret_cast<T*>(this->get_offset_to_index(index));
 }

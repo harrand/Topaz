@@ -20,7 +20,6 @@ void init()
 {
 	Window wnd("Topaz Development Window", 0, 30, 1920, 1080);
 	std::cout << "OpenGL debugging enabled: " << wnd.is_opengl_debugging_enabled() << "\n";
-
 	/*
 	std::vector<int> ints;
 	for(std::size_t i = 0; i < 100; i++)
@@ -41,17 +40,49 @@ void init()
 		std::cout << n << "\n";
 	 */
 
+	tz::platform::OGLVertexArray vao;
+	tz::platform::OGLVertexBuffer& buf = vao.emplace_vertex_buffer();
+    tz::platform::OGLVertexBuffer& buf2 = vao.emplace_vertex_buffer();
+    tz::platform::OGLVertexBuffer& buf3 = vao.emplace_vertex_buffer();
+
+    MemoryPool<float> float_pool = buf.persistently_map<float>(64, false);
+	std::vector<float> float_vec;
+	for(std::size_t i = 0; i < 64; i++)
+		float_vec.push_back(static_cast<float>(std::pow(i, 3)));
+	float_pool = float_vec;
+	for(auto& fl : float_pool)
+		tz::debug::print(fl, "\n");
+
 	std::cout << "sizeof(char) == " << sizeof(char) << "\n";
-	AutomaticDynamicVariadicMemoryPool var_pool{1024};
+	//AutomaticDynamicVariadicMemoryPool var_pool{1024};
+    DVMPool var_pool = buf2.persistently_map_variadic(1024, false);
 	var_pool.push_back<int>(7898);
 	var_pool.push_back<double>(1.2049875);
+	std::cout << "sizeof<int> == " << sizeof(int) << "\n";
+	std::cout << "sizeof<double> == " << sizeof(double) << "\n";
+	std::cout << "sizeof<long double> == " << sizeof(long double) << "\n";
 	std::cout << "type at index 0 = " << var_pool.get_type_at_index(0).name() << "\n";
 	std::cout << "int at index 0 = " << var_pool.at<int>(0) << "\n";
 	std::cout << "type at index 1 = " << var_pool.get_type_at_index(1).name() << "\n";
 	std::cout << "double at index 1 = " << var_pool.at<double>(1) << "\n";
+    var_pool.push_back<double>(1.1287349587);
+	std::cout << "double at index 2 = " << var_pool.at<double>(2) << "\n";
+	std::cout << "type at index 2 = " << var_pool.get_type_at_index(2).name() << "\n";
 	std::cout << var_pool.get_byte_usage() << "/" << var_pool.get_byte_capacity() << " bytes used.\n";
+    std::cout << var_pool.get_size() << "/" << " elements used.\n";
 
-    AutomaticStaticVariadicMemoryPool<float, int, char> s_var_pool{5.0f, 20, 'c'};
+    auto svar_pool = buf3.persistently_map_variadic<float, float, int, float>(false);
+    svar_pool.get<0>() = 456.349587f;
+	svar_pool.get<1>() = 10.5f;
+	svar_pool.get<2>() = 0.5f;
+
+    std::cout << svar_pool.get<0>() << "\n";
+    std::cout << svar_pool.get<1>() << "\n";
+    std::cout << svar_pool.get<2>() << "\n";
+    std::cout << svar_pool.get<3>() << "\n";
+
+
+    ASVMPool<float, int, char> s_var_pool{5.0f, 20, 'c'};
     std::cout << s_var_pool.get<float>() << ", " << s_var_pool.get<char>() << "\n";
 
 	wnd.set_debug_callback();
