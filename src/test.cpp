@@ -52,8 +52,18 @@ void init()
 	float_pool = float_vec;
 	for(auto& fl : float_pool)
 		tz::debug::print(fl, "\n");
+    tz::debug::print("float pool marking bitmask:\n");
+    float_pool.mark(0, 1);
+    float_pool.mark_indices(1, 7, 2);
+    float_pool.mark(9, 3);
+    float_pool.mark_value(238328, 4);
+    float_pool.mark_value(250047, 9);
+	for(auto& fl : float_pool)
+    {
+        tz::debug::print(float_pool.get_value_mark(fl).value_or(0));
+    }
 
-	std::cout << "sizeof(char) == " << sizeof(char) << "\n";
+	std::cout << "\nsizeof(char) == " << sizeof(char) << "\n";
 	//AutomaticDynamicVariadicMemoryPool var_pool{1024};
     DVMPool var_pool = buf2.persistently_map_variadic(1024, false);
 	var_pool.push_back<int>(7898);

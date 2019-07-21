@@ -13,12 +13,29 @@
 template<class ObjectType>
 class RenderableBuffer;
 
+template<typename PoolMarking = int>
+class PoolMarker
+{
+public:
+    using MarkerType = PoolMarking;
+	using MemoryRegion = std::pair<const void*, const void*>;
+	void mark(MemoryRegion region, PoolMarking marking);
+	void unmark(PoolMarking marking);
+	void unmark(MemoryRegion region);
+	std::optional<PoolMarking> get_mark(const void* address) const;
+	std::vector<PoolMarking> get_marks(const MemoryRegion& region) const;
+private:
+	void unmark_address(const void* address);
+
+	std::unordered_multimap<PoolMarking, MemoryRegion> marked_regions;
+};
+
 /**
  * Manages a pre-allocated but currently unmanaged pool of memory. Although the memory is managed by the class, it does not ever attempt to free the memory; that responsibility remains with the caller.
  * @tparam T - The type of data used in this pool. For pools supporting more than one type, consider a DynamicVariadicMemoryPool.
  */
 template<typename T>
-class MemoryPool
+class MemoryPool : protected PoolMarker<>
 {
 public:
 	class iterator : public std::iterator<std::random_access_iterator_tag, T>
@@ -72,6 +89,16 @@ public:
 	const_iterator cbegin() const;
 	iterator end();
 	const_iterator cend() const;
+    void mark(std::size_t index, MarkerType mark);
+    void mark_value(const T& element, MarkerType mark);
+    void mark_range(iterator begin, iterator end, MarkerType mark);
+    void mark_indices(std::size_t begin_index, std::size_t end_index, MarkerType mark);
+    void unmark(std::size_t index);
+    void unmark_value(const T& element);
+    void unmark_range(iterator begin, iterator end);
+    void unmark_indices(std::size_t begin_index, std::size_t end_index);
+    std::optional<MarkerType> get_mark(std::size_t index) const;
+    std::optional<MarkerType> get_value_mark(const T& element) const;
 	/**
 	 * Get the element at the given index. Range-checking is conditionally compiled via assertions. In Release, there is no range-checking.
 	 * @param index - Index of the element to retrieve

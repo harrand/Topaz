@@ -1,6 +1,107 @@
 #include <cstring>
 #include "core/topaz.hpp"
 
+template<typename PoolMarking>
+void PoolMarker<PoolMarking>::mark(PoolMarker::MemoryRegion region, PoolMarking marking)
+{
+	this->marked_regions.emplace(marking, std::move(region));
+}
+
+template<typename PoolMarking>
+void PoolMarker<PoolMarking>::unmark(PoolMarking marking)
+{
+	for(auto it : this->marked_regions)
+	{
+		if(it.first == marking)
+			this->marked_regions.erase(it++);
+		else
+			++it;
+	}
+}
+
+template<typename PoolMarking>
+void PoolMarker<PoolMarking>::unmark(PoolMarker<PoolMarking>::MemoryRegion region)
+{
+	char* begin = reinterpret_cast<char*>(region.first);
+	char* end = reinterpret_cast<char*>(region.second);
+	topaz_assert(std::less_equal<char*>{}(begin, end), "PoolMarking::unmark(...): Given region needs to be coherent (begin < end)");
+	for(char* i = begin; i < end; i++)
+	{
+		this->unmark_address(reinterpret_cast<void*>(i));
+	}
+}
+
+template<typename PoolMarking>
+std::optional<PoolMarking> PoolMarker<PoolMarking>::get_mark(const void* address) const
+{
+	auto within_region = [address](const PoolMarker<PoolMarking>::MemoryRegion& region)->bool
+	{
+		// Assume first is smaller than second.
+		std::less_equal<const void*> less_func;
+		return less_func(region.first, address) && less_func(address, region.second);
+	};
+	for(const auto& [marking, region] : this->marked_regions)
+	{
+		if(within_region(region))
+			return {marking};
+	}
+	return {std::nullopt};
+}
+
+template<typename PoolMarking>
+std::vector<PoolMarking> PoolMarker<PoolMarking>::get_marks(const PoolMarker::MemoryRegion& region) const
+{
+	std::vector<PoolMarking> marks;
+	char* begin = reinterpret_cast<char*>(region.first);
+	char* end = reinterpret_cast<char*>(region.second);
+	topaz_assert(std::less_equal<char*>{}(begin, end), "PoolMarking::get_marks(...): Given region needs to be coherent (begin < end)");
+	for(char* i = begin; i < end; i++)
+	{
+		auto marking = this->get_mark(reinterpret_cast<void*>(i));
+		if(marking.has_value())
+			marks.push_back(marking.value());
+	}
+	return marks;
+}
+
+template<typename PoolMarking>
+void PoolMarker<PoolMarking>::unmark_address(const void *address)
+{
+	auto within_region = [address](const PoolMarker<PoolMarking>::MemoryRegion& region)->bool
+	{
+		// Assume first is smaller than second.
+		std::less_equal<const void*> less_func;
+		return less_func(region.first, address) && less_func(address, region.second);
+	};
+	for(auto it : this->marked_regions)
+	{
+		PoolMarker<PoolMarking>::MemoryRegion region = it.first;
+		PoolMarking marking = it.second;
+		if(within_region(region))
+		{
+			// Need to split the region.
+			char* begin = reinterpret_cast<char*>(region.first);
+			char* end = reinterpret_cast<char*>(region.second);
+			for(char* i = begin; i < end; i++)
+			{
+				MemoryRegion a = std::make_pair(region.first, nullptr);
+				MemoryRegion b = std::make_pair(nullptr, region.second);
+				if(reinterpret_cast<void*>(i) == address)
+				{
+					a.second = i;
+					b.first = i + 1;
+				}
+
+				// We know how to partition, now we can actually do it.
+				this->marked_regions.erase(it++);
+				this->marked_regions[marking] = a;
+				this->marked_regions[marking] = b;
+
+			}
+		}
+	}
+}
+
 template<typename T>
 MemoryPool<T>::iterator::iterator(std::size_t index, T* value): index(index), value(value){}
 
@@ -101,6 +202,78 @@ template<typename T>
 typename MemoryPool<T>::const_iterator MemoryPool<T>::cend() const
 {
 	return {this->pool_size, this->last};
+}
+
+template<typename T>
+void MemoryPool<T>::mark(std::size_t index, MarkerType mark)
+{
+    MemoryPool<T>::mark_value((*this)[index], mark);
+}
+
+template<typename T>
+void MemoryPool<T>::mark_value(const T& element, MarkerType mark)
+{
+    for(const auto& el : *this)
+    {
+        if (el == element)
+            PoolMarker::mark({&el, &el}, mark);
+    }
+}
+
+template<typename T>
+void MemoryPool<T>::mark_range(MemoryPool<T>::iterator begin, MemoryPool<T>::iterator end, MarkerType mark)
+{
+    for(auto it = begin; it != end; it++)
+        MemoryPool<T>::mark(*it, mark);
+}
+
+template<typename T>
+void MemoryPool<T>::mark_indices(std::size_t begin_index, std::size_t end_index, MarkerType mark)
+{
+    for(std::size_t i = begin_index + 1; i <= end_index; ++i)
+        MemoryPool<T>::mark_value((*this)[i], mark);
+}
+
+template<typename T>
+void MemoryPool<T>::unmark(std::size_t index)
+{
+    MemoryPool<T>::unmark_value((*this)[index]);
+}
+
+template<typename T>
+void MemoryPool<T>::unmark_value(const T& element)
+{
+    for(const auto& el : *this)
+    {
+        if (el == element)
+            PoolMarker::unmark({&el, &el});
+    }
+}
+
+template<typename T>
+void MemoryPool<T>::unmark_range(MemoryPool<T>::iterator begin, MemoryPool<T>::iterator end)
+{
+    for(auto it = begin; it != end; it++)
+        MemoryPool<T>::unmark(*it);
+}
+
+template<typename T>
+void MemoryPool<T>::unmark_indices(std::size_t begin_index, std::size_t end_index)
+{
+    for(std::size_t i = begin_index; i < end_index; i++)
+        MemoryPool<T>::unmark_value((*this)[i]);
+}
+
+template<typename T>
+std::optional<PoolMarker<>::MarkerType> MemoryPool<T>::get_mark(std::size_t index) const
+{
+    return MemoryPool<T>::get_value_mark((*this)[index]);
+}
+
+template<typename T>
+std::optional<PoolMarker<>::MarkerType> MemoryPool<T>::get_value_mark(const T& element) const
+{
+    return PoolMarker::get_mark(&element);
 }
 
 template<typename T>
