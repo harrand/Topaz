@@ -85,12 +85,19 @@ void init()
     svar_pool.get<0>() = 456.349587f;
 	svar_pool.get<1>() = 10.5f;
 	svar_pool.get<2>() = 0.5f;
+    ASVMPool<float, float, int, float> asvar_pool = svar_pool;
 
     std::cout << svar_pool.get<0>() << "\n";
     std::cout << svar_pool.get<1>() << "\n";
     std::cout << svar_pool.get<2>() << "\n";
     std::cout << svar_pool.get<3>() << "\n";
-
+    buf3.unmap();
+    buf3.persistently_map<float>(100, false);
+    std::cout << "asvar pool now:\n";
+    std::cout << asvar_pool.get<0>() << "\n";
+    std::cout << asvar_pool.get<1>() << "\n";
+    std::cout << asvar_pool.get<2>() << "\n";
+    std::cout << asvar_pool.get<3>() << "\n";
 
     ASVMPool<float, int, char> s_var_pool{5.0f, 20, 'c'};
     std::cout << s_var_pool.get<float>() << ", " << s_var_pool.get<char>() << "\n";

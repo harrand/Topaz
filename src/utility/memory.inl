@@ -319,6 +319,15 @@ template<typename T>
 AutomaticMemoryPool<T>::AutomaticMemoryPool(std::size_t pool_size): MemoryPool<T>(std::malloc(sizeof(T) * pool_size), pool_size){}
 
 template<typename T>
+AutomaticMemoryPool<T>::AutomaticMemoryPool(const MemoryPool<T>& copy): AutomaticMemoryPool<T>(copy.get_element_capacity())
+{
+	for(std::size_t i = 0; i < copy.get_element_capacity(); i++)
+	{
+		(*this)[i] = copy[i];
+	}
+}
+
+template<typename T>
 AutomaticMemoryPool<T>::~AutomaticMemoryPool()
 {
 	std::free(this->first);
@@ -388,6 +397,12 @@ void StaticVariadicMemoryPool<Ts...>::default_all()
 
 template<typename... Ts>
 AutomaticStaticVariadicMemoryPool<Ts...>::AutomaticStaticVariadicMemoryPool(): StaticVariadicMemoryPool<Ts...>(std::malloc(this->get_byte_capacity())){}
+
+template<typename... Ts>
+AutomaticStaticVariadicMemoryPool<Ts...>::AutomaticStaticVariadicMemoryPool(const StaticVariadicMemoryPool<Ts...>& copy): AutomaticStaticVariadicMemoryPool()
+{
+    *reinterpret_cast<std::tuple<Ts...>*>(this->first) = *reinterpret_cast<const std::tuple<Ts...>*>(&*copy.cbegin());
+}
 
 template<typename... Ts>
 AutomaticStaticVariadicMemoryPool<Ts...>::AutomaticStaticVariadicMemoryPool(Ts&&... ts): StaticVariadicMemoryPool<Ts...>(std::malloc(this->get_byte_capacity()), std::forward<Ts>(ts)...){}

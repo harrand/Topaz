@@ -45,6 +45,12 @@ void DynamicVariadicMemoryPool::zero_all()
 
 AutomaticDynamicVariadicMemoryPool::AutomaticDynamicVariadicMemoryPool(std::size_t byte_size) : DynamicVariadicMemoryPool(std::malloc(byte_size), byte_size){}
 
+AutomaticDynamicVariadicMemoryPool::AutomaticDynamicVariadicMemoryPool(const DynamicVariadicMemoryPool& copy): AutomaticDynamicVariadicMemoryPool(copy.get_byte_capacity())
+{
+	this->type_format = copy.type_format;
+	this->type_size_map = copy.type_size_map;
+}
+
 AutomaticDynamicVariadicMemoryPool::~AutomaticDynamicVariadicMemoryPool()
 {
 	std::free(this->first);

@@ -145,6 +145,7 @@ namespace tz::platform
 		 * @return - If memory is allocated, the usage is returned. Otherwise, null is returned
 		 */
 		std::optional<OGLBufferUsage> query_current_usage() const;
+		void unmap() const;
 	protected:
 		GLuint buffer_handle;
 	};

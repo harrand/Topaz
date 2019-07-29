@@ -163,4 +163,9 @@ namespace tz::platform
 			return std::nullopt;
 		return {OGLBufferUsage{static_cast<const GLenum>(this->get_parameter<OGLBufferParameter::USAGE>())}};
 	}
+
+	void OGLGenericBufferImplicit::unmap() const
+	{
+		glUnmapNamedBuffer(this->buffer_handle);
+	}
 }

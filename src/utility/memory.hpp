@@ -154,6 +154,7 @@ public:
      * @param pool_size - Number of elements in the pool
      */
 	AutomaticMemoryPool(std::size_t pool_size);
+	AutomaticMemoryPool(const MemoryPool<T>& copy);
     /// Deallocates all memory in the pool
 	virtual ~AutomaticMemoryPool();
 };
@@ -196,7 +197,7 @@ public:
 	 */
     virtual std::size_t get_element_capacity() const override;
 	/**
-	 * Get the number of bytes available in th epool. For an SVMPool, this is always equal to the total size of every element in the parameter pack.
+	 * Get the number of bytes available in the pool. For an SVMPool, this is always equal to the total size of every element in the parameter pack.
 	 * @return - Capacity of the pool, in bytes
 	 */
 	virtual std::size_t get_byte_capacity() const override;
@@ -261,6 +262,7 @@ public:
 	 * Note: This does not default-construct the parameters. This can be achieved by invoking ASVMPool<Ts...>::default_all() or selecting a different constructor.
 	 */
     AutomaticStaticVariadicMemoryPool();
+	AutomaticStaticVariadicMemoryPool(const StaticVariadicMemoryPool<Ts...>& copy);
 	/**
 	 * Construct the ASVMPool. Following that, assign each element to the given parameters.
 	 * @param ts - Values of each element to assign.
@@ -350,7 +352,8 @@ public:
 	 * This means that the whole pool will once again be treated as garbage, and push_back will insert from the begin-address.
 	 */
 	virtual void zero_all() override;
-private:
+    friend class AutomaticDynamicVariadicMemoryPool;
+protected:
 	using MemoryPool<char>::get_element_capacity;
 	using MemoryPool<char>::default_all;
 	using MemoryPool<char>::operator[];
@@ -379,6 +382,7 @@ public:
 	 * @param byte_size - Number of bytes comprising the pool
 	 */
 	AutomaticDynamicVariadicMemoryPool(std::size_t byte_size);
+    AutomaticDynamicVariadicMemoryPool(const DynamicVariadicMemoryPool& copy);
 	virtual ~AutomaticDynamicVariadicMemoryPool();
 };
 
