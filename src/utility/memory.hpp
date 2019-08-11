@@ -388,5 +388,18 @@ public:
 
 using ADVMPool = AutomaticDynamicVariadicMemoryPool;
 
+namespace tz::utility::memory
+{
+	/**
+	 * Partition an existing MemoryPool into an SVMPool of known components and the remainder of the pool.
+	 * @tparam T - Type of the MemoryPool
+	 * @tparam Ts - Types comprising the daughter SVMPool
+	 * @param initial_pool - Initial pool to partition
+	 * @return - Pair, where first element is a daughter SVMPool wrapping the first of the initial pool, and a second MemoryPool wrapping the remainder of the initial pool
+	 */
+	template<typename T, typename... Ts>
+	std::pair<SVMPool<Ts...>, MemoryPool<T>> partition(MemoryPool<T> initial_pool);
+}
+
 #include "utility/memory.inl"
 #endif //TOPAZ_MEMORY_HPP

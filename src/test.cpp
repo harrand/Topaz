@@ -41,9 +41,26 @@ void init()
 	 */
 
 	tz::platform::OGLVertexArray vao;
+    tz::platform::OGLVertexBuffer& buf0 = vao.emplace_vertex_buffer();
 	tz::platform::OGLVertexBuffer& buf = vao.emplace_vertex_buffer();
     tz::platform::OGLVertexBuffer& buf2 = vao.emplace_vertex_buffer();
     tz::platform::OGLVertexBuffer& buf3 = vao.emplace_vertex_buffer();
+
+    MemoryPool<int> initial_pool = buf0.persistently_map<int>(10, false);
+    for(std::size_t i = 0; i < 10; i++)
+        initial_pool[i] = static_cast<int>(i);
+    // partition the pool.
+    auto daughters = tz::utility::memory::partition<int, int, int, int>(initial_pool);
+    std::cout << "first svmpool:\n";
+    std::cout << daughters.first.get<0>() << "\n";
+    std::cout << daughters.first.get<1>() << "\n";
+    std::cout << daughters.first.get<2>() << "\n";
+    std::cout << "second memorypool:\n";
+    for(const auto& i : daughters.second)
+    {
+        std::cout << i << "\n";
+    }
+	std::cout << "fin\n";
 
     MemoryPool<float> float_pool = buf.persistently_map<float>(64, false);
 	std::vector<float> float_vec;

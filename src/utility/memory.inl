@@ -456,3 +456,17 @@ const T& DynamicVariadicMemoryPool::at(std::size_t index) const
 	topaz_assert(std::type_index(typeid(T)) == this->get_type_at_index(index), "DynamicVariadicMemoryPool::at<T>(...): Template argument T (", typeid(T).name(), ") does not match the actual type at index ", index, " (which is ", this->get_type_at_index(index).name(), ")\n");
 	return *reinterpret_cast<T*>(this->get_offset_to_index(index));
 }
+
+namespace tz::utility::memory
+{
+	template<typename T, typename... Ts>
+	std::pair<SVMPool<Ts...>, MemoryPool<T>> partition(MemoryPool<T> initial_pool)
+	{
+		std::size_t svm_size = (sizeof(Ts) + ...);
+		topaz_assert(initial_pool.get_byte_capacity() >= svm_size, "tz::utility::memory::partition<SVMPool, MemoryPool>(MemoryPool<T>): Cannot partition a pool when the daughter SVMPool would be larger than the initial pool.");
+		topaz_assert(initial_pool.get_element_capacity() > 0, "tz::utility::memory::partition<SVMPool, MemoryPool>(MemoryPool<T>): Initial pool must contain at least one POD.");
+		char* offset = reinterpret_cast<char*>(&initial_pool[0]) + svm_size;
+		std::size_t remainder_size = static_cast<std::size_t>(reinterpret_cast<char*>(&initial_pool[initial_pool.get_element_capacity() - 1]) - offset) / sizeof(T) + 1;
+		return {{&initial_pool[0]}, {offset, remainder_size}};
+	}
+}
