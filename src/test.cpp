@@ -240,7 +240,7 @@ void init()
 		object.angular_velocity = {rand(-pi, pi) * 0.1f, rand(-pi, pi) * 0.1f, rand(-pi, pi) * 0.1f};
 	}
 	scene.emplace<InstancedStaticObject>(floor_objects);
-	//scene.emplace<InstancedDynamicObject>(falling_objects);
+	scene.emplace<InstancedDynamicObject>(falling_objects);
 	// add the model objects
 	scene.emplace<StaticObject>(Transform{{0, -135, 100}, {}, {50, 50, 50}}, maul);
 	scene.emplace<StaticObject>(Transform{{50, -135, 100}, {}, {7, 7, 7}}, nanosuit);

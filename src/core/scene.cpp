@@ -407,10 +407,12 @@ void Scene::update(float delta_time)
 	if(this->octree.has_value())
 		this->octree.value().update();
 	// Invoke update functions on all dynamic objects and sprites.
-	for(DynamicObject* dynamic_ref : this->get_renderables_by_type<DynamicObject>())
-		dynamic_ref->update(delta_time);
-	for(DynamicSprite* dynamic_sprite_ref : this->get_renderables_by_type<DynamicSprite>())
-		dynamic_sprite_ref->update(delta_time);
+	for(auto* renderable : this->objects)
+	{
+		PhysicsObject* physics_component = dynamic_cast<PhysicsObject*>(renderable);
+		if(physics_component != nullptr)
+			physics_component->update(delta_time);
+	}
 	std::vector<std::reference_wrapper<PhysicsObject>> physics_sprites;
 	using namespace tz::utility;
 	// For each static object, get all those who are also PhysicsObjects.
