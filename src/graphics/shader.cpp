@@ -6,7 +6,7 @@
 #ifdef TOPAZ_OPENGL
 namespace tz::platform
 {
-	OGLShader::OGLShader(const std::string& vertex_source, const std::string& tessellation_control_source, const std::string& tessellation_evaluation_source, const std::string& geometry_source, const std::string& fragment_source, bool compile, bool link, bool validate): OGLShaderProgram()
+	OGLShader::OGLShader(const std::string& vertex_source, const std::string& tessellation_control_source, const std::string& tessellation_evaluation_source, const std::string& geometry_source, const std::string& fragment_source, bool compile, bool link, bool validate, ShaderAttributeCollection attribute_collection): OGLShaderProgram(), attribute_collection(attribute_collection)
 	{
 		if(compile)
 		{
@@ -21,27 +21,23 @@ namespace tz::platform
 		}
 		if(compile && link)
 		{
-			this->setup_standard_attributes();
+			this->setup_attributes();
 			this->link().report_if_fail(std::cout);
 		}
 		if(compile && link && validate)
 			this->validate().report_if_fail(std::cout);
 	}
 
-	OGLShader::OGLShader(std::string path, bool compile, bool link, bool validate): OGLShader(this->include_headers(path, ::tz::utility::file::read(path + ".vertex.glsl")), this->include_headers(path, ::tz::utility::file::read(path + ".tessellation_control.glsl")), this->include_headers(path, ::tz::utility::file::read(path + ".tessellation_evaluation.glsl")), this->include_headers(path, ::tz::utility::file::read(path + ".geometry.glsl")), this->include_headers(path, ::tz::utility::file::read(path + ".fragment.glsl")), compile, link, validate) {}
+	OGLShader::OGLShader(std::string path, bool compile, bool link, bool validate, ShaderAttributeCollection attribute_collection): OGLShader(this->include_headers(path, ::tz::utility::file::read(path + ".vertex.glsl")), this->include_headers(path, ::tz::utility::file::read(path + ".tessellation_control.glsl")), this->include_headers(path, ::tz::utility::file::read(path + ".tessellation_evaluation.glsl")), this->include_headers(path, ::tz::utility::file::read(path + ".geometry.glsl")), this->include_headers(path, ::tz::utility::file::read(path + ".fragment.glsl")), compile, link, validate, attribute_collection) {}
 
-	void OGLShader::setup_standard_attributes() const
+	void OGLShader::setup_attributes() const
 	{
 		using namespace tz::platform;
 		using namespace tz::consts::graphics::mesh;
-		this->bind_attribute_location(static_cast<GLuint>(StandardAttribute::POSITION), attribute::position_attribute);
-		this->bind_attribute_location(static_cast<GLuint>(StandardAttribute::TEXCOORD), attribute::texcoord_attribute);
-		this->bind_attribute_location(static_cast<GLuint>(StandardAttribute::NORMAL), attribute::normal_attribute);
-		this->bind_attribute_location(static_cast<GLuint>(StandardAttribute::TANGENT), attribute::tangent_attribute);
-		this->bind_attribute_location(static_cast<GLuint>(StandardAttribute::INSTANCE_MODEL_X_ROW), attribute::instance_model_x_attribute);
-		this->bind_attribute_location(static_cast<GLuint>(StandardAttribute::INSTANCE_MODEL_Y_ROW), attribute::instance_model_y_attribute);
-		this->bind_attribute_location(static_cast<GLuint>(StandardAttribute::INSTANCE_MODEL_Z_ROW), attribute::instance_model_z_attribute);
-		this->bind_attribute_location(static_cast<GLuint>(StandardAttribute::INSTANCE_MODEL_W_ROW), attribute::instance_model_w_attribute);
+		for(GLuint i = 0; i < this->attribute_collection.get_size(); i++)
+		{
+			this->bind_attribute_location(i, this->attribute_collection[i]);
+		}
 	}
 
 	std::string OGLShader::include_headers(const std::string& path, const std::string& source) const
