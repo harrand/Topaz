@@ -277,6 +277,12 @@ std::optional<PoolMarker<>::MarkerType> MemoryPool<T>::get_value_mark(const T& e
 }
 
 template<typename T>
+bool MemoryPool<T>::empty() const
+{
+	return this->get_element_capacity() == 0;
+}
+
+template<typename T>
 T& MemoryPool<T>::operator[](std::size_t index)
 {
 	topaz_assert(index < pool_size, "MemoryPool<T> accessed at index ", index, " which is out of range of this pool (size ", this->pool_size, ").");

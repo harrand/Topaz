@@ -99,6 +99,7 @@ public:
     void unmark_indices(std::size_t begin_index, std::size_t end_index);
     std::optional<MarkerType> get_mark(std::size_t index) const;
     std::optional<MarkerType> get_value_mark(const T& element) const;
+	bool empty() const;
 	/**
 	 * Get the element at the given index. Range-checking is conditionally compiled via assertions. In Release, there is no range-checking.
 	 * @param index - Index of the element to retrieve

@@ -2,10 +2,10 @@
 #define TEXTURE_HPP
 #include "graphics/graphics.hpp"
 #include "graphics/shader.hpp"
+#include "graphics/image.hpp"
 #include <memory>
 #include <optional>
 #include <variant>
-#include "assimp/texture.h"
 
 namespace tz::graphics
 {
@@ -116,6 +116,7 @@ public:
 	 * @param store_bitmap - Whether the internal image-data should be stored in a local Bitmap.
 	 */
 	Texture(std::string filename, bool mipmapping = true, bool gamma_corrected = true);
+    Texture(const Image& image, bool mipmapping = true, bool gamma_corrected = true);
 	/**
 	 * Loads a texture from existing Pixel Data
 	 * @tparam Pixel - The type of Pixel to store in the Bitmap.
@@ -449,19 +450,13 @@ private:
 	 * Load all of the six texture-faces from their external image files.
 	 * @return - Vector of size-six of all the texture-faces' image data.
 	 */
-	std::vector<unsigned char*> load_textures();
+	std::vector<Image> load_textures();
 	/// Underlying OpenGL cube-map handle.
 	GLuint texture_handle;
 	/// Texture-face external image file name.
 	const std::string right_texture, left_texture, top_texture, bottom_texture, back_texture, front_texture;
 	/// There are six-textures per CubeMap.
 	static constexpr std::size_t number_of_textures = 6;
-	/// Width of each texture-face, in pixels.
-	int width[number_of_textures];
-	/// Height of each texture-face, in pixels.
-	int height[number_of_textures];
-	/// Component-data of each texture-face.
-	int components[number_of_textures];
 };
 
 namespace tz::graphics

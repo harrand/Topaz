@@ -1,6 +1,4 @@
 #include "graphics/texture.hpp"
-#define STB_IMAGE_IMPLEMENTATION
-#include "graphics/stb_image.h"
 
 Texture::Texture():Texture(0, 0, false){}
 
@@ -47,13 +45,12 @@ Texture::Texture(int width, int height, bool initialise_handle, tz::graphics::Te
 
 Texture::Texture(int width, int height, tz::graphics::TextureComponent texture_component, bool gamma_corrected): Texture(width, height, true, texture_component, gamma_corrected){}
 
-Texture::Texture(std::string filename, bool mipmapping, bool gamma_corrected): texture_handle(0), width(0), height(0), components(0), gamma_corrected(gamma_corrected), bitmap({})
+Texture::Texture(std::string filename, bool mipmapping, bool gamma_corrected): Texture(Image{filename}, mipmapping, gamma_corrected) {}
+
+Texture::Texture(const Image& image, bool mipmapping, bool gamma_corrected): texture_handle(0), width(0), height(0), components(4), gamma_corrected(gamma_corrected), bitmap({})
 {
-	unsigned char* imgdata = this->load_texture(filename.c_str());
-	if(imgdata == nullptr)
-	{
-		tz::debug::print("Texture::Texture(std::string, bool, bool): Error: Texture from the path: '", filename, "' could not be loaded.\n");
-	}
+	this->width = image.get_width();
+	this->height = image.get_height();
 
 	glGenTextures(1, &(this->texture_handle));
 	// Let OGL know it's just a 2d texture.
@@ -67,15 +64,12 @@ Texture::Texture(std::string filename, bool mipmapping, bool gamma_corrected): t
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-	glTexImage2D(GL_TEXTURE_2D, 0, this->gamma_corrected ? GL_SRGB8_ALPHA8 : GL_RGBA8, this->width, this->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, imgdata);
+    topaz_assert(!image.get_data().empty(), "Texture::Texture(Image, ...): Image needs to have data! This has no data!");
+    topaz_assert(image.get_data().get_element_capacity() == (this->width * this->height * 4u), "Texture::Texture(Image, ...): Image data size (", image.get_data().get_element_capacity(), ") does not match its expected size (", this->width, "*", this->height, "*4 == ", (this->width * this->height * 4), ").");
+
+	glTexImage2D(GL_TEXTURE_2D, 0, this->gamma_corrected ? GL_SRGB8_ALPHA8 : GL_RGBA8, this->width, this->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, &image.get_data()[0]);
 	if(mipmapping)
 		glGenerateMipmap(GL_TEXTURE_2D);
-
-	this->bitmap = Bitmap<PixelRGBA>();
-	this->bitmap.pixels.reserve(static_cast<std::size_t>(std::abs(this->width * this->height)));
-	for(std::size_t i = 3; i < static_cast<std::size_t>(std::abs(this->width * this->height)); i += 4)
-		this->bitmap.pixels.emplace_back(PixelRGBA{imgdata[i - 3], imgdata[i - 2], imgdata[i - 1], imgdata[i]});
-	this->delete_texture(imgdata);
 }
 
 Texture::Texture(const Font& font, const std::string& text, SDL_Color foreground_colour): Texture()
@@ -143,40 +137,7 @@ Texture::Texture(const Font& font, const std::string& text, SDL_Color foreground
 	SDL_FreeSurface(text_surface);
 }
 
-Texture::Texture(aiTexture* texture): Texture()
-{
-	Bitmap<PixelRGBA> bitmap;
-	if(texture->mHeight == 0 && texture->mWidth != 0)
-	{
-		// texture is compressed
-		//tz::debug::print("aiTexture format = ", texture->achFormatHint, "\n");
-		unsigned int compressed_data_size = texture->mWidth;
-		int comps;
-		int w, h;
-		stbi_uc* image_data = stbi_load_from_memory(reinterpret_cast<stbi_uc*>(texture->pcData), compressed_data_size, &w, &h, &comps, STBI_rgb_alpha);
-		bitmap.width = w;
-		bitmap.height = h;
-		bitmap.pixels.reserve(bitmap.width * bitmap.height);
-		// guaranteed to be a multiple of 4
-		for(std::size_t i = 3; i <= (4 * bitmap.width * bitmap.height); i += 4)
-		{
-			bitmap.pixels.emplace_back(PixelRGBA{image_data[i - 3], image_data[i - 2], image_data[i - 1], image_data[i]});
-		}
-		this->delete_texture(image_data);
-		tz::debug::print("Texture::Texture(aiTexture*): number of pixels in the ", bitmap.width, "x", bitmap.height, " assimp texture = ", bitmap.pixels.size(), "\n");
-	}
-	else
-	{
-		bitmap.width = texture->mWidth;
-		bitmap.height = texture->mHeight;
-		for (std::size_t i = 0; i < bitmap.width * bitmap.height; i++)
-		{
-			const aiTexel &texel = texture->pcData[i];
-			bitmap.pixels.emplace_back(texel.r, texel.g, texel.b, texel.a);
-		}
-	}
-	*this = Texture{bitmap};
-}
+Texture::Texture(aiTexture* texture): Texture(Image{texture}) {}
 
 Texture::Texture(const Texture& copy): Texture(copy.width, copy.height, copy.get_texture_component(), copy.gamma_corrected)
 {
@@ -287,17 +248,6 @@ bool Texture::operator==(const Texture& rhs) const
 	return this->texture_handle == rhs.texture_handle;
 }
 
-unsigned char* Texture::load_texture(const char* file_name)
-{
-	return stbi_load(file_name, &(this->width), &(this->height), &(this->components), 4);
-}
-
-// Deleting texture as far as stb_image is concerned (We want to leave it alone when it's gone to the GPU)
-void Texture::delete_texture(unsigned char* imgdata)
-{
-	stbi_image_free(imgdata);
-}
-
 void Texture::bind_with_string(Shader* shader, unsigned int id, const std::string& sampler_uniform_name) const
 {
 	if(id > 31)
@@ -375,18 +325,17 @@ CubeMap::CubeMap(std::string right_texture, std::string left_texture, std::strin
 {
 	glGenTextures(1, &(this->texture_handle));
 	glBindTexture(GL_TEXTURE_CUBE_MAP, this->texture_handle);
-	std::vector<unsigned char*> face_data = this->load_textures();
-	for(GLuint i = 0; i < face_data.size(); i++)
+	std::vector<Image> face_data = this->load_textures();
+	for(std::size_t i = 0; i < face_data.size(); i++)
 	{
-		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGBA8, this->width[static_cast<unsigned int>(i)], this->height[static_cast<unsigned int>(i)], 0, GL_RGBA, GL_UNSIGNED_BYTE, face_data[i]);
+		const Image& face = face_data[i];
+		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGBA8, face.get_width(), face.get_height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, &face.get_data()[0]);
 	}
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-	for(auto& data : face_data)
-		stbi_image_free(data);
 }
 
 CubeMap::CubeMap(std::string texture_directory, std::string skybox_name, std::string skybox_image_file_extension): CubeMap(texture_directory + skybox_name + "_rt" + skybox_image_file_extension, texture_directory + skybox_name + "_lf" + skybox_image_file_extension, texture_directory + skybox_name + "_up" + skybox_image_file_extension, texture_directory + skybox_name + "_dn" + skybox_image_file_extension, texture_directory + skybox_name + "_bk" + skybox_image_file_extension, texture_directory + skybox_name + "_ft" + skybox_image_file_extension){}
@@ -395,12 +344,6 @@ CubeMap::CubeMap(const CubeMap& copy): CubeMap(copy.right_texture, copy.left_tex
 
 CubeMap::CubeMap(CubeMap&& move): texture_handle(move.texture_handle), right_texture(move.right_texture), left_texture(move.left_texture), top_texture(move.top_texture), bottom_texture(move.bottom_texture), back_texture(move.back_texture), front_texture(move.front_texture)
 {
-	for(unsigned int i = 0; i < 6; i++)
-	{
-		this->width[i] = move.width[i];
-		this->height[i] = move.height[i];
-		this->components[i] = move.components[i];
-	}
 	move.texture_handle = 0;
 }
 
@@ -423,16 +366,16 @@ void CubeMap::bind(Shader* shader, unsigned int id) const
 	shader->set_uniform<int>("cube_map_sampler", id);
 }
 
-std::vector<unsigned char*> CubeMap::load_textures()
+std::vector<Image> CubeMap::load_textures()
 {
-	std::vector<unsigned char*> image_data;
+	std::vector<Image> image_data;
 	image_data.reserve(6);
-	image_data.push_back(stbi_load((this->right_texture).c_str(), &(this->width[0]), &(this->height[0]), &(this->components[0]), 4));
-	image_data.push_back(stbi_load((this->left_texture).c_str(), &(this->width[1]), &(this->height[1]), &(this->components[1]), 4));
-	image_data.push_back(stbi_load((this->top_texture).c_str(), &(this->width[2]), &(this->height[2]), &(this->components[2]), 4));
-	image_data.push_back(stbi_load((this->bottom_texture).c_str(), &(this->width[3]), &(this->height[3]), &(this->components[3]), 4));
-	image_data.push_back(stbi_load((this->back_texture).c_str(), &(this->width[4]), &(this->height[4]), &(this->components[4]), 4));
-	image_data.push_back(stbi_load((this->front_texture).c_str(), &(this->width[5]), &(this->height[5]), &(this->components[5]), 4));
+	image_data.emplace_back(this->right_texture.c_str());
+	image_data.emplace_back(this->left_texture.c_str());
+	image_data.emplace_back(this->top_texture.c_str());
+	image_data.emplace_back(this->bottom_texture.c_str());
+	image_data.emplace_back(this->back_texture.c_str());
+	image_data.emplace_back(this->front_texture.c_str());
 	return image_data;
 }
 

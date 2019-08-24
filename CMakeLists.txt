@@ -18,6 +18,9 @@ else()
 endif()
 
 add_library(topaz SHARED
+        src/ext/glew.c
+        src/ext/stb_image.h
+
         src/audio/audio.cpp
         src/audio/audio.hpp
         src/audio/audio.inl
@@ -51,7 +54,6 @@ add_library(topaz SHARED
         src/graphics/frame_buffer.cpp
         src/graphics/frame_buffer.hpp
         src/graphics/frame_buffer.inl
-        src/graphics/glew.c
         src/graphics/graphics.cpp
         src/graphics/graphics.hpp
         src/graphics/graphics.inl
@@ -67,13 +69,14 @@ add_library(topaz SHARED
         src/graphics/skybox.hpp
         src/graphics/static_object.cpp
         src/graphics/static_object.hpp
-        src/graphics/stb_image.h
         src/graphics/texture.cpp
         src/graphics/texture.hpp
         src/graphics/texture.inl
 
         src/graphics/animated_texture.cpp
         src/graphics/animated_texture.hpp
+        src/graphics/attribute_collection.cpp
+        src/graphics/attribute_collection.hpp
         src/graphics/gui/button.cpp
         src/graphics/gui/button.hpp
         src/graphics/gui/display.cpp
@@ -81,9 +84,13 @@ add_library(topaz SHARED
         src/graphics/gui/gui.cpp
         src/graphics/gui/gui.hpp
         src/graphics/gui/gui.inl
+        src/graphics/image.cpp
+        src/graphics/image.hpp
         src/graphics/model.cpp
         src/graphics/model.hpp
         src/graphics/renderable.hpp
+        src/graphics/renderable_buffer.hpp
+        src/graphics/renderable_buffer.inl
         src/graphics/sprite.cpp
         src/graphics/sprite.hpp
         src/graphics/gui/textfield.cpp
@@ -103,16 +110,27 @@ add_library(topaz SHARED
         src/physics/physics_object.cpp
         src/physics/physics_object.hpp
 
+        src/platform_specific/generic_buffer.cpp
+        src/platform_specific/generic_buffer.hpp
+        src/platform_specific/generic_buffer.inl
+        src/platform_specific/mesh_buffer.cpp
+        src/platform_specific/mesh_buffer.hpp
+        src/platform_specific/mesh_buffer.inl
         src/platform_specific/shader_program.cpp
         src/platform_specific/shader_program.hpp
         src/platform_specific/shader_program.inl
+        src/platform_specific/shader_storage_buffer.cpp
+        src/platform_specific/shader_storage_buffer.hpp
         src/platform_specific/uniform.cpp
         src/platform_specific/uniform.hpp
         src/platform_specific/uniform.inl
+        src/platform_specific/uniform_buffer.cpp
+        src/platform_specific/uniform_buffer.hpp
         src/platform_specific/vertex_buffer.cpp
         src/platform_specific/vertex_buffer.hpp
         src/platform_specific/vertex_buffer.inl
 
+        src/utility/constants.hpp
         src/utility/file.cpp
         src/utility/file.hpp
         src/utility/functional.cpp
@@ -124,6 +142,9 @@ add_library(topaz SHARED
         src/utility/geometry.cpp
         src/utility/geometry.hpp
         src/utility/log.hpp
+        src/utility/memory.hpp
+        src/utility/memory.cpp
+        src/utility/memory.inl
         src/utility/numeric.cpp
         src/utility/numeric.hpp
         src/utility/numeric.inl
@@ -133,7 +154,7 @@ add_library(topaz SHARED
         src/utility/string.hpp
         src/utility/time.cpp
         src/utility/time.hpp
-        src/utility/time.inl src/utility/constants.hpp src/platform_specific/generic_buffer.cpp src/platform_specific/generic_buffer.hpp src/platform_specific/shader_storage_buffer.cpp src/platform_specific/shader_storage_buffer.hpp src/platform_specific/mesh_buffer.cpp src/platform_specific/mesh_buffer.hpp src/utility/memory.hpp src/utility/memory.cpp src/graphics/renderable_buffer.hpp src/platform_specific/uniform_buffer.cpp src/platform_specific/uniform_buffer.hpp src/graphics/attribute_collection.cpp src/graphics/attribute_collection.hpp)
+        src/utility/time.inl)
 # here we express in terms of modules, not just build flags
 target_include_directories(topaz PUBLIC ${PROJECT_SOURCE_DIR}/inc)
 target_include_directories(topaz PRIVATE ${PROJECT_SOURCE_DIR}/src)
