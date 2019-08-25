@@ -10,21 +10,26 @@
 #include <cstddef>
 #include <vector>
 
-// Wrapper for an image loaded from the filesystem.
-// Always RGBA8888.
+/**
+ * Wrapper for an image. Format is always RGBA8888.
+ */
 class Image
 {
 public:
     Image(std::string path);
     Image(const aiTexture* assimp_texture);
-    const MemoryPool<std::byte> get_data() const;
-    MemoryPool<std::byte> get_data();
+    Image(std::vector<std::byte> image_data, unsigned int width, unsigned int height);
+    const BytePool data() const;
+    BytePool data();
     Vector2UI get_dimensions() const;
     unsigned int get_width() const;
     unsigned int get_height() const;
+    std::size_t get_size() const;
+    bool has_filename() const;
+    const std::string* get_filename() const;
 private:
     std::optional<std::string> path;
-    std::vector<std::byte> data;
+    std::vector<std::byte> image_data;
     unsigned int width, height;
 };
 

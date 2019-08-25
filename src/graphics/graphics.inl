@@ -1,28 +1,5 @@
 #include "utility/log.hpp"
 
-template<class Pixel>
-Bitmap<Pixel>::Bitmap(std::vector<Pixel> pixels, std::size_t width, std::size_t height): pixels(pixels), width(width), height(height){}
-
-template<class Pixel>
-void Bitmap<Pixel>::resize(std::size_t width, std::size_t height)
-{
-	this->pixels.resize(width * height);
-	this->width = width;
-	this->height = height;
-}
-
-template<class Pixel>
-const Pixel& Bitmap<Pixel>::get(const Vector2S& coordinate) const
-{
-	return this->pixels.at(coordinate.x + this->width * coordinate.y);
-}
-
-template<class Pixel>
-void Bitmap<Pixel>::set(const Vector2S& coordinate, Pixel pixel)
-{
-	this->pixels.at(coordinate.x + this->width * coordinate.y) = pixel;
-}
-
 #ifndef topaz_assert
 #define topaz_assert(x, y)
 #endif

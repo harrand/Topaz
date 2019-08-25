@@ -3,7 +3,7 @@
 Texture::Texture():Texture(0, 0, false){}
 
 // This is private, to use this constructor, call it via Texture(int width, int height)
-Texture::Texture(int width, int height, bool initialise_handle, tz::graphics::TextureComponent texture_component, bool gamma_corrected): texture_handle(0), width(width), height(height), components(0), texture_component(texture_component), gamma_corrected(gamma_corrected), bitmap({})
+Texture::Texture(int width, int height, bool initialise_handle, tz::graphics::TextureComponent texture_component, bool gamma_corrected): texture_handle(0), width(width), height(height), components(0), texture_component(texture_component), gamma_corrected(gamma_corrected)
 {
 	if(initialise_handle)
 	{
@@ -47,7 +47,7 @@ Texture::Texture(int width, int height, tz::graphics::TextureComponent texture_c
 
 Texture::Texture(std::string filename, bool mipmapping, bool gamma_corrected): Texture(Image{filename}, mipmapping, gamma_corrected) {}
 
-Texture::Texture(const Image& image, bool mipmapping, bool gamma_corrected): texture_handle(0), width(0), height(0), components(4), gamma_corrected(gamma_corrected), bitmap({})
+Texture::Texture(const Image& image, bool mipmapping, bool gamma_corrected): texture_handle(0), width(0), height(0), components(4), gamma_corrected(gamma_corrected)
 {
 	this->width = image.get_width();
 	this->height = image.get_height();
@@ -64,10 +64,10 @@ Texture::Texture(const Image& image, bool mipmapping, bool gamma_corrected): tex
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-    topaz_assert(!image.get_data().empty(), "Texture::Texture(Image, ...): Image needs to have data! This has no data!");
-    topaz_assert(image.get_data().get_element_capacity() == (this->width * this->height * 4u), "Texture::Texture(Image, ...): Image data size (", image.get_data().get_element_capacity(), ") does not match its expected size (", this->width, "*", this->height, "*4 == ", (this->width * this->height * 4), ").");
+    topaz_assert(!image.data().empty(), "Texture::Texture(Image, ...): Image needs to have data! This has no data!");
+    topaz_assert(image.data().get_element_capacity() == (this->width * this->height * 4u), "Texture::Texture(Image, ...): Image data size (", image.data().get_element_capacity(), ") does not match its expected size (", this->width, "*", this->height, "*4 == ", (this->width * this->height * 4), ").");
 
-	glTexImage2D(GL_TEXTURE_2D, 0, this->gamma_corrected ? GL_SRGB8_ALPHA8 : GL_RGBA8, this->width, this->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, &image.get_data()[0]);
+	glTexImage2D(GL_TEXTURE_2D, 0, this->gamma_corrected ? GL_SRGB8_ALPHA8 : GL_RGBA8, this->width, this->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image.data().get_address());
 	if(mipmapping)
 		glGenerateMipmap(GL_TEXTURE_2D);
 }
@@ -77,7 +77,6 @@ Texture::Texture(const Font& font, const std::string& text, SDL_Color foreground
 	if(font.font_handle == NULL)
 	{
 		tz::debug::print("Texture::Texture(Font, ...): Error: Texture attempted to load from an invalid font. Error: \"", TTF_GetError(), "\".\n");
-		this->bitmap = {};
 		return;
 	}
 	SDL_Surface* text_surface = TTF_RenderUTF8_Blended(font.font_handle, text.c_str(), foreground_colour);
@@ -107,33 +106,6 @@ Texture::Texture(const Font& font, const std::string& text, SDL_Color foreground
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexImage2D(GL_TEXTURE_2D, 0, bytes_per_pixel, text_surface->w, text_surface->h, 0, texture_format, GL_UNSIGNED_BYTE, text_surface->pixels);
-	// if ctor parameter said to store the bitmap in RAM, then dewit. otherwise dont bother because it eats lots of ram and its in VRAM anyway
-	// Store necessary data in this bitmap.
-	auto pixel_data = reinterpret_cast<unsigned char*>(text_surface->pixels);
-	this->bitmap = Bitmap<PixelRGBA>();
-	this->bitmap.pixels.reserve(static_cast<std::size_t>(std::abs(this->width * this->height)));
-	for(std::size_t i = 3; i < static_cast<std::size_t>(std::abs(this->width * this->height)); i += 4) {
-		switch (texture_format)
-		{
-			case GL_RGBA8:
-			default:
-				this->bitmap.pixels.emplace_back(
-						PixelRGBA{pixel_data[i - 3], pixel_data[i - 2], pixel_data[i - 1], pixel_data[i]});
-				break;
-			case GL_BGRA:
-				this->bitmap.pixels.emplace_back(
-						PixelRGBA{pixel_data[i - 1], pixel_data[i - 2], pixel_data[i - 3], pixel_data[i]});
-				break;
-			case GL_RGB:
-				this->bitmap.pixels.emplace_back(
-						PixelRGBA{pixel_data[i - 3], pixel_data[i - 2], pixel_data[i - 1], 255});
-				break;
-			case GL_BGR:
-				this->bitmap.pixels.emplace_back(
-						PixelRGBA{pixel_data[i - 1], pixel_data[i - 2], pixel_data[i - 3], 255});
-				break;
-		}
-	}
 	SDL_FreeSurface(text_surface);
 }
 
@@ -142,7 +114,6 @@ Texture::Texture(aiTexture* texture): Texture(Image{texture}) {}
 Texture::Texture(const Texture& copy): Texture(copy.width, copy.height, copy.get_texture_component(), copy.gamma_corrected)
 {
 	this->components = copy.components;
-	this->bitmap = copy.bitmap;
 	tz::graphics::asset::unbind_texture();
 	/*
 	std::cout << "width difference = " << this->width - copy.width << ", height diference = " << this->height - copy.height << "\n";
@@ -233,11 +204,6 @@ bool Texture::has_mipmap() const
 	return this->get_mipmap_type() != tz::graphics::MipmapType::NONE;
 }
 
-const Bitmap<PixelRGBA>& Texture::get_bitmap() const
-{
-	return this->bitmap;
-}
-
 tz::graphics::TextureComponent Texture::get_texture_component() const
 {
 	return this->texture_component;
@@ -270,7 +236,6 @@ void Texture::swap(Texture& lhs, Texture& rhs)
 	std::swap(lhs.components, rhs.components);
 	std::swap(lhs.texture_component, rhs.texture_component);
 	std::swap(lhs.gamma_corrected, rhs.gamma_corrected);
-	std::swap(lhs.bitmap, rhs.bitmap);
 }
 
 NormalMap::NormalMap(std::string filename): Texture(filename, false, false){}
@@ -293,7 +258,6 @@ void ParallaxMap::bind(Shader* shader, unsigned int id, const std::string& sampl
 }
 
 DisplacementMap::DisplacementMap(std::string filename, float displacement_factor): Texture(filename, false, false), displacement_factor(displacement_factor){}
-DisplacementMap::DisplacementMap(Bitmap<PixelDepth> height_map, float displacement_factor): Texture(height_map), displacement_factor(displacement_factor){}
 DisplacementMap::DisplacementMap(aiTexture* assimp_texture): Texture(assimp_texture){}
 
 void DisplacementMap::bind(Shader* shader, unsigned int id, const std::string& sampler_name) const
@@ -329,7 +293,7 @@ CubeMap::CubeMap(std::string right_texture, std::string left_texture, std::strin
 	for(std::size_t i = 0; i < face_data.size(); i++)
 	{
 		const Image& face = face_data[i];
-		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGBA8, face.get_width(), face.get_height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, &face.get_data()[0]);
+		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGBA8, face.get_width(), face.get_height(), 0, GL_RGBA, GL_UNSIGNED_BYTE,face.data().get_address());
 	}
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -381,6 +345,7 @@ std::vector<Image> CubeMap::load_textures()
 
 namespace tz::graphics::height_map
 {
+    /*
 	DisplacementMap generate_smooth_noise(std::size_t width, std::size_t height, float displacement_factor, SmoothNoise noise_function)
 	{
 		std::vector<PixelDepth> pixels;
@@ -408,4 +373,5 @@ namespace tz::graphics::height_map
 		}
 		return {Bitmap<PixelDepth>{pixels, width, height}, displacement_factor};
 	}
+     */
 }

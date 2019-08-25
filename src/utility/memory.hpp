@@ -100,6 +100,8 @@ public:
     std::optional<MarkerType> get_mark(std::size_t index) const;
     std::optional<MarkerType> get_value_mark(const T& element) const;
 	bool empty() const;
+    bool null() const;
+    void* get_address() const;
 	/**
 	 * Get the element at the given index. Range-checking is conditionally compiled via assertions. In Release, there is no range-checking.
 	 * @param index - Index of the element to retrieve
@@ -141,6 +143,8 @@ protected:
     /// Number of elements available in the pool.
 	std::size_t pool_size;
 };
+
+using BytePool = MemoryPool<std::byte>;
 
 /**
  * Identical to MemoryPool, but is responsible for allocating and de-allocating the memory. Do not use if the memory is pre-allocated, or it will corrupt the heap.

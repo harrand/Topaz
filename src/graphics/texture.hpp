@@ -118,13 +118,6 @@ public:
 	Texture(std::string filename, bool mipmapping = true, bool gamma_corrected = true);
     Texture(const Image& image, bool mipmapping = true, bool gamma_corrected = true);
 	/**
-	 * Loads a texture from existing Pixel Data
-	 * @tparam Pixel - The type of Pixel to store in the Bitmap.
-	 * @param pixel_data - The bitmap from which to create a new Texture.
-	 */
-	template<class Pixel>
-	Texture(Bitmap<Pixel> pixel_data);
-	/**
 	 * Loads a texture from a font, given text.
 	 * @param font - The Font containing the desired glyphs.
 	 * @param text - String representing the text to be rendered into a texture.
@@ -183,11 +176,6 @@ public:
 	 */
 	bool has_mipmap() const;
 	/**
-	 * Get the local Bitmap created during Texture construction.
-	 * @return - The Bitmap created during construction. If no Bitmap was created, returns an empty Bitmap
-	 */
-	const Bitmap<PixelRGBA>& get_bitmap() const;
-	/**
 	 * This is a normal Texture.
 	 * @return - TextureType::TEXTURE
 	 */
@@ -235,8 +223,6 @@ protected:
 	tz::graphics::TextureComponent texture_component;
 	/// Stores whether gamma-correction was specified for this texture.
 	bool gamma_corrected;
-	/// Optional storage for a local Bitmap of this texture's image data.
-	Bitmap<PixelRGBA> bitmap;
 private:
 	/**
 	 * Do not use.
@@ -319,7 +305,7 @@ public:
 	 * @param height_map - Heightmap used to construct the displacement map
 	 * @param displacement_factor - The multiplier used on each value in the height map
 	 */
-	DisplacementMap(Bitmap<PixelDepth> height_map, float displacement_factor = tz::consts::graphics::texture::default_displacement_factor);
+	DisplacementMap(const Image& height_map, float displacement_factor = tz::consts::graphics::texture::default_displacement_factor);
 	/**
 	 * Construct a DisplacementMap based upon an existing Assimp texture.
 	 * @param assimp_texture - The assimp texture whose data should be used to construct this DisplacementMap

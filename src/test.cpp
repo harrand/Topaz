@@ -150,9 +150,9 @@ void init()
 	glDebugMessageInsert(GL_DEBUG_SOURCE_APPLICATION, GL_DEBUG_TYPE_ERROR, 0, GL_DEBUG_SEVERITY_NOTIFICATION, -1, "Well met.");
 
 
-	Texture red_texture{Bitmap<PixelRGBA>{{PixelRGBA{255, 0, 0, 255}}, 1, 1}};
-	Texture green_texture{Bitmap<PixelRGBA>{{PixelRGBA{0, 255, 0, 255}}, 1, 1}};
-	Texture blue_texture{Bitmap<PixelRGBA>{{PixelRGBA{0, 0, 255, 255}}, 1, 1}};
+	Texture red_texture{Image{std::vector<std::byte>{std::byte{255}, std::byte{0}, std::byte{0}, std::byte{255}}, 1, 1}};
+	Texture green_texture{Image{std::vector<std::byte>{std::byte{0}, std::byte{255}, std::byte{0}, std::byte{255}}, 1, 1}};
+	Texture blue_texture{Image{std::vector<std::byte>{std::byte{0}, std::byte{0}, std::byte{255}, std::byte{255}}, 1, 1}};
 	AssetBuffer assets;
 	assets.emplace<Model>("darth_maul", "../res/runtime/models/maul/source/Darth Maul/Darth Maul.dae");
 	assets.emplace<Model>("nanosuit", "../res/runtime/models/nanosuit.fbx");
@@ -174,7 +174,7 @@ void init()
 	assets.emplace<ParallaxMap>("stone_parallax", "../res/runtime/parallaxmaps/stone_parallax.png", 0.06f, -0.5f);
 	assets.emplace<ParallaxMap>("wood_parallax", "../res/runtime/parallaxmaps/wood_parallax.jpg");
 	assets.emplace<DisplacementMap>("bricks_displacement", "../res/runtime/displacementmaps/bricks_displacement.png", 0.1f);
-	assets.emplace<DisplacementMap>("noise_displacement", tz::graphics::height_map::generate_cosine_noise(256, 256, 100.0f));
+	//assets.emplace<DisplacementMap>("noise_displacement", tz::graphics::height_map::generate_cosine_noise(256, 256, 100.0f));
 	// render noisemap:
 	Asset maul(assets.find<Model>("darth_maul"));
 	Asset nanosuit(assets.find<Model>("nanosuit"));

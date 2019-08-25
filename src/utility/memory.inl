@@ -283,8 +283,21 @@ bool MemoryPool<T>::empty() const
 }
 
 template<typename T>
+bool MemoryPool<T>::null() const
+{
+    return this->first == nullptr;
+}
+
+template<typename T>
+void* MemoryPool<T>::get_address() const
+{
+    return this->first;
+}
+
+template<typename T>
 T& MemoryPool<T>::operator[](std::size_t index)
 {
+    topaz_assert(!this->null(), "Attempted to access MemoryPool<T>, but it bounded the nullptr.");
 	topaz_assert(index < pool_size, "MemoryPool<T> accessed at index ", index, " which is out of range of this pool (size ", this->pool_size, ").");
 	return *(this->first + index);
 }
@@ -292,7 +305,8 @@ T& MemoryPool<T>::operator[](std::size_t index)
 template<typename T>
 const T& MemoryPool<T>::operator[](std::size_t index) const
 {
-	topaz_assert(index < this->pool_size, "MemoryPool<T> accessed at index ", index, " which is out of range of this pool (size ", this->pool_size, ").");
+    topaz_assert(!this->null(), "Attempted to access MemoryPool<T>, but it bounded the nullptr.");
+    topaz_assert(index < this->pool_size, "MemoryPool<T> accessed at index ", index, " which is out of range of this pool (size ", this->pool_size, ").");
 	return *(this->first + index);
 }
 

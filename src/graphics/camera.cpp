@@ -84,7 +84,6 @@ void Camera::set_orthographic(float right, float left, float top, float bottom, 
 	this->ortho_far = far;
 }
 
-
 Matrix4x4 Camera::view() const
 {
 	return tz::transform::view(this->position, this->rotation);
