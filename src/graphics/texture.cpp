@@ -1,3 +1,4 @@
+#include <map>
 #include "graphics/texture.hpp"
 
 Texture::Texture():Texture(0, 0, false){}
@@ -72,8 +73,65 @@ Texture::Texture(const Image& image, bool mipmapping, bool gamma_corrected): tex
 		glGenerateMipmap(GL_TEXTURE_2D);
 }
 
-Texture::Texture(const Font& font, const std::string& text, SDL_Color foreground_colour): Texture()
+Texture::Texture(const Font& font, const std::string& text, [[maybe_unused]] Vector4F foreground_colour): Texture()
 {
+	auto image_vector = font.render_bitmap(text);
+    std::vector<std::byte> resultant_data;
+    topaz_assert(!image_vector.empty(), "Texture::Texture(font, text): Font");
+	std::map<const Image*, std::vector<std::vector<std::byte>>> image_to_rows_map;
+    unsigned int width = 0, height = 0;
+	for(const Image& image : image_vector)
+	{
+		width += image.get_width();
+		height = std::max(image.get_height(), height);
+		for(std::size_t i = 0 ; i < image.get_height(); i++)
+		{
+			std::vector<std::byte> row;
+			row.resize(image.get_width() * 4);
+			for(std::size_t j = 0; j < image.get_width() * 4; j++)
+			{
+				std::size_t index = (i * image.get_width() * 4) + j;
+				row[j] = image.data()[index];
+			}
+			image_to_rows_map[&image].push_back(std::move(row));
+		}
+	}
+    std::size_t max_row_count = 0;
+    for(auto const& pair : image_to_rows_map)
+    {
+        max_row_count = std::max(max_row_count, pair.second.size());
+    }
+
+    auto append_data = [](std::vector<std::byte>& data, const std::vector<std::byte>& to_append)
+    {
+        for(const auto& byte : to_append)
+            data.push_back(byte);
+    };
+
+    for(std::size_t i = 0; i < max_row_count; i++)
+    {
+        for(const Image& image : image_vector)
+        {
+            try
+            {
+                append_data(resultant_data, image_to_rows_map[&image].at(i));
+            }catch(...)
+            {
+                // pad with zeros if there's no data left for this image (smaller than the others);
+                for([[maybe_unused]] std::size_t j = 0; j < image.get_width(); j++)
+                {
+                    // red for example purposes.
+                    resultant_data.push_back(std::byte{255});
+                    resultant_data.push_back(std::byte{0});
+                    resultant_data.push_back(std::byte{0});
+                    resultant_data.push_back(std::byte{255});
+                }
+            }
+        }
+    }
+    topaz_assert(resultant_data.size() == static_cast<std::size_t>(width * height * 4), "Texture::Texture(Font, ...): Expected data size to be ", width, "*", height, "*4 == ", (width * height * 4), ", but the size was ", resultant_data.size());
+    *this = Texture{Image{resultant_data, width, height}};
+	/**
 	if(font.font_handle == NULL)
 	{
 		tz::debug::print("Texture::Texture(Font, ...): Error: Texture attempted to load from an invalid font. Error: \"", TTF_GetError(), "\".\n");
@@ -107,6 +165,7 @@ Texture::Texture(const Font& font, const std::string& text, SDL_Color foreground
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexImage2D(GL_TEXTURE_2D, 0, bytes_per_pixel, text_surface->w, text_surface->h, 0, texture_format, GL_UNSIGNED_BYTE, text_surface->pixels);
 	SDL_FreeSurface(text_surface);
+	 */
 }
 
 Texture::Texture(aiTexture* texture): Texture(Image{texture}) {}

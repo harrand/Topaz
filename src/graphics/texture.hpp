@@ -1,6 +1,6 @@
 #ifndef TEXTURE_HPP
 #define TEXTURE_HPP
-#include "graphics/graphics.hpp"
+#include "graphics/font.hpp"
 #include "graphics/shader.hpp"
 #include "graphics/image.hpp"
 #include <memory>
@@ -123,7 +123,7 @@ public:
 	 * @param text - String representing the text to be rendered into a texture.
 	 * @param foreground_colour - Colour of the text.
 	 */
-	Texture(const Font& font, const std::string& text, SDL_Color foreground_colour);
+	Texture(const Font& font, const std::string& text, Vector4F foreground_colour);
 	/**
 	 * Construct a Texture based upon an existing Assimp texture.
 	 * @param assimp_texture - The assimp texture whose data should be used to construct this Texture

@@ -140,7 +140,7 @@ void Label::set_font(Font font)
 
 void Label::update_texture()
 {
-	this->text_render_texture = std::make_unique<Texture>(this->font, this->text, SDL_Color({static_cast<unsigned char>(this->text_colour.x * 255), static_cast<unsigned char>(this->text_colour.y * 255), static_cast<unsigned char>(this->text_colour.z * 255), static_cast<unsigned char>(255)}));
+	this->text_render_texture = std::make_unique<Texture>(this->font, this->text, Vector4F{this->text_colour, 1.0f});
 	this->dimensions_local_pixel_space = {this->text_render_texture->get_width(), this->text_render_texture->get_height()};
 }
 

@@ -6,6 +6,7 @@
 #define TOPAZ_IMAGE_HPP
 #include "utility/memory.hpp"
 #include "assimp/texture.h"
+#include "data/vector.hpp"
 #include <string>
 #include <cstddef>
 #include <vector>

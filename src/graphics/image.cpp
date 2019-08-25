@@ -5,6 +5,7 @@
 #include "image.hpp"
 #define STB_IMAGE_IMPLEMENTATION
 #include "ext/stb_image.h"
+#include "core/topaz.hpp"
 
 Image::Image(std::string path): path({path}), image_data(), width(0), height(0)
 {

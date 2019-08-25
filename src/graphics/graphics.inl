@@ -1,4 +1,6 @@
 #include "utility/log.hpp"
+#include "SDL2/SDL_ttf.h"
+#include "graphics/font.hpp"
 
 #ifndef topaz_assert
 #define topaz_assert(x, y)
@@ -13,8 +15,11 @@ namespace tz::graphics
 		[[maybe_unused]] GLenum status = glewInit();
 		topaz_assert(status == GLEW_OK, "tz::graphics::initialise(): Fatal Error: Initialisation of GLEW failed.\n\tInitialisation of tz::graphics unsuccessful!");
 		tz::debug::print("tz::graphics::initialise(): Initialisation of GLEW successful.\n\tInitialised tz::graphics via GLEW (OpenGL).\n");
-		[[maybe_unused]] int ttf_init_result = TTF_Init();
-		topaz_assert(ttf_init_result == 0, "tz::graphics::initialise(): Fatal Error: Initialisation of SDL2_ttf failed.");
+		//[[maybe_unused]] int ttf_init_result = TTF_Init();
+		//topaz_assert(ttf_init_result == 0, "tz::graphics::initialise(): Fatal Error: Initialisation of SDL2_ttf failed.");
+		auto error = FT_Init_FreeType(&tz::graphics::detail::freetype_library);
+		topaz_assert(error == 0, "tz::graphics::initialize(): Fatal Error: Initializer of FreeType failed.");
+		tz::graphics::detail::freetype_initialized = true;
 		tz::debug::print("tz::graphics::initialise(): Successfully initialised SDL2_ttf.\n");
 		tz::graphics::initialised = true;
 		glEnable(GL_FRAMEBUFFER_SRGB);
@@ -23,7 +28,8 @@ namespace tz::graphics
 	
 	inline void terminate()
 	{
-		TTF_Quit();
+		FT_Done_FreeType(tz::graphics::detail::freetype_library);
+		tz::graphics::detail::freetype_initialized = false;
 		tz::debug::print("tz::graphics::terminate(): Terminated SDL2_ttf\n");
 		tz::debug::print("tz::graphics::terminate(): Terminated tz::graphics via GLEW (OpenGL).\n");
 	}

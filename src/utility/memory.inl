@@ -1,5 +1,5 @@
 #include <cstring>
-#include "core/topaz.hpp"
+#include "core/assert.hpp"
 
 template<typename PoolMarking>
 void PoolMarker<PoolMarking>::mark(PoolMarker::MemoryRegion region, PoolMarking marking)

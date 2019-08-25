@@ -17,6 +17,8 @@ else()
     message(FATAL_ERROR "Neither 'Release' nor 'Debug' specified for CMAKE_BUILD_TYPE. You must choose one.")
 endif()
 
+add_subdirectory(src/ext/freetype)
+
 add_library(topaz SHARED
         src/ext/glew.c
         src/ext/stb_image.h
@@ -154,7 +156,7 @@ add_library(topaz SHARED
         src/utility/string.hpp
         src/utility/time.cpp
         src/utility/time.hpp
-        src/utility/time.inl)
+        src/utility/time.inl src/graphics/font.cpp src/graphics/font.hpp src/core/assert.cpp src/core/assert.hpp)
 # here we express in terms of modules, not just build flags
 target_include_directories(topaz PUBLIC ${PROJECT_SOURCE_DIR}/inc)
 target_include_directories(topaz PRIVATE ${PROJECT_SOURCE_DIR}/src)
@@ -174,7 +176,7 @@ else()
     target_compile_definitions(topaz PUBLIC ${UNDERLYING_GRAPHICS_API})
 endif()
 # public is for interface dependencies which we have, but no specific implementation dependencies that games wont need
-target_link_libraries(topaz PUBLIC ${LIB_SDL2} ${LIB_SDL2_MIXER} ${LIB_SDL2_TTF} ${LIB_SDL2_MAIN} ${LIB_ASSIMP} OpenGL32)
+target_link_libraries(topaz PUBLIC ${LIB_SDL2} ${LIB_SDL2_MIXER} ${LIB_SDL2_TTF} ${LIB_SDL2_MAIN} ${LIB_ASSIMP} freetype OpenGL32)
 
 #add_subdirectory(${PROJECT_SOURCE_DIR}/src/test ${PROJECT_BINARY_DIR})
 
