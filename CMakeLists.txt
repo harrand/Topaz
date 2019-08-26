@@ -7,6 +7,7 @@ set(TOPAZ_PROFILING TRUE)
 # add_compile_options are global flags. They are used everywhere, not just in particular modules.
 message("CMAKE_BUILD_TYPE = ${CMAKE_BUILD_TYPE}")
 set(COMPILE_OPTIONS -Wall -Wextra -pedantic-errors)
+
 if(CMAKE_BUILD_TYPE MATCHES Release)
     message(STATUS "Compilation set on Release mode.")
     add_compile_options(-Wall -Wextra -pedantic-errors -O3)
@@ -17,7 +18,16 @@ else()
     message(FATAL_ERROR "Neither 'Release' nor 'Debug' specified for CMAKE_BUILD_TYPE. You must choose one.")
 endif()
 
-add_subdirectory(src/ext/freetype)
+include(ExternalProject)
+set(FREETYPE_BINARY_DIR ${PROJECT_SOURCE_DIR}/extern/freetype/src/freetype_project-build)
+set(FREETYPE_ROOT_DIR ${PROJECT_SOURCE_DIR}/extern/freetype)
+#message(FATAL_ERROR ${FREETYPE_ROOT_DIR})
+link_directories(${FREETYPE_BINARY_DIR})
+ExternalProject_Add(freetype_project
+        GIT_REPOSITORY git://git.sv.nongnu.org/freetype/freetype2.git
+        PREFIX ${FREETYPE_ROOT_DIR}
+        BINARY_DIR ${FREETYPE_BINARY_DIR}
+        INSTALL_COMMAND "")
 
 add_library(topaz SHARED
         src/ext/glew.c
@@ -157,8 +167,9 @@ add_library(topaz SHARED
         src/utility/time.cpp
         src/utility/time.hpp
         src/utility/time.inl src/graphics/font.cpp src/graphics/font.hpp src/core/assert.cpp src/core/assert.hpp)
+add_dependencies(topaz freetype_project)
 # here we express in terms of modules, not just build flags
-target_include_directories(topaz PUBLIC ${PROJECT_SOURCE_DIR}/inc)
+target_include_directories(topaz PUBLIC ${PROJECT_SOURCE_DIR}/inc ${PROJECT_SOURCE_DIR}/src/ext/freetype/include)
 target_include_directories(topaz PRIVATE ${PROJECT_SOURCE_DIR}/src)
 
 find_library(LIB_ASSIMP assimp PATHS ${PROJECT_SOURCE_DIR}/lib)
@@ -176,6 +187,7 @@ else()
     target_compile_definitions(topaz PUBLIC ${UNDERLYING_GRAPHICS_API})
 endif()
 # public is for interface dependencies which we have, but no specific implementation dependencies that games wont need
+#message(FATAL_ERROR ${FREETYPE_BINARY_DIR})
 target_link_libraries(topaz PUBLIC ${LIB_SDL2} ${LIB_SDL2_MIXER} ${LIB_SDL2_TTF} ${LIB_SDL2_MAIN} ${LIB_ASSIMP} freetype OpenGL32)
 
 #add_subdirectory(${PROJECT_SOURCE_DIR}/src/test ${PROJECT_BINARY_DIR})

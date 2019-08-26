@@ -2,6 +2,7 @@
 cpl/
 doc/
 bin/
+extern/
 
 # # I don't want the idea directory in my repo at all
 .idea
@@ -11,7 +12,6 @@ src/test/**/*.o
 
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio and Webstorm
 # Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
-
 
 # User-specific stuff:
 .idea/**/workspace.xml
