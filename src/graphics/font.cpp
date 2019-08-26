@@ -3,7 +3,8 @@
 //
 
 #include "font.hpp"
-#include "core/topaz.hpp"
+#include "utility/log.hpp"
+#include <map>
 
 FT_Library tz::graphics::detail::freetype_library = {};
 bool tz::graphics::detail::freetype_initialized = false;
@@ -58,7 +59,67 @@ const std::string& Font::get_path() const
     return this->font_path;
 }
 
-std::vector<Image> Font::render_bitmap(const std::string& text) const
+Image Font::render_bitmap(const std::string& text) const
+{
+    auto image_vector = this->get_image_sequence(text);
+    std::vector<std::byte> resultant_data;
+    topaz_assert(!image_vector.empty(), "Texture::Texture(font, text): Font");
+    std::map<const Image*, std::vector<std::vector<std::byte>>> image_to_rows_map;
+    unsigned int width = 0, height = 0;
+    for(const Image& image : image_vector)
+    {
+        width += image.get_width();
+        height = std::max(image.get_height(), height);
+        for(std::size_t i = 0 ; i < image.get_height(); i++)
+        {
+            std::vector<std::byte> row;
+            row.resize(image.get_width() * 4);
+            for(std::size_t j = 0; j < image.get_width() * 4; j++)
+            {
+                std::size_t index = (i * image.get_width() * 4) + j;
+                row[j] = image.data()[index];
+            }
+            image_to_rows_map[&image].push_back(std::move(row));
+        }
+    }
+    std::size_t max_row_count = 0;
+    for(auto const& pair : image_to_rows_map)
+    {
+        max_row_count = std::max(max_row_count, pair.second.size());
+    }
+
+    auto append_data = [](std::vector<std::byte>& data, const std::vector<std::byte>& to_append)
+    {
+        for(const auto& byte : to_append)
+            data.push_back(byte);
+    };
+
+    for(std::size_t i = 0; i < max_row_count; i++)
+    {
+        for(const Image& image : image_vector)
+        {
+            try
+            {
+                append_data(resultant_data, image_to_rows_map[&image].at(i));
+            }catch(...)
+            {
+                // pad with zeros if there's no data left for this image (smaller than the others);
+                for([[maybe_unused]] std::size_t j = 0; j < image.get_width(); j++)
+                {
+                    // red for example purposes.
+                    resultant_data.push_back(std::byte{0});
+                    resultant_data.push_back(std::byte{255});
+                    resultant_data.push_back(std::byte{0});
+                    resultant_data.push_back(std::byte{255});
+                }
+            }
+        }
+    }
+    topaz_assert(resultant_data.size() == static_cast<std::size_t>(width * height * 4), "Texture::Texture(Font, ...): Expected data size to be ", width, "*", height, "*4 == ", (width * height * 4), ", but the size was ", resultant_data.size());
+    return {resultant_data, width, height};
+}
+
+std::vector<Image> Font::get_image_sequence(const std::string& text) const
 {
     std::vector<Image> image_sequence;
     for(char c : text)

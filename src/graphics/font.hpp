@@ -63,8 +63,9 @@ public:
      * @return - Filename of the source font.
      */
     const std::string& get_path() const;
-    std::vector<Image> render_bitmap(const std::string& text) const;
+    Image render_bitmap(const std::string& text) const;
 private:
+    std::vector<Image> get_image_sequence(const std::string& text) const;
     /// Path to the font-file containing font-data.
     std::string font_path;
     /// Height of glyphs, in pixels.
