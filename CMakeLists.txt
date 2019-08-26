@@ -189,7 +189,7 @@ else()
 endif()
 # public is for interface dependencies which we have, but no specific implementation dependencies that games wont need
 #message(FATAL_ERROR ${FREETYPE_BINARY_DIR})
-target_link_libraries(topaz PUBLIC ${LIB_SDL2} ${LIB_SDL2_MIXER} ${LIB_SDL2_TTF} ${LIB_SDL2_MAIN} ${LIB_ASSIMP} freetype OpenGL32)
+target_link_libraries(topaz PUBLIC ${LIB_SDL2} ${LIB_SDL2_MIXER} ${LIB_SDL2_MAIN} ${LIB_ASSIMP} freetype OpenGL32)
 
 #add_subdirectory(${PROJECT_SOURCE_DIR}/src/test ${PROJECT_BINARY_DIR})
 
