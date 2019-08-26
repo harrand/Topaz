@@ -4,7 +4,7 @@
 
 #ifndef TOPAZ_FONT_HPP
 #define TOPAZ_FONT_HPP
-#include "ext/freetype/include/ft2build.h"
+#include "ft2build.h"
 #include FT_FREETYPE_H
 #include <string>
 #include "graphics/image.hpp"

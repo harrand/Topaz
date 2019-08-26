@@ -21,7 +21,8 @@ endif()
 include(ExternalProject)
 set(FREETYPE_BINARY_DIR ${PROJECT_SOURCE_DIR}/extern/freetype/src/freetype_project-build)
 set(FREETYPE_ROOT_DIR ${PROJECT_SOURCE_DIR}/extern/freetype)
-#message(FATAL_ERROR ${FREETYPE_ROOT_DIR})
+set(FREETYPE_INCLUDE_DIR ${FREETYPE_ROOT_DIR}/src/freetype_project/include)
+#message(FATAL_ERROR ${FREETYPE_INCLUDE_DIR})
 link_directories(${FREETYPE_BINARY_DIR})
 ExternalProject_Add(freetype_project
         GIT_REPOSITORY git://git.sv.nongnu.org/freetype/freetype2.git
@@ -169,7 +170,7 @@ add_library(topaz SHARED
         src/utility/time.inl src/graphics/font.cpp src/graphics/font.hpp src/core/assert.cpp src/core/assert.hpp)
 add_dependencies(topaz freetype_project)
 # here we express in terms of modules, not just build flags
-target_include_directories(topaz PUBLIC ${PROJECT_SOURCE_DIR}/inc ${PROJECT_SOURCE_DIR}/src/ext/freetype/include)
+target_include_directories(topaz PUBLIC ${PROJECT_SOURCE_DIR}/inc ${FREETYPE_INCLUDE_DIR})
 target_include_directories(topaz PRIVATE ${PROJECT_SOURCE_DIR}/src)
 
 find_library(LIB_ASSIMP assimp PATHS ${PROJECT_SOURCE_DIR}/lib)
