@@ -59,12 +59,12 @@ const std::string& Font::get_path() const
     return this->font_path;
 }
 
-Image Font::render_bitmap(const std::string& text) const
+Image Font::render_bitmap(const std::string& text, const Vector4F& colour) const
 {
-    auto image_vector = this->get_image_sequence(text);
+    auto image_vector = this->get_image_sequence(text, colour);
     std::vector<std::byte> resultant_data;
     topaz_assert(!image_vector.empty(), "Texture::Texture(font, text): Font");
-    std::map<const Image*, std::vector<std::vector<std::byte>>> image_to_rows_map;
+    std::map<const Image*, std::deque<std::vector<std::byte>>> image_to_rows_map;
     unsigned int width = 0, height = 0;
     for(const Image& image : image_vector)
     {
@@ -82,6 +82,25 @@ Image Font::render_bitmap(const std::string& text) const
             image_to_rows_map[&image].push_back(std::move(row));
         }
     }
+
+    for(const Image& image : image_vector)
+    {
+        // perform pre-padding
+        std::size_t num_rows_need_padding = height - image_to_rows_map[&image].size();
+        for(std::size_t i = 0; i < num_rows_need_padding; i++)
+        {
+            std::vector<std::byte> row_data;
+            for(std::size_t j = 0; j < image.get_width(); j++)
+            {
+                row_data.push_back(std::byte{0});
+                row_data.push_back(std::byte{0});
+                row_data.push_back(std::byte{0});
+                row_data.push_back(std::byte{0});
+            }
+            image_to_rows_map[&image].push_front(row_data);
+        }
+    }
+
     std::size_t max_row_count = 0;
     for(auto const& pair : image_to_rows_map)
     {
@@ -119,11 +138,24 @@ Image Font::render_bitmap(const std::string& text) const
     return {resultant_data, width, height};
 }
 
-std::vector<Image> Font::get_image_sequence(const std::string& text) const
+std::vector<Image> Font::get_image_sequence(const std::string& text, const Vector4F& colour) const
 {
     std::vector<Image> image_sequence;
     for(char c : text)
     {
+        if(c == ' ' && !image_sequence.empty())
+        {
+            unsigned int average_width_so_far = 0;
+            unsigned int max_height_so_far = 0;
+            for(const Image& img : image_sequence)
+            {
+                average_width_so_far += img.get_width();
+                max_height_so_far = std::max(img.get_height(), max_height_so_far);
+            }
+            average_width_so_far /= image_sequence.size();
+            std::vector<std::byte> space_data{average_width_so_far * max_height_so_far * 4, std::byte{0}};
+            image_sequence.emplace_back(space_data, average_width_so_far, max_height_so_far);
+        }
         if(FT_Load_Char(this->font_handle, c, FT_LOAD_RENDER))
         {
             tz::debug::print("Font::render_bitmap(text): Failed to load glyph from character '", c, "'");
@@ -138,11 +170,11 @@ std::vector<Image> Font::get_image_sequence(const std::string& text) const
         image_data.reserve(width * height * 4);
         for(std::size_t i = 0; i < (width * height); i++)
         {
-            std::byte data_element{bitmap_data[i]};
-            image_data.push_back(data_element);
-            image_data.push_back(data_element);
-            image_data.push_back(data_element);
-            image_data.push_back(data_element);
+            unsigned char data_element{bitmap_data[i]};
+            image_data.push_back(static_cast<std::byte>(static_cast<unsigned char>(std::ceil(data_element * colour.x))));
+            image_data.push_back(static_cast<std::byte>(static_cast<unsigned char>(std::ceil(data_element * colour.y))));
+            image_data.push_back(static_cast<std::byte>(static_cast<unsigned char>(std::ceil(data_element * colour.z))));
+            image_data.push_back(static_cast<std::byte>(static_cast<unsigned char>(std::ceil(data_element * colour.w))));
         }
         image_sequence.emplace_back(image_data, width, height);
     }

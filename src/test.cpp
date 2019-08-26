@@ -146,7 +146,7 @@ void init()
 	Camera camera;
 	camera.position = {0, 0, -50};
 	Scene scene;
-	scene.add_directional_light({{0.5f, 1.0f, 0.0f}, {1, 1, 1}, 0.8f});
+	scene.add_directional_light({{0.0f, 1.0f, 0.0f}, {1, 1, 1}, 0.8f});
 	glDebugMessageInsert(GL_DEBUG_SOURCE_APPLICATION, GL_DEBUG_TYPE_ERROR, 0, GL_DEBUG_SEVERITY_NOTIFICATION, -1, "Well met.");
 
 

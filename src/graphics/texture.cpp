@@ -73,7 +73,7 @@ Texture::Texture(const Image& image, bool mipmapping, bool gamma_corrected): tex
 		glGenerateMipmap(GL_TEXTURE_2D);
 }
 
-Texture::Texture(const Font& font, const std::string& text, [[maybe_unused]] Vector4F foreground_colour): Texture(font.render_bitmap(text))
+Texture::Texture(const Font& font, const std::string& text, Vector4F foreground_colour): Texture(font.render_bitmap(text, foreground_colour))
 {}
 
 Texture::Texture(aiTexture* texture): Texture(Image{texture}) {}
