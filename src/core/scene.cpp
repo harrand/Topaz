@@ -435,15 +435,15 @@ void Scene::update(float delta_time)
 					auto *fixed = const_cast<Renderable *>(&renderable_cref);
 					if (functional::is_a<Renderable, DynamicObject>(*fixed))
 					{
-						auto *fixed_dyno = dynamic_cast<DynamicObject *>(fixed);
-						physics_objects.push_back(std::ref(*dynamic_cast<PhysicsObject *>(fixed_dyno)));
+						auto *fixed_dyno = static_cast<DynamicObject*>(fixed);
+						physics_objects.push_back(std::ref(*static_cast<PhysicsObject*>(fixed_dyno)));
 					}
 				}
 			}
 			else
 			{
 				for(const auto dyn_object_ptr : this->get_renderables_by_type<DynamicObject>())
-					physics_objects.push_back(std::ref(*dynamic_cast<PhysicsObject*>(dyn_object_ptr)));
+					physics_objects.push_back(std::ref(*static_cast<PhysicsObject*>(dyn_object_ptr)));
 			}
 			//tz::debug::print("Scene::update(...): Handling collision of node of size ", physics_objects.size(), "...\n");
 			physics_component->handle_collisions(physics_objects);

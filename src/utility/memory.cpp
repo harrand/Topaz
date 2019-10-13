@@ -5,6 +5,11 @@
 
 DynamicVariadicMemoryPool::DynamicVariadicMemoryPool(void* begin_address, std::size_t byte_size): MemoryPool<char>(begin_address, byte_size / sizeof(char)), type_format(), type_size_map(){}
 
+bool DynamicVariadicMemoryPool::empty() const
+{
+	return this->get_size() == 0;
+}
+
 std::size_t DynamicVariadicMemoryPool::get_size() const
 {
 	return this->type_format.size();
@@ -39,8 +44,14 @@ const std::type_index& DynamicVariadicMemoryPool::get_type_at_index(std::size_t 
 void DynamicVariadicMemoryPool::zero_all()
 {
 	MemoryPool<char>::zero_all();
-	this->type_format.clear();
-	this->type_size_map.clear();
+}
+
+void DynamicVariadicMemoryPool::clear()
+{
+    this->destructor_trackers.clear();
+    this->zero_all();
+    this->type_size_map.clear();
+    this->type_format.clear();
 }
 
 AutomaticDynamicVariadicMemoryPool::AutomaticDynamicVariadicMemoryPool(std::size_t byte_size) : DynamicVariadicMemoryPool(std::malloc(byte_size), byte_size){}

@@ -9,6 +9,7 @@
 #include <typeindex>
 #include <typeinfo>
 #include <unordered_map>
+#include <memory>
 
 template<class ObjectType>
 class RenderableBuffer;
@@ -62,6 +63,7 @@ public:
 		std::size_t index;
 		const T* value;
 	};
+	MemoryPool();
     /**
      * Construct a MemoryPool to manage a pre-allocated contiguous range of addresses.
      * @param begin_address - First address in the contiguous range
@@ -99,7 +101,7 @@ public:
     void unmark_indices(std::size_t begin_index, std::size_t end_index);
     std::optional<MarkerType> get_mark(std::size_t index) const;
     std::optional<MarkerType> get_value_mark(const T& element) const;
-	bool empty() const;
+	virtual bool empty() const;
     bool null() const;
     void* get_address() const;
 	/**
@@ -159,7 +161,7 @@ public:
      * @param pool_size - Number of elements in the pool
      */
 	AutomaticMemoryPool(std::size_t pool_size);
-	AutomaticMemoryPool(const MemoryPool<T>& copy);
+	AutomaticMemoryPool(const AutomaticMemoryPool<T>& copy);
     /// Deallocates all memory in the pool
 	virtual ~AutomaticMemoryPool();
 };
@@ -176,6 +178,7 @@ template<typename... Ts>
 class StaticVariadicMemoryPool : public MemoryPool<char>
 {
 public:
+    using TupleType = std::tuple<Ts...>;
 	/**
 	 * Construct an SVMPool at the given address.
 	 * Note: It is assumed that the memory region beginning at this address is preallocated, of size at least totalling the total sizeof the parameter pack. If not, attempting to access this pool will invoke UB.
@@ -279,6 +282,22 @@ public:
 template<typename... Ts>
 using ASVMPool = AutomaticStaticVariadicMemoryPool<Ts...>;
 
+class DVMDestructorTrackerBase
+{
+public:
+    virtual ~DVMDestructorTrackerBase(){}
+};
+
+template<typename T>
+class DVMDestructorTracker : public DVMDestructorTrackerBase
+{
+public:
+    DVMDestructorTracker(T* ptr): ptr(ptr){}
+    ~DVMDestructorTracker(){ptr->~T();}
+private:
+    T* ptr;
+};
+
 /**
  * A very highly useful class making heavy use of RTTI.
  * DVMPools wrap a given memory region for use as an arbitrary, dynamic tuple.
@@ -314,6 +333,7 @@ public:
 	 */
 	template<typename T>
 	void push_back(T value);
+    virtual bool empty() const override;
 	/**
 	 * Get the number of elements in this DVMPool.
 	 * Example: For a DVMPool containing a float and an int, with a capacity of 1024 bytes, this method will return 2.
@@ -357,6 +377,7 @@ public:
 	 * This means that the whole pool will once again be treated as garbage, and push_back will insert from the begin-address.
 	 */
 	virtual void zero_all() override;
+    void clear();
     friend class AutomaticDynamicVariadicMemoryPool;
 protected:
 	using MemoryPool<char>::get_element_capacity;
@@ -369,6 +390,7 @@ protected:
 	std::vector<std::type_index> type_format;
 	/// This stores the size of each type used in the DVMPool.
 	std::unordered_map<std::type_index, std::size_t> type_size_map;
+    std::vector<std::unique_ptr<DVMDestructorTrackerBase>> destructor_trackers;
 };
 
 using DVMPool = DynamicVariadicMemoryPool;

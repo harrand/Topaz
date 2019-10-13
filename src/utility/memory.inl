@@ -161,6 +161,9 @@ bool MemoryPool<T>::const_iterator::operator!=(const const_iterator& rhs) const
 }
 
 template<typename T>
+MemoryPool<T>::MemoryPool(): MemoryPool<T>(nullptr, 0){}
+
+template<typename T>
 MemoryPool<T>::MemoryPool(void *begin_address, std::size_t pool_size): first(reinterpret_cast<T*>(begin_address)), last(reinterpret_cast<T*>(begin_address) + pool_size - 1), pool_size(pool_size){}
 
 template<typename T>
@@ -339,7 +342,7 @@ template<typename T>
 AutomaticMemoryPool<T>::AutomaticMemoryPool(std::size_t pool_size): MemoryPool<T>(std::malloc(sizeof(T) * pool_size), pool_size){}
 
 template<typename T>
-AutomaticMemoryPool<T>::AutomaticMemoryPool(const MemoryPool<T>& copy): AutomaticMemoryPool<T>(copy.get_element_capacity())
+AutomaticMemoryPool<T>::AutomaticMemoryPool(const AutomaticMemoryPool<T>& copy): AutomaticMemoryPool<T>(copy.get_element_capacity())
 {
 	for(std::size_t i = 0; i < copy.get_element_capacity(); i++)
 	{
@@ -458,7 +461,12 @@ void DynamicVariadicMemoryPool::push_back(T value)
         auto diff = 1 + reinterpret_cast<std::ptrdiff_t>(reinterpret_cast<char*>(last_ptr) - reinterpret_cast<char*>(after_push_offset));
         topaz_assert(diff >= 0, "DynamicVariadicMemoryPool::push_back(...): Attempted to push back when doing so would go out of bounds:\nBoundary = ", last_ptr, "\nCurrent End = ", current_offset, "\nEnd after push_back = ", after_push_offset, "\nDiff = ", diff, " (" , -diff, " bytes out of bounds)\n");
     }
-	*reinterpret_cast<T*>(current_offset) = value;
+    T* entry = new (reinterpret_cast<T*>(current_offset)) T{value};
+    // Mark this entry for destructor tracking if it's not a pod.
+    if(!std::is_pod_v<T>)
+        this->destructor_trackers.push_back(std::make_unique<DVMDestructorTracker<T>>(entry));
+    else
+        this->destructor_trackers.push_back(nullptr);
 }
 
 template<typename T>
