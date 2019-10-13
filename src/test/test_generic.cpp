@@ -4,7 +4,6 @@
 
 #define UNIT_TEST "Generic"
 #include "lib/test_util.hpp"
-#include "utility/generic.hpp"
 
 void test_sizeof_container()
 {

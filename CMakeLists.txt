@@ -3,8 +3,7 @@ project(topaz VERSION 0.7.0 DESCRIPTION "Cross-Platform Multimedia Engine")
 set(CMAKE_CXX_STANDARD 17)
 set(UNDERLYING_GRAPHICS_API "TOPAZ_OPENGL")
 set(TOPAZ_PROFILING TRUE)
-#set(UNDERLYING_GRAPHICS_API "TOPAZ_VULKAN")
-# add_compile_options are global flags. They are used everywhere, not just in particular modules.
+# Add_compile_options are global flags. They are used everywhere, not just in particular modules.
 message("CMAKE_BUILD_TYPE = ${CMAKE_BUILD_TYPE}")
 set(COMPILE_OPTIONS -Wall -Wextra -pedantic-errors)
 
@@ -18,11 +17,11 @@ else()
     message(FATAL_ERROR "Neither 'Release' nor 'Debug' specified for CMAKE_BUILD_TYPE. You must choose one.")
 endif()
 
+# Fetch and build freetype so Topaz can link against it.
 include(ExternalProject)
 set(FREETYPE_BINARY_DIR ${PROJECT_SOURCE_DIR}/extern/freetype/src/freetype_project-build)
 set(FREETYPE_ROOT_DIR ${PROJECT_SOURCE_DIR}/extern/freetype)
 set(FREETYPE_INCLUDE_DIR ${FREETYPE_ROOT_DIR}/src/freetype_project/include)
-#message(FATAL_ERROR ${FREETYPE_INCLUDE_DIR})
 link_directories(${FREETYPE_BINARY_DIR})
 ExternalProject_Add(freetype_project
         GIT_REPOSITORY git://git.sv.nongnu.org/freetype/freetype2.git
@@ -30,6 +29,7 @@ ExternalProject_Add(freetype_project
         BINARY_DIR ${FREETYPE_BINARY_DIR}
         INSTALL_COMMAND "")
 
+# Build Topaz.
 add_library(topaz SHARED
         src/ext/glew.c
         src/ext/stb_image.h
@@ -38,6 +38,8 @@ add_library(topaz SHARED
         src/audio/audio.hpp
         src/audio/audio.inl
 
+        src/core/assert.cpp
+        src/core/assert.hpp
         src/core/listener.cpp
         src/core/listener.hpp
         src/core/scene.cpp
@@ -90,6 +92,8 @@ add_library(topaz SHARED
         src/graphics/animated_texture.hpp
         src/graphics/attribute_collection.cpp
         src/graphics/attribute_collection.hpp
+        src/graphics/font.cpp
+        src/graphics/font.hpp
         src/graphics/gui/button.cpp
         src/graphics/gui/button.hpp
         src/graphics/gui/display.cpp
@@ -167,7 +171,8 @@ add_library(topaz SHARED
         src/utility/string.hpp
         src/utility/time.cpp
         src/utility/time.hpp
-        src/utility/time.inl src/graphics/font.cpp src/graphics/font.hpp src/core/assert.cpp src/core/assert.hpp)
+        src/utility/time.inl)
+# We depend on freetype.
 add_dependencies(topaz freetype_project)
 # here we express in terms of modules, not just build flags
 target_include_directories(topaz PUBLIC ${PROJECT_SOURCE_DIR}/inc ${FREETYPE_INCLUDE_DIR})
@@ -176,7 +181,6 @@ target_include_directories(topaz PRIVATE ${PROJECT_SOURCE_DIR}/src)
 find_library(LIB_ASSIMP assimp PATHS ${PROJECT_SOURCE_DIR}/lib)
 find_library(LIB_SDL2 SDL2 PATHS ${PROJECT_SOURCE_DIR}/lib)
 find_library(LIB_SDL2_MIXER SDL2_mixer PATHS ${PROJECT_SOURCE_DIR}/lib)
-find_library(LIB_SDL2_TTF SDL2_ttf PATHS ${PROJECT_SOURCE_DIR}/lib)
 find_library(LIB_SDL2_MAIN SDL2main PATHS ${PROJECT_SOURCE_DIR}/lib)
 find_library(LIB_OPENGL OpenGL32)
 
@@ -190,24 +194,15 @@ endif()
 # public is for interface dependencies which we have, but no specific implementation dependencies that games wont need
 #message(FATAL_ERROR ${FREETYPE_BINARY_DIR})
 target_link_libraries(topaz PUBLIC ${LIB_SDL2} ${LIB_SDL2_MIXER} ${LIB_SDL2_MAIN} ${LIB_ASSIMP} freetype OpenGL32)
-
-#add_subdirectory(${PROJECT_SOURCE_DIR}/src/test ${PROJECT_BINARY_DIR})
-
-add_library(unit_testing_utility src/test/lib/test_failure_exception.cpp)
-
-#[[
-file(GLOB UNIT_TEST_SOURCES RELATIVE ${PROJECT_SOURCE_DIR}/src *.cpp)
-foreach(unit_test_source ${UNIT_TEST_SOURCES})
-    # simply cut off the cpp
-    string(REPLACE ".cpp" "" unit_test_name ${unit_test_source})
-    message("found module: " ${unit_test_name})
-    add_executable(${unit_test_name} ${unit_test_source})
-    target_include_directories(${unit_test_name} PRIVATE ${PROJECT_SOURCE_DIR}/src)
-    target_link_libraries(${unit_test_name} topaz unit_testing_utility)
-endforeach()
-]]#
+add_custom_command(TARGET topaz POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${PROJECT_SOURCE_DIR}/res/dep"
+        $<TARGET_FILE_DIR:topaz>)
 
 # For the demo executable
 add_executable(topaz_demo src/test.cpp)
 target_include_directories(topaz_demo PRIVATE ${PROJECT_SOURCE_DIR}/src)
 target_link_libraries(topaz_demo topaz)
+
+# Make unit testing targets visible.
+add_subdirectory(src/test)

@@ -11,20 +11,22 @@ void test()
     wnd.set_minimised(true);
     AssetBuffer asset_buffer{{}, {}};
     std::string raw = "raw";
+    std::string raw_normal = "raw normal";
+    std::string raw_parallax = "raw parallax";
+    std::string raw_displacement = "raw displacement";
     // it's raw.
-    tz::assert::that(asset_buffer.find_mesh(raw) == nullptr);
+    tz::assert::that(asset_buffer.find<Mesh>(raw) == nullptr);
     asset_buffer.emplace_mesh(raw, raw);
-    tz::assert::that(asset_buffer.find_mesh(raw) != nullptr);
-    tz::assert::that(asset_buffer.find_texture(raw) == nullptr);
-    asset_buffer.emplace_texture(raw, raw);
-    tz::assert::that(asset_buffer.find_texture(raw) != nullptr);
-    tz::assert::that(asset_buffer.find_normal_map(raw) == nullptr);
-    asset_buffer.emplace_normalmap(raw, raw);
-    tz::assert::that(asset_buffer.find_normal_map(raw) != nullptr);
-    tz::assert::that(asset_buffer.find_parallax_map(raw) == nullptr);
-    asset_buffer.emplace_parallaxmap(raw, raw);
-    tz::assert::that(asset_buffer.find_parallax_map(raw) != nullptr);
-    tz::assert::that(asset_buffer.find_displacement_map(raw) == nullptr);
-    asset_buffer.emplace_displacementmap(raw, raw);
-    tz::assert::that(asset_buffer.find_displacement_map(raw) != nullptr);
+    tz::assert::that(asset_buffer.find<Mesh>(raw) != nullptr);
+    tz::assert::that(asset_buffer.find<Texture>(raw) == nullptr);
+    asset_buffer.emplace<Texture>(raw, raw);
+    tz::assert::that(asset_buffer.find<Texture>(raw) != nullptr);
+    asset_buffer.emplace<NormalMap>(raw_normal, raw);
+    tz::assert::that(asset_buffer.find<NormalMap>(raw_normal) != nullptr);
+    tz::assert::that(asset_buffer.find<ParallaxMap>(raw_parallax) == nullptr);
+    asset_buffer.emplace<ParallaxMap>(raw_parallax, raw);
+    tz::assert::that(asset_buffer.find<ParallaxMap>(raw_parallax) != nullptr);
+    tz::assert::that(asset_buffer.find<DisplacementMap>(raw_displacement) == nullptr);
+    asset_buffer.emplace<DisplacementMap>(raw_displacement, raw);
+    tz::assert::that(asset_buffer.find<DisplacementMap>(raw_displacement) != nullptr);
 }

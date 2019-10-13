@@ -5,7 +5,6 @@
 #define UNIT_TEST "Geometry"
 #include "lib/test_util.hpp"
 #include "utility/geometry.hpp"
-#include "utility/numeric.hpp"
 
 void test_polygons()
 {
@@ -18,7 +17,7 @@ void test_polygons()
 
     Circle circ{1.0f};
     tz::assert::equal(circ.get_radius(), 1.0f);
-    float pi = static_cast<float>(tz::utility::numeric::consts::pi);
+    float pi = static_cast<float>(tz::consts::numeric::pi);
     tz::assert::equal(circ.get_circumference(), 2.0f * pi);
     tz::assert::equal(circ.get_area(), pi);
     circ.set_radius(50.0f);

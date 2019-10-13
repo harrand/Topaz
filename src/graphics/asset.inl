@@ -51,11 +51,11 @@ AssetType* AssetBuffer::find(const std::string& asset_name)
 	if constexpr(std::is_same_v<AssetType, Mesh>)
 		return this->find_mesh(asset_name);
 	else if constexpr(std::is_base_of_v<Mesh, AssetType>)
-		return dynamic_cast<AssetType*>(this->meshes[asset_name].get());
+		return static_cast<AssetType*>(this->meshes[asset_name].get());
 	else if constexpr(std::is_same_v<AssetType, Texture>)
 		return this->find_texture(asset_name);
 	else if constexpr(std::is_base_of_v<Texture, AssetType>)
-		return dynamic_cast<AssetType*>(this->textures[asset_name].get());
+		return static_cast<AssetType*>(this->textures[asset_name].get());
 	else if constexpr(std::is_same_v<AssetType, AnimatedTexture>)
 		return this->find_animated_texture(asset_name);
 	else if constexpr(std::is_same_v<AssetType, Model>)
