@@ -1,4 +1,5 @@
 #include "core/listener.hpp"
+#include "core/window.hpp"
 
 Listener::Listener(): window(nullptr){}
 

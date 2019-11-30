@@ -4,7 +4,7 @@
 
 #include "generic_buffer.hpp"
 
-namespace tz::platform
+namespace tz::gl
 {
 	OGLBufferUsage::OGLBufferUsage(OGLBufferFrequency frequency, OGLBufferNature nature) : frequency(frequency), nature(nature) {}
 
@@ -55,7 +55,7 @@ namespace tz::platform
 	GLenum OGLBufferUsage::operator()() const
 	{
 		// Nested switches, basically just multiplexing
-		using namespace tz::platform;
+		using namespace tz::gl;
 		switch (this->frequency)
 		{
 			case OGLBufferFrequency::STREAM:

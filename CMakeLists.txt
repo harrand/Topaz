@@ -127,29 +127,29 @@ add_library(topaz SHARED
         src/physics/physics_object.cpp
         src/physics/physics_object.hpp
 
-        src/platform_specific/generic_buffer.cpp
-        src/platform_specific/generic_buffer.hpp
-        src/platform_specific/generic_buffer.inl
-        src/platform_specific/mesh_buffer.cpp
-        src/platform_specific/mesh_buffer.hpp
-        src/platform_specific/mesh_buffer.inl
-        src/platform_specific/shader_program.cpp
-        src/platform_specific/shader_program.hpp
-        src/platform_specific/shader_program.inl
-        src/platform_specific/shader_storage_buffer.cpp
-        src/platform_specific/shader_storage_buffer.hpp
-        src/platform_specific/uniform.cpp
-        src/platform_specific/uniform.hpp
-        src/platform_specific/uniform.inl
-        src/platform_specific/uniform_buffer.cpp
-        src/platform_specific/uniform_buffer.hpp
-        src/platform_specific/vertex_buffer.cpp
-        src/platform_specific/vertex_buffer.hpp
-        src/platform_specific/vertex_buffer.inl
+        src/gl/generic_buffer.cpp
+        src/gl/generic_buffer.hpp
+        src/gl/generic_buffer.inl
+        src/gl/mesh_buffer.cpp
+        src/gl/mesh_buffer.hpp
+        src/gl/mesh_buffer.inl
+        src/gl/shader_program.cpp
+        src/gl/shader_program.hpp
+        src/gl/shader_program.inl
+        src/gl/shader_storage_buffer.cpp
+        src/gl/shader_storage_buffer.hpp
+        src/gl/uniform.cpp
+        src/gl/uniform.hpp
+        src/gl/uniform.inl
+        src/gl/uniform_buffer.cpp
+        src/gl/uniform_buffer.hpp
+        src/gl/vertex_buffer.cpp
+        src/gl/vertex_buffer.hpp
+        src/gl/vertex_buffer.inl
 
         src/utility/constants.hpp
-        src/utility/file.cpp
-        src/utility/file.hpp
+        src/io/file.cpp
+        src/io/file.hpp
         src/utility/functional.cpp
         src/utility/functional.hpp
         src/utility/functional.inl

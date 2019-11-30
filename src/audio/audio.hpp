@@ -2,7 +2,10 @@
 #define AUDIO_HPP
 #include <string>
 #include "SDL2/SDL_mixer.h"
-#include "graphics/camera.hpp"
+#include "data/vector.hpp"
+
+// Forward declares
+class Camera;
 
 /**
 *	Playable audio file. Use this for short audio segments like sound effects.

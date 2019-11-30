@@ -1,4 +1,4 @@
-namespace tz::platform
+namespace tz::gl
 {
 	template<typename... Args>
 	OGLMeshElement& OGLMeshBuffer::emplace_mesh(Args&&... args)

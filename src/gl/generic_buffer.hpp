@@ -8,7 +8,7 @@
 #include "core/topaz.hpp"
 #include "utility/memory.hpp"
 
-namespace tz::platform
+namespace tz::gl
 {
 	enum class OGLBufferType : GLenum
 	{
@@ -207,5 +207,5 @@ namespace tz::platform
 	};
 }
 
-#include "platform_specific/generic_buffer.inl"
+#include "gl/generic_buffer.inl"
 #endif //TOPAZ_GENERIC_BUFFER_HPP

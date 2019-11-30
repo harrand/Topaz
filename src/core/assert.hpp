@@ -31,17 +31,6 @@ namespace tz
             (out << ... << args) << std::endl;
             std::abort();
         }
-        /*
-        #ifndef NDEBUG
-            assert((msg_on_failure, expression));
-        #else
-            if(!expression)
-            {
-                std::cerr << "tz::assert_that(...) failed: " << msg_on_failure << "\n";
-                std::abort();
-            }
-        #endif
-         */
     }
 }
 

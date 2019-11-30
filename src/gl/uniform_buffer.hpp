@@ -4,10 +4,10 @@
 
 #ifndef TOPAZ_UNIFORM_BUFFER_HPP
 #define TOPAZ_UNIFORM_BUFFER_HPP
-#include "platform_specific/generic_buffer.hpp"
+#include "gl/generic_buffer.hpp"
 #ifdef TOPAZ_OPENGL
 
-namespace tz::platform
+namespace tz::gl
 {
     class OGLUniformBuffer : public OGLGenericBuffer<OGLBufferType::UNIFORM_STORAGE>
     {

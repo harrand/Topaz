@@ -1,10 +1,10 @@
 #ifndef SHADER_HPP
 #define SHADER_HPP
-#include "platform_specific/shader_program.hpp"
+#include "gl/shader_program.hpp"
 #include "graphics/attribute_collection.hpp"
 
 #ifdef TOPAZ_OPENGL
-namespace tz::platform
+namespace tz::gl
 {
 	class OGLShader : public OGLShaderProgram
 	{
@@ -18,7 +18,7 @@ namespace tz::platform
 		ShaderAttributeCollection attribute_collection;
 	};
 }
-using Shader = tz::platform::OGLShader;
+using Shader = tz::gl::OGLShader;
 #endif
 
 namespace tz

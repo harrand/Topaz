@@ -1,11 +1,11 @@
 #include "utility/functional.hpp"
 #ifdef TOPAZ_OPENGL
-namespace tz::platform
+namespace tz::gl
 {
 	template<typename T>
 	void OGLVertexAttribute::define(GLint size, GLboolean normalised, GLsizei stride) const
 	{
-		using namespace ::tz::platform;
+		using namespace ::tz::gl;
 		if constexpr(std::is_same_v<T, short>)
 		{
 			this->direct_define(size, OGLVertexAttributeType::SHORT, normalised, stride);

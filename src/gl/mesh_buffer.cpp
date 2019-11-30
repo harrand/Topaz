@@ -7,7 +7,7 @@
 #include "assimp/cimport.h"
 #include "assimp/postprocess.h"
 
-namespace tz::platform
+namespace tz::gl
 {
 	OGLMeshElement::OGLMeshElement(std::string filename): OGLMeshElement()
 	{

@@ -1,6 +1,6 @@
-#include "platform_specific/shader_program.hpp"
+#include "gl/shader_program.hpp"
 #ifdef TOPAZ_OPENGL
-namespace tz::platform
+namespace tz::gl
 {
 	template<class T>
 	Uniform<T>::Uniform(const OGLShaderProgram* shader_program, std::string uniform_location, T value): UniformImplicit(shader_program, uniform_location), value(value), uniform_handle(this->shader_program->get_uniform_location(this->uniform_location).value_or(-1)){}
@@ -82,7 +82,7 @@ namespace tz::platform
 	Uniform<T>::Uniform(const Uniform<T>& copy): UniformImplicit(0, copy.uniform_location), value(copy.value), uniform_handle(-1){}
 
 	template<class T>
-	void Uniform<T>::retarget(const tz::platform::OGLShaderProgram *program)
+	void Uniform<T>::retarget(const tz::gl::OGLShaderProgram *program)
 	{
 		UniformImplicit::retarget(program);
 		this->uniform_handle = program->get_uniform_location(this->uniform_location).value_or(-1);

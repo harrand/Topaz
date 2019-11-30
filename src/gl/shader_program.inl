@@ -1,6 +1,6 @@
-#include "platform_specific/uniform.hpp"
+#include "gl/uniform.hpp"
 #ifdef TOPAZ_OPENGL
-namespace tz::platform
+namespace tz::gl
 {
     template<typename T, typename... Args>
     Uniform<T>& UniformState::emplace(Args&&... args)

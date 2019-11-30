@@ -5,7 +5,7 @@
 #include "vertex_buffer.hpp"
 
 #ifdef TOPAZ_OPENGL
-namespace tz::platform
+namespace tz::gl
 {
 	OGLVertexTransformFeedbackBuffer::OGLVertexTransformFeedbackBuffer(GLuint output_id): OGLGenericBuffer<OGLBufferType::TRANSFORM_FEEDBACK>(), output_id(output_id){}
 

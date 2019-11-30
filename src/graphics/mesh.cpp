@@ -6,7 +6,7 @@
 #include <unordered_set>
 
 #ifdef TOPAZ_OPENGL
-namespace tz::platform
+namespace tz::gl
 {
 	OGLMesh::OGLMesh(std::string filename, std::size_t scene_index) : OGLMesh()
 	{
@@ -137,7 +137,7 @@ namespace tz::platform
 	void OGLMesh::swap(OGLMesh &lhs, OGLMesh &rhs)
 	{
 		std::swap(lhs.vertices, rhs.vertices);
-		tz::platform::OGLVertexArray::swap(lhs.vertex_array, rhs.vertex_array);
+		tz::gl::OGLVertexArray::swap(lhs.vertex_array, rhs.vertex_array);
 		std::swap(lhs.indices, rhs.indices);
 	}
 
@@ -167,7 +167,7 @@ namespace tz::platform
 		this->vertex_array.bind();
 
 		// 0 = Vertices, 1 = Texture Coordinates, 2 = Internal Normals, 3 = Indices, 4 = Tangents
-		using namespace tz::platform;
+		using namespace tz::gl;
 		using namespace tz::utility; // tz::utility::generic::sizeof_element
 		OGLVertexBuffer &position_buffer = this->vertex_array.emplace_vertex_buffer();
 		auto default_usage = OGLBufferUsage{OGLBufferFrequency::STATIC, OGLBufferNature::DRAW};
@@ -240,7 +240,7 @@ namespace tz::platform
 			ws.push_back(model.w.data());
 		}
 
-		using namespace tz::platform;
+		using namespace tz::gl;
 		using namespace tz::utility; // tz::utility::generic::sizeof_element
 		OGLBufferUsage usage{OGLBufferFrequency::STATIC, OGLBufferNature::DRAW};
 		if (dynamic_transform)

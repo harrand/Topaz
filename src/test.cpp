@@ -40,11 +40,11 @@ void init()
 		std::cout << n << "\n";
 	 */
 
-	tz::platform::OGLVertexArray vao;
-    tz::platform::OGLVertexBuffer& buf0 = vao.emplace_vertex_buffer();
-	tz::platform::OGLVertexBuffer& buf = vao.emplace_vertex_buffer();
-    tz::platform::OGLVertexBuffer& buf2 = vao.emplace_vertex_buffer();
-    tz::platform::OGLVertexBuffer& buf3 = vao.emplace_vertex_buffer();
+	tz::gl::OGLVertexArray vao;
+    tz::gl::OGLVertexBuffer& buf0 = vao.emplace_vertex_buffer();
+	tz::gl::OGLVertexBuffer& buf = vao.emplace_vertex_buffer();
+    tz::gl::OGLVertexBuffer& buf2 = vao.emplace_vertex_buffer();
+    tz::gl::OGLVertexBuffer& buf3 = vao.emplace_vertex_buffer();
 
     MemoryPool<int> initial_pool = buf0.persistently_map<int>(10, false);
     for(std::size_t i = 0; i < 10; i++)

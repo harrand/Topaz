@@ -4,10 +4,10 @@
 
 #ifndef TOPAZ_MESH_BUFFER_HPP
 #define TOPAZ_MESH_BUFFER_HPP
-#include "platform_specific/vertex_buffer.hpp"
+#include "gl/vertex_buffer.hpp"
 #include "graphics/mesh.hpp"
 
-namespace tz::platform
+namespace tz::gl
 {
     /// Element of a MeshBuffer.
 	class OGLMeshElement
@@ -125,5 +125,5 @@ namespace tz::platform
 	};
 }
 
-#include "platform_specific/mesh_buffer.inl"
+#include "gl/mesh_buffer.inl"
 #endif //TOPAZ_MESH_BUFFER_HPP

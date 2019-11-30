@@ -1,7 +1,7 @@
 #include "uniform.hpp"
 
 #ifdef TOPAZ_OPENGL
-namespace tz::platform
+namespace tz::gl
 {
 	UniformImplicit::UniformImplicit(const OGLShaderProgram* shader_program, std::string uniform_location): shader_program(shader_program), uniform_location(uniform_location) {}
 
@@ -10,7 +10,7 @@ namespace tz::platform
 		return this->uniform_location;
 	}
 
-	void UniformImplicit::retarget(const tz::platform::OGLShaderProgram* program)
+	void UniformImplicit::retarget(const tz::gl::OGLShaderProgram* program)
 	{
 		topaz_assert(this->shader_program != program, "UniformImplicit::retarget(...): Attempted to retarget a partially-cloned uniform to the same shader. This is illegal because there must never exist two uniforms of identical location on the same shader.");
 		topaz_assert(program != nullptr, "UniformImplicit::retarget(...): Attempted to retarget a possibly partially-cloned uniform to nothing (nullptr). This is illegal, uniforms can only be retargeted onto a valid shader,");
@@ -42,7 +42,7 @@ namespace tz::platform
 		return std::unique_ptr<Uniform<DirectionalLight>>{new Uniform<DirectionalLight>(*this)};
 	}
 
-	void Uniform<DirectionalLight>::retarget(const tz::platform::OGLShaderProgram *program)
+	void Uniform<DirectionalLight>::retarget(const tz::gl::OGLShaderProgram *program)
 	{
 		UniformImplicit::retarget(program);
 		this->direction_uniform_handle = program->get_uniform_location(uniform_location + ".direction").value_or(-1);
@@ -76,7 +76,7 @@ namespace tz::platform
 		return std::unique_ptr<Uniform<PointLight>>{new Uniform<PointLight>(*this)};
 	}
 
-	void Uniform<PointLight>::retarget(const tz::platform::OGLShaderProgram *program)
+	void Uniform<PointLight>::retarget(const tz::gl::OGLShaderProgram *program)
 	{
 		UniformImplicit::retarget(program);
 		this->position_uniform_handle = program->get_uniform_location(uniform_location + ".position").value_or(-1);

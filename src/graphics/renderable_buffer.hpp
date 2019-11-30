@@ -4,8 +4,8 @@
 
 #ifndef TOPAZ_RENDERABLE_BUFFER_HPP
 #define TOPAZ_RENDERABLE_BUFFER_HPP
-#include "platform_specific/mesh_buffer.hpp"
-#include "platform_specific/shader_storage_buffer.hpp"
+#include "gl/mesh_buffer.hpp"
+#include "gl/shader_storage_buffer.hpp"
 #include "graphics/render_pass.hpp"
 #include "graphics/renderable.hpp"
 #include <map>
@@ -31,8 +31,8 @@ private:
     Renderable* take_object(std::unique_ptr<Renderable> object);
 
     std::map<std::size_t, std::unique_ptr<ObjectType>> objects;
-    tz::platform::OGLMeshBuffer mesh_buffer;
-    tz::platform::OGLShaderStorageBuffer data_ssbo;
+    tz::gl::OGLMeshBuffer mesh_buffer;
+    tz::gl::OGLShaderStorageBuffer data_ssbo;
     mutable MemoryPool<Matrix4x4> matrix_pool;
 };
 

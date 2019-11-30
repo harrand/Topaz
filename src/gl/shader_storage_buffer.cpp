@@ -4,7 +4,7 @@
 
 #include "shader_storage_buffer.hpp"
 
-namespace tz::platform
+namespace tz::gl
 {
 	OGLShaderStorageBuffer::OGLShaderStorageBuffer(GLuint layout_qualifier_id) : OGLGenericBuffer<OGLBufferType::SHADER_STORAGE>(), layout_qualifier_id(layout_qualifier_id) {}
 

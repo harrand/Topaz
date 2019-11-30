@@ -5,10 +5,10 @@
 #ifndef TOPAZ_VERTEX_BUFFER_HPP
 #define TOPAZ_VERTEX_BUFFER_HPP
 
-#include "platform_specific/generic_buffer.hpp"
+#include "gl/generic_buffer.hpp"
 
 #ifdef TOPAZ_OPENGL
-namespace tz::platform
+namespace tz::gl
 {
 	using OGLVertexBuffer = OGLGenericBuffer<OGLBufferType::ARRAY>;
 	using OGLIndexBuffer = OGLGenericBuffer<OGLBufferType::INDEX>;

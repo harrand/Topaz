@@ -40,9 +40,9 @@ namespace tz::utility::render
 		return {Transform{{(box.get_minimum() + box.get_maximum()) / 2.0f}, {}, box.get_dimensions() / 2.0f}, Asset{cube_mesh, colour_texture}, wire_width};
 	}
 
-	tz::platform::OGLUniformBuffer pack_mvp(GLuint uniform_binding_id, Matrix4x4 model, Matrix4x4 view, Matrix4x4 projection)
+	tz::gl::OGLUniformBuffer pack_mvp(GLuint uniform_binding_id, Matrix4x4 model, Matrix4x4 view, Matrix4x4 projection)
 	{
-		tz::platform::OGLUniformBuffer ret{uniform_binding_id};
+		tz::gl::OGLUniformBuffer ret{uniform_binding_id};
 		std::vector<float> data;
 		for(auto d : model.fill_data())
 			data.push_back(d);
@@ -50,7 +50,7 @@ namespace tz::utility::render
 			data.push_back(d);
 		for(auto d : projection.fill_data())
 			data.push_back(d);
-		ret.insert(data, tz::platform::OGLBufferUsage{tz::platform::OGLBufferFrequency::STATIC, tz::platform::OGLBufferNature::DRAW});
+		ret.insert(data, tz::gl::OGLBufferUsage{tz::gl::OGLBufferFrequency::STATIC, tz::gl::OGLBufferNature::DRAW});
 		return ret;
 	}
 }

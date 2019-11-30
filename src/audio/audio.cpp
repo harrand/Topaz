@@ -1,5 +1,7 @@
 #include "audio/audio.hpp"
 #include "core/topaz.hpp"
+#include "graphics/camera.hpp"
+
 
 AudioClip::AudioClip(std::string filename): channel(tz::consts::audio::unused_channel), audio_handle(Mix_LoadWAV(filename.c_str()))
 {

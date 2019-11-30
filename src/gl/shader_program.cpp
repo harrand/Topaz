@@ -2,10 +2,10 @@
 // Created by Harrand on 05/04/2019.
 //
 
-#include "platform_specific/shader_program.hpp"
+#include "gl/shader_program.hpp"
 
 #ifdef TOPAZ_OPENGL
-namespace tz::platform
+namespace tz::gl
 {
 	OGLShaderComponentCompileResult::OGLShaderComponentCompileResult(const OGLShaderComponent& component): success(false), error_message(std::nullopt)
 	{
@@ -51,7 +51,7 @@ namespace tz::platform
 			this->report(str);
 	}
 
-	OGLShaderComponent::OGLShaderComponent(tz::platform::OGLShaderComponentType type, const std::optional<std::string>& source): shader_handle(0), type(type)
+	OGLShaderComponent::OGLShaderComponent(tz::gl::OGLShaderComponentType type, const std::optional<std::string>& source): shader_handle(0), type(type)
 	{
 		this->shader_handle = glCreateShader(static_cast<GLenum>(this->type));
 		// If source is passed into constructor, upload and compile it instantly.

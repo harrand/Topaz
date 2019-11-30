@@ -4,9 +4,9 @@
 
 #ifndef TOPAZ_SHADER_STORAGE_BUFFER_HPP
 #define TOPAZ_SHADER_STORAGE_BUFFER_HPP
-#include "platform_specific/generic_buffer.hpp"
+#include "gl/generic_buffer.hpp"
 
-namespace tz::platform
+namespace tz::gl
 {
 	class OGLShaderStorageBuffer : public OGLGenericBuffer<OGLBufferType::SHADER_STORAGE>
 	{

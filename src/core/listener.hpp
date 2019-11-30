@@ -1,7 +1,6 @@
 #ifndef LISTENER_HPP
 #define LISTENER_HPP
 
-#include "core/window.hpp"
 #include "data/vector.hpp"
 #include "SDL2/SDL.h"
 

@@ -1,4 +1,4 @@
-namespace tz::platform
+namespace tz::gl
 {
 	template<OGLBufferParameter parameter>
 	GLint OGLGenericBufferImplicit::get_parameter() const

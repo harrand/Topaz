@@ -9,7 +9,7 @@
 #include <unordered_map>
 
 #ifdef TOPAZ_OPENGL
-namespace tz::platform
+namespace tz::gl
 {
 	class OGLShaderProgram;
 	/**
@@ -175,6 +175,6 @@ namespace tz::platform
 	};
 }
 #endif
-#include "platform_specific/uniform.inl"
+#include "gl/uniform.inl"
 
 #endif //TOPAZ_UNIFORM_HPP

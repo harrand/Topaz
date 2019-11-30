@@ -8,7 +8,7 @@
 #include <array>
 #include <set>
 #include "assimp/mesh.h"
-#include "platform_specific/vertex_buffer.hpp"
+#include "gl/vertex_buffer.hpp"
 
 namespace tz::graphics
 {
@@ -25,7 +25,7 @@ namespace tz::graphics
 
 #ifdef TOPAZ_OPENGL
 class Model;
-namespace tz::platform
+namespace tz::gl
 {
 	enum class StandardAttribute : GLuint
 	{
@@ -117,7 +117,7 @@ namespace tz::platform
 		/// List of all vertex-data.
 		std::vector<Vertex> vertices;
 		/// OpenGL-specific VAO.
-		tz::platform::OGLVertexArray vertex_array;
+		tz::gl::OGLVertexArray vertex_array;
 		/// Element Array Buffer, essentially.
 		std::vector<unsigned int> indices;
 	private:
@@ -195,12 +195,12 @@ namespace tz::platform
 		/// Used for optimisation. Stores whether we expect instances to have their values changed often.
 		bool dynamic_transform;
 		/// Underlying OpenGL VBO handles.
-		tz::platform::OGLVertexBuffer *model_matrix_x_vbo, *model_matrix_y_vbo, *model_matrix_z_vbo, *model_matrix_w_vbo;
+		tz::gl::OGLVertexBuffer *model_matrix_x_vbo, *model_matrix_y_vbo, *model_matrix_z_vbo, *model_matrix_w_vbo;
 	};
 }
 
-using Mesh = tz::platform::OGLMesh;
-using InstancedMesh = tz::platform::OGLInstancedMesh;
+using Mesh = tz::gl::OGLMesh;
+using InstancedMesh = tz::gl::OGLInstancedMesh;
 #endif
 
 namespace tz

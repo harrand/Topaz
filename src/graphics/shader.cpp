@@ -1,10 +1,10 @@
 #include "graphics/shader.hpp"
 #include "utility/string.hpp"
-#include "utility/file.hpp"
+#include "io/file.hpp"
 #include "mesh.hpp"
 
 #ifdef TOPAZ_OPENGL
-namespace tz::platform
+namespace tz::gl
 {
 	OGLShader::OGLShader(const std::string& vertex_source, const std::string& tessellation_control_source, const std::string& tessellation_evaluation_source, const std::string& geometry_source, const std::string& fragment_source, bool compile, bool link, bool validate, ShaderAttributeCollection attribute_collection): OGLShaderProgram(), attribute_collection(attribute_collection)
 	{
@@ -32,7 +32,7 @@ namespace tz::platform
 
 	void OGLShader::setup_attributes() const
 	{
-		using namespace tz::platform;
+		using namespace tz::gl;
 		using namespace tz::consts::graphics::mesh;
 		for(GLuint i = 0; i < this->attribute_collection.get_size(); i++)
 		{

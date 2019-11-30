@@ -5,7 +5,7 @@
 #include "uniform_buffer.hpp"
 
 #ifdef TOPAZ_OPENGL
-namespace tz::platform
+namespace tz::gl
 {
     OGLUniformBuffer::OGLUniformBuffer(GLuint binding_id): OGLGenericBuffer<OGLBufferType::UNIFORM_STORAGE>(), binding_id(binding_id){}
 
