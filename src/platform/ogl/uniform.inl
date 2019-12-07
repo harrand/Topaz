@@ -1,4 +1,4 @@
-#include "gl/shader_program.hpp"
+#include "platform/ogl/shader_program.hpp"
 #ifdef TOPAZ_OPENGL
 namespace tz::gl
 {

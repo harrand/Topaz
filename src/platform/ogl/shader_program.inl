@@ -1,4 +1,4 @@
-#include "gl/uniform.hpp"
+#include "platform/ogl/uniform.hpp"
 #ifdef TOPAZ_OPENGL
 namespace tz::gl
 {

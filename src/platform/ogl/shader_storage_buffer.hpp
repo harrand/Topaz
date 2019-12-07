@@ -4,7 +4,7 @@
 
 #ifndef TOPAZ_SHADER_STORAGE_BUFFER_HPP
 #define TOPAZ_SHADER_STORAGE_BUFFER_HPP
-#include "gl/generic_buffer.hpp"
+#include "platform/ogl/generic_buffer.hpp"
 
 namespace tz::gl
 {

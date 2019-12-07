@@ -1,6 +1,6 @@
 #ifndef SHADER_HPP
 #define SHADER_HPP
-#include "gl/shader_program.hpp"
+#include "platform/ogl/shader_program.hpp"
 #include "graphics/attribute_collection.hpp"
 
 #ifdef TOPAZ_OPENGL

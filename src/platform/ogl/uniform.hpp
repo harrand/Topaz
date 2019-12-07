@@ -175,6 +175,6 @@ namespace tz::gl
 	};
 }
 #endif
-#include "gl/uniform.inl"
+#include "platform/ogl/uniform.inl"
 
 #endif //TOPAZ_UNIFORM_HPP

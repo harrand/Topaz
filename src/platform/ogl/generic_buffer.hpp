@@ -207,5 +207,5 @@ namespace tz::gl
 	};
 }
 
-#include "gl/generic_buffer.inl"
+#include "platform/ogl/generic_buffer.inl"
 #endif //TOPAZ_GENERIC_BUFFER_HPP

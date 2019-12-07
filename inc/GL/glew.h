@@ -118,7 +118,7 @@
  * GL needs GLAPI and GLAPIENTRY, GLU needs APIENTRY, CALLBACK, and wchar_t
  * defined properly.
  */
-/* <windef.h> and <gl.h>*/
+/* <windef.h> and <ogl.h>*/
 #ifdef APIENTRY
 #  ifndef GLAPIENTRY
 #    define GLAPIENTRY APIENTRY

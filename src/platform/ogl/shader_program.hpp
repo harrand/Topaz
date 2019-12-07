@@ -5,9 +5,9 @@
 #ifndef TOPAZ_SHADER_PROGRAM_HPP
 #define TOPAZ_SHADER_PROGRAM_HPP
 
-#include "gl/vertex_buffer.hpp"
-#include "gl/uniform_buffer.hpp"
-#include "gl/shader_storage_buffer.hpp"
+#include "platform/ogl/vertex_buffer.hpp"
+#include "platform/ogl/uniform_buffer.hpp"
+#include "platform/ogl/shader_storage_buffer.hpp"
 #include <unordered_set>
 
 #ifdef TOPAZ_OPENGL
@@ -388,5 +388,5 @@ namespace tz::gl
 	};
 }
 #endif
-#include "gl/shader_program.inl"
+#include "platform/ogl/shader_program.inl"
 #endif //TOPAZ_SHADER_PROGRAM_HPP

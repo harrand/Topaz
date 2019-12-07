@@ -8,7 +8,7 @@
 #include <array>
 #include <set>
 #include "assimp/mesh.h"
-#include "gl/vertex_buffer.hpp"
+#include "platform/ogl/vertex_buffer.hpp"
 
 namespace tz::graphics
 {

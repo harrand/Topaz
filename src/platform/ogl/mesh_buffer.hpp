@@ -4,7 +4,7 @@
 
 #ifndef TOPAZ_MESH_BUFFER_HPP
 #define TOPAZ_MESH_BUFFER_HPP
-#include "gl/vertex_buffer.hpp"
+#include "platform/ogl/vertex_buffer.hpp"
 #include "graphics/mesh.hpp"
 
 namespace tz::gl
@@ -125,5 +125,5 @@ namespace tz::gl
 	};
 }
 
-#include "gl/mesh_buffer.inl"
+#include "platform/ogl/mesh_buffer.inl"
 #endif //TOPAZ_MESH_BUFFER_HPP

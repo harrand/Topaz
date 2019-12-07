@@ -4,8 +4,8 @@
 
 #ifndef TOPAZ_RENDERABLE_BUFFER_HPP
 #define TOPAZ_RENDERABLE_BUFFER_HPP
-#include "gl/mesh_buffer.hpp"
-#include "gl/shader_storage_buffer.hpp"
+#include "platform/ogl/mesh_buffer.hpp"
+#include "platform/ogl/shader_storage_buffer.hpp"
 #include "graphics/render_pass.hpp"
 #include "graphics/renderable.hpp"
 #include <map>

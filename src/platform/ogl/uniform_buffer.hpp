@@ -4,7 +4,7 @@
 
 #ifndef TOPAZ_UNIFORM_BUFFER_HPP
 #define TOPAZ_UNIFORM_BUFFER_HPP
-#include "gl/generic_buffer.hpp"
+#include "platform/ogl/generic_buffer.hpp"
 #ifdef TOPAZ_OPENGL
 
 namespace tz::gl

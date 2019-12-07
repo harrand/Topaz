@@ -6,7 +6,7 @@
 #define TOPAZ_RENDER_HPP
 #include "graphics/static_object.hpp"
 #include "physics/boundary.hpp"
-#include "gl/uniform_buffer.hpp"
+#include "platform/ogl/uniform_buffer.hpp"
 
 /**
  * Like any other StaticObject, but always toggles wireframe-mode between render calls so that the box is transparent.

@@ -26,7 +26,7 @@
  */
 #ifndef _MSC_VER
 #ifdef __IPHONEOS__
-#include <OpenGLES/ES2/gl.h>
+#include <OpenGLES/ES2/ogl.h>
 #include <OpenGLES/ES2/glext.h>
 #else
 #include <GLES2/gl2.h>
