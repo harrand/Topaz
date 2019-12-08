@@ -2,6 +2,7 @@
 #version 430
 
 #include "lighting_utility.header.glsl"
+#include "fragment_assert.header.glsl"
 // This shader works primarily in camera-space.
 
 in MeshData
@@ -62,9 +63,11 @@ layout(location = 0) out vec4 fragment_colour;
 layout(location = 1) out vec4 bright_colour;
 
 // Unlike hard-coded DirectionalLight, we expect the attributes to be in worldspace, NOT cameraspace.
+#static_print("Max number of directional lights = 8")
 const uint num_directional_lights = 8;
 uniform DirectionalLight directional_lights[num_directional_lights];
 
+#static_print("Max number of point lights = 8")
 const uint num_point_lights = 8;
 uniform PointLight point_lights[num_point_lights];
 
@@ -125,6 +128,7 @@ void main()
 		fragment_colour.xyz /= 2.0f;
 	// For some reason, HDR textures have weird w-components (which i assume just fall low as hell, so ensure there is no transparency.)
 	fragment_colour.w = 1.0f;
+	#static_print("Shadowing threshold == vec3(0.2126, 0.7152, 0.0722)")
 	const vec3 threshold = vec3(0.2126, 0.7152, 0.0722);
 	float brightness = dot(fragment_colour.xyz, threshold);
 	if(brightness > 1.0f)

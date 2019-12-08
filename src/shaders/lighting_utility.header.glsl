@@ -19,8 +19,8 @@ struct PointLight
 
 struct OptionalSampler
 {
-    bool exists;
-    sampler2D sampler;
+	bool exists;
+	sampler2D sampler;
 };
 
 vec2 parallax_offset(vec3 eye_direction_tangentspace, sampler2D parallax_map_sampler, vec2 texcoord, float parallax_multiplier, float parallax_bias)
@@ -57,6 +57,7 @@ vec3 specular_directional(DirectionalLight light, vec3 specular_colour, vec3 nor
 	*/
 
 	//blinn-phong specular
+	#static_print("Using blinn-phong implementation for directional specular lighting. Default shininess = 2")
 	const float default_shininess = 2;
 	float shininess = default_shininess;
 	if(specular_map_sampler.exists)
@@ -83,12 +84,13 @@ bool in_range(float value)
 
 bool in_shadow(vec4 position_lightspace, sampler2D shadow_map_sampler)
 {
-    vec3 projection_coords = position_lightspace.xyz / position_lightspace.w;
-    projection_coords = projection_coords * 0.5f + 0.5f;
-    if(!in_range(projection_coords.x) || !in_range(projection_coords.y))
-    	return false;
-    float closest_depth = texture(shadow_map_sampler, projection_coords.xy).r;
-    float current_depth = projection_coords.z;
-    const float bias = 0.005f;
-    return current_depth - bias > closest_depth;
+	vec3 projection_coords = position_lightspace.xyz / position_lightspace.w;
+	projection_coords = projection_coords * 0.5f + 0.5f;
+	if(!in_range(projection_coords.x) || !in_range(projection_coords.y))
+		return false;
+	float closest_depth = texture(shadow_map_sampler, projection_coords.xy).r;
+	float current_depth = projection_coords.z;
+	const float bias = 0.005f;
+	#static_print("Shadowing bias = 0.005")
+	return current_depth - bias > closest_depth;
 }

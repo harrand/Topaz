@@ -6,6 +6,19 @@
 namespace tz::utility::string
 {
 	/**
+	 * Remove whitespace, tabs etc... from the string.
+	 * @param data - The string to strip
+	 * @param preserve_spaces - If true, we will not strip out spaces
+	 */
+	void strip(std::string& data, bool preserve_spaces = false);
+	/**
+	 * Return a copy of the string, but with all whitespace removed.
+	 * @param data - The string to copy and strip
+	 * @param preserve_spaces - If true, we will not strip out spaces
+	 * @return - Stripped string
+	 */
+	std::string stripped(std::string data, bool preserve_spaces = false);
+	/**
 	 * Convert the input string to lower-case.
 	 * @param data - The string to convert to lower-case
 	 * @return - data, in lower-case

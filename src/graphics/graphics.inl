@@ -57,4 +57,9 @@ namespace tz::graphics
 		if(wireframes)
 			glLineWidth(wireframes ? wireframe_width : 1.0f);
 	}
+
+	inline bool ready()
+	{
+		return tz::graphics::has_context && tz::graphics::initialised;
+	}
 }

@@ -62,6 +62,7 @@ namespace tz
 		inline void scene_render_mode();
 		inline void gui_render_mode();
 		inline void enable_wireframe_render(bool wireframes, float wireframe_width = 1.0f);
+		inline bool ready();
 	}
 }
 

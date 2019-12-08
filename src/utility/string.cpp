@@ -1,8 +1,18 @@
 #include "string.hpp" // tz::utility::string definitions
-#include <algorithm>
 
 namespace tz::utility::string
 {
+	void strip(std::string& data, bool preserve_spaces)
+	{
+		data.erase(std::remove_if(data.begin(), data.end(), [preserve_spaces](char c)->bool{return std::isspace(c) && (preserve_spaces ? c != ' ' : true);}), data.end());
+	}
+
+    std::string stripped(std::string data, bool preserve_spaces)
+    {
+        strip(data, preserve_spaces);
+        return data;
+    }
+
 	std::string to_lower(std::string data)
 	{
 		std::transform(data.begin(), data.end(), data.begin(), ::tolower);
