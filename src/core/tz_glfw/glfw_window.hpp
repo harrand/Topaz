@@ -4,6 +4,7 @@
 
 #ifndef TOPAZ_GLFW_WINDOW_HPP
 #define TOPAZ_GLFW_WINDOW_HPP
+#include <map>
 // Forward declares
 struct GLFWmonitor;
 struct GLFWwindow;
@@ -24,6 +25,7 @@ namespace tz::ext::glfw
         int width;
         int height;
     };
+	
     class GLFWWindowImpl
     {
     public:
@@ -33,6 +35,7 @@ namespace tz::ext::glfw
         ~GLFWWindowImpl();
         GLFWWindowImpl& operator=(const GLFWWindowImpl& copy) = delete;
         GLFWWindowImpl& operator=(GLFWWindowImpl&& move);
+		void register_this(tz::core::GLFWWindow* window);
 		
 		bool has_active_context() const;
 
@@ -45,6 +48,12 @@ namespace tz::ext::glfw
         GLFWwindow* window_handle;
         const char* title;
     };
+
+	static std::map<GLFWwindow*, tz::core::GLFWWindow*> window_userdata;
+	
+	void register_window(tz::core::GLFWWindow* window);
+	void glfw_key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
+	void glfw_char_callback(GLFWwindow* window, unsigned int codepoint);
 }
 
 

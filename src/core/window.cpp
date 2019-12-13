@@ -5,6 +5,7 @@
 #include "window.hpp"
 #include "core/debug/assert.hpp"
 #include "GLFW/glfw3.h"
+#include <algorithm>
 
 namespace tz::core
 {
@@ -133,6 +134,46 @@ namespace tz::core
 	{
 		this->verify();
 		glfwSwapBuffers(this->impl->window_handle);
-		glfwPollEvents();
+	}
+	
+	void GLFWWindow::handle_key_event(const tz::input::KeyPressEvent& kpe)
+	{
+		for(const auto& listener_ptr : key_listeners)
+		{
+			listener_ptr->on_key_press(kpe);
+		}
+	}
+	
+	void GLFWWindow::handle_type_event(const tz::input::CharPressEvent& cpe)
+	{
+		for(const auto& listener_ptr : type_listeners)
+		{
+			listener_ptr->on_key_type(cpe);
+		}
+	}
+	
+	void GLFWWindow::register_key_listener(std::shared_ptr<tz::input::KeyListener> listener)
+	{
+		this->key_listeners.push_back(listener);
+	}
+	
+	void GLFWWindow::unregister_key_listener(std::shared_ptr<tz::input::KeyListener> listener)
+	{
+		this->key_listeners.erase(std::remove(this->key_listeners.begin(), this->key_listeners.end(), listener), this->key_listeners.end());
+	}
+	
+	void GLFWWindow::register_type_listener(std::shared_ptr<tz::input::TypeListener> listener)
+	{
+		this->type_listeners.push_back(listener);
+	}
+	
+	void GLFWWindow::unregister_type_listener(std::shared_ptr<tz::input::TypeListener> listener)
+	{
+		this->type_listeners.erase(std::remove(this->type_listeners.begin(), this->type_listeners.end(), listener), this->type_listeners.end());
+	}
+	
+	void GLFWWindow::register_this()
+	{
+		this->impl->register_this(this);
 	}
 }

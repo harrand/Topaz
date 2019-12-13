@@ -6,6 +6,7 @@
 #include "core/debug/assert.hpp"
 #include "core/debug/print.hpp"
 #include "core/tz_glad/glad_context.hpp"
+#include "GLFW/glfw3.h"
 
 namespace tz::core
 {
@@ -65,6 +66,11 @@ namespace tz::core
 		global_core.initialise(app_name);
 	}
 
+	void update()
+	{
+		glfwPollEvents();
+	}
+	
 	void terminate()
 	{
 		global_core.terminate();

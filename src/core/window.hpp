@@ -5,6 +5,17 @@
 #ifndef TOPAZ_WINDOW_HPP
 #define TOPAZ_WINDOW_HPP
 #include "core/tz_glfw/glfw_context.hpp"
+#include <memory>
+#include <vector>
+
+// Forward declare
+namespace tz::input
+{
+	struct KeyListener;
+	struct TypeListener;
+	struct KeyPressEvent;
+	struct CharPressEvent;
+}
 
 namespace tz::core
 {
@@ -36,7 +47,22 @@ namespace tz::core
 		virtual bool is_active_context() const = 0;
 		
 		virtual void update() const = 0;
-    };
+		virtual void handle_key_event(const tz::input::KeyPressEvent& kpe) = 0;
+		virtual void handle_type_event(const tz::input::CharPressEvent& cpe) = 0;
+	
+		virtual void register_key_listener(std::shared_ptr<tz::input::KeyListener> listener) = 0;
+		virtual void unregister_key_listener(std::shared_ptr<tz::input::KeyListener> listener) = 0;
+	
+		virtual void register_type_listener(std::shared_ptr<tz::input::TypeListener> listener) = 0;
+		virtual void unregister_type_listener(std::shared_ptr<tz::input::TypeListener> listener) = 0;
+		
+		template<typename T, typename... Args>
+		tz::input::KeyListener& emplace_custom_key_listener(T callback, Args&&... args);
+		template<typename T, typename... Args>
+		tz::input::TypeListener& emplace_custom_type_listener(T callback, Args&&... args);
+		
+		virtual void register_this(){}
+	};
 
 
     class GLFWWindow : public IWindow
@@ -68,14 +94,29 @@ namespace tz::core
 		virtual bool is_active_context() const override;
 		
 		virtual void update() const override;
+		virtual void handle_key_event(const tz::input::KeyPressEvent& kpe) override;
+		virtual void handle_type_event(const tz::input::CharPressEvent& cpe) override;
+		
+		virtual void register_key_listener(std::shared_ptr<tz::input::KeyListener> listener) override;
+		virtual void unregister_key_listener(std::shared_ptr<tz::input::KeyListener> listener) override;
+	
+		virtual void register_type_listener(std::shared_ptr<tz::input::TypeListener> listener) override;
+		virtual void unregister_type_listener(std::shared_ptr<tz::input::TypeListener> listener) override;
+		
+		virtual void register_this() override;
+		
+		friend void tz::ext::glfw::register_window(tz::core::GLFWWindow*);
     private:
 		std::pair<int, int> get_size() const;
 		void verify() const;
+		
         tz::ext::glfw::GLFWWindowImpl* impl;
+		std::vector<std::shared_ptr<tz::input::KeyListener>> key_listeners;
+		std::vector<std::shared_ptr<tz::input::TypeListener>> type_listeners;
     };
     
     using Window = GLFWWindow;
 }
 
-
+#include "core/window.inl"
 #endif //TOPAZ_WINDOW_HPP

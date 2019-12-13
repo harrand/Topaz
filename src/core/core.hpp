@@ -35,6 +35,7 @@ namespace tz::core
 	};
 
 	void initialise(const char* app_name);
+	void update();
 	void terminate();
 	TopazCore& get();
 }

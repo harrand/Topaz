@@ -2,18 +2,37 @@
 // Created by Harrand on 13/12/2019.
 //
 
+#include "input/input_listener.hpp"
 #include "core/core.hpp"
 #include "window_demo.hpp"
 #include "core/debug/assert.hpp"
-// TODO: Remove
 #include "core/debug/print.hpp"
+#include "GLFW/glfw3.h"
 
 WindowDemo::WindowDemo(): window(nullptr)
 {
 	tz::core::initialise("WindowDemo");
 	this->window = &tz::core::get().window();
-	this->window->set_size(500, 400);
-	this->window->set_title("Well met!");
+	this->window->register_this();
+	this->window->emplace_custom_key_listener(
+			[this](tz::input::KeyPressEvent kpe)
+			{
+				if(kpe.action == GLFW_PRESS || kpe.action == GLFW_REPEAT)
+				{
+					if (kpe.key == GLFW_KEY_ESCAPE)
+					{
+						this->window->request_close();
+						tz::debug_printf("Quitting via escape...");
+					}
+				}
+			}
+	);
+	this->window->emplace_custom_type_listener(
+			[](tz::input::CharPressEvent cpe)
+			{
+				tz::debug_printf("%c", cpe.codepoint);
+			}
+	);
 }
 
 WindowDemo::~WindowDemo()
@@ -39,7 +58,7 @@ int main(int argc, char** argv)
 	while(demo.playing())
 	{
 		demo.update();
-		//tz::debug_printf("hahahah im having fun");
+		tz::core::update();
 	}
 	return 0;
 }
