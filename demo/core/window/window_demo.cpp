@@ -12,6 +12,8 @@ WindowDemo::WindowDemo(): window(nullptr)
 {
 	tz::core::initialise("WindowDemo");
 	this->window = &tz::core::get().window();
+	this->window->set_size(500, 400);
+	this->window->set_title("Well met!");
 }
 
 WindowDemo::~WindowDemo()

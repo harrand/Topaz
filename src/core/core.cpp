@@ -5,6 +5,7 @@
 #include "core/core.hpp"
 #include "core/debug/assert.hpp"
 #include "core/debug/print.hpp"
+#include "core/tz_glad/glad_context.hpp"
 
 namespace tz::core
 {
@@ -14,9 +15,13 @@ namespace tz::core
 	{
 		topaz_assert(!this->initialised, "TopazCore::initialise(): Attempt to initialise but we're already marked as initialised!");
 		this->initialised = true;
-		// TODO: Do initialise stuff here.
+		// Initialise GLFW...
 		tz::ext::glfw::initialise(tz::ext::glfw::WindowCreationArgs{app_name, 1920, 1080});
+		// Create the GLFW window and set this to be the global GLFW context window.
 		this->tz_window = std::make_unique<GLFWWindow>(tz::ext::glfw::get());
+		// Give the context to GLAD and perform a procedure load of all opengl functions.
+		// This overload will use the current global GLFW context (Which we *just* made).
+		tz::ext::glad::load_opengl(tz::ext::glfw::get());
 
 		tz::debug_printf("tz::initialise(): Success\n");
 	}

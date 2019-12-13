@@ -12,9 +12,11 @@ add_library(topaz STATIC
 		src/core/debug/print.hpp
 		src/core/debug/print.inl
 		src/core/core.hpp
-		src/core/core.cpp src/core/tz_glfw/glfw_context.cpp src/core/tz_glfw/glfw_context.hpp src/core/tz_glfw/glfw_window.cpp src/core/tz_glfw/glfw_window.hpp src/core/window.cpp src/core/window.hpp)
+		src/core/core.cpp src/core/tz_glfw/glfw_context.cpp src/core/tz_glfw/glfw_context.hpp src/core/tz_glfw/glfw_window.cpp src/core/tz_glfw/glfw_window.hpp src/core/window.cpp src/core/window.hpp src/core/tz_glad/glad_context.cpp src/core/tz_glad/glad_context.hpp)
 
-target_link_libraries(topaz PUBLIC glfw)
+target_link_libraries(topaz PUBLIC
+		glfw
+		glad)
 target_include_directories(topaz PUBLIC ${TOPAZ_SOURCE_DIR})
 
 add_subdirectory(lib)

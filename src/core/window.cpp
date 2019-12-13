@@ -13,16 +13,16 @@ namespace tz::core
 		this->set_active_context();
 	}
 
-	const char* GLFWWindow::get_name() const
+	const char* GLFWWindow::get_title() const
 	{
 		this->verify();
 		return this->impl->title;
 	}
 	
-	void GLFWWindow::set_name(const char* name)
+	void GLFWWindow::set_title(const char* title)
 	{
 		this->verify();
-		glfwSetWindowTitle(this->impl->window_handle, name);
+		glfwSetWindowTitle(this->impl->window_handle, title);
 	}
 	
 	int GLFWWindow::get_width() const
@@ -47,6 +47,12 @@ namespace tz::core
 		glfwSetWindowSize(this->impl->window_handle, w, height);
 	}
 	
+	void GLFWWindow::set_size(int width, int height) const
+	{
+		this->verify();
+		glfwSetWindowSize(this->impl->window_handle, width, height);
+	}
+	
 	bool GLFWWindow::is_visible() const
 	{
 		this->verify();
@@ -57,6 +63,30 @@ namespace tz::core
 	{
 		this->verify();
 		glfwSetWindowAttrib(this->impl->window_handle, GLFW_VISIBLE, visible);
+	}
+	
+	bool GLFWWindow::is_resizeable() const
+	{
+		this->verify();
+		return static_cast<bool>(glfwGetWindowAttrib(this->impl->window_handle, GLFW_RESIZABLE));
+	}
+	
+	void GLFWWindow::set_resizeable(bool resizeable) const
+	{
+		this->verify();
+		glfwSetWindowAttrib(this->impl->window_handle, GLFW_RESIZABLE, resizeable);
+	}
+	
+	bool GLFWWindow::is_focused() const
+	{
+		this->verify();
+		return static_cast<bool>(glfwGetWindowAttrib(this->impl->window_handle, GLFW_FOCUSED));
+	}
+	
+	void GLFWWindow::set_focused(bool focused) const
+	{
+		this->verify();
+		glfwSetWindowAttrib(this->impl->window_handle, GLFW_FOCUSED, focused);
 	}
 	
 	bool GLFWWindow::is_close_requested() const
@@ -91,6 +121,12 @@ namespace tz::core
 	{
 		this->verify();
 		glfwMakeContextCurrent(this->impl->window_handle);
+	}
+	
+	bool GLFWWindow::is_active_context() const
+	{
+		this->verify();
+		return this->impl->has_active_context();
 	}
 	
 	void GLFWWindow::update() const

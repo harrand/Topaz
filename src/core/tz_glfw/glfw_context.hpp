@@ -18,6 +18,7 @@ namespace tz::ext::glfw
 		tz::ext::glfw::GLFWWindowImpl* get_window();
 		const tz::ext::glfw::GLFWWindowImpl* get_window() const;
 		bool has_window() const;
+		bool is_active_context() const;
 
 		friend void initialise(WindowCreationArgs);
 		friend class tz::core::GLFWWindow;

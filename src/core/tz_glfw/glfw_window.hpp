@@ -33,6 +33,8 @@ namespace tz::ext::glfw
         ~GLFWWindowImpl();
         GLFWWindowImpl& operator=(const GLFWWindowImpl& copy) = delete;
         GLFWWindowImpl& operator=(GLFWWindowImpl&& move);
+		
+		bool has_active_context() const;
 
         friend void initialise(WindowCreationArgs);
         friend class tz::core::GLFWWindow;

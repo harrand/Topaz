@@ -55,6 +55,15 @@ namespace tz::ext::glfw
 		return this->window.has_value();
 	}
 
+	bool GLFWContext::is_active_context() const
+	{
+		if(this->has_window())
+		{
+			return this->get_window()->has_active_context();
+		}
+		return false;
+	}
+
 	void GLFWContext::set_window(tz::ext::glfw::GLFWWindowImpl&& window_to_claim)
 	{
 		this->window = std::move(window_to_claim);

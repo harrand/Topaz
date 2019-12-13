@@ -37,4 +37,9 @@ namespace tz::ext::glfw
 		move.window_handle = nullptr;
 	}
 
+	bool GLFWWindowImpl::has_active_context() const
+	{
+		return (this->window_handle == glfwGetCurrentContext());
+	}
+	
 }
