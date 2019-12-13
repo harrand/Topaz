@@ -6,9 +6,21 @@
 #define TOPAZ_WINDOW_DEMO_HPP
 #include <cstdio>
 
+// Forward declare
+namespace tz::core
+{
+	class IWindow;
+}
+
 class WindowDemo
 {
-
+public:
+	WindowDemo();
+	~WindowDemo();
+	bool playing() const;
+	void update() const;
+private:
+	tz::core::IWindow* window;
 };
 
 

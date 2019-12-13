@@ -7,6 +7,11 @@
 // Forward declares
 struct GLFWmonitor;
 struct GLFWwindow;
+namespace tz::core
+{
+    class GLFWWindow;
+}
+
 
 namespace tz::ext::glfw
 {
@@ -30,11 +35,13 @@ namespace tz::ext::glfw
         GLFWWindowImpl& operator=(GLFWWindowImpl&& move);
 
         friend void initialise(WindowCreationArgs);
+        friend class tz::core::GLFWWindow;
     private:
         GLFWWindowImpl(int width, int height, const char* title, GLFWmonitor* monitor, GLFWwindow* share);
         explicit GLFWWindowImpl(WindowCreationArgs args);
 
         GLFWwindow* window_handle;
+        const char* title;
     };
 }
 

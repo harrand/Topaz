@@ -7,8 +7,8 @@
 
 namespace tz
 {
-    template<typename... Args>
-    void debug_printf(const char* fmt, Args&&... args);
+	template<typename... Args>
+	void debug_printf(const char* fmt, Args&&... args);
 }
 
 #include "core/debug/print.inl"

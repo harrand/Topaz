@@ -9,28 +9,29 @@
 
 namespace tz::ext::glfw
 {
-    class GLFWContext
-    {
-    public:
-        GLFWContext() noexcept;
-        void init();
-        void term();
-        tz::ext::glfw::GLFWWindowImpl* get_window();
-        const tz::ext::glfw::GLFWWindowImpl* get_window() const;
-        bool has_window() const;
+	class GLFWContext
+	{
+	public:
+		GLFWContext() noexcept;
+		void init();
+		void term();
+		tz::ext::glfw::GLFWWindowImpl* get_window();
+		const tz::ext::glfw::GLFWWindowImpl* get_window() const;
+		bool has_window() const;
 
-        friend void initialise(WindowCreationArgs);
-    private:
-        void set_window(tz::ext::glfw::GLFWWindowImpl&& window);
+		friend void initialise(WindowCreationArgs);
+		friend class tz::core::GLFWWindow;
+	private:
+		void set_window(tz::ext::glfw::GLFWWindowImpl&& window);
 
-        bool initialised;
-        tz::ext::glfw::WindowCreationArgs args;
-        std::optional<tz::ext::glfw::GLFWWindowImpl> window;
-    };
+		bool initialised;
+		tz::ext::glfw::WindowCreationArgs args;
+		std::optional<tz::ext::glfw::GLFWWindowImpl> window;
+	};
 
-    void initialise(WindowCreationArgs args);
-    void terminate();
-    const GLFWContext& get();
+	void initialise(WindowCreationArgs args);
+	void terminate();
+	GLFWContext& get();
 }
 
 #endif //TOPAZ_GLFW_CONTEXT_HPP
