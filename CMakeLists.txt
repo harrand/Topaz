@@ -7,11 +7,17 @@ set(CMAKE_CXX_STANDARD 17)
 set(TOPAZ_SOURCE_DIR ${PROJECT_SOURCE_DIR}/src)
 
 include(ExternalProject)
-add_library(topaz SHARED
+add_library(topaz STATIC
 		src/core/debug/assert.hpp
-		src/core/ogl/context.cpp
-		src/core/ogl/context.hpp)
+		src/core/debug/print.hpp
+		src/core/debug/print.inl
+		src/core/core.hpp
+		src/core/core.cpp src/core/tz_glfw/glfw_context.cpp src/core/tz_glfw/glfw_context.hpp src/core/tz_glfw/glfw_window.cpp src/core/tz_glfw/glfw_window.hpp src/core/window.cpp src/core/window.hpp)
 
+target_link_libraries(topaz PUBLIC glfw)
+target_include_directories(topaz PUBLIC ${TOPAZ_SOURCE_DIR})
+
+add_subdirectory(lib)
 add_subdirectory(demo)
 add_subdirectory(test)
 
@@ -22,13 +28,21 @@ set_target_properties(topaz
 		RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
 		)
 
+# Effects *everything*
 add_compile_options(-Wall -Wextra -pedantic-errors)
+
+# Topaz Compile Options
+
+## Build-config specific
 if(${TOPAZ_DEBUG})
 	message(STATUS "Topaz Debug")
-	add_compile_options(-O0 -g)
+	target_compile_options(topaz PUBLIC -O0 -g)
 	target_compile_definitions(topaz PUBLIC -DTOPAZ_DEBUG=1 -DTOPAZ_RELEASE=0)
 else()
 	message(STATUS "Topaz Release")
-	add_compile_options(-O3)
+	target_compile_options(topaz PUBLIC -O3 -fno-exceptions)
 	target_compile_definitions(topaz PUBLIC -DTOPAZ_DEBUG=0 -DTOPAZ_RELEASE=1)
 endif()
+
+## General
+target_compile_options(topaz PRIVATE -fno-rtti) # Disable rrti (until c++20 provides better rtti)
