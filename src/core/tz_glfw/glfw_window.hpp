@@ -5,6 +5,7 @@
 #ifndef TOPAZ_GLFW_WINDOW_HPP
 #define TOPAZ_GLFW_WINDOW_HPP
 #include <map>
+#include <string>
 // Forward declares
 struct GLFWmonitor;
 struct GLFWwindow;
@@ -60,8 +61,14 @@ namespace tz::ext::glfw
 		 */
 		bool has_active_context() const;
 	
+		/**
+		 * TODO: Document
+		 * @param rhs
+		 * @return
+		 */
+		bool operator==(const GLFWWindowImpl& rhs) const;
 		// Is it a good idea to have tight coupling due to this?
-        friend void initialise(WindowCreationArgs);
+        friend GLFWWindowImpl make_impl(WindowCreationArgs);
         friend class tz::core::GLFWWindow;
     private:
 		/**
@@ -82,7 +89,7 @@ namespace tz::ext::glfw
 		/// Underlying glfw window handle
         GLFWwindow* window_handle;
 		/// What's the title of the window?
-        const char* title;
+        std::string title;
     };
 
 	namespace detail
@@ -93,7 +100,7 @@ namespace tz::ext::glfw
 	
 	/**
 	 * Instruct tz_glfw to track this window's underlying implementation.
-	 * This is required to use listeners.
+	 * This is required to use listeners. You should invoke this on secondary windows if they should be listening to input events.
 	 * @param window - Window to track polling data for
 	 */
 	void register_window(tz::core::GLFWWindow* window);

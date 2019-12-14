@@ -53,6 +53,13 @@ namespace tz::ext::glfw
 		return (this->window_handle == glfwGetCurrentContext());
 	}
 	
+	bool GLFWWindowImpl::operator==(const GLFWWindowImpl& rhs) const
+	{
+		if(this->window_handle == nullptr)
+			return false;
+		return this->window_handle == rhs.window_handle;
+	}
+	
 	void register_window(tz::core::GLFWWindow* window)
 	{
 		topaz_assert(window != nullptr, "tz::ext::glfw::register_window(GLFWWindow): Attempting to register a null window!");

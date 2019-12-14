@@ -18,9 +18,13 @@ public:
 	WindowDemo();
 	~WindowDemo();
 	bool playing() const;
-	void update() const;
+	void update();
+	void create_second_window();
+	void destroy_second_window();
 private:
 	tz::core::IWindow* window;
+	std::optional<std::size_t> second_window_id;
+	tz::ext::glfw::GLFWContext* second_context;
 };
 
 

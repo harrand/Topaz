@@ -17,13 +17,14 @@ namespace tz::core
 	const char* GLFWWindow::get_title() const
 	{
 		this->verify();
-		return this->impl->title;
+		return this->impl->title.c_str();
 	}
 	
 	void GLFWWindow::set_title(const char* title)
 	{
 		this->verify();
 		glfwSetWindowTitle(this->impl->window_handle, title);
+		this->impl->title = title;
 	}
 	
 	int GLFWWindow::get_width() const

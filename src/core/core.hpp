@@ -58,9 +58,23 @@ namespace tz::core
 		 * @return - Reference to the initial context window
 		 */
 		IWindow& window();
+		/**
+		 * TODO: Document
+		 * @tparam WindowType
+		 * @tparam Args
+		 * @param args
+		 * @return
+		 */
+		template<typename WindowType, typename... Args>
+		std::size_t emplace_extra_window(Args&&... args);
+		const IWindow* get_extra_window(std::size_t window_id) const;
+		IWindow* get_extra_window(std::size_t window_id);
+		void destroy_extra_window(std::size_t window_id);
 	private:
 		/// High-level window is stored here. Won't store a value until we initialise!
 		std::unique_ptr<IWindow> tz_window;
+		/// The core can store any number of secondary windows.
+		std::vector<std::unique_ptr<IWindow>> secondary_windows;
 		/// Have we been initialised?
 		bool initialised;
 	};
@@ -88,4 +102,5 @@ namespace tz::core
 	TopazCore& get();
 }
 
+#include "core/core.inl"
 #endif //TOPAZ_CORE_HPP

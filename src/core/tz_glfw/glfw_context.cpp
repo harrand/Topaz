@@ -6,6 +6,8 @@
 #include "core/debug/print.hpp"
 #include "glfw_context.hpp"
 #include "GLFW/glfw3.h"
+#include <vector>
+#include <algorithm>
 
 namespace tz::ext::glfw
 {
@@ -63,6 +65,16 @@ namespace tz::ext::glfw
 		}
 		return false;
 	}
+	
+	bool GLFWContext::operator==(const GLFWContext& rhs) const
+	{
+		return this->window == rhs.window;
+	}
+	
+	GLFWContext::GLFWContext(bool pre_initialised) noexcept: GLFWContext()
+	{
+		this->initialised = pre_initialised;
+	}
 
 	void GLFWContext::set_window(tz::ext::glfw::GLFWWindowImpl&& window_to_claim)
 	{
@@ -70,11 +82,22 @@ namespace tz::ext::glfw
 	}
 
 	static GLFWContext glfw;
+	static std::vector<GLFWContext> extra_contexts;
+	
+	GLFWWindowImpl make_impl(WindowCreationArgs args)
+	{
+		return GLFWWindowImpl{args};
+	}
+	
+	void give_window(GLFWContext& ctx, GLFWWindowImpl&& impl)
+	{
+		ctx.set_window(std::move(impl));
+	}
+	
 	void initialise(WindowCreationArgs args)
 	{
 		glfw.init();
-		glfw.set_window(GLFWWindowImpl{args});
-
+		give_window(glfw, make_impl(args));
 	}
 
 	void terminate()
@@ -85,5 +108,18 @@ namespace tz::ext::glfw
 	GLFWContext& get()
 	{
 		return glfw;
+	}
+	
+	GLFWContext& make_secondary_context(WindowCreationArgs args)
+	{
+		GLFWContext secondary_context{true};
+		give_window(secondary_context, make_impl(args));
+		extra_contexts.push_back(std::move(secondary_context));
+		return extra_contexts.back();
+	}
+	
+	void destroy_secondary_context(GLFWContext& context)
+	{
+		extra_contexts.erase(std::remove(extra_contexts.begin(), extra_contexts.end(), context), extra_contexts.end());
 	}
 }

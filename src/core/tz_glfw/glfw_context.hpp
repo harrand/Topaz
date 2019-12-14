@@ -61,11 +61,20 @@ namespace tz::ext::glfw
 		 * @return - True if this context is the active context, otherwise false
 		 */
 		bool is_active_context() const;
+		
+		/**
+		 * TODO: Document
+		 * @param rhs
+		 * @return
+		 */
+		bool operator==(const GLFWContext& rhs) const;
 	
 		// Is it a good idea to have tight coupling due to this?
-		friend void initialise(WindowCreationArgs);
+		friend void give_window(GLFWContext&, GLFWWindowImpl&&);
+		friend GLFWContext& make_secondary_context(WindowCreationArgs);
 		friend class tz::core::GLFWWindow;
 	private:
+		explicit GLFWContext(bool pre_initialised) noexcept;
 		/**
 		 * Take ownership of an existing window implementation.
 		 * @param window - Window implementation to foster
@@ -97,6 +106,16 @@ namespace tz::ext::glfw
 	 * @return - Reference to the active GLFW context
 	 */
 	GLFWContext& get();
+	/**
+	 * TODO: Document
+	 * @return
+	 */
+	GLFWContext& make_secondary_context(WindowCreationArgs args);
+	/**
+	 * TODO: Document
+	 * @param ctx
+	 */
+	void destroy_secondary_context(GLFWContext& ctx);
 }
 
 #endif //TOPAZ_GLFW_CONTEXT_HPP
