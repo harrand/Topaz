@@ -11,7 +11,7 @@
 
 WindowDemo::WindowDemo(): window(nullptr), second_window_id(std::nullopt), second_context(nullptr)
 {
-	tz::core::initialise("WindowDemo");
+	tz::core::initialise("WindowDemo (Press 'Q' to spawn a second window and 'W' to destroy it)");
 	this->window = &tz::core::get().window();
 	this->window->register_this();
 	this->window->emplace_custom_key_listener(
@@ -22,7 +22,6 @@ WindowDemo::WindowDemo(): window(nullptr), second_window_id(std::nullopt), secon
 					if (kpe.key == GLFW_KEY_ESCAPE)
 					{
 						this->window->request_close();
-						tz::ext::glfw::simulate_typing("off i go then!");
 					}
 					
 					if(kpe.key == GLFW_KEY_Q)
@@ -85,10 +84,8 @@ void WindowDemo::create_second_window()
 											 {
 												 tz::core::IWindow* wnd = tz::core::get().get_extra_window(this->second_window_id.value());
 												 std::string s = wnd->get_title();
-												 tz::debug_printf("wnd current title = %s\n", wnd->get_title());
 												 s += static_cast<char>(cpe.codepoint);
 												 wnd->set_title(s.c_str());
-												 tz::debug_printf("wnd title is now %s\n", s.c_str());
 											 });
 	second_wnd->emplace_custom_key_listener([this](tz::input::KeyPressEvent kpe)
 											{
@@ -96,8 +93,28 @@ void WindowDemo::create_second_window()
 												{
 													this->destroy_second_window();
 												}
+												if(kpe.key == GLFW_KEY_BACKSPACE && (kpe.action == GLFW_PRESS || kpe.action == GLFW_REPEAT))
+												{
+													tz::core::IWindow* wnd = tz::core::get().get_extra_window(this->second_window_id.value());
+													std::string s = wnd->get_title();
+													if(s.empty())
+														return;
+													if(kpe.mods & GLFW_MOD_CONTROL)
+													{
+														std::size_t idx = s.find_last_of(' ');
+														if(idx == std::string::npos)
+															s.clear();
+														else
+															s.erase(idx, s.size() - idx);
+													}
+													else
+													{
+														s.pop_back();
+													}
+													wnd->set_title(s.c_str());
+												}
 											});
-	second_wnd->set_title("i am a second window");
+	second_wnd->set_title("Type anything to change my title! Or press Escape to close me.");
 }
 
 void WindowDemo::destroy_second_window()
