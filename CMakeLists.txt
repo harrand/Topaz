@@ -6,7 +6,6 @@ set(CMAKE_CXX_STANDARD 17)
 # Topaz-Specific Definitions
 set(TOPAZ_SOURCE_DIR ${PROJECT_SOURCE_DIR}/src)
 
-include(ExternalProject)
 add_library(topaz STATIC
 		src/core/debug/assert.hpp
 		src/core/debug/print.hpp

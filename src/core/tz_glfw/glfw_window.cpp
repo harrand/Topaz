@@ -30,10 +30,13 @@ namespace tz::ext::glfw
 
 	GLFWWindowImpl::~GLFWWindowImpl()
 	{
-		glfwDestroyWindow(this->window_handle);
+		if(this->window_handle != nullptr)
+		{
+			glfwDestroyWindow(this->window_handle);
+		}
 	}
 
-	GLFWWindowImpl& GLFWWindowImpl::operator=(GLFWWindowImpl&& move)
+	GLFWWindowImpl& GLFWWindowImpl::operator=(GLFWWindowImpl&& move) noexcept
 	{
 		topaz_assert(move.window_handle != nullptr, "GLFWWindowImpl::operator=(move): Invoked with nullified window param. This is wrong.");
 		this->window_handle = move.window_handle;
@@ -42,7 +45,7 @@ namespace tz::ext::glfw
 	
 	void GLFWWindowImpl::register_this(tz::core::GLFWWindow* window)
 	{
-		window_userdata[this->window_handle] = window;
+		detail::window_userdata[this->window_handle] = window;
 	}
 
 	bool GLFWWindowImpl::has_active_context() const
@@ -52,26 +55,47 @@ namespace tz::ext::glfw
 	
 	void register_window(tz::core::GLFWWindow* window)
 	{
+		topaz_assert(window != nullptr, "tz::ext::glfw::register_window(GLFWWindow): Attempting to register a null window!");
 		window->impl->register_this(window);
 	}
 	
 	void glfw_key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 	{
-		if(window_userdata.find(window) != window_userdata.end())
+		if(detail::window_userdata.find(window) != detail::window_userdata.end())
 		{
 			// We know about this window.
-			tz::core::GLFWWindow* wnd = window_userdata[window];
+			tz::core::GLFWWindow* wnd = detail::window_userdata[window];
 			wnd->handle_key_event(tz::input::KeyPressEvent{key, scancode, action, mods});
 		}
 	}
 	
 	void glfw_char_callback(GLFWwindow* window, unsigned int codepoint)
 	{
-		if(window_userdata.find(window) != window_userdata.end())
+		if(detail::window_userdata.find(window) != detail::window_userdata.end())
 		{
 			// We know about this window.
-			tz::core::GLFWWindow* wnd = window_userdata[window];
+			tz::core::GLFWWindow* wnd = detail::window_userdata[window];
 			wnd->handle_type_event(tz::input::CharPressEvent{codepoint});
+		}
+	}
+	
+	void simulate_key_press(const tz::input::KeyPressEvent& kpe)
+	{
+		glfw_key_callback(glfwGetCurrentContext(), kpe.key, kpe.scancode, kpe.action, kpe.mods);
+	}
+	
+	void simulate_key_type(const tz::input::CharPressEvent& cpe)
+	{
+		glfw_char_callback(glfwGetCurrentContext(), cpe.codepoint);
+	}
+	
+	void simulate_typing(const char* letters)
+	{
+		while(*letters != '\0')
+		{
+			tz::input::CharPressEvent cpe = {static_cast<unsigned int>(*letters)};
+			simulate_key_type(cpe);
+			letters++;
 		}
 	}
 }

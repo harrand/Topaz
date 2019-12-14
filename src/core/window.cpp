@@ -154,6 +154,11 @@ namespace tz::core
 	
 	void GLFWWindow::register_key_listener(std::shared_ptr<tz::input::KeyListener> listener)
 	{
+		// Don't add duplicates -- That would be very annoying.
+		if(std::find(this->key_listeners.begin(), this->key_listeners.end(), listener) != this->key_listeners.end())
+		{
+			return;
+		}
 		this->key_listeners.push_back(listener);
 	}
 	

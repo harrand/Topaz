@@ -22,7 +22,7 @@ WindowDemo::WindowDemo(): window(nullptr)
 					if (kpe.key == GLFW_KEY_ESCAPE)
 					{
 						this->window->request_close();
-						tz::debug_printf("Quitting via escape...");
+						tz::ext::glfw::simulate_typing("off i go then!");
 					}
 				}
 			}

@@ -14,21 +14,61 @@ namespace tz::ext::glfw
 
 namespace tz::ext::glad
 {
+	/**
+	 * Wrapper for interacting with GLAD.
+	 * GLAD is a runtime generator-loader of OpenGL functions.
+	 * It is impossible to invoke any OpenGL functions without first loading them via this context.
+	 */
 	class GLADContext
 	{
 	public:
-		explicit GLADContext(const tz::ext::glfw::GLFWContext& glfw_context) noexcept;
+		/**
+		 * Construct a GLAD context based off of the currently active GLFW context.
+		 * The context need not be loaded at this point.
+		 * It is not recommended that you construct GLAD contexts manually -- tz::core should handle this for you.
+		 */
 		GLADContext() noexcept;
+		/**
+		 * Instruct GLAD to load all necessary OpenGL procedures.
+		 * The GLFW context provided at construction must be initialised, or this function will assert.
+		 * Invoking load() on the same context more than once will yield an assert.
+		 */
 		void load();
+		/**
+		 * Query as to whether this GLAD context has yet been instructed to load OpenGL procedures.
+		 * @return - True if OpenGL procedures have been loaded, otherwise false
+		 */
 		bool is_loaded() const;
+		friend void load_opengl();
+		friend void load_opengl(const tz::ext::glfw::GLFWContext&);
 	private:
+		/**
+		 * Construct a GLAD context based off of a given GLFW context.
+		 * The context need not be loaded at this point.
+		 * @param glfw_context - The context that you expect to be operating OpenGL with
+		 */
+		explicit GLADContext(const tz::ext::glfw::GLFWContext& glfw_context) noexcept;
+		
+		/// GLFW context dependency.
 		const tz::ext::glfw::GLFWContext* glfw_context;
+		/// Have we tried to load yet?
 		bool loaded;
 	};
 	
 	static GLADContext global_context;
 	
+	/**
+	 * Load OpenGL using the currently active GLFW context.
+	 * tz::core::initialise() invokes this, and invoking this more than once will assert.
+	 * It is not recommended that you invoke this function unless you know what you're doing.
+	 */
 	void load_opengl();
+	/**
+	 * Load OpenGL using the given GLFW context.
+	 * tz::core::initialise() invokes this, and invoking this more than once will assert.
+	 * It is not recommended that you invoke this function unless you know what you're doing.
+	 * @param specific_context - GLFW context whose Window is expected to use OpenGL functionality
+	 */
 	void load_opengl(const tz::ext::glfw::GLFWContext& specific_context);
 }
 

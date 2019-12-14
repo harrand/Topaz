@@ -23,6 +23,7 @@ namespace tz::ext::glad
 		}
 		topaz_assert(!this->loaded, "GLADContext::load(): Context already marked as loaded!");
 		topaz_assert(this->glfw_context->has_window(), "GLADContext::load(): Given GLFW context is incomplete -- It doesn't have a valid window attached to it.");
+		// Load all the things!
 		gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress));
 	}
 	
@@ -35,13 +36,13 @@ namespace tz::ext::glad
 	{
 		topaz_assert(!global_context.is_loaded(), "tz::ext::glad::load_opengl(): Global GLAD context is already loaded!");
 		global_context = GLADContext{}; // Re-assign incase a new glfw context was since bound.
-		global_context.load();
+		global_context.load(); // Let's go!
 	}
 	
 	void load_opengl(const tz::ext::glfw::GLFWContext& specific_context)
 	{
 		topaz_assert(!global_context.is_loaded(), "tz::ext::glad::load_opengl(): Global GLAD context is already loaded!");
-		global_context = GLADContext{specific_context};
-		global_context.load();
+		global_context = GLADContext{specific_context}; // Re-assign using the context we were told to use.
+		global_context.load(); // Let's go!
 	}
 }

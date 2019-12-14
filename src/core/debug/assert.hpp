@@ -8,6 +8,10 @@ namespace tz
 #ifdef topaz_assert
 #undef topaz_assert
 #endif
+/**
+ * Evaluate the expression.
+ * If TOPAZ_DEBUG == 1 and the expression evaluates to false, abort the runtime with the given message.
+ */
 #define topaz_assert(EXPRESSION, ...) ((EXPRESSION) ? \
 (void)0 : tz::assert_message(std::cerr, \
 "Assertion failure: ", #EXPRESSION, "\nIn file: ", __FILE__, \
