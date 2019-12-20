@@ -17,14 +17,13 @@ namespace tz::core
 	const char* GLFWWindow::get_title() const
 	{
 		this->verify();
-		return this->impl->title.c_str();
+		return this->impl->get_title().c_str();
 	}
 	
 	void GLFWWindow::set_title(const char* title)
 	{
 		this->verify();
-		glfwSetWindowTitle(this->impl->window_handle, title);
-		this->impl->title = title;
+		this->impl->set_title(title);
 	}
 	
 	int GLFWWindow::get_width() const
@@ -39,77 +38,75 @@ namespace tz::core
 	
 	void GLFWWindow::set_width(int width) const
 	{
-		int h = this->get_height();
-		glfwSetWindowSize(this->impl->window_handle, width, h);
+		this->verify();
+		this->impl->set_width(width);
 	
 	}
 	void GLFWWindow::set_height(int height) const
 	{
-		int w = this->get_width();
-		glfwSetWindowSize(this->impl->window_handle, w, height);
+		this->verify();
+		this->impl->set_height(height);
 	}
 	
 	void GLFWWindow::set_size(int width, int height) const
 	{
 		this->verify();
-		glfwSetWindowSize(this->impl->window_handle, width, height);
+		this->impl->set_size(width, height);
 	}
 	
 	bool GLFWWindow::is_visible() const
 	{
 		this->verify();
-		return static_cast<bool>(glfwGetWindowAttrib(this->impl->window_handle, GLFW_VISIBLE));
+		return static_cast<bool>(this->impl->get_attribute(GLFW_VISIBLE));
 	}
 	
 	void GLFWWindow::set_visible(bool visible) const
 	{
 		this->verify();
-		glfwSetWindowAttrib(this->impl->window_handle, GLFW_VISIBLE, visible);
+		this->impl->set_attribute(GLFW_VISIBLE, visible);
 	}
 	
 	bool GLFWWindow::is_resizeable() const
 	{
 		this->verify();
-		return static_cast<bool>(glfwGetWindowAttrib(this->impl->window_handle, GLFW_RESIZABLE));
+		return static_cast<bool>(this->impl->get_attribute(GLFW_RESIZABLE));
 	}
 	
 	void GLFWWindow::set_resizeable(bool resizeable) const
 	{
 		this->verify();
-		glfwSetWindowAttrib(this->impl->window_handle, GLFW_RESIZABLE, resizeable);
+		this->impl->set_attribute(GLFW_RESIZABLE, resizeable);
 	}
 	
 	bool GLFWWindow::is_focused() const
 	{
 		this->verify();
-		return static_cast<bool>(glfwGetWindowAttrib(this->impl->window_handle, GLFW_FOCUSED));
+		return static_cast<bool>(this->impl->get_attribute(GLFW_FOCUSED));
 	}
 	
 	void GLFWWindow::set_focused(bool focused) const
 	{
 		this->verify();
-		glfwSetWindowAttrib(this->impl->window_handle, GLFW_FOCUSED, focused);
+		this->impl->set_attribute(GLFW_FOCUSED, focused);
 	}
 	
 	bool GLFWWindow::is_close_requested() const
 	{
 		this->verify();
-		return static_cast<bool>(glfwWindowShouldClose(this->impl->window_handle));
+		return this->impl->close_requested();
 	}
 	
 	void GLFWWindow::request_close() const
 	{
 		this->verify();
-		glfwSetWindowShouldClose(this->impl->window_handle, true);
+		this->impl->set_close_requested(true);
 	
 	}
 	
 	std::pair<int, int> GLFWWindow::get_size() const
 	{
 		this->verify();
-		int w, h;
-		glfwGetWindowPos(this->impl->window_handle, &w, &h);
-		return {w, h};
+		return this->impl->get_size();
 	}
 	
 	void GLFWWindow::verify() const
@@ -122,7 +119,7 @@ namespace tz::core
 	void GLFWWindow::set_active_context() const
 	{
 		this->verify();
-		glfwMakeContextCurrent(this->impl->window_handle);
+		this->impl->set_active_context();
 	}
 	
 	bool GLFWWindow::is_active_context() const
@@ -134,7 +131,7 @@ namespace tz::core
 	void GLFWWindow::update() const
 	{
 		this->verify();
-		glfwSwapBuffers(this->impl->window_handle);
+		this->impl->swap_buffers();
 	}
 	
 	void GLFWWindow::handle_key_event(const tz::input::KeyPressEvent& kpe)

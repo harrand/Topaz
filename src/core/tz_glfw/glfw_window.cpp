@@ -9,6 +9,12 @@
 
 namespace tz::ext::glfw
 {
+	namespace detail
+	{
+		/// Implementation detail. Stores all the tracking data for each active window. Module-wide.
+		static std::map<GLFWwindow *, tz::core::GLFWWindow *> window_userdata;
+	}
+	
 	WindowCreationArgs::WindowCreationArgs(): title("Untitled"), width(800), height(600){}
 
 	WindowCreationArgs::WindowCreationArgs(const char* title, int width, int height): title(title), width(width), height(height){}
@@ -43,6 +49,74 @@ namespace tz::ext::glfw
 		move.window_handle = nullptr;
 	}
 	
+	const std::string& GLFWWindowImpl::get_title() const
+	{
+		return this->title;
+	}
+	
+	void GLFWWindowImpl::set_title(std::string title)
+	{
+		this->title = title;
+		glfwSetWindowTitle(this->window_handle, this->title.c_str());
+	}
+	
+	int GLFWWindowImpl::get_width() const
+	{
+		return this->get_size().first;
+	}
+	
+	void GLFWWindowImpl::set_width(int width)
+	{
+		this->set_size(width, this->get_height());
+	}
+	
+	int GLFWWindowImpl::get_height() const
+	{
+		return this->get_size().second;
+	}
+	
+	void GLFWWindowImpl::set_height(int height)
+	{
+		this->set_size(this->get_width(), height);
+	}
+	
+	std::pair<int, int> GLFWWindowImpl::get_size() const
+	{
+		int w, h;
+		glfwGetWindowSize(this->window_handle, &w, &h);
+		return {w, h};
+	}
+	
+	void GLFWWindowImpl::set_size(int width, int height)
+	{
+		glfwSetWindowSize(this->window_handle, width, height);
+	}
+	
+	int GLFWWindowImpl::get_attribute(int attrib_flag) const
+	{
+		return glfwGetWindowAttrib(this->window_handle, attrib_flag);
+	}
+	
+	void GLFWWindowImpl::set_attribute(int attrib_flag, int value)
+	{
+		glfwSetWindowAttrib(this->window_handle, attrib_flag, value);
+	}
+	
+	bool GLFWWindowImpl::close_requested() const
+	{
+		return static_cast<bool>(glfwWindowShouldClose(this->window_handle));
+	}
+	
+	void GLFWWindowImpl::set_close_requested(bool should_close)
+	{
+		glfwSetWindowShouldClose(this->window_handle, should_close);
+	}
+	
+	void GLFWWindowImpl::swap_buffers() const
+	{
+		glfwSwapBuffers(this->window_handle);
+	}
+	
 	void GLFWWindowImpl::register_this(tz::core::GLFWWindow* window)
 	{
 		detail::window_userdata[this->window_handle] = window;
@@ -51,6 +125,11 @@ namespace tz::ext::glfw
 	bool GLFWWindowImpl::has_active_context() const
 	{
 		return (this->window_handle == glfwGetCurrentContext());
+	}
+	
+	void GLFWWindowImpl::set_active_context() const
+	{
+		glfwMakeContextCurrent(this->window_handle);
 	}
 	
 	bool GLFWWindowImpl::operator==(const GLFWWindowImpl& rhs) const

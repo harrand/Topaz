@@ -48,6 +48,19 @@ namespace tz::ext::glfw
         ~GLFWWindowImpl();
         GLFWWindowImpl& operator=(const GLFWWindowImpl& copy) = delete;
         GLFWWindowImpl& operator=(GLFWWindowImpl&& move) noexcept;
+		const std::string& get_title() const;
+		void set_title(std::string title);
+		int get_width() const;
+		void set_width(int width);
+		int get_height() const;
+		void set_height(int height);
+		std::pair<int, int> get_size() const;
+		void set_size(int width, int height);
+		int get_attribute(int attrib_flag) const;
+		void set_attribute(int attrib_flag, int value);
+		bool close_requested() const;
+		void set_close_requested(bool should_close);
+		void swap_buffers() const;
 		/**
 		 * Allow tz_glfw to track this window implementation.
 		 * Tracking is required to be able to send input data to listeners properly.
@@ -60,7 +73,7 @@ namespace tz::ext::glfw
 		 * @return - True if the context is active, otherwise false
 		 */
 		bool has_active_context() const;
-	
+		void set_active_context() const;
 		/**
 		 * TODO: Document
 		 * @param rhs
@@ -69,7 +82,6 @@ namespace tz::ext::glfw
 		bool operator==(const GLFWWindowImpl& rhs) const;
 		// Is it a good idea to have tight coupling due to this?
         friend GLFWWindowImpl make_impl(WindowCreationArgs);
-        friend class tz::core::GLFWWindow;
     private:
 		/**
 		 * Construct the window implementation given some brief information.
@@ -91,12 +103,6 @@ namespace tz::ext::glfw
 		/// What's the title of the window?
         std::string title;
     };
-
-	namespace detail
-	{
-		/// Implementation detail. Stores all the tracking data for each active window. Module-wide.
-		static std::map<GLFWwindow *, tz::core::GLFWWindow *> window_userdata;
-	}
 	
 	/**
 	 * Instruct tz_glfw to track this window's underlying implementation.

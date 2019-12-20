@@ -72,7 +72,6 @@ namespace tz::ext::glfw
 		// Is it a good idea to have tight coupling due to this?
 		friend void give_window(GLFWContext&, GLFWWindowImpl&&);
 		friend GLFWContext& make_secondary_context(WindowCreationArgs);
-		friend class tz::core::GLFWWindow;
 	private:
 		explicit GLFWContext(bool pre_initialised) noexcept;
 		/**
