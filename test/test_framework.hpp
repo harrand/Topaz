@@ -58,7 +58,7 @@ namespace tz::test
 		{
 			if(this->result() == 0)
 			{
-				std::cout << "All tests successful (" << this->cases.size() << "/" << this->cases.size() << ") passed\n";
+				std::cout << "All tests successful (" << this->cases.size() << "/" << this->cases.size() << " passed)\n";
 			}
 			else
 			{
@@ -71,7 +71,7 @@ namespace tz::test
 					else
 						fail_names.push_back(c.name());
 				}
-				std::cerr << "Test failures detected: (" << num_succeeds << "/" << this->cases.size() << ") passed\n";
+				std::cerr << "Test failures detected: (" << num_succeeds << "/" << this->cases.size() << " passed)\n";
 				std::cerr << "List of case failures:\n";
 				for(const char* failure_name : fail_names)
 				{

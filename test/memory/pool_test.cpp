@@ -7,7 +7,7 @@
 
 tz::test::Case uniform()
 {
-	tz::test::Case test_case("tz::mem::UniformPool Test");
+	tz::test::Case test_case("tz::mem::UniformPool Basic Tests");
 	// allocate some memory
 	constexpr std::size_t ele_size = 8; // number of elements we can store.
 	using StorageType = std::aligned_storage_t<sizeof(int), alignof(int)>;
@@ -101,10 +101,64 @@ tz::test::Case uniform()
 	return test_case;
 }
 
+struct Reference
+{
+public:
+	Reference(std::size_t& ref): ref(ref)
+	{
+		this->ref++;
+	}
+	
+	Reference(const Reference& copy): Reference(copy.ref){}
+	
+	Reference(Reference&& move): Reference(move.ref){}
+	
+	~Reference()
+	{
+		this->ref--;
+	}
+private:
+	std::size_t& ref;
+};
+
+tz::test::Case object_semantics()
+{
+	tz::test::Case test_case("tz::mem::UniformPool Object Tests");
+	// allocate some memory
+	constexpr std::size_t ele_size = 8; // number of elements we can store.
+	using StorageType = std::aligned_storage_t<sizeof(Reference), alignof(Reference)>;
+	constexpr std::size_t mem_size = ele_size * sizeof(StorageType);
+	StorageType mem[ele_size];
+	tz::mem::UniformPool<Reference> refs{&mem, mem_size};
+	
+	std::size_t count = 0;
+	refs.set(0, Reference{count});
+	topaz_expect(test_case, count == 1, "UniformPool<Reference> failed to increment reference count (Constructor semantics).");
+	refs.erase(0);
+	topaz_expect(test_case, count == 0, "UniformPool<Reference> failed to decrement reference count (Destructor semantics).");
+	refs.set(0, Reference{count});
+	refs.set(1, Reference{count});
+	refs.set(2, Reference{count});
+	topaz_expect(test_case, count == 3, "UniformPool<Reference> did not produce expected refcount. Expected 3, got ", count);
+	refs.clear();
+	refs.debug_print_as<std::size_t>();
+	topaz_expect(test_case, count == 0, "UniformPool<Reference> did not produce expected refcount. Expected 0, got ", count);
+	return test_case;
+}
+
+tz::test::Case overflow()
+{
+	tz::test::Case test_case("tz::mem::UniformPool Overflow Tests");
+	
+	return test_case;
+}
+
 int main()
 {
 	tz::test::Unit pool;
 	pool.add(uniform());
+	pool.add(object_semantics());
+	pool.add(overflow());
 	
 	return pool.result();
 }

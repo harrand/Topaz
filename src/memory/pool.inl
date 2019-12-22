@@ -116,7 +116,7 @@ namespace tz::mem
 		{
 			ptr->~T();
 		}
-		// Now create the object in-place.
+		// Now create the object in-place. No need to use the return as we always launder memory.
 		new (ptr) T{std::forward<Args>(args)...};
 		// Make sure our mask fits. Anything between our old limit and now aren't going to be objects obviously.
 		this->object_mask.resize(index + 1, false);
@@ -146,8 +146,8 @@ namespace tz::mem
 		if constexpr(!std::is_same_v<std::make_signed_t<As>, char> && !std::is_same_v<std::make_signed_t<As>, std::byte>)
 		{
 			// This isn't a char nor byte type. We are about to break strict aliasing.
-			std::cerr << "Warning: About to violate strict aliasing in call to UniformPool<T>::debug_print_as<As>().\n";
-			std::cerr << "Dire Warning: About to purposefully invoke UB.\n";
+			// std::cerr << "Warning: About to violate strict aliasing in call to UniformPool<T>::debug_print_as<As>().\n";
+			// std::cerr << "Dire Warning: About to purposefully invoke UB.\n";
 		}
 		std::cerr << "\nMemory Representation: {";
 		auto as_begin = reinterpret_cast<As*>(this->begin);
@@ -173,7 +173,7 @@ namespace tz::mem
 	template<typename T>
 	bool UniformPool<T>::is_object(std::size_t index) const
 	{
-		if(this->size() <= index)
+		if(this->object_mask.size() <= index)
 			return false;
 		return this->object_mask[index];
 	}
