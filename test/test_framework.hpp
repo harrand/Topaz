@@ -6,6 +6,7 @@
 #define TOPAZ_TEST_FRAMEWORK_HPP
 #include <iostream>
 #include <vector>
+#include "core/debug/assert.hpp"
 
 namespace tz::test
 {
@@ -49,6 +50,11 @@ namespace tz::test
 #undef topaz_expect
 #endif
 #define topaz_expect(CASE, EXPRESSION, ...) (CASE.expect(EXPRESSION, "Expectation failure: ", #EXPRESSION, "\nIn file ", __FILE__, " on line ", __LINE__, ":\n\t", __VA_ARGS__))
+
+#ifdef topaz_expect_assert
+#undef topaz_expect_assert
+#endif
+#define topaz_expect_assert(CASE, SHOULD_ASSERT, ...) (CASE.expect(tz::debug::test::assert_failure() == SHOULD_ASSERT, "Expectation failure for assert in file ", __FILE__, " on line ", __LINE__, ":\n\t", __VA_ARGS__))
 
 	class Unit
 	{

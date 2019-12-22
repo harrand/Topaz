@@ -26,6 +26,8 @@ function(register_test_target TEST_TARGET)
     message (STATUS "Registering target \"${TEST_TARGET}\" executable \"${TARGET_BINARY_LOCATION}\"")
     register_test_executable(${TARGET_BINARY_LOCATION})
     add_dependencies(Topaz_All_Tests ${TEST_TARGET})
+    # Register the unit-test define.
+    target_compile_definitions(${TEST_TARGET} PRIVATE -DTOPAZ_UNIT_TEST=1)
 endfunction()
 
 register_test_target(tz_pool_test)

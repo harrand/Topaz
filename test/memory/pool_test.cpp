@@ -95,9 +95,6 @@ tz::test::Case uniform()
 	topaz_expect(test_case, ints.size() == 0, "UniformPool<int>'s clear() operation failed to make the size zero. Size == ", ints.size());
 	topaz_expect(test_case, ints.empty(), "UniformPool<int>'s clear() operation failed to make the container empty. Size == ", ints.size());
 	
-	// TODO: Remove
-	ints.debug_print_as<int>();
-	
 	return test_case;
 }
 
@@ -141,7 +138,6 @@ tz::test::Case object_semantics()
 	refs.set(2, Reference{count});
 	topaz_expect(test_case, count == 3, "UniformPool<Reference> did not produce expected refcount. Expected 3, got ", count);
 	refs.clear();
-	refs.debug_print_as<std::size_t>();
 	topaz_expect(test_case, count == 0, "UniformPool<Reference> did not produce expected refcount. Expected 0, got ", count);
 	return test_case;
 }
@@ -149,7 +145,19 @@ tz::test::Case object_semantics()
 tz::test::Case overflow()
 {
 	tz::test::Case test_case("tz::mem::UniformPool Overflow Tests");
+	constexpr std::size_t ele_size = 2; // number of elements we can store.
+	using StorageType = std::aligned_storage_t<sizeof(int), alignof(int)>;
+	constexpr std::size_t mem_size = ele_size * sizeof(int);
+	StorageType mem[ele_size];
 	
+	tz::mem::UniformPool<int> ints{&mem, mem_size};
+	ints.set(0, 5);
+	ints.set(1, 6);
+	// We expect to assert on an overflow.
+	topaz_expect_assert(test_case, false, "UniformPool<int> asserted sooner than expected.");
+	ints.set(2, 7);
+	topaz_expect_assert(test_case, true, "UniformPool<int> didn't assert when expected (overflowed pool)");
+	topaz_assert_clear();
 	return test_case;
 }
 

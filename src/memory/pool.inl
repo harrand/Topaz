@@ -77,7 +77,13 @@ namespace tz::mem
 	template<typename T>
 	void UniformPool<T>::set(std::size_t index, std::nullptr_t)
 	{
-		topaz_assert(index < this->capacity(), "UniformPool<T>::set(index, null): Erasing at index", index, " is beyond the capacity of ", this->capacity());
+		if(index >= this->capacity())
+		{
+			// Assert + Early out as the unit-test will prevent these from being fatal.
+			topaz_assert(false, "UniformPool<T>::set(index, null): Erasing at index", index, " is beyond the capacity of ", this->capacity());
+			// In that specific case, we don't want to go on and invoke UB so we will early-out here.
+			return;
+		}
 		if(this->is_object(index))
 		{
 			// if there was something here, we should invoke its destructor!

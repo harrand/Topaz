@@ -5,6 +5,11 @@
 namespace tz
 {
 
+	namespace debug
+	{
+		static bool assert_failure = false;
+	}
+	
 #ifdef topaz_assert
 #undef topaz_assert
 #endif
@@ -22,10 +27,34 @@ namespace tz
 	{
 #if TOPAZ_DEBUG
 		std::flush(out);
+#if TOPAZ_UNIT_TEST
+		// Note: We don't print out the assertion message as a unit-test. It's expected that the expectation failure sort this out instead.
+		debug::assert_failure = true;
+#else
+		// Use the given ostream.
 		(out << ... << args) << std::endl;
 		std::abort();
 #endif
+#endif
 	}
+	
+	namespace debug::test
+	{
+		inline bool assert_failure()
+		{
+			return tz::debug::assert_failure;
+		}
+		
+		inline void clear_assert_failure()
+		{
+			tz::debug::assert_failure = false;
+		}
+	}
+
+#ifdef topaz_assert_clear
+#undef topaz_assert_clear
+#endif
+#define topaz_assert_clear() tz::debug::test::clear_assert_failure()
 }
 
 #endif // ASSERT_HPP
