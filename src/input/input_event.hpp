@@ -25,6 +25,13 @@ namespace tz::input
 		double xpos;
 		double ypos;
 	};
+
+	struct MouseClickEvent
+	{
+		int button;
+		int action;
+		int mods;
+	};
 }
 
 #endif //TOPAZ_INPUT_EVENT_HPP

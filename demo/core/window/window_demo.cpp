@@ -12,6 +12,7 @@
 WindowDemo::WindowDemo(): window(nullptr), second_window_id(std::nullopt), second_context(nullptr)
 {
 	tz::core::initialise("WindowDemo (Press 'Q' to spawn a second window and 'W' to destroy it)");
+	tz::ext::glfw::get().set_error_callback([](int err, const char* err_msg){tz::debug_printf("oh noes!");});
 	this->window = &tz::core::get().window();
 	this->window->register_this();
 	this->window->emplace_custom_key_listener(
@@ -45,7 +46,15 @@ WindowDemo::WindowDemo(): window(nullptr), second_window_id(std::nullopt), secon
 	this->window->emplace_custom_mouse_listener(
 			[](tz::input::MouseUpdateEvent mue)
 			{
-				tz::debug_printf("mouse pos: [%g, %g]\n", mue.xpos, mue.ypos);
+				//tz::debug_printf("mouse pos: [%g, %g]\n", mue.xpos, mue.ypos);
+			}
+			,
+			[](tz::input::MouseClickEvent mce)
+			{
+				if(mce.action == GLFW_PRESS)
+				{
+					tz::debug_printf("mouse click: %d, %d, %d\n", mce.button, mce.action, mce.mods);
+				}
 			}
 	);
 }

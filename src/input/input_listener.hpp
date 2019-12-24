@@ -21,6 +21,7 @@ namespace tz::input
 	struct MouseListener
 	{
 		virtual void on_mouse_update(MouseUpdateEvent mue) = 0;
+		virtual void on_mouse_click(MouseClickEvent mce) = 0;
 	};
 	
 	template<typename Callback>
@@ -41,13 +42,15 @@ namespace tz::input
 		Callback callback;
 	};
 
-	template<typename Callback>
+	template<typename CallbackUpdate, typename CallbackClick>
 	struct CustomMouseListener : public MouseListener
 	{
-		explicit CustomMouseListener(Callback callback);
+		explicit CustomMouseListener(CallbackUpdate update, CallbackClick click);
 		virtual void on_mouse_update(MouseUpdateEvent mue) override;
+		virtual void on_mouse_click(MouseClickEvent mce) override;
 	private:
-		Callback callback;
+		CallbackUpdate update;
+		CallbackClick click;
 	};
 }
 

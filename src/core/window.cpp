@@ -157,6 +157,14 @@ namespace tz::core
 			listener_ptr->on_mouse_update(pos);
 		}
 	}
+
+	void GLFWWindow::handle_click_event(const tz::input::MouseClickEvent& click)
+	{
+		for(const auto& listener_ptr : mouse_listeners)
+		{
+			listener_ptr->on_mouse_click(click);
+		}
+	}
 	
 	void GLFWWindow::register_key_listener(std::shared_ptr<tz::input::KeyListener> listener)
 	{

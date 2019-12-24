@@ -26,6 +26,7 @@ namespace tz::ext::glfw
 		glfwSetKeyCallback(this->window_handle, glfw_key_callback);
 		glfwSetCharCallback(this->window_handle, glfw_char_callback);
 		glfwSetCursorPosCallback(this->window_handle, glfw_mouse_callback);
+		glfwSetMouseButtonCallback(this->window_handle, glfw_click_callback);
 	}
 
 	GLFWWindowImpl::GLFWWindowImpl(WindowCreationArgs args) : GLFWWindowImpl(args.width, args.height, args.title, nullptr, nullptr){}
@@ -174,6 +175,16 @@ namespace tz::ext::glfw
 			// We know about this window.
 			tz::core::GLFWWindow* wnd = detail::window_userdata[window];
 			wnd->handle_mouse_event(tz::input::MouseUpdateEvent{xpos, ypos});
+		}
+	}
+
+	void glfw_click_callback(GLFWwindow* window, int button, int action, int mods)
+	{
+		if(detail::window_userdata.find(window) != detail::window_userdata.end())
+		{
+			// We know about this window.
+			tz::core::GLFWWindow* wnd = detail::window_userdata[window];
+			wnd->handle_click_event(tz::input::MouseClickEvent{button, action, mods});
 		}
 	}
 	

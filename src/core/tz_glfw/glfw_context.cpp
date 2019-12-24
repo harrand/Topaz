@@ -11,7 +11,7 @@
 
 namespace tz::ext::glfw
 {
-	GLFWContext::GLFWContext() noexcept: initialised(false), args(), window({std::nullopt}){}
+	GLFWContext::GLFWContext() noexcept: initialised(false), args(), window({std::nullopt}), error_callback(nullptr){}
 
 	void GLFWContext::init()
 	{
@@ -65,7 +65,26 @@ namespace tz::ext::glfw
 		}
 		return false;
 	}
+
+	void GLFWContext::set_active_context() const
+	{
+		if(this->has_window())
+		{
+			this->get_window()->set_active_context();
+			glfwSetErrorCallback(this->error_callback);
+		}
+	}
 	
+	GLFWErrorCallback* GLFWContext::get_error_callback() const
+	{
+		return this->error_callback;
+	}
+		
+	void GLFWContext::set_error_callback(GLFWErrorCallback* callback)
+	{
+		this->error_callback = callback;
+	}
+
 	bool GLFWContext::operator==(const GLFWContext& rhs) const
 	{
 		return this->window == rhs.window;

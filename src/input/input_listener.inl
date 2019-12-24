@@ -18,12 +18,18 @@ namespace tz::input
 		this->callback(cpe);
 	}
 
-	template<typename Callback>
-	CustomMouseListener<Callback>::CustomMouseListener(Callback callback): callback(callback){}
+	template<typename CallbackUpdate, typename CallbackClick>
+	CustomMouseListener<CallbackUpdate, CallbackClick>::CustomMouseListener(CallbackUpdate update, CallbackClick click): update(update), click(click){}
 	
-	template<typename Callback>
-	void CustomMouseListener<Callback>::on_mouse_update(MouseUpdateEvent mue)
+	template<typename CallbackUpdate, typename CallbackClick>
+	void CustomMouseListener<CallbackUpdate, CallbackClick>::on_mouse_update(MouseUpdateEvent mue)
 	{
-		this->callback(mue);
+		this->update(mue);
+	}
+
+	template<typename CallbackUpdate, typename CallbackClick>
+	void CustomMouseListener<CallbackUpdate, CallbackClick>::on_mouse_click(MouseClickEvent mce)
+	{
+		this->click(mce);
 	}
 }

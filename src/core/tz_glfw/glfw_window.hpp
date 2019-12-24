@@ -73,6 +73,9 @@ namespace tz::ext::glfw
 		 * @return - True if the context is active, otherwise false
 		 */
 		bool has_active_context() const;
+		/**
+		 * TODO: Document
+		 */
 		void set_active_context() const;
 		/**
 		 * TODO: Document
@@ -137,6 +140,14 @@ namespace tz::ext::glfw
 	 * @param ypos
 	 */
 	void glfw_mouse_callback(GLFWwindow* window, double xpos, double ypos);
+	/**
+	 * TODO: Document
+	 * @param window
+	 * @param buton
+	 * @param action
+	 * @param mods
+	 */
+	void glfw_click_callback(GLFWwindow* window, int button, int action, int mods);
 	/**
 	 * Pretend that a key-press occurred!
 	 * This will be handled by the window whose context is currently active.

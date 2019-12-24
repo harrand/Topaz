@@ -18,6 +18,7 @@ namespace tz::input
 	struct KeyPressEvent;
 	struct CharPressEvent;
 	struct MouseUpdateEvent;
+	struct MouseClickEvent;
 }
 
 namespace tz::core
@@ -142,6 +143,11 @@ namespace tz::core
 		 * @param pos
 		 */
 		virtual void handle_mouse_event(const tz::input::MouseUpdateEvent& pos) = 0;
+		/**
+		 * TODO: Document
+		 * @param click
+		 */
+		virtual void handle_click_event(const tz::input::MouseClickEvent& click) = 0;
 	
 		/**
 		 * Register a new key-press listener. The new listener will be notified of any events received by the window.
@@ -203,14 +209,9 @@ namespace tz::core
 		tz::input::TypeListener& emplace_custom_type_listener(T callback, Args&&... args);
 		/**
 		 * TODO: Document
-		 * @tparam T - Listener callback type. This is likely to be a lambda type
-		 * @tparam Args - Types of additional arguments used to construct the listener
-		 * @param callback - Callback value to be invoked when an event is received
-		 * @param args - Additional argument values required to construct the listener
-		 * @return - Reference to the constructed listener
 		 */
-		template<typename T, typename... Args>
-		tz::input::MouseListener& emplace_custom_mouse_listener(T callback, Args&&... args);
+		template<typename TUpdate, typename TClick, typename... Args>
+		tz::input::MouseListener& emplace_custom_mouse_listener(TUpdate update, TClick click, Args&&... args);
 		/**
 		 * Register the underlying window implementation to be tracked by topaz.
 		 * This is required in order to receive input events.
@@ -251,6 +252,7 @@ namespace tz::core
 		virtual void handle_key_event(const tz::input::KeyPressEvent& kpe) override;
 		virtual void handle_type_event(const tz::input::CharPressEvent& cpe) override;
 		virtual void handle_mouse_event(const tz::input::MouseUpdateEvent& pos) override;
+		virtual void handle_click_event(const tz::input::MouseClickEvent& click) override;
 		
 		virtual void register_key_listener(std::shared_ptr<tz::input::KeyListener> listener) override;
 		virtual void unregister_key_listener(std::shared_ptr<tz::input::KeyListener> listener) override;

@@ -9,6 +9,7 @@
 
 namespace tz::ext::glfw
 {
+	using GLFWErrorCallback = void(int, const char*);
 	/**
 	 * Wrapper for interacting with GLFW.
 	 * GLFW is a multi-platform library for OpenGL development.
@@ -61,6 +62,19 @@ namespace tz::ext::glfw
 		 * @return - True if this context is the active context, otherwise false
 		 */
 		bool is_active_context() const;
+		/**
+		 * TODO: Document
+		 */
+		void set_active_context() const;
+		/**
+		 * TODO: Document
+		 */
+		GLFWErrorCallback* get_error_callback() const;
+		/**
+		 * TODO: Document
+		 * @param callback
+		 */
+		void set_error_callback(GLFWErrorCallback* callback);
 		
 		/**
 		 * TODO: Document
@@ -86,6 +100,8 @@ namespace tz::ext::glfw
 		tz::ext::glfw::WindowCreationArgs args;
 		/// Stores the window implementation. There may not be one.
 		std::optional<tz::ext::glfw::GLFWWindowImpl> window;
+		/// Stores the callback used by this context upon GLFW error.
+		GLFWErrorCallback* error_callback;
 	};
 
 	/**
