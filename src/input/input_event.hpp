@@ -19,6 +19,12 @@ namespace tz::input
 	{
 		unsigned int codepoint;
 	};
+
+	struct MouseUpdateEvent
+	{
+		double xpos;
+		double ypos;
+	};
 }
 
 #endif //TOPAZ_INPUT_EVENT_HPP

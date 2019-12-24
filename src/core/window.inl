@@ -17,4 +17,12 @@ namespace tz::core
 		this->register_type_listener(custom_listener_ptr);
 		return *custom_listener_ptr;
 	}
+
+	template<typename T, typename... Args>
+	tz::input::MouseListener& IWindow::emplace_custom_mouse_listener(T callback, Args&&... args)
+	{
+		auto custom_listener_ptr = std::make_shared<tz::input::CustomMouseListener<T>>(callback, std::forward<Args>(args)...);
+		this->register_mouse_listener(custom_listener_ptr);
+		return *custom_listener_ptr;
+	}
 }

@@ -42,6 +42,12 @@ WindowDemo::WindowDemo(): window(nullptr), second_window_id(std::nullopt), secon
 				tz::debug_printf("%c", cpe.codepoint);
 			}
 	);
+	this->window->emplace_custom_mouse_listener(
+			[](tz::input::MouseUpdateEvent mue)
+			{
+				tz::debug_printf("mouse pos: [%g, %g]\n", mue.xpos, mue.ypos);
+			}
+	);
 }
 
 WindowDemo::~WindowDemo()

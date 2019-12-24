@@ -13,8 +13,11 @@ namespace tz::input
 {
 	struct KeyListener;
 	struct TypeListener;
+	struct MouseListener;
+
 	struct KeyPressEvent;
 	struct CharPressEvent;
+	struct MouseUpdateEvent;
 }
 
 namespace tz::core
@@ -134,6 +137,11 @@ namespace tz::core
 		 * @param cpe - Information about the character typed
 		 */
 		virtual void handle_type_event(const tz::input::CharPressEvent& cpe) = 0;
+		/**
+		 * TODO: Document
+		 * @param pos
+		 */
+		virtual void handle_mouse_event(const tz::input::MouseUpdateEvent& pos) = 0;
 	
 		/**
 		 * Register a new key-press listener. The new listener will be notified of any events received by the window.
@@ -160,6 +168,16 @@ namespace tz::core
 		 * @param listener - Allocated listener that the window will no longer share ownership of
 		 */
 		virtual void unregister_type_listener(std::shared_ptr<tz::input::TypeListener> listener) = 0;
+		/**
+		 * TODO: Document
+		 * @param listener - Allocated listener that this window should share ownership of and inform of events
+		 */
+		virtual void register_mouse_listener(std::shared_ptr<tz::input::MouseListener> listener) = 0;
+		/**
+		 * TODO: Document
+		 * @param listener - Allocated listener that this window should share ownership of and inform of events
+		 */
+		virtual void unregister_mouse_listener(std::shared_ptr<tz::input::MouseListener> listener) = 0;
 		
 		/**
 		 * Construct a new key-pressed listener in-place and register it for this window.
@@ -183,7 +201,16 @@ namespace tz::core
 		 */
 		template<typename T, typename... Args>
 		tz::input::TypeListener& emplace_custom_type_listener(T callback, Args&&... args);
-		
+		/**
+		 * TODO: Document
+		 * @tparam T - Listener callback type. This is likely to be a lambda type
+		 * @tparam Args - Types of additional arguments used to construct the listener
+		 * @param callback - Callback value to be invoked when an event is received
+		 * @param args - Additional argument values required to construct the listener
+		 * @return - Reference to the constructed listener
+		 */
+		template<typename T, typename... Args>
+		tz::input::MouseListener& emplace_custom_mouse_listener(T callback, Args&&... args);
 		/**
 		 * Register the underlying window implementation to be tracked by topaz.
 		 * This is required in order to receive input events.
@@ -223,12 +250,16 @@ namespace tz::core
 		virtual void update() const override;
 		virtual void handle_key_event(const tz::input::KeyPressEvent& kpe) override;
 		virtual void handle_type_event(const tz::input::CharPressEvent& cpe) override;
+		virtual void handle_mouse_event(const tz::input::MouseUpdateEvent& pos) override;
 		
 		virtual void register_key_listener(std::shared_ptr<tz::input::KeyListener> listener) override;
 		virtual void unregister_key_listener(std::shared_ptr<tz::input::KeyListener> listener) override;
 	
 		virtual void register_type_listener(std::shared_ptr<tz::input::TypeListener> listener) override;
 		virtual void unregister_type_listener(std::shared_ptr<tz::input::TypeListener> listener) override;
+
+		virtual void register_mouse_listener(std::shared_ptr<tz::input::MouseListener> listener) override;
+		virtual void unregister_mouse_listener(std::shared_ptr<tz::input::MouseListener> listener) override;
 		
 		virtual void register_this() override;
 		
@@ -251,6 +282,8 @@ namespace tz::core
 		std::vector<std::shared_ptr<tz::input::KeyListener>> key_listeners;
 		/// Stores all registered type-listeners.
 		std::vector<std::shared_ptr<tz::input::TypeListener>> type_listeners;
+		/// Stores all registered mouse-listeners.
+		std::vector<std::shared_ptr<tz::input::MouseListener>> mouse_listeners;
     };
     
     using Window = GLFWWindow;

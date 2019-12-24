@@ -149,6 +149,14 @@ namespace tz::core
 			listener_ptr->on_key_type(cpe);
 		}
 	}
+
+	void GLFWWindow::handle_mouse_event(const tz::input::MouseUpdateEvent& pos)
+	{
+		for(const auto& listener_ptr : mouse_listeners)
+		{
+			listener_ptr->on_mouse_update(pos);
+		}
+	}
 	
 	void GLFWWindow::register_key_listener(std::shared_ptr<tz::input::KeyListener> listener)
 	{
@@ -173,6 +181,16 @@ namespace tz::core
 	void GLFWWindow::unregister_type_listener(std::shared_ptr<tz::input::TypeListener> listener)
 	{
 		this->type_listeners.erase(std::remove(this->type_listeners.begin(), this->type_listeners.end(), listener), this->type_listeners.end());
+	}
+
+	void GLFWWindow::register_mouse_listener(std::shared_ptr<tz::input::MouseListener> listener)
+	{
+		this->mouse_listeners.push_back(listener);
+	}
+
+	void GLFWWindow::unregister_mouse_listener(std::shared_ptr<tz::input::MouseListener> listener)
+	{
+		this->mouse_listeners.erase(std::remove(this->mouse_listeners.begin(), this->mouse_listeners.end(), listener), this->mouse_listeners.end());
 	}
 	
 	void GLFWWindow::register_this()

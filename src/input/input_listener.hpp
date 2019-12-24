@@ -17,6 +17,11 @@ namespace tz::input
 	{
 		virtual void on_key_type(CharPressEvent cpe) = 0;
 	};
+
+	struct MouseListener
+	{
+		virtual void on_mouse_update(MouseUpdateEvent mue) = 0;
+	};
 	
 	template<typename Callback>
 	struct CustomKeyListener : public KeyListener
@@ -32,6 +37,15 @@ namespace tz::input
 	{
 		explicit CustomTypeListener(Callback callback);
 		virtual void on_key_type(CharPressEvent cpe) override;
+	private:
+		Callback callback;
+	};
+
+	template<typename Callback>
+	struct CustomMouseListener : public MouseListener
+	{
+		explicit CustomMouseListener(Callback callback);
+		virtual void on_mouse_update(MouseUpdateEvent mue) override;
 	private:
 		Callback callback;
 	};

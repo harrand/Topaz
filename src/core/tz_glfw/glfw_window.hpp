@@ -131,6 +131,13 @@ namespace tz::ext::glfw
 	 */
 	void glfw_char_callback(GLFWwindow* window, unsigned int codepoint);
 	/**
+	 * TODO: Document
+	 * @param window
+	 * @param xpos
+	 * @param ypos
+	 */
+	void glfw_mouse_callback(GLFWwindow* window, double xpos, double ypos);
+	/**
 	 * Pretend that a key-press occurred!
 	 * This will be handled by the window whose context is currently active.
 	 * To force the event to be handled by a specific inactive window, consider invoking glfw_key_callback above.

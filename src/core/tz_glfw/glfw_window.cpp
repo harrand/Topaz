@@ -25,6 +25,7 @@ namespace tz::ext::glfw
 		topaz_assert(this->window_handle != nullptr, "GLFWWindowImpl::GLFWWindowImpl(...): Failed to initialise glfw window!");
 		glfwSetKeyCallback(this->window_handle, glfw_key_callback);
 		glfwSetCharCallback(this->window_handle, glfw_char_callback);
+		glfwSetCursorPosCallback(this->window_handle, glfw_mouse_callback);
 	}
 
 	GLFWWindowImpl::GLFWWindowImpl(WindowCreationArgs args) : GLFWWindowImpl(args.width, args.height, args.title, nullptr, nullptr){}
@@ -47,6 +48,7 @@ namespace tz::ext::glfw
 		topaz_assert(move.window_handle != nullptr, "GLFWWindowImpl::operator=(move): Invoked with nullified window param. This is wrong.");
 		this->window_handle = move.window_handle;
 		move.window_handle = nullptr;
+		return *this;
 	}
 	
 	const std::string& GLFWWindowImpl::get_title() const
@@ -162,6 +164,16 @@ namespace tz::ext::glfw
 			// We know about this window.
 			tz::core::GLFWWindow* wnd = detail::window_userdata[window];
 			wnd->handle_type_event(tz::input::CharPressEvent{codepoint});
+		}
+	}
+
+	void glfw_mouse_callback(GLFWwindow* window, double xpos, double ypos)
+	{
+		if(detail::window_userdata.find(window) != detail::window_userdata.end())
+		{
+			// We know about this window.
+			tz::core::GLFWWindow* wnd = detail::window_userdata[window];
+			wnd->handle_mouse_event(tz::input::MouseUpdateEvent{xpos, ypos});
 		}
 	}
 	
