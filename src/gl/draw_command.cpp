@@ -3,3 +3,11 @@
 //
 
 #include "gl/draw_command.hpp"
+
+namespace tz::gl
+{
+    void IDrawCommand::operator()() const
+    {
+        this->invoke();
+    }
+}
