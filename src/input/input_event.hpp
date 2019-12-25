@@ -7,17 +7,23 @@
 
 namespace tz::input
 {
+
 	struct KeyPressEvent
 	{
 		int key;
 		int scancode;
 		int action;
 		int mods;
+
+		const char* get_key_name() const;
 	};
 	
 	struct CharPressEvent
 	{
+		// Because an unsigned int is 32 bits long on all platforms supported by GLFW, you can treat the code point argument as native endian UTF-32.
 		unsigned int codepoint;
+
+		char32_t get_char() const;		
 	};
 
 	struct MouseUpdateEvent

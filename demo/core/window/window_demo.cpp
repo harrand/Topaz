@@ -40,7 +40,7 @@ WindowDemo::WindowDemo(): window(nullptr), second_window_id(std::nullopt), secon
 	this->window->emplace_custom_type_listener(
 			[](tz::input::CharPressEvent cpe)
 			{
-				tz::debug_printf("%c", cpe.codepoint);
+				tz::debug_printf("%c", cpe.get_char());
 			}
 	);
 	this->window->emplace_custom_mouse_listener(
