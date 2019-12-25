@@ -11,6 +11,11 @@
 
 namespace tz::ext::glfw
 {
+	namespace detail
+	{
+		//void glDebugOutput(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, void *userParam);
+	}
+
 	GLFWContext::GLFWContext() noexcept: initialised(false), args(), window({std::nullopt}), error_callback(nullptr){}
 
 	void GLFWContext::init()
@@ -20,6 +25,7 @@ namespace tz::ext::glfw
 		topaz_assert(success, "GLFWContext::initialise(): glfwInit() failed!");
 		this->initialised = true;
 
+		
 		tz::debug_printf("glfwInit() returned %d\n", success);
 	}
 

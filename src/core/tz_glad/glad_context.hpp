@@ -70,6 +70,10 @@ namespace tz::ext::glad
 	 * @param specific_context - GLFW context whose Window is expected to use OpenGL functionality
 	 */
 	void load_opengl(const tz::ext::glfw::GLFWContext& specific_context);
+	/**
+	 * TODO: Document
+	 */
+	void custom_error(GLenum severity, const GLchar *message);
 }
 
 #endif //TOPAZ_OPENGL_LOADER_HPP

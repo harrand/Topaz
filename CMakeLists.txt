@@ -29,7 +29,12 @@ add_library(topaz STATIC
 		src/input/system_input.cpp
 		src/input/system_input.hpp
 		src/memory/pool.hpp
-		src/memory/pool.inl)
+		src/memory/pool.inl
+		src/gl/buffer.cpp
+		src/gl/buffer.hpp
+		src/gl/buffer.inl
+		src/gl/draw_command.hpp
+		src/gl/draw_command.cpp)
 
 target_link_libraries(topaz PUBLIC
 		glfw

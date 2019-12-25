@@ -6,6 +6,7 @@ target_include_directories(test_framework INTERFACE ./)
 cmake_policy(SET CMP0026 OLD)
 
 add_subdirectory(core)
+add_subdirectory(gl)
 add_subdirectory(input)
 add_subdirectory(memory)
 
@@ -25,8 +26,16 @@ function(register_test_target TEST_TARGET)
     target_compile_definitions(${TEST_TARGET} PRIVATE -DTOPAZ_UNIT_TEST=1)
 endfunction()
 
-register_test_target(tz_pool_test)
+# tz::core
+
+# tz::gl
+register_test_target(tz_buffer_test)
+
+# tz::input
 register_test_target(tz_clipboard_test)
+
+# tz::memory
+register_test_target(tz_pool_test)
 
 add_custom_command(
         TARGET Topaz_All_Tests
