@@ -3,6 +3,7 @@
 //
 
 #include "input/input_listener.hpp"
+#include "input/system_input.hpp"
 #include "core/core.hpp"
 #include "window_demo.hpp"
 #include "core/debug/assert.hpp"
@@ -108,6 +109,12 @@ void WindowDemo::create_second_window()
 												{
 													this->destroy_second_window();
 												}
+
+												if(kpe.key == GLFW_KEY_V && (kpe.mods & GLFW_MOD_CONTROL))
+												{
+													
+												}
+
 												if(kpe.key == GLFW_KEY_BACKSPACE && (kpe.action == GLFW_PRESS || kpe.action == GLFW_REPEAT))
 												{
 													tz::core::IWindow* wnd = tz::core::get().get_extra_window(this->second_window_id.value());

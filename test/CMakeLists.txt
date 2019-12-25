@@ -13,12 +13,7 @@ add_custom_target(Topaz_All_Tests)
 
 # Register a pseudo-target which will run all tests.
 macro(register_test_executable EXECUTABLE_PATH)
-    list(LENGTH "${TOPAZ_TEST_EXECUTABLES}" NUM_SO_FAR)
-    if(NUM_SO_FAR STREQUAL 0)
-        set(TOPAZ_TEST_EXECUTABLES ${EXECUTABLE_PATH} PARENT_SCOPE)
-    else()
-        set(TOPAZ_TEST_EXECUTABLES ${TOPAZ_TEST_EXECUTABLES} ${EXECUTABLE_PATH} PARENT_SCOPE)
-    endif()
+    set(TOPAZ_TEST_EXECUTABLES ${TOPAZ_TEST_EXECUTABLES} ${EXECUTABLE_PATH} PARENT_SCOPE)
 endmacro()
 
 function(register_test_target TEST_TARGET)
@@ -31,6 +26,7 @@ function(register_test_target TEST_TARGET)
 endfunction()
 
 register_test_target(tz_pool_test)
+register_test_target(tz_clipboard_test)
 
 add_custom_command(
         TARGET Topaz_All_Tests
