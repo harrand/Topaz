@@ -11,12 +11,12 @@ namespace tz::mem
 {
     std::size_t byte_distance(void* a, void* b);
 
-    class Block
+    struct Block
     {
-    public:
         Block(void* begin, void* end);
+        Block(void* begin, std::size_t size);
         std::size_t size() const;
-    private:
+
         void* begin;
         void* end;
     };

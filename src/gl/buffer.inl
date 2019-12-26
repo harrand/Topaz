@@ -1,6 +1,13 @@
 namespace tz::gl
 {
 
+    template<typename T>
+    tz::mem::UniformPool<T> IBuffer::map_pool(MappingPurpose purpose)
+    {
+        tz::mem::Block mem_block = this->map(purpose);
+        return {mem_block};
+    }
+
     template<BufferType T>
     void Buffer<T>::bind() const
     {
@@ -43,13 +50,15 @@ namespace tz::gl
     }
 
     template<BufferType T>
-    void* Buffer<T>::map(MappingPurpose purpose)
+    tz::mem::Block Buffer<T>::map(MappingPurpose purpose)
     {
         this->verify();
         this->verify_bound();
         topaz_assert(!this->is_mapped(), "tz::gl::Buffer<T>::map(...): Attempted to map but we are already mapped");
         // We know for sure that we have a valid handle, it is currently bound and we're definitely not yet mapped.
-        return glMapBuffer(static_cast<GLenum>(T), static_cast<GLenum>(purpose));
+        void* begin = glMapBuffer(static_cast<GLenum>(T), static_cast<GLenum>(purpose));
+
+        return {begin, this->size()};
     }
 
     template<BufferType T>

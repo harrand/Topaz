@@ -95,14 +95,24 @@ namespace tz::gl
          */
         virtual void resize(std::size_t size_bytes) = 0;
         /**
-         * Map the buffer, providing contiguous data that can be used from the calling code.
+         * Map the buffer, providing a contiguous data block that can be used from the calling code.
          * 
          * Precondition: Requires the buffer to be valid, bound and unmapped.
          * Note: Attempting to map a buffer twice will assert and invoke UB. Query IBuffer::is_mapped() to ensure that this is false before mapping.
          * @param purpose Describes what the desired use for the data is. This is an optimisation measure. If you don't intend to edit the data, providing MappingPurpose::ReadOnly will be a performance boon. The default purpose allows reading + writing.
-         * @return Pointer to arbitrary data. The properties of this data are not guaranteed to be consistent with that of normal RAM. For example, this might be order of magnitudes slower than normal RAM.
+         * @return Memory Block containing arbitrary data. The properties of this data are not guaranteed to be consistent with that of normal RAM. For example, this might be order of magnitudes slower than normal RAM.
          */
-        virtual void* map(MappingPurpose purpose = MappingPurpose::ReadWrite) = 0;
+        virtual tz::mem::Block map(MappingPurpose purpose = MappingPurpose::ReadWrite) = 0;
+        /**
+         * Map the buffer, providing a memory pool to be used as an array of Ts.
+         * 
+         * Precondition: Requires the buffer to be valid, bound and unmapped.
+         * Note: Attempting to map a buffer twice will assert and invoke UB. Query IBuffer::is_mapped() to ensure that this is false before mapping.
+         * @param purpose Describes what the desired use for the data is. This is an optimisation measure. If you don't intend to edit the data, providing MappingPurpose::ReadOnly will be a performance boon. The default purpose allows reading + writing.
+         * @return Uniform Memory Pool containing uninitialised data. Even if the memory does contain valid Ts, the pool will not recognise them unless they're created via the pool.
+         */
+        template<typename T>
+        tz::mem::UniformPool<T> map_pool(MappingPurpose purpose = MappingPurpose::ReadWrite);
         /**
          * Unmap the buffer, saving any edits to previously mapped data and sending it back to VRAM.
          * 
@@ -138,7 +148,7 @@ namespace tz::gl
         virtual std::size_t size() const override;
         virtual void resize(std::size_t size_bytes) override;
 
-        virtual void* map(MappingPurpose purpose = MappingPurpose::ReadWrite) override;
+        virtual tz::mem::Block map(MappingPurpose purpose = MappingPurpose::ReadWrite) override;
         virtual void unmap() override;
         virtual bool is_mapped() const override;
 

@@ -39,13 +39,34 @@ tz::test::Case mapping()
 
     // Now lets allocate some data in it.
     buf->resize(sizeof(float) * amt);
+    topaz_expect(test_case, !buf->is_mapped(), "tz::gl::IBuffer thinks it's mapped when it really shouldn't be...");
     topaz_expect(test_case, !buf->empty(), "tz::gl::IBuffer still thought it was empty after a resize.");
-    void* mapping = buf->map();
-    topaz_expect_assert(test_case, false, "Unexpected assert invoked while testing tz::gl::Buffer Mapping. There are several possible causes -- Consider debugging.");
-    buf->unmap();
-    //tz::mem::UniformPool<float> pool = buf->map<float>(amt);
-    // Now we have a pool of size 5. Ensure nothing has asserted thus far before continuing.
-    //topaz_expect(test_case, pool.capacity() == amt, "tz::gl::IBuffer::map(): Produced malformed tz::mem::UniformPool<T>. Expected capacity of ", amt, ", but got ", pool.capacity());
+    {
+        tz::mem::Block mapping = buf->map();
+        topaz_expect(test_case, buf->is_mapped(), "tz::gl::IBuffer doesn't think it's mapped when it definitely should be...");
+        topaz_expect(test_case, mapping.size() == (sizeof(float) * amt), "tz::gl::IBuffer mapping had unexpected size. Expected ", sizeof(float)*amt, ", but got ", mapping.size());
+        topaz_expect_assert(test_case, false, "Unexpected assert invoked while testing tz::gl::Buffer Mapping. There are several possible causes -- Consider debugging.");
+        buf->unmap();
+    }
+
+    constexpr float test_val = 862.123f;
+    // Let's map directly to a pool and do an edit.
+    {
+        tz::mem::UniformPool<float> floats = buf->map_pool<float>();
+        floats.set(0, test_val);
+        // Should definitely have capacity of 5.
+        topaz_expect(test_case, floats.capacity() == 5, "Uniform float pool had unexpected capacity. Expected ", 5, " but got ", floats.capacity());
+        buf->unmap();
+    }
+    // First thing in the mapped block should now be a float with the value of test_val.
+    // Because a UniformPool amends the type-system (and float is not a struct with const members), we can type-pun it without issue.
+    // Let's re-map it and check.
+    {
+        tz::mem::Block blk = buf->map();
+        float first = *reinterpret_cast<float*>(blk.begin);
+        topaz_expect(test_case, first == (test_val), "tz::gl::Buffer UniformPool mapping did not reflect in the VRAM data store. Expected value, ", test_val, ", but got ", first);
+        buf->unmap();
+    }
     return test_case;
 }
 

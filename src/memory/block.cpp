@@ -14,6 +14,8 @@ namespace tz::mem
 
     Block::Block(void* begin, void* end): begin(begin), end(end){}
 
+    Block::Block(void* begin, std::size_t size): Block(begin, reinterpret_cast<void*>(reinterpret_cast<char*>(begin) + size)){}
+
     std::size_t Block::size() const
     {
         return byte_distance(this->begin, this->end);
