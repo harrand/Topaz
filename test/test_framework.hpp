@@ -64,7 +64,7 @@ namespace tz::test
 		{
 			if(this->result() == 0)
 			{
-				std::cout << "All tests successful (" << this->cases.size() << "/" << this->cases.size() << " passed)\n";
+				std::cerr << "All tests successful (" << this->cases.size() << "/" << this->cases.size() << " passed)\n";
 			}
 			else
 			{

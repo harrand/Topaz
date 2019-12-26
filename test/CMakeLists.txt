@@ -36,6 +36,7 @@ register_test_target(tz_object_test)
 register_test_target(tz_clipboard_test)
 
 # tz::memory
+register_test_target(tz_block_test)
 register_test_target(tz_pool_test)
 
 add_custom_command(

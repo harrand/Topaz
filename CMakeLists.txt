@@ -28,6 +28,8 @@ add_library(topaz STATIC
 		src/input/input_event.hpp
 		src/input/system_input.cpp
 		src/input/system_input.hpp
+		src/memory/block.cpp
+		src/memory/block.hpp
 		src/memory/pool.hpp
 		src/memory/pool.inl
 		src/gl/buffer.cpp

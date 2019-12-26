@@ -2,9 +2,9 @@
 // Created by Harrand on 20/12/2019.
 //
 
-#ifndef TOPAZ_CONTIGUOUS_BLOCK_HPP
-#define TOPAZ_CONTIGUOUS_BLOCK_HPP
-#include <cstdint>
+#ifndef TOPAZ_POOL_HPP
+#define TOPAZ_POOL_HPP
+#include "memory/block.hpp"
 #include <vector>
 
 namespace tz::mem
@@ -35,6 +35,11 @@ namespace tz::mem
 		 * @param end
 		 */
 		UniformPool(void* begin, void* end);
+		/**
+		 * TODO: Document
+		 * @param block
+		 */
+		UniformPool(Block block);
 		/**
 		 * TODO: Document
 		 * @param begin
@@ -139,4 +144,4 @@ namespace tz::mem
 }
 
 #include "memory/pool.inl"
-#endif //TOPAZ_CONTIGUOUS_BLOCK_HPP
+#endif //TOPAZ_POOL_HPP

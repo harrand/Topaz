@@ -1,21 +1,14 @@
 #include "core/debug/assert.hpp"
 #include <cstddef>
-#include <algorithm>
 
 namespace tz::mem
-{
-	namespace
-	{
-		std::size_t byte_distance(void* a, void* b)
-		{
-			std::ptrdiff_t signed_distance = std::distance(reinterpret_cast<char*>(a), reinterpret_cast<char*>(b));
-			return static_cast<std::size_t>(std::abs(signed_distance));
-		}
-	}
-	
+{	
 	template<typename T>
 	UniformPool<T>::UniformPool(void* begin, void* end): UniformPool<T>(begin, byte_distance(begin, end)){}
 	
+	template<typename T>
+	UniformPool<T>::UniformPool(Block block): UniformPool<T>(block.begin, block.end){}
+
 	template<typename T>
 	UniformPool<T>::UniformPool(void* begin, std::size_t size_bytes): begin(begin), size_bytes(size_bytes){}
 	

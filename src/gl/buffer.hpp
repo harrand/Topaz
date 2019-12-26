@@ -5,6 +5,7 @@
 #ifndef TOPAZ_GL_BUFFER_HPP
 #define TOPAZ_GL_BUFFER_HPP
 #include "glad/glad.h"
+#include "memory/pool.hpp"
 
 namespace tz::gl
 {
@@ -26,6 +27,13 @@ namespace tz::gl
 		UniformStorage = GL_UNIFORM_BUFFER,
 	};
 
+    enum class MappingPurpose : GLenum
+    {
+        ReadOnly = GL_READ_ONLY,
+        WriteOnly = GL_WRITE_ONLY,
+        ReadWrite = GL_READ_WRITE
+    };
+
     using BufferHandle = GLuint;
 
     class IBuffer
@@ -37,9 +45,20 @@ namespace tz::gl
         virtual void bind() const = 0;
         virtual void unbind() const = 0;
 
+        virtual std::size_t size() const = 0;
+        bool empty() const;
+        bool valid() const;
+        
+        virtual void resize(std::size_t size_bytes) = 0;
+        
+        virtual void* map(MappingPurpose purpose = MappingPurpose::ReadWrite) = 0;
+        virtual void unmap() = 0;
+
         bool operator==(BufferHandle handle) const;
+        bool operator!=(BufferHandle handle) const;
     protected:
         void verify() const;
+        void verify_bound() const;
 
         BufferHandle handle;
     };
@@ -50,9 +69,22 @@ namespace tz::gl
     public:
         virtual void bind() const override;
         virtual void unbind() const override;
+        virtual std::size_t size() const override;
+        virtual void resize(std::size_t size_bytes) override;
+
+        virtual void* map(MappingPurpose purpose = MappingPurpose::ReadWrite) override;
+        virtual void unmap() override;
+
+        //template<typename T>
+        //tz::mem::UniformPool<T> map(std::size_t element_count, MappingPurpose purpose = MappingPurpose::ReadWrite);
     };
 
+    // Various aliases...
     using VertexBuffer = Buffer<BufferType::Array>;
+    using UniformBuffer = Buffer<BufferType::UniformStorage>;
+    using UBO = UniformBuffer;
+    using ShaderStorageBuffer = Buffer<BufferType::ShaderStorage>;
+    using SSBO = ShaderStorageBuffer;
 
     namespace bound
     {

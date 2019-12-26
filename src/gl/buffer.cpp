@@ -17,9 +17,32 @@ namespace tz::gl
         glDeleteBuffers(1, &this->handle);
     }
 
+    bool IBuffer::empty() const
+    {
+        return this->size() == 0;
+    }
+
+    bool IBuffer::valid() const
+    {
+        return glIsBuffer(this->handle);
+    }
+
+    void IBuffer::unmap()
+    {
+        this->verify();
+        //topaz_assert(this->mapped, "tz::gl::IBuffer::unmap(): We were never mapped in the first place!");
+        glUnmapNamedBuffer(this->handle);
+        //this->mapped = false;
+    }
+
     bool IBuffer::operator==(BufferHandle handle) const
     {
         return this->handle == handle;
+    }
+
+    bool IBuffer::operator!=(BufferHandle handle) const
+    {
+        return this->handle != handle;
     }
 
     void IBuffer::verify() const
@@ -29,12 +52,19 @@ namespace tz::gl
         #endif
     }
 
+    void IBuffer::verify_bound() const
+    {
+        #if TOPAZ_DEBUG
+            topaz_assert(this->handle == bound::vertex_buffer(), "IBuffer::verify_bound(): Our handle ", this->handle, " is not the same as the bound handle ", bound::vertex_buffer(), "...");
+        #endif
+    }
+
     namespace bound
     {
         int vertex_buffer()
         {
             int handle;
-            glGetIntegerv(GL_VERTEX_ARRAY_BUFFER_BINDING, &handle);
+            glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &handle);
             return handle;
         }
     }

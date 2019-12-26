@@ -42,6 +42,9 @@ namespace tz::ext::glad
    			glDebugMessageCallback(debug::output, nullptr);
     		glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
 		#endif
+
+		//printf("OpenGL %d.%d\n", GLVersion.major, GLVersion.minor);
+		std::cerr << "ogl v" << GLVersion.major << "." << GLVersion.minor << "\n";
 	}
 	
 	bool GLADContext::is_loaded() const
