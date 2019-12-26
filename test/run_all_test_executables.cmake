@@ -4,8 +4,8 @@
 # If at least one executable doesn't return 0, will indicate a test failure.
 function(run_all_tests)
     set(TESTS_SUCCESSFUL 0)
-    list(LENGTH "${TEXT_EXECUTABLES}" NUM_EXES)
-    message(STATUS "Beginning execution of ${NUM_EXES} tests...")
+    math(EXPR NUM_UNIT_TESTS "${CMAKE_ARGC} - 3")
+    message(STATUS "Beginning execution of " ${NUM_UNIT_TESTS} " unit-tests...")
     message(STATUS "Test Executable Paths: " ${TEST_EXECUTABLES})
     foreach(index RANGE 3 ${CMAKE_ARGC})
         set(executable_path ${CMAKE_ARGV${index}})

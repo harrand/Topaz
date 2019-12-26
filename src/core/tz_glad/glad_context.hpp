@@ -74,6 +74,10 @@ namespace tz::ext::glad
 	 * TODO: Document
 	 */
 	void custom_error(GLenum severity, const GLchar *message);
+	/**
+	 * TODO: Document
+	 */
+	std::pair<int, int> gl_version();
 }
 
 #endif //TOPAZ_OPENGL_LOADER_HPP

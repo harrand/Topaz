@@ -42,9 +42,6 @@ namespace tz::ext::glad
    			glDebugMessageCallback(debug::output, nullptr);
     		glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
 		#endif
-
-		//printf("OpenGL %d.%d\n", GLVersion.major, GLVersion.minor);
-		std::cerr << "ogl v" << GLVersion.major << "." << GLVersion.minor << "\n";
 	}
 	
 	bool GLADContext::is_loaded() const
@@ -69,6 +66,11 @@ namespace tz::ext::glad
 	void custom_error(GLenum severity, const GLchar *message)
 	{
 		debug::output(GL_DEBUG_SOURCE_APPLICATION, GL_DEBUG_TYPE_ERROR, 0, severity, -1, message, nullptr);
+	}
+
+	std::pair<int, int> gl_version()
+	{
+		return {GLVersion.major, GLVersion.minor};
 	}
 
 	namespace debug
