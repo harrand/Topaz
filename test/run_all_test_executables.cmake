@@ -12,7 +12,7 @@ function(run_all_tests)
         if(NOT ${executable_path} STREQUAL "")
             message(STATUS "Executing test executable \"${executable_path}\"")
             execute_process(COMMAND ${executable_path}
-                    RESULT_VARIABLE CUR_RESULT_CODE)
+                    RESULT_VARIABLE CUR_RESULT_CODE OUTPUT_QUIET)
             message(STATUS "Executable \"${executable_path}\" exited with code " ${CUR_RESULT_CODE})
             if(NOT ${CUR_RESULT_CODE} STREQUAL 0)
                 message(STATUS "Detected non-zero result code")

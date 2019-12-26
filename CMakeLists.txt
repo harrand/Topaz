@@ -36,7 +36,8 @@ add_library(topaz STATIC
 		src/gl/draw_command.hpp
 		src/gl/draw_command.cpp
 		src/gl/object.hpp
-		src/gl/object.cpp)
+		src/gl/object.cpp
+		src/gl/object.inl)
 
 target_link_libraries(topaz PUBLIC
 		glfw
