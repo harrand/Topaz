@@ -24,17 +24,10 @@ namespace tz::gl
 
     bool IBuffer::valid() const
     {
+        this->verify();
         return glIsBuffer(this->handle);
     }
-
-    void IBuffer::unmap()
-    {
-        this->verify();
-        //topaz_assert(this->mapped, "tz::gl::IBuffer::unmap(): We were never mapped in the first place!");
-        glUnmapNamedBuffer(this->handle);
-        //this->mapped = false;
-    }
-
+    
     bool IBuffer::operator==(BufferHandle handle) const
     {
         return this->handle == handle;

@@ -36,6 +36,9 @@ namespace tz::gl
     template<BufferType T>
     void Buffer<T>::resize(std::size_t size_bytes)
     {
+        this->verify();
+        this->verify_bound();
+        topaz_assert(!this->is_mapped(), "tz::gl::Buffer<T>::resize(", size_bytes, "): Cannot resize because this buffer is currently mapped.");
         glBufferData(static_cast<GLenum>(T), size_bytes, nullptr, GL_STATIC_DRAW);
     }
 
@@ -44,6 +47,8 @@ namespace tz::gl
     {
         this->verify();
         this->verify_bound();
+        topaz_assert(!this->is_mapped(), "tz::gl::Buffer<T>::map(...): Attempted to map but we are already mapped");
+        // We know for sure that we have a valid handle, it is currently bound and we're definitely not yet mapped.
         return glMapBuffer(static_cast<GLenum>(T), static_cast<GLenum>(purpose));
     }
 
@@ -52,6 +57,18 @@ namespace tz::gl
     {
         this->verify();
         this->verify_bound();
+        topaz_assert(this->is_mapped(), "tz::gl::Buffer<T>::unmap(): Attempted to unmap but we weren't already mapped");
+        // We know for sure that we have a valid handle, it is currently bound and we're definitely mapped.
         glUnmapBuffer(static_cast<GLenum>(T));
+    }
+
+    template<BufferType T>
+    bool Buffer<T>::is_mapped() const
+    {
+        this->verify();
+        this->verify_bound();
+        GLint param;
+        glGetBufferParameteriv(static_cast<GLenum>(T), GL_BUFFER_MAPPED, &param);
+        return param == GL_TRUE ? true : false;
     }
 }

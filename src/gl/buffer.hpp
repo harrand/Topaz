@@ -36,28 +36,94 @@ namespace tz::gl
 
     using BufferHandle = GLuint;
 
+    /**
+     * tz::gl Buffer Interface
+     * Buffers are the means through which you can read and manipulate data in VRAM. Some Buffers require a parent tz::gl::Object to function properly -- Some do not.
+     * 
+     * There are many different types of buffers. This class only encompasses behaviour which is shared by all buffer types. All buffers can be bound, unbound, mapped, unmapped.
+     * Note: This is not strictly true -- The concept of buffer size and resizing is only available to a few buffer types. This should be refactored out.
+     */
     class IBuffer
     {
     public:
+        /**
+         * Construct an empty Buffer.
+         */
         IBuffer();
+        /**
+         * Destroy the buffer and all data that might exist alongside it.
+         */
         virtual ~IBuffer();
 
+        /**
+         * Bind the buffer. This must be done before most buffer operations.
+         */
         virtual void bind() const = 0;
+        /**
+         * Unbind the buffer.
+         */
         virtual void unbind() const = 0;
-
+        /**
+         * Retrieve the size of the underlying data associated with the buffer, in bytes.
+         * Note: This doesn't really belong in the interface. This will fail unless the BufferType is one of the following:
+         * - BufferType::Array
+         * - BufferType::Index
+         * Precondition: Requires the buffer to be valid and bound.
+         * @return Size of the buffer, in bytes.
+         */
         virtual std::size_t size() const = 0;
+        /**
+         * Query as to whether the buffer is empty or not. Buffers are empty if their size is 0 bytes.
+         * 
+         * Precondition: Identical to that of IBuffer::size().
+         * @return True if the buffer is empty, otherwise false.
+         */
         bool empty() const;
+        /**
+         * Query as to whether the buffer is 'valid' or not. A valid buffer is a buffer that has been bound at least once.
+         * 
+         * Note: This must be done before most buffer operations.
+         * @return True if the buffer has been bound at least once, otherwise false.
+         */
         bool valid() const;
-        
+        /**
+         * Attempt to change the size of the buffer.
+         * 
+         * Precondition: Requires the buffer to be valid, bound and unmapped.
+         * Note: This will not preserve any of the data within the buffer. You should do that yourself.
+         * @param size_bytes Desired new size of the buffer, in bytes.
+         */
         virtual void resize(std::size_t size_bytes) = 0;
-        
+        /**
+         * Map the buffer, providing contiguous data that can be used from the calling code.
+         * 
+         * Precondition: Requires the buffer to be valid, bound and unmapped.
+         * Note: Attempting to map a buffer twice will assert and invoke UB. Query IBuffer::is_mapped() to ensure that this is false before mapping.
+         * @param purpose Describes what the desired use for the data is. This is an optimisation measure. If you don't intend to edit the data, providing MappingPurpose::ReadOnly will be a performance boon. The default purpose allows reading + writing.
+         * @return Pointer to arbitrary data. The properties of this data are not guaranteed to be consistent with that of normal RAM. For example, this might be order of magnitudes slower than normal RAM.
+         */
         virtual void* map(MappingPurpose purpose = MappingPurpose::ReadWrite) = 0;
+        /**
+         * Unmap the buffer, saving any edits to previously mapped data and sending it back to VRAM.
+         * 
+         * Precondition: Requires the buffer to be valid, bound and mapped.
+         * Note: This will also work for persistently-mapped-buffers (PMBs).
+         */
         virtual void unmap() = 0;
+        /**
+         * Query as to whether the buffer is currently mapped or not.
+         * 
+         * Precondition: Requires the buffer to be both valid and bound.
+         * @return True if the buffer is mapped, otherwise false.
+         */
+        virtual bool is_mapped() const = 0;
 
         bool operator==(BufferHandle handle) const;
         bool operator!=(BufferHandle handle) const;
     protected:
+        /// Asserts that the underlying handle is initialised.
         void verify() const;
+        /// Asserts that this buffer is bound.
         void verify_bound() const;
 
         BufferHandle handle;
@@ -74,6 +140,7 @@ namespace tz::gl
 
         virtual void* map(MappingPurpose purpose = MappingPurpose::ReadWrite) override;
         virtual void unmap() override;
+        virtual bool is_mapped() const override;
 
         //template<typename T>
         //tz::mem::UniformPool<T> map(std::size_t element_count, MappingPurpose purpose = MappingPurpose::ReadWrite);
@@ -81,6 +148,7 @@ namespace tz::gl
 
     // Various aliases...
     using VertexBuffer = Buffer<BufferType::Array>;
+    using VBO = VertexBuffer;
     using UniformBuffer = Buffer<BufferType::UniformStorage>;
     using UBO = UniformBuffer;
     using ShaderStorageBuffer = Buffer<BufferType::ShaderStorage>;
