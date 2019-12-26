@@ -41,6 +41,16 @@ namespace tz::gl
     }
 
     template<BufferType T>
+    bool Buffer<T>::is_terminal() const
+    {
+        this->verify();
+        this->verify_bound();
+        GLint param;
+        glGetBufferParameteriv(static_cast<GLenum>(T), GL_BUFFER_IMMUTABLE_STORAGE, &param);
+        return (param == GL_FALSE) ? false : true;
+    }
+
+    template<BufferType T>
     void Buffer<T>::resize(std::size_t size_bytes)
     {
         this->verify();
@@ -50,13 +60,38 @@ namespace tz::gl
     }
 
     template<BufferType T>
+    void Buffer<T>::terminal_resize(std::size_t size_bytes)
+    {
+        this->verify();
+        this->verify_bound();
+        this->verify_nonterminal();
+        topaz_assert(!this->is_mapped(), "tz::gl::Buffer<T>::terminal_resize(", size_bytes, "): Cannot resize because this buffer is currently mapped.");
+        glBufferStorage(static_cast<GLenum>(T), size_bytes, nullptr, GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
+    }
+
+    template<BufferType T>
+    void Buffer<T>::make_terminal()
+    {
+        this->verify();
+        this->verify_bound();
+        this->verify_nonterminal();
+        topaz_assert(!this->is_mapped(), "tz::gl::Buffer<T>::make_terminal(): Cannot make terminal because the buffer is currently mapped.");
+        // TODO: Maintain a copy of the underlying data first and copy that data back into the immutable data store.
+        glBufferStorage(static_cast<GLenum>(T), this->size(), nullptr, GL_STATIC_DRAW);
+    }
+
+    template<BufferType T>
     tz::mem::Block Buffer<T>::map(MappingPurpose purpose)
     {
         this->verify();
         this->verify_bound();
         topaz_assert(!this->is_mapped(), "tz::gl::Buffer<T>::map(...): Attempted to map but we are already mapped");
         // We know for sure that we have a valid handle, it is currently bound and we're definitely not yet mapped.
-        void* begin = glMapBuffer(static_cast<GLenum>(T), static_cast<GLenum>(purpose));
+        void* begin = nullptr;
+        if(this->is_terminal())
+            begin = glMapBufferRange(static_cast<GLenum>(T), 0, this->size(), GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
+        else
+            begin = glMapBuffer(static_cast<GLenum>(T), static_cast<GLenum>(purpose));
 
         return {begin, this->size()};
     }

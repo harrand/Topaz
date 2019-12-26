@@ -80,6 +80,13 @@ namespace tz::gl
          */
         bool empty() const;
         /**
+         * Query as to whether the buffer is terminal or not. Buffers are terminal if their underlying storage is immutable and thus cannot be resized.
+         * Note: Once a buffer is terminal, it will remain terminal for the remainder of its lifetime. This means that any Buffer can become terminal, but terminal Buffers cannot become non-terminal.
+         * Precondition: Requires the buffer to be valid and bound.
+         * @return True if the buffer is terminal, otherwise false.
+         */
+        virtual bool is_terminal() const = 0;
+        /**
          * Query as to whether the buffer is 'valid' or not. A valid buffer is a buffer that has been bound at least once.
          * 
          * Note: This must be done before most buffer operations.
@@ -94,6 +101,26 @@ namespace tz::gl
          * @param size_bytes Desired new size of the buffer, in bytes.
          */
         virtual void resize(std::size_t size_bytes) = 0;
+        /**
+         * Change the size of the Buffer and make it terminal.
+         * 
+         * Terminal Buffers are fixed-size unlike normal Buffers but have additional features which may be desireable.
+         * - Terminal Buffers can remain mapped concurrent with render invocations. There is no requirement to unmap terminal buffers before rendering.
+         * - Mappings of Terminal Buffers will update VRAM-side as soon as possible, as opposed to updates only happening upon unmapping.
+         * - In OpenGL nomenclature, Terminal Buffers are similar to Persistent Mapped Buffers (PMB).
+         * 
+         * Precondition: Requires the buffer to be valid, bound, non-terminal and unmapped.
+         * Note: This will not preserve any of the data within the buffer. You should do that yourself.
+         * @param size_bytes Desired new size of the buffer, in bytes.
+         */
+        virtual void terminal_resize(std::size_t size_bytes) = 0;
+        /**
+         * Make the Buffer terminal without affecting its size.
+         * 
+         * Precondition: Requires the buffer to be valid, bound, non-terminal and unmapped.
+         * Note: This will preserve the data within the buffer.
+         */
+        virtual void make_terminal() = 0;
         /**
          * Map the buffer, providing a contiguous data block that can be used from the calling code.
          * 
@@ -135,6 +162,8 @@ namespace tz::gl
         void verify() const;
         /// Asserts that this buffer is bound.
         void verify_bound() const;
+        /// Asserts that this buffer is non-terminal.
+        void verify_nonterminal() const;
 
         BufferHandle handle;
     };
@@ -146,14 +175,14 @@ namespace tz::gl
         virtual void bind() const override;
         virtual void unbind() const override;
         virtual std::size_t size() const override;
+        virtual bool is_terminal() const override;
         virtual void resize(std::size_t size_bytes) override;
+        virtual void terminal_resize(std::size_t size_bytes) override;
+        virtual void make_terminal() override;
 
         virtual tz::mem::Block map(MappingPurpose purpose = MappingPurpose::ReadWrite) override;
         virtual void unmap() override;
         virtual bool is_mapped() const override;
-
-        //template<typename T>
-        //tz::mem::UniformPool<T> map(std::size_t element_count, MappingPurpose purpose = MappingPurpose::ReadWrite);
     };
 
     // Various aliases...

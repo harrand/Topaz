@@ -52,7 +52,7 @@ namespace tz::mem
 	template<typename T>
 	void UniformPool<T>::set(std::size_t index, T t)
 	{
-		topaz_assert(index < this->capacity(), "UniformPool<T>::set(index, ...): Setting at index", index, " is beyond the capacity of ", this->capacity());
+		topaz_assert(index < this->capacity(), "UniformPool<T>::set(index, ...): Setting at index ", index, " is beyond the capacity of ", this->capacity());
 		T* ptr = this->at(index);
 		// This element already exists. Invoke its destructor first.
 		if(this->is_object(index))

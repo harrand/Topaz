@@ -70,6 +70,36 @@ tz::test::Case mapping()
     return test_case;
 }
 
+tz::test::Case terminality()
+{
+    tz::test::Case test_case("tz::gl Buffer Terminality Tests");
+    tz::gl::Object o;
+    std::size_t idx = o.emplace_buffer<tz::gl::BufferType::Array>();
+    tz::gl::VBO* vbo = o.get<tz::gl::BufferType::Array>(idx);
+    {
+        topaz_assert_clear();
+        // Make sure it's valid by binding it via the Object.
+        o.bind_child(idx);
+        // Definitely shouldn't be terminal for now.
+        topaz_expect(test_case, !vbo->is_terminal(), "tz::gl::Buffer wrongly considers itself to be terminal.");
+        vbo->resize(1);
+        // Mapping it normally certainly shouldn't make it terminal.
+        topaz_expect(test_case, !vbo->is_mapped(), "tz::gl::Buffers wrongly considers itself to be mapped...");
+        vbo->map();
+        topaz_expect(test_case, vbo->is_mapped(), "tz::gl::Buffer wrongly considers itself to be unmapped...");
+        topaz_expect(test_case, !vbo->is_terminal(), "tz::gl::Buffer wrongly considers itself to be terminal after non-terminal mapping.");
+        vbo->unmap();
+        // Let's resize this terminally!
+        vbo->terminal_resize(1024);
+        topaz_expect(test_case, vbo->is_terminal(), "tz::gl::Buffer failed to realise that it had become terminal after a terminal resize.");
+        vbo->map();
+        // The mapping is valid during render calls etc... There is no good way of testing for this however, as we can't test for the presence of UB without using UBsan which is likely not to detect this anyway...
+        vbo->unmap();
+        topaz_expect_assert(test_case, false, "tz::gl::Buffer unexpectedly asserted during terminality tests...");
+    }
+    return test_case;
+}
+
 int main()
 {
     tz::test::Unit buffer;
@@ -80,6 +110,7 @@ int main()
 
         buffer.add(binding());
         buffer.add(mapping());
+        buffer.add(terminality());
 
         tz::core::terminate();
     }

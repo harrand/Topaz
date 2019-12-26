@@ -52,6 +52,13 @@ namespace tz::gl
         #endif
     }
 
+    void IBuffer::verify_nonterminal() const
+    {
+        #if TOPAZ_DEBUG
+            topaz_assert(!this->is_terminal(), "IBuffer::verify_nonterminal(): Buffer is terminal!");
+        #endif
+    }
+
     namespace bound
     {
         int vertex_buffer()
