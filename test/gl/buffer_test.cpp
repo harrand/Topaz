@@ -92,10 +92,78 @@ tz::test::Case terminality()
         // Let's resize this terminally!
         vbo->terminal_resize(1024);
         topaz_expect(test_case, vbo->is_terminal(), "tz::gl::Buffer failed to realise that it had become terminal after a terminal resize.");
+        topaz_expect(test_case, vbo->size() == 1024, "tz::gl::Buffer had unexpected size. Expected ", 1024, " but got ", vbo->size());
         vbo->map();
         // The mapping is valid during render calls etc... There is no good way of testing for this however, as we can't test for the presence of UB without using UBsan which is likely not to detect this anyway...
         vbo->unmap();
         topaz_expect_assert(test_case, false, "tz::gl::Buffer unexpectedly asserted during terminality tests...");
+    }
+    return test_case;
+}
+
+tz::test::Case nonterminal_retrieval()
+{
+    tz::test::Case test_case("tz::gl::Buffer Non-terminal Retrieval Tests");
+    tz::gl::Object o;
+    std::size_t idx = o.emplace_buffer<tz::gl::BufferType::Array>();
+    tz::gl::VBO* vbo = o.get<tz::gl::BufferType::Array>(idx);
+    {
+        // Let's work with floats.
+        constexpr std::size_t amt = 8;
+        constexpr std::size_t sz = sizeof(float) * amt;
+        o.bind_child(idx);
+        vbo->resize(sz);
+        topaz_expect_assert(test_case, false, "tz::gl::Buffer unexpectedly asserted.");
+        // Map it and write some data into it.
+        {
+            tz::mem::UniformPool<float> pool = vbo->map_pool<float>();
+            for(std::size_t i = 0; i < amt; i++)
+                pool.set(i, 0.0f + i);
+            // expect data-store to be: {0.0f, 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f}
+            // non-terminal buffers absolutely need to be unmapped.
+            vbo->unmap();
+        }
+        float fblk[amt];
+        vbo->retrieve(fblk);
+        for(std::size_t i = 0; i < amt; i++)
+        {
+            topaz_expect(test_case, fblk[i] == (0.0f + i), "tz::gl::Buffer Retrieval Element was incorrect (Terminal). Expected ", (0.0f + i), ", got ", fblk[i]);
+        }
+        topaz_expect_assert(test_case, false, "tz::gl::Buffer Terminal Retrieval yielded unexpected assertion.");
+    }
+    return test_case;
+}
+
+tz::test::Case terminal_retrieval()
+{
+    // This is functionally identical to nonterminal_retrieval except that we don't unmap before retrieval (to test that edge-case).
+    tz::test::Case test_case("tz::gl::Buffer Terminal Retrieval Tests");
+    tz::gl::Object o;
+    std::size_t idx = o.emplace_buffer<tz::gl::BufferType::Array>();
+    tz::gl::VBO* vbo = o.get<tz::gl::BufferType::Array>(idx);
+    {
+        // Let's work with floats.
+        constexpr std::size_t amt = 8;
+        constexpr std::size_t sz = sizeof(float) * amt;
+        o.bind_child(idx);
+        vbo->terminal_resize(sz);
+        topaz_expect_assert(test_case, false, "tz::gl::Buffer unexpectedly asserted.");
+        // Map it and write some data into it.
+        {
+            tz::mem::UniformPool<float> pool = vbo->map_pool<float>();
+            for(std::size_t i = 0; i < amt; i++)
+                pool.set(i, 0.0f + i);
+            // expect data-store to be: {0.0f, 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f}
+            // don't unmap as terminal buffers shouldn't require it.
+            //vbo->unmap();
+        }
+        float fblk[amt];
+        vbo->retrieve(fblk);
+        for(std::size_t i = 0; i < amt; i++)
+        {
+            topaz_expect(test_case, fblk[i] == (0.0f + i), "tz::gl::Buffer Retrieval Element was incorrect (Terminal). Expected ", (0.0f + i), ", got ", fblk[i]);
+        }
+        topaz_expect_assert(test_case, false, "tz::gl::Buffer Terminal Retrieval yielded unexpected assertion.");
     }
     return test_case;
 }
@@ -111,6 +179,8 @@ int main()
         buffer.add(binding());
         buffer.add(mapping());
         buffer.add(terminality());
+        buffer.add(nonterminal_retrieval());
+        buffer.add(terminal_retrieval());
 
         tz::core::terminate();
     }

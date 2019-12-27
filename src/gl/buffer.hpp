@@ -102,6 +102,27 @@ namespace tz::gl
          */
         virtual void resize(std::size_t size_bytes) = 0;
         /**
+         * Retrieve a subset of the data-store.
+         * 
+         * Precondition: Requires the buffer to be valid and bound. If the buffer is non-terminal, then it must also be unmapped.
+         * Precondition: offset + size_bytes must be less than this->size(). Otherwise, this will assert and invoke UB.
+         * Precondition: The memory block pointed to by input_data must have size greater than or equal to size_bytes. Otherwise, this will invoke UB without asserting.
+         * @param offset Offset from the beginning of the data-store, in bytes.
+         * @param size_bytes Size of the data-store to query, in bytes.
+         * @param input_data Pointer to pre-allocated memory.
+         */
+        virtual void retrieve(std::size_t offset, std::size_t size_bytes, void* input_data) const = 0;
+        /**
+         * Retrieve the entirety of the data-store.
+         * 
+         * Precondition: Requires the buffer to be valid and bound. If the buffer is non-terminal, then it must also be unmapped.
+         * Precondition: The memory block pointed to by input_data must have size greater than or equal to this->size(). Otherwise, this will invoke UB without asserting.
+         * @param offset Offset from the beginning of the data-store, in bytes.
+         * @param size_bytes Size of the data-store to query, in bytes.
+         * @param input_data Pointer to pre-allocated memory.
+         */
+        virtual void retrieve(void* input_data) const = 0;
+        /**
          * Change the size of the Buffer and make it terminal.
          * 
          * Terminal Buffers are fixed-size unlike normal Buffers but have additional features which may be desireable.
@@ -177,6 +198,8 @@ namespace tz::gl
         virtual std::size_t size() const override;
         virtual bool is_terminal() const override;
         virtual void resize(std::size_t size_bytes) override;
+        virtual void retrieve(std::size_t offset, std::size_t size_bytes, void* input_data) const override;
+        virtual void retrieve(void* input_data) const override;
         virtual void terminal_resize(std::size_t size_bytes) override;
         virtual void make_terminal() override;
 

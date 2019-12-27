@@ -60,6 +60,25 @@ namespace tz::gl
     }
 
     template<BufferType T>
+    void Buffer<T>::retrieve(std::size_t offset, std::size_t size_bytes, void* input_data) const
+    {
+        this->verify();
+        this->verify_bound();
+        if(!this->is_terminal())
+        {
+            // Cannot do this while mapped if we're non-terminal.
+            topaz_assert(!this->is_mapped(), "tz::gl::Buffer<T>::retrieve(", offset, ", ", size_bytes, ", ptr): Cannot retrieve because this buffer is both non-terminal and mapped. Cannot retrieve a non-terminal buffer if it is mapped.");
+        }
+        glGetBufferSubData(static_cast<GLenum>(T), static_cast<GLintptr>(offset), static_cast<GLsizeiptr>(size_bytes), input_data);
+    }
+
+    template<BufferType T>
+    void Buffer<T>::retrieve(void* input_data) const
+    {
+        this->retrieve(0, this->size(), input_data);
+    }
+
+    template<BufferType T>
     void Buffer<T>::terminal_resize(std::size_t size_bytes)
     {
         this->verify();
