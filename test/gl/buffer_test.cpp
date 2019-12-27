@@ -127,8 +127,7 @@ tz::test::Case retrieval()
         {
             float data[amt - 4];
             // we'll query the first 4 floats.
-            /* TODO: Fix
-            vbo->retrieve(0, 4, data);
+            vbo->retrieve(0, 4 * sizeof(float), data);
             for(std::size_t i = 0; i < 4; i++)
                 topaz_expect(test_case, data[i] == (0.0f + i), "tz::gl::Buffer retrieval of a subset of the data store yielded incorrect value. Expected ", (0.0f + i), ", got ", data[i]);
         }
@@ -136,10 +135,9 @@ tz::test::Case retrieval()
         // Then we'll check with an offset for the last 2 floats.
         {
             float data[2];
-            vbo->retrieve(6, 2, data);
+            vbo->retrieve(6 * sizeof(float), 2 * sizeof(float), data);
             for(std::size_t i = 0; i < 2; i++)
                 topaz_expect(test_case, data[i] == (6.0f + i), "tz::gl::Buffer retrieval of an offsetted subset of the data yielded incorrect value. Expected ", (6.0f + i), ", got ", data[i]);
-            */
         }
     }
     return test_case;
