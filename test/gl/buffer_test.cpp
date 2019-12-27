@@ -101,6 +101,50 @@ tz::test::Case terminality()
     return test_case;
 }
 
+tz::test::Case retrieval()
+{
+    tz::test::Case test_case("tz::gl::Buffer General Retrieval Tests");
+    tz::gl::Object o;
+    std::size_t idx = o.emplace_buffer<tz::gl::BufferType::Array>();
+    tz::gl::VBO* vbo = o.get<tz::gl::BufferType::Array>(idx);
+    {
+        // Let's work with floats.
+        constexpr std::size_t amt = 8;
+        constexpr std::size_t sz = sizeof(float) * amt;
+        o.bind_child(idx);
+        vbo->resize(sz);
+        topaz_expect_assert(test_case, false, "tz::gl::Buffer unexpectedly asserted.");
+        // Map it and write some data into it.
+        {
+            tz::mem::UniformPool<float> pool = vbo->map_pool<float>();
+            for(std::size_t i = 0; i < amt; i++)
+                pool.set(i, 0.0f + i);
+            // expect data-store to be: {0.0f, 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f}
+            vbo->unmap();
+        }
+
+        // Firstly we'll check with no offset and a smaller size.
+        {
+            float data[amt - 4];
+            // we'll query the first 4 floats.
+            /* TODO: Fix
+            vbo->retrieve(0, 4, data);
+            for(std::size_t i = 0; i < 4; i++)
+                topaz_expect(test_case, data[i] == (0.0f + i), "tz::gl::Buffer retrieval of a subset of the data store yielded incorrect value. Expected ", (0.0f + i), ", got ", data[i]);
+        }
+
+        // Then we'll check with an offset for the last 2 floats.
+        {
+            float data[2];
+            vbo->retrieve(6, 2, data);
+            for(std::size_t i = 0; i < 2; i++)
+                topaz_expect(test_case, data[i] == (6.0f + i), "tz::gl::Buffer retrieval of an offsetted subset of the data yielded incorrect value. Expected ", (6.0f + i), ", got ", data[i]);
+            */
+        }
+    }
+    return test_case;
+}
+
 tz::test::Case nonterminal_retrieval()
 {
     tz::test::Case test_case("tz::gl::Buffer Non-terminal Retrieval Tests");
@@ -168,6 +212,58 @@ tz::test::Case terminal_retrieval()
     return test_case;
 }
 
+tz::test::Case sending()
+{
+    tz::test::Case test_case("tz::gl::Buffer General Sending Tests");
+    tz::gl::Object o;
+    std::size_t idx = o.emplace_buffer<tz::gl::BufferType::Array>();
+    tz::gl::VBO* vbo = o.get<tz::gl::BufferType::Array>(idx);
+    {
+        o.bind_child(idx);
+
+        // Let's try and send some ints.
+        constexpr std::size_t amt = 3;
+        constexpr std::size_t sz = sizeof(int) * amt;
+        vbo->resize(sz);
+        
+        // Try sending via void*.
+        {
+            int data[amt] = {0, 1, 2};
+            vbo->send(data);
+            int* recvdata = reinterpret_cast<int*>(vbo->map().begin);
+            for(std::size_t i = 0; i < amt; i++)
+                topaz_expect(test_case, data[i] == recvdata[i], "tz::gl::Buffer::send(void*) seemed to fail to send data correctly. Expected value ", data[i], ", but got value ", recvdata[i]);
+            vbo->unmap();
+        }
+
+        // Try sending via offset and block.
+        {
+            int data = 3;
+            tz::mem::Block blk{&data, 1};
+            const int offset_elements = (vbo->size() / sizeof(int)) - 1;
+            const int offset_bytes = vbo->size() - sizeof(int);
+            vbo->send(offset_bytes, blk);
+            int* recvdata = reinterpret_cast<int*>(vbo->map().begin);
+
+            topaz_expect(test_case, data == recvdata[offset_elements], "tz::gl::Buffer::send(", offset_bytes, ", tz::mem::Block (", blk.size(), ")): seemed to fail to send data correctly. Expected value ", data, ", but got value ", recvdata[offset_elements], " (offset_elements: ", offset_elements, ", offset_bytes = ", offset_bytes, ")");
+            vbo->unmap();
+        }
+        
+        // Try sending via range.
+        {
+            std::vector<int> data = {7, 8, 9};
+            vbo->send_range(data.begin(), data.end());
+            int* recvdata = reinterpret_cast<int*>(vbo->map().begin);
+            for(std::size_t i = 0; i < amt; i++)
+                topaz_expect(test_case, data[i] == recvdata[i], "tz::gl::Buffer::send_range(...): seemed to fail to send data correctly. Expected value ", data[i], ", but got value ", recvdata[i]);
+            vbo->unmap();
+        }
+        
+    }
+
+    return test_case;
+}
+
 int main()
 {
     tz::test::Unit buffer;
@@ -179,8 +275,10 @@ int main()
         buffer.add(binding());
         buffer.add(mapping());
         buffer.add(terminality());
+        buffer.add(retrieval());
         buffer.add(nonterminal_retrieval());
         buffer.add(terminal_retrieval());
+        buffer.add(sending());
 
         tz::core::terminate();
     }

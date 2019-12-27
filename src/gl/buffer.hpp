@@ -123,6 +123,38 @@ namespace tz::gl
          */
         virtual void retrieve(void* input_data) const = 0;
         /**
+         * Send a memory block to the data-store at the given offset.
+         *
+         * Note: The offset is for the destination buffer, not this source block. This will always send the entire block.
+         * Note: If the block only populates a part of the data-store, then the remainder of the data is unchanged. This means that you can freely use this to only update a part of the data-store.
+         * Precondition: Requires the buffer to be valid and bound. If the buffer is non-terminal, then it must also be unmapped.
+         * Precondition: The given memory block must have a size less than or equal to (this->size() - offset). Otherwise, this will assert and only send the portion of the data that fits.
+         * @param offset Offset from the beginning of the data store to send data to, in bytes.
+         * @param output_block Block of memory to copy to the data-store at the given offset.
+         */
+        virtual void send(std::size_t offset, tz::mem::Block output_block) = 0;
+        /**
+         * Send arbitrary data to the data-store.
+         *
+         * Note: This will keep copying data from the contiguous block pointed to by output_data until the data-store is completely full. In other words, the data pointed to by output_data should have size equal to this->size()
+         * Precondition: Requires the buffer to be valid and bound. If the buffer is non-terminal, then it must also be unmapped.
+         * Precondition: Requires output_data to point to allocated memory of size less than this->size(). Otherwise, this will invoke UB without asserting.
+         * @param output_data Pointer to contiguous data used to re-fill the data-store.
+         */
+        virtual void send(void* output_data) = 0;
+        /**
+         * Send a range of data to the data-store.
+         * 
+         * Note: If the range only populates a part of the data-store, then the remainder of the data is unchanged. This means that you can freely use this to only update a part of the data-store.
+         * Precondition: Requires the buffer to be valid and bound. If the buffer is non-terminal, then it must also be unmapped.
+         * Precondition: Requires the distance between begin and end to be less than this->size(). Otherwise, this will assert and only send the data that fits.
+         * @tparam Iter Iterator type. Usage will fail to compile if Iter does not contain an increase operator (Iter::operator++) and the typedef Iter::value_type.
+         * @param begin Beginning of the range to copy to the data-store.
+         * @param end End of the range to copy to the data-store.
+         */
+        template<typename Iter>
+        void send_range(Iter begin, Iter end);
+        /**
          * Change the size of the Buffer and make it terminal.
          * 
          * Terminal Buffers are fixed-size unlike normal Buffers but have additional features which may be desireable.
@@ -200,6 +232,8 @@ namespace tz::gl
         virtual void resize(std::size_t size_bytes) override;
         virtual void retrieve(std::size_t offset, std::size_t size_bytes, void* input_data) const override;
         virtual void retrieve(void* input_data) const override;
+        virtual void send(std::size_t offset, tz::mem::Block output_block) override;
+        virtual void send(void* output_data) override;
         virtual void terminal_resize(std::size_t size_bytes) override;
         virtual void make_terminal() override;
 
