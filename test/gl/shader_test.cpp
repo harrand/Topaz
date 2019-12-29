@@ -11,7 +11,7 @@ tz::test::Case empty_program()
 {
 	tz::test::Case test_case("tz::gl::ShaderProgram Emptiness Tests");
 	tz::gl::ShaderProgram prg;
-	topaz_expect(test_case, !prg.usable(), "tz::gl::ShaderProgram thinks it is usable, but it is empty!");
+	topaz_expect(test_case, !prg.linkable(), "tz::gl::ShaderProgram thinks it is usable, but it is empty!");
 	return test_case;
 }
 

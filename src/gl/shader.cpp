@@ -4,7 +4,7 @@
 
 namespace tz::gl
 {
-	ShaderProgram::ShaderProgram(): handle(glCreateProgram()), shaders()
+	ShaderProgram::ShaderProgram(): handle(glCreateProgram()), shaders(), ready(false)
 	{
 		this->nullify_all();
 	}
@@ -17,6 +17,16 @@ namespace tz::gl
 
 	ShaderProgram::~ShaderProgram()
 	{
+		// Detach all child handles. Only do this if we have a valid handle!
+		if(this->handle != 0)
+		{
+			for(const auto& child_ptr : this->shaders)
+			{
+				if(child_ptr == nullptr)
+					continue;
+				glDetachShader(this->handle, child_ptr->handle);
+			}
+		}
 		// Will silently ignore zero'd handles.
 		glDeleteProgram(this->handle);
 	}
@@ -34,17 +44,50 @@ namespace tz::gl
 		this->shaders[static_cast<std::size_t>(type)] = std::move(shader);
 	}
 
-	bool ShaderProgram::usable() const
+	bool ShaderProgram::linkable() const
 	{
 		// Usable shaders have a vertex and fragment component at the very least.
-		return this->has_shader(ShaderType::Vertex)
+		bool enough_shaders = this->has_shader(ShaderType::Vertex)
 			&& this->has_shader(ShaderType::Fragment);
+		if(!enough_shaders)
+			return false;
+		// All attached shaders must have been compiled successfully.
+		for(const auto& shader_ptr : this->shaders)
+		{
+			if(shader_ptr != nullptr)
+			{
+				if(!shader_ptr->compiled())
+					return false;
+			}
+		}
+		return true;
+	}
+
+	bool ShaderProgram::usable() const
+	{
+		return this->ready;
+	}
+
+	void ShaderProgram::bind()
+	{
+		topaz_assert(this->usable(), "tz::gl::ShaderProgram::bind(): Attempted to bind but the program is not currently usable. Make sure the program is *correctly* linked & validated before invoking this.");
+		glUseProgram(this->handle);
 	}
 
 	bool ShaderProgram::has_shader(ShaderType type) const
 	{
 		topaz_assert(type != ShaderType::NUM_TYPES, "tz::gl::ShaderProgram::has_shader(...): Was given type index ", static_cast<std::size_t>(type), " (ShaderTypes::NUM_TYPES) which is not a legal parameter here.");
 		return this->shaders[static_cast<std::size_t>(type)] != nullptr;
+	}
+
+	bool ShaderProgram::operator==(ShaderProgramHandle rhs) const
+	{
+		return this->handle == rhs;
+	}
+
+	bool ShaderProgram::operator!=(ShaderProgramHandle rhs) const
+	{
+		return this->handle != rhs;
 	}
 
 	void ShaderProgram::verify() const
@@ -63,7 +106,7 @@ namespace tz::gl
 
 	Shader::Shader(ShaderType type): Shader(type, std::string{}){}
 
-	Shader::Shader(ShaderType type, std::string source): type(type), source(source), handle(glCreateShader(detail::resolve_type(this->type)))
+	Shader::Shader(ShaderType type, std::string source): type(type), source(source), handle(glCreateShader(detail::resolve_type(this->type))), compilation_successful(false)
 	{
 		this->upload_source(this->source);
 	}
@@ -83,6 +126,11 @@ namespace tz::gl
 	bool Shader::has_source() const
 	{
 		return !this->source.empty();
+	}
+
+	bool Shader::compiled() const
+	{
+		return this->compilation_successful;
 	}
 
 	void Shader::verify() const
@@ -110,6 +158,16 @@ namespace tz::gl
 					return GL_COMPUTE_SHADER;
 			}
 			return GL_INVALID_VALUE;
+		}
+	}
+
+	namespace bound
+	{
+		ShaderProgramHandle shader_program()
+		{
+			int param;
+			glGetIntegerv(GL_CURRENT_PROGRAM, &param);
+			return static_cast<ShaderProgramHandle>(param);
 		}
 	}
 }

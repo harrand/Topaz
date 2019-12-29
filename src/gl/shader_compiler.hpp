@@ -6,6 +6,7 @@ namespace tz::gl
 {
 	// Forward declares
 	class Shader;
+	class ShaderProgram;
 
 	enum class ShaderCompilerType
 	{
@@ -42,7 +43,8 @@ namespace tz::gl
 	{
 	public:
 		ShaderCompiler(ShaderCompilerOptions options = detail::get_default_compiler_options());
-		ShaderCompilerDiagnostic compile(const Shader& shader) const;
+		ShaderCompilerDiagnostic compile(Shader& shader) const;
+		ShaderCompilerDiagnostic link(ShaderProgram& program) const;
 	private:
 		ShaderCompilerOptions options;
 	};
