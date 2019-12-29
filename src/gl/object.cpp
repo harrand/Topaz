@@ -8,7 +8,7 @@
 
 namespace tz::gl
 {
-    Object::Object(): vao(0), buffers()
+    Object::Object(): vao(0), buffers(), index_buffer_ids()
     {
         glGenVertexArrays(1, &this->vao);
     }
@@ -78,6 +78,13 @@ namespace tz::gl
         }
     }
 
+    std::size_t Object::add_index_buffer(std::unique_ptr<tz::gl::IBuffer> index_buffer)
+    {
+        std::size_t id = this->add_buffer(std::move(index_buffer));
+        this->index_buffer_ids.push_back(id);
+        return id;
+    }
+
     tz::gl::IBuffer* Object::operator[](std::size_t idx)
     {
         topaz_assert(idx < this->size(), "tz::gl::Object::operator[", idx, "] was out of range. Size = ", this->size());
@@ -113,6 +120,17 @@ namespace tz::gl
     void Object::verify() const
     {
         topaz_assert(this->vao != 0, "tz::gl::Object::verify(): Verification failed");
+    }
+
+    tz::gl::IBuffer* Object::bound_index_buffer()
+    {
+        for(std::size_t idx : this->index_buffer_ids)
+        {
+            tz::gl::IBuffer* buf = (*this)[idx];
+            if(buf != nullptr && *buf == tz::gl::bound::vertex_buffer())
+                return buf;
+        }
+        return nullptr;
     }
 
     namespace bound

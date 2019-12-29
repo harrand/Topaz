@@ -36,7 +36,6 @@ namespace tz::gl
          * Unbind the Object. TODO: Document this better.
          */
         void unbind() const;
-
         /**
          * Retrieve the number of Buffers that this Object owns, including null entries.
          * 
@@ -62,11 +61,21 @@ namespace tz::gl
         /**
          * Take ownership of an existing Buffer and retrieve an opaque ID handle corresponding to that Buffer.
          * 
+         * Note: If the given Buffer is an index-buffer and is intended to be used for rendering, invoke this->add_index_buffer(buffer) instead.
          * Note: This handle can be passed to operator[] to retrieve a pointer to the Buffer.
          * @param buffer The buffer to take ownership of.
          * @return Handle ID of the now-owned Buffer.
          */
         std::size_t add_buffer(std::unique_ptr<tz::gl::IBuffer> buffer);
+        /**
+         * Take ownership of an existing Buffer and retrieve an opaque ID handle corresponding to that Buffer. Also, interpret the Buffer as an index-buffer.
+         * 
+         * Note: This should be used instead of add_buffer if the given Buffer is an index-buffer.
+         * Note: This handle can be passed to operator[] to retrieve a pointer to the Buffer.
+         * @param buffer The buffer to take ownership of.
+         * @return Handle ID of the now-owned Buffer.
+         */
+        std::size_t add_index_buffer(std::unique_ptr<tz::gl::IBuffer> index_buffer);
         /**
          * Create a new Buffer in-place and retrieve an opaque ID handle corresponding to the new Buffer.
          * 
@@ -122,7 +131,7 @@ namespace tz::gl
          * Retrieve a pointer to an existing IBuffer using its Handle ID. This will return the underlying interface.
          * 
          * Note: This can return nullptr if the Buffer at this index was previously erased or released.
-         * Note: If the underlying type o the Buffer is not known, you can instead retrieve a pointer to the interface via this->operator[].
+         * Note: If the underlying type of the Buffer is not known, you can instead retrieve a pointer to the interface via this->operator[].
          * Precondition: The given index must be in-range (0 <= idx <= this->size()). Otherwise this will assert and invoke UB.
          * Precondition: The Buffer at the given index must have underlying type matching Type. Otherwise this will invoke UB without asserting.
          * @tparam Type Underlying type of the Buffer at the given index.
@@ -165,9 +174,11 @@ namespace tz::gl
         std::unique_ptr<tz::gl::IBuffer> release(std::size_t idx);
     private:
         void verify() const;
+        tz::gl::IBuffer* bound_index_buffer();
 
         ObjectHandle vao;
         std::vector<std::unique_ptr<tz::gl::IBuffer>> buffers;
+        std::vector<std::size_t> index_buffer_ids;
     };
 
     namespace bound

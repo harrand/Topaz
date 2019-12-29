@@ -6,8 +6,7 @@
 
 namespace tz::gl
 {
-    void IDrawCommand::operator()() const
+    namespace gpu
     {
-        this->invoke();
     }
 }

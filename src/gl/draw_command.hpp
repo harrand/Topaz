@@ -5,11 +5,13 @@
 #ifndef TOPAZ_GL_DRAW_COMMAND_HPP
 #define TOPAZ_GL_DRAW_COMMAND_HPP
 #include "glad/glad.h"
+#include <cstdint>
 
 namespace tz::gl
 {
-    namespace detail
+    namespace gpu
     {
+
         struct DrawArraysIndirectCommand
         {
             GLuint count;
@@ -28,12 +30,6 @@ namespace tz::gl
         };
 
     }
-
-    class IDrawCommand
-    {
-        virtual void invoke() const = 0;
-        void operator()() const;
-    };
 }
 
 #endif // TOPAZ_GL_DRAW_COMMAND_HPP
