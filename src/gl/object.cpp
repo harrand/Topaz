@@ -33,6 +33,15 @@ namespace tz::gl
         return this->buffers.size();
     }
 
+    std::size_t Object::element_size() const
+    {
+        std::size_t sz = 0;
+        for(const auto& child_ptr : this->buffers)
+            if(child_ptr != nullptr)
+                sz++;
+        return sz;
+    }
+
     bool Object::operator==(ObjectHandle handle) const
     {
         return this->vao == handle;
@@ -85,6 +94,20 @@ namespace tz::gl
     {
         glBindVertexArray(this->vao);
         (*this)[idx]->bind();
+    }
+
+    void Object::erase(std::size_t idx)
+    {
+        topaz_assert(idx < this->size(), "tz::gl::Object::erase(", idx, "): Index ", idx, " was out of range! Size: ", this->size());
+        this->buffers[idx] = nullptr;
+    }
+
+    std::unique_ptr<tz::gl::IBuffer> Object::release(std::size_t idx)
+    {
+        topaz_assert(idx < this->size(), "tz::gl::Object::release(", idx, "): Index ", idx, " was out of range! Size: ", this->size());
+        std::unique_ptr<tz::gl::IBuffer> swap_me = nullptr;
+        std::swap(this->buffers[idx], swap_me);
+        return std::move(swap_me);
     }
 
     void Object::verify() const

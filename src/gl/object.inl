@@ -19,4 +19,16 @@ namespace tz::gl
     {
         return static_cast<const tz::gl::Buffer<Type>*>((*this)[idx]);
     }
+
+    template<tz::gl::BufferType Type, typename... Args>
+    void Object::set(std::size_t idx, Args&&... args)
+    {
+        this->verify();
+        topaz_assert(idx < this->size(), "tz::gl::Object::set(", idx, ", ...): Index given to set was not in range. Given an index ", idx, " which must be less-than (", this->size(), ")");
+        // TODO: Implement
+        this->erase(idx);
+        topaz_assert((*this)[idx] == nullptr, "tz::gl::Object::set(", idx, ", ...): Previous element at the index ", idx, " wasn't erased properly.");
+        this->buffers[idx] = std::make_unique<tz::gl::Buffer<Type>>(std::forward<Args>(args)...);
+    }
+
 }

@@ -38,10 +38,21 @@ namespace tz::gl
         void unbind() const;
 
         /**
-         * Retrieve the number of Buffers that this Object owns.
+         * Retrieve the number of Buffers that this Object owns, including null entries.
+         * 
+         * Note: This includes null entries, which are created via release or erase invocations.
+         * Note: To retrieve the number of non-null owned Buffers, see this->element_size().
          * @return Number of child buffers.
          */
         std::size_t size() const;
+        /**
+         * Retrieve the number of Buffers that this Object owns, excluding null entries.
+         * 
+         * Note: This excludes null entries, which are created via release or erase invocations.
+         * Note: To retrieve the number of owned Buffers (including null entries), see this->size().
+         * @return Number of used child buffers.
+         */
+        std::size_t element_size() const;
 
         bool operator==(ObjectHandle handle) const;
         bool operator==(const Object& rhs) const;
@@ -120,6 +131,35 @@ namespace tz::gl
          */
         template<tz::gl::BufferType Type>
         const tz::gl::Buffer<Type>* get(std::size_t idx) const;
+        /**
+         * Erase the Buffer at the given index, and construct a replacement Buffer in-place at that same index.
+         * 
+         * Note: This will destroy the previous entry. You can use this->swap(...) to extract the previous entry.
+         * Note: It is safe to invoke this if the index is in range but the element at the index is null (Such as from a previous erasure).
+         * Precondition: The given index must be in-range (0 <= idx <= this->size()). Otherwise this will assert and invoke UB.
+         * @tparam Type Underlying type fo the Buffer to be constructed at the given index.
+         * @tparam Args Types of the arguments for the new Buffer's construction.
+         * @param idx Handle ID at which the Buffer should be set.
+         * @param Args Values of the arguments for the new Buffer's construction.
+         */
+        template<tz::gl::BufferType Type, typename... Args>
+        void set(std::size_t idx, Args&&... args);
+        /**
+         * Erase the Buffer at the given index.
+         * 
+         * Note: The index will not be re-used in subsequent emplace_buffer or add_buffer invocations. The only way to re-use this index is to invoke this->set(...) at this index.
+         * Precondition: The given index must be in-range (0 <= idx <= this->size()). Otherwise this will assert and invoke UB.
+         * @param idx The index at which the Buffer should be erased.
+         */
+        void erase(std::size_t idx);
+        /**
+         * Relinquish ownership of the Buffer at the given index, yielding it to calling code. This is essentially a retrieve-and-erase. The result can trivially be added to another Object.
+         * 
+         * Note: If the result of this invocation is discarded, the behaviour is identical to that of erasure at this index.
+         * Note: The result of this method has important RAII semantics. If you allow it to go out of scope, it will destroy the Buffer. Either keep ahold of it sensibly or pass it into a new Object ASAP.
+         * Precondition: The given index must be in-range (0 <= idx <= this->size()). Otherwise this will assert and invoke UB.
+         */
+        std::unique_ptr<tz::gl::IBuffer> release(std::size_t idx);
     private:
         void verify() const;
 
