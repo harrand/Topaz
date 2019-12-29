@@ -114,6 +114,7 @@ namespace tz::gl
 	void Shader::upload_source(std::string source)
 	{
 		this->verify();
+		this->compilation_successful = false;
 		// Cache it.
 		this->source = source;
 
