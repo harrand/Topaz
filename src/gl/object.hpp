@@ -155,9 +155,12 @@ namespace tz::gl
         /**
          * Relinquish ownership of the Buffer at the given index, yielding it to calling code. This is essentially a retrieve-and-erase. The result can trivially be added to another Object.
          * 
+         * Note: After releasing at the index, expect the Buffer at the index to be nullptr.
          * Note: If the result of this invocation is discarded, the behaviour is identical to that of erasure at this index.
          * Note: The result of this method has important RAII semantics. If you allow it to go out of scope, it will destroy the Buffer. Either keep ahold of it sensibly or pass it into a new Object ASAP.
          * Precondition: The given index must be in-range (0 <= idx <= this->size()). Otherwise this will assert and invoke UB.
+         * @param idx Index at which the existing Buffer should be retrieved.
+         * @return Smart-pointer to the resultant Buffer.
          */
         std::unique_ptr<tz::gl::IBuffer> release(std::size_t idx);
     private:
