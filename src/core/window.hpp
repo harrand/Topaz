@@ -8,17 +8,20 @@
 #include <memory>
 #include <vector>
 
-// Forward declare
-namespace tz::input
+// Forward declares
+namespace tz
 {
-	struct KeyListener;
-	struct TypeListener;
-	struct MouseListener;
+	namespace input
+	{
+		struct KeyListener;
+		struct TypeListener;
+		struct MouseListener;
 
-	struct KeyPressEvent;
-	struct CharPressEvent;
-	struct MouseUpdateEvent;
-	struct MouseClickEvent;
+		struct KeyPressEvent;
+		struct CharPressEvent;
+		struct MouseUpdateEvent;
+		struct MouseClickEvent;
+	}
 }
 
 namespace tz::core
@@ -67,6 +70,14 @@ namespace tz::core
 		 */
 		virtual void set_size(int width, int height) const = 0;
 		
+		/**
+		 * Get the underlying tz::gl::Frame corresponding to this window.
+		 * 
+		 * Note: Use this to set the window as a render-target.
+		 * @return Frame corresponding to this window.
+		 */
+		virtual tz::gl::IFrame* get_frame() const = 0;
+
 		/**
 		 * Query as to whether the window is currently visible to the user.
 		 * Note: This will return true if the window is technically visible but occluded.
@@ -232,6 +243,8 @@ namespace tz::core
         virtual void set_width(int width) const override;
         virtual void set_height(int height) const override;
 		virtual void set_size(int width, int height) const override;
+
+		virtual tz::gl::IFrame* get_frame() const override;;
 		
         virtual bool is_visible() const override;
         virtual void set_visible(bool visible) const override;

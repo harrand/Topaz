@@ -6,12 +6,19 @@
 #define TOPAZ_GLFW_WINDOW_HPP
 #include <map>
 #include <string>
+#include <memory>
 // Forward declares
 struct GLFWmonitor;
 struct GLFWwindow;
+
 namespace tz::core
 {
     class GLFWWindow;
+}
+namespace tz::gl
+{
+	class IFrame;
+	class WindowFrame;
 }
 namespace tz::input
 {
@@ -61,6 +68,7 @@ namespace tz::ext::glfw
 		bool close_requested() const;
 		void set_close_requested(bool should_close);
 		void swap_buffers() const;
+		tz::gl::IFrame* get_frame() const;
 		/**
 		 * Allow tz_glfw to track this window implementation.
 		 * Tracking is required to be able to send input data to listeners properly.
@@ -105,6 +113,8 @@ namespace tz::ext::glfw
         GLFWwindow* window_handle;
 		/// What's the title of the window?
         std::string title;
+		/// Underlying Frame interface.
+		std::unique_ptr<tz::gl::IFrame> frame;
     };
 	
 	/**

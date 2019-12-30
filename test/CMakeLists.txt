@@ -30,6 +30,7 @@ endfunction()
 
 # tz::gl
 register_test_target(tz_buffer_test)
+register_test_target(tz_frame_test)
 register_test_target(tz_object_test)
 register_test_target(tz_shader_compiler_test)
 register_test_target(tz_shader_preprocessor_test)

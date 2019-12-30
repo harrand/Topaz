@@ -3,6 +3,7 @@
 //
 
 #include "glfw_window.hpp"
+#include "gl/frame.hpp"
 #include "GLFW/glfw3.h"
 #include "core/debug/assert.hpp"
 #include "core/window.hpp"
@@ -20,7 +21,7 @@ namespace tz::ext::glfw
 	WindowCreationArgs::WindowCreationArgs(const char* title, int width, int height): title(title), width(width), height(height){}
 
 	GLFWWindowImpl::GLFWWindowImpl(int width, int height, const char* title, GLFWmonitor* monitor, GLFWwindow* share) :
-			window_handle(glfwCreateWindow(width, height, title, monitor, share)), title(title)
+			window_handle(glfwCreateWindow(width, height, title, monitor, share)), title(title), frame(std::make_unique<tz::gl::WindowFrame>(this->window_handle))
 	{
 		topaz_assert(this->window_handle != nullptr, "GLFWWindowImpl::GLFWWindowImpl(...): Failed to initialise glfw window!");
 		glfwSetKeyCallback(this->window_handle, glfw_key_callback);
@@ -31,9 +32,10 @@ namespace tz::ext::glfw
 
 	GLFWWindowImpl::GLFWWindowImpl(WindowCreationArgs args) : GLFWWindowImpl(args.width, args.height, args.title, nullptr, nullptr){}
 
-	GLFWWindowImpl::GLFWWindowImpl(GLFWWindowImpl&& move) noexcept: window_handle(move.window_handle)
+	GLFWWindowImpl::GLFWWindowImpl(GLFWWindowImpl&& move) noexcept: window_handle(move.window_handle), title(std::move(move.title)), frame(std::move(move.frame))
 	{
 		move.window_handle = nullptr;
+		move.frame = nullptr;
 	}
 
 	GLFWWindowImpl::~GLFWWindowImpl()
@@ -48,7 +50,10 @@ namespace tz::ext::glfw
 	{
 		topaz_assert(move.window_handle != nullptr, "GLFWWindowImpl::operator=(move): Invoked with nullified window param. This is wrong.");
 		this->window_handle = move.window_handle;
+		this->title = std::move(move.title);
+		this->frame = std::move(move.frame);
 		move.window_handle = nullptr;
+		move.frame = nullptr;
 		return *this;
 	}
 	
@@ -118,6 +123,11 @@ namespace tz::ext::glfw
 	void GLFWWindowImpl::swap_buffers() const
 	{
 		glfwSwapBuffers(this->window_handle);
+	}
+
+	tz::gl::IFrame* GLFWWindowImpl::get_frame() const
+	{
+		return this->frame.get();
 	}
 	
 	void GLFWWindowImpl::register_this(tz::core::GLFWWindow* window)

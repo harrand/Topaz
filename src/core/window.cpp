@@ -4,12 +4,13 @@
 
 #include "window.hpp"
 #include "core/debug/assert.hpp"
+#include "gl/frame.hpp"
 #include "GLFW/glfw3.h"
 #include <algorithm>
 
 namespace tz::core
 {
-	GLFWWindow::GLFWWindow(tz::ext::glfw::GLFWContext& ctx): impl(ctx.get_window())
+	GLFWWindow::GLFWWindow(tz::ext::glfw::GLFWContext& ctx): impl(ctx.get_window()), key_listeners(), type_listeners(), mouse_listeners()
 	{
 		this->set_active_context();
 	}
@@ -52,6 +53,11 @@ namespace tz::core
 	{
 		this->verify();
 		this->impl->set_size(width, height);
+	}
+
+	tz::gl::IFrame* GLFWWindow::get_frame() const
+	{
+		return this->impl->get_frame();
 	}
 	
 	bool GLFWWindow::is_visible() const

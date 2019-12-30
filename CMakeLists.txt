@@ -37,6 +37,8 @@ add_library(topaz STATIC
 		src/gl/buffer.inl
 		src/gl/draw_command.hpp
 		src/gl/draw_command.cpp
+		src/gl/frame.cpp
+		src/gl/frame.hpp
 		src/gl/object.hpp
 		src/gl/object.cpp
 		src/gl/object.inl
