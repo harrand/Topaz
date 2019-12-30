@@ -89,6 +89,7 @@ namespace tz::core
 	}
 
 	static TopazCore global_core;
+	static ResourceManager root_manager{tz::core::project_directory};
 
 	void initialise(const char* app_name)
 	{
@@ -109,6 +110,11 @@ namespace tz::core
 	{
 		topaz_assert(global_core.is_initialised(), "Attempted tz::core::get() but tz::initialise() has not yet been invoked!");
 		return global_core;
+	}
+
+	const ResourceManager& res()
+	{
+		return root_manager;
 	}
 }
 

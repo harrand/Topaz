@@ -14,6 +14,7 @@ WindowDemo::WindowDemo(): window(nullptr), second_window_id(std::nullopt), secon
 {
 	tz::core::initialise("WindowDemo (Press 'Q' to spawn a second window and 'W' to destroy it)");
 	tz::ext::glfw::get().set_error_callback([](int err, const char* err_msg){tz::debug_printf("oh noes!");});
+	tz::debug_printf("Project Source Dir: \"%s\"\n", tz::core::project_directory);
 	this->window = &tz::core::get().window();
 	this->window->register_this();
 	this->window->emplace_custom_key_listener(

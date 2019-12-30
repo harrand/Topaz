@@ -13,6 +13,8 @@ add_library(topaz STATIC
 		src/core/core.hpp
 		src/core/core.cpp
 		src/core/core.inl
+		src/core/resource_manager.cpp
+		src/core/resource_manager.hpp
 		src/core/tz_glfw/glfw_context.cpp
 		src/core/tz_glfw/glfw_context.hpp
 		src/core/tz_glfw/glfw_window.cpp
@@ -90,3 +92,4 @@ target_compile_options(topaz PRIVATE -fno-rtti) # Disable rrti (until c++20 prov
 target_compile_options(topaz PRIVATE -fstrict-aliasing) # Enable strict aliasing (which we refuse to violate) for a small performance boost.
 # Unless overriden, we aren't compiling in unit-test mode.
 target_compile_definitions(topaz PUBLIC -DTOPAZ_UNIT_TEST=0)
+target_compile_definitions(topaz PUBLIC -DTOPAZ_PROJECT_DIR=\"${PROJECT_SOURCE_DIR}\")

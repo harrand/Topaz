@@ -5,6 +5,7 @@
 #ifndef TOPAZ_CORE_HPP
 #define TOPAZ_CORE_HPP
 #include "core/window.hpp"
+#include "core/resource_manager.hpp"
 #include <memory>
 
 // Forward declare
@@ -100,6 +101,10 @@ namespace tz::core
 	 * @return - Reference to the topaz core
 	 */
 	TopazCore& get();
+	
+	const ResourceManager& res();
+
+	constexpr char project_directory[] = TOPAZ_PROJECT_DIR;
 }
 
 #include "core/core.inl"
