@@ -8,5 +8,8 @@ target_link_libraries(tz_object_test PRIVATE topaz test_framework)
 add_executable(tz_shader_compiler_test shader_compiler_test.cpp)
 target_link_libraries(tz_shader_compiler_test PRIVATE topaz test_framework)
 
+add_executable(tz_shader_preprocessor_test shader_preprocessor_test.cpp)
+target_link_libraries(tz_shader_preprocessor_test PRIVATE topaz test_framework)
+
 add_executable(tz_shader_test shader_test.cpp)
 target_link_libraries(tz_shader_test PRIVATE topaz test_framework)

@@ -48,7 +48,7 @@ namespace tz::gl
 	{
 		// Usable shaders have a vertex and fragment component at the very least.
 		bool enough_shaders = this->has_shader(ShaderType::Vertex)
-			&& this->has_shader(ShaderType::Fragment);
+						   && this->has_shader(ShaderType::Fragment);
 		if(!enough_shaders)
 			return false;
 		// All attached shaders must have been compiled successfully.

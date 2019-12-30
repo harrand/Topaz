@@ -77,6 +77,7 @@ namespace tz::gl
 		ShaderCompiler(ShaderCompilerOptions options = detail::get_default_compiler_options());
 		/**
 		 * Attempt to compile the given Shader component.
+		 * Precondition: The Shader component should have previously had valid source-code uploaded to it. Otherwise, this will assert and will return a failure diagnostic.
 		 * @param shader Shader whose uploaded source should be compiled.
 		 * @return Diagnostic information from the attempted compilation.
 		 */

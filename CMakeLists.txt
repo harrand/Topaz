@@ -44,7 +44,10 @@ add_library(topaz STATIC
 		src/gl/shader.hpp
 		src/gl/shader.inl
 		src/gl/shader_compiler.cpp
-		src/gl/shader_compiler.hpp)
+		src/gl/shader_compiler.hpp
+		src/gl/shader_preprocessor.cpp
+		src/gl/shader_preprocessor.hpp
+		src/gl/shader_preprocessor.inl)
 
 target_link_libraries(topaz PUBLIC
 		glfw
