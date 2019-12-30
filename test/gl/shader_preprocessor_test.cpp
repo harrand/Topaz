@@ -66,14 +66,22 @@ tz::test::Case module_order()
 {
 	tz::test::Case test_case("tz::gl::ShaderPreprocessor Module Ordering Tests");
 	tz::gl::ShaderPreprocessor pre{src};
-	pre.emplace_module<tz::test::TestUppercaseModule>();
-	pre.emplace_module<tz::test::TestLowercaseModule>();
+	std::size_t u = pre.emplace_module<tz::test::TestUppercaseModule>();
+	std::size_t l = pre.emplace_module<tz::test::TestLowercaseModule>();
 	pre.preprocess();
 	// All chars that can be upper-case should be lower. All alphabetic chars should be uppered by the 0th module, but lowered again by the 1st module.
 	// Module order must matter!
 	for(char c : pre.result())
 	{
 		topaz_expect(test_case, !std::isupper(c), "tz::gl::p Module Ordering Failed: Found non-lowercase character '", c, "'");
+	}
+	// Now swap modules!
+	pre.swap_modules(u, l);
+	pre.preprocess();
+	// This time, the uppercase happens last, so everything should be upper now!
+	for(char c : pre.result())
+	{
+		topaz_expect(test_case, !std::islower(c), "tz::gl::p Module Ordering Failed: Found non-uppercase character '", c, "'");
 	}
 	return test_case;
 }

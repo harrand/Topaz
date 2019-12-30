@@ -15,6 +15,12 @@ namespace tz::gl
 		return this->modules.empty();
 	}
 
+	void ShaderPreprocessor::swap_modules(std::size_t a, std::size_t b)
+	{
+		topaz_assert(a < this->size() && b < this->size(), "tz::gl::ShaderPreprocessor::swap_modules(", a, ", ", b, "): One of the indices (", a, " & ", b, ") was out of range! Size: ", this->size());
+		std::swap(this->modules[a], this->modules[b]);
+	}
+
 	void ShaderPreprocessor::preprocess()
 	{
 		for(const auto& module_ptr : this->modules)
