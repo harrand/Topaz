@@ -44,13 +44,3 @@ namespace tz::gl
 		return this->modules[idx].get();
 	}
 }
-
-namespace tz::gl::p
-{
-	IncludeModule::IncludeModule(std::string source_path): path(source_path){}
-
-	void IncludeModule::operator()(std::string& source) const
-	{
-		// TODO: Do include magic!
-	}
-}

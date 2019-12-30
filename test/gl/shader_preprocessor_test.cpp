@@ -6,11 +6,33 @@
 #include "core/core.hpp"
 #include "core/tz_glad/glad_context.hpp"
 #include "gl/shader_preprocessor.hpp"
+#include "gl/modules/include.hpp"
 #include <cctype>
 
 constexpr char src[] =\
 	"#version 430\n\
 	\n\
+	void main()\n\
+	{\n\
+	\n\
+	}";
+
+constexpr char src2[] =\
+	"#version 430\n\
+	\n\
+	#include \"include_me.header.glsl\"\n\
+	void main()\n\
+	{\n\
+	\n\
+	}";
+
+constexpr char src3[] =\
+	"#version 430\n\
+	\n\
+	#include \"include_me.header.glsl\"\n\
+	#include \"include_me2.header.glsl\"\n\
+	\n\
+	#include \"include_me3.header.glsl\"\n\
 	void main()\n\
 	{\n\
 	\n\
@@ -86,6 +108,36 @@ tz::test::Case module_order()
 	return test_case;
 }
 
+tz::test::Case include_file()
+{
+	tz::test::Case test_case("tz::gl::p IncludeModule Tests");
+	// Easy test-case.
+	{
+		tz::gl::ShaderPreprocessor pre{src2};
+		pre.emplace_module<tz::gl::p::IncludeModule>(__FILE__);
+		// src2 includes "include_me.header.glsl" which is guaranteed to be in the same directory as this source file.
+		// it is also guaranteed to contain the string "Plums"
+		// if the preprocessed source successfully contains the string "Plums", then we will know the include worked.
+		pre.preprocess();
+		std::size_t find_result = pre.result().find("Plums");
+		topaz_expect(test_case, find_result != std::string::npos, "tz::gl::p::IncludeModule failed to process include correctly. Preprocessed source: \n\"", pre.result(), "\"");
+	}
+	// Might have got lucky with a singular include, let's try three!
+	{
+		// src3 includes "include_me2" and "include_me3", which respectively contain the strings "Apples" and "Oranges".
+		tz::gl::ShaderPreprocessor pre{src3};
+		pre.emplace_module<tz::gl::p::IncludeModule>(__FILE__);
+		pre.preprocess();
+		std::size_t a = pre.result().find("Plums");
+		std::size_t b = pre.result().find("Apples");
+		std::size_t c = pre.result().find("Oranges");
+		topaz_expect(test_case, a != std::string::npos, "tz::gl::p::IncludeModule failed to process include correctly. Preprocessed source: \n\"", pre.result(), "\"");
+		topaz_expect(test_case, b != std::string::npos, "tz::gl::p::IncludeModule failed to process include correctly. Preprocessed source: \n\"", pre.result(), "\"");
+		topaz_expect(test_case, c != std::string::npos, "tz::gl::p::IncludeModule failed to process include correctly. Preprocessed source: \n\"", pre.result(), "\"");
+	}
+	return test_case;
+}
+
 int main()
 {
     tz::test::Unit pre;
@@ -96,6 +148,7 @@ int main()
 		pre.add(no_modules());
 		pre.add(example_module());
 		pre.add(module_order());
+		pre.add(include_file());
         tz::core::terminate();
     }
     return pre.result();

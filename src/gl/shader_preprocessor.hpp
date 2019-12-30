@@ -107,18 +107,5 @@ namespace tz::gl
 	};
 }
 
-namespace tz::gl::p
-{
-	// Modules!
-	class IncludeModule : public IModule
-	{
-	public:
-		IncludeModule(std::string source_path);
-		virtual void operator()(std::string& source) const override;
-	private:
-		std::string path;
-	};
-}
-
 #include "gl/shader_preprocessor.inl"
 #endif // TOPAZ_GL_SHADER_PREPROCESSOR_HPP
