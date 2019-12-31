@@ -16,7 +16,7 @@ namespace tz::gl
             // Make a copy of all of the data.
             contiguous_values.push_back(*i);
         }
-        topaz_assert(contiguous_values.size() == element_size, "tz::gl::IBuffer::send_range<Iter>(...): Temporary contiguous buffer of the copied range had unexpected size. Expected size ", size_elements, " but got ", contiguous_values.size());
+        topaz_assert(contiguous_values.size() == size_elements, "tz::gl::IBuffer::send_range<Iter>(...): Temporary contiguous buffer of the copied range had unexpected size. Expected size ", size_elements, " but got ", contiguous_values.size());
         // Now we have all the data we need, we can just send it now.
         this->send(0, tz::mem::Block{contiguous_values.data(), size_bytes});
     }
@@ -127,7 +127,7 @@ namespace tz::gl
         this->verify_bound();
         this->verify_nonterminal();
         topaz_assert(!this->is_mapped(), "tz::gl::Buffer<T>::terminal_resize(", size_bytes, "): Cannot resize because this buffer is currently mapped.");
-        glBufferStorage(static_cast<GLenum>(T), size_bytes, nullptr, GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
+        glBufferStorage(static_cast<GLenum>(T), size_bytes, nullptr, GL_MAP_READ_BIT | GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
     }
 
     template<BufferType T>
@@ -138,7 +138,7 @@ namespace tz::gl
         this->verify_nonterminal();
         topaz_assert(!this->is_mapped(), "tz::gl::Buffer<T>::make_terminal(): Cannot make terminal because the buffer is currently mapped.");
         // TODO: Maintain a copy of the underlying data first and copy that data back into the immutable data store.
-        glBufferStorage(static_cast<GLenum>(T), this->size(), nullptr, GL_STATIC_DRAW);
+        glBufferStorage(static_cast<GLenum>(T), this->size(), nullptr, GL_MAP_READ_BIT | GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
     }
 
     template<BufferType T>
@@ -150,7 +150,7 @@ namespace tz::gl
         // We know for sure that we have a valid handle, it is currently bound and we're definitely not yet mapped.
         void* begin = nullptr;
         if(this->is_terminal())
-            begin = glMapBufferRange(static_cast<GLenum>(T), 0, this->size(), GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
+            begin = glMapBufferRange(static_cast<GLenum>(T), 0, this->size(), GL_MAP_READ_BIT | GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
         else
             begin = glMapBuffer(static_cast<GLenum>(T), static_cast<GLenum>(purpose));
 

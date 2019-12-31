@@ -49,6 +49,10 @@ namespace tz::gl
 		 * Note: This will make subsequent render invocations draw into this frame.
 		 */
 		virtual void bind() const = 0;
+		/**
+		 * Verify that the framebuffer is complete.
+		 */
+		virtual bool complete() const = 0;
 		virtual bool operator==(GLuint handle) const = 0;
 		virtual bool operator!=(GLuint handle) const = 0;
 	private:
@@ -63,6 +67,7 @@ namespace tz::gl
 		~Frame();
 
 		virtual void bind() const override;
+		virtual bool complete() const override;
 		virtual bool operator==(GLuint handle) const override;
 		virtual bool operator!=(GLuint handle) const override;
 	private:
@@ -76,6 +81,7 @@ namespace tz::gl
 	public:
 		WindowFrame(GLFWwindow* handle);
 		virtual void bind() const override;
+		virtual bool complete() const override;
 		virtual bool operator==(GLuint handle) const override;
 		virtual bool operator!=(GLuint handle) const override;
 	private:

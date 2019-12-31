@@ -44,6 +44,12 @@ namespace tz::gl
 		this->shaders[static_cast<std::size_t>(type)] = std::move(shader);
 	}
 
+	void ShaderProgram::define(std::size_t index, const GLchar* name)
+	{
+		this->verify();
+		glBindAttribLocation(this->handle, index, name);
+	}
+
 	bool ShaderProgram::linkable() const
 	{
 		// Usable shaders have a vertex and fragment component at the very least.

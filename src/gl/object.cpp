@@ -85,6 +85,13 @@ namespace tz::gl
         return id;
     }
 
+    void Object::format(std::size_t idx, tz::gl::Format fmt) const
+    {
+        this->bind_child(idx);
+        glEnableVertexAttribArray(idx);
+        glVertexAttribPointer(idx, fmt.num_components, fmt.component_type, GL_TRUE, fmt.num_components * fmt.component_size, reinterpret_cast<const void*>(fmt.offset));
+    }
+
     tz::gl::IBuffer* Object::operator[](std::size_t idx)
     {
         topaz_assert(idx < this->size(), "tz::gl::Object::operator[", idx, "] was out of range. Size = ", this->size());
@@ -120,6 +127,11 @@ namespace tz::gl
     void Object::verify() const
     {
         topaz_assert(this->vao != 0, "tz::gl::Object::verify(): Verification failed");
+    }
+
+    void Object::verify_bound() const
+    {
+        topaz_assert(*this == bound::vao(), "tz::gl::Object::verify_bound(): Object is not bound!");
     }
 
     tz::gl::IBuffer* Object::bound_index_buffer()

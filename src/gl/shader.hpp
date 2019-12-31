@@ -74,6 +74,7 @@ namespace tz::gl
 		 */
 		template<typename... Args>
 		Shader* emplace(ShaderType type, Args&&... args);
+		void define(std::size_t index, const GLchar* name);
 		/**
 		 * Query as to whether this program is in a valid state to be linked. Programs are linkable if they contain at least a Vertex & Fragment shader and all attached shaders have been compiled successfully.
 		 */

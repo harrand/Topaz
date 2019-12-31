@@ -9,6 +9,7 @@ add_subdirectory(core)
 add_subdirectory(gl)
 add_subdirectory(input)
 add_subdirectory(memory)
+add_subdirectory(render)
 
 add_custom_target(Topaz_All_Tests)
 
@@ -42,6 +43,9 @@ register_test_target(tz_clipboard_test)
 # tz::memory
 register_test_target(tz_block_test)
 register_test_target(tz_pool_test)
+
+# tz::render
+register_test_target(tz_device_test)
 
 add_custom_command(
         TARGET Topaz_All_Tests

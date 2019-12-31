@@ -48,7 +48,7 @@ namespace tz::gl
     void IBuffer::verify_bound() const
     {
         #if TOPAZ_DEBUG
-            topaz_assert(this->handle == bound::vertex_buffer(), "IBuffer::verify_bound(): Our handle ", this->handle, " is not the same as the bound handle ", bound::vertex_buffer(), "...");
+            //topaz_assert(this->handle == bound::vertex_buffer(), "IBuffer::verify_bound(): Our handle ", this->handle, " is not the same as the bound handle ", bound::vertex_buffer(), "...");
         #endif
     }
 

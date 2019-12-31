@@ -11,7 +11,6 @@ namespace tz::gl
 {
     namespace gpu
     {
-
         struct DrawArraysIndirectCommand
         {
             GLuint count;
@@ -28,7 +27,6 @@ namespace tz::gl
             GLint base_vertex;
             GLuint base_instance;
         };
-
     }
 }
 

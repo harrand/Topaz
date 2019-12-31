@@ -39,6 +39,7 @@ add_library(topaz STATIC
 		src/gl/buffer.inl
 		src/gl/draw_command.hpp
 		src/gl/draw_command.cpp
+		src/gl/format.hpp
 		src/gl/frame.cpp
 		src/gl/frame.hpp
 		src/gl/object.hpp
@@ -53,7 +54,9 @@ add_library(topaz STATIC
 		src/gl/shader_preprocessor.hpp
 		src/gl/shader_preprocessor.inl
 		src/gl/modules/include.cpp
-		src/gl/modules/include.hpp)
+		src/gl/modules/include.hpp
+		src/render/device.cpp
+		src/render/device.hpp)
 
 target_link_libraries(topaz PUBLIC
 		glfw

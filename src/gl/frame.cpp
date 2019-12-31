@@ -44,6 +44,14 @@ namespace tz::gl
 		glViewport(0, 0, this->get_width(), this->get_height());
 	}
 
+	bool Frame::complete() const
+	{
+		this->verify();
+		this->bind();
+		auto status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+		return status == GL_FRAMEBUFFER_COMPLETE;
+	}
+
 	bool Frame::operator==(GLuint handle) const
 	{
 		return this->handle == handle;
@@ -73,6 +81,12 @@ namespace tz::gl
 		glViewport(0, 0, w, h);
 	}
 
+	bool WindowFrame::complete() const
+	{
+		this->bind();
+		return glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE;
+	}
+
 	bool WindowFrame::operator==(GLuint handle) const
 	{
 		return handle == 0 && (this->handle == glfwGetCurrentContext());
@@ -88,7 +102,7 @@ namespace tz::gl
 		GLuint frame()
 		{
 			GLint param;
-			glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &param);
+			glGetIntegerv(GL_FRAMEBUFFER_BINDING, &param);
 			return static_cast<GLuint>(param);
 		}
 	}

@@ -5,6 +5,7 @@
 #ifndef TOPAZ_GL_OBJECT_HPP
 #define TOPAZ_GL_OBJECT_HPP
 #include "gl/buffer.hpp"
+#include "gl/format.hpp"
 #include <vector>
 #include <memory>
 
@@ -88,6 +89,7 @@ namespace tz::gl
         template<tz::gl::BufferType Type, typename... Args>
         std::size_t emplace_buffer(Args&&... args);
 
+        void format(std::size_t idx, tz::gl::Format fmt) const;
         /**
          * Retrieve a pointer to an existing Buffer using its Handle ID.
          * 
@@ -172,8 +174,11 @@ namespace tz::gl
          * @return Smart-pointer to the resultant Buffer.
          */
         std::unique_ptr<tz::gl::IBuffer> release(std::size_t idx);
+        template<typename IterT>
+        void render(IterT indices_begin, IterT indices_end) const;
     private:
         void verify() const;
+        void verify_bound() const;
         tz::gl::IBuffer* bound_index_buffer();
 
         ObjectHandle vao;
