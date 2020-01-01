@@ -141,7 +141,7 @@ namespace tz::gl
          * Precondition: Requires output_data to point to allocated memory of size less than this->size(). Otherwise, this will invoke UB without asserting.
          * @param output_data Pointer to contiguous data used to re-fill the data-store.
          */
-        virtual void send(void* output_data) = 0;
+        virtual void send(const void* output_data) = 0;
         /**
          * Send a range of data to the data-store.
          * 
@@ -233,7 +233,7 @@ namespace tz::gl
         virtual void retrieve(std::size_t offset, std::size_t size_bytes, void* input_data) const override;
         virtual void retrieve(void* input_data) const override;
         virtual void send(std::size_t offset, tz::mem::Block output_block) override;
-        virtual void send(void* output_data) override;
+        virtual void send(const void* output_data) override;
         virtual void terminal_resize(std::size_t size_bytes) override;
         virtual void make_terminal() override;
 

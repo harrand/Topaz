@@ -110,7 +110,7 @@ namespace tz::gl
     }
 
     template<BufferType T>
-    void Buffer<T>::send(void* output_data)
+    void Buffer<T>::send(const void* output_data)
     {
         this->verify();
         this->verify_bound();

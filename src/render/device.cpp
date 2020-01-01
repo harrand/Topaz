@@ -16,7 +16,7 @@ namespace tz::render
 
 	void Device::render() const
 	{
-		topaz_assert(!this->index_ids.empty(), "tz::render::Device::render(): No indices to render.");
+		//topaz_assert(!this->index_ids.empty(), "tz::render::Device::render(): No indices to render.");
 		if(frame->operator!=(tz::gl::bound::frame()))
 			frame->bind();
 		program->bind();
