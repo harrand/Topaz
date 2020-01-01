@@ -214,7 +214,7 @@ namespace tz::gl
         /// Asserts that the underlying handle is initialised.
         void verify() const;
         /// Asserts that this buffer is bound.
-        void verify_bound() const;
+        virtual void verify_bound() const = 0;
         /// Asserts that this buffer is non-terminal.
         void verify_nonterminal() const;
 
@@ -240,6 +240,8 @@ namespace tz::gl
         virtual tz::mem::Block map(MappingPurpose purpose = MappingPurpose::ReadWrite) override;
         virtual void unmap() override;
         virtual bool is_mapped() const override;
+    protected:
+        virtual void verify_bound() const override;
     };
 
     // Various aliases...
@@ -249,10 +251,15 @@ namespace tz::gl
     using UBO = UniformBuffer;
     using ShaderStorageBuffer = Buffer<BufferType::ShaderStorage>;
     using SSBO = ShaderStorageBuffer;
+    using IndexBuffer = Buffer<BufferType::Index>;
+    using IBO = IndexBuffer;
 
     namespace bound
     {
         int vertex_buffer();
+        int index_buffer();
+        int shader_storage_buffer();
+        int buffer(BufferType type);
     }
 }
 

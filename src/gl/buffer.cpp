@@ -45,13 +45,6 @@ namespace tz::gl
         #endif
     }
 
-    void IBuffer::verify_bound() const
-    {
-        #if TOPAZ_DEBUG
-            //topaz_assert(this->handle == bound::vertex_buffer(), "IBuffer::verify_bound(): Our handle ", this->handle, " is not the same as the bound handle ", bound::vertex_buffer(), "...");
-        #endif
-    }
-
     void IBuffer::verify_nonterminal() const
     {
         #if TOPAZ_DEBUG
@@ -66,6 +59,40 @@ namespace tz::gl
             int handle;
             glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &handle);
             return handle;
+        }
+
+        int index_buffer()
+        {
+            int handle;
+            glGetIntegerv(GL_ELEMENT_ARRAY_BUFFER_BINDING, &handle);
+            return handle;
+        }
+
+        int shader_storage_buffer()
+        {
+            int handle;
+            glGetIntegerv(GL_SHADER_STORAGE_BUFFER_BINDING, &handle);
+            return handle;
+        }
+
+        int buffer(BufferType type)
+        {
+            switch(type)
+            {
+                case BufferType::Array:
+                    return vertex_buffer();
+                break;
+                case BufferType::Index:
+                    return index_buffer();
+                break;
+                case BufferType::ShaderStorage:
+                    return shader_storage_buffer();
+                break;
+                default:
+                    topaz_assert("tz::gl::bound::buffer(", static_cast<GLenum>(type), "): Checking the current bound buffer of this type is not yet implemented, or unsupported.");
+                    return 0;
+                break;
+            }
         }
     }
 }

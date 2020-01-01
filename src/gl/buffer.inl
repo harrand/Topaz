@@ -176,4 +176,10 @@ namespace tz::gl
         glGetBufferParameteriv(static_cast<GLenum>(T), GL_BUFFER_MAPPED, &param);
         return param == GL_TRUE ? true : false;
     }
+
+    template<BufferType T>
+    void Buffer<T>::verify_bound() const
+    {
+        topaz_assert(this->operator==(tz::gl::bound::buffer(T)), "tz::gl::Buffer<T>::verify_bound(): Verification Failed!");
+    }
 }

@@ -5,7 +5,6 @@
 #include "gl/object.hpp"
 #include "gl/buffer.hpp"
 #include "gl/frame.hpp"
-#include "render/device.hpp"
 #include "GLFW/glfw3.h"
 
 const char *vertexShaderSource = "#version 330 core\n"
@@ -97,7 +96,6 @@ int main()
 		});
 
 		glClearColor(0.0f, 0.3f, 0.15f, 1.0f);
-		tz::render::Device triangle_renderer{wnd.get_frame(), &prg, &o};
 		while(!wnd.is_close_requested())
 		{
         	wnd.get_frame()->clear();
