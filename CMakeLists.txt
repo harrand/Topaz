@@ -55,6 +55,8 @@ add_library(topaz STATIC
 		src/gl/shader_preprocessor.inl
 		src/gl/modules/include.cpp
 		src/gl/modules/include.hpp
+		src/gl/modules/ssbo.cpp
+		src/gl/modules/ssbo.hpp
 		src/render/device.cpp
 		src/render/device.hpp)
 

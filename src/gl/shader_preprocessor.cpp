@@ -1,8 +1,14 @@
 #include "gl/shader_preprocessor.hpp"
+#include "gl/object.hpp"
 #include "core/debug/assert.hpp"
 
 namespace tz::gl
 {
+	namespace p
+	{
+		ObjectAwareModule::ObjectAwareModule(tz::gl::Object* o): o(o){}
+	}
+
 	ShaderPreprocessor::ShaderPreprocessor(std::string source): source(source){}
 
 	std::size_t ShaderPreprocessor::size() const

@@ -166,7 +166,7 @@ tz::test::Case nonterminal_retrieval()
             vbo->unmap();
         }
         float fblk[amt];
-        vbo->retrieve(fblk);
+        vbo->retrieve_all(fblk);
         for(std::size_t i = 0; i < amt; i++)
         {
             topaz_expect(test_case, fblk[i] == (0.0f + i), "tz::gl::Buffer Retrieval Element was incorrect (Terminal). Expected ", (0.0f + i), ", got ", fblk[i]);
@@ -200,7 +200,7 @@ tz::test::Case terminal_retrieval()
             //vbo->unmap();
         }
         float fblk[amt];
-        vbo->retrieve(fblk);
+        vbo->retrieve_all(fblk);
         for(std::size_t i = 0; i < amt; i++)
         {
             topaz_expect(test_case, fblk[i] == (0.0f + i), "tz::gl::Buffer Retrieval Element was incorrect (Terminal). Expected ", (0.0f + i), ", got ", fblk[i]);

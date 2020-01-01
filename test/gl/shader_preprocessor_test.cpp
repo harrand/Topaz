@@ -7,6 +7,8 @@
 #include "core/tz_glad/glad_context.hpp"
 #include "gl/shader_preprocessor.hpp"
 #include "gl/modules/include.hpp"
+#include "gl/modules/ssbo.hpp"
+#include "gl/object.hpp"
 #include <cctype>
 
 constexpr char src[] =\
@@ -33,6 +35,18 @@ constexpr char src3[] =\
 	#include \"include_me2.header.glsl\"\n\
 	\n\
 	#include \"include_me3.header.glsl\"\n\
+	void main()\n\
+	{\n\
+	\n\
+	}";
+
+constexpr char src4[] =\
+	"#version 430\n\
+	\n\
+	#ssbo wabbadabbadoo\n\
+	{\n\
+\n\
+	}\n\
 	void main()\n\
 	{\n\
 	\n\
@@ -138,6 +152,29 @@ tz::test::Case include_file()
 	return test_case;
 }
 
+tz::test::Case defined_ssbo()
+{
+	tz::gl::Object o;
+	tz::test::Case test_case("tz::gl::p SSBOModule Tests");
+		
+	tz::gl::ShaderPreprocessor pre{src4};
+	std::size_t ssbo_module_id = pre.emplace_module<tz::gl::p::SSBOModule>(&o);
+	pre.preprocess();
+
+	// src4 contains a ssbo called "wabbadabbadoo".
+	// get the SSBOModule, check that it has an ssbo with that name.
+	// check the corresponding ssbo_id and ensure that the layout qualifier ids match.
+	tz::gl::p::IModule* module = pre[ssbo_module_id];
+	auto* ssbo_module = static_cast<tz::gl::p::SSBOModule*>(module);
+	// We should have exactly one entry.
+	topaz_expect(test_case, ssbo_module->size() == 1, "tz::gl::p::SSBOModule::size(): Had unexpected value. Expected ", 1, ", got ", ssbo_module->size());
+	// Let's get that entry!
+	std::size_t ssbo_id = ssbo_module->get_buffer_id(0);
+	tz::gl::SSBO* ssbo = o.get<tz::gl::BufferType::ShaderStorage>(ssbo_id);
+	topaz_expect_assert(test_case, false, "Unexpected assert after getting the SSBO from the tzglp module...");
+	return test_case;
+}
+
 int main()
 {
     tz::test::Unit pre;
@@ -149,6 +186,7 @@ int main()
 		pre.add(example_module());
 		pre.add(module_order());
 		pre.add(include_file());
+		pre.add(defined_ssbo());
         tz::core::terminate();
     }
     return pre.result();

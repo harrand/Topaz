@@ -45,25 +45,17 @@ namespace tz::gl
     template<BufferType T>
     std::size_t Buffer<T>::size() const
     {
-        if(T == BufferType::Array || T == BufferType::Index)
-        {
-            this->verify();
-            this->verify_bound();
-            GLint param;
-            glGetBufferParameteriv(static_cast<GLenum>(T), GL_BUFFER_SIZE, &param);
-            return static_cast<std::size_t>(param);
-        }
-        else
-        {
-            topaz_assert(false, "tz::gl::Buffer<T>::size(): Cannot query size of a buffer with this type. Can only accept VBOs or IBOs.");
-            return 0;
-        }
+        IBuffer::verify();
+        this->verify_bound();
+        GLint param;
+        glGetBufferParameteriv(static_cast<GLenum>(T), GL_BUFFER_SIZE, &param);
+        return static_cast<std::size_t>(param);
     }
 
     template<BufferType T>
     bool Buffer<T>::is_terminal() const
     {
-        this->verify();
+        IBuffer::verify();
         this->verify_bound();
         GLint param;
         glGetBufferParameteriv(static_cast<GLenum>(T), GL_BUFFER_IMMUTABLE_STORAGE, &param);
@@ -73,7 +65,7 @@ namespace tz::gl
     template<BufferType T>
     void Buffer<T>::resize(std::size_t size_bytes)
     {
-        this->verify();
+        IBuffer::verify();
         this->verify_bound();
         topaz_assert(!this->is_mapped(), "tz::gl::Buffer<T>::resize(", size_bytes, "): Cannot resize because this buffer is currently mapped.");
         glBufferData(static_cast<GLenum>(T), size_bytes, nullptr, GL_STATIC_DRAW);
@@ -82,7 +74,7 @@ namespace tz::gl
     template<BufferType T>
     void Buffer<T>::retrieve(std::size_t offset, std::size_t size_bytes, void* input_data) const
     {
-        this->verify();
+        IBuffer::verify();
         this->verify_bound();
         if(!this->is_terminal())
         {
@@ -93,15 +85,9 @@ namespace tz::gl
     }
 
     template<BufferType T>
-    void Buffer<T>::retrieve(void* input_data) const
-    {
-        this->retrieve(0, this->size(), input_data);
-    }
-
-    template<BufferType T>
     void Buffer<T>::send(std::size_t offset, tz::mem::Block output_block)
     {
-        this->verify();
+        IBuffer::verify();
         this->verify_bound();
         if(!this->is_terminal())
             topaz_assert(!this->is_mapped(), "tz::gl::Buffer::send(", offset, ", tz::mem::Block (", output_block.size(), ")): Cannot send because this buffer is both non-terminal and mapped. Cannot send data to a non-terminal buffer if it is mapped.");
@@ -112,7 +98,7 @@ namespace tz::gl
     template<BufferType T>
     void Buffer<T>::send(const void* output_data)
     {
-        this->verify();
+        IBuffer::verify();
         this->verify_bound();
         if(!this->is_terminal())
             topaz_assert(!this->is_mapped(), "tz::gl::Buffer::send(void*): Cannot send because this buffer is both non-terminal and mapped. Cannot send data to a non-terminal buffer if it is mapped.");
@@ -123,9 +109,9 @@ namespace tz::gl
     template<BufferType T>
     void Buffer<T>::terminal_resize(std::size_t size_bytes)
     {
-        this->verify();
+        IBuffer::verify();
         this->verify_bound();
-        this->verify_nonterminal();
+        IBuffer::verify_nonterminal();
         topaz_assert(!this->is_mapped(), "tz::gl::Buffer<T>::terminal_resize(", size_bytes, "): Cannot resize because this buffer is currently mapped.");
         glBufferStorage(static_cast<GLenum>(T), size_bytes, nullptr, GL_MAP_READ_BIT | GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
     }
@@ -133,9 +119,9 @@ namespace tz::gl
     template<BufferType T>
     void Buffer<T>::make_terminal()
     {
-        this->verify();
+        IBuffer::verify();
         this->verify_bound();
-        this->verify_nonterminal();
+        IBuffer::verify_nonterminal();
         topaz_assert(!this->is_mapped(), "tz::gl::Buffer<T>::make_terminal(): Cannot make terminal because the buffer is currently mapped.");
         // TODO: Maintain a copy of the underlying data first and copy that data back into the immutable data store.
         glBufferStorage(static_cast<GLenum>(T), this->size(), nullptr, GL_MAP_READ_BIT | GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
@@ -144,7 +130,7 @@ namespace tz::gl
     template<BufferType T>
     tz::mem::Block Buffer<T>::map(MappingPurpose purpose)
     {
-        this->verify();
+        IBuffer::verify();
         this->verify_bound();
         topaz_assert(!this->is_mapped(), "tz::gl::Buffer<T>::map(...): Attempted to map but we are already mapped");
         // We know for sure that we have a valid handle, it is currently bound and we're definitely not yet mapped.
@@ -160,7 +146,7 @@ namespace tz::gl
     template<BufferType T>
     void Buffer<T>::unmap()
     {
-        this->verify();
+        IBuffer::verify();
         this->verify_bound();
         topaz_assert(this->is_mapped(), "tz::gl::Buffer<T>::unmap(): Attempted to unmap but we weren't already mapped");
         // We know for sure that we have a valid handle, it is currently bound and we're definitely mapped.
@@ -170,7 +156,7 @@ namespace tz::gl
     template<BufferType T>
     bool Buffer<T>::is_mapped() const
     {
-        this->verify();
+        IBuffer::verify();
         this->verify_bound();
         GLint param;
         glGetBufferParameteriv(static_cast<GLenum>(T), GL_BUFFER_MAPPED, &param);

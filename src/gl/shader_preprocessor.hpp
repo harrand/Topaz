@@ -4,6 +4,15 @@
 #include <vector>
 #include <memory>
 
+// Forward Declares
+namespace tz
+{
+	namespace gl
+	{
+		class Object;
+	}
+}
+
 namespace tz::gl
 {
 	namespace p
@@ -25,6 +34,14 @@ namespace tz::gl
 			 * Invoke the Module, performing source transformation in-place.
 			 */
 			virtual void operator()(std::string& source) const = 0;
+		};
+
+		class ObjectAwareModule : public IModule
+		{
+		public:
+			ObjectAwareModule(tz::gl::Object* o);
+		protected:
+			tz::gl::Object* o;
 		};
 	}
 

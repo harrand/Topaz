@@ -121,7 +121,7 @@ namespace tz::gl
          * @param size_bytes Size of the data-store to query, in bytes.
          * @param input_data Pointer to pre-allocated memory.
          */
-        virtual void retrieve(void* input_data) const = 0;
+        void retrieve_all(void* input_data) const;
         /**
          * Send a memory block to the data-store at the given offset.
          *
@@ -231,7 +231,6 @@ namespace tz::gl
         virtual bool is_terminal() const override;
         virtual void resize(std::size_t size_bytes) override;
         virtual void retrieve(std::size_t offset, std::size_t size_bytes, void* input_data) const override;
-        virtual void retrieve(void* input_data) const override;
         virtual void send(std::size_t offset, tz::mem::Block output_block) override;
         virtual void send(const void* output_data) override;
         virtual void terminal_resize(std::size_t size_bytes) override;
@@ -242,6 +241,34 @@ namespace tz::gl
         virtual bool is_mapped() const override;
     protected:
         virtual void verify_bound() const override;
+    };
+
+    template<>
+    class Buffer<BufferType::ShaderStorage> : public IBuffer
+    {
+    public:
+        Buffer(std::size_t layout_qualifier_id);
+
+        virtual void bind() const override;
+        virtual void unbind() const override;
+        virtual std::size_t size() const override;
+        virtual bool is_terminal() const override;
+        virtual void resize(std::size_t size_bytes) override;
+        virtual void retrieve(std::size_t offset, std::size_t size_bytes, void* input_data) const override;
+        virtual void send(std::size_t offset, tz::mem::Block output_block) override;
+        virtual void send(const void* output_data) override;
+        virtual void terminal_resize(std::size_t size_bytes) override;
+        virtual void make_terminal() override;
+
+        // Special SSBO stuff:
+        std::size_t get_binding_id() const;
+
+        virtual tz::mem::Block map(MappingPurpose purpose = MappingPurpose::ReadWrite) override;
+        virtual void unmap() override;
+        virtual bool is_mapped() const override;
+    protected:
+        virtual void verify_bound() const override;
+        std::size_t layout_qualifier_id;
     };
 
     // Various aliases...
