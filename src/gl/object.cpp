@@ -124,6 +124,13 @@ namespace tz::gl
         return std::move(swap_me);
     }
 
+    void Object::render(std::size_t triangle_count) const
+    {
+        this->verify();
+        this->verify_bound();
+        glDrawArrays(GL_TRIANGLES, 0, triangle_count * 3);
+    }
+
     void Object::verify() const
     {
         topaz_assert(this->vao != 0, "tz::gl::Object::verify(): Verification failed");

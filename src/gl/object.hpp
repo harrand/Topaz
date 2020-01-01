@@ -176,6 +176,7 @@ namespace tz::gl
         std::unique_ptr<tz::gl::IBuffer> release(std::size_t idx);
         template<typename IterT>
         void render(IterT indices_begin, IterT indices_end) const;
+        void render(std::size_t triangle_count) const;
     private:
         void verify() const;
         void verify_bound() const;

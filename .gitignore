@@ -5,9 +5,9 @@ bin/
 extern/
 build/
 
-# # I don't want the idea directory in my repo at all
+# I don't want the idea directory in my repo at all
 .idea
-# # I don't want any libs in my source directory (from unit tests) to leak through either.
+# I don't want any libs in my source directory (from unit tests) to leak through either (TZ1).
 src/test/**/*.a
 src/test/**/*.o
 
@@ -64,3 +64,4 @@ fabric.properties
 
 # VSC
 *.code-workspace
+.vscode

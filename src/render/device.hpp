@@ -22,7 +22,10 @@ namespace tz::render
 		Device(tz::gl::IFrame* frame, tz::gl::ShaderProgram*, tz::gl::Object* object);
 		void specify_handles(std::initializer_list<std::size_t> ids);
 		void render() const;
+		void clear() const;
 	private:
+		void ensure_bound() const;
+
 		tz::gl::IFrame* frame;
 		tz::gl::ShaderProgram* program;
 		tz::gl::Object* object;

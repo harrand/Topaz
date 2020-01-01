@@ -26,6 +26,18 @@ namespace tz::gl
 		this->height = height;
 	}
 
+	void IFrame::clear() const
+	{
+		topaz_assert(this->operator==(tz::gl::bound::frame()), "tz::gl::IFrame::clear(): This frame must be bound before clearing.");
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	}
+
+	void IFrame::set_clear_color(float r, float g, float b)
+	{
+		topaz_assert(this->operator==(tz::gl::bound::frame()), "tz::gl::IFrame::clear(): This frame must be bound before clearing.");
+		glClearColor(r, g, b, 1.0f);
+	}
+
 	Frame::Frame(unsigned int width, unsigned int height): IFrame(width, height), handle(0)
 	{
 		glGenFramebuffers(1, &this->handle);

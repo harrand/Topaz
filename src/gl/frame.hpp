@@ -50,6 +50,14 @@ namespace tz::gl
 		 */
 		virtual void bind() const = 0;
 		/**
+		 * Clear this frame's data.
+		 */
+		void clear() const;
+		/**
+		 * Set the colour of background pixels.
+		 */
+		void set_clear_color(float r, float g, float b);
+		/**
 		 * Verify that the framebuffer is complete.
 		 */
 		virtual bool complete() const = 0;

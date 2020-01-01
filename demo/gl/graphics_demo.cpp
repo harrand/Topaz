@@ -4,6 +4,7 @@
 #include "gl/shader_compiler.hpp"
 #include "gl/object.hpp"
 #include "gl/buffer.hpp"
+#include "gl/frame.hpp"
 #include "render/device.hpp"
 #include "GLFW/glfw3.h"
 
@@ -95,14 +96,14 @@ int main()
 			}
 		});
 
+		glClearColor(0.0f, 0.3f, 0.15f, 1.0f);
 		tz::render::Device triangle_renderer{wnd.get_frame(), &prg, &o};
 		while(!wnd.is_close_requested())
 		{
-			glClearColor(0.0f, 0.3f, 0.15f, 1.0f);
-        	glClear(GL_COLOR_BUFFER_BIT);
+        	wnd.get_frame()->clear();
 			prg.bind();
 			o.bind();
-			glDrawArrays(GL_TRIANGLES, 0, 3);
+			o.render(1);
 
 			wnd.update();
 			tz::core::update();
