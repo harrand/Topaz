@@ -184,6 +184,34 @@ namespace tz::gl
         return this->layout_qualifier_id;
     }
 
+    // Remember: UBO == Buffer<BufferType::UniformStorage>
+    UBO::Buffer(std::size_t layout_qualifier_id): IBuffer(), layout_qualifier_id(layout_qualifier_id)
+    {
+        this->bind();
+        this->unbind();
+    }
+
+    void UBO::bind() const
+    {
+        IBuffer::verify();
+        constexpr GLenum type = static_cast<GLenum>(BufferType::UniformStorage);
+        glBindBuffer(type, this->handle);
+        glBindBufferBase(type, this->layout_qualifier_id, this->handle);
+    }
+
+    void UBO::unbind() const
+    {
+        IBuffer::verify();
+        constexpr GLenum type = static_cast<GLenum>(BufferType::UniformStorage);
+        glBindBuffer(type, 0);
+        glBindBufferBase(type, this->layout_qualifier_id, 0);
+    }
+
+    std::size_t UBO::get_binding_id() const
+    {
+        return this->layout_qualifier_id;
+    }
+
     namespace bound
     {
         int vertex_buffer()

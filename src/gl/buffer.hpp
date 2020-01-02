@@ -244,6 +244,21 @@ namespace tz::gl
         std::size_t layout_qualifier_id;
     };
 
+    template<>
+    class Buffer<BufferType::UniformStorage> : public IBuffer
+    {
+    public:
+        Buffer(std::size_t layout_qualifier_id);
+
+        virtual void bind() const override;
+        virtual void unbind() const override;
+
+        // Special UBO stuff:
+        std::size_t get_binding_id() const;
+    protected:
+        std::size_t layout_qualifier_id;
+    };
+
     // Various aliases...
     using VertexBuffer = Buffer<BufferType::Array>;
     using VBO = VertexBuffer;
