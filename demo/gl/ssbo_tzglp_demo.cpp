@@ -63,7 +63,6 @@ int main()
          0.0f,  0.5f, 0.0f  // top   
     	};
 
-		ssbo->bind();
 		ssbo->terminal_resize(sizeof(vertices));
 		tz::mem::UniformPool<float> vertex_pool = ssbo->map_pool<float>();
 		for(std::size_t i = 0; i < vertex_pool.capacity(); i++)
@@ -82,9 +81,6 @@ int main()
 			vertex_pool[5] += z;
 			vertex_pool[8] += z;
 		};
-
-	    ssbo->unbind();
-		o.unbind();
 
 		tz::core::IWindow& wnd = tz::core::get().window();
 		wnd.register_this();

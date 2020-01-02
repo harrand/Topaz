@@ -45,7 +45,6 @@ int main()
 		std::size_t vbo_id = o.emplace_buffer<tz::gl::BufferType::Array>();
 		tz::gl::VBO* vbo = o.get<tz::gl::BufferType::Array>(vbo_id);
 
-		vbo->bind();
 		vbo->terminal_resize(sizeof(vertices));
 		tz::mem::UniformPool<float> vertex_pool = vbo->map_pool<float>();
 		for(std::size_t i = 0; i < vertex_pool.capacity(); i++)
@@ -66,9 +65,6 @@ int main()
 		};
 
 		o.format(vbo_id, tz::gl::fmt::three_floats);
-
-		vbo->unbind();
-		o.unbind();
 
 		tz::core::IWindow& wnd = tz::core::get().window();
 		wnd.register_this();

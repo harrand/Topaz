@@ -26,13 +26,9 @@ tz::test::Case mapping()
     tz::gl::Object obj;
     std::size_t idx = obj.emplace_buffer<tz::gl::BufferType::Array>();
     tz::gl::IBuffer* buf = obj[idx];
-    topaz_expect(test_case, !buf->valid(), "tz::gl::Buffer was wrongly considered valid before its first bind.");
-    buf->bind();
-    topaz_expect(test_case, buf->valid(), "tz::gl::Buffer was wrongly considered invalid after its first binding");
-    topaz_expect(test_case, glGetError() == 0, "glGetError() displayed an error!");
-    // Now we have a valid buffer. Bind things properly first.
-    obj.bind_child(idx);
     topaz_expect(test_case, buf != nullptr, "tz::gl::Object[", idx, "] gave nullptr. Something is horribly wrong.");
+    topaz_expect(test_case, buf->valid(), "tz::gl::Buffer was wrongly considered invalid after construction");
+    topaz_expect(test_case, glGetError() == 0, "glGetError() displayed an error!");
     topaz_expect(test_case, buf->empty(), "tz::gl::IBuffer constructed in object is not empty!");
     topaz_expect_assert(test_case, false, "tz::gl::IBuffer asserted at the wrong time (Probably from Buffer<T>::size())...");
     constexpr std::size_t amt = 5;
@@ -78,8 +74,6 @@ tz::test::Case terminality()
     tz::gl::VBO* vbo = o.get<tz::gl::BufferType::Array>(idx);
     {
         topaz_assert_clear();
-        // Make sure it's valid by binding it via the Object.
-        o.bind_child(idx);
         // Definitely shouldn't be terminal for now.
         topaz_expect(test_case, !vbo->is_terminal(), "tz::gl::Buffer wrongly considers itself to be terminal.");
         vbo->resize(1);
@@ -111,7 +105,6 @@ tz::test::Case retrieval()
         // Let's work with floats.
         constexpr std::size_t amt = 8;
         constexpr std::size_t sz = sizeof(float) * amt;
-        o.bind_child(idx);
         vbo->resize(sz);
         topaz_expect_assert(test_case, false, "tz::gl::Buffer unexpectedly asserted.");
         // Map it and write some data into it.
@@ -153,7 +146,6 @@ tz::test::Case nonterminal_retrieval()
         // Let's work with floats.
         constexpr std::size_t amt = 8;
         constexpr std::size_t sz = sizeof(float) * amt;
-        o.bind_child(idx);
         vbo->resize(sz);
         topaz_expect_assert(test_case, false, "tz::gl::Buffer unexpectedly asserted.");
         // Map it and write some data into it.
@@ -187,7 +179,6 @@ tz::test::Case terminal_retrieval()
         // Let's work with floats.
         constexpr std::size_t amt = 8;
         constexpr std::size_t sz = sizeof(float) * amt;
-        o.bind_child(idx);
         vbo->terminal_resize(sz);
         topaz_expect_assert(test_case, false, "tz::gl::Buffer unexpectedly asserted.");
         // Map it and write some data into it.
@@ -217,8 +208,6 @@ tz::test::Case sending()
     std::size_t idx = o.emplace_buffer<tz::gl::BufferType::Array>();
     tz::gl::VBO* vbo = o.get<tz::gl::BufferType::Array>(idx);
     {
-        o.bind_child(idx);
-
         // Let's try and send some ints.
         constexpr std::size_t amt = 3;
         constexpr std::size_t sz = sizeof(int) * amt;

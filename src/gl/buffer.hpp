@@ -68,10 +68,10 @@ namespace tz::gl
          * Note: This doesn't really belong in the interface. This will fail unless the BufferType is one of the following:
          * - BufferType::Array
          * - BufferType::Index
-         * Precondition: Requires the buffer to be valid and bound.
+         * Precondition: Requires the buffer to be valid.
          * @return Size of the buffer, in bytes.
          */
-        virtual std::size_t size() const = 0;
+        std::size_t size() const;
         /**
          * Query as to whether the buffer is empty or not. Buffers are empty if their size is 0 bytes.
          * 
@@ -82,12 +82,13 @@ namespace tz::gl
         /**
          * Query as to whether the buffer is terminal or not. Buffers are terminal if their underlying storage is immutable and thus cannot be resized.
          * Note: Once a buffer is terminal, it will remain terminal for the remainder of its lifetime. This means that any Buffer can become terminal, but terminal Buffers cannot become non-terminal.
-         * Precondition: Requires the buffer to be valid and bound.
+         * Precondition: Requires the buffer to be valid.
          * @return True if the buffer is terminal, otherwise false.
          */
-        virtual bool is_terminal() const = 0;
+        bool is_terminal() const;
         /**
          * Query as to whether the buffer is 'valid' or not. A valid buffer is a buffer that has been bound at least once.
+         * Note: Buffers will automatically bind and unbind themselves upon construction. Thus, Buffers should always be invalid.
          * 
          * Note: This must be done before most buffer operations.
          * @return True if the buffer has been bound at least once, otherwise false.
@@ -96,26 +97,26 @@ namespace tz::gl
         /**
          * Attempt to change the size of the buffer.
          * 
-         * Precondition: Requires the buffer to be valid, bound and unmapped.
+         * Precondition: Requires the buffer to be valid and unmapped.
          * Note: This will not preserve any of the data within the buffer. You should do that yourself.
          * @param size_bytes Desired new size of the buffer, in bytes.
          */
-        virtual void resize(std::size_t size_bytes) = 0;
+        void resize(std::size_t size_bytes);
         /**
          * Retrieve a subset of the data-store.
          * 
-         * Precondition: Requires the buffer to be valid and bound. If the buffer is non-terminal, then it must also be unmapped.
+         * Precondition: Requires the buffer to be valid. If the buffer is non-terminal, then it must also be unmapped.
          * Precondition: offset + size_bytes must be less than this->size(). Otherwise, this will assert and invoke UB.
          * Precondition: The memory block pointed to by input_data must have size greater than or equal to size_bytes. Otherwise, this will invoke UB without asserting.
          * @param offset Offset from the beginning of the data-store, in bytes.
          * @param size_bytes Size of the data-store to query, in bytes.
          * @param input_data Pointer to pre-allocated memory.
          */
-        virtual void retrieve(std::size_t offset, std::size_t size_bytes, void* input_data) const = 0;
+        void retrieve(std::size_t offset, std::size_t size_bytes, void* input_data) const;
         /**
          * Retrieve the entirety of the data-store.
          * 
-         * Precondition: Requires the buffer to be valid and bound. If the buffer is non-terminal, then it must also be unmapped.
+         * Precondition: Requires the buffer to be valid. If the buffer is non-terminal, then it must also be unmapped.
          * Precondition: The memory block pointed to by input_data must have size greater than or equal to this->size(). Otherwise, this will invoke UB without asserting.
          * @param offset Offset from the beginning of the data-store, in bytes.
          * @param size_bytes Size of the data-store to query, in bytes.
@@ -132,7 +133,7 @@ namespace tz::gl
          * @param offset Offset from the beginning of the data store to send data to, in bytes.
          * @param output_block Block of memory to copy to the data-store at the given offset.
          */
-        virtual void send(std::size_t offset, tz::mem::Block output_block) = 0;
+        void send(std::size_t offset, tz::mem::Block output_block);
         /**
          * Send arbitrary data to the data-store.
          *
@@ -141,7 +142,7 @@ namespace tz::gl
          * Precondition: Requires output_data to point to allocated memory of size less than this->size(). Otherwise, this will invoke UB without asserting.
          * @param output_data Pointer to contiguous data used to re-fill the data-store.
          */
-        virtual void send(const void* output_data) = 0;
+        void send(const void* output_data);
         /**
          * Send a range of data to the data-store.
          * 
@@ -166,23 +167,23 @@ namespace tz::gl
          * Note: This will not preserve any of the data within the buffer. You should do that yourself.
          * @param size_bytes Desired new size of the buffer, in bytes.
          */
-        virtual void terminal_resize(std::size_t size_bytes) = 0;
+        void terminal_resize(std::size_t size_bytes);
         /**
          * Make the Buffer terminal without affecting its size.
          * 
          * Precondition: Requires the buffer to be valid, bound, non-terminal and unmapped.
          * Note: This will preserve the data within the buffer.
          */
-        virtual void make_terminal() = 0;
+        void make_terminal();
         /**
          * Map the buffer, providing a contiguous data block that can be used from the calling code.
          * 
-         * Precondition: Requires the buffer to be valid, bound and unmapped.
+         * Precondition: Requires the buffer to be valid and unmapped.
          * Note: Attempting to map a buffer twice will assert and invoke UB. Query IBuffer::is_mapped() to ensure that this is false before mapping.
          * @param purpose Describes what the desired use for the data is. This is an optimisation measure. If you don't intend to edit the data, providing MappingPurpose::ReadOnly will be a performance boon. The default purpose allows reading + writing.
          * @return Memory Block containing arbitrary data. The properties of this data are not guaranteed to be consistent with that of normal RAM. For example, this might be order of magnitudes slower than normal RAM.
          */
-        virtual tz::mem::Block map(MappingPurpose purpose = MappingPurpose::ReadWrite) = 0;
+        tz::mem::Block map(MappingPurpose purpose = MappingPurpose::ReadWrite);
         /**
          * Map the buffer, providing a memory pool to be used as an array of Ts.
          * 
@@ -199,22 +200,20 @@ namespace tz::gl
          * Precondition: Requires the buffer to be valid, bound and mapped.
          * Note: This will also work for persistently-mapped-buffers (PMBs).
          */
-        virtual void unmap() = 0;
+        void unmap();
         /**
          * Query as to whether the buffer is currently mapped or not.
          * 
          * Precondition: Requires the buffer to be both valid and bound.
          * @return True if the buffer is mapped, otherwise false.
          */
-        virtual bool is_mapped() const = 0;
+        bool is_mapped() const;
 
         bool operator==(BufferHandle handle) const;
         bool operator!=(BufferHandle handle) const;
     protected:
         /// Asserts that the underlying handle is initialised.
         void verify() const;
-        /// Asserts that this buffer is bound.
-        virtual void verify_bound() const = 0;
         /// Asserts that this buffer is non-terminal.
         void verify_nonterminal() const;
 
@@ -225,22 +224,9 @@ namespace tz::gl
     class Buffer : public IBuffer
     {
     public:
+        Buffer();
         virtual void bind() const override;
         virtual void unbind() const override;
-        virtual std::size_t size() const override;
-        virtual bool is_terminal() const override;
-        virtual void resize(std::size_t size_bytes) override;
-        virtual void retrieve(std::size_t offset, std::size_t size_bytes, void* input_data) const override;
-        virtual void send(std::size_t offset, tz::mem::Block output_block) override;
-        virtual void send(const void* output_data) override;
-        virtual void terminal_resize(std::size_t size_bytes) override;
-        virtual void make_terminal() override;
-
-        virtual tz::mem::Block map(MappingPurpose purpose = MappingPurpose::ReadWrite) override;
-        virtual void unmap() override;
-        virtual bool is_mapped() const override;
-    protected:
-        virtual void verify_bound() const override;
     };
 
     template<>
@@ -251,23 +237,10 @@ namespace tz::gl
 
         virtual void bind() const override;
         virtual void unbind() const override;
-        virtual std::size_t size() const override;
-        virtual bool is_terminal() const override;
-        virtual void resize(std::size_t size_bytes) override;
-        virtual void retrieve(std::size_t offset, std::size_t size_bytes, void* input_data) const override;
-        virtual void send(std::size_t offset, tz::mem::Block output_block) override;
-        virtual void send(const void* output_data) override;
-        virtual void terminal_resize(std::size_t size_bytes) override;
-        virtual void make_terminal() override;
 
         // Special SSBO stuff:
         std::size_t get_binding_id() const;
-
-        virtual tz::mem::Block map(MappingPurpose purpose = MappingPurpose::ReadWrite) override;
-        virtual void unmap() override;
-        virtual bool is_mapped() const override;
     protected:
-        virtual void verify_bound() const override;
         std::size_t layout_qualifier_id;
     };
 
