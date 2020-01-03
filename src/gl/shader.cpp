@@ -22,9 +22,8 @@ namespace tz::gl
 		{
 			for(const auto& child_ptr : this->shaders)
 			{
-				if(child_ptr == nullptr)
-					continue;
-				glDetachShader(this->handle, child_ptr->handle);
+				if(child_ptr.has_value())
+					glDetachShader(this->handle, child_ptr->handle);
 			}
 		}
 		// Will silently ignore zero'd handles.
@@ -36,12 +35,6 @@ namespace tz::gl
 		std::swap(this->handle, rhs.handle);
 		std::swap(this->shaders, rhs.shaders);
 		return *this;
-	}
-
-	void ShaderProgram::set(ShaderType type, std::unique_ptr<Shader> shader)
-	{
-		topaz_assert(type != ShaderType::NUM_TYPES, "tz::gl::ShaderProgram::set(...): Was given type index ", static_cast<std::size_t>(type), " (ShaderTypes::NUM_TYPES) which is not a legal parameter here.");
-		this->shaders[static_cast<std::size_t>(type)] = std::move(shader);
 	}
 
 	void ShaderProgram::define(std::size_t index, const GLchar* name)
@@ -60,7 +53,7 @@ namespace tz::gl
 		// All attached shaders must have been compiled successfully.
 		for(const auto& shader_ptr : this->shaders)
 		{
-			if(shader_ptr != nullptr)
+			if(shader_ptr.has_value())
 			{
 				if(!shader_ptr->compiled())
 					return false;
@@ -83,7 +76,7 @@ namespace tz::gl
 	bool ShaderProgram::has_shader(ShaderType type) const
 	{
 		topaz_assert(type != ShaderType::NUM_TYPES, "tz::gl::ShaderProgram::has_shader(...): Was given type index ", static_cast<std::size_t>(type), " (ShaderTypes::NUM_TYPES) which is not a legal parameter here.");
-		return this->shaders[static_cast<std::size_t>(type)] != nullptr;
+		return this->shaders[static_cast<std::size_t>(type)].has_value();
 	}
 
 	bool ShaderProgram::operator==(ShaderProgramHandle rhs) const
@@ -105,7 +98,7 @@ namespace tz::gl
 	{
 		// Can't fill it because noncopyable, so we just assign them all.
 		for(auto& shader_ptr : this->shaders)
-			shader_ptr = nullptr;
+			shader_ptr = std::nullopt;
 	}
 
 
