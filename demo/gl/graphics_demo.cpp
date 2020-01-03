@@ -5,6 +5,7 @@
 #include "gl/object.hpp"
 #include "gl/buffer.hpp"
 #include "gl/frame.hpp"
+#include "render/device.hpp"
 #include "GLFW/glfw3.h"
 
 const char *vertexShaderSource = "#version 330 core\n"
@@ -65,6 +66,11 @@ int main()
 		};
 
 		o.format(vbo_id, tz::gl::fmt::three_floats);
+		std::size_t ibo_id = o.emplace_buffer<tz::gl::BufferType::Index>();
+		tz::gl::IBO* ibo = o.get<tz::gl::BufferType::Index>(ibo_id);
+		ibo->resize(3 * sizeof(unsigned int));
+		unsigned int indices[] = {0, 1, 2};
+		ibo->send(indices);
 
 		tz::core::IWindow& wnd = tz::core::get().window();
 		wnd.register_this();
@@ -92,12 +98,12 @@ int main()
 		});
 
 		glClearColor(0.0f, 0.3f, 0.15f, 1.0f);
+		tz::render::Device dev{wnd.get_frame(), &prg, &o};
+		dev.specify_handles({ibo_id});
 		while(!wnd.is_close_requested())
 		{
-        	wnd.get_frame()->clear();
-			prg.bind();
-			o.bind();
-			o.render(1);
+        	dev.clear();
+			dev.render();
 
 			wnd.update();
 			tz::core::update();

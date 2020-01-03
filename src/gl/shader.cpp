@@ -4,6 +4,41 @@
 
 namespace tz::gl
 {
+	Shader::Shader(ShaderType type): Shader(type, std::string{}){}
+
+	Shader::Shader(ShaderType type, std::string source): type(type), source(source), handle(glCreateShader(detail::resolve_type(this->type))), compilation_successful(false)
+	{
+		this->upload_source(this->source);
+	}
+
+	void Shader::upload_source(std::string source)
+	{
+		this->verify();
+		this->compilation_successful = false;
+		// Cache it.
+		this->source = source;
+
+		// Lets send it over!
+		const GLchar* src = this->source.c_str();
+		auto len = static_cast<GLint>(this->source.length());
+		glShaderSource(this->handle, 1, &src, &len);
+	}
+
+	bool Shader::has_source() const
+	{
+		return !this->source.empty();
+	}
+
+	bool Shader::compiled() const
+	{
+		return this->compilation_successful;
+	}
+
+	void Shader::verify() const
+	{
+		topaz_assert(this->handle != 0, "tz::gl::Shader::verify(): Verification Failed!");
+	}
+	
 	ShaderProgram::ShaderProgram(): handle(glCreateProgram()), shaders(), ready(false)
 	{
 		this->nullify_all();
@@ -99,43 +134,6 @@ namespace tz::gl
 		// Can't fill it because noncopyable, so we just assign them all.
 		for(auto& shader_ptr : this->shaders)
 			shader_ptr = std::nullopt;
-	}
-
-
-
-	Shader::Shader(ShaderType type): Shader(type, std::string{}){}
-
-	Shader::Shader(ShaderType type, std::string source): type(type), source(source), handle(glCreateShader(detail::resolve_type(this->type))), compilation_successful(false)
-	{
-		this->upload_source(this->source);
-	}
-
-	void Shader::upload_source(std::string source)
-	{
-		this->verify();
-		this->compilation_successful = false;
-		// Cache it.
-		this->source = source;
-
-		// Lets send it over!
-		const GLchar* src = this->source.c_str();
-		auto len = static_cast<GLint>(this->source.length());
-		glShaderSource(this->handle, 1, &src, &len);
-	}
-
-	bool Shader::has_source() const
-	{
-		return !this->source.empty();
-	}
-
-	bool Shader::compiled() const
-	{
-		return this->compilation_successful;
-	}
-
-	void Shader::verify() const
-	{
-		topaz_assert(this->handle != 0, "tz::gl::Shader::verify(): Verification Failed!");
 	}
 
 	namespace detail

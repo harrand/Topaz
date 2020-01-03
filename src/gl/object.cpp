@@ -124,11 +124,11 @@ namespace tz::gl
         return std::move(swap_me);
     }
 
-    void Object::render(std::size_t triangle_count) const
+    void Object::render(std::size_t ibo_id) const
     {
         this->verify();
-        this->verify_bound();
-        glDrawArrays(GL_TRIANGLES, 0, triangle_count * 3);
+        this->bind_child(ibo_id);
+        glDrawElements(GL_TRIANGLES, (*this)[ibo_id]->size() / sizeof(unsigned int), GL_UNSIGNED_INT, nullptr);
     }
 
     void Object::verify() const

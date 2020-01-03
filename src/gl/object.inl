@@ -39,30 +39,14 @@ namespace tz::gl
     void Object::render(IterT indices_begin, IterT indices_end) const
     {
         this->verify();
-        this->verify_bound();
         std::size_t index_buffer_count = std::distance(indices_begin, indices_end);
-        bool multi_draw = (index_buffer_count > 1);
-        for(IterT i = indices_begin; i < indices_end; i++)
+        if(index_buffer_count == 0)
+            return;
+        else if(index_buffer_count == 1)
         {
-            std::size_t index = *i;
-            // Ensure it's an index buffer as far as we're concerned.
-            {
-                auto find_result = std::find(this->index_buffer_ids.begin(), this->index_buffer_ids.end(), index);
-                topaz_assert(find_result != this->index_buffer_ids.end(), "tz::gl::Object::render(...): One of the handle IDs (", index, ") in collection was not marked as an index-buffer!");
-            }
-            // We can safely interpret it as an index-buffer.
-            if(multi_draw)
-            {
-                // TODO: MD Support
-                topaz_assert(false, "tz::gl::Object::render(...): Multi-draw not yet implemented!");
-            }
-            else
-            {
-                //this->bind_child(index);
-                std::size_t num_indices = this->get<tz::gl::BufferType::Index>(index)->size() / sizeof(unsigned int);
-                //glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(num_indices), GL_UNSIGNED_INT, nullptr);
-                glDrawArrays(GL_TRIANGLES, 0, 3);
-            }
+            // Singular Draw, just invoke render with the ibo id.
+            std::size_t ibo_id = *(indices_begin);
+            this->render(ibo_id);
         }
     }
 }

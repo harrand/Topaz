@@ -23,6 +23,7 @@ namespace tz::render
 		void specify_handles(std::initializer_list<std::size_t> ids);
 		void render() const;
 		void clear() const;
+		void reset();
 	private:
 		void ensure_bound() const;
 

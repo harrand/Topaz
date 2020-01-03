@@ -16,7 +16,6 @@ namespace tz::render
 
 	void Device::render() const
 	{
-		//topaz_assert(!this->index_ids.empty(), "tz::render::Device::render(): No indices to render.");
 		if(frame->operator!=(tz::gl::bound::frame()))
 			frame->bind();
 		program->bind();
@@ -25,9 +24,10 @@ namespace tz::render
 
 	void Device::clear() const
 	{
+		topaz_assert(this->frame != nullptr, "tz::render::Device::clear(): There is no tz::gl::Frame attached!");
 		this->frame->clear();
 	}
-
+	
 	void Device::ensure_bound() const
 	{
 		topaz_assert(this->frame != nullptr, "tz::render::Device::ensure_bound(): There is no tz::gl::Frame attached!");
@@ -36,8 +36,5 @@ namespace tz::render
 		topaz_assert(this->program != nullptr, "tz::render::Device::ensure_bound(): There is no tz::gl::ShaderProgram attached!");
 		if(this->program->operator!=(tz::gl::bound::shader_program()))
 			this->program->bind();
-		topaz_assert(this->object != nullptr, "tz::render::Device::ensure_bound(): There is no tz::gl::Object attached!");
-		if(this->object->operator!=(tz::gl::bound::vao()))
-			this->object->bind();
 	}
 }
