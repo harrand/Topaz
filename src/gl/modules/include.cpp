@@ -10,40 +10,12 @@ namespace tz::gl::p
 
 	void IncludeModule::operator()(std::string& source) const
 	{
-		using IncludeJob = std::pair<std::pair<std::size_t, std::size_t>, std::string>;
-		std::vector<IncludeJob> include_processing_list;
-		// Firstly populate processing jobs.
+		src::transform(source, std::regex{"#include \"(.+)\""}, [this](auto beg, auto end)
 		{
-			std::string src_copy = source;
-			// TODO: Do include magic!
-			std::regex reg{"#include \"(.+)\""};
-			std::smatch sm;
-			std::ptrdiff_t src_pos_counter = 0;
-			while(std::regex_search(src_copy, sm, reg))
-			{
-				// Found something!
-				std::ptrdiff_t pos = sm.position() + src_pos_counter;
-				topaz_assert(pos < source.size(), "tz::gl::p::IncludeModule::operator(...): Match result has position ", pos, " in source which is out of range. Size: ", source.size());
-				std::ptrdiff_t len = sm.length();
-				std::string include_file_name = sm[1];
-				src_copy = sm.suffix();
-				src_pos_counter += pos + len;
-				// Register an include process.
-				std::pair<std::size_t, std::size_t> pos_and_length{pos, len};
-				std::string include_data = this->cat_include(include_file_name);
-				IncludeJob job{pos_and_length, include_data};
-				include_processing_list.push_back(job);
-			}
-		}
-
-		// Now invoke all jobs in reverse-order.
-		for(auto i = include_processing_list.rbegin(); i != include_processing_list.rend(); i++)
-		{
-			std::string replacement = i->second;
-			std::size_t pos = i->first.first;
-			std::size_t len = i->first.second;
-			source.replace(pos, len, replacement);
-		}
+	        topaz_assert(std::distance(beg, end) == 1, "tz::gl::p::IncludeModule::operator(): Had unexpected number of inner matches. Expected ", 1, ", got ", std::distance(beg, end));
+			std::string include_file_name = *beg;
+			return this->cat_include(include_file_name);
+		});
 	}
 
 	std::string IncludeModule::cat_include(std::string include_path) const

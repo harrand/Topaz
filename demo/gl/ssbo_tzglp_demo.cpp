@@ -7,6 +7,7 @@
 #include "gl/buffer.hpp"
 #include "gl/frame.hpp"
 #include "gl/modules/ssbo.hpp"
+#include "render/device.hpp"
 #include "GLFW/glfw3.h"
 
 const char *vertexShaderSource = "#version 430\n"
@@ -82,6 +83,12 @@ int main()
 			vertex_pool[8] += z;
 		};
 
+		unsigned int indices[] = {0, 1, 2};
+		std::size_t ibo_id = o.emplace_buffer<tz::gl::BufferType::Index>();
+		tz::gl::IBO* ibo = o.get<tz::gl::BufferType::Index>(ibo_id);
+		ibo->resize(sizeof(indices));
+		ibo->send(indices);
+
 		tz::core::IWindow& wnd = tz::core::get().window();
 		wnd.register_this();
 		wnd.emplace_custom_key_listener([&add_pos](tz::input::KeyPressEvent e)
@@ -108,13 +115,15 @@ int main()
 		});
 
 		glClearColor(0.0f, 0.3f, 0.15f, 1.0f);
+		tz::render::Device dev{wnd.get_frame(), &prg, &o};
+		dev.specify_handles({ibo_id});
 		while(!wnd.is_close_requested())
 		{
-        	wnd.get_frame()->clear();
-			prg.bind();
+        	dev.clear();
 			o.bind();
+			ibo->bind();
             ssbo->bind();
-			o.render(1);
+			dev.render();
 
 			wnd.update();
 			tz::core::update();

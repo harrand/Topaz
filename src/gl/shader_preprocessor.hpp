@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include <regex>
 
 // Forward Declares
 namespace tz
@@ -15,6 +16,12 @@ namespace tz
 
 namespace tz::gl
 {
+	namespace src
+	{
+		template<typename Runnable>
+		void transform(std::string& source, std::regex reg, Runnable transform_function);
+	}
+
 	namespace p
 	{
 		/**
