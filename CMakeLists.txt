@@ -57,6 +57,8 @@ add_library(topaz STATIC
 		src/gl/modules/include.hpp
 		src/gl/modules/ssbo.cpp
 		src/gl/modules/ssbo.hpp
+		src/gl/modules/ubo.cpp
+		src/gl/modules/ubo.hpp
 		src/render/device.cpp
 		src/render/device.hpp)
 
