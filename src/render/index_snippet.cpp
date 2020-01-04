@@ -26,15 +26,15 @@ namespace tz::render
         return this->ranges.size() - 1;
     }
 
-    std::vector<tz::gl::gpu::DrawElementsIndirectCommand> IndexSnippet::get_command_list() const
+    tz::gl::MDIDrawCommandList IndexSnippet::get_command_list() const
     {
-        std::vector<tz::gl::gpu::DrawElementsIndirectCommand> cmds;
+        tz::gl::MDIDrawCommandList cmds;
         for(const IndexRange& range : this->ranges)
         {
             std::size_t big = std::max(range.first, range.second);
             std::size_t small = std::min(range.first, range.second);
             std::size_t index_count = big - small;
-            cmds.push_back({static_cast<GLuint>(index_count), static_cast<GLuint>(index_count / 3), static_cast<GLuint>(small), 0, 0});
+            cmds.add({static_cast<GLuint>(index_count), static_cast<GLuint>(index_count / 3), static_cast<GLuint>(small), 0, 0});
         }
         return cmds;
     }

@@ -178,7 +178,7 @@ namespace tz::gl
         template<typename IterT>
         void render(IterT indices_begin, IterT indices_end) const;
         void render(std::size_t ibo_id) const;
-        void multi_render(std::size_t ibo_id, std::vector<tz::gl::gpu::DrawElementsIndirectCommand> cmd_list) const;
+        void multi_render(std::size_t ibo_id, tz::gl::MDIDrawCommandList cmd_list) const;
     private:
         void verify() const;
         void verify_bound() const;

@@ -15,8 +15,7 @@ namespace tz::render
         std::size_t size() const;
         bool empty() const;
         std::size_t emplace_range(std::size_t begin, std::size_t end);
-        // really ugly but can refactor this later.
-        std::vector<tz::gl::gpu::DrawElementsIndirectCommand> get_command_list() const;
+        tz::gl::MDIDrawCommandList get_command_list() const;
     private:
         using IndexRange = std::pair<std::size_t, std::size_t>;
         std::size_t ibo_index;

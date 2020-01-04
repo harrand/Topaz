@@ -129,7 +129,7 @@ namespace tz::gl
         glDrawElements(GL_TRIANGLES, (*this)[ibo_id]->size() / sizeof(unsigned int), GL_UNSIGNED_INT, nullptr);
     }
 
-    void Object::multi_render(std::size_t ibo_id, std::vector<tz::gl::gpu::DrawElementsIndirectCommand> cmd_list) const
+    void Object::multi_render(std::size_t ibo_id, tz::gl::MDIDrawCommandList cmd_list) const
     {
         this->verify();
         this->bind_child(ibo_id);
