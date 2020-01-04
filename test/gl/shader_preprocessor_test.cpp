@@ -197,16 +197,16 @@ tz::test::Case defined_ubo()
 	std::size_t ubo_module_id = pre.emplace_module<tz::gl::p::UBOModule>(&o);
 	pre.preprocess();
 
-	// src4 contains a ssbo called "wabbadabbadoo".
-	// get the SSBOModule, check that it has an ssbo with that name.
-	// check the corresponding ssbo_id and ensure that the layout qualifier ids match.
+	// src4 contains a ubo called "wabbadabbadoo".
+	// get the UBOModule, check that it has an ubo with that name.
+	// check the corresponding ubo_id and ensure that the layout qualifier ids match.
 	tz::gl::p::IModule* module = pre[ubo_module_id];
-	auto* ubo_module = static_cast<tz::gl::p::SSBOModule*>(module);
+	auto* ubo_module = static_cast<tz::gl::p::UBOModule*>(module);
 	// We should have exactly one entry.
 	topaz_expect(test_case, ubo_module->size() == 1, "tz::gl::p::UBOModule::size(): Had unexpected value. Expected ", 1, ", got ", ubo_module->size());
 	// Let's get that entry!
 	std::size_t ubo_id = ubo_module->get_buffer_id(0);
-	tz::gl::SSBO* ubo = o.get<tz::gl::BufferType::ShaderStorage>(ubo_id);
+	tz::gl::UBO* ubo = o.get<tz::gl::BufferType::UniformStorage>(ubo_id);
 	topaz_expect_assert(test_case, false, "Unexpected assert after getting the UBO from the tzglp module...");
 	return test_case;
 }

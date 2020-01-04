@@ -55,8 +55,8 @@ int main()
          *      o-------o-------o
          *      A       B       E
          * 
-         * tri-left = {0, 1, 2}
-         * tri-right = {1, 4, 3}
+         * tri-left = {0, 1, 2} ABC
+         * tri-right = {1, 4, 3} BED
          */
 		tz::gl::Object o;
 		std::size_t vbo_id = o.emplace_buffer<tz::gl::BufferType::Array>();
@@ -121,30 +121,23 @@ int main()
 
 		glClearColor(0.0f, 0.3f, 0.15f, 1.0f);
 		tz::render::Device dev{wnd.get_frame(), &prg, &o};
-		dev.specify_handles({ibo_id});
+		dev.set_handle(ibo_id);
 		while(!wnd.is_close_requested())
 		{
+			// Clear backbuffer.
         	dev.clear();
-			//dev.render();
-            wnd.get_frame()->bind();
-            prg.bind();
-            //o.render(ibo_id);
-            o.bind_child(ibo_id);
-            //unsigned int offsets[] = {0, 3};
-            //glDrawElements(GL_TRIANGLES, o[ibo_id]->size(), GL_UNSIGNED_INT, nullptr);
-            #define OFFSET_BUFFER(offset) ((char*)NULL + offset)
-            /*
-            // MD
-            GLsizei counts[] = {3, 3};
-            glMultiDrawElements(GL_TRIANGLES, counts, GL_UNSIGNED_INT, reinterpret_cast<void**>(offsets), 2);
-            */
-
-            // MDI
-            tz::gl::gpu::DrawElementsIndirectCommand cmds[2];
-            char* offsets[] = {OFFSET_BUFFER(0), OFFSET_BUFFER(3 * sizeof(unsigned int))};
-            cmds[0] = {3, 1, 0, 0, 0};
-            cmds[1] = {3, 1, 3, 0, 0};
-            glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, cmds, 2, sizeof(tz::gl::gpu::DrawElementsIndirectCommand));
+			// Make a snippet.
+			tz::render::IndexSnippet snippet{ibo_id};
+			// ibo_id is an opaque-handle corresponding to an array equal to:
+			// unsigned int indices[] = {0, 1, 2, 1, 4, 3};
+			// One render invocation contains the index-range between 0-3 (0, 1, 2)
+			snippet.emplace_range(0, 3);
+			// The other contains 3-6 (1, 4, 3)
+			snippet.emplace_range(3, 6);
+			// Tell the render device to prepare a command list.
+			dev.set_snippet(snippet);
+			// Bind everything and go! MDI!
+			dev.render();
 
 			wnd.update();
 			tz::core::update();

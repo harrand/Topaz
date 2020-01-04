@@ -11,17 +11,20 @@ namespace tz::input
 	struct KeyListener
 	{
 		virtual void on_key_press(KeyPressEvent kpe) = 0;
+		virtual ~KeyListener() = default;
 	};
 	
 	struct TypeListener
 	{
 		virtual void on_key_type(CharPressEvent cpe) = 0;
+		virtual ~TypeListener() = default;
 	};
 
 	struct MouseListener
 	{
 		virtual void on_mouse_update(MouseUpdateEvent mue) = 0;
 		virtual void on_mouse_click(MouseClickEvent mce) = 0;
+		virtual ~MouseListener() = default;
 	};
 	
 	template<typename Callback>

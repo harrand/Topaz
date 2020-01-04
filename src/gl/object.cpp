@@ -119,9 +119,7 @@ namespace tz::gl
     std::unique_ptr<tz::gl::IBuffer> Object::release(std::size_t idx)
     {
         topaz_assert(idx < this->size(), "tz::gl::Object::release(", idx, "): Index ", idx, " was out of range! Size: ", this->size());
-        std::unique_ptr<tz::gl::IBuffer> swap_me = nullptr;
-        std::swap(this->buffers[idx], swap_me);
-        return std::move(swap_me);
+        return std::move(this->buffers[idx]);
     }
 
     void Object::render(std::size_t ibo_id) const
@@ -129,6 +127,13 @@ namespace tz::gl
         this->verify();
         this->bind_child(ibo_id);
         glDrawElements(GL_TRIANGLES, (*this)[ibo_id]->size() / sizeof(unsigned int), GL_UNSIGNED_INT, nullptr);
+    }
+
+    void Object::multi_render(std::size_t ibo_id, std::vector<tz::gl::gpu::DrawElementsIndirectCommand> cmd_list) const
+    {
+        this->verify();
+        this->bind_child(ibo_id);
+        glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, cmd_list.data(), cmd_list.size(), sizeof(tz::gl::gpu::DrawElementsIndirectCommand));
     }
 
     void Object::verify() const

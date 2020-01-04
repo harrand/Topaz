@@ -3,7 +3,7 @@
 #include "glad/glad.h"
 
 // Forward Declares.
-class GLFWwindow;
+struct GLFWwindow;
 
 namespace tz::gl
 {

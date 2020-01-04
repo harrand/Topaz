@@ -12,14 +12,14 @@ namespace tz::gl
 			
 			std::string src_copy = source;
 			std::smatch sm;
-			std::ptrdiff_t src_pos_counter = 0;
+			std::size_t src_pos_counter = 0;
 
 			while(std::regex_search(src_copy, sm, reg))
 			{
 				// Found a match!
-				std::ptrdiff_t pos = sm.position() + src_pos_counter;
+				std::size_t pos = sm.position() + src_pos_counter;
             	topaz_assert(pos < source.size(), "tz::gl::src::transform(...): Match result has position ", pos, " in source which is out of range. Size: ", source.size());
-				std::ptrdiff_t len = sm.length();
+				std::size_t len = sm.length();
 				std::size_t num_matches = sm.size();
 				std::vector<std::string> inner_matches;
 				for(std::size_t i = 1; i < sm.size(); i++)

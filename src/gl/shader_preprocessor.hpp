@@ -41,6 +41,7 @@ namespace tz::gl
 			 * Invoke the Module, performing source transformation in-place.
 			 */
 			virtual void operator()(std::string& source) const = 0;
+			virtual ~IModule() = default;
 		};
 
 		class ObjectAwareModule : public IModule

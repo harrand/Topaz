@@ -6,6 +6,7 @@
 #define TOPAZ_GL_OBJECT_HPP
 #include "gl/buffer.hpp"
 #include "gl/format.hpp"
+#include "gl/draw_command.hpp"
 #include <vector>
 #include <memory>
 
@@ -177,6 +178,7 @@ namespace tz::gl
         template<typename IterT>
         void render(IterT indices_begin, IterT indices_end) const;
         void render(std::size_t ibo_id) const;
+        void multi_render(std::size_t ibo_id, std::vector<tz::gl::gpu::DrawElementsIndirectCommand> cmd_list) const;
     private:
         void verify() const;
         void verify_bound() const;

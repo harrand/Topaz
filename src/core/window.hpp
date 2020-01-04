@@ -244,7 +244,7 @@ namespace tz::core
         virtual void set_height(int height) const override;
 		virtual void set_size(int width, int height) const override;
 
-		virtual tz::gl::IFrame* get_frame() const override;;
+		virtual tz::gl::IFrame* get_frame() const override;
 		
         virtual bool is_visible() const override;
         virtual void set_visible(bool visible) const override;

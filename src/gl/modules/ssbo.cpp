@@ -34,11 +34,13 @@ namespace tz::gl::p
 
     const std::string& SSBOModule::get_name(std::size_t idx) const
     {
+        topaz_assert(idx < this->size(), "tz::gl::p::SSBOModule::get_name(", idx, "): Index ", idx, " is out of range! Size: ", this->size());
         return this->ssbo_name_id[idx].first;
     }
 
     std::size_t SSBOModule::get_buffer_id(std::size_t idx) const
     {
+        topaz_assert(idx < this->size(), "tz::gl::p::SSBOModule::get_buffer_id(", idx, "): Index ", idx, " is out of range! Size: ", this->size());
         return this->ssbo_name_id[idx].second;
     }
 }

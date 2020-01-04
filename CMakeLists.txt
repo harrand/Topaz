@@ -60,7 +60,9 @@ add_library(topaz STATIC
 		src/gl/modules/ubo.cpp
 		src/gl/modules/ubo.hpp
 		src/render/device.cpp
-		src/render/device.hpp)
+		src/render/device.hpp
+		src/render/index_snippet.cpp
+		src/render/index_snippet.hpp)
 
 target_link_libraries(topaz PUBLIC
 		glfw
