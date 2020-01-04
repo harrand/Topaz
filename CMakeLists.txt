@@ -42,9 +42,13 @@ add_library(topaz STATIC
 		src/gl/format.hpp
 		src/gl/frame.cpp
 		src/gl/frame.hpp
+		src/gl/image.cpp
+		src/gl/image.hpp
 		src/gl/object.hpp
 		src/gl/object.cpp
 		src/gl/object.inl
+		src/gl/pixel.hpp
+		src/gl/pixel.inl
 		src/gl/shader.cpp
 		src/gl/shader.hpp
 		src/gl/shader.inl
@@ -53,6 +57,9 @@ add_library(topaz STATIC
 		src/gl/shader_preprocessor.cpp
 		src/gl/shader_preprocessor.hpp
 		src/gl/shader_preprocessor.inl
+		src/gl/texture.cpp
+		src/gl/texture.hpp
+		src/gl/texture.inl
 		src/gl/modules/include.cpp
 		src/gl/modules/include.hpp
 		src/gl/modules/ssbo.cpp

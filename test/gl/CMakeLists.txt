@@ -5,6 +5,9 @@ target_link_libraries(tz_buffer_test PRIVATE topaz test_framework)
 add_executable(tz_frame_test frame_test.cpp)
 target_link_libraries(tz_frame_test PRIVATE topaz test_framework)
 
+add_executable(tz_image_test image_test.cpp)
+target_link_libraries(tz_image_test PRIVATE topaz test_framework)
+
 add_executable(tz_object_test object_test.cpp)
 target_link_libraries(tz_object_test PRIVATE topaz test_framework)
 
@@ -16,3 +19,6 @@ target_link_libraries(tz_shader_preprocessor_test PRIVATE topaz test_framework)
 
 add_executable(tz_shader_test shader_test.cpp)
 target_link_libraries(tz_shader_test PRIVATE topaz test_framework)
+
+add_executable(tz_texture_test texture_test.cpp)
+target_link_libraries(tz_texture_test PRIVATE topaz test_framework)
