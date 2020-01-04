@@ -99,7 +99,7 @@ int main()
 
 		glClearColor(0.0f, 0.3f, 0.15f, 1.0f);
 		tz::render::Device dev{wnd.get_frame(), &prg, &o};
-		dev.specify_handles({ibo_id});
+		dev.set_handle(ibo_id);
 		while(!wnd.is_close_requested())
 		{
         	dev.clear();
