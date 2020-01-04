@@ -175,9 +175,21 @@ namespace tz::gl
          * @return Smart-pointer to the resultant Buffer.
          */
         std::unique_ptr<tz::gl::IBuffer> release(std::size_t idx);
-        template<typename IterT>
-        void render(IterT indices_begin, IterT indices_end) const;
+        /**
+         * Invoke a render invocation using the given index-buffer.
+         * 
+         * Note: All indices will be used in the render-invocation.
+         * Precondition: ibo_id must correspond to an existing and valid index-buffer within this object. Otherwise, this will assert and invoke UB.
+         * @param ibo_id ID Handle corresponding to an existing index-buffer within this object.
+         */
         void render(std::size_t ibo_id) const;
+        /**
+         * Invoke a multi-render invocation using MDI via the given index-buffer.
+         * 
+         * Note: The sequences of indicies specified by the command-list is used in the render-invocation.
+         * Precondition: ibo_id must correspond to an existing and valid index-buffer within this object. Otherwise, this will assert and invoke UB.
+         * Precondition: cmd_list must contain valid values and offsets for the index-buffer corresponding to the buffer at element ibo_id. Otherwise, this will assert and invoke UB.
+         */
         void multi_render(std::size_t ibo_id, tz::gl::MDIDrawCommandList cmd_list) const;
     private:
         void verify() const;

@@ -34,19 +34,4 @@ namespace tz::gl
         topaz_assert((*this)[idx] == nullptr, "tz::gl::Object::set(", idx, ", ...): Previous element at the index ", idx, " wasn't erased properly.");
         this->buffers[idx] = std::make_unique<tz::gl::Buffer<Type>>(std::forward<Args>(args)...);
     }
-
-    template<typename IterT>
-    void Object::render(IterT indices_begin, IterT indices_end) const
-    {
-        this->verify();
-        std::size_t index_buffer_count = std::distance(indices_begin, indices_end);
-        if(index_buffer_count == 0)
-            return;
-        else if(index_buffer_count == 1)
-        {
-            // Singular Draw, just invoke render with the ibo id.
-            std::size_t ibo_id = *(indices_begin);
-            this->render(ibo_id);
-        }
-    }
 }

@@ -44,9 +44,17 @@ namespace tz::gl
 			virtual ~IModule() = default;
 		};
 
+		/**
+		 * A specialised module which will always require the use of an existing tz::gl::Object.
+		 */
 		class ObjectAwareModule : public IModule
 		{
 		public:
+			/**
+			 * Construct the module with the given Object.
+			 * 
+			 * Precondition: The Object pointed to by o must remain valid for the entirety of this module's lifetime. Otherwise, this will invoke UB.
+			 */
 			ObjectAwareModule(tz::gl::Object* o);
 		protected:
 			tz::gl::Object* o;

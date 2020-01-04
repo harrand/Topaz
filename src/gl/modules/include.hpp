@@ -13,11 +13,23 @@ namespace tz::gl::p
 	class IncludeModule : public IModule
 	{
 	public:
+		/**
+         * Construct an IncludeModule, searching for include-files relative to the given source-path.
+		 * 
+		 * Note: Include files in #include directives should be relative to the given source path.
+         * @param source_path Parent directory path through which to search for include files.
+         */
 		IncludeModule(std::string source_path);
+		/**
+         * Invoke the module, performing source transformation on the given string by replacing all #include directives with the source code of the included file, if it could be found.
+         * 
+         * Note: Expect the stored SSBOs to be in-order as they appear when the source-code is read top-to-bottom.
+		 * Precondition: All #include files in the source must be relative to the source path in the constructor. Otherwise, this will assert and fail to process includes correctly.
+         * @param source GLSL source-code to preprocess. Note that it doesn't have to be valid code.
+         */
 		virtual void operator()(std::string& source) const override;
 	private:
 		std::string cat_include(std::string include_path) const;
-		void register_replacement(std::size_t string_pos, std::size_t erasure_length, const std::string& replacement);
 
 		std::string path;
 	};
