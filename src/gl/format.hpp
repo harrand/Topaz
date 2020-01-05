@@ -26,6 +26,7 @@ namespace tz::gl
 	{
 		/// Pre-defined format comprised of a trio of three floats, starting from the beginning of the buffer data.
 		constexpr Format three_floats = Format{3, GL_FLOAT, sizeof(float), 0};
+		constexpr Format two_floats = Format{2, GL_FLOAT, sizeof(float), 0};
 	}
 }
 

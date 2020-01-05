@@ -18,6 +18,32 @@ namespace tz::gl
 {
 	namespace src
 	{
+		/**
+		 * Perform general-purpose source information in-place on the given string.
+		 * This will search through the given source string using the regular expression. Where matches are found, the inner match (provided by capture groups in the regex) are given to the transform function before source transformation is performed.
+		 * 
+		 * The transformation function should have the following signature:
+		 * std::string my_transform_function(IterT begin, IterT end).
+		 * The type IterT although is always the same, there is no guarantee that it will not change in future Topaz versions. For this reason, it is recommended to take them in as 'auto's.
+		 * Note: IterT is guaranteed to have the following traits:
+		 * - Support for std::distance(IterT, IterT). Note that std::distance(begin, end) is guaranteed to be equal to the number of capture-groups in the regex.
+		 * - IterT::operator*() will yield a const std::string&
+		 * - IterT::operator++ and IterT::operator+(std::size_t) are provided.
+		 * IterT is not guaranteed to fully satisfy any iterator-traits, only the traits listed above.
+		 * 
+		 * The transform function should return a string that is the result of the source transformation. There is no functionality to skip this process.
+		 * 
+		 * Example: Processing #includes:
+		 * Pass GLSL shader component source into the string, and a regex like "#include \"(.+)\"". Note that the regex has one capture-group.
+		 * In this case, the iterator pairs will have a distance of one, and the result will contain a path to a file to include.
+		 * The source transformation function can process the include and return the contents of the file. This function will then continue and perform the source transformation as provided by the transform_function.
+		 * 
+		 * For more information, I recommend checking out tz::gl::p::IncludeModule in gl/modules/include.hpp. This can make TZGLP modules incredibly simple.
+		 * @tparam Runnable Type representing some callable function with the expected signature. Read above for more information on the expected signature. Note that the signature is expected to vary depending on the regex.
+		 * @param source Source code to perform transformations on.
+		 * @param reg Regular Expression used to search against the source-code.
+		 * @param transform_function Function invoked with inner matches prior to each source transformation.
+		 */
 		template<typename Runnable>
 		void transform(std::string& source, std::regex reg, Runnable transform_function);
 	}
@@ -31,8 +57,7 @@ namespace tz::gl
 		 * Examples:
 		 * - Handling #include
 		 * - Handling #static_print
-		 * - Handling #static_assert (This will require additional ShaderCompiler extension though...)
-		 * 
+		 * - Support for string literals in GLSL.
 		 */
 		class IModule
 		{

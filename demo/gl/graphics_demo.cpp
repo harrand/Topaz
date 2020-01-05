@@ -5,20 +5,27 @@
 #include "gl/object.hpp"
 #include "gl/buffer.hpp"
 #include "gl/frame.hpp"
+#include "gl/modules/ubo.hpp"
+#include "gl/texture.hpp"
 #include "render/device.hpp"
 #include "GLFW/glfw3.h"
 
-const char *vertexShaderSource = "#version 330 core\n"
+const char *vertexShaderSource = "#version 430\n"
     "layout (location = 0) in vec3 aPos;\n"
+	"layout (location = 1) in vec2 aTexcoord;\n"
+	"out vec2 texcoord;\n"
     "void main()\n"
     "{\n"
     "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+	"	texcoord = aTexcoord;\n"
     "}\0";
-const char *fragmentShaderSource = "#version 330 core\n"
+const char *fragmentShaderSource = "#version 430\n"
     "out vec4 FragColor;\n"
+	"in vec2 texcoord;\n"
+	"uniform sampler2D checkerboard;\n"
     "void main()\n"
     "{\n"
-    "   FragColor = vec4(0.8f, 0.15f, 0.0f, 1.0f);\n"
+	"	FragColor = texture(checkerboard, texcoord);\n"
     "}\n\0";
 
 int main()
@@ -26,6 +33,8 @@ int main()
 	// Minimalist Graphics Demo.
 	tz::core::initialise("Topaz Graphics Demo");
 	{
+		tz::gl::Object o;
+
 		tz::gl::ShaderCompiler cpl;
 		tz::gl::ShaderProgram prg;
 		tz::gl::Shader* vs = prg.emplace(tz::gl::ShaderType::Vertex);
@@ -42,9 +51,32 @@ int main()
          0.5f, -0.5f, 0.0f, // right 
          0.0f,  0.5f, 0.0f  // top   
     	};
-		tz::gl::Object o;
+
+		const float texcoords[] = {
+			0.0f, 0.0f,
+			1.0f, 0.0f,
+			0.5f, 1.0f,
+		};
+
+		tz::gl::PixelRGBA8 black_pixel{std::byte{}, std::byte{}, std::byte{}, std::byte{255}};
+		tz::gl::PixelRGBA8 white_pixel{std::byte{255}, std::byte{255}, std::byte{255}, std::byte{255}};
+		tz::gl::Image<tz::gl::PixelRGBA8> rgba_checkerboard{2, 2};
+		rgba_checkerboard(0, 0) = black_pixel;
+		rgba_checkerboard(1, 0) = white_pixel;
+		rgba_checkerboard(0, 1) = white_pixel;
+		rgba_checkerboard(1, 1) = black_pixel;
+		tz::gl::Texture checkerboard;
+		checkerboard.set_parameters(tz::gl::default_texture_params);
+		checkerboard.set_data(rgba_checkerboard);
+
+		prg.attach_texture(0, &checkerboard, "checkerboard");
+
 		std::size_t vbo_id = o.emplace_buffer<tz::gl::BufferType::Array>();
 		tz::gl::VBO* vbo = o.get<tz::gl::BufferType::Array>(vbo_id);
+		std::size_t texcoords_id = o.emplace_buffer<tz::gl::BufferType::Array>();
+		tz::gl::VBO* texcoord_vbo = o.get<tz::gl::BufferType::Array>(texcoords_id);
+		texcoord_vbo->resize(sizeof(texcoords));
+		texcoord_vbo->send(texcoords);
 
 		vbo->terminal_resize(sizeof(vertices));
 		tz::mem::UniformPool<float> vertex_pool = vbo->map_pool<float>();
@@ -66,6 +98,7 @@ int main()
 		};
 
 		o.format(vbo_id, tz::gl::fmt::three_floats);
+		o.format(texcoords_id, tz::gl::fmt::two_floats);
 		std::size_t ibo_id = o.emplace_buffer<tz::gl::BufferType::Index>();
 		tz::gl::IBO* ibo = o.get<tz::gl::BufferType::Index>(ibo_id);
 		ibo->resize(3 * sizeof(unsigned int));
@@ -103,6 +136,7 @@ int main()
 		while(!wnd.is_close_requested())
 		{
         	dev.clear();
+			o.bind();
 			dev.render();
 
 			wnd.update();

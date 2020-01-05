@@ -55,6 +55,12 @@ namespace tz::gl
         return 0;
     }
 
+    void Texture::bind(std::size_t binding_id) const
+    {
+        glActiveTexture(GL_TEXTURE0 + binding_id);
+        this->internal_bind();
+    }
+
     void Texture::internal_bind() const
     {
         glBindTexture(GL_TEXTURE_2D, this->handle);

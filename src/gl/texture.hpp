@@ -32,6 +32,7 @@ namespace tz::gl
         bool empty() const;
         unsigned int get_width() const;
         unsigned int get_height() const;
+        void bind(std::size_t binding_id) const;
         template<template<typename> class PixelType, typename ComponentType>
         void set_data(const tz::gl::Image<PixelType<ComponentType>>& image);
         template<template<typename> class PixelType, typename ComponentType>
@@ -77,6 +78,9 @@ namespace tz::gl
         TextureWrapFunction horizontal_wrap;
         TextureWrapFunction vertical_wrap;
     };
+
+    /// For those times where you really don't care about life.
+    static constexpr TextureParameters default_texture_params{TextureMinificationFunction::Nearest, TextureMagnificationFunction::Nearest, TextureWrapFunction::Repeat, TextureWrapFunction::Repeat};
 }
 
 #include "gl/texture.inl"

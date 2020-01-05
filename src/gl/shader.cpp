@@ -1,4 +1,5 @@
 #include "gl/shader.hpp"
+#include "gl/texture.hpp"
 #include "core/debug/assert.hpp"
 #include <algorithm>
 
@@ -39,7 +40,7 @@ namespace tz::gl
 		topaz_assert(this->handle != 0, "tz::gl::Shader::verify(): Verification Failed!");
 	}
 	
-	ShaderProgram::ShaderProgram(): handle(glCreateProgram()), shaders(), ready(false)
+	ShaderProgram::ShaderProgram(): handle(glCreateProgram()), shaders(), textures(), ready(false)
 	{
 		this->nullify_all();
 	}
@@ -105,7 +106,15 @@ namespace tz::gl
 	void ShaderProgram::bind()
 	{
 		topaz_assert(this->usable(), "tz::gl::ShaderProgram::bind(): Attempted to bind but the program is not currently usable. Make sure the program is *correctly* linked & validated before invoking this.");
+		this->bind_textures();
 		glUseProgram(this->handle);
+	}
+
+	void ShaderProgram::attach_texture(std::size_t idx, const Texture* texture, std::string sampler_name)
+	{
+		topaz_assert(idx < GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, "tz::gl::ShaderProgram::attach_texture(", idx, ", const Texture*, ", sampler_name, "): Index was out of range. Max: ", GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS);
+		this->textures[idx] = texture;
+		this->texture_names[idx] = sampler_name;
 	}
 
 	bool ShaderProgram::has_shader(ShaderType type) const
@@ -134,6 +143,21 @@ namespace tz::gl
 		// Can't fill it because noncopyable, so we just assign them all.
 		for(auto& shader_ptr : this->shaders)
 			shader_ptr = std::nullopt;
+	}
+
+	void ShaderProgram::bind_textures() const
+	{
+		for(std::size_t i = 0; i < GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS; i++)
+		{
+			const Texture* tex = this->textures[i];
+			const char* tex_name = this->texture_names[i].c_str();
+			if(tex != nullptr)
+			{
+				tex->bind(i);
+				GLint sampler_location = glGetUniformLocation(this->handle, tex_name);
+				glUniform1i(sampler_location, i);
+			}
+		}
 	}
 
 	namespace detail

@@ -8,6 +8,11 @@
 
 namespace tz::gl
 {
+	class Texture;
+}
+
+namespace tz::gl
+{
 	enum class ShaderType : std::size_t
 	{
 		Vertex,
@@ -127,6 +132,13 @@ namespace tz::gl
 		void bind();
 
 		/**
+		 * Attach a texture to the given index. Only one texture can hold an index at a time.
+		 * 
+		 * Precondition: The texture provided must not reach the end of its lifetime until either a.) Another texture is attached in its place. b.) This ShaderProgram reaches the end of its lifetime. Otherwise, this will invoke UB without asserting.
+		 */
+		void attach_texture(std::size_t idx, const Texture* texture, std::string sampler_name);
+
+		/**
 		 * Query as to whether a Shader component of the given type is currently attached to this program.
 		 * 
 		 * Precondition: The shader type must not be NUM_TYPES. Otherwise, this will assert and invoke UB.
@@ -140,9 +152,12 @@ namespace tz::gl
 	private:
 		void verify() const;
 		void nullify_all();
+		void bind_textures() const;
 
 		ShaderProgramHandle handle;
 		std::array<std::optional<Shader>, static_cast<std::size_t>(ShaderType::NUM_TYPES)> shaders;
+		std::array<const Texture*, static_cast<std::size_t>(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS)> textures;
+		std::array<std::string, static_cast<std::size_t>(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS)> texture_names;
 		bool ready;
 	};
 

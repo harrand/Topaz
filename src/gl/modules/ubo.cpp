@@ -19,7 +19,7 @@ namespace tz::gl::p
             this->ubo_name_id.emplace_back(ubo_name, ubo_id);
 
             std::stringstream ss;
-            ss << "layout(std430, binding = ";
+            ss << "layout(std140, binding = ";
             ss << ubo->get_binding_id();
             ss << ") uniform ";
             ss << ubo_name;
