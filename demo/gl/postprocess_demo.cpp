@@ -7,7 +7,7 @@
 #include "gl/frame.hpp"
 #include "gl/modules/ubo.hpp"
 #include "gl/texture.hpp"
-#include "render/device.hpp"
+#include "render/pipeline.hpp"
 #include "GLFW/glfw3.h"
 
 const char *vertexShaderSource = "#version 430\n"
@@ -158,13 +158,13 @@ int main()
         tz::render::Device dev2{&second_target, &prg, &o};
 		dev.set_handle(ibo_id);
         dev2.set_handle(ibo_id);
+		tz::render::Pipeline pipeline;
+		pipeline.add(dev);
+		pipeline.add(dev2);
 		while(!wnd.is_close_requested())
 		{
-        	dev.clear();
-            dev2.clear();
-			o.bind();
-			dev.render();
-            dev2.render();
+        	pipeline.clear();
+			pipeline.render();
             {
                 tz::gl::Image<tz::gl::PixelRGBA8> img = render_to_me.get_data<tz::gl::PixelRGBA, std::byte>();
                 checkerboard.set_data(img);

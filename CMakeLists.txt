@@ -70,7 +70,9 @@ add_library(topaz STATIC
 		src/render/device.cpp
 		src/render/device.hpp
 		src/render/index_snippet.cpp
-		src/render/index_snippet.hpp)
+		src/render/index_snippet.hpp
+		src/render/pipeline.cpp
+		src/render/pipeline.hpp)
 
 target_link_libraries(topaz PUBLIC
 		glfw
