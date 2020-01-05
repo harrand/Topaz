@@ -15,6 +15,13 @@ add_executable(topaz_multi_draw_demo
 add_dependencies(topaz_multi_draw_demo topaz)
 target_link_libraries(topaz_multi_draw_demo PRIVATE topaz)
 
+add_executable(topaz_postprocess_demo
+	postprocess_demo.cpp
+)
+
+add_dependencies(topaz_postprocess_demo topaz)
+target_link_libraries(topaz_postprocess_demo PRIVATE topaz)
+
 add_executable(topaz_ssbo_tzglp_demo
 		ssbo_tzglp_demo.cpp
 )

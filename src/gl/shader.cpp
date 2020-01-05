@@ -106,8 +106,24 @@ namespace tz::gl
 	void ShaderProgram::bind()
 	{
 		topaz_assert(this->usable(), "tz::gl::ShaderProgram::bind(): Attempted to bind but the program is not currently usable. Make sure the program is *correctly* linked & validated before invoking this.");
-		this->bind_textures();
 		glUseProgram(this->handle);
+		this->bind_textures();
+	}
+
+	std::size_t ShaderProgram::attached_textures_capacity() const
+	{
+		GLint max_textures_accessed_by_fragment_shader;
+		glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &max_textures_accessed_by_fragment_shader);
+		return std::min(max_textures_accessed_by_fragment_shader, GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS);
+	}
+
+	std::size_t ShaderProgram::attached_textures_size() const
+	{
+		std::size_t num = 0;
+		for(const Texture* tex : this->textures)
+			if(tex != nullptr)
+				num++;
+		return num;
 	}
 
 	void ShaderProgram::attach_texture(std::size_t idx, const Texture* texture, std::string sampler_name)
@@ -115,6 +131,18 @@ namespace tz::gl
 		topaz_assert(idx < GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, "tz::gl::ShaderProgram::attach_texture(", idx, ", const Texture*, ", sampler_name, "): Index was out of range. Max: ", GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS);
 		this->textures[idx] = texture;
 		this->texture_names[idx] = sampler_name;
+	}
+
+	void ShaderProgram::detach_texture(std::size_t idx)
+	{
+		topaz_assert(idx < GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, "tz::gl::ShaderProgram::detach_texture(", idx, "): Index was out of range. Max: ", GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS);
+		this->textures[idx] = nullptr;
+	}
+
+	const Texture* ShaderProgram::get_attachment(std::size_t idx) const
+	{
+		topaz_assert(idx < GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, "tz::gl::ShaderProgram::detach_texture(", idx, "): Index was out of range. Max: ", GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS);
+		return this->textures[idx];
 	}
 
 	bool ShaderProgram::has_shader(ShaderType type) const

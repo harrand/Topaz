@@ -1,6 +1,10 @@
 #ifndef TOPAZ_GL_FRAME_HPP
 #define TOPAZ_GL_FRAME_HPP
 #include "glad/glad.h"
+#include "gl/texture.hpp"
+#include <deque>
+#include <queue>
+#include <variant>
 
 // Forward Declares.
 struct GLFWwindow;
@@ -76,12 +80,22 @@ namespace tz::gl
 
 		virtual void bind() const override;
 		virtual bool complete() const override;
+		template<class TextureType, typename... Args>
+		TextureType& emplace(GLenum attachment, Args&&... args);
+		template<typename... Args>
+		Texture& emplace_texture(GLenum attachment, Args&&... args);
+		template<typename... Args>
+		RenderBuffer& emplace_renderbuffer(GLenum attachment, Args&&... args);
+		void set_output_attachment(GLenum attachment) const;
 		virtual bool operator==(GLuint handle) const override;
 		virtual bool operator!=(GLuint handle) const override;
 	private:
 		void verify() const;
+		void process_pending_attachments() const;
 
 		GLuint handle;
+		std::deque<std::pair<GLenum, std::variant<tz::gl::Texture, tz::gl::RenderBuffer>>> attachments;
+		mutable std::queue<std::pair<GLenum, tz::gl::Texture*>> pending_attachments;
 	};
 
 	class WindowFrame : public IFrame
@@ -102,4 +116,5 @@ namespace tz::gl
 	}
 }
 
+#include "gl/frame.inl"
 #endif

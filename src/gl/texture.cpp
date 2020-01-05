@@ -15,6 +15,8 @@ namespace tz::gl
     Texture::Texture(): handle(0), descriptor(std::nullopt)
     {
         glGenTextures(1, &this->handle);
+        this->internal_bind();
+        this->internal_unbind();
     }
 
     Texture::~Texture()
@@ -29,6 +31,14 @@ namespace tz::gl
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, static_cast<GLint>(params.mag_filter));
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, static_cast<GLint>(params.horizontal_wrap));
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, static_cast<GLint>(params.vertical_wrap));
+    }
+
+    void Texture::resize(const TextureDataDescriptor& descriptor)
+    {
+        this->descriptor = descriptor;
+        this->internal_bind();
+        const auto& desc = this->descriptor.value();
+        glTexImage2D(GL_TEXTURE_2D, 0, desc.internal_format, static_cast<GLsizei>(desc.width), static_cast<GLsizei>(desc.height), 0, desc.format, desc.component_type, nullptr);
     }
 
     std::size_t Texture::size() const
@@ -61,6 +71,11 @@ namespace tz::gl
         this->internal_bind();
     }
 
+    void Texture::bind_to_frame(GLenum attachment) const
+    {
+        glFramebufferTexture2D(GL_FRAMEBUFFER, attachment, GL_TEXTURE_2D, this->handle, 0);
+    }
+
     void Texture::internal_bind() const
     {
         glBindTexture(GL_TEXTURE_2D, this->handle);
@@ -69,5 +84,45 @@ namespace tz::gl
     void Texture::internal_unbind() const
     {
         glBindTexture(GL_TEXTURE_2D, 0);
+    }
+
+    RenderBuffer::RenderBuffer(): handle(0)
+    {
+        glCreateRenderbuffers(1, &this->handle);
+        this->bind();
+        this->unbind();
+    }
+
+    RenderBuffer::RenderBuffer(TextureDataDescriptor descriptor): RenderBuffer()
+    {
+        this->descriptor = descriptor;
+        this->bind();
+        glRenderbufferStorage(GL_RENDERBUFFER, static_cast<GLenum>(this->descriptor.internal_format), static_cast<GLsizei>(this->descriptor.width), static_cast<GLsizei>(this->descriptor.height));
+        this->unbind();
+    }
+
+    RenderBuffer::RenderBuffer(RenderBuffer&& move): handle(move.handle), descriptor(move.descriptor)
+    {
+        move.handle = 0;
+    }
+
+    RenderBuffer::~RenderBuffer()
+    {
+        glDeleteRenderbuffers(1, &this->handle);
+    }
+
+    void RenderBuffer::bind() const
+    {
+        glBindRenderbuffer(GL_RENDERBUFFER, this->handle);
+    }
+
+    void RenderBuffer::unbind() const
+    {
+        glBindRenderbuffer(GL_RENDERBUFFER, 0);
+    }
+
+    void RenderBuffer::bind_to_frame(GLenum attachment) const
+    {
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, attachment, GL_RENDERBUFFER, this->handle);
     }
 }

@@ -132,11 +132,40 @@ namespace tz::gl
 		void bind();
 
 		/**
+		 * Retrieve the maximum number of attached textures possible.
+		 * @return Maximum number of possible attachments.
+		 */
+		std::size_t attached_textures_capacity() const;
+		/**
+		 * Retrieve the current number of attached textures.
+		 * @return Number of attached textures.
+		 */
+		std::size_t attached_textures_size() const;
+		/**
 		 * Attach a texture to the given index. Only one texture can hold an index at a time.
 		 * 
-		 * Precondition: The texture provided must not reach the end of its lifetime until either a.) Another texture is attached in its place. b.) This ShaderProgram reaches the end of its lifetime. Otherwise, this will invoke UB without asserting.
+		 * Precondition: The texture provided must not reach the end of its lifetime until either a.) Another texture is attached in its place (or it is detached). b.) This ShaderProgram reaches the end of its lifetime. Otherwise, this will invoke UB without asserting.
+		 * Precondition: idx must be in-range (idx < this->attached_textures_capacity()). Otherwise, this will assert and may invoke UB.
+		 * @param idx The texture binding id to use.
+		 * @param texture The texture to associate with the ID.
+		 * @param sampler_name The expected name of the corresponding sampler2D in GLSL source.
 		 */
 		void attach_texture(std::size_t idx, const Texture* texture, std::string sampler_name);
+		/**
+		 * Detach the texture at the given index.
+		 * 
+		 * Precondition: idx must be in-range (idx < this->attached_textures_capacity()). Otherwise, this will assert and may invoke UB.
+		 * @param idx The index corresponding to the texture to detach. If no texture was attached at the index, there is no effect.
+		 */
+		void detach_texture(std::size_t idx);
+		/**
+		 * Retrieve the texture at the given index.
+		 * 
+		 * Precondition: idx must be in-range (idx < this->attached_textures_capacity()). Otherwise, this will assert and may invoke UB.
+		 * @param idx The index corresponding to the texture attachment to retrieve.
+		 * @return Pointer to the attached texture if there is one at the given index. Otherwise nullptr.
+		 */
+		const Texture* get_attachment(std::size_t idx) const;
 
 		/**
 		 * Query as to whether a Shader component of the given type is currently attached to this program.

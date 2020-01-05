@@ -28,6 +28,7 @@ namespace tz::gl
         Texture();
         virtual ~Texture();
         void set_parameters(const TextureParameters& params);
+        void resize(const TextureDataDescriptor& descriptor);
         std::size_t size() const;
         bool empty() const;
         unsigned int get_width() const;
@@ -37,12 +38,31 @@ namespace tz::gl
         void set_data(const tz::gl::Image<PixelType<ComponentType>>& image);
         template<template<typename> class PixelType, typename ComponentType>
         tz::gl::Image<PixelType<ComponentType>> get_data() const;
+
+        void bind_to_frame(GLenum attachment) const;
     protected:
         void internal_bind() const;
         void internal_unbind() const;
 
         TextureHandle handle;
         std::optional<TextureDataDescriptor> descriptor;
+    };
+
+    class RenderBuffer
+    {
+    public:
+        RenderBuffer();
+        RenderBuffer(const RenderBuffer& copy) = delete;
+        RenderBuffer(RenderBuffer&& move);
+        RenderBuffer(TextureDataDescriptor descriptor);
+        ~RenderBuffer();
+
+        void bind() const;
+        void unbind() const;
+        void bind_to_frame(GLenum attachment) const;
+    private:
+        GLuint handle;
+        TextureDataDescriptor descriptor;
     };
 
     enum class TextureMinificationFunction : GLint

@@ -38,7 +38,7 @@ namespace tz::gl
 		glClearColor(r, g, b, 1.0f);
 	}
 
-	Frame::Frame(unsigned int width, unsigned int height): IFrame(width, height), handle(0)
+	Frame::Frame(unsigned int width, unsigned int height): IFrame(width, height), handle(0), attachments(), pending_attachments()
 	{
 		glGenFramebuffers(1, &this->handle);
 	}
@@ -52,6 +52,8 @@ namespace tz::gl
 	void Frame::bind() const
 	{
 		this->verify();
+		this->process_pending_attachments();
+		//topaz_assert(this->complete(), "tz::gl::Frame::bind(): Attempting to bind an incomplete frame. This means something has been missed in its setup process.");
 		glBindFramebuffer(GL_FRAMEBUFFER, this->handle);
 		glViewport(0, 0, this->get_width(), this->get_height());
 	}
@@ -59,9 +61,16 @@ namespace tz::gl
 	bool Frame::complete() const
 	{
 		this->verify();
-		this->bind();
+		glBindFramebuffer(GL_FRAMEBUFFER, this->handle);
 		auto status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		return status == GL_FRAMEBUFFER_COMPLETE;
+	}
+
+	void Frame::set_output_attachment(GLenum attachment) const
+	{
+		GLenum attachments[] = {attachment};
+		glNamedFramebufferDrawBuffers(this->handle, 1, attachments);
 	}
 
 	bool Frame::operator==(GLuint handle) const
@@ -77,6 +86,19 @@ namespace tz::gl
 	void Frame::verify() const
 	{
 		topaz_assert(this->handle != 0, "tz::gl::Frame::verify(): Verification Failed!");
+	}
+
+	void Frame::process_pending_attachments() const
+	{
+        glBindFramebuffer(GL_FRAMEBUFFER, this->handle);
+		while(!pending_attachments.empty())
+		{
+			GLenum attachment = pending_attachments.front().first;
+			tz::gl::Texture* tex = pending_attachments.front().second;
+			tex->bind_to_frame(attachment);
+			pending_attachments.pop();
+		}
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 
 	WindowFrame::WindowFrame(GLFWwindow* handle): IFrame(0,0), handle(handle)

@@ -38,6 +38,7 @@ namespace tz::render
 	void Device::clear() const
 	{
 		topaz_assert(this->frame != nullptr, "tz::render::Device::clear(): There is no tz::gl::Frame attached!");
+		this->frame->bind();
 		this->frame->clear();
 	}
 	
