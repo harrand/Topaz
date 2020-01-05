@@ -22,23 +22,80 @@ namespace tz::gl
         bool operator!=(const TextureDataDescriptor& rhs) const;
     };
 
+
+    /**
+     * Used to store image data in VRAM. Can be attached to a shader to bind a texture to a given tz::gl::Object.
+     */
     class Texture
     {
     public:
+        /**
+         * Create an empty Texture.
+         */
         Texture();
         virtual ~Texture();
+        /**
+         * Set the parameters of the texture.
+         */
         void set_parameters(const TextureParameters& params);
+        /**
+         * Clear the data-store and resize it adhereing to the giving description.
+         * 
+         * @param descriptor Type of the underlying data and width/height to resize to.
+         */
         void resize(const TextureDataDescriptor& descriptor);
+        /**
+         * Retrieve the number of pixels in the Texture.
+         * @return Size, in number of pixels.
+         */
         std::size_t size() const;
+        /**
+         * Query as to whether there are any pixels within the Texture.
+         * @return True if there are no pixels. False otherwise.
+         */
         bool empty() const;
+        /**
+         * Retrieve the width of the texture, in pixels.
+         * @return Width in pixels.
+         */
         unsigned int get_width() const;
+        /**
+         * Retrieve the height of the texture, in pixels.
+         * @return Height in pixels.
+         */
         unsigned int get_height() const;
+        /**
+         * Bind the texture, causing sampler2Ds at the given binding-id to reference this texture in subsequent render invocations.
+         * @param binding_id ID of the sampler2D that should resolve to this texture.
+         */
         void bind(std::size_t binding_id) const;
+        /**
+         * Clear the data-store and resize it to fit the given image. After which, copy the image data into the data-store.
+         * Any data in the data-store beforehand will be discarded.
+         * 
+         * Example: tz::gl::Image<tz::gl::PixelRGBA8> resolves to PixelType == tz::gl::PixelRGBA, ComponentType == std::byte.
+         * @tparam PixelType Type of the pixel template to use. Example: tz::gl::PixelRGBA
+         * @tparam ComponentType Underlying data type of the components within the pixel.
+         * @param image Image whose data should be uploaded to VRAM.
+         */
         template<template<typename> class PixelType, typename ComponentType>
         void set_data(const tz::gl::Image<PixelType<ComponentType>>& image);
+        /**
+         * Retrieve the image data from within the data-store.
+         * Any data in the data-store beforehand will be discarded.
+         * 
+         * Example: tz::gl::Image<tz::gl::PixelRGBA8> resolves to PixelType == tz::gl::PixelRGBA, ComponentType == std::byte.
+         * @tparam PixelType Type of the pixel template to use. Example: tz::gl::PixelRGBA
+         * @tparam ComponentType Underlying data type of the components within the pixel.
+         * @return Image containing a copy of the data-store.
+         */
         template<template<typename> class PixelType, typename ComponentType>
         tz::gl::Image<PixelType<ComponentType>> get_data() const;
-
+        /**
+         * Bind the texture to the currently-bound tz::gl::Frame using the given attachment.
+         * Note: Probably not worth invoking this yourself; let the Frame sort this out for you.
+         * @param attachment Desired attachment with which to associate the texture.
+         */
         void bind_to_frame(GLenum attachment) const;
     protected:
         void internal_bind() const;
@@ -48,17 +105,38 @@ namespace tz::gl
         std::optional<TextureDataDescriptor> descriptor;
     };
 
+    /**
+     * Basically a write-only texture.
+     */
     class RenderBuffer
     {
     public:
+        /**
+         * Initialise an empty renderbuffer. Will not be usable as a Frame attachment.
+         */
         RenderBuffer();
         RenderBuffer(const RenderBuffer& copy) = delete;
         RenderBuffer(RenderBuffer&& move);
+        /**
+         * Construct a renderbuffer based upon the given descriptor.
+         * @param descriptor Description of the data expected to be stored in this renderbuffer.
+         */
         RenderBuffer(TextureDataDescriptor descriptor);
         ~RenderBuffer();
 
+        /**
+         * Bind the renderbuffer. Mostly only intended for internal use.
+         */
         void bind() const;
+        /**
+         * Unbind the renderbuffer.
+         */
         void unbind() const;
+        /**
+         * Bind the renderbuffer to the currently-bound tz::gl::Frame using the given attachment.
+         * Note: Probably not worth invoking this yourself; let the Frame sort this out for you.
+         * @param attachment Desired attachment with which to associate the renderbuffer.
+         */
         void bind_to_frame(GLenum attachment) const;
     private:
         GLuint handle;

@@ -72,20 +72,66 @@ namespace tz::gl
 		unsigned int height;
 	};
 
+	/**
+	 * Represents a framebuffer.
+	 */
 	class Frame : public IFrame
 	{
 	public:
+		/**
+		 * Construct a frame with the given width and height, in pixels.
+		 */
 		Frame(unsigned int width, unsigned int height);
 		~Frame();
 
+		/**
+		 * Bind the frame, causing subsequent render operations to output into this frame.
+		 */
 		virtual void bind() const override;
+		/**
+		 * Query as to whether the frame is in a state that it can be validly bound.
+		 * 
+		 * @return True if the frame can be bound. False otherwise.
+		 */
 		virtual bool complete() const override;
+		/**
+		 * Add a texture-like object to the given attachment in the frame. The object is constructed in-place.
+		 * 
+		 * Note: A "texture-like object" is either a tz::gl::Texture or tz::gl::RenderBuffer.
+		 * @tparam TextureType Type of the texture-like object to construct. This must be either a tz::gl::Texture or tz::gl::RenderBuffer.
+		 * @tparam Args Types of arguments used to construct the attachment in-place.
+		 * @param attachment Description of the attachment that the texture-like object represents. Examples are GL_COLOR_ATTACHMENT0 or GL_DEPTH_ATTACHMENT.
+		 * @param args Values of arguments used to construct the attachment in-place.
+		 * @return Reference to the constructed texture-like object.
+		 */
 		template<class TextureType, typename... Args>
 		TextureType& emplace(GLenum attachment, Args&&... args);
+		/**
+		 * Add a tz::gl::Texture to the given attachment in the frame. The texture is constructed in-place.
+		 * 
+		 * @tparam Args Types of arguments used to construct the attachment in-place.
+		 * @param attachment Description of the attachment that the texture represents. Examples are GL_COLOR_ATTACHMENT0 or GL_DEPTH_ATTACHMENT.
+		 * @param args Values of arguments used to construct the attachment in-place.
+		 * @return Reference to the constructed texture.
+		 */
 		template<typename... Args>
 		Texture& emplace_texture(GLenum attachment, Args&&... args);
+		/**
+		 * Add a tz::gl::RenderBuffer to the given attachment in the frame. The renderbuffer is constructed in-place.
+		 * 
+		 * @tparam Args Types of arguments used to construct the attachment in-place.
+		 * @param attachment Description of the attachment that the renderbuffer represents. Examples are GL_COLOR_ATTACHMENT0 or GL_DEPTH_ATTACHMENT.
+		 * @param args Values of arguments used to construct the attachment in-place.
+		 * @return Reference to the constructed renderbuffer.
+		 */
 		template<typename... Args>
 		RenderBuffer& emplace_renderbuffer(GLenum attachment, Args&&... args);
+		/**
+		 * Set the output-attachment.
+		 * 
+		 * Note: At present, only one output is supported. This is likely to change soon.
+		 * @param attachment Desired output attachment type.
+		 */
 		void set_output_attachment(GLenum attachment) const;
 		virtual bool operator==(GLuint handle) const override;
 		virtual bool operator!=(GLuint handle) const override;
