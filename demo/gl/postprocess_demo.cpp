@@ -61,8 +61,6 @@ int main()
             render_to_me.resize(desc);
         }
 
-        second_target.set_output_attachment(GL_COLOR_ATTACHMENT0);
-
 		const float vertices[] = {
         -0.5f, -0.5f, 0.0f, // left  
          0.5f, -0.5f, 0.0f, // right 
@@ -123,7 +121,6 @@ int main()
 		ibo->send(indices);
 
 		tz::core::IWindow& wnd = tz::core::get().window();
-		wnd.register_this();
 		wnd.emplace_custom_key_listener([&add_pos, &checkerboard, &rgba_checkerboard](tz::input::KeyPressEvent e)
 		{
 			if(e.action == GLFW_PRESS)

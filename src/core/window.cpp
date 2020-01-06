@@ -121,6 +121,12 @@ namespace tz::core
 			topaz_assert(this->impl != nullptr, "GLFWWindow::verify(): Verification failed. Did you tz::initialise()?");
 		#endif
 	}
+
+	void GLFWWindow::ensure_registered()
+	{
+		if(!this->impl->is_registered())
+			this->register_this();
+	}
 	
 	void GLFWWindow::set_active_context() const
 	{
@@ -174,6 +180,7 @@ namespace tz::core
 	
 	void GLFWWindow::register_key_listener(std::shared_ptr<tz::input::KeyListener> listener)
 	{
+		this->ensure_registered();
 		// Don't add duplicates -- That would be very annoying.
 		if(std::find(this->key_listeners.begin(), this->key_listeners.end(), listener) != this->key_listeners.end())
 		{
@@ -189,6 +196,7 @@ namespace tz::core
 	
 	void GLFWWindow::register_type_listener(std::shared_ptr<tz::input::TypeListener> listener)
 	{
+		this->ensure_registered();
 		this->type_listeners.push_back(listener);
 	}
 	
@@ -199,6 +207,7 @@ namespace tz::core
 
 	void GLFWWindow::register_mouse_listener(std::shared_ptr<tz::input::MouseListener> listener)
 	{
+		this->ensure_registered();
 		this->mouse_listeners.push_back(listener);
 	}
 

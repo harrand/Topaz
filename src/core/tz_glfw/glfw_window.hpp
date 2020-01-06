@@ -76,6 +76,10 @@ namespace tz::ext::glfw
 		 */
 		void register_this(tz::core::GLFWWindow* window);
 		/**
+		 * Query as to whether tz_glfw is currently tracking this window implementation.
+		 */
+		bool is_registered() const;
+		/**
 		 * GLFW contexts are tightly-coupled with windows.
 		 * Query as to whether this window (and its context) are currently the active context.
 		 * @return - True if the context is active, otherwise false

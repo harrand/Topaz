@@ -290,6 +290,7 @@ namespace tz::core
 		 * Asserts if the window implementation is null.
 		 */
 		void verify() const;
+		void ensure_registered();
 		
 		/// Underlying window implementation. This should not be null.
         tz::ext::glfw::GLFWWindowImpl* impl;

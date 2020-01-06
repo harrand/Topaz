@@ -135,6 +135,11 @@ namespace tz::ext::glfw
 		detail::window_userdata[this->window_handle] = window;
 	}
 
+	bool GLFWWindowImpl::is_registered() const
+	{
+		detail::window_userdata.find(this->window_handle) != detail::window_userdata.end();
+	}
+
 	bool GLFWWindowImpl::has_active_context() const
 	{
 		return (this->window_handle == glfwGetCurrentContext());

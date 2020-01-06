@@ -6,6 +6,7 @@ target_include_directories(test_framework INTERFACE ./)
 cmake_policy(SET CMP0026 OLD)
 
 add_subdirectory(core)
+add_subdirectory(geo)
 add_subdirectory(gl)
 add_subdirectory(input)
 add_subdirectory(memory)
@@ -28,6 +29,9 @@ function(register_test_target TEST_TARGET)
 endfunction()
 
 # tz::core
+
+# tz::geo
+register_test_target(tz_vector_test)
 
 # tz::gl
 register_test_target(tz_buffer_test)
