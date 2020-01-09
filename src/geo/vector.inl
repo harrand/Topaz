@@ -7,14 +7,6 @@ namespace tz::geo
         {
             return reinterpret_cast<__m128*>(aligned_data);
         }
-
-        bool is_system_little_endian()
-        {
-            const int value { 0x01 };
-            const void * address = static_cast<const void *>(&value);
-            const unsigned char * least_significant_address = static_cast<const unsigned char *>(address);
-            return (*least_significant_address == 0x01);
-        }
     }
 
     template<typename T, std::size_t Quantity>

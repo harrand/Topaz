@@ -1,8 +1,7 @@
 #ifndef TOPAZ_GEOMETRY_VECTOR_HPP
 #define TOPAZ_GEOMETRY_VECTOR_HPP
 #include "memory/align.hpp"
-#include <xmmintrin.h>
-#include <emmintrin.h>
+#include <immintrin.h>
 
 namespace tz::geo
 {
@@ -61,11 +60,13 @@ namespace tz::geo
         void set_z(float z) const;
         void set_w(float w) const;
         Vec4Data get() const;
+        float length() const;
         void set(Vec4Data vals);
         Vec4 operator+(const Vec4& rhs) const;
         Vec4 operator-(const Vec4& rhs) const;
         Vec4& operator+=(const Vec4& rhs);
         Vec4& operator-=(const Vec4& rhs);
+        float dot(const Vec4& rhs) const;
     private:
         Vec4(sse::FloatHandle direct_handle);
 

@@ -49,17 +49,29 @@ tz::test::Case addition_subtraction()
     return test_case;
 }
 
+tz::test::Case dot()
+{
+    tz::test::Case test_case("tz::geo::Vec4 SSE Dot/Cross Product Tests");
+
+    tz::geo::Vec4 a(18, 39, 31, 1.0f);
+    tz::geo::Vec4 b(101, 58, 75, 1.0f);
+    tz::geo::Vec4 c(9, 2, 7, 1.0f);
+    tz::geo::Vec4 d(4, 8, 10, 1.0f);
+
+    topaz_expect(test_case, a.length() == 52.981128f, "tz::gl::Vec4 Produced incorrect magnitude of: ", a.length());
+    topaz_expect(test_case, a.dot(b) == 6406, "tz::gl::Vec4 Dot Product yielded incorrect result. Expected ", 6406.0f, ", but got ", a.dot(b));
+    topaz_expect(test_case, c.dot(d) == 123.0f, "tz::gl::Vec4 Dot Product yielded incorrect result. Expected ", 123.0f, ", but got ", c.dot(d));
+
+    return test_case;
+}
+
 int main()
 {
     tz::test::Unit vec;
 
-    // Stuff in here requires topaz to be initialised.
-    {
-        tz::core::initialise("Vector Tests");
-        vec.add(simple_handle());
-        vec.add(addition_subtraction());
-        tz::core::terminate();
-    }
+    vec.add(simple_handle());
+    vec.add(addition_subtraction());
+    vec.add(dot());
 
     return vec.result();
 }

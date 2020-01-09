@@ -1,4 +1,5 @@
 #include "geo/vector.hpp"
+#include <cmath>
 
 namespace tz::geo
 {
@@ -31,6 +32,11 @@ namespace tz::geo
         return floats;
     }
 
+    float Vec4::length() const
+    {
+        return std::sqrt(this->dot(*this));
+    }
+
     void Vec4::set(Vec4Data vals)
     {
         this->handle = _mm_loadr_ps(vals.data());
@@ -56,6 +62,12 @@ namespace tz::geo
     {
         *this = *this - rhs;
         return *this;
+    }
+
+    float Vec4::dot(const Vec4& rhs) const
+    {
+        sse::FloatHandle ret = _mm_dp_ps(this->handle, rhs.handle, 0b11110001);
+        return _mm_cvtss_f32(ret);
     }
 
     Vec4::Vec4(sse::FloatHandle direct_handle): handle(direct_handle){}

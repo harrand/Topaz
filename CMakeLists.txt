@@ -36,6 +36,7 @@ add_library(topaz STATIC
 		src/memory/block.hpp
 		src/memory/pool.hpp
 		src/memory/pool.inl
+		src/geo/vector.cpp
 		src/geo/vector.hpp
 		src/geo/vector.inl
 		src/gl/buffer.cpp
@@ -112,7 +113,7 @@ endif()
 
 ## General
 target_compile_options(topaz PRIVATE -fno-rtti) # Disable rrti (until c++20 provides better rtti)
-target_compile_options(topaz PRIVATE -fstrict-aliasing) # Enable strict aliasing (which we refuse to violate) for a small performance boost.
+target_compile_options(topaz PRIVATE -fstrict-aliasing -msse4.1) # Enable strict aliasing (which we refuse to violate) for a small performance boost.
 # Unless overriden, we aren't compiling in unit-test mode.
 target_compile_definitions(topaz PUBLIC -DTOPAZ_UNIT_TEST=0)
 target_compile_definitions(topaz PUBLIC -DTOPAZ_PROJECT_DIR=\"${PROJECT_SOURCE_DIR}\")
