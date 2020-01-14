@@ -19,6 +19,9 @@ namespace tz::geo
         FloatHandle* handle_array(SSEValidArray<float, Quantity>& aligned_data);
     }
 
+    /**
+     * Wrapper around a fixed-size array. Not required to be aligned for SSE intrinsics.
+     */
     template<typename T, std::size_t Quantity>
     class VecData
     {
@@ -47,6 +50,11 @@ namespace tz::geo
 
     using Vec4Data = VecData<float, 4>;
 
+    /**
+     * Wrapper around a fixed-size array aligned for use of SSE intrinsics.
+     * 
+     * Use this for ultra-fast addition/subtraction/dot of vectors.
+     */
     class Vec4
     {
     public:

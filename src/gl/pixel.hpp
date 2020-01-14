@@ -8,11 +8,14 @@ namespace tz::gl
     template<typename Component>
     struct PixelRGBA
     {
+        static constexpr std::size_t num_components = 4;
         using ComponentType = Component;
         Component r;
         Component g;
         Component b;
         Component a;
+        const Component& operator[](std::size_t idx) const;
+        Component& operator[](std::size_t idx);
         bool operator==(const PixelRGBA<Component>& rhs) const;
         bool operator!=(const PixelRGBA<Component>& rhs) const;
     };
@@ -20,10 +23,13 @@ namespace tz::gl
     template<typename Component>
     struct PixelRGB
     {
+        static constexpr std::size_t num_components = 3;
         using ComponentType = Component;
         Component r;
         Component g;
         Component b;
+        const Component& operator[](std::size_t idx) const;
+        Component& operator[](std::size_t idx);
         bool operator==(const PixelRGB<Component>& rhs) const;
         bool operator!=(const PixelRGB<Component>& rhs) const;
     };
@@ -31,9 +37,12 @@ namespace tz::gl
     template<typename Component>
     struct PixelGrayscale
     {
+        static constexpr std::size_t num_components = 1;
         using ComponentType = Component;
         Component c;
 
+        const Component& operator[](std::size_t idx) const;
+        Component& operator[](std::size_t idx);
         bool operator==(const PixelGrayscale<Component>& rhs) const;
         bool operator!=(const PixelGrayscale<Component>& rhs) const;
     };

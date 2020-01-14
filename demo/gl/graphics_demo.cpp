@@ -1,5 +1,6 @@
 #include "core/core.hpp"
 #include "core/debug/print.hpp"
+#include "input/tz_stb_image/image_reader.hpp"
 #include "gl/shader.hpp"
 #include "gl/shader_compiler.hpp"
 #include "gl/object.hpp"
@@ -58,13 +59,7 @@ int main()
 			0.5f, 1.0f,
 		};
 
-		tz::gl::PixelRGBA8 black_pixel{std::byte{}, std::byte{}, std::byte{}, std::byte{255}};
-		tz::gl::PixelRGBA8 white_pixel{std::byte{255}, std::byte{255}, std::byte{255}, std::byte{255}};
-		tz::gl::Image<tz::gl::PixelRGBA8> rgba_checkerboard{2, 2};
-		rgba_checkerboard(0, 0) = black_pixel;
-		rgba_checkerboard(1, 0) = white_pixel;
-		rgba_checkerboard(0, 1) = white_pixel;
-		rgba_checkerboard(1, 1) = black_pixel;
+		auto rgba_checkerboard = tz::ext::stb::read_image<tz::gl::PixelRGBA8>("res/textures/bricks.jpg");
 		tz::gl::Texture checkerboard;
 		checkerboard.set_parameters(tz::gl::default_texture_params);
 		checkerboard.set_data(rgba_checkerboard);

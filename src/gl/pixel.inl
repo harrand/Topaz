@@ -1,7 +1,46 @@
 #include <type_traits>
+#include "core/debug/assert.hpp"
 
 namespace tz::gl
 {
+
+    template<typename Component>
+    const Component& PixelRGBA<Component>::operator[](std::size_t idx) const
+    {
+        switch(idx)
+        {
+            case 0:
+                return this->r;
+            case 1:
+                return this->g;
+            case 2:
+                return this->b;
+            case 3:
+                return this->a;
+            default:
+                topaz_assert(false, "PixelRGBA::operator[", idx, "] const. Value out of range!");
+        }
+        return this->r;
+    }
+
+    template<typename Component>
+    Component& PixelRGBA<Component>::operator[](std::size_t idx)
+    {
+        switch(idx)
+        {
+            case 0:
+                return this->r;
+            case 1:
+                return this->g;
+            case 2:
+                return this->b;
+            case 3:
+                return this->a;
+            default:
+                topaz_assert(false, "PixelRGBA::operator[", idx, "]. Value out of range!");
+        }
+        return this->r;
+    }
 
     template<typename Component>
     bool PixelRGBA<Component>::operator==(const PixelRGBA<Component>& rhs) const
@@ -28,6 +67,40 @@ namespace tz::gl
     }
 
     template<typename Component>
+    const Component& PixelRGB<Component>::operator[](std::size_t idx) const
+    {
+        switch(idx)
+        {
+            case 0:
+                return this->r;
+            case 1:
+                return this->g;
+            case 2:
+                return this->b;
+            default:
+                topaz_assert(false, "PixelRGB::operator[", idx, "]: Index out of range!");
+        }
+        return this->r;
+    }
+
+    template<typename Component>
+    Component& PixelRGB<Component>::operator[](std::size_t idx)
+    {
+        switch(idx)
+        {
+            case 0:
+                return this->r;
+            case 1:
+                return this->g;
+            case 2:
+                return this->b;
+            default:
+                topaz_assert(false, "PixelRGB::operator[", idx, "]: Index out of range!");
+        }
+        return this->r;
+    }
+
+    template<typename Component>
     bool PixelGrayscale<Component>::operator==(const PixelGrayscale<Component>& rhs) const
     {
         return this->c == rhs.c;
@@ -37,6 +110,19 @@ namespace tz::gl
     bool PixelGrayscale<Component>::operator!=(const PixelGrayscale<Component>& rhs) const
     {
         return this->c != rhs.c;
+    }
+
+    template<typename Component>
+    const Component& PixelGrayscale<Component>::operator[](std::size_t idx) const
+    {
+        switch(idx)
+        {
+            case 0:
+                return this->c;
+            default:
+                topaz_assert(false, "PixelGrayscale::operator[", idx, "]: Index out of range!");
+        }
+        return this->c;
     }
 
     namespace pixel

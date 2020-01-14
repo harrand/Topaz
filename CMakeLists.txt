@@ -81,7 +81,8 @@ add_library(topaz STATIC
 
 target_link_libraries(topaz PUBLIC
 		glfw
-		glad)
+		glad
+		stbi)
 target_include_directories(topaz PUBLIC ${TOPAZ_SOURCE_DIR})
 
 add_subdirectory(lib)
