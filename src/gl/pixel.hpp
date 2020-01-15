@@ -35,6 +35,19 @@ namespace tz::gl
     };
 
     template<typename Component>
+    struct PixelRG
+    {
+        static constexpr std::size_t num_components = 2;
+        using ComponentType = Component;
+        Component x;
+        Component y;
+        const Component& operator[](std::size_t idx) const;
+        Component& operator[](std::size_t idx);
+        bool operator==(const PixelRG<Component>& rhs) const;
+        bool operator!=(const PixelRG<Component>& rhs) const;
+    };
+
+    template<typename Component>
     struct PixelGrayscale
     {
         static constexpr std::size_t num_components = 1;
@@ -57,6 +70,8 @@ namespace tz::gl
         constexpr GLenum parse_format();
     }
     using PixelRGBA8 = PixelRGBA<std::byte>;
+    using PixelRGB8 = PixelRGB<std::byte>;
+    using PixelRG8 = PixelRG<std::byte>;
     using PixelDepth = PixelGrayscale<float>;
 }
 

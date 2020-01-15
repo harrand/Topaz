@@ -59,7 +59,7 @@ int main()
 			0.5f, 1.0f,
 		};
 
-		auto rgba_checkerboard = tz::ext::stb::read_image<tz::gl::PixelRGBA8>("res/textures/bricks.jpg");
+		auto rgba_checkerboard = tz::ext::stb::read_image<tz::gl::PixelRGB8>("res/textures/bricks.jpg");
 		tz::gl::Texture checkerboard;
 		checkerboard.set_parameters(tz::gl::default_texture_params);
 		checkerboard.set_data(rgba_checkerboard);
