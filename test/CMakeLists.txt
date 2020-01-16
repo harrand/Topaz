@@ -32,6 +32,7 @@ endfunction()
 
 # tz::geo
 register_test_target(tz_vector_test)
+register_test_target(tz_matrix_test)
 
 # tz::gl
 register_test_target(tz_buffer_test)

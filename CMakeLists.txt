@@ -36,7 +36,8 @@ add_library(topaz STATIC
 		src/memory/block.hpp
 		src/memory/pool.hpp
 		src/memory/pool.inl
-		src/geo/vector.cpp
+		src/geo/matrix.hpp
+		src/geo/matrix.inl
 		src/geo/vector.hpp
 		src/geo/vector.inl
 		src/gl/buffer.cpp

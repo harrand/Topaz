@@ -1,65 +1,110 @@
-namespace tz::geo
+#include "core/debug/assert.hpp"
+#include <utility>
+#include <cmath>
+
+namespace tz
 {
-    namespace sse
+    template<typename T, std::size_t S>
+    constexpr Vector<T, S>::Vector(std::array<T, S> data): vec(data){}
+
+    template<typename T, std::size_t S>
+    const T& Vector<T, S>::operator[](std::size_t idx) const
     {
-        template<std::size_t Quantity>
-        __m128* handle_array(SSEValidArray<float, Quantity>& aligned_data)
+        topaz_assert(idx < S, "Vector<T, ", S, ">::operator[", idx, "]: Index out of range!");
+        return this->vec[idx];
+    }
+
+    template<typename T, std::size_t S>
+    T& Vector<T, S>::operator[](std::size_t idx)
+    {
+        topaz_assert(idx < S, "Vector<T, ", S, ">::operator[", idx, "]: Index out of range!");
+        return this->vec[idx];
+    }
+
+    template<typename T, std::size_t S>
+    Vector<T, S>& Vector<T, S>::operator+=(const Vector<T, S>& rhs)
+    {
+        for(std::size_t i = 0; i < S; i++)
+            this->vec[i] += rhs.vec[i];
+        return *this;
+    }
+
+    template<typename T, std::size_t S>
+    Vector<T, S> Vector<T, S>::operator+(const Vector<T, S>& rhs) const
+    {
+        Vector<T, S> copy = *this;
+        copy += rhs;
+        return std::move(copy);
+    }
+
+    template<typename T, std::size_t S>
+    Vector<T, S>& Vector<T, S>::operator-=(const Vector<T, S>& rhs)
+    {
+        for(std::size_t i = 0; i < S; i++)
+            this->vec[i] -= rhs.vec[i];
+        return *this;
+    }
+
+    template<typename T, std::size_t S>
+    Vector<T, S> Vector<T, S>::operator-(const Vector<T, S>& rhs) const
+    {
+        Vector<T, S> copy = *this;
+        copy -= rhs;
+        return std::move(copy);
+    }
+
+    template<typename T, std::size_t S>
+    Vector<T, S>& Vector<T, S>::operator*=(T scalar)
+    {
+        for(std::size_t i = 0; i < S; i++)
+            this->vec[i] *= scalar;
+        return *this;
+    }
+
+    template<typename T, std::size_t S>
+    Vector<T, S> Vector<T, S>::operator*(T scalar) const
+    {
+        Vector<T, S> copy = *this;
+        copy *= scalar;
+        return std::move(copy);
+    }
+
+    template<typename T, std::size_t S>
+    Vector<T, S>& Vector<T, S>::operator/=(T scalar)
+    {
+        for(std::size_t i = 0; i < S; i++)
+            this->vec[i] /= scalar;
+        return *this;
+    }
+
+    template<typename T, std::size_t S>
+    Vector<T, S> Vector<T, S>::operator/(T scalar) const
+    {
+        Vector<T, S> copy = *this;
+        copy /= scalar;
+        return std::move(copy);
+    }
+
+    template<typename T, std::size_t S>
+    T Vector<T, S>::dot(const Vector<T, S>& rhs) const
+    {
+        T sum = T();
+        for(std::size_t i = 0; i < S; i++)
         {
-            return reinterpret_cast<__m128*>(aligned_data);
+            sum += ((*this)[i] * rhs[i]);
         }
+        return sum;
     }
 
-    template<typename T, std::size_t Quantity>
-    constexpr VecData<T, Quantity>::VecData(std::array<T, Quantity> array): arr(array){}
-
-    template<typename T, std::size_t Quantity>
-    constexpr const T* VecData<T, Quantity>::data() const
+    template<typename T, std::size_t S>
+    T Vector<T, S>::length() const
     {
-        return this->arr.data();
+        T sum_squares = T();
+        for(std::size_t i = 0; i < S; i++)
+        {
+            sum_squares += (*this)[i] * (*this)[i];
+        }
+        return std::sqrt(sum_squares);
     }
 
-    template<typename T, std::size_t Quantity>
-    constexpr T* VecData<T, Quantity>::data()
-    {
-        return this->arr.data();
-    }
-
-    template<typename T, std::size_t Quantity>
-    constexpr const T& VecData<T, Quantity>::operator[](std::size_t idx) const
-    {
-        return this->arr[idx];
-    }
-
-    template<typename T, std::size_t Quantity>
-    constexpr T& VecData<T, Quantity>::operator[](std::size_t idx)
-    {
-        return this->arr[idx];
-    }
-
-    template<typename T>
-    constexpr VecData<T, 1>::VecData(T value): val(value){}
-
-    template<typename T>
-    constexpr const T* VecData<T, 1>::data() const
-    {
-        return &this->val;
-    }
-
-    template<typename T>
-    constexpr T* VecData<T, 1>::data()
-    {
-        return &this->val;
-    }
-
-    template<typename T>
-    constexpr VecData<T, 1>::operator T() const
-    {
-        return this->val;
-    }
-
-    template<typename T>
-    constexpr VecData<T, 1>::operator T()
-    {
-        return this->val;
-    }
 }
