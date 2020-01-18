@@ -9,5 +9,5 @@ namespace tz::ext::stb
     std::string write_image(const char* path, const tz::gl::Image<PixelType>& image, std::string name = "tz_img.png");
 }
 
-#include "input/tz_stb_image/image_writer.inl"
+#include "gl/tz_stb_image/image_writer.inl"
 #endif

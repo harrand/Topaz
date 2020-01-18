@@ -24,10 +24,6 @@ add_library(topaz STATIC
 		src/core/window.inl
 		src/core/tz_glad/glad_context.cpp
 		src/core/tz_glad/glad_context.hpp
-		src/input/tz_stb_image/image_reader.hpp
-		src/input/tz_stb_image/image_reader.inl
-		src/input/tz_stb_image/image_writer.hpp
-		src/input/tz_stb_image/image_writer.inl
 		src/input/input_listener.cpp
 		src/input/input_listener.hpp
 		src/input/input_event.cpp
@@ -44,6 +40,10 @@ add_library(topaz STATIC
 		src/geo/matrix.inl
 		src/geo/vector.hpp
 		src/geo/vector.inl
+		src/gl/tz_stb_image/image_reader.hpp
+		src/gl/tz_stb_image/image_reader.inl
+		src/gl/tz_stb_image/image_writer.hpp
+		src/gl/tz_stb_image/image_writer.inl
 		src/gl/buffer.cpp
 		src/gl/buffer.hpp
 		src/gl/buffer.inl
