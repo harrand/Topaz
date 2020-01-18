@@ -59,7 +59,8 @@ namespace tz
         void debug_print() const;
         #endif
     private:
-        std::array<Row, C> mat;
+        // 16-byte alignment to make it as easy as possible to auto-vectorise.
+        alignas(16) std::array<Row, C> mat;
     };
 
     using Mat4 = Matrix<float, 4, 4>;
