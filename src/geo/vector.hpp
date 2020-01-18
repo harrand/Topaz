@@ -33,6 +33,9 @@ namespace tz
     using Vec2 = Vector<float, 2>;
     using Vec3 = Vector<float, 3>;
     using Vec4 = Vector<float, 4>;
+
+    template<typename T = float>
+    Vector<T, 3> cross(const Vector<T, 3>& lhs, const Vector<T, 3>& rhs);
 }
 
 #include "geo/vector.inl"

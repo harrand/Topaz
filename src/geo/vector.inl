@@ -107,4 +107,17 @@ namespace tz
         return std::sqrt(sum_squares);
     }
 
+    template<typename T>
+    Vector<T, 3> cross(const Vector<T, 3>& lhs, const Vector<T, 3>& rhs)
+    {
+        Vector<T, 3> ret;
+        //cx = aybz − azby
+        ret[0] = (lhs[1] * rhs[2]) - (lhs[2] * rhs[1]);
+        //cy = azbx − axbz
+        ret[1] = (lhs[2] * rhs[0]) - (lhs[0] * rhs[2]);
+        //cz = axby − aybx
+        ret[2] = (lhs[0] * rhs[1]) - (lhs[1] * rhs[0]);
+        return std::move(ret);
+    }
+
 }

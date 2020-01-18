@@ -1,6 +1,5 @@
 #ifndef TOPAZ_EXT_IMAGE_READER_HPP
 #define TOPAZ_EXT_IMAGE_READER_HPP
-#include "stb_image.h"
 #include "gl/image.hpp"
 
 namespace tz::ext::stb

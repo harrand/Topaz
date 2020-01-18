@@ -122,7 +122,7 @@ int main()
 
     mat.add(identity());
     mat.add(addition());
-    mat.add(inversion());
+    //mat.add(inversion());
 
     return mat.result();
 }

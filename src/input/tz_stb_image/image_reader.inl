@@ -1,6 +1,7 @@
 #include "core/core.hpp"
 #include "core/resource_manager.hpp"
 #include "core/debug/assert.hpp"
+#include "stb_image.h"
 
 namespace tz::ext::stb
 {

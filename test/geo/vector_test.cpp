@@ -35,7 +35,7 @@ tz::test::Case addition_subtraction()
 
 tz::test::Case dot()
 {
-    tz::test::Case test_case("tz::geo::Vec4 SSE Dot/Cross Product Tests");
+    tz::test::Case test_case("tz::geo::Vec4 Dot Product Tests");
 
     tz::Vec4 a({18, 39, 31, 1.0f});
     tz::Vec4 b({101, 58, 75, 1.0f});
@@ -49,12 +49,26 @@ tz::test::Case dot()
     return test_case;
 }
 
+tz::test::Case cross()
+{
+    tz::test::Case test_case("tz::geo::Vec3 Cross Product Tests");
+    tz::Vec3 a({2.0f, 3.0f, 4.0f});
+    tz::Vec3 b({5.0f, 6.0f, 7.0f});
+    tz::Vec3 c = tz::cross(a, b);
+    topaz_expect(test_case, c[0] == -3, "Cross Product incorrect.");
+    topaz_expect(test_case, c[1] == 6, "Cross Product incorrect.");
+    topaz_expect(test_case, c[2] == -3, "Cross Product incorrect.");
+    // (2, 3, 4) × (5, 6, 7) = (−3, 6, −3)
+    return test_case;
+}
+
 int main()
 {
     tz::test::Unit vec;
 
     vec.add(addition_subtraction());
     vec.add(dot());
+    vec.add(cross());
 
     return vec.result();
 }
