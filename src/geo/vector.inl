@@ -86,6 +86,18 @@ namespace tz
     }
 
     template<typename T, std::size_t S>
+    const T* Vector<T, S>::data() const
+    {
+        return this->vec.data();
+    }
+
+    template<typename T, std::size_t S>
+    T* Vector<T, S>::data()
+    {
+        return this->vec.data();
+    }
+
+    template<typename T, std::size_t S>
     T Vector<T, S>::dot(const Vector<T, S>& rhs) const
     {
         T sum = T();

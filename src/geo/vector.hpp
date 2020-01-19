@@ -1,6 +1,7 @@
 #ifndef TOPAZ_GEO_VECTOR_HPP
 #define TOPAZ_GEO_VECTOR_HPP
 #include "memory/align.hpp"
+#include "memory/block.hpp"
 
 namespace tz
 {
@@ -22,6 +23,9 @@ namespace tz
         Vector<T, S> operator*(T scalar) const;
         Vector<T, S>& operator/=(T scalar);
         Vector<T, S> operator/(T scalar) const;
+
+        const T* data() const;
+        T* data();
 
         T dot(const Vector<T, S>& rhs) const;
         T length() const;
