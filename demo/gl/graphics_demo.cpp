@@ -15,14 +15,14 @@
 const char *vertexShaderSource = "#version 430\n"
     "layout (location = 1) in vec3 aPos;\n"
 	"layout (location = 2) in vec2 aTexcoord;\n"
-	"#ubo model_matrices\n"
+	"#ubo matrices\n"
 	"{\n"
-	"	mat4 model;\n"
+	"	mat4 mvp;\n"
 	"};\n"
 	"out vec2 texcoord;\n"
     "void main()\n"
     "{\n"
-    "   gl_Position = model * vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+    "   gl_Position = mvp * vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
 	"	texcoord = aTexcoord;\n"
     "}\0";
 const char *fragmentShaderSource = "#version 430\n"
@@ -49,8 +49,8 @@ int main()
 		}
 		std::size_t ubo_id = ubo_module->get_buffer_id(ubo_module->size() - 1);
 		tz::gl::UBO* ubo = o.get<tz::gl::BufferType::UniformStorage>(ubo_id);
-		ubo->terminal_resize(sizeof(tz::Mat4));
-		tz::mem::UniformPool<tz::Mat4> model_matrix = ubo->map_pool<tz::Mat4>();
+		ubo->terminal_resize(sizeof(tz::Mat4) * 3);
+		tz::mem::UniformPool<tz::Mat4> matrix = ubo->map_pool<tz::Mat4>();
 
 		tz::gl::ShaderCompiler cpl;
 		tz::gl::ShaderProgram prg;
@@ -89,23 +89,14 @@ int main()
 		texcoord_vbo->resize(sizeof(texcoords));
 		texcoord_vbo->send(texcoords);
 
-		vbo->terminal_resize(sizeof(vertices));
-		tz::mem::UniformPool<float> vertex_pool = vbo->map_pool<float>();
-		for(std::size_t i = 0; i < vertex_pool.capacity(); i++)
-			vertex_pool.set(i, vertices[i]);
-		auto add_pos = [&vertex_pool](float x, float y, float z)
+		vbo->resize(sizeof(vertices));
+		vbo->send(vertices);
+		tz::Vec3 triangle_pos{{0.0f, 0.0f, 0.0f}};
+		auto add_pos = [&triangle_pos](float x, float y, float z)
 		{
-			vertex_pool[0] += x;
-			vertex_pool[3] += x;
-			vertex_pool[6] += x;
-
-			vertex_pool[1] += y;
-			vertex_pool[4] += y;
-			vertex_pool[7] += y;
-
-			vertex_pool[2] += z;
-			vertex_pool[5] += z;
-			vertex_pool[8] += z;
+			triangle_pos[0] += x;
+			triangle_pos[1] += y;
+			triangle_pos[2] += z;
 		};
 
 		o.format(vbo_id, tz::gl::fmt::three_floats);
@@ -126,11 +117,11 @@ int main()
 			switch(e.key)
 			{
 			case GLFW_KEY_W:
-				add_pos(0.0f, 0.05f, 0.0f);
+				add_pos(0.0f, 0.00f, -0.05f);
 				tz::debug_printf("moving forward.\n");
 			break;
 			case GLFW_KEY_S:
-				add_pos(0.0f, -0.05f, 0.0f);
+				add_pos(0.0f, 0.00f, 0.05f);
 				tz::debug_printf("moving backward.\n");
 			break;
 			case GLFW_KEY_A:
@@ -141,6 +132,14 @@ int main()
 				add_pos(0.05f, 0.0f, 0.0f);
 				tz::debug_printf("moving right\n");
 			break;
+			case GLFW_KEY_SPACE:
+				add_pos(0.0f, 0.05f, 0.0f);
+				tz::debug_printf("moving up\n");
+			break;
+			case GLFW_KEY_LEFT_SHIFT:
+				add_pos(0.0f, -0.05f, 0.0f);
+				tz::debug_printf("moving down\n");
+			break;
 			}
 		});
 
@@ -149,12 +148,14 @@ int main()
 		dev.set_handle(ibo_id);
 		while(!wnd.is_close_requested())
 		{
-			rotation_x += 0.02f;
 			rotation_y += 0.02f;
 
         	dev.clear();
 			o.bind();
-			model_matrix.set(0, tz::geo::rotate(tz::Vec3{{0.0f, rotation_y, rotation_x}}));
+			tz::Mat4 m = tz::geo::model(triangle_pos, tz::Vec3{{0.0f, rotation_y, 0.0f}}, tz::Vec3{{1.0f, 1.0f, 1.0f}});
+			tz::Mat4 v = tz::geo::view(tz::Vec3{{0.0f, 0.0f, 5.0f}}, tz::Vec3{{0.0f, 0.0f, 0.0f}});
+			tz::Mat4 p = tz::geo::perspective(1.57f, 1920.0f/1080.0f, 0.1f, 1000.0f);
+			matrix.set(0, p * v * m);
 			ubo->bind();
 			dev.render();
 			wnd.update();

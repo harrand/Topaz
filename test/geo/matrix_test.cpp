@@ -116,13 +116,31 @@ tz::test::Case inversion()
     return test_case;
 }
 
+tz::test::Case column_major()
+{
+    tz::test::Case test_case("tz::geo::Matrix Column-Major Tests");
+	tz::Mat4 order{{std::array<float, 4>{0, 1, 2, 3}, {4, 5, 6, 7}, {8, 9, 10, 11}, {12, 13, 14, 15}}};
+    /*
+    |0   4   8   12|
+    |1   5   9   13|
+    |2   6   10   14|
+    |3   7   11   15|
+    */
+
+    topaz_expect(test_case, order(0, 1) == 4.0f, "Expected ", 4.0f, " but got ", order(0, 1));
+    topaz_expect(test_case, order(0, 2) == 8.0f, "Expected ", 8.0f, " but got ", order(0, 2));
+    topaz_expect(test_case, order(3, 1) == 7.0f, "Expected ", 7.0f, " but got ", order(3, 1));
+    return test_case;
+}
+
 int main()
 {
     tz::test::Unit mat;
 
     mat.add(identity());
     mat.add(addition());
-    //mat.add(inversion());
+    mat.add(inversion());
+    mat.add(column_major());
 
     return mat.result();
 }

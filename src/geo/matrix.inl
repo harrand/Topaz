@@ -138,6 +138,7 @@ namespace tz
     template<typename T, std::size_t R, std::size_t C>
     Matrix<T, R, C>& Matrix<T, R, C>::operator*=(const Matrix<T, R, C>& matrix)
     {
+        Matrix<T, R, C> m = *this;
         for(std::size_t i = 0; i < R; i++)
         {
             for(std::size_t j = 0; j < C; j++)
@@ -145,7 +146,7 @@ namespace tz
                 T res_ele = T();
                 for(std::size_t k = 0; k < C; k++)
                 {
-                    res_ele += ((*this)(i, k) * matrix(k, j));
+                    res_ele += (m(i, k) * matrix(k, j));
                 }
                 (*this)(i, j) = res_ele;
             }
@@ -201,11 +202,165 @@ namespace tz
     Matrix<T, R, C> Matrix<T, R, C>::inverse() const
     {
         // Create copy of the current matrix to work with.
-        Matrix<T, R, C> mat = *this;
+        Matrix<T, R, C> mat = Matrix<T, R, C>::identity();
         // TODO: Replace with Jacobi's Method.
+        
+        // Column-major
+        auto at = [](Matrix<T, R, C>& m, std::size_t idx)->T&
+        {
+            // 5 ==> (1, 1)
+            // row_id = 5 / 4 == 1
+            // column_id = (1*4)
+            std::size_t row_id = idx / C;
+            std::size_t column_id = idx - (row_id*C);
+            return m(row_id, column_id);
+        };
+
+        auto cat = [](const Matrix<T, R, C>& m, std::size_t idx)->const T&
+        {
+            // 5 ==> (1, 1)
+            // row_id = 5 / 4 == 1
+            // column_id = (1*4)
+            std::size_t row_id = idx / C;
+            std::size_t column_id = idx - (row_id*C);
+            return m(row_id, column_id);
+        };
+
+        at(mat, 0) = cat(*this, 5) * cat(*this, 10) * cat(*this, 15) -
+                cat(*this, 5) * cat(*this, 11) * cat(*this, 14) -
+                cat(*this, 9) * cat(*this, 6)  * cat(*this, 15) +
+                cat(*this, 9) * cat(*this, 7)  * cat(*this, 14) + 
+                cat(*this, 13) * cat(*this, 6) * cat(*this, 11) - 
+                cat(*this, 13) * cat(*this, 7) * cat(*this, 10);
+
+        at(mat, 4) = -cat(*this, 4)  * cat(*this, 10) * cat(*this, 15) + 
+                cat(*this, 4)  * cat(*this, 11) * cat(*this, 14) + 
+                cat(*this, 8)  * cat(*this, 6)  * cat(*this, 15) - 
+                cat(*this, 8)  * cat(*this, 7)  * cat(*this, 14) - 
+                cat(*this, 12) * cat(*this, 6)  * cat(*this, 11) + 
+                cat(*this, 12) * cat(*this, 7)  * cat(*this, 10);
+
+        at(mat, 8) = cat(*this, 4)  * cat(*this, 9) * cat(*this, 15) - 
+                cat(*this, 4)  * cat(*this, 11) * cat(*this, 13) - 
+                cat(*this, 8)  * cat(*this, 5) * cat(*this, 15) + 
+                cat(*this, 8)  * cat(*this, 7) * cat(*this, 13) + 
+                cat(*this, 12) * cat(*this, 5) * cat(*this, 11) - 
+                cat(*this, 12) * cat(*this, 7) * cat(*this, 9);
+
+        at(mat, 12) = -cat(*this, 4)  * cat(*this, 9) * cat(*this, 14) + 
+                cat(*this, 4)  * cat(*this, 10) * cat(*this, 13) +
+                cat(*this, 8)  * cat(*this, 5) * cat(*this, 14) - 
+                cat(*this, 8)  * cat(*this, 6) * cat(*this, 13) - 
+                cat(*this, 12) * cat(*this, 5) * cat(*this, 10) + 
+                cat(*this, 12) * cat(*this, 6) * cat(*this, 9);
+
+        at(mat, 1) = -cat(*this, 1)  * cat(*this, 10) * cat(*this, 15) + 
+                cat(*this, 1)  * cat(*this, 11) * cat(*this, 14) + 
+                cat(*this, 9)  * cat(*this, 2) * cat(*this, 15) - 
+                cat(*this, 9)  * cat(*this, 3) * cat(*this, 14) - 
+                cat(*this, 13) * cat(*this, 2) * cat(*this, 11) + 
+                cat(*this, 13) * cat(*this, 3) * cat(*this, 10);
+
+        at(mat, 5) = cat(*this, 0)  * cat(*this, 10) * cat(*this, 15) - 
+                cat(*this, 0)  * cat(*this, 11) * cat(*this, 14) - 
+                cat(*this, 8)  * cat(*this, 2) * cat(*this, 15) + 
+                cat(*this, 8)  * cat(*this, 3) * cat(*this, 14) + 
+                cat(*this, 12) * cat(*this, 2) * cat(*this, 11) - 
+                cat(*this, 12) * cat(*this, 3) * cat(*this, 10);
+
+        at(mat, 9) = -cat(*this, 0)  * cat(*this, 9) * cat(*this, 15) + 
+                cat(*this, 0)  * cat(*this, 11) * cat(*this, 13) + 
+                cat(*this, 8)  * cat(*this, 1) * cat(*this, 15) - 
+                cat(*this, 8)  * cat(*this, 3) * cat(*this, 13) - 
+                cat(*this, 12) * cat(*this, 1) * cat(*this, 11) + 
+                cat(*this, 12) * cat(*this, 3) * cat(*this, 9);
+
+        at(mat, 13) = cat(*this, 0)  * cat(*this, 9) * cat(*this, 14) - 
+                cat(*this, 0)  * cat(*this, 10) * cat(*this, 13) - 
+                cat(*this, 8)  * cat(*this, 1) * cat(*this, 14) + 
+                cat(*this, 8)  * cat(*this, 2) * cat(*this, 13) + 
+                cat(*this, 12) * cat(*this, 1) * cat(*this, 10) - 
+                cat(*this, 12) * cat(*this, 2) * cat(*this, 9);
+
+        at(mat, 2) = cat(*this, 1)  * cat(*this, 6) * cat(*this, 15) - 
+                cat(*this, 1)  * cat(*this, 7) * cat(*this, 14) - 
+                cat(*this, 5)  * cat(*this, 2) * cat(*this, 15) + 
+                cat(*this, 5)  * cat(*this, 3) * cat(*this, 14) + 
+                cat(*this, 13) * cat(*this, 2) * cat(*this, 7) - 
+                cat(*this, 13) * cat(*this, 3) * cat(*this, 6);
+
+        at(mat, 6) = -cat(*this, 0)  * cat(*this, 6) * cat(*this, 15) + 
+                cat(*this, 0)  * cat(*this, 7) * cat(*this, 14) + 
+                cat(*this, 4)  * cat(*this, 2) * cat(*this, 15) - 
+                cat(*this, 4)  * cat(*this, 3) * cat(*this, 14) - 
+                cat(*this, 12) * cat(*this, 2) * cat(*this, 7) + 
+                cat(*this, 12) * cat(*this, 3) * cat(*this, 6);
+
+        at(mat, 10) = cat(*this, 0)  * cat(*this, 5) * cat(*this, 15) - 
+                cat(*this, 0)  * cat(*this, 7) * cat(*this, 13) - 
+                cat(*this, 4)  * cat(*this, 1) * cat(*this, 15) + 
+                cat(*this, 4)  * cat(*this, 3) * cat(*this, 13) + 
+                cat(*this, 12) * cat(*this, 1) * cat(*this, 7) - 
+                cat(*this, 12) * cat(*this, 3) * cat(*this, 5);
+
+        at(mat, 14) = -cat(*this, 0)  * cat(*this, 5) * cat(*this, 14) + 
+                cat(*this, 0)  * cat(*this, 6) * cat(*this, 13) + 
+                cat(*this, 4)  * cat(*this, 1) * cat(*this, 14) - 
+                cat(*this, 4)  * cat(*this, 2) * cat(*this, 13) - 
+                cat(*this, 12) * cat(*this, 1) * cat(*this, 6) + 
+                cat(*this, 12) * cat(*this, 2) * cat(*this, 5);
+
+        at(mat, 3) = -cat(*this, 1) * cat(*this, 6) * cat(*this, 11) + 
+                cat(*this, 1) * cat(*this, 7) * cat(*this, 10) + 
+                cat(*this, 5) * cat(*this, 2) * cat(*this, 11) - 
+                cat(*this, 5) * cat(*this, 3) * cat(*this, 10) - 
+                cat(*this, 9) * cat(*this, 2) * cat(*this, 7) + 
+                cat(*this, 9) * cat(*this, 3) * cat(*this, 6);
+
+        at(mat, 7) = cat(*this, 0) * cat(*this, 6) * cat(*this, 11) - 
+                cat(*this, 0) * cat(*this, 7) * cat(*this, 10) - 
+                cat(*this, 4) * cat(*this, 2) * cat(*this, 11) + 
+                cat(*this, 4) * cat(*this, 3) * cat(*this, 10) + 
+                cat(*this, 8) * cat(*this, 2) * cat(*this, 7) - 
+                cat(*this, 8) * cat(*this, 3) * cat(*this, 6);
+
+        at(mat, 11) = -cat(*this, 0) * cat(*this, 5) * cat(*this, 11) + 
+                cat(*this, 0) * cat(*this, 7) * cat(*this, 9) + 
+                cat(*this, 4) * cat(*this, 1) * cat(*this, 11) - 
+                cat(*this, 4) * cat(*this, 3) * cat(*this, 9) - 
+                cat(*this, 8) * cat(*this, 1) * cat(*this, 7) + 
+                cat(*this, 8) * cat(*this, 3) * cat(*this, 5);
+
+        at(mat, 15) = cat(*this, 0) * cat(*this, 5) * cat(*this, 10) - 
+                cat(*this, 0) * cat(*this, 6) * cat(*this, 9) - 
+                cat(*this, 4) * cat(*this, 1) * cat(*this, 10) + 
+                cat(*this, 4) * cat(*this, 2) * cat(*this, 9) + 
+                cat(*this, 8) * cat(*this, 1) * cat(*this, 6) - 
+                cat(*this, 8) * cat(*this, 2) * cat(*this, 5);
+
+        float determinant = cat(*this, 0) * cat(mat, 0) + cat(*this, 1) * cat(mat, 4) + cat(*this, 2) * cat(mat, 8) + cat(*this, 3) * cat(mat, 12);
+        topaz_assert(determinant != 0, "tz::geo::Matrix<T, ", R, ", ", C, ">::inverse(): Cannot get inverse because determinant is zero.");
+        determinant = 1.0f / determinant;
+        for(std::size_t i = 0; i < 16; i++)
+            at(mat, i) = cat(mat, i) * determinant;
         return mat;
     }
 
+    template<typename T, std::size_t R, std::size_t C>
+    //template<std::size_t X, std::size_t Y, typename std::enable_if_t<X == Y>>
+    Matrix<T, R, C> Matrix<T, R, C>::transpose() const
+    {
+        Matrix<T, R, C> m = *this;
+        std::swap(m(0, 1), m(1, 0));
+        std::swap(m(0, 2), m(2, 0));
+        std::swap(m(1, 2), m(2, 1));
+        std::swap(m(0, 3), m(3, 0));
+        std::swap(m(1, 3), m(3, 1));
+        std::swap(m(2, 3), m(3, 2));
+        return m;
+    }
+
+    #if TOPAZ_DEBUG
     template<typename T, std::size_t R, std::size_t C>
     void Matrix<T, R, C>::debug_print() const
     {
@@ -225,4 +380,5 @@ namespace tz
         }
         std::printf("\n");
     }
+    #endif
 }

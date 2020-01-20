@@ -12,10 +12,9 @@ namespace tz::geo
         return m;
     }
 
-    /**
-     * http://www.opengl-tutorial.org/assets/faq_quaternions/index.html#Q28
-     * 
-        Q28. How do I generate a rotation matrix in the X-axis?
+    // http://www.opengl-tutorial.org/assets/faq_quaternions/index.html#Q28
+    /*
+    Q28. How do I generate a rotation matrix in the X-axis?
         -------------------------------------------------------
 
         Use the 4x4 matrix:
@@ -24,30 +23,7 @@ namespace tz::geo
             M = |  0  cos(A) -sin(A)  0 |
                 |  0  sin(A)  cos(A)  0 |
                 |  0  0       0       1 |
-
-
-        Q29. How do I generate a rotation matrix in the Y-axis?
-        -------------------------------------------------------
-
-        Use the 4x4 matrix:
-
-                |  cos(A)  0   sin(A)  0 |
-            M = |  0       1   0       0 |
-                | -sin(A)  0   cos(A)  0 |
-                |  0       0   0       1 |
-
-
-        Q30. How do I generate a rotation matrix in the Z-axis?
-        -------------------------------------------------------
-
-        Use the 4x4 matrix:
-
-                |  cos(A)  -sin(A)   0   0 |
-            M = |  sin(A)   cos(A)   0   0 |
-                |  0        0        1   0 |
-                |  0        0        0   1 |
-     */
-
+    */
     Mat4 rotate_x(float angle)
     {
         Mat4 m = Mat4::identity();
@@ -57,6 +33,18 @@ namespace tz::geo
         m(2, 2) = std::cos(angle);
         return m;
     }
+
+    /*
+        Q29. How do I generate a rotation matrix in the Y-axis?
+        -------------------------------------------------------
+
+        Use the 4x4 matrix:
+
+                |  cos(A)  0   sin(A)  0 |
+            M = |  0       1   0       0 |
+                | -sin(A)  0   cos(A)  0 |
+                |  0       0   0       1 |
+    */
 
     Mat4 rotate_y(float angle)
     {
@@ -68,6 +56,17 @@ namespace tz::geo
         return m;
     }
 
+    /*
+        Q30. How do I generate a rotation matrix in the Z-axis?
+        -------------------------------------------------------
+
+        Use the 4x4 matrix:
+
+                |  cos(A)  -sin(A)   0   0 |
+            M = |  sin(A)   cos(A)   0   0 |
+                |  0        0        1   0 |
+                |  0        0        0   1 |
+     */
     Mat4 rotate_z(float angle)
     {
         Mat4 m = Mat4::identity();
@@ -115,9 +114,9 @@ namespace tz::geo
         m(1, 1) = 1.0f / thf;
 
         m(2, 2) = (far + near) / (near - far);
-        m(2, 3) = -1.0f;
+        m(3, 2) = -1.0f;
         
-        m(3, 2) = (2.0f * far * near) / (near - far);
+        m(2, 3) = (2.0f * far * near) / (near - far);
         m(3, 3) = 0.0f;
         return m;
     }

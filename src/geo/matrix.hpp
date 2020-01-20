@@ -54,6 +54,8 @@ namespace tz
         bool operator==(const Matrix<T, R, C>& matrix) const;
 
         Matrix<T, R, C> inverse() const;
+        //template<std::size_t X = R, std::size_t Y = C, typename std::enable_if_t<std::conditional_t<X == Y>>>
+        Matrix<T, R, C> transpose() const;
 
         #if TOPAZ_DEBUG
         void debug_print() const;
