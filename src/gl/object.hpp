@@ -4,7 +4,7 @@
 
 #ifndef TOPAZ_GL_OBJECT_HPP
 #define TOPAZ_GL_OBJECT_HPP
-#include "gl/buffer.hpp"
+#include "gl/managed_buffer.hpp"
 #include "gl/format.hpp"
 #include "gl/draw_command.hpp"
 #include <vector>
@@ -89,6 +89,8 @@ namespace tz::gl
          */
         template<tz::gl::BufferType Type, typename... Args>
         std::size_t emplace_buffer(Args&&... args);
+        template<tz::gl::BufferType Type, typename... Args>
+        std::size_t emplace_managed_buffer(Args&&... args);
 
         void format(std::size_t idx, tz::gl::Format fmt) const;
         /**
@@ -130,6 +132,8 @@ namespace tz::gl
          */
         template<tz::gl::BufferType Type>
         tz::gl::Buffer<Type>* get(std::size_t idx);
+        template<tz::gl::BufferType Type>
+        tz::gl::ManagedBuffer<Type>* get_managed(std::size_t idx);
         /**
          * Retrieve a pointer to an existing IBuffer using its Handle ID. This will return the underlying interface.
          * 

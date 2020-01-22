@@ -183,7 +183,7 @@ namespace tz::gl
          * @param purpose Describes what the desired use for the data is. This is an optimisation measure. If you don't intend to edit the data, providing MappingPurpose::ReadOnly will be a performance boon. The default purpose allows reading + writing.
          * @return Memory Block containing arbitrary data. The properties of this data are not guaranteed to be consistent with that of normal RAM. For example, this might be order of magnitudes slower than normal RAM.
          */
-        tz::mem::Block map(MappingPurpose purpose = MappingPurpose::ReadWrite);
+        virtual tz::mem::Block map(MappingPurpose purpose = MappingPurpose::ReadWrite);
         /**
          * Map the buffer, providing a memory pool to be used as an array of Ts.
          * 
@@ -200,7 +200,7 @@ namespace tz::gl
          * Precondition: Requires the buffer to be valid, bound and mapped.
          * Note: This will also work for persistently-mapped-buffers (PMBs).
          */
-        void unmap();
+        virtual void unmap();
         /**
          * Query as to whether the buffer is currently mapped or not.
          * 

@@ -34,6 +34,7 @@ add_library(topaz STATIC
 		src/memory/align.inl
 		src/memory/block.cpp
 		src/memory/block.hpp
+		src/memory/block.inl
 		src/memory/pool.hpp
 		src/memory/pool.inl
 		src/geo/matrix_transform.cpp
@@ -57,6 +58,11 @@ add_library(topaz STATIC
 		src/gl/frame.inl
 		src/gl/image.cpp
 		src/gl/image.hpp
+		src/gl/managed_buffer.cpp
+		src/gl/managed_buffer.hpp
+		src/gl/managed_buffer.inl
+		src/gl/mesh.cpp
+		src/gl/mesh.hpp
 		src/gl/object.hpp
 		src/gl/object.cpp
 		src/gl/object.inl
@@ -73,6 +79,8 @@ add_library(topaz STATIC
 		src/gl/texture.cpp
 		src/gl/texture.hpp
 		src/gl/texture.inl
+		src/gl/vertex.cpp
+		src/gl/vertex.hpp
 		src/gl/modules/include.cpp
 		src/gl/modules/include.hpp
 		src/gl/modules/ssbo.cpp
