@@ -29,9 +29,13 @@ namespace tz::mem
         reference_type emplace(Args&&... args);
 
         iterator begin();
+        const_iterator begin() const;
         const_iterator cbegin() const;
         iterator end();
+        const_iterator end() const;
         const_iterator cend() const;
+
+        void clear();
 
         iterator find_by_key(const K& key);
         const_iterator find_by_key(const K& key) const;

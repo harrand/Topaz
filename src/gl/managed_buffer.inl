@@ -14,7 +14,7 @@ namespace tz::gl
         char* mapped_begin = reinterpret_cast<char*>(this->mapped_block.value().begin);
         char* offsetted_begin = mapped_begin + static_cast<std::ptrdiff_t>(offset_bytes);
         auto emplacement_pair = regions.emplace(ManagedBufferRegion{mapped_begin, name.c_str(), {offsetted_begin, size_bytes}}, name);
-        return (emplacement_pair.first)->first;
+        return *(emplacement_pair.first);
     }
 
     template<tz::gl::BufferType Type>
@@ -24,7 +24,7 @@ namespace tz::gl
         {
             if(region_name == cur_region_name)
             {
-                this->regions.erase(cur_region);
+                this->regions.erase_key(cur_region);
                 return;
             }
         }
@@ -86,7 +86,7 @@ namespace tz::gl
     {
         this->verify_mapped();
         auto find_result = this->find_region_iter(name);
-        topaz_assert(find_result != this->regions.end(), "tz::gl::ManagedBuffer<Type>::operator[", name, "]: No such region exists with the name \"", name, "\"");
+        topaz_assert(find_result != this->regions.cend(), "tz::gl::ManagedBuffer<Type>::operator[", name, "]: No such region exists with the name \"", name, "\"");
         return find_result->first;
     }
 
@@ -102,6 +102,10 @@ namespace tz::gl
     {
         this->verify_mapped();
         void* mapping_begin = this->mapped_block.value().begin;
+        topaz_assert(this->regions.contains_value(region_name), "tz::gl::ManagedBuffer<Type>::relocate_region(", region_name, ", ", byte_index, "): No such region named \"", region_name, "\"");
+        ManagedBufferRegion region = this->regions.get_key(region_name);
+        this->regions.erase_value(region_name);
+        /*
         MapType::iterator find_result = this->find_region_iter(region_name);
         topaz_assert(find_result != this->regions.end(), "uh oh");
         // for some god-forsaken reason the key appears to be hard-coded as const.
@@ -109,6 +113,7 @@ namespace tz::gl
         // inefficient as fuck
         this->regions.erase(find_result);
         auto region = find_result->first;
+        */
         auto region_before = region.block;
         const std::size_t region_size_bytes = region_before.size();
         std::size_t byte_index_before = tz::mem::byte_distance(mapping_begin, region_before.begin);
@@ -125,7 +130,7 @@ namespace tz::gl
         std::memcpy(destination_address, source_address, region.block.size());
         // now edit our region to point to this new area.
         region.block = {destination_address, region_size_bytes};
-        this->regions[region] = region_name;
+        this->regions.set_value(region, region_name);
         return true;
     }
 
