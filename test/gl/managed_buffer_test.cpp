@@ -152,6 +152,7 @@ tz::test::Case defragmentation()
     topaz_expect(test_case, !mvbo.regions_full(), "tz::gl::ManagedBuffer<Type>: ManagedBuffer wrongly believes it still has full region usage after erasing a non-empty region.");
     // defragging should do something!
     topaz_expect(test_case, mvbo.defragment(), "tz::gl::ManagedBuffer<Type>::defragment() failed to move any regions when it should have. Size: ", mvbo.size(), ", region usage: ", mvbo.regions_usage());
+    
     return test_case;
 }
 

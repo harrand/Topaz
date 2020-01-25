@@ -12,6 +12,138 @@ namespace tz::mem
     }
 
     template<typename K, typename V>
+    DeMap<K, V>::iterator::iterator(DeMap<K, V>& parent): parent(parent), idx(0){}
+
+    template<typename K, typename V>
+    DeMap<K, V>::iterator::iterator(DeMap<K, V>& parent, std::ptrdiff_t idx): parent(parent), idx(idx){}
+
+    template<typename K, typename V>
+    typename DeMap<K, V>::iterator::RefPair DeMap<K, V>::iterator::operator*()
+    {
+        auto back_iter = this->parent.back.begin();
+        std::advance(back_iter, this->idx);
+        const K* ck_ptr = back_iter->second;
+        V& v_ref = this->parent.ufor[*ck_ptr];
+        return RefPair{ck_ptr, &v_ref};
+    }
+
+    template<typename K, typename V>
+    typename DeMap<K, V>::iterator::CRefPair DeMap<K, V>::iterator::operator*() const
+    {
+        auto back_iter = this->parent.back.begin();
+        std::advance(back_iter, this->idx);
+        const K* ck_ptr = back_iter->second;
+        const V* cv_ptr = back_iter->first;
+        return {ck_ptr, cv_ptr};
+    }
+
+    template<typename K, typename V>
+    bool DeMap<K, V>::iterator::operator==(const DeMap<K, V>::iterator& rhs) const
+    {
+        return this->idx == rhs.idx;
+    }
+
+    template<typename K, typename V>
+    bool DeMap<K, V>::iterator::operator!=(const DeMap<K, V>::iterator& rhs) const
+    {
+        return this->idx != rhs.idx;
+    }
+
+    template<typename K, typename V>
+    typename DeMap<K, V>::iterator::iterator& DeMap<K, V>::iterator::operator++()
+    {
+        ++(this->idx);
+        return *this;
+    }
+
+    template<typename K, typename V>
+    typename DeMap<K, V>::iterator::iterator& DeMap<K, V>::iterator::operator++(int)
+    {
+        this->idx++;
+        return *this;
+    }
+
+    template<typename K, typename V>
+    typename DeMap<K, V>::iterator::iterator& DeMap<K, V>::iterator::operator+=(std::ptrdiff_t offset)
+    {
+        this->idx += offset;
+        return *this;
+    }
+
+    template<typename K, typename V>
+    typename DeMap<K, V>::iterator::iterator DeMap<K, V>::iterator::operator+(std::ptrdiff_t offset) const
+    {
+        iterator copy = *this;
+        return copy += offset;
+    }
+
+    template<typename K, typename V>
+    DeMap<K, V>::const_iterator::const_iterator(const DeMap<K, V>& parent): parent(parent), idx(0){}
+
+    template<typename K, typename V>
+    DeMap<K, V>::const_iterator::const_iterator(const DeMap<K, V>& parent, std::ptrdiff_t idx): parent(parent), idx(idx){}
+
+    template<typename K, typename V>
+    typename DeMap<K, V>::const_iterator::CRefPair DeMap<K, V>::const_iterator::operator*()
+    {
+        auto back_iter = this->parent.back.begin();
+        std::advance(back_iter, this->idx);
+        const K* ck_ptr = back_iter->second;
+        const V& v_ref = this->parent.ufor.at(*ck_ptr);
+        return CRefPair{ck_ptr, &v_ref};
+    }
+
+    template<typename K, typename V>
+    typename DeMap<K, V>::const_iterator::CRefPair DeMap<K, V>::const_iterator::operator*() const
+    {
+        auto back_iter = this->parent.back.begin();
+        std::advance(back_iter, this->idx);
+        const K* ck_ptr = back_iter->second;
+        const V* cv_ptr = back_iter->first;
+        return {ck_ptr, cv_ptr};
+    }
+
+    template<typename K, typename V>
+    bool DeMap<K, V>::const_iterator::operator==(const DeMap<K, V>::const_iterator& rhs) const
+    {
+        return this->idx == rhs.idx;
+    }
+
+    template<typename K, typename V>
+    bool DeMap<K, V>::const_iterator::operator!=(const DeMap<K, V>::const_iterator& rhs) const
+    {
+        return this->idx != rhs.idx;
+    }
+
+    template<typename K, typename V>
+    typename DeMap<K, V>::const_iterator::const_iterator& DeMap<K, V>::const_iterator::operator++()
+    {
+        ++(this->idx);
+        return *this;
+    }
+
+    template<typename K, typename V>
+    typename DeMap<K, V>::const_iterator::const_iterator& DeMap<K, V>::const_iterator::operator++(int)
+    {
+        this->idx++;
+        return *this;
+    }
+
+    template<typename K, typename V>
+    typename DeMap<K, V>::const_iterator::const_iterator& DeMap<K, V>::const_iterator::operator+=(std::ptrdiff_t offset)
+    {
+        this->idx += offset;
+        return *this;
+    }
+
+    template<typename K, typename V>
+    typename DeMap<K, V>::const_iterator::const_iterator DeMap<K, V>::const_iterator::operator+(std::ptrdiff_t offset) const
+    {
+        const_iterator copy = *this;
+        return copy += offset;
+    }
+
+    template<typename K, typename V>
     template<typename... Args>
     typename DeMap<K, V>::reference_type DeMap<K, V>::emplace(Args&&... args)
     {
@@ -26,37 +158,40 @@ namespace tz::mem
     template<typename K, typename V>
     typename DeMap<K, V>::iterator DeMap<K, V>::begin()
     {
-        return this->ufor.begin();
+        auto iter = this->back.begin();
+        return iterator{*this, 0};
     }
 
     template<typename K, typename V>
     typename DeMap<K, V>::const_iterator DeMap<K, V>::begin() const
     {
-        return this->ufor.begin();
+        auto iter = this->back.begin();
+        return const_iterator{*this, 0};
     }
 
     template<typename K, typename V>
     typename DeMap<K, V>::const_iterator DeMap<K, V>::cbegin() const
     {
-        return this->ufor.cbegin();
+        return const_iterator{*this, 0};
     }
 
     template<typename K, typename V>
     typename DeMap<K, V>::iterator DeMap<K, V>::end()
     {
-        return this->ufor.end();
+        auto iter = this->back.end();
+        return iterator{*this, static_cast<std::ptrdiff_t>(this->back.size())};
     }
 
     template<typename K, typename V>
     typename DeMap<K, V>::const_iterator DeMap<K, V>::end() const
     {
-        return this->ufor.end();
+        return const_iterator{*this, static_cast<std::ptrdiff_t>(this->back.size())};
     }
 
     template<typename K, typename V>
     typename DeMap<K, V>::const_iterator DeMap<K, V>::cend() const
     {
-        return this->ufor.cend();
+        return const_iterator{*this, static_cast<std::ptrdiff_t>(this->back.size())};
     }
 
     template<typename K, typename V>
@@ -69,19 +204,25 @@ namespace tz::mem
     template<typename K, typename V>
     typename DeMap<K, V>::iterator DeMap<K, V>::find_by_key(const K& key)
     {
-        return this->ufor.find(key);
+        topaz_assert(this->contains_key(key), "tz::mem::DeMap<K, V>::find_by_key(key): Key did not exist in the demap!");
+        const V* val_ptr = &this->ufor.at(key);
+        auto val_find = this->back.find(val_ptr);
+        return iterator{*this, std::distance(this->back.begin(), val_find)};
     }
 
     template<typename K, typename V>
     typename DeMap<K, V>::const_iterator DeMap<K, V>::find_by_key(const K& key) const
     {
-        return this->ufor.find(key);
+        topaz_assert(this->contains_key(key), "tz::mem::DeMap<K, V>::find_by_key(key): Key did not exist in the demap!");
+        const V* val_ptr = &this->ufor.at(key);
+        auto val_find = this->back.find(val_ptr);
+        return const_iterator{*this, std::distance(this->back.begin(), val_find)};
     }
 
     template<typename K, typename V>
     bool DeMap<K, V>::contains_key(const K& key) const
     {
-        return this->find_by_key(key) != this->cend();
+        return this->ufor.find(key) != this->ufor.end();
     }
 
     template<typename K, typename V>
@@ -119,6 +260,8 @@ namespace tz::mem
     template<typename K, typename V>
     void DeMap<K, V>::erase_key(const K& key)
     {
+        if(!this->contains_key(key))
+            return;
         // Get exact address of the stored value
         V* value_ptr = &(this->ufor.find(key)->second);
         // Don't really need to erase from back first, but it's better practise.
@@ -143,6 +286,9 @@ namespace tz::mem
                 val_ptr_to_erase = val_ptr;
             }
         }
+        // If nothing procs above, these will still be nullptr.
+        // cppreference: 3) Removes the element (if one exists) with the key equivalent to key.
+        // So we're fine to let these erasures happen and it will do nothing.
 
         // Now we can do it similar as before:
         this->back.erase(val_ptr_to_erase);
@@ -154,7 +300,7 @@ namespace tz::mem
     {
         auto find_result = this->find_by_key(key);
         topaz_assert(find_result != this->cend(), "tz::mem::DeMap<K, V>::at_key(...) const: Key did not exist in map!");
-        return find_result->second;
+        return *((*find_result).second);
     }
 
     template<typename K, typename V>
@@ -170,7 +316,7 @@ namespace tz::mem
     {
         auto find_result = this->find_by_value(value);
         topaz_assert(find_result != this->cend(), "tz::mem::DeMap<K, V>::at_value(...) const: Value did not exist in map!");
-        return find_result->first;
+        return *((*find_result).first);
     }
 
     template<typename K, typename V>
