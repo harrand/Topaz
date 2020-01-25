@@ -48,6 +48,13 @@ namespace tz::mem
 		UniformPool(void* begin, std::size_t size_bytes);
 		/**
 		 * TODO: Document
+		 * @param offset
+		 * @param size_elements
+		 * @return
+		 */
+		UniformPool<T> sub_pool(std::ptrdiff_t offset, std::size_t size_elements) const;
+		/**
+		 * TODO: Document
 		 * @return
 		 */
 		std::size_t size() const;

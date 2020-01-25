@@ -84,6 +84,13 @@ namespace tz::gl
     }
 
     template<tz::gl::BufferType Type>
+    const std::string& ManagedBuffer<Type>::operator[](std::size_t idx) const
+    {
+        auto iter = this->regions.begin() + idx;
+        return *((*iter).first);
+    }
+
+    template<tz::gl::BufferType Type>
     void ManagedBuffer<Type>::verify_mapped() const
     {
         topaz_assert(this->mapped_block.has_value() && this->is_mapped(), "tz::gl::ManagedBuffer<Type>::verify_mapped(): Verification failed due to buffer not being terminal.");
@@ -98,7 +105,6 @@ namespace tz::gl
         void* mapping_begin = this->mapped_block.value().begin;
         topaz_assert(this->regions.contains_key(region_name), "tz::gl::ManagedBuffer<Type>::relocate_region(", region_name, ", ", byte_index, "): No such region named \"", region_name, "\"");
         ManagedBufferRegion region = this->regions.get_value(region_name);
-        this->regions.erase_key(region_name);
 
         auto region_before = region.block;
         const std::size_t region_size_bytes = region_before.size();
@@ -106,6 +112,8 @@ namespace tz::gl
         // Is it already at this position? Nice -- early out.
         if(byte_index == byte_index_before)
             return false;
+        
+        this->regions.erase_key(region_name);
 
         // Note: this will not invalidate mapped terminal pools, so we should be very careful to ensure moved elements move the underlying type to its new memory location too.
         // we're not gonna do any checking here. if something important is going to be in our new memory block -- tough shit

@@ -83,6 +83,7 @@ namespace tz::gl
         virtual tz::mem::Block map(MappingPurpose purpose = MappingPurpose::ReadWrite) override;
         virtual void unmap() override;
         const ManagedBufferRegion& operator[](const std::string& name) const;
+        const std::string& operator[](std::size_t idx) const;
     private:
         using MapType = tz::mem::DeMap<std::string, ManagedBufferRegion>;
         void verify_mapped() const;

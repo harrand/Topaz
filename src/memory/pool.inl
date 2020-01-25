@@ -11,6 +11,20 @@ namespace tz::mem
 
 	template<typename T>
 	UniformPool<T>::UniformPool(void* begin, std::size_t size_bytes): begin(begin), size_bytes(size_bytes){}
+
+	template<typename T>
+	UniformPool<T> UniformPool<T>::sub_pool(std::ptrdiff_t offset, std::size_t size_elements) const
+	{
+		char* beg = reinterpret_cast<char*>(this->begin);
+		const std::size_t size_bytes = size_elements * sizeof(T);
+		beg += offset;
+		UniformPool<T> pool{beg, size_bytes};
+		// Copy over object mask information.
+		auto mask_begin = this->object_mask.begin() + offset;
+		auto mask_end = mask_begin + size_elements;
+		std::copy(mask_begin, mask_end, std::back_inserter(pool.object_mask));
+		return pool;
+	}
 	
 	template<typename T>
 	std::size_t UniformPool<T>::size() const
