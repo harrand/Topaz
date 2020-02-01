@@ -133,7 +133,7 @@ namespace tz::gl
         template<tz::gl::BufferType Type>
         tz::gl::Buffer<Type>* get(std::size_t idx);
         template<tz::gl::BufferType Type>
-        tz::gl::ManagedBuffer<Type>* get_managed(std::size_t idx);
+        tz::gl::ManagedTerminalBuffer<Type>* get_managed(std::size_t idx);
         /**
          * Retrieve a pointer to an existing IBuffer using its Handle ID. This will return the underlying interface.
          * 
