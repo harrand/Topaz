@@ -14,10 +14,18 @@ namespace tz::gl
 
 namespace tz::gl
 {
+
+    struct ManagedNonterminalBufferRegion
+    {
+        std::size_t offset;
+        std::size_t size_bytes;
+
+        bool operator<(const ManagedNonterminalBufferRegion& rhs) const;
+    };
+
     struct ManagedTerminalBufferRegion
     {
         void* mapping_begin = nullptr;
-        std::string region_name = "<Unknown Region>";
         tz::mem::Block block = {nullptr, nullptr};
         
         bool operator<(const ManagedTerminalBufferRegion& rhs) const;
@@ -25,10 +33,10 @@ namespace tz::gl
 
     struct deferred_terminal_tag{};
 
-    class IManagedTerminalBuffer
+    class IManagedBuffer
     {
     public:
-        virtual ~IManagedTerminalBuffer() = default;
+        virtual ~IManagedBuffer() = default;
         /**
          * Mark a region of memory with the given parameters and region name.
          * 
@@ -38,7 +46,7 @@ namespace tz::gl
          * @param name String representing the name of the region.
          * @return Structure describing the resultant region.
          */
-        virtual ManagedTerminalBufferRegion region(std::size_t offset_bytes, std::size_t size_bytes, std::string name) = 0;
+        virtual void region(std::size_t offset_bytes, std::size_t size_bytes, std::string name) = 0;
         /**
          * Erase the region with the given name if there is one. If not, nothing happens.
          * @param region_name Name of the region to erase.
@@ -72,12 +80,36 @@ namespace tz::gl
     };
 
     template<tz::gl::BufferType Type>
-    class ManagedTerminalBuffer : public IManagedTerminalBuffer, public Buffer<Type>
+    class ManagedNonterminalBuffer : public IManagedBuffer, public Buffer<Type>
+    {
+    public:
+        ManagedNonterminalBuffer(tz::gl::Object& holder);
+        virtual void region(std::size_t offset_bytes, std::size_t size_bytes, std::string name) override;
+        virtual void erase(const std::string& region_name) override;
+        virtual bool defragment() override;
+        virtual std::size_t regions_usage() const override;
+        virtual bool regions_full() const override;
+
+        const ManagedNonterminalBufferRegion& operator[](const std::string& name) const;
+        const std::string& operator[](std::size_t idx) const;
+    private:
+        using MapType = tz::mem::DeMap<std::string, ManagedNonterminalBufferRegion>;
+        void verify_nonterminal() const;
+        bool relocate_region(std::string region_name, std::size_t byte_index);
+        MapType::iterator find_region_iter(const std::string& name);
+        MapType::const_iterator find_region_iter(const std::string& name) const;
+
+        tz::gl::Object& holder;
+        MapType regions;
+    };
+
+    template<tz::gl::BufferType Type>
+    class ManagedTerminalBuffer : public IManagedBuffer, public Buffer<Type>
     {
     public:
         ManagedTerminalBuffer(tz::gl::Object& holder, std::size_t size_bytes);
         ManagedTerminalBuffer(tz::gl::Object& holder, deferred_terminal_tag);
-        virtual ManagedTerminalBufferRegion region(std::size_t offset_bytes, std::size_t size_bytes, std::string name) override;
+        virtual void region(std::size_t offset_bytes, std::size_t size_bytes, std::string name) override;
         virtual void erase(const std::string& region_name) override;
         virtual bool defragment() override;
         virtual std::size_t regions_usage() const override;
@@ -91,7 +123,6 @@ namespace tz::gl
         using MapType = tz::mem::DeMap<std::string, ManagedTerminalBufferRegion>;
         void verify_mapped() const;
         bool relocate_region(std::string region_name, std::size_t byte_index);
-        const char* region_within(std::size_t byte_index) const;
         MapType::iterator find_region_iter(const std::string& name);
         MapType::const_iterator find_region_iter(const std::string& name) const;
 
@@ -100,10 +131,16 @@ namespace tz::gl
         std::optional<tz::mem::Block> mapped_block;
     };
 
-    using ManagedVBO = ManagedTerminalBuffer<tz::gl::BufferType::Array>;
-    using ManagedIBO = ManagedTerminalBuffer<tz::gl::BufferType::Index>;
-    using ManagedUBO = ManagedTerminalBuffer<tz::gl::BufferType::UniformStorage>;
-    using ManagedSSBO = ManagedTerminalBuffer<tz::gl::BufferType::ShaderStorage>;
+    using ManagedVBO = ManagedNonterminalBuffer<tz::gl::BufferType::Array>;
+    using ManagedIBO = ManagedNonterminalBuffer<tz::gl::BufferType::Index>;
+    using ManagedUBO = ManagedNonterminalBuffer<tz::gl::BufferType::UniformStorage>;
+    using ManagedSSBO = ManagedNonterminalBuffer<tz::gl::BufferType::ShaderStorage>;
+    
+    using ManagedTVBO = ManagedTerminalBuffer<tz::gl::BufferType::Array>;
+    using ManagedTIBO = ManagedTerminalBuffer<tz::gl::BufferType::Index>;
+    using ManagedTUBO = ManagedTerminalBuffer<tz::gl::BufferType::UniformStorage>;
+    using ManagedTSSBO = ManagedTerminalBuffer<tz::gl::BufferType::ShaderStorage>;
+
 }
 
 #include "gl/managed_buffer.inl"

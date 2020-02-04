@@ -5,22 +5,103 @@
 namespace tz::gl
 {
     template<tz::gl::BufferType Type>
-    ManagedTerminalBuffer<Type>::ManagedTerminalBuffer(tz::gl::Object& holder, std::size_t size_bytes): IManagedTerminalBuffer(), Buffer<Type>(), holder(holder), regions(), mapped_block(std::nullopt)
+    ManagedNonterminalBuffer<Type>::ManagedNonterminalBuffer(tz::gl::Object& holder): holder(holder), regions(){}
+
+    template<tz::gl::BufferType Type>
+    void ManagedNonterminalBuffer<Type>::region(std::size_t offset_bytes, std::size_t size_bytes, std::string name)
+    {
+        this->verify_nonterminal();
+        this->regions.emplace(name, ManagedNonterminalBufferRegion{offset_bytes, size_bytes});
+    }
+
+    template<tz::gl::BufferType Type>
+    void ManagedNonterminalBuffer<Type>::erase(const std::string& region_name)
+    {
+        this->regions.erase_key(region_name);
+    }
+
+    template<tz::gl::BufferType Type>
+    bool ManagedNonterminalBuffer<Type>::defragment()
+    {
+        
+    }
+
+    template<tz::gl::BufferType Type>
+    std::size_t ManagedNonterminalBuffer<Type>::regions_usage() const
+    {
+        std::size_t total_size = 0;
+        for(const auto& [region_name_ptr, region_ptr] : this->regions)
+        {
+            total_size += region_ptr->size_bytes;
+        }
+        return total_size;
+    }
+
+    template<tz::gl::BufferType Type>
+    bool ManagedNonterminalBuffer<Type>::regions_full() const
+    {
+        return this->regions_usage() == this->size();
+    }
+
+    template<tz::gl::BufferType Type>
+    const ManagedNonterminalBufferRegion& ManagedNonterminalBuffer<Type>::operator[](const std::string& region_name) const
+    {
+        auto find_result = this->find_region_iter(region_name);
+        topaz_assert(find_result != this->regions.cend(), "tz::gl::ManagedNonterminalBuffer<Type>::operator[", region_name, "]: No such region exists with the given name \"", region_name, "\"");
+        return *((*find_result).second);
+    }
+
+    template<tz::gl::BufferType Type>
+    const std::string& ManagedNonterminalBuffer<Type>::operator[](std::size_t idx) const
+    {
+        auto iter = this->regions.begin() + idx;
+        return *((*iter).first);
+    }
+
+    template<tz::gl::BufferType Type>
+    void ManagedNonterminalBuffer<Type>::verify_nonterminal() const
+    {
+        topaz_assert(!this->is_terminal(), "tz::gl::ManagedNonterminalBuffer<Type>::verify_nonterminal(): Verification failed!");
+    }
+
+    template<tz::gl::BufferType Type>
+    bool ManagedNonterminalBuffer<Type>::relocate_region(std::string region_name, std::size_t byte_index)
+    {
+        // pop this entry out from the demap.
+        auto iter = this->find_region_iter(region_name);
+        std::size_t region_size = (*iter).second->size_bytes;
+        this->erase(region_name);
+        this->region(byte_index, region_size, region_name);
+    }
+
+    template<tz::gl::BufferType Type>
+    typename ManagedNonterminalBuffer<Type>::MapType::iterator ManagedNonterminalBuffer<Type>::find_region_iter(const std::string& name)
+    {
+        return this->regions.find_by_key(name);
+    }
+
+    template<tz::gl::BufferType Type>
+    typename ManagedNonterminalBuffer<Type>::MapType::const_iterator ManagedNonterminalBuffer<Type>::find_region_iter(const std::string& name) const
+    {
+        return this->regions.find_by_key(name);
+    }
+
+    template<tz::gl::BufferType Type>
+    ManagedTerminalBuffer<Type>::ManagedTerminalBuffer(tz::gl::Object& holder, std::size_t size_bytes): IManagedBuffer(), Buffer<Type>(), holder(holder), regions(), mapped_block(std::nullopt)
     {
         this->terminal_resize(size_bytes);
     }
 
     template<tz::gl::BufferType Type>
-    ManagedTerminalBuffer<Type>::ManagedTerminalBuffer(tz::gl::Object& holder, deferred_terminal_tag): IManagedTerminalBuffer(), Buffer<Type>(), holder(holder), regions(), mapped_block(std::nullopt){}
+    ManagedTerminalBuffer<Type>::ManagedTerminalBuffer(tz::gl::Object& holder, deferred_terminal_tag): IManagedBuffer(), Buffer<Type>(), holder(holder), regions(), mapped_block(std::nullopt){}
 
     template<tz::gl::BufferType Type>
-    ManagedTerminalBufferRegion ManagedTerminalBuffer<Type>::region(std::size_t offset_bytes, std::size_t size_bytes, std::string name)
+    void ManagedTerminalBuffer<Type>::region(std::size_t offset_bytes, std::size_t size_bytes, std::string name)
     {
         this->verify_mapped();
         char* mapped_begin = reinterpret_cast<char*>(this->mapped_block.value().begin);
         char* offsetted_begin = mapped_begin + static_cast<std::ptrdiff_t>(offset_bytes);
-        auto emplacement_pair = regions.emplace(name, ManagedTerminalBufferRegion{mapped_begin, name, {offsetted_begin, size_bytes}});
-        return *(emplacement_pair.second);
+        auto emplacement_pair = regions.emplace(name, ManagedTerminalBufferRegion{mapped_begin, {offsetted_begin, size_bytes}});
     }
 
     template<tz::gl::BufferType Type>
@@ -131,12 +212,6 @@ namespace tz::gl
         region.block = {destination_address, region_size_bytes};
         this->regions.set_value(region_name, region);
         return true;
-    }
-
-    template<tz::gl::BufferType Type>
-    const char* ManagedTerminalBuffer<Type>::region_within(std::size_t byte_index) const
-    {
-         
     }
 
     template<tz::gl::BufferType Type>

@@ -16,6 +16,17 @@ namespace tz::gl
     std::size_t Object::emplace_managed_buffer(Args&&... args)
     {
         this->bind();
+        auto managed_ptr = std::make_unique<tz::gl::ManagedNonterminalBuffer<Type>>(*this, std::forward<Args>(args)...);
+        if constexpr(Type == tz::gl::BufferType::Index)
+            return this->add_index_buffer(std::move(managed_ptr));
+        else
+            return this->add_buffer(std::move(managed_ptr));
+    }
+
+    template<tz::gl::BufferType Type, typename... Args>
+    std::size_t Object::emplace_managed_terminal_buffer(Args&&... args)
+    {
+        this->bind();
         auto managed_ptr = std::make_unique<tz::gl::ManagedTerminalBuffer<Type>>(*this, std::forward<Args>(args)...);
         if constexpr(Type == tz::gl::BufferType::Index)
             return this->add_index_buffer(std::move(managed_ptr));
@@ -30,7 +41,13 @@ namespace tz::gl
     }
 
     template<tz::gl::BufferType Type>
-    tz::gl::ManagedTerminalBuffer<Type>* Object::get_managed(std::size_t idx)
+    tz::gl::ManagedNonterminalBuffer<Type>* Object::get_managed(std::size_t idx)
+    {
+        return static_cast<tz::gl::ManagedNonterminalBuffer<Type>*>((*this)[idx]);
+    }
+
+    template<tz::gl::BufferType Type>
+    tz::gl::ManagedTerminalBuffer<Type>* Object::get_managed_terminal(std::size_t idx)
     {
         return static_cast<tz::gl::ManagedTerminalBuffer<Type>*>((*this)[idx]);
     }
