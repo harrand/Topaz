@@ -11,6 +11,9 @@ namespace tz::mem
 {
     std::size_t byte_distance(void* a, void* b);
 
+    /**
+     * Represents a non-owning contiguous block of memory.
+     */
     struct Block
     {
         Block(void* begin, void* end);
@@ -23,6 +26,23 @@ namespace tz::mem
 
         void* begin;
         void* end;
+    };
+
+    /**
+     * Represents an owning block of contiguous memory.
+     */
+    struct OwningBlock : public Block
+    {
+        OwningBlock(std::size_t size);
+        OwningBlock(const OwningBlock& copy) = delete;
+        OwningBlock(OwningBlock&& move);
+        ~OwningBlock();
+        /**
+         * Retrieve a non-owning block managing the same memory as this current block.
+         * 
+         * Does not cause any changes to current ownership semantics -- It is UB to use the new pool after the lifetime of this owning pool has ended.
+         */
+        Block operator()() const;
     };
 }
 

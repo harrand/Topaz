@@ -5,7 +5,7 @@
 
 namespace tz::gl
 {
-    struct Mesh
+    struct MeshData
     {
         std::vector<tz::gl::Vertex> vertices;
     };

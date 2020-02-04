@@ -63,6 +63,8 @@ add_library(topaz STATIC
 		src/gl/managed_buffer.cpp
 		src/gl/managed_buffer.hpp
 		src/gl/managed_buffer.inl
+		src/gl/manager.hpp
+		src/gl/manager.cpp
 		src/gl/mesh.cpp
 		src/gl/mesh.hpp
 		src/gl/object.hpp

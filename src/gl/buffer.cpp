@@ -51,6 +51,34 @@ namespace tz::gl
         glNamedBufferData(this->handle, size_bytes, nullptr, GL_STATIC_DRAW);
     }
 
+    void IBuffer::safe_resize(std::size_t size_bytes)
+    {
+        // Early out if no resize is needed.
+        if(this->size() == size_bytes)
+            return;
+        // Allocate enough memory to store a copy of entire data-store.
+        void* data = std::malloc(this->size());
+        std::size_t data_size = this->size();
+        tz::mem::Block data_blk{data, data_size};
+        // Copy data store...
+        this->retrieve_all(data);
+        // Murder everything and re-size.
+        this->resize(size_bytes);
+        // Did we shrink?
+        if(this->size() < data_size)
+        {
+            // We've shrunk. Only copy what we can.
+            tz::mem::Block shrunk_blk{data_blk.begin, this->size()};
+            this->send(0, shrunk_blk);
+        }
+        else
+        {
+            // We've grown. Just send everything and let the rest be undefined.
+            this->send(0, data_blk);
+        }
+        std::free(data);
+    }
+
     void IBuffer::retrieve(std::size_t offset, std::size_t size_bytes, void* input_data) const
     {
         IBuffer::verify();

@@ -30,8 +30,7 @@ namespace tz
         T dot(const Vector<T, S>& rhs) const;
         T length() const;
     private:
-        /// 16-byte alignment to make it as easy as possible to auto-vectorise.
-        alignas(16) std::array<T, S> vec;
+        std::array<T, S> vec;
     };
 
     using Vec2 = Vector<float, 2>;
