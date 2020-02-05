@@ -12,7 +12,6 @@ tz::test::Case mock_mesh()
 {
     tz::test::Case test_case("tz::gl::Manager Fake Mesh Tests");
     tz::gl::Manager mng;
-    
     // Let's pretend we've loaded in a quad.
     tz::gl::MeshData quad;
     {
@@ -29,6 +28,9 @@ tz::test::Case mock_mesh()
             quad.vertices.push_back(vertices[i]);
     }
 
+    tz::gl::MeshIndices quad_i{{0, 1, 2}};
+    const std::string indices_region_name = "quad_indices";
+
     // Now we'll sort out our expected naming scheme.
     tz::gl::StandardDataRegionNames names
     {
@@ -38,13 +40,16 @@ tz::test::Case mock_mesh()
         "quad_tangents",
         "quad_bitangents"
     };
-    mng.add_data(tz::gl::Data::Static, quad, names);
+
+    tz::gl::Mesh mesh{quad, quad_i, names, indices_region_name};
+    mng.add_mesh(tz::gl::Data::Static, tz::gl::Indices::Static, mesh);
     tz::mem::OwningBlock positions = mng.get_data(tz::gl::Data::Static, "quad_positions");
     tz::mem::OwningBlock texcoords = mng.get_data(tz::gl::Data::Static, "quad_texcoords");
     tz::mem::OwningBlock normals = mng.get_data(tz::gl::Data::Static, "quad_normals");
     tz::mem::OwningBlock tangents = mng.get_data(tz::gl::Data::Static, "quad_tangents");
     tz::mem::OwningBlock bitangents = mng.get_data(tz::gl::Data::Static, "quad_bitangents");
 
+    tz::mem::OwningBlock indices = mng.get_indices(tz::gl::Indices::Static, indices_region_name);
     for(std::size_t i = 0; i < quad.vertices.size(); i++)
     {
         for(std::size_t j = 0; j < 3; j++)
@@ -81,6 +86,13 @@ tz::test::Case mock_mesh()
             float act = *bitangents.get<float>((i * sizeof(float) * 3) + (j * sizeof(float)));
             topaz_expect(test_case, exp == act, "tz::gl::Manager::get_data returned garbage. Expected bi-tangent value ", exp, ", but got ", act);
         }
+    }
+
+    for(std::size_t i = 0; i < 3; i++)
+    {
+        unsigned int exp = quad_i.indices[i];
+        unsigned int act = *indices.get<unsigned int>(i * sizeof(unsigned int));
+        topaz_expect(test_case, exp == act, "tz::gl::Manager::get_indices returned garbage. Expected index value ", exp, ", but got ", act);
     }
     return test_case;
 }

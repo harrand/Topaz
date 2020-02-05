@@ -4,7 +4,7 @@
 #include "gl/tz_stb_image/image_reader.hpp"
 #include "gl/shader.hpp"
 #include "gl/shader_compiler.hpp"
-#include "gl/object.hpp"
+#include "gl/manager.hpp"
 #include "gl/buffer.hpp"
 #include "gl/frame.hpp"
 #include "gl/modules/ubo.hpp"
@@ -13,8 +13,8 @@
 #include "GLFW/glfw3.h"
 
 const char *vertexShaderSource = "#version 430\n"
-    "layout (location = 1) in vec3 aPos;\n"
-	"layout (location = 2) in vec2 aTexcoord;\n"
+    "layout (location = 0) in vec3 aPos;\n"
+	"layout (location = 1) in vec2 aTexcoord;\n"
 	"#ubo matrices\n"
 	"{\n"
 	"	mat4 mvp;\n"
@@ -39,7 +39,8 @@ int main()
 	// Minimalist Graphics Demo.
 	tz::core::initialise("Topaz Graphics Demo");
 	{
-		tz::gl::Object o;
+		tz::gl::Manager m;
+		tz::gl::Object& o = *m;
 		tz::gl::p::UBOModule* ubo_module = nullptr;
 		tz::gl::ShaderPreprocessor pre{vertexShaderSource};
 		{
@@ -63,17 +64,21 @@ int main()
 		cpl.compile(*fs);
 		cpl.link(prg);
 
-		const float vertices[] = {
-        -0.5f, -0.5f, 0.0f, // left  
-         0.5f, -0.5f, 0.0f, // right 
-         0.0f,  0.5f, 0.0f  // top   
-    	};
+		tz::gl::MeshData data;
+		data.vertices.push_back(tz::gl::Vertex{{{-0.5f, -0.5f, 0.0f}}, {{0.0f, 0.0f}}, {{}}, {{}}, {{}}});
+		data.vertices.push_back(tz::gl::Vertex{{{0.5f, -0.5f, 0.0f}}, {{1.0f, 0.0f}}, {{}}, {{}}, {{}}});
+		data.vertices.push_back(tz::gl::Vertex{{{0.0f, 0.5f, 0.0f}}, {{0.5f, 1.0f}}, {{}}, {{}}, {{}}});
 
-		const float texcoords[] = {
-			0.0f, 0.0f,
-			1.0f, 0.0f,
-			0.5f, 1.0f,
+		tz::gl::MeshIndices indices{{0, 1, 2}};
+		tz::gl::StandardDataRegionNames names
+		{
+			"position",
+			"texcoord",
+			"normal",
+			"tangent",
+			"bitangent"
 		};
+		tz::gl::Mesh mesh{data, indices, names, "indices"};
 
 		auto rgba_checkerboard = tz::ext::stb::read_image<tz::gl::PixelRGB8>("res/textures/bricks.jpg");
 		tz::gl::Texture checkerboard;
@@ -82,15 +87,10 @@ int main()
 
 		prg.attach_texture(0, &checkerboard, "checkerboard");
 
-		std::size_t vbo_id = o.emplace_buffer<tz::gl::BufferType::Array>();
-		tz::gl::VBO* vbo = o.get<tz::gl::BufferType::Array>(vbo_id);
-		std::size_t texcoords_id = o.emplace_buffer<tz::gl::BufferType::Array>();
-		tz::gl::VBO* texcoord_vbo = o.get<tz::gl::BufferType::Array>(texcoords_id);
-		texcoord_vbo->resize(sizeof(texcoords));
-		texcoord_vbo->send(texcoords);
+		m.add_mesh(tz::gl::Data::Static, tz::gl::Indices::Static, mesh);
+		m.attrib(tz::gl::Data::Static, "position", tz::gl::fmt::three_floats);
+		m.attrib(tz::gl::Data::Static, "texcoord", tz::gl::fmt::two_floats);
 
-		vbo->resize(sizeof(vertices));
-		vbo->send(vertices);
 		tz::Vec3 triangle_pos{{0.0f, 0.0f, 0.0f}};
 		auto add_pos = [&triangle_pos](float x, float y, float z)
 		{
@@ -98,14 +98,6 @@ int main()
 			triangle_pos[1] += y;
 			triangle_pos[2] += z;
 		};
-
-		o.format(vbo_id, tz::gl::fmt::three_floats);
-		o.format(texcoords_id, tz::gl::fmt::two_floats);
-		std::size_t ibo_id = o.emplace_buffer<tz::gl::BufferType::Index>();
-		tz::gl::IBO* ibo = o.get<tz::gl::BufferType::Index>(ibo_id);
-		ibo->resize(3 * sizeof(unsigned int));
-		unsigned int indices[] = {0, 1, 2};
-		ibo->send(indices);
 
 		float rotation_x = 0.0f;
 		float rotation_y = 0.0f;
@@ -145,7 +137,7 @@ int main()
 
 		glClearColor(0.0f, 0.3f, 0.15f, 1.0f);
 		tz::render::Device dev{wnd.get_frame(), &prg, &o};
-		dev.set_handle(ibo_id);
+		dev.set_handle(2);
 		while(!wnd.is_close_requested())
 		{
 			rotation_y += 0.02f;
@@ -156,7 +148,7 @@ int main()
 			tz::Mat4 v = tz::geo::view(tz::Vec3{{0.0f, 0.0f, 5.0f}}, tz::Vec3{{0.0f, 0.0f, 0.0f}});
 			tz::Mat4 p = tz::geo::perspective(1.57f, 1920.0f/1080.0f, 0.1f, 1000.0f);
 			matrix.set(0, p * v * m);
-			ubo->bind();
+			ubo->bind(); 
 			dev.render();
 			wnd.update();
 			tz::core::update();

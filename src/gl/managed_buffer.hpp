@@ -15,20 +15,12 @@ namespace tz::gl
 namespace tz::gl
 {
 
-    struct ManagedNonterminalBufferRegion
+    struct ManagedBufferRegion
     {
         std::size_t offset;
         std::size_t size_bytes;
 
-        bool operator<(const ManagedNonterminalBufferRegion& rhs) const;
-    };
-
-    struct ManagedTerminalBufferRegion
-    {
-        void* mapping_begin = nullptr;
-        tz::mem::Block block = {nullptr, nullptr};
-        
-        bool operator<(const ManagedTerminalBufferRegion& rhs) const;
+        bool operator<(const ManagedBufferRegion& rhs) const;
     };
 
     struct deferred_terminal_tag{};
@@ -47,6 +39,13 @@ namespace tz::gl
          * @return Structure describing the resultant region.
          */
         virtual void region(std::size_t offset_bytes, std::size_t size_bytes, std::string name) = 0;
+        /**
+         * Retrieve information about a region with the given name.
+         * 
+         * @param name Name of the region to retrieve information about.
+         * @return Information about the region of the given name.
+         */
+        virtual const ManagedBufferRegion& get(const std::string& name) const = 0;
         /**
          * Erase the region with the given name if there is one. If not, nothing happens.
          * @param region_name Name of the region to erase.
@@ -85,15 +84,16 @@ namespace tz::gl
     public:
         ManagedNonterminalBuffer(tz::gl::Object& holder);
         virtual void region(std::size_t offset_bytes, std::size_t size_bytes, std::string name) override;
+        virtual const ManagedBufferRegion& get(const std::string& name) const override;
         virtual void erase(const std::string& region_name) override;
         virtual bool defragment() override;
         virtual std::size_t regions_usage() const override;
         virtual bool regions_full() const override;
 
-        const ManagedNonterminalBufferRegion& operator[](const std::string& name) const;
+        const ManagedBufferRegion& operator[](const std::string& name) const;
         const std::string& operator[](std::size_t idx) const;
     private:
-        using MapType = tz::mem::DeMap<std::string, ManagedNonterminalBufferRegion>;
+        using MapType = tz::mem::DeMap<std::string, ManagedBufferRegion>;
         void verify_nonterminal() const;
         bool relocate_region(std::string region_name, std::size_t byte_index);
         MapType::iterator find_region_iter(const std::string& name);
@@ -110,6 +110,7 @@ namespace tz::gl
         ManagedTerminalBuffer(tz::gl::Object& holder, std::size_t size_bytes);
         ManagedTerminalBuffer(tz::gl::Object& holder, deferred_terminal_tag);
         virtual void region(std::size_t offset_bytes, std::size_t size_bytes, std::string name) override;
+        virtual const ManagedBufferRegion& get(const std::string& name) const override;
         virtual void erase(const std::string& region_name) override;
         virtual bool defragment() override;
         virtual std::size_t regions_usage() const override;
@@ -117,10 +118,10 @@ namespace tz::gl
 
         virtual tz::mem::Block map(MappingPurpose purpose = MappingPurpose::ReadWrite) override;
         virtual void unmap() override;
-        const ManagedTerminalBufferRegion& operator[](const std::string& name) const;
+        const ManagedBufferRegion& operator[](const std::string& name) const;
         const std::string& operator[](std::size_t idx) const;
     private:
-        using MapType = tz::mem::DeMap<std::string, ManagedTerminalBufferRegion>;
+        using MapType = tz::mem::DeMap<std::string, ManagedBufferRegion>;
         void verify_mapped() const;
         bool relocate_region(std::string region_name, std::size_t byte_index);
         MapType::iterator find_region_iter(const std::string& name);

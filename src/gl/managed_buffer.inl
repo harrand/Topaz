@@ -11,7 +11,15 @@ namespace tz::gl
     void ManagedNonterminalBuffer<Type>::region(std::size_t offset_bytes, std::size_t size_bytes, std::string name)
     {
         this->verify_nonterminal();
-        this->regions.emplace(name, ManagedNonterminalBufferRegion{offset_bytes, size_bytes});
+        this->regions.emplace(name, ManagedBufferRegion{offset_bytes, size_bytes});
+    }
+
+    template<tz::gl::BufferType Type>
+    const ManagedBufferRegion& ManagedNonterminalBuffer<Type>::get(const std::string& name) const
+    {
+        auto find_result = this->find_region_iter(name);
+        topaz_assert(find_result != this->regions.cend(), "tz::gl::ManagedNonterminalBuffer<Type>::operator[", name, "]: No such region exists with the given name \"", name, "\"");
+        return *((*find_result).second);
     }
 
     template<tz::gl::BufferType Type>
@@ -44,11 +52,9 @@ namespace tz::gl
     }
 
     template<tz::gl::BufferType Type>
-    const ManagedNonterminalBufferRegion& ManagedNonterminalBuffer<Type>::operator[](const std::string& region_name) const
+    const ManagedBufferRegion& ManagedNonterminalBuffer<Type>::operator[](const std::string& region_name) const
     {
-        auto find_result = this->find_region_iter(region_name);
-        topaz_assert(find_result != this->regions.cend(), "tz::gl::ManagedNonterminalBuffer<Type>::operator[", region_name, "]: No such region exists with the given name \"", region_name, "\"");
-        return *((*find_result).second);
+        return this->get(region_name);
     }
 
     template<tz::gl::BufferType Type>
@@ -99,9 +105,16 @@ namespace tz::gl
     void ManagedTerminalBuffer<Type>::region(std::size_t offset_bytes, std::size_t size_bytes, std::string name)
     {
         this->verify_mapped();
-        char* mapped_begin = reinterpret_cast<char*>(this->mapped_block.value().begin);
-        char* offsetted_begin = mapped_begin + static_cast<std::ptrdiff_t>(offset_bytes);
-        auto emplacement_pair = regions.emplace(name, ManagedTerminalBufferRegion{mapped_begin, {offsetted_begin, size_bytes}});
+        auto emplacement_pair = regions.emplace(name, ManagedBufferRegion{offset_bytes, size_bytes});
+    }
+
+    template<tz::gl::BufferType Type>
+    const ManagedBufferRegion& ManagedTerminalBuffer<Type>::get(const std::string& name) const
+    {
+        this->verify_mapped();
+        auto find_result = this->find_region_iter(name);
+        topaz_assert(find_result != this->regions.cend(), "tz::gl::ManagedTerminalBuffer<Type>::operator[", name, "]: No such region exists with the name \"", name, "\"");
+        return *((*find_result).second);
     }
 
     template<tz::gl::BufferType Type>
@@ -123,7 +136,7 @@ namespace tz::gl
         for(const auto& [region_name, region] : this->regions)
         {
             topaz_assert(byte_count < this->mapped_block.value().size(), "tz::gl::ManagedTerminalBuffer<Type>::defragment(): Internal error: Byte count exceeded mapping size!");
-            std::size_t const region_size = region->block.size();
+            std::size_t const region_size = region->size_bytes;
             movement |= this->relocate_region(*region_name, byte_count);
             byte_count += region_size;
         }
@@ -136,7 +149,7 @@ namespace tz::gl
         std::size_t total_size = 0;
         for(const auto& [region_name, region] : this->regions)
         {  
-            total_size += region->block.size();
+            total_size += region->size_bytes;
         }
         return total_size;
     }
@@ -162,12 +175,9 @@ namespace tz::gl
     }
 
     template<tz::gl::BufferType Type>
-    const ManagedTerminalBufferRegion& ManagedTerminalBuffer<Type>::operator[](const std::string& name) const
+    const ManagedBufferRegion& ManagedTerminalBuffer<Type>::operator[](const std::string& name) const
     {
-        this->verify_mapped();
-        auto find_result = this->find_region_iter(name);
-        topaz_assert(find_result != this->regions.cend(), "tz::gl::ManagedTerminalBuffer<Type>::operator[", name, "]: No such region exists with the name \"", name, "\"");
-        return *((*find_result).second);
+        return this->get(name);
     }
 
     template<tz::gl::BufferType Type>
@@ -191,11 +201,10 @@ namespace tz::gl
         // pop the entry out from the demap, amend the mem block information, and then insert the entry at the new block position.
         void* mapping_begin = this->mapped_block.value().begin;
         topaz_assert(this->regions.contains_key(region_name), "tz::gl::ManagedTerminalBuffer<Type>::relocate_region(", region_name, ", ", byte_index, "): No such region named \"", region_name, "\"");
-        ManagedTerminalBufferRegion region = this->regions.get_value(region_name);
+        ManagedBufferRegion region = this->regions.get_value(region_name);
 
-        auto region_before = region.block;
-        const std::size_t region_size_bytes = region_before.size();
-        std::size_t byte_index_before = tz::mem::byte_distance(mapping_begin, region_before.begin);
+        const std::size_t region_size_bytes = region.size_bytes;
+        std::size_t byte_index_before = region.offset;
         // Is it already at this position? Nice -- early out.
         if(byte_index == byte_index_before)
             return false;
@@ -207,9 +216,9 @@ namespace tz::gl
         char* destination_address = reinterpret_cast<char*>(mapping_begin) + byte_index;
         char* source_address = reinterpret_cast<char*>(mapping_begin) + byte_index_before;
         // do the copy.
-        std::memcpy(destination_address, source_address, region.block.size());
+        std::memcpy(destination_address, source_address, region.size_bytes);
         // now edit our region to point to this new area.
-        region.block = {destination_address, region_size_bytes};
+        region.offset = byte_index;
         this->regions.set_value(region_name, region);
         return true;
     }
