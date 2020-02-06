@@ -64,21 +64,51 @@ int main()
 		cpl.compile(*fs);
 		cpl.link(prg);
 
-		tz::gl::MeshData data;
-		data.vertices.push_back(tz::gl::Vertex{{{-0.5f, -0.5f, 0.0f}}, {{0.0f, 0.0f}}, {{}}, {{}}, {{}}});
-		data.vertices.push_back(tz::gl::Vertex{{{0.5f, -0.5f, 0.0f}}, {{1.0f, 0.0f}}, {{}}, {{}}, {{}}});
-		data.vertices.push_back(tz::gl::Vertex{{{0.0f, 0.5f, 0.0f}}, {{0.5f, 1.0f}}, {{}}, {{}}, {{}}});
-
-		tz::gl::MeshIndices indices{{0, 1, 2}};
-		tz::gl::StandardDataRegionNames names
+		tz::gl::Mesh triangle;
+		tz::gl::Mesh square;
 		{
-			"position",
-			"texcoord",
-			"normal",
-			"tangent",
-			"bitangent"
-		};
-		tz::gl::Mesh mesh{data, indices, names, "indices"};
+			// triangle
+			{
+				tz::gl::MeshData data;
+				data.vertices.push_back(tz::gl::Vertex{{{-0.5f, -0.5f, 0.0f}}, {{0.0f, 0.0f}}, {{}}, {{}}, {{}}});
+				data.vertices.push_back(tz::gl::Vertex{{{0.5f, -0.5f, 0.0f}}, {{1.0f, 0.0f}}, {{}}, {{}}, {{}}});
+				data.vertices.push_back(tz::gl::Vertex{{{0.0f, 0.5f, 0.0f}}, {{0.5f, 1.0f}}, {{}}, {{}}, {{}}});
+
+				tz::gl::MeshIndices indices{{0, 1, 2}};
+				tz::gl::StandardDataRegionNames names
+				{
+					"positiont",
+					"texcoordt",
+					"normalt",
+					"tangentt",
+					"bitangentt"
+				};
+				triangle = {data, indices, names, "indices"};
+			}
+
+			// square
+			{
+				tz::gl::MeshData data;
+				data.vertices.push_back(tz::gl::Vertex{{{-0.5f, -0.5f, 0.0f}}, {{0.0f, 0.0f}}, {{}}, {{}}, {{}}});
+				data.vertices.push_back(tz::gl::Vertex{{{0.5f, -0.5f, 0.0f}}, {{1.0f, 0.0f}}, {{}}, {{}}, {{}}});
+				data.vertices.push_back(tz::gl::Vertex{{{0.5f, 0.5f, 0.0f}}, {{1.0f, 0.5f}}, {{}}, {{}}, {{}}});
+				
+				data.vertices.push_back(tz::gl::Vertex{{{-0.5f, -0.5f, 0.0f}}, {{0.0f, 0.0f}}, {{}}, {{}}, {{}}});
+				data.vertices.push_back(tz::gl::Vertex{{{0.5f, 0.5f, 0.0f}}, {{1.0f, 0.5f}}, {{}}, {{}}, {{}}});
+				data.vertices.push_back(tz::gl::Vertex{{{-0.5f, 0.5f, 0.0f}}, {{0.0f, 0.5f}}, {{}}, {{}}, {{}}});
+
+				tz::gl::MeshIndices indices{{0, 1, 2, 3, 4, 5}};
+				tz::gl::StandardDataRegionNames names
+				{
+					"positions",
+					"texcoords",
+					"normals",
+					"tangents",
+					"bitangents",
+				};
+				square = {data, indices, names, "indices"};
+			}
+		}
 
 		auto rgba_checkerboard = tz::ext::stb::read_image<tz::gl::PixelRGB8>("res/textures/bricks.jpg");
 		tz::gl::Texture checkerboard;
@@ -87,9 +117,25 @@ int main()
 
 		prg.attach_texture(0, &checkerboard, "checkerboard");
 
-		m.add_mesh(tz::gl::Data::Static, tz::gl::Indices::Static, mesh);
-		m.attrib(tz::gl::Data::Static, "position", tz::gl::fmt::three_floats);
-		m.attrib(tz::gl::Data::Static, "texcoord", tz::gl::fmt::two_floats);
+		m.add_mesh(tz::gl::Data::Static, tz::gl::Indices::Static, triangle);
+		m.add_mesh(tz::gl::Data::Static, tz::gl::Indices::Static, square);
+		// so the static data stream looks something like this:
+		// <t r i a n g l e  d a t a  3  v e r t i c e s> <s q u a r e  d a t a  4  v e r t i c e s       >
+		// |--------|---------|-------|--------|---------| |--------|---------|-------|--------|----------|
+		// positiont texcoordt normalt tangentt bitangantt positions texcoords normals tangents bitangents
+		// static index stream looks like this:
+		// 0	1	2	0	1	2	3	4	5
+		// |--------|   |-------------------|
+		//	triangle 			square
+		// as we don't offset new indices, this lets us know that index 0 will start from here for square.
+		m.attrib(tz::gl::Data::Static, "positions", tz::gl::fmt::three_floats);
+		m.attrib(tz::gl::Data::Static, "texcoords", tz::gl::fmt::two_floats);
+		// if we want to draw the triangle, we do:
+		//m.attrib(tz::gl::Data::Static, "positiont", tz::gl::fmt::three_floats);
+		//m.attrib(tz::gl::Data::Static, "texcoordt", tz::gl::fmt::two_floats);
+		// Note: If we tried to use normals but not texcoords this would go bad.
+		// We're getting lucky here because position and texcoord are the first two element regions in order.
+		// We should really, really be using all components here (or not adding them at all?).
 
 		tz::Vec3 triangle_pos{{0.0f, 0.0f, 0.0f}};
 		auto add_pos = [&triangle_pos](float x, float y, float z)
@@ -136,8 +182,22 @@ int main()
 		});
 
 		glClearColor(0.0f, 0.3f, 0.15f, 1.0f);
+		// remember our device. it needs to know about the index snippet we want to use.
 		tz::render::Device dev{wnd.get_frame(), &prg, &o};
-		dev.set_handle(2);
+		// well we use the same IBO for everything so this need never change:
+		dev.set_handle(m.get_indices());
+		// check the index stream above, this should clarify these magic numbers.
+		tz::render::IndexSnippet triangle_indices{m.get_indices()};
+		triangle_indices.emplace_range(0, 2);
+		tz::render::IndexSnippet square_indices{m.get_indices()};
+		square_indices.emplace_range(3, 8);
+		// note that above we're using the square attribs and not the triangle. so we should use the square's indices too!
+		dev.set_snippet(square_indices);
+		// if we want to draw *both*, as it stands we will need to swap between enabling the vertex attrib arrays every time in gl::Object by exposing a new api method.
+		// maybe get a better abstraction around it too because while this is a really good start, MDI will become really brain-hurty having to swap these attribs.
+		// note that storing these sets of attribs and index snippets for any mesh should probably be exactly what tz::render::Object is meant to do when it's implemented!
+		// that way a tz::render::Object essentially represents a mesh which can be rendered by itself even though its data may be buried in a super massive VBO somewhere! pretty nifty.
+		// now this should draw without issue.
 		while(!wnd.is_close_requested())
 		{
 			rotation_y += 0.02f;
