@@ -8,9 +8,6 @@ target_link_libraries(tz_frame_test PRIVATE topaz test_framework)
 add_executable(tz_image_test image_test.cpp)
 target_link_libraries(tz_image_test PRIVATE topaz test_framework)
 
-add_executable(tz_managed_buffer_test managed_buffer_test.cpp)
-target_link_libraries(tz_managed_buffer_test PRIVATE topaz test_framework)
-
 add_executable(tz_object_test object_test.cpp)
 target_link_libraries(tz_object_test PRIVATE topaz test_framework)
 
