@@ -153,10 +153,6 @@ tz::test::Case defragmentation()
     // defragging should do something!
     topaz_expect(test_case, mvbo.defragment(), "tz::gl::ManagedBuffer<Type>::defragment() failed to move any regions when it should have. Size: ", mvbo.size(), ", region usage: ", mvbo.regions_usage());
     
-    // ensure ordering remains correct!
-    topaz_expect(test_case, mvbo[0] == "primes", "tz::gl::ManagedBuffer<Type>::defragment() Wrongly changed region ordering.");
-    topaz_expect(test_case, mvbo[1] == "evens", "tz::gl::ManagedBuffer<Type>::defragment() Wrongly changed region ordering.");
-    topaz_expect(test_case, mvbo[2] == "best number ever!", "tz::gl::ManagedBuffer<Type>::defragment() Wrongly changed region ordering.");
     return test_case;
 }
 
