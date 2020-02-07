@@ -20,22 +20,4 @@ namespace tz::mem
     {
         return byte_distance(this->begin, this->end);
     }
-
-    OwningBlock::OwningBlock(std::size_t size): Block(std::malloc(size), size){}
-
-    OwningBlock::OwningBlock(OwningBlock&& move): Block(move.begin, move.end)
-    {
-        move.begin = nullptr;
-        move.end = nullptr;
-    }
-
-    OwningBlock::~OwningBlock()
-    {
-        std::free(this->begin);
-    }
-
-    Block OwningBlock::operator()() const
-    {
-        return {this->begin, this->end};
-    }
 }

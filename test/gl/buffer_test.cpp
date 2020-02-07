@@ -251,38 +251,6 @@ tz::test::Case sending()
     return test_case;
 }
 
-tz::test::Case safe_resizing()
-{
-    tz::test::Case test_case("tz::gl::Buffer safe resizing test (non-terminal)");
-    tz::gl::Object o;
-    std::size_t idx = o.emplace_buffer<tz::gl::BufferType::Array>();
-    tz::gl::VBO* vbo = o.get<tz::gl::BufferType::Array>(idx);
-    vbo->resize(12 * sizeof(int));
-    // 12 ints long. let's also fill it with some data.
-    {
-        tz::mem::UniformPool<int> p = vbo->map_pool<int>();
-        for(std::size_t i = 0; i < 12; i++)
-        {
-            p.set(i, i);
-        }
-        vbo->unmap();
-    }
-    // should look like: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11}
-    // no need to test this.
-    // let's do a safe resize to half its initial capacity.
-    vbo->safe_resize(6 * sizeof(int));
-    // Now we will check that it's just like {0, 1, 2, 3, 4, 5}.
-    {
-        tz::mem::Block blk = vbo->map();
-        for(std::size_t i = 0; i < 6; i++)
-        {
-            topaz_expect(test_case, *blk.get<int>(i * sizeof(int)) == i, "Nonterminal buffer safe resize trashed the underlying data when it promised not to. Expected ", i, ", but got ", *blk.get<int>(i));
-        }
-        vbo->unmap();
-    }
-    return test_case;
-}
-
 int main()
 {
     tz::test::Unit buffer;
@@ -298,7 +266,6 @@ int main()
         buffer.add(nonterminal_retrieval());
         buffer.add(terminal_retrieval());
         buffer.add(sending());
-        buffer.add(safe_resizing());
 
         tz::core::terminate();
     }

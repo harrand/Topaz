@@ -98,11 +98,10 @@ namespace tz::gl
          * Attempt to change the size of the buffer.
          * 
          * Precondition: Requires the buffer to be valid and unmapped.
-         * Note: This will not preserve any of the data within the buffer. You should use safe_resize for that.
+         * Note: This will not preserve any of the data within the buffer. You should do that yourself.
          * @param size_bytes Desired new size of the buffer, in bytes.
          */
         void resize(std::size_t size_bytes);
-        void safe_resize(std::size_t size_bytes);
         /**
          * Retrieve a subset of the data-store.
          * 

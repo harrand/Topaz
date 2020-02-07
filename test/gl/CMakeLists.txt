@@ -11,9 +11,6 @@ target_link_libraries(tz_image_test PRIVATE topaz test_framework)
 add_executable(tz_managed_buffer_test managed_buffer_test.cpp)
 target_link_libraries(tz_managed_buffer_test PRIVATE topaz test_framework)
 
-add_executable(tz_manager_test manager_test.cpp)
-target_link_libraries(tz_manager_test PRIVATE topaz test_framework)
-
 add_executable(tz_object_test object_test.cpp)
 target_link_libraries(tz_object_test PRIVATE topaz test_framework)
 

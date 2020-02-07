@@ -49,7 +49,7 @@ tz::test::Case mock_mesh()
     std::size_t mvbo_id = o.emplace_managed_terminal_buffer<tz::gl::BufferType::Array>(tz::gl::deferred_terminal_tag{});
     tz::gl::ManagedTVBO& mvbo = *o.get_managed_terminal<tz::gl::BufferType::Array>(mvbo_id);
 
-    tz::gl::MeshData triangle;
+    tz::gl::Mesh triangle;
     {
         // positions, texcoords, normals, tangents, bitangents
         // note: tangents and bitangents are undefined here.
@@ -62,7 +62,7 @@ tz::test::Case mock_mesh()
         for(std::size_t i = 0; i < 3; i++)
             triangle.vertices.push_back(vertices[i]);
     }
-    tz::gl::MeshData quad;
+    tz::gl::Mesh quad;
     {
         // positions, texcoords, normals, tangents, bitangents
         // note: tangents and bitangents are undefined here.
