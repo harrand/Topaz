@@ -10,12 +10,14 @@
 
 tz::test::Case regions()
 {
-    tz::test::Case test_case("tz::gl::ManagedTerminalBuffer<T> Region Tests");
+    tz::test::Case test_case("tz::gl::ManagedBuffer<T> Region Tests");
     tz::gl::Object o;
 
-    std::size_t mvbo_id = o.emplace_managed_buffer<tz::gl::BufferType::Array>(sizeof(float) * 3);
+    std::size_t mvbo_id = o.emplace_managed_buffer<tz::gl::BufferType::Array>();
     tz::gl::ManagedVBO& mvbo = *o.get_managed<tz::gl::BufferType::Array>(mvbo_id);
 
+    // enough data for 3 floats
+    mvbo.terminal_resize(sizeof(float) * 3);
     // is now terminal so we just need to map and we can play with some regions!
     tz::mem::UniformPool<float> floats = mvbo.map_pool<float>();
 
@@ -34,19 +36,19 @@ tz::test::Case regions()
     float ex_x = get_expected("x");
     float ex_y = get_expected("y");
     float ex_z = get_expected("z");
-    topaz_expect(test_case, ex_x == 5.0f, "tz::gl::ManagedTerminalBuffer<T> region yielded incorrect data. Expected ", 5.0f, ", but got ", ex_x);
-    topaz_expect(test_case, ex_y == 10.0f, "tz::gl::ManagedTerminalBuffer<T> region yielded incorrect data. Expected ", 10.0f, ", but got ", ex_y);
-    topaz_expect(test_case, ex_z == 15.0f, "tz::gl::ManagedTerminalBuffer<T> region yielded incorrect data. Expected ", 15.0f, ", but got ", ex_z);
+    topaz_expect(test_case, ex_x == 5.0f, "tz::gl::ManagedBuffer<T> region yielded incorrect data. Expected ", 5.0f, ", but got ", ex_x);
+    topaz_expect(test_case, ex_y == 10.0f, "tz::gl::ManagedBuffer<T> region yielded incorrect data. Expected ", 10.0f, ", but got ", ex_y);
+    topaz_expect(test_case, ex_z == 15.0f, "tz::gl::ManagedBuffer<T> region yielded incorrect data. Expected ", 15.0f, ", but got ", ex_z);
 
     return test_case;
 }
 
 tz::test::Case mock_mesh()
 {
-    tz::test::Case test_case("tz::gl::ManagedTerminalBuffer<T> Region Mesh Mocking Tests");
+    tz::test::Case test_case("tz::gl::ManagedBuffer<T> Region Mesh Mocking Tests");
     tz::gl::Object o;
 
-    std::size_t mvbo_id = o.emplace_managed_buffer<tz::gl::BufferType::Array>(tz::gl::deferred_terminal_tag{});
+    std::size_t mvbo_id = o.emplace_managed_buffer<tz::gl::BufferType::Array>();
     tz::gl::ManagedVBO& mvbo = *o.get_managed<tz::gl::BufferType::Array>(mvbo_id);
 
     tz::gl::Mesh triangle;
@@ -105,14 +107,15 @@ tz::test::Case mock_mesh()
 
 tz::test::Case defragmentation()
 {
-    tz::test::Case test_case("tz::gl::ManagedTerminalBuffer<T> Region Defragmentation Tests");
+    tz::test::Case test_case("tz::gl::ManagedBuffer<T> Region Defragmentation Tests");
     tz::gl::Object o;
 
-    std::size_t mvbo_id = o.emplace_managed_buffer<tz::gl::BufferType::Array>(sizeof(int) * 12);
+    std::size_t mvbo_id = o.emplace_managed_buffer<tz::gl::BufferType::Array>();
     tz::gl::ManagedVBO& mvbo = *o.get_managed<tz::gl::BufferType::Array>(mvbo_id);
+    mvbo.terminal_resize(sizeof(int) * 12);
     // 12 ints
     // i want to organise these ints.
-    topaz_expect(test_case, mvbo.regions_usage() == 0, "tz::gl::ManagedTerminalBuffer<T> Thinks it has non-zero regions usage when there are no regions!");
+    topaz_expect(test_case, mvbo.regions_usage() == 0, "tz::gl::ManagedBuffer<T> Thinks it has non-zero regions usage when there are no regions!");
     
     tz::mem::UniformPool<int> ints = mvbo.map_pool<int>();
     // ok sweet.
@@ -139,21 +142,21 @@ tz::test::Case defragmentation()
     mvbo.region(sizeof(int) * 11, sizeof(int), "best number ever!");
 
     // we should have filled the whole damn thing by now.
-    topaz_expect(test_case, mvbo.regions_full(), "tz::gl::ManagedTerminalBuffer<Type>: ManagedTerminalBuffer failed to recognise that it should be full. Size: ", mvbo.size(), ", regions usage: ", mvbo.regions_usage());
+    topaz_expect(test_case, mvbo.regions_full(), "tz::gl::ManagedBuffer<Type>: ManagedBuffer failed to recognise that it should be full. Size: ", mvbo.size(), ", regions usage: ", mvbo.regions_usage());
     // we can defrag here and nothing should change.
-    topaz_expect(test_case, !mvbo.defragment(), "tz::gl::ManagedTerminalBuffer<Type>::defragment() wrongly moved regions when it was already full.");
+    topaz_expect(test_case, !mvbo.defragment(), "tz::gl::ManagedBuffer<Type>::defragment() wrongly moved regions when it was already full.");
     
     // changed my mind! i fucking hate negative numbers. let's purge them all.
     mvbo.erase("negatives");
     // now regions should no longer fill the whole thing.
-    topaz_expect(test_case, !mvbo.regions_full(), "tz::gl::ManagedTerminalBuffer<Type>: ManagedTerminalBuffer wrongly believes it still has full region usage after erasing a non-empty region.");
+    topaz_expect(test_case, !mvbo.regions_full(), "tz::gl::ManagedBuffer<Type>: ManagedBuffer wrongly believes it still has full region usage after erasing a non-empty region.");
     // defragging should do something!
-    topaz_expect(test_case, mvbo.defragment(), "tz::gl::ManagedTerminalBuffer<Type>::defragment() failed to move any regions when it should have. Size: ", mvbo.size(), ", region usage: ", mvbo.regions_usage());
+    topaz_expect(test_case, mvbo.defragment(), "tz::gl::ManagedBuffer<Type>::defragment() failed to move any regions when it should have. Size: ", mvbo.size(), ", region usage: ", mvbo.regions_usage());
     
     // ensure ordering remains correct!
-    topaz_expect(test_case, mvbo[0] == "primes", "tz::gl::ManagedTerminalBuffer<Type>::defragment() Wrongly changed region ordering.");
-    topaz_expect(test_case, mvbo[1] == "evens", "tz::gl::ManagedTerminalBuffer<Type>::defragment() Wrongly changed region ordering.");
-    topaz_expect(test_case, mvbo[2] == "best number ever!", "tz::gl::ManagedTerminalBuffer<Type>::defragment() Wrongly changed region ordering.");
+    topaz_expect(test_case, mvbo[0] == "primes", "tz::gl::ManagedBuffer<Type>::defragment() Wrongly changed region ordering.");
+    topaz_expect(test_case, mvbo[1] == "evens", "tz::gl::ManagedBuffer<Type>::defragment() Wrongly changed region ordering.");
+    topaz_expect(test_case, mvbo[2] == "best number ever!", "tz::gl::ManagedBuffer<Type>::defragment() Wrongly changed region ordering.");
     return test_case;
 }
 
