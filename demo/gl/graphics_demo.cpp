@@ -13,8 +13,8 @@
 #include "GLFW/glfw3.h"
 
 const char *vertexShaderSource = "#version 430\n"
-    "layout (location = 1) in vec3 aPos;\n"
-	"layout (location = 2) in vec2 aTexcoord;\n"
+    "layout (location = 0) in vec3 aPos;\n"
+	"layout (location = 1) in vec2 aTexcoord;\n"
 	"#ubo matrices\n"
 	"{\n"
 	"	mat4 mvp;\n"

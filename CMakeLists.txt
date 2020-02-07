@@ -57,6 +57,7 @@ add_library(topaz STATIC
 		src/gl/frame.inl
 		src/gl/image.cpp
 		src/gl/image.hpp
+		src/gl/mesh.hpp
 		src/gl/object.hpp
 		src/gl/object.cpp
 		src/gl/object.inl
@@ -73,6 +74,7 @@ add_library(topaz STATIC
 		src/gl/texture.cpp
 		src/gl/texture.hpp
 		src/gl/texture.inl
+		src/gl/vertex.hpp
 		src/gl/modules/include.cpp
 		src/gl/modules/include.hpp
 		src/gl/modules/ssbo.cpp
