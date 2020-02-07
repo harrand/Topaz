@@ -1,11 +1,13 @@
 #ifndef TOPAZ_GL_MESH_HPP
 #define TOPAZ_GL_MESH_HPP
+#include <vector>
+#include "gl/vertex.hpp"
 
 namespace tz::gl
 {
-    class Mesh
+    struct MeshData
     {
-        
+        std::vector<tz::gl::Vertex> vertices;
     };
 }
 

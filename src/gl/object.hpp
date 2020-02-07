@@ -94,7 +94,7 @@ namespace tz::gl
         template<tz::gl::BufferType Type, typename... Args>
         std::size_t emplace_managed_terminal_buffer(Args&&... args);
 
-        void format(std::size_t idx, tz::gl::Format fmt);
+        void format(std::size_t idx, tz::gl::Format fmt) const;
         /**
          * Retrieve a pointer to an existing Buffer using its Handle ID.
          * 
@@ -207,7 +207,6 @@ namespace tz::gl
         ObjectHandle vao;
         std::vector<std::unique_ptr<tz::gl::IBuffer>> buffers;
         std::vector<std::size_t> index_buffer_ids;
-        std::size_t format_count;
     };
 
     namespace bound

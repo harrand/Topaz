@@ -8,7 +8,7 @@
 
 namespace tz::gl
 {
-    Object::Object(): vao(0), buffers(), index_buffer_ids(), format_count(0)
+    Object::Object(): vao(0), buffers(), index_buffer_ids()
     {
         glGenVertexArrays(1, &this->vao);
     }
@@ -85,12 +85,11 @@ namespace tz::gl
         return id;
     }
 
-    void Object::format(std::size_t idx, tz::gl::Format fmt)
+    void Object::format(std::size_t idx, tz::gl::Format fmt) const
     {
         this->bind_child(idx);
-        std::size_t attrib_id = this->format_count++;
-        glEnableVertexAttribArray(attrib_id);
-        glVertexAttribPointer(attrib_id, fmt.num_components, fmt.component_type, GL_TRUE, fmt.num_components * fmt.component_size, reinterpret_cast<const void*>(fmt.offset));
+        glEnableVertexAttribArray(idx);
+        glVertexAttribPointer(idx, fmt.num_components, fmt.component_type, GL_TRUE, fmt.num_components * fmt.component_size, reinterpret_cast<const void*>(fmt.offset));
     }
 
     tz::gl::IBuffer* Object::operator[](std::size_t idx)

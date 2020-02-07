@@ -6,7 +6,7 @@
 #include "core/core.hpp"
 #include "core/tz_glad/glad_context.hpp"
 #include "gl/object.hpp"
-#include "gl/mesh_data.hpp"
+#include "gl/mesh.hpp"
 
 tz::test::Case regions()
 {
@@ -27,10 +27,9 @@ tz::test::Case regions()
     mvbo.region(sizeof(float), sizeof(float), "y");
     mvbo.region(sizeof(float) * 2, sizeof(float), "z");
 
-    auto get_expected = [&mvbo, &floats](const std::string& name)->float
+    auto get_expected = [&mvbo](const std::string& name)->float
     {
-        std::size_t offset_floats = mvbo[name].offset / sizeof(float);
-        return floats[offset_floats];
+        return *(mvbo[name].block.get<float>(0));
     };
     float ex_x = get_expected("x");
     float ex_y = get_expected("y");
@@ -94,12 +93,12 @@ tz::test::Case mock_mesh()
     mvbo.region(0, quad_offset, "triangle data");
     mvbo.region(quad_offset, quad_size, "quad data");
 
-    std::size_t triangle_region_size = mvbo["triangle data"].size_bytes;
-    std::size_t quad_region_size = mvbo["quad data"].size_bytes;
-    const bool expected_triangle_size = quad_size == quad_region_size;
-    const bool expected_quad_size = quad_offset == triangle_region_size;
-    topaz_expect(test_case, expected_quad_size, "tz::gl::ManagedBlock<T> yielded unexpected region size of ", quad_region_size, ", expected ", quad_size);
-    topaz_expect(test_case, expected_triangle_size, "tz::gl::ManagedBlock<T> yielded unexpected region size of ", triangle_region_size, ", expected ", quad_offset);
+    tz::mem::Block triangle_region = mvbo["triangle data"].block;
+    tz::mem::Block quad_region = mvbo["quad data"].block;
+    const bool expected_triangle_size = quad_size == quad_region.size();
+    const bool expected_quad_size = quad_offset == triangle_region.size();
+    topaz_expect(test_case, expected_quad_size, "tz::gl::ManagedBlock<T> yielded unexpected region size of ", quad_region.size(), ", expected ", quad_size);
+    topaz_expect(test_case, expected_triangle_size, "tz::gl::ManagedBlock<T> yielded unexpected region size of ", triangle_region.size(), ", expected ", quad_offset);
 
     return test_case;
 }
@@ -165,11 +164,9 @@ tz::test::Case defragmentation()
     ints[2] = 7;
     ints[3] = 11;
     */
-    // i.e offset should be 0.
-    std::size_t offset_ints = region.offset / sizeof(int);
     for(std::size_t i = 0; i < 4; i++)
     {
-        int cur = ints[offset_ints + i];
+        int cur = *region.block.get<int>(sizeof(int) * i);
         topaz_expect(test_case, ints[i] == cur, "Region elements after defragmentation didn't match. Expected ", ints[i], ", got ", cur);
     }
     topaz_expect_assert(test_case, false, "Unexpected assert");
