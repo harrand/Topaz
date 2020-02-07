@@ -3,11 +3,6 @@
 
 namespace tz::gl
 {
-    bool ManagedNonterminalBufferRegion::operator<(const ManagedNonterminalBufferRegion& rhs) const
-    {
-        return this->offset < rhs.offset;
-    }
-    
     bool ManagedTerminalBufferRegion::operator<(const ManagedTerminalBufferRegion& rhs) const
     {
         topaz_assert(this->mapping_begin == rhs.mapping_begin, "tz::gl::ManagedTerminalBufferRegion::operator<(const ManagedTerminalBufferRegion&): Regions did not share the same common mapping beginning. This is illegal.");
