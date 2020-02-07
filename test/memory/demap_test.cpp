@@ -38,8 +38,8 @@ tz::test::Case example_elements()
     {
         auto fav_iter = m.find_by_key("favourite number"s);
         topaz_expect(test_case, fav_iter != m.end(), "DeMap failed to store favourite number properly.");
-        topaz_expect(test_case, *(*fav_iter).first == ("favourite number"s), "DeMap failed to store key.");
-        topaz_expect(test_case, *(*fav_iter).second == 6, "DeMap failed to store value");
+        topaz_expect(test_case, fav_iter->first == ("favourite number"s), "DeMap failed to store key.");
+        topaz_expect(test_case, fav_iter->second == 6, "DeMap failed to store value");
     }
     return test_case;
 }
@@ -120,51 +120,6 @@ tz::test::Case double_elements()
     return test_case;
 }
 
-tz::test::Case ordering()
-{
-    tz::test::Case test_case("tz::mem::DeMap Ordering Tests (order by value)");
-
-    tz::mem::DeMap<std::string, int> m;
-    using namespace std::literals::string_literals;
-    m.emplace("favourite number"s, 6);
-    m.emplace("small number"s, 1);
-    m.emplace("big number"s, 862);
-
-    auto expected_index = [](std::size_t index)->std::pair<std::string, int>
-    {
-        switch(index)
-        {
-            case 0:
-            default:
-                return {"small number", 1};
-            case 1:
-                return {"favourite number", 6};
-            case 2:
-                return {"big number", 862};
-        }
-    };
-
-    // string-based ordering will yield:
-    // "big number", 862
-    // "favourite number", 6
-    // "small number", 1
-
-    // we want value-based ordering, which should yield:
-    // "small number", 1
-    // "favourite number", 6
-    // "big number", 862
-    std::size_t i = 0;
-    for(const auto& [str_ptr, int_ptr] : m)
-    {
-        auto pair = expected_index(i);
-        topaz_expect(test_case, *str_ptr == pair.first, "DeMap did not order its elements by value correctly. Expected ", pair.first, ", got ", *str_ptr);
-        topaz_expect(test_case, *int_ptr == pair.second, "DeMap did not order its elements by value correctly. Expected ", pair.second, ", got ", *int_ptr);
-        i++;
-    }
-
-    return test_case;
-}
-
 int main()
 {
 	tz::test::Unit dmap;
@@ -174,7 +129,6 @@ int main()
     dmap.add(forward_elements());
     dmap.add(backward_elements());
     dmap.add(double_elements());
-    dmap.add(ordering());
 
 	return dmap.result();
 }
