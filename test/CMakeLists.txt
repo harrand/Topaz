@@ -50,7 +50,6 @@ register_test_target(tz_clipboard_test)
 
 # tz::memory
 register_test_target(tz_block_test)
-register_test_target(tz_demap_test)
 register_test_target(tz_pool_test)
 
 # tz::render
