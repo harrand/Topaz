@@ -84,7 +84,6 @@ namespace tz::gl
         const tz::gl::Object* operator->() const;
         tz::gl::Object& operator*();
         const tz::gl::Object& operator*() const;
-        std::size_t get_indices(Indices type = Indices::Static) const;
     private:
         void init();
         tz::gl::ManagedVBO* static_data();

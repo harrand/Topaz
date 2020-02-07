@@ -33,7 +33,7 @@ namespace tz::render
         {
             std::size_t big = std::max(range.first, range.second);
             std::size_t small = std::min(range.first, range.second);
-            std::size_t index_count = 1 + big - small;
+            std::size_t index_count = big - small;
             cmds.add({static_cast<GLuint>(index_count), static_cast<GLuint>(index_count / 3), static_cast<GLuint>(small), 0, 0});
         }
         return cmds;

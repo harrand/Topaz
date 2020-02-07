@@ -183,17 +183,6 @@ namespace tz::gl
         return this->o;
     }
 
-    std::size_t Manager::get_indices(Indices type) const
-    {
-        switch(type)
-        {
-            case Indices::Static:
-                return this->static_indices_id;
-            case Indices::Dynamic:
-                return this->dynamic_indices_id;
-        }
-    }
-
     void Manager::init()
     {
         this->static_data_id = this->o.emplace_managed_buffer<tz::gl::BufferType::Array>();
