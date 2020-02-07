@@ -2,7 +2,6 @@
 #define TOPAZ_GL_MANAGED_BUFFER_HPP
 #include "gl/buffer.hpp"
 #include "memory/block.hpp"
-#include "memory/demap.hpp"
 #include <map>
 #include <optional>
 
@@ -49,7 +48,7 @@ namespace tz::gl
         virtual void unmap() override;
         const ManagedBufferRegion& operator[](const std::string& name) const;
     private:
-        using MapType = tz::mem::DeMap<ManagedBufferRegion, std::string>;
+        using MapType = std::map<ManagedBufferRegion, std::string>;
         void verify_mapped() const;
         bool relocate_region(const std::string& region_name, std::size_t byte_index);
         const char* region_within(std::size_t byte_index) const;

@@ -30,12 +30,6 @@ namespace tz::mem
     }
 
     template<typename K, typename V>
-    typename DeMap<K, V>::const_iterator DeMap<K, V>::begin() const
-    {
-        return this->ufor.begin();
-    }
-
-    template<typename K, typename V>
     typename DeMap<K, V>::const_iterator DeMap<K, V>::cbegin() const
     {
         return this->ufor.cbegin();
@@ -48,22 +42,9 @@ namespace tz::mem
     }
 
     template<typename K, typename V>
-    typename DeMap<K, V>::const_iterator DeMap<K, V>::end() const
-    {
-        return this->ufor.end();
-    }
-
-    template<typename K, typename V>
     typename DeMap<K, V>::const_iterator DeMap<K, V>::cend() const
     {
         return this->ufor.cend();
-    }
-
-    template<typename K, typename V>
-    void DeMap<K, V>::clear()
-    {
-        this->ufor.clear();
-        this->back.clear();
     }
 
     template<typename K, typename V>
