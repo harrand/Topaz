@@ -87,10 +87,15 @@ namespace tz::gl
 
     void Object::format(std::size_t idx, tz::gl::Format fmt)
     {
+        this->format_custom(idx, fmt.num_components, fmt.component_type, GL_FALSE, fmt.num_components * fmt.component_size, reinterpret_cast<const void*>(fmt.offset));
+    }
+
+    void Object::format_custom(std::size_t idx, GLint size, GLenum type, GLboolean normalised, GLsizei stride, const void* ptr)
+    {
         this->bind_child(idx);
         std::size_t attrib_id = this->format_count++;
         glEnableVertexAttribArray(attrib_id);
-        glVertexAttribPointer(attrib_id, fmt.num_components, fmt.component_type, GL_TRUE, fmt.num_components * fmt.component_size, reinterpret_cast<const void*>(fmt.offset));
+        glVertexAttribPointer(attrib_id, size, type, normalised, stride, ptr);
     }
 
     tz::gl::IBuffer* Object::operator[](std::size_t idx)

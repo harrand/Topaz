@@ -8,6 +8,13 @@ add_executable(topaz_graphics_demo
 add_dependencies(topaz_graphics_demo topaz)
 target_link_libraries(topaz_graphics_demo PRIVATE topaz)
 
+add_executable(topaz_mesh_demo
+		mesh_demo.cpp
+)
+
+add_dependencies(topaz_mesh_demo topaz)
+target_link_libraries(topaz_mesh_demo PRIVATE topaz)
+
 add_executable(topaz_multi_draw_demo
 	multi_draw_demo.cpp
 )

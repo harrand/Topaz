@@ -37,9 +37,10 @@ const char *fragmentShaderSource = "#version 430\n"
 int main()
 {
 	// Minimalist Graphics Demo.
-	tz::core::initialise("Topaz Graphics Demo");
+	tz::core::initialise("Topaz Mesh Demo");
 	{
-		tz::gl::Object o;
+		tz::gl::Manager m;
+        tz::gl::Object& o = *m;
 		tz::gl::p::UBOModule* ubo_module = nullptr;
 		tz::gl::ShaderPreprocessor pre{vertexShaderSource};
 		{
@@ -63,17 +64,21 @@ int main()
 		cpl.compile(*fs);
 		cpl.link(prg);
 
-		const float vertices[] = {
-        -0.5f, -0.5f, 0.0f, // left  
-         0.5f, -0.5f, 0.0f, // right 
-         0.0f,  0.5f, 0.0f  // top   
-    	};
+        tz::gl::IndexedMesh triangle;
+        triangle.vertices.push_back(tz::gl::Vertex{{{-0.5f, 0.5f, 0.0f}}, {{0.0f, 0.0f}}, {{}}, {{}}, {{}}});
+        triangle.vertices.push_back(tz::gl::Vertex{{{0.5f, 0.5f, 0.0f}}, {{1.0f, 0.0f}}, {{}}, {{}}, {{}}});
+        triangle.vertices.push_back(tz::gl::Vertex{{{0.0f, 1.5f, 0.0f}}, {{0.5f, 1.0f}}, {{}}, {{}}, {{}}});
+        triangle.indices = {0, 1, 2};
 
-		const float texcoords[] = {
-			0.0f, 0.0f,
-			1.0f, 0.0f,
-			0.5f, 1.0f,
-		};
+        tz::gl::IndexedMesh square;
+        square.vertices.push_back(tz::gl::Vertex{{{-0.5f, -0.5f, 0.0f}}, {{0.0f, 0.0f}}, {{}}, {{}}, {{}}});
+        square.vertices.push_back(tz::gl::Vertex{{{0.5f, -0.5f, 0.0f}}, {{1.0f, 0.0f}}, {{}}, {{}}, {{}}});
+        square.vertices.push_back(tz::gl::Vertex{{{0.5f, 0.5f, 0.0f}}, {{1.0f, 0.5f}}, {{}}, {{}}, {{}}});
+        
+        square.vertices.push_back(tz::gl::Vertex{{{-0.5f, -0.5f, 0.0f}}, {{0.0f, 0.0f}}, {{}}, {{}}, {{}}});
+        square.vertices.push_back(tz::gl::Vertex{{{0.5f, 0.5f, 0.0f}}, {{1.0f, 0.5f}}, {{}}, {{}}, {{}}});
+        square.vertices.push_back(tz::gl::Vertex{{{-0.5f, 0.5f, 0.0f}}, {{0.0f, 0.5f}}, {{}}, {{}}, {{}}});
+        square.indices = {0, 1, 2, 3, 4, 5};
 
 		auto rgba_checkerboard = tz::ext::stb::read_image<tz::gl::PixelRGB8>("res/textures/bricks.jpg");
 		tz::gl::Texture checkerboard;
@@ -82,15 +87,6 @@ int main()
 
 		prg.attach_texture(0, &checkerboard, "checkerboard");
 
-		std::size_t vbo_id = o.emplace_buffer<tz::gl::BufferType::Array>();
-		tz::gl::VBO* vbo = o.get<tz::gl::BufferType::Array>(vbo_id);
-		std::size_t texcoords_id = o.emplace_buffer<tz::gl::BufferType::Array>();
-		tz::gl::VBO* texcoord_vbo = o.get<tz::gl::BufferType::Array>(texcoords_id);
-		texcoord_vbo->resize(sizeof(texcoords));
-		texcoord_vbo->send(texcoords);
-
-		vbo->resize(sizeof(vertices));
-		vbo->send(vertices);
 		tz::Vec3 triangle_pos{{0.0f, 0.0f, 0.0f}};
 		auto add_pos = [&triangle_pos](float x, float y, float z)
 		{
@@ -99,13 +95,8 @@ int main()
 			triangle_pos[2] += z;
 		};
 
-		o.format(vbo_id, tz::gl::fmt::three_floats);
-		o.format(texcoords_id, tz::gl::fmt::two_floats);
-		std::size_t ibo_id = o.emplace_buffer<tz::gl::BufferType::Index>();
-		tz::gl::IBO* ibo = o.get<tz::gl::BufferType::Index>(ibo_id);
-		ibo->resize(3 * sizeof(unsigned int));
-		unsigned int indices[] = {0, 1, 2};
-		ibo->send(indices);
+		tz::gl::Manager::Handle triangle_handle = m.add_mesh(triangle);
+        tz::gl::Manager::Handle square_handle = m.add_mesh(square);
 
 		float rotation_x = 0.0f;
 		float rotation_y = 0.0f;
@@ -143,9 +134,24 @@ int main()
 			}
 		});
 
-		glClearColor(0.0f, 0.3f, 0.15f, 1.0f);
+		glClearColor(0.3f, 0.15f, 0.0f, 1.0f);
 		tz::render::Device dev{wnd.get_frame(), &prg, &o};
-		dev.set_handle(ibo_id);
+		dev.set_handle(m.get_indices());
+
+        tz::render::IndexSnippet triangle_snip{m.get_indices()};
+        triangle_snip.emplace_range(0, 2);
+
+        tz::render::IndexSnippet square_snip{m.get_indices()};
+        square_snip.emplace_range(3, 8, 3);
+
+        tz::render::IndexSnippet double_snip{m.get_indices()};
+        double_snip.emplace_range(0, 2); // Triangle
+        double_snip.emplace_range(3, 8, 3); // Square
+        // This should do both!
+
+        //dev.set_snippet(triangle_snip);
+        //dev.set_snippet(square_snip);
+        dev.set_snippet(double_snip);
 		while(!wnd.is_close_requested())
 		{
 			rotation_y += 0.02f;

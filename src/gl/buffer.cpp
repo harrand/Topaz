@@ -51,6 +51,31 @@ namespace tz::gl
         glNamedBufferData(this->handle, size_bytes, nullptr, GL_STATIC_DRAW);
     }
 
+    void IBuffer::safe_resize(std::size_t size_bytes)
+    {
+        IBuffer::verify();
+        topaz_assert(!this->is_mapped(), "tz::gl::Buffer<T>::safe_resize(", size_bytes, "): Cannot resize because this buffer is currently mapped.");
+        if(this->size() == size_bytes)
+            return;
+        std::size_t temp_size = this->size();
+        void* temp_data = std::malloc(temp_size);
+        this->retrieve_all(temp_data);
+        this->resize(size_bytes);
+        if(size_bytes > temp_size)
+        {
+            // if we now have extra space that is unused, just copy everything we have so far.
+            tz::mem::Block blk{temp_data, temp_size};
+            this->send(0, blk);
+            // remainder after this block is now undefined and is free to be overwritten.
+        }
+        else
+        {
+            // just send as much as it can take
+            this->send(temp_data);
+        }
+        std::free(temp_data);
+    }
+
     void IBuffer::retrieve(std::size_t offset, std::size_t size_bytes, void* input_data) const
     {
         IBuffer::verify();

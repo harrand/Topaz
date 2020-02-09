@@ -102,6 +102,7 @@ namespace tz::gl
          * @param size_bytes Desired new size of the buffer, in bytes.
          */
         void resize(std::size_t size_bytes);
+        void safe_resize(std::size_t size_bytes);
         /**
          * Retrieve a subset of the data-store.
          * 

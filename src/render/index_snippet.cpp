@@ -22,19 +22,26 @@ namespace tz::render
 
     std::size_t IndexSnippet::emplace_range(std::size_t begin, std::size_t end)
     {
-        this->ranges.emplace_back(begin, end);
+        this->ranges.emplace_back(IndexRange{begin, end}, 0u);
+        return this->ranges.size() - 1;
+    }
+
+    std::size_t IndexSnippet::emplace_range(std::size_t begin, std::size_t end, std::size_t index_offset)
+    {
+        this->ranges.emplace_back(IndexRange{begin, end}, index_offset);
         return this->ranges.size() - 1;
     }
 
     tz::gl::MDIDrawCommandList IndexSnippet::get_command_list() const
     {
         tz::gl::MDIDrawCommandList cmds;
-        for(const IndexRange& range : this->ranges)
+        for(const IndexRangeElement& element : this->ranges)
         {
+            const IndexRange& range = element.range;
             std::size_t big = std::max(range.first, range.second);
             std::size_t small = std::min(range.first, range.second);
-            std::size_t index_count = big - small;
-            cmds.add({static_cast<GLuint>(index_count), static_cast<GLuint>(index_count / 3), static_cast<GLuint>(small), 0, 0});
+            std::size_t index_count = 1 + big - small;
+            cmds.add({static_cast<GLuint>(index_count), static_cast<GLuint>(index_count / 3), static_cast<GLuint>(small), static_cast<GLint>(element.index_offset), 0});
         }
         return cmds;
     }

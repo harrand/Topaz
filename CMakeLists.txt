@@ -57,6 +57,8 @@ add_library(topaz STATIC
 		src/gl/frame.inl
 		src/gl/image.cpp
 		src/gl/image.hpp
+		src/gl/manager.hpp
+		src/gl/manager.cpp
 		src/gl/mesh.hpp
 		src/gl/object.hpp
 		src/gl/object.cpp

@@ -91,6 +91,7 @@ namespace tz::gl
         std::size_t emplace_buffer(Args&&... args);
 
         void format(std::size_t idx, tz::gl::Format fmt);
+        void format_custom(std::size_t idx, GLint size, GLenum type, GLboolean normalised, GLsizei stride, const void* ptr);
         /**
          * Retrieve a pointer to an existing Buffer using its Handle ID.
          * 

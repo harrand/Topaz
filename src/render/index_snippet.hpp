@@ -46,6 +46,7 @@ namespace tz::render
          * @return Index referring to this position of this range in the snippet.
          */
         std::size_t emplace_range(std::size_t begin, std::size_t end);
+        std::size_t emplace_range(std::size_t begin, std::size_t end, std::size_t index_offset);
         /**
          * Using the current ranges within this command-list, retrieve an MDI command list which can be used in a render-invocation.
          * @return Render-ready MDI command list.
@@ -53,8 +54,17 @@ namespace tz::render
         tz::gl::MDIDrawCommandList get_command_list() const;
     private:
         using IndexRange = std::pair<std::size_t, std::size_t>;
+
+        struct IndexRangeElement
+        {
+            IndexRangeElement(IndexRange range, std::size_t offset): range(range), index_offset(offset){}
+            
+            IndexRange range;
+            std::size_t index_offset;
+        };
+
         std::size_t ibo_index;
-        std::vector<IndexRange> ranges;
+        std::vector<IndexRangeElement> ranges;
     };
 }
 

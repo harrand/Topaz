@@ -5,11 +5,6 @@
 
 namespace tz::gl
 {
-    struct IndexedMeshElement
-    {
-        tz::gl::Vertex vertex;
-        tz::gl::Index index;
-    };
 
     struct Mesh
     {
@@ -18,7 +13,18 @@ namespace tz::gl
 
     struct IndexedMesh
     {
-        std::vector<IndexedMeshElement> elements;
+        std::vector<tz::gl::Vertex> vertices;
+        std::vector<tz::gl::Index> indices;
+
+        std::size_t data_size_bytes() const
+        {
+            return this->vertices.size() * sizeof(tz::gl::Vertex);
+        }
+
+        std::size_t indices_size_bytes() const
+        {
+            return this->indices.size() * sizeof(tz::gl::Index);
+        }
     };
 }
 
