@@ -5,6 +5,7 @@
 #include "gl/shader.hpp"
 #include "gl/shader_compiler.hpp"
 #include "gl/manager.hpp"
+#include "gl/mesh_loader.hpp"
 #include "gl/buffer.hpp"
 #include "gl/frame.hpp"
 #include "gl/modules/ubo.hpp"
@@ -80,6 +81,8 @@ int main()
         square.vertices.push_back(tz::gl::Vertex{{{-0.5f, 0.5f, 0.0f}}, {{0.0f, 0.5f}}, {{}}, {{}}, {{}}});
         square.indices = {0, 1, 2, 3, 4, 5};
 
+		tz::gl::IndexedMesh monkey_head = tz::gl::load_mesh("res/models/monkeyhead.obj");
+
 		auto rgba_checkerboard = tz::ext::stb::read_image<tz::gl::PixelRGB8>("res/textures/bricks.jpg");
 		tz::gl::Texture checkerboard;
 		checkerboard.set_parameters(tz::gl::default_texture_params);
@@ -97,6 +100,7 @@ int main()
 
 		tz::gl::Manager::Handle triangle_handle = m.add_mesh(triangle);
         tz::gl::Manager::Handle square_handle = m.add_mesh(square);
+		tz::gl::Manager::Handle monkeyhead_handle = m.add_mesh(monkey_head);
 
 		float rotation_x = 0.0f;
 		float rotation_y = 0.0f;
@@ -144,16 +148,36 @@ int main()
         tz::render::IndexSnippet square_snip{m.get_indices()};
         square_snip.emplace_range(3, 8, 3);
 
+		tz::render::IndexSnippet monkey_snip{m.get_indices()};
+		constexpr std::size_t monkey_begin = 9;
+		monkey_snip.emplace_range(monkey_begin, monkey_head.indices.size() - 4, monkey_begin);
+
         tz::render::IndexSnippet double_snip{m.get_indices()};
-        double_snip.emplace_range(0, 2); // Triangle
-        double_snip.emplace_range(3, 8, 3); // Square
+        double_snip.emplace_range(0, 2, m.get_indices_offset(triangle_handle)); // Triangle
+        double_snip.emplace_range(3, 8, m.get_indices_offset(square_handle)); // Square
         // This should do both!
 
         //dev.set_snippet(triangle_snip);
         //dev.set_snippet(square_snip);
-        dev.set_snippet(double_snip);
+		dev.set_snippet(monkey_snip);
+        //dev.set_snippet(double_snip);
+
+		// TODO: Remove
+		// Temporary FPS Counter Logic
+		double last_time = glfwGetTime();
+		int frames = 0;
 		while(!wnd.is_close_requested())
 		{
+			double time = glfwGetTime();
+			frames++;
+			if(time - last_time >= 1.0)
+			{
+				std::printf("%g ms/frame\n", 1000.0/static_cast<double>(frames));
+				std::printf("%d fps\n", frames);
+				frames = 0;
+				last_time += 1.0;
+			}
+
 			rotation_y += 0.02f;
 
         	dev.clear();

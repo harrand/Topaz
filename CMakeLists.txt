@@ -42,6 +42,8 @@ add_library(topaz STATIC
 		src/geo/matrix.inl
 		src/geo/vector.hpp
 		src/geo/vector.inl
+		src/gl/tz_assimp/scene.hpp
+		src/gl/tz_assimp/scene.cpp
 		src/gl/tz_stb_image/image_reader.hpp
 		src/gl/tz_stb_image/image_reader.inl
 		src/gl/tz_stb_image/image_writer.hpp
@@ -60,6 +62,8 @@ add_library(topaz STATIC
 		src/gl/manager.hpp
 		src/gl/manager.cpp
 		src/gl/mesh.hpp
+		src/gl/mesh_loader.hpp
+		src/gl/mesh_loader.cpp
 		src/gl/object.hpp
 		src/gl/object.cpp
 		src/gl/object.inl
@@ -93,7 +97,8 @@ add_library(topaz STATIC
 target_link_libraries(topaz PUBLIC
 		glfw
 		glad
-		stbi)
+		stbi
+		assimp)
 target_include_directories(topaz PUBLIC ${TOPAZ_SOURCE_DIR})
 
 add_subdirectory(lib)
