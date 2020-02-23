@@ -72,6 +72,41 @@ namespace tz::gl
         return this->mesh_info_map.at(handle).size_vertices;
     }
 
+    typename Manager::Handle Manager::partition(Handle handle, std::size_t vertex_offset)
+    {
+        // We require the given handle to already be managed.
+        topaz_assert(this->mesh_info_map.find(handle) != this->mesh_info_map.end(), "tz::gl::Manager::partition(", handle, ", ", vertex_offset, "): Manager does not know about handle '", handle, "' -- So cannot partition!");
+        MeshInfo& info = this->mesh_info_map[handle];
+        std::size_t original_vertices_size = info.size_vertices;
+        // Ensure that the byte offset is less than our size.
+        topaz_assert(info.size_vertices > vertex_offset, "tz::gl::Manager::partition(", handle, ", ", vertex_offset, "): The given handle '", handle, "' cannot be partitioned at offset ", vertex_offset, " because this handle only occupies ", info.size_vertices, " vertices");
+        info.size_vertices = vertex_offset;
+        Handle new_handle = this->mesh_info_map.size();
+        std::size_t new_offset_vertices = info.offset_vertices + info.size_vertices;
+        MeshInfo new_info{new_offset_vertices, original_vertices_size - vertex_offset};
+        
+        this->mesh_info_map.emplace(new_handle, new_info);
+        return handle;
+    }
+
+    std::vector<typename Manager::Handle> Manager::split(Handle handle, std::size_t stride_vertices)
+    {
+        // Firstly, make sure the stride we get fits properly
+        std::size_t initial_vertex_count = this->get_number_of_vertices(handle);
+        topaz_assert(initial_vertex_count % stride_vertices == 0, "tz::gl::Manager::split(", handle, ", ", stride_vertices, "): Splitting by stride ", stride_vertices, " doesn't make sense as the number of vertices contained within handle ", handle, " is ", initial_vertex_count, ", which is not divisible by ", stride_vertices);
+        std::size_t split_amount = initial_vertex_count / stride_vertices;
+        // Create the underlying container.
+        std::vector<typename Manager::Handle> daughter_handles;
+        daughter_handles.reserve(split_amount);
+        daughter_handles.push_back(handle);
+        // Partition the main handle until we have an equal split in all.
+        for(std::size_t i = 0; i < split_amount - 1; i++)
+        {
+            daughter_handles.push_back(this->partition(handle, i * stride_vertices));
+        }
+        return std::move(daughter_handles);
+    }
+
     tz::gl::Object& Manager::operator*()
     {
         return this->o;

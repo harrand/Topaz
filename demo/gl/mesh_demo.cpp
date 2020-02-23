@@ -82,6 +82,7 @@ int main()
         square.indices = {0, 1, 2, 3, 4, 5};
 
 		tz::gl::IndexedMesh monkey_head = tz::gl::load_mesh("res/models/monkeyhead.obj");
+		tz::debug_printf("monkey head data size = %zu bytes, indices size = %zu bytes", monkey_head.data_size_bytes(), monkey_head.indices_size_bytes());
 
 		auto rgba_checkerboard = tz::ext::stb::read_image<tz::gl::PixelRGB8>("res/textures/bricks.jpg");
 		tz::gl::Texture checkerboard;
