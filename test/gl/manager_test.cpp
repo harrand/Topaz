@@ -29,9 +29,12 @@ tz::test::Case partition()
 
     // add the mesh, and then partition it into two triangles.
     tz::gl::Manager::Handle t1 = m.add_mesh(square());
+    std::size_t offset = m.get_vertices_offset(t1);
     topaz_expect(test_case, m.get_number_of_vertices(t1) == 6, "Handle had unexpected number of vertices. Expected ", 6, ", got ", t1);
     tz::gl::Manager::Handle t2 = m.partition(t1, 3);
     // number of vertices must be conserved
+    topaz_expect(test_case, m.get_vertices_offset(t1) == offset, "Handle had unexpected offset. Expected ", offset, ", got ", m.get_vertices_offset(t1));
+    topaz_expect(test_case, m.get_vertices_offset(t2) == offset + 3, "Handle had unexpected offset. Expected ", offset + 3, ", got ", m.get_vertices_offset(t2));
     topaz_expect(test_case, m.get_number_of_vertices(t1) == 3, "Handle had unexpected number of vertices. Expected ", 3, ", got ", t1);
     topaz_expect(test_case, m.get_number_of_vertices(t2) == 3, "Handle had unexpected number of vertices. Expected ", 3, ", got ", t2);
     return test_case;
@@ -44,9 +47,18 @@ tz::test::Case split()
 
     // add the mesh, and then split it into 3 sets of 2-vertex handles.
     tz::gl::Manager::Handle p1 = m.add_mesh(square());
-    std::vector<tz::gl::Manager::Handle> handles = m.split(p1, 2);
+    constexpr std::size_t split_amt = 2;
+    std::vector<tz::gl::Manager::Handle> handles = m.split(p1, split_amt);
     topaz_expect(test_case, handles.size() == 3, "Expected to split handle into ", 3, "daughters, but instead had ", handles.size(), " daughters");
-
+    for(std::size_t i = 0; i < handles.size(); i++)
+    {
+        tz::gl::Manager::Handle px = handles[i];
+        // All should have same number of vertices.
+        topaz_expect(test_case, m.get_number_of_vertices(px) == 2, "Handle ", px, " expected to contain ", 2, " vertices, but it apparantly contains ", m.get_number_of_vertices(px));
+        // Should have stepping offsets
+        std::size_t expected_offset = m.get_vertices_offset(p1) + (2 * i);
+        topaz_expect(test_case, m.get_vertices_offset(px) == expected_offset, "Handle ", px, " expected to have vertex offset of ", expected_offset, ", but it has an offset of ", m.get_vertices_offset(px));
+    }
     return test_case;
 }
 
@@ -58,6 +70,7 @@ int main()
     {
         tz::core::initialise("Manager Tests");
         manager.add(partition());
+        manager.add(split());
         tz::core::terminate();
     }
     return manager.result();

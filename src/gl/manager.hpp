@@ -18,7 +18,7 @@ namespace tz::gl
         Manager();
         
         Handle add_mesh(tz::gl::IndexedMesh data);
-        std::size_t get_indices_offset(Handle handle) const;
+        std::size_t get_vertices_offset(Handle handle) const;
         std::size_t get_number_of_vertices(Handle handle) const;
         Handle partition(Handle handle, std::size_t vertex_offset);
         std::vector<Handle> split(Handle handle, std::size_t stride_vertices);

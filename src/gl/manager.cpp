@@ -60,7 +60,7 @@ namespace tz::gl
         return handle;
     }
 
-    std::size_t Manager::get_indices_offset(Handle handle) const
+    std::size_t Manager::get_vertices_offset(Handle handle) const
     {
         topaz_assert(this->mesh_info_map.count(handle) == 1, "tz::gl::Manager::get_indices_offset(Handle): This Manager has no knowledge of this handle ", handle, ". Cannot retrieve information about this handle...");
         return this->mesh_info_map.at(handle).offset_vertices;
@@ -80,13 +80,14 @@ namespace tz::gl
         std::size_t original_vertices_size = info.size_vertices;
         // Ensure that the byte offset is less than our size.
         topaz_assert(info.size_vertices > vertex_offset, "tz::gl::Manager::partition(", handle, ", ", vertex_offset, "): The given handle '", handle, "' cannot be partitioned at offset ", vertex_offset, " because this handle only occupies ", info.size_vertices, " vertices");
+        // Essentially we set our size to be equal to the offset, so that the new handle can manage the remainder of the vertices.
         info.size_vertices = vertex_offset;
         Handle new_handle = this->mesh_info_map.size();
         std::size_t new_offset_vertices = info.offset_vertices + info.size_vertices;
-        MeshInfo new_info{new_offset_vertices, original_vertices_size - vertex_offset};
-        
+        // All the vertices which the first handle no longer owns, we will take.
+        MeshInfo new_info{new_offset_vertices, original_vertices_size - info.size_vertices};
         this->mesh_info_map.emplace(new_handle, new_info);
-        return handle;
+        return new_handle;
     }
 
     std::vector<typename Manager::Handle> Manager::split(Handle handle, std::size_t stride_vertices)
@@ -102,7 +103,7 @@ namespace tz::gl
         // Partition the main handle until we have an equal split in all.
         for(std::size_t i = 0; i < split_amount - 1; i++)
         {
-            daughter_handles.push_back(this->partition(handle, i * stride_vertices));
+            daughter_handles.push_back(this->partition(daughter_handles.back(), stride_vertices));
         }
         return std::move(daughter_handles);
     }
