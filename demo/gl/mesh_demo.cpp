@@ -82,6 +82,8 @@ int main()
         square.indices = {0, 1, 2, 3, 4, 5};
 
 		tz::gl::IndexedMesh monkey_head = tz::gl::load_mesh("res/models/monkeyhead.obj");
+		const tz::Vec3 cam_pos{{0.0f, 0.0f, 5.0f}};
+		tz::gl::sort_indices(monkey_head, cam_pos);
 		tz::debug_printf("monkey head data size = %zu bytes, indices size = %zu bytes", monkey_head.data_size_bytes(), monkey_head.indices_size_bytes());
 
 		auto rgba_checkerboard = tz::ext::stb::read_image<tz::gl::PixelRGB8>("res/textures/bricks.jpg");
@@ -151,11 +153,12 @@ int main()
 
 		tz::render::IndexSnippet monkey_snip{m.get_indices()};
 		constexpr std::size_t monkey_begin = 9;
-		monkey_snip.emplace_range(monkey_begin, monkey_head.indices.size() - 4, monkey_begin);
+		monkey_snip.emplace_range(monkey_begin, monkey_head.indices.size(), m.get_vertices_offset(monkeyhead_handle));
+		//monkey_snip.emplace_range(0, 2, m.get_vertices_offset(triangle_handle)); // Triangle
 
         tz::render::IndexSnippet double_snip{m.get_indices()};
-        double_snip.emplace_range(0, 2, m.get_indices_offset(triangle_handle)); // Triangle
-        double_snip.emplace_range(3, 8, m.get_indices_offset(square_handle)); // Square
+		double_snip.emplace_range(3, 8, m.get_vertices_offset(square_handle)); // Square
+        double_snip.emplace_range(0, 2, m.get_vertices_offset(triangle_handle)); // Triangle
         // This should do both!
 
         //dev.set_snippet(triangle_snip);
@@ -184,7 +187,7 @@ int main()
         	dev.clear();
 			o.bind();
 			tz::Mat4 m = tz::geo::model(triangle_pos, tz::Vec3{{0.0f, rotation_y, 0.0f}}, tz::Vec3{{1.0f, 1.0f, 1.0f}});
-			tz::Mat4 v = tz::geo::view(tz::Vec3{{0.0f, 0.0f, 5.0f}}, tz::Vec3{{0.0f, 0.0f, 0.0f}});
+			tz::Mat4 v = tz::geo::view(cam_pos, tz::Vec3{{0.0f, 0.0f, 0.0f}});
 			tz::Mat4 p = tz::geo::perspective(1.57f, 1920.0f/1080.0f, 0.1f, 1000.0f);
 			matrix.set(0, p * v * m);
 			ubo->bind();

@@ -26,7 +26,7 @@ namespace tz::render
 		if(frame->operator!=(tz::gl::bound::frame()))
 			frame->bind();
 		program->bind();
-		if(this->snippet.empty())
+		if (this->snippet.empty())
 			this->object->render(this->ibo_id.value());
 		else
 		{
