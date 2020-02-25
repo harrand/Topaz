@@ -47,16 +47,18 @@ namespace tz::gl
     void IBuffer::resize(std::size_t size_bytes)
     {
         IBuffer::verify();
+        topaz_assert(!this->is_terminal(), "tz::gl::Buffer<T>::resize(", size_bytes, "): Cannot resize a terminal buffer.");
         topaz_assert(!this->is_mapped(), "tz::gl::Buffer<T>::resize(", size_bytes, "): Cannot resize because this buffer is currently mapped.");
         glNamedBufferData(this->handle, size_bytes, nullptr, GL_STATIC_DRAW);
     }
 
     void IBuffer::safe_resize(std::size_t size_bytes)
     {
-        IBuffer::verify();
-        topaz_assert(!this->is_mapped(), "tz::gl::Buffer<T>::safe_resize(", size_bytes, "): Cannot resize because this buffer is currently mapped.");
         if(this->size() == size_bytes)
             return;
+        IBuffer::verify();
+        topaz_assert(!this->is_mapped(), "tz::gl::Buffer<T>::safe_resize(", size_bytes, "): Cannot resize because this buffer is currently mapped.");
+        topaz_assert(!this->is_terminal(), "tz::gl::Buffer<T>::safe_resize(", size_bytes, "): Cannot safe-resize a terminal buffer if the new size parameter is not equal to its old size.");
         std::size_t temp_size = this->size();
         void* temp_data = std::malloc(temp_size);
         this->retrieve_all(temp_data);

@@ -10,11 +10,21 @@
 
 namespace tz::gl
 {
+    /**
+     * Managed tz::gl::Object which implicitly has data buffers prepared. This should be used in-place of a tz::gl::Object if no special data format is required and normal meshes are to be used.
+     * Managers don't create any terminal buffers by default. If you want them, it is recommended to retrieve the manager's object and create them yourself. The manager will never attempt to use any buffers that it hasn't created itself.
+     * Contains:
+     * - Data Buffer
+     * - Indices Buffer
+     */
     class Manager
     {
     public:
         using Handle = std::size_t;
 
+        /**
+         * Construct an empty Manager.
+         */
         Manager();
         
         Handle add_mesh(tz::gl::IndexedMesh data);

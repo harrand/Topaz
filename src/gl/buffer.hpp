@@ -97,11 +97,17 @@ namespace tz::gl
         /**
          * Attempt to change the size of the buffer.
          * 
-         * Precondition: Requires the buffer to be valid and unmapped.
-         * Note: This will not preserve any of the data within the buffer. You should do that yourself.
+         * Precondition: Requires the buffer to be valid, nonterminal and unmapped.
+         * Note: This will not preserve any of the data within the buffer. You should use safe_resize for that.
          * @param size_bytes Desired new size of the buffer, in bytes.
          */
         void resize(std::size_t size_bytes);
+        /**
+         * Attempt to change the size of the buffer, whilst preserving all data within the buffer in the process.
+         * 
+         * Note: You can assume that this will early-out if size_bytes is equal to this->size().
+         * Precondition: Requires the buffer to be valid, nonterminal and unmapped. Note that it is not an error to call safe_resize on a terminal buffer if the size parameter is equal to this->size(). This behaviour is not shared by this->resize().
+         */
         void safe_resize(std::size_t size_bytes);
         /**
          * Retrieve a subset of the data-store.

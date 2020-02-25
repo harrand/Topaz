@@ -13,6 +13,19 @@ namespace tz::gl
         glGenVertexArrays(1, &this->vao);
     }
 
+    Object::Object(Object&& move): vao(move.vao), buffers(std::move(move.buffers)), index_buffer_ids(move.index_buffer_ids), format_count(move.format_count)
+    {
+        move.vao = 0;
+    }
+
+    Object& Object::operator=(Object&& rhs)
+    {
+        std::swap(this->vao, rhs.vao);
+        std::swap(this->buffers, rhs.buffers);
+        std::swap(this->index_buffer_ids, rhs.index_buffer_ids);
+        std::swap(this->format_count, rhs.format_count);
+    }
+
     Object::~Object()
     {
         glDeleteVertexArrays(1, &this->vao);
@@ -137,6 +150,8 @@ namespace tz::gl
 
     void Object::multi_render(std::size_t ibo_id, tz::gl::MDIDrawCommandList cmd_list) const
     {
+        if(cmd_list.empty())
+            return;
         this->verify();
         this->bind_child(ibo_id);
         glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, cmd_list.data(), cmd_list.size(), sizeof(tz::gl::gpu::DrawElementsIndirectCommand));

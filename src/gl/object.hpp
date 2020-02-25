@@ -26,6 +26,10 @@ namespace tz::gl
          * Construct an empty Object. This object will be valid to the eyes of the graphics card drivers but has no useful information.
          */
         Object();
+        Object(const Object& copy) = delete;
+        Object(Object&& move);
+        Object& operator=(const Object& rhs) = delete;
+        Object& operator=(Object&& rhs);
         /**
          * Cleans up VRAM resources used and will destroy all parent Buffers.
          */
@@ -89,8 +93,13 @@ namespace tz::gl
          */
         template<tz::gl::BufferType Type, typename... Args>
         std::size_t emplace_buffer(Args&&... args);
-
+        /**
+         * Format a vertex attribute with the given index and standardised format specifier.
+         */
         void format(std::size_t idx, tz::gl::Format fmt);
+        /**
+         * Format a vertex attribute with the given index and custom OpenGL format specifiers.
+         */
         void format_custom(std::size_t idx, GLint size, GLenum type, GLboolean normalised, GLsizei stride, const void* ptr);
         /**
          * Retrieve a pointer to an existing Buffer using its Handle ID.
@@ -188,8 +197,11 @@ namespace tz::gl
          * Invoke a multi-render invocation using MDI via the given index-buffer.
          * 
          * Note: The sequences of indicies specified by the command-list is used in the render-invocation.
+         * Note: This will early-out in the case that the command-list is empty.
          * Precondition: ibo_id must correspond to an existing and valid index-buffer within this object. Otherwise, this will assert and invoke UB.
          * Precondition: cmd_list must contain valid values and offsets for the index-buffer corresponding to the buffer at element ibo_id. Otherwise, this will assert and invoke UB.
+         * @param ibo_id ID Handle corresponding to an existing idnex-buffer within this object.
+         * @param cmd_list List of glDrawElementsInstancedBaseInstanceBaseVertex commands.
          */
         void multi_render(std::size_t ibo_id, tz::gl::MDIDrawCommandList cmd_list) const;
     private:

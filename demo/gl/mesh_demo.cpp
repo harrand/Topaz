@@ -154,7 +154,7 @@ int main()
 		tz::render::IndexSnippet monkey_snip{m.get_indices()};
 		constexpr std::size_t monkey_begin = 9;
 		monkey_snip.emplace_range(monkey_begin, monkey_head.indices.size(), m.get_vertices_offset(monkeyhead_handle));
-		//monkey_snip.emplace_range(0, 2, m.get_vertices_offset(triangle_handle)); // Triangle
+		monkey_snip.emplace_range(0, 2, m.get_vertices_offset(triangle_handle)); // Triangle
 
         tz::render::IndexSnippet double_snip{m.get_indices()};
 		double_snip.emplace_range(3, 8, m.get_vertices_offset(square_handle)); // Square
