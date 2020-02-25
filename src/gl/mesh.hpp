@@ -49,12 +49,14 @@ namespace tz::gl
             triangles.emplace_back(mesh.indices[i], mesh.indices[i + 1], mesh.indices[i + 2]);
         }
 
+        // Utility lambdas for getting the distance between a triangle and another position vector.
         auto dist = [closest_to](tz::Vec3 position){return (closest_to - position).length();};
         auto triangle_less = [get_triangle_pos, dist](Triangle lhs, Triangle rhs)
         {
             return dist(get_triangle_pos(lhs)) < dist(get_triangle_pos(rhs));
         };
 
+        // Perform the sort via the utility lambda.
         std::sort(triangles.begin(), triangles.end(), triangle_less);
         {
             std::size_t i = 0;
