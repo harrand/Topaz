@@ -25,7 +25,7 @@ namespace tz::ext::glfw
 		topaz_assert(success, "GLFWContext::initialise(): glfwInit() failed!");
 		this->initialised = true;
 
-		
+		glfwSwapInterval(0);
 		tz::debug_printf("glfwInit() returned %d\n", success);
 	}
 

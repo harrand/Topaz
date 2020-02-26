@@ -8,22 +8,22 @@
 #include "gl/mesh_loader.hpp"
 #include "gl/buffer.hpp"
 #include "gl/frame.hpp"
-#include "gl/modules/ubo.hpp"
+#include "gl/modules/ssbo.hpp"
 #include "gl/texture.hpp"
 #include "render/device.hpp"
 #include "GLFW/glfw3.h"
 
-const char *vertexShaderSource = "#version 430\n"
+const char *vertexShaderSource = "#version 460\n"
     "layout (location = 0) in vec3 aPos;\n"
 	"layout (location = 1) in vec2 aTexcoord;\n"
-	"#ubo matrices\n"
+	"#ssbo matrices\n"
 	"{\n"
-	"	mat4 mvp;\n"
+	"	mat4 mvp[2048];\n"
 	"};\n"
 	"out vec2 texcoord;\n"
     "void main()\n"
     "{\n"
-    "   gl_Position = mvp * vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+    "   gl_Position = mvp[gl_DrawID] * vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
 	"	texcoord = aTexcoord;\n"
     "}\0";
 const char *fragmentShaderSource = "#version 430\n"
@@ -42,16 +42,17 @@ int main()
 	{
 		tz::gl::Manager m;
         tz::gl::Object& o = *m;
-		tz::gl::p::UBOModule* ubo_module = nullptr;
+		tz::gl::p::SSBOModule* ubo_module = nullptr;
 		tz::gl::ShaderPreprocessor pre{vertexShaderSource};
 		{
-			std::size_t ubo_module_id = pre.emplace_module<tz::gl::p::UBOModule>(&o);
+			std::size_t ubo_module_id = pre.emplace_module<tz::gl::p::SSBOModule>(&o);
 			pre.preprocess();
-			ubo_module = static_cast<tz::gl::p::UBOModule*>(pre[ubo_module_id]);
+			ubo_module = static_cast<tz::gl::p::SSBOModule*>(pre[ubo_module_id]);
 		}
 		std::size_t ubo_id = ubo_module->get_buffer_id(ubo_module->size() - 1);
-		tz::gl::UBO* ubo = o.get<tz::gl::BufferType::UniformStorage>(ubo_id);
-		ubo->terminal_resize(sizeof(tz::Mat4) * 3);
+		tz::gl::SSBO* ubo = o.get<tz::gl::BufferType::ShaderStorage>(ubo_id);
+		constexpr std::size_t num_meshes = 2048;
+		ubo->terminal_resize(sizeof(tz::Mat4) * num_meshes);
 		tz::mem::UniformPool<tz::Mat4> matrix = ubo->map_pool<tz::Mat4>();
 
 		tz::gl::ShaderCompiler cpl;
@@ -61,9 +62,11 @@ int main()
 		tz::gl::Shader* fs = prg.emplace(tz::gl::ShaderType::Fragment);
 		fs->upload_source(fragmentShaderSource);
 
-		cpl.compile(*vs);
+		auto cpl_diag = cpl.compile(*vs);
+		topaz_assert(cpl_diag.successful(), "Shader Compilation Fail: ", cpl_diag.get_info_log());
 		cpl.compile(*fs);
-		cpl.link(prg);
+		auto lnk_diag = cpl.link(prg);
+		topaz_assert(lnk_diag.successful(), "Shader Linkage Fail: ", lnk_diag.get_info_log());
 
         tz::gl::IndexedMesh triangle;
         triangle.vertices.push_back(tz::gl::Vertex{{{-0.5f, 0.5f, 0.0f}}, {{0.0f, 0.0f}}, {{}}, {{}}, {{}}});
@@ -153,8 +156,8 @@ int main()
 
 		tz::render::IndexSnippet monkey_snip{m.get_indices()};
 		constexpr std::size_t monkey_begin = 9;
-		monkey_snip.emplace_range(monkey_begin, monkey_head.indices.size(), m.get_vertices_offset(monkeyhead_handle));
-		monkey_snip.emplace_range(0, 2, m.get_vertices_offset(triangle_handle)); // Triangle
+		for(std::size_t i = 0; i < num_meshes; i++)
+			monkey_snip.emplace_range(monkey_begin, monkey_head.indices.size(), m.get_vertices_offset(monkeyhead_handle));
 
         tz::render::IndexSnippet double_snip{m.get_indices()};
 		double_snip.emplace_range(3, 8, m.get_vertices_offset(square_handle)); // Square
@@ -186,10 +189,17 @@ int main()
 
         	dev.clear();
 			o.bind();
-			tz::Mat4 m = tz::geo::model(triangle_pos, tz::Vec3{{0.0f, rotation_y, 0.0f}}, tz::Vec3{{1.0f, 1.0f, 1.0f}});
-			tz::Mat4 v = tz::geo::view(cam_pos, tz::Vec3{{0.0f, 0.0f, 0.0f}});
-			tz::Mat4 p = tz::geo::perspective(1.57f, 1920.0f/1080.0f, 0.1f, 1000.0f);
-			matrix.set(0, p * v * m);
+			for(std::size_t i = 0; i < num_meshes; i++)
+			{
+				tz::Vec3 cur_pos = triangle_pos;
+				// Three meshes in a horizontal line.
+				cur_pos[0] += (i % static_cast<std::size_t>(std::sqrt(num_meshes))) * 2.5f;
+				cur_pos[1] += std::floor(i / std::sqrt(num_meshes)) * 2.5f;
+				tz::Mat4 m = tz::geo::model(cur_pos, tz::Vec3{{0.0f, rotation_y, 0.0f}}, tz::Vec3{{1.0f, 1.0f, 1.0f}});
+				tz::Mat4 v = tz::geo::view(cam_pos, tz::Vec3{{0.0f, 0.0f, 0.0f}});
+				tz::Mat4 p = tz::geo::perspective(1.57f, 1920.0f/1080.0f, 0.1f, 1000.0f);
+				matrix.set(i, p * v * m);
+			}
 			ubo->bind();
 			dev.render();
 			wnd.update();
