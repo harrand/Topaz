@@ -23,10 +23,13 @@ namespace tz::gl
     {
         std::size_t cur_offset_bytes = this->data()->size();
         std::size_t cur_offset_vertices = cur_offset_bytes / sizeof(tz::gl::Vertex);
-        std::size_t mesh_size_vertices;
+        std::size_t indices_offset_bytes = this->indices()->size();
+        std::size_t indices_offset_indices = indices_offset_bytes / sizeof(unsigned int);
+        std::size_t mesh_size_vertices, mesh_size_indices;
         {
             std::size_t append_size = data.data_size_bytes();
             mesh_size_vertices = append_size / sizeof(tz::gl::Vertex);
+            mesh_size_indices = data.indices_size_bytes() / sizeof(unsigned int);
             // ensure we have append_size extra data to work with.
             this->data()->safe_resize(this->data()->size() + append_size);
         }
@@ -53,7 +56,7 @@ namespace tz::gl
         }
 
         // Make sure we start tracking this properly.
-        MeshInfo info{cur_offset_vertices, mesh_size_vertices};
+        MeshInfo info{cur_offset_vertices, indices_offset_indices, mesh_size_vertices, mesh_size_indices};
         Handle handle = this->mesh_info_map.size();
         this->mesh_info_map.emplace(handle, info);
 
@@ -62,14 +65,26 @@ namespace tz::gl
 
     std::size_t Manager::get_vertices_offset(Handle handle) const
     {
-        topaz_assert(this->mesh_info_map.count(handle) == 1, "tz::gl::Manager::get_indices_offset(Handle): This Manager has no knowledge of this handle ", handle, ". Cannot retrieve information about this handle...");
+        topaz_assert(this->mesh_info_map.count(handle) == 1, "tz::gl::Manager::get_vertices_offset(Handle): This Manager has no knowledge of this handle ", handle, ". Cannot retrieve information about this handle...");
         return this->mesh_info_map.at(handle).offset_vertices;
+    }
+
+    std::size_t Manager::get_indices_offset(Handle handle) const
+    {
+        topaz_assert(this->mesh_info_map.count(handle) == 1, "tz::gl::Manager::get_indices_offset(Handle): This Manager has no knowledge of this handle ", handle, ". Cannot retrieve information about this handle...");
+        return this->mesh_info_map.at(handle).offset_indices;
     }
 
     std::size_t Manager::get_number_of_vertices(Handle handle) const
     {
         topaz_assert(this->mesh_info_map.count(handle) == 1, "tz::gl::Manager::get_number_of_vertices(Handle): This Manager has no knowledge of this handle ", handle, ". Cannot retrieve information about this handle...");
         return this->mesh_info_map.at(handle).size_vertices;
+    }
+
+    std::size_t Manager::get_number_of_indices(Handle handle) const
+    {
+        topaz_assert(this->mesh_info_map.count(handle) == 1, "tz::gl::Manager::get_number_of_indices(Handle): This Manager has no knowledge of this handle ", handle, ". Cannot retrieve information about this handle...");
+        return this->mesh_info_map.at(handle).size_indices;
     }
 
     typename Manager::Handle Manager::partition(Handle handle, std::size_t vertex_offset)

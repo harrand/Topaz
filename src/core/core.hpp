@@ -59,6 +59,7 @@ namespace tz::core
 		 * @return - Reference to the initial context window
 		 */
 		IWindow& window();
+		void enable_wireframe_mode(bool wireframe) const;
 		/**
 		 * TODO: Document
 		 * @tparam WindowType

@@ -38,12 +38,14 @@ namespace tz::gl
          * @return Number of vertices between the beginning of the internal buffer's data, and the beginning of the handle's mesh data.
          */
         std::size_t get_vertices_offset(Handle handle) const;
+        std::size_t get_indices_offset(Handle handle) const;
         /**
          * Retrieve the number of vertices corresponding to the indexed mesh data associated with the given handle.
          * @param handle Handle whose mesh data size should be retrieved.
          * @return Number of vertices comprising the mesh data.
          */
         std::size_t get_number_of_vertices(Handle handle) const;
+        std::size_t get_number_of_indices(Handle handle) const;
         /**
          * Relinquish a handle's ownership of some or all of its internal mesh data.
          * 
@@ -124,7 +126,9 @@ namespace tz::gl
         struct MeshInfo
         {
             std::size_t offset_vertices;
+            std::size_t offset_indices;
             std::size_t size_vertices;
+            std::size_t size_indices;
         };
 
         tz::gl::Object o;

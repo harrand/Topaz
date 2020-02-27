@@ -58,6 +58,19 @@ namespace tz::core
 		topaz_assert(this->tz_window != nullptr, "TopazCore::window(): Window wasn't initialised yet. Did you forget to tz::initialise?");
 		return *this->tz_window;
 	}
+
+	void TopazCore::enable_wireframe_mode(bool wireframe) const
+	{
+		if(wireframe)
+		{
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+			glLineWidth(1.0f);
+		}
+		else
+		{
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		}
+	}
 	
 	const tz::core::IWindow* TopazCore::get_extra_window(std::size_t window_id) const
 	{

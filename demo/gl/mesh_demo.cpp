@@ -18,7 +18,7 @@ const char *vertexShaderSource = "#version 460\n"
 	"layout (location = 1) in vec2 aTexcoord;\n"
 	"#ssbo matrices\n"
 	"{\n"
-	"	mat4 mvp[2048];\n"
+	"	mat4 mvp[512];\n"
 	"};\n"
 	"out vec2 texcoord;\n"
     "void main()\n"
@@ -51,7 +51,7 @@ int main()
 		}
 		std::size_t ubo_id = ubo_module->get_buffer_id(ubo_module->size() - 1);
 		tz::gl::SSBO* ubo = o.get<tz::gl::BufferType::ShaderStorage>(ubo_id);
-		constexpr std::size_t num_meshes = 2048;
+		constexpr std::size_t num_meshes = 512;
 		ubo->terminal_resize(sizeof(tz::Mat4) * num_meshes);
 		tz::mem::UniformPool<tz::Mat4> matrix = ubo->map_pool<tz::Mat4>();
 
@@ -144,6 +144,21 @@ int main()
 			}
 		});
 
+		wnd.emplace_custom_type_listener([](tz::input::CharPressEvent e)
+		{
+			switch(e.get_char())
+			{
+				case 'q':
+				case 'Q':
+				{
+					static bool wireframe = false;
+					wireframe = !wireframe;
+					tz::core::get().enable_wireframe_mode(wireframe);
+				}
+				break;
+			}
+		});
+
 		glClearColor(0.3f, 0.15f, 0.0f, 1.0f);
 		tz::render::Device dev{wnd.get_frame(), &prg, &o};
 		dev.set_handle(m.get_indices());
@@ -155,9 +170,8 @@ int main()
         square_snip.emplace_range(3, 8, 3);
 
 		tz::render::IndexSnippet monkey_snip{m.get_indices()};
-		constexpr std::size_t monkey_begin = 9;
 		for(std::size_t i = 0; i < num_meshes; i++)
-			monkey_snip.emplace_range(monkey_begin, monkey_head.indices.size(), m.get_vertices_offset(monkeyhead_handle));
+			monkey_snip.emplace_range(m.get_indices_offset(monkeyhead_handle), m.get_number_of_indices(monkeyhead_handle), m.get_vertices_offset(monkeyhead_handle));
 
         tz::render::IndexSnippet double_snip{m.get_indices()};
 		double_snip.emplace_range(3, 8, m.get_vertices_offset(square_handle)); // Square
