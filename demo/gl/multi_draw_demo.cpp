@@ -122,20 +122,20 @@ int main()
 		glClearColor(0.0f, 0.3f, 0.15f, 1.0f);
 		tz::render::Device dev{wnd.get_frame(), &prg, &o};
 		dev.set_handle(ibo_id);
+		// Make a snippet.
+		tz::gl::IndexSnippetList snippets;
+		// ibo_id is an opaque-handle corresponding to an array equal to:
+		// unsigned int indices[] = {0, 1, 2, 1, 4, 3};
+		// One render invocation contains the index-range between 0-3 (0, 1, 2)
+		snippets.emplace_range(0, 2, 0);
+		// The other contains 3-6 (1, 4, 3)
+		snippets.emplace_range(3, 5, 0);
+		// Tell the render device to prepare a command list.
+		dev.set_indices(snippets);
 		while(!wnd.is_close_requested())
 		{
 			// Clear backbuffer.
         	dev.clear();
-			// Make a snippet.
-			tz::render::IndexSnippet snippet{ibo_id};
-			// ibo_id is an opaque-handle corresponding to an array equal to:
-			// unsigned int indices[] = {0, 1, 2, 1, 4, 3};
-			// One render invocation contains the index-range between 0-3 (0, 1, 2)
-			snippet.emplace_range(0, 3);
-			// The other contains 3-6 (1, 4, 3)
-			snippet.emplace_range(3, 6);
-			// Tell the render device to prepare a command list.
-			dev.set_snippet(snippet);
 			// Bind everything and go! MDI!
 			dev.render();
 

@@ -59,6 +59,8 @@ add_library(topaz STATIC
 		src/gl/frame.inl
 		src/gl/image.cpp
 		src/gl/image.hpp
+		src/gl/index_snippet.cpp
+		src/gl/index_snippet.hpp
 		src/gl/manager.hpp
 		src/gl/manager.cpp
 		src/gl/mesh.hpp
@@ -89,8 +91,6 @@ add_library(topaz STATIC
 		src/gl/modules/ubo.hpp
 		src/render/device.cpp
 		src/render/device.hpp
-		src/render/index_snippet.cpp
-		src/render/index_snippet.hpp
 		src/render/pipeline.cpp
 		src/render/pipeline.hpp)
 

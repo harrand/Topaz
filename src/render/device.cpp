@@ -6,17 +6,16 @@
 
 namespace tz::render
 {
-	Device::Device(tz::gl::IFrame* frame, tz::gl::ShaderProgram* program, tz::gl::Object* object): frame(frame), program(program), object(object), ibo_id(std::nullopt), snippet(std::numeric_limits<std::size_t>::max()){}
+	Device::Device(tz::gl::IFrame* frame, tz::gl::ShaderProgram* program, tz::gl::Object* object): frame(frame), program(program), object(object), ibo_id(std::nullopt), snippets(){}
 
 	void Device::set_handle(std::size_t id)
 	{
 		this->ibo_id = id;
-		this->snippet.set_buffer(id);
 	}
 
-	void Device::set_snippet(tz::render::IndexSnippet snippet)
+	void Device::set_indices(tz::gl::IndexSnippetList indices)
 	{
-		this->snippet = snippet;
+		this->snippets = indices;
 	}
 
 	void Device::render() const
@@ -26,12 +25,12 @@ namespace tz::render
 		if(frame->operator!=(tz::gl::bound::frame()))
 			frame->bind();
 		program->bind();
-		if (this->snippet.empty())
+		if (this->snippets.empty())
 			this->object->render(this->ibo_id.value());
 		else
 		{
 			// use MDI.
-			this->object->multi_render(this->ibo_id.value(), this->snippet.get_command_list());
+			this->object->multi_render(this->ibo_id.value(), this->snippets.get_command_list());
 		}
 	}
 

@@ -1,6 +1,6 @@
 #ifndef TOPAZ_RENDER_DEVICE_HPP
 #define TOPAZ_RENDER_DEVICE_HPP
-#include "render/index_snippet.hpp"
+#include "gl/index_snippet.hpp"
 #include <initializer_list>
 #include <optional>
 
@@ -41,13 +41,13 @@ namespace tz::render
 		 */
 		void set_handle(std::size_t ibo_id);
 		/**
-		 * Provide a snippet of offsets into the index-buffer.
+		 * Provide a list of snippets of offsets into the index-buffer.
 		 * 
 		 * Note: After providing a snippet, future render-invocations will invoke multi-render.
 		 * Precondition: snippet must contain index-ranges valid corresponding to the index-buffer which will be bound against this Device.
 		 * @param snippet Snippet containing index-ranges used in MDI.
 		 */
-		void set_snippet(tz::render::IndexSnippet snippet);
+		void set_indices(tz::gl::IndexSnippetList indices);
 		/**
 		 * Invoke a render-invocation, making the Object emit a draw-call via the ibo_id set via this->set_handle.
 		 * 
@@ -67,7 +67,7 @@ namespace tz::render
 		tz::gl::ShaderProgram* program;
 		tz::gl::Object* object;
 		std::optional<std::size_t> ibo_id;
-		tz::render::IndexSnippet snippet;
+		tz::gl::IndexSnippetList snippets;
 	};
 }
 

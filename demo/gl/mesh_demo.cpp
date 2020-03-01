@@ -163,25 +163,25 @@ int main()
 		tz::render::Device dev{wnd.get_frame(), &prg, &o};
 		dev.set_handle(m.get_indices());
 
-        tz::render::IndexSnippet triangle_snip{m.get_indices()};
+        tz::gl::IndexSnippetList triangle_snip;
         triangle_snip.emplace_range(0, 2);
 
-        tz::render::IndexSnippet square_snip{m.get_indices()};
+        tz::gl::IndexSnippetList square_snip;
         square_snip.emplace_range(3, 8, 3);
 
-		tz::render::IndexSnippet monkey_snip{m.get_indices()};
+		tz::gl::IndexSnippetList monkey_snip;
 		for(std::size_t i = 0; i < num_meshes; i++)
-			monkey_snip.emplace_range(m.get_indices_offset(monkeyhead_handle), m.get_number_of_indices(monkeyhead_handle), m.get_vertices_offset(monkeyhead_handle));
+			monkey_snip.emplace_range(m.get_indices_offset(monkeyhead_handle), m.get_indices_offset(monkeyhead_handle) + m.get_number_of_indices(monkeyhead_handle), m.get_vertices_offset(monkeyhead_handle));
 
-        tz::render::IndexSnippet double_snip{m.get_indices()};
+        tz::gl::IndexSnippetList double_snip;
 		double_snip.emplace_range(3, 8, m.get_vertices_offset(square_handle)); // Square
         double_snip.emplace_range(0, 2, m.get_vertices_offset(triangle_handle)); // Triangle
         // This should do both!
 
-        //dev.set_snippet(triangle_snip);
-        //dev.set_snippet(square_snip);
-		dev.set_snippet(monkey_snip);
-        //dev.set_snippet(double_snip);
+        //dev.set_indices(triangle_snip);
+        //dev.set_indices(square_snip);
+		dev.set_indices(monkey_snip);
+        //dev.set_indices(double_snip);
 
 		// TODO: Remove
 		// Temporary FPS Counter Logic

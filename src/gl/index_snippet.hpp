@@ -1,19 +1,27 @@
-#ifndef TOPAZ_RENDER_INDEX_SNIPPET_HPP
-#define TOPAZ_RENDER_INDEX_SNIPPET_HPP
+#ifndef TOPAZ_GL_INDEX_SNIPPET_HPP
+#define TOPAZ_GL_INDEX_SNIPPET_HPP
 #include <cstdint>
 #include <utility>
 #include <vector>
 #include "gl/draw_command.hpp"
 
-namespace tz::render
+namespace tz::gl
 {
+    struct IndexSnippet
+    {
+        IndexSnippet(std::size_t begin, std::size_t end, std::size_t offset);
+        
+        std::size_t begin;
+        std::size_t end;
+        std::size_t index_offset;
+    };
     /**
-     * IndexSnippets contain ranges of indices, where each index is an offset into an existing index-buffer.
+     * IndexSnippetLists contain ranges of indices, where each index is an offset into an existing index-buffer.
      * 
      * In other words, these indices are indices into the index-buffers indices. Unfortunately the inner-workings are a bit complex.
      * For clarity, see the topaz_multi_draw_demo's code as a useful example.
      */
-    class IndexSnippet
+    class IndexSnippetList
     {
     public:
         /**
@@ -23,12 +31,7 @@ namespace tz::render
          * Precondition: The index must be valid in the eyes of that object with which this snippet will be rendered with.
          * @param ibo_index Index buffer corresponding to the ranges within this snippet.
          */
-        IndexSnippet(std::size_t ibo_index);
-        /**
-         * Re-target the ibo_index. This is useful if you wish to preserve the current ranges but refer them to another index-buffer.
-         * @param ibo_index Index buffer corresponding to the ranges within this snippet.
-         */
-        void set_buffer(std::size_t ibo_index);
+        IndexSnippetList() = default;
         /**
          * Retrieve the number of ranges stored within this snippet.
          * @return Number of ranges in this snippet.
@@ -53,19 +56,8 @@ namespace tz::render
          */
         tz::gl::MDIDrawCommandList get_command_list() const;
     private:
-        using IndexRange = std::pair<std::size_t, std::size_t>;
-
-        struct IndexRangeElement
-        {
-            IndexRangeElement(IndexRange range, std::size_t offset): range(range), index_offset(offset){}
-            
-            IndexRange range;
-            std::size_t index_offset;
-        };
-
-        std::size_t ibo_index;
-        std::vector<IndexRangeElement> ranges;
+        std::vector<IndexSnippet> snippets;
     };
 }
 
-#endif // TOPAZ_RENDER_INDEX_SNIPPET_HPP
+#endif // TOPAZ_GL_INDEX_SNIPPET_HPP
