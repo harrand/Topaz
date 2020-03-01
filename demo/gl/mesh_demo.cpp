@@ -171,7 +171,7 @@ int main()
 
 		tz::gl::IndexSnippetList monkey_snip;
 		for(std::size_t i = 0; i < num_meshes; i++)
-			monkey_snip.emplace_range(m.get_indices_offset(monkeyhead_handle), m.get_indices_offset(monkeyhead_handle) + m.get_number_of_indices(monkeyhead_handle), m.get_vertices_offset(monkeyhead_handle));
+			monkey_snip.emplace_range(m, monkeyhead_handle);
 
         tz::gl::IndexSnippetList double_snip;
 		double_snip.emplace_range(3, 8, m.get_vertices_offset(square_handle)); // Square

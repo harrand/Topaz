@@ -4,6 +4,7 @@
 namespace tz::gl
 {
     IndexSnippet::IndexSnippet(std::size_t begin, std::size_t end, std::size_t offset): begin(begin), end(end), index_offset(offset){}
+    IndexSnippet::IndexSnippet(const tz::gl::Manager& manager, tz::gl::Manager::Handle mesh_handle): IndexSnippet(manager.get_indices_offset(mesh_handle), manager.get_indices_offset(mesh_handle) + manager.get_number_of_indices(mesh_handle), manager.get_vertices_offset(mesh_handle)){}
 
     std::size_t IndexSnippetList::size() const
     {
@@ -24,6 +25,12 @@ namespace tz::gl
     std::size_t IndexSnippetList::emplace_range(std::size_t begin, std::size_t end, std::size_t index_offset)
     {
         this->snippets.emplace_back(begin, end, index_offset);
+        return this->snippets.size() - 1;
+    }
+
+    std::size_t IndexSnippetList::emplace_range(const tz::gl::Manager& manager, tz::gl::Manager::Handle mesh_handle)
+    {
+        this->snippets.emplace_back(manager, mesh_handle);
         return this->snippets.size() - 1;
     }
 
