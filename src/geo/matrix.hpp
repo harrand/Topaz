@@ -4,6 +4,12 @@
 
 namespace tz
 {
+    /**
+     * \addtogroup tz_geo Topaz Geometry Library (tz::geo)
+     * A collection of geometric data structures and mathematical types, such as vectors and matrices.
+     * @{
+     */
+
     template<typename T, std::size_t R, std::size_t C>
     class Matrix
     {
@@ -67,6 +73,10 @@ namespace tz
 
     using Mat4 = Matrix<float, 4, 4>;
     using Mat3 = Matrix<float, 3, 3>;
+
+    /**
+     * @}
+     */
 }
 
 #include "geo/matrix.inl"

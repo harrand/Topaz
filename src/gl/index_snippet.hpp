@@ -8,6 +8,11 @@
 
 namespace tz::gl
 {
+    /**
+     * \addtogroup tz_gl Topaz Graphics Library (tz::gl)
+     * @{
+     */
+
     struct IndexSnippet
     {
         IndexSnippet(std::size_t begin, std::size_t end, std::size_t offset);
@@ -61,6 +66,10 @@ namespace tz::gl
     private:
         std::vector<IndexSnippet> snippets;
     };
+
+    /**
+     * @}
+     */
 }
 
 #endif // TOPAZ_GL_INDEX_SNIPPET_HPP

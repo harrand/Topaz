@@ -5,6 +5,15 @@
 namespace tz::gl::p
 {
 	/**
+     * \addtogroup tz_gl Topaz Graphics Library (tz::gl)
+     * @{
+     */
+	/**
+     * \addtogroup tz_gl_p tz::gl Shader Preprocessing Module (TZGLP)
+     * @{
+     */
+
+	/**
 	 * Handles #include preprocessor directives in arbitrary strings. Replaces the #include directive with the contents of the include file.
 	 * 
 	 * Note: This is similar to the #include directive in C++.
@@ -33,6 +42,13 @@ namespace tz::gl::p
 
 		std::string path;
 	};
+
+	/**
+	 * @}
+	 */
+	/**
+	 * @}
+	 */
 }
 
 #endif // TOPAZ_GL_MODULES_INCLUDE_HPP

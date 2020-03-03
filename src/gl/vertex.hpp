@@ -4,6 +4,10 @@
 
 namespace tz::gl
 {
+    /**
+     * \addtogroup tz_gl Topaz Graphics Library (tz::gl)
+     * @{
+     */
     struct Vertex
     {
         tz::Vec3 position;
@@ -14,6 +18,9 @@ namespace tz::gl
     };
 
     using Index = unsigned int;
+    /**
+     * @}
+     */
 }
 
 #endif // TOPAZ_GL_VERTEX_HPP

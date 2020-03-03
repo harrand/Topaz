@@ -5,6 +5,10 @@
 
 namespace tz::gl
 {
+    /**
+     * \addtogroup tz_gl Topaz Graphics Library (tz::gl)
+     * @{
+     */
 
     struct Mesh
     {
@@ -69,6 +73,10 @@ namespace tz::gl
             }
         }
     }
+
+    /**
+     * @}
+     */
 }
 
 #endif // TOPAZ_GL_MESH_HPP

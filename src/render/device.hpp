@@ -18,6 +18,12 @@ namespace tz
 namespace tz::render
 {
 	/**
+     * \addtogroup tz_render Topaz Rendering Library (tz::render)
+     * High-level interface for 3D and 2D hardware-accelerated graphics programming. Used in combination with the \ref tz_gl "Topaz Graphics Library".
+     * @{
+     */
+
+	/**
 	 * Represents and controls the conditions under which render-invocations will take place.
 	 * 
 	 * Devices will always render to the given frame, using the given program and drawing via the given object.
@@ -69,6 +75,10 @@ namespace tz::render
 		std::optional<std::size_t> ibo_id;
 		tz::gl::IndexSnippetList snippets;
 	};
+
+	/**
+	 * @}
+	 */
 }
 
 #endif // TOPAZ_RENDER_DEVICE_HPP

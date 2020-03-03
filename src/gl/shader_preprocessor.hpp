@@ -16,6 +16,11 @@ namespace tz
 
 namespace tz::gl
 {
+	/**
+     * \addtogroup tz_gl Topaz Graphics Library (tz::gl)
+     * @{
+     */
+
 	namespace src
 	{
 		/**
@@ -87,6 +92,13 @@ namespace tz::gl
 	}
 
 	/**
+     * \addtogroup tz_gl_p tz::gl Shader Preprocessing Module (TZGLP)
+     * @{
+     */
+
+	/**
+	 * ShaderPreprocessor is the basis of TZGLP.
+	 * 
 	 * ShaderPreprocessors are executed on Shader component source-code prior to upload and compilation.
 	 * 
 	 * The idea is to populate a ShaderPreprocessors with Modules offering features that you want, and running it on the source before passing it to the graphics drivers for compilation.
@@ -163,6 +175,14 @@ namespace tz::gl
 		std::string source;
 		std::vector<std::unique_ptr<p::IModule>> modules;
 	};
+
+	/**
+	 * @}
+	 */
+
+	/**
+	 * @}
+	 */
 }
 
 #include "gl/shader_preprocessor.inl"

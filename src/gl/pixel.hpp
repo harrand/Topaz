@@ -5,6 +5,10 @@
 
 namespace tz::gl
 {
+    /**
+     * \addtogroup tz_gl Topaz Graphics Library (tz::gl)
+     * @{
+     */
     template<typename Component>
     struct PixelRGBA
     {
@@ -69,10 +73,16 @@ namespace tz::gl
         template<template<typename> class PixelType, typename ComponentType>
         constexpr GLenum parse_format();
     }
+
     using PixelRGBA8 = PixelRGBA<std::byte>;
     using PixelRGB8 = PixelRGB<std::byte>;
     using PixelRG8 = PixelRG<std::byte>;
     using PixelDepth = PixelGrayscale<float>;
+
+    /**
+     * \addtogroup tz_gl Topaz Graphics Library (tz::gl)
+     * @{
+     */
 }
 
 #include "gl/pixel.inl"

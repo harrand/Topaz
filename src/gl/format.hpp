@@ -6,6 +6,11 @@
 namespace tz::gl
 {
 	/**
+     * \addtogroup tz_gl Topaz Graphics Library (tz::gl)
+     * @{
+     */
+
+	/**
 	 * Represents instructions on how to interpret Buffer data.
 	 * 
 	 * In OpenGL nomenclature, this can be considered a wrapper around glVertexAttribPointer.
@@ -28,6 +33,10 @@ namespace tz::gl
 		constexpr Format three_floats = Format{3, GL_FLOAT, sizeof(float), 0};
 		constexpr Format two_floats = Format{2, GL_FLOAT, sizeof(float), 0};
 	}
+
+	/**
+	 * @}
+	 */
 }
 
 #endif // TOPAZ_GL_FORMAT_HPP

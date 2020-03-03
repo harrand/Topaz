@@ -9,6 +9,11 @@
 
 namespace tz::gl
 {
+
+    /**
+     * \addtogroup tz_gl Topaz Graphics Library (tz::gl)
+     * @{
+     */
     enum class BufferType : GLenum
 	{
 		Array = GL_ARRAY_BUFFER,
@@ -227,6 +232,10 @@ namespace tz::gl
         BufferHandle handle;
     };
 
+    /**
+     * @}
+     */
+
     template<BufferType T>
     class Buffer : public IBuffer
     {
@@ -266,7 +275,10 @@ namespace tz::gl
         std::size_t layout_qualifier_id;
     };
 
-    // Various aliases...
+    /**
+     * \addtogroup tz_gl
+     * @{
+     */
     using VertexBuffer = Buffer<BufferType::Array>;
     using VBO = VertexBuffer;
     using UniformBuffer = Buffer<BufferType::UniformStorage>;
@@ -275,6 +287,9 @@ namespace tz::gl
     using SSBO = ShaderStorageBuffer;
     using IndexBuffer = Buffer<BufferType::Index>;
     using IBO = IndexBuffer;
+    /**
+     * @}
+     */
 
     namespace bound
     {

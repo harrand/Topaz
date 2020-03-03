@@ -1,7 +1,3 @@
-//
-// Created by Harrand on 25/12/2019.
-//
-
 #include "gl/object.hpp"
 #include "core/debug/assert.hpp"
 #include <algorithm>

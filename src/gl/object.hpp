@@ -12,6 +12,12 @@
 
 namespace tz::gl
 {
+    /**
+     * \addtogroup tz_gl Topaz Graphics Library (tz::gl)
+     * Low-level interface for 3D and 2D hardware-accelerated graphics programming. Used in combination with the \ref tz_render "Topaz Rendering Library".
+     * @{
+     */
+
     using ObjectHandle = GLuint;
 
     /**
@@ -223,6 +229,9 @@ namespace tz::gl
          */
         int vao();
     }
+    /**
+     * @}
+     */
 }
 
 #include "gl/object.inl"

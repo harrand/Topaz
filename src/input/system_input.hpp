@@ -8,6 +8,12 @@
 namespace tz::input
 {
     /**
+     * \addtogroup tz_input Topaz Input Library (tz::input)
+     * A collection of platform-agnostic input functions and classes.
+     * @{
+     */
+
+    /**
      * TODO: Document
      */
     const char* get_clipboard_data();
@@ -16,6 +22,10 @@ namespace tz::input
      * TODO: Document
      */
     void set_clipboard_data(const char* data);
+
+    /**
+     * @}
+     */
 }
 
 #endif // TOPAZ_SYSTEM_INPUT_HPP

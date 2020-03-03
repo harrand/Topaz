@@ -7,6 +7,11 @@
 
 namespace tz::input
 {
+	/**
+     * \addtogroup tz_input Topaz Input Library (tz::input)
+     * A collection of platform-agnostic input functions and classes.
+     * @{
+     */
 
 	struct KeyPressEvent
 	{
@@ -38,6 +43,10 @@ namespace tz::input
 		int action;
 		int mods;
 	};
+
+	/**
+	 * @}
+	 */
 }
 
 #endif //TOPAZ_INPUT_EVENT_HPP

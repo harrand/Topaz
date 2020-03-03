@@ -5,6 +5,12 @@
 
 namespace tz
 {
+    /**
+     * \addtogroup tz_geo Topaz Geometry Library (tz::geo)
+     * A collection of geometric data structures and mathematical types, such as vectors and matrices.
+     * @{
+     */
+
     template<typename T, std::size_t S>
     class Vector
     {
@@ -40,6 +46,10 @@ namespace tz
 
     template<typename T = float>
     Vector<T, 3> cross(const Vector<T, 3>& lhs, const Vector<T, 3>& rhs);
+
+    /**
+     * @}
+     */
 }
 
 #include "geo/vector.inl"

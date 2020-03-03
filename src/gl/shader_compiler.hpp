@@ -8,6 +8,11 @@ namespace tz::gl
 	class Shader;
 	class ShaderProgram;
 
+	/**
+     * \addtogroup tz_gl Topaz Graphics Library (tz::gl)
+     * @{
+     */
+
 	enum class ShaderCompilerType
 	{
 		Auto // NYFI. Will be a ShaderCompiler fitting the current Topaz build configuration.
@@ -91,6 +96,10 @@ namespace tz::gl
 	private:
 		ShaderCompilerOptions options;
 	};
+
+	/**
+	 * @}
+	 */
 }
 
 #endif // TOPAZ_GL_SHADER_COMPILER_HPP

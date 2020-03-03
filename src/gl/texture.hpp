@@ -5,6 +5,11 @@
 
 namespace tz::gl
 {
+    /**
+     * \addtogroup tz_gl Topaz Graphics Library (tz::gl)
+     * @{
+     */
+
     using TextureHandle = GLuint;
 
     struct TextureParameters;
@@ -176,6 +181,10 @@ namespace tz::gl
         TextureWrapFunction horizontal_wrap;
         TextureWrapFunction vertical_wrap;
     };
+
+    /**
+     * @}
+     */
 
     /// For those times where you really don't care about life.
     static constexpr TextureParameters default_texture_params{TextureMinificationFunction::Nearest, TextureMagnificationFunction::Nearest, TextureWrapFunction::Repeat, TextureWrapFunction::Repeat};

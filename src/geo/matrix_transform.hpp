@@ -9,6 +9,17 @@
 
 namespace tz::geo
 {
+    /**
+     * \addtogroup tz_geo Topaz Geometry Library (tz::geo)
+     * A collection of geometric data structures and mathematical types, such as vectors and matrices.
+     * @{
+     */
+
+    /**
+     * \addtogroup tz_geo_mat tz::geo Matrix Transformation Module
+     * Implementations of various matrix transformations.
+     * @{
+     */
 
     Mat4 translate(Vec3 position);
     Mat4 rotate(Vec3 rotation);
@@ -18,6 +29,13 @@ namespace tz::geo
     Mat4 view(Vec3 position, Vec3 rotation);
     Mat4 perspective(float fov, float aspect_ratio, float near, float far);
     Mat4 orthographic(float left, float right, float top, float bottom, float near, float far);
+
+    /**
+     * @}
+     */
+    /**
+     * @}
+     */
 }
 
 #endif // TOPAZ_GEO_MATRIX_TRANSFORM_HPP

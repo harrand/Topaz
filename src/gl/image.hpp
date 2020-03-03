@@ -6,6 +6,11 @@
 namespace tz::gl
 {
     /**
+     * \addtogroup tz_gl Topaz Graphics Library (tz::gl)
+     * @{
+     */
+
+    /**
      * Represents a bitmap of some pixel type.
      * @tparam PixelType One of the tz::gl Pixel types (see pixel.hpp)
      */
@@ -72,6 +77,10 @@ namespace tz::gl
         // Represented similarly to a row-major matrix.
         std::vector<PixelType> pixel_data;
     };
+
+    /**
+     * @}
+     */
 }
 
 #include "gl/image.inl"

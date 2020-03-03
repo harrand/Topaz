@@ -1,7 +1,3 @@
-//
-// Created by Harrand on 25/12/2019.
-//
-
 #ifndef TOPAZ_GL_DRAW_COMMAND_HPP
 #define TOPAZ_GL_DRAW_COMMAND_HPP
 #include "glad/glad.h"
@@ -11,6 +7,11 @@
 
 namespace tz::gl
 {
+    /**
+     * \addtogroup tz_gl Topaz Graphics Library (tz::gl)
+     * @{
+     */
+
     namespace gpu
     {
         struct DrawArraysIndirectCommand
@@ -106,6 +107,10 @@ namespace tz::gl
     private:
         std::vector<Command> cmds;
     };
+
+    /**
+     * @}
+     */
 }
 
 #endif // TOPAZ_GL_DRAW_COMMAND_HPP

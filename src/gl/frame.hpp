@@ -12,6 +12,11 @@ struct GLFWwindow;
 namespace tz::gl
 {
 	/**
+     * \addtogroup tz_gl Topaz Graphics Library (tz::gl)
+     * @{
+     */
+
+	/**
 	 * Interface for anything that can be a render-target.
 	 * 
 	 * This includes windows and framebuffers.
@@ -160,6 +165,10 @@ namespace tz::gl
 	{
 		GLuint frame();
 	}
+
+	/**
+	 * @}
+	 */
 }
 
 #include "gl/frame.inl"

@@ -11,6 +11,11 @@
 namespace tz::gl
 {
     /**
+     * \addtogroup tz_gl Topaz Graphics Library (tz::gl)
+     * @{
+     */
+
+    /**
      * Managed tz::gl::Object which implicitly has data buffers prepared. This should be used in-place of a tz::gl::Object if no special data format is required and normal meshes are to be used.
      * Managers don't create any terminal buffers by default. If you want them, it is recommended to retrieve the manager's object and create them yourself. The manager will never attempt to use any buffers that it hasn't created itself.
      * Contains:
@@ -137,6 +142,10 @@ namespace tz::gl
         std::size_t index_handle;
         std::unordered_map<Handle, MeshInfo> mesh_info_map;
     };
+
+    /**
+     * @}
+     */
 }
 
 #endif // TOPAZ_GL_MANAGER_HPP

@@ -9,6 +9,12 @@
 
 namespace tz::mem
 {
+    /**
+     * \addtogroup tz_mem Topaz Memory Library (tz::mem)
+     * A collection of low-level abstractions around memory utilities not provided by the C++ standard library. This includes non-owning memory blocks, uniform memory-pools and more.
+     * @{
+     */
+
     std::size_t byte_distance(void* a, void* b);
 
     struct Block
@@ -20,6 +26,10 @@ namespace tz::mem
         void* begin;
         void* end;
     };
+
+    /**
+     * @}
+     */
 }
 
 #endif // TOPAZ_CONTIGUOUS_BLOCK_HPP
