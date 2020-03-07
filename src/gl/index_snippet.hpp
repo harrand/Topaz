@@ -17,6 +17,8 @@ namespace tz::gl
     {
         IndexSnippet(std::size_t begin, std::size_t end, std::size_t offset);
         IndexSnippet(const tz::gl::Manager& manager, tz::gl::Manager::Handle mesh_handle);
+
+        gpu::DrawElementsIndirectCommand mdi() const;
         
         std::size_t begin;
         std::size_t end;
