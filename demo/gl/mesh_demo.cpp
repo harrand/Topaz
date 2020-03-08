@@ -12,6 +12,7 @@
 #include "gl/texture.hpp"
 #include "render/device.hpp"
 #include "GLFW/glfw3.h"
+#include "gl/tz_imgui/imgui_context.hpp"
 
 const char *vertexShaderSource = "#version 460\n"
     "layout (location = 0) in vec3 aPos;\n"
@@ -34,6 +35,23 @@ const char *fragmentShaderSource = "#version 430\n"
     "{\n"
 	"	FragColor = texture(checkerboard, texcoord);\n"
     "}\n\0";
+
+class MeshAdjustor : public tz::ext::imgui::ImGuiWindow
+{
+public:
+	MeshAdjustor(tz::Vec3& offset): offset(offset){}
+	virtual void render() override
+	{
+		ImGui::Begin("MeshAdjustor");
+		ImGui::Text("%s", "Hello!");
+		ImGui::SliderFloat("Mesh Offset X", &offset[0], -100.0f, 100.0f);
+		ImGui::SliderFloat("Mesh Offset Y", &offset[1], -100.0f, 100.0f);
+		ImGui::SliderFloat("Mesh Offset Z", &offset[2], -100.0f, 100.0f);
+		ImGui::End();
+	}
+private:
+	tz::Vec3& offset;
+};
 
 int main()
 {
@@ -103,6 +121,7 @@ int main()
 			triangle_pos[1] += y;
 			triangle_pos[2] += z;
 		};
+		tz::ext::imgui::emplace_window<MeshAdjustor>(triangle_pos);
 
 		tz::gl::Manager::Handle triangle_handle = m.add_mesh(triangle);
         tz::gl::Manager::Handle square_handle = m.add_mesh(square);

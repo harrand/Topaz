@@ -1,6 +1,7 @@
 #ifndef ASSERT_HPP
 #define ASSERT_HPP
 #include <iostream>
+#include "core/debug/break.hpp"
 
 namespace tz
 {
@@ -33,7 +34,8 @@ namespace tz
 #else
 		// Use the given ostream.
 		(out << ... << args) << std::endl;
-		std::abort();
+		//std::abort();
+		tz::debugbreak();
 #endif
 #endif
 	}

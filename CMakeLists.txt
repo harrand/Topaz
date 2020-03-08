@@ -8,6 +8,8 @@ set(TOPAZ_SOURCE_DIR ${PROJECT_SOURCE_DIR}/src)
 
 add_library(topaz STATIC
 		src/core/debug/assert.hpp
+		src/core/debug/break.hpp
+		src/core/debug/break.cpp
 		src/core/debug/print.hpp
 		src/core/debug/print.inl
 		src/core/core.hpp
@@ -106,7 +108,8 @@ target_link_libraries(topaz PUBLIC
 		glad
 		stbi
 		assimp
-		imgui)
+		imgui
+		debugbreak)
 target_include_directories(topaz PUBLIC ${TOPAZ_SOURCE_DIR})
 
 add_subdirectory(lib)

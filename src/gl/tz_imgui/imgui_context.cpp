@@ -1,11 +1,13 @@
 #include "gl/tz_imgui/imgui_context.hpp"
-#include "imgui.h"
 #include "gl/tz_imgui/imgui_impl_opengl3.h"
 #include "gl/tz_imgui/imgui_impl_glfw.h"
 #include "glfw/glfw3.h"
+#include <vector>
 
 namespace tz::ext::imgui
 {
+    static std::vector<std::unique_ptr<ImGuiWindow>> windows;
+
     void set_window_impl(GLFWwindow* wnd)
     {
         window = wnd;
@@ -28,6 +30,36 @@ namespace tz::ext::imgui
         ImGui::DestroyContext();
     }
 
+    ImGuiWindow& add_window(std::unique_ptr<ImGuiWindow> wnd)
+    {
+        windows.push_back(std::move(wnd));
+        return *windows.back();
+    }
+
+    void render_menu()
+    {
+        if(ImGui::BeginMainMenuBar())
+        {
+            if(ImGui::BeginMenu("tz2"))
+            {
+                // ooga booga!
+                ImGui::EndMenu();
+            }
+
+            if(ImGui::BeginMenu("tz::core"))
+            {
+                ImGui::EndMenu();
+            }
+
+            if(ImGui::BeginMenu("tz::gl"))
+            {
+                ImGui::EndMenu();
+            }
+
+            ImGui::EndMainMenuBar();
+        }
+    }
+
     void update()
     {
         ImGui_ImplOpenGL3_NewFrame();
@@ -36,6 +68,8 @@ namespace tz::ext::imgui
 
         static bool show_demo_window = true;
         ImGui::ShowDemoWindow(&show_demo_window);
+
+        render_menu();
 
         for(auto& window_ptr : windows)
         {
