@@ -60,6 +60,10 @@ int main()
 	{
 		tz::gl::Manager m;
         tz::gl::Object& o = *m;
+
+		// Track it in imgui.
+		tz::ext::imgui::track_object(&o);
+
 		tz::gl::p::SSBOModule* ubo_module = nullptr;
 		tz::gl::ShaderPreprocessor pre{vertexShaderSource};
 		{

@@ -6,6 +6,10 @@
 
 // Forward Declares
 struct GLFWwindow;
+namespace tz::gl
+{
+    class Object;
+}
 
 namespace tz::ext::imgui
 {
@@ -17,6 +21,7 @@ namespace tz::ext::imgui
 
     static GLFWwindow* window;
     void set_window_impl(GLFWwindow* wnd);
+    void track_object(tz::gl::Object* obj);
     void initialise();
     void terminate();
     template<class WindowType, typename... Args>
