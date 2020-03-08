@@ -48,6 +48,13 @@ add_library(topaz STATIC
 		src/gl/tz_stb_image/image_reader.inl
 		src/gl/tz_stb_image/image_writer.hpp
 		src/gl/tz_stb_image/image_writer.inl
+		src/gl/tz_imgui/imgui_context.cpp
+		src/gl/tz_imgui/imgui_context.hpp
+		src/gl/tz_imgui/imgui_context.inl
+		src/gl/tz_imgui/imgui_impl_glfw.cpp
+		src/gl/tz_imgui/imgui_impl_glfw.h
+		src/gl/tz_imgui/imgui_impl_opengl3.cpp
+		src/gl/tz_imgui/imgui_impl_opengl3.h
 		src/gl/buffer.cpp
 		src/gl/buffer.hpp
 		src/gl/buffer.inl
@@ -98,7 +105,8 @@ target_link_libraries(topaz PUBLIC
 		glfw
 		glad
 		stbi
-		assimp)
+		assimp
+		imgui)
 target_include_directories(topaz PUBLIC ${TOPAZ_SOURCE_DIR})
 
 add_subdirectory(lib)

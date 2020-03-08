@@ -7,6 +7,7 @@
 #include "GLFW/glfw3.h"
 #include "core/debug/assert.hpp"
 #include "core/window.hpp"
+#include "gl/tz_imgui/imgui_context.hpp"
 
 namespace tz::ext::glfw
 {
@@ -148,6 +149,7 @@ namespace tz::ext::glfw
 	void GLFWWindowImpl::set_active_context() const
 	{
 		glfwMakeContextCurrent(this->window_handle);
+		tz::ext::imgui::set_window_impl(this->window_handle);
 	}
 	
 	bool GLFWWindowImpl::operator==(const GLFWWindowImpl& rhs) const

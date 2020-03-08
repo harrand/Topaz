@@ -6,6 +6,7 @@
 #include "core/debug/assert.hpp"
 #include "core/debug/print.hpp"
 #include "core/tz_glad/glad_context.hpp"
+#include "gl/tz_imgui/imgui_context.hpp"
 #include "GLFW/glfw3.h"
 
 namespace tz::core
@@ -20,9 +21,11 @@ namespace tz::core
 		tz::ext::glfw::initialise(tz::ext::glfw::WindowCreationArgs{app_name, 1920, 1080});
 		// Create the GLFW window and set this to be the global GLFW context window.
 		this->tz_window = std::make_unique<GLFWWindow>(tz::ext::glfw::get());
+		this->tz_window->set_active_context();
 		// Give the context to GLAD and perform a procedure load of all opengl functions.
 		// This overload will use the current global GLFW context (Which we *just* made).
 		tz::ext::glad::load_opengl(tz::ext::glfw::get());
+		tz::ext::imgui::initialise();
 
 		tz::debug_printf("tz::initialise(): Success\n");
 	}
@@ -31,6 +34,7 @@ namespace tz::core
 	{
 		topaz_assert(this->initialised, "TopazCore::terminate(): Attempt to terminate but we're not marked as initialised!");
 		this->initialised = false;
+		tz::ext::imgui::terminate();
 		// TODO: Burn stuff here.
 		tz::ext::glfw::terminate();
 
@@ -112,6 +116,7 @@ namespace tz::core
 	void update()
 	{
 		glfwPollEvents();
+		tz::ext::imgui::update();
 	}
 	
 	void terminate()

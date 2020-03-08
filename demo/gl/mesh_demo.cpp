@@ -216,8 +216,8 @@ int main()
 			}
 			ubo->bind();
 			dev.render();
-			wnd.update();
 			tz::core::update();
+			wnd.update();
 		}
 	}
 	tz::core::terminate();
