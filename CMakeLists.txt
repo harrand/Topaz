@@ -50,6 +50,8 @@ add_library(topaz STATIC
 		src/gl/tz_stb_image/image_reader.inl
 		src/gl/tz_stb_image/image_writer.hpp
 		src/gl/tz_stb_image/image_writer.inl
+		src/gl/tz_imgui/buffer_tracker.cpp
+		src/gl/tz_imgui/buffer_tracker.hpp
 		src/gl/tz_imgui/imgui_context.cpp
 		src/gl/tz_imgui/imgui_context.hpp
 		src/gl/tz_imgui/imgui_context.inl

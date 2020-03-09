@@ -190,8 +190,8 @@ namespace tz::gl
         /**
          * Map the buffer, providing a contiguous data block that can be used from the calling code.
          * 
-         * Precondition: Requires the buffer to be valid and unmapped.
-         * Note: Attempting to map a buffer twice will assert and invoke UB. Query IBuffer::is_mapped() to ensure that this is false before mapping.
+         * Precondition: Requires the buffer to be valid.
+         * Note: When a buffer is mapped, the memory block is cached. If the buffer is mapped a second time without unmapping prior, the cached value is returned.
          * @param purpose Describes what the desired use for the data is. This is an optimisation measure. If you don't intend to edit the data, providing MappingPurpose::ReadOnly will be a performance boon. The default purpose allows reading + writing.
          * @return Memory Block containing arbitrary data. The properties of this data are not guaranteed to be consistent with that of normal RAM. For example, this might be order of magnitudes slower than normal RAM.
          */

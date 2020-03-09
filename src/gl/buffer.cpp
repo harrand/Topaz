@@ -4,6 +4,7 @@
 
 #include "gl/buffer.hpp"
 #include "core/debug/assert.hpp"
+#include <optional>
 
 namespace tz::gl
 {
@@ -131,16 +132,22 @@ namespace tz::gl
 
     tz::mem::Block IBuffer::map(MappingPurpose purpose)
     {
+        static std::optional<tz::mem::Block> block_cache;
         IBuffer::verify();
-        topaz_assert(!this->is_mapped(), "tz::gl::Buffer<T>::map(...): Attempted to map but we are already mapped");
+        if(this->is_mapped())
+        {
+            topaz_assert(block_cache.has_value(), "tz::gl::Buffer<T>::map(...): Attempted to map but we are already mapped without any cached result.");
+            return block_cache.value();
+        }
         // We know for sure that we have a valid handle, it is currently bound and we're definitely not yet mapped.
         void* begin = nullptr;
         if(this->is_terminal())
             begin = glMapNamedBufferRange(this->handle, 0, this->size(), GL_MAP_READ_BIT | GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
         else
             begin = glMapNamedBuffer(this->handle, static_cast<GLenum>(purpose));
-
-        return {begin, this->size()};
+        tz::mem::Block blk{begin, this->size()};
+        block_cache = blk;
+        return blk;
     }
 
     void IBuffer::unmap()

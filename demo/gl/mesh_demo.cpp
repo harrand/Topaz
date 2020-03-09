@@ -39,7 +39,7 @@ const char *fragmentShaderSource = "#version 430\n"
 class MeshAdjustor : public tz::ext::imgui::ImGuiWindow
 {
 public:
-	MeshAdjustor(tz::Vec3& offset): offset(offset){}
+	MeshAdjustor(tz::Vec3& offset): ImGuiWindow("Mesh Adjustor"), offset(offset){}
 	virtual void render() override
 	{
 		ImGui::Begin("MeshAdjustor");

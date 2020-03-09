@@ -16,7 +16,13 @@ namespace tz::ext::imgui
     class ImGuiWindow
     {
     public:
+        ImGuiWindow(const char* name);
+        const char* get_name() const;
         virtual void render() = 0;
+
+        bool visible;
+    private:
+        const char* name;
     };
 
     static GLFWwindow* window;
@@ -30,5 +36,5 @@ namespace tz::ext::imgui
     void update();
 }
 
-#endif // TOPAZ_GL_IMGUI_CONTEXT_HPP
 #include "gl/tz_imgui/imgui_context.inl"
+#endif // TOPAZ_GL_IMGUI_CONTEXT_HPP
