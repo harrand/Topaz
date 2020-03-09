@@ -42,7 +42,7 @@ namespace tz::ext::imgui::gl
             {
                 // will used cached value.
                 auto blk = buf->map();
-                std::memcpy(data.data(), blk.begin, this->view_size);
+                std::memcpy(data.data(), reinterpret_cast<char*>(blk.begin) + this->view_offset, this->view_size);
             }
             else
             {
