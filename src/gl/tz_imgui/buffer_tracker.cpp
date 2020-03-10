@@ -23,6 +23,16 @@ namespace tz::ext::imgui::gl
 
     void BufferTracker::render()
     {
+        auto shrink_as_necessary = [](int& a, int& b, std::size_t max, bool a_changed)
+        {
+            if(a + b >= max)
+            {
+                if(a_changed)
+                    b = (max - a) - 1;
+                else
+                    a = (max - b) - 1;
+            }
+        };
         ImGui::Begin("Buffer Tracker");
         if(this->tracked_buffer_id.has_value())
         {
@@ -30,10 +40,15 @@ namespace tz::ext::imgui::gl
             tz::gl::IBuffer* buf = (*this->object)[buf_id];
             auto buf_size = buf->size();
             ImGui::Text("Size: %zu", buf_size);
-            ImGui::SliderInt("View Byte Offset", &this->view_offset, 0, buf_size);
-            ImGui::SliderInt("View Byte Size", &this->view_size, 1, buf_size - this->view_offset - 1);
+            if(ImGui::SliderInt("View Byte Offset", &this->view_offset, 0, buf_size - 1))
+            {
+                shrink_as_necessary(this->view_offset, this->view_size, buf_size, true);
+            }
+            if(ImGui::SliderInt("View Byte Size", &this->view_size, 1, buf_size - this->view_offset - 1))
+            {
+                shrink_as_necessary(this->view_offset, this->view_size, buf_size, false);
+            }
             // If mapped, we should just take the mapped data.
-            
             std::vector<char> data;
             std::string data_string;
             data.resize(this->view_size);
