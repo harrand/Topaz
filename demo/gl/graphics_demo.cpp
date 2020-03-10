@@ -2,6 +2,7 @@
 #include "core/debug/print.hpp"
 #include "geo/matrix_transform.hpp"
 #include "gl/tz_stb_image/image_reader.hpp"
+#include "gl/tz_imgui/imgui_context.hpp"
 #include "gl/shader.hpp"
 #include "gl/shader_compiler.hpp"
 #include "gl/manager.hpp"
@@ -40,6 +41,7 @@ int main()
 	tz::core::initialise("Topaz Graphics Demo");
 	{
 		tz::gl::Object o;
+		tz::ext::imgui::track_object(&o);
 		tz::gl::p::UBOModule* ubo_module = nullptr;
 		tz::gl::ShaderPreprocessor pre{vertexShaderSource};
 		{
@@ -158,8 +160,8 @@ int main()
 			matrix.set(0, p * v * m);
 			ubo->bind();
 			dev.render();
-			wnd.update();
 			tz::core::update();
+			wnd.update();
 		}
 	}
 	tz::core::terminate();

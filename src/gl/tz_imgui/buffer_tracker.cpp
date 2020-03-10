@@ -28,9 +28,9 @@ namespace tz::ext::imgui::gl
             if(a + b >= max)
             {
                 if(a_changed)
-                    b = (max - a) - 1;
+                    b = (max - a);
                 else
-                    a = (max - b) - 1;
+                    a = (max - b);
             }
         };
         ImGui::Begin("Buffer Tracker");
@@ -44,7 +44,7 @@ namespace tz::ext::imgui::gl
             {
                 shrink_as_necessary(this->view_offset, this->view_size, buf_size, true);
             }
-            if(ImGui::SliderInt("View Byte Size", &this->view_size, 1, buf_size - this->view_offset - 1))
+            if(ImGui::SliderInt("View Byte Size", &this->view_size, 1, buf_size - this->view_offset))
             {
                 shrink_as_necessary(this->view_offset, this->view_size, buf_size, false);
             }

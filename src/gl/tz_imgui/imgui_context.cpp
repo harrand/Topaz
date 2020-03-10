@@ -146,7 +146,7 @@ namespace tz::ext::imgui
                 ImGui::EndMenu();
             }
 
-            if(ImGui::BeginMenu(tz::core::get().window().get_title()))
+            if(!windows.empty() && ImGui::BeginMenu(tz::core::get().window().get_title()))
             {
                 for(const auto& window_ptr : windows)
                 {
