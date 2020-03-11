@@ -9,12 +9,14 @@
 // Diagnostics
 #include <vector>
 #include "gl/tz_imgui/buffer_tracker.hpp"
+#include "gl/tz_imgui/tzglp_preview.hpp"
 
 namespace tz::ext::imgui
 {
     static std::vector<std::unique_ptr<ImGuiWindow>> windows;
     static tz::gl::Object* obj = nullptr;
     static gl::BufferTracker tracker{nullptr};
+    static gl::TZGLPPreview tzglp{};
 
     ImGuiWindow::ImGuiWindow(const char* name): name(name){}
 
@@ -56,6 +58,11 @@ namespace tz::ext::imgui
         wnd->visible = false;
         windows.push_back(std::move(wnd));
         return *windows.back();
+    }
+
+    void render_tzglp_previewer()
+    {
+        tzglp.render();
     }
 
     void render_object_tracker()
@@ -143,6 +150,7 @@ namespace tz::ext::imgui
             {
                 ImGui::MenuItem("gl::Object Tracking", nullptr, &track_objects);
                 ImGui::MenuItem("gl::Buffer Tracking", nullptr, &tracker.visible);
+                ImGui::MenuItem("TZGLP Previewer", nullptr, &tzglp.visible);
                 ImGui::EndMenu();
             }
 
@@ -165,6 +173,11 @@ namespace tz::ext::imgui
             if(tracker.visible)
             {
                 tracker.render();
+            }
+
+            if(tzglp.visible)
+            {
+                tzglp.render();
             }
         }
     }

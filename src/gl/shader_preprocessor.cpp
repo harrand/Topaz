@@ -38,6 +38,11 @@ namespace tz::gl
 		return this->source;
 	}
 
+	void ShaderPreprocessor::set_source(std::string source)
+	{
+		this->source = source;
+	}
+
 	p::IModule* ShaderPreprocessor::operator[](std::size_t idx)
 	{
 		topaz_assert(idx < this->size(), "tz::gl::ShaderPreprocessor[", idx, "]: Index ", idx, " is out of range! Size: ", this->size());

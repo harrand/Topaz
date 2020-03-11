@@ -160,6 +160,10 @@ namespace tz::gl
 		 */
 		const std::string& result() const;
 		/**
+		 * TODO: Document
+		 */
+		void set_source(std::string source);
+		/**
 		 * Retrieve a pointer to an existing Module based upon its index.
 		 * 
 		 * Precondition: idx < this->size(). Otherwise, this will assert and invoke UB.
