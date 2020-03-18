@@ -42,7 +42,7 @@ public:
 	MeshAdjustor(tz::Vec3& offset): ImGuiWindow("Mesh Adjustor"), offset(offset){}
 	virtual void render() override
 	{
-		ImGui::Begin("MeshAdjustor");
+		ImGui::Begin("Mesh Adjustor", &this->visible);
 		ImGui::Text("%s", "Hello!");
 		ImGui::SliderFloat("Mesh Offset X", &offset[0], -100.0f, 100.0f);
 		ImGui::SliderFloat("Mesh Offset Y", &offset[1], -100.0f, 100.0f);

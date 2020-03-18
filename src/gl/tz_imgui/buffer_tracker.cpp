@@ -33,7 +33,7 @@ namespace tz::ext::imgui::gl
                     a = (max - b);
             }
         };
-        ImGui::Begin("Buffer Tracker");
+        ImGui::Begin("Buffer Tracker", &this->visible);
         if(this->tracked_buffer_id.has_value())
         {
             std::size_t buf_id = this->tracked_buffer_id.value();

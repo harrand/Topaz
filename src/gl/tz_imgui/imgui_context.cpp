@@ -17,6 +17,7 @@ namespace tz::ext::imgui
     static tz::gl::Object* obj = nullptr;
     static gl::BufferTracker tracker{nullptr};
     static gl::TZGLPPreview tzglp{};
+    static bool show_demo_window = false;
 
     ImGuiWindow::ImGuiWindow(const char* name): name(name){}
 
@@ -128,11 +129,12 @@ namespace tz::ext::imgui
         if(ImGui::BeginMainMenuBar())
         {
 
-            if(ImGui::BeginMenu("tz2"))
+            if(ImGui::BeginMenu("Topaz 2"))
             {
                 // ooga booga!
                 static bool do_assert = false;
                 ImGui::MenuItem("Test Assert", nullptr, &do_assert);
+                ImGui::MenuItem("ImGui Demo", nullptr, &show_demo_window);
                 if(do_assert)
                 {
                     topaz_assert(false, "Test Assert");
@@ -188,8 +190,8 @@ namespace tz::ext::imgui
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-        static bool show_demo_window = true;
-        ImGui::ShowDemoWindow(&show_demo_window);
+        if(show_demo_window)
+            ImGui::ShowDemoWindow(&show_demo_window);
 
         render_menu();
 

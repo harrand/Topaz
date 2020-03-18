@@ -24,7 +24,7 @@ namespace tz::ext::imgui::gl
         {
             this->dummy_object = new tz::gl::Object;
         }
-        ImGui::Begin(this->get_name());
+        ImGui::Begin(this->get_name(), &this->visible);
         ImGui::TextWrapped("TZGLP stands for the Topaz GL Preprocessor. Shader Preprocessors can have at least zero modules, which affect the way it preprocesses GLSL source.");
         ImGui::Spacing();
         static int slider_choice = 0;
