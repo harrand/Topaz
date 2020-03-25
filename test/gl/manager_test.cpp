@@ -35,8 +35,8 @@ tz::test::Case partition()
     // number of vertices must be conserved
     topaz_expect(test_case, m.get_vertices_offset(t1) == offset, "Handle had unexpected offset. Expected ", offset, ", got ", m.get_vertices_offset(t1));
     topaz_expect(test_case, m.get_vertices_offset(t2) == offset + 3, "Handle had unexpected offset. Expected ", offset + 3, ", got ", m.get_vertices_offset(t2));
-    topaz_expect(test_case, m.get_number_of_vertices(t1) == 3, "Handle had unexpected number of vertices. Expected ", 3, ", got ", t1);
-    topaz_expect(test_case, m.get_number_of_vertices(t2) == 3, "Handle had unexpected number of vertices. Expected ", 3, ", got ", t2);
+    topaz_expect(test_case, m.get_number_of_vertices(t1) == 3, "Handle had unexpected number of vertices. Expected ", 3, ", got ", m.get_number_of_vertices(t1));
+    topaz_expect(test_case, m.get_number_of_vertices(t2) == 3, "Handle had unexpected number of vertices. Expected ", 3, ", got ", m.get_number_of_vertices(t2));
     return test_case;
 }
 

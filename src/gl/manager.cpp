@@ -93,14 +93,19 @@ namespace tz::gl
         topaz_assert(this->mesh_info_map.find(handle) != this->mesh_info_map.end(), "tz::gl::Manager::partition(", handle, ", ", vertex_offset, "): Manager does not know about handle '", handle, "' -- So cannot partition!");
         MeshInfo& info = this->mesh_info_map[handle];
         std::size_t original_vertices_size = info.size_vertices;
+        std::size_t original_indices_size = info.size_indices;
         // Ensure that the byte offset is less than our size.
         topaz_assert(info.size_vertices > vertex_offset, "tz::gl::Manager::partition(", handle, ", ", vertex_offset, "): The given handle '", handle, "' cannot be partitioned at offset ", vertex_offset, " because this handle only occupies ", info.size_vertices, " vertices");
         // Essentially we set our size to be equal to the offset, so that the new handle can manage the remainder of the vertices.
         info.size_vertices = vertex_offset;
+        info.size_indices = vertex_offset;
         Handle new_handle = this->mesh_info_map.size();
         std::size_t new_offset_vertices = info.offset_vertices + info.size_vertices;
+        std::size_t new_offset_indices = info.offset_indices + info.size_indices;
         // All the vertices which the first handle no longer owns, we will take.
-        MeshInfo new_info{new_offset_vertices, original_vertices_size - info.size_vertices};
+        std::size_t new_vertices_size = original_vertices_size - info.size_vertices;
+        std::size_t new_indices_size = original_indices_size - info.size_indices;
+        MeshInfo new_info{new_offset_vertices, new_offset_indices, new_vertices_size, new_indices_size};
         this->mesh_info_map.emplace(new_handle, new_info);
         return new_handle;
     }
