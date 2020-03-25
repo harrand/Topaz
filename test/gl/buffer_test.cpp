@@ -70,9 +70,9 @@ tz::test::Case terminality()
 {
     tz::test::Case test_case("tz::gl Buffer Terminality Tests");
     tz::gl::Object o;
-    std::size_t idx = o.emplace_buffer<tz::gl::BufferType::Array>();
-    tz::gl::VBO* vbo = o.get<tz::gl::BufferType::Array>(idx);
     {
+        std::size_t idx = o.emplace_buffer<tz::gl::BufferType::Array>();
+        tz::gl::VBO* vbo = o.get<tz::gl::BufferType::Array>(idx);
         topaz_assert_clear();
         // Definitely shouldn't be terminal for now.
         topaz_expect(test_case, !vbo->is_terminal(), "tz::gl::Buffer wrongly considers itself to be terminal.");
@@ -91,6 +91,38 @@ tz::test::Case terminality()
         // The mapping is valid during render calls etc... There is no good way of testing for this however, as we can't test for the presence of UB without using UBsan which is likely not to detect this anyway...
         vbo->unmap();
         topaz_expect_assert(test_case, false, "tz::gl::Buffer unexpectedly asserted during terminality tests...");
+    }
+
+    // Have an existing buffer with some data, make it terminal and then ensure data hasn't been screwed up
+
+    {
+        std::size_t idx = o.emplace_buffer<tz::gl::BufferType::Array>();
+        tz::gl::VBO* vbo = o.get<tz::gl::BufferType::Array>(idx);
+
+        // It will store {0, 1, 2, 3}
+        vbo->resize(sizeof(int) * 4);
+        int data[] = {0, 1, 2, 3};
+        vbo->send(data);
+
+        auto ensure = [data, vbo]()
+        {
+            tz::mem::Block blk = vbo->map();
+            for(std::size_t i = 0; i < 4; i++)
+            {
+                auto cur = static_cast<int*>(blk.begin) + i;
+                if(*cur != data[i])
+                {
+                    vbo->unmap();
+                    return false;
+                }
+            }
+            vbo->unmap();
+            return true;
+        };
+        // Ensure should be true before and after making it terminal.
+        topaz_expect(test_case, ensure(), "Ensure failed prior to making the buffer terminal.");
+        vbo->make_terminal();
+        topaz_expect(test_case, ensure(), "Ensure failed after making the buffer terminal. Did it trash the data?");
     }
     return test_case;
 }

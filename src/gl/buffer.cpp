@@ -126,8 +126,12 @@ namespace tz::gl
         IBuffer::verify();
         IBuffer::verify_nonterminal();
         topaz_assert(!this->is_mapped(), "tz::gl::SSBO<T>::make_terminal(): Cannot make terminal because the buffer is currently mapped.");
-        // TODO: Maintain a copy of the underlying data first and copy that data back into the immutable data store.
-        glNamedBufferStorage(this->handle, this->size(), nullptr, GL_MAP_READ_BIT | GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
+        // Maintain a copy of the underlying data first and copy that data back into the immutable data store.
+        auto sz = this->size();
+        tz::mem::Block data_store{std::malloc(sz), sz};
+        this->retrieve(0, sz, data_store.begin);
+        glNamedBufferStorage(this->handle, sz, data_store.begin, GL_MAP_READ_BIT | GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
+        std::free(data_store.begin);
     }
 
     tz::mem::Block IBuffer::map(MappingPurpose purpose)
