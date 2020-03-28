@@ -1,5 +1,6 @@
 #include "gl/tz_imgui/ogl_info.hpp"
 #include "core/tz_glad/glad_context.hpp"
+#include "core/debug/assert.hpp"
 #include <string>
 #include <vector>
 
@@ -19,6 +20,29 @@ namespace tz::ext::imgui::gl
             const GLubyte* vendor = glGetString(GL_VENDOR);
             const GLubyte* renderer = glGetString(GL_RENDERER);
             const GLubyte* glsl_version = glGetString(GL_SHADING_LANGUAGE_VERSION);
+            const GLubyte* extensions_list = glGetString(GL_EXTENSIONS);
+            std::vector<std::string> extension_names;
+            {
+                // Make copy of extensions_list.
+                const GLubyte* offset_byte = extensions_list;
+                topaz_assert(offset_byte != nullptr, "glGetString(GL_EXTENSIONS) returned nullptr");
+                std::string cur;
+                // Separated by spaces, but we obviously end on a null-terminator.
+                while(*offset_byte != '\0')
+                {
+                    if(*offset_byte != ' ')
+                    {
+                        cur += static_cast<char>(*(offset_byte));
+                    }
+                    else
+                    {
+                        extension_names.push_back(cur);
+                        cur.clear();
+                    }
+                    offset_byte++;
+                }
+                
+            }
 
             GLint context_profile;
             glGetIntegerv(GL_CONTEXT_PROFILE_MASK, &context_profile);
@@ -80,25 +104,43 @@ namespace tz::ext::imgui::gl
             }
 
             // Display them
-            ImGui::Text("OpenGL Major/Minor Version: %d.%d", major, minor);
-            ImGui::Text("OpenGL Full Version: %s", full_version_string);
-            ImGui::Text("GLSL Version: %s", glsl_version);
-            
-            ImGui::Spacing();
-            ImGui::Text("Graphics Vendor: %s", vendor);
-            ImGui::Text("Graphics Renderer: %s", renderer);
-            
-            ImGui::Spacing();
-            ImGui::Text("OpenGL Context Type: %s", profile_name.c_str());
-            if(!flags.empty())
+            if(ImGui::CollapsingHeader("OpenGL Driver Info"))
             {
-                ImGui::Text("Context Flags:");
-                ImGui::Indent();
-                for(const char* flag_name : flags)
+                ImGui::Text("OpenGL Major/Minor Version: %d.%d", major, minor);
+                ImGui::Text("OpenGL Full Version: %s", full_version_string);
+                ImGui::Text("GLSL Version: %s", glsl_version);
+            }
+            
+            if(ImGui::CollapsingHeader("Hardware"))
+            {
+                ImGui::Text("Graphics Vendor: %s", vendor);
+                ImGui::Text("Graphics Renderer: %s", renderer);
+            }
+            
+            if(ImGui::CollapsingHeader("Software"))
+            {
+                ImGui::Text("OpenGL Context Type: %s", profile_name.c_str());
+                if(!flags.empty())
                 {
-                    ImGui::BulletText("%s", flag_name);
+                    ImGui::Text("Context Flags:");
+                    ImGui::Indent();
+                    for(const char* flag_name : flags)
+                    {
+                        ImGui::BulletText("%s", flag_name);
+                    }
+                    ImGui::Unindent();
                 }
-                ImGui::Unindent();
+            }
+
+            if(!extension_names.empty())
+            {
+                if(ImGui::CollapsingHeader("Supported Extensions"))
+                {
+                    for(const std::string& extension_name : extension_names)
+                    {
+                        ImGui::BulletText("%s", extension_name.c_str());
+                    }
+                }
             }
         }
 
