@@ -24,7 +24,7 @@ namespace tz
 " on line ", __LINE__, ":\n\t", __VA_ARGS__))
 
 	template<typename... Args>
-	inline void assert_message(std::ostream &out, Args &&... args)
+	inline void assert_message([[maybe_unused]] std::ostream &out, [[maybe_unused]] Args &&... args)
 	{
 #if TOPAZ_DEBUG
 		std::flush(out);

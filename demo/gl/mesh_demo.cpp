@@ -131,7 +131,6 @@ int main()
         tz::gl::Manager::Handle square_handle = m.add_mesh(square);
 		tz::gl::Manager::Handle monkeyhead_handle = m.add_mesh(monkey_head);
 
-		float rotation_x = 0.0f;
 		float rotation_y = 0.0f;
 
 		tz::core::IWindow& wnd = tz::core::get().window();

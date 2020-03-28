@@ -24,8 +24,10 @@ namespace tz::ext::imgui::gl
             case SupportedModule::UBOModule:
                 return "UBO Module";
             break;
+            default:
+                return "Unknown Module";
+            break;
         }
-        return "Unknown Module";
     }
 
     class TZGLPPreview : public ImGuiWindow

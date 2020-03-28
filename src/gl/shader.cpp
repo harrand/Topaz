@@ -206,8 +206,9 @@ namespace tz::gl
 					return GL_FRAGMENT_SHADER;
 				case ShaderType::Compute:
 					return GL_COMPUTE_SHADER;
+				default:
+					return GL_INVALID_VALUE;
 			}
-			return GL_INVALID_VALUE;
 		}
 	}
 

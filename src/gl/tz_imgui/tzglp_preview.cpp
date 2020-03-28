@@ -110,6 +110,9 @@ namespace tz::ext::imgui::gl
                 case SupportedModule::UBOModule:
                     proc.emplace_module<tz::gl::p::UBOModule>(this->dummy_object);
                 break;
+                default:
+                    topaz_assert(false, "Unknown Module Type");
+                break;
             }
             this->preprocessor_modules[preprocessor_id].push_back(choice);
         }

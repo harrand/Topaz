@@ -14,6 +14,7 @@ namespace tz::ext::assimp
     Scene& Scene::operator=(Scene&& rhs)
     {
         std::swap(this->scene, rhs.scene);
+        return *this;
     }
 
     Scene::~Scene()

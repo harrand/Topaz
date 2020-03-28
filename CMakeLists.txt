@@ -129,9 +129,6 @@ set_target_properties(topaz
 		RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
 		)
 
-# Effects *everything*
-add_compile_options(-Wall -Wextra -pedantic-errors)
-
 # Topaz Compile Options
 
 ## Build-config specific
@@ -143,6 +140,20 @@ else()
 	message(STATUS "Topaz Release")
 	target_compile_options(topaz PUBLIC -O3 -fno-exceptions)
 	target_compile_definitions(topaz PUBLIC -DTOPAZ_DEBUG=0 -DTOPAZ_RELEASE=1)
+endif()
+# Because this is public, everything that links against tz2 is forced to follow these. Is this something worth doing?
+target_compile_options(topaz PUBLIC -Wall -Wextra -pedantic-errors)
+# Disabled warnings:
+if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+  # For clang
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+  # For gcc
+  # -Wno-format -- GCC sucks at recognising %zu, which is plentiful in the code-base.
+  target_compile_options(topaz PUBLIC -Wno-format)
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
+  # For icc
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+  # For msvc
 endif()
 
 ## General

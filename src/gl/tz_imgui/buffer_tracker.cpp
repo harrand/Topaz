@@ -25,7 +25,7 @@ namespace tz::ext::imgui::gl
     {
         auto shrink_as_necessary = [](int& a, int& b, std::size_t max, bool a_changed)
         {
-            if(a + b >= max)
+            if(static_cast<unsigned int>(std::abs(a + b)) >= max)
             {
                 if(a_changed)
                     b = (max - a);
@@ -78,7 +78,7 @@ namespace tz::ext::imgui::gl
                 case 0:
                 {
                     // Ints
-                    for(std::size_t i = 0; i < this->view_size; i += sizeof(int))
+                    for(std::size_t i = 0; i < static_cast<std::size_t>(this->view_size); i += sizeof(int))
                     {
                         data_string += std::to_string(*reinterpret_cast<int*>(data.data() + i)) + " ";
                     }
@@ -95,7 +95,7 @@ namespace tz::ext::imgui::gl
                 }
                 case 2:
                 {
-                    for(std::size_t i = 0; i < this->view_size; i += sizeof(float))
+                    for(std::size_t i = 0; i < static_cast<std::size_t>(this->view_size); i += sizeof(float))
                     {
                         data_string += std::to_string(*reinterpret_cast<float*>(data.data() + i)) + " ";
                     }

@@ -18,6 +18,7 @@ namespace tz::render
     std::size_t Pipeline::add(Device d)
     {
         this->devices.push_back(d);
+        return this->devices.size() - 1;
     }
 
     void Pipeline::erase(std::size_t idx)

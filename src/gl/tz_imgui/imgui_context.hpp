@@ -25,7 +25,7 @@ namespace tz::ext::imgui
         const char* name;
     };
 
-    static GLFWwindow* window;
+    [[maybe_unused]] static GLFWwindow* window;
     void set_window_impl(GLFWwindow* wnd);
     void track_object(tz::gl::Object* obj);
     void initialise();

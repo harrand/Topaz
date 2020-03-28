@@ -11,7 +11,7 @@
 
 namespace tz::core
 {
-	TopazCore::TopazCore() noexcept: tz_window(nullptr), initialised(false), secondary_windows() {}
+	TopazCore::TopazCore() noexcept: tz_window(nullptr), secondary_windows(), initialised(false) {}
 
 	void TopazCore::initialise(const char* app_name)
 	{
