@@ -145,15 +145,15 @@ endif()
 target_compile_options(topaz PUBLIC -Wall -Wextra -pedantic-errors)
 # Disabled warnings:
 if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-  # For clang
+	# For clang
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-  # For gcc
-  # -Wno-format -- GCC sucks at recognising %zu, which is plentiful in the code-base.
-  target_compile_options(topaz PUBLIC -Wno-format)
+	# For gcc
+	# -Wno-format -- GCC sucks at recognising %zu, which is plentiful in the code-base.
+	target_compile_options(topaz PUBLIC -Wno-format)
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
-  # For icc
+	# For icc
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-  # For msvc
+	# For msvc
 endif()
 
 ## General
