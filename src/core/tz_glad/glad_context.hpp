@@ -28,6 +28,7 @@ namespace tz::ext::glad
 		 * It is not recommended that you construct GLAD contexts manually -- tz::core should handle this for you.
 		 */
 		GLADContext() noexcept;
+		void pre_init();
 		/**
 		 * Instruct GLAD to load all necessary OpenGL procedures.
 		 * The GLFW context provided at construction must be initialised, or this function will assert.
@@ -40,14 +41,7 @@ namespace tz::ext::glad
 		 */
 		bool is_loaded() const;
 		friend void load_opengl();
-		friend void load_opengl(const tz::ext::glfw::GLFWContext&);
 	private:
-		/**
-		 * Construct a GLAD context based off of a given GLFW context.
-		 * The context need not be loaded at this point.
-		 * @param glfw_context - The context that you expect to be operating OpenGL with
-		 */
-		explicit GLADContext(const tz::ext::glfw::GLFWContext& glfw_context) noexcept;
 		
 		/// GLFW context dependency.
 		const tz::ext::glfw::GLFWContext* glfw_context;
@@ -63,13 +57,6 @@ namespace tz::ext::glad
 	 * It is not recommended that you invoke this function unless you know what you're doing.
 	 */
 	void load_opengl();
-	/**
-	 * Load OpenGL using the given GLFW context.
-	 * tz::core::initialise() invokes this, and invoking this more than once will assert.
-	 * It is not recommended that you invoke this function unless you know what you're doing.
-	 * @param specific_context - GLFW context whose Window is expected to use OpenGL functionality
-	 */
-	void load_opengl(const tz::ext::glfw::GLFWContext& specific_context);
 	/**
 	 * TODO: Document
 	 */

@@ -20,11 +20,11 @@ namespace tz::core
 		// Initialise GLFW...
 		tz::ext::glfw::initialise(tz::ext::glfw::WindowCreationArgs{app_name, 1920, 1080});
 		// Create the GLFW window and set this to be the global GLFW context window.
+		tz::ext::glad::GLADContext glad_context;
+		glad_context.pre_init();
 		this->tz_window = std::make_unique<GLFWWindow>(tz::ext::glfw::get());
 		this->tz_window->set_active_context();
-		// Give the context to GLAD and perform a procedure load of all opengl functions.
-		// This overload will use the current global GLFW context (Which we *just* made).
-		tz::ext::glad::load_opengl(tz::ext::glfw::get());
+		glad_context.load();
 		tz::ext::imgui::initialise();
 
 		tz::debug_printf("tz::initialise(): Success\n");

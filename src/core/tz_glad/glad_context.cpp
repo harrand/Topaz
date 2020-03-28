@@ -16,10 +16,21 @@ namespace tz::ext::glad
 		void output(GLenum source, GLenum type, GLuint id, GLenum severity, 
                             GLsizei length, const GLchar *message, const void *userParam);
 	}
-
-	GLADContext::GLADContext(const tz::ext::glfw::GLFWContext& glfw_context) noexcept: glfw_context(&glfw_context), loaded(false){}
 	
 	GLADContext::GLADContext() noexcept: glfw_context(nullptr), loaded(false){}
+
+	void GLADContext::pre_init()
+	{
+		// Core context
+		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+		#if TOPAZ_DEBUG
+			tz::debug_printf("Activating OpenGL debug context...\n");
+			glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
+		#else
+			// No Errors
+			glfwWindowHint(GLFW_CONTEXT_NO_ERROR, GLFW_TRUE);
+		#endif
+	}
 	
 	void GLADContext::load()
 	{
@@ -34,9 +45,6 @@ namespace tz::ext::glad
 		gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress));
 
 		#if TOPAZ_DEBUG
-			tz::debug_printf("Activating OpenGL debug context...\n");
-			glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
-
 			glEnable(GL_DEBUG_OUTPUT);
     		glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS); 
    			glDebugMessageCallback(debug::output, nullptr);
@@ -56,13 +64,6 @@ namespace tz::ext::glad
 	{
 		topaz_assert(!global_context.is_loaded(), "tz::ext::glad::load_opengl(): Global GLAD context is already loaded!");
 		global_context = GLADContext{}; // Re-assign incase a new glfw context was since bound.
-		global_context.load(); // Let's go!
-	}
-	
-	void load_opengl(const tz::ext::glfw::GLFWContext& specific_context)
-	{
-		topaz_assert(!global_context.is_loaded(), "tz::ext::glad::load_opengl(): Global GLAD context is already loaded!");
-		global_context = GLADContext{specific_context}; // Re-assign using the context we were told to use.
 		global_context.load(); // Let's go!
 	}
 

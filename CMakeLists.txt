@@ -59,6 +59,8 @@ add_library(topaz STATIC
 		src/gl/tz_imgui/imgui_impl_glfw.h
 		src/gl/tz_imgui/imgui_impl_opengl3.cpp
 		src/gl/tz_imgui/imgui_impl_opengl3.h
+		src/gl/tz_imgui/ogl_info.cpp
+		src/gl/tz_imgui/ogl_info.hpp
 		src/gl/tz_imgui/tzglp_preview.cpp
 		src/gl/tz_imgui/tzglp_preview.hpp
 		src/gl/buffer.cpp

@@ -10,6 +10,7 @@
 #include <vector>
 #include "gl/tz_imgui/buffer_tracker.hpp"
 #include "gl/tz_imgui/tzglp_preview.hpp"
+#include "gl/tz_imgui/ogl_info.hpp"
 
 namespace tz::ext::imgui
 {
@@ -17,6 +18,7 @@ namespace tz::ext::imgui
     static tz::gl::Object* obj = nullptr;
     static gl::BufferTracker tracker{nullptr};
     static gl::TZGLPPreview tzglp{};
+    static gl::OpenGLInfoWindow oglinfo{};
     static bool show_demo_window = false;
 
     ImGuiWindow::ImGuiWindow(const char* name): name(name){}
@@ -64,6 +66,11 @@ namespace tz::ext::imgui
     void render_tzglp_previewer()
     {
         tzglp.render();
+    }
+
+    void render_ogl_info()
+    {
+        oglinfo.render();
     }
 
     void render_object_tracker()
@@ -140,6 +147,7 @@ namespace tz::ext::imgui
                     topaz_assert(false, "Test Assert");
                     do_assert = false;
                 }
+                ImGui::MenuItem("OpenGL Info", nullptr, &oglinfo.visible);
                 ImGui::EndMenu();
             }
 
@@ -180,6 +188,11 @@ namespace tz::ext::imgui
             if(tzglp.visible)
             {
                 tzglp.render();
+            }
+
+            if(oglinfo.visible)
+            {
+                oglinfo.render();
             }
         }
     }
