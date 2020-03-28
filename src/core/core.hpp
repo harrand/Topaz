@@ -21,10 +21,18 @@
  * etc...
  */
 
-// Forward declare
-namespace tz::ext::glfw
+// Forward declares
+namespace tz::ext
 {
-	class GLFWContext;
+	namespace glfw
+	{
+		class GLFWContext;
+	}
+
+	namespace glad
+	{
+		class GLADContext;
+	}
 }
 
 namespace tz::core
@@ -68,6 +76,7 @@ namespace tz::core
 		 * @return Reference to the initial context
 		 */
 		const tz::ext::glfw::GLFWContext& context() const;
+		const tz::ext::glad::GLADContext& glad_context() const;
 		/**
 		 * Retrieve the window attached to the main context provided by topaz.
 		 * @return Reference to the initial context window

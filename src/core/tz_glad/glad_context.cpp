@@ -8,6 +8,7 @@
 #include "core/debug/print.hpp"
 
 #include "GLFW/glfw3.h"
+#include <algorithm>
 
 namespace tz::ext::glad
 {
@@ -17,7 +18,7 @@ namespace tz::ext::glad
                             GLsizei length, const GLchar *message, const void *userParam);
 	}
 	
-	GLADContext::GLADContext() noexcept: glfw_context(nullptr), loaded(false){}
+	GLADContext::GLADContext() noexcept: glfw_context(nullptr), loaded(false), supported_extensions(){}
 
 	void GLADContext::pre_init()
 	{
@@ -43,6 +44,7 @@ namespace tz::ext::glad
 		topaz_assert(this->glfw_context->has_window(), "GLADContext::load(): Given GLFW context is incomplete -- It doesn't have a valid window attached to it.");
 		// Load all the things!
 		gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress));
+		this->populate_extensions();
 
 		#if TOPAZ_DEBUG
 			glEnable(GL_DEBUG_OUTPUT);
@@ -53,11 +55,62 @@ namespace tz::ext::glad
 		glEnable(GL_CULL_FACE);
 		glCullFace(GL_BACK);
 		glEnable(GL_DEPTH_TEST);
+		this->loaded = true;
 	}
 	
 	bool GLADContext::is_loaded() const
 	{
 		return this->loaded;
+	}
+
+	bool GLADContext::supports_extension(const char* name) const
+	{
+		auto iter = std::find_if(this->supported_extensions.begin(), this->supported_extensions.end(), [name](OpenGLExtension ext)
+		{
+			return ext.name == name;
+		});
+		return iter != this->supported_extensions.end();
+	}
+
+	std::size_t GLADContext::extensions_count() const
+	{
+		return this->supported_extensions.size();
+	}
+
+	const OpenGLExtension& GLADContext::get_extension(std::size_t extension_id) const
+	{
+		topaz_assert(extension_id < this->supported_extensions.size(), "GLADContext::get_extension(", extension_id, "): ID out of range. Size = ", this->supported_extensions.size());
+		return this->supported_extensions[extension_id];
+	}
+
+	void GLADContext::populate_extensions()
+	{
+		const GLubyte* extensions_list = glGetString(GL_EXTENSIONS);
+		std::vector<std::string> extension_names;
+		{
+			// Make copy of extensions_list.
+			const GLubyte* offset_byte = extensions_list;
+			topaz_assert(offset_byte != nullptr, "glGetString(GL_EXTENSIONS) returned nullptr");
+			std::string cur;
+			// Separated by spaces, but we obviously end on a null-terminator.
+			while(*offset_byte != '\0')
+			{
+				if(*offset_byte != ' ')
+				{
+					cur += static_cast<char>(*(offset_byte));
+				}
+				else
+				{
+					extension_names.push_back(cur);
+					cur.clear();
+				}
+				offset_byte++;
+			}
+		}
+		for(std::string& str : extension_names)
+		{
+			this->supported_extensions.push_back({std::move(str)});
+		}
 	}
 	
 	void load_opengl()
@@ -75,6 +128,11 @@ namespace tz::ext::glad
 	std::pair<int, int> gl_version()
 	{
 		return {GLVersion.major, GLVersion.minor};
+	}
+
+	GLADContext& get()
+	{
+		return global_context;
 	}
 
 	namespace debug

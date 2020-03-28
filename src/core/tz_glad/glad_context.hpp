@@ -5,6 +5,7 @@
 #ifndef TOPAZ_OPENGL_LOADER_HPP
 #define TOPAZ_OPENGL_LOADER_HPP
 #include "glad/glad.h"
+#include <vector>
 
 // Forward declares
 namespace tz::ext::glfw
@@ -14,6 +15,11 @@ namespace tz::ext::glfw
 
 namespace tz::ext::glad
 {
+	struct OpenGLExtension
+	{
+		std::string name;
+	};
+
 	/**
 	 * Wrapper for interacting with GLAD.
 	 * GLAD is a runtime generator-loader of OpenGL functions.
@@ -40,13 +46,17 @@ namespace tz::ext::glad
 		 * @return - True if OpenGL procedures have been loaded, otherwise false
 		 */
 		bool is_loaded() const;
+		bool supports_extension(const char* name) const;
+		std::size_t extensions_count() const;
+		const OpenGLExtension& get_extension(std::size_t extension_id) const;
 		friend void load_opengl();
 	private:
-		
+		void populate_extensions();
 		/// GLFW context dependency.
 		const tz::ext::glfw::GLFWContext* glfw_context;
 		/// Have we tried to load yet?
 		bool loaded;
+		std::vector<OpenGLExtension> supported_extensions;
 	};
 	
 	static GLADContext global_context;
@@ -65,6 +75,10 @@ namespace tz::ext::glad
 	 * TODO: Document
 	 */
 	std::pair<int, int> gl_version();
+	/**
+	 * TODO: Document
+	 */
+	GLADContext& get();
 }
 
 #endif //TOPAZ_OPENGL_LOADER_HPP

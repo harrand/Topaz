@@ -1,6 +1,7 @@
 #include "gl/tz_imgui/ogl_info.hpp"
 #include "core/tz_glad/glad_context.hpp"
 #include "core/debug/assert.hpp"
+#include "core/core.hpp"
 #include <string>
 #include <vector>
 
@@ -20,29 +21,6 @@ namespace tz::ext::imgui::gl
             const GLubyte* vendor = glGetString(GL_VENDOR);
             const GLubyte* renderer = glGetString(GL_RENDERER);
             const GLubyte* glsl_version = glGetString(GL_SHADING_LANGUAGE_VERSION);
-            const GLubyte* extensions_list = glGetString(GL_EXTENSIONS);
-            std::vector<std::string> extension_names;
-            {
-                // Make copy of extensions_list.
-                const GLubyte* offset_byte = extensions_list;
-                topaz_assert(offset_byte != nullptr, "glGetString(GL_EXTENSIONS) returned nullptr");
-                std::string cur;
-                // Separated by spaces, but we obviously end on a null-terminator.
-                while(*offset_byte != '\0')
-                {
-                    if(*offset_byte != ' ')
-                    {
-                        cur += static_cast<char>(*(offset_byte));
-                    }
-                    else
-                    {
-                        extension_names.push_back(cur);
-                        cur.clear();
-                    }
-                    offset_byte++;
-                }
-                
-            }
 
             GLint context_profile;
             glGetIntegerv(GL_CONTEXT_PROFILE_MASK, &context_profile);
@@ -132,13 +110,14 @@ namespace tz::ext::imgui::gl
                 }
             }
 
-            if(!extension_names.empty())
+            tz::ext::glad::GLADContext& glad = tz::ext::glad::get();
+            if(glad.extensions_count() > 0)
             {
                 if(ImGui::CollapsingHeader("Supported Extensions"))
                 {
-                    for(const std::string& extension_name : extension_names)
+                    for(std::size_t i = 0; i < glad.extensions_count(); i++)
                     {
-                        ImGui::BulletText("%s", extension_name.c_str());
+                        ImGui::BulletText("%s", glad.get_extension(i).name.c_str());
                     }
                 }
             }

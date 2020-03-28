@@ -11,7 +11,7 @@
 
 namespace tz::core
 {
-	TopazCore::TopazCore() noexcept: tz_window(nullptr), secondary_windows(), initialised(false) {}
+	TopazCore::TopazCore() noexcept: tz_window(nullptr), secondary_windows(), initialised(false){}
 
 	void TopazCore::initialise(const char* app_name)
 	{
@@ -20,11 +20,10 @@ namespace tz::core
 		// Initialise GLFW...
 		tz::ext::glfw::initialise(tz::ext::glfw::WindowCreationArgs{app_name, 1920, 1080});
 		// Create the GLFW window and set this to be the global GLFW context window.
-		tz::ext::glad::GLADContext glad_context;
-		glad_context.pre_init();
+		tz::ext::glad::get().pre_init();
 		this->tz_window = std::make_unique<GLFWWindow>(tz::ext::glfw::get());
 		this->tz_window->set_active_context();
-		glad_context.load();
+		tz::ext::glad::get().load();
 		tz::ext::imgui::initialise();
 
 		tz::debug_printf("tz::initialise(): Success\n");
@@ -49,6 +48,11 @@ namespace tz::core
 	const tz::ext::glfw::GLFWContext& TopazCore::context() const
 	{
 		return tz::ext::glfw::get();
+	}
+
+	const tz::ext::glad::GLADContext& TopazCore::glad_context() const
+	{
+		return tz::ext::glad::get();
 	}
 	
 	const tz::core::IWindow& TopazCore::window() const
