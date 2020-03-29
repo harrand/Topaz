@@ -43,7 +43,8 @@ namespace tz::ext::glad
 		topaz_assert(!this->loaded, "GLADContext::load(): Context already marked as loaded!");
 		topaz_assert(this->glfw_context->has_window(), "GLADContext::load(): Given GLFW context is incomplete -- It doesn't have a valid window attached to it.");
 		// Load all the things!
-		gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress));
+		[[maybe_unused]] int glad_load_result = gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress));
+		topaz_assert(glad_load_result != 0, "GLADContext::load(): gladLoadGLLoader returned erroneous result.");
 		this->populate_extensions();
 
 		#if TOPAZ_DEBUG
