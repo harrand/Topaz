@@ -20,6 +20,7 @@ namespace tz::gl
         std::swap(this->buffers, rhs.buffers);
         std::swap(this->index_buffer_ids, rhs.index_buffer_ids);
         std::swap(this->format_count, rhs.format_count);
+        return *this;
     }
 
     Object::~Object()

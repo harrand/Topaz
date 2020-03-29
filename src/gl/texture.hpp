@@ -20,8 +20,8 @@ namespace tz::gl
         GLint internal_format;
         GLenum format;
     
-        unsigned int width;
-        unsigned int height;
+        unsigned int width = 0;
+        unsigned int height = 0;
         /// Note: Excludes width and height, only formatting data.
         bool operator==(const TextureDataDescriptor& rhs) const;
         bool operator!=(const TextureDataDescriptor& rhs) const;

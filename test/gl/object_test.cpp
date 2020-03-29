@@ -46,8 +46,8 @@ tz::test::Case erase()
     tz::test::Case test_case("tz::gl::Object Erase Tests");
     tz::gl::Object o;
     auto make_child = [&o](){return o.emplace_buffer<tz::gl::BufferType::Array>();};
-    auto a = make_child();
-    auto b = make_child();
+    make_child();
+    make_child();
     auto c = make_child();
     topaz_expect(test_case, o.size() == 3, "tz::gl::Object failed to retrieve correct size. Expected ", 3, ", got ", o.size());
     topaz_expect(test_case, o.element_size() == 3, "tz::gl::Object failed to retrieve correct element_size. Expected ", 3, ", got ", o.size());
@@ -67,8 +67,8 @@ tz::test::Case release()
     tz::test::Case test_case("tz::gl::Object Release Tests");
     tz::gl::Object o;
     auto make_child = [&o](){return o.emplace_buffer<tz::gl::BufferType::Array>();};
-    auto a = make_child();
-    auto b = make_child();
+    make_child();
+    make_child();
     auto c = make_child();
     topaz_expect(test_case, o.size() == 3, "tz::gl::Object failed to retrieve correct size. Expected ", 3, ", got ", o.size());
     topaz_expect(test_case, o.element_size() == 3, "tz::gl::Object failed to retrieve correct element_size. Expected ", 3, ", got ", o.size());
@@ -93,8 +93,8 @@ tz::test::Case set()
     tz::test::Case test_case("tz::gl::Object Set Tests");
     tz::gl::Object o;
     auto make_child = [&o](){return o.emplace_buffer<tz::gl::BufferType::Array>();};
-    auto a = make_child();
-    auto b = make_child();
+    make_child();
+    make_child();
     auto c = make_child();
     // Will replace with a new buffer-type.
     o.set<tz::gl::BufferType::Array>(c);

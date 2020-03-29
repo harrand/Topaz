@@ -28,7 +28,7 @@ namespace tz
 	{
 #if TOPAZ_DEBUG
 		std::flush(out);
-#if TOPAZ_UNIT_TEST
+#ifdef TOPAZ_UNIT_TEST
 		// Note: We don't print out the assertion message as a unit-test. It's expected that the expectation failure sort this out instead.
 		debug::assert_failure = true;
 #else
