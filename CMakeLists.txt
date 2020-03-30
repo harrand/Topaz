@@ -97,6 +97,8 @@ add_library(topaz STATIC
 		src/gl/texture.cpp
 		src/gl/texture.hpp
 		src/gl/texture.inl
+		src/gl/texture_sentinel.cpp
+		src/gl/texture_sentinel.hpp
 		src/gl/vertex.hpp
 		src/gl/modules/include.cpp
 		src/gl/modules/include.hpp
@@ -117,6 +119,8 @@ target_link_libraries(topaz PUBLIC
 		imgui
 		debugbreak)
 target_include_directories(topaz PUBLIC ${TOPAZ_SOURCE_DIR})
+
+set(GLAD_EXTENSIONS GL_ARB_bindless_texture)
 
 add_subdirectory(lib)
 add_subdirectory(demo)

@@ -2,6 +2,13 @@
 
 namespace tz::gl
 {
+    static TextureSentinel global_sentinel;
+
+    TextureSentinel& sentinel()
+    {
+        return global_sentinel;
+    }
+
     bool TextureDataDescriptor::operator==(const TextureDataDescriptor& rhs) const
     {
         return this->component_type == rhs.component_type && this->internal_format == rhs.internal_format && this->format == rhs.format;
@@ -26,6 +33,7 @@ namespace tz::gl
 
     void Texture::set_parameters(const TextureParameters& params)
     {
+        topaz_hard_assert(!this->is_terminal(), "Cannot set parameters on a terminal texture. Do this before making the texture terminal -- Otherwise this could crash the GPU/entire OS.");
         this->internal_bind();
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, static_cast<GLint>(params.min_filter));
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, static_cast<GLint>(params.mag_filter));
@@ -35,6 +43,7 @@ namespace tz::gl
 
     void Texture::resize(const TextureDataDescriptor& descriptor)
     {
+        topaz_hard_assert(!this->is_terminal(), "tz::gl::Texture::resize(...): Must never resize a terminal texture! Doing so could crash the GPU/entire OS.");
         this->descriptor = descriptor;
         this->internal_bind();
         const auto& desc = this->descriptor.value();
@@ -63,6 +72,29 @@ namespace tz::gl
         if(this->descriptor.has_value())
             return this->descriptor.value().height;
         return 0;
+    }
+
+    bool Texture::is_terminal() const
+    {
+        return this->bindless.has_value();
+    }
+
+    void Texture::make_terminal()
+    {
+        topaz_assert(!this->is_terminal(), "tz::gl::Texture::make_terminal(): Texture is already terminal!");
+        this->bindless = glGetTextureHandleARB(this->handle);
+        tz::gl::sentinel().register_handle(this->bindless.value());
+        glMakeTextureHandleResidentARB(this->bindless.value());
+        tz::gl::sentinel().make_resident(this->bindless.value());
+    }
+
+    BindlessTextureHandle Texture::get_terminal_handle() const
+    {
+        topaz_hard_assert(this->is_terminal(), "tz::gl::Texture::get_terminal_handle(): Texture is not terminal!");
+        topaz_hard_assert(this->bindless.has_value(), "tz::gl::Texture::get_terminal_handle(): Bindless handle isn't set.");
+        auto handle = this->bindless.value();
+        tz::gl::sentinel().notify_usage(handle);
+        return handle;
     }
 
     void Texture::bind(std::size_t binding_id) const

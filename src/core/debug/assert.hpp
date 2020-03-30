@@ -19,12 +19,12 @@ namespace tz
  * If TOPAZ_DEBUG == 1 and the expression evaluates to false, abort the runtime with the given message.
  */
 #define topaz_assert(EXPRESSION, ...) ((EXPRESSION) ? \
-(void)0 : tz::assert_message(std::cerr, \
+(void)0 : tz::assert_message(std::cerr, false, \
 "Assertion failure: ", #EXPRESSION, "\nIn file: ", __FILE__, \
 " on line ", __LINE__, ":\n\t", __VA_ARGS__))
 
 	template<typename... Args>
-	inline void assert_message([[maybe_unused]] std::ostream &out, [[maybe_unused]] Args &&... args)
+	inline void assert_message([[maybe_unused]] std::ostream &out, bool hard, [[maybe_unused]] Args &&... args)
 	{
 #if TOPAZ_DEBUG
 		std::flush(out);
@@ -34,8 +34,12 @@ namespace tz
 #else
 		// Use the given ostream.
 		(out << ... << args) << std::endl;
-		//std::abort();
 		tz::debugbreak();
+		if(hard)
+		{
+			out << "[HARD ASSERT DETETCED. ABORTING.]\n" << std::endl;
+			std::abort();
+		}
 #endif
 #endif
 	}
@@ -53,6 +57,13 @@ namespace tz
 		}
 	}
 
+#ifdef topaz_hard_assert
+#undef topaz_hard_assert
+#endif
+#define topaz_hard_assert(EXPRESSION, ...) ((EXPRESSION) ? \
+(void)0 : tz::assert_message(std::cerr, true, \
+"[FATAL ERROR] Hard Assertion failure: ", #EXPRESSION, "\nIn file: ", __FILE__, \
+" on line ", __LINE__, ":\n\t", __VA_ARGS__))
 #ifdef topaz_assert_clear
 #undef topaz_assert_clear
 #endif

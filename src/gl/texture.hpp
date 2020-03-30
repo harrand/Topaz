@@ -1,16 +1,20 @@
 #ifndef TOPAZ_GL_TEXTURE_HPP
 #define TOPAZ_GL_TEXTURE_HPP
 #include "gl/image.hpp"
+#include "gl/texture_sentinel.hpp"
 #include <optional>
 
 namespace tz::gl
 {
+    TextureSentinel& sentinel();
+
     /**
      * \addtogroup tz_gl Topaz Graphics Library (tz::gl)
      * @{
      */
 
-    using TextureHandle = GLuint;
+    using TextureName = GLuint;
+    using BindlessTextureHandle = GLuint64;
 
     struct TextureParameters;
 
@@ -26,7 +30,6 @@ namespace tz::gl
         bool operator==(const TextureDataDescriptor& rhs) const;
         bool operator!=(const TextureDataDescriptor& rhs) const;
     };
-
 
     /**
      * Used to store image data in VRAM. Can be attached to a shader to bind a texture to a given tz::gl::Object.
@@ -69,6 +72,9 @@ namespace tz::gl
          * @return Height in pixels.
          */
         unsigned int get_height() const;
+        bool is_terminal() const;
+        void make_terminal();
+        BindlessTextureHandle get_terminal_handle() const;
         /**
          * Bind the texture, causing sampler2Ds at the given binding-id to reference this texture in subsequent render invocations.
          * @param binding_id ID of the sampler2D that should resolve to this texture.
@@ -106,8 +112,9 @@ namespace tz::gl
         void internal_bind() const;
         void internal_unbind() const;
 
-        TextureHandle handle;
+        TextureName handle;
         std::optional<TextureDataDescriptor> descriptor;
+        std::optional<BindlessTextureHandle> bindless;
     };
 
     /**

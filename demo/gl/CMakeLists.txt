@@ -1,6 +1,13 @@
 cmake_minimum_required(VERSION 3.9)
 project(topaz_graphics_demo)
 
+add_executable(topaz_bindless_texture_demo
+		bindless_texture_demo.cpp
+)
+
+add_dependencies(topaz_bindless_texture_demo topaz)
+target_link_libraries(topaz_bindless_texture_demo PRIVATE topaz)
+
 add_executable(topaz_graphics_demo
 		graphics_demo.cpp
 )
