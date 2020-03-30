@@ -4,7 +4,7 @@
 
 namespace tz::gl
 {
-    void TextureSentinel::register_handle(GLuint64 handle)
+    void TextureSentinel::register_handle([[maybe_unused]] GLuint64 handle)
     {
         #if TOPAZ_DEBUG
             topaz_hard_assert(!this->registered(handle), "tz::gl::TextureSentinel::register_handle(handle): Handle already has been registered!");
@@ -12,7 +12,7 @@ namespace tz::gl
         #endif
     }
 
-    void TextureSentinel::make_resident(GLuint64 handle)
+    void TextureSentinel::make_resident([[maybe_unused]] GLuint64 handle)
     {
         #if TOPAZ_DEBUG
             topaz_hard_assert(this->registered(handle), "tz::gl::TextureSentinel::make_resident(handle): Handle has not yet been registered!");
@@ -29,7 +29,7 @@ namespace tz::gl
         #endif
     }
 
-    GLuint64 TextureSentinel::get_handle(std::size_t id) const
+    GLuint64 TextureSentinel::get_handle([[maybe_unused]] std::size_t id) const
     {
         #if TOPAZ_DEBUG
             topaz_assert(id < this->residents.size(), "tz::gl::TextureSentinel::get_handle(", id, "): Id out of range. Size = ", this->residents.size());
@@ -39,7 +39,7 @@ namespace tz::gl
         #endif
     }
 
-    bool TextureSentinel::registered(GLuint64 handle) const
+    bool TextureSentinel::registered([[maybe_unused]] GLuint64 handle) const
     {
         #if TOPAZ_DEBUG
             return std::find(this->declared.begin(), this->declared.end(), handle) != this->declared.end();
@@ -48,7 +48,7 @@ namespace tz::gl
         #endif
     }
 
-    bool TextureSentinel::resident(GLuint64 handle) const
+    bool TextureSentinel::resident([[maybe_unused]] GLuint64 handle) const
     {
         #if TOPAZ_DEBUG
             return std::find(this->residents.begin(), this->residents.end(), handle) != this->residents.end();
@@ -62,7 +62,7 @@ namespace tz::gl
         return this->registered(handle) && this->resident(handle);
     }
 
-    void TextureSentinel::notify_usage(GLuint64 handle) const
+    void TextureSentinel::notify_usage([[maybe_unused]] GLuint64 handle) const
     {
         #if TOPAZ_DEBUG
             topaz_hard_assert(this->ready(handle), "tz::gl::TextureSentinel::notify_usage(handle): Bindless handle is not ready!");
