@@ -11,6 +11,7 @@
 #include "gl/tz_imgui/buffer_tracker.hpp"
 #include "gl/tz_imgui/tzglp_preview.hpp"
 #include "gl/tz_imgui/ogl_info.hpp"
+#include "gl/tz_imgui/texture_sentinel_tracker.hpp"
 
 namespace tz::ext::imgui
 {
@@ -19,6 +20,7 @@ namespace tz::ext::imgui
     static gl::BufferTracker tracker{nullptr};
     static gl::TZGLPPreview tzglp{};
     static gl::OpenGLInfoWindow oglinfo{};
+    static gl::SentinelTrackerWindow textracker{};
     static bool show_demo_window = false;
 
     ImGuiWindow::ImGuiWindow(const char* name): name(name){}
@@ -71,6 +73,11 @@ namespace tz::ext::imgui
     void render_ogl_info()
     {
         oglinfo.render();
+    }
+
+    void render_sentinel_tracker()
+    {
+        textracker.render();
     }
 
     void render_object_tracker()
@@ -161,6 +168,7 @@ namespace tz::ext::imgui
                 ImGui::MenuItem("gl::Object Tracking", nullptr, &track_objects);
                 ImGui::MenuItem("gl::Buffer Tracking", nullptr, &tracker.visible);
                 ImGui::MenuItem("TZGLP Previewer", nullptr, &tzglp.visible);
+                ImGui::MenuItem("Texture Sentinel Tracker", nullptr, &textracker.visible);
                 ImGui::EndMenu();
             }
 
@@ -193,6 +201,11 @@ namespace tz::ext::imgui
             if(oglinfo.visible)
             {
                 oglinfo.render();
+            }
+
+            if(textracker.visible)
+            {
+                textracker.render();
             }
         }
     }

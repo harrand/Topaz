@@ -20,6 +20,25 @@ namespace tz::gl
         #endif
     }
 
+    std::size_t TextureSentinel::registered_handle_count() const
+    {
+        #if TOPAZ_DEBUG
+            return this->residents.size();
+        #else
+            return 0;
+        #endif
+    }
+
+    GLuint64 TextureSentinel::get_handle(std::size_t id) const
+    {
+        #if TOPAZ_DEBUG
+            topaz_assert(id < this->residents.size(), "tz::gl::TextureSentinel::get_handle(", id, "): Id out of range. Size = ", this->residents.size());
+            return this->residents[id];
+        #else
+            return -1;
+        #endif
+    }
+
     bool TextureSentinel::registered(GLuint64 handle) const
     {
         #if TOPAZ_DEBUG

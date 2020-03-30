@@ -45,12 +45,12 @@ namespace tz::gl
         return glIsBuffer(this->handle);
     }
 
-    void IBuffer::resize(std::size_t size_bytes)
+    void IBuffer::resize(std::size_t size_bytes, BufferUsage usage)
     {
         IBuffer::verify();
         topaz_assert(!this->is_terminal(), "tz::gl::Buffer<T>::resize(", size_bytes, "): Cannot resize a terminal buffer.");
         topaz_assert(!this->is_mapped(), "tz::gl::Buffer<T>::resize(", size_bytes, "): Cannot resize because this buffer is currently mapped.");
-        glNamedBufferData(this->handle, size_bytes, nullptr, GL_STATIC_DRAW);
+        glNamedBufferData(this->handle, size_bytes, nullptr, static_cast<GLenum>(usage));
     }
 
     void IBuffer::safe_resize(std::size_t size_bytes)

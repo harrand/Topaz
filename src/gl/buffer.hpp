@@ -32,6 +32,21 @@ namespace tz::gl
 		UniformStorage = GL_UNIFORM_BUFFER,
 	};
 
+    enum class BufferUsage : GLenum
+    {
+        StaticDraw = GL_STATIC_DRAW,
+        DynamicDraw = GL_DYNAMIC_DRAW,
+        StreamDraw = GL_STREAM_DRAW,
+
+        StaticRead = GL_STATIC_READ,
+        DynamicRead = GL_DYNAMIC_READ,
+        StreamRead = GL_STREAM_READ,
+
+        StaticCopy = GL_STATIC_COPY,
+        DynamicCopy = GL_DYNAMIC_COPY,
+        StreamCopy = GL_STREAM_COPY,
+    };
+
     enum class MappingPurpose : GLenum
     {
         ReadOnly = GL_READ_ONLY,
@@ -106,7 +121,7 @@ namespace tz::gl
          * Note: This will not preserve any of the data within the buffer. You should use safe_resize for that.
          * @param size_bytes Desired new size of the buffer, in bytes.
          */
-        void resize(std::size_t size_bytes);
+        void resize(std::size_t size_bytes, BufferUsage usage = BufferUsage::StaticDraw);
         /**
          * Attempt to change the size of the buffer, whilst preserving all data within the buffer in the process.
          * 

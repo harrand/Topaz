@@ -14,6 +14,8 @@ namespace tz::gl
         TextureSentinel() = default;
         void register_handle(GLuint64 handle);
         void make_resident(GLuint64 handle);
+        std::size_t registered_handle_count() const;
+        GLuint64 get_handle(std::size_t id) const;
         bool registered(GLuint64 handle) const;
         bool resident(GLuint64 handle) const;
         bool ready(GLuint64 handle) const;
