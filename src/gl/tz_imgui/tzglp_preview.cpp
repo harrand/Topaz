@@ -1,6 +1,7 @@
 #include "gl/tz_imgui/tzglp_preview.hpp"
 #include "gl/modules/ssbo.hpp"
 #include "gl/modules/ubo.hpp"
+#include "gl/modules/bindless_sampler.hpp"
 
 namespace tz::ext::imgui::gl
 {
@@ -109,6 +110,9 @@ namespace tz::ext::imgui::gl
                 break;
                 case SupportedModule::UBOModule:
                     proc.emplace_module<tz::gl::p::UBOModule>(this->dummy_object);
+                break;
+                case SupportedModule::BindlessSamplerModule:
+                    proc.emplace_module<tz::gl::p::BindlessSamplerModule>();
                 break;
                 default:
                     topaz_assert(false, "Unknown Module Type");

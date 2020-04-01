@@ -102,6 +102,8 @@ add_library(topaz STATIC
 		src/gl/texture_sentinel.cpp
 		src/gl/texture_sentinel.hpp
 		src/gl/vertex.hpp
+		src/gl/modules/bindless_sampler.cpp
+		src/gl/modules/bindless_sampler.hpp
 		src/gl/modules/include.cpp
 		src/gl/modules/include.hpp
 		src/gl/modules/ssbo.cpp

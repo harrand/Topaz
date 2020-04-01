@@ -11,7 +11,8 @@ namespace tz::ext::imgui::gl
     {
         SSBOModule = 0,
         UBOModule = 1,
-        Count = 2,
+        BindlessSamplerModule = 2,
+        Count = 3,
     };
 
     inline constexpr const char* get_supported_module_name(SupportedModule module)
@@ -23,6 +24,9 @@ namespace tz::ext::imgui::gl
             break;
             case SupportedModule::UBOModule:
                 return "UBO Module";
+            break;
+            case SupportedModule::BindlessSamplerModule:
+                return "Bindless Sampler Module";
             break;
             default:
                 return "Unknown Module";

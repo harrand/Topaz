@@ -9,6 +9,7 @@
 #include "gl/buffer.hpp"
 #include "gl/frame.hpp"
 #include "gl/modules/ubo.hpp"
+#include "gl/modules/bindless_sampler.hpp"
 #include "gl/texture.hpp"
 #include "render/device.hpp"
 #include "GLFW/glfw3.h"
@@ -32,7 +33,7 @@ const char *fragmentShaderSource = "#version 430\n"
 	"in vec2 texcoord;\n"
 	"#ubo bricks\n"
     "{\n"
-    "   sampler2D bricks_sampler;\n"
+    "   tz_bindless_sampler bricks_sampler;\n"
     "};\n"
     "void main()\n"
     "{\n"
@@ -51,6 +52,7 @@ int main()
 		tz::gl::ShaderPreprocessor pre{vertexShaderSource};
 		{
 			std::size_t ubo_module_id = pre.emplace_module<tz::gl::p::UBOModule>(&o);
+			pre.emplace_module<tz::gl::p::BindlessSamplerModule>();
 			pre.preprocess();
             preprocess_vertex_source = pre.result();
             pre.set_source(fragmentShaderSource);
