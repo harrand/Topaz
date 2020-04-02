@@ -6,6 +6,11 @@
 
 namespace tz::gl
 {
+    /**
+     * Retrieve the global bindless texture sentinel.
+     * Note: This is stubbed out in Release.
+     * @return Reference to global sentinel.
+     */
     TextureSentinel& sentinel();
 
     /**
@@ -72,8 +77,20 @@ namespace tz::gl
          * @return Height in pixels.
          */
         unsigned int get_height() const;
+        /**
+         * Query as to whether the texture has been made terminal.
+         * @return True if texture is terminal. Otherwise false.
+         */
         bool is_terminal() const;
+        /**
+         * Make the texture terminal.
+         * Precondition: Texture is nonterminal prior to invocation. Otherwise, this will assert and invoke UB.
+         */
         void make_terminal();
+        /**
+         * Retrieve a bindless texture handle which can be inserted into a UBO/SSBO.
+         * Precondition: Texture is terminal. Otherwise, this will hard-assert.
+         */
         BindlessTextureHandle get_terminal_handle() const;
         /**
          * Bind the texture, causing sampler2Ds at the given binding-id to reference this texture in subsequent render invocations.

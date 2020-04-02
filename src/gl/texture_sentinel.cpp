@@ -16,6 +16,7 @@ namespace tz::gl
     {
         #if TOPAZ_DEBUG
             topaz_hard_assert(this->registered(handle), "tz::gl::TextureSentinel::make_resident(handle): Handle has not yet been registered!");
+            topaz_hard_assert(!this->resident(handle), "tz::gl::TextureSentinel::make_resident(handle): Handle is already marked as resident!");
             this->residents.push_back(handle);
         #endif
     }
