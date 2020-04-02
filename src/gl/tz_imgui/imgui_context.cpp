@@ -145,14 +145,20 @@ namespace tz::ext::imgui
 
             if(ImGui::BeginMenu("Topaz 2"))
             {
-                // ooga booga!
                 static bool do_assert = false;
+                static bool do_hard_assert = false;
                 ImGui::MenuItem("Test Assert", nullptr, &do_assert);
+                ImGui::MenuItem("Test Hard Assert", nullptr, &do_hard_assert);
                 ImGui::MenuItem("ImGui Demo", nullptr, &show_demo_window);
                 if(do_assert)
                 {
                     topaz_assert(false, "Test Assert");
                     do_assert = false;
+                }
+                if(do_hard_assert)
+                {
+                    topaz_hard_assert(false, "Test Hard Assert");
+                    do_hard_assert = false;
                 }
                 ImGui::MenuItem("OpenGL Info", nullptr, &oglinfo.visible);
                 ImGui::EndMenu();

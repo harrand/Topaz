@@ -31,19 +31,27 @@ namespace tz
 	{
 #if TOPAZ_DEBUG
 		std::flush(out);
-#ifdef TOPAZ_UNIT_TEST
-		// Note: We don't print out the assertion message as a unit-test. It's expected that the expectation failure sort this out instead.
-		debug::assert_failure = true;
-#else
-		// Use the given ostream.
-		(out << ... << args) << std::endl;
-		tz::debugbreak();
-		if(hard)
+		#if TOPAZ_UNIT_TEST
+			bool unit_test = true;
+		#else
+			bool unit_test = false;
+		#endif
+		if(unit_test)
 		{
-			out << "[HARD ASSERT DETETCED. ABORTING.]\n" << std::endl;
-			std::abort();
+			// Note: We don't print out the assertion message as a unit-test. It's expected that the expectation failure sort this out instead.
+			debug::assert_failure = true;
 		}
-#endif
+		else
+		{
+			// Use the given ostream.
+			(out << ... << args) << std::endl;
+			tz::debugbreak();
+			if(hard)
+			{
+				out << "[HARD ASSERT DETECTED. ABORTING.]\n" << std::endl;
+				std::abort();
+			}
+		}
 #endif
 	}
 	
