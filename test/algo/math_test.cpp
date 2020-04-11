@@ -7,7 +7,7 @@
 
 tz::test::Case schmitt()
 {
-    tz::test::Case test_case("tz::algo Math Tests");
+    tz::test::Case test_case("tz::algo Math Schmitt Tests");
     
     int lo = 5;
     int hi = 10;
@@ -38,11 +38,38 @@ tz::test::Case schmitt()
     return test_case;
 }
 
+tz::test::Case schmitt_multiple()
+{
+    tz::test::Case test_case("tz::algo Math Scmitt-Multiple Tests");
+
+    {
+        int ret = tz::algo::schmitt_multiple(8, 10);
+        topaz_expect(test_case, ret == 8, "schmitt_multiple(8, 10) failed to return ", 8, ". Returned ", ret);
+    }
+
+    {
+        int ret = tz::algo::schmitt_multiple(8, 14);
+        topaz_expect(test_case, ret == 16, "schmitt_multiple(8, 14) failed to return ", 16, ". Returned ", ret);
+    }
+
+    {
+        int ret = tz::algo::schmittf_multiple(5, 2.5f);
+        topaz_expect(test_case, ret == 0, "schmittf_multiple(5, 2.5f) failed to return ", 0, ". Returned ", ret);
+    }
+
+    {
+        int ret = tz::algo::schmittf_multiple(5, 2.5f, tz::algo::SchmittBound::Higher);
+        topaz_expect(test_case, ret == 5, "schmittf_multiple(5, 2.5f, SchmittBound::Higher) failed to return ", 5, ". Returned ", ret);
+    }
+    return test_case;
+}
+
 int main()
 {
 	tz::test::Unit math;
 	
     math.add(schmitt());
+    math.add(schmitt_multiple());
 
 	return math.result();
 }

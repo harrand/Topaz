@@ -37,6 +37,16 @@ namespace tz::algo
         }
     }
 
+    template<typename T>
+    T schmitt_multiple(T factor, T value, SchmittBound bound)
+    {
+        topaz_assert(factor != 0, "tz::algo::schmitt_multiple(", factor, ", ", value, ", ...): Cannot divide by factor ", factor);
+        T frac = std::floor(value / factor);
+        T lo = frac * factor;
+        T hi = (frac + 1) * factor;
+        return tz::algo::schmitt<T>(lo, hi, value, bound);
+    }
+
     template<typename T, typename F>
     T schmittf(T lo, T hi, F val, SchmittBound bound)
     {
@@ -70,5 +80,15 @@ namespace tz::algo
             topaz_assert(false, "tz::algo::schmittf(", lo, ", ", hi, ", ...): SchmittBound unrecognised (not lo nor hi).");
             return T{};
         }
+    }
+
+    template<typename T, typename F>
+    T schmittf_multiple(T factor, F value, SchmittBound bound)
+    {
+        topaz_assert(factor != 0, "tz::algo::schmitt_multiple(", factor, ", ", value, ", ...): Cannot divide by factor ", factor);
+        F frac = std::floor(value / static_cast<F>(factor));
+        T lo = frac * factor;
+        T hi = (frac + 1) * factor;
+        return tz::algo::schmittf<T, F>(lo, hi, value, bound);
     }
 }

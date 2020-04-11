@@ -1,5 +1,6 @@
 #include "gl/tz_imgui/buffer_tracker.hpp"
 #include "gl/object.hpp"
+#include "algo/math.hpp"
 #include <string>
 #include <cstring>
 
@@ -33,6 +34,12 @@ namespace tz::ext::imgui::gl
                     a = (max - b);
             }
         };
+        
+        auto ensure_multiple = [](int& val, std::size_t size)
+        {
+            val = tz::algo::schmittf_multiple<std::size_t, float>(size, static_cast<float>(val));
+        };
+
         ImGui::Begin("Buffer Tracker", &this->visible);
         if(this->tracked_buffer_id.has_value())
         {
@@ -82,6 +89,8 @@ namespace tz::ext::imgui::gl
                     {
                         data_string += std::to_string(*reinterpret_cast<int*>(data.data() + i)) + " ";
                     }
+                    ensure_multiple(this->view_offset, sizeof(int));
+                    ensure_multiple(this->view_size, sizeof(int));
                     break;
                 }
                 case 1:
@@ -99,6 +108,8 @@ namespace tz::ext::imgui::gl
                     {
                         data_string += std::to_string(*reinterpret_cast<float*>(data.data() + i)) + " ";
                     }
+                    ensure_multiple(this->view_offset, sizeof(float));
+                    ensure_multiple(this->view_size, sizeof(float));
                     break;
                 }
             }
