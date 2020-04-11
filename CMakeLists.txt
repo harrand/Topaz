@@ -7,6 +7,9 @@ set(CMAKE_CXX_STANDARD 17)
 set(TOPAZ_SOURCE_DIR ${PROJECT_SOURCE_DIR}/src)
 
 add_library(topaz STATIC
+		src/algo/math.cpp
+		src/algo/math.hpp
+		src/algo/math.inl
 		src/core/debug/assert.hpp
 		src/core/debug/break.hpp
 		src/core/debug/break.cpp
