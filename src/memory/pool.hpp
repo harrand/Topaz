@@ -35,6 +35,7 @@ namespace tz::mem
 	class UniformPool
 	{
 	public:
+		using value_type = T;
 		/**
 		 * TODO: Document
 		 * @param begin

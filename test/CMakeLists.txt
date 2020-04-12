@@ -30,6 +30,7 @@ function(register_test_target TEST_TARGET)
 endfunction()
 
 # tz::algo
+register_test_target(tz_container_test)
 register_test_target(tz_math_test)
 
 # tz::core
