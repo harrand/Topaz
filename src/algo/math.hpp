@@ -55,6 +55,18 @@ namespace tz::algo
     template<typename T, typename F>
     T schmittf(T lo, T hi, F val, SchmittBound bound = SchmittBound::Lower);
 
+
+    /**
+     * Perform a schmitt invocation on a value using the given factor.
+     * Note: This has more overhead than schmitt_multiple. If a single uniform type will suffice (no fear of truncation for example), then use schmitt_multiple.
+     * Example: schmittf_multiple(8, 10, ...) yields 8. 10 is between the multiples 8 and 16. 10 is closer to 8, thus we return 8.
+     * @tparam T Underlying value type to use. This might want to be int.
+     * @tparam F Underlying second value type to use. This might want to be float.
+     * @param factor Factor which the value will saturate to.
+     * @param val Value to saturate.
+     * @param bound Chosen behaviour if the value is equidistant between two multiples.
+     * @return A multiple of 'factor' which 'val' is closest to.
+     */
     template<typename T, typename F>
     T schmittf_multiple(T factor, F val, SchmittBound bound = SchmittBound::Lower);
 
