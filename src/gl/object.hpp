@@ -214,9 +214,11 @@ namespace tz::gl
         void verify() const;
         void verify_bound() const;
         tz::gl::IBuffer* bound_index_buffer();
+        void set_draw_data(const tz::gl::MDIDrawCommandList& cmd_list) const;
 
         ObjectHandle vao;
         std::vector<std::unique_ptr<tz::gl::IBuffer>> buffers;
+        mutable tz::gl::DIBO draw_buffer;
         std::vector<std::size_t> index_buffer_ids;
         std::size_t format_count;
     };

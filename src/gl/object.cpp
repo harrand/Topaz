@@ -4,7 +4,7 @@
 
 namespace tz::gl
 {
-    Object::Object(): vao(0), buffers(), index_buffer_ids(), format_count(0)
+    Object::Object(): vao(0), buffers(), draw_buffer(), index_buffer_ids(), format_count(0)
     {
         glGenVertexArrays(1, &this->vao);
     }
@@ -151,7 +151,9 @@ namespace tz::gl
             return;
         this->verify();
         this->bind_child(ibo_id);
-        glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, cmd_list.data(), cmd_list.size(), sizeof(tz::gl::gpu::DrawElementsIndirectCommand));
+        this->set_draw_data(cmd_list);
+        this->draw_buffer.bind();
+        glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, nullptr, cmd_list.size(), sizeof(tz::gl::gpu::DrawElementsIndirectCommand));
     }
 
     void Object::verify() const
@@ -173,6 +175,14 @@ namespace tz::gl
                 return buf;
         }
         return nullptr;
+    }
+
+    void Object::set_draw_data(const tz::gl::MDIDrawCommandList& cmd_list) const
+    {
+        std::size_t cmd_size = sizeof(tz::gl::MDIDrawCommandList::Command);
+        // Resize and chuck data in.
+        this->draw_buffer.resize(cmd_size * cmd_list.size());
+        this->draw_buffer.send(cmd_list.data());
     }
 
     namespace bound

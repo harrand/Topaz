@@ -302,6 +302,8 @@ namespace tz::gl
     using SSBO = ShaderStorageBuffer;
     using IndexBuffer = Buffer<BufferType::Index>;
     using IBO = IndexBuffer;
+    using DrawIndirectBuffer = Buffer<BufferType::IndirectCommandArgument>;
+    using DIBO = DrawIndirectBuffer;
     /**
      * @}
      */
