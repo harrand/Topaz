@@ -52,7 +52,7 @@ int main()
 		std::size_t ubo_id = ubo_module->get_buffer_id(ubo_module->size() - 1);
 		tz::gl::UBO* ubo = o.get<tz::gl::BufferType::UniformStorage>(ubo_id);
 		ubo->terminal_resize(sizeof(tz::Mat4) * 3);
-		tz::mem::UniformPool<tz::Mat4> matrix = ubo->map_pool<tz::Mat4>();
+		tz::mem::UniformPool<tz::Mat4> matrix = ubo->map_uniform<tz::Mat4>();
 
 		tz::gl::ShaderCompiler cpl;
 		tz::gl::ShaderProgram prg;

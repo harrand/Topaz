@@ -48,7 +48,7 @@ tz::test::Case mapping()
     constexpr float test_val = 862.123f;
     // Let's map directly to a pool and do an edit.
     {
-        tz::mem::UniformPool<float> floats = buf->map_pool<float>();
+        tz::mem::UniformPool<float> floats = buf->map_uniform<float>();
         floats.set(0, test_val);
         // Should definitely have capacity of 5.
         topaz_expect(test_case, floats.capacity() == 5, "Uniform float pool had unexpected capacity. Expected ", 5, " but got ", floats.capacity());
@@ -141,7 +141,7 @@ tz::test::Case retrieval()
         topaz_expect_assert(test_case, false, "tz::gl::Buffer unexpectedly asserted.");
         // Map it and write some data into it.
         {
-            tz::mem::UniformPool<float> pool = vbo->map_pool<float>();
+            tz::mem::UniformPool<float> pool = vbo->map_uniform<float>();
             for(std::size_t i = 0; i < amt; i++)
                 pool.set(i, 0.0f + i);
             // expect data-store to be: {0.0f, 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f}
@@ -182,7 +182,7 @@ tz::test::Case nonterminal_retrieval()
         topaz_expect_assert(test_case, false, "tz::gl::Buffer unexpectedly asserted.");
         // Map it and write some data into it.
         {
-            tz::mem::UniformPool<float> pool = vbo->map_pool<float>();
+            tz::mem::UniformPool<float> pool = vbo->map_uniform<float>();
             for(std::size_t i = 0; i < amt; i++)
                 pool.set(i, 0.0f + i);
             // expect data-store to be: {0.0f, 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f}
@@ -215,7 +215,7 @@ tz::test::Case terminal_retrieval()
         topaz_expect_assert(test_case, false, "tz::gl::Buffer unexpectedly asserted.");
         // Map it and write some data into it.
         {
-            tz::mem::UniformPool<float> pool = vbo->map_pool<float>();
+            tz::mem::UniformPool<float> pool = vbo->map_uniform<float>();
             for(std::size_t i = 0; i < amt; i++)
                 pool.set(i, 0.0f + i);
             // expect data-store to be: {0.0f, 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f}

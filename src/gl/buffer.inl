@@ -22,7 +22,7 @@ namespace tz::gl
     }
 
     template<typename T>
-    tz::mem::UniformPool<T> IBuffer::map_pool(MappingPurpose purpose)
+    tz::mem::UniformPool<T> IBuffer::map_uniform(MappingPurpose purpose)
     {
         tz::mem::Block mem_block = this->map(purpose);
         return {mem_block};

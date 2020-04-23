@@ -220,7 +220,7 @@ namespace tz::gl
          * @return Uniform Memory Pool containing uninitialised data. Even if the memory does contain valid Ts, the pool will not recognise them unless they're created via the pool.
          */
         template<typename T>
-        tz::mem::UniformPool<T> map_pool(MappingPurpose purpose = MappingPurpose::ReadWrite);
+        tz::mem::UniformPool<T> map_uniform(MappingPurpose purpose = MappingPurpose::ReadWrite);
         /**
          * Unmap the buffer, saving any edits to previously mapped data and sending it back to VRAM.
          * 

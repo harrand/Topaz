@@ -65,7 +65,7 @@ int main()
     	};
 
 		ssbo->terminal_resize(sizeof(vertices));
-		tz::mem::UniformPool<float> vertex_pool = ssbo->map_pool<float>();
+		tz::mem::UniformPool<float> vertex_pool = ssbo->map_uniform<float>();
 		for(std::size_t i = 0; i < vertex_pool.capacity(); i++)
 			vertex_pool.set(i, vertices[i]);
 		auto add_pos = [&vertex_pool](float x, float y, float z)
