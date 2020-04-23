@@ -161,12 +161,45 @@ tz::test::Case overflow()
 	return test_case;
 }
 
+
+tz::test::Case statics()
+{
+	tz::test::Case test_case("tz::mem::StaticPool Basic Tests");
+	using Pool = tz::mem::StaticPool<int, float, std::string>;
+	tz::mem::AutoBlock blk{Pool::size()};
+
+	{
+		// Pre-initialised from pointer.
+		Pool spool{blk.begin, 5, 6.0f, "well met!"};
+
+		int a = spool.get<0>();
+		topaz_expect(test_case, a == 5, "tz::mem::StaticPool<...>::get<0>(): Expected int value ", 5, ", but got ", a);
+
+		float b = spool.get<1>();
+		topaz_expect(test_case, b == 6.0f, "tz::mem::StaticPool<...>::get<1>(): Expected float value ", 6.0f, ", but got ", b);
+
+		std::string c = spool.get<2>();
+		topaz_expect(test_case, c == "well met!", "tz::mem::StaticPool<...>::get<2>(): Expected string value \"", "well met!", "\", but got \"", c, "\"");
+	}
+
+	{
+		// Uninitialised from a block
+		Pool spool{blk};
+
+		spool.set<0>(15);
+		std::size_t actual = spool.get<0>();
+		topaz_expect(test_case, actual == 15, "tz::mem::StaticPool<...>::get<0>(): Invalid value after invoking set<0>: Set to ", 15, ", but following get returned ", actual);
+	}
+	return test_case;
+}
+
 int main()
 {
 	tz::test::Unit pool;
 	pool.add(uniform());
 	pool.add(object_semantics());
 	pool.add(overflow());
+	pool.add(statics());
 	
 	return pool.result();
 }

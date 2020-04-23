@@ -17,14 +17,27 @@ namespace tz::mem
 
     std::size_t byte_distance(void* a, void* b);
 
+    /**
+     * Represents a non-owning block of pre-allocated memory.
+     */
     struct Block
     {
         Block(void* begin, void* end);
         Block(void* begin, std::size_t size);
         std::size_t size() const;
+        static Block null();
 
         void* begin;
         void* end;
+    };
+
+    /**
+     * Similar to a block, but allocates the block dynamically and uses that (RAII).
+     */
+    struct AutoBlock : public Block
+    {
+        AutoBlock(std::size_t size);
+        ~AutoBlock();
     };
 
     /**

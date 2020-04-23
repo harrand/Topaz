@@ -20,4 +20,16 @@ namespace tz::mem
     {
         return byte_distance(this->begin, this->end);
     }
+
+    Block Block::null()
+    {
+        return {nullptr, nullptr};
+    }
+
+    AutoBlock::AutoBlock(std::size_t size): Block(std::malloc(size), size){}
+
+    AutoBlock::~AutoBlock()
+    {
+        std::free(this->begin);
+    }
 }

@@ -1,5 +1,6 @@
 #include "core/debug/assert.hpp"
 #include <cstddef>
+#include <tuple>
 
 namespace tz::mem
 {	
@@ -196,6 +197,52 @@ namespace tz::mem
 		tbegin += index;
 		// Launder the memory. This should cost nothing if unneeded.
 		return std::launder(tbegin);
+	}
+
+	template<typename... Ts>
+	StaticPool<Ts...>::StaticPool(void* begin, Ts&&... ts): values(new (begin) typename StaticPool<Ts...>::Tuple(std::forward<Ts>(ts)...)){}
+
+	template<typename... Ts>
+	StaticPool<Ts...>::StaticPool(void* begin): values(new (begin) typename StaticPool<Ts...>::Tuple{}){}
+
+	template<typename... Ts>
+	StaticPool<Ts...>::StaticPool(const Block& block, Ts&&... ts): StaticPool<Ts...>(block.begin, std::forward<Ts>(ts)...)
+	{
+		std::size_t tuple_size = sizeof(typename StaticPool<Ts...>::Tuple);
+		topaz_assert(block.size() >= tuple_size, "StaticPool<Ts...>::StaticPool(block, ts...): Block too small. Expected sizeof at least ", tuple_size, " but block is of size ", block.size());
+	}
+
+	template<typename... Ts>
+	StaticPool<Ts...>::StaticPool(const Block& block): StaticPool<Ts...>(block.begin)
+	{
+		std::size_t tuple_size = sizeof(typename StaticPool<Ts...>::Tuple);
+		topaz_assert(block.size() >= tuple_size, "StaticPool<Ts...>::StaticPool(block, ts...): Block too small. Expected sizeof at least ", tuple_size, " but block is of size ", block.size());
+	}
+
+	template<typename... Ts>
+	StaticPool<Ts...>::~StaticPool()
+	{
+		this->values->~Tuple();
+	}
+
+	template<typename... Ts>
+	constexpr std::size_t StaticPool<Ts...>::size()
+	{
+		return sizeof(typename StaticPool<Ts...>::Tuple);
+	}
+
+	template<typename... Ts>
+	template<std::size_t I>
+	const auto& StaticPool<Ts...>::get() const
+	{
+		return std::get<I>(*this->values);
+	}
+
+	template<typename... Ts>
+	template<std::size_t I>
+	void StaticPool<Ts...>::set(StaticPool<Ts...>::ValueType<I> value)
+	{
+		std::get<I>(*this->values) = value;
 	}
 	
 }

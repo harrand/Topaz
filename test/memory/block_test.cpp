@@ -23,11 +23,20 @@ tz::test::Case dist()
     return test_case;
 }
 
+tz::test::Case auto_block()
+{
+	tz::test::Case test_case("tz::mem::AutoBlock");
+    tz::mem::AutoBlock blk{sizeof(int)};
+    topaz_expect(test_case, blk.size() == sizeof(int), "tz::mem::AutoBlock::size(): Unexpected size. Expected ", sizeof(int), ", got ", blk.size());
+    return test_case;
+}
+
 int main()
 {
 	tz::test::Unit block;
 	
     block.add(dist());
+    block.add(auto_block());
 
 	return block.result();
 }

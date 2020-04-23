@@ -150,6 +150,78 @@ namespace tz::mem
 	};
 
 	/**
+	 * Manages a pre-allocated block of memory, treating it as an existing tuple<Ts...>.
+	 * Can be a useful alternative to a UniformPool if the types are known at compile-time.
+	 * @tparam Ts - Permutation of parameter types.
+	 */
+	template<typename... Ts>
+	class StaticPool
+	{
+	public:
+		template<std::size_t I>	
+		using ValueType = std::tuple_element_t<I, std::tuple<Ts...>>;
+		/**
+		 * Construct a StaticPool at the given address, using the given values.
+		 * Precondition: The begin pointer points to a contiguous block of pre-allocated, unmanaged memory of size >= StaticPool<Ts...>::size(). Otherwise, this will invoke UB without asserting.
+		 * @param begin Address containing the beginning of the storage.
+		 * @param ts Parameter values comprising the pool.
+		 */
+		StaticPool(void* begin, Ts&&... ts);
+		/**
+		 * Construct a StaticPool at the given address. Value-initialises all elements of the pool.
+		 * Precondition: The begin pointer points to a contiguous block of pre-allocated, unmanaged memory of size >= StaticPool<Ts...>::size(). Otherwise, this will invoke UB without asserting.
+		 * @param begin Address containing the beginning of the storage.
+		 */
+		StaticPool(void* begin);
+		/**
+		 * Construct a StaticPool within the given memory block. Initialises all elements using the given values.
+		 * Precondition: The block has size() >= StaticPool<Ts...>::size(). Otherwise, this will assert and invoke UB.
+		 * Note: If the block has size() > StaticPool<Ts...>, the remainder bytes ahead of the pool storage will be untouched.
+		 * @param block Memory block to use as a pool.
+		 * @param ts Parameter values comprising the pool.
+		 */
+		StaticPool(const Block& block, Ts&&... ts);
+		/**
+		 * Construct a StaticPool within the given memory block. Value-initialises all elements of the pool.
+		 * Precondition: The block has size() >= StaticPool<Ts...>::size(). Otherwise, this will assert and invoke UB.
+		 * Note: If the block has size() > StaticPool<Ts...>, the remainder bytes ahead of the pool storage will be untouched.
+		 * @param block Memory block to use as a pool.
+		 */
+		StaticPool(const Block& block);
+		~StaticPool();
+
+		/**
+		 * Retrieve the total number of bytes used in the given storage.
+		 * Note: This is *not* guaranteed to be equal to the sizeof sum of Ts.
+		 * @return Required size in bytes.
+		 */
+		static constexpr std::size_t size();
+
+		/**
+		 * Retrieve the pool member at the given index of the parameter pack.
+		 * Static Precondition: I <= sizeof...(Ts). Otherwise, this will fail to compile.
+		 * Example: StaticPool<int, float, char>::get<1>() will retrieve the float.
+		 * @tparam I The index of the template parameter pack to retrieve.
+		 * @return Immutable reference to the pool member.
+		 */
+		template<std::size_t I>
+		const auto& get() const;
+
+		/**
+		 * Assign the pool member at the given index of the parameter pack to a new value.
+		 * Static Precondition: I <= sizeof...(Ts). Otherwise, this will fail to compile.
+		 * Example: StaticPool<int, float, char>::set<1>(1.0f) is valid usage to assign the float.
+		 * @tparam I The index of the template parameter pack to retrieve.
+		 * @param Value The value to assign to values[i].
+		 */
+		template<std::size_t I>
+		void set(ValueType<I> value);
+	private:
+		using Tuple = std::tuple<Ts...>;
+		Tuple* values;
+	};
+
+	/**
 	 * @}
 	 */
 }
