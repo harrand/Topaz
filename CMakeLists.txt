@@ -12,6 +12,7 @@ add_library(topaz STATIC
 		src/algo/math.cpp
 		src/algo/math.hpp
 		src/algo/math.inl
+		src/algo/static.hpp
 		src/core/debug/assert.hpp
 		src/core/debug/break.hpp
 		src/core/debug/break.cpp

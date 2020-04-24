@@ -5,3 +5,6 @@ target_link_libraries(tz_container_test PRIVATE topaz test_framework)
 
 add_executable(tz_math_test math_test.cpp)
 target_link_libraries(tz_math_test PRIVATE topaz test_framework)
+
+add_executable(tz_static_test static_test.cpp)
+target_link_libraries(tz_static_test PRIVATE topaz test_framework)
