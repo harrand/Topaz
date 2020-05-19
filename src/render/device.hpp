@@ -40,6 +40,16 @@ namespace tz::render
 		 */
 		Device(tz::gl::IFrame* frame, tz::gl::ShaderProgram* prg, tz::gl::Object* object);
 		/**
+		 * Retrieve the null-device. This device is invalid and should never be used to render.
+		 * @return The null-device.
+		 */
+		static Device null_device();
+		/**
+		 * Query as to whether this device is equal to the null device.
+		 * @return True if this device is the null-device. Otherwise false
+		 */
+		bool is_null() const;
+		/**
 		 * Refer subsequent render-invocations to the given ID handle corresponding to an index-buffer inside of the Object.
 		 * 
 		 * Precondition: ibo_id must be a valid index in the Object and refer to a valid index-buffer. Otherwise, this will assert and invoke UB.
@@ -66,6 +76,8 @@ namespace tz::render
 		 * Force the attached Frame to clear its backbuffer.
 		 */
 		void clear() const;
+		/// Deep-comparison
+		bool operator==(const Device& rhs) const;
 	private:
 		void ensure_bound() const;
 

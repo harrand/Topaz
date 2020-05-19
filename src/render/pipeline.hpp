@@ -2,7 +2,6 @@
 #define TOPAZ_RENDER_PIPELINE_HPP
 #include "render/device.hpp"
 #include <vector>
-#include <optional>
 
 namespace tz::render
 {
@@ -57,6 +56,12 @@ namespace tz::render
          */
         void erase(std::size_t idx);
         /**
+         * Swap two devices, affecting the order in which they are invoked.
+         * @param idx_a Index of the first device.
+         * @param idx_b Index of the second device.
+         */
+        void swap(std::size_t idx_a, std::size_t idx_b);
+        /**
          * Retrieve a pointer to the device at the given index.
          * 
          * Precondition: The index must be in-range (idx < this->size()). Otherwise, this will assert and invoke UB.
@@ -80,8 +85,12 @@ namespace tz::render
          * Clear all contained non-null devices in chronological order.
          */
         void clear() const;
+        /**
+         * Purge the pipeline, destroying all devices.
+         */
+        void purge();
     private:
-        std::vector<std::optional<Device>> devices;
+        std::vector<Device> devices;
     };
 
     /**

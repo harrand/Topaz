@@ -8,6 +8,16 @@ namespace tz::render
 {
 	Device::Device(tz::gl::IFrame* frame, tz::gl::ShaderProgram* program, tz::gl::Object* object): frame(frame), program(program), object(object), ibo_id(std::nullopt), snippets(){}
 
+	/*static*/ Device Device::null_device()
+	{
+		return {nullptr, nullptr, nullptr};
+	}
+
+	bool Device::is_null() const
+	{
+		return *this == Device::null_device();
+	}
+
 	void Device::set_handle(std::size_t id)
 	{
 		this->ibo_id = id;
@@ -39,6 +49,13 @@ namespace tz::render
 		topaz_assert(this->frame != nullptr, "tz::render::Device::clear(): There is no tz::gl::Frame attached!");
 		this->frame->bind();
 		this->frame->clear();
+	}
+
+	bool Device::operator==(const tz::render::Device& rhs) const
+	{
+		return this->frame == rhs.frame
+			&& this->program == rhs.program
+			&& this->object == rhs.object;
 	}
 	
 	void Device::ensure_bound() const

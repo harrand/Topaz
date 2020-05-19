@@ -183,7 +183,7 @@ tz::test::Case defined_ssbo()
 	topaz_expect(test_case, ssbo_module->size() == 1, "tz::gl::p::SSBOModule::size(): Had unexpected value. Expected ", 1, ", got ", ssbo_module->size());
 	// Let's get that entry!
 	std::size_t ssbo_id = ssbo_module->get_buffer_id(0);
-	tz::gl::SSBO* ssbo = o.get<tz::gl::BufferType::ShaderStorage>(ssbo_id);
+	o.get<tz::gl::BufferType::ShaderStorage>(ssbo_id);
 	topaz_expect_assert(test_case, false, "Unexpected assert after getting the SSBO from the tzglp module...");
 	return test_case;
 }
@@ -206,7 +206,7 @@ tz::test::Case defined_ubo()
 	topaz_expect(test_case, ubo_module->size() == 1, "tz::gl::p::UBOModule::size(): Had unexpected value. Expected ", 1, ", got ", ubo_module->size());
 	// Let's get that entry!
 	std::size_t ubo_id = ubo_module->get_buffer_id(0);
-	tz::gl::UBO* ubo = o.get<tz::gl::BufferType::UniformStorage>(ubo_id);
+	o.get<tz::gl::BufferType::UniformStorage>(ubo_id);
 	topaz_expect_assert(test_case, false, "Unexpected assert after getting the UBO from the tzglp module...");
 	return test_case;
 }
