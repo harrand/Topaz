@@ -55,11 +55,13 @@ tz::test::Case broken_devices()
         topaz_assert(cpldiag_vs.successful() && cpldiag_fs.successful() && lnkdiag.successful(), "Valid ShaderProgram components failed to compile && link. Uh oh!");
     }
 
-    // A simple run-of-the-mill object with no data. Shouldn't pass sanity-check.
+    // A simple run-of-the-mill object with no data. Shouldn't pass sanity-check but that's not part of a readiness check.
     tz::gl::Object obj;
 
     tz::render::Device good_dev{frame, &prog, &obj};
     topaz_expect(test_case, good_dev.ready(), "Good tz::render::Device wrongly considered not to be ready!");
+    tz::render::Device bad_dev{frame, &unusable_prog, &obj};
+    topaz_expect(test_case, !bad_dev.ready(), "Bad tz::render::Device wrongly considered to be ready!");
     return test_case;
 }
 

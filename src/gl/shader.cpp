@@ -119,16 +119,22 @@ namespace tz::gl
 
 	std::size_t ShaderProgram::attached_textures_size() const
 	{
-		std::size_t num = 0;
-		for(const Texture* tex : this->textures)
+		std::size_t count = 0;
+		for(const auto& tex : this->textures)
+		{
 			if(tex != nullptr)
-				num++;
-		return num;
+				count++;
+		}
+		return count;
 	}
 
 	void ShaderProgram::attach_texture(std::size_t idx, const Texture* texture, std::string sampler_name)
 	{
-		topaz_assert(idx < GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, "tz::gl::ShaderProgram::attach_texture(", idx, ", const Texture*, ", sampler_name, "): Index was out of range. Max: ", GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS);
+		if(idx >= this->textures.size())
+		{
+			this->textures.resize(idx + 1, nullptr);
+			this->texture_names.resize(idx + 1, "<INVALID TEXTURE>");
+		}
 		this->textures[idx] = texture;
 		this->texture_names[idx] = sampler_name;
 	}
@@ -175,16 +181,16 @@ namespace tz::gl
 
 	void ShaderProgram::bind_textures() const
 	{
-		for(std::size_t i = 0; i < GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS; i++)
+		for(std::size_t i = 0; i < this->attached_textures_size(); i++)
 		{
 			const Texture* tex = this->textures[i];
 			const char* tex_name = this->texture_names[i].c_str();
-			if(tex != nullptr)
-			{
-				tex->bind(i);
-				GLint sampler_location = glGetUniformLocation(this->handle, tex_name);
-				glUniform1i(sampler_location, i);
-			}
+			topaz_assert(tex != nullptr, "tz::gl::ShaderProgram::bind_textures(): One of the attached textures is nullptr!");
+			if(tex == nullptr)
+				continue;
+			tex->bind(i);
+			GLint sampler_location = glGetUniformLocation(this->handle, tex_name);
+			glUniform1i(sampler_location, i);
 		}
 	}
 

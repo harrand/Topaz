@@ -3,6 +3,7 @@
 #include "glad/glad.h"
 #include <cstdint>
 #include <array>
+#include <vector>
 #include <optional>
 #include <string>
 
@@ -190,8 +191,8 @@ namespace tz::gl
 
 		ShaderProgramHandle handle;
 		std::array<std::optional<Shader>, static_cast<std::size_t>(ShaderType::NUM_TYPES)> shaders;
-		std::array<const Texture*, static_cast<std::size_t>(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS)> textures;
-		std::array<std::string, static_cast<std::size_t>(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS)> texture_names;
+		std::vector<const Texture*> textures;
+		std::vector<std::string> texture_names;
 		bool ready;
 	};
 

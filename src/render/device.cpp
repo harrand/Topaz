@@ -101,7 +101,7 @@ namespace tz::render
 		for(std::size_t i = 0; i < sz; i++)
 		{
 			const tz::gl::IndexSnippet& cur_snippet = indices[i];
-			if(cur_snippet.begin >= index_count || cur_snippet.end >= index_count)
+			if(cur_snippet.begin > index_count || cur_snippet.end > index_count)
 			{
 				return false;
 			}
