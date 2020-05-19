@@ -65,6 +65,13 @@ namespace tz::gl
          * @return Render-ready MDI command list.
          */
         tz::gl::MDIDrawCommandList get_command_list() const;
+        /**
+         * Retrieve the nth index snippet.
+         * Precondition: idx < this->size(). Otherwise, this will assert and invoke UB.
+         * @param idx Index of the snippet of the list to retrieve.
+         * @return Const-reference to given snippet.
+         */
+        const IndexSnippet& operator[](std::size_t idx) const;
     private:
         std::vector<IndexSnippet> snippets;
     };

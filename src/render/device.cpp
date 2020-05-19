@@ -25,11 +25,18 @@ namespace tz::render
 
 	void Device::set_indices(tz::gl::IndexSnippetList indices)
 	{
+		topaz_assert(this->ibo_id.has_value(), "tz::render::Device::set_indices(...): Cannot set indices without an IBO being provided beforehand.");
+		#if TOPAZ_DEBUG
+			tz::gl::IBO* ibo = this->object->get<tz::gl::BufferType::Index>(this->ibo_id.value());
+			topaz_assert(ibo != nullptr, "tz::render::Device::set_indices(...): No valid IBO handle is set.");
+			topaz_assert(this->sanity_check(indices, *ibo), "tz::render::Device::set_indices(...): Sanity-check failed! IndexSnippetList is malformed.");
+		#endif
 		this->snippets = indices;
 	}
 
 	void Device::render() const
 	{
+		topaz_assert(this->ready(), "tz::render::Device::render(): Device is not ready!");
 		if(!this->ibo_id.has_value())
 			return;
 		if(frame->operator!=(tz::gl::bound::frame()))
@@ -51,6 +58,25 @@ namespace tz::render
 		this->frame->clear();
 	}
 
+	bool Device::ready() const
+	{
+		// Firstly make sure frame, program and object are valid.
+		if( this->frame == nullptr
+		|| this->program == nullptr
+		|| this->object == nullptr)
+		{
+			return false;
+		}
+
+		if(!this->frame->complete())
+			return false;
+
+		if(!this->program->usable())
+			return false;
+
+		return true;
+	}
+
 	bool Device::operator==(const tz::render::Device& rhs) const
 	{
 		return this->frame == rhs.frame
@@ -67,4 +93,20 @@ namespace tz::render
 		if(this->program->operator!=(tz::gl::bound::shader_program()))
 			this->program->bind();
 	}
+
+	/*static*/ bool Device::sanity_check(const tz::gl::IndexSnippetList& indices, const tz::gl::IBO& ibo)
+	{
+		const std::size_t index_count = ibo.size() / sizeof(tz::gl::Index);
+		const std::size_t sz = indices.size();
+		for(std::size_t i = 0; i < sz; i++)
+		{
+			const tz::gl::IndexSnippet& cur_snippet = indices[i];
+			if(cur_snippet.begin >= index_count || cur_snippet.end >= index_count)
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+
 }

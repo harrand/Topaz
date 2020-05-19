@@ -76,10 +76,24 @@ namespace tz::render
 		 * Force the attached Frame to clear its backbuffer.
 		 */
 		void clear() const;
+		/**
+		 * Query as to whether the Device is ready to be used for rendering.
+		 * A Device is ready if all of the following is true:
+		 * - References a valid and complete IFrame (see tz::gl::IFrame::complete()).
+		 * - References a valid and useable ShaderProgram (see tz::gl::ShaderProgram::usable()).
+		 * - References a valid tz::gl::Object (Only check so far is nullness so a false-positive is possible).
+		 * Note: A Device must be ready before it is rendered.
+		 * @return True if ready. Otherwise false.
+		 */
+		bool ready() const;
 		/// Deep-comparison
 		bool operator==(const Device& rhs) const;
 	private:
 		void ensure_bound() const;
+		/**
+		 * Ensures that all indices specified by all snippets exist within the IBO.
+		 */
+		static bool sanity_check(const tz::gl::IndexSnippetList& indices, const tz::gl::IBO& ibo);
 
 		tz::gl::IFrame* frame;
 		tz::gl::ShaderProgram* program;

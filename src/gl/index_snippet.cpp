@@ -53,4 +53,10 @@ namespace tz::gl
         }
         return cmds;
     }
+
+    const IndexSnippet& IndexSnippetList::operator[](std::size_t idx) const
+    {
+        topaz_assert(idx < this->size(), "tz::gl::IndexSnippetList::operator[", idx, "]: Out of range! Size: ", this->size());
+        return this->snippets[idx];
+    }
 }
