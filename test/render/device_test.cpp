@@ -93,6 +93,29 @@ tz::test::Case edit_device()
     return test_case;
 }
 
+tz::test::Case resource_buffers()
+{
+    tz::test::Case test_case("tz::render::Device Resource Buffer Tests");
+
+    tz::render::Device dev = tz::render::Device::null_device();
+
+    tz::gl::SSBO ssbo{0};
+    tz::gl::UBO ubo{1};
+
+    topaz_expect(test_case, !dev.contains_resource_buffer(&ssbo), "Null device thinks it contains an SSBO!");
+    topaz_expect(test_case, !dev.contains_resource_buffer(&ubo), "Null device thinks it contains a UBO!");
+    dev.add_resource_buffer(&ssbo);
+    topaz_expect(test_case, dev.contains_resource_buffer(&ssbo), "Device wrongly thinks it hasn't registered an SSBO");
+    dev.add_resource_buffer(&ubo);
+    topaz_expect(test_case, dev.contains_resource_buffer(&ubo), "Device wrongly thinks it hasn't registered a UBO");
+    dev.remove_resource_buffer(&ssbo);
+    topaz_expect(test_case, !dev.contains_resource_buffer(&ssbo), "Device thinks it contains an SSBO after it was just removed!");
+    dev.remove_resource_buffer(&ubo);
+    topaz_expect(test_case, !dev.contains_resource_buffer(&ubo), "Device thinks it contains a UBO after it was just removed!");
+
+    return test_case;
+}
+
 int main()
 {
     tz::test::Unit device;
@@ -102,6 +125,7 @@ int main()
         tz::core::initialise("Render Device Tests");
 		device.add(broken_devices());
         device.add(edit_device());
+        device.add(resource_buffers());
         tz::core::terminate();
     }
     return device.result();

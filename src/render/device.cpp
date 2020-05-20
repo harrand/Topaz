@@ -6,7 +6,7 @@
 
 namespace tz::render
 {
-	Device::Device(tz::gl::IFrame* frame, tz::gl::ShaderProgram* program, tz::gl::Object* object): frame(frame), program(program), object(object), ibo_id(std::nullopt), snippets(){}
+	Device::Device(tz::gl::IFrame* frame, tz::gl::ShaderProgram* program, tz::gl::Object* object): frame(frame), program(program), object(object), ibo_id(std::nullopt), snippets(), resource_buffers(){}
 
 	void Device::set_frame(tz::gl::IFrame* frame)
 	{
@@ -22,6 +22,27 @@ namespace tz::render
 	{
 		this->object = object;
 		this->ibo_id = std::nullopt;
+	}
+
+	bool Device::contains_resource_buffer(const tz::gl::IBuffer* buffer) const
+	{
+		return std::find(this->resource_buffers.begin(), this->resource_buffers.end(), buffer) != this->resource_buffers.end();
+	}
+
+	void Device::add_resource_buffer(const tz::gl::IBuffer* buffer)
+	{
+		if(!this->contains_resource_buffer(buffer))
+		{
+			this->resource_buffers.push_back(buffer);
+		}
+	}
+
+	void Device::remove_resource_buffer(const tz::gl::IBuffer* buffer)
+	{
+		if(this->contains_resource_buffer(buffer))
+		{
+			this->resource_buffers.erase(std::remove(this->resource_buffers.begin(), this->resource_buffers.end(), buffer));
+		}
 	}
 
 	/*static*/ Device Device::null_device()
@@ -65,6 +86,10 @@ namespace tz::render
 		if(frame->operator!=(tz::gl::bound::frame()))
 			frame->bind();
 		program->bind();
+		for(const tz::gl::IBuffer* resource_buffer : this->resource_buffers)
+		{
+			resource_buffer->bind();
+		}
 		if (this->snippets.empty())
 			this->object->render(this->ibo_id.value());
 		else
