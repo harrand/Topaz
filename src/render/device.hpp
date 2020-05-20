@@ -39,6 +39,9 @@ namespace tz::render
 		 * @param object Object whose data will be used to render.
 		 */
 		Device(tz::gl::IFrame* frame, tz::gl::ShaderProgram* prg, tz::gl::Object* object);
+		void set_frame(tz::gl::IFrame* frame);
+		void set_program(tz::gl::ShaderProgram* prg);
+		void set_object(tz::gl::Object* object);
 		/**
 		 * Retrieve the null-device. This device is invalid and should never be used to render.
 		 * @return The null-device.
@@ -51,11 +54,18 @@ namespace tz::render
 		bool is_null() const;
 		/**
 		 * Refer subsequent render-invocations to the given ID handle corresponding to an index-buffer inside of the Object.
-		 * 
+		 * Note: This will clear the list of indices as they may no longer be valid.
 		 * Precondition: ibo_id must be a valid index in the Object and refer to a valid index-buffer. Otherwise, this will assert and invoke UB.
 		 * @param ibo_id Handle ID corresponding to the index-buffer which will be used in render invocations.
 		 */
 		void set_handle(std::size_t ibo_id);
+		/**
+		 * Refer subsequent render-invocations to the given ID handle corresponding to an index-buffer inside of a different Object.
+		 * Note: This will clear the list of indices as they may no longer be valid.
+		 * Precondition: ibo_id must be a valid index in the Object and refer to a valid index-buffer. Otherwise, this will assert and invoke UB.
+		 * @param ibo_id Handle ID corresponding to the index-buffer which will be used in render invocations.
+		 */
+		void set_handle(tz::gl::Object* object, std::size_t ibo_id);
 		/**
 		 * Provide a list of snippets of offsets into the index-buffer.
 		 * 

@@ -23,6 +23,24 @@ constexpr const char *fragmentShaderSource = "#version 430\n"
 	"	FragColor = vec4(0.0);\n"
     "}\n";
 
+tz::gl::ShaderProgram valid_program()
+{
+    tz::gl::ShaderProgram prog;
+    {
+        tz::gl::ShaderCompiler cpl;
+		tz::gl::Shader* vs = prog.emplace(tz::gl::ShaderType::Vertex);
+		vs->upload_source(vertexShaderSource);
+		tz::gl::Shader* fs = prog.emplace(tz::gl::ShaderType::Fragment);
+		fs->upload_source(fragmentShaderSource);
+
+		auto cpldiag_vs = cpl.compile(*vs);
+		auto cpldiag_fs = cpl.compile(*fs);
+		auto lnkdiag = cpl.link(prog);
+        topaz_assert(cpldiag_vs.successful() && cpldiag_fs.successful() && lnkdiag.successful(), "Valid ShaderProgram components failed to compile && link. Uh oh!");
+    }
+    return std::move(prog);
+}
+
 tz::test::Case broken_devices()
 {
 	tz::test::Case test_case("tz::render::Device Draw Tests");
@@ -41,19 +59,7 @@ tz::test::Case broken_devices()
     topaz_assert(!unusable_prog.usable(), "Default ShaderProgram is usable?!?");
 
     // A valid (but useless) program.
-    tz::gl::ShaderProgram prog;
-    {
-        tz::gl::ShaderCompiler cpl;
-		tz::gl::Shader* vs = prog.emplace(tz::gl::ShaderType::Vertex);
-		vs->upload_source(vertexShaderSource);
-		tz::gl::Shader* fs = prog.emplace(tz::gl::ShaderType::Fragment);
-		fs->upload_source(fragmentShaderSource);
-
-		auto cpldiag_vs = cpl.compile(*vs);
-		auto cpldiag_fs = cpl.compile(*fs);
-		auto lnkdiag = cpl.link(prog);
-        topaz_assert(cpldiag_vs.successful() && cpldiag_fs.successful() && lnkdiag.successful(), "Valid ShaderProgram components failed to compile && link. Uh oh!");
-    }
+    tz::gl::ShaderProgram prog = valid_program();
 
     // A simple run-of-the-mill object with no data. Shouldn't pass sanity-check but that's not part of a readiness check.
     tz::gl::Object obj;
@@ -65,6 +71,28 @@ tz::test::Case broken_devices()
     return test_case;
 }
 
+tz::test::Case edit_device()
+{
+    tz::test::Case test_case("tz::render::Device Editing Tests");
+
+    tz::gl::ShaderProgram prog = valid_program();
+    // Create dummy object with no IBO.
+    tz::gl::Object dummy_object;
+    
+    tz::render::Device device = tz::render::Device::null_device();
+    topaz_expect(test_case, !device.ready(), "Null tz::render::Device wrongly considered to be ready.");
+    device.set_frame(tz::core::get().window().get_frame());
+    // Program and object still invalid so this should still be unready.
+    topaz_expect(test_case, !device.ready(), "Edited tz::render::Device wrongly considered to be ready (Missing program and object)");
+    device.set_program(&prog);
+    // Object still invalid so this should still be unready.
+    topaz_expect(test_case, !device.ready(), "Edited tz::render::Device wrongly considered to be ready. (Missing object)");
+    device.set_object(&dummy_object);
+    // Note that no ibo handle was provided (so this would early-out if we attempt to render it). But that is irrelevant to readiness.
+    topaz_expect(test_case, device.ready(), "Amended null tz::render::Device wrongly considered not to be ready.");
+    return test_case;
+}
+
 int main()
 {
     tz::test::Unit device;
@@ -73,6 +101,7 @@ int main()
     {
         tz::core::initialise("Render Device Tests");
 		device.add(broken_devices());
+        device.add(edit_device());
         tz::core::terminate();
     }
     return device.result();

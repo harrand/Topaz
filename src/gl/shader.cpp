@@ -45,7 +45,7 @@ namespace tz::gl
 		this->nullify_all();
 	}
 
-	ShaderProgram::ShaderProgram(ShaderProgram&& move): handle(move.handle), shaders(std::move(move.shaders))
+	ShaderProgram::ShaderProgram(ShaderProgram&& move): handle(move.handle), shaders(std::move(move.shaders)), textures(std::move(move.textures)), texture_names(std::move(move.texture_names)), ready(move.ready)
 	{
 		move.nullify_all();
 		move.handle = 0;

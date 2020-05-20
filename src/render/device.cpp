@@ -8,6 +8,22 @@ namespace tz::render
 {
 	Device::Device(tz::gl::IFrame* frame, tz::gl::ShaderProgram* program, tz::gl::Object* object): frame(frame), program(program), object(object), ibo_id(std::nullopt), snippets(){}
 
+	void Device::set_frame(tz::gl::IFrame* frame)
+	{
+		this->frame = frame;
+	}
+
+	void Device::set_program(tz::gl::ShaderProgram* program)
+	{
+		this->program = program;
+	}
+
+	void Device::set_object(tz::gl::Object* object)
+	{
+		this->object = object;
+		this->ibo_id = std::nullopt;
+	}
+
 	/*static*/ Device Device::null_device()
 	{
 		return {nullptr, nullptr, nullptr};
@@ -21,6 +37,13 @@ namespace tz::render
 	void Device::set_handle(std::size_t id)
 	{
 		this->ibo_id = id;
+		this->snippets = {};
+	}
+
+	void Device::set_handle(tz::gl::Object* object, std::size_t id)
+	{
+		this->object = object;
+		this->set_handle(id);
 	}
 
 	void Device::set_indices(tz::gl::IndexSnippetList indices)
