@@ -183,6 +183,7 @@ int main()
 
 		glClearColor(0.3f, 0.15f, 0.0f, 1.0f);
 		tz::render::Device dev{wnd.get_frame(), &prg, &o};
+		dev.add_resource_buffer(ubo);
 		dev.set_handle(m.get_indices());
 
         tz::gl::IndexSnippetList triangle_snip;
@@ -205,22 +206,8 @@ int main()
 		dev.set_indices(monkey_snip);
         //dev.set_indices(double_snip);
 
-		// TODO: Remove
-		// Temporary FPS Counter Logic
-		double last_time = glfwGetTime();
-		int frames = 0;
 		while(!wnd.is_close_requested())
 		{
-			double time = glfwGetTime();
-			frames++;
-			if(time - last_time >= 1.0)
-			{
-				std::printf("%g ms/frame\n", 1000.0/static_cast<double>(frames));
-				std::printf("%d fps\n", frames);
-				frames = 0;
-				last_time += 1.0;
-			}
-
 			rotation_y += 0.02f;
 
         	dev.clear();
@@ -236,7 +223,6 @@ int main()
 				tz::Mat4 p = tz::geo::perspective(1.57f, 1920.0f/1080.0f, 0.1f, 1000.0f);
 				matrix.set(i, p * v * m);
 			}
-			ubo->bind();
 			dev.render();
 			tz::core::update();
 			wnd.update();
