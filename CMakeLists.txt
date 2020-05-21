@@ -50,6 +50,8 @@ add_library(topaz STATIC
 		src/geo/matrix.inl
 		src/geo/vector.hpp
 		src/geo/vector.inl
+		src/geo/quaternion.cpp
+		src/geo/quaternion.hpp
 		src/gl/tz_assimp/scene.hpp
 		src/gl/tz_assimp/scene.cpp
 		src/gl/tz_stb_image/image_reader.hpp

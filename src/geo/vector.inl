@@ -119,6 +119,25 @@ namespace tz
         return std::sqrt(sum_squares);
     }
 
+    template<typename T, std::size_t S>
+    void Vector<T, S>::normalise()
+    {
+        T l = this->length();
+        topaz_assert(l != T{}, "tz::Vector<T, ", S, ">::normalise(): Length is ", l, "!");
+        for(auto& d : this->vec)
+        {
+            d /= l;
+        }
+    }
+
+    template<typename T, std::size_t S>
+    Vector<T, S> Vector<T, S>::normalised() const
+    {
+        Vector<T, S> cpy = *this;
+        cpy.normalise();
+        return cpy;
+    }
+
     template<typename T>
     Vector<T, 3> cross(const Vector<T, 3>& lhs, const Vector<T, 3>& rhs)
     {
