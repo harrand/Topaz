@@ -4,8 +4,8 @@
 
 namespace tz::ext::stb
 {
-    template<class PixelType>
-    tz::gl::Image<PixelType> read_image(const char* path);
+	template<class PixelType>
+	tz::gl::Image<PixelType> read_image(const char* path);
 }
 
 #include "gl/tz_stb_image/image_reader.inl"

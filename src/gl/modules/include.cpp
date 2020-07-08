@@ -12,7 +12,7 @@ namespace tz::gl::p
 	{
 		src::transform(source, std::regex{"#include \"(.+)\""}, [this](auto beg, auto end)
 		{
-	        topaz_assert(std::distance(beg, end) == 1, "tz::gl::p::IncludeModule::operator(): Had unexpected number of inner matches. Expected ", 1, ", got ", std::distance(beg, end));
+			topaz_assert(std::distance(beg, end) == 1, "tz::gl::p::IncludeModule::operator(): Had unexpected number of inner matches. Expected ", 1, ", got ", std::distance(beg, end));
 			std::string include_file_name = *beg;
 			return this->cat_include(include_file_name);
 		});

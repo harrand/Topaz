@@ -9,9 +9,9 @@ namespace tz::gl
 	class ShaderProgram;
 
 	/**
-     * \addtogroup tz_gl Topaz Graphics Library (tz::gl)
-     * @{
-     */
+	 * \addtogroup tz_gl Topaz Graphics Library (tz::gl)
+	 * @{
+	 */
 
 	enum class ShaderCompilerType
 	{

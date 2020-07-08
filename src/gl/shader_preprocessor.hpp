@@ -17,9 +17,9 @@ namespace tz
 namespace tz::gl
 {
 	/**
-     * \addtogroup tz_gl Topaz Graphics Library (tz::gl)
-     * @{
-     */
+	 * \addtogroup tz_gl Topaz Graphics Library (tz::gl)
+	 * @{
+	 */
 
 	namespace src
 	{
@@ -92,9 +92,9 @@ namespace tz::gl
 	}
 
 	/**
-     * \addtogroup tz_gl_p tz::gl Shader Preprocessing Module (TZGLP)
-     * @{
-     */
+	 * \addtogroup tz_gl_p tz::gl Shader Preprocessing Module (TZGLP)
+	 * @{
+	 */
 
 	/**
 	 * ShaderPreprocessor is the basis of TZGLP.

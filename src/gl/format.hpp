@@ -6,9 +6,9 @@
 namespace tz::gl
 {
 	/**
-     * \addtogroup tz_gl Topaz Graphics Library (tz::gl)
-     * @{
-     */
+	 * \addtogroup tz_gl Topaz Graphics Library (tz::gl)
+	 * @{
+	 */
 
 	/**
 	 * Represents instructions on how to interpret Buffer data.

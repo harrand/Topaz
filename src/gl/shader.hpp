@@ -15,9 +15,9 @@ namespace tz::gl
 namespace tz::gl
 {
 	/**
-     * \addtogroup tz_gl Topaz Graphics Library (tz::gl)
-     * @{
-     */
+	 * \addtogroup tz_gl Topaz Graphics Library (tz::gl)
+	 * @{
+	 */
 
 	enum class ShaderType : std::size_t
 	{

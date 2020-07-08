@@ -90,7 +90,7 @@ namespace tz::gl
 
 	void Frame::process_pending_attachments() const
 	{
-        glBindFramebuffer(GL_FRAMEBUFFER, this->handle);
+		glBindFramebuffer(GL_FRAMEBUFFER, this->handle);
 		while(!pending_attachments.empty())
 		{
 			GLenum attachment = pending_attachments.front().first;

@@ -18,7 +18,7 @@ namespace tz::gl
 			{
 				// Found a match!
 				std::size_t pos = sm.position() + src_pos_counter;
-            	topaz_assert(pos < source.size(), "tz::gl::src::transform(...): Match result has position ", pos, " in source which is out of range. Size: ", source.size());
+				topaz_assert(pos < source.size(), "tz::gl::src::transform(...): Match result has position ", pos, " in source which is out of range. Size: ", source.size());
 				std::size_t len = sm.length();
 				std::vector<std::string> inner_matches;
 				for(std::size_t i = 1; i < sm.size(); i++)

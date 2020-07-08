@@ -12,9 +12,9 @@ struct GLFWwindow;
 namespace tz::gl
 {
 	/**
-     * \addtogroup tz_gl Topaz Graphics Library (tz::gl)
-     * @{
-     */
+	 * \addtogroup tz_gl Topaz Graphics Library (tz::gl)
+	 * @{
+	 */
 
 	/**
 	 * Interface for anything that can be a render-target.
