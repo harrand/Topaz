@@ -13,7 +13,7 @@ struct GLFWwindow;
 
 namespace tz::core
 {
-    class GLFWWindow;
+	class GLFWWindow;
 }
 namespace tz::gl
 {
@@ -32,29 +32,29 @@ namespace tz::ext::glfw
 	/**
 	 * Brief information about what a window might look like.
 	 */
-    struct WindowCreationArgs
-    {
-        WindowCreationArgs();
-        WindowCreationArgs(const char* title, int width, int height);
+	struct WindowCreationArgs
+	{
+		WindowCreationArgs();
+		WindowCreationArgs(const char* title, int width, int height);
 
-        const char* title;
-        int width;
-        int height;
-    };
+		const char* title;
+		int width;
+		int height;
+	};
 	
 	/**
 	 * GLFW low-level window implementation.
 	 * Here be programming dragons.
 	 */
-    class GLFWWindowImpl
-    {
-    public:
-        // No copying, only moving allowed.
-        GLFWWindowImpl(const GLFWWindowImpl& copy) = delete;
-        GLFWWindowImpl(GLFWWindowImpl&& move) noexcept;
-        ~GLFWWindowImpl();
-        GLFWWindowImpl& operator=(const GLFWWindowImpl& copy) = delete;
-        GLFWWindowImpl& operator=(GLFWWindowImpl&& move) noexcept;
+	class GLFWWindowImpl
+	{
+	public:
+		// No copying, only moving allowed.
+		GLFWWindowImpl(const GLFWWindowImpl& copy) = delete;
+		GLFWWindowImpl(GLFWWindowImpl&& move) noexcept;
+		~GLFWWindowImpl();
+		GLFWWindowImpl& operator=(const GLFWWindowImpl& copy) = delete;
+		GLFWWindowImpl& operator=(GLFWWindowImpl&& move) noexcept;
 		const std::string& get_title() const;
 		void set_title(std::string title);
 		int get_width() const;
@@ -96,8 +96,8 @@ namespace tz::ext::glfw
 		 */
 		bool operator==(const GLFWWindowImpl& rhs) const;
 		// Is it a good idea to have tight coupling due to this?
-        friend GLFWWindowImpl make_impl(WindowCreationArgs);
-    private:
+		friend GLFWWindowImpl make_impl(WindowCreationArgs);
+	private:
 		/**
 		 * Construct the window implementation given some brief information.
 		 * @param width - Width of the window, in pixels
@@ -106,20 +106,20 @@ namespace tz::ext::glfw
 		 * @param monitor - Monitor implementation (nullable)
 		 * @param share - Unknown (nullable)
 		 */
-        GLFWWindowImpl(int width, int height, const char* title, GLFWmonitor* monitor, GLFWwindow* share);
+		GLFWWindowImpl(int width, int height, const char* title, GLFWmonitor* monitor, GLFWwindow* share);
 		/**
 		 * Construct the window implementation given some brief information.
 		 * @param args - Structure containing window information, such as width, height and title
 		 */
-        explicit GLFWWindowImpl(WindowCreationArgs args);
+		explicit GLFWWindowImpl(WindowCreationArgs args);
 
 		/// Underlying glfw window handle
-        GLFWwindow* window_handle;
+		GLFWwindow* window_handle;
 		/// What's the title of the window?
-        std::string title;
+		std::string title;
 		/// Underlying Frame interface.
 		std::unique_ptr<tz::gl::IFrame> frame;
-    };
+	};
 	
 	/**
 	 * Instruct tz_glfw to track this window's underlying implementation.

@@ -29,40 +29,40 @@ namespace tz::core
 	/**
 	 * Interface for a high-level implementation of a cross-platform window.
 	 */
-    class IWindow
-    {
-    public:
+	class IWindow
+	{
+	public:
 		/**
 		 * Retrieve the title of the window.
 		 * @return - Title of the window
 		 */
-        virtual const char* get_title() const = 0;
+		virtual const char* get_title() const = 0;
 		/**
 		 * Give the window a new title.
 		 * @param title - Desired new title of the window
 		 */
-        virtual void set_title(const char* title) = 0;
+		virtual void set_title(const char* title) = 0;
 		
 		/**
 		 * Get the width of the window, in pixels.
 		 * @return - Width in pixels
 		 */
-        virtual int get_width() const = 0;
+		virtual int get_width() const = 0;
 		/**
 		 * Get the height of the window, in pixels.
 		 * @return - Height in pixels
 		 */
-        virtual int get_height() const = 0;
+		virtual int get_height() const = 0;
 		/**
 		 * Set the width of the window to a new value, in pixels.
 		 * @param width - Desired new width in pixels
 		 */
-        virtual void set_width(int width) const = 0;
+		virtual void set_width(int width) const = 0;
 		/**
 		 * Set the height of the window to a new value, in pixels.
 		 * @param height - Desired new height in pixels
 		 */
-        virtual void set_height(int height) const = 0;
+		virtual void set_height(int height) const = 0;
 		/**
 		 * Set both the width and height of the window at once. Both values are in pixels.
 		 * @param width - Width in pixels
@@ -83,12 +83,12 @@ namespace tz::core
 		 * Note: This will return true if the window is technically visible but occluded.
 		 * @return - True if the user should be able to see the window, otherwise false
 		 */
-        virtual bool is_visible() const = 0;
+		virtual bool is_visible() const = 0;
 		/**
 		 * Set whether the window should be visible to the user or not.
 		 * @param visible - Whether the window should be visible
 		 */
-        virtual void set_visible(bool visible) const = 0;
+		virtual void set_visible(bool visible) const = 0;
 		
 		/**
 		 * Query as to whether the window is currently able to be resized by the user.
@@ -117,12 +117,12 @@ namespace tz::core
 		 * It is expected that the window be destroyed the frame after it was requested to close.
 		 * @return - True if the window is about to close, otherwise false
 		 */
-        virtual bool is_close_requested() const = 0;
+		virtual bool is_close_requested() const = 0;
 		/**
 		 * Request that the window close as soon as possible.
 		 * This is likely to be at the end of the next frame.
 		 */
-        virtual void request_close() const = 0;
+		virtual void request_close() const = 0;
 	
 		/**
 		 * Set the underlying GL context to be the active context.
@@ -231,23 +231,23 @@ namespace tz::core
 	};
 
 
-    class GLFWWindow : public IWindow
-    {
-    public:
-        explicit GLFWWindow(tz::ext::glfw::GLFWContext& context);
-        virtual const char* get_title() const override;
-        virtual void set_title(const char* title) override;
+	class GLFWWindow : public IWindow
+	{
+	public:
+		explicit GLFWWindow(tz::ext::glfw::GLFWContext& context);
+		virtual const char* get_title() const override;
+		virtual void set_title(const char* title) override;
 		
-        virtual int get_width() const override;
-        virtual int get_height() const override;
-        virtual void set_width(int width) const override;
-        virtual void set_height(int height) const override;
+		virtual int get_width() const override;
+		virtual int get_height() const override;
+		virtual void set_width(int width) const override;
+		virtual void set_height(int height) const override;
 		virtual void set_size(int width, int height) const override;
 
 		virtual tz::gl::IFrame* get_frame() const override;
 		
-        virtual bool is_visible() const override;
-        virtual void set_visible(bool visible) const override;
+		virtual bool is_visible() const override;
+		virtual void set_visible(bool visible) const override;
 	
 		virtual bool is_resizeable() const override;
 		virtual void set_resizeable(bool resizeable) const override;
@@ -255,8 +255,8 @@ namespace tz::core
 		virtual bool is_focused() const override;
 		virtual void set_focused(bool focused) const override;
 		
-        virtual bool is_close_requested() const override;
-        virtual void request_close() const override;
+		virtual bool is_close_requested() const override;
+		virtual void request_close() const override;
 		
 		virtual void set_active_context() const override;
 		virtual bool is_active_context() const override;
@@ -279,7 +279,7 @@ namespace tz::core
 		virtual void register_this() override;
 		
 		friend void tz::ext::glfw::register_window(tz::core::GLFWWindow*);
-    private:
+	private:
 		/**
 		 * Retrieve the width and height of the window, in pixels.
 		 * @return - {width, height} in pixels
@@ -293,16 +293,16 @@ namespace tz::core
 		void ensure_registered();
 		
 		/// Underlying window implementation. This should not be null.
-        tz::ext::glfw::GLFWWindowImpl* impl;
+		tz::ext::glfw::GLFWWindowImpl* impl;
 		/// Stores all registered key-listeners.
 		std::vector<std::shared_ptr<tz::input::KeyListener>> key_listeners;
 		/// Stores all registered type-listeners.
 		std::vector<std::shared_ptr<tz::input::TypeListener>> type_listeners;
 		/// Stores all registered mouse-listeners.
 		std::vector<std::shared_ptr<tz::input::MouseListener>> mouse_listeners;
-    };
-    
-    using Window = GLFWWindow;
+	};
+	
+	using Window = GLFWWindow;
 }
 
 #include "core/window.inl"

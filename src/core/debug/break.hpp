@@ -3,7 +3,7 @@
 
 namespace tz
 {
-    void debugbreak();
+	void debugbreak();
 }
 
 #endif // TOPAZ_CORE_DEBUG_BREAK_HPP

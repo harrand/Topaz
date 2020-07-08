@@ -3,8 +3,8 @@
 
 namespace tz
 {
-    void debugbreak()
-    {
-        debug_break();
-    }
+	void debugbreak()
+	{
+		debug_break();
+	}
 }

@@ -15,7 +15,7 @@ namespace tz::ext::glad
 	namespace debug
 	{
 		void output(GLenum source, GLenum type, GLuint id, GLenum severity, 
-                            GLsizei length, const GLchar *message, const void *userParam);
+							GLsizei length, const GLchar *message, const void *userParam);
 	}
 	
 	GLADContext::GLADContext() noexcept: glfw_context(nullptr), loaded(false), supported_extensions(){}
@@ -49,9 +49,9 @@ namespace tz::ext::glad
 
 		#if TOPAZ_DEBUG
 			glEnable(GL_DEBUG_OUTPUT);
-    		glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS); 
+			glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS); 
    			glDebugMessageCallback(debug::output, nullptr);
-    		glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
+			glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
 		#endif
 		glEnable(GL_CULL_FACE);
 		glCullFace(GL_BACK);
@@ -139,12 +139,12 @@ namespace tz::ext::glad
 	namespace debug
 	{
 		void output(GLenum source, 
-                            GLenum type, 
-                            GLuint id, 
-                            GLenum severity, 
-                            [[maybe_unused]] GLsizei length, 
-                            const GLchar* message, 
-                            [[maybe_unused]] const void* user_param)
+							GLenum type, 
+							GLuint id, 
+							GLenum severity, 
+							[[maybe_unused]] GLsizei length, 
+							const GLchar* message, 
+							[[maybe_unused]] const void* user_param)
 		{
 			// ignore non-significant error/warning codes
 			if(id == 131169 || id == 131185 || id == 131218 || id == 131204) return; 

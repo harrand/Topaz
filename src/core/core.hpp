@@ -38,10 +38,10 @@ namespace tz::ext
 namespace tz::core
 {
 	/**
-     * \addtogroup tz_core Topaz Core Library (tz::core)
-     * A collection of platform-agnostic core interfaces.
-     * @{
-     */
+	 * \addtogroup tz_core Topaz Core Library (tz::core)
+	 * A collection of platform-agnostic core interfaces.
+	 * @{
+	 */
 
 	/**
 	 * Wrapper class responsible for handling initialisation and termination of essential external modules.
