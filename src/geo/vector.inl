@@ -86,6 +86,17 @@ namespace tz
     }
 
     template<typename T, std::size_t S>
+    bool Vector<T, S>::operator==(const Vector<T, S>& rhs) const
+    {
+        for(std::size_t i = 0; i < S; i++)
+        {
+            if(std::abs((*this)[i] - rhs[i]) >= std::numeric_limits<T>::epsilon())
+                return false;
+        }
+        return true;
+    }
+
+    template<typename T, std::size_t S>
     const T* Vector<T, S>::data() const
     {
         return this->vec.data();

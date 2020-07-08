@@ -1,5 +1,6 @@
 #ifndef TOPAZ_GEO_MATRIX_HPP
 #define TOPAZ_GEO_MATRIX_HPP
+#include "geo/vector.hpp"
 #include <array>
 
 namespace tz
@@ -55,6 +56,8 @@ namespace tz
         Matrix<T, R, C>& operator*=(const Matrix<T, R, C>& matrix);
         Matrix<T, R, C> operator*(T scalar) const;
         Matrix<T, R, C> operator*(const Matrix<T, R, C>& matrix) const;
+
+        Vector<T, R> operator*(const Vector<T, C>& vec) const;
 
         bool operator==(T scalar) const;
         bool operator==(const Matrix<T, R, C>& matrix) const;

@@ -91,4 +91,38 @@ namespace tz::algo
         T hi = (frac + 1) * factor;
         return tz::algo::schmittf<T, F>(lo, hi, value, bound);
     }
+
+    template<typename T>
+    std::array<T, 3> axis_angle_to_euler(std::array<T, 3> axis, T angle)
+    {
+        T s = std::sin(angle);
+        T c = std::cos(angle);
+        T t = T{1} - c;
+        // Assume axis is normalised already.
+        T x = axis[0];
+        T y = axis[1];
+        T z = axis[2];
+        T singularity = ((x * y * t) + (z * s));
+        T ex, ey, ez;
+        if(singularity > 0.998)
+        {
+            // north pole singularity
+            ey = T{2} * std::atan2(x * std::sin(angle / T{2}), std::cos(angle / T{2}));
+            ex = std::asin(1); // pi/2
+            ez = T{};
+            return {ex, ey, ez};
+        }
+        if(singularity < -0.998)
+        {
+            ey = T{-2} * std::atan2(x * std::sin(angle / T{2}), std::cos(angle / T{2}));
+            ex = -std::asin(1); // -pi/2
+            ez = T{};
+            return {ex, ey, ez};
+        }
+        ey = std::atan2(y * s - x * z * t, T{1} - (y * y + z * z) * t);
+        ex = std::asin(x * y * t + z * s);
+        ez = -std::atan2(x * s - y * z * t, T{1} - (x * x + z * z) * t);
+        return {ex, ey, ez};
+    }
+
 }

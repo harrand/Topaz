@@ -171,6 +171,17 @@ namespace tz
     }
 
     template<typename T, std::size_t R, std::size_t C>
+    Vector<T, R> Matrix<T, R, C>::operator*(const Vector<T, C>& vec) const
+    {
+        Vector<T, R> ret;
+        for(std::size_t i = 0; i < R; i++)
+        {
+            ret[i] = tz::Vec4{(*this)[i]}.dot(vec);
+        }
+        return ret;
+    }
+
+    template<typename T, std::size_t R, std::size_t C>
     bool Matrix<T, R, C>::operator==(T scalar) const
     {
         for(std::size_t i = 0; i < R; i++)

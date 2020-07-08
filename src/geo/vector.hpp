@@ -30,6 +30,8 @@ namespace tz
         Vector<T, S>& operator/=(T scalar);
         Vector<T, S> operator/(T scalar) const;
 
+        bool operator==(const Vector<T, S>& rhs) const;
+
         const T* data() const;
         T* data();
 

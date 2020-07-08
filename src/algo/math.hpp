@@ -1,5 +1,6 @@
 #ifndef TOPAZ_ALGO_MATH_HPP
 #define TOPAZ_ALGO_MATH_HPP
+#include <array>
 
 namespace tz::algo
 {
@@ -69,6 +70,9 @@ namespace tz::algo
      */
     template<typename T, typename F>
     T schmittf_multiple(T factor, F val, SchmittBound bound = SchmittBound::Lower);
+
+    template<typename T>
+    std::array<T, 3> axis_angle_to_euler(std::array<T, 3>, T angle);
 
     /**
      * @}
