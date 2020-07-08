@@ -11,45 +11,45 @@
 #include "GLFW/glfw3.h"
 
 const char *vertexShaderSource = "#version 430\n"
-    "layout (location = 0) in uint pos_index;\n"
-    "#ssbo position_buffer\n"
-    "{\n"
-    "   float positions[9];\n"
-    "};\n"
-    "\n"
-    "void main()\n"
-    "{\n"
-    "   gl_Position = vec4(positions[gl_VertexID*3], positions[(gl_VertexID*3) + 1], positions[(gl_VertexID*3) + 2], 1.0);\n"
-    "}\0";
+	"layout (location = 0) in uint pos_index;\n"
+	"#ssbo position_buffer\n"
+	"{\n"
+	"   float positions[9];\n"
+	"};\n"
+	"\n"
+	"void main()\n"
+	"{\n"
+	"   gl_Position = vec4(positions[gl_VertexID*3], positions[(gl_VertexID*3) + 1], positions[(gl_VertexID*3) + 2], 1.0);\n"
+	"}\0";
 const char *fragmentShaderSource = "#version 430\n"
-    "out vec4 FragColor;\n"
-    "void main()\n"
-    "{\n"
-    "   FragColor = vec4(0.8f, 0.15f, 0.0f, 1.0f);\n"
-    "}\n\0";
+	"out vec4 FragColor;\n"
+	"void main()\n"
+	"{\n"
+	"   FragColor = vec4(0.8f, 0.15f, 0.0f, 1.0f);\n"
+	"}\n\0";
 
 int main()
 {
 	// Minimalist Graphics Demo.
 	tz::core::initialise("Topaz TZGLP SSBO Demo");
 	{
-        tz::gl::Object o;
-        tz::gl::p::SSBOModule* ssbo_module = nullptr;
+		tz::gl::Object o;
+		tz::gl::p::SSBOModule* ssbo_module = nullptr;
 
-        tz::gl::ShaderPreprocessor pre{vertexShaderSource};
-        {
-            std::size_t ssbo_module_id = pre.emplace_module<tz::gl::p::SSBOModule>(&o);
-            pre.preprocess();
-            // Get the module after use.
-            ssbo_module = static_cast<tz::gl::p::SSBOModule*>(pre[ssbo_module_id]);
-        }
-        std::size_t ssbo_id = ssbo_module->get_buffer_id(ssbo_module->size() - 1);
-        tz::gl::SSBO* ssbo = o.get<tz::gl::BufferType::ShaderStorage>(ssbo_id);
+		tz::gl::ShaderPreprocessor pre{vertexShaderSource};
+		{
+			std::size_t ssbo_module_id = pre.emplace_module<tz::gl::p::SSBOModule>(&o);
+			pre.preprocess();
+			// Get the module after use.
+			ssbo_module = static_cast<tz::gl::p::SSBOModule*>(pre[ssbo_module_id]);
+		}
+		std::size_t ssbo_id = ssbo_module->get_buffer_id(ssbo_module->size() - 1);
+		tz::gl::SSBO* ssbo = o.get<tz::gl::BufferType::ShaderStorage>(ssbo_id);
 
 		tz::gl::ShaderCompiler cpl;
 		tz::gl::ShaderProgram prg;
 		tz::gl::Shader* vs = prg.emplace(tz::gl::ShaderType::Vertex);
-        // We want to upload the preprocessed source.
+		// We want to upload the preprocessed source.
 		vs->upload_source(pre.result());
 		tz::gl::Shader* fs = prg.emplace(tz::gl::ShaderType::Fragment);
 		fs->upload_source(fragmentShaderSource);
@@ -59,10 +59,10 @@ int main()
 		cpl.link(prg);
 
 		const float vertices[] = {
-        -0.5f, -0.5f, 0.0f, // left  
-         0.5f, -0.5f, 0.0f, // right 
-         0.0f,  0.5f, 0.0f  // top   
-    	};
+		-0.5f, -0.5f, 0.0f, // left  
+		 0.5f, -0.5f, 0.0f, // right 
+		 0.0f,  0.5f, 0.0f  // top   
+		};
 
 		ssbo->terminal_resize(sizeof(vertices));
 		tz::mem::UniformPool<float> vertex_pool = ssbo->map_uniform<float>();
@@ -119,9 +119,9 @@ int main()
 		dev.set_handle(ibo_id);
 		while(!wnd.is_close_requested())
 		{
-        	dev.clear();
+			dev.clear();
 			o.bind();
-            ssbo->bind();
+			ssbo->bind();
 			dev.render();
 
 			wnd.update();

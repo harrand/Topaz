@@ -79,15 +79,15 @@ tz::test::Case valid_program()
 
 int main()
 {
-    tz::test::Unit shader;
+	tz::test::Unit shader;
 
-    // We require topaz to be initialised.
-    {
-        tz::core::initialise("Shader Compiler Tests");
+	// We require topaz to be initialised.
+	{
+		tz::core::initialise("Shader Compiler Tests");
 		shader.add(invalid_shader());
 		shader.add(valid_shader());
 		shader.add(valid_program());
-        tz::core::terminate();
-    }
-    return shader.result();
+		tz::core::terminate();
+	}
+	return shader.result();
 }

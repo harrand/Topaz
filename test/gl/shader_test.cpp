@@ -43,15 +43,15 @@ tz::test::Case attach_texture()
 
 int main()
 {
-    tz::test::Unit shader;
+	tz::test::Unit shader;
 
-    // We require topaz to be initialised.
-    {
-        tz::core::initialise("Shader Tests");
+	// We require topaz to be initialised.
+	{
+		tz::core::initialise("Shader Tests");
 		shader.add(empty_program());
 		shader.add(empty_shader());
 		shader.add(attach_texture());
-        tz::core::terminate();
-    }
-    return shader.result();
+		tz::core::terminate();
+	}
+	return shader.result();
 }

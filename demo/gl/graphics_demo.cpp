@@ -14,26 +14,26 @@
 #include "GLFW/glfw3.h"
 
 const char *vertexShaderSource = "#version 430\n"
-    "layout (location = 0) in vec3 aPos;\n"
+	"layout (location = 0) in vec3 aPos;\n"
 	"layout (location = 1) in vec2 aTexcoord;\n"
 	"#ubo matrices\n"
 	"{\n"
 	"	mat4 mvp;\n"
 	"};\n"
 	"out vec2 texcoord;\n"
-    "void main()\n"
-    "{\n"
-    "   gl_Position = mvp * vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+	"void main()\n"
+	"{\n"
+	"   gl_Position = mvp * vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
 	"	texcoord = aTexcoord;\n"
-    "}\0";
+	"}\0";
 const char *fragmentShaderSource = "#version 430\n"
-    "out vec4 FragColor;\n"
+	"out vec4 FragColor;\n"
 	"in vec2 texcoord;\n"
 	"uniform sampler2D checkerboard;\n"
-    "void main()\n"
-    "{\n"
+	"void main()\n"
+	"{\n"
 	"	FragColor = texture(checkerboard, texcoord);\n"
-    "}\n\0";
+	"}\n\0";
 
 int main()
 {
@@ -66,10 +66,10 @@ int main()
 		cpl.link(prg);
 
 		const float vertices[] = {
-        -0.5f, -0.5f, 0.0f, // left  
-         0.5f, -0.5f, 0.0f, // right 
-         0.0f,  0.5f, 0.0f  // top   
-    	};
+		-0.5f, -0.5f, 0.0f, // left  
+		 0.5f, -0.5f, 0.0f, // right 
+		 0.0f,  0.5f, 0.0f  // top   
+		};
 
 		const float texcoords[] = {
 			0.0f, 0.0f,
@@ -152,7 +152,7 @@ int main()
 		{
 			rotation_y += 0.02f;
 
-        	dev.clear();
+			dev.clear();
 			o.bind();
 			tz::Mat4 m = tz::geo::model(triangle_pos, tz::Vec3{{0.0f, rotation_y, 0.0f}}, tz::Vec3{{1.0f, 1.0f, 1.0f}});
 			tz::Mat4 v = tz::geo::view(tz::Vec3{{0.0f, 0.0f, 5.0f}}, tz::Vec3{{0.0f, 0.0f, 0.0f}});

@@ -51,15 +51,15 @@ tz::test::Case window_frame_bindings()
 
 int main()
 {
-    tz::test::Unit frame;
+	tz::test::Unit frame;
 
-    // We require topaz to be initialised.
-    {
-        tz::core::initialise("Frame Tests");
+	// We require topaz to be initialised.
+	{
+		tz::core::initialise("Frame Tests");
 		frame.add(frame_bindings());
 
 		frame.add(window_frame_bindings());
-        tz::core::terminate();
-    }
-    return frame.result();
+		tz::core::terminate();
+	}
+	return frame.result();
 }

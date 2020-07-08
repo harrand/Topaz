@@ -15,26 +15,26 @@
 #include "gl/tz_imgui/imgui_context.hpp"
 
 const char *vertexShaderSource = "#version 460\n"
-    "layout (location = 0) in vec3 aPos;\n"
+	"layout (location = 0) in vec3 aPos;\n"
 	"layout (location = 1) in vec2 aTexcoord;\n"
 	"#ssbo matrices\n"
 	"{\n"
 	"	mat4 mvp[512];\n"
 	"};\n"
 	"out vec2 texcoord;\n"
-    "void main()\n"
-    "{\n"
-    "   gl_Position = mvp[gl_DrawID] * vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+	"void main()\n"
+	"{\n"
+	"   gl_Position = mvp[gl_DrawID] * vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
 	"	texcoord = aTexcoord;\n"
-    "}\0";
+	"}\0";
 const char *fragmentShaderSource = "#version 430\n"
-    "out vec4 FragColor;\n"
+	"out vec4 FragColor;\n"
 	"in vec2 texcoord;\n"
 	"uniform sampler2D checkerboard;\n"
-    "void main()\n"
-    "{\n"
+	"void main()\n"
+	"{\n"
 	"	FragColor = texture(checkerboard, texcoord);\n"
-    "}\n\0";
+	"}\n\0";
 
 class MeshAdjustor : public tz::ext::imgui::ImGuiWindow
 {
@@ -59,7 +59,7 @@ int main()
 	tz::core::initialise("Topaz Mesh Demo");
 	{
 		tz::gl::Manager m;
-        tz::gl::Object& o = *m;
+		tz::gl::Object& o = *m;
 
 		// Track it in imgui.
 		tz::ext::imgui::track_object(&o);
@@ -90,21 +90,21 @@ int main()
 		auto lnk_diag = cpl.link(prg);
 		topaz_assert(lnk_diag.successful(), "Shader Linkage Fail: ", lnk_diag.get_info_log());
 
-        tz::gl::IndexedMesh triangle;
-        triangle.vertices.push_back(tz::gl::Vertex{{{-0.5f, 0.5f, 0.0f}}, {{0.0f, 0.0f}}, {{}}, {{}}, {{}}});
-        triangle.vertices.push_back(tz::gl::Vertex{{{0.5f, 0.5f, 0.0f}}, {{1.0f, 0.0f}}, {{}}, {{}}, {{}}});
-        triangle.vertices.push_back(tz::gl::Vertex{{{0.0f, 1.5f, 0.0f}}, {{0.5f, 1.0f}}, {{}}, {{}}, {{}}});
-        triangle.indices = {0, 1, 2};
+		tz::gl::IndexedMesh triangle;
+		triangle.vertices.push_back(tz::gl::Vertex{{{-0.5f, 0.5f, 0.0f}}, {{0.0f, 0.0f}}, {{}}, {{}}, {{}}});
+		triangle.vertices.push_back(tz::gl::Vertex{{{0.5f, 0.5f, 0.0f}}, {{1.0f, 0.0f}}, {{}}, {{}}, {{}}});
+		triangle.vertices.push_back(tz::gl::Vertex{{{0.0f, 1.5f, 0.0f}}, {{0.5f, 1.0f}}, {{}}, {{}}, {{}}});
+		triangle.indices = {0, 1, 2};
 
-        tz::gl::IndexedMesh square;
-        square.vertices.push_back(tz::gl::Vertex{{{-0.5f, -0.5f, 0.0f}}, {{0.0f, 0.0f}}, {{}}, {{}}, {{}}});
-        square.vertices.push_back(tz::gl::Vertex{{{0.5f, -0.5f, 0.0f}}, {{1.0f, 0.0f}}, {{}}, {{}}, {{}}});
-        square.vertices.push_back(tz::gl::Vertex{{{0.5f, 0.5f, 0.0f}}, {{1.0f, 0.5f}}, {{}}, {{}}, {{}}});
-        
-        square.vertices.push_back(tz::gl::Vertex{{{-0.5f, -0.5f, 0.0f}}, {{0.0f, 0.0f}}, {{}}, {{}}, {{}}});
-        square.vertices.push_back(tz::gl::Vertex{{{0.5f, 0.5f, 0.0f}}, {{1.0f, 0.5f}}, {{}}, {{}}, {{}}});
-        square.vertices.push_back(tz::gl::Vertex{{{-0.5f, 0.5f, 0.0f}}, {{0.0f, 0.5f}}, {{}}, {{}}, {{}}});
-        square.indices = {0, 1, 2, 3, 4, 5};
+		tz::gl::IndexedMesh square;
+		square.vertices.push_back(tz::gl::Vertex{{{-0.5f, -0.5f, 0.0f}}, {{0.0f, 0.0f}}, {{}}, {{}}, {{}}});
+		square.vertices.push_back(tz::gl::Vertex{{{0.5f, -0.5f, 0.0f}}, {{1.0f, 0.0f}}, {{}}, {{}}, {{}}});
+		square.vertices.push_back(tz::gl::Vertex{{{0.5f, 0.5f, 0.0f}}, {{1.0f, 0.5f}}, {{}}, {{}}, {{}}});
+		
+		square.vertices.push_back(tz::gl::Vertex{{{-0.5f, -0.5f, 0.0f}}, {{0.0f, 0.0f}}, {{}}, {{}}, {{}}});
+		square.vertices.push_back(tz::gl::Vertex{{{0.5f, 0.5f, 0.0f}}, {{1.0f, 0.5f}}, {{}}, {{}}, {{}}});
+		square.vertices.push_back(tz::gl::Vertex{{{-0.5f, 0.5f, 0.0f}}, {{0.0f, 0.5f}}, {{}}, {{}}, {{}}});
+		square.indices = {0, 1, 2, 3, 4, 5};
 
 		tz::gl::IndexedMesh monkey_head = tz::gl::load_mesh("res/models/monkeyhead.obj");
 		const tz::Vec3 cam_pos{{0.0f, 0.0f, 5.0f}};
@@ -128,7 +128,7 @@ int main()
 		tz::ext::imgui::emplace_window<MeshAdjustor>(triangle_pos);
 
 		tz::gl::Manager::Handle triangle_handle = m.add_mesh(triangle);
-        tz::gl::Manager::Handle square_handle = m.add_mesh(square);
+		tz::gl::Manager::Handle square_handle = m.add_mesh(square);
 		tz::gl::Manager::Handle monkeyhead_handle = m.add_mesh(monkey_head);
 
 		float rotation_y = 0.0f;
@@ -186,31 +186,31 @@ int main()
 		dev.add_resource_buffer(ubo);
 		dev.set_handle(m.get_indices());
 
-        tz::gl::IndexSnippetList triangle_snip;
-        triangle_snip.emplace_range(0, 2);
+		tz::gl::IndexSnippetList triangle_snip;
+		triangle_snip.emplace_range(0, 2);
 
-        tz::gl::IndexSnippetList square_snip;
-        square_snip.emplace_range(3, 8, 3);
+		tz::gl::IndexSnippetList square_snip;
+		square_snip.emplace_range(3, 8, 3);
 
 		tz::gl::IndexSnippetList monkey_snip;
 		for(std::size_t i = 0; i < num_meshes; i++)
 			monkey_snip.emplace_range(m, monkeyhead_handle);
 
-        tz::gl::IndexSnippetList double_snip;
+		tz::gl::IndexSnippetList double_snip;
 		double_snip.emplace_range(3, 8, m.get_vertices_offset(square_handle)); // Square
-        double_snip.emplace_range(0, 2, m.get_vertices_offset(triangle_handle)); // Triangle
-        // This should do both!
+		double_snip.emplace_range(0, 2, m.get_vertices_offset(triangle_handle)); // Triangle
+		// This should do both!
 
-        //dev.set_indices(triangle_snip);
-        //dev.set_indices(square_snip);
+		//dev.set_indices(triangle_snip);
+		//dev.set_indices(square_snip);
 		dev.set_indices(monkey_snip);
-        //dev.set_indices(double_snip);
+		//dev.set_indices(double_snip);
 
 		while(!wnd.is_close_requested())
 		{
 			rotation_y += 0.02f;
 
-        	dev.clear();
+			dev.clear();
 			o.bind();
 			for(std::size_t i = 0; i < num_meshes; i++)
 			{

@@ -213,18 +213,18 @@ tz::test::Case defined_ubo()
 
 int main()
 {
-    tz::test::Unit pre;
+	tz::test::Unit pre;
 
-    // We require topaz to be initialised.
-    {
-        tz::core::initialise("Shader Preprocessor Tests");
+	// We require topaz to be initialised.
+	{
+		tz::core::initialise("Shader Preprocessor Tests");
 		pre.add(no_modules());
 		pre.add(example_module());
 		pre.add(module_order());
 		pre.add(include_file());
 		pre.add(defined_ssbo());
 		pre.add(defined_ubo());
-        tz::core::terminate();
-    }
-    return pre.result();
+		tz::core::terminate();
+	}
+	return pre.result();
 }

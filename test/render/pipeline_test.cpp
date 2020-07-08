@@ -28,14 +28,14 @@ tz::test::Case add_and_clear()
 
 int main()
 {
-    tz::test::Unit pipeline;
+	tz::test::Unit pipeline;
 
-    // We require topaz to be initialised.
-    {
-        tz::core::initialise("Render Pipeline Tests");
+	// We require topaz to be initialised.
+	{
+		tz::core::initialise("Render Pipeline Tests");
 		pipeline.add(ctor());
 		pipeline.add(add_and_clear());
-        tz::core::terminate();
-    }
-    return pipeline.result();
+		tz::core::terminate();
+	}
+	return pipeline.result();
 }

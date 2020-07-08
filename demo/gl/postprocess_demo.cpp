@@ -11,22 +11,22 @@
 #include "GLFW/glfw3.h"
 
 const char *vertexShaderSource = "#version 430\n"
-    "layout (location = 0) in vec3 aPos;\n"
+	"layout (location = 0) in vec3 aPos;\n"
 	"layout (location = 1) in vec2 aTexcoord;\n"
 	"out vec2 texcoord;\n"
-    "void main()\n"
-    "{\n"
-    "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+	"void main()\n"
+	"{\n"
+	"   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
 	"	texcoord = aTexcoord;\n"
-    "}\0";
+	"}\0";
 const char *fragmentShaderSource = "#version 430\n"
-    "out vec4 FragColor;\n"
+	"out vec4 FragColor;\n"
 	"in vec2 texcoord;\n"
 	"uniform sampler2D checkerboard;\n"
-    "void main()\n"
-    "{\n"
+	"void main()\n"
+	"{\n"
 	"	FragColor = texture(checkerboard, texcoord);\n"
-    "}\n\0";
+	"}\n\0";
 
 int main()
 {
@@ -51,21 +51,21 @@ int main()
 		cpl.compile(*fs);
 		cpl.link(prg);
 
-        tz::gl::Frame second_target{1920, 1080};
-        tz::gl::Texture& render_to_me = second_target.emplace_texture(GL_COLOR_ATTACHMENT0);
-        {
-            // Render-to-texture details.
-            tz::gl::TextureDataDescriptor desc{GL_UNSIGNED_BYTE, GL_RGBA8, GL_RGBA, 1920, 1080};
-            tz::gl::TextureDataDescriptor depth_desc{GL_FLOAT, GL_DEPTH_COMPONENT16, GL_DEPTH_COMPONENT, 1920, 1080};
-            second_target.emplace_renderbuffer(GL_DEPTH_ATTACHMENT, depth_desc);
-            render_to_me.resize(desc);
-        }
+		tz::gl::Frame second_target{1920, 1080};
+		tz::gl::Texture& render_to_me = second_target.emplace_texture(GL_COLOR_ATTACHMENT0);
+		{
+			// Render-to-texture details.
+			tz::gl::TextureDataDescriptor desc{GL_UNSIGNED_BYTE, GL_RGBA8, GL_RGBA, 1920, 1080};
+			tz::gl::TextureDataDescriptor depth_desc{GL_FLOAT, GL_DEPTH_COMPONENT16, GL_DEPTH_COMPONENT, 1920, 1080};
+			second_target.emplace_renderbuffer(GL_DEPTH_ATTACHMENT, depth_desc);
+			render_to_me.resize(desc);
+		}
 
 		const float vertices[] = {
-        -0.5f, -0.5f, 0.0f, // left  
-         0.5f, -0.5f, 0.0f, // right 
-         0.0f,  0.5f, 0.0f  // top   
-    	};
+		-0.5f, -0.5f, 0.0f, // left  
+		 0.5f, -0.5f, 0.0f, // right 
+		 0.0f,  0.5f, 0.0f  // top   
+		};
 
 		const float texcoords[] = {
 			0.0f, 0.0f,
@@ -152,20 +152,20 @@ int main()
 
 		glClearColor(0.0f, 0.3f, 0.15f, 1.0f);
 		tz::render::Device dev{wnd.get_frame(), &prg, &o};
-        tz::render::Device dev2{&second_target, &prg, &o};
+		tz::render::Device dev2{&second_target, &prg, &o};
 		dev.set_handle(ibo_id);
-        dev2.set_handle(ibo_id);
+		dev2.set_handle(ibo_id);
 		tz::render::Pipeline pipeline;
 		pipeline.add(dev);
 		pipeline.add(dev2);
 		while(!wnd.is_close_requested())
 		{
-        	pipeline.clear();
+			pipeline.clear();
 			pipeline.render();
-            {
-                tz::gl::Image<tz::gl::PixelRGBA8> img = render_to_me.get_data<tz::gl::PixelRGBA, std::byte>();
-                checkerboard.set_data(img);
-            }
+			{
+				tz::gl::Image<tz::gl::PixelRGBA8> img = render_to_me.get_data<tz::gl::PixelRGBA, std::byte>();
+				checkerboard.set_data(img);
+			}
 
 			wnd.update();
 			tz::core::update();

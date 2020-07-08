@@ -10,17 +10,17 @@
 #include "GLFW/glfw3.h"
 
 const char *vertexShaderSource = "#version 330 core\n"
-    "layout (location = 0) in vec3 aPos;\n"
-    "void main()\n"
-    "{\n"
-    "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-    "}\0";
+	"layout (location = 0) in vec3 aPos;\n"
+	"void main()\n"
+	"{\n"
+	"   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+	"}\0";
 const char *fragmentShaderSource = "#version 330 core\n"
-    "out vec4 FragColor;\n"
-    "void main()\n"
-    "{\n"
-    "   FragColor = vec4(0.8f, 0.15f, 0.0f, 1.0f);\n"
-    "}\n\0";
+	"out vec4 FragColor;\n"
+	"void main()\n"
+	"{\n"
+	"   FragColor = vec4(0.8f, 0.15f, 0.0f, 1.0f);\n"
+	"}\n\0";
 
 int main()
 {
@@ -39,25 +39,25 @@ int main()
 		cpl.link(prg);
 
 		const float vertices[] = {
-        -0.5f, -0.5f, 0.0f, // A
-         0.0f, -0.5f, 0.0f, // B
-         -0.25f, 0.5f, 0.0f,  // C 
-         0.25f, 0.5f, 0.0f, // D  
-         0.5f, -0.5f, 0.0f // E
-    	};
+		-0.5f, -0.5f, 0.0f, // A
+		 0.0f, -0.5f, 0.0f, // B
+		 -0.25f, 0.5f, 0.0f,  // C 
+		 0.25f, 0.5f, 0.0f, // D  
+		 0.5f, -0.5f, 0.0f // E
+		};
 
-        /**
-         *          C       D
-         *          o       o
-         *         / \     / \
-         *        /   \   /   \
-         *       /     \ /     \
-         *      o-------o-------o
-         *      A       B       E
-         * 
-         * tri-left = {0, 1, 2} ABC
-         * tri-right = {1, 4, 3} BED
-         */
+		/**
+		 *          C       D
+		 *          o       o
+		 *         / \     / \
+		 *        /   \   /   \
+		 *       /     \ /     \
+		 *      o-------o-------o
+		 *      A       B       E
+		 * 
+		 * tri-left = {0, 1, 2} ABC
+		 * tri-right = {1, 4, 3} BED
+		 */
 		tz::gl::Object o;
 		std::size_t vbo_id = o.emplace_buffer<tz::gl::BufferType::Array>();
 		tz::gl::VBO* vbo = o.get<tz::gl::BufferType::Array>(vbo_id);
@@ -71,27 +71,27 @@ int main()
 			vertex_pool[0] += x;
 			vertex_pool[3] += x;
 			vertex_pool[6] += x;
-            vertex_pool[9] += x;
-            vertex_pool[12] += x;
+			vertex_pool[9] += x;
+			vertex_pool[12] += x;
 
 			vertex_pool[1] += y;
 			vertex_pool[4] += y;
 			vertex_pool[7] += y;
-            vertex_pool[10] += y;
-            vertex_pool[13] += y;
+			vertex_pool[10] += y;
+			vertex_pool[13] += y;
 
 			vertex_pool[2] += z;
 			vertex_pool[5] += z;
 			vertex_pool[8] += z;
-            vertex_pool[11] += z;
-            vertex_pool[14] += z;
+			vertex_pool[11] += z;
+			vertex_pool[14] += z;
 		};
 
 		o.format(vbo_id, tz::gl::fmt::three_floats);
 		std::size_t ibo_id = o.emplace_buffer<tz::gl::BufferType::Index>();
 		tz::gl::IBO* ibo = o.get<tz::gl::BufferType::Index>(ibo_id);
 		unsigned int indices[] = {0, 1, 2, 1, 4, 3};
-        ibo->resize(sizeof(indices));
+		ibo->resize(sizeof(indices));
 		ibo->send(indices);
 
 		tz::core::IWindow& wnd = tz::core::get().window();
@@ -135,7 +135,7 @@ int main()
 		while(!wnd.is_close_requested())
 		{
 			// Clear backbuffer.
-        	dev.clear();
+			dev.clear();
 			// Bind everything and go! MDI!
 			dev.render();
 
