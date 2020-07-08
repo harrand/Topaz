@@ -8,10 +8,10 @@
 namespace tz::input
 {
 	/**
-     * \addtogroup tz_input Topaz Input Library (tz::input)
-     * A collection of platform-agnostic input functions and classes.
-     * @{
-     */
+	 * \addtogroup tz_input Topaz Input Library (tz::input)
+	 * A collection of platform-agnostic input functions and classes.
+	 * @{
+	 */
 
 	struct KeyPressEvent
 	{

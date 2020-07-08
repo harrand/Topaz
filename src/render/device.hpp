@@ -19,10 +19,10 @@ namespace tz
 namespace tz::render
 {
 	/**
-     * \addtogroup tz_render Topaz Rendering Library (tz::render)
-     * High-level interface for 3D and 2D hardware-accelerated graphics programming. Used in combination with the \ref tz_gl "Topaz Graphics Library".
-     * @{
-     */
+	 * \addtogroup tz_render Topaz Rendering Library (tz::render)
+	 * High-level interface for 3D and 2D hardware-accelerated graphics programming. Used in combination with the \ref tz_gl "Topaz Graphics Library".
+	 * @{
+	 */
 
 	/**
 	 * Represents and controls the conditions under which render-invocations will take place.

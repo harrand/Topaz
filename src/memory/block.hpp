@@ -9,40 +9,40 @@
 
 namespace tz::mem
 {
-    /**
-     * \addtogroup tz_mem Topaz Memory Library (tz::mem)
-     * A collection of low-level abstractions around memory utilities not provided by the C++ standard library. This includes non-owning memory blocks, uniform memory-pools and more.
-     * @{
-     */
+	/**
+	 * \addtogroup tz_mem Topaz Memory Library (tz::mem)
+	 * A collection of low-level abstractions around memory utilities not provided by the C++ standard library. This includes non-owning memory blocks, uniform memory-pools and more.
+	 * @{
+	 */
 
-    std::size_t byte_distance(void* a, void* b);
+	std::size_t byte_distance(void* a, void* b);
 
-    /**
-     * Represents a non-owning block of pre-allocated memory.
-     */
-    struct Block
-    {
-        Block(void* begin, void* end);
-        Block(void* begin, std::size_t size);
-        std::size_t size() const;
-        static Block null();
+	/**
+	 * Represents a non-owning block of pre-allocated memory.
+	 */
+	struct Block
+	{
+		Block(void* begin, void* end);
+		Block(void* begin, std::size_t size);
+		std::size_t size() const;
+		static Block null();
 
-        void* begin;
-        void* end;
-    };
+		void* begin;
+		void* end;
+	};
 
-    /**
-     * Similar to a block, but allocates the block dynamically and uses that (RAII).
-     */
-    struct AutoBlock : public Block
-    {
-        AutoBlock(std::size_t size);
-        ~AutoBlock();
-    };
+	/**
+	 * Similar to a block, but allocates the block dynamically and uses that (RAII).
+	 */
+	struct AutoBlock : public Block
+	{
+		AutoBlock(std::size_t size);
+		~AutoBlock();
+	};
 
-    /**
-     * @}
-     */
+	/**
+	 * @}
+	 */
 }
 
 #endif // TOPAZ_CONTIGUOUS_BLOCK_HPP

@@ -10,10 +10,10 @@
 namespace tz::mem
 {
 	/**
-     * \addtogroup tz_mem Topaz Memory Library (tz::mem)
-     * A collection of low-level abstractions around memory utilities not provided by the C++ standard library. This includes non-owning memory blocks, uniform memory-pools and more.
-     * @{
-     */
+	 * \addtogroup tz_mem Topaz Memory Library (tz::mem)
+	 * A collection of low-level abstractions around memory utilities not provided by the C++ standard library. This includes non-owning memory blocks, uniform memory-pools and more.
+	 * @{
+	 */
 
 	namespace detail
 	{
