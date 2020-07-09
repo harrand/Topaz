@@ -153,23 +153,31 @@ namespace tz
 
 	tz::Vec3 Quaternion::to_eulers() const
 	{
-		/*
-		// Retrieve axis angle and then convert.
-		AxisAndAngle axis = this->to_axis();
-		// We dig into tz::algo here so we will need to obtain raw array copies rather than use vector operations.
-		std::array<float, 3> axis_cpy;
-		{
-			float* d = axis.axis.normalised().data();
-			axis_cpy[0] = d[0]; axis_cpy[1] = d[1]; axis_cpy[2] = d[2];
-		}
-		std::array<float, 3> eulers_data = tz::algo::axis_angle_to_euler<float>(axis_cpy, axis.angle);
-		return {eulers_data};
-		*/
+		// https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles#QuaterniontoEulerAnglesConversion
 		float qx = (*this)[0]; float qy = (*this)[1]; float qz = (*this)[2]; float qw = (*this)[3];
-		float heading = std::atan2(2.0f * qy * qw - 2.0f * qx * qz, 1.0f - 2.0f * (qy * qy) - 2.0f * (qz * qz));
-		float attitude = std::asin(2.0f * qx * qy + 2.0f * qz * qw);
-		float bank = std::atan2(2.0f * qx * qw - 2.0f * qy * qz, 1.0f - 2.0f * (qx * qx) - 2.0f * (qz * qz));
-		return {{attitude, heading, bank}};
+		float sinr_cosp = 2.0f * (qw * qx + qy * qz);
+		float cosr_cosp = 1.0f - 2.0f * (qx * qx + qy * qy);
+		// roll
+		float x = std::atan2(sinr_cosp, cosr_cosp);
+
+		// pitch
+		float sinp = 2.0f * (qw * qy - qz * qx);
+		float y;
+		if(std::abs(sinp) >= 1)
+		{
+			y = std::copysignf(3.14159 / 2.0f, sinp);
+		}
+		else
+		{
+			y = std::asin(sinp);
+		}
+
+		// yaw
+		float siny_cosp = 2.0f * (qw * qz + qx * qy);
+		float cosy_cosp = 1.0f - 2.0f * (qy * qy + qz * qz);
+		float z = std::atan2(siny_cosp, cosy_cosp);
+
+		return {{x, y, z}};
 	}
 
 	Quaternion Quaternion::from_matrix(tz::Mat4 rotation)

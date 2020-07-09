@@ -48,7 +48,7 @@ tz::test::Case euler_quat_euler()
 	{
 		tz::Vec4 rx = rot_a * subject;
 		tz::Vec4 ry = rot_b * subject;
-		topaz_expect(test_case, rx == ry, "Euler->Quat->Euler: Euler0 is not the same rotation as Euler1. Euler0 = {", rx[0], ", ", rx[1], ", ", rx[2], "}. Euler1 = {", ry[0], ", ", ry[1], ", ", ry[2], "}");
+		topaz_expect(test_case, (rx-ry).length() < 0.01f, "Euler->Quat->Euler: Euler0 is not the same rotation as Euler1. Euler0 = {", rx[0], ", ", rx[1], ", ", rx[2], "}. Euler1 = {", ry[0], ", ", ry[1], ", ", ry[2], "}");
 	}
 	return test_case;
 }
