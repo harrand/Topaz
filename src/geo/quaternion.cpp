@@ -165,7 +165,7 @@ namespace tz
 		float y;
 		if(std::abs(sinp) >= 1)
 		{
-			y = std::copysignf(3.14159 / 2.0f, sinp);
+			y = std::copysignf(tz::pi / 2.0f, sinp);
 		}
 		else
 		{
