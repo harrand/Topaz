@@ -11,9 +11,23 @@ namespace tz::algo
 	{
 		if constexpr(Begin < End)
 		{
-			function(std::integral_constant<std::size_t, Begin>{}.value);
+			function(std::integral_constant<std::size_t, Begin>{});
 			static_for<Begin + 1, End>(function);
 		}
+	}
+
+	template<typename Needle, typename... Haystack>
+	constexpr bool static_find()
+	{
+		bool b = false;
+		static_for<0, sizeof...(Haystack)>([&b]([[maybe_unused]] auto i) constexpr
+		{
+			if constexpr(std::is_same<std::decay_t<decltype(std::get<i.value>(std::declval<std::tuple<Haystack...>>()))>, Needle>::value)
+			{
+				b = true;
+			}
+		});
+		return b;
 	}
 }
 

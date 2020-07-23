@@ -2,6 +2,7 @@
 #define TOPAZ_GEO_VECTOR_HPP
 #include "memory/align.hpp"
 #include "memory/block.hpp"
+#include "algo/static.hpp"
 
 namespace tz
 {
@@ -15,6 +16,8 @@ namespace tz
 	class Vector
 	{
 	public:
+		template<typename... Ts, typename = std::enable_if_t<tz::algo::static_find<T, Ts...>()>>
+		constexpr Vector(Ts&&... ts);
 		constexpr Vector(std::array<T, S> data);
 		Vector() = default;
 
