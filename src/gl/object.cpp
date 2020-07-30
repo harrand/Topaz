@@ -72,7 +72,7 @@ namespace tz::gl
 		return this->vao != rhs.vao;
 	}
 
-	std::size_t Object::add_buffer(std::unique_ptr<tz::gl::IBuffer> buffer)
+	BufferHandle Object::add_buffer(std::unique_ptr<tz::gl::IBuffer> buffer)
 	{
 		auto find_result = std::find(this->buffers.begin(), this->buffers.end(), buffer);
 		if(find_result == this->buffers.end())
@@ -88,7 +88,7 @@ namespace tz::gl
 		}
 	}
 
-	std::size_t Object::add_index_buffer(std::unique_ptr<tz::gl::IBuffer> index_buffer)
+	BufferHandle Object::add_index_buffer(std::unique_ptr<tz::gl::IBuffer> index_buffer)
 	{
 		std::size_t id = this->add_buffer(std::move(index_buffer));
 		this->index_buffer_ids.push_back(id);

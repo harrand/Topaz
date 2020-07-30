@@ -37,10 +37,10 @@ tz::test::Case dot()
 {
 	tz::test::Case test_case("tz::geo::Vec4 Dot Product Tests");
 
-	tz::Vec4 a(18.0f, 39.0f, 31.0f, 1.0f);
-	tz::Vec4 b(101.0f, 58.0f, 75.0f, 1.0f);
-	tz::Vec4 c(9.0f, 2.0f, 7.0f, 1.0f);
-	tz::Vec4 d(4.0f, 8.0f, 10.0f, 1.0f);
+	tz::Vec4 a{18.0f, 39.0f, 31.0f, 1.0f};
+	tz::Vec4 b{101.0f, 58.0f, 75.0f, 1.0f};
+	tz::Vec4 c{9.0f, 2.0f, 7.0f, 1.0f};
+	tz::Vec4 d{4.0f, 8.0f, 10.0f, 1.0f};
 
 	topaz_expect(test_case, a.length() == 52.981128f, "tz::gl::Vec4 Produced incorrect magnitude of: ", a.length());
 	topaz_expect(test_case, a.dot(b) == 6406, "tz::gl::Vec4 Dot Product yielded incorrect result. Expected ", 6406.0f, ", but got ", a.dot(b));

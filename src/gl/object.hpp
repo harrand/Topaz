@@ -78,7 +78,7 @@ namespace tz::gl
 		 * @param buffer The buffer to take ownership of.
 		 * @return Handle ID of the now-owned Buffer.
 		 */
-		std::size_t add_buffer(std::unique_ptr<tz::gl::IBuffer> buffer);
+		BufferHandle add_buffer(std::unique_ptr<tz::gl::IBuffer> buffer);
 		/**
 		 * Take ownership of an existing Buffer and retrieve an opaque ID handle corresponding to that Buffer. Also, interpret the Buffer as an index-buffer.
 		 * 
@@ -87,7 +87,7 @@ namespace tz::gl
 		 * @param buffer The buffer to take ownership of.
 		 * @return Handle ID of the now-owned Buffer.
 		 */
-		std::size_t add_index_buffer(std::unique_ptr<tz::gl::IBuffer> index_buffer);
+		BufferHandle add_index_buffer(std::unique_ptr<tz::gl::IBuffer> index_buffer);
 		/**
 		 * Create a new Buffer in-place and retrieve an opaque ID handle corresponding to the new Buffer.
 		 * 
@@ -98,7 +98,7 @@ namespace tz::gl
 		 * @return Handle ID of the newly-created and owned Buffer.
 		 */
 		template<tz::gl::BufferType Type, typename... Args>
-		std::size_t emplace_buffer(Args&&... args);
+		BufferHandle emplace_buffer(Args&&... args);
 		/**
 		 * Format a vertex attribute with the given index and standardised format specifier.
 		 */

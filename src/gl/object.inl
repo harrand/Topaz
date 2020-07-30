@@ -2,7 +2,7 @@
 namespace tz::gl
 {
 	template<tz::gl::BufferType Type, typename... Args>
-	std::size_t Object::emplace_buffer(Args&&... args)
+	BufferHandle Object::emplace_buffer(Args&&... args)
 	{
 		this->bind();
 		auto buffer_ptr = std::make_unique<tz::gl::Buffer<Type>>(std::forward<Args>(args)...);

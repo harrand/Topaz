@@ -93,7 +93,7 @@ int main()
 
 		vbo->resize(sizeof(vertices));
 		vbo->send(vertices);
-		tz::Vec3 triangle_pos{{0.0f, 0.0f, 0.0f}};
+		tz::Vec3 triangle_pos{0.0f, 0.0f, 0.0f};
 		auto add_pos = [&triangle_pos](float x, float y, float z)
 		{
 			triangle_pos[0] += x;
@@ -109,7 +109,6 @@ int main()
 		unsigned int indices[] = {0, 1, 2};
 		ibo->send(indices);
 
-		float rotation_x = 0.0f;
 		float rotation_y = 0.0f;
 
 		tz::core::IWindow& wnd = tz::core::get().window();
@@ -154,8 +153,8 @@ int main()
 
 			dev.clear();
 			o.bind();
-			tz::Mat4 m = tz::geo::model(triangle_pos, tz::Vec3{{0.0f, rotation_y, 0.0f}}, tz::Vec3{{1.0f, 1.0f, 1.0f}});
-			tz::Mat4 v = tz::geo::view(tz::Vec3{{0.0f, 0.0f, 5.0f}}, tz::Vec3{{0.0f, 0.0f, 0.0f}});
+			tz::Mat4 m = tz::geo::model(triangle_pos, tz::Vec3{0.0f, rotation_y, 0.0f}, tz::Vec3{1.0f, 1.0f, 1.0f});
+			tz::Mat4 v = tz::geo::view(tz::Vec3{0.0f, 0.0f, 5.0f}, tz::Vec3{0.0f, 0.0f, 0.0f});
 			tz::Mat4 p = tz::geo::perspective(1.57f, 1920.0f/1080.0f, 0.1f, 1000.0f);
 			matrix.set(0, p * v * m);
 			ubo->bind();
