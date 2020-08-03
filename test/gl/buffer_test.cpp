@@ -6,6 +6,34 @@
 #include "core/core.hpp"
 #include "core/tz_glad/glad_context.hpp"
 #include "gl/object.hpp"
+#include "algo/static.hpp"
+
+template<tz::gl::BufferType Type>
+constexpr bool confirm()
+{
+	using BufferT = tz::gl::Buffer<Type>;
+	return !tz::algo::copyable<BufferT>() && tz::algo::moveable<BufferT>();
+}
+
+tz::test::Case statics()
+{
+	tz::test::Case test_case("tz::gl::Buffer Static Tests");
+	using namespace tz::gl;
+	topaz_expect(test_case, confirm<BufferType::AtomicCounter>(), "tz::gl ACBO failed static tests");
+	topaz_expect(test_case, confirm<BufferType::CopySource>(), "tz::gl CSBO failed static tests");
+	topaz_expect(test_case, confirm<BufferType::CopyDestination>(), "tz::gl CDBO failed static tests");
+	topaz_expect(test_case, confirm<BufferType::IndirectComputeDispatchCommand>(), "tz::gl DICBO failed static tests");
+	topaz_expect(test_case, confirm<BufferType::IndirectCommandArgument>(), "tz::gl DIBO failed static tests");
+	topaz_expect(test_case, confirm<BufferType::Index>(), "tz::gl IBO failed static tests");
+	topaz_expect(test_case, confirm<BufferType::PixelReadTarget>(), "tz::gl PPBO failed static tests");
+	topaz_expect(test_case, confirm<BufferType::TextureDataSource>(), "tz::gl PUBO failed static tests");
+	topaz_expect(test_case, confirm<BufferType::QueryResult>(), "tz::gl QBO failed static tests");
+	topaz_expect(test_case, confirm<BufferType::ShaderStorage>(), "tz::gl SSBO failed static tests");
+	topaz_expect(test_case, confirm<BufferType::TextureData>(), "tz::gl TBO failed static tests");
+	topaz_expect(test_case, confirm<BufferType::TransformFeedback>(), "tz::gl TFBO failed static tests");
+	topaz_expect(test_case, confirm<BufferType::UniformStorage>(), "tz::gl UBO failed static tests");
+	return test_case;
+}
 
 tz::test::Case binding()
 {
@@ -291,6 +319,7 @@ int main()
 	{
 		tz::core::initialise("Buffer Tests");
 
+		buffer.add(statics());
 		buffer.add(binding());
 		buffer.add(mapping());
 		buffer.add(terminality());

@@ -70,6 +70,11 @@ namespace tz::gl
 		 * Construct an empty Buffer.
 		 */
 		IBuffer();
+		IBuffer(const IBuffer& copy) = delete;
+		IBuffer(IBuffer&& move);
+
+		IBuffer& operator=(const IBuffer& rhs) = delete;
+		IBuffer& operator=(IBuffer&& rhs);
 		/**
 		 * Destroy the buffer and all data that might exist alongside it.
 		 */
@@ -256,6 +261,12 @@ namespace tz::gl
 	{
 	public:
 		Buffer();
+		Buffer(const Buffer<T>& copy) = delete;
+		Buffer(Buffer<T>&& move);
+
+		Buffer& operator=(const Buffer<T>& rhs) = delete;
+		Buffer& operator=(Buffer<T>&& rhs);
+
 		virtual void bind() const override;
 		virtual void unbind() const override;
 	};
@@ -265,6 +276,11 @@ namespace tz::gl
 	{
 	public:
 		Buffer(std::size_t layout_qualifier_id);
+		Buffer(const Buffer<BufferType::ShaderStorage>& copy) = delete;
+		Buffer(Buffer<BufferType::ShaderStorage>&& move);
+
+		Buffer<BufferType::ShaderStorage>& operator=(const Buffer<BufferType::ShaderStorage>& rhs) = delete;
+		Buffer<BufferType::ShaderStorage>& operator=(Buffer<BufferType::ShaderStorage>&& rhs);
 
 		virtual void bind() const override;
 		virtual void unbind() const override;

@@ -36,6 +36,15 @@ namespace tz::gl
 	}
 
 	template<BufferType T>
+	Buffer<T>::Buffer(Buffer<T>&& move): IBuffer(move){}
+
+	template<BufferType T>
+	Buffer<T>& Buffer<T>::operator=(Buffer<T>&& rhs)
+	{
+		return static_cast<Buffer<T>&>(IBuffer::operator=(rhs));
+	}
+
+	template<BufferType T>
 	void Buffer<T>::bind() const
 	{
 		IBuffer::verify();

@@ -13,6 +13,17 @@ namespace tz::gl
 		glGenBuffers(1, &this->handle);
 	}
 
+	IBuffer::IBuffer(IBuffer&& move): handle(move.handle)
+	{
+		move.handle = 0;
+	}
+
+	IBuffer& IBuffer::operator=(IBuffer&& rhs)
+	{
+		std::swap(this->handle, rhs.handle);
+		return *this;
+	}
+
 	IBuffer::~IBuffer()
 	{
 		glDeleteBuffers(1, &this->handle);
@@ -199,6 +210,13 @@ namespace tz::gl
 	{
 		this->bind();
 		this->unbind();
+	}
+
+	SSBO::Buffer(SSBO&& move): IBuffer(std::move(move)){}
+	
+	SSBO& SSBO::operator=(SSBO&& rhs)
+	{
+		return static_cast<SSBO&>(IBuffer::operator=(std::move(rhs)));
 	}
 
 	void SSBO::bind() const
