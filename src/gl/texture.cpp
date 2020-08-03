@@ -26,8 +26,23 @@ namespace tz::gl
 		this->internal_unbind();
 	}
 
+	Texture::Texture(Texture&& move): handle(move.handle), descriptor(move.descriptor)
+	{
+		topaz_assert(move.handle != 0, "tz::gl::Texture::Texture(Texture&&): Provided move candidate was invalid (move.handle == ", move.handle, ")");
+		move.handle = 0;
+	}
+
+	Texture& Texture::operator=(Texture&& rhs)
+	{
+		std::swap(this->handle, rhs.handle);
+		auto desc_tmp = this->descriptor;
+		this->descriptor = rhs.descriptor;
+		rhs.descriptor = desc_tmp;
+	}
+
 	Texture::~Texture()
 	{
+		// "glDeleteTextures silently ignores 0's and names that do not correspond to existing textures." - https://www.khronos.org/registry/OpenGL-Refpages/es2.0/xhtml/glDeleteTextures.xml
 		glDeleteTextures(1, &this->handle);
 	}
 

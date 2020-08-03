@@ -46,7 +46,12 @@ namespace tz::gl
 		 * Create an empty Texture.
 		 */
 		Texture();
-		virtual ~Texture();
+		Texture(const Texture& copy) = delete;
+		Texture(Texture&& move);
+
+		Texture& operator=(const Texture& rhs) = delete;
+		Texture& operator=(Texture&& rhs);
+		~Texture();
 		/**
 		 * Set the parameters of the texture.
 		 */

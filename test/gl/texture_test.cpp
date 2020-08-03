@@ -6,6 +6,15 @@
 #include "core/core.hpp"
 #include "core/tz_glad/glad_context.hpp"
 #include "gl/texture.hpp"
+#include "algo/static.hpp"
+
+tz::test::Case statics()
+{
+	tz::test::Case test_case("tz::gl::Texture Static Tests");
+	topaz_expect(test_case, !tz::algo::copyable<tz::gl::Texture>(), "tz::gl::Texture is copyable. This is wrong.");
+	topaz_expect(test_case, tz::algo::moveable<tz::gl::Texture>(), "tz::gl::Texture is not moveable. This is wrong.");
+	return test_case;
+}
 
 tz::test::Case checkerboard_texture()
 {
@@ -40,6 +49,7 @@ int main()
 	// We require topaz to be initialised.
 	{
 		tz::core::initialise("Texture Tests");
+		tex.add(statics());
 		tex.add(checkerboard_texture());
 		tz::core::terminate();
 	}

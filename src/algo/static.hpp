@@ -29,6 +29,20 @@ namespace tz::algo
 		});
 		return b;
 	}
+
+	template<class T>
+	constexpr bool moveable()
+	{
+		return std::is_move_constructible_v<T>
+			&& std::is_move_assignable_v<T>;
+	}
+
+	template<class T>
+	constexpr bool copyable()
+	{
+		return std::is_copy_constructible_v<T>
+			&& std::is_copy_assignable_v<T>;
+	}
 }
 
 #endif // TOPAZ_ALGO_STATIC_HPP
