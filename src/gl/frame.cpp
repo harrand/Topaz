@@ -6,6 +6,15 @@ namespace tz::gl
 {
 	IFrame::IFrame(unsigned int width, unsigned int height): width(width), height(height){}
 
+	IFrame::IFrame(IFrame&& move): IFrame(move.width, move.height){}
+
+	IFrame& IFrame::operator=(IFrame&& rhs)
+	{
+		std::swap(this->width, rhs.width);
+		std::swap(this->height, rhs.height);
+		return *this;
+	}
+
 	unsigned int IFrame::get_width() const
 	{
 		return this->width;
@@ -41,6 +50,20 @@ namespace tz::gl
 	Frame::Frame(unsigned int width, unsigned int height): IFrame(width, height), handle(0), attachments(), pending_attachments()
 	{
 		glGenFramebuffers(1, &this->handle);
+	}
+
+	Frame::Frame(Frame&& move): IFrame(std::move(move)), handle(move.handle), attachments(std::move(move.attachments)), pending_attachments(std::move(move.pending_attachments))
+	{
+		move.handle = 0;
+	}
+
+	Frame& Frame::operator=(Frame&& rhs)
+	{
+		IFrame::operator=(std::move(rhs));
+		std::swap(this->handle, rhs.handle);
+		std::swap(this->attachments, rhs.attachments);
+		std::swap(this->pending_attachments, rhs.pending_attachments);
+		return *this;
 	}
 
 	Frame::~Frame()
@@ -104,6 +127,15 @@ namespace tz::gl
 	WindowFrame::WindowFrame(GLFWwindow* handle): IFrame(0,0), handle(handle)
 	{
 		// TODO: Sort out width and height stuff...
+	}
+
+	WindowFrame::WindowFrame(WindowFrame&& move): IFrame(std::move(move)), handle(move.handle){}
+
+	WindowFrame& WindowFrame::operator=(WindowFrame&& rhs)
+	{
+		IFrame::operator=(std::move(rhs));
+		std::swap(this->handle, rhs.handle);
+		return *this;
 	}
 
 	void WindowFrame::bind() const

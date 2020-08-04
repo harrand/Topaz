@@ -30,6 +30,11 @@ namespace tz::gl
 		 * @param height Height, in pixels.
 		 */
 		IFrame(unsigned int width, unsigned int height);
+		IFrame(const IFrame& copy) = delete;
+		IFrame(IFrame&& move);
+
+		IFrame& operator=(const IFrame& rhs) = delete;
+		IFrame& operator=(IFrame&& rhs);
 		virtual ~IFrame() = default;
 
 		/**
@@ -87,6 +92,10 @@ namespace tz::gl
 		 * Construct a frame with the given width and height, in pixels.
 		 */
 		Frame(unsigned int width, unsigned int height);
+		Frame(const Frame& copy) = delete;
+		Frame(Frame&& move);
+		Frame& operator=(const Frame& rhs) = delete;
+		Frame& operator=(Frame&& rhs);
 		~Frame();
 
 		/**
@@ -153,6 +162,12 @@ namespace tz::gl
 	{
 	public:
 		WindowFrame(GLFWwindow* handle);
+		WindowFrame(const WindowFrame& copy) = delete;
+		WindowFrame(WindowFrame&& move);
+
+		WindowFrame& operator=(const WindowFrame& rhs) = delete;
+		WindowFrame& operator=(WindowFrame&& rhs);
+		~WindowFrame() = default;
 		virtual void bind() const override;
 		virtual bool complete() const override;
 		virtual bool operator==(GLuint handle) const override;

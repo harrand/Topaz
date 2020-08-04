@@ -6,6 +6,19 @@
 #include "core/core.hpp"
 #include "core/tz_glad/glad_context.hpp"
 #include "gl/frame.hpp"
+#include "algo/static.hpp"
+
+tz::test::Case statics()
+{
+	tz::test::Case test_case("tz::gl::Frame Static Tests");
+	topaz_expect(test_case, !tz::algo::copyable<tz::gl::Frame>(), "tz::gl::Frame is copyable. This is wrong.");
+	topaz_expect(test_case, tz::algo::moveable<tz::gl::Frame>(), "tz::gl::Frame is not moveable. This is wrong.");
+	
+	topaz_expect(test_case, !tz::algo::copyable<tz::gl::WindowFrame>(), "tz::gl::Frame is copyable. This is wrong.");
+	topaz_expect(test_case, tz::algo::moveable<tz::gl::WindowFrame>(), "tz::gl::Frame is not moveable. This is wrong.");
+	
+	return test_case;
+}
 
 tz::test::Case frame_bindings()
 {
