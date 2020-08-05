@@ -12,9 +12,9 @@ namespace tz::gl
 	{
 		tz::Vec3 position;
 		tz::Vec2 texcoord;
-		tz::Vec3 normal;
-		tz::Vec3 tangent;
-		tz::Vec3 bitangent;
+		tz::Vec3 normal = {0.0f, 0.0f, 0.0f};
+		tz::Vec3 tangent = {0.0f, 0.0f, 0.0f};
+		tz::Vec3 bitangent = {0.0f, 0.0f, 0.0f};
 	};
 
 	using Index = unsigned int;

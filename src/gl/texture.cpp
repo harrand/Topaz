@@ -38,6 +38,7 @@ namespace tz::gl
 		auto desc_tmp = this->descriptor;
 		this->descriptor = rhs.descriptor;
 		rhs.descriptor = desc_tmp;
+		return *this;
 	}
 
 	Texture::~Texture()
