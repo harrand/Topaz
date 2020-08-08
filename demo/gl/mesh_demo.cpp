@@ -14,7 +14,7 @@
 #include "GLFW/glfw3.h"
 #include "gl/tz_imgui/imgui_context.hpp"
 
-const char *vertexShaderSource = "#version 460\n"
+const char *vtx_shader_src = "#version 460\n"
 	"layout (location = 0) in vec3 aPos;\n"
 	"layout (location = 1) in vec2 aTexcoord;\n"
 	"#ssbo matrices\n"
@@ -27,7 +27,7 @@ const char *vertexShaderSource = "#version 460\n"
 	"   gl_Position = mvp[gl_DrawID] * vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
 	"	texcoord = aTexcoord;\n"
 	"}\0";
-const char *fragmentShaderSource = "#version 430\n"
+const char *frg_shader_src = "#version 430\n"
 	"out vec4 FragColor;\n"
 	"in vec2 texcoord;\n"
 	"uniform sampler2D checkerboard;\n"
@@ -65,7 +65,7 @@ int main()
 		tz::ext::imgui::track_object(&o);
 
 		tz::gl::p::SSBOModule* ubo_module = nullptr;
-		tz::gl::ShaderPreprocessor pre{vertexShaderSource};
+		tz::gl::ShaderPreprocessor pre{vtx_shader_src};
 		{
 			std::size_t ubo_module_id = pre.emplace_module<tz::gl::p::SSBOModule>(&o);
 			pre.preprocess();
@@ -82,7 +82,7 @@ int main()
 		tz::gl::Shader* vs = prg.emplace(tz::gl::ShaderType::Vertex);
 		vs->upload_source(pre.result());
 		tz::gl::Shader* fs = prg.emplace(tz::gl::ShaderType::Fragment);
-		fs->upload_source(fragmentShaderSource);
+		fs->upload_source(frg_shader_src);
 
 		auto cpl_diag = cpl.compile(*vs);
 		topaz_assert(cpl_diag.successful(), "Shader Compilation Fail: ", cpl_diag.get_info_log());

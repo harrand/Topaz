@@ -10,7 +10,7 @@
 #include "render/pipeline.hpp"
 #include "GLFW/glfw3.h"
 
-const char *vertexShaderSource = "#version 430\n"
+const char *vtx_shader_src = "#version 430\n"
 	"layout (location = 0) in vec3 aPos;\n"
 	"layout (location = 1) in vec2 aTexcoord;\n"
 	"out vec2 texcoord;\n"
@@ -19,7 +19,7 @@ const char *vertexShaderSource = "#version 430\n"
 	"   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
 	"	texcoord = aTexcoord;\n"
 	"}\0";
-const char *fragmentShaderSource = "#version 430\n"
+const char *frg_shader_src = "#version 430\n"
 	"out vec4 FragColor;\n"
 	"in vec2 texcoord;\n"
 	"uniform sampler2D checkerboard;\n"
@@ -43,9 +43,9 @@ int main()
 		tz::gl::ShaderCompiler cpl;
 		tz::gl::ShaderProgram prg;
 		tz::gl::Shader* vs = prg.emplace(tz::gl::ShaderType::Vertex);
-		vs->upload_source(vertexShaderSource);
+		vs->upload_source(vtx_shader_src);
 		tz::gl::Shader* fs = prg.emplace(tz::gl::ShaderType::Fragment);
-		fs->upload_source(fragmentShaderSource);
+		fs->upload_source(frg_shader_src);
 
 		cpl.compile(*vs);
 		cpl.compile(*fs);

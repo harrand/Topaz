@@ -10,7 +10,7 @@
 #include "render/device.hpp"
 #include "GLFW/glfw3.h"
 
-const char *vertexShaderSource = "#version 430\n"
+const char *vtx_shader_src = "#version 430\n"
 	"layout (location = 0) in uint pos_index;\n"
 	"#ssbo position_buffer\n"
 	"{\n"
@@ -21,7 +21,7 @@ const char *vertexShaderSource = "#version 430\n"
 	"{\n"
 	"   gl_Position = vec4(positions[gl_VertexID*3], positions[(gl_VertexID*3) + 1], positions[(gl_VertexID*3) + 2], 1.0);\n"
 	"}\0";
-const char *fragmentShaderSource = "#version 430\n"
+const char *frg_shader_src = "#version 430\n"
 	"out vec4 FragColor;\n"
 	"void main()\n"
 	"{\n"
@@ -36,7 +36,7 @@ int main()
 		tz::gl::Object o;
 		tz::gl::p::SSBOModule* ssbo_module = nullptr;
 
-		tz::gl::ShaderPreprocessor pre{vertexShaderSource};
+		tz::gl::ShaderPreprocessor pre{vtx_shader_src};
 		{
 			std::size_t ssbo_module_id = pre.emplace_module<tz::gl::p::SSBOModule>(&o);
 			pre.preprocess();
@@ -52,7 +52,7 @@ int main()
 		// We want to upload the preprocessed source.
 		vs->upload_source(pre.result());
 		tz::gl::Shader* fs = prg.emplace(tz::gl::ShaderType::Fragment);
-		fs->upload_source(fragmentShaderSource);
+		fs->upload_source(frg_shader_src);
 
 		cpl.compile(*vs);
 		cpl.compile(*fs);

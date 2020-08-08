@@ -12,16 +12,20 @@
 #include "gl/shader_compiler.hpp"
 #include "gl/frame.hpp"
 
-constexpr const char *vertexShaderSource = "#version 430\n"
-	"void main()\n"
-	"{\n"
-	"}\n";
-constexpr const char *fragmentShaderSource = "#version 430\n"
-	"out vec4 FragColor;\n"
-	"void main()\n"
-	"{\n"
-	"	FragColor = vec4(0.0);\n"
-	"}\n";
+constexpr const char *vtx_shader_src = R"GLSL(
+	#version 430
+	void main()
+	{
+	}
+	)GLSL";
+constexpr const char *frg_shader_src = R"GLSL(
+	#version 430
+	out vec4 FragColor;
+	void main()
+	{
+		FragColor = vec4(0.0);
+	}
+	)GLSL";
 
 tz::gl::ShaderProgram valid_program()
 {
@@ -29,9 +33,9 @@ tz::gl::ShaderProgram valid_program()
 	{
 		tz::gl::ShaderCompiler cpl;
 		tz::gl::Shader* vs = prog.emplace(tz::gl::ShaderType::Vertex);
-		vs->upload_source(vertexShaderSource);
+		vs->upload_source(vtx_shader_src);
 		tz::gl::Shader* fs = prog.emplace(tz::gl::ShaderType::Fragment);
-		fs->upload_source(fragmentShaderSource);
+		fs->upload_source(frg_shader_src);
 
 		auto cpldiag_vs = cpl.compile(*vs);
 		auto cpldiag_fs = cpl.compile(*fs);

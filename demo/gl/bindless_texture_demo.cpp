@@ -14,31 +14,33 @@
 #include "render/device.hpp"
 #include "GLFW/glfw3.h"
 
-const char *vertexShaderSource = "#version 430\n"
-	"layout (location = 0) in vec3 aPos;\n"
-	"layout (location = 1) in vec2 aTexcoord;\n"
-	"#ubo matrices\n"
-	"{\n"
-	"	mat4 mvp;\n"
-	"};\n"
-	"out vec2 texcoord;\n"
-	"void main()\n"
-	"{\n"
-	"   gl_Position = mvp * vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-	"	texcoord = aTexcoord;\n"
-	"}\0";
-const char *fragmentShaderSource = "#version 430\n"
-	"#extension GL_ARB_bindless_texture : require\n"
-	"out vec4 FragColor;\n"
-	"in vec2 texcoord;\n"
-	"#ubo bricks\n"
-	"{\n"
-	"   tz_bindless_sampler bricks_sampler;\n"
-	"};\n"
-	"void main()\n"
-	"{\n"
-	"	FragColor = texture(bricks_sampler, texcoord);\n"
-	"}\n\0";
+const char* vtx_shader_src = R"GLSL(
+	#version 430
+	layout (location = 0) in vec3 aPos;
+	layout (location = 1) in vec2 aTexcoord;
+	#ubo matrices
+	{
+		mat4 mvp;
+	};
+	out vec2 texcoord;
+	void main()
+	{
+		gl_Position = mvp * vec4(aPos.x, aPos.y, aPos.z, 1.0);
+		texcoord = aTexcoord;
+	})GLSL";
+const char* frg_shader_src = R"GLSL(
+	#version 430
+	#extension GL_ARB_bindless_texture : require
+	out vec4 FragColor;
+	in vec2 texcoord;
+	#ubo bricks
+	{
+		tz_bindless_sampler bricks_sampler;
+	};
+	void main()
+	{
+		FragColor = texture(bricks_sampler, texcoord);
+	})GLSL";
 
 int main()
 {
@@ -49,13 +51,13 @@ int main()
 		tz::ext::imgui::track_object(&o);
 		tz::gl::p::UBOModule* ubo_module = nullptr;
 		std::string preprocess_vertex_source;
-		tz::gl::ShaderPreprocessor pre{vertexShaderSource};
+		tz::gl::ShaderPreprocessor pre{vtx_shader_src};
 		{
 			std::size_t ubo_module_id = pre.emplace_module<tz::gl::p::UBOModule>(&o);
 			pre.emplace_module<tz::gl::p::BindlessSamplerModule>();
 			pre.preprocess();
 			preprocess_vertex_source = pre.result();
-			pre.set_source(fragmentShaderSource);
+			pre.set_source(frg_shader_src);
 			pre.preprocess();
 			ubo_module = static_cast<tz::gl::p::UBOModule*>(pre[ubo_module_id]);
 		}
@@ -126,7 +128,6 @@ int main()
 		unsigned int indices[] = {0, 1, 2};
 		ibo->send(indices);
 
-		float rotation_x = 0.0f;
 		float rotation_y = 0.0f;
 
 		tz::core::IWindow& wnd = tz::core::get().window();
