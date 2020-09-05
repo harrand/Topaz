@@ -19,7 +19,7 @@ RenderBuffer::~RenderBuffer()
 	glDeleteRenderbuffers(1, &(this->renderbuffer_handle));
 }
 
-FrameBuffer::FrameBuffer(int width, int height): width(width), height(height), framebuffer_handle(0), attachments({})
+FrameBuffer::FrameBuffer(int width, int height): width(width), height(height), framebuffer_handle(0), attachments()
 {
 	glGenFramebuffers(1, &(this->framebuffer_handle));
 }
