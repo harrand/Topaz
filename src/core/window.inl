@@ -1,73 +1,28 @@
-template<class GUIType, typename... Args>
-GUIType& Window::emplace_child(Args&&... args)
+#include "input/input_listener.hpp"
+
+namespace tz::core
 {
-	// result_pair is <iterator, bool>
-	std::shared_ptr<GUIType> gui_shared = std::make_shared<GUIType>(std::forward<Args>(args)...);
-	this->window_gui_element.heap_children.push_back(gui_shared);
-	gui_shared->parent = &this->window_gui_element;
-	this->conditionally_register_additional_listeners<GUIType>(gui_shared.get());
-	return *gui_shared.get();
-}
-
-namespace tz::detail
-{
-	// SFINAE test
-	template <typename T>
-	class HasGetMouseListener
+	template<typename T, typename... Args>
+	tz::input::KeyListener&	IWindow::emplace_custom_key_listener(T callback, Args&&... args)
 	{
-		typedef char one;
-		typedef long two;
-
-		template <typename C> static one test( decltype(&C::get_mouse_listener) ){return {};}
-		template <typename C> static two test(...){return {};}
-
-	public:
-		enum { value = sizeof(test<T>(0)) == sizeof(char) };
-	};
-
-	template <typename T>
-	class HasGetKeyListener
+		auto custom_listener_ptr = std::make_shared<tz::input::CustomKeyListener<T>>(callback, std::forward<Args>(args)...);
+		this->register_key_listener(custom_listener_ptr);
+		return *custom_listener_ptr;
+	}
+	
+	template<typename T, typename... Args>
+	tz::input::TypeListener& IWindow::emplace_custom_type_listener(T callback, Args&&... args)
 	{
-		typedef char one;
-		typedef long two;
-
-		template <typename C> static one test( decltype(&C::get_key_listener) ){return {};}
-		template <typename C> static two test(...){return {};}
-
-	public:
-		enum { value = sizeof(test<T>(0)) == sizeof(char) };
-	};
-}
-
-template<typename GUIType>
-void Window::dispose_child([[maybe_unused]] GUIType *gui)
-{
-	if constexpr(tz::detail::HasGetKeyListener<GUIType>::value)
-	{
-		if(gui->key_sensitive())
-			this->deregister_listener(*gui->get_key_listener());
+		auto custom_listener_ptr = std::make_shared<tz::input::CustomTypeListener<T>>(callback, std::forward<Args>(args)...);
+		this->register_type_listener(custom_listener_ptr);
+		return *custom_listener_ptr;
 	}
 
-	if constexpr(tz::detail::HasGetMouseListener<GUIType>::value)
+	template<typename TUpdate, typename TClick, typename... Args>
+	tz::input::MouseListener& IWindow::emplace_custom_mouse_listener(TUpdate update, TClick click, Args&&... args)
 	{
-		if(gui->mouse_sensitive())
-			this->deregister_listener(*gui->get_mouse_listener());
+		auto custom_listener_ptr = std::make_shared<tz::input::CustomMouseListener<TUpdate, TClick>>(update, click, std::forward<Args>(args)...);
+		this->register_mouse_listener(custom_listener_ptr);
+		return *custom_listener_ptr;
 	}
-}
-
-template<class GUIType>
-void Window::conditionally_register_additional_listeners([[maybe_unused]] GUIType *gui_type)
-{
-	if constexpr(tz::detail::HasGetKeyListener<GUIType>::value)
-	{
-		if(gui_type->key_sensitive())
-			this->register_listener(*gui_type->get_key_listener());
-	}
-
-	if constexpr(tz::detail::HasGetMouseListener<GUIType>::value)
-	{
-		if(gui_type->mouse_sensitive())
-			this->register_listener(*gui_type->get_mouse_listener());
-	}
-
 }

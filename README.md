@@ -1,31 +1,44 @@
-# Topaz
+# Topaz 2
 ## About
 
-Topaz is a multimedia engine written in C++ to be used as a cross-platform abstraction to be used to create applications, games or other programs which demand a modern-C++ mixture of performance and abstraction. Topaz has been in development since it started as an extended project for a sixth-form informal EPQ in 2015.
+Topaz 2 is a rewrite of the [Topaz](https://github.com/Harrand/Topaz) engine. Topaz 2 is an open-source cross-platform graphics/game engine written in C++17.
+
+The Topaz Project has been ongoing since it began as a school project in 2015.
+
+##### Note: Topaz 2 is new and is not yet ready for use. Consider using the legacy Topaz engine. Despite all its flaws, it is usable.
 
 ### Built With
 
-* [GLEW](http://glew.sourceforge.net/) - The OpenGL Extension Wrangler Library, to access OpenGL trivially.
-* [SDL2](https://www.libsdl.org/) - Simple DirectMedia Layer, cross-platform library used for windowing.
-* [SDL2_mixer 2.0](https://www.libsdl.org/projects/SDL_mixer/) - SDL2 Plugin used to load audio files (.wav, .ogg files etc...)
-* [SDL_ttf 2.0](https://www.libsdl.org/projects/SDL_ttf/) - SDL2 Plugin used to load TrueType fonts (.ttf files)
+* [GLAD](https://github.com/Dav1dde/glad) - Open Source, multi-language Vulkan/GL/GLES/EGL/GLX/WGL loader-generator based on the official specs. Used to load OpenGL procedures at runtime for use by the engine.
+* [GLFW](https://www.glfw.org/) - Open Source, multi-platform library for OpenGL, OpenGL ES and Vulkan development on the desktop. Used as a cross-platform abstraction for input event processing and windowing.
+* [CMake](https://cmake.org/) - Open-source, cross-platform family of tools designed to build, test and package software. Used to generate build system files so users can build topaz with the build system of their choice.
 
 ### License
 
-This project is licensed under the Apache License 2.0 - see the [LICENSE.md](LICENSE.md) file for details.
+TODO: Decide license
+
+Copyright © 2019 [Harrand](https://github.com/Harrand)
 
 ## Installation
 ### Prerequisites
 
-* OpenGL v4.3 or later. See your graphics card information to verify that you support this.
-* SDL2-supported hardware. See [their wiki on installation](http://wiki.libsdl.org/Installation) to verify this.
+* OpenGL <TODO: insert-version-here>
+* Platform which supports all dependencies. See the 'Built With' section above to enumerate these dependencies.
 ### Compilation
 
-If you have CMake:
+If you have Python, you can use the new provided configure_debug and configure_release scripts. These will automatically configure CMake and choose a build directory for you. You should however provide a CMake generator to their args.
 
-See `CMakeLists.txt` in the root directory.
+#### Example: Creating MinGW Makefiles in Debug Mode
+`> python configure_debug.py MinGW Makefiles`
 
-If you do not, see the windows batch files (.bat) included in the root folder to aid with compilation. If you are not on Windows nor currently have CMake, then you must [install CMake](https://cmake.org/) to use this library.
+Will provide a Makefile for all targets which will output build data to `PROJECT_SOURCE_DIR/build/debug`. Note, you should expect to find the resultant Makefile in here too.
+
+The functionality of configure_release.py is identical, except that build data will be outputted to `PROJECT_SOURCE_DIR/build/release`
+
+Invoking CMake manually is a fine approach aswell. You should know of the following defines Topaz expects in the top-level CMakeLists.txt:
+* `TOPAZ_DEBUG` should be assigned to 1 if you want to build in Debug, or 0 if you wish to build in Release.
+
+Note: These should ***always*** be defined, it is their value that should be controlled.
 
 ## Documentation
-See the [wiki](https://github.com/Harrand/Topaz/wiki).
+See the [wiki](https://github.com/Harrand/Topaz-2/wiki).

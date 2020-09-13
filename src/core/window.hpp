@@ -1,413 +1,309 @@
+//
+// Created by Harrand on 13/12/2019.
+//
+
 #ifndef TOPAZ_WINDOW_HPP
 #define TOPAZ_WINDOW_HPP
-#ifndef GLEW_STATIC
-#define GLEW_STATIC
-#endif
-#include <string>
-#include "GL/glew.h"
-#include "core/listener.hpp"
-#include "graphics/gui/gui.hpp"
-#include "graphics/texture.hpp"
+#include "core/tz_glfw/glfw_context.hpp"
+#include <memory>
+#include <vector>
 
+// Forward declares
 namespace tz
 {
-	namespace gui
+	namespace input
 	{
-		enum class MessageBoxType : Uint32
-		{
-			ERROR = SDL_MESSAGEBOX_ERROR, WARNING = SDL_MESSAGEBOX_WARNING, INFO = SDL_MESSAGEBOX_INFORMATION
-		};
-	}
-	namespace debug
-	{
-		/**
-		 * This is the default OpenGLDebugCallbackFunction in Window.
-		 * @param source - Which subsystem of OpenGL has lead to this callback invocation
-		 * @param type - Reason for the invocation (e.g error, undefined behaviour)
-		 * @param id - Error/Warning Code. Non-significant error and warning codes shall be silently ignored by this callback
-		 * @param severity - Severity of the error; notification, low, medium, or high
-		 * @param length - Unused
-		 * @param message - The debug message
-		 * @param user_parameters - Unused
-		 */
-		inline void default_ogl_debug_output(GLenum source, GLenum type, GLuint id, GLenum severity, [[maybe_unused]] GLsizei length, const GLchar *message, [[maybe_unused]] const void *user_parameters)
-		{
-			// ignore non-significant error/warning codes
-			if (id == 131169 || id == 131185 || id == 131218 || id == 131204) return;
+		struct KeyListener;
+		struct TypeListener;
+		struct MouseListener;
 
-			std::cout << "---------------" << std::endl;
-			std::cout << "Debug message (" << id << "): " << message << std::endl;
-
-			switch (source)
-			{
-				case GL_DEBUG_SOURCE_API:
-					std::cout << "Source: API";
-					break;
-				case GL_DEBUG_SOURCE_WINDOW_SYSTEM:
-					std::cout << "Source: Window System";
-					break;
-				case GL_DEBUG_SOURCE_SHADER_COMPILER:
-					std::cout << "Source: Shader Compiler";
-					break;
-				case GL_DEBUG_SOURCE_THIRD_PARTY:
-					std::cout << "Source: Third Party";
-					break;
-				case GL_DEBUG_SOURCE_APPLICATION:
-					std::cout << "Source: Application";
-					break;
-				case GL_DEBUG_SOURCE_OTHER:
-					std::cout << "Source: Other";
-					break;
-			}
-			std::cout << std::endl;
-
-			switch (type)
-			{
-				case GL_DEBUG_TYPE_ERROR:
-					std::cout << "Type: Error";
-					break;
-				case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR:
-					std::cout << "Type: Deprecated Behaviour";
-					break;
-				case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:
-					std::cout << "Type: Undefined Behaviour";
-					break;
-				case GL_DEBUG_TYPE_PORTABILITY:
-					std::cout << "Type: Portability";
-					break;
-				case GL_DEBUG_TYPE_PERFORMANCE:
-					std::cout << "Type: Performance";
-					break;
-				case GL_DEBUG_TYPE_MARKER:
-					std::cout << "Type: Marker";
-					break;
-				case GL_DEBUG_TYPE_PUSH_GROUP:
-					std::cout << "Type: Push Group";
-					break;
-				case GL_DEBUG_TYPE_POP_GROUP:
-					std::cout << "Type: Pop Group";
-					break;
-				case GL_DEBUG_TYPE_OTHER:
-					std::cout << "Type: Other";
-					break;
-			}
-			std::cout << std::endl;
-			switch (severity)
-			{
-				case GL_DEBUG_SEVERITY_HIGH:
-					std::cout << "Severity: high";
-					break;
-				case GL_DEBUG_SEVERITY_MEDIUM:
-					std::cout << "Severity: medium";
-					break;
-				case GL_DEBUG_SEVERITY_LOW:
-					std::cout << "Severity: low";
-					break;
-				case GL_DEBUG_SEVERITY_NOTIFICATION:
-					std::cout << "Severity: notification";
-					break;
-			}
-			std::cout << std::endl;
-			std::cout << std::endl;
-		}
+		struct KeyPressEvent;
+		struct CharPressEvent;
+		struct MouseUpdateEvent;
+		struct MouseClickEvent;
 	}
 }
 
-class Listener;
-class MouseListener;
-class KeyListener;
-
-class Window
+namespace tz::core
 {
-public:
-	//using OpenGLDebugCallbackFunction = std::function<void(GLenum, GLenum, GLuint, GLenum, GLsizei, const GLchar*, void*)>;
-	typedef void (*OpenGLDebugCallbackFunction)(GLenum, GLenum, GLuint, GLenum, GLsizei, const GLchar*, const void*);
-	friend class MessageBox;
 	/**
-	 * Constructs a Window from all parameters.
-	 * @param title - Title of the Window bar
-	 * @param x_pixels - Number of pixels from the left of the screen to create the window
-	 * @param y_pixels - Number of pixels from the top of the screen to create the window
-	 * @param width_pixels - Width of the window, in pixels
-	 * @param height_pixels - Height of the window, in pixels
+	 * Interface for a high-level implementation of a cross-platform window.
 	 */
-	Window(std::string title, int x_pixels, int y_pixels, int width_pixels, int height_pixels);
-	/**
-	 * Constructs a Window from compact parameters.
-	 * @param title - Title of the Window bar
-	 * @param position_pixel_space - 2-dimensional Vector representing the position of the top-left of the Window on the screen, in pixels
-	 * @param dimensions_pixel_space - 2-dimensional Vector representing the corresponding width and height of the Window on the screen, in pixels
-	 */
-	Window(std::string title, const Vector2I& position_pixel_space, const Vector2I& dimensions_pixel_space);
-	/**
-	 * Safely dispose of all SDL components and allow any subclasses to also have this behaviour.
-	 */
-	virtual ~Window();
-	/**
-	 * Update (and render) the window.
-	 */
-	void update(Shader& gui_shader, Shader* hdr_gui_shader = nullptr);
-	/**
-	 * Get the position of the top-left of the Window, depending on what screen-space is specified.
-	 * @param screen_space - The specified screen-space to format the return value as
-	 * @return - A Vector2I if ScreenSpace::PIXELS is passed, or a Vector2F if ScreenSpace::NORMALISED is passed
-	 */
-	std::variant<Vector2I, Vector2F> get_position(tz::gui::ScreenSpace screen_space) const;
-	/**
-	 * Get the position of the top-left of the Window, in pixels.
-	 * @return - 2-dimensional Vector corresponding to the x and y coordinates of the top-left of the Window
-	 */
-	Vector2I get_position_pixels() const;
-	/**
-	 * Set the position of the top-left of the Window, depending on what screen-space is specified.
-	 * @param position - Either a Vector2I representing the pixel-coordinate (should be done if ScreenSpace::PIXELS is passed), or a Vector2F representing the normalised-screen-space coordinate (should be done if ScreenSpace::NORMALISED is passed)
-	 * @param screen_space - The specified screen-space to interpret the input as
-	 */
-	void set_position(std::variant<Vector2I, Vector2F> position, tz::gui::ScreenSpace screen_space);
-	/**
-	 * Set the position of the top-left of the Window, in pixel-screen-space.
-	 * @param position_pixels - 2-dimensional Vector representing the position of the top-left of the Window, in pixels
-	 */
-	void set_position_pixels(Vector2I position_pixels);
-	/**
-	 * Set the position of the Window such that it sits directly in the middle of the display.
-	 * @param mask - Mask of which dimensions to apply the centering on (e.g, passing {true, false} performs centering only on the horizontal-axis)
-	 */
-	void centre_position(const Vector2<bool>& mask = {true, true});
-	/**
-	 * Get the dimensions of the Window, depending on what screen-space is specified.
-	 * @param screen_space - The specified screen-space to format the return value as
-	 * @return - A Vector2I if ScreenSpace::PIXELS is passed, or a Vector2F if ScreenSpace::NORMALISED is passed
-	 */
-	std::variant<Vector2I, Vector2F> get_dimensions(tz::gui::ScreenSpace screen_space) const;
-	/**
-	 * Get the dimensions of the Window, in pixels.
-	 * @return - 2-dimensional Vector corresponding to the x and y coordinates of the top-left of the Window
-	 */
-	Vector2I get_dimensions_pixels() const;
-	/**
-	 * Get the width of the Window, in pixels.
-	 * @return - Number of pixels wide for this Window
-	 */
-	int get_width() const;
-	/**
-	 * Set the width of the Window, in pixels.
-	 * @param width - Desired number of pixels representing the width of the window
-	 */
-	void set_width(int width);
-	/**
-	 * Get the height of the Window, in pixels.
-	 * @return - Number of pixels high for this Window
-	 */
-	int get_height() const;
-	/**
-	 * Set the height of the Window, in pixels.
-	 * @param height - Desired number of pixels representing the height of the window
-	 */
-	void set_height(int height);
-	/**
-	 * Get whether the Window has been requested to close.
-	 * @return - True if the Window should be closed. False otherwise
-	 */
-	bool is_close_requested() const;
-	/**
-	 * Specifies which techniques a Window will use each frame to update its buffers.
-	 */
-	enum class SwapIntervalType : int
+	class IWindow
 	{
-		LATE_SWAP_TEARING = -1,
-		IMMEDIATE_UPDATES = 0,
-		VSYNC = 1,
+	public:
+		/**
+		 * Retrieve the title of the window.
+		 * @return - Title of the window
+		 */
+		virtual const char* get_title() const = 0;
+		/**
+		 * Give the window a new title.
+		 * @param title - Desired new title of the window
+		 */
+		virtual void set_title(const char* title) = 0;
+		
+		/**
+		 * Get the width of the window, in pixels.
+		 * @return - Width in pixels
+		 */
+		virtual int get_width() const = 0;
+		/**
+		 * Get the height of the window, in pixels.
+		 * @return - Height in pixels
+		 */
+		virtual int get_height() const = 0;
+		/**
+		 * Set the width of the window to a new value, in pixels.
+		 * @param width - Desired new width in pixels
+		 */
+		virtual void set_width(int width) const = 0;
+		/**
+		 * Set the height of the window to a new value, in pixels.
+		 * @param height - Desired new height in pixels
+		 */
+		virtual void set_height(int height) const = 0;
+		/**
+		 * Set both the width and height of the window at once. Both values are in pixels.
+		 * @param width - Width in pixels
+		 * @param height - Height in pixels
+		 */
+		virtual void set_size(int width, int height) const = 0;
+		
+		/**
+		 * Get the underlying tz::gl::Frame corresponding to this window.
+		 * 
+		 * Note: Use this to set the window as a render-target.
+		 * @return Frame corresponding to this window.
+		 */
+		virtual tz::gl::IFrame* get_frame() const = 0;
+
+		/**
+		 * Query as to whether the window is currently visible to the user.
+		 * Note: This will return true if the window is technically visible but occluded.
+		 * @return - True if the user should be able to see the window, otherwise false
+		 */
+		virtual bool is_visible() const = 0;
+		/**
+		 * Set whether the window should be visible to the user or not.
+		 * @param visible - Whether the window should be visible
+		 */
+		virtual void set_visible(bool visible) const = 0;
+		
+		/**
+		 * Query as to whether the window is currently able to be resized by the user.
+		 * @return - True if the user can resize the window, otherwise false
+		 */
+		virtual bool is_resizeable() const = 0;
+		/**
+		 * Set whether the user should be able to resize the window.
+		 * @param resizeable - Whether the window should be resizeable by the user
+		 */
+		virtual void set_resizeable(bool resizeable) const = 0;
+		
+		/**
+		 * Query as to whether the window is currently in-focus.
+		 * @return - True if the window is focused, otherwise false
+		 */
+		virtual bool is_focused() const = 0;
+		/**
+		 * Set whether the window should be focused or not.
+		 * @param focused - Whether the window should be focused
+		 */
+		virtual void set_focused(bool focused) const = 0;
+		
+		/**
+		 * Query as to whether the user has requested the window to close.
+		 * It is expected that the window be destroyed the frame after it was requested to close.
+		 * @return - True if the window is about to close, otherwise false
+		 */
+		virtual bool is_close_requested() const = 0;
+		/**
+		 * Request that the window close as soon as possible.
+		 * This is likely to be at the end of the next frame.
+		 */
+		virtual void request_close() const = 0;
+	
+		/**
+		 * Set the underlying GL context to be the active context.
+		 * This means that subsequent OpenGL operations will apply to this window.
+		 */
+		virtual void set_active_context() const = 0;
+		/**
+		 * Query as to whether this window's underlying GL context is currently the active context.
+		 * @return - True if this window has the active context, otherwise false
+		 */
+		virtual bool is_active_context() const = 0;
+		
+		/**
+		 * Request that the window swap buffers.
+		 */
+		virtual void update() const = 0;
+		/**
+		 * Send a key-press event to the window.
+		 * @param kpe - Information about the key-press
+		 */
+		virtual void handle_key_event(const tz::input::KeyPressEvent& kpe) = 0;
+		/**
+		 * Send a character-typed event to the window.
+		 * @param cpe - Information about the character typed
+		 */
+		virtual void handle_type_event(const tz::input::CharPressEvent& cpe) = 0;
+		/**
+		 * TODO: Document
+		 * @param pos
+		 */
+		virtual void handle_mouse_event(const tz::input::MouseUpdateEvent& pos) = 0;
+		/**
+		 * TODO: Document
+		 * @param click
+		 */
+		virtual void handle_click_event(const tz::input::MouseClickEvent& click) = 0;
+	
+		/**
+		 * Register a new key-press listener. The new listener will be notified of any events received by the window.
+		 * Note: If the listener was already registered by this window, this method has no effect.
+		 * @param listener - Allocated listener that this window should share ownership of and inform of events
+		 */
+		virtual void register_key_listener(std::shared_ptr<tz::input::KeyListener> listener) = 0;
+		/**
+		 * Unregister an existing key-press listener. The listener will no longer be notified of any events received by the window.
+		 * Note: If the listener wasn't previously registered by this window, this method has no effect.
+		 * @param listener - Allocated listener that the window will no longer share ownership of
+		 */
+		virtual void unregister_key_listener(std::shared_ptr<tz::input::KeyListener> listener) = 0;
+	
+		/**
+		 * Register a new character-typed listener. The new listener will be notified of any events received by the window.
+		 * Note: If the listener was already registered by this window, this method has no effect.
+		 * @param listener - Allocated listener that this window should share ownership of and inform of events
+		 */
+		virtual void register_type_listener(std::shared_ptr<tz::input::TypeListener> listener) = 0;
+		/**
+		 * Unregister an existing character-typed listener. The listener will no longer be notified of any events received by the window.
+		 * Note: If the listener wasn't previously registered by this window, this method has no effect.
+		 * @param listener - Allocated listener that the window will no longer share ownership of
+		 */
+		virtual void unregister_type_listener(std::shared_ptr<tz::input::TypeListener> listener) = 0;
+		/**
+		 * TODO: Document
+		 * @param listener - Allocated listener that this window should share ownership of and inform of events
+		 */
+		virtual void register_mouse_listener(std::shared_ptr<tz::input::MouseListener> listener) = 0;
+		/**
+		 * TODO: Document
+		 * @param listener - Allocated listener that this window should share ownership of and inform of events
+		 */
+		virtual void unregister_mouse_listener(std::shared_ptr<tz::input::MouseListener> listener) = 0;
+		
+		/**
+		 * Construct a new key-pressed listener in-place and register it for this window.
+		 * Note: This is expected to be a CustomKeyListener<T>.
+		 * @tparam T - Listener callback type. This is likely to be a lambda type
+		 * @tparam Args - Types of additional arguments used to construct the listener
+		 * @param callback - Callback value to be invoked when an event is received
+		 * @param args - Additional argument values required to construct the listener
+		 * @return - Reference to the constructed listener
+		 */
+		template<typename T, typename... Args>
+		tz::input::KeyListener& emplace_custom_key_listener(T callback, Args&&... args);
+		/**
+		 * Construct a new character-typed listener in-place and register it for this window.
+		 * Note: This is expected to be a CustomTypeListener<T>.
+		 * @tparam T - Listener callback type. This is likely to be a lambda type
+		 * @tparam Args - Types of additional arguments used to construct the listener
+		 * @param callback - Callback value to be invoked when an event is received
+		 * @param args - Additional argument values required to construct the listener
+		 * @return - Reference to the constructed listener
+		 */
+		template<typename T, typename... Args>
+		tz::input::TypeListener& emplace_custom_type_listener(T callback, Args&&... args);
+		/**
+		 * TODO: Document
+		 */
+		template<typename TUpdate, typename TClick, typename... Args>
+		tz::input::MouseListener& emplace_custom_mouse_listener(TUpdate update, TClick click, Args&&... args);
+		/**
+		 * Register the underlying window implementation to be tracked by topaz.
+		 * This is required in order to receive input events.
+		 */
+		virtual void register_this(){}
 	};
-	/**
-	 * Query which SwapIntervalType is being used for this Window.
-	 * @return - The SwapIntervalType this Window is using
-	 */
-	SwapIntervalType get_swap_interval_type() const;
-	/**
-	 * Specify which SwapIntervalType should be used for this Window.
-	 * @param type - The SwapIntervalType the Window should use
-	 */
-	void set_swap_interval_type(SwapIntervalType type) const;
-	/**
-	 * Get whether this window has an OpenGL debug context.
-	 * This should be true if TOPAZ_DEBUG is defined.
-	 * @return - True if the OpenGL context is a debug context. False otherwise
-	 */
-	bool is_opengl_debugging_enabled() const;
-	/**
-	 * Set
-	 */
-	void set_debug_callback(Window::OpenGLDebugCallbackFunction debug_callback = tz::debug::default_ogl_debug_output) const;
-	/**
-	 * Get the title of this Window.
-	 * @return - Title of the Window
-	 */
-	std::string get_title() const;
-	/**
-	 * Change the string shown on the Window title.
-	 * @param new_title - The new title of the Window.
-	 */
-	void set_title(const std::string& new_title);
-	/**
-	 * Represents which type of Fullscreen states are available for a Window.
-	 */
-	enum class FullscreenType : Uint32
+
+
+	class GLFWWindow : public IWindow
 	{
-		VIDEO_MODE = SDL_WINDOW_FULLSCREEN,
-		DESKTOP_MODE = SDL_WINDOW_FULLSCREEN_DESKTOP,
-		WINDOWED_MODE = 0,
+	public:
+		explicit GLFWWindow(tz::ext::glfw::GLFWContext& context);
+		virtual const char* get_title() const override;
+		virtual void set_title(const char* title) override;
+		
+		virtual int get_width() const override;
+		virtual int get_height() const override;
+		virtual void set_width(int width) const override;
+		virtual void set_height(int height) const override;
+		virtual void set_size(int width, int height) const override;
+
+		virtual tz::gl::IFrame* get_frame() const override;
+		
+		virtual bool is_visible() const override;
+		virtual void set_visible(bool visible) const override;
+	
+		virtual bool is_resizeable() const override;
+		virtual void set_resizeable(bool resizeable) const override;
+	
+		virtual bool is_focused() const override;
+		virtual void set_focused(bool focused) const override;
+		
+		virtual bool is_close_requested() const override;
+		virtual void request_close() const override;
+		
+		virtual void set_active_context() const override;
+		virtual bool is_active_context() const override;
+		
+		virtual void update() const override;
+		virtual void handle_key_event(const tz::input::KeyPressEvent& kpe) override;
+		virtual void handle_type_event(const tz::input::CharPressEvent& cpe) override;
+		virtual void handle_mouse_event(const tz::input::MouseUpdateEvent& pos) override;
+		virtual void handle_click_event(const tz::input::MouseClickEvent& click) override;
+		
+		virtual void register_key_listener(std::shared_ptr<tz::input::KeyListener> listener) override;
+		virtual void unregister_key_listener(std::shared_ptr<tz::input::KeyListener> listener) override;
+	
+		virtual void register_type_listener(std::shared_ptr<tz::input::TypeListener> listener) override;
+		virtual void unregister_type_listener(std::shared_ptr<tz::input::TypeListener> listener) override;
+
+		virtual void register_mouse_listener(std::shared_ptr<tz::input::MouseListener> listener) override;
+		virtual void unregister_mouse_listener(std::shared_ptr<tz::input::MouseListener> listener) override;
+		
+		virtual void register_this() override;
+		
+		friend void tz::ext::glfw::register_window(tz::core::GLFWWindow*);
+	private:
+		/**
+		 * Retrieve the width and height of the window, in pixels.
+		 * @return - {width, height} in pixels
+		 */
+		std::pair<int, int> get_size() const;
+		/**
+		 * Debug-only helper method to perform sanity-checking.
+		 * Asserts if the window implementation is null.
+		 */
+		void verify() const;
+		void ensure_registered();
+		
+		/// Underlying window implementation. This should not be null.
+		tz::ext::glfw::GLFWWindowImpl* impl;
+		/// Stores all registered key-listeners.
+		std::vector<std::shared_ptr<tz::input::KeyListener>> key_listeners;
+		/// Stores all registered type-listeners.
+		std::vector<std::shared_ptr<tz::input::TypeListener>> type_listeners;
+		/// Stores all registered mouse-listeners.
+		std::vector<std::shared_ptr<tz::input::MouseListener>> mouse_listeners;
 	};
-	/**
-	 * Query whether the Window is in either of the two fullscreen-types.
-	 * @return - True if the Window is in either of the two fullscreen-types. False otherwise
-	 */
-	bool is_fullscreen() const;
-	/**
-	 * Get the fullscreen-type that the Window is currently in.
-	 * @return - Either VIDEO_MODE (true fullscreen), DESKTOP_MODE (fake fullscreen) or WINDOWED_MODE (not fullscreen).
-	 */
-	FullscreenType get_fullscreen() const;
-	/**
-	 * Specify the fullscreen-type that the Window should be in.
-	 * @param type - FullscreenType the Window should be in.
-	 */
-	void set_fullscreen(FullscreenType type) const;
-	/**
-	 * Query whether the window is currently minimised.
-	 * @return - True if Window is minimised. Otherwise false
-	 */
-	bool is_minimised() const;
-	/**
-	 * Set whether the window is minimised or not.
-	 * @param minimised - Whether the Window should be minimised or not
-	 */
-	void set_minimised(bool minimised);
-	/**
-	 * Query whether the Window has a border or not.
-	 * @return - True if the Window has a border. False otherwise
-	 */
-	bool has_border() const;
-	/**
-	 * Set whether the Window has a border or not.
-	 * @param has_border - Whether the Window should have a border
-	 */
-	void set_has_border(bool has_border);
-	/**
-	 * Query whether the Window is currently focused.
-	 * @return - True if the Window is in focus. False otherwise
-	 */
-	bool focused() const;
-	/**
-	 * Set the Window to be focused.
-	 */
-	void focus() const;
-	/**
-	 * Query whether the mouse-pointer lies inside the rectangle bounded by the Window.
-	 * @return - True if the mouse is in the Window. False otherwise
-	 */
-	bool mouse_inside() const;
-	/**
-	 * Query whether the Window has taken control from the mouse and trapped it.
-	 * @return - True if the mouse is trapped. False otherwise
-	 */
-	bool mouse_trapped() const;
-	/**
-	 * Ensure that all OpenGL render calls in the future render to this Window's framebuffer.
-	 */
-	void set_render_target() const;
-	/**
-	 * Clear the Window's framebuffer and set the background to a desired colour.
-	 * @param mask - Which buffer-bits to clear
-	 * @param r - Redness of the background colour, between 0.0 and 1.0
-	 * @param g - Greenness of the background colour, between 0.0 and 1.0
-	 * @param b - Blueness of the background colour, between 0.0 and 1.0
-	 * @param a - Alpha intensity of the background colour, between 0.0 and 1.0
-	 */
-	void clear(tz::graphics::BufferBit buffer_bit = tz::graphics::BufferBit::COLOUR_AND_DEPTH, float r = 0.0f, float g = 0.0f, float b = 0.0f, float a = 1.0f) const;
-	/**
-	 * Register an existing listener to this Window.
-	 * @param l - The polymorphic listener that this Window should administrate
-	 */
-	void register_listener(Listener& l);
-	/**
-	 * Deregister a listener that is currently being administrated by this Window.
-	 * @param l - The listener which should be de-registered
-	 */
-	void deregister_listener(const Listener& l);
-	/**
-	 * Get a container of all the GUI elements that are direct children of this Window.
-	 * @return - Container of all children
-	 */
-	std::vector<GUI*> get_children() const;
-	/**
-	 * Construct a GUI element in-place to be a child of this Window.
-	 * @tparam GUIType - The type of the GUI element (e.g Panel)
-	 * @tparam Args - Template parameter pack representing constructor parameters
-	 * @param args - The GUIType's constructor parameters
-	 * @return - Reference to the constructed child
-	 */
-	template<class GUIType, typename... Args>
-	GUIType& emplace_child(Args&&... args);
-	/**
-	 * Set an existing GUI element to be a child of this Window.
-	 * @param gui - The GUI element whose parent should be this Window
-	 * @return - True if the GUI element successfully became a child of this Window
-	 */
-	bool add_child(GUI* gui);
-	template<typename GUIType>
-	void dispose_child(GUIType* gui);
-private:
-	template<class GUIType>
-	void conditionally_register_additional_listeners([[maybe_unused]] GUIType* gui_type);
-	/// Container of all registered polymorphic listeners.
-	std::vector<Listener*> registered_listeners;
-	/// String representing the title of the Window.
-	std::string title;
-	/// Position of the top-left corner of the Window, in pixels.
-	Vector2I position_pixel_space;
-	/// Dimensions of the Window (width and height), in pixels.
-	Vector2I dimensions_pixel_space;
-	/// Underlying SDL2 window handle.
-	SDL_Window* sdl_window;
-	/// Underlying SDL2 GLContext handle.
-	SDL_GLContext sdl_gl_context;
-	/// Stores whether this Window has been requested to close.
-	bool close_requested;
-	/// The GUI element proxy held by this Window.
-	GUI window_gui_element;
-};
+	
+	using Window = GLFWWindow;
+}
 
-/**
- * Creates a displayable message-box.
- */
-class MessageBox
-{
-public:
-	/**
-	 * Construct a MessageBox with all specifications.
-	 * @param type - The type of this message-box, e.g error, warning
-	 * @param title - The title of the message-box
-	 * @param message - The message of the message-box
-	 * @param parent - The parent Window of this message-box. If nullptr is passed, no parent is assumed
-	 */
-	MessageBox(tz::gui::MessageBoxType type, std::string title, std::string message, Window* parent);
-	/**
-	 * Display the message-box.
-	 * @return - True if the message-box was successfully displayed. False otherwise
-	 */
-	bool display() const;
-private:
-	/// Stores a subject for this message-box (e.g error)
-	tz::gui::MessageBoxType type;
-	/// Title of the message-box.
-	std::string title;
-	/// Message of the message-box.
-	std::string message;
-	/// Optional Window parent of the message-box.
-	Window* parent;
-};
-
-#include "window.inl"
-
+#include "core/window.inl"
 #endif //TOPAZ_WINDOW_HPP

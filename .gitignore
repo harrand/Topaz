@@ -3,10 +3,11 @@ cpl/
 doc/
 bin/
 extern/
+build/
 
-# # I don't want the idea directory in my repo at all
+# I don't want the idea directory in my repo at all
 .idea
-# # I don't want any libs in my source directory (from unit tests) to leak through either.
+# I don't want any libs in my source directory (from unit tests) to leak through either (TZ1).
 src/test/**/*.a
 src/test/**/*.o
 
@@ -60,3 +61,7 @@ com_crashlytics_export_strings.xml
 crashlytics.properties
 crashlytics-build.properties
 fabric.properties
+
+# VSC
+*.code-workspace
+.vscode

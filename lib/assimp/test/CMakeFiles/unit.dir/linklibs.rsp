@@ -1,0 +1,1 @@
+ -LC:/Users/Harrand/Programming/Projects/Topaz-2/lib/assimp  -L/lib ../../libassimp.a ../../libzlibstatic.a ../../libIrrXML.a -lgcc_eh -lgcc_eh -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32 
