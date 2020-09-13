@@ -169,6 +169,12 @@ namespace tz::mem
 		std::cerr << " }\n";
 #endif
 	}
+
+	template<typename T>
+	UniformPool<T>::operator tz::mem::Block() const
+	{
+		return {this->begin, this->size_bytes};
+	}
 	
 	template<typename T>
 	bool UniformPool<T>::is_object(std::size_t index) const

@@ -125,6 +125,8 @@ namespace tz::mem
 		 */
 		template<typename As = T>
 		void debug_print_as() const;
+
+		explicit operator tz::mem::Block() const;
 	private:
 		/**
 		 * TODO: Document

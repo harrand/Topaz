@@ -13,6 +13,7 @@
 #include "render/device.hpp"
 #include "GLFW/glfw3.h"
 #include "gl/tz_imgui/imgui_context.hpp"
+#include "gl/resource_writer.hpp"
 
 const char *vtx_shader_src = "#version 460\n"
 	"layout (location = 0) in vec3 aPos;\n"
@@ -78,6 +79,7 @@ int main()
 		constexpr std::size_t num_meshes = 512;
 		ubo->terminal_resize(sizeof(tz::Mat4) * num_meshes);
 		tz::mem::UniformPool<tz::Mat4> matrix = ubo->map_uniform<tz::Mat4>();
+		tz::gl::TransformResourceWriter trans_writer{static_cast<tz::mem::Block>(matrix)};
 
 		tz::gl::ShaderCompiler cpl;
 		tz::gl::ShaderProgram prg;
@@ -221,11 +223,11 @@ int main()
 				// Three meshes in a horizontal line.
 				cur_pos[0] += (i % static_cast<std::size_t>(std::sqrt(num_meshes))) * 2.5f;
 				cur_pos[1] += std::floor(i / std::sqrt(num_meshes)) * 2.5f;
-				tz::Mat4 m = tz::geo::model(cur_pos, tz::Vec3{{0.0f, rotation_y, 0.0f}}, tz::Vec3{{1.0f, 1.0f, 1.0f}});
-				tz::Mat4 v = tz::geo::view(cam_pos, tz::Vec3{{0.0f, 0.0f, 0.0f}});
-				tz::Mat4 p = tz::geo::perspective(1.57f, 1920.0f/1080.0f, 0.1f, 1000.0f);
-				matrix.set(i, p * v * m);
+				
+				bool success = trans_writer.write(cur_pos, tz::Vec3{0.0f, rotation_y, 0.0f}, tz::Vec3{1.0f, 1.0f, 1.0f}, cam_pos, tz::Vec3{0.0f, 0.0f, 0.0f}, 1.57f, 1920.0f/1080.0f, 0.1f, 1000.0f);
+				topaz_assert(success, "TransformationWriter failed.");
 			}
+			trans_writer.reset();
 			dev.render();
 			tz::core::update();
 			wnd.update();
