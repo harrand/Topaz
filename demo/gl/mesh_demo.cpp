@@ -39,7 +39,7 @@ const char *frg_shader_src = "#version 430\n"
 class MeshAdjustor : public tz::ext::imgui::ImGuiWindow
 {
 public:
-	MeshAdjustor(tz::Vec3& offset): ImGuiWindow("Mesh Adjustor"), offset(offset){}
+	MeshAdjustor(tz::Vec3& offset, float& rotation_factor): ImGuiWindow("Mesh Adjustor"), offset(offset), rotation_factor(rotation_factor){}
 	virtual void render() override
 	{
 		ImGui::Begin("Mesh Adjustor", &this->visible);
@@ -47,10 +47,12 @@ public:
 		ImGui::SliderFloat("Mesh Offset X", &offset[0], -100.0f, 100.0f);
 		ImGui::SliderFloat("Mesh Offset Y", &offset[1], -100.0f, 100.0f);
 		ImGui::SliderFloat("Mesh Offset Z", &offset[2], -100.0f, 100.0f);
+		ImGui::InputFloat("Rotation Factor", &rotation_factor);
 		ImGui::End();
 	}
 private:
 	tz::Vec3& offset;
+	float& rotation_factor;
 };
 
 int main()
@@ -111,7 +113,7 @@ int main()
 		tz::gl::sort_indices(monkey_head, cam_pos);
 		tz::debug_printf("monkey head data size = %zu bytes, indices size = %zu bytes", monkey_head.data_size_bytes(), monkey_head.indices_size_bytes());
 
-		auto rgba_checkerboard = tz::ext::stb::read_image<tz::gl::PixelRGB8>("res/textures/bricks.jpg");
+		tz::gl::Image<tz::gl::PixelRGB8> rgba_checkerboard = tz::ext::stb::read_image<tz::gl::PixelRGB8>("res/textures/bricks.jpg");
 		tz::gl::Texture checkerboard;
 		checkerboard.set_parameters(tz::gl::default_texture_params);
 		checkerboard.set_data(rgba_checkerboard);
@@ -119,13 +121,14 @@ int main()
 		prg.attach_texture(0, &checkerboard, "checkerboard");
 
 		tz::Vec3 triangle_pos{{0.0f, 0.0f, 0.0f}};
+		float rotation_factor = 0.02f;
 		auto add_pos = [&triangle_pos](float x, float y, float z)
 		{
 			triangle_pos[0] += x;
 			triangle_pos[1] += y;
 			triangle_pos[2] += z;
 		};
-		tz::ext::imgui::emplace_window<MeshAdjustor>(triangle_pos);
+		tz::ext::imgui::emplace_window<MeshAdjustor>(triangle_pos, rotation_factor);
 
 		tz::gl::Manager::Handle triangle_handle = m.add_mesh(triangle);
 		tz::gl::Manager::Handle square_handle = m.add_mesh(square);
@@ -208,7 +211,7 @@ int main()
 
 		while(!wnd.is_close_requested())
 		{
-			rotation_y += 0.02f;
+			rotation_y += rotation_factor;
 
 			dev.clear();
 			o.bind();
