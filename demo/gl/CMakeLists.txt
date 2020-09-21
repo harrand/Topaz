@@ -36,6 +36,13 @@ add_executable(topaz_postprocess_demo
 add_dependencies(topaz_postprocess_demo topaz)
 target_link_libraries(topaz_postprocess_demo PRIVATE topaz)
 
+add_executable(topaz_shader_demo
+		shader_demo.cpp
+)
+
+add_dependencies(topaz_shader_demo topaz)
+target_link_libraries(topaz_shader_demo PRIVATE topaz)
+
 add_executable(topaz_ssbo_tzglp_demo
 		ssbo_tzglp_demo.cpp
 )
