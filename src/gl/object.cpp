@@ -132,6 +132,11 @@ namespace tz::gl
 		this->buffers[idx] = nullptr;
 	}
 
+	void Object::clear()
+	{
+		this->buffers.clear();
+	}
+
 	std::unique_ptr<tz::gl::IBuffer> Object::release(std::size_t idx)
 	{
 		topaz_assert(idx < this->size(), "tz::gl::Object::release(", idx, "): Index ", idx, " was out of range! Size: ", this->size());

@@ -69,6 +69,11 @@ namespace tz::ext::imgui::gl
 			ImGui::TextColored(ImVec4(0.7f, 0.7f, 1.0f, 1.0f), "%s", output_text.c_str());
 		}
 
+		if(ImGui::Button("Reset State"))
+		{
+			this->dummy_object->clear();
+		}
+
 		ImGui::End();
 		if(this->show_module_configuration)
 		{

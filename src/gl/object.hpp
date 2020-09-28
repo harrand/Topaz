@@ -181,6 +181,10 @@ namespace tz::gl
 		 */
 		void erase(std::size_t idx);
 		/**
+		 * Erase all buffers. All indices to existing buffers are invalidated.
+		 */
+		void clear();
+		/**
 		 * Relinquish ownership of the Buffer at the given index, yielding it to calling code. This is essentially a retrieve-and-erase. The result can trivially be added to another Object.
 		 * 
 		 * Note: After releasing at the index, expect the Buffer at the index to be nullptr.
