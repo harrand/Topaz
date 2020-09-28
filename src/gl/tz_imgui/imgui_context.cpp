@@ -172,7 +172,6 @@ namespace tz::ext::imgui
 			if(ImGui::BeginMenu("tz::gl"))
 			{
 				ImGui::MenuItem("gl::Object Tracking", nullptr, &track_objects);
-				ImGui::MenuItem("gl::Buffer Tracking", nullptr, &tracker.visible);
 				ImGui::MenuItem("TZGLP Previewer", nullptr, &tzglp.visible);
 				ImGui::MenuItem("Texture Sentinel Tracker", nullptr, &textracker.visible);
 				ImGui::EndMenu();
