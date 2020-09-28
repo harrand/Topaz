@@ -44,6 +44,12 @@ namespace tz::gl
 		return this->snippets.size() - 1;
 	}
 
+	std::size_t IndexSnippetList::add_range(IndexSnippet snippet)
+	{
+		this->snippets.push_back(snippet);
+		return this->snippets.size() - 1;
+	}
+
 	tz::gl::MDIDrawCommandList IndexSnippetList::get_command_list() const
 	{
 		tz::gl::MDIDrawCommandList cmds;

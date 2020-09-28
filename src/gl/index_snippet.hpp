@@ -60,6 +60,7 @@ namespace tz::gl
 		std::size_t emplace_range(std::size_t begin, std::size_t end);
 		std::size_t emplace_range(std::size_t begin, std::size_t end, std::size_t index_offset);
 		std::size_t emplace_range(const tz::gl::Manager& manager, tz::gl::Manager::Handle mesh_handle);
+		std::size_t add_range(tz::gl::IndexSnippet snippet);
 		/**
 		 * Using the current ranges within this command-list, retrieve an MDI command list which can be used in a render-invocation.
 		 * @return Render-ready MDI command list.

@@ -44,6 +44,7 @@ add_library(topaz STATIC
 		src/memory/block.hpp
 		src/memory/pool.hpp
 		src/memory/pool.inl
+		src/geo/bool.hpp
 		src/geo/matrix_transform.cpp
 		src/geo/matrix_transform.hpp
 		src/geo/matrix.hpp
@@ -121,6 +122,8 @@ add_library(topaz STATIC
 		src/gl/modules/ssbo.hpp
 		src/gl/modules/ubo.cpp
 		src/gl/modules/ubo.hpp
+		src/render/asset.cpp
+		src/render/asset.hpp
 		src/render/device.cpp
 		src/render/device.hpp
 		src/render/pipeline.cpp

@@ -14,6 +14,7 @@
 #include "GLFW/glfw3.h"
 #include "gl/tz_imgui/imgui_context.hpp"
 #include "gl/resource_writer.hpp"
+#include "render/asset.hpp"
 
 const char *vtx_shader_src = "#version 460\n"
 	"layout (location = 0) in vec3 aPos;\n"
@@ -136,6 +137,8 @@ int main()
 		tz::gl::Manager::Handle square_handle = m.add_mesh(square);
 		tz::gl::Manager::Handle monkeyhead_handle = m.add_mesh(monkey_head);
 
+		tz::render::AssetBuffer assets;
+
 		float rotation_y = 0.0f;
 
 		tz::core::IWindow& wnd = tz::core::get().window();
@@ -197,9 +200,15 @@ int main()
 		tz::gl::IndexSnippetList square_snip;
 		square_snip.emplace_range(3, 8, 3);
 
+		// This is the old shit version
 		tz::gl::IndexSnippetList monkey_snip;
 		for(std::size_t i = 0; i < num_meshes; i++)
 			monkey_snip.emplace_range(m, monkeyhead_handle);
+		// This is the new, slightly less shit version
+		for(std::size_t i = 0; i < num_meshes; i++)
+		{
+			assets.add_mesh({&m, triangle_handle});
+		}
 
 		tz::gl::IndexSnippetList double_snip;
 		double_snip.emplace_range(3, 8, m.get_vertices_offset(square_handle)); // Square
@@ -208,8 +217,10 @@ int main()
 
 		//dev.set_indices(triangle_snip);
 		//dev.set_indices(square_snip);
-		dev.set_indices(monkey_snip);
+		//dev.set_indices(monkey_snip);
+
 		//dev.set_indices(double_snip);
+		assets.apply(dev);
 
 		while(!wnd.is_close_requested())
 		{

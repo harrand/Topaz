@@ -39,7 +39,7 @@ namespace tz::render
 		 * @param prg Shader Program to bind and render with.
 		 * @param object Object whose data will be used to render.
 		 */
-		Device(tz::gl::IFrame* frame, tz::gl::ShaderProgram* prg, tz::gl::Object* object);
+		Device(tz::gl::IFrame* frame = nullptr, tz::gl::ShaderProgram* prg = nullptr, tz::gl::Object* object = nullptr);
 		/**
 		 * Set the Devices currently-used frame. The old value will no longer be used.
 		 * Note: If the frame is incomplete (see tz::gl::IFrame::complete()) or nullptr is passed, the Device will not be ready (see tz::render::Device::ready()).

@@ -5,6 +5,7 @@
 #ifndef TOPAZ_POOL_HPP
 #define TOPAZ_POOL_HPP
 #include "memory/block.hpp"
+#include "geo/bool.hpp"
 #include <vector>
 
 namespace tz::mem
@@ -14,18 +15,6 @@ namespace tz::mem
 	 * A collection of low-level abstractions around memory utilities not provided by the C++ standard library. This includes non-owning memory blocks, uniform memory-pools and more.
 	 * @{
 	 */
-
-	namespace detail
-	{
-		class BoolProxy
-		{
-		public:
-			BoolProxy(bool b): b(b){}
-			operator bool() const{return this->b;}
-		private:
-			bool b;
-		};
-	}
 	/**
 	 * Manages a pre-allocated block of memory, treating it as a contiguous array of Ts.
 	 * Useful for managing a memory block representing a persistently-mapped buffer (PMB).
@@ -148,7 +137,7 @@ namespace tz::mem
 		T* at(std::size_t index);
 		void* begin;
 		std::size_t size_bytes;
-		std::vector<detail::BoolProxy> object_mask;
+		std::vector<tz::geo::BoolProxy> object_mask;
 	};
 
 	/**
