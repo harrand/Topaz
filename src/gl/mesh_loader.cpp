@@ -13,6 +13,9 @@ namespace tz::gl
 		const aiMesh* ass_mesh = scene.get_mesh();
 		
 		tz::gl::IndexedMesh mesh;
+		#if TOPAZ_DEBUG
+		std::vector<tz::Vec2> debug_texcoord_list;
+		#endif
 
 		// Chuck in all those vertices
 		for(unsigned int i = 0; i < ass_mesh->mNumVertices; i++)
@@ -21,10 +24,13 @@ namespace tz::gl
 			const aiVector3D& pos = ass_mesh->mVertices[i];
 			v.position = {{pos.x, pos.y, pos.z}};
 
-			if(ass_mesh->HasTextureCoords(i))
+			if(ass_mesh->HasTextureCoords(0))
 			{
-				const aiVector3D* texcoord = ass_mesh->mTextureCoords[i];
-				v.texcoord = {{texcoord->x, texcoord->y}};
+				aiVector3D texcoord = ass_mesh->mTextureCoords[0][i];
+				v.texcoord = {{texcoord.x, texcoord.y}};
+				#if TOPAZ_DEBUG
+				debug_texcoord_list.push_back(v.texcoord);
+				#endif
 			}
 
 			const aiVector3D& norm = ass_mesh->mNormals[i];
