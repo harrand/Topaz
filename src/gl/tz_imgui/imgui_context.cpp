@@ -116,8 +116,8 @@ namespace tz::ext::imgui
 						{
 							ImGui::Text("Size: %zuB", buf_size_bytes);
 						}
-						ImGui::Text("Terminal: %d", buf->is_terminal());
-						ImGui::Text("Mapped: %d", buf->is_mapped());
+						ImGui::Text("Terminal: %s", buf->is_terminal() ? "true" : "false");
+						ImGui::Text("Mapped: %s", buf->is_mapped() ? "true" : "false");
 						if(ImGui::Button("Track this Buffer"))
 						{
 							tracker.track_buffer(i);
