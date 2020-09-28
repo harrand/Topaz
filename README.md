@@ -1,28 +1,30 @@
-# Topaz 2
+# Topaz
 ## About
 
-Topaz 2 is a rewrite of the [Topaz](https://github.com/Harrand/Topaz) engine. Topaz 2 is an open-source cross-platform graphics/game engine written in C++17.
+Topaz is a graphics engine written in C++17. The most recent release is [Topaz 1.0](https://github.com/Harrand/Topaz/tree/Topaz1.0). The next release is Topaz 2.0, which has no planned release date.
 
-The Topaz Project has been ongoing since it began as a school project in 2015.
-
-##### Note: Topaz 2 is new and is not yet ready for use. Consider using the legacy Topaz engine. Despite all its flaws, it is usable.
+The Topaz project has been ongoing since it began as a school project in 2015.
 
 ### Built With
 
+* [assimp](https://github.com/assimp/assimp) - Open Asset Import Library. Used to load meshes.
+* [debugbreak](https://github.com/scottt/debugbreak) - Debugbreak. Used to create breakpoints in code. Compiler-agnostic.
 * [GLAD](https://github.com/Dav1dde/glad) - Open Source, multi-language Vulkan/GL/GLES/EGL/GLX/WGL loader-generator based on the official specs. Used to load OpenGL procedures at runtime for use by the engine.
 * [GLFW](https://www.glfw.org/) - Open Source, multi-platform library for OpenGL, OpenGL ES and Vulkan development on the desktop. Used as a cross-platform abstraction for input event processing and windowing.
+* [imgui](https://github.com/ocornut/imgui) - Bloat-free graphical user interface library for C++. Used for debug-only user interface for development purposes.
+* [stb_image](https://github.com/nothings/stb) - Lightweight image-loading library.
 * [CMake](https://cmake.org/) - Open-source, cross-platform family of tools designed to build, test and package software. Used to generate build system files so users can build topaz with the build system of their choice.
 
 ### License
 
-TODO: Decide license
+Topaz is licensed under the
 
-Copyright © 2019 [Harrand](https://github.com/Harrand)
+Apache License 2.0. See LICENSE for more details.
 
 ## Installation
 ### Prerequisites
 
-* OpenGL <TODO: insert-version-here>
+* OpenGL 4.6 (Earliest tested version)
 * Platform which supports all dependencies. See the 'Built With' section above to enumerate these dependencies.
 ### Compilation
 
