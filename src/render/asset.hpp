@@ -1,5 +1,6 @@
 #ifndef TOPAZ_RENDER_ASSET_HPP
 #define TOPAZ_RENDER_ASSET_HPP
+#include "core/containers/unique_vector.hpp"
 #include "gl/manager.hpp"
 #include "geo/bool.hpp"
 #include "render/device.hpp"
@@ -30,8 +31,7 @@ namespace tz::render
         void apply(tz::render::Device& device) const;
         const tz::render::MeshAsset& at(Handle handle) const;
     private:
-        std::vector<MeshAsset> meshes;
-        std::vector<tz::geo::BoolProxy> mesh_mask;
+        tz::core::UniqueVector<MeshAsset> meshes;
         std::size_t common_ibo_handle = std::numeric_limits<std::size_t>::max();
         tz::gl::Object* common_object = nullptr;
     };

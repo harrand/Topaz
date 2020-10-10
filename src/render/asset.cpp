@@ -37,7 +37,6 @@ namespace tz::render
             std::size_t size = this->meshes.size();
             this->meshes.push_back(mesh);
             MeshAsset& new_mesh = this->meshes.back();
-            this->mesh_mask.push_back(enable_mesh_by_default);
             if(!new_mesh.shares(this->common_object, this->common_ibo_handle) && size > 0)
             {
                 topaz_assert(false, "AssetBuffer elements do not all share a common gl::Object and IBO handle.");
@@ -47,11 +46,6 @@ namespace tz::render
 
     void AssetBuffer::apply(tz::render::Device& device) const
     {
-        #if TOPAZ_DEBUG
-        auto a = this->meshes.size();
-        auto b = this->mesh_mask.size();
-        topaz_assert(a == b, "tz::render::AssetBuffer::apply(Device): AssetBuffer malformed because it stores ", a, " meshes but the mask only contains ", b, " elements.");
-        #endif
         // Populate the list with snippets. If the mesh mask for the given bit is disabled, then its snippet will be skipped.
         device.set_object(this->common_object);
         device.set_handle(this->common_ibo_handle);

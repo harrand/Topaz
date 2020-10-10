@@ -17,27 +17,31 @@
 #include "render/asset.hpp"
 #include "render/scene.hpp"
 
-const char *vtx_shader_src = "#version 460\n"
-	"layout (location = 0) in vec3 aPos;\n"
-	"layout (location = 1) in vec2 aTexcoord;\n"
-	"#ssbo matrices\n"
-	"{\n"
-	"	mat4 mvp[512];\n"
-	"};\n"
-	"out vec2 texcoord;\n"
-	"void main()\n"
-	"{\n"
-	"   gl_Position = mvp[gl_DrawID] * vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-	"	texcoord = aTexcoord;\n"
-	"}\0";
-const char *frg_shader_src = "#version 430\n"
-	"out vec4 FragColor;\n"
-	"in vec2 texcoord;\n"
-	"uniform sampler2D checkerboard;\n"
-	"void main()\n"
-	"{\n"
-	"	FragColor = texture(checkerboard, texcoord);\n"
-	"}\n\0";
+const char *vtx_shader_src = R"glsl(
+	#version 460
+	layout (location = 0) in vec3 aPos;
+	layout (location = 1) in vec2 aTexcoord;
+	#ssbo matrices
+	{
+		mat4 mvp[512];
+	};
+	out vec2 texcoord;
+	void main()
+	{
+	   gl_Position = mvp[gl_DrawID] * vec4(aPos.x, aPos.y, aPos.z, 1.0);
+		texcoord = aTexcoord;
+	}
+	)glsl";
+const char *frg_shader_src = R"glsl(
+	#version 430
+	out vec4 FragColor;
+	in vec2 texcoord;
+	uniform sampler2D checkerboard;
+	void main()
+	{
+		FragColor = texture(checkerboard, texcoord);
+	}
+	)glsl";
 
 class MeshAdjustor : public tz::ext::imgui::ImGuiWindow
 {
@@ -78,10 +82,6 @@ int main()
 		}
 		std::size_t ubo_id = ubo_module->get_buffer_id(ubo_module->size() - 1);
 		tz::gl::SSBO* ubo = o.get<tz::gl::BufferType::ShaderStorage>(ubo_id);
-		constexpr std::size_t num_meshes = 512;
-		ubo->terminal_resize(sizeof(tz::Mat4) * num_meshes);
-		tz::mem::UniformPool<tz::Mat4> matrix = ubo->map_uniform<tz::Mat4>();
-		tz::gl::TransformResourceWriter trans_writer{static_cast<tz::mem::Block>(matrix)};
 
 		tz::gl::ShaderCompiler cpl;
 		tz::gl::ShaderProgram prg;
@@ -138,7 +138,11 @@ int main()
 		tz::gl::Manager::Handle square_handle = m.add_mesh(square);
 		tz::gl::Manager::Handle monkeyhead_handle = m.add_mesh(monkey_head);
 
-		tz::render::Scene scene{static_cast<tz::mem::Block>(matrix)};
+		// UBO stores mesh transform data (mvp)
+		constexpr std::size_t num_meshes = 512;
+		ubo->terminal_resize(sizeof(tz::Mat4) * num_meshes);
+		// Scene uses UBO resource data.
+		tz::render::Scene<tz::render::SceneElement> scene{ubo->map()};
 
 		float rotation_y = 0.0f;
 
@@ -229,7 +233,6 @@ int main()
 		//dev.set_indices(monkey_snip);
 
 		//dev.set_indices(double_snip);
-		//assets.apply(dev);
 
 		while(!wnd.is_close_requested())
 		{
@@ -248,11 +251,7 @@ int main()
 				cur_ele.pos = cur_pos;
 				cur_ele.rot = tz::Vec3{0.0f, rotation_y, 0.0f};
 				cur_ele.cam_pos = cam_pos;
-				
-				//bool success = trans_writer.write(cur_pos, tz::Vec3{0.0f, rotation_y, 0.0f}, tz::Vec3{1.0f, 1.0f, 1.0f}, cam_pos, tz::Vec3{0.0f, 0.0f, 0.0f}, 1.57f, 1920.0f/1080.0f, 0.1f, 1000.0f);
-				//topaz_assert(success, "TransformationWriter failed.");
 			}
-			trans_writer.reset();
 			scene.render(dev);
 			tz::core::update();
 			wnd.update();

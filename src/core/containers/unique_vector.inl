@@ -1,3 +1,5 @@
+#include <algorithm>
+
 namespace tz::core
 {
     template<class T, class Allocator>
