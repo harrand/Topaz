@@ -74,9 +74,11 @@ add_library(topaz STATIC
 		src/gl/tz_imgui/texture_sentinel_tracker.hpp
 		src/gl/tz_imgui/tzglp_preview.cpp
 		src/gl/tz_imgui/tzglp_preview.hpp
-		src/gl/buffer.cpp
 		src/gl/buffer.hpp
+		src/gl/buffer.cpp
 		src/gl/buffer.inl
+		src/gl/camera.hpp
+		src/gl/camera.cpp
 		src/gl/draw_command.hpp
 		src/gl/draw_command.cpp
 		src/gl/format.hpp
@@ -113,6 +115,7 @@ add_library(topaz STATIC
 		src/gl/texture.inl
 		src/gl/texture_sentinel.cpp
 		src/gl/texture_sentinel.hpp
+		src/gl/transform.hpp
 		src/gl/vertex.hpp
 		src/gl/modules/bindless_sampler.cpp
 		src/gl/modules/bindless_sampler.hpp

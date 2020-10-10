@@ -214,12 +214,12 @@ int main()
 		for(std::size_t i = 0; i < num_meshes; i++)
 		{
 			tz::render::SceneElement ele{triangle_mesh_idx};
-			ele.scale = tz::Vec3{1.0f, 1.0f, 1.0f};
-			ele.cam_rot = tz::Vec3{0.0f, 0.0f, 0.0f};
-			ele.fov = 1.57f;
-			ele.aspect = 1920.0f/1080.0f;
-			ele.near = 0.1f;
-			ele.far = 1000.0f;
+			ele.transform.position = tz::Vec3{1.0f, 1.0f, 1.0f};
+			ele.transform.rotation = tz::Vec3{0.0f, 0.0f, 0.0f};
+			ele.camera.fov = 1.57f;
+			ele.camera.aspect_ratio = 1920.0f/1080.0f;
+			ele.camera.near = 0.1f;
+			ele.camera.far = 1000.0f;
 			scene.add(ele);
 		}
 
@@ -248,9 +248,9 @@ int main()
 				cur_pos[1] += std::floor(i / std::sqrt(num_meshes)) * 2.5f;
 
 				tz::render::SceneElement& cur_ele = scene.get(i);
-				cur_ele.pos = cur_pos;
-				cur_ele.rot = tz::Vec3{0.0f, rotation_y, 0.0f};
-				cur_ele.cam_pos = cam_pos;
+				cur_ele.transform.position = cur_pos;
+				cur_ele.transform.rotation[1] = rotation_y;
+				cur_ele.camera.position = cam_pos;
 			}
 			scene.render(dev);
 			tz::core::update();

@@ -37,7 +37,7 @@ namespace tz::render
             const tz::render::MeshAsset& mesh = AssetBuffer::at(idx);
             indices.add_range(mesh());
 
-            this->writer.write(element.pos, element.rot, element.scale, element.cam_pos, element.cam_rot, element.fov, element.aspect, element.near, element.far);
+            this->writer.write(element.transform.position, element.transform.rotation, element.transform.scale, element.camera.position, element.camera.rotation, element.camera.fov, element.camera.aspect_ratio, element.camera.near, element.camera.far);
         }
         this->apply(device);
         device.set_indices(indices);

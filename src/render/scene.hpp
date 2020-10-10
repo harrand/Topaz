@@ -1,6 +1,8 @@
 #ifndef TOPAZ_RENDER_SCENE_HPP
 #define TOPAZ_RENDER_SCENE_HPP
 #include "render/asset.hpp"
+#include "gl/transform.hpp"
+#include "gl/camera.hpp"
 
 namespace tz::render
 {
@@ -14,15 +16,8 @@ namespace tz::render
     {
         SceneElement(tz::render::AssetBuffer::Index idx): mesh(idx){}
 
-        tz::Vec3 pos;
-        tz::Vec3 rot;
-        tz::Vec3 scale;
-        tz::Vec3 cam_pos;
-        tz::Vec3 cam_rot;
-        float fov;
-        float aspect;
-        float near;
-        float far;
+        tz::gl::Transform transform = {};
+        tz::gl::CameraData camera = {};
         tz::render::AssetBuffer::Index mesh;
     };
     // Element must have operator() which returns its index snippet.
