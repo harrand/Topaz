@@ -6,33 +6,66 @@
 
 namespace tz::render
 {
-    enum class SceneData
-    {
-        Mesh,
-        Position
-    };
-
     struct SceneElement
     {
+        /**
+         * Construct a SceneElement using the given assetbuffer index.
+         */
         SceneElement(tz::render::AssetBuffer::Index idx): mesh(idx){}
 
+        /// Transform of the element, in world-space.
         tz::gl::Transform transform = {};
+        /// Camera data representing the viewer, in world-space.
         tz::gl::CameraData camera = {};
+        /// AssetBuffer index representing the attached mesh.
         tz::render::AssetBuffer::Index mesh;
+        bool visible = true;
     };
     // Element must have operator() which returns its index snippet.
+    /**
+     * Represents a collection of assets, and scene elements.
+     * @tparam Element The element type. It must have public data members available identical to that of tz::render::SceneElement. By default this is simply SceneElement.
+     */
     template<class Element = SceneElement>
     class Scene : public tz::render::AssetBuffer
     {
     public:
         using Handle = std::size_t;
+        /**
+         * Constructs an empty scene. Element data is written into the given resource.
+         * @param resource Memory block where element data is written into. It is recommended for this to be some mapped buffer data.
+         */
         Scene(tz::mem::Block resource);
+        /**
+         * Renders all elements within the scene using the given device. Invisible elements will be skipped.
+         * Note: The device's selected object, index-buffer and index-snippet-list will be changed.
+         * @param device Device whose existing data shall be used.
+         */
         void render(tz::render::Device& device);
+        /**
+         * Add a scene element.
+         * Precondition: The Element's mesh asset must have previously been registered via add_mesh(index). Otherwise, this will invoke UB without asserting on the next render(Device&) invocation.
+         * @param element Scene element to add.
+         * @return Handle referencing the newly-added element. Use Scene::get(handle) to retrieve this element.
+         */
         Handle add(Element element);
+        /**
+         * Retrieve an element which was previously added to the scene.
+         * Precondition: handle corresponds to a valid handle retrieved by a past invocation of Scene<Element>::add(...). Otherwise, this will assert and invoke UB.
+         * 
+         * @param handle Handle to an existing scene element to retrieve.
+         * @return Const reference to the corresponding handle.
+         */
         const Element& get(Handle handle) const;
+        /**
+         * Retrieve an element which was previously added to the scene.
+         * Precondition: handle corresponds to a valid handle retrieved by a past invocation of Scene<Element>::add(...). Otherwise, this will assert and invoke UB.
+         * 
+         * @param handle Handle to an existing scene element to retrieve.
+         * @return Reference to the corresponding handle.
+         */
         Element& get(Handle handle);
     private:
-
         std::vector<Element> elements = {};
         tz::gl::TransformResourceWriter writer;
     };

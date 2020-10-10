@@ -37,8 +37,16 @@ namespace tz::render
             Index size = this->meshes.size();
             bool shares = mesh.shares(this->common_object, this->common_ibo_handle);
             topaz_assert(shares || size == 0, "AssetBuffer elements do not all share a common gl::Object and IBO handle.");
-            this->meshes.push_back(mesh);
-            return size;
+            bool insertion_successful = this->meshes.push_back(mesh);
+            if(insertion_successful)
+            {
+                return size;
+            }
+            else
+            {
+                Index idx = std::distance(this->meshes.begin(), std::find(this->meshes.begin(), this->meshes.end(), mesh));
+                return idx;
+            }
     }
 
     void AssetBuffer::apply(tz::render::Device& device) const

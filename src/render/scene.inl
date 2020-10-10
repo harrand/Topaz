@@ -18,21 +18,28 @@ namespace tz::render
     template<class Element>
     const Element& Scene<Element>::get(Handle handle) const
     {
+        topaz_assert(handle < this->elements.size(), "tz::render::Scene<Element>::get(", handle, "): Handle out of range of element list!");
         return this->elements[handle];
     }
 
     template<class Element>
     Element& Scene<Element>::get(Handle handle)
     {
+        topaz_assert(handle < this->elements.size(), "tz::render::Scene<Element>::get(", handle, "): Handle out of range of element list!");
         return this->elements[handle];
     }
 
     template<class Element>
     void Scene<Element>::render(tz::render::Device& device)
     {
+        // Write mesh and element data to the resource, then tell it to render.
         tz::gl::IndexSnippetList indices;
         for(const Element& element : this->elements)
         {
+            if(!element.visible)
+            {
+                continue;
+            }
             tz::render::AssetBuffer::Index idx = element.mesh;
             const tz::render::MeshAsset& mesh = AssetBuffer::at(idx);
             indices.add_range(mesh());
