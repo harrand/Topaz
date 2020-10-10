@@ -15,6 +15,7 @@
 #include "gl/tz_imgui/imgui_context.hpp"
 #include "gl/resource_writer.hpp"
 #include "render/asset.hpp"
+#include "render/scene.hpp"
 
 const char *vtx_shader_src = "#version 460\n"
 	"layout (location = 0) in vec3 aPos;\n"
@@ -137,7 +138,7 @@ int main()
 		tz::gl::Manager::Handle square_handle = m.add_mesh(square);
 		tz::gl::Manager::Handle monkeyhead_handle = m.add_mesh(monkey_head);
 
-		tz::render::AssetBuffer assets;
+		tz::render::Scene scene{static_cast<tz::mem::Block>(matrix)};
 
 		float rotation_y = 0.0f;
 
@@ -205,9 +206,17 @@ int main()
 		for(std::size_t i = 0; i < num_meshes; i++)
 			monkey_snip.emplace_range(m, monkeyhead_handle);
 		// This is the new, slightly less shit version
+		tz::render::AssetBuffer::Handle triangle_mesh_handle = scene.add_mesh({&m, triangle_handle});
 		for(std::size_t i = 0; i < num_meshes; i++)
 		{
-			assets.add_mesh({&m, triangle_handle});
+			tz::render::SceneElement ele{triangle_mesh_handle};
+			ele.scale = tz::Vec3{1.0f, 1.0f, 1.0f};
+			ele.cam_rot = tz::Vec3{0.0f, 0.0f, 0.0f};
+			ele.fov = 1.57f;
+			ele.aspect = 1920.0f/1080.0f;
+			ele.near = 0.1f;
+			ele.far = 1000.0f;
+			scene.add(ele);
 		}
 
 		tz::gl::IndexSnippetList double_snip;
@@ -220,7 +229,7 @@ int main()
 		//dev.set_indices(monkey_snip);
 
 		//dev.set_indices(double_snip);
-		assets.apply(dev);
+		//assets.apply(dev);
 
 		while(!wnd.is_close_requested())
 		{
@@ -234,12 +243,17 @@ int main()
 				// Three meshes in a horizontal line.
 				cur_pos[0] += (i % static_cast<std::size_t>(std::sqrt(num_meshes))) * 2.5f;
 				cur_pos[1] += std::floor(i / std::sqrt(num_meshes)) * 2.5f;
+
+				tz::render::SceneElement& cur_ele = scene.get(i);
+				cur_ele.pos = cur_pos;
+				cur_ele.rot = tz::Vec3{0.0f, rotation_y, 0.0f};
+				cur_ele.cam_pos = cam_pos;
 				
-				bool success = trans_writer.write(cur_pos, tz::Vec3{0.0f, rotation_y, 0.0f}, tz::Vec3{1.0f, 1.0f, 1.0f}, cam_pos, tz::Vec3{0.0f, 0.0f, 0.0f}, 1.57f, 1920.0f/1080.0f, 0.1f, 1000.0f);
-				topaz_assert(success, "TransformationWriter failed.");
+				//bool success = trans_writer.write(cur_pos, tz::Vec3{0.0f, rotation_y, 0.0f}, tz::Vec3{1.0f, 1.0f, 1.0f}, cam_pos, tz::Vec3{0.0f, 0.0f, 0.0f}, 1.57f, 1920.0f/1080.0f, 0.1f, 1000.0f);
+				//topaz_assert(success, "TransformationWriter failed.");
 			}
 			trans_writer.reset();
-			dev.render();
+			scene.render(dev);
 			tz::core::update();
 			wnd.update();
 		}

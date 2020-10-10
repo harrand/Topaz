@@ -28,6 +28,7 @@ namespace tz::render
         AssetBuffer() = default;
         Handle add_mesh(MeshAsset mesh);
         void apply(tz::render::Device& device) const;
+        const tz::render::MeshAsset& at(Handle handle) const;
     private:
         std::vector<MeshAsset> meshes;
         std::vector<tz::geo::BoolProxy> mesh_mask;

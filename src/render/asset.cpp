@@ -53,18 +53,12 @@ namespace tz::render
         topaz_assert(a == b, "tz::render::AssetBuffer::apply(Device): AssetBuffer malformed because it stores ", a, " meshes but the mask only contains ", b, " elements.");
         #endif
         // Populate the list with snippets. If the mesh mask for the given bit is disabled, then its snippet will be skipped.
-        tz::gl::IndexSnippetList list;
-        for(std::size_t i = 0; i < meshes.size(); i++)
-        {
-            bool enabled = this->mesh_mask[i];
-            const MeshAsset& mesh = this->meshes[i];
-            if(enabled)
-            {
-                list.add_range(mesh());
-            }
-        }
         device.set_object(this->common_object);
         device.set_handle(this->common_ibo_handle);
-        device.set_indices(list);
+    }
+
+    const tz::render::MeshAsset& AssetBuffer::at(Handle handle) const
+    {
+        return this->meshes[handle];
     }
 }
