@@ -33,8 +33,8 @@ namespace tz::render
         tz::gl::IndexSnippetList indices;
         for(const Element& element : this->elements)
         {
-            tz::render::AssetBuffer::Handle handle = element.mesh;
-            const tz::render::MeshAsset& mesh = AssetBuffer::at(handle);
+            tz::render::AssetBuffer::Index idx = element.mesh;
+            const tz::render::MeshAsset& mesh = AssetBuffer::at(idx);
             indices.add_range(mesh());
 
             this->writer.write(element.pos, element.rot, element.scale, element.cam_pos, element.cam_rot, element.fov, element.aspect, element.near, element.far);

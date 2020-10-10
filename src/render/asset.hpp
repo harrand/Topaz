@@ -23,13 +23,14 @@ namespace tz::render
     class AssetBuffer
     {
     public:
-        using Handle = std::size_t;
+        using Index = std::size_t;
         static constexpr bool enable_mesh_by_default = true;
 
         AssetBuffer() = default;
-        Handle add_mesh(MeshAsset mesh);
+        Index add_mesh(MeshAsset mesh);
         void apply(tz::render::Device& device) const;
-        const tz::render::MeshAsset& at(Handle handle) const;
+        const tz::render::MeshAsset& at(Index idx) const;
+        tz::render::MeshAsset& at(Index idx);
     private:
         tz::core::UniqueVector<MeshAsset> meshes;
         std::size_t common_ibo_handle = std::numeric_limits<std::size_t>::max();

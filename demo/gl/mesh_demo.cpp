@@ -210,10 +210,10 @@ int main()
 		for(std::size_t i = 0; i < num_meshes; i++)
 			monkey_snip.emplace_range(m, monkeyhead_handle);
 		// This is the new, slightly less shit version
-		tz::render::AssetBuffer::Handle triangle_mesh_handle = scene.add_mesh({&m, triangle_handle});
+		tz::render::AssetBuffer::Index triangle_mesh_idx = scene.add_mesh({&m, triangle_handle});
 		for(std::size_t i = 0; i < num_meshes; i++)
 		{
-			tz::render::SceneElement ele{triangle_mesh_handle};
+			tz::render::SceneElement ele{triangle_mesh_idx};
 			ele.scale = tz::Vec3{1.0f, 1.0f, 1.0f};
 			ele.cam_rot = tz::Vec3{0.0f, 0.0f, 0.0f};
 			ele.fov = 1.57f;

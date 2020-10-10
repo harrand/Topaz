@@ -32,15 +32,12 @@ namespace tz::render
         return obj_same && ibo_same;
     }
 
-    AssetBuffer::Handle AssetBuffer::add_mesh(MeshAsset mesh)
+    AssetBuffer::Index AssetBuffer::add_mesh(MeshAsset mesh)
     {
-            std::size_t size = this->meshes.size();
+            Index size = this->meshes.size();
+            bool shares = mesh.shares(this->common_object, this->common_ibo_handle);
+            topaz_assert(shares || size == 0, "AssetBuffer elements do not all share a common gl::Object and IBO handle.");
             this->meshes.push_back(mesh);
-            MeshAsset& new_mesh = this->meshes.back();
-            if(!new_mesh.shares(this->common_object, this->common_ibo_handle) && size > 0)
-            {
-                topaz_assert(false, "AssetBuffer elements do not all share a common gl::Object and IBO handle.");
-            }
             return size;
     }
 
@@ -51,8 +48,13 @@ namespace tz::render
         device.set_handle(this->common_ibo_handle);
     }
 
-    const tz::render::MeshAsset& AssetBuffer::at(Handle handle) const
+    const tz::render::MeshAsset& AssetBuffer::at(Index idx) const
     {
-        return this->meshes[handle];
+        return this->meshes[idx];
+    }
+
+    tz::render::MeshAsset& AssetBuffer::at(Index idx)
+    {
+        return this->meshes[idx];
     }
 }

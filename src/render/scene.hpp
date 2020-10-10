@@ -12,7 +12,7 @@ namespace tz::render
 
     struct SceneElement
     {
-        SceneElement(tz::render::AssetBuffer::Handle handle): mesh(handle){}
+        SceneElement(tz::render::AssetBuffer::Index idx): mesh(idx){}
 
         tz::Vec3 pos;
         tz::Vec3 rot;
@@ -23,7 +23,7 @@ namespace tz::render
         float aspect;
         float near;
         float far;
-        tz::render::AssetBuffer::Handle mesh;
+        tz::render::AssetBuffer::Index mesh;
     };
     // Element must have operator() which returns its index snippet.
     template<class Element = SceneElement>
