@@ -30,6 +30,18 @@ namespace tz::render
     }
 
     template<class Element>
+    typename Scene<Element>::Iterator Scene<Element>::begin()
+    {
+        return this->elements.begin();
+    }
+
+    template<class Element>
+    typename Scene<Element>::Iterator Scene<Element>::end()
+    {
+        return this->elements.end();
+    }
+
+    template<class Element>
     void Scene<Element>::render(tz::render::Device& device)
     {
         // Write mesh and element data to the resource, then tell it to render.

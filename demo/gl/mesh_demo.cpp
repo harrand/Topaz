@@ -16,6 +16,7 @@
 #include "gl/resource_writer.hpp"
 #include "render/asset.hpp"
 #include "render/scene.hpp"
+#include <unordered_map>
 
 const char *vtx_shader_src = R"glsl(
 	#version 460
@@ -46,20 +47,50 @@ const char *frg_shader_src = R"glsl(
 class MeshAdjustor : public tz::ext::imgui::ImGuiWindow
 {
 public:
-	MeshAdjustor(tz::Vec3& offset, float& rotation_factor): ImGuiWindow("Mesh Adjustor"), offset(offset), rotation_factor(rotation_factor){}
+	MeshAdjustor(tz::Vec3& offset, float& rotation_factor, tz::render::Scene<tz::render::SceneElement>& scene): ImGuiWindow("Mesh Adjustor"), offset(offset), rotation_factor(rotation_factor), scene(scene){}
+
+	void register_mesh(const char* name, tz::render::AssetBuffer::Index index)
+	{
+		this->meshes.emplace(name, index);
+	}
+
 	virtual void render() override
 	{
 		ImGui::Begin("Mesh Adjustor", &this->visible);
-		ImGui::Text("%s", "Hello!");
+		ImGui::Text("%s", "All Objects");
 		ImGui::SliderFloat("Mesh Offset X", &offset[0], -100.0f, 100.0f);
 		ImGui::SliderFloat("Mesh Offset Y", &offset[1], -100.0f, 100.0f);
 		ImGui::SliderFloat("Mesh Offset Z", &offset[2], -100.0f, 100.0f);
 		ImGui::InputFloat("Rotation Factor", &rotation_factor);
+		
+		if(ImGui::TreeNode("Scene Elements"))
+		{
+			std::size_t i = 0;
+			for(tz::render::SceneElement& ele : this->scene)
+			{
+				ImGui::SetNextItemOpen(true, ImGuiCond_Once);
+				auto ptr = [](std::size_t i){return reinterpret_cast<void*>(static_cast<std::intptr_t>(i));};
+				if(ImGui::TreeNode(ptr(i), "Element %zu", i))
+				{
+					ImGui::Text("Mesh:");
+					for(const auto&[name, mesh] : this->meshes)
+					{
+						ImGui::SameLine();
+						ImGui::RadioButton(name, reinterpret_cast<int*>(&ele.mesh), mesh);
+					}
+					ImGui::TreePop();
+				}
+				i++;
+			}
+			ImGui::TreePop();
+		}
 		ImGui::End();
 	}
 private:
 	tz::Vec3& offset;
 	float& rotation_factor;
+	tz::render::Scene<tz::render::SceneElement>& scene;
+	std::unordered_map<const char*, tz::render::AssetBuffer::Index> meshes;
 };
 
 int main()
@@ -132,7 +163,6 @@ int main()
 			triangle_pos[1] += y;
 			triangle_pos[2] += z;
 		};
-		tz::ext::imgui::emplace_window<MeshAdjustor>(triangle_pos, rotation_factor);
 
 		tz::gl::Manager::Handle triangle_handle = m.add_mesh(triangle);
 		tz::gl::Manager::Handle square_handle = m.add_mesh(square);
@@ -143,6 +173,8 @@ int main()
 		ubo->terminal_resize(sizeof(tz::Mat4) * num_meshes);
 		// Scene uses UBO resource data.
 		tz::render::Scene<tz::render::SceneElement> scene{ubo->map()};
+
+		MeshAdjustor& mesh_adjustor = tz::ext::imgui::emplace_window<MeshAdjustor>(triangle_pos, rotation_factor, scene);
 
 		float rotation_y = 0.0f;
 
@@ -211,6 +243,12 @@ int main()
 			monkey_snip.emplace_range(m, monkeyhead_handle);
 		// This is the new, slightly less shit version
 		tz::render::AssetBuffer::Index triangle_mesh_idx = scene.add_mesh({&m, triangle_handle});
+		tz::render::AssetBuffer::Index monkey_mesh_idx = scene.add_mesh({&m, monkeyhead_handle});
+		tz::render::AssetBuffer::Index square_mesh_idx = scene.add_mesh({&m, square_handle});
+		mesh_adjustor.register_mesh("triangle", triangle_mesh_idx);
+		mesh_adjustor.register_mesh("monkey head", monkey_mesh_idx);
+		mesh_adjustor.register_mesh("square", square_mesh_idx);
+
 		for(std::size_t i = 0; i < num_meshes; i++)
 		{
 			tz::render::SceneElement ele{triangle_mesh_idx};
@@ -223,9 +261,9 @@ int main()
 			scene.add(ele);
 		}
 
-		tz::gl::IndexSnippetList double_snip;
-		double_snip.emplace_range(3, 8, m.get_vertices_offset(square_handle)); // Square
-		double_snip.emplace_range(0, 2, m.get_vertices_offset(triangle_handle)); // Triangle
+		//tz::gl::IndexSnippetList double_snip;
+		//double_snip.emplace_range(3, 8, m.get_vertices_offset(square_handle)); // Square
+		//double_snip.emplace_range(0, 2, m.get_vertices_offset(triangle_handle)); // Triangle
 		// This should do both!
 
 		//dev.set_indices(triangle_snip);

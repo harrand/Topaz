@@ -31,6 +31,7 @@ namespace tz::render
     {
     public:
         using Handle = std::size_t;
+        using Iterator = typename std::vector<Element>::iterator;
         /**
          * Constructs an empty scene. Element data is written into the given resource.
          * @param resource Memory block where element data is written into. It is recommended for this to be some mapped buffer data.
@@ -65,6 +66,8 @@ namespace tz::render
          * @return Reference to the corresponding handle.
          */
         Element& get(Handle handle);
+        Iterator begin();
+        Iterator end();
     private:
         std::vector<Element> elements = {};
         tz::gl::TransformResourceWriter writer;
