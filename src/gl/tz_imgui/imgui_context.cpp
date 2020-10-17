@@ -160,7 +160,6 @@ namespace tz::ext::imgui
 					topaz_hard_assert(false, "Test Hard Assert");
 					do_hard_assert = false;
 				}
-				ImGui::MenuItem("OpenGL Info", nullptr, &oglinfo.visible);
 				ImGui::EndMenu();
 			}
 
@@ -171,9 +170,23 @@ namespace tz::ext::imgui
 
 			if(ImGui::BeginMenu("tz::gl"))
 			{
+				static bool wireframe = false;
+				static bool cull_backfaces = true;
 				ImGui::MenuItem("gl::Object Tracking", nullptr, &track_objects);
 				ImGui::MenuItem("TZGLP Previewer", nullptr, &tzglp.visible);
 				ImGui::MenuItem("Texture Sentinel Tracker", nullptr, &textracker.visible);
+				ImGui::MenuItem("OpenGL Info", nullptr, &oglinfo.visible);
+				ImGui::MenuItem("Wireframe Mode", nullptr, &wireframe);
+				ImGui::MenuItem("Cull Back Faces", nullptr, &cull_backfaces);
+				tz::core::get().enable_wireframe_mode(wireframe);
+				if(cull_backfaces)
+				{
+					glEnable(GL_CULL_FACE);
+				}
+				else
+				{
+					glDisable(GL_CULL_FACE);
+				}
 				ImGui::EndMenu();
 			}
 

@@ -145,7 +145,6 @@ int main()
 
 		tz::gl::IndexedMesh monkey_head = tz::gl::load_mesh("res/models/monkeyhead.obj");
 		const tz::Vec3 cam_pos{{0.0f, 0.0f, 5.0f}};
-		tz::gl::sort_indices(monkey_head, cam_pos);
 		tz::debug_printf("monkey head data size = %zu bytes, indices size = %zu bytes", monkey_head.data_size_bytes(), monkey_head.indices_size_bytes());
 
 		tz::gl::Image<tz::gl::PixelRGB8> rgba_checkerboard = tz::ext::stb::read_image<tz::gl::PixelRGB8>("res/textures/bricks.jpg");
@@ -157,12 +156,6 @@ int main()
 
 		tz::Vec3 triangle_pos{{0.0f, 0.0f, 0.0f}};
 		float rotation_factor = 0.02f;
-		auto add_pos = [&triangle_pos](float x, float y, float z)
-		{
-			triangle_pos[0] += x;
-			triangle_pos[1] += y;
-			triangle_pos[2] += z;
-		};
 
 		tz::gl::Manager::Handle triangle_handle = m.add_mesh(triangle);
 		tz::gl::Manager::Handle square_handle = m.add_mesh(square);
@@ -180,68 +173,13 @@ int main()
 
 		tz::core::IWindow& wnd = tz::core::get().window();
 		wnd.register_this();
-		wnd.emplace_custom_key_listener([&add_pos, &rotation_y](tz::input::KeyPressEvent e)
-		{
-			switch(e.key)
-			{
-			case GLFW_KEY_W:
-				add_pos(0.0f, 0.00f, -0.05f);
-				tz::debug_printf("moving forward.\n");
-			break;
-			case GLFW_KEY_S:
-				add_pos(0.0f, 0.00f, 0.05f);
-				tz::debug_printf("moving backward.\n");
-			break;
-			case GLFW_KEY_A:
-				add_pos(-0.05f, 0.0f, 0.0f);
-				tz::debug_printf("moving left\n");
-			break;
-			case GLFW_KEY_D:
-				add_pos(0.05f, 0.0f, 0.0f);
-				tz::debug_printf("moving right\n");
-			break;
-			case GLFW_KEY_SPACE:
-				add_pos(0.0f, 0.05f, 0.0f);
-				tz::debug_printf("moving up\n");
-			break;
-			case GLFW_KEY_LEFT_SHIFT:
-				add_pos(0.0f, -0.05f, 0.0f);
-				tz::debug_printf("moving down\n");
-			break;
-			}
-		});
-
-		wnd.emplace_custom_type_listener([](tz::input::CharPressEvent e)
-		{
-			switch(e.get_char())
-			{
-				case 'q':
-				case 'Q':
-				{
-					static bool wireframe = false;
-					wireframe = !wireframe;
-					tz::core::get().enable_wireframe_mode(wireframe);
-				}
-				break;
-			}
-		});
 
 		glClearColor(0.3f, 0.15f, 0.0f, 1.0f);
 		tz::render::Device dev{wnd.get_frame(), &prg, &o};
 		dev.add_resource_buffer(ubo);
 		dev.set_handle(m.get_indices());
 
-		tz::gl::IndexSnippetList triangle_snip;
-		triangle_snip.emplace_range(0, 2);
-
-		tz::gl::IndexSnippetList square_snip;
-		square_snip.emplace_range(3, 8, 3);
-
-		// This is the old shit version
-		tz::gl::IndexSnippetList monkey_snip;
-		for(std::size_t i = 0; i < num_meshes; i++)
-			monkey_snip.emplace_range(m, monkeyhead_handle);
-		// This is the new, slightly less shit version
+		// Scene setup.
 		tz::render::AssetBuffer::Index triangle_mesh_idx = scene.add_mesh({&m, triangle_handle});
 		tz::render::AssetBuffer::Index monkey_mesh_idx = scene.add_mesh({&m, monkeyhead_handle});
 		tz::render::AssetBuffer::Index square_mesh_idx = scene.add_mesh({&m, square_handle});
@@ -260,17 +198,6 @@ int main()
 			ele.camera.far = 1000.0f;
 			scene.add(ele);
 		}
-
-		//tz::gl::IndexSnippetList double_snip;
-		//double_snip.emplace_range(3, 8, m.get_vertices_offset(square_handle)); // Square
-		//double_snip.emplace_range(0, 2, m.get_vertices_offset(triangle_handle)); // Triangle
-		// This should do both!
-
-		//dev.set_indices(triangle_snip);
-		//dev.set_indices(square_snip);
-		//dev.set_indices(monkey_snip);
-
-		//dev.set_indices(double_snip);
 
 		while(!wnd.is_close_requested())
 		{
