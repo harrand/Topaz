@@ -35,17 +35,17 @@ const char *vtx_shader_src = R"glsl(
 	}
 	)glsl";
 const char *frg_shader_src = R"glsl(
-	#version 430
+	#version 460
 	#extension GL_ARB_bindless_texture : require
 	out vec4 FragColor;
 	in vec2 texcoord;
-	#ssbo checkerboard_tex
+	#ssbo texture_block
 	{
-		tz_bindless_sampler checkerboard[512];
+		tz_bindless_sampler textures[8];
 	};
 	void main()
 	{
-		FragColor = texture(checkerboard[0], texcoord);
+		FragColor = texture(textures[1], texcoord);
 	}
 	)glsl";
 
@@ -105,7 +105,7 @@ private:
 int main()
 {
 	constexpr std::size_t max_elements = 512;
-	constexpr std::size_t max_textures = 512;
+	constexpr std::size_t max_textures = 8;
 	// Minimalist Graphics Demo.
 	tz::core::initialise("Topaz Render Demo");
 	{
@@ -136,21 +136,6 @@ int main()
 		tz::gl::SSBO* ubo = o.get<tz::gl::BufferType::ShaderStorage>(ubo_id);
 		tz::gl::SSBO* tex_ubo = o.get<tz::gl::BufferType::ShaderStorage>(tex_ubo_id);
 
-		tz::gl::ShaderCompiler cpl;
-		tz::gl::ShaderProgram prg;
-		tz::gl::Shader* vs = prg.emplace(tz::gl::ShaderType::Vertex);
-		vs->upload_source(vtx_result);
-		tz::gl::Shader* fs = prg.emplace(tz::gl::ShaderType::Fragment);
-		fs->upload_source(frg_result);
-
-		auto cpl_diag = cpl.compile(*vs);
-		topaz_assert(cpl_diag.successful(), "Shader Vtx Compilation Fail: ", cpl_diag.get_info_log());
-		cpl_diag = cpl.compile(*fs);
-		topaz_assert(cpl_diag.successful(), "Shader Frg Compilation Fail: ", cpl_diag.get_info_log());
-
-		auto lnk_diag = cpl.link(prg);
-		topaz_assert(lnk_diag.successful(), "Shader Linkage Fail: ", lnk_diag.get_info_log());
-
 		tz::gl::IndexedMesh triangle;
 		triangle.vertices.push_back(tz::gl::Vertex{{{-0.5f, 0.5f, 0.0f}}, {{0.0f, 0.0f}}, {{}}, {{}}, {{}}});
 		triangle.vertices.push_back(tz::gl::Vertex{{{0.5f, 0.5f, 0.0f}}, {{1.0f, 0.0f}}, {{}}, {{}}, {{}}});
@@ -176,6 +161,12 @@ int main()
 		checkerboard.set_parameters(tz::gl::default_texture_params);
 		checkerboard.set_data(rgba_checkerboard);
 		checkerboard.make_terminal();
+		
+		tz::gl::Image<tz::gl::PixelRGB8> metal_img = tz::ext::stb::read_image<tz::gl::PixelRGB8>("res/textures/metal.jpg");
+		tz::gl::Texture metal;
+		metal.set_parameters(tz::gl::default_texture_params);
+		metal.set_data(metal_img);
+		metal.make_terminal();
 
 		tz::Vec3 triangle_pos{{0.0f, 0.0f, 0.0f}};
 		float rotation_factor = 0.02f;
@@ -199,11 +190,6 @@ int main()
 		wnd.register_this();
 
 		wnd.get_frame()->set_clear_color(0.3f, 0.15f, 0.0f);
-		tz::render::Device dev{wnd.get_frame(), &prg, &o};
-		dev.add_resource_buffer(ubo);
-		dev.add_resource_buffer(tex_ubo);
-		dev.set_handle(m.get_indices());
-
 		// Scene setup.
 		// Meshes
 		tz::render::AssetBuffer::Index triangle_mesh_idx = scene.add_mesh({&m, triangle_handle});
@@ -213,9 +199,30 @@ int main()
 		mesh_adjustor.register_mesh("monkey head", monkey_mesh_idx);
 		mesh_adjustor.register_mesh("square", square_mesh_idx);
 		// Textures
-		tz::gl::BindlessTextureHandle checkerboard_handle = checkerboard.get_terminal_handle();
 		tex_ubo->resize(sizeof(tz::gl::BindlessTextureHandle) * max_textures);
-		tex_ubo->send(&checkerboard_handle);
+		{
+			tz::mem::UniformPool<tz::gl::BindlessTextureHandle> tex_pool = tex_ubo->map_uniform<tz::gl::BindlessTextureHandle>();
+			tz::gl::BindlessTextureHandle checkerboard_handle = checkerboard.get_terminal_handle();
+			tz::gl::BindlessTextureHandle metal_handle = metal.get_terminal_handle();
+			tex_pool.set(0, metal_handle);
+			tex_pool.set(1, checkerboard_handle);
+			tex_ubo->unmap();
+		}
+
+		tz::gl::ShaderCompiler cpl;
+		tz::gl::ShaderProgram prg;
+		tz::gl::Shader* vs = prg.emplace(tz::gl::ShaderType::Vertex);
+		vs->upload_source(vtx_result);
+		tz::gl::Shader* fs = prg.emplace(tz::gl::ShaderType::Fragment);
+		fs->upload_source(frg_result);
+
+		auto cpl_diag = cpl.compile(*vs);
+		topaz_assert(cpl_diag.successful(), "Shader Vtx Compilation Fail: ", cpl_diag.get_info_log());
+		cpl_diag = cpl.compile(*fs);
+		topaz_assert(cpl_diag.successful(), "Shader Frg Compilation Fail: ", cpl_diag.get_info_log());
+
+		auto lnk_diag = cpl.link(prg);
+		topaz_assert(lnk_diag.successful(), "Shader Linkage Fail: ", lnk_diag.get_info_log());
 
 		for(std::size_t i = 0; i < max_elements; i++)
 		{
@@ -228,6 +235,11 @@ int main()
 			ele.camera.far = 1000.0f;
 			scene.add(ele);
 		}
+
+		tz::render::Device dev{wnd.get_frame(), &prg, &o};
+		dev.add_resource_buffer(ubo);
+		dev.add_resource_buffer(tex_ubo);
+		dev.set_handle(m.get_indices());
 
 		while(!wnd.is_close_requested())
 		{

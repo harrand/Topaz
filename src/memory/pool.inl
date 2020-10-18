@@ -1,6 +1,7 @@
 #include "core/debug/assert.hpp"
 #include <cstddef>
 #include <tuple>
+#include <memory>
 
 namespace tz::mem
 {	
@@ -189,11 +190,11 @@ namespace tz::mem
 	{
 		auto tbegin = reinterpret_cast<T*>(this->begin);
 		tbegin += index;
+		std::size_t space = sizeof(T);
+		void* ptr = tbegin;
+		T* aligned_ptr = reinterpret_cast<T*>(std::align(alignof(T), sizeof(T), ptr, space));
 		// Launder the memory. This should cost nothing if unneeded.
-		// This will be needed for the following case:
-		// - T contains a const member. Re-assigning the const member, even through placement-new, is UB on next retrieval without laundering.
-		// The use of placement-new to construct Ts means we shouldn't ever need to launder to avoid type-punning UB. We should be fine in that regard.
-		return std::launder(tbegin);
+		return std::launder(aligned_ptr);
 	}
 	
 	template<typename T>
@@ -201,8 +202,11 @@ namespace tz::mem
 	{
 		auto tbegin = reinterpret_cast<T*>(this->begin);
 		tbegin += index;
+		std::size_t space = sizeof(T);
+		void* ptr = tbegin;
+		T* aligned_ptr = reinterpret_cast<T*>(std::align(alignof(T), sizeof(T), ptr, space));
 		// Launder the memory. This should cost nothing if unneeded.
-		return std::launder(tbegin);
+		return std::launder(aligned_ptr);
 	}
 
 	template<typename... Ts>
