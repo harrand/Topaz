@@ -41,11 +41,11 @@ const char *frg_shader_src = R"glsl(
 	in vec2 texcoord;
 	#ssbo checkerboard_tex
 	{
-		tz_bindless_sampler checkerboard;
+		tz_bindless_sampler checkerboard[512];
 	};
 	void main()
 	{
-		FragColor = texture(checkerboard, texcoord);
+		FragColor = texture(checkerboard[0], texcoord);
 	}
 	)glsl";
 
@@ -104,6 +104,8 @@ private:
 
 int main()
 {
+	constexpr std::size_t max_elements = 512;
+	constexpr std::size_t max_textures = 512;
 	// Minimalist Graphics Demo.
 	tz::core::initialise("Topaz Render Demo");
 	{
@@ -173,8 +175,6 @@ int main()
 		tz::gl::Texture checkerboard;
 		checkerboard.set_parameters(tz::gl::default_texture_params);
 		checkerboard.set_data(rgba_checkerboard);
-
-		//prg.attach_texture(0, &checkerboard, "checkerboard");
 		checkerboard.make_terminal();
 
 		tz::Vec3 triangle_pos{{0.0f, 0.0f, 0.0f}};
@@ -187,8 +187,7 @@ int main()
 		tz::gl::Manager::Handle monkeyhead_handle = m.add_mesh(monkey_head);
 
 		// UBO stores mesh transform data (mvp)
-		constexpr std::size_t num_meshes = 512;
-		ubo->terminal_resize(sizeof(tz::Mat4) * num_meshes);
+		ubo->terminal_resize(sizeof(tz::Mat4) * max_elements);
 		// Scene uses UBO resource data.
 		tz::render::Scene<tz::render::SceneElement> scene{ubo->map()};
 
@@ -199,7 +198,7 @@ int main()
 		tz::core::IWindow& wnd = tz::core::get().window();
 		wnd.register_this();
 
-		glClearColor(0.3f, 0.15f, 0.0f, 1.0f);
+		wnd.get_frame()->set_clear_color(0.3f, 0.15f, 0.0f);
 		tz::render::Device dev{wnd.get_frame(), &prg, &o};
 		dev.add_resource_buffer(ubo);
 		dev.add_resource_buffer(tex_ubo);
@@ -215,10 +214,10 @@ int main()
 		mesh_adjustor.register_mesh("square", square_mesh_idx);
 		// Textures
 		tz::gl::BindlessTextureHandle checkerboard_handle = checkerboard.get_terminal_handle();
-		tex_ubo->resize(sizeof(tz::gl::BindlessTextureHandle));
+		tex_ubo->resize(sizeof(tz::gl::BindlessTextureHandle) * max_textures);
 		tex_ubo->send(&checkerboard_handle);
 
-		for(std::size_t i = 0; i < num_meshes; i++)
+		for(std::size_t i = 0; i < max_elements; i++)
 		{
 			tz::render::SceneElement ele{triangle_mesh_idx};
 			ele.transform.position = tz::Vec3{1.0f, 1.0f, 1.0f};
@@ -236,12 +235,12 @@ int main()
 
 			dev.clear();
 			o.bind();
-			for(std::size_t i = 0; i < num_meshes; i++)
+			for(std::size_t i = 0; i < max_elements; i++)
 			{
 				tz::Vec3 cur_pos = triangle_pos;
 				// Three meshes in a horizontal line.
-				cur_pos[0] += (i % static_cast<std::size_t>(std::sqrt(num_meshes))) * x_factor;
-				cur_pos[1] += std::floor(i / std::sqrt(num_meshes)) * y_factor;
+				cur_pos[0] += (i % static_cast<std::size_t>(std::sqrt(max_elements))) * x_factor;
+				cur_pos[1] += std::floor(i / std::sqrt(max_elements)) * y_factor;
 
 				tz::render::SceneElement& cur_ele = scene.get(i);
 				cur_ele.transform.position = cur_pos;
