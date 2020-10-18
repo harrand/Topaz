@@ -14,6 +14,7 @@
 #include "GLFW/glfw3.h"
 #include "gl/tz_imgui/imgui_context.hpp"
 #include "gl/resource_writer.hpp"
+#include "gl/modules/bindless_sampler.hpp"
 #include "render/asset.hpp"
 #include "render/scene.hpp"
 #include <unordered_map>
@@ -35,9 +36,13 @@ const char *vtx_shader_src = R"glsl(
 	)glsl";
 const char *frg_shader_src = R"glsl(
 	#version 430
+	#extension GL_ARB_bindless_texture : require
 	out vec4 FragColor;
 	in vec2 texcoord;
-	uniform sampler2D checkerboard;
+	#ssbo checkerboard_tex
+	{
+		tz_bindless_sampler checkerboard;
+	};
 	void main()
 	{
 		FragColor = texture(checkerboard, texcoord);
@@ -109,25 +114,38 @@ int main()
 		tz::ext::imgui::track_object(&o);
 
 		tz::gl::p::SSBOModule* ubo_module = nullptr;
+		std::string vtx_result;
+		std::string frg_result;
 		tz::gl::ShaderPreprocessor pre{vtx_shader_src};
 		{
 			std::size_t ubo_module_id = pre.emplace_module<tz::gl::p::SSBOModule>(&o);
+			pre.emplace_module<tz::gl::p::BindlessSamplerModule>();
 			pre.preprocess();
+			vtx_result = pre.result();
+			pre.set_source(frg_shader_src);
+			pre.preprocess();
+			frg_result = pre.result();
 			ubo_module = static_cast<tz::gl::p::SSBOModule*>(pre[ubo_module_id]);
 		}
-		std::size_t ubo_id = ubo_module->get_buffer_id(ubo_module->size() - 1);
+		topaz_assert(ubo_module->size() == 2, "UBO Module had unexpected number of buffers. Expected 2, got ", ubo_module->size());
+		std::size_t ubo_id = ubo_module->get_buffer_id(0);
+		std::size_t tex_ubo_id = ubo_module->get_buffer_id(1);
+
 		tz::gl::SSBO* ubo = o.get<tz::gl::BufferType::ShaderStorage>(ubo_id);
+		tz::gl::SSBO* tex_ubo = o.get<tz::gl::BufferType::ShaderStorage>(tex_ubo_id);
 
 		tz::gl::ShaderCompiler cpl;
 		tz::gl::ShaderProgram prg;
 		tz::gl::Shader* vs = prg.emplace(tz::gl::ShaderType::Vertex);
-		vs->upload_source(pre.result());
+		vs->upload_source(vtx_result);
 		tz::gl::Shader* fs = prg.emplace(tz::gl::ShaderType::Fragment);
-		fs->upload_source(frg_shader_src);
+		fs->upload_source(frg_result);
 
 		auto cpl_diag = cpl.compile(*vs);
-		topaz_assert(cpl_diag.successful(), "Shader Compilation Fail: ", cpl_diag.get_info_log());
-		cpl.compile(*fs);
+		topaz_assert(cpl_diag.successful(), "Shader Vtx Compilation Fail: ", cpl_diag.get_info_log());
+		cpl_diag = cpl.compile(*fs);
+		topaz_assert(cpl_diag.successful(), "Shader Frg Compilation Fail: ", cpl_diag.get_info_log());
+
 		auto lnk_diag = cpl.link(prg);
 		topaz_assert(lnk_diag.successful(), "Shader Linkage Fail: ", lnk_diag.get_info_log());
 
@@ -156,7 +174,8 @@ int main()
 		checkerboard.set_parameters(tz::gl::default_texture_params);
 		checkerboard.set_data(rgba_checkerboard);
 
-		prg.attach_texture(0, &checkerboard, "checkerboard");
+		//prg.attach_texture(0, &checkerboard, "checkerboard");
+		checkerboard.make_terminal();
 
 		tz::Vec3 triangle_pos{{0.0f, 0.0f, 0.0f}};
 		float rotation_factor = 0.02f;
@@ -183,15 +202,21 @@ int main()
 		glClearColor(0.3f, 0.15f, 0.0f, 1.0f);
 		tz::render::Device dev{wnd.get_frame(), &prg, &o};
 		dev.add_resource_buffer(ubo);
+		dev.add_resource_buffer(tex_ubo);
 		dev.set_handle(m.get_indices());
 
 		// Scene setup.
+		// Meshes
 		tz::render::AssetBuffer::Index triangle_mesh_idx = scene.add_mesh({&m, triangle_handle});
 		tz::render::AssetBuffer::Index monkey_mesh_idx = scene.add_mesh({&m, monkeyhead_handle});
 		tz::render::AssetBuffer::Index square_mesh_idx = scene.add_mesh({&m, square_handle});
 		mesh_adjustor.register_mesh("triangle", triangle_mesh_idx);
 		mesh_adjustor.register_mesh("monkey head", monkey_mesh_idx);
 		mesh_adjustor.register_mesh("square", square_mesh_idx);
+		// Textures
+		tz::gl::BindlessTextureHandle checkerboard_handle = checkerboard.get_terminal_handle();
+		tex_ubo->resize(sizeof(tz::gl::BindlessTextureHandle));
+		tex_ubo->send(&checkerboard_handle);
 
 		for(std::size_t i = 0; i < num_meshes; i++)
 		{
