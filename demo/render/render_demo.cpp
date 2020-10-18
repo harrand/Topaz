@@ -105,7 +105,7 @@ private:
 int main()
 {
 	// Minimalist Graphics Demo.
-	tz::core::initialise("Topaz Mesh Demo");
+	tz::core::initialise("Topaz Render Demo");
 	{
 		tz::gl::Manager m;
 		tz::gl::Object& o = *m;
