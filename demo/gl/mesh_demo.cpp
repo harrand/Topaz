@@ -47,7 +47,7 @@ const char *frg_shader_src = R"glsl(
 class MeshAdjustor : public tz::ext::imgui::ImGuiWindow
 {
 public:
-	MeshAdjustor(tz::Vec3& offset, float& rotation_factor, tz::render::Scene<tz::render::SceneElement>& scene): ImGuiWindow("Mesh Adjustor"), offset(offset), rotation_factor(rotation_factor), scene(scene){}
+	MeshAdjustor(tz::Vec3& offset, float& rotation_factor, float& x_spacing, float& y_spacing, tz::render::Scene<tz::render::SceneElement>& scene): ImGuiWindow("Mesh Adjustor"), offset(offset), rotation_factor(rotation_factor), x_spacing(x_spacing), y_spacing(y_spacing), scene(scene){}
 
 	void register_mesh(const char* name, tz::render::AssetBuffer::Index index)
 	{
@@ -61,6 +61,8 @@ public:
 		ImGui::SliderFloat("Mesh Offset X", &offset[0], -100.0f, 100.0f);
 		ImGui::SliderFloat("Mesh Offset Y", &offset[1], -100.0f, 100.0f);
 		ImGui::SliderFloat("Mesh Offset Z", &offset[2], -100.0f, 100.0f);
+		ImGui::SliderFloat("Horizontal Spacing Factor", &x_spacing, 0.0f, 5.0f);
+		ImGui::SliderFloat("Vertical Spacing Factor", &y_spacing, 0.0f, 5.0f);
 		ImGui::InputFloat("Rotation Factor", &rotation_factor);
 		
 		if(ImGui::TreeNode("Scene Elements"))
@@ -89,6 +91,8 @@ public:
 private:
 	tz::Vec3& offset;
 	float& rotation_factor;
+	float& x_spacing;
+	float& y_spacing;
 	tz::render::Scene<tz::render::SceneElement>& scene;
 	std::unordered_map<const char*, tz::render::AssetBuffer::Index> meshes;
 };
@@ -156,6 +160,8 @@ int main()
 
 		tz::Vec3 triangle_pos{{0.0f, 0.0f, 0.0f}};
 		float rotation_factor = 0.02f;
+		float x_factor = 2.5f;
+		float y_factor = 2.5f;
 
 		tz::gl::Manager::Handle triangle_handle = m.add_mesh(triangle);
 		tz::gl::Manager::Handle square_handle = m.add_mesh(square);
@@ -167,7 +173,7 @@ int main()
 		// Scene uses UBO resource data.
 		tz::render::Scene<tz::render::SceneElement> scene{ubo->map()};
 
-		MeshAdjustor& mesh_adjustor = tz::ext::imgui::emplace_window<MeshAdjustor>(triangle_pos, rotation_factor, scene);
+		MeshAdjustor& mesh_adjustor = tz::ext::imgui::emplace_window<MeshAdjustor>(triangle_pos, rotation_factor, x_factor, y_factor, scene);
 
 		float rotation_y = 0.0f;
 
@@ -209,8 +215,8 @@ int main()
 			{
 				tz::Vec3 cur_pos = triangle_pos;
 				// Three meshes in a horizontal line.
-				cur_pos[0] += (i % static_cast<std::size_t>(std::sqrt(num_meshes))) * 2.5f;
-				cur_pos[1] += std::floor(i / std::sqrt(num_meshes)) * 2.5f;
+				cur_pos[0] += (i % static_cast<std::size_t>(std::sqrt(num_meshes))) * x_factor;
+				cur_pos[1] += std::floor(i / std::sqrt(num_meshes)) * y_factor;
 
 				tz::render::SceneElement& cur_ele = scene.get(i);
 				cur_ele.transform.position = cur_pos;

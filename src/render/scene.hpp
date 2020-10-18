@@ -66,6 +66,7 @@ namespace tz::render
          * @return Reference to the corresponding handle.
          */
         Element& get(Handle handle);
+        std::size_t size() const;
         Iterator begin();
         Iterator end();
     private:

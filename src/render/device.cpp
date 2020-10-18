@@ -144,6 +144,7 @@ namespace tz::render
 
 	/*static*/ bool Device::sanity_check(const tz::gl::IndexSnippetList& indices, const tz::gl::IBO& ibo)
 	{
+		// Ensures that each snippet's offset is less than the number of indices.
 		const std::size_t index_count = ibo.size() / sizeof(tz::gl::Index);
 		const std::size_t sz = indices.size();
 		for(std::size_t i = 0; i < sz; i++)

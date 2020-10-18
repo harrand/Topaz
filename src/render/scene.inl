@@ -30,6 +30,12 @@ namespace tz::render
     }
 
     template<class Element>
+    std::size_t Scene<Element>::size() const
+    {
+        return this->elements.size();
+    }
+
+    template<class Element>
     typename Scene<Element>::Iterator Scene<Element>::begin()
     {
         return this->elements.begin();
