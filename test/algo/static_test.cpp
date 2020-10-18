@@ -10,7 +10,7 @@ template<typename T>
 void handler(std::size_t& i, [[maybe_unused]] T t)
 {
 	auto handle_char = [&i]([[maybe_unused]] char c){i++;};
-	auto handle_int = [&i]([[maybe_unused]] int i){i *= 2;};
+	auto handle_int = [&i]([[maybe_unused]] int ii){i *= 2;};
 	auto handle_float = [&i]([[maybe_unused]] float f){i *= i;};
 	if constexpr(std::is_same_v<T, char>)
 	{

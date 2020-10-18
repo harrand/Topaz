@@ -6,6 +6,7 @@
 #define TOPAZ_OPENGL_LOADER_HPP
 #include "glad/glad.h"
 #include <vector>
+#include <string>
 
 // Forward declares
 namespace tz::ext::glfw
