@@ -25,7 +25,6 @@ namespace tz::ext::glad
 		// Core context
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 		#if TOPAZ_DEBUG
-			tz::debug_printf("Activating OpenGL debug context...\n");
 			glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
 		#else
 			// No Errors

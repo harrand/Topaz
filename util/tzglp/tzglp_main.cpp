@@ -1,4 +1,5 @@
 #include "tzglp.hpp"
+#include "core/core.hpp"
 #include <string>
 #include <iostream>
 #include <string_view>
@@ -11,15 +12,6 @@ using MaybeArgs = std::optional<PreprocessorArgs>;
 void print_usages();
 MaybeArgs option_a(std::string_view modules_list, std::string_view filename);
 MaybeArgs option_b(std::string_view modules_list);
-template<typename... Args>
-void print_error(const char* fmt, Args&&... args)
-{
-    std::string output;
-    output += "\033[1;31m";
-    output += fmt;
-    output += "\033[0m";
-    std::fprintf(stderr, output.c_str(), std::forward<Args>(args)...);
-}
 
 std::vector<std::string> split(const std::string& i_str, const std::string& i_delim)
 {
@@ -84,21 +76,40 @@ MaybeArgs option_a(std::string_view modules_list, std::string_view filename)
 
 MaybeArgs option_b(std::string_view modules_list)
 {
-    print_error("error: not yet implemented.\n");
-    return {};
+    std::string list_cpy{modules_list};
+    std::string src;
+    for (std::string line; std::getline(std::cin, line);)
+    {
+        src += line + "\n";
+    }
+    return PreprocessorArgs{split(list_cpy, ","), src};
 }
 
-int main(int argc, char** argv)
+int init(int argc, char** argv)
 {
     std::optional<PreprocessorArgs> args = parse_args(argc, argv);
     if(!args.has_value())
     {
-        std::cout << "detected error. aborting...\n";
         return -1;
     }
     TZGLP tzglp{args.value()};
+    if(tzglp.error())
+    {
+        return -1;
+    }
     std::cout << tzglp.get_result();
     return 0;
+}
+
+int main(int argc, char** argv)
+{
+    int ret;
+    tz::core::initialise("TZGLP");
+    {
+        ret = init(argc, argv);
+    }
+    tz::core::terminate();
+    return ret;
 }
 
 void print_usages()

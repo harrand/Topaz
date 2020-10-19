@@ -25,8 +25,6 @@ namespace tz::core
 		this->tz_window->set_active_context();
 		tz::ext::glad::get().load();
 		tz::ext::imgui::initialise();
-
-		tz::debug_printf("tz::initialise(): Success\n");
 	}
 
 	void TopazCore::terminate()
@@ -36,8 +34,6 @@ namespace tz::core
 		tz::ext::imgui::terminate();
 		// TODO: Burn stuff here.
 		tz::ext::glfw::terminate();
-
-		tz::debug_printf("tz::terminate(): Success\n");
 	}
 
 	bool TopazCore::is_initialised() const

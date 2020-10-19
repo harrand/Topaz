@@ -26,7 +26,6 @@ namespace tz::ext::glfw
 		this->initialised = true;
 
 		glfwSwapInterval(0);
-		tz::debug_printf("glfwInit() returned %d\n", success);
 	}
 
 	void GLFWContext::term()
@@ -34,8 +33,6 @@ namespace tz::ext::glfw
 		topaz_assert(this->initialised, "GLFWContext::terminate(): Initialised flag wasn't set!");
 		glfwTerminate();
 		this->initialised = false;
-
-		tz::debug_printf("glfwTerminate() invoked\n");
 	}
 
 	tz::ext::glfw::GLFWWindowImpl* GLFWContext::get_window()

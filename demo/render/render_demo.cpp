@@ -30,7 +30,7 @@ const char *vtx_shader_src = R"glsl(
 	out vec2 texcoord;
 	void main()
 	{
-	   gl_Position = mvp[gl_DrawID] * vec4(aPos.x, aPos.y, aPos.z, 1.0);
+		gl_Position = mvp[gl_DrawID] * vec4(aPos.x, aPos.y, aPos.z, 1.0);
 		texcoord = aTexcoord;
 	}
 	)glsl";
