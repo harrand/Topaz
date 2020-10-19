@@ -116,7 +116,7 @@ namespace tz::gl
 		 * Construct a ShaderPreprocessor with a source code fragment to apply transformations to.
 		 * @param source The source-code to transform.
 		 */
-		ShaderPreprocessor(std::string source);
+		ShaderPreprocessor(std::string source = "");
 		/**
 		 * Retrieve the number of active modules.
 		 * @return Number of modules used in this preprocessor.

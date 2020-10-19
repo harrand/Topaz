@@ -146,6 +146,7 @@ set(GLAD_EXTENSIONS GL_ARB_bindless_texture)
 add_subdirectory(lib)
 add_subdirectory(demo)
 add_subdirectory(test)
+add_subdirectory(util)
 
 set_target_properties(topaz
 		PROPERTIES
