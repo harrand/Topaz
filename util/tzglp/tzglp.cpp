@@ -2,9 +2,10 @@
 #include "gl/modules/ssbo.hpp"
 #include "gl/modules/ubo.hpp"
 #include "gl/modules/bindless_sampler.hpp"
+#include "gl/modules/include.hpp"
 #include <iostream>
 
-TZGLP::TZGLP(const PreprocessorArgs& args)
+TZGLP::TZGLP(const PreprocessorArgs& args): args(args)
 {
     this->handle_args(args);
     this->preprocessor.preprocess();
@@ -33,8 +34,12 @@ void TZGLP::add_module(std::string_view module_name)
 {
     if(module_name == "include")
     {
-        print_error("error: module name \"%s\" not yet implemented\n", module_name.data());
-        this->erroneous = true;
+        if(this->args.include_path.empty())
+        {
+            print_error("error: \"include\" module specified, but no include paths were provided (via \"-I <dirname>\")\n");
+            this->erroneous = true;
+        }
+        this->preprocessor.emplace_module<tz::gl::p::IncludeModule>(this->args.include_path + "/dir/");
     }
     else if(module_name == "ssbo")
     {

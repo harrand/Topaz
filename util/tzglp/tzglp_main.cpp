@@ -12,6 +12,8 @@ using MaybeArgs = std::optional<PreprocessorArgs>;
 void print_usages();
 MaybeArgs option_a(std::string_view modules_list, std::string_view filename);
 MaybeArgs option_b(std::string_view modules_list);
+MaybeArgs option_c(std::string_view modules_list, std::string_view filename, std::string_view include_paths);
+MaybeArgs option_d(std::string_view modules_list, std::string_view include_paths);
 
 std::vector<std::string> split(const std::string& i_str, const std::string& i_delim)
 {
@@ -37,6 +39,10 @@ MaybeArgs parse_args(int argc, char** argv)
     // tzglp <--modules> <m1>[,m2,m3,m4,...] <filename>
     // Option B: Preprocess glsl source via stdin (filename omitted)
     // tzglp <--modules> <m1>[,m2,m3,m4,...]
+    // Option C: Preprocess an existing glsl file with extra include paths.
+    // tzglp <--modules> <m1>[,m2,m3,m4,...] [-I <dir1>] <filename>
+    // Option D: Preprocess glsl source via stdin (filename omitted) with extra include paths.
+    // tzglp <--modules> <m1>[,m2,m3,m4,...] [-I <dir1>]
     switch(argc)
     {
         case 4:
@@ -49,7 +55,19 @@ MaybeArgs parse_args(int argc, char** argv)
         {
             const char* modules_list = argv[2];
             return option_b(modules_list);
-            break;
+        }
+        case 6:
+        {
+            const char* modules_list = argv[2];
+            const char* include_path = argv[4];
+            const char* filename = argv[5];
+            return option_c(modules_list, filename, include_path);
+        }
+        case 5:
+        {
+            const char* modules_list = argv[2];
+            const char* include_path = argv[4];
+            return option_d(modules_list, include_path);
         }
         default:
             print_error("error: invalid number of arguments specified (%d)", argc - 1);
@@ -58,23 +76,7 @@ MaybeArgs parse_args(int argc, char** argv)
     return {std::nullopt};
 }
 
-MaybeArgs option_a(std::string_view modules_list, std::string_view filename)
-{
-    std::string list_cpy{modules_list};
-    
-    std::ifstream shader_file{filename.data()};
-    if(!shader_file.good())
-    {
-        print_error("error: failed to read shader source file \"%s\"", filename);
-        return {std::nullopt};
-    }
-    std::stringstream shader_src_buffer;
-    shader_src_buffer << shader_file.rdbuf();
-
-    return PreprocessorArgs{split(list_cpy, ","), shader_src_buffer.str()};
-}
-
-MaybeArgs option_b(std::string_view modules_list)
+MaybeArgs option_d(std::string_view modules_list, std::string_view include_paths)
 {
     std::string list_cpy{modules_list};
     std::string src;
@@ -82,7 +84,33 @@ MaybeArgs option_b(std::string_view modules_list)
     {
         src += line + "\n";
     }
-    return PreprocessorArgs{split(list_cpy, ","), src};
+    return PreprocessorArgs{split(list_cpy, ","), src, std::string{include_paths}};
+}
+
+MaybeArgs option_c(std::string_view modules_list, std::string_view filename, std::string_view include_paths)
+{
+    std::string list_cpy{modules_list};
+    
+    std::ifstream shader_file{filename.data()};
+    if(!shader_file.good())
+    {
+        print_error("error: failed to read shader source file \"%s\"", filename.data());
+        return {std::nullopt};
+    }
+    std::stringstream shader_src_buffer;
+    shader_src_buffer << shader_file.rdbuf();
+
+    return PreprocessorArgs{split(list_cpy, ","), shader_src_buffer.str(), std::string{include_paths}};
+}
+
+MaybeArgs option_b(std::string_view modules_list)
+{
+    return option_d(modules_list, "");
+}
+
+MaybeArgs option_a(std::string_view modules_list, std::string_view filename)
+{
+    return option_c(modules_list, filename, "");
 }
 
 int init(int argc, char** argv)
@@ -116,8 +144,10 @@ void print_usages()
 {
     constexpr char usages_str[] = R"S(
     note: usages are as follows:
-    "tzglp <--modules> <m1>[,m2,m3,m4,...] <filename>" - from source file
-    "tzglp <--modules> <m1>[,m2,m3,m4,...]" - from stdin
+    "tzglp <--modules> <m1>[,m2,m3,m4,...] <filename>" - from source file, no includes
+    "tzglp <--modules> <m1>[,m2,m3,m4,...]" - from source file, no includes
+    "tzglp <--modules> <m1>[,m2,m3,m4,...] [-I <dir>] <filename>" - from source file, includes
+    "tzglp <--modules> <m1>[,m2,m3,m4,...] [-I <dir>]" - from stdin, includes
     )S";
     std::cout << usages_str;
 }

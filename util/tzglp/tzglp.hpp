@@ -20,6 +20,7 @@ struct PreprocessorArgs
 {
     std::vector<std::string> module_names;
     std::string shader_source;
+    std::string include_path;
 };
 
 class TZGLP
@@ -31,6 +32,7 @@ public:
 private:
     void handle_args(const PreprocessorArgs& args);
     void add_module(std::string_view module_name);
+    PreprocessorArgs args;
     tz::gl::Object dummy;
     tz::gl::ShaderPreprocessor preprocessor;
     bool erroneous = false;
