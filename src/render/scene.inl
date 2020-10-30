@@ -69,4 +69,16 @@ namespace tz::render
         device.render();
         this->writer.reset();
     }
+
+    template<class Element>
+    bool Scene<Element>::contains(const Element& element) const
+    {
+        return std::find(this->elements.begin(), this->elements.end(), element) != this->elements.end();
+    }
+
+    template<class Element>
+    bool Scene<Element>::contains(Handle handle) const
+    {
+        return (this->size() > handle);
+    }
 }

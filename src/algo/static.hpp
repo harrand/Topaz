@@ -73,6 +73,28 @@ namespace tz::algo
 			&& std::is_copy_assignable_v<T>;
 	}
 
+	namespace detail
+	{
+		struct No {};
+
+		template<class T, class Operator>
+		struct ExistsOperator
+		{
+			enum { value = !std::is_same<decltype(std::declval<Operator>()(std::declval<T>(), std::declval<T>())), No>::value };
+		};
+	}
+
+	/**
+	 * Query as to whether T::operator==(T) exists or something very similar.
+	 * @tparam T Type to query equatable
+	 * @return True if T can be compared with another T, otherwise false.
+	 */
+	template<class T>
+	constexpr bool equality_comparable()
+	{
+		return detail::ExistsOperator<T, std::equal_to<T>>::value;
+	}
+
 	/**
 	 * @}
 	 */

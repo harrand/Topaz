@@ -2,6 +2,7 @@
 #define TOPAZ_RENDER_SCENE_HPP
 #include "render/asset.hpp"
 #include "gl/transform.hpp"
+#include "gl/resource_writer.hpp"
 #include "gl/camera.hpp"
 
 namespace tz::render
@@ -12,6 +13,9 @@ namespace tz::render
          * Construct a SceneElement using the given assetbuffer index.
          */
         SceneElement(tz::render::AssetBuffer::Index idx): mesh(idx){}
+        tz::gl::Transform get_transform() const;
+        tz::gl::CameraData get_camera_data() const;
+        tz::render::AssetBuffer::Index get_mesh_index() const;
 
         /// Transform of the element, in world-space.
         tz::gl::Transform transform = {};
@@ -69,6 +73,8 @@ namespace tz::render
         std::size_t size() const;
         Iterator begin();
         Iterator end();
+        bool contains(const Element& element) const;
+        bool contains(Handle handle) const;
     private:
         std::vector<Element> elements = {};
         tz::gl::TransformResourceWriter writer;
