@@ -42,6 +42,32 @@ tz::test::Case adding()
     return test_case;
 }
 
+tz::test::Case removing()
+{
+	tz::test::Case test_case("tz::render::Scene removal tests");
+	TestScene scene{tz::mem::Block::null()};
+	for(int i = 0; i < 100; i++)
+	{
+		scene.add({i});
+	}
+	topaz_expect(test_case, scene.size() == 100, "Scene has unexpected size. Expected 100, got ", scene.size());
+	topaz_expect(test_case, scene.erase(NullSceneElement{99}), "Scene erasure unexpectedly returned false.");
+	topaz_expect(test_case, scene.size() == 99, "Scene has unexpected size. Expected 99, got ", scene.size());
+	for(const NullSceneElement& ele : scene)
+	{
+		topaz_expect(test_case, ele.val != 99, "Scene contained element data after deletion (Range-based for)");
+	}
+	topaz_expect(test_case, !scene.contains(NullSceneElement{99}) && !scene.contains(TestScene::Handle{99}), "Scene contained element data after deletion (Scene::contains)");
+	for(std::size_t i = 50; i < 99; i++)
+	{
+		topaz_assert(scene.contains(TestScene::Handle{i}), "Scene does not contain element which I haven't erased yet (", i, ")");
+		topaz_expect(test_case, scene.erase(TestScene::Handle{i}), "Scene erasure unexpectedly returned false");
+	}
+	topaz_expect(test_case, scene.size() == 50, "Scene had unexpected size. Expected 50, got ", scene.size());
+	scene.pack();
+	return test_case;
+}
+
 int main()
 {
 	tz::test::Unit scene;
@@ -50,6 +76,7 @@ int main()
 	{
 		tz::core::initialise("Render Scene Tests");
 		scene.add(adding());
+		scene.add(removing());
 		tz::core::terminate();
 	}
 	return scene.result();

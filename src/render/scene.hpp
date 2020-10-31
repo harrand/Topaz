@@ -4,6 +4,7 @@
 #include "gl/transform.hpp"
 #include "gl/resource_writer.hpp"
 #include "gl/camera.hpp"
+#include <optional>
 
 namespace tz::render
 {
@@ -35,7 +36,22 @@ namespace tz::render
     {
     public:
         using Handle = std::size_t;
-        using Iterator = typename std::vector<Element>::iterator;
+        class Iterator
+        {
+        public:
+            Iterator(std::optional<Element>* iter, const std::optional<Element>* const end);
+            bool operator==(const Iterator& rhs) const;
+            bool operator!=(const Iterator& rhs) const;
+            const Element& operator*() const;
+            Element& operator*();
+            Iterator& operator++();
+            Iterator operator++(int);
+            Iterator& operator--();
+            Iterator operator--(int);
+        private:
+            std::optional<Element>* iter;
+            const std::optional<Element>* const end;
+        };
         /**
          * Constructs an empty scene. Element data is written into the given resource.
          * @param resource Memory block where element data is written into. It is recommended for this to be some mapped buffer data.
@@ -57,6 +73,7 @@ namespace tz::render
         /**
          * Retrieve an element which was previously added to the scene.
          * Precondition: handle corresponds to a valid handle retrieved by a past invocation of Scene<Element>::add(...). Otherwise, this will assert and invoke UB.
+         * Note: Do *not* cache this reference. References are not stable and can be invalidated at any time.
          * 
          * @param handle Handle to an existing scene element to retrieve.
          * @return Const reference to the corresponding handle.
@@ -65,6 +82,7 @@ namespace tz::render
         /**
          * Retrieve an element which was previously added to the scene.
          * Precondition: handle corresponds to a valid handle retrieved by a past invocation of Scene<Element>::add(...). Otherwise, this will assert and invoke UB.
+         * Note: Do *not* cache this reference. References are not stable and can be invalidated at any time.
          * 
          * @param handle Handle to an existing scene element to retrieve.
          * @return Reference to the corresponding handle.
@@ -75,8 +93,16 @@ namespace tz::render
         Iterator end();
         bool contains(const Element& element) const;
         bool contains(Handle handle) const;
+        bool erase(const Element& element);
+        bool erase(Handle handle);
+        /**
+         * Elements may become fragmented if many erasures happen, which may yield performance reductions. Packing the Scene ensures that elements are closely packed in memory.
+         * Note: All handles and references become invalidated after packing. Do not pack the scene if you are caching handles.
+         * Postcondition: If a cached handle is used after packing, it is not guaranteed to assert, but will certainly invoke UB.
+         */
+        void pack();
     private:
-        std::vector<Element> elements = {};
+        std::vector<std::optional<Element>> elements = {};
         tz::gl::TransformResourceWriter writer;
     };
 }
