@@ -129,6 +129,7 @@ add_library(topaz STATIC
 		src/render/asset.hpp
 		src/render/device.cpp
 		src/render/device.hpp
+		src/render/element_writer.hpp
 		src/render/pipeline.cpp
 		src/render/pipeline.hpp
 		src/render/scene.cpp

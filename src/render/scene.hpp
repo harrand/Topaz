@@ -1,6 +1,7 @@
 #ifndef TOPAZ_RENDER_SCENE_HPP
 #define TOPAZ_RENDER_SCENE_HPP
 #include "render/asset.hpp"
+#include "render/element_writer.hpp"
 #include "gl/transform.hpp"
 #include "gl/resource_writer.hpp"
 #include "gl/camera.hpp"
@@ -26,12 +27,26 @@ namespace tz::render
         tz::render::AssetBuffer::Index mesh;
         bool visible = true;
     };
+
+    namespace detail
+    {
+        template<class Element, class Writer>
+        struct DefaultSceneElementWriterFunctor
+        {
+            void operator()(Writer& writer, const Element& element)
+            {
+                tz::render::ElementWriter<Element, Writer>::write(writer, element);
+            }
+        };
+    }
+    
     // Element must have operator() which returns its index snippet.
     /**
      * Represents a collection of assets, and scene elements.
      * @tparam Element The element type. It must have public data members available identical to that of tz::render::SceneElement. By default this is simply SceneElement.
+     * @tparam Writer The writer type. Responsible for writing uniform data into a memory block on a per-element basis. The default is TransformResourceWriter.
      */
-    template<class Element = SceneElement>
+    template<class Element = SceneElement, class Writer = tz::gl::TransformResourceWriter, class SceneElementWriter = detail::DefaultSceneElementWriterFunctor<Element, Writer>>
     class Scene : public tz::render::AssetBuffer
     {
     public:
@@ -95,6 +110,7 @@ namespace tz::render
         bool contains(Handle handle) const;
         bool erase(const Element& element);
         bool erase(Handle handle);
+        void clear();
         /**
          * Elements may become fragmented if many erasures happen, which may yield performance reductions. Packing the Scene ensures that elements are closely packed in memory.
          * Note: All handles and references become invalidated after packing. Do not pack the scene if you are caching handles.
@@ -103,7 +119,7 @@ namespace tz::render
         void pack();
     private:
         std::vector<std::optional<Element>> elements = {};
-        tz::gl::TransformResourceWriter writer;
+        Writer writer;
     };
 }
 

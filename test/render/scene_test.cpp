@@ -20,6 +20,21 @@ struct NullSceneElement
 
 using TestScene = tz::render::Scene<NullSceneElement>;
 
+namespace tz::render
+{
+	template<>
+	class ElementWriter<NullSceneElement, tz::gl::TransformResourceWriter>
+	{
+	public:
+        static void write(tz::gl::TransformResourceWriter& writer, const NullSceneElement& element)
+        {
+			const tz::gl::Transform& trans = element.get_transform();
+			const tz::gl::CameraData& cam = element.get_camera_data();
+            writer.write(trans.position, trans.rotation, trans.scale, cam.position, cam.rotation, cam.fov, cam.aspect_ratio, cam.near, cam.far);
+        }
+	};
+}
+
 tz::test::Case adding()
 {
     tz::test::Case test_case("tz::render::Scene addition tests");
@@ -65,6 +80,8 @@ tz::test::Case removing()
 	}
 	topaz_expect(test_case, scene.size() == 50, "Scene had unexpected size. Expected 50, got ", scene.size());
 	scene.pack();
+	tz::render::Device dev;
+	scene.render(dev);
 	return test_case;
 }
 
