@@ -59,21 +59,21 @@ add_library(topaz STATIC
 		src/gl/tz_stb_image/image_reader.inl
 		src/gl/tz_stb_image/image_writer.hpp
 		src/gl/tz_stb_image/image_writer.inl
-		src/gl/tz_imgui/buffer_tracker.cpp
-		src/gl/tz_imgui/buffer_tracker.hpp
-		src/gl/tz_imgui/imgui_context.cpp
-		src/gl/tz_imgui/imgui_context.hpp
-		src/gl/tz_imgui/imgui_context.inl
-		src/gl/tz_imgui/imgui_impl_glfw.cpp
-		src/gl/tz_imgui/imgui_impl_glfw.h
-		src/gl/tz_imgui/imgui_impl_opengl3.cpp
-		src/gl/tz_imgui/imgui_impl_opengl3.h
-		src/gl/tz_imgui/ogl_info.cpp
-		src/gl/tz_imgui/ogl_info.hpp
-		src/gl/tz_imgui/texture_sentinel_tracker.cpp
-		src/gl/tz_imgui/texture_sentinel_tracker.hpp
-		src/gl/tz_imgui/tzglp_preview.cpp
-		src/gl/tz_imgui/tzglp_preview.hpp
+		src/dui/buffer_tracker.cpp
+		src/dui/buffer_tracker.hpp
+		src/dui/imgui_context.cpp
+		src/dui/imgui_context.hpp
+		src/dui/imgui_context.inl
+		src/dui/imgui_impl_glfw.cpp
+		src/dui/imgui_impl_glfw.h
+		src/dui/imgui_impl_opengl3.cpp
+		src/dui/imgui_impl_opengl3.h
+		src/dui/ogl_info.cpp
+		src/dui/ogl_info.hpp
+		src/dui/texture_sentinel_tracker.cpp
+		src/dui/texture_sentinel_tracker.hpp
+		src/dui/tzglp_preview.cpp
+		src/dui/tzglp_preview.hpp
 		src/gl/buffer.hpp
 		src/gl/buffer.cpp
 		src/gl/buffer.inl

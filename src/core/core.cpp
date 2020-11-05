@@ -6,7 +6,7 @@
 #include "core/debug/assert.hpp"
 #include "core/debug/print.hpp"
 #include "core/tz_glad/glad_context.hpp"
-#include "gl/tz_imgui/imgui_context.hpp"
+#include "dui/imgui_context.hpp"
 #include "GLFW/glfw3.h"
 
 namespace tz::core

@@ -1,6 +1,6 @@
 #ifndef TOPAZ_GL_IMGUI_TZGLP_PREVIEW_HPP
 #define TOPAZ_GL_IMGUI_TZGLP_PREVIEW_HPP
-#include "gl/tz_imgui/imgui_context.hpp"
+#include "dui/imgui_context.hpp"
 #include "gl/shader_preprocessor.hpp"
 #include "gl/object.hpp"
 #include <unordered_map>

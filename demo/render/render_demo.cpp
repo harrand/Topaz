@@ -12,7 +12,7 @@
 #include "gl/texture.hpp"
 #include "render/device.hpp"
 #include "GLFW/glfw3.h"
-#include "gl/tz_imgui/imgui_context.hpp"
+#include "dui/imgui_context.hpp"
 #include "gl/resource_writer.hpp"
 #include "gl/modules/bindless_sampler.hpp"
 #include "render/asset.hpp"

@@ -1,4 +1,4 @@
-#include "gl/tz_imgui/texture_sentinel_tracker.hpp"
+#include "dui/texture_sentinel_tracker.hpp"
 #include "gl/texture.hpp"
 
 namespace tz::ext::imgui::gl

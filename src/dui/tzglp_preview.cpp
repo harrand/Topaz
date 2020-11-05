@@ -1,4 +1,4 @@
-#include "gl/tz_imgui/tzglp_preview.hpp"
+#include "dui/tzglp_preview.hpp"
 #include "gl/modules/ssbo.hpp"
 #include "gl/modules/ubo.hpp"
 #include "gl/modules/bindless_sampler.hpp"

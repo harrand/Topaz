@@ -1,6 +1,6 @@
 #ifndef TOPAZ_GL_TZ_IMGUI_BUFFER_TRACKER_HPP
 #define TOPAZ_GL_TZ_IMGUI_BUFFER_TRACKER_HPP
-#include "gl/tz_imgui/imgui_context.hpp"
+#include "dui/imgui_context.hpp"
 #include "gl/buffer.hpp"
 #include <optional>
 

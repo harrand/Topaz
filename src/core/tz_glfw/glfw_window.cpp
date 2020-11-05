@@ -7,7 +7,7 @@
 #include "GLFW/glfw3.h"
 #include "core/debug/assert.hpp"
 #include "core/window.hpp"
-#include "gl/tz_imgui/imgui_context.hpp"
+#include "dui/imgui_context.hpp"
 
 namespace tz::ext::glfw
 {

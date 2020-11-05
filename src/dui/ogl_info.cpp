@@ -1,4 +1,4 @@
-#include "gl/tz_imgui/ogl_info.hpp"
+#include "dui/ogl_info.hpp"
 #include "core/tz_glad/glad_context.hpp"
 #include "core/debug/assert.hpp"
 #include "core/core.hpp"

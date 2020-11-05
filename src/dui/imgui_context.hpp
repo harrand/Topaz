@@ -36,5 +36,5 @@ namespace tz::ext::imgui
 	void update();
 }
 
-#include "gl/tz_imgui/imgui_context.inl"
+#include "dui/imgui_context.inl"
 #endif // TOPAZ_GL_IMGUI_CONTEXT_HPP

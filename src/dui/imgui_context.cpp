@@ -1,17 +1,17 @@
-#include "gl/tz_imgui/imgui_context.hpp"
+#include "dui/imgui_context.hpp"
 #include "gl/object.hpp"
-#include "gl/tz_imgui/imgui_impl_opengl3.h"
-#include "gl/tz_imgui/imgui_impl_glfw.h"
+#include "dui/imgui_impl_opengl3.h"
+#include "dui/imgui_impl_glfw.h"
 #include "glfw/glfw3.h"
 #include "core/debug/assert.hpp"
 #include "core/core.hpp"
 
 // Diagnostics
 #include <vector>
-#include "gl/tz_imgui/buffer_tracker.hpp"
-#include "gl/tz_imgui/tzglp_preview.hpp"
-#include "gl/tz_imgui/ogl_info.hpp"
-#include "gl/tz_imgui/texture_sentinel_tracker.hpp"
+#include "dui/buffer_tracker.hpp"
+#include "dui/tzglp_preview.hpp"
+#include "dui/ogl_info.hpp"
+#include "dui/texture_sentinel_tracker.hpp"
 
 namespace tz::ext::imgui
 {
