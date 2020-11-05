@@ -115,6 +115,38 @@ namespace tz::ext::glfw
 	{
 		ctx.set_window(std::move(impl));
 	}
+
+	void check_one_monitor()
+	{
+		#if TOPAZ_DEBUG
+			int count;
+			glfwGetMonitors(&count);
+			if(count > 1)
+			{
+				tz::debug_printf("Detected %d monitors. Only one monitor is supported; tz::gl may not perform correctly.");
+			}
+		#endif
+	}
+
+	std::pair<int, int> get_monitor_dimensions()
+	{
+		check_one_monitor();
+		GLFWmonitor* default_monitor = glfwGetPrimaryMonitor();
+		topaz_assert(default_monitor != nullptr, "glfwGetPrimaryMonitor() returned nullptr");
+		int width, height;
+		glfwGetMonitorPhysicalSize(default_monitor, &width, &height);
+		return {width, height};
+	}
+
+	int get_monitor_width()
+	{
+		return get_monitor_dimensions().first;
+	}
+
+	int get_monitor_height()
+	{
+		return get_monitor_dimensions().second;
+	}
 	
 	void initialise(WindowCreationArgs args)
 	{

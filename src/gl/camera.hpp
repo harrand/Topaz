@@ -2,6 +2,8 @@
 #define TOPAZ_GL_CAMERA_HPP
 #include "algo/math.hpp"
 #include "geo/vector.hpp"
+#include "core/tz_glfw/glfw_context.hpp"
+#include "gl/frame.hpp"
 
 namespace tz::core
 {
@@ -10,21 +12,38 @@ namespace tz::core
 
 namespace tz::gl
 {
+    /**
+	 * \addtogroup tz_gl Topaz Graphics Library (tz::gl)
+	 * @{
+	 */
     struct CameraData
     {
+        // Default field-of-view for all Cameras, in radians.
         constexpr static float default_fov = tz::pi / 2.0f;
+        // Default distance between near-clip plane and camera position.
         constexpr static float default_near = 0.1f;
+        // Default distance between far-clip plane and camera position.
         constexpr static float default_far = 1000.0f;
-        constexpr static float default_aspect_ratio = 1920.0f / 1080.0f;
-        CameraData(const tz::core::IWindow& wnd, float fov = default_fov, float near = default_near, float far = default_far);
-        CameraData() = default;
+        /**
+         * Construct camera data using the aspect-ratio of an existing frame.
+         * @param frame Frame whose current aspect-ratio shall be used.
+         * @param fov Field-of-view, in radians.
+         * @param near Distance between near-plane and camera position.
+         * @param far Distance between far-plane and camera position.
+         */
+        CameraData(const tz::gl::IFrame& frame, float fov = default_fov, float near = default_near, float far = default_far);
+        CameraData();
         tz::Vec3 position = {};
         tz::Vec3 rotation = {};
         float fov = default_fov;
-        float aspect_ratio = default_aspect_ratio;
+        float aspect_ratio;
         float near = default_near;
         float far = default_far;
     };
+
+    /**
+     * @}
+     */
 }
 
 #endif // TOPAZ_GL_CAMERA_HPP

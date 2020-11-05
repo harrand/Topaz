@@ -104,6 +104,9 @@ namespace tz::ext::glfw
 		GLFWErrorCallback* error_callback;
 	};
 
+	int get_monitor_width();
+	int get_monitor_height();
+
 	/**
 	 * Initialize a GLFW context and create a window.
 	 * This must be done aswell as loading OpenGL before rendering can be done.
