@@ -73,11 +73,11 @@ namespace tz::render
          */
         Scene(tz::mem::Block resource);
         /**
-         * Renders all elements within the scene using the given device. Invisible elements will be skipped.
+         * Configures the device such that its next render invocation shall render all objects in the scene.
          * Note: The device's selected object, index-buffer and index-snippet-list will be changed.
-         * @param device Device whose existing data shall be used.
+         * @param device Device whose data should be updated.
          */
-        void render(tz::render::Device& device);
+        void configure(tz::render::Device& device);
         /**
          * Add a scene element.
          * Precondition: The Element's mesh asset must have previously been registered via add_mesh(index). Otherwise, this will invoke UB without asserting on the next render(Device&) invocation.

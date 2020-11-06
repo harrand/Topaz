@@ -259,7 +259,8 @@ int main()
 				cur_ele.transform.rotation[1] = rotation_y;
 				cur_ele.camera.position = cam_pos;
 			}
-			scene.render(dev);
+			scene.configure(dev);
+			dev.render();
 			tz::core::update();
 			wnd.update();
 		}

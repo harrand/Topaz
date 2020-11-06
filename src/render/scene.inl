@@ -135,7 +135,7 @@ namespace tz::render
     }
 
     template<class Element, class Writer, class SceneElementWriter>
-    void Scene<Element, Writer, SceneElementWriter>::render(tz::render::Device& device)
+    void Scene<Element, Writer, SceneElementWriter>::configure(tz::render::Device& device)
     {
         // Write mesh and element data to the resource, then tell it to render.
         tz::gl::IndexSnippetList indices;
@@ -154,7 +154,6 @@ namespace tz::render
         }
         this->apply(device);
         device.set_indices(indices);
-        device.render();
         this->writer.reset();
     }
 

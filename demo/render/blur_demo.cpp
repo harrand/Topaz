@@ -334,8 +334,8 @@ int main()
 
 			pl.clear();
 			
-			scene.render(dev());
-            dev2.render();
+			scene.configure(dev());
+			pl.render();
 			tz::core::update();
 			wnd.update();
 		}
