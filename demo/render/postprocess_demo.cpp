@@ -125,13 +125,13 @@ const char *inv_frg_shader_src = R"glsl(
 	}
 	)glsl";
 
-class BlurDemoWindow : public tz::ext::imgui::ImGuiWindow
+class PostprocessDemoWindow : public tz::ext::imgui::ImGuiWindow
 {
 public:
-	BlurDemoWindow(int& strategy_id): tz::ext::imgui::ImGuiWindow("Topaz Blur Demo"), strategy_id(strategy_id){}
+	PostprocessDemoWindow(int& strategy_id): tz::ext::imgui::ImGuiWindow("Topaz Postprocess Demo"), strategy_id(strategy_id){}
 	virtual void render() override
 	{
-		ImGui::Begin("Topaz Blur Demo");
+		ImGui::Begin("Topaz Postprocess Demo");
 		ImGui::RadioButton("No post-processing", &this->strategy_id, 0);
 		ImGui::RadioButton("Invert colours", &this->strategy_id, 1);
 		ImGui::RadioButton("Gaussian blur", &this->strategy_id, 2);
@@ -146,7 +146,7 @@ int main()
 	constexpr std::size_t max_elements = 512;
 	constexpr std::size_t max_textures = 8;
 	// Minimalist Graphics Demo.
-	tz::core::initialise("Topaz Blur Demo");
+	tz::core::initialise("Topaz Postprocess Demo");
 	{
 		tz::gl::Manager m;
 		tz::gl::Object& o = *m;
@@ -282,7 +282,7 @@ int main()
 			strategy_id = new (strategy_id_block.begin) int{0};
 		}
 
-		tz::ext::imgui::emplace_window<BlurDemoWindow>(*strategy_id);
+		tz::ext::imgui::emplace_window<PostprocessDemoWindow>(*strategy_id);
 
         cpl_diag = cpl.compile(*inv_vs);
 		topaz_assert(cpl_diag.successful(), "Shader Vtx Compilation Fail: ", cpl_diag.get_info_log());
@@ -345,8 +345,6 @@ int main()
         quad_list.emplace_range(m, square_handle);
         dev2.set_indices(quad_list);
         
-        tz::gl::Image<tz::gl::PixelRGB8> temp_img = tz::ext::stb::read_image<tz::gl::PixelRGB8>("res/textures/bricks.jpg");
-
 		while(!wnd.is_close_requested())
 		{
 			rotation_y += rotation_factor;
