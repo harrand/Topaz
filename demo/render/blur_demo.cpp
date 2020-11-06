@@ -76,6 +76,34 @@ const char *inv_frg_shader_src = R"glsl(
 		return vec4(1.0 - col.r, 1.0 - col.g, 1.0 - col.b, 1.0);
 	}
 
+	vec4 blur(vec4 col, bool horizontal)
+	{
+		const int kernel_size = 5;
+		float weight[kernel_size] = float[] (0.227027, 0.1945946, 0.1216216, 0.054054, 0.016216);
+
+		vec2 tex_offset = 1.0 / textureSize(rto_sampler, 0); // gets size of single texel
+		vec3 result = col.rgb * weight[0];
+		if(horizontal)
+		{
+			for(int i = 0; i < kernel_size; i++)
+			{
+				result += texture(rto_sampler, texcoord + vec2(tex_offset.x * i, 0.0)).rgb * weight[i];
+				result += texture(rto_sampler, texcoord - vec2(tex_offset.x * i, 0.0)).rgb * weight[i];
+			}
+		}
+		else
+		{
+			for(int i = 0; i < kernel_size; i++)
+			{
+			result += texture(rto_sampler, texcoord + vec2(0.0, tex_offset.y * i)).rgb * weight[i];
+			result += texture(rto_sampler, texcoord - vec2(0.0, tex_offset.y * i)).rgb * weight[i];
+			}
+		}
+		// then perform tone mapping...
+
+		return vec4(result, 1.0);
+	}
+
 	void main()
 	{
 		vec4 tex = texture(rto_sampler, texcoord);
@@ -84,10 +112,15 @@ const char *inv_frg_shader_src = R"glsl(
 			// No change.
 			FragColor = tex;
 		}
-		else
+		else if(strategy_id == 1)
 		{
 			// Invert colour.
 			FragColor = invert(tex);
+		}
+		else if(strategy_id == 2)
+		{
+			// Blur colour
+			FragColor = blur(blur(tex, true), false);
 		}
 	}
 	)glsl";
@@ -101,6 +134,7 @@ public:
 		ImGui::Begin("Topaz Blur Demo");
 		ImGui::RadioButton("No post-processing", &this->strategy_id, 0);
 		ImGui::RadioButton("Invert colours", &this->strategy_id, 1);
+		ImGui::RadioButton("Gaussian blur", &this->strategy_id, 2);
 		ImGui::End();
 	}
 private:
@@ -260,7 +294,7 @@ int main()
 
 		for(std::size_t i = 0; i < max_elements; i++)
 		{
-			tz::render::SceneElement ele{triangle_mesh_idx};
+			tz::render::SceneElement ele{monkey_mesh_idx};
 			ele.transform.position = tz::Vec3{1.0f, 1.0f, 1.0f};
 			ele.transform.rotation = tz::Vec3{0.0f, 0.0f, 0.0f};
 			ele.camera.fov = 1.57f;
@@ -317,8 +351,7 @@ int main()
 		{
 			rotation_y += rotation_factor;
 
-			dev().clear();
-			o.bind();
+			pl.clear();
 			for(std::size_t i = 0; i < max_elements; i++)
 			{
 				tz::Vec3 cur_pos = triangle_pos;
