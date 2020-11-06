@@ -133,7 +133,7 @@ namespace tz::gl
 		if(idx >= this->textures.size())
 		{
 			this->textures.resize(idx + 1, nullptr);
-			this->texture_names.resize(idx + 1, "<INVALID TEXTURE>");
+            this->texture_names.resize(idx + 1, "<INVALID TEXTURE>");
 		}
 		this->textures[idx] = texture;
 		this->texture_names[idx] = sampler_name;
