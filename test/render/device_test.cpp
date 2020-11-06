@@ -126,7 +126,7 @@ int main()
 
 	// We require topaz to be initialised.
 	{
-		tz::core::initialise("Render Device Tests");
+		tz::core::initialise("Render Device Tests", tz::core::invisible_tag);
 		device.add(broken_devices());
 		device.add(edit_device());
 		device.add(resource_buffers());

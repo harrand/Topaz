@@ -217,7 +217,7 @@ int main()
 
 	// We require topaz to be initialised.
 	{
-		tz::core::initialise("Shader Preprocessor Tests");
+		tz::core::initialise("Shader Preprocessor Tests", tz::core::invisible_tag);
 		pre.add(no_modules());
 		pre.add(example_module());
 		pre.add(module_order());

@@ -58,11 +58,13 @@ namespace tz::render
 
     const tz::render::MeshAsset& AssetBuffer::at(Index idx) const
     {
+        topaz_assert(this->meshes.size() > idx, "AssetBuffer::at(", idx, "): Out of range. Size = ", this->meshes.size());
         return this->meshes[idx];
     }
 
     tz::render::MeshAsset& AssetBuffer::at(Index idx)
     {
+        topaz_assert(this->meshes.size() > idx, "AssetBuffer::at(", idx, "): Out of range. Size = ", this->meshes.size());
         return this->meshes[idx];
     }
 }

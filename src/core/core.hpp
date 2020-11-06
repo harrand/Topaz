@@ -59,8 +59,9 @@ namespace tz::core
 		/**
 		 * Initialise Topaz with the given name. This will be used as the initial title for the window.
 		 * @param app_name C-string corresponding to the name of the application
+		 * @param visible Whether the window should initially be visible.
 		 */
-		void initialise(const char* app_name);
+		void initialise(const char* app_name, bool visible);
 		/**
 		 * Terminate Topaz. This must be invoked before runtime ends to prevent various memory leaks.
 		 */
@@ -109,6 +110,10 @@ namespace tz::core
 		bool initialised;
 	};
 
+	struct invisible_tag_t{};
+
+	constexpr invisible_tag_t invisible_tag{};
+
 	/**
 	 * Instruct topaz to initialise all core modules.
 	 * This will provide you with a window, ready to be rendered into and receive input.
@@ -116,6 +121,7 @@ namespace tz::core
 	 * @param app_name Name of the application; will be the title of the window too
 	 */
 	void initialise(const char* app_name);
+	void initialise(const char* app_name, invisible_tag_t t);
 	/**
 	 * Advance topaz. This will poll all window events for the main core.
 	 * You should invoke this every frame.

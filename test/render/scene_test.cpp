@@ -80,8 +80,6 @@ tz::test::Case removing()
 	}
 	topaz_expect(test_case, scene.size() == 50, "Scene had unexpected size. Expected 50, got ", scene.size());
 	scene.pack();
-	tz::render::Device dev;
-	scene.render(dev);
 	return test_case;
 }
 
@@ -91,7 +89,7 @@ int main()
 
 	// We require topaz to be initialised.
 	{
-		tz::core::initialise("Render Scene Tests");
+		tz::core::initialise("Render Scene Tests", tz::core::invisible_tag);
 		scene.add(adding());
 		scene.add(removing());
 		tz::core::terminate();

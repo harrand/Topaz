@@ -48,7 +48,7 @@ int main()
 
 	// We require topaz to be initialised.
 	{
-		tz::core::initialise("Texture Tests");
+		tz::core::initialise("Texture Tests", tz::core::invisible_tag);
 		tex.add(statics());
 		tex.add(checkerboard_texture());
 		tz::core::terminate();

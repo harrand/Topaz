@@ -13,12 +13,12 @@ namespace tz::core
 {
 	TopazCore::TopazCore() noexcept: tz_window(nullptr), secondary_windows(), initialised(false){}
 
-	void TopazCore::initialise(const char* app_name)
+	void TopazCore::initialise(const char* app_name, bool visible)
 	{
 		topaz_assert(!this->initialised, "TopazCore::initialise(): Attempt to initialise but we're already marked as initialised!");
 		this->initialised = true;
 		// Initialise GLFW...
-		tz::ext::glfw::initialise(tz::ext::glfw::WindowCreationArgs{app_name, 1920, 1080});
+		tz::ext::glfw::initialise(tz::ext::glfw::WindowCreationArgs{app_name, 1920, 1080, visible});
 		// Create the GLFW window and set this to be the global GLFW context window.
 		tz::ext::glad::get().pre_init();
 		this->tz_window = std::make_unique<GLFWWindow>(tz::ext::glfw::get());
@@ -110,7 +110,12 @@ namespace tz::core
 
 	void initialise(const char* app_name)
 	{
-		global_core.initialise(app_name);
+		global_core.initialise(app_name, true);
+	}
+
+	void initialise(const char* app_name, [[maybe_unused]] invisible_tag_t t)
+	{
+		global_core.initialise(app_name, false);
 	}
 
 	void update()

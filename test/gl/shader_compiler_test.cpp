@@ -83,7 +83,7 @@ int main()
 
 	// We require topaz to be initialised.
 	{
-		tz::core::initialise("Shader Compiler Tests");
+		tz::core::initialise("Shader Compiler Tests", tz::core::invisible_tag);
 		shader.add(invalid_shader());
 		shader.add(valid_shader());
 		shader.add(valid_program());

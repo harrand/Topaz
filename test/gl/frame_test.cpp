@@ -68,7 +68,7 @@ int main()
 
 	// We require topaz to be initialised.
 	{
-		tz::core::initialise("Frame Tests");
+		tz::core::initialise("Frame Tests", tz::core::invisible_tag);
 		frame.add(frame_bindings());
 
 		frame.add(window_frame_bindings());

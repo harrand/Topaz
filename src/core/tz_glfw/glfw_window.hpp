@@ -35,11 +35,12 @@ namespace tz::ext::glfw
 	struct WindowCreationArgs
 	{
 		WindowCreationArgs();
-		WindowCreationArgs(const char* title, int width, int height);
+		WindowCreationArgs(const char* title, int width, int height, bool visible);
 
 		const char* title;
 		int width;
 		int height;
+		bool visible;
 	};
 	
 	/**
@@ -106,7 +107,7 @@ namespace tz::ext::glfw
 		 * @param monitor - Monitor implementation (nullable)
 		 * @param share - Unknown (nullable)
 		 */
-		GLFWWindowImpl(int width, int height, const char* title, GLFWmonitor* monitor, GLFWwindow* share);
+		GLFWWindowImpl(int width, int height, const char* title, GLFWmonitor* monitor, GLFWwindow* share, bool initially_visible);
 		/**
 		 * Construct the window implementation given some brief information.
 		 * @param args - Structure containing window information, such as width, height and title

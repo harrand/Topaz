@@ -47,7 +47,7 @@ int main()
 
 	// We require topaz to be initialised.
 	{
-		tz::core::initialise("Shader Tests");
+		tz::core::initialise("Shader Tests", tz::core::invisible_tag);
 		shader.add(empty_program());
 		shader.add(empty_shader());
 		shader.add(attach_texture());

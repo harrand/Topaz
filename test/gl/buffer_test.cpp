@@ -317,7 +317,7 @@ int main()
 
 	// We require topaz to be initialised.
 	{
-		tz::core::initialise("Buffer Tests");
+		tz::core::initialise("Buffer Tests", tz::core::invisible_tag);
 
 		buffer.add(statics());
 		buffer.add(binding());

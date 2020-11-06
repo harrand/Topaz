@@ -111,7 +111,7 @@ int main()
 
 	// We require topaz to be initialised.
 	{
-		tz::core::initialise("Object Tests");
+		tz::core::initialise("Object Tests", tz::core::invisible_tag);
 
 		object.add(binding());
 		object.add(children());

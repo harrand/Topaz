@@ -61,6 +61,7 @@ register_test_target(tz_pool_test)
 # tz::render
 register_test_target(tz_device_test)
 register_test_target(tz_pipeline_test)
+register_test_target(tz_scene_test)
 
 add_custom_command(
         TARGET Topaz_All_Tests

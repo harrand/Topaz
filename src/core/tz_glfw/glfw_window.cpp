@@ -19,19 +19,22 @@ namespace tz::ext::glfw
 	
 	WindowCreationArgs::WindowCreationArgs(): title("Untitled"), width(800), height(600){}
 
-	WindowCreationArgs::WindowCreationArgs(const char* title, int width, int height): title(title), width(width), height(height){}
+	WindowCreationArgs::WindowCreationArgs(const char* title, int width, int height, bool visible): title(title), width(width), height(height), visible(visible){}
 
-	GLFWWindowImpl::GLFWWindowImpl(int width, int height, const char* title, GLFWmonitor* monitor, GLFWwindow* share) :
-			window_handle(glfwCreateWindow(width, height, title, monitor, share)), title(title), frame(std::make_unique<tz::gl::WindowFrame>(this->window_handle))
+	GLFWWindowImpl::GLFWWindowImpl(int width, int height, const char* title, GLFWmonitor* monitor, GLFWwindow* share, bool initially_visible) :
+			window_handle(nullptr), title(title), frame(nullptr)
 	{
+		glfwWindowHint(GLFW_VISIBLE, initially_visible ? GLFW_TRUE : GLFW_FALSE);
+		this->window_handle = glfwCreateWindow(width, height, title, monitor, share);
 		topaz_assert(this->window_handle != nullptr, "GLFWWindowImpl::GLFWWindowImpl(...): Failed to initialise glfw window!");
+		this->frame = std::make_unique<tz::gl::WindowFrame>(this->window_handle);
 		glfwSetKeyCallback(this->window_handle, glfw_key_callback);
 		glfwSetCharCallback(this->window_handle, glfw_char_callback);
 		glfwSetCursorPosCallback(this->window_handle, glfw_mouse_callback);
 		glfwSetMouseButtonCallback(this->window_handle, glfw_click_callback);
 	}
 
-	GLFWWindowImpl::GLFWWindowImpl(WindowCreationArgs args) : GLFWWindowImpl(args.width, args.height, args.title, nullptr, nullptr){}
+	GLFWWindowImpl::GLFWWindowImpl(WindowCreationArgs args) : GLFWWindowImpl(args.width, args.height, args.title, nullptr, nullptr, args.visible){}
 
 	GLFWWindowImpl::GLFWWindowImpl(GLFWWindowImpl&& move) noexcept: window_handle(move.window_handle), title(std::move(move.title)), frame(std::move(move.frame))
 	{

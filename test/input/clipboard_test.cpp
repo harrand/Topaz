@@ -34,7 +34,7 @@ int main()
 
 	// Stuff in here requires topaz to be initialised.
 	{
-		tz::core::initialise("Clipboard Tests");
+		tz::core::initialise("Clipboard Tests", tz::core::invisible_tag);
 
 		clip.add(set_and_get());
 
