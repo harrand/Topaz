@@ -49,7 +49,7 @@ const char *frg_shader_src = R"glsl(
 		FragColor = texture(textures[1], texcoord);
 	}
 	)glsl";
-const char *inv_vtx_shader_src = R"glsl(
+const char *postprocess_vtx_shader_src = R"glsl(
 	#version 460
 	layout (location = 0) in vec3 aPos;
 	layout (location = 1) in vec2 aTexcoord;
@@ -60,7 +60,7 @@ const char *inv_vtx_shader_src = R"glsl(
         texcoord = aTexcoord;
 	}
 	)glsl";
-const char *inv_frg_shader_src = R"glsl(
+const char *postprocess_frg_shader_src = R"glsl(
 	#version 460
 	out vec4 FragColor;
 	in vec2 texcoord;
@@ -131,7 +131,7 @@ public:
 	PostprocessDemoWindow(int& strategy_id): tz::ext::imgui::ImGuiWindow("Topaz Postprocess Demo"), strategy_id(strategy_id){}
 	virtual void render() override
 	{
-		ImGui::Begin("Topaz Postprocess Demo");
+		ImGui::Begin("Topaz Postprocess Demo", &this->visible);
 		ImGui::RadioButton("No post-processing", &this->strategy_id, 0);
 		ImGui::RadioButton("Invert colours", &this->strategy_id, 1);
 		ImGui::RadioButton("Gaussian blur", &this->strategy_id, 2);
@@ -180,12 +180,6 @@ int main()
 		tz::gl::SSBO* ssbo = o.get<tz::gl::BufferType::ShaderStorage>(ssbo_id);
 		tz::gl::SSBO* tex_ssbo = o.get<tz::gl::BufferType::ShaderStorage>(tex_ssbo_id);
 
-		tz::gl::IndexedMesh triangle;
-		triangle.vertices.push_back(tz::gl::Vertex{{{-0.5f, 0.5f, 0.0f}}, {{0.0f, 0.0f}}, {{}}, {{}}, {{}}});
-		triangle.vertices.push_back(tz::gl::Vertex{{{0.5f, 0.5f, 0.0f}}, {{1.0f, 0.0f}}, {{}}, {{}}, {{}}});
-		triangle.vertices.push_back(tz::gl::Vertex{{{0.0f, 1.5f, 0.0f}}, {{0.5f, 1.0f}}, {{}}, {{}}, {{}}});
-		triangle.indices = {0, 1, 2};
-
 		tz::gl::IndexedMesh square;
 		square.vertices.push_back(tz::gl::Vertex{{{-1.0f, -1.0f, 0.0f}}, {{0.0f, 0.0f}}, {{}}, {{}}, {{}}});
 		square.vertices.push_back(tz::gl::Vertex{{{1.0f, -1.0f, 0.0f}}, {{1.0f, 0.0f}}, {{}}, {{}}, {{}}});
@@ -212,12 +206,11 @@ int main()
 		metal.set_data(metal_img);
 		metal.make_terminal();
 
-		tz::Vec3 triangle_pos{{0.0f, 0.0f, 0.0f}};
+		tz::Vec3 triangle_pos{{-25.0f, -25.0f, -25.0f}};
 		float rotation_factor = 0.02f;
 		float x_factor = 2.5f;
 		float y_factor = 2.5f;
 
-		tz::gl::Manager::Handle triangle_handle = m.add_mesh(triangle);
 		tz::gl::Manager::Handle square_handle = m.add_mesh(square);
 		tz::gl::Manager::Handle monkeyhead_handle = m.add_mesh(monkey_head);
 
@@ -234,9 +227,7 @@ int main()
 		wnd.get_frame()->set_clear_color(0.3f, 0.15f, 0.0f);
 		// Scene setup.
 		// Meshes
-		tz::render::AssetBuffer::Index triangle_mesh_idx = scene.add_mesh({&m, triangle_handle});
 		tz::render::AssetBuffer::Index monkey_mesh_idx = scene.add_mesh({&m, monkeyhead_handle});
-		tz::render::AssetBuffer::Index square_mesh_idx = scene.add_mesh({&m, square_handle});
 		// Textures
 		tex_ssbo->resize(sizeof(tz::gl::BindlessTextureHandle) * max_textures);
 		{
@@ -263,15 +254,14 @@ int main()
 		auto lnk_diag = cpl.link(prg);
 		topaz_assert(lnk_diag.successful(), "Shader Linkage Fail: ", lnk_diag.get_info_log());
 
-        tz::gl::ShaderProgram colour_inverter;
-        tz::gl::Shader* inv_vs = colour_inverter.emplace(tz::gl::ShaderType::Vertex);
-		
-        inv_vs->upload_source(inv_vtx_shader_src);
-        tz::gl::Shader* inv_fs = colour_inverter.emplace(tz::gl::ShaderType::Fragment);
-		pre.set_source(inv_frg_shader_src);
+        tz::gl::ShaderProgram postprocess_shader;
+        tz::gl::Shader* postpro_vs = postprocess_shader.emplace(tz::gl::ShaderType::Vertex);
+        postpro_vs->upload_source(postprocess_vtx_shader_src);
+        tz::gl::Shader* postpro_fs = postprocess_shader.emplace(tz::gl::ShaderType::Fragment);
+		pre.set_source(postprocess_frg_shader_src);
 		pre.preprocess();
 		topaz_assert(ubo_module->size() == 1, "UBO Module had unexpected number of buffers. Expected 1, got ", ssbo_module->size());
-        inv_fs->upload_source(pre.result());
+        postpro_fs->upload_source(pre.result());
 
 		std::size_t ubo_id = ubo_module->get_buffer_id(0);
 		tz::gl::UBO* pass2_tex_ubo = o.get<tz::gl::BufferType::UniformStorage>(ubo_id);
@@ -284,12 +274,12 @@ int main()
 
 		tz::ext::imgui::emplace_window<PostprocessDemoWindow>(*strategy_id);
 
-        cpl_diag = cpl.compile(*inv_vs);
+        cpl_diag = cpl.compile(*postpro_vs);
 		topaz_assert(cpl_diag.successful(), "Shader Vtx Compilation Fail: ", cpl_diag.get_info_log());
-		cpl_diag = cpl.compile(*inv_fs);
+		cpl_diag = cpl.compile(*postpro_fs);
 		topaz_assert(cpl_diag.successful(), "Shader Frg Compilation Fail: ", cpl_diag.get_info_log());
 
-		lnk_diag = cpl.link(colour_inverter);
+		lnk_diag = cpl.link(postprocess_shader);
 		topaz_assert(lnk_diag.successful(), "Shader Linkage Fail: ", lnk_diag.get_info_log());
 
 		for(std::size_t i = 0; i < max_elements; i++)
@@ -333,11 +323,11 @@ int main()
         fbo.emplace_renderbuffer(GL_DEPTH_ATTACHMENT, desc2);
 		fbo.bind();
         fbo.set_output_attachment(GL_COLOR_ATTACHMENT0);
-        pl.add({wnd.get_frame(), &colour_inverter, &o});
+        pl.add({wnd.get_frame(), &postprocess_shader, &o});
         tz::render::Device& dev2 = *pl[1];
         topaz_assert(fbo.complete(), "FBO Incomplete");
         dev().set_frame(&fbo);
-        colour_inverter.attach_texture(0, &render_to_texture, "rto_sampler");
+        postprocess_shader.attach_texture(0, &render_to_texture, "rto_sampler");
         dev2.set_handle(m.get_indices());
 		dev2.add_resource_buffer(pass2_tex_ubo);
 

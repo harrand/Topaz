@@ -115,26 +115,26 @@ int main()
 		// Track it in imgui.
 		tz::ext::imgui::track_object(&o);
 
-		tz::gl::p::SSBOModule* ubo_module = nullptr;
+		tz::gl::p::SSBOModule* ssbo_module = nullptr;
 		std::string vtx_result;
 		std::string frg_result;
 		tz::gl::ShaderPreprocessor pre{vtx_shader_src};
 		{
-			std::size_t ubo_module_id = pre.emplace_module<tz::gl::p::SSBOModule>(&o);
+			std::size_t ssbo_module_id = pre.emplace_module<tz::gl::p::SSBOModule>(&o);
 			pre.emplace_module<tz::gl::p::BindlessSamplerModule>();
 			pre.preprocess();
 			vtx_result = pre.result();
 			pre.set_source(frg_shader_src);
 			pre.preprocess();
 			frg_result = pre.result();
-			ubo_module = static_cast<tz::gl::p::SSBOModule*>(pre[ubo_module_id]);
+			ssbo_module = static_cast<tz::gl::p::SSBOModule*>(pre[ssbo_module_id]);
 		}
-		topaz_assert(ubo_module->size() == 2, "UBO Module had unexpected number of buffers. Expected 2, got ", ubo_module->size());
-		std::size_t ubo_id = ubo_module->get_buffer_id(0);
-		std::size_t tex_ubo_id = ubo_module->get_buffer_id(1);
+		topaz_assert(ssbo_module->size() == 2, "UBO Module had unexpected number of buffers. Expected 2, got ", ssbo_module->size());
+		std::size_t ssbo_id = ssbo_module->get_buffer_id(0);
+		std::size_t tex_ssbo_id = ssbo_module->get_buffer_id(1);
 
-		tz::gl::SSBO* ubo = o.get<tz::gl::BufferType::ShaderStorage>(ubo_id);
-		tz::gl::SSBO* tex_ubo = o.get<tz::gl::BufferType::ShaderStorage>(tex_ubo_id);
+		tz::gl::SSBO* ssbo = o.get<tz::gl::BufferType::ShaderStorage>(ssbo_id);
+		tz::gl::SSBO* tex_ssbo = o.get<tz::gl::BufferType::ShaderStorage>(tex_ssbo_id);
 
 		tz::gl::IndexedMesh triangle;
 		triangle.vertices.push_back(tz::gl::Vertex{{{-0.5f, 0.5f, 0.0f}}, {{0.0f, 0.0f}}, {{}}, {{}}, {{}}});
@@ -178,9 +178,9 @@ int main()
 		tz::gl::Manager::Handle monkeyhead_handle = m.add_mesh(monkey_head);
 
 		// UBO stores mesh transform data (mvp)
-		ubo->terminal_resize(sizeof(tz::Mat4) * max_elements);
+		ssbo->terminal_resize(sizeof(tz::Mat4) * max_elements);
 		// Scene uses UBO resource data.
-		tz::render::Scene<tz::render::SceneElement> scene{ubo->map()};
+		tz::render::Scene<tz::render::SceneElement> scene{ssbo->map()};
 
 		MeshAdjustor& mesh_adjustor = tz::ext::imgui::emplace_window<MeshAdjustor>(triangle_pos, rotation_factor, x_factor, y_factor, scene);
 
@@ -199,14 +199,14 @@ int main()
 		mesh_adjustor.register_mesh("monkey head", monkey_mesh_idx);
 		mesh_adjustor.register_mesh("square", square_mesh_idx);
 		// Textures
-		tex_ubo->resize(sizeof(tz::gl::BindlessTextureHandle) * max_textures);
+		tex_ssbo->resize(sizeof(tz::gl::BindlessTextureHandle) * max_textures);
 		{
-			tz::mem::UniformPool<tz::gl::BindlessTextureHandle> tex_pool = tex_ubo->map_uniform<tz::gl::BindlessTextureHandle>();
+			tz::mem::UniformPool<tz::gl::BindlessTextureHandle> tex_pool = tex_ssbo->map_uniform<tz::gl::BindlessTextureHandle>();
 			tz::gl::BindlessTextureHandle checkerboard_handle = checkerboard.get_terminal_handle();
 			tz::gl::BindlessTextureHandle metal_handle = metal.get_terminal_handle();
 			tex_pool.set(0, metal_handle);
 			tex_pool.set(1, checkerboard_handle);
-			tex_ubo->unmap();
+			tex_ssbo->unmap();
 		}
 
 		tz::gl::ShaderCompiler cpl;
@@ -237,8 +237,8 @@ int main()
 		}
 
 		tz::render::Device dev{wnd.get_frame(), &prg, &o};
-		dev.add_resource_buffer(ubo);
-		dev.add_resource_buffer(tex_ubo);
+		dev.add_resource_buffer(ssbo);
+		dev.add_resource_buffer(tex_ssbo);
 		dev.set_handle(m.get_indices());
 
 		while(!wnd.is_close_requested())
