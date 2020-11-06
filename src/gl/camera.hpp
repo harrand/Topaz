@@ -2,7 +2,6 @@
 #define TOPAZ_GL_CAMERA_HPP
 #include "algo/math.hpp"
 #include "geo/vector.hpp"
-#include "core/tz_glfw/glfw_context.hpp"
 #include "gl/frame.hpp"
 
 namespace tz::core
@@ -16,6 +15,7 @@ namespace tz::gl
 	 * \addtogroup tz_gl Topaz Graphics Library (tz::gl)
 	 * @{
 	 */
+    
     struct CameraData
     {
         // Default field-of-view for all Cameras, in radians.
@@ -32,6 +32,9 @@ namespace tz::gl
          * @param far Distance between far-plane and camera position.
          */
         CameraData(const tz::gl::IFrame& frame, float fov = default_fov, float near = default_near, float far = default_far);
+        /**
+         * Construct camera data using default values. The aspect-ratio will be set to the aspect ratio of the primary monitor.
+         */
         CameraData();
         tz::Vec3 position = {};
         tz::Vec3 rotation = {};

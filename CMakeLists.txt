@@ -102,6 +102,8 @@ add_library(topaz STATIC
 		src/gl/resource_writer.cpp
 		src/gl/resource_writer.hpp
 		src/gl/resource_writer.inl
+		src/gl/screen.cpp
+		src/gl/screen.hpp
 		src/gl/shader.cpp
 		src/gl/shader.hpp
 		src/gl/shader.inl
