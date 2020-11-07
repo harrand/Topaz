@@ -169,8 +169,8 @@ namespace tz::gl
 		glBindRenderbuffer(GL_RENDERBUFFER, 0);
 	}
 
-	void RenderBuffer::bind_to_frame(GLenum attachment) const
+	void RenderBuffer::bind_to_frame(FrameAttachment attachment) const
 	{
-		glFramebufferRenderbuffer(GL_FRAMEBUFFER, attachment, GL_RENDERBUFFER, this->handle);
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, static_cast<GLenum>(attachment), GL_RENDERBUFFER, this->handle);
 	}
 }

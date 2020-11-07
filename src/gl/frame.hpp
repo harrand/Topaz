@@ -119,7 +119,7 @@ namespace tz::gl
 		 * @return Reference to the constructed texture-like object.
 		 */
 		template<class TextureType, typename... Args>
-		TextureType& emplace(GLenum attachment, Args&&... args);
+		TextureType& emplace(tz::gl::FrameAttachment attachment, Args&&... args);
 		/**
 		 * Add a tz::gl::Texture to the given attachment in the frame. The texture is constructed in-place.
 		 * 
@@ -129,7 +129,7 @@ namespace tz::gl
 		 * @return Reference to the constructed texture.
 		 */
 		template<typename... Args>
-		Texture& emplace_texture(GLenum attachment, Args&&... args);
+		Texture& emplace_texture(tz::gl::FrameAttachment attachment, Args&&... args);
 		/**
 		 * Add a tz::gl::RenderBuffer to the given attachment in the frame. The renderbuffer is constructed in-place.
 		 * 
@@ -139,14 +139,14 @@ namespace tz::gl
 		 * @return Reference to the constructed renderbuffer.
 		 */
 		template<typename... Args>
-		RenderBuffer& emplace_renderbuffer(GLenum attachment, Args&&... args);
+		RenderBuffer& emplace_renderbuffer(tz::gl::FrameAttachment attachment, Args&&... args);
 		/**
 		 * Set the output-attachment.
 		 * 
 		 * Note: At present, only one output is supported. This is likely to change soon.
 		 * @param attachment Desired output attachment type.
 		 */
-		void set_output_attachment(GLenum attachment) const;
+		void set_output_attachment(tz::gl::FrameAttachment attachment) const;
 		virtual bool operator==(GLuint handle) const override;
 		virtual bool operator!=(GLuint handle) const override;
 	private:

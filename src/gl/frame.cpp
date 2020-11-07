@@ -90,9 +90,9 @@ namespace tz::gl
 		return status == GL_FRAMEBUFFER_COMPLETE;
 	}
 
-	void Frame::set_output_attachment(GLenum attachment) const
+	void Frame::set_output_attachment(tz::gl::FrameAttachment attachment) const
 	{
-		GLenum attachments[] = {attachment};
+		GLenum attachments[] = {static_cast<GLenum>(attachment)};
 		glNamedFramebufferDrawBuffers(this->handle, 1, attachments);
 	}
 

@@ -309,7 +309,7 @@ int main()
         
         // Make fbo with same size as window.
         tz::gl::Frame fbo{static_cast<unsigned int>(wnd.get_width()), static_cast<unsigned int>(wnd.get_height())};
-        tz::gl::Texture& render_to_texture = fbo.emplace_texture(GL_COLOR_ATTACHMENT0);
+        tz::gl::Texture& render_to_texture = fbo.emplace_texture(tz::gl::FrameAttachment::Colour);
         tz::gl::TextureDataDescriptor desc;
         desc.component_type = GL_UNSIGNED_BYTE;
         desc.internal_format = GL_RGBA8;
@@ -320,9 +320,9 @@ int main()
         render_to_texture.set_parameters(tz::gl::default_texture_params);
 		tz::gl::TextureDataDescriptor desc2 = desc;
 		desc2.internal_format = GL_DEPTH_COMPONENT;
-        fbo.emplace_renderbuffer(GL_DEPTH_ATTACHMENT, desc2);
+        fbo.emplace_renderbuffer(tz::gl::FrameAttachment::Depth, desc2);
 		fbo.bind();
-        fbo.set_output_attachment(GL_COLOR_ATTACHMENT0);
+        fbo.set_output_attachment(tz::gl::FrameAttachment::Colour);
         pl.add({wnd.get_frame(), &postprocess_shader, &o});
         tz::render::Device& dev2 = *pl[1];
         topaz_assert(fbo.complete(), "FBO Incomplete");

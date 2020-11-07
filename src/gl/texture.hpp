@@ -139,6 +139,15 @@ namespace tz::gl
 		std::optional<BindlessTextureHandle> bindless;
 	};
 
+	enum class FrameAttachment : GLenum
+	{
+		Colour = GL_COLOR_ATTACHMENT0,
+		Depth = GL_DEPTH_ATTACHMENT,
+		ExtraColour1 = GL_COLOR_ATTACHMENT1,
+		ExtraColour2 = GL_COLOR_ATTACHMENT2,
+		ExtraColour3 = GL_COLOR_ATTACHMENT3,
+	};
+
 	/**
 	 * Basically a write-only texture.
 	 */
@@ -171,7 +180,7 @@ namespace tz::gl
 		 * Note: Probably not worth invoking this yourself; let the Frame sort this out for you.
 		 * @param attachment Desired attachment with which to associate the renderbuffer.
 		 */
-		void bind_to_frame(GLenum attachment) const;
+		void bind_to_frame(FrameAttachment attachment) const;
 	private:
 		GLuint handle;
 		TextureDataDescriptor descriptor;
