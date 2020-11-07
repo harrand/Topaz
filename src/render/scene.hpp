@@ -9,6 +9,12 @@
 
 namespace tz::render
 {
+    /**
+	 * \addtogroup tz_render Topaz Rendering Library (tz::render)
+	 * High-level interface for 3D and 2D hardware-accelerated graphics programming. Used in combination with the \ref tz_gl "Topaz Graphics Library".
+	 * @{
+	 */
+
     struct SceneElement
     {
         /**
@@ -103,13 +109,49 @@ namespace tz::render
          * @return Reference to the corresponding handle.
          */
         Element& get(Handle handle);
+        /**
+         * Retrieve the number of elements within the scene.
+         * @return Number of elements within the scene.
+         */
         std::size_t size() const;
+        /**
+         * Retrieve an iterator corresponding to the beginning of the element range.
+         * @return Beginning of element range.
+         */
         Iterator begin();
+        /**
+         * Retrieve an iterator corresponding to the end of the element range.
+         * @return End of element range.
+         */
         Iterator end();
+        /**
+         * Query as to whether an element exists within the scene such that `scene-element == param-element`
+         * @param element Element to check is within the scene.
+         * @return True if element is in the scene, otherwise false. 
+         */
         bool contains(const Element& element) const;
+        /**
+         * Query as to whether an element exists within the scene corresponding to the given handle.
+         * @param handle Handle to check whose element is within the scene.
+         * @return True if the corresponding element is in the scene, otherwise false.
+         */
         bool contains(Handle handle) const;
+        /**
+         * Erase the element from the scene, if it exists.
+         * @param element Element to erase.
+         * @return True if a deletion occurred, otherwise false.
+         */
         bool erase(const Element& element);
+        /**
+         * Erase the element corresponding to the handle from the scene, if it exists.
+         * @param handle Handle whose corresponding element should be erased.
+         * @return True if a deletion occurred, otherwise false.
+         */
         bool erase(Handle handle);
+        /**
+         * Remove all existing elements from the scene. This invalidates all existing handles.
+         * Note: After clearing a scene, its size will be zero.
+         */
         void clear();
         /**
          * Elements may become fragmented if many erasures happen, which may yield performance reductions. Packing the Scene ensures that elements are closely packed in memory.
@@ -121,6 +163,9 @@ namespace tz::render
         std::vector<std::optional<Element>> elements = {};
         Writer writer;
     };
+    /**
+     * @}
+     */
 }
 
 #include "render/scene.inl"

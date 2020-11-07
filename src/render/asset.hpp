@@ -9,6 +9,11 @@
 namespace tz::render
 {
     /**
+	 * \addtogroup tz_render Topaz Rendering Library (tz::render)
+	 * High-level interface for 3D and 2D hardware-accelerated graphics programming. Used in combination with the \ref tz_gl "Topaz Graphics Library".
+	 * @{
+	 */
+    /**
      * Represents existing mesh data that is already stored within a gl::Manager.
      */
     class MeshAsset
@@ -85,6 +90,9 @@ namespace tz::render
         std::size_t common_ibo_handle = std::numeric_limits<std::size_t>::max();
         tz::gl::Object* common_object = nullptr;
     };
+    /**
+     * @}
+     */
 }
 
 #endif // TOPAZ_RENDER_ASSET_HPP
