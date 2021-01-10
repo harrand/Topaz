@@ -128,10 +128,13 @@ const char *frg_shader_src = R"glsl(
         vec3 forward_modelspace = vec3(0.0, 0.0, -1.0);
         vec3 forward_cameraspace = (cur_mvp.v * cur_mvp.m * vec4(forward_modelspace, 0.0)).xyz;
 		vec4 output_colour = vec4(0.0, 0.0, 0.0, 1.0);
-		PointLight cur_light = point_lights[0];
-		output_colour += vec4(diffuse(cur_light, col.xyz, normal_cameraspace, position_cameraspace, forward_cameraspace), 1.0);
-		FragColor = ambient_col + output_colour;
+		for(int i = 0; i < point_lights.length(); i++)
+		{
+			PointLight cur_light = point_lights[i];
+			output_colour += vec4(diffuse(cur_light, col.xyz, normal_cameraspace, position_cameraspace, forward_cameraspace), 1.0);
+		}
 
+		FragColor = ambient_col + output_colour;
 		// Debug purposes only
 		//FragColor = vec4(cur_light.position, 1.0);
 	}
