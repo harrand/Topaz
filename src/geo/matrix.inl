@@ -362,12 +362,24 @@ namespace tz
 	Matrix<T, R, C> Matrix<T, R, C>::transpose() const
 	{
 		Matrix<T, R, C> m = *this;
+		for(std::size_t i = 0; i < R; i++)
+		{
+			for(std::size_t j = 0; j < C; j++)
+			{
+				if(i != j)
+				{
+					std::swap(m(i, j), m(j, i));
+				}
+			}
+		}
+		/*
 		std::swap(m(0, 1), m(1, 0));
 		std::swap(m(0, 2), m(2, 0));
 		std::swap(m(1, 2), m(2, 1));
 		std::swap(m(0, 3), m(3, 0));
 		std::swap(m(1, 3), m(3, 1));
 		std::swap(m(2, 3), m(3, 2));
+		*/
 		return m;
 	}
 

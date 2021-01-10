@@ -25,8 +25,23 @@ namespace tz::ext::glfw
 			window_handle(nullptr), title(title), frame(nullptr)
 	{
 		glfwWindowHint(GLFW_VISIBLE, initially_visible ? GLFW_TRUE : GLFW_FALSE);
+		// Core context 4.6
+		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+		#if TOPAZ_DEBUG
+			glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
+		#else
+			// No Errors
+			glfwWindowHint(GLFW_CONTEXT_NO_ERROR, GLFW_TRUE);
+		#endif
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 		this->window_handle = glfwCreateWindow(width, height, title, monitor, share);
-		topaz_assert(this->window_handle != nullptr, "GLFWWindowImpl::GLFWWindowImpl(...): Failed to initialise glfw window!");
+		if(this->window_handle == nullptr)
+		{
+			const char* err_msg;
+			int code = glfwGetError(&err_msg);
+			topaz_assert(false, "GLFWWindowImpl::GLFWWindowImpl(...): Failed to initialise glfw window! Code: ", code, ", error: ", err_msg);
+		}
 		this->frame = std::make_unique<tz::gl::WindowFrame>(this->window_handle);
 		glfwSetKeyCallback(this->window_handle, glfw_key_callback);
 		glfwSetCharCallback(this->window_handle, glfw_char_callback);

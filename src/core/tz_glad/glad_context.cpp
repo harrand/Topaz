@@ -19,18 +19,6 @@ namespace tz::ext::glad
 	}
 	
 	GLADContext::GLADContext() noexcept: glfw_context(nullptr), loaded(false), supported_extensions(){}
-
-	void GLADContext::pre_init()
-	{
-		// Core context
-		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-		#if TOPAZ_DEBUG
-			glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
-		#else
-			// No Errors
-			glfwWindowHint(GLFW_CONTEXT_NO_ERROR, GLFW_TRUE);
-		#endif
-	}
 	
 	void GLADContext::load()
 	{
@@ -85,31 +73,12 @@ namespace tz::ext::glad
 
 	void GLADContext::populate_extensions()
 	{
-		const GLubyte* extensions_list = glGetString(GL_EXTENSIONS);
-		std::vector<std::string> extension_names;
+		GLint num_extensions;
+		glGetIntegerv(GL_NUM_EXTENSIONS, &num_extensions);
+		this->supported_extensions.reserve(num_extensions);
+		for(GLuint i = 0; i < static_cast<GLuint>(num_extensions); i++)
 		{
-			// Make copy of extensions_list.
-			const GLubyte* offset_byte = extensions_list;
-			topaz_assert(offset_byte != nullptr, "glGetString(GL_EXTENSIONS) returned nullptr");
-			std::string cur;
-			// Separated by spaces, but we obviously end on a null-terminator.
-			while(*offset_byte != '\0')
-			{
-				if(*offset_byte != ' ')
-				{
-					cur += static_cast<char>(*(offset_byte));
-				}
-				else
-				{
-					extension_names.push_back(cur);
-					cur.clear();
-				}
-				offset_byte++;
-			}
-		}
-		for(std::string& str : extension_names)
-		{
-			this->supported_extensions.push_back({std::move(str)});
+			this->supported_extensions.push_back(OpenGLExtension{std::string{reinterpret_cast<const char*>(glGetStringi(GL_EXTENSIONS, i))}});
 		}
 	}
 	

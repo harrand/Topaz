@@ -2,6 +2,7 @@
 #include <cstddef>
 #include <tuple>
 #include <memory>
+#include "memory/align.hpp"
 
 namespace tz::mem
 {	
@@ -63,6 +64,7 @@ namespace tz::mem
 		}
 		// Now create our object here. No need to do anything with the return result because we are laundering memory.
 		new (ptr) T{t};
+		topaz_assert(tz::mem::is_aligned(*ptr), "UniformPool<T>::set(", index, ", T): Unaligned construction of T detected.");
 		// Make sure our mask is long enough.
 		this->object_mask.resize(std::max(index + 1, this->object_mask.capacity()), false);
 		// And obviously we now have an object here.

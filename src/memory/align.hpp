@@ -13,7 +13,7 @@ namespace tz::mem
 	 * @{
 	 */
 	
-	template<typename T, std::size_t Align>
+	template<typename T, std::size_t Align = std::alignment_of_v<T>>
 	bool is_aligned(const T& t);
 
 	/**

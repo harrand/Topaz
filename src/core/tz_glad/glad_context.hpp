@@ -35,7 +35,6 @@ namespace tz::ext::glad
 		 * It is not recommended that you construct GLAD contexts manually -- tz::core should handle this for you.
 		 */
 		GLADContext() noexcept;
-		void pre_init();
 		/**
 		 * Instruct GLAD to load all necessary OpenGL procedures.
 		 * The GLFW context provided at construction must be initialised, or this function will assert.
