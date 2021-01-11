@@ -89,6 +89,7 @@ namespace tz::core
 		 */
 		IWindow& window();
 		void enable_wireframe_mode(bool wireframe) const;
+		void enable_culling(bool cull_backfaces) const;
 		/**
 		 * TODO: Document
 		 * @tparam WindowType

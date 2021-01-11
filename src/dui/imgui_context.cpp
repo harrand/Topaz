@@ -179,14 +179,7 @@ namespace tz::ext::imgui
 				ImGui::MenuItem("Wireframe Mode", nullptr, &wireframe);
 				ImGui::MenuItem("Cull Back Faces", nullptr, &cull_backfaces);
 				tz::core::get().enable_wireframe_mode(wireframe);
-				if(cull_backfaces)
-				{
-					glEnable(GL_CULL_FACE);
-				}
-				else
-				{
-					glDisable(GL_CULL_FACE);
-				}
+				tz::core::get().enable_culling(cull_backfaces);
 				ImGui::EndMenu();
 			}
 

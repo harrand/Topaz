@@ -103,8 +103,9 @@ const char *frg_shader_src = R"glsl(
         return diffuse_colour * light.colour * light.power * cos_theta;
     }
 
-    vec3 diffuse(PointLight light, vec3 diffuse_colour, vec3 normal_cameraspace, vec3 position_cameraspace, vec3 eye_direction_cameraspace)
+    vec3 diffuse(PointLight light, vec3 diffuse_colour, vec3 normal_cameraspace, vec3 position_cameraspace)
     {
+		vec3 eye_direction_cameraspace = vec3(0, 0, 0) - position_cameraspace;
         float distance = length(light.position - position_cameraspace);
         DirectionalLight directional;
         directional.direction = light.position + eye_direction_cameraspace;
@@ -122,7 +123,7 @@ const char *frg_shader_src = R"glsl(
 	void main()
 	{
 		vec4 col = texture(tex, texcoord);
-        vec4 ambient_col = vec4(ambient_light, 1.0);
+        vec4 ambient_col = vec4(ambient_light, 1.0) * col;
         vec3 normal_cameraspace = (cur_mvp.v * cur_mvp.m * vec4(normal, 0.0)).xyz;
         vec3 position_cameraspace = (cur_mvp.v * cur_mvp.m * vec4(pos, 1.0)).xyz;
         vec3 forward_modelspace = vec3(0.0, 0.0, -1.0);
@@ -131,7 +132,7 @@ const char *frg_shader_src = R"glsl(
 		for(int i = 0; i < point_lights.length(); i++)
 		{
 			PointLight cur_light = point_lights[i];
-			output_colour += vec4(diffuse(cur_light, col.xyz, normal_cameraspace, position_cameraspace, forward_cameraspace), 1.0);
+			output_colour += vec4(diffuse(cur_light, col.xyz, normal_cameraspace, position_cameraspace), 1.0);
 		}
 
 		FragColor = ambient_col + output_colour;
@@ -164,12 +165,13 @@ public:
 class LightingDemoWindow : public tz::ext::imgui::ImGuiWindow
 {
 public:
-    LightingDemoWindow(tz::Vec3* ambient_light, std::array<PointLight*, max_lights> lights): tz::ext::imgui::ImGuiWindow("Topaz Lighting Demo"), ambient_light(ambient_light), lights(lights){}
+    LightingDemoWindow(tz::Vec3* ambient_light, bool* rotate, std::array<PointLight*, max_lights> lights): tz::ext::imgui::ImGuiWindow("Topaz Lighting Demo"), ambient_light(ambient_light), rotate(rotate), lights(lights){}
 
     virtual void render() override
     {
         ImGui::Begin("Topaz Lighting Demo", &this->visible);
         ImGui::DragFloat3("Ambient Light", ambient_light->data(), 0.01f, 0.0f, 1.0f);
+		ImGui::Checkbox("Rotation Enabled", this->rotate);
         for(std::size_t i = 0; i < max_lights; i++)
         {
             PointLight* light = this->lights[i];
@@ -185,6 +187,7 @@ public:
     }
 private:
     tz::Vec3* ambient_light;
+	bool* rotate;
     std::array<PointLight*, max_lights> lights;
 };
 
@@ -228,6 +231,7 @@ int main()
 	constexpr std::size_t max_elements = 512;
 	// Minimalist Graphics Demo.
 	tz::core::initialise("Topaz Lighting Demo");
+	tz::core::get().enable_culling(false);
 	{
 		tz::gl::Manager m;
 		tz::gl::Object& o = *m;
@@ -323,12 +327,13 @@ int main()
 		}
         // Lighting information
         constexpr std::size_t light_buf_size = sizeof(tz::Vec3) + sizeof(float) /*extra padding required*/ + (sizeof(PointLight) * max_lights) /*point lights*/;
-        tz::Vec3* ambient_lighting;
+        constexpr float default_ambient_pow = 0.2f;
+		tz::Vec3* ambient_lighting;
         std::array<PointLight*, max_lights> lights;
         light_ssbo->terminal_resize(light_buf_size);
         {
 		    tz::mem::Block blk = light_ssbo->map();
-			ambient_lighting = new (blk.begin) tz::Vec3{};
+			ambient_lighting = new (blk.begin) tz::Vec3{default_ambient_pow, default_ambient_pow, default_ambient_pow};
 			blk.begin = reinterpret_cast<char*>(blk.begin) + sizeof(tz::Vec3) + /* add extra float because glsl will align to that */sizeof(float);
             tz::mem::UniformPool<PointLight> light_pool{blk};
             for(std::size_t i = 0; i < max_lights; i++)
@@ -339,7 +344,9 @@ int main()
             }
         }
 
-        tz::ext::imgui::emplace_window<LightingDemoWindow>(ambient_lighting, lights);
+		bool rotate_enabled = true;
+
+        tz::ext::imgui::emplace_window<LightingDemoWindow>(ambient_lighting, &rotate_enabled, lights);
 
 		tz::gl::ShaderCompiler cpl;
 		tz::gl::ShaderProgram prg;
@@ -376,7 +383,8 @@ int main()
 
 		while(!wnd.is_close_requested())
 		{
-			rotation_y += rotation_factor;
+			if(rotate_enabled)
+				rotation_y += rotation_factor;
 
 			dev.clear();
 			o.bind();

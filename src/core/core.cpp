@@ -74,6 +74,18 @@ namespace tz::core
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		}
 	}
+
+	void TopazCore::enable_culling(bool cull_backfaces) const
+	{
+		if(cull_backfaces)
+		{
+			glEnable(GL_CULL_FACE);
+		}
+		else
+		{
+			glDisable(GL_CULL_FACE);
+		}
+	}
 	
 	const tz::core::IWindow* TopazCore::get_extra_window(std::size_t window_id) const
 	{
