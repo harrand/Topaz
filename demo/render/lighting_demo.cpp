@@ -278,8 +278,127 @@ int main()
 		square.vertices.push_back(tz::gl::Vertex{{{-0.5f, 0.5f, 0.0f}}, {{0.0f, 0.5f}}, {{}}, {{}}, {{}}});
 		square.indices = {0, 1, 2, 3, 4, 5};
 
+		tz::gl::IndexedMesh cube;
+		cube.vertices.push_back(tz::gl::Vertex{{-1.0f, -1.0f, -1.0f}, {1.0f, 0.0f}, {0.0f, 0.0f, -1.0f}});
+		cube.vertices.push_back(tz::gl::Vertex{{-1.0f, 1.0f, -1.0f}, {0.0f, 0.0f}, {0.0f, 0.0f, -1.0f}});
+		cube.vertices.push_back(tz::gl::Vertex{{1.0f, 1.0f, -1.0f}, {0.0f, 1.0f}, {0.0f, 0.0f, -1.0f}});
+		cube.vertices.push_back(tz::gl::Vertex{{1.0f, -1.0f, -1.0f}, {1.0f, 1.0f}, {0.0f, 0.0f, -1.0f}});
+
+		cube.vertices.push_back(tz::gl::Vertex{{-1.0f, -1.0f, 1.0f}, {1.0f, 0.0f}, {0.0f, 0.0f, 1.0f}});
+		cube.vertices.push_back(tz::gl::Vertex{{-1.0f, 1.0f, 1.0f}, {0.0f, 0.0f}, {0.0f, 0.0f, 1.0f}});
+		cube.vertices.push_back(tz::gl::Vertex{{1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}, {0.0f, 0.0f, 1.0f}});
+		cube.vertices.push_back(tz::gl::Vertex{{1.0f, -1.0f, 1.0f}, {1.0f, 1.0f}, {0.0f, 0.0f, 1.0f}});
+
+		cube.vertices.push_back(tz::gl::Vertex{{-1.0f, -1.0f, -1.0f}, {0.0f, 1.0f}, {0.0f, -1.0f, 0.0f}});
+		cube.vertices.push_back(tz::gl::Vertex{{-1.0f, -1.0f, 1.0f}, {1.0f, 1.0f}, {0.0f, -1.0f, 0.0f}});
+		cube.vertices.push_back(tz::gl::Vertex{{1.0f, -1.0f, 1.0f}, {1.0f, 0.0f}, {0.0f, -1.0f, 0.0f}});
+		cube.vertices.push_back(tz::gl::Vertex{{1.0f, -1.0f, -1.0f}, {0.0f, 0.0f}, {0.0f, -1.0f, 0.0f}});
+
+		cube.vertices.push_back(tz::gl::Vertex{{-1.0f, 1.0f, -1.0f}, {0.0f, 1.0f}, {0.0f, 1.0f, 0.0f}});
+		cube.vertices.push_back(tz::gl::Vertex{{-1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}, {0.0f, 1.0f, 0.0f}});
+		cube.vertices.push_back(tz::gl::Vertex{{1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}, {0.0f, 1.0f, 0.0f}});
+		cube.vertices.push_back(tz::gl::Vertex{{1.0f, 1.0f, -1.0f}, {0.0f, 0.0f}, {0.0f, 1.0f, 0.0f}});
+
+		cube.vertices.push_back(tz::gl::Vertex{{-1.0f, -1.0f, -1.0f}, {1.0f, 1.0f}, {-1.0f, 0.0f, 0.0f}});
+		cube.vertices.push_back(tz::gl::Vertex{{-1.0f, -1.0f, 1.0f}, {1.0f, 0.0f}, {-1.0f, 0.0f, 0.0f}});
+		cube.vertices.push_back(tz::gl::Vertex{{-1.0f, 1.0f, 1.0f}, {0.0f, 0.0f}, {-1.0f, 0.0f, 0.0f}});
+		cube.vertices.push_back(tz::gl::Vertex{{-1.0f, 1.0f, -1.0f}, {0.0f, 1.0f}, {-1.0f, 0.0f, 0.0f}});
+
+		cube.vertices.push_back(tz::gl::Vertex{{1.0f, -1.0f, -1.0f}, {1.0f, 1.0f}, {1.0f, 0.0f, 0.0f}});
+		cube.vertices.push_back(tz::gl::Vertex{{1.0f, -1.0f, 1.0f}, {1.0f, 0.0f}, {1.0f, 0.0f, 0.0f}});
+		cube.vertices.push_back(tz::gl::Vertex{{1.0f, 1.0f, 1.0f}, {0.0f, 0.0f}, {1.0f, 0.0f, 0.0f}});
+		cube.vertices.push_back(tz::gl::Vertex{{1.0f, 1.0f, -1.0f}, {0.0f, 1.0f}, {1.0f, 0.0f, 0.0f}});
+
+		cube.indices = {0, 1, 2,
+						0, 2, 3,
+
+						6, 5, 4,
+						7, 6, 4,
+
+						10, 9, 8,
+						11, 10, 8,
+
+						12, 13, 14,
+						12, 14, 15,
+
+						16, 17, 18,
+						16, 18, 19,
+
+						22, 21, 20,
+						23, 22, 20
+						};
+		/**
+		 * Vertex vertices[] =
+	{
+
+		Vertex(glm::vec3(1, -1, -1), glm::vec2(1, 1), glm::vec3(1, 0, 0)),
+		Vertex(glm::vec3(1, -1, 1), glm::vec2(1, 0), glm::vec3(1, 0, 0)),
+		Vertex(glm::vec3(1, 1, 1), glm::vec2(0, 0), glm::vec3(1, 0, 0)),
+		Vertex(glm::vec3(1, 1, -1), glm::vec2(0, 1), glm::vec3(1, 0, 0)),
+	};
+
+	unsigned int indices[] = {0, 1, 2,
+							  0, 2, 3,
+
+							  6, 5, 4,
+							  7, 6, 4,
+
+							  10, 9, 8,
+							  11, 10, 8,
+
+							  12, 13, 14,
+							  12, 14, 15,
+
+							  16, 17, 18,
+							  16, 18, 19,
+
+							  22, 21, 20,
+							  23, 22, 20
+	                          };
+		 * 
+		 */
+
 		tz::gl::IndexedMesh monkey_head = tz::gl::load_mesh("res/models/monkeyhead.obj");
-		const tz::Vec3 cam_pos{{0.0f, 0.0f, 5.0f}};
+		tz::Vec3 cam_pos{{0.0f, 0.0f, 5.0f}};
+		// camera movement implementation
+		auto add_pos = [&cam_pos](float x, float y, float z)
+		{
+			cam_pos[0] += x;
+			cam_pos[1] += y;
+			cam_pos[2] += z;
+		};
+		tz::core::IWindow& wnd = tz::core::get().window();
+		wnd.register_this();
+		wnd.emplace_custom_key_listener([&add_pos](tz::input::KeyPressEvent e)
+		{
+			switch(e.key)
+			{
+			case GLFW_KEY_W:
+				add_pos(0.0f, 0.00f, -0.05f);
+				tz::debug_printf("moving forward.\n");
+			break;
+			case GLFW_KEY_S:
+				add_pos(0.0f, 0.00f, 0.05f);
+				tz::debug_printf("moving backward.\n");
+			break;
+			case GLFW_KEY_A:
+				add_pos(-0.05f, 0.0f, 0.0f);
+				tz::debug_printf("moving left\n");
+			break;
+			case GLFW_KEY_D:
+				add_pos(0.05f, 0.0f, 0.0f);
+				tz::debug_printf("moving right\n");
+			break;
+			case GLFW_KEY_SPACE:
+				add_pos(0.0f, 0.05f, 0.0f);
+				tz::debug_printf("moving up\n");
+			break;
+			case GLFW_KEY_LEFT_SHIFT:
+				add_pos(0.0f, -0.05f, 0.0f);
+				tz::debug_printf("moving down\n");
+			break;
+			}
+		});
 		tz::debug_printf("monkey head data size = %zu bytes, indices size = %zu bytes", monkey_head.data_size_bytes(), monkey_head.indices_size_bytes());
 
 		tz::gl::Image<tz::gl::PixelRGB8> rgba_checkerboard = tz::ext::stb::read_image<tz::gl::PixelRGB8>("res/textures/bricks.jpg");
@@ -302,6 +421,7 @@ int main()
 		tz::gl::Manager::Handle triangle_handle = m.add_mesh(triangle);
 		//tz::gl::Manager::Handle square_handle = m.add_mesh(square);
 		//tz::gl::Manager::Handle monkeyhead_handle = m.add_mesh(monkey_head);
+		tz::gl::Manager::Handle cube_handle = m.add_mesh(cube);
 
 		// UBO stores mesh transform data (mvp)
 		ssbo->terminal_resize(sizeof(tz::Mat4) * 3 * max_elements);
@@ -310,15 +430,13 @@ int main()
 
 		float rotation_y = 0.0f;
 
-		tz::core::IWindow& wnd = tz::core::get().window();
-		wnd.register_this();
-
 		wnd.get_frame()->set_clear_color(0.3f, 0.15f, 0.0f);
 		// Scene setup.
 		// Meshes
 		tz::render::AssetBuffer::Index triangle_mesh_idx = scene.add_mesh({&m, triangle_handle});
 		//tz::render::AssetBuffer::Index monkey_mesh_idx = scene.add_mesh({&m, monkeyhead_handle});
 		//tz::render::AssetBuffer::Index square_mesh_idx = scene.add_mesh({&m, square_handle});
+		tz::render::AssetBuffer::Index cube_mesh_idx = scene.add_mesh({&m, cube_handle});
 		// Textures
 		tex_ssbo->resize(sizeof(tz::gl::BindlessTextureHandle));
 		{
@@ -365,7 +483,7 @@ int main()
 
 		for(std::size_t i = 0; i < max_elements; i++)
 		{
-			tz::render::SceneElement ele{triangle_mesh_idx};
+			tz::render::SceneElement ele{cube_mesh_idx};
 			ele.transform.position = tz::Vec3{1.0f, 1.0f, 1.0f};
 			ele.transform.rotation = tz::Vec3{0.0f, 0.0f, 0.0f};
 			ele.camera.fov = 1.57f;
