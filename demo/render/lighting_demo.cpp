@@ -19,7 +19,9 @@
 #include "render/scene.hpp"
 #include <unordered_map>
 
-const char *vtx_shader_src = R"glsl(
+namespace render_shader
+{
+	const char *vertex_source = R"glsl(
 	#version 460
 	layout (location = 0) in vec3 aPos;
 	layout (location = 1) in vec2 aTexcoord;
@@ -48,7 +50,8 @@ const char *vtx_shader_src = R"glsl(
         normal = aNormal;
 	}
 	)glsl";
-const char *frg_shader_src = R"glsl(
+
+	const char *fragment_source = R"glsl(
 	#version 460
 	#extension GL_ARB_bindless_texture : require
 	out vec4 FragColor;
@@ -141,7 +144,8 @@ const char *frg_shader_src = R"glsl(
 	}
 	)glsl";
 
-constexpr std::size_t max_lights = 32;
+	constexpr std::size_t max_lights = 32;
+}
 
 struct MVP
 {
@@ -159,109 +163,13 @@ public:
 	float pad0;
 	tz::Vec3 colour;
 	float power;
-
 };
 
-class LightingDemoWindow : public tz::ext::imgui::ImGuiWindow
+class MeshAtlas
 {
 public:
-    LightingDemoWindow(tz::Vec3* ambient_light, bool* rotate, std::array<PointLight*, max_lights> lights): tz::ext::imgui::ImGuiWindow("Topaz Lighting Demo"), ambient_light(ambient_light), rotate(rotate), lights(lights){}
-
-    virtual void render() override
-    {
-        ImGui::Begin("Topaz Lighting Demo", &this->visible);
-        ImGui::DragFloat3("Ambient Light", ambient_light->data(), 0.01f, 0.0f, 1.0f);
-		ImGui::Checkbox("Rotation Enabled", this->rotate);
-        for(std::size_t i = 0; i < max_lights; i++)
-        {
-            PointLight* light = this->lights[i];
-            if(ImGui::TreeNode((std::string{"Light "} + std::to_string(i)).c_str()))
-            {
-                ImGui::DragFloat3("Position Worldspace", light->position.data(), 0.5f, -100.0f, 100.0f);
-                ImGui::DragFloat3("Colour", light->colour.data(), 0.01f, 0.0f, 1.0f);
-                ImGui::DragFloat("Power (W)", &light->power, 1.0f, 0.0f, 10000.0f);
-                ImGui::TreePop();
-            }
-        }
-        ImGui::End();
-    }
-private:
-    tz::Vec3* ambient_light;
-	bool* rotate;
-    std::array<PointLight*, max_lights> lights;
-};
-
-class SplitTransformResourceWriter
-{
-public:
-    SplitTransformResourceWriter(tz::mem::Block data): mat_writer(data){}
-    bool write(tz::Vec3 pos, tz::Vec3 rot, tz::Vec3 scale, tz::Vec3 cam_pos, tz::Vec3 cam_rot, float fov, float aspect, float near, float far)
-    {
-        tz::Mat4 model = tz::geo::model(pos, rot, scale);
-        tz::Mat4 view = tz::geo::view(cam_pos, cam_rot);
-        tz::Mat4 proj = tz::geo::perspective(fov, aspect, near, far);
-        MVP mvp{model, view, proj};
-        return this->mat_writer.write(mvp);
-    }
-
-    void reset()
-    {
-        this->mat_writer.reset();
-    }
-private:
-    tz::gl::BasicResourceWriter<MVP> mat_writer;
-};
-
-namespace tz::render
-{
-    template<>
-    class ElementWriter<tz::render::SceneElement, SplitTransformResourceWriter>
-    {
-    public:
-        static void write(SplitTransformResourceWriter& writer, const tz::render::SceneElement& ele)
-        {
-            writer.write(ele.transform.position, ele.transform.rotation, ele.transform.scale, ele.camera.position, ele.camera.rotation, ele.camera.fov, ele.camera.aspect_ratio, ele.camera.near, ele.camera.far);
-        }
-    };
-}
-
-int main()
-{
-    using MyScene = tz::render::Scene<tz::render::SceneElement, SplitTransformResourceWriter>;
-	constexpr std::size_t max_elements = 512;
-	// Minimalist Graphics Demo.
-	tz::core::initialise("Topaz Lighting Demo");
-	tz::core::get().enable_culling(false);
+	MeshAtlas(): mesh_map()
 	{
-		tz::gl::Manager m;
-		tz::gl::Object& o = *m;
-
-		// Track it in imgui.
-		tz::ext::imgui::track_object(&o);
-
-		tz::gl::p::SSBOModule* ssbo_module = nullptr;
-		std::string vtx_result;
-		std::string frg_result;
-		tz::gl::ShaderPreprocessor pre{vtx_shader_src};
-		{
-			std::size_t ssbo_module_id = pre.emplace_module<tz::gl::p::SSBOModule>(&o);
-			pre.emplace_module<tz::gl::p::BindlessSamplerModule>();
-			pre.preprocess();
-			vtx_result = pre.result();
-			pre.set_source(frg_shader_src);
-			pre.preprocess();
-			frg_result = pre.result();
-			ssbo_module = static_cast<tz::gl::p::SSBOModule*>(pre[ssbo_module_id]);
-		}
-		topaz_assert(ssbo_module->size() == 3, "SSBO Module had unexpected number of buffers. Expected 3, got ", ssbo_module->size());
-		std::size_t ssbo_id = ssbo_module->get_buffer_id(0);
-		std::size_t tex_ssbo_id = ssbo_module->get_buffer_id(1);
-        std::size_t light_ssbo_id = ssbo_module->get_buffer_id(2);
-
-		tz::gl::SSBO* ssbo = o.get<tz::gl::BufferType::ShaderStorage>(ssbo_id);
-		tz::gl::SSBO* tex_ssbo = o.get<tz::gl::BufferType::ShaderStorage>(tex_ssbo_id);
-        tz::gl::SSBO* light_ssbo = o.get<tz::gl::BufferType::ShaderStorage>(light_ssbo_id);
-
 		tz::gl::IndexedMesh triangle;
 		triangle.vertices.push_back(tz::gl::Vertex{{{-0.5f, 0.5f, 0.0f}}, {{0.0f, 0.0f}}, {{0.0f, 0.0f, -1.0f}}, {{}}, {{}}});
 		triangle.vertices.push_back(tz::gl::Vertex{{{0.5f, 0.5f, 0.0f}}, {{1.0f, 0.0f}}, {{0.0f, 0.0f, -1.0f}}, {{}}, {{}}});
@@ -327,79 +235,163 @@ int main()
 						22, 21, 20,
 						23, 22, 20
 						};
-		/**
-		 * Vertex vertices[] =
-	{
-
-		Vertex(glm::vec3(1, -1, -1), glm::vec2(1, 1), glm::vec3(1, 0, 0)),
-		Vertex(glm::vec3(1, -1, 1), glm::vec2(1, 0), glm::vec3(1, 0, 0)),
-		Vertex(glm::vec3(1, 1, 1), glm::vec2(0, 0), glm::vec3(1, 0, 0)),
-		Vertex(glm::vec3(1, 1, -1), glm::vec2(0, 1), glm::vec3(1, 0, 0)),
-	};
-
-	unsigned int indices[] = {0, 1, 2,
-							  0, 2, 3,
-
-							  6, 5, 4,
-							  7, 6, 4,
-
-							  10, 9, 8,
-							  11, 10, 8,
-
-							  12, 13, 14,
-							  12, 14, 15,
-
-							  16, 17, 18,
-							  16, 18, 19,
-
-							  22, 21, 20,
-							  23, 22, 20
-	                          };
-		 * 
-		 */
-
+		
 		tz::gl::IndexedMesh monkey_head = tz::gl::load_mesh("res/models/monkeyhead.obj");
+
+		this->mesh_map["triangle"] = triangle;
+		this->mesh_map["square"] = square;
+		this->mesh_map["cube"] = cube;
+		this->mesh_map["monkeyhead"] = monkey_head;
+	}
+
+	const tz::gl::IndexedMesh& operator[](const char* mesh_name)
+	{
+		topaz_assert(this->mesh_map.find(mesh_name) != this->mesh_map.end(), "Unknown mesh '", mesh_name, "'");
+		return mesh_map[mesh_name];
+	}
+private:
+	std::map<const char*, tz::gl::IndexedMesh> mesh_map;
+};
+
+class LightingDemoWindow : public tz::ext::imgui::ImGuiWindow
+{
+public:
+    LightingDemoWindow(tz::Vec3* ambient_light, bool* rotate, std::array<PointLight*, render_shader::max_lights> lights): tz::ext::imgui::ImGuiWindow("Topaz Lighting Demo"), ambient_light(ambient_light), rotate(rotate), lights(lights){}
+
+    virtual void render() override
+    {
+        ImGui::Begin("Topaz Lighting Demo", &this->visible);
+        ImGui::DragFloat3("Ambient Light", ambient_light->data(), 0.01f, 0.0f, 1.0f);
+		ImGui::Checkbox("Rotation Enabled", this->rotate);
+        for(std::size_t i = 0; i < render_shader::max_lights; i++)
+        {
+            PointLight* light = this->lights[i];
+            if(ImGui::TreeNode((std::string{"Light "} + std::to_string(i)).c_str()))
+            {
+                ImGui::DragFloat3("Position Worldspace", light->position.data(), 0.5f, -100.0f, 100.0f);
+                ImGui::DragFloat3("Colour", light->colour.data(), 0.01f, 0.0f, 1.0f);
+                ImGui::DragFloat("Power (W)", &light->power, 1.0f, 0.0f, 10000.0f);
+                ImGui::TreePop();
+            }
+        }
+        ImGui::End();
+    }
+private:
+    tz::Vec3* ambient_light;
+	bool* rotate;
+    std::array<PointLight*, render_shader::max_lights> lights;
+};
+
+class SplitTransformResourceWriter
+{
+public:
+    SplitTransformResourceWriter(tz::mem::Block data): mat_writer(data){}
+    bool write(tz::Vec3 pos, tz::Vec3 rot, tz::Vec3 scale, tz::Vec3 cam_pos, tz::Vec3 cam_rot, float fov, float aspect, float near, float far)
+    {
+        tz::Mat4 model = tz::geo::model(pos, rot, scale);
+        tz::Mat4 view = tz::geo::view(cam_pos, cam_rot);
+        tz::Mat4 proj = tz::geo::perspective(fov, aspect, near, far);
+        MVP mvp{model, view, proj};
+        return this->mat_writer.write(mvp);
+    }
+
+    void reset()
+    {
+        this->mat_writer.reset();
+    }
+private:
+    tz::gl::BasicResourceWriter<MVP> mat_writer;
+};
+
+namespace tz::render
+{
+    template<>
+    class ElementWriter<tz::render::SceneElement, SplitTransformResourceWriter>
+    {
+    public:
+        static void write(SplitTransformResourceWriter& writer, const tz::render::SceneElement& ele)
+        {
+            writer.write(ele.transform.position, ele.transform.rotation, ele.transform.scale, ele.camera.position, ele.camera.rotation, ele.camera.fov, ele.camera.aspect_ratio, ele.camera.near, ele.camera.far);
+        }
+    };
+}
+
+void setup_window_interactivity(tz::Vec3& cam_pos)
+{
+	auto add_pos = [&cam_pos](float x, float y, float z)
+	{
+		cam_pos[0] += x;
+		cam_pos[1] += y;
+		cam_pos[2] += z;
+	};
+	tz::core::IWindow& wnd = tz::core::get().window();
+	wnd.register_this();
+	wnd.emplace_custom_key_listener([add_pos](tz::input::KeyPressEvent e)
+	{
+		switch(e.key)
+		{
+		case GLFW_KEY_W:
+			add_pos(0.0f, 0.00f, -0.05f);
+		break;
+		case GLFW_KEY_S:
+			add_pos(0.0f, 0.00f, 0.05f);
+		break;
+		case GLFW_KEY_A:
+			add_pos(-0.05f, 0.0f, 0.0f);
+		break;
+		case GLFW_KEY_D:
+			add_pos(0.05f, 0.0f, 0.0f);
+		break;
+		case GLFW_KEY_SPACE:
+			add_pos(0.0f, 0.05f, 0.0f);
+		break;
+		case GLFW_KEY_LEFT_SHIFT:
+			add_pos(0.0f, -0.05f, 0.0f);
+		break;
+		}
+	});
+}
+
+int main()
+{
+    using MyScene = tz::render::Scene<tz::render::SceneElement, SplitTransformResourceWriter>;
+	constexpr std::size_t max_elements = 512;
+	// Minimalist Graphics Demo.
+	tz::core::initialise("Topaz Lighting Demo");
+	MeshAtlas meshes;
+	tz::core::get().enable_culling(false);
+	{
+		tz::gl::Manager m;
+		tz::gl::Object& o = *m;
+
+		// Track it in imgui.
+		tz::ext::imgui::track_object(&o);
+
+		tz::gl::p::SSBOModule* ssbo_module = nullptr;
+		std::string vtx_result;
+		std::string frg_result;
+		tz::gl::ShaderPreprocessor pre{render_shader::vertex_source};
+		{
+			std::size_t ssbo_module_id = pre.emplace_module<tz::gl::p::SSBOModule>(&o);
+			pre.emplace_module<tz::gl::p::BindlessSamplerModule>();
+			pre.preprocess();
+			vtx_result = pre.result();
+			pre.set_source(render_shader::fragment_source);
+			pre.preprocess();
+			frg_result = pre.result();
+			ssbo_module = static_cast<tz::gl::p::SSBOModule*>(pre[ssbo_module_id]);
+		}
+		topaz_assert(ssbo_module->size() == 3, "SSBO Module had unexpected number of buffers. Expected 3, got ", ssbo_module->size());
+		std::size_t ssbo_id = ssbo_module->get_buffer_id(0);
+		std::size_t tex_ssbo_id = ssbo_module->get_buffer_id(1);
+        std::size_t light_ssbo_id = ssbo_module->get_buffer_id(2);
+
+		tz::gl::SSBO* ssbo = o.get<tz::gl::BufferType::ShaderStorage>(ssbo_id);
+		tz::gl::SSBO* tex_ssbo = o.get<tz::gl::BufferType::ShaderStorage>(tex_ssbo_id);
+        tz::gl::SSBO* light_ssbo = o.get<tz::gl::BufferType::ShaderStorage>(light_ssbo_id);
+
 		tz::Vec3 cam_pos{{0.0f, 0.0f, 5.0f}};
-		// camera movement implementation
-		auto add_pos = [&cam_pos](float x, float y, float z)
-		{
-			cam_pos[0] += x;
-			cam_pos[1] += y;
-			cam_pos[2] += z;
-		};
-		tz::core::IWindow& wnd = tz::core::get().window();
-		wnd.register_this();
-		wnd.emplace_custom_key_listener([&add_pos](tz::input::KeyPressEvent e)
-		{
-			switch(e.key)
-			{
-			case GLFW_KEY_W:
-				add_pos(0.0f, 0.00f, -0.05f);
-				tz::debug_printf("moving forward.\n");
-			break;
-			case GLFW_KEY_S:
-				add_pos(0.0f, 0.00f, 0.05f);
-				tz::debug_printf("moving backward.\n");
-			break;
-			case GLFW_KEY_A:
-				add_pos(-0.05f, 0.0f, 0.0f);
-				tz::debug_printf("moving left\n");
-			break;
-			case GLFW_KEY_D:
-				add_pos(0.05f, 0.0f, 0.0f);
-				tz::debug_printf("moving right\n");
-			break;
-			case GLFW_KEY_SPACE:
-				add_pos(0.0f, 0.05f, 0.0f);
-				tz::debug_printf("moving up\n");
-			break;
-			case GLFW_KEY_LEFT_SHIFT:
-				add_pos(0.0f, -0.05f, 0.0f);
-				tz::debug_printf("moving down\n");
-			break;
-			}
-		});
-		tz::debug_printf("monkey head data size = %zu bytes, indices size = %zu bytes", monkey_head.data_size_bytes(), monkey_head.indices_size_bytes());
+		setup_window_interactivity(cam_pos);
 
 		tz::gl::Image<tz::gl::PixelRGB8> rgba_checkerboard = tz::ext::stb::read_image<tz::gl::PixelRGB8>("res/textures/bricks.jpg");
 		tz::gl::Texture checkerboard;
@@ -418,10 +410,10 @@ int main()
 		float x_factor = 2.5f;
 		float y_factor = 2.5f;
 
-		tz::gl::Manager::Handle triangle_handle = m.add_mesh(triangle);
+		tz::gl::Manager::Handle triangle_handle = m.add_mesh(meshes["triangle"]);
 		//tz::gl::Manager::Handle square_handle = m.add_mesh(square);
 		//tz::gl::Manager::Handle monkeyhead_handle = m.add_mesh(monkey_head);
-		tz::gl::Manager::Handle cube_handle = m.add_mesh(cube);
+		tz::gl::Manager::Handle cube_handle = m.add_mesh(meshes["cube"]);
 
 		// UBO stores mesh transform data (mvp)
 		ssbo->terminal_resize(sizeof(tz::Mat4) * 3 * max_elements);
@@ -430,6 +422,7 @@ int main()
 
 		float rotation_y = 0.0f;
 
+		tz::core::IWindow& wnd = tz::core::get().window();
 		wnd.get_frame()->set_clear_color(0.3f, 0.15f, 0.0f);
 		// Scene setup.
 		// Meshes
@@ -444,17 +437,17 @@ int main()
             tex_ssbo->send(&metal_handle);
 		}
         // Lighting information
-        constexpr std::size_t light_buf_size = sizeof(tz::Vec3) + sizeof(float) /*extra padding required*/ + (sizeof(PointLight) * max_lights) /*point lights*/;
+        constexpr std::size_t light_buf_size = sizeof(tz::Vec3) + sizeof(float) /*extra padding required*/ + (sizeof(PointLight) * render_shader::max_lights) /*point lights*/;
         constexpr float default_ambient_pow = 0.2f;
 		tz::Vec3* ambient_lighting;
-        std::array<PointLight*, max_lights> lights;
+        std::array<PointLight*, render_shader::max_lights> lights;
         light_ssbo->terminal_resize(light_buf_size);
         {
 		    tz::mem::Block blk = light_ssbo->map();
 			ambient_lighting = new (blk.begin) tz::Vec3{default_ambient_pow, default_ambient_pow, default_ambient_pow};
 			blk.begin = reinterpret_cast<char*>(blk.begin) + sizeof(tz::Vec3) + /* add extra float because glsl will align to that */sizeof(float);
             tz::mem::UniformPool<PointLight> light_pool{blk};
-            for(std::size_t i = 0; i < max_lights; i++)
+            for(std::size_t i = 0; i < render_shader::max_lights; i++)
             {
                 const PointLight default_light{tz::Vec3{}, tz::Vec3{0.5f, 0.0f, 0.0f}, 0.0f};
                 light_pool.set(i, default_light);
