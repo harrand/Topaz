@@ -256,11 +256,11 @@ private:
 class LightingDemoWindow : public tz::ext::imgui::ImGuiWindow
 {
 public:
-    LightingDemoWindow(tz::Vec3* ambient_light, bool* rotate, std::array<PointLight*, render_shader::max_lights> lights): tz::ext::imgui::ImGuiWindow("Topaz Lighting Demo"), ambient_light(ambient_light), rotate(rotate), lights(lights){}
+    LightingDemoWindow(tz::Vec3* ambient_light, bool* rotate, std::array<PointLight*, render_shader::max_lights> lights): tz::ext::imgui::ImGuiWindow("Lights"), ambient_light(ambient_light), rotate(rotate), lights(lights){}
 
     virtual void render() override
     {
-        ImGui::Begin("Topaz Lighting Demo", &this->visible);
+        ImGui::Begin("Lights", &this->visible);
         ImGui::DragFloat3("Ambient Light", ambient_light->data(), 0.01f, 0.0f, 1.0f);
 		ImGui::Checkbox("Rotation Enabled", this->rotate);
         for(std::size_t i = 0; i < render_shader::max_lights; i++)
@@ -280,6 +280,34 @@ private:
     tz::Vec3* ambient_light;
 	bool* rotate;
     std::array<PointLight*, render_shader::max_lights> lights;
+};
+
+class FrameBufferInspector : public tz::ext::imgui::ImGuiWindow
+{
+public:
+	FrameBufferInspector(): tz::ext::imgui::ImGuiWindow("Framebuffer Inspector"){}
+
+	void track_framebuffer_output(const char* name, tz::gl::Texture* tex)
+	{
+		this->tracked_framebuffer_outputs.push_back(tex);
+		this->tracked_framebuffer_output_names.push_back(name);
+	}
+
+	virtual void render() override
+	{
+		ImGui::Begin("Framebuffer Inspector", &this->visible);
+		topaz_assert(this->tracked_framebuffer_outputs.size() == this->tracked_framebuffer_output_names.size(), "Framebuffer inspector name and texture container sizes didn't match");
+		auto sz = this->tracked_framebuffer_outputs.size();
+		for(std::size_t i = 0; i < sz; i++)
+		{
+			ImGui::Text(this->tracked_framebuffer_output_names[i]);
+			this->tracked_framebuffer_outputs[i]->dui_draw({-1.0f, -1.0f});
+		}
+		ImGui::End();
+	}
+private:
+	std::vector<tz::gl::Texture*> tracked_framebuffer_outputs;
+	std::vector<const char*> tracked_framebuffer_output_names;
 };
 
 class SplitTransformResourceWriter
@@ -458,6 +486,9 @@ int main()
 		bool rotate_enabled = true;
 
         tz::ext::imgui::emplace_window<LightingDemoWindow>(ambient_lighting, &rotate_enabled, lights);
+		FrameBufferInspector& fbinspector = tz::ext::imgui::emplace_window<FrameBufferInspector>();
+		fbinspector.track_framebuffer_output("Test Texture", &checkerboard);
+		fbinspector.track_framebuffer_output("another texture", &metal);
 
 		tz::gl::ShaderCompiler cpl;
 		tz::gl::ShaderProgram prg;

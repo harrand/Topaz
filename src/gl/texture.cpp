@@ -1,4 +1,5 @@
 #include "gl/texture.hpp"
+#include "dui/imgui_context.hpp"
 
 namespace tz::gl
 {
@@ -122,6 +123,17 @@ namespace tz::gl
 	void Texture::bind_to_frame(GLenum attachment) const
 	{
 		glFramebufferTexture2D(GL_FRAMEBUFFER, attachment, GL_TEXTURE_2D, this->handle, 0);
+	}
+
+	void Texture::dui_draw(tz::Vec2 size, tz::Vec2 uv0, tz::Vec2 uv1, tz::Vec4 tint_col, tz::Vec4 border_col) const
+	{
+		auto Vec2ToImVec2 = [](tz::Vec2 v)->ImVec2{return {v[0], v[1]};};
+		auto Vec4ToImVec4 = [](tz::Vec4 v)->ImVec4{return {v[0], v[1], v[2], v[3]};};
+		if(size == tz::Vec2{-1.0f, -1.0f})
+		{
+			size = tz::Vec2{static_cast<float>(this->get_width()), static_cast<float>(this->get_height())};
+		}
+		ImGui::Image(this->handle, Vec2ToImVec2(size), Vec2ToImVec2(uv0), Vec2ToImVec2(uv1), Vec4ToImVec4(tint_col), Vec4ToImVec4(border_col));
 	}
 
 	void Texture::internal_bind() const

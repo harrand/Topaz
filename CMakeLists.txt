@@ -91,6 +91,7 @@ add_library(topaz STATIC
 		src/gl/index_snippet.hpp
 		src/gl/manager.hpp
 		src/gl/manager.cpp
+		src/gl/mesh.cpp
 		src/gl/mesh.hpp
 		src/gl/mesh_loader.hpp
 		src/gl/mesh_loader.cpp

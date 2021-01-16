@@ -2,6 +2,7 @@
 #define TOPAZ_GL_TEXTURE_HPP
 #include "gl/image.hpp"
 #include "gl/texture_sentinel.hpp"
+#include "geo/vector.hpp"
 #include <optional>
 
 namespace tz::gl
@@ -130,6 +131,7 @@ namespace tz::gl
 		 * @param attachment Desired attachment with which to associate the texture.
 		 */
 		void bind_to_frame(GLenum attachment) const;
+		void dui_draw(tz::Vec2 size = {-1.0f, -1.0f}, tz::Vec2 uv0 = {0.0f, 0.0f}, tz::Vec2 uv1 = {1.0f, 1.0f}, tz::Vec4 tint_col = {1.0f, 1.0f, 1.0f, 1.0f}, tz::Vec4 border_col = {0.0f, 0.0f, 0.0f, 0.0f}) const;
 	protected:
 		void internal_bind() const;
 		void internal_unbind() const;
