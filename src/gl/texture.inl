@@ -11,7 +11,7 @@ namespace tz::gl
 		static_assert(type != GL_INVALID_VALUE, "Texture::set_data<PixelType, ComponentType>: Unsupported pixel/component types.");
 		this->internal_bind();
 		glTexImage2D(GL_TEXTURE_2D, 0, internal_format, static_cast<GLsizei>(image.get_width()), static_cast<GLsizei>(image.get_height()), 0, format, type, image.data());
-		this->descriptor = {type, internal_format, format, image.get_width(), image.get_height()};
+		this->descriptor = {static_cast<TextureComponentType>(type), static_cast<TextureInternalFormat>(internal_format), static_cast<TextureFormat>(format), image.get_width(), image.get_height()};
 	}
 
 	template<template<typename> class PixelType, typename ComponentType>

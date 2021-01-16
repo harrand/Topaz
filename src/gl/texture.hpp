@@ -23,12 +23,15 @@ namespace tz::gl
 	using BindlessTextureHandle = GLuint64;
 
 	struct TextureParameters;
+	enum class TextureComponentType : GLenum;
+	enum class TextureInternalFormat : GLint;
+	enum class TextureFormat : GLenum;
 
 	struct TextureDataDescriptor
 	{
-		GLenum component_type;
-		GLint internal_format;
-		GLenum format;
+		TextureComponentType component_type;
+		TextureInternalFormat internal_format;
+		TextureFormat format;
 	
 		unsigned int width = 0;
 		unsigned int height = 0;
@@ -186,6 +189,77 @@ namespace tz::gl
 	private:
 		GLuint handle;
 		TextureDataDescriptor descriptor;
+	};
+
+	enum class TextureComponentType : GLenum
+	{
+		Byte = GL_UNSIGNED_BYTE,
+		Short = GL_UNSIGNED_SHORT,
+		Int = GL_UNSIGNED_INT,
+		HalfFloat = GL_HALF_FLOAT,
+		Float = GL_FLOAT,
+	};
+
+	enum class TextureInternalFormat : GLint
+	{
+		// Unsized format types
+		DepthUnsized = GL_DEPTH_COMPONENT,
+		DepthStencilUnsized = GL_DEPTH_STENCIL,
+		RedUnsized = GL_RED,
+		RedGreenUnsized = GL_RG,
+		RedGreenBlueUnsized = GL_RGB,
+		RedGreenBlueAlphaUnsized = GL_RGBA,
+
+		sRedGreenBlueUnsized = GL_SRGB,
+		sRedGreenBlueAlphaUnsized = GL_SRGB_ALPHA,
+
+		// Sized format types (number represents number of bits per component)
+		// e.g RGBA16 = 16 bits per component = 64 bits per element
+		Depth16 = GL_DEPTH_COMPONENT16,
+		Depth32 = GL_DEPTH_COMPONENT32,
+		Red8 = GL_R8,
+		Red16 = GL_R16,
+
+		RedGreen8 = GL_RG8,
+		RedGreen16 = GL_RG16,
+
+		Red3Green3Blue2 = GL_R3_G3_B2,
+		RedGreenBlue4 = GL_RGB4,
+		RedGreenBlue8 = GL_RGB8,
+		RedGreenBlue16 = GL_RGB16,
+
+		RedGreenBlueAlpha2 = GL_RGBA2,
+		RedGreenBlueAlpha4 = GL_RGBA4,
+		RedGreenBlueAlpha8 = GL_RGBA8,
+		RedGreenBlueAlpha16 = GL_RGBA16,
+
+		sRedGreenBlue8 = GL_SRGB8,
+		sRedGreenBlueAlpha8 = GL_SRGB8_ALPHA8,
+		// Floating-point sized format types
+		// Unlike non floating-point sized formats, elements are not clamped between 0.0 and 1.0. This is useful for HDR.
+		Depth32f = GL_DEPTH_COMPONENT32F,
+
+		Red16f = GL_R16F,
+		Red32f = GL_R32F,
+		RedGreen16f = GL_RG16F,
+		RedGreen32f = GL_RG32F,
+		RedGreenBlue16f = GL_RGB16F,
+		RedGreenBlue32f = GL_RGB32F,
+		RedGreenBlueAlpha16f = GL_RGBA16F,
+		RedGreenBlueAlpha32f = GL_RGBA32F,
+	};
+
+	enum class TextureFormat : GLenum
+	{
+		Red = GL_RED,
+		RedGreen = GL_RG,
+		RedGreenBlue = GL_RGB,
+		RedGreenBlueAlpha = GL_RGBA,
+
+		BlueGreenRed = GL_BGR,
+		BlueGreenRedAlpha = GL_BGRA,
+		DepthComponent = GL_DEPTH_COMPONENT,
+		DepthStencilComponent = GL_DEPTH_STENCIL,
 	};
 
 	enum class TextureMinificationFunction : GLint

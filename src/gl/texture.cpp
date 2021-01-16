@@ -64,7 +64,7 @@ namespace tz::gl
 		this->descriptor = descriptor;
 		this->internal_bind();
 		const auto& desc = this->descriptor.value();
-		glTexImage2D(GL_TEXTURE_2D, 0, desc.internal_format, static_cast<GLsizei>(desc.width), static_cast<GLsizei>(desc.height), 0, desc.format, desc.component_type, nullptr);
+		glTexImage2D(GL_TEXTURE_2D, 0, static_cast<GLint>(desc.internal_format), static_cast<GLsizei>(desc.width), static_cast<GLsizei>(desc.height), 0, static_cast<GLenum>(desc.format), static_cast<GLenum>(desc.component_type), nullptr);
 	}
 
 	std::size_t Texture::size() const
