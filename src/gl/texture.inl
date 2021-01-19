@@ -21,23 +21,23 @@ namespace tz::gl
 		constexpr GLint internal_format = tz::gl::pixel::parse_internal_format<PixelType, ComponentType>();
 		constexpr GLenum format = tz::gl::pixel::parse_format<PixelType, ComponentType>();
 		constexpr GLenum type = tz::gl::pixel::parse_component_type<ComponentType>();
-		TextureDataDescriptor desired_descriptor{type, internal_format, format};
+		TextureDataDescriptor desired_descriptor{static_cast<TextureComponentType>(type), static_cast<TextureInternalFormat>(internal_format), static_cast<TextureFormat>(format)};
 		TextureDataDescriptor expected_descriptor = this->descriptor.value();
 		topaz_assert(desired_descriptor == expected_descriptor, "tz::gl::Texture::get_data<PixelType, ComponentType>(): TextureDataDescriptors didn't match. This means you are attempting to retrieve a texture with a different descriptor than what was set:\n\
 		Desired Descriptor:\n\
-		\tComponent-Type: ", type, "\n\
-		\tInternal-Format: ", internal_format, "\n\
-		\tFormat: ", format, "\
+		\tComponent-Type: ", static_cast<GLenum>(type), "\n\
+		\tInternal-Format: ", static_cast<GLint>(internal_format), "\n\
+		\tFormat: ", static_cast<GLenum>(format), "\
 		Provided Descriptor:\n\
-		\tComponent-Type: ", expected_descriptor.component_type, "\n\
-		\tInternal-Format: ", expected_descriptor.internal_format, "\n\
-		\tFormat: ", expected_descriptor.format);
+		\tComponent-Type: ", static_cast<GLenum>(expected_descriptor.component_type), "\n\
+		\tInternal-Format: ", static_cast<GLint>(expected_descriptor.internal_format), "\n\
+		\tFormat: ", static_cast<GLenum>(expected_descriptor.format));
 
 		// Make the empty image.
 		tz::gl::Image<PixelType<ComponentType>> img{expected_descriptor.width, expected_descriptor.height};
 		// Can safely get the image data now. img.data() will have the correct allocation size.
 		this->internal_bind();
 		glGetTexImage(GL_TEXTURE_2D, 0, format, type, img.data());
-		return std::move(img);
+		return img;
 	}
 }
