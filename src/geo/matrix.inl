@@ -26,7 +26,7 @@ namespace tz
 	const T& Matrix<T, R, C>::operator()(std::size_t row, std::size_t column) const
 	{
 		topaz_assert(row < R, "tz::Matrix<T, ", R, ", ", C, ">::operator(", row, ", ", column, "): Row index out of range!");
-		topaz_assert(column < R, "tz::Matrix<T, ", R, ", ", C, ">::operator(", row, ", ", column, "): Column index out of range!");
+		topaz_assert(column < R, "tz::Matrix<T, ", C, ", ", C, ">::operator(", row, ", ", column, "): Column index out of range!");
 		return (*this)[column][row];
 	}
 
@@ -34,7 +34,7 @@ namespace tz
 	T& Matrix<T, R, C>::operator()(std::size_t row, std::size_t column)
 	{
 		topaz_assert(row < R, "tz::Matrix<T, ", R, ", ", C, ">::operator(", row, ", ", column, "): Row index out of range!");
-		topaz_assert(column < R, "tz::Matrix<T, ", R, ", ", C, ">::operator(", row, ", ", column, "): Column index out of range!");
+		topaz_assert(column < C, "tz::Matrix<T, ", R, ", ", C, ">::operator(", row, ", ", column, "): Column index out of range!");
 		return (*this)[column][row];
 	}
 
@@ -372,14 +372,6 @@ namespace tz
 				}
 			}
 		}
-		/*
-		std::swap(m(0, 1), m(1, 0));
-		std::swap(m(0, 2), m(2, 0));
-		std::swap(m(1, 2), m(2, 1));
-		std::swap(m(0, 3), m(3, 0));
-		std::swap(m(1, 3), m(3, 1));
-		std::swap(m(2, 3), m(3, 2));
-		*/
 		return m;
 	}
 
