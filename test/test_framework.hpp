@@ -81,7 +81,7 @@ tz::test::Case TEST_NAME() \
 		Unit() = default;
 		~Unit()
 		{
-			if(this->result() == 0)
+			if(this->result() >= 0)
 			{
 				std::cerr << "All tests successful (" << this->cases.size() << "/" << this->cases.size() << " passed)\n";
 			}
@@ -118,6 +118,10 @@ tz::test::Case TEST_NAME() \
 			{
 				if(test_case.result() != 0)
 					res = -1;
+			}
+			if(res == 0)
+			{
+				res = this->cases.size();
 			}
 			return res;
 		}
