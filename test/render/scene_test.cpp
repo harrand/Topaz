@@ -35,53 +35,46 @@ namespace tz::render
 	};
 }
 
-tz::test::Case adding()
-{
-    tz::test::Case test_case("tz::render::Scene addition tests");
+TZ_TEST_BEGIN(adding)
     TestScene scene{tz::mem::Block::null()};
-    topaz_expect(test_case, scene.size() == 0, "Newly constructed scene had size of ", scene.size(), ", expected 0.");
+    topaz_expect(scene.size() == 0, "Newly constructed scene had size of ", scene.size(), ", expected 0.");
 	auto red = scene.add({1});
 	NullSceneElement yellow_ele{2};
 	auto yellow = scene.add(yellow_ele);
 	auto orange = scene.add({3});
 	NullSceneElement black{4};
-	topaz_expect(test_case, scene.contains(scene.get(red)), "Scene wrongly believes it doesn't contain the red element.");
-	topaz_expect(test_case, scene.contains(scene.get(yellow)), "Scene wrongly believes it doesn't contain the red element.");
-	topaz_expect(test_case, scene.contains(scene.get(orange)), "Scene wrongly believes it doesn't contain the red element.");
-	topaz_expect(test_case, !scene.contains(black), "Scene wrongly believes it contains the black element.");
+	topaz_expect(scene.contains(scene.get(red)), "Scene wrongly believes it doesn't contain the red element.");
+	topaz_expect(scene.contains(scene.get(yellow)), "Scene wrongly believes it doesn't contain the red element.");
+	topaz_expect(scene.contains(scene.get(orange)), "Scene wrongly believes it doesn't contain the red element.");
+	topaz_expect(!scene.contains(black), "Scene wrongly believes it contains the black element.");
 	auto yellow_cpy = yellow_ele; // Actual copy of yellow_ele.
 	NullSceneElement yellow_alias{2}; // Not explicitly copied but same data as yellow_ele.
-	topaz_expect(test_case, scene.contains(yellow_cpy), "Scene wrongly believes it doesn't contain the yellow element (copy)");
-	topaz_expect(test_case, scene.contains(yellow_alias), "Scene wrongly believes it doesn't contain the yellow element (alias)");
+	topaz_expect(scene.contains(yellow_cpy), "Scene wrongly believes it doesn't contain the yellow element (copy)");
+	topaz_expect(scene.contains(yellow_alias), "Scene wrongly believes it doesn't contain the yellow element (alias)");
+TZ_TEST_END
 
-    return test_case;
-}
-
-tz::test::Case removing()
-{
-	tz::test::Case test_case("tz::render::Scene removal tests");
+TZ_TEST_BEGIN(removing)
 	TestScene scene{tz::mem::Block::null()};
 	for(int i = 0; i < 100; i++)
 	{
 		scene.add({i});
 	}
-	topaz_expect(test_case, scene.size() == 100, "Scene has unexpected size. Expected 100, got ", scene.size());
-	topaz_expect(test_case, scene.erase(NullSceneElement{99}), "Scene erasure unexpectedly returned false.");
-	topaz_expect(test_case, scene.size() == 99, "Scene has unexpected size. Expected 99, got ", scene.size());
+	topaz_expect(scene.size() == 100, "Scene has unexpected size. Expected 100, got ", scene.size());
+	topaz_expect(scene.erase(NullSceneElement{99}), "Scene erasure unexpectedly returned false.");
+	topaz_expect(scene.size() == 99, "Scene has unexpected size. Expected 99, got ", scene.size());
 	for(const NullSceneElement& ele : scene)
 	{
-		topaz_expect(test_case, ele.val != 99, "Scene contained element data after deletion (Range-based for)");
+		topaz_expect(ele.val != 99, "Scene contained element data after deletion (Range-based for)");
 	}
-	topaz_expect(test_case, !scene.contains(NullSceneElement{99}) && !scene.contains(TestScene::Handle{99}), "Scene contained element data after deletion (Scene::contains)");
+	topaz_expect(!scene.contains(NullSceneElement{99}) && !scene.contains(TestScene::Handle{99}), "Scene contained element data after deletion (Scene::contains)");
 	for(std::size_t i = 50; i < 99; i++)
 	{
 		topaz_assert(scene.contains(TestScene::Handle{i}), "Scene does not contain element which I haven't erased yet (", i, ")");
-		topaz_expect(test_case, scene.erase(TestScene::Handle{i}), "Scene erasure unexpectedly returned false");
+		topaz_expect(scene.erase(TestScene::Handle{i}), "Scene erasure unexpectedly returned false");
 	}
-	topaz_expect(test_case, scene.size() == 50, "Scene had unexpected size. Expected 50, got ", scene.size());
+	topaz_expect(scene.size() == 50, "Scene had unexpected size. Expected 50, got ", scene.size());
 	scene.pack();
-	return test_case;
-}
+TZ_TEST_END
 
 int main()
 {

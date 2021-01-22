@@ -26,9 +26,7 @@ void handler(std::size_t& i, [[maybe_unused]] T t)
 	}
 }
 
-tz::test::Case static_for()
-{
-	tz::test::Case test_case("tz::algo Static For Tests");
+TZ_TEST_BEGIN(static_for)
 	std::size_t i = 0;
 	tz::algo::static_for<0, 100>([&i](auto idx){i += idx;});
 	std::size_t actual = 0;
@@ -37,14 +35,10 @@ tz::test::Case static_for()
 		actual += i;
 	}
 
-	topaz_expect(test_case, actual == i, "Uh oh");
-	return test_case;
-}
+	topaz_expect(actual == i, "Uh oh");
+TZ_TEST_END
 
-tz::test::Case static_parameter_expansion()
-{
-	tz::test::Case test_case("tz::algo Static Parameter Expansion Tests");
-
+TZ_TEST_BEGIN(static_parameter_expansion)
 	float f;
 	int i;
 	char c;
@@ -62,12 +56,10 @@ tz::test::Case static_parameter_expansion()
 			break;
 		}
 	});
-	topaz_expect(test_case, f == 0.0f, "Fail");
-	topaz_expect(test_case, i == 1, "Fail");
-	topaz_expect(test_case, c == '2', "Fail");
-
-	return test_case;
-}
+	topaz_expect(f == 0.0f, "Fail");
+	topaz_expect(i == 1, "Fail");
+	topaz_expect(c == '2', "Fail");
+TZ_TEST_END
 
 int main()
 {

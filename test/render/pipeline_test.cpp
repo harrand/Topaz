@@ -6,25 +6,19 @@
 #include "core/core.hpp"
 #include "render/pipeline.hpp"
 
-tz::test::Case ctor()
-{
-	tz::test::Case test_case("tz::render::Pipeline Ctor Tests");
+TZ_TEST_BEGIN(ctor)
 	tz::render::Pipeline empty;
-	topaz_expect(test_case, empty.empty(), "tz::render::Pipeline default construction is wrongly considered not to be empty.");
-	return test_case;
-}
+	topaz_expect(empty.empty(), "tz::render::Pipeline default construction is wrongly considered not to be empty.");
+TZ_TEST_END
 
-tz::test::Case add_and_clear()
-{
-	tz::test::Case test_case("tz::render::Pipeline Add Tests");
+TZ_TEST_BEGIN(add_and_clear)
 	tz::render::Pipeline pipe;
 	tz::render::Device dev = tz::render::Device::null_device();
 	pipe.add(dev);
-	topaz_expect(test_case, !pipe.empty() && pipe.size() == 1, "tz::render::Pipeline had unexpected size. Expected 1, got ", pipe.size());
+	topaz_expect(!pipe.empty() && pipe.size() == 1, "tz::render::Pipeline had unexpected size. Expected 1, got ", pipe.size());
 	pipe.purge();
-	topaz_expect(test_case, pipe.empty(), "tz::render::Pipeline had unexpected size. Expected 0, got ", pipe.size());
-	return test_case;
-}
+	topaz_expect(pipe.empty(), "tz::render::Pipeline had unexpected size. Expected 0, got ", pipe.size());
+TZ_TEST_END
 
 int main()
 {

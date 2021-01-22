@@ -45,18 +45,16 @@ tz::gl::ShaderProgram valid_program()
 	return std::move(prog);
 }
 
-tz::test::Case broken_devices()
-{
-	tz::test::Case test_case("tz::render::Device Draw Tests");
+TZ_TEST_BEGIN(broken_devices)
 	tz::render::Device nul = tz::render::Device::null_device();
 	// Null device absolutely isn't ready.
-	topaz_expect(test_case, !nul.ready(), "tz::render::Device's null-device should never be ready!");
+	topaz_expect(!nul.ready(), "tz::render::Device's null-device should never be ready!");
 	
 	tz::gl::IFrame* frame = tz::core::get().window().get_frame();
 	tz::render::Device frame_only{frame, nullptr, nullptr};
 	// We assume that the window's frame is complete.
 	topaz_assert(frame->complete(), "tz::core Window's IFrame was incomplete. This is unexpected.");
-	topaz_expect(test_case, !frame_only.ready(), "An invalid tz::render::Device with only a valid IFrame is wrongly considered to be ready.");
+	topaz_expect(!frame_only.ready(), "An invalid tz::render::Device with only a valid IFrame is wrongly considered to be ready.");
 
 	// A program with no shaders attached and thus unusable.
 	tz::gl::ShaderProgram unusable_prog;
@@ -69,56 +67,46 @@ tz::test::Case broken_devices()
 	tz::gl::Object obj;
 
 	tz::render::Device good_dev{frame, &prog, &obj};
-	topaz_expect(test_case, good_dev.ready(), "Good tz::render::Device wrongly considered not to be ready!");
+	topaz_expect(good_dev.ready(), "Good tz::render::Device wrongly considered not to be ready!");
 	tz::render::Device bad_dev{frame, &unusable_prog, &obj};
-	topaz_expect(test_case, !bad_dev.ready(), "Bad tz::render::Device wrongly considered to be ready!");
-	return test_case;
-}
+	topaz_expect(!bad_dev.ready(), "Bad tz::render::Device wrongly considered to be ready!");
+TZ_TEST_END
 
-tz::test::Case edit_device()
-{
-	tz::test::Case test_case("tz::render::Device Editing Tests");
-
+TZ_TEST_BEGIN(edit_device)
 	tz::gl::ShaderProgram prog = valid_program();
 	// Create dummy object with no IBO.
 	tz::gl::Object dummy_object;
 	
 	tz::render::Device device = tz::render::Device::null_device();
-	topaz_expect(test_case, !device.ready(), "Null tz::render::Device wrongly considered to be ready.");
+	topaz_expect(!device.ready(), "Null tz::render::Device wrongly considered to be ready.");
 	device.set_frame(tz::core::get().window().get_frame());
 	// Program and object still invalid so this should still be unready.
-	topaz_expect(test_case, !device.ready(), "Edited tz::render::Device wrongly considered to be ready (Missing program and object)");
+	topaz_expect(!device.ready(), "Edited tz::render::Device wrongly considered to be ready (Missing program and object)");
 	device.set_program(&prog);
 	// Object still invalid so this should still be unready.
-	topaz_expect(test_case, !device.ready(), "Edited tz::render::Device wrongly considered to be ready. (Missing object)");
+	topaz_expect(!device.ready(), "Edited tz::render::Device wrongly considered to be ready. (Missing object)");
 	device.set_object(&dummy_object);
 	// Note that no ibo handle was provided (so this would early-out if we attempt to render it). But that is irrelevant to readiness.
-	topaz_expect(test_case, device.ready(), "Amended null tz::render::Device wrongly considered not to be ready.");
-	return test_case;
-}
+	topaz_expect(device.ready(), "Amended null tz::render::Device wrongly considered not to be ready.");
+TZ_TEST_END
 
-tz::test::Case resource_buffers()
-{
-	tz::test::Case test_case("tz::render::Device Resource Buffer Tests");
-
+TZ_TEST_BEGIN(resource_buffers)
 	tz::render::Device dev = tz::render::Device::null_device();
 
 	tz::gl::SSBO ssbo{0};
 	tz::gl::UBO ubo{1};
 
-	topaz_expect(test_case, !dev.contains_resource_buffer(&ssbo), "Null device thinks it contains an SSBO!");
-	topaz_expect(test_case, !dev.contains_resource_buffer(&ubo), "Null device thinks it contains a UBO!");
+	topaz_expect(!dev.contains_resource_buffer(&ssbo), "Null device thinks it contains an SSBO!");
+	topaz_expect(!dev.contains_resource_buffer(&ubo), "Null device thinks it contains a UBO!");
 	dev.add_resource_buffer(&ssbo);
-	topaz_expect(test_case, dev.contains_resource_buffer(&ssbo), "Device wrongly thinks it hasn't registered an SSBO");
+	topaz_expect(dev.contains_resource_buffer(&ssbo), "Device wrongly thinks it hasn't registered an SSBO");
 	dev.add_resource_buffer(&ubo);
-	topaz_expect(test_case, dev.contains_resource_buffer(&ubo), "Device wrongly thinks it hasn't registered a UBO");
+	topaz_expect(dev.contains_resource_buffer(&ubo), "Device wrongly thinks it hasn't registered a UBO");
 	dev.remove_resource_buffer(&ssbo);
-	topaz_expect(test_case, !dev.contains_resource_buffer(&ssbo), "Device thinks it contains an SSBO after it was just removed!");
+	topaz_expect(!dev.contains_resource_buffer(&ssbo), "Device thinks it contains an SSBO after it was just removed!");
 	dev.remove_resource_buffer(&ubo);
-	topaz_expect(test_case, !dev.contains_resource_buffer(&ubo), "Device thinks it contains a UBO after it was just removed!");
-
-	return test_case;
-}
+	topaz_expect(!dev.contains_resource_buffer(&ubo), "Device thinks it contains a UBO after it was just removed!");
+TZ_TEST_END
 
 int main()
 {

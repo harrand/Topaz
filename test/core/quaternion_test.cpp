@@ -9,18 +9,13 @@
 #include <string>
 #include <cstring>
 
-tz::test::Case default_ctor_no_transform()
-{
-	tz::test::Case test_case("tz::Quaternion Default Construction Test");
+TZ_TEST_BEGIN(default_ctor_no_transform)
 	tz::Quaternion rot{{{0.0f, 3.14159f, 0.0f}}};
 	tz::Quaternion transformed = rot * tz::Quaternion{};
-	topaz_expect(test_case, rot == transformed, "Default constructed tz::Quaternion is performing transformation!");
-	return test_case;
-}
+	topaz_expect(rot == transformed, "Default constructed tz::Quaternion is performing transformation!");
+TZ_TEST_END
 
-tz::test::Case matrix()
-{
-	tz::test::Case test_case("tz:Quaternion Matrix Conversion Test (to and from)");
+TZ_TEST_BEGIN(matrix)
 	// Rotate a position about the origin about the y-axis.
 	tz::Vec4 subject{{0.0f, 0.0f, 1.0f, 1.0f}};
 	tz::Quaternion quat = tz::Quaternion::from_axis({{{0.0f, 1.0f, 0.0f}}, 3.14159f / 2.0f});
@@ -28,14 +23,10 @@ tz::test::Case matrix()
 
 	tz::Vec4 result1 = quat.to_matrix() * subject;
 	tz::Vec4 result2 = mat * subject;
-	topaz_expect(test_case, result1 == result2, "Equivalent matrix and quaternions produced different transformations. Result1 = {", result1[0], ", ", result1[1], ", ", result1[2], ", ", result1[3], "}, Result2 = {", result2[0], ", ", result2[1], ", ", result2[2], ", ", result2[3], "}");
-	return test_case;
-}
+	topaz_expect(result1 == result2, "Equivalent matrix and quaternions produced different transformations. Result1 = {", result1[0], ", ", result1[1], ", ", result1[2], ", ", result1[3], "}, Result2 = {", result2[0], ", ", result2[1], ", ", result2[2], ", ", result2[3], "}");
+TZ_TEST_END
 
-tz::test::Case euler_quat_euler()
-{
-	tz::test::Case test_case("tz::Quaternion Euler->Quaternion->Euler Test");
-
+TZ_TEST_BEGIN(euler_quat_euler)
 	constexpr float pi = 3.14159f;
 	tz::Vec3 rot{{0, pi, pi}};
 	tz::Quaternion quat = tz::Quaternion::from_eulers(rot);
@@ -48,10 +39,9 @@ tz::test::Case euler_quat_euler()
 	{
 		tz::Vec4 rx = rot_a * subject;
 		tz::Vec4 ry = rot_b * subject;
-		topaz_expect(test_case, (rx-ry).length() < 0.01f, "Euler->Quat->Euler: Euler0 is not the same rotation as Euler1. Euler0 = {", rx[0], ", ", rx[1], ", ", rx[2], "}. Euler1 = {", ry[0], ", ", ry[1], ", ", ry[2], "}");
+		topaz_expect((rx-ry).length() < 0.01f, "Euler->Quat->Euler: Euler0 is not the same rotation as Euler1. Euler0 = {", rx[0], ", ", rx[1], ", ", rx[2], "}. Euler1 = {", ry[0], ", ", ry[1], ", ", ry[2], "}");
 	}
-	return test_case;
-}
+TZ_TEST_END
 
 int main()
 {

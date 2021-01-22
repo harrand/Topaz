@@ -8,59 +8,48 @@
 #include "gl/frame.hpp"
 #include "algo/static.hpp"
 
-tz::test::Case statics()
-{
-	tz::test::Case test_case("tz::gl::Frame Static Tests");
-	topaz_expect(test_case, !tz::algo::copyable<tz::gl::Frame>(), "tz::gl::Frame is copyable. This is wrong.");
-	topaz_expect(test_case, tz::algo::moveable<tz::gl::Frame>(), "tz::gl::Frame is not moveable. This is wrong.");
+TZ_TEST_BEGIN(statics)
+	topaz_expect(!tz::algo::copyable<tz::gl::Frame>(), "tz::gl::Frame is copyable. This is wrong.");
+	topaz_expect(tz::algo::moveable<tz::gl::Frame>(), "tz::gl::Frame is not moveable. This is wrong.");
 	
-	topaz_expect(test_case, !tz::algo::copyable<tz::gl::WindowFrame>(), "tz::gl::Frame is copyable. This is wrong.");
-	topaz_expect(test_case, tz::algo::moveable<tz::gl::WindowFrame>(), "tz::gl::Frame is not moveable. This is wrong.");
-	
-	return test_case;
-}
+	topaz_expect(!tz::algo::copyable<tz::gl::WindowFrame>(), "tz::gl::Frame is copyable. This is wrong.");
+	topaz_expect(tz::algo::moveable<tz::gl::WindowFrame>(), "tz::gl::Frame is not moveable. This is wrong.");
+TZ_TEST_END
 
-tz::test::Case frame_bindings()
-{
-	tz::test::Case test_case("tz::gl::Frame Binding Tests");
+TZ_TEST_BEGIN(frame_bindings)
 	tz::gl::Frame f1{800, 600};
 	tz::gl::Frame f2{1920, 1080};
-	topaz_expect(test_case, f1 != tz::gl::bound::frame(), "tz::gl::Frame thinks it's bound before I try to bind it!");
-	topaz_expect(test_case, f2 != tz::gl::bound::frame(), "tz::gl::Frame thinks it's bound before I try to bind it!");
+	topaz_expect(f1 != tz::gl::bound::frame(), "tz::gl::Frame thinks it's bound before I try to bind it!");
+	topaz_expect(f2 != tz::gl::bound::frame(), "tz::gl::Frame thinks it's bound before I try to bind it!");
 	f1.bind();
-	topaz_expect(test_case, f1 == tz::gl::bound::frame(), "tz::gl::Frame failed to notice that it had been bound!");
-	topaz_expect(test_case, f2 != tz::gl::bound::frame(), "tz::gl::Frame thinks it's bound before I try to bind it!");
+	topaz_expect(f1 == tz::gl::bound::frame(), "tz::gl::Frame failed to notice that it had been bound!");
+	topaz_expect(f2 != tz::gl::bound::frame(), "tz::gl::Frame thinks it's bound before I try to bind it!");
 	f2.bind();
-	topaz_expect(test_case, f1 != tz::gl::bound::frame(), "tz::gl::Frame thinks it's bound before I try to bind it!");
-	topaz_expect(test_case, f2 == tz::gl::bound::frame(), "tz::gl::Frame failed to notice that it had been bound!");
-	topaz_expect_assert(test_case, false, "tz::gl::Frame asserted unexpectedly!");
+	topaz_expect(f1 != tz::gl::bound::frame(), "tz::gl::Frame thinks it's bound before I try to bind it!");
+	topaz_expect(f2 == tz::gl::bound::frame(), "tz::gl::Frame failed to notice that it had been bound!");
+	topaz_expect_assert(false, "tz::gl::Frame asserted unexpectedly!");
+TZ_TEST_END
 
-	return test_case;
-}
-
-tz::test::Case window_frame_bindings()
-{
-	tz::test::Case test_case("tz::gl::Frame + Window Binding Tests");
+TZ_TEST_BEGIN(window_frame_bindings)
 	tz::core::IWindow& wnd = tz::core::get().window();
 	wnd.set_active_context();
 	tz::gl::Frame f1{800, 600};
 	tz::gl::Frame f2{1920, 1080};
-	topaz_expect(test_case, wnd.get_frame() != nullptr, "tz::core::IWindow doesn't have a frame attached! That should never happen!");
+	topaz_expect(wnd.get_frame() != nullptr, "tz::core::IWindow doesn't have a frame attached! That should never happen!");
 	wnd.get_frame()->bind();
-	topaz_expect(test_case, wnd.get_frame()->complete(), "tz::gl::IWindow's Frame was not complete.");
-	topaz_expect(test_case, f1 != tz::gl::bound::frame(), "tz::gl::Frame wrongly thinks it was bound.");
-	topaz_expect(test_case, f2 != tz::gl::bound::frame(), "tz::gl::Frame thinks it's bound before I try to bind it!");
-	topaz_expect(test_case, wnd.get_frame()->operator==(tz::gl::bound::frame()), "tz::gl::WindowFrame doesn't think it's bound when it is!");
+	topaz_expect(wnd.get_frame()->complete(), "tz::gl::IWindow's Frame was not complete.");
+	topaz_expect(f1 != tz::gl::bound::frame(), "tz::gl::Frame wrongly thinks it was bound.");
+	topaz_expect(f2 != tz::gl::bound::frame(), "tz::gl::Frame thinks it's bound before I try to bind it!");
+	topaz_expect(wnd.get_frame()->operator==(tz::gl::bound::frame()), "tz::gl::WindowFrame doesn't think it's bound when it is!");
 
 	/*
-	topaz_expect(test_case, f1.complete(), "New tz::gl::Frame is not yet complete!");
+	topaz_expect(f1.complete(), "New tz::gl::Frame is not yet complete!");
 	f1.bind();
-	topaz_expect(test_case, f1 == tz::gl::bound::frame(), "tz::gl::Frame failed to notice that it had been bound!");
-	topaz_expect(test_case, f2 != tz::gl::bound::frame(), "tz::gl::Frame thinks it's bound before I try to bind it!");
-	topaz_expect(test_case, wnd.get_frame()->operator!=(tz::gl::bound::frame()), "tz::gl::WindowFrame thinks it's been bound when it's not!");
+	topaz_expect(f1 == tz::gl::bound::frame(), "tz::gl::Frame failed to notice that it had been bound!");
+	topaz_expect(f2 != tz::gl::bound::frame(), "tz::gl::Frame thinks it's bound before I try to bind it!");
+	topaz_expect(wnd.get_frame()->operator!=(tz::gl::bound::frame()), "tz::gl::WindowFrame thinks it's been bound when it's not!");
 	*/
-	return test_case;
-}
+TZ_TEST_END
 
 int main()
 {

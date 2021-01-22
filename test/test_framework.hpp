@@ -46,15 +46,34 @@ namespace tz::test
 		bool erroneous;
 	};
 
+#ifndef TZ_STRINGIFY
+#define TZ_STRINGIFY(a) #a
+#endif
+
+#ifdef TZ_TEST_BEGIN
+#undef TZ_TEST_BEGIN
+#endif
+#define TZ_TEST_BEGIN(TEST_NAME) \
+tz::test::Case TEST_NAME() \
+{ \
+	tz::test::Case test_case(TZ_STRINGIFY(TEST_NAME));
+
+#ifdef TZ_TEST_END
+#undef TZ_TEST_END
+#endif
+#define TZ_TEST_END \
+	return test_case; \
+}
+
 #ifdef topaz_expect
 #undef topaz_expect
 #endif
-#define topaz_expect(CASE, EXPRESSION, ...) (CASE.expect(EXPRESSION, "Expectation failure: ", #EXPRESSION, "\nIn file ", __FILE__, " on line ", __LINE__, ":\n\t", __VA_ARGS__))
+#define topaz_expect(EXPRESSION, ...) (test_case.expect(EXPRESSION, "Expectation failure: ", #EXPRESSION, "\nIn file ", __FILE__, " on line ", __LINE__, ":\n\t", __VA_ARGS__))
 
 #ifdef topaz_expect_assert
 #undef topaz_expect_assert
 #endif
-#define topaz_expect_assert(CASE, SHOULD_ASSERT, ...) (CASE.expect(tz::debug::test::assert_failure() == SHOULD_ASSERT, "Expectation failure for assert in file ", __FILE__, " on line ", __LINE__, ":\n\t", __VA_ARGS__))
+#define topaz_expect_assert(SHOULD_ASSERT, ...) (test_case.expect(tz::debug::test::assert_failure() == SHOULD_ASSERT, "Expectation failure for assert in file ", __FILE__, " on line ", __LINE__, ":\n\t", __VA_ARGS__))
 
 	class Unit
 	{

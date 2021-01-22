@@ -8,9 +8,7 @@
 #include <string>
 #include <cstring>
  
-tz::test::Case set_and_get()
-{
-	tz::test::Case test_case("tz::input Clipboard Tests");
+TZ_TEST_BEGIN(set_and_get)
 	// Make a copy of the current state of the clipboard (So we can restore it without screwing up the user's clipboard).
 	const char* cache = tz::input::get_clipboard_data();
 	if(cache == nullptr)
@@ -20,13 +18,12 @@ tz::test::Case set_and_get()
 	// We're free to use this forever. This will also probably be visible in the binary which is pretty funny
 	const char* perm_data = "follow @Harrandev on twitter";
 	tz::input::set_clipboard_data(perm_data);
-	topaz_expect(test_case, std::strcmp(perm_data, tz::input::get_clipboard_data()) == 0, "tz::input failed to set clipboard data properly (\"", perm_data, "\" and \"", tz::input::get_clipboard_data(), "\"");
+	topaz_expect(std::strcmp(perm_data, tz::input::get_clipboard_data()) == 0, "tz::input failed to set clipboard data properly (\"", perm_data, "\" and \"", tz::input::get_clipboard_data(), "\"");
 
 	// Re-seat the inital clipboard data so to not disrupt the user's workflow.
 	tz::input::set_clipboard_data(clipboard_cache.c_str());
-	topaz_expect(test_case, clipboard_cache == tz::input::get_clipboard_data(), "tz::input failed to preserve initial clipboard data.");
-	return test_case;
-}
+	topaz_expect(clipboard_cache == tz::input::get_clipboard_data(), "tz::input failed to preserve initial clipboard data.");
+TZ_TEST_END
 
 int main()
 {
