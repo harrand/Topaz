@@ -34,11 +34,12 @@ register_test_target(tz_container_test)
 register_test_target(tz_math_test)
 
 # tz::core
-
-# tz::geo
 register_test_target(tz_vector_test)
 register_test_target(tz_matrix_test)
 register_test_target(tz_quaternion_test)
+
+# tz::geo
+register_test_target(tz_aabb_test)
 
 # tz::gl
 register_test_target(tz_buffer_test)

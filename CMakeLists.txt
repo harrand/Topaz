@@ -57,6 +57,9 @@ add_library(topaz STATIC
 		src/memory/pool.hpp
 		src/memory/pool.inl
 
+		src/geo/boundary/aabb.cpp
+		src/geo/boundary/aabb.hpp
+
 		src/gl/tz_assimp/scene.hpp
 		src/gl/tz_assimp/scene.cpp
 		src/gl/tz_stb_image/image_reader.hpp
