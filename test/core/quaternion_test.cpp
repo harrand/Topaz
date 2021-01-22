@@ -4,8 +4,8 @@
 
 #include "test_framework.hpp"
 #include "core/core.hpp"
-#include "geo/quaternion.hpp"
-#include "geo/matrix_transform.hpp"
+#include "core/quaternion.hpp"
+#include "core/matrix_transform.hpp"
 #include <string>
 #include <cstring>
 
@@ -24,7 +24,7 @@ tz::test::Case matrix()
 	// Rotate a position about the origin about the y-axis.
 	tz::Vec4 subject{{0.0f, 0.0f, 1.0f, 1.0f}};
 	tz::Quaternion quat = tz::Quaternion::from_axis({{{0.0f, 1.0f, 0.0f}}, 3.14159f / 2.0f});
-	tz::Mat4 mat = tz::geo::rotate({{0.0f, -3.14159f / 2.0f, 0.0f}});
+	tz::Mat4 mat = tz::rotate({{0.0f, -3.14159f / 2.0f, 0.0f}});
 
 	tz::Vec4 result1 = quat.to_matrix() * subject;
 	tz::Vec4 result2 = mat * subject;
@@ -43,8 +43,8 @@ tz::test::Case euler_quat_euler()
 
 	// rot may not be equal to after, but they should perform the same rotation.
 	tz::Vec4 subject{{0.0f, 0.0f, 1.0f, 1.0f}};
-	tz::Mat4 rot_a = tz::geo::rotate(rot);
-	tz::Mat4 rot_b = tz::geo::rotate(after);
+	tz::Mat4 rot_a = tz::rotate(rot);
+	tz::Mat4 rot_b = tz::rotate(after);
 	{
 		tz::Vec4 rx = rot_a * subject;
 		tz::Vec4 ry = rot_b * subject;

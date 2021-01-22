@@ -13,67 +13,56 @@ add_library(topaz STATIC
 		src/algo/math.hpp
 		src/algo/math.inl
 		src/algo/static.hpp
+
 		src/core/debug/assert.hpp
 		src/core/debug/break.hpp
 		src/core/debug/break.cpp
 		src/core/debug/print.hpp
 		src/core/debug/print.inl
-		src/core/core.hpp
-		src/core/core.cpp
-		src/core/core.inl
-		src/core/resource_manager.cpp
-		src/core/resource_manager.hpp
 		src/core/tz_glfw/glfw_context.cpp
 		src/core/tz_glfw/glfw_context.hpp
 		src/core/tz_glfw/glfw_window.cpp
 		src/core/tz_glfw/glfw_window.hpp
+		src/core/tz_glad/glad_context.cpp
+		src/core/tz_glad/glad_context.hpp
+		src/core/bool.hpp
+		src/core/core.hpp
+		src/core/core.cpp
+		src/core/core.inl
+		src/core/matrix_transform.cpp
+		src/core/matrix_transform.hpp
+		src/core/matrix.hpp
+		src/core/matrix.inl
+		src/core/quaternion.cpp
+		src/core/quaternion.hpp
+		src/core/resource_manager.cpp
+		src/core/resource_manager.hpp
+		src/core/vector.hpp
+		src/core/vector.inl
 		src/core/window.cpp
 		src/core/window.hpp
 		src/core/window.inl
-		src/core/tz_glad/glad_context.cpp
-		src/core/tz_glad/glad_context.hpp
+
 		src/input/input_listener.cpp
 		src/input/input_listener.hpp
 		src/input/input_event.cpp
 		src/input/input_event.hpp
 		src/input/system_input.cpp
 		src/input/system_input.hpp
+
 		src/memory/align.hpp
 		src/memory/align.inl
 		src/memory/block.cpp
 		src/memory/block.hpp
 		src/memory/pool.hpp
 		src/memory/pool.inl
-		src/geo/bool.hpp
-		src/geo/matrix_transform.cpp
-		src/geo/matrix_transform.hpp
-		src/geo/matrix.hpp
-		src/geo/matrix.inl
-		src/geo/vector.hpp
-		src/geo/vector.inl
-		src/geo/quaternion.cpp
-		src/geo/quaternion.hpp
+
 		src/gl/tz_assimp/scene.hpp
 		src/gl/tz_assimp/scene.cpp
 		src/gl/tz_stb_image/image_reader.hpp
 		src/gl/tz_stb_image/image_reader.inl
 		src/gl/tz_stb_image/image_writer.hpp
 		src/gl/tz_stb_image/image_writer.inl
-		src/dui/buffer_tracker.cpp
-		src/dui/buffer_tracker.hpp
-		src/dui/imgui_context.cpp
-		src/dui/imgui_context.hpp
-		src/dui/imgui_context.inl
-		src/dui/imgui_impl_glfw.cpp
-		src/dui/imgui_impl_glfw.h
-		src/dui/imgui_impl_opengl3.cpp
-		src/dui/imgui_impl_opengl3.h
-		src/dui/ogl_info.cpp
-		src/dui/ogl_info.hpp
-		src/dui/texture_sentinel_tracker.cpp
-		src/dui/texture_sentinel_tracker.hpp
-		src/dui/tzglp_preview.cpp
-		src/dui/tzglp_preview.hpp
 		src/gl/buffer.hpp
 		src/gl/buffer.cpp
 		src/gl/buffer.inl
@@ -128,6 +117,23 @@ add_library(topaz STATIC
 		src/gl/modules/ssbo.hpp
 		src/gl/modules/ubo.cpp
 		src/gl/modules/ubo.hpp
+
+		src/dui/buffer_tracker.cpp
+		src/dui/buffer_tracker.hpp
+		src/dui/imgui_context.cpp
+		src/dui/imgui_context.hpp
+		src/dui/imgui_context.inl
+		src/dui/imgui_impl_glfw.cpp
+		src/dui/imgui_impl_glfw.h
+		src/dui/imgui_impl_opengl3.cpp
+		src/dui/imgui_impl_opengl3.h
+		src/dui/ogl_info.cpp
+		src/dui/ogl_info.hpp
+		src/dui/texture_sentinel_tracker.cpp
+		src/dui/texture_sentinel_tracker.hpp
+		src/dui/tzglp_preview.cpp
+		src/dui/tzglp_preview.hpp
+
 		src/render/asset.cpp
 		src/render/asset.hpp
 		src/render/device.cpp

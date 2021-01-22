@@ -1,8 +1,8 @@
 #ifndef TOPAZ_GL_RESOURCE_WRITER_HPP
 #define TOPAZ_GL_RESOURCE_WRITER_HPP
 #include "memory/block.hpp"
-#include "geo/matrix.hpp"
-#include "geo/vector.hpp"
+#include "core/matrix.hpp"
+#include "core/vector.hpp"
 
 namespace tz::gl
 {

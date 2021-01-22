@@ -1,6 +1,6 @@
 #ifndef TOPAZ_GL_TRANSFORM
 #define TOPAZ_GL_TRANSFORM
-#include "geo/vector.hpp"
+#include "core/vector.hpp"
 
 namespace tz::gl
 {

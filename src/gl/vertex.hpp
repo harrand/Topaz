@@ -1,6 +1,6 @@
 #ifndef TOPAZ_GL_VERTEX_HPP
 #define TOPAZ_GL_VERTEX_HPP
-#include "geo/vector.hpp"
+#include "core/vector.hpp"
 
 namespace tz::gl
 {

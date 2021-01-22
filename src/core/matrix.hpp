@@ -1,13 +1,13 @@
-#ifndef TOPAZ_GEO_MATRIX_HPP
-#define TOPAZ_GEO_MATRIX_HPP
-#include "geo/vector.hpp"
+#ifndef TOPAZ_CORE_MATRIX_HPP
+#define TOPAZ_CORE_MATRIX_HPP
+#include "core/vector.hpp"
 #include <array>
 
 namespace tz
 {
 	/**
-	 * \addtogroup tz_geo Topaz Geometry Library (tz::geo)
-	 * A collection of geometric data structures and mathematical types, such as vectors and matrices.
+	 * \addtogroup tz_core Topaz Core Library (tz::core)
+	 * A collection of platform-agnostic core interfaces.
 	 * @{
 	 */
 
@@ -210,5 +210,5 @@ namespace tz
 	 */
 }
 
-#include "geo/matrix.inl"
-#endif
+#include "core/matrix.inl"
+#endif // TOPAZ_CORE_MATRIX_HPP

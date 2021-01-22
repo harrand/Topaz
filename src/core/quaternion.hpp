@@ -1,10 +1,16 @@
-#ifndef TOPAZ_GEO_QUATERNION_HPP
-#define TOPAZ_GEO_QUATERNION_HPP
-#include "geo/vector.hpp"
-#include "geo/matrix.hpp"
+#ifndef TOPAZ_CORE_QUATERNION_HPP
+#define TOPAZ_CORE_QUATERNION_HPP
+#include "core/vector.hpp"
+#include "core/matrix.hpp"
 
 namespace tz
 {
+
+	/**
+	 * \addtogroup tz_core Topaz Core Library (tz::core)
+	 * A collection of platform-agnostic core interfaces.
+	 * @{
+	 */
 
 	struct AxisAndAngle
 	{
@@ -67,6 +73,10 @@ namespace tz
 		using tz::Vec4::normalise;
 		using tz::Vec4::normalised;
 	};
+
+	/**
+	 * @}
+	 */
 }
 
-#endif //TOPAZ_GEO_QUATERNION_HPP
+#endif //TOPAZ_CORE_QUATERNION_HPP

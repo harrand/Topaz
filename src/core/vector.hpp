@@ -1,5 +1,5 @@
-#ifndef TOPAZ_GEO_VECTOR_HPP
-#define TOPAZ_GEO_VECTOR_HPP
+#ifndef TOPAZ_CORE_VECTOR_HPP
+#define TOPAZ_CORE_VECTOR_HPP
 #include "memory/align.hpp"
 #include "memory/block.hpp"
 #include "algo/static.hpp"
@@ -7,8 +7,8 @@
 namespace tz
 {
 	/**
-	 * \addtogroup tz_geo Topaz Geometry Library (tz::geo)
-	 * A collection of geometric data structures and mathematical types, such as vectors and matrices.
+	 * \addtogroup tz_core Topaz Core Library (tz::core)
+	 * A collection of platform-agnostic core interfaces.
 	 * @{
 	 */
 
@@ -151,5 +151,5 @@ namespace tz
 	 */
 }
 
-#include "geo/vector.inl"
-#endif
+#include "core/vector.inl"
+#endif // TOPAZ_CORE_VECTOR_HPP

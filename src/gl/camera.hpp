@@ -1,7 +1,7 @@
 #ifndef TOPAZ_GL_CAMERA_HPP
 #define TOPAZ_GL_CAMERA_HPP
 #include "algo/math.hpp"
-#include "geo/vector.hpp"
+#include "core/vector.hpp"
 #include "gl/frame.hpp"
 
 namespace tz::core

@@ -1,4 +1,4 @@
-#include "geo/quaternion.hpp"
+#include "core/quaternion.hpp"
 #include "algo/math.hpp"
 
 namespace tz

@@ -5,7 +5,7 @@
 #ifndef TOPAZ_POOL_HPP
 #define TOPAZ_POOL_HPP
 #include "memory/block.hpp"
-#include "geo/bool.hpp"
+#include "core/bool.hpp"
 #include <vector>
 
 namespace tz::mem
@@ -137,7 +137,7 @@ namespace tz::mem
 		T* at(std::size_t index);
 		void* begin;
 		std::size_t size_bytes;
-		std::vector<tz::geo::BoolProxy> object_mask;
+		std::vector<tz::BoolProxy> object_mask;
 	};
 
 	/**

@@ -2,7 +2,7 @@
 #define TOPAZ_RENDER_ASSET_HPP
 #include "core/containers/unique_vector.hpp"
 #include "gl/manager.hpp"
-#include "geo/bool.hpp"
+#include "core/bool.hpp"
 #include "render/device.hpp"
 #include <optional>
 

@@ -2,7 +2,7 @@
 #define TOPAZ_GL_TEXTURE_HPP
 #include "gl/image.hpp"
 #include "gl/texture_sentinel.hpp"
-#include "geo/vector.hpp"
+#include "core/vector.hpp"
 #include <optional>
 
 namespace tz::gl

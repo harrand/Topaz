@@ -4,7 +4,7 @@
 
 #include "test_framework.hpp"
 #include "core/core.hpp"
-#include "geo/vector.hpp"
+#include "core/vector.hpp"
 #include <string>
 #include <cstring>
 

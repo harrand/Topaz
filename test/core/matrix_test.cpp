@@ -4,7 +4,7 @@
 
 #include "test_framework.hpp"
 #include "core/core.hpp"
-#include "geo/matrix.hpp"
+#include "core/matrix.hpp"
 #include <string>
 #include <cstring>
 

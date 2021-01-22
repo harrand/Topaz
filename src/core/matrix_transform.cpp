@@ -1,7 +1,7 @@
-#include "geo/matrix_transform.hpp"
+#include "core/matrix_transform.hpp"
 #include <cmath>
 
-namespace tz::geo
+namespace tz
 {
 	Mat4 translate(Vec3 position)
 	{
@@ -98,7 +98,7 @@ namespace tz::geo
 
 	Mat4 model(Vec3 position, Vec3 rotation, Vec3 scale)
 	{
-		return translate(position) * rotate(rotation) * tz::geo::scale(scale);
+		return tz::translate(position) * tz::rotate(rotation) * tz::scale(scale);
 	}
 
 	Mat4 view(Vec3 position, Vec3 rotation)

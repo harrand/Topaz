@@ -2,21 +2,21 @@
 // Created by Harrand on 19/01/2020.
 //
 
-#ifndef TOPAZ_GEO_MATRIX_TRANSFORM_HPP
-#define TOPAZ_GEO_MATRIX_TRANSFORM_HPP
-#include "geo/matrix.hpp"
-#include "geo/vector.hpp"
+#ifndef TOPAZ_CORE_MATRIX_TRANSFORM_HPP
+#define TOPAZ_CORE_MATRIX_TRANSFORM_HPP
+#include "core/matrix.hpp"
+#include "core/vector.hpp"
 
-namespace tz::geo
+namespace tz
 {
 	/**
-	 * \addtogroup tz_geo Topaz Geometry Library (tz::geo)
-	 * A collection of geometric data structures and mathematical types, such as vectors and matrices.
+	 * \addtogroup tz_core Topaz Core Library (tz::core)
+	 * A collection of platform-agnostic core interfaces.
 	 * @{
 	 */
 
 	/**
-	 * \addtogroup tz_geo_mat tz::geo Matrix Transformation Module
+	 * \addtogroup tz_core_mat tz::core Matrix Transformation Module
 	 * Implementations of various matrix transformations. Note that all resultant matrices are row-major.
 	 * @{
 	 */
@@ -71,4 +71,4 @@ namespace tz::geo
 	 */
 }
 
-#endif // TOPAZ_GEO_MATRIX_TRANSFORM_HPP
+#endif // TOPAZ_CORE_MATRIX_TRANSFORM_HPP
