@@ -12,24 +12,24 @@ TZ_TEST_BEGIN(sphere_point_intersection)
 TZ_TEST_END
 
 TZ_TEST_BEGIN(sphere_sphere_intersection)
-	/*
-		       *-*      |						 5
-		     *     *    |						 4
-		  *a         *  |						 3
-		*       b      *|*						 2
-		  *          *  |  *						 1
-	---------*------*---c---*----------------	 0
-		 	   *-*	 *	|  *	 *-*    		-1
-					   *|*	   *-----*  		-2
-						|	  *---d---* 		-3
-						|	   *-----*         	-4
-						|        *-*	    	-5
-	-5 -4  -3  -2  -1   0   1   2   3   4   5
-	*/
-    tz::geo::BoundarySphere a{{-3.0f, 3.0f, 0.0f}, 0.5f};
-    tz::geo::BoundarySphere b{{-2.0f, 2.0f, 0.0f}, 2.0f};
-    tz::geo::BoundarySphere c{{0.0f, 0.0f, 0.0f}, 1.0f};
-    tz::geo::BoundarySphere d{{2.5f, -3.0f, 0.0f}, 1.0f};
+    /*
+               *-*      |                        5
+             *     *    |                        4
+          *a         *  |                        3
+        *       b      *|*                       2
+          *          *  |  *                     1
+    ---------*------*---c---*----------------    0
+               *-*   *  |  *      *-*           -1
+                       *|*      *-----*         -2
+                        |      *---d---*        -3
+                        |       *-----*         -4
+                        |         *-*           -5
+    -5 -4  -3  -2  -1   0   1   2   3   4   5
+    */
+	tz::geo::BoundarySphere a{{-3.0f, 3.0f, 0.0f}, 0.5f};
+	tz::geo::BoundarySphere b{{-2.0f, 2.0f, 0.0f}, 2.0f};
+	tz::geo::BoundarySphere c{{0.0f, 0.0f, 0.0f}, 1.0f};
+	tz::geo::BoundarySphere d{{2.5f, -3.0f, 0.0f}, 1.0f};
 
 	// Sphere A
 	topaz_expect(a.collides(b), "Box A wrongly considered not colliding with Box B");

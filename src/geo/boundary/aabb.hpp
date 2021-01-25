@@ -12,7 +12,7 @@ namespace tz::geo
 	 */
 
     /**
-     * Represents an axis-aligned bounding-box.
+     * Represents an axis-aligned bounding-box in 3D space.
      */
     class BoundaryAABB
     {
@@ -23,9 +23,25 @@ namespace tz::geo
          * @param max Position lying within the AABB as far as possible to the origin of the current space.
          */
         BoundaryAABB(tz::Vec3 min, tz::Vec3 max);
+        /**
+         * Retrieve a point within the box that is closest as possible to the origin.
+         * @return Minimum of the box.
+         */
         tz::Vec3 get_minimum() const;
+        /**
+         * Retrieve a point within the box that is furthest as possible from the origin.
+         * @return Maximum of the box.
+         */
         tz::Vec3 get_maximum() const;
+        /**
+         * Set the new minimum of the box. This changes the dimensions of the box.
+         * @param min New minimum point of the box.
+         */
         void set_minimum(tz::Vec3 min);
+        /**
+         * Set the new maximum of the box. This changes the dimensions of the box.
+         * @param max New maximum point of the box.
+         */
         void set_maximum(tz::Vec3 max);
         /**
          * Query as to whether a point is within the current AABB.
@@ -42,6 +58,7 @@ namespace tz::geo
         /**
          * Query as to whether a given Sphere collides with the current AABB.
          * @param sphere Sphere to query is intersecting with the current AABB.
+         * @param True if the sphere and box intersect. False otherwise.
          */
         bool collides(const BoundarySphere& sphere) const;
     private:
