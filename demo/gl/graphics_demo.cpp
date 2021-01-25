@@ -2,7 +2,7 @@
 #include "core/debug/print.hpp"
 #include "core/matrix_transform.hpp"
 #include "gl/tz_stb_image/image_reader.hpp"
-#include "gl/tz_imgui/imgui_context.hpp"
+#include "dui/imgui_context.hpp"
 #include "gl/shader.hpp"
 #include "gl/shader_compiler.hpp"
 #include "gl/manager.hpp"
@@ -153,9 +153,9 @@ int main()
 
 			dev.clear();
 			o.bind();
-			tz::Mat4 m = tz::geo::model(triangle_pos, tz::Vec3{0.0f, rotation_y, 0.0f}, tz::Vec3{1.0f, 1.0f, 1.0f});
-			tz::Mat4 v = tz::geo::view(tz::Vec3{0.0f, 0.0f, 5.0f}, tz::Vec3{0.0f, 0.0f, 0.0f});
-			tz::Mat4 p = tz::geo::perspective(1.57f, 1920.0f/1080.0f, 0.1f, 1000.0f);
+			tz::Mat4 m = tz::model(triangle_pos, tz::Vec3{0.0f, rotation_y, 0.0f}, tz::Vec3{1.0f, 1.0f, 1.0f});
+			tz::Mat4 v = tz::view(tz::Vec3{0.0f, 0.0f, 5.0f}, tz::Vec3{0.0f, 0.0f, 0.0f});
+			tz::Mat4 p = tz::perspective(1.57f, 1920.0f/1080.0f, 0.1f, 1000.0f);
 			matrix.set(0, p * v * m);
 			ubo->bind();
 			dev.render();

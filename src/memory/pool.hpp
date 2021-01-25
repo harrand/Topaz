@@ -26,86 +26,103 @@ namespace tz::mem
 	public:
 		using value_type = T;
 		/**
-		 * TODO: Document
-		 * @param begin
-		 * @param end
+		 * Construct a UniformPool between two addresses (inclusive).
+		 * Precondition: `begin` and `end` address values both lie within a single range of application-owned memory. If not, or the addresses belong to different allocations, then this will invoke UB without asserting.
+		 * @param begin Begin address.
+		 * @param end End address.
 		 */
 		UniformPool(void* begin, void* end);
 		/**
-		 * TODO: Document
-		 * @param block
+		 * Construct a UniformPool to manage an existing memory block.
+		 * Precondition: The given memory block is valid. Otherwise, this will invoke UB without asserting.
+		 * @param block Memory block to manage.
 		 */
 		UniformPool(Block block);
 		/**
-		 * TODO: Document
-		 * @param begin
-		 * @param size_bytes
+		 * Construct a UniformPool from a beginning address value and a given number of bytes. The begin address should locate a block of available memory large enough for the pool size.
+		 * Precondition: `begin` and `reinterpret_cast<char*>(begin) + size_bytes` values lie within a single range of application-owned memory. If not, or the addresses belong to different allocations, then this will invoke UB without asserting.
+		 * @param begin Begin address.
+		 * @param size_bytes Number of additional bytes after the begin address comprising the pool size.
 		 */
 		UniformPool(void* begin, std::size_t size_bytes);
 		/**
-		 * TODO: Document
-		 * @return
+		 * Retrieve the number of confirmed-constructed objects within the pool.
+		 * Note: Confirmed-constructed objects are objects which were constructed within the underlying memory block via the pool, and not some external source.
+		 * @return Number of confirmed-constructed objects within the pool.
 		 */
 		std::size_t size() const;
 		/**
-		 * TODO: Document
-		 * @return
+		 * Retrieve the maximum number of elements which this pool can store.
+		 * @return Maximum number of possible elements.
 		 */
 		std::size_t capacity() const;
 		/**
-		 * TODO: Document
-		 * @return
+		 * Query as to whether the pool is filled as much as possible with confirmed-constructed objects.
+		 * @return True if the pool is full of confirmed-constructed objects. False otherwise.
 		 */
 		bool full() const;
 		/**
-		 * TODO: Document
-		 * @return
+		 * Query as to whether the pool contains any confirmed-constructed objects.
+		 * @return True if the pool contains *zero* confirmed-constructed objects. False otherwise.
 		 */
 		bool empty() const;
 		/**
-		 * TODO: Document
-		 * @return
+		 * Retrieve the capacity of the underlying memory block.
+		 * @return Size of the pool's underlying memory block, in bytes.
 		 */
 		std::size_t capacity_bytes() const;
 		/**
-		 * TODO: Document
-		 * @param index
-		 * @param t
+		 * Copy a T into the given index within the pool.
+		 * Note: If the UniformPool is considered a T[], then the index represents an index into this array.
+		 * Precondition: `index < capacity()`. Otherwise, this will assert and invoke UB.
+		 * @param index Desired index where the object should be constructed.
+		 * @param t Value type.
 		 */
 		void set(std::size_t index, T t);
 		/**
-		 * TODO: Document
-		 * @param index
+		 * Remove an existing T from the pool at the given index. If no confirmed-constructed T exists at the given index, nothing happens.
+		 * Precondition: `index < capacity()`. Otherwise, this will assert and early-out.
+		 * @param index Index of the pool to clear any objects out of.
 		 */
 		void set(std::size_t index, std::nullptr_t);
 		/**
-		 * TODO: Document
-		 * @param index
+		 * Remove an existing T from the pool at the given index. If no confirmed-constructed T exists at the given index, nothing happens.
+		 * Precondition: `index < capacity()`. Otherwise, this will assert and early-out.
+		 * Note: This is identical to `set(index, nullptr)`.
+		 * @param index Index of the pool to clear any objects out of.
 		 */
 		void erase(std::size_t index);
 		/**
-		 * TODO: Document
+		 * Invoke `erase` on all elements of the pool. All confirmed-constructed objects will be removed.
 		 */
 		void clear();
 		/**
-		 * TODO: Document
-		 * @tparam Args
-		 * @param index
-		 * @param args
-		 * @return
+		 * Construct a new T into the given index directly within the pool.
+		 * Note: If the UniformPool is considered a T[], then the index represents an index into this array.
+		 * Precondition: `index < capacity()`. Otherwise, this will assert and invoke UB.
+		 * @tparam Args Argument type parameters used to construct the T.
+		 * @param index Desired index where the object should be constructed.
+		 * @param args Argument type values used to construct the T.
+		 * @return Reference to the constructed T. This reference remains valid until the underlying memory pool is freed, or the memory at the index is manipulated externally, or another object is constructed at this index.
 		 */
 		template<typename... Args>
 		T& emplace(std::size_t index, Args&&... args);
 		/**
-		 * TODO: Document
-		 * @param index
-		 * @return
+		 * Retrieve the T at the given index.
+		 * Note: The T at the given index is required to be valid, but not confirmed-constructed (This is likely to become more strict soon).
+		 * Precondition: `index < capacity()`. Otherwise, this will assert and invoke UB.
+		 * Precondition: A valid T object exists at the given index. Otherwise, this will invoke UB without asserting.
+		 * @param index Desired index where the object is located.
+		 * @return Reference to the existing T at the given index.
 		 */
 		const T& operator[](std::size_t index) const;
 		/**
-		 * TODO: Document
-		 * @param index
-		 * @return
+		 * Retrieve the T at the given index.
+		 * Note: The T at the given index is required to be valid, but not confirmed-constructed (This is likely to become more strict soon).
+		 * Precondition: `index < capacity()`. Otherwise, this will assert and invoke UB.
+		 * Precondition: A valid T object exists at the given index. Otherwise, this will invoke UB without asserting.
+		 * @param index Desired index where the object is located.
+		 * @return Reference to the existing T at the given index.
 		 */
 		T& operator[](std::size_t index);
 		/**
