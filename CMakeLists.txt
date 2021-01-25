@@ -59,6 +59,8 @@ add_library(topaz STATIC
 
 		src/geo/boundary/aabb.cpp
 		src/geo/boundary/aabb.hpp
+		src/geo/boundary/sphere.cpp
+		src/geo/boundary/sphere.hpp
 
 		src/gl/tz_assimp/scene.hpp
 		src/gl/tz_assimp/scene.cpp

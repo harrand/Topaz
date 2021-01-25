@@ -41,6 +41,7 @@ register_test_target(tz_quaternion_test)
 
 # tz::geo
 register_test_target(tz_aabb_test)
+register_test_target(tz_sphere_test)
 
 # tz::gl
 register_test_target(tz_buffer_test)

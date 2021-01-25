@@ -1,9 +1,32 @@
 #include "geo/boundary/aabb.hpp"
+#include "geo/boundary/sphere.hpp"
 
 namespace tz::geo
 {
     BoundaryAABB::BoundaryAABB(tz::Vec3 min, tz::Vec3 max): min(min), max(max)
     {
+        this->ensure();
+    }
+
+    tz::Vec3 BoundaryAABB::get_minimum() const
+    {
+        return this->min;
+    }
+
+    tz::Vec3 BoundaryAABB::get_maximum() const
+    {
+        return this->max;
+    }
+
+    void BoundaryAABB::set_minimum(tz::Vec3 min)
+    {
+        this->min = min;
+        this->ensure();
+    }
+
+    void BoundaryAABB::set_maximum(tz::Vec3 max)
+    {
+        this->max = max;
         this->ensure();
     }
 
@@ -27,6 +50,11 @@ namespace tz::geo
                 && (a.min[2] <= b.max[2] && a.max[2] >= b.min[2]);
         };
         return box_collides(*this, box);
+    }
+
+    bool BoundaryAABB::collides(const BoundarySphere& sphere) const
+    {
+        return sphere.collides(*this);
     }
 
     void BoundaryAABB::ensure()
