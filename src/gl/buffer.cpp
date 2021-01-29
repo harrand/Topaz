@@ -96,7 +96,7 @@ namespace tz::gl
 		if(!this->is_terminal())
 		{
 			// Cannot do this while mapped if we're non-terminal.
-			topaz_assert(!this->is_mapped(), "tz::gl::IBuffer<T>::retrieve(", offset, ", ", size_bytes, ", ptr): Cannot retrieve because this buffer is both non-terminal and mapped. Cannot retrieve a non-terminal buffer if it is mapped.");
+			topaz_assertf(!this->is_mapped(), "tz::gl::IBuffer<T>::retrieve(%zu, %zu, ptr): Cannot retrieve because this buffer is both non-terminal and mapped.", offset, size_bytes);
 		}
 		glGetNamedBufferSubData(this->handle, static_cast<GLintptr>(offset), static_cast<GLsizeiptr>(size_bytes), input_data);
 	}
@@ -110,8 +110,8 @@ namespace tz::gl
 	{
 		IBuffer::verify();
 		if(!this->is_terminal())
-			topaz_assert(!this->is_mapped(), "tz::gl::Buffer::send(", offset, ", tz::mem::Block (", output_block.size(), ")): Cannot send because this buffer is both non-terminal and mapped. Cannot send data to a non-terminal buffer if it is mapped.");
-		topaz_assert(output_block.size() <= (this->size() - offset), "tz::gl::Buffer::send(", offset, ", tz::mem::Block (", output_block.size(), ")): Block of size ", output_block.size(), " cannot fit in the buffer of size ", this->size(), " at the offset ", offset);
+			topaz_assertf(!this->is_mapped(), "tz::gl::Buffer::send(%zu, tz::mem::Block(%zu)): Cannot send because this buffer is both non-terminal and mapped.", offset, output_block.size());
+		topaz_assertf(output_block.size() <= (this->size() - offset), "tz::gl::Buffer::send(%zu, tz::mem::Block(%zu)): Block of size %zu cannot fit in the buffer of size %zu at the offset %zu.", offset, output_block.size(), output_block.size(), this->size(), offset);
 		glNamedBufferSubData(this->handle, static_cast<GLintptr>(offset), static_cast<GLsizeiptr>(output_block.size()), output_block.begin);
 	}
 

@@ -54,6 +54,23 @@ namespace tz
 		}
 #endif
 	}
+
+#ifdef topaz_assertf
+#undef topaz_assertf
+#endif
+#define topaz_assertf(EXPRESSION, fmt, ...) ((EXPRESSION) ? \
+(void)0 : tz::assert_messagef(stderr, \
+"Assertion failure: %s\nIn file: %s on line %d:\n\t" fmt, #EXPRESSION, __FILE__, __LINE__, __VA_ARGS__))
+
+    template<typename... Args>
+    inline void assert_messagef(FILE* output_stream, const char* fmt, Args&&... args)
+    {
+        #if TOPAZ_DEBUG
+            fflush(output_stream);
+            fprintf(output_stream, fmt, std::forward<Args>(args)...);
+            std::abort();
+		#endif
+    }
 	
 	namespace debug::test
 	{

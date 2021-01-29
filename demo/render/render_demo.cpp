@@ -1,4 +1,5 @@
 #include "core/core.hpp"
+#include "core/debug/assert.hpp"
 #include "core/debug/print.hpp"
 #include "core/matrix_transform.hpp"
 #include "gl/tz_stb_image/image_reader.hpp"

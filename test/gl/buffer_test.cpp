@@ -37,16 +37,16 @@ TZ_TEST_BEGIN(binding)
 	std::size_t idx = obj.emplace_buffer<tz::gl::BufferType::Array>();
 	tz::gl::VertexBuffer* buf = obj.get<tz::gl::BufferType::Array>(idx);
 	obj.bind_child(idx);
-	topaz_expect(*buf == tz::gl::bound::vertex_buffer(), "tz::gl::IBuffer bind failed to reflect in global state (global state handle = ", tz::gl::bound::vertex_buffer(), ")");
+	topaz_expectf(*buf == tz::gl::bound::vertex_buffer(), "tz::gl::IBuffer bind failed to reflect in global state (global state handle = %d)", tz::gl::bound::vertex_buffer());
 	buf->unbind();
-	topaz_expect(*buf != tz::gl::bound::vertex_buffer(), "tz::gl::IBuffer unbind failed to reflect in global state (global state handle = ", tz::gl::bound::vertex_buffer(), ")");
+	topaz_expectf(*buf != tz::gl::bound::vertex_buffer(), "tz::gl::IBuffer unbind failed to reflect in global state (global state handle = %d)", tz::gl::bound::vertex_buffer());
 TZ_TEST_END
 
 TZ_TEST_BEGIN(mapping)
 	tz::gl::Object obj;
 	std::size_t idx = obj.emplace_buffer<tz::gl::BufferType::Array>();
 	tz::gl::IBuffer* buf = obj[idx];
-	topaz_expect(buf != nullptr, "tz::gl::Object[", idx, "] gave nullptr. Something is horribly wrong.");
+	topaz_expectf(buf != nullptr, "tz::gl::Object[%d] gave nullptr. Something is horribly wrong.", idx);
 	topaz_expect(buf->valid(), "tz::gl::Buffer was wrongly considered invalid after construction");
 	topaz_expect(glGetError() == 0, "glGetError() displayed an error!");
 	topaz_expect(buf->empty(), "tz::gl::IBuffer constructed in object is not empty!");
@@ -60,7 +60,7 @@ TZ_TEST_BEGIN(mapping)
 	{
 		tz::mem::Block mapping = buf->map();
 		topaz_expect(buf->is_mapped(), "tz::gl::IBuffer doesn't think it's mapped when it definitely should be...");
-		topaz_expect(mapping.size() == (sizeof(float) * amt), "tz::gl::IBuffer mapping had unexpected size. Expected ", sizeof(float)*amt, ", but got ", mapping.size());
+		topaz_expectf(mapping.size() == (sizeof(float) * amt), "tz::gl::IBuffer mapping had unexpected size. Expected %zu, but got %zu", sizeof(float)*amt, mapping.size());
 		topaz_expect_assert(false, "Unexpected assert invoked while testing tz::gl::Buffer Mapping. There are several possible causes -- Consider debugging.");
 		buf->unmap();
 	}
@@ -71,7 +71,7 @@ TZ_TEST_BEGIN(mapping)
 		tz::mem::UniformPool<float> floats = buf->map_uniform<float>();
 		floats.set(0, test_val);
 		// Should definitely have capacity of 5.
-		topaz_expect(floats.capacity() == 5, "Uniform float pool had unexpected capacity. Expected ", 5, " but got ", floats.capacity());
+		topaz_expect(floats.capacity() == 5, "Uniform float pool had unexpected capacity. Expected %d but got %zu.", 5, floats.capacity());
 		buf->unmap();
 	}
 	// First thing in the mapped block should now be a float with the value of test_val.
@@ -80,7 +80,7 @@ TZ_TEST_BEGIN(mapping)
 	{
 		tz::mem::Block blk = buf->map();
 		float first = *reinterpret_cast<float*>(blk.begin);
-		topaz_expect(first == (test_val), "tz::gl::Buffer UniformPool mapping did not reflect in the VRAM data store. Expected value, ", test_val, ", but got ", first);
+		topaz_expectf(first == (test_val), "tz::gl::Buffer UniformPool mapping did not reflect in the VRAM data store. Expected value, %g, but got %g", test_val, first);
 		buf->unmap();
 	}
 TZ_TEST_END

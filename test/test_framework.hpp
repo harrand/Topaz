@@ -31,6 +31,17 @@ namespace tz::test
 				(std::cerr << ... << args) << "\n";
 			}
 		}
+
+		template<typename... Args>
+		void expectf(bool expression, const char* fmt, Args&&... args)
+		{
+			if(!expression)
+			{
+				this->erroneous = true;
+				std::fprintf(stderr, fmt, std::forward<Args>(args)...);
+				std::fprintf(stderr, "\n");
+			}
+		}
 		
 		int result() const
 		{
@@ -69,6 +80,11 @@ tz::test::Case TEST_NAME() \
 #undef topaz_expect
 #endif
 #define topaz_expect(EXPRESSION, ...) (test_case.expect(EXPRESSION, "Expectation failure: ", #EXPRESSION, "\nIn file ", __FILE__, " on line ", __LINE__, ":\n\t", __VA_ARGS__))
+
+#ifdef topaz_expectf
+#undef topaz_expectf
+#endif
+#define topaz_expectf(EXPRESSION, fmt, ...) (test_case.expectf(EXPRESSION, "Expectation failure: %s\nIn file %s on line %d:\n\t" fmt, #EXPRESSION, __FILE__, __LINE__, __VA_ARGS__))
 
 #ifdef topaz_expect_assert
 #undef topaz_expect_assert
