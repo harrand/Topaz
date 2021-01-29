@@ -3,6 +3,27 @@
 namespace tz::algo
 {
 	template<typename T>
+	T linear_interpolate(T a, T b, T weight)
+	{
+		return (b - a) * weight + a;
+	}
+
+	template<typename T>
+	T cubic_interpolate(T a, T b, T weight)
+	{
+		return (b - a) * (T{3} - weight * T{2}) * weight * weight + a;
+	}
+
+	template<typename T>
+	T cosine_interpolate(T a, T b, T weight)
+	{
+		T theta = weight * tz::pi;
+		// get a value between 0.0-1.0. then pass into linear interpolate.
+		T clamped_value = T{1} - std::cos(theta) * T{0.5f};
+		return linear_interpolate<T>(a, b, clamped_value);
+	}
+
+	template<typename T>
 	T schmitt(T lo, T hi, T val, SchmittBound bound)
 	{
 		T hdist = std::abs(hi - val);

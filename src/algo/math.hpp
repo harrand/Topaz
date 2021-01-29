@@ -15,6 +15,39 @@ namespace tz
 		* @{
 		*/
 
+		/**
+		 * Perform a linear-interpolation between two known values.
+		 * @tparam T Value type.
+		 * @param a Known lower bound.
+		 * @param b Known upper bound.
+		 * @param weight Linear weight value.
+		 * @return Interpolated unknwon value between `a` and `b`.
+		 */
+		template<typename T>
+		T linear_interpolate(T a, T b, T weight);
+
+		/**
+		 * Perform a cubic-interpolation between two known values.
+		 * @tparam T Value type.
+		 * @param a Known lower bound.
+		 * @param b Known upper bound.
+		 * @param weight Cubic weight value.
+		 * @return Interpolated unknwon value between `a` and `b`.
+		 */
+		template<typename T>
+		T cubic_interpolate(T a, T b, T weight);
+
+		/**
+		 * Perform a cosine-interpolation between two known values.
+		 * @tparam T Value type.
+		 * @param a Known lower bound.
+		 * @param b Known upper bound.
+		 * @param weight Cosine weight value.
+		 * @return Interpolated unknwon value between `a` and `b`.
+		 */
+		template<typename T>
+		T cosine_interpolate(T a, T b, T weight);
+
 		enum class SchmittBound
 		{
 			Lower,
