@@ -35,6 +35,9 @@ add_library(topaz STATIC
 		src/core/matrix.inl
 		src/core/quaternion.cpp
 		src/core/quaternion.hpp
+		src/core/random.cpp
+		src/core/random.hpp
+		src/core/random.inl
 		src/core/resource_manager.cpp
 		src/core/resource_manager.hpp
 		src/core/vector.hpp

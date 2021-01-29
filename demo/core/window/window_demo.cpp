@@ -8,6 +8,7 @@
 #include "window_demo.hpp"
 #include "core/debug/assert.hpp"
 #include "core/debug/print.hpp"
+#include "core/random.hpp"
 #include "GLFW/glfw3.h"
 
 WindowDemo::WindowDemo(): window(nullptr), second_window_id(std::nullopt), second_context(nullptr)
@@ -35,6 +36,11 @@ WindowDemo::WindowDemo(): window(nullptr), second_window_id(std::nullopt), secon
 					if(kpe.key == GLFW_KEY_W)
 					{
 						this->destroy_second_window();
+					}
+
+					if(kpe.key == GLFW_KEY_R)
+					{
+						tz::debug_printf("\n%g\n", tz::range(-10.0f, 10.0f));
 					}
 				}
 			}
