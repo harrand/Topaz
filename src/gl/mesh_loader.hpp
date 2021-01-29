@@ -1,6 +1,6 @@
 #ifndef TOPAZ_GL_MESH_LOADER_HPP
 #define TOPAZ_GL_MESH_LOADER_HPP
-#include "gl/mesh.hpp"
+#include "gl/mesh_data.hpp"
 #include "gl/tz_assimp/scene.hpp"
 
 namespace tz::gl

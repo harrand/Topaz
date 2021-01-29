@@ -5,7 +5,7 @@
 #ifndef TOPAZ_GL_MANAGER_HPP
 #define TOPAZ_GL_MANAGER_HPP
 #include "gl/object.hpp"
-#include "gl/mesh.hpp"
+#include "gl/mesh_data.hpp"
 #include <unordered_map>
 
 namespace tz::gl

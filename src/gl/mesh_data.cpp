@@ -1,4 +1,4 @@
-#include "gl/mesh.hpp"
+#include "gl/mesh_data.hpp"
 
 namespace tz::gl
 {
