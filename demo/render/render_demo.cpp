@@ -192,9 +192,9 @@ int main()
 		wnd.get_frame()->set_clear_color(0.3f, 0.15f, 0.0f);
 		// Scene setup.
 		// Meshes
-		tz::render::AssetBuffer::Index triangle_mesh_idx = scene.add_mesh({&m, triangle_handle});
-		tz::render::AssetBuffer::Index monkey_mesh_idx = scene.add_mesh({&m, monkeyhead_handle});
-		tz::render::AssetBuffer::Index square_mesh_idx = scene.add_mesh({&m, square_handle});
+		tz::render::AssetBuffer::Index triangle_mesh_idx = scene.add_mesh({m, triangle_handle});
+		tz::render::AssetBuffer::Index monkey_mesh_idx = scene.add_mesh({m, monkeyhead_handle});
+		tz::render::AssetBuffer::Index square_mesh_idx = scene.add_mesh({m, square_handle});
 		mesh_adjustor.register_mesh("triangle", triangle_mesh_idx);
 		mesh_adjustor.register_mesh("monkey head", monkey_mesh_idx);
 		mesh_adjustor.register_mesh("square", square_mesh_idx);

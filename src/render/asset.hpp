@@ -24,7 +24,7 @@ namespace tz::render
          * @param manager Manager owning the mesh data.
          * @param handle Handle representing the mesh data region within the gl::Manager's data-store.
          */
-        MeshAsset(tz::gl::Manager* manager, tz::gl::Manager::Handle handle);
+        MeshAsset(tz::gl::Manager& manager, tz::gl::Manager::Handle handle);
         /// Shallow-comparison.
         bool operator==(const MeshAsset& rhs) const;
         /**
@@ -40,6 +40,11 @@ namespace tz::render
          * @return True if the object pointer & IBOs match and no assignment took place. Otherwise false.
          */
         bool shares(tz::gl::Object*& object, std::size_t& ibo) const;
+        /**
+         * Retrieve the owning manager.
+         * @return Reference to the manager owning this mesh asset.
+         */
+        const tz::gl::Manager& get_manager() const;
     private:
         tz::gl::Manager* manager;
         tz::gl::Manager::Handle handle;
@@ -85,6 +90,11 @@ namespace tz::render
          * @return Reference to the MeshAsset at the given index.
          */
         tz::render::MeshAsset& at(Index idx);
+        /**
+         * Retrieve the common manager of all meshes within the buffer.
+         * @return Common manager.
+         */
+        const tz::gl::Manager& get_manager() const;
     private:
         tz::core::UniqueVector<MeshAsset> meshes;
         std::size_t common_ibo_handle = std::numeric_limits<std::size_t>::max();

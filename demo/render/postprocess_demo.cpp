@@ -227,7 +227,7 @@ int main()
 		wnd.get_frame()->set_clear_color(0.3f, 0.15f, 0.0f);
 		// Scene setup.
 		// Meshes
-		tz::render::AssetBuffer::Index monkey_mesh_idx = scene.add_mesh({&m, monkeyhead_handle});
+		tz::render::AssetBuffer::Index monkey_mesh_idx = scene.add_mesh({m, monkeyhead_handle});
 		// Textures
 		tex_ssbo->resize(sizeof(tz::gl::BindlessTextureHandle) * max_textures);
 		{

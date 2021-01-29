@@ -3,7 +3,7 @@
 
 namespace tz::render
 {
-    MeshAsset::MeshAsset(tz::gl::Manager* manager, tz::gl::Manager::Handle handle): manager(manager), handle(handle){}
+    MeshAsset::MeshAsset(tz::gl::Manager& manager, tz::gl::Manager::Handle handle): manager(&manager), handle(handle){}
 
     bool MeshAsset::operator==(const MeshAsset& rhs) const
     {
@@ -30,6 +30,11 @@ namespace tz::render
             ibo = mng_ibo;
         }
         return obj_same && ibo_same;
+    }
+
+    const tz::gl::Manager& MeshAsset::get_manager() const
+    {
+        return *this->manager;
     }
 
     AssetBuffer::Index AssetBuffer::add_mesh(MeshAsset mesh)
@@ -66,5 +71,11 @@ namespace tz::render
     {
         topaz_assert(this->meshes.size() > idx, "AssetBuffer::at(", idx, "): Out of range. Size = ", this->meshes.size());
         return this->meshes[idx];
+    }
+
+    const tz::gl::Manager& AssetBuffer::get_manager() const
+    {
+        topaz_assert(!this->meshes.empty(), "AssetBuffer::get_manager(): No meshes stored; no common manager exists.");
+        return this->meshes[0].get_manager();
     }
 }
