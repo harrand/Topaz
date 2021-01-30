@@ -59,6 +59,7 @@ namespace tz::gl::p
 		 */
 		std::size_t get_buffer_id(std::size_t idx) const;
 	private:
+		std::optional<std::size_t> get_ubo_id_by_name(const std::string& ubo_name) const;
 		mutable std::vector<std::pair<std::string, std::size_t>> ubo_name_id;
 	};
 

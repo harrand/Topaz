@@ -65,6 +65,35 @@ constexpr char src5[] =\
 	\n\
 	}";
 
+const char* src6 = R"glsl(
+	#version 430
+	#ubo wabbadabbadoo
+	{
+
+	};
+
+	#ubo wabbadabbadoo
+	{
+
+	};
+
+	#ssbo bobby_b
+	{
+
+
+	};
+
+	#ssbo bobby_b
+	{
+
+	};
+
+	void main()
+	{
+		// yee
+	}
+)glsl";
+
 namespace tz::test
 {
 	class TestUppercaseModule : public tz::gl::p::IModule
@@ -193,6 +222,23 @@ TZ_TEST_BEGIN(defined_ubo)
 	topaz_expect_assert(false, "Unexpected assert after getting the UBO from the tzglp module...");
 TZ_TEST_END
 
+TZ_TEST_BEGIN(shader_buffer_name_clash)
+	tz::gl::Object o;
+
+	tz::gl::ShaderPreprocessor pre{src6};
+	std::size_t ubo_module_id = pre.emplace_module<tz::gl::p::UBOModule>(&o);
+	std::size_t ssbo_module_id = pre.emplace_module<tz::gl::p::SSBOModule>(&o);
+	pre.preprocess();
+	tz::gl::p::IModule* module = pre[ubo_module_id];
+	tz::gl::p::IModule* ssbomod = pre[ssbo_module_id];
+	auto* ubo_module = static_cast<tz::gl::p::UBOModule*>(module);
+	auto* ssbo_module = static_cast<tz::gl::p::SSBOModule*>(ssbomod);
+	// Should have one entry. src6 has 2 references to the same UBO.
+	topaz_expectf(ubo_module->size() == 1, "tz::gl::p::UBOModule::size(): Had unexpected value (two ubos of the same name). Expected %d, got %zu", 1, ubo_module->size());
+	// Same story with ssbo
+	topaz_expectf(ssbo_module->size() == 1, "tz::gl::p::SSBOmodule::size(): Had unexpected value (two ssbos of the same name). Expected %d, got %zu", 1, ssbo_module->size());
+TZ_TEST_END
+
 int main()
 {
 	tz::test::Unit pre;
@@ -206,6 +252,7 @@ int main()
 		pre.add(include_file());
 		pre.add(defined_ssbo());
 		pre.add(defined_ubo());
+		pre.add(shader_buffer_name_clash());
 		tz::core::terminate();
 	}
 	return pre.result();
