@@ -202,7 +202,7 @@ namespace tz::gl
 		 * Precondition: ibo_id must correspond to an existing and valid index-buffer within this object. Otherwise, this will assert and invoke UB.
 		 * @param ibo_id ID Handle corresponding to an existing index-buffer within this object.
 		 */
-		void render(std::size_t ibo_id) const;
+		void render(std::size_t ibo_id, bool patches = false) const;
 		/**
 		 * Invoke a multi-render invocation using MDI via the given index-buffer.
 		 * 
@@ -213,7 +213,7 @@ namespace tz::gl
 		 * @param ibo_id ID Handle corresponding to an existing idnex-buffer within this object.
 		 * @param cmd_list List of glDrawElementsInstancedBaseInstanceBaseVertex commands.
 		 */
-		void multi_render(std::size_t ibo_id, tz::gl::MDIDrawCommandList cmd_list) const;
+		void multi_render(std::size_t ibo_id, tz::gl::MDIDrawCommandList cmd_list, bool patches = false) const;
 	private:
 		void verify() const;
 		void verify_bound() const;

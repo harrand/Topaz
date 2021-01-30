@@ -6,7 +6,7 @@
 
 namespace tz::render
 {
-	Device::Device(tz::gl::IFrame* frame, tz::gl::ShaderProgram* program, tz::gl::Object* object): frame(frame), program(program), object(object), ibo_id(std::nullopt), snippets(), resource_buffers(){}
+	Device::Device(tz::gl::IFrame* frame, tz::gl::ShaderProgram* program, tz::gl::Object* object): frame(frame), program(program), object(object), ibo_id(std::nullopt), snippets(), resource_buffers(), patches(false){}
 
 	void Device::set_frame(tz::gl::IFrame* frame)
 	{
@@ -43,6 +43,16 @@ namespace tz::render
 		{
 			this->resource_buffers.erase(std::remove(this->resource_buffers.begin(), this->resource_buffers.end(), buffer));
 		}
+	}
+
+	bool Device::is_patches() const
+	{
+		return this->patches;
+	}
+
+	void Device::set_is_patches(bool patches)
+	{
+		this->patches = patches;
 	}
 
 	/*static*/ Device Device::null_device()
@@ -91,11 +101,11 @@ namespace tz::render
 			resource_buffer->bind();
 		}
 		if (this->snippets.empty())
-			this->object->render(this->ibo_id.value());
+			this->object->render(this->ibo_id.value(), this->patches);
 		else
 		{
 			// use MDI.
-			this->object->multi_render(this->ibo_id.value(), this->snippets.get_command_list());
+			this->object->multi_render(this->ibo_id.value(), this->snippets.get_command_list(), this->patches);
 		}
 	}
 

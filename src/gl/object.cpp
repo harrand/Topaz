@@ -143,14 +143,14 @@ namespace tz::gl
 		return std::move(this->buffers[idx]);
 	}
 
-	void Object::render(std::size_t ibo_id) const
+	void Object::render(std::size_t ibo_id, bool patches) const
 	{
 		this->verify();
 		this->bind_child(ibo_id);
-		glDrawElements(GL_TRIANGLES, (*this)[ibo_id]->size() / sizeof(unsigned int), GL_UNSIGNED_INT, nullptr);
+		glDrawElements(patches ? GL_PATCHES : GL_TRIANGLES, (*this)[ibo_id]->size() / sizeof(unsigned int), GL_UNSIGNED_INT, nullptr);
 	}
 
-	void Object::multi_render(std::size_t ibo_id, tz::gl::MDIDrawCommandList cmd_list) const
+	void Object::multi_render(std::size_t ibo_id, tz::gl::MDIDrawCommandList cmd_list, bool patches) const
 	{
 		if(cmd_list.empty())
 			return;
@@ -158,7 +158,7 @@ namespace tz::gl
 		this->bind_child(ibo_id);
 		this->set_draw_data(cmd_list);
 		this->draw_buffer.bind();
-		glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, nullptr, cmd_list.size(), sizeof(tz::gl::gpu::DrawElementsIndirectCommand));
+		glMultiDrawElementsIndirect(patches ? GL_PATCHES : GL_TRIANGLES, GL_UNSIGNED_INT, nullptr, cmd_list.size(), sizeof(tz::gl::gpu::DrawElementsIndirectCommand));
 	}
 
 	void Object::verify() const

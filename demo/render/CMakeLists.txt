@@ -18,3 +18,9 @@ add_executable(topaz_lighting_demo
 )
 add_dependencies(topaz_lighting_demo topaz)
 target_link_libraries(topaz_lighting_demo PRIVATE topaz)
+
+add_executable(topaz_tessellation_demo
+		tessellation_demo.cpp
+)
+add_dependencies(topaz_tessellation_demo topaz)
+target_link_libraries(topaz_tessellation_demo PRIVATE topaz)

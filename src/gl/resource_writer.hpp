@@ -67,7 +67,7 @@ namespace tz::gl
          * See BasicResourceWriter<tz::Mat4>::reset().
          */
         void reset();
-    private:
+    protected:
         BasicResourceWriter<tz::Mat4> mat_writer;
     };
     

@@ -78,6 +78,16 @@ namespace tz::render
 		 */
 		void remove_resource_buffer(const tz::gl::IBuffer* buffer);
 		/**
+		 * Query as to whether the Device expects to render patches or triangles.
+		 * @return True if patches are expected, otherwise triangles.
+		 */
+		bool is_patches() const;
+		/**
+		 * Inform the Device to render patches, or the default primitive (triangles).
+		 * @param patches True if patches are to be rendered, false if triangles.
+		 */
+		void set_is_patches(bool patches);
+		/**
 		 * Retrieve the null-device. This device is invalid and should never be used to render.
 		 * @return The null-device.
 		 */
@@ -147,6 +157,7 @@ namespace tz::render
 		std::optional<std::size_t> ibo_id;
 		tz::gl::IndexSnippetList snippets;
 		std::vector<const tz::gl::IBuffer*> resource_buffers;
+		bool patches;
 	};
 
 	/**
