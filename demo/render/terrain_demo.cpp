@@ -168,8 +168,10 @@ const char *frg_shader_src = R"glsl(
 	{
 		vec4 tex_colour = texture(textures[0], texcoord);
 		// gets more white the higher we get. snowy-caps? maybe?
-		FragColor = mix(tex_colour, vec4(1.0), clamp(pow(position_worldspace.y / 5000.0, 3), 0.0, 1.0));
-		FragColor = mix(vec4(0.3, 0.3, 1.0, 1.0), FragColor, clamp(pow(position_worldspace.y / 1500.0, 16), 0.0, 1.0));
+		const vec3 snow_colour = vec3(1.0);
+		const vec3 water_colour = vec3(0.325, 0.3, 0.9);
+		FragColor = mix(tex_colour, vec4(snow_colour, 1.0), clamp(pow(position_worldspace.y / 5000.0, 3), 0.0, 1.0));
+		FragColor = mix(vec4(water_colour, 1.0), FragColor, clamp(pow(position_worldspace.y / 1500.0, 16), 0.0, 1.0));
 	}
 	)glsl";
 
@@ -340,7 +342,7 @@ int main()
 		tz::core::IWindow& wnd = tz::core::get().window();
 		wnd.register_this();
 
-		wnd.get_frame()->set_clear_color(0.3f, 0.15f, 0.0f);
+		wnd.get_frame()->set_clear_color(0.8f, 0.9f, 1.0f);
 		// Scene setup.
 		// Meshes
 		tz::render::AssetBuffer::Index square_mesh_idx = scene.add_mesh({m, square_handle});
