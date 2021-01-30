@@ -279,6 +279,11 @@ public:
 	virtual void render() override
 	{
 		ImGui::Begin("Scenery Options", &this->visible);
+		static tz::Vec3 sky_colour{0.8f, 0.9f, 1.0f};
+		if(ImGui::ColorEdit3("Sky Colour", sky_colour.data()))
+		{
+			tz::core::get().window().get_frame()->set_clear_color(sky_colour[0], sky_colour[1], sky_colour[2]);
+		}
 		ImGui::ColorEdit3("Snow Colour", this->snow_colour.data());
 		ImGui::ColorEdit3("Terrain Colour", this->terrain_colour.data());
 		ImGui::ColorEdit3("Water Colour", this->water_colour.data());
