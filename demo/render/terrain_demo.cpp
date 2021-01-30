@@ -73,6 +73,13 @@ const char* tess_ctrl_src = R"glsl(
     out mat4 view_eval[];
     out mat4 proj_eval[];
 
+	#ssbo scenery_block
+	{
+		vec4 snow_colour;
+		vec4 water_colour;
+		vec4 tessellation_options;
+	};
+
     void main()
     {
         // Set the control points of the output patch.
@@ -90,10 +97,10 @@ const char* tess_ctrl_src = R"glsl(
 
         // Calculate tessellation levels.
         // TODO: Change with respect to distance? The setup is all ready.
-        gl_TessLevelOuter[0] = 8192;
-        gl_TessLevelOuter[1] = 8192;
-        gl_TessLevelOuter[2] = 8192;
-		gl_TessLevelOuter[3] = 8192;
+        gl_TessLevelOuter[0] = tessellation_options[0];
+        gl_TessLevelOuter[1] = tessellation_options[1];
+        gl_TessLevelOuter[2] = tessellation_options[2];
+		gl_TessLevelOuter[3] = tessellation_options[3];
         gl_TessLevelInner[0] = gl_TessLevelOuter[3];
     }
 )glsl";
@@ -164,14 +171,20 @@ const char *frg_shader_src = R"glsl(
 	{
 		tz_bindless_sampler textures[8];
 	};
+	#ssbo scenery_block
+	{
+		vec4 snow_colour;
+		vec4 water_colour;
+		vec4 tessellation_options;
+	};
 	void main()
 	{
 		vec4 tex_colour = texture(textures[0], texcoord);
 		// gets more white the higher we get. snowy-caps? maybe?
-		const vec3 snow_colour = vec3(1.0);
-		const vec3 water_colour = vec3(0.325, 0.3, 0.9);
-		FragColor = mix(tex_colour, vec4(snow_colour, 1.0), clamp(pow(position_worldspace.y / 5000.0, 3), 0.0, 1.0));
-		FragColor = mix(vec4(water_colour, 1.0), FragColor, clamp(pow(position_worldspace.y / 1500.0, 16), 0.0, 1.0));
+		//const vec3 snow_colour = vec3(1.0);
+		//const vec3 water_colour = vec3(0.325, 0.3, 0.9);
+		FragColor = mix(tex_colour, snow_colour, clamp(pow(position_worldspace.y / 5000.0, 3), 0.0, 1.0));
+		FragColor = mix(water_colour, FragColor, clamp(pow(position_worldspace.y / 1500.0, 16), 0.0, 1.0));
 	}
 	)glsl";
 
@@ -255,6 +268,25 @@ private:
 	std::unordered_map<const char*, tz::render::AssetBuffer::Index> meshes;
 };
 
+class SceneryOptionsWindow : public tz::ext::imgui::ImGuiWindow
+{
+public:
+	SceneryOptionsWindow(tz::Vec4& snow_colour, tz::Vec4& water_colour, tz::Vec4& tess_options): tz::ext::imgui::ImGuiWindow("Scenery Options"), snow_colour(snow_colour), water_colour(water_colour), tess_options(tess_options){}
+
+	virtual void render() override
+	{
+		ImGui::Begin("Scenery Options", &this->visible);
+		ImGui::ColorEdit3("Snow Colour", this->snow_colour.data());
+		ImGui::ColorEdit3("Water Colour", this->water_colour.data());
+		ImGui::DragFloat4("Tessellation Options", this->tess_options.data(), 1.0f, 0.0f, 64.0f);
+		ImGui::End();
+	}
+private:
+	tz::Vec4& snow_colour;
+	tz::Vec4& water_colour;
+	tz::Vec4& tess_options;
+};
+
 int main()
 {
 	constexpr std::size_t max_elements = 1;
@@ -272,6 +304,7 @@ int main()
 		tz::gl::p::SSBOModule* ssbo_module = nullptr;
 		std::string vtx_result;
 		std::string frg_result;
+		std::string tess_ctrl_result;
 		std::string tess_result;
 		tz::gl::ShaderPreprocessor pre{vtx_shader_src};
 		{
@@ -282,17 +315,22 @@ int main()
 			pre.set_source(frg_shader_src);
 			pre.preprocess();
 			frg_result = pre.result();
+			pre.set_source(tess_ctrl_src);
+			pre.preprocess();
+			tess_ctrl_result = pre.result();
 			pre.set_source(tess_eval_src);
 			pre.preprocess();
 			tess_result = pre.result();
 			ssbo_module = static_cast<tz::gl::p::SSBOModule*>(pre[ssbo_module_id]);
 		}
-		topaz_assert(ssbo_module->size() == 2, "UBO Module had unexpected number of buffers. Expected 2, got ", ssbo_module->size());
+		topaz_assert(ssbo_module->size() == 3, "UBO Module had unexpected number of buffers. Expected 3, got ", ssbo_module->size());
 		std::size_t ssbo_id = ssbo_module->get_buffer_id(0);
 		std::size_t tex_ssbo_id = ssbo_module->get_buffer_id(1);
+		std::size_t scenery_ssbo_id = ssbo_module->get_buffer_id(2);
 
 		tz::gl::SSBO* ssbo = o.get<tz::gl::BufferType::ShaderStorage>(ssbo_id);
 		tz::gl::SSBO* tex_ssbo = o.get<tz::gl::BufferType::ShaderStorage>(tex_ssbo_id);
+		tz::gl::SSBO* scenery_ssbo = o.get<tz::gl::BufferType::ShaderStorage>(scenery_ssbo_id);
 
 		tz::gl::IndexedMesh square;
 		square.vertices.push_back(tz::gl::Vertex{{{-0.5f, -0.5f, 0.0f}}, {{0.0f, 0.0f}}, {{0.0f, 0.0f, -1.0f}}, {{}}, {{}}});
@@ -359,12 +397,26 @@ int main()
 			tex_pool.set(2, heightmap_handle);
 			tex_ssbo->unmap();
 		}
+		// Scenery options
+		scenery_ssbo->terminal_resize(sizeof(tz::Vec4) * 3);
+		tz::mem::UniformPool<tz::Vec4> scenery_pool = scenery_ssbo->map_uniform<tz::Vec4>();
+		{
+			constexpr tz::Vec4 default_snow_colour{1.0f, 1.0f, 1.0f, 1.0f};
+			constexpr tz::Vec4 default_water_colour{0.325f, 0.3f, 0.9f, 1.0f};
+			constexpr tz::Vec4 default_tess_options{64.0f, 64.0f, 64.0f, 64.0f};
+
+			scenery_pool.set(0, default_snow_colour);
+			scenery_pool.set(1, default_water_colour);
+			scenery_pool.set(2, default_tess_options);
+		}
+
+		tz::ext::imgui::emplace_window<SceneryOptionsWindow>(scenery_pool[0], scenery_pool[1], scenery_pool[2]);
 
 		tz::gl::ShaderCompiler cpl;
 		tz::gl::ShaderProgram prg;
 		tz::gl::Shader* vs = prg.emplace(tz::gl::ShaderType::Vertex);
 		vs->upload_source(vtx_result);
-        tz::gl::Shader* tcs = prg.emplace(tz::gl::ShaderType::TessellationControl, tess_ctrl_src);
+        tz::gl::Shader* tcs = prg.emplace(tz::gl::ShaderType::TessellationControl, tess_ctrl_result);
         tz::gl::Shader* tes = prg.emplace(tz::gl::ShaderType::TessellationEvaluation, tess_result);
 		tz::gl::Shader* fs = prg.emplace(tz::gl::ShaderType::Fragment);
 		fs->upload_source(frg_result);
@@ -455,6 +507,7 @@ int main()
 		tz::render::Device dev{wnd.get_frame(), &prg, &o};
 		dev.add_resource_buffer(ssbo);
 		dev.add_resource_buffer(tex_ssbo);
+		dev.add_resource_buffer(scenery_ssbo);
 		dev.set_handle(m.get_indices());
         dev.set_is_patches(true);
 
