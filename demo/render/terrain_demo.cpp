@@ -76,6 +76,7 @@ const char* tess_ctrl_src = R"glsl(
 	#ssbo scenery_block
 	{
 		vec4 snow_colour;
+		vec4 terrain_colour;
 		vec4 water_colour;
 		vec4 tessellation_options;
 	};
@@ -174,6 +175,7 @@ const char *frg_shader_src = R"glsl(
 	#ssbo scenery_block
 	{
 		vec4 snow_colour;
+		vec4 terrain_colour;
 		vec4 water_colour;
 		vec4 tessellation_options;
 	};
@@ -183,7 +185,8 @@ const char *frg_shader_src = R"glsl(
 		// gets more white the higher we get. snowy-caps? maybe?
 		//const vec3 snow_colour = vec3(1.0);
 		//const vec3 water_colour = vec3(0.325, 0.3, 0.9);
-		FragColor = mix(tex_colour, snow_colour, clamp(pow(position_worldspace.y / 5000.0, 3), 0.0, 1.0));
+		vec4 terrained_colour = mix(tex_colour, terrain_colour, 0.5);
+		FragColor = mix(terrained_colour, snow_colour, clamp(pow(position_worldspace.y / 5000.0, 3), 0.0, 1.0));
 		FragColor = mix(water_colour, FragColor, clamp(pow(position_worldspace.y / 1500.0, 16), 0.0, 1.0));
 	}
 	)glsl";
@@ -271,20 +274,25 @@ private:
 class SceneryOptionsWindow : public tz::ext::imgui::ImGuiWindow
 {
 public:
-	SceneryOptionsWindow(tz::Vec4& snow_colour, tz::Vec4& water_colour, tz::Vec4& tess_options): tz::ext::imgui::ImGuiWindow("Scenery Options"), snow_colour(snow_colour), water_colour(water_colour), tess_options(tess_options){}
+	SceneryOptionsWindow(tz::Vec4& snow_colour, tz::Vec4& terrain_colour, tz::Vec4& water_colour, tz::Vec4& tess_options, tz::gl::Texture& heightmap_tex): tz::ext::imgui::ImGuiWindow("Scenery Options"), snow_colour(snow_colour), terrain_colour(terrain_colour), water_colour(water_colour), tess_options(tess_options), heightmap_tex(heightmap_tex){}
 
 	virtual void render() override
 	{
 		ImGui::Begin("Scenery Options", &this->visible);
 		ImGui::ColorEdit3("Snow Colour", this->snow_colour.data());
+		ImGui::ColorEdit3("Terrain Colour", this->terrain_colour.data());
 		ImGui::ColorEdit3("Water Colour", this->water_colour.data());
 		ImGui::DragFloat4("Tessellation Options", this->tess_options.data(), 1.0f, 0.0f, 64.0f);
+		ImGui::Text("Heightmap:");
+		this->heightmap_tex.dui_draw({512.0f, 512.0f});
 		ImGui::End();
 	}
 private:
 	tz::Vec4& snow_colour;
+	tz::Vec4& terrain_colour;
 	tz::Vec4& water_colour;
 	tz::Vec4& tess_options;
+	tz::gl::Texture& heightmap_tex;
 };
 
 int main()
@@ -398,19 +406,21 @@ int main()
 			tex_ssbo->unmap();
 		}
 		// Scenery options
-		scenery_ssbo->terminal_resize(sizeof(tz::Vec4) * 3);
+		scenery_ssbo->terminal_resize(sizeof(tz::Vec4) * 4);
 		tz::mem::UniformPool<tz::Vec4> scenery_pool = scenery_ssbo->map_uniform<tz::Vec4>();
 		{
 			constexpr tz::Vec4 default_snow_colour{1.0f, 1.0f, 1.0f, 1.0f};
+			constexpr tz::Vec4 default_terrain_colour{0.1f, 0.6f, 0.1f, 1.0f};
 			constexpr tz::Vec4 default_water_colour{0.325f, 0.3f, 0.9f, 1.0f};
 			constexpr tz::Vec4 default_tess_options{64.0f, 64.0f, 64.0f, 64.0f};
 
 			scenery_pool.set(0, default_snow_colour);
-			scenery_pool.set(1, default_water_colour);
-			scenery_pool.set(2, default_tess_options);
+			scenery_pool.set(1, default_terrain_colour);
+			scenery_pool.set(2, default_water_colour);
+			scenery_pool.set(3, default_tess_options);
 		}
 
-		tz::ext::imgui::emplace_window<SceneryOptionsWindow>(scenery_pool[0], scenery_pool[1], scenery_pool[2]);
+		tz::ext::imgui::emplace_window<SceneryOptionsWindow>(scenery_pool[0], scenery_pool[1], scenery_pool[2], scenery_pool[3], heightmap);
 
 		tz::gl::ShaderCompiler cpl;
 		tz::gl::ShaderProgram prg;
