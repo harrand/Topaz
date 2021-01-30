@@ -3,6 +3,7 @@
 #include "gl/shader_preprocessor.hpp"
 #include <vector>
 #include <string>
+#include <optional>
 
 namespace tz::gl::p
 {
@@ -59,6 +60,7 @@ namespace tz::gl::p
 		 */
 		std::size_t get_buffer_id(std::size_t idx) const;
 	private:
+		std::optional<std::size_t> get_existing_ssbo_id(const std::string& ssbo_name) const;
 		mutable std::vector<std::pair<std::string, std::size_t>> ssbo_name_id;
 	};
 

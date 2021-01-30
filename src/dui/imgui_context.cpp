@@ -142,7 +142,8 @@ namespace tz::ext::imgui
 		static bool track_objects = false;
 		if(ImGui::BeginMainMenuBar())
 		{
-
+			static bool wireframe = false;
+			static bool cull_backfaces = true;
 			if(ImGui::BeginMenu("Topaz 2"))
 			{
 				static bool do_assert = false;
@@ -170,8 +171,6 @@ namespace tz::ext::imgui
 
 			if(ImGui::BeginMenu("tz::gl"))
 			{
-				static bool wireframe = false;
-				static bool cull_backfaces = true;
 				ImGui::MenuItem("gl::Object Tracking", nullptr, &track_objects);
 				ImGui::MenuItem("TZGLP Previewer", nullptr, &tzglp.visible);
 				ImGui::MenuItem("Texture Sentinel Tracker", nullptr, &textracker.visible);

@@ -36,12 +36,21 @@ namespace tz::gl
          * Construct camera data using default values. The aspect-ratio will be set to the aspect ratio of the primary monitor.
          */
         CameraData();
+        tz::Vec3 get_forward() const;
+        tz::Vec3 get_backward() const;
+        tz::Vec3 get_left() const;
+        tz::Vec3 get_right() const;
+        tz::Vec3 get_up() const;
+        tz::Vec3 get_down() const;
+
         tz::Vec3 position = {};
         tz::Vec3 rotation = {};
         float fov = default_fov;
         float aspect_ratio;
         float near = default_near;
         float far = default_far;
+    private:
+        tz::Vec3 camera_dir(tz::Vec3 direction) const;
     };
 
     /**

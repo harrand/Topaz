@@ -125,13 +125,13 @@ namespace tz::render
     template<class Element, class Writer, class SceneElementWriter>
     typename Scene<Element, Writer, SceneElementWriter>::Iterator Scene<Element, Writer, SceneElementWriter>::begin()
     {
-        return {this->elements.data(), &(this->elements.back())};
+        return {this->elements.data(), &(this->elements.back()) + 1};
     }
 
     template<class Element, class Writer, class SceneElementWriter>
     typename Scene<Element, Writer, SceneElementWriter>::Iterator Scene<Element, Writer, SceneElementWriter>::end()
     {
-        return {&(this->elements.back()), &(this->elements.back())};
+        return {&(this->elements.back()) + 1, &(this->elements.back()) + 1};
     }
 
     template<class Element, class Writer, class SceneElementWriter>
