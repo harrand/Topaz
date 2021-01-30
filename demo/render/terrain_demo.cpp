@@ -409,13 +409,16 @@ int main()
 			,
 			[&mouse_down](tz::input::MouseClickEvent mce)
 			{
-				if(mce.action == GLFW_PRESS)
+				if(mce.button == GLFW_MOUSE_BUTTON_RIGHT)
 				{
-					mouse_down = true;
-				}
-				else if(mce.action == GLFW_RELEASE)
-				{
-					mouse_down = false;
+					if(mce.action == GLFW_PRESS)
+					{
+						mouse_down = true;
+					}
+					else if(mce.action == GLFW_RELEASE)
+					{
+						mouse_down = false;
+					}
 				}
 			}
 		);
