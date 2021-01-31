@@ -225,7 +225,7 @@ float do_noise(tz::algo::NoiseMap<NoiseMapEngine>& noise_map, NoiseType type, fl
 }
 
 template<typename RandomEngineType = tz::algo::prng::Knuth>
-tz::gl::Image<tz::gl::PixelRGB8> random_noise(unsigned int seed, unsigned int width, unsigned int height, NoiseType type = NoiseType::Rough)
+tz::gl::Image<tz::gl::PixelRGB8> random_noise(unsigned int seed, unsigned int width, unsigned int height, NoiseType type = NoiseType::Rough, float smoothness = 4.0f)
 {
 	tz::algo::NoiseMap<RandomEngineType> noise{seed};
 	tz::gl::Image<tz::gl::PixelRGB8> noise_map{width, height};
@@ -234,7 +234,7 @@ tz::gl::Image<tz::gl::PixelRGB8> random_noise(unsigned int seed, unsigned int wi
 	{
 		for(unsigned int j = 0; j < height; j++)
 		{
-			float value = do_noise(noise, type, static_cast<float>(i / 4.0f), static_cast<float>(j / 4.0f)); // somewhere between 0.0-1.0
+			float value = do_noise(noise, type, static_cast<float>(i / smoothness), static_cast<float>(j / smoothness)); // somewhere between 0.0-1.0
 			// not a very helpful pixel colour.
 			constexpr float max_byte_val_f = 255.0f;
 			constexpr float half_byte_max_f = max_byte_val_f / 2.0f;
@@ -308,11 +308,13 @@ public:
 
 		ImGui::Spacing();
 
+		static float smoothness = 4.0f;
 		ImGui::InputFloat("Noisemap Seed", &this->noise_map_seed, 1.0f, 50.0f);
+		ImGui::InputFloat("Smoothness", &smoothness, 0.1f, 0.5f);
 		if(ImGui::Button("Regenerate Heightmap"))
 		{
 			// This is allowed to happen on-the-fly because underlying texture format/dimensions are the same as it was before.
-			this->heightmap_tex.set_data(random_noise<tz::algo::prng::Knuth>(this->noise_map_seed, heightmap_size, heightmap_size, NoiseType::Cosine));
+			this->heightmap_tex.set_data(random_noise<tz::algo::prng::Knuth>(this->noise_map_seed, heightmap_size, heightmap_size, NoiseType::Cosine, smoothness));
 		}
 		ImGui::Text("Heightmap:");
 		this->heightmap_tex.dui_draw({heightmap_size, heightmap_size});
