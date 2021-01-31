@@ -79,6 +79,7 @@ const char* tess_ctrl_src = R"glsl(
 		vec4 terrain_colour;
 		vec4 water_colour;
 		vec4 tessellation_options;
+		vec4 magic;
 	};
 
     void main()
@@ -127,6 +128,15 @@ const char* tess_eval_src = R"glsl(
 		tz_bindless_sampler textures[8];
 	};
 
+	#ssbo scenery_block
+	{
+		vec4 snow_colour;
+		vec4 terrain_colour;
+		vec4 water_colour;
+		vec4 tessellation_options;
+		vec4 magic;
+	};
+
     vec2 interpolate2D(vec2 v0, vec2 v1, vec2 v2)
     {
         return vec2(gl_TessCoord.x) * v0 + vec2(gl_TessCoord.y) * v1 + vec2(gl_TessCoord.z) * v2;
@@ -149,13 +159,14 @@ const char* tess_eval_src = R"glsl(
 		// but first, we want to use our displacement map to extend the cameraspace position along the normal (in cameraspace too!)
 		vec3 normal_cameraspace = (view_eval[0] * model_eval[0] * vec4(normal, 0.0)).xyz;
 		// now extend the position along the normal.
-		vec3 displaced_position_cameraspace = pos + (normal_cameraspace * displacement_amt * 0.6);
+		float displacement_factor = magic[0];
+		vec3 displaced_position_cameraspace = pos + (normal_cameraspace * displacement_amt * displacement_factor);
 		// remember this is in camera space. we only need multiply by p to get in clip space.
 		vec4 result_clipspace = proj_eval[0] * vec4(displaced_position_cameraspace, 1.0);
 		// now we want this position back in world space.
 		position_worldspace = (inverse(view_eval[0]) * inverse(proj_eval[0]) * result_clipspace).xyz;
 		// anything under 1000 coord is sea so we clamp it to sea level
-		position_worldspace.y = max(position_worldspace.y, 1000.0);
+		position_worldspace.y = max(position_worldspace.y, magic[2] * 0.9f);
 
 		result_clipspace = proj_eval[0] * view_eval[0] * vec4(position_worldspace, 1.0);
 		gl_Position = result_clipspace;
@@ -178,16 +189,14 @@ const char *frg_shader_src = R"glsl(
 		vec4 terrain_colour;
 		vec4 water_colour;
 		vec4 tessellation_options;
+		vec4 magic;
 	};
 	void main()
 	{
 		vec4 tex_colour = texture(textures[0], texcoord);
-		// gets more white the higher we get. snowy-caps? maybe?
-		//const vec3 snow_colour = vec3(1.0);
-		//const vec3 water_colour = vec3(0.325, 0.3, 0.9);
 		vec4 terrained_colour = mix(tex_colour, terrain_colour, 0.5);
-		FragColor = mix(terrained_colour, snow_colour, clamp(pow(position_worldspace.y / 5000.0, 3), 0.0, 1.0));
-		FragColor = mix(water_colour, FragColor, clamp(pow(position_worldspace.y / 1500.0, 16), 0.0, 1.0));
+		FragColor = mix(terrained_colour, snow_colour, clamp(pow(position_worldspace.y / magic[1], 3), 0.0, 1.0));
+		FragColor = mix(water_colour, FragColor, clamp(pow(position_worldspace.y / magic[2], magic[3]), 0.0, 1.0));
 	}
 	)glsl";
 
@@ -218,63 +227,19 @@ namespace tz::render
     };
 }
 
-class MeshAdjustor : public tz::ext::imgui::ImGuiWindow
-{
-public:
-	MeshAdjustor(tz::Vec3& offset, float& rotation_factor, float& x_spacing, float& y_spacing, tz::render::Scene<tz::render::SceneElement, SeparateTransformResourceWriter>& scene): ImGuiWindow("Mesh Adjustor"), offset(offset), rotation_factor(rotation_factor), x_spacing(x_spacing), y_spacing(y_spacing), scene(scene){}
-
-	void register_mesh(const char* name, tz::render::AssetBuffer::Index index)
-	{
-		this->meshes.emplace(name, index);
-	}
-
-	virtual void render() override
-	{
-		ImGui::Begin("Mesh Adjustor", &this->visible);
-		ImGui::Text("%s", "All Objects");
-		ImGui::SliderFloat("Mesh Offset X", &offset[0], -10000.0f, 10000.0f);
-		ImGui::SliderFloat("Mesh Offset Y", &offset[1], -900.0f, 900.0f);
-		ImGui::SliderFloat("Mesh Offset Z", &offset[2], -10000.0f, 10000.0f);
-		ImGui::SliderFloat("Horizontal Spacing Factor", &x_spacing, 0.0f, 5.0f);
-		ImGui::SliderFloat("Vertical Spacing Factor", &y_spacing, 0.0f, 5.0f);
-		ImGui::InputFloat("Rotation Factor", &rotation_factor);
-		
-		if(ImGui::TreeNode("Scene Elements"))
-		{
-			std::size_t i = 0;
-			for(tz::render::SceneElement& ele : this->scene)
-			{
-				ImGui::SetNextItemOpen(true, ImGuiCond_Once);
-				auto ptr = [](std::size_t i){return reinterpret_cast<void*>(static_cast<std::intptr_t>(i));};
-				if(ImGui::TreeNode(ptr(i), "Element %zu", i))
-				{
-					ImGui::Text("Mesh:");
-					for(const auto&[name, mesh] : this->meshes)
-					{
-						ImGui::SameLine();
-						ImGui::RadioButton(name, reinterpret_cast<int*>(&ele.mesh), mesh);
-					}
-					ImGui::TreePop();
-				}
-				i++;
-			}
-			ImGui::TreePop();
-		}
-		ImGui::End();
-	}
-private:
-	tz::Vec3& offset;
-	float& rotation_factor;
-	float& x_spacing;
-	float& y_spacing;
-	tz::render::Scene<tz::render::SceneElement, SeparateTransformResourceWriter>& scene;
-	std::unordered_map<const char*, tz::render::AssetBuffer::Index> meshes;
-};
-
 class SceneryOptionsWindow : public tz::ext::imgui::ImGuiWindow
 {
 public:
-	SceneryOptionsWindow(tz::Vec4& snow_colour, tz::Vec4& terrain_colour, tz::Vec4& water_colour, tz::Vec4& tess_options, tz::gl::Texture& heightmap_tex): tz::ext::imgui::ImGuiWindow("Scenery Options"), snow_colour(snow_colour), terrain_colour(terrain_colour), water_colour(water_colour), tess_options(tess_options), heightmap_tex(heightmap_tex){}
+	SceneryOptionsWindow(tz::Vec4& snow_colour, tz::Vec4& terrain_colour, tz::Vec4& water_colour, tz::Vec4& tess_options, tz::Vec4& magic, tz::gl::Texture& heightmap_tex): tz::ext::imgui::ImGuiWindow("Scenery Options"), snow_colour(snow_colour), terrain_colour(terrain_colour), water_colour(water_colour), tess_options(tess_options), magic(magic), heightmap_tex(heightmap_tex)
+	{
+		constexpr tz::Vec3 default_sky_colour{0.8f, 0.9f, 1.0f};
+		set_sky_col(default_sky_colour);
+	}
+
+	void set_sky_col(tz::Vec3 sky_colour)
+	{
+		tz::core::get().window().get_frame()->set_clear_color(sky_colour[0], sky_colour[1], sky_colour[2]);
+	}
 
 	virtual void render() override
 	{
@@ -282,12 +247,16 @@ public:
 		static tz::Vec3 sky_colour{0.8f, 0.9f, 1.0f};
 		if(ImGui::ColorEdit3("Sky Colour", sky_colour.data()))
 		{
-			tz::core::get().window().get_frame()->set_clear_color(sky_colour[0], sky_colour[1], sky_colour[2]);
+			set_sky_col(sky_colour);
 		}
 		ImGui::ColorEdit3("Snow Colour", this->snow_colour.data());
 		ImGui::ColorEdit3("Terrain Colour", this->terrain_colour.data());
 		ImGui::ColorEdit3("Water Colour", this->water_colour.data());
 		ImGui::DragFloat4("Tessellation Options", this->tess_options.data(), 1.0f, 0.0f, 64.0f);
+		ImGui::DragFloat("Displacement Factor (Magic)", this->magic.data(), 0.025f, 0.0f, 0.8f);
+		ImGui::DragFloat("Snow Threshold (Magic)", this->magic.data() + 1, 100.0f, 1000.0f, 10000.0f);
+		ImGui::DragFloat("Water Threshold (Magic)", this->magic.data() + 2, 50.0f, 500.0f, 5000.0f);
+		ImGui::DragFloat("Water Exponent (Magic)", this->magic.data() + 3, 0.5f, 0.0f, 32.0f);
 		ImGui::Text("Heightmap:");
 		this->heightmap_tex.dui_draw({512.0f, 512.0f});
 		ImGui::End();
@@ -297,6 +266,7 @@ private:
 	tz::Vec4& terrain_colour;
 	tz::Vec4& water_colour;
 	tz::Vec4& tess_options;
+	tz::Vec4& magic;
 	tz::gl::Texture& heightmap_tex;
 };
 
@@ -355,31 +325,22 @@ int main()
 		square.vertices.push_back(tz::gl::Vertex{{{-0.5f, 0.5f, 0.0f}}, {{0.0f, 0.5f}}, {{0.0f, 0.0f, -1.0f}}, {{}}, {{}}});
 		square.indices = {0, 1, 2, 3, 4, 5};
 
-		tz::gl::IndexedMesh monkey_head = tz::gl::load_mesh("res/models/monkeyhead.obj");
 		tz::Vec3 cam_pos{{0.0f, 5000.0f, 0.0f}};
-		tz::debug_printf("monkey head data size = %zu bytes, indices size = %zu bytes", monkey_head.data_size_bytes(), monkey_head.indices_size_bytes());
 
-		tz::gl::Image<tz::gl::PixelRGB8> rgba_checkerboard = tz::ext::stb::read_image<tz::gl::PixelRGB8>("res/textures/grassy.png");
-		tz::gl::Texture checkerboard;
-		checkerboard.set_parameters(tz::gl::default_texture_params);
-		checkerboard.set_data(rgba_checkerboard);
-		checkerboard.make_terminal();
+		tz::gl::Texture terrain_texture;
+		terrain_texture.set_parameters(tz::gl::default_texture_params);
+		terrain_texture.set_data(tz::ext::stb::read_image<tz::gl::PixelRGB8>("res/textures/grassy.png"));
+		terrain_texture.make_terminal();
 		
-		tz::gl::Image<tz::gl::PixelRGB8> metal_img = tz::ext::stb::read_image<tz::gl::PixelRGB8>("res/textures/metal.jpg");
-		tz::gl::Texture metal;
-		metal.set_parameters(tz::gl::default_texture_params);
-		metal.set_data(metal_img);
-		metal.make_terminal();
+		tz::gl::Texture metal_texture;
+		metal_texture.set_parameters(tz::gl::default_texture_params);
+		metal_texture.set_data(tz::ext::stb::read_image<tz::gl::PixelRGB8>("res/textures/metal.jpg"));
+		metal_texture.make_terminal();
 
 		tz::gl::Texture heightmap;
 		heightmap.set_parameters(tz::gl::default_texture_params);
 		heightmap.set_data(tz::ext::stb::read_image<tz::gl::PixelRGB8>("res/textures/smile_displacement.jpg"));
 		heightmap.make_terminal();
-
-		tz::Vec3 triangle_pos{{0.0f, 0.0f, 0.0f}};
-		float rotation_factor = 0.02f;
-		float x_factor = 2.5f;
-		float y_factor = 2.5f;
 
 		tz::gl::Manager::Handle square_handle = m.add_mesh(square);
 
@@ -387,54 +348,46 @@ int main()
 		ssbo->terminal_resize(sizeof(tz::Mat4) * max_elements * 3);
 		// Scene uses UBO resource data.
 		tz::render::Scene<tz::render::SceneElement, SeparateTransformResourceWriter> scene{ssbo->map()};
-
-		MeshAdjustor& mesh_adjustor = tz::ext::imgui::emplace_window<MeshAdjustor>(triangle_pos, rotation_factor, x_factor, y_factor, scene);
-
-		tz::core::IWindow& wnd = tz::core::get().window();
-		wnd.register_this();
-
-		wnd.get_frame()->set_clear_color(0.8f, 0.9f, 1.0f);
 		// Scene setup.
 		// Meshes
 		tz::render::AssetBuffer::Index square_mesh_idx = scene.add_mesh({m, square_handle});
-		mesh_adjustor.register_mesh("square", square_mesh_idx);
 		// Textures
 		tex_ssbo->resize(sizeof(tz::gl::BindlessTextureHandle) * max_textures);
 		{
 			tz::mem::UniformPool<tz::gl::BindlessTextureHandle> tex_pool = tex_ssbo->map_uniform<tz::gl::BindlessTextureHandle>();
-			tz::gl::BindlessTextureHandle checkerboard_handle = checkerboard.get_terminal_handle();
-			tz::gl::BindlessTextureHandle metal_handle = metal.get_terminal_handle();
+			tz::gl::BindlessTextureHandle terrain_texture_handle = terrain_texture.get_terminal_handle();
+			tz::gl::BindlessTextureHandle metal_texture_handle = metal_texture.get_terminal_handle();
 			tz::gl::BindlessTextureHandle heightmap_handle = heightmap.get_terminal_handle();
-			tex_pool.set(0, checkerboard_handle);
-			tex_pool.set(1, metal_handle);
+			tex_pool.set(0, terrain_texture_handle);
+			tex_pool.set(1, metal_texture_handle);
 			tex_pool.set(2, heightmap_handle);
 			tex_ssbo->unmap();
 		}
 		// Scenery options
-		scenery_ssbo->terminal_resize(sizeof(tz::Vec4) * 4);
+		scenery_ssbo->terminal_resize(sizeof(tz::Vec4) * 5);
 		tz::mem::UniformPool<tz::Vec4> scenery_pool = scenery_ssbo->map_uniform<tz::Vec4>();
 		{
 			constexpr tz::Vec4 default_snow_colour{1.0f, 1.0f, 1.0f, 1.0f};
 			constexpr tz::Vec4 default_terrain_colour{0.1f, 0.6f, 0.1f, 1.0f};
 			constexpr tz::Vec4 default_water_colour{0.325f, 0.3f, 0.9f, 1.0f};
 			constexpr tz::Vec4 default_tess_options{64.0f, 64.0f, 64.0f, 64.0f};
+			constexpr tz::Vec4 default_magic{0.6f, 5000.0f, 1500.0f, 16.0f};
 
 			scenery_pool.set(0, default_snow_colour);
 			scenery_pool.set(1, default_terrain_colour);
 			scenery_pool.set(2, default_water_colour);
 			scenery_pool.set(3, default_tess_options);
+			scenery_pool.set(4, default_magic);
 		}
 
-		tz::ext::imgui::emplace_window<SceneryOptionsWindow>(scenery_pool[0], scenery_pool[1], scenery_pool[2], scenery_pool[3], heightmap);
+		tz::ext::imgui::emplace_window<SceneryOptionsWindow>(scenery_pool[0], scenery_pool[1], scenery_pool[2], scenery_pool[3], scenery_pool[4], heightmap);
 
 		tz::gl::ShaderCompiler cpl;
 		tz::gl::ShaderProgram prg;
-		tz::gl::Shader* vs = prg.emplace(tz::gl::ShaderType::Vertex);
-		vs->upload_source(vtx_result);
+		tz::gl::Shader* vs = prg.emplace(tz::gl::ShaderType::Vertex, vtx_result);
         tz::gl::Shader* tcs = prg.emplace(tz::gl::ShaderType::TessellationControl, tess_ctrl_result);
         tz::gl::Shader* tes = prg.emplace(tz::gl::ShaderType::TessellationEvaluation, tess_result);
-		tz::gl::Shader* fs = prg.emplace(tz::gl::ShaderType::Fragment);
-		fs->upload_source(frg_result);
+		tz::gl::Shader* fs = prg.emplace(tz::gl::ShaderType::Fragment, frg_result);
 
 		auto cpl_diag = cpl.compile(*vs);
 		topaz_assert(cpl_diag.successful(), "Shader Vtx Compilation Fail: ", cpl_diag.get_info_log());
@@ -463,6 +416,7 @@ int main()
 		}
 
 		bool mouse_down = false;
+		tz::core::IWindow& wnd = tz::core::get().window();
 		wnd.emplace_custom_mouse_listener(
 			[element_handle, &scene, &mouse_down](tz::input::MouseUpdateEvent mue)
 			{
@@ -533,14 +487,7 @@ int main()
 			o.bind();
 			for(std::size_t i = 0; i < max_elements; i++)
 			{
-				tz::Vec3 cur_pos = triangle_pos;
-				// Three meshes in a horizontal line.
-				cur_pos[0] += (i % static_cast<std::size_t>(std::sqrt(max_elements))) * x_factor;
-				cur_pos[1] += std::floor(i / std::sqrt(max_elements)) * y_factor;
-
-				tz::render::SceneElement& cur_ele = scene.get(i);
-				cur_ele.transform.position = cur_pos;
-				cur_ele.camera.position = cam_pos;
+				scene.get(i).camera.position = cam_pos;
 			}
 			scene.configure(dev);
 			dev.render();
