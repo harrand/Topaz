@@ -1,13 +1,15 @@
-#include "algo/noise.hpp"
 #include "algo/math.hpp"
 
 namespace tz::algo
 {
-    NoiseMap::NoiseMap(unsigned int seed): seed(seed), engine(seed){}
+    template<typename EngineType>
+    NoiseMap<EngineType>::NoiseMap(unsigned int seed): seed(seed), engine(seed){}
 
-    NoiseMap::NoiseMap(): seed(std::random_device{}()), engine(seed){}
+    template<typename EngineType>
+    NoiseMap<EngineType>::NoiseMap(): seed(std::random_device{}()), engine(seed){}
 
-    float NoiseMap::random(float x, float z)
+    template<typename EngineType>
+    float NoiseMap<EngineType>::random(float x, float z)
     {
         unsigned int temp_seed = x * 56346.03297 + z * 189793.3498 + this->seed;
         this->engine.seed(temp_seed);
@@ -15,7 +17,8 @@ namespace tz::algo
         return random_result;
     }
 
-    float NoiseMap::smooth(float x, float z)
+    template<typename EngineType>
+    float NoiseMap<EngineType>::smooth(float x, float z)
     {
         float corners = (this->random(x - 1, z - 1) + this->random(x + 1, z - 1) + this->random(x - 1, z + 1) + this->random(x + 1, z + 1))/16.0f;
         float sides = (this->random(x - 1, z) + this->random(x + 1, z) + this->random(x, z + 1) + this->random(x, z - 1))/8.0f;
@@ -23,7 +26,8 @@ namespace tz::algo
         return corners + sides + centre;
     }
 
-    float NoiseMap::cosine(float x, float z)
+    template<typename EngineType>
+    float NoiseMap<EngineType>::cosine(float x, float z)
     {
         auto ix = static_cast<int>(x);
         auto iz = static_cast<int>(z);

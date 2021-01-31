@@ -206,7 +206,8 @@ enum class NoiseType
 	Cosine
 };
 
-float do_noise(tz::algo::NoiseMap& noise_map, NoiseType type, float x, float z)
+template<typename NoiseMapEngine>
+float do_noise(tz::algo::NoiseMap<NoiseMapEngine>& noise_map, NoiseType type, float x, float z)
 {
 	switch(type)
 	{
@@ -225,7 +226,7 @@ float do_noise(tz::algo::NoiseMap& noise_map, NoiseType type, float x, float z)
 
 tz::gl::Image<tz::gl::PixelRGB8> random_noise(unsigned int seed, unsigned int width, unsigned int height, NoiseType type = NoiseType::Rough)
 {
-	tz::algo::NoiseMap noise{seed};
+	tz::algo::NoiseMap<tz::algo::prng::Knuth> noise{seed};
 	tz::gl::Image<tz::gl::PixelRGB8> noise_map{width, height};
 
 	for(unsigned int i = 0; i < width; i++)
