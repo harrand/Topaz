@@ -389,7 +389,7 @@ int main()
 
 		tz::gl::Texture terrain_texture;
 		terrain_texture.set_parameters(tz::gl::default_texture_params);
-		terrain_texture.set_data(random_noise<tz::algo::prng::LinearCongruential>(9857349, 128, 128));
+		terrain_texture.set_data(random_noise<tz::algo::prng::Knuth>(9857349, 128, 128, NoiseType::Smooth));
 		terrain_texture.make_terminal();
 
 		tz::gl::Texture heightmap;
