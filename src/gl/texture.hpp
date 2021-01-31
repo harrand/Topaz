@@ -110,6 +110,7 @@ namespace tz::gl
 		 * Clear the data-store and resize it to fit the given image. After which, copy the image data into the data-store.
 		 * Any data in the data-store beforehand will be discarded.
 		 * 
+		 * Note: If the PixelType, ComponentType and image dimensions match the current image within the data-store, it is not recreated and the image data is simply replaced.
 		 * Example: tz::gl::Image<tz::gl::PixelRGBA8> resolves to PixelType == tz::gl::PixelRGBA, ComponentType == std::byte.
 		 * @tparam PixelType Type of the pixel template to use. Example: tz::gl::PixelRGBA
 		 * @tparam ComponentType Underlying data type of the components within the pixel.

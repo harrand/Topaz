@@ -1,12 +1,11 @@
 #include "core/core.hpp"
 #include "core/debug/assert.hpp"
-#include "core/debug/print.hpp"
 #include "core/matrix_transform.hpp"
-#include "gl/tz_stb_image/image_reader.hpp"
 #include "gl/shader.hpp"
 #include "gl/shader_compiler.hpp"
 #include "gl/manager.hpp"
 #include "gl/mesh_loader.hpp"
+#include "algo/noise.hpp"
 #include "gl/buffer.hpp"
 #include "gl/frame.hpp"
 #include "gl/modules/ssbo.hpp"
@@ -125,7 +124,7 @@ const char* tess_eval_src = R"glsl(
 
 	#ssbo texture_block
 	{
-		tz_bindless_sampler textures[8];
+		tz_bindless_sampler textures[2];
 	};
 
 	#ssbo scenery_block
@@ -155,7 +154,7 @@ const char* tess_eval_src = R"glsl(
 		// this is already in camera space. multiply by inverse of view to get back to worldspace to pass to frag shader.
         vec3 pos = interpolate3D(pos_eval[0], pos_eval[1], pos_eval[2]);
 
-		float displacement_amt = texture(textures[2], texcoord).r;
+		float displacement_amt = texture(textures[1], texcoord).r;
 		// but first, we want to use our displacement map to extend the cameraspace position along the normal (in cameraspace too!)
 		vec3 normal_cameraspace = (view_eval[0] * model_eval[0] * vec4(normal, 0.0)).xyz;
 		// now extend the position along the normal.
@@ -181,7 +180,7 @@ const char *frg_shader_src = R"glsl(
 	in vec3 position_worldspace;
 	#ssbo texture_block
 	{
-		tz_bindless_sampler textures[8];
+		tz_bindless_sampler textures[2];
 	};
 	#ssbo scenery_block
 	{
@@ -199,6 +198,50 @@ const char *frg_shader_src = R"glsl(
 		FragColor = mix(water_colour, FragColor, clamp(pow(position_worldspace.y / magic[2], magic[3]), 0.0, 1.0));
 	}
 	)glsl";
+
+enum class NoiseType
+{
+	Rough,
+	Smooth,
+	Cosine
+};
+
+float do_noise(tz::algo::NoiseMap& noise_map, NoiseType type, float x, float z)
+{
+	switch(type)
+	{
+		case NoiseType::Rough:
+		default:
+			return noise_map.random(x, z);
+		break;
+		case NoiseType::Smooth:
+			return noise_map.smooth(x, z);
+		break;
+		case NoiseType::Cosine:
+			return noise_map.cosine(x, z);
+		break;
+	}
+}
+
+tz::gl::Image<tz::gl::PixelRGB8> random_noise(unsigned int seed, unsigned int width, unsigned int height, NoiseType type = NoiseType::Rough)
+{
+	tz::algo::NoiseMap noise{seed};
+	tz::gl::Image<tz::gl::PixelRGB8> noise_map{width, height};
+
+	for(unsigned int i = 0; i < width; i++)
+	{
+		for(unsigned int j = 0; j < height; j++)
+		{
+			float value = do_noise(noise, type, static_cast<float>(i / 4.0f), static_cast<float>(j / 4.0f)); // somewhere between 0.0-1.0
+			// not a very helpful pixel colour.
+			constexpr float max_byte_val_f = 255.0f;
+			constexpr float half_byte_max_f = max_byte_val_f / 2.0f;
+			std::byte val_byte = static_cast<std::byte>((value * half_byte_max_f) + half_byte_max_f); // between 0-byte_max
+			noise_map(i, j) = {val_byte, val_byte, val_byte};
+		}
+	}
+	return noise_map;
+}
 
 class SeparateTransformResourceWriter : public tz::gl::TransformResourceWriter
 {
@@ -227,12 +270,15 @@ namespace tz::render
     };
 }
 
+constexpr float heightmap_size = 100.0f;
+
 class SceneryOptionsWindow : public tz::ext::imgui::ImGuiWindow
 {
 public:
-	SceneryOptionsWindow(tz::Vec4& snow_colour, tz::Vec4& terrain_colour, tz::Vec4& water_colour, tz::Vec4& tess_options, tz::Vec4& magic, tz::gl::Texture& heightmap_tex): tz::ext::imgui::ImGuiWindow("Scenery Options"), snow_colour(snow_colour), terrain_colour(terrain_colour), water_colour(water_colour), tess_options(tess_options), magic(magic), heightmap_tex(heightmap_tex)
+	constexpr static tz::Vec3 default_sky_colour{0.2f, 0.2f, 0.2f};
+
+	SceneryOptionsWindow(tz::Vec4& snow_colour, tz::Vec4& terrain_colour, tz::Vec4& water_colour, tz::Vec4& tess_options, tz::Vec4& magic, tz::gl::Texture& heightmap_tex): tz::ext::imgui::ImGuiWindow("Scenery Options"), snow_colour(snow_colour), terrain_colour(terrain_colour), water_colour(water_colour), tess_options(tess_options), magic(magic), heightmap_tex(heightmap_tex), noise_map_seed(0)
 	{
-		constexpr tz::Vec3 default_sky_colour{0.8f, 0.9f, 1.0f};
 		set_sky_col(default_sky_colour);
 	}
 
@@ -244,7 +290,7 @@ public:
 	virtual void render() override
 	{
 		ImGui::Begin("Scenery Options", &this->visible);
-		static tz::Vec3 sky_colour{0.8f, 0.9f, 1.0f};
+		static tz::Vec3 sky_colour = default_sky_colour;
 		if(ImGui::ColorEdit3("Sky Colour", sky_colour.data()))
 		{
 			set_sky_col(sky_colour);
@@ -255,10 +301,19 @@ public:
 		ImGui::DragFloat4("Tessellation Options", this->tess_options.data(), 1.0f, 0.0f, 64.0f);
 		ImGui::DragFloat("Displacement Factor (Magic)", this->magic.data(), 0.025f, 0.0f, 0.8f);
 		ImGui::DragFloat("Snow Threshold (Magic)", this->magic.data() + 1, 100.0f, 1000.0f, 10000.0f);
-		ImGui::DragFloat("Water Threshold (Magic)", this->magic.data() + 2, 50.0f, 500.0f, 5000.0f);
-		ImGui::DragFloat("Water Exponent (Magic)", this->magic.data() + 3, 0.5f, 0.0f, 32.0f);
+		ImGui::DragFloat("Water Threshold (Magic)", this->magic.data() + 2, 50.0f, 500.0f, 10000.0f);
+		ImGui::DragFloat("Water Exponent (Magic)", this->magic.data() + 3, 0.5f, 0.0f, 64.0f);
+
+		ImGui::Spacing();
+
+		ImGui::InputFloat("Noisemap Seed", &this->noise_map_seed, 1.0f, 50.0f);
+		if(ImGui::Button("Regenerate Heightmap"))
+		{
+			// This is allowed to happen on-the-fly because underlying texture format/dimensions are the same as it was before.
+			this->heightmap_tex.set_data(random_noise(this->noise_map_seed, heightmap_size, heightmap_size, NoiseType::Cosine));
+		}
 		ImGui::Text("Heightmap:");
-		this->heightmap_tex.dui_draw({512.0f, 512.0f});
+		this->heightmap_tex.dui_draw({heightmap_size, heightmap_size});
 		ImGui::End();
 	}
 private:
@@ -268,12 +323,13 @@ private:
 	tz::Vec4& tess_options;
 	tz::Vec4& magic;
 	tz::gl::Texture& heightmap_tex;
+	float noise_map_seed;
 };
 
 int main()
 {
 	constexpr std::size_t max_elements = 1;
-	constexpr std::size_t max_textures = 8;
+	constexpr std::size_t max_textures = 2;
 	// Minimalist Graphics Demo.
 	tz::core::initialise("Topaz Terrain Demo");
 	{
@@ -325,21 +381,16 @@ int main()
 		square.vertices.push_back(tz::gl::Vertex{{{-0.5f, 0.5f, 0.0f}}, {{0.0f, 0.5f}}, {{0.0f, 0.0f, -1.0f}}, {{}}, {{}}});
 		square.indices = {0, 1, 2, 3, 4, 5};
 
-		tz::Vec3 cam_pos{{0.0f, 5000.0f, 0.0f}};
+		tz::Vec3 cam_pos{{0.0f, 6000.0f, 0.0f}};
 
 		tz::gl::Texture terrain_texture;
 		terrain_texture.set_parameters(tz::gl::default_texture_params);
-		terrain_texture.set_data(tz::ext::stb::read_image<tz::gl::PixelRGB8>("res/textures/grassy.png"));
+		terrain_texture.set_data(random_noise(9857349, 128, 128));
 		terrain_texture.make_terminal();
-		
-		tz::gl::Texture metal_texture;
-		metal_texture.set_parameters(tz::gl::default_texture_params);
-		metal_texture.set_data(tz::ext::stb::read_image<tz::gl::PixelRGB8>("res/textures/metal.jpg"));
-		metal_texture.make_terminal();
 
 		tz::gl::Texture heightmap;
 		heightmap.set_parameters(tz::gl::default_texture_params);
-		heightmap.set_data(tz::ext::stb::read_image<tz::gl::PixelRGB8>("res/textures/smile_displacement.jpg"));
+		heightmap.set_data(random_noise(1, heightmap_size, heightmap_size, NoiseType::Cosine));
 		heightmap.make_terminal();
 
 		tz::gl::Manager::Handle square_handle = m.add_mesh(square);
@@ -356,22 +407,20 @@ int main()
 		{
 			tz::mem::UniformPool<tz::gl::BindlessTextureHandle> tex_pool = tex_ssbo->map_uniform<tz::gl::BindlessTextureHandle>();
 			tz::gl::BindlessTextureHandle terrain_texture_handle = terrain_texture.get_terminal_handle();
-			tz::gl::BindlessTextureHandle metal_texture_handle = metal_texture.get_terminal_handle();
 			tz::gl::BindlessTextureHandle heightmap_handle = heightmap.get_terminal_handle();
 			tex_pool.set(0, terrain_texture_handle);
-			tex_pool.set(1, metal_texture_handle);
-			tex_pool.set(2, heightmap_handle);
+			tex_pool.set(1, heightmap_handle);
 			tex_ssbo->unmap();
 		}
 		// Scenery options
 		scenery_ssbo->terminal_resize(sizeof(tz::Vec4) * 5);
 		tz::mem::UniformPool<tz::Vec4> scenery_pool = scenery_ssbo->map_uniform<tz::Vec4>();
 		{
-			constexpr tz::Vec4 default_snow_colour{1.0f, 1.0f, 1.0f, 1.0f};
-			constexpr tz::Vec4 default_terrain_colour{0.1f, 0.6f, 0.1f, 1.0f};
-			constexpr tz::Vec4 default_water_colour{0.325f, 0.3f, 0.9f, 1.0f};
+			constexpr tz::Vec4 default_snow_colour{0.27f, 0.0f, 0.0f, 1.0f};
+			constexpr tz::Vec4 default_terrain_colour{0.0f, 0.0f, 0.0f, 1.0f};
+			constexpr tz::Vec4 default_water_colour{1.0f, 0.47f, 0.0f, 1.0f};
 			constexpr tz::Vec4 default_tess_options{64.0f, 64.0f, 64.0f, 64.0f};
-			constexpr tz::Vec4 default_magic{0.6f, 5000.0f, 1500.0f, 16.0f};
+			constexpr tz::Vec4 default_magic{0.625f, 8900.0f, 4850.0f, 64.0f};
 
 			scenery_pool.set(0, default_snow_colour);
 			scenery_pool.set(1, default_terrain_colour);
