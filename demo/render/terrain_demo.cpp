@@ -224,9 +224,10 @@ float do_noise(tz::algo::NoiseMap<NoiseMapEngine>& noise_map, NoiseType type, fl
 	}
 }
 
+template<typename RandomEngineType = tz::algo::prng::Knuth>
 tz::gl::Image<tz::gl::PixelRGB8> random_noise(unsigned int seed, unsigned int width, unsigned int height, NoiseType type = NoiseType::Rough)
 {
-	tz::algo::NoiseMap<tz::algo::prng::Knuth> noise{seed};
+	tz::algo::NoiseMap<RandomEngineType> noise{seed};
 	tz::gl::Image<tz::gl::PixelRGB8> noise_map{width, height};
 
 	for(unsigned int i = 0; i < width; i++)
@@ -311,7 +312,7 @@ public:
 		if(ImGui::Button("Regenerate Heightmap"))
 		{
 			// This is allowed to happen on-the-fly because underlying texture format/dimensions are the same as it was before.
-			this->heightmap_tex.set_data(random_noise(this->noise_map_seed, heightmap_size, heightmap_size, NoiseType::Cosine));
+			this->heightmap_tex.set_data(random_noise<tz::algo::prng::Knuth>(this->noise_map_seed, heightmap_size, heightmap_size, NoiseType::Cosine));
 		}
 		ImGui::Text("Heightmap:");
 		this->heightmap_tex.dui_draw({heightmap_size, heightmap_size});
@@ -386,12 +387,12 @@ int main()
 
 		tz::gl::Texture terrain_texture;
 		terrain_texture.set_parameters(tz::gl::default_texture_params);
-		terrain_texture.set_data(random_noise(9857349, 128, 128));
+		terrain_texture.set_data(random_noise<tz::algo::prng::LinearCongruential>(9857349, 128, 128));
 		terrain_texture.make_terminal();
 
 		tz::gl::Texture heightmap;
 		heightmap.set_parameters(tz::gl::default_texture_params);
-		heightmap.set_data(random_noise(1, heightmap_size, heightmap_size, NoiseType::Cosine));
+		heightmap.set_data(random_noise<tz::algo::prng::Knuth>(1, heightmap_size, heightmap_size, NoiseType::Cosine));
 		heightmap.make_terminal();
 
 		tz::gl::Manager::Handle square_handle = m.add_mesh(square);
