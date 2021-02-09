@@ -127,6 +127,10 @@ add_library(topaz STATIC
 		src/gl/modules/ubo.cpp
 		src/gl/modules/ubo.hpp
 
+		src/dui/module_tabs/core_tab.cpp
+		src/dui/module_tabs/core_tab.hpp
+		src/dui/module_tabs/gl_tab.cpp
+		src/dui/module_tabs/gl_tab.hpp
 		src/dui/buffer_tracker.cpp
 		src/dui/buffer_tracker.hpp
 		src/dui/window.cpp

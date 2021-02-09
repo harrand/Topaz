@@ -82,20 +82,20 @@ namespace tz::dui::gl
 			}
 
 			// Display them
-			if(ImGui::CollapsingHeader("OpenGL Driver Info"))
+			if(ImGui::CollapsingHeader("OpenGL Driver Info", ImGuiTreeNodeFlags_DefaultOpen))
 			{
 				ImGui::Text("OpenGL Major/Minor Version: %d.%d", major, minor);
 				ImGui::Text("OpenGL Full Version: %s", full_version_string);
 				ImGui::Text("GLSL Version: %s", glsl_version);
 			}
 			
-			if(ImGui::CollapsingHeader("Hardware"))
+			if(ImGui::CollapsingHeader("Hardware", ImGuiTreeNodeFlags_DefaultOpen))
 			{
 				ImGui::Text("Graphics Vendor: %s", vendor);
 				ImGui::Text("Graphics Renderer: %s", renderer);
 			}
 			
-			if(ImGui::CollapsingHeader("Software"))
+			if(ImGui::CollapsingHeader("Software", ImGuiTreeNodeFlags_DefaultOpen))
 			{
 				ImGui::Text("OpenGL Context Type: %s", profile_name.c_str());
 				if(!flags.empty())
