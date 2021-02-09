@@ -1,4 +1,5 @@
 #include "core/core.hpp"
+#include "gl/frame.hpp"
 
 int main()
 {
@@ -8,6 +9,7 @@ int main()
 
         while(!window.is_close_requested())
         {
+            window.get_frame()->clear();
             // Do stuff.
             tz::core::update();
             window.update();
