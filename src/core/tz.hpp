@@ -123,7 +123,9 @@ namespace tz
 	 * @return Reference to the topaz core
 	 */
 	TopazCore& get();
-	
+	/**
+	 * Retrieve the root resource manager, which targets the project's root directory. If this header is within "Topaz/src/core", then the root directory is "Topaz".
+	 */
 	const ResourceManager& res();
 
 	/**

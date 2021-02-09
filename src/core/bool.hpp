@@ -9,6 +9,9 @@ namespace tz
 	 * @{
 	 */
     
+    /**
+     * Wrapper class for a simple bool. Used to avoid std::vector<bool> woes.
+     */
     class BoolProxy
     {
     public:
