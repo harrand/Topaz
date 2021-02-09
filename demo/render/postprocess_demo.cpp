@@ -125,10 +125,10 @@ const char *postprocess_frg_shader_src = R"glsl(
 	}
 	)glsl";
 
-class PostprocessDemoWindow : public tz::ext::imgui::ImGuiWindow
+class PostprocessDemoWindow : public tz::dui::DebugWindow
 {
 public:
-	PostprocessDemoWindow(int& strategy_id): tz::ext::imgui::ImGuiWindow("Topaz Postprocess Demo"), strategy_id(strategy_id){}
+	PostprocessDemoWindow(int& strategy_id): tz::dui::DebugWindow("Topaz Postprocess Demo"), strategy_id(strategy_id){}
 	virtual void render() override
 	{
 		ImGui::Begin("Topaz Postprocess Demo", &this->visible);
@@ -152,7 +152,7 @@ int main()
 		tz::gl::Object& o = *m;
 
 		// Track it in imgui.
-		tz::ext::imgui::track_object(&o);
+		tz::dui::track_object(&o);
 
 		tz::gl::p::SSBOModule* ssbo_module = nullptr;
 		tz::gl::p::UBOModule* ubo_module = nullptr;
@@ -272,7 +272,7 @@ int main()
 			strategy_id = new (strategy_id_block.begin) int{0};
 		}
 
-		tz::ext::imgui::emplace_window<PostprocessDemoWindow>(*strategy_id);
+		tz::dui::emplace_window<PostprocessDemoWindow>(*strategy_id);
 
         cpl_diag = cpl.compile(*postpro_vs);
 		topaz_assert(cpl_diag.successful(), "Shader Vtx Compilation Fail: ", cpl_diag.get_info_log());

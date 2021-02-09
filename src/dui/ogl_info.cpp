@@ -5,9 +5,9 @@
 #include <string>
 #include <vector>
 
-namespace tz::ext::imgui::gl
+namespace tz::dui::gl
 {
-	OpenGLInfoWindow::OpenGLInfoWindow(): ImGuiWindow("OpenGL Info"){}
+	OpenGLInfoWindow::OpenGLInfoWindow(): DebugWindow("OpenGL Info"){}
 
 	void OpenGLInfoWindow::render()
 	{

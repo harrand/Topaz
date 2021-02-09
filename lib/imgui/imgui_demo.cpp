@@ -257,16 +257,16 @@ void ImGui::ShowDemoWindow(bool* p_open)
     static bool no_background = false;
     static bool no_bring_to_front = false;
 
-    ImGuiWindowFlags window_flags = 0;
-    if (no_titlebar)        window_flags |= ImGuiWindowFlags_NoTitleBar;
-    if (no_scrollbar)       window_flags |= ImGuiWindowFlags_NoScrollbar;
-    if (!no_menu)           window_flags |= ImGuiWindowFlags_MenuBar;
-    if (no_move)            window_flags |= ImGuiWindowFlags_NoMove;
-    if (no_resize)          window_flags |= ImGuiWindowFlags_NoResize;
-    if (no_collapse)        window_flags |= ImGuiWindowFlags_NoCollapse;
-    if (no_nav)             window_flags |= ImGuiWindowFlags_NoNav;
-    if (no_background)      window_flags |= ImGuiWindowFlags_NoBackground;
-    if (no_bring_to_front)  window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus;
+    DebugWindowFlags window_flags = 0;
+    if (no_titlebar)        window_flags |= DebugWindowFlags_NoTitleBar;
+    if (no_scrollbar)       window_flags |= DebugWindowFlags_NoScrollbar;
+    if (!no_menu)           window_flags |= DebugWindowFlags_MenuBar;
+    if (no_move)            window_flags |= DebugWindowFlags_NoMove;
+    if (no_resize)          window_flags |= DebugWindowFlags_NoResize;
+    if (no_collapse)        window_flags |= DebugWindowFlags_NoCollapse;
+    if (no_nav)             window_flags |= DebugWindowFlags_NoNav;
+    if (no_background)      window_flags |= DebugWindowFlags_NoBackground;
+    if (no_bring_to_front)  window_flags |= DebugWindowFlags_NoBringToFrontOnFocus;
     if (no_close)           p_open = NULL; // Don't pass our bool* to Begin
 
     // We specify a default position/size in case there's no data in the .ini file. Typically this isn't required! We only do it to make the Demo applications a little more welcoming.
@@ -1791,7 +1791,7 @@ static void ShowDemoWindowLayout()
 
         // Child 1: no border, enable horizontal scrollbar
         {
-            ImGuiWindowFlags window_flags = ImGuiWindowFlags_HorizontalScrollbar | (disable_mouse_wheel ? ImGuiWindowFlags_NoScrollWithMouse : 0);
+            DebugWindowFlags window_flags = DebugWindowFlags_HorizontalScrollbar | (disable_mouse_wheel ? DebugWindowFlags_NoScrollWithMouse : 0);
             ImGui::BeginChild("ChildL", ImVec2(ImGui::GetWindowContentRegionWidth() * 0.5f, 260), false, window_flags);
             for (int i = 0; i < 100; i++)
             {
@@ -1808,7 +1808,7 @@ static void ShowDemoWindowLayout()
 
         // Child 2: rounded border
         {
-            ImGuiWindowFlags window_flags = (disable_mouse_wheel ? ImGuiWindowFlags_NoScrollWithMouse : 0) | (disable_menu ? 0 : ImGuiWindowFlags_MenuBar);
+            DebugWindowFlags window_flags = (disable_mouse_wheel ? DebugWindowFlags_NoScrollWithMouse : 0) | (disable_menu ? 0 : DebugWindowFlags_MenuBar);
             ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 5.0f);
             ImGui::BeginChild("ChildR", ImVec2(0, 260), true, window_flags);
             if (!disable_menu && ImGui::BeginMenuBar())
@@ -1843,7 +1843,7 @@ static void ShowDemoWindowLayout()
         {
             ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 10);
             ImGui::PushStyleColor(ImGuiCol_ChildBg, IM_COL32(255, 0, 0, 100));
-            ImGui::BeginChild("Red", ImVec2(200, 100), true, ImGuiWindowFlags_None);
+            ImGui::BeginChild("Red", ImVec2(200, 100), true, DebugWindowFlags_None);
             for (int n = 0; n < 50; n++)
                 ImGui::Text("Some test %d", n);
             ImGui::EndChild();
@@ -2236,7 +2236,7 @@ static void ShowDemoWindowLayout()
             const char* names[] = { "Top", "25%", "Center", "75%", "Bottom" };
             ImGui::TextUnformatted(names[i]);
 
-            ImGuiWindowFlags child_flags = enable_extra_decorations ? ImGuiWindowFlags_MenuBar : 0;
+            DebugWindowFlags child_flags = enable_extra_decorations ? DebugWindowFlags_MenuBar : 0;
             bool window_visible = ImGui::BeginChild(ImGui::GetID((void*)(intptr_t)i), ImVec2(child_w, 200.0f), true, child_flags);
             if (ImGui::BeginMenuBar())
             {
@@ -2277,7 +2277,7 @@ static void ShowDemoWindowLayout()
         for (int i = 0; i < 5; i++)
         {
             float child_height = ImGui::GetTextLineHeight() + style.ScrollbarSize + style.WindowPadding.y * 2.0f;
-            ImGuiWindowFlags child_flags = ImGuiWindowFlags_HorizontalScrollbar | (enable_extra_decorations ? ImGuiWindowFlags_AlwaysVerticalScrollbar : 0);
+            DebugWindowFlags child_flags = DebugWindowFlags_HorizontalScrollbar | (enable_extra_decorations ? DebugWindowFlags_AlwaysVerticalScrollbar : 0);
             bool window_visible = ImGui::BeginChild(ImGui::GetID((void*)(intptr_t)i), ImVec2(-100, child_height), true, child_flags);
             if (scroll_to_off)
                 ImGui::SetScrollX(scroll_to_off_px);
@@ -2310,12 +2310,12 @@ static void ShowDemoWindowLayout()
         ImGui::PopID();
 
         // Miscellaneous Horizontal Scrolling Demo
-        HelpMarker("Horizontal scrolling for a window has to be enabled explicitly via the ImGuiWindowFlags_HorizontalScrollbar flag.\n\nYou may want to explicitly specify content width by calling SetNextWindowContentWidth() before Begin().");
+        HelpMarker("Horizontal scrolling for a window has to be enabled explicitly via the DebugWindowFlags_HorizontalScrollbar flag.\n\nYou may want to explicitly specify content width by calling SetNextWindowContentWidth() before Begin().");
         static int lines = 7;
         ImGui::SliderInt("Lines", &lines, 1, 15);
         ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 3.0f);
         ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(2.0f, 1.0f));
-        ImGui::BeginChild("scrolling", ImVec2(0, ImGui::GetFrameHeightWithSpacing() * 7 + 30), true, ImGuiWindowFlags_HorizontalScrollbar);
+        ImGui::BeginChild("scrolling", ImVec2(0, ImGui::GetFrameHeightWithSpacing() * 7 + 30), true, DebugWindowFlags_HorizontalScrollbar);
         for (int line = 0; line < lines; line++)
         {
             // Display random stuff (for the sake of this trivial demo we are using basic Button+SameLine. If you want to create your own time line for a real application you may be better off
@@ -2370,7 +2370,7 @@ static void ShowDemoWindowLayout()
             static float contents_size_x = 300.0f;
             if (explicit_content_size)
                 ImGui::SetNextWindowContentSize(ImVec2(contents_size_x, 0.0f));
-            ImGui::Begin("Horizontal contents size demo window", &show_horizontal_contents_size_demo_window, show_h_scrollbar ? ImGuiWindowFlags_HorizontalScrollbar : 0);
+            ImGui::Begin("Horizontal contents size demo window", &show_horizontal_contents_size_demo_window, show_h_scrollbar ? DebugWindowFlags_HorizontalScrollbar : 0);
             ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(2, 0));
             ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(2, 0));
             HelpMarker("Test of different widgets react and impact the work rectangle growing when horizontal scrolling is enabled.\n\nUse 'Metrics->Tools->Show windows rectangles' to visualize rectangles.");
@@ -2609,7 +2609,7 @@ static void ShowDemoWindowPopups()
         if (ImGui::Button("Delete.."))
             ImGui::OpenPopup("Delete?");
 
-        if (ImGui::BeginPopupModal("Delete?", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+        if (ImGui::BeginPopupModal("Delete?", NULL, DebugWindowFlags_AlwaysAutoResize))
         {
             ImGui::Text("All those beautiful files will be deleted.\nThis operation cannot be undone!\n\n");
             ImGui::Separator();
@@ -2631,7 +2631,7 @@ static void ShowDemoWindowPopups()
 
         if (ImGui::Button("Stacked modals.."))
             ImGui::OpenPopup("Stacked 1");
-        if (ImGui::BeginPopupModal("Stacked 1", NULL, ImGuiWindowFlags_MenuBar))
+        if (ImGui::BeginPopupModal("Stacked 1", NULL, DebugWindowFlags_MenuBar))
         {
             if (ImGui::BeginMenuBar())
             {
@@ -2860,7 +2860,7 @@ static void ShowDemoWindowColumns()
     if (ImGui::TreeNode("Horizontal Scrolling"))
     {
         ImGui::SetNextWindowContentSize(ImVec2(1500.0f, 0.0f));
-        ImGui::BeginChild("##ScrollingRegion", ImVec2(0, ImGui::GetFontSize() * 20), false, ImGuiWindowFlags_HorizontalScrollbar);
+        ImGui::BeginChild("##ScrollingRegion", ImVec2(0, ImGui::GetFontSize() * 20), false, DebugWindowFlags_HorizontalScrollbar);
         ImGui::Columns(10);
         int ITEMS_COUNT = 2000;
         ImGuiListClipper clipper(ITEMS_COUNT);  // Also demonstrate using the clipper for large list
@@ -3087,7 +3087,7 @@ static void ShowDemoWindowMisc()
 
 void ImGui::ShowAboutWindow(bool* p_open)
 {
-    if (!ImGui::Begin("About Dear ImGui", p_open, ImGuiWindowFlags_AlwaysAutoResize))
+    if (!ImGui::Begin("About Dear ImGui", p_open, DebugWindowFlags_AlwaysAutoResize))
     {
         ImGui::End();
         return;
@@ -3105,7 +3105,7 @@ void ImGui::ShowAboutWindow(bool* p_open)
         ImGuiStyle& style = ImGui::GetStyle();
 
         bool copy_to_clipboard = ImGui::Button("Copy to clipboard");
-        ImGui::BeginChildFrame(ImGui::GetID("cfginfos"), ImVec2(0, ImGui::GetTextLineHeightWithSpacing() * 18), ImGuiWindowFlags_NoMove);
+        ImGui::BeginChildFrame(ImGui::GetID("cfginfos"), ImVec2(0, ImGui::GetTextLineHeightWithSpacing() * 18), DebugWindowFlags_NoMove);
         if (copy_to_clipboard)
         {
             ImGui::LogToClipboard();
@@ -3381,7 +3381,7 @@ void ImGui::ShowStyleEditor(ImGuiStyle* ref)
             if (ImGui::RadioButton("Both",   alpha_flags == ImGuiColorEditFlags_AlphaPreviewHalf))  { alpha_flags = ImGuiColorEditFlags_AlphaPreviewHalf; } ImGui::SameLine();
             HelpMarker("In the color list:\nLeft-click on colored square to open color picker,\nRight-click to open edit options menu.");
 
-            ImGui::BeginChild("##colors", ImVec2(0, 0), true, ImGuiWindowFlags_AlwaysVerticalScrollbar | ImGuiWindowFlags_AlwaysHorizontalScrollbar | ImGuiWindowFlags_NavFlattened);
+            ImGui::BeginChild("##colors", ImVec2(0, 0), true, DebugWindowFlags_AlwaysVerticalScrollbar | DebugWindowFlags_AlwaysHorizontalScrollbar | DebugWindowFlags_NavFlattened);
             ImGui::PushItemWidth(-160);
             for (int i = 0; i < ImGuiCol_COUNT; i++)
             {
@@ -3526,7 +3526,7 @@ void ImGui::ShowStyleEditor(ImGuiStyle* ref)
 
 // Demonstrate creating a "main" fullscreen menu bar and populating it.
 // Note the difference between BeginMainMenuBar() and BeginMenuBar():
-// - BeginMenuBar() = menu-bar inside current window we Begin()-ed into (the window needs the ImGuiWindowFlags_MenuBar flag)
+// - BeginMenuBar() = menu-bar inside current window we Begin()-ed into (the window needs the DebugWindowFlags_MenuBar flag)
 // - BeginMainMenuBar() = helper to create menu-bar-sized window at the top of the main viewport + call BeginMenuBar() into it.
 static void ShowExampleAppMainMenuBar()
 {
@@ -3725,7 +3725,7 @@ struct ExampleAppConsole
         ImGui::Separator();
 
         const float footer_height_to_reserve = ImGui::GetStyle().ItemSpacing.y + ImGui::GetFrameHeightWithSpacing(); // 1 separator, 1 input text
-        ImGui::BeginChild("ScrollingRegion", ImVec2(0, -footer_height_to_reserve), false, ImGuiWindowFlags_HorizontalScrollbar); // Leave room for 1 separator + 1 InputText
+        ImGui::BeginChild("ScrollingRegion", ImVec2(0, -footer_height_to_reserve), false, DebugWindowFlags_HorizontalScrollbar); // Leave room for 1 separator + 1 InputText
         if (ImGui::BeginPopupContextWindow())
         {
             if (ImGui::Selectable("Clear")) ClearLog();
@@ -4011,7 +4011,7 @@ struct ExampleAppLog
         Filter.Draw("Filter", -100.0f);
 
         ImGui::Separator();
-        ImGui::BeginChild("scrolling", ImVec2(0,0), false, ImGuiWindowFlags_HorizontalScrollbar);
+        ImGui::BeginChild("scrolling", ImVec2(0,0), false, DebugWindowFlags_HorizontalScrollbar);
 
         if (clear)
             Clear();
@@ -4105,7 +4105,7 @@ static void ShowExampleAppLog(bool* p_open)
 static void ShowExampleAppLayout(bool* p_open)
 {
     ImGui::SetNextWindowSize(ImVec2(500, 440), ImGuiCond_FirstUseEver);
-    if (ImGui::Begin("Example: Simple layout", p_open, ImGuiWindowFlags_MenuBar))
+    if (ImGui::Begin("Example: Simple layout", p_open, DebugWindowFlags_MenuBar))
     {
         if (ImGui::BeginMenuBar())
         {
@@ -4295,7 +4295,7 @@ static void ShowExampleAppLongText(bool* p_open)
 // Demonstrate creating a window which gets auto-resized according to its content.
 static void ShowExampleAppAutoResize(bool* p_open)
 {
-    if (!ImGui::Begin("Example: Auto-resizing window", p_open, ImGuiWindowFlags_AlwaysAutoResize))
+    if (!ImGui::Begin("Example: Auto-resizing window", p_open, DebugWindowFlags_AlwaysAutoResize))
     {
         ImGui::End();
         return;
@@ -4333,7 +4333,7 @@ static void ShowExampleAppConstrainedResize(bool* p_open)
     if (type == 5) ImGui::SetNextWindowSizeConstraints(ImVec2(0, 0),     ImVec2(FLT_MAX, FLT_MAX), CustomConstraints::Square);                     // Always Square
     if (type == 6) ImGui::SetNextWindowSizeConstraints(ImVec2(0, 0),     ImVec2(FLT_MAX, FLT_MAX), CustomConstraints::Step, (void*)(intptr_t)100); // Fixed Step
 
-    ImGuiWindowFlags flags = auto_resize ? ImGuiWindowFlags_AlwaysAutoResize : 0;
+    DebugWindowFlags flags = auto_resize ? DebugWindowFlags_AlwaysAutoResize : 0;
     if (ImGui::Begin("Example: Constrained Resize", p_open, flags))
     {
         const char* desc[] =
@@ -4377,7 +4377,7 @@ static void ShowExampleAppSimpleOverlay(bool* p_open)
         ImGui::SetNextWindowPos(window_pos, ImGuiCond_Always, window_pos_pivot);
     }
     ImGui::SetNextWindowBgAlpha(0.35f); // Transparent background
-    if (ImGui::Begin("Example: Simple overlay", p_open, (corner != -1 ? ImGuiWindowFlags_NoMove : 0) | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav))
+    if (ImGui::Begin("Example: Simple overlay", p_open, (corner != -1 ? DebugWindowFlags_NoMove : 0) | DebugWindowFlags_NoDecoration | DebugWindowFlags_AlwaysAutoResize | DebugWindowFlags_NoSavedSettings | DebugWindowFlags_NoFocusOnAppearing | DebugWindowFlags_NoNav))
     {
         ImGui::Text("Simple overlay\n" "in the corner of the screen.\n" "(right-click to change position)");
         ImGui::Separator();
@@ -4687,7 +4687,7 @@ void ShowExampleAppDocuments(bool* p_open)
     static bool opt_reorderable = true;
     static ImGuiTabBarFlags opt_fitting_flags = ImGuiTabBarFlags_FittingPolicyDefault_;
 
-    bool window_contents_visible = ImGui::Begin("Example: Documents", p_open, ImGuiWindowFlags_MenuBar);
+    bool window_contents_visible = ImGui::Begin("Example: Documents", p_open, DebugWindowFlags_MenuBar);
     if (!window_contents_visible)
     {
         ImGui::End();

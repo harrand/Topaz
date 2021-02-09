@@ -167,7 +167,7 @@ namespace tz::ext::glfw
 	void GLFWWindowImpl::set_active_context() const
 	{
 		glfwMakeContextCurrent(this->window_handle);
-		tz::ext::imgui::set_window_impl(this->window_handle);
+		tz::dui::set_window_impl(this->window_handle);
 	}
 	
 	bool GLFWWindowImpl::operator==(const GLFWWindowImpl& rhs) const

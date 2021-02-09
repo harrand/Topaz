@@ -48,7 +48,7 @@ int main()
 	tz::initialise("Topaz Bindless Texture Demo");
 	{
 		tz::gl::Object o;
-		tz::ext::imgui::track_object(&o);
+		tz::dui::track_object(&o);
 		tz::gl::p::UBOModule* ubo_module = nullptr;
 		std::string preprocess_vertex_source;
 		tz::gl::ShaderPreprocessor pre{vtx_shader_src};

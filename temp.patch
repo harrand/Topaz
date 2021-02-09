@@ -145,11 +145,11 @@ index 2493424a..c156ce48 100644
 +
 +};
 +
- class LightingDemoWindow : public tz::ext::imgui::ImGuiWindow
+ class LightingDemoWindow : public tz::dui::DebugWindow
  {
  public:
--    LightingDemoWindow(tz::Vec3* ambient_light): tz::ext::imgui::ImGuiWindow("Topaz Lighting Demo"), ambient_light(ambient_light){}
-+    LightingDemoWindow(tz::Vec3* ambient_light, std::array<PointLight*, max_lights> lights): tz::ext::imgui::ImGuiWindow("Topaz Lighting Demo"), ambient_light(ambient_light), lights(lights){}
+-    LightingDemoWindow(tz::Vec3* ambient_light): tz::dui::DebugWindow("Topaz Lighting Demo"), ambient_light(ambient_light){}
++    LightingDemoWindow(tz::Vec3* ambient_light, std::array<PointLight*, max_lights> lights): tz::dui::DebugWindow("Topaz Lighting Demo"), ambient_light(ambient_light), lights(lights){}
  
      virtual void render() override
      {
@@ -264,8 +264,8 @@ index 2493424a..c156ce48 100644
 +            }
          }
  
--        tz::ext::imgui::emplace_window<LightingDemoWindow>(ambient_lighting);
-+        tz::ext::imgui::emplace_window<LightingDemoWindow>(ambient_lighting, lights);
+-        tz::dui::emplace_window<LightingDemoWindow>(ambient_lighting);
++        tz::dui::emplace_window<LightingDemoWindow>(ambient_lighting, lights);
  
  		tz::gl::ShaderCompiler cpl;
  		tz::gl::ShaderProgram prg;

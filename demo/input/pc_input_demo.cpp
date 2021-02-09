@@ -2,10 +2,10 @@
 #include "gl/frame.hpp"
 #include "dui/window.hpp"
 
-class InputDemoWindow : public tz::ext::imgui::ImGuiWindow
+class InputDemoWindow : public tz::dui::DebugWindow
 {
 public:
-    InputDemoWindow(): tz::ext::imgui::ImGuiWindow("Topaz PC Input Demo"){}
+    InputDemoWindow(): tz::dui::DebugWindow("Topaz PC Input Demo"){}
     
     void handle_key_press(tz::input::KeyPressEvent e);
     void handle_char_type(tz::input::CharPressEvent e);
@@ -26,7 +26,7 @@ int main()
     {
         tz::IWindow& window = tz::get().window();
         window.register_this();
-        InputDemoWindow& input = tz::ext::imgui::emplace_window<InputDemoWindow>();
+        InputDemoWindow& input = tz::dui::emplace_window<InputDemoWindow>();
 
         window.emplace_custom_key_listener(
         [&input](tz::input::KeyPressEvent e)

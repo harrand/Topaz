@@ -3,9 +3,9 @@
 #include "gl/modules/ubo.hpp"
 #include "gl/modules/bindless_sampler.hpp"
 
-namespace tz::ext::imgui::gl
+namespace tz::dui::gl
 {
-	TZGLPPreview::TZGLPPreview(): ImGuiWindow("TZGLP Shader Source Previewer"), preprocessors(), show_module_configuration(false), dummy_object(nullptr){}
+	TZGLPPreview::TZGLPPreview(): DebugWindow("TZGLP Shader Source Previewer"), preprocessors(), show_module_configuration(false), dummy_object(nullptr){}
 
 	TZGLPPreview::~TZGLPPreview()
 	{

@@ -5,7 +5,7 @@
 #include "gl/object.hpp"
 #include <unordered_map>
 
-namespace tz::ext::imgui::gl
+namespace tz::dui::gl
 {
 	enum class SupportedModule : int
 	{
@@ -34,7 +34,7 @@ namespace tz::ext::imgui::gl
 		}
 	}
 
-	class TZGLPPreview : public ImGuiWindow
+	class TZGLPPreview : public DebugWindow
 	{
 	public:
 		TZGLPPreview();

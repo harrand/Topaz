@@ -253,10 +253,10 @@ private:
 	std::map<const char*, tz::gl::IndexedMesh> mesh_map;
 };
 
-class LightingDemoWindow : public tz::ext::imgui::ImGuiWindow
+class LightingDemoWindow : public tz::dui::DebugWindow
 {
 public:
-    LightingDemoWindow(tz::Vec3* ambient_light, bool* rotate, std::array<PointLight*, render_shader::max_lights> lights): tz::ext::imgui::ImGuiWindow("Lights"), ambient_light(ambient_light), rotate(rotate), lights(lights){}
+    LightingDemoWindow(tz::Vec3* ambient_light, bool* rotate, std::array<PointLight*, render_shader::max_lights> lights): tz::dui::DebugWindow("Lights"), ambient_light(ambient_light), rotate(rotate), lights(lights){}
 
     virtual void render() override
     {
@@ -282,10 +282,10 @@ private:
     std::array<PointLight*, render_shader::max_lights> lights;
 };
 
-class FrameBufferInspector : public tz::ext::imgui::ImGuiWindow
+class FrameBufferInspector : public tz::dui::DebugWindow
 {
 public:
-	FrameBufferInspector(): tz::ext::imgui::ImGuiWindow("Framebuffer Inspector"){}
+	FrameBufferInspector(): tz::dui::DebugWindow("Framebuffer Inspector"){}
 
 	void track_framebuffer_output(const char* name, tz::gl::Texture* tex)
 	{
@@ -393,7 +393,7 @@ int main()
 		tz::gl::Object& o = *m;
 
 		// Track it in imgui.
-		tz::ext::imgui::track_object(&o);
+		tz::dui::track_object(&o);
 
 		tz::gl::p::SSBOModule* ssbo_module = nullptr;
 		std::string vtx_result;
@@ -485,8 +485,8 @@ int main()
 
 		bool rotate_enabled = true;
 
-        tz::ext::imgui::emplace_window<LightingDemoWindow>(ambient_lighting, &rotate_enabled, lights);
-		FrameBufferInspector& fbinspector = tz::ext::imgui::emplace_window<FrameBufferInspector>();
+        tz::dui::emplace_window<LightingDemoWindow>(ambient_lighting, &rotate_enabled, lights);
+		FrameBufferInspector& fbinspector = tz::dui::emplace_window<FrameBufferInspector>();
 		fbinspector.track_framebuffer_output("Test Texture", &checkerboard);
 		fbinspector.track_framebuffer_output("another texture", &metal);
 

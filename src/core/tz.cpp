@@ -23,14 +23,14 @@ namespace tz
 		this->tz_window = std::make_unique<GLFWWindow>(tz::ext::glfw::get());
 		this->tz_window->set_active_context();
 		tz::ext::glad::get().load();
-		tz::ext::imgui::initialise();
+		tz::dui::initialise();
 	}
 
 	void TopazCore::terminate()
 	{
 		topaz_assert(this->initialised, "TopazCore::terminate(): Attempt to terminate but we're not marked as initialised!");
 		this->initialised = false;
-		tz::ext::imgui::terminate();
+		tz::dui::terminate();
 		// TODO: Burn stuff here.
 		tz::ext::glfw::terminate();
 	}
@@ -103,7 +103,7 @@ namespace tz
 	void update()
 	{
 		glfwPollEvents();
-		tz::ext::imgui::update();
+		tz::dui::update();
 	}
 	
 	void terminate()

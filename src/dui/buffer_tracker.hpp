@@ -10,9 +10,9 @@ namespace tz::gl
 	class Object;
 }
 
-namespace tz::ext::imgui::gl
+namespace tz::dui::gl
 {
-	class BufferTracker : public tz::ext::imgui::ImGuiWindow
+	class BufferTracker : public tz::dui::DebugWindow
 	{
 	public:
 		BufferTracker(tz::gl::Object* object);

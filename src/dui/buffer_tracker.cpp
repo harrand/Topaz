@@ -4,9 +4,9 @@
 #include <string>
 #include <cstring>
 
-namespace tz::ext::imgui::gl
+namespace tz::dui::gl
 {
-	BufferTracker::BufferTracker(tz::gl::Object* object): ImGuiWindow("Buffer Tracker"), object(object), tracked_buffer_id(std::nullopt){}
+	BufferTracker::BufferTracker(tz::gl::Object* object): DebugWindow("Buffer Tracker"), object(object), tracked_buffer_id(std::nullopt){}
 
 	void BufferTracker::track_buffer(std::size_t buffer_handle)
 	{

@@ -41,7 +41,7 @@ int main()
 	tz::initialise("Topaz Graphics Demo");
 	{
 		tz::gl::Object o;
-		tz::ext::imgui::track_object(&o);
+		tz::dui::track_object(&o);
 		tz::gl::p::UBOModule* ubo_module = nullptr;
 		tz::gl::ShaderPreprocessor pre{vtx_shader_src};
 		{

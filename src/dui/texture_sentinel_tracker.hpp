@@ -2,9 +2,9 @@
 #define TOPAZ_GL_IMGUI_TEXTURE_SENTINEL_TRACKER_HPP
 #include "dui/window.hpp"
 
-namespace tz::ext::imgui::gl
+namespace tz::dui::gl
 {
-	class SentinelTrackerWindow : public ImGuiWindow
+	class SentinelTrackerWindow : public DebugWindow
 	{
 	public:
 		SentinelTrackerWindow();

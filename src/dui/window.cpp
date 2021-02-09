@@ -13,9 +13,9 @@
 #include "dui/ogl_info.hpp"
 #include "dui/texture_sentinel_tracker.hpp"
 
-namespace tz::ext::imgui
+namespace tz::dui
 {
-	static std::vector<std::unique_ptr<ImGuiWindow>> windows;
+	static std::vector<std::unique_ptr<DebugWindow>> windows;
 	static tz::gl::Object* obj = nullptr;
 	static gl::BufferTracker tracker{nullptr};
 	static gl::TZGLPPreview tzglp{};
@@ -23,9 +23,9 @@ namespace tz::ext::imgui
 	static gl::SentinelTrackerWindow textracker{};
 	static bool show_demo_window = false;
 
-	ImGuiWindow::ImGuiWindow(const char* name): name(name){}
+	DebugWindow::DebugWindow(const char* name): name(name){}
 
-	const char* ImGuiWindow::get_name() const
+	const char* DebugWindow::get_name() const
 	{
 		return this->name;
 	}
@@ -58,7 +58,7 @@ namespace tz::ext::imgui
 		ImGui::DestroyContext();
 	}
 
-	ImGuiWindow& add_window(std::unique_ptr<ImGuiWindow> wnd)
+	DebugWindow& add_window(std::unique_ptr<DebugWindow> wnd)
 	{
 		wnd->visible = false;
 		windows.push_back(std::move(wnd));
@@ -233,7 +233,7 @@ namespace tz::ext::imgui
 
 		for(auto& window_ptr : windows)
 		{
-			ImGuiWindow& wnd = *window_ptr;
+			DebugWindow& wnd = *window_ptr;
 			if(wnd.visible)
 				wnd.render();
 		}

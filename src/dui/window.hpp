@@ -11,12 +11,12 @@ namespace tz::gl
 	class Object;
 }
 
-namespace tz::ext::imgui
+namespace tz::dui
 {
-	class ImGuiWindow
+	class DebugWindow
 	{
 	public:
-		ImGuiWindow(const char* name);
+		DebugWindow(const char* name);
 		const char* get_name() const;
 		virtual void render() = 0;
 
@@ -32,7 +32,7 @@ namespace tz::ext::imgui
 	void terminate();
 	template<class WindowType, typename... Args>
 	WindowType& emplace_window(Args&&... args);
-	ImGuiWindow& add_window(std::unique_ptr<ImGuiWindow> wnd);
+	DebugWindow& add_window(std::unique_ptr<DebugWindow> wnd);
 	void update();
 }
 

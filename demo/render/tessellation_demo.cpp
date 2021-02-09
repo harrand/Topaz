@@ -165,10 +165,10 @@ namespace tz::render
     };
 }
 
-class MeshAdjustor : public tz::ext::imgui::ImGuiWindow
+class MeshAdjustor : public tz::dui::DebugWindow
 {
 public:
-	MeshAdjustor(tz::Vec3& offset, float& rotation_factor, float& x_spacing, float& y_spacing, tz::render::Scene<tz::render::SceneElement, SeparateTransformResourceWriter>& scene): ImGuiWindow("Mesh Adjustor"), offset(offset), rotation_factor(rotation_factor), x_spacing(x_spacing), y_spacing(y_spacing), scene(scene){}
+	MeshAdjustor(tz::Vec3& offset, float& rotation_factor, float& x_spacing, float& y_spacing, tz::render::Scene<tz::render::SceneElement, SeparateTransformResourceWriter>& scene): DebugWindow("Mesh Adjustor"), offset(offset), rotation_factor(rotation_factor), x_spacing(x_spacing), y_spacing(y_spacing), scene(scene){}
 
 	void register_mesh(const char* name, tz::render::AssetBuffer::Index index)
 	{
@@ -229,7 +229,7 @@ int main()
 		tz::gl::Object& o = *m;
 
 		// Track it in imgui.
-		tz::ext::imgui::track_object(&o);
+		tz::dui::track_object(&o);
         tz::get().enable_wireframe_mode(true);
 
 		tz::gl::p::SSBOModule* ssbo_module = nullptr;
@@ -297,7 +297,7 @@ int main()
 		// Scene uses UBO resource data.
 		tz::render::Scene<tz::render::SceneElement, SeparateTransformResourceWriter> scene{ssbo->map()};
 
-		MeshAdjustor& mesh_adjustor = tz::ext::imgui::emplace_window<MeshAdjustor>(triangle_pos, rotation_factor, x_factor, y_factor, scene);
+		MeshAdjustor& mesh_adjustor = tz::dui::emplace_window<MeshAdjustor>(triangle_pos, rotation_factor, x_factor, y_factor, scene);
 
 		tz::IWindow& wnd = tz::get().window();
 		wnd.register_this();

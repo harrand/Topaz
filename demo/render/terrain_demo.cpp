@@ -275,12 +275,12 @@ namespace tz::render
 
 constexpr float heightmap_size = 100.0f;
 
-class SceneryOptionsWindow : public tz::ext::imgui::ImGuiWindow
+class SceneryOptionsWindow : public tz::dui::DebugWindow
 {
 public:
 	constexpr static tz::Vec3 default_sky_colour{0.2f, 0.2f, 0.2f};
 
-	SceneryOptionsWindow(tz::Vec4& snow_colour, tz::Vec4& terrain_colour, tz::Vec4& water_colour, tz::Vec4& tess_options, tz::Vec4& magic, tz::gl::Texture& heightmap_tex): tz::ext::imgui::ImGuiWindow("Scenery Options"), snow_colour(snow_colour), terrain_colour(terrain_colour), water_colour(water_colour), tess_options(tess_options), magic(magic), heightmap_tex(heightmap_tex), noise_map_seed(0)
+	SceneryOptionsWindow(tz::Vec4& snow_colour, tz::Vec4& terrain_colour, tz::Vec4& water_colour, tz::Vec4& tess_options, tz::Vec4& magic, tz::gl::Texture& heightmap_tex): tz::dui::DebugWindow("Scenery Options"), snow_colour(snow_colour), terrain_colour(terrain_colour), water_colour(water_colour), tess_options(tess_options), magic(magic), heightmap_tex(heightmap_tex), noise_map_seed(0)
 	{
 		set_sky_col(default_sky_colour);
 	}
@@ -348,7 +348,7 @@ int main()
 		tz::gl::Object& o = *m;
 
 		// Track it in imgui.
-		tz::ext::imgui::track_object(&o);
+		tz::dui::track_object(&o);
 		tz::get().enable_culling(false);
 
 		tz::gl::p::SSBOModule* ssbo_module = nullptr;
@@ -440,7 +440,7 @@ int main()
 			scenery_pool.set(4, default_magic);
 		}
 
-		tz::ext::imgui::emplace_window<SceneryOptionsWindow>(scenery_pool[0], scenery_pool[1], scenery_pool[2], scenery_pool[3], scenery_pool[4], heightmap);
+		tz::dui::emplace_window<SceneryOptionsWindow>(scenery_pool[0], scenery_pool[1], scenery_pool[2], scenery_pool[3], scenery_pool[4], heightmap);
 
 		tz::gl::ShaderCompiler cpl;
 		tz::gl::ShaderProgram prg;

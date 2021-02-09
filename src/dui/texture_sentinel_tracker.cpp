@@ -1,9 +1,9 @@
 #include "dui/texture_sentinel_tracker.hpp"
 #include "gl/texture.hpp"
 
-namespace tz::ext::imgui::gl
+namespace tz::dui::gl
 {
-	SentinelTrackerWindow::SentinelTrackerWindow(): ImGuiWindow("Bindless Texture Sentinel Tracker"){}
+	SentinelTrackerWindow::SentinelTrackerWindow(): DebugWindow("Bindless Texture Sentinel Tracker"){}
 
 	void SentinelTrackerWindow::render()
 	{

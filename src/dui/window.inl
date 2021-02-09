@@ -1,5 +1,5 @@
 
-namespace tz::ext::imgui
+namespace tz::dui
 {
 	template<class WindowType, typename... Args>
 	WindowType& emplace_window(Args&&... args)

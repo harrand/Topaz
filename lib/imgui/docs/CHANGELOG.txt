@@ -86,7 +86,7 @@ Other Changes:
   from the widget, the user string object wouldn't be resized when Enter key was pressed. (#3009)
 - MenuBar: Fix minor clipping issue where occasionally a menu text can overlap the right-most border.
 - Window: Fix SetNextWindowBgAlpha(1.0f) failing to override alpha component. (#3007) [@Albog]
-- Window: When testing for the presence of the ImGuiWindowFlags_NoBringToFrontOnFocus flag we
+- Window: When testing for the presence of the DebugWindowFlags_NoBringToFrontOnFocus flag we
   test both the focused/clicked window (which could be a child window) and the root window.
 - ImDrawList: AddCircle(), AddCircleFilled() API can now auto-tessellate when provided a segment
   count of zero. Alter tessellation quality with 'style.CircleSegmentMaxError'. [@ShironekoBen]
@@ -316,9 +316,9 @@ Other Changes:
 - Scrolling: Added SetScrollHereX(), SetScrollFromPosX() for completeness. (#1580) [@kevreco]
 - Scrolling: Mouse wheel scrolling while hovering a child window is automatically forwarded to parent window
   if ScrollMax is zero on the scrolling axis.
-  Also still the case if ImGuiWindowFlags_NoScrollWithMouse is set (not new), but previously the forwarding
-  would be disabled if ImGuiWindowFlags_NoScrollbar was set on the child window, which is not the case
-  any more. Forwarding can still be disabled by setting ImGuiWindowFlags_NoInputs. (amend #1502, #1380).
+  Also still the case if DebugWindowFlags_NoScrollWithMouse is set (not new), but previously the forwarding
+  would be disabled if DebugWindowFlags_NoScrollbar was set on the child window, which is not the case
+  any more. Forwarding can still be disabled by setting DebugWindowFlags_NoInputs. (amend #1502, #1380).
 - Window: Fixed InnerClipRect right-most coordinates using wrong padding setting (introduced in 1.71).
 - Window: Fixed old SetWindowFontScale() api value from not being inherited by child window. Added
   comments about the right way to scale your UI (load a font at the right side, rebuild atlas, scale style).
@@ -717,7 +717,7 @@ Other Changes:
   - Demo: Added "Documents" example app showcasing possible use for tabs.
   This feature was merged from the Docking branch in order to allow the use of regular tabs in your code.
   (It does not provide the docking/splitting/merging of windows available in the Docking branch)
-- Added ImGuiWindowFlags_UnsavedDocument window flag to append '*' to title without altering the ID, as a convenience
+- Added DebugWindowFlags_UnsavedDocument window flag to append '*' to title without altering the ID, as a convenience
   to avoid using the ### operator. In the Docking branch this also has an effect on tab closing behavior.
 - Window, Focus, Popup: Fixed an issue where closing a popup by clicking another window with the _NoMove flag would refocus
   the parent window of the popup instead of the newly clicked window.
@@ -768,7 +768,7 @@ Other Changes:
 
 - Fixed a text rendering/clipping bug introduced in 1.66 (on 2018-10-12, commit ede3a3b9) that affect single ImDrawList::AddText()
   calls with single strings larger than 10k. Text/TextUnformatted() calls were not affected, but e.g. InputText() was. [@pdoane]
-- When the focused window become inactive don't restore focus to a window with the ImGuiWindowFlags_NoInputs flag. (#2213) [@zzzyap]
+- When the focused window become inactive don't restore focus to a window with the DebugWindowFlags_NoInputs flag. (#2213) [@zzzyap]
 - Separator: Fixed Separator() outputting an extraneous empty line when captured into clipboard/text/file.
 - Demo: Added ShowAboutWindow() call, previously was only accessible from the demo window.
 - Demo: ShowAboutWindow() now display various Build/Config Information (compiler, os, etc.) that can easily be copied into bug reports.
@@ -794,7 +794,7 @@ Other Changes:
   accidental alteration of window position. We now round the provided size. (#2067)
 - Fixed calling DestroyContext() always saving .ini data with the current context instead
   of the supplied context pointer. (#2066)
-- Nav, Focus: Fixed ImGuiWindowFlags_NoBringToFrontOnFocus windows not being restoring focus
+- Nav, Focus: Fixed DebugWindowFlags_NoBringToFrontOnFocus windows not being restoring focus
   properly after the main menu bar or last focused window is deactivated.
 - Nav: Fixed an assert in certain circumstance (mostly when using popups) when mouse positions stop being valid. (#2168)
 - Nav: Fixed explicit directional input not re-highlighting current nav item if there is a single item in the window
@@ -807,11 +807,11 @@ Other Changes:
 - Window: Resizing from edges (with io.ConfigResizeWindowsFromEdges Beta flag) extends the hit region
   of root floating windows outside the window, making it easier to resize windows. Resize grips are also
   extended accordingly so there are no discontinuity when hovering between borders and corners. (#1495, #822)
-- Window: Added ImGuiWindowFlags_NoBackground flag to avoid rendering window background. This is mostly to allow
+- Window: Added DebugWindowFlags_NoBackground flag to avoid rendering window background. This is mostly to allow
   the creation of new flag combinations, as we could already use SetNextWindowBgAlpha(0.0f). (#1660) [@biojppm, @ocornut]
-- Window: Added ImGuiWindowFlags_NoDecoration helper flag which is essentially NoTitleBar+NoResize+NoScrollbar+NoCollapse.
-- Window: Added ImGuiWindowFlags_NoMouseInputs which is basically the old ImGuiWindowFlags_NoInputs (essentially
-  we have renamed ImGuiWindowFlags_NoInputs to ImGuiWindowFlags_NoMouseInputs). Made the new ImGuiWindowFlags_NoInputs
+- Window: Added DebugWindowFlags_NoDecoration helper flag which is essentially NoTitleBar+NoResize+NoScrollbar+NoCollapse.
+- Window: Added DebugWindowFlags_NoMouseInputs which is basically the old DebugWindowFlags_NoInputs (essentially
+  we have renamed DebugWindowFlags_NoInputs to DebugWindowFlags_NoMouseInputs). Made the new DebugWindowFlags_NoInputs
   encompass both NoMouseInputs+NoNav, which is consistent with its description. (#1660, #787)
 - Window, Inputs: Fixed resizing from edges when io.MousePos is not pixel-rounded by rounding mouse position input. (#2110)
 - BeginChild(): Fixed BeginChild(const char*, ...) variation erroneously not applying the ID stack
@@ -899,7 +899,7 @@ Breaking Changes:
 - Style: Renamed ImGuiCol_ModalWindowDarkening to ImGuiCol_ModalWindowDimBg for consistency with other features.
   Kept redirection enum (will obsolete).
 - Changed ImGui::GetTime() return value from float to double to avoid accumulating floating point imprecision over time.
-- Removed per-window ImGuiWindowFlags_ResizeFromAnySide Beta flag in favor `io.ConfigResizeWindowsFromEdges=true` to
+- Removed per-window DebugWindowFlags_ResizeFromAnySide Beta flag in favor `io.ConfigResizeWindowsFromEdges=true` to
   enable the feature globally. (#1495)
   The feature is not currently enabled by default because it is not satisfying enough, but will eventually be.
 - InputText: Renamed ImGuiTextEditCallback to ImGuiInputTextCallback, ImGuiTextEditCallbackData to ImGuiInputTextCallbackData
@@ -917,9 +917,9 @@ Other Changes:
 - ArrowButton: Setup current line text baseline so that ArrowButton() + SameLine() + Text() are aligned properly.
 - Nav: Added a CTRL+TAB window list and changed the highlight system accordingly. The change is motivated by upcoming
   Docking features. (#787)
-- Nav: Made CTRL+TAB skip menus + skip the current navigation window if is has the ImGuiWindow_NoNavFocus set. (#787)
+- Nav: Made CTRL+TAB skip menus + skip the current navigation window if is has the DebugWindow_NoNavFocus set. (#787)
   While it was previously possible, you won't be able to CTRL-TAB out and immediately back in a window with the
-  ImGuiWindow_NoNavFocus flag.
+  DebugWindow_NoNavFocus flag.
 - Window: Allow menu and popups windows from ignoring the style.WindowMinSize values so short menus/popups are not padded. (#1909)
 - Window: Added global io.ConfigResizeWindowsFromEdges option to enable resizing windows from their edges and from
   the lower-left corner. (#1495)
@@ -952,7 +952,7 @@ Other Changes:
 - Made assertion more clear when trying to call Begin() outside of the NewFrame()..EndFrame() scope. (#1987)
 - Fixed assertion when transitioning from an active ID to another within a group, affecting ColorPicker (broken in 1.62). (#2023, #820, #956, #1875).
 - Fixed PushID() from keeping alive the new ID Stack top value (if a previously active widget shared the ID it would be erroneously kept alive).
-- Fixed horizontal mouse wheel not forwarding the request to the parent window if ImGuiWindowFlags_NoScrollWithMouse is set. (#1463, #1380, #1502)
+- Fixed horizontal mouse wheel not forwarding the request to the parent window if DebugWindowFlags_NoScrollWithMouse is set. (#1463, #1380, #1502)
 - Fixed a include build issue for Cygwin in non-POSIX (Win32) mode. (#1917, #1319, #276)
 - ImDrawList: Improved handling for worst-case vertices reservation policy when large amount of text (e.g. 1+ million character strings)
   are being submitted in a single call. It would typically have crashed InputTextMultiline(). (#200)
@@ -1089,11 +1089,11 @@ Other Changes:
 - Added SliderScalar, SliderScalarN: supports signed/unsigned, 32/64 bits, float/double data types. (#643, #320, #708, #1011)
 - Window: Fixed pop-ups/tooltips/menus not honoring style.DisplaySafeAreaPadding as well as it should have (part of menus
   displayed outside the safe area, etc.).
-- Window: Fixed windows using the ImGuiWindowFlags_NoSavedSettings flag from not using the same default position as other windows. (#1760)
+- Window: Fixed windows using the DebugWindowFlags_NoSavedSettings flag from not using the same default position as other windows. (#1760)
 - Window: Relaxed the internal stack size checker to allow Push/Begin/Pop/.../End patterns to be used with PushStyleColor, PushStyleVar, PushFont without causing a false positive assert. (#1767)
 - Window: Fixed the default proportional item width lagging by one frame on resize.
 - Columns: Fixed a bug introduced in 1.51 where columns would affect the contents size of their container, often creating
-  feedback loops when ImGuiWindowFlags_AlwaysAutoResize was used. (#1760)
+  feedback loops when DebugWindowFlags_AlwaysAutoResize was used. (#1760)
 - Settings: Fixed saving an empty .ini file if CreateContext/DestroyContext are called without a single call to NewFrame(). (#1741)
 - Settings: Added LoadIniSettingsFromDisk(), LoadIniSettingsFromMemory(), SaveIniSettingsToDisk(), SaveIniSettingsToMemory()
   to manually load/save .ini settings. (#923, #993)
@@ -1191,7 +1191,7 @@ Other Changes:
     For more advanced uses, you may want to read from io.NavActive or io.NavVisible. Read imgui.cpp for more details.
 - Navigation: SetItemDefaultFocus() sets the navigation position in addition to scrolling. (#787)
 - Navigation: Added IsItemFocused(), added IsAnyItemFocused(). (#787)
-- Navigation: Added window flags: ImGuiWindowFlags_NoNav (== ImGuiWindowFlags_NoNavInputs | ImGuiWindowFlags_NoNavFocus).
+- Navigation: Added window flags: DebugWindowFlags_NoNav (== DebugWindowFlags_NoNavInputs | DebugWindowFlags_NoNavFocus).
 - Navigation: Style: Added ImGuiCol_NavHighlight, ImGuiCol_NavWindowingHighlight colors. (#787)
 - Navigation: TreeNode: Added ImGuiTreeNodeFlags_NavLeftJumpsBackHere flag to allow Nav Left direction to jump back to parent tree node from any of its child. (#1079)
 - Navigation: IO: Added io.ConfigFlags (input), io.NavActive (output), io.NavVisible (output). (#787)
@@ -1211,7 +1211,7 @@ Other Changes:
 - IO: Added ImGuiKey_Insert, ImGuiKey_Space keys. Setup in all example bindings. (#1541)
 - IO: Added Horizontal Mouse Wheel support for horizontal scrolling. (#1463) [@tseeker]
 - IO: Added IsAnyMouseDown() helper which is helpful for bindings to handle mouse capturing.
-- Window: Clicking on a window with the ImGuiWIndowFlags_NoMove flags takes an ActiveId so we can't hover something else when dragging afterwards. (#1381, #1337)
+- Window: Clicking on a window with the DebugWindowFlags_NoMove flags takes an ActiveId so we can't hover something else when dragging afterwards. (#1381, #1337)
 - Window: IsWindowHovered(): Added ImGuiHoveredFlags_AnyWindow, ImGuiFocusedFlags_AnyWindow flags (See Breaking Changes). Added to demo. (#1382)
 - Window: Added SetNextWindowBgAlpha() helper. Particularly helpful since the legacy 5-parameters version of Begin() has been marked as obsolete in 1.53. (#1567)
 - Window: Fixed SetNextWindowContentSize() with 0.0f on Y axis (or SetNextWindowContentWidth()) overwriting the contents size. Got broken on Dec 10 (1.53). (#1363)
@@ -1229,7 +1229,7 @@ Other Changes:
 - Popup: Better handling of user mistakenly calling OpenPopup() every frame (with reopen_existing option). The error will now be more visible and easier to understand. (#1497)
 - Popup: BeginPopup(): Exposed extra_flags parameter that are passed through to Begin(). (#1533)
 - Popup: BeginPopupModal: fixed the conditional test for SetNextWindowPos() which was polling the wrong window, which in practice made the test succeed all the time.
-- Tooltip: BeginTooltip() sets ImGuiWindowFlags_NoInputs flag.
+- Tooltip: BeginTooltip() sets DebugWindowFlags_NoInputs flag.
 - Scrollbar: Fixed ScrollbarY enable test after ScrollbarX has been enabled being a little off (small regression from Nov 2017). (#1574)
 - Scrollbar: Fixed ScrollbarX enable test subtracting WindowPadding.x (this has been there since the addition of horizontal scroll bar!).
 - Columns: Clear offsets data when columns count changed. (#1525)
@@ -1323,7 +1323,7 @@ Breaking Changes:
 - Renamed `ImGuiTextBuffer::append()` helper to `appendf()`, and `appendv()` to `appendfv()` for consistency. If you copied the 'Log' demo in your code, it uses appendv() so that needs to be renamed.
 - ImDrawList: Removed 'bool anti_aliased = true' final parameter of `ImDrawList::AddPolyline()` and `ImDrawList::AddConvexPolyFilled()`. Prefer manipulating ImDrawList::Flags if you need to toggle them during the frame.
 - Style, ImDrawList: Renamed `style.AntiAliasedShapes` to `style.AntiAliasedFill` for consistency and as a way to explicitly break code that manipulate those flag at runtime. You can now manipulate ImDrawList::Flags.
-- Style, Begin: Removed `ImGuiWindowFlags_ShowBorders` window flag. Borders are now fully set up in the ImGuiStyle structure (see e.g. `style.FrameBorderSize`, `style.WindowBorderSize`, `style.PopupBorderSize`).
+- Style, Begin: Removed `DebugWindowFlags_ShowBorders` window flag. Borders are now fully set up in the ImGuiStyle structure (see e.g. `style.FrameBorderSize`, `style.WindowBorderSize`, `style.PopupBorderSize`).
   Use `ImGui::ShowStyleEditor()` to look them up.
   Please note that the style system will keep evolving (hopefully stabilizing in Q1 2018), and so custom styles will probably subtly break over time.
   It is recommended that you use the `StyleColorsClassic()`, `StyleColorsDark()`, `StyleColorsLight()` functions. Also see `ShowStyleSelector()`.
@@ -1349,7 +1349,7 @@ Other Changes:
 - Style: Added StyleColorsDark() style. (#707) [@dougbinks]
 - Style: Added StyleColorsLight() style. Best used with frame borders + thicker font than the default font. (#707)
 - Style: Added style.PopupRounding setting. (#1112)
-- Style: Added style.FrameBorderSize, style.WindowBorderSize, style.PopupBorderSize. Removed ImGuiWindowFlags_ShowBorders window flag!
+- Style: Added style.FrameBorderSize, style.WindowBorderSize, style.PopupBorderSize. Removed DebugWindowFlags_ShowBorders window flag!
   Borders are now fully set up in the ImGuiStyle structure. Use ImGui::ShowStyleEditor() to look them up. (#707, fix #819, #1031)
 - Style: Various small changes to the classic style (most noticeably, buttons are now using blue shades). (#707)
 - Style: Renamed ImGuiCol_ChildWindowBg to ImGuiCol_ChildBg.
@@ -1372,13 +1372,13 @@ Other Changes:
 - Window: Calling IsItemActive(), IsItemHovered() etc. after a call to Begin() provides item data for the title bar, so you can easily test if the title bar is being hovered, etc. (#823)
 - Window: Made it possible to use SetNextWindowPos() on a child window.
 - Window: Fixed a one frame glitch. When an appearing window claimed the focus themselves, the title bar wouldn't use the focused color for one frame.
-- Window: Added ImGuiWindowFlags_ResizeFromAnySide flag to resize from any borders or from the lower-left corner of a window. This requires your backend to honor GetMouseCursor() requests for full usability. (#822)
+- Window: Added DebugWindowFlags_ResizeFromAnySide flag to resize from any borders or from the lower-left corner of a window. This requires your backend to honor GetMouseCursor() requests for full usability. (#822)
 - Window: Sizing fixes when using SetNextWindowSize() on individual axises.
 - Window: Hide new window for one frame until they calculate their size. Also fixes SetNextWindowPos() given a non-zero pivot. (#1694)
 - Window: Made mouse wheel scrolling accommodate better to windows that are smaller than the scroll step.
 - Window: SetNextWindowContentSize() adjust for the size of decorations (title bar/menu bar), but _not_ for borders are we consistently make borders not affect layout.
   If you need a non-child window of an exact size with border enabled but zero window padding, you'll need to accommodate for the border size yourself.
-- Window: Using the ImGuiWindowFlags_NoScrollWithMouse flag on a child window forwards the mouse wheel event to the parent window, unless either ImGuiWindowFlags_NoInputs or ImGuiWindowFlags_NoScrollbar are also set. (#1380, #1502)
+- Window: Using the DebugWindowFlags_NoScrollWithMouse flag on a child window forwards the mouse wheel event to the parent window, unless either DebugWindowFlags_NoInputs or DebugWindowFlags_NoScrollbar are also set. (#1380, #1502)
 - Window: Active Modal window always set the WantCaptureKeyboard flag. (#744)
 - Window: Moving window doesn't use accumulating MouseDelta so straying out of imgui boundaries keeps moved imgui window at the same cursor-relative position.
 - IsWindowFocused(): Added ImGuiFocusedFlags_ChildWindows flag to include child windows in the focused test. (#1382).
@@ -1493,7 +1493,7 @@ Other Changes:
 - Window: Fixed `Begin()` auto-fit calculation code that predict the presence of a scrollbar so it works better when window size constraints are used.
 - Window: Fixed calling `Begin()` more than once per frame setting `window_just_activated_by_user` which in turn would set enable the Appearing condition for that frame.
 - Window: The implicit "Debug" window now uses a "Debug##Default" identifier instead of "Debug" to allow user creating a window called "Debug" without losing their custom flags.
-- Window: Made the `ImGuiWindowFlags_NoMove` flag properly inherited from parent to child. In a setup with ParentWindow (no flag) -> Child (NoMove) -> SubChild (no flag), the user won't be able to move the parent window by clicking on SubChild. (#1381)
+- Window: Made the `DebugWindowFlags_NoMove` flag properly inherited from parent to child. In a setup with ParentWindow (no flag) -> Child (NoMove) -> SubChild (no flag), the user won't be able to move the parent window by clicking on SubChild. (#1381)
 - Popups: Pop-ups can be closed with a right-click anywhere, without altering focus under the pop-up. (~#439)
 - Popups: `BeginPopupContextItem()`, `BeginPopupContextWindow()` are now setup to allow reopening a context menu by right-clicking again. (~#439)
 - Popups: `BeginPopupContextItem()` now supports a NULL string identifier and uses the last item ID if available.
@@ -1589,10 +1589,10 @@ Other Changes:
 - ImFontAtlas: Added `TexGlyphPadding` option. (#1282) [@jadwallis]
 - ImFontAtlas: Made it possible to override size of AddFontDefault() (even if it isn't really recommended!).
 - ImDrawList: Added `GetClipRectMin()`, `GetClipRectMax()` helpers.
-- Fixed Ini saving crash if the ImGuiWindowFlags_NoSavedSettings gets removed from a window after its creation (unlikely!). (#1000)
+- Fixed Ini saving crash if the DebugWindowFlags_NoSavedSettings gets removed from a window after its creation (unlikely!). (#1000)
 - Fixed `PushID()`/`PopID()` from marking parent window as Accessed (which needlessly woke up the root "Debug" window when used outside of a regular window). (#747)
 - Fixed an assert when calling `CloseCurrentPopup()` twice in a row. [@nem0]
-- Window size can be loaded from .ini data even if ImGuiWindowFlags_NoResize flag is set. (#1048, #1056)
+- Window size can be loaded from .ini data even if DebugWindowFlags_NoResize flag is set. (#1048, #1056)
 - Columns: Added `SetColumnWidth()`. (#913) [@ggtucker]
 - Columns: Dragging a column preserve its width by default. (#913) [@ggtucker]
 - Columns: Fixed first column appearing wider than others. (#1266)
@@ -1807,13 +1807,13 @@ Other Changes:
 - Fixed clipping of child windows within parent not taking account of child outer clipping boundaries (including scrollbar, etc.). (#506)
 - TextUnformatted(): Fixed rare crash bug with large blurb of text (2k+) not finished with a '\n' and fully above the clipping Y line. (#535)
 - IO: Added 'KeySuper' field to hold CMD keyboard modifiers for OS X. Updated all examples accordingly. (#473)
-- Added ImGuiWindowFlags_ForceVerticalScrollbar, ImGuiWindowFlags_ForceHorizontalScrollbar flags. (#476)
+- Added DebugWindowFlags_ForceVerticalScrollbar, DebugWindowFlags_ForceHorizontalScrollbar flags. (#476)
 - Added IM_COL32 macros to generate a U32 packed color, convenient for direct use of ImDrawList api. (#346)
 - Added GetFontTexUvWhitePixel() helper, convenient for direct use of ImDrawList api.
 - Selectable(): Added ImGuiSelectableFlags_AllowDoubleClick flag to allow user reacting on double-click. (@zapolnov) (#516)
 - Begin(): made the close button explicitly set the boolean to false instead of toggling it. (#499)
 - BeginChild()/EndChild(): fixed incorrect layout to allow widgets submitted after an auto-fitted child window. (#540)
-- BeginChild(): Added ImGuiWindowFlags_AlwaysUseWindowPadding flag to ensure non-bordered child window uses window padding. (#462)
+- BeginChild(): Added DebugWindowFlags_AlwaysUseWindowPadding flag to ensure non-bordered child window uses window padding. (#462)
 - Fixed InputTextMultiLine(), ListBox(), BeginChildFrame(), ProgressBar(): outer frame not honoring bordering. (#462, #503)
 - Fixed Image(), ImageButtion() rendering a rectangle 1 px too large on each axis. (#457)
 - SetItemAllowOverlap(): Promoted from imgui_internal.h to public imgui.h api. (#517)
@@ -1885,7 +1885,7 @@ Changes:
 - InputText(): Replace OS IME (Input Method Editor) cursor on top-left when we are not text editing.
 - TreeNode(), CollapsingHeader(), Bullet(), BulletText(): various sizing and layout fixes to better support laying out
   multiple item with different height on same line. (#414, #282)
-- Begin(): Initial window creation with ImGuiWindowFlags_NoBringToFrontOnFocus flag pushes it at the front of global window list.
+- Begin(): Initial window creation with DebugWindowFlags_NoBringToFrontOnFocus flag pushes it at the front of global window list.
 - BeginPopupContextWindow() and BeginPopupContextVoid() reopen window on subsequent click. (#439)
 - ColorEdit4(): Fixed broken tooltip on hovering the color button. (actually fixes #373, #380)
 - ImageButton(): uses FrameRounding up to a maximum of available framing size. (#394)
@@ -1919,8 +1919,8 @@ Decorated log: https://github.com/ocornut/imgui/releases/tag/v1.46
 
 Changes:
 
-- Begin*(): added ImGuiWindowFlags_NoFocusOnAppearing flag. (#314)
-- Begin*(): added ImGuiWindowFlags_NoBringToFrontOnFocus flag.
+- Begin*(): added DebugWindowFlags_NoFocusOnAppearing flag. (#314)
+- Begin*(): added DebugWindowFlags_NoBringToFrontOnFocus flag.
 - Added GetDrawData() alternative to setting a Render function pointer in ImGuiIO structure.
 - Added SetClipboardText(), GetClipboardText() helper shortcuts that user code can call directly without reading
   from the ImGuiIO structure (to match MemAlloc/MemFree)
@@ -1982,7 +1982,7 @@ Breaking Changes:
 
 Other Changes:
 
-- Added Horizontal Scrollbar via ImGuiWindowFlags_HorizontalScroll (#246).
+- Added Horizontal Scrollbar via DebugWindowFlags_HorizontalScroll (#246).
 - Added GetScrollX(), GetScrollX(), GetScrollMaxX() apis (#246).
 - Added SetNextWindowContentSize(), SetNextWindowContentWidth() to explicitly set the content size of a window, which
   define the range of scrollbar. When set explicitly it also define the base value from which widget width are derived.
@@ -2002,7 +2002,7 @@ Other Changes:
 - Fixed OpenPopup() accessing current window, effectively opening "Debug" when called from an empty window stack.
 - TreeNode(): Fixed IsItemHovered() result being inconsistent with interaction visuals (#282).
 - TreeNode(): Fixed mouse interaction padding past the node label being accounted for in layout (#282).
-- BeginChild(): Passing a ImGuiWindowFlags_NoMove inhibits moving parent window from this child.
+- BeginChild(): Passing a DebugWindowFlags_NoMove inhibits moving parent window from this child.
 - BeginChild() fixed missing rounding for child sizes which leaked into layout and have items misaligned.
 - Begin(): Removed default name = "Debug" parameter. We already have a "Debug" window pushed to the stack in the first place so it's not really a useful default.
 - Begin(): Minor fixes with windows main clipping rectangle (e.g. child window with border).
@@ -2042,7 +2042,7 @@ Other Changes:
 - All sample code is in imgui_demo.cpp. Please keep this file in your project and consider allowing your code to call
   the ShowTestWindow() function as de-facto guide to ImGui features. It will be stripped out by the linker when unused.
 - Added GetContentRegionAvail() helper (basically GetContentRegionMax() - GetCursorPos()).
-- Added ImGuiWindowFlags_NoInputs for totally input-passthru window.
+- Added DebugWindowFlags_NoInputs for totally input-passthru window.
 - Button(): honor negative size consistently with other widgets that do so (width -100 to align the button 100 pixels
   before the right-most position of the contents region).
 - InputTextMultiline(): honor negative size consistently with other widgets that do so.
@@ -2252,7 +2252,7 @@ Other Changes:
   disabled mode. Menu items can be used in any window.
 - Menus: Added BeginMenu() to append a sub-menu. Note that you generally want to add sub-menu inside a popup or a menu-bar.
   They will work inside a normal window but it will be a bit unusual.
-- Menus: Added BeginMenuBar() to append to window menu-bar (set ImGuiWindowFlags_MenuBar to enable).
+- Menus: Added BeginMenuBar() to append to window menu-bar (set DebugWindowFlags_MenuBar to enable).
 - Menus: Added BeginMainMenuBar() helper to append to a fullscreen main menu-bar.
 - Popups: Support for stacked popups. Each popup level inhibit inputs to lower levels. The menus system is based on this. (#126).
 - Popups: Added BeginPopupContextItem(), BeginPopupContextWindow(), BeginPopupContextVoid() to create a popup window on mouse-click.
