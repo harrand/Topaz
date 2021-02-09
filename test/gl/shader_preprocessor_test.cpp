@@ -245,7 +245,7 @@ int main()
 
 	// We require topaz to be initialised.
 	{
-		tz::core::initialise("Shader Preprocessor Tests", tz::core::invisible_tag);
+		tz::initialise("Shader Preprocessor Tests", tz::invisible_tag);
 		pre.add(no_modules());
 		pre.add(example_module());
 		pre.add(module_order());
@@ -253,7 +253,7 @@ int main()
 		pre.add(defined_ssbo());
 		pre.add(defined_ubo());
 		pre.add(shader_buffer_name_clash());
-		tz::core::terminate();
+		tz::terminate();
 	}
 	return pre.result();
 }

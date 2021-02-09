@@ -35,10 +35,10 @@ namespace tz::ext
 	}
 }
 
-namespace tz::core
+namespace tz
 {
 	/**
-	 * \addtogroup tz_core Topaz Core Library (tz::core)
+	 * \addtogroup tz_core Topaz Core Library (tz)
 	 * A collection of platform-agnostic core interfaces.
 	 * @{
 	 */
@@ -46,7 +46,7 @@ namespace tz::core
 	/**
 	 * Wrapper class responsible for handling initialisation and termination of essential external modules.
 	 * Examples of such modules include GLFW and GLAD.
-	 * tz::core::initialise() handles this for you. Don't mess with these unless you know what you're doing!
+	 * tz::initialise() handles this for you. Don't mess with these unless you know what you're doing!
 	 */
 	class TopazCore
 	{

@@ -45,7 +45,7 @@ const char* frg_shader_src = R"GLSL(
 int main()
 {
 	// Minimalist Graphics Demo.
-	tz::core::initialise("Topaz Bindless Texture Demo");
+	tz::initialise("Topaz Bindless Texture Demo");
 	{
 		tz::gl::Object o;
 		tz::ext::imgui::track_object(&o);
@@ -130,7 +130,7 @@ int main()
 
 		float rotation_y = 0.0f;
 
-		tz::core::IWindow& wnd = tz::core::get().window();
+		tz::IWindow& wnd = tz::get().window();
 		wnd.register_this();
 		wnd.emplace_custom_key_listener([&add_pos, &rotation_y](tz::input::KeyPressEvent e)
 		{
@@ -179,9 +179,9 @@ int main()
 			matrix.set(0, p * v * m);
 			ubo->bind();
 			dev.render();
-			tz::core::update();
+			tz::update();
 			wnd.update();
 		}
 	}
-	tz::core::terminate();
+	tz::terminate();
 }

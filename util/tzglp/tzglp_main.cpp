@@ -132,11 +132,11 @@ int init(int argc, char** argv)
 int main(int argc, char** argv)
 {
     int ret;
-    tz::core::initialise("TZGLP");
+    tz::initialise("TZGLP");
     {
         ret = init(argc, argv);
     }
-    tz::core::terminate();
+    tz::terminate();
     return ret;
 }
 

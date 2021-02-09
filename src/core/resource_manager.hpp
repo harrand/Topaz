@@ -5,7 +5,7 @@
 #include <cstddef>
 #include <optional>
 
-namespace tz::core
+namespace tz
 {
 	class ResourceManager
 	{

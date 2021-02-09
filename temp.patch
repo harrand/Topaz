@@ -213,7 +213,7 @@ index 2493424a..c156ce48 100644
 +    using MyScene = tz::render::Scene<tz::render::SceneElement, SplitTransformResourceWriter>;
  	constexpr std::size_t max_elements = 512;
  	// Minimalist Graphics Demo.
- 	tz::core::initialise("Topaz Lighting Demo");
+ 	tz::initialise("Topaz Lighting Demo");
 @@ -104,9 +256,9 @@ int main()
          tz::gl::SSBO* light_ssbo = o.get<tz::gl::BufferType::ShaderStorage>(light_ssbo_id);
  
@@ -273,7 +273,7 @@ diff --git a/src/core/core.cpp b/src/core/core.cpp
 index 38b27245..af920f72 100644
 --- a/src/core/core.cpp
 +++ b/src/core/core.cpp
-@@ -20,7 +20,6 @@ namespace tz::core
+@@ -20,7 +20,6 @@ namespace tz
  		// Initialise GLFW...
  		tz::ext::glfw::initialise(tz::ext::glfw::WindowCreationArgs{app_name, 1920, 1080, visible});
  		// Create the GLFW window and set this to be the global GLFW context window.
@@ -346,7 +346,7 @@ index 3997f7e5..b049f4f8 100644
 --- a/src/core/tz_glad/glad_context.hpp
 +++ b/src/core/tz_glad/glad_context.hpp
 @@ -35,7 +35,6 @@ namespace tz::ext::glad
- 		 * It is not recommended that you construct GLAD contexts manually -- tz::core should handle this for you.
+ 		 * It is not recommended that you construct GLAD contexts manually -- tz should handle this for you.
  		 */
  		GLADContext() noexcept;
 -		void pre_init();

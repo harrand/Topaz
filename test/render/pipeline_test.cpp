@@ -26,10 +26,10 @@ int main()
 
 	// We require topaz to be initialised.
 	{
-		tz::core::initialise("Render Pipeline Tests", tz::core::invisible_tag);
+		tz::initialise("Render Pipeline Tests", tz::invisible_tag);
 		pipeline.add(ctor());
 		pipeline.add(add_and_clear());
-		tz::core::terminate();
+		tz::terminate();
 	}
 	return pipeline.result();
 }

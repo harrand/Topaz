@@ -31,9 +31,9 @@ int main()
 
 	// We require topaz to be initialised.
 	{
-		tz::core::initialise("Image Tests", tz::core::invisible_tag);
+		tz::initialise("Image Tests", tz::invisible_tag);
 		img.add(checkerboard());
-		tz::core::terminate();
+		tz::terminate();
 	}
 	return img.result();
 }

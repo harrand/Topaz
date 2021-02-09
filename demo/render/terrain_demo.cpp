@@ -287,7 +287,7 @@ public:
 
 	void set_sky_col(tz::Vec3 sky_colour)
 	{
-		tz::core::get().window().get_frame()->set_clear_color(sky_colour[0], sky_colour[1], sky_colour[2]);
+		tz::get().window().get_frame()->set_clear_color(sky_colour[0], sky_colour[1], sky_colour[2]);
 	}
 
 	virtual void render() override
@@ -342,14 +342,14 @@ int main()
 	constexpr std::size_t max_elements = 1;
 	constexpr std::size_t max_textures = 2;
 	// Minimalist Graphics Demo.
-	tz::core::initialise("Topaz Terrain Demo");
+	tz::initialise("Topaz Terrain Demo");
 	{
 		tz::gl::Manager m;
 		tz::gl::Object& o = *m;
 
 		// Track it in imgui.
 		tz::ext::imgui::track_object(&o);
-		tz::core::get().enable_culling(false);
+		tz::get().enable_culling(false);
 
 		tz::gl::p::SSBOModule* ssbo_module = nullptr;
 		std::string vtx_result;
@@ -476,7 +476,7 @@ int main()
 		}
 
 		bool mouse_down = false;
-		tz::core::IWindow& wnd = tz::core::get().window();
+		tz::IWindow& wnd = tz::get().window();
 		wnd.emplace_custom_mouse_listener(
 			[element_handle, &scene, &mouse_down](tz::input::MouseUpdateEvent mue)
 			{
@@ -551,9 +551,9 @@ int main()
 			}
 			scene.configure(dev);
 			dev.render();
-			tz::core::update();
+			tz::update();
 			wnd.update();
 		}
 	}
-	tz::core::terminate();
+	tz::terminate();
 }

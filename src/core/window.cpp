@@ -8,7 +8,7 @@
 #include "GLFW/glfw3.h"
 #include <algorithm>
 
-namespace tz::core
+namespace tz
 {
 	GLFWWindow::GLFWWindow(tz::ext::glfw::GLFWContext& ctx): impl(ctx.get_window()), key_listeners(), type_listeners(), mouse_listeners()
 	{

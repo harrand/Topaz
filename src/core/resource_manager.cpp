@@ -2,7 +2,7 @@
 #include <fstream>
 #include <sstream>
 
-namespace tz::core
+namespace tz
 {
 	ResourceManager::ResourceManager(std::string resource_parent_path): path(resource_parent_path)
 	{

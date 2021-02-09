@@ -32,7 +32,7 @@ namespace tz::ext::glad
 		/**
 		 * Construct a GLAD context based off of the currently active GLFW context.
 		 * The context need not be loaded at this point.
-		 * It is not recommended that you construct GLAD contexts manually -- tz::core should handle this for you.
+		 * It is not recommended that you construct GLAD contexts manually -- tz should handle this for you.
 		 */
 		GLADContext() noexcept;
 		/**
@@ -63,7 +63,7 @@ namespace tz::ext::glad
 	
 	/**
 	 * Load OpenGL using the currently active GLFW context.
-	 * tz::core::initialise() invokes this, and invoking this more than once will assert.
+	 * tz::initialise() invokes this, and invoking this more than once will assert.
 	 * It is not recommended that you invoke this function unless you know what you're doing.
 	 */
 	void load_opengl();

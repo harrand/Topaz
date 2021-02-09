@@ -16,9 +16,9 @@
 int main()
 {
 	// Minimalist Graphics Demo.
-	tz::core::initialise("Topaz Shader Demo");
+	tz::initialise("Topaz Shader Demo");
 	{
-		tz::core::IWindow& wnd = tz::core::get().window();
+		tz::IWindow& wnd = tz::get().window();
 		wnd.register_this();
 		wnd.emplace_custom_key_listener([](tz::input::KeyPressEvent e)
 		{
@@ -48,9 +48,9 @@ int main()
 		glClearColor(0.0f, 0.3f, 0.15f, 1.0f);
 		while(!wnd.is_close_requested())
 		{
-			tz::core::update();
+			tz::update();
 			wnd.update();
 		}
 	}
-	tz::core::terminate();
+	tz::terminate();
 }

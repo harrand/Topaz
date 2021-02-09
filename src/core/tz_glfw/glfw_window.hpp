@@ -11,7 +11,7 @@
 struct GLFWmonitor;
 struct GLFWwindow;
 
-namespace tz::core
+namespace tz
 {
 	class GLFWWindow;
 }
@@ -75,7 +75,7 @@ namespace tz::ext::glfw
 		 * Tracking is required to be able to send input data to listeners properly.
 		 * @param window
 		 */
-		void register_this(tz::core::GLFWWindow* window);
+		void register_this(tz::GLFWWindow* window);
 		/**
 		 * Query as to whether tz_glfw is currently tracking this window implementation.
 		 */
@@ -127,7 +127,7 @@ namespace tz::ext::glfw
 	 * This is required to use listeners. You should invoke this on secondary windows if they should be listening to input events.
 	 * @param window - Window to track polling data for
 	 */
-	void register_window(tz::core::GLFWWindow* window);
+	void register_window(tz::GLFWWindow* window);
 	/**
 	 * Invoked by anyone who wishes to send off an input command.
 	 * You can invoke this directly if you wish to inject listener inputs artificially!

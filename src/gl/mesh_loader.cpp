@@ -7,7 +7,7 @@ namespace tz::gl
 {
 	tz::gl::IndexedMesh load_mesh(const std::string& filename)
 	{
-		std::string full_path = tz::core::res().get_path() + filename;
+		std::string full_path = tz::res().get_path() + filename;
 		tz::ext::assimp::Scene scene{full_path};
 		topaz_assert(scene.size_meshes() == 1, "tz::gl::load_mesh(", full_path, "): File must contain exactly one mesh to be loaded this way. This file contains ", scene.size_meshes(), " meshes...");
 		const aiMesh* ass_mesh = scene.get_mesh();

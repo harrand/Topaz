@@ -1,6 +1,6 @@
 #include <algorithm>
 
-namespace tz::core
+namespace tz
 {
     template<class T, class Allocator>
     constexpr UniqueVector<T, Allocator>::UniqueVector(): Base{}{}

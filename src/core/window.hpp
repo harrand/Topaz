@@ -24,7 +24,7 @@ namespace tz
 	}
 }
 
-namespace tz::core
+namespace tz
 {
 	/**
 	 * Interface for a high-level implementation of a cross-platform window.
@@ -278,7 +278,7 @@ namespace tz::core
 		
 		virtual void register_this() override;
 		
-		friend void tz::ext::glfw::register_window(tz::core::GLFWWindow*);
+		friend void tz::ext::glfw::register_window(tz::GLFWWindow*);
 	private:
 		/**
 		 * Retrieve the width and height of the window, in pixels.

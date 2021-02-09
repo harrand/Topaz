@@ -7,7 +7,7 @@ namespace tz
 {
 
 	/**
-	 * \addtogroup tz_core Topaz Core Library (tz::core)
+	 * \addtogroup tz_core Topaz Core Library (tz)
 	 * A collection of platform-agnostic core interfaces.
 	 * @{
 	 */

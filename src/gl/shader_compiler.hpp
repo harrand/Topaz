@@ -76,7 +76,7 @@ namespace tz::gl
 		/**
 		 * Construct a compiler using the given options.
 		 * 
-		 * The compiler is driven by the OpenGL drivers installed on the system. The configuration of this is done in tz::core::initialise.
+		 * The compiler is driven by the OpenGL drivers installed on the system. The configuration of this is done in tz::initialise.
 		 * @param options Compiler options for this compiler.
 		 */
 		ShaderCompiler(ShaderCompilerOptions options = detail::get_default_compiler_options());

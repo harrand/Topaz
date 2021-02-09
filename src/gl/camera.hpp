@@ -4,7 +4,7 @@
 #include "core/vector.hpp"
 #include "gl/frame.hpp"
 
-namespace tz::core
+namespace tz
 {
     class IWindow;
 }

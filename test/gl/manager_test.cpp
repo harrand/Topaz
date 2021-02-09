@@ -62,10 +62,10 @@ int main()
 
 	// We require topaz to be initialised.
 	{
-		tz::core::initialise("Manager Tests", tz::core::invisible_tag);
+		tz::initialise("Manager Tests", tz::invisible_tag);
 		manager.add(partition());
 		manager.add(split());
-		tz::core::terminate();
+		tz::terminate();
 	}
 	return manager.result();
 }

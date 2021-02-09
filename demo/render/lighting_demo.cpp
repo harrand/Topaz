@@ -352,7 +352,7 @@ void setup_window_interactivity(tz::Vec3& cam_pos)
 		cam_pos[1] += y;
 		cam_pos[2] += z;
 	};
-	tz::core::IWindow& wnd = tz::core::get().window();
+	tz::IWindow& wnd = tz::get().window();
 	wnd.register_this();
 	wnd.emplace_custom_key_listener([add_pos](tz::input::KeyPressEvent e)
 	{
@@ -385,9 +385,9 @@ int main()
     using MyScene = tz::render::Scene<tz::render::SceneElement, SplitTransformResourceWriter>;
 	constexpr std::size_t max_elements = 512;
 	// Minimalist Graphics Demo.
-	tz::core::initialise("Topaz Lighting Demo");
+	tz::initialise("Topaz Lighting Demo");
 	MeshAtlas meshes;
-	tz::core::get().enable_culling(false);
+	tz::get().enable_culling(false);
 	{
 		tz::gl::Manager m;
 		tz::gl::Object& o = *m;
@@ -450,7 +450,7 @@ int main()
 
 		float rotation_y = 0.0f;
 
-		tz::core::IWindow& wnd = tz::core::get().window();
+		tz::IWindow& wnd = tz::get().window();
 		wnd.get_frame()->set_clear_color(0.3f, 0.15f, 0.0f);
 		// Scene setup.
 		// Meshes
@@ -544,9 +544,9 @@ int main()
 			}
 			scene.configure(dev);
 			dev.render();
-			tz::core::update();
+			tz::update();
 			wnd.update();
 		}
 	}
-	tz::core::terminate();
+	tz::terminate();
 }

@@ -34,7 +34,7 @@ register_test_target(tz_container_test)
 register_test_target(tz_math_test)
 register_test_target(tz_static_test)
 
-# tz::core
+# tz
 register_test_target(tz_vector_test)
 register_test_target(tz_matrix_test)
 register_test_target(tz_quaternion_test)

@@ -10,13 +10,13 @@
 namespace tz
 {
 	/**
-	 * \addtogroup tz_core Topaz Core Library (tz::core)
+	 * \addtogroup tz_core Topaz Core Library (tz)
 	 * A collection of platform-agnostic core interfaces.
 	 * @{
 	 */
 
 	/**
-	 * \addtogroup tz_core_mat tz::core Matrix Transformation Module
+	 * \addtogroup tz_core_mat tz Matrix Transformation Module
 	 * Implementations of various matrix transformations. Note that all resultant matrices are row-major.
 	 * @{
 	 */

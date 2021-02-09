@@ -11,7 +11,7 @@ namespace tz::ext::stb
 		constexpr std::size_t num_desired_components = PixelType::num_components;
 		int channels_in_file;
 		int w, h;
-		unsigned char* data = stbi_load((tz::core::res().get_path() + path).c_str(), &w, &h, &channels_in_file, num_desired_components);
+		unsigned char* data = stbi_load((tz::res().get_path() + path).c_str(), &w, &h, &channels_in_file, num_desired_components);
 		topaz_assert(data != nullptr, "tz::ext::stb::read_image(", path, "): Could not load image data from memory.");
 		auto width = static_cast<std::size_t>(w);
 		auto height = static_cast<std::size_t>(h);

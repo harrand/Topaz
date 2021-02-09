@@ -1,4 +1,4 @@
-namespace tz::core
+namespace tz
 {
 	template<typename WindowType, typename... Args>
 	std::size_t TopazCore::emplace_extra_window(Args&&... args)

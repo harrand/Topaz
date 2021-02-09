@@ -3,19 +3,19 @@
 
 int main()
 {
-    tz::core::initialise("Topaz Window Demo");
+    tz::initialise("Topaz Window Demo");
     {
-        tz::core::IWindow& window = tz::core::get().window();
+        tz::IWindow& window = tz::get().window();
 
         while(!window.is_close_requested())
         {
             window.get_frame()->clear();
             // Do stuff.
-            tz::core::update();
+            tz::update();
             window.update();
         }
         
     }
-    tz::core::terminate();
+    tz::terminate();
     return 0;
 }

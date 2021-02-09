@@ -96,7 +96,7 @@ namespace tz::render
          */
         const tz::gl::Manager& get_manager() const;
     private:
-        tz::core::UniqueVector<MeshAsset> meshes;
+        tz::UniqueVector<MeshAsset> meshes;
         std::size_t common_ibo_handle = std::numeric_limits<std::size_t>::max();
         tz::gl::Object* common_object = nullptr;
     };

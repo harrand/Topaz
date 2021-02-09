@@ -164,7 +164,7 @@ namespace tz::ext::imgui
 				ImGui::EndMenu();
 			}
 
-			if(ImGui::BeginMenu("tz::core"))
+			if(ImGui::BeginMenu("tz"))
 			{
 				ImGui::EndMenu();
 			}
@@ -177,12 +177,12 @@ namespace tz::ext::imgui
 				ImGui::MenuItem("OpenGL Info", nullptr, &oglinfo.visible);
 				ImGui::MenuItem("Wireframe Mode", nullptr, &wireframe);
 				ImGui::MenuItem("Cull Back Faces", nullptr, &cull_backfaces);
-				tz::core::get().enable_wireframe_mode(wireframe);
-				tz::core::get().enable_culling(cull_backfaces);
+				tz::get().enable_wireframe_mode(wireframe);
+				tz::get().enable_culling(cull_backfaces);
 				ImGui::EndMenu();
 			}
 
-			if(!windows.empty() && ImGui::BeginMenu(tz::core::get().window().get_title()))
+			if(!windows.empty() && ImGui::BeginMenu(tz::get().window().get_title()))
 			{
 				for(const auto& window_ptr : windows)
 				{

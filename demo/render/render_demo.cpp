@@ -108,7 +108,7 @@ int main()
 	constexpr std::size_t max_elements = 512;
 	constexpr std::size_t max_textures = 8;
 	// Minimalist Graphics Demo.
-	tz::core::initialise("Topaz Render Demo");
+	tz::initialise("Topaz Render Demo");
 	{
 		tz::gl::Manager m;
 		tz::gl::Object& o = *m;
@@ -187,7 +187,7 @@ int main()
 
 		float rotation_y = 0.0f;
 
-		tz::core::IWindow& wnd = tz::core::get().window();
+		tz::IWindow& wnd = tz::get().window();
 		wnd.register_this();
 
 		wnd.get_frame()->set_clear_color(0.3f, 0.15f, 0.0f);
@@ -262,9 +262,9 @@ int main()
 			}
 			scene.configure(dev);
 			dev.render();
-			tz::core::update();
+			tz::update();
 			wnd.update();
 		}
 	}
-	tz::core::terminate();
+	tz::terminate();
 }

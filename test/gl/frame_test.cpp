@@ -31,11 +31,11 @@ TZ_TEST_BEGIN(frame_bindings)
 TZ_TEST_END
 
 TZ_TEST_BEGIN(window_frame_bindings)
-	tz::core::IWindow& wnd = tz::core::get().window();
+	tz::IWindow& wnd = tz::get().window();
 	wnd.set_active_context();
 	tz::gl::Frame f1{800, 600};
 	tz::gl::Frame f2{1920, 1080};
-	topaz_expect(wnd.get_frame() != nullptr, "tz::core::IWindow doesn't have a frame attached! That should never happen!");
+	topaz_expect(wnd.get_frame() != nullptr, "tz::IWindow doesn't have a frame attached! That should never happen!");
 	wnd.get_frame()->bind();
 	topaz_expect(wnd.get_frame()->complete(), "tz::gl::IWindow's Frame was not complete.");
 	topaz_expect(f1 != tz::gl::bound::frame(), "tz::gl::Frame wrongly thinks it was bound.");
@@ -57,11 +57,11 @@ int main()
 
 	// We require topaz to be initialised.
 	{
-		tz::core::initialise("Frame Tests", tz::core::invisible_tag);
+		tz::initialise("Frame Tests", tz::invisible_tag);
 		frame.add(frame_bindings());
 
 		frame.add(window_frame_bindings());
-		tz::core::terminate();
+		tz::terminate();
 	}
 	return frame.result();
 }

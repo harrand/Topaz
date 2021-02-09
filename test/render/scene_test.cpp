@@ -82,10 +82,10 @@ int main()
 
 	// We require topaz to be initialised.
 	{
-		tz::core::initialise("Render Scene Tests", tz::core::invisible_tag);
+		tz::initialise("Render Scene Tests", tz::invisible_tag);
 		scene.add(adding());
 		scene.add(removing());
-		tz::core::terminate();
+		tz::terminate();
 	}
 	return scene.result();
 }

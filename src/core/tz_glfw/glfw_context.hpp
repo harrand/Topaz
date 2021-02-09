@@ -39,19 +39,19 @@ namespace tz::ext::glfw
 		void term();
 		/**
 		 * Get a pointer to the window implementation if we were assigned one.
-		 * This will only happen if tz::core has constructed this context.
+		 * This will only happen if tz has constructed this context.
 		 * @return - Pointer to the window implementation if there is one, otherwise nullptr
 		 */
 		tz::ext::glfw::GLFWWindowImpl* get_window();
 		/**
 		 * Get a pointer to the window implementation if we were assigned one.
-		 * This will only happen if tz::core has constructed this context.
+		 * This will only happen if tz has constructed this context.
 		 * @return - Pointer to the window implementation if there is one, otherwise nullptr
 		 */
 		const tz::ext::glfw::GLFWWindowImpl* get_window() const;
 		/**
 		 * Query as to whether this context has an accompanying window implementation.
-		 * This will be true if tz::core has constructed this context.
+		 * This will be true if tz has constructed this context.
 		 * If you constructed this context yourself, this is likely to be false.
 		 * @return - True if there is a window implementation, otherwise false
 		 */

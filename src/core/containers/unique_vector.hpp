@@ -3,7 +3,7 @@
 #include <vector>
 #include <memory>
 
-namespace tz::core
+namespace tz
 {
     template<class T, class Allocator = std::allocator<T>>
     class UniqueVector : public std::vector<T, Allocator>

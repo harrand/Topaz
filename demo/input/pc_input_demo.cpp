@@ -22,9 +22,9 @@ private:
 
 int main()
 {
-    tz::core::initialise("Topaz Window Demo");
+    tz::initialise("Topaz Window Demo");
     {
-        tz::core::IWindow& window = tz::core::get().window();
+        tz::IWindow& window = tz::get().window();
         window.register_this();
         InputDemoWindow& input = tz::ext::imgui::emplace_window<InputDemoWindow>();
 
@@ -53,12 +53,12 @@ int main()
         {
             window.get_frame()->clear();
             // Do stuff.
-            tz::core::update();
+            tz::update();
             window.update();
         }
         
     }
-    tz::core::terminate();
+    tz::terminate();
     return 0;
 }
 

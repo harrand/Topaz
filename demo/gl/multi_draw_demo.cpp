@@ -25,7 +25,7 @@ const char *frg_shader_src = "#version 330 core\n"
 int main()
 {
 	// Minimalist Graphics Demo.
-	tz::core::initialise("Topaz Graphics Demo");
+	tz::initialise("Topaz Graphics Demo");
 	{
 		tz::gl::ShaderCompiler cpl;
 		tz::gl::ShaderProgram prg;
@@ -94,7 +94,7 @@ int main()
 		ibo->resize(sizeof(indices));
 		ibo->send(indices);
 
-		tz::core::IWindow& wnd = tz::core::get().window();
+		tz::IWindow& wnd = tz::get().window();
 		wnd.register_this();
 		wnd.emplace_custom_key_listener([&add_pos](tz::input::KeyPressEvent e)
 		{
@@ -140,8 +140,8 @@ int main()
 			dev.render();
 
 			wnd.update();
-			tz::core::update();
+			tz::update();
 		}
 	}
-	tz::core::terminate();
+	tz::terminate();
 }

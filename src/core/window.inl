@@ -1,6 +1,6 @@
 #include "input/input_listener.hpp"
 
-namespace tz::core
+namespace tz
 {
 	template<typename T, typename... Args>
 	tz::input::KeyListener&	IWindow::emplace_custom_key_listener(T callback, Args&&... args)

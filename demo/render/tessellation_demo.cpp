@@ -223,14 +223,14 @@ int main()
 	constexpr std::size_t max_elements = 1;
 	constexpr std::size_t max_textures = 8;
 	// Minimalist Graphics Demo.
-	tz::core::initialise("Topaz Tessellation Demo");
+	tz::initialise("Topaz Tessellation Demo");
 	{
 		tz::gl::Manager m;
 		tz::gl::Object& o = *m;
 
 		// Track it in imgui.
 		tz::ext::imgui::track_object(&o);
-        tz::core::get().enable_wireframe_mode(true);
+        tz::get().enable_wireframe_mode(true);
 
 		tz::gl::p::SSBOModule* ssbo_module = nullptr;
 		std::string vtx_result;
@@ -299,7 +299,7 @@ int main()
 
 		MeshAdjustor& mesh_adjustor = tz::ext::imgui::emplace_window<MeshAdjustor>(triangle_pos, rotation_factor, x_factor, y_factor, scene);
 
-		tz::core::IWindow& wnd = tz::core::get().window();
+		tz::IWindow& wnd = tz::get().window();
 		wnd.register_this();
 
 		wnd.get_frame()->set_clear_color(0.3f, 0.15f, 0.0f);
@@ -375,9 +375,9 @@ int main()
 			}
 			scene.configure(dev);
 			dev.render();
-			tz::core::update();
+			tz::update();
 			wnd.update();
 		}
 	}
-	tz::core::terminate();
+	tz::terminate();
 }

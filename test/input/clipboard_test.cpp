@@ -31,11 +31,11 @@ int main()
 
 	// Stuff in here requires topaz to be initialised.
 	{
-		tz::core::initialise("Clipboard Tests", tz::core::invisible_tag);
+		tz::initialise("Clipboard Tests", tz::invisible_tag);
 
 		clip.add(set_and_get());
 
-		tz::core::terminate();
+		tz::terminate();
 	}
 
 	return clip.result();

@@ -292,7 +292,7 @@ int main()
 
 	// We require topaz to be initialised.
 	{
-		tz::core::initialise("Buffer Tests", tz::core::invisible_tag);
+		tz::initialise("Buffer Tests", tz::invisible_tag);
 
 		buffer.add(statics());
 		buffer.add(binding());
@@ -303,7 +303,7 @@ int main()
 		buffer.add(terminal_retrieval());
 		buffer.add(sending());
 
-		tz::core::terminate();
+		tz::terminate();
 	}
 	return buffer.result();
 }

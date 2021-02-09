@@ -9,7 +9,7 @@
 #include "dui/imgui_context.hpp"
 #include "GLFW/glfw3.h"
 
-namespace tz::core
+namespace tz
 {
 	TopazCore::TopazCore() noexcept: tz_window(nullptr), secondary_windows(), initialised(false){}
 
@@ -50,13 +50,13 @@ namespace tz::core
 		return tz::ext::glad::get();
 	}
 	
-	const tz::core::IWindow& TopazCore::window() const
+	const tz::IWindow& TopazCore::window() const
 	{
 		topaz_assert(this->tz_window != nullptr, "TopazCore::window(): Window wasn't initialised yet. Did you forget to tz::initialise?");
 		return *this->tz_window;
 	}
 	
-	tz::core::IWindow& TopazCore::window()
+	tz::IWindow& TopazCore::window()
 	{
 		topaz_assert(this->tz_window != nullptr, "TopazCore::window(): Window wasn't initialised yet. Did you forget to tz::initialise?");
 		return *this->tz_window;
@@ -87,9 +87,9 @@ namespace tz::core
 		}
 	}
 	
-	const tz::core::IWindow* TopazCore::get_extra_window(std::size_t window_id) const
+	const tz::IWindow* TopazCore::get_extra_window(std::size_t window_id) const
 	{
-		topaz_assert(tz::core::get().is_initialised(), "TopazCore::get_extra_window(", window_id, "): tz::core is not yet initalised!");
+		topaz_assert(tz::get().is_initialised(), "TopazCore::get_extra_window(", window_id, "): tz is not yet initalised!");
 		if(this->secondary_windows.size() > window_id)
 		{
 			return this->secondary_windows[window_id].get();
@@ -97,9 +97,9 @@ namespace tz::core
 		return nullptr;
 	}
 	
-	tz::core::IWindow* TopazCore::get_extra_window(std::size_t window_id)
+	tz::IWindow* TopazCore::get_extra_window(std::size_t window_id)
 	{
-		topaz_assert(tz::core::get().is_initialised(), "TopazCore::get_extra_window(", window_id, "): tz::core is not yet initalised!");
+		topaz_assert(tz::get().is_initialised(), "TopazCore::get_extra_window(", window_id, "): tz is not yet initalised!");
 		if(this->secondary_windows.size() > window_id)
 		{
 			return this->secondary_windows[window_id].get();
@@ -109,7 +109,7 @@ namespace tz::core
 	
 	void TopazCore::destroy_extra_window(std::size_t window_id)
 	{
-		topaz_assert(tz::core::get().is_initialised(), "TopazCore::destroy_extra_window(", window_id, "): tz::core is not yet initalised!");
+		topaz_assert(tz::get().is_initialised(), "TopazCore::destroy_extra_window(", window_id, "): tz is not yet initalised!");
 		if(this->secondary_windows.size() > window_id)
 		{
 			this->secondary_windows[window_id] = nullptr;
@@ -117,7 +117,7 @@ namespace tz::core
 	}
 
 	static TopazCore global_core;
-	static ResourceManager root_manager{tz::core::project_directory};
+	static ResourceManager root_manager{tz::project_directory};
 
 	void initialise(const char* app_name)
 	{
@@ -142,7 +142,7 @@ namespace tz::core
 
 	TopazCore& get()
 	{
-		topaz_assert(global_core.is_initialised(), "Attempted tz::core::get() but tz::initialise() has not yet been invoked!");
+		topaz_assert(global_core.is_initialised(), "Attempted tz::get() but tz::initialise() has not yet been invoked!");
 		return global_core;
 	}
 

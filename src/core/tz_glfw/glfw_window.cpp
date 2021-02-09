@@ -14,7 +14,7 @@ namespace tz::ext::glfw
 	namespace detail
 	{
 		/// Implementation detail. Stores all the tracking data for each active window. Module-wide.
-		static std::map<GLFWwindow *, tz::core::GLFWWindow *> window_userdata;
+		static std::map<GLFWwindow *, tz::GLFWWindow *> window_userdata;
 	}
 	
 	WindowCreationArgs::WindowCreationArgs(): title("Untitled"), width(800), height(600){}
@@ -149,7 +149,7 @@ namespace tz::ext::glfw
 		return this->frame.get();
 	}
 	
-	void GLFWWindowImpl::register_this(tz::core::GLFWWindow* window)
+	void GLFWWindowImpl::register_this(tz::GLFWWindow* window)
 	{
 		detail::window_userdata[this->window_handle] = window;
 	}
@@ -177,7 +177,7 @@ namespace tz::ext::glfw
 		return this->window_handle == rhs.window_handle;
 	}
 	
-	void register_window(tz::core::GLFWWindow* window)
+	void register_window(tz::GLFWWindow* window)
 	{
 		topaz_assert(window != nullptr, "tz::ext::glfw::register_window(GLFWWindow): Attempting to register a null window!");
 		window->impl->register_this(window);
@@ -188,7 +188,7 @@ namespace tz::ext::glfw
 		if(detail::window_userdata.find(window) != detail::window_userdata.end())
 		{
 			// We know about this window.
-			tz::core::GLFWWindow* wnd = detail::window_userdata[window];
+			tz::GLFWWindow* wnd = detail::window_userdata[window];
 			wnd->handle_key_event(tz::input::KeyPressEvent{key, scancode, action, mods});
 		}
 	}
@@ -198,7 +198,7 @@ namespace tz::ext::glfw
 		if(detail::window_userdata.find(window) != detail::window_userdata.end())
 		{
 			// We know about this window.
-			tz::core::GLFWWindow* wnd = detail::window_userdata[window];
+			tz::GLFWWindow* wnd = detail::window_userdata[window];
 			wnd->handle_type_event(tz::input::CharPressEvent{codepoint});
 		}
 	}
@@ -208,7 +208,7 @@ namespace tz::ext::glfw
 		if(detail::window_userdata.find(window) != detail::window_userdata.end())
 		{
 			// We know about this window.
-			tz::core::GLFWWindow* wnd = detail::window_userdata[window];
+			tz::GLFWWindow* wnd = detail::window_userdata[window];
 			wnd->handle_mouse_event(tz::input::MouseUpdateEvent{xpos, ypos});
 		}
 	}
@@ -218,7 +218,7 @@ namespace tz::ext::glfw
 		if(detail::window_userdata.find(window) != detail::window_userdata.end())
 		{
 			// We know about this window.
-			tz::core::GLFWWindow* wnd = detail::window_userdata[window];
+			tz::GLFWWindow* wnd = detail::window_userdata[window];
 			wnd->handle_click_event(tz::input::MouseClickEvent{button, action, mods});
 		}
 	}

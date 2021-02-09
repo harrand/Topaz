@@ -42,8 +42,8 @@ namespace tz::ext::stb
 	template<class PixelType>
 	std::string write_image(const char* path, const tz::gl::Image<PixelType>& image, std::string name)
 	{
-		std::string result_path = tz::core::res().get_path();
-		topaz_assert(!result_path.empty(), "tz::ext::stb::write_image(", path, ", image, ", name, "): Invalid resource manager path \"", tz::core::res().get_path(), "\"");
+		std::string result_path = tz::res().get_path();
+		topaz_assert(!result_path.empty(), "tz::ext::stb::write_image(", path, ", image, ", name, "): Invalid resource manager path \"", tz::res().get_path(), "\"");
 		result_path += path;
 		if(result_path.back() != '/' || result_path.back() != '\\')
 			result_path += '/';

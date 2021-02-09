@@ -50,10 +50,10 @@ TZ_TEST_BEGIN(broken_devices)
 	// Null device absolutely isn't ready.
 	topaz_expect(!nul.ready(), "tz::render::Device's null-device should never be ready!");
 	
-	tz::gl::IFrame* frame = tz::core::get().window().get_frame();
+	tz::gl::IFrame* frame = tz::get().window().get_frame();
 	tz::render::Device frame_only{frame, nullptr, nullptr};
 	// We assume that the window's frame is complete.
-	topaz_assert(frame->complete(), "tz::core Window's IFrame was incomplete. This is unexpected.");
+	topaz_assert(frame->complete(), "tz Window's IFrame was incomplete. This is unexpected.");
 	topaz_expect(!frame_only.ready(), "An invalid tz::render::Device with only a valid IFrame is wrongly considered to be ready.");
 
 	// A program with no shaders attached and thus unusable.
@@ -79,7 +79,7 @@ TZ_TEST_BEGIN(edit_device)
 	
 	tz::render::Device device = tz::render::Device::null_device();
 	topaz_expect(!device.ready(), "Null tz::render::Device wrongly considered to be ready.");
-	device.set_frame(tz::core::get().window().get_frame());
+	device.set_frame(tz::get().window().get_frame());
 	// Program and object still invalid so this should still be unready.
 	topaz_expect(!device.ready(), "Edited tz::render::Device wrongly considered to be ready (Missing program and object)");
 	device.set_program(&prog);
@@ -114,11 +114,11 @@ int main()
 
 	// We require topaz to be initialised.
 	{
-		tz::core::initialise("Render Device Tests", tz::core::invisible_tag);
+		tz::initialise("Render Device Tests", tz::invisible_tag);
 		device.add(broken_devices());
 		device.add(edit_device());
 		device.add(resource_buffers());
-		tz::core::terminate();
+		tz::terminate();
 	}
 	return device.result();
 }
