@@ -1,6 +1,7 @@
 #include "core/core.hpp"
 #include "core/debug/assert.hpp"
 #include "core/matrix_transform.hpp"
+#include "core/random.hpp"
 #include "gl/shader.hpp"
 #include "gl/shader_compiler.hpp"
 #include "gl/manager.hpp"
@@ -309,7 +310,13 @@ public:
 		ImGui::Spacing();
 
 		static float smoothness = 4.0f;
+		if(ImGui::Button("Random Seed"))
+		{
+			this->noise_map_seed = tz::rand<float>();
+		}
+		ImGui::SameLine();
 		ImGui::InputFloat("Noisemap Seed", &this->noise_map_seed, 1.0f, 50.0f);
+
 		ImGui::InputFloat("Smoothness", &smoothness, 0.1f, 0.5f);
 		if(ImGui::Button("Regenerate Heightmap"))
 		{
