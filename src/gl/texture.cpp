@@ -1,5 +1,5 @@
 #include "gl/texture.hpp"
-#include "dui/imgui_context.hpp"
+#include "dui/window.hpp"
 
 namespace tz::gl
 {

@@ -1,4 +1,4 @@
-#include "dui/imgui_context.hpp"
+#include "dui/window.hpp"
 #include "gl/object.hpp"
 #include "dui/imgui_impl_opengl3.h"
 #include "dui/imgui_impl_glfw.h"

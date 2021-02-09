@@ -1,6 +1,6 @@
 #include "core/tz.hpp"
 #include "gl/frame.hpp"
-#include "dui/imgui_context.hpp"
+#include "dui/window.hpp"
 
 class InputDemoWindow : public tz::ext::imgui::ImGuiWindow
 {

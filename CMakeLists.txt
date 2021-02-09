@@ -129,9 +129,9 @@ add_library(topaz STATIC
 
 		src/dui/buffer_tracker.cpp
 		src/dui/buffer_tracker.hpp
-		src/dui/imgui_context.cpp
-		src/dui/imgui_context.hpp
-		src/dui/imgui_context.inl
+		src/dui/window.cpp
+		src/dui/window.hpp
+		src/dui/window.inl
 		src/dui/imgui_impl_glfw.cpp
 		src/dui/imgui_impl_glfw.h
 		src/dui/imgui_impl_opengl3.cpp

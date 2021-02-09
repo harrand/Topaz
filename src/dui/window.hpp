@@ -1,5 +1,5 @@
-#ifndef TOPAZ_GL_IMGUI_CONTEXT_HPP
-#define TOPAZ_GL_IMGUI_CONTEXT_HPP
+#ifndef TOPAZ_GL_window_HPP
+#define TOPAZ_GL_window_HPP
 #include "imgui.h"
 #include <memory>
 
@@ -36,5 +36,5 @@ namespace tz::ext::imgui
 	void update();
 }
 
-#include "dui/imgui_context.inl"
-#endif // TOPAZ_GL_IMGUI_CONTEXT_HPP
+#include "dui/window.inl"
+#endif // TOPAZ_GL_window_HPP

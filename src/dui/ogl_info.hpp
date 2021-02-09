@@ -1,6 +1,6 @@
 #ifndef TOPAZ_GL_IMGUI_OGL_INFO_HPP
 #define TOPAZ_GL_IMGUI_OGL_INFO_HPP
-#include "dui/imgui_context.hpp"
+#include "dui/window.hpp"
 
 namespace tz::ext::imgui::gl
 {
