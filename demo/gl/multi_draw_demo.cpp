@@ -1,4 +1,4 @@
-#include "core/core.hpp"
+#include "core/tz.hpp"
 #include "core/debug/print.hpp"
 #include "gl/shader.hpp"
 #include "gl/shader_compiler.hpp"

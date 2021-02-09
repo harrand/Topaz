@@ -3,7 +3,7 @@
 //
 
 #include "test_framework.hpp"
-#include "core/core.hpp"
+#include "core/tz.hpp"
 #include "render/pipeline.hpp"
 
 TZ_TEST_BEGIN(ctor)

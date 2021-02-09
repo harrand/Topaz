@@ -1,5 +1,5 @@
 #include "tzglp.hpp"
-#include "core/core.hpp"
+#include "core/tz.hpp"
 #include <string>
 #include <iostream>
 #include <string_view>

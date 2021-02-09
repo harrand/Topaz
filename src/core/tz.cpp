@@ -2,7 +2,7 @@
 // Created by Harrand on 13/12/2019.
 //
 
-#include "core/core.hpp"
+#include "core/tz.hpp"
 #include "core/debug/assert.hpp"
 #include "core/debug/print.hpp"
 #include "core/tz_glad/glad_context.hpp"
@@ -11,7 +11,7 @@
 
 namespace tz
 {
-	TopazCore::TopazCore() noexcept: tz_window(nullptr), secondary_windows(), initialised(false){}
+	TopazCore::TopazCore() noexcept: tz_window(nullptr), initialised(false){}
 
 	void TopazCore::initialise(const char* app_name, bool visible)
 	{
@@ -84,35 +84,6 @@ namespace tz
 		else
 		{
 			glDisable(GL_CULL_FACE);
-		}
-	}
-	
-	const tz::IWindow* TopazCore::get_extra_window(std::size_t window_id) const
-	{
-		topaz_assert(tz::get().is_initialised(), "TopazCore::get_extra_window(", window_id, "): tz is not yet initalised!");
-		if(this->secondary_windows.size() > window_id)
-		{
-			return this->secondary_windows[window_id].get();
-		}
-		return nullptr;
-	}
-	
-	tz::IWindow* TopazCore::get_extra_window(std::size_t window_id)
-	{
-		topaz_assert(tz::get().is_initialised(), "TopazCore::get_extra_window(", window_id, "): tz is not yet initalised!");
-		if(this->secondary_windows.size() > window_id)
-		{
-			return this->secondary_windows[window_id].get();
-		}
-		return nullptr;
-	}
-	
-	void TopazCore::destroy_extra_window(std::size_t window_id)
-	{
-		topaz_assert(tz::get().is_initialised(), "TopazCore::destroy_extra_window(", window_id, "): tz is not yet initalised!");
-		if(this->secondary_windows.size() > window_id)
-		{
-			this->secondary_windows[window_id] = nullptr;
 		}
 	}
 

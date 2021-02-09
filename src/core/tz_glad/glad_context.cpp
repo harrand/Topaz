@@ -2,7 +2,7 @@
 // Created by Harrand on 13/12/2019.
 //
 
-#include "core/core.hpp"
+#include "core/tz.hpp"
 #include "glad_context.hpp"
 #include "core/debug/assert.hpp"
 #include "core/debug/print.hpp"

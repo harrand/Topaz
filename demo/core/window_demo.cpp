@@ -1,4 +1,4 @@
-#include "core/core.hpp"
+#include "core/tz.hpp"
 #include "gl/frame.hpp"
 
 int main()

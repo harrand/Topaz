@@ -1,6 +1,6 @@
 #include "gl/mesh_loader.hpp"
 #include "core/debug/assert.hpp"
-#include "core/core.hpp"
+#include "core/tz.hpp"
 #include "core/resource_manager.hpp"
 
 namespace tz::gl

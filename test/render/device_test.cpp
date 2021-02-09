@@ -3,7 +3,7 @@
 //
 
 #include "test_framework.hpp"
-#include "core/core.hpp"
+#include "core/tz.hpp"
 #include "core/tz_glad/glad_context.hpp"
 #include "GLFW/glfw3.h"
 #include "render/device.hpp"

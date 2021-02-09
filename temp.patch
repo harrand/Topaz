@@ -269,10 +269,10 @@ index 2493424a..c156ce48 100644
  
  		tz::gl::ShaderCompiler cpl;
  		tz::gl::ShaderProgram prg;
-diff --git a/src/core/core.cpp b/src/core/core.cpp
+diff --git a/src/core/tz.cpp b/src/core/tz.cpp
 index 38b27245..af920f72 100644
---- a/src/core/core.cpp
-+++ b/src/core/core.cpp
+--- a/src/core/tz.cpp
++++ b/src/core/tz.cpp
 @@ -20,7 +20,6 @@ namespace tz
  		// Initialise GLFW...
  		tz::ext::glfw::initialise(tz::ext::glfw::WindowCreationArgs{app_name, 1920, 1080, visible});

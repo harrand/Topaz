@@ -3,7 +3,7 @@
 //
 
 #include "test_framework.hpp"
-#include "core/core.hpp"
+#include "core/tz.hpp"
 #include "core/quaternion.hpp"
 #include "core/matrix_transform.hpp"
 #include <string>

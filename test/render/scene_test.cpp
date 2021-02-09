@@ -3,7 +3,7 @@
 //
 
 #include "test_framework.hpp"
-#include "core/core.hpp"
+#include "core/tz.hpp"
 #include "render/scene.hpp"
 
 struct NullSceneElement

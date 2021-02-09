@@ -28,9 +28,8 @@ add_library(topaz STATIC
 		src/core/tz_glad/glad_context.cpp
 		src/core/tz_glad/glad_context.hpp
 		src/core/bool.hpp
-		src/core/core.hpp
-		src/core/core.cpp
-		src/core/core.inl
+		src/core/tz.hpp
+		src/core/tz.cpp
 		src/core/matrix_transform.cpp
 		src/core/matrix_transform.hpp
 		src/core/matrix.hpp

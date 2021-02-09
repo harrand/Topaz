@@ -4,7 +4,7 @@
 #include "dui/imgui_impl_glfw.h"
 #include "glfw/glfw3.h"
 #include "core/debug/assert.hpp"
-#include "core/core.hpp"
+#include "core/tz.hpp"
 
 // Diagnostics
 #include <vector>

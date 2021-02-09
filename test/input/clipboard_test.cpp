@@ -3,7 +3,7 @@
 //
 
 #include "test_framework.hpp"
-#include "core/core.hpp"
+#include "core/tz.hpp"
 #include "input/system_input.hpp"
 #include <string>
 #include <cstring>
