@@ -5,7 +5,7 @@
 
 namespace tz::gl::p
 {
-	SSBOModule::SSBOModule(tz::gl::Object* o): ObjectAwareModule(o){}
+	SSBOModule::SSBOModule(tz::gl::Object& o): ObjectAwareModule(o){}
 
 	void SSBOModule::operator()(std::string& source) const
 	{

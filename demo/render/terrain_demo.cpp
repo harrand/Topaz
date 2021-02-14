@@ -358,7 +358,7 @@ int main()
 		std::string tess_result;
 		tz::gl::ShaderPreprocessor pre{vtx_shader_src};
 		{
-			std::size_t ssbo_module_id = pre.emplace_module<tz::gl::p::SSBOModule>(&o);
+			std::size_t ssbo_module_id = pre.emplace_module<tz::gl::p::SSBOModule>(o);
 			pre.emplace_module<tz::gl::p::BindlessSamplerModule>();
 			pre.preprocess();
 			vtx_result = pre.result();

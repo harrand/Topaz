@@ -83,9 +83,9 @@ namespace tz::gl
 			/**
 			 * Construct the module with the given Object.
 			 * 
-			 * Precondition: The Object pointed to by o must remain valid for the entirety of this module's lifetime. Otherwise, this will invoke UB.
+			 * Precondition: The Object referenced by o must remain valid for the entirety of this module's lifetime. Otherwise, this will invoke UB.
 			 */
-			ObjectAwareModule(tz::gl::Object* o);
+			ObjectAwareModule(tz::gl::Object& o);
 		protected:
 			tz::gl::Object* o;
 		};

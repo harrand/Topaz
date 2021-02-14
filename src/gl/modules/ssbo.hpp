@@ -28,7 +28,7 @@ namespace tz::gl::p
 		 * Construct an SSBOModule, creating SSBOs in the given Object when required.
 		 * @param o tz::gl::Object, will be the parent of any SSBOs that this module creates.
 		 */
-		SSBOModule(tz::gl::Object* o);
+		SSBOModule(tz::gl::Object& o);
 		/**
 		 * Invoke the module, performing source transformation on the given string and creating SSBOs as required inside of the stored Object.
 		 * 

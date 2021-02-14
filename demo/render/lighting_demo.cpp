@@ -400,7 +400,7 @@ int main()
 		std::string frg_result;
 		tz::gl::ShaderPreprocessor pre{render_shader::vertex_source};
 		{
-			std::size_t ssbo_module_id = pre.emplace_module<tz::gl::p::SSBOModule>(&o);
+			std::size_t ssbo_module_id = pre.emplace_module<tz::gl::p::SSBOModule>(o);
 			pre.emplace_module<tz::gl::p::BindlessSamplerModule>();
 			pre.preprocess();
 			vtx_result = pre.result();

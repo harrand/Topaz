@@ -27,7 +27,7 @@ namespace tz::gl::p
 		 * Construct an UBOModule, creating UBOs in the given Object when required.
 		 * @param o tz::gl::Object, will be the parent of any UBOs that this module creates.
 		 */
-		UBOModule(tz::gl::Object* o);
+		UBOModule(tz::gl::Object& o);
 		/**
 		 * Invoke the module, performing source transformation on the given string and creating UBOs as required inside of the stored Object.
 		 * 

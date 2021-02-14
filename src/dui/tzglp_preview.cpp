@@ -108,13 +108,14 @@ namespace tz::dui::gl
 		if(ImGui::Button("Add"))
 		{
 			SupportedModule choice = static_cast<SupportedModule>(t);
+			topaz_assert(this->dummy_object != nullptr, "TZGLP Preview Window: Dummy Object has not been initialised in time.");
 			switch(choice)
 			{
 				case SupportedModule::SSBOModule:
-					proc.emplace_module<tz::gl::p::SSBOModule>(this->dummy_object);
+					proc.emplace_module<tz::gl::p::SSBOModule>(*this->dummy_object);
 				break;
 				case SupportedModule::UBOModule:
-					proc.emplace_module<tz::gl::p::UBOModule>(this->dummy_object);
+					proc.emplace_module<tz::gl::p::UBOModule>(*this->dummy_object);
 				break;
 				case SupportedModule::BindlessSamplerModule:
 					proc.emplace_module<tz::gl::p::BindlessSamplerModule>();

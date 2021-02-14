@@ -45,7 +45,7 @@ int main()
 		tz::gl::p::UBOModule* ubo_module = nullptr;
 		tz::gl::ShaderPreprocessor pre{vtx_shader_src};
 		{
-			std::size_t ubo_module_id = pre.emplace_module<tz::gl::p::UBOModule>(&o);
+			std::size_t ubo_module_id = pre.emplace_module<tz::gl::p::UBOModule>(o);
 			pre.preprocess();
 			ubo_module = static_cast<tz::gl::p::UBOModule*>(pre[ubo_module_id]);
 		}

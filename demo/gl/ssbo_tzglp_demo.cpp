@@ -38,7 +38,7 @@ int main()
 
 		tz::gl::ShaderPreprocessor pre{vtx_shader_src};
 		{
-			std::size_t ssbo_module_id = pre.emplace_module<tz::gl::p::SSBOModule>(&o);
+			std::size_t ssbo_module_id = pre.emplace_module<tz::gl::p::SSBOModule>(o);
 			pre.preprocess();
 			// Get the module after use.
 			ssbo_module = static_cast<tz::gl::p::SSBOModule*>(pre[ssbo_module_id]);

@@ -5,7 +5,7 @@
 
 namespace tz::gl::p
 {
-	UBOModule::UBOModule(tz::gl::Object* o): ObjectAwareModule(o){}
+	UBOModule::UBOModule(tz::gl::Object& o): ObjectAwareModule(o){}
 
 	void UBOModule::operator()(std::string& source) const
 	{

@@ -47,13 +47,14 @@ int main()
 	// Minimalist Graphics Demo.
 	tz::initialise("Topaz Bindless Texture Demo");
 	{
+		tz::get().render_settings().set_culling(tz::RenderSettings::CullTarget::Nothing);
 		tz::gl::Object o;
 		tz::dui::track_object(&o);
 		tz::gl::p::UBOModule* ubo_module = nullptr;
 		std::string preprocess_vertex_source;
 		tz::gl::ShaderPreprocessor pre{vtx_shader_src};
 		{
-			std::size_t ubo_module_id = pre.emplace_module<tz::gl::p::UBOModule>(&o);
+			std::size_t ubo_module_id = pre.emplace_module<tz::gl::p::UBOModule>(o);
 			pre.emplace_module<tz::gl::p::BindlessSamplerModule>();
 			pre.preprocess();
 			preprocess_vertex_source = pre.result();

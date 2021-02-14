@@ -6,7 +6,7 @@ namespace tz::gl
 {
 	namespace p
 	{
-		ObjectAwareModule::ObjectAwareModule(tz::gl::Object* o): o(o){}
+		ObjectAwareModule::ObjectAwareModule(tz::gl::Object& o): o(&o){}
 	}
 
 	ShaderPreprocessor::ShaderPreprocessor(std::string source): source(source){}

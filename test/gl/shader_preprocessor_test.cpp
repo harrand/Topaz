@@ -186,7 +186,7 @@ TZ_TEST_BEGIN(defined_ssbo)
 	tz::gl::Object o;
 		
 	tz::gl::ShaderPreprocessor pre{src4};
-	std::size_t ssbo_module_id = pre.emplace_module<tz::gl::p::SSBOModule>(&o);
+	std::size_t ssbo_module_id = pre.emplace_module<tz::gl::p::SSBOModule>(o);
 	pre.preprocess();
 
 	// src4 contains a ssbo called "wabbadabbadoo".
@@ -206,7 +206,7 @@ TZ_TEST_BEGIN(defined_ubo)
 	tz::gl::Object o;
 		
 	tz::gl::ShaderPreprocessor pre{src5};
-	std::size_t ubo_module_id = pre.emplace_module<tz::gl::p::UBOModule>(&o);
+	std::size_t ubo_module_id = pre.emplace_module<tz::gl::p::UBOModule>(o);
 	pre.preprocess();
 
 	// src4 contains a ubo called "wabbadabbadoo".
@@ -226,8 +226,8 @@ TZ_TEST_BEGIN(shader_buffer_name_clash)
 	tz::gl::Object o;
 
 	tz::gl::ShaderPreprocessor pre{src6};
-	std::size_t ubo_module_id = pre.emplace_module<tz::gl::p::UBOModule>(&o);
-	std::size_t ssbo_module_id = pre.emplace_module<tz::gl::p::SSBOModule>(&o);
+	std::size_t ubo_module_id = pre.emplace_module<tz::gl::p::UBOModule>(o);
+	std::size_t ssbo_module_id = pre.emplace_module<tz::gl::p::SSBOModule>(o);
 	pre.preprocess();
 	tz::gl::p::IModule* module = pre[ubo_module_id];
 	tz::gl::p::IModule* ssbomod = pre[ssbo_module_id];
