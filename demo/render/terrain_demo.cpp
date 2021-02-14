@@ -349,7 +349,7 @@ int main()
 
 		// Track it in imgui.
 		tz::dui::track_object(&o);
-		tz::get().enable_culling(false);
+		tz::get().render_settings().set_culling(tz::RenderSettings::CullTarget::Nothing);
 
 		tz::gl::p::SSBOModule* ssbo_module = nullptr;
 		std::string vtx_result;
