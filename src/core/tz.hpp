@@ -6,6 +6,7 @@
 #define TOPAZ_CORE_HPP
 #include "core/window.hpp"
 #include "core/resource_manager.hpp"
+#include "core/settings.hpp"
 #include <memory>
 
 /*! \mainpage Topaz 2
@@ -85,16 +86,21 @@ namespace tz
 		const IWindow& window() const;
 		/**
 		 * Retrieve the window attached to the main context provided by topaz.
-		 * @return Reference to the initial context window
+		 * @return Reference to the initial context window.
 		 */
 		IWindow& window();
-		void enable_wireframe_mode(bool wireframe) const;
-		void enable_culling(bool cull_backfaces) const;
+		/**
+		 * Retrieve the current render settings. Settings can be changed here.
+		 * @return Reference to the current render settings.
+		 */
+		tz::RenderSettings& render_settings();
 	private:
 		/// High-level window is stored here. Won't store a value until we initialise!
 		std::unique_ptr<IWindow> tz_window;
 		/// Have we been initialised?
 		bool initialised;
+		/// Render settings.
+		tz::RenderSettings current_render_settings;
 	};
 
 	struct invisible_tag_t{};

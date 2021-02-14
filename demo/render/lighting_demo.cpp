@@ -387,7 +387,7 @@ int main()
 	// Minimalist Graphics Demo.
 	tz::initialise("Topaz Lighting Demo");
 	MeshAtlas meshes;
-	tz::get().enable_culling(false);
+	tz::get().render_settings().set_culling(tz::RenderSettings::CullTarget::Nothing);
 	{
 		tz::gl::Manager m;
 		tz::gl::Object& o = *m;

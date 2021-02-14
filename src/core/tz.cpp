@@ -62,29 +62,9 @@ namespace tz
 		return *this->tz_window;
 	}
 
-	void TopazCore::enable_wireframe_mode(bool wireframe) const
+	tz::RenderSettings& TopazCore::render_settings()
 	{
-		if(wireframe)
-		{
-			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-			glLineWidth(1.0f);
-		}
-		else
-		{
-			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-		}
-	}
-
-	void TopazCore::enable_culling(bool cull_backfaces) const
-	{
-		if(cull_backfaces)
-		{
-			glEnable(GL_CULL_FACE);
-		}
-		else
-		{
-			glDisable(GL_CULL_FACE);
-		}
+		return this->current_render_settings;
 	}
 
 	static TopazCore global_core;

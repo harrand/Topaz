@@ -41,6 +41,8 @@ add_library(topaz STATIC
 		src/core/random.inl
 		src/core/resource_manager.cpp
 		src/core/resource_manager.hpp
+		src/core/settings.cpp
+		src/core/settings.hpp
 		src/core/vector.hpp
 		src/core/vector.inl
 		src/core/window.cpp

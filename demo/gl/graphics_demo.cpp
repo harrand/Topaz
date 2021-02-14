@@ -10,7 +10,6 @@
 #include "gl/frame.hpp"
 #include "gl/modules/ubo.hpp"
 #include "gl/texture.hpp"
-#include "render/device.hpp"
 #include "GLFW/glfw3.h"
 
 const char *vtx_shader_src = "#version 430\n"
@@ -40,6 +39,7 @@ int main()
 	// Minimalist Graphics Demo.
 	tz::initialise("Topaz Graphics Demo");
 	{
+		tz::get().render_settings().set_culling(tz::RenderSettings::CullTarget::Nothing);
 		tz::gl::Object o;
 		tz::dui::track_object(&o);
 		tz::gl::p::UBOModule* ubo_module = nullptr;
@@ -144,21 +144,20 @@ int main()
 			}
 		});
 
-		glClearColor(0.0f, 0.3f, 0.15f, 1.0f);
-		tz::render::Device dev{wnd.get_frame(), &prg, &o};
-		dev.set_handle(ibo_id);
+		wnd.get_frame()->set_clear_color(0.0f, 0.3f, 0.15f);
 		while(!wnd.is_close_requested())
 		{
 			rotation_y += 0.02f;
-
-			dev.clear();
+			wnd.get_frame()->bind();
+			wnd.get_frame()->clear();
 			o.bind();
 			tz::Mat4 m = tz::model(triangle_pos, tz::Vec3{0.0f, rotation_y, 0.0f}, tz::Vec3{1.0f, 1.0f, 1.0f});
 			tz::Mat4 v = tz::view(tz::Vec3{0.0f, 0.0f, 5.0f}, tz::Vec3{0.0f, 0.0f, 0.0f});
 			tz::Mat4 p = tz::perspective(1.57f, 1920.0f/1080.0f, 0.1f, 1000.0f);
 			matrix.set(0, p * v * m);
 			ubo->bind();
-			dev.render();
+			prg.bind();
+			o.render(ibo_id, false);
 			tz::update();
 			wnd.update();
 		}

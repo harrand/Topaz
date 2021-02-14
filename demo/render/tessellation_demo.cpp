@@ -230,7 +230,7 @@ int main()
 
 		// Track it in imgui.
 		tz::dui::track_object(&o);
-        tz::get().enable_wireframe_mode(true);
+        tz::get().render_settings().enable_wireframe_mode(true);
 
 		tz::gl::p::SSBOModule* ssbo_module = nullptr;
 		std::string vtx_result;

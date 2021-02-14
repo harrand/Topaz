@@ -17,13 +17,14 @@ namespace tz::dui::gl
     static gl::OpenGLInfoWindow oglinfo{};
 	static gl::SentinelTrackerWindow textracker{};
     static bool track_objects = false;
+	static bool culling = false;
 
+	void render_face_culling();
     void render_object_tracker();
 
     void draw_tab()
     {
 		static bool wireframe = false;
-		static bool cull_backfaces = true;
 
         if(ImGui::BeginMenu("tz::gl"))
         {
@@ -32,11 +33,15 @@ namespace tz::dui::gl
             ImGui::MenuItem("Texture Sentinel Tracker", nullptr, &textracker.visible);
             ImGui::MenuItem("OpenGL Info", nullptr, &oglinfo.visible);
             ImGui::MenuItem("Wireframe Mode", nullptr, &wireframe);
-            ImGui::MenuItem("Cull Back Faces", nullptr, &cull_backfaces);
-            tz::get().enable_wireframe_mode(wireframe);
-            tz::get().enable_culling(cull_backfaces);
+            ImGui::MenuItem("Face Culling", nullptr, &culling);
+            tz::get().render_settings().enable_wireframe_mode(wireframe);
             ImGui::EndMenu();
         }
+
+		if(culling)
+		{
+			render_face_culling();
+		}
 
         if(track_objects)
         {
@@ -68,6 +73,26 @@ namespace tz::dui::gl
 	{
 		obj = object;
 		tracker.target_object(object);
+	}
+
+	void render_face_culling()
+	{
+		ImGui::Begin("Face Culling", &culling);
+		// Get current culling mode
+		tz::RenderSettings::CullTarget current_target = tz::get().render_settings().get_culling();
+		auto tarv = reinterpret_cast<int*>(&current_target);
+		bool changed = false;
+		changed |= ImGui::RadioButton("Back Faces", tarv, static_cast<int>(tz::RenderSettings::CullTarget::BackFaces));
+		changed |= ImGui::RadioButton("Front Faces", tarv, static_cast<int>(tz::RenderSettings::CullTarget::FrontFaces));
+		changed |= ImGui::RadioButton("Both Faces", tarv, static_cast<int>(tz::RenderSettings::CullTarget::Both));
+		changed |= ImGui::RadioButton("No Culling", tarv, static_cast<int>(tz::RenderSettings::CullTarget::Nothing));
+
+		if(changed)
+		{
+			tz::get().render_settings().set_culling(current_target);
+		}
+
+		ImGui::End();
 	}
 
     void render_object_tracker()
