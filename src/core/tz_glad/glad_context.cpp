@@ -40,9 +40,8 @@ namespace tz::ext::glad
    			glDebugMessageCallback(debug::output, nullptr);
 			glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
 		#endif
-		glEnable(GL_CULL_FACE);
-		glCullFace(GL_BACK);
 		glEnable(GL_DEPTH_TEST);
+		tz::get().render_settings().set_culling(tz::RenderSettings::CullTarget::BackFaces);
 		this->loaded = true;
 	}
 	

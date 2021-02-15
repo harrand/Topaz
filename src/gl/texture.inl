@@ -19,6 +19,14 @@ namespace tz::gl
 		}
 		else
 		{
+			if(this->descriptor.has_value())
+			{
+				topaz_assert(this->descriptor.value().width > 0 && this->descriptor.value().height > 0 && !this->is_terminal(), "tz::gl::Texture::set_data(...): Attempted to invoke set_data on a terminal texture with no existing image data. Set the initial image data *before* making the texture terminal!");
+			}
+			else
+			{
+				topaz_assert(!this->is_terminal(), "tz::gl::Texture::set_data(...): Detected attempt of underlying image data format/dimensions change on a terminal texture. This is illegal on terminal textures. Use a non-terminal texture or do not attempt to change the size/format after making the texture terminal.");
+			}
 			glTexImage2D(GL_TEXTURE_2D, 0, internal_format, static_cast<GLsizei>(image.get_width()), static_cast<GLsizei>(image.get_height()), 0, format, type, image.data());
 		}
 		this->descriptor = image_descriptor;
