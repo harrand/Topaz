@@ -71,7 +71,7 @@ namespace tz::render
 		 * @param buffer Buffer to register to this Device.
 		 */
 		void add_resource_buffer(const tz::gl::IBuffer* buffer);
-		void add_resource_buffers(const tz::gl::IBuffer* buffers...);
+		void add_resource_buffers(std::initializer_list<const tz::gl::IBuffer*> buffers);
 		/**
 		 * Unregister the given resource buffer from the Device, preventing it from being bound in subsequent render-passes.
 		 * Note: If the buffer has not previously been registered, nothing interesting happens.

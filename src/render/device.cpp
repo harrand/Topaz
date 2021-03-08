@@ -37,6 +37,14 @@ namespace tz::render
 		}
 	}
 
+	void Device::add_resource_buffers(std::initializer_list<const tz::gl::IBuffer*> buffers)
+	{
+		for(const tz::gl::IBuffer* buf : buffers)
+		{
+			this->add_resource_buffer(buf);
+		}
+	}
+
 	void Device::remove_resource_buffer(const tz::gl::IBuffer* buffer)
 	{
 		if(this->contains_resource_buffer(buffer))

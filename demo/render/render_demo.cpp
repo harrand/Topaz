@@ -18,6 +18,7 @@
 #include "gl/modules/bindless_sampler.hpp"
 #include "render/asset.hpp"
 #include "render/scene.hpp"
+#include "render/pipeline.hpp"
 #include <unordered_map>
 
 const char *vtx_shader_src = R"glsl(
@@ -484,21 +485,20 @@ namespace render_shader
 class LightingDemoWindow : public tz::dui::DebugWindow
 {
 public:
-    LightingDemoWindow(const tz::Vec3* camera_position, tz::Vec3* ambient_light, bool* rotate, DirectionalLight* directional_light, std::array<PointLight*, render_shader::max_point_lights> point_lights): tz::dui::DebugWindow("Lights"), camera_position(camera_position), ambient_light(ambient_light), rotate(rotate), directional_light(directional_light), point_lights(point_lights){}
+    LightingDemoWindow(const tz::Vec3* camera_position, tz::Vec3* ambient_light, DirectionalLight* directional_light, std::array<PointLight*, render_shader::max_point_lights> point_lights): tz::dui::DebugWindow("Lights"), camera_position(camera_position), ambient_light(ambient_light), directional_light(directional_light), point_lights(point_lights){}
 
     virtual void render() override
     {
         ImGui::Begin("Lights", &this->visible);
 		ImGui::Text("Camera Position = {%g, %g, %g}", (*camera_position)[0], (*camera_position)[1], (*camera_position)[2]);
         ImGui::DragFloat3("Ambient Light", ambient_light->data(), 0.01f, 0.0f, 1.0f);
-		ImGui::Checkbox("Rotation Enabled", this->rotate);
 		{
 			// Directional Light
 			if(ImGui::TreeNode("Directional Light"))
 			{
 				ImGui::DragFloat3("Direction", this->directional_light->direction.data(), 0.02f, -1.0f, 1.0f);
 				ImGui::DragFloat3("Colour", this->directional_light->colour.data(), 0.01f, 0.0f, 1.0f);
-				ImGui::DragFloat("Power (W)", &(this->directional_light->power), 10.0f, 0.0f, 100000.0f);
+				ImGui::DragFloat("Power (W)", &(this->directional_light->power), 0.05f, 0.0f, 3.0f);
 				ImGui::TreePop();
 			}
 		}
@@ -519,7 +519,6 @@ public:
 private:
 	const tz::Vec3* camera_position;
     tz::Vec3* ambient_light;
-	bool* rotate;
 	DirectionalLight* directional_light;
     std::array<PointLight*, render_shader::max_point_lights> point_lights;
 };
@@ -651,10 +650,9 @@ int main()
                 lights[i] = &light_pool[i];
             }
         }
-		bool rotate_enabled = false;
 
 		tz::dui::emplace_window<SceneryOptionsWindow>(scenery_pool[0], scenery_pool[1], scenery_pool[2], scenery_pool[3], scenery_pool[4], heightmap);
-		tz::dui::emplace_window<LightingDemoWindow>(&cam_pos, ambient_lighting, &rotate_enabled, directional_light, lights);
+		tz::dui::emplace_window<LightingDemoWindow>(&cam_pos, ambient_lighting, directional_light, lights);
 
 		tz::gl::ShaderCompiler cpl;
 		tz::gl::ShaderProgram prg;
@@ -747,25 +745,53 @@ int main()
 			}
 		});
 
-		tz::render::Device dev{wnd.get_frame(), &prg, &o};
-		dev.add_resource_buffer(ssbo);
-		dev.add_resource_buffer(tex_ssbo);
-		dev.add_resource_buffer(scenery_ssbo);
-		dev.add_resource_buffer(light_ssbo);
-		dev.set_handle(m.get_indices());
-        dev.set_is_patches(true);
+		// Pre-pipeline setup.
+		// 1.) Create a frame as a new render target so we can create the depth map.
+		tz::gl::Frame shadow_frame(static_cast<unsigned int>(wnd.get_width()), static_cast<unsigned int>(wnd.get_height()));
+		tz::gl::Texture& shadow_map = shadow_frame.emplace_texture(tz::gl::FrameAttachment::Depth);
+		{
+			tz::gl::TextureDataDescriptor desc;
+			desc.component_type = tz::gl::TextureComponentType::Float;
+			desc.internal_format = tz::gl::TextureInternalFormat::Depth32;
+			desc.format = tz::gl::TextureFormat::DepthComponent;
+			desc.width = wnd.get_width();
+			desc.height = wnd.get_height();
+
+			tz::gl::TextureParameters params;
+			params.min_filter = tz::gl::TextureMinificationFunction::Nearest;
+			params.mag_filter = tz::gl::TextureMagnificationFunction::Nearest;
+			params.horizontal_wrap = tz::gl::TextureWrapFunction::ClampToEdge;
+			params.vertical_wrap = tz::gl::TextureWrapFunction::ClampToEdge;
+
+			shadow_map.set_parameters(params);
+			shadow_map.resize(desc);
+		}
+		shadow_map.make_terminal();
+		tz::gl::BindlessTextureHandle shadow_map_handle = shadow_map.get_terminal_handle();
+		shadow_frame.set_output_attachment(tz::gl::FrameAttachment::None);
+
+		tz::render::Pipeline pl;
+		// Pass 0 (shadow_device): Render the scene from the viewpoint of the directional light, creating a shadow map.
+		// Pass 1 (scene_device): Render the scene using the shadowmap to darken those considered within shadow.
+		pl.add({&shadow_frame, &prg, &o});
+		pl.add({wnd.get_frame(), &prg, &o});
+		auto shadow_device = [&pl]()->tz::render::Device&{return *pl[0];};
+		auto scene_device = [&pl]()->tz::render::Device&{return *pl[1];};
+		scene_device().add_resource_buffers({ssbo, tex_ssbo, scenery_ssbo, light_ssbo});
+		scene_device().set_handle(m.get_indices());
+        scene_device().set_is_patches(true);
 
 		while(!wnd.is_close_requested())
 		{
 
-			dev.clear();
+			scene_device().clear();
 			o.bind();
 			for(std::size_t i = 0; i < max_elements; i++)
 			{
 				scene.get(i).camera.position = cam_pos;
 			}
-			scene.configure(dev);
-			dev.render();
+			scene.configure(scene_device());
+			scene_device().render();
 			tz::update();
 			wnd.update();
 		}

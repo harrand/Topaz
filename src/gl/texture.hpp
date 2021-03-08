@@ -152,6 +152,7 @@ namespace tz::gl
 		ExtraColour1 = GL_COLOR_ATTACHMENT1,
 		ExtraColour2 = GL_COLOR_ATTACHMENT2,
 		ExtraColour3 = GL_COLOR_ATTACHMENT3,
+		None = GL_NONE
 	};
 
 	/**
