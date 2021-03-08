@@ -281,6 +281,7 @@ const char *frg_shader_src = R"glsl(
 	#ssbo lighting_block
 	{
 		vec3 ambient_light;
+		DirectionalLight directional_light;
 		PointLight point_lights[];
 	};
 
@@ -300,6 +301,10 @@ const char *frg_shader_src = R"glsl(
 		vec3 forward_modelspace = vec3(0.0, 0.0, -1.0);
 		vec3 forward_cameraspace = (mvp_frg.v * mvp_frg.m * vec4(forward_modelspace, 0.0)).xyz;
 		vec4 lit_colour = ambient_col;
+
+		// Firstly, deal with the directional light.
+		lit_colour += vec4(diffuse_directional(directional_light, light_input_colour.xyz, normal_cameraspace), 1.0);
+		// Then all the point lights.
 		for(int i = 0; i < point_lights.length(); i++)
 		{
 			PointLight cur_light = point_lights[i];
@@ -460,15 +465,26 @@ public:
 	float power;
 };
 
+struct DirectionalLight
+{
+public:
+	DirectionalLight(tz::Vec3 direction, tz::Vec3 colour, float power): direction(direction), colour(colour), power(power){}
+
+	tz::Vec3 direction;
+	float pad0;
+	tz::Vec3 colour;
+	float power;
+};
+
 namespace render_shader
 {
-	constexpr std::size_t max_lights = 32;
+	constexpr std::size_t max_point_lights = 32;
 }
 
 class LightingDemoWindow : public tz::dui::DebugWindow
 {
 public:
-    LightingDemoWindow(const tz::Vec3* camera_position, tz::Vec3* ambient_light, bool* rotate, std::array<PointLight*, render_shader::max_lights> lights): tz::dui::DebugWindow("Lights"), camera_position(camera_position), ambient_light(ambient_light), rotate(rotate), lights(lights){}
+    LightingDemoWindow(const tz::Vec3* camera_position, tz::Vec3* ambient_light, bool* rotate, DirectionalLight* directional_light, std::array<PointLight*, render_shader::max_point_lights> point_lights): tz::dui::DebugWindow("Lights"), camera_position(camera_position), ambient_light(ambient_light), rotate(rotate), directional_light(directional_light), point_lights(point_lights){}
 
     virtual void render() override
     {
@@ -476,9 +492,20 @@ public:
 		ImGui::Text("Camera Position = {%g, %g, %g}", (*camera_position)[0], (*camera_position)[1], (*camera_position)[2]);
         ImGui::DragFloat3("Ambient Light", ambient_light->data(), 0.01f, 0.0f, 1.0f);
 		ImGui::Checkbox("Rotation Enabled", this->rotate);
-        for(std::size_t i = 0; i < render_shader::max_lights; i++)
+		{
+			// Directional Light
+			if(ImGui::TreeNode("Directional Light"))
+			{
+				ImGui::DragFloat3("Direction", this->directional_light->direction.data(), 0.02f, -1.0f, 1.0f);
+				ImGui::DragFloat3("Colour", this->directional_light->colour.data(), 0.01f, 0.0f, 1.0f);
+				ImGui::DragFloat("Power (W)", &(this->directional_light->power), 10.0f, 0.0f, 100000.0f);
+				ImGui::TreePop();
+			}
+		}
+        for(std::size_t i = 0; i < render_shader::max_point_lights; i++)
         {
-            PointLight* light = this->lights[i];
+			// Point Lights
+            PointLight* light = this->point_lights[i];
             if(ImGui::TreeNode((std::string{"Light "} + std::to_string(i)).c_str()))
             {
                 ImGui::DragFloat3("Position Worldspace", light->position.data(), 50.0f, -10000.0f, 10000.0f);
@@ -493,7 +520,8 @@ private:
 	const tz::Vec3* camera_position;
     tz::Vec3* ambient_light;
 	bool* rotate;
-    std::array<PointLight*, render_shader::max_lights> lights;
+	DirectionalLight* directional_light;
+    std::array<PointLight*, render_shader::max_point_lights> point_lights;
 };
 
 int main()
@@ -601,17 +629,22 @@ int main()
 		}
 
 		// Lighting information
-        constexpr std::size_t light_buf_size = sizeof(tz::Vec3) + sizeof(float) /*extra padding required*/ + (sizeof(PointLight) * render_shader::max_lights) /*point lights*/;
-        constexpr float default_ambient_pow = 1.0f;
+        constexpr std::size_t light_buf_size = sizeof(tz::Vec3) + sizeof(float) /*extra padding required*/ + sizeof(DirectionalLight) + (sizeof(PointLight) * render_shader::max_point_lights) /*point lights*/;
+        constexpr float default_ambient_pow = 0.3f;
+		constexpr tz::Vec3 default_directional_light_dir{0.5f, 1.0f, 0.0f};
 		tz::Vec3* ambient_lighting;
-        std::array<PointLight*, render_shader::max_lights> lights;
+		DirectionalLight* directional_light = nullptr;
+        std::array<PointLight*, render_shader::max_point_lights> lights;
         light_ssbo->terminal_resize(light_buf_size);
         {
 		    tz::mem::Block blk = light_ssbo->map();
 			ambient_lighting = new (blk.begin) tz::Vec3{default_ambient_pow, default_ambient_pow, default_ambient_pow};
 			blk.begin = reinterpret_cast<char*>(blk.begin) + sizeof(tz::Vec3) + /* add extra float because glsl will align to that */sizeof(float);
+			// Now deal with the directional light.
+			directional_light = new (blk.begin) DirectionalLight{default_directional_light_dir, tz::Vec3{1.0f, 1.0f, 1.0f}, 1.0f};
+			blk.begin = reinterpret_cast<char*>(blk.begin) + sizeof(DirectionalLight);
             tz::mem::UniformPool<PointLight> light_pool{blk};
-            for(std::size_t i = 0; i < render_shader::max_lights; i++)
+            for(std::size_t i = 0; i < render_shader::max_point_lights; i++)
             {
                 const PointLight default_light{tz::Vec3{}, tz::Vec3{0.5f, 0.0f, 0.0f}, 0.0f};
                 light_pool.set(i, default_light);
@@ -621,7 +654,7 @@ int main()
 		bool rotate_enabled = false;
 
 		tz::dui::emplace_window<SceneryOptionsWindow>(scenery_pool[0], scenery_pool[1], scenery_pool[2], scenery_pool[3], scenery_pool[4], heightmap);
-		tz::dui::emplace_window<LightingDemoWindow>(&cam_pos, ambient_lighting, &rotate_enabled, lights);
+		tz::dui::emplace_window<LightingDemoWindow>(&cam_pos, ambient_lighting, &rotate_enabled, directional_light, lights);
 
 		tz::gl::ShaderCompiler cpl;
 		tz::gl::ShaderProgram prg;
