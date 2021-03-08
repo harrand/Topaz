@@ -24,7 +24,8 @@ namespace tz::gl
 				for(std::size_t i = 1; i < sm.size(); i++)
 					inner_matches.push_back(sm[i]);
 				src_copy = sm.suffix();
-				src_pos_counter += pos + len;
+				src_pos_counter = source.find(src_copy);
+				//src_pos_counter += pos + len;
 				// get the transformed string.
 				std::string replacement = transform_function(inner_matches.begin(), inner_matches.end());
 				// register this source replacement.
