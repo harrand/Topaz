@@ -28,8 +28,15 @@ namespace tz::mem
 
 	AutoBlock::AutoBlock(std::size_t size): Block(std::malloc(size), size){}
 
+	AutoBlock::AutoBlock(AutoBlock&& move): Block(move.begin, move.end)
+	{
+		move.begin = nullptr;
+		move.end = nullptr;
+	}
+
 	AutoBlock::~AutoBlock()
 	{
+		// Does nothing if this->begin == nullptr.
 		std::free(this->begin);
 	}
 }

@@ -32,12 +32,15 @@ namespace tz::mem
 	};
 
 	/**
-	 * Similar to a block, but allocates the block dynamically and uses that (RAII).
+	 * Similar to a block, but allocates the block dynamically and uses that (RAII). Non-copyable type.
 	 */
 	struct AutoBlock : public Block
 	{
 		AutoBlock(std::size_t size);
+		AutoBlock(const AutoBlock& copy) = delete;
+		AutoBlock(AutoBlock&& move);
 		~AutoBlock();
+		AutoBlock& operator=(const AutoBlock& rhs) = delete;
 	};
 
 	/**
