@@ -4,6 +4,7 @@
 
 #include "test_framework.hpp"
 #include "memory/block.hpp"
+#include <cstring>
 
 TZ_TEST_BEGIN(dist)
 	// Here's some data, see if the block knows its own size.
@@ -23,12 +24,27 @@ TZ_TEST_BEGIN(auto_block)
 	topaz_expect(blk.size() == sizeof(int), "tz::mem::AutoBlock::size(): Unexpected size. Expected ", sizeof(int), ", got ", blk.size());
 TZ_TEST_END
 
+TZ_TEST_BEGIN(block_cpy)
+	int data[3] = {0, 1, 2};
+	tz::mem::AutoBlock b1{sizeof(int) * 3};
+	std::memcpy(b1.begin, data, b1.size());
+	tz::mem::AutoBlock b2{sizeof(int) * 3};
+	b1.copy_to(b2);
+	for(std::size_t i = 0; i < 3; i++)
+	{
+		int expected = data[i];
+		int actual = *(reinterpret_cast<int*>(b1.begin) + i);
+		topaz_expectf(expected == actual, "tz::mem::Block::copy_to test did not copy as expected. Element %zu -- expected (%d) != actual (%d)", i, expected, actual);
+	}
+TZ_TEST_END
+
 int main()
 {
 	tz::test::Unit block;
 	
 	block.add(dist());
 	block.add(auto_block());
+	block.add(block_cpy());
 
 	return block.result();
 }

@@ -3,6 +3,8 @@
 //
 
 #include "memory/block.hpp"
+#include "core/debug/assert.hpp"
+#include <cstring>
 
 namespace tz::mem
 {
@@ -19,6 +21,12 @@ namespace tz::mem
 	std::size_t Block::size() const
 	{
 		return byte_distance(this->begin, this->end);
+	}
+
+	void Block::copy_to(const Block& block)
+	{
+		topaz_assertf(this->size() <= block.size(), "tz::mem::Block::copy_to(const Block&): Cannot copy source block data (size: %zu bytes) to destination block (size: %zu bytes) because the destination block is too small.", this->size(), block.size());
+		std::memcpy(block.begin, this->begin, this->size());
 	}
 
 	Block Block::null()

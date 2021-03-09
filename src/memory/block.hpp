@@ -25,6 +25,7 @@ namespace tz::mem
 		Block(void* begin, void* end);
 		Block(void* begin, std::size_t size);
 		std::size_t size() const;
+		void copy_to(const Block& block);
 		static Block null();
 
 		void* begin;
