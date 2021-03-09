@@ -14,7 +14,8 @@ namespace tz::dui::gl
 			for(std::size_t i = 0; i < tz::gl::sentinel().registered_handle_count(); i++)
 			{
 				tz::gl::BindlessTextureHandle cur_handle = tz::gl::sentinel().get_handle(i);
-				ImGui::Text("Handle %llu (Resident: %s)", cur_handle, tz::gl::sentinel().resident(cur_handle) ? "true" : "false");
+				bool is_resident = tz::gl::sentinel().resident(cur_handle);
+				ImGui::Text("Handle %llu (Resident: %s)", cur_handle, is_resident ? "true" : "false");
 			}
 		}
 		ImGui::End();

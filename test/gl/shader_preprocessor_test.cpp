@@ -94,6 +94,35 @@ const char* src6 = R"glsl(
 	}
 )glsl";
 
+const char* src6_parsed = R"glsl(
+	#version 430
+	layout(std140, binding = 0) uniform wabbadabbadoo
+	{
+
+	};
+
+	layout(std140, binding = 0) uniform wabbadabbadoo
+	{
+
+	};
+
+	layout(std430, binding = 1) buffer bobby_b
+	{
+
+
+	};
+
+	layout(std430, binding = 1) buffer bobby_b
+	{
+
+	};
+
+	void main()
+	{
+		// yee
+	}
+)glsl";
+
 namespace tz::test
 {
 	class TestUppercaseModule : public tz::gl::p::IModule
@@ -239,6 +268,16 @@ TZ_TEST_BEGIN(shader_buffer_name_clash)
 	topaz_expectf(ssbo_module->size() == 1, "tz::gl::p::SSBOmodule::size(): Had unexpected value (two ssbos of the same name). Expected %d, got %zu", 1, ssbo_module->size());
 TZ_TEST_END
 
+TZ_TEST_BEGIN(shader_source_replacement_correct)
+	tz::gl::Object o;
+
+	tz::gl::ShaderPreprocessor pre{src6};
+	pre.emplace_module<tz::gl::p::UBOModule>(o);
+	pre.emplace_module<tz::gl::p::SSBOModule>(o);
+	pre.preprocess();
+	topaz_expectf(pre.result() == src6_parsed, "tz::gl::p Shader Source Replacement Failed a simple test.\nExpected Source: \n%s\nActual Source: \n%s", pre.result().c_str(), src6_parsed);
+TZ_TEST_END
+
 int main()
 {
 	tz::test::Unit pre;
@@ -253,6 +292,7 @@ int main()
 		pre.add(defined_ssbo());
 		pre.add(defined_ubo());
 		pre.add(shader_buffer_name_clash());
+		pre.add(shader_source_replacement_correct());
 		tz::terminate();
 	}
 	return pre.result();
