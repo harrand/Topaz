@@ -47,4 +47,11 @@ namespace tz::mem
 		// Does nothing if this->begin == nullptr.
 		std::free(this->begin);
 	}
+
+	AutoBlock AutoBlock::take(const Block& allocated_block)
+	{
+		return AutoBlock{allocated_block.begin, allocated_block.end};
+	}
+
+	AutoBlock::AutoBlock(void* begin, void* end): Block(begin, end){}
 }

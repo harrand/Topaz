@@ -38,6 +38,12 @@ TZ_TEST_BEGIN(block_cpy)
 	}
 TZ_TEST_END
 
+TZ_TEST_BEGIN(block_to_autoblock)
+	int* memory = static_cast<int*>(std::malloc(sizeof(int)));
+	tz::mem::Block unmanaged_blk{memory, sizeof(int)};
+	auto blk = tz::mem::AutoBlock::take(unmanaged_blk);
+TZ_TEST_END
+
 int main()
 {
 	tz::test::Unit block;
@@ -45,6 +51,7 @@ int main()
 	block.add(dist());
 	block.add(auto_block());
 	block.add(block_cpy());
+	block.add(block_to_autoblock());
 
 	return block.result();
 }

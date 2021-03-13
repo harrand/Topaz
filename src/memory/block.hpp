@@ -42,6 +42,9 @@ namespace tz::mem
 		AutoBlock(AutoBlock&& move);
 		~AutoBlock();
 		AutoBlock& operator=(const AutoBlock& rhs) = delete;
+		static AutoBlock take(const Block& allocated_block);
+	private:
+		AutoBlock(void* begin, void* end);
 	};
 
 	/**
