@@ -63,6 +63,11 @@ add_library(topaz STATIC
 		src/memory/pool.hpp
 		src/memory/pool.inl
 
+		src/phys/body.cpp
+		src/phys/body.hpp
+		src/phys/motion.cpp
+		src/phys/motion.hpp
+
 		src/geo/boundary/aabb.cpp
 		src/geo/boundary/aabb.hpp
 		src/geo/boundary/sphere.cpp
