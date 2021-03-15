@@ -73,6 +73,8 @@ add_library(topaz STATIC
 		src/phys/body.hpp
 		src/phys/motion.cpp
 		src/phys/motion.hpp
+		src/phys/world.cpp
+		src/phys/world.hpp
 
 		src/geo/boundary/aabb.cpp
 		src/geo/boundary/aabb.hpp

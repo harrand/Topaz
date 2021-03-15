@@ -19,7 +19,7 @@
 #include "render/asset.hpp"
 #include "render/scene.hpp"
 
-#include "phys/body.hpp"
+#include "phys/world.hpp"
 #include "phys/colliders/sphere.hpp"
 #include <unordered_map>
 #include <chrono>
