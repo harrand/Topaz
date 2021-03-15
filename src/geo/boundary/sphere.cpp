@@ -29,4 +29,19 @@ namespace tz::geo
         // Then check if this point intersects with the sphere.
         return this->collides(closest_point);
     }
+
+    const tz::Vec3& BoundarySphere::get_centre() const
+    {
+        return this->centre;
+    }
+
+    void BoundarySphere::set_centre(tz::Vec3 centre)
+    {
+        this->centre = centre;
+    }
+
+    float BoundarySphere::get_radius() const
+    {
+        return this->radius;
+    }
 }

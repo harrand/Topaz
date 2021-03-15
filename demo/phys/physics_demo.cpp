@@ -20,6 +20,7 @@
 #include "render/scene.hpp"
 
 #include "phys/body.hpp"
+#include "phys/colliders/sphere.hpp"
 #include <unordered_map>
 #include <chrono>
 
@@ -75,7 +76,7 @@ public:
         for(tz::phys::Body* body : this->world.body_tracker)
         {
             ImGui::DragFloat3("Force: ", body->force.data());
-            ImGui::DragFloat3("Position: ", body->position.data());
+            ImGui::DragFloat3("Position: ", body->transform.position.data());
             ImGui::DragFloat3("Velocity: ", body->velocity.data());
             ImGui::DragFloat("Mass: ", &body->mass);
         }
@@ -94,7 +95,7 @@ unsigned long long get_current_time()
 
 int main()
 {
-	constexpr std::size_t max_elements = 1;
+	constexpr std::size_t max_elements = 2;
 	constexpr std::size_t max_textures = 8;
 	// Minimalist Graphics Demo.
 	tz::initialise("Topaz Render Demo");
@@ -219,16 +220,30 @@ int main()
 		dev.set_handle(m.get_indices());
 
         // Physics stuff.
+		tz::gl::Transform body_trans;
+		tz::gl::Transform floor_trans;
+		floor_trans.position = {0.0f, -25.0f, 0.0f};
         tz::phys::Body body
         {
+            body_trans,
             tz::Vec3{0.0f, 0.0f, 0.0f},
             tz::Vec3{0.0f, 0.0f, 0.0f},
-            tz::Vec3{0.0f, 0.0f, 0.0f},
-            1.0f
+            1.0f,
+			std::make_unique<tz::phys::SphereCollider>(tz::Vec3{0.0f, 0.0f, 0.0f}, 10.0f)
         };
+
+		tz::phys::Body floor_body
+		{
+			floor_trans,
+			tz::Vec3{0.0f, 0.0f, 0.0f},
+			tz::Vec3{0.0f, 0.0f, 0.0f},
+			100000.0f,
+			std::make_unique<tz::phys::SphereCollider>(tz::Vec3{0.0f, 0.0f, 0.0f}, 10.0f)
+		};
 
         TrackedPhysicsWorld world;
         world.add_body(body);
+		world.add_body(floor_body);
         world.register_uniform_force({0.0f, -1.0f, 0.0f});
 
         tz::dui::emplace_window<PhysicsWorldAdjustor>(world);
@@ -241,11 +256,17 @@ int main()
             old_time = new_time;
 			dev.clear();
 			o.bind();
-			for(std::size_t i = 0; i < max_elements; i++)
+			// The falling object.
 			{
-				tz::render::SceneElement& cur_ele = scene.get(i);
-				cur_ele.transform.position = body.position;
-				cur_ele.camera.position = cam_pos;
+				tz::render::SceneElement& falling_object = scene.get(0);
+				falling_object.transform.position = body.transform.position;
+				falling_object.camera.position = cam_pos;
+			}
+			// The "floor"
+			{
+				tz::render::SceneElement& lower_object = scene.get(1);
+				lower_object.transform.position = body.transform.position;
+				lower_object.camera.position = cam_pos;
 			}
 			scene.configure(dev);
 			dev.render();

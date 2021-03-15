@@ -14,6 +14,8 @@ add_library(topaz STATIC
 		src/algo/math.inl
 		src/algo/noise.hpp
 		src/algo/noise.inl
+		src/algo/physics_collisions.cpp
+		src/algo/physics_collisions.hpp
 		src/algo/static.hpp
 
 		src/core/debug/assert.hpp
@@ -63,6 +65,10 @@ add_library(topaz STATIC
 		src/memory/pool.hpp
 		src/memory/pool.inl
 
+		src/phys/colliders/generic.cpp
+		src/phys/colliders/generic.hpp
+		src/phys/colliders/sphere.cpp
+		src/phys/colliders/sphere.hpp
 		src/phys/body.cpp
 		src/phys/body.hpp
 		src/phys/motion.cpp

@@ -9,7 +9,7 @@ namespace tz::phys::motion
         float half_delta = delta_seconds * 0.5f;
         // (1) Half-update position, (2) update velocity, and then (3) the other half of position.
         // (1)
-        body.position += (body.velocity * half_delta);
+        body.transform.position += (body.velocity * half_delta);
         // (2)
         // f = ma
         // a = f/m
@@ -17,6 +17,6 @@ namespace tz::phys::motion
         body.velocity += (body.force / body.mass) * delta_seconds;
 
         // (3)
-        body.position += (body.velocity * half_delta);
+        body.transform.position += (body.velocity * half_delta);
     }
 }

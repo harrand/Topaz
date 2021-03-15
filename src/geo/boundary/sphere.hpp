@@ -41,6 +41,9 @@ namespace tz::geo
          * @param True if the box and sphere intersect. False otherwise.
          */
         bool collides(const BoundaryAABB& box) const;
+        const tz::Vec3& get_centre() const;
+        void set_centre(tz::Vec3 centre);
+        float get_radius() const;
     private:
         tz::Vec3 centre;
         float radius;

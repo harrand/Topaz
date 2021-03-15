@@ -29,6 +29,7 @@ namespace tz::phys
     void World::update(float delta_millis)
     {
         this->motion_integrate(delta_millis);
+        this->detect_collisions();
     }
 
     void World::motion_integrate(float delta_millis)
@@ -40,6 +41,40 @@ namespace tz::phys
             body_ptr->force += fnet;
             motion::verlet_integrate(delta_millis, *body_ptr);
             body_ptr->force -= fnet;
+        }
+    }
+
+    void World::detect_collisions()
+    {
+        for(Body* i : this->bodies)
+        {
+            tz::phys::ICollider* i_collider = i->collider.get();
+            if(i_collider == nullptr)
+            {
+                continue;
+            }
+            i_collider->push(i->transform.position);
+            for(Body* j : this->bodies)
+            {
+                if(i == j)
+                {
+                    continue;
+                }
+                tz::phys::ICollider* j_collider = j->collider.get();
+                if(j_collider == nullptr)
+                {
+                    continue;
+                }
+                j_collider->push(j->transform.position);
+                tz::phys::CollisionPoint collision = i_collider->test_against(*j_collider);
+                i_collider->pop();
+                j_collider->pop();
+                if(collision.collides())
+                {
+                    // TODO: Sane Collision Response.
+                    topaz_assert(false, "THIS IS THE CURRENT COLLISION RESPONSE. YES, THE COLLISION RESPONSE IS A BREAKPOINT. INCREDIBLE.");
+                }
+            }
         }
     }
 

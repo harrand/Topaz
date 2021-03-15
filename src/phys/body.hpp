@@ -1,16 +1,20 @@
 #ifndef TOPAZ_PHYS_BODY_HPP
 #define TOPAZ_PHYS_BODY_HPP
 #include "core/vector.hpp"
+#include "phys/colliders/generic.hpp"
+#include "gl/transform.hpp"
 #include <vector>
 
 namespace tz::phys
 {
     struct Body
     {
-        tz::Vec3 position;
+        tz::gl::Transform& transform;
         tz::Vec3 velocity;
         tz::Vec3 force;
         float mass;
+
+        std::unique_ptr<ICollider> collider = nullptr;
     };
 
 
@@ -27,6 +31,7 @@ namespace tz::phys
         void update(float delta_millis);
     private:
         void motion_integrate(float delta_millis);
+        void detect_collisions();
         tz::Vec3 fnet_uniform() const;
 
         std::vector<Body*> bodies;
