@@ -27,6 +27,7 @@ namespace tz::phys
 
     void ICollider::pop()
     {
+        topaz_assert(!this->model_space_stack.empty(), "tz::phys::ICollider::pop(): Parent body stack was empty before popping.");
         this->model_space_stack.pop_front();
     }
 

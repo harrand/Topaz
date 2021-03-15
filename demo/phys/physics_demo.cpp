@@ -62,7 +62,17 @@ public:
         this->body_tracker.push_back(&body);
         tz::phys::World::add_body(body);
     }
+
+	void update(float delta_millis)
+	{
+		if(!time_frozen)
+		{
+			tz::phys::World::update(delta_millis);
+		}
+	}
+
     std::vector<tz::phys::Body*> body_tracker;
+	bool time_frozen = false;
 };
 
 class PhysicsWorldAdjustor : public tz::dui::DebugWindow
@@ -73,12 +83,17 @@ public:
     virtual void render() override
     {
         ImGui::Begin("Physics World Adjustor", &this->visible);
+		ImGui::Checkbox("Freeze Time", &this->world.time_frozen);
+		std::size_t count = 0;
         for(tz::phys::Body* body : this->world.body_tracker)
         {
+			ImGui::PushID(count++);
+			ImGui::Spacing();
             ImGui::DragFloat3("Force: ", body->force.data());
             ImGui::DragFloat3("Position: ", body->transform.position.data());
             ImGui::DragFloat3("Velocity: ", body->velocity.data());
             ImGui::DragFloat("Mass: ", &body->mass);
+			ImGui::PopID();
         }
         ImGui::End();
     }
@@ -129,9 +144,9 @@ int main()
 		tz::gl::SSBO* tex_ssbo = o.get<tz::gl::BufferType::ShaderStorage>(tex_ssbo_id);
 
 		tz::gl::IndexedMesh triangle;
-		triangle.vertices.push_back(tz::gl::Vertex{{{-0.5f, 0.5f, 0.0f}}, {{0.0f, 0.0f}}, {{}}, {{}}, {{}}});
-		triangle.vertices.push_back(tz::gl::Vertex{{{0.5f, 0.5f, 0.0f}}, {{1.0f, 0.0f}}, {{}}, {{}}, {{}}});
-		triangle.vertices.push_back(tz::gl::Vertex{{{0.0f, 1.5f, 0.0f}}, {{0.5f, 1.0f}}, {{}}, {{}}, {{}}});
+		triangle.vertices.push_back(tz::gl::Vertex{{{-0.5f, -0.5f, 0.0f}}, {{0.0f, 0.0f}}, {{}}, {{}}, {{}}});
+		triangle.vertices.push_back(tz::gl::Vertex{{{0.5f, -0.5f, 0.0f}}, {{1.0f, 0.0f}}, {{}}, {{}}, {{}}});
+		triangle.vertices.push_back(tz::gl::Vertex{{{0.0f, 0.5f, 0.0f}}, {{0.5f, 1.0f}}, {{}}, {{}}, {{}}});
 		triangle.indices = {0, 1, 2};
 
 		tz::gl::IndexedMesh square;
@@ -163,6 +178,7 @@ int main()
 		tz::Vec3 triangle_pos{{0.0f, 0.0f, 0.0f}};
 
 		tz::gl::Manager::Handle triangle_handle = m.add_mesh(triangle);
+		tz::gl::Manager::Handle square_handle = m.add_mesh(square);
 
 		// UBO stores mesh transform data (mvp)
 		ssbo->terminal_resize(sizeof(tz::Mat4) * max_elements);
@@ -176,6 +192,7 @@ int main()
 		// Scene setup.
 		// Meshes
 		tz::render::AssetBuffer::Index triangle_mesh_idx = scene.add_mesh({m, triangle_handle});
+		tz::render::AssetBuffer::Index square_mesh_idx = scene.add_mesh({m, square_handle});
 		// Textures
 		tex_ssbo->resize(sizeof(tz::gl::BindlessTextureHandle) * max_textures);
 		{
@@ -202,6 +219,7 @@ int main()
 		auto lnk_diag = cpl.link(prg);
 		topaz_assert(lnk_diag.successful(), "Shader Linkage Fail: ", lnk_diag.get_info_log());
 
+		// By default, all elements are triangles.
 		for(std::size_t i = 0; i < max_elements; i++)
 		{
 			tz::render::SceneElement ele{triangle_mesh_idx};
@@ -214,6 +232,9 @@ int main()
 			scene.add(ele);
 		}
 
+		// Element 1 is an exception, and will be a square instead.
+		scene.get(1).mesh = square_mesh_idx;
+
 		tz::render::Device dev{wnd.get_frame(), &prg, &o};
 		dev.add_resource_buffer(ssbo);
 		dev.add_resource_buffer(tex_ssbo);
@@ -221,15 +242,16 @@ int main()
 
         // Physics stuff.
 		tz::gl::Transform body_trans;
+		body_trans.position = {0.0f, 2.0f, 0.0f};
 		tz::gl::Transform floor_trans;
-		floor_trans.position = {0.0f, -25.0f, 0.0f};
+		floor_trans.position = {0.0f, -2.0f, 0.0f};
         tz::phys::Body body
         {
             body_trans,
             tz::Vec3{0.0f, 0.0f, 0.0f},
             tz::Vec3{0.0f, 0.0f, 0.0f},
             1.0f,
-			std::make_unique<tz::phys::SphereCollider>(tz::Vec3{0.0f, 0.0f, 0.0f}, 10.0f)
+			std::make_unique<tz::phys::SphereCollider>(tz::Vec3{0.0f, 0.0f, 0.0f}, 0.5f)
         };
 
 		tz::phys::Body floor_body
@@ -238,15 +260,15 @@ int main()
 			tz::Vec3{0.0f, 0.0f, 0.0f},
 			tz::Vec3{0.0f, 0.0f, 0.0f},
 			100000.0f,
-			std::make_unique<tz::phys::SphereCollider>(tz::Vec3{0.0f, 0.0f, 0.0f}, 10.0f)
+			std::make_unique<tz::phys::SphereCollider>(tz::Vec3{0.0f, 0.0f, 0.0f}, 0.5f)
 		};
 
         TrackedPhysicsWorld world;
         world.add_body(body);
 		world.add_body(floor_body);
-        world.register_uniform_force({0.0f, -1.0f, 0.0f});
+        world.register_uniform_force({0.0f, -0.25f, 0.0f});
 
-        tz::dui::emplace_window<PhysicsWorldAdjustor>(world);
+        tz::dui::emplace_window<PhysicsWorldAdjustor>(world).visible = true;
 
 		while(!wnd.is_close_requested())
 		{
@@ -265,7 +287,7 @@ int main()
 			// The "floor"
 			{
 				tz::render::SceneElement& lower_object = scene.get(1);
-				lower_object.transform.position = body.transform.position;
+				lower_object.transform.position = floor_body.transform.position;
 				lower_object.camera.position = cam_pos;
 			}
 			scene.configure(dev);
