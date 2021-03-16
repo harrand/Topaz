@@ -15,6 +15,9 @@ namespace tz::phys
         float mass;
 
         std::unique_ptr<ICollider> collider = nullptr;
+        float restitution = 1.0f;
+        float static_friction = 0.0f;
+        float dynamic_friction = 0.0f;
     };
 }
 

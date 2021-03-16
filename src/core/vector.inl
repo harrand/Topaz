@@ -141,7 +141,10 @@ namespace tz
 	void Vector<T, S>::normalise()
 	{
 		T l = this->length();
-		topaz_assert(l != T{}, "tz::Vector<T, ", S, ">::normalise(): Length is ", l, "!");
+		if(l == T{})
+		{
+			return;
+		}
 		for(auto& d : this->vec)
 		{
 			d /= l;

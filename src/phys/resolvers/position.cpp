@@ -3,7 +3,7 @@
 
 namespace tz::phys
 {
-    void PositionResolver::solve_all(CollisionList& collisions, float delta_millis)
+    void PositionResolver::solve_all(CollisionList& collisions, [[maybe_unused]] float delta_millis)
     {
         constexpr bool is_kinematic = true;
         using DeltaPair = std::pair<tz::Vec3, tz::Vec3>;

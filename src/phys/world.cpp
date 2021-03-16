@@ -39,9 +39,9 @@ namespace tz::phys
 
     void World::update(float delta_millis)
     {
-        this->motion_integrate(delta_millis);
         CollisionList collisions = this->detect_collisions();
         this->resolve_collisions(collisions, delta_millis);
+        this->motion_integrate(delta_millis);
     }
 
     void World::motion_integrate(float delta_millis)
@@ -85,6 +85,10 @@ namespace tz::phys
                 if(collision_point.collides())
                 {
                     // TODO: Sane Collision
+                    if(i->mass < j->mass)
+                    {
+                        std::swap(i, j);
+                    }
                     CollisionSituation collision{*i, *j, collision_point};
                     collisions.push_back(collision);
                     //topaz_assert(false, "THIS IS THE CURRENT COLLISION RESPONSE. YES, THE COLLISION RESPONSE IS A BREAKPOINT. INCREDIBLE.");

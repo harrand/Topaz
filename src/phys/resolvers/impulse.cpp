@@ -1,11 +1,12 @@
 #include "phys/resolvers/impulse.hpp"
 #include "phys/body.hpp"
+#include <utility>
 
 namespace tz::phys
 {
-    void ImpulseResolver::solve_all(CollisionList& collisions, float delta_millis)
+    void ImpulseResolver::solve_all(CollisionList& collisions, [[maybe_unused]] float delta_millis)
     {
-        for(const CollisionSituation& situation : collisions)
+        for(CollisionSituation& situation : collisions)
         {
             constexpr bool is_kinematic = true;
             tz::Vec3 a_vel = situation.a.velocity;
@@ -23,11 +24,7 @@ namespace tz::phys
                 continue;
             }
 
-            #if 0 // Body::restitution is implemented
             float e = situation.a.restitution * situation.b.restitution;
-            #else
-            float e = 1.0f;
-            #endif
 
             float j = -(1.0f + e) * normal_speed / (inv_mass_a + inv_mass_b);
 
@@ -44,14 +41,11 @@ namespace tz::phys
             tz::Vec3 tangent = (r_vel - situation.point.normal() * normal_speed).normalised();
             float f_vel = r_vel.dot(tangent);
 
-            #if 0 // Body::static_friction and Body::dynamic_fraiction is implemented
             float a_static = situation.a.static_friction;
             float b_static = situation.b.static_friction;
             float a_dynamic = situation.a.dynamic_friction;
             float b_dynamic = situation.b.dynamic_friction;
-            #else
-            float a_static = 0.0f, b_static = 0.0f, a_dynamic = 0.0f, b_dynamic = 0.0f;
-            #endif
+
             float mu = std::hypot(a_static, b_static);
             float f = -f_vel / (inv_mass_a + inv_mass_b);
 

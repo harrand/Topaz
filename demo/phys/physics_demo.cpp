@@ -271,7 +271,7 @@ int main()
         TrackedPhysicsWorld world;
         world.add_body(body);
 		world.add_body(floor_body);
-		world.add_resolver(pos_res);
+		//world.add_resolver(pos_res);
 		world.add_resolver(inv_res);
         world.register_uniform_force({0.0f, -0.25f, 0.0f});
 
