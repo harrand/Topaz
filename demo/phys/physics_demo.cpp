@@ -91,10 +91,15 @@ public:
         {
 			ImGui::PushID(count++);
 			ImGui::Spacing();
+			ImGui::Text("Dynamics");
             ImGui::DragFloat3("Force: ", body->force.data());
             ImGui::DragFloat3("Position: ", body->transform.position.data());
             ImGui::DragFloat3("Velocity: ", body->velocity.data());
-            ImGui::DragFloat("Mass: ", &body->mass);
+            ImGui::DragFloat("Mass: ", &body->mass, 0.25f, 0.0f, 1000.0f);
+			ImGui::Text("Collision Response");
+			ImGui::DragFloat("Restitution (Elasticity)", &body->restitution, 0.05f, 0.0f, 1.0f);
+			ImGui::DragFloat("Static Friction", &body->static_friction, 0.1f, 0.0f, 20.0f);
+			ImGui::DragFloat("Dynamic Friction", &body->dynamic_friction, 0.1f, 0.0f, 20.0f);
 			ImGui::PopID();
         }
         ImGui::End();
@@ -253,7 +258,10 @@ int main()
             tz::Vec3{0.0f, 0.0f, 0.0f},
             tz::Vec3{0.0f, 0.0f, 0.0f},
             1.0f,
-			std::make_unique<tz::phys::SphereCollider>(tz::Vec3{0.0f, 0.0f, 0.0f}, 0.5f)
+			std::make_unique<tz::phys::SphereCollider>(tz::Vec3{0.0f, 0.0f, 0.0f}, 0.5f),
+			0.5f,
+			10.0f,
+			2.0f
         };
 
 		tz::phys::Body floor_body
