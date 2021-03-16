@@ -236,6 +236,7 @@ int main()
 			ele.camera.aspect_ratio = 1920.0f/1080.0f;
 			ele.camera.near = 0.1f;
 			ele.camera.far = 1000.0f;
+			ele.camera.position = cam_pos;
 			scene.add(ele);
 		}
 
@@ -248,13 +249,9 @@ int main()
 		dev.set_handle(m.get_indices());
 
         // Physics stuff.
-		tz::gl::Transform body_trans;
-		body_trans.position = {0.0f, 2.0f, 0.0f};
-		tz::gl::Transform floor_trans;
-		floor_trans.position = {0.0f, -2.0f, 0.0f};
         tz::phys::Body body
         {
-            body_trans,
+            scene.get(0).transform,
             tz::Vec3{0.0f, 0.0f, 0.0f},
             tz::Vec3{0.0f, 0.0f, 0.0f},
             1.0f,
@@ -263,15 +260,17 @@ int main()
 			10.0f,
 			2.0f
         };
+		body.transform.position = {0.0f, 2.0f, 0.0f};
 
 		tz::phys::Body floor_body
 		{
-			floor_trans,
+			scene.get(1).transform,
 			tz::Vec3{0.0f, 0.0f, 0.0f},
 			tz::Vec3{0.0f, 0.0f, 0.0f},
 			100000.0f,
 			std::make_unique<tz::phys::SphereCollider>(tz::Vec3{0.0f, 0.0f, 0.0f}, 0.5f)
 		};
+		floor_body.transform.position = {0.0f, -2.0f, 0.0f};
 
 		tz::phys::PositionResolver pos_res;
 		tz::phys::ImpulseResolver inv_res;
@@ -293,18 +292,6 @@ int main()
             old_time = new_time;
 			dev.clear();
 			o.bind();
-			// The falling object.
-			{
-				tz::render::SceneElement& falling_object = scene.get(0);
-				falling_object.transform.position = body.transform.position;
-				falling_object.camera.position = cam_pos;
-			}
-			// The "floor"
-			{
-				tz::render::SceneElement& lower_object = scene.get(1);
-				lower_object.transform.position = floor_body.transform.position;
-				lower_object.camera.position = cam_pos;
-			}
 			scene.configure(dev);
 			dev.render();
 			tz::update();
