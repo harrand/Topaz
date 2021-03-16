@@ -21,6 +21,8 @@
 
 #include "phys/world.hpp"
 #include "phys/colliders/sphere.hpp"
+#include "phys/resolvers/position.hpp"
+#include "phys/resolvers/impulse.hpp"
 #include <unordered_map>
 #include <chrono>
 
@@ -263,9 +265,14 @@ int main()
 			std::make_unique<tz::phys::SphereCollider>(tz::Vec3{0.0f, 0.0f, 0.0f}, 0.5f)
 		};
 
+		tz::phys::PositionResolver pos_res;
+		tz::phys::ImpulseResolver inv_res;
+
         TrackedPhysicsWorld world;
         world.add_body(body);
 		world.add_body(floor_body);
+		world.add_resolver(pos_res);
+		world.add_resolver(inv_res);
         world.register_uniform_force({0.0f, -0.25f, 0.0f});
 
         tz::dui::emplace_window<PhysicsWorldAdjustor>(world).visible = true;

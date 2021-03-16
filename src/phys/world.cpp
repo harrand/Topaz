@@ -1,5 +1,6 @@
 #include "phys/world.hpp"
 #include "phys/motion.hpp"
+#include "phys/collision.hpp"
 
 namespace tz::phys
 {
@@ -26,10 +27,21 @@ namespace tz::phys
         this->bodies.erase(std::remove(this->bodies.begin(), this->bodies.end(), &body), this->bodies.end());
     }
 
+    void World::add_resolver(IResolver& resolver)
+    {
+        this->resolvers.push_back(&resolver);
+    }
+
+    void World::remove_resolver(IResolver& resolver)
+    {
+        this->resolvers.erase(std::remove(this->resolvers.begin(), this->resolvers.end(), &resolver), this->resolvers.end());
+    }
+
     void World::update(float delta_millis)
     {
         this->motion_integrate(delta_millis);
-        this->detect_collisions();
+        CollisionList collisions = this->detect_collisions();
+        this->resolve_collisions(collisions, delta_millis);
     }
 
     void World::motion_integrate(float delta_millis)
@@ -44,8 +56,9 @@ namespace tz::phys
         }
     }
 
-    void World::detect_collisions()
+    CollisionList World::detect_collisions()
     {
+        CollisionList collisions;
         for(Body* i : this->bodies)
         {
             tz::phys::ICollider* i_collider = i->collider.get();
@@ -66,15 +79,26 @@ namespace tz::phys
                     continue;
                 }
                 j_collider->push(j->transform.position);
-                tz::phys::CollisionPoint collision = i_collider->test_against(*j_collider);
+                tz::phys::CollisionPoint collision_point = i_collider->test_against(*j_collider);
                 i_collider->pop();
                 j_collider->pop();
-                if(collision.collides())
+                if(collision_point.collides())
                 {
-                    // TODO: Sane Collision 
-                    topaz_assert(false, "THIS IS THE CURRENT COLLISION RESPONSE. YES, THE COLLISION RESPONSE IS A BREAKPOINT. INCREDIBLE.");
+                    // TODO: Sane Collision
+                    CollisionSituation collision{*i, *j, collision_point};
+                    collisions.push_back(collision);
+                    //topaz_assert(false, "THIS IS THE CURRENT COLLISION RESPONSE. YES, THE COLLISION RESPONSE IS A BREAKPOINT. INCREDIBLE.");
                 }
             }
+        }
+        return collisions;
+    }
+
+    void World::resolve_collisions(CollisionList collisions, float delta_millis)
+    {
+        for(IResolver* resolver : this->resolvers)
+        {
+            resolver->solve_all(collisions, delta_millis);
         }
     }
 

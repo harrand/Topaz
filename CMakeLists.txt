@@ -69,8 +69,16 @@ add_library(topaz STATIC
 		src/phys/colliders/generic.hpp
 		src/phys/colliders/sphere.cpp
 		src/phys/colliders/sphere.hpp
+		src/phys/resolvers/generic.cpp
+		src/phys/resolvers/generic.hpp
+		src/phys/resolvers/impulse.cpp
+		src/phys/resolvers/impulse.hpp
+		src/phys/resolvers/position.cpp
+		src/phys/resolvers/position.hpp
 		src/phys/body.cpp
 		src/phys/body.hpp
+		src/phys/collision.cpp
+		src/phys/collision.hpp
 		src/phys/motion.cpp
 		src/phys/motion.hpp
 		src/phys/world.cpp
