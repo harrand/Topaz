@@ -61,7 +61,7 @@ namespace tz::phys
         CollisionList collisions;
         for(Body* i : this->bodies)
         {
-            tz::phys::ICollider* i_collider = i->collider.get();
+            tz::phys::ICollider* i_collider = i->collider;
             if(i_collider == nullptr)
             {
                 continue;
@@ -73,7 +73,7 @@ namespace tz::phys
                 {
                     continue;
                 }
-                tz::phys::ICollider* j_collider = j->collider.get();
+                tz::phys::ICollider* j_collider = j->collider;
                 if(j_collider == nullptr)
                 {
                     continue;

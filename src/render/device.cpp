@@ -100,16 +100,22 @@ namespace tz::render
 	{
 		topaz_assert(this->ready(), "tz::render::Device::render(): Device is not ready!");
 		if(!this->ibo_id.has_value())
+		{
 			return;
+		}
 		if(frame->operator!=(tz::gl::bound::frame()))
+		{
 			frame->bind();
+		}
 		program->bind();
 		for(const tz::gl::IBuffer* resource_buffer : this->resource_buffers)
 		{
 			resource_buffer->bind();
 		}
 		if (this->snippets.empty())
+		{
 			this->object->render(this->ibo_id.value(), this->patches);
+		}
 		else
 		{
 			// use MDI.

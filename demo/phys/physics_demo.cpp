@@ -18,6 +18,7 @@
 #include "gl/modules/bindless_sampler.hpp"
 #include "render/asset.hpp"
 #include "render/scene.hpp"
+#include "memory/polymorphic_variant.hpp"
 
 #include "phys/world.hpp"
 #include "phys/colliders/sphere.hpp"
@@ -255,11 +256,12 @@ int main()
             tz::Vec3{0.0f, 0.0f, 0.0f},
             tz::Vec3{0.0f, 0.0f, 0.0f},
             1.0f,
-			std::make_unique<tz::phys::SphereCollider>(tz::Vec3{0.0f, 0.0f, 0.0f}, 0.5f),
+			nullptr,
 			0.5f,
 			10.0f,
 			2.0f
         };
+		body.collider.emplace<tz::phys::SphereCollider>(tz::Vec3{0.0f, 0.0f, 0.0f}, 0.5f);
 		body.transform.position = {0.0f, 2.0f, 0.0f};
 
 		tz::phys::Body floor_body
@@ -267,10 +269,10 @@ int main()
 			scene.get(1).transform,
 			tz::Vec3{0.0f, 0.0f, 0.0f},
 			tz::Vec3{0.0f, 0.0f, 0.0f},
-			100000.0f,
-			std::make_unique<tz::phys::SphereCollider>(tz::Vec3{0.0f, 0.0f, 0.0f}, 0.5f)
+			100000.0f
 		};
 		floor_body.transform.position = {0.0f, -2.0f, 0.0f};
+		floor_body.collider.emplace<tz::phys::SphereCollider>(tz::Vec3{0.0f, 0.0f, 0.0f}, 0.5f);
 
 		tz::phys::PositionResolver pos_res;
 		tz::phys::ImpulseResolver inv_res;

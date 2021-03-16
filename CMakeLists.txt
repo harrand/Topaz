@@ -58,10 +58,14 @@ add_library(topaz STATIC
 		src/input/system_input.cpp
 		src/input/system_input.hpp
 
+		src/memory/polymorphic/base.cpp
+		src/memory/polymorphic/base.hpp
 		src/memory/align.hpp
 		src/memory/align.inl
 		src/memory/block.cpp
 		src/memory/block.hpp
+		src/memory/polymorphic_variant.inl
+		src/memory/polymorphic_variant.hpp
 		src/memory/pool.hpp
 		src/memory/pool.inl
 
