@@ -23,6 +23,8 @@ namespace tz::mem
         constexpr PolymorphicVariant(std::nullptr_t = nullptr);
         PolymorphicVariant(const PolymorphicVariant& copy) = delete;
         PolymorphicVariant(PolymorphicVariant&& move) = delete;
+        template<typename Derived>
+        constexpr PolymorphicVariant(Derived&& derived);
 
         operator Base*();
         operator const Base*() const;
@@ -41,7 +43,9 @@ namespace tz::mem
         template<typename Derived, typename... Ts>
         void emplace(Ts&&... ts);
     private:
-        char buf[tz::mem::register_base<Base, Deriveds...>()];
+        void destruct_current();
+
+        std::aligned_storage_t<tz::mem::max_sizeof<Base, Deriveds...>(), tz::mem::max_alignof<Base, Deriveds...>()> buf;
         Base* clean_ptr;
     };
 

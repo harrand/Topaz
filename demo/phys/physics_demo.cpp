@@ -250,6 +250,7 @@ int main()
 		dev.set_handle(m.get_indices());
 
         // Physics stuff.
+		tz::phys::SphereCollider common_collider{tz::Vec3{0.0f, 0.0f, 0.0f}, 0.5f};
         tz::phys::Body body
         {
             scene.get(0).transform,
@@ -260,7 +261,7 @@ int main()
 			10.0f,
 			2.0f
         };
-		body.collider.emplace<tz::phys::SphereCollider>(tz::Vec3{0.0f, 0.0f, 0.0f}, 0.5f);
+		body.collider = common_collider;
 		body.transform.position = {0.0f, 2.0f, 0.0f};
 		tz::phys::Body floor_body
 		{
@@ -270,7 +271,7 @@ int main()
 			100000.0f
 		};
 		floor_body.transform.position = {0.0f, -2.0f, 0.0f};
-		floor_body.collider.emplace<tz::phys::SphereCollider>(tz::Vec3{0.0f, 0.0f, 0.0f}, 0.5f);
+		floor_body.collider = common_collider;
 
 		tz::phys::PositionResolver pos_res;
 		tz::phys::ImpulseResolver inv_res;
