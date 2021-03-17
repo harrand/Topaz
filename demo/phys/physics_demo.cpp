@@ -259,9 +259,9 @@ int main()
             1.0f,
 			0.5f,
 			10.0f,
-			2.0f
+			2.0f,
+			common_collider
         };
-		body.collider = common_collider;
 		body.transform.position = {0.0f, 2.0f, 0.0f};
 		tz::phys::Body floor_body
 		{

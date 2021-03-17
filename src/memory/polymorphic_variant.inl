@@ -9,8 +9,9 @@ namespace tz::mem
     template<typename Derived>
     constexpr PolymorphicVariant<Base, Deriveds...>::PolymorphicVariant(Derived&& derived)
     {
-        static_assert(tz::algo::static_find<Derived, Deriveds...>(), "tz::mem::PolymorphicVariant: Construction from derived type that is not known by the variant.");
-        this->clean_ptr = new (&this->buf) Derived{std::forward<Derived>(derived)};
+        using DerivedDecayed = std::decay_t<Derived>;
+        static_assert(tz::algo::static_find<DerivedDecayed, Deriveds...>(), "tz::mem::PolymorphicVariant: Construction from derived type that is not known by the variant.");
+        this->clean_ptr = new (&this->buf) DerivedDecayed{std::forward<Derived>(derived)};
     }
 
     template<typename Base, typename... Deriveds>
