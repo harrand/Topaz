@@ -15,11 +15,10 @@ namespace tz::phys
         tz::Vec3 velocity;
         tz::Vec3 force;
         float mass;
-
-        tz::mem::PolymorphicVariant<ICollider, SphereCollider> collider = nullptr;
         float restitution = 1.0f;
         float static_friction = 0.0f;
         float dynamic_friction = 0.0f;
+        tz::mem::PolymorphicVariant<ICollider, SphereCollider> collider = nullptr;
     };
 }
 

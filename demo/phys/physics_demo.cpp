@@ -256,14 +256,12 @@ int main()
             tz::Vec3{0.0f, 0.0f, 0.0f},
             tz::Vec3{0.0f, 0.0f, 0.0f},
             1.0f,
-			nullptr,
 			0.5f,
 			10.0f,
 			2.0f
         };
 		body.collider.emplace<tz::phys::SphereCollider>(tz::Vec3{0.0f, 0.0f, 0.0f}, 0.5f);
 		body.transform.position = {0.0f, 2.0f, 0.0f};
-
 		tz::phys::Body floor_body
 		{
 			scene.get(1).transform,

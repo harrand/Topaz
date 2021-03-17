@@ -4,70 +4,50 @@
 
 namespace tz::mem
 {
+    /**
+	 * \addtogroup tz_mem Topaz Memory Library (tz::mem)
+	 * A collection of low-level abstractions around memory utilities not provided by the C++ standard library. This includes non-owning memory blocks, uniform memory-pools and more.
+	 * @{
+	 */
+
+    /**
+     * Creates local storage large enough to hold any of the derived types and returns a base pointer. The purpose of this is cache coherency -- While the additional line reduces cache line availability, having a parent struct non-fragmented may lead to a performance win.
+     * 
+     * If the set of all known supported derived types is known, this can be used to own a polymorphic object without allocation.
+     * Note: sizeof(PolymorphicVariant<A, B...>) >= Largest sizeof A or any element within B... If derived types vary wildly in size, you are likely to waste quite a bit of stack space.
+     */
     template<typename Base, typename... Deriveds>
     class PolymorphicVariant
     {
     public:
-        constexpr PolymorphicVariant(std::nullptr_t);
+        constexpr PolymorphicVariant(std::nullptr_t = nullptr);
+        PolymorphicVariant(const PolymorphicVariant& copy) = delete;
+        PolymorphicVariant(PolymorphicVariant&& move) = delete;
 
-        operator Base*()
-        {
-            return this->clean_ptr;
-        }
-        operator const Base*() const
-        {
-            return this->clean_ptr;
-        }
-        Base* operator->()
-        {
-            topaz_assert(this->clean_ptr != nullptr, "tz::mem::PolymorphicVariant<...>::operator->(): This was nullptr.");
-            return this->clean_ptr;
-        }
-        const Base* operator->() const
-        {
-            topaz_assert(this->clean_ptr != nullptr, "tz::mem::PolymorphicVariant<...>::operator->() const: This was nullptr.");
-            return this->clean_ptr;
-        }
-        Base& operator*()
-        {
-            topaz_assert(this->clean_ptr != nullptr, "tz::mem::PolymorphicVariant<...>::operator*(): This was nullptr.");
-            return *this->clear_ptr;
-        }
-        const Base& operator*() const
-        {
-            topaz_assert(this->clean_ptr != nullptr, "tz::mem::PolymorphicVariant<...>::operator*() const: This was nullptr.");
-            return *this->clear_ptr;
-        }
+        operator Base*();
+        operator const Base*() const;
+        Base& operator->();
+        const Base& operator->() const;
+        Base& operator*();
+        const Base& operator*() const;
+
+        bool has_value() const;
 
         template<typename Derived>
-        PolymorphicVariant& operator=(Derived&& d)
-        {
-            this->clean_ptr = new (this->buf) Derived{d};
-            return *this;
-        }
-
-        PolymorphicVariant& operator=(Base&& b)
-        {
-            static_assert(std::is_constructible_v<Base>(), "tz::mem::PolymorphicVariant::operator=(Base): Invoked, but Base is not constructible! Perhaps it's pure virtual?");
-            this->clean_ptr = new (this->buf) Base{b};
-            return *this;
-        }
-
-        PolymorphicVariant& operator=(std::nullptr_t)
-        {
-            this->clean_ptr = nullptr;
-            return *this;
-        }
+        PolymorphicVariant& operator=(Derived&& d);
+        PolymorphicVariant& operator=(Base&& b);
+        PolymorphicVariant& operator=(std::nullptr_t);
 
         template<typename Derived, typename... Ts>
-        void emplace(Ts&&... ts)
-        {
-            this->clean_ptr = new (this->buf) Derived(std::forward<Ts>(ts)...);
-        }
+        void emplace(Ts&&... ts);
     private:
         char buf[tz::mem::register_base<Base, Deriveds...>()];
         Base* clean_ptr;
     };
+
+    /**
+     * }@
+     */
 }
 
 #include "memory/polymorphic_variant.inl"
