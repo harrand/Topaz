@@ -65,6 +65,7 @@ namespace tz::mem
     PolymorphicVariant<Base, Deriveds...>& PolymorphicVariant<Base, Deriveds...>::operator=(Derived&& d)
     {
         using DerivedDecayed = std::decay_t<Derived>;
+        static_assert(tz::algo::static_find<DerivedDecayed, Deriveds...>(), "tz::mem::PolymorphicVariant: Assignment to derived type that is not known by the variant.");
         this->destruct_current();
         this->clean_ptr = new (&this->buf) DerivedDecayed{std::forward<Derived>(d)};
         return *this;

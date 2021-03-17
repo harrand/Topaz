@@ -120,8 +120,7 @@ int main()
 {
 	constexpr std::size_t max_elements = 2;
 	constexpr std::size_t max_textures = 8;
-	// Minimalist Graphics Demo.
-	tz::initialise("Topaz Render Demo");
+	tz::initialise("Topaz Physics Demo");
 	{
 		tz::get().render_settings().set_culling(tz::RenderSettings::CullTarget::Nothing);
 		tz::gl::Manager m;
