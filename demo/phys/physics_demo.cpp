@@ -118,7 +118,7 @@ unsigned long long get_current_time()
 
 int main()
 {
-	constexpr std::size_t max_elements = 2;
+	constexpr std::size_t max_elements = 4;
 	constexpr std::size_t max_textures = 8;
 	tz::initialise("Topaz Physics Demo");
 	{
@@ -229,7 +229,7 @@ int main()
 		// By default, all elements are triangles.
 		for(std::size_t i = 0; i < max_elements; i++)
 		{
-			tz::render::SceneElement ele{triangle_mesh_idx};
+			tz::render::SceneElement ele{square_mesh_idx};
 			ele.transform.position = tz::Vec3{1.0f, 1.0f, 1.0f};
 			ele.transform.rotation = tz::Vec3{0.0f, 0.0f, 0.0f};
 			ele.camera.fov = 1.57f;
@@ -240,8 +240,8 @@ int main()
 			scene.add(ele);
 		}
 
-		// Element 1 is an exception, and will be a square instead.
-		scene.get(1).mesh = square_mesh_idx;
+		// Element 0 is an exception, and will be a square instead.
+		scene.get(0).mesh = triangle_mesh_idx;
 
 		tz::render::Device dev{wnd.get_frame(), &prg, &o};
 		dev.add_resource_buffer(ssbo);
@@ -255,7 +255,7 @@ int main()
             scene.get(0).transform,
             tz::Vec3{0.0f, 0.0f, 0.0f},
             tz::Vec3{0.0f, 0.0f, 0.0f},
-            1.0f,
+            0.3f,
 			0.5f,
 			10.0f,
 			2.0f,
@@ -267,10 +267,38 @@ int main()
 			scene.get(1).transform,
 			tz::Vec3{0.0f, 0.0f, 0.0f},
 			tz::Vec3{0.0f, 0.0f, 0.0f},
-			100000.0f
+			100000.0f,
+			1.0f,
+			20.0f,
+			20.0f
 		};
 		floor_body.transform.position = {0.0f, -2.0f, 0.0f};
 		floor_body.collider = common_collider;
+		tz::phys::Body floor_body1
+		{
+			scene.get(2).transform,
+			tz::Vec3{0.0f, 0.0f, 0.0f},
+			tz::Vec3{0.0f, 0.0f, 0.0f},
+			100000.0f,
+			1.0f,
+			20.0f,
+			20.0f
+		};
+		floor_body1.transform.position = {-2.0f, -2.0f, 0.0f};
+		floor_body1.collider = common_collider;
+
+		tz::phys::Body floor_body2
+		{
+			scene.get(3).transform,
+			tz::Vec3{0.0f, 0.0f, 0.0f},
+			tz::Vec3{0.0f, 0.0f, 0.0f},
+			100000.0f,
+			1.0f,
+			20.0f,
+			20.0f
+		};
+		floor_body2.transform.position = {2.0f, -2.0f, 0.0f};
+		floor_body2.collider = common_collider;
 
 		tz::phys::PositionResolver pos_res;
 		tz::phys::ImpulseResolver inv_res;
@@ -278,14 +306,59 @@ int main()
         TrackedPhysicsWorld world;
         world.add_body(body);
 		world.add_body(floor_body);
+		world.add_body(floor_body1);
+		world.add_body(floor_body2);
 		//world.add_resolver(pos_res);
 		world.add_resolver(inv_res);
         world.register_uniform_force({0.0f, -0.25f, 0.0f});
 
         tz::dui::emplace_window<PhysicsWorldAdjustor>(world).visible = true;
+		bool jumping = false;
+
+		wnd.emplace_custom_key_listener([&jumping, &body](tz::input::KeyPressEvent e)
+		{
+			switch(e.key)
+			{
+				case GLFW_KEY_A:
+					if(e.action == GLFW_PRESS)
+					{
+						body.velocity[0] = -0.5f;
+					}
+					else if(e.action == GLFW_RELEASE)
+					{
+						body.velocity[0] = 0.0f;
+					}
+				break;
+				case GLFW_KEY_D:
+					if(e.action == GLFW_PRESS)
+					{
+						body.velocity[0] = 0.5f;
+					}
+					else if(e.action == GLFW_RELEASE)
+					{
+						body.velocity[0] = 0.0f;
+					}
+				break;
+				case GLFW_KEY_SPACE:
+					if(e.action == GLFW_PRESS)
+					{
+						jumping = true;
+					}
+					else if(e.action == GLFW_RELEASE)
+					{
+						jumping = false;
+					}
+				break;
+			}
+		});
 
 		while(!wnd.is_close_requested())
 		{
+			if(jumping)
+			{
+				body.transform.position[1] += 0.01f;
+				body.velocity[1] = 0.5f;
+			}
             static unsigned long long old_time = get_current_time();
             unsigned long long new_time = get_current_time();
             world.update(static_cast<float>(new_time - old_time));

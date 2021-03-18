@@ -66,7 +66,6 @@ namespace tz::phys
             {
                 continue;
             }
-            i_collider->push(i->transform.position);
             for(Body* j : this->bodies)
             {
                 if(i == j)
@@ -78,6 +77,7 @@ namespace tz::phys
                 {
                     continue;
                 }
+                i_collider->push(i->transform.position);
                 j_collider->push(j->transform.position);
                 tz::phys::CollisionPoint collision_point = i_collider->test_against(*j_collider);
                 i_collider->pop();
