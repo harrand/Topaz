@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.9)
-project(topaz VERSION 0.7.0 DESCRIPTION "Cross-Platform Multimedia Engine")
+project(topazteroids VERSION 0.7.0 DESCRIPTION "Cross-Platform Multimedia Engine")
 set(CMAKE_CXX_STANDARD 17)
 set(UNDERLYING_GRAPHICS_API "TOPAZ_OPENGL")
 set(TOPAZ_PROFILING TRUE)
@@ -17,7 +17,7 @@ else()
     message(FATAL_ERROR "Neither 'Release' nor 'Debug' specified for CMAKE_BUILD_TYPE. You must choose one.")
 endif()
 
-add_library(topaz SHARED
+add_library(topazteroids SHARED
         src/audio/audio.cpp
         src/audio/audio.hpp
         src/audio/audio.inl
@@ -135,8 +135,8 @@ add_library(topaz SHARED
         src/utility/time.hpp
         src/utility/time.inl src/utility/constants.hpp src/platform_specific/generic_buffer.cpp src/platform_specific/generic_buffer.hpp src/platform_specific/shader_storage_buffer.cpp src/platform_specific/shader_storage_buffer.hpp src/platform_specific/mesh_buffer.cpp src/platform_specific/mesh_buffer.hpp src/utility/memory.hpp src/utility/memory.cpp src/graphics/renderable_buffer.hpp src/platform_specific/uniform_buffer.cpp src/platform_specific/uniform_buffer.hpp)
 # here we express in terms of modules, not just build flags
-target_include_directories(topaz PUBLIC ${PROJECT_SOURCE_DIR}/inc)
-target_include_directories(topaz PRIVATE ${PROJECT_SOURCE_DIR}/src)
+target_include_directories(topazteroids PUBLIC ${PROJECT_SOURCE_DIR}/inc)
+target_include_directories(topazteroids PRIVATE ${PROJECT_SOURCE_DIR}/src)
 
 find_library(LIB_ASSIMP assimp PATHS ${PROJECT_SOURCE_DIR}/lib)
 find_library(LIB_SDL2 SDL2 PATHS ${PROJECT_SOURCE_DIR}/lib)
@@ -147,13 +147,13 @@ find_library(LIB_OPENGL OpenGL32)
 
 if(CMAKE_BUILD_TYPE MATCHES Debug)
     message("Enabled TOPAZ_DEBUG.")
-    target_compile_definitions(topaz PUBLIC TOPAZ_DEBUG ${UNDERLYING_GRAPHICS_API})
+    target_compile_definitions(topazteroids PUBLIC TOPAZ_DEBUG ${UNDERLYING_GRAPHICS_API})
 else()
     message("Disabled TOPAZ_DEBUG")
-    target_compile_definitions(topaz PUBLIC ${UNDERLYING_GRAPHICS_API})
+    target_compile_definitions(topazteroids PUBLIC ${UNDERLYING_GRAPHICS_API})
 endif()
 # public is for interface dependencies which we have, but no specific implementation dependencies that games wont need
-target_link_libraries(topaz PUBLIC ${LIB_SDL2} ${LIB_SDL2_MIXER} ${LIB_SDL2_TTF} ${LIB_SDL2_MAIN} ${LIB_ASSIMP} OpenGL32)
+target_link_libraries(topazteroids PUBLIC ${LIB_SDL2} ${LIB_SDL2_MIXER} ${LIB_SDL2_TTF} ${LIB_SDL2_MAIN} ${LIB_ASSIMP} OpenGL32)
 
 #add_subdirectory(${PROJECT_SOURCE_DIR}/src/test ${PROJECT_BINARY_DIR})
 
@@ -167,11 +167,11 @@ foreach(unit_test_source ${UNIT_TEST_SOURCES})
     message("found module: " ${unit_test_name})
     add_executable(${unit_test_name} ${unit_test_source})
     target_include_directories(${unit_test_name} PRIVATE ${PROJECT_SOURCE_DIR}/src)
-    target_link_libraries(${unit_test_name} topaz unit_testing_utility)
+    target_link_libraries(${unit_test_name} topazteroids unit_testing_utility)
 endforeach()
 ]]#
 
 # For the demo executable
-add_executable(topaz_demo src/test.cpp)
+add_executable(topaz_demo src/test.cpp src/asteroids.cpp src/asteroids.hpp src/asteroid.cpp src/asteroid.hpp)
 target_include_directories(topaz_demo PRIVATE ${PROJECT_SOURCE_DIR}/src)
-target_link_libraries(topaz_demo topaz)
+target_link_libraries(topaz_demo topazteroids)

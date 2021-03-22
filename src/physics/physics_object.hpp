@@ -89,6 +89,7 @@ public:
 	float moment_of_inertia;
 	/// Angular-velocity, in radians per second.
 	Vector3F angular_velocity;
+	bool make_collisions;
 protected:
 	/// Container of all the forces acting upon the PhysicsObject.
 	std::vector<Vector3F> forces;

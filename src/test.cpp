@@ -5,6 +5,7 @@
 #include "graphics/skybox.hpp"
 #include "graphics/frame_buffer.hpp"
 #include "utility/render.hpp"
+#include "asteroids.hpp"
 
 void init();
 
@@ -18,89 +19,8 @@ int main()
 
 void init()
 {
-	Window wnd("Topaz Development Window", 0, 30, 1920, 1080);
+	Window wnd("Topazteroids!", 0, 30, 1920, 1080);
 	std::cout << "OpenGL debugging enabled: " << wnd.is_opengl_debugging_enabled() << "\n";
-	/*
-	std::vector<int> ints;
-	for(std::size_t i = 0; i < 100; i++)
-		ints.push_back(i);
-	MemoryPool<int> int_pool{ints};
-	for(int i : int_pool)
-		std::cout << i << "\n";
-	int_pool.default_all();
-	for(int i : int_pool)
-		std::cout << i << "\n";
-	 */
-
-	/*
-	AutomaticMemoryPool<int> ints1(10);
-	for(int i = 0; i < 10; i++)
-		ints1[i] = i;
-	for(auto n : ints1)
-		std::cout << n << "\n";
-	 */
-
-	tz::platform::OGLVertexArray vao;
-	tz::platform::OGLVertexBuffer& buf = vao.emplace_vertex_buffer();
-    tz::platform::OGLVertexBuffer& buf2 = vao.emplace_vertex_buffer();
-    tz::platform::OGLVertexBuffer& buf3 = vao.emplace_vertex_buffer();
-
-    MemoryPool<float> float_pool = buf.persistently_map<float>(64, false);
-	std::vector<float> float_vec;
-	for(std::size_t i = 0; i < 64; i++)
-		float_vec.push_back(static_cast<float>(std::pow(i, 3)));
-	float_pool = float_vec;
-	for(auto& fl : float_pool)
-		tz::debug::print(fl, "\n");
-    tz::debug::print("float pool marking bitmask:\n");
-    float_pool.mark(0, 1);
-    float_pool.mark_indices(1, 7, 2);
-    float_pool.mark(9, 3);
-    float_pool.mark_value(238328, 4);
-    float_pool.mark_value(250047, 9);
-	for(auto& fl : float_pool)
-    {
-        tz::debug::print(float_pool.get_value_mark(fl).value_or(0));
-    }
-
-	std::cout << "\nsizeof(char) == " << sizeof(char) << "\n";
-	//AutomaticDynamicVariadicMemoryPool var_pool{1024};
-    DVMPool var_pool = buf2.persistently_map_variadic(1024, false);
-	var_pool.push_back<int>(7898);
-	var_pool.push_back<double>(1.2049875);
-	std::cout << "sizeof<int> == " << sizeof(int) << "\n";
-	std::cout << "sizeof<double> == " << sizeof(double) << "\n";
-	std::cout << "sizeof<long double> == " << sizeof(long double) << "\n";
-	std::cout << "type at index 0 = " << var_pool.get_type_at_index(0).name() << "\n";
-	std::cout << "int at index 0 = " << var_pool.at<int>(0) << "\n";
-	std::cout << "type at index 1 = " << var_pool.get_type_at_index(1).name() << "\n";
-	std::cout << "double at index 1 = " << var_pool.at<double>(1) << "\n";
-    var_pool.push_back<double>(1.1287349587);
-	std::cout << "double at index 2 = " << var_pool.at<double>(2) << "\n";
-	std::cout << "type at index 2 = " << var_pool.get_type_at_index(2).name() << "\n";
-	std::cout << var_pool.get_byte_usage() << "/" << var_pool.get_byte_capacity() << " bytes used.\n";
-    std::cout << var_pool.get_size() << "/" << " elements used.\n";
-
-    auto svar_pool = buf3.persistently_map_variadic<float, float, int, float>(false);
-    svar_pool.get<0>() = 456.349587f;
-	svar_pool.get<1>() = 10.5f;
-	svar_pool.get<2>() = 0.5f;
-    ASVMPool<float, float, int, float> asvar_pool = svar_pool;
-
-    std::cout << svar_pool.get<0>() << "\n";
-    std::cout << svar_pool.get<1>() << "\n";
-    std::cout << svar_pool.get<2>() << "\n";
-    std::cout << svar_pool.get<3>() << "\n";
-    buf3.unmap();
-    buf3.persistently_map<float>(100, false);
-    std::cout << "asvar pool now:\n";
-    std::cout << asvar_pool.get<0>() << "\n";
-    std::cout << asvar_pool.get<1>() << "\n";
-    std::cout << asvar_pool.get<2>() << "\n";
-    std::cout << asvar_pool.get<3>() << "\n";
-
-    ASVMPool<float, int, char> s_var_pool{5.0f, 20, 'c'};
-    std::cout << s_var_pool.get<float>() << ", " << s_var_pool.get<char>() << "\n";
 
 	wnd.set_debug_callback();
 	wnd.set_fullscreen(Window::FullscreenType::WINDOWED_MODE);
@@ -109,17 +29,18 @@ void init()
 	// During init, enable debug output
 	Font font("../res/runtime/fonts/Comfortaa-Regular.ttf", 36);
 	Label& label = wnd.emplace_child<Label>(Vector2I{100, 50}, font, Vector3F{0.0f, 0.3f, 0.0f}, " ");
+    Label& asteroid_count_label = wnd.emplace_child<Label>(Vector2I{100, 100}, font, Vector3F{0.0f, 0.3f, 0.0f}, " ");
 	ProgressBar& progress = wnd.emplace_child<ProgressBar>(Vector2I{0, 50}, Vector2I{100, 50}, ProgressBarTheme{{{0.5f, {0.0f, 0.0f, 1.0f}}, {1.0f, {1.0f, 0.0f, 1.0f}}}, {0.1f, 0.1f, 0.1f}}, 0.5f);
 
 	KeyListener key_listener(wnd);
 	MouseListener mouse_listener(wnd);
 
-	Button& test_button = wnd.emplace_child<Button>(Vector2I{0, 150}, Vector2I{100, 50}, font, Vector3F{}, "press me", Vector3F{0.1f, 0.1f, 0.1f}, Vector3F{0.8f, 0.8f, 0.8f});
-	Button& wireframe_button = wnd.emplace_child<Button>(Vector2I{0, 100}, Vector2I{100, 50}, font, Vector3F{}, "toggle wireframe", Vector3F{0.1f, 0.1f, 0.1f}, Vector3F{0.8f, 0.8f, 0.8f});
-	bool wireframe = false;
-	wireframe_button.set_callback([&wireframe](){wireframe = !wireframe;});
+    AudioMusic bgm{"../res/runtime/music/asteroids.wav"};
+    bgm.play();
 
-	constexpr float speed = 0.5f;
+	bool tabtoggle = false;
+
+	constexpr float speed = 0.1f;
 	Shader render_shader("../src/shaders/3D_FullAssetsInstancedShadowsBloom");
 	// MDI
 	//Shader render_shader("../src/shaders/mdi");
@@ -128,49 +49,9 @@ void init()
 	Shader hdr_gui_shader("../src/shaders/Gui_HDR");
 	Camera camera;
 	camera.position = {0, 0, -50};
-	Scene scene;
+	Asteroids scene;
 	scene.add_directional_light({{0.5f, 1.0f, 0.0f}, {1, 1, 1}, 0.8f});
 	glDebugMessageInsert(GL_DEBUG_SOURCE_APPLICATION, GL_DEBUG_TYPE_ERROR, 0, GL_DEBUG_SEVERITY_NOTIFICATION, -1, "Well met.");
-
-
-	Texture red_texture{Bitmap<PixelRGBA>{{PixelRGBA{255, 0, 0, 255}}, 1, 1}};
-	Texture green_texture{Bitmap<PixelRGBA>{{PixelRGBA{0, 255, 0, 255}}, 1, 1}};
-	Texture blue_texture{Bitmap<PixelRGBA>{{PixelRGBA{0, 0, 255, 255}}, 1, 1}};
-	AssetBuffer assets;
-	assets.emplace<Model>("darth_maul", "../res/runtime/models/maul/source/Darth Maul/Darth Maul.dae");
-	assets.emplace<Model>("nanosuit", "../res/runtime/models/nanosuit.fbx");
-	assets.emplace<Model>("deathwing", "../res/runtime/models/deathwing/Deathwing.fbx");
-	assets.emplace<Model>("illidan", "../res/runtime/models/illidan/IllidanLegion.obj");
-	assets.emplace<Mesh>("cube", "../res/runtime/models/cube.obj");
-	assets.emplace<Mesh>("cube_hd", "../res/runtime/models/cube_hd.obj");
-	assets.emplace<Mesh>("monkey", "../res/runtime/models/monkeyhead.obj");
-	assets.emplace<Mesh>("cylinder", "../res/runtime/models/cylinder.obj");
-	assets.emplace<Mesh>("sphere", "../res/runtime/models/sphere.obj");
-	assets.emplace<Mesh>("plane_hd", "../res/runtime/models/plane_hd.obj");
-	assets.emplace<Texture>("bricks", "../res/runtime/textures/bricks.jpg");
-	assets.emplace<Texture>("stone", "../res/runtime/textures/stone.jpg");
-	assets.emplace<Texture>("wood", "../res/runtime/textures/wood.jpg");
-	assets.emplace<NormalMap>("bricks_normal", "../res/runtime/normalmaps/bricks_normalmap.jpg");
-	assets.emplace<NormalMap>("stone_normal", "../res/runtime/normalmaps/stone_normalmap.jpg");
-	assets.emplace<NormalMap>("wood_normal", "../res/runtime/normalmaps/wood_normalmap.jpg");
-	assets.emplace<ParallaxMap>("bricks_parallax", "../res/runtime/parallaxmaps/bricks_parallax.jpg");
-	assets.emplace<ParallaxMap>("stone_parallax", "../res/runtime/parallaxmaps/stone_parallax.png", 0.06f, -0.5f);
-	assets.emplace<ParallaxMap>("wood_parallax", "../res/runtime/parallaxmaps/wood_parallax.jpg");
-	assets.emplace<DisplacementMap>("bricks_displacement", "../res/runtime/displacementmaps/bricks_displacement.png", 0.1f);
-	assets.emplace<DisplacementMap>("noise_displacement", tz::graphics::height_map::generate_cosine_noise(256, 256, 100.0f));
-	// render noisemap:
-	Asset maul(assets.find<Model>("darth_maul"));
-	Asset nanosuit(assets.find<Model>("nanosuit"));
-	Asset illidan(assets.find<Model>("illidan"));
-	Asset deathwing_asset(assets.find<Model>("deathwing"));
-	Asset asset0(assets.find<Mesh>("cube_hd"), assets.find_texture("bricks"), assets.find<NormalMap>("bricks_normal"), assets.find<ParallaxMap>("bricks_parallax"), assets.find<DisplacementMap>("bricks_displacement"));
-	Asset noise_asset(assets.find<Mesh>("plane_hd"), assets.find_texture("bricks"), assets.find<NormalMap>("bricks_normal"), nullptr, assets.find<DisplacementMap>("noise_displacement"));
-	Asset asset1(assets.find_mesh("cube"), assets.find_texture("bricks"), assets.find<NormalMap>("bricks_normal"), assets.find<ParallaxMap>("bricks_parallax"));
-	Asset asset2(assets.find_mesh("cube"), assets.find_texture("bricks"), assets.find<NormalMap>("bricks_normal"));
-	Asset asset3(assets.find_mesh("cube"), assets.find_texture("bricks"));
-	Asset stone_floor(assets.find_mesh("cube"), assets.find_texture("stone"), assets.find<NormalMap>("stone_normal"), assets.find<ParallaxMap>("stone_parallax"));
-	Asset wooden_sphere(assets.find_mesh("sphere"), assets.find_texture("wood"), assets.find<NormalMap>("wood_normal"), assets.find<ParallaxMap>("wood_parallax"));
-	Asset wooden_cylinder(assets.find_mesh("cylinder"), assets.find_texture("wood"), assets.find<NormalMap>("wood_normal"), assets.find<ParallaxMap>("wood_parallax"));
 
 	Shader gaussian_blur_shader("../src/shaders/GaussianBlur");
 	Shader gui_bloom_shader("../src/shaders/Gui_Bloom");
@@ -184,7 +65,7 @@ void init()
 	Texture& hdr_texture = hdr_buffer.emplace_texture(GL_COLOR_ATTACHMENT0, wnd.get_width(), wnd.get_height(), tz::graphics::TextureComponent::HDR_COLOUR_TEXTURE);
 	Texture& bloom_texture = hdr_buffer.emplace_texture(GL_COLOR_ATTACHMENT1, wnd.get_width(), wnd.get_height(), tz::graphics::TextureComponent::HDR_COLOUR_TEXTURE);
 	hdr_buffer.set_output_attachment({GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1});
-	//Panel& hdr_panel = wnd.emplace_child<Panel>(Vector2I{600, 0}, Vector2I{wnd.get_width(), wnd.get_height()}, &hdr_texture);
+	//Panel& hdr_panel = wnd.emplace_child<Panel>(Vector2I{0, 0}, Vector2I{wnd.get_width(), wnd.get_height()}, &hdr_texture);
 	//hdr_panel.uses_hdr = true;
 	ShadowMap depth_framebuffer{8192, 8192};
 	// Uncomment this to render the depth texture.
@@ -211,49 +92,8 @@ void init()
 	window_panel.set_local_dimensions_normalised_space({1.0f, 1.0f});
 
 	Random rand;
-	test_button.set_callback([&scene, &camera, &asset0]()
-							 {
-								 scene.emplace_object(Transform{camera.position, {}, {10, 10, 10}}, asset0);
-								 tz::audio::play_async(AudioClip{"../res/runtime/music/tulips.wav"});
-							 });
-	std::vector<StaticObject> floor_objects;
-	std::vector<DynamicObject> falling_objects;
-	constexpr int floor_size = 1500;
-	for(float i = 0; i < floor_size; i++)
-	{
-		int index = static_cast<int>(i);
-		int dimensions = std::sqrt(floor_size);
-		int row    = index / dimensions;
-		int column = index % dimensions;
-		const Vector3F scale{20, 1, 20};
-		const Vector3F offset{scale * dimensions};
-		floor_objects.emplace_back(Transform{Vector3F{(scale.x * row * 2), -100, (scale.z * column * 2)} - offset,
-											 {},
-											 scale}, stone_floor);
-		DynamicObject& object = falling_objects.emplace_back(1.0f, Transform{Vector3F{(scale.x * row * 2), -50, (scale.z * column * 2)} - offset,
-																			 {}, scale}, stone_floor);
-		//float sine_id = std::abs(std::sin(i / 10));
-		using namespace tz::consts::numeric;
-		object.add_force({0, -400.0f, 0});
-		object.velocity = {rand(-1000.0f, 1000.0f), rand(1000.0f, 2500.0f), rand(-1000.0f, 1000.0f)};
-		//object.add_force(Vector3F{0, sine_id * 1.5f, 0});
-		object.angular_velocity = {rand(-pi, pi) * 0.1f, rand(-pi, pi) * 0.1f, rand(-pi, pi) * 0.1f};
-	}
-	scene.emplace<InstancedStaticObject>(floor_objects);
-	//scene.emplace<InstancedDynamicObject>(falling_objects);
-	// add the model objects
-	scene.emplace<StaticObject>(Transform{{0, -135, 100}, {}, {50, 50, 50}}, maul);
-	scene.emplace<StaticObject>(Transform{{50, -135, 100}, {}, {7, 7, 7}}, nanosuit);
-	StaticObject& illidan_object = scene.emplace<StaticObject>(Transform{{-75, -135, 100}, {}, {15, 15, 15}}, illidan);
-	StaticObject& deathwing = scene.emplace<StaticObject>(Transform{{0, 200, 0}, {0, 0, 0}, {5, 5, 5}}, deathwing_asset);
-	//scene.add_point_light(PointLight{{0, 0, 125}, {1, 1, 1}, 9000.0f});
-	scene.emplace<StaticObject>(Transform{{100, 0, 0}, {}, {200, 200, 200}}, wooden_cylinder);
-	scene.emplace<StaticObject>(Transform{{0, -50, -70}, {}, {20, 20, 20}}, asset1);
+
 	//scene.emplace<StaticObject>(Transform{{0, -1000, 0}, {}, {4000, 40, 4000}}, noise_asset);
-	scene.emplace<DynamicObject>(1.0f, Transform{{0, 100, 0}, {}, {50, 50, 50}}, wooden_cylinder);
-	scene.emplace<DynamicObject>(1.0f, Transform{{10, 100, 0}, {}, {100, 50, 50}}, wooden_cylinder);
-	scene.emplace<DynamicObject>(1.0f, Transform{{20, 100, 0}, {}, {50, 50, 50}}, wooden_cylinder);
-	scene.emplace<DynamicObject>(1.0f, Transform{{40, 100, 0}, {}, {50, 50, 50}}, wooden_cylinder);
 	/*// BoundaryCluster test...
 	BoundaryCluster cluster;
 	cluster.emplace_sphere(BoundaryCluster::ClusterIntegration::INTERSECTION, Vector3F{}, 50.0f);
@@ -271,21 +111,38 @@ void init()
 			scene.emplace<RenderableBoundingBox>(tz::utility::render::see_aabb(assets, object.get_boundary().value(), {0.0f, 1.0f, 0.0f}));
 	}
 	 */
-	scene.emplace<RenderableBoundingBox>(tz::utility::render::see_aabb(assets, scene.get_boundary(), {0.0f, 0.0f, 1.0f}));
-
+	//scene.emplace<RenderableBoundingBox>(tz::utility::render::see_aabb(assets, scene.get_boundary(), {0.0f, 0.0f, 1.0f}));
+    auto spawn_asteroid = [&scene, &rand]()
+    {
+        auto material_selection = rand.next_int(0, 2);
+        AsteroidType type = AsteroidType::IGNEOUS;
+        switch(material_selection)
+        {
+            case 1:
+                type = AsteroidType::SEDIMENTARY;
+                break;
+            case 2:
+                type = AsteroidType::METALLIC;
+                break;
+        }
+        float size = rand.next_float(10.0f, 55.0f);
+        Asteroid& asteroid = scene.emplace_asteroid({{rand.next_float(-1000.0f, 1000.0f), rand.next_float(-1000.0f, 1000.0f), rand.next_float(-1000.0f, 1000.0f)},
+                                                     {rand.next_float(-2.0f, 2.0f), rand.next_float(-2.0f, 2.0f), rand.next_float(-2.0f, 2.0f)},
+                                                     {size, size, size}}, type, {}, {rand.next_float(-2.0f, 2.0f), rand.next_float(-2.0f, 2.0f), rand.next_float(-2.0f, 2.0f)});
+        asteroid.velocity = {rand.next_float(-50.0f, 50.0f), rand.next_float(-50.0f, 50.0f), rand.next_float(-50.0f, 50.0f)};
+    };
+    for(std::size_t i = 0; i < 1000; i++)
+    {
+        spawn_asteroid();
+    }
 	/*
 	Scene scene_copy{scene};
 	scene_copy.update(0);
 	ScenePartitionNode illegal{std::move(*const_cast<ScenePartitionNode*>(scene_copy.get_octree_root())->get_children()[0])};
 	 */
-
-	// Try using MDI here.
-	RenderableBuffer<StaticObject> static_buffer{0};
-	StaticObject deathwing2 = deathwing;
-	deathwing2.transform.position.y += 100.0f;
-    static_buffer.insert(deathwing2);
-	// But just with one object.
-
+    Asteroid* green_bullet = nullptr;
+    Asteroid* red_bullet = nullptr;
+    Asteroid* blue_bullet = nullptr;
 	long long int time = tz::utility::time::now();
 	Timer second_timer, tick_timer;
 	TimeProfiler profiler;
@@ -304,8 +161,10 @@ void init()
 		tick_timer.update();
 		if(second_timer.millis_passed(1000.0f))
 		{
+            spawn_asteroid();
 			using namespace tz::utility::generic::cast;
 			label.set_text(to_string(profiler.get_delta_average()) + " ms (" + to_string(profiler.get_fps()) + " fps)");
+            asteroid_count_label.set_text(std::string{"asteroid count = "} + to_string(scene.get_number_of<Asteroid>()));
 			second_timer.reload();
 			profiler.reset();
 			//progress.set_visible(!progress.is_visible());
@@ -337,34 +196,90 @@ void init()
 		//wnd.set_render_target();
 		//wnd.clear();
 		// render into the hdr buffer.
-		if(wireframe)
-			tz::graphics::enable_wireframe_render(true);
 		depth_framebuffer.get_depth_texture().bind(&render_shader, 15, "depth_map_sampler");
 		scene.render(main_pass);
-		static_buffer.render(main_pass);
+        if(green_bullet != nullptr)
+        {
+            scene.set_point_light(0, {green_bullet->transform.position, {0.1f, 1.0f, 0.1f}, 75000.0f});
+        }
+        if(red_bullet != nullptr)
+        {
+            scene.set_point_light(1, {red_bullet->transform.position, {1.0f, 0.1f, 0.1f}, 75000.0f});
+        }
+        if(blue_bullet != nullptr)
+        {
+            scene.set_point_light(2, {blue_bullet->transform.position, {0.1f, 0.1f, 1.0f}, 75000.0f});
+        }
 		constexpr int tps = 120;
 		constexpr float tick_delta = 1000.0f / tps;
 		if(tick_timer.millis_passed(tick_delta))
 		{
+            if(blue_bullet != nullptr)
+            {
+                blue_bullet->clear_forces();
+                blue_bullet->add_force((camera.position - blue_bullet->transform.position) * 5.0f);
+            }
+			if(key_listener.catch_key_pressed("G"))
+			{
+				if(green_bullet != nullptr)
+				{
+					scene.remove_object(*green_bullet);
+					green_bullet = nullptr;
+				}
+				green_bullet = &scene.emplace_asteroid({camera.position, {rand.next_float(-3.0f, 3.0f), rand.next_float(-3.0f, 3.0f), rand.next_float(-3.0f, 3.0f)}, {20, 20, 20}}, AsteroidType::GREEN_BULLET, camera.forward() * 500.0f, {rand.next_float(-3.0f, 3.0f), rand.next_float(-3.0f, 3.0f), rand.next_float(-3.0f, 3.0f)});
+				green_bullet->make_collisions = true;
+				green_bullet->add_force(camera.forward() * 6500.0f);
+                scene.play_shoot();
+			}
+
+            if(key_listener.catch_key_pressed("R"))
+            {
+                if(red_bullet != nullptr)
+                {
+                    scene.remove_object(*red_bullet);
+                    red_bullet = nullptr;
+                }
+                red_bullet = &scene.emplace_asteroid({camera.position, {rand.next_float(-3.0f, 3.0f), rand.next_float(-3.0f, 3.0f), rand.next_float(-3.0f, 3.0f)}, {10, 10, 10}}, AsteroidType::RED_BULLET, camera.forward() * 500.0f, {rand.next_float(-3.0f, 3.0f), rand.next_float(-3.0f, 3.0f), rand.next_float(-3.0f, 3.0f)});
+                red_bullet->make_collisions = true;
+                red_bullet->add_force(camera.forward() * 6500.0f);
+                scene.play_shoot();
+            }
+
+            if(key_listener.catch_key_pressed("B"))
+            {
+                if(blue_bullet != nullptr)
+                {
+                    scene.remove_object(*blue_bullet);
+                    blue_bullet = nullptr;
+                }
+                blue_bullet = &scene.emplace_asteroid({camera.position, {rand.next_float(-3.0f, 3.0f), rand.next_float(-3.0f, 3.0f), rand.next_float(-3.0f, 3.0f)}, {10, 10, 10}}, AsteroidType::BLUE_BULLET, camera.forward() * 500.0f, {rand.next_float(-3.0f, 3.0f), rand.next_float(-3.0f, 3.0f), rand.next_float(-3.0f, 3.0f)});
+                blue_bullet->make_collisions = true;
+                blue_bullet->add_force(camera.forward() * 6500.0f);
+                scene.play_shoot();
+            }
+
+			if(key_listener.catch_key_pressed("Tab"))
+				tabtoggle = !tabtoggle;
+            if(key_listener.catch_key_pressed("M"))
+                bgm.set_paused(!bgm.is_paused());
 			scene.update(tick_delta / 1000.0f);
 			tick_timer.reload();
-			static bool done = true;
-			static auto rand = LocalRandom{};
+			//static bool done = true;
+            /**
 			for(const ScenePartitionNode* node : tz::utility::generic::depth_first_search(*scene.get_octree_root()))
 			{
 				if(!done)
 				{
 					Vector3F rand_colour = {rand.next_float(0.0f, 1.0f), rand.next_float(0.0f, 1.0f), rand.next_float(0.0f, 1.0f)};
-					scene.emplace<RenderableBoundingBox>(tz::utility::render::see_aabb(assets, node->get_region(), rand_colour, 7.5f));
+					//scene.emplace<RenderableBoundingBox>(tz::utility::render::see_aabb(assets, node->get_region(), rand_colour, 7.5f));
 				}
 			}
-			done = true;
+             */
+			//done = true;
 		}
-		if(wireframe)
-			tz::graphics::enable_wireframe_render(false);
 
 		// dont render the skybox for now.
-		//skybox.render(camera, skybox_shader, wnd.get_width(), wnd.get_height());
+		skybox.render(camera, skybox_shader, wnd.get_width(), wnd.get_height());
 
 		// now render a simple quad using the unblurred bloom texture with the gaussian blur shader to blur the bright parts.
 		tz::graphics::gui_render_mode();
@@ -408,6 +323,7 @@ void init()
 			camera.rotation.x += 0.03 * delta.y;
 			mouse_listener.reload_mouse_delta();
 		}
+        /*
 		if(mouse_listener.is_right_clicked())
 		{
 			Vector2F position = mouse_listener.get_mouse_position();
@@ -422,9 +338,10 @@ void init()
 						scene.emplace<RenderableBoundingBox>(tz::utility::render::see_aabb(assets, found_object->get_boundary().value()));
 			}
 		}
+         */
 		if(key_listener.is_key_pressed("Escape"))
 			break;
-		if(key_listener.is_key_pressed("W"))
+		if(key_listener.is_key_pressed("W") || tabtoggle)
 			camera.position += camera.forward() * delta_time * speed;
 		if(key_listener.is_key_pressed("S"))
 			camera.position += camera.backward() * delta_time * speed;
@@ -432,8 +349,6 @@ void init()
 			camera.position += camera.left() * delta_time * speed;
 		if(key_listener.is_key_pressed("D"))
 			camera.position += camera.right() * delta_time * speed;
-		deathwing.transform.rotation.y += 0.01f;
-		illidan_object.transform.rotation.y -= 0.01f;
 		profiler.end_frame();
 	}
 }

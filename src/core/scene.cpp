@@ -335,6 +335,12 @@ Scene::Scene(Scene&& move): object_buffer(std::move(move.object_buffer)), object
 		this->erase_object(to_delete);
 }
 
+template<>
+std::size_t Scene::get_number_of<Renderable>() const
+{
+	return this->objects.size();
+}
+
 Scene& Scene::operator=(Scene rhs)
 {
 	Scene::swap(*this, rhs);
@@ -407,34 +413,54 @@ void Scene::update(float delta_time)
 	if(this->octree.has_value())
 		this->octree.value().update();
 	// Invoke update functions on all dynamic objects and sprites.
+	/*
 	for(DynamicObject* dynamic_ref : this->get_renderables_by_type<DynamicObject>())
 		dynamic_ref->update(delta_time);
 	for(DynamicSprite* dynamic_sprite_ref : this->get_renderables_by_type<DynamicSprite>())
 		dynamic_sprite_ref->update(delta_time);
+	 */
+	for(Renderable* renderable : objects)
+	{
+		DynamicObject* dyn_component = dynamic_cast<DynamicObject*>(renderable);
+		if(dyn_component != nullptr)
+			dyn_component->update(delta_time);
+	}
 	std::vector<std::reference_wrapper<PhysicsObject>> physics_sprites;
 	using namespace tz::utility;
 	// For each static object, get all those who are also PhysicsObjects.
 	// from those PhysicsObjects, get the octree node containing this object, and handle collisions with all of those.
-	for(auto* object : this->get_renderables_by_type<StaticObject>())
+	for(auto* object : this->objects)
 	{
 		std::vector<std::reference_wrapper<PhysicsObject>> physics_objects;
 		if(std::find(this->objects_to_delete.begin(), this->objects_to_delete.end(), object) != this->objects_to_delete.end())
 			continue;
 		auto physics_component = dynamic_cast<PhysicsObject*>(object);
-		if(physics_component != nullptr)
+		if(physics_component != nullptr && physics_component->make_collisions)
 		{
 			if(this->octree.has_value())
 			{
 				// this object has a physics component, so check for it in its own node.
 				const ScenePartitionNode *enclosed_node = this->octree.value().get_node_containing(object);
 				// we have the node containing this object, now we get all the PhysicsObjects in this node and handle collisions on it.
-				for (const Renderable &renderable_cref : enclosed_node->get_enclosed_renderables())
+				if(enclosed_node != nullptr)
 				{
-					auto *fixed = const_cast<Renderable *>(&renderable_cref);
-					if (functional::is_a<Renderable, DynamicObject>(*fixed))
+					for (const Renderable &renderable_cref : enclosed_node->get_enclosed_renderables())
 					{
-						auto *fixed_dyno = dynamic_cast<DynamicObject *>(fixed);
-						physics_objects.push_back(std::ref(*dynamic_cast<PhysicsObject *>(fixed_dyno)));
+						auto *fixed = const_cast<Renderable *>(&renderable_cref);
+						if (functional::is_a<Renderable, DynamicObject>(*fixed))
+						{
+							auto *fixed_dyno = dynamic_cast<DynamicObject *>(fixed);
+							physics_objects.push_back(std::ref(*dynamic_cast<PhysicsObject *>(fixed_dyno)));
+						}
+					}
+				}
+				else
+				{
+					for(auto* renderable : this->objects)
+					{
+						PhysicsObject* pobj = dynamic_cast<PhysicsObject*>(renderable);
+						if(pobj != nullptr)
+							physics_objects.push_back(std::ref(*pobj));
 					}
 				}
 			}
@@ -713,6 +739,14 @@ void Scene::erase_object(Renderable* to_delete)
 	auto renderable_iterator = std::remove_if(this->objects.begin(), this->objects.end(), [&](const auto& renderable_ptr){return renderable_ptr == to_delete;});
 	if(renderable_iterator != this->objects.end())
 		this->objects.erase(renderable_iterator);
+    for(auto iter = this->inheritance_map.begin(); iter != this->inheritance_map.end(); iter++)
+    {
+        if(iter->second == to_delete)
+        {
+            this->inheritance_map.erase(iter);
+            continue;
+        }
+    }
 }
 
 void Scene::handle_deletions()
