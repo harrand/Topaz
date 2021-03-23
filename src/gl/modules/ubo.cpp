@@ -53,6 +53,13 @@ namespace tz::gl::p
 		return this->ubo_name_id[idx].second;
 	}
 
+	std::size_t UBOModule::get_buffer_id(const std::string& ubo_name) const
+	{
+		auto optional_sizet = this->get_ubo_id_by_name(ubo_name);
+		topaz_assertf(optional_sizet.has_value(), "tz::gl::p::UBOModule::get_buffer_id(%s): No such UBO with that name present.", ubo_name.c_str());
+		return optional_sizet.value();
+	}
+
 	std::optional<std::size_t> UBOModule::get_ubo_id_by_name(const std::string& ubo_name) const
 	{
 		auto iter = std::find_if(this->ubo_name_id.begin(), this->ubo_name_id.end(), [&ubo_name](auto pair)

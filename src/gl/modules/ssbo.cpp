@@ -54,6 +54,13 @@ namespace tz::gl::p
 		return this->ssbo_name_id[idx].second;
 	}
 
+	std::size_t SSBOModule::get_buffer_id(const std::string& ssbo_name) const
+	{
+		auto optional_sizet = this->get_existing_ssbo_id(ssbo_name);
+		topaz_assertf(optional_sizet.has_value(), "tz::gl::p::SSBOModule::get_buffer_id(%s): No such SSBO with that name present.", ssbo_name.c_str());
+		return optional_sizet.value();
+	}
+
 	std::optional<std::size_t> SSBOModule::get_existing_ssbo_id(const std::string& ssbo_name) const
 	{
 		auto iter = std::find_if(this->ssbo_name_id.begin(), this->ssbo_name_id.end(), [&ssbo_name](std::pair<std::string, std::size_t> entry)->bool

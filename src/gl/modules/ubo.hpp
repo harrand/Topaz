@@ -58,6 +58,7 @@ namespace tz::gl::p
 		 * @return Handle representing the ID of the UBO in the stored tz::gl::Object.
 		 */
 		std::size_t get_buffer_id(std::size_t idx) const;
+		std::size_t get_buffer_id(const std::string& ubo_name) const;
 	private:
 		std::optional<std::size_t> get_ubo_id_by_name(const std::string& ubo_name) const;
 		mutable std::vector<std::pair<std::string, std::size_t>> ubo_name_id;

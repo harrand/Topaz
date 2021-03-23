@@ -559,10 +559,10 @@ int main()
 			ssbo_module = static_cast<tz::gl::p::SSBOModule*>(pre[ssbo_module_id]);
 		}
 		topaz_assert(ssbo_module->size() == 4, "SSBO Module had unexpected number of buffers. Expected 3, got ", ssbo_module->size());
-		std::size_t ssbo_id = ssbo_module->get_buffer_id(0);
-		std::size_t tex_ssbo_id = ssbo_module->get_buffer_id(1);
-		std::size_t scenery_ssbo_id = ssbo_module->get_buffer_id(2);
-		std::size_t lighting_ssbo_id = ssbo_module->get_buffer_id(3);
+		std::size_t ssbo_id = ssbo_module->get_buffer_id("matrices");
+		std::size_t tex_ssbo_id = ssbo_module->get_buffer_id("texture_block");
+		std::size_t scenery_ssbo_id = ssbo_module->get_buffer_id("scenery_block");
+		std::size_t lighting_ssbo_id = ssbo_module->get_buffer_id("lighting_block");
 
 		tz::gl::SSBO* ssbo = o.get<tz::gl::BufferType::ShaderStorage>(ssbo_id);
 		tz::gl::SSBO* tex_ssbo = o.get<tz::gl::BufferType::ShaderStorage>(tex_ssbo_id);
