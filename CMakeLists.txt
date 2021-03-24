@@ -147,6 +147,8 @@ add_library(topaz STATIC
 		src/gl/vertex.hpp
 		src/gl/modules/bindless_sampler.cpp
 		src/gl/modules/bindless_sampler.hpp
+		src/gl/modules/cplvals.cpp
+		src/gl/modules/cplvals.hpp
 		src/gl/modules/include.cpp
 		src/gl/modules/include.hpp
 		src/gl/modules/ssbo.cpp

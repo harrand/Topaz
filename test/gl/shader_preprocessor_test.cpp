@@ -6,6 +6,7 @@
 #include "core/tz.hpp"
 #include "core/tz_glad/glad_context.hpp"
 #include "gl/shader_preprocessor.hpp"
+#include "gl/modules/cplvals.hpp"
 #include "gl/modules/include.hpp"
 #include "gl/modules/ssbo.hpp"
 #include "gl/modules/ubo.hpp"
@@ -120,6 +121,32 @@ const char* src6_parsed = R"glsl(
 	void main()
 	{
 		// yee
+	}
+)glsl";
+
+const char* src7 = R"glsl(
+	void dub(int x)
+	{
+		return x * 2;
+	}
+
+	void main()
+	{
+		int x = #@seven;
+		x = dub(#@seven * 2);
+	}
+)glsl";
+
+const char* src7_parsed = R"glsl(
+	void dub(int x)
+	{
+		return x * 2;
+	}
+
+	void main()
+	{
+		int x = 7;
+		x = dub(7 * 2);
 	}
 )glsl";
 
@@ -274,8 +301,15 @@ TZ_TEST_BEGIN(shader_source_replacement_correct)
 	tz::gl::ShaderPreprocessor pre{src6};
 	pre.emplace_module<tz::gl::p::UBOModule>(o);
 	pre.emplace_module<tz::gl::p::SSBOModule>(o);
+	std::size_t ctvm_id = pre.emplace_module<tz::gl::p::CompileTimeValueModule>();
+	auto* ctvm = static_cast<tz::gl::p::CompileTimeValueModule*>(pre[ctvm_id]);
 	pre.preprocess();
 	topaz_expectf(pre.result() == src6_parsed, "tz::gl::p Shader Source Replacement Failed a simple test.\nExpected Source: \n%s\nActual Source: \n%s", pre.result().c_str(), src6_parsed);
+	pre.set_source(src7);
+
+	ctvm->set("seven", "7");
+	pre.preprocess();
+	topaz_expectf(pre.result() == src7_parsed, "tz::gl::p Shader Source Replacement Failed a simple test.\nExpected Source: \n%s\nActual Source: \n%s", pre.result().c_str(), src7_parsed);
 TZ_TEST_END
 
 int main()
