@@ -18,8 +18,10 @@ namespace tz::dui::gl
 	static gl::SentinelTrackerWindow textracker{};
     static bool track_objects = false;
 	static bool culling = false;
+	static bool depth_testing = false;
 
 	void render_face_culling();
+	void render_depth_testing();
     void render_object_tracker();
 
     void draw_tab()
@@ -34,6 +36,7 @@ namespace tz::dui::gl
             ImGui::MenuItem("OpenGL Info", nullptr, &oglinfo.visible);
             ImGui::MenuItem("Wireframe Mode", nullptr, &wireframe);
             ImGui::MenuItem("Face Culling", nullptr, &culling);
+			ImGui::MenuItem("Depth Testing", nullptr, &depth_testing);
             tz::get().render_settings().enable_wireframe_mode(wireframe);
             ImGui::EndMenu();
         }
@@ -41,6 +44,11 @@ namespace tz::dui::gl
 		if(culling)
 		{
 			render_face_culling();
+		}
+
+		if(depth_testing)
+		{
+			render_depth_testing();
 		}
 
         if(track_objects)
@@ -90,6 +98,30 @@ namespace tz::dui::gl
 		if(changed)
 		{
 			tz::get().render_settings().set_culling(current_target);
+		}
+
+		ImGui::End();
+	}
+
+	void render_depth_testing()
+	{
+		ImGui::Begin("Depth Testing", &depth_testing);
+		// Get current depth testing
+		tz::RenderSettings::DepthTesting current_depth_test = tz::get().render_settings().get_depth_testing();
+		auto tarv = reinterpret_cast<int*>(&current_depth_test);
+		bool changed = false;
+		changed |= ImGui::RadioButton("Never Pass", tarv, static_cast<int>(tz::RenderSettings::DepthTesting::NeverPass));
+		changed |= ImGui::RadioButton("Pass if less than", tarv, static_cast<int>(tz::RenderSettings::DepthTesting::PassIfLess));
+		changed |= ImGui::RadioButton("Pass if equal to", tarv, static_cast<int>(tz::RenderSettings::DepthTesting::PassIfEqual));
+		changed |= ImGui::RadioButton("Pass if less than or equal to", tarv, static_cast<int>(tz::RenderSettings::DepthTesting::PassIfLequal));
+		changed |= ImGui::RadioButton("Pass if greater than", tarv, static_cast<int>(tz::RenderSettings::DepthTesting::PassIfGreater));
+		changed |= ImGui::RadioButton("Pass if not equal to", tarv, static_cast<int>(tz::RenderSettings::DepthTesting::PassIfNequal));
+		changed |= ImGui::RadioButton("Pass if greater than or equal to", tarv, static_cast<int>(tz::RenderSettings::DepthTesting::PassIfGequal));
+		changed |= ImGui::RadioButton("Always Pass (No depth testing)", tarv, static_cast<int>(tz::RenderSettings::DepthTesting::AlwaysPass));
+
+		if(changed)
+		{
+			tz::get().render_settings().set_depth_testing(current_depth_test);
 		}
 
 		ImGui::End();
