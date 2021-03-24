@@ -1,6 +1,7 @@
 #include "dui/buffer_tracker.hpp"
 #include "gl/object.hpp"
 #include "algo/math.hpp"
+#include "gl/texture.hpp"
 #include <string>
 #include <cstring>
 
@@ -78,6 +79,8 @@ namespace tz::dui::gl
 			ImGui::RadioButton("Bytes", &t, 1);
 			ImGui::SameLine();
 			ImGui::RadioButton("Floats", &t, 2);
+			ImGui::SameLine();
+			ImGui::RadioButton("Bindless Handles", &t, 3);
 
 			ImGui::Text("Data");
 			switch(t)
@@ -104,12 +107,22 @@ namespace tz::dui::gl
 				}
 				case 2:
 				{
+					// Floats
 					for(std::size_t i = 0; i < static_cast<std::size_t>(this->view_size); i += sizeof(float))
 					{
 						data_string += std::to_string(*reinterpret_cast<float*>(data.data() + i)) + " ";
 					}
 					ensure_multiple(this->view_offset, sizeof(float));
 					ensure_multiple(this->view_size, sizeof(float));
+					break;
+				}
+				case 3:
+				{
+					// Bindless Handles
+					for(std::size_t i = 0; i < static_cast<std::size_t>(this->view_size); i += sizeof(tz::gl::BindlessTextureHandle))
+					{
+						data_string += std::to_string(*reinterpret_cast<tz::gl::BindlessTextureHandle*>(data.data() + i)) + " ";
+					}
 					break;
 				}
 			}
