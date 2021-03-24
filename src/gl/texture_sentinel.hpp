@@ -2,6 +2,7 @@
 #define TOPAZ_GL_TEXTURE_SENTINEL_HPP
 #include <vector>
 #include <glad/glad.h>
+#include <unordered_map>
 
 namespace tz::gl
 {
@@ -22,6 +23,14 @@ namespace tz::gl
 		 * @param handle Bindless texture handle to register.
 		 */
 		void register_handle(GLuint64 handle);
+		/**
+		 * Register an existing bindless texture handle aswell as its corresponding texture name.
+		 * Note: The handle can be retrieved from a terminal texture via Texture::get_terminal_handle.
+		 * Precondition: The given handle has not already been registered. Otherwise, thsi will hard-assert.
+		 * @param tex_name Texture name to associate with the coming bindless handle.
+		 * @param handle Bindless texture handle to register.
+		 */
+		void register_handle(GLuint tex_name, GLuint64 handle);
 		/**
 		 * Make a registered bindless texture handle resident, signifying that it can be used in subsequent draw calls.
 		 * Precondition: The given handle has already been registered. Otherwise, this will hard-assert.
@@ -69,10 +78,12 @@ namespace tz::gl
 		 * @param handle Handle for which to query status.
 		 */
 		void notify_usage(GLuint64 handle) const;
+		std::optional<GLuint> get_texture_name(GLuint64 handle) const;
 	private:
 	#if TOPAZ_DEBUG
 		std::vector<GLuint64> declared;
 		std::vector<GLuint64> residents;
+		std::unordered_map<GLuint64, GLuint> declared_tex_names;
 	#endif
 	};
 }

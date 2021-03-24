@@ -10,6 +10,21 @@ namespace tz::gl
 		return global_sentinel;
 	}
 
+	bool dui_draw_bindless(BindlessTextureHandle handle, tz::Vec2 size)
+	{
+		auto opt_tex_name = sentinel().get_texture_name(handle);
+		if(!opt_tex_name.has_value())
+		{
+			return false;
+		}
+
+		auto Vec2ToImVec2 = [](tz::Vec2 v)->ImVec2{return {v[0], v[1]};};
+		auto Vec4ToImVec4 = [](tz::Vec4 v)->ImVec4{return {v[0], v[1], v[2], v[3]};};
+		sentinel().notify_usage(handle);
+		ImGui::Image(opt_tex_name.value(), Vec2ToImVec2(size), Vec2ToImVec2(tz::Vec2{0.0f, 0.0f}), Vec2ToImVec2(tz::Vec2{1.0f, 1.0f}), Vec4ToImVec4(tz::Vec4{1.0f, 1.0f, 1.0f, 1.0f}), Vec4ToImVec4(tz::Vec4{0.0f, 0.0f, 0.0f, 0.0f}));
+		return true;
+	}
+
 	bool TextureDataDescriptor::operator==(const TextureDataDescriptor& rhs) const
 	{
 		return this->component_type == rhs.component_type && this->internal_format == rhs.internal_format && this->format == rhs.format;
@@ -100,7 +115,7 @@ namespace tz::gl
 	{
 		topaz_assert(!this->is_terminal(), "tz::gl::Texture::make_terminal(): Texture is already terminal!");
 		this->bindless = glGetTextureHandleARB(this->handle);
-		tz::gl::sentinel().register_handle(this->bindless.value());
+		tz::gl::sentinel().register_handle(this->handle, this->bindless.value());
 		glMakeTextureHandleResidentARB(this->bindless.value());
 		tz::gl::sentinel().make_resident(this->bindless.value());
 	}

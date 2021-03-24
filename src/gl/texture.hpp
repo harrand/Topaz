@@ -22,6 +22,8 @@ namespace tz::gl
 	using TextureName = GLuint;
 	using BindlessTextureHandle = GLuint64;
 
+	bool dui_draw_bindless(BindlessTextureHandle handle, tz::Vec2 size = {64.0f, 64.0f});
+
 	struct TextureParameters;
 	enum class TextureComponentType : GLenum;
 	enum class TextureInternalFormat : GLint;

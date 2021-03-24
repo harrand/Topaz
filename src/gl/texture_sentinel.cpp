@@ -12,6 +12,14 @@ namespace tz::gl
 		#endif
 	}
 
+	void TextureSentinel::register_handle(GLuint tex_name, GLuint64 handle)
+	{
+		#if TOPAZ_DEBUG
+			register_handle(handle);
+			declared_tex_names[handle] = tex_name;
+		#endif
+	}
+
 	void TextureSentinel::make_resident([[maybe_unused]] GLuint64 handle)
 	{
 		#if TOPAZ_DEBUG
@@ -68,5 +76,16 @@ namespace tz::gl
 		#if TOPAZ_DEBUG
 			topaz_hard_assert(this->ready(handle), "tz::gl::TextureSentinel::notify_usage(handle): Bindless handle is not ready!");
 		#endif
+	}
+
+	std::optional<GLuint> TextureSentinel::get_texture_name(GLuint64 handle) const
+	{
+		#if TOPAZ_DEBUG
+		if(this->declared_tex_names.find(handle) != this->declared_tex_names.end())
+		{
+			return {this->declared_tex_names.at(handle)};
+		}
+		#endif
+		return {std::nullopt};
 	}
 }
