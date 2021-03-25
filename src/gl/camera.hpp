@@ -53,6 +53,18 @@ namespace tz::gl
         tz::Vec3 camera_dir(tz::Vec3 direction) const;
     };
 
+    struct CameraDataOrthographic
+    {
+        float top;
+        float bottom;
+        float left;
+        float right;
+        float near;
+        float far;
+        tz::Vec3 position = {};
+        tz::Vec3 rotation = {};
+    };
+
     /**
      * @}
      */

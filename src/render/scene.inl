@@ -3,6 +3,24 @@
 
 namespace tz::render
 {
+    template<typename CameraDataType>
+    tz::gl::Transform SceneElementT<CameraDataType>::get_transform() const
+    {
+        return this->transform;
+    }
+
+    template<typename CameraDataType>
+    CameraDataType SceneElementT<CameraDataType>::get_camera_data() const
+    {
+        return this->camera;
+    }
+
+    template<typename CameraDataType>
+    tz::render::AssetBuffer::Index SceneElementT<CameraDataType>::get_mesh_index() const
+    {
+        return this->mesh;
+    }
+
     template<>
     class ElementWriter<SceneElement, tz::gl::TransformResourceWriter>
     {
@@ -10,6 +28,16 @@ namespace tz::render
         static void write(tz::gl::TransformResourceWriter& writer, const SceneElement& element)
         {
             writer.write(element.transform.position, element.transform.rotation, element.transform.scale, element.camera.position, element.camera.rotation, element.camera.fov, element.camera.aspect_ratio, element.camera.near, element.camera.far);
+        }
+    };
+
+    template<>
+    class ElementWriter<SceneElement2D, tz::gl::TransformResourceWriterOrthographic>
+    {
+    public:
+        static void write(tz::gl::TransformResourceWriterOrthographic& writer, const SceneElement2D& element)
+        {
+            writer.write(element.transform.position, element.transform.rotation, element.transform.scale, element.camera.position, element.camera.rotation, element.camera.top, element.camera.bottom, element.camera.left, element.camera.right, element.camera.near, element.camera.far);
         }
     };
     

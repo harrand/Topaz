@@ -15,24 +15,28 @@ namespace tz::render
 	 * @{
 	 */
 
-    struct SceneElement
+    template<typename CameraDataType>
+    struct SceneElementT
     {
         /**
          * Construct a SceneElement using the given assetbuffer index.
          */
-        SceneElement(tz::render::AssetBuffer::Index idx): mesh(idx){}
+        SceneElementT(tz::render::AssetBuffer::Index idx): mesh(idx){}
         tz::gl::Transform get_transform() const;
-        tz::gl::CameraData get_camera_data() const;
+        CameraDataType get_camera_data() const;
         tz::render::AssetBuffer::Index get_mesh_index() const;
 
         /// Transform of the element, in world-space.
         tz::gl::Transform transform = {};
         /// Camera data representing the viewer, in world-space.
-        tz::gl::CameraData camera = {};
+        CameraDataType camera = {};
         /// AssetBuffer index representing the attached mesh.
         tz::render::AssetBuffer::Index mesh;
         bool visible = true;
     };
+
+    using SceneElement = SceneElementT<tz::gl::CameraData>;
+    using SceneElement2D = SceneElementT<tz::gl::CameraDataOrthographic>;
 
     namespace detail
     {
@@ -163,6 +167,10 @@ namespace tz::render
         std::vector<std::optional<Element>> elements = {};
         Writer writer;
     };
+
+    using StandardScene = Scene<SceneElement, tz::gl::TransformResourceWriter>;
+    using StandardScene2D = Scene<SceneElement2D, tz::gl::TransformResourceWriterOrthographic>;
+
     /**
      * @}
      */

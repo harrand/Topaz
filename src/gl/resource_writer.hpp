@@ -70,6 +70,16 @@ namespace tz::gl
     protected:
         BasicResourceWriter<tz::Mat4> mat_writer;
     };
+
+    class TransformResourceWriterOrthographic
+    {
+    public:
+        TransformResourceWriterOrthographic(tz::mem::Block data);
+        bool write(tz::Vec3 pos, tz::Vec3 rot, tz::Vec3 scale, tz::Vec3 cam_pos, tz::Vec3 cam_rot, float top, float bottom, float left, float right, float near, float far);
+        void reset();
+    protected:
+        BasicResourceWriter<tz::Mat4> mat_writer;
+    };
     
     /**
      * @}
