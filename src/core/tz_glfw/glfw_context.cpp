@@ -133,9 +133,8 @@ namespace tz::ext::glfw
 		check_one_monitor();
 		GLFWmonitor* default_monitor = glfwGetPrimaryMonitor();
 		topaz_assert(default_monitor != nullptr, "glfwGetPrimaryMonitor() returned nullptr");
-		int width, height;
-		glfwGetMonitorPhysicalSize(default_monitor, &width, &height);
-		return {width, height};
+		const GLFWvidmode* vm = glfwGetVideoMode(default_monitor);
+		return {vm->width, vm->height};
 	}
 
 	int get_monitor_width()
