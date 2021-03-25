@@ -134,6 +134,16 @@ namespace tz
 		 * @return - True if this window has the active context, otherwise false
 		 */
 		virtual bool is_active_context() const = 0;
+		/**
+		 * Query as to whether the cursor is visible while the window is in focus.
+		 * @return - True if the mouse cursor is visible, otherwise false.
+		 */
+		virtual bool is_cursor_showing() const = 0;
+		/**
+		 * Set whether the mouse cursor should be showing.
+		 * @param show_cursor - Whether the mouse cursor should be visible or not.
+		 */
+		virtual void set_cursor_showing(bool show_cursor) = 0;
 		
 		/**
 		 * Request that the window swap buffers.
@@ -260,6 +270,9 @@ namespace tz
 		
 		virtual void set_active_context() const override;
 		virtual bool is_active_context() const override;
+
+		virtual bool is_cursor_showing() const override;
+		virtual void set_cursor_showing(bool show_cursor) override;
 		
 		virtual void update() const override;
 		virtual void handle_key_event(const tz::input::KeyPressEvent& kpe) override;

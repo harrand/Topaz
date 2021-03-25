@@ -139,6 +139,18 @@ namespace tz
 		this->verify();
 		return this->impl->has_active_context();
 	}
+
+	bool GLFWWindow::is_cursor_showing() const
+	{
+		this->verify();
+		return this->impl->is_cursor_showing();
+	}
+
+	void GLFWWindow::set_cursor_showing(bool show_cursor)
+	{
+		this->verify();
+		this->impl->set_cursor_showing(show_cursor);
+	}
 	
 	void GLFWWindow::update() const
 	{

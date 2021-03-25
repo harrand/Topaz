@@ -90,6 +90,8 @@ namespace tz::ext::glfw
 		 * TODO: Document
 		 */
 		void set_active_context() const;
+		bool is_cursor_showing() const;
+		void set_cursor_showing(bool show_cursor);
 		/**
 		 * TODO: Document
 		 * @param rhs

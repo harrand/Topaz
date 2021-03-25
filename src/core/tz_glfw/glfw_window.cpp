@@ -169,6 +169,16 @@ namespace tz::ext::glfw
 		glfwMakeContextCurrent(this->window_handle);
 		tz::dui::set_window_impl(this->window_handle);
 	}
+
+	bool GLFWWindowImpl::is_cursor_showing() const
+	{
+		return glfwGetInputMode(this->window_handle, GLFW_CURSOR) == GLFW_CURSOR_NORMAL;
+	}
+
+	void GLFWWindowImpl::set_cursor_showing(bool show_cursor)
+	{
+		glfwSetInputMode(this->window_handle, GLFW_CURSOR, show_cursor ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_HIDDEN);
+	}
 	
 	bool GLFWWindowImpl::operator==(const GLFWWindowImpl& rhs) const
 	{
