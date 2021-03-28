@@ -35,14 +35,14 @@ namespace tz::gl
 		return this->component_type != rhs.component_type || this->internal_format != rhs.internal_format || this->format != rhs.format;
 	}
 
-	Texture::Texture(): handle(0), descriptor(std::nullopt)
+	Texture::Texture(): handle(0), descriptor(std::nullopt), bindless(std::nullopt)
 	{
 		glGenTextures(1, &this->handle);
 		this->internal_bind();
 		this->internal_unbind();
 	}
 
-	Texture::Texture(Texture&& move): handle(move.handle), descriptor(move.descriptor)
+	Texture::Texture(Texture&& move): handle(move.handle), descriptor(move.descriptor), bindless(move.bindless)
 	{
 		topaz_assert(move.handle != 0, "tz::gl::Texture::Texture(Texture&&): Provided move candidate was invalid (move.handle == ", move.handle, ")");
 		move.handle = 0;
