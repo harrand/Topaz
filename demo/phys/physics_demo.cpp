@@ -320,31 +320,31 @@ int main()
 			switch(e.key)
 			{
 				case GLFW_KEY_A:
-					if(e.action == GLFW_PRESS)
+					if(e.action == tz::input::KeyPressEvent::Action::Pressed)
 					{
 						body.velocity[0] = -0.5f;
 					}
-					else if(e.action == GLFW_RELEASE)
+					else if(e.action == tz::input::KeyPressEvent::Action::Released)
 					{
 						body.velocity[0] = 0.0f;
 					}
 				break;
 				case GLFW_KEY_D:
-					if(e.action == GLFW_PRESS)
+					if(e.action == tz::input::KeyPressEvent::Action::Pressed)
 					{
 						body.velocity[0] = 0.5f;
 					}
-					else if(e.action == GLFW_RELEASE)
+					else if(e.action == tz::input::KeyPressEvent::Action::Released)
 					{
 						body.velocity[0] = 0.0f;
 					}
 				break;
 				case GLFW_KEY_SPACE:
-					if(e.action == GLFW_PRESS)
+					if(e.action == tz::input::KeyPressEvent::Action::Pressed)
 					{
 						jumping = true;
 					}
-					else if(e.action == GLFW_RELEASE)
+					else if(e.action == tz::input::KeyPressEvent::Action::Released)
 					{
 						jumping = false;
 					}
