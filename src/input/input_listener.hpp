@@ -5,6 +5,7 @@
 #ifndef TOPAZ_INPUT_LISTENER_HPP
 #define TOPAZ_INPUT_LISTENER_HPP
 #include "input/input_event.hpp"
+#include <unordered_set>
 
 namespace tz::input
 {
@@ -14,9 +15,19 @@ namespace tz::input
 	 * @{
 	 */
 
+	namespace detail
+	{
+		struct NullKeyCallback
+		{
+			void operator()([[maybe_unused]] KeyPressEvent kpe){}
+		};
+	}
+
 	struct KeyListener
 	{
 		virtual void on_key_press(KeyPressEvent kpe) = 0;
+		virtual bool is_key_down(KeyPressEvent::Key key) const = 0;
+		virtual bool is_key_up(KeyPressEvent::Key key) const = 0;
 		virtual ~KeyListener() = default;
 	};
 	
@@ -33,13 +44,16 @@ namespace tz::input
 		virtual ~MouseListener() = default;
 	};
 	
-	template<typename Callback>
+	template<typename Callback = detail::NullKeyCallback>
 	struct CustomKeyListener : public KeyListener
 	{
-		explicit CustomKeyListener(Callback callback);
+		explicit CustomKeyListener(Callback callback = detail::NullKeyCallback{});
 		virtual void on_key_press(KeyPressEvent kpe) override;
+		virtual bool is_key_down(KeyPressEvent::Key key) const override;
+		virtual bool is_key_up(KeyPressEvent::Key key) const override;
 	private:
 		Callback callback;
+		std::unordered_set<KeyPressEvent::Key> pressed_keys;
 	};
 	
 	template<typename Callback>

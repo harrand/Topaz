@@ -218,6 +218,16 @@ namespace tz
 		template<typename T, typename... Args>
 		tz::input::KeyListener& emplace_custom_key_listener(T callback, Args&&... args);
 		/**
+		 * Construct a new key-pressed listener in-place and register it for this window.
+		 * Note: This is expected to be a CustomKeyListener<T>.
+		 * @tparam T - Listener callback type. This is likely to be a lambda type
+		 * @tparam Args - Types of additional arguments used to construct the listener
+		 * @param callback - Callback value to be invoked when an event is received
+		 * @param args - Additional argument values required to construct the listener
+		 * @return - Reference to the constructed listener
+		 */
+		tz::input::KeyListener& emplace_custom_key_listener();
+		/**
 		 * Construct a new character-typed listener in-place and register it for this window.
 		 * Note: This is expected to be a CustomTypeListener<T>.
 		 * @tparam T - Listener callback type. This is likely to be a lambda type

@@ -718,32 +718,7 @@ int main()
 			}
 		);
 
-		wnd.emplace_custom_key_listener([element_handle, &scene, &cam_pos](tz::input::KeyPressEvent e)
-		{
-			const tz::gl::CameraData& cam = scene.get(element_handle).camera;
-			constexpr float multiplier = 20.0f;
-			switch(e.key)
-			{
-			case GLFW_KEY_W:
-				cam_pos += cam.get_forward() * multiplier;
-			break;
-			case GLFW_KEY_S:
-				cam_pos += cam.get_backward() * multiplier;
-			break;
-			case GLFW_KEY_A:
-				cam_pos += cam.get_left() * multiplier;
-			break;
-			case GLFW_KEY_D:
-				cam_pos += cam.get_right() * multiplier;
-			break;
-			case GLFW_KEY_SPACE:
-				cam_pos += cam.get_up() * multiplier;
-			break;
-			case GLFW_KEY_LEFT_SHIFT:
-				cam_pos += cam.get_up() * multiplier;
-			break;
-			}
-		});
+		tz::input::KeyListener& kl = wnd.emplace_custom_key_listener();
 
 		// Pre-pipeline setup.
 		// 1.) Create a frame as a new render target so we can create the depth map.
@@ -783,6 +758,32 @@ int main()
 
 		while(!wnd.is_close_requested())
 		{
+			const tz::gl::CameraData& cam = scene.get(element_handle).camera;
+			constexpr float multiplier = 20.0f;
+			if(kl.is_key_down(GLFW_KEY_W))
+			{
+				cam_pos += cam.get_forward() * multiplier;
+			}
+			if(kl.is_key_down(GLFW_KEY_S))
+			{
+				cam_pos += cam.get_backward() * multiplier;
+			}
+			if(kl.is_key_down(GLFW_KEY_A))
+			{
+				cam_pos += cam.get_left() * multiplier;
+			}
+			if(kl.is_key_down(GLFW_KEY_D))
+			{
+				cam_pos += cam.get_right() * multiplier;
+			}
+			if(kl.is_key_down(GLFW_KEY_SPACE))
+			{
+				cam_pos += cam.get_up() * multiplier;
+			}
+			if(kl.is_key_down(GLFW_KEY_LEFT_SHIFT))
+			{
+				cam_pos += cam.get_up() * multiplier;
+			}
 
 			scene_device().clear();
 			o.bind();

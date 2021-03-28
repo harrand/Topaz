@@ -6,10 +6,18 @@
 #include "core/debug/assert.hpp"
 #include "gl/frame.hpp"
 #include "GLFW/glfw3.h"
+#include "input/input_event.hpp"
 #include <algorithm>
 
 namespace tz
 {
+	tz::input::KeyListener& IWindow::emplace_custom_key_listener()
+	{
+		auto custom_listener_ptr = std::make_shared<tz::input::CustomKeyListener<tz::input::detail::NullKeyCallback>>();
+		this->register_key_listener(custom_listener_ptr);
+		return *custom_listener_ptr;
+	}
+
 	GLFWWindow::GLFWWindow(tz::ext::glfw::GLFWContext& ctx): impl(ctx.get_window()), key_listeners(), type_listeners(), mouse_listeners()
 	{
 		this->set_active_context();

@@ -1,12 +1,34 @@
+#include <algorithm>
+
 namespace tz::input
 {
 	template<typename Callback>
-	CustomKeyListener<Callback>::CustomKeyListener(Callback callback): callback(callback){}
+	CustomKeyListener<Callback>::CustomKeyListener(Callback callback): callback(callback), pressed_keys(){}
 	
 	template<typename Callback>
 	void CustomKeyListener<Callback>::on_key_press(KeyPressEvent kpe)
 	{
 		this->callback(kpe);
+		if(kpe.action == KeyPressEvent::Action::Pressed)
+		{
+			this->pressed_keys.insert(kpe.key);
+		}
+		else if(kpe.action == KeyPressEvent::Action::Released)
+		{
+			this->pressed_keys.erase(kpe.key);
+		}
+	}
+
+	template<typename Callback>
+	bool CustomKeyListener<Callback>::is_key_down(KeyPressEvent::Key key) const
+	{
+		return this->pressed_keys.find(key) != this->pressed_keys.end();
+	}
+
+	template<typename Callback>
+	bool CustomKeyListener<Callback>::is_key_up(KeyPressEvent::Key key) const
+	{
+		return this->pressed_keys.find(key) == this->pressed_keys.end();
 	}
 	
 	template<typename Callback>

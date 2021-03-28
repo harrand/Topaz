@@ -197,9 +197,26 @@ namespace tz::ext::glfw
 	{
 		if(detail::window_userdata.find(window) != detail::window_userdata.end())
 		{
+			auto int_to_key_action = [](int a)->tz::input::KeyPressEvent::Action
+			{
+				switch(a)
+				{
+					case GLFW_PRESS:
+						return tz::input::KeyPressEvent::Action::Pressed;
+					break;
+					case GLFW_RELEASE:
+						return tz::input::KeyPressEvent::Action::Released;
+					break;
+					case GLFW_REPEAT:
+						return tz::input::KeyPressEvent::Action::Repeat;
+					break;
+				}
+				topaz_assert(false, "");
+				return tz::input::KeyPressEvent::Action::Released;
+			};
 			// We know about this window.
 			tz::GLFWWindow* wnd = detail::window_userdata[window];
-			wnd->handle_key_event(tz::input::KeyPressEvent{key, scancode, action, mods});
+			wnd->handle_key_event(tz::input::KeyPressEvent{key, scancode, int_to_key_action(action), mods});
 		}
 	}
 	
@@ -235,7 +252,24 @@ namespace tz::ext::glfw
 	
 	void simulate_key_press(const tz::input::KeyPressEvent& kpe)
 	{
-		glfw_key_callback(glfwGetCurrentContext(), kpe.key, kpe.scancode, kpe.action, kpe.mods);
+		auto key_action_to_int = [](tz::input::KeyPressEvent::Action a)->int
+			{
+				switch(a)
+				{
+					case tz::input::KeyPressEvent::Action::Pressed:
+						return GLFW_PRESS;
+					break;
+					case tz::input::KeyPressEvent::Action::Released:
+						return GLFW_RELEASE;
+					break;
+					case tz::input::KeyPressEvent::Action::Repeat:
+						return GLFW_REPEAT;
+					break;
+				}
+				topaz_assert(false, "");
+				return -1;
+			};
+		glfw_key_callback(glfwGetCurrentContext(), kpe.key, kpe.scancode, key_action_to_int(kpe.action), kpe.mods);
 	}
 	
 	void simulate_key_type(const tz::input::CharPressEvent& cpe)
