@@ -2,6 +2,8 @@
 #include "core/debug/assert.hpp"
 #include "core/debug/print.hpp"
 #include "core/matrix_transform.hpp"
+#include "core/time.hpp"
+#include "core/scheduler.hpp"
 #include "gl/tz_stb_image/image_reader.hpp"
 #include "gl/shader.hpp"
 #include "gl/shader_compiler.hpp"
@@ -108,13 +110,6 @@ public:
 private:
     TrackedPhysicsWorld& world;
 };
-
-unsigned long long get_current_time()
-{
-    using namespace std::chrono;
-    milliseconds ms = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
-    return ms.count();  
-}
 
 int main()
 {
@@ -352,6 +347,8 @@ int main()
 			}
 		});
 
+		// 60 TPS
+		tz::FixedUpdateScheduler phys_update{1000.0f / 60.0f};
 		while(!wnd.is_close_requested())
 		{
 			if(jumping)
@@ -359,9 +356,17 @@ int main()
 				body.transform.position[1] += 0.01f;
 				body.velocity[1] = 0.5f;
 			}
-            static unsigned long long old_time = get_current_time();
-            unsigned long long new_time = get_current_time();
-            world.update(static_cast<float>(new_time - old_time));
+            static unsigned long long old_time = tz::time_millis();
+            unsigned long long new_time = tz::time_millis();
+			float delta_millis = static_cast<float>(new_time - old_time);
+			phys_update.update(delta_millis);
+			{
+				tz::FixedUpdateTick tick = phys_update.tick();
+				if(tick)
+				{
+					world.update(tick.actual_tick_duration);
+				}
+			}
             old_time = new_time;
 			dev.clear();
 			o.bind();
