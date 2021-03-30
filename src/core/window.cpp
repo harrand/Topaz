@@ -7,6 +7,7 @@
 #include "gl/frame.hpp"
 #include "GLFW/glfw3.h"
 #include "input/input_event.hpp"
+#include "algo/container.hpp"
 #include <algorithm>
 
 namespace tz
@@ -202,7 +203,7 @@ namespace tz
 	{
 		this->ensure_registered();
 		// Don't add duplicates -- That would be very annoying.
-		if(std::find(this->key_listeners.begin(), this->key_listeners.end(), listener) != this->key_listeners.end())
+		if(tz::algo::contains_element(this->key_listeners, listener))
 		{
 			return;
 		}
