@@ -3,6 +3,7 @@
 #include "gl/frame.hpp"
 #include "gl/shader.hpp"
 #include "gl/object.hpp"
+#include "algo/container.hpp"
 
 namespace tz::render
 {
@@ -26,7 +27,7 @@ namespace tz::render
 
 	bool Device::contains_resource_buffer(const tz::gl::IBuffer* buffer) const
 	{
-		return std::find(this->resource_buffers.begin(), this->resource_buffers.end(), buffer) != this->resource_buffers.end();
+		return tz::algo::contains_element(this->resource_buffers, buffer);
 	}
 
 	void Device::add_resource_buffer(const tz::gl::IBuffer* buffer)

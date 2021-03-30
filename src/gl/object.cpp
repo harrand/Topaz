@@ -1,6 +1,6 @@
 #include "gl/object.hpp"
 #include "core/debug/assert.hpp"
-#include <algorithm>
+#include "algo/container.hpp"
 
 namespace tz::gl
 {
@@ -74,17 +74,14 @@ namespace tz::gl
 
 	BufferHandle Object::add_buffer(std::unique_ptr<tz::gl::IBuffer> buffer)
 	{
-		auto find_result = std::find(this->buffers.begin(), this->buffers.end(), buffer);
-		if(find_result == this->buffers.end())
+		if(tz::algo::contains_element(this->buffers, buffer))
 		{
-			// We don't contain this. Create it and return the index.
-			this->buffers.push_back(std::move(buffer));
-			return (this->buffers.size() - 1);
+			return std::distance(this->buffers.begin(), std::find(this->buffers.begin(), this->buffers.end(), buffer));
 		}
 		else
 		{
-			// We do contain this. Return the dist.
-			return std::distance(this->buffers.begin(), find_result);
+			this->buffers.push_back(std::move(buffer));
+			return (this->buffers.size() - 1);
 		}
 	}
 

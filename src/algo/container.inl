@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <type_traits>
 
 namespace tz::algo
 {
@@ -23,6 +24,6 @@ namespace tz::algo
 	template<typename StandardContainer, typename ConvertibleToElement, typename ToElementFunctor>
 	bool contains_element(const StandardContainer& container, const ConvertibleToElement& element, const ToElementFunctor& functor)
 	{
-		return contains_element<StandardContainer, std::result_of_t<ToElementFunctor>>(container, functor(element));
+		return contains_element<StandardContainer>(container, functor(element));
 	}
 }

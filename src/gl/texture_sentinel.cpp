@@ -1,6 +1,6 @@
 #include "gl/texture_sentinel.hpp"
 #include "core/debug/assert.hpp"
-#include <algorithm>
+#include "algo/container.hpp"
 
 namespace tz::gl
 {
@@ -51,7 +51,7 @@ namespace tz::gl
 	bool TextureSentinel::registered([[maybe_unused]] GLuint64 handle) const
 	{
 		#if TOPAZ_DEBUG
-			return std::find(this->declared.begin(), this->declared.end(), handle) != this->declared.end();
+			return tz::algo::contains_element(this->declared, handle);
 		#else
 			return false;
 		#endif
@@ -60,7 +60,7 @@ namespace tz::gl
 	bool TextureSentinel::resident([[maybe_unused]] GLuint64 handle) const
 	{
 		#if TOPAZ_DEBUG
-			return std::find(this->residents.begin(), this->residents.end(), handle) != this->residents.end();
+			return tz::algo::contains_element(this->residents, handle);
 		#else
 			return false;
 		#endif

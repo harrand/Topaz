@@ -1,4 +1,4 @@
-#include <algorithm>
+#include "algo/container.hpp"
 
 namespace tz
 {
@@ -30,6 +30,6 @@ namespace tz
     template<class T, class Allocator>
     bool UniqueVector<T, Allocator>::contains_element(const T& value) const
     {
-        return std::find(this->begin(), this->end(), value) != this->end();
+        return tz::algo::contains_element(*this, value);
     }
 }

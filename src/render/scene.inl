@@ -188,7 +188,7 @@ namespace tz::render
     template<class Element, class Writer, class SceneElementWriter>
     bool Scene<Element, Writer, SceneElementWriter>::contains(const Element& element) const
     {
-        return std::find(this->elements.begin(), this->elements.end(), std::optional<Element>{element}) != this->elements.end();
+        return tz::algo::contains_element(this->elements, element, [](const Element& e){return std::optional<Element>{e};});
     }
 
     template<class Element, class Writer, class SceneElementWriter>
