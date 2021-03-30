@@ -9,6 +9,8 @@ set(TOPAZ_SOURCE_DIR ${PROJECT_SOURCE_DIR}/src)
 add_library(topaz STATIC
 		src/algo/container.hpp
 		src/algo/container.inl
+		src/algo/image_processing.hpp
+		src/algo/image_processing.inl
 		src/algo/math.cpp
 		src/algo/math.hpp
 		src/algo/math.inl
