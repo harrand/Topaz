@@ -19,7 +19,7 @@ namespace tz::gl
         }
         // Let's write. If POD we will respect lifetime rules.
         char* loc = reinterpret_cast<char*>(this->data.begin) + offset_bytes;
-        if constexpr(std::is_pod_v<T>)
+        if constexpr(std::is_standard_layout_v<T> && std::is_trivial_v<T>)
         {
             // POD. Just memcpy.
             std::memcpy(loc, &element, sizeof(T));

@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.9)
 project(topaz VERSION 0.0.1 DESCRIPTION "Cross-Platform Multimedia Engine")
 # CMake Variable Redefinitions
 set(CMAKE_BINARY_DIR ${PROJECT_SOURCE_DIR}/build)
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 # Topaz-Specific Definitions
 set(TOPAZ_SOURCE_DIR ${PROJECT_SOURCE_DIR}/src)
 

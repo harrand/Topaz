@@ -3,16 +3,16 @@
 
 namespace tz::algo
 {
-	template<typename StandardContainer>
-	constexpr std::size_t sizeof_element([[maybe_unused]] const StandardContainer& container)
+	template<UniformValueContainer Container>
+	constexpr std::size_t sizeof_element([[maybe_unused]] const Container& container)
 	{
-		return sizeof_element<StandardContainer>();
+		return sizeof_element<Container>();
 	}
 
-	template<typename StandardContainer>
+	template<UniformValueContainer Container> 
 	constexpr std::size_t sizeof_element()
 	{
-		return sizeof(typename StandardContainer::value_type);
+		return sizeof(typename Container::value_type);
 	}
 
 	template<typename StandardContainer, typename ElementType>

@@ -1,6 +1,7 @@
 #ifndef TOPAZ_ALGO_CONTAINER_HPP
 #define TOPAZ_ALGO_CONTAINER_HPP
 #include <cstddef>
+#include <concepts>
 
 namespace tz::algo
 {
@@ -11,6 +12,29 @@ namespace tz::algo
 	 * @{
 	 */
 
+	template<typename IteratorType>
+	concept Iterator = requires(IteratorType a)
+	{
+		a++;
+		++a;
+		a--;
+		--a;
+		*a;
+	};
+
+	template<typename ContainerType>
+	concept Iterable = requires(ContainerType a)
+	{
+		{a.begin()} -> Iterator;
+		{a.end()} -> Iterator;
+	};
+
+	template<typename Container>
+	concept UniformValueContainer = requires
+	{
+		typename Container::value_type;
+	};
+
 	/**
 	 * Retrieve the size of an element in the given standard container.
 	 * Precondition: StandardContainer must define the member alias 'value_type'. Otherwise, usage will fail to compile.
@@ -18,8 +42,8 @@ namespace tz::algo
 	 * @param container Unused container value. Only pass a parameter if you wish for type deduction to take place.
 	 * @return Size of an element in the container, in bytes. For example: for StandardContainer std::vector<int>, expect this to return sizeof(int).
 	 */
-	template<typename StandardContainer>
-	constexpr std::size_t sizeof_element(const StandardContainer& container);
+	template<UniformValueContainer Container> 
+	constexpr std::size_t sizeof_element(const Container& container);
 
 	/**
 	 * Retrieve the size of an element in the given standard container.
@@ -28,7 +52,7 @@ namespace tz::algo
 	 * @tparam StandardContainer Type representing a standard container. Examples: std::vector<int>, tz::mem::UniformPool<float>.
 	 * @return Size of an element in the container, in bytes. For example: for StandardContainer std::vector<int>, expect this to return sizeof(int).
 	 */
-	template<typename StandardContainer>
+	template<UniformValueContainer Container>
 	constexpr std::size_t sizeof_element();
 
 	/**
