@@ -58,8 +58,7 @@ namespace tz::algo
 	template<class T>
 	constexpr bool moveable()
 	{
-		return std::is_move_constructible_v<T>
-			&& std::is_move_assignable_v<T>;
+		return requires{requires std::movable<T>;};
 	}
 
 	/**
@@ -70,8 +69,7 @@ namespace tz::algo
 	template<class T>
 	constexpr bool copyable()
 	{
-		return std::is_copy_constructible_v<T>
-			&& std::is_copy_assignable_v<T>;
+		return requires{requires std::copyable<T>;};
 	}
 
 	namespace detail
