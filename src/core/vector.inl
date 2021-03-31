@@ -41,7 +41,7 @@ namespace tz
 	{
 		Vector<T, S> copy = *this;
 		copy += rhs;
-		return std::move(copy);
+		return copy;
 	}
 
 	template<typename T, std::size_t S>
@@ -57,7 +57,7 @@ namespace tz
 	{
 		Vector<T, S> copy = *this;
 		copy -= rhs;
-		return std::move(copy);
+		return copy;
 	}
 
 	template<typename T, std::size_t S>
@@ -73,7 +73,7 @@ namespace tz
 	{
 		Vector<T, S> copy = *this;
 		copy *= scalar;
-		return std::move(copy);
+		return copy;
 	}
 
 	template<typename T, std::size_t S>
@@ -89,7 +89,7 @@ namespace tz
 	{
 		Vector<T, S> copy = *this;
 		copy /= scalar;
-		return std::move(copy);
+		return copy;
 	}
 
 	template<typename T, std::size_t S>

@@ -159,7 +159,7 @@ namespace tz
 	{
 		Matrix<T, R, C> copy = *this;
 		copy *= scalar;
-		return std::move(copy);
+		return copy;
 	}
 
 	template<typename T, std::size_t R, std::size_t C>
@@ -167,7 +167,7 @@ namespace tz
 	{
 		Matrix<T, R, C> copy = *this;
 		copy *= matrix;
-		return std::move(copy);
+		return copy;
 	}
 
 	template<typename T, std::size_t R, std::size_t C>

@@ -125,7 +125,7 @@ namespace tz::gl
 		{
 			daughter_handles.push_back(this->partition(daughter_handles.back(), stride_vertices));
 		}
-		return std::move(daughter_handles);
+		return daughter_handles;
 	}
 
 	tz::gl::Object& Manager::operator*()

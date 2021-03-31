@@ -2,6 +2,7 @@
 #define TOPAZ_ALGO_STATIC_HPP
 #include <cstddef>
 #include <tuple>
+#include <functional>
 
 namespace tz::algo
 {
@@ -92,7 +93,7 @@ namespace tz::algo
 	template<class T>
 	constexpr bool equality_comparable()
 	{
-		return detail::ExistsOperator<T, std::equal_to<T>>::value;
+		return detail::ExistsOperator<T, std::equal_to<T>()>::value;
 	}
 
 	/**
