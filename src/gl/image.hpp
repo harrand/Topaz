@@ -12,9 +12,9 @@ namespace tz::gl
 
 	/**
 	 * Represents a bitmap of some pixel type.
-	 * @tparam PixelType One of the tz::gl Pixel types (see pixel.hpp)
+	 * @tparam PixelT One of the tz::gl Pixel types (see pixel.hpp)
 	 */
-	template<class PixelType>
+	template<PixelType PixelT>
 	class Image
 	{
 	public:
@@ -43,12 +43,12 @@ namespace tz::gl
 		 * Retrieve image data. Size is guaranteed to be equal to this->get-width() * this->get_height().
 		 * @return Contiguous array of image data.
 		 */
-		const PixelType* data() const;
+		const PixelT* data() const;
 		/**
 		 * Retrieve image data. Size is guaranteed to be equal to this->get-width() * this->get_height().
 		 * @return Contiguous array of image data.
 		 */
-		PixelType* data();
+		PixelT* data();
 		/**
 		 * Retrieve the pixel at the given position in the bitmap.
 		 * Note that (0, 0) corresponds to the top-left of the pixel.
@@ -57,7 +57,7 @@ namespace tz::gl
 		 * @param y Vertical co-ordinate of the desired pixel.
 		 * @return Reference to the pixel at the given position.
 		 */
-		const PixelType& operator()(unsigned int x, unsigned int y) const;
+		const PixelT& operator()(unsigned int x, unsigned int y) const;
 		/**
 		 * Retrieve the pixel at the given position in the bitmap.
 		 * Note that (0, 0) corresponds to the top-left of the pixel.
@@ -66,16 +66,16 @@ namespace tz::gl
 		 * @param y Vertical co-ordinate of the desired pixel.
 		 * @return Reference to the pixel at the given position.
 		 */
-		PixelType& operator()(unsigned int x, unsigned int y);
-		bool operator==(const Image<PixelType>& rhs) const;
-		bool operator!=(const Image<PixelType>& rhs) const;
+		PixelT& operator()(unsigned int x, unsigned int y);
+		bool operator==(const Image<PixelT>& rhs) const;
+		bool operator!=(const Image<PixelT>& rhs) const;
 	private:
 		/// Width, in pixels.
 		unsigned int width;
 		/// Height, in pixels.
 		unsigned int height;
 		// Represented similarly to a row-major matrix.
-		std::vector<PixelType> pixel_data;
+		std::vector<PixelT> pixel_data;
 	};
 
 	/**

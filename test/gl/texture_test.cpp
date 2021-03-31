@@ -16,7 +16,7 @@ TZ_TEST_END
 TZ_TEST_BEGIN(checkerboard_texture)
 	tz::gl::PixelRGBA8 black_pixel{std::byte{}, std::byte{}, std::byte{}, std::byte{255}};
 	tz::gl::PixelRGBA8 white_pixel{std::byte{255}, std::byte{255}, std::byte{255}, std::byte{255}};
-	tz::gl::Image<tz::gl::PixelRGBA8> rgba_checkerboard{2, 2};
+	tz::gl::Image<tz::gl::PixelRGBA<std::byte>> rgba_checkerboard{2, 2};
 	rgba_checkerboard(0, 0) = black_pixel;
 	rgba_checkerboard(1, 0) = white_pixel;
 	rgba_checkerboard(0, 1) = white_pixel;
@@ -32,7 +32,7 @@ TZ_TEST_BEGIN(checkerboard_texture)
 	topaz_expect(!checkerboard.empty(), "tz::gl::Texture wrongly thinks it's empty!");
 	topaz_expect(checkerboard.get_width() == checkerboard.get_height() && checkerboard.get_width() == 2, "tz::gl::Texture had unexpected width and height. Expected 2x2 but got ", checkerboard.get_width(), "x", checkerboard.get_height());
 	// Get it back and ensure everything is the same.
-	tz::gl::Image<tz::gl::PixelRGBA8> retrieved = checkerboard.get_data<tz::gl::PixelRGBA, typename tz::gl::PixelRGBA8::ComponentType>();
+	tz::gl::Image<tz::gl::PixelRGBA8> retrieved = checkerboard.get_data<tz::gl::PixelRGBA8>();
 	topaz_expect(retrieved == rgba_checkerboard, "tz::gl::Texture send/retrieve somehow affected the texture data...");
 TZ_TEST_END
 

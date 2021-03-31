@@ -118,8 +118,8 @@ namespace tz::gl
 		 * @tparam ComponentType Underlying data type of the components within the pixel.
 		 * @param image Image whose data should be uploaded to VRAM.
 		 */
-		template<template<typename> class PixelType, typename ComponentType>
-		void set_data(const tz::gl::Image<PixelType<ComponentType>>& image);
+		template<PixelType PixelT>
+		void set_data(const tz::gl::Image<PixelT>& image);
 		/**
 		 * Retrieve the image data from within the data-store.
 		 * Any data in the data-store beforehand will be discarded.
@@ -129,8 +129,8 @@ namespace tz::gl
 		 * @tparam ComponentType Underlying data type of the components within the pixel.
 		 * @return Image containing a copy of the data-store.
 		 */
-		template<template<typename> class PixelType, typename ComponentType>
-		tz::gl::Image<PixelType<ComponentType>> get_data() const;
+		template<PixelType PixelT>
+		tz::gl::Image<PixelT> get_data() const;
 		/**
 		 * Bind the texture to the currently-bound tz::gl::Frame using the given attachment.
 		 * Note: Probably not worth invoking this yourself; let the Frame sort this out for you.

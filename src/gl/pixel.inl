@@ -4,7 +4,7 @@
 namespace tz::gl
 {
 
-	template<typename Component>
+	template<PixelComponent Component>
 	const Component& PixelRGBA<Component>::operator[](std::size_t idx) const
 	{
 		switch(idx)
@@ -23,7 +23,7 @@ namespace tz::gl
 		return this->r;
 	}
 
-	template<typename Component>
+	template<PixelComponent Component>
 	Component& PixelRGBA<Component>::operator[](std::size_t idx)
 	{
 		switch(idx)
@@ -42,31 +42,31 @@ namespace tz::gl
 		return this->r;
 	}
 
-	template<typename Component>
+	template<PixelComponent Component>
 	bool PixelRGBA<Component>::operator==(const PixelRGBA<Component>& rhs) const
 	{
 		return this->r == rhs.r && this->g == rhs.g && this->b == rhs.b && this->a == rhs.a;
 	}
 
-	template<typename Component>
+	template<PixelComponent Component>
 	bool PixelRGBA<Component>::operator!=(const PixelRGBA<Component>& rhs) const
 	{
 		return this->r != rhs.r || this->g != rhs.g || this->b != rhs.b || this->a != rhs.a;
 	}
 
-	template<typename Component>
+	template<PixelComponent Component>
 	bool PixelRGB<Component>::operator==(const PixelRGB<Component>& rhs) const
 	{
 		return this->r == rhs.r && this->g == rhs.g && this->b == rhs.b;
 	}
 
-	template<typename Component>
+	template<PixelComponent Component>
 	bool PixelRGB<Component>::operator!=(const PixelRGB<Component>& rhs) const
 	{
 		return this->r != rhs.r || this->g != rhs.g || this->b != rhs.b;
 	}
 
-	template<typename Component>
+	template<PixelComponent Component>
 	const Component& PixelRGB<Component>::operator[](std::size_t idx) const
 	{
 		switch(idx)
@@ -83,7 +83,7 @@ namespace tz::gl
 		return this->r;
 	}
 
-	template<typename Component>
+	template<PixelComponent Component>
 	Component& PixelRGB<Component>::operator[](std::size_t idx)
 	{
 		switch(idx)
@@ -100,19 +100,19 @@ namespace tz::gl
 		return this->r;
 	}
 
-	template<typename Component>
+	template<PixelComponent Component>
 	bool PixelRG<Component>::operator==(const PixelRG<Component>& rhs) const
 	{
 		return this->x == rhs.x && this->y == rhs.y;
 	}
 
-	template<typename Component>
+	template<PixelComponent Component>
 	bool PixelRG<Component>::operator!=(const PixelRG<Component>& rhs) const
 	{
 		return this->x != rhs.x || this->y != rhs.y;
 	}
 
-	template<typename Component>
+	template<PixelComponent Component>
 	const Component& PixelRG<Component>::operator[](std::size_t idx) const
 	{
 		switch(idx)
@@ -127,7 +127,7 @@ namespace tz::gl
 		return this->x;
 	}
 
-	template<typename Component>
+	template<PixelComponent Component>
 	Component& PixelRG<Component>::operator[](std::size_t idx)
 	{
 		switch(idx)
@@ -142,19 +142,19 @@ namespace tz::gl
 		return this->x;
 	}
 
-	template<typename Component>
+	template<PixelComponent Component>
 	bool PixelGrayscale<Component>::operator==(const PixelGrayscale<Component>& rhs) const
 	{
 		return this->c == rhs.c;
 	}
 
-	template<typename Component>
+	template<PixelComponent Component>
 	bool PixelGrayscale<Component>::operator!=(const PixelGrayscale<Component>& rhs) const
 	{
 		return this->c != rhs.c;
 	}
 
-	template<typename Component>
+	template<PixelComponent Component>
 	const Component& PixelGrayscale<Component>::operator[](std::size_t idx) const
 	{
 		switch(idx)
@@ -169,10 +169,9 @@ namespace tz::gl
 
 	namespace pixel
 	{
-		template<typename Component>
+		template<PixelComponent Component>
 		constexpr GLenum parse_component_type()
 		{
-			// Until c++20 template lambdas come, this is unfortunately going to be an ugly macro.
 			#define chk(x, y) std::is_same_v<x, y>
 			if constexpr(chk(Component, unsigned char) || chk(Component, std::byte))
 			{
@@ -204,12 +203,13 @@ namespace tz::gl
 			}
 		}
 
-		template<template<typename> class PixelType, typename ComponentType>
+		template<PixelType PixelT>
 		constexpr GLint parse_internal_format()
 		{
 			#define chk(x, y) std::is_same_v<x, y>
+			using ComponentType = PixelT::ComponentType;
 			constexpr GLenum comp_type = tz::gl::pixel::parse_component_type<ComponentType>();
-			if constexpr(chk(PixelType<ComponentType>, PixelRGBA<ComponentType>))
+			if constexpr(chk(PixelT, PixelRGBA<ComponentType>))
 			{
 				// Is some form of RGBA...
 				// Let's find out specifically which!
@@ -221,7 +221,7 @@ namespace tz::gl
 						break;
 				}
 			}
-			else if constexpr(chk(PixelType<ComponentType>, PixelRGB<ComponentType>))
+			else if constexpr(chk(PixelT, PixelRGB<ComponentType>))
 			{
 				// If some form of RGB...
 				switch(comp_type)
@@ -232,7 +232,7 @@ namespace tz::gl
 						break;
 				}
 			}
-			else if constexpr(chk(PixelType<ComponentType>, PixelRG<ComponentType>))
+			else if constexpr(chk(PixelT, PixelRG<ComponentType>))
 			{
 				// If some form of XY...
 				switch(comp_type)
@@ -246,23 +246,24 @@ namespace tz::gl
 			return GL_INVALID_VALUE;
 		}
 
-		template<template<typename> class PixelType, typename ComponentType>
+		template<PixelType PixelT>
 		constexpr GLenum parse_format()
 		{
 			#define chk(x, y) std::is_same_v<x, y>
-			if constexpr(chk(PixelType<ComponentType>, PixelRGBA<ComponentType>))
+			using ComponentType = PixelT::ComponentType;
+			if constexpr(chk(PixelT, PixelRGBA<ComponentType>))
 			{
 				return GL_RGBA;
 			}
-			else if constexpr(chk(PixelType<ComponentType>, PixelRGB<ComponentType>))
+			else if constexpr(chk(PixelT, PixelRGB<ComponentType>))
 			{
 				return GL_RGB;
 			}
-			else if constexpr(chk(PixelType<ComponentType>, PixelRG<ComponentType>))
+			else if constexpr(chk(PixelT, PixelRG<ComponentType>))
 			{
 				return GL_RG;
 			}
-			else if constexpr(chk(PixelType<ComponentType>, PixelGrayscale<ComponentType>))
+			else if constexpr(chk(PixelT, PixelGrayscale<ComponentType>))
 			{
 				return GL_DEPTH_COMPONENT;
 			}
