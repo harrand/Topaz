@@ -2,6 +2,7 @@
 #define TOPAZ_ALGO_CONTAINER_HPP
 #include <cstddef>
 #include <concepts>
+#include <type_traits>
 
 namespace tz::algo
 {
@@ -12,23 +13,6 @@ namespace tz::algo
 	 * @{
 	 */
 
-	template<typename IteratorType>
-	concept Iterator = requires(IteratorType a)
-	{
-		a++;
-		++a;
-		a--;
-		--a;
-		*a;
-	};
-
-	template<typename ContainerType>
-	concept Iterable = requires(ContainerType a)
-	{
-		{a.begin()} -> Iterator;
-		{a.end()} -> Iterator;
-	};
-
 	template<typename Container>
 	concept UniformValueContainer = requires
 	{
@@ -37,23 +21,22 @@ namespace tz::algo
 
 	/**
 	 * Retrieve the size of an element in the given standard container.
-	 * Precondition: StandardContainer must define the member alias 'value_type'. Otherwise, usage will fail to compile.
-	 * @tparam StandardContainer Type representing a standard container. Examples: std::vector<int>, tz::mem::UniformPool<float>.
-	 * @param container Unused container value. Only pass a parameter if you wish for type deduction to take place.
-	 * @return Size of an element in the container, in bytes. For example: for StandardContainer std::vector<int>, expect this to return sizeof(int).
-	 */
-	template<UniformValueContainer Container> 
-	constexpr std::size_t sizeof_element(const Container& container);
-
-	/**
-	 * Retrieve the size of an element in the given standard container.
-	 * Precondition: StandardContainer must define the member alias 'value_type'. Otherwise, usage will fail to compile.
 	 * Note: As this has no parameters, the type cannot be deduced. You must explicitly state the type to use this overload. If you wish to utilise type deduction, see sizeof_element(const StandardContainer&).
-	 * @tparam StandardContainer Type representing a standard container. Examples: std::vector<int>, tz::mem::UniformPool<float>.
-	 * @return Size of an element in the container, in bytes. For example: for StandardContainer std::vector<int>, expect this to return sizeof(int).
+	 * @tparam Container Type representing a standard container. Examples: std::vector<int>, tz::mem::UniformPool<float>.
+	 * @return Size of an element in the container, in bytes. For example: for std::vector<int>, expect this to return sizeof(int).
 	 */
 	template<UniformValueContainer Container>
 	constexpr std::size_t sizeof_element();
+
+	/**
+	 * Retrieve the size of an element in the given container.
+	 * @param container Unused container value. Only pass a parameter if you wish for type deduction to take place.
+	 * @return Size of an element in the container, in bytes. For example: for std::vector<int>, expect this to return sizeof(int).
+	 */
+	constexpr std::size_t sizeof_element(const UniformValueContainer auto& container)
+	{
+		return sizeof_element<std::decay_t<decltype(container)>>();
+	}
 
 	/**
 	 * Query as to whether a given container contains a certain element.
