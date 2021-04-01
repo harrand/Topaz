@@ -1,6 +1,7 @@
 #ifndef TOPAZ_CORE_TYPES_HPP
 #define TOPAZ_CORE_TYPES_HPP
 #include <type_traits>
+#include <concepts>
 
 namespace tz
 {

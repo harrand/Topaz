@@ -5,6 +5,7 @@
 #ifndef TOPAZ_WINDOW_HPP
 #define TOPAZ_WINDOW_HPP
 #include "core/tz_glfw/glfw_context.hpp"
+#include "input/input_event.hpp"
 #include <memory>
 #include <vector>
 
@@ -215,7 +216,7 @@ namespace tz
 		 * @param args - Additional argument values required to construct the listener
 		 * @return - Reference to the constructed listener
 		 */
-		template<typename T, typename... Args>
+		template<tz::input::KeyPressCallback T, typename... Args>
 		tz::input::KeyListener& emplace_custom_key_listener(T callback, Args&&... args);
 		/**
 		 * Construct a new key-pressed listener in-place and register it for this window.
@@ -236,12 +237,12 @@ namespace tz
 		 * @param args - Additional argument values required to construct the listener
 		 * @return - Reference to the constructed listener
 		 */
-		template<typename T, typename... Args>
+		template<tz::input::CharPressCallback T, typename... Args>
 		tz::input::TypeListener& emplace_custom_type_listener(T callback, Args&&... args);
 		/**
 		 * TODO: Document
 		 */
-		template<typename TUpdate, typename TClick, typename... Args>
+		template<tz::input::MouseUpdateCallback TUpdate, tz::input::MouseClickCallback TClick, typename... Args>
 		tz::input::MouseListener& emplace_custom_mouse_listener(TUpdate update, TClick click, Args&&... args);
 		/**
 		 * Register the underlying window implementation to be tracked by topaz.

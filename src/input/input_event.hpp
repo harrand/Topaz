@@ -4,6 +4,7 @@
 
 #ifndef TOPAZ_INPUT_EVENT_HPP
 #define TOPAZ_INPUT_EVENT_HPP
+#include "core/types.hpp"
 
 namespace tz::input
 {
@@ -54,6 +55,18 @@ namespace tz::input
 		int action;
 		int mods;
 	};
+
+	template<typename F>
+	concept KeyPressCallback = tz::Action<F, KeyPressEvent>;
+
+	template<typename F>
+	concept CharPressCallback = tz::Action<F, CharPressEvent>;
+
+	template<typename F>
+	concept MouseUpdateCallback = tz::Action<F, MouseUpdateEvent>;
+
+	template<typename F>
+	concept MouseClickCallback = tz::Action<F, MouseClickEvent>;
 
 	/**
 	 * @}

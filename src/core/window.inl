@@ -2,7 +2,7 @@
 
 namespace tz
 {
-	template<typename T, typename... Args>
+	template<tz::input::KeyPressCallback T, typename... Args>
 	tz::input::KeyListener&	IWindow::emplace_custom_key_listener(T callback, Args&&... args)
 	{
 		auto custom_listener_ptr = std::make_shared<tz::input::CustomKeyListener<T>>(callback, std::forward<Args>(args)...);
@@ -10,7 +10,7 @@ namespace tz
 		return *custom_listener_ptr;
 	}
 	
-	template<typename T, typename... Args>
+	template<tz::input::CharPressCallback T, typename... Args>
 	tz::input::TypeListener& IWindow::emplace_custom_type_listener(T callback, Args&&... args)
 	{
 		auto custom_listener_ptr = std::make_shared<tz::input::CustomTypeListener<T>>(callback, std::forward<Args>(args)...);
@@ -18,7 +18,7 @@ namespace tz
 		return *custom_listener_ptr;
 	}
 
-	template<typename TUpdate, typename TClick, typename... Args>
+	template<tz::input::MouseUpdateCallback TUpdate, tz::input::MouseClickCallback TClick, typename... Args>
 	tz::input::MouseListener& IWindow::emplace_custom_mouse_listener(TUpdate update, TClick click, Args&&... args)
 	{
 		auto custom_listener_ptr = std::make_shared<tz::input::CustomMouseListener<TUpdate, TClick>>(update, click, std::forward<Args>(args)...);
