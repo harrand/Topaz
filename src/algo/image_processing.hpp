@@ -15,7 +15,7 @@ namespace tz::algo
         Vertical
     };
 
-    template<class Pixel>
+    template<tz::gl::PixelType Pixel>
     void flip_image(tz::gl::Image<Pixel>& image, ImageFlipDirection direction);
 
     /**

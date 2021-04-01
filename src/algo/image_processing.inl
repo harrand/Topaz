@@ -1,6 +1,6 @@
 namespace tz::algo
 {
-    template<class Pixel>
+    template<tz::gl::PixelType Pixel>
     void flip_image_horizontally(tz::gl::Image<Pixel>& image)
     {
         for(std::size_t x = 0; x < image.get_width() / 2; x++)
@@ -12,7 +12,7 @@ namespace tz::algo
         }
     }
 
-    template<class Pixel>
+    template<tz::gl::PixelType Pixel>
     void flip_image_vertically(tz::gl::Image<Pixel>& image)
     {
         for(std::size_t x = 0; x < image.get_width(); x++)
@@ -24,7 +24,7 @@ namespace tz::algo
         }
     }
 
-    template<class Pixel>
+    template<tz::gl::PixelType Pixel>
     void flip_image(tz::gl::Image<Pixel>& image, ImageFlipDirection direction)
     {
         switch(direction)
