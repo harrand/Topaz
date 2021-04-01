@@ -22,12 +22,18 @@ namespace tz
         requires !std::is_same_v<std::remove_cvref_t<T>, char>;
     };
 
+    /**
+     * A function can be invoked with its `Args...` to produce a `Result`. This is backend-agnostic, meaning that any invocable backend (func ptr, lambda, functor, you name it...) can be used so long as it matches the signature Result(Args...).
+     */
     template<typename F, typename Result, typename... Args>
     concept Function = requires(F f, Args... args)
     {
         {f(args...)} -> std::convertible_to<Result>;
     };
 
+    /**
+     * Just like a tz::Function, except will never return anything. This makes for cleaner syntax.
+     */
     template<typename F, typename... Args>
     concept Action = Function<F, void, Args...>;
 }

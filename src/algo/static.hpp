@@ -13,6 +13,19 @@ namespace tz::algo
 	*/
 
 	/**
+	 * Issue a compile error if `Type::Type(ConstructorArgs...)` is not valid.
+	 * 
+	 * In other words, invoke this if you wish to guarantee that you're always using arguments appropriate to invoke a constructor of the given type.
+	 * @tparam Type The type which should be constructed from ConstructorArgs...
+	 * @tparam ConstructorArgs The parameter types used to construct Type.
+	 */
+	template<typename Type, typename... ConstructorArgs>
+	constexpr void sanitize_emplacement()
+	{
+		static_assert(std::is_constructible_v<Type, ConstructorArgs...>, "Detected mismatching emplacement.");
+	}
+
+	/**
 	 * Invoke the given functor with a single std::size_t parameter End - Begin times, incrementing the parameter each time.
 	 * This should be used to iterate at compile-time.
 	 * @tparam Begin Value at first iteration.

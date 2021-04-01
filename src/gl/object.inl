@@ -1,9 +1,11 @@
+#include "algo/static.hpp"
 
 namespace tz::gl
 {
 	template<tz::gl::BufferType Type, typename... Args>
 	BufferHandle Object::emplace_buffer(Args&&... args)
 	{
+		tz::algo::sanitize_emplacement<tz::gl::Buffer<Type>, Args...>();
 		this->bind();
 		auto buffer_ptr = std::make_unique<tz::gl::Buffer<Type>>(std::forward<Args>(args)...);
 		if constexpr(Type == tz::gl::BufferType::Index)
