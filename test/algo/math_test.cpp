@@ -22,14 +22,14 @@ TZ_TEST_BEGIN(schmitt)
 
 	// Typical schmittf usage.
 	{
-		int ret = tz::algo::schmittf(lo, hi, 7.5f);
-		topaz_expect(ret == lo, "schmittf(5, 10, 7.5f) failed to return ", lo, ". Returned ", ret);
+		int ret = tz::algo::schmitt(lo, hi, 7.5f);
+		topaz_expect(ret == lo, "schmitt(5, 10, 7.5f) failed to return ", lo, ". Returned ", ret);
 	}
 
 	// Typical schmittf higher usage.
 	{
-		int ret = tz::algo::schmittf(lo, hi, 7.5f, tz::algo::SchmittBound::Higher);
-		topaz_expect(ret == hi, "schmittf(5, 10, 7.5f, SchmittBound::Higher) failed to return ", hi, ". Returned ", ret);
+		int ret = tz::algo::schmitt(lo, hi, 7.5f, tz::algo::SchmittBound::Higher);
+		topaz_expect(ret == hi, "schmitt(5, 10, 7.5f, SchmittBound::Higher) failed to return ", hi, ". Returned ", ret);
 	}
 TZ_TEST_END
 
@@ -45,15 +45,37 @@ TZ_TEST_BEGIN(schmitt_multiple)
 	}
 
 	{
-		int ret = tz::algo::schmittf_multiple(5, 2.5f);
-		topaz_expect(ret == 0, "schmittf_multiple(5, 2.5f) failed to return ", 0, ". Returned ", ret);
+		int ret = tz::algo::schmitt_multiple(5, 2.5f);
+		topaz_expect(ret == 0, "schmitt_multiple(5, 2.5f) failed to return ", 0, ". Returned ", ret);
 	}
 
 	{
-		int ret = tz::algo::schmittf_multiple(5, 2.5f, tz::algo::SchmittBound::Higher);
-		topaz_expect(ret == 5, "schmittf_multiple(5, 2.5f, SchmittBound::Higher) failed to return ", 5, ". Returned ", ret);
+		int ret = tz::algo::schmitt_multiple(5, 2.5f, tz::algo::SchmittBound::Higher);
+		topaz_expect(ret == 5, "schmitt_multiple(5, 2.5f, SchmittBound::Higher) failed to return ", 5, ". Returned ", ret);
 	}
 TZ_TEST_END
+
+TZ_TEST_BEGIN(type_mix)
+	{
+		constexpr float expected = 5.0f;
+		float actual = tz::algo::linear_interpolate(0, 10, 0.5f);
+		topaz_expectf(expected == actual, "linear_interpolate(%d, %d, %g) == %g but resulted in %g", 0, 10, 0.5f, expected, actual);
+	}
+
+	{
+		constexpr float expected = 0.0f;
+		float actual = tz::algo::linear_interpolate(-5, 5u, 0.5);
+		topaz_expectf(expected == actual, "linear_interpolate(%d, %du, %g) == %g but resulted in %g", -5, 5, 0.5f, expected, actual);
+	}
+
+	{
+		constexpr float expected = 16.0f;
+		float actual = tz::algo::schmitt(16.0f, 20, 17u);
+		topaz_expectf(expected == actual, "schmitt(%d.0f, %d, %gu) == %g but resulted in %g", 16, 20, 17, expected, actual);
+	}
+TZ_TEST_END
+
+
 
 int main()
 {
@@ -61,6 +83,7 @@ int main()
 	
 	math.add(schmitt());
 	math.add(schmitt_multiple());
+	math.add(type_mix());
 
 	return math.result();
 }

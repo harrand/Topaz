@@ -1,5 +1,6 @@
 #ifndef TOPAZ_CORE_RANDOM_HPP
 #define TOPAZ_CORE_RANDOM_HPP
+#include "core/types.hpp"
 #include <random>
 
 namespace tz
@@ -14,7 +15,7 @@ namespace tz
      * @tparam T Type of value to generate. This should be implicitly convertible from `unsigned int`.
      * @return Any possible value of T.
      */
-    template<typename T>
+    template<tz::Number T>
     T rand();
 
     /**
@@ -24,8 +25,8 @@ namespace tz
      * @param max Maximum value which can be generated.
      * @return Any possible value of T that is between min and max (double-inclusive).
      */
-    template<typename T>
-    T range(T min, T max);
+    template<tz::Number T>
+    T range(tz::Number auto min, tz::Number auto max);
 }
 
 #include "core/random.inl"

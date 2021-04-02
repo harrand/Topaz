@@ -2,14 +2,14 @@
 
 namespace tz
 {
-    template<typename T>
+    template<tz::Number T>
     T rand()
     {
         return detail::device()();
     }
 
-    template<typename T>
-    T range(T min, T max)
+    template<tz::Number T>
+    T range(tz::Number auto min, tz::Number auto max)
     {
         if constexpr(std::is_integral_v<T>)
         {

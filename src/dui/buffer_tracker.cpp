@@ -38,7 +38,7 @@ namespace tz::dui::gl
 		
 		auto ensure_multiple = [](int& val, std::size_t size)
 		{
-			val = tz::algo::schmittf_multiple<std::size_t, float>(size, static_cast<float>(val));
+			val = tz::algo::schmitt_multiple(size, static_cast<float>(val));
 		};
 
 		ImGui::Begin("Buffer Tracker", &this->visible);

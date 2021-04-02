@@ -2,32 +2,36 @@
 
 namespace tz::algo
 {
-	template<typename T>
-	T linear_interpolate(T a, T b, T weight)
+	constexpr auto linear_interpolate(tz::Number auto a, tz::Number auto b, tz::Number auto weight) -> decltype(weight)
 	{
 		return (b - a) * weight + a;
 	}
 
-	template<typename T>
-	T cubic_interpolate(T a, T b, T weight)
+	constexpr auto cubic_interpolate(tz::Number auto a, tz::Number auto b, tz::Number auto weight) -> decltype(weight)
 	{
-		return (b - a) * (T{3} - weight * T{2}) * weight * weight + a;
+		return (b - a) * (3 - weight * 2) * weight * weight + a;
 	}
 
-	template<typename T>
-	T cosine_interpolate(T a, T b, T weight)
+	constexpr auto cosine_interpolate(tz::Number auto a, tz::Number auto b, tz::Number auto weight) -> decltype(weight)
 	{
-		T theta = weight * tz::pi;
+		auto theta = weight * tz::pi;
 		// get a value between 0.0-1.0. then pass into linear interpolate.
-		T clamped_value = T{1} - std::cos(theta) * T{0.5f};
-		return linear_interpolate<T>(a, b, clamped_value);
+		auto clamped_value = 1 - std::cos(theta) * 0.5f;
+		return linear_interpolate(a, b, clamped_value);
 	}
 
-	template<typename T>
-	T schmitt(T lo, T hi, T val, SchmittBound bound)
+	constexpr auto schmitt(tz::Number auto lo, tz::Number auto hi, tz::Number auto val, SchmittBound bound) -> decltype(hi - lo)
 	{
-		T hdist = std::abs(hi - val);
-		T ldist = std::abs(val - lo);
+		tz::Number auto hdist = hi - val;
+		tz::Number auto ldist = val - lo;
+		if constexpr(std::is_signed_v<decltype(hdist)>)
+		{
+			hdist = std::abs(hdist);
+		}
+		if constexpr(std::is_signed_v<decltype(ldist)>)
+		{
+			ldist = std::abs(ldist);
+		}
 
 		if(bound == SchmittBound::Lower)
 		{
@@ -54,67 +58,21 @@ namespace tz::algo
 		else
 		{
 			topaz_assert(false, "tz::algo::schmitt(", lo, ", ", hi, ", ...): SchmittBound unrecognised (not lo nor hi).");
-			return T{};
+			return {};
 		}
+	}
+
+	constexpr auto schmitt_multiple(tz::Number auto factor, tz::Number auto value, SchmittBound bound)
+	{
+		topaz_assert(factor != 0, "tz::algo::schmitt_multiple(", factor, ", ", value, ", ...): Cannot divide by factor ", factor);
+		tz::Number auto frac = std::floor(value / factor);
+		tz::Number auto lo = frac * factor;
+		tz::Number auto hi = (frac + 1) * factor;
+		return tz::algo::schmitt(lo, hi, value, bound);
 	}
 
 	template<typename T>
-	T schmitt_multiple(T factor, T value, SchmittBound bound)
-	{
-		topaz_assert(factor != 0, "tz::algo::schmitt_multiple(", factor, ", ", value, ", ...): Cannot divide by factor ", factor);
-		T frac = std::floor(value / factor);
-		T lo = frac * factor;
-		T hi = (frac + 1) * factor;
-		return tz::algo::schmitt<T>(lo, hi, value, bound);
-	}
-
-	template<typename T, typename F>
-	T schmittf(T lo, T hi, F val, SchmittBound bound)
-	{
-		F hdist = std::abs(static_cast<F>(hi) - val);
-		F ldist = std::abs(val - static_cast<F>(lo));
-
-		if(bound == SchmittBound::Lower)
-		{
-			if(hdist >= ldist)
-			{
-				return lo;
-			}
-			else
-			{
-				return hi;
-			}
-		}
-		else if(bound == SchmittBound::Higher)
-		{
-			if(hdist <= ldist)
-			{
-				return hi;
-			}
-			else
-			{
-				return lo;
-			}
-		}
-		else
-		{
-			topaz_assert(false, "tz::algo::schmittf(", lo, ", ", hi, ", ...): SchmittBound unrecognised (not lo nor hi).");
-			return T{};
-		}
-	}
-
-	template<typename T, typename F>
-	T schmittf_multiple(T factor, F value, SchmittBound bound)
-	{
-		topaz_assert(factor != 0, "tz::algo::schmitt_multiple(", factor, ", ", value, ", ...): Cannot divide by factor ", factor);
-		F frac = std::floor(value / static_cast<F>(factor));
-		T lo = frac * factor;
-		T hi = (frac + 1) * factor;
-		return tz::algo::schmittf<T, F>(lo, hi, value, bound);
-	}
-
-	template<typename T>
-	std::array<T, 3> axis_angle_to_euler(std::array<T, 3> axis, T angle)
+	constexpr std::array<T, 3> axis_angle_to_euler(std::array<T, 3> axis, T angle)
 	{
 		T s = std::sin(angle);
 		T c = std::cos(angle);

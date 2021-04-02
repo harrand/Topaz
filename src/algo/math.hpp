@@ -1,7 +1,7 @@
 #ifndef TOPAZ_ALGO_MATH_HPP
 #define TOPAZ_ALGO_MATH_HPP
+#include "core/types.hpp"
 #include <array>
-
 
 namespace tz
 {
@@ -23,8 +23,7 @@ namespace tz
 		 * @param weight Linear weight value.
 		 * @return Interpolated unknwon value between `a` and `b`.
 		 */
-		template<typename T>
-		T linear_interpolate(T a, T b, T weight);
+		constexpr auto linear_interpolate(tz::Number auto a, tz::Number auto b, tz::Number auto weight) -> decltype(weight);
 
 		/**
 		 * Perform a cubic-interpolation between two known values.
@@ -34,8 +33,7 @@ namespace tz
 		 * @param weight Cubic weight value.
 		 * @return Interpolated unknwon value between `a` and `b`.
 		 */
-		template<typename T>
-		T cubic_interpolate(T a, T b, T weight);
+		constexpr auto cubic_interpolate(tz::Number auto a, tz::Number auto b, tz::Number auto weight) -> decltype(weight);
 
 		/**
 		 * Perform a cosine-interpolation between two known values.
@@ -45,8 +43,7 @@ namespace tz
 		 * @param weight Cosine weight value.
 		 * @return Interpolated unknwon value between `a` and `b`.
 		 */
-		template<typename T>
-		T cosine_interpolate(T a, T b, T weight);
+		constexpr auto cosine_interpolate(tz::Number auto a, tz::Number auto b, tz::Number auto weight) -> decltype(weight);
 
 		enum class SchmittBound
 		{
@@ -65,8 +62,7 @@ namespace tz
 		* @param bound Chosen behaviour if the value is equidistant between lo and hi.
 		* @return If val is closer to lo, returns lo. If val was closer to hi, returns hi.
 		*/
-		template<typename T>
-		T schmitt(T lo, T hi, T val, SchmittBound bound = SchmittBound::Lower);
+		constexpr auto schmitt(tz::Number auto lo, tz::Number auto hi, tz::Number auto val, SchmittBound bound = SchmittBound::Lower) -> decltype(hi - lo);
 
 		/**
 		* Perform a schmitt invocation on a value using the given factor.
@@ -77,40 +73,10 @@ namespace tz
 		* @param bound Chosen behaviour if the value is equidistant between two multiples.
 		* @return A multiple of 'factor' which 'val' is closest to.
 		*/
-		template<typename T>
-		T schmitt_multiple(T factor, T val, SchmittBound bound = SchmittBound::Lower);
-
-		/**
-		* Perform a schmitt invocation on a value. Schmitt-triggers in electronics can be used to convert analogue signals to digital. This function acts similarly; saturates a value to a higher or lower result.
-		* Note: This has more overhead than schmitt. If a single uniform type will suffice (no fear of truncation for example), then use schmitt.
-		* @tparam T Underlying value type to use. This might want to be int.
-		* @tparam F Underlying second value type to use. This might want to be float.
-		* @param lo Lowest value which should be returned.
-		* @param hi Highest value which should be returned.
-		* @param val Value to saturate.
-		* @param bound Chosen behaviour if the value is equisdistant between lo and hi.
-		* @return If val is closer to lo, returns lo. If val was closer to hi, returns hi.
-		*/
-		template<typename T, typename F>
-		T schmittf(T lo, T hi, F val, SchmittBound bound = SchmittBound::Lower);
-
-
-		/**
-		* Perform a schmitt invocation on a value using the given factor.
-		* Note: This has more overhead than schmitt_multiple. If a single uniform type will suffice (no fear of truncation for example), then use schmitt_multiple.
-		* Example: schmittf_multiple(8, 10, ...) yields 8. 10 is between the multiples 8 and 16. 10 is closer to 8, thus we return 8.
-		* @tparam T Underlying value type to use. This might want to be int.
-		* @tparam F Underlying second value type to use. This might want to be float.
-		* @param factor Factor which the value will saturate to.
-		* @param val Value to saturate.
-		* @param bound Chosen behaviour if the value is equidistant between two multiples.
-		* @return A multiple of 'factor' which 'val' is closest to.
-		*/
-		template<typename T, typename F>
-		T schmittf_multiple(T factor, F val, SchmittBound bound = SchmittBound::Lower);
+		constexpr auto schmitt_multiple(tz::Number auto factor, tz::Number auto val, SchmittBound bound = SchmittBound::Lower);
 
 		template<typename T>
-		std::array<T, 3> axis_angle_to_euler(std::array<T, 3>, T angle);
+		constexpr std::array<T, 3> axis_angle_to_euler(std::array<T, 3>, T angle);
 
 		/**
 		* @}
