@@ -3,7 +3,7 @@
 namespace tz::gl
 {
 	template<PixelType PixelT>
-	Image<PixelT>::Image(unsigned int width, unsigned int height): width(width), height(height), pixel_data(this->width * this->height, PixelT{})
+	constexpr Image<PixelT>::Image(unsigned int width, unsigned int height): width(width), height(height), pixel_data(this->width * this->height, PixelT{})
 	{
 		static_assert(tz::gl::pixel::parse_component_type<typename PixelT::ComponentType>() != GL_INVALID_VALUE, "Invalid pixel component type detected.");
 	}

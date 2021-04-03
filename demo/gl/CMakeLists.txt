@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.9)
-project(topaz_graphics_demo)
+
+add_image("/res/textures/bricks.jpg")
+
 
 add_executable(topaz_bindless_texture_demo
 		bindless_texture_demo.cpp

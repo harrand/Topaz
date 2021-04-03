@@ -23,7 +23,7 @@ namespace tz::gl
 		 * @param width Number of pixels per row.
 		 * @param height Number of pixels per column.
 		 */
-		Image(unsigned int width, unsigned int height);
+		constexpr Image(unsigned int width, unsigned int height);
 		/**
 		 * Retrieve the width of the image, in pixels.
 		 * @return Width in pixels.

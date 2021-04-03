@@ -12,6 +12,9 @@
 #include "gl/texture.hpp"
 #include "GLFW/glfw3.h"
 
+#include <cstddef>
+#include <array>
+
 const char *vtx_shader_src = "#version 430\n"
 	"layout (location = 0) in vec3 aPos;\n"
 	"layout (location = 1) in vec2 aTexcoord;\n"
@@ -33,6 +36,14 @@ const char *frg_shader_src = "#version 430\n"
 	"{\n"
 	"	FragColor = texture(checkerboard, texcoord);\n"
 	"}\n\0";
+
+constexpr tz::gl::Image<tz::gl::PixelRGBA8> get_bricks()
+{
+	#include "../res/textures/bricks.jpg.cpp"
+	tz::gl::Image<tz::gl::PixelRGBA8> img{512, 512};
+	std::memcpy(img.data(), image_data.data(), sizeof(image_data));
+	return img;
+}
 
 int main()
 {
@@ -77,7 +88,7 @@ int main()
 			0.5f, 1.0f,
 		};
 
-		auto rgba_checkerboard = tz::ext::stb::read_image<tz::gl::PixelRGB8>("res/textures/bricks.jpg");
+		tz::gl::Image<tz::gl::PixelRGBA8> rgba_checkerboard = get_bricks();
 		tz::gl::Texture checkerboard;
 		checkerboard.set_parameters(tz::gl::default_texture_params);
 		checkerboard.set_data(rgba_checkerboard);
