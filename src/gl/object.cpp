@@ -74,7 +74,7 @@ namespace tz::gl
 
 	BufferHandle Object::add_buffer(std::unique_ptr<tz::gl::IBuffer> buffer)
 	{
-		if(tz::algo::contains_element(this->buffers, buffer))
+		if(tz::algo::contains_element(this->buffers, buffer)) [[unlikely]]
 		{
 			return std::distance(this->buffers.begin(), std::find(this->buffers.begin(), this->buffers.end(), buffer));
 		}

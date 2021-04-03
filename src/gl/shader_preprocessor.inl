@@ -4,8 +4,7 @@ namespace tz::gl
 {
 	namespace src
 	{
-		template<typename Runnable>
-		void transform(std::string& source, std::regex reg, Runnable transform_function)
+		void transform(std::string& source, std::regex reg, SourceReplaceAction auto transform_function)
 		{
 			using ReplaceJob = std::pair<std::pair<std::size_t, std::size_t>, std::string>;
 			std::vector<ReplaceJob> replacements;

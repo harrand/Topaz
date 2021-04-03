@@ -22,7 +22,7 @@ namespace tz
 	{
 		std::vector<std::byte> bytes;
 		auto text = this->load_text(relative_path);
-		if(text.has_value())
+		if(text.has_value()) [[likely]]
 		{
 			for(char c : text.value())
 				bytes.push_back(static_cast<std::byte>(c));
@@ -33,7 +33,7 @@ namespace tz
 	std::optional<std::string> ResourceManager::load_text(std::string relative_path) const
 	{
 		std::ifstream file{this->path + relative_path};
-		if(!file.good())
+		if(!file.good()) [[unlikely]]
 			return {std::nullopt};
 		std::stringstream ss;
 		ss << file.rdbuf();

@@ -60,7 +60,7 @@ namespace tz::gl
 
 		{
 			auto diagnostic = verify_boilerplate(GL_LINK_STATUS);
-			if(!diagnostic.successful())
+			if(!diagnostic.successful()) [[unlikely]]
 				return diagnostic;
 		}
 
@@ -68,7 +68,7 @@ namespace tz::gl
 		glValidateProgram(program.handle);
 		{
 			auto diagnostic = verify_boilerplate(GL_VALIDATE_STATUS);
-			if(diagnostic.successful())
+			if(diagnostic.successful()) [[unlikely]]
 				program.ready = true; // It's good to go!
 			return diagnostic;
 		}	

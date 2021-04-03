@@ -141,7 +141,7 @@ namespace tz
 	void Vector<T, S>::normalise()
 	{
 		T l = this->length();
-		if(l == T{})
+		if(l == T{}) [[unlikely]]
 		{
 			return;
 		}

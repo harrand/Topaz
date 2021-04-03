@@ -23,7 +23,9 @@ namespace tz
     };
 
     /**
-     * A function can be invoked with its `Args...` to produce a `Result`. This is backend-agnostic, meaning that any invocable backend (func ptr, lambda, functor, you name it...) can be used so long as it matches the signature Result(Args...).
+     * Function concept which constrains F to any type that can be called with `Args...` to produce a Result.
+     * 
+     * This is backend-agnostic, meaning that any invocable backend (func ptr, lambda, functor, you name it...) can be used so long as it matches the signature Result(Args...).
      */
     template<typename F, typename Result, typename... Args>
     concept Function = requires(F f, Args... args)

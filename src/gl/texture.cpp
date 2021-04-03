@@ -13,7 +13,7 @@ namespace tz::gl
 	bool dui_draw_bindless(BindlessTextureHandle handle, tz::Vec2 size)
 	{
 		auto opt_tex_name = sentinel().get_texture_name(handle);
-		if(!opt_tex_name.has_value())
+		if(!opt_tex_name.has_value()) [[unlikely]]
 		{
 			return false;
 		}

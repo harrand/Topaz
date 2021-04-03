@@ -1,5 +1,6 @@
 #ifndef TOPAZ_GL_SHADER_PREPROCESSOR_HPP
 #define TOPAZ_GL_SHADER_PREPROCESSOR_HPP
+#include "core/types.hpp"
 #include <string>
 #include <vector>
 #include <memory>
@@ -23,6 +24,12 @@ namespace tz::gl
 
 	namespace src
 	{
+		namespace detail
+		{
+			using SourceMatchIteratorType = std::vector<std::string>::iterator;
+		}
+		template<typename F>
+		concept SourceReplaceAction = tz::Function<F, std::string, detail::SourceMatchIteratorType, detail::SourceMatchIteratorType>;
 		/**
 		 * Perform general-purpose source information in-place on the given string.
 		 * This will search through the given source string using the regular expression. Where matches are found, the inner match (provided by capture groups in the regex) are given to the transform function before source transformation is performed.
@@ -49,8 +56,7 @@ namespace tz::gl
 		 * @param reg Regular Expression used to search against the source-code.
 		 * @param transform_function Function invoked with inner matches prior to each source transformation.
 		 */
-		template<typename Runnable>
-		void transform(std::string& source, std::regex reg, Runnable transform_function);
+		void transform(std::string& source, std::regex reg, SourceReplaceAction auto transform_function);
 	}
 
 	namespace p
