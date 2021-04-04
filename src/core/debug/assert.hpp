@@ -59,17 +59,36 @@ namespace tz
 #undef topaz_assertf
 #endif
 #define topaz_assertf(EXPRESSION, fmt, ...) ((EXPRESSION) ? \
-(void)0 : tz::assert_messagef(stderr, \
+(void)0 : tz::assert_messagef(stderr, false, \
 "Assertion failure: %s\nIn file: %s on line %d:\n\t" fmt, #EXPRESSION, __FILE__, __LINE__, __VA_ARGS__))
 
     template<typename... Args>
-    inline void assert_messagef(FILE* output_stream, const char* fmt, Args&&... args)
+    inline void assert_messagef([[maybe_unused]] FILE* output_stream, [[maybe_unused]] bool hard, [[maybe_unused]] const char* fmt, [[maybe_unused]] Args&&... args)
     {
-        #if TOPAZ_DEBUG
-            fflush(output_stream);
-            fprintf(output_stream, fmt, std::forward<Args>(args)...);
-            std::abort();
+#if TOPAZ_DEBUG
+		#if TOPAZ_UNIT_TEST
+			bool unit_test = true;
+		#else
+			bool unit_test = false;
 		#endif
+		if(unit_test)
+		{
+			// Note: We don't print out the assertion message as a unit-test. It's expected that the expectation failure sort this out instead.
+			debug::assert_failure = true;
+		}
+		else
+		{
+			// Use the given ostream.
+			fflush(output_stream);
+			fprintf(output_stream, fmt, std::forward<Args>(args)...);
+			tz::debugbreak();
+			if(hard)
+			{
+				fprintf(output_stream, "%s", "[HARD ASSERT DETECTED. ABORTING.]\n");
+				std::abort();
+			}
+		}
+#endif
     }
 	
 	namespace debug::test
@@ -96,6 +115,14 @@ namespace tz
 (void)0 : tz::assert_message(std::cerr, true, \
 "[FATAL ERROR] Hard Assertion failure: ", #EXPRESSION, "\nIn file: ", __FILE__, \
 " on line ", __LINE__, ":\n\t", __VA_ARGS__))
+
+#ifdef topaz_hard_assertf
+#undef topaz_hard_assertf
+#endif
+#define topaz_hard_assertf(EXPRESSION, fmt, ...) ((EXPRESSION) ? \
+(void)0 : tz::assert_messagef(stderr, true, \
+"[FATAL ERROR] Hard Assertion failure: %s\nIn file: %s on line %d:\n\t" fmt, #EXPRESSION, __FILE__, __LINE__, __VA_ARGS__))
+
 #ifdef topaz_assert_clear
 #undef topaz_assert_clear
 #endif
