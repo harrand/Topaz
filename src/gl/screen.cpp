@@ -1,5 +1,5 @@
 #include "gl/screen.hpp"
-#include "core/tz_glfw/glfw_context.hpp"
+#include "core/tz_glfw/settings.hpp"
 
 namespace tz::gl
 {

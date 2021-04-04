@@ -6,6 +6,7 @@
 #include "core/debug/assert.hpp"
 #include "core/debug/print.hpp"
 #include "core/tz_glad/glad_context.hpp"
+#include "core/tz_glfw/interface.hpp"
 #include "dui/window.hpp"
 #include "GLFW/glfw3.h"
 
@@ -18,9 +19,12 @@ namespace tz
 		topaz_assert(!this->initialised, "TopazCore::initialise(): Attempt to initialise but we're already marked as initialised!");
 		this->initialised = true;
 		// Initialise GLFW...
-		tz::ext::glfw::initialise(tz::ext::glfw::WindowCreationArgs{app_name, 1920, 1080, visible});
+		// TODO: Deal with visibility hint
+		tz::ext::glfw::WindowHintCollection hints;
+		hints.add(GLFW_VISIBLE, visible ? GL_TRUE : GL_FALSE);
+		tz::ext::glfw::initialise(tz::ext::glfw::WindowCreationArgs{app_name, 1920, 1080}, hints);
 		// Create the GLFW window and set this to be the global GLFW context window.
-		this->tz_window = std::make_unique<GLFWWindow>(tz::ext::glfw::get());
+		this->tz_window = &tz::ext::glfw::get().get_window();
 		this->tz_window->set_active_context();
 		tz::ext::glad::get().load();
 		tz::dui::initialise();
@@ -38,11 +42,6 @@ namespace tz
 	bool TopazCore::is_initialised() const
 	{
 		return this->initialised;
-	}
-
-	const tz::ext::glfw::GLFWContext& TopazCore::context() const
-	{
-		return tz::ext::glfw::get();
 	}
 
 	const tz::ext::glad::GLADContext& TopazCore::glad_context() const

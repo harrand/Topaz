@@ -1,6 +1,5 @@
 #ifndef TOPAZ_GL_FRAME_HPP
 #define TOPAZ_GL_FRAME_HPP
-#include "glad/glad.h"
 #include "gl/texture.hpp"
 #include <deque>
 #include <queue>

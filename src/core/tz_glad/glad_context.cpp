@@ -3,7 +3,8 @@
 //
 
 #include "core/tz.hpp"
-#include "glad_context.hpp"
+#include "core/tz_glad/glad_context.hpp"
+#include "core/tz_glfw/window_impl.hpp"
 #include "core/debug/assert.hpp"
 #include "core/debug/print.hpp"
 
@@ -18,17 +19,11 @@ namespace tz::ext::glad
 							GLsizei length, const GLchar *message, const void *userParam);
 	}
 	
-	GLADContext::GLADContext() noexcept: glfw_context(nullptr), loaded(false), supported_extensions(){}
+	GLADContext::GLADContext() noexcept: loaded(false), supported_extensions(){}
 	
 	void GLADContext::load()
 	{
-		if(this->glfw_context == nullptr)
-		{
-			// If we never were given a glfw context, use the global one now.
-			this->glfw_context = &tz::ext::glfw::get();
-		}
 		topaz_assert(!this->loaded, "GLADContext::load(): Context already marked as loaded!");
-		topaz_assert(this->glfw_context->has_window(), "GLADContext::load(): Given GLFW context is incomplete -- It doesn't have a valid window attached to it.");
 		// Load all the things!
 		[[maybe_unused]] int glad_load_result = gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress));
 		topaz_assert(glad_load_result != 0, "GLADContext::load(): gladLoadGLLoader returned erroneous result.");

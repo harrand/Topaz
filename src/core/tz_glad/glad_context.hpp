@@ -8,12 +8,6 @@
 #include <vector>
 #include <string>
 
-// Forward declares
-namespace tz::ext::glfw
-{
-	class GLFWContext;
-}
-
 namespace tz::ext::glad
 {
 	struct OpenGLExtension
@@ -52,8 +46,6 @@ namespace tz::ext::glad
 		friend void load_opengl();
 	private:
 		void populate_extensions();
-		/// GLFW context dependency.
-		const tz::ext::glfw::GLFWContext* glfw_context;
 		/// Have we tried to load yet?
 		bool loaded;
 		std::vector<OpenGLExtension> supported_extensions;

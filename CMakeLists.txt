@@ -25,10 +25,15 @@ add_library(topaz STATIC
 		src/core/debug/break.cpp
 		src/core/debug/print.hpp
 		src/core/debug/print.inl
-		src/core/tz_glfw/glfw_context.cpp
-		src/core/tz_glfw/glfw_context.hpp
-		src/core/tz_glfw/glfw_window.cpp
-		src/core/tz_glfw/glfw_window.hpp
+		src/core/tz_glfw/interface.cpp
+		src/core/tz_glfw/interface.inl
+		src/core/tz_glfw/interface.hpp
+		src/core/tz_glfw/window_functionality.cpp
+		src/core/tz_glfw/window_functionality.hpp
+		src/core/tz_glfw/window_impl.cpp
+		src/core/tz_glfw/window_impl.hpp
+		src/core/tz_glfw/settings.cpp
+		src/core/tz_glfw/settings.hpp
 		src/core/tz_glad/glad_context.cpp
 		src/core/tz_glad/glad_context.hpp
 		src/core/bool.hpp
@@ -247,4 +252,4 @@ endif()
 target_compile_options(topaz PRIVATE -fno-rtti) # Disable rrti (until c++20 provides better rtti)
 target_compile_options(topaz PRIVATE -fstrict-aliasing -msse4.1) # Enable strict aliasing (which we refuse to violate) for a small performance boost.
 target_compile_options(topaz PUBLIC -fconcepts-diagnostics-depth=5) # Error diagnostics for concept constraint violation is very detailed
-target_compile_definitions(topaz PUBLIC -DTOPAZ_PROJECT_DIR=\"${CMAKE_SOURCE_DIR}\")
+target_compile_definitions(topaz PUBLIC -DTOPAZ_PROJECT_DIR=\"${CMAKE_SOURCE_DIR}\" -DGLFW_INCLUDE_NONE)

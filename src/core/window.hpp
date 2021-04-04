@@ -4,7 +4,6 @@
 
 #ifndef TOPAZ_WINDOW_HPP
 #define TOPAZ_WINDOW_HPP
-#include "core/tz_glfw/glfw_context.hpp"
 #include "input/input_event.hpp"
 #include <memory>
 #include <vector>
@@ -22,6 +21,11 @@ namespace tz
 		struct CharPressEvent;
 		struct MouseUpdateEvent;
 		struct MouseClickEvent;
+	}
+
+	namespace gl
+	{
+		class IFrame;
 	}
 }
 
@@ -58,18 +62,18 @@ namespace tz
 		 * Set the width of the window to a new value, in pixels.
 		 * @param width - Desired new width in pixels
 		 */
-		virtual void set_width(int width) const = 0;
+		virtual void set_width(int width) = 0;
 		/**
 		 * Set the height of the window to a new value, in pixels.
 		 * @param height - Desired new height in pixels
 		 */
-		virtual void set_height(int height) const = 0;
+		virtual void set_height(int height) = 0;
 		/**
 		 * Set both the width and height of the window at once. Both values are in pixels.
 		 * @param width - Width in pixels
 		 * @param height - Height in pixels
 		 */
-		virtual void set_size(int width, int height) const = 0;
+		virtual void set_size(int width, int height) = 0;
 		
 		/**
 		 * Get the underlying tz::gl::Frame corresponding to this window.
@@ -89,7 +93,7 @@ namespace tz
 		 * Set whether the window should be visible to the user or not.
 		 * @param visible - Whether the window should be visible
 		 */
-		virtual void set_visible(bool visible) const = 0;
+		virtual void set_visible(bool visible) = 0;
 		
 		/**
 		 * Query as to whether the window is currently able to be resized by the user.
@@ -100,7 +104,7 @@ namespace tz
 		 * Set whether the user should be able to resize the window.
 		 * @param resizeable - Whether the window should be resizeable by the user
 		 */
-		virtual void set_resizeable(bool resizeable) const = 0;
+		virtual void set_resizeable(bool resizeable) = 0;
 		
 		/**
 		 * Query as to whether the window is currently in-focus.
@@ -111,7 +115,7 @@ namespace tz
 		 * Set whether the window should be focused or not.
 		 * @param focused - Whether the window should be focused
 		 */
-		virtual void set_focused(bool focused) const = 0;
+		virtual void set_focused(bool focused) = 0;
 		
 		/**
 		 * Query as to whether the user has requested the window to close.
@@ -123,13 +127,13 @@ namespace tz
 		 * Request that the window close as soon as possible.
 		 * This is likely to be at the end of the next frame.
 		 */
-		virtual void request_close() const = 0;
+		virtual void request_close() = 0;
 	
 		/**
 		 * Set the underlying GL context to be the active context.
 		 * This means that subsequent OpenGL operations will apply to this window.
 		 */
-		virtual void set_active_context() const = 0;
+		virtual void set_active_context() = 0;
 		/**
 		 * Query as to whether this window's underlying GL context is currently the active context.
 		 * @return - True if this window has the active context, otherwise false
@@ -176,36 +180,36 @@ namespace tz
 		 * Note: If the listener was already registered by this window, this method has no effect.
 		 * @param listener - Allocated listener that this window should share ownership of and inform of events
 		 */
-		virtual void register_key_listener(std::shared_ptr<tz::input::KeyListener> listener) = 0;
+		virtual void register_key_listener(std::unique_ptr<tz::input::KeyListener> listener) = 0;
 		/**
 		 * Unregister an existing key-press listener. The listener will no longer be notified of any events received by the window.
 		 * Note: If the listener wasn't previously registered by this window, this method has no effect.
 		 * @param listener - Allocated listener that the window will no longer share ownership of
 		 */
-		virtual void unregister_key_listener(std::shared_ptr<tz::input::KeyListener> listener) = 0;
+		virtual void unregister_key_listener(std::unique_ptr<tz::input::KeyListener> listener) = 0;
 	
 		/**
 		 * Register a new character-typed listener. The new listener will be notified of any events received by the window.
 		 * Note: If the listener was already registered by this window, this method has no effect.
 		 * @param listener - Allocated listener that this window should share ownership of and inform of events
 		 */
-		virtual void register_type_listener(std::shared_ptr<tz::input::TypeListener> listener) = 0;
+		virtual void register_type_listener(std::unique_ptr<tz::input::TypeListener> listener) = 0;
 		/**
 		 * Unregister an existing character-typed listener. The listener will no longer be notified of any events received by the window.
 		 * Note: If the listener wasn't previously registered by this window, this method has no effect.
 		 * @param listener - Allocated listener that the window will no longer share ownership of
 		 */
-		virtual void unregister_type_listener(std::shared_ptr<tz::input::TypeListener> listener) = 0;
+		virtual void unregister_type_listener(std::unique_ptr<tz::input::TypeListener> listener) = 0;
 		/**
 		 * TODO: Document
 		 * @param listener - Allocated listener that this window should share ownership of and inform of events
 		 */
-		virtual void register_mouse_listener(std::shared_ptr<tz::input::MouseListener> listener) = 0;
+		virtual void register_mouse_listener(std::unique_ptr<tz::input::MouseListener> listener) = 0;
 		/**
 		 * TODO: Document
 		 * @param listener - Allocated listener that this window should share ownership of and inform of events
 		 */
-		virtual void unregister_mouse_listener(std::shared_ptr<tz::input::MouseListener> listener) = 0;
+		virtual void unregister_mouse_listener(std::unique_ptr<tz::input::MouseListener> listener) = 0;
 		
 		/**
 		 * Construct a new key-pressed listener in-place and register it for this window.
@@ -250,83 +254,6 @@ namespace tz
 		 */
 		virtual void register_this(){}
 	};
-
-
-	class GLFWWindow : public IWindow
-	{
-	public:
-		explicit GLFWWindow(tz::ext::glfw::GLFWContext& context);
-		virtual const char* get_title() const override;
-		virtual void set_title(const char* title) override;
-		
-		virtual int get_width() const override;
-		virtual int get_height() const override;
-		virtual void set_width(int width) const override;
-		virtual void set_height(int height) const override;
-		virtual void set_size(int width, int height) const override;
-
-		virtual tz::gl::IFrame* get_frame() const override;
-		
-		virtual bool is_visible() const override;
-		virtual void set_visible(bool visible) const override;
-	
-		virtual bool is_resizeable() const override;
-		virtual void set_resizeable(bool resizeable) const override;
-	
-		virtual bool is_focused() const override;
-		virtual void set_focused(bool focused) const override;
-		
-		virtual bool is_close_requested() const override;
-		virtual void request_close() const override;
-		
-		virtual void set_active_context() const override;
-		virtual bool is_active_context() const override;
-
-		virtual bool is_cursor_showing() const override;
-		virtual void set_cursor_showing(bool show_cursor) override;
-		
-		virtual void update() const override;
-		virtual void handle_key_event(const tz::input::KeyPressEvent& kpe) override;
-		virtual void handle_type_event(const tz::input::CharPressEvent& cpe) override;
-		virtual void handle_mouse_event(const tz::input::MouseUpdateEvent& pos) override;
-		virtual void handle_click_event(const tz::input::MouseClickEvent& click) override;
-		
-		virtual void register_key_listener(std::shared_ptr<tz::input::KeyListener> listener) override;
-		virtual void unregister_key_listener(std::shared_ptr<tz::input::KeyListener> listener) override;
-	
-		virtual void register_type_listener(std::shared_ptr<tz::input::TypeListener> listener) override;
-		virtual void unregister_type_listener(std::shared_ptr<tz::input::TypeListener> listener) override;
-
-		virtual void register_mouse_listener(std::shared_ptr<tz::input::MouseListener> listener) override;
-		virtual void unregister_mouse_listener(std::shared_ptr<tz::input::MouseListener> listener) override;
-		
-		virtual void register_this() override;
-		
-		friend void tz::ext::glfw::register_window(tz::GLFWWindow*);
-	private:
-		/**
-		 * Retrieve the width and height of the window, in pixels.
-		 * @return - {width, height} in pixels
-		 */
-		std::pair<int, int> get_size() const;
-		/**
-		 * Debug-only helper method to perform sanity-checking.
-		 * Asserts if the window implementation is null.
-		 */
-		void verify() const;
-		void ensure_registered();
-		
-		/// Underlying window implementation. This should not be null.
-		tz::ext::glfw::GLFWWindowImpl* impl;
-		/// Stores all registered key-listeners.
-		std::vector<std::shared_ptr<tz::input::KeyListener>> key_listeners;
-		/// Stores all registered type-listeners.
-		std::vector<std::shared_ptr<tz::input::TypeListener>> type_listeners;
-		/// Stores all registered mouse-listeners.
-		std::vector<std::shared_ptr<tz::input::MouseListener>> mouse_listeners;
-	};
-	
-	using Window = GLFWWindow;
 }
 
 #include "core/window.inl"

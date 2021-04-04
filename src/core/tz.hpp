@@ -96,7 +96,7 @@ namespace tz
 		tz::RenderSettings& render_settings();
 	private:
 		/// High-level window is stored here. Won't store a value until we initialise!
-		std::unique_ptr<IWindow> tz_window;
+		IWindow* tz_window;
 		/// Have we been initialised?
 		bool initialised;
 		/// Render settings.
