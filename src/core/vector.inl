@@ -4,31 +4,31 @@
 
 namespace tz
 {
-	template<typename T, std::size_t S>
+	template<tz::Number T, std::size_t S>
 	template<typename... Ts, typename>
 	constexpr Vector<T, S>::Vector(Ts&&... ts): vec({std::forward<Ts>(ts)...})
 	{
 		static_assert(sizeof...(Ts) == S, "tz::Vector<T, S>::Vector<sizeof...(Ts)>(...): Constructor param pack size does not match vector width.");
 	}
 
-	template<typename T, std::size_t S>
+	template<tz::Number T, std::size_t S>
 	constexpr Vector<T, S>::Vector(std::array<T, S> data): vec(data){}
 
-	template<typename T, std::size_t S>
+	template<tz::Number T, std::size_t S>
 	const T& Vector<T, S>::operator[](std::size_t idx) const
 	{
 		topaz_assert(idx < S, "Vector<T, ", S, ">::operator[", idx, "]: Index out of range!");
 		return this->vec[idx];
 	}
 
-	template<typename T, std::size_t S>
+	template<tz::Number T, std::size_t S>
 	T& Vector<T, S>::operator[](std::size_t idx)
 	{
 		topaz_assert(idx < S, "Vector<T, ", S, ">::operator[", idx, "]: Index out of range!");
 		return this->vec[idx];
 	}
 
-	template<typename T, std::size_t S>
+	template<tz::Number T, std::size_t S>
 	Vector<T, S>& Vector<T, S>::operator+=(const Vector<T, S>& rhs)
 	{
 		for(std::size_t i = 0; i < S; i++)
@@ -36,7 +36,7 @@ namespace tz
 		return *this;
 	}
 
-	template<typename T, std::size_t S>
+	template<tz::Number T, std::size_t S>
 	Vector<T, S> Vector<T, S>::operator+(const Vector<T, S>& rhs) const
 	{
 		Vector<T, S> copy = *this;
@@ -44,7 +44,7 @@ namespace tz
 		return copy;
 	}
 
-	template<typename T, std::size_t S>
+	template<tz::Number T, std::size_t S>
 	Vector<T, S>& Vector<T, S>::operator-=(const Vector<T, S>& rhs)
 	{
 		for(std::size_t i = 0; i < S; i++)
@@ -52,7 +52,7 @@ namespace tz
 		return *this;
 	}
 
-	template<typename T, std::size_t S>
+	template<tz::Number T, std::size_t S>
 	Vector<T, S> Vector<T, S>::operator-(const Vector<T, S>& rhs) const
 	{
 		Vector<T, S> copy = *this;
@@ -60,7 +60,7 @@ namespace tz
 		return copy;
 	}
 
-	template<typename T, std::size_t S>
+	template<tz::Number T, std::size_t S>
 	Vector<T, S>& Vector<T, S>::operator*=(T scalar)
 	{
 		for(std::size_t i = 0; i < S; i++)
@@ -68,7 +68,7 @@ namespace tz
 		return *this;
 	}
 
-	template<typename T, std::size_t S>
+	template<tz::Number T, std::size_t S>
 	Vector<T, S> Vector<T, S>::operator*(T scalar) const
 	{
 		Vector<T, S> copy = *this;
@@ -76,7 +76,7 @@ namespace tz
 		return copy;
 	}
 
-	template<typename T, std::size_t S>
+	template<tz::Number T, std::size_t S>
 	Vector<T, S>& Vector<T, S>::operator/=(T scalar)
 	{
 		for(std::size_t i = 0; i < S; i++)
@@ -84,7 +84,7 @@ namespace tz
 		return *this;
 	}
 
-	template<typename T, std::size_t S>
+	template<tz::Number T, std::size_t S>
 	Vector<T, S> Vector<T, S>::operator/(T scalar) const
 	{
 		Vector<T, S> copy = *this;
@@ -92,7 +92,7 @@ namespace tz
 		return copy;
 	}
 
-	template<typename T, std::size_t S>
+	template<tz::Number T, std::size_t S>
 	bool Vector<T, S>::operator==(const Vector<T, S>& rhs) const
 	{
 		for(std::size_t i = 0; i < S; i++)
@@ -103,19 +103,19 @@ namespace tz
 		return true;
 	}
 
-	template<typename T, std::size_t S>
+	template<tz::Number T, std::size_t S>
 	const T* Vector<T, S>::data() const
 	{
 		return this->vec.data();
 	}
 
-	template<typename T, std::size_t S>
+	template<tz::Number T, std::size_t S>
 	T* Vector<T, S>::data()
 	{
 		return this->vec.data();
 	}
 
-	template<typename T, std::size_t S>
+	template<tz::Number T, std::size_t S>
 	T Vector<T, S>::dot(const Vector<T, S>& rhs) const
 	{
 		T sum = T();
@@ -126,7 +126,7 @@ namespace tz
 		return sum;
 	}
 
-	template<typename T, std::size_t S>
+	template<tz::Number T, std::size_t S>
 	T Vector<T, S>::length() const
 	{
 		T sum_squares = T();
@@ -137,7 +137,7 @@ namespace tz
 		return std::sqrt(sum_squares);
 	}
 
-	template<typename T, std::size_t S>
+	template<tz::Number T, std::size_t S>
 	void Vector<T, S>::normalise()
 	{
 		T l = this->length();
@@ -151,7 +151,7 @@ namespace tz
 		}
 	}
 
-	template<typename T, std::size_t S>
+	template<tz::Number T, std::size_t S>
 	Vector<T, S> Vector<T, S>::normalised() const
 	{
 		Vector<T, S> cpy = *this;
@@ -159,7 +159,7 @@ namespace tz
 		return cpy;
 	}
 
-	template<typename T>
+	template<tz::Number T>
 	Vector<T, 3> cross(const Vector<T, 3>& lhs, const Vector<T, 3>& rhs)
 	{
 		Vector<T, 3> ret;

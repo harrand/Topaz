@@ -1,5 +1,6 @@
 #ifndef TOPAZ_CORE_VECTOR_HPP
 #define TOPAZ_CORE_VECTOR_HPP
+#include "core/types.hpp"
 #include "memory/align.hpp"
 #include "memory/block.hpp"
 #include "algo/static.hpp"
@@ -16,7 +17,7 @@ namespace tz
 	 * Represents a mathematical vector of S elements.
 	 * Typically, elements would be floats or doubles, but in this implementation they are templated on T.
 	 */
-	template<typename T, std::size_t S>
+	template<tz::Number T, std::size_t S>
 	class Vector
 	{
 	public:
