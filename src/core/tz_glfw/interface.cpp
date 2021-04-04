@@ -28,6 +28,11 @@ namespace tz::ext::glfw
         return *glfw_ptr;
     }
 
+    void default_error_callback(int error_code, const char* msg)
+    {
+        topaz_assertf(error_code == GLFW_NO_ERROR, "GLFW Error Code %x. Message: \"%s\"", error_code, msg);
+    }
+
     tz::IWindow& Interface::get_window()
     {
         return this->window.functionality();

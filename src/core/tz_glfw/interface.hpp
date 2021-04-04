@@ -19,6 +19,8 @@ namespace tz::ext::glfw
     template<typename F>
     concept GLFWErrorCallback = tz::Action<F, int, const char*>;
 
+    void default_error_callback(int error_code, const char* msg);
+
     class Interface
     {
     public:
@@ -35,5 +37,5 @@ namespace tz::ext::glfw
     };
 }
 
-#include "core/tz_glfw/interface.hpp"
+#include "core/tz_glfw/interface.inl"
 #endif // TOPAZ_CORE_TZ_GLFW_INTERFACE_HPP

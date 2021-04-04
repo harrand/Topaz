@@ -23,6 +23,8 @@ namespace tz
 		tz::ext::glfw::WindowHintCollection hints;
 		hints.add(GLFW_VISIBLE, visible ? GL_TRUE : GL_FALSE);
 		tz::ext::glfw::initialise(tz::ext::glfw::WindowCreationArgs{app_name, 1920, 1080}, hints);
+		// Setup a debug callback
+		tz::ext::glfw::get().set_error_callback(tz::ext::glfw::default_error_callback);
 		// Create the GLFW window and set this to be the global GLFW context window.
 		this->tz_window = &tz::ext::glfw::get().get_window();
 		this->tz_window->set_active_context();
