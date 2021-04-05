@@ -250,7 +250,6 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
 endif()
 
 ## General
-target_compile_options(topaz PRIVATE -fno-rtti) # Disable rrti (until c++20 provides better rtti)
 target_compile_options(topaz PRIVATE -fstrict-aliasing -msse4.1) # Enable strict aliasing (which we refuse to violate) for a small performance boost.
 target_compile_options(topaz PUBLIC -fconcepts-diagnostics-depth=5) # Error diagnostics for concept constraint violation is very detailed
 target_compile_definitions(topaz PUBLIC -DTOPAZ_PROJECT_DIR=\"${CMAKE_SOURCE_DIR}\" -DGLFW_INCLUDE_NONE)
