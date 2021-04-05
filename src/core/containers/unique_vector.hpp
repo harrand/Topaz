@@ -5,6 +5,9 @@
 
 namespace tz
 {
+    /**
+     * Just like a std::vector<T, Allocator>, but will not allow duplicate elements.
+     */
     template<class T, class Allocator = std::allocator<T>>
     class UniqueVector : public std::vector<T, Allocator>
     {

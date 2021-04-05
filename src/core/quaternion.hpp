@@ -12,12 +12,18 @@ namespace tz
 	 * @{
 	 */
 
+	/**
+	 * Represents a rotation around a directional vector in 3D space.
+	 */
 	struct AxisAndAngle
 	{
 		tz::Vec3 axis;
 		float angle;	
 	};
 
+	/**
+	 * Represents a rotation in 3D space. Unlike rotational matrices, this does not suffer from gimbal lock and is more performant.
+	 */
 	class Quaternion : private tz::Vec4
 	{
 	public:

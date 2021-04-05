@@ -89,6 +89,9 @@ namespace tz::algo
 	{
 		struct No {};
 
+		/**
+		 * Type-trait which constrains types such that T::Operator(T) exists. An example Operator could be std::equal_to<T>.
+		 */
 		template<class T, class Operator>
 		struct ExistsOperator
 		{

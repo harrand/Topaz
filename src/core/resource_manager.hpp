@@ -7,6 +7,10 @@
 
 namespace tz
 {
+	/**
+	 * ResourceManagers target a given path and can read files relative to that path.
+	 * The global ResourceManager is available at `tz::res()`. This always targets the library Topaz root directory (where its CMakeLists.txt lives).
+	 */
 	class ResourceManager
 	{
 	public:

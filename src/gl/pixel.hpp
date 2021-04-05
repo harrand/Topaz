@@ -104,8 +104,7 @@ namespace tz::gl
 	using PixelDepth = PixelGrayscale<float>;
 
 	/**
-	 * \addtogroup tz_gl Topaz Graphics Library (tz::gl)
-	 * @{
+	 * @}
 	 */
 }
 

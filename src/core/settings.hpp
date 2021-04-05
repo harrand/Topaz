@@ -3,6 +3,10 @@
 
 namespace tz
 {
+    /**
+     * RenderSettings includes global state for rendering, such as culling targets, and whether depth-testing is enabled.
+     * The global RenderSettings is available at `tz::get().render_settings()`.
+     */
     class RenderSettings
     {
     public:
