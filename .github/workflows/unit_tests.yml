@@ -49,6 +49,8 @@ jobs:
           # cmakeListsOrSettingsJson: CMakeSettingsJson
           # cmakeSettingsJsonPath: '${{ github.workspace }}/cmakesettings.json/CMakeSettings.json'
           # configurationRegexFilter: '${{ matrix.configuration }}'
+        env:
+          DISPLAY: :0
 
 
 
