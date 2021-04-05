@@ -37,7 +37,7 @@ jobs:
         with:
           cmakeListsOrSettingsJson: "CMakeListsTxtAdvanced"
           cmakeGenerator: UnixMakefiles
-          cmakeAppendedArgs: "-B \"${{ github.workspace }}/../../_temp/build/debug\" -DTOPAZ_DEBUG=1"
+          cmakeAppendedArgs: "-B \"${{ github.workspace }}/../../_temp/build/debug\" -DTOPAZ_DEBUG=1 -DCMAKE_CXX_COMPILER=g++-10"
           buildWithCMake: true
           buildWithCMakeArgs: "--target Topaz_All_Tests --parallel 4"
           buildDirectory: "${{ github.workspace }}/../../_temp/build/debug"
