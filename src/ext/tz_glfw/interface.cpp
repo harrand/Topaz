@@ -30,7 +30,7 @@ namespace tz::ext::glfw
 
     void default_error_callback(int error_code, const char* msg)
     {
-        topaz_assertf(error_code == GLFW_NO_ERROR, "GLFW Error Code %x. Message: \"%s\"", error_code, msg);
+        topaz_assertf(error_code == GLFW_NO_ERROR || error_code == GLFW_PLATFORM_ERROR, "GLFW Error Code %x. Message: \"%s\"", error_code, msg);
     }
 
     tz::IWindow& Interface::get_window()
