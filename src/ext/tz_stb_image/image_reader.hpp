@@ -8,5 +8,5 @@ namespace tz::ext::stb
 	tz::gl::Image<PixelType> read_image(const char* path);
 }
 
-#include "gl/tz_stb_image/image_reader.inl"
+#include "ext/tz_stb_image/image_reader.inl"
 #endif // TOPAZ_EXT_IMAGE_READER_HPP

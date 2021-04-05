@@ -25,17 +25,6 @@ add_library(topaz STATIC
 		src/core/debug/break.cpp
 		src/core/debug/print.hpp
 		src/core/debug/print.inl
-		src/ext/tz_glfw/interface.cpp
-		src/ext/tz_glfw/interface.inl
-		src/ext/tz_glfw/interface.hpp
-		src/ext/tz_glfw/window_functionality.cpp
-		src/ext/tz_glfw/window_functionality.hpp
-		src/ext/tz_glfw/window_impl.cpp
-		src/ext/tz_glfw/window_impl.hpp
-		src/ext/tz_glfw/settings.cpp
-		src/ext/tz_glfw/settings.hpp
-		src/ext/tz_glad/glad_context.cpp
-		src/ext/tz_glad/glad_context.hpp
 		src/core/bool.hpp
 		src/core/tz.hpp
 		src/core/tz.cpp
@@ -62,6 +51,28 @@ add_library(topaz STATIC
 		src/core/window.cpp
 		src/core/window.hpp
 		src/core/window.inl
+
+		src/ext/tz_glfw/interface.cpp
+		src/ext/tz_glfw/interface.inl
+		src/ext/tz_glfw/interface.hpp
+		src/ext/tz_glfw/window_functionality.cpp
+		src/ext/tz_glfw/window_functionality.hpp
+		src/ext/tz_glfw/window_impl.cpp
+		src/ext/tz_glfw/window_impl.hpp
+		src/ext/tz_glfw/settings.cpp
+		src/ext/tz_glfw/settings.hpp
+		src/ext/tz_glad/glad_context.cpp
+		src/ext/tz_glad/glad_context.hpp
+		src/ext/tz_assimp/scene.hpp
+		src/ext/tz_assimp/scene.cpp
+		src/ext/tz_stb_image/image_reader.hpp
+		src/ext/tz_stb_image/image_reader.inl
+		src/ext/tz_stb_image/image_writer.hpp
+		src/ext/tz_stb_image/image_writer.inl
+		src/ext/tz_imgui/imgui_impl_glfw.cpp
+		src/ext/tz_imgui/imgui_impl_glfw.h
+		src/ext/tz_imgui/imgui_impl_opengl3.cpp
+		src/ext/tz_imgui/imgui_impl_opengl3.h
 
 		src/input/input_listener.cpp
 		src/input/input_listener.hpp
@@ -105,12 +116,6 @@ add_library(topaz STATIC
 		src/geo/boundary/sphere.cpp
 		src/geo/boundary/sphere.hpp
 
-		src/gl/tz_assimp/scene.hpp
-		src/gl/tz_assimp/scene.cpp
-		src/gl/tz_stb_image/image_reader.hpp
-		src/gl/tz_stb_image/image_reader.inl
-		src/gl/tz_stb_image/image_writer.hpp
-		src/gl/tz_stb_image/image_writer.inl
 		src/gl/buffer.hpp
 		src/gl/buffer.cpp
 		src/gl/buffer.inl
@@ -177,10 +182,6 @@ add_library(topaz STATIC
 		src/dui/window.cpp
 		src/dui/window.hpp
 		src/dui/window.inl
-		src/dui/imgui_impl_glfw.cpp
-		src/dui/imgui_impl_glfw.h
-		src/dui/imgui_impl_opengl3.cpp
-		src/dui/imgui_impl_opengl3.h
 		src/dui/ogl_info.cpp
 		src/dui/ogl_info.hpp
 		src/dui/texture_sentinel_tracker.cpp

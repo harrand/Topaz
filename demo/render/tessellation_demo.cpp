@@ -2,7 +2,7 @@
 #include "core/debug/assert.hpp"
 #include "core/debug/print.hpp"
 #include "core/matrix_transform.hpp"
-#include "gl/tz_stb_image/image_reader.hpp"
+#include "ext/tz_stb_image/image_reader.hpp"
 #include "gl/shader.hpp"
 #include "gl/shader_compiler.hpp"
 #include "gl/manager.hpp"

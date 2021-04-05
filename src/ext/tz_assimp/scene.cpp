@@ -1,4 +1,4 @@
-#include "gl/tz_assimp/scene.hpp"
+#include "ext/tz_assimp/scene.hpp"
 #include "assimp/cimport.h"
 #include "assimp/postprocess.h"
 
