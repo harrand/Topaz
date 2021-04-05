@@ -1,5 +1,5 @@
 #include "core/settings.hpp"
-#include "core/tz_glad/glad_context.hpp"
+#include "ext/tz_glad/glad_context.hpp"
 #include "core/debug/assert.hpp"
 
 namespace tz
