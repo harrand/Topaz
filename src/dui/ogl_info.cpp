@@ -1,5 +1,5 @@
 #include "dui/ogl_info.hpp"
-#include "core/tz_glad/glad_context.hpp"
+#include "ext/tz_glad/glad_context.hpp"
 #include "core/debug/assert.hpp"
 #include "core/tz.hpp"
 #include <string>

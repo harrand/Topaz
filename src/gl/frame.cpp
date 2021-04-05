@@ -43,6 +43,7 @@ namespace tz::gl
 
 	void IFrame::set_clear_color(float r, float g, float b)
 	{
+		topaz_assert(this->operator==(tz::gl::bound::frame()), "tz::gl::IFrame::clear(): This frame must be bound before clearing.");
 		glClearColor(r, g, b, 1.0f);
 	}
 
@@ -139,7 +140,7 @@ namespace tz::gl
 
 	void WindowFrame::bind() const
 	{
-		glfwMakeContextCurrent(this->handle);
+		topaz_assert(this->handle == glfwGetCurrentContext(), "tz::gl::WindowFrame::bind(): Cannot bind to this WindowFrame because the underlying GLFW context is not current.");
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		int w, h;
 		glfwGetWindowSize(this->handle, &w, &h);

@@ -1,4 +1,4 @@
-#include "core/tz_glfw/window_functionality.hpp"
+#include "ext/tz_glfw/window_functionality.hpp"
 #include "algo/container.hpp"
 #include "gl/frame.hpp"
 

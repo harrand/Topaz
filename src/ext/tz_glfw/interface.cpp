@@ -1,4 +1,4 @@
-#include "core/tz_glfw/interface.hpp"
+#include "ext/tz_glfw/interface.hpp"
 #include "core/debug/assert.hpp"
 #include "GLFW/glfw3.h"
 

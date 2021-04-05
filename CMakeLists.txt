@@ -25,17 +25,17 @@ add_library(topaz STATIC
 		src/core/debug/break.cpp
 		src/core/debug/print.hpp
 		src/core/debug/print.inl
-		src/core/tz_glfw/interface.cpp
-		src/core/tz_glfw/interface.inl
-		src/core/tz_glfw/interface.hpp
-		src/core/tz_glfw/window_functionality.cpp
-		src/core/tz_glfw/window_functionality.hpp
-		src/core/tz_glfw/window_impl.cpp
-		src/core/tz_glfw/window_impl.hpp
-		src/core/tz_glfw/settings.cpp
-		src/core/tz_glfw/settings.hpp
-		src/core/tz_glad/glad_context.cpp
-		src/core/tz_glad/glad_context.hpp
+		src/ext/tz_glfw/interface.cpp
+		src/ext/tz_glfw/interface.inl
+		src/ext/tz_glfw/interface.hpp
+		src/ext/tz_glfw/window_functionality.cpp
+		src/ext/tz_glfw/window_functionality.hpp
+		src/ext/tz_glfw/window_impl.cpp
+		src/ext/tz_glfw/window_impl.hpp
+		src/ext/tz_glfw/settings.cpp
+		src/ext/tz_glfw/settings.hpp
+		src/ext/tz_glad/glad_context.cpp
+		src/ext/tz_glad/glad_context.hpp
 		src/core/bool.hpp
 		src/core/tz.hpp
 		src/core/tz.cpp

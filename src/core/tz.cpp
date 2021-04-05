@@ -5,8 +5,8 @@
 #include "core/tz.hpp"
 #include "core/debug/assert.hpp"
 #include "core/debug/print.hpp"
-#include "core/tz_glad/glad_context.hpp"
-#include "core/tz_glfw/interface.hpp"
+#include "ext/tz_glad/glad_context.hpp"
+#include "ext/tz_glfw/interface.hpp"
 #include "dui/window.hpp"
 #include "GLFW/glfw3.h"
 

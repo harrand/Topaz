@@ -3,8 +3,8 @@
 //
 
 #include "core/tz.hpp"
-#include "core/tz_glad/glad_context.hpp"
-#include "core/tz_glfw/window_impl.hpp"
+#include "ext/tz_glad/glad_context.hpp"
+#include "ext/tz_glfw/window_impl.hpp"
 #include "core/debug/assert.hpp"
 #include "core/debug/print.hpp"
 

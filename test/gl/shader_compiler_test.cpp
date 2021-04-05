@@ -4,7 +4,7 @@
 
 #include "test_framework.hpp"
 #include "core/tz.hpp"
-#include "core/tz_glad/glad_context.hpp"
+#include "ext/tz_glad/glad_context.hpp"
 #include "gl/shader_compiler.hpp"
 #include "gl/shader.hpp"
 

@@ -1,6 +1,6 @@
 #ifndef TOPAZ_CORE_TZ_GLFW_WINDOW_IMPL_HPP
 #define TOPAZ_CORE_TZ_GLFW_WINDOW_IMPL_HPP
-#include "core/tz_glfw/window_functionality.hpp"
+#include "ext/tz_glfw/window_functionality.hpp"
 #include <vector>
 #include <initializer_list>
 
