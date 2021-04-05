@@ -247,6 +247,13 @@ namespace tz::gl
 		this->unbind();
 	}
 
+	UBO::Buffer(UBO&& move): IBuffer(std::move(move)){}
+
+	UBO& UBO::operator=(UBO&& rhs)
+	{
+		return static_cast<UBO&>(IBuffer::operator=(std::move(rhs)));
+	}
+
 	void UBO::bind() const
 	{
 		IBuffer::verify();
