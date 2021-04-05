@@ -9,17 +9,69 @@
 #include "core/settings.hpp"
 #include <memory>
 
-/*! \mainpage Topaz 2
+/*! \mainpage Topaz v2.0-indev
  *
  * \section intro_sec Introduction
  *
- * This is the introduction.
+ * Welcome to the Topaz documentation. This was generated automatically via https://github.com/Harrand/Topaz/actions.
+ * 
+ * If you're here to learn how to use Topaz, it is also recommended to visit the wiki which contains examples and explanations of various engine features. You can find it at: https://github.com/Harrand/Topaz/wiki.
  *
- * \section install_sec Installation
+ * \section modules_sec Topaz Modules
+ * The Topaz engine is comprised of several large modules. Each have their own responsibility, namespace and location with the source code. For more detailed information about the modules, visit the 'Modules' tab above. A summary of the modules has been provided for you below.
  *
- * \subsection step1 Step 1: Opening the box
+ * \subsection tzcore Topaz Core
  *
- * etc...
+ * The core module of Topaz.
+ * Source location: Topaz/src/core
+ * Namespace: `tz`
+ * 
+ * \subsection tzalgo Topaz Algorithms
+ * 
+ * Contains various common algorithms within engine code and is also available to game code.
+ * Source location: Topaz/src/algo
+ * Namespace: `tz::algo`
+ * 
+ * \subsection tzdui Topaz Debug UI
+ * Using Imgui as a backend, display ui within any Topaz application used for debugging purposes. This was initially designed to be debug-only, but exists in all build configs.
+ * Source location: Topaz/src/dui
+ * Namespace: `tz::dui`
+ * 
+ * \subsection tzext Topaz External Code
+ * Consists of wrappers for external libraries used by Topaz.
+ * Source location: Topaz/src/ext
+ * Namespace: `tz::ext`
+ * 
+ * \subsection tzgeo Topaz Geometry
+ * Consists of basic geometric structures to represent various shapes within 3D space.
+ * Source location: Topaz/src/geo
+ * Namespace: `tz::geo`
+ * 
+ * \subsection tzgl Topaz Graphics Library
+ * Low-level 3D graphics functionality. Currently always uses OpenGL as its underlying API, although Vulkan support is planned.
+ * Source location: Topaz/src/gl
+ * Namespace: `tz::gl`
+ * 
+ * \subsection tzinput Topaz Input
+ * Input events, callbacks and device support.
+ * Source location: Topaz/src/input
+ * Namespace: `tz::input`
+ * 
+ * \subsection tzmemory Topaz Memory
+ * Helper structures and functions used for memory management. Mainly intended for engine-side code but will be available to game code aswell.
+ * Source location: Topaz/src/memory
+ * Namespace: `tz::mem`
+ * 
+ * \subsection tzphys Topaz Physics
+ * Classes, logic and functions for physics simulations within a 3D/2D world.
+ * Source location: Topaz/src/phys
+ * Namespace: `tz::phys`
+ * 
+ * \subsection tzrender Topaz Render
+ * High-level 3D graphics functionality. Built directly ontop of `tz::gl`.
+ * Source location: Topaz/src/render
+ * Namespace: `tz::render`
+ * 
  */
 
 // Forward declares
