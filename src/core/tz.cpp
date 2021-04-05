@@ -22,6 +22,7 @@ namespace tz
 		// TODO: Deal with visibility hint
 		tz::ext::glfw::WindowHintCollection hints;
 		hints.add(GLFW_VISIBLE, visible ? GL_TRUE : GL_FALSE);
+		glfwSetErrorCallback(tz::ext::glfw::default_error_callback);
 		tz::ext::glfw::initialise(tz::ext::glfw::WindowCreationArgs{app_name, 1920, 1080}, hints);
 		// Setup a debug callback
 		tz::ext::glfw::get().set_error_callback(tz::ext::glfw::default_error_callback);
