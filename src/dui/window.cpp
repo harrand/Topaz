@@ -2,7 +2,7 @@
 #include "gl/object.hpp"
 #include "ext/tz_imgui/imgui_impl_opengl3.h"
 #include "ext/tz_imgui/imgui_impl_glfw.h"
-#include "glfw/glfw3.h"
+#include "GLFW/glfw3.h"
 #include "core/debug/assert.hpp"
 #include "core/tz.hpp"
 #include "dui/module_tabs/core_tab.hpp"
