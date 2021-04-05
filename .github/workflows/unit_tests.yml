@@ -50,7 +50,7 @@ jobs:
           # cmakeSettingsJsonPath: '${{ github.workspace }}/cmakesettings.json/CMakeSettings.json'
           # configurationRegexFilter: '${{ matrix.configuration }}'
         env:
-          DISPLAY: :0
+          DISPLAY: 0
 
 
 
