@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: Build & Run Unit Tests
+name: Build: Topaz Render Demo (Linux Debug g++-10)
 
 # Controls when the action will run. 
 on:
@@ -43,14 +43,12 @@ jobs:
           cmakeGenerator: UnixMakefiles
           cmakeAppendedArgs: "-B \"${{ github.workspace }}/../../_temp/build/debug\" -DTOPAZ_DEBUG=1 -DCMAKE_CXX_COMPILER=g++-10"
           buildWithCMake: true
-          buildWithCMakeArgs: "--target Topaz_All_Tests --parallel 4"
+          buildWithCMakeArgs: "--target topaz_render_demo --parallel 4"
           buildDirectory: "${{ github.workspace }}/../../_temp/build/debug"
           # Or build multiple configurations out of a CMakeSettings.json file created with Visual Studio.
           # cmakeListsOrSettingsJson: CMakeSettingsJson
           # cmakeSettingsJsonPath: '${{ github.workspace }}/cmakesettings.json/CMakeSettings.json'
           # configurationRegexFilter: '${{ matrix.configuration }}'
-        env:
-          DISPLAY: 0
 
 
 
