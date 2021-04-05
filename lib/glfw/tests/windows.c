@@ -34,7 +34,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-static GLFWwindow* windows[4];
+#include "getopt.h"
+
 static const char* titles[] =
 {
     "Red",
@@ -54,24 +55,18 @@ static const struct
     { 0.98f, 0.74f, 0.04f }
 };
 
+static void usage(void)
+{
+    printf("Usage: windows [-h] [-b] [-f] \n");
+    printf("Options:\n");
+    printf("  -b create decorated windows\n");
+    printf("  -f set focus on show off for all but first window\n");
+    printf("  -h show this help\n");
+}
+
 static void error_callback(int error, const char* description)
 {
     fprintf(stderr, "Error: %s\n", description);
-}
-
-static void arrange_windows(void)
-{
-    int xbase, ybase;
-    glfwGetWindowPos(windows[0], &xbase, &ybase);
-
-    for (int i = 0;  i < 4;  i++)
-    {
-        int left, top, right, bottom;
-        glfwGetWindowFrameSize(windows[i], &left, &top, &right, &bottom);
-        glfwSetWindowPos(windows[i],
-                         xbase + (i & 1) * (200 + left + right),
-                         ybase + (i >> 1) * (200 + top + bottom));
-    }
 }
 
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
@@ -92,34 +87,49 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
         case GLFW_KEY_ESCAPE:
             glfwSetWindowShouldClose(window, GLFW_TRUE);
             break;
-
-        case GLFW_KEY_D:
-        {
-            for (int i = 0;  i < 4;  i++)
-            {
-                const int decorated = glfwGetWindowAttrib(windows[i], GLFW_DECORATED);
-                glfwSetWindowAttrib(windows[i], GLFW_DECORATED, !decorated);
-            }
-
-            arrange_windows();
-            break;
-        }
     }
 }
 
 int main(int argc, char** argv)
 {
+    int i, ch;
+    int decorated = GLFW_FALSE;
+    int focusOnShow = GLFW_TRUE;
+    int running = GLFW_TRUE;
+    GLFWwindow* windows[4];
+
+    while ((ch = getopt(argc, argv, "bfh")) != -1)
+    {
+        switch (ch)
+        {
+            case 'b':
+                decorated = GLFW_TRUE;
+                break;
+            case 'f':
+                focusOnShow = GLFW_FALSE;
+                break;
+            case 'h':
+                usage();
+                exit(EXIT_SUCCESS);
+            default:
+                usage();
+                exit(EXIT_FAILURE);
+        }
+    }
+
     glfwSetErrorCallback(error_callback);
 
     if (!glfwInit())
         exit(EXIT_FAILURE);
 
+    glfwWindowHint(GLFW_DECORATED, decorated);
     glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
 
-    for (int i = 0;  i < 4;  i++)
+    for (i = 0;  i < 4;  i++)
     {
-        if (i > 0)
-            glfwWindowHint(GLFW_FOCUS_ON_SHOW, GLFW_FALSE);
+        int left, top, right, bottom;
+        if (i)
+            glfwWindowHint(GLFW_FOCUS_ON_SHOW, focusOnShow);
 
         windows[i] = glfwCreateWindow(200, 200, titles[i], NULL, NULL);
         if (!windows[i])
@@ -133,29 +143,32 @@ int main(int argc, char** argv)
         glfwMakeContextCurrent(windows[i]);
         gladLoadGL(glfwGetProcAddress);
         glClearColor(colors[i].r, colors[i].g, colors[i].b, 1.f);
+
+        glfwGetWindowFrameSize(windows[i], &left, &top, &right, &bottom);
+        glfwSetWindowPos(windows[i],
+                         100 + (i & 1) * (200 + left + right),
+                         100 + (i >> 1) * (200 + top + bottom));
     }
 
-    arrange_windows();
-
-    for (int i = 0;  i < 4;  i++)
+    for (i = 0;  i < 4;  i++)
         glfwShowWindow(windows[i]);
 
-    for (;;)
+    while (running)
     {
-        for (int i = 0;  i < 4;  i++)
+        for (i = 0;  i < 4;  i++)
         {
             glfwMakeContextCurrent(windows[i]);
             glClear(GL_COLOR_BUFFER_BIT);
             glfwSwapBuffers(windows[i]);
 
             if (glfwWindowShouldClose(windows[i]))
-            {
-                glfwTerminate();
-                exit(EXIT_SUCCESS);
-            }
+                running = GLFW_FALSE;
         }
 
         glfwWaitEvents();
     }
+
+    glfwTerminate();
+    exit(EXIT_SUCCESS);
 }
 
