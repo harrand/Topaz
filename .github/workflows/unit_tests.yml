@@ -40,6 +40,7 @@ jobs:
           cmakeAppendedArgs: "-B \"build/debug\" -DTOPAZ_DEBUG=1"
           buildWithCMake: true
           buildWithCMakeArgs: "--target Topaz_All_Tests --parallel 4"
+          buildDirectory: "${{ github.workspace }}/../../_temp/build/debug"
           # Or build multiple configurations out of a CMakeSettings.json file created with Visual Studio.
           # cmakeListsOrSettingsJson: CMakeSettingsJson
           # cmakeSettingsJsonPath: '${{ github.workspace }}/cmakesettings.json/CMakeSettings.json'
