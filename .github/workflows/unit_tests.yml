@@ -20,17 +20,33 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
+      - name: Ensure GCC10
+        run:   |
+           sudo apt update
+           sudo apt install gcc-10 g++-10
+        shell: bash
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
-      - name: Build CMake
-        # You may pin to the exact commit or the version.
-        # uses: ashutoshvarma/action-cmake-build@0fbeeac8b1f9c8aef99e9eae9d78529ed3b0364b
-        uses: ashutoshvarma/action-cmake-build@v1
+      - name: 'Build & Run Tests'
+        uses: lukka/run-cmake@v3
         with:
-          # CMake build type (Release, Debug, MinSizeRel, RelWithDebInfo)
-          build-type: Debug
-          # CMake build target
-          target: Topaz_All_Tests
-          # Misc Options to pass to CMake while configuring project
-          configure-options: -B build/debug -DTOPAZ_DEBUG=1
+          cmakeListsOrSettingsJson: "CMakeListsTxtAdvanced"
+          cmakeGenerator: UnixMakefiles
+          cmakeAppendedArgs: "-B \"build/debug\" -DTOPAZ_DEBUG=1"
+          buildWithCMake: true
+          buildWithCMakeArgs: "--target Topaz_All_Tests --parallel 4"
+          # Or build multiple configurations out of a CMakeSettings.json file created with Visual Studio.
+          # cmakeListsOrSettingsJson: CMakeSettingsJson
+          # cmakeSettingsJsonPath: '${{ github.workspace }}/cmakesettings.json/CMakeSettings.json'
+          # configurationRegexFilter: '${{ matrix.configuration }}'
+
+
+
+
+
+
+
+
+
+
