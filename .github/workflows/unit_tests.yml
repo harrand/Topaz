@@ -25,6 +25,10 @@ jobs:
            sudo apt update
            sudo apt install gcc-10 g++-10
         shell: bash
+      - name: Ensure Dependencies
+        run:   |
+          sudo apt-get install xorg-dev libglu1-mesa-dev
+          
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
