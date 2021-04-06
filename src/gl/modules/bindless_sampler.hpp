@@ -8,10 +8,6 @@ namespace tz::gl::p
 	 * \addtogroup tz_gl Topaz Graphics Library (tz::gl)
 	 * @{
 	 */
-	/**
-	 * \addtogroup tz_gl_p tz::gl Shader Preprocessing Module (TZGLP)
-	 * @{
-	 */
 
 	/**
 	 * Provides the custom Topaz PDT 'tz_bindless_sampler' define in GLSL. Is just a sampler2D with explicit intent to be used in an UBO/SSBO as a bindless sampler.
@@ -33,10 +29,7 @@ namespace tz::gl::p
 	private:
 		std::string path;
 	};
-
-	/**
-	 * @}
-	 */
+	
 	/**
 	 * @}
 	 */

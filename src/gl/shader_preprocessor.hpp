@@ -98,11 +98,6 @@ namespace tz::gl
 	}
 
 	/**
-	 * \addtogroup tz_gl_p tz::gl Shader Preprocessing Module (TZGLP)
-	 * @{
-	 */
-
-	/**
 	 * ShaderPreprocessor is the basis of TZGLP.
 	 * 
 	 * ShaderPreprocessors are executed on Shader component source-code prior to upload and compilation.
@@ -185,10 +180,6 @@ namespace tz::gl
 		std::string source;
 		std::vector<std::unique_ptr<p::IModule>> modules;
 	};
-
-	/**
-	 * @}
-	 */
 
 	/**
 	 * @}

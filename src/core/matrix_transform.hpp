@@ -16,12 +16,6 @@ namespace tz
 	 */
 
 	/**
-	 * \addtogroup tz_core_mat tz Matrix Transformation Module
-	 * Implementations of various matrix transformations. Note that all resultant matrices are row-major.
-	 * @{
-	 */
-
-	/**
 	 * Generate a matrix which performs the following transformations at once:
 	 * - Translates the result position[0] units in the positive x-direction.
 	 * - Translates the result position[1] units in the positive y-direction.
@@ -63,9 +57,6 @@ namespace tz
 	 */
 	Mat4 orthographic(float left, float right, float top, float bottom, float near, float far);
 
-	/**
-	 * @}
-	 */
 	/**
 	 * @}
 	 */

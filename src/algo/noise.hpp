@@ -10,13 +10,13 @@ namespace tz::algo
     * @{
     */
 
+    /**
+	 * @name Random (RNG) Algorithms
+	 */
+	///@{
+
     namespace prng
     {
-        /**
-		* \addtogroup tz_algo_prng Topaz PRNG Library (tz::algo::prng)
-		* Contains some pre-defined random number generator engines, such as the Mersenne Twister.
-		* @{
-		*/
         /// 32-bit Mersenne Twister by Matsumoto and Nishimura, 1998
         using MersenneTwister = std::mt19937;
         /// "Minimum standard", recommended by Park, Miller, and Stockmeyer in 1993
@@ -72,6 +72,12 @@ namespace tz::algo
         unsigned int seed;
         EngineType engine;
     };
+
+    ///@}
+
+    /**
+     * @}
+     */
 }
 
 #include "algo/noise.inl"

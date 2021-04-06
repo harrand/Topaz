@@ -13,6 +13,11 @@ namespace tz::algo
 	*/
 
 	/**
+	 * @name Compile-Time Type-Safety Algorithms
+	 */
+	///@{
+
+	/**
 	 * Issue a compile error if `Type::Type(ConstructorArgs...)` is not valid.
 	 * 
 	 * In other words, invoke this if you wish to guarantee that you're always using arguments appropriate to invoke a constructor of the given type.
@@ -109,6 +114,8 @@ namespace tz::algo
 	{
 		return detail::ExistsOperator<T, std::equal_to<T>()>::value;
 	}
+
+	///@}
 
 	/**
 	 * @}

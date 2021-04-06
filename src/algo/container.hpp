@@ -13,6 +13,14 @@ namespace tz::algo
 	 * @{
 	 */
 
+	/**
+	 * @name Container Algorithms
+	 */
+	///@{
+
+	/**
+	 * Constrains types where Container::value_type is a valid type.
+	 */
 	template<typename Container>
 	concept UniformValueContainer = requires
 	{
@@ -59,6 +67,8 @@ namespace tz::algo
 	 */
 	template<typename StandardContainer, typename ConvertibleToElement, typename ToElementFunctor>
 	bool contains_element(const StandardContainer& container, const ConvertibleToElement& element, const ToElementFunctor& functor);
+
+	///@}
 
 	/**
 	 * @}

@@ -5,53 +5,53 @@
 #include "test_framework.hpp"
 #include "algo/math.hpp"
 
-TZ_TEST_BEGIN(schmitt)
+TZ_TEST_BEGIN(binary_clamp)
 	int lo = 5;
 	int hi = 10;
 	// Typical schmitt usage. 7 is closer to 5 than 10.
 	{
-		int ret = tz::algo::schmitt(lo, hi, 7);
-		topaz_expect(ret == lo, "schmitt(5, 10, 7) failed to return ", lo, ". Returned ", ret);
+		int ret = tz::algo::binary_clamp(lo, hi, 7);
+		topaz_expect(ret == lo, "binary_clamp(5, 10, 7) failed to return ", lo, ". Returned ", ret);
 	}
 	
 	// Same as before. 7 is still closer to 5 than 10 so even with the higher bound we expect lo.
 	{
-		int ret = tz::algo::schmitt(lo, hi, 7, tz::algo::SchmittBound::Higher);
-		topaz_expect(ret == lo, "schmitt(5, 10, 7, SchmittBound::Higher) failed to return ", lo, ". Returned ", ret);
+		int ret = tz::algo::binary_clamp(lo, hi, 7, tz::algo::SchmittBound::Higher);
+		topaz_expect(ret == lo, "binary_clamp(5, 10, 7, SchmittBound::Higher) failed to return ", lo, ". Returned ", ret);
 	}
 
 	// Typical schmittf usage.
 	{
-		int ret = tz::algo::schmitt(lo, hi, 7.5f);
-		topaz_expect(ret == lo, "schmitt(5, 10, 7.5f) failed to return ", lo, ". Returned ", ret);
+		int ret = tz::algo::binary_clamp(lo, hi, 7.5f);
+		topaz_expect(ret == lo, "binary_clamp(5, 10, 7.5f) failed to return ", lo, ". Returned ", ret);
 	}
 
 	// Typical schmittf higher usage.
 	{
-		int ret = tz::algo::schmitt(lo, hi, 7.5f, tz::algo::SchmittBound::Higher);
-		topaz_expect(ret == hi, "schmitt(5, 10, 7.5f, SchmittBound::Higher) failed to return ", hi, ". Returned ", ret);
+		int ret = tz::algo::binary_clamp(lo, hi, 7.5f, tz::algo::SchmittBound::Higher);
+		topaz_expect(ret == hi, "binary_clamp(5, 10, 7.5f, SchmittBound::Higher) failed to return ", hi, ". Returned ", ret);
 	}
 TZ_TEST_END
 
-TZ_TEST_BEGIN(schmitt_multiple)
+TZ_TEST_BEGIN(clamp_by_factor)
 	{
-		int ret = tz::algo::schmitt_multiple(8, 10);
-		topaz_expect(ret == 8, "schmitt_multiple(8, 10) failed to return ", 8, ". Returned ", ret);
+		int ret = tz::algo::clamp_by_factor(8, 10);
+		topaz_expect(ret == 8, "clamp_by_factor(8, 10) failed to return ", 8, ". Returned ", ret);
 	}
 
 	{
-		int ret = tz::algo::schmitt_multiple(8, 14);
-		topaz_expect(ret == 16, "schmitt_multiple(8, 14) failed to return ", 16, ". Returned ", ret);
+		int ret = tz::algo::clamp_by_factor(8, 14);
+		topaz_expect(ret == 16, "clamp_by_factor(8, 14) failed to return ", 16, ". Returned ", ret);
 	}
 
 	{
-		int ret = tz::algo::schmitt_multiple(5, 2.5f);
-		topaz_expect(ret == 0, "schmitt_multiple(5, 2.5f) failed to return ", 0, ". Returned ", ret);
+		int ret = tz::algo::clamp_by_factor(5, 2.5f);
+		topaz_expect(ret == 0, "clamp_by_factor(5, 2.5f) failed to return ", 0, ". Returned ", ret);
 	}
 
 	{
-		int ret = tz::algo::schmitt_multiple(5, 2.5f, tz::algo::SchmittBound::Higher);
-		topaz_expect(ret == 5, "schmitt_multiple(5, 2.5f, SchmittBound::Higher) failed to return ", 5, ". Returned ", ret);
+		int ret = tz::algo::clamp_by_factor(5, 2.5f, tz::algo::SchmittBound::Higher);
+		topaz_expect(ret == 5, "clamp_by_factor(5, 2.5f, SchmittBound::Higher) failed to return ", 5, ". Returned ", ret);
 	}
 TZ_TEST_END
 
@@ -70,8 +70,8 @@ TZ_TEST_BEGIN(type_mix)
 
 	{
 		constexpr float expected = 16.0f;
-		float actual = tz::algo::schmitt(16.0f, 20, 17u);
-		topaz_expectf(expected == actual, "schmitt(%d.0f, %d, %gu) == %g but resulted in %g", 16, 20, 17, expected, actual);
+		float actual = tz::algo::binary_clamp(16.0f, 20, 17u);
+		topaz_expectf(expected == actual, "binary_clamp(%d.0f, %d, %gu) == %g but resulted in %g", 16, 20, 17, expected, actual);
 	}
 TZ_TEST_END
 
@@ -81,8 +81,8 @@ int main()
 {
 	tz::test::Unit math;
 	
-	math.add(schmitt());
-	math.add(schmitt_multiple());
+	math.add(binary_clamp());
+	math.add(clamp_by_factor());
 	math.add(type_mix());
 
 	return math.result();

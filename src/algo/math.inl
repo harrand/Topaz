@@ -20,7 +20,7 @@ namespace tz::algo
 		return linear_interpolate(a, b, clamped_value);
 	}
 
-	constexpr auto schmitt(tz::Number auto lo, tz::Number auto hi, tz::Number auto val, SchmittBound bound) -> decltype(hi - lo)
+	constexpr auto binary_clamp(tz::Number auto lo, tz::Number auto hi, tz::Number auto val, SchmittBound bound) -> decltype(hi - lo)
 	{
 		tz::Number auto hdist = hi - val;
 		tz::Number auto ldist = val - lo;
@@ -57,21 +57,21 @@ namespace tz::algo
 		}
 		else
 		{
-			topaz_assert(false, "tz::algo::schmitt(", lo, ", ", hi, ", ...): SchmittBound unrecognised (not lo nor hi).");
+			topaz_assert(false, "tz::algo::binary_clamp(", lo, ", ", hi, ", ...): SchmittBound unrecognised (not lo nor hi).");
 			return {};
 		}
 	}
 
-	constexpr auto schmitt_multiple(tz::Number auto factor, tz::Number auto value, SchmittBound bound)
+	constexpr auto clamp_by_factor(tz::Number auto factor, tz::Number auto value, SchmittBound bound)
 	{
-		topaz_assert(factor != 0, "tz::algo::schmitt_multiple(", factor, ", ", value, ", ...): Cannot divide by factor ", factor);
+		topaz_assert(factor != 0, "tz::algo::clamp_by_factor(", factor, ", ", value, ", ...): Cannot divide by factor ", factor);
 		tz::Number auto frac = std::floor(value / factor);
 		tz::Number auto lo = frac * factor;
 		tz::Number auto hi = (frac + 1) * factor;
-		return tz::algo::schmitt(lo, hi, value, bound);
+		return tz::algo::binary_clamp(lo, hi, value, bound);
 	}
 
-	template<typename T>
+	template<tz::Number T>
 	constexpr std::array<T, 3> axis_angle_to_euler(std::array<T, 3> axis, T angle)
 	{
 		T s = std::sin(angle);

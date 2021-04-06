@@ -9,6 +9,12 @@ namespace tz::algo
 	 * Contains common algorithms used in Topaz modules that aren't available in the C++ standard library.
 	 * @{
 	 */
+
+    /**
+	 * @name Image-Processing Algorithms
+	 */
+	///@{
+
     enum class ImageFlipDirection
     {
         Horizontal,
@@ -17,6 +23,8 @@ namespace tz::algo
 
     template<tz::gl::PixelType Pixel>
     void flip_image(tz::gl::Image<Pixel>& image, ImageFlipDirection direction);
+
+    ///@}
 
     /**
      * @}

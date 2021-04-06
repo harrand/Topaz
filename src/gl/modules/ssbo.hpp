@@ -11,10 +11,6 @@ namespace tz::gl::p
 	 * \addtogroup tz_gl Topaz Graphics Library (tz::gl)
 	 * @{
 	 */
-	/**
-	 * \addtogroup tz_gl_p tz::gl Shader Preprocessing Module (TZGLP)
-	 * @{
-	 */
 
 	/**
 	 * Detects the "#ssbo <name>" directive in GLSL source.
@@ -64,10 +60,6 @@ namespace tz::gl::p
 		std::optional<std::size_t> get_existing_ssbo_id(const std::string& ssbo_name) const;
 		mutable std::vector<std::pair<std::string, std::size_t>> ssbo_name_id;
 	};
-
-	/**
-	 * @}
-	 */
 	/**
 	 * @}
 	 */

@@ -16,6 +16,11 @@ namespace tz
 		*/
 
 		/**
+		 * @name Mathematical Algorithms
+		 */
+		///@{
+
+		/**
 		 * Perform a linear-interpolation between two known values.
 		 * @tparam T Value type.
 		 * @param a Known lower bound.
@@ -52,31 +57,36 @@ namespace tz
 		};
 
 		/**
-		* Perform a schmitt invocation on a value. This can be seen as the logical complement to a clamp. Schmitt-triggers in electronics can be used to convert analogue signals to digital. This function acts similarly; saturates a value to a higher or lower result.
-		* Note: There is one uniform type in this invocation. Mixing integers and floats for example will result in float truncation. To avoid this, use schmittf.
-		* Example: schmitt(5, 10, 7, ...) yields 5. 5 is closer to 7 than 7 is to 10.
+		* Perform a binary clamp on a value between `lo` and `hi`.
+		* A typical clamp will take any value and return a value between `lo` and `hi`. A binary clamp will instead take any value between `lo` and `hi` and return a value equal to either `lo` or `hi`, depending on which one is closer to the value.
+		* Example: binary_clamp(5, 10, 7, Lower) yields 5. 5 is closer to 7 than 7 is to 10. If the Higher bound is instead used, the returned value will be 10.
 		* @tparam T Underlying value type to use.
-		* @param lo Lowest value which should be returned.
-		* @param hi Highest value which should be returned.
+		* @param lo Lowest value which could be returned.
+		* @param hi Highest value which could be returned.
 		* @param val Value to saturate.
 		* @param bound Chosen behaviour if the value is equidistant between lo and hi.
 		* @return If val is closer to lo, returns lo. If val was closer to hi, returns hi.
 		*/
-		constexpr auto schmitt(tz::Number auto lo, tz::Number auto hi, tz::Number auto val, SchmittBound bound = SchmittBound::Lower) -> decltype(hi - lo);
+		constexpr auto binary_clamp(tz::Number auto lo, tz::Number auto hi, tz::Number auto val, SchmittBound bound = SchmittBound::Lower) -> decltype(hi - lo);
 
 		/**
-		* Perform a schmitt invocation on a value using the given factor.
-		* Example: schmitt_multiple(8, 10, ...) yields 8. 10 is between the multiples 8 and 16. 10 is closer to 8, thus we return 8.
+		* This clamp will take a value and a factor, and return a multiple of `factor` that was closest to `val`.
+		* Example: clamp_by_factor(8, 10, Lower) yields 8. 10 is between the multiples 8 and 16, but is closer to 8. If the Higher bound is instead used, 16 is returned.
 		* @tparam T Underlying value type to use.
 		* @param factor Factor which the value will saturate to.
 		* @param val Value to saturate.
 		* @param bound Chosen behaviour if the value is equidistant between two multiples.
 		* @return A multiple of 'factor' which 'val' is closest to.
 		*/
-		constexpr auto schmitt_multiple(tz::Number auto factor, tz::Number auto val, SchmittBound bound = SchmittBound::Lower);
+		constexpr auto clamp_by_factor(tz::Number auto factor, tz::Number auto val, SchmittBound bound = SchmittBound::Lower);
 
-		template<typename T>
+		/**
+		 * Interpret an array of numbers as an axis-angle, and return a similar array representing the equivalent set of euler-angles for that rotation.
+		 */
+		template<tz::Number T>
 		constexpr std::array<T, 3> axis_angle_to_euler(std::array<T, 3>, T angle);
+
+		///@}
 
 		/**
 		* @}
