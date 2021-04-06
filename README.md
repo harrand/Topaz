@@ -1,4 +1,5 @@
 # Topaz
+![Build Topaz & Render Demo](https://github.com/Harrand/Topaz/actions/workflows/build_tz_render_demo.yml/badge.svg)
 ## About
 
 Topaz is a graphics engine written in C++20. The most recent release is [Topaz 1.0](https://github.com/Harrand/Topaz/tree/Topaz1.0). Topaz 2.0 is currently in development, however there is no solid release date.
