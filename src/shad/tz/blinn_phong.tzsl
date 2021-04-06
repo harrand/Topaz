@@ -1,0 +1,31 @@
+struct PointLight
+{
+    vec3 position;
+    vec3 colour;
+    float power;
+};
+
+struct DirectionalLight
+{
+    vec3 direction;
+    vec3 colour;
+    float power;
+};
+
+vec3 diffuse_directional(DirectionalLight light, vec3 diffuse_colour, vec3 normal_cameraspace)
+{
+    float cos_theta = clamp(dot(normal_cameraspace, light.direction), 0.0, 1.0);
+    return diffuse_colour * light.colour * light.power * cos_theta;
+}
+
+vec3 diffuse(PointLight light, vec3 diffuse_colour, vec3 normal_cameraspace, vec3 position_cameraspace)
+{
+    vec3 eye_direction_cameraspace = vec3(0, 0, 0) - position_cameraspace;
+    float distance = length(light.position - position_cameraspace);
+    DirectionalLight directional;
+    directional.direction = light.position + eye_direction_cameraspace;
+    directional.colour = light.colour;
+    directional.power = light.power;
+    return diffuse_directional(directional, diffuse_colour, normal_cameraspace) / pow(distance, 2);
+}
+

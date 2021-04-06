@@ -10,6 +10,7 @@
 #include "gl/buffer.hpp"
 #include "gl/frame.hpp"
 #include "gl/modules/ssbo.hpp"
+#include "gl/modules/include.hpp"
 #include "gl/texture.hpp"
 #include "render/device.hpp"
 #include "GLFW/glfw3.h"
@@ -229,55 +230,8 @@ const char *frg_shader_src = R"glsl(
 		vec4 tessellation_options;
 		vec4 magic;
 	};
-	// LIGHTING STUFF BEGIN
-	struct DirectionalLight
-    {
-        /// Direction should always be provided in cameraspace.
-        vec3 direction;
-        /// Colour should always follow RGB notation.
-        vec3 colour;
-        /// Arbitrary units, use your own range.
-        float power;
-    };
-
-    struct PointLight
-    {
-        // alignment = 16
-        //If the member is a three-component vector with components consuming N basic machine units, the base alignment is 4N
-        // Position is in cameraspace.
-        // 0
-        vec3 position; // 12 (4 bytes padding to 16)
-        vec3 colour; // 28 (4 bytes padding to 32)
-        float power; // 36
-    };
-
-	PointLight parse_light(vec3 pos, vec3 col, float pow)
-	{
-		PointLight light;
-		light.position = pos;
-		light.colour = col;
-		light.power = pow;
-		return light;
-	}
-
-    vec3 diffuse_directional(DirectionalLight light, vec3 diffuse_colour, vec3 normal_cameraspace)
-    {
-        float cos_theta = clamp(dot(normal_cameraspace, light.direction), 0.0, 1.0);
-        return diffuse_colour * light.colour * light.power * cos_theta;
-    }
-
-    vec3 diffuse(PointLight light, vec3 diffuse_colour, vec3 normal_cameraspace, vec3 position_cameraspace, mat4 view)
-    {
-		vec3 eye_direction_cameraspace = vec3(0, 0, 0) - position_cameraspace;
-		// firstly convert light position to cameraspace. despite any other possible things saying otherwise, this was in WORLD SPACE.
-        vec3 light_pos_cameraspace = (view * vec4(light.position, 1.0)).xyz;
-		float distance = length(light_pos_cameraspace - position_cameraspace);
-        DirectionalLight directional;
-        directional.direction = light_pos_cameraspace + eye_direction_cameraspace;
-        directional.colour = light.colour;
-        directional.power = light.power * 10000.0f;
-        return diffuse_directional(directional, diffuse_colour, normal_cameraspace) / pow(distance, 2);
-    }
+	
+	#include <tz/blinn_phong.tzsl>
 
 	#ssbo lighting_block
 	{
@@ -309,7 +263,7 @@ const char *frg_shader_src = R"glsl(
 		for(int i = 0; i < point_lights.length(); i++)
 		{
 			PointLight cur_light = point_lights[i];
-			lit_colour += vec4(diffuse(cur_light, light_input_colour.xyz, normal_cameraspace, position_cameraspace, mvp_frg.v), 1.0);
+			lit_colour += vec4(diffuse(cur_light, light_input_colour.xyz, normal_cameraspace, position_cameraspace), 1.0);
 		}
 
 		vec4 final_colour = mix(water_colour, lit_colour, clamp(pow(position_worldspace.y / magic[2], magic[3]), 0.0, 1.0));
@@ -543,6 +497,7 @@ int main()
 		std::string tess_result;
 		tz::gl::ShaderPreprocessor pre{vtx_shader_src};
 		{
+			pre.emplace_module<tz::gl::p::IncludeModule>("");
 			std::size_t ssbo_module_id = pre.emplace_module<tz::gl::p::SSBOModule>(o);
 			pre.emplace_module<tz::gl::p::BindlessSamplerModule>();
 			pre.preprocess();

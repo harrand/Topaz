@@ -205,6 +205,7 @@ namespace tz
 	using Mat4 = Matrix<float, 4, 4>;
 	/// A 3x3 row-major matrix of floats.
 	using Mat3 = Matrix<float, 3, 3>;
+	/// A 2x2 row-major matrix of floats.
 
 	/**
 	 * @}
