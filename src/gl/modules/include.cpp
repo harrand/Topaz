@@ -10,18 +10,22 @@ namespace tz::gl::p
 
 	void IncludeModule::operator()(std::string& source) const
 	{
-		src::transform(source, std::regex{"#include \"(.+)\""}, [this](auto beg, auto end)
+		bool did_any_work;
+		do
 		{
-			topaz_assert(std::distance(beg, end) == 1, "tz::gl::p::IncludeModule::operator(): Had unexpected number of inner matches. Expected ", 1, ", got ", std::distance(beg, end));
-			std::string include_file_name = *beg;
-			return this->cat_include(include_file_name);
-		});
-		src::transform(source, std::regex{"#include <(.+)>"}, [this](auto beg, auto end)
-		{
-			topaz_assert(std::distance(beg, end) == 1, "tz::gl::p::IncludeModule::operator(): Had unexpected number of inner matches. Expected ", 1, ", got ", std::distance(beg, end));
-			std::string include_file_name = *beg;
-			return this->cat_standard_include(include_file_name);
-		});
+			did_any_work = src::transform(source, std::regex{"#include \"(.+)\""}, [this](auto beg, auto end)
+			{
+				topaz_assert(std::distance(beg, end) == 1, "tz::gl::p::IncludeModule::operator(): Had unexpected number of inner matches. Expected ", 1, ", got ", std::distance(beg, end));
+				std::string include_file_name = *beg;
+				return this->cat_include(include_file_name);
+			});
+			did_any_work |= src::transform(source, std::regex{"#include <(.+)>"}, [this](auto beg, auto end)
+			{
+				topaz_assert(std::distance(beg, end) == 1, "tz::gl::p::IncludeModule::operator(): Had unexpected number of inner matches. Expected ", 1, ", got ", std::distance(beg, end));
+				std::string include_file_name = *beg;
+				return this->cat_standard_include(include_file_name);
+			});
+		}while(did_any_work);
 	}
 
 	std::string IncludeModule::cat_include_generic(std::string include_path, std::string include_search_path) const

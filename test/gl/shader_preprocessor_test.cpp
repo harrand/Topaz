@@ -312,6 +312,81 @@ TZ_TEST_BEGIN(shader_source_replacement_correct)
 	topaz_expectf(pre.result() == src7_parsed, "tz::gl::p Shader Source Replacement Failed a simple test.\nExpected Source: \n%s\nActual Source: \n%s", pre.result().c_str(), src7_parsed);
 TZ_TEST_END
 
+const char* src8_parsed = R"glsl(
+struct PointLight
+{
+    vec3 position;
+    vec3 colour;
+    float power;
+};
+
+struct DirectionalLight
+{
+    vec3 direction;
+    vec3 colour;
+    float power;
+};
+
+/**
+ * Convert a point-light to a directional-light. This can only be performed in camera-space.
+ */
+DirectionalLight point_to_directional(PointLight light_cameraspace, vec3 frag_position_cameraspace)
+{
+    vec3 eye_dir = vec3(0, 0, 0) - frag_position_cameraspace;
+    DirectionalLight dir;
+    dir.direction = light_cameraspace.position + eye_dir;
+    dir.colour = light_cameraspace.colour;
+    dir.power = light_cameraspace.power;
+    return dir;
+}
+
+float lambert(DirectionalLight light, vec3 normal)
+{
+    return clamp(dot(light.direction, normal), 0.0, 1.0);
+}
+
+vec3 lambertian_diffuse(DirectionalLight light, vec3 diffuse_colour, vec3 normal)
+{
+    float lambertian = lambert(light, normal);
+    return diffuse_colour * light.colour * light.power * lambertian;
+}
+
+/**
+* Blinn-Phong Reflection Model against a directional light.
+* Precondition: The space of the light direction matches that of the normal. Otherwise, inaccurate results will be obtained.
+*/
+vec3 blinnphong_specular(DirectionalLight light, vec3 specular_colour, vec3 normal, vec3 vertex_pos)
+{
+    float lambertian = lambert(light, normal);
+    if(lambertian > 0.0)
+    {
+        vec3 view_dir = normalize(-vertex_pos);
+        vec3 half_dir = normalize(light.direction + view_dir);
+        float spec_angle = clamp(dot(half_dir, normal), 0.0, 1.0);
+        float specular = pow(spec_angle, 4.0);
+        return specular_colour * light.colour * light.power * specular;
+    }
+    return vec3(0.0, 0.0, 0.0);
+}
+
+DirectionalLight white_light()
+{
+    return DirectionalLight(vec3(), vec3(), 1.0);
+}
+)glsl";
+
+const char* src8 = R"glsl(
+#include "include_me4.header.glsl"
+)glsl";
+
+TZ_TEST_BEGIN(multi_pass_include)
+	tz::gl::ShaderPreprocessor pre{src8};
+	pre.emplace_module<tz::gl::p::IncludeModule>(tz::res().get_path() + "/test/gl/a");
+
+	pre.preprocess();
+	topaz_expectf(pre.result() == src8_parsed, "multi_pass_include failed. Expected result:\n\"%s\"\nbut got\n\"%s\"", pre.result().c_str(), src8_parsed);
+TZ_TEST_END
+
 int main()
 {
 	tz::test::Unit pre;
@@ -327,6 +402,7 @@ int main()
 		pre.add(defined_ubo());
 		pre.add(shader_buffer_name_clash());
 		pre.add(shader_source_replacement_correct());
+		pre.add(multi_pass_include());
 		tz::terminate();
 	}
 	return pre.result();

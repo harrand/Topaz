@@ -4,7 +4,7 @@ namespace tz::gl
 {
 	namespace src
 	{
-		void transform(std::string& source, std::regex reg, SourceReplaceAction auto transform_function)
+		bool transform(std::string& source, std::regex reg, SourceReplaceAction auto transform_function)
 		{
 			using ReplaceJob = std::pair<std::pair<std::size_t, std::size_t>, std::string>;
 			std::vector<ReplaceJob> replacements;
@@ -12,6 +12,8 @@ namespace tz::gl
 			std::string src_copy = source;
 			std::smatch sm;
 			std::size_t src_pos_counter = 0;
+
+			bool did_any_work = false;
 
 			while(std::regex_search(src_copy, sm, reg))
 			{
@@ -32,6 +34,8 @@ namespace tz::gl
 				replacements.push_back(job);
 			}
 
+			did_any_work = !replacements.empty();
+
 			// Invoke all replacements (in reverse-order)
 			for(auto i = replacements.rbegin(); i != replacements.rend(); i++)
 			{
@@ -40,6 +44,8 @@ namespace tz::gl
 				std::size_t len = i->first.second;
 				source.replace(pos, len, replacement);
 			}
+
+			return did_any_work;
 		}
 	}
 

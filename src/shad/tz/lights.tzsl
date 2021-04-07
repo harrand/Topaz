@@ -1,0 +1,26 @@
+struct PointLight
+{
+    vec3 position;
+    vec3 colour;
+    float power;
+};
+
+struct DirectionalLight
+{
+    vec3 direction;
+    vec3 colour;
+    float power;
+};
+
+/**
+ * Convert a point-light to a directional-light. This can only be performed in camera-space.
+ */
+DirectionalLight point_to_directional(PointLight light_cameraspace, vec3 frag_position_cameraspace)
+{
+    vec3 eye_dir = vec3(0, 0, 0) - frag_position_cameraspace;
+    DirectionalLight dir;
+    dir.direction = light_cameraspace.position + eye_dir;
+    dir.colour = light_cameraspace.colour;
+    dir.power = light_cameraspace.power;
+    return dir;
+}

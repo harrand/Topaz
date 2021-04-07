@@ -240,7 +240,11 @@ const char *frg_shader_src = R"glsl(
 		PointLight point_lights[];
 	};
 
-	// LIGHTING STUFF END
+	vec3 calc_light_colour(DirectionalLight light, vec3 colour, vec3 normal, vec3 vertex_pos)
+	{
+		return (lambertian_diffuse(light, colour, normal)
+			  + blinnphong_specular(light, colour, normal, vertex_pos)) / 2.0;
+	}
 
 	void main()
 	{
@@ -258,12 +262,15 @@ const char *frg_shader_src = R"glsl(
 		vec4 lit_colour = ambient_col;
 
 		// Firstly, deal with the directional light.
-		lit_colour += vec4(diffuse_directional(directional_light, light_input_colour.xyz, normal_cameraspace), 1.0);
+		lit_colour += vec4(calc_light_colour(directional_light, light_input_colour.xyz, normal_cameraspace, position_cameraspace), 1.0);
 		// Then all the point lights.
 		for(int i = 0; i < point_lights.length(); i++)
 		{
 			PointLight cur_light = point_lights[i];
-			lit_colour += vec4(diffuse(cur_light, light_input_colour.xyz, normal_cameraspace, position_cameraspace), 1.0);
+			cur_light.position = (mvp_frg.v * vec4(cur_light.position, 1.0)).xyz;
+			DirectionalLight cur_light_directional = point_to_directional(cur_light, position_cameraspace);
+
+			lit_colour += vec4(calc_light_colour(cur_light_directional, light_input_colour.xyz, normal_cameraspace, position_cameraspace), 1.0) / pow(length(cur_light.position - position_cameraspace), 2);
 		}
 
 		vec4 final_colour = mix(water_colour, lit_colour, clamp(pow(position_worldspace.y / magic[2], magic[3]), 0.0, 1.0));

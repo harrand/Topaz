@@ -56,7 +56,7 @@ namespace tz::gl
 		 * @param reg Regular Expression used to search against the source-code.
 		 * @param transform_function Function invoked with inner matches prior to each source transformation.
 		 */
-		void transform(std::string& source, std::regex reg, SourceReplaceAction auto transform_function);
+		bool transform(std::string& source, std::regex reg, SourceReplaceAction auto transform_function);
 	}
 
 	namespace p
