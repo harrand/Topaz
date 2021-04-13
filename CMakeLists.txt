@@ -9,14 +9,15 @@ add_executable(TZVK
     src/core/tz.cpp
     src/core/tz.inl
     src/core/tz.hpp
+    src/core/assert.hpp
     src/main.cpp)
 
 message(STATUS "Topaz Vulkan v${TZ_VERSION}")
 
-if(${TOPAZ_VULKAN} AND ${TOPAZ_OGL})
+if(${TOPAZ_OGL})
     # Vulkan + OGL
-    message(STATUS "RenderAPI: Vulkan + OpenGL (\"VKOGL\")")
-    target_compile_definitions(TZVK PUBLIC -DTZ_VULKAN=1 -DTZ_OGL=1)
+    message(STATUS "RenderAPI: OpenGL (\"OGL\")")
+    target_compile_definitions(TZVK PUBLIC -DTZ_VULKAN=0 -DTZ_OGL=1)
 elseif(${TOPAZ_VULKAN})
     # Vulkan
     message(STATUS "RenderAPI: Vulkan (\"VK\")")

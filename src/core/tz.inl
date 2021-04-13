@@ -1,3 +1,4 @@
+#include "core/assert.hpp"
 #include <string_view>
 #include <cstdint>
 #include <iterator>
@@ -11,8 +12,11 @@ namespace tz
 
         const auto begin = str.find_first_of(numbers);
         if (begin == std::string_view::npos)
+        {
+            tz_error("tz::static_stoi(%.*s, ...): Failed to convert to a number.", str.size(), str.data());
             return -1;
-
+        }
+            
         const auto sign = begin != 0U && str[begin - 1U] == '-' ? -1 : 1;
         str.remove_prefix(begin);
 
