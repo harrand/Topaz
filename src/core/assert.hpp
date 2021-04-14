@@ -4,10 +4,6 @@
 
 namespace tz
 {
-    inline void debugbreak()
-    {
-        ::debug_break();
-    }
 
 #ifdef tz_assert
 #undef tz_assert
@@ -23,7 +19,7 @@ namespace tz
         // Use the given ostream.
         fflush(output_stream);
         fprintf(output_stream, fmt, std::forward<Args>(args)...);
-        tz::debugbreak();
+        ::debug_break();
         if(hard)
         {
             fprintf(output_stream, "%s", "[HARD ASSERT DETECTED. ABORTING.]\n");

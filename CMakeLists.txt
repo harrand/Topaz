@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD 20)
 
 project(TZVK VERSION ${TZ_VERSION})
 
-add_executable(TZVK
+add_library(TZVK
     src/core/assert.hpp
     src/core/engine_info.cpp
     src/core/engine_info.hpp
@@ -14,8 +14,7 @@ add_executable(TZVK
     src/core/tz.cpp
     src/core/tz.inl
     src/core/tz.hpp
-
-    src/main.cpp)
+    )
 
 message(STATUS "Topaz v${TZ_VERSION}")
 
@@ -39,6 +38,8 @@ else()
 endif()
 
 add_subdirectory(lib)
+add_subdirectory(demo)
 
 target_include_directories(TZVK PUBLIC ${PROJECT_SOURCE_DIR}/src)
-target_link_libraries(TZVK PUBLIC debugbreak glfw)
+target_link_libraries(TZVK PRIVATE glfw)
+target_link_libraries(TZVK PUBLIC debugbreak)
