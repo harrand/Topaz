@@ -30,6 +30,7 @@ namespace tz
             std::abort();
         }
 #endif
+    }
 
     #define tz_error9(fmt, ...) static_assert(false, "tz_error(...) invoked with 9 total arguments. 8 or more is unsupported.")
     #define tz_error2ormore(fmt, ...) tz_assert(false, fmt, __VA_ARGS__)
@@ -48,7 +49,6 @@ namespace tz
                           tz_error1(__VA_ARGS__),\
                           tz_error0(__VA_ARGS__)\
                           )
-    }
 }
 
 #endif // TOPAZ_CORE_ASSERT_HPP

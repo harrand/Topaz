@@ -7,10 +7,14 @@ set(CMAKE_CXX_STANDARD 20)
 project(TZVK VERSION ${TZ_VERSION})
 
 add_executable(TZVK
+    src/core/assert.hpp
+    src/core/engine_info.cpp
+    src/core/engine_info.hpp
+    src/core/engine_info.inl
     src/core/tz.cpp
     src/core/tz.inl
     src/core/tz.hpp
-    src/core/assert.hpp
+
     src/main.cpp)
 
 message(STATUS "Topaz v${TZ_VERSION}")
