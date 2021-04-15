@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.9)
 include(cmake/setup_configs.cmake)
 
 file(READ ./version.txt TZ_VERSION)
+# Reconfigure on changes to ./version.txt
+configure_file(./version.txt topaz_version.xml)
 set(CMAKE_CXX_STANDARD 20)
 
 project(TZVK VERSION ${TZ_VERSION})
@@ -11,9 +13,15 @@ add_library(TZVK
     src/core/engine_info.cpp
     src/core/engine_info.hpp
     src/core/engine_info.inl
+    src/core/game_info.hpp
     src/core/tz.cpp
     src/core/tz.inl
     src/core/tz.hpp
+
+    src/gl/vk/setup/extension_list.cpp
+    src/gl/vk/setup/extension_list.hpp
+    src/gl/vk/setup/vulkan_instance.cpp
+    src/gl/vk/setup/vulkan_instance.hpp
     )
 
 message(STATUS "Topaz v${TZ_VERSION}")

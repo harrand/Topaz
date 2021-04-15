@@ -1,0 +1,1 @@
+register_demo(vk_init_demo vk_init_demo.cpp)

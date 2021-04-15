@@ -15,7 +15,7 @@ endfunction()
 
 function(configure_debug target)
     target_compile_definitions(${target} PUBLIC -DTZ_DEBUG=1)
-    target_compile_options(${target} PRIVATE -g)
+    target_compile_options(${target} PUBLIC -g)
 endfunction()
 
 function(configure_release target)

@@ -4,6 +4,9 @@
 
 namespace tz
 {
+    /**
+     * Represents information about the current engine used.
+     */
     struct EngineInfo
     {
         enum class RenderAPI
