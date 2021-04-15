@@ -1,5 +1,6 @@
 #if TZ_VULKAN
 #include "gl/vk/setup/vulkan_instance.hpp"
+#include "gl/vk/validation/debug_messenger.hpp"
 #include "core/assert.hpp"
 namespace tz::gl::vk
 {
@@ -36,9 +37,9 @@ namespace tz::gl::vk
         create.pApplicationInfo = &app_info;
 
         // (Important) TODO: Assert on glfw being initialised. Otherwise UB.
-        ExtensionList glfw_extensions = tz::gl::vk::get_glfw_required_extensions();
+        ExtensionList default_extensions = tz::gl::vk::get_default_required_extensions();
         // Add GLFW required extensions too.
-        extensions.append(glfw_extensions);
+        extensions.append(default_extensions);
         create.enabledExtensionCount = extensions.length();
         create.ppEnabledExtensionNames = extensions.data();
 
@@ -56,6 +57,19 @@ namespace tz::gl::vk
         {
             tz_error("VulkanInstance::VulkanInstance(...): Failed to create instance.");
         }
+
+        tz::gl::vk::validation::initialise_default_messenger(this->instance);
+    }
+
+    VulkanInstance::~VulkanInstance()
+    {
+        tz::gl::vk::validation::destroy_default_messenger();
+        vkDestroyInstance(this->instance, nullptr);
+    }
+
+    VkInstance VulkanInstance::operator()() const
+    {
+        return this->instance;
     }
 }
 

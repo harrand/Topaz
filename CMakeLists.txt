@@ -18,10 +18,20 @@ add_library(TZVK
     src/core/tz.inl
     src/core/tz.hpp
 
+    src/gl/vk/common/basic_list.hpp
+
+    src/gl/vk/hardware/device.cpp
+    src/gl/vk/hardware/device.hpp
+
     src/gl/vk/setup/extension_list.cpp
     src/gl/vk/setup/extension_list.hpp
     src/gl/vk/setup/vulkan_instance.cpp
     src/gl/vk/setup/vulkan_instance.hpp
+
+    src/gl/vk/validation/debug_callback.hpp
+    src/gl/vk/validation/debug_messenger.cpp
+    src/gl/vk/validation/debug_messenger.hpp
+    src/gl/vk/validation/debug_messenger.inl
     src/gl/vk/validation/layer.cpp
     src/gl/vk/validation/layer.hpp
     )

@@ -1,6 +1,8 @@
 #if TZ_VULKAN
 #include "gl/vk/setup/extension_list.hpp"
+#include "gl/vk/validation/layer.hpp"
 #include "GLFW/glfw3.h"
+#include "vulkan/vulkan.h"
 #include <cstdint>
 
 namespace tz::gl::vk
@@ -17,6 +19,16 @@ namespace tz::gl::vk
         }
 
         return glfw_vulkan_extensions;
+    }
+
+    ExtensionList get_default_required_extensions()
+    {
+        ExtensionList exts = get_glfw_required_extensions();
+        if constexpr(tz::gl::vk::validation::layers_enabled)
+        {
+            exts.add(VK_EXT_DEBUG_UTILS_EXTENSION_NAME); // debug messenger
+        }
+        return exts;
     }
 }
 

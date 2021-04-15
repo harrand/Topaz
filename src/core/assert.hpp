@@ -2,6 +2,8 @@
 #define TOPAZ_CORE_ASSERT_HPP
 #include "debugbreak.h"
 #include <cstdio>
+#include <cstdlib>
+#include <utility>
 
 namespace tz
 {

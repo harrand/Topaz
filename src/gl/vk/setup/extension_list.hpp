@@ -10,6 +10,7 @@ namespace tz::gl::vk
     using ExtensionList = common::BasicList<VulkanExtension>;
 
     ExtensionList get_glfw_required_extensions();
+    ExtensionList get_default_required_extensions();
 }
 
 #endif // TZ_VULKAn
