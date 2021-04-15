@@ -19,7 +19,12 @@ add_library(TZVK
     src/core/tz.hpp
 
     src/gl/vk/common/basic_list.hpp
+    src/gl/vk/common/polymorphic_list.hpp
+    src/gl/vk/common/polymorphic_list.inl
 
+    src/gl/vk/hardware/device_filter.cpp
+    src/gl/vk/hardware/device_filter.hpp
+    src/gl/vk/hardware/device_filter.inl
     src/gl/vk/hardware/device.cpp
     src/gl/vk/hardware/device.hpp
 

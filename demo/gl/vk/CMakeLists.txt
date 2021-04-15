@@ -1,1 +1,2 @@
 register_demo(vk_init_demo vk_init_demo.cpp)
+register_demo(vk_device_demo vk_device_demo.cpp)

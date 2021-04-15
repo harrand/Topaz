@@ -7,16 +7,49 @@
 
 namespace tz::gl::vk::common
 {
-    template<typename T>
+    template<typename T, typename Allocator = std::allocator<T>>
     class BasicList
     {
+    private:
+        using UnderlyingList = std::vector<T, Allocator>;
+        UnderlyingList elements;
     public:
-        BasicList(std::initializer_list<T> elements = {}):
+        using Iterator = UnderlyingList::iterator;
+        using ConstIterator = UnderlyingList::const_iterator;
+
+        BasicList(std::initializer_list<T> elements):
         elements(elements){}
 
-        void add(T element)
+        BasicList() = default;
+
+        T& front()
+        {
+            return this->elements.front();
+        }
+
+        const T& front() const
+        {
+            return this->elements.front();
+        }
+
+        T& back()
+        {
+            return this->elements.back();
+        }
+
+        const T& back() const
+        {
+            return this->elements.back();
+        }
+
+        void add(const T& element)
         {
             this->elements.push_back(element);
+        }
+
+        void add(T&& element)
+        {
+            this->elements.push_back(std::forward<T>(element));
         }
 
         void append(const BasicList<T>& other)
@@ -29,12 +62,22 @@ namespace tz::gl::vk::common
             return std::find(this->elements.begin(), this->elements.end(), element) != this->elements.end();
         }
 
-        auto begin()
+        Iterator begin()
         {
             return this->elements.begin();
         }
 
-        auto end()
+        Iterator end()
+        {
+            return this->elements.end();
+        }
+
+        ConstIterator begin() const
+        {
+            return this->elements.begin();
+        }
+
+        ConstIterator end() const
         {
             return this->elements.end();
         }
@@ -48,8 +91,16 @@ namespace tz::gl::vk::common
         {
             return this->elements.data();
         }
-    private:
-        std::vector<T> elements;
+
+        Iterator erase(Iterator position)
+        {
+            return this->elements.erase(position);
+        }
+
+        Iterator erase(Iterator first, Iterator last)
+        {
+            return this->elements.erase(first, last);
+        }
     };
 }
 

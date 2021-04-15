@@ -31,9 +31,9 @@ namespace tz::gl::vk::hardware
     Device::Device(VkPhysicalDevice phys_dev):
     dev(phys_dev){}
 
-    Device::List get_all_devices(VkInstance instance)
+    DeviceList get_all_devices(VkInstance instance)
     {
-        Device::List devices;
+        DeviceList devices;
 
         std::uint32_t num_devices;
         vkEnumeratePhysicalDevices(instance, &num_devices, nullptr);

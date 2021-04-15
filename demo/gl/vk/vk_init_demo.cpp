@@ -3,7 +3,6 @@
 #endif
 
 #include "gl/vk/setup/vulkan_instance.hpp"
-#include "gl/vk/hardware/device.hpp"
 
 int main()
 {
@@ -13,10 +12,5 @@ int main()
     tzvk::VulkanApplicationInfo vk_info{vk_init_demo};
 
     tzvk::VulkanInstance vk_inst{vk_info};
-    tzvk::hardware::Device::List all_devices = tzvk::hardware::get_all_devices(vk_inst());
-    for(const tzvk::hardware::Device& dev : all_devices)
-    {
-        auto props = dev.get_properties();
-    }
     return 0;
 }

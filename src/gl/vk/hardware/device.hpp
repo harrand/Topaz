@@ -22,8 +22,10 @@ namespace tz::gl::vk::hardware
 
         VkPhysicalDevice dev;
     };
+    
+    using DeviceList = Device::List;
 
-    Device::List get_all_devices(VkInstance instance);
+    DeviceList get_all_devices(VkInstance instance);
 }
 
 #endif // TZ_VULKAN
