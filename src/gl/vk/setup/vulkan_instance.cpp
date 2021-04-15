@@ -27,7 +27,7 @@ namespace tz::gl::vk
         return this->app_info;
     }
 
-    VulkanInstance::VulkanInstance(VulkanApplicationInfo vk_app_info, ExtensionList extensions):
+    VulkanInstance::VulkanInstance(VulkanApplicationInfo vk_app_info, ExtensionList extensions, ValidationLayerList validation_layers):
     instance()
     {
         VkInstanceCreateInfo create{};
@@ -42,8 +42,15 @@ namespace tz::gl::vk
         create.enabledExtensionCount = extensions.length();
         create.ppEnabledExtensionNames = extensions.data();
 
-        // TODO: Validation Layers
-        create.enabledLayerCount = 0;
+        // Validation Layers
+        validation_layers.append(tz::gl::vk::get_default_validation_layers());
+        std::vector<const char*> c_strings;
+        create.enabledLayerCount = validation_layers.length();
+        for(const VulkanValidationLayer& layer : validation_layers)
+        {
+            c_strings.push_back(layer.c_str());
+        }
+        create.ppEnabledLayerNames = c_strings.data();
 
         if(vkCreateInstance(&create, nullptr, &this->instance) != VK_SUCCESS)
         {

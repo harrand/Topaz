@@ -22,6 +22,8 @@ add_library(TZVK
     src/gl/vk/setup/extension_list.hpp
     src/gl/vk/setup/vulkan_instance.cpp
     src/gl/vk/setup/vulkan_instance.hpp
+    src/gl/vk/validation/layer.cpp
+    src/gl/vk/validation/layer.hpp
     )
 
 message(STATUS "Topaz v${TZ_VERSION}")

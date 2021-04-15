@@ -3,6 +3,7 @@
 #if TZ_VULKAN
 #include "core/game_info.hpp"
 #include "gl/vk/setup/extension_list.hpp"
+#include "gl/vk/validation/layer.hpp"
 #include "vulkan/vulkan.h"
 
 namespace tz::gl::vk
@@ -20,7 +21,7 @@ namespace tz::gl::vk
     class VulkanInstance
     {
     public:
-        VulkanInstance(VulkanApplicationInfo vk_app_info, ExtensionList extensions = {});
+        VulkanInstance(VulkanApplicationInfo vk_app_info, ExtensionList extensions = {}, ValidationLayerList validation_layers = {});
     private:
         VkInstance instance;
     };

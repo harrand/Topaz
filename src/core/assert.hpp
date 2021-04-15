@@ -1,6 +1,7 @@
 #ifndef TOPAZ_CORE_ASSERT_HPP
 #define TOPAZ_CORE_ASSERT_HPP
 #include "debugbreak.h"
+#include <cstdio>
 
 namespace tz
 {
