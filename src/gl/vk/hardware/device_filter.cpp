@@ -49,6 +49,11 @@ namespace tz::gl::vk::hardware
             filters.emplace<DeviceIntegratedGPUFilter>();
             filters.filter_all(list);
         }
+
+        void preserve_only_graphics_queues(hardware::DeviceList& list)
+        {
+            preserve_only_supporting_queues<VK_QUEUE_GRAPHICS_BIT>(list);
+        }
     }
 }
 

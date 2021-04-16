@@ -7,6 +7,8 @@
 namespace tz::gl::vk::hardware
 {
     using DeviceProperties = VkPhysicalDeviceProperties;
+    using DeviceQueueFamilies = tz::gl::vk::common::BasicList<VkQueueFamilyProperties>;
+
     class Device
     {
     public:
@@ -14,6 +16,7 @@ namespace tz::gl::vk::hardware
         static Device null();
         bool is_null() const;
         DeviceProperties get_properties() const;
+        DeviceQueueFamilies get_queue_families() const;
 
         friend List get_all_devices(VkInstance instance);
     private:

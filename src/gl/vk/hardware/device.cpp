@@ -22,6 +22,21 @@ namespace tz::gl::vk::hardware
         return props;
     }
 
+    DeviceQueueFamilies Device::get_queue_families() const
+    {
+        DeviceQueueFamilies queue_families;
+
+        std::uint32_t queue_family_count;
+        vkGetPhysicalDeviceQueueFamilyProperties(this->dev, &queue_family_count, nullptr);
+        std::vector<VkQueueFamilyProperties> queue_fams{queue_family_count};
+        vkGetPhysicalDeviceQueueFamilyProperties(this->dev, &queue_family_count, queue_fams.data());
+        for(const VkQueueFamilyProperties& prop : queue_fams)
+        {
+            queue_families.add(prop);
+        }
+        return queue_families;
+    }
+
     Device::Device():
     Device(VK_NULL_HANDLE)
     {

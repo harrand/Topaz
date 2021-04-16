@@ -27,6 +27,8 @@ add_library(TZVK
     src/gl/vk/hardware/device_filter.inl
     src/gl/vk/hardware/device.cpp
     src/gl/vk/hardware/device.hpp
+    src/gl/vk/hardware/queue_family.cpp
+    src/gl/vk/hardware/queue_family.hpp
 
     src/gl/vk/setup/extension_list.cpp
     src/gl/vk/setup/extension_list.hpp

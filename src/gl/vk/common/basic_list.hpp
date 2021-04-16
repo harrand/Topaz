@@ -4,6 +4,7 @@
 #include <initializer_list>
 #include <vector>
 #include <algorithm>
+#include <span>
 
 namespace tz::gl::vk::common
 {
@@ -21,6 +22,11 @@ namespace tz::gl::vk::common
         elements(elements){}
 
         BasicList() = default;
+
+        operator std::span<T>() const
+        {
+            return static_cast<std::span<T>>(this->elements);
+        }
 
         T& front()
         {
