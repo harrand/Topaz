@@ -18,7 +18,7 @@ namespace tz::gl::vk::hardware
         DeviceProperties get_properties() const;
         DeviceQueueFamilies get_queue_families() const;
 
-        friend List get_all_devices(VkInstance instance);
+        friend List get_all_devices();
     private:
         Device();
         Device(VkPhysicalDevice phys_dev);
@@ -28,7 +28,7 @@ namespace tz::gl::vk::hardware
     
     using DeviceList = Device::List;
 
-    DeviceList get_all_devices(VkInstance instance);
+    DeviceList get_all_devices();
 }
 
 #endif // TZ_VULKAN

@@ -41,6 +41,9 @@ add_library(TZVK
     src/gl/vk/validation/debug_messenger.inl
     src/gl/vk/validation/layer.cpp
     src/gl/vk/validation/layer.hpp
+
+    src/gl/vk/tz_vulkan.cpp
+    src/gl/vk/tz_vulkan.hpp
     )
 
 message(STATUS "Topaz v${TZ_VERSION}")

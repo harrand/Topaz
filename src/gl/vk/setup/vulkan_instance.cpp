@@ -69,6 +69,11 @@ namespace tz::gl::vk
 
     VkInstance VulkanInstance::operator()() const
     {
+        return this->native();
+    }
+
+    VkInstance VulkanInstance::native() const
+    {
         return this->instance;
     }
 }

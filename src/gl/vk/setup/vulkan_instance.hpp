@@ -24,6 +24,7 @@ namespace tz::gl::vk
         VulkanInstance(VulkanApplicationInfo vk_app_info, ExtensionList extensions = {}, ValidationLayerList validation_layers = {});
         ~VulkanInstance();
         VkInstance operator()() const;
+        VkInstance native() const;
     private:
         VkInstance instance;
     };

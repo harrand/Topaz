@@ -1,4 +1,5 @@
 #include "gl/vk/hardware/device.hpp"
+#include "gl/vk/tz_vulkan.hpp"
 #include "core/assert.hpp"
 #if TZ_VULKAN
 
@@ -46,15 +47,16 @@ namespace tz::gl::vk::hardware
     Device::Device(VkPhysicalDevice phys_dev):
     dev(phys_dev){}
 
-    DeviceList get_all_devices(VkInstance instance)
+    DeviceList get_all_devices()
     {
+        tz_assert(tz::gl::vk::is_initialised(), "tz::gl::vk::hardware::get_all_devices(): tz::gl::vk not initialised", "");
         DeviceList devices;
 
         std::uint32_t num_devices;
-        vkEnumeratePhysicalDevices(instance, &num_devices, nullptr);
+        vkEnumeratePhysicalDevices(tz::gl::vk::get().native(), &num_devices, nullptr);
         tz_assert(num_devices > 0, "tz::gl::vk::hardware::get_all_devices(...): No physical devices were found. Rendering is impossible.", "");
         std::vector<VkPhysicalDevice> physical_devices(num_devices);
-        vkEnumeratePhysicalDevices(instance, &num_devices, physical_devices.data());
+        vkEnumeratePhysicalDevices(tz::gl::vk::get().native(), &num_devices, physical_devices.data());
         for(const auto& dev_handle : physical_devices)
         {
             Device cur_dev{dev_handle};

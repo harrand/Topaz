@@ -2,7 +2,7 @@
     static_assert(false, "Cannot build vk_device_demo with TZ_VULKAN disabled.");
 #endif
 
-#include "gl/vk/setup/vulkan_instance.hpp"
+#include "gl/vk/tz_vulkan.hpp"
 #include "gl/vk/hardware/device.hpp"
 #include "gl/vk/hardware/device_filter.hpp"
 #include <cstdio>
@@ -50,40 +50,41 @@ int main()
     namespace tzvk = tz::gl::vk;
     tzvk::VulkanApplicationInfo vk_info{vk_init_demo};
 
-    tzvk::VulkanInstance vk_inst{vk_info};
-    tzvk::hardware::Device::List all_devices = tzvk::hardware::get_all_devices(vk_inst());
+    tzvk::initialise(vk_init_demo);
+    {
+        tzvk::hardware::Device::List all_devices = tzvk::hardware::get_all_devices();
 
-    tzvk::hardware::Device::List devices = tzvk::hardware::get_all_devices(vk_inst());
-    print_list("Unfiltered", devices);
+        tzvk::hardware::Device::List devices = tzvk::hardware::get_all_devices();
+        print_list("Unfiltered", devices);
 
-    tzvk::hardware::quick_filters::remove_non_gpus(devices);
-    print_list("Non-GPUs Removed", devices);
-    devices = all_devices;
+        tzvk::hardware::quick_filters::remove_non_gpus(devices);
+        print_list("Non-GPUs Removed", devices);
+        devices = all_devices;
 
-    tzvk::hardware::quick_filters::preserve_only_integrated_gpus(devices);
-    print_list("Only integrated GPUs", devices);
-    devices = all_devices;
+        tzvk::hardware::quick_filters::preserve_only_integrated_gpus(devices);
+        print_list("Only integrated GPUs", devices);
+        devices = all_devices;
 
-    tzvk::hardware::quick_filters::preserve_only_supporting_queues<VK_QUEUE_GRAPHICS_BIT>(devices);
-    print_list("Only those with a graphics queue", devices);
-    devices = all_devices;
+        tzvk::hardware::quick_filters::preserve_only_supporting_queues<VK_QUEUE_GRAPHICS_BIT>(devices);
+        print_list("Only those with a graphics queue", devices);
+        devices = all_devices;
 
-    tzvk::hardware::quick_filters::preserve_only_supporting_queues<VK_QUEUE_COMPUTE_BIT>(devices);
-    print_list("Only those with a compute queue", devices);
-    devices = all_devices;
+        tzvk::hardware::quick_filters::preserve_only_supporting_queues<VK_QUEUE_COMPUTE_BIT>(devices);
+        print_list("Only those with a compute queue", devices);
+        devices = all_devices;
 
-    tzvk::hardware::quick_filters::preserve_only_supporting_queues<VK_QUEUE_TRANSFER_BIT>(devices);
-    print_list("Only those with a transfer queue", devices);
-    devices = all_devices;
+        tzvk::hardware::quick_filters::preserve_only_supporting_queues<VK_QUEUE_TRANSFER_BIT>(devices);
+        print_list("Only those with a transfer queue", devices);
+        devices = all_devices;
 
-    tzvk::hardware::quick_filters::preserve_only_supporting_queues<VK_QUEUE_SPARSE_BINDING_BIT>(devices);
-    print_list("Only those with a sparse binding queue", devices);
-    devices = all_devices;
+        tzvk::hardware::quick_filters::preserve_only_supporting_queues<VK_QUEUE_SPARSE_BINDING_BIT>(devices);
+        print_list("Only those with a sparse binding queue", devices);
+        devices = all_devices;
 
-    tzvk::hardware::quick_filters::preserve_only_supporting_queues<VK_QUEUE_GRAPHICS_BIT, VK_QUEUE_COMPUTE_BIT, VK_QUEUE_TRANSFER_BIT, VK_QUEUE_SPARSE_BINDING_BIT>(devices);
-    print_list("Only those with at least one queue supporting one of each: graphics, compute, transfer, sparse binding", devices);
-    devices = all_devices;
-
-
+        tzvk::hardware::quick_filters::preserve_only_supporting_queues<VK_QUEUE_GRAPHICS_BIT, VK_QUEUE_COMPUTE_BIT, VK_QUEUE_TRANSFER_BIT, VK_QUEUE_SPARSE_BINDING_BIT>(devices);
+        print_list("Only those with at least one queue supporting one of each: graphics, compute, transfer, sparse binding", devices);
+        devices = all_devices;
+    }
+    tzvk::terminate();
     return 0;
 }
