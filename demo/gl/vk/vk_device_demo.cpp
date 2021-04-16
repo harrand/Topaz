@@ -65,23 +65,24 @@ int main()
         print_list("Only integrated GPUs", devices);
         devices = all_devices;
 
-        tzvk::hardware::quick_filters::preserve_only_supporting_queues<VK_QUEUE_GRAPHICS_BIT>(devices);
+        tzvk::hardware::quick_filters::preserve_only_with_appropriate_queue(devices, {{tzvk::hardware::QueueFamilyType::Graphics}});
         print_list("Only those with a graphics queue", devices);
         devices = all_devices;
 
-        tzvk::hardware::quick_filters::preserve_only_supporting_queues<VK_QUEUE_COMPUTE_BIT>(devices);
+        tzvk::hardware::quick_filters::preserve_only_with_appropriate_queue(devices, {{tzvk::hardware::QueueFamilyType::Compute}});
         print_list("Only those with a compute queue", devices);
         devices = all_devices;
 
-        tzvk::hardware::quick_filters::preserve_only_supporting_queues<VK_QUEUE_TRANSFER_BIT>(devices);
+        tzvk::hardware::quick_filters::preserve_only_with_appropriate_queue(devices, {{tzvk::hardware::QueueFamilyType::Transfer}});
         print_list("Only those with a transfer queue", devices);
         devices = all_devices;
 
-        tzvk::hardware::quick_filters::preserve_only_supporting_queues<VK_QUEUE_SPARSE_BINDING_BIT>(devices);
+        tzvk::hardware::quick_filters::preserve_only_with_appropriate_queue(devices, {{tzvk::hardware::QueueFamilyType::SparseBinding}});
         print_list("Only those with a sparse binding queue", devices);
         devices = all_devices;
 
-        tzvk::hardware::quick_filters::preserve_only_supporting_queues<VK_QUEUE_GRAPHICS_BIT, VK_QUEUE_COMPUTE_BIT, VK_QUEUE_TRANSFER_BIT, VK_QUEUE_SPARSE_BINDING_BIT>(devices);
+        tzvk::hardware::QueueFamilyTypeField all{{tzvk::hardware::QueueFamilyType::Graphics, tzvk::hardware::QueueFamilyType::Compute, tzvk::hardware::QueueFamilyType::Transfer, tzvk::hardware::QueueFamilyType::SparseBinding}};
+        tzvk::hardware::quick_filters::preserve_only_with_appropriate_queue(devices, all);
         print_list("Only those with at least one queue supporting one of each: graphics, compute, transfer, sparse binding", devices);
         devices = all_devices;
     }

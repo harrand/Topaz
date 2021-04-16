@@ -31,12 +31,26 @@ namespace tz::gl::vk::hardware
         vkGetPhysicalDeviceQueueFamilyProperties(this->dev, &queue_family_count, nullptr);
         std::vector<VkQueueFamilyProperties> queue_fams{queue_family_count};
         vkGetPhysicalDeviceQueueFamilyProperties(this->dev, &queue_family_count, queue_fams.data());
+        int i = 0;
         for(const VkQueueFamilyProperties& prop : queue_fams)
         {
-            queue_families.add(prop);
+            DeviceQueueFamily fam{.dev = this->dev, .index = i};
+            VkQueueFlags flag = prop.queueFlags;
+            auto enum_2_flag = [](QueueFamilyType t){return static_cast<int>(t);};
+            
+            for(QueueFamilyType type : hardware::family_types)
+            {
+                if(flag & enum_2_flag(type))
+                {
+                    fam.types_supported |= type;
+                }
+            }
+            queue_families.add(fam);
+            i++;
         }
         return queue_families;
     }
+
 
     Device::Device():
     Device(VK_NULL_HANDLE)

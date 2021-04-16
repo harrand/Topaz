@@ -21,12 +21,13 @@ namespace tz::gl::vk::hardware
         void filter_all(hardware::DeviceList& devices) const;
     };
 
-    template<VkQueueFlagBits... QueueFamilyTypes>
     class DeviceQueueFamilyFilter : public IDeviceFilter
     {
     public:
-        constexpr DeviceQueueFamilyFilter() = default;
-        virtual bool satisfies(const hardware::Device& device) const;
+        DeviceQueueFamilyFilter(QueueFamilyTypeField types);
+        virtual bool satisfies(const hardware::Device& device) const override;
+    private:
+        QueueFamilyTypeField types;
     };
 
     template<VkPhysicalDeviceType Type>
@@ -54,9 +55,7 @@ namespace tz::gl::vk::hardware
         void remove_non_gpus(hardware::DeviceList& list);
         void preserve_only_discrete_gpus(hardware::DeviceList& list);
         void preserve_only_integrated_gpus(hardware::DeviceList& list);
-        void preserve_only_graphics_queues(hardware::DeviceList& list);
-        template<VkQueueFlagBits... QueueFamilyTypes>
-        void preserve_only_supporting_queues(hardware::DeviceList& list);
+        void preserve_only_with_appropriate_queue(hardware::DeviceList& list, QueueFamilyTypeField field);
     }
 }
 

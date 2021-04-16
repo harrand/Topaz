@@ -20,6 +20,21 @@ namespace tz::gl::vk::hardware
         devices.erase(std::remove_if(devices.begin(), devices.end(), [this](const hardware::Device& dev){return !this->satisfies(dev);}), devices.end());
     }
 
+    DeviceQueueFamilyFilter::DeviceQueueFamilyFilter(QueueFamilyTypeField types):
+    types(types){}
+
+    bool DeviceQueueFamilyFilter::satisfies(const hardware::Device& device) const
+    {
+        for(DeviceQueueFamily family : device.get_queue_families())
+        {
+            if(family.types_supported.contains(this->types))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
     bool DeviceAnyGPUFilter::satisfies(const hardware::Device& device) const
     {
         return DeviceIntegratedGPUFilter{}.satisfies(device)
@@ -50,10 +65,13 @@ namespace tz::gl::vk::hardware
             filters.filter_all(list);
         }
 
-        void preserve_only_graphics_queues(hardware::DeviceList& list)
+        void preserve_only_with_appropriate_queue(hardware::DeviceList& list, QueueFamilyTypeField field)
         {
-            preserve_only_supporting_queues<VK_QUEUE_GRAPHICS_BIT>(list);
+            DeviceFilterList filters;
+            filters.emplace<DeviceQueueFamilyFilter>(field);
+            filters.filter_all(list);
         }
+
     }
 }
 

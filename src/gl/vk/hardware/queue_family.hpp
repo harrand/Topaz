@@ -4,11 +4,41 @@
 #include "vulkan/vulkan.h"
 #include <optional>
 #include <span>
+#include <vector>
+#include <initializer_list>
 
 namespace tz::gl::vk::hardware
 {
-    std::optional<VkQueueFamilyProperties> supports_queue_flag(std::span<const VkQueueFamilyProperties> fam_props, VkQueueFlagBits flag_type);
-    bool supports_queue_flags(std::span<const VkQueueFamilyProperties> fam_props, std::span<const VkQueueFlagBits> flag_types);
+    enum class QueueFamilyType
+    {
+        Graphics = VK_QUEUE_GRAPHICS_BIT,
+        Compute = VK_QUEUE_COMPUTE_BIT,
+        Transfer = VK_QUEUE_TRANSFER_BIT,
+        SparseBinding = VK_QUEUE_SPARSE_BINDING_BIT
+    };
+
+    constexpr QueueFamilyType family_types[] = {QueueFamilyType::Graphics, QueueFamilyType::Compute, QueueFamilyType::Transfer, QueueFamilyType::SparseBinding};
+
+    class QueueFamilyTypeField
+    {
+    public:
+        QueueFamilyTypeField(std::initializer_list<QueueFamilyType> types = {});
+        QueueFamilyTypeField& operator|=(QueueFamilyType type);
+        QueueFamilyTypeField operator|(QueueFamilyType type) const;
+        bool contains(QueueFamilyType type) const;
+        bool contains(QueueFamilyTypeField field) const;
+    private:
+        std::vector<QueueFamilyType> supported_types;
+    };
+
+    using QueueFamilyIndex = int;
+
+    struct DeviceQueueFamily
+    {
+        VkPhysicalDevice dev;
+        QueueFamilyIndex index;
+        QueueFamilyTypeField types_supported;
+    };
 }
 
 #endif

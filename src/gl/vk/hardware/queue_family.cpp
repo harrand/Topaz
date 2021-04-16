@@ -3,6 +3,41 @@
 
 namespace tz::gl::vk::hardware
 {
+    QueueFamilyTypeField::QueueFamilyTypeField(std::initializer_list<QueueFamilyType> types):
+    supported_types(types){}
+
+    QueueFamilyTypeField& QueueFamilyTypeField::operator|=(QueueFamilyType type)
+    {
+        if(!this->contains(type))
+        {
+            this->supported_types.push_back(type);
+        }
+        return *this;
+    }
+
+    QueueFamilyTypeField QueueFamilyTypeField::operator|(QueueFamilyType type) const
+    {
+        QueueFamilyTypeField cpy = *this;
+        return cpy |= type;
+    }
+
+    bool QueueFamilyTypeField::contains(QueueFamilyType type) const
+    {
+        return std::find(this->supported_types.begin(), this->supported_types.end(), type) != this->supported_types.end();
+    }
+
+    bool QueueFamilyTypeField::contains(QueueFamilyTypeField field) const
+    {
+        for(const QueueFamilyType& type : field.supported_types)
+        {
+            if(!this->contains(type))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
     std::optional<VkQueueFamilyProperties> supports_queue_flag(std::span<const VkQueueFamilyProperties> fam_props, VkQueueFlagBits flag_type)
     {
         std::optional<VkQueueFamilyProperties> maybe_props = std::nullopt;

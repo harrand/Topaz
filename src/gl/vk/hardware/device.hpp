@@ -2,12 +2,12 @@
 #define TOPAZ_GL_VK_HARDWARE_DEVICE_HPP
 #if TZ_VULKAN
 #include "gl/vk/common/basic_list.hpp"
-#include "vulkan/vulkan.h"
+#include "gl/vk/hardware/queue_family.hpp"
 
 namespace tz::gl::vk::hardware
 {
     using DeviceProperties = VkPhysicalDeviceProperties;
-    using DeviceQueueFamilies = tz::gl::vk::common::BasicList<VkQueueFamilyProperties>;
+    using DeviceQueueFamilies = tz::gl::vk::common::BasicList<DeviceQueueFamily>;
 
     class Device
     {
