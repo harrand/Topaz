@@ -17,7 +17,7 @@ namespace tz::gl::vk::hardware
 
     DeviceProperties Device::get_properties() const
     {
-        tz_assert(!this->is_null(), "tz::gl::vk::hardware::Device::get_properties(): Null device handle.", "");
+        tz_assert(!this->is_null(), "tz::gl::vk::hardware::Device::get_properties(): Null device handle.");
         VkPhysicalDeviceProperties props;
         vkGetPhysicalDeviceProperties(this->dev, &props);
         return props;
@@ -63,12 +63,12 @@ namespace tz::gl::vk::hardware
 
     DeviceList get_all_devices()
     {
-        tz_assert(tz::gl::vk::is_initialised(), "tz::gl::vk::hardware::get_all_devices(): tz::gl::vk not initialised", "");
+        tz_assert(tz::gl::vk::is_initialised(), "tz::gl::vk::hardware::get_all_devices(): tz::gl::vk not initialised");
         DeviceList devices;
 
         std::uint32_t num_devices;
         vkEnumeratePhysicalDevices(tz::gl::vk::get().native(), &num_devices, nullptr);
-        tz_assert(num_devices > 0, "tz::gl::vk::hardware::get_all_devices(...): No physical devices were found. Rendering is impossible.", "");
+        tz_assert(num_devices > 0, "tz::gl::vk::hardware::get_all_devices(...): No physical devices were found. Rendering is impossible.");
         std::vector<VkPhysicalDevice> physical_devices(num_devices);
         vkEnumeratePhysicalDevices(tz::gl::vk::get().native(), &num_devices, physical_devices.data());
         for(const auto& dev_handle : physical_devices)

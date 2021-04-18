@@ -18,6 +18,7 @@ add_library(TZVK
     src/core/engine_info.hpp
     src/core/engine_info.inl
     src/core/game_info.hpp
+    src/core/report.hpp
     src/core/tz.cpp
     src/core/tz.hpp
     src/core/tz.inl
@@ -61,7 +62,7 @@ elseif(${TOPAZ_VULKAN})
     message(STATUS "RenderAPI: Vulkan (\"VK\")")
     configure_vulkan(TZVK)
 endif()
-target_compile_definitions(TZVK PUBLIC -DTZ_VERSION=\"${TZ_VERSION}\")
+target_compile_definitions(TZVK PUBLIC -DTZ_VERSION=\"${TZ_VERSION}\" -DTZ_SILENCED=0)
 
 if(${TOPAZ_DEBUG})
     message(STATUS "BuildConfig: Debug")

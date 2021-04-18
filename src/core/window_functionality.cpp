@@ -28,6 +28,6 @@ namespace tz
 
     void WindowFunctionality::ensure() const
     {
-        tz_assert(this->wnd != nullptr, "WindowFunctionality::ensure(): Failed", "");
+        tz_assert(this->wnd != nullptr, "WindowFunctionality::ensure(): Failed");
     }
 }

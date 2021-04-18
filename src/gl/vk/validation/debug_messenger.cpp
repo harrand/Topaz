@@ -11,7 +11,7 @@ namespace tz::gl::vk::validation
 
     void initialise_default_messenger(VkInstance instance)
     {
-        tz_assert(def_msg == nullptr, "Double-call of initialise_default_messenger?", "");
+        tz_assert(def_msg == nullptr, "Double-call of initialise_default_messenger?");
         def_msg = new DebugMessenger
         (
             instance,
@@ -30,13 +30,13 @@ namespace tz::gl::vk::validation
 
     void destroy_default_messenger()
     {
-        tz_assert(def_msg != nullptr, "Double-call of destroy_default_messenger()?", "");
+        tz_assert(def_msg != nullptr, "Double-call of destroy_default_messenger()?");
         delete def_msg;
     }
 
     DebugMessenger& default_messenger()
     {
-        tz_assert(def_msg != nullptr, "Retrieving default_messenger() without initialising it first!", "");
+        tz_assert(def_msg != nullptr, "Retrieving default_messenger() without initialising it first!");
         return *def_msg;
     }
 

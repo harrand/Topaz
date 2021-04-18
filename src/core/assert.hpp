@@ -13,7 +13,7 @@ namespace tz
 #endif
 #define tz_assert(EXPRESSION, fmt, ...) ((EXPRESSION) ? \
 (void)0 : tz::assert_message(stderr, false, \
-"Assertion failure: %s\nIn file: %s on line %d:\n\t" fmt, #EXPRESSION, __FILE__, __LINE__, __VA_ARGS__))
+"Assertion failure: %s\nIn file: %s on line %d:\n\t" fmt, #EXPRESSION, __FILE__, __LINE__ __VA_OPT__(,) __VA_ARGS__))
 
     template<typename... Args>
     inline void assert_message([[maybe_unused]] FILE* output_stream, [[maybe_unused]] bool hard, [[maybe_unused]] const char* fmt, [[maybe_unused]] Args&&... args)

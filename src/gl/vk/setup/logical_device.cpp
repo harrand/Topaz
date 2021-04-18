@@ -7,7 +7,7 @@ namespace tz::gl::vk
     LogicalDevice::LogicalDevice(hardware::DeviceQueueFamily queue_family)
     {
         // TODO: Remove assert?
-        tz_assert(queue_family.types_supported.contains(hardware::QueueFamilyType::Graphics), "tz::gl::vk::LogicalDevice::LogicalDevice(...): The given queue family must support graphics queues. Although I admit this might not be a reasonable assert?", "");
+        tz_assert(queue_family.types_supported.contains(hardware::QueueFamilyType::Graphics), "tz::gl::vk::LogicalDevice::LogicalDevice(...): The given queue family must support graphics queues. Although I admit this might not be a reasonable assert?");
         VkDeviceQueueCreateInfo queue_create{};
         queue_create.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
         queue_create.queueFamilyIndex = queue_family.index;
@@ -34,7 +34,7 @@ namespace tz::gl::vk
         create.enabledLayerCount = 0;
 
         VkResult res = vkCreateDevice(queue_family.dev, &create, nullptr, &this->dev);
-        tz_assert(res == VK_SUCCESS, "tz::gl::vk::LogicalDevice(...): Failed to create logical device.", "");
+        tz_assert(res == VK_SUCCESS, "tz::gl::vk::LogicalDevice(...): Failed to create logical device.");
 
         // Possible TODO: Support multiple queues?
         vkGetDeviceQueue(this->dev, queue_family.index, 0, &this->queue);
