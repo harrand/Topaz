@@ -9,18 +9,22 @@ set(CMAKE_CXX_STANDARD 20)
 project(TZVK VERSION ${TZ_VERSION})
 
 add_library(TZVK
+    src/core/containers/basic_list.hpp
+    src/core/containers/polymorphic_list.hpp
+    src/core/containers/polymorphic_list.inl
+
     src/core/assert.hpp
     src/core/engine_info.cpp
     src/core/engine_info.hpp
     src/core/engine_info.inl
     src/core/game_info.hpp
     src/core/tz.cpp
-    src/core/tz.inl
     src/core/tz.hpp
-
-    src/gl/vk/common/basic_list.hpp
-    src/gl/vk/common/polymorphic_list.hpp
-    src/gl/vk/common/polymorphic_list.inl
+    src/core/tz.inl
+    src/core/window_functionality.cpp
+    src/core/window_functionality.hpp
+    src/core/window.cpp
+    src/core/window.hpp
 
     src/gl/vk/hardware/device_filter.cpp
     src/gl/vk/hardware/device_filter.hpp
@@ -71,5 +75,4 @@ add_subdirectory(lib)
 add_subdirectory(demo)
 
 target_include_directories(TZVK PUBLIC ${PROJECT_SOURCE_DIR}/src)
-target_link_libraries(TZVK PRIVATE glfw)
-target_link_libraries(TZVK PUBLIC debugbreak)
+target_link_libraries(TZVK PUBLIC debugbreak glfw)

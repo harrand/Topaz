@@ -1,6 +1,7 @@
 #if TZ_VULKAN
 #include "gl/vk/tz_vulkan.hpp"
 #include "core/assert.hpp"
+#include <cstdio>
 
 namespace tz::gl::vk
 {
@@ -9,6 +10,7 @@ namespace tz::gl::vk
     {
         tz_assert(inst == nullptr, "tz::gl::vk::initialise(...): Already initialised", "");
         inst = new VulkanInstance{game_info};
+        std::printf("Vulkan Initialised\n...\n");
     }
 
     void terminate()
@@ -16,6 +18,7 @@ namespace tz::gl::vk
         tz_assert(inst != nullptr, "tz::gl::vk::terminate(): Not initialised", "");
         delete inst;
         inst = nullptr;
+        std::printf("Vulkan Terminated\n");
     }
 
     VulkanInstance& get()

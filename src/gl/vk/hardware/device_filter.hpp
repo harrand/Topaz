@@ -1,7 +1,7 @@
 #ifndef TOPAZ_GL_VK_HARDWARE_DEVICE_FILTER_HPP
 #define TOPAZ_GL_VK_HARDWARE_DEVICE_FILTER_HPP
 #if TZ_VULKAN
-#include "gl/vk/common/polymorphic_list.hpp"
+#include "core/containers/polymorphic_list.hpp"
 #include "gl/vk/hardware/device.hpp"
 
 namespace tz::gl::vk::hardware
@@ -13,7 +13,7 @@ namespace tz::gl::vk::hardware
         virtual bool satisfies(const hardware::Device& device) const = 0;
     };
 
-    class DeviceFilterList : public common::PolymorphicList<IDeviceFilter>
+    class DeviceFilterList : public tz::PolymorphicList<IDeviceFilter>
     {
     public:
         DeviceFilterList() = default;  

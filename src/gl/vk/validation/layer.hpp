@@ -1,7 +1,7 @@
 #ifndef TOPAZ_GL_VK_VALIDATION_LAYER_HPP
 #define TOPAZ_GL_VK_VALIDATION_LAYER_HPP
 #if TZ_VULKAN
-#include "gl/vk/common/basic_list.hpp"
+#include "core/containers/basic_list.hpp"
 #include <string>
 
 namespace tz::gl::vk
@@ -15,7 +15,7 @@ namespace tz::gl::vk
         #endif
     }
     using VulkanValidationLayer = std::string;
-    using ValidationLayerList = common::BasicList<VulkanValidationLayer>;
+    using ValidationLayerList = tz::BasicList<VulkanValidationLayer>;
 
     ValidationLayerList get_all_available_layers();
     ValidationLayerList get_default_validation_layers();

@@ -1,9 +1,9 @@
 #ifndef TOPAZ_GL_VK_COMMON_POLYMORPHIC_LIST_HPP
 #define TOPAZ_GL_VK_COMMON_POLYMORPHIC_LIST_HPP
-#include "gl/vk/common/basic_list.hpp"
+#include "core/containers/basic_list.hpp"
 #include <memory>
 
-namespace tz::gl::vk::common
+namespace tz
 {
     template<typename T>
     class InterfaceIterator;
@@ -48,5 +48,5 @@ namespace tz::gl::vk::common
     };
 }
 
-#include "gl/vk/common/polymorphic_list.inl"
+#include "core/containers/polymorphic_list.inl"
 #endif // TOPAZ_GL_VK_COMMON_POLYMORPHIC_LIST_HPP

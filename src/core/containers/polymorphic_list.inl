@@ -1,6 +1,6 @@
 #include <utility>
 
-namespace tz::gl::vk::common
+namespace tz
 {
     template<typename T, typename Allocator>
     template<typename Derived, typename... Args>

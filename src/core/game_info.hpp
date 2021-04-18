@@ -1,9 +1,9 @@
 #ifndef TOPAZ_CORE_GAME_INFO_HPP
 #define TOPAZ_CORE_GAME_INFO_HPP
-#include "core/tz.hpp"
+#include "core/engine_info.hpp"
 
 namespace tz
-{
+{    
     struct GameInfo
     {
         using Version = tz::EngineInfo::Version;

@@ -1,10 +1,19 @@
 #ifndef TZ_CORE_TZ_HPP
 #define TZ_CORE_TZ_HPP
-#include "core/engine_info.hpp"
+#include "core/game_info.hpp"
+#include "core/window.hpp"
 
 namespace tz
 {
-    constexpr EngineInfo info();
+    enum class ApplicationType
+    {
+        WindowApplication,
+        Headless
+    };
+
+    void initialise(GameInfo game_info, ApplicationType app_type = ApplicationType::WindowApplication);
+    void terminate();
+    Window& window();
 }
 #include "core/tz.inl"
 #endif // TZ_CORE_TZ_HPP

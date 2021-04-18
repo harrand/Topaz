@@ -39,6 +39,8 @@ namespace tz
     {
         constexpr EngineInfo::Version parse_version(const char* version_string);
     }
+
+    constexpr EngineInfo info();
 }
 #include "core/engine_info.inl"
 #endif // TOPAZ_CORE_ENGINE_INFO_HPP

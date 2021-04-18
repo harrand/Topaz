@@ -1,12 +1,11 @@
 #ifndef TOPAZ_GL_VK_COMMON_BASIC_LIST_HPP
 #define TOPAZ_GL_VK_COMMON_BASIC_LIST_HPP
-// TODO: Guard within TZ_VULKAN? Doesn't seem necessary.
 #include <initializer_list>
 #include <vector>
 #include <algorithm>
 #include <span>
 
-namespace tz::gl::vk::common
+namespace tz
 {
     template<typename T, typename Allocator = std::allocator<T>>
     class BasicList
