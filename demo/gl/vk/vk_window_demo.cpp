@@ -43,7 +43,9 @@ int main()
 
         // Now create the device which can do both. We also ask it to use the swapchain extension.
         vk::LogicalDevice my_logical_device{my_qfam, {"VK_KHR_swapchain"}};
-
+        // Let's also check the extent to which this physical device supports swapchains
+        vk::hardware::SwapchainSupportDetails swapchain_support = my_device.get_window_swapchain_support();
+        tz_assert(swapchain_support.supports_swapchain, "Very odd. The logical device was spawned using swapchain, but the physical device apparantly doesn't support it after all? There's 99\% a bug somewhere");
         while(!tz::window().is_close_requested())
         {
             tz::window().update();

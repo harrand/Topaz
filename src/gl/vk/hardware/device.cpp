@@ -1,6 +1,7 @@
 #include "gl/vk/hardware/device.hpp"
 #include "gl/vk/tz_vulkan.hpp"
 #include "gl/vk/setup/window_surface.hpp"
+#include "gl/vk/hardware/device_filter.hpp"
 #include "core/assert.hpp"
 #if TZ_VULKAN
 
@@ -90,6 +91,16 @@ namespace tz::gl::vk::hardware
         return supported_extensions;
     }
 
+    SwapchainSupportDetails Device::get_window_swapchain_support() const
+    {
+        return
+        {
+            this->get_window_surface_capabilities(),
+            this->get_window_surface_formats(),
+            this->get_window_surface_present_modes(),
+            this->supports_swapchain()
+        };
+    }
 
     Device::Device():
     Device(VK_NULL_HANDLE)
@@ -99,6 +110,58 @@ namespace tz::gl::vk::hardware
 
     Device::Device(VkPhysicalDevice phys_dev):
     dev(phys_dev){}
+
+    bool Device::supports_swapchain() const
+    {
+        DeviceFilterList filter;
+        filter.emplace<DeviceExtensionSupportFilter>(std::initializer_list<VulkanExtension>{"VK_KHR_swapchain"});
+        return filter.satisfies(*this);
+    }
+
+    SurfaceCapabilities Device::get_surface_capabilities(VkSurfaceKHR custom_surface) const
+    {
+        tz_assert(this->supports_swapchain(), "Attempting to retrieve surface capabilities for this device, but there is no swapchain support");
+        SurfaceCapabilities capabilities;
+        vkGetPhysicalDeviceSurfaceCapabilitiesKHR(this->dev, custom_surface, &capabilities);
+        return capabilities;
+    }
+
+    SurfaceCapabilities Device::get_window_surface_capabilities() const
+    {
+        return this->get_surface_capabilities(vk::window_surface()->native());
+    }
+
+    SurfaceFormats Device::get_surface_formats(VkSurfaceKHR custom_surface) const
+    {
+        tz_assert(this->supports_swapchain(), "Attempting to retrieve surface formats for this device, but there is no swapchain support");
+        std::uint32_t format_count;
+        vkGetPhysicalDeviceSurfaceFormatsKHR(this->dev, custom_surface, &format_count, nullptr);
+        SurfaceFormats formats;
+        formats.resize(format_count);
+        vkGetPhysicalDeviceSurfaceFormatsKHR(this->dev, custom_surface, &format_count, formats.data());
+        return formats;
+    }
+
+    SurfaceFormats Device::get_window_surface_formats() const
+    {
+        return this->get_surface_formats(vk::window_surface()->native());
+    }
+
+    SurfacePresentModes Device::get_surface_present_modes(VkSurfaceKHR custom_surface) const
+    {
+        tz_assert(this->supports_swapchain(), "Attempting to retrieve surface present modes for this device, but there is no swapchain support");
+        std::uint32_t present_modes_count;
+        vkGetPhysicalDeviceSurfacePresentModesKHR(this->dev, custom_surface, &present_modes_count, nullptr);
+        SurfacePresentModes present_modes;
+        present_modes.resize(present_modes_count);
+        vkGetPhysicalDeviceSurfacePresentModesKHR(this->dev, custom_surface, &present_modes_count, present_modes.data());
+        return present_modes;
+    }
+
+    SurfacePresentModes Device::get_window_surface_present_modes() const
+    {
+        return this->get_surface_present_modes(vk::window_surface()->native());
+    }
 
     DeviceList get_all_devices()
     {
