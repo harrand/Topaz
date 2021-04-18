@@ -37,8 +37,12 @@ add_library(TZVK
 
     src/gl/vk/setup/extension_list.cpp
     src/gl/vk/setup/extension_list.hpp
+    src/gl/vk/setup/logical_device.cpp
+    src/gl/vk/setup/logical_device.hpp
     src/gl/vk/setup/vulkan_instance.cpp
     src/gl/vk/setup/vulkan_instance.hpp
+    src/gl/vk/setup/window_surface.cpp
+    src/gl/vk/setup/window_surface.hpp
 
     src/gl/vk/validation/debug_callback.hpp
     src/gl/vk/validation/debug_messenger.cpp

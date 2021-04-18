@@ -1,5 +1,6 @@
 #include "gl/vk/hardware/device.hpp"
 #include "gl/vk/tz_vulkan.hpp"
+#include "gl/vk/setup/window_surface.hpp"
 #include "core/assert.hpp"
 #if TZ_VULKAN
 
@@ -36,19 +37,57 @@ namespace tz::gl::vk::hardware
         {
             DeviceQueueFamily fam{.dev = this->dev, .index = i};
             VkQueueFlags flag = prop.queueFlags;
-            auto enum_2_flag = [](QueueFamilyType t){return static_cast<int>(t);};
             
-            for(QueueFamilyType type : hardware::family_types)
+            // The following queue family types are represented with a special bit.
+            for(QueueFamilyType type : {QueueFamilyType::Graphics, QueueFamilyType::Compute, QueueFamilyType::Transfer, QueueFamilyType::SparseBinding})
             {
-                if(flag & enum_2_flag(type))
+                VkQueueFlags type_as_flag;
+                switch(type)
+                {
+                    case QueueFamilyType::Graphics:
+                        type_as_flag = VK_QUEUE_GRAPHICS_BIT;
+                    break;
+                    case QueueFamilyType::Compute:
+                        type_as_flag = VK_QUEUE_COMPUTE_BIT;
+                    break;
+                    case QueueFamilyType::Transfer:
+                        type_as_flag = VK_QUEUE_TRANSFER_BIT;
+                    break;
+                    case QueueFamilyType::SparseBinding:
+                        type_as_flag = VK_QUEUE_SPARSE_BINDING_BIT;
+                    break;
+                }
+                if(flag & type_as_flag)
                 {
                     fam.types_supported |= type;
                 }
             }
+            // The other queue family types are defined separately.
+            // Present Flag (device supports window system integration) -- Note that this is disabled if headless rendering is enabled.
+            if(!tz::gl::vk::is_headless())
+            {
+                VkBool32 present_support = false;
+                vkGetPhysicalDeviceSurfaceSupportKHR(this->dev, i, tz::gl::vk::window_surface()->native(), &present_support);
+                if(present_support)
+                {
+                    fam.types_supported |= QueueFamilyType::Present;
+                }
+            }
+            
             queue_families.add(fam);
             i++;
         }
         return queue_families;
+    }
+
+    DeviceExtensionProperties Device::get_extension_properties() const
+    {
+        std::uint32_t supported_extension_count;
+        vkEnumerateDeviceExtensionProperties(this->dev, nullptr, &supported_extension_count, nullptr);
+        DeviceExtensionProperties supported_extensions;
+        supported_extensions.resize(supported_extension_count);
+        vkEnumerateDeviceExtensionProperties(this->dev, nullptr, &supported_extension_count, supported_extensions.data());
+        return supported_extensions;
     }
 
 

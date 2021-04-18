@@ -7,7 +7,9 @@
 namespace tz::gl::vk::hardware
 {
     using DeviceProperties = VkPhysicalDeviceProperties;
+    using DeviceExtensionProperty = VkExtensionProperties;
     using DeviceQueueFamilies = tz::BasicList<DeviceQueueFamily>;
+    using DeviceExtensionProperties = tz::BasicList<DeviceExtensionProperty>;
 
     class Device
     {
@@ -17,6 +19,7 @@ namespace tz::gl::vk::hardware
         bool is_null() const;
         DeviceProperties get_properties() const;
         DeviceQueueFamilies get_queue_families() const;
+        DeviceExtensionProperties get_extension_properties() const;
 
         friend List get_all_devices();
     private:

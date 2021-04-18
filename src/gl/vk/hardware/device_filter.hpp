@@ -2,6 +2,7 @@
 #define TOPAZ_GL_VK_HARDWARE_DEVICE_FILTER_HPP
 #if TZ_VULKAN
 #include "core/containers/polymorphic_list.hpp"
+#include "gl/vk/setup/extension_list.hpp"
 #include "gl/vk/hardware/device.hpp"
 
 namespace tz::gl::vk::hardware
@@ -28,6 +29,15 @@ namespace tz::gl::vk::hardware
         virtual bool satisfies(const hardware::Device& device) const override;
     private:
         QueueFamilyTypeField types;
+    };
+
+    class DeviceExtensionSupportFilter : public IDeviceFilter
+    {
+    public:
+        DeviceExtensionSupportFilter(std::initializer_list<VulkanExtension> extension_names);
+        virtual bool satisfies(const hardware::Device& device) const override;
+    private:
+        ExtensionList required_extensions;
     };
 
     template<VkPhysicalDeviceType Type>

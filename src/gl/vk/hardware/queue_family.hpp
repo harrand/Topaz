@@ -11,13 +11,12 @@ namespace tz::gl::vk::hardware
 {
     enum class QueueFamilyType
     {
-        Graphics = VK_QUEUE_GRAPHICS_BIT,
-        Compute = VK_QUEUE_COMPUTE_BIT,
-        Transfer = VK_QUEUE_TRANSFER_BIT,
-        SparseBinding = VK_QUEUE_SPARSE_BINDING_BIT
+        Graphics,
+        Compute,
+        Transfer,
+        SparseBinding,
+        Present
     };
-
-    constexpr QueueFamilyType family_types[] = {QueueFamilyType::Graphics, QueueFamilyType::Compute, QueueFamilyType::Transfer, QueueFamilyType::SparseBinding};
 
     class QueueFamilyTypeField
     {

@@ -92,7 +92,17 @@ namespace tz
             return this->elements.size();
         }
 
+        bool empty() const
+        {
+            return this->elements.empty();
+        }
+
         const T* data() const
+        {
+            return this->elements.data();
+        }
+
+        T* data()
         {
             return this->elements.data();
         }
@@ -105,6 +115,11 @@ namespace tz
         Iterator erase(Iterator first, Iterator last)
         {
             return this->elements.erase(first, last);
+        }
+
+        void resize(std::size_t num_elements)
+        {
+            this->elements.resize(num_elements);
         }
     };
 }

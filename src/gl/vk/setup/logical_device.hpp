@@ -2,6 +2,7 @@
 #define TOPAZ_GL_VK_SETUP_LOGICAL_DEVICE_HPP
 #if TZ_VULKAN
 #include "gl/vk/hardware/device.hpp"
+#include "gl/vk/setup/extension_list.hpp"
 
 namespace tz::gl::vk
 {
@@ -9,7 +10,7 @@ namespace tz::gl::vk
     class LogicalDevice
     {
     public:
-        LogicalDevice(hardware::DeviceQueueFamily queue_family);
+        LogicalDevice(hardware::DeviceQueueFamily queue_family, ExtensionList device_extensions = {});
         LogicalDevice(const LogicalDevice& copy) = delete;
         LogicalDevice(LogicalDevice&& move);
         ~LogicalDevice();

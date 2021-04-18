@@ -4,7 +4,7 @@
 
 namespace tz::gl::vk
 {
-    LogicalDevice::LogicalDevice(hardware::DeviceQueueFamily queue_family)
+    LogicalDevice::LogicalDevice(hardware::DeviceQueueFamily queue_family, ExtensionList device_extensions)
     {
         // TODO: Remove assert?
         tz_assert(queue_family.types_supported.contains(hardware::QueueFamilyType::Graphics), "tz::gl::vk::LogicalDevice::LogicalDevice(...): The given queue family must support graphics queues. Although I admit this might not be a reasonable assert?");
@@ -26,7 +26,8 @@ namespace tz::gl::vk
         create.pEnabledFeatures = &features;
 
         // TODO: Device Specific Extension (such as VK_KHR_swapchain which we will need further down development)
-        create.enabledExtensionCount = 0;
+        create.enabledExtensionCount = device_extensions.length();
+        create.ppEnabledExtensionNames = device_extensions.data();
         // Note: In Vulkan 1.1.175, device-only layers are not a thing, they just use the instance layers.
         // https://www.khronos.org/registry/vulkan/specs/1.1-extensions/html/vkspec.html#extendingvulkan-layers-devicelayerdeprecation
         // For that reason, we assume no version is used before this
@@ -57,6 +58,7 @@ namespace tz::gl::vk
     LogicalDevice& LogicalDevice::operator=(LogicalDevice&& rhs)
     {
         std::swap(this->dev, rhs.dev);
+        return *this;
     }
 }
 

@@ -1,5 +1,5 @@
-#include "gl/vk/hardware/device_filter.hpp"
 #if TZ_VULKAN
+#include "gl/vk/hardware/device_filter.hpp"
 
 namespace tz::gl::vk::hardware
 {
@@ -25,7 +25,8 @@ namespace tz::gl::vk::hardware
 
     bool DeviceQueueFamilyFilter::satisfies(const hardware::Device& device) const
     {
-        for(DeviceQueueFamily family : device.get_queue_families())
+        auto families = device.get_queue_families();
+        for(DeviceQueueFamily family : families)
         {
             if(family.types_supported.contains(this->types))
             {
@@ -33,6 +34,30 @@ namespace tz::gl::vk::hardware
             }
         }
         return false;
+    }
+
+    DeviceExtensionSupportFilter::DeviceExtensionSupportFilter(std::initializer_list<VulkanExtension> extension_names):
+    required_extensions(extension_names){}
+
+    bool DeviceExtensionSupportFilter::satisfies(const hardware::Device& device) const
+    {
+        auto extensions = device.get_extension_properties();
+        for(VulkanExtension required_extension : this->required_extensions)
+        {
+            bool found = false;
+            for(DeviceExtensionProperty supported_extension : extensions)
+            {
+                if(std::string{required_extension} == supported_extension.extensionName)
+                {
+                    found = true;
+                }
+            }
+            if(!found)
+            {
+                return false;
+            }
+        }
+        return true;
     }
 
     bool DeviceAnyGPUFilter::satisfies(const hardware::Device& device) const
