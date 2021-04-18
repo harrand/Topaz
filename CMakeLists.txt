@@ -40,6 +40,8 @@ add_library(TZVK
 
     src/gl/vk/setup/extension_list.cpp
     src/gl/vk/setup/extension_list.hpp
+    src/gl/vk/setup/image_view.cpp
+    src/gl/vk/setup/image_view.hpp
     src/gl/vk/setup/logical_device.cpp
     src/gl/vk/setup/logical_device.hpp
     src/gl/vk/setup/swapchain.cpp

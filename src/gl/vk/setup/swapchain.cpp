@@ -6,7 +6,11 @@ namespace tz::gl::vk
 {
     Swapchain::Swapchain(const LogicalDevice& device, VkSurfaceKHR surface, hardware::SwapchainSelectorPreferences preferences):
     swapchain(VK_NULL_HANDLE),
-    logical_device(&device)
+    logical_device(&device),
+    images(),
+    image_views(),
+    format(),
+    extent()
     {
         hardware::DeviceQueueFamily queue_family = device.get_queue_family();
 
@@ -19,7 +23,7 @@ namespace tz::gl::vk
         tz_assert(maybe_format.has_value(), "tz::gl::vk::Swapchain::Swapchain(...): No valid format found");
         tz_assert(maybe_present_mode.has_value(), "tz::gl::vk::Swapchain::Swapchain(...): No valid present mode found");
         
-        std::uint32_t image_count = support.capabilities.maxImageCount + 1; // We'll go with at least one more than the mimimum as a hardcoded default.
+        std::uint32_t image_count = support.capabilities.minImageCount + 1; // We'll go with at least one more than the mimimum as a hardcoded default.
         image_count = std::min(image_count, support.capabilities.maxImageCount); // This shouldn't really be a problem but lets be safe.
 
         VkSwapchainCreateInfoKHR create{};
@@ -53,6 +57,20 @@ namespace tz::gl::vk
 
         auto res = vkCreateSwapchainKHR(device.native(), &create, nullptr, &this->swapchain);
         tz_assert(res == VK_SUCCESS, "Failed to create swapchain");
+
+        // Fill data members
+        vkGetSwapchainImagesKHR(device.native(), this->swapchain, &image_count, nullptr);
+        this->images.resize(image_count);
+        this->image_views.reserve(image_count);
+        vkGetSwapchainImagesKHR(device.native(), this->swapchain, &image_count, this->images.data());
+
+        this->format = maybe_format->format;
+        this->extent = extent;
+
+        for(const VkImage& img : this->images)
+        {
+            this->image_views.emplace_back(device, img, this->format);
+        }
     }
 
     Swapchain::Swapchain(const LogicalDevice& device, hardware::SwapchainSelectorPreferences preferences):
@@ -60,10 +78,13 @@ namespace tz::gl::vk
 
     Swapchain::Swapchain(Swapchain&& move):
     swapchain(VK_NULL_HANDLE),
-    logical_device(nullptr)
+    logical_device(nullptr),
+    images(),
+    image_views(),
+    format(),
+    extent()
     {
-        std::swap(this->swapchain, move.swapchain);
-        std::swap(this->logical_device, move.logical_device);
+        *this = std::move(move);
     }
 
     Swapchain::~Swapchain()
@@ -79,6 +100,10 @@ namespace tz::gl::vk
     {
         std::swap(this->swapchain, rhs.swapchain);
         std::swap(this->logical_device, rhs.logical_device);
+        std::swap(this->images, rhs.images);
+        std::swap(this->image_views, rhs.image_views);
+        std::swap(this->format, rhs.format);
+        std::swap(this->extent, rhs.extent);
         return *this;
     }
 

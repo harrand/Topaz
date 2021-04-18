@@ -3,13 +3,15 @@
 #if TZ_VULKAN
 #include "gl/vk/setup/logical_device.hpp"
 #include "gl/vk/hardware/swapchain_selector.hpp"
+#include "gl/vk/setup/image_view.hpp"
+#include <vector>
 
 namespace tz::gl::vk
 {
     class Swapchain
     {
     public:
-        Swapchain(const LogicalDevice& device, VkSurfaceKHR surface,hardware::SwapchainSelectorPreferences preferences = hardware::default_swapchain_preferences);
+        Swapchain(const LogicalDevice& device, VkSurfaceKHR surface, hardware::SwapchainSelectorPreferences preferences = hardware::default_swapchain_preferences);
         Swapchain(const LogicalDevice& device, hardware::SwapchainSelectorPreferences preferences = hardware::default_swapchain_preferences);
         Swapchain(const Swapchain& copy) = delete;
         Swapchain(Swapchain&& move);
@@ -20,6 +22,10 @@ namespace tz::gl::vk
     private:
         VkSwapchainKHR swapchain;
         const LogicalDevice* logical_device;
+        std::vector<VkImage> images;
+        std::vector<ImageView> image_views;
+        VkFormat format;
+        VkExtent2D extent;
     };
 }
 
