@@ -36,7 +36,7 @@ namespace tz::gl::vk::hardware
         int i = 0;
         for(const VkQueueFamilyProperties& prop : queue_fams)
         {
-            DeviceQueueFamily fam{.dev = this->dev, .index = i};
+            DeviceQueueFamily fam{.dev = this, .index = i};
             VkQueueFlags flag = prop.queueFlags;
             
             // The following queue family types are represented with a special bit.
@@ -100,6 +100,11 @@ namespace tz::gl::vk::hardware
             this->get_window_surface_present_modes(),
             this->supports_swapchain()
         };
+    }
+
+    VkPhysicalDevice Device::native() const
+    {
+        return this->dev;
     }
 
     Device::Device():

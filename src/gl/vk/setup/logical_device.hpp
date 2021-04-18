@@ -17,9 +17,13 @@ namespace tz::gl::vk
 
         LogicalDevice& operator=(const LogicalDevice& rhs) = delete;
         LogicalDevice& operator=(LogicalDevice&& rhs);
+
+        const hardware::DeviceQueueFamily& get_queue_family() const;
+        VkDevice native() const;
     private:
         VkDevice dev;
         VkQueue queue;
+        hardware::DeviceQueueFamily queue_family;
     };
 }
 

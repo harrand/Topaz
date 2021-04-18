@@ -4,10 +4,12 @@
 
 #include "core/tz.hpp"
 #include "core/assert.hpp"
+#include "core/report.hpp"
 #include "gl/vk/setup/vulkan_instance.hpp"
 #include "gl/vk/hardware/device.hpp"
 #include "gl/vk/hardware/device_filter.hpp"
 #include "gl/vk/setup/logical_device.hpp"
+#include "gl/vk/setup/swapchain.hpp"
 
 int main()
 {
@@ -46,6 +48,13 @@ int main()
         // Let's also check the extent to which this physical device supports swapchains
         vk::hardware::SwapchainSupportDetails swapchain_support = my_device.get_window_swapchain_support();
         tz_assert(swapchain_support.supports_swapchain, "Very odd. The logical device was spawned using swapchain, but the physical device apparantly doesn't support it after all? There's 99\% a bug somewhere");
+        tz_debug_report("Swapchain : Image count range: %lu-%lu. %zu formats available. %zu present modes available.", swapchain_support.capabilities.minImageCount, swapchain_support.capabilities.maxImageCount, swapchain_support.formats.length(), swapchain_support.present_modes.length());
+        
+        // Using some very strict requirements here, some machines might straight-up not support this.
+        vk::hardware::SwapchainSelectorPreferences my_prefs;
+        my_prefs.format_pref = {vk::hardware::SwapchainFormatPreferences::Goldilocks, vk::hardware::SwapchainFormatPreferences::FlexibleGoldilocks, vk::hardware::SwapchainFormatPreferences::DontCare};
+        my_prefs.present_mode_pref = {vk::hardware::SwapchainPresentModePreferences::PreferTripleBuffering, vk::hardware::SwapchainPresentModePreferences::DontCare};
+        vk::Swapchain swapchain{my_logical_device, my_prefs};
         while(!tz::window().is_close_requested())
         {
             tz::window().update();

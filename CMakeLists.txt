@@ -34,11 +34,16 @@ add_library(TZVK
     src/gl/vk/hardware/device.hpp
     src/gl/vk/hardware/queue_family.cpp
     src/gl/vk/hardware/queue_family.hpp
+    src/gl/vk/hardware/swapchain_selector.cpp
+    src/gl/vk/hardware/swapchain_selector.hpp
+    src/gl/vk/hardware/swapchain_support.hpp
 
     src/gl/vk/setup/extension_list.cpp
     src/gl/vk/setup/extension_list.hpp
     src/gl/vk/setup/logical_device.cpp
     src/gl/vk/setup/logical_device.hpp
+    src/gl/vk/setup/swapchain.cpp
+    src/gl/vk/setup/swapchain.hpp
     src/gl/vk/setup/vulkan_instance.cpp
     src/gl/vk/setup/vulkan_instance.hpp
     src/gl/vk/setup/window_surface.cpp

@@ -9,6 +9,9 @@
 
 namespace tz::gl::vk::hardware
 {
+    // Pre-defines
+    class Device;
+
     enum class QueueFamilyType
     {
         Graphics,
@@ -34,7 +37,7 @@ namespace tz::gl::vk::hardware
 
     struct DeviceQueueFamily
     {
-        VkPhysicalDevice dev;
+        const Device* dev;
         QueueFamilyIndex index;
         QueueFamilyTypeField types_supported;
     };

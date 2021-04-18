@@ -4,7 +4,10 @@
 
 namespace tz::gl::vk
 {
-    LogicalDevice::LogicalDevice(hardware::DeviceQueueFamily queue_family, ExtensionList device_extensions)
+    LogicalDevice::LogicalDevice(hardware::DeviceQueueFamily queue_family, ExtensionList device_extensions):
+    dev(VK_NULL_HANDLE),
+    queue(VK_NULL_HANDLE),
+    queue_family(queue_family)
     {
         // TODO: Remove assert?
         tz_assert(queue_family.types_supported.contains(hardware::QueueFamilyType::Graphics), "tz::gl::vk::LogicalDevice::LogicalDevice(...): The given queue family must support graphics queues. Although I admit this might not be a reasonable assert?");
@@ -34,7 +37,7 @@ namespace tz::gl::vk
         // TODO: Require this in CMake.
         create.enabledLayerCount = 0;
 
-        VkResult res = vkCreateDevice(queue_family.dev, &create, nullptr, &this->dev);
+        VkResult res = vkCreateDevice(queue_family.dev->native(), &create, nullptr, &this->dev);
         tz_assert(res == VK_SUCCESS, "tz::gl::vk::LogicalDevice(...): Failed to create logical device.");
 
         // Possible TODO: Support multiple queues?
@@ -42,9 +45,14 @@ namespace tz::gl::vk
     }
 
     LogicalDevice::LogicalDevice(LogicalDevice&& move):
-    dev(VK_NULL_HANDLE)
+    dev(VK_NULL_HANDLE),
+    queue(VK_NULL_HANDLE),
+    queue_family()
     {
         std::swap(this->dev, move.dev);
+        std::swap(this->queue, move.queue);
+
+        std::swap(this->queue_family, move.queue_family);
     }
 
     LogicalDevice::~LogicalDevice()
@@ -58,7 +66,19 @@ namespace tz::gl::vk
     LogicalDevice& LogicalDevice::operator=(LogicalDevice&& rhs)
     {
         std::swap(this->dev, rhs.dev);
+        std::swap(this->queue, rhs.queue);
+        std::swap(this->queue_family, rhs.queue_family);
         return *this;
+    }
+
+    const hardware::DeviceQueueFamily& LogicalDevice::get_queue_family() const
+    {
+        return this->queue_family;
+    }
+
+    VkDevice LogicalDevice::native() const
+    {
+        return this->dev;
     }
 }
 

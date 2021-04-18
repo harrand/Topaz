@@ -23,6 +23,8 @@ namespace tz::gl::vk::hardware
         DeviceExtensionProperties get_extension_properties() const;
         SwapchainSupportDetails get_window_swapchain_support() const;
 
+        VkPhysicalDevice native() const;
+
         friend List get_all_devices();
     private:
         Device();
