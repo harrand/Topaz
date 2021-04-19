@@ -19,6 +19,10 @@ namespace tz::gl::vk
 
         Swapchain& operator=(const Swapchain& rhs) = delete;
         Swapchain& operator=(Swapchain&& rhs);
+        float get_width() const;
+        float get_height() const;
+        VkExtent2D native_extent() const;
+        VkFormat native_format() const;
     private:
         VkSwapchainKHR swapchain;
         const LogicalDevice* logical_device;

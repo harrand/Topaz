@@ -39,7 +39,6 @@ namespace tz::gl::vk::hardware
                         return format;
                     }
                 }
-                return std::nullopt;
             break;
 
             case SwapchainFormatPreferences::FlexibleGoldilocks:
@@ -48,7 +47,6 @@ namespace tz::gl::vk::hardware
                     sort_by_rate_perfect(formats);
                     return formats.front();
                 }
-                return std::nullopt;
             break;
 
             case SwapchainFormatPreferences::DontCare:
@@ -57,9 +55,9 @@ namespace tz::gl::vk::hardware
                 {
                     return formats.front();
                 }
-                return std::nullopt;
             }
         }
+        return std::nullopt;
     }
 
     std::optional<VkSurfaceFormatKHR> select_swapchain_format(std::span<VkSurfaceFormatKHR> formats, std::span<SwapchainFormatPreferences> preferences)
@@ -88,16 +86,15 @@ namespace tz::gl::vk::hardware
                         return present_mode;
                     }
                 }
-                return std::nullopt;
             break;
             case SwapchainPresentModePreferences::DontCare:
                 if(!present_modes.empty())
                 {
                     return present_modes.front();
                 }
-                return std::nullopt;
             break;
         }
+        return std::nullopt;
     }
 
     std::optional<VkPresentModeKHR> select_swapchain_present_mode(std::span<VkPresentModeKHR> present_modes, std::span<SwapchainPresentModePreferences> preferences)

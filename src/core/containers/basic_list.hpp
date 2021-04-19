@@ -1,5 +1,6 @@
 #ifndef TOPAZ_GL_VK_COMMON_BASIC_LIST_HPP
 #define TOPAZ_GL_VK_COMMON_BASIC_LIST_HPP
+#include "core/assert.hpp"
 #include <initializer_list>
 #include <vector>
 #include <algorithm>
@@ -57,6 +58,12 @@ namespace tz
             this->elements.push_back(std::forward<T>(element));
         }
 
+        template<typename... Args>
+        T& emplace(Args&&... args)
+        {
+            return this->elements.emplace_back(std::forward<Args>(args)...);
+        }
+
         void append(const BasicList<T>& other)
         {
             this->elements.insert(this->elements.end(), other.elements.begin(), other.elements.end());
@@ -105,6 +112,18 @@ namespace tz
         T* data()
         {
             return this->elements.data();
+        }
+
+        const T& operator[](std::size_t index) const
+        {
+            tz_assert(this->length() > index, "tz::BasicList<T>::operator[%zu]: Out of range (length = %zu)", index, this->length());
+            return this->elements[index];
+        }
+
+        T& operator[](std::size_t index)
+        {
+            tz_assert(this->length() > index, "tz::BasicList<T>::operator[%zu]: Out of range (length = %zu)", index, this->length());
+            return this->elements[index];
         }
 
         Iterator erase(Iterator position)

@@ -107,6 +107,25 @@ namespace tz::gl::vk
         return *this;
     }
 
+    float Swapchain::get_width() const
+    {
+        return this->extent.width;
+    }
+
+    float Swapchain::get_height() const
+    {
+        return this->extent.height;
+    }
+
+    VkExtent2D Swapchain::native_extent() const
+    {
+        return this->extent;
+    }
+
+    VkFormat Swapchain::native_format() const
+    {
+        return this->format;
+    }
 }
 
 #endif // TZ_VULKAN

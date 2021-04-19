@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.9)
 include(cmake/setup_configs.cmake)
+include(cmake/shader_compiler.cmake)
 
 file(READ ./version.txt TZ_VERSION)
 # Reconfigure on changes to ./version.txt
@@ -38,6 +39,33 @@ add_library(TZVK
     src/gl/vk/hardware/swapchain_selector.hpp
     src/gl/vk/hardware/swapchain_support.hpp
 
+    src/gl/vk/pipeline/colour_blend_state.cpp
+    src/gl/vk/pipeline/colour_blend_state.hpp
+    src/gl/vk/pipeline/framebuffer.cpp
+    src/gl/vk/pipeline/framebuffer.hpp
+    src/gl/vk/pipeline/graphics_pipeline.cpp
+    src/gl/vk/pipeline/graphics_pipeline.hpp
+    src/gl/vk/pipeline/input_assembly.cpp
+    src/gl/vk/pipeline/input_assembly.hpp
+    src/gl/vk/pipeline/layout.cpp
+    src/gl/vk/pipeline/layout.hpp
+    src/gl/vk/pipeline/multisample_state.cpp
+    src/gl/vk/pipeline/multisample_state.hpp
+    src/gl/vk/pipeline/rasteriser_state.cpp
+    src/gl/vk/pipeline/rasteriser_state.hpp
+    src/gl/vk/pipeline/render_pass.cpp
+    src/gl/vk/pipeline/render_pass.hpp
+    src/gl/vk/pipeline/shader_compiler.cpp
+    src/gl/vk/pipeline/shader_compiler.hpp
+    src/gl/vk/pipeline/shader_module.cpp
+    src/gl/vk/pipeline/shader_module.hpp
+    src/gl/vk/pipeline/shader_stage.cpp
+    src/gl/vk/pipeline/shader_stage.hpp
+    src/gl/vk/pipeline/vertex_input.cpp
+    src/gl/vk/pipeline/vertex_input.hpp
+    src/gl/vk/pipeline/viewport.cpp
+    src/gl/vk/pipeline/viewport.hpp
+
     src/gl/vk/setup/extension_list.cpp
     src/gl/vk/setup/extension_list.hpp
     src/gl/vk/setup/image_view.cpp
@@ -61,6 +89,7 @@ add_library(TZVK
     src/gl/vk/tz_vulkan.cpp
     src/gl/vk/tz_vulkan.hpp
     )
+
 
 message(STATUS "Topaz v${TZ_VERSION}")
 
