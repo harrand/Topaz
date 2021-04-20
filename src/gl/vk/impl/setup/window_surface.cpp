@@ -1,7 +1,7 @@
 #if TZ_VULKAN
 #include "gl/vk/impl/setup/window_surface.hpp"
 #include "core/tz.hpp"
-#include "gl/vk/impl/tz_vulkan.hpp"
+#include "gl/vk/tz_vulkan.hpp"
 
 namespace tz::gl::vk
 {

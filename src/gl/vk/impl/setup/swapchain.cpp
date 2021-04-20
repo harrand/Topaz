@@ -1,6 +1,6 @@
 #if TZ_VULKAN
 #include "gl/vk/impl/setup/swapchain.hpp"
-#include "gl/vk/impl/tz_vulkan.hpp"
+#include "gl/vk/tz_vulkan.hpp"
 
 namespace tz::gl::vk
 {

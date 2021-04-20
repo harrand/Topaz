@@ -1,5 +1,5 @@
 #include "gl/vk/impl/hardware/device.hpp"
-#include "gl/vk/impl/tz_vulkan.hpp"
+#include "gl/vk/tz_vulkan.hpp"
 #include "gl/vk/impl/setup/window_surface.hpp"
 #include "gl/vk/impl/hardware/device_filter.hpp"
 #include "core/assert.hpp"

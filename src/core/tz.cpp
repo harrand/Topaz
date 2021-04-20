@@ -3,7 +3,7 @@
 #include "core/report.hpp"
 
 #if TZ_VULKAN
-#include "gl/vk/impl/tz_vulkan.hpp"
+#include "gl/vk/tz_vulkan.hpp"
 #endif
 
 #include <cstdio>
