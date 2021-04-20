@@ -1,5 +1,5 @@
-#ifndef TOPAZ_GL_VK_PIPELINE_FRAMEBUFFER_HPP
-#define TOPAZ_GL_VK_PIPELINE_FRAMEBUFFER_HPP
+#ifndef TOPAZ_GL_VK_PIPELINE_FRAMEBUFFER_ATTACHMENTS_HPP
+#define TOPAZ_GL_VK_PIPELINE_FRAMEBUFFER_ATTACHMENTS_HPP
 #if TZ_VULKAN
 #include "gl/vk/setup/swapchain.hpp"
 #include "core/containers/basic_list.hpp"
@@ -35,4 +35,4 @@ namespace tz::gl::vk::pipeline
 }
 
 #endif // TZ_VULKAN
-#endif // TOPAZ_GL_VK_PIPELINE_FRAMEBUFFER_HPP
+#endif // TOPAZ_GL_VK_PIPELINE_FRAMEBUFFER_ATTACHMENTS_HPP

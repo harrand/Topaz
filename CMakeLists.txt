@@ -41,8 +41,8 @@ add_library(TZVK
 
     src/gl/vk/pipeline/colour_blend_state.cpp
     src/gl/vk/pipeline/colour_blend_state.hpp
-    src/gl/vk/pipeline/framebuffer.cpp
-    src/gl/vk/pipeline/framebuffer.hpp
+    src/gl/vk/pipeline/framebuffer_attachments.cpp
+    src/gl/vk/pipeline/framebuffer_attachments.hpp
     src/gl/vk/pipeline/graphics_pipeline.cpp
     src/gl/vk/pipeline/graphics_pipeline.hpp
     src/gl/vk/pipeline/input_assembly.cpp
@@ -86,6 +86,8 @@ add_library(TZVK
     src/gl/vk/validation/layer.cpp
     src/gl/vk/validation/layer.hpp
 
+    src/gl/vk/framebuffer.cpp
+    src/gl/vk/framebuffer.hpp
     src/gl/vk/tz_vulkan.cpp
     src/gl/vk/tz_vulkan.hpp
     )

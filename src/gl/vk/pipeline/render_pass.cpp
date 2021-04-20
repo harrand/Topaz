@@ -59,6 +59,12 @@ namespace tz::gl::vk::pipeline
     {
         return this->render_pass;
     }
+
+    const LogicalDevice& RenderPass::get_device() const
+    {
+        tz_assert(this->device != nullptr, "tz::gl::vk::pipeline::RenderPass::get_device(): Device was null");
+        return *this->device;
+    }
 }
 
 

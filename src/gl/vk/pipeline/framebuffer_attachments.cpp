@@ -1,5 +1,5 @@
 #if TZ_VULKAN
-#include "gl/vk/pipeline/framebuffer.hpp"
+#include "gl/vk/pipeline/framebuffer_attachments.hpp"
 #include "core/assert.hpp"
 
 namespace tz::gl::vk::pipeline

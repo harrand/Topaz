@@ -5,6 +5,7 @@
 #include "gl/vk/hardware/swapchain_selector.hpp"
 #include "gl/vk/setup/image_view.hpp"
 #include <vector>
+#include <span>
 
 namespace tz::gl::vk
 {
@@ -21,6 +22,8 @@ namespace tz::gl::vk
         Swapchain& operator=(Swapchain&& rhs);
         float get_width() const;
         float get_height() const;
+        std::span<const ImageView> get_image_views() const;
+
         VkExtent2D native_extent() const;
         VkFormat native_format() const;
     private:

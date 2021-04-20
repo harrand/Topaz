@@ -117,6 +117,11 @@ namespace tz::gl::vk
         return this->extent.height;
     }
 
+    std::span<const ImageView> Swapchain::get_image_views() const
+    {
+        return this->image_views;
+    }
+
     VkExtent2D Swapchain::native_extent() const
     {
         return this->extent;

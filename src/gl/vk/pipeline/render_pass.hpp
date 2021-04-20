@@ -1,7 +1,7 @@
 #ifndef TOPAZ_GL_VK_PIPELINE_RENDER_PASS_HPP
 #define TOPAZ_GL_VK_PIPELINE_RENDER_PASS_HPP
 #if TZ_VULKAN
-#include "gl/vk/pipeline/framebuffer.hpp"
+#include "gl/vk/pipeline/framebuffer_attachments.hpp"
 #include "gl/vk/setup/logical_device.hpp"
 
 namespace tz::gl::vk::pipeline
@@ -18,6 +18,7 @@ namespace tz::gl::vk::pipeline
         RenderPass& operator=(RenderPass&& rhs);
 
         VkRenderPass native() const;
+        const LogicalDevice& get_device() const;
     private:
         const LogicalDevice* device;
         std::vector<FramebufferAttachmentList> subpasses;

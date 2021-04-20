@@ -49,6 +49,11 @@ namespace tz::gl::vk
         std::swap(this->device, rhs.device);
         return *this;
     }   
+
+    VkImageView ImageView::native() const
+    {
+        return this->view;
+    }
 }
 
 #endif // TZ_VULKAN
