@@ -60,24 +60,16 @@ int main()
 
 
         vk::RenderPassBuilder builder;
-        vk::Attachment one
+        vk::Attachment col
         {
-            vk::Image::Format::Rgba32sRGB,
+            vk::Image::Format::Rgba32Signed,
             vk::Attachment::LoadOperation::Clear,
             vk::Attachment::StoreOperation::Store,
             vk::Image::Layout::Undefined,
             vk::Image::Layout::ColourAttachment
         };
-        vk::Attachment two
-        {
-            vk::Image::Format::Rgba32Signed,
-            vk::Attachment::LoadOperation::Load,
-            vk::Attachment::StoreOperation::Store,
-            vk::Image::Layout::ColourAttachment,
-            vk::Image::Layout::ColourAttachment
-        };
 
-        builder.with(vk::Attachments{one}).with(vk::Attachments{two});
+        builder.with(vk::Attachments{col});
         vk::RenderPass example_hdr_pass{my_logical_device, builder};
 
         while(!tz::window().is_close_requested())
