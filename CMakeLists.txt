@@ -88,6 +88,13 @@ add_library(TZVK
 
     src/gl/vk/impl/framebuffer.cpp
     src/gl/vk/impl/framebuffer.hpp
+
+    src/gl/vk/attachment.cpp
+    src/gl/vk/attachment.hpp
+    src/gl/vk/image.hpp
+    src/gl/vk/render_pass.cpp
+    src/gl/vk/render_pass.hpp
+    src/gl/vk/render_pass.inl
     src/gl/vk/tz_vulkan.cpp
     src/gl/vk/tz_vulkan.hpp
     )

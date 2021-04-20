@@ -11,6 +11,8 @@
 #include "gl/vk/impl/setup/logical_device.hpp"
 #include "gl/vk/impl/setup/swapchain.hpp"
 
+#include "gl/vk/render_pass.hpp"
+
 int main()
 {
     constexpr tz::EngineInfo eng_info = tz::info();
@@ -55,6 +57,29 @@ int main()
         my_prefs.format_pref = {vk::hardware::SwapchainFormatPreferences::Goldilocks, vk::hardware::SwapchainFormatPreferences::FlexibleGoldilocks, vk::hardware::SwapchainFormatPreferences::DontCare};
         my_prefs.present_mode_pref = {vk::hardware::SwapchainPresentModePreferences::PreferTripleBuffering, vk::hardware::SwapchainPresentModePreferences::DontCare};
         vk::Swapchain swapchain{my_logical_device, my_prefs};
+
+
+        vk::RenderPassBuilder builder;
+        vk::Attachment one
+        {
+            vk::Image::Format::Rgba32sRGB,
+            vk::Attachment::LoadOperation::Clear,
+            vk::Attachment::StoreOperation::Store,
+            vk::Image::Layout::Undefined,
+            vk::Image::Layout::ColourAttachment
+        };
+        vk::Attachment two
+        {
+            vk::Image::Format::Rgba32Signed,
+            vk::Attachment::LoadOperation::Load,
+            vk::Attachment::StoreOperation::Store,
+            vk::Image::Layout::ColourAttachment,
+            vk::Image::Layout::ColourAttachment
+        };
+
+        builder.with(vk::Attachments{one}).with(vk::Attachments{two});
+        vk::RenderPass example_hdr_pass{my_logical_device, builder};
+
         while(!tz::window().is_close_requested())
         {
             tz::window().update();
