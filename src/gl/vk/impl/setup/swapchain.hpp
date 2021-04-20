@@ -4,6 +4,7 @@
 #include "gl/vk/impl/setup/logical_device.hpp"
 #include "gl/vk/impl/hardware/swapchain_selector.hpp"
 #include "gl/vk/impl/setup/image_view.hpp"
+#include "gl/vk/image.hpp"
 #include <vector>
 #include <span>
 
@@ -26,6 +27,7 @@ namespace tz::gl::vk
 
         VkExtent2D native_extent() const;
         VkFormat native_format() const;
+        Image::Format get_format() const;
     private:
         VkSwapchainKHR swapchain;
         const LogicalDevice* logical_device;

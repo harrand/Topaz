@@ -12,7 +12,8 @@
 #include "gl/vk/impl/pipeline/multisample_state.hpp"
 #include "gl/vk/impl/pipeline/colour_blend_state.hpp"
 #include "gl/vk/impl/pipeline/layout.hpp"
-#include "gl/vk/impl/pipeline/render_pass.hpp"
+//#include "gl/vk/impl/pipeline/render_pass.hpp"
+#include "gl/vk/render_pass.hpp"
 
 namespace tz::gl::vk
 {
@@ -34,7 +35,7 @@ namespace tz::gl::vk
             pipeline::ColourBlendState colour_blend_state,
             /*TODO: DynamicState*/
             const pipeline::Layout& layout,
-            const pipeline::RenderPass& render_pass
+            const RenderPass& render_pass
         );
         GraphicsPipeline(const GraphicsPipeline& copy) = delete;
         GraphicsPipeline(GraphicsPipeline&& move);

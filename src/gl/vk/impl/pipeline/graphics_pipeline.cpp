@@ -16,7 +16,7 @@ namespace tz::gl::vk
         pipeline::MultisampleState multisample_state,
         pipeline::ColourBlendState colour_blend_state,
         const pipeline::Layout& layout,
-        const pipeline::RenderPass& render_pass
+        const RenderPass& render_pass
     ):
     shaders(shader_stages),
     device(&device),

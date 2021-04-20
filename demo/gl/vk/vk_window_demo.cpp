@@ -10,6 +10,8 @@
 #include "gl/vk/impl/hardware/device_filter.hpp"
 #include "gl/vk/impl/setup/logical_device.hpp"
 #include "gl/vk/impl/setup/swapchain.hpp"
+#include "gl/vk/impl/pipeline/graphics_pipeline.hpp"
+#include "gl/vk/impl/pipeline/shader_compiler.hpp"
 
 #include "gl/vk/render_pass.hpp"
 
@@ -58,11 +60,10 @@ int main()
         my_prefs.present_mode_pref = {vk::hardware::SwapchainPresentModePreferences::PreferTripleBuffering, vk::hardware::SwapchainPresentModePreferences::DontCare};
         vk::Swapchain swapchain{my_logical_device, my_prefs};
 
-
         vk::RenderPassBuilder builder;
         vk::Attachment col
         {
-            vk::Image::Format::Rgba32Signed,
+            swapchain.get_format(), /* AKA vk::Image::Format::Rgba32sRGB for my machine */
             vk::Attachment::LoadOperation::Clear,
             vk::Attachment::StoreOperation::Store,
             vk::Image::Layout::Undefined,
@@ -70,7 +71,26 @@ int main()
         };
 
         builder.with(vk::Attachments{col});
-        vk::RenderPass example_hdr_pass{my_logical_device, builder};
+        vk::RenderPass simple_colour_pass{my_logical_device, builder};
+
+        vk::pipeline::Layout my_layout{my_logical_device};
+
+        vk::ShaderModule vertex{my_logical_device, vk::read_external_shader("C:\\Users\\Harrand\\Desktop\\Projects\\tz_vk\\build\\vulkan_debug\\demo\\gl\\vk\\basic.vertex.glsl").value()};
+        vk::ShaderModule fragment{my_logical_device, vk::read_external_shader("C:\\Users\\Harrand\\Desktop\\Projects\\tz_vk\\build\\vulkan_debug\\demo\\gl\\vk\\basic.fragment.glsl").value()};
+
+        vk::GraphicsPipeline my_pipeline
+        {
+            std::initializer_list<vk::pipeline::ShaderStage>{{vertex, vk::pipeline::ShaderType::Vertex}, {fragment, vk::pipeline::ShaderType::Fragment}},
+            my_logical_device,
+            vk::pipeline::VertexInputState{},
+            vk::pipeline::InputAssembly{vk::pipeline::PrimitiveTopology::Triangles},
+            vk::pipeline::ViewportState{swapchain},
+            vk::pipeline::RasteriserState{},
+            vk::pipeline::MultisampleState{},
+            vk::pipeline::ColourBlendState{},
+            my_layout,
+            simple_colour_pass
+        };
 
         while(!tz::window().is_close_requested())
         {

@@ -59,7 +59,6 @@ namespace tz::gl::vk
 
         this->vk.preserveAttachmentCount = this->referenced_preserved_attachments.size();
         this->vk.pPreserveAttachments = this->referenced_preserved_attachments.data();
-        
     }
 
     RenderSubpass::RenderSubpass(RenderPassBuilder& parent, Attachments attachments):
@@ -175,6 +174,11 @@ namespace tz::gl::vk
         std::swap(this->render_pass, rhs.render_pass);
         std::swap(this->device, rhs.device);
         return *this;
+    }
+
+    VkRenderPass RenderPass::native() const
+    {
+        return this->render_pass;
     }
 }
 

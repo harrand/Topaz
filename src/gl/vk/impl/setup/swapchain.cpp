@@ -131,6 +131,12 @@ namespace tz::gl::vk
     {
         return this->format;
     }
+
+    Image::Format Swapchain::get_format() const
+    {
+        return static_cast<Image::Format>(this->format);
+    }
+
 }
 
 #endif // TZ_VULKAN
