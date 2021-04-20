@@ -6,6 +6,6 @@ add_executable(vk_triangle_demo
     vk_triangle_demo.cpp)
 add_shader(TARGET vk_triangle_demo
     SHADERS
-    demo/gl/vk/basic.vertex.glsl
-    demo/gl/vk/basic.fragment.glsl)
+    demo/gl/vk/impl/basic.vertex.glsl
+    demo/gl/vk/impl/basic.fragment.glsl)
 target_link_libraries(vk_triangle_demo PRIVATE TZVK)

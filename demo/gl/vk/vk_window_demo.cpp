@@ -5,11 +5,11 @@
 #include "core/tz.hpp"
 #include "core/assert.hpp"
 #include "core/report.hpp"
-#include "gl/vk/setup/vulkan_instance.hpp"
-#include "gl/vk/hardware/device.hpp"
-#include "gl/vk/hardware/device_filter.hpp"
-#include "gl/vk/setup/logical_device.hpp"
-#include "gl/vk/setup/swapchain.hpp"
+#include "gl/vk/impl/setup/vulkan_instance.hpp"
+#include "gl/vk/impl/hardware/device.hpp"
+#include "gl/vk/impl/hardware/device_filter.hpp"
+#include "gl/vk/impl/setup/logical_device.hpp"
+#include "gl/vk/impl/setup/swapchain.hpp"
 
 int main()
 {
