@@ -86,11 +86,10 @@ add_library(TZVK
     src/gl/vk/impl/validation/layer.cpp
     src/gl/vk/impl/validation/layer.hpp
 
-    src/gl/vk/impl/framebuffer.cpp
-    src/gl/vk/impl/framebuffer.hpp
-
     src/gl/vk/attachment.cpp
     src/gl/vk/attachment.hpp
+    src/gl/vk/framebuffer.cpp
+    src/gl/vk/framebuffer.hpp
     src/gl/vk/image.hpp
     src/gl/vk/render_pass.cpp
     src/gl/vk/render_pass.hpp

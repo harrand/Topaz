@@ -14,6 +14,7 @@
 #include "gl/vk/impl/pipeline/shader_compiler.hpp"
 
 #include "gl/vk/render_pass.hpp"
+#include "gl/vk/framebuffer.hpp"
 
 int main()
 {
@@ -91,6 +92,12 @@ int main()
             my_layout,
             simple_colour_pass
         };
+
+        std::vector<vk::Framebuffer> swapchain_buffers;
+        for(const vk::ImageView& swapchain_view : swapchain.get_image_views())
+        {
+            swapchain_buffers.emplace_back(simple_colour_pass, swapchain_view, VkExtent2D{static_cast<std::uint32_t>(swapchain.get_width()), static_cast<std::uint32_t>(swapchain.get_height())});
+        }
 
         while(!tz::window().is_close_requested())
         {

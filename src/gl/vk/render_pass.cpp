@@ -176,6 +176,11 @@ namespace tz::gl::vk
         return *this;
     }
 
+    const LogicalDevice& RenderPass::get_device() const
+    {
+        return *this->device;
+    }
+
     VkRenderPass RenderPass::native() const
     {
         return this->render_pass;
