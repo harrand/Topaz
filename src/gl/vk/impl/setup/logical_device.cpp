@@ -6,7 +6,6 @@ namespace tz::gl::vk
 {
     LogicalDevice::LogicalDevice(hardware::DeviceQueueFamily queue_family, ExtensionList device_extensions):
     dev(VK_NULL_HANDLE),
-    queue(VK_NULL_HANDLE),
     queue_family(queue_family)
     {
         // TODO: Remove assert?
@@ -39,20 +38,13 @@ namespace tz::gl::vk
 
         VkResult res = vkCreateDevice(queue_family.dev->native(), &create, nullptr, &this->dev);
         tz_assert(res == VK_SUCCESS, "tz::gl::vk::LogicalDevice(...): Failed to create logical device.");
-
-        // Possible TODO: Support multiple queues?
-        vkGetDeviceQueue(this->dev, queue_family.index, 0, &this->queue);
     }
 
     LogicalDevice::LogicalDevice(LogicalDevice&& move):
     dev(VK_NULL_HANDLE),
-    queue(VK_NULL_HANDLE),
     queue_family()
     {
-        std::swap(this->dev, move.dev);
-        std::swap(this->queue, move.queue);
-
-        std::swap(this->queue_family, move.queue_family);
+        *this = std::move(move);
     }
 
     LogicalDevice::~LogicalDevice()
@@ -66,7 +58,6 @@ namespace tz::gl::vk
     LogicalDevice& LogicalDevice::operator=(LogicalDevice&& rhs)
     {
         std::swap(this->dev, rhs.dev);
-        std::swap(this->queue, rhs.queue);
         std::swap(this->queue_family, rhs.queue_family);
         return *this;
     }
@@ -81,9 +72,9 @@ namespace tz::gl::vk
         return this->dev;
     }
 
-    VkQueue LogicalDevice::native_queue() const
+    hardware::Queue LogicalDevice::get_hardware_queue(std::uint32_t family_index) const
     {
-        return this->queue;
+        return {*this, this->get_queue_family(), family_index};
     }
 
     void LogicalDevice::block_until_idle() const

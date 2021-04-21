@@ -41,8 +41,6 @@ add_library(TZVK
 
     src/gl/vk/impl/pipeline/colour_blend_state.cpp
     src/gl/vk/impl/pipeline/colour_blend_state.hpp
-    src/gl/vk/impl/pipeline/framebuffer_attachments.cpp
-    src/gl/vk/impl/pipeline/framebuffer_attachments.hpp
     src/gl/vk/impl/pipeline/graphics_pipeline.cpp
     src/gl/vk/impl/pipeline/graphics_pipeline.hpp
     src/gl/vk/impl/pipeline/input_assembly.cpp
@@ -53,8 +51,6 @@ add_library(TZVK
     src/gl/vk/impl/pipeline/multisample_state.hpp
     src/gl/vk/impl/pipeline/rasteriser_state.cpp
     src/gl/vk/impl/pipeline/rasteriser_state.hpp
-    src/gl/vk/impl/pipeline/render_pass.cpp
-    src/gl/vk/impl/pipeline/render_pass.hpp
     src/gl/vk/impl/pipeline/shader_compiler.cpp
     src/gl/vk/impl/pipeline/shader_compiler.hpp
     src/gl/vk/impl/pipeline/shader_module.cpp
@@ -85,6 +81,9 @@ add_library(TZVK
     src/gl/vk/impl/validation/debug_messenger.inl
     src/gl/vk/impl/validation/layer.cpp
     src/gl/vk/impl/validation/layer.hpp
+
+    src/gl/vk/hardware/queue.cpp
+    src/gl/vk/hardware/queue.hpp
 
     src/gl/vk/attachment.cpp
     src/gl/vk/attachment.hpp

@@ -124,6 +124,8 @@ int main()
         vk::Semaphore image_available{my_logical_device};
         vk::Semaphore render_finished{my_logical_device};
 
+        vk::hardware::Queue graphics_queue = my_logical_device.get_hardware_queue();
+
         while(!tz::window().is_close_requested())
         {
             tz::window().update();
@@ -147,7 +149,7 @@ int main()
             submit.signalSemaphoreCount = 1;
             submit.pSignalSemaphores = signal_sems;
 
-            auto res = vkQueueSubmit(my_logical_device.native_queue(), 1, &submit, VK_NULL_HANDLE);
+            auto res = vkQueueSubmit(graphics_queue.native(), 1, &submit, VK_NULL_HANDLE);
             tz_assert(res == VK_SUCCESS, "ruh roh");
 
             VkPresentInfoKHR present{};
@@ -160,7 +162,7 @@ int main()
             present.pSwapchains = swapchains;
             present.pImageIndices = &image_index;
             present.pResults = nullptr;
-            res = vkQueuePresentKHR(my_logical_device.native_queue(), &present);
+            res = vkQueuePresentKHR(graphics_queue.native(), &present);
             tz_assert(res == VK_SUCCESS, "ruh roh");
         }
         my_logical_device.block_until_idle();
