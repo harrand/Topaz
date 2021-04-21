@@ -20,6 +20,7 @@ namespace tz::gl::vk
             Undefined = VK_IMAGE_LAYOUT_UNDEFINED,
             ColourAttachment = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
             DepthAttachment = VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL,
+            Present = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR
         };
     private:
     };

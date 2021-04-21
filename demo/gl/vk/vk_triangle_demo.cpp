@@ -13,30 +13,10 @@
 #include "gl/vk/impl/pipeline/graphics_pipeline.hpp"
 #include "gl/vk/impl/pipeline/shader_compiler.hpp"
 
-constexpr char vertex_shader_source[] = R"glsl(
-    #version 450
-    vec2 positions[3] = vec2[](
-        vec2(0.0, -0.5),
-        vec2(0.5, 0.5),
-        vec2(-0.5, 0.5)
-    );
-    void main()
-    {
-        gl_Position = vec4(positions[gl_VertexIndex], 0.0, 1.0);
-    }
-)glsl";
-
-constexpr char fragment_shader_source[] = R"glsl(
-    #version 450
-    #extension GL_ARB_separate_shader_objects : enable
-
-    layout(location = 0) out vec4 frag_colour;
-
-    void main()
-    {
-        frag_colour = vec4(1.0, 0.0, 0.0, 1.0);
-    }
-)glsl";
+#include "gl/vk/render_pass.hpp"
+#include "gl/vk/framebuffer.hpp"
+#include "gl/vk/command.hpp"
+#include "gl/vk/semaphore.hpp"
 
 int main()
 {
@@ -76,28 +56,34 @@ int main()
         vk::hardware::SwapchainSupportDetails swapchain_support = my_device.get_window_swapchain_support();
         tz_assert(swapchain_support.supports_swapchain, "Very odd. The logical device was spawned using swapchain, but the physical device apparantly doesn't support it after all? There's 99\% a bug somewhere");
         tz_debug_report("Swapchain : Image count range: %lu-%lu. %zu formats available. %zu present modes available.", swapchain_support.capabilities.minImageCount, swapchain_support.capabilities.maxImageCount, swapchain_support.formats.length(), swapchain_support.present_modes.length());
-
+        
         // Using some very strict requirements here, some machines might straight-up not support this.
         vk::hardware::SwapchainSelectorPreferences my_prefs;
         my_prefs.format_pref = {vk::hardware::SwapchainFormatPreferences::Goldilocks, vk::hardware::SwapchainFormatPreferences::FlexibleGoldilocks, vk::hardware::SwapchainFormatPreferences::DontCare};
         my_prefs.present_mode_pref = {vk::hardware::SwapchainPresentModePreferences::PreferTripleBuffering, vk::hardware::SwapchainPresentModePreferences::DontCare};
         vk::Swapchain swapchain{my_logical_device, my_prefs};
 
-
-        // Get shaders.
-        auto maybe_vertex = vk::read_external_shader("C:\\Users\\Harrand\\Desktop\\Projects\\tz_vk\\build\\vulkan_debug\\demo\\gl\\vk\\basic.vertex.glsl");
-        auto maybe_fragment = vk::read_external_shader("C:\\Users\\Harrand\\Desktop\\Projects\\tz_vk\\build\\vulkan_debug\\demo\\gl\\vk\\basic.fragment.glsl");
-        tz_assert(maybe_vertex.has_value() && maybe_fragment.has_value(), "Failed to read shader sources");
-
-        vk::ShaderModule vertex_shader{my_logical_device, maybe_vertex.value()};
-        vk::ShaderModule fragment_shader{my_logical_device, maybe_fragment.value()};
-        
-        vk::pipeline::Layout my_layout{my_logical_device};
-        vk::pipeline::RenderPass my_pass{my_logical_device, {vk::pipeline::FramebufferAttachmentList{std::initializer_list<vk::pipeline::FramebufferAttachment>{vk::pipeline::FramebufferAttachment{swapchain, vk::pipeline::AttachmentType::Colour}}}}};
-
-        vk::GraphicsPipeline pipeline
+        vk::RenderPassBuilder builder;
+        vk::Attachment col
         {
-            {{vertex_shader, vk::pipeline::ShaderType::Vertex}, {fragment_shader, vk::pipeline::ShaderType::Fragment}},
+            swapchain.get_format(), /* AKA vk::Image::Format::Rgba32sRGB for my machine */
+            vk::Attachment::LoadOperation::Clear,
+            vk::Attachment::StoreOperation::Store,
+            vk::Image::Layout::Undefined,
+            vk::Image::Layout::Present
+        };
+
+        builder.with(vk::Attachments{col});
+        vk::RenderPass simple_colour_pass{my_logical_device, builder};
+
+        vk::pipeline::Layout my_layout{my_logical_device};
+
+        vk::ShaderModule vertex{my_logical_device, vk::read_external_shader(".\\demo\\gl\\vk\\basic.vertex.glsl").value()};
+        vk::ShaderModule fragment{my_logical_device, vk::read_external_shader(".\\demo\\gl\\vk\\basic.fragment.glsl").value()};
+
+        vk::GraphicsPipeline my_pipeline
+        {
+            std::initializer_list<vk::pipeline::ShaderStage>{{vertex, vk::pipeline::ShaderType::Vertex}, {fragment, vk::pipeline::ShaderType::Fragment}},
             my_logical_device,
             vk::pipeline::VertexInputState{},
             vk::pipeline::InputAssembly{vk::pipeline::PrimitiveTopology::Triangles},
@@ -106,12 +92,68 @@ int main()
             vk::pipeline::MultisampleState{},
             vk::pipeline::ColourBlendState{},
             my_layout,
-            my_pass
+            simple_colour_pass
         };
+
+        std::vector<vk::Framebuffer> swapchain_buffers;
+        for(const vk::ImageView& swapchain_view : swapchain.get_image_views())
+        {
+            swapchain_buffers.emplace_back(simple_colour_pass, swapchain_view, VkExtent2D{static_cast<std::uint32_t>(swapchain.get_width()), static_cast<std::uint32_t>(swapchain.get_height())});
+        }
+
+        vk::CommandPool command_pool(my_logical_device, my_qfam);
+        for(std::size_t i = 0; i < swapchain.get_image_views().size(); i++)
+        {
+            command_pool.with(); // One command buffer per swapchain view
+            command_pool[i].begin_recording();
+            {
+                vk::RenderPassRun run{command_pool[i], simple_colour_pass, swapchain_buffers[i], swapchain.full_render_area(), VkClearValue{1.0f, 0.0f, 0.0f, 1.0f}};
+                my_pipeline.bind(command_pool[i]);
+                command_pool[i].draw(3);
+            };
+            command_pool[i].end_recording();
+        }
+        
+        vk::Semaphore image_available{my_logical_device};
+        vk::Semaphore render_finished{my_logical_device};
 
         while(!tz::window().is_close_requested())
         {
             tz::window().update();
+            std::uint32_t image_index;
+            vkAcquireNextImageKHR(my_logical_device.native(), swapchain.native(), UINT64_MAX, image_available.native(), VK_NULL_HANDLE, &image_index);
+
+            VkSubmitInfo submit{};
+            submit.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+
+            VkSemaphore wait_sems[] = {image_available.native()};
+            VkPipelineStageFlags wait_stages[] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
+            submit.waitSemaphoreCount = 1;
+            submit.pWaitSemaphores = wait_sems;
+            submit.pWaitDstStageMask = wait_stages;
+
+            submit.commandBufferCount = 1;
+            auto cur_buf_native = command_pool[image_index].native();
+            submit.pCommandBuffers = &cur_buf_native;
+
+            VkSemaphore signal_sems[] = {render_finished.native()};
+            submit.signalSemaphoreCount = 1;
+            submit.pSignalSemaphores = signal_sems;
+
+            auto res = vkQueueSubmit(my_logical_device.native_queue(), 1, &submit, VK_NULL_HANDLE);
+            tz_assert(res == VK_SUCCESS, "ruh roh");
+
+            VkPresentInfoKHR present{};
+            present.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+            present.waitSemaphoreCount = 1;
+            present.pWaitSemaphores = signal_sems;
+
+            VkSwapchainKHR swapchains[] = {swapchain.native()};
+            present.swapchainCount = 1;
+            present.pSwapchains = swapchains;
+            present.pImageIndices = &image_index;
+            present.pResults = nullptr;
+            vkQueuePresentKHR(my_logical_device.native_queue(), &present);
         }
     }
     tz::terminate();

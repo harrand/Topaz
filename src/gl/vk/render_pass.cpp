@@ -1,5 +1,6 @@
 #if TZ_VULKAN
 #include "gl/vk/render_pass.hpp"
+#include "gl/vk/framebuffer.hpp"
 #include "core/assert.hpp"
 
 namespace tz::gl::vk
@@ -85,6 +86,8 @@ namespace tz::gl::vk
             // TODO: Input, Preserve and Resolve attachments?
             switch(attachment->get_final_image_layout())
             {
+                case Image::Layout::Present:
+                    ref.layout = static_cast<VkImageLayout>(Image::Layout::ColourAttachment);
                 case Image::Layout::ColourAttachment:
                     desc.referenced_colour_attachments.push_back(ref);
                 break;
@@ -185,6 +188,27 @@ namespace tz::gl::vk
     {
         return this->render_pass;
     }
+
+    RenderPassRun::RenderPassRun(const CommandBuffer& command_buffer, const RenderPass& render_pass, const Framebuffer& framebuffer, VkRect2D render_area, VkClearValue clear_colour):
+    command_buffer(&command_buffer)
+    {
+        VkRenderPassBeginInfo begin{};
+        begin.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+        begin.renderPass = render_pass.native();
+        begin.framebuffer = framebuffer.native();
+
+        begin.renderArea = render_area;
+        begin.clearValueCount = 1;
+        begin.pClearValues = &clear_colour;
+        
+        vkCmdBeginRenderPass(command_buffer.native(), &begin, VK_SUBPASS_CONTENTS_INLINE);
+    }
+
+    RenderPassRun::~RenderPassRun()
+    {
+        vkCmdEndRenderPass(this->command_buffer->native());
+    }
+
 }
 
 #endif // TZ_VULKAN

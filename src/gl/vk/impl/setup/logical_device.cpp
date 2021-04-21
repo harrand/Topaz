@@ -80,6 +80,12 @@ namespace tz::gl::vk
     {
         return this->dev;
     }
+
+    VkQueue LogicalDevice::native_queue() const
+    {
+        return this->queue;
+    }
+
 }
 
 #endif

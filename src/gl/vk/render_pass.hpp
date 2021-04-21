@@ -3,6 +3,7 @@
 #if TZ_VULKAN
 #include "gl/vk/attachment.hpp"
 #include "gl/vk/impl/setup/logical_device.hpp"
+#include "gl/vk/command.hpp"
 #include <vector>
 #include <cstdint>
 #include <optional>
@@ -78,6 +79,17 @@ namespace tz::gl::vk
     private:
         VkRenderPass render_pass;
         const LogicalDevice* device;
+    };
+
+    class Framebuffer;
+
+    class RenderPassRun
+    {
+    public:
+        RenderPassRun(const CommandBuffer& command_buffer, const RenderPass& render_pass, const Framebuffer& framebuffer, VkRect2D render_area, VkClearValue clear_colour);
+        ~RenderPassRun();
+    private:
+        const CommandBuffer* command_buffer;
     };
 }
 

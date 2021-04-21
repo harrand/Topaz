@@ -82,6 +82,11 @@ namespace tz::gl::vk
         std::swap(this->graphics_pipeline, rhs.graphics_pipeline);
         return *this;
     }
+
+    void GraphicsPipeline::bind(const CommandBuffer& command_buffer)
+    {
+        vkCmdBindPipeline(command_buffer.native(), VK_PIPELINE_BIND_POINT_GRAPHICS, this->graphics_pipeline);
+    }
 }
 
 #endif // TZ_VULKAN

@@ -132,6 +132,21 @@ namespace tz::gl::vk
         return this->format;
     }
 
+    VkSwapchainKHR Swapchain::native() const
+    {
+        return this->swapchain;
+    }
+
+
+    VkRect2D Swapchain::full_render_area() const
+    {
+        VkRect2D rect;
+        rect.extent = this->native_extent();
+        rect.offset = {0, 0};
+        return rect;
+    }
+
+
     Image::Format Swapchain::get_format() const
     {
         return static_cast<Image::Format>(this->format);

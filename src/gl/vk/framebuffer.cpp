@@ -23,7 +23,8 @@ namespace tz::gl::vk
     }
 
     Framebuffer::Framebuffer(Framebuffer&& move):
-    frame_buffer(VK_NULL_HANDLE)
+    frame_buffer(VK_NULL_HANDLE),
+    device(nullptr)
     {
         *this = std::move(move);
     }
@@ -40,8 +41,15 @@ namespace tz::gl::vk
     Framebuffer& Framebuffer::operator=(Framebuffer&& rhs)
     {
         std::swap(this->frame_buffer, rhs.frame_buffer);
+        std::swap(this->device, rhs.device);
         return *this;
     }
+    
+    VkFramebuffer Framebuffer::native() const
+    {
+        return this->frame_buffer;
+    }
+
 }
 
 #endif // TZ_VULKAN

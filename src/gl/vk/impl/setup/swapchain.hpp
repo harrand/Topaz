@@ -27,6 +27,9 @@ namespace tz::gl::vk
 
         VkExtent2D native_extent() const;
         VkFormat native_format() const;
+        VkSwapchainKHR native() const;
+
+        VkRect2D full_render_area() const;
         Image::Format get_format() const;
     private:
         VkSwapchainKHR swapchain;

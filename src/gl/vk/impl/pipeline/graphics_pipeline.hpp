@@ -43,6 +43,8 @@ namespace tz::gl::vk
 
         GraphicsPipeline& operator=(const GraphicsPipeline& rhs) = delete;
         GraphicsPipeline& operator=(GraphicsPipeline&& rhs);
+
+        void bind(const CommandBuffer& command_buffer);
     private:
         ShaderPipeline shaders;
         const LogicalDevice* device;

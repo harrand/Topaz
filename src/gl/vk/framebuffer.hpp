@@ -16,6 +16,7 @@ namespace tz::gl::vk
 
         Framebuffer& operator=(const Framebuffer& rhs) = delete;
         Framebuffer& operator=(Framebuffer&& rhs);
+        VkFramebuffer native() const;
 
     private:
         const LogicalDevice* device;
