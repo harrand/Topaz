@@ -1,8 +1,8 @@
 #ifndef TOPAZ_GL_VK_COMMAND_HPP
 #define TOPAZ_GL_VK_COMMAND_HPP
 #if TZ_VULKAN
-#include "gl/vk/impl/hardware/queue_family.hpp"
-#include "gl/vk/impl/setup/logical_device.hpp"
+#include "gl/vk/hardware/queue_family.hpp"
+#include "gl/vk/logical_device.hpp"
 
 namespace tz::gl::vk
 {

@@ -1,7 +1,7 @@
 #ifndef TOPAZ_GL_VK_SEMAPHORE_HPP
 #define TOPAZ_GL_VK_SEMAPHORE_HPP
 #if TZ_VULKAN
-#include "gl/vk/impl/setup/logical_device.hpp"
+#include "gl/vk/logical_device.hpp"
 
 namespace tz::gl::vk
 {

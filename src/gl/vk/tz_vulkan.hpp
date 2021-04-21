@@ -1,8 +1,8 @@
 #ifndef TOPAZ_GL_VK_TZ_VULKAN_HPP
 #define TOPAZ_GL_VK_TZ_VULKAN_HPP
 #if TZ_VULKAN
-#include "gl/vk/impl/setup/vulkan_instance.hpp"
-#include "gl/vk/impl/setup/window_surface.hpp"
+#include "gl/vk/setup/vulkan_instance.hpp"
+#include "gl/vk/setup/window_surface.hpp"
 
 namespace tz::gl::vk
 {

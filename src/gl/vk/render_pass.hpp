@@ -2,7 +2,7 @@
 #define TOPAZ_GL_VK_RENDER_PASS_HPP
 #if TZ_VULKAN
 #include "gl/vk/attachment.hpp"
-#include "gl/vk/impl/setup/logical_device.hpp"
+#include "gl/vk/logical_device.hpp"
 #include "gl/vk/command.hpp"
 #include <vector>
 #include <cstdint>

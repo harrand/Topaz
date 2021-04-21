@@ -1,6 +1,6 @@
 #if TZ_VULKAN
 #include "gl/vk/hardware/queue.hpp"
-#include "gl/vk/impl/setup/logical_device.hpp"
+#include "gl/vk/logical_device.hpp"
 
 namespace tz::gl::vk::hardware
 {

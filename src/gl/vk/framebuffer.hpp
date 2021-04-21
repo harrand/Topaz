@@ -2,7 +2,7 @@
 #define TOPAZ_GL_VK_FRAMEBUFFER_HPP
 #if TZ_VULKAN
 #include "gl/vk/render_pass.hpp"
-#include "gl/vk/impl/setup/image_view.hpp"
+#include "gl/vk/image_view.hpp"
 
 namespace tz::gl::vk
 {

@@ -28,59 +28,53 @@ add_library(TZVK
     src/core/window.cpp
     src/core/window.hpp
 
-    src/gl/vk/impl/hardware/device_filter.cpp
-    src/gl/vk/impl/hardware/device_filter.hpp
-    src/gl/vk/impl/hardware/device_filter.inl
-    src/gl/vk/impl/hardware/device.cpp
-    src/gl/vk/impl/hardware/device.hpp
-    src/gl/vk/impl/hardware/queue_family.cpp
-    src/gl/vk/impl/hardware/queue_family.hpp
-    src/gl/vk/impl/hardware/swapchain_selector.cpp
-    src/gl/vk/impl/hardware/swapchain_selector.hpp
-    src/gl/vk/impl/hardware/swapchain_support.hpp
+    src/gl/vk/hardware/device_filter.cpp
+    src/gl/vk/hardware/device_filter.hpp
+    src/gl/vk/hardware/device_filter.inl
+    src/gl/vk/hardware/device.cpp
+    src/gl/vk/hardware/device.hpp
+    src/gl/vk/hardware/queue_family.cpp
+    src/gl/vk/hardware/queue_family.hpp
+    src/gl/vk/hardware/swapchain_selector.cpp
+    src/gl/vk/hardware/swapchain_selector.hpp
+    src/gl/vk/hardware/swapchain_support.hpp
 
-    src/gl/vk/impl/pipeline/colour_blend_state.cpp
-    src/gl/vk/impl/pipeline/colour_blend_state.hpp
-    src/gl/vk/impl/pipeline/graphics_pipeline.cpp
-    src/gl/vk/impl/pipeline/graphics_pipeline.hpp
-    src/gl/vk/impl/pipeline/input_assembly.cpp
-    src/gl/vk/impl/pipeline/input_assembly.hpp
-    src/gl/vk/impl/pipeline/layout.cpp
-    src/gl/vk/impl/pipeline/layout.hpp
-    src/gl/vk/impl/pipeline/multisample_state.cpp
-    src/gl/vk/impl/pipeline/multisample_state.hpp
-    src/gl/vk/impl/pipeline/rasteriser_state.cpp
-    src/gl/vk/impl/pipeline/rasteriser_state.hpp
-    src/gl/vk/impl/pipeline/shader_compiler.cpp
-    src/gl/vk/impl/pipeline/shader_compiler.hpp
-    src/gl/vk/impl/pipeline/shader_module.cpp
-    src/gl/vk/impl/pipeline/shader_module.hpp
-    src/gl/vk/impl/pipeline/shader_stage.cpp
-    src/gl/vk/impl/pipeline/shader_stage.hpp
-    src/gl/vk/impl/pipeline/vertex_input.cpp
-    src/gl/vk/impl/pipeline/vertex_input.hpp
-    src/gl/vk/impl/pipeline/viewport.cpp
-    src/gl/vk/impl/pipeline/viewport.hpp
+    src/gl/vk/pipeline/colour_blend_state.cpp
+    src/gl/vk/pipeline/colour_blend_state.hpp
+    src/gl/vk/pipeline/graphics_pipeline.cpp
+    src/gl/vk/pipeline/graphics_pipeline.hpp
+    src/gl/vk/pipeline/input_assembly.cpp
+    src/gl/vk/pipeline/input_assembly.hpp
+    src/gl/vk/pipeline/layout.cpp
+    src/gl/vk/pipeline/layout.hpp
+    src/gl/vk/pipeline/multisample_state.cpp
+    src/gl/vk/pipeline/multisample_state.hpp
+    src/gl/vk/pipeline/rasteriser_state.cpp
+    src/gl/vk/pipeline/rasteriser_state.hpp
+    src/gl/vk/pipeline/shader_compiler.cpp
+    src/gl/vk/pipeline/shader_compiler.hpp
+    src/gl/vk/pipeline/shader_module.cpp
+    src/gl/vk/pipeline/shader_module.hpp
+    src/gl/vk/pipeline/shader_stage.cpp
+    src/gl/vk/pipeline/shader_stage.hpp
+    src/gl/vk/pipeline/vertex_input.cpp
+    src/gl/vk/pipeline/vertex_input.hpp
+    src/gl/vk/pipeline/viewport.cpp
+    src/gl/vk/pipeline/viewport.hpp
 
-    src/gl/vk/impl/setup/extension_list.cpp
-    src/gl/vk/impl/setup/extension_list.hpp
-    src/gl/vk/impl/setup/image_view.cpp
-    src/gl/vk/impl/setup/image_view.hpp
-    src/gl/vk/impl/setup/logical_device.cpp
-    src/gl/vk/impl/setup/logical_device.hpp
-    src/gl/vk/impl/setup/swapchain.cpp
-    src/gl/vk/impl/setup/swapchain.hpp
-    src/gl/vk/impl/setup/vulkan_instance.cpp
-    src/gl/vk/impl/setup/vulkan_instance.hpp
-    src/gl/vk/impl/setup/window_surface.cpp
-    src/gl/vk/impl/setup/window_surface.hpp
+    src/gl/vk/setup/extension_list.cpp
+    src/gl/vk/setup/extension_list.hpp
+    src/gl/vk/setup/vulkan_instance.cpp
+    src/gl/vk/setup/vulkan_instance.hpp
+    src/gl/vk/setup/window_surface.cpp
+    src/gl/vk/setup/window_surface.hpp
 
-    src/gl/vk/impl/validation/debug_callback.hpp
-    src/gl/vk/impl/validation/debug_messenger.cpp
-    src/gl/vk/impl/validation/debug_messenger.hpp
-    src/gl/vk/impl/validation/debug_messenger.inl
-    src/gl/vk/impl/validation/layer.cpp
-    src/gl/vk/impl/validation/layer.hpp
+    src/gl/vk/validation/debug_callback.hpp
+    src/gl/vk/validation/debug_messenger.cpp
+    src/gl/vk/validation/debug_messenger.hpp
+    src/gl/vk/validation/debug_messenger.inl
+    src/gl/vk/validation/layer.cpp
+    src/gl/vk/validation/layer.hpp
 
     src/gl/vk/hardware/queue.cpp
     src/gl/vk/hardware/queue.hpp
@@ -92,12 +86,18 @@ add_library(TZVK
     src/gl/vk/command.inl
     src/gl/vk/framebuffer.cpp
     src/gl/vk/framebuffer.hpp
+    src/gl/vk/image_view.cpp
+    src/gl/vk/image_view.hpp
     src/gl/vk/image.hpp
+    src/gl/vk/logical_device.cpp
+    src/gl/vk/logical_device.hpp
     src/gl/vk/render_pass.cpp
     src/gl/vk/render_pass.hpp
     src/gl/vk/render_pass.inl
     src/gl/vk/semaphore.cpp
     src/gl/vk/semaphore.hpp
+    src/gl/vk/swapchain.cpp
+    src/gl/vk/swapchain.hpp
     src/gl/vk/tz_vulkan.cpp
     src/gl/vk/tz_vulkan.hpp
     )

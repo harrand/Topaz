@@ -1,7 +1,7 @@
 #ifndef TOPAZ_GL_VK_HARDWARE_QUEUE_HPP
 #define TOPAZ_GL_VK_HARDWARE_QUEUE_HPP
 #if TZ_VULKAN
-#include "gl/vk/impl/hardware/queue_family.hpp"
+#include "gl/vk/hardware/queue_family.hpp"
 #include <cstdint>
 
 namespace tz::gl::vk

@@ -3,8 +3,8 @@
 #endif
 
 #include "core/tz.hpp"
-#include "gl/vk/impl/hardware/device.hpp"
-#include "gl/vk/impl/hardware/device_filter.hpp"
+#include "gl/vk/hardware/device.hpp"
+#include "gl/vk/hardware/device_filter.hpp"
 #include <cstdio>
 
 const char* get_device_type_name(VkPhysicalDeviceType t)
