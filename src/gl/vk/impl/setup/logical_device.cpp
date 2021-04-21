@@ -86,6 +86,10 @@ namespace tz::gl::vk
         return this->queue;
     }
 
+    void LogicalDevice::block_until_idle() const
+    {
+        vkDeviceWaitIdle(this->dev);
+    }
 }
 
 #endif

@@ -162,8 +162,8 @@ int main()
             present.pResults = nullptr;
             res = vkQueuePresentKHR(my_logical_device.native_queue(), &present);
             tz_assert(res == VK_SUCCESS, "ruh roh");
-
         }
+        my_logical_device.block_until_idle();
     }
     tz::terminate();
     return 0;

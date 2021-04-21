@@ -21,6 +21,8 @@ namespace tz::gl::vk
         const hardware::DeviceQueueFamily& get_queue_family() const;
         VkDevice native() const;
         VkQueue native_queue() const;
+
+        void block_until_idle() const;
     private:
         VkDevice dev;
         VkQueue queue;
