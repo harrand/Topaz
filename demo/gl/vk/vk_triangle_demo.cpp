@@ -107,7 +107,7 @@ int main()
             command_pool.with(); // One command buffer per swapchain view
             command_pool[i].begin_recording();
             {
-                vk::RenderPassRun run{command_pool[i], simple_colour_pass, swapchain_buffers[i], swapchain.full_render_area(), VkClearValue{1.0f, 0.0f, 0.0f, 1.0f}};
+                vk::RenderPassRun run{command_pool[i], simple_colour_pass, swapchain_buffers[i], swapchain.full_render_area(), VkClearValue{0.1f, 0.3f, 0.7f, 0.0f}};
                 my_pipeline.bind(command_pool[i]);
                 command_pool[i].draw(3);
             };
