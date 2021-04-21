@@ -8,13 +8,14 @@ namespace tz::gl::vk
     WindowSurface::WindowSurface():
     surface(VK_NULL_HANDLE)
     {
-        glfwCreateWindowSurface(tz::gl::vk::get().native(), tz::window().get_middleware_handle(), nullptr, &this->surface);
+        auto res = glfwCreateWindowSurface(tz::gl::vk::get().native(), tz::window().get_middleware_handle(), nullptr, &this->surface);
+        tz_assert(res == VK_SUCCESS, "GLFW Failed to create window surface");
     }
 
     WindowSurface::WindowSurface(WindowSurface&& move):
     surface(VK_NULL_HANDLE)
     {
-        std::swap(this->surface, move.surface);
+        *this = std::move(move);
     }
 
     WindowSurface::~WindowSurface()

@@ -8,9 +8,8 @@ namespace tz::gl::vk
     {
         VkCommandBufferBeginInfo begin{};
         begin.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-        // TODO: Remove
-        begin.flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
         begin.pInheritanceInfo = nullptr;
+        begin.flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
 
         auto res = vkBeginCommandBuffer(this->command_buffer, &begin);
         tz_assert(res == VK_SUCCESS, "Failed to begin recording command buffer");
@@ -18,7 +17,8 @@ namespace tz::gl::vk
 
     void CommandBuffer::end_recording()
     {
-        vkEndCommandBuffer(this->command_buffer);
+        auto res = vkEndCommandBuffer(this->command_buffer);
+        tz_assert(res == VK_SUCCESS, "Failed to end recording command buffer");
     }
 
     VkCommandBuffer CommandBuffer::native() const

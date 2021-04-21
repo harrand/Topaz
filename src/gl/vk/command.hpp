@@ -12,13 +12,12 @@ namespace tz::gl::vk
     {
     public:
         friend class CommandPool;
+        CommandBuffer(const CommandPool& parent){};
         void begin_recording();
         void end_recording();
         VkCommandBuffer native() const;
-        void draw(std::uint32_t vert_count, std::uint32_t inst_count = 0, std::uint32_t first_index = 0, std::uint32_t first_instance = 0);
+        void draw(std::uint32_t vert_count, std::uint32_t inst_count, std::uint32_t first_index = 0, std::uint32_t first_instance = 0);
     private:
-        CommandBuffer(const CommandPool& parent){};
-
         VkCommandBuffer command_buffer;
     };
 
@@ -35,7 +34,7 @@ namespace tz::gl::vk
 
         VkCommandPool native() const;
         template<typename... Args>
-        std::size_t with(Args&&... args);
+        std::size_t with(std::size_t count, Args&&... args);
 
         CommandBuffer& operator[](std::size_t idx);
         const CommandBuffer& operator[](std::size_t idx) const;

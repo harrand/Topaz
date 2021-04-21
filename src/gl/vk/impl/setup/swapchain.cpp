@@ -146,7 +146,6 @@ namespace tz::gl::vk
         return rect;
     }
 
-
     Image::Format Swapchain::get_format() const
     {
         return static_cast<Image::Format>(this->format);

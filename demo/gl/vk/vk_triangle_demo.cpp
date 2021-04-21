@@ -88,7 +88,14 @@ int main()
             vk::pipeline::VertexInputState{},
             vk::pipeline::InputAssembly{vk::pipeline::PrimitiveTopology::Triangles},
             vk::pipeline::ViewportState{swapchain},
-            vk::pipeline::RasteriserState{},
+            vk::pipeline::RasteriserState
+            {
+                false,
+                false,
+                vk::pipeline::PolygonMode::Fill,
+                1.0f,
+                vk::pipeline::CullingStrategy::None
+            },
             vk::pipeline::MultisampleState{},
             vk::pipeline::ColourBlendState{},
             my_layout,
@@ -102,14 +109,14 @@ int main()
         }
 
         vk::CommandPool command_pool(my_logical_device, my_qfam);
+        command_pool.with(swapchain.get_image_views().size());
         for(std::size_t i = 0; i < swapchain.get_image_views().size(); i++)
         {
-            command_pool.with(); // One command buffer per swapchain view
             command_pool[i].begin_recording();
             {
                 vk::RenderPassRun run{command_pool[i], simple_colour_pass, swapchain_buffers[i], swapchain.full_render_area(), VkClearValue{0.1f, 0.3f, 0.7f, 0.0f}};
                 my_pipeline.bind(command_pool[i]);
-                command_pool[i].draw(3);
+                command_pool[i].draw(3, 1);
             };
             command_pool[i].end_recording();
         }
@@ -153,7 +160,9 @@ int main()
             present.pSwapchains = swapchains;
             present.pImageIndices = &image_index;
             present.pResults = nullptr;
-            vkQueuePresentKHR(my_logical_device.native_queue(), &present);
+            res = vkQueuePresentKHR(my_logical_device.native_queue(), &present);
+            tz_assert(res == VK_SUCCESS, "ruh roh");
+
         }
     }
     tz::terminate();

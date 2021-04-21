@@ -153,6 +153,16 @@ namespace tz::gl::vk
         create.pAttachments = attachments.data();
         create.subpassCount = builder.get_subpasses().size();
         create.pSubpasses = subpass_vk_descriptions.data();
+        create.dependencyCount = 1;
+        VkSubpassDependency initial_dep{};
+        initial_dep.srcSubpass = VK_SUBPASS_EXTERNAL;
+        initial_dep.dstSubpass = 0;
+        initial_dep.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+        initial_dep.srcAccessMask = 0;
+        initial_dep.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+        initial_dep.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+
+        create.pDependencies = &initial_dep;
 
         auto res = vkCreateRenderPass(this->device->native(), &create, nullptr, &this->render_pass);
     }
@@ -201,7 +211,7 @@ namespace tz::gl::vk
         begin.clearValueCount = 1;
         begin.pClearValues = &clear_colour;
         
-        vkCmdBeginRenderPass(command_buffer.native(), &begin, VK_SUBPASS_CONTENTS_INLINE);
+        vkCmdBeginRenderPass(this->command_buffer->native(), &begin, VK_SUBPASS_CONTENTS_INLINE);
     }
 
     RenderPassRun::~RenderPassRun()
