@@ -75,8 +75,8 @@ int main()
 
         vk::pipeline::Layout my_layout{my_logical_device};
 
-        vk::ShaderModule vertex{my_logical_device, vk::read_external_shader("C:\\Users\\Harrand\\Desktop\\Projects\\tz_vk\\build\\vulkan_debug\\demo\\gl\\vk\\basic.vertex.glsl").value()};
-        vk::ShaderModule fragment{my_logical_device, vk::read_external_shader("C:\\Users\\Harrand\\Desktop\\Projects\\tz_vk\\build\\vulkan_debug\\demo\\gl\\vk\\basic.fragment.glsl").value()};
+        vk::ShaderModule vertex{my_logical_device, vk::read_external_shader(".\\demo\\gl\\vk\\basic.vertex.glsl").value()};
+        vk::ShaderModule fragment{my_logical_device, vk::read_external_shader(".\\demo\\gl\\vk\\basic.fragment.glsl").value()};
 
         vk::GraphicsPipeline my_pipeline
         {
