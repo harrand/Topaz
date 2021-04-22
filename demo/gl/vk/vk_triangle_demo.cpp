@@ -17,6 +17,8 @@
 #include "gl/vk/framebuffer.hpp"
 #include "gl/vk/command.hpp"
 #include "gl/vk/semaphore.hpp"
+#include "gl/vk/present.hpp"
+#include "gl/vk/submit.hpp"
 
 int main()
 {
@@ -124,46 +126,19 @@ int main()
         vk::Semaphore image_available{my_logical_device};
         vk::Semaphore render_finished{my_logical_device};
 
-        vk::hardware::Queue graphics_queue = my_logical_device.get_hardware_queue();
+        vk::hardware::Queue graphics_present_queue = my_logical_device.get_hardware_queue();
 
         while(!tz::window().is_close_requested())
         {
             tz::window().update();
-            std::uint32_t image_index;
-            vkAcquireNextImageKHR(my_logical_device.native(), swapchain.native(), UINT64_MAX, image_available.native(), VK_NULL_HANDLE, &image_index);
+            std::uint32_t image_index = swapchain.acquire_next_image_index(image_available);
 
-            VkSubmitInfo submit{};
-            submit.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+            vk::Submit submit{vk::CommandBuffers{command_pool[image_index]}, vk::SemaphoreRefs{image_available}, vk::WaitStages{vk::WaitStage::ColourAttachmentOutput}, vk::SemaphoreRefs{render_finished}};
+            submit(graphics_present_queue);
 
-            VkSemaphore wait_sems[] = {image_available.native()};
-            VkPipelineStageFlags wait_stages[] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
-            submit.waitSemaphoreCount = 1;
-            submit.pWaitSemaphores = wait_sems;
-            submit.pWaitDstStageMask = wait_stages;
-
-            submit.commandBufferCount = 1;
-            auto cur_buf_native = command_pool[image_index].native();
-            submit.pCommandBuffers = &cur_buf_native;
-
-            VkSemaphore signal_sems[] = {render_finished.native()};
-            submit.signalSemaphoreCount = 1;
-            submit.pSignalSemaphores = signal_sems;
-
-            auto res = vkQueueSubmit(graphics_queue.native(), 1, &submit, VK_NULL_HANDLE);
-            tz_assert(res == VK_SUCCESS, "ruh roh");
-
-            VkPresentInfoKHR present{};
-            present.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
-            present.waitSemaphoreCount = 1;
-            present.pWaitSemaphores = signal_sems;
-
-            VkSwapchainKHR swapchains[] = {swapchain.native()};
-            present.swapchainCount = 1;
-            present.pSwapchains = swapchains;
-            present.pImageIndices = &image_index;
-            present.pResults = nullptr;
-            res = vkQueuePresentKHR(graphics_queue.native(), &present);
-            tz_assert(res == VK_SUCCESS, "ruh roh");
+            vk::Present present{swapchain, image_index, vk::SemaphoreRefs{render_finished}};
+            present(graphics_present_queue);
+            graphics_present_queue.block_until_idle();
         }
         my_logical_device.block_until_idle();
     }

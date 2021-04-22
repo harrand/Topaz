@@ -1,6 +1,7 @@
 #if TZ_VULKAN
 #include "gl/vk/swapchain.hpp"
 #include "gl/vk/tz_vulkan.hpp"
+#include <limits>
 
 namespace tz::gl::vk
 {
@@ -149,6 +150,13 @@ namespace tz::gl::vk
     Image::Format Swapchain::get_format() const
     {
         return static_cast<Image::Format>(this->format);
+    }
+
+    std::uint32_t Swapchain::acquire_next_image_index(const Semaphore& semaphore) const
+    {
+        std::uint32_t image_index;
+        vkAcquireNextImageKHR(this->logical_device->native(), this->swapchain, std::numeric_limits<std::uint64_t>::max(), semaphore.native(), VK_NULL_HANDLE, &image_index);
+        return image_index;
     }
 
 }

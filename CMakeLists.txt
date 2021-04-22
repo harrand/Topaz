@@ -91,11 +91,15 @@ add_library(TZVK
     src/gl/vk/image.hpp
     src/gl/vk/logical_device.cpp
     src/gl/vk/logical_device.hpp
+    src/gl/vk/present.cpp
+    src/gl/vk/present.hpp
     src/gl/vk/render_pass.cpp
     src/gl/vk/render_pass.hpp
     src/gl/vk/render_pass.inl
     src/gl/vk/semaphore.cpp
     src/gl/vk/semaphore.hpp
+    src/gl/vk/submit.cpp
+    src/gl/vk/submit.hpp
     src/gl/vk/swapchain.cpp
     src/gl/vk/swapchain.hpp
     src/gl/vk/tz_vulkan.cpp

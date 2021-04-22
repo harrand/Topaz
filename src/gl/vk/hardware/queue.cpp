@@ -10,6 +10,11 @@ namespace tz::gl::vk::hardware
         vkGetDeviceQueue(device.native(), queue_family.index, queue_index, &this->queue);
     }
 
+    void Queue::block_until_idle() const
+    {
+        vkQueueWaitIdle(this->queue);
+    }
+
     VkQueue Queue::native() const
     {
         return this->queue;

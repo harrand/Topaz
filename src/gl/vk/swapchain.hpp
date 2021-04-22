@@ -5,6 +5,7 @@
 #include "gl/vk/hardware/swapchain_selector.hpp"
 #include "gl/vk/image_view.hpp"
 #include "gl/vk/image.hpp"
+#include "gl/vk/semaphore.hpp"
 #include <vector>
 #include <span>
 
@@ -31,6 +32,7 @@ namespace tz::gl::vk
 
         VkRect2D full_render_area() const;
         Image::Format get_format() const;
+        std::uint32_t acquire_next_image_index(const Semaphore& semaphore) const;
     private:
         VkSwapchainKHR swapchain;
         const LogicalDevice* logical_device;

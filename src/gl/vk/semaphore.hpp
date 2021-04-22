@@ -21,6 +21,8 @@ namespace tz::gl::vk
         VkSemaphore sem;
         const LogicalDevice* device;
     };
+
+    using SemaphoreRefs = std::initializer_list<std::reference_wrapper<const Semaphore>>;
 }
 
 #endif // TZ_VULKAN

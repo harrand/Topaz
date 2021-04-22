@@ -9,7 +9,6 @@ namespace tz::gl::vk
         VkCommandBufferBeginInfo begin{};
         begin.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
         begin.pInheritanceInfo = nullptr;
-        begin.flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
 
         auto res = vkBeginCommandBuffer(this->command_buffer, &begin);
         tz_assert(res == VK_SUCCESS, "Failed to begin recording command buffer");
