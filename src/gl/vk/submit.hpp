@@ -3,6 +3,7 @@
 #if TZ_VULKAN
 #include "gl/vk/command.hpp"
 #include "gl/vk/semaphore.hpp"
+#include "gl/vk/fence.hpp"
 #include "gl/vk/hardware/queue.hpp"
 
 namespace tz::gl::vk
@@ -19,6 +20,7 @@ namespace tz::gl::vk
     {
     public:
         Submit(CommandBuffers buffers, SemaphoreRefs wait_semaphores, WaitStages wait_stages, SemaphoreRefs signal_semaphores);
+        void operator()(const hardware::Queue& queue, const Fence& fence) const;
         void operator()(const hardware::Queue& queue) const;
     private:
         void update();

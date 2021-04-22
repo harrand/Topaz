@@ -35,6 +35,11 @@ namespace tz::gl::vk
         this->update();
     }
 
+    void Submit::operator()(const hardware::Queue& queue, const Fence& fence) const
+    {
+        vkQueueSubmit(queue.native(), 1, &this->submit, fence.native());
+    }
+
     void Submit::operator()(const hardware::Queue& queue) const
     {
         vkQueueSubmit(queue.native(), 1, &this->submit, VK_NULL_HANDLE);

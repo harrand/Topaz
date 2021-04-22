@@ -84,6 +84,8 @@ add_library(TZVK
     src/gl/vk/command.cpp
     src/gl/vk/command.hpp
     src/gl/vk/command.inl
+    src/gl/vk/fence.cpp
+    src/gl/vk/fence.hpp
     src/gl/vk/frame_admin.cpp
     src/gl/vk/frame_admin.hpp
     src/gl/vk/framebuffer.cpp
