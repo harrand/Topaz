@@ -84,6 +84,8 @@ add_library(TZVK
     src/gl/vk/command.cpp
     src/gl/vk/command.hpp
     src/gl/vk/command.inl
+    src/gl/vk/frame_admin.cpp
+    src/gl/vk/frame_admin.hpp
     src/gl/vk/framebuffer.cpp
     src/gl/vk/framebuffer.hpp
     src/gl/vk/image_view.cpp

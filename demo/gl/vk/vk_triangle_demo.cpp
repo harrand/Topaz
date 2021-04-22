@@ -19,6 +19,7 @@
 #include "gl/vk/semaphore.hpp"
 #include "gl/vk/present.hpp"
 #include "gl/vk/submit.hpp"
+#include "gl/vk/frame_admin.hpp"
 
 int main()
 {
@@ -128,16 +129,12 @@ int main()
 
         vk::hardware::Queue graphics_present_queue = my_logical_device.get_hardware_queue();
 
+        constexpr std::size_t num_frames_in_flight = 2;
+        vk::FrameAdmin frame_admin{my_logical_device, num_frames_in_flight};
         while(!tz::window().is_close_requested())
         {
             tz::window().update();
-            std::uint32_t image_index = swapchain.acquire_next_image_index(image_available);
-
-            vk::Submit submit{vk::CommandBuffers{command_pool[image_index]}, vk::SemaphoreRefs{image_available}, vk::WaitStages{vk::WaitStage::ColourAttachmentOutput}, vk::SemaphoreRefs{render_finished}};
-            submit(graphics_present_queue);
-
-            vk::Present present{swapchain, image_index, vk::SemaphoreRefs{render_finished}};
-            present(graphics_present_queue);
+            frame_admin.render_frame(graphics_present_queue, swapchain, command_pool, vk::WaitStages{vk::WaitStage::ColourAttachmentOutput});
             graphics_present_queue.block_until_idle();
         }
         my_logical_device.block_until_idle();
