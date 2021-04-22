@@ -135,7 +135,6 @@ int main()
         {
             tz::window().update();
             frame_admin.render_frame(graphics_present_queue, swapchain, command_pool, vk::WaitStages{vk::WaitStage::ColourAttachmentOutput});
-            graphics_present_queue.block_until_idle();
         }
         my_logical_device.block_until_idle();
     }
