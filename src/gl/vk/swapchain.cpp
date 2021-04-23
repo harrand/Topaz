@@ -152,11 +152,22 @@ namespace tz::gl::vk
         return static_cast<Image::Format>(this->format);
     }
 
-    std::uint32_t Swapchain::acquire_next_image_index(const Semaphore& semaphore) const
+    Swapchain::AcquireResult Swapchain::acquire_next_image_index(const Semaphore& semaphore) const
     {
         std::uint32_t image_index;
-        vkAcquireNextImageKHR(this->logical_device->native(), this->swapchain, std::numeric_limits<std::uint64_t>::max(), semaphore.native(), VK_NULL_HANDLE, &image_index);
-        return image_index;
+        auto res = vkAcquireNextImageKHR(this->logical_device->native(), this->swapchain, std::numeric_limits<std::uint64_t>::max(), semaphore.native(), VK_NULL_HANDLE, &image_index);
+        switch(res)
+        {
+            case VK_SUCCESS:
+                return {image_index, Swapchain::AcquireResponseType::Fine};
+            break;
+            case VK_ERROR_OUT_OF_DATE_KHR:
+                return {std::nullopt, Swapchain::AcquireResponseType::ErrorSwapchainOutOfDate};
+            break;
+            default:
+                return {std::nullopt, Swapchain::AcquireResponseType::ErrorUnknown};
+            break;
+        }
     }
 
 }

@@ -11,7 +11,8 @@ namespace tz::gl::vk
     image_available_semaphores(),
     render_finish_semaphores(),
     in_flight_fences(),
-    images_in_flight()
+    images_in_flight(),
+    regenerate_function(nullptr)
     {
         for(std::size_t i = 0; i < this->frame_depth; i++)
         {
@@ -30,7 +31,27 @@ namespace tz::gl::vk
         std::size_t& i = frame_counter;
         this->in_flight_fences[i].wait_for();
 
-        std::uint32_t image_index = swapchain.acquire_next_image_index(this->image_available_semaphores[i]);
+        auto acquisition = swapchain.acquire_next_image_index(this->image_available_semaphores[i]);
+        if(!acquisition.index.has_value())
+        {
+            switch(acquisition.response)
+            {
+                case Swapchain::AcquireResponseType::ErrorSwapchainOutOfDate:
+                    if(this->regenerate_function != nullptr)
+                    {
+                        this->regenerate_function();
+                    }
+                    else
+                    {
+                        tz_error("Swapchain index acquisition failed: Out of date without regeneration function.");
+                    }
+                break;
+                default:
+                    tz_error("Swapchain index acquisition failed for unexpected reason.");
+                break;
+            }
+        }
+        std::uint32_t image_index = acquisition.index.value();
         // If previous frames at this counter still have work going, we need to wait on it.
         if(this->images_in_flight[image_index] != nullptr)
         {

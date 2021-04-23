@@ -25,6 +25,7 @@ add_library(TZVK
     src/core/tz.inl
     src/core/window_functionality.cpp
     src/core/window_functionality.hpp
+    src/core/window_functionality.inl
     src/core/window.cpp
     src/core/window.hpp
 
@@ -88,6 +89,7 @@ add_library(TZVK
     src/gl/vk/fence.hpp
     src/gl/vk/frame_admin.cpp
     src/gl/vk/frame_admin.hpp
+    src/gl/vk/frame_admin.inl
     src/gl/vk/framebuffer.cpp
     src/gl/vk/framebuffer.hpp
     src/gl/vk/image_view.cpp

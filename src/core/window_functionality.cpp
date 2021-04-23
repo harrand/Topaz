@@ -17,6 +17,16 @@ namespace tz
         return glfwWindowShouldClose(this->wnd) == GLFW_TRUE;
     }
 
+    float WindowFunctionality::get_width() const
+    {
+        return this->get_size().first;
+    }
+
+    float WindowFunctionality::get_height() const
+    {
+        return this->get_size().second;
+    }
+
     void WindowFunctionality::update()
     {
         glfwPollEvents();
@@ -24,6 +34,18 @@ namespace tz
             // OpenGL only
             glfwSwapBuffers();
         #endif
+    }
+
+    void WindowFunctionality::block_until_event_happens()
+    {
+        glfwWaitEvents();
+    }
+
+    std::pair<int, int> WindowFunctionality::get_size() const
+    {
+        int w, h;
+        glfwGetFramebufferSize(this->wnd, &w, &h);
+        return {w, h};
     }
 
     void WindowFunctionality::ensure() const

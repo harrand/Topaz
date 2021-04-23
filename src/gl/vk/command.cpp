@@ -70,6 +70,13 @@ namespace tz::gl::vk
         return this->command_pool;
     }
 
+    void CommandPool::clear()
+    {
+        auto buffer_natives = this->get_buffer_natives();
+        vkFreeCommandBuffers(this->device->native(), this->command_pool, buffer_natives.size(), buffer_natives.data());
+        this->buffers.clear();
+    }
+
     CommandBuffer& CommandPool::operator[](std::size_t idx)
     {
         return this->buffers[idx];
@@ -78,6 +85,16 @@ namespace tz::gl::vk
     const CommandBuffer& CommandPool::operator[](std::size_t idx) const
     {
         return this->buffers[idx];
+    }
+
+    std::vector<VkCommandBuffer> CommandPool::get_buffer_natives() const
+    {
+        std::vector<VkCommandBuffer> buffer_natives;
+        for(std::size_t i = 0; i < this->buffers.size(); i++)
+        {
+            buffer_natives.push_back(this->buffers[i].native());
+        }
+        return buffer_natives;
     }
 }
 

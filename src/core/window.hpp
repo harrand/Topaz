@@ -31,6 +31,8 @@ namespace tz
         ~Window();
         Window& operator=(const Window& rhs) = delete;
         Window& operator=(Window&& rhs);
+
+        static void window_resize_callback(GLFWwindow* window, int width, int height);
     };
 }
 

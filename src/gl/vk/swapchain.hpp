@@ -8,12 +8,26 @@
 #include "gl/vk/semaphore.hpp"
 #include <vector>
 #include <span>
+#include <optional>
 
 namespace tz::gl::vk
 {
     class Swapchain
     {
     public:
+        enum class AcquireResponseType
+        {
+            Fine,
+            ErrorSwapchainOutOfDate,
+            ErrorUnknown
+        };
+
+        struct AcquireResult
+        {
+            std::optional<std::uint32_t> index;
+            AcquireResponseType response;
+        };
+
         Swapchain(const LogicalDevice& device, VkSurfaceKHR surface, hardware::SwapchainSelectorPreferences preferences = hardware::default_swapchain_preferences);
         Swapchain(const LogicalDevice& device, hardware::SwapchainSelectorPreferences preferences = hardware::default_swapchain_preferences);
         Swapchain(const Swapchain& copy) = delete;
@@ -32,7 +46,7 @@ namespace tz::gl::vk
 
         VkRect2D full_render_area() const;
         Image::Format get_format() const;
-        std::uint32_t acquire_next_image_index(const Semaphore& semaphore) const;
+        AcquireResult acquire_next_image_index(const Semaphore& semaphore) const;
     private:
         VkSwapchainKHR swapchain;
         const LogicalDevice* logical_device;

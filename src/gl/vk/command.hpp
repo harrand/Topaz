@@ -35,10 +35,13 @@ namespace tz::gl::vk
         VkCommandPool native() const;
         template<typename... Args>
         std::size_t with(std::size_t count, Args&&... args);
+        void clear();
 
         CommandBuffer& operator[](std::size_t idx);
         const CommandBuffer& operator[](std::size_t idx) const;
     private:
+        std::vector<VkCommandBuffer> get_buffer_natives() const;
+        
         VkCommandPool command_pool;
         const LogicalDevice* device;
         std::vector<CommandBuffer> buffers;

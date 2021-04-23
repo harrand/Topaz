@@ -11,11 +11,7 @@ namespace tz::gl::vk
         {
             this->buffers.emplace_back(*this, std::forward<Args>(args)...);
         }
-        std::vector<VkCommandBuffer> buffer_natives;
-        for(std::size_t i = 0; i < this->buffers.size(); i++)
-        {
-            buffer_natives.push_back(this->buffers[i].native());
-        }
+        auto buffer_natives = this->get_buffer_natives();
         VkCommandBufferAllocateInfo info{};
         info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
         info.commandPool = this->command_pool;
