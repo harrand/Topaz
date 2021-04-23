@@ -21,13 +21,35 @@
 #include "gl/vk/submit.hpp"
 #include "gl/vk/frame_admin.hpp"
 
+#include "core/vector.hpp"
+
+using namespace tz::gl;
+
+struct Vertex
+{
+    tz::Vec2 pos;
+    tz::Vec3 colour;
+};
+
+static constexpr vk::VertexBindingDescription binding_description{0, sizeof(Vertex), vk::VertexInputRate::PerVertexBasis};
+static constexpr vk::VertexAttributeDescription pos_description{0, 0, VK_FORMAT_R32G32_SFLOAT, offsetof(Vertex, pos)};
+static constexpr vk::VertexAttributeDescription col_description{0, 1, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, colour)};
+
+
 int main()
 {
     constexpr tz::EngineInfo eng_info = tz::info();
     constexpr tz::GameInfo vk_triangle_demo{"vk_triangle_demo", eng_info.version, eng_info};
+    
+    std::array<Vertex, 3> vertices =
+    {
+        Vertex{{0.0f, -0.5f}, {1.0f, 0.0f, 0.0f}},
+        Vertex{{0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}},
+        Vertex{{-0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}}
+    };
+
     tz::initialise(vk_triangle_demo);
     {
-        using namespace tz::gl;
         vk::hardware::DeviceList valid_devices = tz::gl::vk::hardware::get_all_devices();
         vk::hardware::QueueFamilyTypeField type_requirements{{vk::hardware::QueueFamilyType::Graphics, vk::hardware::QueueFamilyType::Present}};
         // Let's grab a device which can do graphics and present images.
@@ -66,6 +88,12 @@ int main()
         my_prefs.present_mode_pref = {vk::hardware::SwapchainPresentModePreferences::PreferTripleBuffering, vk::hardware::SwapchainPresentModePreferences::DontCare};
         vk::Swapchain swapchain{my_logical_device, my_prefs};
 
+        vk::pipeline::VertexInputState vertex_input_state
+        {
+            vk::VertexBindingDescriptions{binding_description},
+            vk::VertexAttributeDescriptions{pos_description, col_description}
+        };
+
         vk::RenderPassBuilder builder;
         vk::Attachment col
         {
@@ -88,7 +116,7 @@ int main()
         {
             std::initializer_list<vk::pipeline::ShaderStage>{{vertex, vk::pipeline::ShaderType::Vertex}, {fragment, vk::pipeline::ShaderType::Fragment}},
             my_logical_device,
-            vk::pipeline::VertexInputState{},
+            vertex_input_state,
             vk::pipeline::InputAssembly{vk::pipeline::PrimitiveTopology::Triangles},
             vk::pipeline::ViewportState{swapchain},
             vk::pipeline::RasteriserState
@@ -147,7 +175,7 @@ int main()
             my_pipeline = {
                 std::initializer_list<vk::pipeline::ShaderStage>{{vertex, vk::pipeline::ShaderType::Vertex}, {fragment, vk::pipeline::ShaderType::Fragment}},
                 my_logical_device,
-                vk::pipeline::VertexInputState{},
+                vertex_input_state,
                 vk::pipeline::InputAssembly{vk::pipeline::PrimitiveTopology::Triangles},
                 vk::pipeline::ViewportState{swapchain},
                 vk::pipeline::RasteriserState
@@ -199,7 +227,6 @@ int main()
             }
             regenerate();
         });
-        //regenerate();
         while(!tz::window().is_close_requested())
         {
             tz::window().update();

@@ -1,7 +1,9 @@
 #ifndef TOPAZ_GL_VK_PIPELINE_VERTEX_INPUT_HPP
 #define TOPAZ_GL_VK_PIPELINE_VERTEX_INPUT_HPP
 #if TZ_VULKAN
-#include "vulkan/vulkan.h"
+#include "gl/vk/attribute_binding_description.hpp"
+#include "gl/vk/vertex_binding_description.hpp"
+#include <vector>
 
 namespace tz::gl::vk::pipeline
 {
@@ -9,9 +11,12 @@ namespace tz::gl::vk::pipeline
     {
     public:
         VertexInputState();
+        VertexInputState(VertexBindingDescriptions binding_descriptions, VertexAttributeDescriptions attribute_descriptions);
         VkPipelineVertexInputStateCreateInfo native() const;
     private:
         VkPipelineVertexInputStateCreateInfo create;
+        std::vector<VkVertexInputBindingDescription> binding_description_natives;
+        std::vector<VkVertexInputAttributeDescription> attribute_description_natives;
     };
 }
 

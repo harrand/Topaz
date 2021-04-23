@@ -14,6 +14,8 @@ add_library(TZVK
     src/core/containers/polymorphic_list.hpp
     src/core/containers/polymorphic_list.inl
 
+    src/core/algorithms/static.hpp
+
     src/core/assert.hpp
     src/core/engine_info.cpp
     src/core/engine_info.hpp
@@ -23,6 +25,8 @@ add_library(TZVK
     src/core/tz.cpp
     src/core/tz.hpp
     src/core/tz.inl
+    src/core/vector.hpp
+    src/core/vector.inl
     src/core/window_functionality.cpp
     src/core/window_functionality.hpp
     src/core/window_functionality.inl
@@ -82,6 +86,8 @@ add_library(TZVK
 
     src/gl/vk/attachment.cpp
     src/gl/vk/attachment.hpp
+    src/gl/vk/attribute_binding_description.cpp
+    src/gl/vk/attribute_binding_description.hpp
     src/gl/vk/command.cpp
     src/gl/vk/command.hpp
     src/gl/vk/command.inl
@@ -110,6 +116,8 @@ add_library(TZVK
     src/gl/vk/swapchain.hpp
     src/gl/vk/tz_vulkan.cpp
     src/gl/vk/tz_vulkan.hpp
+    src/gl/vk/vertex_binding_description.cpp
+    src/gl/vk/vertex_binding_description.hpp
     )
 
 
