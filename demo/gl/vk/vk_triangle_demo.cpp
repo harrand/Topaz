@@ -64,6 +64,7 @@ int main()
         tz_assert(!valid_devices.empty(), "No valid devices. Require a physical device which supports graphics and present queue families.");
         // Just choose the first one.
         vk::hardware::Device my_device = valid_devices.front();
+        vk::hardware::MemoryProperties my_memory_props = my_device.get_memory_properties();
         std::optional<vk::hardware::DeviceQueueFamily> maybe_my_qfam = std::nullopt;
         for(auto fam : my_device.get_queue_families())
         {
@@ -133,6 +134,10 @@ int main()
             simple_colour_pass
         };
 
+        const std::size_t vertices_bytes = sizeof(Vertex) * vertices.size();
+        vk::Buffer buf{vk::BufferType::Vertex, my_logical_device, vertices_bytes};
+        buf.write(vertices.data(), vertices_bytes);
+
         std::vector<vk::Framebuffer> swapchain_buffers;
         for(const vk::ImageView& swapchain_view : swapchain.get_image_views())
         {
@@ -147,7 +152,8 @@ int main()
             {
                 vk::RenderPassRun run{command_pool[i], simple_colour_pass, swapchain_buffers[i], swapchain.full_render_area(), VkClearValue{0.1f, 0.3f, 0.7f, 0.0f}};
                 my_pipeline.bind(command_pool[i]);
-                command_pool[i].draw(3, 1);
+                command_pool[i].bind(buf);
+                command_pool[i].draw(vertices.size(), 1);
             };
             command_pool[i].end_recording();
         }
@@ -206,7 +212,8 @@ int main()
                 {
                     vk::RenderPassRun run{command_pool[i], simple_colour_pass, swapchain_buffers[i], swapchain.full_render_area(), VkClearValue{0.1f, 0.3f, 0.7f, 0.0f}};
                     my_pipeline.bind(command_pool[i]);
-                    command_pool[i].draw(3, 1);
+                    command_pool[i].bind(buf);
+                    command_pool[i].draw(vertices.size(), 1);
                 };
                 command_pool[i].end_recording();
             }

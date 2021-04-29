@@ -102,6 +102,15 @@ namespace tz::gl::vk::hardware
         };
     }
 
+    MemoryProperties Device::get_memory_properties() const
+    {
+        return
+        {
+            *this
+        };
+    }
+
+
     VkPhysicalDevice Device::native() const
     {
         return this->dev;

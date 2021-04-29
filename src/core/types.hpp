@@ -11,6 +11,9 @@ namespace tz
     template<typename T>
     concept Arithmetic = std::is_arithmetic_v<T>;
 
+    template<typename T>
+    concept EnumClass = std::is_enum_v<T> && !std::is_convertible_v<T, int>;
+
     /**
      * A number is any arithmetic type excluding char and bool.
      */

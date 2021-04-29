@@ -2,6 +2,7 @@
 #define TOPAZ_GL_VK_HARDWARE_QUEUE_FAMILY_HPP
 #if TZ_VULKAN
 #include "vulkan/vulkan.h"
+#include "core/containers/enum_field.hpp"
 #include <optional>
 #include <span>
 #include <vector>
@@ -21,17 +22,7 @@ namespace tz::gl::vk::hardware
         Present
     };
 
-    class QueueFamilyTypeField
-    {
-    public:
-        QueueFamilyTypeField(std::initializer_list<QueueFamilyType> types = {});
-        QueueFamilyTypeField& operator|=(QueueFamilyType type);
-        QueueFamilyTypeField operator|(QueueFamilyType type) const;
-        bool contains(QueueFamilyType type) const;
-        bool contains(QueueFamilyTypeField field) const;
-    private:
-        std::vector<QueueFamilyType> supported_types;
-    };
+    using QueueFamilyTypeField = tz::EnumField<QueueFamilyType>;
 
     using QueueFamilyIndex = int;
 

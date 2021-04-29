@@ -25,6 +25,13 @@ namespace tz::gl::vk
         return this->command_buffer;
     }
 
+    void CommandBuffer::bind(const Buffer& buf) const
+    {
+        auto buf_native = buf.native();
+        VkDeviceSize offsets[] = {0};
+        vkCmdBindVertexBuffers(this->command_buffer, 0, 1, &buf_native, offsets);
+    }
+
     void CommandBuffer::draw(std::uint32_t vert_count, std::uint32_t inst_count, std::uint32_t first_index, std::uint32_t first_instance)
     {
         vkCmdDraw(this->command_buffer, vert_count, inst_count, first_index, first_instance);

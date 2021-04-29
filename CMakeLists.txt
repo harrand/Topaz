@@ -11,6 +11,8 @@ project(TZVK VERSION ${TZ_VERSION})
 
 add_library(TZVK
     src/core/containers/basic_list.hpp
+    src/core/containers/enum_field.hpp
+    src/core/containers/enum_field.inl
     src/core/containers/polymorphic_list.hpp
     src/core/containers/polymorphic_list.inl
 
@@ -38,6 +40,8 @@ add_library(TZVK
     src/gl/vk/hardware/device_filter.inl
     src/gl/vk/hardware/device.cpp
     src/gl/vk/hardware/device.hpp
+    src/gl/vk/hardware/memory.cpp
+    src/gl/vk/hardware/memory.hpp
     src/gl/vk/hardware/queue_family.cpp
     src/gl/vk/hardware/queue_family.hpp
     src/gl/vk/hardware/swapchain_selector.cpp
@@ -88,6 +92,8 @@ add_library(TZVK
     src/gl/vk/attachment.hpp
     src/gl/vk/attribute_binding_description.cpp
     src/gl/vk/attribute_binding_description.hpp
+    src/gl/vk/buffer.cpp
+    src/gl/vk/buffer.hpp
     src/gl/vk/command.cpp
     src/gl/vk/command.hpp
     src/gl/vk/command.inl

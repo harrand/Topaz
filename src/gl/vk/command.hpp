@@ -3,6 +3,7 @@
 #if TZ_VULKAN
 #include "gl/vk/hardware/queue_family.hpp"
 #include "gl/vk/logical_device.hpp"
+#include "gl/vk/buffer.hpp"
 
 namespace tz::gl::vk
 {
@@ -16,6 +17,8 @@ namespace tz::gl::vk
         void begin_recording();
         void end_recording();
         VkCommandBuffer native() const;
+
+        void bind(const Buffer& buf) const;
         void draw(std::uint32_t vert_count, std::uint32_t inst_count, std::uint32_t first_index = 0, std::uint32_t first_instance = 0);
     private:
         VkCommandBuffer command_buffer;

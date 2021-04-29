@@ -4,6 +4,7 @@
 #include "core/containers/basic_list.hpp"
 #include "gl/vk/hardware/queue_family.hpp"
 #include "gl/vk/hardware/swapchain_support.hpp"
+#include "gl/vk/hardware/memory.hpp"
 
 namespace tz::gl::vk::hardware
 {
@@ -22,6 +23,7 @@ namespace tz::gl::vk::hardware
         DeviceQueueFamilies get_queue_families() const;
         DeviceExtensionProperties get_extension_properties() const;
         SwapchainSupportDetails get_window_swapchain_support() const;
+        MemoryProperties get_memory_properties() const;
 
         VkPhysicalDevice native() const;
 
