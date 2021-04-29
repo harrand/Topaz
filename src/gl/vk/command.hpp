@@ -13,11 +13,16 @@ namespace tz::gl::vk
     {
     public:
         friend class CommandPool;
+        struct OneTimeUseTag{};
+        static constexpr OneTimeUseTag OneTimeUse{};
+
         CommandBuffer(const CommandPool& parent){};
         void begin_recording();
+        void begin_recording(OneTimeUseTag onetime_use);
         void end_recording();
         VkCommandBuffer native() const;
 
+        void copy(const Buffer& source, Buffer& destination, std::size_t copy_bytes_length);
         void bind(const Buffer& buf) const;
         void draw(std::uint32_t vert_count, std::uint32_t inst_count, std::uint32_t first_index = 0, std::uint32_t first_instance = 0);
     private:

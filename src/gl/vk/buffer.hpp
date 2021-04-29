@@ -8,13 +8,21 @@ namespace tz::gl::vk
 {
     enum class BufferType
     {
-        Vertex
+        Vertex,
+        Staging
+    };
+
+    enum class BufferPurpose
+    {
+        TransferSource,
+        TransferDestination,
+        NothingSpecial
     };
 
     class Buffer
     {
     public:
-        Buffer(BufferType type, const LogicalDevice& device, std::size_t size_bytes);
+        Buffer(BufferType type, BufferPurpose purpose, const LogicalDevice& device, hardware::MemoryModule resource_memory, std::size_t bytes);
         Buffer(const Buffer& copy) = delete;
         Buffer(Buffer&& move);
         ~Buffer();

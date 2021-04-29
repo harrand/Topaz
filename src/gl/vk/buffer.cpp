@@ -4,7 +4,7 @@
 
 namespace tz::gl::vk
 {
-    Buffer::Buffer(BufferType type, const LogicalDevice& device, std::size_t size_bytes):
+    Buffer::Buffer(BufferType type, BufferPurpose purpose, const LogicalDevice& device, hardware::MemoryModule resource_memory, std::size_t size_bytes):
     buffer(VK_NULL_HANDLE),
     memory(VK_NULL_HANDLE),
     device(&device)
@@ -17,8 +17,28 @@ namespace tz::gl::vk
             case BufferType::Vertex:
                 create.usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
             break;
+            case BufferType::Staging:
+
+            break;
             default:
                 tz_error("Unrecognised BufferType");
+            break;
+        }
+        switch(purpose)
+        {
+            case BufferPurpose::TransferSource:
+                tz_assert(type == BufferType::Staging, "Buffer with TransferSource purpose (Staging Buffer) is incompatible with all BufferTypes aside from Staging");
+                create.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
+            break;
+            case BufferPurpose::TransferDestination:
+                // Any buffer can be a transfer destination
+                create.usage |= VK_BUFFER_USAGE_TRANSFER_DST_BIT;
+            break;
+            case BufferPurpose::NothingSpecial:
+
+            break;
+            default:
+                tz_error("Unrecognised BufferPurpose");
             break;
         }
         create.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
@@ -31,13 +51,13 @@ namespace tz::gl::vk
         
         const hardware::Device& phys_dev = *this->device->get_queue_family().dev;
         hardware::MemoryProperties mem_props = phys_dev.get_memory_properties();
+        tz_assert(phys_dev == *resource_memory.device, "Resource memory comes from hardware device \"%s\" but the logical device provided is sourced from hardware device \"%s\"", phys_dev.get_properties().deviceName, phys_dev.get_properties().deviceName);
 
         // TODO: Not something this stupid
-        hardware::MemoryModule mod = mem_props.unsafe_get_some_module_matching({hardware::MemoryType::HostVisible, hardware::MemoryType::HostCoherent});
         VkMemoryAllocateInfo alloc{};
         alloc.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
         alloc.allocationSize = mem_reqs.size;
-        alloc.memoryTypeIndex = mod.index;
+        alloc.memoryTypeIndex = resource_memory.index;
 
         res = vkAllocateMemory(this->device->native(), &alloc, nullptr, &this->memory);
         tz_assert(res == VK_SUCCESS, "Failed to allocate device memory for buffer");

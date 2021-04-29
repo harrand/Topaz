@@ -134,9 +134,12 @@ int main()
             simple_colour_pass
         };
 
+        vk::hardware::MemoryModule host_visible_mem = my_device.get_memory_properties().unsafe_get_some_module_matching({vk::hardware::MemoryType::HostVisible, vk::hardware::MemoryType::HostCoherent});
+        vk::hardware::MemoryModule device_local_mem = my_device.get_memory_properties().unsafe_get_some_module_matching({vk::hardware::MemoryType::DeviceLocal});
         const std::size_t vertices_bytes = sizeof(Vertex) * vertices.size();
-        vk::Buffer buf{vk::BufferType::Vertex, my_logical_device, vertices_bytes};
-        buf.write(vertices.data(), vertices_bytes);
+        vk::Buffer vertices_staging{vk::BufferType::Staging, vk::BufferPurpose::TransferSource, my_logical_device, host_visible_mem, vertices_bytes};
+        vk::Buffer buf{vk::BufferType::Vertex, vk::BufferPurpose::TransferDestination, my_logical_device, device_local_mem, vertices_bytes};
+        vertices_staging.write(vertices.data(), vertices_bytes);
 
         std::vector<vk::Framebuffer> swapchain_buffers;
         for(const vk::ImageView& swapchain_view : swapchain.get_image_views())
@@ -145,7 +148,7 @@ int main()
         }
 
         vk::CommandPool command_pool(my_logical_device, my_qfam);
-        command_pool.with(swapchain.get_image_views().size());
+        command_pool.with(swapchain.get_image_views().size() + 1);
         for(std::size_t i = 0; i < swapchain.get_image_views().size(); i++)
         {
             command_pool[i].begin_recording();
@@ -157,11 +160,29 @@ int main()
             };
             command_pool[i].end_recording();
         }
+        // last buffer in command pool is specifically for transfer.
+        vk::CommandBuffer& transfer_cmd_buf = command_pool[swapchain.get_image_views().size()];
+        {
+            transfer_cmd_buf.begin_recording(vk::CommandBuffer::OneTimeUse);
+            {
+                transfer_cmd_buf.copy(vertices_staging, buf, vertices_bytes);
+            }
+            transfer_cmd_buf.end_recording();
+        }
         
         vk::Semaphore image_available{my_logical_device};
         vk::Semaphore render_finished{my_logical_device};
 
         vk::hardware::Queue graphics_present_queue = my_logical_device.get_hardware_queue();
+
+        // Insta submit the copy now. Wait on the copy!
+        {
+            vk::Fence wait_for_cpy{my_logical_device};
+            wait_for_cpy.signal();
+            vk::Submit do_staging_cpy{vk::CommandBuffers{transfer_cmd_buf}, vk::SemaphoreRefs{}, vk::WaitStages{}, vk::SemaphoreRefs{}};
+            do_staging_cpy(graphics_present_queue, wait_for_cpy);
+            wait_for_cpy.wait_for();
+        }
 
         auto regenerate = [&]()
         {

@@ -9,10 +9,23 @@ namespace tz::gl::vk
         VkCommandBufferBeginInfo begin{};
         begin.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
         begin.pInheritanceInfo = nullptr;
+        begin.flags = 0;
 
         auto res = vkBeginCommandBuffer(this->command_buffer, &begin);
         tz_assert(res == VK_SUCCESS, "Failed to begin recording command buffer");
     }
+
+    void CommandBuffer::begin_recording(OneTimeUseTag onetime_use)
+    {
+        VkCommandBufferBeginInfo begin{};
+        begin.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+        begin.pInheritanceInfo = nullptr;
+        begin.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+
+        auto res = vkBeginCommandBuffer(this->command_buffer, &begin);
+        tz_assert(res == VK_SUCCESS, "Failed to begin recording command buffer");
+    }
+
 
     void CommandBuffer::end_recording()
     {
@@ -23,6 +36,16 @@ namespace tz::gl::vk
     VkCommandBuffer CommandBuffer::native() const
     {
         return this->command_buffer;
+    }
+
+    void CommandBuffer::copy(const Buffer& source, Buffer& destination, std::size_t copy_bytes_length)
+    {
+        VkBufferCopy cpy{};
+        cpy.dstOffset = 0;
+        cpy.srcOffset = 0;
+        cpy.size = copy_bytes_length;
+
+        vkCmdCopyBuffer(this->command_buffer, source.native(), destination.native(), 1, &cpy);
     }
 
     void CommandBuffer::bind(const Buffer& buf) const

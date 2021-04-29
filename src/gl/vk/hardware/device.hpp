@@ -27,6 +27,7 @@ namespace tz::gl::vk::hardware
 
         VkPhysicalDevice native() const;
 
+        bool operator==(const Device& rhs) const = default;
         friend List get_all_devices();
     private:
         Device();
@@ -39,7 +40,6 @@ namespace tz::gl::vk::hardware
         SurfaceFormats get_window_surface_formats() const;
         SurfacePresentModes get_surface_present_modes(VkSurfaceKHR custom_surface) const;
         SurfacePresentModes get_window_surface_present_modes() const;
-
 
         VkPhysicalDevice dev;
     };
