@@ -24,6 +24,9 @@ namespace tz::gl::vk
             case BufferType::Staging:
 
             break;
+            case BufferType::Uniform:
+                create.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
+            break;
             default:
                 tz_error("Unrecognised BufferType");
             break;
@@ -57,7 +60,7 @@ namespace tz::gl::vk
         hardware::MemoryProperties mem_props = phys_dev.get_memory_properties();
         tz_assert(phys_dev == *resource_memory.device, "Resource memory comes from hardware device \"%s\" but the logical device provided is sourced from hardware device \"%s\"", phys_dev.get_properties().deviceName, phys_dev.get_properties().deviceName);
 
-        // TODO: Not something this stupid
+        // TODO: Not something this stupid. Having resource memory per buffer is ludicrous. We need a custom allocator
         VkMemoryAllocateInfo alloc{};
         alloc.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
         alloc.allocationSize = mem_reqs.size;

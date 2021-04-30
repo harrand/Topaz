@@ -2,6 +2,7 @@
 #define TOPAZ_GL_VK_PIPELINE_LAYOUT_HPP
 #if TZ_VULKAN
 #include "gl/vk/logical_device.hpp"
+#include "gl/vk/descriptor_set_layout.hpp"
 
 namespace tz::gl::vk::pipeline
 {
@@ -9,6 +10,7 @@ namespace tz::gl::vk::pipeline
     {
     public:
         Layout(const LogicalDevice& device);
+        Layout(const LogicalDevice& device, DescriptorSetLayouts descriptors);
         Layout(const Layout& copy) = delete;
         Layout(Layout&& move);
         ~Layout();
@@ -19,6 +21,7 @@ namespace tz::gl::vk::pipeline
         VkPipelineLayout native() const;
     private:
         VkPipelineLayout layout;
+        DescriptorSetLayouts descriptor_layouts;
         const LogicalDevice* device;
     };
 }

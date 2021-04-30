@@ -23,6 +23,10 @@ add_library(TZVK
     src/core/engine_info.hpp
     src/core/engine_info.inl
     src/core/game_info.hpp
+    src/core/matrix_transform.cpp
+    src/core/matrix_transform.hpp
+    src/core/matrix.hpp
+    src/core/matrix.inl
     src/core/report.hpp
     src/core/tz.cpp
     src/core/tz.hpp
@@ -97,6 +101,11 @@ add_library(TZVK
     src/gl/vk/command.cpp
     src/gl/vk/command.hpp
     src/gl/vk/command.inl
+    src/gl/vk/descriptor_set_layout.cpp
+    src/gl/vk/descriptor_set_layout.hpp
+    src/gl/vk/descriptor.cpp
+    src/gl/vk/descriptor.hpp
+    src/gl/vk/descriptor.inl
     src/gl/vk/fence.cpp
     src/gl/vk/fence.hpp
     src/gl/vk/frame_admin.cpp

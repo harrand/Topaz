@@ -8,6 +8,7 @@ namespace tz::gl::vk
     device(&device),
     frame_depth(frame_depth),
     frame_counter(0),
+    cur_image_index(0),
     image_available_semaphores(),
     render_finish_semaphores(),
     in_flight_fences(),
@@ -51,21 +52,26 @@ namespace tz::gl::vk
                 break;
             }
         }
-        std::uint32_t image_index = acquisition.index.value();
+        this->cur_image_index = acquisition.index.value();
         // If previous frames at this counter still have work going, we need to wait on it.
-        if(this->images_in_flight[image_index] != nullptr)
+        if(this->images_in_flight[cur_image_index] != nullptr)
         {
-            this->images_in_flight[image_index]->wait_for();
+            this->images_in_flight[cur_image_index]->wait_for();
         }
 
-        this->images_in_flight[image_index] = &this->in_flight_fences[i];
-        vk::Submit submit{CommandBuffers{command_pool[image_index]}, SemaphoreRefs{this->image_available_semaphores[i]}, wait_stages, SemaphoreRefs{this->render_finish_semaphores[i]}};
+        this->images_in_flight[cur_image_index] = &this->in_flight_fences[i];
+        vk::Submit submit{CommandBuffers{command_pool[cur_image_index]}, SemaphoreRefs{this->image_available_semaphores[i]}, wait_stages, SemaphoreRefs{this->render_finish_semaphores[i]}};
         this->in_flight_fences[i].signal();
         submit(queue, this->in_flight_fences[i]);
 
-        vk::Present present{swapchain, image_index, vk::SemaphoreRefs{this->render_finish_semaphores[i]}};
+        vk::Present present{swapchain, cur_image_index, vk::SemaphoreRefs{this->render_finish_semaphores[i]}};
         present(queue);
         i = (i + 1) % this->frame_depth;
+    }
+
+    std::size_t FrameAdmin::get_image_index() const
+    {
+        return this->cur_image_index;
     }
 
 }

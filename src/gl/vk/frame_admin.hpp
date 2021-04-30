@@ -14,10 +14,12 @@ namespace tz::gl::vk
         FrameAdmin(const LogicalDevice& device, std::size_t frame_depth);
         void render_frame(hardware::Queue queue, const Swapchain& swapchain, const CommandPool& command_pool, WaitStages wait_stages);
         void set_regeneration_function(tz::Action auto regeneration_function);
+        std::size_t get_image_index() const;
     private:        
         const LogicalDevice* device;
         std::size_t frame_depth;
         std::size_t frame_counter;
+        std::uint32_t cur_image_index;
         std::vector<Semaphore> image_available_semaphores;
         std::vector<Semaphore> render_finish_semaphores;
         std::vector<Fence> in_flight_fences;

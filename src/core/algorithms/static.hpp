@@ -1,4 +1,6 @@
 #include <cstdint>
+#include <tuple>
+#include <variant>
 
 namespace tz
 {

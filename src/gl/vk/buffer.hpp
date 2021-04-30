@@ -10,7 +10,8 @@ namespace tz::gl::vk
     {
         Vertex,
         Index,
-        Staging
+        Staging,
+        Uniform
     };
 
     enum class BufferPurpose

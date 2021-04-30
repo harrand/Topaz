@@ -2,6 +2,8 @@
 #define TOPAZ_CORE_VECTOR_HPP
 #include "core/types.hpp"
 #include "core/algorithms/static.hpp"
+#include <array>
+#include <tuple>
 
 namespace tz
 {

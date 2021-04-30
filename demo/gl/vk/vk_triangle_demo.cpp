@@ -20,8 +20,11 @@
 #include "gl/vk/present.hpp"
 #include "gl/vk/submit.hpp"
 #include "gl/vk/frame_admin.hpp"
+#include "gl/vk/descriptor.hpp"
 
-#include "core/vector.hpp"
+#include "core/matrix_transform.hpp"
+
+#include <chrono>
 
 using namespace tz::gl;
 
@@ -34,6 +37,13 @@ struct Vertex
 static constexpr vk::VertexBindingDescription binding_description{0, sizeof(Vertex), vk::VertexInputRate::PerVertexBasis};
 static constexpr vk::VertexAttributeDescription pos_description{0, 0, VK_FORMAT_R32G32_SFLOAT, offsetof(Vertex, pos)};
 static constexpr vk::VertexAttributeDescription col_description{0, 1, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, colour)};
+
+struct MVP
+{
+    tz::Mat4 m;
+    tz::Mat4 v;
+    tz::Mat4 p;
+};
 
 
 int main()
@@ -114,7 +124,10 @@ int main()
         builder.with(vk::Attachments{col});
         vk::RenderPass simple_colour_pass{my_logical_device, builder};
 
-        vk::pipeline::Layout my_layout{my_logical_device};
+        vk::DescriptorSetLayout mvp_layout{my_logical_device, vk::DescriptorSetLayoutBinding{0, vk::DescriptorType::UniformBuffer}};
+        vk::DescriptorSetLayouts layouts;
+        layouts.push_back(std::move(mvp_layout));
+        vk::pipeline::Layout my_layout{my_logical_device, std::move(layouts)};
 
         vk::ShaderModule vertex{my_logical_device, vk::read_external_shader(".\\demo\\gl\\vk\\basic.vertex.glsl").value()};
         vk::ShaderModule fragment{my_logical_device, vk::read_external_shader(".\\demo\\gl\\vk\\basic.fragment.glsl").value()};
@@ -144,14 +157,29 @@ int main()
         vk::hardware::MemoryModule device_local_mem = my_device.get_memory_properties().unsafe_get_some_module_matching({vk::hardware::MemoryType::DeviceLocal});
         const std::size_t vertices_bytes = sizeof(Vertex) * vertices.size();
         const std::size_t indices_bytes = sizeof(std::uint16_t) * indices.size();
+        const std::size_t mvp_bytes = sizeof(MVP);
         vk::Buffer buf{vk::BufferType::Vertex, vk::BufferPurpose::TransferDestination, my_logical_device, device_local_mem, vertices_bytes};
         vk::Buffer index_buf{vk::BufferType::Index, vk::BufferPurpose::TransferDestination, my_logical_device, device_local_mem, indices_bytes};
+        std::vector<vk::Buffer> mvp_bufs;
+        for(std::size_t i = 0; i < swapchain.get_image_views().size(); i++)
+        {
+            mvp_bufs.emplace_back(vk::BufferType::Uniform, vk::BufferPurpose::NothingSpecial, my_logical_device, host_visible_mem, mvp_bytes);
+        }
 
         std::vector<vk::Framebuffer> swapchain_buffers;
         for(const vk::ImageView& swapchain_view : swapchain.get_image_views())
         {
             swapchain_buffers.emplace_back(simple_colour_pass, swapchain_view, VkExtent2D{static_cast<std::uint32_t>(swapchain.get_width()), static_cast<std::uint32_t>(swapchain.get_height())});
         }
+
+        auto num_sets = static_cast<std::uint32_t>(swapchain.get_image_views().size());
+        vk::DescriptorSetLayouts layouts2;
+        for(std::size_t i = 0; i < swapchain.get_image_views().size(); i++)
+        {
+            layouts2.emplace_back(my_logical_device, vk::DescriptorSetLayoutBinding{0, vk::DescriptorType::UniformBuffer});
+        }
+        vk::DescriptorPool descriptor_pool{my_logical_device, vk::DescriptorPoolSizes{{vk::DescriptorType::UniformBuffer, num_sets}}, std::move(layouts2)};
+        descriptor_pool.with(num_sets, mvp_bufs);
 
         vk::CommandPool command_pool(my_logical_device, my_qfam, vk::CommandPool::RecycleBuffer);
         command_pool.with(swapchain.get_image_views().size() + 1);
@@ -163,6 +191,7 @@ int main()
                 my_pipeline.bind(command_pool[i]);
                 command_pool[i].bind(buf);
                 command_pool[i].bind(index_buf);
+                command_pool[i].bind(descriptor_pool[i], my_layout);
                 command_pool[i].draw_indexed(indices.size());
             };
             command_pool[i].end_recording();
@@ -204,6 +233,20 @@ int main()
         
         vk::Semaphore image_available{my_logical_device};
         vk::Semaphore render_finished{my_logical_device};
+
+        auto update_uniform_buffer = [&](std::uint32_t image_index)
+        {
+            static auto startTime = std::chrono::high_resolution_clock::now();
+
+            auto currentTime = std::chrono::high_resolution_clock::now();
+            float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
+            
+            MVP mvp{};
+            mvp.m = tz::model({0.0f, 0.0f, -10.0f}, {0.0f, time, 0.0f}, {5.0f, 5.0f, 5.0f});
+            mvp.v = tz::view({0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f});
+            mvp.p = tz::perspective(1.27f, swapchain.get_width() / swapchain.get_height(), 0.1f, 100.0f);
+            mvp_bufs[image_index].write(&mvp, mvp_bytes);
+        };
 
 
         auto regenerate = [&]()
@@ -281,6 +324,7 @@ int main()
         while(!tz::window().is_close_requested())
         {
             tz::window().update();
+            update_uniform_buffer(frame_admin.get_image_index());
             frame_admin.render_frame(graphics_present_queue, swapchain, command_pool, vk::WaitStages{vk::WaitStage::ColourAttachmentOutput});
         }
         my_logical_device.block_until_idle();
