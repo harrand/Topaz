@@ -9,6 +9,7 @@ namespace tz::gl::vk
     enum class BufferType
     {
         Vertex,
+        Index,
         Staging
     };
 
@@ -27,6 +28,8 @@ namespace tz::gl::vk
         Buffer(Buffer&& move);
         ~Buffer();
 
+        BufferType get_type() const;
+
         void write(const void* addr, std::size_t bytes);
 
         Buffer& operator=(const Buffer& rhs) = delete;
@@ -37,6 +40,7 @@ namespace tz::gl::vk
         VkBuffer buffer;
         VkDeviceMemory memory;
         const LogicalDevice* device;
+        BufferType type;
     };
 }
 

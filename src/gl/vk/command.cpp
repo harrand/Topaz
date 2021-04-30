@@ -52,12 +52,33 @@ namespace tz::gl::vk
     {
         auto buf_native = buf.native();
         VkDeviceSize offsets[] = {0};
-        vkCmdBindVertexBuffers(this->command_buffer, 0, 1, &buf_native, offsets);
+        switch(buf.get_type())
+        {
+            case BufferType::Vertex:
+                vkCmdBindVertexBuffers(this->command_buffer, 0, 1, &buf_native, offsets);
+            break;
+            case BufferType::Index:
+                vkCmdBindIndexBuffer(this->command_buffer, buf_native, 0, VK_INDEX_TYPE_UINT16);
+            break;
+            default:
+                tz_error("Attempting to bind buffer, but its BufferType is unsupported");
+            break;
+        }
     }
 
     void CommandBuffer::draw(std::uint32_t vert_count, std::uint32_t inst_count, std::uint32_t first_index, std::uint32_t first_instance)
     {
         vkCmdDraw(this->command_buffer, vert_count, inst_count, first_index, first_instance);
+    }
+
+    void CommandBuffer::draw_indexed(std::uint32_t index_count, std::uint32_t inst_count, std::uint32_t first_index, std::uint32_t vertex_offset, std::uint32_t first_instance)
+    {
+        vkCmdDrawIndexed(this->command_buffer, index_count, inst_count, first_index, vertex_offset, first_instance);
+    }
+
+    void CommandBuffer::reset()
+    {
+        vkResetCommandBuffer(this->command_buffer, VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT);
     }
 
     CommandPool::CommandPool(const LogicalDevice& device, const hardware::DeviceQueueFamily& queue_family):
@@ -70,7 +91,22 @@ namespace tz::gl::vk
         create.flags = 0;
 
         auto res = vkCreateCommandPool(this->device->native(), &create, nullptr, &this->command_pool);
+        tz_assert(res == VK_SUCCESS, "Failed to create command pool");
     }
+
+    CommandPool::CommandPool(const LogicalDevice& device, const hardware::DeviceQueueFamily& queue_family, RecycleableBufferTag recycleable):
+    command_pool(VK_NULL_HANDLE),
+    device(&device)
+    {
+        VkCommandPoolCreateInfo create{};
+        create.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+        create.queueFamilyIndex = queue_family.index;
+        create.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+
+        auto res = vkCreateCommandPool(this->device->native(), &create, nullptr, &this->command_pool);
+        tz_assert(res == VK_SUCCESS, "Failed to create command pool");
+    }
+
 
     CommandPool::CommandPool(CommandPool&& move):
     command_pool(VK_NULL_HANDLE),

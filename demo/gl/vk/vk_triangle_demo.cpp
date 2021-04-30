@@ -41,11 +41,17 @@ int main()
     constexpr tz::EngineInfo eng_info = tz::info();
     constexpr tz::GameInfo vk_triangle_demo{"vk_triangle_demo", eng_info.version, eng_info};
     
-    std::array<Vertex, 3> vertices =
+    std::array<Vertex, 4> vertices =
     {
-        Vertex{{0.0f, -0.5f}, {1.0f, 0.0f, 0.0f}},
-        Vertex{{0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}},
-        Vertex{{-0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}}
+        Vertex{{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},
+        Vertex{{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},
+        Vertex{{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}},
+        Vertex{{-0.5f, 0.5f}, {0.0f, 0.0f, 0.0f}}
+    };
+
+    std::array<std::uint16_t, 6> indices = 
+    {
+        0, 1, 2, 2, 3, 0
     };
 
     tz::initialise(vk_triangle_demo);
@@ -137,9 +143,9 @@ int main()
         vk::hardware::MemoryModule host_visible_mem = my_device.get_memory_properties().unsafe_get_some_module_matching({vk::hardware::MemoryType::HostVisible, vk::hardware::MemoryType::HostCoherent});
         vk::hardware::MemoryModule device_local_mem = my_device.get_memory_properties().unsafe_get_some_module_matching({vk::hardware::MemoryType::DeviceLocal});
         const std::size_t vertices_bytes = sizeof(Vertex) * vertices.size();
-        vk::Buffer vertices_staging{vk::BufferType::Staging, vk::BufferPurpose::TransferSource, my_logical_device, host_visible_mem, vertices_bytes};
+        const std::size_t indices_bytes = sizeof(std::uint16_t) * indices.size();
         vk::Buffer buf{vk::BufferType::Vertex, vk::BufferPurpose::TransferDestination, my_logical_device, device_local_mem, vertices_bytes};
-        vertices_staging.write(vertices.data(), vertices_bytes);
+        vk::Buffer index_buf{vk::BufferType::Index, vk::BufferPurpose::TransferDestination, my_logical_device, device_local_mem, indices_bytes};
 
         std::vector<vk::Framebuffer> swapchain_buffers;
         for(const vk::ImageView& swapchain_view : swapchain.get_image_views())
@@ -147,7 +153,7 @@ int main()
             swapchain_buffers.emplace_back(simple_colour_pass, swapchain_view, VkExtent2D{static_cast<std::uint32_t>(swapchain.get_width()), static_cast<std::uint32_t>(swapchain.get_height())});
         }
 
-        vk::CommandPool command_pool(my_logical_device, my_qfam);
+        vk::CommandPool command_pool(my_logical_device, my_qfam, vk::CommandPool::RecycleBuffer);
         command_pool.with(swapchain.get_image_views().size() + 1);
         for(std::size_t i = 0; i < swapchain.get_image_views().size(); i++)
         {
@@ -156,33 +162,49 @@ int main()
                 vk::RenderPassRun run{command_pool[i], simple_colour_pass, swapchain_buffers[i], swapchain.full_render_area(), VkClearValue{0.1f, 0.3f, 0.7f, 0.0f}};
                 my_pipeline.bind(command_pool[i]);
                 command_pool[i].bind(buf);
-                command_pool[i].draw(vertices.size(), 1);
+                command_pool[i].bind(index_buf);
+                command_pool[i].draw_indexed(indices.size());
             };
             command_pool[i].end_recording();
         }
+
+        vk::hardware::Queue graphics_present_queue = my_logical_device.get_hardware_queue();
+
         // last buffer in command pool is specifically for transfer.
         vk::CommandBuffer& transfer_cmd_buf = command_pool[swapchain.get_image_views().size()];
         {
+            vk::Buffer vertices_staging{vk::BufferType::Staging, vk::BufferPurpose::TransferSource, my_logical_device, host_visible_mem, vertices_bytes};
+            vertices_staging.write(vertices.data(), vertices_bytes);
             transfer_cmd_buf.begin_recording(vk::CommandBuffer::OneTimeUse);
             {
                 transfer_cmd_buf.copy(vertices_staging, buf, vertices_bytes);
             }
             transfer_cmd_buf.end_recording();
-        }
-        
-        vk::Semaphore image_available{my_logical_device};
-        vk::Semaphore render_finished{my_logical_device};
 
-        vk::hardware::Queue graphics_present_queue = my_logical_device.get_hardware_queue();
-
-        // Insta submit the copy now. Wait on the copy!
-        {
             vk::Fence wait_for_cpy{my_logical_device};
             wait_for_cpy.signal();
             vk::Submit do_staging_cpy{vk::CommandBuffers{transfer_cmd_buf}, vk::SemaphoreRefs{}, vk::WaitStages{}, vk::SemaphoreRefs{}};
             do_staging_cpy(graphics_present_queue, wait_for_cpy);
             wait_for_cpy.wait_for();
+
+            // Then repeat the process for index buffer.
+            vk::Buffer indices_staging{vk::BufferType::Staging, vk::BufferPurpose::TransferSource, my_logical_device, host_visible_mem, indices_bytes};
+            indices_staging.write(indices.data(), indices_bytes);
+            transfer_cmd_buf.reset();
+            transfer_cmd_buf.begin_recording(vk::CommandBuffer::OneTimeUse);
+            {
+                transfer_cmd_buf.copy(indices_staging, index_buf, indices_bytes);
+            }
+            transfer_cmd_buf.end_recording();
+
+            wait_for_cpy.signal();
+            do_staging_cpy(graphics_present_queue, wait_for_cpy);
+            wait_for_cpy.wait_for();
         }
+        
+        vk::Semaphore image_available{my_logical_device};
+        vk::Semaphore render_finished{my_logical_device};
+
 
         auto regenerate = [&]()
         {
@@ -234,7 +256,8 @@ int main()
                     vk::RenderPassRun run{command_pool[i], simple_colour_pass, swapchain_buffers[i], swapchain.full_render_area(), VkClearValue{0.1f, 0.3f, 0.7f, 0.0f}};
                     my_pipeline.bind(command_pool[i]);
                     command_pool[i].bind(buf);
-                    command_pool[i].draw(vertices.size(), 1);
+                    command_pool[i].bind(index_buf);
+                    command_pool[i].draw_indexed(indices.size());
                 };
                 command_pool[i].end_recording();
             }

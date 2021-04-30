@@ -24,7 +24,9 @@ namespace tz::gl::vk
 
         void copy(const Buffer& source, Buffer& destination, std::size_t copy_bytes_length);
         void bind(const Buffer& buf) const;
-        void draw(std::uint32_t vert_count, std::uint32_t inst_count, std::uint32_t first_index = 0, std::uint32_t first_instance = 0);
+        void draw(std::uint32_t vert_count, std::uint32_t inst_count = 1, std::uint32_t first_index = 0, std::uint32_t first_instance = 0);
+        void draw_indexed(std::uint32_t index_count, std::uint32_t inst_count = 1, std::uint32_t first_index = 0, std::uint32_t vertex_offset = 0, std::uint32_t first_instance = 0);
+        void reset();
     private:
         VkCommandBuffer command_buffer;
     };
@@ -32,7 +34,11 @@ namespace tz::gl::vk
     class CommandPool
     {
     public:
+        struct RecycleableBufferTag{};
+        static constexpr RecycleableBufferTag RecycleBuffer{};
+
         CommandPool(const LogicalDevice& device, const hardware::DeviceQueueFamily& queue_family);
+        CommandPool(const LogicalDevice& device, const hardware::DeviceQueueFamily& queue_family, RecycleableBufferTag recycleable);
         CommandPool(const CommandPool& copy) = delete;
         CommandPool(CommandPool&& move);
         ~CommandPool();

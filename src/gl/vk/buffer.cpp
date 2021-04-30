@@ -7,7 +7,8 @@ namespace tz::gl::vk
     Buffer::Buffer(BufferType type, BufferPurpose purpose, const LogicalDevice& device, hardware::MemoryModule resource_memory, std::size_t size_bytes):
     buffer(VK_NULL_HANDLE),
     memory(VK_NULL_HANDLE),
-    device(&device)
+    device(&device),
+    type(type)
     {
         VkBufferCreateInfo create{};
         create.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
@@ -16,6 +17,9 @@ namespace tz::gl::vk
         {
             case BufferType::Vertex:
                 create.usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
+            break;
+            case BufferType::Index:
+                create.usage = VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
             break;
             case BufferType::Staging:
 
@@ -67,7 +71,8 @@ namespace tz::gl::vk
     Buffer::Buffer(Buffer&& move):
     buffer(VK_NULL_HANDLE),
     memory(VK_NULL_HANDLE),
-    device(nullptr)
+    device(nullptr),
+    type()
     {
         *this = std::move(move);
     }
@@ -86,6 +91,11 @@ namespace tz::gl::vk
         }
     }
 
+    BufferType Buffer::get_type() const
+    {
+        return this->type;
+    }
+
     void Buffer::write(const void* addr, std::size_t bytes)
     {
         void* data;
@@ -99,6 +109,7 @@ namespace tz::gl::vk
         std::swap(this->buffer, rhs.buffer);
         std::swap(this->memory, rhs.memory);
         std::swap(this->device, rhs.device);
+        std::swap(this->type, rhs.type);
         return *this;
     }
 
