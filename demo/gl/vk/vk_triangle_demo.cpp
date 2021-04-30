@@ -263,7 +263,6 @@ int main()
             swapchain.~Swapchain();
             new (&swapchain) vk::Swapchain{my_logical_device, my_prefs};
             simple_colour_pass = {my_logical_device, builder};
-            my_layout = {my_logical_device};
             my_pipeline = {
                 std::initializer_list<vk::pipeline::ShaderStage>{{vertex, vk::pipeline::ShaderType::Vertex}, {fragment, vk::pipeline::ShaderType::Fragment}},
                 my_logical_device,
@@ -300,6 +299,7 @@ int main()
                     my_pipeline.bind(command_pool[i]);
                     command_pool[i].bind(buf);
                     command_pool[i].bind(index_buf);
+                    command_pool[i].bind(descriptor_pool[i], my_layout);
                     command_pool[i].draw_indexed(indices.size());
                 };
                 command_pool[i].end_recording();
