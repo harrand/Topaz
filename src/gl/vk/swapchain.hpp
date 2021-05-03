@@ -47,11 +47,13 @@ namespace tz::gl::vk
         VkRect2D full_render_area() const;
         Image::Format get_format() const;
         AcquireResult acquire_next_image_index(const Semaphore& semaphore) const;
+
+        const LogicalDevice& get_device() const;
     private:
         VkSwapchainKHR swapchain;
         const LogicalDevice* logical_device;
         std::vector<VkImage> images;
-        std::vector<ImageView> image_views;
+        ImageViews image_views;
         VkFormat format;
         VkExtent2D extent;
     };

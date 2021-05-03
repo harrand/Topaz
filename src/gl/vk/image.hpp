@@ -1,7 +1,7 @@
 #ifndef TOPAZ_GL_VK_IMAGE_HPP
 #define TOPAZ_GL_VK_IMAGE_HPP
 #if TZ_VULKAN
-#include "vulkan/vulkan.h"
+#include "gl/vk/logical_device.hpp"
 
 namespace tz::gl::vk
 {
@@ -22,7 +22,28 @@ namespace tz::gl::vk
             DepthAttachment = VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL,
             Present = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR
         };
+
+        Image(const LogicalDevice& device, std::uint32_t width, std::uint32_t height, Format format, hardware::MemoryModule resource_memory);
+        Image(const Image& copy) = delete;
+        Image(Image&& move);
+        ~Image();
+
+        Image& operator=(const Image& rhs) = delete;
+        Image& operator=(Image&& rhs);
+
+        std::uint32_t get_width() const;
+        std::uint32_t get_height() const;
+
+        Format get_format() const;
+
+        VkImage native() const;
     private:
+        VkImage image;
+        VkDeviceMemory image_memory;
+        const LogicalDevice* device;
+        std::uint32_t width;
+        std::uint32_t height;
+        Format format;
     };
 }
 

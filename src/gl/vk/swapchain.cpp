@@ -24,7 +24,7 @@ namespace tz::gl::vk
         tz_assert(maybe_format.has_value(), "tz::gl::vk::Swapchain::Swapchain(...): No valid format found");
         tz_assert(maybe_present_mode.has_value(), "tz::gl::vk::Swapchain::Swapchain(...): No valid present mode found");
         
-        std::uint32_t image_count = support.capabilities.minImageCount + 1; // We'll go with at least one more than the mimimum as a hardcoded default.
+        std::uint32_t image_count = support.capabilities.minImageCount; // We'll go with at least one more than the mimimum as a hardcoded default.
         image_count = std::min(image_count, support.capabilities.maxImageCount); // This shouldn't really be a problem but lets be safe.
 
         VkSwapchainCreateInfoKHR create{};
@@ -59,19 +59,10 @@ namespace tz::gl::vk
         auto res = vkCreateSwapchainKHR(device.native(), &create, nullptr, &this->swapchain);
         tz_assert(res == VK_SUCCESS, "Failed to create swapchain");
 
-        // Fill data members
-        vkGetSwapchainImagesKHR(device.native(), this->swapchain, &image_count, nullptr);
-        this->images.resize(image_count);
-        this->image_views.reserve(image_count);
-        vkGetSwapchainImagesKHR(device.native(), this->swapchain, &image_count, this->images.data());
-
         this->format = maybe_format->format;
         this->extent = extent;
 
-        for(const VkImage& img : this->images)
-        {
-            this->image_views.emplace_back(device, img, this->format);
-        }
+        this->image_views = {*this};
     }
 
     Swapchain::Swapchain(const LogicalDevice& device, hardware::SwapchainSelectorPreferences preferences):
@@ -170,6 +161,10 @@ namespace tz::gl::vk
         }
     }
 
+    const LogicalDevice& Swapchain::get_device() const
+    {
+        return *this->logical_device;
+    }
 }
 
 #endif // TZ_VULKAN

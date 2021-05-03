@@ -18,8 +18,8 @@ namespace tz::gl::vk
         float queue_priority = 1.0f;
         queue_create.pQueuePriorities = &queue_priority;
 
-        // TODO: Populate this once we start properly using Vulkan.
         VkPhysicalDeviceFeatures features{};
+        features.samplerAnisotropy = VK_TRUE; // TODO: Customiseable?
 
         VkDeviceCreateInfo create{};
         create.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;

@@ -116,6 +116,7 @@ add_library(TZVK
     src/gl/vk/image_view.cpp
     src/gl/vk/image_view.hpp
     src/gl/vk/image.hpp
+    src/gl/vk/image.cpp
     src/gl/vk/logical_device.cpp
     src/gl/vk/logical_device.hpp
     src/gl/vk/present.cpp
