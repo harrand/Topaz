@@ -23,9 +23,9 @@ namespace tz
 
         BasicList() = default;
 
-        operator std::span<T>() const
+        operator std::span<const T>() const
         {
-            return static_cast<std::span<T>>(this->elements);
+            return static_cast<std::span<const T>>(this->elements);
         }
 
         T& front()

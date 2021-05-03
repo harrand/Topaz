@@ -35,6 +35,7 @@ namespace tz::gl::vk
     public:
         ImageViews() = default;
         ImageViews(const Swapchain& swapchain);
+        ImageViews(std::span<ImageView> views);
     };
 }
 

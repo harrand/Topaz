@@ -90,6 +90,15 @@ namespace tz::gl::vk
             this->add(std::move(view));
         }
     }
+
+    ImageViews::ImageViews(std::span<ImageView> views):
+    ImageViews()
+    {
+        for(ImageView& view : views)
+        {
+            this->add(std::move(view));
+        }
+    }
 }
 
 #endif // TZ_VULKAN
