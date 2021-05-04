@@ -2,6 +2,7 @@
 #define TOPAZ_GL_VK_PIPELINE_SHADER_STAGE_HPP
 #if TZ_VULKAN
 #include "gl/vk/pipeline/shader_module.hpp"
+#include "core/containers/enum_field.hpp"
 
 namespace tz::gl::vk::pipeline
 {
@@ -9,6 +10,14 @@ namespace tz::gl::vk::pipeline
     {
         Vertex,
         Fragment
+    };
+
+    class ShaderTypeField : public tz::EnumField<ShaderType>
+    {
+    public:
+        ShaderTypeField() = default;
+        ShaderTypeField(std::initializer_list<ShaderType> types);
+        static ShaderTypeField All();
     };
 
     class ShaderStage

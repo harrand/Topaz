@@ -6,10 +6,34 @@
 #include "gl/vk/buffer.hpp"
 #include "gl/vk/descriptor.hpp"
 #include "gl/vk/pipeline/layout.hpp"
+#include <functional>
 
 namespace tz::gl::vk
 {
     class CommandPool;
+    class CommandBuffer;
+
+    class CommandBufferRecording
+    {
+    public:
+        CommandBufferRecording(const CommandBufferRecording& copy) = delete;
+        CommandBufferRecording(CommandBufferRecording&& move);
+        ~CommandBufferRecording();
+        CommandBufferRecording& operator=(const CommandBufferRecording& rhs) = delete;
+        CommandBufferRecording& operator=(CommandBufferRecording&& rhs);
+
+        void buffer_copy_buffer(const Buffer& source, Buffer& destination, std::size_t copy_bytes_length);
+        void bind(const Buffer& buf);
+        void bind(const DescriptorSet& descriptor_set, const pipeline::Layout& layout);
+        void draw(std::uint32_t vertex_count, std::uint32_t instance_count = 1, std::uint32_t first_index = 0, std::uint32_t first_instance = 0);
+        void draw_indexed(std::uint32_t index_count, std::uint32_t instance_count = 1, std::uint32_t first_index = 0, std::uint32_t vertex_offset = 0, std::uint32_t first_instance = 0);
+
+        friend class CommandBuffer;
+    private:
+        CommandBufferRecording(const CommandBuffer& buffer, std::function<void()> on_recording_end);
+        const CommandBuffer* command_buffer;
+        std::function<void()> on_recording_end;
+    };
 
     class CommandBuffer
     {
@@ -18,20 +42,16 @@ namespace tz::gl::vk
         struct OneTimeUseTag{};
         static constexpr OneTimeUseTag OneTimeUse{};
 
-        CommandBuffer(const CommandPool& parent){};
-        void begin_recording();
-        void begin_recording(OneTimeUseTag onetime_use);
-        void end_recording();
+        CommandBuffer(const CommandPool& parent);
+        CommandBufferRecording record();
         VkCommandBuffer native() const;
 
-        void copy(const Buffer& source, Buffer& destination, std::size_t copy_bytes_length);
-        void bind(const Buffer& buf) const;
-        void bind(const DescriptorSet& descriptor_set, const pipeline::Layout& layout) const;
-        void draw(std::uint32_t vert_count, std::uint32_t inst_count = 1, std::uint32_t first_index = 0, std::uint32_t first_instance = 0);
-        void draw_indexed(std::uint32_t index_count, std::uint32_t inst_count = 1, std::uint32_t first_index = 0, std::uint32_t vertex_offset = 0, std::uint32_t first_instance = 0);
         void reset();
     private:
+        void notify_recording_begin();
+        void notify_recording_end();
         VkCommandBuffer command_buffer;
+        bool currently_recording;
     };
 
     class CommandPool

@@ -2,6 +2,7 @@
 #define TOPAZ_GL_VK_DESCRIPTOR_SET_LAYOUT_HPP
 #if TZ_VULKAN
 #include "gl/vk/logical_device.hpp"
+#include "gl/vk/pipeline/shader_stage.hpp"
 #include <cstdint>
 
 namespace tz::gl::vk
@@ -11,16 +12,25 @@ namespace tz::gl::vk
         UniformBuffer
     };
 
-    struct DescriptorSetLayoutBinding
+    class LayoutBuilder
     {
-        std::uint32_t binding;
-        DescriptorType type;
+    public:
+        LayoutBuilder() = default;
+        std::uint32_t add(DescriptorType type, pipeline::ShaderTypeField relevant_stages);
+        VkDescriptorSetLayoutBinding operator[](std::size_t index) const;
+        VkDescriptorSetLayoutCreateInfo native() const;
+
+        std::size_t size() const;
+    private:
+        std::vector<VkDescriptorType> binding_types;
+        std::vector<VkShaderStageFlags> binding_relevant_shader_stages;
+        mutable std::vector<VkDescriptorSetLayoutBinding> bindings;
     };
 
     class DescriptorSetLayout
     {
     public:
-        DescriptorSetLayout(const LogicalDevice& device, DescriptorSetLayoutBinding binding);
+        DescriptorSetLayout(const LogicalDevice& device, const LayoutBuilder& builder);
         DescriptorSetLayout(const DescriptorSetLayout& copy) = delete;
         DescriptorSetLayout(DescriptorSetLayout&& move);
         ~DescriptorSetLayout();
@@ -29,14 +39,12 @@ namespace tz::gl::vk
         DescriptorSetLayout& operator=(DescriptorSetLayout&& rhs);
 
         VkDescriptorSetLayout native() const;
-        DescriptorSetLayoutBinding get_binding() const;
     private:
         VkDescriptorSetLayout layout;
-        DescriptorSetLayoutBinding binding;
         const LogicalDevice* device;
     };
 
-    using DescriptorSetLayouts = std::vector<DescriptorSetLayout>;
+    using DescriptorSetLayoutRefs = std::vector<std::reference_wrapper<const DescriptorSetLayout>>;
 }
 
 #endif // TZ_VULKAN

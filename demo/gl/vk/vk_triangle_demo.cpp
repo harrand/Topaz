@@ -124,10 +124,17 @@ int main()
         builder.with(vk::Attachments{col});
         vk::RenderPass simple_colour_pass{my_logical_device, builder};
 
+/*
         vk::DescriptorSetLayout mvp_layout{my_logical_device, vk::DescriptorSetLayoutBinding{0, vk::DescriptorType::UniformBuffer}};
         vk::DescriptorSetLayouts layouts;
         layouts.push_back(std::move(mvp_layout));
-        vk::pipeline::Layout my_layout{my_logical_device, std::move(layouts)};
+*/
+        vk::LayoutBuilder layout_build;
+        std::uint32_t ubo_binding = layout_build.add(vk::DescriptorType::UniformBuffer, vk::pipeline::ShaderTypeField::All());
+        tz_assert(ubo_binding == 0, "Expected binding to be 0. Shader needs to change or this");
+        vk::DescriptorSetLayout layout{my_logical_device, layout_build};
+        
+        vk::pipeline::Layout my_layout{my_logical_device, vk::DescriptorSetLayoutRefs{layout}};
 
         vk::ShaderModule vertex{my_logical_device, vk::read_external_shader(".\\demo\\gl\\vk\\basic.vertex.glsl").value()};
         vk::ShaderModule fragment{my_logical_device, vk::read_external_shader(".\\demo\\gl\\vk\\basic.fragment.glsl").value()};
@@ -172,6 +179,25 @@ int main()
             swapchain_buffers.emplace_back(simple_colour_pass, swapchain_view, VkExtent2D{static_cast<std::uint32_t>(swapchain.get_width()), static_cast<std::uint32_t>(swapchain.get_height())});
         }
 
+        vk::DescriptorPoolBuilder pool_builder;
+        pool_builder
+        // Enough for all our descriptors.
+        .with_capacity(swapchain.get_image_views().size())
+        // We have one UBO per swapchain image.
+        .with_size(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, swapchain.get_image_views().size());
+        for(std::size_t i = 0; i < swapchain.get_image_views().size(); i++)
+        {
+            pool_builder.with_layout(layout);
+        }
+
+        vk::DescriptorPool descriptor_pool{my_logical_device, pool_builder};
+        vk::DescriptorSetsCreationRequest request;
+        for(std::size_t i = 0; i < swapchain.get_image_views().size(); i++)
+        {
+            request.add_buffer(mvp_bufs[i], 0, VK_WHOLE_SIZE, ubo_binding);
+        }
+        descriptor_pool.initialise_sets(request);
+        /*
         auto num_sets = static_cast<std::uint32_t>(swapchain.get_image_views().size());
         vk::DescriptorSetLayouts layouts2;
         for(std::size_t i = 0; i < swapchain.get_image_views().size(); i++)
@@ -180,21 +206,19 @@ int main()
         }
         vk::DescriptorPool descriptor_pool{my_logical_device, vk::DescriptorPoolSizes{{vk::DescriptorType::UniformBuffer, num_sets}}, std::move(layouts2)};
         descriptor_pool.with(num_sets, mvp_bufs);
+        */
 
         vk::CommandPool command_pool(my_logical_device, my_qfam, vk::CommandPool::RecycleBuffer);
         command_pool.with(swapchain.get_image_views().size() + 1);
         for(std::size_t i = 0; i < swapchain.get_image_views().size(); i++)
         {
-            command_pool[i].begin_recording();
-            {
-                vk::RenderPassRun run{command_pool[i], simple_colour_pass, swapchain_buffers[i], swapchain.full_render_area(), VkClearValue{0.1f, 0.3f, 0.7f, 0.0f}};
-                my_pipeline.bind(command_pool[i]);
-                command_pool[i].bind(buf);
-                command_pool[i].bind(index_buf);
-                command_pool[i].bind(descriptor_pool[i], my_layout);
-                command_pool[i].draw_indexed(indices.size());
-            };
-            command_pool[i].end_recording();
+            vk::CommandBufferRecording render = command_pool[i].record();
+            vk::RenderPassRun run{command_pool[i], simple_colour_pass, swapchain_buffers[i], swapchain.full_render_area(), VkClearValue{0.1f, 0.3f, 0.7f, 0.0f}};
+            my_pipeline.bind(command_pool[i]);
+            render.bind(buf);
+            render.bind(index_buf);
+            render.bind(descriptor_pool[i], my_layout);
+            render.draw_indexed(indices.size());
         }
 
         vk::hardware::Queue graphics_present_queue = my_logical_device.get_hardware_queue();
@@ -204,11 +228,10 @@ int main()
         {
             vk::Buffer vertices_staging{vk::BufferType::Staging, vk::BufferPurpose::TransferSource, my_logical_device, host_visible_mem, vertices_bytes};
             vertices_staging.write(vertices.data(), vertices_bytes);
-            transfer_cmd_buf.begin_recording(vk::CommandBuffer::OneTimeUse);
             {
-                transfer_cmd_buf.copy(vertices_staging, buf, vertices_bytes);
+                vk::CommandBufferRecording transfer_vertices = transfer_cmd_buf.record();
+                transfer_vertices.buffer_copy_buffer(vertices_staging, buf, vertices_bytes);
             }
-            transfer_cmd_buf.end_recording();
 
             vk::Fence wait_for_cpy{my_logical_device};
             wait_for_cpy.signal();
@@ -220,11 +243,10 @@ int main()
             vk::Buffer indices_staging{vk::BufferType::Staging, vk::BufferPurpose::TransferSource, my_logical_device, host_visible_mem, indices_bytes};
             indices_staging.write(indices.data(), indices_bytes);
             transfer_cmd_buf.reset();
-            transfer_cmd_buf.begin_recording(vk::CommandBuffer::OneTimeUse);
             {
-                transfer_cmd_buf.copy(indices_staging, index_buf, indices_bytes);
+                vk::CommandBufferRecording transfer_indices = transfer_cmd_buf.record();
+                transfer_indices.buffer_copy_buffer(indices_staging, index_buf, indices_bytes);
             }
-            transfer_cmd_buf.end_recording();
 
             wait_for_cpy.signal();
             do_staging_cpy(graphics_present_queue, wait_for_cpy);
@@ -293,16 +315,13 @@ int main()
             command_pool.with(swapchain.get_image_views().size());
             for(std::size_t i = 0; i < swapchain.get_image_views().size(); i++)
             {
-                command_pool[i].begin_recording();
-                {
-                    vk::RenderPassRun run{command_pool[i], simple_colour_pass, swapchain_buffers[i], swapchain.full_render_area(), VkClearValue{0.1f, 0.3f, 0.7f, 0.0f}};
-                    my_pipeline.bind(command_pool[i]);
-                    command_pool[i].bind(buf);
-                    command_pool[i].bind(index_buf);
-                    command_pool[i].bind(descriptor_pool[i], my_layout);
-                    command_pool[i].draw_indexed(indices.size());
-                };
-                command_pool[i].end_recording();
+                vk::CommandBufferRecording render = command_pool[i].record();
+                vk::RenderPassRun run{command_pool[i], simple_colour_pass, swapchain_buffers[i], swapchain.full_render_area(), VkClearValue{0.1f, 0.3f, 0.7f, 0.0f}};
+                my_pipeline.bind(command_pool[i]);
+                render.bind(buf);
+                render.bind(index_buf);
+                render.bind(descriptor_pool[i], my_layout);
+                render.draw_indexed(indices.size());
             }
         };
 

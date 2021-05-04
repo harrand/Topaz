@@ -10,7 +10,7 @@ namespace tz::gl::vk::pipeline
     {
     public:
         Layout(const LogicalDevice& device);
-        Layout(const LogicalDevice& device, DescriptorSetLayouts descriptors);
+        Layout(const LogicalDevice& device, DescriptorSetLayoutRefs descriptor_layouts);
         Layout(const Layout& copy) = delete;
         Layout(Layout&& move);
         ~Layout();
@@ -21,7 +21,7 @@ namespace tz::gl::vk::pipeline
         VkPipelineLayout native() const;
     private:
         VkPipelineLayout layout;
-        DescriptorSetLayouts descriptor_layouts;
+        DescriptorSetLayoutRefs descriptor_layouts;
         const LogicalDevice* device;
     };
 }

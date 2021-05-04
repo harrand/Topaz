@@ -3,41 +3,83 @@
 
 namespace tz::gl::vk
 {
-    DescriptorSetLayout::DescriptorSetLayout(const LogicalDevice& device, DescriptorSetLayoutBinding binding):
-    layout(VK_NULL_HANDLE),
-    binding(binding),
-    device(&device)
+    std::uint32_t LayoutBuilder::add(DescriptorType type, pipeline::ShaderTypeField relevant_stages)
     {
-        VkDescriptorSetLayoutCreateInfo create{};
-        create.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-        create.bindingCount = 1;
-
-        VkDescriptorSetLayoutBinding bind;
-        bind.binding = binding.binding;
-        bind.descriptorCount = 1;
-        switch(binding.type)
+        VkDescriptorType t;
+        switch(type)
         {
             case DescriptorType::UniformBuffer:
-                bind.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+                t = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
             break;
             default:
-                tz_error("Unknown descriptor type");
+                tz_error("Unrecognised descriptor type");
             break;
         }
-        // TODO: Selective instead of allowing it to be used in all stages?
-        bind.stageFlags = VK_SHADER_STAGE_ALL_GRAPHICS;
-        // TODO: Image sampling related descriptors?
-        bind.pImmutableSamplers = nullptr;
+        this->binding_types.push_back(t);
+        if(relevant_stages == pipeline::ShaderTypeField::All())
+        {
+            this->binding_relevant_shader_stages.push_back(VK_SHADER_STAGE_ALL_GRAPHICS);
+        }
+        else
+        {
+            if(relevant_stages.contains(pipeline::ShaderType::Vertex))
+            {
+                this->binding_relevant_shader_stages.push_back(VK_SHADER_STAGE_VERTEX_BIT);
+            }
+            else if(relevant_stages.contains(pipeline::ShaderType::Fragment))
+            {
+                this->binding_relevant_shader_stages.push_back(VK_SHADER_STAGE_FRAGMENT_BIT);
+            }
+            else
+            {
+                tz_error("Unrecognised shader type field.");
+            }
+        }
+        return this->binding_types.size() - 1;
+    }
 
-        create.pBindings = &bind;
+    VkDescriptorSetLayoutBinding LayoutBuilder::operator[](std::size_t index) const
+    {
+        VkDescriptorSetLayoutBinding binding{};
+        binding.binding = index;
+        binding.descriptorCount = 1;
+        binding.descriptorType = this->binding_types[index];
+        binding.stageFlags = this->binding_relevant_shader_stages[index];
+        binding.pImmutableSamplers = nullptr;
+        return binding;
+    }
 
-        auto res = vkCreateDescriptorSetLayout(this->device->native(), &create, nullptr, &this->layout);
+    VkDescriptorSetLayoutCreateInfo LayoutBuilder::native() const
+    {
+        VkDescriptorSetLayoutCreateInfo layout{};
+        layout.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+        layout.pNext = nullptr;
+        layout.bindingCount = this->size();
+        for(std::size_t i = 0; i < this->size(); i++)
+        {
+            this->bindings.push_back((*this)[i]);
+        }
+        layout.pBindings = this->bindings.data();
+        return layout;
+    }
+
+    std::size_t LayoutBuilder::size() const
+    {
+        tz_assert(this->binding_types.size() == this->binding_relevant_shader_stages.size(), "Layout Builder is corrupted");
+        return this->binding_types.size();
+    }
+
+    DescriptorSetLayout::DescriptorSetLayout(const LogicalDevice& device, const LayoutBuilder& builder):
+    layout(VK_NULL_HANDLE),
+    device(&device)
+    {
+        VkDescriptorSetLayoutCreateInfo layout_create = builder.native();
+        auto res = vkCreateDescriptorSetLayout(this->device->native(), &layout_create, nullptr, &this->layout);
         tz_assert(res == VK_SUCCESS, "Failed to create descriptor set layout");
     }
 
     DescriptorSetLayout::DescriptorSetLayout(DescriptorSetLayout&& move):
     layout(VK_NULL_HANDLE),
-    binding(),
     device(nullptr)
     {
         *this = std::move(move);
@@ -55,7 +97,6 @@ namespace tz::gl::vk
     DescriptorSetLayout& DescriptorSetLayout::operator=(DescriptorSetLayout&& rhs)
     {
         std::swap(this->layout, rhs.layout);
-        std::swap(this->binding, rhs.binding);
         std::swap(this->device, rhs.device);
         return *this;
     }
@@ -63,11 +104,6 @@ namespace tz::gl::vk
     VkDescriptorSetLayout DescriptorSetLayout::native() const
     {
         return this->layout;
-    }
-
-    DescriptorSetLayoutBinding DescriptorSetLayout::get_binding() const
-    {
-        return this->binding;
     }
 }
 

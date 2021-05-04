@@ -14,6 +14,7 @@ namespace tz
         constexpr EnumField() = default;
         constexpr EnumField(std::initializer_list<E> types);
         constexpr EnumField(E type);
+        constexpr ~EnumField() = default;
         bool contains(E type) const;
         bool contains(const EnumField<E>& field) const;
         EnumField<E>& operator|=(E type);

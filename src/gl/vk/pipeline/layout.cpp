@@ -5,17 +5,17 @@
 namespace tz::gl::vk::pipeline
 {
     Layout::Layout(const LogicalDevice& device):
-    Layout(device, DescriptorSetLayouts{}){}
+    Layout(device, DescriptorSetLayoutRefs{}){}
 
-    Layout::Layout(const LogicalDevice& device, DescriptorSetLayouts descriptors):
+    Layout::Layout(const LogicalDevice& device, DescriptorSetLayoutRefs descriptor_layouts):
     layout(VK_NULL_HANDLE),
-    descriptor_layouts(std::move(descriptors)),
+    descriptor_layouts(descriptor_layouts),
     device(&device)
     {
         std::vector<VkDescriptorSetLayout> layout_natives;
         for(const auto& descriptor : this->descriptor_layouts)
         {
-            layout_natives.push_back(descriptor.native());
+            layout_natives.push_back(descriptor.get().native());
         }
         VkPipelineLayoutCreateInfo create{};
         create.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;

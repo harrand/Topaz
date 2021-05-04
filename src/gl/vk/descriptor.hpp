@@ -4,34 +4,52 @@
 #include "gl/vk/logical_device.hpp"
 #include "gl/vk/descriptor_set_layout.hpp"
 #include "gl/vk/buffer.hpp"
+#include <variant>
 
 namespace tz::gl::vk
 {
-    class DescriptorPool;
+    class DescriptorPoolBuilder
+    {
+    public:
+        DescriptorPoolBuilder() = default;
+        DescriptorPoolBuilder& with_size(VkDescriptorType type, std::uint32_t descriptor_count);
+        DescriptorPoolBuilder& with_layout(const DescriptorSetLayout& layout);
+        DescriptorPoolBuilder& with_capacity(std::uint32_t max_sets);
+
+        friend class DescriptorPool;
+    private:
+        std::vector<VkDescriptorPoolSize> pool_sizes;
+        std::vector<VkDescriptorSetLayout> layouts;
+        std::uint32_t max_sets;
+    };
+
+    class DescriptorSetsCreationRequest
+    {
+    public:
+        DescriptorSetsCreationRequest() = default;
+        void add_buffer(const Buffer& buffer, VkDeviceSize offset, VkDeviceSize range, std::uint32_t binding_id);
+        friend class DescriptorPool;
+    private:
+        using ResourceInfoVariant = std::variant<VkDescriptorBufferInfo>;
+        std::vector<ResourceInfoVariant> resources;
+        std::vector<VkDescriptorType> types;
+        std::vector<std::uint32_t> bindings;
+    };
 
     class DescriptorSet
     {
     public:
-        friend class DescriptorPool;
-        DescriptorSet() = default;
-        void initialise(const DescriptorPool& parent, const DescriptorSetLayout& layout, const Buffer& buffer, std::size_t buffer_data_offset = 0);
         VkDescriptorSet native() const;
+        friend class DescriptorPool;
     private:
+        DescriptorSet(VkDescriptorSet set);
         VkDescriptorSet set;
     };
-
-    struct DescriptorPoolSize
-    {
-        DescriptorType type;
-        std::uint32_t descriptor_count;
-    };
-
-    using DescriptorPoolSizes = std::initializer_list<DescriptorPoolSize>;
 
     class DescriptorPool
     {
     public:
-        DescriptorPool(const LogicalDevice& device, DescriptorPoolSizes pool_sizes, DescriptorSetLayouts&& layouts);
+        DescriptorPool(const LogicalDevice& device, const DescriptorPoolBuilder& builder);
         DescriptorPool(const DescriptorPool& copy) = delete;
         DescriptorPool(DescriptorPool&& move);
         ~DescriptorPool();
@@ -39,20 +57,15 @@ namespace tz::gl::vk
         DescriptorPool& operator=(const DescriptorPool& rhs) = delete;
         DescriptorPool& operator=(DescriptorPool&& rhs);
 
-        const DescriptorSet& operator[](std::size_t index) const;
-        DescriptorSet& operator[](std::size_t index);
-
-        template<typename... Args>
-        std::size_t with(std::size_t count, std::span<const Buffer> buffers, Args&&... args);
-
-        const LogicalDevice& get_device() const;
+        void initialise_sets(DescriptorSetsCreationRequest request);
+        DescriptorSet operator[](std::size_t index) const;
     private:
-        std::vector<VkDescriptorSet> get_set_natives() const;
+        void destroy_sets();
 
         VkDescriptorPool pool;
+        std::vector<VkDescriptorSetLayout> layouts;
+        std::vector<VkDescriptorSet> sets;
         const LogicalDevice* device;
-        std::vector<DescriptorSet> sets;
-        std::vector<DescriptorSetLayout> set_layouts;
     };
 }
 

@@ -4,6 +4,18 @@
 
 namespace tz::gl::vk::pipeline
 {
+
+    ShaderTypeField::ShaderTypeField(std::initializer_list<ShaderType> types):
+    tz::EnumField<ShaderType>(types){}
+
+    ShaderTypeField ShaderTypeField::All()
+    {
+        ShaderTypeField field;
+        field |= ShaderType::Vertex;
+        field |= ShaderType::Fragment;
+        return field;
+    }
+
     ShaderStage::ShaderStage(const ShaderModule& module, ShaderType type):
     create(),
     type(type)
