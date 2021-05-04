@@ -82,11 +82,6 @@ namespace tz::gl::vk
             vkDestroyDescriptorPool(this->device->native(), this->pool, nullptr);
             this->pool = VK_NULL_HANDLE;
         }
-
-        for(VkDescriptorSetLayout layout : this->layouts)
-        {
-            vkDestroyDescriptorSetLayout(this->device->native(), layout, nullptr);
-        }
         this->layouts.clear();
     }
 
