@@ -64,6 +64,14 @@ int main()
         0, 1, 2, 2, 3, 0
     };
 
+    std::array<float, 16> imgdata = 
+    {
+        0.0f, 0.0f, 0.0f, 1.0f,
+        1.0f, 0.0f, 0.0f, 1.0f,
+        0.0f, 1.0f, 0.0f, 1.0f,
+        0.0f, 0.0f, 1.0f, 1.0f
+    };
+
     tz::initialise(vk_triangle_demo);
     {
         vk::hardware::DeviceList valid_devices = tz::gl::vk::hardware::get_all_devices();
@@ -124,11 +132,6 @@ int main()
         builder.with(vk::Attachments{col});
         vk::RenderPass simple_colour_pass{my_logical_device, builder};
 
-/*
-        vk::DescriptorSetLayout mvp_layout{my_logical_device, vk::DescriptorSetLayoutBinding{0, vk::DescriptorType::UniformBuffer}};
-        vk::DescriptorSetLayouts layouts;
-        layouts.push_back(std::move(mvp_layout));
-*/
         vk::LayoutBuilder layout_build;
         std::uint32_t ubo_binding = layout_build.add(vk::DescriptorType::UniformBuffer, vk::pipeline::ShaderTypeField::All());
         tz_assert(ubo_binding == 0, "Expected binding to be 0. Shader needs to change or this");
@@ -165,9 +168,13 @@ int main()
         const std::size_t vertices_bytes = sizeof(Vertex) * vertices.size();
         const std::size_t indices_bytes = sizeof(std::uint16_t) * indices.size();
         const std::size_t mvp_bytes = sizeof(MVP);
+        const std::size_t img_bytes = sizeof(imgdata);
         vk::Buffer buf{vk::BufferType::Vertex, vk::BufferPurpose::TransferDestination, my_logical_device, device_local_mem, vertices_bytes};
         vk::Buffer index_buf{vk::BufferType::Index, vk::BufferPurpose::TransferDestination, my_logical_device, device_local_mem, indices_bytes};
+        vk::Buffer img_buf{vk::BufferType::Staging, vk::BufferPurpose::TransferSource, my_logical_device, host_visible_mem, img_bytes};
         std::vector<vk::Buffer> mvp_bufs;
+
+        vk::Image img{my_logical_device, 2, 2, vk::Image::Format::Rgba32Unsigned, device_local_mem};
         for(std::size_t i = 0; i < swapchain.get_image_views().size(); i++)
         {
             mvp_bufs.emplace_back(vk::BufferType::Uniform, vk::BufferPurpose::NothingSpecial, my_logical_device, host_visible_mem, mvp_bytes);
@@ -251,6 +258,16 @@ int main()
             wait_for_cpy.signal();
             do_staging_cpy(graphics_present_queue, wait_for_cpy);
             wait_for_cpy.wait_for();
+
+            transfer_cmd_buf.reset();
+            {
+                vk::CommandBufferRecording transfer_image = transfer_cmd_buf.record();
+                img.set_layout(transfer_image, vk::Image::Layout::TransferDestination);
+                //transfer_image.transition_image_layout(img, vk::Image::Layout::TransferDestination);
+                transfer_image.buffer_copy_image(img_buf, img, img_bytes);
+                img.set_layout(transfer_image, vk::Image::Layout::ShaderResource);
+                //transfer_image.transition_image_layout(img, vk::Image::Layout::ShaderResource);
+            }
         }
         
         vk::Semaphore image_available{my_logical_device};
@@ -264,7 +281,7 @@ int main()
             float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
             
             MVP mvp{};
-            mvp.m = tz::model({0.0f, 0.0f, -10.0f}, {0.0f, time, 0.0f}, {5.0f, 5.0f, 5.0f});
+            mvp.m = tz::model({0.0f, std::sin(time * 4.0f), -10.0f}, {0.0f, time * 2.0f, 0.0f}, {5.0f, 5.0f, 5.0f});
             mvp.v = tz::view({0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f});
             mvp.p = tz::perspective(1.27f, swapchain.get_width() / swapchain.get_height(), 0.1f, 100.0f);
             mvp_bufs[image_index].write(&mvp, mvp_bytes);

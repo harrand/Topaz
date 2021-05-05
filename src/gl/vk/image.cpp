@@ -1,5 +1,6 @@
 #if TZ_VULKAN
 #include "gl/vk/image.hpp"
+#include "gl/vk/command.hpp"
 
 namespace tz::gl::vk
 {
@@ -9,7 +10,8 @@ namespace tz::gl::vk
     device(&device),
     width(width),
     height(height),
-    format(format)
+    format(format),
+    layout(Image::Layout::Undefined)
     {
         VkImageCreateInfo create{};
         create.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
@@ -21,7 +23,7 @@ namespace tz::gl::vk
         create.arrayLayers = 1;
         create.format = static_cast<VkFormat>(format);
         create.tiling = VK_IMAGE_TILING_OPTIMAL;
-        create.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+        create.initialLayout = static_cast<VkImageLayout>(this->layout);
         create.usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
         create.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
         create.samples = VK_SAMPLE_COUNT_1_BIT;
@@ -90,6 +92,17 @@ namespace tz::gl::vk
     Image::Format Image::get_format() const
     {
         return this->format;
+    }
+
+    Image::Layout Image::get_layout() const
+    {
+        return this->layout;
+    }
+
+    void Image::set_layout(CommandBufferRecording& recording, Image::Layout new_layout)
+    {
+        recording.transition_image_layout(*this, new_layout);
+        this->layout = new_layout;
     }
 
     VkImage Image::native() const

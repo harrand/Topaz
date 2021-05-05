@@ -34,6 +34,52 @@ namespace tz::gl::vk
         vkCmdCopyBuffer(this->command_buffer->native(), source.native(), destination.native(), 1, &cpy);
     }
 
+    void CommandBufferRecording::buffer_copy_image(const Buffer& source, Image& destination, std::size_t copy_bytes_length)
+    {
+        VkBufferImageCopy cpy{};
+        cpy.bufferOffset = 0;
+        cpy.bufferRowLength = 0;
+        cpy.bufferImageHeight = 0;
+
+        cpy.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+        cpy.imageSubresource.mipLevel = 0;
+        cpy.imageSubresource.baseArrayLayer = 0;
+        cpy.imageSubresource.layerCount = 1;
+
+        cpy.imageOffset = {0, 0, 0};
+        cpy.imageExtent = {
+            destination.get_width(),
+            destination.get_height(),
+            1
+        };
+
+        vkCmdCopyBufferToImage(this->command_buffer->native(), source.native(), destination.native(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &cpy);
+    }
+
+    void CommandBufferRecording::transition_image_layout(Image& image, Image::Layout new_layout)
+    {
+        VkImageMemoryBarrier barrier{};
+        barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+        barrier.oldLayout = static_cast<VkImageLayout>(image.get_layout());
+        barrier.newLayout = static_cast<VkImageLayout>(new_layout);
+
+        barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+        barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+
+        barrier.image = image.native();
+        barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+        barrier.subresourceRange.baseMipLevel = 0;
+        barrier.subresourceRange.levelCount = 1;
+        barrier.subresourceRange.baseArrayLayer = 0;
+        barrier.subresourceRange.layerCount = 1;
+
+        // TODO: Fix
+        barrier.srcAccessMask = 0;
+        barrier.dstAccessMask = 0;
+
+        vkCmdPipelineBarrier(this->command_buffer->native(), 0, 0, 0, 0, nullptr, 0, nullptr, 1, &barrier);
+    }
+
     void CommandBufferRecording::bind(const Buffer& buf)
     {
         auto buf_native = buf.native();

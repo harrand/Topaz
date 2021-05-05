@@ -5,6 +5,8 @@
 
 namespace tz::gl::vk
 {
+    class CommandBufferRecording;
+
     class Image
     {
     public:
@@ -20,7 +22,10 @@ namespace tz::gl::vk
             Undefined = VK_IMAGE_LAYOUT_UNDEFINED,
             ColourAttachment = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
             DepthAttachment = VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL,
-            Present = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR
+            Present = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
+            TransferSource = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+            TransferDestination = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+            ShaderResource = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
         };
 
         Image(const LogicalDevice& device, std::uint32_t width, std::uint32_t height, Format format, hardware::MemoryModule resource_memory);
@@ -35,6 +40,8 @@ namespace tz::gl::vk
         std::uint32_t get_height() const;
 
         Format get_format() const;
+        Layout get_layout() const;
+        void set_layout(CommandBufferRecording& recording, Image::Layout new_layout);
 
         VkImage native() const;
     private:
@@ -44,6 +51,7 @@ namespace tz::gl::vk
         std::uint32_t width;
         std::uint32_t height;
         Format format;
+        Layout layout;
     };
 }
 
