@@ -73,11 +73,38 @@ namespace tz::gl::vk
         barrier.subresourceRange.baseArrayLayer = 0;
         barrier.subresourceRange.layerCount = 1;
 
-        // TODO: Fix
-        barrier.srcAccessMask = 0;
-        barrier.dstAccessMask = 0;
+        VkPipelineStageFlags source_stage;
+        VkPipelineStageFlags destination_stage;
 
-        vkCmdPipelineBarrier(this->command_buffer->native(), 0, 0, 0, 0, nullptr, 0, nullptr, 1, &barrier);
+        switch(image.get_layout())
+        {
+            case Image::Layout::Undefined:
+                barrier.srcAccessMask = 0;
+                source_stage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+            break;
+            case Image::Layout::TransferDestination:
+                barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+                source_stage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+            break;
+            default:
+                tz_error("Image Source Layout is NYI");
+            break;
+        }
+
+        switch(new_layout)
+        {
+            case Image::Layout::TransferDestination:
+                barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+                destination_stage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+            break;
+            case Image::Layout::ShaderResource:
+                barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+                // TODO: Not just frag shader? Displacement maps etc
+                destination_stage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+            break;
+        }
+
+        vkCmdPipelineBarrier(this->command_buffer->native(), source_stage, destination_stage, 0, 0, nullptr, 0, nullptr, 1, &barrier);
     }
 
     void CommandBufferRecording::bind(const Buffer& buf)
