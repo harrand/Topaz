@@ -102,6 +102,9 @@ namespace tz::gl::vk
                 // TODO: Not just frag shader? Displacement maps etc
                 destination_stage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
             break;
+            default:
+                tz_error("Image Destination Layout is NYI");
+            break;
         }
 
         vkCmdPipelineBarrier(this->command_buffer->native(), source_stage, destination_stage, 0, 0, nullptr, 0, nullptr, 1, &barrier);

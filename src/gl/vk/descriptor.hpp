@@ -4,6 +4,8 @@
 #include "gl/vk/logical_device.hpp"
 #include "gl/vk/descriptor_set_layout.hpp"
 #include "gl/vk/buffer.hpp"
+#include "gl/vk/image_view.hpp"
+#include "gl/vk/sampler.hpp"
 #include <variant>
 
 namespace tz::gl::vk
@@ -28,12 +30,27 @@ namespace tz::gl::vk
     public:
         DescriptorSetsCreationRequest() = default;
         void add_buffer(const Buffer& buffer, VkDeviceSize offset, VkDeviceSize range, std::uint32_t binding_id);
+        void add_image(const ImageView& image, const Sampler& sampler, VkDeviceSize offset, VkDeviceSize range, std::uint32_t binding_id);;
         friend class DescriptorPool;
     private:
-        using ResourceInfoVariant = std::variant<VkDescriptorBufferInfo>;
+        using ResourceInfoVariant = std::variant<VkDescriptorBufferInfo, VkDescriptorImageInfo>;
         std::vector<ResourceInfoVariant> resources;
         std::vector<VkDescriptorType> types;
         std::vector<std::uint32_t> bindings;
+    };
+
+    class DescriptorSetsCreationRequests
+    {
+    public:
+        DescriptorSetsCreationRequests() = default;
+        DescriptorSetsCreationRequest& new_request();
+        std::size_t size() const;
+        const DescriptorSetsCreationRequest& operator[](std::size_t i) const;
+        DescriptorSetsCreationRequest& operator[](std::size_t i);
+        auto begin();
+        auto end();
+    private:
+        std::vector<DescriptorSetsCreationRequest> requests;
     };
 
     class DescriptorSet
@@ -57,9 +74,10 @@ namespace tz::gl::vk
         DescriptorPool& operator=(const DescriptorPool& rhs) = delete;
         DescriptorPool& operator=(DescriptorPool&& rhs);
 
-        void initialise_sets(DescriptorSetsCreationRequest request);
+        void initialise_sets(DescriptorSetsCreationRequests requests);
         DescriptorSet operator[](std::size_t index) const;
     private:
+        void initialise_set(DescriptorSetsCreationRequest request, std::size_t set_id);
         void destroy_sets();
 
         VkDescriptorPool pool;

@@ -42,6 +42,46 @@ namespace tz::gl::vk
         this->bindings.push_back(binding_id);
     }
 
+    void DescriptorSetsCreationRequest::add_image(const ImageView& image, const Sampler& sampler, VkDeviceSize offset, VkDeviceSize range, std::uint32_t binding_id)
+    {
+        auto& info = std::get<VkDescriptorImageInfo>(this->resources.emplace_back(VkDescriptorImageInfo{}));
+        info.imageLayout = static_cast<VkImageLayout>(Image::Layout::ShaderResource);
+        info.imageView = image.native();
+        info.sampler = sampler.native();
+        this->types.push_back(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER);
+        this->bindings.push_back(binding_id);
+    }
+
+    DescriptorSetsCreationRequest& DescriptorSetsCreationRequests::new_request()
+    {
+        return this->requests.emplace_back();
+    }
+
+    std::size_t DescriptorSetsCreationRequests::size() const
+    {
+        return this->requests.size();
+    }
+
+    const DescriptorSetsCreationRequest& DescriptorSetsCreationRequests::operator[](std::size_t i) const
+    {
+        return this->requests[i];
+    }
+
+    DescriptorSetsCreationRequest& DescriptorSetsCreationRequests::operator[](std::size_t i)
+    {
+        return this->requests[i];
+    }
+
+    auto DescriptorSetsCreationRequests::begin()
+    {
+        return this->requests.begin();
+    }
+
+    auto DescriptorSetsCreationRequests::end()
+    {
+        return this->requests.end();
+    }
+
     VkDescriptorSet DescriptorSet::native() const
     {
         return this->set;
@@ -94,41 +134,52 @@ namespace tz::gl::vk
         return *this;
     }
 
-    void DescriptorPool::initialise_sets(DescriptorSetsCreationRequest request)
+    void DescriptorPool::initialise_sets(DescriptorSetsCreationRequests requests)
     {
-        if(!this->sets.empty())
-        {
-            this->destroy_sets();
-        }
-
         // Allocate the sets
         VkDescriptorSetAllocateInfo alloc{};
         alloc.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
         alloc.pNext = nullptr;
         alloc.descriptorPool = this->pool;
-        alloc.descriptorSetCount = request.resources.size();
+        alloc.descriptorSetCount = requests.size();
         alloc.pSetLayouts = this->layouts.data();
-        this->sets.resize(request.resources.size());
+        this->sets.resize(requests.size());
         auto res = vkAllocateDescriptorSets(this->device->native(), &alloc, this->sets.data());
         tz_assert(res == VK_SUCCESS, "Failed to allocate descriptor sets");
 
-        // Then initialise them.
+        for(std::size_t i = 0; i < requests.size(); i++)
+        {
+            this->initialise_set(requests[i], i);
+        }
+    }
+
+    DescriptorSet DescriptorPool::operator[](std::size_t index) const
+    {
+        return {this->sets[index]};
+    }
+
+    void DescriptorPool::initialise_set(DescriptorSetsCreationRequest request, std::size_t set_id)
+    {
         std::vector<VkWriteDescriptorSet> writes;
         for(std::size_t i = 0; i < request.resources.size(); i++)
         {
             VkWriteDescriptorSet& write = writes.emplace_back();
             write.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
             write.pNext = nullptr;
-            write.dstSet = this->sets[i];
+            write.dstSet = this->sets[set_id];
             write.descriptorCount = 1;
             write.descriptorType = request.types[i];
-            DescriptorSetsCreationRequest::ResourceInfoVariant resource_info = request.resources[i];
+            const DescriptorSetsCreationRequest::ResourceInfoVariant& resource_info = request.resources[i];
             std::visit([&write, &resource_info](auto&& arg)
             {
                 using T = std::decay_t<decltype(arg)>;
                 if constexpr(std::is_same_v<T, VkDescriptorBufferInfo>)
                 {
                     write.pBufferInfo = &std::get<VkDescriptorBufferInfo>(resource_info);
+                }
+                else if constexpr(std::is_same_v<T, VkDescriptorImageInfo>)
+                {
+                    write.pImageInfo = &std::get<VkDescriptorImageInfo>(resource_info);
                 }
                 else
                 {
@@ -138,13 +189,7 @@ namespace tz::gl::vk
             write.dstArrayElement = 0;
             write.dstBinding = request.bindings[i];
         }
-
         vkUpdateDescriptorSets(this->device->native(), writes.size(), writes.data(), 0, nullptr);
-    }
-
-    DescriptorSet DescriptorPool::operator[](std::size_t index) const
-    {
-        return {this->sets[index]};
     }
 
     void DescriptorPool::destroy_sets()

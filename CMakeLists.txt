@@ -124,6 +124,8 @@ add_library(TZVK
     src/gl/vk/render_pass.cpp
     src/gl/vk/render_pass.hpp
     src/gl/vk/render_pass.inl
+    src/gl/vk/sampler.cpp
+    src/gl/vk/sampler.hpp
     src/gl/vk/semaphore.cpp
     src/gl/vk/semaphore.hpp
     src/gl/vk/submit.cpp

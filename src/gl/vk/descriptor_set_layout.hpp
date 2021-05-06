@@ -9,7 +9,8 @@ namespace tz::gl::vk
 {
     enum class DescriptorType
     {
-        UniformBuffer
+        UniformBuffer,
+        CombinedImageSampler
     };
 
     class LayoutBuilder

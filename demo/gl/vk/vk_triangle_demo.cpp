@@ -32,11 +32,13 @@ struct Vertex
 {
     tz::Vec2 pos;
     tz::Vec3 colour;
+    tz::Vec2 tex_coord;
 };
 
 static constexpr vk::VertexBindingDescription binding_description{0, sizeof(Vertex), vk::VertexInputRate::PerVertexBasis};
 static constexpr vk::VertexAttributeDescription pos_description{0, 0, VK_FORMAT_R32G32_SFLOAT, offsetof(Vertex, pos)};
 static constexpr vk::VertexAttributeDescription col_description{0, 1, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, colour)};
+static constexpr vk::VertexAttributeDescription texcoord_description{0, 2, VK_FORMAT_R32G32_SFLOAT, offsetof(Vertex, tex_coord)};
 
 struct MVP
 {
@@ -53,10 +55,10 @@ int main()
     
     std::array<Vertex, 4> vertices =
     {
-        Vertex{{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},
-        Vertex{{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},
-        Vertex{{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}},
-        Vertex{{-0.5f, 0.5f}, {0.0f, 0.0f, 0.0f}}
+        Vertex{{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
+        Vertex{{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
+        Vertex{{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
+        Vertex{{-0.5f, 0.5f}, {0.0f, 0.0f, 0.0f}, {1.0f, 1.0f}}
     };
 
     std::array<std::uint16_t, 6> indices = 
@@ -64,12 +66,12 @@ int main()
         0, 1, 2, 2, 3, 0
     };
 
-    std::array<float, 16> imgdata = 
+    std::array<unsigned int, 4> imgdata = 
     {
-        0.0f, 0.0f, 0.0f, 1.0f,
-        1.0f, 0.0f, 0.0f, 1.0f,
-        0.0f, 1.0f, 0.0f, 1.0f,
-        0.0f, 0.0f, 1.0f, 1.0f
+        0x000000FF,
+        0xFF0000FF,
+        0x00FF00FF,
+        0x0000FFFF
     };
 
     tz::initialise(vk_triangle_demo);
@@ -116,7 +118,7 @@ int main()
         vk::pipeline::VertexInputState vertex_input_state
         {
             vk::VertexBindingDescriptions{binding_description},
-            vk::VertexAttributeDescriptions{pos_description, col_description}
+            vk::VertexAttributeDescriptions{pos_description, col_description, texcoord_description}
         };
 
         vk::RenderPassBuilder builder;
@@ -133,7 +135,8 @@ int main()
         vk::RenderPass simple_colour_pass{my_logical_device, builder};
 
         vk::LayoutBuilder layout_build;
-        std::uint32_t ubo_binding = layout_build.add(vk::DescriptorType::UniformBuffer, vk::pipeline::ShaderTypeField::All());
+        std::uint32_t ubo_binding = layout_build.add(vk::DescriptorType::UniformBuffer, vk::pipeline::ShaderTypeField{vk::pipeline::ShaderType::Vertex});
+        std::uint32_t img_binding = layout_build.add(vk::DescriptorType::CombinedImageSampler, vk::pipeline::ShaderTypeField{vk::pipeline::ShaderType::Fragment});
         tz_assert(ubo_binding == 0, "Expected binding to be 0. Shader needs to change or this");
         vk::DescriptorSetLayout layout{my_logical_device, layout_build};
         
@@ -172,9 +175,13 @@ int main()
         vk::Buffer buf{vk::BufferType::Vertex, vk::BufferPurpose::TransferDestination, my_logical_device, device_local_mem, vertices_bytes};
         vk::Buffer index_buf{vk::BufferType::Index, vk::BufferPurpose::TransferDestination, my_logical_device, device_local_mem, indices_bytes};
         vk::Buffer img_buf{vk::BufferType::Staging, vk::BufferPurpose::TransferSource, my_logical_device, host_visible_mem, img_bytes};
+        img_buf.write(imgdata.data(), img_bytes);
         std::vector<vk::Buffer> mvp_bufs;
 
-        vk::Image img{my_logical_device, 2, 2, vk::Image::Format::Rgba32Unsigned, device_local_mem};
+        vk::Image img{my_logical_device, 2, 2, vk::Image::Format::Rgba32sRGB, device_local_mem};
+        vk::ImageView img_view{my_logical_device, img};
+        vk::Sampler img_sampler{my_logical_device};
+        
         for(std::size_t i = 0; i < swapchain.get_image_views().size(); i++)
         {
             mvp_bufs.emplace_back(vk::BufferType::Uniform, vk::BufferPurpose::NothingSpecial, my_logical_device, host_visible_mem, mvp_bytes);
@@ -189,21 +196,24 @@ int main()
         vk::DescriptorPoolBuilder pool_builder;
         pool_builder
         // Enough for all our descriptors.
-        .with_capacity(swapchain.get_image_views().size())
+        .with_capacity(swapchain.get_image_views().size() * 2)
         // We have one UBO per swapchain image.
-        .with_size(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, swapchain.get_image_views().size());
+        .with_size(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, swapchain.get_image_views().size())
+        .with_size(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, swapchain.get_image_views().size());
         for(std::size_t i = 0; i < swapchain.get_image_views().size(); i++)
         {
             pool_builder.with_layout(layout);
         }
 
         vk::DescriptorPool descriptor_pool{my_logical_device, pool_builder};
-        vk::DescriptorSetsCreationRequest request;
+        vk::DescriptorSetsCreationRequests requests;
         for(std::size_t i = 0; i < swapchain.get_image_views().size(); i++)
         {
+            vk::DescriptorSetsCreationRequest& request = requests.new_request();
             request.add_buffer(mvp_bufs[i], 0, VK_WHOLE_SIZE, ubo_binding);
+            request.add_image(img_view, img_sampler, 0, VK_WHOLE_SIZE, img_binding);
         }
-        descriptor_pool.initialise_sets(request);
+        descriptor_pool.initialise_sets(requests);
         /*
         auto num_sets = static_cast<std::uint32_t>(swapchain.get_image_views().size());
         vk::DescriptorSetLayouts layouts2;
@@ -268,6 +278,10 @@ int main()
                 img.set_layout(transfer_image, vk::Image::Layout::ShaderResource);
                 //transfer_image.transition_image_layout(img, vk::Image::Layout::ShaderResource);
             }
+
+            wait_for_cpy.signal();
+            do_staging_cpy(graphics_present_queue, wait_for_cpy);
+            wait_for_cpy.wait_for();
         }
         
         vk::Semaphore image_available{my_logical_device};
