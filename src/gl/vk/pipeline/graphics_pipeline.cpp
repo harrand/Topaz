@@ -40,12 +40,27 @@ namespace tz::gl::vk
         auto multisample_state_native = multisample_state.native();
         auto colour_blend_state_native = colour_blend_state.native();
 
+        VkPipelineDepthStencilStateCreateInfo depth_stencil{};
+        depth_stencil.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
+        depth_stencil.depthTestEnable = VK_TRUE;
+        depth_stencil.depthWriteEnable = VK_TRUE;
+
+        depth_stencil.depthCompareOp = VK_COMPARE_OP_LESS;
+
+        depth_stencil.depthBoundsTestEnable = VK_FALSE;
+        depth_stencil.minDepthBounds = 0.0f; // Optional
+        depth_stencil.maxDepthBounds = 1.0f; // Optional
+
+        depth_stencil.stencilTestEnable = VK_FALSE;
+        depth_stencil.front = {}; // Optional
+        depth_stencil.back = {}; // Optional
+
         create.pVertexInputState = &vertex_input_native;
         create.pInputAssemblyState = &input_assembly_native;
         create.pViewportState = &viewport_state_native;
         create.pRasterizationState = &rasterisation_state_native;
         create.pMultisampleState = &multisample_state_native;
-        create.pDepthStencilState = nullptr;
+        create.pDepthStencilState = &depth_stencil;
         create.pColorBlendState = &colour_blend_state_native;
         create.pDynamicState = nullptr;
 

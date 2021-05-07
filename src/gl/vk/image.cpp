@@ -4,7 +4,7 @@
 
 namespace tz::gl::vk
 {
-    Image::Image(const LogicalDevice& device, std::uint32_t width, std::uint32_t height, Image::Format format, hardware::MemoryModule resource_memory):
+    Image::Image(const LogicalDevice& device, std::uint32_t width, std::uint32_t height, Image::Format format, Image::UsageField usage, hardware::MemoryModule resource_memory):
     image(VK_NULL_HANDLE),
     image_memory(VK_NULL_HANDLE),
     device(&device),
@@ -24,8 +24,7 @@ namespace tz::gl::vk
         create.format = static_cast<VkFormat>(format);
         create.tiling = VK_IMAGE_TILING_OPTIMAL;
         create.initialLayout = static_cast<VkImageLayout>(this->layout);
-        create.usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
-        create.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+        create.usage = static_cast<VkImageUsageFlags>(static_cast<Image::Usage>(usage));
         create.samples = VK_SAMPLE_COUNT_1_BIT;
         create.flags = 0;
 

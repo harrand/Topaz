@@ -21,6 +21,7 @@ namespace tz
         EnumField<E> operator|(E type) const;
 
         bool operator==(const EnumField<E>& rhs) const = default;
+        explicit operator E() const;
     private:
         std::vector<E> elements;
     };

@@ -9,7 +9,8 @@ namespace tz::gl::vk
     class Framebuffer
     {
     public:
-        Framebuffer(const RenderPass& render_pass, const ImageView& image_view, VkExtent2D dimensions);
+        Framebuffer(const RenderPass& render_pass, const ImageView& col_view, VkExtent2D dimensions);
+        Framebuffer(const RenderPass& render_pass, const ImageView& col_view, const ImageView& depth_view, VkExtent2D dimensions);
         Framebuffer(const Framebuffer& copy) = delete;
         Framebuffer(Framebuffer&& move);
         ~Framebuffer();

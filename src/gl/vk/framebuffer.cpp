@@ -4,16 +4,34 @@
 
 namespace tz::gl::vk
 {
-    Framebuffer::Framebuffer(const RenderPass& render_pass, const ImageView& image_view, VkExtent2D dimensions):
+    Framebuffer::Framebuffer(const RenderPass& render_pass, const ImageView& col_view, VkExtent2D dimensions):
     frame_buffer(VK_NULL_HANDLE),
     device(&render_pass.get_device())
     {
-        auto img_view_native = image_view.native();
+        auto img_view_native = col_view.native();
         VkFramebufferCreateInfo create{};
         create.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
         create.renderPass = render_pass.native();
         create.attachmentCount = 1;
         create.pAttachments = &img_view_native;
+        create.width = dimensions.width;
+        create.height = dimensions.height;
+        create.layers = 1;
+
+        auto res = vkCreateFramebuffer(this->device->native(), &create, nullptr, &this->frame_buffer);
+        tz_assert(res == VK_SUCCESS, "Failed to create Framebuffer");
+    }
+
+    Framebuffer::Framebuffer(const RenderPass& render_pass, const ImageView& col_view, const ImageView& depth_view, VkExtent2D dimensions):
+    frame_buffer(VK_NULL_HANDLE),
+    device(&render_pass.get_device())
+    {
+        std::array<VkImageView, 2> img_view_natives{col_view.native(), depth_view.native()};
+        VkFramebufferCreateInfo create{};
+        create.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+        create.renderPass = render_pass.native();
+        create.attachmentCount = img_view_natives.size();
+        create.pAttachments = img_view_natives.data();
         create.width = dimensions.width;
         create.height = dimensions.height;
         create.layers = 1;

@@ -30,13 +30,13 @@ using namespace tz::gl;
 
 struct Vertex
 {
-    tz::Vec2 pos;
+    tz::Vec3 pos;
     tz::Vec3 colour;
     tz::Vec2 tex_coord;
 };
 
 static constexpr vk::VertexBindingDescription binding_description{0, sizeof(Vertex), vk::VertexInputRate::PerVertexBasis};
-static constexpr vk::VertexAttributeDescription pos_description{0, 0, VK_FORMAT_R32G32_SFLOAT, offsetof(Vertex, pos)};
+static constexpr vk::VertexAttributeDescription pos_description{0, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, pos)};
 static constexpr vk::VertexAttributeDescription col_description{0, 1, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, colour)};
 static constexpr vk::VertexAttributeDescription texcoord_description{0, 2, VK_FORMAT_R32G32_SFLOAT, offsetof(Vertex, tex_coord)};
 
@@ -53,17 +53,23 @@ int main()
     constexpr tz::EngineInfo eng_info = tz::info();
     constexpr tz::GameInfo vk_triangle_demo{"vk_triangle_demo", eng_info.version, eng_info};
     
-    std::array<Vertex, 4> vertices =
+    std::array<Vertex, 8> vertices =
     {
-        Vertex{{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
-        Vertex{{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
-        Vertex{{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
-        Vertex{{-0.5f, 0.5f}, {0.0f, 0.0f, 0.0f}, {1.0f, 1.0f}}
+        Vertex{{-0.5f, -0.5f, 0.0f}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
+        Vertex{{0.5f, -0.5f, 0.0f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
+        Vertex{{0.5f, 0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
+        Vertex{{-0.5f, 0.5f, 0.0f}, {0.0f, 0.0f, 0.0f}, {1.0f, 1.0f}},
+
+        Vertex{{-0.5f, -0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
+        Vertex{{0.5f, -0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
+        Vertex{{0.5f, 0.5f, -0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
+        Vertex{{-0.5f, 0.5f, -0.5f}, {0.0f, 0.0f, 0.0f}, {1.0f, 1.0f}}
     };
 
-    std::array<std::uint16_t, 6> indices = 
+    std::array<std::uint16_t, 12> indices = 
     {
-        0, 1, 2, 2, 3, 0
+        0, 1, 2, 2, 3, 0,
+        4, 5, 6, 6, 7, 4
     };
 
     std::array<unsigned int, 4> imgdata = 
@@ -131,7 +137,18 @@ int main()
             vk::Image::Layout::Present
         };
 
-        builder.with(vk::Attachments{col});
+        vk::Attachment depth
+        {
+            vk::Image::Format::DepthFloat32,
+            vk::Attachment::LoadOperation::Clear,
+            vk::Attachment::StoreOperation::DontCare,
+            vk::Attachment::LoadOperation::DontCare,
+            vk::Attachment::StoreOperation::DontCare,
+            vk::Image::Layout::Undefined,
+            vk::Image::Layout::DepthAttachment
+        };
+
+        builder.with(vk::Attachments{col, depth});
         vk::RenderPass simple_colour_pass{my_logical_device, builder};
 
         vk::LayoutBuilder layout_build;
@@ -178,9 +195,12 @@ int main()
         img_buf.write(imgdata.data(), img_bytes);
         std::vector<vk::Buffer> mvp_bufs;
 
-        vk::Image img{my_logical_device, 2, 2, vk::Image::Format::Rgba32sRGB, device_local_mem};
+        vk::Image img{my_logical_device, 2, 2, vk::Image::Format::Rgba32sRGB, {vk::Image::Usage::TransferDestination, vk::Image::Usage::Sampleable}, device_local_mem};
         vk::ImageView img_view{my_logical_device, img};
         vk::Sampler img_sampler{my_logical_device};
+
+        vk::Image depth_img{my_logical_device, static_cast<std::uint32_t>(swapchain.get_width()), static_cast<std::uint32_t>(swapchain.get_height()), vk::Image::Format::DepthFloat32, {vk::Image::Usage::DepthStencilAttachment}, device_local_mem};
+        vk::ImageView depth_img_view{my_logical_device, depth_img};
         
         for(std::size_t i = 0; i < swapchain.get_image_views().size(); i++)
         {
@@ -190,7 +210,7 @@ int main()
         std::vector<vk::Framebuffer> swapchain_buffers;
         for(const vk::ImageView& swapchain_view : swapchain.get_image_views())
         {
-            swapchain_buffers.emplace_back(simple_colour_pass, swapchain_view, VkExtent2D{static_cast<std::uint32_t>(swapchain.get_width()), static_cast<std::uint32_t>(swapchain.get_height())});
+            swapchain_buffers.emplace_back(simple_colour_pass, swapchain_view, depth_img_view, VkExtent2D{static_cast<std::uint32_t>(swapchain.get_width()), static_cast<std::uint32_t>(swapchain.get_height())});
         }
 
         vk::DescriptorPoolBuilder pool_builder;

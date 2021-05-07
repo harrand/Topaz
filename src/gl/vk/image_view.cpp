@@ -17,7 +17,15 @@ namespace tz::gl::vk
         create.viewType = VK_IMAGE_VIEW_TYPE_2D;
 
         create.format = static_cast<VkFormat>(image.get_format());
-        create.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+        switch(image.get_format())
+        {
+            case Image::Format::DepthFloat32:
+                create.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
+            break;
+            default:
+                create.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+            break;
+        }
         create.subresourceRange.baseMipLevel = 0;
         create.subresourceRange.levelCount = 1;
         create.subresourceRange.baseArrayLayer = 0;
@@ -99,6 +107,7 @@ namespace tz::gl::vk
             this->add(std::move(view));
         }
     }
+
 }
 
 #endif // TZ_VULKAN

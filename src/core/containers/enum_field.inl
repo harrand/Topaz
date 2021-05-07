@@ -47,4 +47,18 @@ namespace tz
         EnumField<E> cpy = *this;
         return cpy |= type;
     }
+
+    template<tz::EnumClass E>
+    EnumField<E>::operator E() const
+    {
+        using UnderlyingType = std::underlying_type_t<E>;
+        tz_assert(!this->elements.empty(), "No values in EnumField");
+        auto e = static_cast<UnderlyingType>(this->elements.front());
+        for(E ele : this->elements)
+        {
+            e |= static_cast<UnderlyingType>(ele);
+        }
+        return static_cast<E>(e);
+    }
+
 }

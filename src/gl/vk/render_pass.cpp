@@ -19,6 +19,16 @@ namespace tz::gl::vk
         return this->subpasses;
     }
 
+    bool RenderPassBuilder::has_depth_attachment() const
+    {
+        auto iter = std::find_if(this->subpass_attachments.begin(), this->subpass_attachments.end(), [](const Attachment* att)
+        {
+            return att->get_format() == Image::Format::DepthFloat32;
+        });
+        return iter != this->subpass_attachments.end();
+    }
+
+
     RenderSubpass::Description::Description(const RenderSubpass::Description& copy):
     referenced_input_attachments(copy.referenced_input_attachments),
     referenced_colour_attachments(copy.referenced_colour_attachments),
@@ -161,6 +171,12 @@ namespace tz::gl::vk
         initial_dep.srcAccessMask = 0;
         initial_dep.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
         initial_dep.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+        if(builder.has_depth_attachment())
+        {
+            initial_dep.srcStageMask |= VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+            initial_dep.dstStageMask |= VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+            initial_dep.dstAccessMask |= VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+        }
 
         create.pDependencies = &initial_dep;
 
@@ -207,9 +223,13 @@ namespace tz::gl::vk
         begin.renderPass = render_pass.native();
         begin.framebuffer = framebuffer.native();
 
+        VkClearValue depth_clear_colour{};
+        depth_clear_colour.depthStencil = {1.0f, 0};
+        std::array<VkClearValue, 2> clear_vals{clear_colour, depth_clear_colour};
+
         begin.renderArea = render_area;
-        begin.clearValueCount = 1;
-        begin.pClearValues = &clear_colour;
+        begin.clearValueCount = clear_vals.size();
+        begin.pClearValues = clear_vals.data();
         
         vkCmdBeginRenderPass(this->command_buffer->native(), &begin, VK_SUBPASS_CONTENTS_INLINE);
     }
