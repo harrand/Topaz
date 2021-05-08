@@ -335,6 +335,7 @@ int main()
             // TODO: Have both around at once and grandfather the old one via oldSwapchain support.
             swapchain.~Swapchain();
             new (&swapchain) vk::Swapchain{my_logical_device, my_prefs};
+
             simple_colour_pass = {my_logical_device, builder};
             my_pipeline = {
                 std::initializer_list<vk::pipeline::ShaderStage>{{vertex, vk::pipeline::ShaderType::Vertex}, {fragment, vk::pipeline::ShaderType::Fragment}},
@@ -356,10 +357,13 @@ int main()
                 simple_colour_pass
             };
 
+            depth_img = {my_logical_device, static_cast<std::uint32_t>(swapchain.get_width()), static_cast<std::uint32_t>(swapchain.get_height()), vk::Image::Format::DepthFloat32, {vk::Image::Usage::DepthStencilAttachment}, device_local_mem};
+            depth_img_view = {my_logical_device, depth_img};
+
             swapchain_buffers.clear();
             for(const vk::ImageView& swapchain_view : swapchain.get_image_views())
             {
-                swapchain_buffers.emplace_back(simple_colour_pass, swapchain_view, VkExtent2D{static_cast<std::uint32_t>(swapchain.get_width()), static_cast<std::uint32_t>(swapchain.get_height())});
+                swapchain_buffers.emplace_back(simple_colour_pass, swapchain_view, depth_img_view, VkExtent2D{static_cast<std::uint32_t>(swapchain.get_width()), static_cast<std::uint32_t>(swapchain.get_height())});
             }
 
             command_pool.clear();
