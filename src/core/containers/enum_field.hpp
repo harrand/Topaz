@@ -17,8 +17,13 @@ namespace tz
         constexpr ~EnumField() = default;
         bool contains(E type) const;
         bool contains(const EnumField<E>& field) const;
+        std::size_t count() const;
         EnumField<E>& operator|=(E type);
         EnumField<E> operator|(E type) const;
+        auto begin() const;
+        auto begin();
+        auto end() const;
+        auto end();
 
         bool operator==(const EnumField<E>& rhs) const = default;
         explicit operator E() const;

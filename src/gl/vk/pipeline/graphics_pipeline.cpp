@@ -15,6 +15,7 @@ namespace tz::gl::vk
         pipeline::RasteriserState rasterisation_state,
         pipeline::MultisampleState multisample_state,
         pipeline::ColourBlendState colour_blend_state,
+        pipeline::DynamicState dynamic_state,
         const pipeline::Layout& layout,
         const RenderPass& render_pass
     ):
@@ -39,6 +40,7 @@ namespace tz::gl::vk
         auto rasterisation_state_native = rasterisation_state.native();
         auto multisample_state_native = multisample_state.native();
         auto colour_blend_state_native = colour_blend_state.native();
+        auto dynamic_state_native = dynamic_state.native();
 
         VkPipelineDepthStencilStateCreateInfo depth_stencil{};
         depth_stencil.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
@@ -62,7 +64,7 @@ namespace tz::gl::vk
         create.pMultisampleState = &multisample_state_native;
         create.pDepthStencilState = &depth_stencil;
         create.pColorBlendState = &colour_blend_state_native;
-        create.pDynamicState = nullptr;
+        create.pDynamicState = &dynamic_state_native;
 
         create.layout = layout.native();
         create.renderPass = render_pass.native();

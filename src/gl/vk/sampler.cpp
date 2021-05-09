@@ -16,9 +16,7 @@ namespace tz::gl::vk
         create.addressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
         create.addressModeW = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
 
-        create.anisotropyEnable = VK_TRUE;
-        hardware::DeviceProperties props = this->device->get_queue_family().dev->get_properties();
-        create.maxAnisotropy = props.limits.maxSamplerAnisotropy;
+        create.anisotropyEnable = VK_FALSE;
 
         create.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
         create.unnormalizedCoordinates = VK_FALSE;

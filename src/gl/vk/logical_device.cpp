@@ -8,8 +8,6 @@ namespace tz::gl::vk
     dev(VK_NULL_HANDLE),
     queue_family(queue_family)
     {
-        // TODO: Remove assert?
-        tz_assert(queue_family.types_supported.contains(hardware::QueueFamilyType::Graphics), "tz::gl::vk::LogicalDevice::LogicalDevice(...): The given queue family must support graphics queues. Although I admit this might not be a reasonable assert?");
         VkDeviceQueueCreateInfo queue_create{};
         queue_create.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
         queue_create.queueFamilyIndex = queue_family.index;
@@ -19,7 +17,7 @@ namespace tz::gl::vk
         queue_create.pQueuePriorities = &queue_priority;
 
         VkPhysicalDeviceFeatures features{};
-        features.samplerAnisotropy = VK_TRUE; // TODO: Customiseable?
+        features.samplerAnisotropy = VK_FALSE; // TODO: Customiseable?
 
         VkDeviceCreateInfo create{};
         create.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
@@ -27,13 +25,9 @@ namespace tz::gl::vk
         create.queueCreateInfoCount = 1;
         create.pEnabledFeatures = &features;
 
-        // TODO: Device Specific Extension (such as VK_KHR_swapchain which we will need further down development)
         create.enabledExtensionCount = device_extensions.length();
         create.ppEnabledExtensionNames = device_extensions.data();
         // Note: In Vulkan 1.1.175, device-only layers are not a thing, they just use the instance layers.
-        // https://www.khronos.org/registry/vulkan/specs/1.1-extensions/html/vkspec.html#extendingvulkan-layers-devicelayerdeprecation
-        // For that reason, we assume no version is used before this
-        // TODO: Require this in CMake.
         create.enabledLayerCount = 0;
 
         VkResult res = vkCreateDevice(queue_family.dev->native(), &create, nullptr, &this->dev);

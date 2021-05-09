@@ -35,7 +35,6 @@ namespace tz::gl::vk
         create.imageColorSpace = maybe_format->colorSpace;
         create.imageExtent = extent;
         create.imageArrayLayers = 1;
-        // TODO: Don't hardcode this so we can render into a separate image first (post-processing?)
         create.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
         // TODO: Don't assume we use the same queue family for graphics and present

@@ -11,8 +11,8 @@
 #include "gl/vk/pipeline/rasteriser_state.hpp"
 #include "gl/vk/pipeline/multisample_state.hpp"
 #include "gl/vk/pipeline/colour_blend_state.hpp"
+#include "gl/vk/pipeline/dynamic_state.hpp"
 #include "gl/vk/pipeline/layout.hpp"
-//#include "gl/vk/pipeline/render_pass.hpp"
 #include "gl/vk/render_pass.hpp"
 
 namespace tz::gl::vk
@@ -33,7 +33,7 @@ namespace tz::gl::vk
             pipeline::MultisampleState multisample_state,
             /*TODO: DepthStencilState*/
             pipeline::ColourBlendState colour_blend_state,
-            /*TODO: DynamicState*/
+            pipeline::DynamicState dynamic_state,
             const pipeline::Layout& layout,
             const RenderPass& render_pass
         );

@@ -54,6 +54,8 @@ add_library(TZVK
 
     src/gl/vk/pipeline/colour_blend_state.cpp
     src/gl/vk/pipeline/colour_blend_state.hpp
+    src/gl/vk/pipeline/dynamic_state.cpp
+    src/gl/vk/pipeline/dynamic_state.hpp
     src/gl/vk/pipeline/graphics_pipeline.cpp
     src/gl/vk/pipeline/graphics_pipeline.hpp
     src/gl/vk/pipeline/input_assembly.cpp

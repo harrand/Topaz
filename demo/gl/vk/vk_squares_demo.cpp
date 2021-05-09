@@ -193,6 +193,7 @@ int main()
             },
             vk::pipeline::MultisampleState{},
             vk::pipeline::ColourBlendState{},
+            vk::pipeline::DynamicState::None(),
             my_layout,
             simple_colour_pass
         };
@@ -367,6 +368,7 @@ int main()
                 },
                 vk::pipeline::MultisampleState{},
                 vk::pipeline::ColourBlendState{},
+                vk::pipeline::DynamicState::None(),
                 my_layout,
                 simple_colour_pass
             };

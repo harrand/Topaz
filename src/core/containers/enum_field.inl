@@ -32,6 +32,13 @@ namespace tz
     }
 
     template<tz::EnumClass E>
+    std::size_t EnumField<E>::count() const
+    {
+        return this->elements.size();
+    }
+
+
+    template<tz::EnumClass E>
     EnumField<E>& EnumField<E>::operator|=(E type)
     {
         if(!this->contains(type))
@@ -46,6 +53,30 @@ namespace tz
     {
         EnumField<E> cpy = *this;
         return cpy |= type;
+    }
+
+    template<tz::EnumClass E>
+    auto EnumField<E>::begin() const
+    {
+        return this->elements.begin();
+    }
+
+    template<tz::EnumClass E>
+    auto EnumField<E>::begin()
+    {
+        return this->elements.begin();
+    }
+
+    template<tz::EnumClass E>
+    auto EnumField<E>::end() const
+    {
+        return this->elements.end();
+    }
+
+    template<tz::EnumClass E>
+    auto EnumField<E>::end()
+    {
+        return this->elements.end();
     }
 
     template<tz::EnumClass E>

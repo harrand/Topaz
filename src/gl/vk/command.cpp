@@ -99,8 +99,7 @@ namespace tz::gl::vk
             break;
             case Image::Layout::ShaderResource:
                 barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
-                // TODO: Not just frag shader? Displacement maps etc
-                destination_stage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+                destination_stage = VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT;
             break;
             default:
                 tz_error("Image Destination Layout is NYI");
