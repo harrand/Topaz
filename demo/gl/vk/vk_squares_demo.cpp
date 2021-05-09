@@ -47,12 +47,10 @@ struct MVP
     tz::Mat4 p;
 };
 
-
 int main()
 {
-    constexpr tz::EngineInfo eng_info = tz::info();
-    constexpr tz::GameInfo vk_triangle_demo{"vk_triangle_demo", eng_info.version, eng_info};
-    tz_report("%s", vk_triangle_demo.to_string().c_str());
+    constexpr tz::GameInfo vk_squares_demo{"vk_squares_demo", tz::EngineInfo::Version{1, 0, 0}, tz::info()};
+    tz_report("%s", vk_squares_demo.to_string().c_str());
     
     std::array<Vertex, 8> vertices =
     {
@@ -73,15 +71,30 @@ int main()
         4, 5, 6, 6, 7, 4
     };
 
-    std::array<unsigned int, 4> imgdata = 
+    std::array<unsigned char, 16> imgdata = 
     {
-        0x000000FF,
-        0xFF0000FF,
-        0x00FF00FF,
-        0x0000FFFF
+        0b0000'0000,
+        0b0000'0000,
+        0b1111'1111,
+        0b1111'1111,
+
+        0b1111'1111,
+        0b0000'0000,
+        0b0000'0000,
+        0b1111'1111,
+
+        0b0000'0000,
+        0b1111'1111,
+        0b0000'0000,
+        0b1111'1111,
+
+        0b0000'0000,
+        0b0000'0000,
+        0b1111'1111,
+        0b1111'1111,
     };
 
-    tz::initialise(vk_triangle_demo);
+    tz::initialise(vk_squares_demo);
     {
         vk::hardware::DeviceList valid_devices = tz::gl::vk::hardware::get_all_devices();
         vk::hardware::QueueFamilyTypeField type_requirements{{vk::hardware::QueueFamilyType::Graphics, vk::hardware::QueueFamilyType::Present}};

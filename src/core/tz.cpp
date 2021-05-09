@@ -21,7 +21,7 @@ namespace tz
         if(app_type == ApplicationType::WindowApplication)
         {
             tz_assert(wnd == nullptr && !initialised, "tz::initialise(): Already initialised");
-            wnd = new tz::Window{WindowInitArgs{.width = 800, .height = 600, .title = game_info.name}};
+            wnd = new tz::Window{WindowInitArgs{.width = 800, .height = 600, .title = game_info.to_string().c_str()}};
         }
         
         tz_report("%s Application", app_type == ApplicationType::Headless ? "Headless" : "Windowed");
