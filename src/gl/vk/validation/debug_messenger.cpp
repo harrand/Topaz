@@ -1,3 +1,4 @@
+#if TZ_VULKAN
 #include "gl/vk/validation/debug_messenger.hpp"
 
 namespace tz::gl::vk::validation
@@ -69,3 +70,4 @@ namespace tz::gl::vk::validation
     }
 
 }
+#endif // TZ_VULKAN

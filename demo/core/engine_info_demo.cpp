@@ -1,8 +1,9 @@
 #include "core/tz.hpp"
+#include "core/report.hpp"
 #include <cstdio>
 
 int main()
 {
     constexpr tz::EngineInfo info = tz::info();
-    std::printf("%s", info.to_string().c_str());
+    tz_report("Engine Info: %s", info.to_string().c_str());
 }
