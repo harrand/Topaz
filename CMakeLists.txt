@@ -10,6 +10,7 @@ set(CMAKE_CXX_STANDARD 20)
 project(TZVK VERSION ${TZ_VERSION})
 
 add_library(TZVK
+    # tz::core
     src/core/containers/basic_list.hpp
     src/core/containers/enum_field.hpp
     src/core/containers/enum_field.inl
@@ -39,6 +40,11 @@ add_library(TZVK
     src/core/window.cpp
     src/core/window.hpp
 
+    # tz::gl
+    src/gl/device.cpp
+    src/gl/device.hpp
+
+    # tz::gl (Vulkan)
     src/gl/vk/hardware/device_filter.cpp
     src/gl/vk/hardware/device_filter.hpp
     src/gl/vk/hardware/device_filter.inl

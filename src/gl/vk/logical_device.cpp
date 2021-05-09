@@ -56,6 +56,16 @@ namespace tz::gl::vk
         return *this;
     }
 
+    LogicalDevice LogicalDevice::null()
+    {
+        return {};
+    }
+
+    bool LogicalDevice::is_null() const
+    {
+        return this->dev == VK_NULL_HANDLE;
+    }
+
     const hardware::DeviceQueueFamily& LogicalDevice::get_queue_family() const
     {
         return this->queue_family;
@@ -75,6 +85,11 @@ namespace tz::gl::vk
     {
         vkDeviceWaitIdle(this->dev);
     }
+
+    LogicalDevice::LogicalDevice():
+    dev(VK_NULL_HANDLE),
+    queue_family()
+    {}
 }
 
 #endif

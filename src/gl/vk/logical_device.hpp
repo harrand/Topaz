@@ -19,12 +19,17 @@ namespace tz::gl::vk
         LogicalDevice& operator=(const LogicalDevice& rhs) = delete;
         LogicalDevice& operator=(LogicalDevice&& rhs);
 
+        static LogicalDevice null();
+        bool is_null() const;
+
         const hardware::DeviceQueueFamily& get_queue_family() const;
         VkDevice native() const;
         hardware::Queue get_hardware_queue(std::uint32_t family_index = 0) const;
 
         void block_until_idle() const;
     private:
+        LogicalDevice();
+
         VkDevice dev;
         hardware::DeviceQueueFamily queue_family;
     };
