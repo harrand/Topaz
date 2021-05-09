@@ -24,14 +24,23 @@ namespace tz
                 build_config = "Release";
             break;
         }
-        const char* version_string = TZ_VERSION;
-
         std::string result = "Topaz v";
-        result += version_string;
+        result += engine_info::stringify_version(this->version);
         result += " ";
         result += render_api;
         result += " ";
         result += build_config;
         return result;
+    }
+
+    namespace engine_info
+    {
+        std::string stringify_version(EngineInfo::Version version)
+        {
+            std::string res = std::to_string(version.major) + ".";
+            res += std::to_string(version.minor) + ".";
+            res += std::to_string(version.patch);
+            return res;
+        }
     }
 }

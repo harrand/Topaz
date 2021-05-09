@@ -52,6 +52,7 @@ int main()
 {
     constexpr tz::EngineInfo eng_info = tz::info();
     constexpr tz::GameInfo vk_triangle_demo{"vk_triangle_demo", eng_info.version, eng_info};
+    tz_report("%s", vk_triangle_demo.to_string().c_str());
     
     std::array<Vertex, 8> vertices =
     {

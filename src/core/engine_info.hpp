@@ -38,6 +38,7 @@ namespace tz
     namespace engine_info
     {
         constexpr EngineInfo::Version parse_version(const char* version_string);
+        std::string stringify_version(EngineInfo::Version version);
     }
 
     constexpr EngineInfo info();

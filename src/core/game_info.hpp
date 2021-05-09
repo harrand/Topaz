@@ -13,6 +13,17 @@ namespace tz
         version(version),
         engine(engine){}
 
+        inline std::string to_string() const
+        {
+            std::string res = this->name;
+            res += " v";
+            res += engine_info::stringify_version(this->version);
+            res += " (";
+            res += this->engine.to_string();
+            res += ")";
+            return res;
+        }
+
         const char* name;
         Version version;
         EngineInfo engine;

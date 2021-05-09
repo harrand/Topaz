@@ -30,7 +30,6 @@ def parse_build_type():
 		
 
 def configure():
-	# Achieves the following:
 	build_type = parse_build_type()
 	build_dir = build_type.render_api.name + "_" + build_type.build_config.name
 	cmd = "cmake -B \"build/%s\" -DTOPAZ_DEBUG=%d -DTOPAZ_VULKAN=%d -DTOPAZ_OGL=%d -G \"%s\"" % (build_dir, 1 if build_type.build_config == TopazBuildConfig.debug else 0, 1 if build_type.render_api == TopazRenderApi.vulkan else 0, 1 if build_type.render_api == TopazRenderApi.opengl else 0, build_type.generator)
