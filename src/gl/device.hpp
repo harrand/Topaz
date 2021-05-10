@@ -7,12 +7,14 @@
 namespace tz::gl
 {
     using Device = DeviceVulkan;
+    using DeviceBuilder = DeviceBuilderVulkan;
 }
 #elif TZ_OGL
 #include "gl/impl/ogl/device.hpp"
 namespace tz::gl
 {
     using Device = DeviceOGL;
+    using DeviceBuilder = DeviceBuilderOGL;
 }
 #endif
 

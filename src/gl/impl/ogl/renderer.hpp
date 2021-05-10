@@ -1,5 +1,6 @@
 #ifndef TOPAZ_GL_IMPL_OGL_RENDERER_HPP
 #define TOPAZ_GL_IMPL_OGL_RENDERER_HPP
+#include "gl/impl/common/device.hpp"
 
 namespace tz::gl
 {

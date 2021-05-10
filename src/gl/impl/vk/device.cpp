@@ -4,10 +4,41 @@
 
 namespace tz::gl
 {
+    DeviceBuilderVulkan::DeviceBuilderVulkan():
+    primitive_type(GraphicsPrimitiveType::Triangles)
+    {
+
+    }
+
+    void DeviceBuilderVulkan::set_primitive_type(GraphicsPrimitiveType type)
+    {
+        this->primitive_type = type;
+    }
+
+    GraphicsPrimitiveType DeviceBuilderVulkan::get_primitive_type() const
+    {
+        return this->primitive_type;
+    }
+
+    vk::pipeline::PrimitiveTopology DeviceBuilderVulkan::vk_get_primitive_topology() const
+    {
+        switch(this->primitive_type)
+        {
+            case GraphicsPrimitiveType::Triangles:
+                return vk::pipeline::PrimitiveTopology::Triangles;
+            break;
+            default:
+                tz_error("GraphicsPrimitiveType not supported");
+                return vk::pipeline::PrimitiveTopology::Triangles;
+            break;
+        }
+    }
+
     DeviceFunctionalityVulkan::DeviceFunctionalityVulkan():
     physical_device(vk::hardware::Device::null()),
     device(vk::LogicalDevice::null()),
-    swapchain(vk::Swapchain::null())
+    swapchain(vk::Swapchain::null()),
+    primitive_type()
     {
 
     }
@@ -20,10 +51,12 @@ namespace tz::gl
 
     Renderer DeviceFunctionalityVulkan::create_renderer(RendererBuilder builder) const
     {
-        return {builder};
+        RendererBuilderDeviceInfoVulkan device_info;
+        device_info.primitive_type = this->primitive_type;
+        return {builder, device_info};
     }
 
-    DeviceVulkan::DeviceVulkan():
+    DeviceVulkan::DeviceVulkan(DeviceBuilderVulkan builder):
     DeviceFunctionalityVulkan()
     {
         vk::hardware::DeviceList all_devices = vk::hardware::get_all_devices();
@@ -54,6 +87,7 @@ namespace tz::gl
         my_prefs.present_mode_pref = {vk::hardware::SwapchainPresentModePreferences::PreferTripleBuffering, vk::hardware::SwapchainPresentModePreferences::DontCare};
         
         this->swapchain = {this->device, my_prefs};
+        this->primitive_type = builder.vk_get_primitive_topology();
     }
 }
 

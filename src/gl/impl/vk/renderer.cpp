@@ -3,7 +3,8 @@
 
 namespace tz::gl
 {
-    RendererVulkan::RendererVulkan(RendererBuilderVulkan builder)
+    RendererVulkan::RendererVulkan(RendererBuilderVulkan builder, RendererBuilderDeviceInfoVulkan device_info):
+    input_assembly(device_info.primitive_type)
     {
 
     }
