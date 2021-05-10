@@ -36,6 +36,8 @@ namespace tz::gl::vk
 
         Swapchain& operator=(const Swapchain& rhs) = delete;
         Swapchain& operator=(Swapchain&& rhs);
+
+        static Swapchain null();
         float get_width() const;
         float get_height() const;
         std::span<const ImageView> get_image_views() const;
@@ -50,6 +52,8 @@ namespace tz::gl::vk
 
         const LogicalDevice& get_device() const;
     private:
+        Swapchain();
+
         VkSwapchainKHR swapchain;
         const LogicalDevice* logical_device;
         std::vector<VkImage> images;

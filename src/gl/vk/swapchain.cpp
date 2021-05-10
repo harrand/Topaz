@@ -98,6 +98,11 @@ namespace tz::gl::vk
         return *this;
     }
 
+    Swapchain Swapchain::null()
+    {
+        return {};
+    }
+
     float Swapchain::get_width() const
     {
         return this->extent.width;
@@ -164,6 +169,14 @@ namespace tz::gl::vk
     {
         return *this->logical_device;
     }
+
+    Swapchain::Swapchain():
+    swapchain(VK_NULL_HANDLE),
+    logical_device(nullptr),
+    images(),
+    image_views(),
+    format(VK_FORMAT_UNDEFINED),
+    extent(){}
 }
 
 #endif // TZ_VULKAN

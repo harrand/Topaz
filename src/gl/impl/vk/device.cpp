@@ -6,7 +6,8 @@ namespace tz::gl
 {
     DeviceFunctionalityVulkan::DeviceFunctionalityVulkan():
     physical_device(vk::hardware::Device::null()),
-    device(vk::LogicalDevice::null())
+    device(vk::LogicalDevice::null()),
+    swapchain(vk::Swapchain::null())
     {
 
     }
@@ -15,6 +16,11 @@ namespace tz::gl
     {
         builder.finalise();
         return {this->device, builder};
+    }
+
+    Renderer DeviceFunctionalityVulkan::create_renderer(RendererBuilder builder) const
+    {
+        return {builder};
     }
 
     DeviceVulkan::DeviceVulkan():
@@ -43,6 +49,11 @@ namespace tz::gl
         }
         tz_assert(maybe_chosen_queue_family.has_value(), "Valid device found which supports present, graphics and transfer, but not a single queue that can do both. Topaz Vulkan does not support your hardware.");
         this->device = {maybe_chosen_queue_family.value(), {"VK_KHR_swapchain"}};
+        vk::hardware::SwapchainSelectorPreferences my_prefs;
+        my_prefs.format_pref = {vk::hardware::SwapchainFormatPreferences::Goldilocks, vk::hardware::SwapchainFormatPreferences::FlexibleGoldilocks, vk::hardware::SwapchainFormatPreferences::DontCare};
+        my_prefs.present_mode_pref = {vk::hardware::SwapchainPresentModePreferences::PreferTripleBuffering, vk::hardware::SwapchainPresentModePreferences::DontCare};
+        
+        this->swapchain = {this->device, my_prefs};
     }
 }
 

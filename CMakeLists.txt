@@ -43,18 +43,23 @@ add_library(TZVK
     # tz::gl
     src/gl/device.hpp
     src/gl/render_pass.hpp
+    src/gl/renderer.hpp
 
     # tz::gl (Vulkan Frontend)
     src/gl/impl/vk/device.cpp
     src/gl/impl/vk/device.hpp
     src/gl/impl/vk/render_pass.cpp
     src/gl/impl/vk/render_pass.hpp
+    src/gl/impl/vk/renderer.cpp
+    src/gl/impl/vk/renderer.hpp
 
     # tz::gl (OpenGL Frontend)
     src/gl/impl/ogl/device.cpp
     src/gl/impl/ogl/device.hpp
     src/gl/impl/ogl/render_pass.cpp
     src/gl/impl/ogl/render_pass.hpp
+    src/gl/impl/ogl/renderer.hpp
+    src/gl/impl/ogl/renderer.cpp
 
     # tz::gl (Vulkan Backend)
     src/gl/vk/hardware/device_filter.cpp

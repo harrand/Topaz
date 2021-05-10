@@ -7,5 +7,10 @@ namespace tz::gl
     {
         return {builder};
     }
+
+    Renderer DeviceOGL::create_renderer(RendererBuilder builder) const
+    {
+        return {builder};
+    }
 }
 #endif // TZ_OGL
