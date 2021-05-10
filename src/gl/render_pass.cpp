@@ -97,6 +97,13 @@ namespace tz::gl
         
     }
 #elif TZ_OGL
+    void RenderPassBuilderOGL::add_pass(RenderPassAttachment attachment)
+    {
+        this->attachments.push_back(attachment);
+    }
 
+    RenderPassOGL::RenderPassOGL(RenderPassBuilderOGL builder):
+    subpasses(builder)
+    {}
 #endif
 }

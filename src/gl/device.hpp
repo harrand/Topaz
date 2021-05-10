@@ -26,7 +26,8 @@ namespace tz::gl
     class DeviceOGL
     {
     public:
-
+        DeviceOGL() = default;
+        RenderPass create_render_pass(RenderPassBuilder builder) const;
     private:
 
     };

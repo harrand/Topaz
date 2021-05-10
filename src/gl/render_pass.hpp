@@ -4,7 +4,7 @@
 #if TZ_VULKAN
 #include "gl/vk/render_pass.hpp"
 #elif TZ_OGL
-
+#include <vector>
 #endif
 
 namespace tz::gl
@@ -42,11 +42,26 @@ namespace tz::gl
 #elif TZ_OGL
     class RenderPassBuilderOGL
     {
+    public:
+        RenderPassBuilderOGL() = default;
+        void add_pass(RenderPassAttachment attachment);
+        void finalise(){}
 
+        friend class RenderPassOGL;
+    private:
+        std::vector<RenderPassAttachment> attachments;
+    };
+
+    class RenderPassOGL
+    {
+    public:
+        RenderPassOGL(RenderPassBuilderOGL builder);
+    private:
+        RenderPassBuilderOGL subpasses;
     };
 
     using RenderPassBuilder = RenderPassBuilderOGL;
-    using RenderPass = RenderPassVulkan;
+    using RenderPass = RenderPassOGL;
 #endif
 }
 

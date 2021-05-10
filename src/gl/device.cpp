@@ -46,6 +46,9 @@ namespace tz::gl
     }
 
 #elif TZ_OGL
-
+    RenderPass DeviceOGL::create_render_pass(RenderPassBuilder builder) const
+    {
+        return {builder};
+    }
 #endif
 }
