@@ -3,37 +3,17 @@
 #include "gl/render_pass.hpp"
 
 #if TZ_VULKAN
-#include "gl/vk/logical_device.hpp"
-#elif TZ_OGL
-
-#endif
-
+#include "gl/impl/vk/device.hpp"
 namespace tz::gl
 {
-#if TZ_VULKAN
-    class DeviceVulkan
-    {
-    public:
-        DeviceVulkan();
-        RenderPass create_render_pass(RenderPassBuilder builder) const;
-    private:
-        vk::hardware::Device physical_device;
-        vk::LogicalDevice device;
-    };
-
     using Device = DeviceVulkan;
-#elif TZ_OGL
-    class DeviceOGL
-    {
-    public:
-        DeviceOGL() = default;
-        RenderPass create_render_pass(RenderPassBuilder builder) const;
-    private:
-
-    };
-    
-    using Device = DeviceOGL;
-#endif
 }
+#elif TZ_OGL
+#include "gl/impl/ogl/device.hpp"
+namespace tz::gl
+{
+    using Device = DeviceOGL;
+}
+#endif
 
 #endif // TOPAZ_GL_DEVICE_HPP

@@ -1,15 +1,9 @@
-#include "gl/device.hpp"
-
 #if TZ_VULKAN
+#include "gl/impl/vk/device.hpp"
 #include "gl/vk/hardware/device_filter.hpp"
-#elif TZ_OGL
-
-#endif
 
 namespace tz::gl
 {
-#if TZ_VULKAN
-
     DeviceVulkan::DeviceVulkan():
     physical_device(vk::hardware::Device::null()),
     device(vk::LogicalDevice::null())
@@ -44,11 +38,6 @@ namespace tz::gl
         builder.finalise();
         return {this->device, builder};
     }
-
-#elif TZ_OGL
-    RenderPass DeviceOGL::create_render_pass(RenderPassBuilder builder) const
-    {
-        return {builder};
-    }
-#endif
 }
+
+#endif // TZ_VULKAN
