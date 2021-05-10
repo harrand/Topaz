@@ -43,6 +43,8 @@ add_library(TZVK
     # tz::gl
     src/gl/device.cpp
     src/gl/device.hpp
+    src/gl/render_pass.cpp
+    src/gl/render_pass.hpp
 
     # tz::gl (Vulkan)
     src/gl/vk/hardware/device_filter.cpp

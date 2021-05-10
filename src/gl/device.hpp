@@ -1,5 +1,6 @@
 #ifndef TOPAZ_GL_DEVICE_HPP
 #define TOPAZ_GL_DEVICE_HPP
+#include "gl/render_pass.hpp"
 
 #if TZ_VULKAN
 #include "gl/vk/logical_device.hpp"
@@ -14,6 +15,7 @@ namespace tz::gl
     {
     public:
         DeviceVulkan();
+        RenderPass create_render_pass(RenderPassBuilder builder) const;
     private:
         vk::hardware::Device physical_device;
         vk::LogicalDevice device;

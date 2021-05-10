@@ -26,7 +26,9 @@ namespace tz::gl::vk
 
         std::span<const Attachment* const> get_attachments() const;
         std::span<const RenderSubpass> get_subpasses() const;
+        std::span<RenderSubpass> get_subpasses();
         bool has_depth_attachment() const;
+        void remove_subpass(SubpassID subpass);
 
         friend class RenderSubpass;
     private:
@@ -56,6 +58,8 @@ namespace tz::gl::vk
 
         RenderSubpass(RenderPassBuilder& parent, Attachments attachments);
         Description describe() const;
+        std::span<const Attachment> get_attachments() const;
+        std::span<Attachment> get_attachments();
     private:
         std::size_t get_attachment_id(const Attachment& attachment) const;
 

@@ -19,6 +19,11 @@ namespace tz::gl::vk
         return this->subpasses;
     }
 
+    std::span<RenderSubpass> RenderPassBuilder::get_subpasses()
+    {
+        return this->subpasses;
+    }
+
     bool RenderPassBuilder::has_depth_attachment() const
     {
         auto iter = std::find_if(this->subpass_attachments.begin(), this->subpass_attachments.end(), [](const Attachment* att)
@@ -26,6 +31,16 @@ namespace tz::gl::vk
             return att->get_format() == Image::Format::DepthFloat32;
         });
         return iter != this->subpass_attachments.end();
+    }
+
+    void RenderPassBuilder::remove_subpass(SubpassID subpass)
+    {
+        const RenderSubpass& to_remove = this->subpasses.back();
+        for(const Attachment& dead_attachment : to_remove.get_attachments())
+        {
+            this->subpass_attachments.erase(std::remove_if(this->subpass_attachments.begin(), this->subpass_attachments.end(), [dead_attachment](const Attachment* attachment_ptr){return attachment_ptr != nullptr && *attachment_ptr == dead_attachment;}), this->subpass_attachments.end());
+        }
+        this->subpasses.erase(this->subpasses.begin() + subpass);
     }
 
 
@@ -112,6 +127,16 @@ namespace tz::gl::vk
         }
         desc.update_description();
         return desc;
+    }
+
+    std::span<const Attachment> RenderSubpass::get_attachments() const
+    {
+        return this->attachments;
+    }
+
+    std::span<Attachment> RenderSubpass::get_attachments()
+    {
+        return this->attachments;
     }
 
     std::size_t RenderSubpass::get_attachment_id(const Attachment& attachment) const

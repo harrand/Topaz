@@ -39,6 +39,12 @@ namespace tz::gl
         this->device = {maybe_chosen_queue_family.value(), {"VK_KHR_swapchain"}};
     }
 
+    RenderPass DeviceVulkan::create_render_pass(RenderPassBuilder builder) const
+    {
+        builder.finalise();
+        return {this->device, builder};
+    }
+
 #elif TZ_OGL
 
 #endif
