@@ -1,15 +1,9 @@
-#include "gl/render_pass.hpp"
-
 #if TZ_VULKAN
+#include "gl/impl/vk/render_pass.hpp"
 #include <algorithm>
-#elif TZ_OGL
-
-#endif
 
 namespace tz::gl
 {
-#if TZ_VULKAN
-
     constexpr vk::Image::Format colour_attachment_format = vk::Image::Format::Rgba32sRGB;
 
     vk::Attachment default_presentable_colour_attachment()
@@ -96,14 +90,6 @@ namespace tz::gl
     {
         
     }
-#elif TZ_OGL
-    void RenderPassBuilderOGL::add_pass(RenderPassAttachment attachment)
-    {
-        this->attachments.push_back(attachment);
-    }
-
-    RenderPassOGL::RenderPassOGL(RenderPassBuilderOGL builder):
-    subpasses(builder)
-    {}
-#endif
 }
+
+#endif // TZ_VULKAN
