@@ -4,9 +4,21 @@
 
 namespace tz::gl
 {
-    DeviceVulkan::DeviceVulkan():
+    DeviceFunctionalityVulkan::DeviceFunctionalityVulkan():
     physical_device(vk::hardware::Device::null()),
     device(vk::LogicalDevice::null())
+    {
+
+    }
+
+    RenderPass DeviceFunctionalityVulkan::create_render_pass(RenderPassBuilder builder) const
+    {
+        builder.finalise();
+        return {this->device, builder};
+    }
+
+    DeviceVulkan::DeviceVulkan():
+    DeviceFunctionalityVulkan()
     {
         vk::hardware::DeviceList all_devices = vk::hardware::get_all_devices();
         // Ideally we want a queue which supports all 3 of graphics, transfer and present.
@@ -31,12 +43,6 @@ namespace tz::gl
         }
         tz_assert(maybe_chosen_queue_family.has_value(), "Valid device found which supports present, graphics and transfer, but not a single queue that can do both. Topaz Vulkan does not support your hardware.");
         this->device = {maybe_chosen_queue_family.value(), {"VK_KHR_swapchain"}};
-    }
-
-    RenderPass DeviceVulkan::create_render_pass(RenderPassBuilder builder) const
-    {
-        builder.finalise();
-        return {this->device, builder};
     }
 }
 

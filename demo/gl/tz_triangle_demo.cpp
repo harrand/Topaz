@@ -13,7 +13,6 @@ int main()
         builder.add_pass(tz::gl::RenderPassAttachment::ColourDepth);
 
         tz::gl::RenderPass render_pass = device.create_render_pass(builder);
-
         while(!tz::window().is_close_requested())
         {
             tz::window().update();

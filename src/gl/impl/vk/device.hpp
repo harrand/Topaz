@@ -5,14 +5,21 @@
 
 namespace tz::gl
 {
-    class DeviceVulkan
+    class DeviceFunctionalityVulkan
+    {
+    public:
+        RenderPass create_render_pass(RenderPassBuilder builder) const;
+    protected:
+        DeviceFunctionalityVulkan();
+        
+        vk::hardware::Device physical_device;
+        vk::LogicalDevice device;        
+    };
+
+    class DeviceVulkan : public DeviceFunctionalityVulkan
     {
     public:
         DeviceVulkan();
-        RenderPass create_render_pass(RenderPassBuilder builder) const;
-    private:
-        vk::hardware::Device physical_device;
-        vk::LogicalDevice device;
     };
 }
 
