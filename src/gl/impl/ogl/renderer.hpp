@@ -1,15 +1,15 @@
 #ifndef TOPAZ_GL_IMPL_OGL_RENDERER_HPP
 #define TOPAZ_GL_IMPL_OGL_RENDERER_HPP
-#include "gl/impl/common/device.hpp"
+#include "gl/api/renderer.hpp"
 
 namespace tz::gl
 {
-    class RendererBuilderOGL
+    class RendererBuilderOGL : public IRendererBuilder
     {
 
     };
 
-    class RendererOGL
+    class RendererOGL : public IRenderer
     {
     public:
         RendererOGL(RendererBuilderOGL builder);

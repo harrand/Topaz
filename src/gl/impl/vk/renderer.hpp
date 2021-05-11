@@ -1,10 +1,11 @@
 #ifndef TOPAZ_GL_IMPL_VK_RENDERER_HPP
 #define TOPAZ_GL_IMPL_VK_RENDERER_HPP
+#include "gl/api/renderer.hpp"
 #include "gl/vk/pipeline/input_assembly.hpp"
 
 namespace tz::gl
 {
-    class RendererBuilderVulkan
+    class RendererBuilderVulkan : public IRendererBuilder
     {
 
     };
@@ -14,7 +15,7 @@ namespace tz::gl
         vk::pipeline::PrimitiveTopology primitive_type;
     };
 
-    class RendererVulkan
+    class RendererVulkan : public IRenderer
     {
     public:
         RendererVulkan(RendererBuilderVulkan builder, RendererBuilderDeviceInfoVulkan);
