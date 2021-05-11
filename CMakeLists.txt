@@ -45,6 +45,10 @@ add_library(TZVK
     src/gl/render_pass.hpp
     src/gl/renderer.hpp
 
+    # tz::gl (API)
+    src/gl/api/device.hpp
+    src/gl/api/render_pass.hpp
+
     # tz::gl (Vulkan Frontend)
     src/gl/impl/vk/device.cpp
     src/gl/impl/vk/device.hpp

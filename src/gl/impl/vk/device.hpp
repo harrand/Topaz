@@ -1,8 +1,6 @@
 #ifndef TOPAZ_GL_IMPL_VK_DEVICE_HPP
 #define TOPAZ_GL_IMPL_VK_DEVICE_HPP
-#include "gl/render_pass.hpp"
-#include "gl/renderer.hpp"
-#include "gl/impl/common/device.hpp"
+#include "gl/api/device.hpp"
 
 #include "gl/vk/logical_device.hpp"
 #include "gl/vk/swapchain.hpp"
@@ -14,7 +12,13 @@ namespace tz::gl
     {
     public:
         DeviceBuilderVulkan();
+        /**
+         * See @ref IDeviceBuilder::set_primitive_type(GraphicsPrimitiveType)
+         */
         void set_primitive_type(GraphicsPrimitiveType type);
+        /**
+         * See @ref IDeviceBuilder::get_primitive_type()
+         */
         GraphicsPrimitiveType get_primitive_type() const;
         
         vk::pipeline::PrimitiveTopology vk_get_primitive_topology() const;
@@ -22,11 +26,11 @@ namespace tz::gl
         GraphicsPrimitiveType primitive_type;
     };
 
-    class DeviceFunctionalityVulkan
+    class DeviceFunctionalityVulkan : public IDevice
     {
     public:
-        RenderPass create_render_pass(RenderPassBuilder builder) const;
-        Renderer create_renderer(RendererBuilder builder) const;
+        virtual RenderPass create_render_pass(RenderPassBuilder builder) const override;
+        virtual Renderer create_renderer(RendererBuilder builder) const override;
     protected:
         DeviceFunctionalityVulkan();
         

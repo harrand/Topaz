@@ -1,17 +1,17 @@
 #ifndef TOPAZ_GL_IMPL_OGL_RENDER_PASS_HPP
 #define TOPAZ_GL_IMPL_OGL_RENDER_PASS_HPP
 
-#include "gl/impl/common/render_pass_attachment.hpp"
+#include "gl/api/render_pass.hpp"
 #include <vector>
 
 namespace tz::gl
 {
-    class RenderPassBuilderOGL
+    class RenderPassBuilderOGL : public IRenderPassBuilder
     {
     public:
         RenderPassBuilderOGL() = default;
-        void add_pass(RenderPassAttachment attachment);
-        void finalise(){}
+        virtual void add_pass(RenderPassAttachment attachment) final;
+        virtual void finalise() final{}
 
         friend class RenderPassOGL;
     private:

@@ -1,17 +1,17 @@
 #ifndef TOPAZ_GL_IMPL_VK_RENDER_PASS_HPP
 #define TOPAZ_GL_IMPL_VK_RENDER_PASS_HPP
 
-#include "gl/impl/common/render_pass_attachment.hpp"
+#include "gl/api/render_pass.hpp"
 #include "gl/vk/render_pass.hpp"
 
 namespace tz::gl
 {
-    class RenderPassBuilderVulkan
+    class RenderPassBuilderVulkan : public IRenderPassBuilder
     {
     public:
         RenderPassBuilderVulkan() = default;
-        void add_pass(RenderPassAttachment attachment);
-        void finalise();
+        virtual void add_pass(RenderPassAttachment attachment) final;
+        virtual void finalise() final;
 
         friend class RenderPassVulkan;
     private:
