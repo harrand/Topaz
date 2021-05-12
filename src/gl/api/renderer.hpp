@@ -24,6 +24,8 @@ namespace tz::gl
     public:
         virtual void set_element_format(RendererElementFormat element_format) = 0;
         virtual RendererElementFormat get_element_format() const = 0;
+        virtual void set_culling_strategy(RendererCullingStrategy culling_strategy) = 0;
+        virtual RendererCullingStrategy get_culling_strategy() const = 0;
     };
 
     class IRenderer

@@ -14,6 +14,16 @@ namespace tz::gl
         return this->format.value();
     }
 
+    void RendererBuilderVulkan::set_culling_strategy(RendererCullingStrategy culling_strategy)
+    {
+        this->culling_strategy = culling_strategy;
+    }
+
+    RendererCullingStrategy RendererBuilderVulkan::get_culling_strategy() const
+    {
+        return this->culling_strategy;
+    }
+
     vk::pipeline::VertexInputState RendererBuilderVulkan::vk_get_vertex_input() const
     {
         RendererElementFormat fmt = this->get_element_format();
@@ -57,9 +67,39 @@ namespace tz::gl
         return {vk::VertexBindingDescriptions{binding}, attributes};
     }
 
+    vk::pipeline::RasteriserState RendererBuilderVulkan::vk_get_rasteriser_state() const
+    {
+        vk::pipeline::CullingStrategy vk_cull;
+        switch(this->culling_strategy)
+        {
+            case RendererCullingStrategy::NoCulling:
+                vk_cull = vk::pipeline::CullingStrategy::None;
+            break;
+            case RendererCullingStrategy::CullFrontFaces:
+                vk_cull = vk::pipeline::CullingStrategy::Front;
+            break;
+            case RendererCullingStrategy::CullBackFaces:
+                vk_cull = vk::pipeline::CullingStrategy::Back;
+            break;
+            case RendererCullingStrategy::CullEverything:
+                vk_cull = vk::pipeline::CullingStrategy::Both;
+            break;
+        }
+        return
+        {
+            false,
+            false,
+            vk::pipeline::PolygonMode::Fill,
+            1.0f,
+            vk_cull
+        };
+    }
+
     RendererVulkan::RendererVulkan(RendererBuilderVulkan builder, RendererBuilderDeviceInfoVulkan device_info):
     input_assembly(device_info.primitive_type),
-    vertex_input(builder.vk_get_vertex_input())
+    vertex_input(builder.vk_get_vertex_input()),
+    swapchain(device_info.device_swapchain),
+    rasteriser_state(builder.vk_get_rasteriser_state())
     {
 
     }

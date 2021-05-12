@@ -14,9 +14,38 @@ namespace tz::gl
         return this->format.value();
     }
 
+    void RendererBuilderOGL::set_culling_strategy(RendererCullingStrategy culling_strategy)
+    {
+        this->culling_strategy = culling_strategy;
+    }
+
+    RendererCullingStrategy RendererBuilderOGL::get_culling_strategy() const
+    {
+        return this->culling_strategy;
+    }
+
     RendererOGL::RendererOGL(RendererBuilderOGL builder):
     vao(0)
     {
+        switch(builder.get_culling_strategy())
+        {
+            case RendererCullingStrategy::NoCulling:
+                glDisable(GL_CULL_FACE);
+            break;
+            case RendererCullingStrategy::CullFrontFaces:
+                glEnable(GL_CULL_FACE);
+                glCullFace(GL_FRONT);
+            break;
+            case RendererCullingStrategy::CullBackFaces:
+                glEnable(GL_CULL_FACE);
+                glCullFace(GL_BACK);
+            break;
+            case RendererCullingStrategy::CullEverything:
+                glEnable(GL_CULL_FACE);
+                glCullFace(GL_FRONT_AND_BACK);
+            break;
+        }
+
         RendererElementFormat format = builder.get_element_format();
         tz_assert(format.basis == RendererInputFrequency::PerVertexBasis, "Vertex data on a per-instance basis is not yet implemented");
         glGenVertexArrays(1, &this->vao);

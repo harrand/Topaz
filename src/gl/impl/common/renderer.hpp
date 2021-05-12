@@ -15,6 +15,14 @@ namespace tz::gl
         Float32x2,
         Float32x3
     };
+
+    enum class RendererCullingStrategy
+    {
+        NoCulling,
+        CullFrontFaces,
+        CullBackFaces,
+        CullEverything
+    };
 }
 
 #endif // TOPAZ_GL_IMPL_COMMON_RENDERER_HPP

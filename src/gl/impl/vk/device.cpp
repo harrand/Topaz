@@ -53,6 +53,7 @@ namespace tz::gl
     {
         RendererBuilderDeviceInfoVulkan device_info;
         device_info.primitive_type = this->primitive_type;
+        device_info.device_swapchain = &this->swapchain;
         return {builder, device_info};
     }
 
