@@ -56,7 +56,7 @@ namespace tz
     {
         #if TZ_VULKAN
             tz::gl::vk::terminate();
-        #elif TZ_OPENGL
+        #elif TZ_OGL
             tz::gl::ogl::terminate();
         #endif
 
