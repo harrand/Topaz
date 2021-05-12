@@ -1,7 +1,35 @@
 #include "core/tz.hpp"
+#include "core/vector.hpp"
 #include "gl/device.hpp"
 #include "gl/render_pass.hpp"
 #include "gl/renderer.hpp"
+
+struct Vertex
+{
+    tz::Vec2 pos;
+    tz::Vec3 col;
+};
+
+tz::gl::RendererElementFormat vertex_format()
+{
+    tz::BasicList<tz::gl::RendererAttributeFormat> attributes;
+    attributes.add(
+        {
+            .element_attribute_offset = offsetof(Vertex, pos),
+            .type = tz::gl::RendererComponentType::Float32x2
+        });
+    attributes.add(
+        {
+            .element_attribute_offset = offsetof(Vertex, col),
+            .type = tz::gl::RendererComponentType::Float32x3
+        });
+    return
+    {
+        .binding_size = sizeof(Vertex),
+        .basis = tz::gl::RendererInputFrequency::PerVertexBasis,
+        .binding_attributes = attributes
+    };
+}
 
 int main()
 {
@@ -17,6 +45,7 @@ int main()
         tz::gl::RenderPass render_pass = device.create_render_pass(pass_builder);
 
         tz::gl::RendererBuilder renderer_builder;
+        renderer_builder.set_element_format(vertex_format());
         tz::gl::Renderer renderer = device.create_renderer(renderer_builder);
         while(!tz::window().is_close_requested())
         {

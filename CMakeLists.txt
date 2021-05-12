@@ -180,7 +180,7 @@ elseif(${TOPAZ_VULKAN})
     message(STATUS "RenderAPI: Vulkan (\"VK\")")
     configure_vulkan(TZVK)
 endif()
-target_compile_definitions(TZVK PUBLIC -DTZ_VERSION=\"${TZ_VERSION}\" -DTZ_SILENCED=0)
+target_compile_definitions(TZVK PUBLIC -DTZ_VERSION=\"${TZ_VERSION}\" -DTZ_SILENCED=0 -DGLFW_INCLUDE_NONE)
 
 if(${TOPAZ_DEBUG})
     message(STATUS "BuildConfig: Debug")

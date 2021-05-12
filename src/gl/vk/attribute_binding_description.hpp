@@ -3,6 +3,7 @@
 #if TZ_VULKAN
 #include "vulkan/vulkan.h"
 #include "core/assert.hpp"
+#include <vector>
 #include <cstdint>
 
 namespace tz::gl::vk
@@ -25,7 +26,7 @@ namespace tz::gl::vk
         VkVertexInputAttributeDescription desc;
     };
 
-    using VertexAttributeDescriptions = std::initializer_list<VertexAttributeDescription>;
+    using VertexAttributeDescriptions = std::vector<VertexAttributeDescription>;
 }
 
 #endif // TZ_VULKAN
