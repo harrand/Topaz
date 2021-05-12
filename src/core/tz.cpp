@@ -4,6 +4,8 @@
 
 #if TZ_VULKAN
 #include "gl/vk/tz_vulkan.hpp"
+#elif TZ_OGL
+#include "gl/ogl/tz_opengl.hpp"
 #endif
 
 #include <cstdio>
@@ -35,8 +37,15 @@ namespace tz
             {
                 tz::gl::vk::initialise_headless(game_info);
             }
-        #elif TZ_OPENGL
-
+        #elif TZ_OGL
+            if(app_type == ApplicationType::WindowApplication)
+            {
+                tz::gl::ogl::initialise(game_info);
+            }
+            else
+            {
+                tz::gl::ogl::initialise_headless(game_info);
+            }
         #endif
 
         initialised = true;
@@ -48,7 +57,7 @@ namespace tz
         #if TZ_VULKAN
             tz::gl::vk::terminate();
         #elif TZ_OPENGL
-
+            tz::gl::ogl::terminate();
         #endif
 
         if(tz_app_type == ApplicationType::WindowApplication)

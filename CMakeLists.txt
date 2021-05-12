@@ -166,6 +166,12 @@ add_library(TZVK
     src/gl/vk/tz_vulkan.hpp
     src/gl/vk/vertex_binding_description.cpp
     src/gl/vk/vertex_binding_description.hpp
+
+    # tz::gl (OpenGL Backend)
+    src/gl/ogl/setup/opengl_instance.cpp
+    src/gl/ogl/setup/opengl_instance.hpp
+    src/gl/ogl/tz_opengl.hpp
+    src/gl/ogl/tz_opengl.cpp
     )
 
 
