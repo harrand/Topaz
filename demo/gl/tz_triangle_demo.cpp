@@ -41,13 +41,13 @@ int main()
 
         tz::gl::RenderPassBuilder pass_builder;
         pass_builder.add_pass(tz::gl::RenderPassAttachment::ColourDepth);
-
         tz::gl::RenderPass render_pass = device.create_render_pass(pass_builder);
 
         tz::gl::RendererBuilder renderer_builder;
         renderer_builder.set_element_format(vertex_format());
         renderer_builder.set_render_pass(render_pass);
         tz::gl::Renderer renderer = device.create_renderer(renderer_builder);
+        
         while(!tz::window().is_close_requested())
         {
             tz::window().update();
