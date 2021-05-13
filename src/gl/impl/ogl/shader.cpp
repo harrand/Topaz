@@ -84,6 +84,7 @@ namespace tz::gl
     }
 
     ShaderOGL::ShaderOGL(ShaderOGL&& move):
+    program(0),
     vertex_shader(0),
     fragment_shader(0)
     {
@@ -92,14 +93,19 @@ namespace tz::gl
 
     ShaderOGL::~ShaderOGL()
     {
+        glDetachShader(this->program, this->vertex_shader);
+        glDetachShader(this->program, this->fragment_shader);
         glDeleteShader(this->vertex_shader);
         glDeleteShader(this->fragment_shader);
+        glDeleteProgram(this->program);
+        this->program = 0;
         this->vertex_shader = 0;
         this->fragment_shader = 0;
     }
 
     ShaderOGL& ShaderOGL::operator=(ShaderOGL&& rhs)
     {
+        std::swap(this->program, rhs.program);
         std::swap(this->vertex_shader, rhs.vertex_shader);
         std::swap(this->fragment_shader, rhs.fragment_shader);
         return *this;
