@@ -28,6 +28,8 @@ macro(add_shader_opengl)
         OUTPUT ${output_path}
         COMMENT "OGL: Building ${output_path}"
         COMMAND ${CMAKE_COMMAND} -E copy ${shader_path} ${output_path}
+        IMPLICIT_DEPENDS CXX ${shader_path}
+        VERBATIM
     )
 
     set_source_files_properties(${output_path} PROPERTIES GENERATED TRUE)

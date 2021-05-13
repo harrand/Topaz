@@ -37,7 +37,7 @@ namespace tz::gl
 
     Shader DeviceOGL::create_shader(ShaderBuilder builder) const
     {
-        return {};
+        return {builder};
     }
 }
 #endif // TZ_OGL

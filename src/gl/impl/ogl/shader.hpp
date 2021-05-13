@@ -2,6 +2,7 @@
 #define TOPAZ_GL_IMPL_OGL_SHADER_HPP
 #if TZ_OGL
 #include "gl/api/shader.hpp"
+#include "glad/glad.h"
 
 namespace tz::gl
 {
@@ -20,7 +21,19 @@ namespace tz::gl
 
     class ShaderOGL
     {
+    public:
+        ShaderOGL(ShaderBuilderOGL builder);
+        ShaderOGL(const ShaderOGL& copy) = delete;
+        ShaderOGL(ShaderOGL&& move);
+        ~ShaderOGL();
 
+        ShaderOGL& operator=(const ShaderOGL& rhs) = delete;
+        ShaderOGL& operator=(ShaderOGL&& rhs);
+    private:
+        static std::string get_info_log(GLuint shader);
+
+        GLuint vertex_shader;
+        GLuint fragment_shader;
     };
 }
 
