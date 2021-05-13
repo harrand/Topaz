@@ -18,6 +18,8 @@ namespace tz::gl
         virtual RendererCullingStrategy get_culling_strategy() const final;
         virtual void set_render_pass(const RenderPass& render_pass) final;
         virtual const RenderPass& get_render_pass() const final;
+        virtual void set_shader(const Shader& shader) final;
+        virtual const Shader& get_shader() const final;
 
         vk::pipeline::VertexInputState vk_get_vertex_input() const;
         vk::pipeline::RasteriserState vk_get_rasteriser_state() const;
@@ -25,6 +27,7 @@ namespace tz::gl
         std::optional<RendererElementFormat> format = std::nullopt;
         RendererCullingStrategy culling_strategy = RendererCullingStrategy::NoCulling;
         const RenderPass* render_pass = nullptr;
+        const Shader* shader = nullptr;
     };
 
     struct RendererBuilderDeviceInfoVulkan

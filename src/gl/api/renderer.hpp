@@ -3,6 +3,7 @@
 #include "core/containers/basic_list.hpp"
 #include "gl/impl/common/renderer.hpp"
 #include "gl/render_pass.hpp"
+#include "gl/shader.hpp"
 #include <cstdint>
 
 namespace tz::gl
@@ -76,6 +77,9 @@ namespace tz::gl
          * @return The current render pass object referenced by this renderer.
          */
         virtual const RenderPass& get_render_pass() const = 0;
+
+        virtual void set_shader(const Shader& shader) = 0;
+        virtual const Shader& get_shader() const = 0;
     };
 
     class IRenderer

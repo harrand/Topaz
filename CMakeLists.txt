@@ -44,11 +44,13 @@ add_library(TZVK
     src/gl/device.hpp
     src/gl/render_pass.hpp
     src/gl/renderer.hpp
+    src/gl/shader.hpp
 
     # tz::gl (API)
     src/gl/api/device.hpp
     src/gl/api/render_pass.hpp
     src/gl/api/renderer.hpp
+    src/gl/api/shader.hpp
 
     # tz::gl (Vulkan Frontend)
     src/gl/impl/vk/device.cpp
@@ -57,6 +59,8 @@ add_library(TZVK
     src/gl/impl/vk/render_pass.hpp
     src/gl/impl/vk/renderer.cpp
     src/gl/impl/vk/renderer.hpp
+    src/gl/impl/vk/shader.cpp
+    src/gl/impl/vk/shader.hpp
 
     # tz::gl (OpenGL Frontend)
     src/gl/impl/ogl/device.cpp
@@ -65,6 +69,8 @@ add_library(TZVK
     src/gl/impl/ogl/render_pass.hpp
     src/gl/impl/ogl/renderer.hpp
     src/gl/impl/ogl/renderer.cpp
+    src/gl/impl/ogl/shader.cpp
+    src/gl/impl/ogl/shader.hpp
 
     # tz::gl (Vulkan Backend)
     src/gl/vk/hardware/device_filter.cpp

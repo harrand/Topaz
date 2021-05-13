@@ -35,6 +35,17 @@ namespace tz::gl
         return *static_cast<const RenderPass*>(nullptr);
     }
 
+    void RendererBuilderOGL::set_shader(const Shader& shader)
+    {
+        // TODO: Do we need to do something with this later? Almost certainly.
+    }
+
+    const Shader& RendererBuilderOGL::get_shader() const
+    {
+        tz_error("Renderer shader integration is not yet implemented for OpenGL");
+        return *static_cast<const Shader*>(nullptr);
+    }
+
     RendererOGL::RendererOGL(RendererBuilderOGL builder):
     vao(0)
     {

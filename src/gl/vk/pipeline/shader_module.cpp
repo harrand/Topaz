@@ -5,7 +5,7 @@
 
 namespace tz::gl::vk
 {
-    ShaderModule::ShaderModule(const LogicalDevice& device, const std::vector<char>& spirv):
+    ShaderModule::ShaderModule(const LogicalDevice& device, const std::span<const char>& spirv):
     device(&device),
     shader_module(VK_NULL_HANDLE)
     {

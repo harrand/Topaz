@@ -36,6 +36,17 @@ namespace tz::gl
         return *this->render_pass;
     }
 
+    void RendererBuilderVulkan::set_shader(const Shader& shader)
+    {
+        this->shader = &shader;
+    }
+
+    const Shader& RendererBuilderVulkan::get_shader() const
+    {
+        tz_assert(this->shader != nullptr, "No shader yet");
+        return *this->shader;
+    }
+
     vk::pipeline::VertexInputState RendererBuilderVulkan::vk_get_vertex_input() const
     {
         RendererElementFormat fmt = this->get_element_format();
@@ -110,7 +121,7 @@ namespace tz::gl
     RendererVulkan::RendererVulkan(RendererBuilderVulkan builder, RendererBuilderDeviceInfoVulkan device_info):
     graphics_pipeline
     (
-        std::initializer_list<vk::pipeline::ShaderStage>{} /*TODO: Shaders*/,
+        {vk::pipeline::ShaderStage{builder.get_shader().vk_get_vertex_shader(), vk::pipeline::ShaderType::Vertex}, vk::pipeline::ShaderStage{builder.get_shader().vk_get_fragment_shader(), vk::pipeline::ShaderType::Fragment}},
         *device_info.device,
         builder.vk_get_vertex_input(),
         vk::pipeline::InputAssembly{device_info.primitive_type},

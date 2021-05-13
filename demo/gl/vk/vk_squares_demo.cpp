@@ -173,12 +173,14 @@ int main()
         
         vk::pipeline::Layout my_layout{my_logical_device, vk::DescriptorSetLayoutRefs{layout}};
 
-        vk::ShaderModule vertex{my_logical_device, vk::read_external_shader(".\\demo\\gl\\vk\\basic.vertex.glsl").value()};
-        vk::ShaderModule fragment{my_logical_device, vk::read_external_shader(".\\demo\\gl\\vk\\basic.fragment.glsl").value()};
+        auto vtx_src = vk::read_external_shader(".\\demo\\gl\\vk\\basic.vertex.glsl").value();
+        auto frg_src = vk::read_external_shader(".\\demo\\gl\\vk\\basic.fragment.glsl").value();
+        vk::ShaderModule vertex{my_logical_device, {vtx_src.begin(), vtx_src.end()}};
+        vk::ShaderModule fragment{my_logical_device, {frg_src.begin(), frg_src.end()}};
 
         vk::GraphicsPipeline my_pipeline
         {
-            std::initializer_list<vk::pipeline::ShaderStage>{{vertex, vk::pipeline::ShaderType::Vertex}, {fragment, vk::pipeline::ShaderType::Fragment}},
+            {vk::pipeline::ShaderStage{vertex, vk::pipeline::ShaderType::Vertex}, vk::pipeline::ShaderStage{fragment, vk::pipeline::ShaderType::Fragment}},
             my_logical_device,
             vertex_input_state,
             vk::pipeline::InputAssembly{vk::pipeline::PrimitiveTopology::Triangles},

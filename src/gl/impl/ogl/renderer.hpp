@@ -16,6 +16,8 @@ namespace tz::gl
         virtual RendererCullingStrategy get_culling_strategy() const final;
         virtual void set_render_pass(const RenderPass& render_pass) final;
         virtual const RenderPass& get_render_pass() const final;
+        virtual void set_shader(const Shader& shader) final;
+        virtual const Shader& get_shader() const final;
     private:
         std::optional<RendererElementFormat> format;
         RendererCullingStrategy culling_strategy;

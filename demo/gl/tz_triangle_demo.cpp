@@ -3,6 +3,7 @@
 #include "gl/device.hpp"
 #include "gl/render_pass.hpp"
 #include "gl/renderer.hpp"
+#include "gl/shader.hpp"
 
 struct Vertex
 {
@@ -43,11 +44,22 @@ int main()
         pass_builder.add_pass(tz::gl::RenderPassAttachment::ColourDepth);
         tz::gl::RenderPass render_pass = device.create_render_pass(pass_builder);
 
+        tz::gl::ShaderBuilder shader_builder;
+        // TODO: Remove
+        #if TZ_VULKAN
+        shader_builder.set_shader_file(tz::gl::ShaderType::VertexShader, ".\\demo\\gl\\basic.vertex.glsl.spv");
+        shader_builder.set_shader_file(tz::gl::ShaderType::FragmentShader, ".\\demo\\gl\\basic.fragment.glsl.spv");
+        #elif TZ_OGL
+
+        #endif
+        tz::gl::Shader shader = device.create_shader(shader_builder);
+
         tz::gl::RendererBuilder renderer_builder;
         renderer_builder.set_element_format(vertex_format());
         renderer_builder.set_render_pass(render_pass);
+        renderer_builder.set_shader(shader);
         tz::gl::Renderer renderer = device.create_renderer(renderer_builder);
-        
+
         while(!tz::window().is_close_requested())
         {
             tz::window().update();

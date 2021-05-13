@@ -58,6 +58,11 @@ namespace tz::gl
         return {builder, device_info};
     }
 
+    Shader DeviceFunctionalityVulkan::create_shader(ShaderBuilder builder) const
+    {
+        return {this->device, builder};
+    }
+
     DeviceVulkan::DeviceVulkan(DeviceBuilderVulkan builder):
     DeviceFunctionalityVulkan()
     {

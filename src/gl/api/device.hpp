@@ -2,6 +2,8 @@
 #define TOPAZ_GL_API_DEVICE_HPP
 #include "gl/render_pass.hpp"
 #include "gl/renderer.hpp"
+#include "gl/shader.hpp"
+
 #include "gl/impl/common/device.hpp"
 
 namespace tz::gl
@@ -28,6 +30,7 @@ namespace tz::gl
     public:
         virtual RenderPass create_render_pass(RenderPassBuilder builder) const = 0;
         virtual Renderer create_renderer(RendererBuilder builder) const = 0;
+        virtual Shader create_shader(ShaderBuilder builder) const = 0;
     };
 }
 

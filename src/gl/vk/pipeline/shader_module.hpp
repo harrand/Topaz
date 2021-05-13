@@ -2,6 +2,7 @@
 #define TOPAZ_GL_VK_PIPELINE_SHADER_MODULE_HPP
 #if TZ_VULKAN
 #include "gl/vk/logical_device.hpp"
+#include <span>
 #include <string>
 
 namespace tz::gl::vk
@@ -9,7 +10,7 @@ namespace tz::gl::vk
     class ShaderModule
     {
     public:
-        ShaderModule(const LogicalDevice& device, const std::vector<char>& spirv);
+        ShaderModule(const LogicalDevice& device, const std::span<const char>& spirv);
         ShaderModule(const ShaderModule& copy) = delete;
         ShaderModule(ShaderModule&& move);
         ~ShaderModule();

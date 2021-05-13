@@ -24,7 +24,7 @@ namespace tz::gl::vk
     public:
         GraphicsPipeline
         (
-            std::initializer_list<pipeline::ShaderStage> shader_stages,
+            tz::BasicList<pipeline::ShaderStage> shader_stages,
             const LogicalDevice& device,
             pipeline::VertexInputState vertex_input,
             pipeline::InputAssembly input_assembly,
