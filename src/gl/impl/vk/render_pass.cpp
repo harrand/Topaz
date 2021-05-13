@@ -90,6 +90,12 @@ namespace tz::gl
     {
         
     }
+
+    const vk::RenderPass& RenderPassVulkan::vk_get_render_pass() const
+    {
+        return this->render_pass;
+    }
+
 }
 
 #endif // TZ_VULKAN

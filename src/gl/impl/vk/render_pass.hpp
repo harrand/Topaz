@@ -22,6 +22,7 @@ namespace tz::gl
     {
     public:
         RenderPassVulkan(const vk::LogicalDevice& device, RenderPassBuilderVulkan builder);
+        const vk::RenderPass& vk_get_render_pass() const;
     private:
         vk::RenderPass render_pass;
     };

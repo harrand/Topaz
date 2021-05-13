@@ -46,6 +46,7 @@ int main()
 
         tz::gl::RendererBuilder renderer_builder;
         renderer_builder.set_element_format(vertex_format());
+        renderer_builder.set_render_pass(render_pass);
         tz::gl::Renderer renderer = device.create_renderer(renderer_builder);
         while(!tz::window().is_close_requested())
         {

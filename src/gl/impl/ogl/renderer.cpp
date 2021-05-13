@@ -24,6 +24,17 @@ namespace tz::gl
         return this->culling_strategy;
     }
 
+    void RendererBuilderOGL::set_render_pass(const RenderPass& render_pass)
+    {
+        // TODO: Do we need to do something with this later?
+    }
+
+    const RenderPass& RendererBuilderOGL::get_render_pass() const
+    {
+        tz_error("Renderer render pass integration is not yet implemented for OpenGL");
+        return *static_cast<const RenderPass*>(nullptr);
+    }
+
     RendererOGL::RendererOGL(RendererBuilderOGL builder):
     vao(0)
     {

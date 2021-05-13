@@ -4,6 +4,9 @@
 
 namespace tz::gl
 {
+    /**
+     * @brief Describes the subpasses, attachments and other parameters comprising a RenderPass.
+     */
     class IRenderPassBuilder
     {
     public:

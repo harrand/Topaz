@@ -1,5 +1,6 @@
 #if TZ_VULKAN
 #include "gl/impl/vk/renderer.hpp"
+#include "gl/impl/vk/device.hpp"
 
 namespace tz::gl
 {
@@ -22,6 +23,17 @@ namespace tz::gl
     RendererCullingStrategy RendererBuilderVulkan::get_culling_strategy() const
     {
         return this->culling_strategy;
+    }
+
+    void RendererBuilderVulkan::set_render_pass(const RenderPass& render_pass)
+    {
+        this->render_pass = &render_pass;
+    }
+
+    const RenderPass& RendererBuilder::get_render_pass() const
+    {
+        tz_assert(this->render_pass != nullptr, "No render pass set");
+        return *this->render_pass;
     }
 
     vk::pipeline::VertexInputState RendererBuilderVulkan::vk_get_vertex_input() const
@@ -96,12 +108,22 @@ namespace tz::gl
     }
 
     RendererVulkan::RendererVulkan(RendererBuilderVulkan builder, RendererBuilderDeviceInfoVulkan device_info):
-    input_assembly(device_info.primitive_type),
-    vertex_input(builder.vk_get_vertex_input()),
-    swapchain(device_info.device_swapchain),
-    rasteriser_state(builder.vk_get_rasteriser_state())
+    graphics_pipeline
+    (
+        std::initializer_list<vk::pipeline::ShaderStage>{} /*TODO: Shaders*/,
+        *device_info.device,
+        builder.vk_get_vertex_input(),
+        vk::pipeline::InputAssembly{device_info.primitive_type},
+        vk::pipeline::ViewportState{*device_info.device_swapchain},
+        builder.vk_get_rasteriser_state(),
+        vk::pipeline::MultisampleState{},
+        vk::pipeline::ColourBlendState{},
+        vk::pipeline::DynamicState::None(),
+        vk::pipeline::Layout{*device_info.device},
+        builder.get_render_pass().vk_get_render_pass()
+    )
     {
-
+        
     }
 }
 #endif // TZ_VULKAN
