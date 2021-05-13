@@ -57,9 +57,14 @@ namespace tz::gl
     }
 
     ShaderOGL::ShaderOGL(ShaderBuilderOGL builder):
+    program(glCreateProgram()),
     vertex_shader(glCreateShader(GL_VERTEX_SHADER)),
     fragment_shader(glCreateShader(GL_FRAGMENT_SHADER))
     {
+        // Attach shaders
+        glAttachShader(this->program, this->vertex_shader);
+        glAttachShader(this->program, this->fragment_shader);
+
         // Upload source code
         {
             const GLchar* vtx_src = builder.get_shader_source(ShaderType::VertexShader).data();
@@ -69,22 +74,13 @@ namespace tz::gl
         }
         // Compile
         glCompileShader(this->vertex_shader);
-        {
-            std::string info_log = ShaderOGL::get_info_log(this->vertex_shader);
-            if(!info_log.empty())
-            {
-                tz_error("Vertex Shader Compile Failed: %s", info_log.c_str());
-            }
-        }
+        ShaderOGL::check_shader_error(this->vertex_shader);
         glCompileShader(this->fragment_shader);
-        {
-            std::string info_log = ShaderOGL::get_info_log(this->fragment_shader);
-            if(!info_log.empty())
-            {
-                tz_error("Vertex Shader Compile Failed: %s", info_log.c_str());
-            }
-        }
-
+        ShaderOGL::check_shader_error(this->fragment_shader);
+        // Link
+        glLinkProgram(this->program);
+        glValidateProgram(this->program);
+        ShaderOGL::check_program_error(this->program);
     }
 
     ShaderOGL::ShaderOGL(ShaderOGL&& move):
@@ -109,14 +105,42 @@ namespace tz::gl
         return *this;
     }
 
-    std::string ShaderOGL::get_info_log(GLuint shader)
+    void ShaderOGL::check_shader_error(GLuint shader)
+    {
+        GLint cpl_status;
+        glGetShaderiv(shader, GL_COMPILE_STATUS, &cpl_status);
+        tz_assert(cpl_status == GL_TRUE, "Shader Compile Error: %s", ShaderOGL::shad_info_log(shader).c_str());
+    }
+
+    void ShaderOGL::check_program_error(GLuint program)
+    {
+        GLint status;
+        glGetProgramiv(program, GL_LINK_STATUS, &status);
+        tz_assert(status == GL_TRUE, "Shader Program Link Error: %s", ShaderOGL::prog_info_log(program).c_str());
+        glGetProgramiv(program, GL_VALIDATE_STATUS, &status);
+        tz_assert(status == GL_TRUE, "Shader Program Validate Error: %s", ShaderOGL::prog_info_log(program).c_str());
+    }
+
+    std::string ShaderOGL::shad_info_log(GLuint shader)
     {
         GLint info_log_length;
-        glGetShaderiv(shader, GL_SHADER_SOURCE_LENGTH, &info_log_length);
+        glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &info_log_length);
         GLsizei real_log_size;
         std::string info_log;
         info_log.resize(info_log_length);
         glGetShaderInfoLog(shader, info_log_length, &real_log_size, info_log.data());
+        info_log.resize(real_log_size);
+        return info_log;
+    }
+
+    std::string ShaderOGL::prog_info_log(GLuint program)
+    {
+        GLint info_log_length;
+        glGetProgramiv(program, GL_INFO_LOG_LENGTH, &info_log_length);
+        GLsizei real_log_size;
+        std::string info_log;
+        info_log.resize(info_log_length);
+        glGetProgramInfoLog(program, info_log_length, &real_log_size, info_log.data());
         info_log.resize(real_log_size);
         return info_log;
     }

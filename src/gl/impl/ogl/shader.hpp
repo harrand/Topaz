@@ -30,8 +30,12 @@ namespace tz::gl
         ShaderOGL& operator=(const ShaderOGL& rhs) = delete;
         ShaderOGL& operator=(ShaderOGL&& rhs);
     private:
-        static std::string get_info_log(GLuint shader);
+        static void check_shader_error(GLuint shader);
+        static void check_program_error(GLuint program);
+        static std::string shad_info_log(GLuint shader);
+        static std::string prog_info_log(GLuint program);
 
+        GLuint program;
         GLuint vertex_shader;
         GLuint fragment_shader;
     };
