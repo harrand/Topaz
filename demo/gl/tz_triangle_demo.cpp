@@ -45,13 +45,9 @@ int main()
         tz::gl::RenderPass render_pass = device.create_render_pass(pass_builder);
 
         tz::gl::ShaderBuilder shader_builder;
-        // TODO: Remove
-        #if TZ_VULKAN
-        shader_builder.set_shader_file(tz::gl::ShaderType::VertexShader, ".\\demo\\gl\\basic.vertex.glsl.spv");
-        shader_builder.set_shader_file(tz::gl::ShaderType::FragmentShader, ".\\demo\\gl\\basic.fragment.glsl.spv");
-        #elif TZ_OGL
+        shader_builder.set_shader_file(tz::gl::ShaderType::VertexShader, ".\\demo\\gl\\basic.vertex.glsl");
+        shader_builder.set_shader_file(tz::gl::ShaderType::FragmentShader, ".\\demo\\gl\\basic.fragment.glsl");
 
-        #endif
         tz::gl::Shader shader = device.create_shader(shader_builder);
 
         tz::gl::RendererBuilder renderer_builder;

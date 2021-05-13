@@ -13,6 +13,9 @@ namespace tz::gl
         virtual void set_shader_source(ShaderType type, std::string source_code) final;
         virtual std::string_view get_shader_source(ShaderType type) const final;
         virtual bool has_shader(ShaderType type) const final;
+    private:
+        std::string vertex_shader_source;
+        std::string fragment_shader_source;
     };
 
     class ShaderOGL

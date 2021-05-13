@@ -7,6 +7,7 @@ namespace tz::gl
 {
     void ShaderBuilderVulkan::set_shader_file(ShaderType type, std::filesystem::path shader_file)
     {
+        shader_file += ".spv";
         std::ifstream shader{shader_file.c_str(), std::ios::ate | std::ios::binary};
         tz_assert(shader.is_open(), "Cannot open shader file %s", shader_file.c_str());
         auto file_size_bytes = static_cast<std::size_t>(shader.tellg());
