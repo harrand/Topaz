@@ -3,34 +3,8 @@
 #include "gl/device.hpp"
 #include "gl/render_pass.hpp"
 #include "gl/renderer.hpp"
+#include "gl/mesh.hpp"
 #include "gl/shader.hpp"
-
-struct Vertex
-{
-    tz::Vec2 pos;
-    tz::Vec3 col;
-};
-
-tz::gl::RendererElementFormat vertex_format()
-{
-    tz::BasicList<tz::gl::RendererAttributeFormat> attributes;
-    attributes.add(
-        {
-            .element_attribute_offset = offsetof(Vertex, pos),
-            .type = tz::gl::RendererComponentType::Float32x2
-        });
-    attributes.add(
-        {
-            .element_attribute_offset = offsetof(Vertex, col),
-            .type = tz::gl::RendererComponentType::Float32x3
-        });
-    return
-    {
-        .binding_size = sizeof(Vertex),
-        .basis = tz::gl::RendererInputFrequency::PerVertexBasis,
-        .binding_attributes = attributes
-    };
-}
 
 int main()
 {
@@ -51,7 +25,19 @@ int main()
         tz::gl::Shader shader = device.create_shader(shader_builder);
 
         tz::gl::RendererBuilder renderer_builder;
-        renderer_builder.set_input_format(vertex_format());
+        tz::gl::Mesh mesh;
+        mesh.vertices =
+        {
+            tz::gl::Vertex{{-0.5f, -0.5f, 0.0f}, {1.0f, 0.0f}, {}, {}, {}},
+            tz::gl::Vertex{{0.5f, -0.5f, 0.0f}, {0.0f, 0.0f}, {}, {}, {}},
+            tz::gl::Vertex{{0.5f, 0.5f, 0.0f}, {0.0f, 1.0f}, {}, {}, {}}
+        };
+        mesh.indices =
+        {
+            0, 1, 2
+        };
+        tz::gl::MeshInput mesh_input{mesh, {tz::gl::MeshInputIgnoreFlag::TexcoordIgnore, tz::gl::MeshInputIgnoreFlag::NormalIgnore, tz::gl::MeshInputIgnoreFlag::TangentIgnore, tz::gl::MeshInputIgnoreFlag::BitangentIgnore}};
+        renderer_builder.set_input(mesh_input);
         renderer_builder.set_render_pass(render_pass);
         renderer_builder.set_shader(shader);
         tz::gl::Renderer renderer = device.create_renderer(renderer_builder);

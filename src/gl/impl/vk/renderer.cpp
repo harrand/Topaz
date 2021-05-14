@@ -4,9 +4,9 @@
 
 namespace tz::gl
 {
-    void RendererBuilderVulkan::set_input_format(RendererElementFormat element_format)
+    void RendererBuilderVulkan::set_input(const IRendererInput& input)
     {
-        this->format = {element_format};
+        this->format = {input.get_format()};
     }
 
     RendererElementFormat RendererBuilderVulkan::get_input_format() const

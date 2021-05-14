@@ -29,7 +29,15 @@ namespace tz::gl
         /// How often should we expect to see these elements? Per vertex, or per instance?
         RendererInputFrequency basis;
         /// List of all attributes. These must be in order.
-        tz::BasicList<RendererAttributeFormat> binding_attributes;
+        tz::BasicList<RendererAttributeFormat> binding_attributes; // TODO: (C++20 constexpr std::vector support) replace with std::vector so we are a LiteralType. Then IRendererInput::get_format() can be constexpr.
+    };
+
+    class IRendererInput
+    {
+    public:
+        virtual RendererElementFormat get_format() const = 0;
+        virtual std::span<const std::byte> get_vertex_bytes() const = 0;
+        virtual std::span<const unsigned int> get_indices() const = 0;
     };
 
     /**
@@ -40,12 +48,7 @@ namespace tz::gl
     class IRendererBuilder
     {
     public:
-        /**
-         * @brief Set the format of the vertex data elements.
-         * 
-         * @param element_format RendererElementFormat describing the layout of the vertex data in memory.
-         */
-        virtual void set_input_format(RendererElementFormat element_format) = 0;
+        virtual void set_input(const IRendererInput& input) = 0;
         /**
          * @brief Retrieve the format of the vertex data elements.
          * 

@@ -3,10 +3,17 @@
 
 namespace tz::gl
 {
+    /*
     void RendererBuilderOGL::set_input_format(RendererElementFormat element_format)
     {
         this->format = {element_format};
     }
+    */
+   void RendererBuilderOGL::set_input(const IRendererInput& input)
+   {
+       this->input = &input;
+       this->format = this->input->get_format();
+   }
 
     RendererElementFormat RendererBuilderOGL::get_input_format() const
     {

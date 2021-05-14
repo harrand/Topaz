@@ -42,6 +42,8 @@ add_library(TZVK
 
     # tz::gl
     src/gl/device.hpp
+    src/gl/mesh.cpp
+    src/gl/mesh.hpp
     src/gl/render_pass.hpp
     src/gl/renderer.hpp
     src/gl/shader.hpp
