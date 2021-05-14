@@ -51,7 +51,7 @@ int main()
         tz::gl::Shader shader = device.create_shader(shader_builder);
 
         tz::gl::RendererBuilder renderer_builder;
-        renderer_builder.set_element_format(vertex_format());
+        renderer_builder.set_input_format(vertex_format());
         renderer_builder.set_render_pass(render_pass);
         renderer_builder.set_shader(shader);
         tz::gl::Renderer renderer = device.create_renderer(renderer_builder);

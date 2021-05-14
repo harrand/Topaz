@@ -10,8 +10,8 @@ namespace tz::gl
     {
     public:
         RendererBuilderOGL() = default;
-        virtual void set_element_format(RendererElementFormat element_format) final;
-        virtual RendererElementFormat get_element_format() const final;
+        virtual void set_input_format(RendererElementFormat element_format) final;
+        virtual RendererElementFormat get_input_format() const final;
         virtual void set_culling_strategy(RendererCullingStrategy culling_strategy) final;
         virtual RendererCullingStrategy get_culling_strategy() const final;
         virtual void set_render_pass(const RenderPass& render_pass) final;

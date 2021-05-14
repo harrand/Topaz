@@ -3,12 +3,12 @@
 
 namespace tz::gl
 {
-    void RendererBuilderOGL::set_element_format(RendererElementFormat element_format)
+    void RendererBuilderOGL::set_input_format(RendererElementFormat element_format)
     {
         this->format = {element_format};
     }
 
-    RendererElementFormat RendererBuilderOGL::get_element_format() const
+    RendererElementFormat RendererBuilderOGL::get_input_format() const
     {
         tz_assert(this->format.has_value(), "RendererBuilder has not had element format set yet");
         return this->format.value();
@@ -68,7 +68,7 @@ namespace tz::gl
             break;
         }
 
-        RendererElementFormat format = builder.get_element_format();
+        RendererElementFormat format = builder.get_input_format();
         tz_assert(format.basis == RendererInputFrequency::PerVertexBasis, "Vertex data on a per-instance basis is not yet implemented");
         glGenVertexArrays(1, &this->vao);
 

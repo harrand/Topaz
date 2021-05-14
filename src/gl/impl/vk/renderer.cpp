@@ -4,12 +4,12 @@
 
 namespace tz::gl
 {
-    void RendererBuilderVulkan::set_element_format(RendererElementFormat element_format)
+    void RendererBuilderVulkan::set_input_format(RendererElementFormat element_format)
     {
         this->format = {element_format};
     }
 
-    RendererElementFormat RendererBuilderVulkan::get_element_format() const
+    RendererElementFormat RendererBuilderVulkan::get_input_format() const
     {
         tz_assert(this->format.has_value(), "RendererBuilder has not had element format set yet");
         return this->format.value();
@@ -49,7 +49,7 @@ namespace tz::gl
 
     vk::pipeline::VertexInputState RendererBuilderVulkan::vk_get_vertex_input() const
     {
-        RendererElementFormat fmt = this->get_element_format();
+        RendererElementFormat fmt = this->get_input_format();
         vk::VertexInputRate input_rate;
         switch(fmt.basis)
         {

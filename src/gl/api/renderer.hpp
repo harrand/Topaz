@@ -45,13 +45,13 @@ namespace tz::gl
          * 
          * @param element_format RendererElementFormat describing the layout of the vertex data in memory.
          */
-        virtual void set_element_format(RendererElementFormat element_format) = 0;
+        virtual void set_input_format(RendererElementFormat element_format) = 0;
         /**
          * @brief Retrieve the format of the vertex data elements.
          * 
          * @return RendererElementFormat describing how vertex data is laid out in memory.
          */
-        virtual RendererElementFormat get_element_format() const = 0;
+        virtual RendererElementFormat get_input_format() const = 0;
         /**
          * @brief Set the culling strategy used during rendering.
          * 
