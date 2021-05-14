@@ -32,6 +32,11 @@ namespace tz::gl
         tz::BasicList<RendererAttributeFormat> binding_attributes; // TODO: (C++20 constexpr std::vector support) replace with std::vector so we are a LiteralType. Then IRendererInput::get_format() can be constexpr.
     };
 
+    /**
+     * @brief A renderer is always provided some input data. This data is always sorted into vertex/index buffers eventually, but there may be custom setups where you need more control over how this data is represented in memory.
+     * @details Renderer inputs can vary wildly in their nature depending on what sort of rendering you'd like to do. Topaz does not mandate a specific renderer input type, but the most common use-case is for storing mesh data. A class already exists for this purpose: @ref MeshInput
+     * 
+     */
     class IRendererInput
     {
     public:
@@ -48,6 +53,12 @@ namespace tz::gl
     class IRendererBuilder
     {
     public:
+        /**
+         * @brief Provide initial input data for the renderer.
+         * @todo Allow this data to be changed later. Right now as soon as the Renderer is constructed this data never changes.
+         * 
+         * @param input Reference to an existing @ref IRendererInput
+         */
         virtual void set_input(const IRendererInput& input) = 0;
         /**
          * @brief Retrieve the format of the vertex data elements.

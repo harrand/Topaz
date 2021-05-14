@@ -8,7 +8,7 @@
 namespace tz::gl
 {
     /**
-     * @brief Represents the typical vertex type Topaz expects.
+     * @brief Represents the typical vertex type Topaz expects. This is the data type used by tz::gl::Mesh and tz::gl::MeshInput.
      */
     struct Vertex
     {
@@ -19,12 +19,21 @@ namespace tz::gl
         tz::Vec3 bitangent = {};
     };
 
+    /**
+     * @brief Represents the typical mesh type Topaz expects.
+     * 
+     */
     struct Mesh
     {
         tz::BasicList<Vertex> vertices;
         tz::BasicList<unsigned int> indices;
     };
 
+    /**
+     * @brief If a shader does not explicitly use each mesh input attribute, a warning may be emitted by the runtime. Pass ignore flags for each attribute your shader won't reference to prevent this.
+     * @note This may become required behaviour later on, so it is highly recommended that you provide ignore flags as necessary.
+     * 
+     */
     enum class MeshInputIgnoreFlag
     {
         PositionIgnore,
@@ -36,6 +45,10 @@ namespace tz::gl
 
     using MeshInputIgnoreField = tz::EnumField<MeshInputIgnoreFlag>;
 
+    /**
+     * @brief Renderer Input representing a typical mesh.
+     * 
+     */
     class MeshInput : public IRendererInput
     {
     public:
