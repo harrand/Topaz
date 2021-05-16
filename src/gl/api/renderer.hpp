@@ -1,6 +1,7 @@
 #ifndef TOPAZ_GL_API_RENDERER_HPP
 #define TOPAZ_GL_API_RENDERER_HPP
 #include "core/containers/basic_list.hpp"
+#include "core/vector.hpp"
 #include "gl/impl/common/renderer.hpp"
 #include "gl/render_pass.hpp"
 #include "gl/shader.hpp"
@@ -65,7 +66,7 @@ namespace tz::gl
          * 
          * @return RendererElementFormat describing how vertex data is laid out in memory.
          */
-        virtual RendererElementFormat get_input_format() const = 0;
+        virtual const IRendererInput* get_input() const = 0;
         /**
          * @brief Set the culling strategy used during rendering.
          * 
@@ -99,7 +100,21 @@ namespace tz::gl
     class IRenderer
     {
     public:
+        /**
+         * @brief Set the clear colour for any colour attachments throughout the renderpass.
+         * 
+         * @param clear_colour Clear colour value, as a normalised Vec4.
+         */
+        virtual void set_clear_colour(tz::Vec4 clear_colour) = 0;
+        /**
+         * @brief Retrieve the clear colour for any colour attachments throughout the renderpass.
+         * @note The default clear colour is {0, 0, 0, 0} (solid black) on all platforms.
+         * 
+         * @return Clear colour value, as a normalised Vec4.
+         */
+        virtual tz::Vec4 get_clear_colour() const = 0;
 
+        virtual void render() = 0;
     };
 }
 

@@ -13,7 +13,7 @@ namespace tz::gl
     public:
         RendererBuilderVulkan() = default;
         virtual void set_input(const IRendererInput& input) final;
-        virtual RendererElementFormat get_input_format() const final;
+        virtual const IRendererInput* get_input() const final;
         virtual void set_culling_strategy(RendererCullingStrategy culling_strategy) final;
         virtual RendererCullingStrategy get_culling_strategy() const final;
         virtual void set_render_pass(const RenderPass& render_pass) final;
@@ -24,7 +24,7 @@ namespace tz::gl
         vk::pipeline::VertexInputState vk_get_vertex_input() const;
         vk::pipeline::RasteriserState vk_get_rasteriser_state() const;
     private:
-        std::optional<RendererElementFormat> format = std::nullopt;
+        const IRendererInput* input = nullptr;
         RendererCullingStrategy culling_strategy = RendererCullingStrategy::NoCulling;
         const RenderPass* render_pass = nullptr;
         const Shader* shader = nullptr;
@@ -41,9 +41,15 @@ namespace tz::gl
     {
     public:
         RendererVulkan(RendererBuilderVulkan builder, RendererBuilderDeviceInfoVulkan);
+    
+        virtual void set_clear_colour(tz::Vec4 clear_colour) final;
+        virtual tz::Vec4 get_clear_colour() const final;
+        
+        virtual void render() final;
     private:
         vk::GraphicsPipeline graphics_pipeline;
         const vk::Swapchain* swapchain;
+        tz::Vec4 clear_colour;
     };
 }
 

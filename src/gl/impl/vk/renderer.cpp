@@ -1,4 +1,5 @@
 #if TZ_VULKAN
+#include "core/report.hpp"
 #include "gl/impl/vk/renderer.hpp"
 #include "gl/impl/vk/device.hpp"
 
@@ -6,13 +7,12 @@ namespace tz::gl
 {
     void RendererBuilderVulkan::set_input(const IRendererInput& input)
     {
-        this->format = {input.get_format()};
+        this->input = &input;
     }
 
-    RendererElementFormat RendererBuilderVulkan::get_input_format() const
+    const IRendererInput* RendererBuilderVulkan::get_input() const
     {
-        tz_assert(this->format.has_value(), "RendererBuilder has not had element format set yet");
-        return this->format.value();
+        return this->input;
     }
 
     void RendererBuilderVulkan::set_culling_strategy(RendererCullingStrategy culling_strategy)
@@ -49,7 +49,14 @@ namespace tz::gl
 
     vk::pipeline::VertexInputState RendererBuilderVulkan::vk_get_vertex_input() const
     {
-        RendererElementFormat fmt = this->get_input_format();
+        if(this->input == nullptr)
+        {
+            // Just default vertexinput as we don't have any inputs.
+            return {};
+        }
+
+        // Do the work to retrieve the formats and build up the vertex input state.
+        RendererElementFormat fmt = this->input->get_format();
         vk::VertexInputRate input_rate;
         switch(fmt.basis)
         {
@@ -133,6 +140,22 @@ namespace tz::gl
         vk::pipeline::Layout{*device_info.device},
         builder.get_render_pass().vk_get_render_pass()
     )
+    {
+        this->set_clear_colour({0.0f, 0.0f, 0.0f, 0.0f});
+        tz_report("RendererVulkan (Input = %p)", builder.get_input());
+    }
+
+    void RendererVulkan::set_clear_colour(tz::Vec4 clear_colour)
+    {
+        this->clear_colour = clear_colour;
+    }
+
+    tz::Vec4 RendererVulkan::get_clear_colour() const
+    {
+        return this->clear_colour;
+    }
+
+    void RendererVulkan::render()
     {
         
     }

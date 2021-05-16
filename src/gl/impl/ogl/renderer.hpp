@@ -11,7 +11,7 @@ namespace tz::gl
     public:
         RendererBuilderOGL() = default;
         virtual void set_input(const IRendererInput& input) final;
-        virtual RendererElementFormat get_input_format() const final;
+        virtual const IRendererInput* get_input() const final;
         virtual void set_culling_strategy(RendererCullingStrategy culling_strategy) final;
         virtual RendererCullingStrategy get_culling_strategy() const final;
         virtual void set_render_pass(const RenderPass& render_pass) final;
@@ -34,6 +34,11 @@ namespace tz::gl
 
         RendererOGL& operator=(const RendererOGL& rhs) = delete;
         RendererOGL& operator=(RendererOGL&& rhs);
+
+        virtual void set_clear_colour(tz::Vec4 clear_colour) final;
+        virtual tz::Vec4 get_clear_colour() const final;
+        
+        virtual void render() final;
     private:
         GLuint vao;
     };
