@@ -4,6 +4,7 @@
 
 #include "gl/vk/pipeline/graphics_pipeline.hpp"
 
+#include "gl/vk/logical_device.hpp"
 #include "gl/vk/swapchain.hpp"
 #include "gl/vk/framebuffer.hpp"
 #include "gl/vk/frame_admin.hpp"
@@ -55,6 +56,16 @@ namespace tz::gl
         
         virtual void render() final;
     private:
+        void setup_buffers(const IRendererInput* input);
+        void setup_depth_image();
+        void setup_swapchain_framebuffers(const RenderPass& render_pass);
+        void record_rendering_commands(const RenderPass& render_pass, const IRendererInput* input);
+        void record_and_run_scratch_commands(const IRendererInput* input);
+
+        const vk::LogicalDevice* device;
+        const vk::hardware::Device* physical_device;
+        vk::hardware::MemoryModule device_local_mem;
+        vk::hardware::MemoryModule host_visible_mem;
         vk::GraphicsPipeline graphics_pipeline;
         std::optional<vk::Buffer> vertex_buffer;
         std::optional<vk::Buffer> index_buffer;
