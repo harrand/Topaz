@@ -7,6 +7,8 @@ namespace tz::gl
     {
         Triangles,
     };
+
+    using DeviceWindowResizeCallback = std::function<void()>;
 }
 
 #endif // TOPAZ_GL_IMPL_COMMON_DEVICE_HPP

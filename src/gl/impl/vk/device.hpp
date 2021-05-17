@@ -5,6 +5,7 @@
 #include "gl/vk/logical_device.hpp"
 #include "gl/vk/swapchain.hpp"
 #include "gl/vk/pipeline/input_assembly.hpp"
+#include <deque>
 
 namespace tz::gl
 {
@@ -39,6 +40,10 @@ namespace tz::gl
         vk::LogicalDevice device;
         vk::Swapchain swapchain;
         vk::pipeline::PrimitiveTopology primitive_type;
+    private:
+        void on_window_resize();
+
+        mutable std::deque<DeviceWindowResizeCallback> renderer_resize_callbacks;
     };
 
     class DeviceVulkan : public DeviceFunctionalityVulkan

@@ -142,19 +142,26 @@ namespace tz::gl
     physical_device(this->device->get_queue_family().dev),
     device_local_mem(this->physical_device->get_memory_properties().unsafe_get_some_module_matching({vk::hardware::MemoryType::DeviceLocal})),
     host_visible_mem(this->physical_device->get_memory_properties().unsafe_get_some_module_matching({vk::hardware::MemoryType::HostVisible, vk::hardware::MemoryType::HostCoherent})),
+    vertex_shader(&builder.get_shader().vk_get_vertex_shader()),
+    fragment_shader(&builder.get_shader().vk_get_fragment_shader()),
+    vertex_input_state(builder.vk_get_vertex_input()),
+    input_assembly{device_info.primitive_type},
+    rasteriser_state(builder.vk_get_rasteriser_state()),
+    render_pass(&builder.get_render_pass()),
+    renderer_input(builder.get_input()),
     graphics_pipeline
     (
-        {vk::pipeline::ShaderStage{builder.get_shader().vk_get_vertex_shader(), vk::pipeline::ShaderType::Vertex}, vk::pipeline::ShaderStage{builder.get_shader().vk_get_fragment_shader(), vk::pipeline::ShaderType::Fragment}},
+        {vk::pipeline::ShaderStage{*this->vertex_shader, vk::pipeline::ShaderType::Vertex}, vk::pipeline::ShaderStage{*this->fragment_shader, vk::pipeline::ShaderType::Fragment}},
         *device_info.device,
-        builder.vk_get_vertex_input(),
+        this->vertex_input_state,
         vk::pipeline::InputAssembly{device_info.primitive_type},
         vk::pipeline::ViewportState{*device_info.device_swapchain, true},
-        builder.vk_get_rasteriser_state(),
+        this->rasteriser_state,
         vk::pipeline::MultisampleState{},
         vk::pipeline::ColourBlendState{},
         vk::pipeline::DynamicState::None(),
         vk::pipeline::Layout{*device_info.device},
-        builder.get_render_pass().vk_get_render_pass()
+        this->render_pass->vk_get_render_pass()
     ),
     vertex_buffer(std::nullopt),
     index_buffer(std::nullopt),
@@ -182,6 +189,10 @@ namespace tz::gl
         this->record_rendering_commands(render_pass, input);
 
         this->record_and_run_scratch_commands(input);
+        // If frame admin needs to regenerate, allow it to.
+        this->frame_admin.set_regeneration_function([this](){this->handle_resize();});
+        // Tell the device to notify us when it detects a window resize. We will also need to regenerate then too.
+        *device_info.on_resize = [this](){this->handle_resize();};
         tz_report("RendererVulkan (Input = %p)", input);
     }
 
@@ -278,6 +289,37 @@ namespace tz::gl
             do_scratch_operation(this->graphics_present_queue, copy_fence);
             copy_fence.wait_for();
         }
+    }
+
+    void RendererVulkan::handle_resize()
+    {
+        // Assume swapchain has been reinitialised.
+        // Assume render_pass has been reinitialised.
+        // Recreate everything else.
+        this->graphics_pipeline = vk::GraphicsPipeline{
+            {vk::pipeline::ShaderStage{*this->vertex_shader, vk::pipeline::ShaderType::Vertex}, vk::pipeline::ShaderStage{*this->fragment_shader, vk::pipeline::ShaderType::Fragment}},
+            *this->device,
+            this->vertex_input_state,
+            this->input_assembly,
+            vk::pipeline::ViewportState{*this->swapchain, true},
+            this->rasteriser_state,
+            vk::pipeline::MultisampleState{},
+            vk::pipeline::ColourBlendState{},
+            vk::pipeline::DynamicState::None(),
+            vk::pipeline::Layout{*this->device},
+            this->render_pass->vk_get_render_pass()
+        };
+
+        this->setup_depth_image();
+
+        this->swapchain_framebuffers.clear();
+        this->setup_swapchain_framebuffers(*this->render_pass);
+
+        this->command_pool.clear();
+        // Command Buffers for each swapchain image, but an extra general-purpose recycleable buffer.
+        constexpr std::size_t num_scratch_command_bufs = 1;
+        this->command_pool.with(this->swapchain->get_image_views().size() + num_scratch_command_bufs);
+        this->record_rendering_commands(*this->render_pass, this->renderer_input);
     }
 }
 #endif // TZ_VULKAN

@@ -1,4 +1,5 @@
 #if TZ_VULKAN
+#include "core/tz.hpp"
 #include "gl/impl/vk/device.hpp"
 #include "gl/vk/hardware/device_filter.hpp"
 
@@ -38,9 +39,22 @@ namespace tz::gl
     physical_device(vk::hardware::Device::null()),
     device(vk::LogicalDevice::null()),
     swapchain(vk::Swapchain::null()),
-    primitive_type()
+    primitive_type(),
+    renderer_resize_callbacks()
     {
-
+        // Setup window resize support.
+        tz::window().add_resize_callback([this](int width, int height)
+        {
+            int w = width;
+            int h = height;
+            while(w == 0 || h == 0)
+            {
+                w = tz::window().get_width();
+                h = tz::window().get_height();
+                tz::Window::block_until_event_happens();
+            }
+            this->on_window_resize();
+        });
     }
 
     RenderPass DeviceFunctionalityVulkan::create_render_pass(RenderPassBuilder builder) const
@@ -58,6 +72,7 @@ namespace tz::gl
         device_info.device = &this->device;
         device_info.primitive_type = this->primitive_type;
         device_info.device_swapchain = &this->swapchain;
+        device_info.on_resize = &this->renderer_resize_callbacks.emplace_back(nullptr);
         return {builder, device_info};
     }
 
@@ -98,6 +113,26 @@ namespace tz::gl
         
         this->swapchain = {this->device, my_prefs};
         this->primitive_type = builder.vk_get_primitive_topology();
+    }
+
+    void DeviceFunctionalityVulkan::on_window_resize()
+    {
+        // First update swapchain.
+        vk::hardware::SwapchainSelectorPreferences my_prefs;
+        my_prefs.format_pref = {vk::hardware::SwapchainFormatPreferences::Goldilocks, vk::hardware::SwapchainFormatPreferences::FlexibleGoldilocks, vk::hardware::SwapchainFormatPreferences::DontCare};
+        my_prefs.present_mode_pref = {vk::hardware::SwapchainPresentModePreferences::PreferTripleBuffering, vk::hardware::SwapchainPresentModePreferences::DontCare};
+
+        this->device.block_until_idle();
+        this->swapchain.~Swapchain();
+        new (&this->swapchain) vk::Swapchain(this->device, my_prefs);
+        // Then notify all renderers which care.
+        for(const DeviceWindowResizeCallback& callback : this->renderer_resize_callbacks)
+        {
+            if(callback != nullptr)
+            {
+                callback();
+            }
+        }
     }
 }
 

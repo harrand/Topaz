@@ -1,10 +1,12 @@
 #ifndef TOPAZ_GL_IMPL_VK_RENDERER_HPP
 #define TOPAZ_GL_IMPL_VK_RENDERER_HPP
 #include "gl/api/renderer.hpp"
+#include "gl/impl/common/device.hpp"
 
 #include "gl/vk/pipeline/graphics_pipeline.hpp"
 
 #include "gl/vk/logical_device.hpp"
+#include "gl/vk/pipeline/shader_module.hpp"
 #include "gl/vk/swapchain.hpp"
 #include "gl/vk/framebuffer.hpp"
 #include "gl/vk/frame_admin.hpp"
@@ -43,6 +45,7 @@ namespace tz::gl
         const vk::LogicalDevice* device;
         vk::pipeline::PrimitiveTopology primitive_type;
         const vk::Swapchain* device_swapchain;
+        DeviceWindowResizeCallback* on_resize;
     };
 
     class RendererVulkan : public IRenderer
@@ -62,10 +65,19 @@ namespace tz::gl
         void record_rendering_commands(const RenderPass& render_pass, const IRendererInput* input);
         void record_and_run_scratch_commands(const IRendererInput* input);
 
+        void handle_resize();
+
         const vk::LogicalDevice* device;
         const vk::hardware::Device* physical_device;
         vk::hardware::MemoryModule device_local_mem;
         vk::hardware::MemoryModule host_visible_mem;
+        const vk::ShaderModule* vertex_shader;
+        const vk::ShaderModule* fragment_shader;
+        vk::pipeline::VertexInputState vertex_input_state;
+        vk::pipeline::InputAssembly input_assembly;
+        vk::pipeline::RasteriserState rasteriser_state;
+        const RenderPass* render_pass;
+        const IRendererInput* renderer_input;
         vk::GraphicsPipeline graphics_pipeline;
         std::optional<vk::Buffer> vertex_buffer;
         std::optional<vk::Buffer> index_buffer;
