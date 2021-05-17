@@ -27,6 +27,10 @@ namespace tz
 
         this->wnd = glfwCreateWindow(args.width, args.height, args.title, nullptr, nullptr);
         glfwMakeContextCurrent(this->wnd);
+        #if TZ_OGL
+            // Vulkan isn't fps-capped -- neither should opengl be.
+            glfwSwapInterval(0);
+        #endif
         glfwSetWindowUserPointer(this->wnd, this);
         glfwSetFramebufferSizeCallback(this->wnd, Window::window_resize_callback);
     }
