@@ -45,13 +45,13 @@ namespace tz::gl
 
     void RendererBuilderOGL::set_render_pass(const RenderPass& render_pass)
     {
-        // TODO: Do we need to do something with this later?
+        this->render_pass = &render_pass;
     }
 
     const RenderPass& RendererBuilderOGL::get_render_pass() const
     {
-        tz_error("Renderer render pass integration is not yet implemented for OpenGL");
-        return *static_cast<const RenderPass*>(nullptr);
+        tz_assert(this->render_pass != nullptr, "No render pass set");
+        return *this->render_pass;
     }
 
     void RendererBuilderOGL::set_shader(const Shader& shader)
@@ -69,9 +69,20 @@ namespace tz::gl
     vbo(0),
     ibo(0),
     index_count(0),
+    render_pass(&builder.get_render_pass()),
     shader(&builder.get_shader()),
     output(builder.get_output())
     {
+        switch(builder.get_render_pass().ogl_get_attachments()[0])
+        {
+            case RenderPassAttachment::ColourDepth:
+            case RenderPassAttachment::Depth:
+                glEnable(GL_DEPTH_TEST);
+            break;
+            case RenderPassAttachment::Colour:
+                glDisable(GL_DEPTH_TEST);
+            break;
+        }
         switch(builder.get_culling_strategy())
         {
             case RendererCullingStrategy::NoCulling:
@@ -159,7 +170,9 @@ namespace tz::gl
     vbo(0),
     ibo(0),
     index_count(0),
-    shader(nullptr)
+    render_pass(nullptr),
+    shader(nullptr),
+    output(nullptr)
     {
         *this = std::move(move);
     }
@@ -188,6 +201,9 @@ namespace tz::gl
         std::swap(this->vbo, rhs.vbo);
         std::swap(this->ibo, rhs.ibo);
         std::swap(this->index_count, rhs.index_count);
+        std::swap(this->render_pass, rhs.render_pass);
+        std::swap(this->shader, rhs.shader);
+        std::swap(this->output, rhs.output);
         return *this;
     }
 
@@ -214,7 +230,22 @@ namespace tz::gl
             tz_report("[Warning]: RendererOGL::render() invoked with no output specified. The behaviour is undefined.");
         }
 
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        auto attachment = this->render_pass->ogl_get_attachments()[0];
+        GLenum buffer_bits;
+        switch(attachment)
+        {
+            case RenderPassAttachment::Colour:
+            default:
+                buffer_bits = GL_COLOR_BUFFER_BIT;
+            break;
+            case RenderPassAttachment::Depth:
+                buffer_bits = GL_DEPTH_BUFFER_BIT;
+            break;
+            case RenderPassAttachment::ColourDepth:
+                buffer_bits = GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT;
+            break;
+        }
+        glClear(buffer_bits);
 
         glBindVertexArray(this->vao);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->ibo);

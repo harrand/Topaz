@@ -3,6 +3,7 @@
 
 #include "gl/api/render_pass.hpp"
 #include <vector>
+#include <span>
 
 namespace tz::gl
 {
@@ -11,8 +12,7 @@ namespace tz::gl
     public:
         RenderPassBuilderOGL() = default;
         virtual void add_pass(RenderPassAttachment attachment) final;
-
-        friend class RenderPassOGL;
+        std::span<const RenderPassAttachment> ogl_get_attachments() const;
     private:
         std::vector<RenderPassAttachment> attachments;
     };
@@ -21,6 +21,7 @@ namespace tz::gl
     {
     public:
         RenderPassOGL(RenderPassBuilderOGL builder);
+        std::span<const RenderPassAttachment> ogl_get_attachments() const;
     private:
         RenderPassBuilderOGL subpasses;
     };

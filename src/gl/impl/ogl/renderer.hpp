@@ -1,6 +1,7 @@
 #ifndef TOPAZ_GL_IMPL_OGL_RENDERER_HPP
 #define TOPAZ_GL_IMPL_OGL_RENDERER_HPP
 #include "gl/api/renderer.hpp"
+
 #include "glad/glad.h"
 #include <optional>
 
@@ -23,6 +24,7 @@ namespace tz::gl
     private:
         const IRendererInput* input = nullptr;
         const IRendererOutput* output = nullptr;
+        const RenderPass* render_pass = nullptr;
         const Shader* shader = nullptr;
         std::optional<RendererElementFormat> format;
         RendererCullingStrategy culling_strategy;
@@ -47,6 +49,7 @@ namespace tz::gl
         GLuint vao;
         GLuint vbo, ibo;
         GLsizei index_count;
+        const RenderPass* render_pass;
         const Shader* shader;
         const IRendererOutput* output;
     };

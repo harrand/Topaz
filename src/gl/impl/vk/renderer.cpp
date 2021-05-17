@@ -196,7 +196,6 @@ namespace tz::gl
             render.bind(this->index_buffer.value());
             auto indices_count = builder.get_input()->get_indices().size();
             render.draw_indexed(indices_count);
-            //render.draw(3);
         }
 
         // Setup transfers using the scratch buffers.
