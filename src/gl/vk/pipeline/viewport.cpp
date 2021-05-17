@@ -3,7 +3,7 @@
 
 namespace tz::gl::vk::pipeline
 {
-    ViewportState::ViewportState(const Swapchain& swapchain):
+    ViewportState::ViewportState(const Swapchain& swapchain, bool use_opengl_coordinate_system):
     create(),
     viewport(),
     scissor()
@@ -12,6 +12,11 @@ namespace tz::gl::vk::pipeline
         this->viewport.y = 0.0f;
         this->viewport.width = swapchain.get_width();
         this->viewport.height = swapchain.get_height();
+        if(use_opengl_coordinate_system)
+        {
+            this->viewport.height *= -1;
+            this->viewport.y += swapchain.get_height();
+        }
         this->viewport.minDepth = 0.0f;
         this->viewport.maxDepth = 1.0f;
 

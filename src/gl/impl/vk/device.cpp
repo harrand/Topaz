@@ -75,7 +75,7 @@ namespace tz::gl
         // We require swapchain support too.
         vk::hardware::DeviceFilterList filters;
         filters.emplace<vk::hardware::DeviceQueueFamilyFilter>(type_requirements);
-        filters.emplace<vk::hardware::DeviceExtensionSupportFilter>(std::initializer_list<vk::VulkanExtension>{"VK_KHR_swapchain"});
+        filters.emplace<vk::hardware::DeviceExtensionSupportFilter>(std::initializer_list<vk::VulkanExtension>{"VK_KHR_swapchain", "VK_KHR_maintenance1"});
         // Filter out all devices which don't match our description.
         filters.filter_all(all_devices);
         tz_assert(!all_devices.empty(), "Physical Device requirements are too stringent for this machine. Topaz Vulkan does not support your hardware.");

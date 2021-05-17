@@ -8,7 +8,7 @@ namespace tz::gl::vk::pipeline
     class ViewportState
     {
     public:
-        ViewportState(const Swapchain& swapchain);
+        ViewportState(const Swapchain& swapchain, bool use_opengl_coordinate_system = false);
         VkPipelineViewportStateCreateInfo native() const;
     private:
         VkPipelineViewportStateCreateInfo create;

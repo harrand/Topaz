@@ -144,7 +144,7 @@ namespace tz::gl
         *device_info.device,
         builder.vk_get_vertex_input(),
         vk::pipeline::InputAssembly{device_info.primitive_type},
-        vk::pipeline::ViewportState{*device_info.device_swapchain},
+        vk::pipeline::ViewportState{*device_info.device_swapchain, true},
         builder.vk_get_rasteriser_state(),
         vk::pipeline::MultisampleState{},
         vk::pipeline::ColourBlendState{},
