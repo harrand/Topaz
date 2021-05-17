@@ -24,7 +24,7 @@ namespace tz::gl
         {
             vk::Image::Format::DepthFloat32,
             vk::Attachment::LoadOperation::Clear,
-            vk::Attachment::StoreOperation::DontCare,
+            vk::Attachment::StoreOperation::Store,
             vk::Attachment::LoadOperation::DontCare,
             vk::Attachment::StoreOperation::DontCare,
             vk::Image::Layout::Undefined,

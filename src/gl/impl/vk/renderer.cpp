@@ -194,7 +194,9 @@ namespace tz::gl
             this->graphics_pipeline.bind(this->command_pool[i]);
             render.bind(this->vertex_buffer.value());
             render.bind(this->index_buffer.value());
-            render.draw_indexed(builder.get_input()->get_indices().size());
+            auto indices_count = builder.get_input()->get_indices().size();
+            render.draw_indexed(indices_count);
+            //render.draw(3);
         }
 
         // Setup transfers using the scratch buffers.

@@ -119,7 +119,7 @@ namespace tz::gl::vk
                 vkCmdBindVertexBuffers(this->command_buffer->native(), 0, 1, &buf_native, offsets);
             break;
             case BufferType::Index:
-                vkCmdBindIndexBuffer(this->command_buffer->native(), buf_native, 0, VK_INDEX_TYPE_UINT16);
+                vkCmdBindIndexBuffer(this->command_buffer->native(), buf_native, 0, VK_INDEX_TYPE_UINT32);
             break;
             default:
                 tz_error("Attempting to bind buffer, but its BufferType is unsupported");

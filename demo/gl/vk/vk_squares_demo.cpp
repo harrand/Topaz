@@ -65,7 +65,7 @@ int main()
         Vertex{{-0.5f, 0.5f, -0.5f}, {0.0f, 0.0f, 0.0f}, {1.0f, 1.0f}}
     };
 
-    std::array<std::uint16_t, 12> indices = 
+    std::array<unsigned int, 12> indices = 
     {
         0, 1, 2, 2, 3, 0,
         4, 5, 6, 6, 7, 4
@@ -203,7 +203,7 @@ int main()
         vk::hardware::MemoryModule host_visible_mem = my_device.get_memory_properties().unsafe_get_some_module_matching({vk::hardware::MemoryType::HostVisible, vk::hardware::MemoryType::HostCoherent});
         vk::hardware::MemoryModule device_local_mem = my_device.get_memory_properties().unsafe_get_some_module_matching({vk::hardware::MemoryType::DeviceLocal});
         const std::size_t vertices_bytes = sizeof(Vertex) * vertices.size();
-        const std::size_t indices_bytes = sizeof(std::uint16_t) * indices.size();
+        const std::size_t indices_bytes = sizeof(unsigned int) * indices.size();
         const std::size_t mvp_bytes = sizeof(MVP);
         const std::size_t img_bytes = sizeof(imgdata);
         vk::Buffer buf{vk::BufferType::Vertex, vk::BufferPurpose::TransferDestination, my_logical_device, device_local_mem, vertices_bytes};
