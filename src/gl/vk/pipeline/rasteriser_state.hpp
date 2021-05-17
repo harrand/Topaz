@@ -35,8 +35,8 @@ namespace tz::gl::vk::pipeline
             bool discard_everything = false,
             PolygonMode mode = PolygonMode::Fill,
             float line_width = 1.0f,
-            CullingStrategy strategy = CullingStrategy::Back,
-            WindingOrder winding_order = WindingOrder::Clockwise,
+            CullingStrategy strategy = CullingStrategy::None,
+            WindingOrder winding_order = WindingOrder::Anticlockwise,
             bool depth_bias_enabled = false
         );
 

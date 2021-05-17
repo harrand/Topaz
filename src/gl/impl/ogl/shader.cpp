@@ -111,6 +111,11 @@ namespace tz::gl
         return *this;
     }
 
+    GLuint ShaderOGL::ogl_get_program_handle() const
+    {
+        return this->program;
+    }
+
     void ShaderOGL::check_shader_error(GLuint shader)
     {
         GLint cpl_status;

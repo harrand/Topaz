@@ -13,6 +13,16 @@ namespace tz
 
         #if TZ_VULKAN
             glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+        #elif TZ_OGL
+            glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
+            glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+            glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+            glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+            #if TZ_DEBUG
+                glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
+            #else
+                glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_FALSE);
+            #endif
         #endif
 
         this->wnd = glfwCreateWindow(args.width, args.height, args.title, nullptr, nullptr);

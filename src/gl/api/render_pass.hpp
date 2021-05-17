@@ -11,7 +11,6 @@ namespace tz::gl
     {
     public:
         virtual void add_pass(RenderPassAttachment attachment) = 0;
-        virtual void finalise() = 0;
     };
 
     class IRenderPass

@@ -11,7 +11,6 @@ namespace tz::gl
     public:
         RenderPassBuilderOGL() = default;
         virtual void add_pass(RenderPassAttachment attachment) final;
-        virtual void finalise() final{}
 
         friend class RenderPassOGL;
     private:

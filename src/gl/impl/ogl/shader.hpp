@@ -29,6 +29,8 @@ namespace tz::gl
 
         ShaderOGL& operator=(const ShaderOGL& rhs) = delete;
         ShaderOGL& operator=(ShaderOGL&& rhs);
+
+        GLuint ogl_get_program_handle() const;
     private:
         static void check_shader_error(GLuint shader);
         static void check_program_error(GLuint program);

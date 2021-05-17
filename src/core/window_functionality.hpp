@@ -1,7 +1,9 @@
 #ifndef TOPAZ_CORE_WINDOW_FUNCTIONALITY_HPP
 #define TOPAZ_CORE_WINDOW_FUNCTIONALITY_HPP
 #include "core/types.hpp"
+#include "gl/api/renderer.hpp"
 #include "GLFW/glfw3.h"
+
 #include <vector>
 #include <functional>
 
@@ -11,7 +13,7 @@ namespace tz
     template<typename F>
     concept WindowResizeConcept = tz::Action<F, int, int>;
 
-    class WindowFunctionality
+    class WindowFunctionality : public tz::gl::IRendererOutput
     {
     public:
         WindowFunctionality(GLFWwindow* wnd);
@@ -23,6 +25,9 @@ namespace tz
         float get_height() const;
 
         void update();
+
+        virtual void set_render_target() const final;
+
         static void block_until_event_happens();
     protected:
         GLFWwindow* wnd;

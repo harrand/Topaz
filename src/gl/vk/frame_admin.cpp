@@ -23,6 +23,11 @@ namespace tz::gl::vk
         }
     }
 
+    FrameAdmin::~FrameAdmin()
+    {
+        this->device->block_until_idle();
+    }
+
     void FrameAdmin::render_frame(hardware::Queue queue, const Swapchain& swapchain, const CommandPool& command_pool, WaitStages wait_stages)
     {
         if(this->images_in_flight.empty())

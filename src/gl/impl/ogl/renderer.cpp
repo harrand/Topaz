@@ -23,6 +23,16 @@ namespace tz::gl
         //return this->format.value();
     }
 
+    void RendererBuilderOGL::set_output(const IRendererOutput& output)
+    {
+        this->output = &output;
+    }
+
+    const IRendererOutput* RendererBuilderOGL::get_output() const
+    {
+        return this->output;
+    }
+
     void RendererBuilderOGL::set_culling_strategy(RendererCullingStrategy culling_strategy)
     {
         this->culling_strategy = culling_strategy;
@@ -46,17 +56,21 @@ namespace tz::gl
 
     void RendererBuilderOGL::set_shader(const Shader& shader)
     {
-        // TODO: Do we need to do something with this later? Almost certainly.
+        this->shader = &shader;
     }
 
     const Shader& RendererBuilderOGL::get_shader() const
     {
-        tz_error("Renderer shader integration is not yet implemented for OpenGL");
-        return *static_cast<const Shader*>(nullptr);
+        return *this->shader;
     }
 
     RendererOGL::RendererOGL(RendererBuilderOGL builder):
-    vao(0)
+    vao(0),
+    vbo(0),
+    ibo(0),
+    index_count(0),
+    shader(&builder.get_shader()),
+    output(builder.get_output())
     {
         switch(builder.get_culling_strategy())
         {
@@ -78,10 +92,32 @@ namespace tz::gl
         }
 
         glGenVertexArrays(1, &this->vao);
-
-        // If we have inputs, try to sort out their formats.
+        glBindVertexArray(this->vao);
         if(builder.get_input() != nullptr)
         {
+            // First fill buffers.
+            {
+                GLuint buffers[2];
+                glCreateBuffers(2, buffers);
+                this->vbo = buffers[0];
+                this->ibo = buffers[1];
+            }
+
+            const IRendererInput& input = *builder.get_input();
+            {
+                auto vertices_size = input.get_vertex_bytes().size();
+                auto vertices_size_bytes = input.get_vertex_bytes().size_bytes();
+                auto indices_size = input.get_indices().size();
+                auto indices_size_bytes = input.get_indices().size_bytes();
+                tz_report("VBO (%zu vertices, %zu bytes total)", vertices_size, vertices_size_bytes);
+                tz_report("IBO (%zu indices, %zu bytes total)", indices_size, indices_size_bytes);
+                glNamedBufferData(this->vbo, input.get_vertex_bytes().size_bytes(), input.get_vertex_bytes().data(), GL_STATIC_DRAW);
+                glNamedBufferData(this->ibo, input.get_indices().size_bytes(), input.get_indices().data(), GL_STATIC_DRAW);
+                this->index_count = input.get_indices().size();
+            }
+            
+            glBindBuffer(GL_ARRAY_BUFFER, this->vbo);
+            // Then sort out formats (vertex array attributes)
             RendererElementFormat format = builder.get_input()->get_format();
             tz_assert(format.basis == RendererInputFrequency::PerVertexBasis, "Vertex data on a per-instance basis is not yet implemented");
 
@@ -93,15 +129,15 @@ namespace tz::gl
                 switch(attrib_format.type)
                 {
                     case RendererComponentType::Float32:
-                        size = sizeof(float);
+                        size = 1;
                         type = GL_FLOAT;
                     break;
                     case RendererComponentType::Float32x2:
-                        size = sizeof(float) * 2;
+                        size = 2;
                         type = GL_FLOAT;
                     break;
                     case RendererComponentType::Float32x3:
-                        size = sizeof(float) * 3;
+                        size = 3;
                         type = GL_FLOAT;
                     break;
                     default:
@@ -113,18 +149,33 @@ namespace tz::gl
                 glEnableVertexAttribArray(attrib_id);
                 glVertexAttribPointer(attrib_id, size, type, GL_FALSE, format.binding_size, to_ptr(attrib_format.element_attribute_offset));
             }
+            glBindBuffer(GL_ARRAY_BUFFER, 0);
         }
         tz_report("RendererOGL (Input = %p)", builder.get_input());
     }
 
     RendererOGL::RendererOGL(RendererOGL&& move):
-    vao(0)
+    vao(0),
+    vbo(0),
+    ibo(0),
+    index_count(0),
+    shader(nullptr)
     {
         *this = std::move(move);
     }
 
     RendererOGL::~RendererOGL()
     {
+        if(this->vbo != 0)
+        {
+            glDeleteBuffers(1, &this->vbo);
+        }
+
+        if(this->ibo != 0)
+        {
+            glDeleteBuffers(1, &this->ibo);
+        }
+
         if(this->vao != 0)
         {
             glDeleteVertexArrays(1, &this->vao);
@@ -134,6 +185,9 @@ namespace tz::gl
     RendererOGL& RendererOGL::operator=(RendererOGL&& rhs)
     {
         std::swap(this->vao, rhs.vao);
+        std::swap(this->vbo, rhs.vbo);
+        std::swap(this->ibo, rhs.ibo);
+        std::swap(this->index_count, rhs.index_count);
         return *this;
     }
 
@@ -151,7 +205,21 @@ namespace tz::gl
 
     void RendererOGL::render()
     {
-        
+        if(this->output != nullptr)
+        {
+            this->output->set_render_target();
+        }
+        else
+        {
+            tz_report("[Warning]: RendererOGL::render() invoked with no output specified. The behaviour is undefined.");
+        }
+
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        glBindVertexArray(this->vao);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->ibo);
+        glUseProgram(this->shader->ogl_get_program_handle());
+        glDrawElements(GL_TRIANGLES, this->index_count, GL_UNSIGNED_INT, nullptr);
     }
 }
 

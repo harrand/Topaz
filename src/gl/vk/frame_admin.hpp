@@ -12,6 +12,7 @@ namespace tz::gl::vk
     {
     public:
         FrameAdmin(const LogicalDevice& device, std::size_t frame_depth);
+        ~FrameAdmin();
         void render_frame(hardware::Queue queue, const Swapchain& swapchain, const CommandPool& command_pool, WaitStages wait_stages);
         void set_regeneration_function(tz::Action auto regeneration_function);
         std::size_t get_image_index() const;

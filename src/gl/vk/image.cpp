@@ -49,7 +49,9 @@ namespace tz::gl::vk
     image_memory(VK_NULL_HANDLE),
     device(nullptr),
     width(0),
-    height(0)
+    height(0),
+    format(Image::Format::Undefined),
+    layout(Image::Layout::Undefined)
     {
         *this = std::move(move);
     }
@@ -75,6 +77,8 @@ namespace tz::gl::vk
         std::swap(this->device, rhs.device);
         std::swap(this->width, rhs.width);
         std::swap(this->height, rhs.height);
+        std::swap(this->format, rhs.format);
+        std::swap(this->layout, rhs.layout);
         return *this;
     }
 

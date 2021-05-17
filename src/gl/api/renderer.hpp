@@ -46,6 +46,12 @@ namespace tz::gl
         virtual std::span<const unsigned int> get_indices() const = 0;
     };
 
+    class IRendererOutput
+    {
+    public:
+        virtual void set_render_target() const = 0;
+    };
+
     /**
      * @brief Structure describing the nature of a renderer.
      * @note There is no default element format. You must specify one before creating a renderer, otherwise the behaviour is undefined.
@@ -67,6 +73,10 @@ namespace tz::gl
          * @return RendererElementFormat describing how vertex data is laid out in memory.
          */
         virtual const IRendererInput* get_input() const = 0;
+
+        virtual void set_output(const IRendererOutput& output) = 0;
+        virtual const IRendererOutput* get_output() const = 0;
+
         /**
          * @brief Set the culling strategy used during rendering.
          * 

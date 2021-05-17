@@ -38,14 +38,14 @@ int main()
         };
         tz::gl::MeshInput mesh_input{mesh, {tz::gl::MeshInputIgnoreFlag::TexcoordIgnore, tz::gl::MeshInputIgnoreFlag::NormalIgnore, tz::gl::MeshInputIgnoreFlag::TangentIgnore, tz::gl::MeshInputIgnoreFlag::BitangentIgnore}};
         renderer_builder.set_input(mesh_input);
+        renderer_builder.set_output(tz::window());
         renderer_builder.set_render_pass(render_pass);
         renderer_builder.set_shader(shader);
         tz::gl::Renderer renderer = device.create_renderer(renderer_builder);
-        auto col = renderer.get_clear_colour();
         while(!tz::window().is_close_requested())
         {
-            renderer.render();
             tz::window().update();
+            renderer.render();
         }
     }
     tz::terminate();

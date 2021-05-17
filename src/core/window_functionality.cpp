@@ -1,6 +1,10 @@
 #include "core/window_functionality.hpp"
 #include "core/assert.hpp"
 
+#if TZ_OGL
+#include "glad/glad.h"
+#endif
+
 namespace tz
 {
     WindowFunctionality::WindowFunctionality(GLFWwindow* wnd):
@@ -30,9 +34,19 @@ namespace tz
     void WindowFunctionality::update()
     {
         glfwPollEvents();
-        #if TZ_OPENGL
+        #if TZ_OGL
             // OpenGL only
-            glfwSwapBuffers();
+            glfwSwapBuffers(this->wnd);
+        #endif
+    }
+
+    void WindowFunctionality::set_render_target() const
+    {
+        #if TZ_VULKAN
+
+        #elif TZ_OGL
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glViewport(0, 0, this->get_width(), this->get_height());
         #endif
     }
 

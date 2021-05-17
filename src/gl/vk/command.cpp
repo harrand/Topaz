@@ -222,7 +222,8 @@ namespace tz::gl::vk
 
     CommandPool::CommandPool(CommandPool&& move):
     command_pool(VK_NULL_HANDLE),
-    device(nullptr)
+    device(nullptr),
+    buffers()
     {
         *this = std::move(move);
     }
@@ -240,6 +241,7 @@ namespace tz::gl::vk
     {
         std::swap(this->command_pool, rhs.command_pool);
         std::swap(this->device, rhs.device);
+        std::swap(this->buffers, rhs.buffers);
         return *this;
     }
 

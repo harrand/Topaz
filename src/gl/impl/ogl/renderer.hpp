@@ -12,6 +12,8 @@ namespace tz::gl
         RendererBuilderOGL() = default;
         virtual void set_input(const IRendererInput& input) final;
         virtual const IRendererInput* get_input() const final;
+        virtual void set_output(const IRendererOutput& output) final;
+        virtual const IRendererOutput* get_output() const final;
         virtual void set_culling_strategy(RendererCullingStrategy culling_strategy) final;
         virtual RendererCullingStrategy get_culling_strategy() const final;
         virtual void set_render_pass(const RenderPass& render_pass) final;
@@ -20,6 +22,8 @@ namespace tz::gl
         virtual const Shader& get_shader() const final;
     private:
         const IRendererInput* input = nullptr;
+        const IRendererOutput* output = nullptr;
+        const Shader* shader = nullptr;
         std::optional<RendererElementFormat> format;
         RendererCullingStrategy culling_strategy;
     };
@@ -41,6 +45,10 @@ namespace tz::gl
         virtual void render() final;
     private:
         GLuint vao;
+        GLuint vbo, ibo;
+        GLsizei index_count;
+        const Shader* shader;
+        const IRendererOutput* output;
     };
 }
 

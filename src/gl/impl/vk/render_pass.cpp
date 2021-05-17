@@ -4,25 +4,13 @@
 
 namespace tz::gl
 {
-    constexpr vk::Image::Format colour_attachment_format = vk::Image::Format::Rgba32sRGB;
-
-    vk::Attachment default_presentable_colour_attachment()
-    {
-        return
-        {
-            colour_attachment_format,
-            vk::Attachment::LoadOperation::Clear,
-            vk::Attachment::StoreOperation::Store,
-            vk::Image::Layout::Undefined,
-            vk::Image::Layout::Present
-        };
-    }
+    constexpr vk::Image::Format colour_placeholder = vk::Image::Format::Undefined;
 
     vk::Attachment default_colour_attachment()
     {
         return
         {
-            colour_attachment_format,
+            colour_placeholder,
             vk::Attachment::LoadOperation::Clear,
             vk::Attachment::StoreOperation::Store,
             vk::Image::Layout::Undefined,
@@ -60,7 +48,7 @@ namespace tz::gl
         }
     }
 
-    void RenderPassBuilderVulkan::finalise()
+    void RenderPassBuilderVulkan::vk_finalise(vk::Image::Format colour_attachment_format)
     {
         // Find the last subpass with a colour attachment. It should be made into a presentable colour attachment.
         auto get_last_colour_attachment = [](std::span<vk::RenderSubpass> subpasses) -> vk::Attachment*
@@ -69,7 +57,7 @@ namespace tz::gl
             {
                 for(vk::Attachment& attachment : iter->get_attachments())
                 {
-                    if(attachment.get_format() == colour_attachment_format)
+                    if(attachment.get_format() == colour_placeholder)
                     {
                         return &attachment;
                     }
@@ -83,10 +71,23 @@ namespace tz::gl
         {
             last_colour_attachment->set_final_image_layout(vk::Image::Layout::Present);
         }
+
+        // Now replace any colour attachment placeholder formats with the provided format.
+        for(vk::RenderSubpass& subpass : this->builder.get_subpasses())
+        {
+            for(vk::Attachment& attachment : subpass.get_attachments())
+            {
+                if(attachment.get_format() == colour_placeholder)
+                {
+                    attachment.set_format(colour_attachment_format);
+                }
+            }
+        }
     }
 
-    RenderPassVulkan::RenderPassVulkan(const vk::LogicalDevice& device, RenderPassBuilderVulkan builder):
-    render_pass(device, builder.builder)
+    RenderPassVulkan::RenderPassVulkan(RenderPassBuilderVulkan builder, RenderPassBuilderDeviceInfoVulkan device_info):
+    render_pass(*device_info.device, builder.builder),
+    colour_attachment_format(device_info.device_swapchain->get_format())
     {
         
     }

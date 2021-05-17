@@ -24,7 +24,7 @@ namespace tz::gl::vk
         template<typename... Args>
         RenderPassBuilder& with(Args&&... args);
 
-        std::span<const Attachment* const> get_attachments() const;
+        std::vector<const Attachment*> get_attachments() const;
         std::span<const RenderSubpass> get_subpasses() const;
         std::span<RenderSubpass> get_subpasses();
         bool has_depth_attachment() const;
@@ -32,7 +32,6 @@ namespace tz::gl::vk
 
         friend class RenderSubpass;
     private:
-        std::vector<const Attachment*> subpass_attachments;
         std::vector<RenderSubpass> subpasses;
     };
 
@@ -41,7 +40,6 @@ namespace tz::gl::vk
     class RenderSubpass
     {
     public:
-
         struct Description
         {
             Description() = default;

@@ -5,6 +5,8 @@
 #include "gl/vk/pipeline/graphics_pipeline.hpp"
 
 #include "gl/vk/swapchain.hpp"
+#include "gl/vk/framebuffer.hpp"
+#include "gl/vk/frame_admin.hpp"
 
 namespace tz::gl
 {
@@ -14,6 +16,10 @@ namespace tz::gl
         RendererBuilderVulkan() = default;
         virtual void set_input(const IRendererInput& input) final;
         virtual const IRendererInput* get_input() const final;
+
+        virtual void set_output(const IRendererOutput& output) final;
+        virtual const IRendererOutput* get_output() const final;
+
         virtual void set_culling_strategy(RendererCullingStrategy culling_strategy) final;
         virtual RendererCullingStrategy get_culling_strategy() const final;
         virtual void set_render_pass(const RenderPass& render_pass) final;
@@ -25,6 +31,7 @@ namespace tz::gl
         vk::pipeline::RasteriserState vk_get_rasteriser_state() const;
     private:
         const IRendererInput* input = nullptr;
+        const IRendererOutput* output = nullptr;
         RendererCullingStrategy culling_strategy = RendererCullingStrategy::NoCulling;
         const RenderPass* render_pass = nullptr;
         const Shader* shader = nullptr;
@@ -40,6 +47,7 @@ namespace tz::gl
     class RendererVulkan : public IRenderer
     {
     public:
+        constexpr static std::size_t frames_in_flight = 2;
         RendererVulkan(RendererBuilderVulkan builder, RendererBuilderDeviceInfoVulkan);
     
         virtual void set_clear_colour(tz::Vec4 clear_colour) final;
@@ -48,8 +56,16 @@ namespace tz::gl
         virtual void render() final;
     private:
         vk::GraphicsPipeline graphics_pipeline;
+        std::optional<vk::Buffer> vertex_buffer;
+        std::optional<vk::Buffer> index_buffer;
+        std::optional<vk::Image> depth_image;
+        std::optional<vk::ImageView> depth_imageview;
+        vk::CommandPool command_pool;
         const vk::Swapchain* swapchain;
+        std::vector<vk::Framebuffer> swapchain_framebuffers;
+        vk::hardware::Queue graphics_present_queue;
         tz::Vec4 clear_colour;
+        vk::FrameAdmin frame_admin;
     };
 }
 

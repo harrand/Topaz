@@ -6,12 +6,19 @@
 namespace tz::gl::vk
 {
     RenderPassBuilder::RenderPassBuilder():
-    subpass_attachments(),
     subpasses(){}
 
-    std::span<const Attachment* const> RenderPassBuilder::get_attachments() const
+    std::vector<const Attachment*> RenderPassBuilder::get_attachments() const
     {
-        return this->subpass_attachments;
+        std::vector<const Attachment*> all_attachments;
+        for(const RenderSubpass& subpass : this->subpasses)
+        {
+            for(const Attachment& attachment : subpass.get_attachments())
+            {
+                all_attachments.push_back(&attachment);
+            }
+        }
+        return all_attachments;
     }
 
     std::span<const RenderSubpass> RenderPassBuilder::get_subpasses() const
@@ -26,20 +33,16 @@ namespace tz::gl::vk
 
     bool RenderPassBuilder::has_depth_attachment() const
     {
-        auto iter = std::find_if(this->subpass_attachments.begin(), this->subpass_attachments.end(), [](const Attachment* att)
+        auto subpass_attachments = this->get_attachments();
+        auto iter = std::find_if(subpass_attachments.begin(), subpass_attachments.end(), [](const Attachment* att)
         {
             return att->get_format() == Image::Format::DepthFloat32;
         });
-        return iter != this->subpass_attachments.end();
+        return iter != subpass_attachments.end();
     }
 
     void RenderPassBuilder::remove_subpass(SubpassID subpass)
     {
-        const RenderSubpass& to_remove = this->subpasses.back();
-        for(const Attachment& dead_attachment : to_remove.get_attachments())
-        {
-            this->subpass_attachments.erase(std::remove_if(this->subpass_attachments.begin(), this->subpass_attachments.end(), [dead_attachment](const Attachment* attachment_ptr){return attachment_ptr != nullptr && *attachment_ptr == dead_attachment;}), this->subpass_attachments.end());
-        }
         this->subpasses.erase(this->subpasses.begin() + subpass);
     }
 
@@ -90,19 +93,15 @@ namespace tz::gl::vk
     RenderSubpass::RenderSubpass(RenderPassBuilder& parent, Attachments attachments):
     parent(&parent),
     attachments(attachments),
-    attachments_offset(parent.subpass_attachments.size())
+    attachments_offset(parent.get_attachments().size())
     {
-        for(const Attachment& attachment : this->attachments)
-        {
-            this->parent->subpass_attachments.push_back(&attachment);
-        }
     }
 
     RenderSubpass::Description RenderSubpass::describe() const
     {
         RenderSubpass::Description desc;
 
-        for(const Attachment* attachment : this->parent->subpass_attachments)
+        for(const Attachment* attachment : this->parent->get_attachments())
         {
             VkAttachmentReference ref{};
             ref.layout = static_cast<VkImageLayout>(attachment->get_final_image_layout());
@@ -145,7 +144,7 @@ namespace tz::gl::vk
         if(iter == this->attachments.end())
         {
             // This is not our attachment
-            const auto& parent_list = this->parent->subpass_attachments;
+            auto parent_list = this->parent->get_attachments();
             auto iter = std::find_if(parent_list.begin(), parent_list.end(), [&attachment](const Attachment* attachment_ptr){return attachment == *attachment_ptr;});
             tz_assert(iter != parent_list.end(), "Attachment not found within subpass nor the parent renderpass.");
             auto global_index = std::distance(parent_list.begin(), iter);
