@@ -1,3 +1,0 @@
-"C:\Program Files\CMake\bin\cmake.exe" -E remove -f CMakeFiles\zlib.dir/objects.a
-C:\mingw64\bin\ar.exe cr CMakeFiles\zlib.dir/objects.a @CMakeFiles\zlib.dir\objects1.rsp
-C:\mingw64\bin\gcc.exe  -fno-strict-aliasing -fPIC   -shared -o ..\..\..\..\bin\libzlib.dll -Wl,--out-implib,..\..\..\libzlib.dll.a -Wl,--major-image-version,0,--minor-image-version,0 -Wl,--whole-archive CMakeFiles\zlib.dir/objects.a -Wl,--no-whole-archive @CMakeFiles\zlib.dir\linklibs.rsp
