@@ -10,7 +10,7 @@ function(add_demo)
     add_executable(${ADD_DEMO_TARGET}
         ${ADD_DEMO_SOURCE_FILES}
     )
-    target_link_libraries(${ADD_DEMO_TARGET} PRIVATE TZVK)
+    target_link_libraries(${ADD_DEMO_TARGET} PRIVATE topaz)
     add_shader(
         TARGET ${ADD_DEMO_TARGET}
         SHADERS ${ADD_DEMO_SHADER_SOURCES}

@@ -7,9 +7,9 @@ file(READ ./version.txt TZ_VERSION)
 configure_file(./version.txt topaz_version.xml)
 set(CMAKE_CXX_STANDARD 20)
 
-project(TZVK VERSION ${TZ_VERSION})
+project(topaz VERSION ${TZ_VERSION})
 
-add_library(TZVK
+add_library(topaz
     # tz::core
     src/core/containers/basic_list.hpp
     src/core/containers/enum_field.hpp
@@ -188,24 +188,24 @@ message(STATUS "Topaz v${TZ_VERSION}")
 if(${TOPAZ_OGL})
     # Vulkan + OGL
     message(STATUS "RenderAPI: OpenGL (\"OGL\")")
-    configure_opengl(TZVK)
+    configure_opengl(topaz)
 elseif(${TOPAZ_VULKAN})
     # Vulkan
     message(STATUS "RenderAPI: Vulkan (\"VK\")")
-    configure_vulkan(TZVK)
+    configure_vulkan(topaz)
 endif()
-target_compile_definitions(TZVK PUBLIC -DTZ_VERSION=\"${TZ_VERSION}\" -DTZ_SILENCED=0 -DGLFW_INCLUDE_NONE)
+target_compile_definitions(topaz PUBLIC -DTZ_VERSION=\"${TZ_VERSION}\" -DTZ_SILENCED=0 -DGLFW_INCLUDE_NONE)
 
 if(${TOPAZ_DEBUG})
     message(STATUS "BuildConfig: Debug")
-    configure_debug(TZVK)
+    configure_debug(topaz)
 else()
     message(STATUS "BuildConfig: Release")
-    configure_release(TZVK)
+    configure_release(topaz)
 endif()
 
 add_subdirectory(lib)
 add_subdirectory(demo)
 
-target_include_directories(TZVK PUBLIC ${PROJECT_SOURCE_DIR}/src)
-target_link_libraries(TZVK PUBLIC debugbreak glfw)
+target_include_directories(topaz PUBLIC ${PROJECT_SOURCE_DIR}/src)
+target_link_libraries(topaz PUBLIC debugbreak glfw)
