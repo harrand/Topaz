@@ -34,6 +34,13 @@ namespace tz::gl
         tz::BasicList<RendererAttributeFormat> binding_attributes; // TODO: (C++20 constexpr std::vector support) replace with std::vector so we are a LiteralType. Then IRendererInput::get_format() can be constexpr.
     };
 
+    /**
+     * @brief A renderer is always provided some input data. This data is always sorted into vertex/index buffers eventually, but there may be custom setups where you need more control over how this data is represented in memory.
+     * @details Renderer inputs can vary wildly in their nature depending on what sort of rendering you'd like to do. Topaz does not mandate a specific renderer input type, but the most common use-case is for storing mesh data. A class already exists for this purpose: @ref MeshInput
+     * 
+     * @pre IRendererInput declares `IRendererInput::unique_clone()` which derived types must implement. If you are implementing derived type `D`, if `D` is copy-constructible then implement `IRendererInputCopyable<D>` instead. If `D` is not copy-constructible then you must implement `IRendererInput::unique_clone()` yourself.
+     * 
+     */
     class IRendererInput
     {
     public:
@@ -44,13 +51,15 @@ namespace tz::gl
     };
 
     /**
-     * @brief A renderer is always provided some input data. This data is always sorted into vertex/index buffers eventually, but there may be custom setups where you need more control over how this data is represented in memory.
-     * @details Renderer inputs can vary wildly in their nature depending on what sort of rendering you'd like to do. Topaz does not mandate a specific renderer input type, but the most common use-case is for storing mesh data. A class already exists for this purpose: @ref MeshInput
+     * @brief Identical to @ref IRendererInput, but `IRendererInputCopyable<T>::unique_clone()` need not be implemented.
+     * @pre Derived must be copy-constructible. Otherwise, the program is ill-formed.
      * 
+     * @tparam Derived Renderer input type. It must be copy-constructible.
      */
     template<class Derived>
     class IRendererInputCopyable : public IRendererInput
     {
+        /// Invokes `Derived::Derived(const Derived&)`
         virtual std::unique_ptr<IRendererInput> unique_clone() const
         {
             static_assert(requires{requires std::copyable<Derived>;}, "IRendererInputCopyable<T>: T must be copyable. Derive from IRendererInput and implement unique_clone if not copyable.");
