@@ -29,6 +29,13 @@ namespace tz::gl
     {
     public:
         virtual RenderPass create_render_pass(RenderPassBuilder builder) const = 0;
+        /**
+         * @brief Create a renderer using this device and the provided builder.
+         * @note Renderer inputs are copied over, so the renderer input provided is no longer needed once the renderer has been created.
+         * 
+         * @param builder Describes the resultant Renderer.
+         * @return The created renderer.
+         */
         virtual Renderer create_renderer(RendererBuilder builder) const = 0;
         virtual Shader create_shader(ShaderBuilder builder) const = 0;
     };

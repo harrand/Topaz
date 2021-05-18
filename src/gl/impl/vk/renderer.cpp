@@ -141,7 +141,7 @@ namespace tz::gl
     device(device_info.device),
     physical_device(this->device->get_queue_family().dev),
     render_pass(&builder.get_render_pass()),
-    renderer_input(builder.get_input()),
+    renderer_input(builder.get_input()->unique_clone()),
     device_local_mem(this->physical_device->get_memory_properties().unsafe_get_some_module_matching({vk::hardware::MemoryType::DeviceLocal})),
     host_visible_mem(this->physical_device->get_memory_properties().unsafe_get_some_module_matching({vk::hardware::MemoryType::HostVisible, vk::hardware::MemoryType::HostCoherent})),
     vertex_shader(&builder.get_shader().vk_get_vertex_shader()),
@@ -191,7 +191,7 @@ namespace tz::gl
         this->frame_admin.set_regeneration_function([this](){this->handle_resize();});
         // Tell the device to notify us when it detects a window resize. We will also need to regenerate then too.
         *device_info.on_resize = [this](){this->handle_resize();};
-        tz_report("RendererVulkan (Input = %p)", this->renderer_input);
+        tz_report("RendererVulkan (Input = %p)", this->renderer_input.get());
     }
 
     void RendererVulkan::set_clear_colour(tz::Vec4 clear_colour)

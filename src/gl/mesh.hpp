@@ -49,11 +49,12 @@ namespace tz::gl
      * @brief Renderer Input representing a typical mesh.
      * 
      */
-    class MeshInput : public IRendererInput
+    class MeshInput : public IRendererInputCopyable<MeshInput>
     {
     public:
         MeshInput(Mesh mesh);
         MeshInput(Mesh mesh, MeshInputIgnoreField ignores);
+        MeshInput(const MeshInput& copy) = default;
 
         virtual RendererElementFormat get_format() const final;
         virtual std::span<const std::byte> get_vertex_bytes() const final;

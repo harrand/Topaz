@@ -36,12 +36,13 @@ int main()
         {
             0, 1, 2
         };
-        tz::gl::MeshInput mesh_input{mesh};
-        renderer_builder.set_input(mesh_input);
+        tz::gl::MeshInput* mesh_input = new tz::gl::MeshInput{mesh};
+        renderer_builder.set_input(*mesh_input);
         renderer_builder.set_output(tz::window());
         renderer_builder.set_render_pass(render_pass);
         renderer_builder.set_shader(shader);
         tz::gl::Renderer renderer = device.create_renderer(renderer_builder);
+        delete mesh_input;
         renderer.set_clear_colour({0.1f, 0.2f, 0.4f, 1.0f});
         while(!tz::window().is_close_requested())
         {

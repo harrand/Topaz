@@ -6,6 +6,7 @@
 #include "gl/render_pass.hpp"
 #include "gl/shader.hpp"
 #include <cstdint>
+#include <concepts>
 
 namespace tz::gl
 {
@@ -33,17 +34,28 @@ namespace tz::gl
         tz::BasicList<RendererAttributeFormat> binding_attributes; // TODO: (C++20 constexpr std::vector support) replace with std::vector so we are a LiteralType. Then IRendererInput::get_format() can be constexpr.
     };
 
+    class IRendererInput
+    {
+    public:
+        virtual std::unique_ptr<IRendererInput> unique_clone() const = 0;
+        virtual RendererElementFormat get_format() const = 0;
+        virtual std::span<const std::byte> get_vertex_bytes() const = 0;
+        virtual std::span<const unsigned int> get_indices() const = 0;
+    };
+
     /**
      * @brief A renderer is always provided some input data. This data is always sorted into vertex/index buffers eventually, but there may be custom setups where you need more control over how this data is represented in memory.
      * @details Renderer inputs can vary wildly in their nature depending on what sort of rendering you'd like to do. Topaz does not mandate a specific renderer input type, but the most common use-case is for storing mesh data. A class already exists for this purpose: @ref MeshInput
      * 
      */
-    class IRendererInput
+    template<class Derived>
+    class IRendererInputCopyable : public IRendererInput
     {
-    public:
-        virtual RendererElementFormat get_format() const = 0;
-        virtual std::span<const std::byte> get_vertex_bytes() const = 0;
-        virtual std::span<const unsigned int> get_indices() const = 0;
+        virtual std::unique_ptr<IRendererInput> unique_clone() const
+        {
+            static_assert(requires{requires std::copyable<Derived>;}, "IRendererInputCopyable<T>: T must be copyable. Derive from IRendererInput and implement unique_clone if not copyable.");
+            return std::make_unique<Derived>(static_cast<const Derived&>(*this));
+        }
     };
 
     class IRendererOutput
