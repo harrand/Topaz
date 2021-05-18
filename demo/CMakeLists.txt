@@ -1,5 +1,3 @@
-include(CmakeParseArguments)
-
 function(add_demo)
     cmake_parse_arguments(
         ADD_DEMO
