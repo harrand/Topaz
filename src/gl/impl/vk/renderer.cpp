@@ -140,6 +140,8 @@ namespace tz::gl
     RendererVulkan::RendererVulkan(RendererBuilderVulkan builder, RendererBuilderDeviceInfoVulkan device_info):
     device(device_info.device),
     physical_device(this->device->get_queue_family().dev),
+    render_pass(&builder.get_render_pass()),
+    renderer_input(builder.get_input()),
     device_local_mem(this->physical_device->get_memory_properties().unsafe_get_some_module_matching({vk::hardware::MemoryType::DeviceLocal})),
     host_visible_mem(this->physical_device->get_memory_properties().unsafe_get_some_module_matching({vk::hardware::MemoryType::HostVisible, vk::hardware::MemoryType::HostCoherent})),
     vertex_shader(&builder.get_shader().vk_get_vertex_shader()),
@@ -147,8 +149,6 @@ namespace tz::gl
     vertex_input_state(builder.vk_get_vertex_input()),
     input_assembly{device_info.primitive_type},
     rasteriser_state(builder.vk_get_rasteriser_state()),
-    render_pass(&builder.get_render_pass()),
-    renderer_input(builder.get_input()),
     graphics_pipeline
     (
         {vk::pipeline::ShaderStage{*this->vertex_shader, vk::pipeline::ShaderType::Vertex}, vk::pipeline::ShaderStage{*this->fragment_shader, vk::pipeline::ShaderType::Fragment}},
@@ -175,31 +175,29 @@ namespace tz::gl
     frame_admin(*device_info.device, RendererVulkan::frames_in_flight)
     {
         this->clear_colour = {0.0f, 0.0f, 0.0f, 0.0f};
-        const IRendererInput* input = builder.get_input();
-        const RenderPass& render_pass = builder.get_render_pass();
 
-        this->setup_buffers(input);
+        this->setup_buffers();
         this->setup_depth_image();
-        this->setup_swapchain_framebuffers(render_pass);
+        this->setup_swapchain_framebuffers();
 
         // Command Buffers for each swapchain image, but an extra general-purpose recycleable buffer.
         constexpr std::size_t num_scratch_command_bufs = 1;
         this->command_pool.with(this->swapchain->get_image_views().size() + num_scratch_command_bufs);
         // Now setup the swapchain image buffers
-        this->record_rendering_commands(render_pass, input);
+        this->record_rendering_commands();
 
-        this->record_and_run_scratch_commands(input);
+        this->record_and_run_scratch_commands();
         // If frame admin needs to regenerate, allow it to.
         this->frame_admin.set_regeneration_function([this](){this->handle_resize();});
         // Tell the device to notify us when it detects a window resize. We will also need to regenerate then too.
         *device_info.on_resize = [this](){this->handle_resize();};
-        tz_report("RendererVulkan (Input = %p)", input);
+        tz_report("RendererVulkan (Input = %p)", this->renderer_input);
     }
 
     void RendererVulkan::set_clear_colour(tz::Vec4 clear_colour)
     {
         this->clear_colour = clear_colour;
-        tz_error("Setting clear-colour post-creation is not yet implemented vulkan-side. Sorry");
+        this->handle_clear_colour_change();
     }
 
     tz::Vec4 RendererVulkan::get_clear_colour() const
@@ -212,10 +210,10 @@ namespace tz::gl
         this->frame_admin.render_frame(this->graphics_present_queue, *this->swapchain, this->command_pool, vk::WaitStages{vk::WaitStage::ColourAttachmentOutput});
     }
 
-    void RendererVulkan::setup_buffers(const IRendererInput* input)
+    void RendererVulkan::setup_buffers()
     {
-        this->vertex_buffer = vk::Buffer{vk::BufferType::Vertex, vk::BufferPurpose::TransferDestination, *this->device, device_local_mem, input->get_vertex_bytes().size_bytes()};
-        this->index_buffer = vk::Buffer{vk::BufferType::Index, vk::BufferPurpose::TransferDestination, *this->device, device_local_mem, input->get_indices().size_bytes()};
+        this->vertex_buffer = vk::Buffer{vk::BufferType::Vertex, vk::BufferPurpose::TransferDestination, *this->device, device_local_mem, this->renderer_input->get_vertex_bytes().size_bytes()};
+        this->index_buffer = vk::Buffer{vk::BufferType::Index, vk::BufferPurpose::TransferDestination, *this->device, device_local_mem, this->renderer_input->get_indices().size_bytes()};
     }
 
     void RendererVulkan::setup_depth_image()
@@ -226,38 +224,38 @@ namespace tz::gl
         this->depth_imageview = vk::ImageView{*this->device, this->depth_image.value()};
     }
 
-    void RendererVulkan::setup_swapchain_framebuffers(const RenderPass& render_pass)
+    void RendererVulkan::setup_swapchain_framebuffers()
     {
         auto swapchain_width = static_cast<std::uint32_t>(this->swapchain->get_width());
         auto swapchain_height = static_cast<std::uint32_t>(this->swapchain->get_height());
         for(const vk::ImageView& swapchain_view : this->swapchain->get_image_views())
         {
-            this->swapchain_framebuffers.emplace_back(render_pass.vk_get_render_pass(), swapchain_view, this->depth_imageview.value(), VkExtent2D{swapchain_width, swapchain_height});
+            this->swapchain_framebuffers.emplace_back(this->render_pass->vk_get_render_pass(), swapchain_view, this->depth_imageview.value(), VkExtent2D{swapchain_width, swapchain_height});
         }
     }
 
-    void RendererVulkan::record_rendering_commands(const RenderPass& render_pass, const IRendererInput* input)
+    void RendererVulkan::record_rendering_commands()
     {
         VkClearValue vk_clear_colour{this->clear_colour[0], this->clear_colour[1], this->clear_colour[2], this->clear_colour[3]};
         for(std::size_t i = 0; i < this->swapchain->get_image_views().size(); i++)
         {
             vk::CommandBufferRecording render = this->command_pool[i].record();
-            vk::RenderPassRun run{this->command_pool[i], render_pass.vk_get_render_pass(), this->swapchain_framebuffers[i], this->swapchain->full_render_area(), vk_clear_colour};
+            vk::RenderPassRun run{this->command_pool[i], this->render_pass->vk_get_render_pass(), this->swapchain_framebuffers[i], this->swapchain->full_render_area(), vk_clear_colour};
             this->graphics_pipeline.bind(this->command_pool[i]);
             render.bind(this->vertex_buffer.value());
             render.bind(this->index_buffer.value());
-            auto indices_count = input->get_indices().size();
+            auto indices_count = this->renderer_input->get_indices().size();
             render.draw_indexed(indices_count);
         }
     }
 
-    void RendererVulkan::record_and_run_scratch_commands(const IRendererInput* input)
+    void RendererVulkan::record_and_run_scratch_commands()
     {
         // Setup transfers using the scratch buffers.
         vk::CommandBuffer& scratch_buf = this->command_pool[this->swapchain->get_image_views().size()];
         {
             // Part 1: Transfer vertex data.
-            auto vertex_data = input->get_vertex_bytes();
+            auto vertex_data = this->renderer_input->get_vertex_bytes();
             tz_report("VB (%zu vertices, %zu bytes total)", vertex_data.size(), vertex_data.size_bytes());
             vk::Buffer vertices_staging{vk::BufferType::Staging, vk::BufferPurpose::TransferSource, *this->device, host_visible_mem, vertex_data.size_bytes()};
             vertices_staging.write(vertex_data.data(), vertex_data.size_bytes());
@@ -276,7 +274,7 @@ namespace tz::gl
             copy_fence.wait_for();
             scratch_buf.reset();
             // Part 2: Transfer index data.
-            auto index_data = input->get_indices();
+            auto index_data = this->renderer_input->get_indices();
             tz_report("IB (%zu indices, %zu bytes total)", index_data.size(), index_data.size_bytes());
             vk::Buffer indices_staging{vk::BufferType::Staging, vk::BufferPurpose::TransferSource, *this->device, host_visible_mem, index_data.size_bytes()};
             indices_staging.write(index_data.data(), index_data.size_bytes());
@@ -293,8 +291,8 @@ namespace tz::gl
 
     void RendererVulkan::handle_resize()
     {
-        // Assume swapchain has been reinitialised.
-        // Assume render_pass has been reinitialised.
+        // Assume swapchain has been reinitialised by the device.
+        // Assume render_pass has been reinitialised by the device.
         // Recreate everything else.
         this->graphics_pipeline = vk::GraphicsPipeline{
             {vk::pipeline::ShaderStage{*this->vertex_shader, vk::pipeline::ShaderType::Vertex}, vk::pipeline::ShaderStage{*this->fragment_shader, vk::pipeline::ShaderType::Fragment}},
@@ -313,13 +311,23 @@ namespace tz::gl
         this->setup_depth_image();
 
         this->swapchain_framebuffers.clear();
-        this->setup_swapchain_framebuffers(*this->render_pass);
+        this->setup_swapchain_framebuffers();
 
         this->command_pool.clear();
         // Command Buffers for each swapchain image, but an extra general-purpose recycleable buffer.
         constexpr std::size_t num_scratch_command_bufs = 1;
         this->command_pool.with(this->swapchain->get_image_views().size() + num_scratch_command_bufs);
-        this->record_rendering_commands(*this->render_pass, this->renderer_input);
+        this->record_rendering_commands();
+    }
+
+    void RendererVulkan::handle_clear_colour_change()
+    {
+        this->device->block_until_idle();
+
+        this->command_pool.clear();
+        constexpr std::size_t num_scratch_command_bufs = 1;
+        this->command_pool.with(this->swapchain->get_image_views().size() + num_scratch_command_bufs);
+        this->record_rendering_commands();
     }
 }
 #endif // TZ_VULKAN

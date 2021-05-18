@@ -59,16 +59,19 @@ namespace tz::gl
         
         virtual void render() final;
     private:
-        void setup_buffers(const IRendererInput* input);
+        void setup_buffers();
         void setup_depth_image();
-        void setup_swapchain_framebuffers(const RenderPass& render_pass);
-        void record_rendering_commands(const RenderPass& render_pass, const IRendererInput* input);
-        void record_and_run_scratch_commands(const IRendererInput* input);
+        void setup_swapchain_framebuffers();
+        void record_rendering_commands();
+        void record_and_run_scratch_commands();
 
         void handle_resize();
+        void handle_clear_colour_change();
 
         const vk::LogicalDevice* device;
         const vk::hardware::Device* physical_device;
+        const RenderPass* render_pass;
+        const IRendererInput* renderer_input;
         vk::hardware::MemoryModule device_local_mem;
         vk::hardware::MemoryModule host_visible_mem;
         const vk::ShaderModule* vertex_shader;
@@ -76,8 +79,6 @@ namespace tz::gl
         vk::pipeline::VertexInputState vertex_input_state;
         vk::pipeline::InputAssembly input_assembly;
         vk::pipeline::RasteriserState rasteriser_state;
-        const RenderPass* render_pass;
-        const IRendererInput* renderer_input;
         vk::GraphicsPipeline graphics_pipeline;
         std::optional<vk::Buffer> vertex_buffer;
         std::optional<vk::Buffer> index_buffer;
