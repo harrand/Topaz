@@ -5,6 +5,7 @@ include(cmake/shader_compiler.cmake)
 file(READ ./version.txt TZ_VERSION)
 # Reconfigure on changes to ./version.txt
 configure_file(./version.txt topaz_version.xml)
+set(CXX_STANDARD_REQUIRED 20)
 set(CMAKE_CXX_STANDARD 20)
 
 project(topaz VERSION ${TZ_VERSION})

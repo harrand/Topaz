@@ -15,7 +15,11 @@ endfunction()
 
 function(configure_debug target)
     target_compile_definitions(${target} PUBLIC -DTZ_DEBUG=1)
-    target_compile_options(${target} PUBLIC -g)
+    if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+        target_compile_options(${target} PUBLIC /Zi)
+    else()
+        target_compile_options(${target} PUBLIC -g)
+    endif()
 endfunction()
 
 function(configure_release target)
