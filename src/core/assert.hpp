@@ -31,23 +31,20 @@ namespace tz
 #endif
     }
 
-    #define tz_error9(fmt, ...) static_assert(false, "tz_error(...) invoked with 9 total arguments. 8 or more is unsupported.")
-    #define tz_error2ormore(fmt, ...) tz_assert(false, fmt, __VA_ARGS__)
-    #define tz_error1(msg) tz_error2ormore(msg, "")
-    #define tz_error0() tz_error1("tz::error() invoked.")
-    #define tz_errorX(x, A, B, C, D, E, F, G, H, I, FUNC, ...) FUNC
-    #define tz_error(...) tz_errorX(,##__VA_ARGS__,\
-                          tz_error9(__VA_ARGS__),\
-                          tz_error2ormore(__VA_ARGS__),\
-                          tz_error2ormore(__VA_ARGS__),\
-                          tz_error2ormore(__VA_ARGS__),\
-                          tz_error2ormore(__VA_ARGS__),\
-                          tz_error2ormore(__VA_ARGS__),\
-                          tz_error2ormore(__VA_ARGS__),\
-                          tz_error2ormore(__VA_ARGS__),\
-                          tz_error1(__VA_ARGS__),\
-                          tz_error0(__VA_ARGS__)\
-                          )
+#define tz_error(fmt, ...) (tz::error_message(stderr, \
+"Error (tz_error): \nIn file: %s on line %d:\n\t" fmt, __FILE__, __LINE__ __VA_OPT__(,) __VA_ARGS__))
+
+
+    template<typename... Args>
+    inline void error_message([[maybe_unused]] FILE* output_stream, [[maybe_unused]] const char* fmt, [[maybe_unused]] Args&&... args)
+    {
+#if TZ_DEBUG
+        // Use the given ostream.
+        fflush(output_stream);
+        fprintf(output_stream, fmt, std::forward<Args>(args)...);
+        ::debug_break();
+#endif
+    }
 }
 
 #endif // TOPAZ_CORE_ASSERT_HPP
