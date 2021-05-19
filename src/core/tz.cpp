@@ -27,7 +27,7 @@ namespace tz
         }
         
         tz_report("%s Application", app_type == ApplicationType::Headless ? "Headless" : "Windowed");
-
+        initialised = true;
         #if TZ_VULKAN
             if(app_type == ApplicationType::WindowApplication)
             {
@@ -48,7 +48,6 @@ namespace tz
             }
         #endif
 
-        initialised = true;
         tz_app_type = app_type;
     }
 

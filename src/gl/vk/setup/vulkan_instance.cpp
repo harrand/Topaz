@@ -1,6 +1,7 @@
 #if TZ_VULKAN
 #include "gl/vk/setup/vulkan_instance.hpp"
 #include "gl/vk/validation/debug_messenger.hpp"
+#include "core/tz.hpp"
 #include "core/assert.hpp"
 namespace tz::gl::vk
 {
@@ -36,7 +37,7 @@ namespace tz::gl::vk
         create.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
         create.pApplicationInfo = &app_info;
 
-        // (Important) TODO: Assert on glfw being initialised. Otherwise UB.
+        tz_assert(tz::is_initialised(), "Cannot create VulkanInstanced when tz::initialise() hasn't been invoked");
         ExtensionList default_extensions = tz::gl::vk::get_default_required_extensions();
         // Add GLFW required extensions too.
         extensions.append(default_extensions);
