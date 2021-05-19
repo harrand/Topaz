@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: "Build: Topaz Triangle Demo (linux-debug-g++-10-opengl)"
+name: "Build: Topaz Triangle Demo (linux-debug-gcc-opengl)"
 
 # Controls when the action will run. 
 on:
@@ -13,22 +13,11 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
-  build_topaz_all_tests:
+  gcc-opengl-linux:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
-
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      - name: Ensure GCC10
-        run:   |
-           sudo apt update
-           sudo apt install gcc-10 g++-10
-        shell: bash
-      - name: Ensure Dependencies
-        run:   |
-          sudo apt-get install xorg-dev libglu1-mesa-dev
-
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
@@ -41,8 +30,6 @@ jobs:
           buildWithCMake: true
           buildWithCMakeArgs: "--target tz_triangle_demo --parallel 4"
           buildDirectory: "${{ github.workspace }}/../../_temp/build/debug"
-
-
 
 
 
