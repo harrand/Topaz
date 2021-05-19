@@ -23,12 +23,12 @@ namespace tz
 
     float WindowFunctionality::get_width() const
     {
-        return this->get_size().first;
+        return return static_cast<float>(this->get_size().first);
     }
 
     float WindowFunctionality::get_height() const
     {
-        return this->get_size().second;
+        return static_cast<float>(this->get_size().second);
     }
 
     void WindowFunctionality::update()
