@@ -9,7 +9,7 @@ namespace tz::gl::ogl
     class OpenGLInstance
     {
     public:
-        static void opengl_debug_callback(GLenum source​, GLenum type​, GLuint id​, GLenum severity​, GLsizei length​, const GLchar* message​, const void* user_data);
+        static void opengl_debug_callback(GLenum source, GLenum type, GLuint id, GLenum severity, Glsizei length, const GLchar* message, const void* user_data);
 
         OpenGLInstance(tz::GameInfo game_info);
         ~OpenGLInstance();
