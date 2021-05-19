@@ -57,7 +57,7 @@ jobs:
     steps:
       - name: Setup Vulkan
         run: |
-            Invoke-WebRequest -Uri "https://sdk.lunarg.com/sdk/download/1.1.175.0/windows/VulkanSDK-1.1.175.0-Installer.exe" -OutFile VulkanSDK.exe
+            Invoke-WebRequest -Uri "https://sdk.lunarg.com/sdk/download/1.2.131.1/windows/VulkanSDK-1.2.131.1-Installer.exe" -OutFile VulkanSDK.exe
             $installer = Start-Process -FilePath VulkanSDK.exe -Wait -PassThru -ArgumentList @("/S");
             $installer.WaitForExit();
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
