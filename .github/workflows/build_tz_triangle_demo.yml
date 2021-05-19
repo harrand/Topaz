@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: "Build: Topaz Triangle Demo (linux-debug-gcc-opengl)"
+name: "Build: Topaz Triangle Demo"
 
 # Controls when the action will run. 
 on:
