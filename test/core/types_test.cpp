@@ -138,13 +138,11 @@ TZ_TEST_END
 int main()
 {
     constexpr tz::GameInfo tz_types_test{"tz_types_test", tz::EngineInfo::Version{1, 0, 0}, tz::info()};
-    tz::initialise(tz_types_test, tz::ApplicationType::Headless);
 	tz::test::Unit types;
 
     types.add(sanity_check());
 	types.add(numeric());
     types.add(functional_action());
 
-    tz::terminate();
 	return types.result();
 }
