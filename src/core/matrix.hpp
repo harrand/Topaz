@@ -190,7 +190,7 @@ namespace tz
 		 * @return Transpose of the original matrix. The original matrix is unchanged.
 		 */
 		Matrix<T, R, C> transpose() const;
-		#if TOPAZ_DEBUG
+		#if TZ_DEBUG
 		/**
 		 * Pretty-print each value of the given matrix. If T is not printable, then the program is ill-formed.
 		 * Note: This method is compiled-out in release. If this method is invoked in a non-debug context, then the program is ill-formed.

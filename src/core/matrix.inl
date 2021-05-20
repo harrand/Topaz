@@ -375,7 +375,7 @@ namespace tz
 		return m;
 	}
 
-	#if TOPAZ_DEBUG
+	#if TZ_DEBUG
 	template<tz::Number T, std::size_t R, std::size_t C>
 	void Matrix<T, R, C>::debug_print() const
 	{
