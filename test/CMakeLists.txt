@@ -15,6 +15,7 @@ function(add_tz_test)
     add_test(NAME ${ADD_TZ_TEST_NAME}
         COMMAND ${ADD_TZ_TEST_NAME})
     add_dependencies(tztest ${ADD_TZ_TEST_NAME})
+    add_dependencies(tztest_nographics ${ADD_TZ_TEST_NAME})
     if(${ADD_TZ_TEST_GRAPHICAL})
         set_tests_properties(${ADD_TZ_TEST_NAME} PROPERTIES LABELS GRAPHICAL)
         message(STATUS "Found graphical test ${ADD_TZ_TEST_NAME}")
