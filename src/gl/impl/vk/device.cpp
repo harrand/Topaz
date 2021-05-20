@@ -86,7 +86,7 @@ namespace tz::gl
     {
         vk::hardware::DeviceList all_devices = vk::hardware::get_all_devices();
         // Ideally we want a queue which supports all 3 of graphics, transfer and present.
-        vk::hardware::QueueFamilyTypeField type_requirements{{vk::hardware::QueueFamilyType::Graphics, vk::hardware::QueueFamilyType::Present, vk::hardware::QueueFamilyType::Transfer}};
+        vk::hardware::QueueFamilyTypeField type_requirements{{vk::hardware::QueueFamilyType::Graphics, vk::hardware::QueueFamilyType::Transfer}};
         // We require swapchain support too.
         vk::hardware::DeviceFilterList filters;
         filters.emplace<vk::hardware::DeviceQueueFamilyFilter>(type_requirements);

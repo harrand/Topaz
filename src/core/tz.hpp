@@ -8,6 +8,7 @@ namespace tz
     enum class ApplicationType
     {
         WindowApplication,
+        HiddenWindowApplication,
         Headless
     };
 

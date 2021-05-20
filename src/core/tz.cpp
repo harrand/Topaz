@@ -20,10 +20,15 @@ namespace tz
     {
         glfwInit();
         
-        if(app_type == ApplicationType::WindowApplication)
+        if(app_type == ApplicationType::WindowApplication || app_type == ApplicationType::HiddenWindowApplication)
         {
             tz_assert(wnd == nullptr && !initialised, "tz::initialise(): Already initialised");
-            wnd = new tz::Window{WindowInitArgs{.width = 800, .height = 600, .title = game_info.to_string().c_str()}};
+            WindowHintList hints;
+            if(app_type == ApplicationType::HiddenWindowApplication)
+            {
+                hints.emplace(GLFW_VISIBLE, GLFW_FALSE);
+            }
+            wnd = new tz::Window{WindowInitArgs{.width = 800, .height = 600, .title = game_info.to_string().c_str()}, hints};
         }
         else
         {
@@ -35,22 +40,30 @@ namespace tz
         tz_report("%s Application", app_type == ApplicationType::Headless ? "Headless" : "Windowed");
         initialised = true;
         #if TZ_VULKAN
-            if(app_type == ApplicationType::WindowApplication)
+            if(app_type == ApplicationType::WindowApplication || app_type == ApplicationType::HiddenWindowApplication)
             {
                 tz::gl::vk::initialise(game_info);
             }
-            else
+            else if(app_type == ApplicationType::Headless)
             {
                 tz::gl::vk::initialise_headless(game_info);
             }
+            else
+            {
+                tz_error("Invalid tz::ApplicationType or support for that type is not yet implemented for this render-api (Vulkan)");
+            }
         #elif TZ_OGL
-            if(app_type == ApplicationType::WindowApplication)
+            if(app_type == ApplicationType::WindowApplication || app_type == ApplicationType::HiddenWindowApplication)
             {
                 tz::gl::ogl::initialise(game_info);
             }
-            else
+            else if(app_type == ApplicationType::Headless)
             {
                 tz::gl::ogl::initialise_headless(game_info);
+            }
+            else
+            {
+                tz_error("Invalid tz::ApplicationType or support for that type is not yet implemented for this render-api (OpenGL)");
             }
         #endif
 
