@@ -1,3 +1,7 @@
+add_tz_test(NAME tz_initialise_test
+        SOURCE_FILES initialise_test.cpp
+        )
+
 add_tz_test(NAME tz_matrix_test
         SOURCE_FILES matrix_test.cpp
         )

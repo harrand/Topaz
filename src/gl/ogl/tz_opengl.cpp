@@ -9,7 +9,10 @@ namespace tz::gl::ogl
 
     void initialise_headless(tz::GameInfo game_info)
     {
-        tz_error("Headless is not supported for OpenGL. Sorry.");
+        //tz_error("Headless is not supported for OpenGL. Sorry.");
+        tz_assert(inst == nullptr, "Already initialised");
+        inst = new OpenGLInstance{game_info};
+        tz_report("OpenGL Initialised (Headless)");
     }
 
     void initialise(tz::GameInfo game_info)
