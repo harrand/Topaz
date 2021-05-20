@@ -1,5 +1,7 @@
 # Topaz
 ![tz_triangle_demo linux-opengl-debug](https://github.com/Harrand/Topaz/actions/workflows/build_tz_triangle_demo.yml/badge.svg)
+![non_graphical_tests linux-opengl-debug](https://github.com/Harrand/Topaz/actions/workflows/non_graphical_tests.yml/badge.svg)
+
 ## About
 
  Topaz is a graphics engine written in C++20. Topaz 3.0 is currently in development. [Topaz 2.0](https://github.com/Harrand/Topaz/tree/Topaz2.0) is the most recent release of the Topaz Engine.
