@@ -207,6 +207,14 @@ endif()
 
 add_subdirectory(lib)
 add_subdirectory(demo)
+enable_testing()
+add_subdirectory(test)
+
+#
+#add_tz_test(
+#    NAME default_test
+#    SOURCE_FILES test/test.cpp
+#)
 
 target_include_directories(topaz PUBLIC ${PROJECT_SOURCE_DIR}/src)
 target_link_libraries(topaz PUBLIC debugbreak glfw)

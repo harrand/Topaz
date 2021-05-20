@@ -22,6 +22,7 @@ namespace tz
         // Use the given ostream.
         fflush(output_stream);
         fprintf(output_stream, fmt, std::forward<Args>(args)...);
+        fflush(output_stream);
         ::debug_break();
         if(hard)
         {
@@ -42,6 +43,7 @@ namespace tz
         // Use the given ostream.
         fflush(output_stream);
         fprintf(output_stream, fmt, std::forward<Args>(args)...);
+        fflush(output_stream);
         ::debug_break();
 #endif
     }
