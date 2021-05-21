@@ -204,7 +204,8 @@ HTML_FOOTER            =
 HTML_STYLESHEET        =
 HTML_EXTRA_STYLESHEET  = "doc/custom.css" \
                          "doc/custom_dark_theme.css"
-HTML_EXTRA_FILES       = doc/android-chrome-192x192.png \
+HTML_EXTRA_FILES       = doc/tz.png \
+                         doc/android-chrome-192x192.png \
                          doc/android-chrome-256x256.png \
                          doc/apple-touch-icon.png \
                          doc/browserconfig.xml \
