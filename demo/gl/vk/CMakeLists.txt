@@ -20,3 +20,11 @@ add_demo(
         demo/gl/vk/basic.vertex.glsl
         demo/gl/vk/basic.fragment.glsl
 )
+
+add_demo(
+    TARGET vk_triangle_demo
+    SOURCE_FILES vk_triangle_demo.cpp
+    SHADER_SOURCES
+        demo/gl/vk/triangle_demo.vertex.glsl
+        demo/gl/vk/triangle_demo.fragment.glsl
+)
