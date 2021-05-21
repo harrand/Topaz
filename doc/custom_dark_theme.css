@@ -7,6 +7,14 @@
 	background: #dfe5f2 !important;
 }
 
+span.icona {
+	visibility: collapse;
+}
+
+div.levels {
+	visibility: collapse;
+}
+
 .sm-dox a {
 	background: none;
 }
@@ -25,7 +33,7 @@ div.fragment, pre.fragment {
 }
 
 a, a:link, a:visited {
-	color: #67d8ef !important;
+	color: #e9cd53 !important;
 }
 
 .highlighted {
@@ -323,7 +331,7 @@ span.lineno a {
 }
 
 h2.groupheader {
-	color: #67d8ef;
+	color: #e6d382;
 }
 
 /*********************************************/
@@ -388,6 +396,10 @@ td.memItemLeft, td.memItemRight {
 
 .navpath li.footer {
 	color: inherit;
+}
+
+.navpath li::marker {
+	content: '::';
 }
 
 .navpath li.navelem a {

@@ -42,7 +42,6 @@ namespace tz
  * Source location: Topaz/src/gl <br>
  * Namespace: `tz::gl`
  * <hr>
- * \image html tz.png width=64px height=64px "Topaz"
  */
 
 #endif // TZ_CORE_TZ_HPP

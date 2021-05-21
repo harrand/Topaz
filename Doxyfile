@@ -204,7 +204,17 @@ HTML_FOOTER            =
 HTML_STYLESHEET        =
 HTML_EXTRA_STYLESHEET  = "doc/custom.css" \
                          "doc/custom_dark_theme.css"
-HTML_EXTRA_FILES       = tz.ico
+HTML_EXTRA_FILES       = doc/android-chrome-192x192.png \
+                         doc/android-chrome-256x256.png \
+                         doc/apple-touch-icon.png \
+                         doc/browserconfig.xml \
+                         doc/favicon.ico \
+                         doc/favicon-16x16.png \
+                         doc/favicon-32x32.png \
+                         doc/mstile-150x150.png \
+                         doc/safari-pinned-tab.svg \
+                         doc/site.webmanifest
+
 HTML_COLORSTYLE_HUE    = 220
 HTML_COLORSTYLE_SAT    = 100
 HTML_COLORSTYLE_GAMMA  = 80
