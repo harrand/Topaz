@@ -2,11 +2,6 @@
 /* New light dark background #3 2 3 6 3 d */
 /* Dark background: #d f e 5 f 2; */
 
-* {
-	font-size: 100%;
-	font-family: Verdana;
-}
-
 /* TOP MENU */
 .sm-dox {
 	background: #dfe5f2 !important;
@@ -20,6 +15,8 @@ body {
 	background: #282923;
 	background-image: none;
 	color: #D8D8D8;
+	font-size: 100%;
+	font-family: Verdana;
 }
 
 div.fragment, pre.fragment {
