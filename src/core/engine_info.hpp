@@ -5,6 +5,11 @@
 namespace tz
 {
     /**
+	 * \addtogroup tz_core Topaz Core Library (tz)
+	 * A collection of platform-agnostic core interfaces.
+	 * @{
+	 */
+    /**
      * Represents information about the current engine used.
      */
     struct EngineInfo
@@ -42,6 +47,10 @@ namespace tz
     }
 
     constexpr EngineInfo info();
+
+    /**
+     * @}
+     */
 }
 #include "core/engine_info.inl"
 #endif // TOPAZ_CORE_ENGINE_INFO_HPP

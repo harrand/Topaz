@@ -11,6 +11,11 @@
 namespace tz::gl
 {
     /**
+	 * \addtogroup tz_gl Topaz Graphics Library (tz::gl)
+	 * A collection of low-level renderer-agnostic graphical interfaces.
+	 * @{
+	 */
+    /**
      * @brief Describes the layout of a vertex attribute in memory.
      */
     struct RendererAttributeFormat
@@ -147,6 +152,9 @@ namespace tz::gl
 
         virtual void render() = 0;
     };
+    /**
+     * @}
+     */
 }
 
 #endif // TOPAZ_GL_API_RENDERER_HPP

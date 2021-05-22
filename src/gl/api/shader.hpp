@@ -7,6 +7,11 @@
 
 namespace tz::gl
 {
+    /**
+	 * \addtogroup tz_gl Topaz Graphics Library (tz::gl)
+	 * A collection of low-level renderer-agnostic graphical interfaces.
+	 * @{
+	 */
     class IShaderBuilder
     {
     public:
@@ -15,6 +20,9 @@ namespace tz::gl
         virtual std::string_view get_shader_source(ShaderType type) const = 0;
         virtual bool has_shader(ShaderType type) const = 0;
     };
+    /**
+     * @}
+     */
 }
 
 #endif // TOPAZ_GL_API_SHADER_HPP

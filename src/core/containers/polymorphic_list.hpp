@@ -5,6 +5,11 @@
 
 namespace tz
 {
+    /**
+	 * \addtogroup tz_core Topaz Core Library (tz)
+	 * A collection of platform-agnostic core interfaces.
+	 * @{
+	 */
     template<typename T>
     class InterfaceIterator;
 
@@ -44,8 +49,10 @@ namespace tz
         bool operator==(const InterfaceIterator<T>& rhs) const;
     private:
         const std::unique_ptr<T>* loc;
-
     };
+    /**
+	 * @}
+	 */
 }
 
 #include "core/containers/polymorphic_list.inl"

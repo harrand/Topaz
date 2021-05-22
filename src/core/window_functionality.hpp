@@ -9,6 +9,11 @@
 
 namespace tz
 {
+    /**
+	 * \addtogroup tz_core Topaz Core Library (tz)
+	 * A collection of platform-agnostic core interfaces.
+	 * @{
+	 */
     using WindowResizeSignature = void(int width, int height);
     template<typename F>
     concept WindowResizeConcept = tz::Action<F, int, int>;
@@ -36,6 +41,10 @@ namespace tz
         std::pair<int, int> get_size() const;
         void ensure() const;
     };
+
+    /**
+     * @}
+     */
 }
 
 #include "core/window_functionality.inl"

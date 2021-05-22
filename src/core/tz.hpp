@@ -5,6 +5,11 @@
 
 namespace tz
 {
+    /**
+	 * \addtogroup tz_core Topaz Core Library (tz)
+	 * A collection of platform-agnostic core interfaces.
+	 * @{
+	 */
     enum class ApplicationType
     {
         WindowApplication,
@@ -16,6 +21,10 @@ namespace tz
     void terminate();
     Window& window();
     bool is_initialised();
+    
+    /**
+	 * @}
+	 */
 }
 #include "core/tz.inl"
 

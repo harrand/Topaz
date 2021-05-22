@@ -8,6 +8,11 @@
 
 namespace tz
 {
+    /**
+	 * \addtogroup tz_core Topaz Core Library (tz)
+	 * A collection of platform-agnostic core interfaces.
+	 * @{
+	 */
     template<typename T, typename Allocator = std::allocator<T>>
     class BasicList
     {
@@ -141,6 +146,10 @@ namespace tz
             this->elements.resize(num_elements);
         }
     };
+
+    /**
+     * @}
+     */
 }
 
 #endif // TOPAZ_GL_VK_COMMON_BASIC_LIST_HPP

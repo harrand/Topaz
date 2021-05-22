@@ -5,6 +5,11 @@
 namespace tz::gl
 {
     /**
+	 * \addtogroup tz_gl Topaz Graphics Library (tz::gl)
+	 * A collection of low-level renderer-agnostic graphical interfaces.
+	 * @{
+	 */
+    /**
      * @brief Describes the subpasses, attachments and other parameters comprising a RenderPass.
      */
     class IRenderPassBuilder
@@ -18,7 +23,9 @@ namespace tz::gl
     public:
         
     };
-
+    /**
+     * @}
+     */
 }
 
 #endif // TOPAZ_GL_API_RENDER_PASS_HPP

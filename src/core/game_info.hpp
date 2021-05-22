@@ -4,6 +4,11 @@
 
 namespace tz
 {    
+    /**
+	 * \addtogroup tz_core Topaz Core Library (tz)
+	 * A collection of platform-agnostic core interfaces.
+	 * @{
+	 */
     struct GameInfo
     {
         using Version = tz::EngineInfo::Version;
@@ -28,6 +33,9 @@ namespace tz
         Version version;
         EngineInfo engine;
     };
+    /**
+     * @}
+     */
 }
 
 #endif // TOPAZ_CORE_GAME_INFO_HPP

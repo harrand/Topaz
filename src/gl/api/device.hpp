@@ -8,6 +8,11 @@
 
 namespace tz::gl
 {
+    /**
+	 * \addtogroup tz_gl Topaz Graphics Library (tz::gl)
+	 * A collection of low-level renderer-agnostic graphical interfaces.
+	 * @{
+	 */
     class IDeviceBuilder
     {
     public:
@@ -39,6 +44,9 @@ namespace tz::gl
         virtual Renderer create_renderer(RendererBuilder builder) const = 0;
         virtual Shader create_shader(ShaderBuilder builder) const = 0;
     };
+    /**
+     * @}
+     */
 }
 
 #endif // TOPAZ_GL_API_DEVICE_HPP

@@ -200,7 +200,7 @@ GENERATE_HTML          = YES
 HTML_OUTPUT            = html
 HTML_FILE_EXTENSION    = .html
 HTML_HEADER            = doc/header.html
-HTML_FOOTER            =
+HTML_FOOTER            = doc/footer.html
 HTML_STYLESHEET        =
 HTML_EXTRA_STYLESHEET  = "doc/custom.css" \
                          "doc/custom_dark_theme.css"

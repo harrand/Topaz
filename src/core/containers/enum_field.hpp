@@ -6,7 +6,11 @@
 
 namespace tz
 {
-
+    /**
+	 * \addtogroup tz_core Topaz Core Library (tz)
+	 * A collection of platform-agnostic core interfaces.
+	 * @{
+	 */
     template<tz::EnumClass E>
     class EnumField
     {
@@ -30,6 +34,10 @@ namespace tz
     private:
         std::vector<E> elements;
     };
+
+    /**
+     * @}
+     */
 }
 
 #include "core/containers/enum_field.inl"

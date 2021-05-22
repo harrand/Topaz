@@ -5,6 +5,12 @@
 
 namespace tz
 {
+    /**
+	 * \addtogroup tz_core Topaz Core Library (tz)
+	 * A collection of platform-agnostic core interfaces.
+	 * @{
+	 */
+
     struct WindowHint
     {
         int hint;
@@ -21,7 +27,7 @@ namespace tz
     constexpr WindowInitArgs default_args = {.width = 800, .height = 600, .title = "Untitled"};
 
     using WindowHintList = tz::BasicList<WindowHint>;
-    
+
     class Window : public WindowFunctionality
     {
     public:
@@ -34,6 +40,10 @@ namespace tz
 
         static void window_resize_callback(GLFWwindow* window, int width, int height);
     };
+
+    /**
+     * @}
+     */
 }
 
 #endif // TOPAZ_CORE_WINDOW_HPP
