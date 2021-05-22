@@ -9,18 +9,12 @@
 
 namespace tz::gl
 {
-    class DeviceBuilderVulkan
+    class DeviceBuilderVulkan : public IDeviceBuilder
     {
     public:
         DeviceBuilderVulkan();
-        /**
-         * See @ref IDeviceBuilder::set_primitive_type(GraphicsPrimitiveType)
-         */
-        void set_primitive_type(GraphicsPrimitiveType type);
-        /**
-         * See @ref IDeviceBuilder::get_primitive_type()
-         */
-        GraphicsPrimitiveType get_primitive_type() const;
+        virtual void set_primitive_type(GraphicsPrimitiveType type) final;
+        virtual GraphicsPrimitiveType get_primitive_type() const final;
         
         vk::pipeline::PrimitiveTopology vk_get_primitive_topology() const;
     private:
