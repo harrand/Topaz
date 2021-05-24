@@ -9,6 +9,10 @@ namespace tz
 	 * A collection of platform-agnostic core interfaces.
 	 * @{
 	 */
+    /**
+     * Contains basic information about the target game/application.
+     * @note This struct is within the Initial Group.
+     */
     struct GameInfo
     {
         using Version = tz::EngineInfo::Version;

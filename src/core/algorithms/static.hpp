@@ -9,6 +9,9 @@ namespace tz
 	 * A collection of platform-agnostic core interfaces.
 	 * @{
 	 */
+	/**
+	 * Compute a compile-time for-loop.
+	 */
     template<std::size_t Begin, std::size_t End, typename Functor>
 	constexpr void static_for(const Functor& function)
 	{

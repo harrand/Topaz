@@ -11,6 +11,7 @@ namespace tz
 	 */
     /**
      * Represents information about the current engine used.
+     * @note This struct is within the Initial Group.
      */
     struct EngineInfo
     {
