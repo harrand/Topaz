@@ -13,7 +13,7 @@ namespace tz::gl::vk
         const char** glfw_extensions = glfwGetRequiredInstanceExtensions(&glfw_extension_count);
 
         ExtensionList glfw_vulkan_extensions;
-        for(auto i = 0; i < glfw_extension_count; i++)
+        for(std::uint32_t i = 0; i < glfw_extension_count; i++)
         {
             glfw_vulkan_extensions.add(glfw_extensions[i]);
         }

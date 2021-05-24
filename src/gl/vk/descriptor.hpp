@@ -30,7 +30,7 @@ namespace tz::gl::vk
     public:
         DescriptorSetsCreationRequest() = default;
         void add_buffer(const Buffer& buffer, VkDeviceSize offset, VkDeviceSize range, std::uint32_t binding_id);
-        void add_image(const ImageView& image, const Sampler& sampler, VkDeviceSize offset, VkDeviceSize range, std::uint32_t binding_id);;
+        void add_image(const ImageView& image, const Sampler& sampler, std::uint32_t binding_id);
         friend class DescriptorPool;
     private:
         using ResourceInfoVariant = std::variant<VkDescriptorBufferInfo, VkDescriptorImageInfo>;

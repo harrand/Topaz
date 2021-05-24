@@ -51,7 +51,7 @@ namespace tz::gl
         }
     }
 
-    bool ShaderBuilderOGL::has_shader(ShaderType type) const
+    bool ShaderBuilderOGL::has_shader([[maybe_unused]] ShaderType type) const
     {
         return false;
     }

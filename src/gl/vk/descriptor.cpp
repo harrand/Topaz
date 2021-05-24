@@ -42,7 +42,7 @@ namespace tz::gl::vk
         this->bindings.push_back(binding_id);
     }
 
-    void DescriptorSetsCreationRequest::add_image(const ImageView& image, const Sampler& sampler, VkDeviceSize offset, VkDeviceSize range, std::uint32_t binding_id)
+    void DescriptorSetsCreationRequest::add_image(const ImageView& image, const Sampler& sampler, std::uint32_t binding_id)
     {
         auto& info = std::get<VkDescriptorImageInfo>(this->resources.emplace_back(VkDescriptorImageInfo{}));
         info.imageLayout = static_cast<VkImageLayout>(Image::Layout::ShaderResource);

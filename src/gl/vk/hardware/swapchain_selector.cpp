@@ -13,7 +13,7 @@ namespace tz::gl::vk::hardware
         return format.format == perfect_format.format && format.colorSpace == perfect_format.colorSpace;
     }
 
-    constexpr int rate_perfect(VkSurfaceFormatKHR format)
+    constexpr int rate_perfect([[maybe_unused]] VkSurfaceFormatKHR format)
     {
         // TODO: Implement
         return 0;

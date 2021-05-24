@@ -23,9 +23,9 @@ namespace tz::gl::vk
         inline VKAPI_ATTR VkBool32 VKAPI_CALL default_debug_callback
         (
             VkDebugUtilsMessageSeverityFlagBitsEXT message_severity,
-            VkDebugUtilsMessageTypeFlagsEXT message_type,
+            [[maybe_unused]] VkDebugUtilsMessageTypeFlagsEXT message_type,
             const VkDebugUtilsMessengerCallbackDataEXT* callback_data,
-            void* user_data
+            [[maybe_unused]] void* user_data
         )
         {
             if(message_severity >= VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT)

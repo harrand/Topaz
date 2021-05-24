@@ -34,7 +34,7 @@ namespace tz::gl::vk
         vkCmdCopyBuffer(this->command_buffer->native(), source.native(), destination.native(), 1, &cpy);
     }
 
-    void CommandBufferRecording::buffer_copy_image(const Buffer& source, Image& destination, std::size_t copy_bytes_length)
+    void CommandBufferRecording::buffer_copy_image(const Buffer& source, Image& destination, [[maybe_unused]] std::size_t copy_bytes_length)
     {
         VkBufferImageCopy cpy{};
         cpy.bufferOffset = 0;
@@ -156,7 +156,7 @@ namespace tz::gl::vk
         tz_assert(res == VK_SUCCESS, "Failed to begin command buffer recording");
     }
 
-    CommandBuffer::CommandBuffer(const CommandPool& parent):
+    CommandBuffer::CommandBuffer([[maybe_unused]] const CommandPool& parent):
     command_buffer(VK_NULL_HANDLE),
     currently_recording(false)
     {
@@ -206,7 +206,7 @@ namespace tz::gl::vk
         tz_assert(res == VK_SUCCESS, "Failed to create command pool");
     }
 
-    CommandPool::CommandPool(const LogicalDevice& device, const hardware::DeviceQueueFamily& queue_family, RecycleableBufferTag recycleable):
+    CommandPool::CommandPool(const LogicalDevice& device, const hardware::DeviceQueueFamily& queue_family, [[maybe_unused]] RecycleableBufferTag recycleable):
     command_pool(VK_NULL_HANDLE),
     device(&device)
     {

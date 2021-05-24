@@ -6,7 +6,7 @@ namespace tz::gl::vk::validation
         VkDebugUtilsMessageSeverityFlagsEXT severity_filter,
         VkDebugUtilsMessageTypeFlagsEXT message_type_filter,
         VulkanDebugCallback auto callback,
-        void* user_data
+        [[maybe_unused]] void* user_data
     ):
     messenger(),
     current_instance(instance)

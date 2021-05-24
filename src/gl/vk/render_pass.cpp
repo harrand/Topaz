@@ -112,6 +112,7 @@ namespace tz::gl::vk
             {
                 case Image::Layout::Present:
                     ref.layout = static_cast<VkImageLayout>(Image::Layout::ColourAttachment);
+                    [[fallthrough]];
                 case Image::Layout::ColourAttachment:
                     desc.referenced_colour_attachments.push_back(ref);
                 break;
@@ -145,9 +146,9 @@ namespace tz::gl::vk
         {
             // This is not our attachment
             auto parent_list = this->parent->get_attachments();
-            auto iter = std::find_if(parent_list.begin(), parent_list.end(), [&attachment](const Attachment* attachment_ptr){return attachment == *attachment_ptr;});
-            tz_assert(iter != parent_list.end(), "Attachment not found within subpass nor the parent renderpass.");
-            auto global_index = std::distance(parent_list.begin(), iter);
+            auto parent_iter = std::find_if(parent_list.begin(), parent_list.end(), [&attachment](const Attachment* attachment_ptr){return attachment == *attachment_ptr;});
+            tz_assert(parent_iter != parent_list.end(), "Attachment not found within subpass nor the parent renderpass.");
+            auto global_index = std::distance(parent_list.begin(), parent_iter);
             return global_index;
         }
         // This is our attachment, we can pretty easily find it.
@@ -205,6 +206,7 @@ namespace tz::gl::vk
         create.pDependencies = &initial_dep;
 
         auto res = vkCreateRenderPass(this->device->native(), &create, nullptr, &this->render_pass);
+        tz_assert(res == VK_SUCCESS, "Failed to create render pass");
     }
 
     RenderPass::RenderPass(RenderPass&& move):

@@ -6,7 +6,7 @@
 
 namespace tz::gl::ogl
 {
-    void OpenGLInstance::opengl_debug_callback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* user_data)
+    void OpenGLInstance::opengl_debug_callback(GLenum source, GLenum type, GLuint id, GLenum severity, [[maybe_unused]] GLsizei length, const GLchar* message, [[maybe_unused]] const void* user_data)
     {
         // ignore non-significant error/warning codes
         if(id == 131169 || id == 131185 || id == 131218 || id == 131204) return; 
@@ -52,7 +52,7 @@ namespace tz::gl::ogl
         }
     }
 
-    OpenGLInstance::OpenGLInstance(tz::GameInfo game_info)
+    OpenGLInstance::OpenGLInstance([[maybe_unused]] tz::GameInfo game_info)
     {
         [[maybe_unused]] int glad_load_result = gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress));
         tz_assert(glad_load_result != 0, "gladLoadGLLoader returned error");

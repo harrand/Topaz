@@ -10,6 +10,7 @@ namespace tz::gl::vk
         VkSemaphoreCreateInfo create{};
         create.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
         auto res = vkCreateSemaphore(this->device->native(), &create, nullptr, &this->sem);
+        tz_assert(res == VK_SUCCESS, "Failed to create semaphore");
     }
 
     Semaphore::Semaphore(Semaphore&& move):

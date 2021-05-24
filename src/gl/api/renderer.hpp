@@ -49,7 +49,12 @@ namespace tz::gl
     class IRendererInput
     {
     public:
-        virtual std::unique_ptr<IRendererInput> unique_clone() const = 0;
+        /**
+         * @brief Clone the renderer input, creating an exact copy of the input data.
+         * 
+         * @return Smart pointer to the new IRendererInput. Ownership must be claimed by the caller.
+         */
+        [[nodiscard]] virtual std::unique_ptr<IRendererInput> unique_clone() const = 0;
 
         virtual constexpr RendererInputDataAccess data_access() const = 0;
         virtual RendererElementFormat get_format() const = 0;
@@ -66,8 +71,9 @@ namespace tz::gl
     template<class Derived>
     class IRendererInputCopyable : public IRendererInput
     {
+    public:
         /// Invokes `Derived::Derived(const Derived&)`
-        virtual std::unique_ptr<IRendererInput> unique_clone() const
+        [[nodiscard]] virtual std::unique_ptr<IRendererInput> unique_clone() const
         {
             static_assert(requires{requires std::copyable<Derived>;}, "IRendererInputCopyable<T>: T must be copyable. Derive from IRendererInput and implement unique_clone if not copyable.");
             return std::make_unique<Derived>(static_cast<const Derived&>(*this));
@@ -77,6 +83,7 @@ namespace tz::gl
     class IRendererOutput
     {
     public:
+        virtual ~IRendererOutput() = default;
         virtual void set_render_target() const = 0;
     };
 

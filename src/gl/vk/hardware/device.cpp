@@ -36,7 +36,7 @@ namespace tz::gl::vk::hardware
         int i = 0;
         for(const VkQueueFamilyProperties& prop : queue_fams)
         {
-            DeviceQueueFamily fam{.dev = this, .index = i};
+            DeviceQueueFamily fam{.dev = this, .index = i, .types_supported = {}};
             VkQueueFlags flag = prop.queueFlags;
             
             // The following queue family types are represented with a special bit.
@@ -56,6 +56,9 @@ namespace tz::gl::vk::hardware
                     break;
                     case QueueFamilyType::SparseBinding:
                         type_as_flag = VK_QUEUE_SPARSE_BINDING_BIT;
+                    break;
+                    case QueueFamilyType::Present:
+                        tz_error("Did not expect Present here");
                     break;
                 }
                 if(flag & type_as_flag)

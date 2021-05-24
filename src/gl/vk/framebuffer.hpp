@@ -20,8 +20,8 @@ namespace tz::gl::vk
         VkFramebuffer native() const;
 
     private:
-        const LogicalDevice* device;
         VkFramebuffer frame_buffer;
+        const LogicalDevice* device;
     };
 }
 

@@ -6,8 +6,8 @@
 namespace tz::gl::vk
 {
     VulkanApplicationInfo::VulkanApplicationInfo(tz::GameInfo game_info):
-    app_info(),
-    engine_name(game_info.engine.to_string())
+    engine_name(game_info.engine.to_string()),
+    app_info()
     {
         std::string engine_name = game_info.engine.to_string();
         auto ToVkVersion = [](tz::GameInfo::Version ver)->std::uint32_t
