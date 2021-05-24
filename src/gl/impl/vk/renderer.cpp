@@ -212,8 +212,16 @@ namespace tz::gl
 
     void RendererVulkan::setup_buffers()
     {
-        this->vertex_buffer = vk::Buffer{vk::BufferType::Vertex, vk::BufferPurpose::TransferDestination, *this->device, device_local_mem, this->renderer_input->get_vertex_bytes().size_bytes()};
-        this->index_buffer = vk::Buffer{vk::BufferType::Index, vk::BufferPurpose::TransferDestination, *this->device, device_local_mem, this->renderer_input->get_indices().size_bytes()};
+        switch(this->renderer_input->data_access())
+        {
+            case RendererInputDataAccess::StaticFixed:
+                this->vertex_buffer = vk::Buffer{vk::BufferType::Vertex, vk::BufferPurpose::TransferDestination, *this->device, device_local_mem, this->renderer_input->get_vertex_bytes().size_bytes()};
+                this->index_buffer = vk::Buffer{vk::BufferType::Index, vk::BufferPurpose::TransferDestination, *this->device, device_local_mem, this->renderer_input->get_indices().size_bytes()};
+            break;
+            default:
+                tz_error("Renderer inputs of this data access type are not yet implemented.");
+            break;
+        }
     }
 
     void RendererVulkan::setup_depth_image()

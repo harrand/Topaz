@@ -15,7 +15,6 @@ namespace tz::gl
         return this->attachments;
     }
 
-
     RenderPassOGL::RenderPassOGL(RenderPassBuilderOGL builder):
     subpasses(builder)
     {}

@@ -50,6 +50,8 @@ namespace tz::gl
     {
     public:
         virtual std::unique_ptr<IRendererInput> unique_clone() const = 0;
+
+        virtual constexpr RendererInputDataAccess data_access() const = 0;
         virtual RendererElementFormat get_format() const = 0;
         virtual std::span<const std::byte> get_vertex_bytes() const = 0;
         virtual std::span<const unsigned int> get_indices() const = 0;

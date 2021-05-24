@@ -115,16 +115,24 @@ namespace tz::gl
             }
 
             const IRendererInput& input = *builder.get_input();
+            switch(input.data_access())
             {
-                auto vertices_size = input.get_vertex_bytes().size();
-                auto vertices_size_bytes = input.get_vertex_bytes().size_bytes();
-                auto indices_size = input.get_indices().size();
-                auto indices_size_bytes = input.get_indices().size_bytes();
-                tz_report("VBO (%zu vertices, %zu bytes total)", vertices_size, vertices_size_bytes);
-                tz_report("IBO (%zu indices, %zu bytes total)", indices_size, indices_size_bytes);
-                glNamedBufferData(this->vbo, input.get_vertex_bytes().size_bytes(), input.get_vertex_bytes().data(), GL_STATIC_DRAW);
-                glNamedBufferData(this->ibo, input.get_indices().size_bytes(), input.get_indices().data(), GL_STATIC_DRAW);
-                this->index_count = input.get_indices().size();
+                case RendererInputDataAccess::StaticFixed:
+                {
+                    auto vertices_size = input.get_vertex_bytes().size();
+                    auto vertices_size_bytes = input.get_vertex_bytes().size_bytes();
+                    auto indices_size = input.get_indices().size();
+                    auto indices_size_bytes = input.get_indices().size_bytes();
+                    tz_report("VBO (%zu vertices, %zu bytes total)", vertices_size, vertices_size_bytes);
+                    tz_report("IBO (%zu indices, %zu bytes total)", indices_size, indices_size_bytes);
+                    glNamedBufferData(this->vbo, input.get_vertex_bytes().size_bytes(), input.get_vertex_bytes().data(), GL_STATIC_DRAW);
+                    glNamedBufferData(this->ibo, input.get_indices().size_bytes(), input.get_indices().data(), GL_STATIC_DRAW);
+                    this->index_count = input.get_indices().size();
+                }
+                break;
+                default:
+                    tz_error("Renderer inputs of this data access type are not yet implemented.");
+                break;
             }
             
             glBindBuffer(GL_ARRAY_BUFFER, this->vbo);
