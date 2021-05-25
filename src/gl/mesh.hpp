@@ -56,11 +56,6 @@ namespace tz::gl
         MeshInput(Mesh mesh, MeshInputIgnoreField ignores);
         MeshInput(const MeshInput& copy) = default;
 
-        virtual constexpr RendererInputDataAccess data_access() const final
-        {
-            return RendererInputDataAccess::StaticFixed;
-        }
-
         virtual RendererElementFormat get_format() const final;
         virtual std::span<const std::byte> get_vertex_bytes() const final;
         virtual std::span<const unsigned int> get_indices() const final;

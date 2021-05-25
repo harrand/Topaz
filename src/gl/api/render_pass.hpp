@@ -18,6 +18,9 @@ namespace tz::gl
         virtual void add_pass(RenderPassAttachment attachment) = 0;
     };
 
+    /**
+     * @brief Render-passes describe the composition of a single render-invocation of a @ref IRenderer. See @ref IRenderer::render().
+     */
     class IRenderPass
     {
     public:

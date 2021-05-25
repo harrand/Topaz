@@ -33,18 +33,24 @@ namespace tz::gl
         virtual GraphicsPrimitiveType get_primitive_type() const = 0;
     };
 
+    /**
+     * @brief Top-level interface through which `tz::gl` mechanisms can be constructed. Devices can be described as follows:
+     * - A device can spawn any number of `tz::gl` mechanisms, such as render-passes, renderers or shaders. It has sole ownership of anything it spawns.
+     * - Ownership transfer of these mechanisms to another Device is not supported.
+     * - Any mechanisms spawned by the device are valid until the device reaches the end of its lifetime.
+     */
     class IDevice
     {
     public:
         /**
-         * @brief Create a render-pass using this device and the provided builder.
+         * @brief Create an @ref IRenderPass using this device and the provided builder.
          * 
          * @param builder Builder describing the composition of the render-pass.
          * @return RenderPass 
          */
         virtual RenderPass create_render_pass(RenderPassBuilder builder) const = 0;
         /**
-         * @brief Create a renderer using this device and the provided builder.
+         * @brief Create an @ref IRenderer using this device and the provided builder.
          * @note Renderer inputs are copied over, so the renderer input provided is no longer needed once the renderer has been created.
          * 
          * @param builder Builder describing the parameters of the renderer.
@@ -52,7 +58,7 @@ namespace tz::gl
          */
         virtual Renderer create_renderer(RendererBuilder builder) const = 0;
         /**
-         * @brief Create a shader program using this device and the provided builder.
+         * @brief Create an @ref IShader using this device and the provided builder.
          *
          * @param builder Builder describing the sources and modules of the shader program.
          * @return Shader Shader program which can be provided to a `tz::gl::Renderer`.

@@ -55,9 +55,9 @@ namespace tz::gl
      */
     enum class RendererInputDataAccess
     {
-        /// Renderer input data is completely immutable -- It cannot be resized or edited.
+        /// Renderer input data is fixed and immutable -- It cannot be resized or edited.
         StaticFixed,
-        /// Renderer input data is partially immutable -- It cannot be resized but can be edited.
+        /// Renderer input data is fixed and mutable -- It cannot be resized but can be edited.
         DynamicFixed
     };
     /**

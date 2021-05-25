@@ -20,6 +20,11 @@ namespace tz::gl
         virtual std::string_view get_shader_source(ShaderType type) const = 0;
         virtual bool has_shader(ShaderType type) const = 0;
     };
+
+    class IShader
+    {
+    public:
+    };
     /**
      * @}
      */

@@ -56,9 +56,31 @@ namespace tz::gl
          */
         [[nodiscard]] virtual std::unique_ptr<IRendererInput> unique_clone() const = 0;
 
-        virtual constexpr RendererInputDataAccess data_access() const = 0;
+        /**
+         * @brief Retrieve the data access specifier for this render input type.
+         * @note Inputs derived from @ref IRendererInput are `StaticFixed` by default, but this can be overriden. Inputs derived from @ref IRendererDynamicInput are always `DynamicFixed` and this cannot be overridden.
+         * 
+         * @return constexpr RendererInputDataAccess 
+         */
+        virtual constexpr RendererInputDataAccess data_access() const {return RendererInputDataAccess::StaticFixed;}
+        /**
+         * @brief Obtain the format of the input elements.
+         * 
+         * @return RenderElementFormat corresponding to layout of a single vertex data element.
+         */
         virtual RendererElementFormat get_format() const = 0;
+        /**
+         * @brief Retrieve the vertex data as bytes. The data within the span is immutable.
+         * @note See @ref IRendererDynamicInput::get_vertex_bytes_dynamic() for the option of mutable vertex data.
+         * @note It is vaild to interpret these bytes as a `VertexType`, where VertexType is the type of the vertex data.
+         * @return std::span<const std::byte> displaying the byte-representation of vertex data.
+         */
         virtual std::span<const std::byte> get_vertex_bytes() const = 0;
+        /**
+         * @brief Retrieve the index data.
+         * 
+         * @return std::span<const unsigned int> displaying an array of all the indices.
+         */
         virtual std::span<const unsigned int> get_indices() const = 0;
     };
 
@@ -80,13 +102,37 @@ namespace tz::gl
         }
     };
 
+    /**
+     * @brief Similar to @ref IRendererInput, but the vertex/index data can be changed at any point, even while used by a renderer.
+     * 
+     */
     class IRendererDynamicInput : public IRendererInput
     {
     public:
+        /**
+         * @brief Retrieve the data access specifier for this render input type.
+         * @note Inputs derived from @ref IRendererInput are `StaticFixed` by default. Inputs derived from @ref IRendererDynamicInput are `DynamicFixed` by default.
+         * 
+         * @return constexpr RendererInputDataAccess 
+         */
         virtual constexpr RendererInputDataAccess data_access() const final{return RendererInputDataAccess::DynamicFixed;}
-
+        /**
+         * @brief Retrieve the vertex data as bytes. The data within the span is mutable.
+         * @note Aside from mutablility, this is functionally identical to @ref IRendererInput::get_vertex_bytes().
+         * @note Dynamic vertex data can be edited on-the-fly -- It is valid to edit data even while the input is in-use by a renderer, in which case the updated values are guaranteed to be visible in the next render invocation.
+         * @return std::span<std::byte> displaying the byte-representation of vertex data.
+         */
         virtual std::span<std::byte> get_vertex_bytes_dynamic() = 0;
+        
+        #if TZ_VULKAN
+            friend class RendererVulkan;
+        #elif TZ_OGL
+            friend class RendererOGL;
+        #endif
+    private:
+        // Only intended to be used by the Renderer.
         virtual void set_vertex_data(std::byte* vertex_data) = 0;
+        // Only intended to be used by the Renderer.
         virtual void set_index_data(unsigned int* index_data) = 0;
     };
 
@@ -125,7 +171,8 @@ namespace tz::gl
     public:
         /**
          * @brief Provide initial input data for the renderer.
-         * @todo Allow this data to be changed later. Right now as soon as the Renderer is constructed this data never changes.
+         * It is an error to retain this reference to dynamic input data and expect to change it later. To do that, create the Renderer as normal and invoke @ref IRenderer::get_input() to retrieve the Renderer's own copy of the input and perform your processing there.
+         * @note When the Renderer is constructed, it will have its own copy of the input.
          * 
          * @param input Reference to an existing @ref IRendererInput
          */
@@ -170,6 +217,16 @@ namespace tz::gl
         virtual const Shader& get_shader() const = 0;
     };
 
+    /**
+     * @brief High-level object used to render geometry. Renderers can be described as follows:
+     * - A Renderer has exactly one @ref IRendererInput. It is planned to allow Renderers without inputs (for example, if vertices are hard-coded within the shader) but this is not yet implemented.
+     * - A Renderer has exactly one @ref IRendererOutput.
+     * - Renderers will never change their input or its corresponding input data.
+     * - Renderers cannot have their input/output changed. However, dynamic input data is supported via @ref IRendererDynamicInput.
+     * - Renderers have an initial clear-colour but this can be changed after construction. If it is changed during rendering, this may reconstruct the entire render pipeline and incur a large spike in latency.
+     * - Renderers will be able to use any number of resources (aka uniform buffers, textures etc...) This is not yet implemented.
+     * - Renderers will be able to edit data for a given resource if the resource is writable (e.g SSBOs).
+     */
     class IRenderer
     {
     public:
@@ -187,8 +244,19 @@ namespace tz::gl
          */
         virtual tz::Vec4 get_clear_colour() const = 0;
 
+        /**
+         * @brief Retrieve the renderer input.
+         * @note Each renderer takes a copy of the input it was given in its corresponding `IRendererBuilder`. This is NOT the same input as the one you gave to the builder.
+         * @note The pointer returned is valid until this Renderer reaches the end of its lifetime.
+         * @details For static renderer inputs, you will rarely find this useful. If you have dynamic renderer inputs, you should retrieve a pointer to the input here and edit its data as you wish.
+         * 
+         * @return IRendererInput* pointing to the renderer's input.
+         */
         virtual IRendererInput* get_input() = 0;
 
+        /**
+         * @brief Proceed through the provided render-pass using any inputs and resources.
+         */
         virtual void render() = 0;
     };
     /**
