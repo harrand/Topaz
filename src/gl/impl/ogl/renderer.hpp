@@ -43,6 +43,7 @@ namespace tz::gl
 
         virtual void set_clear_colour(tz::Vec4 clear_colour) final;
         virtual tz::Vec4 get_clear_colour() const final;
+        virtual IRendererInput* get_input() final;
         
         virtual void render() final;
     private:
@@ -51,6 +52,7 @@ namespace tz::gl
         GLsizei index_count;
         const RenderPass* render_pass;
         const Shader* shader;
+        std::unique_ptr<IRendererInput> input;
         const IRendererOutput* output;
     };
 }

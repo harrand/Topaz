@@ -68,6 +68,30 @@ namespace tz::gl
         Mesh mesh;
         MeshInputIgnoreField ignores;
     };
+
+    class MeshDynamicInput : public IRendererDynamicInputCopyable<MeshDynamicInput>
+    {
+    public:
+        MeshDynamicInput(Mesh mesh);
+        MeshDynamicInput(Mesh mesh, MeshInputIgnoreField ignores);
+        MeshDynamicInput(const MeshDynamicInput& copy);
+        ~MeshDynamicInput() = default;
+        MeshDynamicInput& operator=(const MeshDynamicInput& rhs);
+
+        virtual RendererElementFormat get_format() const final;
+        virtual std::span<const std::byte> get_vertex_bytes() const final;
+        virtual std::span<const unsigned int> get_indices() const final;
+
+        // IRendererDynamicInput
+        virtual std::span<std::byte> get_vertex_bytes_dynamic() final;
+        virtual void set_vertex_data(std::byte* vertex_data) final;
+        virtual void set_index_data(unsigned int* index_data) final;
+    private:
+        Mesh initial_data;
+        MeshInputIgnoreField ignores;
+        std::byte* vertex_data;
+        unsigned int* index_data;
+    };
 }
 
 #endif // TOPAZ_GL_MESH_HPP

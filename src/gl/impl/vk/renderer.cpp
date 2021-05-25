@@ -205,6 +205,11 @@ namespace tz::gl
         return this->clear_colour;
     }
 
+    IRendererInput* RendererVulkan::get_input()
+    {
+        return this->renderer_input.get();
+    }
+
     void RendererVulkan::render()
     {
         this->frame_admin.render_frame(this->graphics_present_queue, *this->swapchain, this->command_pool, vk::WaitStages{vk::WaitStage::ColourAttachmentOutput});
@@ -218,8 +223,14 @@ namespace tz::gl
                 this->vertex_buffer = vk::Buffer{vk::BufferType::Vertex, vk::BufferPurpose::TransferDestination, *this->device, device_local_mem, this->renderer_input->get_vertex_bytes().size_bytes()};
                 this->index_buffer = vk::Buffer{vk::BufferType::Index, vk::BufferPurpose::TransferDestination, *this->device, device_local_mem, this->renderer_input->get_indices().size_bytes()};
             break;
-            default:
-                tz_error("Renderer inputs of this data access type are not yet implemented.");
+            case RendererInputDataAccess::DynamicFixed:
+                auto& dynamic_input = static_cast<IRendererDynamicInput&>(*this->renderer_input);
+                // Create buffers in host-visible memory (slow) and pass the mapped ptrs to the renderer input.
+                // Note: This also copies over the initial vertex data to buffers. Nothing is done in scratch command buffers this time.
+                this->vertex_buffer = vk::Buffer{vk::BufferType::Vertex, vk::BufferPurpose::NothingSpecial, *this->device, host_visible_mem, this->renderer_input->get_vertex_bytes().size_bytes()};
+                dynamic_input.set_vertex_data(static_cast<std::byte*>(this->vertex_buffer->map_memory()));
+                this->index_buffer = vk::Buffer{vk::BufferType::Index, vk::BufferPurpose::NothingSpecial, *this->device, host_visible_mem, this->renderer_input->get_indices().size_bytes()};
+                dynamic_input.set_index_data(static_cast<unsigned int*>(this->index_buffer->map_memory()));
             break;
         }
     }
@@ -259,41 +270,44 @@ namespace tz::gl
 
     void RendererVulkan::record_and_run_scratch_commands()
     {
-        // Setup transfers using the scratch buffers.
-        vk::CommandBuffer& scratch_buf = this->command_pool[this->swapchain->get_image_views().size()];
+        if(this->renderer_input->data_access() == RendererInputDataAccess::StaticFixed)
         {
-            // Part 1: Transfer vertex data.
-            auto vertex_data = this->renderer_input->get_vertex_bytes();
-            tz_report("VB (%zu vertices, %zu bytes total)", vertex_data.size(), vertex_data.size_bytes());
-            vk::Buffer vertices_staging{vk::BufferType::Staging, vk::BufferPurpose::TransferSource, *this->device, host_visible_mem, vertex_data.size_bytes()};
-            vertices_staging.write(vertex_data.data(), vertex_data.size_bytes());
+            // Setup transfers using the scratch buffers.
+            vk::CommandBuffer& scratch_buf = this->command_pool[this->swapchain->get_image_views().size()];
             {
-                vk::CommandBufferRecording transfer_vertices = scratch_buf.record();
-                transfer_vertices.buffer_copy_buffer(vertices_staging, this->vertex_buffer.value(), vertex_data.size_bytes());
+                // Part 1: Transfer vertex data.
+                auto vertex_data = this->renderer_input->get_vertex_bytes();
+                tz_report("VB (%zu vertices, %zu bytes total)", vertex_data.size(), vertex_data.size_bytes());
+                vk::Buffer vertices_staging{vk::BufferType::Staging, vk::BufferPurpose::TransferSource, *this->device, host_visible_mem, vertex_data.size_bytes()};
+                vertices_staging.write(vertex_data.data(), vertex_data.size_bytes());
+                {
+                    vk::CommandBufferRecording transfer_vertices = scratch_buf.record();
+                    transfer_vertices.buffer_copy_buffer(vertices_staging, this->vertex_buffer.value(), vertex_data.size_bytes());
+                }
+
+                vk::Fence copy_fence{*this->device};
+                copy_fence.signal();
+                vk::Submit do_scratch_operation{vk::CommandBuffers{scratch_buf}, vk::SemaphoreRefs{}, vk::WaitStages{}, vk::SemaphoreRefs{}};
+
+                // Submit Part 1
+                do_scratch_operation(this->graphics_present_queue, copy_fence);
+
+                copy_fence.wait_for();
+                scratch_buf.reset();
+                // Part 2: Transfer index data.
+                auto index_data = this->renderer_input->get_indices();
+                tz_report("IB (%zu indices, %zu bytes total)", index_data.size(), index_data.size_bytes());
+                vk::Buffer indices_staging{vk::BufferType::Staging, vk::BufferPurpose::TransferSource, *this->device, host_visible_mem, index_data.size_bytes()};
+                indices_staging.write(index_data.data(), index_data.size_bytes());
+                {
+                    vk::CommandBufferRecording transfer_indices = scratch_buf.record();
+                    transfer_indices.buffer_copy_buffer(indices_staging, this->index_buffer.value(), index_data.size_bytes());
+                }
+                copy_fence.signal();
+                // Submit Part 2
+                do_scratch_operation(this->graphics_present_queue, copy_fence);
+                copy_fence.wait_for();
             }
-
-            vk::Fence copy_fence{*this->device};
-            copy_fence.signal();
-            vk::Submit do_scratch_operation{vk::CommandBuffers{scratch_buf}, vk::SemaphoreRefs{}, vk::WaitStages{}, vk::SemaphoreRefs{}};
-
-            // Submit Part 1
-            do_scratch_operation(this->graphics_present_queue, copy_fence);
-
-            copy_fence.wait_for();
-            scratch_buf.reset();
-            // Part 2: Transfer index data.
-            auto index_data = this->renderer_input->get_indices();
-            tz_report("IB (%zu indices, %zu bytes total)", index_data.size(), index_data.size_bytes());
-            vk::Buffer indices_staging{vk::BufferType::Staging, vk::BufferPurpose::TransferSource, *this->device, host_visible_mem, index_data.size_bytes()};
-            indices_staging.write(index_data.data(), index_data.size_bytes());
-            {
-                vk::CommandBufferRecording transfer_indices = scratch_buf.record();
-                transfer_indices.buffer_copy_buffer(indices_staging, this->index_buffer.value(), index_data.size_bytes());
-            }
-            copy_fence.signal();
-            // Submit Part 2
-            do_scratch_operation(this->graphics_present_queue, copy_fence);
-            copy_fence.wait_for();
         }
     }
 

@@ -73,7 +73,35 @@ namespace tz::gl
     {
     public:
         /// Invokes `Derived::Derived(const Derived&)`
-        [[nodiscard]] virtual std::unique_ptr<IRendererInput> unique_clone() const
+        [[nodiscard]] virtual std::unique_ptr<IRendererInput> unique_clone() const final
+        {
+            static_assert(requires{requires std::copyable<Derived>;}, "IRendererInputCopyable<T>: T must be copyable. Derive from IRendererInput and implement unique_clone if not copyable.");
+            return std::make_unique<Derived>(static_cast<const Derived&>(*this));
+        }
+    };
+
+    class IRendererDynamicInput : public IRendererInput
+    {
+    public:
+        virtual constexpr RendererInputDataAccess data_access() const final{return RendererInputDataAccess::DynamicFixed;}
+
+        virtual std::span<std::byte> get_vertex_bytes_dynamic() = 0;
+        virtual void set_vertex_data(std::byte* vertex_data) = 0;
+        virtual void set_index_data(unsigned int* index_data) = 0;
+    };
+
+    /**
+     * @brief Identical to @ref IRendererInput, but `IRendererInputCopyable<T>::unique_clone()` need not be implemented.
+     * @pre Derived must be copy-constructible. Otherwise, the program is ill-formed.
+     * 
+     * @tparam Derived Renderer input type. It must be copy-constructible.
+     */
+    template<class Derived>
+    class IRendererDynamicInputCopyable : public IRendererDynamicInput
+    {
+    public:
+        /// Invokes `Derived::Derived(const Derived&)`
+        [[nodiscard]] virtual std::unique_ptr<IRendererInput> unique_clone() const final
         {
             static_assert(requires{requires std::copyable<Derived>;}, "IRendererInputCopyable<T>: T must be copyable. Derive from IRendererInput and implement unique_clone if not copyable.");
             return std::make_unique<Derived>(static_cast<const Derived&>(*this));
@@ -158,6 +186,8 @@ namespace tz::gl
          * @return Clear colour value, as a normalised Vec4.
          */
         virtual tz::Vec4 get_clear_colour() const = 0;
+
+        virtual IRendererInput* get_input() = 0;
 
         virtual void render() = 0;
     };

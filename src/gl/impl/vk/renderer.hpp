@@ -56,6 +56,7 @@ namespace tz::gl
     
         virtual void set_clear_colour(tz::Vec4 clear_colour) final;
         virtual tz::Vec4 get_clear_colour() const final;
+        virtual IRendererInput* get_input() final;
         
         virtual void render() final;
     private:
@@ -71,7 +72,7 @@ namespace tz::gl
         const vk::LogicalDevice* device;
         const vk::hardware::Device* physical_device;
         const RenderPass* render_pass;
-        std::unique_ptr<const IRendererInput> renderer_input;
+        std::unique_ptr<IRendererInput> renderer_input;
         vk::hardware::MemoryModule device_local_mem;
         vk::hardware::MemoryModule host_visible_mem;
         const vk::ShaderModule* vertex_shader;

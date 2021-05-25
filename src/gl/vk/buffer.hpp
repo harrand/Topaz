@@ -32,6 +32,8 @@ namespace tz::gl::vk
         BufferType get_type() const;
 
         void write(const void* addr, std::size_t bytes);
+        void* map_memory();
+        void unmap_memory();
 
         Buffer& operator=(const Buffer& rhs) = delete;
         Buffer& operator=(Buffer&& rhs);

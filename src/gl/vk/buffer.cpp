@@ -107,6 +107,18 @@ namespace tz::gl::vk
         vkUnmapMemory(this->device->native(), this->memory);
     }
 
+    void* Buffer::map_memory()
+    {
+        void* data;
+        vkMapMemory(this->device->native(), this->memory, 0, VK_WHOLE_SIZE, 0, &data);
+        return data;
+    }
+
+    void Buffer::unmap_memory()
+    {
+        vkUnmapMemory(this->device->native(), this->memory);
+    }
+
     Buffer& Buffer::operator=(Buffer&& rhs)
     {
         std::swap(this->buffer, rhs.buffer);

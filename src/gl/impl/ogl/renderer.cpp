@@ -71,6 +71,7 @@ namespace tz::gl
     index_count(0),
     render_pass(&builder.get_render_pass()),
     shader(&builder.get_shader()),
+    input(builder.get_input()->unique_clone()),
     output(builder.get_output())
     {
         switch(builder.get_render_pass().ogl_get_attachments()[0])
@@ -114,24 +115,33 @@ namespace tz::gl
                 this->ibo = buffers[1];
             }
 
-            const IRendererInput& input = *builder.get_input();
+            const IRendererInput& input = *this->input;
+
+            auto vertices_size = input.get_vertex_bytes().size();
+            auto vertices_size_bytes = input.get_vertex_bytes().size_bytes();
+            auto indices_size = input.get_indices().size();
+            auto indices_size_bytes = input.get_indices().size_bytes();
+            tz_report("VBO (%zu vertices, %zu bytes total)", vertices_size, vertices_size_bytes);
+            tz_report("IBO (%zu indices, %zu bytes total)", indices_size, indices_size_bytes);
             switch(input.data_access())
             {
                 case RendererInputDataAccess::StaticFixed:
                 {
-                    auto vertices_size = input.get_vertex_bytes().size();
-                    auto vertices_size_bytes = input.get_vertex_bytes().size_bytes();
-                    auto indices_size = input.get_indices().size();
-                    auto indices_size_bytes = input.get_indices().size_bytes();
-                    tz_report("VBO (%zu vertices, %zu bytes total)", vertices_size, vertices_size_bytes);
-                    tz_report("IBO (%zu indices, %zu bytes total)", indices_size, indices_size_bytes);
                     glNamedBufferData(this->vbo, input.get_vertex_bytes().size_bytes(), input.get_vertex_bytes().data(), GL_STATIC_DRAW);
                     glNamedBufferData(this->ibo, input.get_indices().size_bytes(), input.get_indices().data(), GL_STATIC_DRAW);
                     this->index_count = input.get_indices().size();
                 }
                 break;
-                default:
-                    tz_error("Renderer inputs of this data access type are not yet implemented.");
+                case RendererInputDataAccess::DynamicFixed:
+                    auto& dynamic_input = static_cast<IRendererDynamicInput&>(*this->input);
+                    auto persistent_mapped_buffer_flags = GL_MAP_READ_BIT | GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT;
+                    glNamedBufferStorage(this->vbo, dynamic_input.get_vertex_bytes().size_bytes(), dynamic_input.get_vertex_bytes().data(), persistent_mapped_buffer_flags);
+                    glNamedBufferStorage(this->ibo, dynamic_input.get_indices().size_bytes(), dynamic_input.get_indices().data(), persistent_mapped_buffer_flags);
+                    this->index_count = dynamic_input.get_indices().size();
+                    void* vertex_data = glMapNamedBufferRange(this->vbo, 0, dynamic_input.get_vertex_bytes().size_bytes(), persistent_mapped_buffer_flags);
+                    void* index_data = glMapNamedBufferRange(this->ibo, 0, dynamic_input.get_indices().size_bytes(), persistent_mapped_buffer_flags);
+                    dynamic_input.set_vertex_data(static_cast<std::byte*>(vertex_data));
+                    dynamic_input.set_index_data(static_cast<unsigned int*>(index_data));
                 break;
             }
             
@@ -218,6 +228,11 @@ namespace tz::gl
     void RendererOGL::set_clear_colour(tz::Vec4 clear_colour)
     {
         glClearColor(clear_colour[0], clear_colour[1], clear_colour[2], clear_colour[3]);
+    }
+
+    IRendererInput* RendererOGL::get_input()
+    {
+        return this->input.get();
     }
 
     tz::Vec4 RendererOGL::get_clear_colour() const
