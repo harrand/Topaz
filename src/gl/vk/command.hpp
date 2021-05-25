@@ -24,7 +24,7 @@ namespace tz::gl::vk
         CommandBufferRecording& operator=(CommandBufferRecording&& rhs);
 
         void buffer_copy_buffer(const Buffer& source, Buffer& destination, std::size_t copy_bytes_length);
-        void buffer_copy_image(const Buffer& source, Image& destination, std::size_t copy_bytes_length);
+        void buffer_copy_image(const Buffer& source, Image& destination);
         void transition_image_layout(Image& image, Image::Layout new_layout);
         void bind(const Buffer& buf);
         void bind(const DescriptorSet& descriptor_set, const pipeline::Layout& layout);

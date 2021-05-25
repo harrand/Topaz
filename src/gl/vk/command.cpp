@@ -34,7 +34,7 @@ namespace tz::gl::vk
         vkCmdCopyBuffer(this->command_buffer->native(), source.native(), destination.native(), 1, &cpy);
     }
 
-    void CommandBufferRecording::buffer_copy_image(const Buffer& source, Image& destination, [[maybe_unused]] std::size_t copy_bytes_length)
+    void CommandBufferRecording::buffer_copy_image(const Buffer& source, Image& destination)
     {
         VkBufferImageCopy cpy{};
         cpy.bufferOffset = 0;

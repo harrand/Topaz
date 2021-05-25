@@ -226,7 +226,7 @@ int main()
         {
             vk::DescriptorSetsCreationRequest& request = requests.new_request();
             request.add_buffer(mvp_bufs[i], 0, VK_WHOLE_SIZE, ubo_binding);
-            request.add_image(img_view, img_sampler, 0, VK_WHOLE_SIZE, img_binding);
+            request.add_image(img_view, img_sampler, img_binding);
         }
         descriptor_pool.initialise_sets(requests);
         /*
@@ -289,7 +289,7 @@ int main()
                 vk::CommandBufferRecording transfer_image = transfer_cmd_buf.record();
                 img.set_layout(transfer_image, vk::Image::Layout::TransferDestination);
                 //transfer_image.transition_image_layout(img, vk::Image::Layout::TransferDestination);
-                transfer_image.buffer_copy_image(img_buf, img, img_bytes);
+                transfer_image.buffer_copy_image(img_buf, img);
                 img.set_layout(transfer_image, vk::Image::Layout::ShaderResource);
                 //transfer_image.transition_image_layout(img, vk::Image::Layout::ShaderResource);
             }
