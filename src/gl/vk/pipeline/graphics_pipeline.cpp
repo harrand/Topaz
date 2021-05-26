@@ -100,7 +100,7 @@ namespace tz::gl::vk
         return *this;
     }
 
-    void GraphicsPipeline::bind(const CommandBuffer& command_buffer)
+    void GraphicsPipeline::bind(const CommandBuffer& command_buffer) const
     {
         vkCmdBindPipeline(command_buffer.native(), VK_PIPELINE_BIND_POINT_GRAPHICS, this->graphics_pipeline);
     }

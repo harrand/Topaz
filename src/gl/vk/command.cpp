@@ -250,6 +250,11 @@ namespace tz::gl::vk
         return this->command_pool;
     }
 
+    bool CommandPool::empty() const
+    {
+        return this->buffers.empty();
+    }
+
     void CommandPool::clear()
     {
         auto buffer_natives = this->get_buffer_natives();

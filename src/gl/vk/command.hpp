@@ -75,6 +75,7 @@ namespace tz::gl::vk
         VkCommandPool native() const;
         template<typename... Args>
         std::size_t with(std::size_t count, Args&&... args);
+        bool empty() const;
         void clear();
 
         CommandBuffer& operator[](std::size_t idx);

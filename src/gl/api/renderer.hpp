@@ -125,7 +125,7 @@ namespace tz::gl
         virtual std::span<std::byte> get_vertex_bytes_dynamic() = 0;
         
         #if TZ_VULKAN
-            friend class RendererVulkan;
+            friend class RendererBufferManagerVulkan;
         #elif TZ_OGL
             friend class RendererOGL;
         #endif
