@@ -125,14 +125,14 @@ namespace tz::gl
             tz_report("IBO (%zu indices, %zu bytes total)", indices_size, indices_size_bytes);
             switch(input.data_access())
             {
-                case RendererInputDataAccess::StaticFixed:
+                case RendererDataAccess::StaticFixed:
                 {
                     glNamedBufferData(this->vbo, input.get_vertex_bytes().size_bytes(), input.get_vertex_bytes().data(), GL_STATIC_DRAW);
                     glNamedBufferData(this->ibo, input.get_indices().size_bytes(), input.get_indices().data(), GL_STATIC_DRAW);
                     this->index_count = input.get_indices().size();
                 }
                 break;
-                case RendererInputDataAccess::DynamicFixed:
+                case RendererDataAccess::DynamicFixed:
                     auto& dynamic_input = static_cast<IRendererDynamicInput&>(*this->input);
                     auto persistent_mapped_buffer_flags = GL_MAP_READ_BIT | GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT;
                     glNamedBufferStorage(this->vbo, dynamic_input.get_vertex_bytes().size_bytes(), dynamic_input.get_vertex_bytes().data(), persistent_mapped_buffer_flags);

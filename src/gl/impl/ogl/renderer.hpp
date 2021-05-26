@@ -13,12 +13,20 @@ namespace tz::gl
         RendererBuilderOGL() = default;
         virtual void set_input(const IRendererInput& input) final;
         virtual const IRendererInput* get_input() const final;
+
         virtual void set_output(const IRendererOutput& output) final;
         virtual const IRendererOutput* get_output() const final;
+
+        virtual void add_resource(unsigned int resource_id, const IResource& resource) final;
+        virtual void remove_resource(unsigned int resource_id) final;
+        virtual const IResource* get_resource(unsigned int resource_id) const final;
+
         virtual void set_culling_strategy(RendererCullingStrategy culling_strategy) final;
         virtual RendererCullingStrategy get_culling_strategy() const final;
+
         virtual void set_render_pass(const RenderPass& render_pass) final;
         virtual const RenderPass& get_render_pass() const final;
+
         virtual void set_shader(const Shader& shader) final;
         virtual const Shader& get_shader() const final;
     private:

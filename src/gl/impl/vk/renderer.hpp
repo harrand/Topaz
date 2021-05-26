@@ -1,5 +1,6 @@
 #ifndef TOPAZ_GL_IMPL_VK_RENDERER_HPP
 #define TOPAZ_GL_IMPL_VK_RENDERER_HPP
+#include "core/containers/polymorphic_list.hpp"
 #include "gl/api/renderer.hpp"
 #include "gl/impl/common/device.hpp"
 
@@ -23,6 +24,10 @@ namespace tz::gl
         virtual void set_output(const IRendererOutput& output) final;
         virtual const IRendererOutput* get_output() const final;
 
+        virtual void add_resource(unsigned int resource_id, const IResource& resource) final;
+        virtual void remove_resource(unsigned int resource_id) final;
+        virtual const IResource* get_resource(unsigned int resource_id) const final;
+
         virtual void set_culling_strategy(RendererCullingStrategy culling_strategy) final;
         virtual RendererCullingStrategy get_culling_strategy() const final;
         virtual void set_render_pass(const RenderPass& render_pass) final;
@@ -35,6 +40,7 @@ namespace tz::gl
     private:
         const IRendererInput* input = nullptr;
         const IRendererOutput* output = nullptr;
+        std::vector<const IResource*> resources = {};
         RendererCullingStrategy culling_strategy = RendererCullingStrategy::NoCulling;
         const RenderPass* render_pass = nullptr;
         const Shader* shader = nullptr;

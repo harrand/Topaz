@@ -4,7 +4,9 @@
 #include "gl/render_pass.hpp"
 #include "gl/renderer.hpp"
 #include "gl/mesh.hpp"
+#include "gl/resource.hpp"
 #include "gl/shader.hpp"
+#include <cstring>
 
 int main()
 {
@@ -37,8 +39,18 @@ int main()
             0, 1, 2
         };
         tz::gl::MeshInput mesh_input{mesh};
+
+        tz::Vec3 triangle_pos{0.0f, 0.5f, 0.0f};
+        tz::gl::BufferResourceData triangle_pos_data;
+        {
+            triangle_pos_data.data.resize(sizeof(tz::Vec3));
+            std::memcpy(triangle_pos_data.data.data(), &triangle_pos, sizeof(tz::Vec3));
+        }
+        tz::gl::BufferResource triangle_resource{triangle_pos_data};
+
         renderer_builder.set_input(mesh_input);
         renderer_builder.set_output(tz::window());
+        renderer_builder.add_resource(0, triangle_resource);
         renderer_builder.set_render_pass(render_pass);
         renderer_builder.set_shader(shader);
         tz::gl::Renderer renderer = device.create_renderer(renderer_builder);

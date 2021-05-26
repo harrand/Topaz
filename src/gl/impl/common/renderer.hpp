@@ -53,7 +53,7 @@ namespace tz::gl
     /**
      * @brief Describes how IRendererInput data can be accessed after Renderer construction.
      */
-    enum class RendererInputDataAccess
+    enum class RendererDataAccess
     {
         /// Renderer input data is fixed and immutable -- It cannot be resized or edited.
         StaticFixed,

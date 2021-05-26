@@ -27,6 +27,43 @@ namespace tz::gl
         return this->output;
     }
 
+    void RendererBuilderVulkan::add_resource(unsigned int resource_id, const IResource& resource)
+    {
+        // If resource list is too small, fill it with zeros.
+        if(this->resources.size() <= resource_id)
+        {
+            this->resources.resize(resource_id, nullptr);
+            this->resources.push_back(&resource);
+        }
+        else
+        {
+            // Our resource list is large enough, but the id might already be taken.
+            tz_assert(this->resources[resource_id] == nullptr, "A resource already exists with this id.");
+            this->resources[resource_id] = &resource;
+        }
+    }
+
+    void RendererBuilderVulkan::remove_resource(unsigned int resource_id)
+    {
+        if(this->resources.size() <= resource_id)
+        {
+            // Doesn't even contain it.
+            return;
+        }
+
+        // Builder does not own the pointers, so we don't need to do any deletions here.
+        this->resources[resource_id] = nullptr;
+    }
+
+    const IResource* RendererBuilderVulkan::get_resource(unsigned int resource_id) const
+    {
+        if(this->resources.size() <= resource_id)
+        {
+            return nullptr;
+        }
+        return this->resources[resource_id];
+    }
+
     void RendererBuilderVulkan::set_culling_strategy(RendererCullingStrategy culling_strategy)
     {
         this->culling_strategy = culling_strategy;
@@ -219,11 +256,11 @@ namespace tz::gl
     {
         switch(this->renderer_input->data_access())
         {
-            case RendererInputDataAccess::StaticFixed:
+            case RendererDataAccess::StaticFixed:
                 this->vertex_buffer = vk::Buffer{vk::BufferType::Vertex, vk::BufferPurpose::TransferDestination, *this->device, device_local_mem, this->renderer_input->get_vertex_bytes().size_bytes()};
                 this->index_buffer = vk::Buffer{vk::BufferType::Index, vk::BufferPurpose::TransferDestination, *this->device, device_local_mem, this->renderer_input->get_indices().size_bytes()};
             break;
-            case RendererInputDataAccess::DynamicFixed:
+            case RendererDataAccess::DynamicFixed:
                 auto& dynamic_input = static_cast<IRendererDynamicInput&>(*this->renderer_input);
                 // Create buffers in host-visible memory (slow) and pass the mapped ptrs to the renderer input.
                 // Note: This also copies over the initial vertex data to buffers. Nothing is done in scratch command buffers this time.
@@ -270,7 +307,7 @@ namespace tz::gl
 
     void RendererVulkan::record_and_run_scratch_commands()
     {
-        if(this->renderer_input->data_access() == RendererInputDataAccess::StaticFixed)
+        if(this->renderer_input->data_access() == RendererDataAccess::StaticFixed)
         {
             // Setup transfers using the scratch buffers.
             vk::CommandBuffer& scratch_buf = this->command_pool[this->swapchain->get_image_views().size()];

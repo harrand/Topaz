@@ -4,6 +4,7 @@
 #include "core/vector.hpp"
 #include "gl/impl/common/renderer.hpp"
 #include "gl/render_pass.hpp"
+#include "gl/resource.hpp"
 #include "gl/shader.hpp"
 #include <cstdint>
 #include <concepts>
@@ -60,9 +61,9 @@ namespace tz::gl
          * @brief Retrieve the data access specifier for this render input type.
          * @note Inputs derived from @ref IRendererInput are `StaticFixed` by default, but this can be overriden. Inputs derived from @ref IRendererDynamicInput are always `DynamicFixed` and this cannot be overridden.
          * 
-         * @return constexpr RendererInputDataAccess 
+         * @return constexpr RendererDataAccess 
          */
-        virtual constexpr RendererInputDataAccess data_access() const {return RendererInputDataAccess::StaticFixed;}
+        virtual constexpr RendererDataAccess data_access() const {return RendererDataAccess::StaticFixed;}
         /**
          * @brief Obtain the format of the input elements.
          * 
@@ -113,9 +114,9 @@ namespace tz::gl
          * @brief Retrieve the data access specifier for this render input type.
          * @note Inputs derived from @ref IRendererInput are `StaticFixed` by default. Inputs derived from @ref IRendererDynamicInput are `DynamicFixed` by default.
          * 
-         * @return constexpr RendererInputDataAccess 
+         * @return constexpr RendererDataAccess 
          */
-        virtual constexpr RendererInputDataAccess data_access() const final{return RendererInputDataAccess::DynamicFixed;}
+        virtual constexpr RendererDataAccess data_access() const final{return RendererDataAccess::DynamicFixed;}
         /**
          * @brief Retrieve the vertex data as bytes. The data within the span is mutable.
          * @note Aside from mutablility, this is functionally identical to @ref IRendererInput::get_vertex_bytes().
@@ -186,6 +187,10 @@ namespace tz::gl
 
         virtual void set_output(const IRendererOutput& output) = 0;
         virtual const IRendererOutput* get_output() const = 0;
+
+        virtual void add_resource(unsigned int resource_id, const IResource& resource) = 0;
+        virtual void remove_resource(unsigned int resource_id) = 0;
+        virtual const IResource* get_resource(unsigned int resource_id) const = 0;
 
         /**
          * @brief Set the culling strategy used during rendering.

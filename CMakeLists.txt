@@ -47,12 +47,15 @@ add_library(topaz
     src/gl/mesh.hpp
     src/gl/render_pass.hpp
     src/gl/renderer.hpp
+    src/gl/resource.cpp
+    src/gl/resource.hpp
     src/gl/shader.hpp
 
     # tz::gl (API)
     src/gl/api/device.hpp
     src/gl/api/render_pass.hpp
     src/gl/api/renderer.hpp
+    src/gl/api/resource.hpp
     src/gl/api/shader.hpp
 
     # tz::gl (Vulkan Frontend)
