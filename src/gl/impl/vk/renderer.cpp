@@ -186,7 +186,7 @@ namespace tz::gl
         return this->graphics_pipeline;
     }
 
-    RendererBufferManagerVulkan::RendererBufferManagerVulkan(RendererBuilderVulkan builder, RendererBuilderDeviceInfoVulkan device_info, IRendererInput* renderer_input):
+    RendererBufferManagerVulkan::RendererBufferManagerVulkan(RendererBuilderDeviceInfoVulkan device_info, IRendererInput* renderer_input):
     device(device_info.device),
     physical_device(this->device->get_queue_family().dev),
     device_local_mem(this->physical_device->get_memory_properties().unsafe_get_some_module_matching({vk::hardware::MemoryType::DeviceLocal})),
@@ -391,7 +391,7 @@ namespace tz::gl
 
     RendererVulkan::RendererVulkan(RendererBuilderVulkan builder, RendererBuilderDeviceInfoVulkan device_info):
     renderer_input(builder.get_input()->unique_clone()),
-    buffer_manager(builder, device_info, this->renderer_input.get()),
+    buffer_manager(device_info, this->renderer_input.get()),
     pipeline_manager(builder, device_info),
     image_manager(builder, device_info),
     processor(builder, device_info, this->renderer_input.get()),

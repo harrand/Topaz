@@ -69,7 +69,7 @@ namespace tz::gl
     class RendererBufferManagerVulkan
     {
     public:
-        RendererBufferManagerVulkan(RendererBuilderVulkan builder, RendererBuilderDeviceInfoVulkan device_info, IRendererInput* renderer_input);
+        RendererBufferManagerVulkan(RendererBuilderDeviceInfoVulkan device_info, IRendererInput* renderer_input);
         void setup_buffers();
         const vk::Buffer* get_vertex_buffer() const;
         vk::Buffer* get_vertex_buffer();
