@@ -34,6 +34,12 @@ namespace tz
             unsigned int patch;
         };
 
+        /**
+         * @brief Retrieve a string describing the engine.
+         * - `RENDERAPI` is either "Vulkan" or "OpenGL" depending on CMake configuration.
+         * - `BUILDCONFIG` is either "Debug" or "Release" depending on CMake configuration.
+         * @return 'Topaz vX.Y.Z `RENDERAPI` `BUILDCONFIG`' 
+         */
         std::string to_string() const;
 
         RenderAPI renderer;
@@ -47,6 +53,12 @@ namespace tz
         std::string stringify_version(EngineInfo::Version version);
     }
 
+    /**
+     * @brief Retrieves the EngineInfo for this specific build of Topaz.
+     * @relates EngineInfo
+     * 
+     * @return Information about this Topaz build.
+     */
     constexpr EngineInfo info();
 
     /**

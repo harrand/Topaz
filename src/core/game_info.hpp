@@ -22,6 +22,11 @@ namespace tz
         version(version),
         engine(engine){}
 
+        /**
+         * @brief Retrieve a string describing the GameInfo.
+         * - See @ref EngineInfo::to_string() for `ENGINEINFO`
+         * @return 'APPNAME vX.Y.Z (`ENGINEINFO`)'
+         */
         inline std::string to_string() const
         {
             std::string res = this->name;
