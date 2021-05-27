@@ -200,28 +200,26 @@ int main()
             simple_colour_pass
         };
 
-        vk::hardware::MemoryModule host_visible_mem = my_device.get_memory_properties().unsafe_get_some_module_matching({vk::hardware::MemoryType::HostVisible, vk::hardware::MemoryType::HostCoherent});
-        vk::hardware::MemoryModule device_local_mem = my_device.get_memory_properties().unsafe_get_some_module_matching({vk::hardware::MemoryType::DeviceLocal});
         const std::size_t vertices_bytes = sizeof(Vertex) * vertices.size();
         const std::size_t indices_bytes = sizeof(unsigned int) * indices.size();
         const std::size_t mvp_bytes = sizeof(MVP);
         const std::size_t img_bytes = sizeof(imgdata);
-        vk::Buffer buf{vk::BufferType::Vertex, vk::BufferPurpose::TransferDestination, my_logical_device, device_local_mem, vertices_bytes};
-        vk::Buffer index_buf{vk::BufferType::Index, vk::BufferPurpose::TransferDestination, my_logical_device, device_local_mem, indices_bytes};
-        vk::Buffer img_buf{vk::BufferType::Staging, vk::BufferPurpose::TransferSource, my_logical_device, host_visible_mem, img_bytes};
+        vk::Buffer buf{vk::BufferType::Vertex, vk::BufferPurpose::TransferDestination, my_logical_device, vk::hardware::MemoryResidency::GPU, vertices_bytes};
+        vk::Buffer index_buf{vk::BufferType::Index, vk::BufferPurpose::TransferDestination, my_logical_device, vk::hardware::MemoryResidency::GPU, indices_bytes};
+        vk::Buffer img_buf{vk::BufferType::Staging, vk::BufferPurpose::TransferSource, my_logical_device, vk::hardware::MemoryResidency::CPU, img_bytes};
         img_buf.write(imgdata.data(), img_bytes);
         std::vector<vk::Buffer> mvp_bufs;
 
-        vk::Image img{my_logical_device, 2, 2, vk::Image::Format::Rgba32sRGB, {vk::Image::Usage::TransferDestination, vk::Image::Usage::Sampleable}, device_local_mem};
+        vk::Image img{my_logical_device, 2, 2, vk::Image::Format::Rgba32sRGB, {vk::Image::Usage::TransferDestination, vk::Image::Usage::Sampleable}, vk::hardware::MemoryResidency::GPU};
         vk::ImageView img_view{my_logical_device, img};
         vk::Sampler img_sampler{my_logical_device};
 
-        vk::Image depth_img{my_logical_device, static_cast<std::uint32_t>(swapchain.get_width()), static_cast<std::uint32_t>(swapchain.get_height()), vk::Image::Format::DepthFloat32, {vk::Image::Usage::DepthStencilAttachment}, device_local_mem};
+        vk::Image depth_img{my_logical_device, static_cast<std::uint32_t>(swapchain.get_width()), static_cast<std::uint32_t>(swapchain.get_height()), vk::Image::Format::DepthFloat32, {vk::Image::Usage::DepthStencilAttachment}, vk::hardware::MemoryResidency::GPU};
         vk::ImageView depth_img_view{my_logical_device, depth_img};
         
         for(std::size_t i = 0; i < swapchain.get_image_views().size(); i++)
         {
-            mvp_bufs.emplace_back(vk::BufferType::Uniform, vk::BufferPurpose::NothingSpecial, my_logical_device, host_visible_mem, mvp_bytes);
+            mvp_bufs.emplace_back(vk::BufferType::Uniform, vk::BufferPurpose::NothingSpecial, my_logical_device, vk::hardware::MemoryResidency::CPU, mvp_bytes);
         }
 
         std::vector<vk::Framebuffer> swapchain_buffers;
@@ -280,7 +278,7 @@ int main()
         // last buffer in command pool is specifically for transfer.
         vk::CommandBuffer& transfer_cmd_buf = command_pool[swapchain.get_image_views().size()];
         {
-            vk::Buffer vertices_staging{vk::BufferType::Staging, vk::BufferPurpose::TransferSource, my_logical_device, host_visible_mem, vertices_bytes};
+            vk::Buffer vertices_staging{vk::BufferType::Staging, vk::BufferPurpose::TransferSource, my_logical_device, vk::hardware::MemoryResidency::CPU, vertices_bytes};
             vertices_staging.write(vertices.data(), vertices_bytes);
             {
                 vk::CommandBufferRecording transfer_vertices = transfer_cmd_buf.record();
@@ -294,7 +292,7 @@ int main()
             wait_for_cpy.wait_for();
 
             // Then repeat the process for index buffer.
-            vk::Buffer indices_staging{vk::BufferType::Staging, vk::BufferPurpose::TransferSource, my_logical_device, host_visible_mem, indices_bytes};
+            vk::Buffer indices_staging{vk::BufferType::Staging, vk::BufferPurpose::TransferSource, my_logical_device, vk::hardware::MemoryResidency::CPU, indices_bytes};
             indices_staging.write(indices.data(), indices_bytes);
             transfer_cmd_buf.reset();
             {
@@ -375,7 +373,7 @@ int main()
                 simple_colour_pass
             };
 
-            depth_img = {my_logical_device, static_cast<std::uint32_t>(swapchain.get_width()), static_cast<std::uint32_t>(swapchain.get_height()), vk::Image::Format::DepthFloat32, {vk::Image::Usage::DepthStencilAttachment}, device_local_mem};
+            depth_img = {my_logical_device, static_cast<std::uint32_t>(swapchain.get_width()), static_cast<std::uint32_t>(swapchain.get_height()), vk::Image::Format::DepthFloat32, {vk::Image::Usage::DepthStencilAttachment}, vk::hardware::MemoryResidency::GPU};
             depth_img_view = {my_logical_device, depth_img};
 
             swapchain_buffers.clear();

@@ -4,9 +4,9 @@
 
 namespace tz::gl::vk
 {
-    Buffer::Buffer(BufferType type, BufferPurpose purpose, const LogicalDevice& device, hardware::MemoryModule resource_memory, std::size_t size_bytes):
+    Buffer::Buffer(BufferType type, BufferPurpose purpose, const LogicalDevice& device, hardware::MemoryResidency residency, std::size_t size_bytes):
     buffer(VK_NULL_HANDLE),
-    memory(VK_NULL_HANDLE),
+    alloc(),
     device(&device),
     type(type)
     {
@@ -50,30 +50,27 @@ namespace tz::gl::vk
         }
         create.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
-        auto res = vkCreateBuffer(this->device->native(), &create, nullptr, &this->buffer);
+        VmaAllocationCreateInfo alloc_info{};
+        switch(residency)
+        {
+            case hardware::MemoryResidency::CPU:
+                alloc_info.usage = VMA_MEMORY_USAGE_CPU_ONLY;
+            break;
+            case hardware::MemoryResidency::GPU:
+                alloc_info.usage = VMA_MEMORY_USAGE_GPU_ONLY;
+            break;
+            default:
+                tz_error("Unexpected MemoryResidency");
+            break;
+        }
+
+        auto res = vmaCreateBuffer(this->device->native_allocator(), &create, &alloc_info, &this->buffer, &this->alloc, nullptr);
         tz_assert(res == VK_SUCCESS, "Failed to create buffer");
-
-        VkMemoryRequirements mem_reqs;
-        vkGetBufferMemoryRequirements(this->device->native(), this->buffer, &mem_reqs);
-        
-        const hardware::Device& phys_dev = *this->device->get_queue_family().dev;
-        hardware::MemoryProperties mem_props = phys_dev.get_memory_properties();
-        tz_assert(phys_dev == *resource_memory.device, "Resource memory comes from hardware device \"%s\" but the logical device provided is sourced from hardware device \"%s\"", phys_dev.get_properties().deviceName, phys_dev.get_properties().deviceName);
-
-        // TODO: Not something this stupid. Having resource memory per buffer is ludicrous. We need a custom allocator
-        VkMemoryAllocateInfo alloc{};
-        alloc.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-        alloc.allocationSize = mem_reqs.size;
-        alloc.memoryTypeIndex = resource_memory.index;
-
-        res = vkAllocateMemory(this->device->native(), &alloc, nullptr, &this->memory);
-        tz_assert(res == VK_SUCCESS, "Failed to allocate device memory for buffer");
-        vkBindBufferMemory(this->device->native(), this->buffer, this->memory, 0);
     }
 
     Buffer::Buffer(Buffer&& move):
     buffer(VK_NULL_HANDLE),
-    memory(VK_NULL_HANDLE),
+    alloc(),
     device(nullptr),
     type()
     {
@@ -84,13 +81,8 @@ namespace tz::gl::vk
     {
         if(this->buffer != VK_NULL_HANDLE)
         {
-            vkDestroyBuffer(this->device->native(), this->buffer, nullptr);
+            vmaDestroyBuffer(this->device->native_allocator(), this->buffer, this->alloc);
             this->buffer = VK_NULL_HANDLE;
-        }
-        if(this->memory != VK_NULL_HANDLE)
-        {
-            vkFreeMemory(this->device->native(), this->memory, nullptr);
-            this->memory = VK_NULL_HANDLE;
         }
     }
 
@@ -101,28 +93,27 @@ namespace tz::gl::vk
 
     void Buffer::write(const void* addr, std::size_t bytes)
     {
-        void* data;
-        vkMapMemory(this->device->native(), this->memory, 0, bytes, 0, &data);
+        void* data = this->map_memory();
         std::memcpy(data, addr, bytes);
-        vkUnmapMemory(this->device->native(), this->memory);
+        this->unmap_memory();
     }
 
     void* Buffer::map_memory()
     {
         void* data;
-        vkMapMemory(this->device->native(), this->memory, 0, VK_WHOLE_SIZE, 0, &data);
+        vmaMapMemory(this->device->native_allocator(), this->alloc, &data);
         return data;
     }
 
     void Buffer::unmap_memory()
     {
-        vkUnmapMemory(this->device->native(), this->memory);
+        vmaUnmapMemory(this->device->native_allocator(), this->alloc);
     }
 
     Buffer& Buffer::operator=(Buffer&& rhs)
     {
         std::swap(this->buffer, rhs.buffer);
-        std::swap(this->memory, rhs.memory);
+        std::swap(this->alloc, rhs.alloc);
         std::swap(this->device, rhs.device);
         std::swap(this->type, rhs.type);
         return *this;

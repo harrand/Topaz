@@ -24,7 +24,7 @@ namespace tz::gl::vk
     class Buffer
     {
     public:
-        Buffer(BufferType type, BufferPurpose purpose, const LogicalDevice& device, hardware::MemoryModule resource_memory, std::size_t bytes);
+        Buffer(BufferType type, BufferPurpose purpose, const LogicalDevice& device, hardware::MemoryResidency residency, std::size_t bytes);
         Buffer(const Buffer& copy) = delete;
         Buffer(Buffer&& move);
         ~Buffer();
@@ -41,7 +41,7 @@ namespace tz::gl::vk
         VkBuffer native() const;
     private:
         VkBuffer buffer;
-        VkDeviceMemory memory;
+        VmaAllocation alloc;
         const LogicalDevice* device;
         BufferType type;
     };

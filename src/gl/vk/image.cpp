@@ -4,9 +4,9 @@
 
 namespace tz::gl::vk
 {
-    Image::Image(const LogicalDevice& device, std::uint32_t width, std::uint32_t height, Image::Format format, Image::UsageField usage, hardware::MemoryModule resource_memory):
+    Image::Image(const LogicalDevice& device, std::uint32_t width, std::uint32_t height, Image::Format format, Image::UsageField usage, hardware::MemoryResidency residency):
     image(VK_NULL_HANDLE),
-    image_memory(VK_NULL_HANDLE),
+    alloc(),
     device(&device),
     width(width),
     height(height),
@@ -28,25 +28,27 @@ namespace tz::gl::vk
         create.samples = VK_SAMPLE_COUNT_1_BIT;
         create.flags = 0;
 
-        auto res = vkCreateImage(this->device->native(), &create, nullptr, &this->image);
+        VmaAllocationCreateInfo alloc_info{};
+        switch(residency)
+        {
+            case hardware::MemoryResidency::CPU:
+                alloc_info.usage = VMA_MEMORY_USAGE_CPU_ONLY;
+            break;
+            case hardware::MemoryResidency::GPU:
+                alloc_info.usage = VMA_MEMORY_USAGE_GPU_ONLY;
+            break;
+            default:
+                tz_error("Unexpected MemoryResidency");
+            break;
+        }
+
+        auto res = vmaCreateImage(this->device->native_allocator(), &create, &alloc_info, &this->image, &this->alloc, nullptr);
         tz_assert(res == VK_SUCCESS, "Failed to create image");
-
-        VkMemoryRequirements mem_reqs;
-        vkGetImageMemoryRequirements(this->device->native(), this->image, &mem_reqs);
-
-        VkMemoryAllocateInfo alloc{};
-        alloc.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-        alloc.allocationSize = mem_reqs.size;
-        alloc.memoryTypeIndex = resource_memory.index;
-
-        res = vkAllocateMemory(this->device->native(), &alloc, nullptr, &this->image_memory);
-        tz_assert(res == VK_SUCCESS, "Failed to allocate device memory for image");
-        vkBindImageMemory(this->device->native(), this->image, this->image_memory, 0);
     }
 
     Image::Image(Image&& move):
     image(VK_NULL_HANDLE),
-    image_memory(VK_NULL_HANDLE),
+    alloc(),
     device(nullptr),
     width(0),
     height(0),
@@ -60,20 +62,15 @@ namespace tz::gl::vk
     {
         if(this->image != VK_NULL_HANDLE)
         {
-            vkDestroyImage(this->device->native(), this->image, nullptr);
+            vmaDestroyImage(this->device->native_allocator(), this->image, this->alloc);
             this->image = VK_NULL_HANDLE;
-        }
-        if(this->image_memory != VK_NULL_HANDLE)
-        {
-            vkFreeMemory(this->device->native(), this->image_memory, nullptr);
-            this->image_memory = VK_NULL_HANDLE;
         }
     }
 
     Image& Image::operator=(Image&& rhs)
     {
         std::swap(this->image, rhs.image);
-        std::swap(this->image_memory, rhs.image_memory);
+        std::swap(this->alloc, rhs.alloc);
         std::swap(this->device, rhs.device);
         std::swap(this->width, rhs.width);
         std::swap(this->height, rhs.height);

@@ -189,8 +189,6 @@ namespace tz::gl
     RendererBufferManagerVulkan::RendererBufferManagerVulkan(RendererBuilderDeviceInfoVulkan device_info, IRendererInput* renderer_input):
     device(device_info.device),
     physical_device(this->device->get_queue_family().dev),
-    device_local_mem(this->physical_device->get_memory_properties().unsafe_get_some_module_matching({vk::hardware::MemoryType::DeviceLocal})),
-    host_visible_mem(this->physical_device->get_memory_properties().unsafe_get_some_module_matching({vk::hardware::MemoryType::HostVisible, vk::hardware::MemoryType::HostCoherent})),
     input(renderer_input),
     vertex_buffer(std::nullopt),
     index_buffer(std::nullopt)
@@ -202,16 +200,16 @@ namespace tz::gl
         switch(this->input->data_access())
         {
             case RendererInputDataAccess::StaticFixed:
-                this->vertex_buffer = vk::Buffer{vk::BufferType::Vertex, vk::BufferPurpose::TransferDestination, *this->device, device_local_mem, this->input->get_vertex_bytes().size_bytes()};
-                this->index_buffer = vk::Buffer{vk::BufferType::Index, vk::BufferPurpose::TransferDestination, *this->device, device_local_mem, this->input->get_indices().size_bytes()};
+                this->vertex_buffer = vk::Buffer{vk::BufferType::Vertex, vk::BufferPurpose::TransferDestination, *this->device, vk::hardware::MemoryResidency::GPU, this->input->get_vertex_bytes().size_bytes()};
+                this->index_buffer = vk::Buffer{vk::BufferType::Index, vk::BufferPurpose::TransferDestination, *this->device, vk::hardware::MemoryResidency::GPU, this->input->get_indices().size_bytes()};
             break;
             case RendererInputDataAccess::DynamicFixed:
                 auto& dynamic_input = static_cast<IRendererDynamicInput&>(*this->input);
                 // Create buffers in host-visible memory (slow) and pass the mapped ptrs to the renderer input.
                 // Note: This also copies over the initial vertex data to buffers. Nothing is done in scratch command buffers this time.
-                this->vertex_buffer = vk::Buffer{vk::BufferType::Vertex, vk::BufferPurpose::NothingSpecial, *this->device, host_visible_mem, this->input->get_vertex_bytes().size_bytes()};
+                this->vertex_buffer = vk::Buffer{vk::BufferType::Vertex, vk::BufferPurpose::NothingSpecial, *this->device, vk::hardware::MemoryResidency::CPU, this->input->get_vertex_bytes().size_bytes()};
                 dynamic_input.set_vertex_data(static_cast<std::byte*>(this->vertex_buffer->map_memory()));
-                this->index_buffer = vk::Buffer{vk::BufferType::Index, vk::BufferPurpose::NothingSpecial, *this->device, host_visible_mem, this->input->get_indices().size_bytes()};
+                this->index_buffer = vk::Buffer{vk::BufferType::Index, vk::BufferPurpose::NothingSpecial, *this->device, vk::hardware::MemoryResidency::CPU, this->input->get_indices().size_bytes()};
                 dynamic_input.set_index_data(static_cast<unsigned int*>(this->index_buffer->map_memory()));
             break;
         }
@@ -258,8 +256,6 @@ namespace tz::gl
     physical_device(this->device->get_queue_family().dev),
     render_pass(&builder.get_render_pass()),
     swapchain(device_info.device_swapchain),
-    device_local_mem(this->physical_device->get_memory_properties().unsafe_get_some_module_matching({vk::hardware::MemoryType::DeviceLocal})),
-    host_visible_mem(this->physical_device->get_memory_properties().unsafe_get_some_module_matching({vk::hardware::MemoryType::HostVisible, vk::hardware::MemoryType::HostCoherent})),
     depth_image(std::nullopt),
     depth_imageview(std::nullopt),
     swapchain_framebuffers()
@@ -271,7 +267,7 @@ namespace tz::gl
     {
         auto swapchain_width = static_cast<std::uint32_t>(this->swapchain->get_width());
         auto swapchain_height = static_cast<std::uint32_t>(this->swapchain->get_height());
-        this->depth_image = vk::Image{*this->device, swapchain_width, swapchain_height, vk::Image::Format::DepthFloat32, {vk::Image::Usage::DepthStencilAttachment}, device_local_mem};
+        this->depth_image = vk::Image{*this->device, swapchain_width, swapchain_height, vk::Image::Format::DepthFloat32, {vk::Image::Usage::DepthStencilAttachment}, vk::hardware::MemoryResidency::GPU};
         this->depth_imageview = vk::ImageView{*this->device, this->depth_image.value()};
     }
 
@@ -299,9 +295,7 @@ namespace tz::gl
     input(input),
     command_pool(*this->device, this->device->get_queue_family(), vk::CommandPool::RecycleBuffer),
     graphics_present_queue(this->device->get_hardware_queue()),
-    frame_admin(*this->device, RendererVulkan::frames_in_flight),
-    device_local_mem(this->physical_device->get_memory_properties().unsafe_get_some_module_matching({vk::hardware::MemoryType::DeviceLocal})),
-    host_visible_mem(this->physical_device->get_memory_properties().unsafe_get_some_module_matching({vk::hardware::MemoryType::HostVisible, vk::hardware::MemoryType::HostCoherent}))
+    frame_admin(*this->device, RendererVulkan::frames_in_flight)
     {
         this->initialise_command_pool();
     }
@@ -346,7 +340,7 @@ namespace tz::gl
                 // Part 1: Transfer vertex data.
                 auto vertex_data = this->input->get_vertex_bytes();
                 tz_report("VB (%zu vertices, %zu bytes total)", vertex_data.size(), vertex_data.size_bytes());
-                vk::Buffer vertices_staging{vk::BufferType::Staging, vk::BufferPurpose::TransferSource, *this->device, host_visible_mem, vertex_data.size_bytes()};
+                vk::Buffer vertices_staging{vk::BufferType::Staging, vk::BufferPurpose::TransferSource, *this->device, vk::hardware::MemoryResidency::CPU, vertex_data.size_bytes()};
                 vertices_staging.write(vertex_data.data(), vertex_data.size_bytes());
                 {
                     vk::CommandBufferRecording transfer_vertices = scratch_buf.record();
@@ -365,7 +359,7 @@ namespace tz::gl
                 // Part 2: Transfer index data.
                 auto index_data = this->input->get_indices();
                 tz_report("IB (%zu indices, %zu bytes total)", index_data.size(), index_data.size_bytes());
-                vk::Buffer indices_staging{vk::BufferType::Staging, vk::BufferPurpose::TransferSource, *this->device, host_visible_mem, index_data.size_bytes()};
+                vk::Buffer indices_staging{vk::BufferType::Staging, vk::BufferPurpose::TransferSource, *this->device, vk::hardware::MemoryResidency::CPU, index_data.size_bytes()};
                 indices_staging.write(index_data.data(), index_data.size_bytes());
                 {
                     vk::CommandBufferRecording transfer_indices = scratch_buf.record();

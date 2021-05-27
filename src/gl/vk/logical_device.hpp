@@ -1,6 +1,7 @@
 #ifndef TOPAZ_GL_VK_SETUP_LOGICAL_DEVICE_HPP
 #define TOPAZ_GL_VK_SETUP_LOGICAL_DEVICE_HPP
 #if TZ_VULKAN
+#include "vk_mem_alloc.h"
 #include "gl/vk/hardware/device.hpp"
 #include "gl/vk/setup/extension_list.hpp"
 #include "gl/vk/hardware/queue.hpp"
@@ -24,6 +25,7 @@ namespace tz::gl::vk
 
         const hardware::DeviceQueueFamily& get_queue_family() const;
         VkDevice native() const;
+        VmaAllocator native_allocator() const;
         hardware::Queue get_hardware_queue(std::uint32_t family_index = 0) const;
 
         void block_until_idle() const;
@@ -32,6 +34,7 @@ namespace tz::gl::vk
 
         VkDevice dev;
         hardware::DeviceQueueFamily queue_family;
+        std::optional<VmaAllocator> vma;
     };
 }
 

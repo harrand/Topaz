@@ -78,8 +78,6 @@ namespace tz::gl
     private:
         const vk::LogicalDevice* device;
         const vk::hardware::Device* physical_device;
-        vk::hardware::MemoryModule device_local_mem;
-        vk::hardware::MemoryModule host_visible_mem;
         IRendererInput* input;
         std::optional<vk::Buffer> vertex_buffer;
         std::optional<vk::Buffer> index_buffer;
@@ -97,8 +95,6 @@ namespace tz::gl
         const vk::hardware::Device* physical_device;
         const RenderPass* render_pass;
         const vk::Swapchain* swapchain;
-        vk::hardware::MemoryModule device_local_mem;
-        vk::hardware::MemoryModule host_visible_mem;
         std::optional<vk::Image> depth_image;
         std::optional<vk::ImageView> depth_imageview;
         std::vector<vk::Framebuffer> swapchain_framebuffers;
@@ -123,8 +119,6 @@ namespace tz::gl
         vk::CommandPool command_pool;
         vk::hardware::Queue graphics_present_queue;
         vk::FrameAdmin frame_admin;
-        vk::hardware::MemoryModule device_local_mem;
-        vk::hardware::MemoryModule host_visible_mem;
     };
 
     class RendererVulkan : public IRenderer

@@ -22,6 +22,12 @@ namespace tz::gl::vk::hardware
         HostCached = VK_MEMORY_PROPERTY_HOST_CACHED_BIT
     };
 
+    enum class MemoryResidency
+    {
+        CPU,
+        GPU
+    };
+
     using MemoryTypeField = tz::EnumField<MemoryType>;
 
     struct MemoryModule

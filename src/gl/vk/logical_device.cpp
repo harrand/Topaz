@@ -1,12 +1,14 @@
 #if TZ_VULKAN
 #include "gl/vk/logical_device.hpp"
+#include "gl/vk/tz_vulkan.hpp"
 #include "core/assert.hpp"
 
 namespace tz::gl::vk
 {
     LogicalDevice::LogicalDevice(hardware::DeviceQueueFamily queue_family, ExtensionList device_extensions):
     dev(VK_NULL_HANDLE),
-    queue_family(queue_family)
+    queue_family(queue_family),
+    vma(std::nullopt)
     {
         VkDeviceQueueCreateInfo queue_create{};
         queue_create.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
@@ -32,17 +34,33 @@ namespace tz::gl::vk
 
         VkResult res = vkCreateDevice(queue_family.dev->native(), &create, nullptr, &this->dev);
         tz_assert(res == VK_SUCCESS, "tz::gl::vk::LogicalDevice(...): Failed to create logical device.");
+
+        VmaAllocatorCreateInfo alloc_create{};
+        alloc_create.vulkanApiVersion = VK_API_VERSION_1_1;
+        alloc_create.physicalDevice = this->queue_family.dev->native();
+        alloc_create.device = this->dev;
+        alloc_create.instance = vk::get().native();
+
+        this->vma = VmaAllocator{};
+        res = vmaCreateAllocator(&alloc_create, &this->vma.value());
+        tz_assert(res == VK_SUCCESS, "Failed to create vma allocator");
     }
 
     LogicalDevice::LogicalDevice(LogicalDevice&& move):
     dev(VK_NULL_HANDLE),
-    queue_family()
+    queue_family(),
+    vma(std::nullopt)
     {
         *this = std::move(move);
     }
 
     LogicalDevice::~LogicalDevice()
     {
+        if(this->vma.has_value())
+        {
+            vmaDestroyAllocator(this->vma.value());
+            this->vma = std::nullopt;
+        }
         if(this->dev != VK_NULL_HANDLE)
         {
             vkDestroyDevice(this->dev, nullptr);
@@ -53,6 +71,7 @@ namespace tz::gl::vk
     {
         std::swap(this->dev, rhs.dev);
         std::swap(this->queue_family, rhs.queue_family);
+        std::swap(this->vma, rhs.vma);
         return *this;
     }
 
@@ -74,6 +93,12 @@ namespace tz::gl::vk
     VkDevice LogicalDevice::native() const
     {
         return this->dev;
+    }
+
+    VmaAllocator LogicalDevice::native_allocator() const
+    {
+        tz_assert(this->vma.has_value(), "Native allocator doesn't exist.");
+        return this->vma.value();
     }
 
     hardware::Queue LogicalDevice::get_hardware_queue(std::uint32_t family_index) const

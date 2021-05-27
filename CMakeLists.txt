@@ -175,6 +175,7 @@ add_library(topaz
     src/gl/vk/tz_vulkan.hpp
     src/gl/vk/vertex_binding_description.cpp
     src/gl/vk/vertex_binding_description.hpp
+    src/gl/vk/vma.cpp
 
     # tz::gl (OpenGL Backend)
     src/gl/ogl/setup/opengl_instance.cpp
