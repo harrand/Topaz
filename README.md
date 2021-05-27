@@ -16,6 +16,7 @@ Documentation for Topaz 3.0 can be found [here](https://harrand.github.io/Topaz/
 * [debugbreak](https://github.com/scottt/debugbreak) - Debugbreak. Used to create breakpoints in code. Compiler-agnostic.
 * [GLAD](https://github.com/Dav1dde/glad) - Open Source, multi-language Vulkan/GL/GLES/EGL/GLX/WGL loader-generator based on the official specs. Used to load OpenGL procedures at runtime for use by the engine.
 * [GLFW](https://www.glfw.org/) - Open Source, multi-platform library for OpenGL, OpenGL ES and Vulkan development on the desktop. Used as a cross-platform abstraction for input event processing and windowing.
+* [VulkanMemoryAllocator](https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator) - Memory allocation library for Vulkan.
 
 ## Installation Requirements
 Requirements to build Topaz are listed below. Some requirements are specific to a certain build configuration.
