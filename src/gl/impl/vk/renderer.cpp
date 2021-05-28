@@ -207,9 +207,9 @@ namespace tz::gl
                 auto& dynamic_input = static_cast<IRendererDynamicInput&>(*this->input);
                 // Create buffers in host-visible memory (slow) and pass the mapped ptrs to the renderer input.
                 // Note: This also copies over the initial vertex data to buffers. Nothing is done in scratch command buffers this time.
-                this->vertex_buffer = vk::Buffer{vk::BufferType::Vertex, vk::BufferPurpose::NothingSpecial, *this->device, vk::hardware::MemoryResidency::CPU, this->input->get_vertex_bytes().size_bytes()};
+                this->vertex_buffer = vk::Buffer{vk::BufferType::Vertex, vk::BufferPurpose::NothingSpecial, *this->device, vk::hardware::MemoryResidency::CPUPersistent, this->input->get_vertex_bytes().size_bytes()};
                 dynamic_input.set_vertex_data(static_cast<std::byte*>(this->vertex_buffer->map_memory()));
-                this->index_buffer = vk::Buffer{vk::BufferType::Index, vk::BufferPurpose::NothingSpecial, *this->device, vk::hardware::MemoryResidency::CPU, this->input->get_indices().size_bytes()};
+                this->index_buffer = vk::Buffer{vk::BufferType::Index, vk::BufferPurpose::NothingSpecial, *this->device, vk::hardware::MemoryResidency::CPUPersistent, this->input->get_indices().size_bytes()};
                 dynamic_input.set_index_data(static_cast<unsigned int*>(this->index_buffer->map_memory()));
             break;
         }

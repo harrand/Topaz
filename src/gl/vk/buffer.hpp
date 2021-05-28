@@ -41,6 +41,7 @@ namespace tz::gl::vk
         VkBuffer native() const;
     private:
         VkBuffer buffer;
+        void* persistent_mapped_ptr;
         VmaAllocation alloc;
         const LogicalDevice* device;
         BufferType type;

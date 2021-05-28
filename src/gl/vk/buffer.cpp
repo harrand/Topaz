@@ -6,6 +6,7 @@ namespace tz::gl::vk
 {
     Buffer::Buffer(BufferType type, BufferPurpose purpose, const LogicalDevice& device, hardware::MemoryResidency residency, std::size_t size_bytes):
     buffer(VK_NULL_HANDLE),
+    persistent_mapped_ptr(nullptr),
     alloc(),
     device(&device),
     type(type)
@@ -53,6 +54,9 @@ namespace tz::gl::vk
         VmaAllocationCreateInfo alloc_info{};
         switch(residency)
         {
+            case hardware::MemoryResidency::CPUPersistent:
+                alloc_info.flags = VMA_ALLOCATION_CREATE_MAPPED_BIT;
+                [[fallthrough]];
             case hardware::MemoryResidency::CPU:
                 alloc_info.usage = VMA_MEMORY_USAGE_CPU_ONLY;
             break;
@@ -64,12 +68,18 @@ namespace tz::gl::vk
             break;
         }
 
-        auto res = vmaCreateBuffer(this->device->native_allocator(), &create, &alloc_info, &this->buffer, &this->alloc, nullptr);
+        VmaAllocationInfo alloc_result;
+        auto res = vmaCreateBuffer(this->device->native_allocator(), &create, &alloc_info, &this->buffer, &this->alloc, &alloc_result);
+        if(residency == hardware::MemoryResidency::CPUPersistent)
+        {
+            this->persistent_mapped_ptr = alloc_result.pMappedData;
+        }
         tz_assert(res == VK_SUCCESS, "Failed to create buffer");
     }
 
     Buffer::Buffer(Buffer&& move):
     buffer(VK_NULL_HANDLE),
+    persistent_mapped_ptr(nullptr),
     alloc(),
     device(nullptr),
     type()
@@ -100,6 +110,10 @@ namespace tz::gl::vk
 
     void* Buffer::map_memory()
     {
+        if(this->persistent_mapped_ptr != nullptr)
+        {
+            return this->persistent_mapped_ptr;
+        }
         void* data;
         vmaMapMemory(this->device->native_allocator(), this->alloc, &data);
         return data;
@@ -107,12 +121,17 @@ namespace tz::gl::vk
 
     void Buffer::unmap_memory()
     {
+        if(this->persistent_mapped_ptr != nullptr)
+        {
+            return;
+        }
         vmaUnmapMemory(this->device->native_allocator(), this->alloc);
     }
 
     Buffer& Buffer::operator=(Buffer&& rhs)
     {
         std::swap(this->buffer, rhs.buffer);
+        std::swap(this->persistent_mapped_ptr, rhs.persistent_mapped_ptr);
         std::swap(this->alloc, rhs.alloc);
         std::swap(this->device, rhs.device);
         std::swap(this->type, rhs.type);

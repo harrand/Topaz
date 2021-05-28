@@ -25,6 +25,7 @@ namespace tz::gl::vk::hardware
     enum class MemoryResidency
     {
         CPU,
+        CPUPersistent,
         GPU
     };
 
