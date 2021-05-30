@@ -1,8 +1,10 @@
 #include "core/tz.hpp"
 #include "core/vector.hpp"
+#include "core/matrix_transform.hpp"
 #include "gl/device.hpp"
 #include "gl/render_pass.hpp"
 #include "gl/renderer.hpp"
+#include "gl/resource.hpp"
 #include "gl/mesh.hpp"
 #include "gl/shader.hpp"
 
@@ -36,25 +38,33 @@ int main()
         {
             0, 1, 2
         };
-        tz::gl::MeshDynamicInput mesh_input{mesh};
+        tz::gl::MeshInput mesh_input{mesh};
+
+        
+        float aspect_ratio = tz::window().get_width() / tz::window().get_height();
+        std::array<tz::Mat4, 3> mvp_data
+        {
+            tz::model({0.0f, 0.0f, -1.0f}, {0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f}),
+            tz::view({0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}),
+            tz::perspective(1.27f, aspect_ratio, 0.1f, 1000.0f)
+        };
+        tz::gl::DynamicBufferResource buf_res{tz::gl::BufferData::FromArray<tz::Mat4>(mvp_data)};
+
         renderer_builder.set_input(mesh_input);
         renderer_builder.set_output(tz::window());
+        tz::gl::ResourceHandle buf_handle = renderer_builder.add_resource(buf_res);
         renderer_builder.set_render_pass(render_pass);
         renderer_builder.set_shader(shader);
         tz::gl::Renderer renderer = device.create_renderer(renderer_builder);
         renderer.set_clear_colour({0.1f, 0.2f, 0.4f, 1.0f});
         while(!tz::window().is_close_requested())
         {
+            // Every frame, change the position of the triangle ever so slightly.
             {
-                // Temporary: Mess with vertex data.
-                auto vertices_bytes = static_cast<tz::gl::IRendererDynamicInput*>(renderer.get_input())->get_vertex_bytes_dynamic();
-                auto* vertices = reinterpret_cast<tz::gl::Vertex*>(vertices_bytes.data());
+                auto buffer_bytes = static_cast<tz::gl::IDynamicResource*>(renderer.get_resource(buf_handle))->get_resource_bytes_dynamic();
+                tz::Mat4& model = reinterpret_cast<tz::Mat4*>(buffer_bytes.data())[0];
                 static float counter = 0.0f;
-                for(std::size_t i = 0; i < vertices_bytes.size_bytes() / sizeof(tz::gl::Vertex); i++)
-                {
-                    tz::gl::Vertex& vert = vertices[i];
-                    vert.position[1] += std::sin(counter) * 0.00005f;
-                }
+                model = tz::model({std::sin(counter * 0.25f) * 0.25f, std::sin(counter) * 0.25f, -1.0f}, {}, {1.0f, 1.0f, 1.0f});
                 counter += 0.001f;
             }
             tz::window().update();

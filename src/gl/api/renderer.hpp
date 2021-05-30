@@ -1,9 +1,11 @@
 #ifndef TOPAZ_GL_API_RENDERER_HPP
 #define TOPAZ_GL_API_RENDERER_HPP
 #include "core/containers/basic_list.hpp"
+#include "core/interfaces/cloneable.hpp"
 #include "core/vector.hpp"
 #include "gl/impl/common/renderer.hpp"
 #include "gl/render_pass.hpp"
+#include "gl/resource.hpp"
 #include "gl/shader.hpp"
 #include <cstdint>
 #include <concepts>
@@ -46,16 +48,9 @@ namespace tz::gl
      * @pre IRendererInput declares `IRendererInput::unique_clone()` which derived types must implement. If you are implementing derived type `D`, if `D` is copy-constructible then implement `IRendererInputCopyable<D>` instead. If `D` is not copy-constructible then you must implement `IRendererInput::unique_clone()` yourself.
      * 
      */
-    class IRendererInput
+    class IRendererInput : public tz::IUniqueCloneable<IRendererInput>
     {
     public:
-        /**
-         * @brief Clone the renderer input, creating an exact copy of the input data.
-         * 
-         * @return Smart pointer to the new IRendererInput. Ownership must be claimed by the caller.
-         */
-        [[nodiscard]] virtual std::unique_ptr<IRendererInput> unique_clone() const = 0;
-
         /**
          * @brief Retrieve the data access specifier for this render input type.
          * @note Inputs derived from @ref IRendererInput are `StaticFixed` by default, but this can be overriden. Inputs derived from @ref IRendererDynamicInput are always `DynamicFixed` and this cannot be overridden.
@@ -187,6 +182,8 @@ namespace tz::gl
         virtual void set_output(const IRendererOutput& output) = 0;
         virtual const IRendererOutput* get_output() const = 0;
 
+        virtual ResourceHandle add_resource(const IResource& resource) = 0;
+
         /**
          * @brief Set the culling strategy used during rendering.
          * 
@@ -253,6 +250,8 @@ namespace tz::gl
          * @return IRendererInput* pointing to the renderer's input.
          */
         virtual IRendererInput* get_input() = 0;
+
+        virtual IResource* get_resource(ResourceHandle handle) = 0;
 
         /**
          * @brief Proceed through the provided render-pass using any inputs and resources.

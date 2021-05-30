@@ -20,6 +20,8 @@ add_library(topaz
 
     src/core/algorithms/static.hpp
 
+    src/core/interfaces/cloneable.hpp
+
     src/core/assert.hpp
     src/core/engine_info.cpp
     src/core/engine_info.hpp
@@ -29,6 +31,7 @@ add_library(topaz
     src/core/matrix_transform.hpp
     src/core/matrix.hpp
     src/core/matrix.inl
+    src/core/handle.hpp
     src/core/report.hpp
     src/core/tz.cpp
     src/core/tz.hpp
@@ -47,13 +50,22 @@ add_library(topaz
     src/gl/mesh.hpp
     src/gl/render_pass.hpp
     src/gl/renderer.hpp
+    src/gl/resource.cpp
+    src/gl/resource.hpp
     src/gl/shader.hpp
 
     # tz::gl (API)
     src/gl/api/device.hpp
     src/gl/api/render_pass.hpp
     src/gl/api/renderer.hpp
+    src/gl/api/resource.hpp
     src/gl/api/shader.hpp
+
+    src/gl/impl/common/device.hpp
+    src/gl/impl/common/render_pass_attachment.hpp
+    src/gl/impl/common/renderer.hpp
+    src/gl/impl/common/resource.hpp
+    src/gl/impl/common/shader.hpp
 
     # tz::gl (Vulkan Frontend)
     src/gl/impl/vk/device.cpp
