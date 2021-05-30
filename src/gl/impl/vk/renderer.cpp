@@ -258,6 +258,10 @@ namespace tz::gl
 
     void RendererBufferManagerVulkan::setup_buffers()
     {
+        if(this->input == nullptr)
+        {
+            return;
+        }
         switch(this->input->data_access())
         {
             case RendererInputDataAccess::StaticFixed:
@@ -407,12 +411,16 @@ namespace tz::gl
     {
         // Now the command pool
         this->initialise_command_pool();
+        if(this->input == nullptr)
+        {
+            tz_report("Renderer will draw with no input -- Won't draw anything.");
+        }
     }
 
     void RendererProcessorVulkan::initialise_resource_descriptors(const RendererPipelineManagerVulkan& pipeline_manager, const RendererBufferManagerVulkan& buffer_manager, std::vector<const IResource*> resources)
     {
         const vk::DescriptorSetLayout* layout = pipeline_manager.get_resource_descriptor_layout();
-        if(layout != nullptr)
+        if(layout != nullptr && !resources.empty())
         {
             // First use the layout and all resources to create the pool.
             vk::DescriptorPoolBuilder pool_builder;
@@ -431,12 +439,12 @@ namespace tz::gl
 
             auto image_count = this->swapchain->get_image_views().size();
             
-            for(std::size_t i = 0; i < num_buffer_resources; i++)
+            for(decltype(num_buffer_resources) i = 0; i < num_buffer_resources; i++)
             {
                 pool_builder.with_size(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, image_count);
             }
 
-            for(std::size_t i = 0; i < num_texture_resources; i++)
+            for(decltype(num_texture_resources) i = 0; i < num_texture_resources; i++)
             {
                 pool_builder.with_size(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, image_count);
             }
@@ -451,7 +459,7 @@ namespace tz::gl
             for(std::size_t i = 0; i < image_count; i++)
             {
                 vk::DescriptorSetsCreationRequest& request = requests.new_request();
-                for(std::size_t j = 0; j < num_buffer_resources; j++)
+                for(decltype(num_buffer_resources) j = 0; j < num_buffer_resources; j++)
                 {
                     const vk::Buffer& resource_buffer = buffer_manager.get_resource_buffers()[j];
                     request.add_buffer(resource_buffer, 0, VK_WHOLE_SIZE, j);
@@ -486,19 +494,33 @@ namespace tz::gl
     void RendererProcessorVulkan::record_rendering_commands(const RendererPipelineManagerVulkan& pipeline_manager, const RendererBufferManagerVulkan& buffer_manager, const RendererImageManagerVulkan& image_manager, tz::Vec4 clear_colour)
     {
         VkClearValue vk_clear_colour{clear_colour[0], clear_colour[1], clear_colour[2], clear_colour[3]};
+
         for(std::size_t i = 0; i < this->swapchain->get_image_views().size(); i++)
         {
             vk::CommandBufferRecording render = this->command_pool[i].record();
             vk::RenderPassRun run{this->command_pool[i], this->render_pass->vk_get_render_pass(), image_manager.get_swapchain_framebuffers()[i], this->swapchain->full_render_area(), vk_clear_colour};
             pipeline_manager.get_pipeline().bind(this->command_pool[i]);
-            render.bind(*buffer_manager.get_vertex_buffer());
-            render.bind(*buffer_manager.get_index_buffer());
+            if(buffer_manager.get_vertex_buffer() != nullptr)
+            {
+                render.bind(*buffer_manager.get_vertex_buffer());
+            }
+            if(buffer_manager.get_index_buffer() != nullptr)
+            {
+                render.bind(*buffer_manager.get_index_buffer());
+            }
             if(this->resource_descriptor_pool.has_value())
             {
                 render.bind(this->resource_descriptor_pool.value()[i], pipeline_manager.get_layout());
             }
-            auto indices_count = this->input->get_indices().size();
-            render.draw_indexed(indices_count);
+            if(this->input != nullptr)
+            {
+                render.draw_indexed(this->input->get_indices().size());
+            }
+            else
+            {
+                // TODO: Specify custom number of vertices when there is no input?
+                render.draw(0);
+            }
         }
     }
 
@@ -509,7 +531,7 @@ namespace tz::gl
         vk::CommandBuffer& scratch_buf = this->command_pool[this->swapchain->get_image_views().size()];
         vk::Submit do_scratch_operation{vk::CommandBuffers{scratch_buf}, vk::SemaphoreRefs{}, vk::WaitStages{}, vk::SemaphoreRefs{}};
 
-        if(this->input->data_access() == RendererInputDataAccess::StaticFixed)
+        if(this->input != nullptr && this->input->data_access() == RendererInputDataAccess::StaticFixed)
         {
             // Setup transfers using the scratch buffers.
             {
@@ -578,7 +600,7 @@ namespace tz::gl
     }
 
     RendererVulkan::RendererVulkan(RendererBuilderVulkan builder, RendererBuilderDeviceInfoVulkan device_info):
-    renderer_input(builder.get_input()->unique_clone()),
+    renderer_input(builder.get_input() == nullptr ? nullptr : builder.get_input()->unique_clone()),
     renderer_resources(),
     buffer_manager(device_info, this->renderer_input.get()),
     pipeline_manager(builder, device_info),

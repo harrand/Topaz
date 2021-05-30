@@ -18,7 +18,6 @@ namespace tz::gl
 
     const IRendererInput* RendererBuilderOGL::get_input() const
     {
-        tz_assert(this->format.has_value(), "RendererBuilder has not had element format set yet");
         return this->input;
         //return this->format.value();
     }
@@ -103,7 +102,7 @@ namespace tz::gl
     index_count(0),
     render_pass(&builder.get_render_pass()),
     shader(&builder.get_shader()),
-    input(builder.get_input()->unique_clone()),
+    input(builder.get_input() == nullptr ? nullptr : builder.get_input()->unique_clone()),
     output(builder.get_output())
     {
         auto persistent_mapped_buffer_flags = GL_MAP_READ_BIT | GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT;
