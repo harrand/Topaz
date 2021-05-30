@@ -258,30 +258,29 @@ namespace tz::gl
 
     void RendererBufferManagerVulkan::setup_buffers()
     {
-        if(this->input == nullptr)
+        if(this->input != nullptr)
         {
-            return;
-        }
-        switch(this->input->data_access())
-        {
-            case RendererInputDataAccess::StaticFixed:
-                this->vertex_buffer = vk::Buffer{vk::BufferType::Vertex, vk::BufferPurpose::TransferDestination, *this->device, vk::hardware::MemoryResidency::GPU, this->input->get_vertex_bytes().size_bytes()};
-                this->index_buffer = vk::Buffer{vk::BufferType::Index, vk::BufferPurpose::TransferDestination, *this->device, vk::hardware::MemoryResidency::GPU, this->input->get_indices().size_bytes()};
-            break;
-            case RendererInputDataAccess::DynamicFixed:
-                {
-                    auto& dynamic_input = static_cast<IRendererDynamicInput&>(*this->input);
-                    // Create buffers in host-visible memory (slow) and pass the mapped ptrs to the renderer input.
-                    // Note: This also copies over the initial vertex data to buffers. Nothing is done in scratch command buffers this time.
-                    this->vertex_buffer = vk::Buffer{vk::BufferType::Vertex, vk::BufferPurpose::NothingSpecial, *this->device, vk::hardware::MemoryResidency::CPUPersistent, this->input->get_vertex_bytes().size_bytes()};
-                    dynamic_input.set_vertex_data(static_cast<std::byte*>(this->vertex_buffer->map_memory()));
-                    this->index_buffer = vk::Buffer{vk::BufferType::Index, vk::BufferPurpose::NothingSpecial, *this->device, vk::hardware::MemoryResidency::CPUPersistent, this->input->get_indices().size_bytes()};
-                    dynamic_input.set_index_data(static_cast<unsigned int*>(this->index_buffer->map_memory()));
-                }
-            break;
-            default:
-                tz_error("Input data access unsupported (Vulkan)");
-            break;
+            switch(this->input->data_access())
+            {
+                case RendererInputDataAccess::StaticFixed:
+                    this->vertex_buffer = vk::Buffer{vk::BufferType::Vertex, vk::BufferPurpose::TransferDestination, *this->device, vk::hardware::MemoryResidency::GPU, this->input->get_vertex_bytes().size_bytes()};
+                    this->index_buffer = vk::Buffer{vk::BufferType::Index, vk::BufferPurpose::TransferDestination, *this->device, vk::hardware::MemoryResidency::GPU, this->input->get_indices().size_bytes()};
+                break;
+                case RendererInputDataAccess::DynamicFixed:
+                    {
+                        auto& dynamic_input = static_cast<IRendererDynamicInput&>(*this->input);
+                        // Create buffers in host-visible memory (slow) and pass the mapped ptrs to the renderer input.
+                        // Note: This also copies over the initial vertex data to buffers. Nothing is done in scratch command buffers this time.
+                        this->vertex_buffer = vk::Buffer{vk::BufferType::Vertex, vk::BufferPurpose::NothingSpecial, *this->device, vk::hardware::MemoryResidency::CPUPersistent, this->input->get_vertex_bytes().size_bytes()};
+                        dynamic_input.set_vertex_data(static_cast<std::byte*>(this->vertex_buffer->map_memory()));
+                        this->index_buffer = vk::Buffer{vk::BufferType::Index, vk::BufferPurpose::NothingSpecial, *this->device, vk::hardware::MemoryResidency::CPUPersistent, this->input->get_indices().size_bytes()};
+                        dynamic_input.set_index_data(static_cast<unsigned int*>(this->index_buffer->map_memory()));
+                    }
+                break;
+                default:
+                    tz_error("Input data access unsupported (Vulkan)");
+                break;
+            }
         }
 
         this->buffer_resource_buffers.clear();
