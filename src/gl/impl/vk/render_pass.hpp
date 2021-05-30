@@ -18,6 +18,7 @@ namespace tz::gl
         friend class RenderPassVulkan;
     private:
         vk::RenderPassBuilder builder;
+        std::vector<RenderPassAttachment> passes;
     };
 
     struct RenderPassBuilderDeviceInfoVulkan
@@ -26,14 +27,16 @@ namespace tz::gl
         const vk::Swapchain* device_swapchain;
     };
 
-    class RenderPassVulkan
+    class RenderPassVulkan : public IRenderPass
     {
     public:
         RenderPassVulkan(RenderPassBuilderVulkan builder, RenderPassBuilderDeviceInfoVulkan device_info);
+        virtual bool requires_depth_image() const final;
         const vk::RenderPass& vk_get_render_pass() const;
     private:
         vk::RenderPass render_pass;
         vk::Image::Format colour_attachment_format;
+        bool has_depth_attachment;
     };
 }
 

@@ -388,7 +388,15 @@ namespace tz::gl
         auto swapchain_height = static_cast<std::uint32_t>(this->swapchain->get_height());
         for(const vk::ImageView& swapchain_view : this->swapchain->get_image_views())
         {
-            this->swapchain_framebuffers.emplace_back(this->render_pass->vk_get_render_pass(), swapchain_view, this->depth_imageview.value(), VkExtent2D{swapchain_width, swapchain_height});
+            // If we have a depth image attached, add it to the framebuffer.
+            if(this->depth_imageview.has_value())
+            {
+                this->swapchain_framebuffers.emplace_back(this->render_pass->vk_get_render_pass(), swapchain_view, this->depth_imageview.value(), VkExtent2D{swapchain_width, swapchain_height});
+            }
+            else
+            {
+                this->swapchain_framebuffers.emplace_back(this->render_pass->vk_get_render_pass(), swapchain_view, VkExtent2D{swapchain_width, swapchain_height});
+            }
         }
     }
 
@@ -601,7 +609,8 @@ namespace tz::gl
     pipeline_manager(builder, device_info),
     image_manager(builder, device_info),
     processor(builder, device_info, this->renderer_input.get()),
-    clear_colour()
+    clear_colour(),
+    requires_depth_image(builder.get_render_pass().requires_depth_image())
     {
         this->clear_colour = {0.0f, 0.0f, 0.0f, 0.0f};
 
@@ -625,7 +634,10 @@ namespace tz::gl
 
         this->buffer_manager.initialise_resources(buffer_resources);
         this->buffer_manager.setup_buffers();
-        this->image_manager.setup_depth_image();
+        if(this->requires_depth_image)
+        {
+            this->image_manager.setup_depth_image();
+        }
         this->image_manager.setup_swapchain_framebuffers();
 
         this->processor.initialise_resource_descriptors(this->pipeline_manager, this->buffer_manager, all_resources);
@@ -672,7 +684,10 @@ namespace tz::gl
     {
         this->pipeline_manager.reconstruct_pipeline();
 
-        this->image_manager.setup_depth_image();
+        if(this->requires_depth_image)
+        {
+            this->image_manager.setup_depth_image();
+        }
 
         this->image_manager.setup_swapchain_framebuffers();
 

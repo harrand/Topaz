@@ -36,7 +36,7 @@ namespace tz::gl::vk::hardware
         return false;
     }
 
-    DeviceExtensionSupportFilter::DeviceExtensionSupportFilter(std::initializer_list<VulkanExtension> extension_names):
+    DeviceExtensionSupportFilter::DeviceExtensionSupportFilter(ExtensionList extension_names):
     required_extensions(extension_names){}
 
     bool DeviceExtensionSupportFilter::satisfies(const hardware::Device& device) const

@@ -46,6 +46,7 @@ namespace tz::gl
                 this->builder.with(vk::Attachments{default_colour_attachment(), default_depth_attachment()});
             break;
         }
+        this->passes.push_back(attachment);
     }
 
     void RenderPassBuilderVulkan::vk_finalise(vk::Image::Format colour_attachment_format)
@@ -87,9 +88,15 @@ namespace tz::gl
 
     RenderPassVulkan::RenderPassVulkan(RenderPassBuilderVulkan builder, RenderPassBuilderDeviceInfoVulkan device_info):
     render_pass(*device_info.device, builder.builder),
-    colour_attachment_format(device_info.device_swapchain->get_format())
+    colour_attachment_format(device_info.device_swapchain->get_format()),
+    has_depth_attachment(std::find(builder.passes.begin(), builder.passes.end(), RenderPassAttachment::ColourDepth) != builder.passes.end())
     {
         
+    }
+
+    bool RenderPassVulkan::requires_depth_image() const
+    {
+        return this->has_depth_attachment;
     }
 
     const vk::RenderPass& RenderPassVulkan::vk_get_render_pass() const

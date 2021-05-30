@@ -8,6 +8,11 @@
 #include "gl/mesh.hpp"
 #include "gl/shader.hpp"
 
+float get_aspect_ratio()
+{
+    return tz::window().get_width() / tz::window().get_height();
+}
+
 int main()
 {
     constexpr tz::GameInfo tz_triangle_demo{"tz_triangle_demo", tz::EngineInfo::Version{1, 0, 0}, tz::info()};
@@ -17,7 +22,7 @@ int main()
         tz::gl::Device device{device_builder};
 
         tz::gl::RenderPassBuilder pass_builder;
-        pass_builder.add_pass(tz::gl::RenderPassAttachment::ColourDepth);
+        pass_builder.add_pass(tz::gl::RenderPassAttachment::Colour);
         tz::gl::RenderPass render_pass = device.create_render_pass(pass_builder);
 
         tz::gl::ShaderBuilder shader_builder;
@@ -40,14 +45,13 @@ int main()
         };
         tz::gl::MeshInput mesh_input{mesh};
 
-        
-        float aspect_ratio = tz::window().get_width() / tz::window().get_height();
         std::array<tz::Mat4, 3> mvp_data
         {
             tz::model({0.0f, 0.0f, -1.0f}, {0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f}),
             tz::view({0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}),
-            tz::perspective(1.27f, aspect_ratio, 0.1f, 1000.0f)
+            tz::perspective(1.27f, get_aspect_ratio(), 0.1f, 1000.0f)
         };
+        // Note: Window is resizeable but we don't amend the aspect-ratio if it does. This is for simplicity's sake -- This is done properly in tz_dynamic_triangle_demo.
         tz::gl::BufferResource buf_res{tz::gl::BufferData::FromArray<tz::Mat4>(mvp_data)};
 
         renderer_builder.set_input(mesh_input);

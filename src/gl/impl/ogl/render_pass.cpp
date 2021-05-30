@@ -19,6 +19,13 @@ namespace tz::gl
     subpasses(builder)
     {}
 
+    bool RenderPassOGL::requires_depth_image() const
+    {
+        auto attachments = this->subpasses.ogl_get_attachments();
+        return std::find(attachments.begin(), attachments.end(), RenderPassAttachment::ColourDepth) != attachments.end();
+    }
+
+
     std::span<const RenderPassAttachment> RenderPassOGL::ogl_get_attachments() const
     {
         return this->subpasses.ogl_get_attachments();

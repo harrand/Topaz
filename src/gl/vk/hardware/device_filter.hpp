@@ -34,7 +34,7 @@ namespace tz::gl::vk::hardware
     class DeviceExtensionSupportFilter : public IDeviceFilter
     {
     public:
-        DeviceExtensionSupportFilter(std::initializer_list<VulkanExtension> extension_names);
+        DeviceExtensionSupportFilter(ExtensionList extension_names);
         virtual bool satisfies(const hardware::Device& device) const override;
     private:
         ExtensionList required_extensions;

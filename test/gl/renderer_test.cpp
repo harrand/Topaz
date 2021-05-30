@@ -11,7 +11,7 @@ int main()
         tz::gl::Device device{tz::gl::DeviceBuilder{}};
 
         tz::gl::RenderPassBuilder pass_builder;
-        pass_builder.add_pass(tz::gl::RenderPassAttachment::ColourDepth);
+        pass_builder.add_pass(tz::gl::RenderPassAttachment::Colour);
         tz::gl::RenderPass render_pass = device.create_render_pass(pass_builder);
 
         tz::gl::ShaderBuilder builder;

@@ -17,10 +17,11 @@ namespace tz::gl
         std::vector<RenderPassAttachment> attachments;
     };
 
-    class RenderPassOGL
+    class RenderPassOGL : public IRenderPass
     {
     public:
         RenderPassOGL(RenderPassBuilderOGL builder);
+        virtual bool requires_depth_image() const final;
         std::span<const RenderPassAttachment> ogl_get_attachments() const;
     private:
         RenderPassBuilderOGL subpasses;

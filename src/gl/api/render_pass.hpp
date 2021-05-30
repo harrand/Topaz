@@ -24,7 +24,7 @@ namespace tz::gl
     class IRenderPass
     {
     public:
-        
+        virtual bool requires_depth_image() const = 0;
     };
     /**
      * @}

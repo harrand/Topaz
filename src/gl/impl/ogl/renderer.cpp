@@ -107,15 +107,13 @@ namespace tz::gl
     {
         auto persistent_mapped_buffer_flags = GL_MAP_READ_BIT | GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT;
 
-        switch(builder.get_render_pass().ogl_get_attachments()[0])
+        if(builder.get_render_pass().requires_depth_image())
         {
-            case RenderPassAttachment::ColourDepth:
-            case RenderPassAttachment::Depth:
-                glEnable(GL_DEPTH_TEST);
-            break;
-            case RenderPassAttachment::Colour:
-                glDisable(GL_DEPTH_TEST);
-            break;
+            glEnable(GL_DEPTH_TEST);
+        }
+        else
+        {
+            glDisable(GL_DEPTH_TEST);
         }
         switch(builder.get_culling_strategy())
         {
@@ -249,7 +247,7 @@ namespace tz::gl
             }
         }
 
-        for(const IResource* texture_resource : builder.ogl_get_texture_resources())
+        for(std::size_t i = 0; i < builder.ogl_get_texture_resources().size(); i++)
         {
             tz_error("Texture resources not yet implemented on OGL");
         }
