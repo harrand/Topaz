@@ -29,15 +29,16 @@ namespace tz::gl
 
     ResourceHandle RendererBuilderVulkan::add_resource(const IResource& resource)
     {
+        std::size_t total_resource_size = this->buffer_resources.size() + this->texture_resources.size();
         switch(resource.get_type())
         {
             case ResourceType::Buffer:
                 this->buffer_resources.push_back(&resource);
-                return {static_cast<tz::HandleValue>(this->buffer_resources.size() - 1)};
+                return {static_cast<tz::HandleValue>(total_resource_size)};
             break;
             case ResourceType::Texture:
                 this->texture_resources.push_back(&resource);
-                return {static_cast<tz::HandleValue>(this->texture_resources.size() - 1)};
+                return {static_cast<tz::HandleValue>(total_resource_size)};
             break;
             default:
                 tz_error("Unexpected resource type. Support for this resource type is not yet implemented (Vulkan)");
@@ -165,8 +166,6 @@ namespace tz::gl
         }
         return {device, layout_builder};
     }
-
-
 
     std::span<const IResource* const> RendererBuilderVulkan::vk_get_buffer_resources() const
     {

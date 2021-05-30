@@ -7,7 +7,7 @@ layout(location = 2) in vec3 normal;
 layout(location = 3) in vec3 tangent;
 layout(location = 4) in vec3 bitangent;
 
-layout(set = 0, binding = 0) uniform MVP
+layout(binding = 0) uniform MVP
 {
     mat4 model;
     mat4 view;

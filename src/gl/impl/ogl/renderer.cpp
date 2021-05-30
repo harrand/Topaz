@@ -33,6 +33,26 @@ namespace tz::gl
         return this->output;
     }
 
+    ResourceHandle RendererBuilderOGL::add_resource(const IResource& resource)
+    {
+        std::size_t total_resource_size = this->buffer_resources.size() + this->texture_resources.size();
+        switch(resource.get_type())
+        {
+            case ResourceType::Buffer:
+                this->buffer_resources.push_back(&resource);
+                return {static_cast<tz::HandleValue>(total_resource_size)};
+            break;
+            case ResourceType::Texture:
+                this->texture_resources.push_back(&resource);
+                return {static_cast<tz::HandleValue>(total_resource_size)};
+            break;
+            default:
+                tz_error("Unexpected resource type. Support for this resource type is not yet implemented (OGL)");
+                return {static_cast<tz::HandleValue>(0)};
+            break;
+        }
+    }
+
     void RendererBuilderOGL::set_culling_strategy(RendererCullingStrategy culling_strategy)
     {
         this->culling_strategy = culling_strategy;
@@ -64,16 +84,30 @@ namespace tz::gl
         return *this->shader;
     }
 
+    std::span<const IResource* const> RendererBuilderOGL::ogl_get_buffer_resources() const
+    {
+        return {this->buffer_resources.begin(), this->buffer_resources.end()};
+    }
+    
+    std::span<const IResource* const> RendererBuilderOGL::ogl_get_texture_resources() const
+    {
+        return {this->texture_resources.begin(), this->texture_resources.end()};
+    }
+
     RendererOGL::RendererOGL(RendererBuilderOGL builder):
     vao(0),
     vbo(0),
     ibo(0),
+    resources(),
+    resource_ubos(),
     index_count(0),
     render_pass(&builder.get_render_pass()),
     shader(&builder.get_shader()),
     input(builder.get_input()->unique_clone()),
     output(builder.get_output())
     {
+        auto persistent_mapped_buffer_flags = GL_MAP_READ_BIT | GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT;
+
         switch(builder.get_render_pass().ogl_get_attachments()[0])
         {
             case RenderPassAttachment::ColourDepth:
@@ -134,7 +168,6 @@ namespace tz::gl
                 break;
                 case RendererInputDataAccess::DynamicFixed:
                     auto& dynamic_input = static_cast<IRendererDynamicInput&>(*this->input);
-                    auto persistent_mapped_buffer_flags = GL_MAP_READ_BIT | GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT;
                     glNamedBufferStorage(this->vbo, dynamic_input.get_vertex_bytes().size_bytes(), dynamic_input.get_vertex_bytes().data(), persistent_mapped_buffer_flags);
                     glNamedBufferStorage(this->ibo, dynamic_input.get_indices().size_bytes(), dynamic_input.get_indices().data(), persistent_mapped_buffer_flags);
                     this->index_count = dynamic_input.get_indices().size();
@@ -180,6 +213,48 @@ namespace tz::gl
             }
             glBindBuffer(GL_ARRAY_BUFFER, 0);
         }
+
+        std::vector<IResource*> buffer_resources;
+        for(const IResource* buffer_resource : builder.ogl_get_buffer_resources())
+        {
+            this->resources.push_back(buffer_resource->unique_clone());
+            buffer_resources.push_back(this->resources.back().get());
+        }
+        for(const IResource* texture_resource : builder.ogl_get_texture_resources())
+        {
+            this->resources.push_back(texture_resource->unique_clone());
+        }
+
+        for(std::size_t i = 0 ; i < buffer_resources.size(); i++)
+        {
+            IResource* buffer_resource = buffer_resources[i];
+            GLuint& buf = this->resource_ubos.emplace_back();
+            glCreateBuffers(1, &buf);
+            switch(buffer_resource->data_access())
+            {
+                case RendererInputDataAccess::StaticFixed:
+                    glNamedBufferData(buf, buffer_resource->get_resource_bytes().size_bytes(), buffer_resource->get_resource_bytes().data(), GL_STATIC_DRAW);
+                break;
+                case RendererInputDataAccess::DynamicFixed:
+                    {
+                        auto& dynamic_buf = *static_cast<IDynamicResource*>(buffer_resource);
+                        auto buf_bytes = dynamic_buf.get_resource_bytes().size_bytes();
+                        glNamedBufferStorage(buf, buf_bytes, dynamic_buf.get_resource_bytes().data(), persistent_mapped_buffer_flags);
+                        void* res_data = glMapNamedBufferRange(buf, 0, buf_bytes, persistent_mapped_buffer_flags);
+                        dynamic_buf.set_resource_data(static_cast<std::byte*>(res_data));
+                    }
+                break;
+                default:
+                    tz_error("Resource type not yet implemented (OGL)");
+                break;
+            }
+        }
+
+        for(const IResource* texture_resource : builder.ogl_get_texture_resources())
+        {
+            tz_error("Texture resources not yet implemented on OGL");
+        }
+
         tz_report("RendererOGL (Input = %p)", builder.get_input());
     }
 
@@ -187,6 +262,7 @@ namespace tz::gl
     vao(0),
     vbo(0),
     ibo(0),
+    resource_ubos(),
     index_count(0),
     render_pass(nullptr),
     shader(nullptr),
@@ -207,6 +283,11 @@ namespace tz::gl
             glDeleteBuffers(1, &this->ibo);
         }
 
+        for(GLuint buf : this->resource_ubos)
+        {
+            glDeleteBuffers(1, &buf);
+        }
+
         if(this->vao != 0)
         {
             glDeleteVertexArrays(1, &this->vao);
@@ -218,6 +299,7 @@ namespace tz::gl
         std::swap(this->vao, rhs.vao);
         std::swap(this->vbo, rhs.vbo);
         std::swap(this->ibo, rhs.ibo);
+        std::swap(this->resource_ubos, rhs.resource_ubos);
         std::swap(this->index_count, rhs.index_count);
         std::swap(this->render_pass, rhs.render_pass);
         std::swap(this->shader, rhs.shader);
@@ -233,6 +315,12 @@ namespace tz::gl
     IRendererInput* RendererOGL::get_input()
     {
         return this->input.get();
+    }
+
+    IResource* RendererOGL::get_resource(ResourceHandle handle)
+    {
+        auto handle_value = static_cast<HandleValueUnderlying>(static_cast<HandleValue>(handle));
+        return this->resources[handle_value].get();
     }
 
     tz::Vec4 RendererOGL::get_clear_colour() const
@@ -272,6 +360,11 @@ namespace tz::gl
 
         glBindVertexArray(this->vao);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->ibo);
+        for(std::size_t i = 0; i < this->resource_ubos.size(); i++)
+        {
+            GLuint res_ubo = this->resource_ubos[i];
+            glBindBufferBase(GL_UNIFORM_BUFFER, i, res_ubo);
+        }
         glUseProgram(this->shader->ogl_get_program_handle());
         glDrawElements(GL_TRIANGLES, this->index_count, GL_UNSIGNED_INT, nullptr);
     }
