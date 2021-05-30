@@ -254,7 +254,7 @@ namespace tz::gl
             tz_error("Texture resources not yet implemented on OGL");
         }
 
-        tz_report("RendererOGL (Input = %p)", builder.get_input());
+        tz_report("RendererOGL (%s, %zu resource%s)", this->input != nullptr ? "Input" : "No Input", this->resources.size(), this->resources.size() == 1 ? "" : "s");
     }
 
     RendererOGL::RendererOGL(RendererOGL&& move):

@@ -161,7 +161,6 @@ namespace tz::gl::vk
     currently_recording(false)
     {
         // Note: this->command_buffer is handled by CommandPool.
-        // TODO: Make this less disgusting?
     }
 
     CommandBufferRecording CommandBuffer::record()

@@ -411,10 +411,6 @@ namespace tz::gl
     {
         // Now the command pool
         this->initialise_command_pool();
-        if(this->input == nullptr)
-        {
-            tz_report("Renderer will draw with no input -- Won't draw anything.");
-        }
     }
 
     void RendererProcessorVulkan::initialise_resource_descriptors(const RendererPipelineManagerVulkan& pipeline_manager, const RendererBufferManagerVulkan& buffer_manager, std::vector<const IResource*> resources)
@@ -643,7 +639,7 @@ namespace tz::gl
         this->processor.set_regeneration_function([this](){this->handle_resize();});
         // Tell the device to notify us when it detects a window resize. We will also need to regenerate then too.
         *device_info.on_resize = [this](){this->handle_resize();};
-        tz_report("RendererVulkan (Input = %p)", this->renderer_input.get());
+        tz_report("RendererVulkan (%s, %zu resource%s)", this->renderer_input != nullptr ? "Input" : "No Input", this->renderer_resources.size(), this->renderer_resources.size() == 1 ? "" : "s");
     }
 
     void RendererVulkan::set_clear_colour(tz::Vec4 clear_colour)

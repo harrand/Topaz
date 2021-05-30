@@ -47,7 +47,6 @@ namespace tz::gl
 
     /**
      * @brief Renderer Input representing a typical mesh.
-     * 
      */
     class MeshInput : public IRendererInputCopyable<MeshInput>
     {

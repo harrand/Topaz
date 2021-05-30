@@ -9,17 +9,30 @@ namespace tz::gl
     struct BufferData
     {
         template<typename T>
-        static BufferData FromArray(std::span<T> data)
+        static BufferData FromArray(std::span<const T> data)
         {
             BufferData buf;
             buf.data.resize(data.size_bytes());
             std::memcpy(buf.data.data(), data.data(), data.size_bytes());
             return buf;
         }
+
+        template<typename T>
+        static BufferData FromValue(const T& data)
+        {
+            BufferData buf;
+            buf.data.resize(sizeof(T));
+            std::memcpy(buf.data.data(), &data, sizeof(T));
+            return buf;
+        }
         std::vector<std::byte> data;
     };
 
-    class BufferResource : public IResourceCloneable<BufferResource>
+    /**
+     * @brief Renderer Resource representing a uniform buffer.
+     * 
+     */
+    class BufferResource : public IResourceCopyable<BufferResource>
     {
     public:
         BufferResource(BufferData data):
@@ -39,7 +52,7 @@ namespace tz::gl
         BufferData data;
     };
 
-    class DynamicBufferResource : public IDynamicResourceCloneable<DynamicBufferResource>
+    class DynamicBufferResource : public IDynamicResourceCopyable<DynamicBufferResource>
     {
     public:
         DynamicBufferResource(BufferData data):

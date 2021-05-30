@@ -55,7 +55,7 @@ namespace tz::gl
          * @brief Retrieve the data access specifier for this render input type.
          * @note Inputs derived from @ref IRendererInput are `StaticFixed` by default, but this can be overriden. Inputs derived from @ref IRendererDynamicInput are always `DynamicFixed` and this cannot be overridden.
          * 
-         * @return constexpr RendererInputDataAccess 
+         * @return Access specifier for the data relative to the @ref IRenderer.
          */
         virtual constexpr RendererInputDataAccess data_access() const {return RendererInputDataAccess::StaticFixed;}
         /**
@@ -98,15 +98,14 @@ namespace tz::gl
     };
 
     /**
-     * @brief Similar to @ref IRendererInput, but the vertex/index data can be changed at any point, even while used by a renderer.
-     * 
+     * @brief Similar to @ref IRendererInput, but the vertex/index data can be changed at any point, even while used by a @ref IRenderer.
      */
     class IRendererDynamicInput : public IRendererInput
     {
     public:
         /**
          * @brief Retrieve the data access specifier for this render input type.
-         * @note Inputs derived from @ref IRendererInput are `StaticFixed` by default. Inputs derived from @ref IRendererDynamicInput are `DynamicFixed` by default.
+         * @note Inputs derived from @ref IRendererInput are `StaticFixed` by default. Inputs derived from @ref IRendererDynamicInput are always `DynamicFixed`.
          * 
          * @return constexpr RendererInputDataAccess 
          */
@@ -132,7 +131,7 @@ namespace tz::gl
     };
 
     /**
-     * @brief Identical to @ref IRendererInput, but `IRendererInputCopyable<T>::unique_clone()` need not be implemented.
+     * @brief Identical to @ref IRendererDynamicInput, but `IRendererDynamicInputCopyable<T>::unique_clone()` need not be implemented.
      * @pre Derived must be copy-constructible. Otherwise, the program is ill-formed.
      * 
      * @tparam Derived Renderer input type. It must be copy-constructible.
