@@ -61,7 +61,7 @@ namespace tz::gl
         RendererPipelineManagerVulkan(RendererBuilderVulkan builder, RendererBuilderDeviceInfoVulkan device_info);
         void reconstruct_pipeline();
         const vk::GraphicsPipeline& get_pipeline() const;
-        const vk::DescriptorSetLayout* get_resource_descriptor_layout() const;
+        const vk::DescriptorSetLayout& get_resource_descriptor_layout() const;
         const vk::pipeline::Layout& get_layout() const;
     private:
         const vk::LogicalDevice* device;

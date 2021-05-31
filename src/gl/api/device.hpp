@@ -48,7 +48,7 @@ namespace tz::gl
          * @param builder Builder describing the composition of the render-pass.
          * @return RenderPass 
          */
-        virtual RenderPass create_render_pass(RenderPassBuilder builder) const = 0;
+        [[nodiscard]] virtual RenderPass create_render_pass(RenderPassBuilder builder) const = 0;
         /**
          * @brief Create an @ref IRenderer using this device and the provided builder.
          * @note Renderer inputs are copied over, so the renderer input provided is no longer needed once the renderer has been created.
@@ -56,14 +56,14 @@ namespace tz::gl
          * @param builder Builder describing the parameters of the renderer.
          * @return The created renderer.
          */
-        virtual Renderer create_renderer(RendererBuilder builder) const = 0;
+        [[nodiscard]] virtual Renderer create_renderer(RendererBuilder builder) const = 0;
         /**
          * @brief Create an @ref IShader using this device and the provided builder.
          *
          * @param builder Builder describing the sources and modules of the shader program.
          * @return Shader Shader program which can be provided to a `tz::gl::Renderer`.
          */
-        virtual Shader create_shader(ShaderBuilder builder) const = 0;
+        [[nodiscard]] virtual Shader create_shader(ShaderBuilder builder) const = 0;
     };
     /**
      * @}

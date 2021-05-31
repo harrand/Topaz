@@ -20,9 +20,9 @@ namespace tz::gl
     {
     public:
         DeviceOGL(DeviceBuilderOGL builder);
-        virtual RenderPass create_render_pass(RenderPassBuilder builder) const final;
-        virtual Renderer create_renderer(RendererBuilder builder) const final;
-        virtual Shader create_shader(ShaderBuilder builder) const final;
+        [[nodiscard]] virtual RenderPass create_render_pass(RenderPassBuilder builder) const final;
+        [[nodiscard]] virtual Renderer create_renderer(RendererBuilder builder) const final;
+        [[nodiscard]] virtual Shader create_shader(ShaderBuilder builder) const final;
     private:
         GraphicsPrimitiveType primitive_type;
     };

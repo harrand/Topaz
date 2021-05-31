@@ -230,9 +230,9 @@ namespace tz::gl
         return this->graphics_pipeline;
     }
 
-    const vk::DescriptorSetLayout* RendererPipelineManagerVulkan::get_resource_descriptor_layout() const
+    const vk::DescriptorSetLayout& RendererPipelineManagerVulkan::get_resource_descriptor_layout() const
     {
-        return &this->resource_descriptor_layout;
+        return this->resource_descriptor_layout;
     }
 
     const vk::pipeline::Layout& RendererPipelineManagerVulkan::get_layout() const
@@ -422,8 +422,8 @@ namespace tz::gl
 
     void RendererProcessorVulkan::initialise_resource_descriptors(const RendererPipelineManagerVulkan& pipeline_manager, const RendererBufferManagerVulkan& buffer_manager, std::vector<const IResource*> resources)
     {
-        const vk::DescriptorSetLayout* layout = pipeline_manager.get_resource_descriptor_layout();
-        if(layout != nullptr && !resources.empty())
+        const vk::DescriptorSetLayout& layout = pipeline_manager.get_resource_descriptor_layout();
+        if(!resources.empty())
         {
             // First use the layout and all resources to create the pool.
             vk::DescriptorPoolBuilder pool_builder;
@@ -453,7 +453,7 @@ namespace tz::gl
             }
             for(std::size_t i = 0; i < image_count; i++)
             {
-                pool_builder.with_layout(*layout);
+                pool_builder.with_layout(layout);
             }
 
             this->resource_descriptor_pool = {*this->device, pool_builder};
