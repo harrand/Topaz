@@ -26,8 +26,8 @@ int main()
         tz::gl::RenderPass render_pass = device.create_render_pass(pass_builder);
 
         tz::gl::ShaderBuilder shader_builder;
-        shader_builder.set_shader_file(tz::gl::ShaderType::VertexShader, ".\\demo\\gl\\triangle_demo.vertex.glsl");
-        shader_builder.set_shader_file(tz::gl::ShaderType::FragmentShader, ".\\demo\\gl\\triangle_demo.fragment.glsl");
+        shader_builder.set_shader_file(tz::gl::ShaderType::VertexShader, ".\\demo\\gl\\dynamic_triangle_demo.vertex.glsl");
+        shader_builder.set_shader_file(tz::gl::ShaderType::FragmentShader, ".\\demo\\gl\\dynamic_triangle_demo.fragment.glsl");
 
         tz::gl::Shader shader = device.create_shader(shader_builder);
 
@@ -45,6 +45,30 @@ int main()
         };
         tz::gl::MeshInput mesh_input{mesh};
 
+        std::array<unsigned char, 16> imgdata = 
+        {
+            0b0000'0000,
+            0b0000'0000,
+            0b1111'1111,
+            0b1111'1111,
+
+            0b1111'1111,
+            0b0000'0000,
+            0b0000'0000,
+            0b1111'1111,
+
+            0b0000'0000,
+            0b1111'1111,
+            0b0000'0000,
+            0b1111'1111,
+
+            0b0000'0000,
+            0b0000'0000,
+            0b1111'1111,
+            0b1111'1111,
+        };
+        tz::gl::TextureResource texture{tz::gl::TextureData::FromMemory(2, 2, imgdata), tz::gl::TextureFormat::Rgba32sRGB};
+
         std::array<tz::Mat4, 3> mvp_data
         {
             tz::model({0.0f, 0.0f, -1.0f}, {0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f}),
@@ -57,6 +81,7 @@ int main()
         renderer_builder.set_input(mesh_input);
         renderer_builder.set_output(tz::window());
         tz::gl::ResourceHandle buf_handle = renderer_builder.add_resource(buf_res);
+        renderer_builder.add_resource(texture);
         renderer_builder.set_render_pass(render_pass);
         renderer_builder.set_shader(shader);
         tz::gl::Renderer renderer = device.create_renderer(renderer_builder);
@@ -68,7 +93,7 @@ int main()
                 auto buffer_bytes = static_cast<tz::gl::IDynamicResource*>(renderer.get_resource(buf_handle))->get_resource_bytes_dynamic();
                 tz::Mat4& model = reinterpret_cast<tz::Mat4*>(buffer_bytes.data())[0];
                 static float counter = 0.0f;
-                model = tz::model({std::sin(counter * 0.25f) * 0.25f, std::sin(counter) * 0.25f, -1.0f}, {}, {1.0f, 1.0f, 1.0f});
+                model = tz::model({std::sin(counter * 0.25f) * 0.25f, std::sin(counter) * 0.25f, -1.0f}, {0.0f, 0.0f, std::sin(counter * 0.1f) * 3.14159f}, {1.0f, 1.0f, 1.0f});
                 counter += 0.001f;
             }
 

@@ -104,15 +104,30 @@ namespace tz::gl
     class RendererImageManagerVulkan
     {
     public:
+        struct TextureComponent
+        {
+            vk::Image img;
+            vk::ImageView view;
+            vk::Sampler sampler;
+        };
+
         RendererImageManagerVulkan(RendererBuilderVulkan builder, RendererBuilderDeviceInfoVulkan device_info);
+        void initialise_resources(std::vector<IResource*> renderer_buffer_resources);
         void setup_depth_image();
         void setup_swapchain_framebuffers();
         std::span<const vk::Framebuffer> get_swapchain_framebuffers() const;
+        std::span<const IResource* const> get_texture_resources() const;
+        std::span<IResource*> get_texture_resources();
+        std::span<const TextureComponent> get_resource_textures() const;
+        std::span<TextureComponent> get_resource_textures();
     private:
+
         const vk::LogicalDevice* device;
         const vk::hardware::Device* physical_device;
         const RenderPass* render_pass;
         const vk::Swapchain* swapchain;
+        std::vector<IResource*> texture_resources;
+        std::vector<TextureComponent> texture_resource_textures;
         std::optional<vk::Image> depth_image;
         std::optional<vk::ImageView> depth_imageview;
         std::vector<vk::Framebuffer> swapchain_framebuffers;
@@ -122,11 +137,11 @@ namespace tz::gl
     {
     public:
         RendererProcessorVulkan(RendererBuilderVulkan builder, RendererBuilderDeviceInfoVulkan device_info, const IRendererInput* input);
-        void initialise_resource_descriptors(const RendererPipelineManagerVulkan& pipeline_manager, const RendererBufferManagerVulkan& buffer_manager, std::vector<const IResource*> resources);
+        void initialise_resource_descriptors(const RendererPipelineManagerVulkan& pipeline_manager, const RendererBufferManagerVulkan& buffer_manager, const RendererImageManagerVulkan& image_manager, std::vector<const IResource*> resources);
         void initialise_command_pool();
         void block_until_idle();
         void record_rendering_commands(const RendererPipelineManagerVulkan& pipeline_manager, const RendererBufferManagerVulkan& buffer_manager, const RendererImageManagerVulkan& image_manager, tz::Vec4 clear_colour);
-        void record_and_run_scratch_commands(RendererBufferManagerVulkan& buffer_manager);
+        void record_and_run_scratch_commands(RendererBufferManagerVulkan& buffer_manager, RendererImageManagerVulkan& image_manager);
         void set_regeneration_function(std::function<void()> action);
         void render();
     private:

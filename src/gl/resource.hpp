@@ -1,8 +1,11 @@
 #ifndef TOPAZ_GL_RESOURCE_HPP
 #define TOPAZ_GL_RESOURCE_HPP
+#include "core/assert.hpp"
 #include "gl/api/resource.hpp"
+#include "stb_image.h"
 #include <cstring>
 #include <vector>
+#include <filesystem>
 
 namespace tz::gl
 {
@@ -92,6 +95,92 @@ namespace tz::gl
     private:
         BufferData initial_data;
         std::byte* resource_data;
+    };
+
+    struct TextureData
+    {
+        static TextureData FromImageFile(const std::filesystem::path image_path, TextureFormat format)
+        {
+            TextureData data;
+            std::size_t components_per_element;
+            switch(format)
+            {
+                case TextureFormat::Rgba32Signed:
+                [[fallthrough]];
+                case TextureFormat::Rgba32Unsigned:
+                [[fallthrough]];
+                case TextureFormat::Rgba32sRGB:
+                    components_per_element = 4;
+                break;
+                case TextureFormat::DepthFloat32:
+                    components_per_element = 1;
+                break;
+                default:
+                    tz_error("No support for given TextureFormat");
+                break;
+            }
+
+            {
+                int w, h;
+                int channels_in_file;
+                unsigned char* imgdata = stbi_load(image_path.string().c_str(), &w, &h, &channels_in_file, components_per_element);
+                data.width = w;
+                data.height = h;
+                std::size_t imgdata_size = w * h * components_per_element;
+                data.image_data.resize(imgdata_size);
+                std::memcpy(data.image_data.data(), imgdata, imgdata_size);
+            }
+            return data;
+        }
+
+        static TextureData FromMemory(unsigned int width, unsigned int height, std::span<unsigned char> image_data)
+        {
+            TextureData data;
+            data.width = width;
+            data.height = height;
+            data.image_data.resize(image_data.size_bytes());
+            std::memcpy(data.image_data.data(), image_data.data(), image_data.size_bytes());
+            return data;
+        }
+
+        unsigned int width;
+        unsigned int height;
+        std::vector<std::byte> image_data;
+    };
+
+    class TextureResource : public IResourceCopyable<TextureResource>
+    {
+    public:
+        TextureResource(TextureData data, TextureFormat format):
+        data(data), format(format){}
+
+        virtual constexpr ResourceType get_type() const final
+        {
+            return ResourceType::Texture;
+        }
+
+        virtual std::span<const std::byte> get_resource_bytes() const final
+        {
+            return {this->data.image_data.begin(), this->data.image_data.end()};
+        }
+
+        const TextureFormat& get_format() const
+        {
+            return this->format;
+        }
+
+        unsigned int get_width() const
+        {
+            return data.width;
+        }
+
+        unsigned int get_height() const
+        {
+            return data.height;
+        }
+    private:
+        TextureData data;
+        TextureFormat format;
     };
 }
 

@@ -13,6 +13,14 @@ namespace tz::gl
         Buffer,
         Texture
     };
+
+    enum class TextureFormat
+    {
+        Rgba32Signed,
+        Rgba32Unsigned,
+        Rgba32sRGB,
+        DepthFloat32
+    };
     /**
      * @} 
      */

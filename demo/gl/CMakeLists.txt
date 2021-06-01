@@ -12,6 +12,6 @@ add_demo(
     TARGET tz_dynamic_triangle_demo
     SOURCE_FILES tz_dynamic_triangle_demo.cpp
     SHADER_SOURCES
-        demo/gl/triangle_demo.vertex.glsl
-        demo/gl/triangle_demo.fragment.glsl
+        demo/gl/dynamic_triangle_demo.vertex.glsl
+        demo/gl/dynamic_triangle_demo.fragment.glsl
 )
