@@ -63,6 +63,7 @@ namespace tz::gl
         GLuint vbo, ibo;
         std::vector<std::unique_ptr<IResource>> resources;
         std::vector<GLuint> resource_ubos;
+        std::vector<GLuint> resource_textures;
         GLsizei index_count;
         const RenderPass* render_pass;
         const Shader* shader;

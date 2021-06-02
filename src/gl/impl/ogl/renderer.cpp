@@ -99,6 +99,7 @@ namespace tz::gl
     ibo(0),
     resources(),
     resource_ubos(),
+    resource_textures(),
     index_count(0),
     render_pass(&builder.get_render_pass()),
     shader(&builder.get_shader()),
@@ -212,6 +213,7 @@ namespace tz::gl
         }
 
         std::vector<IResource*> buffer_resources;
+        std::vector<IResource*> texture_resources;
         for(const IResource* buffer_resource : builder.ogl_get_buffer_resources())
         {
             this->resources.push_back(buffer_resource->unique_clone());
@@ -220,11 +222,13 @@ namespace tz::gl
         for(const IResource* texture_resource : builder.ogl_get_texture_resources())
         {
             this->resources.push_back(texture_resource->unique_clone());
+            texture_resources.push_back(this->resources.back().get());
         }
 
         for(std::size_t i = 0 ; i < buffer_resources.size(); i++)
         {
             IResource* buffer_resource = buffer_resources[i];
+            tz_report("Buffer Resource (ResourceID: %zu, BufferComponentID: %zu, %zu bytes total)", i, i, buffer_resource->get_resource_bytes().size_bytes());
             GLuint& buf = this->resource_ubos.emplace_back();
             glCreateBuffers(1, &buf);
             switch(buffer_resource->data_access())
@@ -247,9 +251,43 @@ namespace tz::gl
             }
         }
 
-        for(std::size_t i = 0; i < builder.ogl_get_texture_resources().size(); i++)
+        for(std::size_t i = 0; i < texture_resources.size(); i++)
         {
-            tz_error("Texture resources not yet implemented on OGL");
+            auto* texture_resource = static_cast<TextureResource*>(texture_resources[i]);
+            tz_report("Texture Resource (ResourceID: %zu, TextureComponentID: %zu, %zu bytes total)", buffer_resources.size() + i, i, texture_resource->get_resource_bytes().size_bytes());
+            GLuint& tex = this->resource_textures.emplace_back();
+            glCreateTextures(GL_TEXTURE_2D, 1, &tex);
+            GLenum internal_format, format, type;
+            switch(texture_resource->get_format())
+            {
+                case TextureFormat::Rgba32Signed:
+                    internal_format = GL_RGBA8;
+                    format = GL_RGBA;
+                    type = GL_BYTE;
+                break;
+                case TextureFormat::Rgba32Unsigned:
+                    internal_format = GL_RGBA8;
+                    format = GL_RGBA;
+                    type = GL_UNSIGNED_BYTE;
+                break;
+                case TextureFormat::Rgba32sRGB:
+                    internal_format = GL_SRGB8_ALPHA8;
+                    format = GL_RGBA;
+                    type = GL_UNSIGNED_BYTE;
+                break;
+                case TextureFormat::DepthFloat32:
+                    internal_format = GL_DEPTH_COMPONENT32F;
+                    format = GL_DEPTH_COMPONENT;
+                    type = GL_FLOAT;
+                break;
+            }
+            glBindTexture(GL_TEXTURE_2D, tex);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glTexImage2D(GL_TEXTURE_2D, 0, internal_format, texture_resource->get_width(), texture_resource->get_height(), 0, format, type, texture_resource->get_resource_bytes().data());
+            glBindTexture(GL_TEXTURE_2D, 0);
         }
 
         tz_report("RendererOGL (%s, %zu resource%s)", this->input != nullptr ? "Input" : "No Input", this->resources.size(), this->resources.size() == 1 ? "" : "s");
@@ -280,10 +318,8 @@ namespace tz::gl
             glDeleteBuffers(1, &this->ibo);
         }
 
-        for(GLuint buf : this->resource_ubos)
-        {
-            glDeleteBuffers(1, &buf);
-        }
+        glDeleteBuffers(this->resource_ubos.size(), this->resource_ubos.data());
+        glDeleteTextures(this->resource_textures.size(), this->resource_textures.data());
 
         if(this->vao != 0)
         {
@@ -363,6 +399,15 @@ namespace tz::gl
             glBindBufferBase(GL_UNIFORM_BUFFER, i, res_ubo);
         }
         glUseProgram(this->shader->ogl_get_program_handle());
+        
+        for(std::size_t i = 0; i < this->resource_textures.size(); i++)
+        {
+            GLuint res_tex = this->resource_textures[i];
+            glActiveTexture(GL_TEXTURE0 + i);
+            glBindTexture(GL_TEXTURE_2D, res_tex);
+            glUniform1i(this->resource_ubos.size() + i, res_tex);
+        }
+
         glDrawElements(GL_TRIANGLES, this->index_count, GL_UNSIGNED_INT, nullptr);
     }
 }
