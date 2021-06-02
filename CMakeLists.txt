@@ -1,6 +1,5 @@
 cmake_minimum_required(VERSION 3.9)
 include(cmake/setup_configs.cmake)
-include(cmake/shader_compiler.cmake)
 
 file(READ ./version.txt TZ_VERSION)
 # Reconfigure on changes to ./version.txt
@@ -220,6 +219,7 @@ endif()
 
 add_subdirectory(lib)
 add_subdirectory(tools)
+include(cmake/shader_compiler.cmake)
 add_subdirectory(demo)
 enable_testing()
 add_subdirectory(test)
