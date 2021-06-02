@@ -219,10 +219,10 @@ else()
 endif()
 
 add_subdirectory(lib)
+add_subdirectory(tools)
 add_subdirectory(demo)
 enable_testing()
 add_subdirectory(test)
-
 #
 #add_tz_test(
 #    NAME default_test
