@@ -133,7 +133,7 @@ namespace tz::gl
             return data;
         }
 
-        static TextureData FromMemory(unsigned int width, unsigned int height, std::span<unsigned char> image_data)
+        static TextureData FromMemory(unsigned int width, unsigned int height, std::span<const unsigned char> image_data)
         {
             TextureData data;
             data.width = width;

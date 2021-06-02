@@ -15,8 +15,7 @@ float get_aspect_ratio()
 
 int main()
 {
-    constexpr tz::GameInfo tz_dynamic_triangle_demo{"tz_dynamic_triangle_demo", tz::EngineInfo::Version{1, 0, 0}, tz::info()};
-    tz::initialise(tz_dynamic_triangle_demo);
+    tz::initialise({"tz_dynamic_triangle_demo", tz::EngineInfo::Version{1, 0, 0}, tz::info()});
     {
         tz::gl::DeviceBuilder device_builder;
         tz::gl::Device device{device_builder};
@@ -32,51 +31,46 @@ int main()
         tz::gl::Shader shader = device.create_shader(shader_builder);
 
         tz::gl::RendererBuilder renderer_builder;
-        tz::gl::Mesh mesh;
-        mesh.vertices =
+        tz::gl::MeshInput mesh_input{tz::gl::Mesh
         {
-            tz::gl::Vertex{{-0.5f, -0.5f, 0.0f}, {1.0f, 0.0f}, {}, {}, {}},
-            tz::gl::Vertex{{0.5f, -0.5f, 0.0f}, {0.0f, 0.0f}, {}, {}, {}},
-            tz::gl::Vertex{{0.5f, 0.5f, 0.0f}, {0.0f, 1.0f}, {}, {}, {}}
-        };
-        mesh.indices =
-        {
-            0, 1, 2
-        };
-        tz::gl::MeshInput mesh_input{mesh};
+            .vertices =
+            {
+                tz::gl::Vertex{{-0.5f, -0.5f, 0.0f}, {1.0f, 0.0f}, {}, {}, {}},
+                tz::gl::Vertex{{0.5f, -0.5f, 0.0f}, {0.0f, 0.0f}, {}, {}, {}},
+                tz::gl::Vertex{{0.5f, 0.5f, 0.0f}, {0.0f, 1.0f}, {}, {}, {}}
+            },
+            .indices = {0, 1, 2}
+        }};
 
-        std::array<unsigned char, 16> imgdata = 
-        {
+        tz::gl::TextureResource texture{tz::gl::TextureData::FromMemory(2, 2,
+        {{
             0b0000'0000,
             0b0000'0000,
             0b1111'1111,
-            0b1111'1111,
-
-            0b1111'1111,
-            0b0000'0000,
-            0b0000'0000,
             0b1111'1111,
 
-            0b0000'0000,
             0b1111'1111,
+            0b0000'0000,
             0b0000'0000,
             0b1111'1111,
 
             0b0000'0000,
+            0b1111'1111,
             0b0000'0000,
             0b1111'1111,
-            0b1111'1111,
-        };
-        tz::gl::TextureResource texture{tz::gl::TextureData::FromMemory(2, 2, imgdata), tz::gl::TextureFormat::Rgba32sRGB};
 
-        std::array<tz::Mat4, 3> mvp_data
-        {
+            0b0000'0000,
+            0b0000'0000,
+            0b1111'1111,
+            0b1111'1111
+        }}), tz::gl::TextureFormat::Rgba32sRGB};
+
+        tz::gl::DynamicBufferResource buf_res{tz::gl::BufferData::FromArray<tz::Mat4>
+        ({{
             tz::model({0.0f, 0.0f, -1.0f}, {0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f}),
             tz::view({0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}),
             tz::perspective(1.27f, get_aspect_ratio(), 0.1f, 1000.0f)
-        };
-        // Dynamic buffer for both the aspect-ratio (which could change as the window is resizeable) and the position of the triangle, which changes every frame.
-        tz::gl::DynamicBufferResource buf_res{tz::gl::BufferData::FromArray<tz::Mat4>(mvp_data)};
+        }})};
 
         renderer_builder.set_input(mesh_input);
         renderer_builder.set_output(tz::window());
@@ -88,20 +82,20 @@ int main()
         renderer.set_clear_colour({0.1f, 0.2f, 0.4f, 1.0f});
         while(!tz::window().is_close_requested())
         {
-            // Every frame, change the position of the triangle ever so slightly.
+            // Every frame, update some of the buffer resource data.
             {
                 auto buffer_bytes = static_cast<tz::gl::IDynamicResource*>(renderer.get_resource(buf_handle))->get_resource_bytes_dynamic();
+                // Change the position of the triangle ever so slightly.
                 tz::Mat4& model = reinterpret_cast<tz::Mat4*>(buffer_bytes.data())[0];
                 static float counter = 0.0f;
                 model = tz::model({std::sin(counter * 0.25f) * 0.5f * get_aspect_ratio(), std::sin(counter) * 0.25f, -1.0f}, {0.0f, 0.0f, std::sin(counter * 0.1f) * 3.14159f}, {1.0f, 1.0f, 1.0f});
                 counter += 0.001f;
+
+                // Then update aspect ratio of mvp perspective.
+                tz::Mat4& projection = reinterpret_cast<tz::Mat4*>(buffer_bytes.data())[2];
+                projection = tz::perspective(1.27f, get_aspect_ratio(), 0.1f, 1000.0f);
             }
 
-            // Ensure aspect ratio of mvp perspective matches window dimensions. Technically only need to do this when the window is resized, not on every frame, but this is simpler.
-            {
-                auto* mvp_buf_res = static_cast<tz::gl::IDynamicResource*>(renderer.get_resource(buf_handle));
-                reinterpret_cast<tz::Mat4*>(mvp_buf_res->get_resource_bytes_dynamic().data())[2] = tz::perspective(1.27f, get_aspect_ratio(), 0.1f, 1000.0f);
-            }
             tz::window().update();
             renderer.render();
         }

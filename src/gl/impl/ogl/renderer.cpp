@@ -413,5 +413,4 @@ namespace tz::gl
     }
 }
 
-
 #endif // TZ_OGL

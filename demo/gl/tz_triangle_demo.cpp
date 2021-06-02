@@ -15,8 +15,7 @@ float get_aspect_ratio()
 
 int main()
 {
-    constexpr tz::GameInfo tz_triangle_demo{"tz_triangle_demo", tz::EngineInfo::Version{1, 0, 0}, tz::info()};
-    tz::initialise(tz_triangle_demo);
+    tz::initialise({"tz_triangle_demo", tz::EngineInfo::Version{1, 0, 0}, tz::info()});
     {
         tz::gl::DeviceBuilder device_builder;
         tz::gl::Device device{device_builder};
@@ -32,27 +31,23 @@ int main()
         tz::gl::Shader shader = device.create_shader(shader_builder);
 
         tz::gl::RendererBuilder renderer_builder;
-        tz::gl::Mesh mesh;
-        mesh.vertices =
+        tz::gl::MeshInput mesh_input{tz::gl::Mesh
         {
-            tz::gl::Vertex{{-0.5f, -0.5f, 0.0f}, {1.0f, 0.0f}, {}, {}, {}},
-            tz::gl::Vertex{{0.5f, -0.5f, 0.0f}, {0.0f, 0.0f}, {}, {}, {}},
-            tz::gl::Vertex{{0.5f, 0.5f, 0.0f}, {0.0f, 1.0f}, {}, {}, {}}
-        };
-        mesh.indices =
-        {
-            0, 1, 2
-        };
-        tz::gl::MeshInput mesh_input{mesh};
-
-        std::array<tz::Mat4, 3> mvp_data
-        {
+            .vertices =
+            {
+                tz::gl::Vertex{{-0.5f, -0.5f, 0.0f}, {1.0f, 0.0f}, {}, {}, {}},
+                tz::gl::Vertex{{0.5f, -0.5f, 0.0f}, {0.0f, 0.0f}, {}, {}, {}},
+                tz::gl::Vertex{{0.5f, 0.5f, 0.0f}, {0.0f, 1.0f}, {}, {}, {}}
+            },
+            .indices = {0, 1, 2}
+        }};
+        // Note: Window is resizeable but we don't amend the aspect-ratio if it does. This is for simplicity's sake -- This is done properly in tz_dynamic_triangle_demo.
+        tz::gl::BufferResource buf_res{tz::gl::BufferData::FromArray<tz::Mat4>
+        ({{
             tz::model({0.0f, 0.0f, -1.0f}, {0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f}),
             tz::view({0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}),
             tz::perspective(1.27f, get_aspect_ratio(), 0.1f, 1000.0f)
-        };
-        // Note: Window is resizeable but we don't amend the aspect-ratio if it does. This is for simplicity's sake -- This is done properly in tz_dynamic_triangle_demo.
-        tz::gl::BufferResource buf_res{tz::gl::BufferData::FromArray<tz::Mat4>(mvp_data)};
+        }})};
 
         renderer_builder.set_input(mesh_input);
         renderer_builder.set_output(tz::window());
