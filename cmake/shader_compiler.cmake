@@ -35,7 +35,7 @@ endmacro()
 macro(add_shader_opengl)
     set(shader_path ${PROJECT_SOURCE_DIR}/${SHADER})
     set(output_name ${SHADER}.glsl)
-    set(output_path ${PROJECT_BINARY_DIR}/${output_name}})
+    set(output_path ${PROJECT_BINARY_DIR}/${output_name})
 
     add_custom_command(
         OUTPUT ${output_path}
