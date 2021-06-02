@@ -3,6 +3,7 @@
 #include "core/types.hpp"
 #include <string>
 #include <vector>
+#include <regex>
 
 namespace tzslc
 {

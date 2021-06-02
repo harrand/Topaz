@@ -23,11 +23,12 @@ macro(add_shader_vulkan)
         COMMENT "VK: Building ${spv_path}"
         COMMAND ${VK_GLSLC_EXECUTABLE_PATH} -o ${spv_path} ${processed_shader_path}
         DEPENDS ${processed_shader_path}
+        IMPLICIT_DEPENDS CXX ${processed_shader_path}
         VERBATIM)
 
-    set_source_files_properties(${spv_path} PROPERTIES GENERATED TRUE)
+    set_source_files_properties(${processed_shader_path} ${spv_path} PROPERTIES GENERATED TRUE)
     add_dependencies(${ADD_SHADER_TARGET} tzslc)
-    target_sources(${ADD_SHADER_TARGET} PRIVATE ${spv_path})
+    target_sources(${ADD_SHADER_TARGET} PRIVATE ${processed_shader_path} ${spv_path})
 endmacro()
 
 macro(add_shader_opengl)
@@ -38,7 +39,8 @@ macro(add_shader_opengl)
         OUTPUT ${output_path}
         COMMENT "TZSLC_OGL: Building ${output_path}"
         COMMAND "${TZSLC_EXECUTABLE_PATH}" ${shader_path} -mall -o ${output_path}
-        DEPENDS ${tzslc} ${shader_path}
+        DEPENDS ${shader_path}
+        IMPLICIT_DEPENDS CXX ${processed_shader_path}
         VERBATIM
     )
 

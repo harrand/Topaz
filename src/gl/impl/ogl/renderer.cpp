@@ -403,9 +403,10 @@ namespace tz::gl
         for(std::size_t i = 0; i < this->resource_textures.size(); i++)
         {
             GLuint res_tex = this->resource_textures[i];
-            glActiveTexture(GL_TEXTURE0 + i);
+            GLint tex_location = this->resource_ubos.size() + i;
+            glActiveTexture(GL_TEXTURE0 + tex_location);
             glBindTexture(GL_TEXTURE_2D, res_tex);
-            glUniform1i(this->resource_ubos.size() + i, res_tex);
+            glUniform1i(tex_location, res_tex);
         }
 
         glDrawElements(GL_TRIANGLES, this->index_count, GL_UNSIGNED_INT, nullptr);
