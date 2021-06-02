@@ -93,7 +93,7 @@ int main()
                 auto buffer_bytes = static_cast<tz::gl::IDynamicResource*>(renderer.get_resource(buf_handle))->get_resource_bytes_dynamic();
                 tz::Mat4& model = reinterpret_cast<tz::Mat4*>(buffer_bytes.data())[0];
                 static float counter = 0.0f;
-                model = tz::model({std::sin(counter * 0.25f) * 0.25f, std::sin(counter) * 0.25f, -1.0f}, {0.0f, 0.0f, std::sin(counter * 0.1f) * 3.14159f}, {1.0f, 1.0f, 1.0f});
+                model = tz::model({std::sin(counter * 0.25f) * 0.5f * get_aspect_ratio(), std::sin(counter) * 0.25f, -1.0f}, {0.0f, 0.0f, std::sin(counter * 0.1f) * 3.14159f}, {1.0f, 1.0f, 1.0f});
                 counter += 0.001f;
             }
 
