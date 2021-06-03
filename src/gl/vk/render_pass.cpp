@@ -111,6 +111,8 @@ namespace tz::gl::vk
             switch(attachment->get_final_image_layout())
             {
                 case Image::Layout::Present:
+                    [[fallthrough]];
+                case Image::Layout::TransferSource: // note: for offscreen images
                     ref.layout = static_cast<VkImageLayout>(Image::Layout::ColourAttachment);
                     [[fallthrough]];
                 case Image::Layout::ColourAttachment:

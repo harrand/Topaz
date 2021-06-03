@@ -35,9 +35,10 @@ namespace tz::gl::vk
 
         enum class Usage
         {
-            TrasferSource = VK_IMAGE_USAGE_TRANSFER_SRC_BIT,   
+            TransferSource = VK_IMAGE_USAGE_TRANSFER_SRC_BIT,   
             TransferDestination = VK_IMAGE_USAGE_TRANSFER_DST_BIT,
             Sampleable = VK_IMAGE_USAGE_SAMPLED_BIT,
+            ColourAttachment = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
             DepthStencilAttachment = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
         };
 

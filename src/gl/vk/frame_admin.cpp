@@ -74,6 +74,31 @@ namespace tz::gl::vk
         i = (i + 1) % this->frame_depth;
     }
 
+    void FrameAdmin::render_frame_headless(hardware::Queue queue, std::size_t headless_image_count, const CommandPool& command_pool, WaitStages wait_stages)
+    {
+        tz_assert(headless_image_count == 1, "Multiple headless images not yet supported: See cur_image_index");
+        if(this->images_in_flight.empty())
+        {
+            this->images_in_flight.resize(headless_image_count, nullptr);
+        }
+        std::size_t& i = frame_counter;
+        this->in_flight_fences[i].wait_for();
+
+        this->cur_image_index = 0;
+        // If previous frames at this counter still have work going, we need to wait on it.
+        if(this->images_in_flight[cur_image_index] != nullptr)
+        {
+            this->images_in_flight[cur_image_index]->wait_for();
+        }
+
+        this->images_in_flight[cur_image_index] = &this->in_flight_fences[i];
+        vk::Submit submit{CommandBuffers{command_pool[cur_image_index]}, SemaphoreRefs{}, wait_stages, SemaphoreRefs{}};
+        this->in_flight_fences[i].signal();
+        submit(queue, this->in_flight_fences[i]);
+
+        i = (i + 1) % this->frame_depth;
+    }
+
     std::size_t FrameAdmin::get_image_index() const
     {
         return this->cur_image_index;

@@ -9,8 +9,10 @@ namespace tz::gl::vk::pipeline
     {
     public:
         ViewportState(const Swapchain& swapchain, bool use_opengl_coordinate_system = false);
+        ViewportState(const Image& image, bool use_opengl_coordinate_system = false);
         VkPipelineViewportStateCreateInfo native() const;
     private:
+        ViewportState(float width, float height, VkExtent2D extent, bool use_opengl_coordinate_system);
         VkPipelineViewportStateCreateInfo create;
         VkViewport viewport;
         VkRect2D scissor;
