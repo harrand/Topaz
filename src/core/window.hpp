@@ -38,7 +38,11 @@ namespace tz
         Window& operator=(const Window& rhs) = delete;
         Window& operator=(Window&& rhs);
 
+        static Window null();
+
         static void window_resize_callback(GLFWwindow* window, int width, int height);
+    private:
+        Window(std::nullptr_t);
     };
 
     /**

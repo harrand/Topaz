@@ -32,7 +32,10 @@ namespace tz
         }
         else
         {
-            #if TZ_OGL
+            #if TZ_VULKAN
+                wnd = new tz::Window{tz::Window::null()};
+            #elif TZ_OGL
+                // TODO: Headless implementation for OGL
                 wnd = new tz::Window{WindowInitArgs{.width = 800, .height = 600, .title = game_info.to_string().c_str()}, {{GLFW_VISIBLE, GL_FALSE}}};
             #endif
         }

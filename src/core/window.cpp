@@ -56,6 +56,11 @@ namespace tz
         return *this;
     }
 
+    Window Window::null()
+    {
+        return {nullptr};
+    }
+
     void Window::window_resize_callback(GLFWwindow* window, int width, int height)
     {
         WindowFunctionality* cur_window_func = reinterpret_cast<WindowFunctionality*>(glfwGetWindowUserPointer(window));
@@ -64,6 +69,12 @@ namespace tz
         {
             resize_callback(width, height);
         }
+    }
+
+    Window::Window(std::nullptr_t):
+    WindowFunctionality(nullptr)
+    {
+        // Empty window, breaks if you try and do anything with it.
     }
 
 }

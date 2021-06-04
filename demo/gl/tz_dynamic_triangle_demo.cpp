@@ -21,7 +21,7 @@ float get_aspect_ratio()
 
 int main()
 {
-    tz::initialise({"tz_dynamic_triangle_demo", tz::EngineInfo::Version{1, 0, 0}, tz::info()}, tz::ApplicationType::Headless);
+    tz::initialise({"tz_dynamic_triangle_demo", tz::EngineInfo::Version{1, 0, 0}, tz::info()});
     {
         tz::gl::DeviceBuilder device_builder;
         tz::gl::Device device{device_builder};
@@ -81,7 +81,7 @@ int main()
         tz::gl::TextureOutput render_to_texture{1920, 1080};
 
         renderer_builder.set_input(mesh_input);
-        renderer_builder.set_output(render_to_texture);
+        renderer_builder.set_output(tz::window());
         tz::gl::ResourceHandle buf_handle = renderer_builder.add_resource(buf_res);
         renderer_builder.add_resource(texture);
         renderer_builder.set_render_pass(render_pass);
