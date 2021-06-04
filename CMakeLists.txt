@@ -233,9 +233,10 @@ add_subdirectory(test)
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
 	# For msvc
+    target_compile_options(topaz PRIVATE /std:c++latest)
 else()
     # GCC/Clang
-    target_compile_options(topaz PRIVATE -Wall -Wextra -Wshadow=local -Wdelete-non-virtual-dtor -pedantic-errors)
+    target_compile_options(topaz PRIVATE -Wall -Wextra -Wshadow=local -Wdelete-non-virtual-dtor -pedantic-errors -std=c++20)
 endif()
 target_include_directories(topaz PUBLIC ${PROJECT_SOURCE_DIR}/src)
 target_link_libraries(topaz PUBLIC debugbreak glfw stbi)
