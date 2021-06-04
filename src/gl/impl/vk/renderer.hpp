@@ -51,7 +51,7 @@ namespace tz::gl
     {
         const vk::LogicalDevice* device;
         vk::pipeline::PrimitiveTopology primitive_type;
-        const vk::Swapchain* device_swapchain;
+        const DeviceWindowBufferVulkan* device_swapchain;
         DeviceWindowResizeCallback* on_resize;
     };
 
@@ -64,6 +64,7 @@ namespace tz::gl
         const vk::DescriptorSetLayout& get_resource_descriptor_layout() const;
         const vk::pipeline::Layout& get_layout() const;
     private:
+        vk::GraphicsPipeline create_pipeline() const;
         const vk::LogicalDevice* device;
         const RenderPass* render_pass;
         const vk::ShaderModule* vertex_shader;
@@ -71,7 +72,7 @@ namespace tz::gl
         vk::pipeline::VertexInputState vertex_input_state;
         vk::pipeline::InputAssembly input_assembly;
         vk::pipeline::RasteriserState rasteriser_state;
-        const vk::Swapchain* swapchain;
+        const DeviceWindowBufferVulkan* swapchain;
         vk::DescriptorSetLayout resource_descriptor_layout;
         vk::pipeline::Layout layout;
         vk::GraphicsPipeline graphics_pipeline;
@@ -125,7 +126,8 @@ namespace tz::gl
         const vk::LogicalDevice* device;
         const vk::hardware::Device* physical_device;
         const RenderPass* render_pass;
-        const vk::Swapchain* swapchain;
+        const DeviceWindowBufferVulkan* swapchain;
+        std::optional<vk::ImageView> maybe_swapchain_offscreen_imageview;
         std::vector<IResource*> texture_resources;
         std::vector<TextureComponent> texture_resource_textures;
         std::optional<vk::Image> depth_image;
@@ -145,10 +147,11 @@ namespace tz::gl
         void set_regeneration_function(std::function<void()> action);
         void render();
     private:
+        std::size_t get_view_count() const;
         const vk::LogicalDevice* device;
         const vk::hardware::Device* physical_device;
         const RenderPass* render_pass;
-        const vk::Swapchain* swapchain;
+        const DeviceWindowBufferVulkan* swapchain;
         const IRendererInput* input;
         std::optional<vk::DescriptorPool> resource_descriptor_pool;
         vk::CommandPool command_pool;

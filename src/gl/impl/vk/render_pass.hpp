@@ -2,9 +2,7 @@
 #define TOPAZ_GL_IMPL_VK_RENDER_PASS_HPP
 
 #include "gl/api/render_pass.hpp"
-
 #include "gl/vk/render_pass.hpp"
-#include "gl/vk/swapchain.hpp"
 
 namespace tz::gl
 {
@@ -21,10 +19,12 @@ namespace tz::gl
         std::vector<RenderPassAttachment> passes;
     };
 
+    class DeviceWindowBufferVulkan;
+
     struct RenderPassBuilderDeviceInfoVulkan
     {
         const vk::LogicalDevice* device;
-        const vk::Swapchain* device_swapchain;
+        const DeviceWindowBufferVulkan* device_swapchain;
     };
 
     class RenderPassVulkan : public IRenderPass

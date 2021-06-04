@@ -60,6 +60,12 @@ namespace tz::gl
         /// Renderer input data is fixed and mutable -- It cannot be resized but can be edited.
         DynamicFixed
     };
+
+    enum class RendererOutputType
+    {
+        Window,
+        Texture
+    };
     /**
      * @} 
      */

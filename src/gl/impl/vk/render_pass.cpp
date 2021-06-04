@@ -1,5 +1,7 @@
 #if TZ_VULKAN
+#include "gl/device.hpp"
 #include "gl/impl/vk/render_pass.hpp"
+#include "gl/vk/tz_vulkan.hpp"
 #include <algorithm>
 
 namespace tz::gl
@@ -70,7 +72,15 @@ namespace tz::gl
         vk::Attachment* last_colour_attachment = get_last_colour_attachment(this->builder.get_subpasses());
         if(last_colour_attachment != nullptr)
         {
-            last_colour_attachment->set_final_image_layout(vk::Image::Layout::Present);
+            if(vk::is_headless())
+            {
+                last_colour_attachment->set_final_image_layout(vk::Image::Layout::TransferSource);
+            }
+            else
+            {
+                last_colour_attachment->set_final_image_layout(vk::Image::Layout::Present);
+            }
+            
         }
 
         // Now replace any colour attachment placeholder formats with the provided format.

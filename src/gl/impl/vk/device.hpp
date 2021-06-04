@@ -21,6 +21,24 @@ namespace tz::gl
         GraphicsPrimitiveType primitive_type;
     };
 
+    class DeviceWindowBufferVulkan : public std::variant<std::monostate, vk::Swapchain, vk::Image>
+    {
+    public:
+        vk::Image::Format get_format() const;
+        std::uint32_t get_width() const;
+        std::uint32_t get_height() const;
+        VkRect2D full_render_area() const;
+
+        DeviceWindowBufferVulkan& operator=(vk::Swapchain&& rhs);
+        DeviceWindowBufferVulkan& operator=(vk::Image&& rhs);
+        explicit operator vk::Swapchain&();
+        explicit operator const vk::Swapchain&() const;
+        explicit operator vk::Image&();
+        explicit operator const vk::Image&() const;
+    private:
+        using VariantType = std::variant<std::monostate, vk::Swapchain, vk::Image>;
+    };
+
     class DeviceFunctionalityVulkan : public IDevice
     {
     public:
@@ -32,7 +50,7 @@ namespace tz::gl
         
         vk::hardware::Device physical_device;
         vk::LogicalDevice device;
-        vk::Swapchain swapchain;
+        DeviceWindowBufferVulkan swapchain;
         vk::pipeline::PrimitiveTopology primitive_type;
     private:
         void on_window_resize();

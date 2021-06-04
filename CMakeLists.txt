@@ -52,6 +52,8 @@ add_library(topaz
     src/gl/resource.cpp
     src/gl/resource.hpp
     src/gl/shader.hpp
+    src/gl/texture.cpp
+    src/gl/texture.hpp
 
     # tz::gl (API)
     src/gl/api/device.hpp

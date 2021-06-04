@@ -40,6 +40,7 @@ namespace tz
         #endif
     }
 
+    /*
     void WindowFunctionality::set_render_target() const
     {
         #if TZ_VULKAN
@@ -49,6 +50,7 @@ namespace tz
         glViewport(0, 0, static_cast<GLsizei>(this->get_width()), static_cast<GLsizei>(this->get_height()));
         #endif
     }
+    */
 
     void WindowFunctionality::block_until_event_happens()
     {

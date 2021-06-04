@@ -2,6 +2,7 @@
 #include "core/report.hpp"
 #include "gl/impl/vk/renderer.hpp"
 #include "gl/impl/vk/device.hpp"
+#include "gl/vk/tz_vulkan.hpp"
 #include "gl/vk/fence.hpp"
 #include "gl/vk/submit.hpp"
 
@@ -192,20 +193,7 @@ namespace tz::gl
     swapchain(device_info.device_swapchain),
     resource_descriptor_layout(builder.vk_get_descriptor_set_layout(*this->device)),
     layout(*this->device, vk::DescriptorSetLayoutRefs{this->resource_descriptor_layout}),
-    graphics_pipeline
-    (
-        {vk::pipeline::ShaderStage{*this->vertex_shader, vk::pipeline::ShaderType::Vertex}, vk::pipeline::ShaderStage{*this->fragment_shader, vk::pipeline::ShaderType::Fragment}},
-        *device_info.device,
-        this->vertex_input_state,
-        vk::pipeline::InputAssembly{device_info.primitive_type},
-        vk::pipeline::ViewportState{*device_info.device_swapchain, true},
-        this->rasteriser_state,
-        vk::pipeline::MultisampleState{},
-        vk::pipeline::ColourBlendState{},
-        vk::pipeline::DynamicState::None(),
-        this->layout,
-        this->render_pass->vk_get_render_pass()
-    )
+    graphics_pipeline(this->create_pipeline())
     {
     }
 
@@ -214,19 +202,7 @@ namespace tz::gl
         // Assume swapchain has been reinitialised by the device.
         // Assume render_pass has been reinitialised by the device.
         // Recreate everything else.
-        this->graphics_pipeline = vk::GraphicsPipeline{
-            {vk::pipeline::ShaderStage{*this->vertex_shader, vk::pipeline::ShaderType::Vertex}, vk::pipeline::ShaderStage{*this->fragment_shader, vk::pipeline::ShaderType::Fragment}},
-            *this->device,
-            this->vertex_input_state,
-            this->input_assembly,
-            vk::pipeline::ViewportState{*this->swapchain, true},
-            this->rasteriser_state,
-            vk::pipeline::MultisampleState{},
-            vk::pipeline::ColourBlendState{},
-            vk::pipeline::DynamicState::None(),
-            this->layout,
-            this->render_pass->vk_get_render_pass()
-        };
+        this->graphics_pipeline = this->create_pipeline();
     }
 
     const vk::GraphicsPipeline& RendererPipelineManagerVulkan::get_pipeline() const
@@ -242,6 +218,37 @@ namespace tz::gl
     const vk::pipeline::Layout& RendererPipelineManagerVulkan::get_layout() const
     {
         return this->layout;
+    }
+
+    vk::GraphicsPipeline RendererPipelineManagerVulkan::create_pipeline() const
+    {
+        auto make_viewport_state = [this]()
+        {
+            if(vk::is_headless())
+            {
+                const auto& as_image = static_cast<const vk::Image&>(*this->swapchain);
+                return vk::pipeline::ViewportState{as_image, true};
+            }
+            else
+            {
+                const auto& as_swapchain = static_cast<const vk::Swapchain&>(*this->swapchain);
+                return vk::pipeline::ViewportState{as_swapchain, true};
+            }
+        };
+        return vk::GraphicsPipeline
+        {
+            {vk::pipeline::ShaderStage{*this->vertex_shader, vk::pipeline::ShaderType::Vertex}, vk::pipeline::ShaderStage{*this->fragment_shader, vk::pipeline::ShaderType::Fragment}},
+            *this->device,
+            this->vertex_input_state,
+            this->input_assembly,
+            make_viewport_state(),
+            this->rasteriser_state,
+            vk::pipeline::MultisampleState{},
+            vk::pipeline::ColourBlendState{},
+            vk::pipeline::DynamicState::None(),
+            this->layout,
+            this->render_pass->vk_get_render_pass()
+        };
     }
 
     RendererBufferManagerVulkan::RendererBufferManagerVulkan(RendererBuilderDeviceInfoVulkan device_info, IRendererInput* renderer_input):
@@ -370,11 +377,22 @@ namespace tz::gl
     physical_device(this->device->get_queue_family().dev),
     render_pass(&builder.get_render_pass()),
     swapchain(device_info.device_swapchain),
+    maybe_swapchain_offscreen_imageview(std::nullopt),
     depth_image(std::nullopt),
     depth_imageview(std::nullopt),
     swapchain_framebuffers()
     {
-        this->swapchain_framebuffers.reserve(this->swapchain->get_image_views().size());
+        if(vk::is_headless())
+        {
+            this->swapchain_framebuffers.reserve(1);
+            this->maybe_swapchain_offscreen_imageview = vk::ImageView{*this->device, static_cast<const vk::Image&>(*this->swapchain)};
+        }
+        else
+        {
+            const auto& as_swapchain = static_cast<const vk::Swapchain&>(*this->swapchain);
+            this->swapchain_framebuffers.reserve(as_swapchain.get_image_views().size());
+        }
+        
     }
 
     void RendererImageManagerVulkan::initialise_resources(std::vector<IResource*> renderer_texture_resources)
@@ -423,16 +441,31 @@ namespace tz::gl
         this->swapchain_framebuffers.clear();
         auto swapchain_width = static_cast<std::uint32_t>(this->swapchain->get_width());
         auto swapchain_height = static_cast<std::uint32_t>(this->swapchain->get_height());
-        for(const vk::ImageView& swapchain_view : this->swapchain->get_image_views())
+        if(vk::is_headless())
         {
-            // If we have a depth image attached, add it to the framebuffer.
             if(this->depth_imageview.has_value())
             {
-                this->swapchain_framebuffers.emplace_back(this->render_pass->vk_get_render_pass(), swapchain_view, this->depth_imageview.value(), VkExtent2D{swapchain_width, swapchain_height});
+                this->swapchain_framebuffers.emplace_back(this->render_pass->vk_get_render_pass(), this->maybe_swapchain_offscreen_imageview.value(), this->depth_imageview.value(), VkExtent2D(swapchain_width, swapchain_height));
             }
             else
             {
-                this->swapchain_framebuffers.emplace_back(this->render_pass->vk_get_render_pass(), swapchain_view, VkExtent2D{swapchain_width, swapchain_height});
+                this->swapchain_framebuffers.emplace_back(this->render_pass->vk_get_render_pass(), this->maybe_swapchain_offscreen_imageview.value(), VkExtent2D(swapchain_width, swapchain_height));
+            }
+        }
+        else
+        {
+            const auto& as_swapchain = static_cast<const vk::Swapchain&>(*this->swapchain);
+            for(const vk::ImageView& swapchain_view : as_swapchain.get_image_views())
+            {
+                // If we have a depth image attached, add it to the framebuffer.
+                if(this->depth_imageview.has_value())
+                {
+                    this->swapchain_framebuffers.emplace_back(this->render_pass->vk_get_render_pass(), swapchain_view, this->depth_imageview.value(), VkExtent2D{swapchain_width, swapchain_height});
+                }
+                else
+                {
+                    this->swapchain_framebuffers.emplace_back(this->render_pass->vk_get_render_pass(), swapchain_view, VkExtent2D{swapchain_width, swapchain_height});
+                }
             }
         }
     }
@@ -484,7 +517,8 @@ namespace tz::gl
         {
             // First use the layout and all resources to create the pool.
             vk::DescriptorPoolBuilder pool_builder;
-            pool_builder.with_capacity(this->swapchain->get_image_views().size() * resources.size());
+            std::size_t view_count = this->get_view_count();
+            pool_builder.with_capacity(view_count * resources.size());
             auto buffer_resources = resources | std::views::filter([](const IResource* const resource)
             {
                 return resource->get_type() == ResourceType::Buffer;
@@ -497,7 +531,7 @@ namespace tz::gl
             auto num_buffer_resources = std::ranges::distance(buffer_resources.begin(), buffer_resources.end());
             auto num_texture_resources = std::ranges::distance(texture_resources.begin(), texture_resources.end());
 
-            auto image_count = this->swapchain->get_image_views().size();
+            auto image_count = view_count;
             
             for(decltype(num_buffer_resources) i = 0; i < num_buffer_resources; i++)
             {
@@ -541,7 +575,7 @@ namespace tz::gl
             this->command_pool.clear();
         }
         constexpr std::size_t num_scratch_command_bufs = 1;
-        this->command_pool.with(this->swapchain->get_image_views().size() + num_scratch_command_bufs);
+        this->command_pool.with(this->get_view_count() + num_scratch_command_bufs);
     }
 
     void RendererProcessorVulkan::block_until_idle()
@@ -552,8 +586,7 @@ namespace tz::gl
     void RendererProcessorVulkan::record_rendering_commands(const RendererPipelineManagerVulkan& pipeline_manager, const RendererBufferManagerVulkan& buffer_manager, const RendererImageManagerVulkan& image_manager, tz::Vec4 clear_colour)
     {
         VkClearValue vk_clear_colour{clear_colour[0], clear_colour[1], clear_colour[2], clear_colour[3]};
-
-        for(std::size_t i = 0; i < this->swapchain->get_image_views().size(); i++)
+        for(std::size_t i = 0; i < this->get_view_count(); i++)
         {
             vk::CommandBufferRecording render = this->command_pool[i].record();
             vk::RenderPassRun run{this->command_pool[i], this->render_pass->vk_get_render_pass(), image_manager.get_swapchain_framebuffers()[i], this->swapchain->full_render_area(), vk_clear_colour};
@@ -586,7 +619,7 @@ namespace tz::gl
     {
         vk::Fence copy_fence{*this->device};
         copy_fence.signal();
-        vk::CommandBuffer& scratch_buf = this->command_pool[this->swapchain->get_image_views().size()];
+        vk::CommandBuffer& scratch_buf = this->command_pool[this->get_view_count()];
         vk::Submit do_scratch_operation{vk::CommandBuffers{scratch_buf}, vk::SemaphoreRefs{}, vk::WaitStages{}, vk::SemaphoreRefs{}};
 
         if(this->input != nullptr && this->input->data_access() == RendererInputDataAccess::StaticFixed)
@@ -676,7 +709,26 @@ namespace tz::gl
 
     void RendererProcessorVulkan::render()
     {
-        this->frame_admin.render_frame(this->graphics_present_queue, *this->swapchain, this->command_pool, vk::WaitStages{vk::WaitStage::ColourAttachmentOutput});
+        if(vk::is_headless())
+        {
+            this->frame_admin.render_frame_headless(this->graphics_present_queue, 1, this->command_pool, vk::WaitStages{vk::WaitStage::ColourAttachmentOutput});
+        }
+        else
+        {
+            this->frame_admin.render_frame(this->graphics_present_queue, static_cast<const vk::Swapchain&>(*this->swapchain), this->command_pool, vk::WaitStages{vk::WaitStage::ColourAttachmentOutput});
+        }
+    }
+
+    std::size_t RendererProcessorVulkan::get_view_count() const
+    {
+        if(vk::is_headless())
+        {
+            return 1;
+        }
+        else
+        {
+            return static_cast<const vk::Swapchain&>(*this->swapchain).get_image_views().size();
+        }
     }
 
     RendererVulkan::RendererVulkan(RendererBuilderVulkan builder, RendererBuilderDeviceInfoVulkan device_info):

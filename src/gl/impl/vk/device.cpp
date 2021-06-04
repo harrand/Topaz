@@ -1,6 +1,7 @@
 #if TZ_VULKAN
 #include "core/tz.hpp"
 #include "gl/impl/vk/device.hpp"
+#include "gl/vk/tz_vulkan.hpp"
 #include "gl/vk/hardware/device_filter.hpp"
 
 namespace tz::gl
@@ -35,26 +36,114 @@ namespace tz::gl
         }
     }
 
+    vk::Image::Format DeviceWindowBufferVulkan::get_format() const
+    {
+        if(vk::is_headless())
+        {
+            return std::get<vk::Image>(*this).get_format();
+        }
+        else
+        {
+            return std::get<vk::Swapchain>(*this).get_format();
+        }
+    }
+
+    std::uint32_t DeviceWindowBufferVulkan::get_width() const
+    {
+        if(vk::is_headless())
+        {
+            return std::get<vk::Image>(*this).get_width();
+        }
+        else
+        {
+            return static_cast<std::uint32_t>(std::get<vk::Swapchain>(*this).get_width());
+        }
+    }
+
+    unsigned int DeviceWindowBufferVulkan::get_height() const
+    {
+        if(vk::is_headless())
+        {
+            return std::get<vk::Image>(*this).get_height();
+        }
+        else
+        {
+            return static_cast<std::uint32_t>(std::get<vk::Swapchain>(*this).get_height());
+        }
+    }
+
+    VkRect2D DeviceWindowBufferVulkan::full_render_area() const
+    {
+        if(vk::is_headless())
+        {
+            const vk::Image& as_image = std::get<vk::Image>(*this);
+            return {.offset = {0, 0}, .extent = {as_image.get_width(), as_image.get_height()}};
+        }
+        else
+        {
+            return std::get<vk::Swapchain>(*this).full_render_area();
+        }
+    }
+
+    DeviceWindowBufferVulkan& DeviceWindowBufferVulkan::operator=(vk::Swapchain&& rhs)
+    {
+        static_cast<DeviceWindowBufferVulkan::VariantType&>(*this) = std::move(rhs);
+        return *this;
+    }
+
+    DeviceWindowBufferVulkan& DeviceWindowBufferVulkan::operator=(vk::Image&& rhs)
+    {
+        static_cast<DeviceWindowBufferVulkan::VariantType&>(*this) = std::move(rhs);
+        return *this;
+    }
+
+    DeviceWindowBufferVulkan::operator vk::Swapchain&()
+    {
+        tz_assert(!vk::is_headless(), "DeviceWindowBufferVulkan is not a vk::Swapchain because application is headless");
+        return std::get<vk::Swapchain>(*this);
+    }
+
+    DeviceWindowBufferVulkan::operator const vk::Swapchain&() const
+    {
+        tz_assert(!vk::is_headless(), "DeviceWindowBufferVulkan is not a vk::Swapchain because application is headless");
+        return std::get<vk::Swapchain>(*this);
+    }
+
+    DeviceWindowBufferVulkan::operator vk::Image&()
+    {
+        tz_assert(vk::is_headless(), "DeviceWindowBufferVulkan is not a vk::Image because application isn't headless");
+        return std::get<vk::Image>(*this);
+    }
+
+    DeviceWindowBufferVulkan::operator const vk::Image&() const
+    {
+        tz_assert(vk::is_headless(), "DeviceWindowBufferVulkan is not a vk::Image because application isn't headless");
+        return std::get<vk::Image>(*this);
+    }
+
     DeviceFunctionalityVulkan::DeviceFunctionalityVulkan():
     physical_device(vk::hardware::Device::null()),
     device(vk::LogicalDevice::null()),
-    swapchain(vk::Swapchain::null()),
+    swapchain(),
     primitive_type(),
     renderer_resize_callbacks()
     {
         // Setup window resize support.
-        tz::window().add_resize_callback([this](int width, int height)
+        if(!vk::is_headless())
         {
-            int w = width;
-            int h = height;
-            while(w == 0 || h == 0)
+            tz::window().add_resize_callback([this](int width, int height)
             {
-                w = tz::window().get_width();
-                h = tz::window().get_height();
-                tz::Window::block_until_event_happens();
-            }
-            this->on_window_resize();
-        });
+                int w = width;
+                int h = height;
+                while(w == 0 || h == 0)
+                {
+                    w = tz::window().get_width();
+                    h = tz::window().get_height();
+                    tz::Window::block_until_event_happens();
+                }
+                this->on_window_resize();
+            });
+        }
     }
 
     RenderPass DeviceFunctionalityVulkan::create_render_pass(RenderPassBuilder builder) const
@@ -108,24 +197,36 @@ namespace tz::gl
         }
         tz_assert(maybe_chosen_queue_family.has_value(), "Valid device found which supports present, graphics and transfer, but not a single queue that can do both. Topaz Vulkan does not support your hardware.");
         this->device = {maybe_chosen_queue_family.value(), extensions};
-        vk::hardware::SwapchainSelectorPreferences my_prefs;
-        my_prefs.format_pref = {vk::hardware::SwapchainFormatPreferences::Goldilocks, vk::hardware::SwapchainFormatPreferences::FlexibleGoldilocks, vk::hardware::SwapchainFormatPreferences::DontCare};
-        my_prefs.present_mode_pref = {vk::hardware::SwapchainPresentModePreferences::PreferTripleBuffering, vk::hardware::SwapchainPresentModePreferences::DontCare};
+        if(vk::is_headless())
+        {
+            this->swapchain = vk::Image{this->device, 800, 600, vk::Image::Format::Rgba32sRGB, vk::Image::UsageField{vk::Image::Usage::ColourAttachment, vk::Image::Usage::TransferSource}, vk::hardware::MemoryResidency::GPU};
+        }
+        else
+        {
+            vk::hardware::SwapchainSelectorPreferences my_prefs;
+            my_prefs.format_pref = {vk::hardware::SwapchainFormatPreferences::Goldilocks, vk::hardware::SwapchainFormatPreferences::FlexibleGoldilocks, vk::hardware::SwapchainFormatPreferences::DontCare};
+            my_prefs.present_mode_pref = {vk::hardware::SwapchainPresentModePreferences::PreferTripleBuffering, vk::hardware::SwapchainPresentModePreferences::DontCare};
+            
+            this->swapchain = vk::Swapchain{this->device, my_prefs};
+        }
         
-        this->swapchain = {this->device, my_prefs};
         this->primitive_type = builder.vk_get_primitive_topology();
     }
 
     void DeviceFunctionalityVulkan::on_window_resize()
     {
-        // First update swapchain.
-        vk::hardware::SwapchainSelectorPreferences my_prefs;
-        my_prefs.format_pref = {vk::hardware::SwapchainFormatPreferences::Goldilocks, vk::hardware::SwapchainFormatPreferences::FlexibleGoldilocks, vk::hardware::SwapchainFormatPreferences::DontCare};
-        my_prefs.present_mode_pref = {vk::hardware::SwapchainPresentModePreferences::PreferTripleBuffering, vk::hardware::SwapchainPresentModePreferences::DontCare};
-
         this->device.block_until_idle();
-        this->swapchain.~Swapchain();
-        new (&this->swapchain) vk::Swapchain(this->device, my_prefs);
+        if(!vk::is_headless())
+        {
+            // First update swapchain.
+            vk::hardware::SwapchainSelectorPreferences my_prefs;
+            my_prefs.format_pref = {vk::hardware::SwapchainFormatPreferences::Goldilocks, vk::hardware::SwapchainFormatPreferences::FlexibleGoldilocks, vk::hardware::SwapchainFormatPreferences::DontCare};
+            my_prefs.present_mode_pref = {vk::hardware::SwapchainPresentModePreferences::PreferTripleBuffering, vk::hardware::SwapchainPresentModePreferences::DontCare};
+
+            vk::Swapchain& real_swapchain = std::get<vk::Swapchain>(this->swapchain);
+            real_swapchain.~Swapchain();
+            new (&real_swapchain) vk::Swapchain(this->device, my_prefs);
+        }
         // Then notify all renderers which care.
         for(const DeviceWindowResizeCallback& callback : this->renderer_resize_callbacks)
         {

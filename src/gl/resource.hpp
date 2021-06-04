@@ -143,6 +143,32 @@ namespace tz::gl
             return data;
         }
 
+        static TextureData Uninitialised(unsigned int width, unsigned int height, TextureFormat format)
+        {
+            TextureData data;
+            data.width = width;
+            data.height = height;
+            std::size_t element_size;
+            switch(format)
+            {
+                case TextureFormat::Rgba32Signed:
+                [[fallthrough]];
+                case TextureFormat::Rgba32Unsigned:
+                [[fallthrough]];
+                case TextureFormat::Rgba32sRGB:
+                    element_size = 4;
+                break;
+                case TextureFormat::DepthFloat32:
+                    element_size = 4;
+                break;
+                default:
+                    tz_error("No support for given TextureFormat");
+                break;
+            }
+            data.image_data.resize(element_size * width * height);
+            return data;
+        }
+
         unsigned int width;
         unsigned int height;
         std::vector<std::byte> image_data;

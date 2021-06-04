@@ -152,7 +152,7 @@ namespace tz::gl
     {
     public:
         virtual ~IRendererOutput() = default;
-        virtual void set_render_target() const = 0;
+        virtual RendererOutputType get_type() const = 0;
     };
 
     /**

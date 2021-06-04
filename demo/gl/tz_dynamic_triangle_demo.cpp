@@ -7,15 +7,21 @@
 #include "gl/resource.hpp"
 #include "gl/mesh.hpp"
 #include "gl/shader.hpp"
+#include "gl/texture.hpp"
+#include "gl/vk/tz_vulkan.hpp"
 
 float get_aspect_ratio()
 {
+    if(tz::gl::vk::is_headless())
+    {
+        return 800.0f/600.0f;
+    }
     return tz::window().get_width() / tz::window().get_height();
 }
 
 int main()
 {
-    tz::initialise({"tz_dynamic_triangle_demo", tz::EngineInfo::Version{1, 0, 0}, tz::info()});
+    tz::initialise({"tz_dynamic_triangle_demo", tz::EngineInfo::Version{1, 0, 0}, tz::info()}, tz::ApplicationType::Headless);
     {
         tz::gl::DeviceBuilder device_builder;
         tz::gl::Device device{device_builder};
@@ -72,15 +78,17 @@ int main()
             tz::perspective(1.27f, get_aspect_ratio(), 0.1f, 1000.0f)
         }})};
 
+        tz::gl::TextureOutput render_to_texture{1920, 1080};
+
         renderer_builder.set_input(mesh_input);
-        renderer_builder.set_output(tz::window());
+        renderer_builder.set_output(render_to_texture);
         tz::gl::ResourceHandle buf_handle = renderer_builder.add_resource(buf_res);
         renderer_builder.add_resource(texture);
         renderer_builder.set_render_pass(render_pass);
         renderer_builder.set_shader(shader);
         tz::gl::Renderer renderer = device.create_renderer(renderer_builder);
         renderer.set_clear_colour({0.1f, 0.2f, 0.4f, 1.0f});
-        while(!tz::window().is_close_requested())
+        while(true)
         {
             // Every frame, update some of the buffer resource data.
             {
@@ -96,7 +104,7 @@ int main()
                 projection = tz::perspective(1.27f, get_aspect_ratio(), 0.1f, 1000.0f);
             }
 
-            tz::window().update();
+            //tz::window().update();
             renderer.render();
         }
     }

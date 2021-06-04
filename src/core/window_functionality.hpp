@@ -31,7 +31,10 @@ namespace tz
 
         void update();
 
-        virtual void set_render_target() const final;
+        virtual tz::gl::RendererOutputType get_type() const final
+        {
+            return tz::gl::RendererOutputType::Window;
+        }
 
         static void block_until_event_happens();
     protected:
