@@ -1,0 +1,9 @@
+#version 450
+#pragma shader_stage(fragment)
+
+layout(location = 0) out vec4 output_colour;
+
+void main()
+{
+    output_colour = vec4(1.0, 1.0, 1.0, 1.0);
+}
