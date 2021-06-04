@@ -24,7 +24,7 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
-      - name: 'Run all non-graphical tests (opengl-debug)'
+      - name: 'Run all non-graphical tests (gcc opengl-debug)'
         uses: lukka/run-cmake@v3
         with:
           cmakeListsOrSettingsJson: "CMakeListsTxtAdvanced"
@@ -33,23 +33,23 @@ jobs:
           buildWithCMake: true
           buildWithCMakeArgs: "--target tztest_nographics --parallel 4"
           buildDirectory: "${{ github.workspace }}/../../_temp/build/debug"
-#  msvc-opengl-windows:
-#    # The type of runner that the job will run on
-#    runs-on: windows-latest
-#    # Steps represent a sequence of tasks that will be executed as part of the job
-#    steps:
-#      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-#      - uses: actions/checkout@v2
-#
-#      - name: 'Build Triangle Demo (opengl-debug)'
-#        uses: lukka/run-cmake@v3
-#        with:
-#          cmakeListsOrSettingsJson: "CMakeListsTxtAdvanced"
-#          cmakeGenerator: UnixMakefiles
-#          cmakeAppendedArgs: "-B \"${{ github.workspace }}/../../_temp/build/debug\" -DTOPAZ_DEBUG=1 -DTOPAZ_VULKAN=0 -DTOPAZ_OGL=1 -DCMAKE_CXX_COMPILER=g++-10"
-#          buildWithCMake: true
-#          buildWithCMakeArgs: "--target tz_triangle_demo --parallel 4"
-#          buildDirectory: "${{ github.workspace }}/../../_temp/build/debug"
+  msvc-opengl-windows:
+    # The type of runner that the job will run on
+    runs-on: windows-latest
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+
+      - name: 'Run all non-graphical tests (msvc opengl-debug)'
+        uses: lukka/run-cmake@v3
+        with:
+          cmakeListsOrSettingsJson: "CMakeListsTxtAdvanced"
+          cmakeGenerator: UnixMakefiles
+          cmakeAppendedArgs: "-B \"${{ github.workspace }}/../../_temp/build/debug\" -DTOPAZ_DEBUG=1 -DTOPAZ_VULKAN=0 -DTOPAZ_OGL=1 -DCMAKE_CXX_COMPILER=g++-10"
+          buildWithCMake: true
+          buildWithCMakeArgs: "--target tz_triangle_demo --parallel 4"
+          buildDirectory: "${{ github.workspace }}/../../_temp/build/debug"
 #  msvc-vulkan-windows:
 #    # The type of runner that the job will run on
 #    runs-on: windows-latest
