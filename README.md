@@ -1,6 +1,7 @@
 # Topaz
-![tz_triangle_demo linux-opengl-debug](https://github.com/Harrand/Topaz/actions/workflows/build_tz_triangle_demo.yml/badge.svg)
-![non_graphical_tests linux-opengl-debug](https://github.com/Harrand/Topaz/actions/workflows/non_graphical_tests_gcc.yml/badge.svg)
+![tz_triangle_demo gcc-opengl-debug](https://github.com/Harrand/Topaz/actions/workflows/build_tz_triangle_demo.yml/badge.svg)
+![non_graphical_tests gcc-opengl-debug](https://github.com/Harrand/Topaz/actions/workflows/non_graphical_tests_gcc.yml/badge.svg)
+![non_graphical_tests clang-opengl-debug](https://github.com/Harrand/Topaz/actions/workflows/non_graphical_tests_clang.yml/badge.svg)
 ![non_graphical_tests windows-opengl-debug](https://github.com/Harrand/Topaz/actions/workflows/non_graphical_tests_msvc.yml/badge.svg)
 
 ## About
