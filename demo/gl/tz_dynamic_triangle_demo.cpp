@@ -12,10 +12,6 @@
 
 float get_aspect_ratio()
 {
-    if(tz::gl::vk::is_headless())
-    {
-        return 800.0f/600.0f;
-    }
     return tz::window().get_width() / tz::window().get_height();
 }
 
@@ -88,7 +84,7 @@ int main()
         renderer_builder.set_shader(shader);
         tz::gl::Renderer renderer = device.create_renderer(renderer_builder);
         renderer.set_clear_colour({0.1f, 0.2f, 0.4f, 1.0f});
-        while(true)
+        while(!tz::window().is_close_requested())
         {
             // Every frame, update some of the buffer resource data.
             {
@@ -104,7 +100,7 @@ int main()
                 projection = tz::perspective(1.27f, get_aspect_ratio(), 0.1f, 1000.0f);
             }
 
-            //tz::window().update();
+            tz::window().update();
             renderer.render();
         }
     }

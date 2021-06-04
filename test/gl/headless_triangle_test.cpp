@@ -10,6 +10,10 @@
 
 int main()
 {
+    #if TZ_OGL
+        // TODO: OpenGL support for headless applications
+        return 0;
+    #endif
     tz::initialise({"tz_headless_triangle_test", tz::EngineInfo::Version{1, 0, 0}, tz::info()}, tz::ApplicationType::Headless);
     {
         tz::gl::DeviceBuilder device_builder;

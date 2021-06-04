@@ -3,7 +3,6 @@ add_tz_test(NAME tz_headless_triangle_test
         SHADER_SOURCES
             test/gl/triangle_test.vertex.tzsl
             test/gl/triangle_test.fragment.tzsl
-        GRAPHICAL
         )
 
 add_tz_test(NAME tz_mesh_test

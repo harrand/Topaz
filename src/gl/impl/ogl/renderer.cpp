@@ -1,15 +1,10 @@
 #if TZ_OGL
 #include "core/report.hpp"
+#include "core/tz.hpp"
 #include "gl/impl/ogl/renderer.hpp"
 
 namespace tz::gl
 {
-    /*
-    void RendererBuilderOGL::set_input_format(RendererElementFormat element_format)
-    {
-        this->format = {element_format};
-    }
-    */
    void RendererBuilderOGL::set_input(const IRendererInput& input)
    {
        this->input = &input;
@@ -365,13 +360,14 @@ namespace tz::gl
 
     void RendererOGL::render()
     {
-        if(this->output != nullptr)
-        {
-            this->output->set_render_target();
-        }
-        else
+        if(this->output == nullptr)
         {
             tz_report("[Warning]: RendererOGL::render() invoked with no output specified. The behaviour is undefined.");
+        }
+        else if(this->output->get_type() == RendererOutputType::Window)
+        {
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+            glViewport(0, 0, static_cast<GLsizei>(tz::window().get_width()), static_cast<GLsizei>(tz::window().get_height()));
         }
 
         auto attachment = this->render_pass->ogl_get_attachments()[0];
