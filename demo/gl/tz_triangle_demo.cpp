@@ -31,16 +31,15 @@ int main()
         tz::gl::Shader shader = device.create_shader(shader_builder);
 
         tz::gl::RendererBuilder renderer_builder;
-        tz::gl::MeshInput mesh_input{tz::gl::Mesh
-        {
-            .vertices =
+        tz::gl::Mesh mesh;
+        mesh.vertices =
             {
                 tz::gl::Vertex{{-0.5f, -0.5f, 0.0f}, {1.0f, 0.0f}, {}, {}, {}},
                 tz::gl::Vertex{{0.5f, -0.5f, 0.0f}, {0.0f, 0.0f}, {}, {}, {}},
                 tz::gl::Vertex{{0.5f, 0.5f, 0.0f}, {0.0f, 1.0f}, {}, {}, {}}
-            },
-            .indices = {0, 1, 2}
-        }};
+            };
+        mesh.indices = {0, 1, 2};
+        tz::gl::MeshInput mesh_input{mesh};
         // Note: Window is resizeable but we don't amend the aspect-ratio if it does. This is for simplicity's sake -- This is done properly in tz_dynamic_triangle_demo.
         tz::gl::BufferResource buf_res{tz::gl::BufferData::FromArray<tz::Mat4>
         ({{
