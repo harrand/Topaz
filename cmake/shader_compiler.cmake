@@ -51,7 +51,7 @@ macro(add_shader_opengl)
 endmacro()
 
 function(add_shader)
-    set(TZSLC_EXECUTABLE_PATH ${PROJECT_BINARY_DIR}/tools/tzslc/tzslc)
+    set(TZSLC_EXECUTABLE_PATH $<TARGET_FILE:tzslc>)
     cmake_parse_arguments(
         ADD_SHADER
         ""

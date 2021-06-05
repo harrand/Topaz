@@ -20,8 +20,8 @@ namespace tz
         using UnderlyingList = std::vector<T, Allocator>;
         UnderlyingList elements;
     public:
-        using Iterator = UnderlyingList::iterator;
-        using ConstIterator = UnderlyingList::const_iterator;
+        using Iterator = typename UnderlyingList::iterator;
+        using ConstIterator = typename UnderlyingList::const_iterator;
 
         BasicList(std::initializer_list<T> elements):
         elements(elements){}
