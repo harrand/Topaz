@@ -43,8 +43,11 @@ void sanity_check()
 
     auto expect_void_action = []<typename F>(F&& f, bool should_be) constexpr
     {
-        constexpr bool satisfies = requires{requires tz::Action<F>;};
-        tz_assert(satisfies == should_be, "A type did not satisfy a sanity check (tz::Action<F> aka 'void()')");
+        #ifndef _MSC_VER
+            // No MSVC support for 'requires' expression https://en.cppreference.com/w/cpp/compiler_support
+            constexpr bool satisfies = requires{requires tz::Action<F>;};
+            tz_assert(satisfies == should_be, "A type did not satisfy a sanity check (tz::Action<F> aka 'void()')");
+        #endif
     };
 
     struct MyFunctor
@@ -60,8 +63,11 @@ void sanity_check()
 
     auto expect_int_func_taking_two_ints = []<typename F>(F&& f, bool should_be) constexpr
     {
-        constexpr bool satisfies = requires{requires tz::Function<F, int, int, int>;};
-        tz_assert(satisfies == should_be, "A type did not satisfy a sanity check (tz::Function<F, int, int, int> aka 'int(int, int)')");
+        #ifndef _MSC_VER
+            // No MSVC support for 'requires' expression https://en.cppreference.com/w/cpp/compiler_support
+            constexpr bool satisfies = requires{requires tz::Function<F, int, int, int>;};
+            tz_assert(satisfies == should_be, "A type did not satisfy a sanity check (tz::Function<F, int, int, int> aka 'int(int, int)')");
+        #endif
     };
     struct MyAdderFunctor
     {
