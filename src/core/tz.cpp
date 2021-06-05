@@ -26,7 +26,7 @@ namespace tz
             WindowHintList hints;
             if(app_type == ApplicationType::HiddenWindowApplication)
             {
-                hints.emplace(GLFW_VISIBLE, GLFW_FALSE);
+                hints.add(WindowHint{.hint = GLFW_VISIBLE, .value = GLFW_FALSE});
             }
             wnd = new tz::Window{WindowInitArgs{.width = 800, .height = 600, .title = game_info.to_string().c_str()}, hints};
         }
