@@ -39,7 +39,7 @@ FILE* get_output_stream(int argc, char** argv)
         std::string_view arg_next{argv[i + 1]};
         if(arg == "-o")
         {
-            fopen_s(&output, arg_next.data(), "w");
+            output = fopen(arg_next.data(), "w");
         }
     }
     return output;
