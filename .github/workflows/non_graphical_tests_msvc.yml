@@ -28,5 +28,5 @@ jobs:
             cmakeGenerator: UnixMakefiles
             cmakeAppendedArgs: "-B \"${{ github.workspace }}/../../_temp/build/debug\" -DTOPAZ_DEBUG=1 -DTOPAZ_VULKAN=0 -DTOPAZ_OGL=1 -DCMAKE_CXX_COMPILER=g++-10"
             buildWithCMake: true
-            buildWithCMakeArgs: "--target tz_triangle_demo --parallel 4"
+            buildWithCMakeArgs: "--target tztest_nographics --parallel 4"
             buildDirectory: "${{ github.workspace }}/../../_temp/build/debug"
