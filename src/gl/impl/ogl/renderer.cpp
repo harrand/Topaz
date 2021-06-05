@@ -156,14 +156,14 @@ namespace tz::gl
                 {
                     glNamedBufferData(this->vbo, input.get_vertex_bytes().size_bytes(), input.get_vertex_bytes().data(), GL_STATIC_DRAW);
                     glNamedBufferData(this->ibo, input.get_indices().size_bytes(), input.get_indices().data(), GL_STATIC_DRAW);
-                    this->index_count = input.get_indices().size();
+                    this->index_count = static_cast<GLsizei>(input.get_indices().size());
                 }
                 break;
                 case RendererInputDataAccess::DynamicFixed:
                     auto& dynamic_input = static_cast<IRendererDynamicInput&>(*this->input);
                     glNamedBufferStorage(this->vbo, dynamic_input.get_vertex_bytes().size_bytes(), dynamic_input.get_vertex_bytes().data(), persistent_mapped_buffer_flags);
                     glNamedBufferStorage(this->ibo, dynamic_input.get_indices().size_bytes(), dynamic_input.get_indices().data(), persistent_mapped_buffer_flags);
-                    this->index_count = dynamic_input.get_indices().size();
+                    this->index_count = static_cast<GLsizei>(dynamic_input.get_indices().size());
                     void* vertex_data = glMapNamedBufferRange(this->vbo, 0, dynamic_input.get_vertex_bytes().size_bytes(), persistent_mapped_buffer_flags);
                     void* index_data = glMapNamedBufferRange(this->ibo, 0, dynamic_input.get_indices().size_bytes(), persistent_mapped_buffer_flags);
                     dynamic_input.set_vertex_data(static_cast<std::byte*>(vertex_data));
@@ -176,7 +176,7 @@ namespace tz::gl
             RendererElementFormat format = builder.get_input()->get_format();
             tz_assert(format.basis == RendererInputFrequency::PerVertexBasis, "Vertex data on a per-instance basis is not yet implemented");
 
-            for(std::size_t attrib_id = 0; attrib_id < format.binding_attributes.length(); attrib_id++)
+            for(GLuint attrib_id = 0; attrib_id < static_cast<GLuint>(format.binding_attributes.length()); attrib_id++)
             {
                 RendererAttributeFormat attrib_format = format.binding_attributes[attrib_id];
                 GLint size;
@@ -202,7 +202,7 @@ namespace tz::gl
 
                 auto to_ptr = [](std::size_t offset)->const void*{return reinterpret_cast<const void*>(offset);};
                 glEnableVertexAttribArray(attrib_id);
-                glVertexAttribPointer(attrib_id, size, type, GL_FALSE, format.binding_size, to_ptr(attrib_format.element_attribute_offset));
+                glVertexAttribPointer(attrib_id, size, type, GL_FALSE, static_cast<GLsizei>(format.binding_size), to_ptr(attrib_format.element_attribute_offset));
             }
             glBindBuffer(GL_ARRAY_BUFFER, 0);
         }
@@ -313,8 +313,8 @@ namespace tz::gl
             glDeleteBuffers(1, &this->ibo);
         }
 
-        glDeleteBuffers(this->resource_ubos.size(), this->resource_ubos.data());
-        glDeleteTextures(this->resource_textures.size(), this->resource_textures.data());
+        glDeleteBuffers(static_cast<GLsizei>(this->resource_ubos.size()), this->resource_ubos.data());
+        glDeleteTextures(static_cast<GLsizei>(this->resource_textures.size()), this->resource_textures.data());
 
         if(this->vao != 0)
         {
@@ -392,14 +392,14 @@ namespace tz::gl
         for(std::size_t i = 0; i < this->resource_ubos.size(); i++)
         {
             GLuint res_ubo = this->resource_ubos[i];
-            glBindBufferBase(GL_UNIFORM_BUFFER, i, res_ubo);
+            glBindBufferBase(GL_UNIFORM_BUFFER, static_cast<GLuint>(i), res_ubo);
         }
         glUseProgram(this->shader->ogl_get_program_handle());
         
         for(std::size_t i = 0; i < this->resource_textures.size(); i++)
         {
             GLuint res_tex = this->resource_textures[i];
-            GLint tex_location = this->resource_ubos.size() + i;
+            auto tex_location = static_cast<GLint>(this->resource_ubos.size() + i);
             glActiveTexture(GL_TEXTURE0 + tex_location);
             glBindTexture(GL_TEXTURE_2D, res_tex);
             glUniform1i(tex_location, res_tex);

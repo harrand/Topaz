@@ -102,7 +102,7 @@ namespace tz::gl
         static TextureData FromImageFile(const std::filesystem::path image_path, TextureFormat format)
         {
             TextureData data;
-            std::size_t components_per_element;
+            int components_per_element;
             switch(format)
             {
                 case TextureFormat::Rgba32Signed:
