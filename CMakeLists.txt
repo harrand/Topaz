@@ -26,11 +26,11 @@ add_library(topaz
     src/core/engine_info.hpp
     src/core/engine_info.inl
     src/core/game_info.hpp
+    src/core/handle.hpp
     src/core/matrix_transform.cpp
     src/core/matrix_transform.hpp
     src/core/matrix.hpp
     src/core/matrix.inl
-    src/core/handle.hpp
     src/core/report.hpp
     src/core/tz.cpp
     src/core/tz.hpp

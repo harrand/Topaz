@@ -7,46 +7,32 @@
 
 namespace tz
 {
-
-#ifdef tz_assert
-#undef tz_assert
-#endif
-#define tz_assert(EXPRESSION, fmt, ...) ((EXPRESSION) ? \
-(void)0 : tz::assert_message(stderr, false, \
-"Assertion failure: %s\nIn file: %s on line %d:\n\t" fmt, #EXPRESSION, __FILE__, __LINE__ __VA_OPT__(,) __VA_ARGS__))
-
     template<typename... Args>
-    inline void assert_message([[maybe_unused]] FILE* output_stream, [[maybe_unused]] bool hard, [[maybe_unused]] const char* fmt, [[maybe_unused]] Args&&... args)
+    void error_internal(const char* fmt, Args&&... args)
     {
-#if TZ_DEBUG
-        // Use the given ostream.
-        fflush(output_stream);
-        fprintf(output_stream, fmt, std::forward<Args>(args)...);
-        fflush(output_stream);
-        ::debug_break();
-        if(hard)
-        {
-            fprintf(output_stream, "%s", "[HARD ASSERT DETECTED. ABORTING.]\n");
-            std::abort();
-        }
-#endif
+        #if TZ_DEBUG
+            std::fflush(stderr);
+            std::fprintf(stderr, fmt, std::forward<Args>(args)...);
+            std::fflush(stderr);
+            ::debug_break();
+        #endif
     }
 
-#define tz_error(fmt, ...) (tz::error_message(stderr, \
-"Error (tz_error): \nIn file: %s on line %d:\n\t" fmt, __FILE__, __LINE__ __VA_OPT__(,) __VA_ARGS__))
-
-
     template<typename... Args>
-    inline void error_message([[maybe_unused]] FILE* output_stream, [[maybe_unused]] const char* fmt, [[maybe_unused]] Args&&... args)
+    void assert_internal(bool eval, const char* fmt, Args&&... args)
     {
-#if TZ_DEBUG
-        // Use the given ostream.
-        fflush(output_stream);
-        fprintf(output_stream, fmt, std::forward<Args>(args)...);
-        fflush(output_stream);
-        ::debug_break();
-#endif
+        #if TZ_DEBUG
+            if(!eval)
+            {
+                std::fflush(stderr);
+                std::fprintf(stderr, fmt, std::forward<Args>(args)...);
+                std::fflush(stderr);
+                ::debug_break();
+            }
+        #endif
     }
 }
+#define tz_error(msg, ...) {tz::error_internal("tz_error:\nIn file %s:%d:\n\t " msg "\n", __FILE__, __LINE__, ##__VA_ARGS__);} (void)0;
+#define tz_assert(eval, msg, ...) {tz::assert_internal(eval, "tz_assert Failure: %s\nIn file: %s:%d:\n\t " msg "\n", #eval, __FILE__, __LINE__, ##__VA_ARGS__);} (void)0;
 
 #endif // TOPAZ_CORE_ASSERT_HPP
