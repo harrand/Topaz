@@ -231,12 +231,16 @@ add_subdirectory(test)
 #    SOURCE_FILES test/test.cpp
 #)
 
-if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-	# For msvc
-    target_compile_options(topaz PRIVATE /std:c++latest)
-else()
-    # GCC/Clang
-    target_compile_options(topaz PRIVATE -Wall -Wextra -Wshadow=local -Wdelete-non-virtual-dtor -pedantic-errors -std=c++20)
+if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+	# GCC/Clang options
+    target_compile_options(topaz PRIVATE -Wall -Wextra -Wshadow=local -Wdelete-non-virtual-dtor -pedantic-errors)
+    if(CMAKE_CXX_COMPILER MATCHES "Clang")
+        # Clang-only options
+        # Use GNU's `, __VA_ARGS__` extension (used for tz_assert, tz_error, tz_report)
+        target_compile_options(topaz private -Wno-gnu-zero-variadic-macro-arguments)
+    endif()
+elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+    # MSVC-only options
 endif()
 target_include_directories(topaz PUBLIC ${PROJECT_SOURCE_DIR}/src)
 target_link_libraries(topaz PUBLIC debugbreak glfw stbi)

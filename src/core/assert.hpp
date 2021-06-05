@@ -32,7 +32,15 @@ namespace tz
         #endif
     }
 }
-#define tz_error(msg, ...) {tz::error_internal("tz_error:\nIn file %s:%d:\n\t " msg "\n", __FILE__, __LINE__, ##__VA_ARGS__);} (void)0;
-#define tz_assert(eval, msg, ...) {tz::assert_internal(eval, "tz_assert Failure: %s\nIn file: %s:%d:\n\t " msg "\n", #eval, __FILE__, __LINE__, ##__VA_ARGS__);} (void)0;
+#ifdef tz_error
+#undef tz_error
+#endif
 
+#define tz_error(msg, ...) {tz::error_internal("tz_error:\nIn file %s:%d:\n\t " msg "\n", __FILE__, __LINE__, ##__VA_ARGS__);} (void)0;
+
+#ifdef tz_assert
+#undef tz_assert
+#endif
+
+#define tz_assert(eval, msg, ...) {tz::assert_internal(eval, "tz_assert Failure: %s\nIn file: %s:%d:\n\t " msg "\n", #eval, __FILE__, __LINE__, ##__VA_ARGS__);} (void)0;
 #endif // TOPAZ_CORE_ASSERT_HPP
