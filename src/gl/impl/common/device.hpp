@@ -1,5 +1,6 @@
 #ifndef TOPAZ_GL_IMPL_COMMON_DEVICE_HPP
 #define TOPAZ_GL_IMPL_COMMON_DEVICE_HPP
+#include <functional>
 
 namespace tz::gl
 {
