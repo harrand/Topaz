@@ -30,16 +30,15 @@ int main()
         tz::gl::Shader shader = device.create_shader(shader_builder);
 
         tz::gl::RendererBuilder renderer_builder;
-        tz::gl::MeshInput mesh_input{tz::gl::Mesh
+        tz::gl::Mesh mesh;
+        mesh.vertices =
         {
-            .vertices =
-            {
                 tz::gl::Vertex{{-0.5f, -0.5f, 0.0f}, {1.0f, 0.0f}, {}, {}, {}},
                 tz::gl::Vertex{{0.5f, -0.5f, 0.0f}, {0.0f, 0.0f}, {}, {}, {}},
                 tz::gl::Vertex{{0.5f, 0.5f, 0.0f}, {0.0f, 1.0f}, {}, {}, {}}
-            },
-            .indices = {0, 1, 2}
-        }};
+        };
+        mesh.indices = { 0, 1, 2 };
+        tz::gl::MeshInput mesh_input{mesh};
 
         renderer_builder.set_input(mesh_input);
         renderer_builder.set_output(tz::window());

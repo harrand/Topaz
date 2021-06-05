@@ -355,7 +355,7 @@ namespace tz::gl
     {
         GLfloat rgba[4];
         glGetFloatv(GL_COLOR_CLEAR_VALUE, rgba);
-        return {rgba[0], rgba[1], rgba[2], rgba[3]};
+        return {static_cast<float>(rgba[0]), static_cast<float>(rgba[1]), static_cast<float>(rgba[2]), static_cast<float>(rgba[3])};
     }
 
     void RendererOGL::render()

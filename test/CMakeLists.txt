@@ -32,7 +32,7 @@ endfunction()
 add_custom_target(tztest COMMAND "${CMAKE_CTEST_COMMAND}" "--output-on-failure"
                         WORKING_DIRECTORY ${PROJECT_BINARY_DIR})
 
-add_custom_target(tztest_nographics COMMAND "${CMAKE_CTEST_COMMAND}" --output-on-failure -LE ^GRAPHICAL$
+add_custom_target(tztest_nographics COMMAND "${CMAKE_CTEST_COMMAND}" --output-on-failure -LE GRAPHICAL
                         WORKING_DIRECTORY ${PROJECT_BINARY_DIR})
 
 add_library(tz_test_harness INTERFACE)

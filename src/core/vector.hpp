@@ -25,8 +25,9 @@ namespace tz
 		 * Construct a vector directly using a variadic parameter pack value.
 		 * Static Precondition: sizeof...(Ts) == S, otherwise the program is ill-formed.
 		 */
-		template<typename... Ts, typename = std::enable_if_t<tz::static_find<T, Ts...>()>>
-		constexpr Vector(Ts&&... ts);
+		template<tz::Number... Ts>
+		constexpr Vector(Ts&&... ts) :
+		vec({ std::forward<Ts>(ts)... }) {}
 		/**
 		 * Construct a vector using an existing array of appropriate size.
 		 */

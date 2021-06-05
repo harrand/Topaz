@@ -5,13 +5,6 @@
 namespace tz
 {
 	template<tz::Number T, std::size_t S>
-	template<typename... Ts, typename>
-	constexpr Vector<T, S>::Vector(Ts&&... ts): vec({std::forward<Ts>(ts)...})
-	{
-		static_assert(sizeof...(Ts) == S, "tz::Vector<T, S>::Vector<sizeof...(Ts)>(...): Constructor param pack size does not match vector width.");
-	}
-
-	template<tz::Number T, std::size_t S>
 	constexpr Vector<T, S>::Vector(std::array<T, S> data): vec(data){}
 
 	template<tz::Number T, std::size_t S>
