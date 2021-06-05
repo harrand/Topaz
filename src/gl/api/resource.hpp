@@ -60,7 +60,7 @@ namespace tz::gl
         /// Invokes `Derived::Derived(const Derived&)`
         [[nodiscard]] virtual std::unique_ptr<IResource> unique_clone() const final
         {
-            static_assert(requires{requires std::copyable<Derived>;}, "IResourceCopyable<T>: T must be copyable. Derive from IResource and implement unique_clone if not copyable.");
+            static_assert(std::is_copy_constructible_v<Derived>, "IResourceCopyable<T>: T must be copyable. Derive from IResource and implement unique_clone if not copyable.");
             return std::make_unique<Derived>(static_cast<const Derived&>(*this));
         }
     };
@@ -109,7 +109,7 @@ namespace tz::gl
         /// Invokes `Derived::Derived(const Derived&)`
         [[nodiscard]] virtual std::unique_ptr<IResource> unique_clone() const final
         {
-            static_assert(requires{requires std::copyable<Derived>;}, "IDynamicResourceCopyable<T>: T must be copyable. Derive from IDynamicResource and implement unique_clone if not copyable.");
+            static_assert(std::is_copy_constructible_v<Derived>, "IDynamicResourceCopyable<T>: T must be copyable. Derive from IDynamicResource and implement unique_clone if not copyable.");
             return std::make_unique<Derived>(static_cast<const Derived&>(*this));
         }
     };

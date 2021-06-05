@@ -92,7 +92,7 @@ namespace tz::gl
         /// Invokes `Derived::Derived(const Derived&)`
         [[nodiscard]] virtual std::unique_ptr<IRendererInput> unique_clone() const final
         {
-            static_assert(requires{requires std::copyable<Derived>;}, "IRendererInputCopyable<T>: T must be copyable. Derive from IRendererInput and implement unique_clone if not copyable.");
+            static_assert(std::is_copy_constructible_v<Derived>, "IRendererInputCopyable<T>: T must be copyable. Derive from IRendererInput and implement unique_clone if not copyable.");
             return std::make_unique<Derived>(static_cast<const Derived&>(*this));
         }
     };
@@ -143,7 +143,7 @@ namespace tz::gl
         /// Invokes `Derived::Derived(const Derived&)`
         [[nodiscard]] virtual std::unique_ptr<IRendererInput> unique_clone() const final
         {
-            static_assert(requires{requires std::copyable<Derived>;}, "IRendererInputCopyable<T>: T must be copyable. Derive from IRendererInput and implement unique_clone if not copyable.");
+            static_assert(std::is_copy_constructible_v<Derived>, "IRendererInputCopyable<T>: T must be copyable. Derive from IRendererInput and implement unique_clone if not copyable.");
             return std::make_unique<Derived>(static_cast<const Derived&>(*this));
         }
     };

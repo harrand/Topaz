@@ -233,11 +233,14 @@ add_subdirectory(test)
 
 if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
 	# GCC/Clang options
-    target_compile_options(topaz PRIVATE -Wall -Wextra -Wshadow=local -Wdelete-non-virtual-dtor -pedantic-errors)
+    target_compile_options(topaz PRIVATE -Wall -Wextra -Wdelete-non-virtual-dtor -pedantic-errors)
     if(CMAKE_CXX_COMPILER MATCHES "Clang")
         # Clang-only options
         # Use GNU's `, __VA_ARGS__` extension (used for tz_assert, tz_error, tz_report)
-        target_compile_options(topaz private -Wno-gnu-zero-variadic-macro-arguments)
+        target_compile_options(topaz PRIVATE -Wgnu-zero-variadic-macro-arguments)
+    elseif(CMAKE_CXX_COMPILER MATCHES "GNU")
+        # GCC-only options
+        target_compile_options(topaz PRIVATE -Wshadow=local)
     endif()
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
     # MSVC-only options
