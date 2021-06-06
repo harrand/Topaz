@@ -194,7 +194,15 @@ int main()
 
         vk::Image img{my_logical_device, 2, 2, vk::Image::Format::Rgba32sRGB, {vk::Image::Usage::TransferDestination, vk::Image::Usage::Sampleable}, vk::hardware::MemoryResidency::GPU};
         vk::ImageView img_view{my_logical_device, img};
-        vk::Sampler img_sampler{my_logical_device};
+        vk::SamplerProperties props
+        {
+            .min_filter = VK_FILTER_LINEAR,
+            .mag_filter = VK_FILTER_LINEAR,
+            .address_mode_u = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
+            .address_mode_v = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
+            .address_mode_w = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
+        };
+        vk::Sampler img_sampler{my_logical_device, props};
         
         /*
         for(std::size_t i = 0; i < swapchain.get_image_views().size(); i++)

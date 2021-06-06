@@ -20,7 +20,7 @@ namespace tz
 #undef tz_debug_report
 #endif
 #if TZ_DEBUG
-    #define tz_debug_report(fmt, ...) tz_report(fmt, ...)
+    #define tz_debug_report(fmt, ...) tz_report(fmt, ##__VA_ARGS__)
 #else
     #define tz_debug_report(fmt, ...) (void)0
 #endif

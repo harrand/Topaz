@@ -421,9 +421,49 @@ namespace tz::gl
                 break;
             }
 
+            vk::SamplerProperties props;
+            {
+                TextureProperties gl_props = tex_res->get_properties();
+                auto convert_filter = [](TexturePropertyFilter filter)
+                {
+                    switch(filter)
+                    {
+                        case TexturePropertyFilter::Nearest:
+                            return VK_FILTER_NEAREST;
+                        break;
+                        case TexturePropertyFilter::Linear:
+                            return VK_FILTER_LINEAR;
+                        break;
+                        default:
+                            tz_error("Vulkan support for TexturePropertyFilter is not yet implemented");
+                            return static_cast<VkFilter>(VK_NULL_HANDLE);
+                        break;
+                    }
+                };
+                auto convert_address_mode = [](TextureAddressMode addr_mode)
+                {
+                    switch(addr_mode)
+                    {
+                        case TextureAddressMode::ClampToEdge:
+                            return VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+                        break;
+                        default:
+                            tz_error("Vulkan support for TextureAddressMode is not yet implemented");
+                            return static_cast<VkSamplerAddressMode>(VK_NULL_HANDLE);
+                        break;
+                    }
+                };
+                props.min_filter = convert_filter(gl_props.min_filter);
+                props.mag_filter = convert_filter(gl_props.mag_filter);
+
+                props.address_mode_u = convert_address_mode(gl_props.address_mode_u);
+                props.address_mode_v = convert_address_mode(gl_props.address_mode_v);
+                props.address_mode_w = convert_address_mode(gl_props.address_mode_w);
+            }
+
             vk::Image img{*this->device, tex_res->get_width(), tex_res->get_height(), format, vk::Image::UsageField{vk::Image::Usage::TransferDestination, vk::Image::Usage::Sampleable}, vk::hardware::MemoryResidency::GPU};
             vk::ImageView view{*this->device, img};
-            vk::Sampler img_sampler{*this->device};
+            vk::Sampler img_sampler{*this->device, props};
             this->texture_resource_textures.push_back({std::move(img), std::move(view), std::move(img_sampler)});
         }
     }

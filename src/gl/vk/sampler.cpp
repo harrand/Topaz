@@ -3,18 +3,19 @@
 
 namespace tz::gl::vk
 {
-    Sampler::Sampler(const LogicalDevice& device):
+
+    Sampler::Sampler(const LogicalDevice& device, SamplerProperties props):
     sampler(VK_NULL_HANDLE),
     device(&device)
     {
         VkSamplerCreateInfo create{};
         create.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
-        create.magFilter = VK_FILTER_LINEAR;
-        create.minFilter = VK_FILTER_LINEAR;
+        create.magFilter = props.mag_filter;
+        create.minFilter = props.min_filter;
 
-        create.addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
-        create.addressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
-        create.addressModeW = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+        create.addressModeU = props.address_mode_u;
+        create.addressModeV = props.address_mode_v;
+        create.addressModeW = props.address_mode_w;
 
         create.anisotropyEnable = VK_FALSE;
 

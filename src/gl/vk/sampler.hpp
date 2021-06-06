@@ -5,10 +5,20 @@
 
 namespace tz::gl::vk
 {
+    struct SamplerProperties
+    {   
+        VkFilter min_filter;
+        VkFilter mag_filter;
+
+        VkSamplerAddressMode address_mode_u;
+        VkSamplerAddressMode address_mode_v;
+        VkSamplerAddressMode address_mode_w;
+    };
+
     class Sampler
     {
     public:
-        Sampler(const LogicalDevice& device);
+        Sampler(const LogicalDevice& device, SamplerProperties props);
         Sampler(const Sampler& copy) = delete;
         Sampler(Sampler&& move);
         ~Sampler();

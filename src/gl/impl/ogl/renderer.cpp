@@ -277,10 +277,43 @@ namespace tz::gl
                 break;
             }
             glBindTexture(GL_TEXTURE_2D, tex);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            
+            auto convert_filter = [](TexturePropertyFilter filter)
+            {
+                switch(filter)
+                {
+                    case TexturePropertyFilter::Nearest:
+                        return GL_NEAREST;
+                    break;
+                    case TexturePropertyFilter::Linear:
+                        return GL_LINEAR;
+                    break;
+                    default:
+                        tz_error("OpenGL support for TexturePropertyFilter is not yet implemented");
+                        return GL_INVALID_ENUM;
+                    break;
+                }
+            };
+            auto convert_address_mode = [](TextureAddressMode addr_mode)
+            {
+                switch(addr_mode)
+                {
+                    case TextureAddressMode::ClampToEdge:
+                        return GL_CLAMP_TO_EDGE;
+                    break;
+                    default:
+                        tz_error("OpenGL support for TextureAddressMode is not yet implemented");
+                        return GL_INVALID_ENUM;
+                    break;
+                }
+            };
+
+            TextureProperties gl_props = texture_resource->get_properties();
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, convert_address_mode(gl_props.address_mode_u));
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, convert_address_mode(gl_props.address_mode_v));
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, convert_address_mode(gl_props.address_mode_w));
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, convert_filter(gl_props.min_filter));
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, convert_filter(gl_props.min_filter));
             glTexImage2D(GL_TEXTURE_2D, 0, internal_format, texture_resource->get_width(), texture_resource->get_height(), 0, format, type, texture_resource->get_resource_bytes().data());
             glBindTexture(GL_TEXTURE_2D, 0);
         }

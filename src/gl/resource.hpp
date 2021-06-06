@@ -177,8 +177,10 @@ namespace tz::gl
     class TextureResource : public IResourceCopyable<TextureResource>
     {
     public:
-        TextureResource(TextureData data, TextureFormat format):
-        data(data), format(format){}
+        TextureResource(TextureData data, TextureFormat format, TextureProperties properties = TextureProperties::get_default()):
+        data(data),
+        format(format),
+        properties(properties){}
 
         virtual constexpr ResourceType get_type() const final
         {
@@ -195,6 +197,11 @@ namespace tz::gl
             return this->format;
         }
 
+        const TextureProperties& get_properties() const
+        {
+            return this->properties;
+        }
+
         unsigned int get_width() const
         {
             return data.width;
@@ -207,6 +214,7 @@ namespace tz::gl
     private:
         TextureData data;
         TextureFormat format;
+        TextureProperties properties;
     };
 }
 
