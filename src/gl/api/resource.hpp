@@ -22,6 +22,7 @@ namespace tz::gl
     class IResource : public tz::IUniqueCloneable<IResource>
     {
     public:
+        virtual ~IResource() = default;
         /**
          * @brief Obtain the type represented by this resource.
          * 

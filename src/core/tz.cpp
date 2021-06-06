@@ -36,6 +36,8 @@ namespace tz
                 wnd = new tz::Window{tz::Window::null()};
             #elif TZ_OGL
                 // TODO: Headless implementation for OGL
+                tz_report("Headless applications are stubbed out for OpenGL");
+                std::exit(0);
                 wnd = new tz::Window{WindowInitArgs{.width = 800, .height = 600, .title = game_info.to_string().c_str()}, {{GLFW_VISIBLE, GL_FALSE}}};
             #endif
         }
