@@ -51,6 +51,7 @@ namespace tz::gl
     class IRendererInput : public tz::IUniqueCloneable<IRendererInput>
     {
     public:
+        virtual ~IRendererInput() = default;
         /**
          * @brief Retrieve the data access specifier for this render input type.
          * @note Inputs derived from @ref IRendererInput are `StaticFixed` by default, but this can be overriden. Inputs derived from @ref IRendererDynamicInput are always `DynamicFixed` and this cannot be overridden.
