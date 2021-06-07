@@ -36,7 +36,11 @@ namespace tz::gl::vk
         tz_assert(res == VK_SUCCESS, "tz::gl::vk::LogicalDevice(...): Failed to create logical device.");
 
         VmaAllocatorCreateInfo alloc_create{};
-        alloc_create.vulkanApiVersion = VK_API_VERSION_1_1;
+        auto ToVkVersion = [](tz::GameInfo::Version ver)->std::uint32_t
+        {
+            return VK_MAKE_VERSION(ver.major, ver.minor, ver.patch);
+        };
+        alloc_create.vulkanApiVersion = ToVkVersion(vk::VulkanApplicationInfo::get_vulkan_version());
         alloc_create.physicalDevice = this->queue_family.dev->native();
         alloc_create.device = this->dev;
         alloc_create.instance = vk::get().native();

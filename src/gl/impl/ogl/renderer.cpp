@@ -435,7 +435,7 @@ namespace tz::gl
             auto tex_location = static_cast<GLint>(this->resource_ubos.size() + i);
             glActiveTexture(GL_TEXTURE0 + tex_location);
             glBindTexture(GL_TEXTURE_2D, res_tex);
-            glUniform1i(tex_location, res_tex);
+            glUniform1i(tex_location, tex_location);
         }
 
         glDrawElements(GL_TRIANGLES, this->index_count, GL_UNSIGNED_INT, nullptr);

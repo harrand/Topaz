@@ -21,7 +21,8 @@ namespace tz::gl::vk
         
         this->app_info.pEngineName = engine_name.c_str();
         this->app_info.engineVersion = ToVkVersion(game_info.engine.version);
-        this->app_info.apiVersion = VK_API_VERSION_1_0;
+        constexpr tz::EngineInfo::Version vulkan_version = get_vulkan_version();
+        this->app_info.apiVersion = ToVkVersion(vulkan_version);
     }
 
     VkApplicationInfo VulkanApplicationInfo::get_info() const
