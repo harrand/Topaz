@@ -422,7 +422,6 @@ namespace tz::gl
         glClear(buffer_bits);
 
         glBindVertexArray(this->vao);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->ibo);
         for(std::size_t i = 0; i < this->resource_ubos.size(); i++)
         {
             GLuint res_ubo = this->resource_ubos[i];
@@ -436,7 +435,7 @@ namespace tz::gl
             auto tex_location = static_cast<GLint>(this->resource_ubos.size() + i);
 
             glBindTextureUnit(tex_location, res_tex);
-            glUniform1i(tex_location, tex_location);
+            glProgramUniform1i(this->shader->ogl_get_program_handle(), tex_location, tex_location);
         }
 
         glDrawElements(GL_TRIANGLES, this->index_count, GL_UNSIGNED_INT, nullptr);
