@@ -13,10 +13,6 @@ namespace tz::gl::vk
     public:
         VulkanApplicationInfo(tz::GameInfo game_info);
         VkApplicationInfo get_info() const;
-        constexpr static tz::EngineInfo::Version get_vulkan_version()
-        {
-            return {1, 1, 175};
-        }
     private:
         std::string engine_name;
         VkApplicationInfo app_info;

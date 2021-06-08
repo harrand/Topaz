@@ -15,8 +15,6 @@ namespace tz
      */
     struct GameInfo
     {
-        using Version = tz::EngineInfo::Version;
-
         constexpr GameInfo(const char* application_name, Version version, EngineInfo engine = tz::info()):
         name(application_name),
         version(version),
@@ -31,7 +29,7 @@ namespace tz
         {
             std::string res = this->name;
             res += " v";
-            res += engine_info::stringify_version(this->version);
+            res += tz::stringify_version(this->version);
             res += " (";
             res += this->engine.to_string();
             res += ")";

@@ -37,6 +37,9 @@ add_library(topaz
     src/core/tz.inl
     src/core/vector.hpp
     src/core/vector.inl
+    src/core/version.cpp
+    src/core/version.hpp
+    src/core/version.inl
     src/core/window_functionality.cpp
     src/core/window_functionality.hpp
     src/core/window_functionality.inl

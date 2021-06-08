@@ -10,6 +10,11 @@ namespace tz::gl::ogl
     void terminate();
     OpenGLInstance& get();
     bool is_initialised();
+
+    constexpr static tz::Version get_opengl_version()
+    {
+        return {4, 6, 0};
+    }
 }
 
 #endif // TZ_OGL

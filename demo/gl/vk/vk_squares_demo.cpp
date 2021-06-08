@@ -49,7 +49,7 @@ struct MVP
 
 int main()
 {
-    constexpr tz::GameInfo vk_squares_demo{"vk_squares_demo", tz::EngineInfo::Version{1, 0, 0}, tz::info()};
+    constexpr tz::GameInfo vk_squares_demo{"vk_squares_demo", tz::Version{1, 0, 0}, tz::info()};
     tz_report("%s", vk_squares_demo.to_string().c_str());
     
     std::array<Vertex, 8> vertices =

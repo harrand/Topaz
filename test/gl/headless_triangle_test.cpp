@@ -10,7 +10,7 @@
 
 int main()
 {
-    tz::initialise({"tz_headless_triangle_test", tz::EngineInfo::Version{1, 0, 0}, tz::info()}, tz::ApplicationType::Headless);
+    tz::initialise({"tz_headless_triangle_test", tz::Version{1, 0, 0}, tz::info()}, tz::ApplicationType::Headless);
     {
         tz::gl::DeviceBuilder device_builder;
         tz::gl::Device device{device_builder};

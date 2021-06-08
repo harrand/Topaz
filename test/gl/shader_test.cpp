@@ -4,7 +4,7 @@
 
 int main()
 {
-    tz::initialise({"tz_shader_test", tz::EngineInfo::Version{1, 0, 0}, tz::info()}, tz::ApplicationType::HiddenWindowApplication);
+    tz::initialise({"tz_shader_test", tz::Version{1, 0, 0}, tz::info()}, tz::ApplicationType::HiddenWindowApplication);
     {
         // Simply create some basic shaders. Don't try and render or anything.
         tz::gl::Device device{tz::gl::DeviceBuilder{}};

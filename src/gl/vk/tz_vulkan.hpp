@@ -13,6 +13,11 @@ namespace tz::gl::vk
     bool is_initialised();
     WindowSurface* window_surface();
     bool is_headless();
+
+    constexpr static tz::Version get_vulkan_version()
+    {
+        return {1, 1, 175};
+    }
 }
 
 #endif // TZ_VULKAN

@@ -1,6 +1,7 @@
 #ifndef TOPAZ_CORE_ENGINE_INFO_HPP
 #define TOPAZ_CORE_ENGINE_INFO_HPP
 #include <string>
+#include "core/version.hpp"
 
 namespace tz
 {
@@ -27,13 +28,6 @@ namespace tz
             Release
         };
 
-        struct Version
-        {
-            unsigned int major;
-            unsigned int minor;
-            unsigned int patch;
-        };
-
         /**
          * @brief Retrieve a string describing the engine.
          * - `RENDERAPI` is either "Vulkan" or "OpenGL" depending on CMake configuration.
@@ -46,12 +40,6 @@ namespace tz
         BuildConfig build;
         Version version;
     };
-
-    namespace engine_info
-    {
-        constexpr EngineInfo::Version parse_version(const char* version_string);
-        std::string stringify_version(EngineInfo::Version version);
-    }
 
     /**
      * @brief Retrieves the EngineInfo for this specific build of Topaz.

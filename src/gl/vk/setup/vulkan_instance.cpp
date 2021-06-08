@@ -1,4 +1,5 @@
 #if TZ_VULKAN
+#include "gl/vk/tz_vulkan.hpp"
 #include "gl/vk/setup/vulkan_instance.hpp"
 #include "gl/vk/validation/debug_messenger.hpp"
 #include "core/tz.hpp"
@@ -10,7 +11,7 @@ namespace tz::gl::vk
     app_info()
     {
         std::string engine_name = game_info.engine.to_string();
-        auto ToVkVersion = [](tz::GameInfo::Version ver)->std::uint32_t
+        auto ToVkVersion = [](tz::Version ver)->std::uint32_t
         {
             return VK_MAKE_VERSION(ver.major, ver.minor, ver.patch);
         };
@@ -21,8 +22,7 @@ namespace tz::gl::vk
         
         this->app_info.pEngineName = engine_name.c_str();
         this->app_info.engineVersion = ToVkVersion(game_info.engine.version);
-        constexpr tz::EngineInfo::Version vulkan_version = get_vulkan_version();
-        this->app_info.apiVersion = ToVkVersion(vulkan_version);
+        this->app_info.apiVersion = ToVkVersion(vk::get_vulkan_version());
     }
 
     VkApplicationInfo VulkanApplicationInfo::get_info() const

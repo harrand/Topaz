@@ -17,7 +17,7 @@ float get_aspect_ratio()
 
 int main()
 {
-    tz::initialise({"tz_dynamic_triangle_demo", tz::EngineInfo::Version{1, 0, 0}, tz::info()});
+    tz::initialise({"tz_dynamic_triangle_demo", tz::Version{1, 0, 0}, tz::info()});
     {
         tz::gl::DeviceBuilder device_builder;
         tz::gl::Device device{device_builder};
