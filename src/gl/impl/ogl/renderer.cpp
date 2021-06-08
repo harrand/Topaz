@@ -130,7 +130,7 @@ namespace tz::gl
             break;
         }
 
-        glGenVertexArrays(1, &this->vao);
+        glCreateVertexArrays(1, &this->vao);
         glBindVertexArray(this->vao);
         if(builder.get_input() != nullptr)
         {
@@ -171,7 +171,6 @@ namespace tz::gl
                 break;
             }
             
-            glBindBuffer(GL_ARRAY_BUFFER, this->vbo);
             // Then sort out formats (vertex array attributes)
             RendererElementFormat format = builder.get_input()->get_format();
             tz_assert(format.basis == RendererInputFrequency::PerVertexBasis, "Vertex data on a per-instance basis is not yet implemented");
@@ -199,12 +198,12 @@ namespace tz::gl
                         tz_error("Support for this attribute format is not yet implemented");
                     break;
                 }
-
-                auto to_ptr = [](std::size_t offset)->const void*{return reinterpret_cast<const void*>(offset);};
-                glEnableVertexAttribArray(attrib_id);
-                glVertexAttribPointer(attrib_id, size, type, GL_FALSE, static_cast<GLsizei>(format.binding_size), to_ptr(attrib_format.element_attribute_offset));
+                glEnableVertexArrayAttrib(this->vao, attrib_id);
+                glVertexArrayAttribFormat(this->vao, attrib_id, size, type, GL_FALSE, attrib_format.element_attribute_offset);
+                glVertexArrayAttribBinding(this->vao, attrib_id, 0);
             }
-            glBindBuffer(GL_ARRAY_BUFFER, 0);
+            glVertexArrayVertexBuffer(this->vao, 0, this->vbo, 0, static_cast<GLsizei>(format.binding_size));
+            glVertexArrayElementBuffer(this->vao, this->ibo);
         }
 
         std::vector<IResource*> buffer_resources;
@@ -276,7 +275,6 @@ namespace tz::gl
                     type = GL_FLOAT;
                 break;
             }
-            glBindTexture(GL_TEXTURE_2D, tex);
             
             auto convert_filter = [](TexturePropertyFilter filter)
             {
@@ -309,13 +307,16 @@ namespace tz::gl
             };
 
             TextureProperties gl_props = texture_resource->get_properties();
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, convert_address_mode(gl_props.address_mode_u));
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, convert_address_mode(gl_props.address_mode_v));
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, convert_address_mode(gl_props.address_mode_w));
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, convert_filter(gl_props.min_filter));
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, convert_filter(gl_props.min_filter));
-            glTexImage2D(GL_TEXTURE_2D, 0, internal_format, texture_resource->get_width(), texture_resource->get_height(), 0, format, type, texture_resource->get_resource_bytes().data());
-            glBindTexture(GL_TEXTURE_2D, 0);
+            glTextureParameteri(tex, GL_TEXTURE_WRAP_S, convert_address_mode(gl_props.address_mode_u));
+			glTextureParameteri(tex, GL_TEXTURE_WRAP_T, convert_address_mode(gl_props.address_mode_v));
+            glTextureParameteri(tex, GL_TEXTURE_WRAP_R, convert_address_mode(gl_props.address_mode_w));
+			glTextureParameteri(tex, GL_TEXTURE_MIN_FILTER, convert_filter(gl_props.min_filter));
+			glTextureParameteri(tex, GL_TEXTURE_MAG_FILTER, convert_filter(gl_props.min_filter));
+
+            GLsizei tex_w = texture_resource->get_width();
+            GLsizei tex_h = texture_resource->get_height();
+            glTextureStorage2D(tex, 1, internal_format, tex_w, tex_h);
+            glTextureSubImage2D(tex, 0, 0, 0, tex_w, tex_h, format, type, texture_resource->get_resource_bytes().data());
         }
 
         tz_report("RendererOGL (%s, %zu resource%s)", this->input != nullptr ? "Input" : "No Input", this->resources.size(), this->resources.size() == 1 ? "" : "s");
@@ -433,8 +434,8 @@ namespace tz::gl
         {
             GLuint res_tex = this->resource_textures[i];
             auto tex_location = static_cast<GLint>(this->resource_ubos.size() + i);
-            glActiveTexture(GL_TEXTURE0 + tex_location);
-            glBindTexture(GL_TEXTURE_2D, res_tex);
+
+            glBindTextureUnit(tex_location, res_tex);
             glUniform1i(tex_location, tex_location);
         }
 
