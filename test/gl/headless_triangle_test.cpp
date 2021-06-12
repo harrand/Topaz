@@ -36,7 +36,7 @@ int main()
         mesh.indices = { 0, 1, 2 };
         tz::gl::MeshInput mesh_input{mesh};
 
-        renderer_builder.set_input(mesh_input);
+        renderer_builder.add_input(mesh_input);
         renderer_builder.set_output(tz::window());
         renderer_builder.set_render_pass(render_pass);
         renderer_builder.set_shader(shader);

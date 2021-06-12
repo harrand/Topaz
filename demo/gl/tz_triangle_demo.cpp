@@ -48,7 +48,7 @@ int main()
             tz::perspective(1.27f, get_aspect_ratio(), 0.1f, 1000.0f)
         }})};
 
-        renderer_builder.set_input(mesh_input);
+        renderer_builder.add_input(mesh_input);
         renderer_builder.set_output(tz::window());
         renderer_builder.add_resource(buf_res);
         renderer_builder.set_render_pass(render_pass);

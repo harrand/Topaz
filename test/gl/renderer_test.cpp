@@ -28,7 +28,6 @@ int main()
         renderer_builder.set_render_pass(render_pass);
         renderer_builder.set_shader(shader);
         tz::gl::Renderer renderer = device.create_renderer(renderer_builder);
-        tz_assert(renderer.get_input() == nullptr, "Renderer wrongly thinks it has an input");
 
         // Ensure resources make sense.
         tz::gl::IResource* same_int_resource = renderer.get_resource(int_handle);
