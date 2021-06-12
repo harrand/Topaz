@@ -237,7 +237,8 @@ namespace tz::gl
 
     /**
      * @brief High-level object used to render geometry. Renderers can be described as follows:
-     * - A Renderer has exactly one @ref IRendererInput. It is planned to allow Renderers without inputs (for example, if vertices are hard-coded within the shader) but this is not yet implemented.
+     * - A Renderer has zero or more @ref IRendererInput. It is planned to allow Renderers without inputs (for example, if vertices are hard-coded within the shader) but this is not yet implemented.
+     *      - Drawing multiple inputs is batched as much as possible. Typically, a renderer will emit 1-2 draw calls, regardless of the number of inputs.
      * - A Renderer has exactly one @ref IRendererOutput.
      * - Renderers will never change their input or its corresponding input data.
      * - Renderers cannot have their input/output changed. However, dynamic input data is supported via @ref IRendererDynamicInput.

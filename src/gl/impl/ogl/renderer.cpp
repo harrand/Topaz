@@ -2,19 +2,31 @@
 #include "core/report.hpp"
 #include "core/tz.hpp"
 #include "gl/impl/ogl/renderer.hpp"
+#include <numeric>
 
 namespace tz::gl
 {
-   void RendererBuilderOGL::set_input(const IRendererInput& input)
+    struct DrawIndirectCommand
+    {
+        unsigned int count;
+        unsigned int instanceCount;
+        unsigned int firstIndex;
+        unsigned int baseVertex;
+        unsigned int baseInstance;
+    };
+
+   RendererInputHandle RendererBuilderOGL::add_input(const IRendererInput& input)
    {
-       this->input = &input;
-       this->format = this->input->get_format();
+       auto sz = this->inputs.size();
+       this->inputs.push_back(&input);
+       return {static_cast<tz::HandleValue>(sz)};
    }
 
-    const IRendererInput* RendererBuilderOGL::get_input() const
+    const IRendererInput* RendererBuilderOGL::get_input(RendererInputHandle handle) const
     {
-        return this->input;
-        //return this->format.value();
+        std::size_t handle_val = static_cast<std::size_t>(static_cast<tz::HandleValue>(handle));
+        tz_assert(handle_val < this->inputs.size(), "Handle value %zu does not belong to this Renderer. Does it perhaps belong to another?");
+        return this->inputs[handle_val];
     }
 
     void RendererBuilderOGL::set_output(const IRendererOutput& output)
@@ -88,17 +100,26 @@ namespace tz::gl
         return {this->texture_resources.begin(), this->texture_resources.end()};
     }
 
+    std::span<const IRendererInput* const> RendererBuilderOGL::ogl_get_inputs() const
+    {
+        return this->inputs;
+    }
+
+
     RendererOGL::RendererOGL(RendererBuilderOGL builder):
     vao(0),
     vbo(0),
     ibo(0),
+    vbo_dynamic(0),
+    ibo_dynamic(0),
+    indirect_buffer(0),
+    indirect_buffer_dynamic(0),
     resources(),
     resource_ubos(),
     resource_textures(),
-    index_count(0),
     render_pass(&builder.get_render_pass()),
     shader(&builder.get_shader()),
-    input(builder.get_input() == nullptr ? nullptr : builder.get_input()->unique_clone()),
+    inputs(this->copy_inputs(builder)),
     output(builder.get_output())
     {
         auto persistent_mapped_buffer_flags = GL_MAP_READ_BIT | GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT;
@@ -132,47 +153,130 @@ namespace tz::gl
 
         glCreateVertexArrays(1, &this->vao);
         glBindVertexArray(this->vao);
-        if(builder.get_input() != nullptr)
+
+        struct DynamicInputMapRegion
         {
-            // First fill buffers.
+            IRendererDynamicInput& input;
+            std::size_t offset;
+            std::size_t length;
+        };
+
+        if(!builder.ogl_get_inputs().empty())
+        {
+            std::vector<std::byte> total_vertices;
+            std::vector<unsigned int> total_indices;
+            std::vector<std::byte> total_vertices_dynamic;
+            std::vector<unsigned int> total_indices_dynamic;
+            std::vector<DynamicInputMapRegion> vertex_regions, index_regions;
+            std::vector<DrawIndirectCommand> static_draws;
+            std::vector<DrawIndirectCommand> dynamic_draws;
+
+            unsigned int index_count_so_far = 0;
+            unsigned int dyn_index_count_so_far = 0;
+            unsigned int vertex_count_so_far = 0;
+            unsigned int dyn_vertex_count_so_far = 0;
+
+            bool any_static_geometry = false;
+            bool any_dynamic_geometry = false;
+
+            // Step 1: Compile all data.
+            for(auto& input_ptr : this->inputs)
             {
-                GLuint buffers[2];
-                glCreateBuffers(2, buffers);
+                if(input_ptr == nullptr)
+                {
+                    continue;
+                }
+                IRendererInput& input = *input_ptr;
+                this->format = input.get_format();
+                std::span<const std::byte> input_vertices = input.get_vertex_bytes();
+                std::span<const unsigned int> input_indices = input.get_indices();
+
+
+                DrawIndirectCommand cur_cmd;
+                cur_cmd.count = input.get_indices().size();
+                cur_cmd.instanceCount = 1;
+                cur_cmd.baseInstance = 0;
+                switch(input.data_access())
+                {
+                    case RendererInputDataAccess::StaticFixed:
+                        cur_cmd.firstIndex = index_count_so_far;
+                        cur_cmd.baseVertex = vertex_count_so_far;
+                        std::copy(input_vertices.begin(), input_vertices.end(), std::back_inserter(total_vertices));
+                        std::copy(input_indices.begin(), input_indices.end(), std::back_inserter(total_indices));
+                        any_static_geometry = true;
+
+                        index_count_so_far += input.index_count();
+                        vertex_count_so_far += input.vertex_count();
+                        static_draws.push_back(cur_cmd);
+                    break;
+                    case RendererInputDataAccess::DynamicFixed:
+                    {
+                        cur_cmd.firstIndex = dyn_index_count_so_far;
+                        cur_cmd.baseVertex = dyn_vertex_count_so_far;
+                        std::size_t vertex_region_offset = total_vertices_dynamic.size();
+                        std::size_t vertex_region_length = input_vertices.size();
+                        std::copy(input_vertices.begin(), input_vertices.end(), std::back_inserter(total_vertices_dynamic));
+                        std::size_t index_region_offset = total_indices_dynamic.size();
+                        std::size_t index_region_length = input_indices.size();
+                        std::copy(input_indices.begin(), input_indices.end(), std::back_inserter(total_indices_dynamic));
+                        any_dynamic_geometry = true;
+
+                        vertex_regions.push_back({.input = static_cast<IRendererDynamicInput&>(input), .offset = vertex_region_offset, .length = vertex_region_length});
+                        index_regions.push_back({.input = static_cast<IRendererDynamicInput&>(input), .offset = index_region_offset, .length = index_region_length});
+
+                        dyn_index_count_so_far += input.index_count();
+                        dyn_vertex_count_so_far += input.vertex_count();
+                        dynamic_draws.push_back(cur_cmd);
+                    }
+                    break;
+                    default:
+                        tz_error("Input data access unsupported (Vulkan)");
+                    break;
+                }
+            }
+
+            // Step 2: Fill buffers and map properly.
+            if(any_static_geometry)
+            {
+                GLuint buffers[3];
+                glCreateBuffers(3, buffers);
                 this->vbo = buffers[0];
                 this->ibo = buffers[1];
+                this->indirect_buffer = buffers[2];
+
+                glNamedBufferData(this->vbo, total_vertices.size(), total_vertices.data(), GL_STATIC_DRAW);
+                glNamedBufferData(this->ibo, total_indices.size() * sizeof(unsigned int), total_indices.data(), GL_STATIC_DRAW);
+                glNamedBufferData(this->indirect_buffer, static_draws.size() * sizeof(DrawIndirectCommand), static_draws.data(), GL_STATIC_DRAW);
             }
-
-            const IRendererInput& input = *this->input;
-
-            auto vertices_size = input.get_vertex_bytes().size();
-            auto vertices_size_bytes = input.get_vertex_bytes().size_bytes();
-            auto indices_size = input.get_indices().size();
-            auto indices_size_bytes = input.get_indices().size_bytes();
-            tz_report("VBO (%zu vertices, %zu bytes total)", vertices_size, vertices_size_bytes);
-            tz_report("IBO (%zu indices, %zu bytes total)", indices_size, indices_size_bytes);
-            switch(input.data_access())
+            if(any_dynamic_geometry)
             {
-                case RendererInputDataAccess::StaticFixed:
+                GLuint buffers[3];
+                glCreateBuffers(3, buffers);
+                this->vbo_dynamic = buffers[0];
+                this->ibo_dynamic = buffers[1];
+                this->indirect_buffer_dynamic = buffers[2];
+
+                glNamedBufferStorage(this->vbo_dynamic, total_vertices_dynamic.size(), total_vertices_dynamic.data(), persistent_mapped_buffer_flags);
+                glNamedBufferStorage(this->ibo_dynamic, total_indices_dynamic.size() * sizeof(unsigned int), total_indices_dynamic.data(), persistent_mapped_buffer_flags);
+                glNamedBufferData(this->indirect_buffer_dynamic, dynamic_draws.size() * sizeof(DrawIndirectCommand), dynamic_draws.data(), GL_STATIC_DRAW);
+
+                void* vtx_data = glMapNamedBufferRange(this->vbo_dynamic, 0, total_vertices_dynamic.size(), persistent_mapped_buffer_flags);
+                void* idx_data = glMapNamedBufferRange(this->ibo_dynamic, 0, total_indices_dynamic.size(), persistent_mapped_buffer_flags);
+                
+                std::byte* vtx_mem = static_cast<std::byte*>(vtx_data);
+                for(const auto& vertex_region : vertex_regions)
                 {
-                    glNamedBufferData(this->vbo, input.get_vertex_bytes().size_bytes(), input.get_vertex_bytes().data(), GL_STATIC_DRAW);
-                    glNamedBufferData(this->ibo, input.get_indices().size_bytes(), input.get_indices().data(), GL_STATIC_DRAW);
-                    this->index_count = static_cast<GLsizei>(input.get_indices().size());
+                    vertex_region.input.set_vertex_data(vtx_mem + vertex_region.offset);
                 }
-                break;
-                case RendererInputDataAccess::DynamicFixed:
-                    auto& dynamic_input = static_cast<IRendererDynamicInput&>(*this->input);
-                    glNamedBufferStorage(this->vbo, dynamic_input.get_vertex_bytes().size_bytes(), dynamic_input.get_vertex_bytes().data(), persistent_mapped_buffer_flags);
-                    glNamedBufferStorage(this->ibo, dynamic_input.get_indices().size_bytes(), dynamic_input.get_indices().data(), persistent_mapped_buffer_flags);
-                    this->index_count = static_cast<GLsizei>(dynamic_input.get_indices().size());
-                    void* vertex_data = glMapNamedBufferRange(this->vbo, 0, dynamic_input.get_vertex_bytes().size_bytes(), persistent_mapped_buffer_flags);
-                    void* index_data = glMapNamedBufferRange(this->ibo, 0, dynamic_input.get_indices().size_bytes(), persistent_mapped_buffer_flags);
-                    dynamic_input.set_vertex_data(static_cast<std::byte*>(vertex_data));
-                    dynamic_input.set_index_data(static_cast<unsigned int*>(index_data));
-                break;
+
+                unsigned int* idx_mem = static_cast<unsigned int*>(idx_data);
+                for(const auto& index_region : index_regions)
+                {
+                    index_region.input.set_index_data(idx_mem + index_region.offset);
+                }
             }
-            
-            // Then sort out formats (vertex array attributes)
-            RendererElementFormat format = builder.get_input()->get_format();
+
+            // Step 3: Sort out formats (vertex array attributes)
             tz_assert(format.basis == RendererInputFrequency::PerVertexBasis, "Vertex data on a per-instance basis is not yet implemented");
 
             for(GLuint attrib_id = 0; attrib_id < static_cast<GLuint>(format.binding_attributes.length()); attrib_id++)
@@ -202,8 +306,6 @@ namespace tz::gl
                 glVertexArrayAttribFormat(this->vao, attrib_id, size, type, GL_FALSE, attrib_format.element_attribute_offset);
                 glVertexArrayAttribBinding(this->vao, attrib_id, 0);
             }
-            glVertexArrayVertexBuffer(this->vao, 0, this->vbo, 0, static_cast<GLsizei>(format.binding_size));
-            glVertexArrayElementBuffer(this->vao, this->ibo);
         }
 
         std::vector<IResource*> buffer_resources;
@@ -319,7 +421,7 @@ namespace tz::gl
             glTextureSubImage2D(tex, 0, 0, 0, tex_w, tex_h, format, type, texture_resource->get_resource_bytes().data());
         }
 
-        tz_report("RendererOGL (%s, %zu resource%s)", this->input != nullptr ? "Input" : "No Input", this->resources.size(), this->resources.size() == 1 ? "" : "s");
+        tz_report("RendererOGL (%zu input%s, %zu resource%s)", this->inputs.size(), this->inputs.size() == 1 ? "" : "s", this->resources.size(), this->resources.size() == 1 ? "" : "s");
     }
 
     RendererOGL::RendererOGL(RendererOGL&& move):
@@ -327,7 +429,6 @@ namespace tz::gl
     vbo(0),
     ibo(0),
     resource_ubos(),
-    index_count(0),
     render_pass(nullptr),
     shader(nullptr),
     output(nullptr)
@@ -362,9 +463,11 @@ namespace tz::gl
         std::swap(this->vbo, rhs.vbo);
         std::swap(this->ibo, rhs.ibo);
         std::swap(this->resource_ubos, rhs.resource_ubos);
-        std::swap(this->index_count, rhs.index_count);
+        std::swap(this->resource_textures, rhs.resource_textures);
+        std::swap(this->format, rhs.format);
         std::swap(this->render_pass, rhs.render_pass);
         std::swap(this->shader, rhs.shader);
+        std::swap(this->inputs, rhs.inputs);
         std::swap(this->output, rhs.output);
         return *this;
     }
@@ -374,9 +477,10 @@ namespace tz::gl
         glClearColor(clear_colour[0], clear_colour[1], clear_colour[2], clear_colour[3]);
     }
 
-    IRendererInput* RendererOGL::get_input()
+    IRendererInput* RendererOGL::get_input(RendererInputHandle handle)
     {
-        return this->input.get();
+        auto handle_value = static_cast<std::size_t>(static_cast<tz::HandleValue>(handle));
+        return this->inputs[handle_value].get();
     }
 
     IResource* RendererOGL::get_resource(ResourceHandle handle)
@@ -438,7 +542,62 @@ namespace tz::gl
             glProgramUniform1i(this->shader->ogl_get_program_handle(), tex_location, tex_location);
         }
 
-        glDrawElements(GL_TRIANGLES, this->index_count, GL_UNSIGNED_INT, nullptr);
+        if(this->num_static_inputs() > 0)
+        {
+            glVertexArrayVertexBuffer(this->vao, 0, this->vbo, 0, static_cast<GLsizei>(this->format.binding_size));
+            glVertexArrayElementBuffer(this->vao, this->ibo);
+            glBindBuffer(GL_DRAW_INDIRECT_BUFFER, this->indirect_buffer);
+            glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, nullptr, this->num_static_inputs(), sizeof(DrawIndirectCommand));
+        }
+
+        if(this->num_dynamic_inputs() > 0)
+        {
+            glVertexArrayVertexBuffer(this->vao, 0, this->vbo_dynamic, 0, static_cast<GLsizei>(this->format.binding_size));
+            glVertexArrayElementBuffer(this->vao, this->ibo_dynamic);
+            glBindBuffer(GL_DRAW_INDIRECT_BUFFER, this->indirect_buffer_dynamic);
+            glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, nullptr, this->num_dynamic_inputs(), sizeof(DrawIndirectCommand));
+        }
+        //glDrawElements(GL_TRIANGLES, this->index_count, GL_UNSIGNED_INT, nullptr);
+    }
+
+    std::vector<std::unique_ptr<IRendererInput>> RendererOGL::copy_inputs(const RendererBuilderOGL& builder)
+    {
+        std::vector<std::unique_ptr<IRendererInput>> inputs;
+        for(const IRendererInput* const input : builder.ogl_get_inputs())
+        {
+            inputs.push_back(input->unique_clone());
+        }
+        return inputs;
+    }
+
+    std::vector<IRendererInput*> RendererOGL::get_inputs()
+    {
+        std::vector<IRendererInput*> inputs;
+        for(const auto& input_ptr : this->inputs)
+        {
+            inputs.push_back(input_ptr.get());
+        }
+        return inputs;
+    }
+
+    std::size_t RendererOGL::num_static_inputs() const
+    {
+        std::size_t total = std::accumulate(this->inputs.begin(), this->inputs.end(), 0, [](std::size_t accumulator, const std::unique_ptr<IRendererInput>& input)
+        {
+            return accumulator + (input->data_access() == RendererInputDataAccess::StaticFixed ? 1 : 0);
+        });
+
+        return total;
+    }
+
+    std::size_t RendererOGL::num_dynamic_inputs() const
+    {
+        std::size_t total = std::accumulate(this->inputs.begin(), this->inputs.end(), 0, [](std::size_t accumulator, const std::unique_ptr<IRendererInput>& input)
+        {
+            return accumulator + (input->data_access() == RendererInputDataAccess::DynamicFixed ? 1 : 0);
+        });
+
+        return total;
     }
 }
 

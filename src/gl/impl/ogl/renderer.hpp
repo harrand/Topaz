@@ -11,8 +11,8 @@ namespace tz::gl
     {
     public:
         RendererBuilderOGL() = default;
-        virtual void set_input(const IRendererInput& input) final;
-        virtual const IRendererInput* get_input() const final;
+        virtual RendererInputHandle add_input(const IRendererInput& input) final;
+        virtual const IRendererInput* get_input(RendererInputHandle handle) const final;
 
         virtual void set_output(const IRendererOutput& output) final;
         virtual const IRendererOutput* get_output() const final;
@@ -30,14 +30,14 @@ namespace tz::gl
 
         std::span<const IResource* const> ogl_get_buffer_resources() const;
         std::span<const IResource* const> ogl_get_texture_resources() const;
+        std::span<const IRendererInput* const> ogl_get_inputs() const;
     private:
-        const IRendererInput* input = nullptr;
+        std::vector<const IRendererInput*> inputs;
         const IRendererOutput* output = nullptr;
         std::vector<const IResource*> buffer_resources;
         std::vector<const IResource*> texture_resources;
         const RenderPass* render_pass = nullptr;
         const Shader* shader = nullptr;
-        std::optional<RendererElementFormat> format;
         RendererCullingStrategy culling_strategy;
     };
 
@@ -54,20 +54,26 @@ namespace tz::gl
 
         virtual void set_clear_colour(tz::Vec4 clear_colour) final;
         virtual tz::Vec4 get_clear_colour() const final;
-        virtual IRendererInput* get_input() final;
+        virtual IRendererInput* get_input(RendererInputHandle handle) final;
         virtual IResource* get_resource(ResourceHandle handle) final;
         
         virtual void render() final;
     private:
+        std::vector<std::unique_ptr<IRendererInput>> copy_inputs(const RendererBuilderOGL& builder);
+        std::vector<IRendererInput*> get_inputs();
+        std::size_t num_static_inputs() const;
+        std::size_t num_dynamic_inputs() const;
+
         GLuint vao;
-        GLuint vbo, ibo;
+        GLuint vbo, ibo, vbo_dynamic, ibo_dynamic;
+        GLuint indirect_buffer, indirect_buffer_dynamic;
         std::vector<std::unique_ptr<IResource>> resources;
         std::vector<GLuint> resource_ubos;
         std::vector<GLuint> resource_textures;
-        GLsizei index_count;
+        RendererElementFormat format;
         const RenderPass* render_pass;
         const Shader* shader;
-        std::unique_ptr<IRendererInput> input;
+        std::vector<std::unique_ptr<IRendererInput>> inputs;
         const IRendererOutput* output;
     };
 }

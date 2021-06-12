@@ -9,13 +9,6 @@
 
 namespace tz::gl
 {
-    /*
-    void RendererBuilderVulkan::set_input(const IRendererInput& input)
-    {
-        this->input = &input;
-    }
-    */
-
    using DrawIndirectCommand = VkDrawIndexedIndirectCommand;
 
     RendererInputHandle RendererBuilderVulkan::add_input(const IRendererInput& input)
