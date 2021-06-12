@@ -175,7 +175,7 @@ namespace tz::gl
         {
             return std::as_bytes(std::span<const Vertex>(this->initial_data.vertices.begin(), this->initial_data.vertices.end()));
         }
-        return {this->vertex_data, this->vertex_data + this->initial_data.vertices.length()};
+        return {this->vertex_data, this->vertex_data + (this->initial_data.vertices.length() * sizeof(tz::gl::Vertex))};
     }
 
     std::span<const unsigned int> MeshDynamicInput::get_indices() const

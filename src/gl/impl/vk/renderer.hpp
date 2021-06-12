@@ -17,8 +17,9 @@ namespace tz::gl
     {
     public:
         RendererBuilderVulkan() = default;
-        virtual void set_input(const IRendererInput& input) final;
-        virtual const IRendererInput* get_input() const final;
+        //virtual void set_input(const IRendererInput& input) final;
+        virtual RendererInputHandle add_input(const IRendererInput& input) final;
+        virtual const IRendererInput* get_input(RendererInputHandle handle) const final;
 
         virtual void set_output(const IRendererOutput& output) final;
         virtual const IRendererOutput* get_output() const final;
@@ -35,10 +36,11 @@ namespace tz::gl
         vk::pipeline::VertexInputState vk_get_vertex_input() const;
         vk::pipeline::RasteriserState vk_get_rasteriser_state() const;
         vk::DescriptorSetLayout vk_get_descriptor_set_layout(const vk::LogicalDevice& device) const;
+        std::span<const IRendererInput* const> vk_get_inputs() const;
         std::span<const IResource* const> vk_get_buffer_resources() const;
         std::span<const IResource* const> vk_get_texture_resources() const;
     private:
-        const IRendererInput* input = nullptr;
+        std::vector<const IRendererInput*> inputs;
         const IRendererOutput* output = nullptr;
         std::vector<const IResource*> buffer_resources;
         std::vector<const IResource*> texture_resources;
@@ -81,13 +83,17 @@ namespace tz::gl
     class RendererBufferManagerVulkan
     {
     public:
-        RendererBufferManagerVulkan(RendererBuilderDeviceInfoVulkan device_info, IRendererInput* renderer_input);
+        RendererBufferManagerVulkan(RendererBuilderDeviceInfoVulkan device_info, std::vector<IRendererInput*> renderer_inputs);
         void initialise_resources(std::vector<IResource*> renderer_buffer_resources);
         void setup_buffers();
         const vk::Buffer* get_vertex_buffer() const;
         vk::Buffer* get_vertex_buffer();
         const vk::Buffer* get_index_buffer() const;
         vk::Buffer* get_index_buffer();
+        const vk::Buffer* get_dynamic_vertex_buffer() const;
+        vk::Buffer* get_dynamic_vertex_buffer();
+        const vk::Buffer* get_dynamic_index_buffer() const;
+        vk::Buffer* get_dynamic_index_buffer();
         std::span<const IResource* const> get_buffer_resources() const;
         std::span<IResource*> get_buffer_resources();
         std::span<const vk::Buffer> get_resource_buffers() const;
@@ -95,9 +101,11 @@ namespace tz::gl
     private:
         const vk::LogicalDevice* device;
         const vk::hardware::Device* physical_device;
-        IRendererInput* input;        
+        std::vector<IRendererInput*> inputs;        
         std::optional<vk::Buffer> vertex_buffer;
+        std::optional<vk::Buffer> dynamic_vertex_buffer;
         std::optional<vk::Buffer> index_buffer;
+        std::optional<vk::Buffer> dynamic_index_buffer;
         std::vector<IResource*> buffer_resources;
         std::vector<vk::Buffer> buffer_resource_buffers;
     };
@@ -138,7 +146,7 @@ namespace tz::gl
     class RendererProcessorVulkan
     {
     public:
-        RendererProcessorVulkan(RendererBuilderVulkan builder, RendererBuilderDeviceInfoVulkan device_info, const IRendererInput* input);
+        RendererProcessorVulkan(RendererBuilderVulkan builder, RendererBuilderDeviceInfoVulkan device_info, std::vector<IRendererInput*> inputs);
         void initialise_resource_descriptors(const RendererPipelineManagerVulkan& pipeline_manager, const RendererBufferManagerVulkan& buffer_manager, const RendererImageManagerVulkan& image_manager, std::vector<const IResource*> resources);
         void initialise_command_pool();
         void block_until_idle();
@@ -148,14 +156,19 @@ namespace tz::gl
         void render();
     private:
         std::size_t get_view_count() const;
+        std::size_t num_static_inputs() const;
+        std::size_t num_dynamic_inputs() const;
+
         const vk::LogicalDevice* device;
         const vk::hardware::Device* physical_device;
         const RenderPass* render_pass;
         const DeviceWindowBufferVulkan* swapchain;
-        const IRendererInput* input;
+        std::vector<IRendererInput*> inputs;
         std::optional<vk::DescriptorPool> resource_descriptor_pool;
         vk::CommandPool command_pool;
         vk::hardware::Queue graphics_present_queue;
+        std::optional<vk::Buffer> draw_indirect_buffer;
+        std::optional<vk::Buffer> draw_indirect_dynamic_buffer;
         vk::FrameAdmin frame_admin;
     };
 
@@ -167,15 +180,17 @@ namespace tz::gl
     
         virtual void set_clear_colour(tz::Vec4 clear_colour) final;
         virtual tz::Vec4 get_clear_colour() const final;
-        virtual IRendererInput* get_input() final;
+        virtual IRendererInput* get_input(RendererInputHandle handle) final;
         virtual IResource* get_resource(ResourceHandle handle) final;
         
         virtual void render() final;
     private:
+        std::vector<std::unique_ptr<IRendererInput>> copy_inputs(const RendererBuilderVulkan builder);
+        std::vector<IRendererInput*> get_inputs();
         void handle_resize();
         void handle_clear_colour_change();
 
-        std::unique_ptr<IRendererInput> renderer_input;
+        std::vector<std::unique_ptr<IRendererInput>> renderer_inputs;
         std::vector<std::unique_ptr<IResource>> renderer_resources;
 
         RendererBufferManagerVulkan buffer_manager;

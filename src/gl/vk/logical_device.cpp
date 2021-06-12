@@ -20,6 +20,7 @@ namespace tz::gl::vk
 
         VkPhysicalDeviceFeatures features{};
         features.samplerAnisotropy = VK_FALSE; // TODO: Customiseable?
+        features.multiDrawIndirect = VK_TRUE; // Yes we want MDI
 
         VkDeviceCreateInfo create{};
         create.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;

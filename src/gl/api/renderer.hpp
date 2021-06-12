@@ -80,6 +80,9 @@ namespace tz::gl
         virtual std::span<const unsigned int> get_indices() const = 0;
     };
 
+    /// Opaque handle which can be provided to @ref IRenderer::get_input() to retrieve an input.
+    using RendererInputHandle = tz::Handle<IRendererInput>;
+
     /**
      * @brief Identical to @ref IRendererInput, but `IRendererInputCopyable<T>::unique_clone()` need not be implemented.
      * @pre Derived must be copy-constructible. Otherwise, the program is ill-formed.
@@ -165,19 +168,21 @@ namespace tz::gl
     {
     public:
         /**
-         * @brief Provide initial input data for the renderer.
+         * @brief Add input data for the renderer.
+         * When a Renderer performs a render, the data within each input is expressed as a list of vertex data and indices. If multiple inputs have been added, they will all be drawn in as few draw-calls as possible.
+         * 
          * It is an error to retain this reference to dynamic input data and expect to change it later. To do that, create the Renderer as normal and invoke @ref IRenderer::get_input() to retrieve the Renderer's own copy of the input and perform your processing there.
          * @note When the Renderer is constructed, it will have its own copy of the input.
          * 
          * @param input Reference to an existing @ref IRendererInput
          */
-        virtual void set_input(const IRendererInput& input) = 0;
+        virtual RendererInputHandle add_input(const IRendererInput& input) = 0;
         /**
          * @brief Retrieve the format of the vertex data elements.
          * 
          * @return RendererElementFormat describing how vertex data is laid out in memory.
          */
-        virtual const IRendererInput* get_input() const = 0;
+        virtual const IRendererInput* get_input(RendererInputHandle input_handle) const = 0;
 
         virtual void set_output(const IRendererOutput& output) = 0;
         virtual const IRendererOutput* get_output() const = 0;
@@ -249,7 +254,7 @@ namespace tz::gl
          * 
          * @return IRendererInput* pointing to the renderer's input.
          */
-        virtual IRendererInput* get_input() = 0;
+        virtual IRendererInput* get_input(RendererInputHandle handle) = 0;
 
         virtual IResource* get_resource(ResourceHandle handle) = 0;
 

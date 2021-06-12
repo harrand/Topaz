@@ -11,7 +11,8 @@ namespace tz::gl::vk
         Vertex,
         Index,
         Staging,
-        Uniform
+        Uniform,
+        DrawIndirect
     };
 
     enum class BufferPurpose

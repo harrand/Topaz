@@ -143,6 +143,11 @@ namespace tz::gl::vk
         vkCmdDrawIndexed(this->command_buffer->native(), index_count, inst_count, first_index, vertex_offset, first_instance);
     }
 
+    void CommandBufferRecording::draw_indirect(const vk::Buffer& draw_indirect_buffer, std::uint32_t draw_count)
+    {
+        vkCmdDrawIndexedIndirect(this->command_buffer->native(), draw_indirect_buffer.native(), 0, draw_count, sizeof(VkDrawIndexedIndirectCommand));
+    }
+
     CommandBufferRecording::CommandBufferRecording(const CommandBuffer& buffer, std::function<void()> on_recording_end):
     command_buffer(&buffer),
     on_recording_end(on_recording_end)
