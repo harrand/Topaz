@@ -830,8 +830,8 @@ namespace tz::gl
                             *cmd = cur_cmd;
                             cmd++;
                         }
-                        index_count_so_far += input->get_indices().size();
-                        vertex_count_so_far += input->get_vertex_bytes().size_bytes() / input->get_format().binding_size;
+                        index_count_so_far += input->index_count();
+                        vertex_count_so_far += input->vertex_count();
                     }
                     else if(input->data_access() == RendererInputDataAccess::DynamicFixed)
                     {
@@ -844,8 +844,8 @@ namespace tz::gl
                             *dyn_cmd = cur_cmd;
                             ++dyn_cmd;
                         }
-                        dyn_index_count_so_far += input->get_indices().size();
-                        dyn_vertex_count_so_far += input->get_vertex_bytes().size_bytes() / input->get_format().binding_size;
+                        dyn_index_count_so_far += input->index_count();
+                        dyn_vertex_count_so_far += input->vertex_count();
                     }
                     
                 }

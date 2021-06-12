@@ -78,6 +78,22 @@ namespace tz::gl
          * @return std::span<const unsigned int> displaying an array of all the indices.
          */
         virtual std::span<const unsigned int> get_indices() const = 0;
+        std::size_t vertex_count() const
+        {
+            return this->vertex_count_bytes() / this->get_format().binding_size;
+        }
+        std::size_t vertex_count_bytes() const
+        {
+            return this->get_vertex_bytes().size_bytes();
+        }
+        std::size_t index_count() const
+        {
+            return this->get_indices().size();
+        }
+        std::size_t index_count_bytes() const
+        {
+            return this->get_indices().size_bytes();
+        }
     };
 
     /// Opaque handle which can be provided to @ref IRenderer::get_input() to retrieve an input.
