@@ -151,13 +151,19 @@ namespace tz::gl
         void initialise_command_pool();
         void block_until_idle();
         void record_rendering_commands(const RendererPipelineManagerVulkan& pipeline_manager, const RendererBufferManagerVulkan& buffer_manager, const RendererImageManagerVulkan& image_manager, tz::Vec4 clear_colour);
+        void clear_rendering_commands();
         void record_and_run_scratch_commands(RendererBufferManagerVulkan& buffer_manager, RendererImageManagerVulkan& image_manager);
         void set_regeneration_function(std::function<void()> action);
+        void record_draw_list(const RendererDrawList& draws);
+        bool draws_match_cache(const RendererDrawList& draws) const;
         void render();
     private:
         std::size_t get_view_count() const;
         std::size_t num_static_inputs() const;
         std::size_t num_dynamic_inputs() const;
+        std::size_t num_static_draws() const;
+        std::size_t num_dynamic_draws() const;
+        RendererDrawList all_inputs_once() const;
 
         const vk::LogicalDevice* device;
         const vk::hardware::Device* physical_device;
@@ -169,6 +175,7 @@ namespace tz::gl
         vk::hardware::Queue graphics_present_queue;
         std::optional<vk::Buffer> draw_indirect_buffer;
         std::optional<vk::Buffer> draw_indirect_dynamic_buffer;
+        RendererDrawList draw_cache;
         vk::FrameAdmin frame_admin;
     };
 
@@ -184,6 +191,7 @@ namespace tz::gl
         virtual IResource* get_resource(ResourceHandle handle) final;
         
         virtual void render() final;
+        virtual void render(const RendererDrawList& draws) final;
     private:
         std::vector<std::unique_ptr<IRendererInput>> copy_inputs(const RendererBuilderVulkan builder);
         std::vector<IRendererInput*> get_inputs();

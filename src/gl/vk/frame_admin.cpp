@@ -34,7 +34,7 @@ namespace tz::gl::vk
         {
             this->images_in_flight.resize(swapchain.get_image_views().size(), nullptr);
         }
-        std::size_t& i = frame_counter;
+        std::size_t& i = this->frame_counter;
         this->in_flight_fences[i].wait_for();
 
         auto acquisition = swapchain.acquire_next_image_index(this->image_available_semaphores[i]);
@@ -103,7 +103,6 @@ namespace tz::gl::vk
     {
         return this->cur_image_index;
     }
-
 }
 
 #endif // TZ_VULKAN

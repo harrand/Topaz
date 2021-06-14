@@ -131,6 +131,8 @@ namespace tz
             return this->elements[index];
         }
 
+        bool operator<=>(const tz::BasicList<T, Allocator>& rhs) const = default;
+
         Iterator erase(Iterator position)
         {
             return this->elements.erase(position);

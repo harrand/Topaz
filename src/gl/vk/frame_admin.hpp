@@ -17,6 +17,7 @@ namespace tz::gl::vk
         void render_frame_headless(hardware::Queue queue, std::size_t headless_image_count, const CommandPool& command_pool, WaitStages wait_stages);
         void set_regeneration_function(tz::Action auto regeneration_function);
         std::size_t get_image_index() const;
+        bool wait_for(const CommandBuffer& pending_cmd_buf) const;
     private:        
         const LogicalDevice* device;
         std::size_t frame_depth;
