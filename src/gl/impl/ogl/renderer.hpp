@@ -58,11 +58,17 @@ namespace tz::gl
         virtual IResource* get_resource(ResourceHandle handle) final;
         
         virtual void render() final;
+        virtual void render(RendererDrawList draw_list) final;
     private:
+        void bind_draw_list(const RendererDrawList& list);
+        bool draws_match_cache(const RendererDrawList& list) const;
+        RendererDrawList all_inputs_once() const;
         std::vector<std::unique_ptr<IRendererInput>> copy_inputs(const RendererBuilderOGL& builder);
         std::vector<IRendererInput*> get_inputs();
         std::size_t num_static_inputs() const;
         std::size_t num_dynamic_inputs() const;
+        std::size_t num_static_draws() const;
+        std::size_t num_dynamic_draws() const;
 
         GLuint vao;
         GLuint vbo, ibo, vbo_dynamic, ibo_dynamic;
@@ -75,6 +81,7 @@ namespace tz::gl
         const Shader* shader;
         std::vector<std::unique_ptr<IRendererInput>> inputs;
         const IRendererOutput* output;
+        RendererDrawList draw_cache;
     };
 }
 

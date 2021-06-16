@@ -1,5 +1,6 @@
 #ifndef TOPAZ_GL_IMPL_COMMON_RENDERER_HPP
 #define TOPAZ_GL_IMPL_COMMON_RENDERER_HPP
+#include "core/handle.hpp"
 
 namespace tz::gl
 {

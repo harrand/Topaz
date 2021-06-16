@@ -352,29 +352,6 @@ namespace tz::gl
                     index_region.input.set_index_data(idx_mem + index_region.offset);
                 }
             }
-            /*
-            switch(this->input->data_access())
-            {
-                case RendererInputDataAccess::StaticFixed:
-                    this->vertex_buffer = vk::Buffer{vk::BufferType::Vertex, vk::BufferPurpose::TransferDestination, *this->device, vk::hardware::MemoryResidency::GPU, this->input->get_vertex_bytes().size_bytes()};
-                    this->index_buffer = vk::Buffer{vk::BufferType::Index, vk::BufferPurpose::TransferDestination, *this->device, vk::hardware::MemoryResidency::GPU, this->input->get_indices().size_bytes()};
-                break;
-                case RendererInputDataAccess::DynamicFixed:
-                    {
-                        auto& dynamic_input = static_cast<IRendererDynamicInput&>(*this->input);
-                        // Create buffers in host-visible memory (slow) and pass the mapped ptrs to the renderer input.
-                        // Note: This also copies over the initial vertex data to buffers. Nothing is done in scratch command buffers this time.
-                        this->vertex_buffer = vk::Buffer{vk::BufferType::Vertex, vk::BufferPurpose::NothingSpecial, *this->device, vk::hardware::MemoryResidency::CPUPersistent, this->input->get_vertex_bytes().size_bytes()};
-                        dynamic_input.set_vertex_data(static_cast<std::byte*>(this->vertex_buffer->map_memory()));
-                        this->index_buffer = vk::Buffer{vk::BufferType::Index, vk::BufferPurpose::NothingSpecial, *this->device, vk::hardware::MemoryResidency::CPUPersistent, this->input->get_indices().size_bytes()};
-                        dynamic_input.set_index_data(static_cast<unsigned int*>(this->index_buffer->map_memory()));
-                    }
-                break;
-                default:
-                    tz_error("Input data access unsupported (Vulkan)");
-                break;
-            }
-            */
         }
 
         this->buffer_resource_buffers.clear();
@@ -665,7 +642,7 @@ namespace tz::gl
     graphics_present_queue(this->device->get_hardware_queue()),
     draw_indirect_buffer{this->num_static_inputs() > 0 ? std::optional<vk::Buffer>{vk::Buffer{vk::BufferType::DrawIndirect, vk::BufferPurpose::TransferDestination, *this->device, vk::hardware::MemoryResidency::GPU, sizeof(DrawIndirectCommand) * this->num_static_inputs()}} : std::nullopt},
     draw_indirect_dynamic_buffer{this->num_dynamic_inputs() > 0 ? std::optional<vk::Buffer>{vk::Buffer{vk::BufferType::DrawIndirect, vk::BufferPurpose::TransferDestination, *this->device, vk::hardware::MemoryResidency::GPU, sizeof(DrawIndirectCommand) * this->num_dynamic_inputs()}} : std::nullopt},
-    frame_admin(*this->device, RendererVulkan::frames_in_flight)
+    frame_admin(*this->device, vk::is_headless() ? 1 : RendererVulkan::frames_in_flight)
     {
         // Now the command pool
         this->initialise_command_pool();
@@ -756,18 +733,27 @@ namespace tz::gl
             {
                 render.bind(this->resource_descriptor_pool.value()[i], pipeline_manager.get_layout());
             }
-            if(this->num_static_inputs() > 0)
+            if(this->draw_indirect_buffer.has_value())
             {
                 render.bind(*buffer_manager.get_vertex_buffer());
                 render.bind(*buffer_manager.get_index_buffer());
-                render.draw_indirect(this->draw_indirect_buffer.value(), this->num_static_inputs());
+                render.draw_indirect(this->draw_indirect_buffer.value(), this->num_static_draws());
             }
-            if(this->num_dynamic_inputs() > 0)
+            if(this->draw_indirect_dynamic_buffer.has_value() > 0)
             {
                 render.bind(*buffer_manager.get_dynamic_vertex_buffer());
                 render.bind(*buffer_manager.get_dynamic_index_buffer());
-                render.draw_indirect(this->draw_indirect_dynamic_buffer.value(), this->num_dynamic_inputs());
+                render.draw_indirect(this->draw_indirect_dynamic_buffer.value(), this->num_dynamic_draws());
             }
+        }
+    }
+
+    void RendererProcessorVulkan::clear_rendering_commands()
+    {
+        for(std::size_t i = 0; i < this->get_view_count(); i++)
+        {
+            this->frame_admin.wait_for(i);
+            this->command_pool[i].reset();
         }
     }
 
@@ -888,26 +874,7 @@ namespace tz::gl
             }
 
             // Part 3: Setup draw commands
-            if(this->draw_indirect_buffer.has_value())
-            {
-                {
-                    vk::CommandBufferRecording transfer_draw_commands = scratch_buf.record();
-                    transfer_draw_commands.buffer_copy_buffer(draw_staging.value(), this->draw_indirect_buffer.value(), sizeof(DrawIndirectCommand) * this->num_static_inputs());
-                }
-                copy_fence.signal();
-                do_scratch_operation(this->graphics_present_queue, copy_fence);
-                copy_fence.wait_for();
-            }
-            if(this->draw_indirect_dynamic_buffer.has_value())
-            {
-                {
-                    vk::CommandBufferRecording transfer_draw_commands_dyn = scratch_buf.record();
-                    transfer_draw_commands_dyn.buffer_copy_buffer(draw_staging_dynamic.value(), this->draw_indirect_dynamic_buffer.value(), sizeof(DrawIndirectCommand) * this->num_dynamic_inputs());
-                }
-                copy_fence.signal();
-                do_scratch_operation(this->graphics_present_queue, copy_fence);
-                copy_fence.wait_for();
-            }
+            this->record_draw_list(this->all_inputs_once());
         }
 
         tz_assert(buffer_manager.get_resource_buffers().size() == buffer_manager.get_buffer_resources().size(), "Resource buffer size != Buffer resource size");
@@ -964,7 +931,7 @@ namespace tz::gl
     {
         if(vk::is_headless())
         {
-            this->frame_admin.render_frame_headless(this->graphics_present_queue, 1, this->command_pool, vk::WaitStages{vk::WaitStage::ColourAttachmentOutput});
+            this->frame_admin.render_frame_headless(this->graphics_present_queue, this->command_pool, vk::WaitStages{vk::WaitStage::ColourAttachmentOutput});
         }
         else
         {
@@ -1003,6 +970,153 @@ namespace tz::gl
         });
         return total;
     }
+
+    std::size_t RendererProcessorVulkan::num_static_draws() const
+    {
+        std::size_t total = std::accumulate(this->draw_cache.begin(), this->draw_cache.end(), 0, [this](std::size_t accumulator, const RendererInputHandle& handle)
+        {
+            std::size_t handle_val = static_cast<std::size_t>(static_cast<tz::HandleValue>(handle));
+            return accumulator + (this->inputs[handle_val]->data_access() == RendererInputDataAccess::StaticFixed ? 1 : 0);
+        });
+        return total;
+    }
+    
+    std::size_t RendererProcessorVulkan::num_dynamic_draws() const
+    {
+        std::size_t total = std::accumulate(this->draw_cache.begin(), this->draw_cache.end(), 0, [this](std::size_t accumulator, const RendererInputHandle& handle)
+        {
+            std::size_t handle_val = static_cast<std::size_t>(static_cast<tz::HandleValue>(handle));
+            return accumulator + (this->inputs[handle_val]->data_access() == RendererInputDataAccess::DynamicFixed ? 1 : 0);
+        });
+        return total;
+    }
+
+    void RendererProcessorVulkan::record_draw_list(const RendererDrawList& draws)
+    {
+        if(this->draws_match_cache(draws))
+        {
+            return;
+        }
+        // Firstly, retrieve an internal draw command for every input.
+        std::unordered_map<const IRendererInput*, DrawIndirectCommand> input_draws;
+        std::unordered_map<const IRendererInput*, DrawIndirectCommand> dynamic_input_draws;
+
+        {
+            std::size_t static_vtx_count = 0, static_idx_count = 0;
+            std::size_t dynamic_vtx_count = 0, dynamic_idx_count = 0;
+            for(const IRendererInput* input : this->inputs)
+            {
+                DrawIndirectCommand cmd;
+                cmd.indexCount = input->index_count();
+                cmd.instanceCount = 1;
+                cmd.firstInstance = 0;
+                switch(input->data_access())
+                {
+                    case RendererInputDataAccess::StaticFixed:
+                        cmd.vertexOffset = static_vtx_count;
+                        cmd.firstIndex = static_idx_count;
+                        static_vtx_count += input->vertex_count();
+                        static_idx_count += input->index_count();
+                        input_draws[input] = cmd;
+                    break;
+                    case RendererInputDataAccess::DynamicFixed:
+                        cmd.vertexOffset = dynamic_vtx_count;
+                        cmd.firstIndex = dynamic_idx_count;
+                        dynamic_vtx_count += input->vertex_count();
+                        dynamic_idx_count += input->index_count();
+                        dynamic_input_draws[input] = cmd;
+                    break;
+                    default:
+                        tz_error("Unknown renderer input data access (Vulkan)");
+                    break;
+                }
+            }
+        }
+
+        // Secondly, convert the draw list to a list of indirect draw commands.
+        std::vector<DrawIndirectCommand> internal_draws;
+        std::vector<DrawIndirectCommand> internal_draws_dynamic;
+        internal_draws.reserve(draws.length());
+        for(RendererInputHandle handle : draws)
+        {
+            std::size_t handle_val = static_cast<std::size_t>(static_cast<tz::HandleValue>(handle));
+            const IRendererInput* input = this->inputs[handle_val];
+            switch(input->data_access())
+            {
+                case RendererInputDataAccess::StaticFixed:
+                    internal_draws.push_back(input_draws[input]);
+                break;
+                case RendererInputDataAccess::DynamicFixed:
+                    internal_draws_dynamic.push_back(dynamic_input_draws[input]);
+                break;
+                default:
+                        tz_error("Unknown renderer input data access (Vulkan)");
+                break;
+            }
+        }
+        tz_assert(internal_draws.size() + internal_draws_dynamic.size() == draws.length(), "Internal draw total didn't match number of inputs in draw list");
+
+        vk::Fence copy_fence{*this->device};
+        copy_fence.signal();
+        vk::CommandBuffer& scratch_buf = this->command_pool[this->get_view_count()];
+        vk::Submit do_scratch_operation{vk::CommandBuffers{scratch_buf}, vk::SemaphoreRefs{}, vk::WaitStages{}, vk::SemaphoreRefs{}};
+
+        if(internal_draws.empty())
+        {
+            this->draw_indirect_buffer = std::nullopt;
+        }
+        else
+        {
+            std::size_t draw_size_bytes = internal_draws.size() * sizeof(DrawIndirectCommand);
+
+            this->draw_indirect_buffer = vk::Buffer{vk::BufferType::DrawIndirect, vk::BufferPurpose::TransferDestination, *this->device, vk::hardware::MemoryResidency::GPU, draw_size_bytes};
+            vk::Buffer draw_staging{vk::BufferType::Staging, vk::BufferPurpose::TransferSource, *this->device, vk::hardware::MemoryResidency::CPU, draw_size_bytes};
+            draw_staging.write(internal_draws.data(), draw_size_bytes);
+            {
+                vk::CommandBufferRecording transfer_draw_commands = scratch_buf.record();
+                transfer_draw_commands.buffer_copy_buffer(draw_staging, this->draw_indirect_buffer.value(), draw_size_bytes);
+            }
+            copy_fence.signal();
+            do_scratch_operation(this->graphics_present_queue, copy_fence);
+            copy_fence.wait_for();
+        }
+
+        if(internal_draws_dynamic.empty())
+        {
+            this->draw_indirect_dynamic_buffer = std::nullopt;
+        }
+        else
+        {
+            std::size_t draw_size_bytes = internal_draws_dynamic.size() * sizeof(DrawIndirectCommand);
+
+            this->draw_indirect_dynamic_buffer = vk::Buffer{vk::BufferType::DrawIndirect, vk::BufferPurpose::TransferDestination, *this->device, vk::hardware::MemoryResidency::GPU, draw_size_bytes};
+            vk::Buffer draw_staging{vk::BufferType::Staging, vk::BufferPurpose::TransferSource, *this->device, vk::hardware::MemoryResidency::CPU, draw_size_bytes};
+            draw_staging.write(internal_draws_dynamic.data(), draw_size_bytes);
+            {
+                vk::CommandBufferRecording transfer_draw_commands = scratch_buf.record();
+                transfer_draw_commands.buffer_copy_buffer(draw_staging, this->draw_indirect_dynamic_buffer.value(), draw_size_bytes);
+            }
+            copy_fence.signal();
+            do_scratch_operation(this->graphics_present_queue, copy_fence);
+            copy_fence.wait_for();
+        }
+        this->draw_cache = draws;
+    }
+
+    bool RendererProcessorVulkan::draws_match_cache(const RendererDrawList& draws) const
+    {
+        return this->draw_cache == draws;
+    }
+
+    RendererDrawList RendererProcessorVulkan::all_inputs_once() const
+    {
+        RendererDrawList list;
+        for(std::size_t i = 0; i < this->inputs.size(); i++)
+        {
+            list.add(RendererInputHandle{static_cast<tz::HandleValue>(i)});
+        }
+        return list;
+    }   
 
     RendererVulkan::RendererVulkan(RendererBuilderVulkan builder, RendererBuilderDeviceInfoVulkan device_info):
     renderer_inputs(this->copy_inputs(builder)),
@@ -1082,6 +1196,17 @@ namespace tz::gl
 
     void RendererVulkan::render()
     {
+        this->processor.render();
+    }
+
+    void RendererVulkan::render(RendererDrawList draws)
+    {
+        if(!this->processor.draws_match_cache(draws))
+        {
+            this->processor.clear_rendering_commands();
+            this->processor.record_draw_list(draws);
+            this->processor.record_rendering_commands(this->pipeline_manager, this->buffer_manager, this->image_manager, this->clear_colour);
+        }
         this->processor.render();
     }
 

@@ -98,8 +98,8 @@ int main()
             tz::perspective(1.27f, get_aspect_ratio(), 0.1f, 1000.0f)
         }})};
 
-        renderer_builder.add_input(mesh_input);
-        renderer_builder.add_input(mesh_input2);
+        tz::gl::RendererInputHandle handle1 = renderer_builder.add_input(mesh_input);
+        tz::gl::RendererInputHandle handle2 = renderer_builder.add_input(mesh_input2);
         tz::gl::RendererInputHandle handle3 = renderer_builder.add_input(mesh_input3);
         renderer_builder.set_output(tz::window());
         tz::gl::ResourceHandle buf_handle = renderer_builder.add_resource(buf_res);
@@ -108,6 +108,9 @@ int main()
         renderer_builder.set_shader(shader);
         tz::gl::Renderer renderer = device.create_renderer(renderer_builder);
         renderer.set_clear_colour({0.1f, 0.2f, 0.4f, 1.0f});
+
+        tz::gl::RendererDrawList draws{handle1, handle2, handle3};
+
         while(!tz::window().is_close_requested())
         {
             static float counter = 0.0f;
@@ -135,7 +138,7 @@ int main()
             }
 
             tz::window().update();
-            renderer.render();
+            renderer.render(draws);
         }
     }
     tz::terminate();

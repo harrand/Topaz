@@ -33,6 +33,7 @@ namespace tz
         {
             return this->value == static_cast<HandleValue>(0);
         }
+        bool operator==(const Handle<T>& rhs) const = default;
     private:
         HandleValue value;
     };

@@ -168,13 +168,6 @@ namespace tz::gl
             std::vector<std::byte> total_vertices_dynamic;
             std::vector<unsigned int> total_indices_dynamic;
             std::vector<DynamicInputMapRegion> vertex_regions, index_regions;
-            std::vector<DrawIndirectCommand> static_draws;
-            std::vector<DrawIndirectCommand> dynamic_draws;
-
-            unsigned int index_count_so_far = 0;
-            unsigned int dyn_index_count_so_far = 0;
-            unsigned int vertex_count_so_far = 0;
-            unsigned int dyn_vertex_count_so_far = 0;
 
             bool any_static_geometry = false;
             bool any_dynamic_geometry = false;
@@ -190,29 +183,15 @@ namespace tz::gl
                 this->format = input.get_format();
                 std::span<const std::byte> input_vertices = input.get_vertex_bytes();
                 std::span<const unsigned int> input_indices = input.get_indices();
-
-
-                DrawIndirectCommand cur_cmd;
-                cur_cmd.count = input.get_indices().size();
-                cur_cmd.instanceCount = 1;
-                cur_cmd.baseInstance = 0;
                 switch(input.data_access())
                 {
                     case RendererInputDataAccess::StaticFixed:
-                        cur_cmd.firstIndex = index_count_so_far;
-                        cur_cmd.baseVertex = vertex_count_so_far;
                         std::copy(input_vertices.begin(), input_vertices.end(), std::back_inserter(total_vertices));
                         std::copy(input_indices.begin(), input_indices.end(), std::back_inserter(total_indices));
                         any_static_geometry = true;
-
-                        index_count_so_far += input.index_count();
-                        vertex_count_so_far += input.vertex_count();
-                        static_draws.push_back(cur_cmd);
                     break;
                     case RendererInputDataAccess::DynamicFixed:
                     {
-                        cur_cmd.firstIndex = dyn_index_count_so_far;
-                        cur_cmd.baseVertex = dyn_vertex_count_so_far;
                         std::size_t vertex_region_offset = total_vertices_dynamic.size();
                         std::size_t vertex_region_length = input_vertices.size();
                         std::copy(input_vertices.begin(), input_vertices.end(), std::back_inserter(total_vertices_dynamic));
@@ -223,10 +202,6 @@ namespace tz::gl
 
                         vertex_regions.push_back({.input = static_cast<IRendererDynamicInput&>(input), .offset = vertex_region_offset, .length = vertex_region_length});
                         index_regions.push_back({.input = static_cast<IRendererDynamicInput&>(input), .offset = index_region_offset, .length = index_region_length});
-
-                        dyn_index_count_so_far += input.index_count();
-                        dyn_vertex_count_so_far += input.vertex_count();
-                        dynamic_draws.push_back(cur_cmd);
                     }
                     break;
                     default:
@@ -242,23 +217,19 @@ namespace tz::gl
                 glCreateBuffers(3, buffers);
                 this->vbo = buffers[0];
                 this->ibo = buffers[1];
-                this->indirect_buffer = buffers[2];
 
                 glNamedBufferData(this->vbo, total_vertices.size(), total_vertices.data(), GL_STATIC_DRAW);
                 glNamedBufferData(this->ibo, total_indices.size() * sizeof(unsigned int), total_indices.data(), GL_STATIC_DRAW);
-                glNamedBufferData(this->indirect_buffer, static_draws.size() * sizeof(DrawIndirectCommand), static_draws.data(), GL_STATIC_DRAW);
             }
             if(any_dynamic_geometry)
             {
                 GLuint buffers[3];
-                glCreateBuffers(3, buffers);
+                glCreateBuffers(2, buffers);
                 this->vbo_dynamic = buffers[0];
                 this->ibo_dynamic = buffers[1];
-                this->indirect_buffer_dynamic = buffers[2];
 
                 glNamedBufferStorage(this->vbo_dynamic, total_vertices_dynamic.size(), total_vertices_dynamic.data(), persistent_mapped_buffer_flags);
                 glNamedBufferStorage(this->ibo_dynamic, total_indices_dynamic.size() * sizeof(unsigned int), total_indices_dynamic.data(), persistent_mapped_buffer_flags);
-                glNamedBufferData(this->indirect_buffer_dynamic, dynamic_draws.size() * sizeof(DrawIndirectCommand), dynamic_draws.data(), GL_STATIC_DRAW);
 
                 void* vtx_data = glMapNamedBufferRange(this->vbo_dynamic, 0, total_vertices_dynamic.size(), persistent_mapped_buffer_flags);
                 void* idx_data = glMapNamedBufferRange(this->ibo_dynamic, 0, total_indices_dynamic.size(), persistent_mapped_buffer_flags);
@@ -421,6 +392,8 @@ namespace tz::gl
             glTextureSubImage2D(tex, 0, 0, 0, tex_w, tex_h, format, type, texture_resource->get_resource_bytes().data());
         }
 
+        this->bind_draw_list(this->all_inputs_once());
+
         tz_report("RendererOGL (%zu input%s, %zu resource%s)", this->inputs.size(), this->inputs.size() == 1 ? "" : "s", this->resources.size(), this->resources.size() == 1 ? "" : "s");
     }
 
@@ -542,22 +515,147 @@ namespace tz::gl
             glProgramUniform1i(this->shader->ogl_get_program_handle(), tex_location, tex_location);
         }
 
-        if(this->num_static_inputs() > 0)
+        if(this->indirect_buffer != 0)
         {
+            tz_assert(this->indirect_buffer != 0, "Had static draws but no indirect buffer");
             glVertexArrayVertexBuffer(this->vao, 0, this->vbo, 0, static_cast<GLsizei>(this->format.binding_size));
             glVertexArrayElementBuffer(this->vao, this->ibo);
             glBindBuffer(GL_DRAW_INDIRECT_BUFFER, this->indirect_buffer);
-            glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, nullptr, this->num_static_inputs(), sizeof(DrawIndirectCommand));
+            glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, nullptr, this->num_static_draws(), sizeof(DrawIndirectCommand));
         }
 
-        if(this->num_dynamic_inputs() > 0)
+        if(this->indirect_buffer_dynamic != 0)
         {
+            tz_assert(this->indirect_buffer_dynamic != 0, "Had static draws but no indirect buffer");
             glVertexArrayVertexBuffer(this->vao, 0, this->vbo_dynamic, 0, static_cast<GLsizei>(this->format.binding_size));
             glVertexArrayElementBuffer(this->vao, this->ibo_dynamic);
             glBindBuffer(GL_DRAW_INDIRECT_BUFFER, this->indirect_buffer_dynamic);
-            glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, nullptr, this->num_dynamic_inputs(), sizeof(DrawIndirectCommand));
+            glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, nullptr, this->num_dynamic_draws(), sizeof(DrawIndirectCommand));
         }
-        //glDrawElements(GL_TRIANGLES, this->index_count, GL_UNSIGNED_INT, nullptr);
+    }
+
+    void RendererOGL::render(RendererDrawList draw_list)
+    {
+        if(!this->draws_match_cache(draw_list))
+        {
+            this->bind_draw_list(draw_list);
+        }
+        this->render();
+    }
+
+    void RendererOGL::bind_draw_list(const RendererDrawList& draws)
+    {
+        if(this->draws_match_cache(draws))
+        {
+            return;
+        }
+        // Firstly, retrieve an internal draw command for every input.
+        std::unordered_map<const IRendererInput*, DrawIndirectCommand> input_draws;
+        std::unordered_map<const IRendererInput*, DrawIndirectCommand> dynamic_input_draws;
+
+        {
+            std::size_t static_vtx_count = 0, static_idx_count = 0;
+            std::size_t dynamic_vtx_count = 0, dynamic_idx_count = 0;
+            for(const auto& input_ptr : this->inputs)
+            {
+                const IRendererInput* input = input_ptr.get();
+                DrawIndirectCommand cmd;
+                cmd.count = input->index_count();
+                cmd.instanceCount = 1;
+                cmd.baseInstance = 0;
+                switch(input->data_access())
+                {
+                    case RendererInputDataAccess::StaticFixed:
+                        cmd.baseVertex = static_vtx_count;
+                        cmd.firstIndex = static_idx_count;
+                        static_vtx_count += input->vertex_count();
+                        static_idx_count += input->index_count();
+                        input_draws[input] = cmd;
+                    break;
+                    case RendererInputDataAccess::DynamicFixed:
+                        cmd.baseVertex = dynamic_vtx_count;
+                        cmd.firstIndex = dynamic_idx_count;
+                        dynamic_vtx_count += input->vertex_count();
+                        dynamic_idx_count += input->index_count();
+                        dynamic_input_draws[input] = cmd;
+                    break;
+                    default:
+                        tz_error("Unknown renderer input data access (OpenGL)");
+                    break;
+                }
+            }
+        }
+
+        // Secondly, convert the draw list to a list of indirect draw commands.
+        std::vector<DrawIndirectCommand> internal_draws;
+        std::vector<DrawIndirectCommand> internal_draws_dynamic;
+        internal_draws.reserve(draws.length());
+        for(RendererInputHandle handle : draws)
+        {
+            std::size_t handle_val = static_cast<std::size_t>(static_cast<tz::HandleValue>(handle));
+            const IRendererInput* input = this->inputs[handle_val].get();
+            switch(input->data_access())
+            {
+                case RendererInputDataAccess::StaticFixed:
+                    internal_draws.push_back(input_draws[input]);
+                break;
+                case RendererInputDataAccess::DynamicFixed:
+                    internal_draws_dynamic.push_back(dynamic_input_draws[input]);
+                break;
+                default:
+                        tz_error("Unknown renderer input data access (OpenGL)");
+                break;
+            }
+        }
+        tz_assert(internal_draws.size() + internal_draws_dynamic.size() == draws.length(), "Internal draw total didn't match number of inputs in draw list");
+
+        if(internal_draws.empty())
+        {
+            glDeleteBuffers(1, &this->indirect_buffer);
+            this->indirect_buffer = 0;
+        }
+        else
+        {
+            if(this->indirect_buffer == 0)
+            {
+                glCreateBuffers(1, &this->indirect_buffer);
+            }
+
+            std::size_t draw_size_bytes = internal_draws.size() * sizeof(DrawIndirectCommand);
+            glNamedBufferData(this->indirect_buffer, draw_size_bytes, internal_draws.data(), GL_STATIC_DRAW);
+        }
+
+        if(internal_draws_dynamic.empty())
+        {
+            glDeleteBuffers(1, &this->indirect_buffer_dynamic);
+            this->indirect_buffer_dynamic = 0;
+        }
+        else
+        {
+            if(this->indirect_buffer_dynamic == 0)
+            {
+                glCreateBuffers(1, &this->indirect_buffer_dynamic);
+            }
+
+            std::size_t draw_size_bytes = internal_draws_dynamic.size() * sizeof(DrawIndirectCommand);
+            glNamedBufferData(this->indirect_buffer_dynamic, draw_size_bytes, internal_draws_dynamic.data(), GL_STATIC_DRAW);
+        }
+        this->draw_cache = draws;
+    }
+
+    bool RendererOGL::draws_match_cache(const RendererDrawList& list) const
+    {
+        return this->draw_cache == list;
+    }
+
+    RendererDrawList RendererOGL::all_inputs_once() const
+    {
+        RendererDrawList list;
+        for(std::size_t i = 0; i < this->inputs.size(); i++)
+        {
+            list.add(RendererInputHandle{static_cast<tz::HandleValue>(i)});
+        }
+        return list;
     }
 
     std::vector<std::unique_ptr<IRendererInput>> RendererOGL::copy_inputs(const RendererBuilderOGL& builder)
@@ -597,6 +695,26 @@ namespace tz::gl
             return accumulator + (input->data_access() == RendererInputDataAccess::DynamicFixed ? 1 : 0);
         });
 
+        return total;
+    }
+
+    std::size_t RendererOGL::num_static_draws() const
+    {
+        std::size_t total = std::accumulate(this->draw_cache.begin(), this->draw_cache.end(), 0, [this](std::size_t accumulator, const RendererInputHandle& handle)
+        {
+            std::size_t handle_val = static_cast<std::size_t>(static_cast<tz::HandleValue>(handle));
+            return accumulator + (this->inputs[handle_val]->data_access() == RendererInputDataAccess::StaticFixed ? 1 : 0);
+        });
+        return total;
+    }
+    
+    std::size_t RendererOGL::num_dynamic_draws() const
+    {
+        std::size_t total = std::accumulate(this->draw_cache.begin(), this->draw_cache.end(), 0, [this](std::size_t accumulator, const RendererInputHandle& handle)
+        {
+            std::size_t handle_val = static_cast<std::size_t>(static_cast<tz::HandleValue>(handle));
+            return accumulator + (this->inputs[handle_val]->data_access() == RendererInputDataAccess::DynamicFixed ? 1 : 0);
+        });
         return total;
     }
 }

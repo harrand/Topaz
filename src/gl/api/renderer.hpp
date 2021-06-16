@@ -100,6 +100,16 @@ namespace tz::gl
     using RendererInputHandle = tz::Handle<IRendererInput>;
 
     /**
+     * @details RendererDrawLists contain a permutation of renderer inputs which will be drawn in a given render invocation. Typically, you can use a draw list to represent objects in a 3D scene.
+     * 
+     * Let's say for example you're building a fantasy game. You would like to draw three goblins within the world. The goblin mesh is stored within a @ref IRenderer as an input, with the input handle `x`.
+     * 
+     * You will need to draw the same input `x` three times. Your draw list may look like: `{x, x, x}`. Note that this will only draw the goblin mesh three times, and none of the other inputs. The draw list should correspond exactly with every object you would like to draw for the given frame. Do not neglect the concept of draw lists as the default draw-list is rarely useful. See @ref IRenderer::render() for information about default draw lists.
+     * 
+     */
+    using RendererDrawList = tz::BasicList<tz::gl::RendererInputHandle>;
+
+    /**
      * @brief Identical to @ref IRendererInput, but `IRendererInputCopyable<T>::unique_clone()` need not be implemented.
      * @pre Derived must be copy-constructible. Otherwise, the program is ill-formed.
      * 
@@ -277,8 +287,17 @@ namespace tz::gl
 
         /**
          * @brief Proceed through the provided render-pass using any inputs and resources.
+         * 
+         * @note This function does not take in a draw list. This means that it will use the most-recently-provided draw list.
+         * If no draw list was ever provided, then a draw list equivalent of once-per-input will be used.
          */
         virtual void render() = 0;
+        /**
+         * @brief Proceed through the provided render-pass, drawing a list of the inputs.
+         * 
+         * @param draws List of the input handles to draw in-order. It is valid for the same input to be drawn multiple times. This will also be used for each subsequent render invocation until a new draw list is supplied.
+         */
+        virtual void render(RendererDrawList draws) = 0;
     };
     /**
      * @}
