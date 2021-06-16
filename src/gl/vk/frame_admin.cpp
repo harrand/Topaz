@@ -7,6 +7,7 @@ namespace tz::gl::vk
     FrameAdmin::FrameAdmin(const LogicalDevice& device, std::size_t frame_depth):
     device(&device),
     frame_depth(frame_depth),
+    image_index_at_frame(),
     frame_counter(0),
     cur_image_index(0),
     image_available_semaphores(),
@@ -15,6 +16,7 @@ namespace tz::gl::vk
     images_in_flight(),
     regenerate_function(nullptr)
     {
+        this->image_index_at_frame.resize(this->frame_depth, std::numeric_limits<std::size_t>::max());
         for(std::size_t i = 0; i < this->frame_depth; i++)
         {
             this->image_available_semaphores.emplace_back(device);
@@ -65,6 +67,7 @@ namespace tz::gl::vk
         }
 
         this->images_in_flight[cur_image_index] = &this->in_flight_fences[i];
+        this->image_index_at_frame[cur_image_index] = i;
         vk::Submit submit{CommandBuffers{command_pool[cur_image_index]}, SemaphoreRefs{this->image_available_semaphores[i]}, wait_stages, SemaphoreRefs{this->render_finish_semaphores[i]}};
         this->in_flight_fences[i].signal();
         submit(queue, this->in_flight_fences[i]);
@@ -74,17 +77,15 @@ namespace tz::gl::vk
         i = (i + 1) % this->frame_depth;
     }
 
-    void FrameAdmin::render_frame_headless(hardware::Queue queue, std::size_t headless_image_count, const CommandPool& command_pool, WaitStages wait_stages)
+    void FrameAdmin::render_frame_headless(hardware::Queue queue, const CommandPool& command_pool, WaitStages wait_stages)
     {
-        tz_assert(headless_image_count == 1, "Multiple headless images not yet supported: See cur_image_index");
         if(this->images_in_flight.empty())
         {
-            this->images_in_flight.resize(headless_image_count, nullptr);
+            this->images_in_flight.resize(this->frame_depth, nullptr);
         }
+        this->cur_image_index = frame_counter;
         std::size_t& i = frame_counter;
-        this->in_flight_fences[i].wait_for();
 
-        this->cur_image_index = 0;
         // If previous frames at this counter still have work going, we need to wait on it.
         if(this->images_in_flight[cur_image_index] != nullptr)
         {
@@ -103,6 +104,18 @@ namespace tz::gl::vk
     {
         return this->cur_image_index;
     }
+
+    void FrameAdmin::wait_for(std::size_t cmd_buf_id) const
+    {
+        std::size_t image_index = this->image_index_at_frame[cmd_buf_id];
+        if(image_index == std::numeric_limits<std::size_t>::max())
+        {
+            // Never rendered for this image index, therefore the command buffer must be free.
+            return;
+        }
+        this->in_flight_fences[image_index].wait_for();
+    }
+
 }
 
 #endif // TZ_VULKAN

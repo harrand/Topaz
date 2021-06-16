@@ -642,7 +642,7 @@ namespace tz::gl
     graphics_present_queue(this->device->get_hardware_queue()),
     draw_indirect_buffer{this->num_static_inputs() > 0 ? std::optional<vk::Buffer>{vk::Buffer{vk::BufferType::DrawIndirect, vk::BufferPurpose::TransferDestination, *this->device, vk::hardware::MemoryResidency::GPU, sizeof(DrawIndirectCommand) * this->num_static_inputs()}} : std::nullopt},
     draw_indirect_dynamic_buffer{this->num_dynamic_inputs() > 0 ? std::optional<vk::Buffer>{vk::Buffer{vk::BufferType::DrawIndirect, vk::BufferPurpose::TransferDestination, *this->device, vk::hardware::MemoryResidency::GPU, sizeof(DrawIndirectCommand) * this->num_dynamic_inputs()}} : std::nullopt},
-    frame_admin(*this->device, RendererVulkan::frames_in_flight)
+    frame_admin(*this->device, vk::is_headless() ? 1 : RendererVulkan::frames_in_flight)
     {
         // Now the command pool
         this->initialise_command_pool();
@@ -750,9 +750,9 @@ namespace tz::gl
 
     void RendererProcessorVulkan::clear_rendering_commands()
     {
-        this->graphics_present_queue.block_until_idle();
         for(std::size_t i = 0; i < this->get_view_count(); i++)
         {
+            this->frame_admin.wait_for(i);
             this->command_pool[i].reset();
         }
     }
@@ -931,7 +931,7 @@ namespace tz::gl
     {
         if(vk::is_headless())
         {
-            this->frame_admin.render_frame_headless(this->graphics_present_queue, 1, this->command_pool, vk::WaitStages{vk::WaitStage::ColourAttachmentOutput});
+            this->frame_admin.render_frame_headless(this->graphics_present_queue, this->command_pool, vk::WaitStages{vk::WaitStage::ColourAttachmentOutput});
         }
         else
         {

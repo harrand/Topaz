@@ -43,7 +43,8 @@ int main()
         tz::gl::Renderer renderer = device.create_renderer(renderer_builder);
         renderer.set_clear_colour({0.1f, 0.2f, 0.4f, 1.0f});
 
-        // Just render a single frame
+        // Just render 64 frames.
+        for(std::size_t i = 0; i < 64; i++)
         {
             renderer.render();
         }
