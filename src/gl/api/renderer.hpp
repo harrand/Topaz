@@ -297,7 +297,7 @@ namespace tz::gl
          * 
          * @param draws List of the input handles to draw in-order. It is valid for the same input to be drawn multiple times. This will also be used for each subsequent render invocation until a new draw list is supplied.
          */
-        virtual void render(const RendererDrawList& draws) = 0;
+        virtual void render(RendererDrawList draws) = 0;
     };
     /**
      * @}

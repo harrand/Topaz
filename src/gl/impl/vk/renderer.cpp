@@ -1199,7 +1199,7 @@ namespace tz::gl
         this->processor.render();
     }
 
-    void RendererVulkan::render(const RendererDrawList& draws)
+    void RendererVulkan::render(RendererDrawList draws)
     {
         if(!this->processor.draws_match_cache(draws))
         {

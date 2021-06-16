@@ -109,7 +109,7 @@ int main()
         tz::gl::Renderer renderer = device.create_renderer(renderer_builder);
         renderer.set_clear_colour({0.1f, 0.2f, 0.4f, 1.0f});
 
-        tz::gl::RendererDrawList draws{handle2, handle3};
+        tz::gl::RendererDrawList draws{handle1, handle2, handle3};
 
         while(!tz::window().is_close_requested())
         {

@@ -191,7 +191,7 @@ namespace tz::gl
         virtual IResource* get_resource(ResourceHandle handle) final;
         
         virtual void render() final;
-        virtual void render(const RendererDrawList& draws) final;
+        virtual void render(RendererDrawList draws) final;
     private:
         std::vector<std::unique_ptr<IRendererInput>> copy_inputs(const RendererBuilderVulkan builder);
         std::vector<IRendererInput*> get_inputs();
