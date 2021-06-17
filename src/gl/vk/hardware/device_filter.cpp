@@ -1,5 +1,6 @@
 #if TZ_VULKAN
 #include "gl/vk/hardware/device_filter.hpp"
+#include <string>
 
 namespace tz::gl::vk::hardware
 {

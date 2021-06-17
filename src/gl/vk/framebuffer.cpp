@@ -1,6 +1,7 @@
 #if TZ_VULKAN
 #include "gl/vk/framebuffer.hpp"
 #include "core/assert.hpp"
+#include <array>
 
 namespace tz::gl::vk
 {
