@@ -16,6 +16,8 @@ jobs:
   msvc-vulkan-windows:
       # The type of runner that the job will run on
       runs-on: windows-latest
+      env:
+        VK_SDK_PATH: 'C:/VulkanSDK/1.2.176.1'
       # Steps represent a sequence of tasks that will be executed as part of the job
       steps:
         - name: Setup Vulkan
@@ -26,10 +28,6 @@ jobs:
 
         # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
         - uses: actions/checkout@v2
-
-        - name: Setup Vulkan Env Vars
-          run: |
-            echo "VK_SDK_PATH=C:/VulkanSDK/1.2.176.1" >> $GITHUB_ENV
 
         - name: 'Run all non-graphical tests (msvc vulkan-debug)'
           uses: lukka/run-cmake@v3
