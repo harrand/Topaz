@@ -27,6 +27,11 @@ jobs:
         # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
         - uses: actions/checkout@v2
 
+        - name: Setup Vulkan Env Vars
+          run: |
+              $Env:VULKAN_SDK = "C:/VulkanSDK/1.2.176.1"
+              $Env:Path += ";C:/VulkanSDK/1.2.176.1/Bin"
+
         - name: 'Run all non-graphical tests (msvc vulkan-debug)'
           uses: lukka/run-cmake@v3
           with:
@@ -36,6 +41,3 @@ jobs:
             buildWithCMake: true
             buildWithCMakeArgs: "--target tztest_nographics --parallel 4"
             buildDirectory: "${{ github.workspace }}/../../_temp/build/debug"
-          run: |
-            $Env:VULKAN_SDK = "C:/VulkanSDK/1.2.176.1"
-            $Env:Path += ";C:/VulkanSDK/1.2.176.1/Bin"
