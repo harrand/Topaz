@@ -37,5 +37,5 @@ jobs:
             buildWithCMakeArgs: "--target tztest_nographics --parallel 4"
             buildDirectory: "${{ github.workspace }}/../../_temp/build/debug"
           run: |
-          $Env:VULKAN_SDK = "C:/VulkanSDK/1.2.176.1"
-          $Env:Path += ";C:/VulkanSDK/1.2.176.1/Bin"
+            $Env:VULKAN_SDK = "C:/VulkanSDK/1.2.176.1"
+            $Env:Path += ";C:/VulkanSDK/1.2.176.1/Bin"
