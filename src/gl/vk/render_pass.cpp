@@ -2,6 +2,7 @@
 #include "gl/vk/render_pass.hpp"
 #include "gl/vk/framebuffer.hpp"
 #include "core/assert.hpp"
+#include <array>
 
 namespace tz::gl::vk
 {
