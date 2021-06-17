@@ -1,0 +1,41 @@
+# This is a basic workflow to help you get started with Actions
+
+name: "TZ Tests (OpenGL MSVC Debug)"
+
+# Controls when the action will run. 
+on:
+  # Triggers the workflow on push or pull request events but only for the master branch
+  push:
+    branches: [ master ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  msvc-vulkan-windows:
+      # The type of runner that the job will run on
+      runs-on: windows-latest
+      # Steps represent a sequence of tasks that will be executed as part of the job
+      steps:
+        - name: Setup Vulkan
+          run: |
+              Invoke-WebRequest -Uri "https://sdk.lunarg.com/sdk/download/1.2.176.1/windows/VulkanSDK-1.2.176.1-Installer.exe" -OutFile VulkanSDK.exe
+              $installer = Start-Process -FilePath VulkanSDK.exe -Wait -PassThru -ArgumentList @("/S");
+              $installer.WaitForExit();
+
+        # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+        - uses: actions/checkout@v2
+
+        - name: 'Run all non-graphical tests (msvc vulkan-debug)'
+          uses: lukka/run-cmake@v3
+          with:
+            cmakeListsOrSettingsJson: "CMakeListsTxtAdvanced"
+            cmakeGenerator: UnixMakefiles
+            cmakeAppendedArgs: "-B \"${{ github.workspace }}/../../_temp/build/debug\" -DTOPAZ_DEBUG=1 -DTOPAZ_VULKAN=1 -DTOPAZ_OGL=0 -DCMAKE_CXX_COMPILER=g++-10"
+            buildWithCMake: true
+            buildWithCMakeArgs: "--target tztest_nographics --parallel 4"
+            buildDirectory: "${{ github.workspace }}/../../_temp/build/debug"
+          run: |
+          $Env:VULKAN_SDK = "C:/VulkanSDK/1.2.176.1"
+          $Env:Path += ";C:/VulkanSDK/1.2.176.1/Bin"
