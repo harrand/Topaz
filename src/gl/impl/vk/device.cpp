@@ -173,7 +173,11 @@ namespace tz::gl
     DeviceVulkan::DeviceVulkan(DeviceBuilderVulkan builder):
     DeviceFunctionalityVulkan()
     {
-        vk::ExtensionList extensions{"VK_KHR_swapchain", "VK_KHR_maintenance1"};
+        vk::ExtensionList extensions{"VK_KHR_maintenance1"};
+        if(!vk::is_headless())
+        {
+            extensions.add("VK_KHR_swapchain");
+        }
         vk::hardware::DeviceList all_devices = vk::hardware::get_all_devices();
         // Ideally we want a queue which supports all 3 of graphics, transfer and present.
         vk::hardware::QueueFamilyTypeField type_requirements{{vk::hardware::QueueFamilyType::Graphics, vk::hardware::QueueFamilyType::Transfer}};

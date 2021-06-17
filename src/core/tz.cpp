@@ -17,11 +17,10 @@ namespace tz
     ApplicationType tz_app_type = ApplicationType::WindowApplication;
 
     void initialise(GameInfo game_info, ApplicationType app_type)
-    {
-        glfwInit();
-        
+    {   
         if(app_type == ApplicationType::WindowApplication || app_type == ApplicationType::HiddenWindowApplication)
         {
+            glfwInit();
             tz_assert(wnd == nullptr && !initialised, "tz::initialise(): Already initialised");
             WindowHintList hints;
             if(app_type == ApplicationType::HiddenWindowApplication)
@@ -89,7 +88,10 @@ namespace tz
             delete wnd;
         }
 
-        glfwTerminate();
+        if(tz_app_type != ApplicationType::Headless)
+        {
+            glfwTerminate();
+        }
         initialised = false;
     }
 
