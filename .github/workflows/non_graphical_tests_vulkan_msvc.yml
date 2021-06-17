@@ -29,9 +29,7 @@ jobs:
 
         - name: Setup Vulkan Env Vars
           run: |
-            $Env:VULKAN_SDK = "C:/VulkanSDK/1.2.176.1"
-            $Env:VK_SDK_PATH += ";C:/VulkanSDK/1.2.176.1/Bin"
-            $Env:Path += ";C:/VulkanSDK/1.2.176.1/Bin"
+            echo "VK_SDK_PATH=C:/VulkanSDK/1.2.176.1" >> $GITHUB_ENV
 
         - name: 'Run all non-graphical tests (msvc vulkan-debug)'
           uses: lukka/run-cmake@v3
