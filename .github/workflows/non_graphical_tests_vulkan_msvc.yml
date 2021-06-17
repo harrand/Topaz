@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: "TZ Tests (OpenGL MSVC Debug)"
+name: "TZ Tests (Vulkan MSVC Debug)"
 
 # Controls when the action will run. 
 on:
@@ -30,6 +30,7 @@ jobs:
         - name: Setup Vulkan Env Vars
           run: |
             $Env:VULKAN_SDK = "C:/VulkanSDK/1.2.176.1"
+            $Env:VK_SDK_PATH += ";C:/VulkanSDK/1.2.176.1/Bin"
             $Env:Path += ";C:/VulkanSDK/1.2.176.1/Bin"
 
         - name: 'Run all non-graphical tests (msvc vulkan-debug)'
