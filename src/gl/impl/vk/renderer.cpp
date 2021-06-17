@@ -296,10 +296,13 @@ namespace tz::gl
 
             bool any_static_geometry = false;
             bool any_dynamic_geometry = false;
+
+            RendererElementFormat fmt;
             
             // Step 1: Compile all data
             for(IRendererInput* input : this->inputs)
             {
+                fmt = input->get_format();
                 std::span<const std::byte> input_vertices = input->get_vertex_bytes();
                 std::span<const unsigned int> input_indices = input->get_indices();
                 switch(input->data_access())
@@ -333,12 +336,16 @@ namespace tz::gl
             if(any_static_geometry)
             {
                 this->vertex_buffer = vk::Buffer{vk::BufferType::Vertex, vk::BufferPurpose::TransferDestination, *this->device, vk::hardware::MemoryResidency::GPU, static_vertex_bytes.size()};
+                tz_report("VB Static (%zu vertices, %zu bytes total)", static_vertex_bytes.size() / fmt.binding_size, static_vertex_bytes.size());
                 this->index_buffer = vk::Buffer{vk::BufferType::Index, vk::BufferPurpose::TransferDestination, *this->device, vk::hardware::MemoryResidency::GPU, static_indices.size() * sizeof(unsigned int)};
+                tz_report("IB Static (%zu indices, %zu bytes total)", static_indices.size(), static_indices.size() * sizeof(unsigned int));
             }
             if(any_dynamic_geometry)
             {
                 this->dynamic_vertex_buffer = vk::Buffer{vk::BufferType::Vertex, vk::BufferPurpose::NothingSpecial, *this->device, vk::hardware::MemoryResidency::CPUPersistent, dynamic_vertex_bytes.size()};
+                tz_report("VB Dynamic (%zu vertices, %zu bytes total)", dynamic_vertex_bytes.size() / fmt.binding_size, dynamic_vertex_bytes.size());
                 this->dynamic_index_buffer = vk::Buffer{vk::BufferType::Index, vk::BufferPurpose::NothingSpecial, *this->device, vk::hardware::MemoryResidency::CPUPersistent, dynamic_indices.size() * sizeof(unsigned int)};
+                tz_report("IB Dynamic (%zu indices, %zu bytes total)", dynamic_indices.size(), dynamic_indices.size() * sizeof(unsigned int));
 
                 std::byte* vtx_mem = static_cast<std::byte*>(this->dynamic_vertex_buffer->map_memory());
                 for(const auto& vertex_region : vertex_regions)
@@ -844,7 +851,6 @@ namespace tz::gl
                 // Part 1: Transfer vertex data.
                 std::span<const std::byte> vertex_data = total_vertices;
                 copy_fence.signal();
-                tz_report("VB (%zu vertices, %zu bytes total)", vertex_data.size(), vertex_data.size_bytes());
                 vk::Buffer vertices_staging{vk::BufferType::Staging, vk::BufferPurpose::TransferSource, *this->device, vk::hardware::MemoryResidency::CPU, vertex_data.size_bytes()};
                 vertices_staging.write(vertex_data.data(), vertex_data.size_bytes());
                 {
@@ -859,7 +865,6 @@ namespace tz::gl
                 scratch_buf.reset();
                 // Part 2: Transfer index data.
                 std::span<const unsigned int> index_data = total_indices;
-                tz_report("IB (%zu indices, %zu bytes total)", index_data.size(), index_data.size_bytes());
                 vk::Buffer indices_staging{vk::BufferType::Staging, vk::BufferPurpose::TransferSource, *this->device, vk::hardware::MemoryResidency::CPU, index_data.size_bytes()};
                 indices_staging.write(index_data.data(), index_data.size_bytes());
                 {

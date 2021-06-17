@@ -172,6 +172,8 @@ namespace tz::gl
             bool any_static_geometry = false;
             bool any_dynamic_geometry = false;
 
+            RendererElementFormat fmt;
+
             // Step 1: Compile all data.
             for(auto& input_ptr : this->inputs)
             {
@@ -180,6 +182,7 @@ namespace tz::gl
                     continue;
                 }
                 IRendererInput& input = *input_ptr;
+                fmt = input.get_format();
                 this->format = input.get_format();
                 std::span<const std::byte> input_vertices = input.get_vertex_bytes();
                 std::span<const unsigned int> input_indices = input.get_indices();
@@ -219,7 +222,9 @@ namespace tz::gl
                 this->ibo = buffers[1];
 
                 glNamedBufferData(this->vbo, total_vertices.size(), total_vertices.data(), GL_STATIC_DRAW);
+                tz_report("VB Static (%zu vertices, %zu bytes total)", total_vertices.size() / fmt.binding_size, total_vertices.size());
                 glNamedBufferData(this->ibo, total_indices.size() * sizeof(unsigned int), total_indices.data(), GL_STATIC_DRAW);
+                tz_report("IB Static (%zu indices, %zu bytes total)", total_indices.size(), total_indices.size() * sizeof(unsigned int));
             }
             if(any_dynamic_geometry)
             {
@@ -229,7 +234,9 @@ namespace tz::gl
                 this->ibo_dynamic = buffers[1];
 
                 glNamedBufferStorage(this->vbo_dynamic, total_vertices_dynamic.size(), total_vertices_dynamic.data(), persistent_mapped_buffer_flags);
+                tz_report("VB Dynamic (%zu vertices, %zu bytes total)", total_vertices_dynamic.size() / fmt.binding_size, total_vertices_dynamic.size());
                 glNamedBufferStorage(this->ibo_dynamic, total_indices_dynamic.size() * sizeof(unsigned int), total_indices_dynamic.data(), persistent_mapped_buffer_flags);
+                tz_report("IB Dynamic (%zu indices, %zu bytes total)", total_indices_dynamic.size(), total_indices_dynamic.size() * sizeof(unsigned int));
 
                 void* vtx_data = glMapNamedBufferRange(this->vbo_dynamic, 0, total_vertices_dynamic.size(), persistent_mapped_buffer_flags);
                 void* idx_data = glMapNamedBufferRange(this->ibo_dynamic, 0, total_indices_dynamic.size(), persistent_mapped_buffer_flags);
