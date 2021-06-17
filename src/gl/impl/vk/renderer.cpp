@@ -540,7 +540,7 @@ namespace tz::gl
                         break;
                         default:
                             tz_error("Vulkan support for TexturePropertyFilter is not yet implemented");
-                            return static_cast<VkFilter>(static_cast<int>(VK_NULL_HANDLE));
+                            return static_cast<VkFilter>(0);
                         break;
                     }
                 };
@@ -553,7 +553,7 @@ namespace tz::gl
                         break;
                         default:
                             tz_error("Vulkan support for TextureAddressMode is not yet implemented");
-                            return static_cast<VkSamplerAddressMode>(static_cast<int>(VK_NULL_HANDLE));
+                            return static_cast<VkSamplerAddressMode>(0);
                         break;
                     }
                 };
