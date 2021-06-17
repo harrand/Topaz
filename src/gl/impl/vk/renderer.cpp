@@ -6,6 +6,7 @@
 #include "gl/vk/fence.hpp"
 #include "gl/vk/submit.hpp"
 #include <numeric>
+#include <ranges>
 
 namespace tz::gl
 {
@@ -539,7 +540,7 @@ namespace tz::gl
                         break;
                         default:
                             tz_error("Vulkan support for TexturePropertyFilter is not yet implemented");
-                            return static_cast<VkFilter>(VK_NULL_HANDLE);
+                            return static_cast<VkFilter>(static_cast<int>(VK_NULL_HANDLE));
                         break;
                     }
                 };
@@ -552,7 +553,7 @@ namespace tz::gl
                         break;
                         default:
                             tz_error("Vulkan support for TextureAddressMode is not yet implemented");
-                            return static_cast<VkSamplerAddressMode>(VK_NULL_HANDLE);
+                            return static_cast<VkSamplerAddressMode>(static_cast<int>(VK_NULL_HANDLE));
                         break;
                     }
                 };
@@ -746,7 +747,7 @@ namespace tz::gl
                 render.bind(*buffer_manager.get_index_buffer());
                 render.draw_indirect(this->draw_indirect_buffer.value(), this->num_static_draws());
             }
-            if(this->draw_indirect_dynamic_buffer.has_value() > 0)
+            if(this->draw_indirect_dynamic_buffer.has_value())
             {
                 render.bind(*buffer_manager.get_dynamic_vertex_buffer());
                 render.bind(*buffer_manager.get_dynamic_index_buffer());
