@@ -26,10 +26,7 @@ jobs:
               $installer = Start-Process -FilePath VulkanSDK.exe -Wait -PassThru -ArgumentList @("/S");
               $installer.WaitForExit();
         
-        - name: Set up MinGW W64
-          uses: egor-tensin/setup-mingw@v2
-          with:
-            platform: x64
+        - uses: msys2/setup-msys2@v2
 
         # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
         - uses: actions/checkout@v2
@@ -43,3 +40,4 @@ jobs:
             buildWithCMake: true
             buildWithCMakeArgs: "--target tztest_nographics --parallel 4"
             buildDirectory: "${{ github.workspace }}/../../_temp/build/debug"
+            useShell: msys2 {0}
