@@ -31,13 +31,9 @@ jobs:
         # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
         - uses: actions/checkout@v2
 
-        - name: 'Run all non-graphical tests (gcc vulkan-debug)'
-          uses: lukka/run-cmake@v3
-          with:
-            cmakeListsOrSettingsJson: "CMakeListsTxtAdvanced"
-            cmakeGenerator: UnixMakefiles
-            cmakeAppendedArgs: "-B \"${{ github.workspace }}/../../_temp/build/debug\" -DTOPAZ_DEBUG=1 -DTOPAZ_VULKAN=1 -DTOPAZ_OGL=0 -DCMAKE_CXX_COMPILER=g++-10"
-            buildWithCMake: true
-            buildWithCMakeArgs: "--target tztest_nographics --parallel 4"
-            buildDirectory: "${{ github.workspace }}/../../_temp/build/debug"
-            useShell: msys2 {0}
+        - name: Build & Run Tests
+          run: |
+              python configure.py Debug Vulkan "MinGW Makefiles"
+              cd build/vulkan_debug && mingw32-make tztest_nographics
+          working-directory: ${GITHUB_WORKSPACE}
+          shell: msys2 {0}
