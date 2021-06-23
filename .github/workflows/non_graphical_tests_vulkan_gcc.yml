@@ -33,7 +33,6 @@ jobs:
 
         - name: Build & Run Tests
           run: |
-              python configure.py Debug Vulkan "MinGW Makefiles"
-              cd build/vulkan_debug && mingw32-make tztest_nographics
-          working-directory: ${GITHUB_WORKSPACE}
+              python ${GITHUB_WORKSPACE}/configure.py Debug Vulkan "MinGW Makefiles"
+              cd ${GITHUB_WORKSPACE}/build/vulkan_debug && mingw32-make tztest_nographics
           shell: msys2 {0}
