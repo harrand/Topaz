@@ -447,10 +447,44 @@ namespace tz::gl
         glClearColor(clear_colour[0], clear_colour[1], clear_colour[2], clear_colour[3]);
     }
 
+    std::size_t RendererOGL::input_count() const
+    {
+        return this->inputs.size();
+    }
+
+    std::size_t RendererOGL::input_count_of(RendererInputDataAccess access) const
+    {
+        return std::accumulate(this->inputs.begin(), this->inputs.end(), 0, [access](std::size_t init, const std::unique_ptr<IRendererInput>& input_ptr)
+        {
+            if(input_ptr->data_access() == access)
+            {
+                return init + 1;
+            }
+            return init;
+        });
+    }
+
     IRendererInput* RendererOGL::get_input(RendererInputHandle handle)
     {
         auto handle_value = static_cast<std::size_t>(static_cast<tz::HandleValue>(handle));
         return this->inputs[handle_value].get();
+    }
+
+    std::size_t RendererOGL::resource_count() const
+    {
+        return this->resources.size();
+    }
+
+    std::size_t RendererOGL::resource_count_of(ResourceType type) const
+    {
+        return std::accumulate(this->resources.begin(), this->resources.end(), 0, [type](std::size_t init, const std::unique_ptr<IResource>& res_ptr)
+        {
+            if(res_ptr->get_type() == type)
+            {
+                return init + 1;
+            }
+            return init;
+        });
     }
 
     IResource* RendererOGL::get_resource(ResourceHandle handle)

@@ -273,6 +273,9 @@ namespace tz::gl
          */
         virtual tz::Vec4 get_clear_colour() const = 0;
 
+        virtual std::size_t input_count() const = 0;
+        virtual std::size_t input_count_of(RendererInputDataAccess access) const = 0;
+
         /**
          * @brief Retrieve the renderer input.
          * @note Each renderer takes a copy of the input it was given in its corresponding `IRendererBuilder`. This is NOT the same input as the one you gave to the builder.
@@ -282,6 +285,9 @@ namespace tz::gl
          * @return IRendererInput* pointing to the renderer's input.
          */
         virtual IRendererInput* get_input(RendererInputHandle handle) = 0;
+
+        virtual std::size_t resource_count() const = 0;
+        virtual std::size_t resource_count_of(ResourceType type) const = 0;
 
         virtual IResource* get_resource(ResourceHandle handle) = 0;
 

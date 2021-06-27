@@ -1147,10 +1147,44 @@ namespace tz::gl
         return this->clear_colour;
     }
 
+    std::size_t RendererVulkan::input_count() const
+    {
+        return this->renderer_inputs.size();
+    }
+
+    std::size_t RendererVulkan::input_count_of(RendererInputDataAccess access) const
+    {
+        return std::accumulate(this->renderer_inputs.begin(), this->renderer_inputs.end(), 0, [access](std::size_t init, const std::unique_ptr<IRendererInput>& input_ptr)
+        {
+            if(input_ptr->data_access() == access)
+            {
+                return init + 1;
+            }
+            return init;
+        });
+    }
+
     IRendererInput* RendererVulkan::get_input(RendererInputHandle handle)
     {
         std::size_t handle_val = static_cast<std::size_t>(static_cast<tz::HandleValue>(handle));
         return this->renderer_inputs[handle_val].get();
+    }
+
+    std::size_t RendererVulkan::resource_count() const
+    {
+        return this->renderer_resources.size();
+    }
+
+    std::size_t RendererVulkan::resource_count_of(ResourceType type) const
+    {
+        return std::accumulate(this->renderer_resources.begin(), this->renderer_resources.end(), 0, [type](std::size_t init, const std::unique_ptr<IResource>& res_ptr)
+        {
+            if(res_ptr->get_type() == type)
+            {
+                return init + 1;
+            }
+            return init;
+        });
     }
 
     IResource* RendererVulkan::get_resource(ResourceHandle handle)

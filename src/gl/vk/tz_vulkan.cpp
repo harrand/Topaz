@@ -13,7 +13,8 @@ namespace tz::gl::vk
     {
         tz_assert(inst == nullptr, "tz::gl::vk::initialise(...): Already initialised");
         inst = new VulkanInstance{game_info};
-        tz_report("Vulkan Initialised (Headless)");
+        tz::Version v = vk::get_vulkan_version();
+        tz_report("Vulkan v%u.%u.%u Initialised (Headless)", v.major, v.minor, v.patch);
     }
 
     void initialise(tz::GameInfo game_info)
@@ -21,7 +22,8 @@ namespace tz::gl::vk
         tz_assert(inst == nullptr, "tz::gl::vk::initialise(...): Already initialised");
         inst = new VulkanInstance{game_info};
         surf = new WindowSurface;
-        tz_report("Vulkan Initialised (Window)");
+        tz::Version v = vk::get_vulkan_version();
+        tz_report("Vulkan v%u.%u.%u Initialised (Window)", v.major, v.minor, v.patch);
     }
 
     void terminate()

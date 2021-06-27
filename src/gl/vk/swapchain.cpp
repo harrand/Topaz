@@ -15,7 +15,7 @@ namespace tz::gl::vk
     {
         hardware::DeviceQueueFamily queue_family = device.get_queue_family();
 
-        tz_assert(queue_family.dev != nullptr, "tz::gl::vk::Swapchain::Swapchain(...): Queue Family is not associated to any physical device!");
+        tz_assert(queue_family.dev != nullptr, "tz::gl::vk::Swapchain::Swapchain(...): Queue Family is not associated with any physical device!");
         hardware::SwapchainSupportDetails support = queue_family.dev->get_window_swapchain_support();
         auto maybe_format = hardware::select_swapchain_format(support.formats, preferences.format_pref);
         auto maybe_present_mode = hardware::select_swapchain_present_mode(support.present_modes, preferences.present_mode_pref);

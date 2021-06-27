@@ -54,7 +54,14 @@ namespace tz::gl
 
         virtual void set_clear_colour(tz::Vec4 clear_colour) final;
         virtual tz::Vec4 get_clear_colour() const final;
+
+        virtual std::size_t input_count() const final;
+        virtual std::size_t input_count_of(RendererInputDataAccess access) const final;
+
         virtual IRendererInput* get_input(RendererInputHandle handle) final;
+
+        virtual std::size_t resource_count() const final;
+        virtual std::size_t resource_count_of(ResourceType type) const final;
         virtual IResource* get_resource(ResourceHandle handle) final;
         
         virtual void render() final;
