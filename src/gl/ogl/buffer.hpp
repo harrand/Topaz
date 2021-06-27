@@ -1,5 +1,6 @@
 #ifndef TOPAZ_GL_OGL_BUFFER_HPP
 #define TOPAZ_GL_OGL_BUFFER_HPP
+#if TZ_OGL
 #include "glad/glad.h"
 #include <cstdint>
 
@@ -63,4 +64,5 @@ namespace tz::gl::ogl
     };
 }
 
+#endif // TZ_OGL
 #endif // TOPAZ_GL_OGL_BUFFER_HPP

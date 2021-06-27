@@ -1,5 +1,6 @@
 #ifndef TOPAZ_GL_IMPL_OGL_DEVICE_HPP
 #define TOPAZ_GL_IMPL_OGL_DEVICE_HPP
+#if TZ_OGL
 #include "gl/api/device.hpp"
 
 namespace tz::gl
@@ -28,4 +29,5 @@ namespace tz::gl
     };
 }
 
+#endif // TZ_OGL
 #endif // TOPAZ_GL_IMPL_OGL_DEVICE_HPP

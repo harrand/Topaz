@@ -1,5 +1,6 @@
 #ifndef TOPAZ_GL_IMPL_OGL_RENDERER_HPP
 #define TOPAZ_GL_IMPL_OGL_RENDERER_HPP
+#if TZ_OGL
 #include "gl/api/renderer.hpp"
 #include "gl/ogl/buffer.hpp"
 #include <optional>
@@ -86,4 +87,5 @@ namespace tz::gl
     };
 }
 
+#endif // TZ_OGL
 #endif // TOPAZ_GL_IMPL_OGL_RENDERER_HPP

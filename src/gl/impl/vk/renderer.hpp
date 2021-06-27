@@ -1,5 +1,6 @@
 #ifndef TOPAZ_GL_IMPL_VK_RENDERER_HPP
 #define TOPAZ_GL_IMPL_VK_RENDERER_HPP
+#if TZ_VULKAN
 #include "gl/api/renderer.hpp"
 #include "gl/impl/common/device.hpp"
 
@@ -285,4 +286,5 @@ namespace tz::gl
     };
 }
 
+#endif // TZ_VULKAN
 #endif // TOPAZ_GL_IMPL_VK_RENDERER_HPP

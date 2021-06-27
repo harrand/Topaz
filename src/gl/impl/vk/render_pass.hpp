@@ -1,5 +1,6 @@
 #ifndef TOPAZ_GL_IMPL_VK_RENDER_PASS_HPP
 #define TOPAZ_GL_IMPL_VK_RENDER_PASS_HPP
+#if TZ_VULKAN
 
 #include "gl/api/render_pass.hpp"
 #include "gl/vk/render_pass.hpp"
@@ -40,4 +41,5 @@ namespace tz::gl
     };
 }
 
+#endif // TZ_VULKAN
 #endif // TOPAZ_GL_IMPL_VK_RENDER_PASS_HPP

@@ -1,3 +1,4 @@
+#if TZ_OGL
 #include "core/assert.hpp"
 #include "gl/ogl/buffer.hpp"
 #include <utility>
@@ -146,3 +147,4 @@ namespace tz::gl::ogl
 
     }
 }
+#endif // TZ_OGL

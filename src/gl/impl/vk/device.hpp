@@ -1,5 +1,6 @@
 #ifndef TOPAZ_GL_IMPL_VK_DEVICE_HPP
 #define TOPAZ_GL_IMPL_VK_DEVICE_HPP
+#if TZ_VULKAN
 #include "gl/api/device.hpp"
 
 #include "gl/vk/logical_device.hpp"
@@ -67,4 +68,5 @@ namespace tz::gl
     };
 }
 
+#endif // TZ_VULKAN
 #endif // TOPAZ_GL_IMPL_VK_DEVICE_HPP
