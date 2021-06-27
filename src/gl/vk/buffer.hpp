@@ -40,7 +40,12 @@ namespace tz::gl::vk
         Buffer& operator=(Buffer&& rhs);
 
         VkBuffer native() const;
+        bool is_null() const;
+        static Buffer null();
     private:
+        Buffer();
+        void ensure_notnull() const;
+
         VkBuffer buffer;
         void* persistent_mapped_ptr;
         VmaAllocation alloc;

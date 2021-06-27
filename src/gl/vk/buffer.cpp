@@ -101,11 +101,13 @@ namespace tz::gl::vk
 
     BufferType Buffer::get_type() const
     {
+        this->ensure_notnull();
         return this->type;
     }
 
     void Buffer::write(const void* addr, std::size_t bytes)
     {
+        this->ensure_notnull();
         void* data = this->map_memory();
         std::memcpy(data, addr, bytes);
         this->unmap_memory();
@@ -113,6 +115,7 @@ namespace tz::gl::vk
 
     void* Buffer::map_memory()
     {
+        this->ensure_notnull();
         if(this->persistent_mapped_ptr != nullptr)
         {
             return this->persistent_mapped_ptr;
@@ -124,6 +127,7 @@ namespace tz::gl::vk
 
     void Buffer::unmap_memory()
     {
+        this->ensure_notnull();
         if(this->persistent_mapped_ptr != nullptr)
         {
             return;
@@ -144,6 +148,29 @@ namespace tz::gl::vk
     VkBuffer Buffer::native() const
     {
         return this->buffer;
+    }
+
+    bool Buffer::is_null() const
+    {
+        return this->buffer == VK_NULL_HANDLE;
+    }
+
+    Buffer Buffer::null()
+    {
+        return Buffer{};
+    }
+
+    Buffer::Buffer():
+    buffer(VK_NULL_HANDLE),
+    persistent_mapped_ptr(nullptr),
+    alloc(),
+    device(nullptr),
+    type()
+    {}
+
+    void Buffer::ensure_notnull() const
+    {
+        tz_assert(!this->is_null(), "Attempted to perform operation on null vk::Buffer");
     }
 }
 

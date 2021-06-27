@@ -80,55 +80,131 @@ namespace tz::gl
         vk::GraphicsPipeline graphics_pipeline;
     };
 
+    /// Buffer Components represent the guts of an existing Buffer Resource. Only the implementation should be concerned with buffer components -- It is the buffer resource which is user-facing.
+    struct BufferComponentVulkan
+    {
+        vk::Buffer buffer;
+        IResource* resource;
+    };
+
+    /**
+     * @brief Owns and controls all buffers associated with a Renderer. Renderers have multiple buffers used to store input data, and zero or more resource buffers.
+     * 
+     * Buffer Resources are user-facing descriptions of what a buffer should be like. Buffer components are created by the renderer's buffer manager and represent the implementation-side of the resource. Each buffer resource has exactly one buffer component.
+     */
     class RendererBufferManagerVulkan
     {
     public:
+        /**
+         * @brief Construct a new buffer manager.
+         * 
+         * @param device_info Information about the Device.
+         * @param renderer_inputs List of all inputs. We should sort the input data into buffers.
+         */
         RendererBufferManagerVulkan(RendererBuilderDeviceInfoVulkan device_info, std::vector<IRendererInput*> renderer_inputs);
+        /**
+         * @brief Create empty buffer components for each buffer resource.
+         * 
+         * @param renderer_buffer_resources List of all buffer resources.
+         */
         void initialise_resources(std::vector<IResource*> renderer_buffer_resources);
+        /**
+         * @brief Fill all of the buffers prepared earlier. This includes the buffers for input data and all buffer components.
+         * 
+         */
         void setup_buffers();
+        /**
+         * @brief Retrieve the vertex buffer if there is one.
+         * 
+         * @return Buffer containing all static input vertex data, or nullptr if there are no static inputs.
+         */
         const vk::Buffer* get_vertex_buffer() const;
+        /**
+         * @brief Retrieve the vertex buffer if there is one.
+         * 
+         * @return Buffer containing all static input vertex data, or nullptr if there are no static inputs.
+         */
         vk::Buffer* get_vertex_buffer();
+        /**
+         * @brief Retrieve the index buffer if there is one.
+         * 
+         * @return Buffer containing all static input index data, or nullptr if there are no static inputs.
+         */
         const vk::Buffer* get_index_buffer() const;
+        /**
+         * @brief Retrieve the index buffer if there is one.
+         * 
+         * @return Buffer containing all static input index data, or nullptr if there are no static inputs.
+         */
         vk::Buffer* get_index_buffer();
+        /**
+         * @brief Retrieve the dynamic vertex buffer if there is one.
+         * 
+         * @return Buffer containing all dynamic input vertex data, or nullptr if there are no dynamic inputs.
+         */
         const vk::Buffer* get_dynamic_vertex_buffer() const;
+        /**
+         * @brief Retrieve the dynamic vertex buffer if there is one.
+         * 
+         * @return Buffer containing all dynamic input vertex data, or nullptr if there are no dynamic inputs.
+         */
         vk::Buffer* get_dynamic_vertex_buffer();
+        /**
+         * @brief Retrieve the dynamic index buffer if there is one.
+         * 
+         * @return Buffer containing all dynamic input index data, or nullptr if there are no dynamic inputs.
+         */
         const vk::Buffer* get_dynamic_index_buffer() const;
+        /**
+         * @brief Retrieve the dynamic index buffer if there is one.
+         * 
+         * @return Buffer containing all dynamic input index data, or nullptr if there are no dynamic inputs.
+         */
         vk::Buffer* get_dynamic_index_buffer();
-        std::span<const IResource* const> get_buffer_resources() const;
-        std::span<IResource*> get_buffer_resources();
-        std::span<const vk::Buffer> get_resource_buffers() const;
-        std::span<vk::Buffer> get_resource_buffers();
+        /**
+         * @brief Retrieve all of the buffer components. If there are no buffer resources, this will be empty.
+         * @note `get_buffer_components()[handle]` will retrieve the corresponding BufferComponent for the BufferResource created via the handle `handle`.
+         * 
+         * @return Span representing all buffer components.
+         */
+        std::span<const BufferComponentVulkan> get_buffer_components() const;
+        /**
+         * @brief Retrieve all of the buffer components. If there are no buffer resources, this will be empty.
+         * @note `get_buffer_components()[handle]` will retrieve the corresponding BufferComponent for the BufferResource created via the handle `handle`.
+         * 
+         * @return Span representing all buffer components.
+         */
+        std::span<BufferComponentVulkan> get_buffer_components();
     private:
         const vk::LogicalDevice* device;
         const vk::hardware::Device* physical_device;
-        std::vector<IRendererInput*> inputs;        
+        std::vector<IRendererInput*> inputs;
         std::optional<vk::Buffer> vertex_buffer;
         std::optional<vk::Buffer> dynamic_vertex_buffer;
         std::optional<vk::Buffer> index_buffer;
         std::optional<vk::Buffer> dynamic_index_buffer;
-        std::vector<IResource*> buffer_resources;
-        std::vector<vk::Buffer> buffer_resource_buffers;
+        std::vector<BufferComponentVulkan> buffer_components;
+    };
+
+    /// Texture Components represent the guts of an existing Texture Resource. Only the implementation should be concerned with texture components -- It is the texture resource which is user-facing.
+    struct TextureComponentVulkan
+    {
+        vk::Image img;
+        vk::ImageView view;
+        vk::Sampler sampler;
+        IResource* resource;
     };
 
     class RendererImageManagerVulkan
     {
     public:
-        struct TextureComponent
-        {
-            vk::Image img;
-            vk::ImageView view;
-            vk::Sampler sampler;
-        };
-
         RendererImageManagerVulkan(RendererBuilderVulkan builder, RendererBuilderDeviceInfoVulkan device_info);
         void initialise_resources(std::vector<IResource*> renderer_buffer_resources);
         void setup_depth_image();
         void setup_swapchain_framebuffers();
         std::span<const vk::Framebuffer> get_swapchain_framebuffers() const;
-        std::span<const IResource* const> get_texture_resources() const;
-        std::span<IResource*> get_texture_resources();
-        std::span<const TextureComponent> get_resource_textures() const;
-        std::span<TextureComponent> get_resource_textures();
+        std::span<const TextureComponentVulkan> get_texture_components() const;
+        std::span<TextureComponentVulkan> get_texture_components();
     private:
 
         const vk::LogicalDevice* device;
@@ -136,8 +212,7 @@ namespace tz::gl
         const RenderPass* render_pass;
         const DeviceWindowBufferVulkan* swapchain;
         std::optional<vk::ImageView> maybe_swapchain_offscreen_imageview;
-        std::vector<IResource*> texture_resources;
-        std::vector<TextureComponent> texture_resource_textures;
+        std::vector<TextureComponentVulkan> texture_components;
         std::optional<vk::Image> depth_image;
         std::optional<vk::ImageView> depth_imageview;
         std::vector<vk::Framebuffer> swapchain_framebuffers;
