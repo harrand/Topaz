@@ -114,54 +114,17 @@ namespace tz::gl
          * 
          */
         void setup_buffers();
-        /**
-         * @brief Retrieve the vertex buffer if there is one.
-         * 
-         * @return Buffer containing all static input vertex data, or nullptr if there are no static inputs.
-         */
-        const vk::Buffer* get_vertex_buffer() const;
-        /**
-         * @brief Retrieve the vertex buffer if there is one.
-         * 
-         * @return Buffer containing all static input vertex data, or nullptr if there are no static inputs.
-         */
-        vk::Buffer* get_vertex_buffer();
-        /**
-         * @brief Retrieve the index buffer if there is one.
-         * 
-         * @return Buffer containing all static input index data, or nullptr if there are no static inputs.
-         */
-        const vk::Buffer* get_index_buffer() const;
-        /**
-         * @brief Retrieve the index buffer if there is one.
-         * 
-         * @return Buffer containing all static input index data, or nullptr if there are no static inputs.
-         */
-        vk::Buffer* get_index_buffer();
-        /**
-         * @brief Retrieve the dynamic vertex buffer if there is one.
-         * 
-         * @return Buffer containing all dynamic input vertex data, or nullptr if there are no dynamic inputs.
-         */
-        const vk::Buffer* get_dynamic_vertex_buffer() const;
-        /**
-         * @brief Retrieve the dynamic vertex buffer if there is one.
-         * 
-         * @return Buffer containing all dynamic input vertex data, or nullptr if there are no dynamic inputs.
-         */
-        vk::Buffer* get_dynamic_vertex_buffer();
-        /**
-         * @brief Retrieve the dynamic index buffer if there is one.
-         * 
-         * @return Buffer containing all dynamic input index data, or nullptr if there are no dynamic inputs.
-         */
-        const vk::Buffer* get_dynamic_index_buffer() const;
-        /**
-         * @brief Retrieve the dynamic index buffer if there is one.
-         * 
-         * @return Buffer containing all dynamic input index data, or nullptr if there are no dynamic inputs.
-         */
-        vk::Buffer* get_dynamic_index_buffer();
+        const vk::Buffer& get_vertex_buffer() const;
+        vk::Buffer& get_vertex_buffer();
+        
+        const vk::Buffer& get_index_buffer() const;
+        vk::Buffer& get_index_buffer();
+
+        const vk::Buffer& get_dynamic_vertex_buffer() const;
+        vk::Buffer& get_dynamic_vertex_buffer();
+
+        const vk::Buffer& get_dynamic_index_buffer() const;
+        vk::Buffer& get_dynamic_index_buffer();
         /**
          * @brief Retrieve all of the buffer components. If there are no buffer resources, this will be empty.
          * @note `get_buffer_components()[handle]` will retrieve the corresponding BufferComponent for the BufferResource created via the handle `handle`.
@@ -180,10 +143,10 @@ namespace tz::gl
         const vk::LogicalDevice* device;
         const vk::hardware::Device* physical_device;
         std::vector<IRendererInput*> inputs;
-        std::optional<vk::Buffer> vertex_buffer;
-        std::optional<vk::Buffer> dynamic_vertex_buffer;
-        std::optional<vk::Buffer> index_buffer;
-        std::optional<vk::Buffer> dynamic_index_buffer;
+        vk::Buffer vertex_buffer;
+        vk::Buffer dynamic_vertex_buffer;
+        vk::Buffer index_buffer;
+        vk::Buffer dynamic_index_buffer;
         std::vector<BufferComponentVulkan> buffer_components;
     };
 

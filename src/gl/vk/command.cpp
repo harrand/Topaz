@@ -26,6 +26,9 @@ namespace tz::gl::vk
 
     void CommandBufferRecording::buffer_copy_buffer(const Buffer& source, Buffer& destination, std::size_t copy_bytes_length)
     {
+        tz_assert(!source.is_null(), "Attempted to record a buffer->buffer copy where the source is a null buffer.");
+        tz_assert(!destination.is_null(), "Attempted to record a buffer->buffer copy where the destination is a null buffer.");
+
         VkBufferCopy cpy{};
         cpy.dstOffset = 0;
         cpy.srcOffset = 0;
@@ -36,6 +39,7 @@ namespace tz::gl::vk
 
     void CommandBufferRecording::buffer_copy_image(const Buffer& source, Image& destination)
     {
+        tz_assert(!source.is_null(), "Attempted to record a buffer->image copy where the source is a null buffer.");
         VkBufferImageCopy cpy{};
         cpy.bufferOffset = 0;
         cpy.bufferRowLength = 0;
@@ -111,6 +115,7 @@ namespace tz::gl::vk
 
     void CommandBufferRecording::bind(const Buffer& buf)
     {
+        tz_assert(!buf.is_null(), "Attempted to record a bind for a null buffer.");
         auto buf_native = buf.native();
         VkDeviceSize offsets[] = {0};
         switch(buf.get_type())
@@ -145,6 +150,7 @@ namespace tz::gl::vk
 
     void CommandBufferRecording::draw_indirect(const vk::Buffer& draw_indirect_buffer, std::uint32_t draw_count)
     {
+        tz_assert(!draw_indirect_buffer.is_null(), "Attempted to record a draw-indirect, but the draw-indirect-buffer was a null buffer.");
         vkCmdDrawIndexedIndirect(this->command_buffer->native(), draw_indirect_buffer.native(), 0, draw_count, sizeof(VkDrawIndexedIndirectCommand));
     }
 

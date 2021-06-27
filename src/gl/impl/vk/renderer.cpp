@@ -268,8 +268,10 @@ namespace tz::gl
     device(device_info.device),
     physical_device(this->device->get_queue_family().dev),
     inputs(renderer_inputs),
-    vertex_buffer(std::nullopt),
-    index_buffer(std::nullopt),
+    vertex_buffer(vk::Buffer::null()),
+    dynamic_vertex_buffer(vk::Buffer::null()),
+    index_buffer(vk::Buffer::null()),
+    dynamic_index_buffer(vk::Buffer::null()),
     buffer_components()
     {
     }
@@ -351,13 +353,13 @@ namespace tz::gl
                 this->dynamic_index_buffer = vk::Buffer{vk::BufferType::Index, vk::BufferPurpose::NothingSpecial, *this->device, vk::hardware::MemoryResidency::CPUPersistent, dynamic_indices.size() * sizeof(unsigned int)};
                 tz_report("IB Dynamic (%zu indices, %zu bytes total)", dynamic_indices.size(), dynamic_indices.size() * sizeof(unsigned int));
 
-                std::byte* vtx_mem = static_cast<std::byte*>(this->dynamic_vertex_buffer->map_memory());
+                std::byte* vtx_mem = static_cast<std::byte*>(this->dynamic_vertex_buffer.map_memory());
                 for(const auto& vertex_region : vertex_regions)
                 {
                     vertex_region.input.set_vertex_data(vtx_mem + vertex_region.offset);
                 }
 
-                unsigned int* idx_mem = static_cast<unsigned int*>(this->dynamic_index_buffer->map_memory());
+                unsigned int* idx_mem = static_cast<unsigned int*>(this->dynamic_index_buffer.map_memory());
                 for(const auto& index_region : index_regions)
                 {
                     index_region.input.set_index_data(idx_mem + index_region.offset);
@@ -385,100 +387,46 @@ namespace tz::gl
                 break;
             }
         }
-        /*
-        this->buffer_resource_buffers.clear();
-        for(IResource* buffer_resource : this->buffer_resources)
-        {
-            switch(buffer_resource->data_access())
-            {
-                case RendererInputDataAccess::StaticFixed:
-                    this->buffer_resource_buffers.emplace_back(vk::BufferType::Uniform, vk::BufferPurpose::TransferDestination, *this->device, vk::hardware::MemoryResidency::GPU, buffer_resource->get_resource_bytes().size_bytes());
-                break;
-                case RendererInputDataAccess::DynamicFixed:
-                    {
-                        auto& dynamic_resource = static_cast<IDynamicResource&>(*buffer_resource);
-                        vk::Buffer& resource_buf = this->buffer_resource_buffers.emplace_back(vk::BufferType::Uniform, vk::BufferPurpose::NothingSpecial, *this->device, vk::hardware::MemoryResidency::CPUPersistent, dynamic_resource.get_resource_bytes().size_bytes());
-                        dynamic_resource.set_resource_data(static_cast<std::byte*>(resource_buf.map_memory()));
-                    }
-                break;
-                default:
-                    tz_error("Resource data access unsupported (Vulkan)");
-                break;
-            }
-        }
-        */
     }
 
-    const vk::Buffer* RendererBufferManagerVulkan::get_vertex_buffer() const
+    const vk::Buffer& RendererBufferManagerVulkan::get_vertex_buffer() const
     {
-        if(this->vertex_buffer.has_value())
-        {
-            return &this->vertex_buffer.value();
-        }
-        return nullptr;
+        return this->vertex_buffer;
     }
 
-    vk::Buffer* RendererBufferManagerVulkan::get_vertex_buffer()
+    vk::Buffer& RendererBufferManagerVulkan::get_vertex_buffer()
     {
-        if(this->vertex_buffer.has_value())
-        {
-            return &this->vertex_buffer.value();
-        }
-        return nullptr;
+        return this->vertex_buffer;
     }
 
-    const vk::Buffer* RendererBufferManagerVulkan::get_index_buffer() const
+    const vk::Buffer& RendererBufferManagerVulkan::get_index_buffer() const
     {
-        if(this->index_buffer.has_value())
-        {
-            return &this->index_buffer.value();
-        }
-        return nullptr;
+        return this->index_buffer;
     }
 
-    vk::Buffer* RendererBufferManagerVulkan::get_index_buffer()
+    vk::Buffer& RendererBufferManagerVulkan::get_index_buffer()
     {
-        if(this->index_buffer.has_value())
-        {
-            return &this->index_buffer.value();
-        }
-        return nullptr;
+        return this->index_buffer;
     }
 
-    const vk::Buffer* RendererBufferManagerVulkan::get_dynamic_vertex_buffer() const
+    const vk::Buffer& RendererBufferManagerVulkan::get_dynamic_vertex_buffer() const
     {
-        if(this->dynamic_vertex_buffer.has_value())
-        {
-            return &this->dynamic_vertex_buffer.value();
-        }
-        return nullptr;
+        return this->dynamic_vertex_buffer;
     }
 
-    vk::Buffer* RendererBufferManagerVulkan::get_dynamic_vertex_buffer()
+    vk::Buffer& RendererBufferManagerVulkan::get_dynamic_vertex_buffer()
     {
-        if(this->dynamic_vertex_buffer.has_value())
-        {
-            return &this->dynamic_vertex_buffer.value();
-        }
-        return nullptr;
+        return this->dynamic_vertex_buffer;
     }
 
-    const vk::Buffer* RendererBufferManagerVulkan::get_dynamic_index_buffer() const
+    const vk::Buffer& RendererBufferManagerVulkan::get_dynamic_index_buffer() const
     {
-        if(this->dynamic_index_buffer.has_value())
-        {
-            return &this->dynamic_index_buffer.value();
-        }
-        return nullptr;
+        return this->dynamic_index_buffer;
     }
 
-    vk::Buffer* RendererBufferManagerVulkan::get_dynamic_index_buffer()
+    vk::Buffer& RendererBufferManagerVulkan::get_dynamic_index_buffer()
     {
-        if(this->dynamic_index_buffer.has_value())
-        {
-            return &this->dynamic_index_buffer.value();
-        }
-        return nullptr;
+        return this->dynamic_index_buffer;
     }
 
     std::span<const BufferComponentVulkan> RendererBufferManagerVulkan::get_buffer_components() const
@@ -754,14 +702,14 @@ namespace tz::gl
             }
             if(this->draw_indirect_buffer.has_value())
             {
-                render.bind(*buffer_manager.get_vertex_buffer());
-                render.bind(*buffer_manager.get_index_buffer());
+                render.bind(buffer_manager.get_vertex_buffer());
+                render.bind(buffer_manager.get_index_buffer());
                 render.draw_indirect(this->draw_indirect_buffer.value(), this->num_static_draws());
             }
             if(this->draw_indirect_dynamic_buffer.has_value())
             {
-                render.bind(*buffer_manager.get_dynamic_vertex_buffer());
-                render.bind(*buffer_manager.get_dynamic_index_buffer());
+                render.bind(buffer_manager.get_dynamic_vertex_buffer());
+                render.bind(buffer_manager.get_dynamic_index_buffer());
                 render.draw_indirect(this->draw_indirect_dynamic_buffer.value(), this->num_dynamic_draws());
             }
         }
@@ -867,7 +815,7 @@ namespace tz::gl
                 vertices_staging.write(vertex_data.data(), vertex_data.size_bytes());
                 {
                     vk::CommandBufferRecording transfer_vertices = scratch_buf.record();
-                    transfer_vertices.buffer_copy_buffer(vertices_staging, *buffer_manager.get_vertex_buffer(), vertex_data.size_bytes());
+                    transfer_vertices.buffer_copy_buffer(vertices_staging, buffer_manager.get_vertex_buffer(), vertex_data.size_bytes());
                 }
 
                 // Submit Part 1
@@ -881,7 +829,7 @@ namespace tz::gl
                 indices_staging.write(index_data.data(), index_data.size_bytes());
                 {
                     vk::CommandBufferRecording transfer_indices = scratch_buf.record();
-                    transfer_indices.buffer_copy_buffer(indices_staging, *buffer_manager.get_index_buffer(), index_data.size_bytes());
+                    transfer_indices.buffer_copy_buffer(indices_staging, buffer_manager.get_index_buffer(), index_data.size_bytes());
                 }
                 copy_fence.signal();
                 // Submit Part 2
