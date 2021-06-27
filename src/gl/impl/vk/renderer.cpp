@@ -282,7 +282,6 @@ namespace tz::gl
         {
             this->buffer_components.push_back({vk::Buffer::null(), resource});
         }
-        //this->buffer_resources = renderer_buffer_resources;
     }
 
     void RendererBufferManagerVulkan::setup_buffers()
@@ -465,12 +464,6 @@ namespace tz::gl
 
     void RendererImageManagerVulkan::initialise_resources(std::vector<IResource*> renderer_texture_resources)
     {
-        /*
-        for(IResource* resource : renderer_texture_resources)
-        {
-            this->texture_components.push_back({vk::Image::null(), vk::ImageView::null(), vk::Sampler::null(), resource});
-        }
-        */
         for(IResource* texture_resource : renderer_texture_resources)
         {
             auto* tex_res = static_cast<TextureResource*>(texture_resource);
@@ -731,6 +724,7 @@ namespace tz::gl
         vk::CommandBuffer& scratch_buf = this->command_pool[this->get_view_count()];
         vk::Submit do_scratch_operation{vk::CommandBuffers{scratch_buf}, vk::SemaphoreRefs{}, vk::WaitStages{}, vk::SemaphoreRefs{}};
 
+        // Run scratch commands to ensure inputs are sorted w.r.t vertex/index/draw-indirect buffers.
         {
             std::optional<vk::Buffer> draw_staging;
             if(this->num_static_inputs() > 0)
@@ -762,7 +756,6 @@ namespace tz::gl
                     DrawIndirectCommand cur_cmd;
                     cur_cmd.indexCount = input->get_indices().size();
                     cur_cmd.instanceCount = 1;
-                    ///cur_cmd.firstIndex = 0;
                     cur_cmd.firstInstance = 0;
 
                     if(input->data_access() == RendererInputDataAccess::StaticFixed)
@@ -805,7 +798,7 @@ namespace tz::gl
                 draw_staging_dynamic->unmap_memory();
             }
 
-            // Setup transfers using the scratch buffers.
+            // Setup input data transfers using the scratch buffers.
             if(index_count_so_far > 0)
             {
                 // Part 1: Transfer vertex data.
@@ -838,10 +831,11 @@ namespace tz::gl
                 scratch_buf.reset();
             }
 
-            // Part 3: Setup draw commands
+            // Part 3: Setup draw commands for the inputs.
             this->record_draw_list(this->all_inputs_once());
         }
 
+        // Setup all components for buffer resources.
         for(std::size_t i = 0; i < buffer_manager.get_buffer_components().size(); i++)
         {
             BufferComponentVulkan& buffer_component = buffer_manager.get_buffer_components()[i];
@@ -864,6 +858,7 @@ namespace tz::gl
             }
         }
 
+        // Setup all components for texture resources.
         for(std::size_t i = 0; i < image_manager.get_texture_components().size(); i++)
         {
             TextureComponentVulkan& texture_component = image_manager.get_texture_components()[i];
@@ -1156,11 +1151,7 @@ namespace tz::gl
     {
         return std::accumulate(this->renderer_inputs.begin(), this->renderer_inputs.end(), 0, [access](std::size_t init, const std::unique_ptr<IRendererInput>& input_ptr)
         {
-            if(input_ptr->data_access() == access)
-            {
-                return init + 1;
-            }
-            return init;
+            return init + (input_ptr->data_access() == access ? 1 : 0);
         });
     }
 
@@ -1183,11 +1174,7 @@ namespace tz::gl
     {
         return std::accumulate(this->renderer_resources.begin(), this->renderer_resources.end(), 0, [type](std::size_t init, const std::unique_ptr<IResource>& res_ptr)
         {
-            if(res_ptr->get_type() == type)
-            {
-                return init + 1;
-            }
-            return init;
+            return init + (res_ptr->get_type() == type ? 1 : 0);
         });
     }
 
