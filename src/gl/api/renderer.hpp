@@ -272,10 +272,19 @@ namespace tz::gl
          * @return Clear colour value, as a normalised Vec4.
          */
         virtual tz::Vec4 get_clear_colour() const = 0;
-
+        /**
+         * @brief Retrieve the number of inputs within the renderer.
+         * 
+         * @return Number of inputs added to the renderer. Not necessarily the size of the draw-list.
+         */
         virtual std::size_t input_count() const = 0;
+        /**
+         * @brief Retrieve the number of inputs of the given access within the renderer. For example, `input_count_of(tz::gl::RendererInputDataAccess::DynamicFixed)` returns the number of dynamic inputs.
+         * 
+         * @param access Access specifier of inputs to count.
+         * @return Number of inputs added to the renderer with the given access specifier.
+         */
         virtual std::size_t input_count_of(RendererInputDataAccess access) const = 0;
-
         /**
          * @brief Retrieve the renderer input.
          * @note Each renderer takes a copy of the input it was given in its corresponding `IRendererBuilder`. This is NOT the same input as the one you gave to the builder.
@@ -285,10 +294,25 @@ namespace tz::gl
          * @return IRendererInput* pointing to the renderer's input.
          */
         virtual IRendererInput* get_input(RendererInputHandle handle) = 0;
-
+        /**
+         * @brief Retrieve the number of resources associated with the renderer.
+         * 
+         * @return Number of resources associated with the renderer.
+         */
         virtual std::size_t resource_count() const = 0;
+        /**
+         * @brief Retrieve the number of resources of the given type within the renderer. For exmaple: `resource_count_of(tz::gl::ResourceType::Texture)` returns the number of texture resources.
+         * 
+         * @param type Resource type of resources to count.
+         * @return Number of resources of the given type that are associated with the renderer.
+         */
         virtual std::size_t resource_count_of(ResourceType type) const = 0;
-
+        /**
+         * @brief Retrieve the resource corresponding to the given handle.
+         * 
+         * @param handle Handle corresponding to the desired resource.
+         * @return Pointer to the resource if such a resource exists within the renderer with this handle. If no such resource exists, nullptr is returned.
+         */
         virtual IResource* get_resource(ResourceHandle handle) = 0;
 
         /**

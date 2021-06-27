@@ -467,6 +467,10 @@ namespace tz::gl
     IRendererInput* RendererOGL::get_input(RendererInputHandle handle)
     {
         auto handle_value = static_cast<std::size_t>(static_cast<tz::HandleValue>(handle));
+        if(this->inputs.size() <= handle_value)
+        {
+            return nullptr;
+        }
         return this->inputs[handle_value].get();
     }
 
@@ -490,6 +494,10 @@ namespace tz::gl
     IResource* RendererOGL::get_resource(ResourceHandle handle)
     {
         auto handle_value = static_cast<HandleValueUnderlying>(static_cast<HandleValue>(handle));
+        if(this->resources.size() <= handle_value)
+        {
+            return nullptr;
+        }
         return this->resources[handle_value].get();
     }
 

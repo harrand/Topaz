@@ -1167,6 +1167,10 @@ namespace tz::gl
     IRendererInput* RendererVulkan::get_input(RendererInputHandle handle)
     {
         std::size_t handle_val = static_cast<std::size_t>(static_cast<tz::HandleValue>(handle));
+        if(this->renderer_inputs.size() <= handle_val)
+        {
+            return nullptr;
+        }
         return this->renderer_inputs[handle_val].get();
     }
 
@@ -1190,6 +1194,10 @@ namespace tz::gl
     IResource* RendererVulkan::get_resource(ResourceHandle handle)
     {
         auto handle_value = static_cast<HandleValueUnderlying>(static_cast<HandleValue>(handle));
+        if(this->renderer_resources.size() <= handle_value)
+        {
+            return nullptr;
+        }
         return this->renderer_resources[handle_value].get();
     }
 
