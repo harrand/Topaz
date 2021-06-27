@@ -108,12 +108,12 @@ namespace tz::gl
 
     RendererOGL::RendererOGL(RendererBuilderOGL builder):
     vao(0),
-    vbo(0),
-    ibo(0),
-    vbo_dynamic(0),
-    ibo_dynamic(0),
-    indirect_buffer(0),
-    indirect_buffer_dynamic(0),
+    vbo(std::nullopt),
+    ibo(std::nullopt),
+    vbo_dynamic(std::nullopt),
+    ibo_dynamic(std::nullopt),
+    indirect_buffer(std::nullopt),
+    indirect_buffer_dynamic(std::nullopt),
     resources(),
     resource_ubos(),
     resource_textures(),
@@ -216,31 +216,27 @@ namespace tz::gl
             // Step 2: Fill buffers and map properly.
             if(any_static_geometry)
             {
-                GLuint buffers[3];
-                glCreateBuffers(3, buffers);
-                this->vbo = buffers[0];
-                this->ibo = buffers[1];
-
-                glNamedBufferData(this->vbo, total_vertices.size(), total_vertices.data(), GL_STATIC_DRAW);
+                this->vbo = ogl::Buffer{ogl::BufferType::Vertex, ogl::BufferPurpose::StaticDraw, ogl::BufferUsage::ReadWrite, total_vertices.size()};
+                this->vbo->write(total_vertices.data(), total_vertices.size());
                 tz_report("VB Static (%zu vertices, %zu bytes total)", total_vertices.size() / fmt.binding_size, total_vertices.size());
-                glNamedBufferData(this->ibo, total_indices.size() * sizeof(unsigned int), total_indices.data(), GL_STATIC_DRAW);
-                tz_report("IB Static (%zu indices, %zu bytes total)", total_indices.size(), total_indices.size() * sizeof(unsigned int));
+                std::size_t total_indices_size = total_indices.size() * sizeof(unsigned int);
+                this->ibo = ogl::Buffer{ogl::BufferType::Index, ogl::BufferPurpose::StaticDraw, ogl::BufferUsage::ReadWrite, total_indices_size};
+                this->ibo->write(total_indices.data(), total_indices_size);
+                tz_report("IB Static (%zu indices, %zu bytes total)", total_indices.size(), total_indices_size);
             }
             if(any_dynamic_geometry)
             {
-                GLuint buffers[3];
-                glCreateBuffers(2, buffers);
-                this->vbo_dynamic = buffers[0];
-                this->ibo_dynamic = buffers[1];
-
-                glNamedBufferStorage(this->vbo_dynamic, total_vertices_dynamic.size(), total_vertices_dynamic.data(), persistent_mapped_buffer_flags);
+                this->vbo_dynamic = ogl::Buffer{ogl::BufferType::Vertex, ogl::BufferPurpose::DynamicDraw, ogl::BufferUsage::PersistentMapped, total_vertices_dynamic.size()};
+                this->vbo_dynamic->write(total_vertices_dynamic.data(), total_vertices_dynamic.size());
                 tz_report("VB Dynamic (%zu vertices, %zu bytes total)", total_vertices_dynamic.size() / fmt.binding_size, total_vertices_dynamic.size());
-                glNamedBufferStorage(this->ibo_dynamic, total_indices_dynamic.size() * sizeof(unsigned int), total_indices_dynamic.data(), persistent_mapped_buffer_flags);
-                tz_report("IB Dynamic (%zu indices, %zu bytes total)", total_indices_dynamic.size(), total_indices_dynamic.size() * sizeof(unsigned int));
+                std::size_t total_indices_dynamic_size = total_indices_dynamic.size() * sizeof(unsigned int);
+                this->ibo_dynamic = ogl::Buffer{ogl::BufferType::Index, ogl::BufferPurpose::DynamicDraw, ogl::BufferUsage::PersistentMapped, total_indices_dynamic_size};
+                this->ibo_dynamic->write(total_indices_dynamic.data(), total_indices_dynamic_size);
+                tz_report("IB Dynamic (%zu indices, %zu bytes total)", total_indices_dynamic.size(), total_indices_dynamic_size);
 
-                void* vtx_data = glMapNamedBufferRange(this->vbo_dynamic, 0, total_vertices_dynamic.size(), persistent_mapped_buffer_flags);
-                void* idx_data = glMapNamedBufferRange(this->ibo_dynamic, 0, total_indices_dynamic.size(), persistent_mapped_buffer_flags);
-                
+                void* vtx_data = this->vbo_dynamic->map_memory();
+                void* idx_data = this->ibo_dynamic->map_memory();
+
                 std::byte* vtx_mem = static_cast<std::byte*>(vtx_data);
                 for(const auto& vertex_region : vertex_regions)
                 {
@@ -406,8 +402,12 @@ namespace tz::gl
 
     RendererOGL::RendererOGL(RendererOGL&& move):
     vao(0),
-    vbo(0),
-    ibo(0),
+    vbo(std::nullopt),
+    ibo(std::nullopt),
+    vbo_dynamic(std::nullopt),
+    ibo_dynamic(std::nullopt),
+    indirect_buffer(std::nullopt),
+    indirect_buffer_dynamic(std::nullopt),
     resource_ubos(),
     render_pass(nullptr),
     shader(nullptr),
@@ -418,16 +418,6 @@ namespace tz::gl
 
     RendererOGL::~RendererOGL()
     {
-        if(this->vbo != 0)
-        {
-            glDeleteBuffers(1, &this->vbo);
-        }
-
-        if(this->ibo != 0)
-        {
-            glDeleteBuffers(1, &this->ibo);
-        }
-
         glDeleteBuffers(static_cast<GLsizei>(this->resource_ubos.size()), this->resource_ubos.data());
         glDeleteTextures(static_cast<GLsizei>(this->resource_textures.size()), this->resource_textures.data());
 
@@ -522,21 +512,19 @@ namespace tz::gl
             glProgramUniform1i(this->shader->ogl_get_program_handle(), tex_location, tex_location);
         }
 
-        if(this->indirect_buffer != 0)
+        if(this->indirect_buffer.has_value())
         {
-            tz_assert(this->indirect_buffer != 0, "Had static draws but no indirect buffer");
-            glVertexArrayVertexBuffer(this->vao, 0, this->vbo, 0, static_cast<GLsizei>(this->format.binding_size));
-            glVertexArrayElementBuffer(this->vao, this->ibo);
-            glBindBuffer(GL_DRAW_INDIRECT_BUFFER, this->indirect_buffer);
+            glVertexArrayVertexBuffer(this->vao, 0, this->vbo->native(), 0, static_cast<GLsizei>(this->format.binding_size));
+            glVertexArrayElementBuffer(this->vao, this->ibo->native());
+            this->indirect_buffer->bind();
             glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, nullptr, this->num_static_draws(), sizeof(DrawIndirectCommand));
         }
 
-        if(this->indirect_buffer_dynamic != 0)
+        if(this->indirect_buffer_dynamic.has_value())
         {
-            tz_assert(this->indirect_buffer_dynamic != 0, "Had static draws but no indirect buffer");
-            glVertexArrayVertexBuffer(this->vao, 0, this->vbo_dynamic, 0, static_cast<GLsizei>(this->format.binding_size));
-            glVertexArrayElementBuffer(this->vao, this->ibo_dynamic);
-            glBindBuffer(GL_DRAW_INDIRECT_BUFFER, this->indirect_buffer_dynamic);
+            glVertexArrayVertexBuffer(this->vao, 0, this->vbo_dynamic->native(), 0, static_cast<GLsizei>(this->format.binding_size));
+            glVertexArrayElementBuffer(this->vao, this->ibo_dynamic->native());
+            this->indirect_buffer_dynamic->bind();
             glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, nullptr, this->num_dynamic_draws(), sizeof(DrawIndirectCommand));
         }
     }
@@ -618,34 +606,32 @@ namespace tz::gl
 
         if(internal_draws.empty())
         {
-            glDeleteBuffers(1, &this->indirect_buffer);
-            this->indirect_buffer = 0;
+            this->indirect_buffer = std::nullopt;
         }
         else
         {
-            if(this->indirect_buffer == 0)
+            std::size_t draw_size_bytes = internal_draws.size() * sizeof(DrawIndirectCommand);
+            if(!this->indirect_buffer.has_value())
             {
-                glCreateBuffers(1, &this->indirect_buffer);
+                this->indirect_buffer = ogl::Buffer{ogl::BufferType::DrawIndirect, ogl::BufferPurpose::StaticDraw, ogl::BufferUsage::ReadWrite, draw_size_bytes};
             }
 
-            std::size_t draw_size_bytes = internal_draws.size() * sizeof(DrawIndirectCommand);
-            glNamedBufferData(this->indirect_buffer, draw_size_bytes, internal_draws.data(), GL_STATIC_DRAW);
+            this->indirect_buffer->write(internal_draws.data(), draw_size_bytes);
         }
 
         if(internal_draws_dynamic.empty())
         {
-            glDeleteBuffers(1, &this->indirect_buffer_dynamic);
-            this->indirect_buffer_dynamic = 0;
+            this->indirect_buffer_dynamic = std::nullopt;
         }
         else
         {
-            if(this->indirect_buffer_dynamic == 0)
+            std::size_t draw_size_bytes = internal_draws_dynamic.size() * sizeof(DrawIndirectCommand);
+            if(!this->indirect_buffer_dynamic.has_value())
             {
-                glCreateBuffers(1, &this->indirect_buffer_dynamic);
+                this->indirect_buffer_dynamic = ogl::Buffer{ogl::BufferType::DrawIndirect, ogl::BufferPurpose::StaticDraw, ogl::BufferUsage::ReadWrite, draw_size_bytes};
             }
 
-            std::size_t draw_size_bytes = internal_draws_dynamic.size() * sizeof(DrawIndirectCommand);
-            glNamedBufferData(this->indirect_buffer_dynamic, draw_size_bytes, internal_draws_dynamic.data(), GL_STATIC_DRAW);
+            this->indirect_buffer_dynamic->write(internal_draws_dynamic.data(), draw_size_bytes);
         }
         this->draw_cache = draws;
     }

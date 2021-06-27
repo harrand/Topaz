@@ -1,8 +1,7 @@
 #ifndef TOPAZ_GL_IMPL_OGL_RENDERER_HPP
 #define TOPAZ_GL_IMPL_OGL_RENDERER_HPP
 #include "gl/api/renderer.hpp"
-
-#include "glad/glad.h"
+#include "gl/ogl/buffer.hpp"
 #include <optional>
 
 namespace tz::gl
@@ -71,8 +70,10 @@ namespace tz::gl
         std::size_t num_dynamic_draws() const;
 
         GLuint vao;
-        GLuint vbo, ibo, vbo_dynamic, ibo_dynamic;
-        GLuint indirect_buffer, indirect_buffer_dynamic;
+        std::optional<ogl::Buffer> vbo, ibo, vbo_dynamic, ibo_dynamic;
+        //GLuint vbo, ibo, vbo_dynamic, ibo_dynamic;
+        std::optional<ogl::Buffer> indirect_buffer, indirect_buffer_dynamic;
+        //GLuint indirect_buffer, indirect_buffer_dynamic;
         std::vector<std::unique_ptr<IResource>> resources;
         std::vector<GLuint> resource_ubos;
         std::vector<GLuint> resource_textures;

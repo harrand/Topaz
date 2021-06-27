@@ -29,15 +29,14 @@ namespace tz::gl::vk
         Buffer(const Buffer& copy) = delete;
         Buffer(Buffer&& move);
         ~Buffer();
+        Buffer& operator=(const Buffer& rhs) = delete;
+        Buffer& operator=(Buffer&& rhs);
 
         BufferType get_type() const;
 
         void write(const void* addr, std::size_t bytes);
         void* map_memory();
         void unmap_memory();
-
-        Buffer& operator=(const Buffer& rhs) = delete;
-        Buffer& operator=(Buffer&& rhs);
 
         VkBuffer native() const;
         bool is_null() const;
