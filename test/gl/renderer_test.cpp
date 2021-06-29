@@ -20,7 +20,7 @@ int main()
         tz::gl::Shader shader = device.create_shader(builder);
 
         std::array<int, 5> values{1, 2, 3, 4, 5};
-        tz::gl::BufferResource int_resource{tz::gl::BufferData::FromArray<int>(values)};
+        tz::gl::BufferResource int_resource{tz::gl::BufferData::from_array<int>(values)};
 
         tz::gl::RendererBuilder renderer_builder;
         tz::gl::ResourceHandle int_handle = renderer_builder.add_resource(int_resource);

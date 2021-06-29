@@ -2,35 +2,12 @@
 #define TOPAZ_GL_RESOURCE_HPP
 #include "core/assert.hpp"
 #include "gl/api/resource.hpp"
-#include "stb_image.h"
+#include "gl/buffer.hpp"
+#include "gl/texture.hpp"
 #include <cstring>
-#include <vector>
-#include <filesystem>
 
 namespace tz::gl
 {
-    struct BufferData
-    {
-        template<typename T>
-        static BufferData FromArray(std::span<const T> data)
-        {
-            BufferData buf;
-            buf.data.resize(data.size_bytes());
-            std::memcpy(buf.data.data(), data.data(), data.size_bytes());
-            return buf;
-        }
-
-        template<typename T>
-        static BufferData FromValue(const T& data)
-        {
-            BufferData buf;
-            buf.data.resize(sizeof(T));
-            std::memcpy(buf.data.data(), &data, sizeof(T));
-            return buf;
-        }
-        std::vector<std::byte> data;
-    };
-
     /**
      * @brief Renderer Resource representing a uniform buffer.
      * 
@@ -95,83 +72,6 @@ namespace tz::gl
     private:
         BufferData initial_data;
         std::byte* resource_data;
-    };
-
-    struct TextureData
-    {
-        static TextureData FromImageFile(const std::filesystem::path image_path, TextureFormat format)
-        {
-            TextureData data;
-            int components_per_element;
-            switch(format)
-            {
-                case TextureFormat::Rgba32Signed:
-                [[fallthrough]];
-                case TextureFormat::Rgba32Unsigned:
-                [[fallthrough]];
-                case TextureFormat::Rgba32sRGB:
-                    components_per_element = 4;
-                break;
-                case TextureFormat::DepthFloat32:
-                    components_per_element = 1;
-                break;
-                default:
-                    tz_error("No support for given TextureFormat");
-                break;
-            }
-
-            {
-                int w, h;
-                int channels_in_file;
-                unsigned char* imgdata = stbi_load(image_path.string().c_str(), &w, &h, &channels_in_file, components_per_element);
-                data.width = w;
-                data.height = h;
-                std::size_t imgdata_size = w * h * components_per_element;
-                data.image_data.resize(imgdata_size);
-                std::memcpy(data.image_data.data(), imgdata, imgdata_size);
-            }
-            return data;
-        }
-
-        static TextureData FromMemory(unsigned int width, unsigned int height, std::span<const unsigned char> image_data)
-        {
-            TextureData data;
-            data.width = width;
-            data.height = height;
-            data.image_data.resize(image_data.size_bytes());
-            std::memcpy(data.image_data.data(), image_data.data(), image_data.size_bytes());
-            return data;
-        }
-
-        static TextureData Uninitialised(unsigned int width, unsigned int height, TextureFormat format)
-        {
-            TextureData data;
-            data.width = width;
-            data.height = height;
-            std::size_t element_size;
-            switch(format)
-            {
-                case TextureFormat::Rgba32Signed:
-                [[fallthrough]];
-                case TextureFormat::Rgba32Unsigned:
-                [[fallthrough]];
-                case TextureFormat::Rgba32sRGB:
-                    element_size = 4;
-                break;
-                case TextureFormat::DepthFloat32:
-                    element_size = 4;
-                break;
-                default:
-                    tz_error("No support for given TextureFormat");
-                break;
-            }
-            data.image_data.resize(element_size * width * height);
-            return data;
-        }
-
-        unsigned int width;
-        unsigned int height;
-        std::vector<std::byte> image_data;
     };
 
     class TextureResource : public IResourceCopyable<TextureResource>

@@ -5,7 +5,6 @@
 #include "gl/impl/common/device.hpp"
 
 #include "gl/vk/pipeline/graphics_pipeline.hpp"
-
 #include "gl/vk/logical_device.hpp"
 #include "gl/vk/pipeline/shader_module.hpp"
 #include "gl/vk/swapchain.hpp"

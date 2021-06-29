@@ -47,9 +47,15 @@ add_library(topaz
     src/core/window.hpp
 
     # tz::gl
+    src/gl/buffer.hpp
+    src/gl/buffer.inl
     src/gl/device.hpp
+    src/gl/input.cpp
+    src/gl/input.hpp
     src/gl/mesh.cpp
     src/gl/mesh.hpp
+    src/gl/output.cpp
+    src/gl/output.hpp
     src/gl/render_pass.hpp
     src/gl/renderer.hpp
     src/gl/resource.cpp

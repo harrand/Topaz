@@ -5,7 +5,7 @@
 #include "gl/render_pass.hpp"
 #include "gl/renderer.hpp"
 #include "gl/resource.hpp"
-#include "gl/mesh.hpp"
+#include "gl/input.hpp"
 #include "gl/shader.hpp"
 
 int main()

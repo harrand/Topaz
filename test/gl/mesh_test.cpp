@@ -1,6 +1,6 @@
 #include "core/tz.hpp"
 #include "core/assert.hpp"
-#include "gl/mesh.hpp"
+#include "gl/input.hpp"
 
 int main()
 {
