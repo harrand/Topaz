@@ -4,7 +4,7 @@
 
 int main()
 {
-    tz::initialise({"tz_mesh_test", tz::Version{1, 0, 0}, tz::info()}, tz::ApplicationType::HiddenWindowApplication);
+    tz::initialise({"tz_mesh_test", tz::Version{1, 0, 0}, tz::info()}, tz::ApplicationType::Headless);
     {
         tz::gl::Mesh mesh;
         mesh.vertices =

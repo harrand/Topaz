@@ -7,7 +7,6 @@ add_tz_test(NAME tz_headless_triangle_test
 
 add_tz_test(NAME tz_mesh_test
         SOURCE_FILES mesh_test.cpp
-        GRAPHICAL
         )
 
 add_tz_test(NAME tz_renderer_test
@@ -15,7 +14,6 @@ add_tz_test(NAME tz_renderer_test
         SHADER_SOURCES
             test/gl/shader_test.vertex.glsl
             test/gl/shader_test.fragment.glsl
-        GRAPHICAL
         )
 
 add_tz_test(NAME tz_shader_test
@@ -23,5 +21,4 @@ add_tz_test(NAME tz_shader_test
         SHADER_SOURCES
             test/gl/shader_test.vertex.glsl
             test/gl/shader_test.fragment.glsl
-        GRAPHICAL
         )

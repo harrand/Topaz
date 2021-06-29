@@ -5,7 +5,7 @@
 int main()
 {
     constexpr std::size_t frame_number = 10;
-    tz::initialise({"tz_renderer_test", tz::Version{1, 0, 0}, tz::info()}, tz::ApplicationType::HiddenWindowApplication);
+    tz::initialise({"tz_renderer_test", tz::Version{1, 0, 0}, tz::info()}, tz::ApplicationType::Headless);
     {
         // Simply create some basic shaders. Don't try and render or anything.
         tz::gl::Device device{tz::gl::DeviceBuilder{}};
