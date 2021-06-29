@@ -5,9 +5,6 @@
 ![non_graphical_tests clang-opengl-debug](https://github.com/Harrand/Topaz/actions/workflows/non_graphical_tests_opengl_clang.yml/badge.svg)
 ![non_graphical_tests windows-opengl-debug](https://github.com/Harrand/Topaz/actions/workflows/non_graphical_tests_opengl_msvc.yml/badge.svg)
 
-![non_graphical_tests windows-vulkan-debug](https://github.com/Harrand/Topaz/actions/workflows/non_graphical_tests_vulkan_msvc.yml/badge.svg)
-![non_graphical_tests gcc-vulkan-debug](https://github.com/Harrand/Topaz/actions/workflows/non_graphical_tests_vulkan_gcc.yml/badge.svg)
-
 ## About
 
  Topaz is a graphics engine written in C++20. Topaz 3.0 is currently in development. [Topaz 2.0](https://github.com/Harrand/Topaz/tree/Topaz2.0) is the most recent release of the Topaz Engine.
