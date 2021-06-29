@@ -5,7 +5,7 @@
 #include "gl/render_pass.hpp"
 #include "gl/renderer.hpp"
 #include "gl/resource.hpp"
-#include "gl/mesh.hpp"
+#include "gl/input.hpp"
 #include "gl/shader.hpp"
 
 float get_aspect_ratio()
@@ -41,7 +41,7 @@ int main()
         mesh.indices = {0, 1, 2};
         tz::gl::MeshInput mesh_input{mesh};
         // Note: Window is resizeable but we don't amend the aspect-ratio if it does. This is for simplicity's sake -- This is done properly in tz_dynamic_triangle_demo.
-        tz::gl::BufferResource buf_res{tz::gl::BufferData::FromArray<tz::Mat4>
+        tz::gl::BufferResource buf_res{tz::gl::BufferData::from_array<tz::Mat4>
         ({{
             tz::model({0.0f, 0.0f, -1.0f}, {0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f}),
             tz::view({0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}),

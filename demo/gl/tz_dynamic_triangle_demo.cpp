@@ -5,10 +5,9 @@
 #include "gl/render_pass.hpp"
 #include "gl/renderer.hpp"
 #include "gl/resource.hpp"
-#include "gl/mesh.hpp"
+#include "gl/input.hpp"
 #include "gl/shader.hpp"
 #include "gl/texture.hpp"
-#include "gl/vk/tz_vulkan.hpp"
 
 float get_aspect_ratio()
 {
@@ -44,7 +43,7 @@ int main()
             .indices = {0, 1, 2}
         }};
 
-        tz::gl::TextureResource texture{tz::gl::TextureData::FromMemory(2, 2,
+        tz::gl::TextureResource texture{tz::gl::TextureData::from_memory(2, 2,
         {{
             0b0000'0000,
             0b0000'0000,
@@ -67,14 +66,12 @@ int main()
             0b1111'1111
         }}), tz::gl::TextureFormat::Rgba32sRGB};
 
-        tz::gl::DynamicBufferResource buf_res{tz::gl::BufferData::FromArray<tz::Mat4>
+        tz::gl::DynamicBufferResource buf_res{tz::gl::BufferData::from_array<tz::Mat4>
         ({{
             tz::model({0.0f, 0.0f, -1.0f}, {0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f}),
             tz::view({0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}),
             tz::perspective(1.27f, get_aspect_ratio(), 0.1f, 1000.0f)
         }})};
-
-        tz::gl::TextureOutput render_to_texture{1920, 1080};
 
         renderer_builder.add_input(mesh_input);
         renderer_builder.set_output(tz::window());
