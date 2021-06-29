@@ -1,4 +1,5 @@
 #include "gl/texture.hpp"
+#include <cstring>
 
 namespace tz::gl
 {

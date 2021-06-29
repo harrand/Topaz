@@ -4,8 +4,9 @@
 #include "gl/impl/common/resource.hpp"
 #include "stb_image.h"
 #include <filesystem>
-#include <cstring>
 #include <span>
+#include <vector>
+#include <cstddef>
 
 namespace tz::gl
 {
