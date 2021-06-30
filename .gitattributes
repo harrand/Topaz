@@ -1,7 +1,7 @@
 * linguist-vendored
-cmake/* linguist-vendored=false
-demo/* linguist-vendored=false
-src/* linguist-vendored=false
-test/* linguist-vendored=false
-tools/* linguist-vendored=false
+cmake/** linguist-vendored=false
+demo/** linguist-vendored=false
+src/** linguist-vendored=false
+test/** linguist-vendored=false
+tools/** linguist-vendored=false
 *.tzsl linguist-language=GLSL
