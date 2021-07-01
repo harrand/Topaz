@@ -14,6 +14,13 @@ namespace tz::gl::vk
     WindowSurface* window_surface();
     bool is_headless();
 
+    constexpr VkPhysicalDeviceFeatures required_rendering_features()
+    {
+        VkPhysicalDeviceFeatures features{};
+        features.multiDrawIndirect = VK_TRUE;
+        return features;
+    }
+
     constexpr static tz::Version get_vulkan_version()
     {
         return {1, 1, 175};

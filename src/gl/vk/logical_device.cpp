@@ -5,7 +5,7 @@
 
 namespace tz::gl::vk
 {
-    LogicalDevice::LogicalDevice(hardware::DeviceQueueFamily queue_family, ExtensionList device_extensions):
+    LogicalDevice::LogicalDevice(hardware::DeviceQueueFamily queue_family, ExtensionList device_extensions, VkPhysicalDeviceFeatures features):
     dev(VK_NULL_HANDLE),
     queue_family(queue_family),
     vma(std::nullopt)
@@ -17,11 +17,7 @@ namespace tz::gl::vk
 
         float queue_priority = 1.0f;
         queue_create.pQueuePriorities = &queue_priority;
-
-        VkPhysicalDeviceFeatures features{};
-        features.samplerAnisotropy = VK_FALSE; // TODO: Customiseable?
-        features.multiDrawIndirect = VK_TRUE; // Yes we want MDI
-
+        
         VkDeviceCreateInfo create{};
         create.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
         create.pQueueCreateInfos = &queue_create;

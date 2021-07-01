@@ -10,7 +10,6 @@ namespace tz::gl
 {
     /**
      * @brief Renderer Resource representing a uniform buffer.
-     * 
      */
     class BufferResource : public IResourceCopyable<BufferResource>
     {

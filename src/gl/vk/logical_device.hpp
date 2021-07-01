@@ -5,6 +5,7 @@
 #include "gl/vk/hardware/device.hpp"
 #include "gl/vk/setup/extension_list.hpp"
 #include "gl/vk/hardware/queue.hpp"
+#include "gl/vk/tz_vulkan.hpp"
 
 namespace tz::gl::vk
 {
@@ -12,7 +13,7 @@ namespace tz::gl::vk
     class LogicalDevice
     {
     public:
-        LogicalDevice(hardware::DeviceQueueFamily queue_family, ExtensionList device_extensions = {});
+        LogicalDevice(hardware::DeviceQueueFamily queue_family, ExtensionList device_extensions = {}, VkPhysicalDeviceFeatures features = vk::required_rendering_features());
         LogicalDevice(const LogicalDevice& copy) = delete;
         LogicalDevice(LogicalDevice&& move);
         ~LogicalDevice();
