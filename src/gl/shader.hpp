@@ -2,14 +2,14 @@
 #define TOPAZ_GL_SHADER_HPP
 
 #if TZ_VULKAN
-#include "gl/impl/vk/shader.hpp"
+#include "gl/impl/frontend/vk/shader.hpp"
 namespace tz::gl
 {
     using Shader = ShaderVulkan;
     using ShaderBuilder = ShaderBuilderVulkan;
 }
 #elif TZ_OGL
-#include "gl/impl/ogl/shader.hpp"
+#include "gl/impl/frontend/ogl/shader.hpp"
 namespace tz::gl
 {
     using Shader = ShaderOGL;

@@ -3,14 +3,14 @@
 #include "gl/render_pass.hpp"
 
 #if TZ_VULKAN
-#include "gl/impl/vk/device.hpp"
+#include "gl/impl/frontend/vk/device.hpp"
 namespace tz::gl
 {
     using Device = DeviceVulkan;
     using DeviceBuilder = DeviceBuilderVulkan;
 }
 #elif TZ_OGL
-#include "gl/impl/ogl/device.hpp"
+#include "gl/impl/frontend/ogl/device.hpp"
 namespace tz::gl
 {
     using Device = DeviceOGL;

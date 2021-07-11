@@ -3,9 +3,9 @@
 #include "core/report.hpp"
 
 #if TZ_VULKAN
-#include "gl/vk/tz_vulkan.hpp"
+#include "gl/impl/backend/vk/tz_vulkan.hpp"
 #elif TZ_OGL
-#include "gl/ogl/tz_opengl.hpp"
+#include "gl/impl/backend/ogl/tz_opengl.hpp"
 #endif
 
 #include <cstdio>

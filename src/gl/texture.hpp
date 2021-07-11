@@ -1,7 +1,7 @@
 #ifndef TOPAZ_GL_TEXTURE_HPP
 #define TOPAZ_GL_TEXTURE_HPP
 #include "core/assert.hpp"
-#include "gl/impl/common/resource.hpp"
+#include "gl/impl/frontend/common/resource.hpp"
 #include "stb_image.h"
 #include <filesystem>
 #include <span>

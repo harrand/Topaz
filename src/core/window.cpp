@@ -1,5 +1,5 @@
 #include "core/window.hpp"
-#include "gl/ogl/tz_opengl.hpp"
+#include "gl/impl/backend/ogl/tz_opengl.hpp"
 #include <utility>
 
 namespace tz

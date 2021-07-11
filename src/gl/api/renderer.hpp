@@ -3,7 +3,7 @@
 #include "core/containers/basic_list.hpp"
 #include "core/interfaces/cloneable.hpp"
 #include "core/vector.hpp"
-#include "gl/impl/common/renderer.hpp"
+#include "gl/impl/frontend/common/renderer.hpp"
 #include "gl/render_pass.hpp"
 #include "gl/resource.hpp"
 #include "gl/shader.hpp"

@@ -4,7 +4,7 @@
 #include "gl/renderer.hpp"
 #include "gl/shader.hpp"
 
-#include "gl/impl/common/device.hpp"
+#include "gl/impl/frontend/common/device.hpp"
 
 namespace tz::gl
 {

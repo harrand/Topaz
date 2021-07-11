@@ -2,8 +2,8 @@
 #define TOPAZ_GL_API_RESOURCE_HPP
 #include "core/interfaces/cloneable.hpp"
 #include "core/handle.hpp"
-#include "gl/impl/common/resource.hpp"
-#include "gl/impl/common/renderer.hpp"
+#include "gl/impl/frontend/common/resource.hpp"
+#include "gl/impl/frontend/common/renderer.hpp"
 #include <span>
 
 namespace tz::gl

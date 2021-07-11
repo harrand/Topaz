@@ -1,6 +1,6 @@
 #ifndef TOPAZ_GL_API_SHADER_HPP
 #define TOPAZ_GL_API_SHADER_HPP
-#include "gl/impl/common/shader.hpp"
+#include "gl/impl/frontend/common/shader.hpp"
 #include <string>
 #include <string_view>
 #include <filesystem>

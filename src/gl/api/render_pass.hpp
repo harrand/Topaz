@@ -1,6 +1,6 @@
 #ifndef TOPAZ_GL_API_RENDER_PASS_HPP
 #define TOPAZ_GL_API_RENDER_PASS_HPP
-#include "gl/impl/common/render_pass_attachment.hpp"
+#include "gl/impl/frontend/common/render_pass_attachment.hpp"
 
 namespace tz::gl
 {
