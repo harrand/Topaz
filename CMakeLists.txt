@@ -21,6 +21,8 @@ add_library(topaz
 
     src/core/interfaces/cloneable.hpp
 
+    src/core/profiling/zone.hpp
+
     src/core/assert.hpp
     src/core/engine_info.cpp
     src/core/engine_info.hpp

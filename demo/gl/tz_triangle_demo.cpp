@@ -7,7 +7,6 @@
 #include "gl/resource.hpp"
 #include "gl/input.hpp"
 #include "gl/shader.hpp"
-#include "Tracy.hpp"
 
 float get_aspect_ratio()
 {
@@ -58,15 +57,8 @@ int main()
         renderer.set_clear_colour({0.1f, 0.2f, 0.4f, 1.0f});
         while(!tz::window().is_close_requested())
         {
-            #if TZ_PROFILE
-                constexpr char const* tracy_label = "WindowCloseRequestedLoop";
-                FrameMarkStart(tracy_label);
-            #endif
             tz::window().update();
             renderer.render();
-            #if TZ_PROFILE
-                FrameMarkEnd(tracy_label);
-            #endif
         }
     }
     tz::terminate();
