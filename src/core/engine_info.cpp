@@ -20,6 +20,9 @@ namespace tz
             case BuildConfig::Debug:
                 build_config = "Debug";
             break;
+            case BuildConfig::Profile:
+                build_config = "Profile";
+            break;
             case BuildConfig::Release:
                 build_config = "Release";
             break;

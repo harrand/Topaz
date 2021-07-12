@@ -6,6 +6,7 @@ from enum import Enum
 class TopazBuildConfig(Enum):
 	debug = 0
 	release = 1
+	profile = 2
 
 class TopazRenderApi(Enum):
 	vulkan = 0
@@ -32,7 +33,7 @@ def parse_build_type():
 def configure():
 	build_type = parse_build_type()
 	build_dir = build_type.render_api.name + "_" + build_type.build_config.name
-	cmd = "cmake -B \"build/%s\" -DTOPAZ_DEBUG=%d -DTOPAZ_VULKAN=%d -DTOPAZ_OGL=%d -G \"%s\"" % (build_dir, 1 if build_type.build_config == TopazBuildConfig.debug else 0, 1 if build_type.render_api == TopazRenderApi.vulkan else 0, 1 if build_type.render_api == TopazRenderApi.opengl else 0, build_type.generator)
+	cmd = "cmake -B \"build/%s\" -DTOPAZ_DEBUG=%d -DTOPAZ_PROFILE=%d -DTOPAZ_VULKAN=%d -DTOPAZ_OGL=%d -G \"%s\"" % (build_dir, 1 if build_type.build_config == TopazBuildConfig.debug else 0, 1 if build_type.build_config == TopazBuildConfig.profile else 0, 1 if build_type.render_api == TopazRenderApi.vulkan else 0, 1 if build_type.render_api == TopazRenderApi.opengl else 0, build_type.generator)
 	print("Configuring Topaz build system generation with default settings...")
 	subprocess.call(cmd + " -S .")
 

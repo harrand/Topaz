@@ -25,7 +25,8 @@ namespace tz
         enum class BuildConfig
         {
             Debug,
-            Release
+            Release,
+            Profile
         };
 
         /**

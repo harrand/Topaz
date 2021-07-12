@@ -4,7 +4,7 @@
 namespace tz
 {
     template<typename... Args>
-    void report_internal(const char* fmt, Args&&... args)
+    void report_internal([[maybe_unused]] const char* fmt, [[maybe_unused]] Args&&... args)
     {
         std::fflush(stdout);
         std::fprintf(stdout, fmt, std::forward<Args>(args)...);

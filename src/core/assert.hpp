@@ -8,7 +8,7 @@
 namespace tz
 {
     template<typename... Args>
-    void error_internal(const char* fmt, Args&&... args)
+    void error_internal([[maybe_unused]] const char* fmt, [[maybe_unused]] Args&&... args)
     {
         #if TZ_DEBUG
             std::fflush(stderr);
@@ -19,7 +19,7 @@ namespace tz
     }
 
     template<typename... Args>
-    void assert_internal(bool eval, const char* fmt, Args&&... args)
+    void assert_internal([[maybe_unused]] bool eval, [[maybe_unused]] const char* fmt, [[maybe_unused]] Args&&... args)
     {
         #if TZ_DEBUG
             if(!eval)

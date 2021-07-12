@@ -18,6 +18,8 @@ namespace tz
 
         #if TZ_DEBUG
             inf.build = EngineInfo::BuildConfig::Debug;
+        #elif TZ_PROFILE
+            inf.build = EngineInfo::BuildConfig::Profile;
         #else
             inf.build = EngineInfo::BuildConfig::Release;
         #endif

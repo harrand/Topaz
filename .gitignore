@@ -4,6 +4,7 @@ doc/*/
 bin/
 extern/
 build/
+tracy_server/
 
 # I don't want the idea directory in my repo at all
 .idea
