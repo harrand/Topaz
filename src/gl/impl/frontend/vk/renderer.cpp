@@ -684,7 +684,7 @@ namespace tz::gl
 
     void RendererProcessorVulkan::record_rendering_commands(const RendererPipelineManagerVulkan& pipeline_manager, const RendererBufferManagerVulkan& buffer_manager, const RendererImageManagerVulkan& image_manager, tz::Vec4 clear_colour)
     {
-        TZ_PROFZONE;
+        TZ_PROFSCOPE("Record Rendering Commands", TZ_PROFCOL_BLUE);
         VkClearValue vk_clear_colour{clear_colour[0], clear_colour[1], clear_colour[2], clear_colour[3]};
         for(std::size_t i = 0; i < this->get_view_count(); i++)
         {
@@ -712,7 +712,7 @@ namespace tz::gl
 
     void RendererProcessorVulkan::clear_rendering_commands()
     {
-        TZ_PROFZONE;
+        TZ_PROFSCOPE("Clear Rendering Commands", TZ_PROFCOL_BLUE);
         for(std::size_t i = 0; i < this->get_view_count(); i++)
         {
             this->frame_admin.wait_for(i);
@@ -722,7 +722,7 @@ namespace tz::gl
 
     void RendererProcessorVulkan::record_and_run_scratch_commands(RendererBufferManagerVulkan& buffer_manager, RendererImageManagerVulkan& image_manager)
     {
-        TZ_PROFZONE;
+        TZ_PROFSCOPE("Record & Run Scratch Commands", TZ_PROFCOL_BLUE);
         vk::Fence copy_fence{*this->device};
         copy_fence.signal();
         vk::CommandBuffer& scratch_buf = this->command_pool[this->get_view_count()];
@@ -893,7 +893,7 @@ namespace tz::gl
 
     void RendererProcessorVulkan::render()
     {
-        TZ_PROFZONE;
+        TZ_PROFSCOPE("RendererProcessorVulkan::render", TZ_PROFCOL_YELLOW);
         if(vk::is_headless())
         {
             this->frame_admin.render_frame_headless(this->graphics_present_queue, this->command_pool, vk::WaitStages{vk::WaitStage::ColourAttachmentOutput});
@@ -1195,7 +1195,6 @@ namespace tz::gl
 
     void RendererVulkan::render()
     {
-        TZ_PROFZONE;
         this->processor.render();
     }
 

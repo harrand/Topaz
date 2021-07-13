@@ -116,7 +116,7 @@ int main()
             static float counter = 0.0f;
             // Every frame, update some of the buffer resource data.
             {
-                TZ_NAMED_PROFZONE("Buffer Resource Data Edits");
+                TZ_PROFSCOPE("Buffer Resource Data Edits", TZ_PROFCOL_RED);
                 auto buffer_bytes = static_cast<tz::gl::IDynamicResource*>(renderer.get_resource(buf_handle))->get_resource_bytes_dynamic();
                 // Change the position of the triangle ever so slightly.
                 tz::Mat4& model = reinterpret_cast<tz::Mat4*>(buffer_bytes.data())[0];
@@ -129,7 +129,7 @@ int main()
             }
 
             {
-                TZ_NAMED_PROFZONE("Dynamic Input Data Edits");
+                TZ_PROFSCOPE("Dynamic Input Data Edits", TZ_PROFCOL_RED);
                 // Also, mess around with the smaller square (which is a dynamic input)
                 auto* input3 = static_cast<tz::gl::IRendererDynamicInput*>(renderer.get_input(handle3));
                 auto* input3_vertices = reinterpret_cast<tz::gl::Vertex*>(input3->get_vertex_bytes_dynamic().data());
