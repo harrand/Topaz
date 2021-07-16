@@ -1,4 +1,5 @@
 #if TZ_VULKAN
+#include "core/profiling/zone.hpp"
 #include "gl/impl/backend/vk/fence.hpp"
 
 namespace tz::gl::vk
@@ -44,6 +45,7 @@ namespace tz::gl::vk
 
     void Fence::wait_for() const
     {
+        TZ_PROFSCOPE("Backend VK : Fence Wait", TZ_PROFCOL_RED);
         vkWaitForFences(this->device->native(), 1, &this->fence, VK_TRUE, std::numeric_limits<std::uint64_t>::max());
     }
 

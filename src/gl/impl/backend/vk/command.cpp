@@ -1,6 +1,7 @@
 #if TZ_VULKAN
 
 #include "gl/impl/backend/vk/command.hpp"
+#include "core/profiling/zone.hpp"
 
 namespace tz::gl::vk
 {
@@ -26,6 +27,7 @@ namespace tz::gl::vk
 
     void CommandBufferRecording::buffer_copy_buffer(const Buffer& source, Buffer& destination, std::size_t copy_bytes_length)
     {
+        TZ_PROFSCOPE("Backend VK - Record Buffer->Buffer", TZ_PROFCOL_RED);
         tz_assert(!source.is_null(), "Attempted to record a buffer->buffer copy where the source is a null buffer.");
         tz_assert(!destination.is_null(), "Attempted to record a buffer->buffer copy where the destination is a null buffer.");
 
@@ -39,6 +41,7 @@ namespace tz::gl::vk
 
     void CommandBufferRecording::buffer_copy_image(const Buffer& source, Image& destination)
     {
+        TZ_PROFSCOPE("Backend VK - Record Buffer->Image", TZ_PROFCOL_RED);
         tz_assert(!source.is_null(), "Attempted to record a buffer->image copy where the source is a null buffer.");
         VkBufferImageCopy cpy{};
         cpy.bufferOffset = 0;
@@ -62,6 +65,7 @@ namespace tz::gl::vk
 
     void CommandBufferRecording::transition_image_layout(Image& image, Image::Layout new_layout)
     {
+        TZ_PROFSCOPE("Backend VK - Record Image Transition", TZ_PROFCOL_RED);
         VkImageMemoryBarrier barrier{};
         barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
         barrier.oldLayout = static_cast<VkImageLayout>(image.get_layout());
@@ -115,6 +119,7 @@ namespace tz::gl::vk
 
     void CommandBufferRecording::bind(const Buffer& buf)
     {
+        TZ_PROFSCOPE("Backend VK - Record BindBuffer", TZ_PROFCOL_RED);
         tz_assert(!buf.is_null(), "Attempted to record a bind for a null buffer.");
         auto buf_native = buf.native();
         VkDeviceSize offsets[] = {0};
@@ -134,22 +139,26 @@ namespace tz::gl::vk
 
     void CommandBufferRecording::bind(const DescriptorSet& descriptor_set, const pipeline::Layout& layout)
     {
+        TZ_PROFSCOPE("Backend VK - Record DescriptorSet", TZ_PROFCOL_RED);
         auto descriptor_set_native = descriptor_set.native();
         vkCmdBindDescriptorSets(this->command_buffer->native(), VK_PIPELINE_BIND_POINT_GRAPHICS, layout.native(), 0, 1, &descriptor_set_native, 0, nullptr);
     }
 
     void CommandBufferRecording::draw(std::uint32_t vert_count, std::uint32_t inst_count, std::uint32_t first_index, std::uint32_t first_instance)
     {
+        TZ_PROFSCOPE("Backend VK - Record Draw", TZ_PROFCOL_RED);
         vkCmdDraw(this->command_buffer->native(), vert_count, inst_count, first_index, first_instance);
     }
 
     void CommandBufferRecording::draw_indexed(std::uint32_t index_count, std::uint32_t inst_count, std::uint32_t first_index, std::uint32_t vertex_offset, std::uint32_t first_instance)
     {
+        TZ_PROFSCOPE("Backend VK - Record DrawIndexed", TZ_PROFCOL_RED);
         vkCmdDrawIndexed(this->command_buffer->native(), index_count, inst_count, first_index, vertex_offset, first_instance);
     }
 
     void CommandBufferRecording::draw_indirect(const vk::Buffer& draw_indirect_buffer, std::uint32_t draw_count)
     {
+        TZ_PROFSCOPE("Backend VK - Record DrawIndexedIndirect", TZ_PROFCOL_RED);
         tz_assert(!draw_indirect_buffer.is_null(), "Attempted to record a draw-indirect, but the draw-indirect-buffer was a null buffer.");
         vkCmdDrawIndexedIndirect(this->command_buffer->native(), draw_indirect_buffer.native(), 0, draw_count, sizeof(VkDrawIndexedIndirectCommand));
     }

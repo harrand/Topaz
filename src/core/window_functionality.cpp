@@ -1,5 +1,6 @@
 #include "core/window_functionality.hpp"
 #include "core/assert.hpp"
+#include "core/profiling/zone.hpp"
 
 #if TZ_OGL
 #include "glad/glad.h"
@@ -33,6 +34,7 @@ namespace tz
 
     void WindowFunctionality::update()
     {
+        TZ_PROFSCOPE("WindowFunctionality::update", TZ_PROFCOL_YELLOW);
         glfwPollEvents();
         #if TZ_OGL
             // OpenGL only

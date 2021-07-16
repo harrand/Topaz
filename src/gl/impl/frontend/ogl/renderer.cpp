@@ -1,5 +1,6 @@
 #if TZ_OGL
 #include "core/report.hpp"
+#include "core/profiling/zone.hpp"
 #include "core/tz.hpp"
 #include "gl/impl/frontend/ogl/renderer.hpp"
 #include <numeric>
@@ -510,6 +511,7 @@ namespace tz::gl
 
     void RendererOGL::render()
     {
+        TZ_PROFSCOPE("RendererOGL::render", TZ_PROFCOL_YELLOW);
         if(this->output == nullptr)
         {
             tz_report("[Warning]: RendererOGL::render() invoked with no output specified. The behaviour is undefined.");
@@ -538,24 +540,30 @@ namespace tz::gl
         glClear(buffer_bits);
 
         glBindVertexArray(this->vao);
-        for(std::size_t i = 0; i < this->resource_ubos.size(); i++)
         {
-            GLuint res_ubo = this->resource_ubos[i];
-            glBindBufferBase(GL_UNIFORM_BUFFER, static_cast<GLuint>(i), res_ubo);
+            TZ_PROFSCOPE("Frontend OGL : Bind Buffer Resources", TZ_PROFCOL_RED);
+            for(std::size_t i = 0; i < this->resource_ubos.size(); i++)
+            {
+                GLuint res_ubo = this->resource_ubos[i];
+                glBindBufferBase(GL_UNIFORM_BUFFER, static_cast<GLuint>(i), res_ubo);
+            }
         }
         glUseProgram(this->shader->ogl_get_program_handle());
-        
-        for(std::size_t i = 0; i < this->resource_textures.size(); i++)
         {
-            GLuint res_tex = this->resource_textures[i];
-            auto tex_location = static_cast<GLint>(this->resource_ubos.size() + i);
+            TZ_PROFSCOPE("Frontend OGL : Bind Texture Resources", TZ_PROFCOL_RED);
+            for(std::size_t i = 0; i < this->resource_textures.size(); i++)
+            {
+                GLuint res_tex = this->resource_textures[i];
+                auto tex_location = static_cast<GLint>(this->resource_ubos.size() + i);
 
-            glBindTextureUnit(tex_location, res_tex);
-            glProgramUniform1i(this->shader->ogl_get_program_handle(), tex_location, tex_location);
+                glBindTextureUnit(tex_location, res_tex);
+                glProgramUniform1i(this->shader->ogl_get_program_handle(), tex_location, tex_location);
+            }
         }
 
         if(this->indirect_buffer.has_value())
         {
+            TZ_PROFSCOPE("Frontend OGL : Static Inputs Draw", TZ_PROFCOL_RED);
             glVertexArrayVertexBuffer(this->vao, 0, this->vbo->native(), 0, static_cast<GLsizei>(this->format.binding_size));
             glVertexArrayElementBuffer(this->vao, this->ibo->native());
             this->indirect_buffer->bind();
@@ -564,6 +572,7 @@ namespace tz::gl
 
         if(this->indirect_buffer_dynamic.has_value())
         {
+            TZ_PROFSCOPE("Frontend OGL : Dynamic Inputs Draw", TZ_PROFCOL_RED);
             glVertexArrayVertexBuffer(this->vao, 0, this->vbo_dynamic->native(), 0, static_cast<GLsizei>(this->format.binding_size));
             glVertexArrayElementBuffer(this->vao, this->ibo_dynamic->native());
             this->indirect_buffer_dynamic->bind();
@@ -582,6 +591,7 @@ namespace tz::gl
 
     void RendererOGL::bind_draw_list(const RendererDrawList& draws)
     {
+        TZ_PROFSCOPE("RendererOGL::bind_draw_list", TZ_PROFCOL_YELLOW);
         if(this->draws_match_cache(draws))
         {
             return;

@@ -1,5 +1,6 @@
 #if TZ_VULKAN
 #include "gl/impl/backend/vk/present.hpp"
+#include "core/profiling/zone.hpp"
 
 namespace tz::gl::vk
 {
@@ -21,6 +22,7 @@ namespace tz::gl::vk
 
     void Present::operator()(const hardware::Queue& queue) const
     {
+        TZ_PROFSCOPE("Backend VK - Image Present", TZ_PROFCOL_RED);
         auto res = vkQueuePresentKHR(queue.native(), &this->present);
         tz_assert(res == VK_SUCCESS, "tz::gl::vk::Present(hardware::Queue): Failed to present queue");
     }
