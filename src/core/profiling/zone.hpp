@@ -1,6 +1,8 @@
 #ifndef TOPAZ_CORE_PROFILING_ZONE_HPP
 #define TOPAZ_CORE_PROFILING_ZONE_HPP
+#if TZ_PROFILE
 #include "Tracy.hpp"
+#endif // TZ_PROFILE
 
 namespace tz
 {
@@ -10,11 +12,13 @@ namespace tz
     #define TZ_PROFCOL_YELLOW 0xFFAAAA00
 
     #if TZ_PROFILE
-        #define TZ_PROFSCOPE(name, colour) ZoneScopedNC(name, colour)
-        #define TZ_PROFZONE TZ_PROFSCOPE(__func__, 0xFFFFFFFF)
+        #define CONCAT(a, b) CONCAT_INNER(a, b)
+        #define CONCAT_INNER(a, b) a ## b
+
+        #define UNIQUE_NAME(base) CONCAT(base, __LINE__)
+        #define TZ_PROFSCOPE(name, colour) ZoneNamedNC(UNIQUE_NAME(tracy_profvar), name, colour, true)
     #else
-        #define TZ_PROFSCOPE
-        #define TZ_PROFZONE
+        #define TZ_PROFSCOPE(name, colour)
     #endif
 
     #if TZ_PROFILE
