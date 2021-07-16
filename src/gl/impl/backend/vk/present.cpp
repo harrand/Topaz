@@ -22,7 +22,7 @@ namespace tz::gl::vk
 
     void Present::operator()(const hardware::Queue& queue) const
     {
-        TZ_PROFSCOPE("Backend VK - Image Present", TZ_PROFCOL_RED);
+        TZ_PROFZONE("Backend VK - Image Present", TZ_PROFCOL_RED);
         auto res = vkQueuePresentKHR(queue.native(), &this->present);
         tz_assert(res == VK_SUCCESS, "tz::gl::vk::Present(hardware::Queue): Failed to present queue");
     }

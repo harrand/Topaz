@@ -33,14 +33,14 @@ namespace tz::gl::vk
 
     void FrameAdmin::render_frame(hardware::Queue queue, const Swapchain& swapchain, const CommandPool& command_pool, WaitStages wait_stages)
     {
-        TZ_PROFSCOPE("FrameAdmin Render", TZ_PROFCOL_YELLOW);
+        TZ_PROFZONE("FrameAdmin Render", TZ_PROFCOL_YELLOW);
         if(this->images_in_flight.empty())
         {
             this->images_in_flight.resize(swapchain.get_image_views().size(), nullptr);
         }
         std::size_t& i = this->frame_counter;
         {
-            TZ_PROFSCOPE("FrameAdmin Render - Wait on Fences", TZ_PROFCOL_RED);
+            TZ_PROFZONE("FrameAdmin Render - Wait on Fences", TZ_PROFCOL_RED);
             this->in_flight_fences[i].wait_for();
         }
 

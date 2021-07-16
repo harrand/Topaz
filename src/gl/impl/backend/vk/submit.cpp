@@ -38,13 +38,13 @@ namespace tz::gl::vk
 
     void Submit::operator()(const hardware::Queue& queue, const Fence& fence) const
     {
-        TZ_PROFSCOPE("Backend VK : RenderWork Submit w/ Fence", TZ_PROFCOL_RED);
+        TZ_PROFZONE("Backend VK : RenderWork Submit w/ Fence", TZ_PROFCOL_RED);
         vkQueueSubmit(queue.native(), 1, &this->submit, fence.native());
     }
 
     void Submit::operator()(const hardware::Queue& queue) const
     {
-        TZ_PROFSCOPE("Backend VK : RenderWork Submit", TZ_PROFCOL_RED);
+        TZ_PROFZONE("Backend VK : RenderWork Submit", TZ_PROFCOL_RED);
         vkQueueSubmit(queue.native(), 1, &this->submit, VK_NULL_HANDLE);
     }
 

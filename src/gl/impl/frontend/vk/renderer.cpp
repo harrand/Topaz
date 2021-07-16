@@ -684,7 +684,7 @@ namespace tz::gl
 
     void RendererProcessorVulkan::record_rendering_commands(const RendererPipelineManagerVulkan& pipeline_manager, const RendererBufferManagerVulkan& buffer_manager, const RendererImageManagerVulkan& image_manager, tz::Vec4 clear_colour)
     {
-        TZ_PROFSCOPE("Record Rendering Commands", TZ_PROFCOL_YELLOW);
+        TZ_PROFZONE("Record Rendering Commands", TZ_PROFCOL_YELLOW);
         VkClearValue vk_clear_colour{clear_colour[0], clear_colour[1], clear_colour[2], clear_colour[3]};
         for(std::size_t i = 0; i < this->get_view_count(); i++)
         {
@@ -712,7 +712,7 @@ namespace tz::gl
 
     void RendererProcessorVulkan::clear_rendering_commands()
     {
-        TZ_PROFSCOPE("Clear Rendering Commands", TZ_PROFCOL_YELLOW);
+        TZ_PROFZONE("Clear Rendering Commands", TZ_PROFCOL_YELLOW);
         for(std::size_t i = 0; i < this->get_view_count(); i++)
         {
             this->frame_admin.wait_for(i);
@@ -722,7 +722,7 @@ namespace tz::gl
 
     void RendererProcessorVulkan::record_and_run_scratch_commands(RendererBufferManagerVulkan& buffer_manager, RendererImageManagerVulkan& image_manager)
     {
-        TZ_PROFSCOPE("Record & Run Scratch Commands", TZ_PROFCOL_YELLOW);
+        TZ_PROFZONE("Record & Run Scratch Commands", TZ_PROFCOL_YELLOW);
         vk::Fence copy_fence{*this->device};
         copy_fence.signal();
         vk::CommandBuffer& scratch_buf = this->command_pool[this->get_view_count()];
@@ -730,7 +730,7 @@ namespace tz::gl
 
         // Run scratch commands to ensure inputs are sorted w.r.t vertex/index/draw-indirect buffers.
         {
-            TZ_PROFSCOPE("Scratch : Inputs", TZ_PROFCOL_YELLOW);
+            TZ_PROFZONE("Scratch : Inputs", TZ_PROFCOL_YELLOW);
             std::optional<vk::Buffer> draw_staging;
             if(this->num_static_inputs() > 0)
             {
@@ -751,7 +751,7 @@ namespace tz::gl
             std::uint32_t dyn_vertex_count_so_far = 0;
 
             {
-                TZ_PROFSCOPE("Scratch : Fill indirect buffers", TZ_PROFCOL_RED);
+                TZ_PROFZONE("Scratch : Fill indirect buffers", TZ_PROFCOL_RED);
                 for(const IRendererInput* input : this->inputs)
                 {
                     if(input != nullptr)
@@ -811,7 +811,7 @@ namespace tz::gl
             {
                 // Part 1: Transfer vertex data.
                 {
-                    TZ_PROFSCOPE("Scratch : Transfer Vertex Data", TZ_PROFCOL_RED);
+                    TZ_PROFZONE("Scratch : Transfer Vertex Data", TZ_PROFCOL_RED);
                     std::span<const std::byte> vertex_data = total_vertices;
                     copy_fence.signal();
                     vk::Buffer vertices_staging{vk::BufferType::Staging, vk::BufferPurpose::TransferSource, *this->device, vk::hardware::MemoryResidency::CPU, vertex_data.size_bytes()};
@@ -828,7 +828,7 @@ namespace tz::gl
                 scratch_buf.reset();
                 // Part 2: Transfer index data.
                 {
-                    TZ_PROFSCOPE("Scratch : Transfer Index Data", TZ_PROFCOL_RED);
+                    TZ_PROFZONE("Scratch : Transfer Index Data", TZ_PROFCOL_RED);
                     std::span<const unsigned int> index_data = total_indices;
                     vk::Buffer indices_staging{vk::BufferType::Staging, vk::BufferPurpose::TransferSource, *this->device, vk::hardware::MemoryResidency::CPU, index_data.size_bytes()};
                     indices_staging.write(index_data.data(), index_data.size_bytes());
@@ -846,14 +846,14 @@ namespace tz::gl
 
             // Part 3: Setup draw commands for the inputs.
             {
-                TZ_PROFSCOPE("Scratch : Setup Initial Draw List", TZ_PROFCOL_RED);
+                TZ_PROFZONE("Scratch : Setup Initial Draw List", TZ_PROFCOL_RED);
                 this->record_draw_list(this->all_inputs_once());
             }
         }
 
         {
             // Setup all components for buffer resources.
-            TZ_PROFSCOPE("Scratch : Buffer Resources", TZ_PROFCOL_YELLOW);
+            TZ_PROFZONE("Scratch : Buffer Resources", TZ_PROFCOL_YELLOW);
             for(std::size_t i = 0; i < buffer_manager.get_buffer_components().size(); i++)
             {
                 BufferComponentVulkan& buffer_component = buffer_manager.get_buffer_components()[i];
@@ -862,7 +862,7 @@ namespace tz::gl
                 tz_report("Buffer Resource (ResourceID: %zu, BufferComponentID: %zu, %zu bytes total)", i, i, buffer_resource->get_resource_bytes().size_bytes());
                 if(buffer_resource->data_access() == RendererInputDataAccess::StaticFixed)
                 {
-                    TZ_PROFSCOPE("Scratch : Copy Buffer Data", TZ_PROFCOL_RED);
+                    TZ_PROFZONE("Scratch : Copy Buffer Data", TZ_PROFCOL_RED);
                     // Do transfers now.
                     scratch_buf.reset();
                     vk::Buffer resource_staging{vk::BufferType::Staging, vk::BufferPurpose::TransferSource, *this->device, vk::hardware::MemoryResidency::CPU, buffer_resource->get_resource_bytes().size_bytes()};
@@ -880,7 +880,7 @@ namespace tz::gl
 
         {
             // Setup all components for texture resources.
-            TZ_PROFSCOPE("Scratch : Texture Resources", TZ_PROFCOL_YELLOW);
+            TZ_PROFZONE("Scratch : Texture Resources", TZ_PROFCOL_YELLOW);
             for(std::size_t i = 0; i < image_manager.get_texture_components().size(); i++)
             {
                 TextureComponentVulkan& texture_component = image_manager.get_texture_components()[i];
@@ -888,7 +888,7 @@ namespace tz::gl
                 tz_report("Texture Resource (ResourceID: %zu, TextureComponentID: %zu, %zu bytes total)", buffer_manager.get_buffer_components().size() + i, i, texture_resource->get_resource_bytes().size_bytes());
                 tz_assert(texture_resource->data_access() == RendererInputDataAccess::StaticFixed, "DynamicFixed texture resources not yet implemented (Vulkan)");
                 {
-                    TZ_PROFSCOPE("Scratch : Copy Image Data", TZ_PROFCOL_RED);
+                    TZ_PROFZONE("Scratch : Copy Image Data", TZ_PROFCOL_RED);
                     scratch_buf.reset();
                     vk::Buffer resource_staging{vk::BufferType::Staging, vk::BufferPurpose::TransferSource, *this->device, vk::hardware::MemoryResidency::CPU, texture_resource->get_resource_bytes().size_bytes()};
                     resource_staging.write(texture_resource->get_resource_bytes().data(), texture_resource->get_resource_bytes().size_bytes());
@@ -1219,10 +1219,10 @@ namespace tz::gl
 
     void RendererVulkan::render(RendererDrawList draws)
     {
-        TZ_PROFSCOPE("RendererVulkan::render(RendererDrawList)", TZ_PROFCOL_YELLOW);
+        TZ_PROFZONE("RendererVulkan::render(RendererDrawList)", TZ_PROFCOL_YELLOW);
         if(!this->processor.draws_match_cache(draws))
         {
-            TZ_PROFSCOPE("Frontend VK : New Draw List", TZ_PROFCOL_YELLOW);
+            TZ_PROFZONE("Frontend VK : New Draw List", TZ_PROFCOL_YELLOW);
             this->processor.clear_rendering_commands();
             this->processor.record_draw_list(draws);
             this->processor.record_rendering_commands(this->pipeline_manager, this->buffer_manager, this->image_manager, this->clear_colour);

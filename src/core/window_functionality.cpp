@@ -34,7 +34,7 @@ namespace tz
 
     void WindowFunctionality::update()
     {
-        TZ_PROFSCOPE("WindowFunctionality::update", TZ_PROFCOL_YELLOW);
+        TZ_PROFZONE("WindowFunctionality::update", TZ_PROFCOL_YELLOW);
         glfwPollEvents();
         #if TZ_OGL
             // OpenGL only

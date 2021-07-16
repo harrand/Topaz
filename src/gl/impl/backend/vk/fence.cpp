@@ -45,7 +45,7 @@ namespace tz::gl::vk
 
     void Fence::wait_for() const
     {
-        TZ_PROFSCOPE("Backend VK : Fence Wait", TZ_PROFCOL_RED);
+        TZ_PROFZONE("Backend VK : Fence Wait", TZ_PROFCOL_RED);
         vkWaitForFences(this->device->native(), 1, &this->fence, VK_TRUE, std::numeric_limits<std::uint64_t>::max());
     }
 

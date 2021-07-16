@@ -16,9 +16,9 @@ namespace tz
         #define CONCAT_INNER(a, b) a ## b
 
         #define UNIQUE_NAME(base) CONCAT(base, __LINE__)
-        #define TZ_PROFSCOPE(name, colour) ZoneNamedNC(UNIQUE_NAME(tracy_profvar), name, colour, true)
+        #define TZ_PROFZONE(name, colour) ZoneNamedNC(UNIQUE_NAME(tracy_profvar), name, colour, true)
     #else
-        #define TZ_PROFSCOPE(name, colour)
+        #define TZ_PROFZONE(name, colour)
     #endif
 
     #if TZ_PROFILE
