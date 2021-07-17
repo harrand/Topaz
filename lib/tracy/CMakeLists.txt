@@ -23,8 +23,12 @@ if(WIN32)
     endif()
 elseif(UNIX)
     # We require pkg-config.
+    add_custom_target(TracyServerDepInstall
+        COMMENT "Empty Tracy Server Dependency Installation")
 else()
     message(STATUS "Warning: Tracy Server is not supported for this platform")
+    add_custom_target(TracyServerDepInstall
+        COMMENT "Empty Tracy Server Dependency Installation")
 endif()
 
 # TODO: Create TracyServer target.
