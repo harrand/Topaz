@@ -278,7 +278,7 @@ namespace tz::gl
                     break;
                 }
                 glEnableVertexArrayAttrib(this->vao, attrib_id);
-                glVertexArrayAttribFormat(this->vao, attrib_id, size, type, GL_FALSE, attrib_format.element_attribute_offset);
+                glVertexArrayAttribFormat(this->vao, attrib_id, size, type, GL_FALSE, static_cast<GLuint>(attrib_format.element_attribute_offset));
                 glVertexArrayAttribBinding(this->vao, attrib_id, 0);
             }
         }
@@ -567,7 +567,7 @@ namespace tz::gl
             glVertexArrayVertexBuffer(this->vao, 0, this->vbo->native(), 0, static_cast<GLsizei>(this->format.binding_size));
             glVertexArrayElementBuffer(this->vao, this->ibo->native());
             this->indirect_buffer->bind();
-            glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, nullptr, this->num_static_draws(), sizeof(DrawIndirectCommand));
+            glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, nullptr, static_cast<GLsizei>(this->num_static_draws()), sizeof(DrawIndirectCommand));
         }
 
         if(this->indirect_buffer_dynamic.has_value())
@@ -576,7 +576,7 @@ namespace tz::gl
             glVertexArrayVertexBuffer(this->vao, 0, this->vbo_dynamic->native(), 0, static_cast<GLsizei>(this->format.binding_size));
             glVertexArrayElementBuffer(this->vao, this->ibo_dynamic->native());
             this->indirect_buffer_dynamic->bind();
-            glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, nullptr, this->num_dynamic_draws(), sizeof(DrawIndirectCommand));
+            glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, nullptr, static_cast<GLsizei>(this->num_dynamic_draws()), sizeof(DrawIndirectCommand));
         }
     }
 
@@ -601,13 +601,13 @@ namespace tz::gl
         std::unordered_map<const IRendererInput*, DrawIndirectCommand> dynamic_input_draws;
 
         {
-            std::size_t static_vtx_count = 0, static_idx_count = 0;
-            std::size_t dynamic_vtx_count = 0, dynamic_idx_count = 0;
+            unsigned int static_vtx_count = 0, static_idx_count = 0;
+            unsigned int dynamic_vtx_count = 0, dynamic_idx_count = 0;
             for(const auto& input_ptr : this->inputs)
             {
                 const IRendererInput* input = input_ptr.get();
                 DrawIndirectCommand cmd;
-                cmd.count = input->index_count();
+                cmd.count = static_cast<unsigned int>(input->index_count());
                 cmd.instanceCount = 1;
                 cmd.baseInstance = 0;
                 switch(input->data_access())

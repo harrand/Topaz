@@ -33,7 +33,7 @@ void addition()
 	{
 		for(std::size_t j = 0; j < 4; j++)
 		{
-			m(i, j) = (i*4) + j;
+			m(i, j) = static_cast<float>((i*4) + j);
 		}
 	}
 
