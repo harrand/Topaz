@@ -3,6 +3,7 @@
 #include "core/profiling/zone.hpp"
 #include "core/tz.hpp"
 #include "gl/impl/frontend/ogl/renderer.hpp"
+#include "gl/impl/frontend/ogl/device.hpp"
 #include <numeric>
 
 namespace tz::gl
@@ -28,6 +29,16 @@ namespace tz::gl
         std::size_t handle_val = static_cast<std::size_t>(static_cast<tz::HandleValue>(handle));
         tz_assert(handle_val < this->inputs.size(), "Handle value %zu does not belong to this Renderer. Does it perhaps belong to another?");
         return this->inputs[handle_val];
+    }
+
+    void RendererBuilderOGL::set_pass(RenderPassAttachment pass)
+    {
+        this->pass = pass;
+    }
+    
+    RenderPassAttachment RendererBuilderOGL::get_pass() const
+    {
+        return this->pass;
     }
 
     void RendererBuilderOGL::set_output(const IRendererOutput& output)
@@ -70,17 +81,6 @@ namespace tz::gl
         return this->culling_strategy;
     }
 
-    void RendererBuilderOGL::set_render_pass(const RenderPass& render_pass)
-    {
-        this->render_pass = &render_pass;
-    }
-
-    const RenderPass& RendererBuilderOGL::get_render_pass() const
-    {
-        tz_assert(this->render_pass != nullptr, "No render pass set");
-        return *this->render_pass;
-    }
-
     void RendererBuilderOGL::set_shader(const Shader& shader)
     {
         this->shader = &shader;
@@ -107,7 +107,7 @@ namespace tz::gl
     }
 
 
-    RendererOGL::RendererOGL(RendererBuilderOGL builder):
+    RendererOGL::RendererOGL(RendererBuilderOGL builder, RendererBuilderDeviceInfoOGL device_info):
     vao(0),
     vbo(std::nullopt),
     ibo(std::nullopt),
@@ -118,14 +118,14 @@ namespace tz::gl
     resources(),
     resource_ubos(),
     resource_textures(),
-    render_pass(&builder.get_render_pass()),
+    render_pass(this->make_simple_render_pass(builder, device_info)),
     shader(&builder.get_shader()),
     inputs(this->copy_inputs(builder)),
     output(builder.get_output())
     {
         auto persistent_mapped_buffer_flags = GL_MAP_READ_BIT | GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT;
 
-        if(builder.get_render_pass().requires_depth_image())
+        if(this->render_pass.requires_depth_image())
         {
             glEnable(GL_DEPTH_TEST);
         }
@@ -410,7 +410,7 @@ namespace tz::gl
     indirect_buffer(std::nullopt),
     indirect_buffer_dynamic(std::nullopt),
     resource_ubos(),
-    render_pass(nullptr),
+    render_pass(RenderPassBuilder{}),
     shader(nullptr),
     output(nullptr)
     {
@@ -522,7 +522,7 @@ namespace tz::gl
             glViewport(0, 0, static_cast<GLsizei>(tz::window().get_width()), static_cast<GLsizei>(tz::window().get_height()));
         }
 
-        auto attachment = this->render_pass->ogl_get_attachments()[0];
+        auto attachment = this->render_pass.ogl_get_attachments()[0];
         GLenum buffer_bits;
         switch(attachment)
         {
@@ -587,6 +587,13 @@ namespace tz::gl
             this->bind_draw_list(draw_list);
         }
         this->render();
+    }
+
+    RenderPass RendererOGL::make_simple_render_pass(const RendererBuilderOGL& builder, const RendererBuilderDeviceInfoOGL& device_info)
+    {
+        RenderPassBuilder pass_builder;
+        pass_builder.add_pass(builder.get_pass());
+        return device_info.creator_device->create_render_pass(pass_builder);
     }
 
     void RendererOGL::bind_draw_list(const RendererDrawList& draws)

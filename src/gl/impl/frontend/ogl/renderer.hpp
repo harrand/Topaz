@@ -14,6 +14,9 @@ namespace tz::gl
         virtual RendererInputHandle add_input(const IRendererInput& input) final;
         virtual const IRendererInput* get_input(RendererInputHandle handle) const final;
 
+        virtual void set_pass(RenderPassAttachment pass) final;
+        virtual RenderPassAttachment get_pass() const final;
+
         virtual void set_output(const IRendererOutput& output) final;
         virtual const IRendererOutput* get_output() const final;
 
@@ -21,9 +24,6 @@ namespace tz::gl
 
         virtual void set_culling_strategy(RendererCullingStrategy culling_strategy) final;
         virtual RendererCullingStrategy get_culling_strategy() const final;
-        
-        virtual void set_render_pass(const RenderPass& render_pass) final;
-        virtual const RenderPass& get_render_pass() const final;
         
         virtual void set_shader(const Shader& shader) final;
         virtual const Shader& get_shader() const final;
@@ -33,18 +33,25 @@ namespace tz::gl
         std::span<const IRendererInput* const> ogl_get_inputs() const;
     private:
         std::vector<const IRendererInput*> inputs;
+        RenderPassAttachment pass = RenderPassAttachment::ColourDepth;
         const IRendererOutput* output = nullptr;
         std::vector<const IResource*> buffer_resources;
         std::vector<const IResource*> texture_resources;
-        const RenderPass* render_pass = nullptr;
         const Shader* shader = nullptr;
         RendererCullingStrategy culling_strategy;
+    };
+
+    class DeviceOGL;
+
+    struct RendererBuilderDeviceInfoOGL
+    {
+        const DeviceOGL* creator_device;
     };
 
     class RendererOGL : public IRenderer
     {
     public:
-        RendererOGL(RendererBuilderOGL builder);
+        RendererOGL(RendererBuilderOGL builder, RendererBuilderDeviceInfoOGL device_info);
         RendererOGL(const RendererOGL& copy) = delete;
         RendererOGL(RendererOGL&& move);
         ~RendererOGL();
@@ -67,6 +74,7 @@ namespace tz::gl
         virtual void render() final;
         virtual void render(RendererDrawList draw_list) final;
     private:
+        RenderPass make_simple_render_pass(const RendererBuilderOGL& builder, const RendererBuilderDeviceInfoOGL& device_info);
         void bind_draw_list(const RendererDrawList& list);
         bool draws_match_cache(const RendererDrawList& list) const;
         RendererDrawList all_inputs_once() const;
@@ -86,7 +94,7 @@ namespace tz::gl
         std::vector<GLuint> resource_ubos;
         std::vector<GLuint> resource_textures;
         RendererElementFormat format;
-        const RenderPass* render_pass;
+        RenderPass render_pass;
         const Shader* shader;
         std::vector<std::unique_ptr<IRendererInput>> inputs;
         const IRendererOutput* output;

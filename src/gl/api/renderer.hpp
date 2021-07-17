@@ -209,7 +209,8 @@ namespace tz::gl
          * @return RendererElementFormat describing how vertex data is laid out in memory.
          */
         virtual const IRendererInput* get_input(RendererInputHandle input_handle) const = 0;
-
+        virtual void set_pass(RenderPassAttachment pass) = 0;
+        virtual RenderPassAttachment get_pass() const = 0;
         virtual void set_output(const IRendererOutput& output) = 0;
         virtual const IRendererOutput* get_output() const = 0;
 
@@ -227,19 +228,6 @@ namespace tz::gl
          * @return Culling strategy that the renderer will use.
          */
         virtual RendererCullingStrategy get_culling_strategy() const = 0;
-        /**
-         * @brief Renderers must reference an existing RenderPass. Renderers will render each stage of the render pass in the expected order.
-         * 
-         * @param render_pass Render pass that will be ran
-         */
-        virtual void set_render_pass(const RenderPass& render_pass) = 0;
-        /**
-         * @brief Retrieve the existing render pass associated with this renderer.
-         * @pre A render pass must have previously been associated with this renderer via IRendererBuilder::set_render_pass
-         * 
-         * @return The current render pass object referenced by this renderer.
-         */
-        virtual const RenderPass& get_render_pass() const = 0;
 
         virtual void set_shader(const Shader& shader) = 0;
         virtual const Shader& get_shader() const = 0;

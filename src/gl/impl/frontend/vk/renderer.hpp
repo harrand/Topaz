@@ -21,6 +21,9 @@ namespace tz::gl
         virtual RendererInputHandle add_input(const IRendererInput& input) final;
         virtual const IRendererInput* get_input(RendererInputHandle handle) const final;
 
+        virtual void set_pass(RenderPassAttachment pass) final;
+        virtual RenderPassAttachment get_pass() const final;
+
         virtual void set_output(const IRendererOutput& output) final;
         virtual const IRendererOutput* get_output() const final;
 
@@ -28,8 +31,6 @@ namespace tz::gl
 
         virtual void set_culling_strategy(RendererCullingStrategy culling_strategy) final;
         virtual RendererCullingStrategy get_culling_strategy() const final;
-        virtual void set_render_pass(const RenderPass& render_pass) final;
-        virtual const RenderPass& get_render_pass() const final;
         virtual void set_shader(const Shader& shader) final;
         virtual const Shader& get_shader() const final;
 
@@ -41,16 +42,19 @@ namespace tz::gl
         std::span<const IResource* const> vk_get_texture_resources() const;
     private:
         std::vector<const IRendererInput*> inputs;
+        RenderPassAttachment pass = RenderPassAttachment::ColourDepth;
         const IRendererOutput* output = nullptr;
         std::vector<const IResource*> buffer_resources;
         std::vector<const IResource*> texture_resources;
         RendererCullingStrategy culling_strategy = RendererCullingStrategy::NoCulling;
-        const RenderPass* render_pass = nullptr;
         const Shader* shader = nullptr;
     };
 
+    class DeviceFunctionalityVulkan;
+
     struct RendererBuilderDeviceInfoVulkan
     {
+        const DeviceFunctionalityVulkan* creator_device;
         const vk::LogicalDevice* device;
         vk::pipeline::PrimitiveTopology primitive_type;
         const DeviceWindowBufferVulkan* device_swapchain;
@@ -60,7 +64,7 @@ namespace tz::gl
     class RendererPipelineManagerVulkan
     {
     public:
-        RendererPipelineManagerVulkan(RendererBuilderVulkan builder, RendererBuilderDeviceInfoVulkan device_info);
+        RendererPipelineManagerVulkan(RendererBuilderVulkan builder, RendererBuilderDeviceInfoVulkan device_info, const RenderPass& render_pass);
         void reconstruct_pipeline();
         const vk::GraphicsPipeline& get_pipeline() const;
         const vk::DescriptorSetLayout& get_resource_descriptor_layout() const;
@@ -161,7 +165,7 @@ namespace tz::gl
     class RendererImageManagerVulkan
     {
     public:
-        RendererImageManagerVulkan(RendererBuilderVulkan builder, RendererBuilderDeviceInfoVulkan device_info);
+        RendererImageManagerVulkan(RendererBuilderVulkan builder, RendererBuilderDeviceInfoVulkan device_info, const RenderPass& render_pass);
         void initialise_resources(std::vector<IResource*> renderer_buffer_resources);
         void setup_depth_image();
         void setup_swapchain_framebuffers();
@@ -184,7 +188,7 @@ namespace tz::gl
     class RendererProcessorVulkan
     {
     public:
-        RendererProcessorVulkan(RendererBuilderVulkan builder, RendererBuilderDeviceInfoVulkan device_info, std::vector<IRendererInput*> inputs);
+        RendererProcessorVulkan(RendererBuilderVulkan builder, RendererBuilderDeviceInfoVulkan device_info, std::vector<IRendererInput*> inputs, const RenderPass& render_pass);
         void initialise_resource_descriptors(const RendererPipelineManagerVulkan& pipeline_manager, const RendererBufferManagerVulkan& buffer_manager, const RendererImageManagerVulkan& image_manager, std::vector<const IResource*> resources);
         void initialise_command_pool();
         void block_until_idle();
@@ -239,6 +243,7 @@ namespace tz::gl
         virtual void render() final;
         virtual void render(RendererDrawList draws) final;
     private:
+        RenderPass make_simple_render_pass(const RendererBuilderVulkan& builder, const RendererBuilderDeviceInfoVulkan& device_info) const;
         std::vector<std::unique_ptr<IRendererInput>> copy_inputs(const RendererBuilderVulkan builder);
         std::vector<IRendererInput*> get_inputs();
         void handle_resize();
@@ -247,6 +252,7 @@ namespace tz::gl
         std::vector<std::unique_ptr<IRendererInput>> renderer_inputs;
         std::vector<std::unique_ptr<IResource>> renderer_resources;
 
+        RenderPass render_pass;
         RendererBufferManagerVulkan buffer_manager;
         RendererPipelineManagerVulkan pipeline_manager;
         RendererImageManagerVulkan image_manager;

@@ -158,6 +158,7 @@ namespace tz::gl
     Renderer DeviceFunctionalityVulkan::create_renderer(RendererBuilder builder) const
     {
         RendererBuilderDeviceInfoVulkan device_info;
+        device_info.creator_device = this;
         device_info.device = &this->device;
         device_info.primitive_type = this->primitive_type;
         device_info.device_swapchain = &this->swapchain;
