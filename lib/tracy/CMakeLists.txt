@@ -100,7 +100,6 @@ profiler/src/NativeWindow.cpp
 profiler/src/ResolvService.cpp
 profiler/src/winmain.cpp
 profiler/src/winmainArchDiscovery
-profiler/build/win32/Tracy.rc
 )
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
