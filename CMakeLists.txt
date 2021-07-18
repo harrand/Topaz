@@ -58,7 +58,6 @@ add_library(topaz
     src/gl/mesh.hpp
     src/gl/output.cpp
     src/gl/output.hpp
-    src/gl/render_pass.hpp
     src/gl/renderer.hpp
     src/gl/resource.cpp
     src/gl/resource.hpp
@@ -92,8 +91,6 @@ add_library(topaz
     # tz::gl (OpenGL Frontend)
     src/gl/impl/frontend/ogl/device.cpp
     src/gl/impl/frontend/ogl/device.hpp
-    src/gl/impl/frontend/ogl/render_pass.cpp
-    src/gl/impl/frontend/ogl/render_pass.hpp
     src/gl/impl/frontend/ogl/renderer.hpp
     src/gl/impl/frontend/ogl/renderer.cpp
     src/gl/impl/frontend/ogl/shader.cpp

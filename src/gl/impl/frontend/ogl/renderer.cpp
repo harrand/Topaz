@@ -3,7 +3,6 @@
 #include "core/profiling/zone.hpp"
 #include "core/tz.hpp"
 #include "gl/impl/frontend/ogl/renderer.hpp"
-#include "gl/impl/frontend/ogl/device.hpp"
 #include <numeric>
 
 namespace tz::gl
@@ -107,7 +106,7 @@ namespace tz::gl
     }
 
 
-    RendererOGL::RendererOGL(RendererBuilderOGL builder, RendererBuilderDeviceInfoOGL device_info):
+    RendererOGL::RendererOGL(RendererBuilderOGL builder):
     vao(0),
     vbo(std::nullopt),
     ibo(std::nullopt),
@@ -118,14 +117,14 @@ namespace tz::gl
     resources(),
     resource_ubos(),
     resource_textures(),
-    render_pass(this->make_simple_render_pass(builder, device_info)),
+    pass_attachment(builder.get_pass()),
     shader(&builder.get_shader()),
     inputs(this->copy_inputs(builder)),
     output(builder.get_output())
     {
         auto persistent_mapped_buffer_flags = GL_MAP_READ_BIT | GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT;
 
-        if(this->render_pass.requires_depth_image())
+        if(this->pass_attachment != RenderPassAttachment::Colour)
         {
             glEnable(GL_DEPTH_TEST);
         }
@@ -410,7 +409,7 @@ namespace tz::gl
     indirect_buffer(std::nullopt),
     indirect_buffer_dynamic(std::nullopt),
     resource_ubos(),
-    render_pass(RenderPassBuilder{}),
+    pass_attachment(RenderPassAttachment::ColourDepth),
     shader(nullptr),
     output(nullptr)
     {
@@ -436,7 +435,7 @@ namespace tz::gl
         std::swap(this->resource_ubos, rhs.resource_ubos);
         std::swap(this->resource_textures, rhs.resource_textures);
         std::swap(this->format, rhs.format);
-        std::swap(this->render_pass, rhs.render_pass);
+        std::swap(this->pass_attachment, rhs.pass_attachment);
         std::swap(this->shader, rhs.shader);
         std::swap(this->inputs, rhs.inputs);
         std::swap(this->output, rhs.output);
@@ -522,9 +521,8 @@ namespace tz::gl
             glViewport(0, 0, static_cast<GLsizei>(tz::window().get_width()), static_cast<GLsizei>(tz::window().get_height()));
         }
 
-        auto attachment = this->render_pass.ogl_get_attachments()[0];
         GLenum buffer_bits;
-        switch(attachment)
+        switch(this->pass_attachment)
         {
             case RenderPassAttachment::Colour:
             default:
@@ -587,13 +585,6 @@ namespace tz::gl
             this->bind_draw_list(draw_list);
         }
         this->render();
-    }
-
-    RenderPass RendererOGL::make_simple_render_pass(const RendererBuilderOGL& builder, const RendererBuilderDeviceInfoOGL& device_info)
-    {
-        RenderPassBuilder pass_builder;
-        pass_builder.add_pass(builder.get_pass());
-        return device_info.creator_device->create_render_pass(pass_builder);
     }
 
     void RendererOGL::bind_draw_list(const RendererDrawList& draws)

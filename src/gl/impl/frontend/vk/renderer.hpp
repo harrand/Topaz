@@ -3,6 +3,7 @@
 #if TZ_VULKAN
 #include "gl/api/renderer.hpp"
 #include "gl/impl/frontend/common/device.hpp"
+#include "gl/impl/frontend/vk/render_pass.hpp"
 
 #include "gl/impl/backend/vk/pipeline/graphics_pipeline.hpp"
 #include "gl/impl/backend/vk/logical_device.hpp"
@@ -51,6 +52,7 @@ namespace tz::gl
     };
 
     class DeviceFunctionalityVulkan;
+    class DeviceWindowBufferVulkan;
 
     struct RendererBuilderDeviceInfoVulkan
     {
@@ -64,7 +66,7 @@ namespace tz::gl
     class RendererPipelineManagerVulkan
     {
     public:
-        RendererPipelineManagerVulkan(RendererBuilderVulkan builder, RendererBuilderDeviceInfoVulkan device_info, const RenderPass& render_pass);
+        RendererPipelineManagerVulkan(RendererBuilderVulkan builder, RendererBuilderDeviceInfoVulkan device_info, const RenderPassVulkan& render_pass);
         void reconstruct_pipeline();
         const vk::GraphicsPipeline& get_pipeline() const;
         const vk::DescriptorSetLayout& get_resource_descriptor_layout() const;
@@ -72,7 +74,7 @@ namespace tz::gl
     private:
         vk::GraphicsPipeline create_pipeline() const;
         const vk::LogicalDevice* device;
-        const RenderPass* render_pass;
+        const RenderPassVulkan* render_pass;
         const vk::ShaderModule* vertex_shader;
         const vk::ShaderModule* fragment_shader;
         vk::pipeline::VertexInputState vertex_input_state;
@@ -165,7 +167,7 @@ namespace tz::gl
     class RendererImageManagerVulkan
     {
     public:
-        RendererImageManagerVulkan(RendererBuilderVulkan builder, RendererBuilderDeviceInfoVulkan device_info, const RenderPass& render_pass);
+        RendererImageManagerVulkan(RendererBuilderDeviceInfoVulkan device_info, const RenderPassVulkan& render_pass);
         void initialise_resources(std::vector<IResource*> renderer_buffer_resources);
         void setup_depth_image();
         void setup_swapchain_framebuffers();
@@ -176,7 +178,7 @@ namespace tz::gl
 
         const vk::LogicalDevice* device;
         const vk::hardware::Device* physical_device;
-        const RenderPass* render_pass;
+        const RenderPassVulkan* render_pass;
         const DeviceWindowBufferVulkan* swapchain;
         std::optional<vk::ImageView> maybe_swapchain_offscreen_imageview;
         std::vector<TextureComponentVulkan> texture_components;
@@ -188,7 +190,7 @@ namespace tz::gl
     class RendererProcessorVulkan
     {
     public:
-        RendererProcessorVulkan(RendererBuilderVulkan builder, RendererBuilderDeviceInfoVulkan device_info, std::vector<IRendererInput*> inputs, const RenderPass& render_pass);
+        RendererProcessorVulkan(RendererBuilderDeviceInfoVulkan device_info, std::vector<IRendererInput*> inputs, const RenderPassVulkan& render_pass);
         void initialise_resource_descriptors(const RendererPipelineManagerVulkan& pipeline_manager, const RendererBufferManagerVulkan& buffer_manager, const RendererImageManagerVulkan& image_manager, std::vector<const IResource*> resources);
         void initialise_command_pool();
         void block_until_idle();
@@ -209,7 +211,7 @@ namespace tz::gl
 
         const vk::LogicalDevice* device;
         const vk::hardware::Device* physical_device;
-        const RenderPass* render_pass;
+        const RenderPassVulkan* render_pass;
         const DeviceWindowBufferVulkan* swapchain;
         std::vector<IRendererInput*> inputs;
         std::optional<vk::DescriptorPool> resource_descriptor_pool;
@@ -243,7 +245,7 @@ namespace tz::gl
         virtual void render() final;
         virtual void render(RendererDrawList draws) final;
     private:
-        RenderPass make_simple_render_pass(const RendererBuilderVulkan& builder, const RendererBuilderDeviceInfoVulkan& device_info) const;
+        RenderPassVulkan make_simple_render_pass(const RendererBuilderVulkan& builder, const RendererBuilderDeviceInfoVulkan& device_info) const;
         std::vector<std::unique_ptr<IRendererInput>> copy_inputs(const RendererBuilderVulkan builder);
         std::vector<IRendererInput*> get_inputs();
         void handle_resize();
@@ -252,7 +254,7 @@ namespace tz::gl
         std::vector<std::unique_ptr<IRendererInput>> renderer_inputs;
         std::vector<std::unique_ptr<IResource>> renderer_resources;
 
-        RenderPass render_pass;
+        RenderPassVulkan render_pass;
         RendererBufferManagerVulkan buffer_manager;
         RendererPipelineManagerVulkan pipeline_manager;
         RendererImageManagerVulkan image_manager;

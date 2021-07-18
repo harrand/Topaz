@@ -146,7 +146,7 @@ namespace tz::gl
         }
     }
 
-    RenderPass DeviceFunctionalityVulkan::create_render_pass(RenderPassBuilder builder) const
+    RenderPassVulkan DeviceFunctionalityVulkan::vk_create_render_pass(RenderPassBuilderVulkan builder) const
     {
         builder.vk_finalise(this->swapchain.get_format());
         RenderPassBuilderDeviceInfoVulkan device_info;

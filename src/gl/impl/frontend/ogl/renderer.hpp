@@ -41,17 +41,10 @@ namespace tz::gl
         RendererCullingStrategy culling_strategy;
     };
 
-    class DeviceOGL;
-
-    struct RendererBuilderDeviceInfoOGL
-    {
-        const DeviceOGL* creator_device;
-    };
-
     class RendererOGL : public IRenderer
     {
     public:
-        RendererOGL(RendererBuilderOGL builder, RendererBuilderDeviceInfoOGL device_info);
+        RendererOGL(RendererBuilderOGL builder);
         RendererOGL(const RendererOGL& copy) = delete;
         RendererOGL(RendererOGL&& move);
         ~RendererOGL();
@@ -74,7 +67,6 @@ namespace tz::gl
         virtual void render() final;
         virtual void render(RendererDrawList draw_list) final;
     private:
-        RenderPass make_simple_render_pass(const RendererBuilderOGL& builder, const RendererBuilderDeviceInfoOGL& device_info);
         void bind_draw_list(const RendererDrawList& list);
         bool draws_match_cache(const RendererDrawList& list) const;
         RendererDrawList all_inputs_once() const;
@@ -94,7 +86,7 @@ namespace tz::gl
         std::vector<GLuint> resource_ubos;
         std::vector<GLuint> resource_textures;
         RendererElementFormat format;
-        RenderPass render_pass;
+        RenderPassAttachment pass_attachment;
         const Shader* shader;
         std::vector<std::unique_ptr<IRendererInput>> inputs;
         const IRendererOutput* output;

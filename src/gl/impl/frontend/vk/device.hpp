@@ -3,6 +3,7 @@
 #if TZ_VULKAN
 #include "gl/api/device.hpp"
 
+#include "gl/impl/frontend/vk/render_pass.hpp"
 #include "gl/impl/backend/vk/logical_device.hpp"
 #include "gl/impl/backend/vk/swapchain.hpp"
 #include "gl/impl/backend/vk/pipeline/input_assembly.hpp"
@@ -43,7 +44,7 @@ namespace tz::gl
     class DeviceFunctionalityVulkan : public IDevice
     {
     public:
-        [[nodiscard]] virtual RenderPass create_render_pass(RenderPassBuilder builder) const final;
+        RenderPassVulkan vk_create_render_pass(RenderPassBuilderVulkan builder) const;
         [[nodiscard]] virtual Renderer create_renderer(RendererBuilder builder) const final;
         [[nodiscard]] virtual Shader create_shader(ShaderBuilder builder) const final;
     protected:

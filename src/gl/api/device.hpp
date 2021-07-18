@@ -1,6 +1,5 @@
 #ifndef TOPAZ_GL_API_DEVICE_HPP
 #define TOPAZ_GL_API_DEVICE_HPP
-#include "gl/render_pass.hpp"
 #include "gl/renderer.hpp"
 #include "gl/shader.hpp"
 
@@ -42,13 +41,6 @@ namespace tz::gl
     class IDevice
     {
     public:
-        /**
-         * @brief Create an @ref IRenderPass using this device and the provided builder.
-         * 
-         * @param builder Builder describing the composition of the render-pass.
-         * @return RenderPass 
-         */
-        [[nodiscard]] virtual RenderPass create_render_pass(RenderPassBuilder builder) const = 0;
         /**
          * @brief Create an @ref IRenderer using this device and the provided builder.
          * @note Renderer inputs are copied over, so the renderer input provided is no longer needed once the renderer has been created.

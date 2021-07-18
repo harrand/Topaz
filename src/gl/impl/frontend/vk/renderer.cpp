@@ -195,7 +195,7 @@ namespace tz::gl
         return {this->texture_resources.begin(), this->texture_resources.end()};
     }
 
-    RendererPipelineManagerVulkan::RendererPipelineManagerVulkan(RendererBuilderVulkan builder, RendererBuilderDeviceInfoVulkan device_info, const RenderPass& render_pass):
+    RendererPipelineManagerVulkan::RendererPipelineManagerVulkan(RendererBuilderVulkan builder, RendererBuilderDeviceInfoVulkan device_info, const RenderPassVulkan& render_pass):
     device(device_info.device),
     render_pass(&render_pass),
     vertex_shader(&builder.get_shader().vk_get_vertex_shader()),
@@ -438,7 +438,7 @@ namespace tz::gl
         return this->buffer_components;
     }
 
-    RendererImageManagerVulkan::RendererImageManagerVulkan(RendererBuilderVulkan builder, RendererBuilderDeviceInfoVulkan device_info, const RenderPass& render_pass):
+    RendererImageManagerVulkan::RendererImageManagerVulkan(RendererBuilderDeviceInfoVulkan device_info, const RenderPassVulkan& render_pass):
     device(device_info.device),
     physical_device(this->device->get_queue_family().dev),
     render_pass(&render_pass),
@@ -591,7 +591,7 @@ namespace tz::gl
         return this->texture_components;
     }
 
-    RendererProcessorVulkan::RendererProcessorVulkan(RendererBuilderVulkan builder, RendererBuilderDeviceInfoVulkan device_info, std::vector<IRendererInput*> inputs, const RenderPass& render_pass):
+    RendererProcessorVulkan::RendererProcessorVulkan(RendererBuilderDeviceInfoVulkan device_info, std::vector<IRendererInput*> inputs, const RenderPassVulkan& render_pass):
     device(device_info.device),
     physical_device(this->device->get_queue_family().dev),
     render_pass(&render_pass),
@@ -1107,8 +1107,8 @@ namespace tz::gl
     render_pass(this->make_simple_render_pass(builder, device_info)),
     buffer_manager(device_info, this->get_inputs()),
     pipeline_manager(builder, device_info, this->render_pass),
-    image_manager(builder, device_info, this->render_pass),
-    processor(builder, device_info, this->get_inputs(), this->render_pass),
+    image_manager(device_info, this->render_pass),
+    processor(device_info, this->get_inputs(), this->render_pass),
     clear_colour(),
     requires_depth_image(builder.get_pass() != RenderPassAttachment::Colour)
     {
@@ -1230,11 +1230,11 @@ namespace tz::gl
         this->processor.render();
     }
 
-    RenderPass RendererVulkan::make_simple_render_pass(const RendererBuilderVulkan& builder, const RendererBuilderDeviceInfoVulkan& device_info) const
+    RenderPassVulkan RendererVulkan::make_simple_render_pass(const RendererBuilderVulkan& builder, const RendererBuilderDeviceInfoVulkan& device_info) const
     {
-        RenderPassBuilder pass_builder;
+        RenderPassBuilderVulkan pass_builder;
         pass_builder.add_pass(builder.get_pass());
-        return device_info.creator_device->create_render_pass(pass_builder);
+        return device_info.creator_device->vk_create_render_pass(pass_builder);
     }
 
     std::vector<std::unique_ptr<IRendererInput>> RendererVulkan::copy_inputs(const RendererBuilderVulkan builder)

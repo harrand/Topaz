@@ -1,6 +1,5 @@
 #if TZ_OGL
 #include "gl/impl/frontend/ogl/device.hpp"
-#include "gl/impl/frontend/ogl/renderer.hpp"
 
 namespace tz::gl
 {
@@ -26,16 +25,9 @@ namespace tz::gl
         
     }
 
-    RenderPass DeviceOGL::create_render_pass(RenderPassBuilder builder) const
-    {
-        return {builder};
-    }
-
     Renderer DeviceOGL::create_renderer(RendererBuilder builder) const
     {
-        RendererBuilderDeviceInfoOGL device_info;
-        device_info.creator_device = this;
-        return {builder, device_info};
+        return {builder};
     }
 
     Shader DeviceOGL::create_shader(ShaderBuilder builder) const
