@@ -2,7 +2,6 @@
 #include "core/vector.hpp"
 #include "core/matrix_transform.hpp"
 #include "gl/device.hpp"
-#include "gl/render_pass.hpp"
 #include "gl/renderer.hpp"
 #include "gl/resource.hpp"
 #include "gl/input.hpp"
@@ -20,10 +19,6 @@ int main()
     {
         tz::gl::DeviceBuilder device_builder;
         tz::gl::Device device{device_builder};
-
-        tz::gl::RenderPassBuilder pass_builder;
-        pass_builder.add_pass(tz::gl::RenderPassAttachment::Colour);
-        tz::gl::RenderPass render_pass = device.create_render_pass(pass_builder);
 
         tz::gl::ShaderBuilder shader_builder;
         shader_builder.set_shader_file(tz::gl::ShaderType::VertexShader, ".\\demo\\gl\\dynamic_triangle_demo.vertex.tzsl");
@@ -77,7 +72,7 @@ int main()
         renderer_builder.set_output(tz::window());
         tz::gl::ResourceHandle buf_handle = renderer_builder.add_resource(buf_res);
         renderer_builder.add_resource(texture);
-        renderer_builder.set_render_pass(render_pass);
+        renderer_builder.set_pass(tz::gl::RenderPassAttachment::Colour);
         renderer_builder.set_shader(shader);
         tz::gl::Renderer renderer = device.create_renderer(renderer_builder);
         renderer.set_clear_colour({0.1f, 0.2f, 0.4f, 1.0f});

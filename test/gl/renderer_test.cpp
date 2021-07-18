@@ -10,10 +10,6 @@ int main()
         // Simply create some basic shaders. Don't try and render or anything.
         tz::gl::Device device{tz::gl::DeviceBuilder{}};
 
-        tz::gl::RenderPassBuilder pass_builder;
-        pass_builder.add_pass(tz::gl::RenderPassAttachment::Colour);
-        tz::gl::RenderPass render_pass = device.create_render_pass(pass_builder);
-
         tz::gl::ShaderBuilder builder;
         builder.set_shader_file(tz::gl::ShaderType::VertexShader, ".\\test\\gl\\shader_test.vertex.glsl");
         builder.set_shader_file(tz::gl::ShaderType::FragmentShader, ".\\test\\gl\\shader_test.fragment.glsl");
@@ -25,7 +21,7 @@ int main()
         tz::gl::RendererBuilder renderer_builder;
         tz::gl::ResourceHandle int_handle = renderer_builder.add_resource(int_resource);
         renderer_builder.set_output(tz::window());
-        renderer_builder.set_render_pass(render_pass);
+        renderer_builder.set_pass(tz::gl::RenderPassAttachment::Colour);
         renderer_builder.set_shader(shader);
         tz::gl::Renderer renderer = device.create_renderer(renderer_builder);
 
