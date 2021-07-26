@@ -143,6 +143,11 @@ namespace tz
             return this->elements.erase(first, last);
         }
 
+        void clear()
+        {
+            this->elements.clear();
+        }
+
         void resize(std::size_t num_elements)
         {
             this->elements.resize(num_elements);

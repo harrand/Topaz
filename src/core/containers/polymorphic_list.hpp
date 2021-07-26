@@ -29,6 +29,7 @@ namespace tz
         Iterator begin() const;
         Iterator end() const;
         std::size_t size() const;
+        void clear();
         const T& operator[](std::size_t idx) const;
         T& operator[](std::size_t idx);
     private:

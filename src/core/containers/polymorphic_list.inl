@@ -42,6 +42,12 @@ namespace tz
     }
 
     template<typename T, typename Allocator>
+    void PolymorphicList<T, Allocator>::clear()
+    {
+        this->elements.clear();
+    }
+
+    template<typename T, typename Allocator>
     const T& PolymorphicList<T, Allocator>::operator[](std::size_t idx) const
     {
         tz_assert(idx < this->size(), "Index %zu out of range, size = %zu", idx, this->size());
