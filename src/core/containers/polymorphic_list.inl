@@ -35,6 +35,26 @@ namespace tz
         return {this->elements.data() + this->elements.length()};
     }
 
+    template<typename T, typename Allocator>
+    std::size_t PolymorphicList<T, Allocator>::size() const
+    {
+        return this->elements.length();
+    }
+
+    template<typename T, typename Allocator>
+    const T& PolymorphicList<T, Allocator>::operator[](std::size_t idx) const
+    {
+        tz_assert(idx < this->size(), "Index %zu out of range, size = %zu", idx, this->size());
+        return *this->elements[idx];
+    }
+        
+    template<typename T, typename Allocator>
+    T& PolymorphicList<T, Allocator>::operator[](std::size_t idx)
+    {
+        tz_assert(idx < this->size(), "Index %zu out of range, size = %zu", idx, this->size());
+        return *this->elements[idx];
+    }
+
     template<typename T>
     InterfaceIterator<T>::InterfaceIterator(const std::unique_ptr<T>* loc):
     loc(loc)

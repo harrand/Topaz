@@ -28,6 +28,9 @@ namespace tz
         Iterator end();
         Iterator begin() const;
         Iterator end() const;
+        std::size_t size() const;
+        const T& operator[](std::size_t idx) const;
+        T& operator[](std::size_t idx);
     private:
         using SmartPointer = std::unique_ptr<T>;
         using SmartPointerConst = std::unique_ptr<const T>;
