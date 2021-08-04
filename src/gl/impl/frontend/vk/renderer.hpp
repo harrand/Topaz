@@ -226,6 +226,7 @@ namespace tz::gl
         virtual std::size_t resource_count_of(ResourceType type) const final;
         
         virtual IResource* get_resource(ResourceHandle handle) final;
+        virtual IComponent* get_component(ResourceHandle handle) final;
         
         virtual void render() final;
         virtual void render(RendererDrawList draws) final;

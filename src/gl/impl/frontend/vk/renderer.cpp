@@ -1212,6 +1212,35 @@ namespace tz::gl
         return this->renderer_resources[handle_value].get();
     }
 
+    IComponent* RendererVulkan::get_component(ResourceHandle handle)
+    {
+        IResource* resource = this->get_resource(handle);
+        if(resource == nullptr)
+        {
+            return nullptr;
+        }
+
+        switch(resource->get_type())
+        {
+            case ResourceType::Buffer:
+            {
+                std::size_t buffer_id = this->resource_handle_to_buffer_id(handle);
+                return &this->buffer_manager.get_buffer_components()[buffer_id];
+            }
+            break;
+            case ResourceType::Texture:
+            {
+                std::size_t texture_id = this->resource_handle_to_texture_id(handle);
+                return &this->image_manager.get_texture_components()[texture_id];
+            }
+            break;
+            default:
+                tz_error("Unknown ResourceType. Not yet implemented?");
+                return nullptr;
+            break;
+        }
+    }
+
     void RendererVulkan::render()
     {
         this->processor.render();

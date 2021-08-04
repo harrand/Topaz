@@ -97,11 +97,14 @@ int main()
         tz::gl::RendererInputHandle handle3 = renderer_builder.add_input(mesh_input3);
         renderer_builder.set_output(tz::window());
         tz::gl::ResourceHandle buf_handle = renderer_builder.add_resource(buf_res);
-        renderer_builder.add_resource(texture);
+        tz::gl::ResourceHandle tex_handle = renderer_builder.add_resource(texture);
         renderer_builder.set_pass(tz::gl::RenderPassAttachment::ColourDepth);
         renderer_builder.set_shader(shader);
         tz::gl::Renderer renderer = device.create_renderer(renderer_builder);
         renderer.set_clear_colour({0.1f, 0.2f, 0.4f, 1.0f});
+
+        auto* buf_comp = renderer.get_component(buf_handle);
+        auto* tex_comp = renderer.get_component(tex_handle);
 
         tz::gl::RendererDrawList draws{handle1, handle2, handle3};
 
