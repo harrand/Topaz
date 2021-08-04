@@ -152,13 +152,14 @@ namespace tz::gl
     class RendererImageManagerVulkan
     {
     public:
-        RendererImageManagerVulkan(RendererBuilderDeviceInfoVulkan device_info, const RenderPassVulkan& render_pass);
+        RendererImageManagerVulkan(RendererBuilderVulkan builder, RendererBuilderDeviceInfoVulkan device_info, const RenderPassVulkan& render_pass);
         void initialise_resources(std::vector<IResource*> renderer_buffer_resources);
         void setup_depth_image();
         void setup_swapchain_framebuffers();
         std::span<const vk::Framebuffer> get_swapchain_framebuffers() const;
         std::span<const TextureComponentVulkan> get_texture_components() const;
         std::span<TextureComponentVulkan> get_texture_components();
+        const vk::Framebuffer* get_texture_output() const;
     private:
 
         const vk::LogicalDevice* device;
@@ -170,6 +171,7 @@ namespace tz::gl
         std::optional<vk::Image> depth_image;
         std::optional<vk::ImageView> depth_imageview;
         std::vector<vk::Framebuffer> swapchain_framebuffers;
+        std::optional<vk::Framebuffer> texture_output_framebuffer;
     };
 
     class RendererProcessorVulkan

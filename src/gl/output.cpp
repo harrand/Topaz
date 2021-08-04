@@ -11,4 +11,13 @@ namespace tz::gl
     {
         this->depth_attachment = texture_component;
     }
+
+    const tz::gl::TextureComponent* TextureOutput::get_first_colour_component() const
+    {
+        if(this->colour_outputs.empty())
+        {
+            return nullptr;
+        }
+        return this->colour_outputs.front();
+    }
 }

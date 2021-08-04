@@ -12,6 +12,7 @@ namespace tz::gl
         TextureOutput() = default;
         void add_colour_output(tz::gl::TextureComponent* texture_component);
         void set_depth_output(tz::gl::TextureComponent* texture_component);
+        const tz::gl::TextureComponent* get_first_colour_component() const;
         virtual RendererOutputType get_type() const final
         {
             return RendererOutputType::Texture;

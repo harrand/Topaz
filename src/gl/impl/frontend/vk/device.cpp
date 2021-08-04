@@ -171,6 +171,32 @@ namespace tz::gl
         return {this->device, builder};
     }
 
+    TextureFormat DeviceFunctionalityVulkan::get_window_format() const
+    {
+        switch(this->swapchain.get_format())
+        {
+            case vk::Image::Format::Rgba32Signed:
+                return TextureFormat::Rgba32Signed;
+            break;
+            case vk::Image::Format::Rgba32Unsigned:
+                return TextureFormat::Rgba32Unsigned;
+            break;
+            case vk::Image::Format::Rgba32sRGB:
+                return TextureFormat::Rgba32sRGB;
+            break;
+            case vk::Image::Format::DepthFloat32:
+                return TextureFormat::DepthFloat32;
+            break;
+            case vk::Image::Format::Bgra32UnsignedNorm:
+                return TextureFormat::Bgra32UnsignedNorm;
+            break;
+            default:
+                tz_error("Unrecognised underlying window format. Behaviour of program is undefined.");
+                return {};
+            break;
+        }
+    }
+
     DeviceVulkan::DeviceVulkan(DeviceBuilderVulkan builder):
     DeviceFunctionalityVulkan()
     {

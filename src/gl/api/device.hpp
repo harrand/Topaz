@@ -56,6 +56,12 @@ namespace tz::gl
          * @return Shader Shader program which can be provided to a `tz::gl::Renderer`.
          */
         [[nodiscard]] virtual Shader create_shader(ShaderBuilder builder) const = 0;
+        /**
+         * @brief Retrieve the texture format used by the window. Note that in headless applications, the return value is implementation-defined.
+         * 
+         * @return TextureFormat Format corresponding to the window framebuffer.
+         */
+        virtual TextureFormat get_window_format() const = 0;
     };
     /**
      * @}

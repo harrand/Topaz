@@ -28,7 +28,8 @@ int main()
 
         float w = tz::window().get_width();
         float h = tz::window().get_height();
-        tz::gl::TextureResource tex_res{tz::gl::TextureData::uninitialised(w, h, tz::gl::TextureFormat::Rgba32sRGB), tz::gl::TextureFormat::Rgba32sRGB};
+        tz::gl::TextureFormat wnd_fmt = device.get_window_format();
+        tz::gl::TextureResource tex_res{tz::gl::TextureData::uninitialised(w, h, wnd_fmt), wnd_fmt};
 
         tz::gl::Shader invert_shader = device.create_shader(invert_shader_builder);
 
@@ -38,6 +39,7 @@ int main()
         invert_renderer_builder.set_shader(invert_shader);
 
         tz::gl::Renderer invert_renderer = device.create_renderer(invert_renderer_builder);
+        invert_renderer.set_clear_colour({1.0f, 1.0f, 0.0f, 1.0f});
 
         auto* render_target_component = static_cast<tz::gl::TextureComponent*>(invert_renderer.get_component(render_target_handle));
         tz::gl::TextureOutput render_target;

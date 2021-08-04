@@ -60,6 +60,8 @@ namespace tz::gl
             case TextureFormat::Rgba32Unsigned:
             [[fallthrough]];
             case TextureFormat::Rgba32sRGB:
+            [[fallthrough]];
+            case TextureFormat::Bgra32UnsignedNorm:
                 element_size = 4;
             break;
             case TextureFormat::DepthFloat32:

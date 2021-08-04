@@ -20,6 +20,7 @@ namespace tz::gl::vk
             Rgba32sRGB = VK_FORMAT_R8G8B8A8_SRGB,
             Bgra32sRGB = VK_FORMAT_B8G8R8A8_SRGB,
             DepthFloat32 = VK_FORMAT_D32_SFLOAT,
+            Bgra32UnsignedNorm = VK_FORMAT_B8G8R8A8_UNORM
         };
 
         enum class Layout

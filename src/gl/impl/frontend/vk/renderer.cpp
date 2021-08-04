@@ -2,6 +2,7 @@
 #include "core/report.hpp"
 #include "core/profiling/zone.hpp"
 #include "gl/resource.hpp"
+#include "gl/output.hpp"
 #include "gl/impl/frontend/vk/renderer.hpp"
 #include "gl/impl/frontend/vk/device.hpp"
 #include "gl/impl/backend/vk/tz_vulkan.hpp"
@@ -439,7 +440,7 @@ namespace tz::gl
         return this->buffer_components;
     }
 
-    RendererImageManagerVulkan::RendererImageManagerVulkan(RendererBuilderDeviceInfoVulkan device_info, const RenderPassVulkan& render_pass):
+    RendererImageManagerVulkan::RendererImageManagerVulkan(RendererBuilderVulkan builder, RendererBuilderDeviceInfoVulkan device_info, const RenderPassVulkan& render_pass):
     device(device_info.device),
     physical_device(this->device->get_queue_family().dev),
     render_pass(&render_pass),
@@ -448,7 +449,8 @@ namespace tz::gl
     texture_components(),
     depth_image(std::nullopt),
     depth_imageview(std::nullopt),
-    swapchain_framebuffers()
+    swapchain_framebuffers(),
+    texture_output_framebuffer()
     {
         if(vk::is_headless())
         {
@@ -457,8 +459,21 @@ namespace tz::gl
         }
         else
         {
-            const auto& as_swapchain = static_cast<const vk::Swapchain&>(*this->swapchain);
-            this->swapchain_framebuffers.reserve(as_swapchain.get_image_views().size());
+            if(builder.get_output()->get_type() == RendererOutputType::Texture)
+            {
+                auto* texture_output = static_cast<const TextureOutput*>(builder.get_output());
+                VkExtent2D output_component_dimensions;
+                const TextureComponentVulkan* component = texture_output->get_first_colour_component();
+                output_component_dimensions.width = component->get_image().get_width();
+                output_component_dimensions.height = component->get_image().get_height();
+                this->texture_output_framebuffer = vk::Framebuffer(this->render_pass->vk_get_render_pass(), component->get_view(), output_component_dimensions);
+            }
+            else
+            {
+                const auto& as_swapchain = static_cast<const vk::Swapchain&>(*this->swapchain);
+                this->swapchain_framebuffers.reserve(as_swapchain.get_image_views().size());
+            }
+            
         }
         
     }
@@ -482,6 +497,9 @@ namespace tz::gl
                 break;
                 case TextureFormat::DepthFloat32:
                     format = vk::Image::Format::DepthFloat32;
+                break;
+                case TextureFormat::Bgra32UnsignedNorm:
+                    format = vk::Image::Format::Bgra32UnsignedNorm;
                 break;
                 default:
                     tz_error("Unrecognised texture format (Vulkan)");
@@ -528,7 +546,7 @@ namespace tz::gl
                 props.address_mode_w = convert_address_mode(gl_props.address_mode_w);
             }
 
-            vk::Image img{*this->device, tex_res->get_width(), tex_res->get_height(), format, vk::Image::UsageField{vk::Image::Usage::TransferDestination, vk::Image::Usage::Sampleable}, vk::hardware::MemoryResidency::GPU};
+            vk::Image img{*this->device, tex_res->get_width(), tex_res->get_height(), format, vk::Image::UsageField{vk::Image::Usage::TransferDestination, vk::Image::Usage::Sampleable, vk::Image::Usage::ColourAttachment}, vk::hardware::MemoryResidency::GPU};
             vk::ImageView view{*this->device, img};
             vk::Sampler img_sampler{*this->device, props};
             this->texture_components.emplace_back(texture_resource, std::move(img), std::move(view), std::move(img_sampler));
@@ -590,6 +608,15 @@ namespace tz::gl
     std::span<TextureComponentVulkan> RendererImageManagerVulkan::get_texture_components()
     {
         return this->texture_components;
+    }
+
+    const vk::Framebuffer* RendererImageManagerVulkan::get_texture_output() const
+    {
+        if(this->texture_output_framebuffer.has_value())
+        {
+            return &this->texture_output_framebuffer.value();
+        }
+        return nullptr;
     }
 
     RendererProcessorVulkan::RendererProcessorVulkan(RendererBuilderVulkan builder, RendererBuilderDeviceInfoVulkan device_info, std::vector<IRendererInput*> inputs, const RenderPassVulkan& render_pass):
@@ -691,23 +718,39 @@ namespace tz::gl
         for(std::size_t i = 0; i < this->get_view_count(); i++)
         {
             vk::CommandBufferRecording render = this->command_pool[i].record();
-            vk::RenderPassRun run{this->command_pool[i], this->render_pass->vk_get_render_pass(), image_manager.get_swapchain_framebuffers()[i], this->swapchain->full_render_area(), vk_clear_colour};
+            const vk::Framebuffer* render_target = nullptr;
+            if(image_manager.get_texture_output() != nullptr)
+            {
+                render_target = image_manager.get_texture_output();
+            } 
+            else
+            {
+                render_target = &image_manager.get_swapchain_framebuffers()[i];
+            }
+            vk::RenderPassRun run{this->command_pool[i], this->render_pass->vk_get_render_pass(), *render_target, this->swapchain->full_render_area(), vk_clear_colour};
             pipeline_manager.get_pipeline().bind(this->command_pool[i]);
             if(this->resource_descriptor_pool.has_value())
             {
                 render.bind(this->resource_descriptor_pool.value()[i], pipeline_manager.get_layout());
             }
-            if(this->draw_indirect_buffer.has_value())
+            if(this->inputs.empty())
             {
-                render.bind(buffer_manager.get_vertex_buffer());
-                render.bind(buffer_manager.get_index_buffer());
-                render.draw_indirect(this->draw_indirect_buffer.value(), this->num_static_draws());
+                render.draw(3);
             }
-            if(this->draw_indirect_dynamic_buffer.has_value())
+            else
             {
-                render.bind(buffer_manager.get_dynamic_vertex_buffer());
-                render.bind(buffer_manager.get_dynamic_index_buffer());
-                render.draw_indirect(this->draw_indirect_dynamic_buffer.value(), this->num_dynamic_draws());
+                if(this->draw_indirect_buffer.has_value())
+                {
+                    render.bind(buffer_manager.get_vertex_buffer());
+                    render.bind(buffer_manager.get_index_buffer());
+                    render.draw_indirect(this->draw_indirect_buffer.value(), this->num_static_draws());
+                }
+                if(this->draw_indirect_dynamic_buffer.has_value())
+                {
+                    render.bind(buffer_manager.get_dynamic_vertex_buffer());
+                    render.bind(buffer_manager.get_dynamic_index_buffer());
+                    render.draw_indirect(this->draw_indirect_dynamic_buffer.value(), this->num_dynamic_draws());
+                }
             }
         }
     }
@@ -927,6 +970,8 @@ namespace tz::gl
             }
             else
             {
+                //this->frame_admin.render_frame(this->graphics_present_queue, static_cast<const vk::Swapchain&>(*this->swapchain), this->command_pool, vk::WaitStages{vk::WaitStage::ColourAttachmentOutput});
+
                 this->frame_admin.submit_rendering(this->graphics_present_queue, this->command_pool, vk::WaitStages{vk::WaitStage::ColourAttachmentOutput});
             }
         }
@@ -1117,7 +1162,7 @@ namespace tz::gl
     render_pass(this->make_simple_render_pass(builder, device_info)),
     buffer_manager(device_info, this->get_inputs()),
     pipeline_manager(builder, device_info, this->render_pass),
-    image_manager(device_info, this->render_pass),
+    image_manager(builder, device_info, this->render_pass),
     processor(builder, device_info, this->get_inputs(), this->render_pass),
     clear_colour(),
     requires_depth_image(builder.get_pass() != RenderPassAttachment::Colour)
