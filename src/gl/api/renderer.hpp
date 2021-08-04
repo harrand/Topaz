@@ -5,7 +5,8 @@
 #include "core/vector.hpp"
 #include "gl/impl/frontend/common/renderer.hpp"
 #include "gl/impl/frontend/common/render_pass_attachment.hpp"
-#include "gl/resource.hpp"
+#include "gl/api/resource.hpp"
+#include "gl/api/component.hpp"
 #include "gl/shader.hpp"
 #include <cstdint>
 #include <concepts>

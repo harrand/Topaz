@@ -4,6 +4,7 @@
 #include "gl/device.hpp"
 #include "gl/renderer.hpp"
 #include "gl/resource.hpp"
+#include "gl/component.hpp"
 #include "gl/input.hpp"
 #include "gl/shader.hpp"
 #include "gl/texture.hpp"
@@ -102,9 +103,6 @@ int main()
         renderer_builder.set_shader(shader);
         tz::gl::Renderer renderer = device.create_renderer(renderer_builder);
         renderer.set_clear_colour({0.1f, 0.2f, 0.4f, 1.0f});
-
-        auto* buf_comp = renderer.get_component(buf_handle);
-        auto* tex_comp = renderer.get_component(tex_handle);
 
         tz::gl::RendererDrawList draws{handle1, handle2, handle3};
 

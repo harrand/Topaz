@@ -51,6 +51,7 @@ add_library(topaz
     # tz::gl
     src/gl/buffer.hpp
     src/gl/buffer.inl
+    src/gl/component.hpp
     src/gl/device.hpp
     src/gl/input.cpp
     src/gl/input.hpp

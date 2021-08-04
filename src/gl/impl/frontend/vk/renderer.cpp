@@ -1,6 +1,7 @@
 #if TZ_VULKAN
 #include "core/report.hpp"
 #include "core/profiling/zone.hpp"
+#include "gl/resource.hpp"
 #include "gl/impl/frontend/vk/renderer.hpp"
 #include "gl/impl/frontend/vk/device.hpp"
 #include "gl/impl/backend/vk/tz_vulkan.hpp"

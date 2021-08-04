@@ -1,4 +1,5 @@
 #include "gl/input.hpp"
+#include <cstring>
 
 namespace tz::gl
 {
