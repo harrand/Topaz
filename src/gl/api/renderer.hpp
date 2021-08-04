@@ -303,6 +303,14 @@ namespace tz::gl
          */
         virtual IResource* get_resource(ResourceHandle handle) = 0;
         /**
+         * @brief Retrieve the component corresponding to the resource with the given handle.
+         * @note The ResourceHandle must correspond to a resource owned by this Renderer, otherwise the behaviour is undefined.
+         * 
+         * @param handle Handle corresponding to the owned resource whose IComponent should be retrieved.
+         * @return IComponent* Component corresponding to the resource provided, if there is any. If the resource is a null-handle, nullptr is returned.
+         */
+        virtual IComponent* get_component(ResourceHandle handle) = 0;
+        /**
          * @brief Proceed through the provided render-pass using any inputs and resources.
          * 
          * @note This function does not take in a draw list. This means that it will use the most-recently-provided draw list.
