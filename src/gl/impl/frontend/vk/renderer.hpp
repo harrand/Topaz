@@ -175,7 +175,7 @@ namespace tz::gl
     class RendererProcessorVulkan
     {
     public:
-        RendererProcessorVulkan(RendererBuilderDeviceInfoVulkan device_info, std::vector<IRendererInput*> inputs, const RenderPassVulkan& render_pass);
+        RendererProcessorVulkan(RendererBuilderVulkan builder, RendererBuilderDeviceInfoVulkan device_info, std::vector<IRendererInput*> inputs, const RenderPassVulkan& render_pass);
         void initialise_resource_descriptors(const RendererPipelineManagerVulkan& pipeline_manager, const RendererBufferManagerVulkan& buffer_manager, const RendererImageManagerVulkan& image_manager, std::vector<const IResource*> resources);
         void initialise_command_pool();
         void block_until_idle();
@@ -205,6 +205,7 @@ namespace tz::gl
         std::optional<vk::Buffer> draw_indirect_buffer;
         std::optional<vk::Buffer> draw_indirect_dynamic_buffer;
         RendererDrawList draw_cache;
+        bool requires_present;
         vk::FrameAdmin frame_admin;
     };
 

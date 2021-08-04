@@ -33,7 +33,7 @@ namespace tz::gl::vk
 
     void FrameAdmin::render_frame(hardware::Queue queue, const Swapchain& swapchain, const CommandPool& command_pool, WaitStages wait_stages)
     {
-        TZ_PROFZONE("FrameAdmin Render", TZ_PROFCOL_YELLOW);
+        TZ_PROFZONE("FrameAdmin Render (Submit + Present)", TZ_PROFCOL_YELLOW);
         if(this->images_in_flight.empty())
         {
             this->images_in_flight.resize(swapchain.get_image_views().size(), nullptr);
@@ -81,6 +81,16 @@ namespace tz::gl::vk
         present(queue);
         i = (i + 1) % this->frame_depth;
     }
+
+    void FrameAdmin::submit_rendering(hardware::Queue queue, const CommandPool& command_pool, WaitStages wait_stages)
+    {
+        TZ_PROFZONE("FrameAdmin Render (Submit Only)", TZ_PROFCOL_YELLOW);
+        vk::Submit submit{CommandBuffers{command_pool[this->cur_image_index]}, SemaphoreRefs{}, wait_stages, SemaphoreRefs{}};
+        this->in_flight_fences[this->frame_counter].wait_then_signal();
+        submit(queue, this->in_flight_fences[this->frame_counter]);
+        this->wait_for(this->frame_counter);
+    }
+
 
     void FrameAdmin::render_frame_headless(hardware::Queue queue, const CommandPool& command_pool, WaitStages wait_stages)
     {

@@ -2,10 +2,13 @@
 
 namespace tz::gl
 {
-    TextureOutput::TextureOutput(unsigned int width, unsigned int height):
-    width(width),
-    height(height)
+    void TextureOutput::add_colour_output(tz::gl::TextureComponent* texture_component)
     {
-        
+        this->colour_outputs.push_back(texture_component);
+    }
+
+    void TextureOutput::set_depth_output(tz::gl::TextureComponent* texture_component)
+    {
+        this->depth_attachment = texture_component;
     }
 }

@@ -592,7 +592,7 @@ namespace tz::gl
         return this->texture_components;
     }
 
-    RendererProcessorVulkan::RendererProcessorVulkan(RendererBuilderDeviceInfoVulkan device_info, std::vector<IRendererInput*> inputs, const RenderPassVulkan& render_pass):
+    RendererProcessorVulkan::RendererProcessorVulkan(RendererBuilderVulkan builder, RendererBuilderDeviceInfoVulkan device_info, std::vector<IRendererInput*> inputs, const RenderPassVulkan& render_pass):
     device(device_info.device),
     physical_device(this->device->get_queue_family().dev),
     render_pass(&render_pass),
@@ -603,6 +603,8 @@ namespace tz::gl
     graphics_present_queue(this->device->get_hardware_queue()),
     draw_indirect_buffer{this->num_static_inputs() > 0 ? std::optional<vk::Buffer>{vk::Buffer{vk::BufferType::DrawIndirect, vk::BufferPurpose::TransferDestination, *this->device, vk::hardware::MemoryResidency::GPU, sizeof(DrawIndirectCommand) * this->num_static_inputs()}} : std::nullopt},
     draw_indirect_dynamic_buffer{this->num_dynamic_inputs() > 0 ? std::optional<vk::Buffer>{vk::Buffer{vk::BufferType::DrawIndirect, vk::BufferPurpose::TransferDestination, *this->device, vk::hardware::MemoryResidency::GPU, sizeof(DrawIndirectCommand) * this->num_dynamic_inputs()}} : std::nullopt},
+    draw_cache(),
+    requires_present(builder.get_output()->get_type() == RendererOutputType::Window),
     frame_admin(*this->device, vk::is_headless() ? 1 : RendererVulkan::frames_in_flight)
     {
         // Now the command pool
@@ -919,7 +921,14 @@ namespace tz::gl
         }
         else
         {
-            this->frame_admin.render_frame(this->graphics_present_queue, static_cast<const vk::Swapchain&>(*this->swapchain), this->command_pool, vk::WaitStages{vk::WaitStage::ColourAttachmentOutput});
+            if(this->requires_present)
+            {
+                this->frame_admin.render_frame(this->graphics_present_queue, static_cast<const vk::Swapchain&>(*this->swapchain), this->command_pool, vk::WaitStages{vk::WaitStage::ColourAttachmentOutput});
+            }
+            else
+            {
+                this->frame_admin.submit_rendering(this->graphics_present_queue, this->command_pool, vk::WaitStages{vk::WaitStage::ColourAttachmentOutput});
+            }
         }
     }
 
@@ -1109,7 +1118,7 @@ namespace tz::gl
     buffer_manager(device_info, this->get_inputs()),
     pipeline_manager(builder, device_info, this->render_pass),
     image_manager(device_info, this->render_pass),
-    processor(device_info, this->get_inputs(), this->render_pass),
+    processor(builder, device_info, this->get_inputs(), this->render_pass),
     clear_colour(),
     requires_depth_image(builder.get_pass() != RenderPassAttachment::Colour)
     {
