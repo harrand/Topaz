@@ -149,15 +149,6 @@ namespace tz::gl
         std::vector<BufferComponentVulkan> buffer_components;
     };
 
-    /// Texture Components represent the guts of an existing Texture Resource. Only the implementation should be concerned with texture components -- It is the texture resource which is user-facing.
-    struct TextureComponentVulkan
-    {
-        vk::Image img;
-        vk::ImageView view;
-        vk::Sampler sampler;
-        IResource* resource;
-    };
-
     class RendererImageManagerVulkan
     {
     public:

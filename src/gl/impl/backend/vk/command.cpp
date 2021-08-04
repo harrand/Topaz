@@ -39,7 +39,7 @@ namespace tz::gl::vk
         vkCmdCopyBuffer(this->command_buffer->native(), source.native(), destination.native(), 1, &cpy);
     }
 
-    void CommandBufferRecording::buffer_copy_image(const Buffer& source, Image& destination)
+    void CommandBufferRecording::buffer_copy_image(const Buffer& source, const Image& destination)
     {
         TZ_PROFZONE("Backend VK - Record Buffer->Image", TZ_PROFCOL_RED);
         tz_assert(!source.is_null(), "Attempted to record a buffer->image copy where the source is a null buffer.");
@@ -63,7 +63,7 @@ namespace tz::gl::vk
         vkCmdCopyBufferToImage(this->command_buffer->native(), source.native(), destination.native(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &cpy);
     }
 
-    void CommandBufferRecording::transition_image_layout(Image& image, Image::Layout new_layout)
+    void CommandBufferRecording::transition_image_layout(const Image& image, Image::Layout new_layout)
     {
         TZ_PROFZONE("Backend VK - Record Image Transition", TZ_PROFCOL_RED);
         VkImageMemoryBarrier barrier{};

@@ -24,8 +24,8 @@ namespace tz::gl::vk
         CommandBufferRecording& operator=(CommandBufferRecording&& rhs);
 
         void buffer_copy_buffer(const Buffer& source, Buffer& destination, std::size_t copy_bytes_length);
-        void buffer_copy_image(const Buffer& source, Image& destination);
-        void transition_image_layout(Image& image, Image::Layout new_layout);
+        void buffer_copy_image(const Buffer& source, const Image& destination);
+        void transition_image_layout(const Image& image, Image::Layout new_layout);
         void bind(const Buffer& buf);
         void bind(const DescriptorSet& descriptor_set, const pipeline::Layout& layout);
         void draw(std::uint32_t vertex_count, std::uint32_t instance_count = 1, std::uint32_t first_index = 0, std::uint32_t first_instance = 0);

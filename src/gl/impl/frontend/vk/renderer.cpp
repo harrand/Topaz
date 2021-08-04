@@ -530,7 +530,7 @@ namespace tz::gl
             vk::Image img{*this->device, tex_res->get_width(), tex_res->get_height(), format, vk::Image::UsageField{vk::Image::Usage::TransferDestination, vk::Image::Usage::Sampleable}, vk::hardware::MemoryResidency::GPU};
             vk::ImageView view{*this->device, img};
             vk::Sampler img_sampler{*this->device, props};
-            this->texture_components.push_back({std::move(img), std::move(view), std::move(img_sampler), texture_resource});
+            this->texture_components.emplace_back(texture_resource, std::move(img), std::move(view), std::move(img_sampler));
         }
     }
 
@@ -659,7 +659,7 @@ namespace tz::gl
                 for(decltype(num_texture_resources) j = 0; j < num_texture_resources; j++)
                 {
                     const TextureComponentVulkan& texture_component = image_manager.get_texture_components()[j];
-                    request.add_image(texture_component.view, texture_component.sampler, j + num_buffer_resources);
+                    request.add_image(texture_component.get_view(), texture_component.get_sampler(), j + num_buffer_resources);
                 }
             }
             this->resource_descriptor_pool->initialise_sets(requests);
@@ -883,7 +883,7 @@ namespace tz::gl
             for(std::size_t i = 0; i < image_manager.get_texture_components().size(); i++)
             {
                 TextureComponentVulkan& texture_component = image_manager.get_texture_components()[i];
-                IResource* texture_resource = texture_component.resource;
+                IResource* texture_resource = texture_component.get_resource();
                 tz_report("Texture Resource (ResourceID: %zu, TextureComponentID: %zu, %zu bytes total)", buffer_manager.get_buffer_components().size() + i, i, texture_resource->get_resource_bytes().size_bytes());
                 tz_assert(texture_resource->data_access() == RendererInputDataAccess::StaticFixed, "DynamicFixed texture resources not yet implemented (Vulkan)");
                 {
@@ -893,9 +893,9 @@ namespace tz::gl
                     resource_staging.write(texture_resource->get_resource_bytes().data(), texture_resource->get_resource_bytes().size_bytes());
                     {
                         vk::CommandBufferRecording transfer_image = scratch_buf.record();
-                        transfer_image.transition_image_layout(texture_component.img, vk::Image::Layout::TransferDestination);
-                        transfer_image.buffer_copy_image(resource_staging, texture_component.img);
-                        transfer_image.transition_image_layout(texture_component.img, vk::Image::Layout::ShaderResource);
+                        transfer_image.transition_image_layout(texture_component.get_image(), vk::Image::Layout::TransferDestination);
+                        transfer_image.buffer_copy_image(resource_staging, texture_component.get_image());
+                        transfer_image.transition_image_layout(texture_component.get_image(), vk::Image::Layout::ShaderResource);
                     }
                     copy_fence.signal();
                     do_scratch_operation(this->graphics_present_queue, copy_fence);
