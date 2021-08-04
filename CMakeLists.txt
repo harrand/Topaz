@@ -66,6 +66,7 @@ add_library(topaz
     src/gl/texture.hpp
 
     # tz::gl (API)
+    src/gl/api/component.hpp
     src/gl/api/device.hpp
     src/gl/api/render_pass.hpp
     src/gl/api/renderer.hpp
@@ -79,6 +80,8 @@ add_library(topaz
     src/gl/impl/frontend/common/shader.hpp
 
     # tz::gl (Vulkan Frontend)
+    src/gl/impl/frontend/vk/component.cpp
+    src/gl/impl/frontend/vk/component.hpp
     src/gl/impl/frontend/vk/device.cpp
     src/gl/impl/frontend/vk/device.hpp
     src/gl/impl/frontend/vk/render_pass.cpp

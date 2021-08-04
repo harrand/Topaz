@@ -280,7 +280,7 @@ namespace tz::gl
     {
         for(IResource* resource : renderer_buffer_resources)
         {
-            this->buffer_components.push_back({vk::Buffer::null(), resource});
+            this->buffer_components.emplace_back(resource);
         }
     }
 
@@ -368,17 +368,17 @@ namespace tz::gl
 
         for(BufferComponentVulkan& buffer_component : this->buffer_components)
         {
-            IResource* buffer_resource = buffer_component.resource;
+            IResource* buffer_resource = buffer_component.get_resource();
             switch(buffer_resource->data_access())
             {
                 case RendererInputDataAccess::StaticFixed:
-                    buffer_component.buffer = vk::Buffer{vk::BufferType::Uniform, vk::BufferPurpose::TransferDestination, *this->device, vk::hardware::MemoryResidency::GPU, buffer_resource->get_resource_bytes().size_bytes()};
+                    buffer_component.set_buffer(vk::Buffer{vk::BufferType::Uniform, vk::BufferPurpose::TransferDestination, *this->device, vk::hardware::MemoryResidency::GPU, buffer_resource->get_resource_bytes().size_bytes()});
                 break;
                 case RendererInputDataAccess::DynamicFixed:
                     {
                         auto& dynamic_resource = static_cast<IDynamicResource&>(*buffer_resource);
-                        buffer_component.buffer = vk::Buffer{vk::BufferType::Uniform, vk::BufferPurpose::NothingSpecial, *this->device, vk::hardware::MemoryResidency::CPUPersistent, dynamic_resource.get_resource_bytes().size_bytes()};
-                        dynamic_resource.set_resource_data(static_cast<std::byte*>(buffer_component.buffer.map_memory()));
+                        buffer_component.set_buffer(vk::Buffer{vk::BufferType::Uniform, vk::BufferPurpose::NothingSpecial, *this->device, vk::hardware::MemoryResidency::CPUPersistent, dynamic_resource.get_resource_bytes().size_bytes()});
+                        dynamic_resource.set_resource_data(static_cast<std::byte*>(buffer_component.get_buffer().map_memory()));
                     }
                 break;
                 default:
@@ -653,7 +653,7 @@ namespace tz::gl
                 vk::DescriptorSetsCreationRequest& request = requests.new_request();
                 for(decltype(num_buffer_resources) j = 0; j < num_buffer_resources; j++)
                 {
-                    const vk::Buffer& resource_buffer = buffer_manager.get_buffer_components()[j].buffer;
+                    const vk::Buffer& resource_buffer = buffer_manager.get_buffer_components()[j].get_buffer();
                     request.add_buffer(resource_buffer, 0, VK_WHOLE_SIZE, j);
                 }
                 for(decltype(num_texture_resources) j = 0; j < num_texture_resources; j++)
@@ -856,8 +856,8 @@ namespace tz::gl
             for(std::size_t i = 0; i < buffer_manager.get_buffer_components().size(); i++)
             {
                 BufferComponentVulkan& buffer_component = buffer_manager.get_buffer_components()[i];
-                vk::Buffer& resource_buffer = buffer_component.buffer;
-                IResource* buffer_resource = buffer_component.resource;
+                vk::Buffer& resource_buffer = buffer_component.get_buffer();
+                IResource* buffer_resource = buffer_component.get_resource();
                 tz_report("Buffer Resource (ResourceID: %zu, BufferComponentID: %zu, %zu bytes total)", i, i, buffer_resource->get_resource_bytes().size_bytes());
                 if(buffer_resource->data_access() == RendererInputDataAccess::StaticFixed)
                 {

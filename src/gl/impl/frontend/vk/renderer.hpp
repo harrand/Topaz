@@ -4,6 +4,7 @@
 #include "gl/api/renderer.hpp"
 #include "gl/impl/frontend/common/device.hpp"
 #include "gl/impl/frontend/vk/render_pass.hpp"
+#include "gl/impl/frontend/vk/component.hpp"
 
 #include "gl/impl/backend/vk/pipeline/graphics_pipeline.hpp"
 #include "gl/impl/backend/vk/logical_device.hpp"
@@ -84,13 +85,6 @@ namespace tz::gl
         vk::DescriptorSetLayout resource_descriptor_layout;
         vk::pipeline::Layout layout;
         vk::GraphicsPipeline graphics_pipeline;
-    };
-
-    /// Buffer Components represent the guts of an existing Buffer Resource. Only the implementation should be concerned with buffer components -- It is the buffer resource which is user-facing.
-    struct BufferComponentVulkan
-    {
-        vk::Buffer buffer;
-        IResource* resource;
     };
 
     /**
