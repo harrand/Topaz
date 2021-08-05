@@ -258,9 +258,10 @@ namespace tz::gl
             real_swapchain.~Swapchain();
             new (&real_swapchain) vk::Swapchain(this->device, my_prefs);
         }
-        // Then notify all renderers which care.
-        for(const DeviceWindowResizeCallback& callback : this->renderer_resize_callbacks)
+        // Then notify all renderers which care. Do it in reverse as renderers that rely on other renderers will have been created before.
+        for(auto i = this->renderer_resize_callbacks.rbegin(); i != this->renderer_resize_callbacks.rend(); i++)
         {
+            const DeviceWindowResizeCallback& callback = *i;
             if(callback != nullptr)
             {
                 callback();

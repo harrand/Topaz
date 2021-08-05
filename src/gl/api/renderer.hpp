@@ -212,8 +212,9 @@ namespace tz::gl
         virtual const IRendererInput* get_input(RendererInputHandle input_handle) const = 0;
         virtual void set_pass(RenderPassAttachment pass) = 0;
         virtual RenderPassAttachment get_pass() const = 0;
-        virtual void set_output(const IRendererOutput& output) = 0;
+        virtual void set_output(IRendererOutput& output) = 0;
         virtual const IRendererOutput* get_output() const = 0;
+        virtual IRendererOutput* get_output() = 0;
 
         virtual ResourceHandle add_resource(const IResource& resource) = 0;
 

@@ -26,8 +26,9 @@ namespace tz::gl
         virtual void set_pass(RenderPassAttachment pass) final;
         virtual RenderPassAttachment get_pass() const final;
 
-        virtual void set_output(const IRendererOutput& output) final;
+        virtual void set_output(IRendererOutput& output) final;
         virtual const IRendererOutput* get_output() const final;
+        virtual IRendererOutput* get_output() final;
 
         virtual ResourceHandle add_resource(const IResource& resource) final;
 
@@ -45,7 +46,7 @@ namespace tz::gl
     private:
         std::vector<const IRendererInput*> inputs;
         RenderPassAttachment pass = RenderPassAttachment::ColourDepth;
-        const IRendererOutput* output = nullptr;
+        IRendererOutput* output = nullptr;
         std::vector<const IResource*> buffer_resources;
         std::vector<const IResource*> texture_resources;
         RendererCullingStrategy culling_strategy = RendererCullingStrategy::NoCulling;
@@ -156,6 +157,8 @@ namespace tz::gl
         void initialise_resources(std::vector<IResource*> renderer_buffer_resources);
         void setup_depth_image();
         void setup_swapchain_framebuffers();
+        void resize_output_component();
+        void setup_outout_framebuffer();
         std::span<const vk::Framebuffer> get_swapchain_framebuffers() const;
         std::span<const TextureComponentVulkan> get_texture_components() const;
         std::span<TextureComponentVulkan> get_texture_components();
@@ -171,6 +174,7 @@ namespace tz::gl
         std::optional<vk::Image> depth_image;
         std::optional<vk::ImageView> depth_imageview;
         std::vector<vk::Framebuffer> swapchain_framebuffers;
+        TextureComponentVulkan* output_texture_component;
         std::optional<vk::Framebuffer> texture_output_framebuffer;
     };
 

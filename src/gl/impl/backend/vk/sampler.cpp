@@ -6,7 +6,8 @@ namespace tz::gl::vk
 
     Sampler::Sampler(const LogicalDevice& device, SamplerProperties props):
     sampler(VK_NULL_HANDLE),
-    device(&device)
+    device(&device),
+    properties(props)
     {
         VkSamplerCreateInfo create{};
         create.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
@@ -35,7 +36,8 @@ namespace tz::gl::vk
 
     Sampler::Sampler(Sampler&& move):
     sampler(VK_NULL_HANDLE),
-    device(nullptr)
+    device(nullptr),
+    properties()
     {
         *this = std::move(move);
     }
@@ -54,6 +56,11 @@ namespace tz::gl::vk
         std::swap(this->sampler, rhs.sampler);
         std::swap(this->device, rhs.device);
         return *this;
+    }
+
+    const SamplerProperties& Sampler::get_properties() const
+    {
+        return this->properties;
     }
 
     VkSampler Sampler::native() const

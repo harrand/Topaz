@@ -26,10 +26,12 @@ namespace tz::gl::vk
         Sampler& operator=(const Sampler& rhs) = delete;
         Sampler& operator=(Sampler&& rhs);
 
+        const SamplerProperties& get_properties() const;
         VkSampler native() const;
     private:
         VkSampler sampler;
         const LogicalDevice* device;
+        SamplerProperties properties;
     };
 }
 

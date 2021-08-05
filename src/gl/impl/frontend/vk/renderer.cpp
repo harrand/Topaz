@@ -39,12 +39,17 @@ namespace tz::gl
         return this->pass;
     }
 
-    void RendererBuilderVulkan::set_output(const IRendererOutput& output)
+    void RendererBuilderVulkan::set_output(IRendererOutput& output)
     {
         this->output = &output;
     }
 
     const IRendererOutput* RendererBuilderVulkan::get_output() const
+    {
+        return this->output;
+    }
+
+    IRendererOutput* RendererBuilderVulkan::get_output()
     {
         return this->output;
     }
@@ -450,6 +455,8 @@ namespace tz::gl
     depth_image(std::nullopt),
     depth_imageview(std::nullopt),
     swapchain_framebuffers(),
+    //requires_output_framebuffer(builder.get_output()->get_type() == RendererOutputType::Texture),
+    output_texture_component(nullptr),
     texture_output_framebuffer()
     {
         if(vk::is_headless())
@@ -459,6 +466,16 @@ namespace tz::gl
         }
         else
         {
+            if(builder.get_output()->get_type() == RendererOutputType::Texture)
+            {
+                this->output_texture_component = static_cast<TextureOutput*>(builder.get_output())->get_first_colour_component();
+            }
+            else
+            {
+                const auto& as_swapchain = static_cast<const vk::Swapchain&>(*this->swapchain);
+                this->swapchain_framebuffers.reserve(as_swapchain.get_image_views().size());
+            }
+            /*
             if(builder.get_output()->get_type() == RendererOutputType::Texture)
             {
                 auto* texture_output = static_cast<const TextureOutput*>(builder.get_output());
@@ -473,6 +490,7 @@ namespace tz::gl
                 const auto& as_swapchain = static_cast<const vk::Swapchain&>(*this->swapchain);
                 this->swapchain_framebuffers.reserve(as_swapchain.get_image_views().size());
             }
+            */
             
         }
         
@@ -559,6 +577,26 @@ namespace tz::gl
         auto swapchain_height = static_cast<std::uint32_t>(this->swapchain->get_height());
         this->depth_image = vk::Image{*this->device, swapchain_width, swapchain_height, vk::Image::Format::DepthFloat32, {vk::Image::Usage::DepthStencilAttachment}, vk::hardware::MemoryResidency::GPU};
         this->depth_imageview = vk::ImageView{*this->device, this->depth_image.value()};
+    }
+
+    void RendererImageManagerVulkan::resize_output_component()
+    {
+        if(this->output_texture_component != nullptr)
+        {
+            this->output_texture_component->clear_and_resize(this->swapchain->get_width(), this->swapchain->get_height());
+        }
+    }
+
+    void RendererImageManagerVulkan::setup_outout_framebuffer()
+    {
+        if(this->output_texture_component != nullptr)
+        {
+            //auto* texture_output = static_cast<const TextureOutput*>(builder.get_output());
+            VkExtent2D output_component_dimensions;
+            output_component_dimensions.width = this->output_texture_component->get_image().get_width();
+            output_component_dimensions.height = this->output_texture_component->get_image().get_height();
+            this->texture_output_framebuffer = vk::Framebuffer(this->render_pass->vk_get_render_pass(), this->output_texture_component->get_view(), output_component_dimensions);
+        }
     }
 
     void RendererImageManagerVulkan::setup_swapchain_framebuffers()
@@ -1195,6 +1233,7 @@ namespace tz::gl
         {
             this->image_manager.setup_depth_image();
         }
+        this->image_manager.setup_outout_framebuffer();
         this->image_manager.setup_swapchain_framebuffers();
 
         this->processor.initialise_resource_descriptors(this->pipeline_manager, this->buffer_manager, this->image_manager, all_resources);
@@ -1355,8 +1394,16 @@ namespace tz::gl
             this->image_manager.setup_depth_image();
         }
 
+        this->image_manager.resize_output_component();
+        this->image_manager.setup_outout_framebuffer();
         this->image_manager.setup_swapchain_framebuffers();
 
+        std::vector<const IResource*> all_resources;
+        for(const auto& resource_ptr : this->renderer_resources)
+        {
+            all_resources.push_back(resource_ptr.get());
+        }
+        this->processor.initialise_resource_descriptors(this->pipeline_manager, this->buffer_manager, this->image_manager, all_resources);
         this->processor.initialise_command_pool();
         this->processor.record_rendering_commands(this->pipeline_manager, this->buffer_manager, this->image_manager, this->clear_colour);
     }

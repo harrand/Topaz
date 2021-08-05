@@ -20,4 +20,13 @@ namespace tz::gl
         }
         return this->colour_outputs.front();
     }
+
+    tz::gl::TextureComponent* TextureOutput::get_first_colour_component()
+    {
+        if(this->colour_outputs.empty())
+        {
+            return nullptr;
+        }
+        return this->colour_outputs.front();
+    }
 }

@@ -10,8 +10,10 @@ namespace tz::gl::vk
     device(&device),
     width(width),
     height(height),
+    usage(static_cast<Image::Usage>(usage)),
     format(format),
-    layout(Image::Layout::Undefined)
+    layout(Image::Layout::Undefined),
+    residency(residency)
     {
         VkImageCreateInfo create{};
         create.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
@@ -24,12 +26,12 @@ namespace tz::gl::vk
         create.format = static_cast<VkFormat>(format);
         create.tiling = VK_IMAGE_TILING_OPTIMAL;
         create.initialLayout = static_cast<VkImageLayout>(this->layout);
-        create.usage = static_cast<VkImageUsageFlags>(static_cast<Image::Usage>(usage));
+        create.usage = static_cast<VkImageUsageFlags>(this->usage);
         create.samples = VK_SAMPLE_COUNT_1_BIT;
         create.flags = 0;
 
         VmaAllocationCreateInfo alloc_info{};
-        switch(residency)
+        switch(this->residency)
         {
             case hardware::MemoryResidency::CPU:
                 alloc_info.usage = VMA_MEMORY_USAGE_CPU_ONLY;
@@ -52,8 +54,10 @@ namespace tz::gl::vk
     device(nullptr),
     width(0),
     height(0),
+    usage(),
     format(Image::Format::Undefined),
-    layout(Image::Layout::Undefined)
+    layout(Image::Layout::Undefined),
+    residency()
     {
         *this = std::move(move);
     }
@@ -74,8 +78,10 @@ namespace tz::gl::vk
         std::swap(this->device, rhs.device);
         std::swap(this->width, rhs.width);
         std::swap(this->height, rhs.height);
+        std::swap(this->usage, rhs.usage);
         std::swap(this->format, rhs.format);
         std::swap(this->layout, rhs.layout);
+        std::swap(this->residency, rhs.residency);
         return *this;
     }
 
@@ -89,9 +95,19 @@ namespace tz::gl::vk
         return this->height;
     }
 
+    const LogicalDevice& Image::get_device() const
+    {
+        return *this->device;
+    }
+
     Image::Format Image::get_format() const
     {
         return this->format;
+    }
+
+    Image::Usage Image::get_usage() const
+    {
+        return this->usage;
     }
 
     Image::Layout Image::get_layout() const
@@ -103,6 +119,11 @@ namespace tz::gl::vk
     {
         recording.transition_image_layout(*this, new_layout);
         this->layout = new_layout;
+    }
+
+    hardware::MemoryResidency Image::get_memory_residency() const
+    {
+        return this->residency;
     }
 
     VkImage Image::native() const

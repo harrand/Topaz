@@ -55,10 +55,13 @@ namespace tz::gl::vk
 
         std::uint32_t get_width() const;
         std::uint32_t get_height() const;
+        const LogicalDevice& get_device() const;
 
         Format get_format() const;
+        Usage get_usage() const;
         Layout get_layout() const;
         void set_layout(CommandBufferRecording& recording, Image::Layout new_layout);
+        hardware::MemoryResidency get_memory_residency() const;
 
         VkImage native() const;
     private:
@@ -67,8 +70,10 @@ namespace tz::gl::vk
         const LogicalDevice* device;
         std::uint32_t width;
         std::uint32_t height;
+        Usage usage;
         Format format;
         Layout layout;
+        hardware::MemoryResidency residency;
     };
 }
 

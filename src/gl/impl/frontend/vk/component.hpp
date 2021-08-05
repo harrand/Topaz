@@ -31,6 +31,7 @@ namespace tz::gl
     public:
         TextureComponentVulkan(IResource* resource, vk::Image img, vk::ImageView view, vk::Sampler sampler);
         TextureComponentVulkan(vk::Image img, vk::ImageView view, vk::Sampler sampler);
+        void clear_and_resize(unsigned int width, unsigned int height);
         virtual const IResource* get_resource() const override;
         virtual IResource* get_resource() override;
         const vk::Image& get_image() const;

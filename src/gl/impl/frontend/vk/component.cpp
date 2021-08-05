@@ -46,6 +46,18 @@ namespace tz::gl
     TextureComponentVulkan::TextureComponentVulkan(vk::Image img, vk::ImageView view, vk::Sampler sampler):
     TextureComponentVulkan(nullptr, std::move(img), std::move(view), std::move(sampler)){}
 
+    void TextureComponentVulkan::clear_and_resize(unsigned int width, unsigned int height)
+    {
+        const vk::LogicalDevice& dev = this->img.get_device();
+        vk::Image::Format fmt = this->img.get_format();
+        vk::Image::Usage usage = this->img.get_usage();
+        vk::hardware::MemoryResidency residency = this->img.get_memory_residency();
+        this->img = vk::Image(dev, width, height, fmt, vk::Image::UsageField{usage}, residency);
+        this->view = vk::ImageView(dev, this->img);
+        this->sampler = vk::Sampler(dev, this->sampler.get_properties());
+    }
+
+
     const IResource* TextureComponentVulkan::get_resource() const
     {
         return this->resource;
