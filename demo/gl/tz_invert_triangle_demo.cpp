@@ -78,11 +78,22 @@ int main()
         renderer_builder.set_shader(shader);
         tz::gl::Renderer renderer = device.create_renderer(renderer_builder);
         renderer.set_clear_colour({0.1f, 0.2f, 0.4f, 1.0f});
+
+        auto draw_scene = [&renderer, &invert_renderer]()
+        {
+            renderer.render();
+            invert_renderer.render();
+        };
+
+        tz::window().add_resize_callback([&draw_scene]([[maybe_unused]] int w, [[maybe_unused]] int h)
+        {
+            draw_scene();
+        });
+
         while(!tz::window().is_close_requested())
         {
             tz::window().update();
-            renderer.render();
-            invert_renderer.render();
+            draw_scene();
         }
     }
     tz::terminate();

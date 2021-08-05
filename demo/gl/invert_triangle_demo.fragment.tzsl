@@ -9,6 +9,11 @@ void main()
 {
     vec2 texcoord_transformed = texcoord;
     texcoord_transformed.y = 1.0 - texcoord_transformed.y;
-    output_colour = vec4(1.0) - texture(tex_sampler, texcoord_transformed);
+    output_colour = texture(tex_sampler, texcoord_transformed);
+    {
+        vec4 inverse = vec4(1.0) - output_colour;
+        output_colour = mix(output_colour, inverse, sin(gl_FragCoord.x / 10.0) + sin(gl_FragCoord.y / 10.0));
+    }
+    
     output_colour.w = 1.0;
 }
