@@ -51,6 +51,16 @@ namespace tz::gl
         this->passes.push_back(attachment);
     }
 
+    void RenderPassBuilderVulkan::set_presentable_output(bool presentable_output)
+    {
+        this->presentable_output = presentable_output;
+    }
+
+    bool RenderPassBuilderVulkan::has_presentable_output() const
+    {
+        return this->presentable_output;
+    }
+
     void RenderPassBuilderVulkan::vk_finalise(vk::Image::Format colour_attachment_format)
     {
         // Find the last subpass with a colour attachment. It should be made into a presentable colour attachment.
@@ -74,11 +84,21 @@ namespace tz::gl
         {
             if(vk::is_headless())
             {
+                // We're going to render into an internal texture and probably end up transferring from it into something host-visible so we can write it into some form of output file?
                 last_colour_attachment->set_final_image_layout(vk::Image::Layout::TransferSource);
             }
             else
             {
-                last_colour_attachment->set_final_image_layout(vk::Image::Layout::Present);
+                if(this->has_presentable_output())
+                {
+                    // We're going to present the output to the screen. It needs to be presentable.
+                    last_colour_attachment->set_final_image_layout(vk::Image::Layout::Present);
+                }
+                else
+                {
+                    // We're assuming we're rendering into a texture which we will use in a future render-pass.
+                    last_colour_attachment->set_final_image_layout(vk::Image::Layout::ShaderResource);
+                }
             }
             
         }

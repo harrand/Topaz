@@ -1,6 +1,6 @@
 #version 450
 #pragma shader_stage(vertex)
-layout (location = 1) out vec2 out_texcoord;
+layout (location = 0) out vec2 out_texcoord;
 void main() 
 {
     out_texcoord = vec2((gl_VertexIndex << 1) & 2, gl_VertexIndex & 2);

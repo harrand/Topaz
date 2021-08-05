@@ -1318,6 +1318,11 @@ namespace tz::gl
     {
         RenderPassBuilderVulkan pass_builder;
         pass_builder.add_pass(builder.get_pass());
+        if(builder.get_output()->get_type() != RendererOutputType::Window)
+        {
+            // We're not expecting to present the output to the window. Don't transition to presentable.
+            pass_builder.set_presentable_output(false);
+        }
         return device_info.creator_device->vk_create_render_pass(pass_builder);
     }
 

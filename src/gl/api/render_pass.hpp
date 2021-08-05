@@ -16,6 +16,8 @@ namespace tz::gl
     {
     public:
         virtual void add_pass(RenderPassAttachment attachment) = 0;
+        virtual void set_presentable_output(bool presentable_output) = 0;
+        virtual bool has_presentable_output() const = 0;
     };
 
     /**

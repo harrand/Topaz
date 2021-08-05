@@ -12,10 +12,13 @@ namespace tz::gl
     public:
         RenderPassBuilderVulkan() = default;
         virtual void add_pass(RenderPassAttachment attachment) final;
+        virtual void set_presentable_output(bool presentable_output) final;
+        virtual bool has_presentable_output() const final;
         void vk_finalise(vk::Image::Format colour_attachment_format);
 
         friend class RenderPassVulkan;
     private:
+        bool presentable_output = true;
         vk::RenderPassBuilder builder;
         std::vector<RenderPassAttachment> passes;
     };
