@@ -4,6 +4,7 @@
 #include "gl/api/renderer.hpp"
 #include "gl/impl/frontend/ogl/component.hpp"
 #include "gl/impl/backend/ogl/buffer.hpp"
+#include "gl/impl/backend/ogl/framebuffer.hpp"
 
 #include <optional>
 
@@ -95,6 +96,8 @@ namespace tz::gl
         std::vector<std::unique_ptr<IRendererInput>> inputs;
         const IRendererOutput* output;
         TextureComponentOGL* output_texture_component;
+        std::optional<ogl::Framebuffer> output_framebuffer;
+        std::optional<ogl::Renderbuffer> output_depth_renderbuffer;
         RendererDrawList draw_cache;
     };
 }

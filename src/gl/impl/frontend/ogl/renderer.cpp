@@ -127,14 +127,28 @@ namespace tz::gl
     pass_attachment(builder.get_pass()),
     shader(&builder.get_shader()),
     inputs(this->copy_inputs(builder)),
-    output(builder.get_output())
+    output(builder.get_output()),
+    output_texture_component(nullptr),
+    output_framebuffer(std::nullopt),
+    draw_cache()
     {
         if(this->output != nullptr)
         {
             if(this->output->get_type() == RendererOutputType::Texture)
             {
                 this->output_texture_component = static_cast<TextureOutput*>(builder.get_output())->get_first_colour_component();
-                // TODO: Create a framebuffer using the texture component so we can bind it as a render target.
+
+                const ogl::Texture& output_tex = this->output_texture_component->get_texture();
+                GLsizei width = output_tex.get_width();
+                GLsizei height = output_tex.get_height();
+
+                this->output_framebuffer = ogl::Framebuffer{};
+                this->output_depth_renderbuffer = ogl::Renderbuffer{width, height, ogl::Texture::Format::DepthFloat32};
+
+                // For now we only support a single colour attachment and no depth attachments. That makes this really easy.
+                this->output_framebuffer->attach(GL_COLOR_ATTACHMENT0, output_tex);
+                this->output_framebuffer->attach(GL_DEPTH_ATTACHMENT, this->output_depth_renderbuffer.value());
+                this->output_framebuffer->set_output(GL_COLOR_ATTACHMENT0);
             }
         }
         auto persistent_mapped_buffer_flags = GL_MAP_READ_BIT | GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT;
@@ -582,6 +596,12 @@ namespace tz::gl
         else if(this->output->get_type() == RendererOutputType::Window)
         {
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
+            glViewport(0, 0, static_cast<GLsizei>(tz::window().get_width()), static_cast<GLsizei>(tz::window().get_height()));
+        }
+        else if(this->output->get_type() == RendererOutputType::Texture)
+        {
+            tz_assert(this->output_framebuffer.has_value(), "Renderer has a texture output, but no output framebuffer was ever created. Logic error (OpenGL)");
+            this->output_framebuffer->bind();
             glViewport(0, 0, static_cast<GLsizei>(tz::window().get_width()), static_cast<GLsizei>(tz::window().get_height()));
         }
 

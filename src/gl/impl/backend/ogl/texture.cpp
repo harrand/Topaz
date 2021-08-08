@@ -45,9 +45,25 @@ namespace tz::gl::ogl
         std::swap(this->texture, rhs.texture);
         std::swap(this->width, rhs.width);
         std::swap(this->height, rhs.height);
+        std::swap(this->frontend_format, rhs.frontend_format);
         std::swap(this->format, rhs.format);
         std::swap(this->parameters, rhs.parameters);
         return *this;
+    }
+
+    GLsizei Texture::get_width() const
+    {
+        return this->width;
+    }
+
+    GLsizei Texture::get_height() const
+    {
+        return this->height;
+    }
+
+    Texture::Format Texture::get_format() const
+    {
+        return this->frontend_format;
     }
 
     void Texture::resize_and_clear(GLsizei width, GLsizei height)
@@ -105,6 +121,11 @@ namespace tz::gl::ogl
     void Texture::bind_at(GLint location)
     {
         glBindTextureUnit(location, this->texture);
+    }
+
+    GLuint Texture::native() const
+    {
+        return this->texture;
     }
 }
 
