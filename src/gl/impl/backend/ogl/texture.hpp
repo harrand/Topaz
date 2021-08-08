@@ -57,6 +57,10 @@ namespace tz::gl::ogl
 
         Texture& operator=(const Texture& rhs) = delete;
         Texture& operator=(Texture&& rhs);
+
+        void resize_and_clear(unsigned int width, unsigned int height);
+        void resize(unsigned int width, unsigned int height);
+        void set_image_data(void* data, std::size_t data_size_bytes);
     private:
         GLuint texture;
         unsigned int width;

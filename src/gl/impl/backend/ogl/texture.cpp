@@ -19,9 +19,7 @@ namespace tz::gl::ogl
         glTextureParameteri(this->texture, GL_TEXTURE_MIN_FILTER, this->parameters.min_filter);
         glTextureParameteri(this->texture, GL_TEXTURE_MAG_FILTER, this->parameters.mag_filter);
 
-        glBindTexture(GL_TEXTURE_2D, this->texture);
-        glTexImage2D(GL_TEXTURE_2D, 0, this->format.internal_format, this->width, this->height, 0, this->format.format, this->format.type, nullptr);
-        glBindTexture(GL_TEXTURE_2D, 0);
+        this->resize_and_clear(this->width, this->height);
     }
 
     Texture::Texture(Texture&& move):
@@ -41,6 +39,57 @@ namespace tz::gl::ogl
         std::swap(this->height, rhs.height);
         std::swap(this->format, rhs.format);
         std::swap(this->parameters, rhs.parameters);
+    }
+
+    void Texture::resize_and_clear(unsigned int width, unsigned int height)
+    {
+        this->width = width;
+        this->height = height;
+
+        glBindTexture(GL_TEXTURE_2D, this->texture);
+        glTexImage2D(GL_TEXTURE_2D, 0, this->format.internal_format, this->width, this->height, 0, this->format.format, this->format.type, nullptr);
+        glBindTexture(GL_TEXTURE_2D, 0);
+    }
+
+    void Texture::resize(unsigned int width, unsigned int height)
+    {
+        std::size_t pixel_size_bytes;
+        switch(this->format)
+        {
+            case Rgba32Signed:
+            [[fallthrough]];
+            case Rgba32Unsigned:
+            [[fallthrough]];
+            case Rgba32sRGB:
+            [[fallthrough]];
+            case Bgra32UnsignedNorm:
+            [[fallthrough]];
+            case DepthFloat32:
+                pixel_size_bytes = 32;
+            default:
+                tz_error("Unrecognised format (OpenGL). NYI?");
+            break;
+        }
+        void* buf = std::malloc(width * height * pixel_size_bytes);
+        
+        // Retrieve our image data.
+        glGetTextureImage(this->texture, 0, this->format.format, this->format.type, width * height * pixel_size_bytes, buf);
+        // Do an unsafe resize.
+        this->resize_and_clear(width, height);
+        
+        this->width = width;
+        this->height = height;
+        this->set_image_data(buf, width * height * pixel_size_bytes);
+
+        std::free(buf);
+    }
+
+    void Texture::set_image_data(void* data, std::size_t data_size_bytes)
+    {
+        // TODO: Validation with data_size_bytes. Right now it goes until the texture data is full, which may well crash if bad ptr is provided.
+        glBindTexture(GL_TEXTURE_2D, this->texture);
+        glTexImage2D(GL_TEXTURE_2D, 0, this->format.internal_format, this->width, this->height, 0, this->format.format, this->format.type, data);
+        glBindTexture(GL_TEXTURE_2D, 0);
     }
 }
 
