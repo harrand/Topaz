@@ -207,6 +207,8 @@ add_library(topaz
     src/gl/impl/backend/ogl/setup/opengl_instance.hpp
     src/gl/impl/backend/ogl/buffer.cpp
     src/gl/impl/backend/ogl/buffer.hpp
+    src/gl/impl/backend/ogl/texture.cpp
+    src/gl/impl/backend/ogl/texture.hpp
     src/gl/impl/backend/ogl/tz_opengl.hpp
     src/gl/impl/backend/ogl/tz_opengl.cpp
     )

@@ -16,7 +16,9 @@ namespace tz::gl::vk
         {
             Undefined = VK_FORMAT_UNDEFINED,
             Rgba32Signed = VK_FORMAT_R8G8B8A8_SINT,
+            Rgba32SignedNorm = VK_FORMAT_R8G8B8A8_UNORM,
             Rgba32Unsigned = VK_FORMAT_R8G8B8A8_UINT,
+            Rgba32UnsignedNorm = VK_FORMAT_R8G8B8A8_UNORM,
             Rgba32sRGB = VK_FORMAT_R8G8B8A8_SRGB,
             Bgra32sRGB = VK_FORMAT_B8G8R8A8_SRGB,
             DepthFloat32 = VK_FORMAT_D32_SFLOAT,

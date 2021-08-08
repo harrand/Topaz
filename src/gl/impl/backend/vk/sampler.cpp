@@ -55,6 +55,7 @@ namespace tz::gl::vk
     {
         std::swap(this->sampler, rhs.sampler);
         std::swap(this->device, rhs.device);
+        std::swap(this->properties, rhs.properties);
         return *this;
     }
 
