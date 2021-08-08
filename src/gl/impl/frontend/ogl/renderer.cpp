@@ -4,6 +4,7 @@
 #include "core/tz.hpp"
 #include "gl/impl/frontend/ogl/renderer.hpp"
 #include "gl/resource.hpp"
+#include "gl/output.hpp"
 #include <numeric>
 
 namespace tz::gl
@@ -128,6 +129,14 @@ namespace tz::gl
     inputs(this->copy_inputs(builder)),
     output(builder.get_output())
     {
+        if(this->output != nullptr)
+        {
+            if(this->output->get_type() == RendererOutputType::Texture)
+            {
+                this->output_texture_component = static_cast<TextureOutput*>(builder.get_output())->get_first_colour_component();
+                // TODO: Create a framebuffer using the texture component so we can bind it as a render target.
+            }
+        }
         auto persistent_mapped_buffer_flags = GL_MAP_READ_BIT | GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT;
 
         if(this->pass_attachment != RenderPassAttachment::Colour)
@@ -531,7 +540,29 @@ namespace tz::gl
 
     IComponent* RendererOGL::get_component([[maybe_unused]] ResourceHandle handle)
     {
-        return nullptr;
+        IResource* resource = this->get_resource(handle);
+        if(resource == nullptr)
+        {
+            return nullptr;
+        }
+        switch(resource->get_type())
+        {
+            case ResourceType::Buffer:
+                //std::size_t buffer_id = this->resource_handle_to_buffer_id(handle);
+                tz_error("Retrieving Buffer Components are not yet supported (OpenGL)");
+                return nullptr;
+            break;
+            case ResourceType::Texture:
+            {
+                std::size_t texture_id = this->resource_handle_to_texture_id(handle);
+                return &this->resource_textures[texture_id];
+            }
+            break;
+            default:
+                tz_error("Unknown ResourceType. Not yet implemented? (OpenGL)");
+                return nullptr;
+            break;
+        }
     }
 
     tz::Vec4 RendererOGL::get_clear_colour() const

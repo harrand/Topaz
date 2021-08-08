@@ -1329,7 +1329,7 @@ namespace tz::gl
             }
             break;
             default:
-                tz_error("Unknown ResourceType. Not yet implemented?");
+                tz_error("Unknown ResourceType. Not yet implemented? (Vulkan)");
                 return nullptr;
             break;
         }

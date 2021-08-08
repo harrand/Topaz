@@ -94,6 +94,7 @@ namespace tz::gl
         const Shader* shader;
         std::vector<std::unique_ptr<IRendererInput>> inputs;
         const IRendererOutput* output;
+        TextureComponentOGL* output_texture_component;
         RendererDrawList draw_cache;
     };
 }
