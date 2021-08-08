@@ -2,7 +2,9 @@
 #define TOPAZ_GL_IMPL_OGL_RENDERER_HPP
 #if TZ_OGL
 #include "gl/api/renderer.hpp"
+#include "gl/impl/frontend/ogl/component.hpp"
 #include "gl/impl/backend/ogl/buffer.hpp"
+
 #include <optional>
 
 namespace tz::gl
@@ -17,8 +19,9 @@ namespace tz::gl
         virtual void set_pass(RenderPassAttachment pass) final;
         virtual RenderPassAttachment get_pass() const final;
 
-        virtual void set_output(const IRendererOutput& output) final;
+        virtual void set_output(IRendererOutput& output) final;
         virtual const IRendererOutput* get_output() const final;
+        virtual IRendererOutput* get_output() final;
 
         virtual ResourceHandle add_resource(const IResource& resource) final;
 
@@ -34,7 +37,7 @@ namespace tz::gl
     private:
         std::vector<const IRendererInput*> inputs;
         RenderPassAttachment pass = RenderPassAttachment::ColourDepth;
-        const IRendererOutput* output = nullptr;
+        IRendererOutput* output = nullptr;
         std::vector<const IResource*> buffer_resources;
         std::vector<const IResource*> texture_resources;
         const Shader* shader = nullptr;
@@ -63,7 +66,8 @@ namespace tz::gl
         virtual std::size_t resource_count() const final;
         virtual std::size_t resource_count_of(ResourceType type) const final;
         virtual IResource* get_resource(ResourceHandle handle) final;
-        
+        virtual IComponent* get_component(ResourceHandle handle) final;
+
         virtual void render() final;
         virtual void render(RendererDrawList draw_list) final;
     private:
@@ -84,7 +88,7 @@ namespace tz::gl
         //GLuint indirect_buffer, indirect_buffer_dynamic;
         std::vector<std::unique_ptr<IResource>> resources;
         std::vector<GLuint> resource_ubos;
-        std::vector<GLuint> resource_textures;
+        std::vector<TextureComponentOGL> resource_textures;
         RendererElementFormat format;
         RenderPassAttachment pass_attachment;
         const Shader* shader;

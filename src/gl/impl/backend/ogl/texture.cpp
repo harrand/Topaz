@@ -1,13 +1,15 @@
 #if TZ_OGL
 #include "gl/impl/backend/ogl/texture.hpp"
+#include <utility>
 
 namespace tz::gl::ogl
 {
-    Texture::Texture(unsigned int width, unsigned int height, Format format, TextureParameters parameters):
+    Texture::Texture(GLsizei width, GLsizei height, Format format, TextureParameters parameters):
     texture(0),
     width(width),
     height(height),
-    format(format),
+    frontend_format(format),
+    format(fmt_internal(this->frontend_format)),
     parameters(parameters)
     {
         glCreateTextures(GL_TEXTURE_2D, 1, &this->texture);
@@ -26,10 +28,16 @@ namespace tz::gl::ogl
     texture(0),
     width(),
     height(),
+    frontend_format(),
     format(),
     parameters()
     {
         *this = std::move(move);
+    }
+
+    Texture::~Texture()
+    {
+        glDeleteTextures(1, &this->texture);
     }
 
     Texture& Texture::operator=(Texture&& rhs)
@@ -39,9 +47,10 @@ namespace tz::gl::ogl
         std::swap(this->height, rhs.height);
         std::swap(this->format, rhs.format);
         std::swap(this->parameters, rhs.parameters);
+        return *this;
     }
 
-    void Texture::resize_and_clear(unsigned int width, unsigned int height)
+    void Texture::resize_and_clear(GLsizei width, GLsizei height)
     {
         this->width = width;
         this->height = height;
@@ -51,21 +60,22 @@ namespace tz::gl::ogl
         glBindTexture(GL_TEXTURE_2D, 0);
     }
 
-    void Texture::resize(unsigned int width, unsigned int height)
+    void Texture::resize(GLsizei width, GLsizei height)
     {
         std::size_t pixel_size_bytes;
-        switch(this->format)
+        switch(this->frontend_format)
         {
-            case Rgba32Signed:
+            case Format::Rgba32Signed:
             [[fallthrough]];
-            case Rgba32Unsigned:
+            case Format::Rgba32Unsigned:
             [[fallthrough]];
-            case Rgba32sRGB:
+            case Format::Rgba32sRGB:
             [[fallthrough]];
-            case Bgra32UnsignedNorm:
+            case Format::Bgra32UnsignedNorm:
             [[fallthrough]];
-            case DepthFloat32:
+            case Format::DepthFloat32:
                 pixel_size_bytes = 32;
+            break;
             default:
                 tz_error("Unrecognised format (OpenGL). NYI?");
             break;
@@ -84,12 +94,17 @@ namespace tz::gl::ogl
         std::free(buf);
     }
 
-    void Texture::set_image_data(void* data, std::size_t data_size_bytes)
+    void Texture::set_image_data(const void* data, [[maybe_unused]] std::size_t data_size_bytes)
     {
         // TODO: Validation with data_size_bytes. Right now it goes until the texture data is full, which may well crash if bad ptr is provided.
         glBindTexture(GL_TEXTURE_2D, this->texture);
         glTexImage2D(GL_TEXTURE_2D, 0, this->format.internal_format, this->width, this->height, 0, this->format.format, this->format.type, data);
         glBindTexture(GL_TEXTURE_2D, 0);
+    }
+
+    void Texture::bind_at(GLint location)
+    {
+        glBindTextureUnit(location, this->texture);
     }
 }
 

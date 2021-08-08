@@ -3,6 +3,7 @@
 #include "core/profiling/zone.hpp"
 #include "core/tz.hpp"
 #include "gl/impl/frontend/ogl/renderer.hpp"
+#include "gl/resource.hpp"
 #include <numeric>
 
 namespace tz::gl
@@ -40,12 +41,17 @@ namespace tz::gl
         return this->pass;
     }
 
-    void RendererBuilderOGL::set_output(const IRendererOutput& output)
+    void RendererBuilderOGL::set_output(IRendererOutput& output)
     {
         this->output = &output;
     }
 
     const IRendererOutput* RendererBuilderOGL::get_output() const
+    {
+        return this->output;
+    }
+
+    IRendererOutput* RendererBuilderOGL::get_output()
     {
         return this->output;
     }
@@ -325,34 +331,47 @@ namespace tz::gl
         {
             auto* texture_resource = static_cast<TextureResource*>(texture_resources[i]);
             tz_report("Texture Resource (ResourceID: %zu, TextureComponentID: %zu, %zu bytes total)", buffer_resources.size() + i, i, texture_resource->get_resource_bytes().size_bytes());
-            GLuint& tex = this->resource_textures.emplace_back();
-            glCreateTextures(GL_TEXTURE_2D, 1, &tex);
-            GLenum internal_format, format, type;
+            //GLuint& tex = this->resource_textures.emplace_back();
+            //glCreateTextures(GL_TEXTURE_2D, 1, &tex);
+            //GLenum internal_format, format, type;
+            ogl::Texture::Format format;
             switch(texture_resource->get_format())
             {
                 case TextureFormat::Rgba32Signed:
-                    internal_format = GL_RGBA8;
-                    format = GL_RGBA;
-                    type = GL_BYTE;
+                    format = ogl::Texture::Format::Rgba32Signed;
+                    //internal_format = GL_RGBA8;
+                    //format = GL_RGBA;
+                    //type = GL_BYTE;
                 break;
                 case TextureFormat::Rgba32Unsigned:
-                    internal_format = GL_RGBA8;
-                    format = GL_RGBA;
-                    type = GL_UNSIGNED_BYTE;
+                    format = ogl::Texture::Format::Rgba32Unsigned;
+                    //internal_format = GL_RGBA8;
+                    //format = GL_RGBA;
+                    //type = GL_UNSIGNED_BYTE;
                 break;
                 case TextureFormat::Rgba32sRGB:
-                    internal_format = GL_SRGB8_ALPHA8;
-                    format = GL_RGBA;
-                    type = GL_UNSIGNED_BYTE;
+                    format = ogl::Texture::Format::Rgba32sRGB;
+                    //internal_format = GL_SRGB8_ALPHA8;
+                    //format = GL_RGBA;
+                    //type = GL_UNSIGNED_BYTE;
                 break;
                 case TextureFormat::DepthFloat32:
-                    internal_format = GL_DEPTH_COMPONENT32F;
-                    format = GL_DEPTH_COMPONENT;
-                    type = GL_FLOAT;
+                    format = ogl::Texture::Format::DepthFloat32;
+                    //internal_format = GL_DEPTH_COMPONENT32F;
+                    //format = GL_DEPTH_COMPONENT;
+                    //type = GL_FLOAT;
+                break;
+                case TextureFormat::Bgra32UnsignedNorm:
+                    format = ogl::Texture::Format::Bgra32UnsignedNorm;
+                break;
+                default:
+                    tz_error("Unrecogised Resource TextureFormat (OpenGL)");
                 break;
             }
-            
-            auto convert_filter = [](TexturePropertyFilter filter)
+
+            TextureProperties gl_props = texture_resource->get_properties();
+            ogl::TextureParameters ogl_params;
+            auto to_ogl_filter = [](TexturePropertyFilter filter) -> GLint
             {
                 switch(filter)
                 {
@@ -363,36 +382,46 @@ namespace tz::gl
                         return GL_LINEAR;
                     break;
                     default:
-                        tz_error("OpenGL support for TexturePropertyFilter is not yet implemented");
-                        return GL_INVALID_ENUM;
+                        tz_error("Unrecognised Resource TexturePropertyFilter (OpenGL)");
+                        return 0;
                     break;
                 }
             };
-            auto convert_address_mode = [](TextureAddressMode addr_mode)
+
+            auto to_ogl_addrmode = [](TextureAddressMode mode) -> GLint
             {
-                switch(addr_mode)
+                switch(mode)
                 {
                     case TextureAddressMode::ClampToEdge:
                         return GL_CLAMP_TO_EDGE;
                     break;
                     default:
-                        tz_error("OpenGL support for TextureAddressMode is not yet implemented");
-                        return GL_INVALID_ENUM;
+                        tz_error("Unrecognised Resource TextureAddressMode (OpenGL)");
+                        return 0;
                     break;
                 }
             };
 
-            TextureProperties gl_props = texture_resource->get_properties();
+            ogl_params.min_filter = to_ogl_filter(gl_props.min_filter);
+            ogl_params.mag_filter = to_ogl_filter(gl_props.mag_filter);
+            ogl_params.tex_wrap_s = to_ogl_addrmode(gl_props.address_mode_u);
+            ogl_params.tex_wrap_t = to_ogl_addrmode(gl_props.address_mode_v);
+            ogl_params.tex_wrap_u = to_ogl_addrmode(gl_props.address_mode_w);
+            /*
             glTextureParameteri(tex, GL_TEXTURE_WRAP_S, convert_address_mode(gl_props.address_mode_u));
 			glTextureParameteri(tex, GL_TEXTURE_WRAP_T, convert_address_mode(gl_props.address_mode_v));
             glTextureParameteri(tex, GL_TEXTURE_WRAP_R, convert_address_mode(gl_props.address_mode_w));
 			glTextureParameteri(tex, GL_TEXTURE_MIN_FILTER, convert_filter(gl_props.min_filter));
 			glTextureParameteri(tex, GL_TEXTURE_MAG_FILTER, convert_filter(gl_props.min_filter));
+            */
 
             GLsizei tex_w = texture_resource->get_width();
             GLsizei tex_h = texture_resource->get_height();
-            glTextureStorage2D(tex, 1, internal_format, tex_w, tex_h);
-            glTextureSubImage2D(tex, 0, 0, 0, tex_w, tex_h, format, type, texture_resource->get_resource_bytes().data());
+            ogl::Texture tex{tex_w, tex_h, format, ogl_params};
+            tex.set_image_data(texture_resource->get_resource_bytes().data(), texture_resource->get_resource_bytes().size_bytes());
+            this->resource_textures.emplace_back(texture_resource, std::move(tex));
+            //glTextureStorage2D(tex, 1, internal_format, tex_w, tex_h);
+            //glTextureSubImage2D(tex, 0, 0, 0, tex_w, tex_h, format, type, texture_resource->get_resource_bytes().data());
         }
 
         this->bind_draw_list(this->all_inputs_once());
@@ -419,7 +448,6 @@ namespace tz::gl
     RendererOGL::~RendererOGL()
     {
         glDeleteBuffers(static_cast<GLsizei>(this->resource_ubos.size()), this->resource_ubos.data());
-        glDeleteTextures(static_cast<GLsizei>(this->resource_textures.size()), this->resource_textures.data());
 
         if(this->vao != 0)
         {
@@ -501,6 +529,11 @@ namespace tz::gl
         return this->resources[handle_value].get();
     }
 
+    IComponent* RendererOGL::get_component([[maybe_unused]] ResourceHandle handle)
+    {
+        return nullptr;
+    }
+
     tz::Vec4 RendererOGL::get_clear_colour() const
     {
         GLfloat rgba[4];
@@ -551,10 +584,12 @@ namespace tz::gl
             TZ_PROFZONE("Frontend OGL : Bind Texture Resources", TZ_PROFCOL_RED);
             for(std::size_t i = 0; i < this->resource_textures.size(); i++)
             {
-                GLuint res_tex = this->resource_textures[i];
+                TextureComponentOGL& cur_tex = this->resource_textures[i];
+                //GLuint res_tex = this->resource_textures[i];
                 auto tex_location = static_cast<GLint>(this->resource_ubos.size() + i);
 
-                glBindTextureUnit(tex_location, res_tex);
+                //glBindTextureUnit(tex_location, res_tex);
+                cur_tex.get_texture().bind_at(tex_location);
                 glProgramUniform1i(this->shader->ogl_get_program_handle(), tex_location, tex_location);
             }
         }

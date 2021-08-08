@@ -34,5 +34,10 @@ namespace tz::gl
     {
         return {builder};
     }
+
+    TextureFormat DeviceOGL::get_window_format() const
+    {
+        return TextureFormat::Bgra32UnsignedNorm;
+    }
 }
 #endif // TZ_OGL

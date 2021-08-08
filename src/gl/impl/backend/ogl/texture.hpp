@@ -1,6 +1,9 @@
 #ifndef TOPAZ_GL_IMPL_BACKEND_OGL_TEXTURE_HPP
 #define TOPAZ_GL_IMPL_BACKEND_OGL_TEXTURE_HPP
 #if TZ_OGL
+#include "core/assert.hpp"
+#include "glad/glad.h"
+#include <cstdint>
 
 namespace tz::gl::ogl
 {
@@ -11,8 +14,8 @@ namespace tz::gl::ogl
     // We'll have to use underlying int and support all conversions manually.
     struct InternalTextureFormat
     {
-        GLenum internal_format;
         GLenum format;
+        GLenum internal_format;
         GLenum type;
     };
 
@@ -50,7 +53,7 @@ namespace tz::gl::ogl
             Bgra32UnsignedNorm
         };
 
-        Texture(unsigned int width, unsigned int height, Format format, TextureParameters = default_parameters());
+        Texture(GLsizei width, GLsizei height, Format format, TextureParameters parameters = default_parameters());
         Texture(const Texture& copy) = delete;
         Texture(Texture&& move);
         ~Texture();
@@ -58,14 +61,16 @@ namespace tz::gl::ogl
         Texture& operator=(const Texture& rhs) = delete;
         Texture& operator=(Texture&& rhs);
 
-        void resize_and_clear(unsigned int width, unsigned int height);
-        void resize(unsigned int width, unsigned int height);
-        void set_image_data(void* data, std::size_t data_size_bytes);
+        void resize_and_clear(GLsizei width, GLsizei height);
+        void resize(GLsizei width, GLsizei height);
+        void set_image_data(const void* data, std::size_t data_size_bytes);
+        void bind_at(GLint location);
     private:
         GLuint texture;
-        unsigned int width;
-        unsigned int height;
-        Format format;
+        GLsizei width;
+        GLsizei height;
+        Format frontend_format;
+        InternalTextureFormat format;
         TextureParameters parameters;
     };
 
@@ -79,7 +84,7 @@ namespace tz::gl::ogl
                     .format = GL_RGBA,
                     .internal_format = GL_RGBA8I,
                     .type = GL_BYTE
-                }
+                };
             break;
             case Texture::Format::Rgba32Unsigned:
                 return
@@ -87,7 +92,7 @@ namespace tz::gl::ogl
                     .format = GL_RGBA,
                     .internal_format = GL_RGBA8UI,
                     .type = GL_UNSIGNED_BYTE
-                }
+                };
             break;
             case Texture::Format::Rgba32sRGB:
                 return
@@ -95,7 +100,7 @@ namespace tz::gl::ogl
                     .format = GL_RGBA,
                     .internal_format = GL_SRGB8_ALPHA8,
                     .type = GL_UNSIGNED_BYTE
-                }
+                };
             break;
             case Texture::Format::DepthFloat32:
                 return
@@ -103,15 +108,15 @@ namespace tz::gl::ogl
                     .format = GL_DEPTH_COMPONENT,
                     .internal_format = GL_DEPTH_COMPONENT32F,
                     .type = GL_FLOAT
-                }
+                };
             break;
             case Texture::Format::Bgra32UnsignedNorm:
                 return
                 {
-                    .format = GL_RGBA,
-                    .internal_format = GL_BGRA8,
+                    .format = GL_BGRA,
+                    .internal_format = GL_RGBA8,
                     .type = GL_UNSIGNED_BYTE
-                }
+                };
             break;
             default:
                 tz_error("Unrecognised OpenGL Format (Failed to retrieve internal texture format)");

@@ -12,7 +12,7 @@ namespace tz::gl
 #include "gl/impl/frontend/ogl/component.hpp"
 namespace tz::gl
 {
-    using BufferComponent = BufferComponentOGL;
+    //using BufferComponent = BufferComponentOGL;
     using TextureComponent = TextureComponentOGL;
 }
 #endif

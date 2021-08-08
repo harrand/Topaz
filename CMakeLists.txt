@@ -93,6 +93,8 @@ add_library(topaz
     src/gl/impl/frontend/vk/shader.hpp
 
     # tz::gl (OpenGL Frontend)
+    src/gl/impl/frontend/ogl/component.cpp
+    src/gl/impl/frontend/ogl/component.hpp
     src/gl/impl/frontend/ogl/device.cpp
     src/gl/impl/frontend/ogl/device.hpp
     src/gl/impl/frontend/ogl/renderer.hpp

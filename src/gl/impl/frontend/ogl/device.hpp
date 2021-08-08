@@ -23,6 +23,7 @@ namespace tz::gl
         DeviceOGL(DeviceBuilderOGL builder);
         [[nodiscard]] virtual Renderer create_renderer(RendererBuilder builder) const final;
         [[nodiscard]] virtual Shader create_shader(ShaderBuilder builder) const final;
+        virtual TextureFormat get_window_format() const final;
     private:
         GraphicsPrimitiveType primitive_type;
     };

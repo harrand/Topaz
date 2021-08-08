@@ -1,5 +1,7 @@
 #version 450
 #pragma shader_stage(vertex)
+#extension GL_KHR_vulkan_glsl : require
+
 layout (location = 0) out vec2 out_texcoord;
 void main() 
 {
