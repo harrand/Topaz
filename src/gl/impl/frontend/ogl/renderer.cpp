@@ -645,22 +645,29 @@ namespace tz::gl
             }
         }
 
-        if(this->indirect_buffer.has_value())
+        if(this->inputs.empty())
         {
-            TZ_PROFZONE("Frontend OGL : Static Inputs Draw", TZ_PROFCOL_RED);
-            glVertexArrayVertexBuffer(this->vao, 0, this->vbo->native(), 0, static_cast<GLsizei>(this->format.binding_size));
-            glVertexArrayElementBuffer(this->vao, this->ibo->native());
-            this->indirect_buffer->bind();
-            glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, nullptr, static_cast<GLsizei>(this->num_static_draws()), sizeof(DrawIndirectCommand));
+            glDrawArrays(GL_TRIANGLES, 0, 3);
         }
-
-        if(this->indirect_buffer_dynamic.has_value())
+        else
         {
-            TZ_PROFZONE("Frontend OGL : Dynamic Inputs Draw", TZ_PROFCOL_RED);
-            glVertexArrayVertexBuffer(this->vao, 0, this->vbo_dynamic->native(), 0, static_cast<GLsizei>(this->format.binding_size));
-            glVertexArrayElementBuffer(this->vao, this->ibo_dynamic->native());
-            this->indirect_buffer_dynamic->bind();
-            glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, nullptr, static_cast<GLsizei>(this->num_dynamic_draws()), sizeof(DrawIndirectCommand));
+            if(this->indirect_buffer.has_value())
+            {
+                TZ_PROFZONE("Frontend OGL : Static Inputs Draw", TZ_PROFCOL_RED);
+                glVertexArrayVertexBuffer(this->vao, 0, this->vbo->native(), 0, static_cast<GLsizei>(this->format.binding_size));
+                glVertexArrayElementBuffer(this->vao, this->ibo->native());
+                this->indirect_buffer->bind();
+                glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, nullptr, static_cast<GLsizei>(this->num_static_draws()), sizeof(DrawIndirectCommand));
+            }
+
+            if(this->indirect_buffer_dynamic.has_value())
+            {
+                TZ_PROFZONE("Frontend OGL : Dynamic Inputs Draw", TZ_PROFCOL_RED);
+                glVertexArrayVertexBuffer(this->vao, 0, this->vbo_dynamic->native(), 0, static_cast<GLsizei>(this->format.binding_size));
+                glVertexArrayElementBuffer(this->vao, this->ibo_dynamic->native());
+                this->indirect_buffer_dynamic->bind();
+                glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, nullptr, static_cast<GLsizei>(this->num_dynamic_draws()), sizeof(DrawIndirectCommand));
+            }
         }
     }
 
