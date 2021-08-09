@@ -1,6 +1,7 @@
 #include "core/tz.hpp"
 #include "gl/device.hpp"
 #include "gl/renderer.hpp"
+#include "gl/resource.hpp"
 
 int main()
 {
