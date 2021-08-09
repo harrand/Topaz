@@ -7,9 +7,10 @@
 enum class PreprocessorModule
 {
     Sampler,
+    TopazDefines,
 
     Begin = Sampler,
-    End
+    End = TopazDefines + 1
 };
 
 class PreprocessorModuleField : public tz::EnumField<PreprocessorModule>
@@ -28,10 +29,11 @@ public:
 
 namespace tzslc
 {
-    constexpr std::array<const char*, static_cast<int>(PreprocessorModule::End)> preprocessor_module_names{{{"sampler"}}};
+    constexpr std::array<const char*, static_cast<int>(PreprocessorModule::End)> preprocessor_module_names{{"sampler", "tzdefs"}};
 
     bool preprocess(PreprocessorModuleField modules, std::string& shader_source);
     bool preprocess_samplers(std::string& shader_source);
+    bool preprocess_topaz_defines(std::string& shader_source);
 }
 
 #endif // TZSLC_PREPROCESSOR_HPP

@@ -81,6 +81,7 @@ int main()
 
         auto draw_scene = [&renderer, &invert_renderer]()
         {
+            tz::window().update();
             renderer.render();
             invert_renderer.render();
         };
@@ -92,7 +93,6 @@ int main()
 
         while(!tz::window().is_close_requested())
         {
-            tz::window().update();
             draw_scene();
         }
     }

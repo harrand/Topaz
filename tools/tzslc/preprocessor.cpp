@@ -4,12 +4,17 @@
 
 namespace tzslc
 {
+
     bool preprocess(PreprocessorModuleField modules, std::string& shader_source)
     {
         bool done_any_work = false;
         if(modules.contains(PreprocessorModule::Sampler))
         {
             done_any_work |= preprocess_samplers(shader_source);
+        }
+        if(modules.contains(PreprocessorModule::TopazDefines))
+        {
+            done_any_work |= preprocess_topaz_defines(shader_source);
         }
         return done_any_work;
     }
@@ -31,4 +36,20 @@ namespace tzslc
         });
         return false;
     }
+
+    bool preprocess_topaz_defines(std::string& shader_source)
+    {
+        tzslc::transform(shader_source, std::regex{"#tz_defines"}, [](auto beg, auto end)->std::string
+        {
+            std::string replacement;
+            #if TZ_VULKAN
+                replacement = "#define TZ_OGL 0\n#define TZ_VULKAN 1\n";
+            #elif TZ_OGL
+                replacement = "#define TZ_OGL 1\n#define TZ_VULKAN 0\n";
+            #endif
+            return replacement;
+        });
+        return false;
+    }
+
 }

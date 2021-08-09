@@ -1,5 +1,6 @@
 #version 450
 #pragma shader_stage(fragment)
+#tz_defines
 
 tz_sampler2D_uniform(0) tex_sampler;
 layout(location = 0) in vec2 texcoord;
@@ -10,7 +11,9 @@ const float grid_scale = 20.0;
 void main()
 {
     vec2 texcoord_transformed = texcoord;
-    texcoord_transformed.y = 1.0 - texcoord_transformed.y;
+    #if TZ_VULKAN
+        texcoord_transformed.y = 1.0 - texcoord_transformed.y;
+    #endif
     output_colour = texture(tex_sampler, texcoord_transformed);
     {
         vec4 inverse = vec4(1.0) - output_colour;

@@ -1,10 +1,16 @@
 #version 450
 #pragma shader_stage(vertex)
-#extension GL_KHR_vulkan_glsl : require
+#tz_defines
+
+#if TZ_OGL
+int tz_vertex_id = gl_VertexID;
+#elif TZ_VULKAN
+int tz_vertex_id = gl_VertexIndex;
+#endif
 
 layout (location = 0) out vec2 out_texcoord;
-void main() 
+void main()
 {
-    out_texcoord = vec2((gl_VertexIndex << 1) & 2, gl_VertexIndex & 2);
+    out_texcoord = vec2((tz_vertex_id << 1) & 2, tz_vertex_id & 2);
     gl_Position = vec4(out_texcoord * 2.0f + -1.0f, 0.0f, 1.0f);
 }
