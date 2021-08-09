@@ -113,7 +113,7 @@ namespace tz::gl
     }
 
 
-    RendererOGL::RendererOGL(RendererBuilderOGL builder):
+    RendererOGL::RendererOGL(RendererBuilderOGL builder, RendererDeviceInfoOGL device_info):
     vao(0),
     vbo(std::nullopt),
     ibo(std::nullopt),
@@ -132,23 +132,14 @@ namespace tz::gl
     output_framebuffer(std::nullopt),
     draw_cache()
     {
+        *device_info.on_resize = [this](){this->handle_resize();};
         if(this->output != nullptr)
         {
             if(this->output->get_type() == RendererOutputType::Texture)
             {
                 this->output_texture_component = static_cast<TextureOutput*>(builder.get_output())->get_first_colour_component();
 
-                const ogl::Texture& output_tex = this->output_texture_component->get_texture();
-                GLsizei width = output_tex.get_width();
-                GLsizei height = output_tex.get_height();
-
-                this->output_framebuffer = ogl::Framebuffer{};
-                this->output_depth_renderbuffer = ogl::Renderbuffer{width, height, ogl::Texture::Format::DepthFloat32};
-
-                // For now we only support a single colour attachment and no depth attachments. That makes this really easy.
-                this->output_framebuffer->attach(GL_COLOR_ATTACHMENT0, output_tex);
-                this->output_framebuffer->attach(GL_DEPTH_ATTACHMENT, this->output_depth_renderbuffer.value());
-                this->output_framebuffer->set_output(GL_COLOR_ATTACHMENT0);
+                this->setup_output_framebuffer();
             }
         }
         auto persistent_mapped_buffer_flags = GL_MAP_READ_BIT | GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT;
@@ -680,6 +671,25 @@ namespace tz::gl
         this->render();
     }
 
+    void RendererOGL::setup_output_framebuffer()
+    {
+        if(this->output_texture_component == nullptr)
+        {
+            return;
+        }
+        const ogl::Texture& output_tex = this->output_texture_component->get_texture();
+        GLsizei width = output_tex.get_width();
+        GLsizei height = output_tex.get_height();
+
+        this->output_framebuffer = ogl::Framebuffer{};
+        this->output_depth_renderbuffer = ogl::Renderbuffer{width, height, ogl::Texture::Format::DepthFloat32};
+
+        // For now we only support a single colour attachment and no depth attachments. That makes this really easy.
+        this->output_framebuffer->attach(GL_COLOR_ATTACHMENT0, output_tex);
+        this->output_framebuffer->attach(GL_DEPTH_ATTACHMENT, this->output_depth_renderbuffer.value());
+        this->output_framebuffer->set_output(GL_COLOR_ATTACHMENT0);
+    }
+
     void RendererOGL::bind_draw_list(const RendererDrawList& draws)
     {
         TZ_PROFZONE("RendererOGL::bind_draw_list", TZ_PROFCOL_YELLOW);
@@ -852,6 +862,20 @@ namespace tz::gl
             return accumulator + (this->inputs[handle_val]->data_access() == RendererInputDataAccess::DynamicFixed ? 1 : 0);
         });
         return total;
+    }
+
+    void RendererOGL::resize_output_component()
+    {
+        if(this->output_texture_component != nullptr)
+        {
+            this->output_texture_component->clear_and_resize(tz::window().get_width(), tz::window().get_height());
+        }
+    }
+
+    void RendererOGL::handle_resize()
+    {
+        this->resize_output_component();
+        this->setup_output_framebuffer();
     }
 }
 

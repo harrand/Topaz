@@ -25,7 +25,10 @@ namespace tz::gl
         [[nodiscard]] virtual Shader create_shader(ShaderBuilder builder) const final;
         virtual TextureFormat get_window_format() const final;
     private:
+        void on_window_resize();
+
         GraphicsPrimitiveType primitive_type;
+        mutable std::deque<DeviceWindowResizeCallback> renderer_resize_callbacks;
     };
 }
 
