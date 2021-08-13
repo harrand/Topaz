@@ -10,7 +10,7 @@ namespace tz
         if(!args.resizeable)
         {
             // GLFW assumes window is resizable. If not we will need to add an extra hint.
-            hints.emplace(GLFW_RESIZABLE, GLFW_FALSE);
+            hints.add(WindowHint{.hint = GLFW_RESIZABLE, .value = GLFW_FALSE});
         }
         for(const WindowHint& hint : hints)
         {
