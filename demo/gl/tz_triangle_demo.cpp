@@ -14,7 +14,9 @@ float get_aspect_ratio()
 
 int main()
 {
-    tz::initialise({"tz_triangle_demo", tz::Version{1, 0, 0}, tz::info()});
+    tz::WindowInitArgs wargs = tz::default_args;
+    wargs.resizeable = false;
+    tz::initialise({"tz_triangle_demo", tz::Version{1, 0, 0}, tz::info()}, tz::ApplicationType::WindowApplication, wargs);
     {
         tz::gl::DeviceBuilder device_builder;
         tz::gl::Device device{device_builder};
