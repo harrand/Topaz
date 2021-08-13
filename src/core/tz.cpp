@@ -16,7 +16,7 @@ namespace tz
     bool initialised = false;
     ApplicationType tz_app_type = ApplicationType::WindowApplication;
 
-    void initialise(GameInfo game_info, ApplicationType app_type)
+    void initialise(GameInfo game_info, ApplicationType app_type, WindowInitArgs wargs)
     {   
         if(app_type == ApplicationType::WindowApplication || app_type == ApplicationType::HiddenWindowApplication)
         {
@@ -27,7 +27,10 @@ namespace tz
             {
                 hints.add(WindowHint{.hint = GLFW_VISIBLE, .value = GLFW_FALSE});
             }
-            wnd = new tz::Window{WindowInitArgs{.width = 800, .height = 600, .title = game_info.to_string().c_str()}, hints};
+
+            std::string wnd_title = game_info.to_string();
+            wargs.title = wnd_title.c_str();
+            wnd = new tz::Window{wargs, hints};
         }
         else
         {
@@ -37,7 +40,6 @@ namespace tz
                 // TODO: Headless implementation for OGL
                 tz_report("Headless applications are stubbed out for OpenGL");
                 std::exit(0);
-                wnd = new tz::Window{WindowInitArgs{.width = 800, .height = 600, .title = game_info.to_string().c_str()}, {{GLFW_VISIBLE, GL_FALSE}}};
             #endif
         }
         

@@ -1,6 +1,4 @@
-#version 450
 #pragma shader_stage(fragment)
-#tz_defines
 
 tz_sampler2D_uniform(0) tex_sampler;
 layout(location = 0) in vec2 texcoord;

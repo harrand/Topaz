@@ -1,4 +1,3 @@
-#version 450
 #pragma shader_stage(fragment)
 
 tz_sampler2D_uniform(1) tex_sampler;

@@ -31,7 +31,7 @@ namespace tz
      * @param game_info Information about the application
      * @param app_type Describes the anatomy of the application.
      */
-    void initialise(GameInfo game_info, ApplicationType app_type = ApplicationType::WindowApplication);
+    void initialise(GameInfo game_info, ApplicationType app_type = ApplicationType::WindowApplication, WindowInitArgs wargs = tz::default_args);
     /**
      * @brief Terminate Topaz.
      * @pre If `tz::initialise` has not been invoked before this, then the behaviour of the program is undefined.

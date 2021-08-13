@@ -1,6 +1,4 @@
-#version 450
 #pragma shader_stage(vertex)
-#tz_defines
 
 #if TZ_OGL
 int tz_vertex_id = gl_VertexID;

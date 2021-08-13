@@ -4,17 +4,32 @@
 
 namespace tzslc
 {
+    constexpr const char* tzslc_platform_defines()
+    {
+        #if TZ_VULKAN
+            return "#define TZ_OGL 0\n#define TZ_VULKAN 1\n";
+        #elif TZ_OGL
+            return "#define TZ_OGL 1\n#define TZ_VULKAN 0\n";
+        #else
+            #error "Neither Vulkan nor OGL render-api backend specified";
+        #endif
+    }
+
+    void add_glsl_header_info(std::string& shader_source)
+    {
+        std::string hdrinfo = "/*tzslc header info begin*/\n#version 450 core\n";
+        hdrinfo += tzslc_platform_defines();
+        hdrinfo += "/*tzslc header info end*/\n";
+        shader_source = hdrinfo + shader_source;
+    }
 
     bool preprocess(PreprocessorModuleField modules, std::string& shader_source)
     {
         bool done_any_work = false;
+        add_glsl_header_info(shader_source);
         if(modules.contains(PreprocessorModule::Sampler))
         {
             done_any_work |= preprocess_samplers(shader_source);
-        }
-        if(modules.contains(PreprocessorModule::TopazDefines))
-        {
-            done_any_work |= preprocess_topaz_defines(shader_source);
         }
         return done_any_work;
     }
@@ -36,20 +51,4 @@ namespace tzslc
         });
         return false;
     }
-
-    bool preprocess_topaz_defines(std::string& shader_source)
-    {
-        tzslc::transform(shader_source, std::regex{"#tz_defines"}, [](auto beg, auto end)->std::string
-        {
-            std::string replacement;
-            #if TZ_VULKAN
-                replacement = "#define TZ_OGL 0\n#define TZ_VULKAN 1\n";
-            #elif TZ_OGL
-                replacement = "#define TZ_OGL 1\n#define TZ_VULKAN 0\n";
-            #endif
-            return replacement;
-        });
-        return false;
-    }
-
 }

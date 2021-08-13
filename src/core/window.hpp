@@ -21,10 +21,11 @@ namespace tz
     {
         int width;
         int height;
+        bool resizeable;
         const char* title;
     };
 
-    constexpr WindowInitArgs default_args = {.width = 800, .height = 600, .title = "Untitled"};
+    constexpr WindowInitArgs default_args = {.width = 800, .height = 600, .resizeable = true, .title = "Untitled"};
 
     using WindowHintList = tz::BasicList<WindowHint>;
 

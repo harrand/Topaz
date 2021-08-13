@@ -7,6 +7,11 @@ namespace tz
     Window::Window(WindowInitArgs args, WindowHintList hints):
     WindowFunctionality(nullptr)
     {
+        if(!args.resizeable)
+        {
+            // GLFW assumes window is resizable. If not we will need to add an extra hint.
+            hints.emplace(GLFW_RESIZABLE, GLFW_FALSE);
+        }
         for(const WindowHint& hint : hints)
         {
             glfwWindowHint(hint.hint, hint.value);
