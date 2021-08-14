@@ -42,7 +42,10 @@ namespace tz
         static Window null();
 
         static void window_resize_callback(GLFWwindow* window, int width, int height);
+        static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
     private:
+        void handle_key_event(int key, int scancode, int action, int mods);
+        
         Window(std::nullptr_t);
     };
 

@@ -32,6 +32,11 @@ namespace tz
         return static_cast<float>(this->get_size().second);
     }
 
+    bool WindowFunctionality::is_key_pressed(int key_code) const
+    {
+        return this->pressed.is_pressed(key_code);
+    }
+
     void WindowFunctionality::update()
     {
         TZ_PROFZONE("WindowFunctionality::update", TZ_PROFCOL_YELLOW);
@@ -57,6 +62,11 @@ namespace tz
     void WindowFunctionality::block_until_event_happens()
     {
         glfwWaitEvents();
+    }
+
+    void WindowFunctionality::handle_key_event(int key, int scancode, int action, int mods)
+    {
+        this->pressed.glfw_update_state(key, scancode, action, mods);
     }
 
     std::pair<int, int> WindowFunctionality::get_size() const

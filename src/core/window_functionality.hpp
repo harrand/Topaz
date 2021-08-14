@@ -1,8 +1,8 @@
 #ifndef TOPAZ_CORE_WINDOW_FUNCTIONALITY_HPP
 #define TOPAZ_CORE_WINDOW_FUNCTIONALITY_HPP
 #include "core/types.hpp"
+#include "core/keyboard_state.hpp"
 #include "gl/api/renderer.hpp"
-#include "GLFW/glfw3.h"
 
 #include <vector>
 #include <functional>
@@ -29,6 +29,8 @@ namespace tz
         float get_width() const;
         float get_height() const;
 
+        bool is_key_pressed(int key_code) const;
+
         void update();
 
         virtual tz::gl::RendererOutputType get_type() const final
@@ -38,11 +40,15 @@ namespace tz
 
         static void block_until_event_happens();
     protected:
+        void handle_key_event(int key, int scancode, int action, int mods);
+
         GLFWwindow* wnd;
         std::vector<std::function<WindowResizeSignature>> window_resize_callbacks;
     private:
         std::pair<int, int> get_size() const;
         void ensure() const;
+
+        KeyPressedState pressed;
     };
 
     /**

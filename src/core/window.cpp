@@ -40,6 +40,7 @@ namespace tz
         #endif
         glfwSetWindowUserPointer(this->wnd, this);
         glfwSetFramebufferSizeCallback(this->wnd, Window::window_resize_callback);
+        glfwSetKeyCallback(this->wnd, Window::key_callback);
     }
 
     Window::Window(Window&& move):
@@ -77,6 +78,18 @@ namespace tz
             resize_callback(width, height);
         }
     }
+
+    void Window::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+    {
+        WindowFunctionality* cur_window_func = reinterpret_cast<WindowFunctionality*>(glfwGetWindowUserPointer(window));
+        static_cast<Window*>(cur_window_func)->handle_key_event(key, scancode, action, mods);
+    }
+
+    void Window::handle_key_event(int key, int scancode, int action, int mods)
+    {
+        WindowFunctionality::handle_key_event(key, scancode, action, mods);
+    }
+
 
     Window::Window(std::nullptr_t):
     WindowFunctionality(nullptr)
