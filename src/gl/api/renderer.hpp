@@ -210,15 +210,55 @@ namespace tz::gl
          * @return RendererElementFormat describing how vertex data is laid out in memory.
          */
         virtual const IRendererInput* get_input(RendererInputHandle input_handle) const = 0;
+        /**
+         * @brief Describe the nature of the renderpass
+         * @deprecated Poorly describes the nature of the render-pass. This may be removed and the attachment stuff done under-the-hood.
+         * Currently RenderPasses always consist of one subpass. All colour-depth attachments are assumed to have the exact same TextureFormat which is unreasonable.
+         * 
+         * This however tells the renderer whether there even exists any colour/depth attachments.
+         * 
+         * @param pass 
+         */
         virtual void set_pass(RenderPassAttachment pass) = 0;
+        /**
+         * @brief Retrieve information about the colour/depth attachments.
+         * 
+         * @return Information on whether the renderer expects to have colour/depth attachments.
+         */
         virtual RenderPassAttachment get_pass() const = 0;
+        /**
+         * @brief Renderers must have one output. Currently, an output is either a @ref tz::gl::TextureOutput (render-to-texture) or the @ref tz::window() (the window or an offscreen-image for headless applications).
+         * 
+         * @param output Information about the renderer's render-target.
+         */
         virtual void set_output(IRendererOutput& output) = 0;
+        /**
+         * @brief Retrieve the output that will be used by the renderer.
+         * 
+         * @return const IRendererOutput* pointing to the output.
+         */
         virtual const IRendererOutput* get_output() const = 0;
+        /**
+         * @brief Retrieve the output that will be used by the renderer.
+         * 
+         * @return const IRendererOutput* pointing to the output.
+         */
         virtual IRendererOutput* get_output() = 0;
-
+        /**
+         * @brief Add a resource to the renderer, meaning that its data may be used while rendering.
+         * @note When a Renderer is created, any resources referred to within its builder are copied, meaning that the resources need not exist beyond that point for that particular renderer.
+         * @param resource Reference to an existing resource. The IResource must refer to a valid object until the desired Renderer has been created.
+         * @return ResourceHandle Handle which can be used to refer to the resource provided. The ResourceHandle is also valid for any Renderer created from this builder.
+         */
         virtual ResourceHandle add_resource(const IResource& resource) = 0;
+        /**
+         * @brief Retrieve a resource using the given handle.
+         * @pre `handle` must refer to an existing resource that was earlier registered via @ref IRendererBuilder::add_resource.
+         * 
+         * @param handle Handle whose corresponding resource should be retrieved.
+         * @return const IResource* pointing to the resource.
+         */
         virtual const IResource* get_resource(ResourceHandle handle) const = 0;
-
         /**
          * @brief Set the culling strategy used during rendering.
          * 
@@ -231,8 +271,18 @@ namespace tz::gl
          * @return Culling strategy that the renderer will use.
          */
         virtual RendererCullingStrategy get_culling_strategy() const = 0;
-
+        /**
+         * @brief Set the shader which will be used while rendering.
+         * This is non-optional. All renderers *must* have a shader.
+         * 
+         * @param shader Existing Shader program. Unlike resources/inputs, the shader must exist throughout the lifetime of the builder, and any spawned Renderers.
+         */
         virtual void set_shader(const Shader& shader) = 0;
+        /**
+         * @brief Retrieve the shader that will be used while rendering.
+         * @pre @ref IRendererBuilder::set_shader must have been invoked earlier, so a shader is currently being referred to.
+         * @return const Shader& Reference to an existing Shader program.
+         */
         virtual const Shader& get_shader() const = 0;
     };
 
