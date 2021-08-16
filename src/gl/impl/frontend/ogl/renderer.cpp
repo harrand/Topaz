@@ -77,6 +77,28 @@ namespace tz::gl
         }
     }
 
+    const IResource* RendererBuilderOGL::get_resource(ResourceHandle handle) const
+    {
+        auto handle_value = static_cast<std::size_t>(static_cast<tz::HandleValue>(handle));
+        if(handle_value >= this->buffer_resources.size())
+        {
+            // Handle value doesn't fit within buffer resources, must be a texture resource or invalid.
+            if(handle_value < this->buffer_resources.size() + this->texture_resources.size())
+            {
+                // Is within range, we assume it's a valid texture resource
+                return this->texture_resources[handle_value - this->buffer_resources.size()];
+            }
+            else
+            {
+                // Invalid, probably someone else's ResourceHsndle
+                return nullptr;
+            }
+        }
+        // Is within range, we assume it's a valid buffer resource
+        return this->buffer_resources[handle_value];
+    }
+
+
     void RendererBuilderOGL::set_culling_strategy(RendererCullingStrategy culling_strategy)
     {
         this->culling_strategy = culling_strategy;

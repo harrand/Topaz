@@ -31,6 +31,7 @@ namespace tz::gl
         virtual IRendererOutput* get_output() final;
 
         virtual ResourceHandle add_resource(const IResource& resource) final;
+        virtual const IResource* get_resource(ResourceHandle handle) const final;
 
         virtual void set_culling_strategy(RendererCullingStrategy culling_strategy) final;
         virtual RendererCullingStrategy get_culling_strategy() const final;

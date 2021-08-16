@@ -217,6 +217,7 @@ namespace tz::gl
         virtual IRendererOutput* get_output() = 0;
 
         virtual ResourceHandle add_resource(const IResource& resource) = 0;
+        virtual const IResource* get_resource(ResourceHandle handle) const = 0;
 
         /**
          * @brief Set the culling strategy used during rendering.

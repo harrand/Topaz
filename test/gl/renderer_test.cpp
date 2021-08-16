@@ -21,6 +21,14 @@ int main()
 
         tz::gl::RendererBuilder renderer_builder;
         tz::gl::ResourceHandle int_handle = renderer_builder.add_resource(int_resource);
+        {
+            auto* retrieval = static_cast<const tz::gl::BufferResource*>(renderer_builder.get_resource(int_handle));
+            tz_assert(retrieval != nullptr, "RendererBuilder failed to retrieve resource with a definitely valid handle");
+            auto span1 = retrieval->get_resource_bytes();
+            auto span2 = int_resource.get_resource_bytes();
+            tz_assert(span1.size() == span2.size(), "RendererBuilder wrongfully resized the resource data");
+            tz_assert(std::equal(span1.begin(), span1.end(), span2.begin()), "RendererBuilder wrongfully edited some of its resource data");
+        }
         renderer_builder.set_output(tz::window());
         renderer_builder.set_pass(tz::gl::RenderPassAttachment::Colour);
         renderer_builder.set_shader(shader);
