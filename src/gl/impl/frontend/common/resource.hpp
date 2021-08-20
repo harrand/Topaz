@@ -20,8 +20,9 @@ namespace tz::gl
         Rgba32Unsigned,
         Rgba32sRGB,
         DepthFloat32,
-        Bgra32UnsignedNorm
+        Bgra32UnsignedNorm,
 
+        Null
     };
 
     enum class TexturePropertyFilter

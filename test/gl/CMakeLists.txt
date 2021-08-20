@@ -9,6 +9,10 @@ add_tz_test(NAME tz_mesh_test
         SOURCE_FILES mesh_test.cpp
         )
 
+add_tz_test(NAME tz_render_pass_test
+        SOURCE_FILES render_pass_test.cpp
+        )
+
 add_tz_test(NAME tz_renderer_test
         SOURCE_FILES renderer_test.cpp
         SHADER_SOURCES
