@@ -87,17 +87,17 @@ namespace tz::gl::ogl
             case Texture::Format::Rgba32Signed:
                 return
                 {
-                    .format = GL_RGBA,
+                    .format = GL_RGBA_INTEGER,
                     .internal_format = GL_RGBA8I,
-                    .type = GL_BYTE
+                    .type = GL_INT
                 };
             break;
             case Texture::Format::Rgba32Unsigned:
                 return
                 {
-                    .format = GL_RGBA,
+                    .format = GL_RGBA_INTEGER,
                     .internal_format = GL_RGBA8UI,
-                    .type = GL_UNSIGNED_BYTE
+                    .type = GL_UNSIGNED_INT
                 };
             break;
             case Texture::Format::Rgba32sRGB:
