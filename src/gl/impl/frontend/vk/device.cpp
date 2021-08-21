@@ -148,10 +148,10 @@ namespace tz::gl
 
     RenderPassVulkan DeviceFunctionalityVulkan::vk_create_render_pass(RenderPassBuilderVulkan builder) const
     {
-        builder.vk_finalise(this->swapchain.get_format());
-        RenderPassBuilderDeviceInfoVulkan device_info;
-        device_info.device = &this->device;
-        device_info.device_swapchain = &this->swapchain;
+        RenderPassDeviceInfoVulkan device_info;
+        device_info.device = this;
+        device_info.window_buffer = &this->swapchain;
+        device_info.vk_device = &this->device;
         return {builder, device_info};
     }
 

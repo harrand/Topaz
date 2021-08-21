@@ -1,48 +1,40 @@
-#ifndef TOPAZ_GL_IMPL_VK_RENDER_PASS_HPP
-#define TOPAZ_GL_IMPL_VK_RENDER_PASS_HPP
+#ifndef TOPAZ_GL_IMPL_FRONTEND_VK_RENDER_PASS_HPP
+#define TOPAZ_GL_IMPL_FRONTEND_VK_RENDER_PASS_HPP
 #if TZ_VULKAN
-
-#include "gl/api/render_pass.hpp"
+#include "gl/impl/frontend/common/render_pass_info.hpp"
 #include "gl/impl/backend/vk/render_pass.hpp"
 
 namespace tz::gl
 {
-    class RenderPassBuilderVulkan : public IRenderPassBuilder
+    class RenderPassBuilderVulkan
     {
     public:
-        RenderPassBuilderVulkan() = default;
-        virtual void add_pass(RenderPassAttachment attachment) final;
-        virtual void set_presentable_output(bool presentable_output) final;
-        virtual bool has_presentable_output() const final;
-        void vk_finalise(vk::Image::Format colour_attachment_format);
-
-        friend class RenderPassVulkan;
+        RenderPassBuilderVulkan(RenderPassInfo info, bool presentable_output);
+        vk::RenderPassBuilder vk_get() const;
     private:
-        bool presentable_output = true;
-        vk::RenderPassBuilder builder;
-        std::vector<RenderPassAttachment> passes;
+        RenderPassInfo info;
+        bool presentable_output;
     };
 
+    class IDevice;
     class DeviceWindowBufferVulkan;
 
-    struct RenderPassBuilderDeviceInfoVulkan
+    struct RenderPassDeviceInfoVulkan
     {
-        const vk::LogicalDevice* device;
-        const DeviceWindowBufferVulkan* device_swapchain;
+        const IDevice* device;
+        const DeviceWindowBufferVulkan* window_buffer;
+        const vk::LogicalDevice* vk_device;
     };
 
-    class RenderPassVulkan : public IRenderPass
+    class RenderPassVulkan
     {
     public:
-        RenderPassVulkan(RenderPassBuilderVulkan builder, RenderPassBuilderDeviceInfoVulkan device_info);
-        virtual bool requires_depth_image() const final;
+        RenderPassVulkan(RenderPassBuilderVulkan builder, RenderPassDeviceInfoVulkan device_info);
         const vk::RenderPass& vk_get_render_pass() const;
     private:
         vk::RenderPass render_pass;
-        vk::Image::Format colour_attachment_format;
-        bool has_depth_attachment;
     };
 }
 
 #endif // TZ_VULKAN
-#endif // TOPAZ_GL_IMPL_VK_RENDER_PASS_HPP
+#endif // TOPAZ_GL_IMPL_FRONTEND_VK_RENDER_PASS_HPP

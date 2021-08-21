@@ -1376,6 +1376,11 @@ namespace tz::gl
 
     RenderPassVulkan RendererVulkan::make_simple_render_pass(const RendererBuilderVulkan& builder, const RendererBuilderDeviceInfoVulkan& device_info) const
     {
+        RenderPassInfo info = detail::describe_renderer(builder, *device_info.creator_device);
+        bool presentable_output = builder.get_output()->get_type() == RendererOutputType::Window;
+        RenderPassBuilderVulkan pass_builder{info, presentable_output};
+        return device_info.creator_device->vk_create_render_pass(pass_builder);
+        /*
         RenderPassBuilderVulkan pass_builder;
         pass_builder.add_pass(builder.get_pass());
         if(builder.get_output()->get_type() != RendererOutputType::Window)
@@ -1384,6 +1389,7 @@ namespace tz::gl
             pass_builder.set_presentable_output(false);
         }
         return device_info.creator_device->vk_create_render_pass(pass_builder);
+        */
     }
 
     std::vector<std::unique_ptr<IRendererInput>> RendererVulkan::copy_inputs(const RendererBuilderVulkan builder)

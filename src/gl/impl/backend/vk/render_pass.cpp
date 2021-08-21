@@ -113,6 +113,8 @@ namespace tz::gl::vk
             {
                 case Image::Layout::Present:
                     [[fallthrough]];
+                case Image::Layout::ShaderResource:
+                    [[fallthrough]];
                 case Image::Layout::TransferSource: // note: for offscreen images
                     ref.layout = static_cast<VkImageLayout>(Image::Layout::ColourAttachment);
                     [[fallthrough]];

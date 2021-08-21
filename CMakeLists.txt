@@ -71,7 +71,6 @@ add_library(topaz
     # tz::gl (API)
     src/gl/api/component.hpp
     src/gl/api/device.hpp
-    src/gl/api/render_pass.hpp
     src/gl/api/renderer.hpp
     src/gl/api/resource.hpp
     src/gl/api/shader.hpp

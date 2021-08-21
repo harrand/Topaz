@@ -17,7 +17,7 @@ namespace tz::gl
         GraphicsPrimitiveType primitive_type;
     };
 
-    class DeviceOGL : IDevice
+    class DeviceOGL : public IDevice
     {
     public:
         DeviceOGL(DeviceBuilderOGL builder);
