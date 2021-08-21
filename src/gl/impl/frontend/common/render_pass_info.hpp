@@ -3,6 +3,7 @@
 #include "core/containers/basic_list.hpp"
 #include "gl/impl/frontend/common/resource.hpp"
 #include "gl/impl/frontend/common/render_pass_attachment.hpp"
+#include <optional>
 
 namespace tz::gl
 {
