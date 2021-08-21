@@ -18,15 +18,15 @@ namespace tz::gl
     {
         // TODO: Multiple subpasses
         RenderSubpassInfo subpasses = {};
-        tz::gl::TextureFormat output_format = tz::gl::TextureFormat::Null;
     };
 
     class RenderPassBuilder
     {
     public:
         RenderPassBuilder() = default;
-        void set_output_format(tz::gl::TextureFormat output_format);
         tz::gl::TextureFormat get_output_format() const;
+
+        void add_subpass(RenderSubpassInfo info);
 
         const RenderPassInfo& get_info() const;
 
@@ -34,6 +34,15 @@ namespace tz::gl
     private:
         RenderPassInfo info;
     };
+
+
+    class IRendererBuilder;
+    class IDevice;
+
+    namespace detail
+    {
+        RenderPassInfo describe_renderer(const IRendererBuilder& renderer_builder, const IDevice& creator_device);
+    }
 }
 
 #endif // TOPAZ_GL_IMPL_FRONTEND_COMMON_RENDER_PASS_HPP
