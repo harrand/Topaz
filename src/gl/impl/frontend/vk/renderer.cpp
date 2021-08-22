@@ -622,6 +622,11 @@ namespace tz::gl
 
     void RendererImageManagerVulkan::setup_swapchain_framebuffers()
     {
+        if(this->output_texture_component != nullptr)
+        {
+            // If we're rendering into a texture, we don't need to setup swapchain framebuffers
+            return;
+        }
         this->swapchain_framebuffers.clear();
         auto swapchain_width = static_cast<std::uint32_t>(this->swapchain->get_width());
         auto swapchain_height = static_cast<std::uint32_t>(this->swapchain->get_height());
