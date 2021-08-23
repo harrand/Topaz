@@ -46,6 +46,7 @@ namespace tz::gl::vk
 
         void bind(const CommandBuffer& command_buffer) const;
     private:
+        bool is_compute() const;
         ShaderPipeline shaders;
         const LogicalDevice* device;
         VkPipeline graphics_pipeline;

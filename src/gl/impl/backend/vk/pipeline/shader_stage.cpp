@@ -13,6 +13,7 @@ namespace tz::gl::vk::pipeline
         ShaderTypeField field;
         field |= ShaderType::Vertex;
         field |= ShaderType::Fragment;
+        field |= ShaderType::Compute;
         return field;
     }
 
@@ -28,6 +29,9 @@ namespace tz::gl::vk::pipeline
             break;
             case ShaderType::Fragment:
                 this->create.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
+            break;
+            case ShaderType::Compute:
+                this->create.stage = VK_SHADER_STAGE_COMPUTE_BIT;
             break;
             default:
                 tz_error("No ShaderStage support implemented for the given ShaderType. You probably forgot to implement it");

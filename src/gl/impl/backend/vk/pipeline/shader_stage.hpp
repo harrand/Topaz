@@ -9,7 +9,8 @@ namespace tz::gl::vk::pipeline
     enum class ShaderType
     {
         Vertex,
-        Fragment
+        Fragment,
+        Compute
     };
 
     class ShaderTypeField : public tz::EnumField<ShaderType>

@@ -102,7 +102,17 @@ namespace tz::gl::vk
 
     void GraphicsPipeline::bind(const CommandBuffer& command_buffer) const
     {
-        vkCmdBindPipeline(command_buffer.native(), VK_PIPELINE_BIND_POINT_GRAPHICS, this->graphics_pipeline);
+        VkPipelineBindPoint bind = this->is_compute() ? VK_PIPELINE_BIND_POINT_COMPUTE : VK_PIPELINE_BIND_POINT_GRAPHICS;
+        vkCmdBindPipeline(command_buffer.native(), bind, this->graphics_pipeline);
+    }
+
+    bool GraphicsPipeline::is_compute() const
+    {
+        // GraphicsPipelines can be for graphics or computes. This depends on whether the stages are compute shaders.
+        return std::any_of(this->shaders.begin(), this->shaders.end(), [](const pipeline::ShaderStage& stage)
+        {
+            return stage.get_type() == pipeline::ShaderType::Compute;
+        });
     }
 }
 
