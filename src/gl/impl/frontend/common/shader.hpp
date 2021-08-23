@@ -6,7 +6,8 @@ namespace tz::gl
     enum class ShaderType
     {
         VertexShader,
-        FragmentShader
+        FragmentShader,
+        ComputeShader
     };
 }
 

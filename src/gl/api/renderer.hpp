@@ -294,7 +294,7 @@ namespace tz::gl
      * - Renderers will never change their input or its corresponding input data.
      * - Renderers cannot have their input/output changed. However, dynamic input data is supported via @ref IRendererDynamicInput.
      * - Renderers have an initial clear-colour but this can be changed after construction. If it is changed during rendering, this may reconstruct the entire render pipeline and incur a large spike in latency.
-     * - Renderers will be able to use any number of resources (aka uniform buffers, textures etc...) This is not yet implemented.
+     * - Renderers will be able to use any number of resources (aka uniform buffers, textures etc...).
      * - Renderers will be able to edit data for a given resource if the resource is writable (e.g SSBOs).
      */
     class IRenderer
