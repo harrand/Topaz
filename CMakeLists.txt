@@ -124,6 +124,8 @@ add_library(topaz
 
     src/gl/impl/backend/vk/pipeline/colour_blend_state.cpp
     src/gl/impl/backend/vk/pipeline/colour_blend_state.hpp
+    src/gl/impl/backend/vk/pipeline/compute_pipeline.cpp
+    src/gl/impl/backend/vk/pipeline/compute_pipeline.hpp
     src/gl/impl/backend/vk/pipeline/dynamic_state.cpp
     src/gl/impl/backend/vk/pipeline/dynamic_state.hpp
     src/gl/impl/backend/vk/pipeline/graphics_pipeline.cpp
