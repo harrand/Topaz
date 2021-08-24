@@ -1,6 +1,7 @@
 #ifndef TOPAZ_GL_API_DEVICE_HPP
 #define TOPAZ_GL_API_DEVICE_HPP
 #include "gl/renderer.hpp"
+#include "gl/processor.hpp"
 #include "gl/shader.hpp"
 
 #include "gl/impl/frontend/common/device.hpp"
@@ -49,6 +50,13 @@ namespace tz::gl
          * @return The created renderer.
          */
         [[nodiscard]] virtual Renderer create_renderer(RendererBuilder builder) const = 0;
+        /**
+         * @brief Create an @ref IProcessor using this device and the provided builder.
+         * 
+         * @param builder Builder describing the parameters of the processor.
+         * @return The created processor.
+         */
+        [[nodiscard]] virtual Processor create_processor(ProcessorBuilder builder) const = 0;
         /**
          * @brief Create an @ref IShader using this device and the provided builder.
          *

@@ -19,6 +19,7 @@ namespace tz::gl
     private:
         std::string vertex_shader_source;
         std::string fragment_shader_source;
+        std::string compute_shader_source;
     };
 
     class ShaderVulkan
@@ -27,9 +28,11 @@ namespace tz::gl
         ShaderVulkan(const vk::LogicalDevice& device, ShaderBuilderVulkan builder);
         const vk::ShaderModule& vk_get_vertex_shader() const;
         const vk::ShaderModule& vk_get_fragment_shader() const;
+        const vk::ShaderModule& vk_get_compute_shader() const;
     private:
-        vk::ShaderModule vertex_shader;
-        vk::ShaderModule fragment_shader;
+        std::optional<vk::ShaderModule> vertex_shader = std::nullopt;
+        std::optional<vk::ShaderModule> fragment_shader = std::nullopt;
+        std::optional<vk::ShaderModule> compute_shader = std::nullopt;
     };
 }
 

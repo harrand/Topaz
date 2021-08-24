@@ -61,6 +61,7 @@ add_library(topaz
     src/gl/mesh.hpp
     src/gl/output.cpp
     src/gl/output.hpp
+    src/gl/processor.hpp
     src/gl/renderer.hpp
     src/gl/resource.cpp
     src/gl/resource.hpp

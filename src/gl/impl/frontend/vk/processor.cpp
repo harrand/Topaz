@@ -53,6 +53,57 @@ namespace tz::gl
         tz_assert(this->shader != nullptr, "No shader was set previously so cannot retrieve the current shader");
         return *this->shader;
     }
+
+    vk::DescriptorSetLayout ProcessorBuilderVulkan::vk_get_descriptor_set_layout(const vk::LogicalDevice& device) const
+    {
+        vk::LayoutBuilder layout_builder;
+        for(std::size_t i = 0; i < this->buffer_resources.size(); i++)
+        {
+            layout_builder.add(vk::DescriptorType::UniformBuffer, {vk::pipeline::ShaderType::Compute});
+        }
+        for(std::size_t i = this->buffer_resources.size(); i < this->buffer_resources.size() + this->texture_resources.size(); i++)
+        {
+            layout_builder.add(vk::DescriptorType::CombinedImageSampler, {vk::pipeline::ShaderType::Compute});
+        }
+        return {device, layout_builder};
+    }
+
+    const vk::ShaderModule& ProcessorBuilderVulkan::vk_get_compute_shader() const
+    {
+        return this->shader->vk_get_compute_shader();
+    }
+
+    ProcessorVulkan::ProcessorVulkan(ProcessorBuilderVulkan builder, ProcessorDeviceInfoVulkan device_info):
+    descriptor_layout(builder.vk_get_descriptor_set_layout(*device_info.vk_device)),
+    compute_pipeline
+    (
+        vk::pipeline::ShaderStage{builder.vk_get_compute_shader(), vk::pipeline::ShaderType::Compute},
+        *device_info.vk_device,
+        vk::pipeline::Layout{*device_info.vk_device, vk::DescriptorSetLayoutRefs{this->descriptor_layout}}
+    )
+    {}
+
+    std::size_t ProcessorVulkan::resource_count() const
+    {
+        return 0;
+    }
+
+    std::size_t ProcessorVulkan::resource_count_of(ResourceType type) const
+    {
+        (void)type;
+        return 0;
+    }
+
+    IResource* ProcessorVulkan::get_resource(ResourceHandle handle)
+    {
+        (void)handle;
+        return nullptr;
+    }
+
+    void ProcessorVulkan::process()
+    {
+        std::printf("ayy lmao\n");
+    }
 }
 
 #endif // TZ_VULKAN

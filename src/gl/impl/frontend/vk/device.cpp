@@ -166,6 +166,13 @@ namespace tz::gl
         return {builder, device_info};
     }
 
+    Processor DeviceFunctionalityVulkan::create_processor(ProcessorBuilder builder) const
+    {
+        ProcessorDeviceInfoVulkan device_info;
+        device_info.vk_device = &this->device;
+        return {builder, device_info};
+    }
+
     Shader DeviceFunctionalityVulkan::create_shader(ShaderBuilder builder) const
     {
         return {this->device, builder};

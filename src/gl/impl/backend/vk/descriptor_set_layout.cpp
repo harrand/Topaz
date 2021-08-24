@@ -33,6 +33,10 @@ namespace tz::gl::vk
             {
                 this->binding_relevant_shader_stages.push_back(VK_SHADER_STAGE_FRAGMENT_BIT);
             }
+            else if(relevant_stages.contains(pipeline::ShaderType::Compute))
+            {
+                this->binding_relevant_shader_stages.push_back(VK_SHADER_STAGE_COMPUTE_BIT);
+            }
             else
             {
                 tz_error("Unrecognised shader type field.");
