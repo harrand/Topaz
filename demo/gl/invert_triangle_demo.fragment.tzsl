@@ -1,6 +1,6 @@
 #pragma shader_stage(fragment)
 
-tz_sampler2D_uniform(0) tex_sampler;
+resource(id = 0) const texture tex_sampler;
 layout(location = 0) in vec2 texcoord;
 layout(location = 0) out vec4 output_colour;
 

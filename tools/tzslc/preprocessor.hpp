@@ -32,7 +32,7 @@ namespace tzslc
 
     bool preprocess(PreprocessorModuleField modules, std::string& shader_source);
     bool preprocess_samplers(std::string& shader_source);
-    bool preprocess_topaz_defines(std::string& shader_source);
+    bool preprocess_topaz_types(std::string& shader_source);
 }
 
 #endif // TZSLC_PREPROCESSOR_HPP

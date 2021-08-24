@@ -1,6 +1,6 @@
 #pragma shader_stage(compute)
 
-layout(binding = 0) uniform MVP
+resource(id = 0) const buffer MVP
 {
     mat4 model;
     mat4 view;

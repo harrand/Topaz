@@ -27,6 +27,7 @@ namespace tzslc
     {
         bool done_any_work = false;
         add_glsl_header_info(shader_source);
+        preprocess_topaz_types(shader_source);
         if(modules.contains(PreprocessorModule::Sampler))
         {
             done_any_work |= preprocess_samplers(shader_source);
@@ -36,11 +37,11 @@ namespace tzslc
 
     bool preprocess_samplers(std::string& shader_source)
     {
-        tzslc::transform(shader_source, std::regex{"tz_sampler2D_uniform\\(([0-9]+)\\)"}, [](auto beg, auto end)->std::string
-        {
-            tz_assert(std::distance(beg, end) == 1, "tz_sampler2D_uniform(x) : 'x' should be one number");
+       tzslc::transform(shader_source, std::regex{"resource\\(id ?= ?([0-9]+)\\) const texture"}, [](auto beg, auto end)->std::string
+       {
+            tz_assert(std::distance(beg, end) == 1, "resource(id = x) const texture <name> : 'x' should be one number");
             int id = std::stoi(*beg);
-            std::string replacement = "/*tzslc*/ layout(";
+            std::string replacement = "/*tzslc: const texture*/ layout(";
             #if TZ_VULKAN
                 replacement += "binding";
             #elif TZ_OGL
@@ -48,7 +49,49 @@ namespace tzslc
             #endif
             replacement += " = " + std::to_string(id) + ") uniform sampler2D";
             return replacement;
-        });
-        return false;
+       });
+       return false;
+    }
+
+    bool preprocess_topaz_types(std::string& shader_source)
+    {
+        /*
+        example tzsl:
+        resource(id = 0) const buffer MVP
+        {
+            mat4 model;
+            mat4 view;
+            mat4 projection;
+        } mvp;
+
+        desired output (vulkan & opengl):
+        layout(binding = 0) uniform MVP
+        {
+            mat4 model;
+            mat4 view;
+            mat4 projection;
+        } mvp;
+        */
+       // Handle 'const buffer' (UBO)
+       tzslc::transform(shader_source, std::regex{"resource\\(id ?= ?([0-9]+)\\) const buffer"}, [](auto beg, auto end)->std::string
+       {
+            tz_assert(std::distance(beg, end) == 1, "resource(id = x) const buffer <name> : 'x' should be one number");
+            int id = std::stoi(*beg);
+            std::string replacement = "/*tzslc: const buffer resource (ubo)*/ layout(binding = ";
+            replacement += std::to_string(id);
+            replacement += ") uniform";
+            return replacement;
+       });
+       // Handle 'buffer' (SSBO)
+       tzslc::transform(shader_source, std::regex{"resource\\(id ?= ?([0-9]+)\\) buffer"}, [](auto beg, auto end)->std::string
+       {
+            tz_assert(std::distance(beg, end) == 1, "resource(id = x) buffer : 'x' should be one number");
+            int id = std::stoi(*beg);
+            std::string replacement = "/*tzslc buffer resource (ssbo)*/ layout(binding = ";
+            replacement += std::to_string(id);
+            replacement += ") buffer";
+            return replacement;
+       });
+       return false;
     }
 }
