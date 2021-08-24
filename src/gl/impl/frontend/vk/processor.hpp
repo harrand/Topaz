@@ -36,18 +36,24 @@ namespace tz::gl
     class ProcessorResourceManagerVulkan
     {
     public:
-        ProcessorResourceManagerVulkan(ProcessorBuilderVulkan builder, ProcessorDeviceInfoVulkan device_info);
+        ProcessorResourceManagerVulkan(ProcessorBuilderVulkan builder, ProcessorDeviceInfoVulkan device_info, const vk::DescriptorSetLayout& descriptor_layout, const vk::pipeline::Layout& pipeline_layout);
         std::size_t resource_count() const;
         std::size_t resource_count_of(ResourceType type) const;
         IResource* get_resource(ResourceHandle handle);
+        const vk::DescriptorPool* get_descriptor_pool() const;
     private:
         void setup_buffers();
         void setup_textures();
+        void initialise_resource_descriptors();
+
         const vk::LogicalDevice* device;
+        const vk::DescriptorSetLayout* descriptor_layout;
+        const vk::pipeline::Layout* pipeline_layout;
         std::vector<std::unique_ptr<IResource>> buffer_resources;
         std::vector<std::unique_ptr<IResource>> texture_resources;
         std::vector<BufferComponentVulkan> buffer_components;
         std::vector<TextureComponentVulkan> texture_components;
+        std::optional<vk::DescriptorPool> resource_descriptor_pool;
     };
 
     class ProcessorVulkan : public IProcessor
@@ -62,10 +68,10 @@ namespace tz::gl
         void record_processing_commands();
 
         vk::DescriptorSetLayout descriptor_layout;
+        vk::pipeline::Layout pipeline_layout;
         vk::ComputePipeline compute_pipeline;
         ProcessorResourceManagerVulkan resource_manager;
 
-        std::optional<vk::DescriptorPool> resource_descriptor_pool;
         vk::CommandPool command_pool;
         vk::hardware::Queue compute_queue;
         vk::Fence process_fence;

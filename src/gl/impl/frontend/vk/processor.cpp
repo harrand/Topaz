@@ -87,8 +87,10 @@ namespace tz::gl
         return this->texture_resources;
     }
 
-    ProcessorResourceManagerVulkan::ProcessorResourceManagerVulkan(ProcessorBuilderVulkan builder, ProcessorDeviceInfoVulkan device_info):
-    device(device_info.vk_device)
+    ProcessorResourceManagerVulkan::ProcessorResourceManagerVulkan(ProcessorBuilderVulkan builder, ProcessorDeviceInfoVulkan device_info, const vk::DescriptorSetLayout& descriptor_set_layout, const vk::pipeline::Layout& pipeline_layout):
+    device(device_info.vk_device),
+    descriptor_layout(&descriptor_set_layout),
+    pipeline_layout(&pipeline_layout)
     {
         for(const IResource* const buf_res : builder.vk_get_buffer_resources())
         {
@@ -142,6 +144,16 @@ namespace tz::gl
             return nullptr;
         }
     }
+
+    const vk::DescriptorPool* ProcessorResourceManagerVulkan::get_descriptor_pool() const
+    {
+        if(this->resource_descriptor_pool.has_value())
+        {
+            return &this->resource_descriptor_pool.value();
+        }
+        return nullptr;
+    }
+
 
     void ProcessorResourceManagerVulkan::setup_buffers()
     {
@@ -248,16 +260,63 @@ namespace tz::gl
         }
     }
 
+    void ProcessorResourceManagerVulkan::initialise_resource_descriptors()
+    {
+        const vk::DescriptorSetLayout& layout = *this->descriptor_layout;
+        if(this->resource_count() > 0)
+        {
+            // First use the layout and all resources to create the pool.
+            vk::DescriptorPoolBuilder pool_builder;
+            std::size_t view_count = 1;
+            pool_builder.with_capacity(view_count * this->resource_count());
+
+            for(std::size_t i = 0; i < this->resource_count_of(ResourceType::Buffer); i++)
+            {
+                pool_builder.with_size(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, view_count);
+            }
+
+            for(std::size_t i = 0; i < this->resource_count_of(ResourceType::Texture); i++)
+            {
+                pool_builder.with_size(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, view_count);
+            }
+
+            for(std::size_t i = 0; i < view_count; i++)
+            {
+                pool_builder.with_layout(layout);
+            }
+
+            this->resource_descriptor_pool = {*this->device, pool_builder};
+            // Now create the descriptor sets.
+            vk::DescriptorSetsCreationRequests requests;
+            for(std::size_t i = 0; i < view_count; i++)
+            {
+                vk::DescriptorSetsCreationRequest& request = requests.new_request();
+                for(std::size_t j = 0; j < this->resource_count_of(ResourceType::Buffer); j++)
+                {
+                    const vk::Buffer& resource_buffer = this->buffer_components[i].get_buffer();
+                    request.add_buffer(resource_buffer, 0, VK_WHOLE_SIZE, j);
+                }
+
+                for(std::size_t j = 0; j < this->resource_count_of(ResourceType::Texture); j++)
+                {
+                    const TextureComponentVulkan& texture_component = this->texture_components[j];
+                    request.add_image(texture_component.get_view(), texture_component.get_sampler(), j + this->resource_count_of(ResourceType::Buffer));
+                }
+            }
+            this->resource_descriptor_pool->initialise_sets(requests);
+        }
+    }
+
     ProcessorVulkan::ProcessorVulkan(ProcessorBuilderVulkan builder, ProcessorDeviceInfoVulkan device_info):
     descriptor_layout(builder.vk_get_descriptor_set_layout(*device_info.vk_device)),
+    pipeline_layout{*device_info.vk_device, vk::DescriptorSetLayoutRefs{this->descriptor_layout}},
     compute_pipeline
     (
         vk::pipeline::ShaderStage{builder.vk_get_compute_shader(), vk::pipeline::ShaderType::Compute},
         *device_info.vk_device,
-        vk::pipeline::Layout{*device_info.vk_device, vk::DescriptorSetLayoutRefs{this->descriptor_layout}}
+        this->pipeline_layout
     ),
-    resource_manager(builder, device_info),
-    resource_descriptor_pool(std::nullopt),
+    resource_manager(builder, device_info, this->descriptor_layout, this->pipeline_layout),
     command_pool(*device_info.vk_device, device_info.vk_device->get_queue_family(), vk::CommandPool::RecycleBuffer),
     compute_queue(device_info.vk_device->get_hardware_queue()),
     process_fence(*device_info.vk_device)
@@ -297,50 +356,12 @@ namespace tz::gl
             vk::CommandBuffer& cmd_buf = this->command_pool[0];
             vk::CommandBufferRecording render = cmd_buf.record();
             this->compute_pipeline.bind(cmd_buf);
+            if(this->resource_manager.get_descriptor_pool() != nullptr)
+            {
+                render.bind((*this->resource_manager.get_descriptor_pool())[0], this->pipeline_layout);
+            }
             render.dispatch(1, 1, 1);
         }
-        /*
-TZ_PROFZONE("Record Rendering Commands", TZ_PROFCOL_YELLOW);
-        VkClearValue vk_clear_colour{clear_colour[0], clear_colour[1], clear_colour[2], clear_colour[3]};
-        for(std::size_t i = 0; i < this->get_view_count(); i++)
-        {
-            vk::CommandBufferRecording render = this->command_pool[i].record();
-            const vk::Framebuffer* render_target = nullptr;
-            if(image_manager.get_texture_output() != nullptr)
-            {
-                render_target = image_manager.get_texture_output();
-            } 
-            else
-            {
-                render_target = &image_manager.get_swapchain_framebuffers()[i];
-            }
-            vk::RenderPassRun run{this->command_pool[i], this->render_pass->vk_get_render_pass(), *render_target, this->swapchain->full_render_area(), vk_clear_colour};
-            pipeline_manager.get_pipeline().bind(this->command_pool[i]);
-            if(this->resource_descriptor_pool.has_value())
-            {
-                render.bind(this->resource_descriptor_pool.value()[i], pipeline_manager.get_layout());
-            }
-            if(this->inputs.empty())
-            {
-                render.draw(3);
-            }
-            else
-            {
-                if(this->draw_indirect_buffer.has_value())
-                {
-                    render.bind(buffer_manager.get_vertex_buffer());
-                    render.bind(buffer_manager.get_index_buffer());
-                    render.draw_indirect(this->draw_indirect_buffer.value(), this->num_static_draws());
-                }
-                if(this->draw_indirect_dynamic_buffer.has_value())
-                {
-                    render.bind(buffer_manager.get_dynamic_vertex_buffer());
-                    render.bind(buffer_manager.get_dynamic_index_buffer());
-                    render.draw_indirect(this->draw_indirect_dynamic_buffer.value(), this->num_dynamic_draws());
-                }
-            }
-        }
-        */
     }
 }
 
