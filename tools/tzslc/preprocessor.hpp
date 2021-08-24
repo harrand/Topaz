@@ -30,9 +30,9 @@ namespace tzslc
 {
     constexpr std::array<const char*, static_cast<int>(PreprocessorModule::End)> preprocessor_module_names{{"sampler"}};
 
-    bool preprocess(PreprocessorModuleField modules, std::string& shader_source);
-    bool preprocess_samplers(std::string& shader_source);
-    bool preprocess_topaz_types(std::string& shader_source);
+    bool preprocess(PreprocessorModuleField modules, std::string& shader_source, std::string& meta);
+    bool preprocess_samplers(std::string& shader_source, std::string& meta);
+    bool preprocess_topaz_types(std::string& shader_source, std::string& meta);
 }
 
 #endif // TZSLC_PREPROCESSOR_HPP

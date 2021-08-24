@@ -23,21 +23,21 @@ namespace tzslc
         shader_source = hdrinfo + shader_source;
     }
 
-    bool preprocess(PreprocessorModuleField modules, std::string& shader_source)
+    bool preprocess(PreprocessorModuleField modules, std::string& shader_source, std::string& meta)
     {
         bool done_any_work = false;
         add_glsl_header_info(shader_source);
-        preprocess_topaz_types(shader_source);
+        preprocess_topaz_types(shader_source, meta);
         if(modules.contains(PreprocessorModule::Sampler))
         {
-            done_any_work |= preprocess_samplers(shader_source);
+            done_any_work |= preprocess_samplers(shader_source, meta);
         }
         return done_any_work;
     }
 
-    bool preprocess_samplers(std::string& shader_source)
+    bool preprocess_samplers(std::string& shader_source, std::string& meta)
     {
-       tzslc::transform(shader_source, std::regex{"resource\\(id ?= ?([0-9]+)\\) const texture"}, [](auto beg, auto end)->std::string
+       tzslc::transform(shader_source, std::regex{"resource\\(id ?= ?([0-9]+)\\) const texture"}, [&](auto beg, auto end)->std::string
        {
             tz_assert(std::distance(beg, end) == 1, "resource(id = x) const texture <name> : 'x' should be one number");
             int id = std::stoi(*beg);
@@ -48,12 +48,13 @@ namespace tzslc
                 replacement += "location";
             #endif
             replacement += " = " + std::to_string(id) + ") uniform sampler2D";
+            meta += std::to_string(id) + " = texture";
             return replacement;
        });
        return false;
     }
 
-    bool preprocess_topaz_types(std::string& shader_source)
+    bool preprocess_topaz_types(std::string& shader_source, std::string& meta)
     {
         /*
         example tzsl:
@@ -73,23 +74,26 @@ namespace tzslc
         } mvp;
         */
        // Handle 'const buffer' (UBO)
-       tzslc::transform(shader_source, std::regex{"resource\\(id ?= ?([0-9]+)\\) const buffer"}, [](auto beg, auto end)->std::string
+       tzslc::transform(shader_source, std::regex{"resource\\(id ?= ?([0-9]+)\\) const buffer"}, [&meta](auto beg, auto end)->std::string
        {
             tz_assert(std::distance(beg, end) == 1, "resource(id = x) const buffer <name> : 'x' should be one number");
             int id = std::stoi(*beg);
             std::string replacement = "/*tzslc: const buffer resource (ubo)*/ layout(binding = ";
             replacement += std::to_string(id);
             replacement += ") uniform";
+
+            meta += std::to_string(id) + " = ubo";
             return replacement;
        });
        // Handle 'buffer' (SSBO)
-       tzslc::transform(shader_source, std::regex{"resource\\(id ?= ?([0-9]+)\\) buffer"}, [](auto beg, auto end)->std::string
+       tzslc::transform(shader_source, std::regex{"resource\\(id ?= ?([0-9]+)\\) buffer"}, [&meta](auto beg, auto end)->std::string
        {
             tz_assert(std::distance(beg, end) == 1, "resource(id = x) buffer : 'x' should be one number");
             int id = std::stoi(*beg);
             std::string replacement = "/*tzslc buffer resource (ssbo)*/ layout(binding = ";
             replacement += std::to_string(id);
             replacement += ") buffer";
+            meta += std::to_string(id) + " = ssbo";
             return replacement;
        });
        return false;
