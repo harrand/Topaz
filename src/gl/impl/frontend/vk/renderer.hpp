@@ -103,7 +103,7 @@ namespace tz::gl
          * @param device_info Information about the Device.
          * @param renderer_inputs List of all inputs. We should sort the input data into buffers.
          */
-        RendererBufferManagerVulkan(RendererBuilderDeviceInfoVulkan device_info, std::vector<IRendererInput*> renderer_inputs);
+        RendererBufferManagerVulkan(RendererBuilderDeviceInfoVulkan device_info, std::vector<IRendererInput*> renderer_inputs, const Shader& shader);
         /**
          * @brief Create empty buffer components for each buffer resource.
          * 
@@ -143,6 +143,7 @@ namespace tz::gl
     private:
         const vk::LogicalDevice* device;
         const vk::hardware::Device* physical_device;
+        const Shader* shader;
         std::vector<IRendererInput*> inputs;
         vk::Buffer vertex_buffer;
         vk::Buffer dynamic_vertex_buffer;

@@ -199,7 +199,26 @@ namespace tz::gl
         vk::LayoutBuilder layout_builder;
         for(std::size_t i = 0; i < this->buffer_resources.size(); i++)
         {
-            layout_builder.add(vk::DescriptorType::UniformBuffer, vk::pipeline::ShaderTypeField::All());
+            vk::DescriptorType desc_type = vk::DescriptorType::UniformBuffer;
+            const tz::gl::ShaderMeta& meta = this->shader->vk_get_meta();
+            if(meta.resource_types.contains(i))
+            {
+                const std::string& metadata = meta.resource_types.at(i);
+                if(metadata == "ubo")
+                {
+                    desc_type = vk::DescriptorType::UniformBuffer;
+                }
+                else if(metadata == "ssbo")
+                {
+                    desc_type = vk::DescriptorType::ShaderStorageBuffer;
+                }
+                else
+                {
+                    tz_error("Unknown shader metadata for resource with id %zu - \"%s\". Expected \"ubo\" or \"ssbo\"", i, metadata.c_str());
+                }
+            }
+            
+            layout_builder.add(desc_type, vk::pipeline::ShaderTypeField::All());
         }
         for(std::size_t i = this->buffer_resources.size(); i < this->buffer_resources.size() + this->texture_resources.size(); i++)
         {
@@ -292,9 +311,10 @@ namespace tz::gl
         };
     }
 
-    RendererBufferManagerVulkan::RendererBufferManagerVulkan(RendererBuilderDeviceInfoVulkan device_info, std::vector<IRendererInput*> renderer_inputs):
+    RendererBufferManagerVulkan::RendererBufferManagerVulkan(RendererBuilderDeviceInfoVulkan device_info, std::vector<IRendererInput*> renderer_inputs, const Shader& shader):
     device(device_info.device),
     physical_device(this->device->get_queue_family().dev),
+    shader(&shader),
     inputs(renderer_inputs),
     vertex_buffer(vk::Buffer::null()),
     dynamic_vertex_buffer(vk::Buffer::null()),
@@ -394,18 +414,37 @@ namespace tz::gl
             }
         }
 
-        for(BufferComponentVulkan& buffer_component : this->buffer_components)
+        for(std::size_t buf_res_id = 0; buf_res_id < this->buffer_components.size(); buf_res_id++ /*BufferComponentVulkan& buffer_component : this->buffer_components*/)
         {
+            BufferComponentVulkan& buffer_component = this->buffer_components[buf_res_id];
+            const ShaderMeta& meta = this->shader->vk_get_meta();
+            vk::BufferType buf_type = vk::BufferType::Uniform;
+            if(meta.resource_types.contains(buf_res_id))
+            {
+                const std::string& metadata = meta.resource_types.at(buf_res_id);
+                if(metadata == "ubo")
+                {
+                    buf_type = vk::BufferType::Uniform;
+                }
+                else if(metadata == "ssbo")
+                {
+                    buf_type = vk::BufferType::ShaderStorage;
+                }
+                else
+                {
+                    tz_error("Unknown shader metadata for resource with id %zu - \"%s\". Expected \"ubo\" or \"ssbo\"", buf_res_id, metadata.c_str());
+                }
+            }
             IResource* buffer_resource = buffer_component.get_resource();
             switch(buffer_resource->data_access())
             {
                 case RendererInputDataAccess::StaticFixed:
-                    buffer_component.set_buffer(vk::Buffer{vk::BufferType::Uniform, vk::BufferPurpose::TransferDestination, *this->device, vk::hardware::MemoryResidency::GPU, buffer_resource->get_resource_bytes().size_bytes()});
+                    buffer_component.set_buffer(vk::Buffer{buf_type, vk::BufferPurpose::TransferDestination, *this->device, vk::hardware::MemoryResidency::GPU, buffer_resource->get_resource_bytes().size_bytes()});
                 break;
                 case RendererInputDataAccess::DynamicFixed:
                     {
                         auto& dynamic_resource = static_cast<IDynamicResource&>(*buffer_resource);
-                        buffer_component.set_buffer(vk::Buffer{vk::BufferType::Uniform, vk::BufferPurpose::NothingSpecial, *this->device, vk::hardware::MemoryResidency::CPUPersistent, dynamic_resource.get_resource_bytes().size_bytes()});
+                        buffer_component.set_buffer(vk::Buffer{buf_type, vk::BufferPurpose::NothingSpecial, *this->device, vk::hardware::MemoryResidency::CPUPersistent, dynamic_resource.get_resource_bytes().size_bytes()});
                         dynamic_resource.set_resource_data(static_cast<std::byte*>(buffer_component.get_buffer().map_memory()));
                     }
                 break;
@@ -727,7 +766,21 @@ namespace tz::gl
             
             for(decltype(num_buffer_resources) i = 0; i < num_buffer_resources; i++)
             {
-                pool_builder.with_size(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, image_count);
+                vk::BufferType buf_type = buffer_manager.get_buffer_components()[i].get_buffer().get_type();
+                VkDescriptorType desc_type;
+                switch(buf_type)
+                {
+                    case vk::BufferType::Uniform:
+                        desc_type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+                    break;
+                    case vk::BufferType::ShaderStorage:
+                        desc_type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+                    break;
+                    default:
+                        tz_error("Provided BufferType is not valid for a BufferResource");
+                    break;
+                }
+                pool_builder.with_size(desc_type, image_count);
             }
 
             for(decltype(num_texture_resources) i = 0; i < num_texture_resources; i++)
@@ -1224,7 +1277,7 @@ namespace tz::gl
     renderer_inputs(this->copy_inputs(builder)),
     renderer_resources(),
     render_pass(this->make_simple_render_pass(builder, device_info)),
-    buffer_manager(device_info, this->get_inputs()),
+    buffer_manager(device_info, this->get_inputs(), builder.get_shader()),
     pipeline_manager(builder, device_info, this->render_pass),
     image_manager(builder, device_info, this->render_pass),
     processor(builder, device_info, this->get_inputs(), this->render_pass),
