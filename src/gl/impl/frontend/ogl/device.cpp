@@ -51,6 +51,11 @@ namespace tz::gl
         return {builder};
     }
 
+    Processor DeviceOGL::create_processor(ProcessorBuilder builder) const
+    {
+        return {builder};
+    }
+
     TextureFormat DeviceOGL::get_window_format() const
     {
         return TextureFormat::Bgra32UnsignedNorm;
