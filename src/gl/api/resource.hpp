@@ -90,6 +90,7 @@ namespace tz::gl
 
         #if TZ_VULKAN
             friend class RendererBufferManagerVulkan;
+            friend class ProcessorResourceManagerVulkan;
         #elif TZ_OGL
             friend class RendererOGL;
         #endif

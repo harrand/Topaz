@@ -2,8 +2,10 @@
 #define TOPAZ_GL_IMPL_FRONTEND_VK_PROCESSOR_HPP
 #if TZ_VULKAN
 #include "gl/api/processor.hpp"
+#include "gl/impl/frontend/vk/component.hpp"
 #include "gl/impl/backend/vk/pipeline/compute_pipeline.hpp"
 #include "gl/impl/backend/vk/descriptor_set_layout.hpp"
+#include "gl/impl/backend/vk/fence.hpp"
 
 namespace tz::gl
 {
@@ -18,6 +20,8 @@ namespace tz::gl
 
         vk::DescriptorSetLayout vk_get_descriptor_set_layout(const vk::LogicalDevice& device) const;
         const vk::ShaderModule& vk_get_compute_shader() const;
+        std::span<const IResource* const> vk_get_buffer_resources() const;
+        std::span<const IResource* const> vk_get_texture_resources() const;
     private:
         std::vector<const IResource*> buffer_resources;
         std::vector<const IResource*> texture_resources;
@@ -29,6 +33,23 @@ namespace tz::gl
         const vk::LogicalDevice* vk_device;
     };
 
+    class ProcessorResourceManagerVulkan
+    {
+    public:
+        ProcessorResourceManagerVulkan(ProcessorBuilderVulkan builder, ProcessorDeviceInfoVulkan device_info);
+        std::size_t resource_count() const;
+        std::size_t resource_count_of(ResourceType type) const;
+        IResource* get_resource(ResourceHandle handle);
+    private:
+        void setup_buffers();
+        void setup_textures();
+        const vk::LogicalDevice* device;
+        std::vector<std::unique_ptr<IResource>> buffer_resources;
+        std::vector<std::unique_ptr<IResource>> texture_resources;
+        std::vector<BufferComponentVulkan> buffer_components;
+        std::vector<TextureComponentVulkan> texture_components;
+    };
+
     class ProcessorVulkan : public IProcessor
     {
     public:
@@ -38,8 +59,16 @@ namespace tz::gl
         virtual IResource* get_resource(ResourceHandle handle) final;
         virtual void process() final;
     private:
+        void record_processing_commands();
+
         vk::DescriptorSetLayout descriptor_layout;
         vk::ComputePipeline compute_pipeline;
+        ProcessorResourceManagerVulkan resource_manager;
+
+        std::optional<vk::DescriptorPool> resource_descriptor_pool;
+        vk::CommandPool command_pool;
+        vk::hardware::Queue compute_queue;
+        vk::Fence process_fence;
     };
 }
 

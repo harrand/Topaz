@@ -31,6 +31,7 @@ namespace tz::gl::vk
         void draw(std::uint32_t vertex_count, std::uint32_t instance_count = 1, std::uint32_t first_index = 0, std::uint32_t first_instance = 0);
         void draw_indexed(std::uint32_t index_count, std::uint32_t instance_count = 1, std::uint32_t first_index = 0, std::uint32_t vertex_offset = 0, std::uint32_t first_instance = 0);
         void draw_indirect(const vk::Buffer& draw_indirect_buffer, std::uint32_t draw_count);
+        void dispatch(std::uint32_t group_count_x, std::uint32_t group_count_y, std::uint32_t group_count_z);
 
         friend class CommandBuffer;
     private:

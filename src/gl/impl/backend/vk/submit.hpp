@@ -10,7 +10,8 @@ namespace tz::gl::vk
 {
     enum class WaitStage
     {
-        ColourAttachmentOutput = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
+        ColourAttachmentOutput = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+        Compute = VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT
     };
 
     using CommandBuffers = std::initializer_list<std::reference_wrapper<const CommandBuffer>>;

@@ -163,6 +163,13 @@ namespace tz::gl::vk
         vkCmdDrawIndexedIndirect(this->command_buffer->native(), draw_indirect_buffer.native(), 0, draw_count, sizeof(VkDrawIndexedIndirectCommand));
     }
 
+    void CommandBufferRecording::dispatch(std::uint32_t group_count_x, std::uint32_t group_count_y, std::uint32_t group_count_z)
+    {
+        TZ_PROFZONE("Backend VK - Record Dispatch", TZ_PROFCOL_RED);
+        vkCmdDispatch(this->command_buffer->native(), group_count_x, group_count_y, group_count_z);
+    }
+
+
     CommandBufferRecording::CommandBufferRecording(const CommandBuffer& buffer, std::function<void()> on_recording_end):
     command_buffer(&buffer),
     on_recording_end(on_recording_end)
