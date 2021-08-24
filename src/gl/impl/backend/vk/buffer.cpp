@@ -28,6 +28,9 @@ namespace tz::gl::vk
             case BufferType::Uniform:
                 create.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
             break;
+            case BufferType::ShaderStorage:
+                create.usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
+            break;
             case BufferType::DrawIndirect:
                 create.usage = VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT;
             break;

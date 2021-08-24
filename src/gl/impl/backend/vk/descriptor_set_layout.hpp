@@ -10,6 +10,7 @@ namespace tz::gl::vk
     enum class DescriptorType
     {
         UniformBuffer,
+        ShaderStorageBuffer,
         CombinedImageSampler
     };
 

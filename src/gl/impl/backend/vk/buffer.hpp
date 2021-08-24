@@ -12,6 +12,7 @@ namespace tz::gl::vk
         Index,
         Staging,
         Uniform,
+        ShaderStorage,
         DrawIndirect
     };
 

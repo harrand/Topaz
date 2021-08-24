@@ -95,12 +95,6 @@ namespace tz::gl::ogl
 
     void Buffer::bind() const
     {
-        /*
-        Vertex,
-        Index,
-        Uniform,
-        DrawIndirect
-        */
         GLenum buftype;
         switch(this->type)
         {
@@ -112,6 +106,9 @@ namespace tz::gl::ogl
             break;
             case BufferType::Uniform:
                 buftype = GL_UNIFORM_BUFFER;
+            break;
+            case BufferType::ShaderStorage:
+                buftype = GL_SHADER_STORAGE_BUFFER;
             break;
             case BufferType::DrawIndirect:
                 buftype = GL_DRAW_INDIRECT_BUFFER;

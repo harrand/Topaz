@@ -35,6 +35,9 @@ namespace tz::gl::vk
             case BufferType::Uniform:
                 this->types.push_back(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER);
             break;
+            case BufferType::ShaderStorage:
+                this->types.push_back(VK_DESCRIPTOR_TYPE_STORAGE_BUFFER);
+            break;
             default:
                 tz_error("Given a buffer to attach to a descriptor set, but the buffer type is not compatible.");
             break;

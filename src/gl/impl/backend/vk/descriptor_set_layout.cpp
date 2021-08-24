@@ -11,6 +11,9 @@ namespace tz::gl::vk
             case DescriptorType::UniformBuffer:
                 t = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
             break;
+            case DescriptorType::ShaderStorageBuffer:
+                t = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+            break;
             case DescriptorType::CombinedImageSampler:
                 t = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
             break;

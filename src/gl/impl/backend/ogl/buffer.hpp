@@ -11,6 +11,7 @@ namespace tz::gl::ogl
         Vertex,
         Index,
         Uniform,
+        ShaderStorage
         DrawIndirect
     };
 
