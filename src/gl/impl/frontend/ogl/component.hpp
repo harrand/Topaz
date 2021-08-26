@@ -4,9 +4,25 @@
 #include "gl/api/component.hpp"
 
 #include "gl/impl/backend/ogl/texture.hpp"
+#include "gl/impl/backend/ogl/buffer.hpp"
 
 namespace tz::gl
 {
+    class BufferComponentOGL : public IComponent
+    {
+    public:
+        BufferComponentOGL(IResource* resource);
+        BufferComponentOGL() = default;
+        virtual const IResource* get_resource() const final;
+        virtual IResource* get_resource() final;
+        const ogl::Buffer& get_buffer() const;
+        ogl::Buffer& get_buffer();
+        void set_buffer(ogl::Buffer buffer);
+    private:
+        ogl::Buffer buffer = ogl::Buffer::null();
+        IResource* resource = nullptr;
+    };
+
     class TextureComponentOGL : public IComponent
     {
     public:

@@ -48,7 +48,7 @@ namespace tzslc
                 replacement += "location";
             #endif
             replacement += " = " + std::to_string(id) + ") uniform sampler2D";
-            meta += std::to_string(id) + " = texture";
+            meta += std::to_string(id) + " = texture\n";
             return replacement;
        });
        return false;
@@ -82,7 +82,7 @@ namespace tzslc
             replacement += std::to_string(id);
             replacement += ") uniform";
 
-            meta += std::to_string(id) + " = ubo";
+            meta += std::to_string(id) + " = ubo\n";
             return replacement;
        });
        // Handle 'buffer' (SSBO)
@@ -93,7 +93,7 @@ namespace tzslc
             std::string replacement = "/*tzslc buffer resource (ssbo)*/ layout(binding = ";
             replacement += std::to_string(id);
             replacement += ") buffer";
-            meta += std::to_string(id) + " = ssbo";
+            meta += std::to_string(id) + " = ssbo\n";
             return replacement;
        });
        return false;
