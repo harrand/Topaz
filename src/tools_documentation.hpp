@@ -9,9 +9,7 @@
  * 
  * TZSLC is available under the CMake target `tzslc`. It has no additional documentation.
  * @subsection TZSL
- * TZSL stands for TopaZ Shader Language. Files containing TZSL code typically end in .tzsl. It is virtually identical to GLSL aside from a few quality-of-life changes:
- * - Any TZSL code containing a `#version` directive is ill-formed -- This is a GLSL directive that specifies the version of GLSL used. When TZSLC produces the GLSL output, it chooses the GLSL version used.
- * - GLSL is not consistent across render-apis. Vulkan and OpenGL each have their own dialect, meaning that often the same .glsl file cannot be used for both render-apis. TZSL exists to mitigate this issue.
+ * Information on the shading language TZSL can be found at: @ref tzsl
  * @subsection Usage TZSLC Usage
  * `tzslc <path-to-tzsl-file> [-m{module-name}]...`
  * 
