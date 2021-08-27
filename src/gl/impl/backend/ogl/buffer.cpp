@@ -120,6 +120,34 @@ namespace tz::gl::ogl
         glBindBuffer(buftype, this->buf);
     }
 
+    void Buffer::bind_base(GLuint index) const
+    {
+        GLenum buftype;
+        switch(this->type)
+        {
+            case BufferType::Vertex:
+                buftype = GL_ARRAY_BUFFER;
+            break;
+            case BufferType::Index:
+                buftype = GL_ELEMENT_ARRAY_BUFFER;
+            break;
+            case BufferType::Uniform:
+                buftype = GL_UNIFORM_BUFFER;
+            break;
+            case BufferType::ShaderStorage:
+                buftype = GL_SHADER_STORAGE_BUFFER;
+            break;
+            case BufferType::DrawIndirect:
+                buftype = GL_DRAW_INDIRECT_BUFFER;
+            break;
+            default:
+                tz_error("Unrecognised BufferType (OpenGL)");
+            break;
+        }
+        glBindBufferBase(buftype, index, this->buf);
+    }
+
+
     GLuint Buffer::native() const
     {
         return this->buf;

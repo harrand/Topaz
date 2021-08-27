@@ -50,6 +50,7 @@ namespace tz::gl::ogl
         void* map_memory();
         void unmap_memory();
         void bind() const;
+        void bind_base(GLuint index) const;
 
         GLuint native() const;
 

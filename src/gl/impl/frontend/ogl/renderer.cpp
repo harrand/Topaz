@@ -144,7 +144,7 @@ namespace tz::gl
     indirect_buffer(std::nullopt),
     indirect_buffer_dynamic(std::nullopt),
     resources(),
-    resource_ubos(),
+    resource_buffers(),
     resource_textures(),
     pass_attachment(builder.get_pass()),
     shader(&builder.get_shader()),
@@ -164,7 +164,7 @@ namespace tz::gl
                 this->setup_output_framebuffer();
             }
         }
-        auto persistent_mapped_buffer_flags = GL_MAP_READ_BIT | GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT;
+        //auto persistent_mapped_buffer_flags = GL_MAP_READ_BIT | GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT;
 
         if(this->pass_attachment != RenderPassAttachment::Colour)
         {
@@ -341,9 +341,31 @@ namespace tz::gl
         {
             IResource* buffer_resource = buffer_resources[i];
             tz_report("Buffer Resource (ResourceID: %zu, BufferComponentID: %zu, %zu bytes total)", i, i, buffer_resource->get_resource_bytes().size_bytes());
-            GLuint& buf = this->resource_ubos.emplace_back();
-            glCreateBuffers(1, &buf);
+            //GLuint& buf = this->resource_buffers.emplace_back();
+            BufferComponentOGL& buffer = this->resource_buffers.emplace_back(buffer_resource);
+            std::span<const std::byte> buffer_data = buffer_resource->get_resource_bytes();
+            ogl::BufferUsage usage;
             switch(buffer_resource->data_access())
+            {
+                case RendererInputDataAccess::StaticFixed:
+                    usage = ogl::BufferUsage::ReadWrite;
+                break;
+                case RendererInputDataAccess::DynamicFixed:
+                    usage = ogl::BufferUsage::PersistentMapped;
+                break;
+                default:
+                    tz_error("Resource type not yet implemented (OGL)");
+                break;
+            }
+            ogl::Buffer buf{ogl::BufferType::Uniform, ogl::BufferPurpose::StaticDraw, usage, buffer_data.size_bytes()};
+            if(buffer_resource->data_access() == RendererInputDataAccess::DynamicFixed)
+            {
+                auto& dynamic_buf = *static_cast<IDynamicResource*>(buffer_resource);
+                void* res_data = buf.map_memory();
+                dynamic_buf.set_resource_data(static_cast<std::byte*>(res_data));
+            }
+            buffer.set_buffer(std::move(buf));
+            /*switch(buffer_resource->data_access())
             {
                 case RendererInputDataAccess::StaticFixed:
                     glNamedBufferData(buf, buffer_resource->get_resource_bytes().size_bytes(), buffer_resource->get_resource_bytes().data(), GL_STATIC_DRAW);
@@ -361,6 +383,7 @@ namespace tz::gl
                     tz_error("Resource type not yet implemented (OGL)");
                 break;
             }
+            */
         }
 
         for(std::size_t i = 0; i < texture_resources.size(); i++)
@@ -473,7 +496,7 @@ namespace tz::gl
     ibo_dynamic(std::nullopt),
     indirect_buffer(std::nullopt),
     indirect_buffer_dynamic(std::nullopt),
-    resource_ubos(),
+    resource_buffers(),
     pass_attachment(RenderPassAttachment::ColourDepth),
     shader(nullptr),
     output(nullptr)
@@ -483,8 +506,6 @@ namespace tz::gl
 
     RendererOGL::~RendererOGL()
     {
-        glDeleteBuffers(static_cast<GLsizei>(this->resource_ubos.size()), this->resource_ubos.data());
-
         if(this->vao != 0)
         {
             glDeleteVertexArrays(1, &this->vao);
@@ -496,7 +517,7 @@ namespace tz::gl
         std::swap(this->vao, rhs.vao);
         std::swap(this->vbo, rhs.vbo);
         std::swap(this->ibo, rhs.ibo);
-        std::swap(this->resource_ubos, rhs.resource_ubos);
+        std::swap(this->resource_buffers, rhs.resource_buffers);
         std::swap(this->resource_textures, rhs.resource_textures);
         std::swap(this->format, rhs.format);
         std::swap(this->pass_attachment, rhs.pass_attachment);
@@ -575,9 +596,10 @@ namespace tz::gl
         switch(resource->get_type())
         {
             case ResourceType::Buffer:
-                //std::size_t buffer_id = this->resource_handle_to_buffer_id(handle);
-                tz_error("Retrieving Buffer Components are not yet supported (OpenGL)");
-                return nullptr;
+            {
+                std::size_t buffer_id = this->resource_handle_to_buffer_id(handle);
+                return &this->resource_buffers[buffer_id];
+            }
             break;
             case ResourceType::Texture:
             {
@@ -637,10 +659,12 @@ namespace tz::gl
         glBindVertexArray(this->vao);
         {
             TZ_PROFZONE("Frontend OGL : Bind Buffer Resources", TZ_PROFCOL_RED);
-            for(std::size_t i = 0; i < this->resource_ubos.size(); i++)
+            for(std::size_t i = 0; i < this->resource_buffers.size(); i++)
             {
-                GLuint res_ubo = this->resource_ubos[i];
-                glBindBufferBase(GL_UNIFORM_BUFFER, static_cast<GLuint>(i), res_ubo);
+                const BufferComponentOGL& res_buf = this->resource_buffers[i];
+                res_buf.get_buffer().bind_base(static_cast<GLuint>(i));
+                //GLuint res_ubo = this->resource_buffers[i];
+                //glBindBufferBase(GL_UNIFORM_BUFFER, static_cast<GLuint>(i), res_ubo);
             }
         }
         glUseProgram(this->shader->ogl_get_program_handle());
@@ -650,7 +674,7 @@ namespace tz::gl
             {
                 TextureComponentOGL& cur_tex = this->resource_textures[i];
                 //GLuint res_tex = this->resource_textures[i];
-                auto tex_location = static_cast<GLint>(this->resource_ubos.size() + i);
+                auto tex_location = static_cast<GLint>(this->resource_buffers.size() + i);
 
                 //glBindTextureUnit(tex_location, res_tex);
                 cur_tex.get_texture().bind_at(tex_location);

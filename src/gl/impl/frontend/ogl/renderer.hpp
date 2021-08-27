@@ -98,7 +98,7 @@ namespace tz::gl
         std::optional<ogl::Buffer> indirect_buffer, indirect_buffer_dynamic;
         //GLuint indirect_buffer, indirect_buffer_dynamic;
         std::vector<std::unique_ptr<IResource>> resources;
-        std::vector<GLuint> resource_ubos;
+        std::vector<BufferComponentOGL> resource_buffers;
         std::vector<TextureComponentOGL> resource_textures;
         RendererElementFormat format;
         RenderPassAttachment pass_attachment;
