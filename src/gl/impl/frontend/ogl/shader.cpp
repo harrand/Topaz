@@ -2,21 +2,38 @@
 #include "core/assert.hpp"
 #include "gl/impl/frontend/ogl/shader.hpp"
 #include <fstream>
+#include <filesystem>
 
 namespace tz::gl
 {
     void ShaderBuilderOGL::set_shader_file(ShaderType type, std::filesystem::path shader_file)
     {
-        shader_file += ".glsl";
-        std::ifstream shader{shader_file.c_str(), std::ios::ate | std::ios::binary};
-        tz_assert(shader.is_open(), "Cannot open shader file %s", shader_file.c_str());
-        auto file_size_bytes = static_cast<std::size_t>(shader.tellg());
-        shader.seekg(0);
-        std::string buffer;
-        buffer.resize(file_size_bytes);
-        shader.read(buffer.data(), file_size_bytes);
-        shader.close();
-        this->set_shader_source(type, buffer);
+        auto read_all = [](std::filesystem::path path)->std::string
+        {
+            std::ifstream fstr(path.c_str(), std::ios::ate | std::ios::binary);
+            if(!fstr.is_open())
+            {
+                return "";
+            }
+            auto file_size_bytes = static_cast<std::size_t>(fstr.tellg());
+            fstr.seekg(0);
+            std::string buffer;
+            buffer.resize(file_size_bytes);
+            fstr.read(buffer.data(), file_size_bytes);
+            fstr.close();
+            return buffer;
+        };
+        std::filesystem::path glsl_file = shader_file;
+        glsl_file += ".glsl";
+        this->set_shader_source(type, read_all(glsl_file));
+
+        // Now find the meta file if there is one
+        std::filesystem::path meta_file = shader_file;
+        meta_file += ".glsl.meta";
+        if(std::filesystem::exists(meta_file))
+        {
+            this->set_shader_meta(type, read_all(meta_file));
+        }
     }
 
     void ShaderBuilderOGL::set_shader_source(ShaderType type, std::string source_code)
@@ -28,6 +45,22 @@ namespace tz::gl
             break;
             case ShaderType::FragmentShader:
                 this->fragment_shader_source = source_code;
+            break;
+            default:
+                tz_error("Shader type (write) is not supported on Vulkan");
+            break;
+        }
+    }
+
+    void ShaderBuilderOGL::set_shader_meta(ShaderType type, std::string metadata)
+    {
+        switch(type)
+        {
+            case ShaderType::VertexShader:
+                this->vertex_shader_metadata = metadata;
+            break;
+            case ShaderType::FragmentShader:
+                this->fragment_shader_metadata = metadata;
             break;
             default:
                 tz_error("Shader type (write) is not supported on Vulkan");
@@ -52,6 +85,23 @@ namespace tz::gl
         }
     }
 
+    std::string_view ShaderBuilderOGL::get_shader_meta(ShaderType type) const
+    {
+        switch(type)
+        {
+            case ShaderType::VertexShader:
+                return this->vertex_shader_metadata;
+            break;
+            case ShaderType::FragmentShader:
+                return this->fragment_shader_metadata;
+            break;
+            default:
+                tz_error("Shader type (write) is not supported on Vulkan");
+                return "";
+            break;
+        }
+    }
+
     bool ShaderBuilderOGL::has_shader([[maybe_unused]] ShaderType type) const
     {
         return false;
@@ -60,7 +110,8 @@ namespace tz::gl
     ShaderOGL::ShaderOGL(ShaderBuilderOGL builder):
     program(glCreateProgram()),
     vertex_shader(glCreateShader(GL_VERTEX_SHADER)),
-    fragment_shader(glCreateShader(GL_FRAGMENT_SHADER))
+    fragment_shader(glCreateShader(GL_FRAGMENT_SHADER)),
+    meta()
     {
         // Attach shaders
         glAttachShader(this->program, this->vertex_shader);
@@ -82,6 +133,14 @@ namespace tz::gl
         glLinkProgram(this->program);
         glValidateProgram(this->program);
         ShaderOGL::check_program_error(this->program);
+
+        // Meta
+        std::string all_metadata;
+        {
+            all_metadata += std::string("\n") + static_cast<std::string>(builder.get_shader_meta(ShaderType::VertexShader));
+            all_metadata += std::string("\n") + static_cast<std::string>(builder.get_shader_meta(ShaderType::FragmentShader));
+        }
+        this->meta = ShaderMeta::from_metadata_string(all_metadata);
     }
 
     ShaderOGL::ShaderOGL(ShaderOGL&& move):
@@ -115,6 +174,11 @@ namespace tz::gl
     GLuint ShaderOGL::ogl_get_program_handle() const
     {
         return this->program;
+    }
+
+    const ShaderMeta& ShaderOGL::ogl_get_meta() const
+    {
+        return this->meta;
     }
 
     void ShaderOGL::check_shader_error(GLuint shader)

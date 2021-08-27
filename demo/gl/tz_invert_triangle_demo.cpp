@@ -63,17 +63,9 @@ int main()
             };
         mesh.indices = {0, 1, 2};
         tz::gl::MeshInput mesh_input{mesh};
-        // Note: Window is resizeable but we don't amend the aspect-ratio if it does. This is for simplicity's sake -- This is done properly in tz_dynamic_triangle_demo.
-        tz::gl::BufferResource buf_res{tz::gl::BufferData::from_array<tz::Mat4>
-        ({{
-            tz::model({0.0f, 0.0f, -1.0f}, {0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f}),
-            tz::view({0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}),
-            tz::perspective(1.27f, get_aspect_ratio(), 0.1f, 1000.0f)
-        }})};
 
         renderer_builder.add_input(mesh_input);
         renderer_builder.set_output(render_target);
-        renderer_builder.add_resource(buf_res);
         renderer_builder.set_pass(tz::gl::RenderPassAttachment::Colour);
         renderer_builder.set_shader(shader);
         tz::gl::Renderer renderer = device.create_renderer(renderer_builder);

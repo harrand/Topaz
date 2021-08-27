@@ -341,7 +341,6 @@ namespace tz::gl
         {
             IResource* buffer_resource = buffer_resources[i];
             tz_report("Buffer Resource (ResourceID: %zu, BufferComponentID: %zu, %zu bytes total)", i, i, buffer_resource->get_resource_bytes().size_bytes());
-            //GLuint& buf = this->resource_buffers.emplace_back();
             BufferComponentOGL& buffer = this->resource_buffers.emplace_back(buffer_resource);
             std::span<const std::byte> buffer_data = buffer_resource->get_resource_bytes();
             ogl::BufferUsage usage;
@@ -357,7 +356,26 @@ namespace tz::gl
                     tz_error("Resource type not yet implemented (OGL)");
                 break;
             }
-            ogl::Buffer buf{ogl::BufferType::Uniform, ogl::BufferPurpose::StaticDraw, usage, buffer_data.size_bytes()};
+            ogl::BufferType buftype = ogl::BufferType::Uniform;
+            const tz::gl::ShaderMeta& meta = this->shader->ogl_get_meta();
+            if(meta.resource_types.contains(i))
+            {
+                const std::string& metadata = meta.resource_types.at(i);
+                if(metadata == "ubo")
+                {
+                    buftype = ogl::BufferType::Uniform;
+                }
+                else if(metadata == "ssbo")
+                {
+                    buftype = ogl::BufferType::ShaderStorage;
+                }
+                else
+                {
+                    tz_error("Unknown shader metadata for resource with id %zu - \"%s\". Expected \"ubo\" or \"ssbo\"", i, metadata.c_str());
+                }
+            }
+            
+            ogl::Buffer buf{buftype, ogl::BufferPurpose::StaticDraw, usage, buffer_data.size_bytes()};
             if(buffer_resource->data_access() == RendererInputDataAccess::DynamicFixed)
             {
                 auto& dynamic_buf = *static_cast<IDynamicResource*>(buffer_resource);
@@ -365,34 +383,13 @@ namespace tz::gl
                 dynamic_buf.set_resource_data(static_cast<std::byte*>(res_data));
             }
             buffer.set_buffer(std::move(buf));
-            /*switch(buffer_resource->data_access())
-            {
-                case RendererInputDataAccess::StaticFixed:
-                    glNamedBufferData(buf, buffer_resource->get_resource_bytes().size_bytes(), buffer_resource->get_resource_bytes().data(), GL_STATIC_DRAW);
-                break;
-                case RendererInputDataAccess::DynamicFixed:
-                    {
-                        auto& dynamic_buf = *static_cast<IDynamicResource*>(buffer_resource);
-                        auto buf_bytes = dynamic_buf.get_resource_bytes().size_bytes();
-                        glNamedBufferStorage(buf, buf_bytes, dynamic_buf.get_resource_bytes().data(), persistent_mapped_buffer_flags);
-                        void* res_data = glMapNamedBufferRange(buf, 0, buf_bytes, persistent_mapped_buffer_flags);
-                        dynamic_buf.set_resource_data(static_cast<std::byte*>(res_data));
-                    }
-                break;
-                default:
-                    tz_error("Resource type not yet implemented (OGL)");
-                break;
-            }
-            */
         }
 
         for(std::size_t i = 0; i < texture_resources.size(); i++)
         {
             auto* texture_resource = static_cast<TextureResource*>(texture_resources[i]);
             tz_report("Texture Resource (ResourceID: %zu, TextureComponentID: %zu, %zu bytes total)", buffer_resources.size() + i, i, texture_resource->get_resource_bytes().size_bytes());
-            //GLuint& tex = this->resource_textures.emplace_back();
-            //glCreateTextures(GL_TEXTURE_2D, 1, &tex);
-            //GLenum internal_format, format, type;
+
             ogl::Texture::Format format;
             switch(texture_resource->get_format())
             {
@@ -663,8 +660,6 @@ namespace tz::gl
             {
                 const BufferComponentOGL& res_buf = this->resource_buffers[i];
                 res_buf.get_buffer().bind_base(static_cast<GLuint>(i));
-                //GLuint res_ubo = this->resource_buffers[i];
-                //glBindBufferBase(GL_UNIFORM_BUFFER, static_cast<GLuint>(i), res_ubo);
             }
         }
         glUseProgram(this->shader->ogl_get_program_handle());

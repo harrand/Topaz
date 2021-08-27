@@ -17,11 +17,11 @@ int main()
 
         #if TZ_VULKAN
             const tz::gl::ShaderMeta& meta = shader.vk_get_meta();
-            tz_assert(meta.resource_types.at(0) == "ubo", "Shader failed to generate correct meta");
-            tz_assert(meta.resource_types.at(1) == "ssbo", "Shader failed to generate correct meta")
         #elif TZ_OGL
-            tz_error("Not yet implemented (OGL)");
+            const tz::gl::ShaderMeta& meta = shader.ogl_get_meta();
         #endif
+        tz_assert(meta.resource_types.at(0) == "ubo", "Shader failed to generate correct meta");
+        tz_assert(meta.resource_types.at(1) == "ssbo", "Shader failed to generate correct meta");
     }
     tz::terminate();
 }
