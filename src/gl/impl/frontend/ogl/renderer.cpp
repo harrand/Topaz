@@ -356,23 +356,23 @@ namespace tz::gl
                     tz_error("Resource type not yet implemented (OGL)");
                 break;
             }
-            ogl::BufferType buftype = ogl::BufferType::Uniform;
+            ogl::BufferType buftype;
             const tz::gl::ShaderMeta& meta = this->shader->ogl_get_meta();
-            if(meta.resource_types.contains(i))
+            ShaderMetaValue value = meta.try_get_meta_value(i).value_or(ShaderMetaValue::UBO);
+            switch(value)
             {
-                const std::string& metadata = meta.resource_types.at(i);
-                if(metadata == "ubo")
-                {
+                case ShaderMetaValue::UBO:
                     buftype = ogl::BufferType::Uniform;
-                }
-                else if(metadata == "ssbo")
-                {
+                break;
+                case ShaderMetaValue::SSBO:
                     buftype = ogl::BufferType::ShaderStorage;
-                }
-                else
+                break;
+                default:
                 {
-                    tz_error("Unknown shader metadata for resource with id %zu - \"%s\". Expected \"ubo\" or \"ssbo\"", i, metadata.c_str());
+                    const char* meta_value_name = detail::meta_value_names[static_cast<int>(value)];
+                    tz_error("Unexpected Shader meta value. Expecting a buffer-y meta value, but instead got \"%s\"", meta_value_name);
                 }
+                break;
             }
             
             ogl::Buffer buf{buftype, ogl::BufferPurpose::StaticDraw, usage, buffer_data.size_bytes()};

@@ -20,8 +20,8 @@ int main()
         #elif TZ_OGL
             const tz::gl::ShaderMeta& meta = shader.ogl_get_meta();
         #endif
-        tz_assert(meta.resource_types.at(0) == "ubo", "Shader failed to generate correct meta");
-        tz_assert(meta.resource_types.at(1) == "ssbo", "Shader failed to generate correct meta");
+        tz_assert(meta.try_get_meta_value(0).value_or(tz::gl::ShaderMetaValue::Count) == tz::gl::ShaderMetaValue::UBO, "Shader failed to generate correct meta");
+        tz_assert(meta.try_get_meta_value(1).value_or(tz::gl::ShaderMetaValue::Count) == tz::gl::ShaderMetaValue::SSBO, "Shader failed to generate correct meta");
     }
     tz::terminate();
 }

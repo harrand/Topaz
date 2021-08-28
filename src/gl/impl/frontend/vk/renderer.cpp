@@ -201,23 +201,22 @@ namespace tz::gl
         {
             vk::DescriptorType desc_type = vk::DescriptorType::UniformBuffer;
             const tz::gl::ShaderMeta& meta = this->shader->vk_get_meta();
-            if(meta.resource_types.contains(i))
+            ShaderMetaValue value = meta.try_get_meta_value(i).value_or(ShaderMetaValue::UBO);
+            switch(value)
             {
-                const std::string& metadata = meta.resource_types.at(i);
-                if(metadata == "ubo")
-                {
+                case ShaderMetaValue::UBO:
                     desc_type = vk::DescriptorType::UniformBuffer;
-                }
-                else if(metadata == "ssbo")
-                {
+                break;
+                case ShaderMetaValue::SSBO:
                     desc_type = vk::DescriptorType::ShaderStorageBuffer;
-                }
-                else
+                break;
+                default:
                 {
-                    tz_error("Unknown shader metadata for resource with id %zu - \"%s\". Expected \"ubo\" or \"ssbo\"", i, metadata.c_str());
+                    const char* meta_value_name = detail::meta_value_names[static_cast<int>(value)];
+                    tz_error("Unexpected Shader meta value. Expecting a buffer-y meta value, but instead got \"%s\"", meta_value_name);
                 }
+                break;
             }
-            
             layout_builder.add(desc_type, vk::pipeline::ShaderTypeField::All());
         }
         for(std::size_t i = this->buffer_resources.size(); i < this->buffer_resources.size() + this->texture_resources.size(); i++)
@@ -417,24 +416,25 @@ namespace tz::gl
         for(std::size_t buf_res_id = 0; buf_res_id < this->buffer_components.size(); buf_res_id++ /*BufferComponentVulkan& buffer_component : this->buffer_components*/)
         {
             BufferComponentVulkan& buffer_component = this->buffer_components[buf_res_id];
-            const ShaderMeta& meta = this->shader->vk_get_meta();
-            vk::BufferType buf_type = vk::BufferType::Uniform;
-            if(meta.resource_types.contains(buf_res_id))
+            vk::BufferType buf_type;
+            const tz::gl::ShaderMeta& meta = this->shader->vk_get_meta();
+            ShaderMetaValue value = meta.try_get_meta_value(buf_res_id).value_or(ShaderMetaValue::UBO);
+            switch(value)
             {
-                const std::string& metadata = meta.resource_types.at(buf_res_id);
-                if(metadata == "ubo")
-                {
+                case ShaderMetaValue::UBO:
                     buf_type = vk::BufferType::Uniform;
-                }
-                else if(metadata == "ssbo")
-                {
+                break;
+                case ShaderMetaValue::SSBO:
                     buf_type = vk::BufferType::ShaderStorage;
-                }
-                else
+                break;
+                default:
                 {
-                    tz_error("Unknown shader metadata for resource with id %zu - \"%s\". Expected \"ubo\" or \"ssbo\"", buf_res_id, metadata.c_str());
+                    const char* meta_value_name = detail::meta_value_names[static_cast<int>(value)];
+                    tz_error("Unexpected Shader meta value. Expecting a buffer-y meta value, but instead got \"%s\"", meta_value_name);
                 }
+                break;
             }
+
             IResource* buffer_resource = buffer_component.get_resource();
             switch(buffer_resource->data_access())
             {
