@@ -176,7 +176,7 @@ namespace tz::gl
         return this->program;
     }
 
-    const ShaderMeta& ShaderOGL::ogl_get_meta() const
+    const ShaderMeta& ShaderOGL::get_meta() const
     {
         return this->meta;
     }

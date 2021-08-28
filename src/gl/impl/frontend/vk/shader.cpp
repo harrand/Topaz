@@ -174,7 +174,7 @@ namespace tz::gl
         return this->compute_shader.value();
     }
 
-    const ShaderMeta& ShaderVulkan::vk_get_meta() const
+    const ShaderMeta& ShaderVulkan::get_meta() const
     {
         return this->meta;
     }

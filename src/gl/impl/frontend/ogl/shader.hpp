@@ -25,7 +25,7 @@ namespace tz::gl
         std::string fragment_shader_metadata;
     };
 
-    class ShaderOGL
+    class ShaderOGL : public IShader
     {
     public:
         ShaderOGL(ShaderBuilderOGL builder);
@@ -37,7 +37,7 @@ namespace tz::gl
         ShaderOGL& operator=(ShaderOGL&& rhs);
 
         GLuint ogl_get_program_handle() const;
-        const ShaderMeta& ogl_get_meta() const;
+        virtual const ShaderMeta& get_meta() const final;
     private:
         static void check_shader_error(GLuint shader);
         static void check_program_error(GLuint program);

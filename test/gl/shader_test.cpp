@@ -15,11 +15,7 @@ int main()
         builder.set_shader_file(tz::gl::ShaderType::FragmentShader, ".\\test\\gl\\shader_test.fragment.glsl");
         tz::gl::Shader shader = device.create_shader(builder);
 
-        #if TZ_VULKAN
-            const tz::gl::ShaderMeta& meta = shader.vk_get_meta();
-        #elif TZ_OGL
-            const tz::gl::ShaderMeta& meta = shader.ogl_get_meta();
-        #endif
+        const tz::gl::ShaderMeta& meta = shader.get_meta();
         tz_assert(meta.try_get_meta_value(0).value_or(tz::gl::ShaderMetaValue::Count) == tz::gl::ShaderMetaValue::UBO, "Shader failed to generate correct meta");
         tz_assert(meta.try_get_meta_value(1).value_or(tz::gl::ShaderMetaValue::Count) == tz::gl::ShaderMetaValue::SSBO, "Shader failed to generate correct meta");
     }

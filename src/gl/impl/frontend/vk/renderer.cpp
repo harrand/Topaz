@@ -200,7 +200,7 @@ namespace tz::gl
         for(std::size_t i = 0; i < this->buffer_resources.size(); i++)
         {
             vk::DescriptorType desc_type = vk::DescriptorType::UniformBuffer;
-            const tz::gl::ShaderMeta& meta = this->shader->vk_get_meta();
+            const tz::gl::ShaderMeta& meta = this->shader->get_meta();
             ShaderMetaValue value = meta.try_get_meta_value(i).value_or(ShaderMetaValue::UBO);
             switch(value)
             {
@@ -417,7 +417,7 @@ namespace tz::gl
         {
             BufferComponentVulkan& buffer_component = this->buffer_components[buf_res_id];
             vk::BufferType buf_type;
-            const tz::gl::ShaderMeta& meta = this->shader->vk_get_meta();
+            const tz::gl::ShaderMeta& meta = this->shader->get_meta();
             ShaderMetaValue value = meta.try_get_meta_value(buf_res_id).value_or(ShaderMetaValue::UBO);
             switch(value)
             {

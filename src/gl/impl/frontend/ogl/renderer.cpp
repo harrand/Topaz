@@ -357,7 +357,7 @@ namespace tz::gl
                 break;
             }
             ogl::BufferType buftype;
-            const tz::gl::ShaderMeta& meta = this->shader->ogl_get_meta();
+            const tz::gl::ShaderMeta& meta = this->shader->get_meta();
             ShaderMetaValue value = meta.try_get_meta_value(i).value_or(ShaderMetaValue::UBO);
             switch(value)
             {

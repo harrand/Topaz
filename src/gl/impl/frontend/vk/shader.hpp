@@ -8,7 +8,7 @@
 
 namespace tz::gl
 {
-    class ShaderBuilderVulkan
+    class ShaderBuilderVulkan : public IShaderBuilder
     {
     public:
         ShaderBuilderVulkan() = default;
@@ -28,14 +28,14 @@ namespace tz::gl
         std::string compute_shader_metadata;
     };
 
-    class ShaderVulkan
+    class ShaderVulkan : public IShader
     {
     public:
         ShaderVulkan(const vk::LogicalDevice& device, ShaderBuilderVulkan builder);
         const vk::ShaderModule& vk_get_vertex_shader() const;
         const vk::ShaderModule& vk_get_fragment_shader() const;
         const vk::ShaderModule& vk_get_compute_shader() const;
-        const ShaderMeta& vk_get_meta() const;
+        virtual const ShaderMeta& get_meta() const final;
     private:
         std::optional<vk::ShaderModule> vertex_shader = std::nullopt;
         std::optional<vk::ShaderModule> fragment_shader = std::nullopt;
