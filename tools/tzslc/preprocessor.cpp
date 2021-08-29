@@ -1,6 +1,7 @@
 #include "core/assert.hpp"
 #include "preprocessor.hpp"
 #include "source_transform.hpp"
+#include "gl/shader.hpp"
 
 namespace tzslc
 {
@@ -77,23 +78,33 @@ namespace tzslc
        tzslc::transform(shader_source, std::regex{"resource\\(id ?= ?([0-9]+)\\) const buffer"}, [&meta](auto beg, auto end)->std::string
        {
             tz_assert(std::distance(beg, end) == 1, "resource(id = x) const buffer <name> : 'x' should be one number");
+            const char* buffer_subtype_name = tz::gl::detail::meta_value_names[static_cast<int>(tz::gl::ShaderMetaValue::UBO)];
             int id = std::stoi(*beg);
-            std::string replacement = "/*tzslc: const buffer resource (ubo)*/ layout(binding = ";
+            std::string replacement = "/*tzslc: const buffer resource (";
+            replacement += buffer_subtype_name;
+            replacement += ")*/ layout(binding = ";
             replacement += std::to_string(id);
             replacement += ") uniform";
 
-            meta += std::to_string(id) + " = ubo\n";
+            meta += std::to_string(id) + " = ";
+            meta += buffer_subtype_name;
+            meta += "\n";
             return replacement;
        });
        // Handle 'buffer' (SSBO)
        tzslc::transform(shader_source, std::regex{"resource\\(id ?= ?([0-9]+)\\) buffer"}, [&meta](auto beg, auto end)->std::string
        {
             tz_assert(std::distance(beg, end) == 1, "resource(id = x) buffer : 'x' should be one number");
+            const char* buffer_subtype_name = tz::gl::detail::meta_value_names[static_cast<int>(tz::gl::ShaderMetaValue::SSBO)];
             int id = std::stoi(*beg);
-            std::string replacement = "/*tzslc buffer resource (ssbo)*/ layout(binding = ";
+            std::string replacement = "/*tzslc buffer resource (";
+            replacement += buffer_subtype_name;
+            replacement += ")*/ layout(binding = ";
             replacement += std::to_string(id);
             replacement += ") buffer";
-            meta += std::to_string(id) + " = ssbo\n";
+            meta += std::to_string(id) + " = ";
+            meta += buffer_subtype_name;
+            meta += "\n";
             return replacement;
        });
        return false;
