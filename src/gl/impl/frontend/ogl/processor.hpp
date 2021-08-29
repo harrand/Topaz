@@ -3,6 +3,7 @@
 #if TZ_OGL
 #include "gl/api/processor.hpp"
 #include "gl/impl/frontend/ogl/component.hpp"
+#include <vector>
 
 namespace tz::gl
 {
