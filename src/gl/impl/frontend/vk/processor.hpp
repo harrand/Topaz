@@ -41,6 +41,9 @@ namespace tz::gl
         std::size_t resource_count_of(ResourceType type) const;
         IResource* get_resource(ResourceHandle handle);
         const vk::DescriptorPool* get_descriptor_pool() const;
+
+        std::span<BufferComponentVulkan> get_buffer_components();
+        std::span<TextureComponentVulkan> get_texture_components();
     private:
         void setup_buffers();
         void setup_textures();
@@ -67,6 +70,9 @@ namespace tz::gl
         virtual void process() final;
     private:
         void record_processing_commands();
+        void record_and_run_scratch_commands();
+
+        const vk::LogicalDevice* device;
 
         vk::DescriptorSetLayout descriptor_layout;
         vk::pipeline::Layout pipeline_layout;

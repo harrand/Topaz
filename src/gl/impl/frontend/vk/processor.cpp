@@ -1,5 +1,6 @@
 #if TZ_VULKAN
 #include "core/profiling/zone.hpp"
+#include "core/report.hpp"
 #include "gl/impl/frontend/vk/processor.hpp"
 #include "gl/impl/backend/vk/submit.hpp"
 #include "gl/resource.hpp"
@@ -172,6 +173,16 @@ namespace tz::gl
             return &this->resource_descriptor_pool.value();
         }
         return nullptr;
+    }
+
+    std::span<BufferComponentVulkan> ProcessorResourceManagerVulkan::get_buffer_components()
+    {
+        return this->buffer_components;
+    }
+
+    std::span<TextureComponentVulkan> ProcessorResourceManagerVulkan::get_texture_components()
+    {
+        return this->texture_components;
     }
 
 
@@ -363,8 +374,9 @@ namespace tz::gl
     }
 
     ProcessorVulkan::ProcessorVulkan(ProcessorBuilderVulkan builder, ProcessorDeviceInfoVulkan device_info):
-    descriptor_layout(builder.vk_get_descriptor_set_layout(*device_info.vk_device)),
-    pipeline_layout{*device_info.vk_device, vk::DescriptorSetLayoutRefs{this->descriptor_layout}},
+    device(device_info.vk_device),
+    descriptor_layout(builder.vk_get_descriptor_set_layout(*this->device)),
+    pipeline_layout{*this->device, vk::DescriptorSetLayoutRefs{this->descriptor_layout}},
     compute_pipeline
     (
         vk::pipeline::ShaderStage{builder.vk_get_compute_shader(), vk::pipeline::ShaderType::Compute},
@@ -372,12 +384,13 @@ namespace tz::gl
         this->pipeline_layout
     ),
     resource_manager(builder, device_info, this->descriptor_layout, this->pipeline_layout),
-    command_pool(*device_info.vk_device, device_info.vk_device->get_queue_family(), vk::CommandPool::RecycleBuffer),
-    compute_queue(device_info.vk_device->get_hardware_queue()),
-    process_fence(*device_info.vk_device)
+    command_pool(*this->device, this->device->get_queue_family(), vk::CommandPool::RecycleBuffer),
+    compute_queue(this->device->get_hardware_queue()),
+    process_fence(*this->device)
     {
-        this->command_pool.with(1);
+        this->command_pool.with(2);
         this->record_processing_commands();
+        this->record_and_run_scratch_commands();
     }
 
     std::size_t ProcessorVulkan::resource_count() const
@@ -417,6 +430,69 @@ namespace tz::gl
                 render.bind_compute(pool[0], this->pipeline_layout);
             }
             render.dispatch(1, 1, 1);
+        }
+    }
+
+    void ProcessorVulkan::record_and_run_scratch_commands()
+    {
+        TZ_PROFZONE("Scratch : Record and Run Scratch Commands", TZ_PROFCOL_YELLOW);
+        vk::Fence copy_fence{*this->device};
+        copy_fence.signal();
+        vk::CommandBuffer& scratch_buf = this->command_pool[1];
+        vk::Submit do_scratch_operation{vk::CommandBuffers{scratch_buf}, vk::SemaphoreRefs{}, vk::WaitStages{}, vk::SemaphoreRefs{}};
+        // Run scratch commands to ensure resource data is initialised properly.
+        {
+            // Setup all components for buffer resources.
+            TZ_PROFZONE("Scratch : Buffer Resources", TZ_PROFCOL_YELLOW);
+            for(std::size_t i = 0; i < this->resource_manager.get_buffer_components().size(); i++)
+            {
+                BufferComponentVulkan& buffer_component = this->resource_manager.get_buffer_components()[i];
+                vk::Buffer& resource_buffer = buffer_component.get_buffer();
+                IResource* buffer_resource = buffer_component.get_resource();
+                tz_report("Buffer Resource (ResourceID: %zu, BufferComponentID: %zu, %zu bytes total)", i, i, buffer_resource->get_resource_bytes().size_bytes());
+                if(buffer_resource->data_access() == RendererInputDataAccess::StaticFixed)
+                {
+                    TZ_PROFZONE("Scratch : Copy Buffer Data", TZ_PROFCOL_RED);
+                    // Do transfers now.
+                    scratch_buf.reset();
+                    vk::Buffer resource_staging{vk::BufferType::Staging, vk::BufferPurpose::TransferSource, *this->device, vk::hardware::MemoryResidency::CPU, buffer_resource->get_resource_bytes().size_bytes()};
+                    resource_staging.write(buffer_resource->get_resource_bytes().data(), buffer_resource->get_resource_bytes().size_bytes());
+                    {
+                        vk::CommandBufferRecording transfer_resource = scratch_buf.record();
+                        transfer_resource.buffer_copy_buffer(resource_staging, resource_buffer, buffer_resource->get_resource_bytes().size_bytes());
+                    }
+                    copy_fence.signal();
+                    do_scratch_operation(this->compute_queue, copy_fence);
+                    copy_fence.wait_for();
+                }
+            }
+        }
+
+        {
+            // Setup all components for texture resources.
+            TZ_PROFZONE("Scratch : Texture Resources", TZ_PROFCOL_YELLOW);
+            for(std::size_t i = 0; i < this->resource_manager.get_texture_components().size(); i++)
+            {
+                TextureComponentVulkan& texture_component = this->resource_manager.get_texture_components()[i];
+                IResource* texture_resource = texture_component.get_resource();
+                tz_report("Texture Resource (ResourceID: %zu, TextureComponentID: %zu, %zu bytes total)", this->resource_manager.get_buffer_components().size() + i, i, texture_resource->get_resource_bytes().size_bytes());
+                tz_assert(texture_resource->data_access() == RendererInputDataAccess::StaticFixed, "DynamicFixed texture resources not yet implemented (Vulkan)");
+                {
+                    TZ_PROFZONE("Scratch : Copy Image Data", TZ_PROFCOL_RED);
+                    scratch_buf.reset();
+                    vk::Buffer resource_staging{vk::BufferType::Staging, vk::BufferPurpose::TransferSource, *this->device, vk::hardware::MemoryResidency::CPU, texture_resource->get_resource_bytes().size_bytes()};
+                    resource_staging.write(texture_resource->get_resource_bytes().data(), texture_resource->get_resource_bytes().size_bytes());
+                    {
+                        vk::CommandBufferRecording transfer_image = scratch_buf.record();
+                        transfer_image.transition_image_layout(texture_component.get_image(), vk::Image::Layout::TransferDestination);
+                        transfer_image.buffer_copy_image(resource_staging, texture_component.get_image());
+                        transfer_image.transition_image_layout(texture_component.get_image(), vk::Image::Layout::ShaderResource);
+                    }
+                    copy_fence.signal();
+                    do_scratch_operation(this->compute_queue, copy_fence);
+                    copy_fence.wait_for();
+                }
+            }
         }
     }
 }
