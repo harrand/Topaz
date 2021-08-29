@@ -93,6 +93,7 @@ namespace tz::gl
             friend class ProcessorResourceManagerVulkan;
         #elif TZ_OGL
             friend class RendererOGL;
+            friend class ProcessorOGL;
         #endif
     private:
         virtual void set_resource_data(std::byte* resource_data) = 0;

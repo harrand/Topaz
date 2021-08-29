@@ -105,6 +105,8 @@ add_library(topaz
     src/gl/impl/frontend/ogl/component.hpp
     src/gl/impl/frontend/ogl/device.cpp
     src/gl/impl/frontend/ogl/device.hpp
+    src/gl/impl/frontend/ogl/processor.cpp
+    src/gl/impl/frontend/ogl/processor.hpp
     src/gl/impl/frontend/ogl/renderer.hpp
     src/gl/impl/frontend/ogl/renderer.cpp
     src/gl/impl/frontend/ogl/shader.cpp

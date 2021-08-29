@@ -46,6 +46,9 @@ namespace tz::gl
             case ShaderType::FragmentShader:
                 this->fragment_shader_source = source_code;
             break;
+            case ShaderType::ComputeShader:
+                this->compute_shader_source = source_code;
+            break;
             default:
                 tz_error("Shader type (write) is not supported on Vulkan");
             break;
@@ -62,6 +65,9 @@ namespace tz::gl
             case ShaderType::FragmentShader:
                 this->fragment_shader_metadata = metadata;
             break;
+            case ShaderType::ComputeShader:
+                this->compute_shader_metadata = metadata;
+            break;
             default:
                 tz_error("Shader type (write) is not supported on Vulkan");
             break;
@@ -77,6 +83,9 @@ namespace tz::gl
             break;
             case ShaderType::FragmentShader:
                 return this->fragment_shader_source;
+            break;
+            case ShaderType::ComputeShader:
+                return this->compute_shader_source;
             break;
             default:
                 tz_error("Shader type (write) is not supported on Vulkan");
@@ -95,6 +104,9 @@ namespace tz::gl
             case ShaderType::FragmentShader:
                 return this->fragment_shader_metadata;
             break;
+            case ShaderType::ComputeShader:
+                return this->compute_shader_metadata;
+            break;
             default:
                 tz_error("Shader type (write) is not supported on Vulkan");
                 return "";
@@ -111,52 +123,89 @@ namespace tz::gl
     program(glCreateProgram()),
     vertex_shader(glCreateShader(GL_VERTEX_SHADER)),
     fragment_shader(glCreateShader(GL_FRAGMENT_SHADER)),
-    meta()
+    compute_shader(glCreateShader(GL_COMPUTE_SHADER)),
+    meta(),
+    is_compute(!builder.get_shader_source(ShaderType::ComputeShader).empty())
     {
-        // Attach shaders
-        glAttachShader(this->program, this->vertex_shader);
-        glAttachShader(this->program, this->fragment_shader);
-
-        // Upload source code
+        if(!this->is_compute)
         {
-            const GLchar* vtx_src = builder.get_shader_source(ShaderType::VertexShader).data();
-            const GLchar* frg_src = builder.get_shader_source(ShaderType::FragmentShader).data();
-            glShaderSource(this->vertex_shader, 1, &vtx_src, nullptr);
-            glShaderSource(this->fragment_shader, 1,&frg_src , nullptr);
-        }
-        // Compile
-        glCompileShader(this->vertex_shader);
-        ShaderOGL::check_shader_error(this->vertex_shader);
-        glCompileShader(this->fragment_shader);
-        ShaderOGL::check_shader_error(this->fragment_shader);
-        // Link
-        glLinkProgram(this->program);
-        glValidateProgram(this->program);
-        ShaderOGL::check_program_error(this->program);
+            // Attach vertex/fragment shaders
+            glAttachShader(this->program, this->vertex_shader);
+            glAttachShader(this->program, this->fragment_shader);
 
-        // Meta
-        std::string all_metadata;
-        {
-            all_metadata += std::string("\n") + static_cast<std::string>(builder.get_shader_meta(ShaderType::VertexShader));
-            all_metadata += std::string("\n") + static_cast<std::string>(builder.get_shader_meta(ShaderType::FragmentShader));
+            // Upload source code
+            {
+                const GLchar* vtx_src = builder.get_shader_source(ShaderType::VertexShader).data();
+                const GLchar* frg_src = builder.get_shader_source(ShaderType::FragmentShader).data();
+                glShaderSource(this->vertex_shader, 1, &vtx_src, nullptr);
+                glShaderSource(this->fragment_shader, 1,&frg_src , nullptr);
+            }
+            // Compile
+            glCompileShader(this->vertex_shader);
+            ShaderOGL::check_shader_error(this->vertex_shader);
+            glCompileShader(this->fragment_shader);
+            ShaderOGL::check_shader_error(this->fragment_shader);
+            // Link
+            glLinkProgram(this->program);
+            glValidateProgram(this->program);
+            ShaderOGL::check_program_error(this->program);
+
+            // Meta
+            std::string all_metadata;
+            {
+                all_metadata += std::string("\n") + static_cast<std::string>(builder.get_shader_meta(ShaderType::VertexShader));
+                all_metadata += std::string("\n") + static_cast<std::string>(builder.get_shader_meta(ShaderType::FragmentShader));
+            }
+            this->meta = ShaderMeta::from_metadata_string(all_metadata);
         }
-        this->meta = ShaderMeta::from_metadata_string(all_metadata);
+        else
+        {
+            // Attach compute shader
+            glAttachShader(this->program, this->compute_shader);
+            {
+                const GLchar* cmp_src = builder.get_shader_source(ShaderType::ComputeShader).data();
+                glShaderSource(this->compute_shader, 1, &cmp_src, nullptr);
+                // Compile
+                glCompileShader(this->compute_shader);
+                ShaderOGL::check_shader_error(this->compute_shader);
+                // Link
+                glLinkProgram(this->program);
+                ShaderOGL::check_program_error(this->program);
+                glValidateProgram(this->program);
+                ShaderOGL::check_program_error(this->program);
+                // Meta
+            std::string all_metadata;
+            {
+                all_metadata += std::string("\n") + static_cast<std::string>(builder.get_shader_meta(ShaderType::ComputeShader));
+            }
+            this->meta = ShaderMeta::from_metadata_string(all_metadata);
+            }
+        }
     }
 
     ShaderOGL::ShaderOGL(ShaderOGL&& move):
     program(0),
     vertex_shader(0),
-    fragment_shader(0)
+    fragment_shader(0),
+    compute_shader(0)
     {
         *this = std::move(move);
     }
 
     ShaderOGL::~ShaderOGL()
     {
-        glDetachShader(this->program, this->vertex_shader);
-        glDetachShader(this->program, this->fragment_shader);
+        if(!is_compute)
+        {
+            glDetachShader(this->program, this->vertex_shader);
+            glDetachShader(this->program, this->fragment_shader);
+        }
+        else
+        {
+            glDetachShader(this->program, this->compute_shader);
+        }
         glDeleteShader(this->vertex_shader);
         glDeleteShader(this->fragment_shader);
+        glDeleteShader(this->compute_shader);
         glDeleteProgram(this->program);
         this->program = 0;
         this->vertex_shader = 0;
@@ -168,6 +217,9 @@ namespace tz::gl
         std::swap(this->program, rhs.program);
         std::swap(this->vertex_shader, rhs.vertex_shader);
         std::swap(this->fragment_shader, rhs.fragment_shader);
+        std::swap(this->compute_shader, rhs.compute_shader);
+        std::swap(this->meta, rhs.meta);
+        std::swap(this->is_compute, rhs.is_compute);
         return *this;
     }
 

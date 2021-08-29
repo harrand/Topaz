@@ -9,13 +9,11 @@ namespace tz::gl
     using Processor = ProcessorVulkan;
 }
 #elif TZ_OGL
-//#include "gl/impl/frontend/ogl/processor.hpp"
+#include "gl/impl/frontend/ogl/processor.hpp"
 namespace tz::gl
 {
-    //using ProcessorBuilder = ProcessorBuilderOGL;
-    //using Processor = ProcessorOGL;
-    class ProcessorBuilder{};
-    class Processor{public: Processor([[maybe_unused]] ProcessorBuilder builder){}};
+    using ProcessorBuilder = ProcessorBuilderOGL;
+    using Processor = ProcessorOGL;
 }
 #endif
 

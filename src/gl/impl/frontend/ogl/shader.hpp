@@ -20,9 +20,11 @@ namespace tz::gl
     private:
         std::string vertex_shader_source;
         std::string fragment_shader_source;
+        std::string compute_shader_source;
 
         std::string vertex_shader_metadata;
         std::string fragment_shader_metadata;
+        std::string compute_shader_metadata;
     };
 
     class ShaderOGL : public IShader
@@ -47,7 +49,10 @@ namespace tz::gl
         GLuint program;
         GLuint vertex_shader;
         GLuint fragment_shader;
+        GLuint compute_shader;
         ShaderMeta meta;
+
+        bool is_compute;
     };
 }
 
