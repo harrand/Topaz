@@ -181,6 +181,7 @@ namespace tz::gl
             }
             
             ogl::Buffer buf{buftype, ogl::BufferPurpose::StaticDraw, usage, buffer_data.size_bytes()};
+            buf.write(buffer_resource->get_resource_bytes().data(), buffer_resource->get_resource_bytes().size_bytes());
             if(buffer_resource->data_access() == RendererInputDataAccess::DynamicFixed)
             {
                 auto& dynamic_buf = *static_cast<IDynamicResource*>(buffer_resource);
