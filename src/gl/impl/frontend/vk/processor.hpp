@@ -49,6 +49,7 @@ namespace tz::gl
         const vk::LogicalDevice* device;
         const vk::DescriptorSetLayout* descriptor_layout;
         const vk::pipeline::Layout* pipeline_layout;
+        const ShaderVulkan* shader;
         std::vector<std::unique_ptr<IResource>> buffer_resources;
         std::vector<std::unique_ptr<IResource>> texture_resources;
         std::vector<BufferComponentVulkan> buffer_components;

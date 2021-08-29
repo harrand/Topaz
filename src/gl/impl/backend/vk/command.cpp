@@ -144,6 +144,13 @@ namespace tz::gl::vk
         vkCmdBindDescriptorSets(this->command_buffer->native(), VK_PIPELINE_BIND_POINT_GRAPHICS, layout.native(), 0, 1, &descriptor_set_native, 0, nullptr);
     }
 
+    void CommandBufferRecording::bind_compute(const DescriptorSet& descriptor_set, const pipeline::Layout& layout)
+    {
+        TZ_PROFZONE("Backend VK - Record DescriptorSet (Compute)", TZ_PROFCOL_RED);
+        auto descriptor_set_native = descriptor_set.native();
+        vkCmdBindDescriptorSets(this->command_buffer->native(), VK_PIPELINE_BIND_POINT_COMPUTE, layout.native(), 0, 1, &descriptor_set_native, 0, nullptr);
+    }
+
     void CommandBufferRecording::draw(std::uint32_t vert_count, std::uint32_t inst_count, std::uint32_t first_index, std::uint32_t first_instance)
     {
         TZ_PROFZONE("Backend VK - Record Draw", TZ_PROFCOL_RED);

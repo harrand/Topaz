@@ -28,6 +28,7 @@ namespace tz::gl::vk
         void transition_image_layout(const Image& image, Image::Layout new_layout);
         void bind(const Buffer& buf);
         void bind(const DescriptorSet& descriptor_set, const pipeline::Layout& layout);
+        void bind_compute(const DescriptorSet& descriptor_set, const pipeline::Layout& layout);
         void draw(std::uint32_t vertex_count, std::uint32_t instance_count = 1, std::uint32_t first_index = 0, std::uint32_t first_instance = 0);
         void draw_indexed(std::uint32_t index_count, std::uint32_t instance_count = 1, std::uint32_t first_index = 0, std::uint32_t vertex_offset = 0, std::uint32_t first_instance = 0);
         void draw_indirect(const vk::Buffer& draw_indirect_buffer, std::uint32_t draw_count);

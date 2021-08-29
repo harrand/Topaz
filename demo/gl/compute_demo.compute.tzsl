@@ -1,6 +1,6 @@
 #pragma shader_stage(compute)
 
-resource(id = 0) const buffer MVP
+resource(id = 0) buffer MVP
 {
     mat4 model;
     mat4 view;
@@ -9,5 +9,5 @@ resource(id = 0) const buffer MVP
 
 void main()
 {
-    
+    mvp.model[0][0] = 69.0;
 }

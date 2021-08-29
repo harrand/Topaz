@@ -63,7 +63,25 @@ namespace tz::gl
         vk::LayoutBuilder layout_builder;
         for(std::size_t i = 0; i < this->buffer_resources.size(); i++)
         {
-            layout_builder.add(vk::DescriptorType::UniformBuffer, {vk::pipeline::ShaderType::Compute});
+            vk::DescriptorType desc_type;
+            const tz::gl::ShaderMeta& meta = this->shader->get_meta();
+            ShaderMetaValue value = meta.try_get_meta_value(i).value_or(ShaderMetaValue::UBO);
+            switch(value)
+            {
+                case ShaderMetaValue::UBO:
+                    desc_type = vk::DescriptorType::UniformBuffer;
+                break;
+                case ShaderMetaValue::SSBO:
+                    desc_type = vk::DescriptorType::ShaderStorageBuffer;
+                break;
+                default:
+                {
+                    const char* meta_value_name = detail::meta_value_names[static_cast<int>(value)];
+                    tz_error("Unexpected Shader meta value. Expecting a buffer-y meta value, but instead got \"%s\"", meta_value_name);
+                }
+                break;
+            }
+            layout_builder.add(desc_type, {vk::pipeline::ShaderType::Compute});
         }
         for(std::size_t i = this->buffer_resources.size(); i < this->buffer_resources.size() + this->texture_resources.size(); i++)
         {
@@ -90,7 +108,8 @@ namespace tz::gl
     ProcessorResourceManagerVulkan::ProcessorResourceManagerVulkan(ProcessorBuilderVulkan builder, ProcessorDeviceInfoVulkan device_info, const vk::DescriptorSetLayout& descriptor_set_layout, const vk::pipeline::Layout& pipeline_layout):
     device(device_info.vk_device),
     descriptor_layout(&descriptor_set_layout),
-    pipeline_layout(&pipeline_layout)
+    pipeline_layout(&pipeline_layout),
+    shader(&builder.get_shader())
     {
         for(const IResource* const buf_res : builder.vk_get_buffer_resources())
         {
@@ -102,6 +121,7 @@ namespace tz::gl
         }
         this->setup_buffers();
         this->setup_textures();
+        this->initialise_resource_descriptors();
     }
 
     std::size_t ProcessorResourceManagerVulkan::resource_count() const
@@ -162,18 +182,39 @@ namespace tz::gl
             this->buffer_components.emplace_back(buf_res_ptr.get());
         }
 
-        for(BufferComponentVulkan& buffer_component : this->buffer_components)
+        for(std::size_t i = 0; i < this->buffer_components.size(); i++)
         {
+            BufferComponentVulkan& buffer_component = this->buffer_components[i];
+            vk::BufferType buf_type;
+            const tz::gl::ShaderMeta& meta = this->shader->get_meta();
+            ShaderMetaValue value = meta.try_get_meta_value(i).value_or(ShaderMetaValue::UBO);
+            switch(value)
+            {
+                case ShaderMetaValue::UBO:
+                    buf_type = vk::BufferType::Uniform;
+                break;
+                case ShaderMetaValue::SSBO:
+                    buf_type = vk::BufferType::ShaderStorage;
+                break;
+                default:
+                {
+                    const char* meta_value_name = detail::meta_value_names[static_cast<int>(value)];
+                    tz_error("Unexpected Shader meta value. Expecting a buffer-y meta value, but instead got \"%s\"", meta_value_name);
+                }
+                break;
+            }
+
             IResource* buffer_resource = buffer_component.get_resource();
             switch(buffer_resource->data_access())
             {
                 case RendererInputDataAccess::StaticFixed:
-                    buffer_component.set_buffer(vk::Buffer{vk::BufferType::Uniform, vk::BufferPurpose::TransferDestination, *this->device, vk::hardware::MemoryResidency::GPU, buffer_resource->get_resource_bytes().size_bytes()});
+
+                    buffer_component.set_buffer(vk::Buffer{buf_type, vk::BufferPurpose::TransferDestination, *this->device, vk::hardware::MemoryResidency::GPU, buffer_resource->get_resource_bytes().size_bytes()});
                 break;
                 case RendererInputDataAccess::DynamicFixed:
                     {
                         auto& dynamic_resource = static_cast<IDynamicResource&>(*buffer_resource);
-                        buffer_component.set_buffer(vk::Buffer{vk::BufferType::Uniform, vk::BufferPurpose::NothingSpecial, *this->device, vk::hardware::MemoryResidency::CPUPersistent, dynamic_resource.get_resource_bytes().size_bytes()});
+                        buffer_component.set_buffer(vk::Buffer{buf_type, vk::BufferPurpose::NothingSpecial, *this->device, vk::hardware::MemoryResidency::CPUPersistent, dynamic_resource.get_resource_bytes().size_bytes()});
                         dynamic_resource.set_resource_data(static_cast<std::byte*>(buffer_component.get_buffer().map_memory()));
                     }
                 break;
@@ -272,7 +313,21 @@ namespace tz::gl
 
             for(std::size_t i = 0; i < this->resource_count_of(ResourceType::Buffer); i++)
             {
-                pool_builder.with_size(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, view_count);
+                vk::BufferType buf_type = this->buffer_components[i].get_buffer().get_type();
+                VkDescriptorType desc_type;
+                switch(buf_type)
+                {
+                    case vk::BufferType::Uniform:
+                        desc_type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+                    break;
+                    case vk::BufferType::ShaderStorage:
+                        desc_type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+                    break;
+                    default:
+                        tz_error("Provided BufferType is not valid for a BufferResource");
+                    break;
+                }
+                pool_builder.with_size(desc_type, view_count);
             }
 
             for(std::size_t i = 0; i < this->resource_count_of(ResourceType::Texture); i++)
@@ -358,7 +413,8 @@ namespace tz::gl
             this->compute_pipeline.bind(cmd_buf);
             if(this->resource_manager.get_descriptor_pool() != nullptr)
             {
-                render.bind((*this->resource_manager.get_descriptor_pool())[0], this->pipeline_layout);
+                const vk::DescriptorPool& pool = *this->resource_manager.get_descriptor_pool();
+                render.bind_compute(pool[0], this->pipeline_layout);
             }
             render.dispatch(1, 1, 1);
         }
