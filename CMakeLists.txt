@@ -77,6 +77,9 @@ add_library(topaz
     src/gl/api/resource.hpp
     src/gl/api/shader.hpp
 
+    src/gl/impl/frontend/common/component.cpp
+    src/gl/impl/frontend/common/component.hpp
+    src/gl/impl/frontend/common/component.inl
     src/gl/impl/frontend/common/device.hpp
     src/gl/impl/frontend/common/render_pass_attachment.hpp
     src/gl/impl/frontend/common/render_pass_info.cpp

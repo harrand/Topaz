@@ -2,6 +2,7 @@
 #define TOPAZ_GL_IMPL_FRONTEND_VK_PROCESSOR_HPP
 #if TZ_VULKAN
 #include "gl/api/processor.hpp"
+#include "gl/impl/frontend/common/component.hpp"
 #include "gl/impl/frontend/vk/component.hpp"
 #include "gl/impl/backend/vk/pipeline/compute_pipeline.hpp"
 #include "gl/impl/backend/vk/descriptor_set_layout.hpp"
@@ -42,8 +43,8 @@ namespace tz::gl
         IResource* get_resource(ResourceHandle handle);
         const vk::DescriptorPool* get_descriptor_pool() const;
 
-        std::span<BufferComponentVulkan> get_buffer_components();
-        std::span<TextureComponentVulkan> get_texture_components();
+        BufferComponentVulkan* get_buffer_component(std::size_t buffer_id);
+        TextureComponentVulkan* get_texture_component(std::size_t texture_id);
     private:
         void setup_buffers();
         void setup_textures();
@@ -55,8 +56,11 @@ namespace tz::gl
         const ShaderVulkan* shader;
         std::vector<std::unique_ptr<IResource>> buffer_resources;
         std::vector<std::unique_ptr<IResource>> texture_resources;
+        /*
         std::vector<BufferComponentVulkan> buffer_components;
         std::vector<TextureComponentVulkan> texture_components;
+        */
+        ComponentManager components;
         std::optional<vk::DescriptorPool> resource_descriptor_pool;
     };
 

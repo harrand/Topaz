@@ -127,11 +127,14 @@ namespace tz::gl
 
     std::size_t ProcessorResourceManagerVulkan::resource_count() const
     {
-        return this->buffer_components.size() + this->texture_components.size();
+        return this->components.component_count();
+        //return this->buffer_components.size() + this->texture_components.size();
     }
 
     std::size_t ProcessorResourceManagerVulkan::resource_count_of(ResourceType type) const
     {
+        return this->components.component_count_of(type);
+        /*
         switch(type)
         {
             case ResourceType::Buffer:
@@ -145,10 +148,13 @@ namespace tz::gl
                 return 0;
             break;
         }
+        */
     }
 
     IResource* ProcessorResourceManagerVulkan::get_resource(ResourceHandle handle)
     {
+        return this->components.get_component(handle)->get_resource();
+        /*
         auto handle_value = static_cast<HandleValueUnderlying>(static_cast<HandleValue>(handle));
 
         if(handle_value < this->buffer_components.size())
@@ -164,6 +170,7 @@ namespace tz::gl
             tz_error("Invalid ResourceHandle");
             return nullptr;
         }
+        */
     }
 
     const vk::DescriptorPool* ProcessorResourceManagerVulkan::get_descriptor_pool() const
@@ -175,24 +182,72 @@ namespace tz::gl
         return nullptr;
     }
 
-    std::span<BufferComponentVulkan> ProcessorResourceManagerVulkan::get_buffer_components()
+    BufferComponentVulkan* ProcessorResourceManagerVulkan::get_buffer_component(std::size_t buffer_id)
     {
-        return this->buffer_components;
+        std::size_t res_id = buffer_id;
+        return static_cast<BufferComponentVulkan*>(this->components.get_component(tz::HandleValue{res_id}));
     }
 
-    std::span<TextureComponentVulkan> ProcessorResourceManagerVulkan::get_texture_components()
+    TextureComponentVulkan* ProcessorResourceManagerVulkan::get_texture_component(std::size_t texture_id)
     {
-        return this->texture_components;
+        std::size_t res_id = texture_id + this->resource_count_of(ResourceType::Buffer);
+        return static_cast<TextureComponentVulkan*>(this->components.get_component(tz::HandleValue{res_id}));
     }
-
 
     void ProcessorResourceManagerVulkan::setup_buffers()
     {
+        /*
         for(const auto& buf_res_ptr : this->buffer_resources)
         {
             this->buffer_components.emplace_back(buf_res_ptr.get());
         }
+        */
+        for(std::size_t i = 0; i < this->buffer_resources.size(); i++)
+        {
+            IResource* buf_res = this->buffer_resources[i].get();
+            // For each buffer resource, generate a buffercomponent.
+            ResourceHandle comp_handle = this->components.emplace_component<BufferComponentVulkan>(buf_res);
+            auto* buffer_component = static_cast<BufferComponentVulkan*>(this->components.get_component(comp_handle));
 
+            vk::BufferType buf_type;
+            const tz::gl::ShaderMeta& meta = this->shader->get_meta();
+            ShaderMetaValue value = meta.try_get_meta_value(i).value_or(ShaderMetaValue::UBO);
+            switch(value)
+            {
+                case ShaderMetaValue::UBO:
+                    buf_type = vk::BufferType::Uniform;
+                break;
+                case ShaderMetaValue::SSBO:
+                    buf_type = vk::BufferType::ShaderStorage;
+                break;
+                default:
+                {
+                    const char* meta_value_name = detail::meta_value_names[static_cast<int>(value)];
+                    tz_error("Unexpected Shader meta value. Expecting a buffer-y meta value, but instead got \"%s\"", meta_value_name);
+                }
+                break;
+            }
+
+            IResource* buffer_resource = buffer_component->get_resource();
+            switch(buffer_resource->data_access())
+            {
+                case RendererInputDataAccess::StaticFixed:
+
+                    buffer_component->set_buffer(vk::Buffer{buf_type, vk::BufferPurpose::TransferDestination, *this->device, vk::hardware::MemoryResidency::GPU, buffer_resource->get_resource_bytes().size_bytes()});
+                break;
+                case RendererInputDataAccess::DynamicFixed:
+                    {
+                        auto& dynamic_resource = static_cast<IDynamicResource&>(*buffer_resource);
+                        buffer_component->set_buffer(vk::Buffer{buf_type, vk::BufferPurpose::NothingSpecial, *this->device, vk::hardware::MemoryResidency::CPUPersistent, dynamic_resource.get_resource_bytes().size_bytes()});
+                        dynamic_resource.set_resource_data(static_cast<std::byte*>(buffer_component->get_buffer().map_memory()));
+                    }
+                break;
+                default:
+                    tz_error("Resource data access unsupported (Vulkan)");
+                break;
+            }
+        }
+        /*
         for(std::size_t i = 0; i < this->buffer_components.size(); i++)
         {
             BufferComponentVulkan& buffer_component = this->buffer_components[i];
@@ -234,6 +289,7 @@ namespace tz::gl
                 break;
             }
         }
+        */
     }
 
     void ProcessorResourceManagerVulkan::setup_textures()
@@ -308,7 +364,8 @@ namespace tz::gl
             vk::Image img{*this->device, tex_res->get_width(), tex_res->get_height(), format, vk::Image::UsageField{vk::Image::Usage::TransferDestination, vk::Image::Usage::Sampleable, vk::Image::Usage::ColourAttachment}, vk::hardware::MemoryResidency::GPU};
             vk::ImageView view{*this->device, img};
             vk::Sampler img_sampler{*this->device, props};
-            this->texture_components.emplace_back(texture_resource, std::move(img), std::move(view), std::move(img_sampler));
+            this->components.emplace_component<TextureComponentVulkan>(texture_resource, std::move(img), std::move(view), std::move(img_sampler));
+            //this->texture_components.emplace_back(texture_resource, std::move(img), std::move(view), std::move(img_sampler));
         }
     }
 
@@ -324,7 +381,7 @@ namespace tz::gl
 
             for(std::size_t i = 0; i < this->resource_count_of(ResourceType::Buffer); i++)
             {
-                vk::BufferType buf_type = this->buffer_components[i].get_buffer().get_type();
+                vk::BufferType buf_type = this->get_buffer_component(i)->get_buffer().get_type();
                 VkDescriptorType desc_type;
                 switch(buf_type)
                 {
@@ -359,13 +416,13 @@ namespace tz::gl
                 vk::DescriptorSetsCreationRequest& request = requests.new_request();
                 for(std::size_t j = 0; j < this->resource_count_of(ResourceType::Buffer); j++)
                 {
-                    const vk::Buffer& resource_buffer = this->buffer_components[i].get_buffer();
+                    const vk::Buffer& resource_buffer = this->get_buffer_component(j)->get_buffer();
                     request.add_buffer(resource_buffer, 0, VK_WHOLE_SIZE, j);
                 }
 
                 for(std::size_t j = 0; j < this->resource_count_of(ResourceType::Texture); j++)
                 {
-                    const TextureComponentVulkan& texture_component = this->texture_components[j];
+                    const TextureComponentVulkan& texture_component = *this->get_texture_component(j);
                     request.add_image(texture_component.get_view(), texture_component.get_sampler(), j + this->resource_count_of(ResourceType::Buffer));
                 }
             }
@@ -444,9 +501,9 @@ namespace tz::gl
         {
             // Setup all components for buffer resources.
             TZ_PROFZONE("Scratch : Buffer Resources", TZ_PROFCOL_YELLOW);
-            for(std::size_t i = 0; i < this->resource_manager.get_buffer_components().size(); i++)
+            for(std::size_t i = 0; i < this->resource_manager.resource_count_of(ResourceType::Buffer); i++)
             {
-                BufferComponentVulkan& buffer_component = this->resource_manager.get_buffer_components()[i];
+                BufferComponentVulkan& buffer_component = *this->resource_manager.get_buffer_component(i);
                 vk::Buffer& resource_buffer = buffer_component.get_buffer();
                 IResource* buffer_resource = buffer_component.get_resource();
                 tz_report("Buffer Resource (ResourceID: %zu, BufferComponentID: %zu, %zu bytes total)", i, i, buffer_resource->get_resource_bytes().size_bytes());
@@ -471,11 +528,11 @@ namespace tz::gl
         {
             // Setup all components for texture resources.
             TZ_PROFZONE("Scratch : Texture Resources", TZ_PROFCOL_YELLOW);
-            for(std::size_t i = 0; i < this->resource_manager.get_texture_components().size(); i++)
+            for(std::size_t i = 0; i < this->resource_manager.resource_count_of(ResourceType::Texture); i++)
             {
-                TextureComponentVulkan& texture_component = this->resource_manager.get_texture_components()[i];
+                TextureComponentVulkan& texture_component = *this->resource_manager.get_texture_component(i);
                 IResource* texture_resource = texture_component.get_resource();
-                tz_report("Texture Resource (ResourceID: %zu, TextureComponentID: %zu, %zu bytes total)", this->resource_manager.get_buffer_components().size() + i, i, texture_resource->get_resource_bytes().size_bytes());
+                tz_report("Texture Resource (ResourceID: %zu, TextureComponentID: %zu, %zu bytes total)", this->resource_manager.resource_count_of(ResourceType::Buffer) + i, i, texture_resource->get_resource_bytes().size_bytes());
                 tz_assert(texture_resource->data_access() == RendererInputDataAccess::StaticFixed, "DynamicFixed texture resources not yet implemented (Vulkan)");
                 {
                     TZ_PROFZONE("Scratch : Copy Image Data", TZ_PROFCOL_RED);
