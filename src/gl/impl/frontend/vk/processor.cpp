@@ -128,49 +128,16 @@ namespace tz::gl
     std::size_t ProcessorResourceManagerVulkan::resource_count() const
     {
         return this->components.component_count();
-        //return this->buffer_components.size() + this->texture_components.size();
     }
 
     std::size_t ProcessorResourceManagerVulkan::resource_count_of(ResourceType type) const
     {
         return this->components.component_count_of(type);
-        /*
-        switch(type)
-        {
-            case ResourceType::Buffer:
-                return this->buffer_components.size();
-            break;
-            case ResourceType::Texture:
-                return this->texture_components.size();
-            break;
-            default:
-                tz_error("Unknown ResourceType (Vulkan)");
-                return 0;
-            break;
-        }
-        */
     }
 
     IResource* ProcessorResourceManagerVulkan::get_resource(ResourceHandle handle)
     {
         return this->components.get_component(handle)->get_resource();
-        /*
-        auto handle_value = static_cast<HandleValueUnderlying>(static_cast<HandleValue>(handle));
-
-        if(handle_value < this->buffer_components.size())
-        {
-            return this->buffer_components[handle_value].get_resource();
-        }
-        else if(handle_value < this->buffer_components.size() + this->texture_components.size())
-        {
-            return this->texture_components[handle_value - this->buffer_components.size()].get_resource();
-        }
-        else
-        {
-            tz_error("Invalid ResourceHandle");
-            return nullptr;
-        }
-        */
     }
 
     const vk::DescriptorPool* ProcessorResourceManagerVulkan::get_descriptor_pool() const
@@ -196,12 +163,6 @@ namespace tz::gl
 
     void ProcessorResourceManagerVulkan::setup_buffers()
     {
-        /*
-        for(const auto& buf_res_ptr : this->buffer_resources)
-        {
-            this->buffer_components.emplace_back(buf_res_ptr.get());
-        }
-        */
         for(std::size_t i = 0; i < this->buffer_resources.size(); i++)
         {
             IResource* buf_res = this->buffer_resources[i].get();
@@ -247,49 +208,6 @@ namespace tz::gl
                 break;
             }
         }
-        /*
-        for(std::size_t i = 0; i < this->buffer_components.size(); i++)
-        {
-            BufferComponentVulkan& buffer_component = this->buffer_components[i];
-            vk::BufferType buf_type;
-            const tz::gl::ShaderMeta& meta = this->shader->get_meta();
-            ShaderMetaValue value = meta.try_get_meta_value(i).value_or(ShaderMetaValue::UBO);
-            switch(value)
-            {
-                case ShaderMetaValue::UBO:
-                    buf_type = vk::BufferType::Uniform;
-                break;
-                case ShaderMetaValue::SSBO:
-                    buf_type = vk::BufferType::ShaderStorage;
-                break;
-                default:
-                {
-                    const char* meta_value_name = detail::meta_value_names[static_cast<int>(value)];
-                    tz_error("Unexpected Shader meta value. Expecting a buffer-y meta value, but instead got \"%s\"", meta_value_name);
-                }
-                break;
-            }
-
-            IResource* buffer_resource = buffer_component.get_resource();
-            switch(buffer_resource->data_access())
-            {
-                case RendererInputDataAccess::StaticFixed:
-
-                    buffer_component.set_buffer(vk::Buffer{buf_type, vk::BufferPurpose::TransferDestination, *this->device, vk::hardware::MemoryResidency::GPU, buffer_resource->get_resource_bytes().size_bytes()});
-                break;
-                case RendererInputDataAccess::DynamicFixed:
-                    {
-                        auto& dynamic_resource = static_cast<IDynamicResource&>(*buffer_resource);
-                        buffer_component.set_buffer(vk::Buffer{buf_type, vk::BufferPurpose::NothingSpecial, *this->device, vk::hardware::MemoryResidency::CPUPersistent, dynamic_resource.get_resource_bytes().size_bytes()});
-                        dynamic_resource.set_resource_data(static_cast<std::byte*>(buffer_component.get_buffer().map_memory()));
-                    }
-                break;
-                default:
-                    tz_error("Resource data access unsupported (Vulkan)");
-                break;
-            }
-        }
-        */
     }
 
     void ProcessorResourceManagerVulkan::setup_textures()
