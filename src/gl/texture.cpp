@@ -21,6 +21,7 @@ namespace tz::gl
             break;
             default:
                 tz_error("No support for given TextureFormat");
+                return data;
             break;
         }
 

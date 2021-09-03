@@ -1,4 +1,4 @@
-/* Copyright (c) 2011-2018, Scott Tsai
+/* Copyright (c) 2011-2021, Scott Tsai
  * 
  * All rights reserved.
  * 
@@ -24,6 +24,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #ifndef DEBUG_BREAK_H
+#define DEBUG_BREAK_H
 
 #ifdef _MSC_VER
 
@@ -48,7 +49,7 @@ __inline__ static void trap_instruction(void)
 #elif defined(__thumb__)
 	#define DEBUG_BREAK_IMPL DEBUG_BREAK_USE_TRAP_INSTRUCTION
 /* FIXME: handle __THUMB_INTERWORK__ */
-__attribute__((gnu_inline, always_inline))
+__attribute__((always_inline))
 __inline__ static void trap_instruction(void)
 {
 	/* See 'arm-linux-tdep.c' in GDB source.
@@ -80,7 +81,7 @@ __inline__ static void trap_instruction(void)
 }
 #elif defined(__arm__) && !defined(__thumb__)
 	#define DEBUG_BREAK_IMPL DEBUG_BREAK_USE_TRAP_INSTRUCTION
-__attribute__((gnu_inline, always_inline))
+__attribute__((always_inline))
 __inline__ static void trap_instruction(void)
 {
 	/* See 'arm-linux-tdep.c' in GDB source,
@@ -90,10 +91,10 @@ __inline__ static void trap_instruction(void)
 	 * Same problem and workaround as Thumb mode */
 }
 #elif defined(__aarch64__) && defined(__APPLE__)
-	#define DEBUG_BREAK_IMPL DEBUG_BREAK_USE_BULTIN_TRAP
+	#define DEBUG_BREAK_IMPL DEBUG_BREAK_USE_BULTIN_DEBUGTRAP
 #elif defined(__aarch64__)
 	#define DEBUG_BREAK_IMPL DEBUG_BREAK_USE_TRAP_INSTRUCTION
-__attribute__((gnu_inline, always_inline))
+__attribute__((always_inline))
 __inline__ static void trap_instruction(void)
 {
 	/* See 'aarch64-tdep.c' in GDB source,
@@ -103,7 +104,7 @@ __inline__ static void trap_instruction(void)
 #elif defined(__powerpc__)
 	/* PPC 32 or 64-bit, big or little endian */
 	#define DEBUG_BREAK_IMPL DEBUG_BREAK_USE_TRAP_INSTRUCTION
-__attribute__((gnu_inline, always_inline))
+__attribute__((always_inline))
 __inline__ static void trap_instruction(void)
 {
 	/* See 'rs6000-tdep.c' in GDB source,
@@ -117,6 +118,17 @@ __inline__ static void trap_instruction(void)
 	 * The workaround is the same as ARM Thumb mode: use debugbreak-gdb.py
 	 * or manually jump over the instruction. */
 }
+#elif defined(__riscv)
+	/* RISC-V 32 or 64-bit, whether the "C" extension
+	 * for compressed, 16-bit instructions are supported or not */
+	#define DEBUG_BREAK_IMPL DEBUG_BREAK_USE_TRAP_INSTRUCTION
+__attribute__((always_inline))
+__inline__ static void trap_instruction(void)
+{
+	/* See 'riscv-tdep.c' in GDB source,
+	 * 'riscv_sw_breakpoint_from_kind' */
+	__asm__ volatile(".4byte 0x00100073");
+}
 #else
 	#define DEBUG_BREAK_IMPL DEBUG_BREAK_USE_SIGTRAP
 #endif
@@ -125,20 +137,26 @@ __inline__ static void trap_instruction(void)
 #ifndef DEBUG_BREAK_IMPL
 #error "debugbreak.h is not supported on this target"
 #elif DEBUG_BREAK_IMPL == DEBUG_BREAK_USE_TRAP_INSTRUCTION
-__attribute__((gnu_inline, always_inline))
+__attribute__((always_inline))
 __inline__ static void debug_break(void)
 {
 	trap_instruction();
 }
+#elif DEBUG_BREAK_IMPL == DEBUG_BREAK_USE_BULTIN_DEBUGTRAP
+__attribute__((always_inline))
+__inline__ static void debug_break(void)
+{
+	__builtin_debugtrap();
+}
 #elif DEBUG_BREAK_IMPL == DEBUG_BREAK_USE_BULTIN_TRAP
-__attribute__((gnu_inline, always_inline))
+__attribute__((always_inline))
 __inline__ static void debug_break(void)
 {
 	__builtin_trap();
 }
 #elif DEBUG_BREAK_IMPL == DEBUG_BREAK_USE_SIGTRAP
 #include <signal.h>
-__attribute__((gnu_inline, always_inline))
+__attribute__((always_inline))
 __inline__ static void debug_break(void)
 {
 	raise(SIGTRAP);
