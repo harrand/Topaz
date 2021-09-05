@@ -1,6 +1,7 @@
 #ifndef TOPAZ_GL_IMPL_FRONTEND_COMMON_PROCESSOR_HPP
 #define TOPAZ_GL_IMPL_FRONTEND_COMMON_PROCESSOR_HPP
 #include "gl/api/processor.hpp"
+#include <vector>
 
 namespace tz::gl
 {
