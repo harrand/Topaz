@@ -4,6 +4,7 @@
 #include "core/interfaces/cloneable.hpp"
 #include "core/vector.hpp"
 #include "gl/impl/frontend/common/renderer.hpp"
+#include "gl/impl/frontend/common/resource.hpp"
 #include "gl/impl/frontend/common/render_pass_attachment.hpp"
 #include "gl/api/resource.hpp"
 #include "gl/api/component.hpp"

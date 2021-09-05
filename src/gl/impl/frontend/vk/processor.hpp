@@ -1,7 +1,7 @@
 #ifndef TOPAZ_GL_IMPL_FRONTEND_VK_PROCESSOR_HPP
 #define TOPAZ_GL_IMPL_FRONTEND_VK_PROCESSOR_HPP
 #if TZ_VULKAN
-#include "gl/api/processor.hpp"
+#include "gl/impl/frontend/common/processor.hpp"
 #include "gl/impl/frontend/common/component.hpp"
 #include "gl/impl/frontend/vk/component.hpp"
 #include "gl/impl/backend/vk/pipeline/compute_pipeline.hpp"
@@ -10,23 +10,14 @@
 
 namespace tz::gl
 {
-    class ProcessorBuilderVulkan : public IProcessorBuilder
+    class ProcessorBuilderVulkan : public ProcessorBuilderBase
     {
     public:
         ProcessorBuilderVulkan() = default;
-        virtual ResourceHandle add_resource(const IResource& resource) final;
-        virtual const IResource* get_resource(ResourceHandle handle) const final;
-        virtual void set_shader(const Shader& shader) final;
-        virtual const Shader& get_shader() const final;
-
         vk::DescriptorSetLayout vk_get_descriptor_set_layout(const vk::LogicalDevice& device) const;
         const vk::ShaderModule& vk_get_compute_shader() const;
         std::span<const IResource* const> vk_get_buffer_resources() const;
         std::span<const IResource* const> vk_get_texture_resources() const;
-    private:
-        std::vector<const IResource*> buffer_resources;
-        std::vector<const IResource*> texture_resources;
-        const Shader* shader = nullptr;
     };
 
     struct ProcessorDeviceInfoVulkan
