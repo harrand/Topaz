@@ -7,25 +7,7 @@
 
 namespace tz::gl
 {
-    class ShaderBuilderOGL : public IShaderBuilder
-    {
-    public:
-        ShaderBuilderOGL() = default;
-        virtual void set_shader_file(ShaderType type, std::filesystem::path shader_file) final;
-        virtual void set_shader_source(ShaderType type, std::string source_code) final;
-        virtual void set_shader_meta(ShaderType type, std::string metadata) final;
-        virtual std::string_view get_shader_source(ShaderType type) const final;
-        virtual std::string_view get_shader_meta(ShaderType type) const final;
-        virtual bool has_shader(ShaderType type) const final;
-    private:
-        std::string vertex_shader_source;
-        std::string fragment_shader_source;
-        std::string compute_shader_source;
-
-        std::string vertex_shader_metadata;
-        std::string fragment_shader_metadata;
-        std::string compute_shader_metadata;
-    };
+    using ShaderBuilderOGL = ShaderBuilderBase;
 
     class ShaderOGL : public IShader
     {

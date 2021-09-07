@@ -6,188 +6,78 @@
 
 namespace tz::gl
 {
-    void ShaderBuilderOGL::set_shader_file(ShaderType type, std::filesystem::path shader_file)
-    {
-        auto read_all = [](std::filesystem::path path)->std::string
-        {
-            std::ifstream fstr(path.c_str(), std::ios::ate | std::ios::binary);
-            if(!fstr.is_open())
-            {
-                return "";
-            }
-            auto file_size_bytes = static_cast<std::size_t>(fstr.tellg());
-            fstr.seekg(0);
-            std::string buffer;
-            buffer.resize(file_size_bytes);
-            fstr.read(buffer.data(), file_size_bytes);
-            fstr.close();
-            return buffer;
-        };
-        std::filesystem::path glsl_file = shader_file;
-        glsl_file += ".glsl";
-        this->set_shader_source(type, read_all(glsl_file));
-
-        // Now find the meta file if there is one
-        std::filesystem::path meta_file = shader_file;
-        meta_file += ".glsl.meta";
-        if(std::filesystem::exists(meta_file))
-        {
-            this->set_shader_meta(type, read_all(meta_file));
-        }
-    }
-
-    void ShaderBuilderOGL::set_shader_source(ShaderType type, std::string source_code)
-    {
-        switch(type)
-        {
-            case ShaderType::VertexShader:
-                this->vertex_shader_source = source_code;
-            break;
-            case ShaderType::FragmentShader:
-                this->fragment_shader_source = source_code;
-            break;
-            case ShaderType::ComputeShader:
-                this->compute_shader_source = source_code;
-            break;
-            default:
-                tz_error("Shader type (write) is not supported on Vulkan");
-            break;
-        }
-    }
-
-    void ShaderBuilderOGL::set_shader_meta(ShaderType type, std::string metadata)
-    {
-        switch(type)
-        {
-            case ShaderType::VertexShader:
-                this->vertex_shader_metadata = metadata;
-            break;
-            case ShaderType::FragmentShader:
-                this->fragment_shader_metadata = metadata;
-            break;
-            case ShaderType::ComputeShader:
-                this->compute_shader_metadata = metadata;
-            break;
-            default:
-                tz_error("Shader type (write) is not supported on Vulkan");
-            break;
-        }
-    }
-
-    std::string_view ShaderBuilderOGL::get_shader_source(ShaderType type) const
-    {
-        switch(type)
-        {
-            case ShaderType::VertexShader:
-                return this->vertex_shader_source;
-            break;
-            case ShaderType::FragmentShader:
-                return this->fragment_shader_source;
-            break;
-            case ShaderType::ComputeShader:
-                return this->compute_shader_source;
-            break;
-            default:
-                tz_error("Shader type (write) is not supported on Vulkan");
-                return "";
-            break;
-        }
-    }
-
-    std::string_view ShaderBuilderOGL::get_shader_meta(ShaderType type) const
-    {
-        switch(type)
-        {
-            case ShaderType::VertexShader:
-                return this->vertex_shader_metadata;
-            break;
-            case ShaderType::FragmentShader:
-                return this->fragment_shader_metadata;
-            break;
-            case ShaderType::ComputeShader:
-                return this->compute_shader_metadata;
-            break;
-            default:
-                tz_error("Shader type (write) is not supported on Vulkan");
-                return "";
-            break;
-        }
-    }
-
-    bool ShaderBuilderOGL::has_shader([[maybe_unused]] ShaderType type) const
-    {
-        return false;
-    }
-
     ShaderOGL::ShaderOGL(ShaderBuilderOGL builder):
     program(glCreateProgram()),
-    vertex_shader(glCreateShader(GL_VERTEX_SHADER)),
-    fragment_shader(glCreateShader(GL_FRAGMENT_SHADER)),
-    compute_shader(glCreateShader(GL_COMPUTE_SHADER)),
+    vertex_shader(0),
+    fragment_shader(0),
+    compute_shader(0),
     meta(),
     is_compute(!builder.get_shader_source(ShaderType::ComputeShader).empty())
     {
-        if(!this->is_compute)
+        auto setup_shader = [this, &builder](ShaderType type)->std::string
         {
-            // Attach vertex/fragment shaders
-            glAttachShader(this->program, this->vertex_shader);
-            glAttachShader(this->program, this->fragment_shader);
-
-            // Upload source code
+            GLuint* shad;
+            GLenum shad_type;
+            switch(type)
             {
-                const GLchar* vtx_src = builder.get_shader_source(ShaderType::VertexShader).data();
-                const GLchar* frg_src = builder.get_shader_source(ShaderType::FragmentShader).data();
-                glShaderSource(this->vertex_shader, 1, &vtx_src, nullptr);
-                glShaderSource(this->fragment_shader, 1,&frg_src , nullptr);
+                case ShaderType::VertexShader:
+                    shad = &this->vertex_shader;
+                    shad_type = GL_VERTEX_SHADER;
+                break;
+                case ShaderType::FragmentShader:
+                    shad = &this->fragment_shader;
+                    shad_type = GL_FRAGMENT_SHADER;
+                break;
+                case ShaderType::ComputeShader:
+                    shad = &this->compute_shader;
+                    shad_type = GL_COMPUTE_SHADER;
+                break;
+                default:
+                    tz_error("Unknown ShaderType");
+                break;
+            }
+
+            *shad = glCreateShader(shad_type);
+            glAttachShader(this->program, *shad);
+            // Upload source
+            {
+                std::string_view src = builder.get_shader_source(type);
+                auto src_len = static_cast<GLint>(src.length());
+                const GLchar* src_data = src.data();
+                glShaderSource(*shad, 1, &src_data, &src_len);
             }
             // Compile
-            glCompileShader(this->vertex_shader);
-            ShaderOGL::check_shader_error(this->vertex_shader);
-            glCompileShader(this->fragment_shader);
-            ShaderOGL::check_shader_error(this->fragment_shader);
-            // Link
-            glLinkProgram(this->program);
-            glValidateProgram(this->program);
-            ShaderOGL::check_program_error(this->program);
-
-            // Meta
-            std::string all_metadata;
-            {
-                all_metadata += std::string("\n") + static_cast<std::string>(builder.get_shader_meta(ShaderType::VertexShader));
-                all_metadata += std::string("\n") + static_cast<std::string>(builder.get_shader_meta(ShaderType::FragmentShader));
-            }
-            this->meta = ShaderMeta::from_metadata_string(all_metadata);
+            glCompileShader(*shad);
+            ShaderOGL::check_shader_error(*shad);
+            // Metadata
+            return std::string("\n") + static_cast<std::string>(builder.get_shader_meta(type));
+        };
+        std::string all_metadata;
+        if(this->is_compute)
+        {
+            all_metadata = setup_shader(ShaderType::ComputeShader);
         }
         else
         {
-            // Attach compute shader
-            glAttachShader(this->program, this->compute_shader);
-            {
-                const GLchar* cmp_src = builder.get_shader_source(ShaderType::ComputeShader).data();
-                glShaderSource(this->compute_shader, 1, &cmp_src, nullptr);
-                // Compile
-                glCompileShader(this->compute_shader);
-                ShaderOGL::check_shader_error(this->compute_shader);
-                // Link
-                glLinkProgram(this->program);
-                ShaderOGL::check_program_error(this->program);
-                glValidateProgram(this->program);
-                ShaderOGL::check_program_error(this->program);
-                // Meta
-            std::string all_metadata;
-            {
-                all_metadata += std::string("\n") + static_cast<std::string>(builder.get_shader_meta(ShaderType::ComputeShader));
-            }
-            this->meta = ShaderMeta::from_metadata_string(all_metadata);
-            }
+            all_metadata = setup_shader(ShaderType::VertexShader);
+            all_metadata += setup_shader(ShaderType::FragmentShader);
         }
+        // Link & Validate
+        glLinkProgram(this->program);
+        ShaderOGL::check_program_error(this->program);
+        glValidateProgram(this->program);
+        ShaderOGL::check_program_error(this->program);
+
+        // Meta
+        this->meta = ShaderMeta::from_metadata_string(all_metadata);
     }
 
     ShaderOGL::ShaderOGL(ShaderOGL&& move):
     program(0),
     vertex_shader(0),
     fragment_shader(0),
-    compute_shader(0)
+    compute_shader(0),
+    is_compute(false)
     {
         *this = std::move(move);
     }

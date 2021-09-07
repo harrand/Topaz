@@ -3,16 +3,10 @@
 #include <string>
 #include <unordered_map>
 #include <optional>
+#include "gl/api/shader.hpp"
 
 namespace tz::gl
 {
-    enum class ShaderType
-    {
-        VertexShader,
-        FragmentShader,
-        ComputeShader
-    };
-
     enum class ShaderMetaValue
     {
         // Buffers
@@ -45,6 +39,28 @@ namespace tz::gl
         std::optional<ShaderMetaValue> try_get_meta_value(unsigned int resource_id) const;
     private:
         std::unordered_map<unsigned int, ShaderMetaValue> resource_types = {};
+    };
+
+    class ShaderBuilderBase : public IShaderBuilder
+    {
+    public:
+        ShaderBuilderBase() = default;
+        virtual void set_shader_file(ShaderType type, std::filesystem::path shader_file) override;
+        virtual void set_shader_source(ShaderType type, std::string source_code) override;
+        virtual void set_shader_meta(ShaderType type, std::string metadata) override;
+        virtual std::string_view get_shader_source(ShaderType type) const override;
+        virtual std::string_view get_shader_meta(ShaderType type) const override;
+        virtual bool has_shader(ShaderType type) const override;
+    private:
+        struct ShaderInfo
+        {
+            static ShaderInfo null(){return {.source = "", .metadata = ""};}
+            std::string source;
+            std::string metadata;
+        };
+        ShaderInfo vertex;
+        ShaderInfo fragment;
+        ShaderInfo compute;
     };
 }
 

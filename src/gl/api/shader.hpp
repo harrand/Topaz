@@ -1,12 +1,21 @@
 #ifndef TOPAZ_GL_API_SHADER_HPP
 #define TOPAZ_GL_API_SHADER_HPP
-#include "gl/impl/frontend/common/shader.hpp"
 #include <string>
 #include <string_view>
 #include <filesystem>
 
 namespace tz::gl
 {
+    // Pre-declares
+    class ShaderMeta;
+
+    enum class ShaderType
+    {
+        VertexShader,
+        FragmentShader,
+        ComputeShader
+    };
+
     /**
 	 * \addtogroup tz_gl Topaz Graphics Library (tz::gl)
 	 * A collection of low-level renderer-agnostic graphical interfaces.
