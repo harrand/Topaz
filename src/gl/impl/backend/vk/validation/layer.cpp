@@ -37,7 +37,7 @@ namespace tz::gl::vk
         for(std::size_t i = 0; i < num_default_layers; i++)
         {
             VulkanValidationLayer layer = default_layer_names[i];
-            tz_assert(avail_layers.contains(layer), "tz::gl::vk::get_default_validation_layers(): Default layer named \"%s\" is not within the list of available validation layers!", layer);
+            tz_assert(avail_layers.contains(layer), "tz::gl::vk::get_default_validation_layers(): Default layer named \"%s\" is not within the list of available validation layers!", layer.c_str());
             default_layers.add(layer);
         }
         return default_layers;

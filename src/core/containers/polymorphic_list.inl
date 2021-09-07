@@ -4,7 +4,7 @@ namespace tz
 {
     template<typename T, typename Allocator>
     template<typename Derived, typename... Args>
-    PolymorphicList<T, Allocator>::Reference PolymorphicList<T, Allocator>::emplace(Args&&... args)
+    typename PolymorphicList<T, Allocator>::Reference PolymorphicList<T, Allocator>::emplace(Args&&... args)
     {
         auto ptr = static_cast<SmartPointer>(std::make_unique<Derived>(std::forward<Args>(args)...));
         this->elements.add(std::move(ptr));
@@ -12,25 +12,25 @@ namespace tz
     }
 
     template<typename T, typename Allocator>
-    PolymorphicList<T, Allocator>::Iterator PolymorphicList<T, Allocator>::begin()
+    typename PolymorphicList<T, Allocator>::Iterator PolymorphicList<T, Allocator>::begin()
     {
         return {this->elements.data()};
     }
 
     template<typename T, typename Allocator>
-    PolymorphicList<T, Allocator>::Iterator PolymorphicList<T, Allocator>::end()
+    typename PolymorphicList<T, Allocator>::Iterator PolymorphicList<T, Allocator>::end()
     {
         return {this->elements.data() + this->elements.length()};
     }
 
     template<typename T, typename Allocator>
-    PolymorphicList<T, Allocator>::Iterator PolymorphicList<T, Allocator>::begin() const
+    typename PolymorphicList<T, Allocator>::Iterator PolymorphicList<T, Allocator>::begin() const
     {
         return {this->elements.data()};
     }
 
     template<typename T, typename Allocator>
-    PolymorphicList<T, Allocator>::Iterator PolymorphicList<T, Allocator>::end() const
+    typename PolymorphicList<T, Allocator>::Iterator PolymorphicList<T, Allocator>::end() const
     {
         return {this->elements.data() + this->elements.length()};
     }

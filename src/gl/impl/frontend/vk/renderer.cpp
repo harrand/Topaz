@@ -580,6 +580,7 @@ namespace tz::gl
                     format = vk::Image::Format::Bgra32UnsignedNorm;
                 break;
                 default:
+                    format = vk::Image::Format::Undefined;
                     tz_error("Unrecognised texture format (Vulkan)");
                 break;
             }
@@ -667,17 +668,19 @@ namespace tz::gl
             return;
         }
         this->swapchain_framebuffers.clear();
-        auto swapchain_width = static_cast<std::uint32_t>(this->swapchain->get_width());
-        auto swapchain_height = static_cast<std::uint32_t>(this->swapchain->get_height());
+        using VkExtentComponentType = decltype(std::declval<VkExtent2D>().width);
+        auto swapchain_width = static_cast<VkExtentComponentType>(this->swapchain->get_width());
+        auto swapchain_height = static_cast<VkExtentComponentType>(this->swapchain->get_height());
         if(vk::is_headless())
         {
+            VkExtent2D extent{.width = swapchain_width, .height = swapchain_height};
             if(this->depth_imageview.has_value())
             {
-                this->swapchain_framebuffers.emplace_back(this->render_pass->vk_get_render_pass(), this->maybe_swapchain_offscreen_imageview.value(), this->depth_imageview.value(), VkExtent2D(swapchain_width, swapchain_height));
+                this->swapchain_framebuffers.emplace_back(this->render_pass->vk_get_render_pass(), this->maybe_swapchain_offscreen_imageview.value(), this->depth_imageview.value(), extent);
             }
             else
             {
-                this->swapchain_framebuffers.emplace_back(this->render_pass->vk_get_render_pass(), this->maybe_swapchain_offscreen_imageview.value(), VkExtent2D(swapchain_width, swapchain_height));
+                this->swapchain_framebuffers.emplace_back(this->render_pass->vk_get_render_pass(), this->maybe_swapchain_offscreen_imageview.value(), extent);
             }
         }
         else
@@ -688,7 +691,7 @@ namespace tz::gl
                 // If we have a depth image attached, add it to the framebuffer.
                 if(this->depth_imageview.has_value())
                 {
-                    this->swapchain_framebuffers.emplace_back(this->render_pass->vk_get_render_pass(), swapchain_view, this->depth_imageview.value(), VkExtent2D{swapchain_width, swapchain_height});
+                    this->swapchain_framebuffers.emplace_back(this->render_pass->vk_get_render_pass(), swapchain_view, this->depth_imageview.value(), VkExtent2D{.width = swapchain_width, .height = swapchain_height});
                 }
                 else
                 {

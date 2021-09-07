@@ -96,6 +96,7 @@ namespace tz::gl::vk
             break;
             default:
                 tz_error("Image Source Layout is NYI");
+                return;
             break;
         }
 
@@ -111,6 +112,7 @@ namespace tz::gl::vk
             break;
             default:
                 tz_error("Image Destination Layout is NYI");
+                return;
             break;
         }
 

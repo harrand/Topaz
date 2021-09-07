@@ -70,6 +70,7 @@ namespace tz::gl
             break;
             default:
                 tz_error("No support for given TextureFormat");
+                element_size = 0;
             break;
         }
         data.image_data.resize(element_size * width * height);

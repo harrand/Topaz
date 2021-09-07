@@ -15,7 +15,7 @@ namespace tz::gl::vk::hardware
         {
             VkMemoryType vk_type = props.memoryTypes[i];
             VkMemoryPropertyFlags flags = vk_type.propertyFlags;
-            this->modules.emplace_back(&device, MemoryProperties::parse_field(flags), i, vk_type.heapIndex);
+            this->modules.push_back(MemoryModule{&device, MemoryProperties::parse_field(flags), i, vk_type.heapIndex});
         }
     }
 
