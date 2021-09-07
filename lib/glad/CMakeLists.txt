@@ -6,3 +6,7 @@ cmake_minimum_required(VERSION 3.9)
 
 add_library(glad src/glad.c)
 target_include_directories(glad PUBLIC ./include)
+
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+target_compile_options(glad INTERFACE -Wno-language-extension-token)
+endif()
