@@ -28,7 +28,7 @@ namespace tz::gl
     class ProcessorResourceManagerVulkan
     {
     public:
-        ProcessorResourceManagerVulkan(ProcessorBuilderVulkan builder, ProcessorDeviceInfoVulkan device_info, const vk::DescriptorSetLayout& descriptor_layout, const vk::pipeline::Layout& pipeline_layout);
+        ProcessorResourceManagerVulkan(ProcessorBuilderVulkan builder, ProcessorDeviceInfoVulkan device_info, const vk::DescriptorSetLayout& descriptor_layout);
         std::size_t resource_count() const;
         std::size_t resource_count_of(ResourceType type) const;
         IResource* get_resource(ResourceHandle handle);
@@ -43,7 +43,6 @@ namespace tz::gl
 
         const vk::LogicalDevice* device;
         const vk::DescriptorSetLayout* descriptor_layout;
-        const vk::pipeline::Layout* pipeline_layout;
         const ShaderVulkan* shader;
         std::vector<std::unique_ptr<IResource>> buffer_resources;
         std::vector<std::unique_ptr<IResource>> texture_resources;

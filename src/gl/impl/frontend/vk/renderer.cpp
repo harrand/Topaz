@@ -781,6 +781,7 @@ namespace tz::gl
                     break;
                     default:
                         tz_error("Provided BufferType is not valid for a BufferResource");
+                        return;
                     break;
                 }
                 pool_builder.with_size(desc_type, image_count);
@@ -834,7 +835,8 @@ namespace tz::gl
     void RendererProcessorVulkan::record_rendering_commands(const RendererPipelineManagerVulkan& pipeline_manager, const RendererBufferManagerVulkan& buffer_manager, const RendererImageManagerVulkan& image_manager, tz::Vec4 clear_colour)
     {
         TZ_PROFZONE("Record Rendering Commands", TZ_PROFCOL_YELLOW);
-        VkClearValue vk_clear_colour{clear_colour[0], clear_colour[1], clear_colour[2], clear_colour[3]};
+        VkClearValue vk_clear_colour;
+        vk_clear_colour.color = VkClearColorValue{.float32 = {clear_colour[0], clear_colour[1], clear_colour[2], clear_colour[3]}};
         for(std::size_t i = 0; i < this->get_view_count(); i++)
         {
             vk::CommandBufferRecording render = this->command_pool[i].record();

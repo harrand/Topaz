@@ -59,6 +59,7 @@ namespace tz::gl::vk::hardware
                     break;
                     case QueueFamilyType::Present:
                         tz_error("Did not expect Present here");
+                        return queue_families;
                     break;
                 }
                 if(flag & type_as_flag)

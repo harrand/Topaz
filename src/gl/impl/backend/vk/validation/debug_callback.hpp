@@ -11,7 +11,7 @@ namespace tz::gl::vk
     {
         template<typename F>
         concept VulkanDebugCallback = tz::Function<F,
-            VKAPI_ATTR VkBool32 VKAPI_CALL, /*Return Type*/
+            VKAPI_ATTR VkBool32, /*Return Type*/
 
             /*Argument Types*/
             VkDebugUtilsMessageSeverityFlagBitsEXT,

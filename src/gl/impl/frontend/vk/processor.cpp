@@ -28,6 +28,7 @@ namespace tz::gl
                 {
                     const char* meta_value_name = detail::meta_value_names[static_cast<int>(value)];
                     tz_error("Unexpected Shader meta value. Expecting a buffer-y meta value, but instead got \"%s\"", meta_value_name);
+                    return {device, layout_builder};
                 }
                 break;
             }
@@ -55,10 +56,9 @@ namespace tz::gl
         return this->texture_resources;
     }
 
-    ProcessorResourceManagerVulkan::ProcessorResourceManagerVulkan(ProcessorBuilderVulkan builder, ProcessorDeviceInfoVulkan device_info, const vk::DescriptorSetLayout& descriptor_set_layout, const vk::pipeline::Layout& pipeline_layout):
+    ProcessorResourceManagerVulkan::ProcessorResourceManagerVulkan(ProcessorBuilderVulkan builder, ProcessorDeviceInfoVulkan device_info, const vk::DescriptorSetLayout& descriptor_set_layout):
     device(device_info.vk_device),
     descriptor_layout(&descriptor_set_layout),
-    pipeline_layout(&pipeline_layout),
     shader(&builder.get_shader())
     {
         for(const IResource* const buf_res : builder.vk_get_buffer_resources())
@@ -185,6 +185,7 @@ namespace tz::gl
                 break;
                 default:
                     tz_error("Unrecognised texture format (Vulkan)");
+                    format = vk::Image::Format::Undefined;
                 break;
             }
 
@@ -260,6 +261,7 @@ namespace tz::gl
                     break;
                     default:
                         tz_error("Provided BufferType is not valid for a BufferResource");
+                        return;
                     break;
                 }
                 pool_builder.with_size(desc_type, view_count);
@@ -307,7 +309,7 @@ namespace tz::gl
         *device_info.vk_device,
         this->pipeline_layout
     ),
-    resource_manager(builder, device_info, this->descriptor_layout, this->pipeline_layout),
+    resource_manager(builder, device_info, this->descriptor_layout),
     command_pool(*this->device, this->device->get_queue_family(), vk::CommandPool::RecycleBuffer),
     compute_queue(this->device->get_hardware_queue()),
     process_fence(*this->device)

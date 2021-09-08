@@ -176,6 +176,7 @@ namespace tz::gl
                 {
                     const char* meta_value_name = detail::meta_value_names[static_cast<int>(value)];
                     tz_error("Unexpected Shader meta value. Expecting a buffer-y meta value, but instead got \"%s\"", meta_value_name);
+                    return;
                 }
                 break;
             }
@@ -231,6 +232,7 @@ namespace tz::gl
                 break;
                 default:
                     tz_error("Unrecogised Resource TextureFormat (OpenGL)");
+                    return;
                 break;
             }
 

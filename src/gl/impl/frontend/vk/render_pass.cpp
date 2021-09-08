@@ -60,6 +60,7 @@ namespace tz::gl
             break;
             default:
                 tz_error("Unrecognised TextureFormat (Vulkan)");
+                colour_format = vk::Image::Format::Undefined;
             break;
         }
         colour_attachment.set_format(colour_format);
