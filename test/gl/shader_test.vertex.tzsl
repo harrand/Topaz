@@ -1,5 +1,4 @@
 #pragma shader_stage(vertex)
-#extension GL_KHR_vulkan_glsl : enable
 
 #if TZ_VULKAN
     int tz_vertex_id = gl_VertexIndex;

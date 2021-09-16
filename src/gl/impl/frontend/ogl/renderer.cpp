@@ -18,12 +18,6 @@ namespace tz::gl
         unsigned int baseInstance;
     };
 
-    std::span<const IRendererInput* const> RendererBuilderOGL::ogl_get_inputs() const
-    {
-        return this->inputs;
-    }
-
-
     RendererOGL::RendererOGL(RendererBuilderOGL builder, RendererDeviceInfoOGL device_info):
     vao(0),
     vbo(std::nullopt),
@@ -84,7 +78,7 @@ namespace tz::gl
             std::size_t length;
         };
 
-        if(!builder.ogl_get_inputs().empty())
+        if(builder.input_count() > 0)
         {
             std::vector<std::byte> total_vertices;
             std::vector<unsigned int> total_indices;
@@ -719,9 +713,12 @@ namespace tz::gl
     std::vector<std::unique_ptr<IRendererInput>> RendererOGL::copy_inputs(const RendererBuilderOGL& builder)
     {
         std::vector<std::unique_ptr<IRendererInput>> inputs;
-        for(const IRendererInput* const input : builder.ogl_get_inputs())
+        for(std::size_t i = 0; i < builder.input_count(); i++)
         {
-            inputs.push_back(input->unique_clone());
+            RendererInputHandle handle{static_cast<tz::HandleValue>(i)};
+            const IRendererInput* cur_input = builder.get_input(handle);
+            tz_assert(cur_input != nullptr, "Builder had a null input. It is valid for a builder to have no inputs, but a null input is wrong.");
+            inputs.push_back(cur_input->unique_clone());
         }
         return inputs;
     }

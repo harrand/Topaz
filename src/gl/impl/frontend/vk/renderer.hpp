@@ -24,7 +24,6 @@ namespace tz::gl
         vk::pipeline::VertexInputState vk_get_vertex_input() const;
         vk::pipeline::RasteriserState vk_get_rasteriser_state() const;
         vk::DescriptorSetLayout vk_get_descriptor_set_layout(const vk::LogicalDevice& device) const;
-        std::span<const IRendererInput* const> vk_get_inputs() const;
     };
 
     class DeviceFunctionalityVulkan;

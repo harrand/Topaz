@@ -125,11 +125,6 @@ namespace tz::gl
         return {device, layout_builder};
     }
 
-    std::span<const IRendererInput* const> RendererBuilderVulkan::vk_get_inputs() const
-    {
-        return {this->inputs.begin(), this->inputs.end()};
-    }
-
     RendererPipelineManagerVulkan::RendererPipelineManagerVulkan(RendererBuilderVulkan builder, RendererBuilderDeviceInfoVulkan device_info, const RenderPassVulkan& render_pass):
     device(device_info.device),
     render_pass(&render_pass),
@@ -1347,9 +1342,12 @@ namespace tz::gl
     std::vector<std::unique_ptr<IRendererInput>> RendererVulkan::copy_inputs(const RendererBuilderVulkan builder)
     {
         std::vector<std::unique_ptr<IRendererInput>> input_duplicates;
-        for(const IRendererInput* const input : builder.vk_get_inputs())
+        for(std::size_t i = 0; i < builder.input_count(); i++)
         {
-            input_duplicates.push_back(input != nullptr ? input->unique_clone() : nullptr);
+            RendererInputHandle handle{static_cast<tz::HandleValue>(i)};
+            const IRendererInput* cur_input = builder.get_input(handle);
+            tz_assert(cur_input != nullptr, "Builder had a null input. It is valid for a builder to have no inputs, but a null input is wrong.");
+            input_duplicates.push_back(cur_input->unique_clone());
         }
         return input_duplicates;
     }

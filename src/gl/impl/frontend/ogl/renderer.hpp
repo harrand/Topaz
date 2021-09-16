@@ -12,12 +12,7 @@
 
 namespace tz::gl
 {
-    class RendererBuilderOGL : public RendererBuilderBase
-    {
-    public:
-        RendererBuilderOGL() = default;
-        std::span<const IRendererInput* const> ogl_get_inputs() const;
-    };
+    using RendererBuilderOGL = RendererBuilderBase;
 
     struct RendererDeviceInfoOGL
     {

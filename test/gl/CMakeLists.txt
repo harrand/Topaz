@@ -16,13 +16,13 @@ add_tz_test(NAME tz_render_pass_test
 add_tz_test(NAME tz_renderer_test
         SOURCE_FILES renderer_test.cpp
         SHADER_SOURCES
-            test/gl/shader_test.vertex.glsl
-            test/gl/shader_test.fragment.glsl
+            test/gl/shader_test.vertex.tzsl
+            test/gl/shader_test.fragment.tzsl
         )
 
 add_tz_test(NAME tz_shader_test
         SOURCE_FILES shader_test.cpp
         SHADER_SOURCES
-            test/gl/shader_test.vertex.glsl
-            test/gl/shader_test.fragment.glsl
+            test/gl/shader_test.vertex.tzsl
+            test/gl/shader_test.fragment.tzsl
         )
