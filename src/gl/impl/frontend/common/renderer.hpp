@@ -11,6 +11,7 @@ namespace tz::gl
 
         virtual RendererInputHandle add_input(const IRendererInput& input) final;
         virtual const IRendererInput* get_input(RendererInputHandle handle) const final;
+        virtual std::size_t input_count() const final;
 
         virtual void set_output(IRendererOutput& output) final;
         virtual const IRendererOutput* get_output() const final;
@@ -18,6 +19,7 @@ namespace tz::gl
 
         virtual ResourceHandle add_resource(const IResource& resource) final;
         virtual const IResource* get_resource(ResourceHandle handle) const final;
+        virtual std::span<const IResource* const> get_resources(ResourceType type) const final;
 
         virtual void set_culling_strategy(RendererCullingStrategy culling_strategy) final;
         virtual RendererCullingStrategy get_culling_strategy() const final;

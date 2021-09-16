@@ -16,8 +16,6 @@ namespace tz::gl
     {
     public:
         RendererBuilderOGL() = default;
-        std::span<const IResource* const> ogl_get_buffer_resources() const;
-        std::span<const IResource* const> ogl_get_texture_resources() const;
         std::span<const IRendererInput* const> ogl_get_inputs() const;
     };
 

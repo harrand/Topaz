@@ -16,6 +16,11 @@ namespace tz::gl
         return this->inputs[input_id];
     }
 
+    std::size_t RendererBuilderBase::input_count() const
+    {
+        return this->inputs.size();
+    }
+
     void RendererBuilderBase::set_output(IRendererOutput& output)
     {
         this->output = &output;
@@ -70,6 +75,23 @@ namespace tz::gl
         }
         // Is within range, we assume it's a valid buffer resource
         return this->buffer_resources[handle_value];
+    }
+
+    std::span<const IResource* const> RendererBuilderBase::get_resources(ResourceType type) const
+    {
+        switch(type)
+        {
+            case ResourceType::Buffer:
+                return {this->buffer_resources.begin(), this->buffer_resources.end()};
+            break;
+            case ResourceType::Texture:
+                return {this->texture_resources.begin(), this->texture_resources.end()};
+            break;
+            default:
+                tz_error("Unknown ResourceType when retrieving a resource span");
+                return {};
+            break;
+        }
     }
 
     void RendererBuilderBase::set_culling_strategy(RendererCullingStrategy culling_strategy)

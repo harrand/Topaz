@@ -18,16 +18,6 @@ namespace tz::gl
         unsigned int baseInstance;
     };
 
-    std::span<const IResource* const> RendererBuilderOGL::ogl_get_buffer_resources() const
-    {
-        return {this->buffer_resources.begin(), this->buffer_resources.end()};
-    }
-    
-    std::span<const IResource* const> RendererBuilderOGL::ogl_get_texture_resources() const
-    {
-        return {this->texture_resources.begin(), this->texture_resources.end()};
-    }
-
     std::span<const IRendererInput* const> RendererBuilderOGL::ogl_get_inputs() const
     {
         return this->inputs;
@@ -217,12 +207,12 @@ namespace tz::gl
 
         std::vector<IResource*> buffer_resources;
         std::vector<IResource*> texture_resources;
-        for(const IResource* buffer_resource : builder.ogl_get_buffer_resources())
+        for(const IResource* buffer_resource : builder.get_resources(ResourceType::Buffer))
         {
             this->resources.push_back(buffer_resource->unique_clone());
             buffer_resources.push_back(this->resources.back().get());
         }
-        for(const IResource* texture_resource : builder.ogl_get_texture_resources())
+        for(const IResource* texture_resource : builder.get_resources(ResourceType::Texture))
         {
             this->resources.push_back(texture_resource->unique_clone());
             texture_resources.push_back(this->resources.back().get());

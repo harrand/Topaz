@@ -211,6 +211,12 @@ namespace tz::gl
          */
         virtual const IRendererInput* get_input(RendererInputHandle input_handle) const = 0;
         /**
+         * @brief Retrieve the number of inputs registered.
+         * 
+         * @return Number of inputs
+         */
+        virtual std::size_t input_count() const = 0;
+        /**
          * @brief Renderers must have one output. Currently, an output is either a @ref tz::gl::TextureOutput (render-to-texture) or the @ref tz::window() (the window or an offscreen-image for headless applications).
          * 
          * @param output Information about the renderer's render-target.
@@ -243,6 +249,14 @@ namespace tz::gl
          * @return const IResource* pointing to the resource.
          */
         virtual const IResource* get_resource(ResourceHandle handle) const = 0;
+        /**
+         * @brief Retrieve a span containing all resources of a given type.
+         * Valid ResourceTypes consist of Buffer and Resource.
+         * 
+         * @param type Type of resources to retrieve
+         * @return Span referring to all resources of the given type.
+         */
+        virtual std::span<const IResource* const> get_resources(ResourceType type) const = 0;
         /**
          * @brief Set the culling strategy used during rendering.
          * 

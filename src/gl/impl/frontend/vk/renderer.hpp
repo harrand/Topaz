@@ -25,8 +25,6 @@ namespace tz::gl
         vk::pipeline::RasteriserState vk_get_rasteriser_state() const;
         vk::DescriptorSetLayout vk_get_descriptor_set_layout(const vk::LogicalDevice& device) const;
         std::span<const IRendererInput* const> vk_get_inputs() const;
-        std::span<const IResource* const> vk_get_buffer_resources() const;
-        std::span<const IResource* const> vk_get_texture_resources() const;
     };
 
     class DeviceFunctionalityVulkan;

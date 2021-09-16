@@ -130,16 +130,6 @@ namespace tz::gl
         return {this->inputs.begin(), this->inputs.end()};
     }
 
-    std::span<const IResource* const> RendererBuilderVulkan::vk_get_buffer_resources() const
-    {
-        return {this->buffer_resources.begin(), this->buffer_resources.end()};
-    }
-
-    std::span<const IResource* const> RendererBuilderVulkan::vk_get_texture_resources() const
-    {
-        return {this->texture_resources.begin(), this->texture_resources.end()};
-    }
-
     RendererPipelineManagerVulkan::RendererPipelineManagerVulkan(RendererBuilderVulkan builder, RendererBuilderDeviceInfoVulkan device_info, const RenderPassVulkan& render_pass):
     device(device_info.device),
     render_pass(&render_pass),
@@ -1193,14 +1183,14 @@ namespace tz::gl
         std::vector<const IResource*> all_resources;
         std::vector<IResource*> buffer_resources;
         std::vector<IResource*> texture_resources;
-        for(const IResource* buffer_resource : builder.vk_get_buffer_resources())
+        for(const IResource* buffer_resource : builder.get_resources(ResourceType::Buffer))
         {
             this->renderer_resources.push_back(buffer_resource->unique_clone());
             IResource* new_resource = this->renderer_resources.back().get();
             buffer_resources.push_back(new_resource);
             all_resources.push_back(new_resource);
         }
-        for(const IResource* texture_resource : builder.vk_get_texture_resources())
+        for(const IResource* texture_resource : builder.get_resources(ResourceType::Texture))
         {
             this->renderer_resources.push_back(texture_resource->unique_clone());
             IResource* new_resource = this->renderer_resources.back().get();
