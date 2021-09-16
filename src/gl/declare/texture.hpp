@@ -1,19 +1,7 @@
-#ifndef TOPAZ_GL_IMPL_COMMON_RESOURCE_HPP
-#define TOPAZ_GL_IMPL_COMMON_RESOURCE_HPP
-
+#ifndef TOPAZ_GL_DECLARE_TEXTURE_HPP
+#define TOPAZ_GL_DECLARE_TEXTURE_HPP
 namespace tz::gl
 {
-    /**
-	 * \addtogroup tz_gl Topaz Graphics Library (tz::gl)
-	 * A collection of low-level renderer-agnostic graphical interfaces.
-	 * @{
-	 */
-    enum class ResourceType
-    {
-        Buffer,
-        Texture
-    };
-
     enum class TextureFormat
     {
         Rgba32Signed,
@@ -58,8 +46,6 @@ namespace tz::gl
         TextureAddressMode address_mode_v;
         TextureAddressMode address_mode_w;
     };
-    /**
-     * @} 
-     */
 }
-#endif // TOPAZ_GL_IMPL_COMMON_RESOURCE_HPP
+
+#endif // TOPAZ_GL_DECLARE_TEXTURE_HPP

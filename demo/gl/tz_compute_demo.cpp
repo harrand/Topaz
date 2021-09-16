@@ -65,7 +65,6 @@ int main()
         renderer_builder.add_input(mesh_input);
         renderer_builder.set_output(tz::window());
         renderer_builder.add_resource(buf_res);
-        renderer_builder.set_pass(tz::gl::RenderPassAttachment::Colour);
         renderer_builder.set_shader(render_shader);
         tz::gl::Renderer renderer = device.create_renderer(renderer_builder);
         renderer.set_clear_colour({0.1f, 0.2f, 0.4f, 1.0f});

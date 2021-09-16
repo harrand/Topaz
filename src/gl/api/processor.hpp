@@ -1,6 +1,7 @@
 #ifndef TOPAZ_GL_API_PROCESSOR_HPP
 #define TOPAZ_GL_API_PROCESSOR_HPP
 #include "gl/api/resource.hpp"
+#include "gl/declare/resource.hpp"
 #include "gl/shader.hpp"
 
 namespace tz::gl

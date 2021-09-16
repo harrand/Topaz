@@ -37,19 +37,17 @@ int main()
         // Create an example RendererBuilder and see if we can describe its renderpass correctly
         tz::gl::RendererBuilder ren1;
         ren1.set_output(tz::window());
-        ren1.set_pass(tz::gl::RenderPassAttachment::Colour);
         // ren1 expects a single subpass, with 1 colour attachment matching the window format and no depth attachment
 
         tz::gl::RenderPassInfo ren1pass = tz::gl::detail::describe_renderer(ren1, device);
         tz_assert(ren1pass.subpasses.colour_attachments.length() == 1 && ren1pass.subpasses.colour_attachments[0] == device.get_window_format(), "Ren1Pass had unexpected colour attachments in its single subpass");
-        tz_assert(ren1pass.subpasses.depth_attachment == std::nullopt, "Ren1Pass wrongly had a depth attachment");
+        tz_assert(ren1pass.subpasses.depth_attachment != std::nullopt, "Ren1Pass wrongly did not have a depth attachment");
 
         tz::gl::RendererBuilder ren2;
         ren2.set_output(tz::window());
         auto ren2tex_fmt = tz::gl::TextureFormat::Rgba32Signed;
         tz::gl::TextureResource ren2tex{tz::gl::TextureData::uninitialised(1, 1, ren2tex_fmt), ren2tex_fmt};
         tz::gl::ResourceHandle ren2res = ren2.add_resource(ren2tex);
-        ren2.set_pass(tz::gl::RenderPassAttachment::ColourDepth);
         ren2.set_shader(shader);
         // ren2 expects a single subpass, with 1 colour attachment matching the window format and a depth attachment of DepthFloat32
 
@@ -63,7 +61,6 @@ int main()
         tz::gl::TextureOutput ren2_output;
         ren2_output.add_colour_output(static_cast<tz::gl::TextureComponent*>(ren2renderer.get_component(ren2res)));
         ren3.set_output(ren2_output);
-        ren3.set_pass(tz::gl::RenderPassAttachment::ColourDepth);
         // ren3 expects a single subpass, with 1 colour attachment matching ren2tex_fmt and a depth attachment of DepthFloat32
 
         tz::gl::RenderPassInfo ren3pass = tz::gl::detail::describe_renderer(ren3, device);

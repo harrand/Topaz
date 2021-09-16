@@ -29,16 +29,6 @@ namespace tz::gl
         return this->inputs[input_id];
     }
 
-    void RendererBuilderVulkan::set_pass(RenderPassAttachment pass)
-    {
-        this->pass = pass;
-    }
-
-    RenderPassAttachment RendererBuilderVulkan::get_pass() const
-    {
-        return this->pass;
-    }
-
     void RendererBuilderVulkan::set_output(IRendererOutput& output)
     {
         this->output = &output;
@@ -1287,7 +1277,7 @@ namespace tz::gl
     image_manager(builder, device_info, this->render_pass),
     processor(builder, device_info, this->get_inputs(), this->render_pass),
     clear_colour(),
-    requires_depth_image(builder.get_pass() != RenderPassAttachment::Colour)
+    requires_depth_image(true /*TODO: Option to disable depth image*/)
     {
         this->clear_colour = {0.0f, 0.0f, 0.0f, 0.0f};
 

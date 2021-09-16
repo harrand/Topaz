@@ -3,9 +3,8 @@
 #include "core/containers/basic_list.hpp"
 #include "core/interfaces/cloneable.hpp"
 #include "core/vector.hpp"
-#include "gl/impl/frontend/common/renderer.hpp"
-#include "gl/impl/frontend/common/resource.hpp"
-#include "gl/impl/frontend/common/render_pass_attachment.hpp"
+#include "gl/declare/resource.hpp"
+#include "gl/declare/renderer.hpp"
 #include "gl/api/resource.hpp"
 #include "gl/api/component.hpp"
 #include "gl/shader.hpp"
@@ -211,22 +210,6 @@ namespace tz::gl
          * @return RendererElementFormat describing how vertex data is laid out in memory.
          */
         virtual const IRendererInput* get_input(RendererInputHandle input_handle) const = 0;
-        /**
-         * @brief Describe the nature of the renderpass
-         * @deprecated Poorly describes the nature of the render-pass. This may be removed and the attachment stuff done under-the-hood.
-         * Currently RenderPasses always consist of one subpass. All colour-depth attachments are assumed to have the exact same TextureFormat which is unreasonable.
-         * 
-         * This however tells the renderer whether there even exists any colour/depth attachments.
-         * 
-         * @param pass 
-         */
-        virtual void set_pass(RenderPassAttachment pass) = 0;
-        /**
-         * @brief Retrieve information about the colour/depth attachments.
-         * 
-         * @return Information on whether the renderer expects to have colour/depth attachments.
-         */
-        virtual RenderPassAttachment get_pass() const = 0;
         /**
          * @brief Renderers must have one output. Currently, an output is either a @ref tz::gl::TextureOutput (render-to-texture) or the @ref tz::window() (the window or an offscreen-image for headless applications).
          * 

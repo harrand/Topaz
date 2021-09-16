@@ -1,15 +1,8 @@
-#ifndef TOPAZ_GL_IMPL_COMMON_RENDERER_HPP
-#define TOPAZ_GL_IMPL_COMMON_RENDERER_HPP
-#include "core/handle.hpp"
+#ifndef TOPAZ_GL_DECLARE_RENDERER_HPP
+#define TOPAZ_GL_DECLARE_RENDERER_HPP
 
 namespace tz::gl
 {
-    /**
-	 * \addtogroup tz_gl Topaz Graphics Library (tz::gl)
-	 * A collection of low-level renderer-agnostic graphical interfaces.
-	 * @{
-	 */
-
     /**
      * @brief Describes how often the renderer elements should expect new attribute values.
      * 
@@ -67,9 +60,6 @@ namespace tz::gl
         Window,
         Texture
     };
-    /**
-     * @} 
-     */
 }
 
-#endif // TOPAZ_GL_IMPL_COMMON_RENDERER_HPP
+#endif // TOPAZ_GL_DECLARE_RENDERER_HPP

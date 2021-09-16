@@ -2,7 +2,7 @@
 #define TOPAZ_GL_IMPL_OGL_RENDERER_HPP
 #if TZ_OGL
 #include "gl/api/renderer.hpp"
-#include "gl/impl/frontend/common/device.hpp"
+#include "gl/declare/device.hpp"
 #include "gl/impl/frontend/ogl/component.hpp"
 #include "gl/impl/backend/ogl/buffer.hpp"
 #include "gl/impl/backend/ogl/framebuffer.hpp"
@@ -17,9 +17,6 @@ namespace tz::gl
         RendererBuilderOGL() = default;
         virtual RendererInputHandle add_input(const IRendererInput& input) final;
         virtual const IRendererInput* get_input(RendererInputHandle handle) const final;
-
-        virtual void set_pass(RenderPassAttachment pass) final;
-        virtual RenderPassAttachment get_pass() const final;
 
         virtual void set_output(IRendererOutput& output) final;
         virtual const IRendererOutput* get_output() const final;
@@ -39,7 +36,6 @@ namespace tz::gl
         std::span<const IRendererInput* const> ogl_get_inputs() const;
     private:
         std::vector<const IRendererInput*> inputs;
-        RenderPassAttachment pass = RenderPassAttachment::ColourDepth;
         IRendererOutput* output = nullptr;
         std::vector<const IResource*> buffer_resources;
         std::vector<const IResource*> texture_resources;
@@ -101,7 +97,6 @@ namespace tz::gl
         std::vector<BufferComponentOGL> resource_buffers;
         std::vector<TextureComponentOGL> resource_textures;
         RendererElementFormat format;
-        RenderPassAttachment pass_attachment;
         const Shader* shader;
         std::vector<std::unique_ptr<IRendererInput>> inputs;
         const IRendererOutput* output;

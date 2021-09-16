@@ -72,7 +72,6 @@ int main()
         renderer_builder.set_output(tz::window());
         tz::gl::ResourceHandle buf_handle = renderer_builder.add_resource(buf_res);
         renderer_builder.add_resource(texture);
-        renderer_builder.set_pass(tz::gl::RenderPassAttachment::Colour);
         renderer_builder.set_shader(shader);
         tz::gl::Renderer renderer = device.create_renderer(renderer_builder);
         renderer.set_clear_colour({0.1f, 0.2f, 0.4f, 1.0f});

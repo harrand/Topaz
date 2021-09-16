@@ -32,16 +32,6 @@ namespace tz::gl
         return this->inputs[handle_val];
     }
 
-    void RendererBuilderOGL::set_pass(RenderPassAttachment pass)
-    {
-        this->pass = pass;
-    }
-    
-    RenderPassAttachment RendererBuilderOGL::get_pass() const
-    {
-        return this->pass;
-    }
-
     void RendererBuilderOGL::set_output(IRendererOutput& output)
     {
         this->output = &output;
@@ -146,7 +136,6 @@ namespace tz::gl
     resources(),
     resource_buffers(),
     resource_textures(),
-    pass_attachment(builder.get_pass()),
     shader(&builder.get_shader()),
     inputs(this->copy_inputs(builder)),
     output(builder.get_output()),
@@ -165,15 +154,8 @@ namespace tz::gl
             }
         }
         //auto persistent_mapped_buffer_flags = GL_MAP_READ_BIT | GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT;
-
-        if(this->pass_attachment != RenderPassAttachment::Colour)
-        {
-            glEnable(GL_DEPTH_TEST);
-        }
-        else
-        {
-            glDisable(GL_DEPTH_TEST);
-        }
+        // TODO: Add the option to disable depth buffer
+        glEnable(GL_DEPTH_TEST);
         switch(builder.get_culling_strategy())
         {
             case RendererCullingStrategy::NoCulling:
@@ -498,7 +480,6 @@ namespace tz::gl
     indirect_buffer(std::nullopt),
     indirect_buffer_dynamic(std::nullopt),
     resource_buffers(),
-    pass_attachment(RenderPassAttachment::ColourDepth),
     shader(nullptr),
     output(nullptr)
     {
@@ -521,7 +502,6 @@ namespace tz::gl
         std::swap(this->resource_buffers, rhs.resource_buffers);
         std::swap(this->resource_textures, rhs.resource_textures);
         std::swap(this->format, rhs.format);
-        std::swap(this->pass_attachment, rhs.pass_attachment);
         std::swap(this->shader, rhs.shader);
         std::swap(this->inputs, rhs.inputs);
         std::swap(this->output, rhs.output);
@@ -641,20 +621,8 @@ namespace tz::gl
             glViewport(0, 0, static_cast<GLsizei>(tz::window().get_width()), static_cast<GLsizei>(tz::window().get_height()));
         }
 
-        GLenum buffer_bits;
-        switch(this->pass_attachment)
-        {
-            case RenderPassAttachment::Colour:
-            default:
-                buffer_bits = GL_COLOR_BUFFER_BIT;
-            break;
-            case RenderPassAttachment::Depth:
-                buffer_bits = GL_DEPTH_BUFFER_BIT;
-            break;
-            case RenderPassAttachment::ColourDepth:
-                buffer_bits = GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT;
-            break;
-        }
+        // TODO: Option to disable depth image
+        constexpr GLenum buffer_bits = GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT;
         glClear(buffer_bits);
 
         glBindVertexArray(this->vao);

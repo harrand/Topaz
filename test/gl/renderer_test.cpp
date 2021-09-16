@@ -33,7 +33,6 @@ int main()
             tz_assert(std::equal(span1.begin(), span1.end(), span2.begin()), "RendererBuilder wrongfully edited some of its resource data");
         }
         renderer_builder.set_output(tz::window());
-        renderer_builder.set_pass(tz::gl::RenderPassAttachment::Colour);
         renderer_builder.set_shader(shader);
         tz::gl::Renderer renderer = device.create_renderer(renderer_builder);
 

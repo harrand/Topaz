@@ -77,17 +77,21 @@ add_library(topaz
     src/gl/api/resource.hpp
     src/gl/api/shader.hpp
 
+    # tz::gl (Declare)
+    src/gl/declare/device.hpp
+    src/gl/declare/renderer.hpp
+    src/gl/declare/resource.hpp
+    src/gl/declare/texture.hpp
+
+    # tz::gl (Common Impl)
+
     src/gl/impl/frontend/common/component.cpp
     src/gl/impl/frontend/common/component.hpp
     src/gl/impl/frontend/common/component.inl
-    src/gl/impl/frontend/common/device.hpp
     src/gl/impl/frontend/common/processor.cpp
     src/gl/impl/frontend/common/processor.hpp
-    src/gl/impl/frontend/common/render_pass_attachment.hpp
     src/gl/impl/frontend/common/render_pass_info.cpp
     src/gl/impl/frontend/common/render_pass_info.hpp
-    src/gl/impl/frontend/common/renderer.hpp
-    src/gl/impl/frontend/common/resource.hpp
     src/gl/impl/frontend/common/shader.cpp
     src/gl/impl/frontend/common/shader.hpp
 

@@ -1,8 +1,7 @@
 #ifndef TOPAZ_GL_IMPL_FRONTEND_COMMON_RENDER_PASS_HPP
 #define TOPAZ_GL_IMPL_FRONTEND_COMMON_RENDER_PASS_HPP
 #include "core/containers/basic_list.hpp"
-#include "gl/impl/frontend/common/resource.hpp"
-#include "gl/impl/frontend/common/render_pass_attachment.hpp"
+#include "gl/declare/texture.hpp"
 #include <optional>
 
 namespace tz::gl

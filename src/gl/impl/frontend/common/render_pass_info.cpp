@@ -58,6 +58,7 @@ namespace tz::gl
                 output_format = output_texture_attachment_format;
             }
             RenderSubpassInfo subpass;
+            /*
             switch(renderer_builder.get_pass())
             {
                 case RenderPassAttachment::Colour:
@@ -80,6 +81,12 @@ namespace tz::gl
                     tz_error("Unknown RenderPassAttachment");
                 break;
             }
+            */
+           // For now, hardcode to DepthFloat32.
+            // TODO: With output depth textures, this should be customiseable
+            subpass.colour_attachments = {output_format};
+            subpass.depth_attachment = tz::gl::TextureFormat::DepthFloat32;
+            
             builder.add_subpass(subpass);
             tz_assert(builder.valid(), "When describing a RenderPass via a renderer we did not get a valid result");
             return builder.get_info();

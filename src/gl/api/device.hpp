@@ -3,8 +3,8 @@
 #include "gl/renderer.hpp"
 #include "gl/processor.hpp"
 #include "gl/shader.hpp"
-
-#include "gl/impl/frontend/common/device.hpp"
+#include "gl/declare/texture.hpp"
+#include "gl/declare/device.hpp"
 
 namespace tz::gl
 {
