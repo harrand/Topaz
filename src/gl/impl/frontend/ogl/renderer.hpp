@@ -3,6 +3,7 @@
 #if TZ_OGL
 #include "gl/api/renderer.hpp"
 #include "gl/declare/device.hpp"
+#include "gl/impl/frontend/common/renderer.hpp"
 #include "gl/impl/frontend/ogl/component.hpp"
 #include "gl/impl/backend/ogl/buffer.hpp"
 #include "gl/impl/backend/ogl/framebuffer.hpp"
@@ -11,36 +12,13 @@
 
 namespace tz::gl
 {
-    class RendererBuilderOGL : public IRendererBuilder
+    class RendererBuilderOGL : public RendererBuilderBase
     {
     public:
         RendererBuilderOGL() = default;
-        virtual RendererInputHandle add_input(const IRendererInput& input) final;
-        virtual const IRendererInput* get_input(RendererInputHandle handle) const final;
-
-        virtual void set_output(IRendererOutput& output) final;
-        virtual const IRendererOutput* get_output() const final;
-        virtual IRendererOutput* get_output() final;
-
-        virtual ResourceHandle add_resource(const IResource& resource) final;
-        virtual const IResource* get_resource(ResourceHandle handle) const final;
-
-        virtual void set_culling_strategy(RendererCullingStrategy culling_strategy) final;
-        virtual RendererCullingStrategy get_culling_strategy() const final;
-        
-        virtual void set_shader(const Shader& shader) final;
-        virtual const Shader& get_shader() const final;
-
         std::span<const IResource* const> ogl_get_buffer_resources() const;
         std::span<const IResource* const> ogl_get_texture_resources() const;
         std::span<const IRendererInput* const> ogl_get_inputs() const;
-    private:
-        std::vector<const IRendererInput*> inputs;
-        IRendererOutput* output = nullptr;
-        std::vector<const IResource*> buffer_resources;
-        std::vector<const IResource*> texture_resources;
-        const Shader* shader = nullptr;
-        RendererCullingStrategy culling_strategy;
     };
 
     struct RendererDeviceInfoOGL

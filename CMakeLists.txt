@@ -92,6 +92,8 @@ add_library(topaz
     src/gl/impl/frontend/common/processor.hpp
     src/gl/impl/frontend/common/render_pass_info.cpp
     src/gl/impl/frontend/common/render_pass_info.hpp
+    src/gl/impl/frontend/common/renderer.cpp
+    src/gl/impl/frontend/common/renderer.hpp
     src/gl/impl/frontend/common/shader.cpp
     src/gl/impl/frontend/common/shader.hpp
 
