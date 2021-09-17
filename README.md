@@ -7,7 +7,7 @@
 
 ## About
 
- Topaz is a graphics engine written in C++20. Topaz 3.0 is currently in development. [Topaz 2.0](https://github.com/Harrand/Topaz/tree/Topaz2.0) is the most recent release of the Topaz Engine.
+ Topaz is a graphics engine written in C++20. [Topaz 3.0](https://github.com/Harrand/Topaz/tree/Topaz3.0) is the most recent release of the Topaz Engine.
 
 The Topaz project has been ongoing since it began as a school project in 2015.
 
@@ -29,7 +29,7 @@ Requirements to build Topaz are listed below. Some requirements are specific to 
 #### Vulkan Build
 * Vulkan 1.1.175 or later
 #### OpenGL Build
-* OpenGL 4.6 or later
+* OpenGL 4.6
 
 ## Version History
 Please note that documentation is not published for old versions of Topaz. You must retrieve it yourself from the relevant branch.
