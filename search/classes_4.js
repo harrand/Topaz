@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['handle_177',['Handle',['../classtz_1_1_handle.html',1,'tz']]]
+  ['gameinfo_183',['GameInfo',['../structtz_1_1_game_info.html',1,'tz']]]
 ];

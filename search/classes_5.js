@@ -1,29 +1,4 @@
 var searchData=
 [
-  ['idevice_178',['IDevice',['../classtz_1_1gl_1_1_i_device.html',1,'tz::gl']]],
-  ['idevicebuilder_179',['IDeviceBuilder',['../classtz_1_1gl_1_1_i_device_builder.html',1,'tz::gl']]],
-  ['idynamicresource_180',['IDynamicResource',['../classtz_1_1gl_1_1_i_dynamic_resource.html',1,'tz::gl']]],
-  ['idynamicresourcecopyable_181',['IDynamicResourceCopyable',['../classtz_1_1gl_1_1_i_dynamic_resource_copyable.html',1,'tz::gl']]],
-  ['idynamicresourcecopyable_3c_20dynamicbufferresource_20_3e_182',['IDynamicResourceCopyable&lt; DynamicBufferResource &gt;',['../classtz_1_1gl_1_1_i_dynamic_resource_copyable.html',1,'tz::gl']]],
-  ['interfaceiterator_183',['InterfaceIterator',['../classtz_1_1_interface_iterator.html',1,'tz']]],
-  ['irenderer_184',['IRenderer',['../classtz_1_1gl_1_1_i_renderer.html',1,'tz::gl']]],
-  ['irendererbuilder_185',['IRendererBuilder',['../classtz_1_1gl_1_1_i_renderer_builder.html',1,'tz::gl']]],
-  ['irendererdynamicinput_186',['IRendererDynamicInput',['../classtz_1_1gl_1_1_i_renderer_dynamic_input.html',1,'tz::gl']]],
-  ['irendererdynamicinputcopyable_187',['IRendererDynamicInputCopyable',['../classtz_1_1gl_1_1_i_renderer_dynamic_input_copyable.html',1,'tz::gl']]],
-  ['irendererdynamicinputcopyable_3c_20meshdynamicinput_20_3e_188',['IRendererDynamicInputCopyable&lt; MeshDynamicInput &gt;',['../classtz_1_1gl_1_1_i_renderer_dynamic_input_copyable.html',1,'tz::gl']]],
-  ['irendererinput_189',['IRendererInput',['../classtz_1_1gl_1_1_i_renderer_input.html',1,'tz::gl']]],
-  ['irendererinputcopyable_190',['IRendererInputCopyable',['../classtz_1_1gl_1_1_i_renderer_input_copyable.html',1,'tz::gl']]],
-  ['irendererinputcopyable_3c_20meshinput_20_3e_191',['IRendererInputCopyable&lt; MeshInput &gt;',['../classtz_1_1gl_1_1_i_renderer_input_copyable.html',1,'tz::gl']]],
-  ['irendereroutput_192',['IRendererOutput',['../classtz_1_1gl_1_1_i_renderer_output.html',1,'tz::gl']]],
-  ['irenderpass_193',['IRenderPass',['../classtz_1_1gl_1_1_i_render_pass.html',1,'tz::gl']]],
-  ['irenderpassbuilder_194',['IRenderPassBuilder',['../classtz_1_1gl_1_1_i_render_pass_builder.html',1,'tz::gl']]],
-  ['iresource_195',['IResource',['../classtz_1_1gl_1_1_i_resource.html',1,'tz::gl']]],
-  ['iresourcecopyable_196',['IResourceCopyable',['../classtz_1_1gl_1_1_i_resource_copyable.html',1,'tz::gl']]],
-  ['iresourcecopyable_3c_20bufferresource_20_3e_197',['IResourceCopyable&lt; BufferResource &gt;',['../classtz_1_1gl_1_1_i_resource_copyable.html',1,'tz::gl']]],
-  ['iresourcecopyable_3c_20textureresource_20_3e_198',['IResourceCopyable&lt; TextureResource &gt;',['../classtz_1_1gl_1_1_i_resource_copyable.html',1,'tz::gl']]],
-  ['ishader_199',['IShader',['../classtz_1_1gl_1_1_i_shader.html',1,'tz::gl']]],
-  ['ishaderbuilder_200',['IShaderBuilder',['../classtz_1_1gl_1_1_i_shader_builder.html',1,'tz::gl']]],
-  ['iuniquecloneable_201',['IUniqueCloneable',['../classtz_1_1_i_unique_cloneable.html',1,'tz']]],
-  ['iuniquecloneable_3c_20irendererinput_20_3e_202',['IUniqueCloneable&lt; IRendererInput &gt;',['../classtz_1_1_i_unique_cloneable.html',1,'tz']]],
-  ['iuniquecloneable_3c_20iresource_20_3e_203',['IUniqueCloneable&lt; IResource &gt;',['../classtz_1_1_i_unique_cloneable.html',1,'tz']]]
+  ['handle_184',['Handle',['../classtz_1_1_handle.html',1,'tz']]]
 ];

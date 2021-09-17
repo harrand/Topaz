@@ -1,12 +1,18 @@
 var searchData=
 [
-  ['scale_126',['scale',['../group__tz__core.html#ga6707edf92230968e8506c18670d3bd8f',1,'tz']]],
-  ['set_5fclear_5fcolour_127',['set_clear_colour',['../classtz_1_1gl_1_1_i_renderer.html#ac6049d98b1673fbd6b51f01874b805db',1,'tz::gl::IRenderer']]],
-  ['set_5fculling_5fstrategy_128',['set_culling_strategy',['../classtz_1_1gl_1_1_i_renderer_builder.html#aa0ec9397ec7486f17ac0dda04be4ced7',1,'tz::gl::IRendererBuilder']]],
-  ['set_5fprimitive_5ftype_129',['set_primitive_type',['../classtz_1_1gl_1_1_i_device_builder.html#a14093347f8e63a641ef8a737dd30ae2c',1,'tz::gl::IDeviceBuilder']]],
-  ['set_5frender_5fpass_130',['set_render_pass',['../classtz_1_1gl_1_1_i_renderer_builder.html#a4d02431fbc4cbac2ead0f12d102296f3',1,'tz::gl::IRendererBuilder']]],
-  ['static_5ffind_131',['static_find',['../group__tz__core.html#gac864efe5932f846519806594da168044',1,'tz']]],
-  ['static_5ffor_132',['static_for',['../group__tz__core.html#gaa286c039ff91658f1195bf5d91e126cb',1,'tz']]],
-  ['staticfixed_133',['StaticFixed',['../group__tz__gl.html#gga2246f3d60530d326626d01af9226bbd6ab6808d7d17fa4d376d212668279ef514',1,'tz::gl']]],
-  ['swapchainsupportdetails_134',['SwapchainSupportDetails',['../structtz_1_1gl_1_1vk_1_1hardware_1_1_swapchain_support_details.html',1,'tz::gl::vk::hardware']]]
+  ['render_113',['render',['../classtz_1_1gl_1_1_i_renderer.html#a5267aed0d583d4d7ba0a30baec3bf749',1,'tz::gl::IRenderer::render()=0'],['../classtz_1_1gl_1_1_i_renderer.html#adb0072a6ddee51cca31abc6eeb0e3525',1,'tz::gl::IRenderer::render(RendererDrawList draws)=0']]],
+  ['rendererattributeformat_114',['RendererAttributeFormat',['../structtz_1_1gl_1_1_renderer_attribute_format.html',1,'tz::gl']]],
+  ['rendererbase_115',['RendererBase',['../classtz_1_1gl_1_1_renderer_base.html',1,'tz::gl']]],
+  ['rendererbuilderbase_116',['RendererBuilderBase',['../classtz_1_1gl_1_1_renderer_builder_base.html',1,'tz::gl']]],
+  ['rendererdrawlist_117',['RendererDrawList',['../group__tz__gl.html#ga2a069d5ae367c42653ab84cd2764996b',1,'tz::gl']]],
+  ['rendererelementformat_118',['RendererElementFormat',['../structtz_1_1gl_1_1_renderer_element_format.html',1,'tz::gl']]],
+  ['rendererinputhandle_119',['RendererInputHandle',['../group__tz__gl.html#ga3d7bba77854877a6e7bec15475af2bc8',1,'tz::gl']]],
+  ['renderpassbuilder_120',['RenderPassBuilder',['../classtz_1_1gl_1_1_render_pass_builder.html',1,'tz::gl']]],
+  ['renderpassinfo_121',['RenderPassInfo',['../structtz_1_1gl_1_1_render_pass_info.html',1,'tz::gl']]],
+  ['rendersubpassinfo_122',['RenderSubpassInfo',['../structtz_1_1gl_1_1_render_subpass_info.html',1,'tz::gl']]],
+  ['resource_5fcount_123',['resource_count',['../classtz_1_1gl_1_1_i_processor.html#a02fb3c5127277fea567a956bb8229a0d',1,'tz::gl::IProcessor::resource_count()'],['../classtz_1_1gl_1_1_i_renderer.html#a456ada8460dd593eef89d1e9c63836b7',1,'tz::gl::IRenderer::resource_count()'],['../classtz_1_1gl_1_1_renderer_base.html#aed2d172ad31238917ce55438c6b82100',1,'tz::gl::RendererBase::resource_count()']]],
+  ['resource_5fcount_5fof_124',['resource_count_of',['../classtz_1_1gl_1_1_i_processor.html#a70cbcc2adf9ee7843e3d76a83bed9caf',1,'tz::gl::IProcessor::resource_count_of()'],['../classtz_1_1gl_1_1_i_renderer.html#a242f339a0152c527a49a8d22d0d0a8a8',1,'tz::gl::IRenderer::resource_count_of()'],['../classtz_1_1gl_1_1_renderer_base.html#ac7f4b76f08879320810cefee4684be30',1,'tz::gl::RendererBase::resource_count_of()']]],
+  ['resourcehandle_125',['ResourceHandle',['../group__tz__gl.html#gab5cba6a14010fe9722b6be089de938e0',1,'tz::gl']]],
+  ['rotate_126',['rotate',['../group__tz__core.html#ga8688d528fb598d8114bee15d030f343e',1,'tz']]],
+  ['row_127',['Row',['../classtz_1_1_matrix.html#a50ef4911814e693caafba0b1d506e612',1,'tz::Matrix']]]
 ];

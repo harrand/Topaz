@@ -1,8 +1,6 @@
 var searchData=
 [
-  ['vector_217',['Vector',['../classtz_1_1_vector.html',1,'tz']]],
-  ['vector_3c_20float_2c_202_20_3e_218',['Vector&lt; float, 2 &gt;',['../classtz_1_1_vector.html',1,'tz']]],
-  ['vector_3c_20float_2c_203_20_3e_219',['Vector&lt; float, 3 &gt;',['../classtz_1_1_vector.html',1,'tz']]],
-  ['version_220',['Version',['../structtz_1_1_version.html',1,'tz']]],
-  ['vertex_221',['Vertex',['../structtz_1_1gl_1_1_vertex.html',1,'tz::gl']]]
+  ['shaderbuilderbase_227',['ShaderBuilderBase',['../classtz_1_1gl_1_1_shader_builder_base.html',1,'tz::gl']]],
+  ['shadermeta_228',['ShaderMeta',['../classtz_1_1gl_1_1_shader_meta.html',1,'tz::gl']]],
+  ['swapchainsupportdetails_229',['SwapchainSupportDetails',['../structtz_1_1gl_1_1vk_1_1hardware_1_1_swapchain_support_details.html',1,'tz::gl::vk::hardware']]]
 ];
