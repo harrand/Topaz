@@ -19,6 +19,7 @@ namespace tz::gl
     };
 
     RendererOGL::RendererOGL(RendererBuilderOGL builder, RendererDeviceInfoOGL device_info):
+    RendererBase(builder),
     vao(0),
     vbo(std::nullopt),
     ibo(std::nullopt),
@@ -26,11 +27,9 @@ namespace tz::gl
     ibo_dynamic(std::nullopt),
     indirect_buffer(std::nullopt),
     indirect_buffer_dynamic(std::nullopt),
-    resources(),
     resource_buffers(),
     resource_textures(),
     shader(&builder.get_shader()),
-    inputs(this->copy_inputs(builder)),
     output(builder.get_output()),
     output_texture_component(nullptr),
     output_framebuffer(std::nullopt),
@@ -199,22 +198,10 @@ namespace tz::gl
             }
         }
 
-        std::vector<IResource*> buffer_resources;
-        std::vector<IResource*> texture_resources;
-        for(const IResource* buffer_resource : builder.get_resources(ResourceType::Buffer))
+        for(std::size_t i = 0 ; i < this->resource_count_of(ResourceType::Buffer); i++)
         {
-            this->resources.push_back(buffer_resource->unique_clone());
-            buffer_resources.push_back(this->resources.back().get());
-        }
-        for(const IResource* texture_resource : builder.get_resources(ResourceType::Texture))
-        {
-            this->resources.push_back(texture_resource->unique_clone());
-            texture_resources.push_back(this->resources.back().get());
-        }
-
-        for(std::size_t i = 0 ; i < buffer_resources.size(); i++)
-        {
-            IResource* buffer_resource = buffer_resources[i];
+            IResource* buffer_resource = this->buffer_resources[i].get();
+            tz_assert(buffer_resource != nullptr, "Nullptr buffer resource");
             tz_report("Buffer Resource (ResourceID: %zu, BufferComponentID: %zu, %zu bytes total)", i, i, buffer_resource->get_resource_bytes().size_bytes());
             BufferComponentOGL& buffer = this->resource_buffers.emplace_back(buffer_resource);
             std::span<const std::byte> buffer_data = buffer_resource->get_resource_bytes();
@@ -262,9 +249,9 @@ namespace tz::gl
             buffer.set_buffer(std::move(buf));
         }
 
-        for(std::size_t i = 0; i < texture_resources.size(); i++)
+        for(std::size_t i = 0; i < this->resource_count_of(ResourceType::Texture); i++)
         {
-            auto* texture_resource = static_cast<TextureResource*>(texture_resources[i]);
+            auto* texture_resource = static_cast<TextureResource*>(this->texture_resources[i].get());
             tz_report("Texture Resource (ResourceID: %zu, TextureComponentID: %zu, %zu bytes total)", buffer_resources.size() + i, i, texture_resource->get_resource_bytes().size_bytes());
 
             ogl::Texture::Format format;
@@ -361,10 +348,11 @@ namespace tz::gl
 
         this->bind_draw_list(this->all_inputs_once());
 
-        tz_report("RendererOGL (%zu input%s, %zu resource%s)", this->inputs.size(), this->inputs.size() == 1 ? "" : "s", this->resources.size(), this->resources.size() == 1 ? "" : "s");
+        tz_report("RendererOGL (%zu input%s, %zu resource%s)", this->input_count(), this->input_count() == 1 ? "" : "s", this->resource_count(), this->resource_count() == 1 ? "" : "s");
     }
 
     RendererOGL::RendererOGL(RendererOGL&& move):
+    RendererBase(),
     vao(0),
     vbo(std::nullopt),
     ibo(std::nullopt),
@@ -403,61 +391,8 @@ namespace tz::gl
 
     void RendererOGL::set_clear_colour(tz::Vec4 clear_colour)
     {
+        RendererBase::set_clear_colour(clear_colour);
         glClearColor(clear_colour[0], clear_colour[1], clear_colour[2], clear_colour[3]);
-    }
-
-    std::size_t RendererOGL::input_count() const
-    {
-        return this->inputs.size();
-    }
-
-    std::size_t RendererOGL::input_count_of(RendererInputDataAccess access) const
-    {
-        return std::accumulate(this->inputs.begin(), this->inputs.end(), 0, [access](std::size_t init, const std::unique_ptr<IRendererInput>& input_ptr)
-        {
-            if(input_ptr->data_access() == access)
-            {
-                return init + 1;
-            }
-            return init;
-        });
-    }
-
-    IRendererInput* RendererOGL::get_input(RendererInputHandle handle)
-    {
-        auto handle_value = static_cast<std::size_t>(static_cast<tz::HandleValue>(handle));
-        if(this->inputs.size() <= handle_value)
-        {
-            return nullptr;
-        }
-        return this->inputs[handle_value].get();
-    }
-
-    std::size_t RendererOGL::resource_count() const
-    {
-        return this->resources.size();
-    }
-
-    std::size_t RendererOGL::resource_count_of(ResourceType type) const
-    {
-        return std::accumulate(this->resources.begin(), this->resources.end(), 0, [type](std::size_t init, const std::unique_ptr<IResource>& res_ptr)
-        {
-            if(res_ptr->get_type() == type)
-            {
-                return init + 1;
-            }
-            return init;
-        });
-    }
-
-    IResource* RendererOGL::get_resource(ResourceHandle handle)
-    {
-        auto handle_value = static_cast<HandleValueUnderlying>(static_cast<HandleValue>(handle));
-        if(this->resources.size() <= handle_value)
-        {
-            return nullptr;
-        }
-        return this->resources[handle_value].get();
     }
 
     IComponent* RendererOGL::get_component([[maybe_unused]] ResourceHandle handle)
@@ -486,13 +421,6 @@ namespace tz::gl
                 return nullptr;
             break;
         }
-    }
-
-    tz::Vec4 RendererOGL::get_clear_colour() const
-    {
-        GLfloat rgba[4];
-        glGetFloatv(GL_COLOR_CLEAR_VALUE, rgba);
-        return {static_cast<float>(rgba[0]), static_cast<float>(rgba[1]), static_cast<float>(rgba[2]), static_cast<float>(rgba[3])};
     }
 
     void RendererOGL::render()
@@ -708,29 +636,6 @@ namespace tz::gl
             list.add(RendererInputHandle{static_cast<tz::HandleValue>(i)});
         }
         return list;
-    }
-
-    std::vector<std::unique_ptr<IRendererInput>> RendererOGL::copy_inputs(const RendererBuilderOGL& builder)
-    {
-        std::vector<std::unique_ptr<IRendererInput>> inputs;
-        for(std::size_t i = 0; i < builder.input_count(); i++)
-        {
-            RendererInputHandle handle{static_cast<tz::HandleValue>(i)};
-            const IRendererInput* cur_input = builder.get_input(handle);
-            tz_assert(cur_input != nullptr, "Builder had a null input. It is valid for a builder to have no inputs, but a null input is wrong.");
-            inputs.push_back(cur_input->unique_clone());
-        }
-        return inputs;
-    }
-
-    std::vector<IRendererInput*> RendererOGL::get_inputs()
-    {
-        std::vector<IRendererInput*> inputs;
-        for(const auto& input_ptr : this->inputs)
-        {
-            inputs.push_back(input_ptr.get());
-        }
-        return inputs;
     }
 
     std::size_t RendererOGL::num_static_inputs() const

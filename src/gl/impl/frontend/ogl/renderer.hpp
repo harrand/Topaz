@@ -19,7 +19,7 @@ namespace tz::gl
         DeviceWindowResizeCallback* on_resize;
     };
 
-    class RendererOGL : public IRenderer
+    class RendererOGL : public RendererBase
     {
     public:
         RendererOGL(RendererBuilderOGL builder, RendererDeviceInfoOGL device_info);
@@ -31,16 +31,6 @@ namespace tz::gl
         RendererOGL& operator=(RendererOGL&& rhs);
 
         virtual void set_clear_colour(tz::Vec4 clear_colour) final;
-        virtual tz::Vec4 get_clear_colour() const final;
-
-        virtual std::size_t input_count() const final;
-        virtual std::size_t input_count_of(RendererInputDataAccess access) const final;
-
-        virtual IRendererInput* get_input(RendererInputHandle handle) final;
-
-        virtual std::size_t resource_count() const final;
-        virtual std::size_t resource_count_of(ResourceType type) const final;
-        virtual IResource* get_resource(ResourceHandle handle) final;
         virtual IComponent* get_component(ResourceHandle handle) final;
 
         virtual void render() final;
@@ -50,8 +40,6 @@ namespace tz::gl
         void bind_draw_list(const RendererDrawList& list);
         bool draws_match_cache(const RendererDrawList& list) const;
         RendererDrawList all_inputs_once() const;
-        std::vector<std::unique_ptr<IRendererInput>> copy_inputs(const RendererBuilderOGL& builder);
-        std::vector<IRendererInput*> get_inputs();
         std::size_t num_static_inputs() const;
         std::size_t num_dynamic_inputs() const;
         std::size_t num_static_draws() const;
@@ -61,15 +49,11 @@ namespace tz::gl
 
         GLuint vao;
         std::optional<ogl::Buffer> vbo, ibo, vbo_dynamic, ibo_dynamic;
-        //GLuint vbo, ibo, vbo_dynamic, ibo_dynamic;
         std::optional<ogl::Buffer> indirect_buffer, indirect_buffer_dynamic;
-        //GLuint indirect_buffer, indirect_buffer_dynamic;
-        std::vector<std::unique_ptr<IResource>> resources;
         std::vector<BufferComponentOGL> resource_buffers;
         std::vector<TextureComponentOGL> resource_textures;
         RendererElementFormat format;
         const Shader* shader;
-        std::vector<std::unique_ptr<IRendererInput>> inputs;
         const IRendererOutput* output;
         TextureComponentOGL* output_texture_component;
         std::optional<ogl::Framebuffer> output_framebuffer;
