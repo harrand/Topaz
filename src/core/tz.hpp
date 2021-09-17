@@ -59,7 +59,7 @@ namespace tz
 }
 #include "core/tz.inl"
 
-/*! \mainpage Topaz v3.0.0-indev
+/*! \mainpage Topaz v3.1.0-indev
  * \section intro_sec Introduction
  *
  * Welcome to the Topaz documentation. This was generated automatically via https://github.com/Harrand/Topaz/actions.

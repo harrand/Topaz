@@ -7,7 +7,7 @@
 
 ## About
 
- Topaz is a graphics engine written in C++20. [Topaz 3.0](https://github.com/Harrand/Topaz/tree/Topaz3.0) is the most recent release of the Topaz Engine.
+ Topaz is a graphics engine written in C++20. [Topaz 3.0](https://github.com/Harrand/Topaz/tree/Topaz3.0) is the most recent release of the Topaz Engine. The next version will be version 3.1.
 
 The Topaz project has been ongoing since it began as a school project in 2015.
 
@@ -33,6 +33,11 @@ Requirements to build Topaz are listed below. Some requirements are specific to 
 
 ## Version History
 Please note that documentation is not published for old versions of Topaz. You must retrieve it yourself from the relevant branch.
+### Topaz 3.0
+* [Branch available here](https://github.com/Harrand/Topaz/tree/Topaz3.0)
+#### Retrieving Documentation
+Documentation for Topaz 3.0 is automatically published at the branch [gh-pages-tz3](https://github.com/Harrand/Topaz/tree/gh-pages-tz3). To retrieve documentation, run the following command:
+`git clone https://github.com/Harrand/Topaz.git --branch gh-pages-tz3 --single-branch`
 ### Topaz 2.0
 * [Branch available here](https://github.com/Harrand/Topaz/tree/Topaz2.0)
 #### Retrieving Documentation
