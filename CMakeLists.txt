@@ -100,6 +100,8 @@ add_library(topaz
     # tz::gl (Vulkan Frontend)
     src/gl/impl/frontend/vk/component.cpp
     src/gl/impl/frontend/vk/component.hpp
+    src/gl/impl/frontend/vk/convert.hpp
+    src/gl/impl/frontend/vk/convert.inl
     src/gl/impl/frontend/vk/device.cpp
     src/gl/impl/frontend/vk/device.hpp
     src/gl/impl/frontend/vk/processor.cpp
@@ -114,6 +116,8 @@ add_library(topaz
     # tz::gl (OpenGL Frontend)
     src/gl/impl/frontend/ogl/component.cpp
     src/gl/impl/frontend/ogl/component.hpp
+    src/gl/impl/frontend/ogl/convert.hpp
+    src/gl/impl/frontend/ogl/convert.inl
     src/gl/impl/frontend/ogl/device.cpp
     src/gl/impl/frontend/ogl/device.hpp
     src/gl/impl/frontend/ogl/processor.cpp

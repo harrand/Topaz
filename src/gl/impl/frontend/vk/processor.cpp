@@ -1,6 +1,7 @@
 #if TZ_VULKAN
 #include "core/profiling/zone.hpp"
 #include "core/report.hpp"
+#include "gl/impl/frontend/vk/convert.hpp"
 #include "gl/impl/frontend/vk/processor.hpp"
 #include "gl/impl/backend/vk/submit.hpp"
 #include "gl/resource.hpp"
@@ -165,29 +166,7 @@ namespace tz::gl
         {
             IResource* texture_resource = texture_resource_ptr.get();
             auto* tex_res = static_cast<TextureResource*>(texture_resource);
-            vk::Image::Format format;
-            switch(tex_res->get_format())
-            {
-                case TextureFormat::Rgba32Signed:
-                    format = vk::Image::Format::Rgba32Signed;
-                break;
-                case TextureFormat::Rgba32Unsigned:
-                    format = vk::Image::Format::Rgba32Unsigned;
-                break;
-                case TextureFormat::Rgba32sRGB:
-                    format = vk::Image::Format::Rgba32sRGB;
-                break;
-                case TextureFormat::DepthFloat32:
-                    format = vk::Image::Format::DepthFloat32;
-                break;
-                case TextureFormat::Bgra32UnsignedNorm:
-                    format = vk::Image::Format::Bgra32UnsignedNorm;
-                break;
-                default:
-                    tz_error("Unrecognised texture format (Vulkan)");
-                    format = vk::Image::Format::Undefined;
-                break;
-            }
+            vk::Image::Format format = to_vk(tex_res->get_format());
 
             vk::SamplerProperties props;
             {

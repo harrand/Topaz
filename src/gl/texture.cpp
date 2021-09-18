@@ -3,28 +3,31 @@
 
 namespace tz::gl
 {
-    TextureData TextureData::from_image_file(const std::filesystem::path image_path, TextureFormat format)
+    constexpr std::size_t component_count(TextureFormat fmt)
     {
-        TextureData data;
-        int components_per_element;
-        switch(format)
+        switch(fmt)
         {
             case TextureFormat::Rgba32Signed:
             [[fallthrough]];
             case TextureFormat::Rgba32Unsigned:
             [[fallthrough]];
             case TextureFormat::Rgba32sRGB:
-                components_per_element = 4;
+                return 4;
             break;
             case TextureFormat::DepthFloat32:
-                components_per_element = 1;
+                return 1;
             break;
             default:
                 tz_error("No support for given TextureFormat");
-                return data;
+                return 0;
             break;
         }
+    }
 
+    TextureData TextureData::from_image_file(const std::filesystem::path image_path, TextureFormat format)
+    {
+        TextureData data;
+        int components_per_element = component_count(format);
         {
             int w, h;
             int channels_in_file;
@@ -53,26 +56,7 @@ namespace tz::gl
         TextureData data;
         data.width = width;
         data.height = height;
-        std::size_t element_size;
-        switch(format)
-        {
-            case TextureFormat::Rgba32Signed:
-            [[fallthrough]];
-            case TextureFormat::Rgba32Unsigned:
-            [[fallthrough]];
-            case TextureFormat::Rgba32sRGB:
-            [[fallthrough]];
-            case TextureFormat::Bgra32UnsignedNorm:
-                element_size = 4;
-            break;
-            case TextureFormat::DepthFloat32:
-                element_size = 4;
-            break;
-            default:
-                tz_error("No support for given TextureFormat");
-                element_size = 0;
-            break;
-        }
+        std::size_t element_size = component_count(format);
         data.image_data.resize(element_size * width * height);
         return data;
     }

@@ -50,7 +50,8 @@ namespace tz::gl::ogl
             Rgba32Unsigned,
             Rgba32sRGB,
             DepthFloat32,
-            Bgra32UnsignedNorm
+            Bgra32UnsignedNorm,
+            Undefined
         };
 
         Texture(GLsizei width, GLsizei height, Format format, TextureParameters parameters = default_parameters());

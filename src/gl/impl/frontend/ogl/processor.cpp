@@ -1,5 +1,6 @@
 #if TZ_OGL
 #include "gl/impl/frontend/ogl/processor.hpp"
+#include "gl/impl/frontend/ogl/convert.hpp"
 #include "gl/resource.hpp"
 #include "core/report.hpp"
 #include "core/profiling/zone.hpp"
@@ -200,41 +201,7 @@ namespace tz::gl
             auto* texture_resource = static_cast<TextureResource*>(texture_resources[i].get());
             tz_report("Texture Resource (ResourceID: %zu, TextureComponentID: %zu, %zu bytes total)", buffer_resources.size() + i, i, texture_resource->get_resource_bytes().size_bytes());
 
-            ogl::Texture::Format format;
-            switch(texture_resource->get_format())
-            {
-                case TextureFormat::Rgba32Signed:
-                    format = ogl::Texture::Format::Rgba32Signed;
-                    //internal_format = GL_RGBA8;
-                    //format = GL_RGBA;
-                    //type = GL_BYTE;
-                break;
-                case TextureFormat::Rgba32Unsigned:
-                    format = ogl::Texture::Format::Rgba32Unsigned;
-                    //internal_format = GL_RGBA8;
-                    //format = GL_RGBA;
-                    //type = GL_UNSIGNED_BYTE;
-                break;
-                case TextureFormat::Rgba32sRGB:
-                    format = ogl::Texture::Format::Rgba32sRGB;
-                    //internal_format = GL_SRGB8_ALPHA8;
-                    //format = GL_RGBA;
-                    //type = GL_UNSIGNED_BYTE;
-                break;
-                case TextureFormat::DepthFloat32:
-                    format = ogl::Texture::Format::DepthFloat32;
-                    //internal_format = GL_DEPTH_COMPONENT32F;
-                    //format = GL_DEPTH_COMPONENT;
-                    //type = GL_FLOAT;
-                break;
-                case TextureFormat::Bgra32UnsignedNorm:
-                    format = ogl::Texture::Format::Bgra32UnsignedNorm;
-                break;
-                default:
-                    tz_error("Unrecogised Resource TextureFormat (OpenGL)");
-                    return;
-                break;
-            }
+            ogl::Texture::Format format = to_ogl(texture_resource->get_format());
 
             TextureProperties gl_props = texture_resource->get_properties();
             ogl::TextureParameters ogl_params;
