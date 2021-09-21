@@ -189,37 +189,22 @@ namespace tz::gl
         vk::FrameAdmin frame_admin;
     };
 
-    class RendererVulkan : public IRenderer
+    class RendererVulkan : public RendererBase
     {
     public:
         constexpr static std::size_t frames_in_flight = 2;
         RendererVulkan(RendererBuilderVulkan builder, RendererBuilderDeviceInfoVulkan device_info);
     
         virtual void set_clear_colour(tz::Vec4 clear_colour) final;
-        virtual tz::Vec4 get_clear_colour() const final;
-        
-        virtual std::size_t input_count() const final;
-        virtual std::size_t input_count_of(RendererInputDataAccess access) const final;
-        
-        virtual IRendererInput* get_input(RendererInputHandle handle) final;
-        
-        virtual std::size_t resource_count() const final;
-        virtual std::size_t resource_count_of(ResourceType type) const final;
-        
-        virtual IResource* get_resource(ResourceHandle handle) final;
         virtual IComponent* get_component(ResourceHandle handle) final;
         
         virtual void render() final;
         virtual void render(RendererDrawList draws) final;
     private:
         RenderPassVulkan make_simple_render_pass(const RendererBuilderVulkan& builder, const RendererBuilderDeviceInfoVulkan& device_info) const;
-        std::vector<std::unique_ptr<IRendererInput>> copy_inputs(const RendererBuilderVulkan builder);
         std::vector<IRendererInput*> get_inputs();
         void handle_resize();
         void handle_clear_colour_change();
-
-        std::vector<std::unique_ptr<IRendererInput>> renderer_inputs;
-        std::vector<std::unique_ptr<IResource>> renderer_resources;
 
         RenderPassVulkan render_pass;
         RendererBufferManagerVulkan buffer_manager;

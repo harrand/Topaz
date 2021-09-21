@@ -196,7 +196,7 @@ namespace tz::gl
             if(handval < bufc + texc)
             {
                 // It's a texture
-                return this->texture_resources[handval].get();
+                return this->texture_resources[handval - bufc].get();
             }
             else
             {

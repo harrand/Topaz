@@ -400,7 +400,6 @@ namespace tz::gl
     depth_image(std::nullopt),
     depth_imageview(std::nullopt),
     swapchain_framebuffers(),
-    //requires_output_framebuffer(builder.get_output()->get_type() == RendererOutputType::Texture),
     output_texture_component(nullptr),
     texture_output_framebuffer()
     {
@@ -420,25 +419,7 @@ namespace tz::gl
                 const auto& as_swapchain = static_cast<const vk::Swapchain&>(*this->swapchain);
                 this->swapchain_framebuffers.reserve(as_swapchain.get_image_views().size());
             }
-            /*
-            if(builder.get_output()->get_type() == RendererOutputType::Texture)
-            {
-                auto* texture_output = static_cast<const TextureOutput*>(builder.get_output());
-                VkExtent2D output_component_dimensions;
-                const TextureComponentVulkan* component = texture_output->get_first_colour_component();
-                output_component_dimensions.width = component->get_image().get_width();
-                output_component_dimensions.height = component->get_image().get_height();
-                this->texture_output_framebuffer = vk::Framebuffer(this->render_pass->vk_get_render_pass(), component->get_view(), output_component_dimensions);
-            }
-            else
-            {
-                const auto& as_swapchain = static_cast<const vk::Swapchain&>(*this->swapchain);
-                this->swapchain_framebuffers.reserve(as_swapchain.get_image_views().size());
-            }
-            */
-            
         }
-        
     }
 
     void RendererImageManagerVulkan::initialise_resources(std::vector<IResource*> renderer_texture_resources)
@@ -1142,8 +1123,7 @@ namespace tz::gl
     }   
 
     RendererVulkan::RendererVulkan(RendererBuilderVulkan builder, RendererBuilderDeviceInfoVulkan device_info):
-    renderer_inputs(this->copy_inputs(builder)),
-    renderer_resources(),
+    RendererBase(builder),
     render_pass(this->make_simple_render_pass(builder, device_info)),
     buffer_manager(device_info, this->get_inputs(), builder.get_shader()),
     pipeline_manager(builder, device_info, this->render_pass),
@@ -1157,20 +1137,24 @@ namespace tz::gl
         std::vector<const IResource*> all_resources;
         std::vector<IResource*> buffer_resources;
         std::vector<IResource*> texture_resources;
-        for(const IResource* buffer_resource : builder.get_resources(ResourceType::Buffer))
+        for(std::size_t i = 0; i < this->resource_count(); i++)
         {
-            this->renderer_resources.push_back(buffer_resource->unique_clone());
-            IResource* new_resource = this->renderer_resources.back().get();
-            buffer_resources.push_back(new_resource);
-            all_resources.push_back(new_resource);
+            auto handle_val = static_cast<tz::HandleValue>(i);
+            IResource* res = this->get_resource(handle_val);
+            all_resources.push_back(res);
+            if(i < this->resource_count_of(ResourceType::Buffer))
+            {
+                tz_assert(res->get_type() == ResourceType::Buffer, "Buffer resource has ResourceType != ResourceType::Buffer");
+                buffer_resources.push_back(res);
+            }
+            else
+            {
+                tz_assert(res->get_type() == ResourceType::Texture, "Texture resource has ResourceType != ResourceType::Texture");
+                texture_resources.push_back(res);
+            }
         }
-        for(const IResource* texture_resource : builder.get_resources(ResourceType::Texture))
-        {
-            this->renderer_resources.push_back(texture_resource->unique_clone());
-            IResource* new_resource = this->renderer_resources.back().get();
-            texture_resources.push_back(new_resource);
-            all_resources.push_back(new_resource);
-        }
+
+        tz_assert(all_resources.size() == buffer_resources.size() + texture_resources.size(), "Buffer Resource Count + Texture Resource Count != Total Resource Count");
 
         this->buffer_manager.initialise_resources(buffer_resources);
         this->buffer_manager.setup_buffers();
@@ -1193,64 +1177,19 @@ namespace tz::gl
         this->processor.set_regeneration_function([this](){this->handle_resize();});
         // Tell the device to notify us when it detects a window resize. We will also need to regenerate then too.
         *device_info.on_resize = [this](){this->handle_resize();};
-        tz_report("RendererVulkan (%zu input%s, %zu resource%s)", this->renderer_inputs.size(), this->renderer_inputs.size() == 1 ? "" : "s", this->renderer_resources.size(), this->renderer_resources.size() == 1 ? "" : "s");
+        #if TZ_DEBUG
+        {
+            auto in_num = this->input_count();
+            auto res_num = this->resource_count();
+            tz_report("RendererVulkan (%zu input%s, %zu resource%s)", in_num, in_num == 1 ? "" : "s", res_num, res_num == 1 ? "" : "s");
+        }
+        #endif
     }
 
     void RendererVulkan::set_clear_colour(tz::Vec4 clear_colour)
     {
-        this->clear_colour = clear_colour;
+        RendererBase::set_clear_colour(clear_colour);
         this->handle_clear_colour_change();
-    }
-
-    tz::Vec4 RendererVulkan::get_clear_colour() const
-    {
-        return this->clear_colour;
-    }
-
-    std::size_t RendererVulkan::input_count() const
-    {
-        return this->renderer_inputs.size();
-    }
-
-    std::size_t RendererVulkan::input_count_of(RendererInputDataAccess access) const
-    {
-        return std::accumulate(this->renderer_inputs.begin(), this->renderer_inputs.end(), 0, [access](std::size_t init, const std::unique_ptr<IRendererInput>& input_ptr)
-        {
-            return init + (input_ptr->data_access() == access ? 1 : 0);
-        });
-    }
-
-    IRendererInput* RendererVulkan::get_input(RendererInputHandle handle)
-    {
-        std::size_t handle_val = static_cast<std::size_t>(static_cast<tz::HandleValue>(handle));
-        if(this->renderer_inputs.size() <= handle_val)
-        {
-            return nullptr;
-        }
-        return this->renderer_inputs[handle_val].get();
-    }
-
-    std::size_t RendererVulkan::resource_count() const
-    {
-        return this->renderer_resources.size();
-    }
-
-    std::size_t RendererVulkan::resource_count_of(ResourceType type) const
-    {
-        return std::accumulate(this->renderer_resources.begin(), this->renderer_resources.end(), 0, [type](std::size_t init, const std::unique_ptr<IResource>& res_ptr)
-        {
-            return init + (res_ptr->get_type() == type ? 1 : 0);
-        });
-    }
-
-    IResource* RendererVulkan::get_resource(ResourceHandle handle)
-    {
-        auto handle_value = static_cast<HandleValueUnderlying>(static_cast<HandleValue>(handle));
-        if(this->renderer_resources.size() <= handle_value)
-        {
-            return nullptr;
-        }
-        return this->renderer_resources[handle_value].get();
     }
 
     IComponent* RendererVulkan::get_component(ResourceHandle handle)
@@ -1306,39 +1245,16 @@ namespace tz::gl
         bool presentable_output = builder.get_output()->get_type() == RendererOutputType::Window;
         RenderPassBuilderVulkan pass_builder{info, presentable_output};
         return device_info.creator_device->vk_create_render_pass(pass_builder);
-        /*
-        RenderPassBuilderVulkan pass_builder;
-        pass_builder.add_pass(builder.get_pass());
-        if(builder.get_output()->get_type() != RendererOutputType::Window)
-        {
-            // We're not expecting to present the output to the window. Don't transition to presentable.
-            pass_builder.set_presentable_output(false);
-        }
-        return device_info.creator_device->vk_create_render_pass(pass_builder);
-        */
-    }
-
-    std::vector<std::unique_ptr<IRendererInput>> RendererVulkan::copy_inputs(const RendererBuilderVulkan builder)
-    {
-        std::vector<std::unique_ptr<IRendererInput>> input_duplicates;
-        for(std::size_t i = 0; i < builder.input_count(); i++)
-        {
-            RendererInputHandle handle{static_cast<tz::HandleValue>(i)};
-            const IRendererInput* cur_input = builder.get_input(handle);
-            tz_assert(cur_input != nullptr, "Builder had a null input. It is valid for a builder to have no inputs, but a null input is wrong.");
-            input_duplicates.push_back(cur_input->unique_clone());
-        }
-        return input_duplicates;
     }
 
     std::vector<IRendererInput*> RendererVulkan::get_inputs()
     {
-        std::vector<IRendererInput*> inputs;
-        for(std::unique_ptr<IRendererInput>& input_ptr : this->renderer_inputs)
+        std::vector<IRendererInput*> input_refs;
+        for(std::size_t i = 0; i < this->input_count(); i++)
         {
-            inputs.push_back(input_ptr.get());
+            input_refs.push_back(this->get_input(static_cast<tz::HandleValue>(i)));
         }
-        return inputs;
+        return input_refs;
     }
 
     void RendererVulkan::handle_resize()
@@ -1355,13 +1271,13 @@ namespace tz::gl
         this->image_manager.setup_swapchain_framebuffers();
 
         std::vector<const IResource*> all_resources;
-        for(const auto& resource_ptr : this->renderer_resources)
+        for(std::size_t i = 0; i < this->resource_count(); i++/*const auto& resource_ptr : this->renderer_resources*/)
         {
-            all_resources.push_back(resource_ptr.get());
+            all_resources.push_back(this->get_resource(static_cast<tz::HandleValue>(i)));
         }
         this->processor.initialise_resource_descriptors(this->pipeline_manager, this->buffer_manager, this->image_manager, all_resources);
         this->processor.initialise_command_pool();
-        this->processor.record_rendering_commands(this->pipeline_manager, this->buffer_manager, this->image_manager, this->clear_colour);
+        this->processor.record_rendering_commands(this->pipeline_manager, this->buffer_manager, this->image_manager, this->get_clear_colour());
     }
 
     void RendererVulkan::handle_clear_colour_change()
@@ -1369,7 +1285,7 @@ namespace tz::gl
         this->processor.block_until_idle();
 
         this->processor.initialise_command_pool();
-        this->processor.record_rendering_commands(this->pipeline_manager, this->buffer_manager, this->image_manager, this->clear_colour);
+        this->processor.record_rendering_commands(this->pipeline_manager, this->buffer_manager, this->image_manager, this->get_clear_colour());
     }
 }
 #endif // TZ_VULKAN
