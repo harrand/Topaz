@@ -1129,11 +1129,8 @@ namespace tz::gl
     pipeline_manager(builder, device_info, this->render_pass),
     image_manager(builder, device_info, this->render_pass),
     processor(builder, device_info, this->get_inputs(), this->render_pass),
-    clear_colour(),
     requires_depth_image(true /*TODO: Option to disable depth image*/)
     {
-        this->clear_colour = {0.0f, 0.0f, 0.0f, 0.0f};
-
         std::vector<const IResource*> all_resources;
         std::vector<IResource*> buffer_resources;
         std::vector<IResource*> texture_resources;
@@ -1170,7 +1167,7 @@ namespace tz::gl
         this->processor.initialise_resource_descriptors(this->pipeline_manager, this->buffer_manager, this->image_manager, all_resources);
         // Command Buffers for each swapchain image, but an extra general-purpose recycleable buffer.
         // Now setup the swapchain image buffers
-        this->processor.record_rendering_commands(this->pipeline_manager, this->buffer_manager, this->image_manager, this->clear_colour);
+        this->processor.record_rendering_commands(this->pipeline_manager, this->buffer_manager, this->image_manager, this->get_clear_colour());
 
         this->processor.record_and_run_scratch_commands(this->buffer_manager, this->image_manager);
         // If frame admin needs to regenerate, allow it to.
@@ -1234,7 +1231,7 @@ namespace tz::gl
             TZ_PROFZONE("Frontend VK : New Draw List", TZ_PROFCOL_YELLOW);
             this->processor.clear_rendering_commands();
             this->processor.record_draw_list(draws);
-            this->processor.record_rendering_commands(this->pipeline_manager, this->buffer_manager, this->image_manager, this->clear_colour);
+            this->processor.record_rendering_commands(this->pipeline_manager, this->buffer_manager, this->image_manager, this->get_clear_colour());
         }
         this->processor.render();
     }
@@ -1271,7 +1268,7 @@ namespace tz::gl
         this->image_manager.setup_swapchain_framebuffers();
 
         std::vector<const IResource*> all_resources;
-        for(std::size_t i = 0; i < this->resource_count(); i++/*const auto& resource_ptr : this->renderer_resources*/)
+        for(std::size_t i = 0; i < this->resource_count(); i++)
         {
             all_resources.push_back(this->get_resource(static_cast<tz::HandleValue>(i)));
         }
