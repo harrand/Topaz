@@ -5,6 +5,15 @@
 
 namespace tz::gl::vk
 {
+    Command<CommandType::TransitionImageLayout>::Command(Image& image, Image::Layout new_layout):
+    image(&image),
+    new_layout(new_layout){}
+
+    void Command<CommandType::TransitionImageLayout>::operator()() const
+    {
+        this->image->set_layout(new_layout);
+    }
+    
     CommandBufferRecording::CommandBufferRecording(CommandBufferRecording&& move):
     command_buffer(nullptr)
     {
@@ -15,7 +24,7 @@ namespace tz::gl::vk
     {
         auto res = vkEndCommandBuffer(this->command_buffer->native());
         tz_assert(res == VK_SUCCESS, "Failed to end command buffer recording");
-        this->on_recording_end();
+        this->on_recording_end(*this);
     }
     
     CommandBufferRecording& CommandBufferRecording::operator=(CommandBufferRecording&& rhs)
@@ -37,6 +46,7 @@ namespace tz::gl::vk
         cpy.size = copy_bytes_length;
 
         vkCmdCopyBuffer(this->command_buffer->native(), source.native(), destination.native(), 1, &cpy);
+        this->recorded_commands.emplace<Command<CommandType::BufferCopyBuffer>>();
     }
 
     void CommandBufferRecording::buffer_copy_image(const Buffer& source, const Image& destination)
@@ -61,9 +71,10 @@ namespace tz::gl::vk
         };
 
         vkCmdCopyBufferToImage(this->command_buffer->native(), source.native(), destination.native(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &cpy);
+        this->recorded_commands.emplace<Command<CommandType::BufferCopyImage>>();
     }
 
-    void CommandBufferRecording::transition_image_layout(const Image& image, Image::Layout new_layout)
+    void CommandBufferRecording::transition_image_layout(Image& image, Image::Layout new_layout)
     {
         TZ_PROFZONE("Backend VK - Record Image Transition", TZ_PROFCOL_RED);
         VkImageMemoryBarrier barrier{};
@@ -117,6 +128,7 @@ namespace tz::gl::vk
         }
 
         vkCmdPipelineBarrier(this->command_buffer->native(), source_stage, destination_stage, 0, 0, nullptr, 0, nullptr, 1, &barrier);
+        this->recorded_commands.emplace<Command<CommandType::TransitionImageLayout>>(image, new_layout);
     }
 
     void CommandBufferRecording::bind(const Buffer& buf)
@@ -137,6 +149,7 @@ namespace tz::gl::vk
                 tz_error("Attempting to bind buffer, but its BufferType is unsupported");
             break;
         }
+        this->recorded_commands.emplace<Command<CommandType::BindBuffer>>();
     }
 
     void CommandBufferRecording::bind(const DescriptorSet& descriptor_set, const pipeline::Layout& layout)
@@ -144,6 +157,7 @@ namespace tz::gl::vk
         TZ_PROFZONE("Backend VK - Record DescriptorSet", TZ_PROFCOL_RED);
         auto descriptor_set_native = descriptor_set.native();
         vkCmdBindDescriptorSets(this->command_buffer->native(), VK_PIPELINE_BIND_POINT_GRAPHICS, layout.native(), 0, 1, &descriptor_set_native, 0, nullptr);
+        this->recorded_commands.emplace<Command<CommandType::BindDescriptorSet>>();
     }
 
     void CommandBufferRecording::bind_compute(const DescriptorSet& descriptor_set, const pipeline::Layout& layout)
@@ -151,18 +165,21 @@ namespace tz::gl::vk
         TZ_PROFZONE("Backend VK - Record DescriptorSet (Compute)", TZ_PROFCOL_RED);
         auto descriptor_set_native = descriptor_set.native();
         vkCmdBindDescriptorSets(this->command_buffer->native(), VK_PIPELINE_BIND_POINT_COMPUTE, layout.native(), 0, 1, &descriptor_set_native, 0, nullptr);
+        this->recorded_commands.emplace<Command<CommandType::BindDescriptorSet>>();
     }
 
     void CommandBufferRecording::draw(std::uint32_t vert_count, std::uint32_t inst_count, std::uint32_t first_index, std::uint32_t first_instance)
     {
         TZ_PROFZONE("Backend VK - Record Draw", TZ_PROFCOL_RED);
         vkCmdDraw(this->command_buffer->native(), vert_count, inst_count, first_index, first_instance);
+        this->recorded_commands.emplace<Command<CommandType::Draw>>();
     }
 
     void CommandBufferRecording::draw_indexed(std::uint32_t index_count, std::uint32_t inst_count, std::uint32_t first_index, std::uint32_t vertex_offset, std::uint32_t first_instance)
     {
         TZ_PROFZONE("Backend VK - Record DrawIndexed", TZ_PROFCOL_RED);
         vkCmdDrawIndexed(this->command_buffer->native(), index_count, inst_count, first_index, vertex_offset, first_instance);
+        this->recorded_commands.emplace<Command<CommandType::DrawIndexed>>();
     }
 
     void CommandBufferRecording::draw_indirect(const vk::Buffer& draw_indirect_buffer, std::uint32_t draw_count)
@@ -170,16 +187,17 @@ namespace tz::gl::vk
         TZ_PROFZONE("Backend VK - Record DrawIndexedIndirect", TZ_PROFCOL_RED);
         tz_assert(!draw_indirect_buffer.is_null(), "Attempted to record a draw-indirect, but the draw-indirect-buffer was a null buffer.");
         vkCmdDrawIndexedIndirect(this->command_buffer->native(), draw_indirect_buffer.native(), 0, draw_count, sizeof(VkDrawIndexedIndirectCommand));
+        this->recorded_commands.emplace<Command<CommandType::DrawIndirect>>();
     }
 
     void CommandBufferRecording::dispatch(std::uint32_t group_count_x, std::uint32_t group_count_y, std::uint32_t group_count_z)
     {
         TZ_PROFZONE("Backend VK - Record Dispatch", TZ_PROFCOL_RED);
         vkCmdDispatch(this->command_buffer->native(), group_count_x, group_count_y, group_count_z);
+        this->recorded_commands.emplace<Command<CommandType::Dispatch>>();
     }
 
-
-    CommandBufferRecording::CommandBufferRecording(const CommandBuffer& buffer, std::function<void()> on_recording_end):
+    CommandBufferRecording::CommandBufferRecording(const CommandBuffer& buffer, std::function<void(CommandBufferRecording&)> on_recording_end):
     command_buffer(&buffer),
     on_recording_end(on_recording_end)
     {
@@ -202,7 +220,7 @@ namespace tz::gl::vk
     CommandBufferRecording CommandBuffer::record()
     {
         this->notify_recording_begin();
-        return {*this, [this](){this->notify_recording_end();}};
+        return {*this, [this](CommandBufferRecording& recording){this->notify_recording_end(recording);}};
     }
 
     VkCommandBuffer CommandBuffer::native() const
@@ -214,6 +232,15 @@ namespace tz::gl::vk
     {
         tz_assert(!this->currently_recording, "Cannot reset a command buffer that is currently recording");
         vkResetCommandBuffer(this->command_buffer, VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT);
+        this->recorded_commands.clear();
+    }
+
+    void CommandBuffer::operator()() const
+    {
+        for(const ICommand& cmd : this->recorded_commands)
+        {
+            cmd();
+        }
     }
 
     void CommandBuffer::notify_recording_begin()
@@ -222,10 +249,11 @@ namespace tz::gl::vk
         this->currently_recording = true;
     }
 
-    void CommandBuffer::notify_recording_end()
+    void CommandBuffer::notify_recording_end(CommandBufferRecording& recording)
     {
         tz_assert(this->currently_recording, "Command buffer tried to end recording but wasn't recording");
         this->currently_recording = false;
+        this->recorded_commands = std::move(recording.recorded_commands);
     }
 
     CommandPool::CommandPool(const LogicalDevice& device, const hardware::DeviceQueueFamily& queue_family):

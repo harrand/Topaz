@@ -29,6 +29,7 @@ namespace tz::gl::vk
         VkSubmitInfo submit;
         std::vector<VkSemaphore> wait_semaphore_natives;
         std::vector<VkCommandBuffer> command_buffer_natives;
+        std::vector<const CommandBuffer*> command_buffer_references;
         std::vector<VkSemaphore> signal_semaphore_natives;
         std::vector<VkPipelineStageFlags> wait_stages;
     };

@@ -62,7 +62,7 @@ namespace tz::gl::vk
         Format get_format() const;
         Usage get_usage() const;
         Layout get_layout() const;
-        void set_layout(CommandBufferRecording& recording, Image::Layout new_layout);
+        void set_layout(Image::Layout new_layout);
         hardware::MemoryResidency get_memory_residency() const;
 
         VkImage native() const;

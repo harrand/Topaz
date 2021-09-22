@@ -293,11 +293,9 @@ int main()
             transfer_cmd_buf.reset();
             {
                 vk::CommandBufferRecording transfer_image = transfer_cmd_buf.record();
-                img.set_layout(transfer_image, vk::Image::Layout::TransferDestination);
-                //transfer_image.transition_image_layout(img, vk::Image::Layout::TransferDestination);
+                transfer_image.transition_image_layout(img, vk::Image::Layout::TransferDestination);
                 transfer_image.buffer_copy_image(img_buf, img);
-                img.set_layout(transfer_image, vk::Image::Layout::ShaderResource);
-                //transfer_image.transition_image_layout(img, vk::Image::Layout::ShaderResource);
+                transfer_image.transition_image_layout(img, vk::Image::Layout::ShaderResource);
             }
 
             wait_for_cpy.signal();

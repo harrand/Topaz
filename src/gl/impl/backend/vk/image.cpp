@@ -115,9 +115,8 @@ namespace tz::gl::vk
         return this->layout;
     }
 
-    void Image::set_layout(CommandBufferRecording& recording, Image::Layout new_layout)
+    void Image::set_layout(Image::Layout new_layout)
     {
-        recording.transition_image_layout(*this, new_layout);
         this->layout = new_layout;
     }
 

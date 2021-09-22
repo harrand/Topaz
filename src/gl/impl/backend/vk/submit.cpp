@@ -16,6 +16,7 @@ namespace tz::gl::vk
         for(const CommandBuffer& buf : buffers)
         {
             this->command_buffer_natives.push_back(buf.native());
+            this->command_buffer_references.push_back(&buf);
         }
 
         for(const Semaphore& wait_sem : wait_semaphores)
@@ -40,12 +41,20 @@ namespace tz::gl::vk
     {
         TZ_PROFZONE("Backend VK : RenderWork Submit w/ Fence", TZ_PROFCOL_RED);
         vkQueueSubmit(queue.native(), 1, &this->submit, fence.native());
+        for(const CommandBuffer* cmd_buf : this->command_buffer_references)
+        {
+            (*cmd_buf)();
+        }
     }
 
     void Submit::operator()(const hardware::Queue& queue) const
     {
         TZ_PROFZONE("Backend VK : RenderWork Submit", TZ_PROFCOL_RED);
         vkQueueSubmit(queue.native(), 1, &this->submit, VK_NULL_HANDLE);
+        for(const CommandBuffer* cmd_buf : this->command_buffer_references)
+        {
+            (*cmd_buf)();
+        }
     }
 
     void Submit::update()

@@ -73,6 +73,11 @@ namespace tz::gl
         return this->img;
     }
 
+    vk::Image& TextureComponentVulkan::get_image()
+    {
+        return this->img;
+    }
+
     const vk::ImageView& TextureComponentVulkan::get_view() const
     {
         return this->view;

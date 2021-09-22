@@ -35,6 +35,7 @@ namespace tz::gl
         virtual const IResource* get_resource() const override;
         virtual IResource* get_resource() override;
         const vk::Image& get_image() const;
+        vk::Image& get_image();
         const vk::ImageView& get_view() const;
         const vk::Sampler& get_sampler() const;
     private:
