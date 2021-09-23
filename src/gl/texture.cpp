@@ -11,6 +11,8 @@ namespace tz::gl
             [[fallthrough]];
             case TextureFormat::Rgba32Unsigned:
             [[fallthrough]];
+            case TextureFormat::Bgra32UnsignedNorm:
+            [[fallthrough]];
             case TextureFormat::Rgba32sRGB:
                 return 4;
             break;

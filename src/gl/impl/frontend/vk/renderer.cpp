@@ -496,11 +496,17 @@ namespace tz::gl
     {
         if(this->output_texture_component != nullptr)
         {
-            //auto* texture_output = static_cast<const TextureOutput*>(builder.get_output());
             VkExtent2D output_component_dimensions;
             output_component_dimensions.width = this->output_texture_component->get_image().get_width();
             output_component_dimensions.height = this->output_texture_component->get_image().get_height();
-            this->texture_output_framebuffer = vk::Framebuffer(this->render_pass->vk_get_render_pass(), this->output_texture_component->get_view(), output_component_dimensions);
+            if(this->depth_imageview.has_value())
+            {
+                this->texture_output_framebuffer = vk::Framebuffer(this->render_pass->vk_get_render_pass(), this->output_texture_component->get_view(), this->depth_imageview.value(), output_component_dimensions);
+            }
+            else
+            {
+                this->texture_output_framebuffer = vk::Framebuffer(this->render_pass->vk_get_render_pass(), this->output_texture_component->get_view(), output_component_dimensions);
+            }
         }
     }
 
