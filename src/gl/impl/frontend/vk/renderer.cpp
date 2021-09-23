@@ -566,13 +566,23 @@ namespace tz::gl
         return this->texture_components;
     }
 
-    const vk::Framebuffer* RendererImageManagerVulkan::get_texture_output() const
+    const vk::Framebuffer* RendererImageManagerVulkan::get_output_framebuffer() const
     {
         if(this->texture_output_framebuffer.has_value())
         {
             return &this->texture_output_framebuffer.value();
         }
-        return nullptr;
+        return &this->swapchain_framebuffers.front();
+    }
+
+    bool RendererImageManagerVulkan::is_window_output() const
+    {
+        return this->output_texture_component == nullptr;
+    }
+
+    TextureComponentVulkan* RendererImageManagerVulkan::get_output_component()
+    {
+        return this->output_texture_component;
     }
 
     RendererProcessorVulkan::RendererProcessorVulkan(RendererBuilderVulkan builder, RendererBuilderDeviceInfoVulkan device_info, std::vector<IRendererInput*> inputs, const RenderPassVulkan& render_pass):
@@ -691,13 +701,13 @@ namespace tz::gl
         {
             vk::CommandBufferRecording render = this->command_pool[i].record();
             const vk::Framebuffer* render_target = nullptr;
-            if(image_manager.get_texture_output() != nullptr)
+            if(image_manager.is_window_output())
             {
-                render_target = image_manager.get_texture_output();
+                render_target = &image_manager.get_swapchain_framebuffers()[i];
             } 
             else
             {
-                render_target = &image_manager.get_swapchain_framebuffers()[i];
+                render_target = image_manager.get_output_framebuffer();
             }
             vk::RenderPassRun run{this->command_pool[i], this->render_pass->vk_get_render_pass(), *render_target, this->swapchain->full_render_area(), vk_clear_colour};
             pipeline_manager.get_pipeline().bind(this->command_pool[i]);
@@ -1226,7 +1236,34 @@ namespace tz::gl
 
     void RendererVulkan::render()
     {
+        // Before asking the processor to render, we would like to make sure the output image has the correct initial layout.
+        // Unlike the final layout, the render pass doesn't do that for us -- It is our job to make sure it matches.
+        // However we will only ever do this check on debug mode.
+        const vk::ImageView& output_view = this->image_manager.get_output_framebuffer()->get_colour_view();
+        #if TZ_DEBUG
+        if(output_view.get_image() != nullptr)
+        {
+            // vk::ImageView::get_image() may return null (if for example it is a swapchain image). In which case we cannot perform this validation.
+
+            // https://www.khronos.org/registry/vulkan/specs/1.0-wsi_extensions/html/vkspec.html#VkImageMemoryBarrier:
+            // "oldLayout must be VK_IMAGE_LAYOUT_UNDEFINED or the current layout of the image subresources affected by the barrier"
+            // This means if expected == vk::Image::Layout::Undefined, we can skip this check entirely because it's valid for it not to match if the renderpass says its undefined.
+            vk::Image::Layout actual = output_view.get_image()->get_layout();
+            vk::Image::Layout expected = this->get_output_initial_layout();
+            if(expected != vk::Image::Layout::Undefined)
+            {
+                tz_assert(actual == expected, "Output component image layout did not match the initial layout expected by the vk::RenderPass");
+            }
+        }
+        #endif // TZ_DEBUG
         this->processor.render();
+        if(output_view.get_image() != nullptr)
+        {
+            // Once we're done rendering, we should update the output image's layout to match that of whatever the RenderPass said the final layout would be CPU-side.
+            // The render-pass will have definitely done this transition under-the-hood, but our data member doesn't magically account for that. This is why this code is here.
+            // We'll do this regardless of build config, even though technically this is only read by debug-mode code.
+            output_view.get_image()->set_layout(this->get_output_initial_layout());
+        }
     }
 
     void RendererVulkan::render(RendererDrawList draws)
@@ -1239,7 +1276,37 @@ namespace tz::gl
             this->processor.record_draw_list(draws);
             this->processor.record_rendering_commands(this->pipeline_manager, this->buffer_manager, this->image_manager, this->get_clear_colour());
         }
-        this->processor.render();
+        this->render();
+    }
+
+    const vk::Attachment* RendererVulkan::get_renderpass_output_colour_attachment() const
+    {
+        const vk::RenderPassBuilder& render_pass_builder = this->render_pass.vk_get_render_pass().get_builder();
+        tz_assert(!render_pass_builder.get_subpasses().empty(), "VK Render Pass had no subpasses");
+        const vk::RenderSubpass& first_subpass = render_pass_builder.get_subpasses().front();
+        tz_assert(!first_subpass.get_attachments().empty(), "VK Render Pass - First subpass had no attachments");
+        {
+            auto attachments = first_subpass.get_attachments();
+            auto is_not_depth_attachment = [](const vk::Attachment& attachment)
+            {
+                return attachment.get_format() != vk::Image::Format::DepthFloat32;
+            };
+            auto iter = std::find_if(attachments.begin(), attachments.end(), is_not_depth_attachment);
+            tz_assert(iter != attachments.end(), "VK Render Pass - First subpass had no non-depth attachments");
+            const vk::Attachment& first_non_depth_attachment = *iter;
+            return &first_non_depth_attachment;
+        }
+        return nullptr;
+    }
+
+    vk::Image::Layout RendererVulkan::get_output_initial_layout() const
+    {
+        return this->get_renderpass_output_colour_attachment()->get_initial_image_layout();
+    }
+
+    vk::Image::Layout RendererVulkan::get_output_final_layout() const
+    {
+        return this->get_renderpass_output_colour_attachment()->get_final_image_layout();
     }
 
     RenderPassVulkan RendererVulkan::make_simple_render_pass(const RendererBuilderVulkan& builder, const RendererBuilderDeviceInfoVulkan& device_info) const

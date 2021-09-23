@@ -115,7 +115,7 @@ namespace tz::gl::vk
         return this->layout;
     }
 
-    void Image::set_layout(Image::Layout new_layout)
+    void Image::set_layout(Image::Layout new_layout) const
     {
         this->layout = new_layout;
     }

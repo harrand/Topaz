@@ -17,10 +17,14 @@ namespace tz::gl::vk
 
         Framebuffer& operator=(const Framebuffer& rhs) = delete;
         Framebuffer& operator=(Framebuffer&& rhs);
+        const ImageView& get_colour_view() const;
+        const ImageView* get_depth_view() const;
         VkFramebuffer native() const;
 
     private:
         VkFramebuffer frame_buffer;
+        const ImageView* colour_view;
+        const ImageView* depth_view;
         const LogicalDevice* device;
     };
 }

@@ -163,25 +163,26 @@ namespace tz::gl::vk
 
     RenderPass::RenderPass(const LogicalDevice& device, RenderPassBuilder builder):
     render_pass(VK_NULL_HANDLE),
+    builder(builder),
     device(&device)
     {
         std::vector<VkAttachmentDescription> attachments;
         
-        attachments.reserve(builder.get_attachments().size());
-        for(const Attachment* attachment_ptr : builder.get_attachments())
+        attachments.reserve(this->builder.get_attachments().size());
+        for(const Attachment* attachment_ptr : this->builder.get_attachments())
         {
             attachments.push_back(attachment_ptr->get_description());
         }
 
         // Need all descriptions resident in RAM if we're going to reference them all.
         std::vector<RenderSubpass::Description> subpass_descriptions;
-        subpass_descriptions.reserve(builder.get_subpasses().size());
-        for(const RenderSubpass& subpass : builder.get_subpasses())
+        subpass_descriptions.reserve(this->builder.get_subpasses().size());
+        for(const RenderSubpass& subpass : this->builder.get_subpasses())
         {
             subpass_descriptions.push_back(subpass.describe());
         }
         std::vector<VkSubpassDescription> subpass_vk_descriptions;
-        subpass_vk_descriptions.reserve(builder.get_subpasses().size());
+        subpass_vk_descriptions.reserve(this->builder.get_subpasses().size());
         for(const RenderSubpass::Description& desc : subpass_descriptions)
         {
             subpass_vk_descriptions.push_back(desc.vk);
@@ -189,9 +190,9 @@ namespace tz::gl::vk
         
         VkRenderPassCreateInfo create{};
         create.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-        create.attachmentCount = builder.get_attachments().size();
+        create.attachmentCount = this->builder.get_attachments().size();
         create.pAttachments = attachments.data();
-        create.subpassCount = builder.get_subpasses().size();
+        create.subpassCount = this->builder.get_subpasses().size();
         create.pSubpasses = subpass_vk_descriptions.data();
         create.dependencyCount = 1;
         VkSubpassDependency initial_dep{};
@@ -201,7 +202,7 @@ namespace tz::gl::vk
         initial_dep.srcAccessMask = 0;
         initial_dep.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
         initial_dep.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-        if(builder.has_depth_attachment())
+        if(this->builder.has_depth_attachment())
         {
             initial_dep.srcStageMask |= VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
             initial_dep.dstStageMask |= VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
@@ -234,6 +235,11 @@ namespace tz::gl::vk
         std::swap(this->render_pass, rhs.render_pass);
         std::swap(this->device, rhs.device);
         return *this;
+    }
+
+    const RenderPassBuilder& RenderPass::get_builder() const
+    {
+        return this->builder;
     }
 
     const LogicalDevice& RenderPass::get_device() const

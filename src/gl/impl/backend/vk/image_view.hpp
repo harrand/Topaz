@@ -18,6 +18,7 @@ namespace tz::gl::vk
         ImageView& operator=(const ImageView& rhs) = delete;
         ImageView& operator=(ImageView&& rhs);
 
+        const Image* get_image() const;
         VkImageView native() const;
         friend class ImageViews;
 
@@ -25,6 +26,7 @@ namespace tz::gl::vk
         ImageView(const LogicalDevice& device, VkImage image, VkFormat format);
         
         VkImageView view;
+        const Image* image;
         const LogicalDevice* device;
     };
 

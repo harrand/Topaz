@@ -8,6 +8,7 @@ namespace tz::gl::vk
 {
     ImageView::ImageView(const LogicalDevice& device, const Image& image):
     view(VK_NULL_HANDLE),
+    image(&image),
     device(&device)
     {
         VkImageViewCreateInfo create{};
@@ -36,6 +37,7 @@ namespace tz::gl::vk
 
     ImageView::ImageView(ImageView&& move):
     view(VK_NULL_HANDLE),
+    image(nullptr),
     device(nullptr)
     {
         *this = std::move(move);
@@ -53,9 +55,15 @@ namespace tz::gl::vk
     ImageView& ImageView::operator=(ImageView&& rhs)
     {
         std::swap(this->view, rhs.view);
+        std::swap(this->image, rhs.image);
         std::swap(this->device, rhs.device);
         return *this;
     }   
+
+    const Image* ImageView::get_image() const
+    {
+        return this->image;
+    }
 
     VkImageView ImageView::native() const
     {
@@ -64,6 +72,7 @@ namespace tz::gl::vk
 
     ImageView::ImageView(const LogicalDevice& device, VkImage image, VkFormat format):
     view(VK_NULL_HANDLE),
+    image(nullptr),
     device(&device)
     {
         VkImageViewCreateInfo create{};

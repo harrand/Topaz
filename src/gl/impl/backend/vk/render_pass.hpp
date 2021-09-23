@@ -77,10 +77,12 @@ namespace tz::gl::vk
         RenderPass& operator=(const RenderPass& rhs) = delete;
         RenderPass& operator=(RenderPass&& rhs);
 
+        const RenderPassBuilder& get_builder() const;
         const LogicalDevice& get_device() const;
         VkRenderPass native() const;
     private:
         VkRenderPass render_pass;
+        RenderPassBuilder builder;
         const LogicalDevice* device;
     };
 

@@ -136,9 +136,10 @@ namespace tz::gl
         std::span<const vk::Framebuffer> get_swapchain_framebuffers() const;
         std::span<const TextureComponentVulkan> get_texture_components() const;
         std::span<TextureComponentVulkan> get_texture_components();
-        const vk::Framebuffer* get_texture_output() const;
+        const vk::Framebuffer* get_output_framebuffer() const;
+        bool is_window_output() const;
+        TextureComponentVulkan* get_output_component();
     private:
-
         const vk::LogicalDevice* device;
         const vk::hardware::Device* physical_device;
         const RenderPassVulkan* render_pass;
@@ -201,6 +202,9 @@ namespace tz::gl
         virtual void render() final;
         virtual void render(RendererDrawList draws) final;
     private:
+        const vk::Attachment* get_renderpass_output_colour_attachment() const;
+        vk::Image::Layout get_output_initial_layout() const;
+        vk::Image::Layout get_output_final_layout() const;
         RenderPassVulkan make_simple_render_pass(const RendererBuilderVulkan& builder, const RendererBuilderDeviceInfoVulkan& device_info) const;
         std::vector<IRendererInput*> get_inputs();
         void handle_resize();
