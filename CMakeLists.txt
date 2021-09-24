@@ -18,7 +18,6 @@ add_library(topaz
     src/core/containers/polymorphic_list.inl
 
     src/core/algorithms/static.hpp
-
     src/core/interfaces/cloneable.hpp
 
     src/core/profiling/zone.hpp
@@ -285,7 +284,7 @@ add_subdirectory(test)
 
 if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
 	# GCC/Clang options
-    target_compile_options(topaz PRIVATE -Wall -Wextra -Wdelete-non-virtual-dtor -pedantic-errors)
+    target_compile_options(topaz PRIVATE -Wall -Wextra -Wdelete-non-virtual-dtor -pedantic-errors -fsanitize-undefined-trap-on-error)
     if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
         # Clang-only options
         # Use GNU's `, __VA_ARGS__` extension (used for tz_assert, tz_error, tz_report)

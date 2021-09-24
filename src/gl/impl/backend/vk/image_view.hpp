@@ -20,25 +20,10 @@ namespace tz::gl::vk
 
         const Image* get_image() const;
         VkImageView native() const;
-        friend class ImageViews;
-
-    private:
-        ImageView(const LogicalDevice& device, VkImage image, VkFormat format);
-        
+    private:        
         VkImageView view;
         const Image* image;
         const LogicalDevice* device;
-    };
-
-    class Swapchain;
-
-    class ImageViews : public tz::BasicList<ImageView>
-    {
-    public:
-        ImageViews() = default;
-        ImageViews(const Swapchain& swapchain);
-        ImageViews(std::span<ImageView> views);
-        ImageViews(std::initializer_list<std::reference_wrapper<const ImageView>> view_crefs);
     };
 }
 

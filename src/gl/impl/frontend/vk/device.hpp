@@ -33,6 +33,7 @@ namespace tz::gl
 
         DeviceWindowBufferVulkan& operator=(vk::Swapchain&& rhs);
         DeviceWindowBufferVulkan& operator=(vk::Image&& rhs);
+        DeviceWindowBufferVulkan& operator=(std::monostate rhs);
         explicit operator vk::Swapchain&();
         explicit operator const vk::Swapchain&() const;
         explicit operator vk::Image&();

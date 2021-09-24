@@ -52,12 +52,13 @@ namespace tz::gl::vk
 
         const LogicalDevice& get_device() const;
     private:
+        std::vector<VkImage> get_swapchain_image_natives() const;
         Swapchain();
 
         VkSwapchainKHR swapchain;
         const LogicalDevice* logical_device;
-        std::vector<VkImage> images;
-        ImageViews image_views;
+        std::vector<Image> images;
+        std::vector<ImageView> image_views;
         VkFormat format;
         VkExtent2D extent;
     };

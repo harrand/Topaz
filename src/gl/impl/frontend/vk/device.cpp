@@ -97,6 +97,13 @@ namespace tz::gl
         return *this;
     }
 
+    DeviceWindowBufferVulkan& DeviceWindowBufferVulkan::operator=(std::monostate rhs)
+    {
+        VariantType tmp{rhs};
+        this->swap(tmp);
+        return *this;
+    }
+
     DeviceWindowBufferVulkan::operator vk::Swapchain&()
     {
         tz_assert(!vk::is_headless(), "DeviceWindowBufferVulkan is not a vk::Swapchain because application is headless");
@@ -261,9 +268,11 @@ namespace tz::gl
             my_prefs.format_pref = {vk::hardware::SwapchainFormatPreferences::Goldilocks, vk::hardware::SwapchainFormatPreferences::FlexibleGoldilocks, vk::hardware::SwapchainFormatPreferences::DontCare};
             my_prefs.present_mode_pref = {vk::hardware::SwapchainPresentModePreferences::PreferTripleBuffering, vk::hardware::SwapchainPresentModePreferences::DontCare};
 
-            vk::Swapchain& real_swapchain = std::get<vk::Swapchain>(this->swapchain);
-            real_swapchain.~Swapchain();
-            new (&real_swapchain) vk::Swapchain(this->device, my_prefs);
+            //vk::Swapchain& real_swapchain = std::get<vk::Swapchain>(this->swapchain);
+            this->swapchain = std::monostate{};
+            this->swapchain = vk::Swapchain{this->device, my_prefs};
+            //vk::Swapchain new_swapchain{this->device, my_prefs};
+            //std::swap(real_swapchain, new_swapchain);
         }
         // Then notify all renderers which care. Do it in reverse as renderers that rely on other renderers will have been created before.
         for(auto i = this->renderer_resize_callbacks.rbegin(); i != this->renderer_resize_callbacks.rend(); i++)

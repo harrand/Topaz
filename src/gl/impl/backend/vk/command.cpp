@@ -239,6 +239,7 @@ namespace tz::gl::vk
     {
         for(const ICommand& cmd : this->recorded_commands)
         {
+            [[maybe_unused]] CommandType type = cmd.get_type();
             cmd();
         }
     }

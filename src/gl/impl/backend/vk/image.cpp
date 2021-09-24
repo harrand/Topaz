@@ -6,7 +6,7 @@ namespace tz::gl::vk
 {
     Image::Image(const LogicalDevice& device, std::uint32_t width, std::uint32_t height, Image::Format format, Image::UsageField usage, hardware::MemoryResidency residency):
     image(VK_NULL_HANDLE),
-    alloc(),
+    alloc(VmaAllocation{}),
     device(&device),
     width(width),
     height(height),
@@ -44,13 +44,27 @@ namespace tz::gl::vk
             break;
         }
 
-        auto res = vmaCreateImage(this->device->native_allocator(), &create, &alloc_info, &this->image, &this->alloc, nullptr);
+        auto res = vmaCreateImage(this->device->native_allocator(), &create, &alloc_info, &this->image, &this->alloc.value(), nullptr);
         tz_assert(res == VK_SUCCESS, "Failed to create image");
+    }
+
+    Image::Image(const LogicalDevice& device, VkImage swapchain_image_native, std::uint32_t width, std::uint32_t height, Format format, UsageField usage):
+    image(swapchain_image_native),
+    alloc(std::nullopt),
+    device(&device),
+    width(width),
+    height(height),
+    usage(usage),
+    format(format),
+    layout(Image::Layout::Undefined),
+    residency()
+    {
+        // Note that alloc is nullopt -- Don't want the dtor to destroy swapchain images as we don't 'own' it.
     }
 
     Image::Image(Image&& move):
     image(VK_NULL_HANDLE),
-    alloc(),
+    alloc(std::nullopt),
     device(nullptr),
     width(0),
     height(0),
@@ -64,9 +78,9 @@ namespace tz::gl::vk
 
     Image::~Image()
     {
-        if(this->image != VK_NULL_HANDLE)
+        if(this->image != VK_NULL_HANDLE && this->alloc.has_value())
         {
-            vmaDestroyImage(this->device->native_allocator(), this->image, this->alloc);
+            vmaDestroyImage(this->device->native_allocator(), this->image, this->alloc.value());
             this->image = VK_NULL_HANDLE;
         }
     }

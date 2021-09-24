@@ -61,7 +61,12 @@ namespace tz::gl::vk
         this->format = maybe_format->format;
         this->extent = extent;
 
-        this->image_views = {*this};
+        std::vector<VkImage> img_handles = this->get_swapchain_image_natives();
+        for(VkImage native : img_handles)
+        {
+            const vk::Image& img = this->images.emplace_back(*this->logical_device, native, static_cast<std::uint32_t>(this->get_width()), static_cast<std::uint32_t>(this->get_height()), this->get_format(), vk::Image::UsageField{vk::Image::Usage::ColourAttachment});
+            this->image_views.emplace_back(*this->logical_device, img);
+        }
     }
 
     Swapchain::Swapchain(const LogicalDevice& device, hardware::SwapchainSelectorPreferences preferences):
@@ -168,6 +173,16 @@ namespace tz::gl::vk
     const LogicalDevice& Swapchain::get_device() const
     {
         return *this->logical_device;
+    }
+
+    std::vector<VkImage> Swapchain::get_swapchain_image_natives() const
+    {
+        std::vector<VkImage> image_natives;
+        std::uint32_t image_count;
+        vkGetSwapchainImagesKHR(this->logical_device->native(), this->swapchain, &image_count, nullptr);
+        image_natives.resize(image_count);
+        vkGetSwapchainImagesKHR(this->logical_device->native(), this->swapchain, &image_count, image_natives.data());
+        return image_natives;
     }
 
     Swapchain::Swapchain():

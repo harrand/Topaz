@@ -48,6 +48,7 @@ namespace tz::gl::vk
         using UsageField = tz::EnumField<Usage>;
 
         Image(const LogicalDevice& device, std::uint32_t width, std::uint32_t height, Format format, UsageField usage, hardware::MemoryResidency residency);
+        Image(const LogicalDevice& device, VkImage swapchain_image_native, std::uint32_t width, std::uint32_t height, Format format, UsageField usage);
         Image(const Image& copy) = delete;
         Image(Image&& move);
         ~Image();
@@ -66,9 +67,9 @@ namespace tz::gl::vk
         hardware::MemoryResidency get_memory_residency() const;
 
         VkImage native() const;
-    private:
+    protected:
         VkImage image;
-        VmaAllocation alloc;
+        std::optional<VmaAllocation> alloc;
         const LogicalDevice* device;
         std::uint32_t width;
         std::uint32_t height;
