@@ -8,8 +8,8 @@ namespace tz::gl::vk
     Swapchain::Swapchain(const LogicalDevice& device, VkSurfaceKHR surface, hardware::SwapchainSelectorPreferences preferences):
     swapchain(VK_NULL_HANDLE),
     logical_device(&device),
-    images(),
     image_views(),
+    images(),
     format(),
     extent()
     {
@@ -62,10 +62,14 @@ namespace tz::gl::vk
         this->extent = extent;
 
         std::vector<VkImage> img_handles = this->get_swapchain_image_natives();
+        auto sz = img_handles.size();
+        this->images.reserve(sz);
+        this->image_views.reserve(sz);
         for(VkImage native : img_handles)
         {
             const vk::Image& img = this->images.emplace_back(*this->logical_device, native, static_cast<std::uint32_t>(this->get_width()), static_cast<std::uint32_t>(this->get_height()), this->get_format(), vk::Image::UsageField{vk::Image::Usage::ColourAttachment});
-            this->image_views.emplace_back(*this->logical_device, img);
+            vk::ImageView view{*this->logical_device, img};
+            this->image_views.push_back(std::move(view));
         }
     }
 
@@ -75,8 +79,8 @@ namespace tz::gl::vk
     Swapchain::Swapchain(Swapchain&& move):
     swapchain(VK_NULL_HANDLE),
     logical_device(nullptr),
-    images(),
     image_views(),
+    images(),
     format(),
     extent()
     {
@@ -96,8 +100,8 @@ namespace tz::gl::vk
     {
         std::swap(this->swapchain, rhs.swapchain);
         std::swap(this->logical_device, rhs.logical_device);
-        std::swap(this->images, rhs.images);
         std::swap(this->image_views, rhs.image_views);
+        std::swap(this->images, rhs.images);
         std::swap(this->format, rhs.format);
         std::swap(this->extent, rhs.extent);
         return *this;
@@ -188,8 +192,8 @@ namespace tz::gl::vk
     Swapchain::Swapchain():
     swapchain(VK_NULL_HANDLE),
     logical_device(nullptr),
-    images(),
     image_views(),
+    images(),
     format(VK_FORMAT_UNDEFINED),
     extent(){}
 }

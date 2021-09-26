@@ -57,8 +57,8 @@ namespace tz::gl::vk
 
         VkSwapchainKHR swapchain;
         const LogicalDevice* logical_device;
-        std::vector<Image> images;
         std::vector<ImageView> image_views;
+        std::vector<Image> images;
         VkFormat format;
         VkExtent2D extent;
     };

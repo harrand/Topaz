@@ -215,7 +215,6 @@ namespace tz::gl
         RendererPipelineManagerVulkan pipeline_manager;
         RendererImageManagerVulkan image_manager;
         RendererProcessorVulkan processor;
-        tz::Vec4 clear_colour;
         bool requires_depth_image;
     };
 }
