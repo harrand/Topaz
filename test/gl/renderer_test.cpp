@@ -13,8 +13,8 @@ int main()
         tz::gl::Device device{tz::gl::DeviceBuilder{}};
 
         tz::gl::ShaderBuilder builder;
-        builder.set_shader_file(tz::gl::ShaderType::VertexShader, ".\\test\\gl\\shader_test.vertex.glsl");
-        builder.set_shader_file(tz::gl::ShaderType::FragmentShader, ".\\test\\gl\\shader_test.fragment.glsl");
+        builder.set_shader_file(tz::gl::ShaderType::VertexShader, ".\\test\\gl\\shader_test.vertex.tzsl");
+        builder.set_shader_file(tz::gl::ShaderType::FragmentShader, ".\\test\\gl\\shader_test.fragment.tzsl");
         tz::gl::Shader shader = device.create_shader(builder);
 
         std::array<int, 5> values{1, 2, 3, 4, 5};

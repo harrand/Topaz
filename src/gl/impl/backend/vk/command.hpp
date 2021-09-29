@@ -2,6 +2,7 @@
 #define TOPAZ_GL_VK_COMMAND_HPP
 #if TZ_VULKAN
 #include "core/containers/polymorphic_list.hpp"
+#include "core/handle.hpp"
 #include "gl/impl/backend/vk/hardware/queue_family.hpp"
 #include "gl/impl/backend/vk/logical_device.hpp"
 #include "gl/impl/backend/vk/buffer.hpp"
@@ -100,6 +101,7 @@ namespace tz::gl::vk
 
         void reset();
         void operator()() const;
+        bool operator==(const CommandBuffer& rhs) const;
     private:
         void notify_recording_begin();
         void notify_recording_end(CommandBufferRecording& recording);

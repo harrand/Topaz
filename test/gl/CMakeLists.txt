@@ -1,3 +1,9 @@
+if(${TOPAZ_OGL})
+        add_subdirectory(ogl)
+elseif(${TOPAZ_VULKAN})
+        add_subdirectory(vk)
+endif()
+
 add_tz_test(NAME tz_headless_triangle_test
         SOURCE_FILES headless_triangle_test.cpp
         SHADER_SOURCES

@@ -127,6 +127,9 @@ add_library(topaz
     src/gl/impl/frontend/ogl/shader.hpp
 
     # tz::gl (Vulkan Backend)
+    src/gl/impl/backend/vk/extra/command_manager.cpp
+    src/gl/impl/backend/vk/extra/command_manager.hpp
+
     src/gl/impl/backend/vk/hardware/device_filter.cpp
     src/gl/impl/backend/vk/hardware/device_filter.hpp
     src/gl/impl/backend/vk/hardware/device_filter.inl

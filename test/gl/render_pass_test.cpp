@@ -13,8 +13,8 @@ int main()
 
         // We will need a dummy shader.
         tz::gl::ShaderBuilder shad_builder;
-        shad_builder.set_shader_file(tz::gl::ShaderType::VertexShader, ".\\test\\gl\\shader_test.vertex.glsl");
-        shad_builder.set_shader_file(tz::gl::ShaderType::FragmentShader, ".\\test\\gl\\shader_test.fragment.glsl");
+        shad_builder.set_shader_file(tz::gl::ShaderType::VertexShader, ".\\test\\gl\\shader_test.vertex.tzsl");
+        shad_builder.set_shader_file(tz::gl::ShaderType::FragmentShader, ".\\test\\gl\\shader_test.fragment.tzsl");
         tz::gl::Shader shader = device.create_shader(shad_builder);
 
         // Use a render pass builder to create the render pass info struct

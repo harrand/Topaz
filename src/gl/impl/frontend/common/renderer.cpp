@@ -120,7 +120,7 @@ namespace tz::gl
     inputs(RendererBase::copy_inputs(builder)),
     buffer_resources(RendererBase::copy_resources(ResourceType::Buffer, builder)),
     texture_resources(RendererBase::copy_resources(ResourceType::Texture, builder)),
-    clear_colour{0.0f, 0.0f, 0.0f, 1.0f}
+    clear_colour{0.0f, 0.0f, 0.0f, 0.0f}
     {
 
     }

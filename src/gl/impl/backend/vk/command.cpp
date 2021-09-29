@@ -244,6 +244,11 @@ namespace tz::gl::vk
         }
     }
 
+    bool CommandBuffer::operator==(const CommandBuffer& rhs) const
+    {
+        return this->command_buffer == rhs.command_buffer;
+    }
+
     void CommandBuffer::notify_recording_begin()
     {
         tz_assert(!this->currently_recording, "Command buffer double recording detected");
@@ -347,4 +352,4 @@ namespace tz::gl::vk
     }
 }
 
-#endif
+#endif // TZ_VULKAN
