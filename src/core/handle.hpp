@@ -17,7 +17,7 @@ namespace tz
         value(value){}
 
         Handle(nullhand_t):
-        value(static_cast<HandleValue>(0)){}
+        value(static_cast<HandleValue>(std::numeric_limits<std::size_t>::max())){}
 
         explicit operator HandleValue() const
         {
@@ -36,6 +36,18 @@ namespace tz
         bool operator==(const Handle<T>& rhs) const = default;
     private:
         HandleValue value;
+    };
+}
+
+namespace std
+{
+    template<typename T>
+    struct hash<tz::Handle<T>>
+    {
+        std::size_t operator()(const tz::Handle<T>& handle) const
+        {
+            return std::hash<std::size_t>{}(static_cast<std::size_t>(static_cast<tz::HandleValue>(handle)));
+        }
     };
 }
 

@@ -18,10 +18,10 @@ namespace tz::gl::vk::extra
         {
             if(!this->free_list.empty())
             {
-                CommandBufferHandle handle = this->free_list.front();
+                CommandBufferHandle handle = *this->free_list.begin();
                 // Reset the buffer just incase.
                 (*this)[handle].reset();
-                this->free_list.pop_front();
+                this->free_list.erase(handle);
                 return handle;
             }
         }
@@ -66,12 +66,19 @@ namespace tz::gl::vk::extra
         {
             return 0;
         }
-        if(this->pool_buffer_cursor == 0)
+        // It's 2am and I can't think of any useful names for these values. It's got something to do with how we pre-set pool_buffer_cursor to 0 if the last pool is full (almost like magically incrementing it i suppose)
+        // Good luck!
+        std::size_t magic = this->pool_buffer_cursor;
+        if(magic == 0)
         {
-            // All pools are full.
-            return (this->command_pools.size() * this->info.pool_size_buffers) - this->free_list.size();
+            magic = this->info.pool_size_buffers;
         }
-        return ((this->command_pools.size() - 1) * this->info.pool_size_buffers) + pool_buffer_cursor - this->free_list.size();
+        std::size_t magic2 = this->buffer_capacity() - (this->info.pool_size_buffers - magic);
+        if(this->free_list.size() > magic2)
+        {
+            return 0;
+        }
+        return magic2 - this->free_list.size();
     }
 
     const CommandBuffer& CommandManager::operator[](CommandBufferHandle handle) const
@@ -104,6 +111,11 @@ namespace tz::gl::vk::extra
         return &this->command_pools[pair.first][pair.second];
     }
 
+    std::size_t CommandManager::buffer_capacity() const
+    {
+        return this->command_pools.size() * this->info.pool_size_buffers;
+    }
+
     CommandBuffer* CommandManager::at(CommandBufferHandle handle)
     {
         if(this->is_freed(handle))
@@ -124,13 +136,16 @@ namespace tz::gl::vk::extra
 
     void CommandManager::clear()
     {
-        this->command_pools.clear();
-        this->pool_buffer_cursor = 0;
+        // Firstly clear the free list, and then add every single buffer into it.
+        for(std::size_t i = 0; i < this->buffer_capacity(); i++)
+        {
+            this->erase(static_cast<tz::HandleValue>(i));
+        }
     }
 
     void CommandManager::erase(CommandBufferHandle handle)
     {
-        this->free_list.push_back(handle);
+        this->free_list.insert(handle);
     }
 
     CommandPool& CommandManager::add_pool()

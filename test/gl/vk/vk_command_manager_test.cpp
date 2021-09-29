@@ -75,11 +75,10 @@ int main()
             tz_assert(mgr.at(b1) != nullptr, "CommandManager::at(valid handle) returned nullptr");
             tz_assert(mgr.at(b2) != nullptr, "CommandManager::at(valid handle) returned nullptr");
             tz_assert(mgr.at(b3) == nullptr, "CommandManager::at(freed handle) did not return nullptr");
-            tz::gl::vk::extra::CommandBufferHandle nonsense_handle = static_cast<tz::HandleValue>(999999);
-            tz_assert(mgr.at(nonsense_handle) == nullptr, "CommandManager::at(out of range handle) did not return nullptr");
+            tz_assert(mgr.at(tz::nullhand) == nullptr, "CommandManager::at(nullhand) did not return nullptr");
         }
         mgr.clear();
-        tz_assert(mgr.pool_count() == 0, "Empty CommandManager had pool count == %zu which is != 0", mgr.pool_count());
+        // Note: Pool count will probably not be zero -- We really won't let go of these until the end of our lifetime.
         tz_assert(mgr.buffer_count() == 0, "Empty CommandManager had buffer count == %zu which is != 0", mgr.buffer_count());
     }
     tz::terminate();
