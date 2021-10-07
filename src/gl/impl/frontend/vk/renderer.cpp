@@ -613,17 +613,23 @@ namespace tz::gl
             vk::DescriptorPoolBuilder pool_builder;
             std::size_t view_count = this->get_view_count();
             pool_builder.with_capacity(view_count * resources.size());
-            auto buffer_resources = resources | std::views::filter([](const IResource* const resource)
-            {
-                return resource->get_type() == ResourceType::Buffer;
-            });
-            auto texture_resources = resources | std::views::filter([](const IResource* const resource)
-            {
-                return resource->get_type() == ResourceType::Texture;
-            });
 
-            auto num_buffer_resources = std::ranges::distance(buffer_resources.begin(), buffer_resources.end());
-            auto num_texture_resources = std::ranges::distance(texture_resources.begin(), texture_resources.end());
+            std::vector<const IResource*> buffer_resources;
+            std::vector<const IResource*> texture_resources;
+            for(const IResource* res : resources)
+            {
+                if(res->get_type() == ResourceType::Buffer)
+                {
+                    buffer_resources.push_back(res);
+                }
+                if(res->get_type() == ResourceType::Texture)
+                {
+                    texture_resources.push_back(res);
+                }
+            }
+
+            auto num_buffer_resources = buffer_resources.size();
+            auto num_texture_resources = texture_resources.size();
 
             auto image_count = view_count;
             
