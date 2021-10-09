@@ -8,6 +8,8 @@ tracy_server/
 
 # I don't want the idea directory in my repo at all
 .idea
+# I don't want any symlinks to be submitted
+*.lnk
 # I don't want any libs in my source directory (from unit tests) to leak through either (TZ1).
 src/test/**/*.a
 src/test/**/*.o
