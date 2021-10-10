@@ -1,5 +1,6 @@
 #include "core/handle.hpp"
 #include "core/assert.hpp"
+#include <vector>
 
 struct HandleGenerator
 {
@@ -14,6 +15,11 @@ public:
 	HandleGenerator(HandleGenerator&& move):
 	HandleGenerator(){}
 
+	tz::Handle<unsigned int> get() const
+	{
+		return {tz::HandleValue{inst_count}};
+	}
+
 	~HandleGenerator()
 	{
 		inst_count--;
@@ -23,8 +29,18 @@ public:
 
 int main()
 {
-	tz_assert(HandleGenerator::inst_count == 0, "HandleGenerator instance count started at %zu, not zero", HandleGenerator::inst_count);
-	HandleGenerator g;	
-	tz_assert(HandleGenerator::inst_count == 1, "HandleGenerator instance count started at %zu, not zero", HandleGenerator::inst_count);
+	auto get = [](const auto& handle)
+	{
+		return static_cast<std::size_t>(static_cast<tz::HandleValue>(handle));
+	};
+
+	std::vector<HandleGenerator> gens;
+	auto h1 = gens.emplace_back().get();
+	tz_assert(h1 != tz::nullhand, "Valid handle == nullhand. Impossibru");
+	auto h2 = gens.emplace_back().get();
+	tz_assert(h2 != tz::nullhand && h2 != h1, "Valid handle == nullhand. Impossibru");
+	gens.clear();
+	auto h3 = gens.emplace_back().get();
+	tz_assert(h3 == h1, "Handles do not make sense");
 	return 0;
 }
