@@ -12,6 +12,7 @@ tracy_server/
 .cache
 # I don't want any symlinks to be submitted
 *.lnk
+*.swp
 # No compile_commands.json either please.
 compile_commands.json
 # I don't want any libs in my source directory (from unit tests) to leak through either (TZ1).

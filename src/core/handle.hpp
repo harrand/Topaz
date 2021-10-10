@@ -1,6 +1,9 @@
 #ifndef TOPAZ_CORE_OPAQUE_HANDLE_HPP
 #define TOPAZ_CORE_OPAQUE_HANDLE_HPP
 #include <cstddef>
+#include <type_traits>
+#include <functional>
+#include <limits>
 
 namespace tz
 {
@@ -39,16 +42,15 @@ namespace tz
 	};
 }
 
-namespace std
+template<typename T>
+struct std::hash<tz::Handle<T>>
 {
-	template<typename T>
-	struct hash<tz::Handle<T>>
+	std::size_t operator()(const tz::Handle<T>& handle) const
 	{
-		std::size_t operator()(const tz::Handle<T>& handle) const
-		{
-			return std::hash<std::size_t>{}(static_cast<std::size_t>(static_cast<tz::HandleValue>(handle)));
-		}
-	};
-}
+		auto hand_val = static_cast<std::size_t>(static_cast<tz::HandleValue>(handle));
+		std::size_t ret = std::hash<int>{}(static_cast<int>(hand_val));
+		return ret;
+	}
+};
 
 #endif //TOPAZ_CORE_OPAQUE_HANDLE_HPP
