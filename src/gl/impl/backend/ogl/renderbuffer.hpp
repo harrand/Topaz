@@ -5,24 +5,24 @@
 
 namespace tz::gl::ogl
 {
-    class Renderbuffer
-    {
-    public:
-        Renderbuffer(GLsizei width, GLsizei height, Texture::Format format);
-        Renderbuffer(const Renderbuffer& copy) = delete;
-        Renderbuffer(Renderbuffer&& move);
-        ~Renderbuffer();
+	class Renderbuffer
+	{
+	public:
+		Renderbuffer(GLsizei width, GLsizei height, Texture::Format format);
+		Renderbuffer(const Renderbuffer& copy) = delete;
+		Renderbuffer(Renderbuffer&& move);
+		~Renderbuffer();
 
-        Renderbuffer& operator=(const Renderbuffer& copy) = delete;
-        Renderbuffer& operator=(Renderbuffer&& move);
+		Renderbuffer& operator=(const Renderbuffer& copy) = delete;
+		Renderbuffer& operator=(Renderbuffer&& move);
 
-        GLuint native() const;
-    private:
-        GLuint renderbuffer;
-        GLsizei width;
-        GLsizei height;
-        Texture::Format format;
-    };
+		GLuint native() const;
+	private:
+		GLuint renderbuffer;
+		GLsizei width;
+		GLsizei height;
+		Texture::Format format;
+	};
 }
 
 #endif // TZ_OGL

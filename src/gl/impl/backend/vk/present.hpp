@@ -8,18 +8,18 @@
 
 namespace tz::gl::vk
 {
-    class Present
-    {
-    public:
-        Present(const Swapchain& swapchain, std::uint32_t swapchain_image_index, SemaphoreRefs semaphores);
-        void operator()(const hardware::Queue& queue) const;
-    private:
-        void update();
-        VkSwapchainKHR swapchain_native;
-        std::vector<VkSemaphore> signal_sem_natives;
-        VkPresentInfoKHR present;
-        std::uint32_t image_index;
-    };
+	class Present
+	{
+	public:
+		Present(const Swapchain& swapchain, std::uint32_t swapchain_image_index, SemaphoreRefs semaphores);
+		void operator()(const hardware::Queue& queue) const;
+	private:
+		void update();
+		VkSwapchainKHR swapchain_native;
+		std::vector<VkSemaphore> signal_sem_natives;
+		VkPresentInfoKHR present;
+		std::uint32_t image_index;
+	};
 }
 
 #endif // TZ_VULKAN

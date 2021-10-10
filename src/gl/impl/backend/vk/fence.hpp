@@ -5,25 +5,25 @@
 
 namespace tz::gl::vk
 {
-    class Fence
-    {
-    public:
-        Fence(const LogicalDevice& device);
-        Fence(const Fence& copy) = delete;
-        Fence(Fence&& move);
-        ~Fence();
+	class Fence
+	{
+	public:
+		Fence(const LogicalDevice& device);
+		Fence(const Fence& copy) = delete;
+		Fence(Fence&& move);
+		~Fence();
 
-        Fence& operator=(const Fence& rhs) = delete;
-        Fence& operator=(Fence&& rhs);
+		Fence& operator=(const Fence& rhs) = delete;
+		Fence& operator=(Fence&& rhs);
 
-        VkFence native() const;
-        void wait_for() const;
-        void signal() const;
-        void wait_then_signal() const;
-    private:
-        VkFence fence;
-        const LogicalDevice* device;
-    };
+		VkFence native() const;
+		void wait_for() const;
+		void signal() const;
+		void wait_then_signal() const;
+	private:
+		VkFence fence;
+		const LogicalDevice* device;
+	};
 }
 
 #endif // TZ_VULKAN

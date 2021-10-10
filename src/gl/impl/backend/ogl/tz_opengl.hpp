@@ -5,16 +5,16 @@
 
 namespace tz::gl::ogl
 {
-    void initialise_headless(tz::GameInfo game_info);
-    void initialise(tz::GameInfo game_info);
-    void terminate();
-    OpenGLInstance& get();
-    bool is_initialised();
+	void initialise_headless(tz::GameInfo game_info);
+	void initialise(tz::GameInfo game_info);
+	void terminate();
+	OpenGLInstance& get();
+	bool is_initialised();
 
-    constexpr static tz::Version get_opengl_version()
-    {
-        return {4, 6, 0};
-    }
+	constexpr static tz::Version get_opengl_version()
+	{
+		return {4, 6, 0};
+	}
 }
 
 #endif // TZ_OGL

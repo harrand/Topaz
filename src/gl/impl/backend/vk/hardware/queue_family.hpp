@@ -10,28 +10,28 @@
 
 namespace tz::gl::vk::hardware
 {
-    // Pre-defines
-    class Device;
+	// Pre-defines
+	class Device;
 
-    enum class QueueFamilyType
-    {
-        Graphics,
-        Compute,
-        Transfer,
-        SparseBinding,
-        Present
-    };
+	enum class QueueFamilyType
+	{
+		Graphics,
+		Compute,
+		Transfer,
+		SparseBinding,
+		Present
+	};
 
-    using QueueFamilyTypeField = tz::EnumField<QueueFamilyType>;
+	using QueueFamilyTypeField = tz::EnumField<QueueFamilyType>;
 
-    using QueueFamilyIndex = int;
+	using QueueFamilyIndex = int;
 
-    struct DeviceQueueFamily
-    {
-        const Device* dev;
-        QueueFamilyIndex index;
-        QueueFamilyTypeField types_supported;
-    };
+	struct DeviceQueueFamily
+	{
+		const Device* dev;
+		QueueFamilyIndex index;
+		QueueFamilyTypeField types_supported;
+	};
 }
 
 #endif

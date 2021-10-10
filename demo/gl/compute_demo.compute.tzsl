@@ -6,12 +6,12 @@ layout(local_size_x = 1, local_size_y = 1) in;
 
 resource(id = 0) buffer MVP
 {
-    mat4 model;
-    mat4 view;
-    mat4 projection;
+	mat4 model;
+	mat4 view;
+	mat4 projection;
 } mvp;
 
 void main()
 {
-    mvp.model[0][0] = 69.0;
+	mvp.model[0][0] = 69.0;
 }

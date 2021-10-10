@@ -3,12 +3,12 @@
 
 namespace tz
 {
-    template<typename... Args>
-    void report_internal([[maybe_unused]] const char* fmt, [[maybe_unused]] Args&&... args)
-    {
-        std::fflush(stdout);
-        std::fprintf(stdout, fmt, std::forward<Args>(args)...);
-    }
+	template<typename... Args>
+	void report_internal([[maybe_unused]] const char* fmt, [[maybe_unused]] Args&&... args)
+	{
+		std::fflush(stdout);
+		std::fprintf(stdout, fmt, std::forward<Args>(args)...);
+	}
 }
 
 #ifdef tz_report
@@ -20,7 +20,7 @@ namespace tz
 #undef tz_debug_report
 #endif
 #if TZ_DEBUG
-    #define tz_debug_report(fmt, ...) tz_report(fmt, ##__VA_ARGS__)
+	#define tz_debug_report(fmt, ...) tz_report(fmt, ##__VA_ARGS__)
 #else
-    #define tz_debug_report(fmt, ...) (void)0
+	#define tz_debug_report(fmt, ...) (void)0
 #endif

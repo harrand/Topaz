@@ -6,24 +6,24 @@
 
 namespace tz::gl::vk::pipeline
 {
-    class Layout
-    {
-    public:
-        Layout(const LogicalDevice& device);
-        Layout(const LogicalDevice& device, DescriptorSetLayoutRefs descriptor_layouts);
-        Layout(const Layout& copy) = delete;
-        Layout(Layout&& move);
-        ~Layout();
+	class Layout
+	{
+	public:
+		Layout(const LogicalDevice& device);
+		Layout(const LogicalDevice& device, DescriptorSetLayoutRefs descriptor_layouts);
+		Layout(const Layout& copy) = delete;
+		Layout(Layout&& move);
+		~Layout();
 
-        Layout& operator=(const Layout& rhs) = delete;
-        Layout& operator=(Layout&& rhs);
+		Layout& operator=(const Layout& rhs) = delete;
+		Layout& operator=(Layout&& rhs);
 
-        VkPipelineLayout native() const;
-    private:
-        VkPipelineLayout layout;
-        DescriptorSetLayoutRefs descriptor_layouts;
-        const LogicalDevice* device;
-    };
+		VkPipelineLayout native() const;
+	private:
+		VkPipelineLayout layout;
+		DescriptorSetLayoutRefs descriptor_layouts;
+		const LogicalDevice* device;
+	};
 }
 
 #endif // TZ_VULKAN

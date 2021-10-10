@@ -6,27 +6,27 @@
 
 namespace tz::gl::vk
 {
-    class Framebuffer
-    {
-    public:
-        Framebuffer(const RenderPass& render_pass, const ImageView& col_view, VkExtent2D dimensions);
-        Framebuffer(const RenderPass& render_pass, const ImageView& col_view, const ImageView& depth_view, VkExtent2D dimensions);
-        Framebuffer(const Framebuffer& copy) = delete;
-        Framebuffer(Framebuffer&& move);
-        ~Framebuffer();
+	class Framebuffer
+	{
+	public:
+		Framebuffer(const RenderPass& render_pass, const ImageView& col_view, VkExtent2D dimensions);
+		Framebuffer(const RenderPass& render_pass, const ImageView& col_view, const ImageView& depth_view, VkExtent2D dimensions);
+		Framebuffer(const Framebuffer& copy) = delete;
+		Framebuffer(Framebuffer&& move);
+		~Framebuffer();
 
-        Framebuffer& operator=(const Framebuffer& rhs) = delete;
-        Framebuffer& operator=(Framebuffer&& rhs);
-        const ImageView& get_colour_view() const;
-        const ImageView* get_depth_view() const;
-        VkFramebuffer native() const;
+		Framebuffer& operator=(const Framebuffer& rhs) = delete;
+		Framebuffer& operator=(Framebuffer&& rhs);
+		const ImageView& get_colour_view() const;
+		const ImageView* get_depth_view() const;
+		VkFramebuffer native() const;
 
-    private:
-        VkFramebuffer frame_buffer;
-        const ImageView* colour_view;
-        const ImageView* depth_view;
-        const LogicalDevice* device;
-    };
+	private:
+		VkFramebuffer frame_buffer;
+		const ImageView* colour_view;
+		const ImageView* depth_view;
+		const LogicalDevice* device;
+	};
 }
 
 #endif // TZ_VULKAN

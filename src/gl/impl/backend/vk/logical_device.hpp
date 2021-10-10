@@ -10,33 +10,33 @@
 namespace tz::gl::vk
 {
 
-    class LogicalDevice
-    {
-    public:
-        LogicalDevice(hardware::DeviceQueueFamily queue_family, ExtensionList device_extensions = {}, VkPhysicalDeviceFeatures features = vk::required_rendering_features());
-        LogicalDevice(const LogicalDevice& copy) = delete;
-        LogicalDevice(LogicalDevice&& move);
-        ~LogicalDevice();
+	class LogicalDevice
+	{
+	public:
+		LogicalDevice(hardware::DeviceQueueFamily queue_family, ExtensionList device_extensions = {}, VkPhysicalDeviceFeatures features = vk::required_rendering_features());
+		LogicalDevice(const LogicalDevice& copy) = delete;
+		LogicalDevice(LogicalDevice&& move);
+		~LogicalDevice();
 
-        LogicalDevice& operator=(const LogicalDevice& rhs) = delete;
-        LogicalDevice& operator=(LogicalDevice&& rhs);
+		LogicalDevice& operator=(const LogicalDevice& rhs) = delete;
+		LogicalDevice& operator=(LogicalDevice&& rhs);
 
-        static LogicalDevice null();
-        bool is_null() const;
+		static LogicalDevice null();
+		bool is_null() const;
 
-        const hardware::DeviceQueueFamily& get_queue_family() const;
-        VkDevice native() const;
-        VmaAllocator native_allocator() const;
-        hardware::Queue get_hardware_queue(std::uint32_t family_index = 0) const;
+		const hardware::DeviceQueueFamily& get_queue_family() const;
+		VkDevice native() const;
+		VmaAllocator native_allocator() const;
+		hardware::Queue get_hardware_queue(std::uint32_t family_index = 0) const;
 
-        void block_until_idle() const;
-    private:
-        LogicalDevice();
+		void block_until_idle() const;
+	private:
+		LogicalDevice();
 
-        VkDevice dev;
-        hardware::DeviceQueueFamily queue_family;
-        std::optional<VmaAllocator> vma;
-    };
+		VkDevice dev;
+		hardware::DeviceQueueFamily queue_family;
+		std::optional<VmaAllocator> vma;
+	};
 }
 
 #endif // TZ_VULKAN

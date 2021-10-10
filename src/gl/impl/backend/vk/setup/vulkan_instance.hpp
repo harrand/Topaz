@@ -8,26 +8,26 @@
 
 namespace tz::gl::vk
 {
-    class VulkanApplicationInfo
-    {
-    public:
-        VulkanApplicationInfo(tz::GameInfo game_info);
-        VkApplicationInfo get_info() const;
-    private:
-        std::string engine_name;
-        VkApplicationInfo app_info;
-    };
+	class VulkanApplicationInfo
+	{
+	public:
+		VulkanApplicationInfo(tz::GameInfo game_info);
+		VkApplicationInfo get_info() const;
+	private:
+		std::string engine_name;
+		VkApplicationInfo app_info;
+	};
 
-    class VulkanInstance
-    {
-    public:
-        VulkanInstance(VulkanApplicationInfo vk_app_info, ExtensionList extensions = {}, ValidationLayerList validation_layers = {});
-        ~VulkanInstance();
-        VkInstance operator()() const;
-        VkInstance native() const;
-    private:
-        VkInstance instance;
-    };
+	class VulkanInstance
+	{
+	public:
+		VulkanInstance(VulkanApplicationInfo vk_app_info, ExtensionList extensions = {}, ValidationLayerList validation_layers = {});
+		~VulkanInstance();
+		VkInstance operator()() const;
+		VkInstance native() const;
+	private:
+		VkInstance instance;
+	};
 }
 
 #endif // TZ_VULKAN

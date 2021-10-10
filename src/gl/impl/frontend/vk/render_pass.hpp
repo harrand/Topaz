@@ -6,34 +6,34 @@
 
 namespace tz::gl
 {
-    class RenderPassBuilderVulkan
-    {
-    public:
-        RenderPassBuilderVulkan(RenderPassInfo info, bool presentable_output);
-        vk::RenderPassBuilder vk_get() const;
-    private:
-        RenderPassInfo info;
-        bool presentable_output;
-    };
+	class RenderPassBuilderVulkan
+	{
+	public:
+		RenderPassBuilderVulkan(RenderPassInfo info, bool presentable_output);
+		vk::RenderPassBuilder vk_get() const;
+	private:
+		RenderPassInfo info;
+		bool presentable_output;
+	};
 
-    class IDevice;
-    class DeviceWindowBufferVulkan;
+	class IDevice;
+	class DeviceWindowBufferVulkan;
 
-    struct RenderPassDeviceInfoVulkan
-    {
-        const IDevice* device;
-        const DeviceWindowBufferVulkan* window_buffer;
-        const vk::LogicalDevice* vk_device;
-    };
+	struct RenderPassDeviceInfoVulkan
+	{
+		const IDevice* device;
+		const DeviceWindowBufferVulkan* window_buffer;
+		const vk::LogicalDevice* vk_device;
+	};
 
-    class RenderPassVulkan
-    {
-    public:
-        RenderPassVulkan(RenderPassBuilderVulkan builder, RenderPassDeviceInfoVulkan device_info);
-        const vk::RenderPass& vk_get_render_pass() const;
-    private:
-        vk::RenderPass render_pass;
-    };
+	class RenderPassVulkan
+	{
+	public:
+		RenderPassVulkan(RenderPassBuilderVulkan builder, RenderPassDeviceInfoVulkan device_info);
+		const vk::RenderPass& vk_get_render_pass() const;
+	private:
+		vk::RenderPass render_pass;
+	};
 }
 
 #endif // TZ_VULKAN

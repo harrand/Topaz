@@ -7,24 +7,24 @@
 
 namespace tz::gl::vk
 {
-    class ImageView
-    {
-    public:
-        ImageView(const LogicalDevice& device, const Image& image);
-        ImageView(const ImageView& copy) = delete;
-        ImageView(ImageView&& move);
-        ~ImageView();
+	class ImageView
+	{
+	public:
+		ImageView(const LogicalDevice& device, const Image& image);
+		ImageView(const ImageView& copy) = delete;
+		ImageView(ImageView&& move);
+		~ImageView();
 
-        ImageView& operator=(const ImageView& rhs) = delete;
-        ImageView& operator=(ImageView&& rhs);
+		ImageView& operator=(const ImageView& rhs) = delete;
+		ImageView& operator=(ImageView&& rhs);
 
-        const Image* get_image() const;
-        VkImageView native() const;
-    private:        
-        VkImageView view;
-        const Image* image;
-        const LogicalDevice* device;
-    };
+		const Image* get_image() const;
+		VkImageView native() const;
+	private:        
+		VkImageView view;
+		const Image* image;
+		const LogicalDevice* device;
+	};
 }
 
 #endif // TZ_VULKAN

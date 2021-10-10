@@ -6,8 +6,8 @@
 
 namespace tz::gl
 {
-    constexpr ogl::Texture::Format to_ogl(TextureFormat fmt);
-    constexpr TextureFormat from_ogl(ogl::Texture::Format fmt);
+	constexpr ogl::Texture::Format to_ogl(TextureFormat fmt);
+	constexpr TextureFormat from_ogl(ogl::Texture::Format fmt);
 }
 
 #include "gl/impl/frontend/ogl/convert.inl"

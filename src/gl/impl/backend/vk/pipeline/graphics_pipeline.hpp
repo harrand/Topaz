@@ -17,39 +17,39 @@
 
 namespace tz::gl::vk
 {
-    using ShaderPipeline = tz::BasicList<pipeline::ShaderStage>;
-    
-    class GraphicsPipeline
-    {
-    public:
-        GraphicsPipeline
-        (
-            tz::BasicList<pipeline::ShaderStage> shader_stages,
-            const LogicalDevice& device,
-            pipeline::VertexInputState vertex_input,
-            pipeline::InputAssembly input_assembly,
-            pipeline::ViewportState viewport_state,
-            pipeline::RasteriserState rasterisation_state,
-            pipeline::MultisampleState multisample_state,
-            /*TODO: DepthStencilState*/
-            pipeline::ColourBlendState colour_blend_state,
-            pipeline::DynamicState dynamic_state,
-            const pipeline::Layout& layout,
-            const RenderPass& render_pass
-        );
-        GraphicsPipeline(const GraphicsPipeline& copy) = delete;
-        GraphicsPipeline(GraphicsPipeline&& move);
-        ~GraphicsPipeline();
+	using ShaderPipeline = tz::BasicList<pipeline::ShaderStage>;
+	
+	class GraphicsPipeline
+	{
+	public:
+		GraphicsPipeline
+		(
+			tz::BasicList<pipeline::ShaderStage> shader_stages,
+			const LogicalDevice& device,
+			pipeline::VertexInputState vertex_input,
+			pipeline::InputAssembly input_assembly,
+			pipeline::ViewportState viewport_state,
+			pipeline::RasteriserState rasterisation_state,
+			pipeline::MultisampleState multisample_state,
+			/*TODO: DepthStencilState*/
+			pipeline::ColourBlendState colour_blend_state,
+			pipeline::DynamicState dynamic_state,
+			const pipeline::Layout& layout,
+			const RenderPass& render_pass
+		);
+		GraphicsPipeline(const GraphicsPipeline& copy) = delete;
+		GraphicsPipeline(GraphicsPipeline&& move);
+		~GraphicsPipeline();
 
-        GraphicsPipeline& operator=(const GraphicsPipeline& rhs) = delete;
-        GraphicsPipeline& operator=(GraphicsPipeline&& rhs);
+		GraphicsPipeline& operator=(const GraphicsPipeline& rhs) = delete;
+		GraphicsPipeline& operator=(GraphicsPipeline&& rhs);
 
-        void bind(const CommandBuffer& command_buffer) const;
-    private:
-        ShaderPipeline shaders;
-        const LogicalDevice* device;
-        VkPipeline graphics_pipeline;
-    };
+		void bind(const CommandBuffer& command_buffer) const;
+	private:
+		ShaderPipeline shaders;
+		const LogicalDevice* device;
+		VkPipeline graphics_pipeline;
+	};
 }
 
 #endif // TZ_VULKAN

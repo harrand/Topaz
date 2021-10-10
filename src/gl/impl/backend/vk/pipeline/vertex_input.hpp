@@ -7,17 +7,17 @@
 
 namespace tz::gl::vk::pipeline
 {
-    class VertexInputState
-    {
-    public:
-        VertexInputState();
-        VertexInputState(VertexBindingDescriptions binding_descriptions, VertexAttributeDescriptions attribute_descriptions);
-        VkPipelineVertexInputStateCreateInfo native() const;
-    private:
-        VkPipelineVertexInputStateCreateInfo create;
-        std::vector<VkVertexInputBindingDescription> binding_description_natives;
-        std::vector<VkVertexInputAttributeDescription> attribute_description_natives;
-    };
+	class VertexInputState
+	{
+	public:
+		VertexInputState();
+		VertexInputState(VertexBindingDescriptions binding_descriptions, VertexAttributeDescriptions attribute_descriptions);
+		VkPipelineVertexInputStateCreateInfo native() const;
+	private:
+		VkPipelineVertexInputStateCreateInfo create;
+		std::vector<VkVertexInputBindingDescription> binding_description_natives;
+		std::vector<VkVertexInputAttributeDescription> attribute_description_natives;
+	};
 }
 
 #endif // TZ_VULKAN

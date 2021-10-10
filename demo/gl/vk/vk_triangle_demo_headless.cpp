@@ -1,5 +1,5 @@
 #if !TZ_VULKAN
-    static_assert(false, "Cannot build vk_init_demo with TZ_VULKAN disabled.");
+	static_assert(false, "Cannot build vk_init_demo with TZ_VULKAN disabled.");
 #endif
 
 #include "core/tz.hpp"
@@ -30,9 +30,9 @@ using namespace tz::gl;
 
 struct Vertex
 {
-    tz::Vec2 pos;
-    tz::Vec3 colour;
-    tz::Vec2 tex_coord;
+	tz::Vec2 pos;
+	tz::Vec3 colour;
+	tz::Vec2 tex_coord;
 };
 
 static constexpr vk::VertexBindingDescription binding_description{0, sizeof(Vertex), vk::VertexInputRate::PerVertexBasis};
@@ -42,331 +42,331 @@ static constexpr vk::VertexAttributeDescription texcoord_description{0, 2, VK_FO
 
 struct MVP
 {
-    tz::Mat4 m;
-    tz::Mat4 v;
-    tz::Mat4 p;
+	tz::Mat4 m;
+	tz::Mat4 v;
+	tz::Mat4 p;
 };
 
 
 int main()
 {
-    constexpr tz::EngineInfo eng_info = tz::info();
-    constexpr tz::GameInfo vk_triangle_demo_headless{"vk_triangle_demo_headless", eng_info.version, eng_info};
-    
-    std::array<Vertex, 4> vertices =
-    {
-        Vertex{{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
-        Vertex{{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
-        Vertex{{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
-    };
+	constexpr tz::EngineInfo eng_info = tz::info();
+	constexpr tz::GameInfo vk_triangle_demo_headless{"vk_triangle_demo_headless", eng_info.version, eng_info};
+	
+	std::array<Vertex, 4> vertices =
+	{
+		Vertex{{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
+		Vertex{{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
+		Vertex{{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
+	};
 
-    std::array<unsigned int, 6> indices = 
-    {
-        0, 1, 2
-    };
+	std::array<unsigned int, 6> indices = 
+	{
+		0, 1, 2
+	};
 
-    std::array<unsigned char, 16> imgdata = 
-    {
-        0b0000'0000,
-        0b0000'0000,
-        0b1111'1111,
-        0b1111'1111,
+	std::array<unsigned char, 16> imgdata = 
+	{
+		0b0000'0000,
+		0b0000'0000,
+		0b1111'1111,
+		0b1111'1111,
 
-        0b1111'1111,
-        0b0000'0000,
-        0b0000'0000,
-        0b1111'1111,
+		0b1111'1111,
+		0b0000'0000,
+		0b0000'0000,
+		0b1111'1111,
 
-        0b0000'0000,
-        0b1111'1111,
-        0b0000'0000,
-        0b1111'1111,
+		0b0000'0000,
+		0b1111'1111,
+		0b0000'0000,
+		0b1111'1111,
 
-        0b0000'0000,
-        0b0000'0000,
-        0b1111'1111,
-        0b1111'1111,
-    };
+		0b0000'0000,
+		0b0000'0000,
+		0b1111'1111,
+		0b1111'1111,
+	};
 
-    tz::initialise(vk_triangle_demo_headless, tz::ApplicationType::Headless);
-    {
-        vk::hardware::DeviceList valid_devices = tz::gl::vk::hardware::get_all_devices();
-        vk::hardware::QueueFamilyTypeField type_requirements{{vk::hardware::QueueFamilyType::Graphics}};
-        // Let's grab a device which can do graphics and present images.
-        // It also must support the swapchain device extension.
-        {
-            namespace hw = vk::hardware;
-            hw::DeviceFilterList filters;
-            filters.emplace<hw::DeviceQueueFamilyFilter>(type_requirements);
-            filters.emplace<hw::DeviceExtensionSupportFilter>(std::initializer_list<vk::VulkanExtension>{"VK_KHR_swapchain"});
-            filters.filter_all(valid_devices);
-        }
-        tz_assert(!valid_devices.empty(), "No valid devices. Require a physical device which supports graphics and present queue families.");
-        // Just choose the first one.
-        vk::hardware::Device my_device = valid_devices.front();
-        vk::hardware::MemoryProperties my_memory_props = my_device.get_memory_properties();
-        std::optional<vk::hardware::DeviceQueueFamily> maybe_my_qfam = std::nullopt;
-        for(auto fam : my_device.get_queue_families())
-        {
-            if(fam.types_supported.contains(type_requirements))
-            {
-                maybe_my_qfam = fam;
-            }
-        }
-        tz_assert(maybe_my_qfam.has_value(), "Valid device found which supports present and graphics, but not a single queue that can do both.");
-        vk::hardware::DeviceQueueFamily my_qfam = maybe_my_qfam.value();
+	tz::initialise(vk_triangle_demo_headless, tz::ApplicationType::Headless);
+	{
+		vk::hardware::DeviceList valid_devices = tz::gl::vk::hardware::get_all_devices();
+		vk::hardware::QueueFamilyTypeField type_requirements{{vk::hardware::QueueFamilyType::Graphics}};
+		// Let's grab a device which can do graphics and present images.
+		// It also must support the swapchain device extension.
+		{
+			namespace hw = vk::hardware;
+			hw::DeviceFilterList filters;
+			filters.emplace<hw::DeviceQueueFamilyFilter>(type_requirements);
+			filters.emplace<hw::DeviceExtensionSupportFilter>(std::initializer_list<vk::VulkanExtension>{"VK_KHR_swapchain"});
+			filters.filter_all(valid_devices);
+		}
+		tz_assert(!valid_devices.empty(), "No valid devices. Require a physical device which supports graphics and present queue families.");
+		// Just choose the first one.
+		vk::hardware::Device my_device = valid_devices.front();
+		vk::hardware::MemoryProperties my_memory_props = my_device.get_memory_properties();
+		std::optional<vk::hardware::DeviceQueueFamily> maybe_my_qfam = std::nullopt;
+		for(auto fam : my_device.get_queue_families())
+		{
+			if(fam.types_supported.contains(type_requirements))
+			{
+				maybe_my_qfam = fam;
+			}
+		}
+		tz_assert(maybe_my_qfam.has_value(), "Valid device found which supports present and graphics, but not a single queue that can do both.");
+		vk::hardware::DeviceQueueFamily my_qfam = maybe_my_qfam.value();
 
-        // Now create the device which can do both. We also ask it to use the swapchain extension.
-        vk::LogicalDevice my_logical_device{my_qfam, {"VK_KHR_swapchain"}};
-        // Let's make our set of offscreen images
-        constexpr float offscreen_width = 1920.0f;
-        constexpr float offscreen_height = 1080.0f;
-        constexpr float offscreen_image_count = 1;
-        std::vector<vk::Image> offscreen_images;
-        std::vector<vk::ImageView> offscreen_views;
-        for(std::size_t i = 0; i < offscreen_image_count; i++)
-        {
-            vk::Image& cur = offscreen_images.emplace_back(my_logical_device, static_cast<std::uint32_t>(offscreen_width), static_cast<std::uint32_t>(offscreen_height), vk::Image::Format::Rgba32sRGB, vk::Image::UsageField{vk::Image::Usage::TransferSource, vk::Image::Usage::ColourAttachment}, vk::hardware::MemoryResidency::GPU);
-            offscreen_views.emplace_back(my_logical_device, cur);
-        }      
+		// Now create the device which can do both. We also ask it to use the swapchain extension.
+		vk::LogicalDevice my_logical_device{my_qfam, {"VK_KHR_swapchain"}};
+		// Let's make our set of offscreen images
+		constexpr float offscreen_width = 1920.0f;
+		constexpr float offscreen_height = 1080.0f;
+		constexpr float offscreen_image_count = 1;
+		std::vector<vk::Image> offscreen_images;
+		std::vector<vk::ImageView> offscreen_views;
+		for(std::size_t i = 0; i < offscreen_image_count; i++)
+		{
+			vk::Image& cur = offscreen_images.emplace_back(my_logical_device, static_cast<std::uint32_t>(offscreen_width), static_cast<std::uint32_t>(offscreen_height), vk::Image::Format::Rgba32sRGB, vk::Image::UsageField{vk::Image::Usage::TransferSource, vk::Image::Usage::ColourAttachment}, vk::hardware::MemoryResidency::GPU);
+			offscreen_views.emplace_back(my_logical_device, cur);
+		}      
 
-        vk::pipeline::VertexInputState vertex_input_state
-        {
-            vk::VertexBindingDescriptions{binding_description},
-            vk::VertexAttributeDescriptions{pos_description, col_description, texcoord_description}
-        };
+		vk::pipeline::VertexInputState vertex_input_state
+		{
+			vk::VertexBindingDescriptions{binding_description},
+			vk::VertexAttributeDescriptions{pos_description, col_description, texcoord_description}
+		};
 
-        vk::RenderPassBuilder builder;
-        vk::Attachment col
-        {
-            vk::Image::Format::Rgba32sRGB, /* Offscreen image format */
-            vk::Attachment::LoadOperation::Clear,
-            vk::Attachment::StoreOperation::Store,
-            vk::Image::Layout::Undefined,
-            vk::Image::Layout::TransferSource
-        };
+		vk::RenderPassBuilder builder;
+		vk::Attachment col
+		{
+			vk::Image::Format::Rgba32sRGB, /* Offscreen image format */
+			vk::Attachment::LoadOperation::Clear,
+			vk::Attachment::StoreOperation::Store,
+			vk::Image::Layout::Undefined,
+			vk::Image::Layout::TransferSource
+		};
 
-        builder.with(vk::Attachments{col});
-        vk::RenderPass simple_colour_pass{my_logical_device, builder};
+		builder.with(vk::Attachments{col});
+		vk::RenderPass simple_colour_pass{my_logical_device, builder};
 
-        vk::LayoutBuilder layout_build;
-        std::uint32_t ubo_binding = layout_build.add(vk::DescriptorType::UniformBuffer, vk::pipeline::ShaderTypeField{vk::pipeline::ShaderType::Vertex});
-        std::uint32_t img_binding = layout_build.add(vk::DescriptorType::CombinedImageSampler, vk::pipeline::ShaderTypeField{vk::pipeline::ShaderType::Fragment});
-        tz_assert(ubo_binding == 0, "Expected binding to be 0. Shader needs to change or this");
-        vk::DescriptorSetLayout layout{my_logical_device, layout_build};
-        
-        vk::pipeline::Layout my_layout{my_logical_device, vk::DescriptorSetLayoutRefs{layout}};
+		vk::LayoutBuilder layout_build;
+		std::uint32_t ubo_binding = layout_build.add(vk::DescriptorType::UniformBuffer, vk::pipeline::ShaderTypeField{vk::pipeline::ShaderType::Vertex});
+		std::uint32_t img_binding = layout_build.add(vk::DescriptorType::CombinedImageSampler, vk::pipeline::ShaderTypeField{vk::pipeline::ShaderType::Fragment});
+		tz_assert(ubo_binding == 0, "Expected binding to be 0. Shader needs to change or this");
+		vk::DescriptorSetLayout layout{my_logical_device, layout_build};
+		
+		vk::pipeline::Layout my_layout{my_logical_device, vk::DescriptorSetLayoutRefs{layout}};
 
-        vk::ShaderModule vertex{my_logical_device, vk::read_external_shader(".\\demo\\gl\\vk\\triangle_demo.vertex.glsl").value()};
-        vk::ShaderModule fragment{my_logical_device, vk::read_external_shader(".\\demo\\gl\\vk\\triangle_demo.fragment.glsl").value()};
+		vk::ShaderModule vertex{my_logical_device, vk::read_external_shader(".\\demo\\gl\\vk\\triangle_demo.vertex.glsl").value()};
+		vk::ShaderModule fragment{my_logical_device, vk::read_external_shader(".\\demo\\gl\\vk\\triangle_demo.fragment.glsl").value()};
 
-        vk::GraphicsPipeline my_pipeline
-        {
-            {{vertex, vk::pipeline::ShaderType::Vertex}, {fragment, vk::pipeline::ShaderType::Fragment}},
-            my_logical_device,
-            vertex_input_state,
-            vk::pipeline::InputAssembly{vk::pipeline::PrimitiveTopology::Triangles},
-            vk::pipeline::ViewportState{offscreen_images.front()},
-            vk::pipeline::RasteriserState
-            {
-                false,
-                false,
-                vk::pipeline::PolygonMode::Fill,
-                1.0f,
-                vk::pipeline::CullingStrategy::None
-            },
-            vk::pipeline::MultisampleState{},
-            vk::pipeline::ColourBlendState{},
-            vk::pipeline::DynamicState::None(),
-            my_layout,
-            simple_colour_pass
-        };
+		vk::GraphicsPipeline my_pipeline
+		{
+			{{vertex, vk::pipeline::ShaderType::Vertex}, {fragment, vk::pipeline::ShaderType::Fragment}},
+			my_logical_device,
+			vertex_input_state,
+			vk::pipeline::InputAssembly{vk::pipeline::PrimitiveTopology::Triangles},
+			vk::pipeline::ViewportState{offscreen_images.front()},
+			vk::pipeline::RasteriserState
+			{
+				false,
+				false,
+				vk::pipeline::PolygonMode::Fill,
+				1.0f,
+				vk::pipeline::CullingStrategy::None
+			},
+			vk::pipeline::MultisampleState{},
+			vk::pipeline::ColourBlendState{},
+			vk::pipeline::DynamicState::None(),
+			my_layout,
+			simple_colour_pass
+		};
 
-        const std::size_t vertices_bytes = sizeof(Vertex) * vertices.size();
-        const std::size_t indices_bytes = sizeof(unsigned int) * indices.size();
-        const std::size_t mvp_bytes = sizeof(MVP);
-        const std::size_t img_bytes = sizeof(imgdata);
-        vk::Buffer buf{vk::BufferType::Vertex, vk::BufferPurpose::TransferDestination, my_logical_device, vk::hardware::MemoryResidency::GPU, vertices_bytes};
-        vk::Buffer index_buf{vk::BufferType::Index, vk::BufferPurpose::TransferDestination, my_logical_device, vk::hardware::MemoryResidency::GPU, indices_bytes};
-        vk::Buffer img_buf{vk::BufferType::Staging, vk::BufferPurpose::TransferSource, my_logical_device, vk::hardware::MemoryResidency::CPU, img_bytes};
-        img_buf.write(imgdata.data(), img_bytes);
-        std::vector<vk::Buffer> mvp_bufs;
+		const std::size_t vertices_bytes = sizeof(Vertex) * vertices.size();
+		const std::size_t indices_bytes = sizeof(unsigned int) * indices.size();
+		const std::size_t mvp_bytes = sizeof(MVP);
+		const std::size_t img_bytes = sizeof(imgdata);
+		vk::Buffer buf{vk::BufferType::Vertex, vk::BufferPurpose::TransferDestination, my_logical_device, vk::hardware::MemoryResidency::GPU, vertices_bytes};
+		vk::Buffer index_buf{vk::BufferType::Index, vk::BufferPurpose::TransferDestination, my_logical_device, vk::hardware::MemoryResidency::GPU, indices_bytes};
+		vk::Buffer img_buf{vk::BufferType::Staging, vk::BufferPurpose::TransferSource, my_logical_device, vk::hardware::MemoryResidency::CPU, img_bytes};
+		img_buf.write(imgdata.data(), img_bytes);
+		std::vector<vk::Buffer> mvp_bufs;
 
-        vk::Image img{my_logical_device, 2, 2, vk::Image::Format::Rgba32sRGB, {vk::Image::Usage::TransferDestination, vk::Image::Usage::Sampleable}, vk::hardware::MemoryResidency::GPU};
-        vk::ImageView img_view{my_logical_device, img};
-        vk::SamplerProperties props
-        {
-            .min_filter = VK_FILTER_LINEAR,
-            .mag_filter = VK_FILTER_LINEAR,
-            .address_mode_u = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
-            .address_mode_v = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
-            .address_mode_w = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
-        };
-        vk::Sampler img_sampler{my_logical_device, props};
-        
-        /*
-        for(std::size_t i = 0; i < swapchain.get_image_views().size(); i++)
-        {
-            mvp_bufs.emplace_back(vk::BufferType::Uniform, vk::BufferPurpose::NothingSpecial, my_logical_device, vk::hardware::MemoryResidency::CPU, mvp_bytes);
-        }*/
-        for(std::size_t i = 0; i < offscreen_image_count; i++)
-        {
-            mvp_bufs.emplace_back(vk::BufferType::Uniform, vk::BufferPurpose::NothingSpecial, my_logical_device, vk::hardware::MemoryResidency::CPU, mvp_bytes);
-        }
+		vk::Image img{my_logical_device, 2, 2, vk::Image::Format::Rgba32sRGB, {vk::Image::Usage::TransferDestination, vk::Image::Usage::Sampleable}, vk::hardware::MemoryResidency::GPU};
+		vk::ImageView img_view{my_logical_device, img};
+		vk::SamplerProperties props
+		{
+			.min_filter = VK_FILTER_LINEAR,
+			.mag_filter = VK_FILTER_LINEAR,
+			.address_mode_u = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
+			.address_mode_v = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
+			.address_mode_w = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
+		};
+		vk::Sampler img_sampler{my_logical_device, props};
+		
+		/*
+		for(std::size_t i = 0; i < swapchain.get_image_views().size(); i++)
+		{
+			mvp_bufs.emplace_back(vk::BufferType::Uniform, vk::BufferPurpose::NothingSpecial, my_logical_device, vk::hardware::MemoryResidency::CPU, mvp_bytes);
+		}*/
+		for(std::size_t i = 0; i < offscreen_image_count; i++)
+		{
+			mvp_bufs.emplace_back(vk::BufferType::Uniform, vk::BufferPurpose::NothingSpecial, my_logical_device, vk::hardware::MemoryResidency::CPU, mvp_bytes);
+		}
 
-        std::vector<vk::Framebuffer> swapchain_buffers;
-        /*
-        for(const vk::ImageView& swapchain_view : swapchain.get_image_views())
-        {
-            swapchain_buffers.emplace_back(simple_colour_pass, swapchain_view, VkExtent2D{static_cast<std::uint32_t>(swapchain.get_width()), static_cast<std::uint32_t>(swapchain.get_height())});
-        }
-        */
-       for(const vk::ImageView& offscreen_view : offscreen_views)
-       {
-           swapchain_buffers.emplace_back(simple_colour_pass, offscreen_view, VkExtent2D{static_cast<std::uint32_t>(offscreen_width), static_cast<std::uint32_t>(offscreen_height)});
-       }
+		std::vector<vk::Framebuffer> swapchain_buffers;
+		/*
+		for(const vk::ImageView& swapchain_view : swapchain.get_image_views())
+		{
+			swapchain_buffers.emplace_back(simple_colour_pass, swapchain_view, VkExtent2D{static_cast<std::uint32_t>(swapchain.get_width()), static_cast<std::uint32_t>(swapchain.get_height())});
+		}
+		*/
+	   for(const vk::ImageView& offscreen_view : offscreen_views)
+	   {
+		   swapchain_buffers.emplace_back(simple_colour_pass, offscreen_view, VkExtent2D{static_cast<std::uint32_t>(offscreen_width), static_cast<std::uint32_t>(offscreen_height)});
+	   }
 
-        vk::DescriptorPoolBuilder pool_builder;
-        pool_builder
-        // Enough for all our descriptors.
-        //.with_capacity(swapchain.get_image_views().size() * 2)
-        .with_capacity(offscreen_image_count * 2)
-        // We have one UBO per swapchain image.
-        //.with_size(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, swapchain.get_image_views().size())
-        //.with_size(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, swapchain.get_image_views().size());
-        .with_size(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, offscreen_image_count)
-        .with_size(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, offscreen_image_count);
-        /*
-        for(std::size_t i = 0; i < swapchain.get_image_views().size(); i++)
-        {
-            pool_builder.with_layout(layout);
-        }
-        */
-        for(std::size_t i = 0; i < offscreen_image_count; i++)
-        {
-            pool_builder.with_layout(layout);
-        }
+		vk::DescriptorPoolBuilder pool_builder;
+		pool_builder
+		// Enough for all our descriptors.
+		//.with_capacity(swapchain.get_image_views().size() * 2)
+		.with_capacity(offscreen_image_count * 2)
+		// We have one UBO per swapchain image.
+		//.with_size(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, swapchain.get_image_views().size())
+		//.with_size(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, swapchain.get_image_views().size());
+		.with_size(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, offscreen_image_count)
+		.with_size(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, offscreen_image_count);
+		/*
+		for(std::size_t i = 0; i < swapchain.get_image_views().size(); i++)
+		{
+			pool_builder.with_layout(layout);
+		}
+		*/
+		for(std::size_t i = 0; i < offscreen_image_count; i++)
+		{
+			pool_builder.with_layout(layout);
+		}
 
-        vk::DescriptorPool descriptor_pool{my_logical_device, pool_builder};
-        vk::DescriptorSetsCreationRequests requests;
-        /*
-        for(std::size_t i = 0; i < swapchain.get_image_views().size(); i++)
-        {
-            vk::DescriptorSetsCreationRequest& request = requests.new_request();
-            request.add_buffer(mvp_bufs[i], 0, VK_WHOLE_SIZE, ubo_binding);
-            request.add_image(img_view, img_sampler, img_binding);
-        }
-        */
-       for(std::size_t i = 0; i < offscreen_image_count; i++)
-        {
-            vk::DescriptorSetsCreationRequest& request = requests.new_request();
-            request.add_buffer(mvp_bufs[i], 0, VK_WHOLE_SIZE, ubo_binding);
-            request.add_image(img_view, img_sampler, img_binding);
-        }
-        descriptor_pool.initialise_sets(requests);
-        /*
-        auto num_sets = static_cast<std::uint32_t>(swapchain.get_image_views().size());
-        vk::DescriptorSetLayouts layouts2;
-        for(std::size_t i = 0; i < swapchain.get_image_views().size(); i++)
-        {
-            layouts2.emplace_back(my_logical_device, vk::DescriptorSetLayoutBinding{0, vk::DescriptorType::UniformBuffer});
-        }
-        vk::DescriptorPool descriptor_pool{my_logical_device, vk::DescriptorPoolSizes{{vk::DescriptorType::UniformBuffer, num_sets}}, std::move(layouts2)};
-        descriptor_pool.with(num_sets, mvp_bufs);
-        */
+		vk::DescriptorPool descriptor_pool{my_logical_device, pool_builder};
+		vk::DescriptorSetsCreationRequests requests;
+		/*
+		for(std::size_t i = 0; i < swapchain.get_image_views().size(); i++)
+		{
+			vk::DescriptorSetsCreationRequest& request = requests.new_request();
+			request.add_buffer(mvp_bufs[i], 0, VK_WHOLE_SIZE, ubo_binding);
+			request.add_image(img_view, img_sampler, img_binding);
+		}
+		*/
+	   for(std::size_t i = 0; i < offscreen_image_count; i++)
+		{
+			vk::DescriptorSetsCreationRequest& request = requests.new_request();
+			request.add_buffer(mvp_bufs[i], 0, VK_WHOLE_SIZE, ubo_binding);
+			request.add_image(img_view, img_sampler, img_binding);
+		}
+		descriptor_pool.initialise_sets(requests);
+		/*
+		auto num_sets = static_cast<std::uint32_t>(swapchain.get_image_views().size());
+		vk::DescriptorSetLayouts layouts2;
+		for(std::size_t i = 0; i < swapchain.get_image_views().size(); i++)
+		{
+			layouts2.emplace_back(my_logical_device, vk::DescriptorSetLayoutBinding{0, vk::DescriptorType::UniformBuffer});
+		}
+		vk::DescriptorPool descriptor_pool{my_logical_device, vk::DescriptorPoolSizes{{vk::DescriptorType::UniformBuffer, num_sets}}, std::move(layouts2)};
+		descriptor_pool.with(num_sets, mvp_bufs);
+		*/
 
-        vk::CommandPool command_pool(my_logical_device, my_qfam, vk::CommandPool::RecycleBuffer);
-        //command_pool.with(swapchain.get_image_views().size() + 1);
-        command_pool.with(offscreen_image_count + 1);
-        //for(std::size_t i = 0; i < swapchain.get_image_views().size(); i++)
-        for(std::size_t i = 0; i < offscreen_image_count; i++)
-        {
-            vk::CommandBufferRecording render = command_pool[i].record();
-            VkRect2D offscreen_render_area;
-            offscreen_render_area.offset = {0, 0};
-            offscreen_render_area.extent = {static_cast<std::uint32_t>(offscreen_width), static_cast<std::uint32_t>(offscreen_height)};
-            //vk::RenderPassRun run{command_pool[i], simple_colour_pass, swapchain_buffers[i], swapchain.full_render_area(), VkClearValue{0.1f, 0.3f, 0.7f, 0.0f}};
-            vk::RenderPassRun run{command_pool[i], simple_colour_pass, swapchain_buffers[i], offscreen_render_area, VkClearValue{0.1f, 0.3f, 0.7f, 0.0f}};
-            my_pipeline.bind(command_pool[i]);
-            render.bind(buf);
-            render.bind(index_buf);
-            render.bind(descriptor_pool[i], my_layout);
-            render.draw_indexed(indices.size());
-        }
+		vk::CommandPool command_pool(my_logical_device, my_qfam, vk::CommandPool::RecycleBuffer);
+		//command_pool.with(swapchain.get_image_views().size() + 1);
+		command_pool.with(offscreen_image_count + 1);
+		//for(std::size_t i = 0; i < swapchain.get_image_views().size(); i++)
+		for(std::size_t i = 0; i < offscreen_image_count; i++)
+		{
+			vk::CommandBufferRecording render = command_pool[i].record();
+			VkRect2D offscreen_render_area;
+			offscreen_render_area.offset = {0, 0};
+			offscreen_render_area.extent = {static_cast<std::uint32_t>(offscreen_width), static_cast<std::uint32_t>(offscreen_height)};
+			//vk::RenderPassRun run{command_pool[i], simple_colour_pass, swapchain_buffers[i], swapchain.full_render_area(), VkClearValue{0.1f, 0.3f, 0.7f, 0.0f}};
+			vk::RenderPassRun run{command_pool[i], simple_colour_pass, swapchain_buffers[i], offscreen_render_area, VkClearValue{0.1f, 0.3f, 0.7f, 0.0f}};
+			my_pipeline.bind(command_pool[i]);
+			render.bind(buf);
+			render.bind(index_buf);
+			render.bind(descriptor_pool[i], my_layout);
+			render.draw_indexed(indices.size());
+		}
 
-        vk::hardware::Queue graphics_present_queue = my_logical_device.get_hardware_queue();
+		vk::hardware::Queue graphics_present_queue = my_logical_device.get_hardware_queue();
 
-        // last buffer in command pool is specifically for transfer.
-        //vk::CommandBuffer& transfer_cmd_buf = command_pool[swapchain.get_image_views().size()];
-        vk::CommandBuffer& transfer_cmd_buf = command_pool[offscreen_image_count];
-        {
-            vk::Buffer vertices_staging{vk::BufferType::Staging, vk::BufferPurpose::TransferSource, my_logical_device, vk::hardware::MemoryResidency::CPU, vertices_bytes};
-            vertices_staging.write(vertices.data(), vertices_bytes);
-            {
-                vk::CommandBufferRecording transfer_vertices = transfer_cmd_buf.record();
-                transfer_vertices.buffer_copy_buffer(vertices_staging, buf, vertices_bytes);
-            }
+		// last buffer in command pool is specifically for transfer.
+		//vk::CommandBuffer& transfer_cmd_buf = command_pool[swapchain.get_image_views().size()];
+		vk::CommandBuffer& transfer_cmd_buf = command_pool[offscreen_image_count];
+		{
+			vk::Buffer vertices_staging{vk::BufferType::Staging, vk::BufferPurpose::TransferSource, my_logical_device, vk::hardware::MemoryResidency::CPU, vertices_bytes};
+			vertices_staging.write(vertices.data(), vertices_bytes);
+			{
+				vk::CommandBufferRecording transfer_vertices = transfer_cmd_buf.record();
+				transfer_vertices.buffer_copy_buffer(vertices_staging, buf, vertices_bytes);
+			}
 
-            vk::Fence wait_for_cpy{my_logical_device};
-            wait_for_cpy.signal();
-            vk::Submit do_staging_cpy{vk::CommandBuffers{transfer_cmd_buf}, vk::SemaphoreRefs{}, vk::WaitStages{}, vk::SemaphoreRefs{}};
-            do_staging_cpy(graphics_present_queue, wait_for_cpy);
-            wait_for_cpy.wait_for();
+			vk::Fence wait_for_cpy{my_logical_device};
+			wait_for_cpy.signal();
+			vk::Submit do_staging_cpy{vk::CommandBuffers{transfer_cmd_buf}, vk::SemaphoreRefs{}, vk::WaitStages{}, vk::SemaphoreRefs{}};
+			do_staging_cpy(graphics_present_queue, wait_for_cpy);
+			wait_for_cpy.wait_for();
 
-            // Then repeat the process for index buffer.
-            vk::Buffer indices_staging{vk::BufferType::Staging, vk::BufferPurpose::TransferSource, my_logical_device, vk::hardware::MemoryResidency::CPU, indices_bytes};
-            indices_staging.write(indices.data(), indices_bytes);
-            transfer_cmd_buf.reset();
-            {
-                vk::CommandBufferRecording transfer_indices = transfer_cmd_buf.record();
-                transfer_indices.buffer_copy_buffer(indices_staging, index_buf, indices_bytes);
-            }
+			// Then repeat the process for index buffer.
+			vk::Buffer indices_staging{vk::BufferType::Staging, vk::BufferPurpose::TransferSource, my_logical_device, vk::hardware::MemoryResidency::CPU, indices_bytes};
+			indices_staging.write(indices.data(), indices_bytes);
+			transfer_cmd_buf.reset();
+			{
+				vk::CommandBufferRecording transfer_indices = transfer_cmd_buf.record();
+				transfer_indices.buffer_copy_buffer(indices_staging, index_buf, indices_bytes);
+			}
 
-            wait_for_cpy.signal();
-            do_staging_cpy(graphics_present_queue, wait_for_cpy);
-            wait_for_cpy.wait_for();
+			wait_for_cpy.signal();
+			do_staging_cpy(graphics_present_queue, wait_for_cpy);
+			wait_for_cpy.wait_for();
 
-            transfer_cmd_buf.reset();
-            {
-                vk::CommandBufferRecording transfer_image = transfer_cmd_buf.record();
-                transfer_image.transition_image_layout(img, vk::Image::Layout::TransferDestination);
-                transfer_image.buffer_copy_image(img_buf, img);
-                transfer_image.transition_image_layout(img, vk::Image::Layout::ShaderResource);
-            }
+			transfer_cmd_buf.reset();
+			{
+				vk::CommandBufferRecording transfer_image = transfer_cmd_buf.record();
+				transfer_image.transition_image_layout(img, vk::Image::Layout::TransferDestination);
+				transfer_image.buffer_copy_image(img_buf, img);
+				transfer_image.transition_image_layout(img, vk::Image::Layout::ShaderResource);
+			}
 
-            wait_for_cpy.signal();
-            do_staging_cpy(graphics_present_queue, wait_for_cpy);
-            wait_for_cpy.wait_for();
-        }
-        
-        vk::Semaphore image_available{my_logical_device};
-        vk::Semaphore render_finished{my_logical_device};
+			wait_for_cpy.signal();
+			do_staging_cpy(graphics_present_queue, wait_for_cpy);
+			wait_for_cpy.wait_for();
+		}
+		
+		vk::Semaphore image_available{my_logical_device};
+		vk::Semaphore render_finished{my_logical_device};
 
-        auto update_uniform_buffer = [&](std::uint32_t image_index)
-        {
-            static auto startTime = std::chrono::high_resolution_clock::now();
+		auto update_uniform_buffer = [&](std::uint32_t image_index)
+		{
+			static auto startTime = std::chrono::high_resolution_clock::now();
 
-            auto currentTime = std::chrono::high_resolution_clock::now();
-            float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
-            
-            MVP mvp{};
-            mvp.m = tz::model({0.0f, std::sin(time * 4.0f), -10.0f}, {0.0f, time * 2.0f, 0.0f}, {5.0f, 5.0f, 5.0f});
-            mvp.v = tz::view({0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f});
-            //mvp.p = tz::perspective(1.27f, swapchain.get_width() / swapchain.get_height(), 0.1f, 100.0f);
-            mvp.p = tz::perspective(1.27f, offscreen_width / offscreen_height, 0.1f, 100.0f);
-            mvp_bufs[image_index].write(&mvp, mvp_bytes);
-        };
+			auto currentTime = std::chrono::high_resolution_clock::now();
+			float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
+			
+			MVP mvp{};
+			mvp.m = tz::model({0.0f, std::sin(time * 4.0f), -10.0f}, {0.0f, time * 2.0f, 0.0f}, {5.0f, 5.0f, 5.0f});
+			mvp.v = tz::view({0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f});
+			//mvp.p = tz::perspective(1.27f, swapchain.get_width() / swapchain.get_height(), 0.1f, 100.0f);
+			mvp.p = tz::perspective(1.27f, offscreen_width / offscreen_height, 0.1f, 100.0f);
+			mvp_bufs[image_index].write(&mvp, mvp_bytes);
+		};
 
-        constexpr std::size_t num_frames_in_flight = 1;
-        vk::FrameAdmin frame_admin{my_logical_device, num_frames_in_flight};
-        
-        // Only once
-        {
-            update_uniform_buffer(frame_admin.get_image_index());
-            frame_admin.render_frame_headless(graphics_present_queue, offscreen_image_count, command_pool, vk::WaitStages{vk::WaitStage::ColourAttachmentOutput});
-        }
-        my_logical_device.block_until_idle();
-    }
-    tz::terminate();
-    return 0;
+		constexpr std::size_t num_frames_in_flight = 1;
+		vk::FrameAdmin frame_admin{my_logical_device, num_frames_in_flight};
+		
+		// Only once
+		{
+			update_uniform_buffer(frame_admin.get_image_index());
+			frame_admin.render_frame_headless(graphics_present_queue, offscreen_image_count, command_pool, vk::WaitStages{vk::WaitStage::ColourAttachmentOutput});
+		}
+		my_logical_device.block_until_idle();
+	}
+	tz::terminate();
+	return 0;
 }

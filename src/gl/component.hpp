@@ -5,15 +5,15 @@
 #include "gl/impl/frontend/vk/component.hpp"
 namespace tz::gl
 {
-    using BufferComponent = BufferComponentVulkan;
-    using TextureComponent = TextureComponentVulkan;
+	using BufferComponent = BufferComponentVulkan;
+	using TextureComponent = TextureComponentVulkan;
 }
 #elif TZ_OGL
 #include "gl/impl/frontend/ogl/component.hpp"
 namespace tz::gl
 {
-    using BufferComponent = BufferComponentOGL;
-    using TextureComponent = TextureComponentOGL;
+	using BufferComponent = BufferComponentOGL;
+	using TextureComponent = TextureComponentOGL;
 }
 #endif
 

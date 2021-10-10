@@ -5,15 +5,15 @@
 
 namespace tz::gl::vk::pipeline
 {
-    // TODO: Enable multisampling
-    class MultisampleState
-    {
-    public:
-        MultisampleState();
-        VkPipelineMultisampleStateCreateInfo native() const;
-    private:
-        VkPipelineMultisampleStateCreateInfo create;
-    };
+	// TODO: Enable multisampling
+	class MultisampleState
+	{
+	public:
+		MultisampleState();
+		VkPipelineMultisampleStateCreateInfo native() const;
+	private:
+		VkPipelineMultisampleStateCreateInfo create;
+	};
 }
 
 #endif // TZ_VULKAN

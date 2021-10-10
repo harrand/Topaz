@@ -9,24 +9,24 @@
 namespace tz::gl::vk
 {
 
-    class VertexAttributeDescription
-    {
-    public:
-        constexpr VertexAttributeDescription(std::uint32_t binding, std::uint32_t location, VkFormat vertex_format, std::uint32_t offset):
-        desc()
-        {
-            this->desc.binding = binding;
-            this->desc.location = location;
-            this->desc.format = vertex_format;
-            this->desc.offset = offset;
-        }
+	class VertexAttributeDescription
+	{
+	public:
+		constexpr VertexAttributeDescription(std::uint32_t binding, std::uint32_t location, VkFormat vertex_format, std::uint32_t offset):
+		desc()
+		{
+			this->desc.binding = binding;
+			this->desc.location = location;
+			this->desc.format = vertex_format;
+			this->desc.offset = offset;
+		}
 
-        VkVertexInputAttributeDescription native() const;
-    private:
-        VkVertexInputAttributeDescription desc;
-    };
+		VkVertexInputAttributeDescription native() const;
+	private:
+		VkVertexInputAttributeDescription desc;
+	};
 
-    using VertexAttributeDescriptions = std::vector<VertexAttributeDescription>;
+	using VertexAttributeDescriptions = std::vector<VertexAttributeDescription>;
 }
 
 #endif // TZ_VULKAN

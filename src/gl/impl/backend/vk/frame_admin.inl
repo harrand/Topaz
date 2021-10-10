@@ -2,10 +2,10 @@
 
 namespace tz::gl::vk
 {
-    void FrameAdmin::set_regeneration_function(tz::Action auto regeneration_function)
-    {
-        this->regenerate_function = regeneration_function;
-    }
+	void FrameAdmin::set_regeneration_function(tz::Action auto regeneration_function)
+	{
+		this->regenerate_function = regeneration_function;
+	}
 
 }
 

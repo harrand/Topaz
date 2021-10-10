@@ -5,15 +5,15 @@
 #include "gl/impl/frontend/vk/processor.hpp"
 namespace tz::gl
 {
-    using ProcessorBuilder = ProcessorBuilderVulkan;
-    using Processor = ProcessorVulkan;
+	using ProcessorBuilder = ProcessorBuilderVulkan;
+	using Processor = ProcessorVulkan;
 }
 #elif TZ_OGL
 #include "gl/impl/frontend/ogl/processor.hpp"
 namespace tz::gl
 {
-    using ProcessorBuilder = ProcessorBuilderOGL;
-    using Processor = ProcessorOGL;
+	using ProcessorBuilder = ProcessorBuilderOGL;
+	using Processor = ProcessorOGL;
 }
 #endif
 

@@ -6,8 +6,8 @@
 
 namespace tz::gl
 {
-    constexpr vk::Image::Format to_vk(TextureFormat fmt);
-    constexpr TextureFormat from_vk(vk::Image::Format fmt);
+	constexpr vk::Image::Format to_vk(TextureFormat fmt);
+	constexpr TextureFormat from_vk(vk::Image::Format fmt);
 }
 
 #include "gl/impl/frontend/vk/convert.inl"

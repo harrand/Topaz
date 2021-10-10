@@ -9,6 +9,6 @@ int tz_vertex_id = gl_VertexIndex;
 layout (location = 0) out vec2 out_texcoord;
 void main()
 {
-    out_texcoord = vec2((tz_vertex_id << 1) & 2, tz_vertex_id & 2);
-    gl_Position = vec4(out_texcoord * 2.0f + -1.0f, 0.0f, 1.0f);
+	out_texcoord = vec2((tz_vertex_id << 1) & 2, tz_vertex_id & 2);
+	gl_Position = vec4(out_texcoord * 2.0f + -1.0f, 0.0f, 1.0f);
 }

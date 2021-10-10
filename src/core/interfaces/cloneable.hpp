@@ -4,12 +4,12 @@
 
 namespace tz
 {
-    template<typename T>
-    class IUniqueCloneable
-    {
-    public:
-        [[nodiscard]] virtual std::unique_ptr<T> unique_clone() const = 0;
-    };
+	template<typename T>
+	class IUniqueCloneable
+	{
+	public:
+		[[nodiscard]] virtual std::unique_ptr<T> unique_clone() const = 0;
+	};
 }
 
 #endif //TOPAZ_CORE_INTERFACES_CLONEABLE_HPP

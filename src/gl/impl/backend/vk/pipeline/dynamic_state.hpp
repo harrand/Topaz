@@ -6,27 +6,27 @@
 
 namespace tz::gl::vk::pipeline
 {
-    enum class DynamicStateType
-    {
-        ViewportDimensions = VK_DYNAMIC_STATE_VIEWPORT,
-        ScissorDimensions = VK_DYNAMIC_STATE_SCISSOR,
-        LineWidth = VK_DYNAMIC_STATE_LINE_WIDTH,
-    };
+	enum class DynamicStateType
+	{
+		ViewportDimensions = VK_DYNAMIC_STATE_VIEWPORT,
+		ScissorDimensions = VK_DYNAMIC_STATE_SCISSOR,
+		LineWidth = VK_DYNAMIC_STATE_LINE_WIDTH,
+	};
 
-    using DynamicStateTypeField = tz::EnumField<DynamicStateType>;
+	using DynamicStateTypeField = tz::EnumField<DynamicStateType>;
 
-    class DynamicState
-    {
-    public:
-        DynamicState(DynamicStateTypeField state_enables);
-        static DynamicState None();
-        VkPipelineDynamicStateCreateInfo native() const;
-    private:
-        DynamicState();
-        DynamicStateTypeField states_enabled;
-        std::vector<VkDynamicState> state_natives;
-        VkPipelineDynamicStateCreateInfo create;
-    };
+	class DynamicState
+	{
+	public:
+		DynamicState(DynamicStateTypeField state_enables);
+		static DynamicState None();
+		VkPipelineDynamicStateCreateInfo native() const;
+	private:
+		DynamicState();
+		DynamicStateTypeField states_enabled;
+		std::vector<VkDynamicState> state_natives;
+		VkPipelineDynamicStateCreateInfo create;
+	};
 }
 
 #endif // TZ_VULKAN

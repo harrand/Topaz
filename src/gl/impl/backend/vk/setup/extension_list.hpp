@@ -5,12 +5,12 @@
 
 namespace tz::gl::vk
 {
-    using VulkanExtension = const char*;
+	using VulkanExtension = const char*;
 
-    using ExtensionList = tz::BasicList<VulkanExtension>;
+	using ExtensionList = tz::BasicList<VulkanExtension>;
 
-    ExtensionList get_glfw_required_extensions();
-    ExtensionList get_default_required_extensions();
+	ExtensionList get_glfw_required_extensions();
+	ExtensionList get_default_required_extensions();
 }
 
 #endif // TZ_VULKAn

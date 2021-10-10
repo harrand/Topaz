@@ -3,10 +3,10 @@
 
 namespace tz::gl::vk
 {
-    VkVertexInputAttributeDescription VertexAttributeDescription::native() const
-    {
-        return this->desc;
-    }
+	VkVertexInputAttributeDescription VertexAttributeDescription::native() const
+	{
+		return this->desc;
+	}
 }
 
 #endif // TZ_VULKAN

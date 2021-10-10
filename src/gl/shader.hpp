@@ -5,15 +5,15 @@
 #include "gl/impl/frontend/vk/shader.hpp"
 namespace tz::gl
 {
-    using Shader = ShaderVulkan;
-    using ShaderBuilder = ShaderBuilderVulkan;
+	using Shader = ShaderVulkan;
+	using ShaderBuilder = ShaderBuilderVulkan;
 }
 #elif TZ_OGL
 #include "gl/impl/frontend/ogl/shader.hpp"
 namespace tz::gl
 {
-    using Shader = ShaderOGL;
-    using ShaderBuilder = ShaderBuilderOGL;
+	using Shader = ShaderOGL;
+	using ShaderBuilder = ShaderBuilderOGL;
 }
 #endif
 

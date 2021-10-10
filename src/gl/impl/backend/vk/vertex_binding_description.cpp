@@ -3,10 +3,10 @@
 
 namespace tz::gl::vk
 {
-    VkVertexInputBindingDescription VertexBindingDescription::native() const
-    {
-        return this->desc;
-    }
+	VkVertexInputBindingDescription VertexBindingDescription::native() const
+	{
+		return this->desc;
+	}
 }
 
 #endif // TZ_VULKAN

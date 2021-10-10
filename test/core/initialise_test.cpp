@@ -2,9 +2,9 @@
 
 int main()
 {
-    tz::initialise({"tz_initialise_test", tz::Version{1, 0, 0}, tz::info()}, tz::ApplicationType::Headless);
-    {
-        // Nothing
-    }
-    tz::terminate();
+	tz::initialise({"tz_initialise_test", tz::Version{1, 0, 0}, tz::info()}, tz::ApplicationType::Headless);
+	{
+		// Nothing
+	}
+	tz::terminate();
 }

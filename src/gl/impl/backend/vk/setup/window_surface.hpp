@@ -5,20 +5,20 @@
 
 namespace tz::gl::vk
 {
-    class WindowSurface
-    {
-    public:
-        WindowSurface();
-        WindowSurface(const WindowSurface& copy) = delete;
-        WindowSurface(WindowSurface&& move);
-        ~WindowSurface();
-        WindowSurface& operator=(const WindowSurface& copy) = delete;
-        WindowSurface& operator=(WindowSurface&& move);
+	class WindowSurface
+	{
+	public:
+		WindowSurface();
+		WindowSurface(const WindowSurface& copy) = delete;
+		WindowSurface(WindowSurface&& move);
+		~WindowSurface();
+		WindowSurface& operator=(const WindowSurface& copy) = delete;
+		WindowSurface& operator=(WindowSurface&& move);
 
-        VkSurfaceKHR native() const;
-    private:
-        VkSurfaceKHR surface;
-    };
+		VkSurfaceKHR native() const;
+	private:
+		VkSurfaceKHR surface;
+	};
 }
 
 #endif // TZ_VULKAN

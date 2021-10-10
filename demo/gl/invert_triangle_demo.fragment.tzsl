@@ -8,15 +8,15 @@ const float grid_scale = 20.0;
 
 void main()
 {
-    vec2 texcoord_transformed = texcoord;
-    #if TZ_VULKAN
-        texcoord_transformed.y = 1.0 - texcoord_transformed.y;
-    #endif
-    output_colour = texture(tex_sampler, texcoord_transformed);
-    {
-        vec4 inverse = vec4(1.0) - output_colour;
-        output_colour = mix(output_colour, inverse, sin(gl_FragCoord.x / grid_scale) + sin(gl_FragCoord.y / grid_scale));
-    }
-    
-    output_colour.w = 1.0;
+	vec2 texcoord_transformed = texcoord;
+	#if TZ_VULKAN
+		texcoord_transformed.y = 1.0 - texcoord_transformed.y;
+	#endif
+	output_colour = texture(tex_sampler, texcoord_transformed);
+	{
+		vec4 inverse = vec4(1.0) - output_colour;
+		output_colour = mix(output_colour, inverse, sin(gl_FragCoord.x / grid_scale) + sin(gl_FragCoord.y / grid_scale));
+	}
+	
+	output_colour.w = 1.0;
 }

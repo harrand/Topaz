@@ -5,15 +5,15 @@
 #include "gl/impl/frontend/vk/device.hpp"
 namespace tz::gl
 {
-    using Device = DeviceVulkan;
-    using DeviceBuilder = DeviceBuilderVulkan;
+	using Device = DeviceVulkan;
+	using DeviceBuilder = DeviceBuilderVulkan;
 }
 #elif TZ_OGL
 #include "gl/impl/frontend/ogl/device.hpp"
 namespace tz::gl
 {
-    using Device = DeviceOGL;
-    using DeviceBuilder = DeviceBuilderOGL;
+	using Device = DeviceOGL;
+	using DeviceBuilder = DeviceBuilderOGL;
 }
 #endif
 

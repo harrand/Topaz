@@ -6,25 +6,25 @@
 
 namespace tz::gl::vk
 {
-    void initialise_headless(tz::GameInfo game_info);
-    void initialise(tz::GameInfo game_info);
-    void terminate();
-    VulkanInstance& get();
-    bool is_initialised();
-    WindowSurface* window_surface();
-    bool is_headless();
+	void initialise_headless(tz::GameInfo game_info);
+	void initialise(tz::GameInfo game_info);
+	void terminate();
+	VulkanInstance& get();
+	bool is_initialised();
+	WindowSurface* window_surface();
+	bool is_headless();
 
-    constexpr VkPhysicalDeviceFeatures required_rendering_features()
-    {
-        VkPhysicalDeviceFeatures features{};
-        features.multiDrawIndirect = VK_TRUE;
-        return features;
-    }
+	constexpr VkPhysicalDeviceFeatures required_rendering_features()
+	{
+		VkPhysicalDeviceFeatures features{};
+		features.multiDrawIndirect = VK_TRUE;
+		return features;
+	}
 
-    constexpr static tz::Version get_vulkan_version()
-    {
-        return {1, 1, 175};
-    }
+	constexpr static tz::Version get_vulkan_version()
+	{
+		return {1, 1, 175};
+	}
 }
 
 #endif // TZ_VULKAN

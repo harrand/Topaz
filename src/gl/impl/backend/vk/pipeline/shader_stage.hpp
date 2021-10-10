@@ -6,31 +6,31 @@
 
 namespace tz::gl::vk::pipeline
 {
-    enum class ShaderType
-    {
-        Vertex,
-        Fragment,
-        Compute
-    };
+	enum class ShaderType
+	{
+		Vertex,
+		Fragment,
+		Compute
+	};
 
-    class ShaderTypeField : public tz::EnumField<ShaderType>
-    {
-    public:
-        ShaderTypeField() = default;
-        ShaderTypeField(std::initializer_list<ShaderType> types);
-        static ShaderTypeField All();
-    };
+	class ShaderTypeField : public tz::EnumField<ShaderType>
+	{
+	public:
+		ShaderTypeField() = default;
+		ShaderTypeField(std::initializer_list<ShaderType> types);
+		static ShaderTypeField All();
+	};
 
-    class ShaderStage
-    {
-    public:
-        ShaderStage(const ShaderModule& module, ShaderType type);
-        ShaderType get_type() const;
-        VkPipelineShaderStageCreateInfo native() const;
-    private:
-        VkPipelineShaderStageCreateInfo create;
-        ShaderType type;
-    };
+	class ShaderStage
+	{
+	public:
+		ShaderStage(const ShaderModule& module, ShaderType type);
+		ShaderType get_type() const;
+		VkPipelineShaderStageCreateInfo native() const;
+	private:
+		VkPipelineShaderStageCreateInfo create;
+		ShaderType type;
+	};
 }
 
 #endif // TZ_VULKAN

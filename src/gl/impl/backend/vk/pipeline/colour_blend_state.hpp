@@ -6,24 +6,24 @@
 
 namespace tz::gl::vk::pipeline
 {
-    using ColourBlendAttachmentState = VkPipelineColorBlendAttachmentState;
-    using ColourBlendAttachmentStates = tz::BasicList<ColourBlendAttachmentState>;
-    
-    enum class ColourBlendingStrategy
-    {
-        None,
-        AlphaBlending
-    };
-    
-    class ColourBlendState
-    {
-    public:
-        ColourBlendState(std::size_t attached_framebuffer_count = 1, ColourBlendingStrategy colour_blending = ColourBlendingStrategy::None);
-        VkPipelineColorBlendStateCreateInfo native() const;
-    private:
-        ColourBlendAttachmentStates attachments; // per attached framebuffer
-        VkPipelineColorBlendStateCreateInfo create; // global color blending settings
-    };
+	using ColourBlendAttachmentState = VkPipelineColorBlendAttachmentState;
+	using ColourBlendAttachmentStates = tz::BasicList<ColourBlendAttachmentState>;
+	
+	enum class ColourBlendingStrategy
+	{
+		None,
+		AlphaBlending
+	};
+	
+	class ColourBlendState
+	{
+	public:
+		ColourBlendState(std::size_t attached_framebuffer_count = 1, ColourBlendingStrategy colour_blending = ColourBlendingStrategy::None);
+		VkPipelineColorBlendStateCreateInfo native() const;
+	private:
+		ColourBlendAttachmentStates attachments; // per attached framebuffer
+		VkPipelineColorBlendStateCreateInfo create; // global color blending settings
+	};
 }
 
 #endif // TZ_VULKAN

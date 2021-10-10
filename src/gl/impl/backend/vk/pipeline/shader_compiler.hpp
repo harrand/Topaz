@@ -7,7 +7,7 @@
 
 namespace tz::gl::vk
 {
-    std::optional<std::vector<char>> read_external_shader(std::string shader_name);
+	std::optional<std::vector<char>> read_external_shader(std::string shader_name);
 }
 
 #endif

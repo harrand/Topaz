@@ -7,40 +7,40 @@
 
 namespace tz::gl::vk
 {
-    enum class VertexInputRate
-    {
-        PerVertexBasis,
-        PerInstanceBasis
-    };
+	enum class VertexInputRate
+	{
+		PerVertexBasis,
+		PerInstanceBasis
+	};
 
-    class VertexBindingDescription
-    {
-    public:
-        constexpr VertexBindingDescription(std::uint32_t binding, std::size_t stride, VertexInputRate rate):
-        desc()
-        {
-            this->desc.binding = binding;
-            this->desc.stride = static_cast<std::uint32_t>(stride);
-            switch(rate)
-            {
-                case VertexInputRate::PerVertexBasis:
-                    this->desc.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
-                break;
-                case VertexInputRate::PerInstanceBasis:
-                    this->desc.inputRate = VK_VERTEX_INPUT_RATE_INSTANCE;
-                break;
-                default:
-                    tz_error("Unrecognised VertexInputRate");
-                break;
-            }
-        }
+	class VertexBindingDescription
+	{
+	public:
+		constexpr VertexBindingDescription(std::uint32_t binding, std::size_t stride, VertexInputRate rate):
+		desc()
+		{
+			this->desc.binding = binding;
+			this->desc.stride = static_cast<std::uint32_t>(stride);
+			switch(rate)
+			{
+				case VertexInputRate::PerVertexBasis:
+					this->desc.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+				break;
+				case VertexInputRate::PerInstanceBasis:
+					this->desc.inputRate = VK_VERTEX_INPUT_RATE_INSTANCE;
+				break;
+				default:
+					tz_error("Unrecognised VertexInputRate");
+				break;
+			}
+		}
 
-        VkVertexInputBindingDescription native() const;
-    private:
-        VkVertexInputBindingDescription desc;
-    };
+		VkVertexInputBindingDescription native() const;
+	private:
+		VkVertexInputBindingDescription desc;
+	};
 
-    using VertexBindingDescriptions = std::initializer_list<VertexBindingDescription>;
+	using VertexBindingDescriptions = std::initializer_list<VertexBindingDescription>;
 }
 
 #endif // TZ_VULKAN

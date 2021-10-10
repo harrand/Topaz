@@ -5,23 +5,23 @@
 
 namespace tz::gl::vk::pipeline
 {
-    enum class PrimitiveTopology
-    {
-        Points = VK_PRIMITIVE_TOPOLOGY_POINT_LIST,
-        Lines = VK_PRIMITIVE_TOPOLOGY_LINE_LIST,
-        LineStrips = VK_PRIMITIVE_TOPOLOGY_LINE_STRIP,
-        Triangles = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
-        TriangleStrips = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP
-    };
+	enum class PrimitiveTopology
+	{
+		Points = VK_PRIMITIVE_TOPOLOGY_POINT_LIST,
+		Lines = VK_PRIMITIVE_TOPOLOGY_LINE_LIST,
+		LineStrips = VK_PRIMITIVE_TOPOLOGY_LINE_STRIP,
+		Triangles = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
+		TriangleStrips = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP
+	};
 
-    class InputAssembly
-    {
-    public:
-        InputAssembly(PrimitiveTopology topology, bool breakable_strips = false);
-        VkPipelineInputAssemblyStateCreateInfo native() const;
-    private:
-        VkPipelineInputAssemblyStateCreateInfo create;
-    };
+	class InputAssembly
+	{
+	public:
+		InputAssembly(PrimitiveTopology topology, bool breakable_strips = false);
+		VkPipelineInputAssemblyStateCreateInfo native() const;
+	private:
+		VkPipelineInputAssemblyStateCreateInfo create;
+	};
 }
 
 #endif // TZ_VULKAN

@@ -3,11 +3,11 @@
 
 namespace tz::gl
 {
-    enum class ResourceType
-    {
-        Buffer,
-        Texture
-    };
+	enum class ResourceType
+	{
+		Buffer,
+		Texture
+	};
 }
 
 #endif // TOPAZ_GL_DECLARE_RESOURCE_HPP

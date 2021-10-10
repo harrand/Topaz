@@ -4,15 +4,15 @@
 
 namespace tz
 {
-    struct Version
-    {
-        unsigned int major;
-        unsigned int minor;
-        unsigned int patch;
-    };
+	struct Version
+	{
+		unsigned int major;
+		unsigned int minor;
+		unsigned int patch;
+	};
 
-    constexpr Version parse_version(const char* version_string);
-    std::string stringify_version(Version version);
+	constexpr Version parse_version(const char* version_string);
+	std::string stringify_version(Version version);
 }
 #include "core/version.inl"
 

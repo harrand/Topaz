@@ -8,16 +8,16 @@ layout(location = 4) in vec3 bitangent;
 
 resource(id = 0) const buffer MVP
 {
-    mat4 model;
-    mat4 view;
-    mat4 projection;
+	mat4 model;
+	mat4 view;
+	mat4 projection;
 } mvp;
 
 layout(location = 0) out vec2 frag_tex_coord;
 
 void main()
 {
-    mat4 mvp_matrix = mvp.projection * mvp.view * mvp.model;
-    gl_Position = mvp_matrix * vec4(position, 1.0);
-    frag_tex_coord = texcoord;
+	mat4 mvp_matrix = mvp.projection * mvp.view * mvp.model;
+	gl_Position = mvp_matrix * vec4(position, 1.0);
+	frag_tex_coord = texcoord;
 }

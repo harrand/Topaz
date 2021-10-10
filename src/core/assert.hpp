@@ -7,30 +7,30 @@
 
 namespace tz
 {
-    template<typename... Args>
-    void error_internal([[maybe_unused]] const char* fmt, [[maybe_unused]] Args&&... args)
-    {
-        #if TZ_DEBUG
-            std::fflush(stderr);
-            std::fprintf(stderr, fmt, std::forward<Args>(args)...);
-            std::fflush(stderr);
-            ::debug_break();
-        #endif
-    }
+	template<typename... Args>
+	void error_internal([[maybe_unused]] const char* fmt, [[maybe_unused]] Args&&... args)
+	{
+		#if TZ_DEBUG
+			std::fflush(stderr);
+			std::fprintf(stderr, fmt, std::forward<Args>(args)...);
+			std::fflush(stderr);
+			::debug_break();
+		#endif
+	}
 
-    template<typename... Args>
-    void assert_internal([[maybe_unused]] bool eval, [[maybe_unused]] const char* fmt, [[maybe_unused]] Args&&... args)
-    {
-        #if TZ_DEBUG
-            if(!eval)
-            {
-                std::fflush(stderr);
-                std::fprintf(stderr, fmt, std::forward<Args>(args)...);
-                std::fflush(stderr);
-                ::debug_break();
-            }
-        #endif
-    }
+	template<typename... Args>
+	void assert_internal([[maybe_unused]] bool eval, [[maybe_unused]] const char* fmt, [[maybe_unused]] Args&&... args)
+	{
+		#if TZ_DEBUG
+			if(!eval)
+			{
+				std::fflush(stderr);
+				std::fprintf(stderr, fmt, std::forward<Args>(args)...);
+				std::fflush(stderr);
+				::debug_break();
+			}
+		#endif
+	}
 }
 #ifdef tz_error
 #undef tz_error

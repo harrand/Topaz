@@ -5,55 +5,55 @@
 
 namespace tz
 {
-    /**
+	/**
 	 * \addtogroup tz_core Topaz Core Library (tz)
 	 * A collection of platform-agnostic core interfaces.
-     * 
-     * This is the only module containing members of the Initial Group. The Initial Group is a group of functions and structures which can be invoked before @ref tz::initialise().
+	 * 
+	 * This is the only module containing members of the Initial Group. The Initial Group is a group of functions and structures which can be invoked before @ref tz::initialise().
 	 * @{
 	 */
-    /**
-     * Describes a given application.
-     */
-    enum class ApplicationType
-    {
-        WindowApplication,
-        HiddenWindowApplication,
-        Headless
-    };
+	/**
+	 * Describes a given application.
+	 */
+	enum class ApplicationType
+	{
+		WindowApplication,
+		HiddenWindowApplication,
+		Headless
+	};
 
-    /**
-     * @brief Initialise Topaz.
-     * @pre If any other Topaz code not within the "Initial Group" has been invoked before this, then the behaviour of the program is undefined. To know if something is within the Initial Group, check their doucmentation notes.
-     * @post If `tz::terminate()` is not called before the end of program runtime, then the behaviour of the program is undefined.
-     * @details This initialises the render-api backend. Also creates a window unless `ApplicationType::Headless` is specified. Note that for `ApplicationType::HiddenWindowApplication`, a window is created but it is invisible.
-     * 
-     * @param game_info Information about the application
-     * @param app_type Describes the anatomy of the application.
-     */
-    void initialise(GameInfo game_info, ApplicationType app_type = ApplicationType::WindowApplication, WindowInitArgs wargs = tz::default_args);
-    /**
-     * @brief Terminate Topaz.
-     * @pre If `tz::initialise` has not been invoked before this, then the behaviour of the program is undefined.
-     * @post If anything in `tz` is invoked after this, then the behaviour of the program is undefined.
-     * @details This destroys the render-api backend. If a window was created previously by `tz::initialise`, then it will be destroyed here.
-     */
-    void terminate();
-    /**
-     * @brief Retrieve the application window.
-     * @pre @ref tz::initialise() has been invoked but not with `ApplicationType::Headless`.
-     * @post @ref tz::terminate() has not yet been invoked.
-     * @return Window& Reference to the application window.
-     */
-    Window& window();
-    /**
-     * @brief Query as to whether Topaz is initialised.
-     * @note This function is within the Initial Group.
-     * @return true If `tz::initialise` has been invoked and `tz::terminate()` has not yet been invoked. Otherwise, returns false.
-     */
-    bool is_initialised();
-    
-    /**
+	/**
+	 * @brief Initialise Topaz.
+	 * @pre If any other Topaz code not within the "Initial Group" has been invoked before this, then the behaviour of the program is undefined. To know if something is within the Initial Group, check their doucmentation notes.
+	 * @post If `tz::terminate()` is not called before the end of program runtime, then the behaviour of the program is undefined.
+	 * @details This initialises the render-api backend. Also creates a window unless `ApplicationType::Headless` is specified. Note that for `ApplicationType::HiddenWindowApplication`, a window is created but it is invisible.
+	 * 
+	 * @param game_info Information about the application
+	 * @param app_type Describes the anatomy of the application.
+	 */
+	void initialise(GameInfo game_info, ApplicationType app_type = ApplicationType::WindowApplication, WindowInitArgs wargs = tz::default_args);
+	/**
+	 * @brief Terminate Topaz.
+	 * @pre If `tz::initialise` has not been invoked before this, then the behaviour of the program is undefined.
+	 * @post If anything in `tz` is invoked after this, then the behaviour of the program is undefined.
+	 * @details This destroys the render-api backend. If a window was created previously by `tz::initialise`, then it will be destroyed here.
+	 */
+	void terminate();
+	/**
+	 * @brief Retrieve the application window.
+	 * @pre @ref tz::initialise() has been invoked but not with `ApplicationType::Headless`.
+	 * @post @ref tz::terminate() has not yet been invoked.
+	 * @return Window& Reference to the application window.
+	 */
+	Window& window();
+	/**
+	 * @brief Query as to whether Topaz is initialised.
+	 * @note This function is within the Initial Group.
+	 * @return true If `tz::initialise` has been invoked and `tz::terminate()` has not yet been invoked. Otherwise, returns false.
+	 */
+	bool is_initialised();
+	
+	/**
 	 * @}
 	 */
 }

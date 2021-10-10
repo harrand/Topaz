@@ -5,34 +5,34 @@
 
 namespace tz::gl::vk
 {
-    struct SamplerProperties
-    {   
-        VkFilter min_filter;
-        VkFilter mag_filter;
+	struct SamplerProperties
+	{   
+		VkFilter min_filter;
+		VkFilter mag_filter;
 
-        VkSamplerAddressMode address_mode_u;
-        VkSamplerAddressMode address_mode_v;
-        VkSamplerAddressMode address_mode_w;
-    };
+		VkSamplerAddressMode address_mode_u;
+		VkSamplerAddressMode address_mode_v;
+		VkSamplerAddressMode address_mode_w;
+	};
 
-    class Sampler
-    {
-    public:
-        Sampler(const LogicalDevice& device, SamplerProperties props);
-        Sampler(const Sampler& copy) = delete;
-        Sampler(Sampler&& move);
-        ~Sampler();
+	class Sampler
+	{
+	public:
+		Sampler(const LogicalDevice& device, SamplerProperties props);
+		Sampler(const Sampler& copy) = delete;
+		Sampler(Sampler&& move);
+		~Sampler();
 
-        Sampler& operator=(const Sampler& rhs) = delete;
-        Sampler& operator=(Sampler&& rhs);
+		Sampler& operator=(const Sampler& rhs) = delete;
+		Sampler& operator=(Sampler&& rhs);
 
-        const SamplerProperties& get_properties() const;
-        VkSampler native() const;
-    private:
-        VkSampler sampler;
-        const LogicalDevice* device;
-        SamplerProperties properties;
-    };
+		const SamplerProperties& get_properties() const;
+		VkSampler native() const;
+	private:
+		VkSampler sampler;
+		const LogicalDevice* device;
+		SamplerProperties properties;
+	};
 }
 
 #endif // TZ_VULKAN
