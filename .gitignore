@@ -8,8 +8,12 @@ tracy_server/
 
 # I don't want the idea directory in my repo at all
 .idea
+# No vim cache either
+.cache
 # I don't want any symlinks to be submitted
 *.lnk
+# No compile_commands.json either please.
+compile_commands.json
 # I don't want any libs in my source directory (from unit tests) to leak through either (TZ1).
 src/test/**/*.a
 src/test/**/*.o
