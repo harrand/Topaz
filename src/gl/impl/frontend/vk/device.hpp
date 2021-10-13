@@ -46,9 +46,9 @@ namespace tz::gl
 	{
 	public:
 		RenderPassVulkan vk_create_render_pass(RenderPassBuilderVulkan builder) const;
-		[[nodiscard]] virtual Renderer create_renderer(RendererBuilder builder) const final;
-		[[nodiscard]] virtual Processor create_processor(ProcessorBuilderVulkan builder) const final;
-		[[nodiscard]] virtual Shader create_shader(ShaderBuilder builder) const final;
+		[[nodiscard]] virtual Renderer create_renderer(RendererBuilder builder) final;
+		[[nodiscard]] virtual Processor create_processor(ProcessorBuilderVulkan builder) final;
+		[[nodiscard]] virtual Shader create_shader(ShaderBuilder builder) final;
 		virtual TextureFormat get_window_format() const final;
 	protected:
 		DeviceFunctionalityVulkan();

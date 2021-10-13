@@ -39,19 +39,19 @@ namespace tz::gl
 		});
 	}
 
-	Renderer DeviceOGL::create_renderer(RendererBuilder builder) const
+	Renderer DeviceOGL::create_renderer(RendererBuilder builder) 
 	{
 		RendererDeviceInfoOGL device_info;
 		device_info.on_resize = &this->renderer_resize_callbacks.emplace_back(nullptr);
 		return {builder, device_info};
 	}
 
-	Shader DeviceOGL::create_shader(ShaderBuilder builder) const
+	Shader DeviceOGL::create_shader(ShaderBuilder builder) 
 	{
 		return {builder};
 	}
 
-	Processor DeviceOGL::create_processor(ProcessorBuilder builder) const
+	Processor DeviceOGL::create_processor(ProcessorBuilder builder) 
 	{
 		return {builder};
 	}

@@ -162,7 +162,7 @@ namespace tz::gl
 		return {builder, device_info};
 	}
 
-	Renderer DeviceFunctionalityVulkan::create_renderer(RendererBuilder builder) const
+	Renderer DeviceFunctionalityVulkan::create_renderer(RendererBuilder builder) 
 	{
 		RendererBuilderDeviceInfoVulkan device_info;
 		device_info.creator_device = this;
@@ -173,14 +173,14 @@ namespace tz::gl
 		return {builder, device_info};
 	}
 
-	Processor DeviceFunctionalityVulkan::create_processor(ProcessorBuilder builder) const
+	Processor DeviceFunctionalityVulkan::create_processor(ProcessorBuilder builder) 
 	{
 		ProcessorDeviceInfoVulkan device_info;
 		device_info.vk_device = &this->device;
 		return {builder, device_info};
 	}
 
-	Shader DeviceFunctionalityVulkan::create_shader(ShaderBuilder builder) const
+	Shader DeviceFunctionalityVulkan::create_shader(ShaderBuilder builder) 
 	{
 		return {this->device, builder};
 	}

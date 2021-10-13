@@ -49,21 +49,21 @@ namespace tz::gl
 		 * @param builder Builder describing the parameters of the renderer.
 		 * @return The created renderer.
 		 */
-		[[nodiscard]] virtual Renderer create_renderer(RendererBuilder builder) const = 0;
+		[[nodiscard]] virtual Renderer create_renderer(RendererBuilder builder) = 0;
 		/**
 		 * @brief Create an @ref IProcessor using this device and the provided builder.
 		 * 
 		 * @param builder Builder describing the parameters of the processor.
 		 * @return The created processor.
 		 */
-		[[nodiscard]] virtual Processor create_processor(ProcessorBuilder builder) const = 0;
+		[[nodiscard]] virtual Processor create_processor(ProcessorBuilder builder) = 0;
 		/**
 		 * @brief Create an @ref IShader using this device and the provided builder.
 		 *
 		 * @param builder Builder describing the sources and modules of the shader program.
 		 * @return Shader Shader program which can be provided to a `tz::gl::Renderer`.
 		 */
-		[[nodiscard]] virtual Shader create_shader(ShaderBuilder builder) const = 0;
+		[[nodiscard]] virtual Shader create_shader(ShaderBuilder builder) = 0;
 		/**
 		 * @brief Retrieve the texture format used by the window. Note that in headless applications, the return value is implementation-defined.
 		 * 

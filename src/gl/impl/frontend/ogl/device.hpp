@@ -21,9 +21,9 @@ namespace tz::gl
 	{
 	public:
 		DeviceOGL(DeviceBuilderOGL builder);
-		[[nodiscard]] virtual Renderer create_renderer(RendererBuilder builder) const final;
-		[[nodiscard]] virtual Shader create_shader(ShaderBuilder builder) const final;
-		[[nodiscard]] virtual Processor create_processor(ProcessorBuilder builder) const final;
+		[[nodiscard]] virtual Renderer create_renderer(RendererBuilder builder) final;
+		[[nodiscard]] virtual Shader create_shader(ShaderBuilder builder) final;
+		[[nodiscard]] virtual Processor create_processor(ProcessorBuilder builder) final;
 		virtual TextureFormat get_window_format() const final;
 	private:
 		void on_window_resize();
