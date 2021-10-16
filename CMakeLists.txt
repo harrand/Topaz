@@ -232,6 +232,10 @@ add_library(topaz
 	src/gl/impl/backend/vk/vertex_binding_description.cpp
 	src/gl/impl/backend/vk/vertex_binding_description.hpp
 	src/gl/impl/backend/vk/vma.cpp
+	
+	# tz::gl (Vulkan Backend 2)
+	src/gl/impl/backend/vk2/tz_vulkan.cpp
+	src/gl/impl/backend/vk2/tz_vulkan.hpp
 
 	# tz::gl (OpenGL Backend)
 	src/gl/impl/backend/ogl/setup/opengl_instance.cpp
