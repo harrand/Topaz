@@ -1,6 +1,7 @@
 #if TZ_VULKAN
 #include "core/version.hpp"
 #include "core/game_info.hpp"
+#include "core/containers/basic_list.hpp"
 #include "vulkan/vulkan.h"
 #include <cstdint>
 namespace tz::gl::vk2
@@ -15,10 +16,13 @@ namespace tz::gl::vk2
 		}
 	}
 
+	using Extension = const char*;
+	using ExtensionList = tz::BasicList<Extension>;
+
 	class VulkanInfo
 	{
 	public:
-		VulkanInfo(tz::GameInfo game_info);
+		VulkanInfo(tz::GameInfo game_info, ExtensionList extensions = {});
 
 		constexpr VkApplicationInfo native() const
 		{
@@ -32,10 +36,22 @@ namespace tz::gl::vk2
 			info.apiVersion = util::tz_to_vk_version(vulkan_version);
 			return info;
 		}
+		const ExtensionList& get_extensions() const;
 	private:
 		tz::GameInfo game_info;
 		std::string engine_name;
+		ExtensionList extensions;
 
+	};
+
+	class VulkanInstance
+	{
+	public:
+		VulkanInstance(VulkanInfo info);
+	private:
+		VulkanInfo info;
+		VkApplicationInfo info_native;
+		VkInstanceCreateInfo inst_info;
 	};
 }
 #endif // TZ_VULKAN
