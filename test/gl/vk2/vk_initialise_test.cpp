@@ -13,6 +13,10 @@ int main()
 		// Ensure no magic extensions are sneaked in. When we do things like this, we have to specify everything.
 		tz_assert(vk.get_extensions().empty(), "Default VulkanInfo based on GameInfo somehow has extensions specified (we don't want this done automatically, we should do this manually)");
 		VulkanInstance inst{vk};	
+
+		ExtensionList exts{Extension::Swapchain};
+		VulkanInfo vk2{game, exts};
+		tz_assert(vk2.get_extensions().length() == 1, "VulkanInfo ExtensionLists do not work properly");
 	}
 	return 0;
 }

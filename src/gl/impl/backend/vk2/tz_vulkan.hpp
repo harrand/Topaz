@@ -3,20 +3,48 @@
 #include "core/game_info.hpp"
 #include "core/containers/basic_list.hpp"
 #include "vulkan/vulkan.h"
+#include <array>
 #include <cstdint>
 namespace tz::gl::vk2
 {
+	/// This is the fixed Vulkan version we will use when building the  engine.
 	constexpr tz::Version vulkan_version{1, 2, 0};
+	using VkExtension = const char*;
+
+	/**
+	 * Only the vulkan extensions listed here are supported. We won't be arbitrarily chucking in random strings into an ExtensionList.
+	 */
+	enum class Extension
+	{
+		Swapchain,
+
+		Count	
+	};
+
 	namespace util
 	{
 		using VkVersion = std::uint32_t;
+		/**
+		 * Convert a tz::Version to a VkVersion, which is used when interacting with the Vulkan API.
+		 * @param ver Topaz version to convert
+		 * @return Corresponding VkVersion.
+		 */
 		constexpr VkVersion tz_to_vk_version(tz::Version ver)
 		{
 			return VK_MAKE_VERSION(ver.major, ver.minor, ver.patch);
 		}
+
+		constexpr std::array<VkExtension, static_cast<int>(Extension::Count)> extension_names{VK_KHR_SWAPCHAIN_EXTENSION_NAME};
+
+		constexpr VkExtension to_vk_extension(Extension extension)
+		{
+			using SizeType = decltype(extension_names)::size_type;
+			return extension_names[static_cast<SizeType>(static_cast<int>(extension))];
+		}
 	}
 
-	using Extension = const char*;
+
+	using VkExtensionList = tz::BasicList<VkExtension>;
 	using ExtensionList = tz::BasicList<Extension>;
 
 	class VulkanInfo
@@ -24,34 +52,25 @@ namespace tz::gl::vk2
 	public:
 		VulkanInfo(tz::GameInfo game_info, ExtensionList extensions = {});
 
-		constexpr VkApplicationInfo native() const
-		{
-			VkApplicationInfo info{};
-			info.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-			info.pApplicationName = this->game_info.name;
-			info.applicationVersion = util::tz_to_vk_version(this->game_info.version);
-			
-			info.pEngineName = this->engine_name.c_str();
-			info.engineVersion = util::tz_to_vk_version(this->game_info.engine.version);
-			info.apiVersion = util::tz_to_vk_version(vulkan_version);
-			return info;
-		}
+		VkApplicationInfo native() const;
 		const ExtensionList& get_extensions() const;
 	private:
 		tz::GameInfo game_info;
 		std::string engine_name;
 		ExtensionList extensions;
-
 	};
 
 	class VulkanInstance
 	{
 	public:
 		VulkanInstance(VulkanInfo info);
+		const VulkanInfo& get_info() const;
 	private:
 		VulkanInfo info;
 		VkApplicationInfo info_native;
+		VkExtensionList extensions;
 		VkInstanceCreateInfo inst_info;
+		VkInstance instance;
 	};
 }
 #endif // TZ_VULKAN
