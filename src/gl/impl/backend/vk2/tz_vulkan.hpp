@@ -2,6 +2,7 @@
 #include "core/version.hpp"
 #include "core/game_info.hpp"
 #include "core/containers/basic_list.hpp"
+#include "core/window.hpp"
 #include "vulkan/vulkan.h"
 #include <array>
 #include <cstdint>
@@ -47,6 +48,9 @@ namespace tz::gl::vk2
 	using VkExtensionList = tz::BasicList<VkExtension>;
 	using ExtensionList = tz::BasicList<Extension>;
 
+	/**
+	 * Contains information about a Vulkan instance.
+	 */
 	class VulkanInfo
 	{
 	public:
@@ -65,12 +69,23 @@ namespace tz::gl::vk2
 	public:
 		VulkanInstance(VulkanInfo info);
 		const VulkanInfo& get_info() const;
+		VkInstance native() const;
 	private:
 		VulkanInfo info;
 		VkApplicationInfo info_native;
 		VkExtensionList extensions;
 		VkInstanceCreateInfo inst_info;
 		VkInstance instance;
+	};
+
+	class WindowSurface
+	{
+	public:
+		WindowSurface(const VulkanInstance& instance, const tz::Window& window);
+		~WindowSurface();
+	private:
+		VkSurfaceKHR surface;
+		const VulkanInstance* instance;
 	};
 }
 #endif // TZ_VULKAN

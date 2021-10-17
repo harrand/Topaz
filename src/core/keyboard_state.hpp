@@ -1,5 +1,10 @@
 #ifndef TOPAZ_CORE_KEYBOARD_STATE_HPP
 #define TOPAZ_CORE_KEYBOARD_STATE_HPP
+#if TZ_VULKAN
+// "To include the Vulkan header, define GLFW_INCLUDE_VULKAN before including the GLFW header." - GLFW
+// We will want to use glfw-vulkan integration functionality later, so we make sure those headers are included properly now, even through strictly keyboard state has nothing to do with vulkan.
+#include "vulkan/vulkan.h"
+#endif // TZ_VULKAN
 #include "GLFW/glfw3.h"
 #include <vector>
 

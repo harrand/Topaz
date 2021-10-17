@@ -1,7 +1,10 @@
-#include <algorithm>
 #if TZ_VULKAN
 #include "core/tz.hpp"
 #include "gl/impl/backend/vk2/tz_vulkan.hpp"
+#include "GLFW/glfw3.h"
+#include <algorithm>
+#include <utility>
+#include <cstring>
 
 namespace tz::gl::vk2
 {
@@ -30,18 +33,41 @@ namespace tz::gl::vk2
 		return this->extensions;
 	}
 
+	bool extension_supported(VkExtension extension)
+	{
+		std::uint32_t ext_count;
+		vkEnumerateInstanceExtensionProperties(nullptr, &ext_count, nullptr);
+		std::vector<VkExtensionProperties> exts;
+		exts.resize(ext_count);
+		vkEnumerateInstanceExtensionProperties(nullptr, &ext_count, exts.data());
+		return std::any_of(exts.begin(), exts.end(), [extension](VkExtensionProperties props)->bool
+		{
+			return std::strcmp(props.extensionName, extension) == 0;
+		});
+	}
+
 	VulkanInstance::VulkanInstance(VulkanInfo info):
 	info(info),
 	info_native(this->info.native()),
 	extensions(),
 	inst_info()
 	{
-		tz_assert(tz::is_initialised(), "VulkanInstance constructed before tz::initialise()");
+		//tz_assert(tz::is_initialised(), "VulkanInstance constructed before tz::initialise()");
 		// Basic Application Info
 		this->inst_info.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
 		this->inst_info.pApplicationInfo = &this->info_native;
 
 		// Extensions
+		// TODO: Only conditionally add these extra glfw extensions.
+		{
+			std::uint32_t glfw_extension_count;
+			const char** glfw_extensions = glfwGetRequiredInstanceExtensions(&glfw_extension_count);
+			for(int i = 0; i < std::cmp_less(i, glfw_extension_count); i++)
+			{
+				this->extensions.add(glfw_extensions[i]);
+				tz_assert(extension_supported(glfw_extensions[i]), "The GLFW extension \"%s\" is not supported by the machine. Windowed applictions are not possible in this state.", glfw_extensions[i]);
+			}
+		}
 		for(Extension extension : this->info.get_extensions())
 		{
 			this->extensions.add(util::to_vk_extension(extension));
@@ -71,7 +97,7 @@ namespace tz::gl::vk2
 			// Now pass it to the create info.
 			this->inst_info.enabledLayerCount = layer_count;
 			this->inst_info.ppEnabledLayerNames = enabled_layers.data();
-		#else
+		#else // !TZ_DEBUG, AKA Release
 			this->inst_info.enabledLayerCount = 0;
 			this->inst_info.ppEnabledLayerNames = nullptr;
 		#endif // TZ_DEBUG
@@ -98,6 +124,39 @@ namespace tz::gl::vk2
 	{
 		return this->info;
 	}
+
+	VkInstance VulkanInstance::native() const
+	{
+		return this->instance;
+	}
+
+	WindowSurface::WindowSurface(const VulkanInstance& instance, const tz::Window& window):
+	surface(VK_NULL_HANDLE),
+	instance(&instance)
+	{
+		VkResult res = glfwCreateWindowSurface(this->instance->native(), window.get_middleware_handle(), nullptr, &this->surface);
+		switch(res)
+		{
+			case VK_ERROR_INITIALIZATION_FAILED:
+				tz_error("Failed to find either a Vulkan loader or a minimally functional ICD (installable client driver), cannot create Window Surface. If you're an end-user, please ensure your drivers are upto-date -- Note that while this is almost certainly *not* a bug, this is a fatal error and the application must crash.");
+			break;
+			case VK_ERROR_EXTENSION_NOT_PRESENT:
+				tz_error("The provided VulkanInstance does not support window surface creation. Please submit a bug report.");
+			break;
+			case VK_ERROR_NATIVE_WINDOW_IN_USE_KHR:
+				tz_error("Window was not created to be used for Vulkan (client api hint wasn't set to GLFW_NO_API). Please submit a bug report.");
+			break;
+			default:
+				tz_error("Window surface creation failed, but for an unknown reason. Please ensure your computer meets the minimum requirements for this program. If you are absolutely sure that your machine is valid, please submit a bug report.");
+			break;
+		}
+	}
+
+	WindowSurface::~WindowSurface()
+	{
+		vkDestroySurfaceKHR(this->instance->native(), this->surface, nullptr);
+	}
+
 }
 
 #endif // TZ_VULKAN
