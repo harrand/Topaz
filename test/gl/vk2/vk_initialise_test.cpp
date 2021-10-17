@@ -18,7 +18,8 @@ int main()
 			ExtensionList exts;
 			VulkanInfo vk2{game, exts};
 			VulkanInstance inst{vk2};	
-			WindowSurface surface{inst, tz::window()};
+			tz_assert(inst.get_info() == vk2, "VulkanInstance::get_info() != Info passed into ctor");
+			//WindowSurface surface{inst, tz::window()};
 		}
 	}
 	return 0;

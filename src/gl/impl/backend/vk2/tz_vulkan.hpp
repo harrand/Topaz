@@ -58,6 +58,7 @@ namespace tz::gl::vk2
 
 		VkApplicationInfo native() const;
 		const ExtensionList& get_extensions() const;
+		bool operator==(const VulkanInfo& rhs) const = default;
 	private:
 		tz::GameInfo game_info;
 		std::string engine_name;

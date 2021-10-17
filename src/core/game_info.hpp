@@ -1,6 +1,7 @@
 #ifndef TOPAZ_CORE_GAME_INFO_HPP
 #define TOPAZ_CORE_GAME_INFO_HPP
 #include "core/engine_info.hpp"
+#include <cstring>
 
 namespace tz
 {    
@@ -34,6 +35,11 @@ namespace tz
 			res += this->engine.to_string();
 			res += ")";
 			return res;
+		}
+
+		bool operator==(const GameInfo& rhs) const
+		{
+			return std::strcmp(this->name, rhs.name) == 0 && version == rhs.version && engine == rhs.engine;
 		}
 
 		const char* name;

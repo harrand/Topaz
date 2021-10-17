@@ -36,6 +36,7 @@ namespace tz
 		 * @return 'Topaz vX.Y.Z `RENDERAPI` `BUILDCONFIG`' 
 		 */
 		std::string to_string() const;
+		constexpr bool operator==(const EngineInfo& rhs) const = default;
 
 		RenderAPI renderer;
 		BuildConfig build;

@@ -9,6 +9,8 @@ namespace tz
 		unsigned int major;
 		unsigned int minor;
 		unsigned int patch;
+
+		auto operator<=>(const Version& rhs) const = default;
 	};
 
 	constexpr Version parse_version(const char* version_string);
