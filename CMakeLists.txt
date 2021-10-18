@@ -6,6 +6,7 @@ file(READ ./version.txt TZ_VERSION)
 configure_file(./version.txt topaz_version.xml)
 set(CXX_STANDARD_REQUIRED 20)
 set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 project(topaz VERSION ${TZ_VERSION})
 
@@ -236,6 +237,8 @@ add_library(topaz
 	# tz::gl (Vulkan Backend 2)
 	src/gl/impl/backend/vk2/tz_vulkan.cpp
 	src/gl/impl/backend/vk2/tz_vulkan.hpp
+	src/gl/impl/backend/vk2/hardware/physical_device.cpp
+	src/gl/impl/backend/vk2/hardware/physical_device.hpp
 
 	# tz::gl (OpenGL Backend)
 	src/gl/impl/backend/ogl/setup/opengl_instance.cpp

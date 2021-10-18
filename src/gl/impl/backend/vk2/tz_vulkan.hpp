@@ -11,6 +11,10 @@ namespace tz::gl::vk2
 	void initialise(tz::GameInfo game_info, tz::ApplicationType app_type);
 	void initialise_headless(tz::GameInfo game_info, tz::ApplicationType app_type);
 	void terminate();
+
+	class VulkanInstance;
+
+	const VulkanInstance& get();
 	/// This is the fixed Vulkan version we will use when building the  engine.
 	constexpr tz::Version vulkan_version{1, 2, 0};
 	using VkExtension = const char*;

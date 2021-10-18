@@ -32,6 +32,12 @@ namespace tz::gl::vk2
 		inst = nullptr;
 	}
 
+	const VulkanInstance& get()
+	{
+		tz_assert(inst != nullptr, "Not initialised");
+		return *inst;
+	}
+
 	VulkanInfo::VulkanInfo(tz::GameInfo game_info, ExtensionList extensions):
 	game_info(game_info),
 	engine_name(this->game_info.engine.to_string()),
