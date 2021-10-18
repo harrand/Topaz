@@ -2,12 +2,15 @@
 #include "core/version.hpp"
 #include "core/game_info.hpp"
 #include "core/containers/basic_list.hpp"
-#include "core/window.hpp"
+#include "core/tz.hpp"
 #include "vulkan/vulkan.h"
 #include <array>
 #include <cstdint>
 namespace tz::gl::vk2
 {
+	void initialise(tz::GameInfo game_info, tz::ApplicationType app_type);
+	void initialise_headless(tz::GameInfo game_info, tz::ApplicationType app_type);
+	void terminate();
 	/// This is the fixed Vulkan version we will use when building the  engine.
 	constexpr tz::Version vulkan_version{1, 2, 0};
 	using VkExtension = const char*;
@@ -68,11 +71,12 @@ namespace tz::gl::vk2
 	class VulkanInstance
 	{
 	public:
-		VulkanInstance(VulkanInfo info);
+		VulkanInstance(VulkanInfo info, tz::ApplicationType app_type);
 		const VulkanInfo& get_info() const;
 		VkInstance native() const;
 	private:
 		VulkanInfo info;
+		tz::ApplicationType app_type;
 		VkApplicationInfo info_native;
 		VkExtensionList extensions;
 		VkInstanceCreateInfo inst_info;

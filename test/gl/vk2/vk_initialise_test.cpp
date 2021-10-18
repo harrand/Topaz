@@ -5,6 +5,7 @@
 int main()
 {
 	tz::GameInfo game{"vk_initialise_test", tz::Version{1, 0, 0}, tz::info()};
+	tz::initialise(game, tz::ApplicationType::Headless);
 	{
 		tz::gl::vk2::VulkanInfo vk{game};
 
@@ -17,10 +18,11 @@ int main()
 
 			ExtensionList exts;
 			VulkanInfo vk2{game, exts};
-			VulkanInstance inst{vk2};	
+			VulkanInstance inst{vk2, tz::ApplicationType::Headless};	
 			tz_assert(inst.get_info() == vk2, "VulkanInstance::get_info() != Info passed into ctor");
-			//WindowSurface surface{inst, tz::window()};
+			//WindowSurface surface{inst, tz::window()}; // We're headless, we can't do this!
 		}
 	}
+	tz::terminate();
 	return 0;
 }

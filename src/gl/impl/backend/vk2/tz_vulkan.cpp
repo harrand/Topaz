@@ -8,6 +8,30 @@
 
 namespace tz::gl::vk2
 {
+	VulkanInstance* inst = nullptr;
+	WindowSurface* surf = nullptr;
+
+	void initialise(tz::GameInfo game_info, tz::ApplicationType app_type)
+	{
+		initialise_headless(game_info, app_type);
+
+		surf = new WindowSurface{*inst, tz::window()};
+	}
+
+	void initialise_headless(tz::GameInfo game_info, tz::ApplicationType app_type)
+	{
+		tz_assert(inst == nullptr, "Double initialise");
+		VulkanInfo vk_info{game_info};
+		inst = new VulkanInstance{vk_info, app_type};
+	}
+
+	void terminate()
+	{
+		tz_assert(inst != nullptr, "Not initialised");
+		delete inst;
+		inst = nullptr;
+	}
+
 	VulkanInfo::VulkanInfo(tz::GameInfo game_info, ExtensionList extensions):
 	game_info(game_info),
 	engine_name(this->game_info.engine.to_string()),
@@ -46,19 +70,20 @@ namespace tz::gl::vk2
 		});
 	}
 
-	VulkanInstance::VulkanInstance(VulkanInfo info):
+	VulkanInstance::VulkanInstance(VulkanInfo info, tz::ApplicationType type):
 	info(info),
+	app_type(type),
 	info_native(this->info.native()),
 	extensions(),
 	inst_info()
 	{
-		//tz_assert(tz::is_initialised(), "VulkanInstance constructed before tz::initialise()");
+		tz_assert(tz::is_initialised(), "VulkanInstance constructed before tz::initialise()");
 		// Basic Application Info
 		this->inst_info.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
 		this->inst_info.pApplicationInfo = &this->info_native;
 
 		// Extensions
-		// TODO: Only conditionally add these extra glfw extensions.
+		if(this->app_type != tz::ApplicationType::Headless)
 		{
 			std::uint32_t glfw_extension_count;
 			const char** glfw_extensions = glfwGetRequiredInstanceExtensions(&glfw_extension_count);
@@ -134,6 +159,8 @@ namespace tz::gl::vk2
 	surface(VK_NULL_HANDLE),
 	instance(&instance)
 	{
+		tz_assert(!window.is_null(), "Cannot create WindowSurface off of a null window. GLFW has likely failed. If you are trying to run a headless application, please submit a bug report.");
+
 		VkResult res = glfwCreateWindowSurface(this->instance->native(), window.get_middleware_handle(), nullptr, &this->surface);
 		switch(res)
 		{
