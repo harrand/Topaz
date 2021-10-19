@@ -49,11 +49,20 @@ namespace tz::gl::vk2
 			using SizeType = decltype(extension_names)::size_type;
 			return extension_names[static_cast<SizeType>(static_cast<int>(extension))];
 		}
+
+		constexpr Extension to_tz_extension(VkExtension extension)
+		{
+			auto iter = std::find(extension_names.begin(), extension_names.end(), extension);
+			if(iter != extension_names.end())
+			{
+				return static_cast<Extension>(static_cast<int>(std::distance(extension_names.begin(), iter)));
+			}
+			return Extension::Count;
+		}
 	}
 
-
 	using VkExtensionList = tz::BasicList<VkExtension>;
-	using ExtensionList = tz::BasicList<Extension>;
+	using ExtensionList = tz::EnumField<Extension>;
 
 	/**
 	 * Contains information about a Vulkan instance.

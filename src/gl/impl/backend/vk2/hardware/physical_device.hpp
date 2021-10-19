@@ -3,7 +3,7 @@
 #if TZ_VULKAN
 #include "core/containers/basic_list.hpp"
 #include "core/containers/enum_field.hpp"
-#include "vulkan/vulkan.h"
+#include "gl/impl/backend/vk2/tz_vulkan.hpp"
 
 namespace tz::gl::vk2
 {
@@ -40,6 +40,7 @@ namespace tz::gl::vk2
 		 * @return An EnumField containing all the features supported by this Physical Device.
 		 */
 		PhysicalDeviceFeatureField get_supported_features() const;
+		ExtensionList get_supported_extensions() const;
 		/**
 		 * Retrieve the native Vulkan API Handle corresponding to this PhysicalDevice.
 		 */

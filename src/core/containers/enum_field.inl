@@ -37,6 +37,11 @@ namespace tz
 		return this->elements.size();
 	}
 
+	template<tz::EnumClass E>
+	bool EnumField<E>::empty() const
+	{
+		return this->count() == 0;
+	}
 
 	template<tz::EnumClass E>
 	EnumField<E>& EnumField<E>::operator|=(E type)

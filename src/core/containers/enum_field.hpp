@@ -22,6 +22,7 @@ namespace tz
 		bool contains(E type) const;
 		bool contains(const EnumField<E>& field) const;
 		std::size_t count() const;
+		bool empty() const;
 		EnumField<E>& operator|=(E type);
 		EnumField<E> operator|(E type) const;
 		auto begin() const;

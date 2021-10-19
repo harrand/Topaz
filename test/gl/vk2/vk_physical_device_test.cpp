@@ -1,5 +1,4 @@
 #include "core/tz.hpp"
-#include "gl/impl/backend/vk2/tz_vulkan.hpp"
 #include "gl/impl/backend/vk2/hardware/physical_device.hpp"
 
 namespace drivers
@@ -12,6 +11,16 @@ namespace drivers
 		VkPhysicalDeviceFeatures feat;
 		feat.multiDrawIndirect = avail ? VK_TRUE : VK_FALSE;
 		return feat;
+	}
+
+	tz::gl::vk2::ExtensionList swapchain(bool avail)
+	{
+		tz::gl::vk2::ExtensionList l;
+		if(avail)
+		{
+			l  |= tz::gl::vk2::Extension::Swapchain;
+		}
+		return l;
 	}
 }
 
@@ -34,6 +43,13 @@ int main()
 
 		tz_assert(mdi_yes.contains(PhysicalDeviceFeature::MultiDrawIndirect), "PhysicalDeviceFeatureField::MultiDrawIndirect (MDI) is not handled properly.");
 		tz_assert(!mdi_no.contains(PhysicalDeviceFeature::MultiDrawIndirect), "PhysicalDeviceFeatureField::MultiDrawIndirect (MDI) is not handled properly.");
+
+		ExtensionList swapchain_yes = drivers::swapchain(true);
+		ExtensionList swapchain_no = drivers::swapchain(false);
+
+		tz_assert(swapchain_yes.contains(Extension::Swapchain), "ExtensionList wrongly says it doesn't Extension::Swapchain");
+		tz_assert(!swapchain_no.contains(Extension::Swapchain), "ExtensionList wrongly says it contains Extension::Swapchain");
+
 	}
 	tz::gl::vk2::terminate();
 	tz::terminate();

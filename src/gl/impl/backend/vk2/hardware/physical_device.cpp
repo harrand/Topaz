@@ -1,7 +1,6 @@
 #include "gl/impl/frontend/common/shader.hpp"
 #if TZ_VULKAN
 #include "gl/impl/backend/vk2/hardware/physical_device.hpp"
-#include "gl/impl/backend/vk2/tz_vulkan.hpp"
 #include <vector>
 
 namespace tz::gl::vk2
@@ -30,6 +29,27 @@ namespace tz::gl::vk2
 		vkGetPhysicalDeviceFeatures(this->dev, &features);
 
 		return detail::to_feature_field(features);
+	}
+
+	ExtensionList PhysicalDevice::get_supported_extensions() const
+	{
+		std::uint32_t supported_extension_count;
+		vkEnumerateDeviceExtensionProperties(this->dev, nullptr, &supported_extension_count, nullptr);
+		std::vector<VkExtensionProperties> props;
+		std::vector<VkExtension> extensions; 
+
+		props.resize(static_cast<decltype(props)::size_type>(supported_extension_count));
+		vkEnumerateDeviceExtensionProperties(this->dev, nullptr, &supported_extension_count, props.data());
+		extensions.resize(static_cast<decltype(props)::size_type>(supported_extension_count));
+
+		std::transform(props.begin(), props.end(), extensions.begin(), [](const VkExtensionProperties& prop)->VkExtension{return prop.extensionName;});
+		ExtensionList exts;
+		std::for_each(extensions.begin(), extensions.end(), [&exts](VkExtension ext)
+		{
+			exts |= util::to_tz_extension(ext);
+		});
+
+		return exts;
 	}
 
 	VkPhysicalDevice PhysicalDevice::native() const
