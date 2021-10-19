@@ -1,3 +1,4 @@
+#include "gl/impl/frontend/common/shader.hpp"
 #if TZ_VULKAN
 #include "gl/impl/backend/vk2/hardware/physical_device.hpp"
 #include "gl/impl/backend/vk2/tz_vulkan.hpp"
@@ -29,6 +30,11 @@ namespace tz::gl::vk2
 		vkGetPhysicalDeviceFeatures(this->dev, &features);
 
 		return detail::to_feature_field(features);
+	}
+
+	VkPhysicalDevice PhysicalDevice::native() const
+	{
+		return this->dev;
 	}
 
 	PhysicalDeviceList get_all_devices()
