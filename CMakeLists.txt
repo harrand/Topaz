@@ -237,6 +237,8 @@ add_library(topaz
 	# tz::gl (Vulkan Backend 2)
 	src/gl/impl/backend/vk2/tz_vulkan.cpp
 	src/gl/impl/backend/vk2/tz_vulkan.hpp
+	src/gl/impl/backend/vk2/logical_device.cpp
+	src/gl/impl/backend/vk2/logical_device.hpp
 	src/gl/impl/backend/vk2/hardware/physical_device.cpp
 	src/gl/impl/backend/vk2/hardware/physical_device.hpp
 

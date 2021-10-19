@@ -85,6 +85,18 @@ namespace tz
 	}
 
 	template<tz::EnumClass E>
+	const E& EnumField<E>::front() const
+	{
+		return this->elements.front();
+	}
+
+	template<tz::EnumClass E>
+	const E& EnumField<E>::back() const
+	{
+		return this->elements.back();
+	}
+
+	template<tz::EnumClass E>
 	EnumField<E>::operator E() const
 	{
 		using UnderlyingType = std::underlying_type_t<E>;

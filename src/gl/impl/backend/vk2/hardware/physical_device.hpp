@@ -21,6 +21,7 @@ namespace tz::gl::vk2
 		 * Convert a supported Vulkan feature into its underlying representation for the Vulkan API.
 		 */
 		PhysicalDeviceFeatureField to_feature_field(VkPhysicalDeviceFeatures features);
+		VkPhysicalDeviceFeatures from_feature_field(const PhysicalDeviceFeatureField& feature_field);
 	}
 
 	/**

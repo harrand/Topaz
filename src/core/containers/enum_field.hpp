@@ -29,6 +29,8 @@ namespace tz
 		auto begin();
 		auto end() const;
 		auto end();
+		const E& front() const;
+		const E& back() const;
 
 		bool operator==(const EnumField<E>& rhs) const = default;
 		explicit operator E() const;

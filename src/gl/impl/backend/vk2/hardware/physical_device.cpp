@@ -18,6 +18,13 @@ namespace tz::gl::vk2
 		
 			return ret;
 		}
+
+		VkPhysicalDeviceFeatures from_feature_field(const PhysicalDeviceFeatureField& feature_field)
+		{
+			VkPhysicalDeviceFeatures features{};
+			features.multiDrawIndirect = feature_field.contains(PhysicalDeviceFeature::MultiDrawIndirect) ? VK_TRUE : VK_FALSE;
+			return features;
+		}
 	}
 
 	PhysicalDevice::PhysicalDevice(VkPhysicalDevice native):
@@ -46,7 +53,11 @@ namespace tz::gl::vk2
 		ExtensionList exts;
 		std::for_each(extensions.begin(), extensions.end(), [&exts](VkExtension ext)
 		{
-			exts |= util::to_tz_extension(ext);
+			Extension tz_ext = util::to_tz_extension(ext);
+			if(tz_ext != Extension::Count)
+			{
+				exts |= tz_ext;
+			}
 		});
 
 		return exts;
@@ -66,6 +77,7 @@ namespace tz::gl::vk2
 		vkEnumeratePhysicalDevices(vk2::get().native(), &physical_device_count, nullptr);
 
 		device_natives.resize(static_cast<std::size_t>(physical_device_count));
+		vkEnumeratePhysicalDevices(vk2::get().native(), &physical_device_count, device_natives.data());
 		for(VkPhysicalDevice device_native : device_natives)
 		{
 			devices.emplace(device_native);

@@ -35,6 +35,16 @@ int main()
 		PhysicalDeviceList devices = get_all_devices();	
 
 		tz_assert(!devices.empty(), "No physical devices are available");
+		tz_assert(devices.front().native() != VK_NULL_HANDLE, "get_all_devices() returns nonsense");
+
+		// Ensure that no devices have invalid extensions.
+		for(const PhysicalDevice& dev : devices)
+		{
+			for(Extension e : dev.get_supported_extensions())
+			{
+				tz_assert(e != Extension::Count, "PhysicalDevice list of supported extensions includes Extension::Count, which makes no sense.");
+			}
+		}
 
 		// We'll play around with all the supported features.
 		// MDI
