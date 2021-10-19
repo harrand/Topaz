@@ -40,6 +40,10 @@ namespace tz::gl::vk2
 		 * @return An EnumField containing all the features supported by this Physical Device.
 		 */
 		PhysicalDeviceFeatureField get_supported_features() const;
+		/**
+		 * PhysicalDevices support various extensions, but not necessarily all of them.
+		 * @return An EnumField containing all the extensions supported by this PhysicalDevice.
+		 */
 		ExtensionList get_supported_extensions() const;
 		/**
 		 * Retrieve the native Vulkan API Handle corresponding to this PhysicalDevice.

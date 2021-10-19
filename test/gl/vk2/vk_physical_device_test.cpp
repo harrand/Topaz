@@ -44,6 +44,7 @@ int main()
 		tz_assert(mdi_yes.contains(PhysicalDeviceFeature::MultiDrawIndirect), "PhysicalDeviceFeatureField::MultiDrawIndirect (MDI) is not handled properly.");
 		tz_assert(!mdi_no.contains(PhysicalDeviceFeature::MultiDrawIndirect), "PhysicalDeviceFeatureField::MultiDrawIndirect (MDI) is not handled properly.");
 
+		// Now we'll try some supported extensions.
 		ExtensionList swapchain_yes = drivers::swapchain(true);
 		ExtensionList swapchain_no = drivers::swapchain(false);
 
