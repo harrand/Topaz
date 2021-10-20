@@ -6,6 +6,10 @@
 namespace tz
 {
 	/**
+	 * @}
+	 */
+
+	/**
 	 * \addtogroup tz_core Topaz Core Library (tz)
 	 * A collection of platform-agnostic core interfaces.
 	 * 
