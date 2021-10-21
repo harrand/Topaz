@@ -18,6 +18,15 @@ namespace tz::gl::vk2
 		MultiDrawIndirect ///  - Allows mass-batching of draw-calls. Vastly improves performance for large scenes.
 	};
 
+	/// Represents a PhysicalDevice manufacturer.
+	enum class PhysicalDeviceVendor
+	{
+		Nvidia,
+		AMD,
+		Intel,
+		Other
+	};
+
 	using PhysicalDeviceFeatureField = tz::EnumField<PhysicalDeviceFeature>;
 
 	/**
@@ -35,6 +44,8 @@ namespace tz::gl::vk2
 		 * Convert a Topaz Vulkan feature into its vulkan-api-friendly variant.
 		 */
 		VkPhysicalDeviceFeatures from_feature_field(const PhysicalDeviceFeatureField& feature_field);
+
+		PhysicalDeviceVendor to_tz_vendor(VkDriverId driver_id);
 	}
 
 	/**
@@ -58,8 +69,20 @@ namespace tz::gl::vk2
 		 * @return An EnumField containing all the extensions supported by this PhysicalDevice.
 		 */
 		ExtensionList get_supported_extensions() const;
+		/**
+		 * Retrieve the vendor. Only a few vendors are supported, so check @ref PhysicalDeviceVendor for information.
+		 * If you're using very new hardware, or various custom drivers such as MoltenVK, this may very well not return the expected value. This should mainly be used for vendor-specific optimisations and shouldn't be exposed to the end-user.
+		 */
+		PhysicalDeviceVendor get_vendor() const;
 		VkPhysicalDevice native() const;
 	private:
+		struct DeviceProps
+		{
+			VkPhysicalDeviceProperties2 props = {};
+			VkPhysicalDeviceDriverProperties driver_props = {};
+		};
+		DeviceProps get_internal_device_props() const;
+
 		VkPhysicalDevice dev;
 	};
 

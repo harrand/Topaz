@@ -25,6 +25,29 @@ namespace tz::gl::vk2
 			features.multiDrawIndirect = feature_field.contains(PhysicalDeviceFeature::MultiDrawIndirect) ? VK_TRUE : VK_FALSE;
 			return features;
 		}
+
+		PhysicalDeviceVendor to_tz_vendor(VkDriverId driver_id)
+		{
+			switch(driver_id)
+			{
+				case VK_DRIVER_ID_AMD_PROPRIETARY:
+					[[fallthrough]];
+				case VK_DRIVER_ID_AMD_OPEN_SOURCE:
+					return PhysicalDeviceVendor::AMD;
+				break;
+				case VK_DRIVER_ID_NVIDIA_PROPRIETARY:
+					return PhysicalDeviceVendor::Nvidia;
+				break;
+				case VK_DRIVER_ID_INTEL_PROPRIETARY_WINDOWS:
+					[[fallthrough]];
+				case VK_DRIVER_ID_INTEL_OPEN_SOURCE_MESA:
+					return PhysicalDeviceVendor::Intel;
+				break;
+				default:
+					return PhysicalDeviceVendor::Other;
+				break;
+			}
+		}
 	}
 
 	PhysicalDevice::PhysicalDevice(VkPhysicalDevice native):
@@ -62,10 +85,27 @@ namespace tz::gl::vk2
 
 		return exts;
 	}
+	
+	PhysicalDeviceVendor PhysicalDevice::get_vendor() const
+	{
+		DeviceProps props = this->get_internal_device_props();
+		return detail::to_tz_vendor(props.driver_props.driverID);
+	}
 
 	VkPhysicalDevice PhysicalDevice::native() const
 	{
 		return this->dev;
+	}
+
+	PhysicalDevice::DeviceProps PhysicalDevice::get_internal_device_props() const
+	{
+		DeviceProps props;
+		props.props.pNext = &props.driver_props;
+		props.driver_props.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DRIVER_PROPERTIES;
+		props.props.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2;
+
+		vkGetPhysicalDeviceProperties2(this->dev, &props.props);
+		return props;
 	}
 
 	PhysicalDeviceList get_all_devices()
