@@ -18,9 +18,13 @@ int main()
 
 			ExtensionList exts;
 			VulkanInfo vk2{game, exts};
+			tz_assert(!vk2.has_debug_validation(), "VulkanInfo without any extensions wrongly says it has debug validation enabled.");
 			VulkanInstance inst{vk2, tz::ApplicationType::Headless};	
 			tz_assert(inst.get_info() == vk2, "VulkanInstance::get_info() != Info passed into ctor");
 			//WindowSurface surface{inst, tz::window()}; // We're headless, we can't do this!
+			ExtensionList exts2{Extension::DebugMessenger};
+			VulkanInfo vk3{game, exts2};
+			tz_assert(vk3.has_debug_validation(), "VulkanInfo with ExtensionList containing {Extension::DebugMessenger} wrongly doesn't support debug validation (we're definitely TZ_DEBUG because this is an assert!)");
 		}
 	}
 	tz::terminate();

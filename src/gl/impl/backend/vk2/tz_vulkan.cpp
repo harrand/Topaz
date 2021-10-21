@@ -63,6 +63,79 @@ namespace tz::gl::vk2
 		return this->extensions;
 	}
 
+	bool VulkanInfo::has_debug_validation() const
+	{
+		return this->extensions.contains(Extension::DebugMessenger) && TZ_DEBUG;
+	}
+
+	inline VKAPI_ATTR VkBool32 VKAPI_CALL default_debug_callback
+	(
+		VkDebugUtilsMessageSeverityFlagBitsEXT message_severity,
+		[[maybe_unused]] VkDebugUtilsMessageTypeFlagsEXT message_type,
+		const VkDebugUtilsMessengerCallbackDataEXT* callback_data,
+		[[maybe_unused]] void* user_data
+	)
+	{
+		tz_error("[Vulkan Debug Callback]: %s\n", callback_data->pMessage);
+		return VK_FALSE;
+	}
+
+	VkResult vkCreateDebugUtilsMessengerEXT
+	(
+	    VkInstance instance,
+	    const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo,
+	    const VkAllocationCallbacks* pAllocator,
+	    VkDebugUtilsMessengerEXT* pMessenger
+	)
+	{
+		PFN_vkCreateDebugUtilsMessengerEXT tz_vkCreateDebugUtilsMessengerExt = reinterpret_cast<PFN_vkCreateDebugUtilsMessengerEXT>(vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT"));
+		return tz_vkCreateDebugUtilsMessengerExt(instance, pCreateInfo, pAllocator, pMessenger);
+	}
+
+	void vkDestroyDebugUtilsMessengerEXT
+	(
+		VkInstance instance,
+		VkDebugUtilsMessengerEXT messenger,
+		const VkAllocationCallbacks* pAllocator
+	)	
+	{
+		PFN_vkDestroyDebugUtilsMessengerEXT tz_vkDestroyDebugUtilsMessengerExt = reinterpret_cast<PFN_vkDestroyDebugUtilsMessengerEXT>(vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT"));
+		return tz_vkDestroyDebugUtilsMessengerExt(instance, messenger, pAllocator);
+	}
+
+	VulkanDebugMessenger::VulkanDebugMessenger(const VulkanInstance& instance):
+	debug_messenger(VK_NULL_HANDLE),
+	instance(&instance)
+	{
+		tz_assert(instance.get_info().get_extensions().contains(Extension::DebugMessenger), "VulkanInstance provided does not support %s, but is trying to initialie a VulkanDebugMessenger. Please submit a bug report.", VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+		
+		VkDebugUtilsMessengerCreateInfoEXT create{};
+		create.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
+		create.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT;
+		create.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
+		create.pfnUserCallback = default_debug_callback;
+
+		VkResult res = vk2::vkCreateDebugUtilsMessengerEXT(instance.native(), &create, nullptr, &this->debug_messenger);
+		switch(res)
+		{
+			case VK_SUCCESS:
+				// nothing
+			break;
+			case VK_ERROR_OUT_OF_HOST_MEMORY:
+				tz_error("Failed to create DebugMessenger because we ran out of memory.");
+			break;
+			default:
+				tz_error("Failed to create DebugMessenger, but couldn't find out how. This unrecognised error code is undocumented by the Vulkan API, so it's probably something very weird. Please submit a bug report!");
+			break;
+		}
+	}
+
+	VulkanDebugMessenger::~VulkanDebugMessenger()
+	{
+		vk2::vkDestroyDebugUtilsMessengerEXT(this->instance->native(), this->debug_messenger, nullptr);
+		this->debug_messenger = VK_NULL_HANDLE;
+	}
+
 	bool extension_supported(VkExtension extension)
 	{
 		std::uint32_t ext_count;
@@ -81,7 +154,8 @@ namespace tz::gl::vk2
 	app_type(type),
 	info_native(this->info.native()),
 	extensions(),
-	inst_info()
+	inst_info(),
+	debug_messenger(std::nullopt)
 	{
 		tz_assert(tz::is_initialised(), "VulkanInstance constructed before tz::initialise()");
 		// Basic Application Info
@@ -149,6 +223,15 @@ namespace tz::gl::vk2
 				tz_error("Instance creation failed, but couldn't determine the reason why...");
 			}
 		}
+		if(this->info.has_debug_validation())
+		{
+			this->debug_messenger = VulkanDebugMessenger{*this};
+		}
+	}
+
+	VulkanInstance::~VulkanInstance()
+	{
+		
 	}
 
 	const VulkanInfo& VulkanInstance::get_info() const

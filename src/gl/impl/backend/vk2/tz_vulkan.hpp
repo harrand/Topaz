@@ -48,6 +48,8 @@ namespace tz::gl::vk2
 	{
 		/// - Enables Swapchain operations (required to create a swapchain and present images)
 		Swapchain,
+		/// - Enables Debug Messenger (only supported on TZ_DEBUG)
+		DebugMessenger,
 		
 		Count	
 	};
@@ -65,7 +67,7 @@ namespace tz::gl::vk2
 			return VK_MAKE_VERSION(ver.major, ver.minor, ver.patch);
 		}
 
-		constexpr std::array<VkExtension, static_cast<int>(Extension::Count)> extension_names{VK_KHR_SWAPCHAIN_EXTENSION_NAME};
+		constexpr std::array<VkExtension, static_cast<int>(Extension::Count)> extension_names{VK_KHR_SWAPCHAIN_EXTENSION_NAME, VK_EXT_DEBUG_UTILS_EXTENSION_NAME};
 
 		constexpr VkExtension to_vk_extension(Extension extension)
 		{
@@ -106,11 +108,29 @@ namespace tz::gl::vk2
 		 * @return List of instance extensions to be enabled by the next VulkanInstance using this struct.
 		 */
 		const ExtensionList& get_extensions() const;
+		/**
+		 * Query as to whether a spawned VulkanInstance would support debug validation layer messengers.
+		 * Debug layer messengers automatically assert on any Vulkan-API validation layer errors. This is enabled when the Extension::DebugMessenger is specified, and built under TZ_DEBUG.
+		 * @return True if vulkan-api errors will tz_error, otherwise false.
+		 */
+		bool has_debug_validation() const;
 		bool operator==(const VulkanInfo& rhs) const = default;
 	private:
 		tz::GameInfo game_info;
 		std::string engine_name;
 		ExtensionList extensions;
+	};
+
+	class VulkanInstance;
+
+	class VulkanDebugMessenger
+	{
+	public:
+		VulkanDebugMessenger(const VulkanInstance& instance);
+		~VulkanDebugMessenger();
+	private:
+		VkDebugUtilsMessengerEXT debug_messenger;	
+		const VulkanInstance* instance;
 	};
 
 	/**
@@ -126,6 +146,7 @@ namespace tz::gl::vk2
 		 * @param app_type Application type. Headless applications require slightly modified vulkan instances, for example.
 		 */
 		VulkanInstance(VulkanInfo info, tz::ApplicationType app_type);
+		~VulkanInstance();
 		/**
 		 * @brief Retrieve the @ref VulkanInfo used to construct this instance.
 		 */
@@ -138,6 +159,7 @@ namespace tz::gl::vk2
 		VkExtensionList extensions;
 		VkInstanceCreateInfo inst_info;
 		VkInstance instance;
+		std::optional<VulkanDebugMessenger> debug_messenger;
 	};
 
 	/**
