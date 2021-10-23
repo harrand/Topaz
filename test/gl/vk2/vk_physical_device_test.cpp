@@ -67,18 +67,29 @@ void guaranteed_formats()
 	// Ensure all PhysicalDevices support the guaranteed formats.
 	for(const PhysicalDevice& dev : devices)
 	{
-		for(decltype(std::size(safe_colour_attachment_formats)) i = 0; i < std::size(safe_colour_attachment_formats); i++)
+		using ImageFormats = std::span<const ImageFormat>;
+		constexpr ImageFormats cols = format_traits::get_mandatory_colour_attachment_formats();
+		constexpr ImageFormats depths = format_traits::get_mandatory_depth_attachment_formats();
+		constexpr ImageFormats sampleds = format_traits::get_mandatory_sampled_image_formats();
+
+		bool cols_satisfied = std::all_of(cols.begin(), cols.end(), [&dev](const ImageFormat& fmt)
 		{
-			tz_assert(dev.supports_image_colour_format(safe_colour_attachment_formats[i]), "Guaranteed ImageFormat not supported by PhysicalDevice. There is either a bug or the vulkan drivers are not standard-compliant.");
-		}
-		for(decltype(std::size(safe_depth_attachment_formats)) i = 0; i < std::size(safe_depth_attachment_formats); i++)
+			return dev.supports_image_colour_format(fmt);
+		});
+
+		bool depths_satisfied = std::all_of(depths.begin(), depths.end(), [&dev](const ImageFormat& fmt)
 		{
-			tz_assert(dev.supports_image_depth_format(safe_depth_attachment_formats[i]), "Guaranteed ImageFormat not supported by PhysicalDevice. There is either a bug or the vulkan drivers are not standard-compliant.");
-		}
-		for(decltype(std::size(safe_sampled_image_formats)) i = 0; i < std::size(safe_sampled_image_formats); i++)
+			return dev.supports_image_depth_format(fmt);
+		});
+
+		bool sampleds_satisfied = std::all_of(sampleds.begin(), sampleds.end(), [&dev](const ImageFormat& fmt)
 		{
-			tz_assert(dev.supports_image_sampled_format(safe_sampled_image_formats[i]), "Guaranteed ImageFormat not supported by PhysicalDevice. There is either a bug or the vulkan drivers are not standard-compliant.");
-		}
+			return dev.supports_image_sampled_format(fmt);
+		});
+
+		tz_assert(cols_satisfied, "Mandatory ImageFormats not available on this PhysicalDevice (Colour Attachment)");
+		tz_assert(depths_satisfied, "Mandatory ImageFormats not available on this PhysicalDevice (Depth Attachment)");
+		tz_assert(sampleds_satisfied, "Mandatory ImageFormats not available on this PhysicalDevice (Sampled Image)");
 	}
 }
 

@@ -4,6 +4,7 @@
 #include "vulkan/vulkan.h"
 #include <algorithm>
 #include <array>
+#include <span>
 
 namespace tz::gl::vk2
 {
@@ -142,21 +143,24 @@ namespace tz::gl::vk2
 		ImageFormat::BGRA32_sRGB
 	};
 
-	constexpr bool is_guaranteed_colour_format(const ImageFormat& format)
+	namespace format_traits
 	{
-		return std::find(std::begin(safe_colour_attachment_formats), std::end(safe_colour_attachment_formats), format) != std::end(safe_colour_attachment_formats);
-	}
+		constexpr std::span<const ImageFormat> get_mandatory_colour_attachment_formats()
+		{
+			return {safe_colour_attachment_formats};
+		}
 
-	constexpr bool is_guaranteed_depth_format(const ImageFormat& format)
-	{
-		return std::find(std::begin(safe_depth_attachment_formats), std::end(safe_depth_attachment_formats), format) != std::end(safe_depth_attachment_formats);
-	}
+		constexpr std::span<const ImageFormat> get_mandatory_depth_attachment_formats()
+		{
+			return {safe_depth_attachment_formats};
+		}
+		
+		constexpr std::span<const ImageFormat> get_mandatory_sampled_image_formats()
+		{
+			return {safe_sampled_image_formats};
+		}
 
-	constexpr bool is_guaranteed_sampled_format(const ImageFormat& format)
-	{
-		return std::find(std::begin(safe_sampled_image_formats), std::end(safe_sampled_image_formats), format) != std::end(safe_sampled_image_formats);
 	}
 }
-
 #endif // TZ_VULKAN
 #endif // TOPAZ_GL_IMPL_BACKEND_VK2_IMAGE_FORMAT_HPP
