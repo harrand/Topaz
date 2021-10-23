@@ -24,43 +24,65 @@ namespace drivers
 	}
 }
 
+void devices()
+{
+	using namespace tz::gl::vk2;
+	PhysicalDeviceList devices = get_all_devices();	
+
+	tz_assert(!devices.empty(), "No physical devices are available");
+	tz_assert(devices.front().native() != VK_NULL_HANDLE, "get_all_devices() returns nonsense");
+
+	// Ensure that no devices have invalid extensions.
+	for(const PhysicalDevice& dev : devices)
+	{
+		for(Extension e : dev.get_supported_extensions())
+		{
+			tz_assert(e != Extension::Count, "PhysicalDevice list of supported extensions includes Extension::Count, which makes no sense.");
+		}
+	}
+
+	// We'll play around with all the supported features.
+	// MDI
+	PhysicalDeviceFeatureField mdi_yes = detail::to_feature_field(drivers::mdi(true));
+	PhysicalDeviceFeatureField mdi_no = detail::to_feature_field(drivers::mdi(false));
+
+	tz_assert(mdi_yes.contains(PhysicalDeviceFeature::MultiDrawIndirect), "PhysicalDeviceFeatureField::MultiDrawIndirect (MDI) is not handled properly.");
+	tz_assert(!mdi_no.contains(PhysicalDeviceFeature::MultiDrawIndirect), "PhysicalDeviceFeatureField::MultiDrawIndirect (MDI) is not handled properly.");
+
+	// Now we'll try some supported extensions.
+	ExtensionList swapchain_yes = drivers::swapchain(true);
+	ExtensionList swapchain_no = drivers::swapchain(false);
+
+	tz_assert(swapchain_yes.contains(Extension::Swapchain), "ExtensionList wrongly says it doesn't Extension::Swapchain");
+	tz_assert(!swapchain_no.contains(Extension::Swapchain), "ExtensionList wrongly says it contains Extension::Swapchain");
+
+}
+
+void window_surfaces(tz::GameInfo game)
+{
+	using namespace tz::gl::vk2;
+	PhysicalDeviceList devices = get_all_devices();	
+	VulkanInfo window_info{game};
+	VulkanInstance window_inst{window_info, tz::ApplicationType::HiddenWindowApplication};
+	WindowSurface window_surf{window_inst, tz::window()};
+	// If we have a PhysicalDevice which supports WindowSurfaces, ensure that its swapchain format support isn't shit
+	for(const PhysicalDevice& dev : devices)
+	{
+		tz::BasicList<ImageFormat> supported_formats = dev.get_supported_surface_formats(window_surf);
+		tz_assert(!supported_formats.empty(), "PhysicalDevice found which doesn't support any window surface formats");
+	}
+}
+
 int main()
 {
 	tz::GameInfo game{"vk_physical_device_test", tz::Version{1, 0, 0}, tz::info()};
-	tz::initialise(game, tz::ApplicationType::Headless);
+	tz::ApplicationType app_type = tz::ApplicationType::HiddenWindowApplication;
+	tz::initialise(game, app_type);
 	// TODO: Don't need to specifically vk2::initialise/term once vk2 is hooked up to tz::initialise.
-	tz::gl::vk2::initialise_headless(game, tz::ApplicationType::Headless);
+	tz::gl::vk2::initialise_headless(game, app_type);
 	{
-		using namespace tz::gl::vk2;
-		PhysicalDeviceList devices = get_all_devices();	
-
-		tz_assert(!devices.empty(), "No physical devices are available");
-		tz_assert(devices.front().native() != VK_NULL_HANDLE, "get_all_devices() returns nonsense");
-
-		// Ensure that no devices have invalid extensions.
-		for(const PhysicalDevice& dev : devices)
-		{
-			for(Extension e : dev.get_supported_extensions())
-			{
-				tz_assert(e != Extension::Count, "PhysicalDevice list of supported extensions includes Extension::Count, which makes no sense.");
-			}
-		}
-
-		// We'll play around with all the supported features.
-		// MDI
-		PhysicalDeviceFeatureField mdi_yes = detail::to_feature_field(drivers::mdi(true));
-		PhysicalDeviceFeatureField mdi_no = detail::to_feature_field(drivers::mdi(false));
-
-		tz_assert(mdi_yes.contains(PhysicalDeviceFeature::MultiDrawIndirect), "PhysicalDeviceFeatureField::MultiDrawIndirect (MDI) is not handled properly.");
-		tz_assert(!mdi_no.contains(PhysicalDeviceFeature::MultiDrawIndirect), "PhysicalDeviceFeatureField::MultiDrawIndirect (MDI) is not handled properly.");
-
-		// Now we'll try some supported extensions.
-		ExtensionList swapchain_yes = drivers::swapchain(true);
-		ExtensionList swapchain_no = drivers::swapchain(false);
-
-		tz_assert(swapchain_yes.contains(Extension::Swapchain), "ExtensionList wrongly says it doesn't Extension::Swapchain");
-		tz_assert(!swapchain_no.contains(Extension::Swapchain), "ExtensionList wrongly says it contains Extension::Swapchain");
-
+		devices();
+		window_surfaces(game);
 	}
 	tz::gl::vk2::terminate();
 	tz::terminate();

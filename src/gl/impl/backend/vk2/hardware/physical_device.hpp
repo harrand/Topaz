@@ -4,6 +4,7 @@
 #include "core/containers/basic_list.hpp"
 #include "core/containers/enum_field.hpp"
 #include "gl/impl/backend/vk2/tz_vulkan.hpp"
+#include "gl/impl/backend/vk2/image_format.hpp"
 
 namespace tz::gl::vk2
 {
@@ -74,6 +75,7 @@ namespace tz::gl::vk2
 		 * If you're using very new hardware, or various custom drivers such as MoltenVK, this may very well not return the expected value. This should mainly be used for vendor-specific optimisations and shouldn't be exposed to the end-user.
 		 */
 		PhysicalDeviceVendor get_vendor() const;
+		tz::BasicList<ImageFormat> get_supported_surface_formats(const WindowSurface& surface) const;
 		VkPhysicalDevice native() const;
 	private:
 		struct DeviceProps

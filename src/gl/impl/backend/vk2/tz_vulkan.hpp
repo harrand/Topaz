@@ -171,6 +171,8 @@ namespace tz::gl::vk2
 	public:
 		WindowSurface(const VulkanInstance& instance, const tz::Window& window);
 		~WindowSurface();
+
+		VkSurfaceKHR native() const;
 	private:
 		VkSurfaceKHR surface;
 		const VulkanInstance* instance;

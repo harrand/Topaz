@@ -13,8 +13,8 @@ namespace tz::gl::vk2
 
 	void initialise(tz::GameInfo game_info, tz::ApplicationType app_type)
 	{
-		initialise_headless(game_info, app_type);
-
+		VulkanInfo vk_info{game_info};
+		inst = new VulkanInstance{vk_info, app_type};
 		surf = new WindowSurface{*inst, tz::window()};
 	}
 
@@ -167,7 +167,7 @@ namespace tz::gl::vk2
 		{
 			std::uint32_t glfw_extension_count;
 			const char** glfw_extensions = glfwGetRequiredInstanceExtensions(&glfw_extension_count);
-			for(int i = 0; i < std::cmp_less(i, glfw_extension_count); i++)
+			for(int i = 0; std::cmp_less(i, glfw_extension_count); i++)
 			{
 				this->extensions.add(glfw_extensions[i]);
 				tz_assert(extension_supported(glfw_extensions[i]), "The GLFW extension \"%s\" is not supported by the machine. Windowed applictions are not possible in this state.", glfw_extensions[i]);
@@ -253,6 +253,9 @@ namespace tz::gl::vk2
 		VkResult res = glfwCreateWindowSurface(this->instance->native(), window.get_middleware_handle(), nullptr, &this->surface);
 		switch(res)
 		{
+			case VK_SUCCESS:
+
+			break;
 			case VK_ERROR_INITIALIZATION_FAILED:
 				tz_error("Failed to find either a Vulkan loader or a minimally functional ICD (installable client driver), cannot create Window Surface. If you're an end-user, please ensure your drivers are upto-date -- Note that while this is almost certainly *not* a bug, this is a fatal error and the application must crash.");
 			break;
@@ -271,6 +274,11 @@ namespace tz::gl::vk2
 	WindowSurface::~WindowSurface()
 	{
 		vkDestroySurfaceKHR(this->instance->native(), this->surface, nullptr);
+	}
+
+	VkSurfaceKHR WindowSurface::native() const
+	{
+		return this->surface;
 	}
 
 }

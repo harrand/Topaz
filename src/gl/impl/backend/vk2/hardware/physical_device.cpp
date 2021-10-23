@@ -92,6 +92,23 @@ namespace tz::gl::vk2
 		return detail::to_tz_vendor(props.driver_props.driverID);
 	}
 
+	tz::BasicList<ImageFormat> PhysicalDevice::get_supported_surface_formats(const WindowSurface& surface) const
+	{
+		tz::BasicList<ImageFormat> fmts;
+
+		std::vector<VkSurfaceFormatKHR> surf_fmts;
+		std::uint32_t num_supported_formats;
+		vkGetPhysicalDeviceSurfaceFormatsKHR(this->dev, surface.native(), &num_supported_formats, nullptr);
+		surf_fmts.resize(static_cast<decltype(surf_fmts)::size_type>(num_supported_formats));
+		vkGetPhysicalDeviceSurfaceFormatsKHR(this->dev, surface.native(), &num_supported_formats, surf_fmts.data());
+		
+		for(VkSurfaceFormatKHR surf_fmt : surf_fmts)
+		{
+			fmts.add(static_cast<ImageFormat>(surf_fmt.format));
+		}
+		return fmts;
+	}
+
 	VkPhysicalDevice PhysicalDevice::native() const
 	{
 		return this->dev;
