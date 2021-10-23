@@ -1,6 +1,9 @@
 #ifndef TOPAZ_GL_IMPL_BACKEND_VK2_IMAGE_FORMAT_HPP
 #define TOPAZ_GL_IMPL_BACKEND_VK2_IMAGE_FORMAT_HPP
+#if TZ_VULKAN
 #include "vulkan/vulkan.h"
+#include <algorithm>
+#include <array>
 
 namespace tz::gl::vk2
 {
@@ -16,6 +19,7 @@ namespace tz::gl::vk2
 	 * 	- SNORM = float [-1 -> 1]
 	 * 	- UINT = unsigned int
 	 * 	- SINT = signed int
+	 * 	- SFLOAT = signed float
 	 * 	- SRGB = sRGB nonlinear encoding
 	 * Examples:
 	 * - RGBA32 = (RGBA, 32 bit, UNORM)
@@ -80,8 +84,79 @@ namespace tz::gl::vk2
 		BGRA32_SNorm = VK_FORMAT_B8G8R8A8_SNORM,
 		BGRA32_UInt = VK_FORMAT_B8G8R8A8_UINT,
 		BGRA32_SInt = VK_FORMAT_B8G8R8A8_SINT,
-		BGRA32_sRGB = VK_FORMAT_B8G8R8A8_SRGB
+		BGRA32_sRGB = VK_FORMAT_B8G8R8A8_SRGB,
+
+		Depth16_UNorm = VK_FORMAT_D16_UNORM
 	};
+
+	/*
+	 * https://www.khronos.org/registry/vulkan/specs/1.2/pdf/vkspec.pdf
+	 * pg 1081-1090 (big tables of mandatory supported formats)
+	 */
+	constexpr ImageFormat safe_colour_attachment_formats[]
+	{
+		ImageFormat::RGBA32_UInt,
+		ImageFormat::RGBA32_SInt,
+		ImageFormat::RGBA32_sRGB,
+
+		ImageFormat::BGRA32,
+		ImageFormat::BGRA32_sRGB,
+
+		ImageFormat::RG16_UInt,
+		ImageFormat::RG16_SInt,
+
+		ImageFormat::RG32_UInt,
+		ImageFormat::RG32_SInt,
+	};
+
+	constexpr ImageFormat safe_depth_attachment_formats[]
+	{
+		ImageFormat::Depth16_UNorm
+	};
+
+	constexpr ImageFormat safe_sampled_image_formats[]
+	{
+		ImageFormat::R8,
+		ImageFormat::R8_SNorm,
+		ImageFormat::R8_UInt,
+		ImageFormat::R8_SInt,
+
+		ImageFormat::R16_UInt,
+		ImageFormat::R16_SInt,
+
+		ImageFormat::RG16,
+		ImageFormat::RG16_SNorm,
+		ImageFormat::RG16_UInt,
+		ImageFormat::RG16_SInt,
+
+		ImageFormat::RG32_UInt,
+		ImageFormat::RG32_SInt,
+
+		ImageFormat::RGBA32,
+		ImageFormat::RGBA32_SNorm,
+		ImageFormat::RGBA32_UInt,
+		ImageFormat::RGBA32_SInt,
+		ImageFormat::RGBA32_sRGB,
+
+		ImageFormat::BGRA32,
+		ImageFormat::BGRA32_sRGB
+	};
+
+	constexpr bool is_guaranteed_colour_format(const ImageFormat& format)
+	{
+		return std::find(std::begin(safe_colour_attachment_formats), std::end(safe_colour_attachment_formats), format) != std::end(safe_colour_attachment_formats);
+	}
+
+	constexpr bool is_guaranteed_depth_format(const ImageFormat& format)
+	{
+		return std::find(std::begin(safe_depth_attachment_formats), std::end(safe_depth_attachment_formats), format) != std::end(safe_depth_attachment_formats);
+	}
+
+	constexpr bool is_guaranteed_sampled_format(const ImageFormat& format)
+	{
+		return std::find(std::begin(safe_sampled_image_formats), std::end(safe_sampled_image_formats), format) != std::end(safe_sampled_image_formats);
+	}
 }
 
+#endif // TZ_VULKAN
 #endif // TOPAZ_GL_IMPL_BACKEND_VK2_IMAGE_FORMAT_HPP

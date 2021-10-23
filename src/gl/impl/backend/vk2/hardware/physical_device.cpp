@@ -1,3 +1,4 @@
+#include "gl/impl/backend/vk2/image_format.hpp"
 #include "gl/impl/frontend/common/shader.hpp"
 #if TZ_VULKAN
 #include "gl/impl/backend/vk2/hardware/physical_device.hpp"
@@ -109,6 +110,20 @@ namespace tz::gl::vk2
 		return fmts;
 	}
 
+	bool PhysicalDevice::supports_image_colour_format(ImageFormat colour_format) const
+	{
+		return this->supports_image_format(colour_format, VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT);
+	}
+
+	bool PhysicalDevice::supports_image_sampled_format(ImageFormat sampled_format) const
+	{
+		return this->supports_image_format(sampled_format, VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT);
+	}
+
+	bool PhysicalDevice::supports_image_depth_format(ImageFormat depth_format) const
+	{
+		return this->supports_image_format(depth_format, VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
+	}
 	VkPhysicalDevice PhysicalDevice::native() const
 	{
 		return this->dev;
@@ -123,6 +138,14 @@ namespace tz::gl::vk2
 
 		vkGetPhysicalDeviceProperties2(this->dev, &props.props);
 		return props;
+	}
+
+	bool PhysicalDevice::supports_image_format(ImageFormat format,VkFormatFeatureFlagBits feature_type) const
+	{
+		VkFormatProperties props;
+		vkGetPhysicalDeviceFormatProperties(this->dev, static_cast<VkFormat>(format), &props);
+		// Assume we always use optimal tiling.
+		return (props.optimalTilingFeatures & feature_type) == feature_type;
 	}
 
 	PhysicalDeviceList get_all_devices()

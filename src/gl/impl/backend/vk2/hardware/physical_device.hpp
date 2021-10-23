@@ -75,7 +75,26 @@ namespace tz::gl::vk2
 		 * If you're using very new hardware, or various custom drivers such as MoltenVK, this may very well not return the expected value. This should mainly be used for vendor-specific optimisations and shouldn't be exposed to the end-user.
 		 */
 		PhysicalDeviceVendor get_vendor() const;
+		/**
+		 * Retrieve a list of all ImageFormats that could represent the given window surface.
+		 * @return List of acceptable ImageFormats for a window surface.
+		 */
 		tz::BasicList<ImageFormat> get_supported_surface_formats(const WindowSurface& surface) const;
+		/**
+		 * Query as to whether the given ImageFormat can be used as a framebuffer colour attachment and as an input attachment format.
+		 * @return true if `colour_format` can be a colour attachment, otherwise false.
+		 */
+		bool supports_image_colour_format(ImageFormat colour_format) const;
+		/**
+		 * Query as to whether an ImageView using this format can be sampled from within a shader. 
+		 * @return true if `sampled_format` can be sampled in a shader, otherwise false.
+		 */
+		bool supports_image_sampled_format(ImageFormat sampled_format) const;
+		/**
+		 * Query as to whether the given ImageFormat can be used as a framebuffer depth/stencil attachment and as an input attachment format.
+		 * @return true if `depth_format` can be a depth/stencil attachment, otherwise false.
+		 */
+		bool supports_image_depth_format(ImageFormat depth_format) const;
 		VkPhysicalDevice native() const;
 	private:
 		struct DeviceProps
@@ -84,6 +103,7 @@ namespace tz::gl::vk2
 			VkPhysicalDeviceDriverProperties driver_props = {};
 		};
 		DeviceProps get_internal_device_props() const;
+		bool supports_image_format(ImageFormat format, VkFormatFeatureFlagBits feature_type) const;
 
 		VkPhysicalDevice dev;
 	};

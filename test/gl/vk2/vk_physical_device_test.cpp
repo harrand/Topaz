@@ -1,5 +1,6 @@
 #include "core/tz.hpp"
 #include "gl/impl/backend/vk2/hardware/physical_device.hpp"
+#include "gl/impl/backend/vk2/image_format.hpp"
 
 namespace drivers
 {
@@ -58,6 +59,29 @@ void devices()
 
 }
 
+void guaranteed_formats()
+{
+	using namespace tz::gl::vk2;
+	PhysicalDeviceList devices = get_all_devices();	
+
+	// Ensure all PhysicalDevices support the guaranteed formats.
+	for(const PhysicalDevice& dev : devices)
+	{
+		for(decltype(std::size(safe_colour_attachment_formats)) i = 0; i < std::size(safe_colour_attachment_formats); i++)
+		{
+			tz_assert(dev.supports_image_colour_format(safe_colour_attachment_formats[i]), "Guaranteed ImageFormat not supported by PhysicalDevice. There is either a bug or the vulkan drivers are not standard-compliant.");
+		}
+		for(decltype(std::size(safe_depth_attachment_formats)) i = 0; i < std::size(safe_depth_attachment_formats); i++)
+		{
+			tz_assert(dev.supports_image_depth_format(safe_depth_attachment_formats[i]), "Guaranteed ImageFormat not supported by PhysicalDevice. There is either a bug or the vulkan drivers are not standard-compliant.");
+		}
+		for(decltype(std::size(safe_sampled_image_formats)) i = 0; i < std::size(safe_sampled_image_formats); i++)
+		{
+			tz_assert(dev.supports_image_sampled_format(safe_sampled_image_formats[i]), "Guaranteed ImageFormat not supported by PhysicalDevice. There is either a bug or the vulkan drivers are not standard-compliant.");
+		}
+	}
+}
+
 void window_surfaces(tz::GameInfo game)
 {
 	using namespace tz::gl::vk2;
@@ -82,6 +106,7 @@ int main()
 	tz::gl::vk2::initialise_headless(game, app_type);
 	{
 		devices();
+		guaranteed_formats();
 		window_surfaces(game);
 	}
 	tz::gl::vk2::terminate();
