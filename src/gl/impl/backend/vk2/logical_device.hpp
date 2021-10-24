@@ -66,6 +66,7 @@ namespace tz::gl::vk2
 		PhysicalDevice physical_device;
 		ExtensionList enabled_extensions;
 		PhysicalDeviceFeatureField enabled_features;
+		std::vector<QueueFamilyInfo> queue_families;
 	};
 }
 

@@ -8,10 +8,10 @@ namespace tz::gl::vk2
 	dev(VK_NULL_HANDLE),
 	physical_device(physical_device),
 	enabled_extensions(enabled_extensions),
-	enabled_features(enabled_features)
+	enabled_features(enabled_features),
+	queue_families()
 	{
 		// Firstly, let's retrieve some information about the PhysicalDevice's queue families. Note that its API doesn't expose this to the end-user, so we have to do this ourselves.
-		std::vector<QueueFamilyInfo> queue_families;
 		{
 			std::vector<VkQueueFamilyProperties> queue_family_props;
 
@@ -22,7 +22,7 @@ namespace tz::gl::vk2
 
 			vkGetPhysicalDeviceQueueFamilyProperties(this->physical_device.native(), &queue_family_property_count, queue_family_props.data());
 			// Queue Family Index == i, where queue_family_props[i] makes sense.
-			std::for_each(queue_family_props.begin(), queue_family_props.end(), [&queue_families](VkQueueFamilyProperties prop)
+			std::for_each(queue_family_props.begin(), queue_family_props.end(), [this](VkQueueFamilyProperties prop)
 			{
 				QueueFamilyInfo info;
 				info.family_size = prop.queueCount;
@@ -39,17 +39,17 @@ namespace tz::gl::vk2
 				{
 					info.types |= QueueFamilyType::Transfer;
 				}
-				queue_families.push_back(info);
+				this->queue_families.push_back(info);
 			});
 		}
 		// Now create the VkDeviceQueueCreateInfos
 		std::vector<VkDeviceQueueCreateInfo> queue_creates;
-		for(std::uint32_t qf_index = 0; qf_index < queue_families.size(); qf_index++)
+		for(std::uint32_t qf_index = 0; qf_index < this->queue_families.size(); qf_index++)
 		{
 			VkDeviceQueueCreateInfo& queue_create = queue_creates.emplace_back();
 			queue_create.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
 			queue_create.queueFamilyIndex = qf_index;
-			queue_create.queueCount = queue_families[static_cast<decltype(queue_families)::size_type>(qf_index)].family_size;
+			queue_create.queueCount = this->queue_families[static_cast<decltype(queue_families)::size_type>(qf_index)].family_size;
 		}
 		// This is when we actually can create the LogicalDevice.
 		VkDeviceCreateInfo create{};
