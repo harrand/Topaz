@@ -29,11 +29,14 @@ namespace tz::gl::vk2
 	void terminate();
 
 	class VulkanInstance;
+	class WindowSurface;
 
 	/**
 	 * @brief Retrieve a reference to the current Vulkan Instance. This will have been created during initialisation.
 	 */
 	const VulkanInstance& get();
+	bool is_headless();
+	const WindowSurface& get_window_surface();
 
 	constexpr tz::Version vulkan_version{1, 2, 0};
 

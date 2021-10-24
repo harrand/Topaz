@@ -4,8 +4,8 @@
 int main()
 {
 	tz::GameInfo game{"vk_logical_device_test", tz::Version{1, 0, 0}, tz::info()};
-	tz::initialise(game, tz::ApplicationType::Headless);
-	tz::gl::vk2::initialise_headless(game, tz::ApplicationType::Headless);
+	tz::initialise(game, tz::ApplicationType::HiddenWindowApplication);
+	tz::gl::vk2::initialise(game, tz::ApplicationType::HiddenWindowApplication);
 	{
 		using namespace tz::gl::vk2;
 		PhysicalDeviceList devices = get_all_devices();

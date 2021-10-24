@@ -22,11 +22,14 @@ namespace tz::gl::vk2
 
 			vkGetPhysicalDeviceQueueFamilyProperties(this->physical_device.native(), &queue_family_property_count, queue_family_props.data());
 			// Queue Family Index == i, where queue_family_props[i] makes sense.
-			std::for_each(queue_family_props.begin(), queue_family_props.end(), [this](VkQueueFamilyProperties prop)
+			for(std::uint32_t queue_family_index = 0; std::cmp_less(queue_family_index, queue_family_props.size()); queue_family_index++)
 			{
+
+				VkQueueFamilyProperties prop = queue_family_props[queue_family_index];
 				QueueFamilyInfo info;
 				info.family_size = prop.queueCount;
 				info.types = {};
+				info.present_support = false;
 				if(prop.queueFlags & VK_QUEUE_GRAPHICS_BIT)
 				{
 					info.types |= QueueFamilyType::Graphics;
@@ -39,8 +42,15 @@ namespace tz::gl::vk2
 				{
 					info.types |= QueueFamilyType::Transfer;
 				}
+
+				if(!vk::is_headless())
+				{
+					VkBool32 present_support;
+					vkGetPhysicalDeviceSurfaceSupportKHR(this->physical_device.native(), queue_family_index, vk2::get_window_surface().native(), &present_support);
+					info.present_support = present_support == VK_TRUE;
+				}
 				this->queue_families.push_back(info);
-			});
+			};
 		}
 		// Now create the VkDeviceQueueCreateInfos
 		std::vector<VkDeviceQueueCreateInfo> queue_creates;

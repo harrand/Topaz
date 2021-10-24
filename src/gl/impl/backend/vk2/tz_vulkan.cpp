@@ -38,6 +38,18 @@ namespace tz::gl::vk2
 		return *inst;
 	}
 
+	bool is_headless()
+	{
+		tz_assert(inst != nullptr, "Not initialised");
+		return surf != nullptr;
+	}
+
+	const WindowSurface& get_window_surface()
+	{
+		tz_assert(is_headless(), "Cannot retrieve window surface in headless applictions.");
+		return *surf;
+	}
+
 	VulkanInfo::VulkanInfo(tz::GameInfo game_info, InstanceExtensionList extensions):
 	game_info(game_info),
 	engine_name(this->game_info.engine.to_string()),

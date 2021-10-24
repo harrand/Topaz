@@ -36,6 +36,7 @@ namespace tz::gl::vk2
 	struct QueueFamilyInfo
 	{
 		std::uint32_t family_size;
+		bool present_support;
 		QueueFamilyTypeField types;
 	};
 	
