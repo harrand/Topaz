@@ -50,7 +50,7 @@ namespace tz::gl::vk2
 		 * @brief Construct a LogicalDevice based on a PhysicalDevice, and some optional extensions/features to enable.
 		 * @pre All elements of `enabled_extensions` are supported. That is, are contained within @ref PhysicalDevice::get_supported_extensions and @ref PhysicalDevice::get_supported_features. If an extension/feature is enabled which is not supported by `physical_device`, the behaviour is undefined.
 		 */
-		LogicalDevice(PhysicalDevice physical_device, ExtensionList enabled_extensions = {}, PhysicalDeviceFeatureField enabled_features = {});
+		LogicalDevice(PhysicalDevice physical_device, DeviceExtensionList enabled_extensions = {}, PhysicalDeviceFeatureField enabled_features = {});
 
 		/**
 		 * @brief Retrieve the PhysicalDevice that this LogicalDevice derives from.
@@ -59,12 +59,12 @@ namespace tz::gl::vk2
 		/**
 		 * @brief Retrieve a list of all enabled extensions.
 		 */
-		const ExtensionList& get_extensions() const;
+		const DeviceExtensionList& get_extensions() const;
 		VkDevice native() const;
 	private:
 		VkDevice dev;
 		PhysicalDevice physical_device;
-		ExtensionList enabled_extensions;
+		DeviceExtensionList enabled_extensions;
 		PhysicalDeviceFeatureField enabled_features;
 		std::vector<QueueFamilyInfo> queue_families;
 	};

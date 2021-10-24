@@ -38,7 +38,7 @@ namespace tz::gl::vk2
 		return *inst;
 	}
 
-	VulkanInfo::VulkanInfo(tz::GameInfo game_info, ExtensionList extensions):
+	VulkanInfo::VulkanInfo(tz::GameInfo game_info, InstanceExtensionList extensions):
 	game_info(game_info),
 	engine_name(this->game_info.engine.to_string()),
 	extensions(extensions)
@@ -58,14 +58,14 @@ namespace tz::gl::vk2
 		return info;
 	}
 
-	const ExtensionList& VulkanInfo::get_extensions() const
+	const InstanceExtensionList& VulkanInfo::get_extensions() const
 	{
 		return this->extensions;
 	}
 
 	bool VulkanInfo::has_debug_validation() const
 	{
-		return this->extensions.contains(Extension::DebugMessenger) && TZ_DEBUG;
+		return this->extensions.contains(InstanceExtension::DebugMessenger) && TZ_DEBUG;
 	}
 
 	inline VKAPI_ATTR VkBool32 VKAPI_CALL default_debug_callback
@@ -107,7 +107,7 @@ namespace tz::gl::vk2
 	debug_messenger(VK_NULL_HANDLE),
 	instance(&instance)
 	{
-		tz_assert(instance.get_info().get_extensions().contains(Extension::DebugMessenger), "VulkanInstance provided does not support %s, but is trying to initialie a VulkanDebugMessenger. Please submit a bug report.", VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+		tz_assert(instance.get_info().get_extensions().contains(InstanceExtension::DebugMessenger), "VulkanInstance provided does not support %s, but is trying to initialie a VulkanDebugMessenger. Please submit a bug report.", VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
 		
 		VkDebugUtilsMessengerCreateInfoEXT create{};
 		create.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
@@ -136,7 +136,7 @@ namespace tz::gl::vk2
 		this->debug_messenger = VK_NULL_HANDLE;
 	}
 
-	bool extension_supported(VkExtension extension)
+	bool extension_supported(util::VkExtension extension)
 	{
 		std::uint32_t ext_count;
 		vkEnumerateInstanceExtensionProperties(nullptr, &ext_count, nullptr);
@@ -173,7 +173,7 @@ namespace tz::gl::vk2
 				tz_assert(extension_supported(glfw_extensions[i]), "The GLFW extension \"%s\" is not supported by the machine. Windowed applictions are not possible in this state.", glfw_extensions[i]);
 			}
 		}
-		for(Extension extension : this->info.get_extensions())
+		for(InstanceExtension extension : this->info.get_extensions())
 		{
 			this->extensions.add(util::to_vk_extension(extension));
 		}

@@ -17,14 +17,14 @@ int main()
 		// Now with one extension, if there are any.
 		if(!pdev.get_supported_extensions().empty())
 		{
-			ExtensionList exts;
+			DeviceExtensionList exts;
 			exts |= pdev.get_supported_extensions().front();
 			LogicalDevice ldev2{pdev, exts};
 		}
 		// Now with one extension and one feature (once again, if there are any)
 		if(!pdev.get_supported_extensions().empty() && !pdev.get_supported_features().empty())
 		{
-			ExtensionList exts;
+			DeviceExtensionList exts;
 			exts |= pdev.get_supported_extensions().front();
 			PhysicalDeviceFeatureField features;
 			features |= pdev.get_supported_features().front();

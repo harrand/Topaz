@@ -62,23 +62,23 @@ namespace tz::gl::vk2
 		return detail::to_feature_field(features);
 	}
 
-	ExtensionList PhysicalDevice::get_supported_extensions() const
+	DeviceExtensionList PhysicalDevice::get_supported_extensions() const
 	{
 		std::uint32_t supported_extension_count;
 		vkEnumerateDeviceExtensionProperties(this->dev, nullptr, &supported_extension_count, nullptr);
 		std::vector<VkExtensionProperties> props;
-		std::vector<VkExtension> extensions; 
+		std::vector<util::VkExtension> extensions; 
 
 		props.resize(static_cast<decltype(props)::size_type>(supported_extension_count));
 		vkEnumerateDeviceExtensionProperties(this->dev, nullptr, &supported_extension_count, props.data());
 		extensions.resize(static_cast<decltype(props)::size_type>(supported_extension_count));
 
-		std::transform(props.begin(), props.end(), extensions.begin(), [](const VkExtensionProperties& prop)->VkExtension{return prop.extensionName;});
-		ExtensionList exts;
-		std::for_each(extensions.begin(), extensions.end(), [&exts](VkExtension ext)
+		std::transform(props.begin(), props.end(), extensions.begin(), [](const VkExtensionProperties& prop)->util::VkExtension{return prop.extensionName;});
+		DeviceExtensionList exts;
+		std::for_each(extensions.begin(), extensions.end(), [&exts](util::VkExtension ext)
 		{
-			Extension tz_ext = util::to_tz_extension(ext);
-			if(tz_ext != Extension::Count)
+			DeviceExtension tz_ext = util::to_device_extension(ext);
+			if(tz_ext != DeviceExtension::Count)
 			{
 				exts |= tz_ext;
 			}

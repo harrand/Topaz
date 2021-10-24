@@ -14,12 +14,12 @@ namespace drivers
 		return feat;
 	}
 
-	tz::gl::vk2::ExtensionList swapchain(bool avail)
+	tz::gl::vk2::DeviceExtensionList swapchain(bool avail)
 	{
-		tz::gl::vk2::ExtensionList l;
+		tz::gl::vk2::DeviceExtensionList l;
 		if(avail)
 		{
-			l  |= tz::gl::vk2::Extension::Swapchain;
+			l  |= tz::gl::vk2::DeviceExtension::Swapchain;
 		}
 		return l;
 	}
@@ -36,9 +36,9 @@ void devices()
 	// Ensure that no devices have invalid extensions.
 	for(const PhysicalDevice& dev : devices)
 	{
-		for(Extension e : dev.get_supported_extensions())
+		for(DeviceExtension e : dev.get_supported_extensions())
 		{
-			tz_assert(e != Extension::Count, "PhysicalDevice list of supported extensions includes Extension::Count, which makes no sense.");
+			tz_assert(e != DeviceExtension::Count, "PhysicalDevice list of supported extensions includes Extension::Count, which makes no sense.");
 		}
 	}
 
@@ -51,11 +51,11 @@ void devices()
 	tz_assert(!mdi_no.contains(PhysicalDeviceFeature::MultiDrawIndirect), "PhysicalDeviceFeatureField::MultiDrawIndirect (MDI) is not handled properly.");
 
 	// Now we'll try some supported extensions.
-	ExtensionList swapchain_yes = drivers::swapchain(true);
-	ExtensionList swapchain_no = drivers::swapchain(false);
+	DeviceExtensionList swapchain_yes = drivers::swapchain(true);
+	DeviceExtensionList swapchain_no = drivers::swapchain(false);
 
-	tz_assert(swapchain_yes.contains(Extension::Swapchain), "ExtensionList wrongly says it doesn't Extension::Swapchain");
-	tz_assert(!swapchain_no.contains(Extension::Swapchain), "ExtensionList wrongly says it contains Extension::Swapchain");
+	tz_assert(swapchain_yes.contains(DeviceExtension::Swapchain), "ExtensionList wrongly says it doesn't Extension::Swapchain");
+	tz_assert(!swapchain_no.contains(DeviceExtension::Swapchain), "ExtensionList wrongly says it contains Extension::Swapchain");
 
 }
 

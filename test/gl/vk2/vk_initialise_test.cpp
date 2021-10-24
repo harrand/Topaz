@@ -16,13 +16,13 @@ int main()
 			// Ensure no magic extensions are sneaked in. When we do things like this, we have to specify everything.
 			tz_assert(vk.get_extensions().empty(), "Default VulkanInfo based on GameInfo somehow has extensions specified (we don't want this done automatically, we should do this manually)");
 
-			ExtensionList exts;
+			InstanceExtensionList exts;
 			VulkanInfo vk2{game, exts};
 			tz_assert(!vk2.has_debug_validation(), "VulkanInfo without any extensions wrongly says it has debug validation enabled.");
 			VulkanInstance inst{vk2, tz::ApplicationType::Headless};	
 			tz_assert(inst.get_info() == vk2, "VulkanInstance::get_info() != Info passed into ctor");
 			//WindowSurface surface{inst, tz::window()}; // We're headless, we can't do this!
-			ExtensionList exts2{Extension::DebugMessenger};
+			InstanceExtensionList exts2{InstanceExtension::DebugMessenger};
 			VulkanInfo vk3{game, exts2};
 			tz_assert(vk3.has_debug_validation(), "VulkanInfo with ExtensionList containing {Extension::DebugMessenger} wrongly doesn't support debug validation (we're definitely TZ_DEBUG because this is an assert!)");
 		}

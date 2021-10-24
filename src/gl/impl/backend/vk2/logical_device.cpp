@@ -4,7 +4,7 @@
 
 namespace tz::gl::vk2
 {
-	LogicalDevice::LogicalDevice(PhysicalDevice physical_device, ExtensionList enabled_extensions, PhysicalDeviceFeatureField enabled_features):
+	LogicalDevice::LogicalDevice(PhysicalDevice physical_device, DeviceExtensionList enabled_extensions, PhysicalDeviceFeatureField enabled_features):
 	dev(VK_NULL_HANDLE),
 	physical_device(physical_device),
 	enabled_extensions(enabled_extensions),
@@ -64,13 +64,13 @@ namespace tz::gl::vk2
 		create.pQueueCreateInfos = queue_creates.data();
 
 		// Now deal with extensions.
-		VkExtensionList vk_extensions;
+		util::VkExtensionList vk_extensions;
 		#if TZ_DEBUG
-			ExtensionList debug_supported_extensions = this->physical_device.get_supported_extensions();		
+			DeviceExtensionList debug_supported_extensions = this->physical_device.get_supported_extensions();		
 		#endif
-		for(Extension ext : this->enabled_extensions)
+		for(DeviceExtension ext : this->enabled_extensions)
 		{
-			tz_assert(ext != Extension::Count, "Invalid extension passed into LogicalDevice ctor Extension::Count");
+			tz_assert(ext != DeviceExtension::Count, "Invalid extension passed into LogicalDevice ctor Extension::Count");
 			tz_assert(debug_supported_extensions.contains(ext), "LogicalDevice attempted to use the extension %s, but the correspnding PhysicalDevice does not support it. Submit a bug report.", util::to_vk_extension(ext));
 			vk_extensions.add(util::to_vk_extension(ext));
 		}
@@ -122,7 +122,7 @@ namespace tz::gl::vk2
 		return this->physical_device;
 	}
 
-	const ExtensionList& LogicalDevice::get_extensions() const
+	const DeviceExtensionList& LogicalDevice::get_extensions() const
 	{
 		return this->enabled_extensions;
 	}

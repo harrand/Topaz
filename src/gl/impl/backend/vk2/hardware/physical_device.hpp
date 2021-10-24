@@ -69,7 +69,7 @@ namespace tz::gl::vk2
 		 * @brief PhysicalDevices support various extensions, but not necessarily all of them.
 		 * @return An EnumField containing all the extensions supported by this PhysicalDevice.
 		 */
-		ExtensionList get_supported_extensions() const;
+		DeviceExtensionList get_supported_extensions() const;
 		/**
 		 * Retrieve the vendor. Only a few vendors are supported, so check @ref PhysicalDeviceVendor for information.
 		 * If you're using very new hardware, or various custom drivers such as MoltenVK, this may very well not return the expected value. This should mainly be used for vendor-specific optimisations and shouldn't be exposed to the end-user.
