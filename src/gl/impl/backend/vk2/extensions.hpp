@@ -7,15 +7,28 @@
 
 namespace tz::gl::vk2
 {
+	/**
+	 * @ingroup tz_gl_vk
+	 * @{
+	 */
+
+	/**
+	 * Supported Vulkan extension for a VulkanInstance.
+	 */
 	enum class InstanceExtension
 	{
+		/// - Enables Debug Messenger (only supported on TZ_DEBUG)
 		DebugMessenger,
 
 		Count
 	};
 
+	/**
+	 * Supported Vulkan extension for a LogicalDevice.
+	 */
 	enum class DeviceExtension
 	{
+		/// - Enables Swapchain operations (required to create a swapchain and present images)
 		Swapchain,
 
 		Count
@@ -64,6 +77,10 @@ namespace tz::gl::vk2
 
 	using InstanceExtensionList = tz::EnumField<InstanceExtension>;
 	using DeviceExtensionList = tz::EnumField<DeviceExtension>;
+
+	/**
+	 * @}
+	 */
 }
 
 #endif // TOPAZ_GL_IMPL_BACKEND_VK2_EXTENSIONS_HPP
