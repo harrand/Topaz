@@ -39,6 +39,14 @@ namespace tz::gl::vk2
 		bool present_support;
 		QueueFamilyTypeField types;
 	};
+
+	struct LogicalDeviceInfo
+	{
+		PhysicalDevice physical_device = {};
+		DeviceExtensionList extensions = {};
+		PhysicalDeviceFeatureField features = {};
+		const WindowSurface* surface = nullptr;
+	};
 	
 	/**
 	 * @ingroup tz_gl_vk
@@ -51,7 +59,7 @@ namespace tz::gl::vk2
 		 * @brief Construct a LogicalDevice based on a PhysicalDevice, and some optional extensions/features to enable.
 		 * @pre All elements of `enabled_extensions` are supported. That is, are contained within @ref PhysicalDevice::get_supported_extensions and @ref PhysicalDevice::get_supported_features. If an extension/feature is enabled which is not supported by `physical_device`, the behaviour is undefined.
 		 */
-		LogicalDevice(PhysicalDevice physical_device, DeviceExtensionList enabled_extensions = {}, PhysicalDeviceFeatureField enabled_features = {});
+		LogicalDevice(LogicalDeviceInfo device_info);
 
 		/**
 		 * @brief Retrieve the PhysicalDevice that this LogicalDevice derives from.

@@ -4,11 +4,11 @@
 
 namespace tz::gl::vk2
 {
-	LogicalDevice::LogicalDevice(PhysicalDevice physical_device, DeviceExtensionList enabled_extensions, PhysicalDeviceFeatureField enabled_features):
+	LogicalDevice::LogicalDevice(LogicalDeviceInfo device_info):
 	dev(VK_NULL_HANDLE),
-	physical_device(physical_device),
-	enabled_extensions(enabled_extensions),
-	enabled_features(enabled_features),
+	physical_device(device_info.physical_device),
+	enabled_extensions(device_info.extensions),
+	enabled_features(device_info.features),
 	queue_families()
 	{
 		// Firstly, let's retrieve some information about the PhysicalDevice's queue families. Note that its API doesn't expose this to the end-user, so we have to do this ourselves.
@@ -45,8 +45,13 @@ namespace tz::gl::vk2
 
 				if(!vk::is_headless())
 				{
+					const WindowSurface* surf = device_info.surface;
+					if(surf == nullptr)
+					{
+						surf = &vk2::get_window_surface();	
+					}
 					VkBool32 present_support;
-					vkGetPhysicalDeviceSurfaceSupportKHR(this->physical_device.native(), queue_family_index, vk2::get_window_surface().native(), &present_support);
+					vkGetPhysicalDeviceSurfaceSupportKHR(this->physical_device.native(), queue_family_index, surf->native(), &present_support);
 					info.present_support = present_support == VK_TRUE;
 				}
 				this->queue_families.push_back(info);

@@ -59,7 +59,7 @@ namespace tz::gl::vk2
 		/**
 		 * @brief You're not meant to construct these directly. See @ref get_all_devices()
 		 */
-		PhysicalDevice(VkPhysicalDevice native);
+		PhysicalDevice(VkPhysicalDevice native = VK_NULL_HANDLE);
 		/**
 		 * @brief PhysicalDevices do not necessarily support all available PhysicalDeviceFeatures.
 		 * @return An EnumField containing all the features supported by this Physical Device.
@@ -116,6 +116,7 @@ namespace tz::gl::vk2
 	 * @return BasicList of all PhysicalDevices. These have not been filtered in any way.
 	 */
 	PhysicalDeviceList get_all_devices();
+	PhysicalDeviceList get_all_devices(const VulkanInstance& instance);
 }
 
 #endif // TZ_VULKAN

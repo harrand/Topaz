@@ -148,21 +148,26 @@ namespace tz::gl::vk2
 		return (props.optimalTilingFeatures & feature_type) == feature_type;
 	}
 
-	PhysicalDeviceList get_all_devices()
+	PhysicalDeviceList get_all_devices(const VulkanInstance& instance)
 	{
 		PhysicalDeviceList devices;
 		std::vector<VkPhysicalDevice> device_natives;
 
 		std::uint32_t physical_device_count;
-		vkEnumeratePhysicalDevices(vk2::get().native(), &physical_device_count, nullptr);
+		vkEnumeratePhysicalDevices(instance.native(), &physical_device_count, nullptr);
 
 		device_natives.resize(static_cast<std::size_t>(physical_device_count));
-		vkEnumeratePhysicalDevices(vk2::get().native(), &physical_device_count, device_natives.data());
+		vkEnumeratePhysicalDevices(instance.native(), &physical_device_count, device_natives.data());
 		for(VkPhysicalDevice device_native : device_natives)
 		{
 			devices.emplace(device_native);
 		}
 		return devices;
+	}
+
+	PhysicalDeviceList get_all_devices()
+	{
+		return get_all_devices(vk2::get());
 	}
 }
 
