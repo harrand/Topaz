@@ -41,6 +41,12 @@ namespace tz
 	 */
 	template<typename F, typename... Args>
 	concept Action = Function<F, void, Args...>;
+
+	template<typename T>
+	constexpr bool copyable = requires { requires std::copyable<T>; };
+
+	template<typename T>
+	constexpr bool moveable = requires { requires std::movable<T>; };
 }
 
 #endif // TOPAZ_CORE_TYPES_HPP

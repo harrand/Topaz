@@ -95,7 +95,7 @@ namespace tz::gl::vk2
 		~VulkanDebugMessenger();
 	private:
 		VkDebugUtilsMessengerEXT debug_messenger;	
-		const VulkanInstance* instance;
+		VkInstance instance;
 	};
 
 	/**
@@ -111,7 +111,11 @@ namespace tz::gl::vk2
 		 * @param app_type Application type. Headless applications require slightly modified vulkan instances, for example.
 		 */
 		VulkanInstance(VulkanInfo info, tz::ApplicationType app_type);
+		VulkanInstance(const VulkanInstance& copy) = delete;
+		VulkanInstance(VulkanInstance&& move) = delete;
 		~VulkanInstance();
+		VulkanInstance& operator=(const VulkanInstance& rhs) = delete;
+		VulkanInstance& operator=(VulkanInstance&& rhs) = delete;
 		/**
 		 * @brief Retrieve the @ref VulkanInfo used to construct this instance.
 		 */

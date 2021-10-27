@@ -1,3 +1,4 @@
+#include "gl/impl/backend/vk2/extensions.hpp"
 #if TZ_VULKAN
 #include "core/tz.hpp"
 #include "gl/impl/backend/vk2/tz_vulkan.hpp"
@@ -100,8 +101,15 @@ namespace tz::gl::vk2
 	    VkDebugUtilsMessengerEXT* pMessenger
 	)
 	{
-		PFN_vkCreateDebugUtilsMessengerEXT tz_vkCreateDebugUtilsMessengerExt = reinterpret_cast<PFN_vkCreateDebugUtilsMessengerEXT>(vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT"));
-		return tz_vkCreateDebugUtilsMessengerExt(instance, pCreateInfo, pAllocator, pMessenger);
+		auto func = reinterpret_cast<PFN_vkCreateDebugUtilsMessengerEXT>(vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT"));
+		if(func != nullptr)
+		{
+			return func(instance, pCreateInfo, pAllocator, pMessenger);
+		}
+		else
+		{
+			return VK_ERROR_EXTENSION_NOT_PRESENT;
+		}
 	}
 
 	void vkDestroyDebugUtilsMessengerEXT
@@ -111,13 +119,18 @@ namespace tz::gl::vk2
 		const VkAllocationCallbacks* pAllocator
 	)	
 	{
-		PFN_vkDestroyDebugUtilsMessengerEXT tz_vkDestroyDebugUtilsMessengerExt = reinterpret_cast<PFN_vkDestroyDebugUtilsMessengerEXT>(vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT"));
-		return tz_vkDestroyDebugUtilsMessengerExt(instance, messenger, pAllocator);
+		#if TZ_DEBUG
+			auto func = reinterpret_cast<PFN_vkDestroyDebugUtilsMessengerEXT>(vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT"));
+			if(func != nullptr)
+			{
+				func(instance, messenger, pAllocator);
+			}
+		#endif
 	}
 
 	VulkanDebugMessenger::VulkanDebugMessenger(const VulkanInstance& instance):
 	debug_messenger(VK_NULL_HANDLE),
-	instance(&instance)
+	instance(instance.native())
 	{
 		tz_assert(instance.get_info().get_extensions().contains(InstanceExtension::DebugMessenger), "VulkanInstance provided does not support %s, but is trying to initialie a VulkanDebugMessenger. Please submit a bug report.", VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
 		
@@ -144,8 +157,11 @@ namespace tz::gl::vk2
 
 	VulkanDebugMessenger::~VulkanDebugMessenger()
 	{
-		vk2::vkDestroyDebugUtilsMessengerEXT(this->instance->native(), this->debug_messenger, nullptr);
-		this->debug_messenger = VK_NULL_HANDLE;
+		if(this->debug_messenger != VK_NULL_HANDLE)
+		{
+			vk2::vkDestroyDebugUtilsMessengerEXT(this->instance, this->debug_messenger, nullptr);
+			this->debug_messenger = VK_NULL_HANDLE;
+		}
 	}
 
 	bool extension_supported(util::VkExtension extension)
@@ -243,7 +259,13 @@ namespace tz::gl::vk2
 
 	VulkanInstance::~VulkanInstance()
 	{
-		
+		this->debug_messenger = std::nullopt;	
+
+		if(this->instance != VK_NULL_HANDLE)
+		{
+			vkDestroyInstance(this->instance, nullptr);	
+			this->instance = VK_NULL_HANDLE;
+		}
 	}
 
 	const VulkanInfo& VulkanInstance::get_info() const

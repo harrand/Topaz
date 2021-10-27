@@ -1,5 +1,6 @@
 #include "gl/impl/backend/vk2/hardware/physical_device.hpp"
 #include "gl/impl/backend/vk2/logical_device.hpp"
+#include <concepts>
 
 void extensions_coherent()
 {
@@ -48,6 +49,25 @@ void custom_instance_and_window_surface(const tz::GameInfo& game)
 	}
 }
 
+void semantics()
+{
+	using namespace tz::gl::vk2;	
+	// Ensure constexpr stuff
+	static_assert(!tz::copyable<LogicalDevice>, "LogicalDevice is wrongly copyable");
+	static_assert(tz::moveable<LogicalDevice>, "LogicalDevice is wrongly not moveable");
+	// Ensure move doesn't assert/crash:
+	// We will need a valid PhysicalDevice.
+	tz_assert(!get_all_devices().empty(), "No valid PhysicalDevices");
+	LogicalDeviceInfo dummy;
+	dummy.physical_device = get_all_devices().front();
+	{
+		LogicalDevice l1{dummy};
+		LogicalDevice l2{std::move(l1)}; // l1 dies
+		LogicalDevice l3{dummy};
+		l3 = std::move(l2); // l2 dies
+	}
+}
+
 int main()
 {
 	tz::GameInfo game{"vk_logical_device_test", tz::Version{1, 0, 0}, tz::info()};
@@ -56,6 +76,7 @@ int main()
 	{
 		extensions_coherent();
 		custom_instance_and_window_surface(game);
+		semantics();
 	}
 	tz::gl::vk2::terminate();
 	tz::terminate();

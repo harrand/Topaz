@@ -55,6 +55,20 @@ namespace tz::gl::vk2
 	queue(queue_info),
 	family(family_info){}
 
+	QueueStorage::QueueData::QueueData(QueueData&& move):
+	queue(std::move(move.queue)),
+	family()
+	{
+		std::swap(this->family, move.family);
+	}
+
+	QueueStorage::QueueData& QueueStorage::QueueData::operator=(QueueData&& rhs)
+	{
+		std::swap(this->queue, rhs.queue);
+		std::swap(this->family, rhs.family);
+		return *this;
+	}
+
 	LogicalDevice::LogicalDevice(LogicalDeviceInfo device_info):
 	dev(VK_NULL_HANDLE),
 	physical_device(device_info.physical_device),
@@ -62,14 +76,14 @@ namespace tz::gl::vk2
 	enabled_features(device_info.features),
 	queue_families()
 	{
+		tz_assert(this->physical_device.native() != VK_NULL_HANDLE, "Null PhysicalDevice provided to LogicalDevice ctor. Submit a bug report.");
 		// Firstly, let's retrieve some information about the PhysicalDevice's queue families. Note that its API doesn't expose this to the end-user, so we have to do this ourselves.
 		{
 			std::vector<VkQueueFamilyProperties> queue_family_props;
 
 			std::uint32_t queue_family_property_count;
 			vkGetPhysicalDeviceQueueFamilyProperties(this->physical_device.native(), &queue_family_property_count, nullptr);
-			using SizeType = decltype(queue_family_props)::size_type;
-			queue_family_props.resize(static_cast<SizeType>(queue_family_property_count));
+			queue_family_props.resize(queue_family_property_count);
 
 			vkGetPhysicalDeviceQueueFamilyProperties(this->physical_device.native(), &queue_family_property_count, queue_family_props.data());
 			// Queue Family Index == i, where queue_family_props[i] makes sense.
@@ -175,14 +189,45 @@ namespace tz::gl::vk2
 				tz_error("Failed to create LogicalDevice because a feature was enabled but not supported by the PhysicalDevice. An assert should've popped earlier - If this is the first error you've seen, submit a bug report");
 			break;
 			case VK_ERROR_TOO_MANY_OBJECTS:
-				tz_error("Failed to create LogicalDevice because too many of such objects");
+				tz_error("Failed to create LogicalDevice because too many of such objects. Pleas submit a bug report.");
 			break;
 			case VK_ERROR_DEVICE_LOST:
-				tz_error("Device lost whilst trying to create a LogicalDevice. Possible hardware fault. Please be aware: Device loss is extremely serious and further attempts to run the engine may cause serious hazards, such as operating system crash. Submit a bug report but do not attempt to reproduce the issue.");
+				tz_error("Device lost whilst trying to create a LogicalDevice. Possible hardware fault. Please be aware: Device loss is serious and further attempts to run the engine may cause serious hazards, such as operating system crash. Submit a bug report but do not attempt to reproduce the issue.");
 			break;
 		}
 		// We'll retrieve all the VkQueues now so we don't have to deal with it later.
 		this->queue_storage.init(this->queue_families, *this);
+	}
+
+	LogicalDevice::LogicalDevice(LogicalDevice&& move):
+	dev(VK_NULL_HANDLE),
+	physical_device(),
+	enabled_extensions(),
+	enabled_features(),
+	queue_families(),
+	queue_storage()
+	{
+		*this = std::move(move);
+	}
+
+	LogicalDevice::~LogicalDevice()
+	{
+		if(this->dev != VK_NULL_HANDLE)
+		{
+			vkDestroyDevice(this->dev, nullptr);
+			this->dev = VK_NULL_HANDLE;
+		}
+	}
+
+	LogicalDevice& LogicalDevice::operator=(LogicalDevice&& rhs)
+	{
+		std::swap(this->dev, rhs.dev);
+		std::swap(this->physical_device, rhs.physical_device);
+		std::swap(this->enabled_extensions, rhs.enabled_extensions);
+		std::swap(this->enabled_features, rhs.enabled_features);
+		std::swap(this->queue_families, rhs.queue_families);
+		std::swap(this->queue_storage, rhs.queue_storage);
+		return *this;
 	}
 
 	const PhysicalDevice& LogicalDevice::get_hardware() const
@@ -194,7 +239,6 @@ namespace tz::gl::vk2
 	{
 		return this->enabled_extensions;
 	}
-
 
 	VkDevice LogicalDevice::native() const
 	{

@@ -65,6 +65,11 @@ namespace tz::gl::vk2
 		struct QueueData
 		{
 			QueueData(hardware::QueueInfo queue_info, QueueFamilyInfo family_info);
+			QueueData(const QueueData& copy) = delete;
+			QueueData(QueueData&& move);
+			~QueueData() = default;
+			QueueData& operator=(const QueueData& rhs) = delete;
+			QueueData& operator=(QueueData&& rhs);
 
 			hardware::Queue queue;
 			QueueFamilyInfo family;
@@ -85,7 +90,11 @@ namespace tz::gl::vk2
 		 * @pre All elements of `enabled_extensions` are supported. That is, are contained within @ref PhysicalDevice::get_supported_extensions and @ref PhysicalDevice::get_supported_features. If an extension/feature is enabled which is not supported by `physical_device`, the behaviour is undefined.
 		 */
 		LogicalDevice(LogicalDeviceInfo device_info);
-
+		LogicalDevice(const LogicalDevice& copy) = delete;
+		LogicalDevice(LogicalDevice&& move);
+		~LogicalDevice();
+		LogicalDevice& operator=(const LogicalDevice& rhs) = delete;
+		LogicalDevice& operator=(LogicalDevice&& rhs);
 		/**
 		 * @brief Retrieve the PhysicalDevice that this LogicalDevice derives from.
 		 */

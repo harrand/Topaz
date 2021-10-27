@@ -29,10 +29,10 @@ function(add_tz_test)
 	endif()
 endfunction()
 
-add_custom_target(tztest COMMAND "${CMAKE_CTEST_COMMAND}" -V --output-on-failure -C Debug
+add_custom_target(tztest COMMAND "${CMAKE_CTEST_COMMAND}" --output-on-failure -C Debug
 						WORKING_DIRECTORY ${PROJECT_BINARY_DIR})
 
-add_custom_target(tztest_nographics COMMAND "${CMAKE_CTEST_COMMAND}" -V --output-on-failure -LE GRAPHICAL -C Debug
+add_custom_target(tztest_nographics COMMAND "${CMAKE_CTEST_COMMAND}" --output-on-failure -LE GRAPHICAL -C Debug
 						WORKING_DIRECTORY ${PROJECT_BINARY_DIR})
 
 add_library(tz_test_harness INTERFACE)
