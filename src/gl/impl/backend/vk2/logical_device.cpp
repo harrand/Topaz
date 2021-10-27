@@ -4,6 +4,57 @@
 
 namespace tz::gl::vk2
 {
+	void QueueStorage::init(std::span<const QueueFamilyInfo> queue_families, const LogicalDevice& device)
+	{
+		for(std::uint32_t i = 0; std::cmp_less(i, queue_families.size()); i++)
+		{
+			List& hardware_queue_family = this->hardware_queue_families.emplace();
+			for(std::uint32_t j = 0; std::cmp_less(j, queue_families[i].family_size); j++)
+			{
+				hardware::QueueInfo info;
+				info.dev = &device;
+				info.queue_family_idx = i;
+				info.queue_idx = j;
+
+				hardware_queue_family.emplace(info, queue_families[i]);
+			}
+		}
+	}
+
+	const hardware::Queue* QueueStorage::request_queue(QueueRequest request) const
+	{
+		auto queue_satisfies_request = [request](const QueueFamilyInfo& info)
+		{
+			// If we request present support, the queue family *must* support it.
+			if(!request.present_support && info.present_support)
+			{
+				return false;
+			}
+			// Otherwise ensure the type field matches.
+			return std::all_of(request.field.begin(), request.field.end(), [info](QueueFamilyType type)
+			{
+				return info.types.contains(type);
+			});
+		};
+		for(const QueueStorage::List& queue_family : this->hardware_queue_families)
+		{
+			if(queue_family.empty())
+			{
+				continue;
+			}
+			const QueueData& qdata = queue_family.front();
+			if(queue_satisfies_request(qdata.family))
+			{
+				return &qdata.queue;	
+			}
+		}
+		return nullptr;	
+	}
+
+	QueueStorage::QueueData::QueueData(hardware::QueueInfo queue_info, QueueFamilyInfo family_info):
+	queue(queue_info),
+	family(family_info){}
+
 	LogicalDevice::LogicalDevice(LogicalDeviceInfo device_info):
 	dev(VK_NULL_HANDLE),
 	physical_device(device_info.physical_device),
@@ -130,6 +181,8 @@ namespace tz::gl::vk2
 				tz_error("Device lost whilst trying to create a LogicalDevice. Possible hardware fault. Please be aware: Device loss is extremely serious and further attempts to run the engine may cause serious hazards, such as operating system crash. Submit a bug report but do not attempt to reproduce the issue.");
 			break;
 		}
+		// We'll retrieve all the VkQueues now so we don't have to deal with it later.
+		this->queue_storage.init(this->queue_families, *this);
 	}
 
 	const PhysicalDevice& LogicalDevice::get_hardware() const

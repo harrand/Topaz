@@ -21,6 +21,7 @@ namespace tz::gl::vk2
 		public:
 			Queue(QueueInfo info);
 
+			const QueueInfo& get_info() const;
 			VkQueue native() const;
 		private:
 			VkQueue queue;

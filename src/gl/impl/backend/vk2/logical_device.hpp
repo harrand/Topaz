@@ -2,6 +2,7 @@
 #define TOPAZ_GL_IMPL_BACKEND_VK2_LOGICAL_DEVICE_HPP
 #if TZ_VULKAN
 #include "gl/impl/backend/vk2/hardware/physical_device.hpp"
+#include "gl/impl/backend/vk2/hardware/queue.hpp"
 
 namespace tz::gl::vk2
 {
@@ -47,6 +48,30 @@ namespace tz::gl::vk2
 		PhysicalDeviceFeatureField features = {};
 		const WindowSurface* surface = nullptr;
 	};
+
+	struct QueueRequest
+	{
+		QueueFamilyTypeField field;
+		bool present_support;
+	};
+
+	class QueueStorage
+	{
+	public:
+		QueueStorage() = default;
+		void init(std::span<const QueueFamilyInfo> queue_families, const LogicalDevice& device);
+		const hardware::Queue* request_queue(QueueRequest request) const;
+	private:
+		struct QueueData
+		{
+			QueueData(hardware::QueueInfo queue_info, QueueFamilyInfo family_info);
+
+			hardware::Queue queue;
+			QueueFamilyInfo family;
+		};
+		using List = tz::BasicList<QueueData>;
+		tz::BasicList<List> hardware_queue_families;	
+	};
 	
 	/**
 	 * @ingroup tz_gl_vk
@@ -76,6 +101,7 @@ namespace tz::gl::vk2
 		DeviceExtensionList enabled_extensions;
 		PhysicalDeviceFeatureField enabled_features;
 		std::vector<QueueFamilyInfo> queue_families;
+		QueueStorage queue_storage;
 	};
 }
 

@@ -11,6 +11,16 @@ namespace tz::gl::vk2::hardware
 		tz_assert(info.dev != nullptr, "QueueInfo's LogicalDevice was nullptr");
 		vkGetDeviceQueue(info.dev->native(), this->info.queue_family_idx, this->info.queue_idx, &this->queue);
 	}
+
+	const QueueInfo& Queue::get_info() const
+	{
+		return this->info;
+	}
+
+	VkQueue Queue::native() const
+	{
+		return this->queue;
+	}
 }
 
 #endif // TZ_VULKAN
