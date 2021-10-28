@@ -162,9 +162,13 @@ namespace tz::gl::vk2
 
 	enum class SurfacePresentMode
 	{
+		/// - No internal queueing of presentation requests. Requests are applied instantly. Vulnerable to tearing.
 		Immediate = VK_PRESENT_MODE_IMMEDIATE_KHR,
+		/// - Recommended. Immune to tearing. If new requests come in before there is space for them, they will replace the old requests. No hard vsync.
 		Mailbox = VK_PRESENT_MODE_MAILBOX_KHR,
+		/// - Hard vsync. Immune to tearing. If new requests come in before there is space for them, the application will wait until there is space. Application will be locked to the FPS of the screen.
 		Fifo = VK_PRESENT_MODE_FIFO_KHR,
+		/// - Adaptive vsync. Vulnerable to tearing. If new requests come in too fast, existing requests are applied instantly, like Immediate.
 		FifoRelaxed = VK_PRESENT_MODE_FIFO_RELAXED_KHR
 	};
 

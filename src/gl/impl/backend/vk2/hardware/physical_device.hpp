@@ -1,6 +1,7 @@
 #ifndef TOPAZ_GL_IMPL_BACKEND_VK2_HARDWARE_PHYSICAL_DEVICE_HPP
 #define TOPAZ_GL_IMPL_BACKEND_VK2_HARDWARE_PHYSICAL_DEVICE_HPP
 #if TZ_VULKAN
+#include "core/vector.hpp"
 #include "core/containers/basic_list.hpp"
 #include "core/containers/enum_field.hpp"
 #include "gl/impl/backend/vk2/tz_vulkan.hpp"
@@ -26,6 +27,20 @@ namespace tz::gl::vk2
 		AMD,
 		Intel,
 		Other
+	};
+
+	struct PhysicalDeviceSurfaceCapabilityInfo
+	{
+		PhysicalDeviceSurfaceCapabilityInfo(VkSurfaceCapabilitiesKHR vk_capabilities);
+		struct SwapchainExtent
+		{
+			tz::Vector<std::uint32_t, 2> current_extent;
+			tz::Vector<std::uint32_t, 2> min_image_extent;
+			tz::Vector<std::uint32_t, 2> max_image_extent;
+		};
+		std::uint32_t min_image_count;
+		std::uint32_t max_image_count;
+		std::optional<SwapchainExtent> maybe_surface_dimensions;
 	};
 
 	using PhysicalDeviceFeatureField = tz::EnumField<PhysicalDeviceFeature>;
@@ -83,6 +98,7 @@ namespace tz::gl::vk2
 		 */
 		tz::BasicList<ImageFormat> get_supported_surface_formats(const WindowSurface& surface) const;
 		tz::BasicList<SurfacePresentMode> get_supported_surface_present_modes(const WindowSurface& surface) const;
+		PhysicalDeviceSurfaceCapabilityInfo get_surface_capabilities(const WindowSurface& surface) const;
 		/**
 		 * Query as to whether the given ImageFormat can be used as a framebuffer colour attachment and as an input attachment format.
 		 * @return true if `colour_format` can be a colour attachment, otherwise false.

@@ -7,6 +7,31 @@
 
 namespace tz::gl::vk2
 {
+	PhysicalDeviceSurfaceCapabilityInfo::PhysicalDeviceSurfaceCapabilityInfo(VkSurfaceCapabilitiesKHR vk_capabilities):
+	min_image_count(vk_capabilities.minImageCount),
+	max_image_count(vk_capabilities.maxImageCount),
+	maybe_surface_dimensions(std::nullopt)
+	{
+		// currentExtent is the current width and height of the surface, or the special value (0xFFFFFFFF, 0xFFFFFFFF) indicating that the surface size will be determined by the extent of a swapchain targeting the surface.
+		const VkExtent2D cur = vk_capabilities.currentExtent;
+		constexpr std::uint32_t special_value = 0xFFFFFFFF;
+		if(cur.width == special_value && cur.height == special_value)
+		{
+			// Leave maybe_surface_dimensions as nullopt as it's upto the swapchain now.
+		}
+		else
+		{
+			// Retrieve the SwapchainExtent corresponding to the width and height of the surface.
+			SwapchainExtent dims;
+			dims.current_extent = tz::Vector<std::uint32_t, 2>{cur.width, cur.height};
+			const VkExtent2D min = vk_capabilities.minImageExtent;
+			const VkExtent2D max = vk_capabilities.maxImageExtent;
+			dims.min_image_extent = tz::Vector<std::uint32_t, 2>{min.width, min.height};
+			dims.max_image_extent = tz::Vector<std::uint32_t, 2>{max.width, max.height};
+			this->maybe_surface_dimensions = dims;
+		}
+	}
+
 	namespace detail
 	{
 		PhysicalDeviceFeatureField to_feature_field(VkPhysicalDeviceFeatures features)
@@ -145,6 +170,16 @@ namespace tz::gl::vk2
 			presents.add(static_cast<SurfacePresentMode>(present_native));
 		}
 		return presents;
+	}
+
+	PhysicalDeviceSurfaceCapabilityInfo PhysicalDevice::get_surface_capabilities(const WindowSurface& surface) const
+	{
+		tz_assert(this->instance != nullptr, "PhysicalDevice is not aware of its vulkan instance");
+		tz_assert(*this->instance == surface.get_instance(), "PhysicalDevice instance doesn't match the WindowSurface's creator instance. You've probably retrieved this via vk2::get_all_devices(const VulkanInstance&) where the passed instance does not match the WindowSurface's creator instance you've provided here.");
+		// We can assume that this->instance == surface.get->instance() meaning that the VulkanInstance supports the "VK_KHR_surface" util::VkExtension which is what we need for vkGetPhysicalDeviceSurfaceFormatsKHR. For this reason we don't check for the extensions availability and assume everything is ok. 
+		VkSurfaceCapabilitiesKHR vk_caps;
+		vkGetPhysicalDeviceSurfaceCapabilitiesKHR(this->dev, surface.native(), &vk_caps);
+		return {vk_caps};
 	}
 
 	bool PhysicalDevice::supports_image_colour_format(ImageFormat colour_format) const

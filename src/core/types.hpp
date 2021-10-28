@@ -9,7 +9,7 @@ namespace tz
 	 * An integral type or a floating-point type (including char and bool).
 	 */
 	template<typename T>
-	concept Arithmetic = std::is_arithmetic_v<T>;
+	concept Arithmetic = std::is_arithmetic_v<std::decay_t<T>>;
 
 	template<typename T>
 	concept EnumClass = std::is_enum_v<T> && !std::is_convertible_v<T, int>;
