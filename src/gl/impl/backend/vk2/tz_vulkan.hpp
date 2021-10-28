@@ -1,3 +1,4 @@
+#include "core/window.hpp"
 #if TZ_VULKAN
 #include "core/version.hpp"
 #include "core/game_info.hpp"
@@ -92,7 +93,12 @@ namespace tz::gl::vk2
 	{
 	public:
 		VulkanDebugMessenger(const VulkanInstance& instance);
+		VulkanDebugMessenger(const VulkanDebugMessenger& copy) = delete;
+		VulkanDebugMessenger(VulkanDebugMessenger&& move);
 		~VulkanDebugMessenger();
+
+		VulkanDebugMessenger& operator=(const VulkanDebugMessenger& rhs) = delete;
+		VulkanDebugMessenger& operator=(VulkanDebugMessenger&& rhs);
 	private:
 		VkDebugUtilsMessengerEXT debug_messenger;	
 		VkInstance instance;
@@ -139,7 +145,12 @@ namespace tz::gl::vk2
 	{
 	public:
 		WindowSurface(const VulkanInstance& instance, const tz::Window& window);
+		WindowSurface(const WindowSurface& copy) = delete;
+		WindowSurface(WindowSurface&& move);
 		~WindowSurface();
+
+		WindowSurface& operator=(const WindowSurface& rhs) = delete;
+		WindowSurface& operator=(WindowSurface&& rhs);
 
 		VkSurfaceKHR native() const;
 	private:

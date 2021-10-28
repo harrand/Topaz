@@ -124,12 +124,16 @@ namespace tz::gl::vk2
 		}
 		// Now create the VkDeviceQueueCreateInfos
 		std::vector<VkDeviceQueueCreateInfo> queue_creates;
+		std::vector<std::vector<float>> queue_priorities;
+		queue_priorities.resize(this->queue_families.size());
 		for(std::uint32_t qf_index = 0; qf_index < this->queue_families.size(); qf_index++)
 		{
 			VkDeviceQueueCreateInfo& queue_create = queue_creates.emplace_back();
 			queue_create.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
 			queue_create.queueFamilyIndex = qf_index;
-			queue_create.queueCount = this->queue_families[static_cast<decltype(queue_families)::size_type>(qf_index)].family_size;
+			queue_create.queueCount = this->queue_families[qf_index].family_size;
+			queue_priorities[qf_index].resize(queue_create.queueCount, 1.0f);
+			queue_create.pQueuePriorities = queue_priorities[qf_index].data();
 		}
 		// This is when we actually can create the LogicalDevice.
 		VkDeviceCreateInfo create{};

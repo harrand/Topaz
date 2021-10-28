@@ -14,7 +14,7 @@ namespace tz::gl::vk2
 
 	void initialise(tz::GameInfo game_info, tz::ApplicationType app_type)
 	{
-		VulkanInfo vk_info{game_info};
+		VulkanInfo vk_info{game_info, InstanceExtensionList{InstanceExtension::DebugMessenger}};
 		inst = new VulkanInstance{vk_info, app_type};
 		surf = new WindowSurface{*inst, tz::window()};
 	}
@@ -22,13 +22,18 @@ namespace tz::gl::vk2
 	void initialise_headless(tz::GameInfo game_info, tz::ApplicationType app_type)
 	{
 		tz_assert(inst == nullptr, "Double initialise");
-		VulkanInfo vk_info{game_info};
+		VulkanInfo vk_info{game_info, InstanceExtensionList{InstanceExtension::DebugMessenger}};
 		inst = new VulkanInstance{vk_info, app_type};
 	}
 
 	void terminate()
 	{
 		tz_assert(inst != nullptr, "Not initialised");
+		if(surf != nullptr)
+		{
+			delete surf;
+			surf = nullptr;
+		}
 		delete inst;
 		inst = nullptr;
 	}
@@ -56,7 +61,6 @@ namespace tz::gl::vk2
 	engine_name(this->game_info.engine.to_string()),
 	extensions(extensions)
 	{}
-
 
 	VkApplicationInfo VulkanInfo::native() const
 	{
@@ -128,18 +132,23 @@ namespace tz::gl::vk2
 		#endif
 	}
 
+	VkDebugUtilsMessengerCreateInfoEXT make_debug_messenger_info()
+	{
+		VkDebugUtilsMessengerCreateInfoEXT create{};
+		create.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
+		create.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT;
+		create.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
+		create.pfnUserCallback = default_debug_callback;
+		return create;
+	}
+
 	VulkanDebugMessenger::VulkanDebugMessenger(const VulkanInstance& instance):
 	debug_messenger(VK_NULL_HANDLE),
 	instance(instance.native())
 	{
 		tz_assert(instance.get_info().get_extensions().contains(InstanceExtension::DebugMessenger), "VulkanInstance provided does not support %s, but is trying to initialie a VulkanDebugMessenger. Please submit a bug report.", VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
 		
-		VkDebugUtilsMessengerCreateInfoEXT create{};
-		create.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
-		create.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT;
-		create.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
-		create.pfnUserCallback = default_debug_callback;
-
+		VkDebugUtilsMessengerCreateInfoEXT create = make_debug_messenger_info();
 		VkResult res = vk2::vkCreateDebugUtilsMessengerEXT(instance.native(), &create, nullptr, &this->debug_messenger);
 		switch(res)
 		{
@@ -155,6 +164,13 @@ namespace tz::gl::vk2
 		}
 	}
 
+	VulkanDebugMessenger::VulkanDebugMessenger(VulkanDebugMessenger&& move):
+	debug_messenger(VK_NULL_HANDLE),
+	instance(VK_NULL_HANDLE)
+	{
+		*this = std::move(move);
+	}
+
 	VulkanDebugMessenger::~VulkanDebugMessenger()
 	{
 		if(this->debug_messenger != VK_NULL_HANDLE)
@@ -162,6 +178,13 @@ namespace tz::gl::vk2
 			vk2::vkDestroyDebugUtilsMessengerEXT(this->instance, this->debug_messenger, nullptr);
 			this->debug_messenger = VK_NULL_HANDLE;
 		}
+	}
+
+	VulkanDebugMessenger& VulkanDebugMessenger::operator=(VulkanDebugMessenger&& rhs)
+	{
+		std::swap(this->debug_messenger, rhs.debug_messenger);
+		std::swap(this->instance, rhs.instance);
+		return *this;
 	}
 
 	bool extension_supported(util::VkExtension extension)
@@ -234,6 +257,13 @@ namespace tz::gl::vk2
 			this->inst_info.enabledLayerCount = 0;
 			this->inst_info.ppEnabledLayerNames = nullptr;
 		#endif // TZ_DEBUG
+		VkDebugUtilsMessengerCreateInfoEXT debug_create_temp;
+		if(this->info.has_debug_validation())
+		{
+			// Debug Messenger isn't created until after the instance, so we don't get coverage while creating the instance. We pass a temporary Debug Messenger into inst_info.pNext to provide coverage here.
+			debug_create_temp = make_debug_messenger_info();
+			inst_info.pNext = &debug_create_temp;
+		}
 
 		VkResult res = vkCreateInstance(&this->inst_info, nullptr, &this->instance);
 		if(res != VK_SUCCESS)
@@ -305,9 +335,26 @@ namespace tz::gl::vk2
 		}
 	}
 
+	WindowSurface::WindowSurface(WindowSurface&& move):
+	surface(VK_NULL_HANDLE),
+	instance(nullptr)
+	{
+		*this = std::move(move);
+	}
+
 	WindowSurface::~WindowSurface()
 	{
-		vkDestroySurfaceKHR(this->instance->native(), this->surface, nullptr);
+		if(this->surface != VK_NULL_HANDLE)
+		{
+			vkDestroySurfaceKHR(this->instance->native(), this->surface, nullptr);
+		}
+	}
+
+	WindowSurface& WindowSurface::operator=(WindowSurface&& rhs)
+	{
+		std::swap(this->surface, rhs.surface);
+		std::swap(this->instance, rhs.instance);
+		return *this;
 	}
 
 	VkSurfaceKHR WindowSurface::native() const
