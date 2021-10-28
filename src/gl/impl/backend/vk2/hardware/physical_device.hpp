@@ -82,6 +82,7 @@ namespace tz::gl::vk2
 		 * @return List of acceptable ImageFormats for a window surface.
 		 */
 		tz::BasicList<ImageFormat> get_supported_surface_formats(const WindowSurface& surface) const;
+		tz::BasicList<SurfacePresentMode> get_supported_surface_present_modes(const WindowSurface& surface) const;
 		/**
 		 * Query as to whether the given ImageFormat can be used as a framebuffer colour attachment and as an input attachment format.
 		 * @return true if `colour_format` can be a colour attachment, otherwise false.

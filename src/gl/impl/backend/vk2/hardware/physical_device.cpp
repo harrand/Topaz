@@ -1,3 +1,4 @@
+#include "gl/impl/backend/vk/tz_vulkan.hpp"
 #include "gl/impl/backend/vk2/image_format.hpp"
 #include "gl/impl/frontend/common/shader.hpp"
 #if TZ_VULKAN
@@ -109,7 +110,8 @@ namespace tz::gl::vk2
 	tz::BasicList<ImageFormat> PhysicalDevice::get_supported_surface_formats(const WindowSurface& surface) const
 	{
 		tz_assert(this->instance != nullptr, "PhysicalDevice is not aware of its vulkan instance");
-		tz_assert(*this->instance == surface.get_instance(), "PhysicalDevice instance doesn't match the WindowSurface's creator instance. You've probably retrieved this via vk2::get_all_devices(const VulkanInstance&) where the passed instance does not match the WindwSurface's creator instance you've provided here.");
+		tz_assert(*this->instance == surface.get_instance(), "PhysicalDevice instance doesn't match the WindowSurface's creator instance. You've probably retrieved this via vk2::get_all_devices(const VulkanInstance&) where the passed instance does not match the WindowSurface's creator instance you've provided here.");
+		// We can assume that this->instance == surface.get->instance() meaning that the VulkanInstance supports the "VK_KHR_surface" util::VkExtension which is what we need for vkGetPhysicalDeviceSurfaceFormatsKHR. For this reason we don't check for the extensions availability and assume everything is ok. 
 		tz::BasicList<ImageFormat> fmts;
 
 		std::vector<VkSurfaceFormatKHR> surf_fmts;
@@ -123,6 +125,26 @@ namespace tz::gl::vk2
 			fmts.add(static_cast<ImageFormat>(surf_fmt.format));
 		}
 		return fmts;
+	}
+
+	tz::BasicList<SurfacePresentMode> PhysicalDevice::get_supported_surface_present_modes(const WindowSurface& surface) const
+	{
+		tz_assert(this->instance != nullptr, "PhysicalDevice is not aware of its vulkan instance");
+		tz_assert(*this->instance == surface.get_instance(), "PhysicalDevice instance doesn't match the WindowSurface's creator instance. You've probably retrieved this via vk2::get_all_devices(const VulkanInstance&) where the passed instance does not match the WindowSurface's creator instance you've provided here.");
+		// We can assume that this->instance == surface.get->instance() meaning that the VulkanInstance supports the "VK_KHR_surface" util::VkExtension which is what we need for vkGetPhysicalDeviceSurfaceFormatsKHR. For this reason we don't check for the extensions availability and assume everything is ok. 
+		tz::BasicList<SurfacePresentMode> presents;
+		tz::BasicList<VkPresentModeKHR> present_natives;
+
+		std::uint32_t present_mode_count = 0;
+		vkGetPhysicalDeviceSurfacePresentModesKHR(this->dev, surface.native(), &present_mode_count, nullptr);
+		present_natives.resize(present_mode_count);
+		vkGetPhysicalDeviceSurfacePresentModesKHR(this->dev, surface.native(), &present_mode_count, present_natives.data());
+
+		for(VkPresentModeKHR present_native : present_natives)
+		{
+			presents.add(static_cast<SurfacePresentMode>(present_native));
+		}
+		return presents;
 	}
 
 	bool PhysicalDevice::supports_image_colour_format(ImageFormat colour_format) const

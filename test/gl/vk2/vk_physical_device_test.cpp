@@ -109,6 +109,25 @@ void window_surfaces(tz::GameInfo game)
 	}
 }
 
+void surface_present_modes(tz::GameInfo game)
+{
+	using namespace tz::gl::vk2;
+	VulkanInfo window_info{game};
+	VulkanInstance window_inst{window_info, tz::ApplicationType::HiddenWindowApplication};
+	PhysicalDeviceList devices = get_all_devices(window_inst);	
+	WindowSurface window_surf{window_inst, tz::window()};
+
+	// Ensure all PhysicalDevices support the guaranteed formats.
+	for(const PhysicalDevice& dev : devices)
+	{
+		tz::BasicList<SurfacePresentMode> supported_present_modes = dev.get_supported_surface_present_modes(window_surf);
+		for(SurfacePresentMode mandatory_present_mode : present_traits::get_mandatory_present_modes())
+		{
+			tz_assert(supported_present_modes.contains(mandatory_present_mode), "PhysicalDevice found which doesn't support the mandatory surface present modes.");
+		}
+	}
+}
+
 void semantics()
 {
 	using namespace tz::gl::vk2;
@@ -127,6 +146,7 @@ int main()
 		devices();
 		guaranteed_formats();
 		window_surfaces(game);
+		surface_present_modes(game);
 		semantics();
 	}
 	tz::gl::vk2::terminate();

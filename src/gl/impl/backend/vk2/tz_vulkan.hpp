@@ -159,5 +159,29 @@ namespace tz::gl::vk2
 		VkSurfaceKHR surface;
 		const VulkanInstance* instance;
 	};
+
+	enum class SurfacePresentMode
+	{
+		Immediate = VK_PRESENT_MODE_IMMEDIATE_KHR,
+		Mailbox = VK_PRESENT_MODE_MAILBOX_KHR,
+		Fifo = VK_PRESENT_MODE_FIFO_KHR,
+		FifoRelaxed = VK_PRESENT_MODE_FIFO_RELAXED_KHR
+	};
+
+	constexpr SurfacePresentMode safe_present_modes[]
+	{
+		/* https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkPresentModeKHR.html -> Description:
+		 * VK_PRESENT_MODE_FIFO -- This is the only value of presentMode that is required to be supported. 
+		 */
+		SurfacePresentMode::Fifo
+	};
+
+	namespace present_traits
+	{
+		constexpr std::span<const SurfacePresentMode> get_mandatory_present_modes()
+		{
+			return {safe_present_modes};
+		}
+	}
 }
 #endif // TZ_VULKAN
