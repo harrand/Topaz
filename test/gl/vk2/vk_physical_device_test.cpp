@@ -1,4 +1,5 @@
 #include "core/tz.hpp"
+#include "core/types.hpp"
 #include "gl/impl/backend/vk2/hardware/physical_device.hpp"
 #include "gl/impl/backend/vk2/image_format.hpp"
 
@@ -108,6 +109,13 @@ void window_surfaces(tz::GameInfo game)
 	}
 }
 
+void semantics()
+{
+	using namespace tz::gl::vk2;
+	static_assert(tz::copyable<PhysicalDevice>, "PhysicalDevice is wrongly non-copyable");	
+	static_assert(tz::moveable<PhysicalDevice>, "PhysicalDevice is wrongly non-moveable");	
+}
+
 int main()
 {
 	tz::GameInfo game{"vk_physical_device_test", tz::Version{1, 0, 0}, tz::info()};
@@ -119,6 +127,7 @@ int main()
 		devices();
 		guaranteed_formats();
 		window_surfaces(game);
+		semantics();
 	}
 	tz::gl::vk2::terminate();
 	tz::terminate();
