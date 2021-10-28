@@ -127,6 +127,7 @@ namespace tz::gl::vk2
 		 */
 		const VulkanInfo& get_info() const;
 		VkInstance native() const;
+		bool operator==(const VulkanInstance& rhs) const;
 	private:
 		VulkanInfo info;
 		tz::ApplicationType app_type;
@@ -153,6 +154,7 @@ namespace tz::gl::vk2
 		WindowSurface& operator=(WindowSurface&& rhs);
 
 		VkSurfaceKHR native() const;
+		const VulkanInstance& get_instance() const;
 	private:
 		VkSurfaceKHR surface;
 		const VulkanInstance* instance;

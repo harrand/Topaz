@@ -59,7 +59,9 @@ namespace tz::gl::vk2
 		/**
 		 * @brief You're not meant to construct these directly. See @ref get_all_devices()
 		 */
-		PhysicalDevice(VkPhysicalDevice native = VK_NULL_HANDLE);
+		PhysicalDevice(VkPhysicalDevice native, const VulkanInstance& instance);
+		PhysicalDevice();
+		static PhysicalDevice null(); 
 		/**
 		 * @brief PhysicalDevices do not necessarily support all available PhysicalDeviceFeatures.
 		 * @return An EnumField containing all the features supported by this Physical Device.
@@ -106,6 +108,7 @@ namespace tz::gl::vk2
 		bool supports_image_format(ImageFormat format, VkFormatFeatureFlagBits feature_type) const;
 
 		VkPhysicalDevice dev;
+		const VulkanInstance* instance;
 	};
 
 	using PhysicalDeviceList = tz::BasicList<PhysicalDevice>;

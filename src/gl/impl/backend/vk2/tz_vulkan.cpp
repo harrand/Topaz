@@ -308,6 +308,11 @@ namespace tz::gl::vk2
 		return this->instance;
 	}
 
+	bool VulkanInstance::operator==(const VulkanInstance& rhs) const
+	{
+		return this->instance == rhs.instance;
+	}
+
 	WindowSurface::WindowSurface(const VulkanInstance& instance, const tz::Window& window):
 	surface(VK_NULL_HANDLE),
 	instance(&instance)
@@ -360,6 +365,12 @@ namespace tz::gl::vk2
 	VkSurfaceKHR WindowSurface::native() const
 	{
 		return this->surface;
+	}
+	
+	const VulkanInstance& WindowSurface::get_instance() const
+	{
+		tz_assert(this->instance != nullptr, "WindowSurface had null instance");
+		return *this->instance;
 	}
 
 }

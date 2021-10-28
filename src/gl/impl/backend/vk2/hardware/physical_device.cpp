@@ -51,8 +51,21 @@ namespace tz::gl::vk2
 		}
 	}
 
-	PhysicalDevice::PhysicalDevice(VkPhysicalDevice native):
-	dev(native){}
+	PhysicalDevice::PhysicalDevice(VkPhysicalDevice native, const VulkanInstance& instance):
+	dev(native),
+	instance(&instance){}
+
+	PhysicalDevice::PhysicalDevice():
+	dev(VK_NULL_HANDLE),
+	instance(nullptr)
+	{
+
+	}
+
+	PhysicalDevice PhysicalDevice::null()
+	{
+		return {};
+	}
 
 	PhysicalDeviceFeatureField PhysicalDevice::get_supported_features() const
 	{
@@ -95,6 +108,8 @@ namespace tz::gl::vk2
 
 	tz::BasicList<ImageFormat> PhysicalDevice::get_supported_surface_formats(const WindowSurface& surface) const
 	{
+		tz_assert(this->instance != nullptr, "PhysicalDevice is not aware of its vulkan instance");
+		tz_assert(*this->instance == surface.get_instance(), "PhysicalDevice instance doesn't match the WindowSurface's creator instance. You've probably retrieved this via vk2::get_all_devices(const VulkanInstance&) where the passed instance does not match the WindwSurface's creator instance you've provided here.");
 		tz::BasicList<ImageFormat> fmts;
 
 		std::vector<VkSurfaceFormatKHR> surf_fmts;
@@ -160,7 +175,7 @@ namespace tz::gl::vk2
 		vkEnumeratePhysicalDevices(instance.native(), &physical_device_count, device_natives.data());
 		for(VkPhysicalDevice device_native : device_natives)
 		{
-			devices.emplace(device_native);
+			devices.emplace(device_native, instance);
 		}
 		return devices;
 	}
