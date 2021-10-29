@@ -123,6 +123,11 @@ namespace tz::gl::vk2
 		return this->swapchain == VK_NULL_HANDLE;
 	}
 
+	VkSwapchainKHR Swapchain::native() const
+	{
+		return this->swapchain;
+	}
+
 	Swapchain::Swapchain():
 	swapchain(VK_NULL_HANDLE),
 	info(){}
