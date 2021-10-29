@@ -10,6 +10,7 @@ namespace tz::gl::vk2
 	PhysicalDeviceSurfaceCapabilityInfo::PhysicalDeviceSurfaceCapabilityInfo(VkSurfaceCapabilitiesKHR vk_capabilities):
 	min_image_count(vk_capabilities.minImageCount),
 	max_image_count(vk_capabilities.maxImageCount),
+	current_transform(vk_capabilities.currentTransform),
 	maybe_surface_dimensions(std::nullopt)
 	{
 		// currentExtent is the current width and height of the surface, or the special value (0xFFFFFFFF, 0xFFFFFFFF) indicating that the surface size will be determined by the extent of a swapchain targeting the surface.
@@ -110,8 +111,7 @@ namespace tz::gl::vk2
 
 		props.resize(static_cast<decltype(props)::size_type>(supported_extension_count));
 		vkEnumerateDeviceExtensionProperties(this->dev, nullptr, &supported_extension_count, props.data());
-		extensions.resize(static_cast<decltype(props)::size_type>(supported_extension_count));
-
+		extensions.resize(supported_extension_count);
 		std::transform(props.begin(), props.end(), extensions.begin(), [](const VkExtensionProperties& prop)->util::VkExtension{return prop.extensionName;});
 		DeviceExtensionList exts;
 		std::for_each(extensions.begin(), extensions.end(), [&exts](util::VkExtension ext)

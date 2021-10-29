@@ -4,6 +4,7 @@
 #include "core/containers/enum_field.hpp"
 #include "vulkan/vulkan.h"
 #include <array>
+#include <cstring>
 
 namespace tz::gl::vk2
 {
@@ -54,7 +55,7 @@ namespace tz::gl::vk2
 
 		constexpr InstanceExtension to_instance_extension(VkExtension extension)
 		{
-			auto iter = std::find(instance_extension_names.begin(), instance_extension_names.end(), extension);
+			auto iter = std::find_if(instance_extension_names.begin(), instance_extension_names.end(), [extension](VkExtension cur_ext)->bool{return std::strcmp(cur_ext, extension) == 0;});
 			if(iter != instance_extension_names.end())
 			{
 				return static_cast<InstanceExtension>(static_cast<int>(std::distance(instance_extension_names.begin(), iter)));
@@ -64,7 +65,7 @@ namespace tz::gl::vk2
 		
 		constexpr DeviceExtension to_device_extension(VkExtension extension)
 		{
-			auto iter = std::find(device_extension_names.begin(), device_extension_names.end(), extension);
+			auto iter = std::find_if(device_extension_names.begin(), device_extension_names.end(), [extension](VkExtension cur_ext)->bool{return std::strcmp(cur_ext, extension) == 0;});
 			if(iter != device_extension_names.end())
 			{
 				return static_cast<DeviceExtension>(static_cast<int>(std::distance(device_extension_names.begin(), iter)));

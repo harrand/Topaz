@@ -40,6 +40,7 @@ namespace tz::gl::vk2
 		};
 		std::uint32_t min_image_count;
 		std::uint32_t max_image_count;
+		VkSurfaceTransformFlagBitsKHR current_transform;
 		std::optional<SwapchainExtent> maybe_surface_dimensions;
 	};
 

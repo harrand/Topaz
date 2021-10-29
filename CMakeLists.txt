@@ -241,6 +241,8 @@ add_library(topaz
 	src/gl/impl/backend/vk2/image_format.hpp
 	src/gl/impl/backend/vk2/logical_device.cpp
 	src/gl/impl/backend/vk2/logical_device.hpp
+	src/gl/impl/backend/vk2/swapchain.cpp
+	src/gl/impl/backend/vk2/swapchain.hpp
 	src/gl/impl/backend/vk2/hardware/physical_device.cpp
 	src/gl/impl/backend/vk2/hardware/physical_device.hpp
 	src/gl/impl/backend/vk2/hardware/queue.cpp
