@@ -7,11 +7,6 @@
 namespace tz::gl::vk2
 {
 	/**
-	 * @ingroup tz_gl_vk
-	 * @{
-	 */
-
-	/**
 	 * @brief PhysicalDevices contain families of queues. Each family can fulfill a variety of different purposes, such as graphics or compute. This enum lists all such usages.
 	 * @note Queue Families may have more than one type, and due to this are associated with a @ref QueueFamilyTypeField.
 	 */
@@ -30,10 +25,6 @@ namespace tz::gl::vk2
 	 */
 	using QueueFamilyTypeField = tz::EnumField<QueueFamilyType>;
 
-	/**
-	 * @}
-	 */
-
 	struct QueueFamilyInfo
 	{
 		std::uint32_t family_size;
@@ -41,11 +32,28 @@ namespace tz::gl::vk2
 		QueueFamilyTypeField types;
 	};
 
+	/**
+	 * Specifies parameters for a newly created @ref LogicalDevice.
+	 * @ingroup tz_gl_vk
+	 */
 	struct LogicalDeviceInfo
 	{
-		PhysicalDevice physical_device = {};
+		/// physical_device is the PhysicalDevice that the LogicalDevice shall be based off.
+		PhysicalDevice physical_device = PhysicalDevice::null();
+		/**
+		 * `extensions` is a list of DeviceExtensions to be enabled.
+		 * @pre For each element `e`, `physical_device.get_supported_extensions().contains(e)` must hold true.
+		 */
 		DeviceExtensionList extensions = {};
+		/**
+		 * `features` is a list of PhysicalDeviceFeatures to be enabled.
+		 * @pre For each element `e`, `physical_device.get_supported_features().contains(e)` must hold true.
+		 */
 		PhysicalDeviceFeatureField features = {};
+		/**
+		 * `surface` is `nullptr` or a valid pointer to an existing @ref WindowSurface
+		 * @pre If a surface is provided, the @ref VulkanInstance who spawned it must be equal to the VulkanInstance that spawned `physical_device`
+		 */
 		const WindowSurface* surface = nullptr;
 	};
 
@@ -97,6 +105,7 @@ namespace tz::gl::vk2
 		LogicalDevice& operator=(LogicalDevice&& rhs);
 		/**
 		 * @brief Retrieve the PhysicalDevice that this LogicalDevice derives from.
+		 * @return PhysicalDevice provided to the original @ref LogicalDeviceInfo.
 		 */
 		const PhysicalDevice& get_hardware() const;
 		/**
@@ -104,7 +113,19 @@ namespace tz::gl::vk2
 		 */
 		const DeviceExtensionList& get_extensions() const;
 		VkDevice native() const;
+		/**
+		 * Create a LogicalDevice which doesn't do anything.
+		 * @note It is an error to use null LogicalDevices for most operations. Retrieving the native handle and querying for null-ness are the only valid operations on a null LogicalDevice.
+		 */
+		static LogicalDevice null();
+		/**
+		 * Query as to whether the LogicalDevice is null. Null LogicalDevices cannot perform operations or be used for GPU work.
+		 * See @ref LogicalDevice::null for more information.
+		 */
+		bool is_null() const;
 	private:
+		LogicalDevice();
+
 		VkDevice dev;
 		PhysicalDevice physical_device;
 		DeviceExtensionList enabled_extensions;

@@ -82,20 +82,9 @@ namespace tz::gl::vk2
 	dev(native),
 	instance(&instance){}
 
-	PhysicalDevice::PhysicalDevice():
-	dev(VK_NULL_HANDLE),
-	instance(nullptr)
-	{
-
-	}
-
-	PhysicalDevice PhysicalDevice::null()
-	{
-		return {};
-	}
-
 	PhysicalDeviceFeatureField PhysicalDevice::get_supported_features() const
 	{
+		tz_assert(!this->is_null(), "This was PhysicalDevice::null()");
 		VkPhysicalDeviceFeatures features;
 		vkGetPhysicalDeviceFeatures(this->dev, &features);
 
@@ -104,6 +93,7 @@ namespace tz::gl::vk2
 
 	DeviceExtensionList PhysicalDevice::get_supported_extensions() const
 	{
+		tz_assert(!this->is_null(), "This was PhysicalDevice::null()");
 		std::uint32_t supported_extension_count;
 		vkEnumerateDeviceExtensionProperties(this->dev, nullptr, &supported_extension_count, nullptr);
 		std::vector<VkExtensionProperties> props;
@@ -128,12 +118,14 @@ namespace tz::gl::vk2
 	
 	PhysicalDeviceVendor PhysicalDevice::get_vendor() const
 	{
+		tz_assert(!this->is_null(), "This was PhysicalDevice::null()");
 		DeviceProps props = this->get_internal_device_props();
 		return detail::to_tz_vendor(props.driver_props.driverID);
 	}
 
 	tz::BasicList<ImageFormat> PhysicalDevice::get_supported_surface_formats(const WindowSurface& surface) const
 	{
+		tz_assert(!this->is_null(), "This was PhysicalDevice::null()");
 		tz_assert(this->instance != nullptr, "PhysicalDevice is not aware of its vulkan instance");
 		tz_assert(*this->instance == surface.get_instance(), "PhysicalDevice instance doesn't match the WindowSurface's creator instance. You've probably retrieved this via vk2::get_all_devices(const VulkanInstance&) where the passed instance does not match the WindowSurface's creator instance you've provided here.");
 		// We can assume that this->instance == surface.get->instance() meaning that the VulkanInstance supports the "VK_KHR_surface" util::VkExtension which is what we need for vkGetPhysicalDeviceSurfaceFormatsKHR. For this reason we don't check for the extensions availability and assume everything is ok. 
@@ -154,6 +146,7 @@ namespace tz::gl::vk2
 
 	tz::BasicList<SurfacePresentMode> PhysicalDevice::get_supported_surface_present_modes(const WindowSurface& surface) const
 	{
+		tz_assert(!this->is_null(), "This was PhysicalDevice::null()");
 		tz_assert(this->instance != nullptr, "PhysicalDevice is not aware of its vulkan instance");
 		tz_assert(*this->instance == surface.get_instance(), "PhysicalDevice instance doesn't match the WindowSurface's creator instance. You've probably retrieved this via vk2::get_all_devices(const VulkanInstance&) where the passed instance does not match the WindowSurface's creator instance you've provided here.");
 		// We can assume that this->instance == surface.get->instance() meaning that the VulkanInstance supports the "VK_KHR_surface" util::VkExtension which is what we need for vkGetPhysicalDeviceSurfaceFormatsKHR. For this reason we don't check for the extensions availability and assume everything is ok. 
@@ -174,6 +167,7 @@ namespace tz::gl::vk2
 
 	PhysicalDeviceSurfaceCapabilityInfo PhysicalDevice::get_surface_capabilities(const WindowSurface& surface) const
 	{
+		tz_assert(!this->is_null(), "This was PhysicalDevice::null()");
 		tz_assert(this->instance != nullptr, "PhysicalDevice is not aware of its vulkan instance");
 		tz_assert(*this->instance == surface.get_instance(), "PhysicalDevice instance doesn't match the WindowSurface's creator instance. You've probably retrieved this via vk2::get_all_devices(const VulkanInstance&) where the passed instance does not match the WindowSurface's creator instance you've provided here.");
 		// We can assume that this->instance == surface.get->instance() meaning that the VulkanInstance supports the "VK_KHR_surface" util::VkExtension which is what we need for vkGetPhysicalDeviceSurfaceFormatsKHR. For this reason we don't check for the extensions availability and assume everything is ok. 
@@ -184,25 +178,40 @@ namespace tz::gl::vk2
 
 	bool PhysicalDevice::supports_image_colour_format(ImageFormat colour_format) const
 	{
+		tz_assert(!this->is_null(), "This was PhysicalDevice::null()");
 		return this->supports_image_format(colour_format, VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT);
 	}
 
 	bool PhysicalDevice::supports_image_sampled_format(ImageFormat sampled_format) const
 	{
+		tz_assert(!this->is_null(), "This was PhysicalDevice::null()");
 		return this->supports_image_format(sampled_format, VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT);
 	}
 
 	bool PhysicalDevice::supports_image_depth_format(ImageFormat depth_format) const
 	{
+		tz_assert(!this->is_null(), "This was PhysicalDevice::null()");
 		return this->supports_image_format(depth_format, VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
 	}
+
 	VkPhysicalDevice PhysicalDevice::native() const
 	{
 		return this->dev;
 	}
 
+	PhysicalDevice PhysicalDevice::null()
+	{
+		return {};
+	}
+
+	bool PhysicalDevice::is_null() const
+	{
+		return this->dev == VK_NULL_HANDLE;
+	}
+
 	PhysicalDevice::DeviceProps PhysicalDevice::get_internal_device_props() const
 	{
+		tz_assert(!this->is_null(), "This was PhysicalDevice::null()");
 		DeviceProps props;
 		props.props.pNext = &props.driver_props;
 		props.driver_props.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DRIVER_PROPERTIES;
@@ -212,8 +221,16 @@ namespace tz::gl::vk2
 		return props;
 	}
 
+	PhysicalDevice::PhysicalDevice():
+	dev(VK_NULL_HANDLE),
+	instance(nullptr)
+	{
+
+	}
+
 	bool PhysicalDevice::supports_image_format(ImageFormat format,VkFormatFeatureFlagBits feature_type) const
 	{
+		tz_assert(!this->is_null(), "This was PhysicalDevice::null()");
 		VkFormatProperties props;
 		vkGetPhysicalDeviceFormatProperties(this->dev, static_cast<VkFormat>(format), &props);
 		// Assume we always use optimal tiling.

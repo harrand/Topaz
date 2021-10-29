@@ -75,6 +75,7 @@ void semantics()
 	dummy.surface = &get_window_surface();
 	{
 		LogicalDevice ldev{dummy};
+
 		SwapchainInfo sinfo = get_safe_swapchain_info(ldev, get_window_surface());
 		Swapchain s1{sinfo};
 		tz_assert(!s1.is_null(), "Swapchain wrongly thinks its null");

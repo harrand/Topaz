@@ -10,17 +10,19 @@
 namespace tz::gl::vk2
 {
 	/**
-	 * @ingroup tz_gl_vk
-	 * @{
+	 * @ingroup tz_gl_vk_extension
+	 * @brief Represents a PhysicalDevice feature directly supported by Topaz.
+	 * These may contain some of the Vulkan VkPhysicalDeviceFeatures, but it not limited to Vulkan-API specific stuff. Some of these features may be Topaz-centric.
 	 */
-
-	/// Represents a Vulkan feature directly supported by Topaz.
 	enum class PhysicalDeviceFeature
 	{
 		MultiDrawIndirect ///  - Allows mass-batching of draw-calls. Vastly improves performance for large scenes.
 	};
 
-	/// Represents a PhysicalDevice manufacturer.
+	/**
+	 * @ingroup tz_gl_vk
+	 * Represents a PhysicalDevice manufacturer.
+	 */
 	enum class PhysicalDeviceVendor
 	{
 		Nvidia,
@@ -45,10 +47,6 @@ namespace tz::gl::vk2
 	};
 
 	using PhysicalDeviceFeatureField = tz::EnumField<PhysicalDeviceFeature>;
-
-	/**
-	 * @}
-	 */
 
 	namespace detail
 	{
@@ -76,8 +74,6 @@ namespace tz::gl::vk2
 		 * @brief You're not meant to construct these directly. See @ref get_all_devices()
 		 */
 		PhysicalDevice(VkPhysicalDevice native, const VulkanInstance& instance);
-		PhysicalDevice();
-		static PhysicalDevice null(); 
 		/**
 		 * @brief PhysicalDevices do not necessarily support all available PhysicalDeviceFeatures.
 		 * @return An EnumField containing all the features supported by this Physical Device.
@@ -98,10 +94,16 @@ namespace tz::gl::vk2
 		 * @return List of acceptable ImageFormats for a window surface.
 		 */
 		tz::BasicList<ImageFormat> get_supported_surface_formats(const WindowSurface& surface) const;
+		/**
+		 * Retrieve a list of all SurfacePresentModes that could be used to present images to the given @ref WindowSurface.
+		 * This is guaranteed to contain every element within @ref present_traits::get_mandatory_present_modes().
+		 * @return List of acceptable SurfacePresentModes for a window surface.
+		 */
 		tz::BasicList<SurfacePresentMode> get_supported_surface_present_modes(const WindowSurface& surface) const;
 		PhysicalDeviceSurfaceCapabilityInfo get_surface_capabilities(const WindowSurface& surface) const;
 		/**
 		 * Query as to whether the given ImageFormat can be used as a framebuffer colour attachment and as an input attachment format.
+		 * This is guaranteed to return true for any @ref ImageFormat within @ref format_traits::get_mandatory_colour_attachment_formats().
 		 * @return true if `colour_format` can be a colour attachment, otherwise false.
 		 */
 		bool supports_image_colour_format(ImageFormat colour_format) const;
@@ -116,12 +118,15 @@ namespace tz::gl::vk2
 		 */
 		bool supports_image_depth_format(ImageFormat depth_format) const;
 		VkPhysicalDevice native() const;
+		static PhysicalDevice null(); 
+		bool is_null() const;
 	private:
 		struct DeviceProps
 		{
 			VkPhysicalDeviceProperties2 props = {};
 			VkPhysicalDeviceDriverProperties driver_props = {};
 		};
+		PhysicalDevice();
 		DeviceProps get_internal_device_props() const;
 		bool supports_image_format(ImageFormat format, VkFormatFeatureFlagBits feature_type) const;
 
@@ -131,12 +136,16 @@ namespace tz::gl::vk2
 
 	using PhysicalDeviceList = tz::BasicList<PhysicalDevice>;
 
-	/**
+	/*
 	 * @ingroup tz_gl_vk
-	 * @brief Retrieve a list of all physical devices available on the machine
-	 * @return BasicList of all PhysicalDevices. These have not been filtered in any way.
 	 */
 	PhysicalDeviceList get_all_devices();
+	/**
+	 * @ingroup tz_gl_vk
+	 * @brief Retrieve a list of all physical devices available on the machine for the given @ref VulkanInstance.
+	 * If no VulkanInstance is provided, the global instance @ref vk2::get() will be used.
+	 * @return BasicList of all PhysicalDevices. These have not been filtered in any way.
+	 */
 	PhysicalDeviceList get_all_devices(const VulkanInstance& instance);
 }
 

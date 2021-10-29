@@ -9,7 +9,7 @@
 namespace tz::gl::vk2
 {
 	/**
-	 * @ingroup tz_gl_vk
+	 * @ingroup tz_gl_vk_extension
 	 * @{
 	 */
 
@@ -34,6 +34,13 @@ namespace tz::gl::vk2
 
 		Count
 	};
+
+	using InstanceExtensionList = tz::EnumField<InstanceExtension>;
+	using DeviceExtensionList = tz::EnumField<DeviceExtension>;
+
+	/**
+	 * @}
+	 */
 
 	namespace util
 	{
@@ -75,13 +82,6 @@ namespace tz::gl::vk2
 
 		using VkExtensionList = tz::BasicList<VkExtension>;
 	}
-
-	using InstanceExtensionList = tz::EnumField<InstanceExtension>;
-	using DeviceExtensionList = tz::EnumField<DeviceExtension>;
-
-	/**
-	 * @}
-	 */
 }
 
 #endif // TOPAZ_GL_IMPL_BACKEND_VK2_EXTENSIONS_HPP

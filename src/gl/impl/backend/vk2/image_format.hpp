@@ -9,6 +9,7 @@
 namespace tz::gl::vk2
 {
 	/**
+	 * @ingroup tz_gl_vk
 	 * Various image formats are supported. Note that PhysicalDevices may not support all formats listed here.
 	 *
 	 * ImageFormats are comprised of three properties. The enum values are named as follows:
@@ -143,18 +144,34 @@ namespace tz::gl::vk2
 		ImageFormat::BGRA32_sRGB
 	};
 
+	/**
+	 * @ingroup tz_gl_vk
+	 * Meta information about ImageFormats.
+	 */
 	namespace format_traits
 	{
+		/**
+		 * Retrieve a span of all ImageFormats which are guaranteed to be supported for a colour attachment for any framebuffer.
+		 * An @ref Image can safely use these as a @ref Framebuffer colour attachment format without ensuring its corresponding @ref PhysicalDevice supports it via @ref PhysicalDevice::supports_image_colour_format.
+		 */
 		constexpr std::span<const ImageFormat> get_mandatory_colour_attachment_formats()
 		{
 			return {safe_colour_attachment_formats};
 		}
 
+		/**
+		 * Retrieve a span of all ImageFormats which are guaranteed to be supported for a depth attachment for any framebuffer.
+		 * An @ref Image can safely use these as a @ref Framebuffer depth attachment format without ensuring its corresponding @ref PhysicalDevice supports it via @ref PhysicalDevice::supports_image_depth_format.
+		 */
 		constexpr std::span<const ImageFormat> get_mandatory_depth_attachment_formats()
 		{
 			return {safe_depth_attachment_formats};
 		}
 		
+		/**
+		 * Retrieve a span of all ImageFormats which are guaranteed to be supported for a sampled image within a shader resource.
+		 * An @ref Image can safely use these as a shader resource image format without ensuring its corresponding @ref PhysicalDevice supports it via @ref PhysicalDevice::supports_image_sampled_format.
+		 */
 		constexpr std::span<const ImageFormat> get_mandatory_sampled_image_formats()
 		{
 			return {safe_sampled_image_formats};

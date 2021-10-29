@@ -205,7 +205,7 @@ namespace tz::gl::vk2
 
 	LogicalDevice::LogicalDevice(LogicalDevice&& move):
 	dev(VK_NULL_HANDLE),
-	physical_device(),
+	physical_device(PhysicalDevice::null()),
 	enabled_extensions(),
 	enabled_features(),
 	queue_families(),
@@ -248,6 +248,25 @@ namespace tz::gl::vk2
 	{
 		return this->dev;
 	}
+
+	LogicalDevice LogicalDevice::null()
+	{
+		return {};
+	}
+
+	bool LogicalDevice::is_null() const
+	{
+		return this->dev == VK_NULL_HANDLE;
+	}
+
+	LogicalDevice::LogicalDevice():
+	dev(VK_NULL_HANDLE),
+	physical_device(PhysicalDevice::null()),
+	enabled_extensions(),
+	enabled_features(),
+	queue_families(),
+	queue_storage()
+	{}
 }
 
 #endif // TZ_VULKAN

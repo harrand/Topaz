@@ -7,10 +7,29 @@
 #include <cstdint>
 namespace tz::gl::vk2
 {
+	class VulkanInstance;
+	class WindowSurface;
+
 	/**
 	 * @ingroup tz_gl
 	 * @defgroup tz_gl_vk Vulkan Backend (tz::gl::vk2)
 	 * Documentation for those working with the Vulkan Backend.
+	 */
+
+	/**
+	 * @ingroup tz_gl_vk
+	 * @defgroup tz_gl_vk_presentation Presentation and Window Surface Interation (WSI)
+	 * Documentation for functionality related to presenting images to existing windows.
+	 */
+
+	/**
+	 * @ingroup tz_gl_vk
+	 * @defgroup tz_gl_vk_extension Extensions and Features
+	 * Documentation for functionality related to instance/device extensions, and optional features.
+	 */
+
+	/**
+	 * @ingroup tz_gl_vk
 	 * @{
 	 */
 
@@ -29,15 +48,16 @@ namespace tz::gl::vk2
 	 */
 	void terminate();
 
-	class VulkanInstance;
-	class WindowSurface;
-
 	/**
 	 * @brief Retrieve a reference to the current Vulkan Instance. This will have been created during initialisation.
 	 */
 	const VulkanInstance& get();
 	bool is_headless();
 	const WindowSurface& get_window_surface();
+
+	/**
+	 * @}
+	 */
 
 	constexpr tz::Version vulkan_version{1, 2, 0};
 
@@ -56,7 +76,8 @@ namespace tz::gl::vk2
 	}
 
 	/**
-	 * @brief Contains information about a Vulkan instance.
+	 * @ingroup tz_gl_vk
+	 * Specifies parameters for a newly created @ref VulkanInstance.
 	 */
 	class VulkanInfo
 	{
@@ -105,7 +126,8 @@ namespace tz::gl::vk2
 	};
 
 	/**
-	 * @brief Represents a Vulkan Instance
+	 * @ingroup tz_gl_vk
+	 * Represents a Vulkan Instance
 	 */
 	class VulkanInstance
 	{
@@ -139,12 +161,16 @@ namespace tz::gl::vk2
 	};
 
 	/**
-	 * @}
+	 * @ingroup tz_gl_vk_presentation
+	 * Create a representation for an existing Window surface.
+	 * @post Once a WindowSurface is created for a given @ref tz::Window, no other WindowSurfaces can be created for that window. This means only one VulkanInstance can own a Window.
 	 */
-
 	class WindowSurface
 	{
 	public:
+		/**
+		 * Create a WindowSurface for a given window via an existing VulkanInstance.
+		 */
 		WindowSurface(const VulkanInstance& instance, const tz::Window& window);
 		WindowSurface(const WindowSurface& copy) = delete;
 		WindowSurface(WindowSurface&& move);
@@ -160,6 +186,10 @@ namespace tz::gl::vk2
 		const VulkanInstance* instance;
 	};
 
+	/**
+	 * @ingroup tz_gl_vk_presentation
+	 * Supported Presentation mode supported for a @ref WindowSurface.
+	 */
 	enum class SurfacePresentMode
 	{
 		/// - No internal queueing of presentation requests. Requests are applied instantly. Vulnerable to tearing.
@@ -180,8 +210,16 @@ namespace tz::gl::vk2
 		SurfacePresentMode::Fifo
 	};
 
+	/**
+	 * @ingroup tz_gl_vk_presentation
+	 * Meta behaviour related to presentation and surfaces.
+	 */
 	namespace present_traits
 	{
+		/**
+		 * Retrieve a span of all SurfacePresentModes which are guaranteed to be supported on any machine.
+		 * You can safely use these in a @ref Swapchain without ensuring its corresponding @ref PhysicalDevice supports it via @ref PhysicalDevice::get_supported_surface_present_modes.
+		 */
 		constexpr std::span<const SurfacePresentMode> get_mandatory_present_modes()
 		{
 			return {safe_present_modes};
