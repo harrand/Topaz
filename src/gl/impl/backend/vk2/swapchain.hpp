@@ -1,6 +1,7 @@
 #ifndef TOPAZ_GL_IMPL_BACKEND_VK2_SWAPCHAIN_HPP
 #define TOPAZ_GL_IMPL_BACKEND_VK2_SWAPCHAIN_HPP
 #include "gl/impl/backend/vk2/logical_device.hpp"
+#include "gl/impl/backend/vk2/image.hpp"
 
 namespace tz::gl::vk2
 {
@@ -40,6 +41,8 @@ namespace tz::gl::vk2
 		Swapchain& operator=(const Swapchain& rhs) = delete;
 		Swapchain& operator=(Swapchain&& rhs);
 
+		const LogicalDevice& get_device() const;
+
 		/**
 		 * Create a Swapchain which doesn't do anything.
 		 * @note It is an error to use null Swapchains for most operations. Retrieving the native  handle and querying for null-ness are the only valid operations on a null Swapchain.
@@ -51,11 +54,23 @@ namespace tz::gl::vk2
 		 */
 		bool is_null() const;
 		VkSwapchainKHR native() const;
+		/**
+		 * Retrieve a span of all presentable images associated with this Swapchain.
+		 * @return Span containing all swapchain images.
+		 */
+		std::span<const Image> get_images() const;
+		/**
+		 * Retrieve a span of all presentable images associated with this Swapchain.
+		 * @return Span containing all swapchain images.
+		 */
+		std::span<Image> get_images();
 	private:
 		Swapchain();
+		void initialise_images();
 
 		VkSwapchainKHR swapchain;
 		SwapchainInfo info;
+		std::vector<Image> swapchain_images;
 	};
 }
 

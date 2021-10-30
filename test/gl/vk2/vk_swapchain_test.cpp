@@ -47,6 +47,12 @@ void mandatory_swapchain(tz::GameInfo g)
 
 	// Now we create the Swapchain! Finally...
 	Swapchain swapchain{sinfo};
+
+	// Let's check the number of swapchain images fits what the PhysicalDevice required (this should 100% happen).
+	PhysicalDeviceSurfaceCapabilityInfo pdev_surface_cap = pdev.get_surface_capabilities(window_surf);
+	std::span<const Image> swapchain_images = swapchain.get_images();
+	tz_assert(swapchain_images.size() >= pdev_surface_cap.min_image_count, "Swapchain::get_images() returned an ImageSpan of size %zu which is smaller than the PhysicalDevice minimum image count of %u", swapchain_images.size(), pdev_surface_cap.min_image_count);
+	tz_assert(swapchain_images.size() <= pdev_surface_cap.max_image_count, "Swapchain::get_images() returned an ImageSpan of size %zu which is larger than the PhysicalDevice maximum image count of %u", swapchain_images.size(), pdev_surface_cap.max_image_count);
 }
 
 void swapchain_extension_supported()

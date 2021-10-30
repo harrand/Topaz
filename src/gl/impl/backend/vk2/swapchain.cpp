@@ -1,3 +1,4 @@
+#include "gl/impl/backend/vk2/image.hpp"
 #if TZ_VULKAN
 #include "gl/impl/backend/vk2/swapchain.hpp"
 
@@ -87,6 +88,7 @@ namespace tz::gl::vk2
 				tz_error("Failed to create a Swapchain, and the error code is unrecognised. Either we are missing a return code case, or something has gone very, very wrong. Please submit a bug report.");
 			break;
 		}
+		this->initialise_images();
 	}
 
 	Swapchain::Swapchain(Swapchain&& move):
@@ -110,7 +112,15 @@ namespace tz::gl::vk2
 	{
 		std::swap(this->swapchain, rhs.swapchain);
 		std::swap(this->info, rhs.info);
+		std::swap(this->swapchain_images, rhs.swapchain_images);
 		return *this;
+	}
+
+	const LogicalDevice& Swapchain::get_device() const
+	{
+		const LogicalDevice* ldev = this->info.device;
+		tz_assert(ldev != nullptr && !ldev->is_null(), "SwapchainInfo contained nullptr or null LogicalDevice");
+		return *ldev;
 	}
 
 	Swapchain Swapchain::null()
@@ -128,9 +138,39 @@ namespace tz::gl::vk2
 		return this->swapchain;
 	}
 
+	std::span<const Image> Swapchain::get_images() const
+	{
+		return this->swapchain_images;
+	}
+
+	std::span<Image> Swapchain::get_images()
+	{
+		return this->swapchain_images;
+	}
+
 	Swapchain::Swapchain():
 	swapchain(VK_NULL_HANDLE),
 	info(){}
+
+	void Swapchain::initialise_images()
+	{
+		if(!this->swapchain_images.empty())
+		{
+			this->swapchain_images.clear();
+		}
+
+		std::uint32_t true_image_count;
+		vkGetSwapchainImagesKHR(this->get_device().native(), this->swapchain, &true_image_count, nullptr);
+		this->swapchain_images.reserve(true_image_count);
+		for(std::uint32_t i = 0; std::cmp_less(i, true_image_count); i++)
+		{
+			SwapchainImageInfo sinfo;
+			sinfo.swapchain = this;
+			sinfo.image_index = i;
+
+			this->swapchain_images.emplace_back(sinfo);
+		}
+	}
 }
 
 #endif // TZ_VULKAN

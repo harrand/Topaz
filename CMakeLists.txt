@@ -238,6 +238,8 @@ add_library(topaz
 	src/gl/impl/backend/vk2/extensions.hpp
 	src/gl/impl/backend/vk2/tz_vulkan.cpp
 	src/gl/impl/backend/vk2/tz_vulkan.hpp
+	src/gl/impl/backend/vk2/image.cpp
+	src/gl/impl/backend/vk2/image.hpp
 	src/gl/impl/backend/vk2/image_format.hpp
 	src/gl/impl/backend/vk2/logical_device.cpp
 	src/gl/impl/backend/vk2/logical_device.hpp
