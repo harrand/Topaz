@@ -87,6 +87,25 @@ namespace tz::gl::vk2
 	{
 		return this->image;
 	}
+
+	Image Image::null()
+	{
+		return {};
+	}
+
+	bool Image::is_null() const
+	{
+		return this->image == VK_NULL_HANDLE;
+	}
+
+	Image::Image():
+	image(VK_NULL_HANDLE),
+	format(ImageFormat::Undefined),
+	layout(ImageLayout::Undefined),
+	dimensions{0u, 0u},
+	device(nullptr),
+	destroy_on_destructor(false)
+	{}
 }
 
 #endif // TZ_VULKAN

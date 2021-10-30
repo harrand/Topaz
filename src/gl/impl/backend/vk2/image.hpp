@@ -78,7 +78,11 @@ namespace tz::gl::vk2
 		 */
 		const LogicalDevice& get_device() const;
 		VkImage native() const;
+		static Image null();
+		bool is_null() const;
 	private:
+		Image();
+
 		VkImage image;
 		ImageFormat format;
 		ImageLayout layout;
