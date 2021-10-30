@@ -7,6 +7,7 @@ namespace tz::gl::vk2
 {
 	Image::Image(SwapchainImageInfo sinfo):
 	image(VK_NULL_HANDLE),
+	format(ImageFormat::Undefined),
 	device(nullptr),
 	destroy_on_destructor(false)
 	{
@@ -22,11 +23,16 @@ namespace tz::gl::vk2
 		
 		// Now actually initialise the object internals.
 		this->image = swapchain_image_natives[sinfo.image_index];
+		this->format = sinfo.swapchain->get_image_format();
+		this->layout = ImageLayout::Undefined;
 		this->device = &sinfo.swapchain->get_device();
+		// I verified in the spec here: https://www.khronos.org/registry/vulkan/specs/1.2-extensions/html/vkspec.html#_wsi_swapchain that the initial layout of a swapchain image is guaranteed to be undefined.
 	}
 
 	Image::Image(Image&& move):
 	image(VK_NULL_HANDLE),
+	format(ImageFormat::Undefined),
+	layout(ImageLayout::Undefined),
 	device(nullptr),
 	destroy_on_destructor(false)
 	{
@@ -46,9 +52,21 @@ namespace tz::gl::vk2
 	Image& Image::operator=(Image&& rhs)
 	{
 		std::swap(this->image, rhs.image);
+		std::swap(this->format, rhs.format);
+		std::swap(this->layout, rhs.layout);
 		std::swap(this->device, rhs.device);
 		std::swap(this->destroy_on_destructor, rhs.destroy_on_destructor);
 		return *this;
+	}
+
+	ImageFormat Image::get_format() const
+	{
+		return this->format;
+	}
+
+	ImageLayout Image::get_layout() const
+	{
+		return this->layout;
 	}
 }
 

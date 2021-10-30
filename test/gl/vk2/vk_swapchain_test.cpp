@@ -53,6 +53,20 @@ void mandatory_swapchain(tz::GameInfo g)
 	std::span<const Image> swapchain_images = swapchain.get_images();
 	tz_assert(swapchain_images.size() >= pdev_surface_cap.min_image_count, "Swapchain::get_images() returned an ImageSpan of size %zu which is smaller than the PhysicalDevice minimum image count of %u", swapchain_images.size(), pdev_surface_cap.min_image_count);
 	tz_assert(swapchain_images.size() <= pdev_surface_cap.max_image_count, "Swapchain::get_images() returned an ImageSpan of size %zu which is larger than the PhysicalDevice maximum image count of %u", swapchain_images.size(), pdev_surface_cap.max_image_count);
+
+	ImageFormat swapchain_image_fmt = swapchain.get_image_format();
+	bool all_same_format = std::all_of(swapchain_images.begin(), swapchain_images.end(), [swapchain_image_fmt](const Image& img)
+	{
+		return img.get_format() == swapchain_image_fmt && img.get_format() != ImageFormat::Undefined;
+	});
+	tz_assert(all_same_format, "Swapchain images did not all have the same format (or they were ImageFormat::Undefined)");
+
+	constexpr ImageLayout initial_swapchain_image_layout = ImageLayout::Undefined;
+	bool all_correct_layout = std::all_of(swapchain_images.begin(), swapchain_images.end(), [initial_swapchain_image_layout](const Image& img)
+	{
+		return img.get_layout() == initial_swapchain_image_layout;
+	});
+	tz_assert(all_correct_layout, "Swapchain images did not all have the expected ImageLayout::Undefined. The spec demands it!");
 }
 
 void swapchain_extension_supported()

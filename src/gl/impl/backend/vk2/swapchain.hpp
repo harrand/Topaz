@@ -64,6 +64,7 @@ namespace tz::gl::vk2
 		 * @return Span containing all swapchain images.
 		 */
 		std::span<Image> get_images();
+		ImageFormat get_image_format() const;
 	private:
 		Swapchain();
 		void initialise_images();

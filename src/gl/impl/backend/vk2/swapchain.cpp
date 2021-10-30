@@ -93,7 +93,8 @@ namespace tz::gl::vk2
 
 	Swapchain::Swapchain(Swapchain&& move):
 	swapchain(VK_NULL_HANDLE),
-	info()
+	info(),
+	swapchain_images()
 	{
 		*this = std::move(move);
 	}
@@ -118,6 +119,7 @@ namespace tz::gl::vk2
 
 	const LogicalDevice& Swapchain::get_device() const
 	{
+		tz_assert(!this->is_null(), "Tried to retrieve LogicalDevice from a null Swapchain. Please submit a bug report.");
 		const LogicalDevice* ldev = this->info.device;
 		tz_assert(ldev != nullptr && !ldev->is_null(), "SwapchainInfo contained nullptr or null LogicalDevice");
 		return *ldev;
@@ -148,12 +150,18 @@ namespace tz::gl::vk2
 		return this->swapchain_images;
 	}
 
+	ImageFormat Swapchain::get_image_format() const
+	{
+		return this->info.image_format;
+	}
+
 	Swapchain::Swapchain():
 	swapchain(VK_NULL_HANDLE),
 	info(){}
 
 	void Swapchain::initialise_images()
 	{
+		tz_assert(!this->is_null(), "Tried to initialise Swapchain images, but the Swapchain is null. Please submit a bug report.");
 		if(!this->swapchain_images.empty())
 		{
 			this->swapchain_images.clear();
