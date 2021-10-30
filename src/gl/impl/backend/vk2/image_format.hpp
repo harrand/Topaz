@@ -9,11 +9,12 @@
 namespace tz::gl::vk2
 {
 	/**
-	 * @ingroup tz_gl_vk
+	 * @ingroup tz_gl_vk_image
 	 * Various image formats are supported. Note that PhysicalDevices may not support all formats listed here.
 	 *
-	 * ImageFormats are comprised of three properties. The enum values are named as follows:
-	 * ComponentsSizeInternal, where:
+	 * ImageFormats are comprised of three properties.
+	 *
+	 * The enum values are named as `Components``Size``Internal` where:
 	 * - Components (R, RG, RGB, BGR, RGBA): Number of components and order.
 	 * - Size (8, 16, 24, 32): Total size of the whole element, not just one component. Assume all components are equally-sized.
 	 * - Internal (UNORM, SNORM, UINT, SINT): Value type of the element. This can be ommitted, in which case the default is UNORM.
@@ -23,6 +24,7 @@ namespace tz::gl::vk2
 	 * 	- SINT = signed int
 	 * 	- SFLOAT = signed float
 	 * 	- SRGB = sRGB nonlinear encoding
+	 *
 	 * Examples:
 	 * - RGBA32 = (RGBA, 32 bit, UNORM)
 	 * - RGBA32_UNorm = (RGBA, 32 bit, UNORM) == RGBA32
@@ -145,7 +147,7 @@ namespace tz::gl::vk2
 	};
 
 	/**
-	 * @ingroup tz_gl_vk
+	 * @ingroup tz_gl_vk_image
 	 * Meta information about ImageFormats.
 	 */
 	namespace format_traits
