@@ -8,6 +8,8 @@ namespace tz::gl::vk2
 	Image::Image(SwapchainImageInfo sinfo):
 	image(VK_NULL_HANDLE),
 	format(ImageFormat::Undefined),
+	layout(ImageLayout::Undefined),
+	dimensions(),
 	device(nullptr),
 	destroy_on_destructor(false)
 	{
@@ -25,6 +27,7 @@ namespace tz::gl::vk2
 		this->image = swapchain_image_natives[sinfo.image_index];
 		this->format = sinfo.swapchain->get_image_format();
 		this->layout = ImageLayout::Undefined;
+		this->dimensions = sinfo.swapchain->get_dimensions();
 		this->device = &sinfo.swapchain->get_device();
 		// I verified in the spec here: https://www.khronos.org/registry/vulkan/specs/1.2-extensions/html/vkspec.html#_wsi_swapchain that the initial layout of a swapchain image is guaranteed to be undefined.
 	}
@@ -67,6 +70,22 @@ namespace tz::gl::vk2
 	ImageLayout Image::get_layout() const
 	{
 		return this->layout;
+	}
+
+	Vec2ui Image::get_dimensions() const
+	{
+		return this->dimensions;
+	}
+
+	const LogicalDevice& Image::get_device() const
+	{
+		tz_assert(this->device != nullptr, "Image had nullptr or null LogicalDevice");
+		return *this->device;
+	}
+
+	VkImage Image::native() const
+	{
+		return this->image;
 	}
 }
 

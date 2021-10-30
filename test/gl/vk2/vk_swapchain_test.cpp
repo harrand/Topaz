@@ -67,6 +67,13 @@ void mandatory_swapchain(tz::GameInfo g)
 		return img.get_layout() == initial_swapchain_image_layout;
 	});
 	tz_assert(all_correct_layout, "Swapchain images did not all have the expected ImageLayout::Undefined. The spec demands it!");
+
+	const tz::Vec2ui dims = swapchain.get_dimensions();
+	bool all_correct_size = std::all_of(swapchain_images.begin(), swapchain_images.end(), [&dims](const Image& img)
+	{
+		return img.get_dimensions() == dims;
+	});
+	tz_assert(all_correct_size, "Swapchain images did not all have the expected size of {%u, %u}", dims[0], dims[1]);
 }
 
 void swapchain_extension_supported()

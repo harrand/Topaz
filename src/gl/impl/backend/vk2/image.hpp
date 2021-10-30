@@ -1,6 +1,7 @@
 #ifndef TOPAZ_GL_IMPL_BACKEND_VK2_IMAGE_HPP
 #define TOPAZ_GL_IMPL_BACKEND_VK2_IMAGE_HPP
 #if TZ_VULKAN
+#include "core/vector.hpp"
 #include "gl/impl/backend/vk2/image_format.hpp"
 
 namespace tz::gl::vk2
@@ -69,16 +70,19 @@ namespace tz::gl::vk2
 		 * Retrieve the current layout of the image.
 		 */
 		ImageLayout get_layout() const;
+		Vec2ui get_dimensions() const;
 		/**
 		 * Retrieve the @ref LogicalDevice that 'owns' the image.
 		 *
 		 * Swapchain images are owned by the presentation device. For that reason, these do not belong to this device per-se. In this case this will return the @ref LogicalDevice responsible for retrieving the image (Most certainly the LogicalDevice that initially spawned its owner Swapchain.)
 		 */
 		const LogicalDevice& get_device() const;
+		VkImage native() const;
 	private:
 		VkImage image;
 		ImageFormat format;
 		ImageLayout layout;
+		Vec2ui dimensions;
 		const LogicalDevice* device;
 		bool destroy_on_destructor;
 	};

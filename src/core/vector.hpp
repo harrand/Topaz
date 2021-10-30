@@ -144,7 +144,21 @@ namespace tz
 	using Vec3 = Vector<float, 3>;
 	/// A vector of four floats.
 	using Vec4 = Vector<float, 4>;
+
+	/// A vector of two ints.
+	using Vec2i = Vector<int, 2>;
+	/// A vector of three ints.
+	using Vec3i = Vector<int, 3>;
+	/// A vector of four ints.
+	using Vec4i = Vector<int, 4>;
 	
+	/// A vector of two unsigned ints.
+	using Vec2ui = Vector<unsigned int, 2>;
+	/// A vector of three unsigned ints.
+	using Vec3ui = Vector<unsigned int, 3>;
+	/// A vector of four unsigned ints.
+	using Vec4ui = Vector<unsigned int, 4>;
+
 	template<typename T = float>
 	Vector<T, 3> cross(const Vector<T, 3>& lhs, const Vector<T, 3>& rhs);
 

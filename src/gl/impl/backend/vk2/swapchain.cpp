@@ -6,7 +6,9 @@ namespace tz::gl::vk2
 {	
 	Swapchain::Swapchain(SwapchainInfo info):
 	swapchain(VK_NULL_HANDLE),
-	info(info)
+	info(info),
+	dimensions(),
+	swapchain_images()
 	{
 		tz_assert(this->info.device != nullptr, "SwapchainInfo contained null LogicalDevice. Please submi a bug report.");
 		tz_assert(this->info.surface != nullptr, "SwapchainInfo contained null WindowSurface. Please submit a bug report.");
@@ -88,12 +90,16 @@ namespace tz::gl::vk2
 				tz_error("Failed to create a Swapchain, and the error code is unrecognised. Either we are missing a return code case, or something has gone very, very wrong. Please submit a bug report.");
 			break;
 		}
+
+		this->dimensions[0] = static_cast<unsigned int>(extent.width);
+		this->dimensions[1] = static_cast<unsigned int>(extent.height);
 		this->initialise_images();
 	}
 
 	Swapchain::Swapchain(Swapchain&& move):
 	swapchain(VK_NULL_HANDLE),
 	info(),
+	dimensions(),
 	swapchain_images()
 	{
 		*this = std::move(move);
@@ -113,6 +119,7 @@ namespace tz::gl::vk2
 	{
 		std::swap(this->swapchain, rhs.swapchain);
 		std::swap(this->info, rhs.info);
+		std::swap(this->dimensions, rhs.dimensions);
 		std::swap(this->swapchain_images, rhs.swapchain_images);
 		return *this;
 	}
@@ -153,6 +160,11 @@ namespace tz::gl::vk2
 	ImageFormat Swapchain::get_image_format() const
 	{
 		return this->info.image_format;
+	}
+
+	Vec2ui Swapchain::get_dimensions() const
+	{
+		return this->dimensions;
 	}
 
 	Swapchain::Swapchain():

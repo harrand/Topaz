@@ -90,8 +90,22 @@ namespace tz
 	{
 		for(std::size_t i = 0; i < S; i++)
 		{
-			if(std::abs((*this)[i] - rhs[i]) >= std::numeric_limits<T>::epsilon())
-				return false;
+			if constexpr(std::is_integral_v<T>)
+			{
+				// If we're some integer type
+				if(!std::cmp_equal(this->vec[i], rhs[i]))
+				{
+					return false;
+				}
+			}
+			else
+			{
+				// Float or double
+				if(std::fabs(this->vec[i] - rhs[i]) > std::numeric_limits<T>::epsilon())
+				{
+					return false;
+				}
+			}
 		}
 		return true;
 	}

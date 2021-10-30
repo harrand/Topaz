@@ -65,12 +65,14 @@ namespace tz::gl::vk2
 		 */
 		std::span<Image> get_images();
 		ImageFormat get_image_format() const;
+		Vec2ui get_dimensions() const;
 	private:
 		Swapchain();
 		void initialise_images();
 
 		VkSwapchainKHR swapchain;
 		SwapchainInfo info;
+		Vec2ui dimensions;
 		std::vector<Image> swapchain_images;
 	};
 }
