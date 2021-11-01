@@ -51,6 +51,7 @@ void mandatory_swapchain(tz::GameInfo g)
 	// Let's check the number of swapchain images fits what the PhysicalDevice required (this should 100% happen).
 	PhysicalDeviceSurfaceCapabilityInfo pdev_surface_cap = pdev.get_surface_capabilities(window_surf);
 	std::span<const Image> swapchain_images = swapchain.get_images();
+	std::span<const ImageView> swapchain_image_views = swapchain.get_image_views();
 	tz_assert(swapchain_images.size() >= pdev_surface_cap.min_image_count, "Swapchain::get_images() returned an ImageSpan of size %zu which is smaller than the PhysicalDevice minimum image count of %u", swapchain_images.size(), pdev_surface_cap.min_image_count);
 	tz_assert(swapchain_images.size() <= pdev_surface_cap.max_image_count, "Swapchain::get_images() returned an ImageSpan of size %zu which is larger than the PhysicalDevice maximum image count of %u", swapchain_images.size(), pdev_surface_cap.max_image_count);
 
@@ -69,11 +70,11 @@ void mandatory_swapchain(tz::GameInfo g)
 	tz_assert(all_correct_layout, "Swapchain images did not all have the expected ImageLayout::Undefined. The spec demands it!");
 
 	const tz::Vec2ui dims = swapchain.get_dimensions();
-	bool all_correct_size = std::all_of(swapchain_images.begin(), swapchain_images.end(), [&dims](const Image& img)
+	bool all_correct_size = std::equal(swapchain_image_views.begin(), swapchain_image_views.end(), swapchain_images.begin(), [&dims](const ImageView& view, const Image& image)
 	{
-		return img.get_dimensions() == dims;
+		return view.get_image() == image && image.get_dimensions() == dims;
 	});
-	tz_assert(all_correct_size, "Swapchain images did not all have the expected size of {%u, %u}", dims[0], dims[1]);
+	tz_assert(all_correct_size, "Not all of the Swapchain images had the expected size. The expected size if {%u, %u}", dims[0], dims[1]);
 }
 
 void swapchain_extension_supported()
@@ -105,6 +106,7 @@ void semantics()
 
 		SwapchainInfo sinfo = get_safe_swapchain_info(ldev, get_window_surface());
 		Swapchain s1{sinfo};
+		const std::size_t img_count = s1.get_images().size();
 		tz_assert(!s1.is_null(), "Swapchain wrongly thinks its null");
 		Swapchain s2{std::move(s1)}; // s1 dies
 		tz_assert(!s2.is_null(), "Swapchain wrongly thinks its null");
@@ -112,6 +114,18 @@ void semantics()
 		tz_assert(s3.is_null(), "Swapchain wrongly thinks its non-null");
 		s3 = std::move(s2); // s2 dies
 		tz_assert(!s3.is_null(), "Swapchain wrongly thinks its null");
+
+		// After move, make sure its imageviews and images make sense.
+		tz_assert(s3.get_images().size() == img_count, "Swapchain post move-assign wasexpected to have %zu images, but it actually has %zu", img_count, s3.get_images().size());
+		tz_assert(s3.get_image_views().size() == img_count, "Swapchain post move-assign wasexpected to have %zu image views, but it actually has %zu", img_count, s3.get_image_views().size());
+		// Ensure that at index i, the ImageView's actual Image matches the Image at that index
+		auto views = s3.get_image_views();
+		auto images = s3.get_images();
+		bool images_congruent = std::equal(views.begin(), views.end(), images.begin(), [](const ImageView& view, const Image& image)
+		{
+			return view.get_image() == image;
+		});
+		tz_assert(images_congruent, "One or more ImageViews in the Swapchain does not correspond to the Image at the same index.");
 	}
 }
 

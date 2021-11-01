@@ -6,19 +6,10 @@
 #include "core/containers/enum_field.hpp"
 #include "gl/impl/backend/vk2/tz_vulkan.hpp"
 #include "gl/impl/backend/vk2/image_format.hpp"
+#include "gl/impl/backend/vk2/features.hpp"
 
 namespace tz::gl::vk2
 {
-	/**
-	 * @ingroup tz_gl_vk_extension
-	 * @brief Represents a PhysicalDevice feature directly supported by Topaz.
-	 * These may contain some of the Vulkan VkPhysicalDeviceFeatures, but it not limited to Vulkan-API specific stuff. Some of these features may be Topaz-centric.
-	 */
-	enum class PhysicalDeviceFeature
-	{
-		MultiDrawIndirect ///  - Allows mass-batching of draw-calls. Vastly improves performance for large scenes.
-	};
-
 	/**
 	 * @ingroup tz_gl_vk
 	 * Represents a PhysicalDevice manufacturer.
@@ -45,8 +36,6 @@ namespace tz::gl::vk2
 		VkSurfaceTransformFlagBitsKHR current_transform;
 		std::optional<SwapchainExtent> maybe_surface_dimensions;
 	};
-
-	using PhysicalDeviceFeatureField = tz::EnumField<PhysicalDeviceFeature>;
 
 	namespace detail
 	{

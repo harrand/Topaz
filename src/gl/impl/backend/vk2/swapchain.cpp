@@ -8,7 +8,8 @@ namespace tz::gl::vk2
 	swapchain(VK_NULL_HANDLE),
 	info(info),
 	dimensions(),
-	swapchain_images()
+	swapchain_images(),
+	swapchain_image_views()
 	{
 		tz_assert(this->info.device != nullptr, "SwapchainInfo contained null LogicalDevice. Please submi a bug report.");
 		tz_assert(this->info.surface != nullptr, "SwapchainInfo contained null WindowSurface. Please submit a bug report.");
@@ -100,7 +101,8 @@ namespace tz::gl::vk2
 	swapchain(VK_NULL_HANDLE),
 	info(),
 	dimensions(),
-	swapchain_images()
+	swapchain_images(),
+	swapchain_image_views()
 	{
 		*this = std::move(move);
 	}
@@ -121,6 +123,7 @@ namespace tz::gl::vk2
 		std::swap(this->info, rhs.info);
 		std::swap(this->dimensions, rhs.dimensions);
 		std::swap(this->swapchain_images, rhs.swapchain_images);
+		std::swap(this->swapchain_image_views, rhs.swapchain_image_views);
 		return *this;
 	}
 
@@ -152,9 +155,9 @@ namespace tz::gl::vk2
 		return this->swapchain_images;
 	}
 
-	std::span<Image> Swapchain::get_images()
+	std::span<const ImageView> Swapchain::get_image_views() const
 	{
-		return this->swapchain_images;
+		return this->swapchain_image_views;
 	}
 
 	ImageFormat Swapchain::get_image_format() const
@@ -177,6 +180,7 @@ namespace tz::gl::vk2
 		if(!this->swapchain_images.empty())
 		{
 			this->swapchain_images.clear();
+			this->swapchain_image_views.clear();
 		}
 
 		std::uint32_t true_image_count;
@@ -188,7 +192,12 @@ namespace tz::gl::vk2
 			sinfo.swapchain = this;
 			sinfo.image_index = i;
 
-			this->swapchain_images.emplace_back(sinfo);
+			Image& img = this->swapchain_images.emplace_back(sinfo);
+
+			ImageViewInfo view_info;
+			view_info.image = &img;
+			view_info.aspect = ImageAspect::Colour;
+			this->swapchain_image_views.emplace_back(view_info);
 		}
 	}
 }

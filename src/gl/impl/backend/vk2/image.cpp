@@ -98,6 +98,11 @@ namespace tz::gl::vk2
 		return this->image == VK_NULL_HANDLE;
 	}
 
+	bool Image::operator==(const Image& rhs) const
+	{
+		return this->image == rhs.image;
+	}
+
 	Image::Image():
 	image(VK_NULL_HANDLE),
 	format(ImageFormat::Undefined),

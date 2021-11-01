@@ -80,6 +80,8 @@ namespace tz::gl::vk2
 		VkImage native() const;
 		static Image null();
 		bool is_null() const;
+
+		bool operator==(const Image& rhs) const;
 	private:
 		Image();
 

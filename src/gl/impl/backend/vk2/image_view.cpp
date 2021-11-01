@@ -27,7 +27,7 @@ namespace tz::gl::vk2
 			break;
 		}
 		create.subresourceRange.baseMipLevel = 0;
-		create.subresourceRange.levelCount = 0;
+		create.subresourceRange.levelCount = 1;
 		create.subresourceRange.baseArrayLayer = 0;
 		create.subresourceRange.layerCount = 1;
 
@@ -64,6 +64,13 @@ namespace tz::gl::vk2
 			vkDestroyImageView(this->get_image().get_device().native(), this->image_view, nullptr);
 			this->image_view = VK_NULL_HANDLE;
 		}
+	}
+
+	ImageView& ImageView::operator=(ImageView&& rhs)
+	{
+		std::swap(this->image_view, rhs.image_view);
+		std::swap(this->info, rhs.info);
+		return *this;
 	}
 
 	const Image& ImageView::get_image() const

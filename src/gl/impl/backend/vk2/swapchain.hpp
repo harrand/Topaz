@@ -1,7 +1,7 @@
 #ifndef TOPAZ_GL_IMPL_BACKEND_VK2_SWAPCHAIN_HPP
 #define TOPAZ_GL_IMPL_BACKEND_VK2_SWAPCHAIN_HPP
 #include "gl/impl/backend/vk2/logical_device.hpp"
-#include "gl/impl/backend/vk2/image.hpp"
+#include "gl/impl/backend/vk2/image_view.hpp"
 
 namespace tz::gl::vk2
 {
@@ -59,11 +59,7 @@ namespace tz::gl::vk2
 		 * @return Span containing all swapchain images.
 		 */
 		std::span<const Image> get_images() const;
-		/**
-		 * Retrieve a span of all presentable images associated with this Swapchain.
-		 * @return Span containing all swapchain images.
-		 */
-		std::span<Image> get_images();
+		std::span<const ImageView> get_image_views() const;
 		ImageFormat get_image_format() const;
 		Vec2ui get_dimensions() const;
 	private:
@@ -74,6 +70,7 @@ namespace tz::gl::vk2
 		SwapchainInfo info;
 		Vec2ui dimensions;
 		std::vector<Image> swapchain_images;
+		std::vector<ImageView> swapchain_image_views;
 	};
 }
 
