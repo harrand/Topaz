@@ -11,7 +11,9 @@ void extensions_coherent()
 
 	PhysicalDevice pdev = devices.front();
 	// Firstly try to create a LogicalDevice with no extensions/features.
-	LogicalDevice ldev1{LogicalDeviceInfo{.physical_device = pdev}};
+	{
+		LogicalDevice ldev1{LogicalDeviceInfo{.physical_device = pdev}};
+	}
 	// Now with one extension, if there are any.
 	if(!pdev.get_supported_extensions().empty())
 	{
@@ -63,8 +65,21 @@ void semantics()
 	{
 		LogicalDevice l1{dummy};
 		LogicalDevice l2{std::move(l1)}; // l1 dies
-		LogicalDevice l3{dummy};
+		LogicalDevice l3 = LogicalDevice::null();
 		l3 = std::move(l2); // l2 dies
+	}
+}
+
+void simulataneous_logical_devices()
+{
+	using namespace tz::gl::vk2;
+	PhysicalDeviceList pdevs = get_all_devices();
+	LogicalDeviceInfo linfo;
+	linfo.physical_device = pdevs.front();
+	
+	{
+		LogicalDevice l1{linfo};
+		LogicalDevice l2{linfo};
 	}
 }
 
@@ -77,6 +92,7 @@ int main()
 		extensions_coherent();
 		custom_instance_and_window_surface(game);
 		semantics();
+		simulataneous_logical_devices();
 	}
 	tz::gl::vk2::terminate();
 	tz::terminate();
