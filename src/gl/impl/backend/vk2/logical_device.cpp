@@ -155,7 +155,9 @@ namespace tz::gl::vk2
 		for(DeviceExtension ext : this->enabled_extensions)
 		{
 			tz_assert(ext != DeviceExtension::Count, "Invalid extension passed into LogicalDevice ctor Extension::Count");
-			tz_assert(debug_supported_extensions.contains(ext), "LogicalDevice attempted to use the extension %s, but the correspnding PhysicalDevice does not support it. Submit a bug report.", util::to_vk_extension(ext));
+			#if TZ_DEBUG
+				tz_assert(debug_supported_extensions.contains(ext), "LogicalDevice attempted to use the extension %s, but the correspnding PhysicalDevice does not support it. Submit a bug report.", util::to_vk_extension(ext));
+			#endif
 			vk_extensions.add(util::to_vk_extension(ext));
 		}
 		create.enabledExtensionCount = this->enabled_extensions.count();
