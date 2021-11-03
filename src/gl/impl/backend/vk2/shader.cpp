@@ -62,6 +62,52 @@ namespace tz::gl::vk2
 		return *this;
 	}	
 
+	ShaderType ShaderModule::get_type() const
+	{
+		return this->type;
+	}
+
+	VkShaderModule ShaderModule::native() const
+	{
+		return this->shader_module;
+	}
+	
+	Shader::Shader(const ShaderInfo& info):
+	modules()
+	{
+		for(const ShaderModuleInfo& module_info : info.modules)
+		{
+			tz_assert(module_info.device == info.device, "ShaderInfo LogicalDevice did not match the devices specified in one or more of its ShaderModuleInfos. Please submit a bug report.");
+			this->modules.emplace_back(module_info);
+		}
+	}
+
+	Shader::Shader(Shader&& move):
+	modules()
+	{
+		*this = std::move(move);
+	}
+
+	Shader& Shader::operator=(Shader&& rhs)
+	{
+		std::swap(this->modules, rhs.modules);
+		return *this;
+	}
+
+	ShaderPipelineData Shader::native_data() const
+	{
+		ShaderPipelineData ret;
+		for(const ShaderModule& shader_module : this->modules)
+		{
+			ret.create_infos.add({});
+			VkPipelineShaderStageCreateInfo& cur_create = ret.create_infos.back();
+			cur_create.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+			cur_create.stage = static_cast<VkShaderStageFlagBits>(shader_module.get_type());
+			cur_create.module = shader_module.native();
+			cur_create.pName = "main";
+		}
+		return ret;
+	}
 }
 
 #endif // TZ_VULKAN

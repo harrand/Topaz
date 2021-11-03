@@ -40,6 +40,31 @@ void basic_shader_module()
 	ShaderModule basic_module{info};
 }
 
+void basic_shader()
+{
+	using namespace tz::gl::vk2;
+
+	PhysicalDevice pdev = get_all_devices().front();
+	LogicalDeviceInfo linfo;
+	linfo.physical_device = pdev;
+	LogicalDevice ldev{linfo};
+
+	ShaderInfo sinfo;
+	{
+		ShaderModuleInfo info;
+		info.device = &ldev;
+		info.code = get_empty_shader_spirv();
+		info.type = ShaderType::Fragment;
+
+		sinfo.device = &ldev;
+		sinfo.modules = {std::move(info)};
+	}
+	Shader shader{sinfo};
+
+	auto native_data = shader.native_data();
+	tz_assert(native_data.create_infos.length() == 1, "Shader.native_data() returned %zu elements, expected %d", native_data.create_infos.length(), 1);
+}
+
 int main()
 {
 	tz::GameInfo game{"vk_shader_test", tz::Version{1, 0, 0}};
@@ -47,6 +72,7 @@ int main()
 	tz::gl::vk2::initialise_headless(game, tz::ApplicationType::Headless);
 	{
 		basic_shader_module();
+		basic_shader();
 	}
 	tz::gl::vk2::terminate();
 	tz::terminate();

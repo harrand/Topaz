@@ -12,12 +12,12 @@ namespace tz::gl::vk2
 	 */
 	enum class ShaderType
 	{
-		Vertex,
-		Fragment,
+		Vertex = VK_SHADER_STAGE_VERTEX_BIT,
+		Fragment = VK_SHADER_STAGE_FRAGMENT_BIT,
 
-		Compute
+		Compute = VK_SHADER_STAGE_COMPUTE_BIT
 	};
-
+	
 	using ShaderTypeField = tz::EnumField<ShaderType>;
 
 	/**
@@ -52,6 +52,10 @@ namespace tz::gl::vk2
 		ShaderModule& operator=(const ShaderModule& rhs) = delete;
 		ShaderModule& operator=(ShaderModule&& rhs);
 
+		/**
+		 * Retrieve the type of this shader module.
+		 */
+		ShaderType get_type() const;
 		VkShaderModule native() const;
 	private:
 		const LogicalDevice* device;
@@ -59,6 +63,42 @@ namespace tz::gl::vk2
 		VkShaderModule shader_module;
 	};
 
+	/**
+	 * @ingroup tz_gl_vk_graphics_pipeline_shader
+	 * Specifies parameters of a Shader, and all the modules that comprise it.
+	 */
+	struct ShaderInfo
+	{
+		/// LogicalDevice owner. Must not be null.
+		const LogicalDevice* device;
+		/// Information about the Shader's modules. Must be a valid combination of modules.
+		tz::BasicList<ShaderModuleInfo> modules;
+	};
+
+	struct ShaderPipelineData
+	{
+		tz::BasicList<VkPipelineShaderStageCreateInfo> create_infos;
+	};
+
+	/**
+	 * @ingroup tz_gl_vk_graphics_pipeline_shader
+	 * Represents a Shader program. Can be used within a @ref GraphicsPipeline or @ref ComputePipeline.
+	 */
+	class Shader
+	{
+	public:
+		Shader(const ShaderInfo& info);
+		Shader(const Shader& copy) = delete;
+		Shader(Shader&& move);
+		~Shader() = default;
+
+		Shader& operator=(const Shader& rhs) = delete;
+		Shader& operator=(Shader&& rhs);
+
+		ShaderPipelineData native_data() const;
+	private:
+		std::vector<ShaderModule> modules;
+	};
 }
 
 #endif // TZ_VULKAN
