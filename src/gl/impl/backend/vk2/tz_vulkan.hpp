@@ -36,6 +36,18 @@ namespace tz::gl::vk2
 
 	/**
 	 * @ingroup tz_gl_vk
+	 * @defgroup tz_gl_vk_graphics_pipeline Graphics Pipeline
+	 * Documentation for the graphics pipeline.
+	 */
+	
+		/**
+		 * @ingroup tz_gl_vk_graphics_pipeline
+		 * @defgroup tz_gl_vk_graphics_pipeline_shader Shader Programs and Modules
+		 * Documentation for shaders.
+		 */
+
+	/**
+	 * @ingroup tz_gl_vk
 	 * @{
 	 */
 
