@@ -77,7 +77,9 @@ namespace tz::gl::vk2
 		 * Swapchain images are owned by the presentation device. For that reason, these do not belong to this device per-se. In this case this will return the @ref LogicalDevice responsible for retrieving the image (Most certainly the LogicalDevice that initially spawned its owner Swapchain.)
 		 */
 		const LogicalDevice& get_device() const;
-		VkImage native() const;
+
+		using NativeType = VkImage;
+		NativeType native() const;
 		static Image null();
 		bool is_null() const;
 

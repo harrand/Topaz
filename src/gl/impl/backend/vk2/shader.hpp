@@ -56,7 +56,9 @@ namespace tz::gl::vk2
 		 * Retrieve the type of this shader module.
 		 */
 		ShaderType get_type() const;
-		VkShaderModule native() const;
+
+		using NativeType = VkShaderModule;
+		NativeType native() const;
 	private:
 		const LogicalDevice* device;
 		ShaderType type;

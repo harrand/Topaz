@@ -145,7 +145,7 @@ namespace tz::gl::vk2
 		return this->swapchain == VK_NULL_HANDLE;
 	}
 
-	VkSwapchainKHR Swapchain::native() const
+	Swapchain::NativeType Swapchain::native() const
 	{
 		return this->swapchain;
 	}

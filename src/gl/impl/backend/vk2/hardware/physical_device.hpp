@@ -106,7 +106,9 @@ namespace tz::gl::vk2
 		 * @return true if `depth_format` can be a depth/stencil attachment, otherwise false.
 		 */
 		bool supports_image_depth_format(ImageFormat depth_format) const;
-		VkPhysicalDevice native() const;
+
+		using NativeType = VkPhysicalDevice;
+		NativeType native() const;
 		static PhysicalDevice null(); 
 		bool is_null() const;
 	private:

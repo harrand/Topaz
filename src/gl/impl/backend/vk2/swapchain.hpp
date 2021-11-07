@@ -53,7 +53,8 @@ namespace tz::gl::vk2
 		 * See @ref Swapchain::null for more information.
 		 */
 		bool is_null() const;
-		VkSwapchainKHR native() const;
+		using NativeType = VkSwapchainKHR;
+		NativeType native() const;
 		/**
 		 * Retrieve a span of all presentable images associated with this Swapchain.
 		 * @return Span containing all swapchain images.

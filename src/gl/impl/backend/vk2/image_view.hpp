@@ -32,7 +32,9 @@ namespace tz::gl::vk2
 		ImageView& operator=(ImageView&& rhs);
 
 		const Image& get_image() const;
-		VkImageView native() const;
+
+		using NativeType = VkImageView;
+		NativeType native() const;
 	private:
 		VkImageView image_view;
 		ImageViewInfo info;

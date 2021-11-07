@@ -194,7 +194,7 @@ namespace tz::gl::vk2
 		return this->supports_image_format(depth_format, VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
 	}
 
-	VkPhysicalDevice PhysicalDevice::native() const
+	PhysicalDevice::NativeType PhysicalDevice::native() const
 	{
 		return this->dev;
 	}

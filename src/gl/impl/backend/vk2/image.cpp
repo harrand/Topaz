@@ -83,7 +83,7 @@ namespace tz::gl::vk2
 		return *this->device;
 	}
 
-	VkImage Image::native() const
+	Image::NativeType Image::native() const
 	{
 		return this->image;
 	}

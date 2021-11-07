@@ -303,14 +303,14 @@ namespace tz::gl::vk2
 		return this->info;
 	}
 
-	VkInstance VulkanInstance::native() const
-	{
-		return this->instance;
-	}
-
 	bool VulkanInstance::operator==(const VulkanInstance& rhs) const
 	{
 		return this->instance == rhs.instance;
+	}
+
+	VulkanInstance::NativeType VulkanInstance::native() const
+	{
+		return this->instance;
 	}
 
 	WindowSurface::WindowSurface(const VulkanInstance& instance, const tz::Window& window):
@@ -362,17 +362,17 @@ namespace tz::gl::vk2
 		return *this;
 	}
 
-	VkSurfaceKHR WindowSurface::native() const
-	{
-		return this->surface;
-	}
-	
 	const VulkanInstance& WindowSurface::get_instance() const
 	{
 		tz_assert(this->instance != nullptr, "WindowSurface had null instance");
 		return *this->instance;
 	}
 
+	WindowSurface::NativeType WindowSurface::native() const
+	{
+		return this->surface;
+	}
+	
 }
 
 #endif // TZ_VULKAN

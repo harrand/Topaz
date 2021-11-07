@@ -22,7 +22,9 @@ namespace tz::gl::vk2
 			Queue(QueueInfo info);
 
 			const QueueInfo& get_info() const;
-			VkQueue native() const;
+
+			using NativeType = VkQueue;
+			NativeType native() const;
 		private:
 			VkQueue queue;
 			QueueInfo info;

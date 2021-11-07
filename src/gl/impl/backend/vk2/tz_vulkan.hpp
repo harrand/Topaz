@@ -172,8 +172,9 @@ namespace tz::gl::vk2
 		 * @brief Retrieve the @ref VulkanInfo used to construct this instance.
 		 */
 		const VulkanInfo& get_info() const;
-		VkInstance native() const;
 		bool operator==(const VulkanInstance& rhs) const;
+		using NativeType = VkInstance;
+		NativeType native() const;
 	private:
 		VulkanInfo info;
 		tz::ApplicationType app_type;
@@ -203,7 +204,8 @@ namespace tz::gl::vk2
 		WindowSurface& operator=(const WindowSurface& rhs) = delete;
 		WindowSurface& operator=(WindowSurface&& rhs);
 
-		VkSurfaceKHR native() const;
+		using NativeType = VkSurfaceKHR;
+		NativeType native() const;
 		const VulkanInstance& get_instance() const;
 	private:
 		VkSurfaceKHR surface;

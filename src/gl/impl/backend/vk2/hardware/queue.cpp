@@ -17,7 +17,7 @@ namespace tz::gl::vk2::hardware
 		return this->info;
 	}
 
-	VkQueue Queue::native() const
+	Queue::NativeType Queue::native() const
 	{
 		return this->queue;
 	}

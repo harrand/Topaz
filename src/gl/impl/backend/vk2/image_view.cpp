@@ -79,7 +79,7 @@ namespace tz::gl::vk2
 		return *this->info.image;
 	}
 
-	VkImageView ImageView::native() const
+	ImageView::NativeType ImageView::native() const
 	{
 		return this->image_view;
 	}

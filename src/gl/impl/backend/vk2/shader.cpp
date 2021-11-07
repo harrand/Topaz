@@ -67,7 +67,7 @@ namespace tz::gl::vk2
 		return this->type;
 	}
 
-	VkShaderModule ShaderModule::native() const
+	ShaderModule::NativeType ShaderModule::native() const
 	{
 		return this->shader_module;
 	}

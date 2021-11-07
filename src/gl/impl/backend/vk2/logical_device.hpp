@@ -112,7 +112,9 @@ namespace tz::gl::vk2
 		 * @brief Retrieve a list of all enabled extensions.
 		 */
 		const DeviceExtensionList& get_extensions() const;
-		VkDevice native() const;
+
+		using NativeType = VkDevice;
+		NativeType native() const;
 		/**
 		 * Create a LogicalDevice which doesn't do anything.
 		 * @note It is an error to use null LogicalDevices for most operations. Retrieving the native handle and querying for null-ness are the only valid operations on a null LogicalDevice.
