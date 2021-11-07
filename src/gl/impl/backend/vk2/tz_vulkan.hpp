@@ -46,6 +46,12 @@ namespace tz::gl::vk2
 		 * Documentation for shaders.
 		 */
 
+		/**
+		 * @ingroup tz_gl_vk_graphics_pipeline
+		 * @defgroup tz_gl_vk_graphics_pipeline_fixed Fixed Pipeline State Values
+		 * Documentation for the fixed-pipeline settings, such as rasteriser state and input assembly.
+		 */
+
 	/**
 	 * @ingroup tz_gl_vk
 	 * @{
