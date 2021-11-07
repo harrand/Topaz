@@ -235,6 +235,8 @@ add_library(topaz
 	src/gl/impl/backend/vk/vma.cpp
 	
 	# tz::gl (Vulkan Backend 2)
+	src/gl/impl/backend/vk2/descriptors.cpp
+	src/gl/impl/backend/vk2/descriptors.hpp
 	src/gl/impl/backend/vk2/extensions.hpp
 	src/gl/impl/backend/vk2/features.hpp
 	src/gl/impl/backend/vk2/fixed_function.cpp
@@ -248,6 +250,8 @@ add_library(topaz
 	src/gl/impl/backend/vk2/image_format.hpp
 	src/gl/impl/backend/vk2/logical_device.cpp
 	src/gl/impl/backend/vk2/logical_device.hpp
+	src/gl/impl/backend/vk2/pipeline_layout.cpp
+	src/gl/impl/backend/vk2/pipeline_layout.hpp
 	src/gl/impl/backend/vk2/shader.cpp
 	src/gl/impl/backend/vk2/shader.hpp
 	src/gl/impl/backend/vk2/swapchain.cpp

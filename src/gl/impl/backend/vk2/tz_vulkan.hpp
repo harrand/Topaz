@@ -36,6 +36,12 @@ namespace tz::gl::vk2
 
 	/**
 	 * @ingroup tz_gl_vk
+	 * @defgroup tz_gl_vk_descriptors Descriptor Layouts and Sets
+	 * Documentation for everything related to Descriptors.
+	 */
+
+	/**
+	 * @ingroup tz_gl_vk
 	 * @defgroup tz_gl_vk_graphics_pipeline Graphics Pipeline
 	 * Documentation for the graphics pipeline.
 	 */
@@ -204,9 +210,10 @@ namespace tz::gl::vk2
 		WindowSurface& operator=(const WindowSurface& rhs) = delete;
 		WindowSurface& operator=(WindowSurface&& rhs);
 
+		const VulkanInstance& get_instance() const;
+
 		using NativeType = VkSurfaceKHR;
 		NativeType native() const;
-		const VulkanInstance& get_instance() const;
 	private:
 		VkSurfaceKHR surface;
 		const VulkanInstance* instance;
