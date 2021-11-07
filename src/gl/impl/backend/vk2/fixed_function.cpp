@@ -3,6 +3,20 @@
 
 namespace tz::gl::vk2
 {
+	VertexInputState::NativeType VertexInputState::native() const
+	{
+		return
+		{
+			.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
+			.pNext = nullptr,
+			.flags = 0,
+			.vertexBindingDescriptionCount = static_cast<std::uint32_t>(this->bindings.length()),
+			.pVertexBindingDescriptions = this->bindings.data(),
+			.vertexAttributeDescriptionCount = static_cast<std::uint32_t>(this->attributes.length()),
+			.pVertexAttributeDescriptions = this->attributes.data()
+		};
+	}
+
 	InputAssembly::NativeType InputAssembly::native() const
 	{
 		return
@@ -80,6 +94,71 @@ namespace tz::gl::vk2
 			.pSampleMask = nullptr,
 			.alphaToCoverageEnable = VK_FALSE,
 			.alphaToOneEnable = VK_FALSE
+		};
+	}
+
+	DepthStencilState::NativeType DepthStencilState::native() const
+	{
+		return
+		{
+			.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO,
+			.pNext = nullptr,
+			.flags = 0,
+			.depthTestEnable = this->depth_testing ? VK_TRUE : VK_FALSE,
+			.depthWriteEnable = this->depth_writes ? VK_TRUE : VK_FALSE,
+			.depthCompareOp = static_cast<VkCompareOp>(this->depth_compare_operation),
+			.depthBoundsTestEnable = this->depth_bounds_testing ? VK_TRUE : VK_FALSE,
+			.stencilTestEnable = this->stencil_testing ? VK_TRUE : VK_FALSE,
+			.front = this->front,
+			.back = this->back,
+			.minDepthBounds = this->min_depth_bounds,
+			.maxDepthBounds = this->max_depth_bounds
+		};
+	}
+
+	ColourBlendState::AttachmentState ColourBlendState::no_blending()
+	{
+		return
+		{
+			.blendEnable = VK_FALSE,
+			.srcColorBlendFactor = VK_BLEND_FACTOR_ONE,
+			.dstColorBlendFactor = VK_BLEND_FACTOR_ZERO,
+			.colorBlendOp = VK_BLEND_OP_ADD,
+			.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE,
+			.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO,
+			.alphaBlendOp = VK_BLEND_OP_ADD,
+			.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT
+		};
+	}
+
+	ColourBlendState::NativeType ColourBlendState::native() const
+	{
+		ColourBlendState::NativeType native
+		{
+			.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO,
+			.pNext = nullptr,
+			.flags = 0,
+			.logicOpEnable = this->logical_operator.has_value() ? VK_TRUE : VK_FALSE,
+			.logicOp = this->logical_operator.value_or(VkLogicOp{}),
+			.attachmentCount = static_cast<std::uint32_t>(this->attachment_states.length()),
+			.pAttachments = this->attachment_states.data(),
+		};
+		for(std::size_t i = 0; i < sizeof(native.blendConstants) / sizeof(native.blendConstants[0]); i++)
+		{
+			native.blendConstants[i] = 0.0f;
+		}
+		return native;
+	}
+
+	DynamicState::NativeType DynamicState::native() const
+	{
+		return
+		{
+			.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO,
+			.pNext = nullptr,
+			.flags = 0,
+			.dynamicStateCount = 0,
+			.pDynamicStates = nullptr
 		};
 	}
 }
