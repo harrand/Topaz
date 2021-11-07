@@ -108,15 +108,27 @@ namespace tz::gl::vk2
 		NativeType native() const;
 	};
 
+	/**
+	 * @ingroup tz_gl_vk_graphics_pipeline_fixed
+	 * When two fragments depth values are compared aka `comp(lhs, rhs)`, what should the return expression be?
+	 */
 	enum class DepthComparator
 	{
+		/// - Return false.
 		AlwaysFalse = VK_COMPARE_OP_NEVER,
+		/// - Return lhs < rhs.
 		LessThan = VK_COMPARE_OP_LESS,
+		/// - Return lhs == rhs.
 		EqualTo = VK_COMPARE_OP_EQUAL,
+		/// - Return lhs <= rhs.
 		LessThanOrEqual = VK_COMPARE_OP_LESS_OR_EQUAL,
+		/// - Return lhs > rhs.
 		GreaterThan = VK_COMPARE_OP_GREATER,
+		/// - Return lhs != rhs.
 		NotEqualTo = VK_COMPARE_OP_NOT_EQUAL,
+		/// - Return lhs >= rhs.
 		GreaterThanOrEqual = VK_COMPARE_OP_GREATER_OR_EQUAL,
+		/// - Return true.
 		AlwaysTrue = VK_COMPARE_OP_ALWAYS
 	};
 	/**
@@ -125,15 +137,24 @@ namespace tz::gl::vk2
 	 */
 	struct DepthStencilState
 	{
+		/// Whether depth testing is enabled.
 		bool depth_testing = false;
+		/// If a fragment's value passes the depth test (that is, the depth compare operation returns `true`), this flag controls whether the depth attachment value is set to the sample's depth value.
 		bool depth_writes = false;
+		/// Describes how two fragment depth values are compared. See @ref DepthComparator for more information.
 		DepthComparator depth_compare_operation = DepthComparator::LessThan;
+		/// Whether depth bounds testing should be enabled. If enabled, fragments with depth values < `min_depth_bounds` || >`max_depth_bounds` will have zero coverage.
 		bool depth_bounds_testing = false;
 
+		/// Whether stencil testing is enabled.
 		bool stencil_testing = false;
+		/// Parameter of stencil testing.
 		VkStencilOpState front = {};
+		/// Parameter of stencil testing.
 		VkStencilOpState back = {};
+		/// If depth bounds testing is enabled, this specifies the minimum depth boundary.
 		float min_depth_bounds = 0.0f;
+		/// If depth bounds testing is enabled, this specifies the maximum depth boundary.
 		float max_depth_bounds = 1.0f;
 
 		using NativeType = VkPipelineDepthStencilStateCreateInfo;
