@@ -95,14 +95,14 @@ namespace tz::gl::vk2
 
 	/**
 	 * @ingroup tz_gl_vk_descriptors
-	 * A specialised @ref DescriptorLayoutBuilder to produce a layout utilising @ref PhysicalDeviceFeature::BindlessDescriptors.
+	 * A specialised @ref DescriptorLayoutBuilder to produce a layout utilising @ref DeviceFeature::BindlessDescriptors.
 	 */
 	class DescriptorLayoutBuilderBindless
 	{
 	public:
 		/**
 		 * Initialise the builder based upon the given LogicalDevice.
-		 * @pre `logical_device` must have @ref PhysicalDeviceFeature::BindlessDescriptors enabled.
+		 * @pre `logical_device` must have @ref DeviceFeature::BindlessDescriptors enabled.
 		 */
 		DescriptorLayoutBuilderBindless(const LogicalDevice& logical_device);
 		/**

@@ -166,13 +166,13 @@ namespace tz::gl::vk2
 
 		// And finally, features.
 		#if TZ_DEBUG
-			PhysicalDeviceFeatureField debug_supported_features = this->physical_device.get_supported_features();
-			std::for_each(this->enabled_features.begin(), this->enabled_features.end(), [&debug_supported_features](const PhysicalDeviceFeature& feature)
+			DeviceFeatureField debug_supported_features = this->physical_device.get_supported_features();
+			std::for_each(this->enabled_features.begin(), this->enabled_features.end(), [&debug_supported_features](const DeviceFeature& feature)
 			{
 				tz_assert(debug_supported_features.contains(feature), "LogicalDevice attempted to use a feature, but the corresponding PhysicalDevice does not support it. Submit a bug report.");
 			});		
 		#endif
-		detail::PhysicalDeviceFeatureInfo features = detail::from_feature_field(this->enabled_features);
+		detail::DeviceFeatureInfo features = detail::from_feature_field(this->enabled_features);
 		features.features.pNext = &features.descriptor_indexing_features;
 		create.pEnabledFeatures = nullptr;
 		create.pNext = &features.features;
@@ -249,7 +249,7 @@ namespace tz::gl::vk2
 		return this->enabled_extensions;
 	}
 
-	const PhysicalDeviceFeatureField& LogicalDevice::get_features() const
+	const DeviceFeatureField& LogicalDevice::get_features() const
 	{
 		return this->enabled_features;
 	}

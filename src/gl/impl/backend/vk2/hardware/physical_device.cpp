@@ -36,13 +36,13 @@ namespace tz::gl::vk2
 
 	namespace detail
 	{
-		PhysicalDeviceFeatureField to_feature_field(PhysicalDeviceFeatureInfo features)
+		DeviceFeatureField to_feature_field(DeviceFeatureInfo features)
 		{
-			PhysicalDeviceFeatureField ret;
+			DeviceFeatureField ret;
 
 			if(features.features.features.multiDrawIndirect)
 			{
-				ret |= PhysicalDeviceFeature::MultiDrawIndirect;
+				ret |= DeviceFeature::MultiDrawIndirect;
 			}
 			if(features.descriptor_indexing_features.descriptorBindingStorageImageUpdateAfterBind
 			&& features.descriptor_indexing_features.descriptorBindingStorageBufferUpdateAfterBind
@@ -51,18 +51,18 @@ namespace tz::gl::vk2
 			&& features.descriptor_indexing_features.descriptorBindingPartiallyBound
 			&& features.descriptor_indexing_features.descriptorBindingVariableDescriptorCount)
 			{
-				ret |= PhysicalDeviceFeature::BindlessDescriptors;
+				ret |= DeviceFeature::BindlessDescriptors;
 			}
 		
 			return ret;
 		}
 
-		PhysicalDeviceFeatureInfo from_feature_field(const PhysicalDeviceFeatureField& feature_field)
+		DeviceFeatureInfo from_feature_field(const DeviceFeatureField& feature_field)
 		{
-			PhysicalDeviceFeatureInfo info;
-			info.features.features.multiDrawIndirect = feature_field.contains(PhysicalDeviceFeature::MultiDrawIndirect) ? VK_TRUE : VK_FALSE;
+			DeviceFeatureInfo info;
+			info.features.features.multiDrawIndirect = feature_field.contains(DeviceFeature::MultiDrawIndirect) ? VK_TRUE : VK_FALSE;
 
-			if(feature_field.contains(PhysicalDeviceFeature::BindlessDescriptors))
+			if(feature_field.contains(DeviceFeature::BindlessDescriptors))
 			{
 				info.descriptor_indexing_features.descriptorBindingStorageImageUpdateAfterBind = VK_TRUE;
 				info.descriptor_indexing_features.descriptorBindingStorageBufferUpdateAfterBind = VK_TRUE;
@@ -102,10 +102,10 @@ namespace tz::gl::vk2
 	dev(native),
 	instance(&instance){}
 
-	PhysicalDeviceFeatureField PhysicalDevice::get_supported_features() const
+	DeviceFeatureField PhysicalDevice::get_supported_features() const
 	{
 		tz_assert(!this->is_null(), "This was PhysicalDevice::null()");
-		detail::PhysicalDeviceFeatureInfo feature_info;
+		detail::DeviceFeatureInfo feature_info;
 		vkGetPhysicalDeviceFeatures2(this->dev, &feature_info.features);
 
 		return detail::to_feature_field(feature_info);

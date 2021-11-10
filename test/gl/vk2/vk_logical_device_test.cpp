@@ -27,7 +27,7 @@ void extensions_coherent()
 	{
 		DeviceExtensionList exts;
 		exts |= pdev.get_supported_extensions().front();
-		PhysicalDeviceFeatureField features;
+		DeviceFeatureField features;
 		features |= pdev_features.front();
 		LogicalDevice ldev2{LogicalDeviceInfo{.physical_device = pdev, .extensions = exts, .features = features}};
 	}

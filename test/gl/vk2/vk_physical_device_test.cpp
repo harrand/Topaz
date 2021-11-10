@@ -9,9 +9,9 @@ namespace drivers
 	// vk2::PhysicalDevice surrounds its VkPhysicalDevice native handle.
 	// We want to be able to work with a physical device, with or without given features.
 	// There is no guarantee such devices are available on the running machine, so we use a driver to mimic the results such devices would provide. An example of this would be device features such as MDI.
-	constexpr tz::gl::vk2::detail::PhysicalDeviceFeatureInfo mdi(bool avail)
+	constexpr tz::gl::vk2::detail::DeviceFeatureInfo mdi(bool avail)
 	{
-		tz::gl::vk2::detail::PhysicalDeviceFeatureInfo ret;
+		tz::gl::vk2::detail::DeviceFeatureInfo ret;
 		ret.features.features.multiDrawIndirect = avail ? VK_TRUE : VK_FALSE;
 		return ret;
 	}
@@ -46,11 +46,11 @@ void devices()
 
 	// We'll play around with all the supported features.
 	// MDI
-	PhysicalDeviceFeatureField mdi_yes = detail::to_feature_field(drivers::mdi(true));
-	PhysicalDeviceFeatureField mdi_no = detail::to_feature_field(drivers::mdi(false));
+	DeviceFeatureField mdi_yes = detail::to_feature_field(drivers::mdi(true));
+	DeviceFeatureField mdi_no = detail::to_feature_field(drivers::mdi(false));
 
-	tz_assert(mdi_yes.contains(PhysicalDeviceFeature::MultiDrawIndirect), "PhysicalDeviceFeatureField::MultiDrawIndirect (MDI) is not handled properly.");
-	tz_assert(!mdi_no.contains(PhysicalDeviceFeature::MultiDrawIndirect), "PhysicalDeviceFeatureField::MultiDrawIndirect (MDI) is not handled properly.");
+	tz_assert(mdi_yes.contains(DeviceFeature::MultiDrawIndirect), "PhysicalDeviceFeatureField::MultiDrawIndirect (MDI) is not handled properly.");
+	tz_assert(!mdi_no.contains(DeviceFeature::MultiDrawIndirect), "PhysicalDeviceFeatureField::MultiDrawIndirect (MDI) is not handled properly.");
 
 	// Now we'll try some supported extensions.
 	DeviceExtensionList swapchain_yes = drivers::swapchain(true);

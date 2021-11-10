@@ -50,7 +50,7 @@ namespace tz::gl::vk2
 	logical_device(&logical_device),
 	descriptors()
 	{
-		tz_assert(this->logical_device->get_features().contains(PhysicalDeviceFeature::BindlessDescriptors), "Creating a builder for a bindless descriptor layout, but the LogicalDevice does not have PhysicalDeviceFeature::BindlessDescriptors enabled");
+		tz_assert(this->logical_device->get_features().contains(DeviceFeature::BindlessDescriptors), "Creating a builder for a bindless descriptor layout, but the LogicalDevice does not have DeviceFeature::BindlessDescriptors enabled");
 	}
 
 	DescriptorLayoutBuilderBindless& DescriptorLayoutBuilderBindless::with_descriptor(DescriptorType desc, std::size_t descriptor_count)

@@ -46,10 +46,10 @@ namespace tz::gl::vk2
 		 */
 		DeviceExtensionList extensions = {};
 		/**
-		 * `features` is a list of PhysicalDeviceFeatures to be enabled.
+		 * `features` is a list of DeviceFeatures to be enabled.
 		 * @pre For each element `e`, `physical_device.get_supported_features().contains(e)` must hold true.
 		 */
-		PhysicalDeviceFeatureField features = {};
+		DeviceFeatureField features = {};
 		/**
 		 * `surface` is `nullptr` or a valid pointer to an existing @ref WindowSurface
 		 * @pre If a surface is provided, the @ref VulkanInstance who spawned it must be equal to the VulkanInstance that spawned `physical_device`
@@ -115,7 +115,7 @@ namespace tz::gl::vk2
 		/**
 		 * @brief Retrieve a list of all enabled features.
 		 */
-		const PhysicalDeviceFeatureField& get_features() const;
+		const DeviceFeatureField& get_features() const;
 
 		using NativeType = VkDevice;
 		NativeType native() const;
@@ -135,7 +135,7 @@ namespace tz::gl::vk2
 		VkDevice dev;
 		PhysicalDevice physical_device;
 		DeviceExtensionList enabled_extensions;
-		PhysicalDeviceFeatureField enabled_features;
+		DeviceFeatureField enabled_features;
 		std::vector<QueueFamilyInfo> queue_families;
 		QueueStorage queue_storage;
 	};

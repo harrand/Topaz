@@ -9,11 +9,11 @@ namespace tz::gl::vk2
 	 * @ingroup tz_gl_vk_extension
 	 * @brief Represents an optional feature specific to a @ref PhysicalDevice.
 	 *
-	 * - PhysicalDeviceFeatures provide various advantages/additional features.
+	 * - DeviceFeatures provide various advantages/additional features.
 	 * - No features are enabled by default.
-	 * - PhysicalDeviceFeatures may not be supported by a PhysicalDevice. See @ref PhysicalDevice::get_supported_features to retrieve a list of supported features.
+	 * - DeviceFeatures may not be supported by a PhysicalDevice. See @ref PhysicalDevice::get_supported_features to retrieve a list of supported features.
 	 */
-	enum class PhysicalDeviceFeature
+	enum class DeviceFeature
 	{
 		/// - Allows mass-batching of draw-calls. Vastly improves performance for large scenes.
 		MultiDrawIndirect,
@@ -21,11 +21,11 @@ namespace tz::gl::vk2
 		BindlessDescriptors
 	};
 
-	using PhysicalDeviceFeatureField = tz::EnumField<PhysicalDeviceFeature>;
+	using DeviceFeatureField = tz::EnumField<DeviceFeature>;
 
 	namespace detail
 	{
-		struct PhysicalDeviceFeatureInfo
+		struct DeviceFeatureInfo
 		{
 			VkPhysicalDeviceDescriptorIndexingFeatures descriptor_indexing_features =
 			{
