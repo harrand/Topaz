@@ -8,6 +8,7 @@ void basic_descriptor_layout()
 	LogicalDeviceInfo linfo;
 	linfo.physical_device = pdev;
 	linfo.surface = &get_window_surface();
+	linfo.features = {PhysicalDeviceFeature::BindlessDescriptors};
 
 	LogicalDevice ldev{linfo};
 	{

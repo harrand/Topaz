@@ -22,12 +22,13 @@ void extensions_coherent()
 		LogicalDevice ldev2{LogicalDeviceInfo{.physical_device = pdev, .extensions = exts}};
 	}
 	// Now with one extension and one feature (once again, if there are any)
-	if(!pdev.get_supported_extensions().empty() && !pdev.get_supported_features().empty())
+	auto pdev_features = pdev.get_supported_features();
+	if(!pdev.get_supported_extensions().empty() && !pdev_features.empty())
 	{
 		DeviceExtensionList exts;
 		exts |= pdev.get_supported_extensions().front();
 		PhysicalDeviceFeatureField features;
-		features |= pdev.get_supported_features().front();
+		features |= pdev_features.front();
 		LogicalDevice ldev2{LogicalDeviceInfo{.physical_device = pdev, .extensions = exts, .features = features}};
 	}
 	// And now simply with all features/extensions enabled.

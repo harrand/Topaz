@@ -12,10 +12,30 @@ namespace tz::gl::vk2
 	 */
 	enum class PhysicalDeviceFeature
 	{
-		MultiDrawIndirect ///  - Allows mass-batching of draw-calls. Vastly improves performance for large scenes.
+		///  - Allows mass-batching of draw-calls. Vastly improves performance for large scenes.
+		MultiDrawIndirect,
+
+		BindlessDescriptors
 	};
 
 	using PhysicalDeviceFeatureField = tz::EnumField<PhysicalDeviceFeature>;
+
+	namespace detail
+	{
+		struct PhysicalDeviceFeatureInfo
+		{
+			VkPhysicalDeviceDescriptorIndexingFeatures descriptor_indexing_features =
+			{
+				.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES,
+				.pNext = nullptr
+			};
+			VkPhysicalDeviceFeatures2 features =
+			{
+				.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2,
+				.pNext = &descriptor_indexing_features
+			};
+		};
+	}
 }
 
 #endif // TZ_VULKAN

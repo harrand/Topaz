@@ -1,3 +1,4 @@
+#include "gl/impl/backend/vk2/features.hpp"
 #include "gl/impl/backend/vk2/hardware/physical_device.hpp"
 #if TZ_VULKAN
 #include "gl/impl/backend/vk2/logical_device.hpp"
@@ -171,8 +172,10 @@ namespace tz::gl::vk2
 				tz_assert(debug_supported_features.contains(feature), "LogicalDevice attempted to use a feature, but the corresponding PhysicalDevice does not support it. Submit a bug report.");
 			});		
 		#endif
-		VkPhysicalDeviceFeatures features = detail::from_feature_field(this->enabled_features);
-		create.pEnabledFeatures = &features;
+		detail::PhysicalDeviceFeatureInfo features = detail::from_feature_field(this->enabled_features);
+		features.features.pNext = &features.descriptor_indexing_features;
+		create.pEnabledFeatures = nullptr;
+		create.pNext = &features.features;
 		VkResult res = vkCreateDevice(this->physical_device.native(), &create, nullptr, &this->dev);
 		switch(res)
 		{

@@ -1,5 +1,6 @@
 #include "core/tz.hpp"
 #include "core/types.hpp"
+#include "gl/impl/backend/vk2/features.hpp"
 #include "gl/impl/backend/vk2/hardware/physical_device.hpp"
 #include "gl/impl/backend/vk2/image_format.hpp"
 
@@ -8,11 +9,11 @@ namespace drivers
 	// vk2::PhysicalDevice surrounds its VkPhysicalDevice native handle.
 	// We want to be able to work with a physical device, with or without given features.
 	// There is no guarantee such devices are available on the running machine, so we use a driver to mimic the results such devices would provide. An example of this would be device features such as MDI.
-	constexpr VkPhysicalDeviceFeatures mdi(bool avail)
+	constexpr tz::gl::vk2::detail::PhysicalDeviceFeatureInfo mdi(bool avail)
 	{
-		VkPhysicalDeviceFeatures feat;
-		feat.multiDrawIndirect = avail ? VK_TRUE : VK_FALSE;
-		return feat;
+		tz::gl::vk2::detail::PhysicalDeviceFeatureInfo ret;
+		ret.features.features.multiDrawIndirect = avail ? VK_TRUE : VK_FALSE;
+		return ret;
 	}
 
 	tz::gl::vk2::DeviceExtensionList swapchain(bool avail)

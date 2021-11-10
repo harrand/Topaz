@@ -43,11 +43,11 @@ namespace tz::gl::vk2
 		 * Convert a vkPhysicalDeviceFeatures to a Topaz Vulkan feature.
 		 * Note: If none of the enabled features are Topaz Vulkan features, the resultant field will be empty.
 		 */
-		PhysicalDeviceFeatureField to_feature_field(VkPhysicalDeviceFeatures features);
+		PhysicalDeviceFeatureField to_feature_field(PhysicalDeviceFeatureInfo vulkan_features);
 		/*
 		 * Convert a Topaz Vulkan feature into its vulkan-api-friendly variant.
 		 */
-		VkPhysicalDeviceFeatures from_feature_field(const PhysicalDeviceFeatureField& feature_field);
+		PhysicalDeviceFeatureInfo from_feature_field(const PhysicalDeviceFeatureField& feature_field);
 
 		PhysicalDeviceVendor to_tz_vendor(VkDriverId driver_id);
 	}

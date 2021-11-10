@@ -1,4 +1,5 @@
 #include "gl/impl/backend/vk/tz_vulkan.hpp"
+#include "gl/impl/backend/vk2/features.hpp"
 #include "gl/impl/backend/vk2/image_format.hpp"
 #include "gl/impl/frontend/common/shader.hpp"
 #if TZ_VULKAN
@@ -35,23 +36,42 @@ namespace tz::gl::vk2
 
 	namespace detail
 	{
-		PhysicalDeviceFeatureField to_feature_field(VkPhysicalDeviceFeatures features)
+		PhysicalDeviceFeatureField to_feature_field(PhysicalDeviceFeatureInfo features)
 		{
 			PhysicalDeviceFeatureField ret;
 
-			if(features.multiDrawIndirect)
+			if(features.features.features.multiDrawIndirect)
 			{
 				ret |= PhysicalDeviceFeature::MultiDrawIndirect;
+			}
+			if(features.descriptor_indexing_features.descriptorBindingStorageImageUpdateAfterBind
+			&& features.descriptor_indexing_features.descriptorBindingStorageBufferUpdateAfterBind
+			&& features.descriptor_indexing_features.descriptorBindingSampledImageUpdateAfterBind
+			&& features.descriptor_indexing_features.descriptorBindingUpdateUnusedWhilePending
+			&& features.descriptor_indexing_features.descriptorBindingPartiallyBound
+			&& features.descriptor_indexing_features.descriptorBindingVariableDescriptorCount)
+			{
+				ret |= PhysicalDeviceFeature::BindlessDescriptors;
 			}
 		
 			return ret;
 		}
 
-		VkPhysicalDeviceFeatures from_feature_field(const PhysicalDeviceFeatureField& feature_field)
+		PhysicalDeviceFeatureInfo from_feature_field(const PhysicalDeviceFeatureField& feature_field)
 		{
-			VkPhysicalDeviceFeatures features{};
-			features.multiDrawIndirect = feature_field.contains(PhysicalDeviceFeature::MultiDrawIndirect) ? VK_TRUE : VK_FALSE;
-			return features;
+			PhysicalDeviceFeatureInfo info;
+			info.features.features.multiDrawIndirect = feature_field.contains(PhysicalDeviceFeature::MultiDrawIndirect) ? VK_TRUE : VK_FALSE;
+
+			if(feature_field.contains(PhysicalDeviceFeature::BindlessDescriptors))
+			{
+				info.descriptor_indexing_features.descriptorBindingStorageImageUpdateAfterBind = VK_TRUE;
+				info.descriptor_indexing_features.descriptorBindingStorageBufferUpdateAfterBind = VK_TRUE;
+				info.descriptor_indexing_features.descriptorBindingSampledImageUpdateAfterBind = VK_TRUE;
+				info.descriptor_indexing_features.descriptorBindingUpdateUnusedWhilePending = VK_TRUE;
+				info.descriptor_indexing_features.descriptorBindingPartiallyBound = VK_TRUE;
+				info.descriptor_indexing_features.descriptorBindingVariableDescriptorCount = VK_TRUE;
+			}
+			return info;
 		}
 
 		PhysicalDeviceVendor to_tz_vendor(VkDriverId driver_id)
@@ -85,10 +105,10 @@ namespace tz::gl::vk2
 	PhysicalDeviceFeatureField PhysicalDevice::get_supported_features() const
 	{
 		tz_assert(!this->is_null(), "This was PhysicalDevice::null()");
-		VkPhysicalDeviceFeatures features;
-		vkGetPhysicalDeviceFeatures(this->dev, &features);
+		detail::PhysicalDeviceFeatureInfo feature_info;
+		vkGetPhysicalDeviceFeatures2(this->dev, &feature_info.features);
 
-		return detail::to_feature_field(features);
+		return detail::to_feature_field(feature_info);
 	}
 
 	DeviceExtensionList PhysicalDevice::get_supported_extensions() const
