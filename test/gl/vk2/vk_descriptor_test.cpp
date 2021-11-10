@@ -12,15 +12,26 @@ void basic_descriptor_layout()
 	LogicalDevice ldev{linfo};
 	{
 		DescriptorLayoutBuilder builder{ldev};
+		DescriptorLayoutBuilder build_all{ldev};
 		// Firstly create a builder with no descriptors.	
 		DescriptorLayoutInfo dinfo1 = builder.build();
 		
 		// Now one with a couple of resources.
 		builder.with_descriptor(DescriptorType::Image).with_descriptor(DescriptorType::Sampler);
 		DescriptorLayoutInfo dinfo2 = builder.build();
+		// Finally, one with just fucking everything.
+		build_all
+			.with_descriptor(DescriptorType::Sampler)
+			.with_descriptor(DescriptorType::Image)
+			.with_descriptor(DescriptorType::ImageWithSampler)
+			.with_descriptor(DescriptorType::StorageImage)
+			.with_descriptor(DescriptorType::UniformBuffer)
+			.with_descriptor(DescriptorType::StorageBuffer);
+		DescriptorLayoutInfo dinfo3 = build_all.build();
 		{
 			DescriptorLayout dlayout1{dinfo1};
 			DescriptorLayout dlayout2{dinfo2};
+			DescriptorLayout dlayout3{dinfo3};
 		}
 	}
 }
