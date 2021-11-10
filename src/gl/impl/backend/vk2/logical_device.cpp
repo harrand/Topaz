@@ -249,6 +249,11 @@ namespace tz::gl::vk2
 		return this->enabled_extensions;
 	}
 
+	const PhysicalDeviceFeatureField& LogicalDevice::get_features() const
+	{
+		return this->enabled_features;
+	}
+
 	VkDevice LogicalDevice::native() const
 	{
 		return this->dev;

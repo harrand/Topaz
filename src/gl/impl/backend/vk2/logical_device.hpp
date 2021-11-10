@@ -112,6 +112,10 @@ namespace tz::gl::vk2
 		 * @brief Retrieve a list of all enabled extensions.
 		 */
 		const DeviceExtensionList& get_extensions() const;
+		/**
+		 * @brief Retrieve a list of all enabled features.
+		 */
+		const PhysicalDeviceFeatureField& get_features() const;
 
 		using NativeType = VkDevice;
 		NativeType native() const;
