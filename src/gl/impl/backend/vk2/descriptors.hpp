@@ -55,12 +55,9 @@ namespace tz::gl::vk2
 		/// List of all descriptors in the layout.
 		tz::BasicList<VkDescriptorSetLayoutBinding> bindings;
 		/// If we're in a bindless context (see @ref DescriptorLayoutInfo::context) then this must have a value which specifies the flags for each element in each descriptor binding.
-		std::optional<VkDescriptorSetLayoutBindingFlagsCreateInfo> maybe_bindless_flags;
+		std::optional<DescriptorLayoutBindlessFlagsInfo> maybe_bindless_flags;
 		/// LogicalDevice which will be creating the resultant @ref DescriptorLayout. This must not be null or a null LogicalDevice.
 		const LogicalDevice* logical_device;
-
-		using NativeType = VkDescriptorSetLayoutCreateInfo;
-		NativeType native() const;
 	};
 
 	/**
@@ -84,7 +81,26 @@ namespace tz::gl::vk2
 		DescriptorLayoutInfo build() const;
 	private:
 		const LogicalDevice* logical_device;
+		// Each binding has one descriptor
 		std::vector<DescriptorType> descriptors;
+	};
+
+	class DescriptorLayoutBuilderBindless
+	{
+	public:
+		DescriptorLayoutBuilderBindless(const LogicalDevice& logical_device);
+		DescriptorLayoutBuilderBindless& with_descriptor(DescriptorType desc, std::size_t descriptor_count);
+
+		DescriptorLayoutInfo build() const;
+	private:
+		struct DescriptorLayoutElementInfo
+		{
+			DescriptorType type;
+			std::uint32_t count;
+		};
+
+		const LogicalDevice* logical_device;
+		std::vector<DescriptorLayoutElementInfo> descriptors;
 	};
 
 	/**

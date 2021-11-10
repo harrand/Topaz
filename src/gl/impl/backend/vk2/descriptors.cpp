@@ -15,36 +15,6 @@ namespace tz::gl::vk2
 		};
 	}
 
-	DescriptorLayoutInfo::NativeType DescriptorLayoutInfo::native() const
-	{
-		switch(this->context)
-		{
-			case DescriptorContext::Classic:
-				return
-				{
-					.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
-					.pNext = nullptr,
-					.flags = 0,
-					.bindingCount = static_cast<std::uint32_t>(this->bindings.length()),
-					.pBindings = this->bindings.data()
-				};
-			break;
-			case DescriptorContext::Bindless:
-				tz_assert(this->maybe_bindless_flags.has_value(), "DescriptorLayoutInfo contains DescriptorContext::Bindless, but no bindless flags were specified. Please submit a bug report");
-				return
-				{
-					.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
-					.pNext = &this->maybe_bindless_flags.value(),
-					.bindingCount = static_cast<std::uint32_t>(this->bindings.length()),
-					.pBindings = this->bindings.data()
-				};
-			break;
-			default:
-				tz_error("Unrecognised DescriptorContext");
-			break;
-		}
-	}
-
 	DescriptorLayoutBuilder::DescriptorLayoutBuilder(const LogicalDevice& logical_device):
 	logical_device(&logical_device),
 	descriptors()
@@ -76,16 +46,90 @@ namespace tz::gl::vk2
 		return info;
 	}
 
+	DescriptorLayoutBuilderBindless::DescriptorLayoutBuilderBindless(const LogicalDevice& logical_device):
+	logical_device(&logical_device),
+	descriptors(){}
+
+	DescriptorLayoutBuilderBindless& DescriptorLayoutBuilderBindless::with_descriptor(DescriptorType desc, std::size_t descriptor_count)
+	{
+		this->descriptors.push_back({.type = desc, .count = static_cast<std::uint32_t>(descriptor_count)});
+		return *this;
+	}
+
+	DescriptorLayoutInfo DescriptorLayoutBuilderBindless::build() const
+	{
+		constexpr VkDescriptorBindingFlags vk_bindless_flags_head =
+			VK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT &
+			VK_DESCRIPTOR_BINDING_UPDATE_UNUSED_WHILE_PENDING_BIT &
+			VK_DESCRIPTOR_BINDING_PARTIALLY_BOUND_BIT;
+		constexpr VkDescriptorBindingFlags vk_bindless_flags_tail =
+			VK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT &
+			VK_DESCRIPTOR_BINDING_UPDATE_UNUSED_WHILE_PENDING_BIT &
+			VK_DESCRIPTOR_BINDING_PARTIALLY_BOUND_BIT &
+			VK_DESCRIPTOR_BINDING_VARIABLE_DESCRIPTOR_COUNT_BIT;
+
+		DescriptorLayoutBindlessFlagsInfo bindless_flags;
+		bindless_flags.binding_flags.resize(this->descriptors.size());
+		// binding_flags = {head, head, head, ..., head, head, tail}
+		std::for_each(bindless_flags.binding_flags.begin(), bindless_flags.binding_flags.end(),
+		[](VkDescriptorBindingFlags& flags){flags = vk_bindless_flags_head;});
+		bindless_flags.binding_flags.back() = vk_bindless_flags_tail;
+
+		DescriptorLayoutInfo info;
+		info.context = DescriptorContext::Bindless;
+		info.maybe_bindless_flags = bindless_flags;
+		info.bindings.resize(this->descriptors.size());
+		for(std::size_t i = 0; i < this->descriptors.size(); i++)
+		{
+			const DescriptorLayoutElementInfo& elem = this->descriptors[i];
+
+			VkDescriptorSetLayoutBinding& binding = info.bindings[i];
+			binding.binding = i;
+			binding.descriptorType = static_cast<VkDescriptorType>(elem.type);
+			binding.descriptorCount = elem.count;
+			// TODO: Improve
+			binding.stageFlags = VK_SHADER_STAGE_ALL;
+			// TODO: Improve
+			binding.pImmutableSamplers = nullptr;
+		}
+		info.logical_device = this->logical_device;
+		return info;
+	}
+
 	DescriptorLayout::DescriptorLayout(const DescriptorLayoutInfo& info):
 	descriptor_layout(VK_NULL_HANDLE),
 	logical_device(info.logical_device)
 	{
-		if(info.context == DescriptorContext::Bindless)
+		VkDescriptorSetLayoutCreateInfo create{};
+		VkDescriptorSetLayoutBindingFlagsCreateInfo create_bindless{};
+		switch(info.context)
 		{
-			tz_error("DescriptorContext::Bindless not yet implemented");
+			case DescriptorContext::Classic:
+				create =
+				{
+					.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
+					.pNext = nullptr,
+					.flags = 0,
+					.bindingCount = static_cast<std::uint32_t>(info.bindings.length()),
+					.pBindings = info.bindings.data()
+				};
+			break;
+			case DescriptorContext::Bindless:
+				tz_assert(info.maybe_bindless_flags.has_value(), "DescriptorLayoutInfo contains DescriptorContext::Bindless, but no bindless flags were specified. Please submit a bug report");
+				create_bindless = info.maybe_bindless_flags.value().native();
+				create = 
+				{
+					.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
+					.pNext = &create_bindless,
+					.bindingCount = static_cast<std::uint32_t>(info.bindings.length()),
+					.pBindings = info.bindings.data()
+				};
+			break;
+			default:
+				tz_error("Unrecognised DescriptorContext");
+			break;
 		}
 
-		VkDescriptorSetLayoutCreateInfo create = info.native();
 		VkResult res = vkCreateDescriptorSetLayout(this->logical_device->native(), &create, nullptr, &this->descriptor_layout);
 		switch(res)
 		{
