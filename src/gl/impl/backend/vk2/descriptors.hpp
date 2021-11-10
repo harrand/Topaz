@@ -47,6 +47,10 @@ namespace tz::gl::vk2
 	/**
 	 * @ingroup tz_gl_vk_descriptors
 	 * Specifies creation flags for a descriptor set layout.
+	 *
+	 * Special helper classes exist to populate this structure. See:
+	 * - @ref DescriptorLayoutBuilder to produce classical layouts.
+	 * - @ref DescriptorLayoutBuilderBindless to produce bindless layouts.
 	 */
 	struct DescriptorLayoutInfo
 	{
@@ -62,8 +66,8 @@ namespace tz::gl::vk2
 
 	/**
 	 * @ingroup tz_gl_vk_descriptors
-	 * Intuitive builder interface for creating a @ref DescriptorLayoutInfo.
-	 * @note DescriptorLayoutInfos for @ref DescriptorContext::Bindless are not yet implemented.
+	 * Intuitive builder interface for creating a classical @ref DescriptorLayoutInfo.
+	 * If you wish to produce bindless layouts, see @ref DescriptorLayoutBuilderBindless.
 	 */
 	class DescriptorLayoutBuilder
 	{
@@ -73,6 +77,10 @@ namespace tz::gl::vk2
 		 * @param logical_device Device with which the layout will be created. This must not be null nor a null device.
 		 */
 		DescriptorLayoutBuilder(const LogicalDevice& logical_device);
+		/**
+		 * Add a binding containing a single descriptor of the given type to the set layout.
+		 * @param desc Type of the descriptor.
+		 */
 		DescriptorLayoutBuilder& with_descriptor(DescriptorType desc);
 		/**
 		 * Build the resultant layout information.
@@ -85,12 +93,28 @@ namespace tz::gl::vk2
 		std::vector<DescriptorType> descriptors;
 	};
 
+	/**
+	 * @ingroup tz_gl_vk_descriptors
+	 * A specialised @ref DescriptorLayoutBuilder to produce a layout utilising @ref PhysicalDeviceFeature::BindlessDescriptors.
+	 */
 	class DescriptorLayoutBuilderBindless
 	{
 	public:
+		/**
+		 * Initialise the builder based upon the given LogicalDevice.
+		 * @pre `logical_device` must have @ref PhysicalDeviceFeature::BindlessDescriptors enabled.
+		 */
 		DescriptorLayoutBuilderBindless(const LogicalDevice& logical_device);
+		/**
+		 * Add a binding containing an arbitrary number of descriptors of the given type to the set layout.
+		 * @param desc Type of the descriptor.
+		 * @param descriptor_count Number of descriptors in the binding.
+		 */
 		DescriptorLayoutBuilderBindless& with_descriptor(DescriptorType desc, std::size_t descriptor_count);
-
+		/**
+		 * Build the resultant layout information.
+		 * @return Structure which can be used to construct a @ref DescriptorLayout.
+		 */
 		DescriptorLayoutInfo build() const;
 	private:
 		struct DescriptorLayoutElementInfo
