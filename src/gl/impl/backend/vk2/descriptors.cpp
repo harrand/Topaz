@@ -59,13 +59,11 @@ namespace tz::gl::vk2
 	DescriptorLayoutInfo DescriptorLayoutBuilderBindless::build() const
 	{
 		constexpr VkDescriptorBindingFlags vk_bindless_flags_head =
-			VK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT &
-			VK_DESCRIPTOR_BINDING_UPDATE_UNUSED_WHILE_PENDING_BIT &
+			VK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT |
+			VK_DESCRIPTOR_BINDING_UPDATE_UNUSED_WHILE_PENDING_BIT |
 			VK_DESCRIPTOR_BINDING_PARTIALLY_BOUND_BIT;
 		constexpr VkDescriptorBindingFlags vk_bindless_flags_tail =
-			VK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT &
-			VK_DESCRIPTOR_BINDING_UPDATE_UNUSED_WHILE_PENDING_BIT &
-			VK_DESCRIPTOR_BINDING_PARTIALLY_BOUND_BIT &
+			vk_bindless_flags_head |
 			VK_DESCRIPTOR_BINDING_VARIABLE_DESCRIPTOR_COUNT_BIT;
 
 		DescriptorLayoutBindlessFlagsInfo bindless_flags;
@@ -121,6 +119,7 @@ namespace tz::gl::vk2
 				{
 					.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
 					.pNext = &create_bindless,
+					.flags = VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT,
 					.bindingCount = static_cast<std::uint32_t>(info.bindings.length()),
 					.pBindings = info.bindings.data()
 				};
