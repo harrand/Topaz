@@ -1,7 +1,7 @@
-#include "gl/impl/backend/vk2/extensions.hpp"
 #if TZ_VULKAN
-#include "core/tz.hpp"
 #include "gl/impl/backend/vk2/tz_vulkan.hpp"
+#include "core/tz.hpp"
+#include "gl/impl/backend/vk2/extensions.hpp"
 #include "GLFW/glfw3.h"
 #include <algorithm>
 #include <utility>

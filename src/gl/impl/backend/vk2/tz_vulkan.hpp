@@ -1,5 +1,5 @@
-#include "core/window.hpp"
 #if TZ_VULKAN
+#include "core/window.hpp"
 #include "core/version.hpp"
 #include "core/game_info.hpp"
 #include "core/tz.hpp"
