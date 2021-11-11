@@ -178,6 +178,88 @@ namespace tz::gl::vk2
 	{
 		return this->descriptor_layout;
 	}
+
+	DescriptorPoolInfo create_pool_for_layout(const DescriptorLayoutInfo& layout_info, std::size_t number_of_sets)
+	{
+		DescriptorPoolInfo info;
+		info.context = layout_info.context;
+		info.logical_device = layout_info.logical_device;
+		info.maximum_descriptor_set_count = number_of_sets;
+
+		info.pool_sizes.resize(layout_info.bindings.length());
+		std::transform(layout_info.bindings.begin(), layout_info.bindings.end(), info.pool_sizes.begin(),
+		[number_of_sets](const VkDescriptorSetLayoutBinding& binding)->DescriptorPoolInfo::PoolSize
+		{
+			return
+			{
+				.type = binding.descriptorType,
+				.descriptorCount = static_cast<std::uint32_t>(binding.descriptorCount * number_of_sets)
+			};
+		});
+		return info;
+	}
+
+	DescriptorPool::DescriptorPool(const DescriptorPoolInfo& info):
+	pool(VK_NULL_HANDLE),
+	logical_device(info.logical_device)
+	{
+		VkDescriptorPoolCreateInfo create{};
+		create.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+		create.pNext = nullptr;
+		create.flags = 0;
+		create.maxSets = static_cast<std::uint32_t>(info.maximum_descriptor_set_count);
+		create.poolSizeCount = static_cast<std::uint32_t>(info.pool_sizes.length());
+		create.pPoolSizes = info.pool_sizes.data();
+
+		if(info.context == DescriptorContext::Bindless)
+		{
+			create.flags = VK_DESCRIPTOR_POOL_CREATE_UPDATE_AFTER_BIND_BIT;
+		}
+
+		VkResult res = vkCreateDescriptorPool(this->logical_device->native(), &create, nullptr, &this->pool);
+		switch(res)
+		{
+			case VK_SUCCESS:
+
+			break;
+			case VK_ERROR_OUT_OF_HOST_MEMORY:
+				tz_error("Failed to create DescriptorPool because we ran out of host memory (RAM). Please ensure that your system meets the minimum requirements.");
+			break;
+			case VK_ERROR_OUT_OF_DEVICE_MEMORY:
+				tz_error("Failed to create DescriptorPool because we ran out of device memory (VRAM). Please ensure that your system meets the minimum requirements.");
+			break;
+			case VK_ERROR_FRAGMENTATION:
+				tz_error("Failed to create DescriptorPool due to fragmentation. There may be a code path to avoid this issue from being lethal, but it does not exist yet. Please submit a bug report.");
+			break;
+			default:
+				tz_error("Failed to create DescriptorPool but cannot determine why. Please submit a bug report.");
+			break;
+		}
+	}
+
+	DescriptorPool::DescriptorPool(DescriptorPool&& move):
+	pool(VK_NULL_HANDLE),
+	logical_device(nullptr)
+	{
+		*this = std::move(move);
+	}
+
+	DescriptorPool::~DescriptorPool()
+	{
+		if(this->pool != VK_NULL_HANDLE)
+		{
+			tz_assert(this->logical_device != nullptr && !this->logical_device->is_null(), "Failed to destroy DescriptorPool because LogicalDevice was null or a null device");	
+			vkDestroyDescriptorPool(this->logical_device->native(), this->pool, nullptr);
+			this->pool = VK_NULL_HANDLE;
+		}
+	}
+
+	DescriptorPool& DescriptorPool::operator=(DescriptorPool&& rhs)
+	{
+		std::swap(this->pool, rhs.pool);
+		std::swap(this->logical_device, rhs.logical_device);
+		return *this;
+	}
 }
 
 #endif // TZ_VULKAN

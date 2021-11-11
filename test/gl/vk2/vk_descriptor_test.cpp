@@ -99,6 +99,49 @@ void basic_bindless_descriptor_layout()
 	}
 }
 
+void classic_pool_creation()
+{
+	using namespace tz::gl::vk2;
+	PhysicalDevice pdev = get_all_devices().front();
+	LogicalDeviceInfo linfo;
+	linfo.physical_device = pdev;
+	linfo.surface = &get_window_surface();
+
+	LogicalDevice ldev{linfo};
+	{
+		DescriptorLayoutBuilder builder{ldev};
+		builder.with_descriptor(DescriptorType::UniformBuffer);
+		DescriptorLayoutInfo dinfo = builder.build();
+
+		DescriptorPoolInfo pinfo = tz::gl::vk2::create_pool_for_layout(dinfo, 1);
+		DescriptorPool pool{pinfo};
+	}
+}
+
+void bindless_pool_creation()
+{
+	using namespace tz::gl::vk2;
+	PhysicalDevice pdev = get_all_devices().front();
+	if(!pdev.get_supported_features().contains(DeviceFeature::BindlessDescriptors))
+	{
+		return;
+	}
+	LogicalDeviceInfo linfo;
+	linfo.physical_device = pdev;
+	linfo.surface = &get_window_surface();
+	linfo.features = {DeviceFeature::BindlessDescriptors};
+
+	LogicalDevice ldev{linfo};
+	{
+		DescriptorLayoutBuilderBindless builder{ldev};
+		builder.with_descriptor(DescriptorType::UniformBuffer, 10);
+		DescriptorLayoutInfo dinfo = builder.build();
+
+		DescriptorPoolInfo pinfo = tz::gl::vk2::create_pool_for_layout(dinfo, 1);
+		DescriptorPool pool{pinfo};
+	}
+}
+
 int main()
 {
 	tz::GameInfo game{"vk_descriptor_test", tz::Version{1, 0, 0}, tz::info()};
@@ -107,6 +150,8 @@ int main()
 	{
 		basic_classic_descriptor_layout();
 		basic_bindless_descriptor_layout();
+		classic_pool_creation();
+		bindless_pool_creation();
 	}
 	tz::gl::vk2::terminate();
 	tz::terminate();

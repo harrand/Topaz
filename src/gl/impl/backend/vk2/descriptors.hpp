@@ -148,6 +148,33 @@ namespace tz::gl::vk2
 		VkDescriptorSetLayout descriptor_layout;
 		const LogicalDevice* logical_device;
 	};
+
+	struct DescriptorPoolInfo
+	{
+		using PoolSize = VkDescriptorPoolSize;
+
+		const LogicalDevice* logical_device;
+		DescriptorContext context;
+		std::size_t maximum_descriptor_set_count;
+		tz::BasicList<PoolSize> pool_sizes;
+	};
+
+	DescriptorPoolInfo create_pool_for_layout(const DescriptorLayoutInfo& layout_info, std::size_t number_of_sets);
+
+	class DescriptorPool
+	{
+	public:
+		DescriptorPool(const DescriptorPoolInfo& info);
+		DescriptorPool(const DescriptorPool& copy) = delete;
+		DescriptorPool(DescriptorPool&& move);
+		~DescriptorPool();
+
+		DescriptorPool& operator=(const DescriptorPool& rhs) = delete;
+		DescriptorPool& operator=(DescriptorPool&& rhs);
+	private:
+		VkDescriptorPool pool;
+		const LogicalDevice* logical_device;
+	};
 }
 
 #endif // TOPAZ_GL_IMPL_BACKEND_VK2_DESCRIPTORS_HPP
