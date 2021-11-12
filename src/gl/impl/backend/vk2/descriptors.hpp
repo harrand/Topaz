@@ -144,26 +144,68 @@ namespace tz::gl::vk2
 
 		using NativeType = VkDescriptorSetLayout;
 		NativeType native() const;
+
+		static DescriptorLayout null();
+		bool is_null() const;
 	private:
+		DescriptorLayout();
+
 		VkDescriptorSetLayout descriptor_layout;
 		const LogicalDevice* logical_device;
 	};
 
+	class DescriptorSet
+	{
+	public:
+		friend class DescriptorPool;
+		using NativeType = VkDescriptorSet;
+		NativeType native() const;
+	private:
+		/// See @ref DescriptorPool.
+		DescriptorSet(std::size_t set_id, const DescriptorLayout& layout, NativeType native);
+		VkDescriptorSet set;
+		std::uint32_t set_id;
+		const DescriptorLayout* layout;
+	};
+
+	/**
+	 * @ingroup tz_gl_vk_descriptors
+	 * Specifies creation flags for a DescriptorPool.
+	 * A special helper function exists to populate this structure. See:
+	 * - @ref create_pool_for_layout
+	 */
 	struct DescriptorPoolInfo
 	{
 		using PoolSize = VkDescriptorPoolSize;
 
+		/// Owner device. This must not be nullptr or a null device.
 		const LogicalDevice* logical_device;
+		/// Describes the context of the descriptors that will be contained within the pool.
 		DescriptorContext context;
+		/// Maximum number of descriptor sets.
 		std::size_t maximum_descriptor_set_count;
+		/// List of information about limits for each DescriptorType.
 		tz::BasicList<PoolSize> pool_sizes;
 	};
 
+	/**
+	 * @ingroup tz_gl_vk_descriptors
+	 * Specify creation flags for a DescriptorPool large enough to contain `number_of_sets` that all use the same `layout_info`.
+	 */
 	DescriptorPoolInfo create_pool_for_layout(const DescriptorLayoutInfo& layout_info, std::size_t number_of_sets);
 
+	/**
+	 * @ingroup tz_gl_descriptors
+	 * Maintains a pool of descriptors, from which descriptor sets are allocated.
+	 */
 	class DescriptorPool
 	{
 	public:
+		struct AllocateInfo
+		{
+			tz::BasicList<const DescriptorLayout*> set_layouts;
+		};
+
 		DescriptorPool(const DescriptorPoolInfo& info);
 		DescriptorPool(const DescriptorPool& copy) = delete;
 		DescriptorPool(DescriptorPool&& move);
@@ -171,9 +213,17 @@ namespace tz::gl::vk2
 
 		DescriptorPool& operator=(const DescriptorPool& rhs) = delete;
 		DescriptorPool& operator=(DescriptorPool&& rhs);
+
+		tz::BasicList<DescriptorSet> allocate_sets(const AllocateInfo& alloc);
+		void clear();
+
+		using NativeType = VkDescriptorPool;
+		NativeType native() const;
 	private:
 		VkDescriptorPool pool;
+		DescriptorContext context;
 		const LogicalDevice* logical_device;
+		std::vector<DescriptorSet::NativeType> allocated_set_natives;
 	};
 }
 
