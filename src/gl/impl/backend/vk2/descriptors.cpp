@@ -1,6 +1,8 @@
-#include "gl/impl/backend/vk2/hardware/queue.hpp"
 #if TZ_VULKAN
 #include "gl/impl/backend/vk2/descriptors.hpp"
+#include "gl/impl/backend/vk2/hardware/queue.hpp"
+#include <variant>
+#include <deque>
 
 namespace tz::gl::vk2
 {
@@ -97,8 +99,9 @@ namespace tz::gl::vk2
 		return info;
 	}
 
-	DescriptorLayout::DescriptorLayout(const DescriptorLayoutInfo& info):
+	DescriptorLayout::DescriptorLayout(DescriptorLayoutInfo info):
 	descriptor_layout(VK_NULL_HANDLE),
+	info(info),
 	logical_device(info.logical_device)
 	{
 		VkDescriptorSetLayoutCreateInfo create{};
@@ -174,6 +177,11 @@ namespace tz::gl::vk2
 		return *this;
 	}
 
+	const DescriptorLayoutInfo& DescriptorLayout::get_info() const
+	{
+		return this->info;
+	}
+
 	DescriptorLayout::NativeType DescriptorLayout::native() const
 	{
 		return this->descriptor_layout;
@@ -193,6 +201,16 @@ namespace tz::gl::vk2
 	descriptor_layout(VK_NULL_HANDLE),
 	logical_device(nullptr)
 	{}
+
+	DescriptorSet::NativeType DescriptorSet::native() const
+	{
+		return this->set;
+	}
+
+	const DescriptorLayout& DescriptorSet::get_layout() const
+	{
+		return *this->layout;
+	}
 
 	DescriptorSet::DescriptorSet(std::size_t set_id, const DescriptorLayout& layout, NativeType native):
 	set(native),
@@ -350,6 +368,55 @@ namespace tz::gl::vk2
 			ret.add(DescriptorSet{i, *alloc.set_layouts[i], set_natives[i]});
 		}
 		return ret;
+	}
+
+	void DescriptorPool::update_sets(const UpdateInfo& update)
+	{
+		std::vector<VkWriteDescriptorSet> write_natives;
+		write_natives.resize(update.writes.length());
+
+		std::deque<std::vector<VkDescriptorBufferInfo>> total_buffer_infos;
+		std::deque<std::vector<VkDescriptorImageInfo>> total_image_infos;
+		for(std::size_t i = 0; i < update.writes.length(); i++)
+		{
+			if(update.writes[i].write_info.empty())
+			{
+				continue;
+			}
+			tz_assert(update.writes[i].set != nullptr, "DescriptorPool::UpdateInfo contained Write where the target DescriptorSet was nullptr. Please submit a bug report");
+			const DescriptorLayoutInfo& layout_info = update.writes[i].set->get_layout().get_info();
+			tz_assert(layout_info.bindings.length() > update.writes[i].binding_id, "DescriptorPool::UpdateInfo contained Write where the binding id %u is less than the number of bindings in the corresponding set's layout, which is %u", layout_info.bindings.length(), update.writes[i].binding_id);
+			write_natives[i].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+			write_natives[i].pNext = nullptr;
+			write_natives[i].dstSet = update.writes[i].set->native();
+			write_natives[i].dstBinding = update.writes[i].binding_id;
+			write_natives[i].dstArrayElement = 0;
+
+			const std::uint32_t desc_count = update.writes[i].write_info.size();
+
+			write_natives[i].descriptorCount = desc_count;
+			write_natives[i].descriptorType = layout_info.bindings[update.writes[i].binding_id].descriptorType;
+
+			std::vector<VkDescriptorBufferInfo>& buffer_infos = total_buffer_infos.emplace_back();
+			std::vector<VkDescriptorImageInfo>& image_infos = total_image_infos.emplace_back();
+			// Let's find out whether we're writing to a buffer or image.
+			std::visit([&write_natives, &buffer_infos, &image_infos, desc_count, i](const auto& arg)
+			{
+				using T = std::decay_t<decltype(arg)>;
+				if constexpr(std::is_same_v<T, VkDescriptorBufferInfo>)
+				{
+					buffer_infos.resize(desc_count, arg);
+					write_natives[i].pBufferInfo = buffer_infos.data();
+				}
+				else if constexpr(std::is_same_v<T, VkDescriptorImageInfo>)
+				{
+					image_infos.resize(desc_count, arg);
+					write_natives[i].pImageInfo = image_infos.data();
+				}
+			}, update.writes[i].write_info.front());
+		}
+
+		vkUpdateDescriptorSets(this->logical_device->native(), static_cast<std::uint32_t>(write_natives.size()), write_natives.data(), 0, nullptr);
 	}
 
 	void DescriptorPool::clear()

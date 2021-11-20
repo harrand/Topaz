@@ -134,13 +134,15 @@ namespace tz::gl::vk2
 	class DescriptorLayout
 	{
 	public:
-		DescriptorLayout(const DescriptorLayoutInfo& info);
+		DescriptorLayout(DescriptorLayoutInfo info);
 		DescriptorLayout(const DescriptorLayout& copy) = delete;
 		DescriptorLayout(DescriptorLayout&& move);
 		~DescriptorLayout();
 
 		DescriptorLayout& operator=(const DescriptorLayout& rhs) = delete;
 		DescriptorLayout& operator=(DescriptorLayout&& rhs);
+
+		const DescriptorLayoutInfo& get_info() const;
 
 		using NativeType = VkDescriptorSetLayout;
 		NativeType native() const;
@@ -151,6 +153,7 @@ namespace tz::gl::vk2
 		DescriptorLayout();
 
 		VkDescriptorSetLayout descriptor_layout;
+		DescriptorLayoutInfo info;
 		const LogicalDevice* logical_device;
 	};
 
@@ -160,6 +163,8 @@ namespace tz::gl::vk2
 		friend class DescriptorPool;
 		using NativeType = VkDescriptorSet;
 		NativeType native() const;
+
+		const DescriptorLayout& get_layout() const;
 	private:
 		/// See @ref DescriptorPool.
 		DescriptorSet(std::size_t set_id, const DescriptorLayout& layout, NativeType native);
@@ -206,6 +211,19 @@ namespace tz::gl::vk2
 			tz::BasicList<const DescriptorLayout*> set_layouts;
 		};
 
+		struct UpdateInfo
+		{
+			struct Write
+			{
+				using VariantType = std::variant<VkDescriptorBufferInfo, VkDescriptorImageInfo>;
+				const DescriptorSet* set;
+				std::uint32_t binding_id;
+				std::vector<VariantType> write_info;
+			};
+
+			tz::BasicList<Write> writes;
+		};
+
 		DescriptorPool(const DescriptorPoolInfo& info);
 		DescriptorPool(const DescriptorPool& copy) = delete;
 		DescriptorPool(DescriptorPool&& move);
@@ -215,6 +233,7 @@ namespace tz::gl::vk2
 		DescriptorPool& operator=(DescriptorPool&& rhs);
 
 		tz::BasicList<DescriptorSet> allocate_sets(const AllocateInfo& alloc);
+		void update_sets(const UpdateInfo& update);
 		void clear();
 
 		using NativeType = VkDescriptorPool;

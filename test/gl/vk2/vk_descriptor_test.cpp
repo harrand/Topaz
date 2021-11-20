@@ -198,6 +198,8 @@ void classic_pool_usage_full_sets()
 		}
 		tz::BasicList<DescriptorSet> result_sets = pool.allocate_sets(alloc);
 		tz_assert(result_sets.length() == set_count, "DescriptorPool allocation returned unexpected number of DescriptorSets. Expected %d, but got %zu", set_count, result_sets.length());
+
+
 	}
 }
 
@@ -235,10 +237,10 @@ void bindless_pool_usage_one_set()
 
 void bindless_pool_usage_full_sets()
 {
-	// Create pool large enough 6x {49 StorageBuffer, 3 CombinedImageSampler}. Then create 6 DescriptorSet for it.
+	// Create pool large enough 6x {49 StorageBuffer, 8 CombinedImageSampler}. Then create 6 DescriptorSet for it.
 	constexpr int set_count = 6;
 	constexpr int buf_count = 49;
-	constexpr int image_count = 3;
+	constexpr int image_count = 8;
 
 	using namespace tz::gl::vk2;
 	PhysicalDevice pdev = get_all_devices().front();
@@ -270,6 +272,22 @@ void bindless_pool_usage_full_sets()
 		}
 		tz::BasicList<DescriptorSet> result_sets = pool.allocate_sets(alloc);
 		tz_assert(result_sets.length() == set_count, "DescriptorPool allocation returned unexpected number of DescriptorSets. Expected %d, but got %zu", set_count, result_sets.length());
+
+		// Now try to set the variable count of the final descriptor of the set to half the capacity.
+		// TODO: Enable once we can create image resources
+		//DescriptorPool::UpdateInfo update;
+		//for(std::size_t i = 0; i < set_count; i++)
+		//{
+		//	DescriptorPool::UpdateInfo::Write& write = update.writes.emplace();
+		//	write.set = &result_sets[i];
+		//	write.binding_id = 1; // needs to be the last binding in the set, so {UniformBuffer, CombinedImage} is 1
+		//	VkDescriptorImageInfo img_info;
+		//	img_info.imageLayout = VK_IMAGE_LAYOUT_GENERAL;
+		//	img_info.imageView = VK_NULL_HANDLE;
+		//	img_info.sampler = VK_NULL_HANDLE;
+		//	write.write_info.resize(image_count, {img_info});
+		//}
+		//pool.update_sets(update);
 	}
 }
 
