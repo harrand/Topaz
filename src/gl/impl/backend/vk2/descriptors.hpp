@@ -1,22 +1,10 @@
-#ifndef TOPAZ_GL_IMPL_BACKEND_VK2_DESCRIPTORS_HPP
-#define TOPAZ_GL_IMPL_BACKEND_VK2_DESCRIPTORS_HPP
+#ifndef TOPAZ_GL_IMPL_BACKEND_VK2_DESCRIPTORS2_HPP
+#define TOPAZ_GL_IMPL_BACKEND_VK2_DESCRIPTORS2_HPP
+#include "core/containers/basic_list.hpp"
 #include "gl/impl/backend/vk2/logical_device.hpp"
-#include <variant>
 
 namespace tz::gl::vk2
 {
-	/**
-	 * @ingroup tz_gl_vk_descriptors
-	 * Descriptors can be created/used in multiple contexts.
-	 */
-	enum class DescriptorContext
-	{
-		/// - Old-school, bindful descriptor behaviour.
-		Classic,
-		/// - Bindless descriptor behaviour. Requires the @ref PhysicalDevice to support @ref DeviceExtension::Bindless.
-		Bindless
-	};
-
 	/**
 	 * @ingroup tz_gl_vk_descriptors
 	 */
@@ -31,100 +19,44 @@ namespace tz::gl::vk2
 		StorageBuffer = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER
 	};
 
-	/**
-	 * @ingroup tz_gl_vk_descriptors
-	 * Specifies creation flags for descriptor set layout bindings.
-	 */
-	struct DescriptorLayoutBindlessFlagsInfo
+	enum class DescriptorFlag
 	{
-		/// Flags for each descriptor set layout binding (of which there are likely to be many for Bindless Descriptors).
-		tz::BasicList<VkDescriptorBindingFlags> binding_flags;
-
-		using NativeType = VkDescriptorSetLayoutBindingFlagsCreateInfo;
-		NativeType native() const;
+		UpdateAfterBind = VK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT,
+		UpdateUnusedWhilePending = VK_DESCRIPTOR_BINDING_UPDATE_UNUSED_WHILE_PENDING_BIT,
+		PartiallyBound = VK_DESCRIPTOR_BINDING_PARTIALLY_BOUND_BIT,
+		VariableCount = VK_DESCRIPTOR_BINDING_VARIABLE_DESCRIPTOR_COUNT_BIT
 	};
+
+	using DescriptorFlags = tz::EnumField<DescriptorFlag>;
 
 	/**
 	 * @ingroup tz_gl_vk_descriptors
 	 * Specifies creation flags for a descriptor set layout.
 	 *
-	 * Special helper classes exist to populate this structure. See:
-	 * - @ref DescriptorLayoutBuilder to produce classical layouts.
-	 * - @ref DescriptorLayoutBuilderBindless to produce bindless layouts.
+	 * See @ref DescriptorLayoutBuilder to help populate this structure.
 	 */
 	struct DescriptorLayoutInfo
 	{
-		/// Specifies the context in which the Descriptors should be created.
-		DescriptorContext context;
-		/// List of all descriptors in the layout.
-		tz::BasicList<VkDescriptorSetLayoutBinding> bindings;
-		/// If we're in a bindless context (see @ref DescriptorLayoutInfo::context) then this must have a value which specifies the flags for each element in each descriptor binding.
-		std::optional<DescriptorLayoutBindlessFlagsInfo> maybe_bindless_flags;
+		/// Retrieve the number of bindings.
+		std::size_t binding_count() const;
+		/// Query as to whether the LogicalDevice `logical_device` is a valid device. That is, the device is not nullptr nor a null device.
+		bool has_valid_device() const;
+		/// BindingInfos might contain flags that are only optionally supported. This method returns a bool as to whether the LogicalDevice supports all these flags.
+		bool device_supports_flags() const;
+
+		struct BindingInfo
+		{
+			/// What is the type of the descriptor?
+			DescriptorType type;
+			/// How many are at this binding? If more than 1, we are an array.
+			std::uint32_t count;
+			/// Do we have any extra flags?
+			DescriptorFlags flags;
+		};
+		/// List of all descriptor bindings in the layout.
+		tz::BasicList<BindingInfo> bindings;
 		/// LogicalDevice which will be creating the resultant @ref DescriptorLayout. This must not be null or a null LogicalDevice.
 		const LogicalDevice* logical_device;
-	};
-
-	/**
-	 * @ingroup tz_gl_vk_descriptors
-	 * Intuitive builder interface for creating a classical @ref DescriptorLayoutInfo.
-	 * If you wish to produce bindless layouts, see @ref DescriptorLayoutBuilderBindless.
-	 */
-	class DescriptorLayoutBuilder
-	{
-	public:
-		/**
-		 * Initialise the builder with the @ref LogicalDevice that will end up creating the @ref DescriptorLayout.
-		 * @param logical_device Device with which the layout will be created. This must not be null nor a null device.
-		 */
-		DescriptorLayoutBuilder(const LogicalDevice& logical_device);
-		/**
-		 * Add a binding containing a single descriptor of the given type to the set layout.
-		 * @param desc Type of the descriptor.
-		 */
-		DescriptorLayoutBuilder& with_descriptor(DescriptorType desc);
-		/**
-		 * Build the resultant layout information.
-		 * @return Structure which can be used to construct a @ref DescriptorLayout.
-		 */
-		DescriptorLayoutInfo build() const;
-	private:
-		const LogicalDevice* logical_device;
-		// Each binding has one descriptor
-		std::vector<DescriptorType> descriptors;
-	};
-
-	/**
-	 * @ingroup tz_gl_vk_descriptors
-	 * A specialised @ref DescriptorLayoutBuilder to produce a layout utilising @ref DeviceFeature::BindlessDescriptors.
-	 */
-	class DescriptorLayoutBuilderBindless
-	{
-	public:
-		/**
-		 * Initialise the builder based upon the given LogicalDevice.
-		 * @pre `logical_device` must have @ref DeviceFeature::BindlessDescriptors enabled.
-		 */
-		DescriptorLayoutBuilderBindless(const LogicalDevice& logical_device);
-		/**
-		 * Add a binding containing an arbitrary number of descriptors of the given type to the set layout.
-		 * @param desc Type of the descriptor.
-		 * @param descriptor_count Number of descriptors in the binding.
-		 */
-		DescriptorLayoutBuilderBindless& with_descriptor(DescriptorType desc, std::size_t descriptor_count);
-		/**
-		 * Build the resultant layout information.
-		 * @return Structure which can be used to construct a @ref DescriptorLayout.
-		 */
-		DescriptorLayoutInfo build() const;
-	private:
-		struct DescriptorLayoutElementInfo
-		{
-			DescriptorType type;
-			std::uint32_t count;
-		};
-
-		const LogicalDevice* logical_device;
-		std::vector<DescriptorLayoutElementInfo> descriptors;
 	};
 
 	/**
@@ -134,6 +66,9 @@ namespace tz::gl::vk2
 	class DescriptorLayout
 	{
 	public:
+		/**
+		 * Construct a DescriptorLayout.
+		 */
 		DescriptorLayout(DescriptorLayoutInfo info);
 		DescriptorLayout(const DescriptorLayout& copy) = delete;
 		DescriptorLayout(DescriptorLayout&& move);
@@ -142,7 +77,27 @@ namespace tz::gl::vk2
 		DescriptorLayout& operator=(const DescriptorLayout& rhs) = delete;
 		DescriptorLayout& operator=(DescriptorLayout&& rhs);
 
-		const DescriptorLayoutInfo& get_info() const;
+		/**
+		 * Retrieve the number of bindings within the layout.
+		 * @return Number of bindings.
+		 */
+		std::size_t binding_count() const;
+		/**
+		 * Retrieve the total number of descriptors in all of the bindings.
+		 * @return Sum of all descriptor counts within the bindings.
+		 */
+		std::size_t descriptor_count() const;
+		/**
+		 * Retrieve the total number of descriptors of the given type in all of the bindings.
+		 * @param type Descriptor type to retrieve the count of.
+		 * @return Sum of all descriptor counts within the bindings matching `type`.
+		 */
+		std::size_t descriptor_count_of(DescriptorType type) const;
+		/**
+		 * Retrieve a read-only view into the bindings data for the layout.
+		 * @return Span of structures containing information for each respective binding. The i'th element of the span is the binding with the binding-index `i`.
+		 */
+		std::span<const DescriptorLayoutInfo::BindingInfo> get_bindings() const;
 
 		using NativeType = VkDescriptorSetLayout;
 		NativeType native() const;
@@ -151,99 +106,55 @@ namespace tz::gl::vk2
 		bool is_null() const;
 	private:
 		DescriptorLayout();
+		const DescriptorLayoutInfo& get_info() const;
 
 		VkDescriptorSetLayout descriptor_layout;
 		DescriptorLayoutInfo info;
-		const LogicalDevice* logical_device;
-	};
-
-	class DescriptorSet
-	{
-	public:
-		friend class DescriptorPool;
-		using NativeType = VkDescriptorSet;
-		NativeType native() const;
-
-		const DescriptorLayout& get_layout() const;
-	private:
-		/// See @ref DescriptorPool.
-		DescriptorSet(std::size_t set_id, const DescriptorLayout& layout, NativeType native);
-		VkDescriptorSet set;
-		std::uint32_t set_id;
-		const DescriptorLayout* layout;
 	};
 
 	/**
 	 * @ingroup tz_gl_vk_descriptors
-	 * Specifies creation flags for a DescriptorPool.
-	 * A special helper function exists to populate this structure. See:
-	 * - @ref create_pool_for_layout
+	 * Helper class to populate a @ref DescriptorLayoutInfo.
 	 */
-	struct DescriptorPoolInfo
-	{
-		using PoolSize = VkDescriptorPoolSize;
-
-		/// Owner device. This must not be nullptr or a null device.
-		const LogicalDevice* logical_device;
-		/// Describes the context of the descriptors that will be contained within the pool.
-		DescriptorContext context;
-		/// Maximum number of descriptor sets.
-		std::size_t maximum_descriptor_set_count;
-		/// List of information about limits for each DescriptorType.
-		tz::BasicList<PoolSize> pool_sizes;
-	};
-
-	/**
-	 * @ingroup tz_gl_vk_descriptors
-	 * Specify creation flags for a DescriptorPool large enough to contain `number_of_sets` that all use the same `layout_info`.
-	 */
-	DescriptorPoolInfo create_pool_for_layout(const DescriptorLayoutInfo& layout_info, std::size_t number_of_sets);
-
-	/**
-	 * @ingroup tz_gl_descriptors
-	 * Maintains a pool of descriptors, from which descriptor sets are allocated.
-	 */
-	class DescriptorPool
+	class DescriptorLayoutBuilder
 	{
 	public:
-		struct AllocateInfo
-		{
-			tz::BasicList<const DescriptorLayout*> set_layouts;
-		};
-
-		struct UpdateInfo
-		{
-			struct Write
-			{
-				using VariantType = std::variant<VkDescriptorBufferInfo, VkDescriptorImageInfo>;
-				const DescriptorSet* set;
-				std::uint32_t binding_id;
-				std::vector<VariantType> write_info;
-			};
-
-			tz::BasicList<Write> writes;
-		};
-
-		DescriptorPool(const DescriptorPoolInfo& info);
-		DescriptorPool(const DescriptorPool& copy) = delete;
-		DescriptorPool(DescriptorPool&& move);
-		~DescriptorPool();
-
-		DescriptorPool& operator=(const DescriptorPool& rhs) = delete;
-		DescriptorPool& operator=(DescriptorPool&& rhs);
-
-		tz::BasicList<DescriptorSet> allocate_sets(const AllocateInfo& alloc);
-		void update_sets(const UpdateInfo& update);
+		/**
+		 * Create a builder starting with no bindings.
+		 */
+		DescriptorLayoutBuilder() = default;
+		/**
+		 * Create a builder based upon an existing layout.
+		 */
+		DescriptorLayoutBuilder(DescriptorLayoutInfo existing_info);
+		DescriptorLayoutBuilder& with_binding(DescriptorLayoutInfo::BindingInfo binding);
+		/**
+		 * Retrieve the LogicalDevice which will be used to construct the resultant layout.
+		 * @return Pointer to LogicalDevice. This is initially nullptr.
+		 */
+		const LogicalDevice* get_device() const;
+		/**
+		 * Set which LogicalDevice will be used to construct the resultant layout. Note that it is an error not to provide a valid LogicalDevice when creating the @ref DescriptorLayout.
+		 * @param device LogicalDevice which will own the layout.
+		 */
+		void set_device(const LogicalDevice& device);
+		/**
+		 * Retrieve the info structure corresponding to this builder. This can be used to construct the @ref DescriptorLayout.
+		 * @return Layout info structure.
+		 */
+		const DescriptorLayoutInfo& get_info() const;
+		/**
+		 * Create a new @ref DescriptorLayout based upon this builder.
+		 * @return New DescriptorLayout.
+		 */
+		DescriptorLayout build() const;
+		/**
+		 * Undo all information, including bindings and device info back to default settings.
+		 */
 		void clear();
-
-		using NativeType = VkDescriptorPool;
-		NativeType native() const;
 	private:
-		VkDescriptorPool pool;
-		DescriptorContext context;
-		const LogicalDevice* logical_device;
-		std::vector<DescriptorSet::NativeType> allocated_set_natives;
+		DescriptorLayoutInfo info;
 	};
 }
 
-#endif // TOPAZ_GL_IMPL_BACKEND_VK2_DESCRIPTORS_HPP
+#endif // TOPAZ_GL_IMPL_BACKEND_VK2_DESCRIPTORS2_HPP

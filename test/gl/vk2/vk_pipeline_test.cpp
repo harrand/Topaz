@@ -11,42 +11,10 @@ void basic_classic_pipeline_layout()
 
 	LogicalDevice ldev{linfo};
 	{
-		DescriptorLayoutBuilder builder{ldev};
+		DescriptorLayoutBuilder builder;
+		builder.set_device(ldev);
 		// Firstly create a builder with no descriptors.	
-		DescriptorLayoutInfo dinfo = builder.build();
-		{
-			std::vector<DescriptorLayout> dlayouts;
-			dlayouts.emplace_back(dinfo);
-
-			PipelineLayoutInfo pinfo;
-			pinfo.descriptor_layouts = {dlayouts};
-			pinfo.logical_device = &ldev;
-
-			PipelineLayout playout{pinfo};
-		}
-	}
-}
-
-void basic_bindless_pipeline_layout()
-{
-	using namespace tz::gl::vk2;
-
-	PhysicalDevice pdev = get_all_devices().front();
-	if(pdev.get_supported_features().contains(DeviceFeature::BindlessDescriptors))
-	{
-		return;
-	}
-
-	LogicalDeviceInfo linfo;
-	linfo.physical_device = pdev;
-	linfo.surface = nullptr;
-	linfo.features = {DeviceFeature::BindlessDescriptors};
-
-	LogicalDevice ldev{linfo};
-	{
-		DescriptorLayoutBuilderBindless builder{ldev};
-		// Firstly create a builder with no descriptors.	
-		DescriptorLayoutInfo dinfo = builder.build();
+		DescriptorLayoutInfo dinfo = builder.get_info();
 		{
 			std::vector<DescriptorLayout> dlayouts;
 			dlayouts.emplace_back(dinfo);
@@ -67,7 +35,6 @@ int main()
 	tz::gl::vk2::initialise(game, tz::ApplicationType::HiddenWindowApplication);
 	{
 		basic_classic_pipeline_layout();
-		basic_bindless_pipeline_layout();
 	}
 	tz::gl::vk2::terminate();
 	tz::terminate();

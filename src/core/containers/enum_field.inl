@@ -100,7 +100,10 @@ namespace tz
 	EnumField<E>::operator E() const
 	{
 		using UnderlyingType = std::underlying_type_t<E>;
-		tz_assert(!this->elements.empty(), "No values in EnumField");
+		if(this->elements.empty())
+		{
+			return E{};
+		}
 		auto e = static_cast<UnderlyingType>(this->elements.front());
 		for(E ele : this->elements)
 		{

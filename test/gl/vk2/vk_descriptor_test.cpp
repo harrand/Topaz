@@ -1,7 +1,6 @@
-#include "core/tz.hpp"
 #include "gl/impl/backend/vk2/descriptors.hpp"
 
-void basic_classic_descriptor_layout()
+void basic_descriptor_layouts()
 {
 	using namespace tz::gl::vk2;
 	PhysicalDevice pdev = get_all_devices().front();
@@ -11,121 +10,57 @@ void basic_classic_descriptor_layout()
 
 	LogicalDevice ldev{linfo};
 	{
-		DescriptorLayoutBuilder builder{ldev};
-		DescriptorLayoutBuilder build_all{ldev};
-		// Firstly create a builder with no descriptors.	
-		DescriptorLayoutInfo dinfo1 = builder.build();
+		constexpr std::uint32_t low_count = 1;
+		constexpr std::uint32_t medium_count = 8;
+		constexpr std::uint32_t high_count = 128;
+		constexpr std::uint32_t huge_count = 512 * 512;
+		DescriptorLayoutBuilder empty, some, lots;
+		empty.set_device(ldev); some.set_device(ldev); lots.set_device(ldev);
 		
-		// Now one with a couple of resources.
-		builder.with_descriptor(DescriptorType::Image).with_descriptor(DescriptorType::Sampler);
-		DescriptorLayoutInfo dinfo2 = builder.build();
-		// Then, one with just fucking everything.
-		build_all
-			.with_descriptor(DescriptorType::Sampler)
-			.with_descriptor(DescriptorType::Image)
-			.with_descriptor(DescriptorType::ImageWithSampler)
-			.with_descriptor(DescriptorType::StorageImage)
-			.with_descriptor(DescriptorType::UniformBuffer)
-			.with_descriptor(DescriptorType::StorageBuffer);
-		DescriptorLayoutInfo dinfo3 = build_all.build();
+		some.with_binding({.type = DescriptorType::StorageBuffer, .count = low_count})
+		    .with_binding({.type = DescriptorType::ImageWithSampler, .count = high_count});
 
-		// Do some testing on the dinfos
-		tz_assert(dinfo1.context == DescriptorContext::Classic, "DescriptorLayoutInfo has wrong context type");
-		tz_assert(dinfo2.context == DescriptorContext::Classic, "DescriptorLayoutInfo has wrong context type");
-		tz_assert(dinfo3.context == DescriptorContext::Classic, "DescriptorLayoutInfo has wrong context type");
-		{
-			DescriptorLayout dlayout1{dinfo1};
-			DescriptorLayout dlayout2{dinfo2};
-			DescriptorLayout dlayout3{dinfo3};
-		}
-	}
-}
+		lots.with_binding({.type = DescriptorType::StorageBuffer, .count = medium_count})
+		    .with_binding({.type = DescriptorType::StorageImage, .count = medium_count})
+		    .with_binding({.type = DescriptorType::ImageWithSampler, .count = huge_count})
+		    .with_binding({.type = DescriptorType::StorageImage, .count = medium_count});
 
-void basic_bindless_descriptor_layout()
-{
-	using namespace tz::gl::vk2;
-	PhysicalDevice pdev = get_all_devices().front();
-	if(!pdev.get_supported_features().contains(DeviceFeature::BindlessDescriptors))
-	{
-		// Can't test bindless if the PhysicalDevice doesn't support it
-		return;
-	}
-	LogicalDeviceInfo linfo;
-	linfo.physical_device = pdev;
-	linfo.surface = &get_window_surface();
-	linfo.features = {DeviceFeature::BindlessDescriptors};
+		DescriptorLayout empty_layout = empty.build();
+		DescriptorLayout some_layout = some.build();
+		DescriptorLayout lots_layout = lots.build();
 
-	LogicalDevice ldev{linfo};
-	{
-		DescriptorLayoutBuilder builder{ldev};
-		DescriptorLayoutBuilder build_all{ldev};
-		DescriptorLayoutBuilderBindless build_all_bindless{ldev};
-		// Firstly create a builder with no descriptors.	
-		DescriptorLayoutInfo dinfo1 = builder.build();
+		// Ensure 'empty' makes sense.
+		// - Nothing in the layout
+		tz_assert(empty_layout.descriptor_count() == 0, "Empty DescriptorLayout had %zu descriptors, expected %d", empty_layout.descriptor_count(), 0);
+		tz_assert(empty_layout.binding_count() == 0, "Empty DescriptorLayout had %zu bindings, expected %d", empty_layout.binding_count(), 0);
+
 		
-		// Now one with a couple of resources.
-		builder.with_descriptor(DescriptorType::Image).with_descriptor(DescriptorType::Sampler);
-		DescriptorLayoutInfo dinfo2 = builder.build();
-		// Then, one with just fucking everything.
-		build_all
-			.with_descriptor(DescriptorType::Sampler)
-			.with_descriptor(DescriptorType::Image)
-			.with_descriptor(DescriptorType::ImageWithSampler)
-			.with_descriptor(DescriptorType::StorageImage)
-			.with_descriptor(DescriptorType::UniformBuffer)
-			.with_descriptor(DescriptorType::StorageBuffer);
-		DescriptorLayoutInfo dinfo3 = build_all.build();
-		// Finally, same as before but bindless (with arrays of small but >1 size).
-		build_all_bindless
-			.with_descriptor(DescriptorType::StorageBuffer, 255)
-			.with_descriptor(DescriptorType::Image, 255)
-			.with_descriptor(DescriptorType::StorageImage, 255)
-			.with_descriptor(DescriptorType::Sampler, 255);
-		DescriptorLayoutInfo dinfo4 = build_all_bindless.build();
+		// Ensure 'some' makes sense.
+		// We expect: 2 bindings
+		// - Low number of StorageBuffers
+		// - High number of ImageWithSamplers
+		tz_assert(some_layout.binding_count() == 2, "DescriptorLayout 'some' had %zu bindings, expected %d", some_layout.binding_count(), 2);
+		tz_assert(some_layout.descriptor_count() == low_count + high_count, "DescriptorLayout 'some' had %zu descriptors, expecteed %u", some_layout.descriptor_count(), low_count + high_count);
+		tz_assert(some_layout.descriptor_count_of(DescriptorType::StorageBuffer) == low_count, "DescriptorLayout 'some' had %zu StorageBuffers, expected %u", some_layout.descriptor_count_of(DescriptorType::StorageBuffer), low_count);
+		tz_assert(some_layout.descriptor_count_of(DescriptorType::ImageWithSampler) == high_count, "DescriptorLayout 'some' had %zu StorageBuffers, expected %u", some_layout.descriptor_count_of(DescriptorType::ImageWithSampler), high_count);
 
-
-		// Do some testing on the dinfos
-		// All but dinfo4 should be Context::Classic
-		tz_assert(dinfo1.context == DescriptorContext::Classic, "DescriptorLayoutInfo has wrong context type");
-		tz_assert(dinfo2.context == DescriptorContext::Classic, "DescriptorLayoutInfo has wrong context type");
-		tz_assert(dinfo3.context == DescriptorContext::Classic, "DescriptorLayoutInfo has wrong context type");
-		tz_assert(dinfo4.context == DescriptorContext::Bindless, "DescriptorLayoutInfo has wrong context type");
-		{
-			DescriptorLayout dlayout1{dinfo1};
-			DescriptorLayout dlayout2{dinfo2};
-			DescriptorLayout dlayout3{dinfo3};
-			DescriptorLayout dlayout4{dinfo4};
-		}
+		// Ensure 'lots' makes sense.
+		// We expect: 4 bindings
+		// - Medium number of StorageBuffers
+		// - 2x Medium number of StorageImages
+		// - Huge number of ImageWithSamplers
+		tz_assert(lots_layout.binding_count() == 4, "DescriptorLayout 'lots' had %zu bindings, expected %d", lots_layout.binding_count(), 4);
+		tz_assert(lots_layout.descriptor_count() == medium_count + medium_count + huge_count + medium_count, "DescriptorLayout 'lots' had %zu descriptors, expected %u", lots_layout.descriptor_count(), medium_count + medium_count + huge_count + medium_count);
+		tz_assert(lots_layout.descriptor_count_of(DescriptorType::StorageBuffer) == medium_count, "DescriptorLayout 'lots' had %zu StorageBuffers, expected %u", lots_layout.descriptor_count_of(DescriptorType::StorageBuffer), medium_count);
+		tz_assert(lots_layout.descriptor_count_of(DescriptorType::StorageImage) == medium_count + medium_count, "DescriptorLayout 'lots' had %zu StorageImages, expected %u", lots_layout.descriptor_count_of(DescriptorType::StorageImage), medium_count + medium_count);
+		tz_assert(lots_layout.descriptor_count_of(DescriptorType::ImageWithSampler) == huge_count, "DescriptorLayout 'lots' had %zu ImageWithSamplers, expected %u", lots_layout.descriptor_count_of(DescriptorType::ImageWithSampler), huge_count);
 	}
 }
 
-void classic_pool_creation()
+void descriptor_layouts_descriptor_indexing()
 {
 	using namespace tz::gl::vk2;
 	PhysicalDevice pdev = get_all_devices().front();
-	LogicalDeviceInfo linfo;
-	linfo.physical_device = pdev;
-	linfo.surface = &get_window_surface();
-
-	LogicalDevice ldev{linfo};
-	{
-		DescriptorLayoutBuilder builder{ldev};
-		builder.with_descriptor(DescriptorType::UniformBuffer);
-		DescriptorLayoutInfo dinfo = builder.build();
-
-		DescriptorPoolInfo pinfo = tz::gl::vk2::create_pool_for_layout(dinfo, 1);
-		DescriptorPool pool{pinfo};
-	}
-}
-
-void bindless_pool_creation()
-{
-	using namespace tz::gl::vk2;
-	PhysicalDevice pdev = get_all_devices().front();
-	if(!pdev.get_supported_features().contains(DeviceFeature::BindlessDescriptors))
-	{
-		return;
-	}
 	LogicalDeviceInfo linfo;
 	linfo.physical_device = pdev;
 	linfo.surface = &get_window_surface();
@@ -133,199 +68,16 @@ void bindless_pool_creation()
 
 	LogicalDevice ldev{linfo};
 	{
-		DescriptorLayoutBuilderBindless builder{ldev};
-		builder.with_descriptor(DescriptorType::UniformBuffer, 10);
-		DescriptorLayoutInfo dinfo = builder.build();
-
-		DescriptorPoolInfo pinfo = tz::gl::vk2::create_pool_for_layout(dinfo, 1);
-		DescriptorPool pool{pinfo};
-	}
-}
-
-void classic_pool_usage_one_set()
-{
-	// Create pool large enough for one UniformBuffer. Then create a DescriptorSet for it.
-	using namespace tz::gl::vk2;
-	PhysicalDevice pdev = get_all_devices().front();
-	LogicalDeviceInfo linfo;
-	linfo.physical_device = pdev;
-	linfo.surface = &get_window_surface();
-
-	LogicalDevice ldev{linfo};
-	{
-		DescriptorLayoutBuilder builder{ldev};
-		builder.with_descriptor(DescriptorType::UniformBuffer);
-		DescriptorLayoutInfo dinfo = builder.build();
-
-		DescriptorPoolInfo pinfo = tz::gl::vk2::create_pool_for_layout(dinfo, 1);
-		DescriptorPool pool{pinfo};
-
-		DescriptorLayout dlayout{dinfo};
-
-		DescriptorPool::AllocateInfo alloc;
-		alloc.set_layouts = {&dlayout};
-		tz::BasicList<DescriptorSet> result_sets = pool.allocate_sets(alloc);
-		tz_assert(result_sets.length() == 1, "DescriptorPool allocation returned unexpected number of DescriptorSets. Expected %zu, but got %zu", 1, result_sets.length());
-	}
-}
-
-void classic_pool_usage_full_sets()
-{
-	// Create pool large enough 6x {1 UniformBuffer, 1 CombinedImageSampler}. Then create 6 DescriptorSet for it.
-	constexpr int set_count = 6;
-	using namespace tz::gl::vk2;
-	PhysicalDevice pdev = get_all_devices().front();
-	LogicalDeviceInfo linfo;
-	linfo.physical_device = pdev;
-	linfo.surface = &get_window_surface();
-
-	LogicalDevice ldev{linfo};
-	{
-		DescriptorLayoutBuilder builder{ldev};
-		builder.with_descriptor(DescriptorType::UniformBuffer);
-		builder.with_descriptor(DescriptorType::ImageWithSampler);
-		DescriptorLayoutInfo dinfo = builder.build();
-
-		DescriptorPoolInfo pinfo = tz::gl::vk2::create_pool_for_layout(dinfo, set_count);
-		DescriptorPool pool{pinfo};
-
-		DescriptorLayout dlayout{dinfo};
-
-		DescriptorPool::AllocateInfo alloc;
-		for(std::size_t i = 0; i < set_count; i++)
-		{
-			alloc.set_layouts.add(&dlayout);
-		}
-		tz::BasicList<DescriptorSet> result_sets = pool.allocate_sets(alloc);
-		tz_assert(result_sets.length() == set_count, "DescriptorPool allocation returned unexpected number of DescriptorSets. Expected %d, but got %zu", set_count, result_sets.length());
-
-
-	}
-}
-
-void bindless_pool_usage_one_set()
-{
-	// Create pool large enough for one StorageBuffer. Then create a DescriptorSet for it.
-	using namespace tz::gl::vk2;
-	PhysicalDevice pdev = get_all_devices().front();
-	if(!pdev.get_supported_features().contains(DeviceFeature::BindlessDescriptors))
-	{
-		return;
-	}
-	LogicalDeviceInfo linfo;
-	linfo.physical_device = pdev;
-	linfo.surface = &get_window_surface();
-	linfo.features = {DeviceFeature::BindlessDescriptors};
-
-	LogicalDevice ldev{linfo};
-	{
-		DescriptorLayoutBuilderBindless builder{ldev};
-		builder.with_descriptor(DescriptorType::StorageBuffer, 1);
-		DescriptorLayoutInfo dinfo = builder.build();
-
-		DescriptorPoolInfo pinfo = tz::gl::vk2::create_pool_for_layout(dinfo, 1);
-		DescriptorPool pool{pinfo};
-
-		DescriptorLayout dlayout{dinfo};
-
-		DescriptorPool::AllocateInfo alloc;
-		alloc.set_layouts = {&dlayout};
-		tz::BasicList<DescriptorSet> result_sets = pool.allocate_sets(alloc);
-		tz_assert(result_sets.length() == 1, "DescriptorPool allocation returned unexpected number of DescriptorSets. Expected %zu, but got %zu", 1, result_sets.length());
-	}
-}
-
-void bindless_pool_usage_full_sets()
-{
-	// Create pool large enough 6x {49 StorageBuffer, 8 CombinedImageSampler}. Then create 6 DescriptorSet for it.
-	constexpr int set_count = 6;
-	constexpr int buf_count = 49;
-	constexpr int image_count = 8;
-
-	using namespace tz::gl::vk2;
-	PhysicalDevice pdev = get_all_devices().front();
-	if(!pdev.get_supported_features().contains(DeviceFeature::BindlessDescriptors))
-	{
-		return;
-	}
-	LogicalDeviceInfo linfo;
-	linfo.physical_device = pdev;
-	linfo.surface = &get_window_surface();
-	linfo.features = {DeviceFeature::BindlessDescriptors};
-
-	LogicalDevice ldev{linfo};
-	{
-		DescriptorLayoutBuilderBindless builder{ldev};
-		builder.with_descriptor(DescriptorType::StorageBuffer, buf_count);
-		builder.with_descriptor(DescriptorType::ImageWithSampler, image_count);
-		DescriptorLayoutInfo dinfo = builder.build();
-
-		DescriptorPoolInfo pinfo = tz::gl::vk2::create_pool_for_layout(dinfo, set_count);
-		DescriptorPool pool{pinfo};
-
-		DescriptorLayout dlayout{dinfo};
-
-		DescriptorPool::AllocateInfo alloc;
-		for(std::size_t i = 0; i < set_count; i++)
-		{
-			alloc.set_layouts.add(&dlayout);
-		}
-		tz::BasicList<DescriptorSet> result_sets = pool.allocate_sets(alloc);
-		tz_assert(result_sets.length() == set_count, "DescriptorPool allocation returned unexpected number of DescriptorSets. Expected %d, but got %zu", set_count, result_sets.length());
-
-		// Now try to set the variable count of the final descriptor of the set to half the capacity.
-		// TODO: Enable once we can create image resources
-		//DescriptorPool::UpdateInfo update;
-		//for(std::size_t i = 0; i < set_count; i++)
-		//{
-		//	DescriptorPool::UpdateInfo::Write& write = update.writes.emplace();
-		//	write.set = &result_sets[i];
-		//	write.binding_id = 1; // needs to be the last binding in the set, so {UniformBuffer, CombinedImage} is 1
-		//	VkDescriptorImageInfo img_info;
-		//	img_info.imageLayout = VK_IMAGE_LAYOUT_GENERAL;
-		//	img_info.imageView = VK_NULL_HANDLE;
-		//	img_info.sampler = VK_NULL_HANDLE;
-		//	write.write_info.resize(image_count, {img_info});
-		//}
-		//pool.update_sets(update);
-	}
-}
-
-void semantics()
-{
-	using namespace tz::gl::vk2;	
-	// Ensure constexpr stuff
-	static_assert(!tz::copyable<DescriptorLayout>, "DescriptorLayout is wrongly copyable");
-	static_assert(tz::moveable<DescriptorLayout>, "DescriptorLayout is wrongly not moveable");
-
-	static_assert(!tz::copyable<DescriptorPool>, "DescriptorPool is wrongly copyable");
-	static_assert(tz::moveable<DescriptorPool>, "DescriptorPool is wrongly not moveable");
-
-	PhysicalDevice pdev = get_all_devices().front();
-	if(!pdev.get_supported_features().contains(DeviceFeature::BindlessDescriptors))
-	{
-		return;
-	}
-	LogicalDeviceInfo linfo;
-	linfo.physical_device = pdev;
-	linfo.surface = &get_window_surface();
-	linfo.features = {DeviceFeature::BindlessDescriptors};
-
-	LogicalDevice ldev{linfo};
-	// Semantics for DescriptorLayout
-	{
-		DescriptorLayoutBuilder builder{ldev};
-		builder.with_descriptor(DescriptorType::UniformBuffer);
-		DescriptorLayoutInfo dinfo = builder.build();
-
-		DescriptorLayout d1{dinfo};
-		DescriptorLayout d2 = DescriptorLayout::null();
-		tz_assert(!d1.is_null(), "DescriptorLayout wrongly considered null");
-		tz_assert(d2.is_null(), "DescriptorLayout wrongly considered not-null");
-		d2 = std::move(d1);
-		tz_assert(!d2.is_null(), "DescriptorLayout wrongly considered null after move assign");
-		DescriptorLayout d3{std::move(d2)};
-		tz_assert(!d3.is_null(), "DescriptorLayout wrongly considered null after move construction");
+		// Create a layout but using the DescriptorFlags corresponding to VK_descriptor_indexing_KHR
+		DescriptorLayoutBuilder builder;
+		builder.set_device(ldev);
+		builder.with_binding({.type = DescriptorType::ImageWithSampler,
+				    .count = 512,
+				    .flags = {DescriptorFlag::UpdateAfterBind,
+				    	      DescriptorFlag::UpdateUnusedWhilePending,
+					      DescriptorFlag::PartiallyBound,
+					      DescriptorFlag::VariableCount}});
+		DescriptorLayout layout = builder.build();
 	}
 }
 
@@ -335,15 +87,8 @@ int main()
 	tz::initialise(game, tz::ApplicationType::HiddenWindowApplication);
 	tz::gl::vk2::initialise(game, tz::ApplicationType::HiddenWindowApplication);
 	{
-		basic_classic_descriptor_layout();
-		basic_bindless_descriptor_layout();
-		classic_pool_creation();
-		classic_pool_usage_one_set();
-		classic_pool_usage_full_sets();
-		bindless_pool_creation();
-		bindless_pool_usage_one_set();
-		bindless_pool_usage_full_sets();
-		semantics();
+		basic_descriptor_layouts();
+		descriptor_layouts_descriptor_indexing();
 	}
 	tz::gl::vk2::terminate();
 	tz::terminate();
