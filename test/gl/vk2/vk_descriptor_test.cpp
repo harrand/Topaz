@@ -142,6 +142,77 @@ void descriptor_pools_descriptor_indexing()
 	}
 }
 
+void basic_descriptor_set_allocation()
+{
+	using namespace tz::gl::vk2;
+	PhysicalDevice pdev = get_all_devices().front();
+	LogicalDeviceInfo linfo;
+	linfo.physical_device = pdev;
+	linfo.surface = &get_window_surface();
+
+	LogicalDevice ldev{linfo};
+	{
+		DescriptorLayoutBuilder builder;
+		builder.set_device(ldev);
+		builder.with_binding({.type = DescriptorType::StorageBuffer, .count = 1})
+		       .with_binding({.type = DescriptorType::ImageWithSampler, .count = 3});
+
+		DescriptorLayout layout = builder.build();
+		// Let's create a pool enough for one set of this layout, and another for two.
+		DescriptorPoolInfo pinfo = DescriptorPoolInfo::to_fit_layout(layout, 1);
+
+		DescriptorPool pool{pinfo};
+		DescriptorPool::Allocation alloc
+		{
+			.set_layouts = {&layout}
+		};
+		DescriptorPool::AllocationResult alloc_res = pool.allocate_sets(alloc);
+		tz_assert(alloc_res.success(), "DescriptorPool allocation failed unexpectedly.");
+		tz_assert(alloc_res.sets.length() == 1, "DescriptorPool allocation returned list of sets of unexpected size. Expected %d, got %zu", 1, alloc_res.sets.length());
+		DescriptorSet set = alloc_res.sets.front();
+	}
+}
+
+void descriptor_set_allocation_descriptor_indexing()
+{
+	using namespace tz::gl::vk2;
+	PhysicalDevice pdev = get_all_devices().front();
+	if(!pdev.get_supported_features().contains(DeviceFeature::BindlessDescriptors))
+	{
+		return;
+	}
+	LogicalDeviceInfo linfo;
+	linfo.physical_device = pdev;
+	linfo.surface = &get_window_surface();
+	linfo.features = {DeviceFeature::BindlessDescriptors};
+
+	LogicalDevice ldev{linfo};
+	{
+		DescriptorLayoutBuilder builder;
+		builder.set_device(ldev);
+		builder.with_binding({.type = DescriptorType::ImageWithSampler, .count = 3})
+	 	       .with_binding({.type = DescriptorType::StorageBuffer, .count = 1,
+					.flags = {DescriptorFlag::UpdateAfterBind,
+						  DescriptorFlag::UpdateUnusedWhilePending,
+						  DescriptorFlag::PartiallyBound,
+						  DescriptorFlag::VariableCount}});
+		DescriptorLayout layout = builder.build();
+		// Let's create a pool enough for one set of this layout, and ensure validation layers don't complain about the descriptor-indexing flags.
+		DescriptorPoolInfo pool_info = DescriptorPoolInfo::to_fit_layout(layout, 1);
+
+		DescriptorPool pool{pool_info};
+		// Let's create one set.
+		DescriptorPool::Allocation alloc
+		{
+			.set_layouts = {&layout}
+		};
+		DescriptorPool::AllocationResult alloc_res = pool.allocate_sets(alloc);
+		tz_assert(alloc_res.success(), "DescriptorPool allocation failed unexpectedly.");
+		tz_assert(alloc_res.sets.length() == 1, "DescriptorPool allocation returned list of sets of unexpected size. Expected %d, got %zu", 1, alloc_res.sets.length());
+		DescriptorSet set = alloc_res.sets.front();
+	}
+}
+
 int main()
 {
 	tz::GameInfo game{"vk_descriptor_test", tz::Version{1, 0, 0}, tz::info()};
@@ -152,6 +223,9 @@ int main()
 		descriptor_layouts_descriptor_indexing();
 		basic_descriptor_pools();
 		descriptor_pools_descriptor_indexing();
+
+		basic_descriptor_set_allocation();
+		descriptor_set_allocation_descriptor_indexing();
 	}
 	tz::gl::vk2::terminate();
 	tz::terminate();

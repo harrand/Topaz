@@ -2,6 +2,7 @@
 #define TOPAZ_GL_IMPL_BACKEND_VK2_DESCRIPTORS2_HPP
 #include "core/containers/basic_list.hpp"
 #include "gl/impl/backend/vk2/logical_device.hpp"
+#include "gl/impl/backend/vk2/image_view.hpp"
 #include <unordered_map>
 
 namespace tz::gl::vk2
@@ -27,11 +28,19 @@ namespace tz::gl::vk2
 		VkDescriptorType to_desc_type(DescriptorType type);
 	}
 
+	/**
+	 * @ingroup tz_gl_vk_descriptors
+	 * Information about a specific descriptor (or array of descriptors) via a descriptor layout binding.
+	 */
 	enum class DescriptorFlag
 	{
+		/// - Indicates that the parent set can be updated even after its bound within a command buffer.
 		UpdateAfterBind = VK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT,
+		/// - Indicates that the parent set can be updated even if its bound and being used by a command buffer, so long as the execution of that command buffer isn't actually using this descriptor.
 		UpdateUnusedWhilePending = VK_DESCRIPTOR_BINDING_UPDATE_UNUSED_WHILE_PENDING_BIT,
+		/// - Indicates that the descriptor is partially bound. This means that if it's not used during rendering (even if its set is), it doesn't have to be set properly, or even in a valid state.
 		PartiallyBound = VK_DESCRIPTOR_BINDING_PARTIALLY_BOUND_BIT,
+		/// - Indicates that this descriptor array is of variable size. Note that only the final binding of a descriptor layout can be an array of variable size.
 		VariableCount = VK_DESCRIPTOR_BINDING_VARIABLE_DESCRIPTOR_COUNT_BIT
 	};
 
@@ -207,11 +216,99 @@ namespace tz::gl::vk2
 
 	/**
 	 * @ingroup tz_gl_vk_descriptors
+	 * Represents a set of one or more descriptors.
+	 */
+	class DescriptorSet
+	{
+	public:
+		/**
+		 * Specifies information about writing to a specific element of the descriptor set via binding id.
+		 */
+		struct Write
+		{
+			struct BufferWriteInfo
+			{
+				// TODO: Complete once vk2::Buffer is implemented.
+				int buffer;	
+				std::size_t buffer_offset;
+				std::size_t buffer_write_size;
+			};
+
+			struct ImageWriteInfo
+			{
+				// TODO: Complete once vk2::Sampler is implemented.
+				int sampler;
+				const ImageView& image_view;
+			};
+			using WriteInfo = std::variant<BufferWriteInfo, ImageWriteInfo>;
+
+			/// Specifies which set we are working on. Must not be null.
+			const DescriptorSet* set;
+			/// Specifies the binding-id at which the descriptor/descriptor array will be written to.
+			std::uint32_t binding_id;
+			/// Zero or the element of the descriptor array we would like to start writes to.
+			std::uint32_t array_element;
+			/// List of writes to the descriptor array
+			std::vector<WriteInfo> write_infos;
+		};
+		using WriteList = tz::BasicList<Write>;
+
+		friend class DescriptorPool;
+		using NativeType = VkDescriptorSet;
+		NativeType native() const;
+
+		/**
+		 * Retrieve the @ref DescriptorLayout which this set matches.
+		 * @return Layout of this DescriptorSet.
+		 */
+		const DescriptorLayout& get_layout() const;
+	private:
+		/// See @ref DescriptorPool.
+		DescriptorSet(std::size_t set_id, const DescriptorLayout& layout, NativeType native);
+		VkDescriptorSet set;
+		std::uint32_t set_id;
+		const DescriptorLayout* layout;
+	};
+
+	/**
+	 * @ingroup tz_gl_vk_descriptors
 	 * Represents storage for DescriptorSets.
 	 */
 	class DescriptorPool
 	{
 	public:
+		/// Specifies information about a DescriptorPool allocation.
+		struct Allocation
+		{
+			/// List of layouts for each set. When an allocation is performed, a list of DescriptorSets is returned. The list has size matching `set_layouts.length()` and the i'th element of the list will have layout matching `set_layouts[i]`.
+			tz::BasicList<const DescriptorLayout*> set_layouts;
+		};
+
+		/// Specifies information about the resultant of an invocation to @ref DescriptorPool::allocate_sets
+		struct AllocationResult
+		{
+			/// Returns true if the allocation was successful.
+			bool success() const;
+
+			/// Allocations can succeed, or fail in various ways.
+			enum class AllocationResultType
+			{
+				/// - Allocation succeeded. Valid DescriptorSets available within the returned list.
+				Success,
+				/// - Allocation failed. Fatal error occurred. No way of recovery.
+				FatalError,
+				/// - Allocation failed. Pool technically had enough memory for the allocation, but it was fragmented.
+				FragmentedPool,
+				/// - Allocation failed. Pool did not have enough memory for the allocation.
+				PoolOutOfMemory
+			};
+
+			/// List of allocated sets. If `type` == `AllocationResultType::Success`, this contains a list of valid DescriptorSets which can now be used.
+			tz::BasicList<DescriptorSet> sets;
+			/// Describes how the allocation went. Allocations can fail.
+			AllocationResultType type;
+		};
+
 		DescriptorPool(DescriptorPoolInfo info);
 		DescriptorPool(const DescriptorPool& copy) = delete;
 		DescriptorPool(DescriptorPool&& move);
@@ -224,9 +321,24 @@ namespace tz::gl::vk2
 		 * Retrieve the LogicalDevice which was used to create the pool.
 		 */
 		const LogicalDevice* get_device() const;
+		/**
+		 * Allocate some DescriptorSets. See @ref Allocation for more info.
+		 * @return Structure with resultant information, including newly-allocated DescriptorSets.
+		 */
+		AllocationResult allocate_sets(const Allocation& alloc);
+		/**
+		 * Update some existing DescriptorSets. See @ref DescriptorSet::Write for more.
+		 * @param writes List of DescriptorSet::Write to make changes to existing descriptors or descriptor arrays.
+		 */
+		void update_sets(const DescriptorSet::WriteList& writes);
+		/**
+		 * Purge all DescriptorSets. The pool reclaims all memory from previously allocated DescriptorSets. This also means that all DescriptorSets allocated from this pool are now invalid.
+		 */
+		void clear();
 	private:
 		VkDescriptorPool pool;
 		DescriptorPoolInfo info;
+		std::vector<DescriptorSet::NativeType> allocated_set_natives;
 	};
 }
 

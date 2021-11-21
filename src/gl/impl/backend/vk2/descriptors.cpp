@@ -275,9 +275,31 @@ namespace tz::gl::vk2
 		return this->logical_device != nullptr && !this->logical_device->is_null();
 	}
 
+	DescriptorSet::NativeType DescriptorSet::native() const
+	{
+		return this->set;
+	}
+
+	const DescriptorLayout& DescriptorSet::get_layout() const
+	{
+		return *this->layout;
+	}
+
+	DescriptorSet::DescriptorSet(std::size_t set_id, const DescriptorLayout& layout, NativeType native):
+	set(native),
+	set_id(set_id),
+	layout(&layout)
+	{}
+
+	bool DescriptorPool::AllocationResult::success() const
+	{
+		return this->type == DescriptorPool::AllocationResult::AllocationResultType::Success;
+	}
+
 	DescriptorPool::DescriptorPool(DescriptorPoolInfo info):
 	pool(VK_NULL_HANDLE),
-	info(info)
+	info(info),
+	allocated_set_natives()
 	{
 		tz_assert(this->info.has_valid_device(), "DescriptorPoolInfo did not have valid LogicalDevice. Please submit a bug report.");
 
@@ -332,7 +354,8 @@ namespace tz::gl::vk2
 
 	DescriptorPool::DescriptorPool(DescriptorPool&& move):
 	pool(VK_NULL_HANDLE),
-	info()
+	info(),
+	allocated_set_natives()
 	{
 		*this = std::move(move);
 	}
@@ -341,7 +364,7 @@ namespace tz::gl::vk2
 	{
 		if(this->pool != VK_NULL_HANDLE)
 		{
-			//this->clear();
+			this->clear();
 
 			vkDestroyDescriptorPool(this->get_device()->native(), this->pool, nullptr);
 			this->pool = VK_NULL_HANDLE;
@@ -352,12 +375,133 @@ namespace tz::gl::vk2
 	{
 		std::swap(this->pool, rhs.pool);
 		std::swap(this->info, rhs.info);
+		std::swap(this->allocated_set_natives, rhs.allocated_set_natives);
 		return *this;
 	}
 
 	const LogicalDevice* DescriptorPool::get_device() const
 	{
 		return this->info.logical_device;
+	}
+
+	DescriptorPool::AllocationResult DescriptorPool::allocate_sets(const DescriptorPool::Allocation& alloc)
+	{
+		// One or more of our set layouts might contain a binding that is variable-size.
+		// Initially we will set the variable count to the max (which is stored in the set layout). Otherwise we will set it to zero.
+		std::vector<std::uint32_t> variable_counts(alloc.set_layouts.length());
+		std::transform(alloc.set_layouts.begin(), alloc.set_layouts.end(), variable_counts.begin(),
+		[](const DescriptorLayout* layout) -> std::uint32_t
+		{
+			if(layout == nullptr)
+			{
+				return 0;
+			}
+			// If the layout does have a variable count, the last one must have it.
+			const DescriptorLayoutInfo::BindingInfo& last_binding = layout->get_bindings().back();
+			if(last_binding.flags.contains(DescriptorFlag::VariableCount))
+			{
+				return last_binding.count;
+			}
+			return 0;
+		});
+		// Then we retrieve the natives of the layouts.
+		std::vector<DescriptorLayout::NativeType> layout_natives(alloc.set_layouts.length());
+		std::transform(alloc.set_layouts.begin(), alloc.set_layouts.end(), layout_natives.begin(),
+		[](const DescriptorLayout* layout) -> DescriptorLayout::NativeType
+		{
+			tz_assert(layout != nullptr, "DescriptorPool::Allocate::set_layouts contained nullptr");
+			return layout->native();
+		});
+
+		VkDescriptorSetVariableDescriptorCountAllocateInfo variable_alloc
+		{
+			.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_VARIABLE_DESCRIPTOR_COUNT_ALLOCATE_INFO,
+			.pNext = nullptr,
+			.descriptorSetCount = static_cast<std::uint32_t>(variable_counts.size()),
+			.pDescriptorCounts = variable_counts.data()
+		};
+
+		VkDescriptorSetAllocateInfo create
+		{
+			.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO,
+			.pNext = &variable_alloc,
+			.descriptorPool = this->pool,
+			.descriptorSetCount = static_cast<std::uint32_t>(alloc.set_layouts.length()),
+			.pSetLayouts = layout_natives.data()
+		};
+
+		std::vector<DescriptorSet::NativeType> output_set_natives(alloc.set_layouts.length());
+		VkResult res = vkAllocateDescriptorSets(this->get_device()->native(), &create, output_set_natives.data());
+		DescriptorPool::AllocationResult ret;
+		switch(res)
+		{
+			case VK_SUCCESS:
+				ret.type = AllocationResult::AllocationResultType::Success;
+			break;
+			case VK_ERROR_OUT_OF_HOST_MEMORY:
+				tz_error("Failed to allocate DescriptorSets because we ran out of host memory (RAM). Please ensure that your system meets the minimum requirements.");
+				ret.type = AllocationResult::AllocationResultType::FatalError;
+			break;
+			case VK_ERROR_OUT_OF_DEVICE_MEMORY:
+				tz_error("Failed to allocate DescriptorSets because we ran out of device memory (VRAM). Please ensure that your system meets the minimum requirements.");
+				ret.type = AllocationResult::AllocationResultType::FatalError;
+			break;
+			case VK_ERROR_FRAGMENTED_POOL:
+				ret.type = AllocationResult::AllocationResultType::FragmentedPool;
+			break;
+			case VK_ERROR_OUT_OF_POOL_MEMORY:
+				ret.type = AllocationResult::AllocationResultType::PoolOutOfMemory;
+			break;
+			default:
+				tz_error("Failed to allocate DescriptorSets but cannot determine why. Please submit a bug report.");
+			break;
+		}
+
+		// Now we have all the natives, emplace them all within a list of DescriptorSet and then return it.
+		for(std::size_t i = 0; i < output_set_natives.size(); i++)
+		{
+			ret.sets.add(DescriptorSet{i, *alloc.set_layouts[i], output_set_natives[i]});
+			this->allocated_set_natives.push_back(output_set_natives[i]);
+		}
+		return ret;
+	}
+
+	void DescriptorPool::update_sets(const DescriptorSet::WriteList& writes)
+	{
+		tz_error("Not yet implemented");
+		std::vector<VkWriteDescriptorSet> write_natives(writes.length());
+		std::transform(writes.begin(), writes.end(), write_natives.begin(),
+		[](const DescriptorSet::Write& write) -> VkWriteDescriptorSet
+		{
+			return
+			{
+				.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
+				.pNext = nullptr,
+				.dstSet = write.set->native(),
+				.dstBinding = write.binding_id,
+				.dstArrayElement = write.array_element,
+				.descriptorCount = static_cast<std::uint32_t>(write.write_infos.size()),
+				.descriptorType = detail::to_desc_type(write.set->get_layout().get_bindings()[write.binding_id].type),
+				// TODO: Fill in if we're writing images
+				.pImageInfo = nullptr,
+				// TODO: Fill in if we're writing buffers
+				.pBufferInfo = nullptr,
+				.pTexelBufferView = nullptr
+			};
+		});
+		vkUpdateDescriptorSets(this->get_device()->native(), write_natives.size(), write_natives.data(), 0, nullptr);
+	}
+
+	void DescriptorPool::clear()
+	{
+		vkResetDescriptorPool(this->get_device()->native(), this->pool, 0);
+		// Note: vkFreeDescriptorSets can't be used unless VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT is set (which is currently isn't)
+		//if(this->allocated_set_natives.empty())
+		//{
+		//	return;
+		//}
+		//vkFreeDescriptorSets(this->get_device()->native(), this->pool, this->allocated_set_natives.size(), this->allocated_set_natives.data());
+		//this->allocated_set_natives.clear();
 	}
 }
 
