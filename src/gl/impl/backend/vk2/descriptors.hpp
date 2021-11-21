@@ -2,6 +2,7 @@
 #define TOPAZ_GL_IMPL_BACKEND_VK2_DESCRIPTORS2_HPP
 #include "core/containers/basic_list.hpp"
 #include "gl/impl/backend/vk2/logical_device.hpp"
+#include <unordered_map>
 
 namespace tz::gl::vk2
 {
@@ -10,14 +11,21 @@ namespace tz::gl::vk2
 	 */
 	enum class DescriptorType
 	{
-		Sampler = VK_DESCRIPTOR_TYPE_SAMPLER,
-		ImageWithSampler = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-		Image = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,
-		StorageImage = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
+		Sampler,
+		ImageWithSampler,
+		Image,
+		StorageImage,
+		UniformBuffer,
+		StorageBuffer, 
 
-		UniformBuffer = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
-		StorageBuffer = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER
+		Count
 	};
+
+	namespace detail
+	{
+		constexpr std::array<VkDescriptorType, static_cast<int>(DescriptorType::Count)> vk_desc_types{VK_DESCRIPTOR_TYPE_SAMPLER, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER};
+		VkDescriptorType to_desc_type(DescriptorType type);
+	}
 
 	enum class DescriptorFlag
 	{
@@ -99,6 +107,8 @@ namespace tz::gl::vk2
 		 */
 		std::span<const DescriptorLayoutInfo::BindingInfo> get_bindings() const;
 
+		const LogicalDevice* get_device() const;
+
 		using NativeType = VkDescriptorSetLayout;
 		NativeType native() const;
 
@@ -127,6 +137,9 @@ namespace tz::gl::vk2
 		 * Create a builder based upon an existing layout.
 		 */
 		DescriptorLayoutBuilder(DescriptorLayoutInfo existing_info);
+		/**
+		 * Add a new binding. See @ref DescriptorLayoutInfo::BindingInfo for more information.
+		 */
 		DescriptorLayoutBuilder& with_binding(DescriptorLayoutInfo::BindingInfo binding);
 		/**
 		 * Retrieve the LogicalDevice which will be used to construct the resultant layout.
@@ -154,6 +167,66 @@ namespace tz::gl::vk2
 		void clear();
 	private:
 		DescriptorLayoutInfo info;
+	};
+
+	/**
+	 * @ingroup tz_gl_vk_descriptors
+	 * Specifies creation flags for a descriptor pool.
+	 */
+	struct DescriptorPoolInfo
+	{
+		/**
+		 * Create a PoolInfo large enough such that `quantity` descriptor sets each matching `layout` can be allocated.
+		 * @param descriptor_layout Layout from which the capacities of the pool will be specified.
+		 * @param quantity Number of sets using `layout` which can fit in the pool.
+		 */
+		static DescriptorPoolInfo to_fit_layout(const DescriptorLayout& descriptor_layout, std::size_t quantity);
+		/**
+		 * Query as to whether the provided LogicalDevice is valid. This is the case if the LogicalDevice is not nullptr nor a null device.
+		 */
+		bool has_valid_device() const;
+
+		/**
+		 * Structure specifying limits for a DescriptorPool.
+		 */
+		struct PoolLimits
+		{
+			/// Map of the maximum number of descriptors for each type. If a type does not exist within the map, no such descriptors can be allocated from the pool.
+			std::unordered_map<DescriptorType, std::uint32_t> limits;
+			/// Maximum number of sets that can be allocated from the pool, regardless of layout.
+			std::uint32_t max_sets = 0;
+			/// True if any of the descriptors should be able to be updated after bind. This is true if bindless descriptors are created.
+			bool supports_update_after_bind = false;
+		};
+
+		/// Specifies the limits for the created pool.
+		PoolLimits limits;
+		/// LogicalDevice which will be used to create the pool.
+		const LogicalDevice* logical_device;
+	};
+
+	/**
+	 * @ingroup tz_gl_vk_descriptors
+	 * Represents storage for DescriptorSets.
+	 */
+	class DescriptorPool
+	{
+	public:
+		DescriptorPool(DescriptorPoolInfo info);
+		DescriptorPool(const DescriptorPool& copy) = delete;
+		DescriptorPool(DescriptorPool&& move);
+		~DescriptorPool();
+
+		DescriptorPool& operator=(const DescriptorPool& rhs) = delete;
+		DescriptorPool& operator=(DescriptorPool&& rhs);
+
+		/**
+		 * Retrieve the LogicalDevice which was used to create the pool.
+		 */
+		const LogicalDevice* get_device() const;
+	private:
+		VkDescriptorPool pool;
+		DescriptorPoolInfo info;
 	};
 }
 

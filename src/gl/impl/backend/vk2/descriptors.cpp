@@ -3,6 +3,14 @@
 
 namespace tz::gl::vk2
 {
+	namespace detail
+	{
+		VkDescriptorType to_desc_type(DescriptorType type)
+		{
+			return vk_desc_types[static_cast<int>(type)];
+		}
+	}
+
 	std::size_t DescriptorLayoutInfo::binding_count() const
 	{
 		return this->bindings.length();
@@ -101,7 +109,7 @@ namespace tz::gl::vk2
 			bindings[i] =
 			{
 				.binding = i,
-				.descriptorType = static_cast<VkDescriptorType>(binding.type),
+				.descriptorType = detail::to_desc_type(binding.type),
 				.descriptorCount = binding.count,
 				.stageFlags = VK_SHADER_STAGE_ALL,
 				.pImmutableSamplers = nullptr
@@ -213,6 +221,11 @@ namespace tz::gl::vk2
 		return this->info.bindings;
 	}
 
+	const LogicalDevice* DescriptorLayout::get_device() const
+	{
+		return this->info.logical_device;
+	}
+
 	DescriptorLayout::NativeType DescriptorLayout::native() const
 	{
 		return this->descriptor_layout;
@@ -236,6 +249,115 @@ namespace tz::gl::vk2
 	const DescriptorLayoutInfo& DescriptorLayout::get_info() const
 	{
 		return this->info;
+	}
+
+	DescriptorPoolInfo DescriptorPoolInfo::to_fit_layout(const DescriptorLayout& layout, std::size_t quantity)
+	{
+		DescriptorPoolInfo info;
+		info.logical_device = layout.get_device();
+		info.limits.max_sets = quantity;
+		for(std::size_t i = 0; std::cmp_less(i, static_cast<int>(DescriptorType::Count)); i++)
+		{
+			DescriptorType t = static_cast<DescriptorType>(i);
+			info.limits.limits[t] = layout.descriptor_count_of(t);
+		}
+
+		std::span<const DescriptorLayoutInfo::BindingInfo> binding_span = layout.get_bindings();
+		info.limits.supports_update_after_bind = std::any_of(binding_span.begin(), binding_span.end(), [](const DescriptorLayoutInfo::BindingInfo& binding)->bool
+		{
+			return binding.flags.contains(DescriptorFlag::UpdateAfterBind);
+		});
+		return info;
+	}
+	
+	bool DescriptorPoolInfo::has_valid_device() const
+	{
+		return this->logical_device != nullptr && !this->logical_device->is_null();
+	}
+
+	DescriptorPool::DescriptorPool(DescriptorPoolInfo info):
+	pool(VK_NULL_HANDLE),
+	info(info)
+	{
+		tz_assert(this->info.has_valid_device(), "DescriptorPoolInfo did not have valid LogicalDevice. Please submit a bug report.");
+
+		VkDescriptorPoolCreateFlags flags = 0;
+		if(this->info.limits.supports_update_after_bind)
+		{
+			flags |= VK_DESCRIPTOR_POOL_CREATE_UPDATE_AFTER_BIND_BIT;
+		}
+		std::vector<VkDescriptorPoolSize> pool_sizes;
+		for(const auto& [descriptor_type, count] : this->info.limits.limits)
+		{
+			if(count > 0)
+			{
+				pool_sizes.push_back(VkDescriptorPoolSize
+				{
+					.type = detail::to_desc_type(descriptor_type),
+					.descriptorCount = count
+				});
+			}
+		}
+
+		VkDescriptorPoolCreateInfo create
+		{
+			.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO,
+			.pNext = nullptr,
+			.flags = flags,
+			.maxSets = this->info.limits.max_sets,
+			.poolSizeCount = static_cast<std::uint32_t>(pool_sizes.size()),
+			.pPoolSizes = pool_sizes.data()
+		};
+
+		VkResult res = vkCreateDescriptorPool(this->get_device()->native(), &create, nullptr, &this->pool);
+		switch(res)
+		{
+			case VK_SUCCESS:
+
+			break;
+			case VK_ERROR_OUT_OF_HOST_MEMORY:
+				tz_error("Failed to create DescriptorPool because we ran out of host memory (RAM). Please ensure that your system meets the minimum requirements.");
+			break;
+			case VK_ERROR_OUT_OF_DEVICE_MEMORY:
+				tz_error("Failed to create DescriptorPool because we ran out of device memory (VRAM). Please ensure that your system meets the minimum requirements.");
+			break;
+			case VK_ERROR_FRAGMENTATION:
+				tz_error("Failed to create DescriptorPool due to fragmentation. There may be a code path to avoid this issue from being lethal, but it does not exist yet. Please submit a bug report.");
+			break;
+			default:
+				tz_error("Failed to create DescriptorPool but cannot determine why. Please submit a bug report.");
+			break;
+		}
+	}
+
+	DescriptorPool::DescriptorPool(DescriptorPool&& move):
+	pool(VK_NULL_HANDLE),
+	info()
+	{
+		*this = std::move(move);
+	}
+
+	DescriptorPool::~DescriptorPool()
+	{
+		if(this->pool != VK_NULL_HANDLE)
+		{
+			//this->clear();
+
+			vkDestroyDescriptorPool(this->get_device()->native(), this->pool, nullptr);
+			this->pool = VK_NULL_HANDLE;
+		}
+	}
+
+	DescriptorPool& DescriptorPool::operator=(DescriptorPool&& rhs)
+	{
+		std::swap(this->pool, rhs.pool);
+		std::swap(this->info, rhs.info);
+		return *this;
+	}
+
+	const LogicalDevice* DescriptorPool::get_device() const
+	{
+		return this->info.logical_device;
 	}
 }
 

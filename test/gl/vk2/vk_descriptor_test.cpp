@@ -61,6 +61,11 @@ void descriptor_layouts_descriptor_indexing()
 {
 	using namespace tz::gl::vk2;
 	PhysicalDevice pdev = get_all_devices().front();
+	if(!pdev.get_supported_features().contains(DeviceFeature::BindlessDescriptors))
+	{
+		// If the PhysicalDevice doesn't support bindless, we can't possibly test it.
+		return;
+	}
 	LogicalDeviceInfo linfo;
 	linfo.physical_device = pdev;
 	linfo.surface = &get_window_surface();
@@ -81,6 +86,62 @@ void descriptor_layouts_descriptor_indexing()
 	}
 }
 
+void basic_descriptor_pools()
+{
+	using namespace tz::gl::vk2;
+	PhysicalDevice pdev = get_all_devices().front();
+	LogicalDeviceInfo linfo;
+	linfo.physical_device = pdev;
+	linfo.surface = &get_window_surface();
+
+	LogicalDevice ldev{linfo};
+	{
+		DescriptorLayoutBuilder builder;
+		builder.set_device(ldev);
+		builder.with_binding({.type = DescriptorType::StorageBuffer, .count = 1})
+		       .with_binding({.type = DescriptorType::ImageWithSampler, .count = 3});
+
+		DescriptorLayout layout = builder.build();
+		// Let's create a pool enough for one set of this layout, and another for two.
+		DescriptorPoolInfo pool_for_one = DescriptorPoolInfo::to_fit_layout(layout, 1);
+		DescriptorPoolInfo pool_for_two = DescriptorPoolInfo::to_fit_layout(layout, 2);
+
+		DescriptorPool p1{pool_for_one};
+		DescriptorPool p2{pool_for_two};
+	}
+}
+
+void descriptor_pools_descriptor_indexing()
+{
+	using namespace tz::gl::vk2;
+	PhysicalDevice pdev = get_all_devices().front();
+	if(!pdev.get_supported_features().contains(DeviceFeature::BindlessDescriptors))
+	{
+		return;
+	}
+	LogicalDeviceInfo linfo;
+	linfo.physical_device = pdev;
+	linfo.surface = &get_window_surface();
+	linfo.features = {DeviceFeature::BindlessDescriptors};
+
+	LogicalDevice ldev{linfo};
+	{
+		DescriptorLayoutBuilder builder;
+		builder.set_device(ldev);
+		builder.with_binding({.type = DescriptorType::ImageWithSampler, .count = 3})
+	 	       .with_binding({.type = DescriptorType::StorageBuffer, .count = 1,
+					.flags = {DescriptorFlag::UpdateAfterBind,
+						  DescriptorFlag::UpdateUnusedWhilePending,
+						  DescriptorFlag::PartiallyBound,
+						  DescriptorFlag::VariableCount}});
+		DescriptorLayout layout = builder.build();
+		// Let's create a pool enough for one set of this layout, and ensure validation layers don't complain about the descriptor-indexing flags.
+		DescriptorPoolInfo pool_info = DescriptorPoolInfo::to_fit_layout(layout, 1);
+
+		DescriptorPool pool{pool_info};
+	}
+}
+
 int main()
 {
 	tz::GameInfo game{"vk_descriptor_test", tz::Version{1, 0, 0}, tz::info()};
@@ -89,6 +150,8 @@ int main()
 	{
 		basic_descriptor_layouts();
 		descriptor_layouts_descriptor_indexing();
+		basic_descriptor_pools();
+		descriptor_pools_descriptor_indexing();
 	}
 	tz::gl::vk2::terminate();
 	tz::terminate();
