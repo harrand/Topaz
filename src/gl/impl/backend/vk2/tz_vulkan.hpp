@@ -58,6 +58,12 @@ namespace tz::gl::vk2
 		 * Documentation for the fixed-pipeline settings, such as rasteriser state and input assembly.
 		 */
 
+		/**
+		 * @ingroup tz_gl_vk_graphics_pipeline
+		 * @defgroup tz_gl_vk_graphics_pipeline_render_pass Render Passes
+		 * Documentation for render passes and how they interact with the rendering pipeline.
+		 */
+
 	/**
 	 * @ingroup tz_gl_vk
 	 * @{

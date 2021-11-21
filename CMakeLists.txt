@@ -252,6 +252,8 @@ add_library(topaz
 	src/gl/impl/backend/vk2/logical_device.hpp
 	src/gl/impl/backend/vk2/pipeline_layout.cpp
 	src/gl/impl/backend/vk2/pipeline_layout.hpp
+	src/gl/impl/backend/vk2/render_pass.cpp
+	src/gl/impl/backend/vk2/render_pass.hpp
 	src/gl/impl/backend/vk2/shader.cpp
 	src/gl/impl/backend/vk2/shader.hpp
 	src/gl/impl/backend/vk2/swapchain.cpp
