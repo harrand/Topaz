@@ -232,6 +232,11 @@ namespace tz::gl::vk2
 		return this->info.logical_device;
 	}
 
+	RenderPass::NativeType RenderPass::native() const
+	{
+		return this->pass;
+	}
+
 	SubpassBuilder& SubpassBuilder::with_input_attachment(RenderPassInfo::InputAttachmentReference input_attachment)
 	{
 		this->subpass.input_attachments.add(input_attachment);

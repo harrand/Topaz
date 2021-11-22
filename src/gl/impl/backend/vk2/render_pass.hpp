@@ -178,6 +178,9 @@ namespace tz::gl::vk2
 		RenderPass& operator=(RenderPass&& rhs);
 
 		const LogicalDevice* get_device() const;
+
+		using NativeType = VkRenderPass;
+		NativeType native() const;
 	private:
 		VkRenderPass pass;
 		RenderPassInfo info;
