@@ -241,6 +241,8 @@ add_library(topaz
 	src/gl/impl/backend/vk2/features.hpp
 	src/gl/impl/backend/vk2/fixed_function.cpp
 	src/gl/impl/backend/vk2/fixed_function.hpp
+	src/gl/impl/backend/vk2/framebuffer.cpp
+	src/gl/impl/backend/vk2/framebuffer.hpp
 	src/gl/impl/backend/vk2/graphics_pipeline.cpp
 	src/gl/impl/backend/vk2/graphics_pipeline.hpp
 	src/gl/impl/backend/vk2/tz_vulkan.cpp

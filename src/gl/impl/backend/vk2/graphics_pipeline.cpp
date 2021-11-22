@@ -29,6 +29,7 @@ namespace tz::gl::vk2
 	device(info.device)
 	{
 		tz_assert(info.valid(), "GraphicsPipelineInfo was invalid. Please submit a bug report.");
+		// https://youtu.be/yyLuGNPLRjc
 		auto vertex_input_state_native = info.vertex_input_state->native();
 		auto input_assembly_native = info.input_assembly->native();
 		auto viewport_state_native = info.viewport_state->native();
@@ -67,16 +68,16 @@ namespace tz::gl::vk2
 
 			break;
 			case VK_ERROR_OUT_OF_HOST_MEMORY:
-				tz_error("Failed to create RenderPass because we ran out of host memory (RAM). Please ensure that your system meets the minimum requirements.");
+				tz_error("Failed to create GraphicsPipeline because we ran out of host memory (RAM). Please ensure that your system meets the minimum requirements.");
 			break;
 			case VK_ERROR_OUT_OF_DEVICE_MEMORY:
-				tz_error("Failed to create RenderPass because we ran out of device memory (VRAM). Please ensure that your system meets the minimum requirements.");
+				tz_error("Failed to create GraphicsPipeline because we ran out of device memory (VRAM). Please ensure that your system meets the minimum requirements.");
 			break;
 			case VK_ERROR_INVALID_SHADER_NV:
 				tz_error("Failed to create GraphicsPipeline because one or more shaders failed to compile/link. Please submit a bug report");
 			break;
 			default:
-				tz_error("Failed to create RenderPass but cannot determine why. Please submit a bug report.");
+				tz_error("Failed to create GraphicsPipeline but cannot determine why. Please submit a bug report.");
 			break;
 		}
 	}

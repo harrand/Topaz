@@ -6,6 +6,10 @@ add_tz_test(NAME vk_descriptor_test
 	SOURCE_FILES vk_descriptor_test.cpp	
 	)
 
+add_tz_test(NAME vk_framebuffer_test
+	SOURCE_FILES vk_framebuffer_test.cpp	
+	)
+
 add_tz_test(NAME vk_graphics_pipeline_test
 	SOURCE_FILES vk_graphics_pipeline_test.cpp	
 	)

@@ -25,7 +25,9 @@ namespace tz::gl::vk2
 		/// - Only useable as a source image of some transfer command.
 		TransferFrom = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
 		/// - Only useable as a destination image of some transfer command.
-		TransferTo = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
+		TransferTo = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+		/// - Useable as a presentable image.
+		Present = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR
 	};
 
 	class Swapchain;
