@@ -50,6 +50,8 @@ namespace tz::gl::vk2
 		GraphicsPipeline& operator=(const GraphicsPipeline& rhs) = delete;
 		GraphicsPipeline& operator=(GraphicsPipeline&& rhs);
 
+		const LogicalDevice& get_device() const;
+
 		using NativeType = VkPipeline;
 		NativeType native() const;
 	private:

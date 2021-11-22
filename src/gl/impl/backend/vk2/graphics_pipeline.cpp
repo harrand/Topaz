@@ -61,7 +61,7 @@ namespace tz::gl::vk2
 			.basePipelineIndex = -1
 		};
 
-		VkResult res = vkCreateGraphicsPipelines(this->device->native(), VK_NULL_HANDLE, 1, &create, nullptr, &this->pipeline);
+		VkResult res = vkCreateGraphicsPipelines(this->get_device().native(), VK_NULL_HANDLE, 1, &create, nullptr, &this->pipeline);
 		switch(res)
 		{
 			case VK_SUCCESS:
@@ -93,7 +93,7 @@ namespace tz::gl::vk2
 	{
 		if(this->pipeline != VK_NULL_HANDLE)
 		{
-			vkDestroyPipeline(this->device->native(), this->pipeline, nullptr);
+			vkDestroyPipeline(this->get_device().native(), this->pipeline, nullptr);
 			this->pipeline = VK_NULL_HANDLE;
 		}
 	}
@@ -103,6 +103,12 @@ namespace tz::gl::vk2
 		std::swap(this->pipeline, rhs.pipeline);
 		std::swap(this->device, rhs.device);
 		return *this;
+	}
+
+	const LogicalDevice& GraphicsPipeline::get_device() const
+	{
+		tz_assert(this->device != nullptr, "GraphicsPipelineInfo contained nullptr LogicalDevice. Please submit a bug report.");
+		return *this->device;
 	}
 
 	GraphicsPipeline::NativeType GraphicsPipeline::native() const

@@ -116,7 +116,7 @@ namespace tz::gl::vk2
 		 */
 		std::span<const DescriptorLayoutInfo::BindingInfo> get_bindings() const;
 
-		const LogicalDevice* get_device() const;
+		const LogicalDevice& get_device() const;
 
 		using NativeType = VkDescriptorSetLayout;
 		NativeType native() const;
@@ -320,7 +320,7 @@ namespace tz::gl::vk2
 		/**
 		 * Retrieve the LogicalDevice which was used to create the pool.
 		 */
-		const LogicalDevice* get_device() const;
+		const LogicalDevice& get_device() const;
 		/**
 		 * Allocate some DescriptorSets. See @ref Allocation for more info.
 		 * @return Structure with resultant information, including newly-allocated DescriptorSets.

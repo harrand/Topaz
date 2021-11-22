@@ -11,7 +11,7 @@ namespace tz::gl::vk2
 				{
 					return view_ptr->get_image().get_dimensions() == this->dimensions; 
 				})
-			&& this->render_pass->get_device() != nullptr && !this->render_pass->get_device()->is_null();
+			&& !this->render_pass->get_device().is_null();
 	}
 
 	Framebuffer::Framebuffer(FramebufferInfo info):
@@ -39,7 +39,7 @@ namespace tz::gl::vk2
 			.layers = 1
 		};
 
-		VkResult res = vkCreateFramebuffer(this->get_device()->native(), &create, nullptr, &this->framebuffer);
+		VkResult res = vkCreateFramebuffer(this->get_device().native(), &create, nullptr, &this->framebuffer);
 		switch(res)
 		{
 			case VK_SUCCESS:
@@ -68,7 +68,7 @@ namespace tz::gl::vk2
 	{
 		if(this->framebuffer != VK_NULL_HANDLE)
 		{
-			vkDestroyFramebuffer(this->get_device()->native(), this->framebuffer, nullptr);
+			vkDestroyFramebuffer(this->get_device().native(), this->framebuffer, nullptr);
 			this->framebuffer = VK_NULL_HANDLE;
 		}
 	}
@@ -80,10 +80,25 @@ namespace tz::gl::vk2
 		return *this;
 	}
 
-	const LogicalDevice* Framebuffer::get_device() const
+	tz::Vec2ui Framebuffer::get_dimensions() const
 	{
-		tz_assert(this->info.render_pass != nullptr, "Framebuffer had no attached RenderPass. Please submit a bug report.");
-		return this->info.render_pass->get_device();
+		return this->info.dimensions;
+	}
+
+	const RenderPass& Framebuffer::get_pass() const
+	{
+		tz_assert(this->info.render_pass != nullptr, "Framebuffer had no attached RenderPass. Please submit a bug report");
+		return *this->info.render_pass;
+	}
+
+	const LogicalDevice& Framebuffer::get_device() const
+	{
+		return this->get_pass().get_device();
+	}
+
+	const tz::BasicList<const ImageView*>& Framebuffer::get_attachment_views() const
+	{
+		return this->info.attachments;
 	}
 }
 

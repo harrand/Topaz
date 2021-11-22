@@ -39,7 +39,26 @@ namespace tz::gl::vk2
 		Framebuffer& operator=(const Framebuffer& rhs) = delete;
 		Framebuffer& operator=(Framebuffer&& rhs);
 
-		const LogicalDevice* get_device() const;
+		/**
+		 * Retrieve the width and height of the framebuffer. All attachments must have the same dimensions.
+		 * @return Dimensions of the framebuffer, in pixels.
+		 */
+		tz::Vec2ui get_dimensions() const;
+		/**
+		 * Retrieve the @ref RenderPass that this Framebuffer expects to act as a target for.
+		 * @return Reference to parent @ref RenderPass.
+		 */
+		const RenderPass& get_pass() const;
+		/**
+		 * Retrieve the @ref LogicalDevice that spawned this Framebuffer.
+		 * @note This is identical to the @ref LogicalDevice that spawned the @ref RenderPass referenced by `this->get_pass()`.
+		 */
+		const LogicalDevice& get_device() const;
+		/**
+		 * Retrieve a list of imageviews corresponding to each attachment.
+		 * @return List of ImageViews. The i'th @ref ImageView corresponds to the i'th output attachment from the @ref RenderPass referernced by `this->get_pass()`.
+		 */
+		const tz::BasicList<const ImageView*>& get_attachment_views() const;
 	private:
 		FramebufferInfo info;
 		VkFramebuffer framebuffer;

@@ -221,9 +221,10 @@ namespace tz::gl::vk2
 		return this->info.bindings;
 	}
 
-	const LogicalDevice* DescriptorLayout::get_device() const
+	const LogicalDevice& DescriptorLayout::get_device() const
 	{
-		return this->info.logical_device;
+		tz_assert(this->info.logical_device != nullptr, "DescriptorLayoutInfo contained nullptr LogicalDevice. Please submit a bug report.");
+		return *this->info.logical_device;
 	}
 
 	DescriptorLayout::NativeType DescriptorLayout::native() const
@@ -254,7 +255,7 @@ namespace tz::gl::vk2
 	DescriptorPoolInfo DescriptorPoolInfo::to_fit_layout(const DescriptorLayout& layout, std::size_t quantity)
 	{
 		DescriptorPoolInfo info;
-		info.logical_device = layout.get_device();
+		info.logical_device = &layout.get_device();
 		info.limits.max_sets = quantity;
 		for(std::size_t i = 0; std::cmp_less(i, static_cast<int>(DescriptorType::Count)); i++)
 		{
@@ -331,7 +332,7 @@ namespace tz::gl::vk2
 			.pPoolSizes = pool_sizes.data()
 		};
 
-		VkResult res = vkCreateDescriptorPool(this->get_device()->native(), &create, nullptr, &this->pool);
+		VkResult res = vkCreateDescriptorPool(this->get_device().native(), &create, nullptr, &this->pool);
 		switch(res)
 		{
 			case VK_SUCCESS:
@@ -366,7 +367,7 @@ namespace tz::gl::vk2
 		{
 			this->clear();
 
-			vkDestroyDescriptorPool(this->get_device()->native(), this->pool, nullptr);
+			vkDestroyDescriptorPool(this->get_device().native(), this->pool, nullptr);
 			this->pool = VK_NULL_HANDLE;
 		}
 	}
@@ -379,9 +380,10 @@ namespace tz::gl::vk2
 		return *this;
 	}
 
-	const LogicalDevice* DescriptorPool::get_device() const
+	const LogicalDevice& DescriptorPool::get_device() const
 	{
-		return this->info.logical_device;
+		tz_assert(this->info.logical_device != nullptr, "DescriptorPoolInfo contained nullptr LogicalDevice. Please submit a bug report.");
+		return *this->info.logical_device;
 	}
 
 	DescriptorPool::AllocationResult DescriptorPool::allocate_sets(const DescriptorPool::Allocation& alloc)
@@ -431,7 +433,7 @@ namespace tz::gl::vk2
 		};
 
 		std::vector<DescriptorSet::NativeType> output_set_natives(alloc.set_layouts.length());
-		VkResult res = vkAllocateDescriptorSets(this->get_device()->native(), &create, output_set_natives.data());
+		VkResult res = vkAllocateDescriptorSets(this->get_device().native(), &create, output_set_natives.data());
 		DescriptorPool::AllocationResult ret;
 		switch(res)
 		{
@@ -489,18 +491,18 @@ namespace tz::gl::vk2
 				.pTexelBufferView = nullptr
 			};
 		});
-		vkUpdateDescriptorSets(this->get_device()->native(), write_natives.size(), write_natives.data(), 0, nullptr);
+		vkUpdateDescriptorSets(this->get_device().native(), write_natives.size(), write_natives.data(), 0, nullptr);
 	}
 
 	void DescriptorPool::clear()
 	{
-		vkResetDescriptorPool(this->get_device()->native(), this->pool, 0);
+		vkResetDescriptorPool(this->get_device().native(), this->pool, 0);
 		// Note: vkFreeDescriptorSets can't be used unless VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT is set (which is currently isn't)
 		//if(this->allocated_set_natives.empty())
 		//{
 		//	return;
 		//}
-		//vkFreeDescriptorSets(this->get_device()->native(), this->pool, this->allocated_set_natives.size(), this->allocated_set_natives.data());
+		//vkFreeDescriptorSets(this->get_device().native(), this->pool, this->allocated_set_natives.size(), this->allocated_set_natives.data());
 		//this->allocated_set_natives.clear();
 	}
 }

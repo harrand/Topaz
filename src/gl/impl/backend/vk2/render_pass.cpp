@@ -185,7 +185,7 @@ namespace tz::gl::vk2
 			.correlatedViewMaskCount = 0,
 			.pCorrelatedViewMasks = nullptr
 		};
-		VkResult res = vkCreateRenderPass2(this->get_device()->native(), &create, nullptr, &this->pass);
+		VkResult res = vkCreateRenderPass2(this->get_device().native(), &create, nullptr, &this->pass);
 
 		switch(res)
 		{
@@ -215,7 +215,7 @@ namespace tz::gl::vk2
 	{
 		if(this->pass != VK_NULL_HANDLE)
 		{
-			vkDestroyRenderPass(this->get_device()->native(), this->pass, nullptr);
+			vkDestroyRenderPass(this->get_device().native(), this->pass, nullptr);
 			this->pass = VK_NULL_HANDLE;
 		}
 	}
@@ -227,9 +227,10 @@ namespace tz::gl::vk2
 		return *this;
 	}
 
-	const LogicalDevice* RenderPass::get_device() const
+	const LogicalDevice& RenderPass::get_device() const
 	{
-		return this->info.logical_device;
+		tz_assert(this->info.logical_device != nullptr, "RenderPassInfo contained nullptr LogicalDevice. Please submit a bug report.");
+		return *this->info.logical_device;
 	}
 
 	RenderPass::NativeType RenderPass::native() const

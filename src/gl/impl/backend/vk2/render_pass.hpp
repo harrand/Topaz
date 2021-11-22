@@ -177,7 +177,7 @@ namespace tz::gl::vk2
 		RenderPass& operator=(const RenderPass& rhs) = delete;
 		RenderPass& operator=(RenderPass&& rhs);
 
-		const LogicalDevice* get_device() const;
+		const LogicalDevice& get_device() const;
 
 		using NativeType = VkRenderPass;
 		NativeType native() const;
