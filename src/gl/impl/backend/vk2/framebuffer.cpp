@@ -100,6 +100,11 @@ namespace tz::gl::vk2
 	{
 		return this->info.attachments;
 	}
+
+	Framebuffer::NativeType Framebuffer::native() const
+	{
+		return this->framebuffer;
+	}
 }
 
 #endif // TZ_VULKAN

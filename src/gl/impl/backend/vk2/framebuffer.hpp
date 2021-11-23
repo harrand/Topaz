@@ -59,6 +59,9 @@ namespace tz::gl::vk2
 		 * @return List of ImageViews. The i'th @ref ImageView corresponds to the i'th output attachment from the @ref RenderPass referernced by `this->get_pass()`.
 		 */
 		const tz::BasicList<const ImageView*>& get_attachment_views() const;
+
+		using NativeType = VkFramebuffer;
+		NativeType native() const;
 	private:
 		FramebufferInfo info;
 		VkFramebuffer framebuffer;
