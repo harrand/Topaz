@@ -17,6 +17,12 @@ namespace tz::gl::vk2::hardware
 		return this->info;
 	}
 
+	const LogicalDevice& Queue::get_device() const
+	{
+		tz_assert(this->info.dev != nullptr, "QueueInfo contained nullptr LogicalDevice");
+		return *this->info.dev;
+	}
+
 	Queue::NativeType Queue::native() const
 	{
 		return this->queue;

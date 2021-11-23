@@ -22,6 +22,7 @@ namespace tz::gl::vk2
 			Queue(QueueInfo info);
 
 			const QueueInfo& get_info() const;
+			const LogicalDevice& get_device() const;
 
 			using NativeType = VkQueue;
 			NativeType native() const;

@@ -117,6 +117,8 @@ namespace tz::gl::vk2
 		 */
 		const DeviceFeatureField& get_features() const;
 
+		const hardware::Queue* get_hardware_queue(QueueRequest request) const;
+
 		using NativeType = VkDevice;
 		NativeType native() const;
 		/**

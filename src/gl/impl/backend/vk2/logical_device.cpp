@@ -27,7 +27,7 @@ namespace tz::gl::vk2
 		auto queue_satisfies_request = [request](const QueueFamilyInfo& info)
 		{
 			// If we request present support, the queue family *must* support it.
-			if(!request.present_support && info.present_support)
+			if(request.present_support && !info.present_support)
 			{
 				return false;
 			}
@@ -252,6 +252,11 @@ namespace tz::gl::vk2
 	const DeviceFeatureField& LogicalDevice::get_features() const
 	{
 		return this->enabled_features;
+	}
+
+	const hardware::Queue* LogicalDevice::get_hardware_queue(QueueRequest request) const
+	{
+		return this->queue_storage.request_queue(request);
 	}
 
 	VkDevice LogicalDevice::native() const

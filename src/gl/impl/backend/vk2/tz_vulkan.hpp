@@ -63,6 +63,12 @@ namespace tz::gl::vk2
 		 * @defgroup tz_gl_vk_graphics_pipeline_render_pass Render Passes
 		 * Documentation for render passes and how they interact with the rendering pipeline.
 		 */
+	
+	/**
+	 * @ingroup tz_gl_vk
+	 * @defgroup tz_gl_vk_commands Command Buffers and Pools
+	 * Documentation for everything related to Command Buffers, Command Pools and Vulkan Commands.
+	 */
 
 	/**
 	 * @ingroup tz_gl_vk
