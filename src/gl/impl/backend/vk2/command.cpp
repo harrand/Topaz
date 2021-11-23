@@ -102,6 +102,11 @@ namespace tz::gl::vk2
 		return {*this};
 	}
 
+	bool CommandBuffer::is_recording() const
+	{
+		return this->recording;
+	}
+
 	CommandBuffer::NativeType CommandBuffer::native() const
 	{
 		return this->command_buffer;

@@ -80,10 +80,14 @@ namespace tz::gl::vk2
 		const LogicalDevice& get_device() const;
 		/**
 		 * Begin recording the CommandBuffer.
-		 * @pre The CommandBuffer is not currently being recorded.
+		 * @pre The CommandBuffer is not currently being recorded. See @ref CommandBuffer::is_recording
 		 * @return An object which can be used to invoke vulkan commands. The duration of the recording matches that of the returned object.
 		 */
 		CommandBufferRecording record();
+		/**
+		 * Query as to whether this CommandBuffer is currently recording.
+		 */
+		bool is_recording() const;
 
 		using NativeType = VkCommandBuffer;
 		NativeType native() const;

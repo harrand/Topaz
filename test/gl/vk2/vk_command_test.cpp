@@ -111,14 +111,20 @@ void empty_command_buffer_recording()
 		tz_assert(result.success(), "CommandPool failed to perform a basic allocation");
 
 		CommandBuffer& cbuf1 = result.buffers.front();
+		tz_assert(!cbuf1.is_recording(), "Newly-allocated CommandBuffer wrongly considered to be recording.");
 		CommandBuffer& cbuf2 = result.buffers.back();
+		tz_assert(!cbuf2.is_recording(), "Newly-allocated CommandBuffer wrongly considered to be recording.");
 		// Try a recording.
 		{
 			CommandBufferRecording recording = cbuf1.record();
+			tz_assert(cbuf1.is_recording(), "CommandBuffer wrongly considered to not be recording");
 		}
+		tz_assert(!cbuf1.is_recording(), "CommandBuffer wrongly considered to be recording");
 		// Now one where we use a renderpass.
 		{
+			tz_assert(!cbuf2.is_recording(), "CommandBuffer wrongly considered to be recording");
 			CommandBufferRecording recording = cbuf2.record();
+			tz_assert(cbuf2.is_recording(), "CommandBuffer wrongly considered to not be recording");
 			{
 				CommandBufferRecording::RenderPassRun run{fb, recording};
 			}
