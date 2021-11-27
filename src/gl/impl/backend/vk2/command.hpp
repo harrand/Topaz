@@ -1,13 +1,71 @@
 #ifndef TOPAZ_GL_IMPL_BACKEND_VK2_COMMAND_HPP
 #define TOPAZ_GL_IMPL_BACKEND_VK2_COMMAND_HPP
-#include "gl/impl/backend/vk/render_pass.hpp"
 #if TZ_VULKAN
+#include "gl/impl/backend/vk/render_pass.hpp"
 #include "gl/impl/backend/vk2/hardware/queue.hpp"
 #include "gl/impl/backend/vk2/logical_device.hpp"
 #include "gl/impl/backend/vk2/framebuffer.hpp"
+#include "gl/impl/backend/vk2/graphics_pipeline.hpp"
 
 namespace tz::gl::vk2
 {
+	/**
+	 * @ingroup tz_gl_vk_commands
+	 * Contains all the possible commands which can be recorded within a @ref CommandBuffer.
+	 */
+	struct VulkanCommand
+	{
+		/**
+		 * Record a non-indexed draw.
+		 * See @ref CommandBufferRecording::draw for usage.
+		 */
+		struct Draw
+		{
+			/// Number of vertices to draw.
+			std::uint32_t vertex_count;
+			/// Number of instances to draw (Default 1).
+			std::uint32_t instance_count = 1;
+			/// Index of the first vertex to draw (Default 0).
+			std::uint32_t first_vertex = 0;
+			/// Instance ID of the first instance to draw (Default 0).
+			std::uint32_t first_instance = 0;
+		};
+
+		/**
+		 * Record a bind of a @ref GraphicsPipeline.
+		 * See @ref CommandBufferRecording::bind_pipeline for usage.
+		 */
+		struct BindPipeline
+		{
+			/// Pipeline to be bound. Must not be null.
+			const GraphicsPipeline* pipeline;
+			/// Specify the pipeline context to bind to. Binding to one context does not disturb existing binds to other contexts.
+			PipelineContext pipeline_context;
+		};
+
+		/**
+		 * Record a beginning of some @ref RenderPass.
+		 * See @ref CommandBufferRecording::RenderPassRun for usage.
+		 */
+		struct BeginRenderPass
+		{
+			/// The @ref RenderPass which will begin.
+			const RenderPass* pass;
+		};
+		
+		/**
+		 * Record the ending of some @ref RenderPass.
+		 * See @ref CommandBufferRecording::RenderPassRun for usage.
+		 */
+		struct EndRenderPass
+		{
+			/// The @ref RenderPass which will end.
+			const RenderPass* pass;
+		};
+
+		/// Variant type which has alternatives for every single possible recordable command type.
+		using Variant = std::variant<Draw, BindPipeline, BeginRenderPass, EndRenderPass>;
+	};
 	/**
 	 * @ingroup tz_gl_vk_commands
 	 * Specifies creation flags for a @ref CommandPool.
@@ -34,7 +92,13 @@ namespace tz::gl::vk2
 		class RenderPassRun
 		{
 		public:
-			RenderPassRun(const Framebuffer& framebuffer, const CommandBufferRecording& recording);
+			/**
+			 * Record the beginning of the @ref RenderPass sourcing the provided @ref Framebuffer.
+			 * @param framebuffer Framebuffer whose @ref RenderPass should begin within the @ref CommandBuffer.
+			 * @param recording Existing recording of a @ref CommandBuffer which shall record the beginning/ending of the render pass.
+			 * @note The construction of this object begins the render pass, and the destruction ends the render pass. This means all commands recorded during the lifetime of this object will apply to the render pass.
+			 */
+			RenderPassRun(const Framebuffer& framebuffer, CommandBufferRecording& recording);
 			RenderPassRun(const RenderPassRun& copy) = delete;
 			RenderPassRun(RenderPassRun&& move) = delete;
 			~RenderPassRun();
@@ -43,7 +107,7 @@ namespace tz::gl::vk2
 			RenderPassRun& operator=(RenderPassRun&& rhs) = delete;
 		private:
 			const Framebuffer* framebuffer;
-			const CommandBufferRecording* recording;
+			CommandBufferRecording* recording;
 		};
 
 		CommandBufferRecording(CommandBuffer& command_buffer);
@@ -55,11 +119,27 @@ namespace tz::gl::vk2
 		CommandBufferRecording& operator=(CommandBufferRecording&& rhs);
 
 		/**
+		 * Bind an existing @ref GraphicsPipeline to some context.
+		 * See @ref VulkanCommand::BindPipeline for details.
+		 */
+		void bind_pipeline(VulkanCommand::BindPipeline command);
+		/**
+		 * Perform a non-instanced draw.
+		 * See @ref VulkanCommand::Draw for details.
+		 */
+		void draw(VulkanCommand::Draw draw);
+
+		/**
 		 * Retrieve the @ref CommandBuffer that is currently being recorded.
 		 * @return CommandBuffer that this recording corresponds to.
 		 */
 		const CommandBuffer& get_command_buffer() const;
+
+		friend class RenderPassRun;
 	private:
+		CommandBuffer& get_command_buffer();
+		void register_command(VulkanCommand::Variant command);
+
 		CommandBuffer* command_buffer;
 	};
 
@@ -73,7 +153,6 @@ namespace tz::gl::vk2
 	{
 	public:
 		friend class CommandPool;
-
 		/**
 		 * CommandBuffers are allocated from a @ref CommandPool. Each pool was spawned from a @ref LogicalDevice. Retrieve a reference to the LogicalDevice which spawned the pool which owns this buffer.
 		 */
@@ -88,6 +167,11 @@ namespace tz::gl::vk2
 		 * Query as to whether this CommandBuffer is currently recording.
 		 */
 		bool is_recording() const;
+		/**
+		 * Retrieve the number of commands recorded into the buffer.
+		 * @return Number of commands within the buffer.
+		 */
+		std::size_t command_count() const;
 
 		using NativeType = VkCommandBuffer;
 		NativeType native() const;
@@ -95,12 +179,14 @@ namespace tz::gl::vk2
 		friend class CommandBufferRecording;
 	private:
 		void set_recording(bool recording);
+		void add_command(VulkanCommand::Variant command);
 
 		CommandBuffer(const CommandPool& owner_pool, CommandBuffer::NativeType native);
 
 		VkCommandBuffer command_buffer;
 		const CommandPool* owner_pool;
 		bool recording;
+		std::vector<VulkanCommand::Variant> recorded_commands;
 	};
 
 	/**

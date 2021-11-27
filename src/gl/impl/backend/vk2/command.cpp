@@ -3,7 +3,7 @@
 
 namespace tz::gl::vk2
 {
-	CommandBufferRecording::RenderPassRun::RenderPassRun(const Framebuffer& framebuffer, const CommandBufferRecording& recording):
+	CommandBufferRecording::RenderPassRun::RenderPassRun(const Framebuffer& framebuffer, CommandBufferRecording& recording):
 	framebuffer(&framebuffer),
 	recording(&recording)
 	{
@@ -29,11 +29,13 @@ namespace tz::gl::vk2
 		};
 
 		vkCmdBeginRenderPass(this->recording->get_command_buffer().native(), &begin, VK_SUBPASS_CONTENTS_INLINE);
+		this->recording->register_command(VulkanCommand::BeginRenderPass{.pass = &this->framebuffer->get_pass()});
 	}
 
 	CommandBufferRecording::RenderPassRun::~RenderPassRun()
 	{
 		vkCmdEndRenderPass(this->recording->get_command_buffer().native());
+		this->recording->register_command(VulkanCommand::EndRenderPass{.pass = &this->framebuffer->get_pass()});
 	}
 
 	CommandBufferRecording::CommandBufferRecording(CommandBuffer& command_buffer):
@@ -85,10 +87,37 @@ namespace tz::gl::vk2
 		return *this;
 	}
 
+	void CommandBufferRecording::bind_pipeline(VulkanCommand::BindPipeline command)
+	{
+		this->register_command(command);
+		tz_assert(command.pipeline != nullptr, "BindPipeline Command contained nullptr GraphicsPipeline");
+
+		vkCmdBindPipeline(this->get_command_buffer().native(), static_cast<VkPipelineBindPoint>(command.pipeline_context), command.pipeline->native());
+	}
+
+	void CommandBufferRecording::draw(VulkanCommand::Draw command)
+	{
+		this->register_command(command);
+		vkCmdDraw(this->get_command_buffer().native(), command.vertex_count, command.instance_count, command.first_vertex, command.first_instance);
+	}
+
 	const CommandBuffer& CommandBufferRecording::get_command_buffer() const
 	{
 		tz_assert(this->command_buffer != nullptr, "CommandBufferRecording had nullptr CommandBuffer. Please submit a bug report");
 		return *this->command_buffer;
+	}
+
+	CommandBuffer& CommandBufferRecording::get_command_buffer()
+	{
+		tz_assert(this->command_buffer != nullptr, "CommandBufferRecording had nullptr CommandBuffer. Please submit a bug report");
+		return *this->command_buffer;
+	}
+
+	void CommandBufferRecording::register_command(VulkanCommand::Variant command)
+	{
+		CommandBuffer& buf = this->get_command_buffer();
+		tz_assert(buf.is_recording(), "CommandBufferRecording tried to register a command, but the CommandBuffer isn't actually recording. Please submit a bug report.");
+		buf.add_command(command);
 	}
 
 	const LogicalDevice& CommandBuffer::get_device() const
@@ -99,12 +128,18 @@ namespace tz::gl::vk2
 	CommandBufferRecording CommandBuffer::record()
 	{
 		tz_assert(!this->recording, "CommandBuffer already being recorded");
+		this->recorded_commands.clear();
 		return {*this};
 	}
 
 	bool CommandBuffer::is_recording() const
 	{
 		return this->recording;
+	}
+
+	std::size_t CommandBuffer::command_count() const
+	{
+		return this->recorded_commands.size();
 	}
 
 	CommandBuffer::NativeType CommandBuffer::native() const
@@ -115,6 +150,11 @@ namespace tz::gl::vk2
 	void CommandBuffer::set_recording(bool recording)
 	{
 		this->recording = recording;
+	}
+
+	void CommandBuffer::add_command(VulkanCommand::Variant command)
+	{
+		this->recorded_commands.push_back(command);
 	}
 	
 	CommandBuffer::CommandBuffer(const CommandPool& owner_pool, CommandBuffer::NativeType native):
