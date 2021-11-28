@@ -18,7 +18,9 @@ namespace tz::gl::vk2
 		/// - Allows mass-batching of draw-calls. Vastly improves performance for large scenes.
 		MultiDrawIndirect,
 		/// - Allows creation of bindless descriptors. Dramatically increases the limits for shader resources, and yields a moderate to vast improvement to performance across-the-board.
-		BindlessDescriptors
+		BindlessDescriptors,
+		/// - Enables use of @ref TimelineSemaphore.
+		TimelineSemaphores
 	};
 
 	using DeviceFeatureField = tz::EnumField<DeviceFeature>;
@@ -32,10 +34,15 @@ namespace tz::gl::vk2
 				.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES,
 				.pNext = nullptr
 			};
+			VkPhysicalDeviceVulkan12Features features12 =
+			{
+				.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_FEATURES,
+				.pNext = &descriptor_indexing_features
+			};
 			VkPhysicalDeviceFeatures2 features =
 			{
 				.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2,
-				.pNext = &descriptor_indexing_features
+				.pNext = &features12
 			};
 		};
 	}

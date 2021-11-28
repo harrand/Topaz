@@ -53,6 +53,10 @@ namespace tz::gl::vk2
 			{
 				ret |= DeviceFeature::BindlessDescriptors;
 			}
+			if(features.features12.timelineSemaphore)
+			{
+				ret |= DeviceFeature::TimelineSemaphores;
+			}
 		
 			return ret;
 		}
@@ -61,6 +65,7 @@ namespace tz::gl::vk2
 		{
 			DeviceFeatureInfo info;
 			info.features.features.multiDrawIndirect = feature_field.contains(DeviceFeature::MultiDrawIndirect) ? VK_TRUE : VK_FALSE;
+			info.features12.timelineSemaphore = feature_field.contains(DeviceFeature::TimelineSemaphores) ? VK_TRUE : VK_FALSE;
 
 			if(feature_field.contains(DeviceFeature::BindlessDescriptors))
 			{
