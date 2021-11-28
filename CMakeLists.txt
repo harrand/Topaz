@@ -241,6 +241,8 @@ add_library(topaz
 	src/gl/impl/backend/vk2/descriptors.hpp
 	src/gl/impl/backend/vk2/extensions.hpp
 	src/gl/impl/backend/vk2/features.hpp
+	src/gl/impl/backend/vk2/fence.cpp
+	src/gl/impl/backend/vk2/fence.hpp
 	src/gl/impl/backend/vk2/fixed_function.cpp
 	src/gl/impl/backend/vk2/fixed_function.hpp
 	src/gl/impl/backend/vk2/framebuffer.cpp

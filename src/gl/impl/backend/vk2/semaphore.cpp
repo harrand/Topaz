@@ -60,6 +60,11 @@ namespace tz::gl::vk2
 		return *this->device;
 	}
 
+	BinarySemaphore::NativeType BinarySemaphore::native() const
+	{
+		return this->sem;
+	}
+
 	BinarySemaphore::BinarySemaphore():
 	sem(VK_NULL_HANDLE),
 	device(nullptr){}

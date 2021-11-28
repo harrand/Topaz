@@ -24,6 +24,12 @@ namespace tz::gl::vk2
 
 	/**
 	 * @ingroup tz_gl_vk
+	 * @defgroup tz_gl_vk_sync Synchronisation Primitives
+	 * Documentation for functionality related to CPU/GPU Vulkan synchronisation primitives.
+	 */
+
+	/**
+	 * @ingroup tz_gl_vk
 	 * @defgroup tz_gl_vk_extension Extensions and Features
 	 * Documentation for functionality related to instance/device extensions, and optional features.
 	 */

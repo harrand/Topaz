@@ -6,10 +6,11 @@
 namespace tz::gl::vk2
 {
 	/**
-	 * @ingroup tz_gl_vk
-	 * A semaphore which is not interactable on the host and which has two states:
+	 * @ingroup tz_gl_vk_sync
+	 * Synchronisation primitive which is not interactable on the host and which has two states:
 	 * - Signalled
 	 * - Unsignalled
+	 * Useful for the GPU detecting the completion of another GPU operation.
 	 */
 	class BinarySemaphore
 	{
@@ -33,16 +34,16 @@ namespace tz::gl::vk2
 	};
 
 	/**
-	 * @ingroup tz_gl_vk
+	 * @ingroup tz_gl_vk_sync
 	 * Alias for @ref BinarySemaphore
 	 */
 	using Semaphore = BinarySemaphore;
 
 	/**
-	 * @ingroup tz_gl_vk
-	 * Semaphore with a strictly increasing 64-bit unsigned integer payload. They are signalled with respect to a particular reference value. Note that this is an optional feature.
+	 * @ingroup tz_gl_vk_sync
+	 * Synchronisation primitive similar to @ref BinarySemaphore. Semaphore with a strictly increasing 64-bit unsigned integer payload. They are signalled with respect to a particular reference value. Note that this is an optional feature.
 	 *
-	 * In addition, TimelineSemaphores can be signalled/waited-on directly by the host.
+	 * In addition, TimelineSemaphores can be signalled/waited-on directly by the host. This makes them the most host-interactable synchronisation primitive, more than the @ref BinarySemaphore and even more than the @ref Fence.
 	 */
 	class TimelineSemaphore : public BinarySemaphore
 	{

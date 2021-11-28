@@ -10,6 +10,10 @@ add_tz_test(NAME vk_descriptor_test
 	SOURCE_FILES vk_descriptor_test.cpp	
 	)
 
+add_tz_test(NAME vk_fence_test
+	SOURCE_FILES vk_fence_test.cpp	
+	)
+
 add_tz_test(NAME vk_framebuffer_test
 	SOURCE_FILES vk_framebuffer_test.cpp	
 	)
