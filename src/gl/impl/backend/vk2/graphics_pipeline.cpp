@@ -26,7 +26,7 @@ namespace tz::gl::vk2
 
 	GraphicsPipeline::GraphicsPipeline(const GraphicsPipelineInfo& info):
 	pipeline(VK_NULL_HANDLE),
-	device(info.device)
+	info(info)
 	{
 		tz_assert(info.valid(), "GraphicsPipelineInfo was invalid. Please submit a bug report.");
 		// https://youtu.be/yyLuGNPLRjc
@@ -84,7 +84,7 @@ namespace tz::gl::vk2
 
 	GraphicsPipeline::GraphicsPipeline(GraphicsPipeline&& move):
 	pipeline(VK_NULL_HANDLE),
-	device(nullptr)
+	info()
 	{
 		*this = std::move(move);
 	}
@@ -101,14 +101,19 @@ namespace tz::gl::vk2
 	GraphicsPipeline& GraphicsPipeline::operator=(GraphicsPipeline&& rhs)
 	{
 		std::swap(this->pipeline, rhs.pipeline);
-		std::swap(this->device, rhs.device);
+		std::swap(this->info, rhs.info);
 		return *this;
 	}
 
 	const LogicalDevice& GraphicsPipeline::get_device() const
 	{
-		tz_assert(this->device != nullptr, "GraphicsPipelineInfo contained nullptr LogicalDevice. Please submit a bug report.");
-		return *this->device;
+		tz_assert(this->info.device != nullptr, "GraphicsPipelineInfo contained nullptr LogicalDevice. Please submit a bug report.");
+		return *this->info.device;
+	}
+
+	const GraphicsPipelineInfo& GraphicsPipeline::get_info() const
+	{
+		return this->info;
 	}
 
 	GraphicsPipeline::NativeType GraphicsPipeline::native() const

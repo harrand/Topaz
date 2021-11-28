@@ -101,6 +101,15 @@ namespace tz::gl::vk2
 		vkCmdDraw(this->get_command_buffer().native(), command.vertex_count, command.instance_count, command.first_vertex, command.first_instance);
 	}
 
+	void CommandBufferRecording::bind_descriptor_sets(VulkanCommand::BindDescriptorSets command)
+	{
+		this->register_command(command);
+		std::vector<DescriptorSet::NativeType> set_natives(command.descriptor_sets.length());
+		std::transform(command.descriptor_sets.begin(), command.descriptor_sets.end(), set_natives.begin(), [](const DescriptorSet* set){return set->native();});
+
+		vkCmdBindDescriptorSets(this->get_command_buffer().native(), static_cast<VkPipelineBindPoint>(command.context), command.pipeline_layout->native(), command.first_set_id, command.descriptor_sets.length(), set_natives.data(), 0, nullptr);
+	}
+
 	const CommandBuffer& CommandBufferRecording::get_command_buffer() const
 	{
 		tz_assert(this->command_buffer != nullptr, "CommandBufferRecording had nullptr CommandBuffer. Please submit a bug report");

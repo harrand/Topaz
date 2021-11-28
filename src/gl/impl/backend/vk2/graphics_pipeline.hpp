@@ -51,12 +51,13 @@ namespace tz::gl::vk2
 		GraphicsPipeline& operator=(GraphicsPipeline&& rhs);
 
 		const LogicalDevice& get_device() const;
+		const GraphicsPipelineInfo& get_info() const;
 
 		using NativeType = VkPipeline;
 		NativeType native() const;
 	private:
 		VkPipeline pipeline;
-		const LogicalDevice* device;
+		GraphicsPipelineInfo info;
 	};
 }
 

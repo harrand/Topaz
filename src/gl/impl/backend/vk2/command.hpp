@@ -1,5 +1,6 @@
 #ifndef TOPAZ_GL_IMPL_BACKEND_VK2_COMMAND_HPP
 #define TOPAZ_GL_IMPL_BACKEND_VK2_COMMAND_HPP
+#include "gl/impl/backend/vk2/render_pass.hpp"
 #if TZ_VULKAN
 #include "gl/impl/backend/vk/render_pass.hpp"
 #include "gl/impl/backend/vk2/hardware/queue.hpp"
@@ -44,6 +45,22 @@ namespace tz::gl::vk2
 		};
 
 		/**
+		 * Record a bind of one of more @ref DescriptorSet
+		 * See @ref CommandBufferRecording::bind_descriptor_sets for usage.
+		 */
+		struct BindDescriptorSets
+		{
+			/// PipelineLayout representing the list of layouts matching each provided set.
+			const PipelineLayout* pipeline_layout;
+			/// Pipeline bind point.
+			PipelineContext context;
+			/// List of DescriptorSet to bind.
+			const tz::BasicList<const DescriptorSet*> descriptor_sets;
+			/// The operation causes the sets [first_set_id, first_set_id + descriptor_sets.length() + 1] to refer to the DescriptorSets within `descriptor_sets`.
+			std::uint32_t first_set_id;
+		};
+
+		/**
 		 * Record a beginning of some @ref RenderPass.
 		 * See @ref CommandBufferRecording::RenderPassRun for usage.
 		 */
@@ -64,7 +81,7 @@ namespace tz::gl::vk2
 		};
 
 		/// Variant type which has alternatives for every single possible recordable command type.
-		using Variant = std::variant<Draw, BindPipeline, BeginRenderPass, EndRenderPass>;
+		using Variant = std::variant<Draw, BindPipeline, BindDescriptorSets, BeginRenderPass, EndRenderPass>;
 	};
 	/**
 	 * @ingroup tz_gl_vk_commands
@@ -128,6 +145,11 @@ namespace tz::gl::vk2
 		 * See @ref VulkanCommand::Draw for details.
 		 */
 		void draw(VulkanCommand::Draw draw);
+		/**
+		 * Bind a list of @ref DescriptorSet.
+		 * See @ref VulkanCommand::BindDescriptorSets for details.
+		 */
+		void bind_descriptor_sets(VulkanCommand::BindDescriptorSets command);
 
 		/**
 		 * Retrieve the @ref CommandBuffer that is currently being recorded.
