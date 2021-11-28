@@ -10,6 +10,8 @@ namespace tz::gl::vk2
 	class LogicalDevice;
 	class CommandBuffer;
 	class BinarySemaphore;
+	class Swapchain;
+	class Fence;
 
 	/**
 	 * @ingroup tz_gl_vk_graphics_pipeline
@@ -60,26 +62,63 @@ namespace tz::gl::vk2
 			std::uint32_t queue_idx;
 		};
 
+		/**
+		 * @ingroup tz_gl_vk
+		 * Represents a single hardware Queue.
+		 */
 		class Queue
 		{
 		public:
+			/**
+			 * Specifies information about a submission of GPU work to a Queue.
+			 */
 			struct SubmitInfo
 			{
 				struct WaitInfo
 				{
+					/// Semaphore which will be waited on.
 					const BinarySemaphore* wait_semaphore;
+					/// Information about when specifically the semaphore will be waited on.
 					PipelineStage wait_stage;
 				};
 
+				/// List of command buffers to submit.
 				tz::BasicList<const CommandBuffer*> command_buffers;
+				/// List of wait semaphores. Command buffers for this submission batch will not begin execution until these semaphores are signalled. Note that when the wait is complete, each semaphore will be automatically set to unsignalled again.
 				tz::BasicList<WaitInfo> waits;
+				/// List of signal semaphores. Once the command buffers associated with this submission have completed execution, these semaphores are signalled.
 				tz::BasicList<const BinarySemaphore*> signal_semaphores;
+				/// Optional fence which is signalled once all command buffers have finished execution. If this is nullptr, there is no way to verify that the command buffers associated with this submission have completed.
+				const Fence* execution_complete_fence;
 			};
+
+			/**
+			 * Specifies information about a present request issued to a Queue.
+			 */
+			struct PresentInfo
+			{
+				/// List of wait semaphores. The present request will not be issued until all of these semaphores are signalled. Note that once they are signalled, they are automatically set to unsignalled again.
+				tz::BasicList<const BinarySemaphore*> wait_semaphores;
+				/// Pointer to a swapchain from which an image will be sourced. This must not be nullptr.
+				const Swapchain* swapchain;
+				/// Index to the swapchain's images which will be presented to the surface. The index must have value such that `swapchain_image_index < swapchain.get_image_views().size()`
+				std::uint32_t swapchain_image_index;
+			};
+
 			Queue(QueueInfo info);
 
 			const QueueInfo& get_info() const;
 			const LogicalDevice& get_device() const;
+			/**
+			 * Submit the queue, including any associated command buffers and perform necessary synchronisation.
+			 * See @ref SubmitInfo for more information.
+			 */
 			void submit(SubmitInfo submit_info);
+			/**
+			 * Queue an image for presentation.
+			 * See @ref PresentInfo for more information.
+			 */
+			void present(PresentInfo present_info);
 
 			using NativeType = VkQueue;
 			NativeType native() const;

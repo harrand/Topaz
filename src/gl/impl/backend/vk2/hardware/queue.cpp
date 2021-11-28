@@ -1,7 +1,9 @@
-#include "gl/impl/backend/vk2/command.hpp"
 #if TZ_VULKAN
+#include "gl/impl/backend/vk2/command.hpp"
 #include "gl/impl/backend/vk2/hardware/queue.hpp"
 #include "gl/impl/backend/vk2/semaphore.hpp"
+#include "gl/impl/backend/vk2/fence.hpp"
+#include "gl/impl/backend/vk2/swapchain.hpp"
 
 namespace tz::gl::vk2::hardware
 {
@@ -53,7 +55,12 @@ namespace tz::gl::vk2::hardware
 			.pSignalSemaphores = signal_sem_natives.data()
 		};
 
-		VkResult res = vkQueueSubmit(this->queue, 1, &sub, VK_NULL_HANDLE);
+		VkFence fence_native = VK_NULL_HANDLE;
+		if(submit_info.execution_complete_fence != nullptr)
+		{
+			fence_native = submit_info.execution_complete_fence->native();
+		}
+		VkResult res = vkQueueSubmit(this->queue, 1, &sub, fence_native);
 		switch(res)
 		{
 			case VK_SUCCESS:
@@ -70,6 +77,56 @@ namespace tz::gl::vk2::hardware
 			break;
 			default:
 				tz_error("Failed to submit Queue but cannot determine why. Please submit a bug report.");
+			break;
+		}
+	}
+
+	void Queue::present(Queue::PresentInfo present_info)
+	{
+		std::vector<BinarySemaphore::NativeType> wait_sem_natives(present_info.wait_semaphores.length());
+		
+		std::transform(present_info.wait_semaphores.begin(), present_info.wait_semaphores.end(), wait_sem_natives.begin(), [](const BinarySemaphore* sem){return sem->native();});
+
+		Swapchain::NativeType swapchain_native = present_info.swapchain->native();
+
+		VkPresentInfoKHR present
+		{
+			.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
+			.pNext = nullptr,
+			.waitSemaphoreCount = static_cast<std::uint32_t>(present_info.wait_semaphores.length()),
+			.pWaitSemaphores = wait_sem_natives.data(),
+			.swapchainCount = 1,
+			.pSwapchains = &swapchain_native,
+			.pImageIndices = &present_info.swapchain_image_index,
+			.pResults = nullptr
+		};
+
+		VkResult res = vkQueuePresentKHR(this->queue, &present);
+		switch(res)
+		{
+			case VK_SUCCESS:
+				// do nothing
+			break;
+			case VK_ERROR_OUT_OF_HOST_MEMORY:
+				tz_error("Failed to present Queue because we ran out of host memory (RAM). Please ensure that your system meets the minimum requirements.");
+			break;
+			case VK_ERROR_OUT_OF_DEVICE_MEMORY:
+				tz_error("Failed to present Queue because we ran out of device memory (VRAM). Please ensure that your system meets the minimum requirements.");
+			break;
+			case VK_ERROR_DEVICE_LOST:
+				tz_error("Failed to present Queue because device was lost. This is a fatal error.");
+			break;
+			case VK_ERROR_OUT_OF_DATE_KHR:
+				tz_error("Failed to present Queue because the associated Swapchain out of date. TODO: Implement swapchain updates. Please submit a feature request.");
+			break;
+			case VK_ERROR_SURFACE_LOST_KHR:
+				tz_error("Failed to present Queue because the surface provided is no longer available. Please submit a bug report.");
+			break;
+			case VK_ERROR_FULL_SCREEN_EXCLUSIVE_MODE_LOST_EXT:
+				tz_error("Failed to present Queue because the associated Swapchain did not have exclusive full-screen access. Please submit a bug report.");
+			break;
+			default:
+				tz_error("Failed to present Queue but cannot determine why. Please submit a bug report.");
 			break;
 		}
 	}
