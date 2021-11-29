@@ -240,18 +240,23 @@ namespace tz::gl::vk2
 			using ValidationLayerList = tz::BasicList<ValidationLayer>;
 			// So we need to pass in a list of layer names, but we enumerate layers via VkLayerProperties, which contains, among other things, the layer name.
 			// So we retrieve the list of VkLayerProperties and then fill in their names.
-			std::uint32_t layer_count;
-			vkEnumerateInstanceLayerProperties(&layer_count, nullptr);
-			std::vector<VkLayerProperties> layer_props(layer_count);
-			ValidationLayerList enabled_layers;
-			enabled_layers.resize(layer_count);
-			enabled_layers.resize(layer_count);
-			vkEnumerateInstanceLayerProperties(&layer_count, layer_props.data());
+			std::uint32_t avail_layer_count;
+			vkEnumerateInstanceLayerProperties(&avail_layer_count, nullptr);
+			std::vector<VkLayerProperties> layer_props(avail_layer_count);
+			ValidationLayerList avail_layers;
+			avail_layers.resize(avail_layer_count);
+			vkEnumerateInstanceLayerProperties(&avail_layer_count, layer_props.data());
 			// Retrieve each name
-			std::transform(layer_props.begin(), layer_props.end(), enabled_layers.begin(), [](const VkLayerProperties& prop){return prop.layerName;});
+			std::transform(layer_props.begin(), layer_props.end(), avail_layers.begin(), [](const VkLayerProperties& prop){return prop.layerName;});
 
+			constexpr char khronos_validation[] = "VK_LAYER_KHRONOS_validation";
+			ValidationLayerList enabled_layers;
+			if(std::any_of(avail_layers.begin(), avail_layers.end(), [&khronos_validation](const char* layer_name){return std::strcmp(layer_name, khronos_validation) == 0;}))
+			{
+				enabled_layers = {khronos_validation};
+			}
 			// Now pass it to the create info.
-			this->inst_info.enabledLayerCount = layer_count;
+			this->inst_info.enabledLayerCount = enabled_layers.length();
 			this->inst_info.ppEnabledLayerNames = enabled_layers.data();
 		#else // !TZ_DEBUG, AKA Release
 			this->inst_info.enabledLayerCount = 0;

@@ -273,8 +273,7 @@ int main()
 
 			tz::window().update();
 		}
-		// TODO: Abstract away (or better yet, do something less shit)
-		vkDeviceWaitIdle(ldev.native());
+		ldev.wait_until_idle();
 	}
 	tz::gl::vk2::terminate();
 	tz::terminate();

@@ -118,6 +118,8 @@ namespace tz::gl::vk2
 		 */
 		const DeviceFeatureField& get_features() const;
 
+		void wait_until_idle() const;
+
 		const hardware::Queue* get_hardware_queue(QueueRequest request) const;
 		hardware::Queue* get_hardware_queue(QueueRequest request);
 

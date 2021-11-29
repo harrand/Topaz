@@ -284,6 +284,11 @@ namespace tz::gl::vk2
 		return this->enabled_features;
 	}
 
+	void LogicalDevice::wait_until_idle() const
+	{
+		vkDeviceWaitIdle(this->dev);
+	}
+
 	const hardware::Queue* LogicalDevice::get_hardware_queue(QueueRequest request) const
 	{
 		return this->queue_storage.request_queue(request);
