@@ -129,7 +129,6 @@ namespace tz::gl::vk2
 		 */
 		struct InputAttachmentReference
 		{
-			/// 
 			AttachmentReference attachment_ref;
 			ImageAspectFlags aspect_flags;
 		};

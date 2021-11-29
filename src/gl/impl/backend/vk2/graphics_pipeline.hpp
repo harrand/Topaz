@@ -28,7 +28,7 @@ namespace tz::gl::vk2
 		const MultisampleState* multisample_state;
 		const DepthStencilState* depth_stencil_state;
 		const ColourBlendState* colour_blend_state;
-		const DynamicState* dynamic_state;
+		const DynamicState* dynamic_state = nullptr;
 		const PipelineLayout* pipeline_layout;
 		const RenderPass* render_pass;
 

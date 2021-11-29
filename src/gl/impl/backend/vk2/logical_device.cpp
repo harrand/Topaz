@@ -51,6 +51,36 @@ namespace tz::gl::vk2
 		}
 		return nullptr;	
 	}
+	
+	hardware::Queue* QueueStorage::request_queue(QueueRequest request)
+	{
+		auto queue_satisfies_request = [request](const QueueFamilyInfo& info)
+		{
+			// If we request present support, the queue family *must* support it.
+			if(request.present_support && !info.present_support)
+			{
+				return false;
+			}
+			// Otherwise ensure the type field matches.
+			return std::all_of(request.field.begin(), request.field.end(), [info](QueueFamilyType type)
+			{
+				return info.types.contains(type);
+			});
+		};
+		for(QueueStorage::List& queue_family : this->hardware_queue_families)
+		{
+			if(queue_family.empty())
+			{
+				continue;
+			}
+			QueueData& qdata = queue_family.front();
+			if(queue_satisfies_request(qdata.family))
+			{
+				return &qdata.queue;	
+			}
+		}
+		return nullptr;	
+	}
 
 	QueueStorage::QueueData::QueueData(hardware::QueueInfo queue_info, QueueFamilyInfo family_info):
 	queue(queue_info),
@@ -255,6 +285,11 @@ namespace tz::gl::vk2
 	}
 
 	const hardware::Queue* LogicalDevice::get_hardware_queue(QueueRequest request) const
+	{
+		return this->queue_storage.request_queue(request);
+	}
+
+	hardware::Queue* LogicalDevice::get_hardware_queue(QueueRequest request) 
 	{
 		return this->queue_storage.request_queue(request);
 	}

@@ -43,6 +43,10 @@ namespace tz::gl::vk2
 		 * @post `this->is_signalled()` returns true.
 		 */
 		void wait_until_signalled() const;
+		/**
+		 * Set the state of the Fence to the unsignaleld state.
+		 */
+		void unsignal();
 
 		using NativeType = VkFence;
 		NativeType native() const;

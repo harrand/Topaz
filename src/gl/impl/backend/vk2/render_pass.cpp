@@ -171,6 +171,20 @@ namespace tz::gl::vk2
 			return desc;
 		});
 
+		VkSubpassDependency2 dep
+		{
+			.sType = VK_STRUCTURE_TYPE_SUBPASS_DEPENDENCY_2,
+			.pNext = nullptr,
+			.srcSubpass = VK_SUBPASS_EXTERNAL,
+			.dstSubpass = 0,
+			.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+			.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+			.srcAccessMask = 0,
+			.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+			.dependencyFlags = 0,
+			.viewOffset = 0
+		};
+
 		VkRenderPassCreateInfo2 create
 		{
 			.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO_2,
@@ -180,8 +194,8 @@ namespace tz::gl::vk2
 			.pAttachments = attachment_natives.data(),
 			.subpassCount = static_cast<std::uint32_t>(subpass_natives.size()),
 			.pSubpasses = subpass_natives.data(),
-			.dependencyCount = 0,
-			.pDependencies = nullptr,
+			.dependencyCount = 1,
+			.pDependencies = &dep,
 			.correlatedViewMaskCount = 0,
 			.pCorrelatedViewMasks = nullptr
 		};

@@ -71,6 +71,11 @@ namespace tz::gl::vk2
 		vkWaitForFences(this->get_device().native(), 1, &this->fence, VK_FALSE, std::numeric_limits<std::uint64_t>::max());
 	}
 
+	void Fence::unsignal()
+	{
+		vkResetFences(this->get_device().native(), 1, &this->fence);
+	}
+
 	Fence::NativeType Fence::native() const
 	{
 		return this->fence;

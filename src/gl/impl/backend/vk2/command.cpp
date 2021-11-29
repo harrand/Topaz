@@ -7,7 +7,7 @@ namespace tz::gl::vk2
 	framebuffer(&framebuffer),
 	recording(&recording)
 	{
-		std::vector<VkClearValue> clear_values;
+		std::vector<VkClearValue> clear_values(framebuffer.get_attachment_views().length(), VkClearValue{.color = {.float32 = {0.0f, 0.0f, 0.0f, 1.0f}}});
 
 		VkRenderPassBeginInfo begin
 		{

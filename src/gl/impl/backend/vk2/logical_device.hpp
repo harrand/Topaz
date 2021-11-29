@@ -69,6 +69,7 @@ namespace tz::gl::vk2
 		QueueStorage() = default;
 		void init(std::span<const QueueFamilyInfo> queue_families, const LogicalDevice& device);
 		const hardware::Queue* request_queue(QueueRequest request) const;
+		hardware::Queue* request_queue(QueueRequest request);
 	private:
 		struct QueueData
 		{
@@ -118,6 +119,7 @@ namespace tz::gl::vk2
 		const DeviceFeatureField& get_features() const;
 
 		const hardware::Queue* get_hardware_queue(QueueRequest request) const;
+		hardware::Queue* get_hardware_queue(QueueRequest request);
 
 		using NativeType = VkDevice;
 		NativeType native() const;

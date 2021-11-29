@@ -1,4 +1,5 @@
 add_subdirectory(vk)
+add_subdirectory(vk2)
 
 add_demo(
 	TARGET tz_triangle_demo

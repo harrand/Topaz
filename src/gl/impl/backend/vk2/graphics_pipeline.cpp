@@ -37,7 +37,13 @@ namespace tz::gl::vk2
 		auto multisample_state_native = info.multisample_state->native();
 		auto depth_stencil_state_native = info.depth_stencil_state->native();
 		auto colour_blend_state_native = info.colour_blend_state->native();
-		auto dynamic_state_native = info.dynamic_state->native();
+		DynamicState::NativeType dynamic_state_native;
+		DynamicState::NativeType* dynamic_state_native_ptr = nullptr;
+		if(info.dynamic_state != nullptr)
+		{
+			dynamic_state_native = info.dynamic_state->native();
+			dynamic_state_native_ptr = &dynamic_state_native;
+		}
 		VkGraphicsPipelineCreateInfo create
 		{
 			.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
@@ -53,7 +59,7 @@ namespace tz::gl::vk2
 			.pMultisampleState = &multisample_state_native,
 			.pDepthStencilState = &depth_stencil_state_native,
 			.pColorBlendState = &colour_blend_state_native,
-			.pDynamicState = &dynamic_state_native,
+			.pDynamicState = dynamic_state_native_ptr,
 			.layout = info.pipeline_layout->native(),
 			.renderPass = info.render_pass->native(),
 			.subpass = 0,
