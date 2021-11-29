@@ -117,7 +117,9 @@ namespace tz::gl::vk2
 		 * @brief Retrieve a list of all enabled features.
 		 */
 		const DeviceFeatureField& get_features() const;
-
+		/**
+		 * Block the current thread until all queues associated with this device have become idle.
+		 */
 		void wait_until_idle() const;
 
 		const hardware::Queue* get_hardware_queue(QueueRequest request) const;

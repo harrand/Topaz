@@ -237,8 +237,10 @@ int main()
 			// Frame admin stuff
 			in_flight_fences[current_frame].wait_until_signalled();
 
-			// TODO: Abstract away
-			vkAcquireNextImageKHR(ldev.native(), swapchain.native(), std::numeric_limits<int>::max(), image_available_semaphores[current_frame].native(), VK_NULL_HANDLE, &swapchain_image_index);
+			swapchain_image_index = swapchain.acquire_image
+			({
+				.signal_semaphore = &image_available_semaphores[current_frame],
+			}).image_index;
 
 			if(images_in_flight[swapchain_image_index] != nullptr)
 			{

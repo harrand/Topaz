@@ -1,6 +1,8 @@
 #include "gl/impl/backend/vk2/image.hpp"
 #if TZ_VULKAN
 #include "gl/impl/backend/vk2/swapchain.hpp"
+#include "gl/impl/backend/vk2/semaphore.hpp"
+#include "gl/impl/backend/vk2/fence.hpp"
 
 namespace tz::gl::vk2
 {	
@@ -133,6 +135,25 @@ namespace tz::gl::vk2
 		const LogicalDevice* ldev = this->info.device;
 		tz_assert(ldev != nullptr && !ldev->is_null(), "SwapchainInfo contained nullptr or null LogicalDevice");
 		return *ldev;
+	}
+
+	Swapchain::ImageAcquisitionResult Swapchain::acquire_image(const Swapchain::ImageAcquisition& acquire)
+	{
+		BinarySemaphore::NativeType signal_semaphore_native = VK_NULL_HANDLE;
+		Fence::NativeType signal_fence_native = VK_NULL_HANDLE;
+
+		if(acquire.signal_semaphore != nullptr)
+		{
+			signal_semaphore_native = acquire.signal_semaphore->native();
+		}
+		if(acquire.signal_fence != nullptr)
+		{
+			signal_fence_native = acquire.signal_fence->native();
+		}
+
+		Swapchain::ImageAcquisitionResult result;
+		vkAcquireNextImageKHR(this->get_device().native(), this->swapchain, acquire.timeout, signal_semaphore_native, signal_fence_native, &result.image_index);
+		return result;
 	}
 
 	Swapchain Swapchain::null()

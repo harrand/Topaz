@@ -32,6 +32,24 @@ namespace tz::gl::vk2
 	{
 	public:
 		/**
+		 * Specify information about a request to acquire the next available presentable image.
+		 * See @ref Swapchain::acquire_image for usage.
+		 */
+		struct ImageAcquisition
+		{
+			/// Semaphore to signal when the image has been retrieved. If not required, this can be nullptr.
+			const BinarySemaphore* signal_semaphore = nullptr;
+			/// Fence to signal when the image has been retrieved. If not required, this can be nullptr.
+			const Fence* signal_fence = nullptr;
+			/// Specifies number of nanoseconds which can pass before failing if no presentable images are available. By default, this is forever.
+			std::uint64_t timeout = std::numeric_limits<std::uint64_t>::max();
+		};
+
+		struct ImageAcquisitionResult
+		{
+			std::uint32_t image_index;
+		};
+		/**
 		 * Construct a new Swapchain.
 		 */
 		Swapchain(SwapchainInfo info);
@@ -42,6 +60,11 @@ namespace tz::gl::vk2
 		Swapchain& operator=(Swapchain&& rhs);
 
 		const LogicalDevice& get_device() const;
+		/**
+		 * Retrieve a presentable image index.
+		 * See @ref ImageAcquisition for details.
+		 */
+		ImageAcquisitionResult acquire_image(const ImageAcquisition& acquire);
 
 		/**
 		 * Create a Swapchain which doesn't do anything.
