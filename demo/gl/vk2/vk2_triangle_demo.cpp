@@ -32,41 +32,37 @@ std::vector<char> read_shader_code(const char* relative_shader_filename)
 int main()
 {
 	tz::GameInfo g{"vk2_triangle_demo", tz::Version{1, 0, 0}, tz::info()};
-	tz::WindowInitArgs wargs
+	tz::initialise(g, tz::ApplicationType::WindowApplication, 
 	{
 		.width = 800,
 		.height = 600,
 		.resizeable = false,
-		.title = "Vulkan (vk2) Triangle Demo"
-	};
-	tz::initialise(g, tz::ApplicationType::WindowApplication, wargs);
+	});
 	tz::gl::vk2::initialise(g, tz::ApplicationType::WindowApplication);
 	{
 		// First start with basic state (get a LogicalDevice and Swapchain running)
 		using namespace tz::gl::vk2;
 		PhysicalDevice pdev = get_all_devices().front();
-		LogicalDeviceInfo linfo
-		{
+
+		LogicalDevice ldev
+		{{
 			.physical_device = pdev,
 			.extensions = {DeviceExtension::Swapchain},
 			.surface = &get_window_surface()
-		};
-
-		LogicalDevice ldev{linfo};
+		}};
 		PhysicalDeviceSurfaceCapabilityInfo pdev_capability = pdev.get_surface_capabilities(get_window_surface());
 
 		ImageFormat swapchain_format = pdev.get_supported_surface_formats(get_window_surface()).front();
 
-		SwapchainInfo sinfo
-		{
+		Swapchain swapchain
+		{{
+
 			.device = &ldev,
 			.surface = &get_window_surface(),
 			.swapchain_image_count_minimum = pdev_capability.min_image_count,
 			.image_format = swapchain_format,
 			.present_mode = pdev.get_supported_surface_present_modes(get_window_surface()).front(),
-		};
-
-		Swapchain swapchain{sinfo};
+		}};
 
 		// Create RenderPass.
 		// Pass consists of 1 attachment (swapchain image, initial layout: Undefined, final layout: Present)
@@ -105,15 +101,14 @@ int main()
 		std::vector<DescriptorLayout> dlayouts;
 		dlayouts.push_back(lbuilder.build());
 
-		PipelineLayoutInfo plinfo
-		{
+		PipelineLayout pipeline_layout
+		{{
 			.descriptor_layouts = dlayouts,
 			.logical_device = &ldev
-		};
-		PipelineLayout pipeline_layout{plinfo};
+		}};
 
-		ShaderInfo shinfo
-		{
+		Shader shader
+		{{
 			.device = &ldev,
 			.modules =
 			{
@@ -131,12 +126,10 @@ int main()
 					.code = read_shader_code("demo/gl/vk2/shaders/triangle_demo.fragment.tzsl.spv")
 				}
 			}
-		};
+		}};
 
-		Shader shader{shinfo};
-
-		GraphicsPipelineInfo gpinfo
-		{
+		GraphicsPipeline graphics_pipeline
+		{{
 			.shaders = shader.native_data(),
 			.vertex_input_state = &vertex_input,
 			.input_assembly = &input_assembly,
@@ -150,22 +143,19 @@ int main()
 			.render_pass = &render_pass,
 
 			.device = &ldev
-		};
-
-		GraphicsPipeline graphics_pipeline{gpinfo};
+		}};
 
 		// Create framebuffers from swapchain images.
 		std::vector<Framebuffer> swapchain_framebuffers;
 		swapchain_framebuffers.reserve(swapchain.get_image_views().size());
 		for(const ImageView& swapchain_image_view : swapchain.get_image_views())
 		{
-			FramebufferInfo fbinfo
-			{
+			swapchain_framebuffers.emplace_back
+			(FramebufferInfo{
 				.render_pass = &render_pass,
 				.attachments = {&swapchain_image_view},
 				.dimensions = {swapchain_image_view.get_image().get_dimensions()}
-			};
-			swapchain_framebuffers.emplace_back(fbinfo);
+			});
 		}
 
 		// Create and record command buffers. One command buffer per swapchain image
@@ -176,17 +166,14 @@ int main()
 			.present_support = true
 		});
 
-		CommandPoolInfo cpinfo
-		{
+		CommandPool cpool
+		{{
 			.queue = queue
-		};
-
-		CommandPool cpool{cpinfo};
-		CommandPool::Allocation alloc
-		{
+		}};
+		CommandPool::AllocationResult result = cpool.allocate_buffers
+		({
 			.buffer_count = static_cast<std::uint32_t>(swapchain.get_images().size())
-		};
-		CommandPool::AllocationResult result = cpool.allocate_buffers(alloc);
+		});
 		tz_assert(result.success(), "CommandPool allocation failed unexpectedly");
 		tz_assert(result.buffers.length() == swapchain.get_images().size(), "Did not allocate correct number of CommandBuffers");
 
