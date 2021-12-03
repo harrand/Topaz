@@ -273,6 +273,8 @@ add_library(topaz
 	src/gl/impl/backend/vk2/hardware/queue.cpp
 	src/gl/impl/backend/vk2/hardware/queue.hpp
 
+	src/gl/impl/backend/vk2/vma.cpp
+
 	# tz::gl (OpenGL Backend)
 	src/gl/impl/backend/ogl/setup/opengl_instance.cpp
 	src/gl/impl/backend/ogl/setup/opengl_instance.hpp
