@@ -6,18 +6,31 @@
 
 namespace tz::gl::vk2
 {
+	/**
+	 * @ingroup tz_gl_vk_graphics_pipeline_fixed
+	 * Specifies the format of a vertex input attribute.
+	 * See @ref VertexInputState::Attribute for usage.
+	 */
 	enum class VertexInputFormat
 	{
+		/// A single 16-bit float.
 		Vec1Float16 = VK_FORMAT_R16_SFLOAT,
+		/// A single 32-bit float.
 		Vec1Float32 = VK_FORMAT_R32_SFLOAT,
 		
+		/// Two 16-bit floats.
 		Vec2Float32 = VK_FORMAT_R16G16_SFLOAT,
+		/// Two 32-bit floats.
 		Vec2Float64 = VK_FORMAT_R32G32_SFLOAT,
 
+		/// Three 16-bit floats.
 		Vec3Float48 = VK_FORMAT_R16G16B16_SFLOAT,
+		/// Three 32-bit floats.
 		Vec3Float96 = VK_FORMAT_R32G32B32_SFLOAT,
 
+		/// Four 16-bit floats.
 		Vec4Float64 = VK_FORMAT_R16G16B16A16_SFLOAT,
+		/// Four 32-bit floats.
 		Vec4Float128 = VK_FORMAT_R32G32B32A32_SFLOAT
 	};
 
@@ -26,24 +39,36 @@ namespace tz::gl::vk2
 		PerVertexBasis = VK_VERTEX_INPUT_RATE_VERTEX,
 		PerInstanceBasis = VK_VERTEX_INPUT_RATE_INSTANCE
 	};
+
 	/**
 	 * @ingroup tz_gl_vk_graphics_pipeline_fixed
 	 * Specifies how the input vertex data is organised.
+	 *
+	 * Input state is comprised of zero or more bindings and attributes.
 	 */
 	struct VertexInputState
 	{
+		/// Each binding has an index. Attributes refer to an existing binding via its index.
 		struct Binding
 		{
+			/// Index of the binding.
 			std::uint32_t binding;
+			/// Distance (in bytes) between the same binding in the next vertex input element.
 			std::uint32_t stride;
+			/// Describes how often the binding appears throughout the vertex input.
 			VertexInputRate input_rate;
 		};
 
+		/// Attributes describe data members of a vertex input element.
 		struct Attribute
 		{
+			/// Shader Input Location number corresponding to this attribute.
 			std::uint32_t shader_location;
+			/// Binding id corresponding to this attribute. @ref VertexInputState::bindings must contain an element @ref VertexInputState::Binding such that `binding.binding == this->binding_id`, then this attribute refers to that binding.
 			std::uint32_t binding_id;
+			/// Describes the data components of the attribute are laid out.
 			VertexInputFormat format;
+			/// Distance (in bytes) from the beginning of the vertex input element to this attribute. If this is the first attribute of the vertex input, then this should be `0`.
 			std::uint32_t element_offset;
 		};
 
