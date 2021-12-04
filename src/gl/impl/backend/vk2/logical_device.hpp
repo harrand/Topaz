@@ -59,7 +59,9 @@ namespace tz::gl::vk2
 
 	struct QueueRequest
 	{
+		/// Field for all functionality that the Queue should be able to perform.
 		QueueFamilyTypeField field;
+		/// If true, the returned Queue be able to present images.
 		bool present_support;
 	};
 
