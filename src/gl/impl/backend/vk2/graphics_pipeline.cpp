@@ -1,5 +1,6 @@
 #if TZ_VULKAN
 #include "gl/impl/backend/vk2/graphics_pipeline.hpp"
+#include <algorithm>
 
 namespace tz::gl::vk2
 {
@@ -30,7 +31,43 @@ namespace tz::gl::vk2
 	{
 		tz_assert(info.valid(), "GraphicsPipelineInfo was invalid. Please submit a bug report.");
 		// https://youtu.be/yyLuGNPLRjc
-		auto vertex_input_state_native = info.vertex_input_state->native();
+		// Vertex Input State
+		tz_assert(info.vertex_input_state != nullptr, "GraphicsPipelineInfo contained nullptr VertexInputState. Please submit a bug report");
+		std::vector<VkVertexInputBindingDescription> vertex_input_binding_natives(info.vertex_input_state->bindings.length());
+		std::vector<VkVertexInputAttributeDescription> vertex_input_attribute_natives(info.vertex_input_state->attributes.length());
+
+		std::transform(info.vertex_input_state->bindings.begin(), info.vertex_input_state->bindings.end(), vertex_input_binding_natives.begin(), [](const VertexInputState::Binding& binding)
+		{
+			return VkVertexInputBindingDescription
+			{
+				.binding = binding.binding,
+				.stride = binding.stride,
+				.inputRate = static_cast<VkVertexInputRate>(binding.input_rate)
+			};
+		});
+
+		std::transform(info.vertex_input_state->attributes.begin(), info.vertex_input_state->attributes.end(), vertex_input_attribute_natives.data(), [](const VertexInputState::Attribute& attribute)
+		{
+			return VkVertexInputAttributeDescription
+			{
+				.location = attribute.shader_location,
+				.binding = attribute.binding_id,
+				.format = static_cast<VkFormat>(attribute.format),
+				.offset = attribute.element_offset
+			};
+		});
+		
+		VkPipelineVertexInputStateCreateInfo vertex_input_state_native
+		{
+			.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
+			.pNext = nullptr,
+			.flags = 0,
+			.vertexBindingDescriptionCount = static_cast<std::uint32_t>(vertex_input_binding_natives.size()),
+			.pVertexBindingDescriptions = vertex_input_binding_natives.data(),
+			.vertexAttributeDescriptionCount = static_cast<std::uint32_t>(vertex_input_attribute_natives.size()),
+			.pVertexAttributeDescriptions = vertex_input_attribute_natives.data()
+		};
+
 		auto input_assembly_native = info.input_assembly->native();
 		auto viewport_state_native = info.viewport_state->native();
 		auto rasteriser_state_native = info.rasteriser_state->native();

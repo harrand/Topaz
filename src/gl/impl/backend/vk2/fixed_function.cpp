@@ -3,20 +3,6 @@
 
 namespace tz::gl::vk2
 {
-	VertexInputState::NativeType VertexInputState::native() const
-	{
-		return
-		{
-			.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
-			.pNext = nullptr,
-			.flags = 0,
-			.vertexBindingDescriptionCount = static_cast<std::uint32_t>(this->bindings.length()),
-			.pVertexBindingDescriptions = this->bindings.data(),
-			.vertexAttributeDescriptionCount = static_cast<std::uint32_t>(this->attributes.length()),
-			.pVertexAttributeDescriptions = this->attributes.data()
-		};
-	}
-
 	InputAssembly::NativeType InputAssembly::native() const
 	{
 		return

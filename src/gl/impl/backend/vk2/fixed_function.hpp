@@ -6,20 +6,49 @@
 
 namespace tz::gl::vk2
 {
+	enum class VertexInputFormat
+	{
+		Vec1Float16 = VK_FORMAT_R16_SFLOAT,
+		Vec1Float32 = VK_FORMAT_R32_SFLOAT,
+		
+		Vec2Float32 = VK_FORMAT_R16G16_SFLOAT,
+		Vec2Float64 = VK_FORMAT_R32G32_SFLOAT,
+
+		Vec3Float48 = VK_FORMAT_R16G16B16_SFLOAT,
+		Vec3Float96 = VK_FORMAT_R32G32B32_SFLOAT,
+
+		Vec4Float64 = VK_FORMAT_R16G16B16A16_SFLOAT,
+		Vec4Float128 = VK_FORMAT_R32G32B32A32_SFLOAT
+	};
+
+	enum class VertexInputRate
+	{
+		PerVertexBasis = VK_VERTEX_INPUT_RATE_VERTEX,
+		PerInstanceBasis = VK_VERTEX_INPUT_RATE_INSTANCE
+	};
 	/**
 	 * @ingroup tz_gl_vk_graphics_pipeline_fixed
 	 * Specifies how the input vertex data is organised.
 	 */
 	struct VertexInputState
 	{
-		using Binding = VkVertexInputBindingDescription;
-		using Attribute = VkVertexInputAttributeDescription;
+		struct Binding
+		{
+			std::uint32_t binding;
+			std::uint32_t stride;
+			VertexInputRate input_rate;
+		};
+
+		struct Attribute
+		{
+			std::uint32_t shader_location;
+			std::uint32_t binding_id;
+			VertexInputFormat format;
+			std::uint32_t element_offset;
+		};
 
 		tz::BasicList<Binding> bindings = {};
 		tz::BasicList<Attribute> attributes = {};
-		
-		using NativeType = VkPipelineVertexInputStateCreateInfo;
-		NativeType native() const;
 	};
 
 	/**
