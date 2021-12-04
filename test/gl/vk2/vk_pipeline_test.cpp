@@ -7,7 +7,6 @@ void basic_classic_pipeline_layout()
 	PhysicalDevice pdev = get_all_devices().front();
 	LogicalDeviceInfo linfo;
 	linfo.physical_device = pdev;
-	linfo.surface = nullptr;
 
 	LogicalDevice ldev{linfo};
 	{
@@ -31,8 +30,8 @@ void basic_classic_pipeline_layout()
 int main()
 {
 	tz::GameInfo game{"vk_pipeline_test", tz::Version{1, 0, 0}, tz::info()};
-	tz::initialise(game, tz::ApplicationType::HiddenWindowApplication);
-	tz::gl::vk2::initialise(game, tz::ApplicationType::HiddenWindowApplication);
+	tz::initialise(game, tz::ApplicationType::Headless);
+	tz::gl::vk2::initialise(game, tz::ApplicationType::Headless);
 	{
 		basic_classic_pipeline_layout();
 	}

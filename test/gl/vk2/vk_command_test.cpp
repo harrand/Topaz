@@ -6,7 +6,6 @@ void empty_command_pool()
 	PhysicalDevice pdev = get_all_devices().front();
 	LogicalDeviceInfo linfo;
 	linfo.physical_device = pdev;
-	linfo.surface = &get_window_surface();
 
 	LogicalDevice ldev{linfo};
 	{
@@ -33,7 +32,6 @@ void basic_command_buffers()
 	PhysicalDevice pdev = get_all_devices().front();
 	LogicalDeviceInfo linfo;
 	linfo.physical_device = pdev;
-	linfo.surface = &get_window_surface();
 
 	LogicalDevice ldev{linfo};
 	{
@@ -68,7 +66,6 @@ void empty_command_buffer_recording()
 	PhysicalDevice pdev = get_all_devices().front();
 	LogicalDeviceInfo linfo;
 	linfo.physical_device = pdev;
-	linfo.surface = &get_window_surface();
 
 	LogicalDevice ldev{linfo};
 	{
@@ -135,8 +132,8 @@ void empty_command_buffer_recording()
 int main()
 {
 	tz::GameInfo game{"vk_command_test", tz::Version{1, 0, 0}, tz::info()};
-	tz::initialise(game, tz::ApplicationType::HiddenWindowApplication);
-	tz::gl::vk2::initialise(game, tz::ApplicationType::HiddenWindowApplication);
+	tz::initialise(game, tz::ApplicationType::Headless);
+	tz::gl::vk2::initialise(game, tz::ApplicationType::Headless);
 	{
 		empty_command_pool();
 		basic_command_buffers();

@@ -106,6 +106,10 @@ namespace tz::gl::vk2
 		 * @return true if `depth_format` can be a depth/stencil attachment, otherwise false.
 		 */
 		bool supports_image_depth_format(ImageFormat depth_format) const;
+		/**
+		 * Retrieve the @ref VulkanInstance to which this physical device belongs.
+		 */
+		const VulkanInstance& get_instance() const;
 
 		using NativeType = VkPhysicalDevice;
 		NativeType native() const;

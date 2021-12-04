@@ -219,6 +219,12 @@ namespace tz::gl::vk2
 		return this->supports_image_format(depth_format, VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
 	}
 
+	const VulkanInstance& PhysicalDevice::get_instance() const
+	{
+		tz_assert(this->instance != nullptr, "PhysicalDevice had nullptr VulkanInstance. Please submit a bug report");
+		return *this->instance;
+	}
+
 	PhysicalDevice::NativeType PhysicalDevice::native() const
 	{
 		return this->dev;

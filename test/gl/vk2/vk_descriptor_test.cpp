@@ -6,7 +6,6 @@ void basic_descriptor_layouts()
 	PhysicalDevice pdev = get_all_devices().front();
 	LogicalDeviceInfo linfo;
 	linfo.physical_device = pdev;
-	linfo.surface = &get_window_surface();
 
 	LogicalDevice ldev{linfo};
 	{
@@ -68,7 +67,6 @@ void descriptor_layouts_descriptor_indexing()
 	}
 	LogicalDeviceInfo linfo;
 	linfo.physical_device = pdev;
-	linfo.surface = &get_window_surface();
 	linfo.features = {DeviceFeature::BindlessDescriptors};
 
 	LogicalDevice ldev{linfo};
@@ -92,7 +90,6 @@ void basic_descriptor_pools()
 	PhysicalDevice pdev = get_all_devices().front();
 	LogicalDeviceInfo linfo;
 	linfo.physical_device = pdev;
-	linfo.surface = &get_window_surface();
 
 	LogicalDevice ldev{linfo};
 	{
@@ -121,7 +118,6 @@ void descriptor_pools_descriptor_indexing()
 	}
 	LogicalDeviceInfo linfo;
 	linfo.physical_device = pdev;
-	linfo.surface = &get_window_surface();
 	linfo.features = {DeviceFeature::BindlessDescriptors};
 
 	LogicalDevice ldev{linfo};
@@ -148,7 +144,6 @@ void basic_descriptor_set_allocation()
 	PhysicalDevice pdev = get_all_devices().front();
 	LogicalDeviceInfo linfo;
 	linfo.physical_device = pdev;
-	linfo.surface = &get_window_surface();
 
 	LogicalDevice ldev{linfo};
 	{
@@ -183,7 +178,6 @@ void descriptor_set_allocation_descriptor_indexing()
 	}
 	LogicalDeviceInfo linfo;
 	linfo.physical_device = pdev;
-	linfo.surface = &get_window_surface();
 	linfo.features = {DeviceFeature::BindlessDescriptors};
 
 	LogicalDevice ldev{linfo};
@@ -216,8 +210,8 @@ void descriptor_set_allocation_descriptor_indexing()
 int main()
 {
 	tz::GameInfo game{"vk_descriptor_test", tz::Version{1, 0, 0}, tz::info()};
-	tz::initialise(game, tz::ApplicationType::HiddenWindowApplication);
-	tz::gl::vk2::initialise(game, tz::ApplicationType::HiddenWindowApplication);
+	tz::initialise(game, tz::ApplicationType::Headless);
+	tz::gl::vk2::initialise(game, tz::ApplicationType::Headless);
 	{
 		basic_descriptor_layouts();
 		descriptor_layouts_descriptor_indexing();

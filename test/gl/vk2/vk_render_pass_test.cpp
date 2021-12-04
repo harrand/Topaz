@@ -6,7 +6,6 @@ void basic_render_pass()
 	PhysicalDevice pdev = get_all_devices().front();
 	LogicalDeviceInfo linfo;
 	linfo.physical_device = pdev;
-	linfo.surface = &get_window_surface();
 
 	LogicalDevice ldev{linfo};
 	{
@@ -37,7 +36,6 @@ void complicated_render_pass()
 	PhysicalDevice pdev = get_all_devices().front();
 	LogicalDeviceInfo linfo;
 	linfo.physical_device = pdev;
-	linfo.surface = &get_window_surface();
 
 	LogicalDevice ldev{linfo};
 	{
@@ -75,8 +73,8 @@ void complicated_render_pass()
 int main()
 {
 	tz::GameInfo game{"vk_render_pass_test", tz::Version{1, 0, 0}, tz::info()};
-	tz::initialise(game, tz::ApplicationType::HiddenWindowApplication);
-	tz::gl::vk2::initialise(game, tz::ApplicationType::HiddenWindowApplication);
+	tz::initialise(game, tz::ApplicationType::Headless);
+	tz::gl::vk2::initialise(game, tz::ApplicationType::Headless);
 	{
 		basic_render_pass();
 		complicated_render_pass();

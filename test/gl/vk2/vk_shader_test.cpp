@@ -69,7 +69,7 @@ int main()
 {
 	tz::GameInfo game{"vk_shader_test", tz::Version{1, 0, 0}};
 	tz::initialise(game, tz::ApplicationType::Headless);
-	tz::gl::vk2::initialise_headless(game, tz::ApplicationType::Headless);
+	tz::gl::vk2::initialise(game, tz::ApplicationType::Headless);
 	{
 		basic_shader_module();
 		basic_shader();

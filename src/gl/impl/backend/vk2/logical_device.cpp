@@ -139,7 +139,7 @@ namespace tz::gl::vk2
 					info.types |= QueueFamilyType::Transfer;
 				}
 
-				if(!vk::is_headless())
+				if(!this->physical_device.get_instance().is_headless())
 				{
 					const WindowSurface* surf = device_info.surface;
 					if(surf == nullptr)

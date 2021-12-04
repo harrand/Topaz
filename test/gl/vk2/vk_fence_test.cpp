@@ -6,7 +6,6 @@ void basic_fence_operations()
 	PhysicalDevice pdev = get_all_devices().front();
 	LogicalDeviceInfo linfo;
 	linfo.physical_device = pdev;
-	linfo.surface = &get_window_surface();
 
 	LogicalDevice ldev{linfo};
 	{
@@ -32,8 +31,8 @@ void basic_fence_operations()
 int main()
 {
 	tz::GameInfo game{"vk_fence_test", tz::Version{1, 0, 0}, tz::info()};
-	tz::initialise(game, tz::ApplicationType::HiddenWindowApplication);
-	tz::gl::vk2::initialise(game, tz::ApplicationType::HiddenWindowApplication);
+	tz::initialise(game, tz::ApplicationType::Headless);
+	tz::gl::vk2::initialise(game, tz::ApplicationType::Headless);
 	{
 		basic_fence_operations();
 	}

@@ -8,13 +8,13 @@ void basic_graphics_pipeline()
 	PhysicalDevice pdev = get_all_devices().front();
 	LogicalDeviceInfo linfo;
 	linfo.physical_device = pdev;
-	linfo.surface = &get_window_surface();
 
 	LogicalDevice ldev{linfo};
 	{
 		VertexInputState vertex_input;
 		InputAssembly input_assembly;
-		ViewportState viewport = create_basic_viewport({tz::window().get_width(), tz::window().get_height()});
+		tz::Vec2 dims{1.0f, 1.0f};
+		ViewportState viewport = create_basic_viewport(dims);
 		RasteriserState rasteriser;
 		MultisampleState multisample;
 		DepthStencilState depth_stencil;
@@ -76,8 +76,8 @@ void basic_graphics_pipeline()
 int main()
 {
 	tz::GameInfo game{"vk_descriptor_test", tz::Version{1, 0, 0}, tz::info()};
-	tz::initialise(game, tz::ApplicationType::HiddenWindowApplication);
-	tz::gl::vk2::initialise(game, tz::ApplicationType::HiddenWindowApplication);
+	tz::initialise(game, tz::ApplicationType::Headless);
+	tz::gl::vk2::initialise(game, tz::ApplicationType::Headless);
 	{
 		basic_graphics_pipeline();
 	}

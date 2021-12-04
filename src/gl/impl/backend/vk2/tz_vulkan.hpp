@@ -87,11 +87,6 @@ namespace tz::gl::vk2
 	 */
 	void initialise(tz::GameInfo game_info, tz::ApplicationType app_type);
 	/**
-	 * @brief Initialise the vulkan backend for headless rendering.
-	 * @note This is intended to be invoked automatically by @ref tz::initialise however this is not yet implemented - You should invoke this yourself at the start of your program directly after `tz::initialise`
-	 */
-	void initialise_headless(tz::GameInfo game_info, tz::ApplicationType app_type);
-	/**
 	 * @brief Terminate the vulkan backend
 	 */
 	void terminate();
@@ -196,6 +191,9 @@ namespace tz::gl::vk2
 		 * @brief Retrieve the @ref VulkanInfo used to construct this instance.
 		 */
 		const VulkanInfo& get_info() const;
+
+		bool is_headless() const;
+
 		bool operator==(const VulkanInstance& rhs) const;
 		using NativeType = VkInstance;
 		NativeType native() const;

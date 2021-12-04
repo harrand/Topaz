@@ -14,16 +14,22 @@ namespace tz::gl::vk2
 
 	void initialise(tz::GameInfo game_info, tz::ApplicationType app_type)
 	{
-		VulkanInfo vk_info{game_info, InstanceExtensionList{InstanceExtension::DebugMessenger}};
+		tz_assert(inst == nullptr, "Vulkan Backend already initialised");
+		InstanceExtensionList exts;
+		#if TZ_DEBUG
+			exts |= InstanceExtension::DebugMessenger;
+		#endif
+		VulkanInfo vk_info{game_info, exts};
 		inst = new VulkanInstance{vk_info, app_type};
-		surf = new WindowSurface{*inst, tz::window()};
-	}
-
-	void initialise_headless(tz::GameInfo game_info, tz::ApplicationType app_type)
-	{
-		tz_assert(inst == nullptr, "Double initialise");
-		VulkanInfo vk_info{game_info, InstanceExtensionList{InstanceExtension::DebugMessenger}};
-		inst = new VulkanInstance{vk_info, app_type};
+		switch(app_type)
+		{
+			case tz::ApplicationType::Headless:
+				// Don't create global window surface.
+			break;
+			default:
+				surf = new WindowSurface{*inst, tz::window()};
+			break;
+		}
 	}
 
 	void terminate()
@@ -306,6 +312,11 @@ namespace tz::gl::vk2
 	const VulkanInfo& VulkanInstance::get_info() const
 	{
 		return this->info;
+	}
+
+	bool VulkanInstance::is_headless() const
+	{
+		return this->app_type == tz::ApplicationType::Headless;
 	}
 
 	bool VulkanInstance::operator==(const VulkanInstance& rhs) const

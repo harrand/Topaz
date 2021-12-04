@@ -1,3 +1,4 @@
+#include "core/tz.hpp"
 #include "gl/impl/backend/vk2/hardware/physical_device.hpp"
 #include "gl/impl/backend/vk2/logical_device.hpp"
 #include <concepts>
@@ -84,6 +85,23 @@ void simulataneous_logical_devices()
 	}
 }
 
+void headless_logical_device(tz::GameInfo game)
+{
+	using namespace tz::gl::vk2;
+	VulkanInfo vinfo{game, InstanceExtensionList{}};
+	VulkanInstance vinst{vinfo, tz::ApplicationType::Headless};
+	{
+		PhysicalDevice pdev = get_all_devices(vinst).front();
+		LogicalDevice ldev
+		{{
+			.physical_device = pdev,
+			.extensions = {},
+			.features = {},
+			.surface = nullptr
+		}};
+	}
+}
+
 int main()
 {
 	tz::GameInfo game{"vk_logical_device_test", tz::Version{1, 0, 0}, tz::info()};
@@ -94,6 +112,7 @@ int main()
 		custom_instance_and_window_surface(game);
 		semantics();
 		simulataneous_logical_devices();
+		headless_logical_device(game);
 	}
 	tz::gl::vk2::terminate();
 	tz::terminate();
