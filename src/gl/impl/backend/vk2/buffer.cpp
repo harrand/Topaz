@@ -134,7 +134,7 @@ namespace tz::gl::vk2
 
 	void Buffer::unmap()
 	{
-		if(this->vma_alloc_info.pMappedData != nullptr)
+		if(this->vma_alloc_info.pMappedData == nullptr || this->info.residency == MemoryResidency::CPUPersistent)
 		{
 			return;
 		}

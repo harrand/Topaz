@@ -28,6 +28,11 @@ namespace tz::gl::vk2::hardware
 
 	void Queue::submit(SubmitInfo submit_info)
 	{
+		if(submit_info.execution_complete_fence != nullptr)
+		{
+			tz_assert(!submit_info.execution_complete_fence->is_signalled(), "SubmitInfo contained Fence to signal on execution complete, but it was already signalled.");
+		}
+
 		std::vector<BinarySemaphore::NativeType> wait_sem_natives(submit_info.waits.length());
 		std::vector<VkPipelineStageFlags> wait_stage_natives(submit_info.waits.length());
 		for(std::size_t i = 0; i < submit_info.waits.length(); i++)

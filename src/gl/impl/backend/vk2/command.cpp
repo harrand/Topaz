@@ -110,6 +110,18 @@ namespace tz::gl::vk2
 		vkCmdBindDescriptorSets(this->get_command_buffer().native(), static_cast<VkPipelineBindPoint>(command.context), command.pipeline_layout->native(), command.first_set_id, command.descriptor_sets.length(), set_natives.data(), 0, nullptr);
 	}
 
+	void CommandBufferRecording::buffer_copy_buffer(VulkanCommand::BufferCopyBuffer command)
+	{
+		this->register_command(command);
+		VkBufferCopy cpy
+		{
+			.srcOffset = 0,
+			.dstOffset = 0,
+			.size = std::min(command.src->size(), command.dst->size())
+		};
+		vkCmdCopyBuffer(this->get_command_buffer().native(), command.src->native(), command.dst->native(), 1, &cpy);
+	}
+
 	const CommandBuffer& CommandBufferRecording::get_command_buffer() const
 	{
 		tz_assert(this->command_buffer != nullptr, "CommandBufferRecording had nullptr CommandBuffer. Please submit a bug report");

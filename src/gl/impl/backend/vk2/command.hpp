@@ -7,6 +7,7 @@
 #include "gl/impl/backend/vk2/logical_device.hpp"
 #include "gl/impl/backend/vk2/framebuffer.hpp"
 #include "gl/impl/backend/vk2/graphics_pipeline.hpp"
+#include "gl/impl/backend/vk2/buffer.hpp"
 
 namespace tz::gl::vk2
 {
@@ -80,8 +81,21 @@ namespace tz::gl::vk2
 			const RenderPass* pass;
 		};
 
+		/**
+		 * Record a copy from one @ref Buffer to another.
+		 *
+		 * The first N bytes will be copied from the source buffer to the destination buffer, where `N == min(src->size(), dst->size())`
+		 */
+		struct BufferCopyBuffer
+		{
+			/// Buffer to copy data from. Must not be null.
+			const Buffer* src;
+			/// Buffer to copy to. Must not be null.
+			Buffer* dst;
+		};
+
 		/// Variant type which has alternatives for every single possible recordable command type.
-		using Variant = std::variant<Draw, BindPipeline, BindDescriptorSets, BeginRenderPass, EndRenderPass>;
+		using Variant = std::variant<Draw, BindPipeline, BindDescriptorSets, BeginRenderPass, EndRenderPass, BufferCopyBuffer>;
 	};
 	/**
 	 * @ingroup tz_gl_vk_commands
@@ -150,6 +164,11 @@ namespace tz::gl::vk2
 		 * See @ref VulkanCommand::BindDescriptorSets for details.
 		 */
 		void bind_descriptor_sets(VulkanCommand::BindDescriptorSets command);
+		/**
+		 * Copy data from one @ref Buffer to another.
+		 * See @ref VulkanCommand::BufferCopyBuffer for details.
+		 */
+		void buffer_copy_buffer(VulkanCommand::BufferCopyBuffer command);
 
 		/**
 		 * Retrieve the @ref CommandBuffer that is currently being recorded.
