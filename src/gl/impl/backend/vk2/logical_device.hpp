@@ -129,6 +129,7 @@ namespace tz::gl::vk2
 
 		using NativeType = VkDevice;
 		NativeType native() const;
+		VmaAllocator vma_native() const;
 		/**
 		 * Create a LogicalDevice which doesn't do anything.
 		 * @note It is an error to use null LogicalDevices for most operations. Retrieving the native handle and querying for null-ness are the only valid operations on a null LogicalDevice.
@@ -148,6 +149,7 @@ namespace tz::gl::vk2
 		DeviceFeatureField enabled_features;
 		std::vector<QueueFamilyInfo> queue_families;
 		QueueStorage queue_storage;
+		VmaAllocator vma_allocator;
 	};
 }
 

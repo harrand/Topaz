@@ -4,6 +4,7 @@
 #include "core/game_info.hpp"
 #include "core/tz.hpp"
 #include "gl/impl/backend/vk2/extensions.hpp"
+#include "vk_mem_alloc.h"
 #include <cstdint>
 namespace tz::gl::vk2
 {
@@ -38,6 +39,12 @@ namespace tz::gl::vk2
 	 * @ingroup tz_gl_vk
 	 * @defgroup tz_gl_vk_image Images and Formats
 	 * Documentation for everything relating to Images and ImageFormats.
+	 */
+
+	/**
+	 * @ingroup tz_gl_vk
+	 * @defgroup tz_gl_vk_buffer Buffers
+	 * Documentation for Vulkan Buffers.
 	 */
 
 	/**

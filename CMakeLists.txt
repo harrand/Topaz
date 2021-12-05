@@ -235,6 +235,8 @@ add_library(topaz
 	src/gl/impl/backend/vk/vma.cpp
 	
 	# tz::gl (Vulkan Backend 2)
+	src/gl/impl/backend/vk2/buffer.cpp
+	src/gl/impl/backend/vk2/buffer.hpp
 	src/gl/impl/backend/vk2/command.cpp
 	src/gl/impl/backend/vk2/command.hpp
 	src/gl/impl/backend/vk2/descriptors.cpp
@@ -247,6 +249,7 @@ add_library(topaz
 	src/gl/impl/backend/vk2/fixed_function.hpp
 	src/gl/impl/backend/vk2/framebuffer.cpp
 	src/gl/impl/backend/vk2/framebuffer.hpp
+	src/gl/impl/backend/vk2/gpu_mem.hpp
 	src/gl/impl/backend/vk2/graphics_pipeline.cpp
 	src/gl/impl/backend/vk2/graphics_pipeline.hpp
 	src/gl/impl/backend/vk2/tz_vulkan.cpp

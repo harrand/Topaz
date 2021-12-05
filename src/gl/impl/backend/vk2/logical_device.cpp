@@ -105,7 +105,8 @@ namespace tz::gl::vk2
 	physical_device(device_info.physical_device),
 	enabled_extensions(device_info.extensions),
 	enabled_features(device_info.features),
-	queue_families()
+	queue_families(),
+	vma_allocator()
 	{
 		tz_assert(this->physical_device.native() != VK_NULL_HANDLE, "Null PhysicalDevice provided to LogicalDevice ctor. Submit a bug report.");
 		// Firstly, let's retrieve some information about the PhysicalDevice's queue families. Note that its API doesn't expose this to the end-user, so we have to do this ourselves.
@@ -236,6 +237,34 @@ namespace tz::gl::vk2
 		}
 		// We'll retrieve all the VkQueues now so we don't have to deal with it later.
 		this->queue_storage.init(this->queue_families, *this);
+
+		// Now we'll create a VMA allocator.
+		VmaAllocatorCreateInfo vma_create
+		{
+			.flags = 0,
+			.physicalDevice = this->get_hardware().native(),
+			.device = this->native(),
+			.preferredLargeHeapBlockSize = 0,
+			.pAllocationCallbacks = nullptr,
+			.pDeviceMemoryCallbacks = nullptr,
+			.frameInUseCount = 0,
+			.pHeapSizeLimit = nullptr,
+			.pVulkanFunctions = nullptr,
+			.pRecordSettings = nullptr,
+			.instance = this->get_hardware().get_instance().native(),
+			.vulkanApiVersion = util::tz_to_vk_version(vulkan_version)
+		};
+
+		VkResult alloc_res = vmaCreateAllocator(&vma_create, &this->vma_allocator);
+		switch(alloc_res)
+		{
+			case VK_SUCCESS:
+
+			break;
+			default:
+				tz_error("Failed to create VMA allocator for unknown reason. Please submit a bug report.");
+			break;
+		}
 	}
 
 	LogicalDevice::LogicalDevice(LogicalDevice&& move):
@@ -244,7 +273,8 @@ namespace tz::gl::vk2
 	enabled_extensions(),
 	enabled_features(),
 	queue_families(),
-	queue_storage()
+	queue_storage(),
+	vma_allocator()
 	{
 		*this = std::move(move);
 	}
@@ -253,6 +283,7 @@ namespace tz::gl::vk2
 	{
 		if(this->dev != VK_NULL_HANDLE)
 		{
+			vmaDestroyAllocator(this->vma_allocator);
 			vkDestroyDevice(this->dev, nullptr);
 			this->dev = VK_NULL_HANDLE;
 		}
@@ -266,6 +297,7 @@ namespace tz::gl::vk2
 		std::swap(this->enabled_features, rhs.enabled_features);
 		std::swap(this->queue_families, rhs.queue_families);
 		std::swap(this->queue_storage, rhs.queue_storage);
+		std::swap(this->vma_allocator, rhs.vma_allocator);
 		return *this;
 	}
 
@@ -302,6 +334,11 @@ namespace tz::gl::vk2
 	VkDevice LogicalDevice::native() const
 	{
 		return this->dev;
+	}
+
+	VmaAllocator LogicalDevice::vma_native() const
+	{
+		return this->vma_allocator;
 	}
 
 	LogicalDevice LogicalDevice::null()
