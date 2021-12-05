@@ -89,8 +89,8 @@ namespace tz::gl::vk2
 
 	void CommandBufferRecording::bind_pipeline(VulkanCommand::BindPipeline command)
 	{
-		this->register_command(command);
 		tz_assert(command.pipeline != nullptr, "BindPipeline Command contained nullptr GraphicsPipeline");
+		this->register_command(command);
 
 		vkCmdBindPipeline(this->get_command_buffer().native(), static_cast<VkPipelineBindPoint>(command.pipeline_context), command.pipeline->native());
 	}
@@ -112,6 +112,11 @@ namespace tz::gl::vk2
 
 	void CommandBufferRecording::buffer_copy_buffer(VulkanCommand::BufferCopyBuffer command)
 	{
+		tz_assert(command.src != nullptr, "BufferCopyBuffer: Source buffer was nullptr");
+		tz_assert(command.dst != nullptr, "BufferCopyBuffer: Destination buffer was nullptr");
+		tz_assert(command.src->get_usage().contains(BufferUsage::TransferSource), "BufferCopyBuffer: Source buffer did not contain BufferUsage::TransferSource");
+		tz_assert(command.dst->get_usage().contains(BufferUsage::TransferDestination), "BufferCopyBuffer: Destination buffer did not contain BufferUsage::TransferDestination");
+
 		this->register_command(command);
 		VkBufferCopy cpy
 		{
