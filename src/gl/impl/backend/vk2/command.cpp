@@ -127,6 +127,27 @@ namespace tz::gl::vk2
 		vkCmdCopyBuffer(this->get_command_buffer().native(), command.src->native(), command.dst->native(), 1, &cpy);
 	}
 
+	void CommandBufferRecording::bind_buffer(VulkanCommand::BindBuffer command)
+	{
+		tz_assert(command.buffer != nullptr, "BindBuffer contained nullptr Buffer. Please submit a bug report.");
+		Buffer::NativeType buf_native = command.buffer->native();
+		VkDeviceSize offsets[] = {0};
+		if(command.buffer->get_usage().contains(BufferUsage::VertexBuffer))
+		{
+			vkCmdBindVertexBuffers(this->get_command_buffer().native(), 0, 1, &buf_native, offsets);
+		}
+		else if(command.buffer->get_usage().contains(BufferUsage::IndexBuffer))
+		{
+			vkCmdBindIndexBuffer(this->get_command_buffer().native(), buf_native, 0, VK_INDEX_TYPE_UINT32);
+		}
+		else
+		{
+			tz_error("BindBuffer contained a Buffer that was not a VertexBuffer nor IndexBuffer. Please submit a bug report.");
+			return;
+		}
+		this->register_command(command);
+	}
+
 	const CommandBuffer& CommandBufferRecording::get_command_buffer() const
 	{
 		tz_assert(this->command_buffer != nullptr, "CommandBufferRecording had nullptr CommandBuffer. Please submit a bug report");

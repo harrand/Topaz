@@ -94,8 +94,17 @@ namespace tz::gl::vk2
 			Buffer* dst;
 		};
 
+		/**
+		 * Bind a vertex or index @ref Buffer.
+		 */
+		struct BindBuffer
+		{
+			/// Buffer to bind, usage must contain *one* of @ref BufferUsage::VertexBuffer or @ref BufferUsage::IndexBuffer.
+			const Buffer* buffer;
+		};
+
 		/// Variant type which has alternatives for every single possible recordable command type.
-		using Variant = std::variant<Draw, BindPipeline, BindDescriptorSets, BeginRenderPass, EndRenderPass, BufferCopyBuffer>;
+		using Variant = std::variant<Draw, BindPipeline, BindDescriptorSets, BeginRenderPass, EndRenderPass, BufferCopyBuffer, BindBuffer>;
 	};
 	/**
 	 * @ingroup tz_gl_vk_commands
@@ -169,6 +178,11 @@ namespace tz::gl::vk2
 		 * See @ref VulkanCommand::BufferCopyBuffer for details.
 		 */
 		void buffer_copy_buffer(VulkanCommand::BufferCopyBuffer command);
+		/**
+		 * Bind a @ref Buffer.
+		 * See @ref VulkanCommand::BindBuffer for details.
+		 */
+		void bind_buffer(VulkanCommand::BindBuffer command);
 
 		/**
 		 * Retrieve the @ref CommandBuffer that is currently being recorded.
