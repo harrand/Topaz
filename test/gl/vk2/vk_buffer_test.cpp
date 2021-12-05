@@ -3,6 +3,7 @@
 #include "gl/impl/backend/vk2/hardware/physical_device.hpp"
 #include "gl/impl/backend/vk2/command.hpp"
 #include "gl/impl/backend/vk2/fence.hpp"
+#include "gl/impl/backend/vk2/semaphore.hpp"
 
 void basic_buffers()
 {
@@ -29,8 +30,9 @@ void basic_buffers()
 	basic_vtx.unmap();
 }
 
-void staging_buffer()
+void buffer_transfers()
 {
+	// Write data into a staging buffer. Use a command buffer to transfer the staging buffer data into a GPU buffer. After that, transfer that back into another CPU buffer and ensure the resultant data is the same.
 	using namespace tz::gl::vk2;
 	PhysicalDevice pdev = get_all_devices().front();
 	LogicalDevice ldev
@@ -49,9 +51,10 @@ void staging_buffer()
 	}};
 	CommandPool::AllocationResult cres = cpool.allocate_buffers
 	({
-		.buffer_count = 1
+		.buffer_count = 2
 	});
-	CommandBuffer& cbuf = cres.buffers.front();
+	CommandBuffer& cbuf = cres.buffers[0];
+	CommandBuffer& cbuf2 = cres.buffers[1];
 
 	// Create a staging buffer and a normal buffer.
 	constexpr std::size_t float_count = 3;
@@ -66,7 +69,7 @@ void staging_buffer()
 	{{
 		.device = &ldev,
 		.size_bytes = sizeof(float) * float_count,
-		.usage = {BufferUsage::VertexBuffer, BufferUsage::TransferDestination},
+		.usage = {BufferUsage::VertexBuffer, BufferUsage::TransferDestination, BufferUsage::TransferSource},
 		.residency = MemoryResidency::GPU
 	}};
 	// Put {1.0f, 2.0f, 3.0f, ...} into the staging buffer.
@@ -87,21 +90,65 @@ void staging_buffer()
 			.dst = &vtx_buf
 		});
 	}
-	// Submit the work. Use a fence so we can wait till its done.
-	Fence fence
-	{{
-		.device = &ldev,
-	}};
+	// Submit the first transfer. Signal a semaphore when it's done.
+	BinarySemaphore sem{ldev};
 
 	queue->submit
 	({
 		.command_buffers = {&cbuf},
 		.waits = {},
+		.signal_semaphores = {&sem},
+	});
+
+	Buffer final_cpu_buf
+	{{
+		.device = &ldev,
+		.size_bytes = sizeof(float) * float_count,
+		.usage = {BufferUsage::TransferDestination},
+		.residency = MemoryResidency::CPU
+	}};
+
+	{
+		// Record the second transfer.
+		CommandBufferRecording record = cbuf2.record();
+		record.buffer_copy_buffer
+		({
+			.src = &vtx_buf,
+			.dst = &final_cpu_buf
+		});
+	}
+	// Submit the work, wait on a fence to make sure we only check once it's done.
+	Fence fence
+	{{
+		.device = &ldev
+	}};
+	queue->submit
+	({
+		.command_buffers = {&cbuf2},
+		.waits = 
+		{
+			hardware::Queue::SubmitInfo::WaitInfo
+			{
+				.wait_semaphore = &sem,
+				.wait_stage = PipelineStage::TransferCommands
+			}
+		},
 		.signal_semaphores = {},
 		.execution_complete_fence = &fence
 	});
 
 	fence.wait_until_signalled();
+	// Now check the data is correct.
+	{
+		std::span<float> output_data = final_cpu_buf.map_as<float>();
+		
+		for(std::size_t i = 0; i < output_data.size(); i++)
+		{
+			tz_assert(output_data[i] == static_cast<float>(i), "Output data was incorrect. Expected %g, got %g", static_cast<float>(i), output_data[i]);
+		}
+
+		final_cpu_buf.unmap();
+	}
 }
 
 int main()
@@ -111,7 +158,7 @@ int main()
 	tz::gl::vk2::initialise(game, tz::ApplicationType::Headless);
 	{
 		basic_buffers();
-		staging_buffer();
+		buffer_transfers();
 	}
 	tz::gl::vk2::terminate();
 	tz::terminate();
