@@ -123,6 +123,8 @@ namespace tz::gl::vk2
 			using NativeType = VkQueue;
 			NativeType native() const;
 		private:
+			void execute_cpu_side_command_buffer(const CommandBuffer& command_buffer) const;
+
 			VkQueue queue;
 			QueueInfo info;
 		};

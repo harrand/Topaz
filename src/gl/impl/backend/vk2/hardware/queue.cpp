@@ -69,7 +69,11 @@ namespace tz::gl::vk2::hardware
 		switch(res)
 		{
 			case VK_SUCCESS:
-				// do nothing
+				// Some commands require cpu-side operations too.
+				for(const CommandBuffer* buf : submit_info.command_buffers)
+				{
+					this->execute_cpu_side_command_buffer(*buf);
+				}
 			break;
 			case VK_ERROR_OUT_OF_HOST_MEMORY:
 				tz_error("Failed to submit Queue because we ran out of host memory (RAM). Please ensure that your system meets the minimum requirements.");
@@ -139,6 +143,23 @@ namespace tz::gl::vk2::hardware
 	Queue::NativeType Queue::native() const
 	{
 		return this->queue;
+	}
+
+	void Queue::execute_cpu_side_command_buffer(const CommandBuffer& command_buffer) const
+	{
+		for(const VulkanCommand::Variant& cmd : command_buffer.get_recorded_commands())
+		{
+			std::visit([](auto&& val)
+			{
+				using T = std::decay_t<decltype(val)>;
+				if constexpr(std::is_same_v<T, VulkanCommand::TransitionImageLayout>)
+				{
+					// We probably need to change the image's layout CPU-side.
+					Image& img = *val.image;
+					img.set_layout(val.target_layout);
+				}
+			}, cmd);
+		}
 	}
 }
 

@@ -192,6 +192,11 @@ namespace tz::gl::vk2
 	device(nullptr),
 	destroy_on_destructor(false)
 	{}
+
+	void Image::set_layout(ImageLayout layout)
+	{
+		this->layout = layout;
+	}
 }
 
 #endif // TZ_VULKAN

@@ -103,8 +103,38 @@ namespace tz::gl::vk2
 			const Buffer* buffer;
 		};
 
+		/**
+		 * Transition an image layout via recording a pipeline barrier into the @ref CommandBuffer.
+		 *
+		 * @post After submission, `image->get_layout() == .target_layout` is guaranteed to be true, however this may actually occur *before* some @ref hardware::Queue has actually fully invoked this command. For that reason, if `image->get_layout()` is accessed before the submission of this command has fully finished (see @ref hardware::Queue::SubmitInfo::execution_complete_fence), then the behaviour is undefined.
+		 * @internal See @ref hardware::queue::execute_cpu_side_command_buffer for implementation details of the changing of the @ref ImageLayout CPU-side.
+		 */
+		struct TransitionImageLayout
+		{
+			/// Image to transition.
+			Image* image;
+			/// Desired ImageLayout of `image` after the command has finished execution.
+			ImageLayout target_layout;
+
+			/// All preceeding operations within the recorded @ref CommandBuffer that satisfy an access method specified here will not be re-ordered (guaranteed to be before every candidate after the barrier)
+			AccessFlagField source_access;
+			/// All succeding operations within the recorded @ref CommandBuffer that satisfy an access method specified here will not be re-ordered (guaranteed to be after every candidate before the barrier).
+			AccessFlagField destination_access;
+			/// Stage that the barrier blocks after.
+			PipelineStage source_stage;
+			/// Stage that the barrier blocks before.
+			PipelineStage destination_stage;
+			/// Aspect of `image` in this context.
+			ImageAspectFlags image_aspects;
+
+			/// List of affected mip levels. Must be in ascending-order and with no gaps. E.g {0, 1, 2} is fine, {0, 2, 3} is not and neither is {0, 2, 1}. Default is {0}.
+			tz::BasicList<std::uint32_t> affected_mip_levels = {0u};
+			/// List of affected array layers. Must be in ascending-order and with no gaps. E.g {0, 1, 2} is fine, {0, 2, 3} is not and neither is {0, 2, 1}. Default is {0}.
+			tz::BasicList<std::uint32_t> affected_layers = {0u};
+		};
+
 		/// Variant type which has alternatives for every single possible recordable command type.
-		using Variant = std::variant<Draw, BindPipeline, BindDescriptorSets, BeginRenderPass, EndRenderPass, BufferCopyBuffer, BindBuffer>;
+		using Variant = std::variant<Draw, BindPipeline, BindDescriptorSets, BeginRenderPass, EndRenderPass, BufferCopyBuffer, BindBuffer, TransitionImageLayout>;
 	};
 	/**
 	 * @ingroup tz_gl_vk_commands
@@ -184,6 +214,8 @@ namespace tz::gl::vk2
 		 */
 		void bind_buffer(VulkanCommand::BindBuffer command);
 
+		void transition_image_layout(VulkanCommand::TransitionImageLayout command);
+
 		/**
 		 * Retrieve the @ref CommandBuffer that is currently being recorded.
 		 * @return CommandBuffer that this recording corresponds to.
@@ -227,6 +259,7 @@ namespace tz::gl::vk2
 		 * @return Number of commands within the buffer.
 		 */
 		std::size_t command_count() const;
+		std::span<const VulkanCommand::Variant> get_recorded_commands() const;
 
 		using NativeType = VkCommandBuffer;
 		NativeType native() const;

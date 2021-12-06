@@ -1,5 +1,7 @@
 #if TZ_VULKAN
+#include "gl/impl/backend/vk2/render_pass.hpp"
 #include "gl/impl/backend/vk2/command.hpp"
+#include <numeric>
 
 namespace tz::gl::vk2
 {
@@ -148,6 +150,51 @@ namespace tz::gl::vk2
 		this->register_command(command);
 	}
 
+	void CommandBufferRecording::transition_image_layout(VulkanCommand::TransitionImageLayout command)
+	{
+		tz_assert(command.image != nullptr, "TransitionImageLayout contained nullptr Image");
+		// Given a list of mip-levels/array layers X:
+		// X.begin() -> X.end() must be sequential with no gaps.
+		// i.e {-1, 0, 1, 2, 3} is fine {-1, 1, 2, 3} is not, neither is {-1, 2, 3, 0, 1}
+		// Assert that neither of these are the case.
+		auto is_ascending_with_no_gaps = []<typename T>(auto begin, auto end)->bool
+		{
+			std::vector<T> iota_version(std::distance(begin, end));
+			std::iota(iota_version.begin(), iota_version.end(), *begin);
+			return std::equal(begin, end, iota_version.begin());
+		};
+		auto is_ascending_with_no_gaps_ui32 = [is_ascending_with_no_gaps](auto begin, auto end)->bool{return is_ascending_with_no_gaps.template operator()<std::uint32_t>(begin, end);};
+
+		tz_assert(is_ascending_with_no_gaps_ui32(command.affected_mip_levels.begin(), command.affected_mip_levels.end()), "TransitionImageLayout contained list of affected mip levels of size %zu. However, the elements were not 'sequential without gaps'.", command.affected_mip_levels.length());
+		tz_assert(is_ascending_with_no_gaps_ui32(command.affected_layers.begin(), command.affected_layers.end()), "TransitionImageLayout contained list of affected array layers of size %zu. However, the elements were not 'sequential without gaps'.", command.affected_layers.length());
+
+		VkImageSubresourceRange img_subres_range
+		{
+			.aspectMask = static_cast<VkImageAspectFlags>(static_cast<ImageAspectFlag>(command.image_aspects)),
+			.baseMipLevel = command.affected_mip_levels.front(),
+			.levelCount = static_cast<std::uint32_t>(command.affected_mip_levels.length()),
+			.baseArrayLayer = command.affected_layers.front(),
+			.layerCount = static_cast<std::uint32_t>(command.affected_layers.length())
+		};
+
+		this->register_command(command);
+		VkImageMemoryBarrier barrier
+		{
+			.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
+			.pNext = nullptr,
+			.srcAccessMask = static_cast<VkAccessFlags>(static_cast<AccessFlag>(command.source_access)),
+			.dstAccessMask = static_cast<VkAccessFlags>(static_cast<AccessFlag>(command.destination_access)),
+			.oldLayout = static_cast<VkImageLayout>(command.image->get_layout()),
+			.newLayout = static_cast<VkImageLayout>(command.target_layout),
+			.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+			.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+			.image = command.image->native(),
+			.subresourceRange = img_subres_range
+		};
+
+		vkCmdPipelineBarrier(this->get_command_buffer().native(), static_cast<VkPipelineStageFlags>(command.source_stage), static_cast<VkPipelineStageFlags>(command.destination_stage), 0, 0, nullptr, 0, nullptr, 1, &barrier);
+	}
+
 	const CommandBuffer& CommandBufferRecording::get_command_buffer() const
 	{
 		tz_assert(this->command_buffer != nullptr, "CommandBufferRecording had nullptr CommandBuffer. Please submit a bug report");
@@ -187,6 +234,11 @@ namespace tz::gl::vk2
 	std::size_t CommandBuffer::command_count() const
 	{
 		return this->recorded_commands.size();
+	}
+
+	std::span<const VulkanCommand::Variant> CommandBuffer::get_recorded_commands() const
+	{
+		return this->recorded_commands;
 	}
 
 	CommandBuffer::NativeType CommandBuffer::native() const

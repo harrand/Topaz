@@ -86,6 +86,10 @@ namespace tz::gl::vk2
 
 	class Swapchain;
 	class LogicalDevice;
+	namespace hardware
+	{
+		class Queue;
+	}
 
 	/**
 	 * @ingroup tz_gl_vk_image
@@ -171,8 +175,11 @@ namespace tz::gl::vk2
 		bool is_null() const;
 
 		bool operator==(const Image& rhs) const;
+
+		friend class hardware::Queue;
 	private:
 		Image();
+		void set_layout(ImageLayout layout);
 
 		VkImage image;
 		ImageFormat format;

@@ -57,6 +57,55 @@ namespace tz::gl::vk2
 
 	/**
 	 * @ingroup tz_gl_vk_graphics_pipeline_render_pass
+	 * Specifies specific events during which a memory dependency takes place.
+	 */
+	enum class AccessFlag
+	{
+		/// - Doesn't need to happen.
+		None = VK_ACCESS_NONE_KHR,
+		/// - Anytime any read is done.
+		AllReads = VK_ACCESS_MEMORY_READ_BIT,
+		/// - Anytime any write is done.
+		AllWrites = VK_ACCESS_MEMORY_WRITE_BIT,
+
+		/// - Anytime an Indirect @ref Buffer is read from during an indirect draw/dispatch.
+		IndirectBufferRead = VK_ACCESS_INDIRECT_COMMAND_READ_BIT,
+		/// - Anytime an Index @ref Buffer is read from during an indexed draw.
+		IndexBufferRead = VK_ACCESS_INDEX_READ_BIT,
+		/// - Anytime a Vertex @ref Buffer is read from during a draw.
+		VertexBufferRead = VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT,
+		/// - Anytime a Uniform @ref Buffer is read from during any shader pipeline stage.
+		UniformBufferRead = VK_ACCESS_UNIFORM_READ_BIT,
+
+		/// - Anytime an input attachment to a @ref RenderPass is read from during fragment shading.
+		InputAttachmentRead = VK_ACCESS_INPUT_ATTACHMENT_READ_BIT,
+		/// - Anytime any read/write @ref Shader resource is read from during shader invocations (Uniform Buffers, Storage Buffers, Images, Storage Images etc...).
+		ShaderResourceRead = VK_ACCESS_SHADER_READ_BIT,
+		/// - Anytime any writeable @ref Shader resource is written to during shader invocations (Storage Buffers, Storage Images etc...).
+		ShaderResourceWrite = VK_ACCESS_SHADER_WRITE_BIT,
+		/// - Anytime a colour attachment is read from (e.g blending, logic operations, subpass load operations...)
+		ColourAttachmentRead = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT,
+		/// - Anytime a colour attachment is written to (e.g during a @ref RenderPass or subpass load operations...)
+		ColourAttachmentWrite = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+		/// - Anytime a depth/stencil attachment is read from.
+		DepthStencilAttachmentRead = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT,
+		/// - Anytime a depth/stencil attachment is written to.
+		DepthStencilAttachmentWrite = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
+		/// - Anytime a @ref Image or @ref Buffer is read from during a clear/copy transfer operation.
+		TransferOperationRead = VK_ACCESS_TRANSFER_READ_BIT,
+		/// - Anytime a @ref Image or @ref Buffer is written to during a clear/copy transfer operation.
+		TransferOperationWrite = VK_ACCESS_TRANSFER_WRITE_BIT,
+		/// - Anytime a read occurs on directly-host-visible memory.
+		HostRead = VK_ACCESS_HOST_READ_BIT,
+		/// - Anytime a write occurs on directly-host-visible memory.
+		HostWrite = VK_ACCESS_HOST_WRITE_BIT,
+
+	};
+
+	using AccessFlagField = tz::EnumField<AccessFlag>;
+
+	/**
+	 * @ingroup tz_gl_vk_graphics_pipeline_render_pass
 	 * Specifies some data about an attachment.
 	 */
 	struct Attachment
