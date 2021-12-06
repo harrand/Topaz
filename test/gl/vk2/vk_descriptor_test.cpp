@@ -1,4 +1,5 @@
 #include "gl/impl/backend/vk2/descriptors.hpp"
+#include "gl/impl/backend/vk2/image_format.hpp"
 
 void basic_descriptor_layouts()
 {
@@ -207,6 +208,104 @@ void descriptor_set_allocation_descriptor_indexing()
 	}
 }
 
+void write_actual_descriptors()
+{
+	using namespace tz::gl::vk2;
+	PhysicalDevice pdev = get_all_devices().front();
+	LogicalDeviceInfo linfo;
+	linfo.physical_device = pdev;
+
+	LogicalDevice ldev{linfo};
+	{
+		Buffer ssbo
+		{{
+			.device = &ldev,
+			.size_bytes = sizeof(float),
+			.usage = {BufferUsage::StorageBuffer},
+			.residency = MemoryResidency::GPU
+		}};
+
+		Image img
+		{{
+			.device = &ldev,
+			.format = format_traits::get_mandatory_sampled_image_formats().front(),
+			.dimensions = {1u, 1u},
+			.usage = {ImageUsage::SampledImage},
+			.residency = MemoryResidency::GPU
+		}};
+
+		ImageView img_view
+		{{
+			.image = &img,
+			.aspect = ImageAspect::Colour
+		}};
+
+		Sampler sampler
+		{{
+			.device = &ldev,
+			.min_filter = LookupFilter::Nearest,
+			.mag_filter = LookupFilter::Nearest,
+			.mipmap_mode = MipLookupFilter::Nearest,
+			.address_mode_u = SamplerAddressMode::ClampToEdge,
+			.address_mode_v = SamplerAddressMode::ClampToEdge,
+			.address_mode_w = SamplerAddressMode::ClampToEdge
+		}};
+	
+		DescriptorLayoutBuilder builder;
+		builder.set_device(ldev);
+		builder.with_binding({.type = DescriptorType::StorageBuffer, .count = 1})
+		       .with_binding({.type = DescriptorType::ImageWithSampler, .count = 1});
+
+		DescriptorLayout layout = builder.build();
+		// Let's create a pool enough for one set of this layout, and another for two.
+		DescriptorPoolInfo pinfo = DescriptorPoolInfo::to_fit_layout(layout, 1);
+
+		DescriptorPool pool{pinfo};
+		DescriptorPool::Allocation alloc
+		{
+			.set_layouts = {&layout}
+		};
+		DescriptorPool::AllocationResult alloc_res = pool.allocate_sets(alloc);
+		tz_assert(alloc_res.success(), "DescriptorPool allocation failed unexpectedly.");
+		tz_assert(alloc_res.sets.length() == 1, "DescriptorPool allocation returned list of sets of unexpected size. Expected %d, got %zu", 1, alloc_res.sets.length());
+		DescriptorSet set = alloc_res.sets.front();
+
+		pool.update_sets
+		({
+		 	DescriptorSet::Write
+			{
+				.set = &set,
+				.binding_id = 0,
+				.array_element = 0,
+				.write_infos =
+				{
+					DescriptorSet::Write::BufferWriteInfo
+					{
+						.buffer = &ssbo,
+						.buffer_offset = 0,
+						.buffer_write_size = ssbo.size()
+					}
+				}
+			},
+		 	DescriptorSet::Write
+			{
+				.set = &set,
+				.binding_id = 1,
+				.array_element = 0,
+				.write_infos =
+				{
+					DescriptorSet::Write::ImageWriteInfo
+					{
+						.sampler = &sampler,
+						.image_view = &img_view
+					}
+				}
+			}
+		});
+
+	}
+}
+
 int main()
 {
 	tz::GameInfo game{"vk_descriptor_test", tz::Version{1, 0, 0}, tz::info()};
@@ -220,6 +319,7 @@ int main()
 
 		basic_descriptor_set_allocation();
 		descriptor_set_allocation_descriptor_indexing();
+		write_actual_descriptors();
 	}
 	tz::gl::vk2::terminate();
 	tz::terminate();

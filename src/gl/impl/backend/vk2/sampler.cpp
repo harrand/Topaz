@@ -76,6 +76,11 @@ namespace tz::gl::vk2
 		tz_assert(this->info.device != nullptr && !this->info.device->is_null(), "SamplerInfo contained nullptr or null LogicalDevice. Please submit a bug report.");
 		return *this->info.device;
 	}
+
+	Sampler::NativeType Sampler::native() const
+	{
+		return this->sampler;
+	}
 }
 
 #endif // TZ_VULKAN

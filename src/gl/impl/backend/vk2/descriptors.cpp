@@ -1,5 +1,7 @@
+#include "gl/impl/backend/vk2/sampler.hpp"
 #if TZ_VULKAN
 #include "gl/impl/backend/vk2/descriptors.hpp"
+#include <numeric>
 
 namespace tz::gl::vk2
 {
@@ -470,12 +472,78 @@ namespace tz::gl::vk2
 
 	void DescriptorPool::update_sets(const DescriptorSet::WriteList& writes)
 	{
-		tz_error("Not yet implemented");
 		std::vector<VkWriteDescriptorSet> write_natives(writes.length());
-		std::transform(writes.begin(), writes.end(), write_natives.begin(),
-		[](const DescriptorSet::Write& write) -> VkWriteDescriptorSet
+
+		// Firstly let's find out how many buffers/images we're actually going to need to write to.
+		std::size_t num_buffers = std::accumulate(writes.begin(), writes.end(), 0u, [](std::size_t sum, const DescriptorSet::Write& write) -> std::size_t
 		{
-			return
+			return sum + std::count_if(write.write_infos.begin(), write.write_infos.end(), [](const DescriptorSet::Write::WriteInfo& write_info)
+			{
+				return std::holds_alternative<DescriptorSet::Write::BufferWriteInfo>(write_info);
+			});
+		});
+
+		std::size_t num_textures = std::accumulate(writes.begin(), writes.end(), 0u, [](std::size_t sum, const DescriptorSet::Write& write) -> std::size_t
+		{
+			return sum + std::count_if(write.write_infos.begin(), write.write_infos.end(), [](const DescriptorSet::Write::WriteInfo& write_info)
+			{
+				return std::holds_alternative<DescriptorSet::Write::BufferWriteInfo>(write_info);
+			});
+		});
+		// Now create enough space for them and we'll write into them as we go along.
+
+		std::vector<VkDescriptorBufferInfo> write_buffers(num_buffers);
+		std::vector<VkDescriptorImageInfo> write_images(num_textures);
+
+		for(std::size_t i = 0; i < writes.length(); i++)
+		{
+			const DescriptorSet::Write& write = writes[i];
+			std::size_t buffer_offset = 0;
+			std::size_t image_offset = 0;
+			bool is_buffer;
+			for(const DescriptorSet::Write::WriteInfo& write_info : write.write_infos)
+			{
+				std::visit([&buffer_offset, &image_offset, i, &write_buffers, &write_images, &is_buffer](auto&& arg)
+				{
+					using T = std::decay_t<decltype(arg)>;
+					if constexpr(std::is_same_v<T, DescriptorSet::Write::BufferWriteInfo>)
+					{
+						// We're a buffer.	
+						std::size_t buffer_index = i + buffer_offset++;
+						write_buffers[buffer_index] = VkDescriptorBufferInfo
+						{
+							.buffer = arg.buffer->native(),
+							.offset = static_cast<VkDeviceSize>(arg.buffer_offset),
+							.range = static_cast<VkDeviceSize>(arg.buffer_write_size)
+						};
+						is_buffer = true;
+					}
+					else if constexpr(std::is_same_v<T, DescriptorSet::Write::ImageWriteInfo>)
+					{
+						// We're an image.
+						std::size_t image_index = i + image_offset++;	
+						const Image& img = arg.image_view->get_image();
+						ImageLayout expected_image_layout;
+						if(img.get_layout() == ImageLayout::General)
+						{
+							expected_image_layout = ImageLayout::General;
+						}
+						else
+						{
+							expected_image_layout = ImageLayout::ShaderResource;
+						}
+						write_images[image_index] = VkDescriptorImageInfo
+						{
+							.sampler = arg.sampler->native(),
+							.imageView = arg.image_view->native(),
+							.imageLayout = static_cast<VkImageLayout>(expected_image_layout)
+						};
+						is_buffer = false;
+					}
+				}, write_info);
+
+			}
+			write_natives[i] = VkWriteDescriptorSet
 			{
 				.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
 				.pNext = nullptr,
@@ -484,13 +552,19 @@ namespace tz::gl::vk2
 				.dstArrayElement = write.array_element,
 				.descriptorCount = static_cast<std::uint32_t>(write.write_infos.size()),
 				.descriptorType = detail::to_desc_type(write.set->get_layout().get_bindings()[write.binding_id].type),
-				// TODO: Fill in if we're writing images
 				.pImageInfo = nullptr,
-				// TODO: Fill in if we're writing buffers
 				.pBufferInfo = nullptr,
 				.pTexelBufferView = nullptr
 			};
-		});
+			if(is_buffer)
+			{
+				write_natives[i].pBufferInfo = &write_buffers[i + buffer_offset - 1];
+			}
+			else
+			{
+				write_natives[i].pImageInfo = &write_images[i + image_offset - 1];
+			}
+		}
 		vkUpdateDescriptorSets(this->get_device().native(), write_natives.size(), write_natives.data(), 0, nullptr);
 	}
 

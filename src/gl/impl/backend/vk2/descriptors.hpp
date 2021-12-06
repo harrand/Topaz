@@ -1,7 +1,8 @@
 #ifndef TOPAZ_GL_IMPL_BACKEND_VK2_DESCRIPTORS2_HPP
 #define TOPAZ_GL_IMPL_BACKEND_VK2_DESCRIPTORS2_HPP
 #include "core/containers/basic_list.hpp"
-#include "gl/impl/backend/vk2/logical_device.hpp"
+#include "gl/impl/backend/vk2/buffer.hpp"
+#include "gl/impl/backend/vk2/sampler.hpp"
 #include "gl/impl/backend/vk2/image_view.hpp"
 #include <unordered_map>
 
@@ -226,19 +227,28 @@ namespace tz::gl::vk2
 		 */
 		struct Write
 		{
+			/**
+			 * Specifies information about having a descriptor refer to an existing @ref Buffer.
+			 */
 			struct BufferWriteInfo
 			{
-				// TODO: Complete once vk2::Buffer is implemented.
-				int buffer;	
+				/// Buffer to refer to. Must not be nullptr.
+				const Buffer* buffer;
+				/// Offset, in bytes, from the start of the buffer data.
 				std::size_t buffer_offset;
+				/// Number of bytes from the buffer to associate with the descriptor.
 				std::size_t buffer_write_size;
 			};
 
+			/**
+			 * Specifies information about having a descriptor refer to an existing @ref Image.
+			 */
 			struct ImageWriteInfo
 			{
-				// TODO: Complete once vk2::Sampler is implemented.
-				int sampler;
-				const ImageView& image_view;
+				/// Sampler to use. Must not be nullptr.
+				const Sampler* sampler;
+				/// ImageView to use. Must not be nullptr and must refer to a valid @ref Image.
+				const ImageView* image_view;
 			};
 			using WriteInfo = std::variant<BufferWriteInfo, ImageWriteInfo>;
 
