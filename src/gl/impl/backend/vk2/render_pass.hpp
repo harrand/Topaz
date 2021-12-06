@@ -34,21 +34,6 @@ namespace tz::gl::vk2
 
 	/**
 	 * @ingroup tz_gl_vk_graphics_pipeline_render_pass
-	 * Specifies the number of samples stored per image pixel.
-	 */
-	enum class SampleCount
-	{
-		One = VK_SAMPLE_COUNT_1_BIT,
-		Two = VK_SAMPLE_COUNT_2_BIT,
-		Four = VK_SAMPLE_COUNT_4_BIT,
-		Eight = VK_SAMPLE_COUNT_8_BIT,
-		Sixteen = VK_SAMPLE_COUNT_16_BIT,
-		ThirtyTwo = VK_SAMPLE_COUNT_32_BIT,
-		SixtyFour = VK_SAMPLE_COUNT_64_BIT
-	};
-
-	/**
-	 * @ingroup tz_gl_vk_graphics_pipeline_render_pass
 	 * Specifies which pipeline type a RenderPass subpass is expected to bind to.
 	 */
 	enum class PipelineContext

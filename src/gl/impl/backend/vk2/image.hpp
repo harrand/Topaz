@@ -2,7 +2,10 @@
 #define TOPAZ_GL_IMPL_BACKEND_VK2_IMAGE_HPP
 #if TZ_VULKAN
 #include "core/vector.hpp"
+#include "core/containers/enum_field.hpp"
 #include "gl/impl/backend/vk2/image_format.hpp"
+#include "gl/impl/backend/vk2/gpu_mem.hpp"
+#include "vk_mem_alloc.h"
 
 namespace tz::gl::vk2
 {
@@ -23,12 +26,63 @@ namespace tz::gl::vk2
 		/// - Read-only access in a @ref Shader as a sampled image.
 		ShaderResource = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
 		/// - Only useable as a source image of some transfer command.
-		TransferFrom = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+		TransferSource = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
 		/// - Only useable as a destination image of some transfer command.
-		TransferTo = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+		TransferDestination = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
 		/// - Useable as a presentable image.
 		Present = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR
 	};
+
+	/**
+	 * @ingroup tz_gl_vk_image
+	 * Specifies the number of samples stored per image pixel.
+	 */
+	enum class SampleCount
+	{
+		One = VK_SAMPLE_COUNT_1_BIT,
+		Two = VK_SAMPLE_COUNT_2_BIT,
+		Four = VK_SAMPLE_COUNT_4_BIT,
+		Eight = VK_SAMPLE_COUNT_8_BIT,
+		Sixteen = VK_SAMPLE_COUNT_16_BIT,
+		ThirtyTwo = VK_SAMPLE_COUNT_32_BIT,
+		SixtyFour = VK_SAMPLE_COUNT_64_BIT
+	};
+
+	/**
+	 * @ingroup tz_gl_vk_image
+	 * Specifies how the image is laid out in memory.
+	 */
+	enum class ImageTiling
+	{
+		/// Image texels are laid out in an implementation-defined manner.
+		Optimal = VK_IMAGE_TILING_OPTIMAL,
+		/// Image texels are laid out in memory in row-major order, possibly with some padding on each row.
+		Linear = VK_IMAGE_TILING_LINEAR
+	};
+
+	/**
+	 * @ingroup tz_gl_vk_image
+	 * Specifies intended usage of an @ref Image.
+	 */
+	enum class ImageUsage
+	{
+		/// - Image can be used as a source in a transfer command.
+		TransferSource = VK_IMAGE_USAGE_TRANSFER_SRC_BIT,
+		/// - Image can be used as a destination in a transfer command.
+		TransferDestination = VK_IMAGE_USAGE_TRANSFER_DST_BIT,
+		/// - Image can be used as a read-only shader resource.
+		SampledImage = VK_IMAGE_USAGE_SAMPLED_BIT,
+		/// - Image can be used as a read/write shader resource.
+		StorageImage = VK_IMAGE_USAGE_STORAGE_BIT,
+		/// - Image is suitable as a colour attachment within a @ref Framebuffer.
+		ColourAttachment = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
+		/// - Image is suitable as a depth/stencil attachment within a @ref Framebuffer.
+		DepthStencilAttachment = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
+		/// - Image is suitable as an input attachment within a @ref Framebuffer.
+		InputAttachment = VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT
+	};
+
+	using ImageUsageField = tz::EnumField<ImageUsage>;
 
 	class Swapchain;
 	class LogicalDevice;
@@ -47,6 +101,32 @@ namespace tz::gl::vk2
 
 	/**
 	 * @ingroup tz_gl_vk_image
+	 * Specifies creation flags for an @ref Image.
+	 */
+	struct ImageInfo
+	{
+		/// LogicalDevice owning this image. Must not be null.
+		const LogicalDevice* device;
+		/// Format of the image.
+		ImageFormat format;
+		/// Dimensions of the image, in pixels.
+		tz::Vec2ui dimensions;
+		/// Field of expected usages of the image. For example, if you wish to transition the image to @ref ImageLayout::TransferTo then this usage field must contain @ref ImageUsage::TransferDestination.
+		ImageUsageField usage;
+		/// Describes where the image is laid out in memory.
+		MemoryResidency residency;
+		/// Specifies how many mip levels there are. Default 1.
+		std::uint32_t mip_levels = 1;
+		/// Specifies how many layers there are. Default 1.
+		std::uint32_t array_layers = 1;
+		/// Specifies how many times the image is sampled per pixel. Default 1.
+		SampleCount sample_count = SampleCount::One;
+		/// Specifies image tiling. Default ImageTiling::Optimal.
+		ImageTiling image_tiling = ImageTiling::Optimal;
+	};
+
+	/**
+	 * @ingroup tz_gl_vk_image
 	 * Represents an Image owned by the Vulkan API. This includes Swapchain images!
 	 */
 	class Image
@@ -57,6 +137,7 @@ namespace tz::gl::vk2
 		 * @param info Information about the Swapchain and which image to refer to.
 		 */
 		Image(SwapchainImageInfo sinfo);
+		Image(ImageInfo info);
 		Image(const Image& copy) = delete;
 		Image(Image&& move);
 		~Image();
@@ -72,6 +153,10 @@ namespace tz::gl::vk2
 		 * Retrieve the current layout of the image.
 		 */
 		ImageLayout get_layout() const;
+		/**
+		 * Retrieve the dimensions of the image.
+		 * @return {width, height} of the image, in pixels.
+		 */
 		Vec2ui get_dimensions() const;
 		/**
 		 * Retrieve the @ref LogicalDevice that 'owns' the image.
@@ -95,6 +180,7 @@ namespace tz::gl::vk2
 		Vec2ui dimensions;
 		const LogicalDevice* device;
 		bool destroy_on_destructor;
+		std::optional<VmaAllocation> vma_alloc;
 	};
 }
 

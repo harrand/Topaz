@@ -26,6 +26,10 @@ add_tz_test(NAME vk_graphics_pipeline_test
 	SOURCE_FILES vk_graphics_pipeline_test.cpp	
 	)
 
+add_tz_test(NAME vk_image_test
+	SOURCE_FILES vk_image_test.cpp	
+	)
+
 add_tz_test(NAME vk_logical_device_test
 	SOURCE_FILES vk_logical_device_test.cpp	
 	)
