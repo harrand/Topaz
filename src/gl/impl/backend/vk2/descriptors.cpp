@@ -495,21 +495,23 @@ namespace tz::gl::vk2
 		std::vector<VkDescriptorBufferInfo> write_buffers(num_buffers);
 		std::vector<VkDescriptorImageInfo> write_images(num_textures);
 
+		std::size_t buffer_offset = 0;
+		std::size_t image_offset = 0;
+
 		for(std::size_t i = 0; i < writes.length(); i++)
 		{
 			const DescriptorSet::Write& write = writes[i];
-			std::size_t buffer_offset = 0;
-			std::size_t image_offset = 0;
 			bool is_buffer;
 			for(const DescriptorSet::Write::WriteInfo& write_info : write.write_infos)
 			{
-				std::visit([&buffer_offset, &image_offset, i, &write_buffers, &write_images, &is_buffer](auto&& arg)
+				std::visit([&](auto&& arg)
 				{
 					using T = std::decay_t<decltype(arg)>;
 					if constexpr(std::is_same_v<T, DescriptorSet::Write::BufferWriteInfo>)
 					{
 						// We're a buffer.	
-						std::size_t buffer_index = i + buffer_offset++;
+						std::size_t buffer_index = buffer_offset++;
+						tz_assert(buffer_index < num_buffers, "Buffer Index out of range. Index = %zu, length = %zu. Please submit a bug report", buffer_index, num_buffers);
 						write_buffers[buffer_index] = VkDescriptorBufferInfo
 						{
 							.buffer = arg.buffer->native(),
@@ -521,7 +523,8 @@ namespace tz::gl::vk2
 					else if constexpr(std::is_same_v<T, DescriptorSet::Write::ImageWriteInfo>)
 					{
 						// We're an image.
-						std::size_t image_index = i + image_offset++;	
+						std::size_t image_index = image_offset++;	
+						tz_assert(image_index < num_textures, "Image index out of range. Index = %zu, length = %zu. Please submit a bug report", image_index, num_textures);
 						const Image& img = arg.image_view->get_image();
 						ImageLayout expected_image_layout;
 						if(img.get_layout() == ImageLayout::General)
@@ -558,11 +561,15 @@ namespace tz::gl::vk2
 			};
 			if(is_buffer)
 			{
-				write_natives[i].pBufferInfo = &write_buffers[i + buffer_offset - 1];
+				std::size_t idx = buffer_offset - 1;
+				tz_assert(idx < num_buffers, "Buffer index out of range. Index = %zu, size = %zu", idx, num_buffers);
+				write_natives[i].pBufferInfo = &write_buffers[idx];
 			}
 			else
 			{
-				write_natives[i].pImageInfo = &write_images[i + image_offset - 1];
+				std::size_t idx = image_offset - 1;
+				tz_assert(idx < num_textures, "Image index out of range. Index = %zu, size = %zu", idx, num_textures);
+				write_natives[i].pImageInfo = &write_images[idx];
 			}
 		}
 		vkUpdateDescriptorSets(this->get_device().native(), write_natives.size(), write_natives.data(), 0, nullptr);
