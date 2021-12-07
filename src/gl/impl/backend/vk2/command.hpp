@@ -67,8 +67,8 @@ namespace tz::gl::vk2
 		 */
 		struct BeginRenderPass
 		{
-			/// The @ref RenderPass which will begin.
-			const RenderPass* pass;
+			/// Framebuffer containing the @ref RenderPass.
+			Framebuffer* framebuffer;
 		};
 		
 		/**
@@ -77,8 +77,8 @@ namespace tz::gl::vk2
 		 */
 		struct EndRenderPass
 		{
-			/// The @ref RenderPass which will end.
-			const RenderPass* pass;
+			/// Framebuffer containing the @ref RenderPass.
+			Framebuffer* framebuffer;
 		};
 
 		/**
@@ -168,7 +168,7 @@ namespace tz::gl::vk2
 			 * @param recording Existing recording of a @ref CommandBuffer which shall record the beginning/ending of the render pass.
 			 * @note The construction of this object begins the render pass, and the destruction ends the render pass. This means all commands recorded during the lifetime of this object will apply to the render pass.
 			 */
-			RenderPassRun(const Framebuffer& framebuffer, CommandBufferRecording& recording);
+			RenderPassRun(Framebuffer& framebuffer, CommandBufferRecording& recording);
 			RenderPassRun(const RenderPassRun& copy) = delete;
 			RenderPassRun(RenderPassRun&& move) = delete;
 			~RenderPassRun();
@@ -176,7 +176,7 @@ namespace tz::gl::vk2
 			RenderPassRun& operator=(const RenderPassRun& rhs) = delete;
 			RenderPassRun& operator=(RenderPassRun&& rhs) = delete;
 		private:
-			const Framebuffer* framebuffer;
+			Framebuffer* framebuffer;
 			CommandBufferRecording* recording;
 		};
 

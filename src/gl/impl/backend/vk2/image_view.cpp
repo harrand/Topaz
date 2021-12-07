@@ -79,6 +79,12 @@ namespace tz::gl::vk2
 		return *this->info.image;
 	}
 
+	Image& ImageView::get_image()
+	{
+		tz_assert(this->info.image != nullptr, "ImageView originated from a nullptr Image. Move semantics may have gone pear-shaped. Please submit a bug report.");
+		return *this->info.image;
+	}
+
 	ImageView::NativeType ImageView::native() const
 	{
 		return this->image_view;

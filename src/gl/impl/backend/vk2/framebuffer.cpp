@@ -96,7 +96,15 @@ namespace tz::gl::vk2
 		return this->get_pass().get_device();
 	}
 
-	const tz::BasicList<const ImageView*>& Framebuffer::get_attachment_views() const
+	tz::BasicList<const ImageView*> Framebuffer::get_attachment_views() const
+	{
+		tz::BasicList<const ImageView*> views_const;
+		views_const.resize(this->info.attachments.length());
+		std::transform(this->info.attachments.begin(), this->info.attachments.end(), views_const.begin(), [](ImageView* view){return view;});
+		return views_const;
+	}
+
+	tz::BasicList<ImageView*> Framebuffer::get_attachment_views()
 	{
 		return this->info.attachments;
 	}

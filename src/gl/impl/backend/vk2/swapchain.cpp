@@ -176,7 +176,17 @@ namespace tz::gl::vk2
 		return this->swapchain_images;
 	}
 
+	std::span<Image> Swapchain::get_images() 
+	{
+		return this->swapchain_images;
+	}
+
 	std::span<const ImageView> Swapchain::get_image_views() const
+	{
+		return this->swapchain_image_views;
+	}
+
+	std::span<ImageView> Swapchain::get_image_views()
 	{
 		return this->swapchain_image_views;
 	}

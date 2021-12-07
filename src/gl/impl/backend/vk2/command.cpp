@@ -5,7 +5,7 @@
 
 namespace tz::gl::vk2
 {
-	CommandBufferRecording::RenderPassRun::RenderPassRun(const Framebuffer& framebuffer, CommandBufferRecording& recording):
+	CommandBufferRecording::RenderPassRun::RenderPassRun(Framebuffer& framebuffer, CommandBufferRecording& recording):
 	framebuffer(&framebuffer),
 	recording(&recording)
 	{
@@ -31,13 +31,19 @@ namespace tz::gl::vk2
 		};
 
 		vkCmdBeginRenderPass(this->recording->get_command_buffer().native(), &begin, VK_SUBPASS_CONTENTS_INLINE);
-		this->recording->register_command(VulkanCommand::BeginRenderPass{.pass = &this->framebuffer->get_pass()});
+		this->recording->register_command
+		(VulkanCommand::BeginRenderPass{
+		 	.framebuffer = this->framebuffer
+		});
 	}
 
 	CommandBufferRecording::RenderPassRun::~RenderPassRun()
 	{
 		vkCmdEndRenderPass(this->recording->get_command_buffer().native());
-		this->recording->register_command(VulkanCommand::EndRenderPass{.pass = &this->framebuffer->get_pass()});
+		this->recording->register_command
+		(VulkanCommand::EndRenderPass{
+			.framebuffer = this->framebuffer
+		});
 	}
 
 	CommandBufferRecording::CommandBufferRecording(CommandBuffer& command_buffer):

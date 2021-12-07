@@ -83,8 +83,30 @@ namespace tz::gl::vk2
 		 * @return Span containing all swapchain images.
 		 */
 		std::span<const Image> get_images() const;
+		/**
+		 * Retrieve a span of all presentable images associated with this Swapchain.
+		 * @return Span containing all swapchain images.
+		 */
+		std::span<Image> get_images();
+		/**
+		 * Retrieve a span of all ImageViews corresponding to an image associated with this Swapchain.
+		 * `this->get_image_views()[i].get_image() == this->get_images()[i]` is guaranteed to be the case.
+		 */
 		std::span<const ImageView> get_image_views() const;
+		/**
+		 * Retrieve a span of all ImageViews corresponding to an image associated with this Swapchain.
+		 * `this->get_image_views()[i].get_image() == this->get_images()[i]` is guaranteed to be the case.
+		 */
+		std::span<ImageView> get_image_views();
+		/**
+		 * Retrieve the ImageFormat of the swapchain images.
+		 * @return Swapchain format.
+		 */
 		ImageFormat get_image_format() const;
+		/**
+		 * Retrieve the dimensions of the swapchain images.
+		 * @return Swapchain image dimensions, in pixels.
+		 */
 		Vec2ui get_dimensions() const;
 	private:
 		Swapchain();

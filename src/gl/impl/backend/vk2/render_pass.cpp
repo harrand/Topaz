@@ -247,6 +247,11 @@ namespace tz::gl::vk2
 		return *this->info.logical_device;
 	}
 
+	const RenderPassInfo& RenderPass::get_info() const
+	{
+		return this->info;
+	}
+
 	RenderPass::NativeType RenderPass::native() const
 	{
 		return this->pass;

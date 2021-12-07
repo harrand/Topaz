@@ -13,7 +13,7 @@ namespace tz::gl::vk2
 
 	struct ImageViewInfo
 	{
-		const Image* image;
+		Image* image;
 		ImageAspect aspect;
 	};
 
@@ -32,6 +32,7 @@ namespace tz::gl::vk2
 		ImageView& operator=(ImageView&& rhs);
 
 		const Image& get_image() const;
+		Image& get_image();
 
 		using NativeType = VkImageView;
 		NativeType native() const;

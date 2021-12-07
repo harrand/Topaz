@@ -148,7 +148,7 @@ int main()
 		// Create framebuffers from swapchain images.
 		std::vector<Framebuffer> swapchain_framebuffers;
 		swapchain_framebuffers.reserve(swapchain.get_image_views().size());
-		for(const ImageView& swapchain_image_view : swapchain.get_image_views())
+		for(ImageView& swapchain_image_view : swapchain.get_image_views())
 		{
 			swapchain_framebuffers.emplace_back
 			(FramebufferInfo{
