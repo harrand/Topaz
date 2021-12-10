@@ -12,6 +12,9 @@ project(topaz VERSION ${TZ_VERSION})
 
 add_library(topaz
 	# tz::core
+	src/core/allocators/linear.inl
+	src/core/allocators/linear.hpp
+
 	src/core/containers/basic_list.hpp
 	src/core/containers/enum_field.hpp
 	src/core/containers/enum_field.inl
