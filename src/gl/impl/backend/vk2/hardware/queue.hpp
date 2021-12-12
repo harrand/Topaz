@@ -92,6 +92,23 @@ namespace tz::gl::vk2
 				const Fence* execution_complete_fence;
 			};
 
+			/// Describes the result of a presentation request. See @ref Queue::present
+			enum class PresentResult
+			{
+				/// - Presentation request succeeded without any issues.
+				Success,
+				/// - Presentation request succeeded, but swapchain no longer matches surface properly. It should be updated.
+				Success_Suboptimal,
+				/// - Presentation request failed because the swapchain is no longer comapatible with the surface. It should be updated.
+				Fail_OutOfDate,
+				/// - Presentation request failed because we did not have exclusive access to the swapchain.
+				Fail_AccessDenied,
+				/// - Presentation request failed because the surface is no longer available.
+				Fail_SurfaceLost,
+				/// - Presentation request failed, and there's nothing we can do about it.
+				Fail_FatalError
+			};
+
 			/**
 			 * Specifies information about a present request issued to a Queue.
 			 */
@@ -116,9 +133,10 @@ namespace tz::gl::vk2
 			void submit(SubmitInfo submit_info);
 			/**
 			 * Queue an image for presentation.
-			 * See @ref PresentInfo for more information.
+			 * See @ref PresentInfo for details.
+			 * @return Description on whether the presentation request was accepted or rejected.
 			 */
-			void present(PresentInfo present_info);
+			[[nodiscard]] PresentResult present(PresentInfo present_info);
 
 			using NativeType = VkQueue;
 			NativeType native() const;

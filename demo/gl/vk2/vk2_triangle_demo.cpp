@@ -251,12 +251,13 @@ int main()
 				.execution_complete_fence = &in_flight_fences[current_frame]
 			});
 
-			queue->present
+			hardware::Queue::PresentResult res = queue->present
 			({
 			 	.wait_semaphores = {&render_finished_semaphores[current_frame]},
 				.swapchain = &swapchain,
 				.swapchain_image_index = swapchain_image_index
 			});
+			tz_assert(res == hardware::Queue::PresentResult::Success || res == hardware::Queue::PresentResult::Success_Suboptimal, "Presentation failed.");
 
 			current_frame = (current_frame + 1) % max_frames_in_flight;
 

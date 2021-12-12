@@ -90,7 +90,7 @@ namespace tz::gl::vk2::hardware
 		}
 	}
 
-	void Queue::present(Queue::PresentInfo present_info)
+	Queue::PresentResult Queue::present(Queue::PresentInfo present_info)
 	{
 		std::vector<BinarySemaphore::NativeType> wait_sem_natives(present_info.wait_semaphores.length());
 		
@@ -111,33 +111,42 @@ namespace tz::gl::vk2::hardware
 		};
 
 		VkResult res = vkQueuePresentKHR(this->queue, &present);
+		PresentResult pres_result;
 		switch(res)
 		{
 			case VK_SUCCESS:
-				// do nothing
+				pres_result = PresentResult::Success;
+			break;
+			case VK_SUBOPTIMAL_KHR:
+				pres_result = PresentResult::Success_Suboptimal;
 			break;
 			case VK_ERROR_OUT_OF_HOST_MEMORY:
+				pres_result = PresentResult::Fail_FatalError;
 				tz_error("Failed to present Queue because we ran out of host memory (RAM). Please ensure that your system meets the minimum requirements.");
 			break;
 			case VK_ERROR_OUT_OF_DEVICE_MEMORY:
+				pres_result = PresentResult::Fail_FatalError;
 				tz_error("Failed to present Queue because we ran out of device memory (VRAM). Please ensure that your system meets the minimum requirements.");
 			break;
 			case VK_ERROR_DEVICE_LOST:
+				pres_result = PresentResult::Fail_FatalError;
 				tz_error("Failed to present Queue because device was lost. This is a fatal error.");
 			break;
 			case VK_ERROR_OUT_OF_DATE_KHR:
-				tz_error("Failed to present Queue because the associated Swapchain out of date. TODO: Implement swapchain updates. Please submit a feature request.");
+				pres_result = PresentResult::Fail_OutOfDate;
 			break;
 			case VK_ERROR_SURFACE_LOST_KHR:
-				tz_error("Failed to present Queue because the surface provided is no longer available. Please submit a bug report.");
+				pres_result = PresentResult::Fail_SurfaceLost;
 			break;
 			case VK_ERROR_FULL_SCREEN_EXCLUSIVE_MODE_LOST_EXT:
-				tz_error("Failed to present Queue because the associated Swapchain did not have exclusive full-screen access. Please submit a bug report.");
+				pres_result = PresentResult::Fail_AccessDenied;
 			break;
 			default:
+				pres_result = PresentResult::Fail_FatalError;
 				tz_error("Failed to present Queue but cannot determine why. Please submit a bug report.");
 			break;
 		}
+		return pres_result;
 	}
 
 	Queue::NativeType Queue::native() const
