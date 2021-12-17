@@ -9,6 +9,16 @@
 
 namespace tz::gl::vk2
 {
+	struct PipelineState
+	{
+		ViewportState viewport;
+		VertexInputState vertex_input = {};
+		RasteriserState rasteriser = {};
+		MultisampleState multisample = {};
+		DepthStencilState depth_stencil = {};
+		ColourBlendState colour_blend = {};
+		DynamicState dynamic = {};
+	};
 	/**
 	 * @ingroup tz_gl_vk_graphics_pipeline
 	 * Specifies creation flags for a @ref GraphicsPipeline.
@@ -21,14 +31,7 @@ namespace tz::gl::vk2
 		bool valid_device() const;
 
 		ShaderPipelineData shaders;
-		const VertexInputState* vertex_input_state;
-		const InputAssembly* input_assembly;
-		const ViewportState* viewport_state;
-		const RasteriserState* rasteriser_state;
-		const MultisampleState* multisample_state;
-		const DepthStencilState* depth_stencil_state;
-		const ColourBlendState* colour_blend_state;
-		const DynamicState* dynamic_state = nullptr;
+		PipelineState state;
 		const PipelineLayout* pipeline_layout;
 		const RenderPass* render_pass;
 

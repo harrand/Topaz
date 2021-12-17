@@ -7,14 +7,6 @@ namespace tz::gl::vk2
 	bool GraphicsPipelineInfo::valid() const
 	{
 		return !this->shaders.create_infos.empty()
-			&& this->vertex_input_state != nullptr
-			&& this->input_assembly != nullptr
-			&& this->viewport_state != nullptr
-			&& this->rasteriser_state != nullptr
-			&& this->multisample_state != nullptr
-			/*this->depth_stencil_state is optional*/
-			&& this->colour_blend_state != nullptr
-			/*this->dynamic_state is optional*/	
 			&& this->pipeline_layout != nullptr
 			&& this->render_pass != nullptr
 			&& this->valid_device();
@@ -32,11 +24,10 @@ namespace tz::gl::vk2
 		tz_assert(info.valid(), "GraphicsPipelineInfo was invalid. Please submit a bug report.");
 		// https://youtu.be/yyLuGNPLRjc
 		// Vertex Input State
-		tz_assert(info.vertex_input_state != nullptr, "GraphicsPipelineInfo contained nullptr VertexInputState. Please submit a bug report");
-		std::vector<VkVertexInputBindingDescription> vertex_input_binding_natives(info.vertex_input_state->bindings.length());
-		std::vector<VkVertexInputAttributeDescription> vertex_input_attribute_natives(info.vertex_input_state->attributes.length());
+		std::vector<VkVertexInputBindingDescription> vertex_input_binding_natives(info.state.vertex_input.bindings.length());
+		std::vector<VkVertexInputAttributeDescription> vertex_input_attribute_natives(info.state.vertex_input.attributes.length());
 
-		std::transform(info.vertex_input_state->bindings.begin(), info.vertex_input_state->bindings.end(), vertex_input_binding_natives.begin(), [](const VertexInputState::Binding& binding)
+		std::transform(info.state.vertex_input.bindings.begin(), info.state.vertex_input.bindings.end(), vertex_input_binding_natives.begin(), [](const VertexInputState::Binding& binding)
 		{
 			return VkVertexInputBindingDescription
 			{
@@ -46,7 +37,7 @@ namespace tz::gl::vk2
 			};
 		});
 
-		std::transform(info.vertex_input_state->attributes.begin(), info.vertex_input_state->attributes.end(), vertex_input_attribute_natives.data(), [](const VertexInputState::Attribute& attribute)
+		std::transform(info.state.vertex_input.attributes.begin(), info.state.vertex_input.attributes.end(), vertex_input_attribute_natives.data(), [](const VertexInputState::Attribute& attribute)
 		{
 			return VkVertexInputAttributeDescription
 			{
@@ -68,19 +59,21 @@ namespace tz::gl::vk2
 			.pVertexAttributeDescriptions = vertex_input_attribute_natives.data()
 		};
 
-		auto input_assembly_native = info.input_assembly->native();
-		auto viewport_state_native = info.viewport_state->native();
-		auto rasteriser_state_native = info.rasteriser_state->native();
-		auto multisample_state_native = info.multisample_state->native();
-		auto depth_stencil_state_native = info.depth_stencil_state->native();
-		auto colour_blend_state_native = info.colour_blend_state->native();
-		DynamicState::NativeType dynamic_state_native;
-		DynamicState::NativeType* dynamic_state_native_ptr = nullptr;
-		if(info.dynamic_state != nullptr)
+		VkPipelineInputAssemblyStateCreateInfo input_assembly_native =
 		{
-			dynamic_state_native = info.dynamic_state->native();
-			dynamic_state_native_ptr = &dynamic_state_native;
-		}
+			.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO, 
+			.pNext = nullptr,
+			.flags = 0,
+			.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
+			.primitiveRestartEnable = VK_FALSE
+		};
+
+		auto viewport_state_native = info.state.viewport.native();
+		auto rasteriser_state_native = info.state.rasteriser.native();
+		auto multisample_state_native = info.state.multisample.native();
+		auto depth_stencil_state_native = info.state.depth_stencil.native();
+		auto colour_blend_state_native = info.state.colour_blend.native();
+		auto dynamic_state_native = info.state.dynamic.native();
 		VkGraphicsPipelineCreateInfo create
 		{
 			.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
@@ -96,7 +89,7 @@ namespace tz::gl::vk2
 			.pMultisampleState = &multisample_state_native,
 			.pDepthStencilState = &depth_stencil_state_native,
 			.pColorBlendState = &colour_blend_state_native,
-			.pDynamicState = dynamic_state_native_ptr,
+			.pDynamicState = &dynamic_state_native,
 			.layout = info.pipeline_layout->native(),
 			.renderPass = info.render_pass->native(),
 			.subpass = 0,

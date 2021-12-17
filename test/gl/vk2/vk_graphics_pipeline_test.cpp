@@ -11,16 +11,6 @@ void basic_graphics_pipeline()
 
 	LogicalDevice ldev{linfo};
 	{
-		VertexInputState vertex_input;
-		InputAssembly input_assembly;
-		tz::Vec2 dims{1.0f, 1.0f};
-		ViewportState viewport = create_basic_viewport(dims);
-		RasteriserState rasteriser;
-		MultisampleState multisample;
-		DepthStencilState depth_stencil;
-		ColourBlendState colour_blend;
-		DynamicState dynamic;
-
 		DescriptorLayoutBuilder lbuilder;
 		lbuilder.set_device(ldev);
 		std::vector<DescriptorLayout> dlayouts;
@@ -56,18 +46,12 @@ void basic_graphics_pipeline()
 
 		GraphicsPipelineInfo ginfo
 		{
-			.vertex_input_state = &vertex_input,
-			.input_assembly = &input_assembly,
-			.viewport_state = &viewport,
-			.rasteriser_state = &rasteriser,
-			.multisample_state = &multisample,
-			.depth_stencil_state = &depth_stencil,
-			.colour_blend_state = &colour_blend,
-			.dynamic_state = &dynamic,
-
+			.state = PipelineState
+			{
+				.viewport = create_basic_viewport({1.0f, 1.0f})
+			},
 			.pipeline_layout = &pipeline_layout,
 			.render_pass = &pass,
-
 			.device = &ldev
 		};
 	}

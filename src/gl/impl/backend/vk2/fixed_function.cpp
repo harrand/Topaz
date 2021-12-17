@@ -3,18 +3,6 @@
 
 namespace tz::gl::vk2
 {
-	InputAssembly::NativeType InputAssembly::native() const
-	{
-		return
-		{
-			.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO, 
-			.pNext = nullptr,
-			.flags = 0,
-			.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
-			.primitiveRestartEnable = VK_FALSE
-		};
-	}
-
 	ViewportState::NativeType ViewportState::native() const
 	{
 		return

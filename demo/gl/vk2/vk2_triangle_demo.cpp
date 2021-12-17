@@ -88,14 +88,6 @@ int main()
 		RenderPass render_pass{rbuilder.build()};
 
 		// Now create GraphicsPipeline.
-		VertexInputState vertex_input;
-		InputAssembly input_assembly;
-		ViewportState viewport = create_basic_viewport({tz::window().get_width(), tz::window().get_height()});
-		RasteriserState rasteriser;
-		MultisampleState multisample;
-		DepthStencilState depth_stencil;
-		ColourBlendState colour_blend;
-
 		DescriptorLayoutBuilder lbuilder;
 		lbuilder.set_device(ldev);
 		std::vector<DescriptorLayout> dlayouts;
@@ -131,14 +123,11 @@ int main()
 		GraphicsPipeline graphics_pipeline
 		{{
 			.shaders = shader.native_data(),
-			.vertex_input_state = &vertex_input,
-			.input_assembly = &input_assembly,
-			.viewport_state = &viewport,
-			.rasteriser_state = &rasteriser,
-			.multisample_state = &multisample,
-			.depth_stencil_state = &depth_stencil,
-			.colour_blend_state = &colour_blend,
+			.state = PipelineState
+			{
+				.viewport = create_basic_viewport({tz::window().get_width(), tz::window().get_height()})
 
+			},
 			.pipeline_layout = &pipeline_layout,
 			.render_pass = &render_pass,
 

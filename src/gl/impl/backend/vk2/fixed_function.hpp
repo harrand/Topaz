@@ -78,17 +78,6 @@ namespace tz::gl::vk2
 
 	/**
 	 * @ingroup tz_gl_vk_graphics_pipeline_fixed
-	 * Specifies what type of geometry shall be drawn.
-	 * @note At present, this is not configurable and triangle lists are always drawn.
-	 */
-	struct InputAssembly
-	{
-		using NativeType = VkPipelineInputAssemblyStateCreateInfo;
-		NativeType native() const;
-	};
-
-	/**
-	 * @ingroup tz_gl_vk_graphics_pipeline_fixed
 	 * Specifies the region of the output that will be rendered to.
 	 *
 	 * See @ref create_basic_viewport(tz::Vec2) to create a ViewportState for a basic region.
@@ -154,7 +143,6 @@ namespace tz::gl::vk2
 	/**
 	 * @ingroup tz_gl_vk_graphics_pipeline_fixed
 	 * At present, multisampling is not supported, so this struct is not configurable.
-	 * TODO: Implement
 	 */
 	struct MultisampleState
 	{
@@ -235,7 +223,6 @@ namespace tz::gl::vk2
 	/**
 	 * @ingroup tz_gl_vk_graphics_pipeline_fixed
 	 * At present, dynamic state is not supported, so this struct is not configurable.
-	 * TODO: Implement
 	 */
 	struct DynamicState
 	{
