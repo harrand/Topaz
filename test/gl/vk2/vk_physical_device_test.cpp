@@ -98,8 +98,11 @@ void guaranteed_formats()
 void window_surfaces(tz::GameInfo game)
 {
 	using namespace tz::gl::vk2;
-	VulkanInfo window_info{game};
-	VulkanInstance window_inst{window_info, tz::ApplicationType::HiddenWindowApplication};
+	VulkanInstance window_inst
+	{{
+		.game_info = game,
+		.app_type = tz::ApplicationType::HiddenWindowApplication
+	}};
 	PhysicalDeviceList devices = get_all_devices(window_inst);	
 	WindowSurface window_surf{window_inst, tz::window()};
 	// If we have a PhysicalDevice which supports WindowSurfaces, ensure that its swapchain format support isn't shit
@@ -113,8 +116,11 @@ void window_surfaces(tz::GameInfo game)
 void surface_present_modes(tz::GameInfo game)
 {
 	using namespace tz::gl::vk2;
-	VulkanInfo window_info{game};
-	VulkanInstance window_inst{window_info, tz::ApplicationType::HiddenWindowApplication};
+	VulkanInstance window_inst
+	{{
+		.game_info = game,
+		.app_type = tz::ApplicationType::HiddenWindowApplication
+	}};
 	PhysicalDeviceList devices = get_all_devices(window_inst);	
 	WindowSurface window_surf{window_inst, tz::window()};
 

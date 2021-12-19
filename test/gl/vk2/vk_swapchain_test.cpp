@@ -30,8 +30,12 @@ void mandatory_swapchain(tz::GameInfo g)
 	// No shared state, create our own instance and everything...
 	// Create a swapchain with settings that are mandatory for all vulkan driver implementations, and make sure nothing crashes.
 	using namespace tz::gl::vk2;
-	VulkanInfo info{g, InstanceExtensionList{InstanceExtension::DebugMessenger}};
-	VulkanInstance window_inst{info, tz::ApplicationType::HiddenWindowApplication};
+	VulkanInstance window_inst
+	{{
+		.game_info = g,
+		.app_type = tz::ApplicationType::HiddenWindowApplication,
+		.extensions = {InstanceExtension::DebugMessenger}
+	}};
 	PhysicalDeviceList devices = get_all_devices(window_inst);	
 	PhysicalDevice pdev = devices.front();
 	WindowSurface window_surf{window_inst, tz::window()};

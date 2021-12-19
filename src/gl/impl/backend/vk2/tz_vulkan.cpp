@@ -15,12 +15,14 @@ namespace tz::gl::vk2
 	void initialise(tz::GameInfo game_info, tz::ApplicationType app_type)
 	{
 		tz_assert(inst == nullptr, "Vulkan Backend already initialised");
-		InstanceExtensionList exts;
-		#if TZ_DEBUG
-			exts |= InstanceExtension::DebugMessenger;
-		#endif
-		VulkanInfo vk_info{game_info, exts};
-		inst = new VulkanInstance{vk_info, app_type};
+		inst = new VulkanInstance
+		{{
+			.game_info = game_info,
+			.app_type = app_type
+#if TZ_DEBUG
+			,.extensions = {InstanceExtension::DebugMessenger}
+#endif
+		}};
 		switch(app_type)
 		{
 			case tz::ApplicationType::Headless:
@@ -60,35 +62,6 @@ namespace tz::gl::vk2
 	{
 		tz_assert(is_headless(), "Cannot retrieve window surface in headless applictions.");
 		return *surf;
-	}
-
-	VulkanInfo::VulkanInfo(tz::GameInfo game_info, InstanceExtensionList extensions):
-	game_info(game_info),
-	engine_name(this->game_info.engine.to_string()),
-	extensions(extensions)
-	{}
-
-	VkApplicationInfo VulkanInfo::native() const
-	{
-		VkApplicationInfo info{};
-		info.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-		info.pApplicationName = this->game_info.name;
-		info.applicationVersion = util::tz_to_vk_version(this->game_info.version);
-		
-		info.pEngineName = this->engine_name.c_str();
-		info.engineVersion = util::tz_to_vk_version(this->game_info.engine.version);
-		info.apiVersion = util::tz_to_vk_version(vulkan_version);
-		return info;
-	}
-
-	const InstanceExtensionList& VulkanInfo::get_extensions() const
-	{
-		return this->extensions;
-	}
-
-	bool VulkanInfo::has_debug_validation() const
-	{
-		return this->extensions.contains(InstanceExtension::DebugMessenger) && TZ_DEBUG;
 	}
 
 	inline VKAPI_ATTR VkBool32 VKAPI_CALL default_debug_callback
@@ -152,8 +125,6 @@ namespace tz::gl::vk2
 	debug_messenger(VK_NULL_HANDLE),
 	instance(instance.native())
 	{
-		tz_assert(instance.get_info().get_extensions().contains(InstanceExtension::DebugMessenger), "VulkanInstance provided does not support %s, but is trying to initialie a VulkanDebugMessenger. Please submit a bug report.", VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
-		
 		VkDebugUtilsMessengerCreateInfoEXT create = make_debug_messenger_info();
 		VkResult res = vk2::vkCreateDebugUtilsMessengerEXT(instance.native(), &create, nullptr, &this->debug_messenger);
 		switch(res)
@@ -206,101 +177,113 @@ namespace tz::gl::vk2
 		});
 	}
 
-	VulkanInstance::VulkanInstance(VulkanInfo info, tz::ApplicationType type):
+	VulkanInstance::VulkanInstance(VulkanInstanceInfo info):
 	info(info),
-	app_type(type),
-	info_native(this->info.native()),
-	extensions(),
-	inst_info(),
-	debug_messenger(std::nullopt)
+	instance(VK_NULL_HANDLE),
+	maybe_debug_messenger(std::nullopt)
 	{
-		tz_assert(tz::is_initialised(), "VulkanInstance constructed before tz::initialise()");
-		// Basic Application Info
-		this->inst_info.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
-		this->inst_info.pApplicationInfo = &this->info_native;
-
-		// Extensions
-		if(this->app_type != tz::ApplicationType::Headless)
+		std::string engine_name_str = info.game_info.to_string();
+		VkApplicationInfo app_info
 		{
+			.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO,
+			.pNext = nullptr,
+			.pApplicationName = info.game_info.name,
+			.applicationVersion = util::tz_to_vk_version(info.game_info.version),
+			.pEngineName = engine_name_str.c_str(),
+			.engineVersion = util::tz_to_vk_version(info.game_info.engine.version),
+			.apiVersion = util::tz_to_vk_version(vulkan_version)
+		};
+		// Validation Layers
+		const char* enabled_layers = "VK_LAYER_KHRONOS_validation";
+
+		// Extensions (Specified from VulkanInstanceInfo + GLFW if we're not headless)
+		std::size_t extension_count = info.extensions.count();
+		util::VkExtensionList extension_natives;
+		if(this->is_headless())
+		{
+			// Only use the extensions we asked for.
+			extension_natives.resize(extension_count);
+			std::transform(info.extensions.begin(), info.extensions.end(), extension_natives.begin(), [](InstanceExtension ext){return util::to_vk_extension(ext);});
+		}
+		else
+		{
+			// Use what we asked for, plus everything GLFW wants.
 			std::uint32_t glfw_extension_count;
 			const char** glfw_extensions = glfwGetRequiredInstanceExtensions(&glfw_extension_count);
-			for(int i = 0; std::cmp_less(i, glfw_extension_count); i++)
+
+			extension_natives.resize(info.extensions.count() + glfw_extension_count);
+			std::transform(info.extensions.begin(), info.extensions.end(), extension_natives.begin(), [](InstanceExtension ext){return util::to_vk_extension(ext);});
+			for(std::size_t i = 0; std::cmp_less(i, glfw_extension_count); i++)
 			{
-				this->extensions.add(glfw_extensions[i]);
-				tz_assert(extension_supported(glfw_extensions[i]), "The GLFW extension \"%s\" is not supported by the machine. Windowed applictions are not possible in this state.", glfw_extensions[i]);
+				std::size_t idx = i + info.extensions.count();
+				extension_natives[idx] = glfw_extensions[i];
 			}
 		}
-		for(InstanceExtension extension : this->info.get_extensions())
+
+		void* inst_create_pnext = nullptr;
+		// Debug Messenger
+		const bool create_debug_validation = info.extensions.contains(InstanceExtension::DebugMessenger) && TZ_DEBUG;
+		VkDebugUtilsMessengerCreateInfoEXT debug_validation_create;
+		if(create_debug_validation)
 		{
-			this->extensions.add(util::to_vk_extension(extension));
+			debug_validation_create = make_debug_messenger_info();
+			inst_create_pnext = &debug_validation_create;
 		}
 
-		this->inst_info.enabledExtensionCount = this->extensions.length();
-		this->inst_info.ppEnabledExtensionNames = this->extensions.data();	
-
-		// Validation Layers
-		// So on TZ_DEBUG we want to enable all validation layers.
-		// Otherwise no, no validation layers at all.
-		#if TZ_DEBUG
-			using ValidationLayer = const char*;
-			using ValidationLayerList = tz::BasicList<ValidationLayer>;
-			// So we need to pass in a list of layer names, but we enumerate layers via VkLayerProperties, which contains, among other things, the layer name.
-			// So we retrieve the list of VkLayerProperties and then fill in their names.
-			std::uint32_t avail_layer_count;
-			vkEnumerateInstanceLayerProperties(&avail_layer_count, nullptr);
-			std::vector<VkLayerProperties> layer_props(avail_layer_count);
-			ValidationLayerList avail_layers;
-			avail_layers.resize(avail_layer_count);
-			vkEnumerateInstanceLayerProperties(&avail_layer_count, layer_props.data());
-			// Retrieve each name
-			std::transform(layer_props.begin(), layer_props.end(), avail_layers.begin(), [](const VkLayerProperties& prop){return prop.layerName;});
-
-			constexpr char khronos_validation[] = "VK_LAYER_KHRONOS_validation";
-			ValidationLayerList enabled_layers;
-			if(std::any_of(avail_layers.begin(), avail_layers.end(), [&khronos_validation](const char* layer_name){return std::strcmp(layer_name, khronos_validation) == 0;}))
-			{
-				enabled_layers = {khronos_validation};
-			}
-			// Now pass it to the create info.
-			this->inst_info.enabledLayerCount = enabled_layers.length();
-			this->inst_info.ppEnabledLayerNames = enabled_layers.data();
-		#else // !TZ_DEBUG, AKA Release
-			this->inst_info.enabledLayerCount = 0;
-			this->inst_info.ppEnabledLayerNames = nullptr;
-		#endif // TZ_DEBUG
-		VkDebugUtilsMessengerCreateInfoEXT debug_create_temp;
-		if(this->info.has_debug_validation())
+		VkInstanceCreateInfo create
 		{
-			// Debug Messenger isn't created until after the instance, so we don't get coverage while creating the instance. We pass a temporary Debug Messenger into inst_info.pNext to provide coverage here.
-			debug_create_temp = make_debug_messenger_info();
-			inst_info.pNext = &debug_create_temp;
+			.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
+			.pNext = inst_create_pnext,
+			.flags = 0,
+			.pApplicationInfo = &app_info,
+			#if TZ_DEBUG
+			.enabledLayerCount = 1,
+			.ppEnabledLayerNames = &enabled_layers,
+			#else
+			.enabledLayerCount = 0,
+			.ppEnabledLayerNames = nullptr,
+			#endif
+			.enabledExtensionCount = static_cast<std::uint32_t>(extension_natives.length()),
+			.ppEnabledExtensionNames = extension_natives.data()
+		};
+		VkResult res = vkCreateInstance(&create, nullptr, &this->instance);
+		switch(res)
+		{
+			case VK_SUCCESS:
+
+			break;
+			case VK_ERROR_OUT_OF_HOST_MEMORY:
+				tz_error("Failed to create VulkanInstance because we ran out of host memory (RAM). Please ensure that your system meets the minimum requirements.");
+			break;
+			case VK_ERROR_OUT_OF_DEVICE_MEMORY:
+				tz_error("Failed to create VulkanInstance because we ran out of device memory (VRAM). Please ensure that your system meets the minimum requirements.");
+			break;
+			case VK_ERROR_INITIALIZATION_FAILED:
+				tz_error("Failed to create VulkanInstance due to an implementation-specific reason that has not made itself clear. Ensure that your machine supports Vulkan 1.2");
+			break;
+			case VK_ERROR_LAYER_NOT_PRESENT:
+				tz_error("Failed to create VulkanInstance because one or more of the provided %zu layers aren't available on this machine. Please submit a bug report.", create.enabledLayerCount);
+			break;
+			case VK_ERROR_EXTENSION_NOT_PRESENT:
+				tz_error("Failed to create VulkanInstance because one or more of the provided %zu extensions is not supported on this machine. Please submit a bug report.", create.enabledExtensionCount);
+			break;
+			case VK_ERROR_INCOMPATIBLE_DRIVER:
+				tz_error("Failed to create VulkanInstance because Vulkan %u.%u is not supported on this machine. You cannot run this build/version of Topaz on this machine unless you update your drivers such that support is achieved. Alternatively have you tried the OpenGL build?", vulkan_version.major, vulkan_version.minor);
+			break;
+			default:
+				tz_error("Failed to create VulkanInstance but cannot determine why. Please submit a bug report.");
+			break;
 		}
-
-		VkResult res = vkCreateInstance(&this->inst_info, nullptr, &this->instance);
-		if(res != VK_SUCCESS)
+		if(create_debug_validation)
 		{
-			if(res == VK_ERROR_LAYER_NOT_PRESENT)
-			{
-				tz_error("Instance creation failed. One or more of the provided %zu layers don't exist", this->inst_info.enabledLayerCount);
-			}
-			else if(res == VK_ERROR_EXTENSION_NOT_PRESENT)
-			{
-				tz_error("Instance creation failed. One or more of the provided %zu extensions is not supported on this machine.", this->inst_info.enabledExtensionCount);
-			}
-			else
-			{
-				tz_error("Instance creation failed, but couldn't determine the reason why...");
-			}
-		}
-		if(this->info.has_debug_validation())
-		{
-			this->debug_messenger = VulkanDebugMessenger{*this};
+			this->maybe_debug_messenger = VulkanDebugMessenger{*this};
 		}
 	}
 
+
 	VulkanInstance::~VulkanInstance()
 	{
-		this->debug_messenger = std::nullopt;	
+		this->maybe_debug_messenger = std::nullopt;	
 
 		if(this->instance != VK_NULL_HANDLE)
 		{
@@ -309,14 +292,9 @@ namespace tz::gl::vk2
 		}
 	}
 
-	const VulkanInfo& VulkanInstance::get_info() const
-	{
-		return this->info;
-	}
-
 	bool VulkanInstance::is_headless() const
 	{
-		return this->app_type == tz::ApplicationType::Headless;
+		return this->info.app_type == tz::ApplicationType::Headless;
 	}
 
 	bool VulkanInstance::operator==(const VulkanInstance& rhs) const

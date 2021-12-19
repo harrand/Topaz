@@ -43,8 +43,11 @@ void custom_instance_and_window_surface(const tz::GameInfo& game)
 	using namespace tz::gl::vk2;
 	// Now try with a custom WindowSurface.
 	{
-		VulkanInfo window_info{game};
-		VulkanInstance window_inst{window_info, tz::ApplicationType::HiddenWindowApplication};
+		VulkanInstance window_inst
+		{{
+			.game_info = game,
+			.app_type = tz::ApplicationType::HiddenWindowApplication
+		}};
 		PhysicalDeviceList devices = get_all_devices(window_inst);	
 		PhysicalDevice local_pdev = devices.front();
 		WindowSurface window_surf{window_inst, tz::window()};
@@ -88,8 +91,11 @@ void simulataneous_logical_devices()
 void headless_logical_device(tz::GameInfo game)
 {
 	using namespace tz::gl::vk2;
-	VulkanInfo vinfo{game, InstanceExtensionList{}};
-	VulkanInstance vinst{vinfo, tz::ApplicationType::Headless};
+	VulkanInstance vinst
+	{{
+		.game_info = game,
+		.app_type = tz::ApplicationType::Headless
+	}};
 	{
 		PhysicalDevice pdev = get_all_devices(vinst).front();
 		LogicalDevice ldev

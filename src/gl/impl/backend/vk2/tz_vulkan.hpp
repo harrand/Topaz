@@ -127,35 +127,13 @@ namespace tz::gl::vk2
 
 	/**
 	 * @ingroup tz_gl_vk
-	 * Specifies parameters for a newly created @ref VulkanInstance.
+	 * Specifies creation flags for a @ref VulkanInstance.
 	 */
-	class VulkanInfo
+	struct VulkanInstanceInfo
 	{
-	public:
-		/**
-		 * @brief Construct a VulkanInfo from an existing @ref tz::GameInfo and an @ref ExtensionList of instance extensions - Note that these are instance extensions, not device extensions.
-		 * @param game_info Information about the application being ran.
-		 * @param extensions List of instance extensions to enable.
-		 */
-		VulkanInfo(tz::GameInfo game_info, InstanceExtensionList extensions = {});
-
-		VkApplicationInfo native() const;
-		/**
-		 * Retrieve a list of instance extensions to be used by a VulkanInstance.
-		 * @return List of instance extensions to be enabled by the next VulkanInstance using this struct.
-		 */
-		const InstanceExtensionList& get_extensions() const;
-		/**
-		 * Query as to whether a spawned VulkanInstance would support debug validation layer messengers.
-		 * Debug layer messengers automatically assert on any Vulkan-API validation layer errors. This is enabled when the Extension::DebugMessenger is specified, and built under TZ_DEBUG.
-		 * @return True if vulkan-api errors will tz_error, otherwise false.
-		 */
-		bool has_debug_validation() const;
-		bool operator==(const VulkanInfo& rhs) const = default;
-	private:
 		tz::GameInfo game_info;
-		std::string engine_name;
-		InstanceExtensionList extensions;
+		tz::ApplicationType app_type = tz::ApplicationType::WindowApplication;
+		InstanceExtensionList extensions = {};
 	};
 
 	class VulkanInstance;
@@ -177,41 +155,34 @@ namespace tz::gl::vk2
 
 	/**
 	 * @ingroup tz_gl_vk
-	 * Represents a Vulkan Instance
+	 * Represents a vulkan instance, which acts as a reference to all per-application state.
+	 * There is a default instance, retrievable via @ref vk2::get() but you can create additional instances.
 	 */
 	class VulkanInstance
 	{
 	public:
-		/**
-		 * @brief Construct an instance.
-		 * You probably don't need to do this; an instance is setup for you automatically during initialisation.
-		 * @param info Information about the instance.
-		 * @param app_type Application type. Headless applications require slightly modified vulkan instances, for example.
-		 */
-		VulkanInstance(VulkanInfo info, tz::ApplicationType app_type);
+		VulkanInstance(VulkanInstanceInfo info);
 		VulkanInstance(const VulkanInstance& copy) = delete;
 		VulkanInstance(VulkanInstance&& move) = delete;
 		~VulkanInstance();
 		VulkanInstance& operator=(const VulkanInstance& rhs) = delete;
 		VulkanInstance& operator=(VulkanInstance&& rhs) = delete;
-		/**
-		 * @brief Retrieve the @ref VulkanInfo used to construct this instance.
-		 */
-		const VulkanInfo& get_info() const;
 
+		/**
+		 * Query as to whether the instance is headless or not.
+		 *
+		 * A headless instance does not support WSI.
+		 */
 		bool is_headless() const;
 
-		bool operator==(const VulkanInstance& rhs) const;
 		using NativeType = VkInstance;
 		NativeType native() const;
+
+		bool operator==(const VulkanInstance& rhs) const;
 	private:
-		VulkanInfo info;
-		tz::ApplicationType app_type;
-		VkApplicationInfo info_native;
-		util::VkExtensionList extensions;
-		VkInstanceCreateInfo inst_info;
+		VulkanInstanceInfo info;
 		VkInstance instance;
-		std::optional<VulkanDebugMessenger> debug_messenger;
+		std::optional<VulkanDebugMessenger> maybe_debug_messenger;
 	};
 
 	/**
@@ -225,7 +196,7 @@ namespace tz::gl::vk2
 		/**
 		 * Create a WindowSurface for a given window via an existing VulkanInstance.
 		 */
-		WindowSurface(const VulkanInstance& instance, const tz::Window& window);
+		WindowSurface(const VulkanInstance& instance, const tz::Window& window);	
 		WindowSurface(const WindowSurface& copy) = delete;
 		WindowSurface(WindowSurface&& move);
 		~WindowSurface();
