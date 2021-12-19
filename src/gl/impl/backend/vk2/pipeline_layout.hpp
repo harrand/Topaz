@@ -5,12 +5,22 @@
 
 namespace tz::gl::vk2
 {
+	/**
+	 * @ingroup tz_gl_vk_graphics_pipeline
+	 * Specifies creation flags for a @ref PipelineLayout.
+	 */
 	struct PipelineLayoutInfo
 	{
+		/// List of layouts, in order.
 		std::vector<const DescriptorLayout*> descriptor_layouts;
+		/// Owning LogicalDevice. Must not be nullptr or null Device.
 		const LogicalDevice* logical_device;
 	};
 
+	/**
+	 * @ingroup tz_gl_vk_graphics_pipeline
+	 * Represents an interface between shader stages and shader resources in terms of the layout of a group of @ref DescriptorSet.
+	 */
 	class PipelineLayout
 	{
 	public:
