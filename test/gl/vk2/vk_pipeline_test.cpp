@@ -15,11 +15,10 @@ void basic_classic_pipeline_layout()
 		// Firstly create a builder with no descriptors.	
 		DescriptorLayoutInfo dinfo = builder.get_info();
 		{
-			std::vector<DescriptorLayout> dlayouts;
-			dlayouts.emplace_back(dinfo);
+			DescriptorLayout dlayout{dinfo};
 
 			PipelineLayoutInfo pinfo;
-			pinfo.descriptor_layouts = {dlayouts};
+			pinfo.descriptor_layouts = {&dlayout};
 			pinfo.logical_device = &ldev;
 
 			PipelineLayout playout{pinfo};

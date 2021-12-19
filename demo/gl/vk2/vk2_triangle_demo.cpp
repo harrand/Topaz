@@ -90,12 +90,11 @@ int main()
 		// Now create GraphicsPipeline.
 		DescriptorLayoutBuilder lbuilder;
 		lbuilder.set_device(ldev);
-		std::vector<DescriptorLayout> dlayouts;
-		dlayouts.push_back(lbuilder.build());
+		DescriptorLayout dlayout{lbuilder.build()};
 
 		PipelineLayout pipeline_layout
 		{{
-			.descriptor_layouts = dlayouts,
+			.descriptor_layouts = {&dlayout},
 			.logical_device = &ldev
 		}};
 

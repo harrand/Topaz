@@ -7,7 +7,7 @@ namespace tz::gl::vk2
 {
 	struct PipelineLayoutInfo
 	{
-		std::span<const DescriptorLayout> descriptor_layouts;
+		std::vector<const DescriptorLayout*> descriptor_layouts;
 		const LogicalDevice* logical_device;
 	};
 

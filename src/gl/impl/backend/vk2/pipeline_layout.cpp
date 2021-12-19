@@ -16,7 +16,7 @@ namespace tz::gl::vk2
 		std::vector<DescriptorLayout::NativeType> descriptor_layout_natives;
 		for(std::size_t i = 0; i < info.descriptor_layouts.size(); i++)
 		{
-			descriptor_layout_natives.push_back(info.descriptor_layouts[i].native());
+			descriptor_layout_natives.push_back(info.descriptor_layouts[i]->native());
 		}
 		create.pSetLayouts = descriptor_layout_natives.data();
 		create.pushConstantRangeCount = 0;

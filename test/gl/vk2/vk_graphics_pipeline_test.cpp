@@ -13,12 +13,11 @@ void basic_graphics_pipeline()
 	{
 		DescriptorLayoutBuilder lbuilder;
 		lbuilder.set_device(ldev);
-		std::vector<DescriptorLayout> dlayouts;
-		dlayouts.push_back(lbuilder.build());
+		DescriptorLayout dlayout = lbuilder.build();
 
 		PipelineLayoutInfo plinfo
 		{
-			.descriptor_layouts = dlayouts,
+			.descriptor_layouts = {&dlayout},
 			.logical_device = &ldev
 		};
 		PipelineLayout pipeline_layout{plinfo};
