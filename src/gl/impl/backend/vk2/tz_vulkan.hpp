@@ -123,18 +123,6 @@ namespace tz::gl::vk2
 		}
 	}
 
-	/**
-	 * @ingroup tz_gl_vk
-	 * Specifies creation flags for a @ref VulkanInstance.
-	 */
-	struct VulkanInstanceInfo
-	{
-		tz::GameInfo game_info;
-		tz::ApplicationType app_type = tz::ApplicationType::WindowApplication;
-		InstanceExtensionList extensions = {};
-		const tz::Window* window = nullptr;
-	};
-
 	class VulkanInstance;
 
 	class VulkanDebugMessenger
@@ -154,7 +142,8 @@ namespace tz::gl::vk2
 
 	/**
 	 * @ingroup tz_gl_vk_presentation
-	 * Create a representation for an existing Window surface.
+	 * Represents a Vulkan-friendly interface to an existing OS window. In order to present results to the screen, it is done via this WindowSurface class.
+	 * @pre The @ref VulkanInstance associated with the surface must not be a Headless instance.
 	 * @post Once a WindowSurface is created for a given @ref tz::Window, no other WindowSurfaces can be created for that window. This means only one VulkanInstance can own a Window.
 	 */
 	class WindowSurface
@@ -181,6 +170,23 @@ namespace tz::gl::vk2
 		const VulkanInstance* instance;
 		const tz::Window* window;
 	};
+
+	/**
+	 * @ingroup tz_gl_vk
+	 * Specifies creation flags for a @ref VulkanInstance.
+	 */
+	struct VulkanInstanceInfo
+	{
+		/// Information about the application.
+		tz::GameInfo game_info;
+		/// Describes the application type. If Headless is passed, the resultant @ref VulkanInstance will not have an associated @ref WindowSurface.
+		tz::ApplicationType app_type = tz::ApplicationType::WindowApplication;
+		/// List of extensions to enable. Empty by default.
+		InstanceExtensionList extensions = {};
+		/// Window from which to create a @ref WindowSurface. If nullptr is passed, no @ref WindowSurface is created. If `app_type == tz::ApplicationType::Headless`, this is ignored. Defaults to nullptr.
+		const tz::Window* window = nullptr;
+	};
+
 
 	/**
 	 * @ingroup tz_gl_vk
