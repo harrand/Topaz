@@ -82,14 +82,14 @@ namespace tz::gl::vk2
 		 * Retrieve a list of all ImageFormats that could represent the given window surface.
 		 * @return List of acceptable ImageFormats for a window surface.
 		 */
-		tz::BasicList<ImageFormat> get_supported_surface_formats(const WindowSurface& surface) const;
+		tz::BasicList<ImageFormat> get_supported_surface_formats() const;
 		/**
-		 * Retrieve a list of all SurfacePresentModes that could be used to present images to the given @ref WindowSurface.
+		 * Retrieve a list of all SurfacePresentModes that could be used to present images to the @ref WindowSurface attached to the @ref VulkanInstance owning this device.
 		 * This is guaranteed to contain every element within @ref present_traits::get_mandatory_present_modes().
 		 * @return List of acceptable SurfacePresentModes for a window surface.
 		 */
-		tz::BasicList<SurfacePresentMode> get_supported_surface_present_modes(const WindowSurface& surface) const;
-		PhysicalDeviceSurfaceCapabilityInfo get_surface_capabilities(const WindowSurface& surface) const;
+		tz::BasicList<SurfacePresentMode> get_supported_surface_present_modes() const;
+		PhysicalDeviceSurfaceCapabilityInfo get_surface_capabilities() const;
 		/**
 		 * Query as to whether the given ImageFormat can be used as a framebuffer colour attachment and as an input attachment format.
 		 * This is guaranteed to return true for any @ref ImageFormat within @ref format_traits::get_mandatory_colour_attachment_formats().

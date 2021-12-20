@@ -9,19 +9,16 @@ void swapchain_image_framebuffer()
 
 	LogicalDeviceInfo linfo;
 	linfo.physical_device = pdev;
-	linfo.surface = &get_window_surface();
 	linfo.extensions = {DeviceExtension::Swapchain};
 
 	LogicalDevice ldev{linfo};
-	const WindowSurface& window_surf = tz::gl::vk2::get_window_surface();
 
 	SwapchainInfo sinfo;
 	sinfo.device = &ldev;
-	sinfo.surface = &window_surf;
-	sinfo.swapchain_image_count_minimum = pdev.get_surface_capabilities(window_surf).min_image_count;
-	ImageFormat swapchain_image_format = pdev.get_supported_surface_formats(window_surf).front();
+	sinfo.swapchain_image_count_minimum = pdev.get_surface_capabilities().min_image_count;
+	ImageFormat swapchain_image_format = pdev.get_supported_surface_formats().front();
 	sinfo.image_format = swapchain_image_format;
-	sinfo.present_mode = pdev.get_supported_surface_present_modes(window_surf).front();
+	sinfo.present_mode = pdev.get_supported_surface_present_modes().front();
 
 	Swapchain swapchain{sinfo};
 

@@ -10,7 +10,6 @@
 namespace tz::gl::vk2
 {
 	VulkanInstance* inst = nullptr;
-	WindowSurface* surf = nullptr;
 
 	void initialise(tz::GameInfo game_info, tz::ApplicationType app_type)
 	{
@@ -20,28 +19,15 @@ namespace tz::gl::vk2
 			.game_info = game_info,
 			.app_type = app_type
 #if TZ_DEBUG
-			,.extensions = {InstanceExtension::DebugMessenger}
+			,.extensions = {InstanceExtension::DebugMessenger},
 #endif
+			.window = &tz::window()
 		}};
-		switch(app_type)
-		{
-			case tz::ApplicationType::Headless:
-				// Don't create global window surface.
-			break;
-			default:
-				surf = new WindowSurface{*inst, tz::window()};
-			break;
-		}
 	}
 
 	void terminate()
 	{
 		tz_assert(inst != nullptr, "Not initialised");
-		if(surf != nullptr)
-		{
-			delete surf;
-			surf = nullptr;
-		}
 		delete inst;
 		inst = nullptr;
 	}
@@ -55,13 +41,7 @@ namespace tz::gl::vk2
 	bool is_headless()
 	{
 		tz_assert(inst != nullptr, "Not initialised");
-		return surf != nullptr;
-	}
-
-	const WindowSurface& get_window_surface()
-	{
-		tz_assert(is_headless(), "Cannot retrieve window surface in headless applictions.");
-		return *surf;
+		return inst->is_headless();
 	}
 
 	inline VKAPI_ATTR VkBool32 VKAPI_CALL default_debug_callback
@@ -164,23 +144,81 @@ namespace tz::gl::vk2
 		return *this;
 	}
 
-	bool extension_supported(util::VkExtension extension)
+	WindowSurface::WindowSurface(const VulkanInstance& instance, const tz::Window& window):
+	surface(VK_NULL_HANDLE),
+	instance(&instance),
+	window(&window)
 	{
-		std::uint32_t ext_count;
-		vkEnumerateInstanceExtensionProperties(nullptr, &ext_count, nullptr);
-		std::vector<VkExtensionProperties> exts;
-		exts.resize(ext_count);
-		vkEnumerateInstanceExtensionProperties(nullptr, &ext_count, exts.data());
-		return std::any_of(exts.begin(), exts.end(), [extension](VkExtensionProperties props)->bool
+		tz_assert(!this->window->is_null(), "Cannot create WindowSurface off of a null window. GLFW has likely failed. If you are trying to run a headless application, please submit a bug report.");
+
+		VkResult res = glfwCreateWindowSurface(this->instance->native(), this->window->get_middleware_handle(), nullptr, &this->surface);
+		switch(res)
 		{
-			return std::strcmp(props.extensionName, extension) == 0;
-		});
+			case VK_SUCCESS:
+
+			break;
+			case VK_ERROR_INITIALIZATION_FAILED:
+				tz_error("Failed to find either a Vulkan loader or a minimally functional ICD (installable client driver), cannot create Window Surface. If you're an end-user, please ensure your drivers are upto-date -- Note that while this is almost certainly *not* a bug, this is a fatal error and the application must crash.");
+			break;
+			case VK_ERROR_EXTENSION_NOT_PRESENT:
+				tz_error("The provided VulkanInstance does not support window surface creation. Please submit a bug report.");
+			break;
+			case VK_ERROR_NATIVE_WINDOW_IN_USE_KHR:
+				tz_error("Window was not created to be used for Vulkan (client api hint wasn't set to GLFW_NO_API). Please submit a bug report.");
+			break;
+			default:
+				tz_error("Window surface creation failed, but for an unknown reason. Please ensure your computer meets the minimum requirements for this program. If you are absolutely sure that your machine is valid, please submit a bug report.");
+			break;
+		}
 	}
+
+	WindowSurface::WindowSurface(WindowSurface&& move):
+	surface(VK_NULL_HANDLE),
+	instance(nullptr),
+	window(nullptr)
+	{
+		*this = std::move(move);
+	}
+
+	WindowSurface::~WindowSurface()
+	{
+		if(this->surface != VK_NULL_HANDLE)
+		{
+			vkDestroySurfaceKHR(this->instance->native(), this->surface, nullptr);
+		}
+	}
+
+	WindowSurface& WindowSurface::operator=(WindowSurface&& rhs)
+	{
+		std::swap(this->surface, rhs.surface);
+		std::swap(this->instance, rhs.instance);
+		std::swap(this->window, rhs.window);
+		return *this;
+	}
+
+	const VulkanInstance& WindowSurface::get_instance() const
+	{
+		tz_assert(this->instance != nullptr, "WindowSurface had null instance");
+		return *this->instance;
+	}
+
+	const tz::Window& WindowSurface::get_window() const
+	{
+		tz_assert(this->window != nullptr && !this->window->is_null(), "WindowSurface had nullptr or null tz::Window. Please submit a bug report.");
+		return *this->window;
+	}
+
+	WindowSurface::NativeType WindowSurface::native() const
+	{
+		return this->surface;
+	}
+	
 
 	VulkanInstance::VulkanInstance(VulkanInstanceInfo info):
 	info(info),
 	instance(VK_NULL_HANDLE),
-	maybe_debug_messenger(std::nullopt)
+	maybe_debug_messenger(std::nullopt),
+	maybe_window_surface(std::nullopt)
 	{
 		std::string engine_name_str = info.game_info.to_string();
 		VkApplicationInfo app_info
@@ -223,6 +261,7 @@ namespace tz::gl::vk2
 		void* inst_create_pnext = nullptr;
 		// Debug Messenger
 		const bool create_debug_validation = info.extensions.contains(InstanceExtension::DebugMessenger) && TZ_DEBUG;
+		const bool create_window_surface = !this->is_headless() && info.window != nullptr && !info.window->is_null();
 		VkDebugUtilsMessengerCreateInfoEXT debug_validation_create;
 		if(create_debug_validation)
 		{
@@ -278,12 +317,17 @@ namespace tz::gl::vk2
 		{
 			this->maybe_debug_messenger = VulkanDebugMessenger{*this};
 		}
+		if(create_window_surface)
+		{
+			this->maybe_window_surface = WindowSurface{*this, *info.window};
+		}
 	}
 
 
 	VulkanInstance::~VulkanInstance()
 	{
 		this->maybe_debug_messenger = std::nullopt;	
+		this->maybe_window_surface = std::nullopt;
 
 		if(this->instance != VK_NULL_HANDLE)
 		{
@@ -297,6 +341,17 @@ namespace tz::gl::vk2
 		return this->info.app_type == tz::ApplicationType::Headless;
 	}
 
+	bool VulkanInstance::has_surface() const
+	{
+		return this->maybe_window_surface.has_value();
+	}
+
+	const WindowSurface& VulkanInstance::get_surface() const
+	{
+		tz_assert(this->has_surface(), "VulkanInstance did not have attached surface. Please submit a bug report.");
+		return this->maybe_window_surface.value();
+	}
+
 	bool VulkanInstance::operator==(const VulkanInstance& rhs) const
 	{
 		return this->instance == rhs.instance;
@@ -307,66 +362,6 @@ namespace tz::gl::vk2
 		return this->instance;
 	}
 
-	WindowSurface::WindowSurface(const VulkanInstance& instance, const tz::Window& window):
-	surface(VK_NULL_HANDLE),
-	instance(&instance)
-	{
-		tz_assert(!window.is_null(), "Cannot create WindowSurface off of a null window. GLFW has likely failed. If you are trying to run a headless application, please submit a bug report.");
-
-		VkResult res = glfwCreateWindowSurface(this->instance->native(), window.get_middleware_handle(), nullptr, &this->surface);
-		switch(res)
-		{
-			case VK_SUCCESS:
-
-			break;
-			case VK_ERROR_INITIALIZATION_FAILED:
-				tz_error("Failed to find either a Vulkan loader or a minimally functional ICD (installable client driver), cannot create Window Surface. If you're an end-user, please ensure your drivers are upto-date -- Note that while this is almost certainly *not* a bug, this is a fatal error and the application must crash.");
-			break;
-			case VK_ERROR_EXTENSION_NOT_PRESENT:
-				tz_error("The provided VulkanInstance does not support window surface creation. Please submit a bug report.");
-			break;
-			case VK_ERROR_NATIVE_WINDOW_IN_USE_KHR:
-				tz_error("Window was not created to be used for Vulkan (client api hint wasn't set to GLFW_NO_API). Please submit a bug report.");
-			break;
-			default:
-				tz_error("Window surface creation failed, but for an unknown reason. Please ensure your computer meets the minimum requirements for this program. If you are absolutely sure that your machine is valid, please submit a bug report.");
-			break;
-		}
-	}
-
-	WindowSurface::WindowSurface(WindowSurface&& move):
-	surface(VK_NULL_HANDLE),
-	instance(nullptr)
-	{
-		*this = std::move(move);
-	}
-
-	WindowSurface::~WindowSurface()
-	{
-		if(this->surface != VK_NULL_HANDLE)
-		{
-			vkDestroySurfaceKHR(this->instance->native(), this->surface, nullptr);
-		}
-	}
-
-	WindowSurface& WindowSurface::operator=(WindowSurface&& rhs)
-	{
-		std::swap(this->surface, rhs.surface);
-		std::swap(this->instance, rhs.instance);
-		return *this;
-	}
-
-	const VulkanInstance& WindowSurface::get_instance() const
-	{
-		tz_assert(this->instance != nullptr, "WindowSurface had null instance");
-		return *this->instance;
-	}
-
-	WindowSurface::NativeType WindowSurface::native() const
-	{
-		return this->surface;
-	}
-	
 }
 
 #endif // TZ_VULKAN

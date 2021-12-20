@@ -50,11 +50,6 @@ namespace tz::gl::vk2
 		 * @pre For each element `e`, `physical_device.get_supported_features().contains(e)` must hold true.
 		 */
 		DeviceFeatureField features = {};
-		/**
-		 * `surface` is `nullptr` or a valid pointer to an existing @ref WindowSurface
-		 * @pre If a surface is provided, the @ref VulkanInstance who spawned it must be equal to the VulkanInstance that spawned `physical_device`
-		 */
-		const WindowSurface* surface = nullptr;
 	};
 
 	struct QueueRequest

@@ -48,20 +48,18 @@ int main()
 		{{
 			.physical_device = pdev,
 			.extensions = {DeviceExtension::Swapchain},
-			.surface = &get_window_surface()
 		}};
-		PhysicalDeviceSurfaceCapabilityInfo pdev_capability = pdev.get_surface_capabilities(get_window_surface());
+		PhysicalDeviceSurfaceCapabilityInfo pdev_capability = pdev.get_surface_capabilities();
 
-		ImageFormat swapchain_format = pdev.get_supported_surface_formats(get_window_surface()).front();
+		ImageFormat swapchain_format = pdev.get_supported_surface_formats().front();
 
 		Swapchain swapchain
 		{{
 
 			.device = &ldev,
-			.surface = &get_window_surface(),
 			.swapchain_image_count_minimum = pdev_capability.min_image_count,
 			.image_format = swapchain_format,
-			.present_mode = pdev.get_supported_surface_present_modes(get_window_surface()).front(),
+			.present_mode = pdev.get_supported_surface_present_modes().front(),
 		}};
 
 		// Create RenderPass.

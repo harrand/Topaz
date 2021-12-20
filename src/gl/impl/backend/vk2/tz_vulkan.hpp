@@ -9,7 +9,6 @@
 namespace tz::gl::vk2
 {
 	class VulkanInstance;
-	class WindowSurface;
 
 	/**
 	 * @ingroup tz_gl
@@ -103,7 +102,6 @@ namespace tz::gl::vk2
 	 */
 	const VulkanInstance& get();
 	bool is_headless();
-	const WindowSurface& get_window_surface();
 
 	/**
 	 * @}
@@ -134,6 +132,7 @@ namespace tz::gl::vk2
 		tz::GameInfo game_info;
 		tz::ApplicationType app_type = tz::ApplicationType::WindowApplication;
 		InstanceExtensionList extensions = {};
+		const tz::Window* window = nullptr;
 	};
 
 	class VulkanInstance;
@@ -151,6 +150,36 @@ namespace tz::gl::vk2
 	private:
 		VkDebugUtilsMessengerEXT debug_messenger;	
 		VkInstance instance;
+	};
+
+	/**
+	 * @ingroup tz_gl_vk_presentation
+	 * Create a representation for an existing Window surface.
+	 * @post Once a WindowSurface is created for a given @ref tz::Window, no other WindowSurfaces can be created for that window. This means only one VulkanInstance can own a Window.
+	 */
+	class WindowSurface
+	{
+	public:
+		/**
+		 * Create a WindowSurface for a given window via an existing VulkanInstance.
+		 */
+		WindowSurface(const VulkanInstance& instance, const tz::Window& window);	
+		WindowSurface(const WindowSurface& copy) = delete;
+		WindowSurface(WindowSurface&& move);
+		~WindowSurface();
+
+		WindowSurface& operator=(const WindowSurface& rhs) = delete;
+		WindowSurface& operator=(WindowSurface&& rhs);
+
+		const VulkanInstance& get_instance() const;
+		const tz::Window& get_window() const;
+
+		using NativeType = VkSurfaceKHR;
+		NativeType native() const;
+	private:
+		VkSurfaceKHR surface;
+		const VulkanInstance* instance;
+		const tz::Window* window;
 	};
 
 	/**
@@ -174,6 +203,9 @@ namespace tz::gl::vk2
 		 * A headless instance does not support WSI.
 		 */
 		bool is_headless() const;
+		bool has_surface() const;
+
+		const WindowSurface& get_surface() const;
 
 		using NativeType = VkInstance;
 		NativeType native() const;
@@ -183,34 +215,7 @@ namespace tz::gl::vk2
 		VulkanInstanceInfo info;
 		VkInstance instance;
 		std::optional<VulkanDebugMessenger> maybe_debug_messenger;
-	};
-
-	/**
-	 * @ingroup tz_gl_vk_presentation
-	 * Create a representation for an existing Window surface.
-	 * @post Once a WindowSurface is created for a given @ref tz::Window, no other WindowSurfaces can be created for that window. This means only one VulkanInstance can own a Window.
-	 */
-	class WindowSurface
-	{
-	public:
-		/**
-		 * Create a WindowSurface for a given window via an existing VulkanInstance.
-		 */
-		WindowSurface(const VulkanInstance& instance, const tz::Window& window);	
-		WindowSurface(const WindowSurface& copy) = delete;
-		WindowSurface(WindowSurface&& move);
-		~WindowSurface();
-
-		WindowSurface& operator=(const WindowSurface& rhs) = delete;
-		WindowSurface& operator=(WindowSurface&& rhs);
-
-		const VulkanInstance& get_instance() const;
-
-		using NativeType = VkSurfaceKHR;
-		NativeType native() const;
-	private:
-		VkSurfaceKHR surface;
-		const VulkanInstance* instance;
+		std::optional<WindowSurface> maybe_window_surface;
 	};
 
 	/**

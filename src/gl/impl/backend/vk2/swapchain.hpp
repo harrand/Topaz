@@ -13,8 +13,6 @@ namespace tz::gl::vk2
 	{
 		/// Pointer to a valid @ref LogicalDevice. This must not be null.
 		const LogicalDevice* device;
-		/// Pointer to a valid @ref WindowSurface onto which the Swapchain shall present images. This must not be null.
-		const WindowSurface* surface;
 		/// Minimum number of swapchain images. This must be satisfied by the @ref PhysicalDevice corresponding to `device.get_hardware()`. See @ref PhysicalDevice::get_surface_capabilities for more information. 
 		std::uint32_t swapchain_image_count_minimum;
 		/// Specifies the format the swapchain image(s) will be created with. 

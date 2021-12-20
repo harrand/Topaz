@@ -14,21 +14,20 @@ namespace tz::gl::vk2
 	swapchain_image_views()
 	{
 		tz_assert(this->info.device != nullptr, "SwapchainInfo contained null LogicalDevice. Please submi a bug report.");
-		tz_assert(this->info.surface != nullptr, "SwapchainInfo contained null WindowSurface. Please submit a bug report.");
 		const LogicalDevice& ldev = *this->info.device;
 		const PhysicalDevice& pdev = ldev.get_hardware();
-		const WindowSurface& surface = *this->info.surface;
 
 		// Ensure the swapchain info specifies meets hardware requirements:
 		// Check the Swapchain extension is enabled.
 		tz_assert(ldev.get_extensions().contains(DeviceExtension::Swapchain), "Attempted to create Swapchain, but owning LogicalDevice does not have DeviceExtension::Swapchain enabled!");
 
 		// Ensure the image count is reasonable (not too low or high)
-		PhysicalDeviceSurfaceCapabilityInfo pdev_surface_cap = pdev.get_surface_capabilities(surface);
+		PhysicalDeviceSurfaceCapabilityInfo pdev_surface_cap = pdev.get_surface_capabilities();
 		tz_assert(pdev_surface_cap.min_image_count <= info.swapchain_image_count_minimum, "Swapchain image count too low (hardware minimum = %u, requested %u). Please submit a bug report.", pdev_surface_cap.min_image_count, info.swapchain_image_count_minimum);
 		tz_assert(info.swapchain_image_count_minimum <= pdev_surface_cap.max_image_count, "Swapchain image count too high (hardware maximum = %u, requested %u). Please submit a bug report.", pdev_surface_cap.max_image_count, info.swapchain_image_count_minimum);
 		// Now ensure the PhysicalDevice supports the provided ImageFormat
-		tz_assert(pdev.get_supported_surface_formats(surface).contains(this->info.image_format), "Swapchain provided ImageFormat which the PhysicalDevice does not support. Please submit a bug report.");
+		tz_assert(pdev.get_supported_surface_formats().contains(this->info.image_format), "Swapchain provided ImageFormat which the PhysicalDevice does not support. Please submit a bug report.");
+		const WindowSurface& surface = pdev.get_instance().get_surface();
 
 		// Once we're ready, find out the surface extent we want.
 		// The PhysicalDevice might have a number for us, but it may not. If not we just use the window dimensions.
@@ -42,8 +41,8 @@ namespace tz::gl::vk2
 			}
 			else
 			{
-				extent.width = static_cast<std::uint32_t>(tz::window().get_width());
-				extent.height = static_cast<std::uint32_t>(tz::window().get_height());
+				extent.width = static_cast<std::uint32_t>(surface.get_window().get_width());
+				extent.height = static_cast<std::uint32_t>(surface.get_window().get_height());
 			}
 		}
 

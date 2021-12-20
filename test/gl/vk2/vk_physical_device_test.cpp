@@ -101,14 +101,14 @@ void window_surfaces(tz::GameInfo game)
 	VulkanInstance window_inst
 	{{
 		.game_info = game,
-		.app_type = tz::ApplicationType::HiddenWindowApplication
+		.app_type = tz::ApplicationType::HiddenWindowApplication,
+		.window = &tz::window()
 	}};
 	PhysicalDeviceList devices = get_all_devices(window_inst);	
-	WindowSurface window_surf{window_inst, tz::window()};
 	// If we have a PhysicalDevice which supports WindowSurfaces, ensure that its swapchain format support isn't shit
 	for(const PhysicalDevice& dev : devices)
 	{
-		tz::BasicList<ImageFormat> supported_formats = dev.get_supported_surface_formats(window_surf);
+		tz::BasicList<ImageFormat> supported_formats = dev.get_supported_surface_formats();
 		tz_assert(!supported_formats.empty(), "PhysicalDevice found which doesn't support any window surface formats");
 	}
 }
@@ -119,15 +119,15 @@ void surface_present_modes(tz::GameInfo game)
 	VulkanInstance window_inst
 	{{
 		.game_info = game,
-		.app_type = tz::ApplicationType::HiddenWindowApplication
+		.app_type = tz::ApplicationType::HiddenWindowApplication,
+		.window = &tz::window()
 	}};
 	PhysicalDeviceList devices = get_all_devices(window_inst);	
-	WindowSurface window_surf{window_inst, tz::window()};
 
 	// Ensure all PhysicalDevices support the guaranteed formats.
 	for(const PhysicalDevice& dev : devices)
 	{
-		tz::BasicList<SurfacePresentMode> supported_present_modes = dev.get_supported_surface_present_modes(window_surf);
+		tz::BasicList<SurfacePresentMode> supported_present_modes = dev.get_supported_surface_present_modes();
 		for(SurfacePresentMode mandatory_present_mode : present_traits::get_mandatory_present_modes())
 		{
 			tz_assert(supported_present_modes.contains(mandatory_present_mode), "PhysicalDevice found which doesn't support the mandatory surface present modes.");

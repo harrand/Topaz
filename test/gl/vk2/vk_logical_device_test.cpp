@@ -46,13 +46,14 @@ void custom_instance_and_window_surface(const tz::GameInfo& game)
 		VulkanInstance window_inst
 		{{
 			.game_info = game,
-			.app_type = tz::ApplicationType::HiddenWindowApplication
+			.app_type = tz::ApplicationType::HiddenWindowApplication,
+			.window = &tz::window()
 		}};
 		PhysicalDeviceList devices = get_all_devices(window_inst);	
 		PhysicalDevice local_pdev = devices.front();
 		WindowSurface window_surf{window_inst, tz::window()};
 
-		LogicalDevice ldev4{LogicalDeviceInfo{.physical_device = local_pdev, .surface = &window_surf}};
+		LogicalDevice ldev4{LogicalDeviceInfo{.physical_device = local_pdev}};
 	}
 }
 
@@ -94,7 +95,7 @@ void headless_logical_device(tz::GameInfo game)
 	VulkanInstance vinst
 	{{
 		.game_info = game,
-		.app_type = tz::ApplicationType::Headless
+		.app_type = tz::ApplicationType::Headless,
 	}};
 	{
 		PhysicalDevice pdev = get_all_devices(vinst).front();
@@ -103,7 +104,6 @@ void headless_logical_device(tz::GameInfo game)
 			.physical_device = pdev,
 			.extensions = {},
 			.features = {},
-			.surface = nullptr
 		}};
 	}
 }

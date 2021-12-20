@@ -3,23 +3,22 @@
 #include "gl/impl/backend/vk2/hardware/physical_device.hpp"
 #include "gl/impl/backend/vk2/swapchain.hpp"
 
-tz::gl::vk2::SwapchainInfo get_safe_swapchain_info(const tz::gl::vk2::LogicalDevice& ldev, const tz::gl::vk2::WindowSurface& window_surf)
+tz::gl::vk2::SwapchainInfo get_safe_swapchain_info(const tz::gl::vk2::LogicalDevice& ldev)
 {
 	using namespace tz::gl::vk2;
 	const PhysicalDevice& pdev = ldev.get_hardware();
 	SwapchainInfo sinfo;
 	sinfo.device = &ldev;
-	sinfo.surface = &window_surf;
 	// The next params need to be supported by the PhysicalDevice, so we'll make it any old thing that the PhysicalDevice supports.
 	// We start with an image count minimum.
-	PhysicalDeviceSurfaceCapabilityInfo pdev_surface_cap = pdev.get_surface_capabilities(window_surf);	
+	PhysicalDeviceSurfaceCapabilityInfo pdev_surface_cap = pdev.get_surface_capabilities();	
 	sinfo.swapchain_image_count_minimum = pdev_surface_cap.min_image_count;
 	// Now an image format.
-	tz::BasicList<ImageFormat> fmt_list = pdev.get_supported_surface_formats(window_surf);
+	tz::BasicList<ImageFormat> fmt_list = pdev.get_supported_surface_formats();
 	tz_assert(!fmt_list.empty(), "Tried to create a Swapchain from a PhysicalDevice which doesn't support any surface image formats. vk_physical_device_test probably fails too. If not, this test needs changes to more sensibly choose a PhysicalDevice.");
 	sinfo.image_format = fmt_list.front();
 	// And finally, a present mode.	
-	tz::BasicList<SurfacePresentMode> pmode_list = pdev.get_supported_surface_present_modes(window_surf);
+	tz::BasicList<SurfacePresentMode> pmode_list = pdev.get_supported_surface_present_modes();
 	tz_assert(!pmode_list.empty(), "Tried to create a Swapchain from a PhysicalDevice which doesn't support any surface present modes. vk_physical_device_test probably fails too. If not, this test needs changes to more sensibly choose a PhysicalDevice");
 	sinfo.present_mode = pmode_list.front();
 	return sinfo;
@@ -34,26 +33,25 @@ void mandatory_swapchain(tz::GameInfo g)
 	{{
 		.game_info = g,
 		.app_type = tz::ApplicationType::HiddenWindowApplication,
-		.extensions = {InstanceExtension::DebugMessenger}
+		.extensions = {InstanceExtension::DebugMessenger},
+		.window = &tz::window()
 	}};
 	PhysicalDeviceList devices = get_all_devices(window_inst);	
 	PhysicalDevice pdev = devices.front();
-	WindowSurface window_surf{window_inst, tz::window()};
 
 	// Create a LogicalDevice, and then use that to create a Swapchain.
 	LogicalDeviceInfo linfo;
 	linfo.physical_device = pdev;
 	linfo.extensions = DeviceExtensionList{DeviceExtension::Swapchain};
-	linfo.surface = &window_surf;
 	LogicalDevice ldev{linfo};
 
-	SwapchainInfo sinfo = get_safe_swapchain_info(ldev, window_surf);
+	SwapchainInfo sinfo = get_safe_swapchain_info(ldev);
 
 	// Now we create the Swapchain! Finally...
 	Swapchain swapchain{sinfo};
 
 	// Let's check the number of swapchain images fits what the PhysicalDevice required (this should 100% happen).
-	PhysicalDeviceSurfaceCapabilityInfo pdev_surface_cap = pdev.get_surface_capabilities(window_surf);
+	PhysicalDeviceSurfaceCapabilityInfo pdev_surface_cap = pdev.get_surface_capabilities();
 	std::span<const Image> swapchain_images = swapchain.get_images();
 	std::span<const ImageView> swapchain_image_views = swapchain.get_image_views();
 	tz_assert(swapchain_images.size() >= pdev_surface_cap.min_image_count, "Swapchain::get_images() returned an ImageSpan of size %zu which is smaller than the PhysicalDevice minimum image count of %u", swapchain_images.size(), pdev_surface_cap.min_image_count);
@@ -104,11 +102,10 @@ void semantics()
 	LogicalDeviceInfo dummy;
 	dummy.physical_device = get_all_devices().front();
 	dummy.extensions = DeviceExtensionList{DeviceExtension::Swapchain};
-	dummy.surface = &get_window_surface();
 	{
 		LogicalDevice ldev{dummy};
 
-		SwapchainInfo sinfo = get_safe_swapchain_info(ldev, get_window_surface());
+		SwapchainInfo sinfo = get_safe_swapchain_info(ldev);
 		Swapchain s1{sinfo};
 		const std::size_t img_count = s1.get_images().size();
 		tz_assert(!s1.is_null(), "Swapchain wrongly thinks its null");
