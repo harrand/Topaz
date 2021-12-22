@@ -41,3 +41,11 @@ add_demo(
 		demo/gl/dynamic_triangle_demo.vertex.tzsl
 		demo/gl/dynamic_triangle_demo.fragment.tzsl
 )
+
+add_demo(
+	TARGET vkfront_temp_demo
+	SOURCE_FILES vkfront_temp_demo.cpp
+	SHADER_SOURCES
+		demo/gl/triangle_demo.vertex.tzsl
+		demo/gl/triangle_demo.fragment.tzsl
+)

@@ -113,6 +113,10 @@ add_library(topaz
 	src/gl/impl/frontend/vk/shader.cpp
 	src/gl/impl/frontend/vk/shader.hpp
 
+	# tz::gl (Vulkan Frontend 2)
+	src/gl/impl/frontend/vk2/device.cpp
+	src/gl/impl/frontend/vk2/device.hpp
+
 	# tz::gl (OpenGL Frontend)
 	src/gl/impl/frontend/ogl/component.cpp
 	src/gl/impl/frontend/ogl/component.hpp
