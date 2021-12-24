@@ -1,0 +1,37 @@
+#pragma shader_stage(vertex)
+
+layout(location = 0) out vec2 texcoord_modelspace;
+
+struct TriangleVertexData
+{
+	vec3 position;
+	vec2 texcoord;
+};
+
+struct TriangleResourceData
+{
+	vec3 position;
+	vec3 rotation;
+	vec3 scale;
+};
+
+resource(id = 0) buffer VertexData
+{
+	TriangleVertexData[3] vertices;
+} vertex_data;
+
+resource(id = 1) buffer ResourceData
+{
+	TriangleResourceData[] resources;
+} resource_data;
+
+void main()
+{
+	int triangle_index = gl_VertexIndex / 3;
+	int triangle_vertex_id = gl_VertexIndex % 3;
+	TriangleVertexData cur_vertex = vertex_data.vertices[triangle_vertex_id];
+	TriangleResourceData cur_resource = resource_data.resources[triangle_index];
+
+	texcoord_modelspace = cur_vertex.texcoord;
+	gl_Position = vec4(cur_vertex.position, 1.0);
+}

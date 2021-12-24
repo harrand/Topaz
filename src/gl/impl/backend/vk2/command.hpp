@@ -95,6 +95,20 @@ namespace tz::gl::vk2
 		};
 
 		/**
+		 * Record a copy from one @ref Buffer to an @ref Image.
+		 *
+		 * The first N bytes will be copied from the source buffer to the destination image.
+		 */
+		struct BufferCopyImage
+		{
+			/// Buffer to copy data from. Must not be null.
+			const Buffer* src;
+			/// Buffer to copy to. Must not be null.
+			Image* dst;
+			/// Aspect of `image` in this context.
+			ImageAspectFlags image_aspects;
+		};
+		/**
 		 * Bind a vertex or index @ref Buffer.
 		 */
 		struct BindBuffer
@@ -134,7 +148,7 @@ namespace tz::gl::vk2
 		};
 
 		/// Variant type which has alternatives for every single possible recordable command type.
-		using Variant = std::variant<Draw, BindPipeline, BindDescriptorSets, BeginRenderPass, EndRenderPass, BufferCopyBuffer, BindBuffer, TransitionImageLayout>;
+		using Variant = std::variant<Draw, BindPipeline, BindDescriptorSets, BeginRenderPass, EndRenderPass, BufferCopyBuffer, BufferCopyImage, BindBuffer, TransitionImageLayout>;
 	};
 	/**
 	 * @ingroup tz_gl_vk_commands
@@ -208,6 +222,11 @@ namespace tz::gl::vk2
 		 * See @ref VulkanCommand::BufferCopyBuffer for details.
 		 */
 		void buffer_copy_buffer(VulkanCommand::BufferCopyBuffer command);
+		/**
+		 * Copy data from one @ref Buffer to an @ref Image.
+		 * See @ref VulkanCommand::BufferCopyImage for details.
+		 */
+		void buffer_copy_image(VulkanCommand::BufferCopyImage command);
 		/**
 		 * Bind a @ref Buffer.
 		 * See @ref VulkanCommand::BindBuffer for details.

@@ -135,6 +135,52 @@ namespace tz::gl::vk2
 		vkCmdCopyBuffer(this->get_command_buffer().native(), command.src->native(), command.dst->native(), 1, &cpy);
 	}
 
+	void CommandBufferRecording::buffer_copy_image(VulkanCommand::BufferCopyImage command)
+	{
+		tz_assert(command.src != nullptr, "BufferCopyImage: Source buffer was nullptr");
+		tz_assert(command.dst != nullptr, "BufferCopyImage: Destination image was nullptr");
+		tz_assert(command.src->get_usage().contains(BufferUsage::TransferSource), "BufferCopyImage: Source buffer did not contain BufferUsage::TransferSource");
+
+		// So ideally we could just use command.dst->get_layout(). However, it's very possible this recording contains a previous command which will have changed that layout. We will check to make sure. If so, we use the updated layout (even though it hasn't happened yet), otherwise we just use the images current layout.
+		ImageLayout img_layout = command.dst->get_layout();
+		for(const VulkanCommand::Variant& previous_command : this->get_command_buffer().get_recorded_commands())
+		{
+			std::visit([&img_layout, &command](auto&& arg)
+			{
+				using T = std::decay_t<decltype(arg)>;
+				if constexpr(std::is_same_v<T, VulkanCommand::TransitionImageLayout>)
+				{
+					// If the image layout will have been transitioned, then use the updated layout.
+					if(arg.image == command.dst)
+					{
+						img_layout = arg.target_layout;
+					}
+				}
+				// TODO: End of render pass can also change image layouts. We should check for this.
+			}, previous_command);
+		}
+		tz_assert(img_layout == ImageLayout::TransferDestination, "BufferCopyImage:: Destination image was not in TransferDestination ImageLayout, so it cannot be an, erm, transfer destination.");
+
+		this->register_command(command);
+		tz::Vec2ui img_dims = command.dst->get_dimensions();
+		VkBufferImageCopy cpy
+		{
+			.bufferOffset = 0,
+			.bufferRowLength = 0,
+			.bufferImageHeight = 0,
+			.imageSubresource =
+			{
+				.aspectMask = static_cast<VkImageAspectFlags>(static_cast<ImageAspectFlag>(command.image_aspects)),
+				.mipLevel = 0,
+				.baseArrayLayer = 0,
+				.layerCount = 1
+			},
+			.imageOffset = VkOffset3D{.x = 0, .y = 0, .z = 0},
+			.imageExtent = VkExtent3D{.width = img_dims[0], .height = img_dims[1], .depth = 1}
+		};
+		vkCmdCopyBufferToImage(this->get_command_buffer().native(), command.src->native(), command.dst->native(), static_cast<VkImageLayout>(img_layout), 1, &cpy);
+	}
+
 	void CommandBufferRecording::bind_buffer(VulkanCommand::BindBuffer command)
 	{
 		tz_assert(command.buffer != nullptr, "BindBuffer contained nullptr Buffer. Please submit a bug report.");

@@ -8,30 +8,14 @@
 #include "gl/impl/backend/vk2/command.hpp"
 #include "gl/impl/backend/vk2/semaphore.hpp"
 #include "gl/impl/backend/vk2/fence.hpp"
-#include <fstream>
 
-constexpr static std::size_t max_frames_in_flight = 2;
+#include "vk2_triangle_demo_common.hpp"
 
-std::vector<char> read_shader_code(const char* relative_shader_filename)
-{
-	 std::ifstream file(relative_shader_filename, std::ios::ate | std::ios::binary);
-
-	 tz_assert(file.is_open(), "Failed to find shader file %s. Are you running in the correct working directory?", relative_shader_filename);
-
-        size_t fileSize = (size_t) file.tellg();
-        std::vector<char> buffer(fileSize);
-
-        file.seekg(0);
-        file.read(buffer.data(), fileSize);
-
-        file.close();
-
-        return buffer;
-}
+// An extremely simple demo which renders a single triangle using screen-space coordinates and fixed colour shading.
 
 int main()
 {
-	tz::GameInfo g{"vk2_triangle_demo", tz::Version{1, 0, 0}, tz::info()};
+	tz::GameInfo g{"vk2_triangle_demo_small", tz::Version{1, 0, 0}, tz::info()};
 	tz::initialise(g, tz::ApplicationType::WindowApplication, 
 	{
 		.width = 800,
