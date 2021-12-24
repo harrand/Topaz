@@ -58,7 +58,7 @@ int main()
 		LogicalDevice ldev
 		{{
 			.physical_device = pdev,
-			.extensions = {DeviceExtension::Swapchain},
+			.extensions = {DeviceExtension::Swapchain, DeviceExtension::ShaderDebugPrint},
 		}};
 		PhysicalDeviceSurfaceCapabilityInfo pdev_capability = pdev.get_surface_capabilities();
 

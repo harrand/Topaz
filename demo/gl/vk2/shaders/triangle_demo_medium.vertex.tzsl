@@ -1,4 +1,5 @@
 #pragma shader_stage(vertex)
+#extension GL_EXT_debug_printf : enable
 
 layout(location = 0) out vec2 texcoord_modelspace;
 
@@ -37,4 +38,5 @@ void main()
 	vec3 position_modelspace = cur_vertex.position;
 	vec3 position_clipspace = (cur_resource.mvp * vec4(position_modelspace, 1.0)).xyz;
 	gl_Position = vec4(position_clipspace, 1.0);
+	debugPrintfEXT("triangle %d, vertex %d\n====================\nResource Data\n===============\nPosition = {%.2f, %.2f, %.2f} Rotation = {%.2f, %.2f, %.2f} Scale = {%.2f, %.2f, %.2f}", triangle_index, triangle_vertex_id, cur_resource.position.x, cur_resource.position.y, cur_resource.position.z, cur_resource.rotation.x, cur_resource.rotation.y, cur_resource.rotation.z, cur_resource.scale.x, cur_resource.scale.y, cur_resource.scale.z);
 }
