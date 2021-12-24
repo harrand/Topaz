@@ -10,6 +10,7 @@
 #include "gl/impl/backend/vk2/fence.hpp"
 
 #include "vk2_triangle_demo_common.hpp"
+#include "core/matrix_transform.hpp"
 #include <random>
 #include <chrono>
 
@@ -26,6 +27,7 @@ struct TriangleResourceData
 	float pad1;
 	tz::Vec3 scale;
 	float pad2;
+	tz::Mat4 mvp;
 };
 
 struct TriangleVertexData
@@ -92,7 +94,7 @@ int main()
 		Image triangle_texture
 		{{
 			.device = &ldev,
-			.format = ImageFormat::RGBA32_UInt,
+			.format = ImageFormat::RGBA32,
 			.dimensions = {64u, 64u},
 			.usage = {ImageUsage::SampledImage, ImageUsage::TransferDestination},
 			.residency = MemoryResidency::GPU
@@ -409,10 +411,15 @@ int main()
 				{
 					resources[i] =
 					{
-						.position = {(5.0f * i) - 5.0f, 0.0f, 0.0f},
-						.rotation = {0.0f, 0.0f, 0.0f},
-						.scale = {1.0f, 1.0f, 1.0f}
+						.position = {(0.5f * i) - 0.5f, 0.0f, -0.2f},
+						.rotation = {0.0f, 0.0f, i * 1.5708f},
+						.scale = {0.4f, 0.4f, 0.4f},
 					};
+					tz::Mat4 m = tz::model(resources[i].position, resources[i].rotation, resources[i].scale);
+
+					tz::Mat4 v = tz::view({0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 3.14159f});
+					tz::Mat4 p = tz::perspective(1.27f, tz::window().get_width() / tz::window().get_height(), 0.1f, 1000.0f);
+					resources[i].mvp = (p * v * m).transpose();
 				}
 				triangle_resource_buffer_staging.unmap();
 			}

@@ -13,6 +13,7 @@ struct TriangleResourceData
 	vec3 position;
 	vec3 rotation;
 	vec3 scale;
+	mat4 mvp;
 };
 
 resource(id = 0) buffer VertexData
@@ -33,5 +34,7 @@ void main()
 	TriangleResourceData cur_resource = resource_data.resources[triangle_index];
 
 	texcoord_modelspace = cur_vertex.texcoord;
-	gl_Position = vec4(cur_vertex.position, 1.0);
+	vec3 position_modelspace = cur_vertex.position;
+	vec3 position_clipspace = (cur_resource.mvp * vec4(position_modelspace, 1.0)).xyz;
+	gl_Position = vec4(position_clipspace, 1.0);
 }
