@@ -1,6 +1,7 @@
 #ifndef TZSLC_SOURCE_TRANSFORM_HPP
 #define TZSLC_SOURCE_TRANSFORM_HPP
 #include "core/types.hpp"
+#include "core/assert.hpp"
 #include <string>
 #include <vector>
 #include <regex>

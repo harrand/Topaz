@@ -27,6 +27,10 @@ namespace tzslc
 	bool preprocess(PreprocessorModuleField modules, std::string& shader_source, std::string& meta)
 	{
 		bool done_any_work = false;
+		if(modules.contains(PreprocessorModule::DebugPrint))
+		{
+			done_any_work |= preprocess_prints(shader_source);
+		}
 		add_glsl_header_info(shader_source);
 		preprocess_topaz_types(shader_source, meta);
 		if(modules.contains(PreprocessorModule::Sampler))
@@ -52,6 +56,21 @@ namespace tzslc
 			meta += std::to_string(id) + " = texture\n";
 			return replacement;
 	   });
+	   return false;
+	}
+
+	bool preprocess_prints(std::string& shader_source)
+	{
+		bool work_done = false;
+	   tzslc::transform(shader_source, std::regex{"tz_printf"}, [&](auto beg, auto end)->std::string
+	   {
+	   	work_done = true;
+	   	return "debugPrintfEXT";
+	   });
+	   if(work_done)
+	   {
+		shader_source = std::string("#extension GL_EXT_debug_printf : enable\n") + shader_source;
+	   }
 	   return false;
 	}
 

@@ -95,7 +95,7 @@ int main()
 		{{
 			.device = &ldev,
 			.format = ImageFormat::RGBA32,
-			.dimensions = {64u, 64u},
+			.dimensions = {32u, 32u},
 			.usage = {ImageUsage::SampledImage, ImageUsage::TransferDestination},
 			.residency = MemoryResidency::GPU
 		}};
@@ -374,11 +374,11 @@ int main()
 				.residency = MemoryResidency::CPU
 			}};
 			// Now a buffer which we can transfer image data from.
-			// RGBA32_UInt, so four uint8_ts per element. 64x64 elements
+			// RGBA32_UInt, so four uint8_ts per element. 32x32 elements
 			Buffer triangle_texture_staging_buffer
 			{{
 				.device = &ldev,
-				.size_bytes = (32/8) * (64*64),
+				.size_bytes = (32/8) * (32*32),
 				.usage = {BufferUsage::TransferSource},
 				.residency = MemoryResidency::CPU
 			}};
@@ -425,7 +425,7 @@ int main()
 			}
 			// Finally, the texture data.
 			{
-				// Remember the texture is 64x64, where each element is uint8*4_t
+				// Remember the texture is 32x32, where each element is uint8*4_t
 				std::span<std::uint32_t> texture_data = triangle_texture_staging_buffer.map_as<std::uint32_t>();
 				std::default_random_engine rand(static_cast<unsigned int>(std::chrono::system_clock::now().time_since_epoch().count()));
 				for(std::uint32_t& texel : texture_data)
