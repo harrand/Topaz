@@ -128,6 +128,7 @@ namespace tz::gl::vk2
 	class VulkanDebugMessenger
 	{
 	public:
+		static constexpr char debug_message_shader_printf_label[] = "TZ_ASSERT_SHADER";
 		VulkanDebugMessenger(const VulkanInstance& instance);
 		VulkanDebugMessenger(const VulkanDebugMessenger& copy) = delete;
 		VulkanDebugMessenger(VulkanDebugMessenger&& move);

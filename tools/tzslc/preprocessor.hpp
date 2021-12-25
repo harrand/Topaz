@@ -8,6 +8,7 @@ enum class PreprocessorModule
 {
 	Sampler,
 	DebugPrint,
+	Assert,
 
 	End,
 	Begin = Sampler,
@@ -29,11 +30,12 @@ public:
 
 namespace tzslc
 {
-	constexpr std::array<const char*, static_cast<int>(PreprocessorModule::End)> preprocessor_module_names{{"sampler", "debug_print"}};
+	constexpr std::array<const char*, static_cast<int>(PreprocessorModule::End)> preprocessor_module_names{{"sampler", "debug_print", "assert"}};
 
 	bool preprocess(PreprocessorModuleField modules, std::string& shader_source, std::string& meta);
 	bool preprocess_samplers(std::string& shader_source, std::string& meta);
 	bool preprocess_prints(std::string& shader_source);
+	bool preprocess_asserts(std::string& shader_source);
 	bool preprocess_topaz_types(std::string& shader_source, std::string& meta);
 }
 

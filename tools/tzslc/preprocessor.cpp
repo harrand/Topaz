@@ -2,6 +2,9 @@
 #include "preprocessor.hpp"
 #include "source_transform.hpp"
 #include "gl/shader.hpp"
+#if TZ_VULKAN
+#include "gl/impl/backend/vk2/tz_vulkan.hpp"
+#endif
 
 namespace tzslc
 {
@@ -27,6 +30,10 @@ namespace tzslc
 	bool preprocess(PreprocessorModuleField modules, std::string& shader_source, std::string& meta)
 	{
 		bool done_any_work = false;
+		if(modules.contains(PreprocessorModule::Assert))
+		{
+			done_any_work |= preprocess_asserts(shader_source);
+		}
 		if(modules.contains(PreprocessorModule::DebugPrint))
 		{
 			done_any_work |= preprocess_prints(shader_source);
@@ -62,10 +69,34 @@ namespace tzslc
 	bool preprocess_prints(std::string& shader_source)
 	{
 		bool work_done = false;
-	   tzslc::transform(shader_source, std::regex{"tz_printf"}, [&](auto beg, auto end)->std::string
+	   tzslc::transform(shader_source, std::regex{"tz_printf\\((.*)\\).*;"}, [&](auto beg, auto end)->std::string
 	   {
+	   	std::string contents = *beg;
+		// Only actually compile to debug printfs on debug mode.
+		#if TZ_DEBUG
+	   		work_done = true;
+	   		return std::string("debugPrintfEXT(") + contents + ");";
+		#else
+			return "";
+		#endif
+	   });
+	   if(work_done)
+	   {
+		shader_source = std::string("#extension GL_EXT_debug_printf : enable\n") + shader_source;
+	   }
+	   return false;
+	}
+
+	bool preprocess_asserts(std::string& shader_source)
+	{
+		bool work_done = false;
+	   tzslc::transform(shader_source, std::regex{"tz_assert\\((.*),\\s+\"(.*)\""}, [&](auto beg, auto end)->std::string
+	   {
+		tz_assert(std::distance(beg, end) == 2, "\"tz_assert(<expression>,\"... failed to parse");
+		std::string expr = *beg;
+		std::string fmt_str = *(beg + 1);
 	   	work_done = true;
-	   	return "debugPrintfEXT";
+	   	return std::string("tz_printf(") + std::string("\"") + std::string(tz::gl::vk2::VulkanDebugMessenger::debug_message_shader_printf_label) +  std::string("[%d]") + fmt_str + "\", " + expr;
 	   });
 	   if(work_done)
 	   {
