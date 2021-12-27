@@ -74,6 +74,13 @@ namespace tz
 			this->elements.insert(this->elements.end(), other.elements.begin(), other.elements.end());
 		}
 
+		template<typename InputIt>
+		Iterator append_range(InputIt first, InputIt last)
+		{
+			return this->elements.insert(this->elements.end(), first, last);
+		}
+
+
 		bool contains(T element) const
 		{
 			return std::find(this->elements.begin(), this->elements.end(), element) != this->elements.end();

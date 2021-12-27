@@ -215,6 +215,7 @@ namespace tz::gl::vk2
 		const LogicalDevice* logical_device;
 	};
 
+
 	/**
 	 * @ingroup tz_gl_vk_descriptors
 	 * Represents a set of one or more descriptors.
@@ -263,6 +264,48 @@ namespace tz::gl::vk2
 		};
 		using WriteList = tz::BasicList<Write>;
 
+		/**
+		 * Request structure representing zero or more descriptor changes for this set.
+		 *
+		 * To create an edit request, see @ref DescriptorSet::make_edit_request.
+		 */
+		class EditRequest
+		{
+		public:
+			/**
+			 * Request that the buffer at the given binding at the provided array index refers to an existing @ref Buffer.
+			 * @param binding_id Binding id to write a buffer to.
+			 * @param buffer_write Struct containing information about which @ref Buffer is to be referred to by this descriptor, and optionally at a given subregion of the buffer.
+			 * @param array_index Index of the descriptor array which this edit applies to. If this binding does not refer to a descriptor array, this must be zero. Default zero.
+			 * @pre The descriptor or descriptor array at `binding_id` must be a 'buffery' @ref DescriptorType. This is either `UniformBuffer` or `StorageBuffer`.
+			 * @pre If `array_index != 0`, then there must be a descriptor array at the given `binding_id` of size greater than or equal to `array_index`.
+			 */
+			void set_buffer(std::uint32_t binding_id, Write::BufferWriteInfo buffer_write, std::uint32_t array_index = 0);
+			/**
+			 * Request that the image at the given binding at the provided array index refers to an existing @ref Image.
+			 * @param binding_id Binding id to write an image to.
+			 * @param image_write Struct containing information about which @ref Image is to be referred to by this descriptor, and optionally a new @ref Sampler.
+			 * @param array_index Index of the descriptor array which this edit applies to. If this binding does not refer to a descriptor array, this must be zero. Default zero.
+			 * @pre The descriptor or descriptor array at `binding_id` must be a 'imagey' @ref DescriptorType. This is either `Image`, `ImageWithSampler`, or `StorageImage`.
+			 * @pre If `array_index != 0`, then there must be a descriptor array at the given `binding_id` of size greater than or equal to `array_index`.
+			 */
+			void set_image(std::uint32_t binding_id, Write::ImageWriteInfo image_write, std::uint32_t array_index = 0);
+			/**
+			 * Retrieve a basic list of writes corresponding to all requested edits so far.
+			 */
+			DescriptorSet::WriteList to_write_list() const;
+			/**
+			 * Retrieve the @ref DescriptorSet which this request is intending to edit.
+			 */
+			const DescriptorSet& get_set() const;
+			friend class DescriptorSet;
+		private:
+			EditRequest(DescriptorSet& set);
+
+			DescriptorSet* set;
+			DescriptorSet::WriteList write_info;
+		};
+
 		friend class DescriptorPool;
 		using NativeType = VkDescriptorSet;
 		NativeType native() const;
@@ -272,6 +315,11 @@ namespace tz::gl::vk2
 		 * @return Layout of this DescriptorSet.
 		 */
 		const DescriptorLayout& get_layout() const;
+		/**
+		 * Retrieve an empty request for this set. You can use this to request changes to existing descriptors within this set.
+		 * @note This only represents a *request* to make changes. To submit requests, this request must be passed to a @ref DescriptorPool::UpdateRequest.
+		 */
+		EditRequest make_edit_request();
 	private:
 		/// See @ref DescriptorPool.
 		DescriptorSet(std::size_t set_id, const DescriptorLayout& layout, NativeType native);
@@ -319,6 +367,19 @@ namespace tz::gl::vk2
 			AllocationResultType type;
 		};
 
+		class UpdateRequest
+		{
+		public:
+			void add_set_edit(DescriptorSet::EditRequest set_edit);
+			std::span<const DescriptorSet::EditRequest> get_set_edits() const;
+			friend class DescriptorPool;
+		private:
+			UpdateRequest(DescriptorPool& pool);
+
+			DescriptorPool* pool;
+			std::vector<DescriptorSet::EditRequest> set_edits;
+		};
+
 		DescriptorPool(DescriptorPoolInfo info);
 		DescriptorPool(const DescriptorPool& copy) = delete;
 		DescriptorPool(DescriptorPool&& move);
@@ -326,6 +387,12 @@ namespace tz::gl::vk2
 
 		DescriptorPool& operator=(const DescriptorPool& rhs) = delete;
 		DescriptorPool& operator=(DescriptorPool&& rhs);
+
+		/**
+		 * Query as to whether an existing DescriptorSet was allocated from this pool.
+		 * @return True if set belongs to this pool and is still allocated, otherwise false.
+		 */
+		bool contains(const DescriptorSet& set) const;
 
 		/**
 		 * Retrieve the LogicalDevice which was used to create the pool.
@@ -337,8 +404,18 @@ namespace tz::gl::vk2
 		 */
 		AllocationResult allocate_sets(const Allocation& alloc);
 		/**
+		 * Retrieve an empty update request for this pool. You can fill this in and then pass to @ref DescriptorPool::update_sets(UpdateRequest) to edit descriptors within any owned sets.
+		 */
+		UpdateRequest make_update_request();
+		/**
+		 * Issue an update request to any DescriptorSets owned by this pool. See @ref UpdateRequest for details.
+		 * See @ref DescriptorPool::make_update_request to retrieve an empty @ref UpdateRequest to make descriptor changes within owned sets.
+		 */
+		void update_sets(UpdateRequest update_request);
+		/**
 		 * Update some existing DescriptorSets. See @ref DescriptorSet::Write for more.
 		 * @param writes List of DescriptorSet::Write to make changes to existing descriptors or descriptor arrays.
+		 * @deprecated Creating WriteLists from scratch is really finnicky and easy to screw up. See @ref update_sets(DescriptorPool::UpdateRequest) as a better alternative.
 		 */
 		void update_sets(const DescriptorSet::WriteList& writes);
 		/**

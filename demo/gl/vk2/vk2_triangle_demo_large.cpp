@@ -28,6 +28,8 @@ struct TriangleResourceData
 	tz::Vec3 scale;
 	float pad2;
 	tz::Mat4 mvp;
+	std::uint32_t texture_id;
+	std::uint32_t pad3[3];
 };
 
 struct TriangleVertexData
@@ -59,6 +61,7 @@ int main()
 		{{
 			.physical_device = pdev,
 			.extensions = {DeviceExtension::Swapchain, DeviceExtension::ShaderDebugPrint},
+			.features = {DeviceFeature::BindlessDescriptors}
 		}};
 		PhysicalDeviceSurfaceCapabilityInfo pdev_capability = pdev.get_surface_capabilities();
 
@@ -70,7 +73,7 @@ int main()
 			.device = &ldev,
 			.swapchain_image_count_minimum = pdev_capability.min_image_count,
 			.image_format = swapchain_format,
-			.present_mode = pdev.get_supported_surface_present_modes().front(),
+			.present_mode = present_traits::get_mandatory_present_modes().front(),
 		}};
 
 		// Create two storage buffers.
@@ -90,8 +93,8 @@ int main()
 			.usage = {BufferUsage::StorageBuffer},
 			.residency = MemoryResidency::CPUPersistent
 		}};
-		// Finally, a single texture that all triangles use.
-		Image triangle_texture
+		// Finally, two textures just for fun. We're gonna use a descriptor array!
+		Image on_texture
 		{{
 			.device = &ldev,
 			.format = ImageFormat::RGBA32,
@@ -100,9 +103,23 @@ int main()
 			.residency = MemoryResidency::GPU
 		}};
 		// Texture will need a view and sampler.
-		ImageView triangle_texture_view
+		ImageView on_texture_view
 		{{
-			.image = &triangle_texture,
+			.image = &on_texture,
+			.aspect = ImageAspect::Colour
+		}};
+		Image off_texture
+		{{
+			.device = &ldev,
+			.format = ImageFormat::RGBA32,
+			.dimensions = {32u, 32u},
+			.usage = {ImageUsage::SampledImage, ImageUsage::TransferDestination},
+			.residency = MemoryResidency::GPU
+		}};
+		// Texture will need a view and sampler.
+		ImageView off_texture_view
+		{{
+			.image = &off_texture,
 			.aspect = ImageAspect::Colour
 		}};
 		Sampler basic_sampler
@@ -115,7 +132,6 @@ int main()
 			.address_mode_v = SamplerAddressMode::ClampToEdge,
 			.address_mode_w = SamplerAddressMode::ClampToEdge,
 		}};
-
 		// Create RenderPass.
 		// Pass consists of 1 attachment (swapchain image, initial layout: Undefined, final layout: Present)
 		// 1 subpass (attachment 0: Undefined -> Colour Attachment)
@@ -149,14 +165,15 @@ int main()
 			.count = 1
 		}).with_binding
 		({
-			// Vertex Resource Buffer
+			// Triangle Resource Buffer
 			.type = DescriptorType::StorageBuffer,
 			.count = 1
 		}).with_binding
 		({
-		 	// Just the single texture for all triangles
+		 	// Both the 'on' and 'off' textures have corresponding descriptors at this binding id. Note that the array is actually of size 3. 'on' = 0, 'off' = 1 and the last index is purposefully unused (just to ensure that PartiallyBound works, nobody tries to use this texture id).
 			.type = DescriptorType::ImageWithSampler,
-			.count = 1
+			.count = 3,
+			.flags = {DescriptorFlag::PartiallyBound}
 		});
 		DescriptorLayout dlayout{lbuilder.build()};
 		// Now let's create the Descriptor Sets.
@@ -167,7 +184,7 @@ int main()
 				.limits =
 				{
 					{DescriptorType::StorageBuffer, swapchain.get_images().size() * 2},
-					{DescriptorType::ImageWithSampler, swapchain.get_images().size()}
+					{DescriptorType::ImageWithSampler, swapchain.get_images().size() * 2}
 				},
 				.max_sets = static_cast<std::uint32_t>(swapchain.get_images().size())
 			},
@@ -189,58 +206,36 @@ int main()
 		// 	- Write the vertex storage buffer to binding 0
 		// 	- Write the triangle resource buffer to binding 1
 		// 	- Write the triangle texture to binding 2
-		DescriptorSet::Write::BufferWriteInfo vertex_write
-		{
-			.buffer = &vertex_storage_buffer,
-			.buffer_offset = 0,
-			.buffer_write_size = vertex_storage_buffer.size()
-		};
-		DescriptorSet::Write::BufferWriteInfo resource_write
-		{
-			.buffer = &triangle_resource_buffer,
-			.buffer_offset = 0,
-			.buffer_write_size = triangle_resource_buffer.size()
-		};
-		DescriptorSet::Write::ImageWriteInfo texture_write
-		{
-			.sampler = &basic_sampler,
-			.image_view = &triangle_texture_view
-		};
-		// Now create the writes
-		tz::BasicList<DescriptorSet::Write> descriptor_writes;
+		DescriptorPool::UpdateRequest update = dpool.make_update_request();
 		for(std::size_t i = 0; i < swapchain.get_images().size(); i++)
 		{
-			descriptor_writes.add
-			(
-				{
-					.set = &dpool_alloc.sets[i],
-					.binding_id = 0,
-					.array_element = 0,
-					.write_infos = {vertex_write}
-				}
-			);
-			descriptor_writes.add
-			(
-
-				{
-					.set = &dpool_alloc.sets[i],
-					.binding_id = 1,
-					.array_element = 0,
-					.write_infos = {resource_write}
-				}
-			);
-			descriptor_writes.add
-			(
-
-				{
-					.set = &dpool_alloc.sets[i],
-					.binding_id = 2,
-					.array_element = 0,
-					.write_infos = {texture_write}
-				}
-			);
+			DescriptorSet& set = dpool_alloc.sets[i];
+			DescriptorSet::EditRequest set_edit = set.make_edit_request();
+			set_edit.set_buffer(0,
+			{
+				.buffer = &vertex_storage_buffer,
+				.buffer_offset = 0,
+				.buffer_write_size = vertex_storage_buffer.size()
+			});
+			set_edit.set_buffer(1,
+			{
+				.buffer = &triangle_resource_buffer,
+				.buffer_offset = 0,
+				.buffer_write_size = triangle_resource_buffer.size()
+			});
+			set_edit.set_image(2,
+			{
+				.sampler = &basic_sampler,
+				.image_view = &on_texture_view
+			}, 0);
+			set_edit.set_image(2,
+			{
+				.sampler = &basic_sampler,
+				.image_view = &off_texture_view
+			}, 1);
+			update.add_set_edit(set_edit);
 		}
-		dpool.update_sets(descriptor_writes);
+		dpool.update_sets(update);
 
 		// TODO: Sanity check.
 		std::vector<const DescriptorLayout*> layout_ptrs;
@@ -368,7 +363,14 @@ int main()
 			// Resource buffer is CPUPersistent, so we don't need to do any scratch commands for it.
 			// Now a buffer which we can transfer image data from is needed.
 			// RGBA32_UInt, so four uint8_ts per element. 32x32 elements
-			Buffer triangle_texture_staging_buffer
+			Buffer on_texture_staging_buffer
+			{{
+				.device = &ldev,
+				.size_bytes = (32/8) * (32*32),
+				.usage = {BufferUsage::TransferSource},
+				.residency = MemoryResidency::CPU
+			}};
+			Buffer on_texture_staging_buffer2
 			{{
 				.device = &ldev,
 				.size_bytes = (32/8) * (32*32),
@@ -400,13 +402,28 @@ int main()
 			// Finally, the texture data.
 			{
 				// Remember the texture is 32x32, where each element is uint8*4_t
-				std::span<std::uint32_t> texture_data = triangle_texture_staging_buffer.map_as<std::uint32_t>();
+				std::span<std::uint32_t> texture_data = on_texture_staging_buffer.map_as<std::uint32_t>();
 				std::default_random_engine rand(static_cast<unsigned int>(std::chrono::system_clock::now().time_since_epoch().count()));
 				for(std::uint32_t& texel : texture_data)
 				{
 					texel = rand();
 				}
-				triangle_texture_staging_buffer.unmap();
+				on_texture_staging_buffer.unmap();
+			}
+			{
+				std::span<std::uint32_t> texture_data = on_texture_staging_buffer2.map_as<std::uint32_t>();
+				std::span<std::uint32_t> old_texture_data = on_texture_staging_buffer.map_as<std::uint32_t>();
+				for(std::size_t i = 0; i < texture_data.size(); i++)
+				{
+					// wtf this is ABGR?
+					std::uint32_t& texel = texture_data[i];
+					texel = old_texture_data[i];
+					texel |= 0xFF000000;
+					texel &= 0xFF111133;
+
+				}
+				on_texture_staging_buffer.unmap();
+				on_texture_staging_buffer2.unmap();
 			}
 
 			// We made an extra command buffer earlier. Time to use it to submit these transfers to the GPU buffers/image.
@@ -420,7 +437,7 @@ int main()
 				// Image starts in Undefined layout, which can't be a transfer destination. Need to transition the image layout. This is gonna hurt...
 				recording.transition_image_layout
 				({
-					.image = &triangle_texture,
+					.image = &on_texture,
 					.target_layout = ImageLayout::TransferDestination,
 					.source_access = {AccessFlag::None},
 					.destination_access = {AccessFlag::TransferOperationWrite},
@@ -430,14 +447,42 @@ int main()
 				});
 				recording.buffer_copy_image
 				({
-					.src = &triangle_texture_staging_buffer,
-					.dst = &triangle_texture,
+					.src = &on_texture_staging_buffer,
+					.dst = &on_texture,
 					.image_aspects = {ImageAspectFlag::Colour}
 				});
 				// We're about the use the image as a shader resource, so we'll transition it back.
 				recording.transition_image_layout
 				({
-					.image = &triangle_texture,
+					.image = &on_texture,
+					.target_layout = ImageLayout::ShaderResource,
+					.source_access = {AccessFlag::TransferOperationWrite},
+					.destination_access = {AccessFlag::ShaderResourceRead},
+					.source_stage = PipelineStage::TransferCommands,
+					.destination_stage = PipelineStage::FragmentShader,
+					.image_aspects = {ImageAspectFlag::Colour}
+				});
+				// same shit for 2nd image
+				recording.transition_image_layout
+				({
+					.image = &off_texture,
+					.target_layout = ImageLayout::TransferDestination,
+					.source_access = {AccessFlag::None},
+					.destination_access = {AccessFlag::TransferOperationWrite},
+					.source_stage = PipelineStage::Top,
+					.destination_stage = PipelineStage::TransferCommands,
+					.image_aspects = {ImageAspectFlag::Colour}
+				});
+				recording.buffer_copy_image
+				({
+					.src = &on_texture_staging_buffer2,
+					.dst = &off_texture,
+					.image_aspects = {ImageAspectFlag::Colour}
+				});
+				// We're about the use the image as a shader resource, so we'll transition it back.
+				recording.transition_image_layout
+				({
+					.image = &off_texture,
 					.target_layout = ImageLayout::ShaderResource,
 					.source_access = {AccessFlag::TransferOperationWrite},
 					.destination_access = {AccessFlag::ShaderResourceRead},
@@ -478,26 +523,35 @@ int main()
 		}
 		// Now the resource data.
 		std::span<TriangleResourceData> resources = triangle_resource_buffer.map_as<TriangleResourceData>();
-		auto set_triangle_transform = [&resources](std::size_t triangle_idx, tz::Vec3 position, tz::Vec3 rotation, tz::Vec3 scale)
+		auto set_triangle_data = [&resources](std::size_t triangle_idx, tz::Vec3 position, tz::Vec3 rotation, tz::Vec3 scale, std::uint32_t texture_id = 0)
 		{
+			tz_assert(texture_id < 2, "Texture ID %u is invalid.", texture_id);
 			resources[triangle_idx] =
 			{
 				.position = position,
 				.rotation = rotation,
 				.scale = scale,
+				.mvp = {},
+				.texture_id = texture_id
 			};
+			resources[triangle_idx].position[0] = (0.5f * triangle_idx) - 0.5f;
 			tz::Mat4 m = tz::model(resources[triangle_idx].position, resources[triangle_idx].rotation, resources[triangle_idx].scale);
 
 			tz::Mat4 v = tz::view({0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 3.14159f});
 			tz::Mat4 p = tz::perspective(1.27f, tz::window().get_width() / tz::window().get_height(), 0.1f, 1000.0f);
 			resources[triangle_idx].mvp = (p * v * m).transpose();
 		};
+
+		auto set_on_texture_id = [&resources](std::size_t triangle_index, std::uint32_t texture_id)
+		{
+			resources[triangle_index].texture_id = texture_id;
+		};
 		for(std::size_t i = 0; i < triangle_count; i++)
 		{
-			set_triangle_transform(i,
-				{(0.5f * i) - 0.5f, 0.0f, -0.2f},
+			set_triangle_data(i,
+				{0.0f,  0.0f, -0.2f},
 				{0.0f, 0.0f, i * 1.5708f},
-				{0.4f, 0.4f, 0.4f});
+				{0.4f, 0.4f, 0.4f}, 1);
 		}
 
 		// Main game loop
@@ -509,10 +563,23 @@ int main()
 		{
 			static float counter = 0.0f;
 			counter += 0.05f;
-			set_triangle_transform(1,
+			if(counter >= 100.0f)
+			{
+				counter = 0;
+			}
+			std::size_t target_triangle_index = static_cast<std::size_t>((counter / 100.0f) * triangle_count);
+			set_triangle_data(target_triangle_index,
 				{0.0f, std::sin(counter) * 0.3f, -0.2f},
 				{0.0f, 0.0f, counter / 3.0f},
-				{0.4f, 0.4f, 0.4f});
+				{0.4f, 0.4f, 0.4f}, 0);
+			for(std::size_t i = 0; i < triangle_count; i++)
+			{
+				if(i != target_triangle_index)
+				{
+					set_on_texture_id(i, 1);
+				}
+			}
+
 			// Frame admin stuff
 			in_flight_fences[current_frame].wait_until_signalled();
 

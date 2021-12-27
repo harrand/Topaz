@@ -1,6 +1,7 @@
 #pragma shader_stage(vertex)
 
 layout(location = 0) out vec2 texcoord_modelspace;
+layout(location = 1) out uint texture_id;
 
 struct TriangleVertexData
 {
@@ -14,6 +15,7 @@ struct TriangleResourceData
 	vec3 rotation;
 	vec3 scale;
 	mat4 mvp;
+	uint texture_id;
 };
 
 resource(id = 0) buffer VertexData
@@ -34,9 +36,15 @@ void main()
 	TriangleResourceData cur_resource = resource_data.resources[triangle_index];
 
 	texcoord_modelspace = cur_vertex.texcoord;
+	texture_id = cur_resource.texture_id;
 	vec3 position_modelspace = cur_vertex.position;
 	vec3 position_clipspace = (cur_resource.mvp * vec4(position_modelspace, 1.0)).xyz;
 	gl_Position = vec4(position_clipspace, 1.0);
 
-	tz_printf("triangle %d, vertex %d\n====================\nResource Data\n===============\nPosition = {%.2f, %.2f, %.2f} Rotation = {%.2f, %.2f, %.2f} Scale = {%.2f, %.2f, %.2f}", triangle_index, triangle_vertex_id, cur_resource.position.x, cur_resource.position.y, cur_resource.position.z, cur_resource.rotation.x, cur_resource.rotation.y, cur_resource.rotation.z, cur_resource.scale.x, cur_resource.scale.y, cur_resource.scale.z);
+#if TZ_DEBUG
+	if(triangle_vertex_id == 0)
+	{
+		tz_printf("triangle %d, vertex %d\n====================\nResource Data\n===============\nPosition = {%.2f, %.2f, %.2f} Rotation = {%.2f, %.2f, %.2f} Scale = {%.2f, %.2f, %.2f} TextureID = %u", triangle_index, triangle_vertex_id, cur_resource.position.x, cur_resource.position.y, cur_resource.position.z, cur_resource.rotation.x, cur_resource.rotation.y, cur_resource.rotation.z, cur_resource.scale.x, cur_resource.scale.y, cur_resource.scale.z, texture_id);
+	}
+#endif
 }

@@ -17,9 +17,9 @@ namespace tz::gl::vk2
 		inst = new VulkanInstance
 		{{
 			.game_info = game_info,
-			.app_type = app_type
+			.app_type = app_type,
 #if TZ_DEBUG
-			,.extensions = {InstanceExtension::DebugMessenger},
+			.extensions = {InstanceExtension::DebugMessenger},
 #endif
 			.window = &tz::window()
 		}};

@@ -19,10 +19,20 @@ namespace tzslc
 		#endif
 	}
 
+	constexpr const char* tzslc_config_defines()
+	{
+		#if TZ_DEBUG
+			return "#define TZ_DEBUG 1\n";
+		#else
+			return "#define TZ_DEBUG 0\n";
+		#endif
+	}
+
 	void add_glsl_header_info(std::string& shader_source)
 	{
 		std::string hdrinfo = "/*tzslc header info begin*/\n#version 450 core\n";
 		hdrinfo += tzslc_platform_defines();
+		hdrinfo += tzslc_config_defines();
 		hdrinfo += "/*tzslc header info end*/\n";
 		shader_source = hdrinfo + shader_source;
 	}

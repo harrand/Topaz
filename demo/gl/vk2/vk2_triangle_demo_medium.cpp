@@ -189,59 +189,31 @@ int main()
 		// 	- Write the vertex storage buffer to binding 0
 		// 	- Write the triangle resource buffer to binding 1
 		// 	- Write the triangle texture to binding 2
-		DescriptorSet::Write::BufferWriteInfo vertex_write
-		{
-			.buffer = &vertex_storage_buffer,
-			.buffer_offset = 0,
-			.buffer_write_size = vertex_storage_buffer.size()
-		};
-		DescriptorSet::Write::BufferWriteInfo resource_write
-		{
-			.buffer = &triangle_resource_buffer,
-			.buffer_offset = 0,
-			.buffer_write_size = triangle_resource_buffer.size()
-		};
-		DescriptorSet::Write::ImageWriteInfo texture_write
-		{
-			.sampler = &basic_sampler,
-			.image_view = &triangle_texture_view
-		};
-		// Now create the writes
-		tz::BasicList<DescriptorSet::Write> descriptor_writes;
+		DescriptorPool::UpdateRequest update = dpool.make_update_request();
 		for(std::size_t i = 0; i < swapchain.get_images().size(); i++)
 		{
-			descriptor_writes.add
-			(
-				{
-					.set = &dpool_alloc.sets[i],
-					.binding_id = 0,
-					.array_element = 0,
-					.write_infos = {vertex_write}
-				}
-			);
-			descriptor_writes.add
-			(
-
-				{
-					.set = &dpool_alloc.sets[i],
-					.binding_id = 1,
-					.array_element = 0,
-					.write_infos = {resource_write}
-				}
-			);
-			descriptor_writes.add
-			(
-
-				{
-					.set = &dpool_alloc.sets[i],
-					.binding_id = 2,
-					.array_element = 0,
-					.write_infos = {texture_write}
-				}
-			);
+			DescriptorSet& set = dpool_alloc.sets[i];
+			DescriptorSet::EditRequest set_edit = set.make_edit_request();
+			set_edit.set_buffer(0,
+			{
+				.buffer = &vertex_storage_buffer,
+				.buffer_offset = 0,
+				.buffer_write_size = vertex_storage_buffer.size()
+			});
+			set_edit.set_buffer(1,
+			{
+				.buffer = &triangle_resource_buffer,
+				.buffer_offset = 0,
+				.buffer_write_size = triangle_resource_buffer.size()
+			});
+			set_edit.set_image(2,
+			{
+				.sampler = &basic_sampler,
+				.image_view = &triangle_texture_view
+			});
+			update.add_set_edit(set_edit);
 		}
-		dpool.update_sets(descriptor_writes);
-
+		dpool.update_sets(update);
 		// TODO: Sanity check.
 		std::vector<const DescriptorLayout*> layout_ptrs;
 		for(std::size_t i = 0; i < swapchain.get_images().size(); i++)

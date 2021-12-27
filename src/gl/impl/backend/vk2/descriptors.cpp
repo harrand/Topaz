@@ -278,6 +278,63 @@ namespace tz::gl::vk2
 		return this->logical_device != nullptr && !this->logical_device->is_null();
 	}
 
+	void DescriptorSet::EditRequest::set_buffer(std::uint32_t binding_id, Write::BufferWriteInfo buffer_write, std::uint32_t array_index)
+	{
+		// We can find out the DescriptorType at this binding id from the sets layout. Here we make sure it matches.
+		#if TZ_DEBUG
+			const DescriptorLayoutInfo::BindingInfo& binding_info = this->get_set().get_layout().get_bindings()[binding_id];
+			constexpr std::array<DescriptorType, 2> buffer_descriptor_types = {DescriptorType::UniformBuffer, DescriptorType::StorageBuffer};
+			tz_assert(std::find(buffer_descriptor_types.begin(), buffer_descriptor_types.end(), binding_info.type) != buffer_descriptor_types.end(), "EditRequest for a DescriptorSet wants to set an image at binding %u, but the DescriptorType at that index according to the layout is not an image.", binding_id);
+			if(array_index != 0)
+			{
+				tz_assert(array_index < binding_info.count, "EditRequest for a DescriptorSet wants to set an image at binding %u and array-index %u, but the array index was out of range. Descriptor array at this binding has length %u", binding_id, array_index, binding_info.count);
+			}
+		#endif
+		
+		write_info.add
+		({
+			.set = this->set,
+			.binding_id = binding_id,
+			.array_element = array_index,
+			.write_infos = {buffer_write}
+		});
+	}
+
+	void DescriptorSet::EditRequest::set_image(std::uint32_t binding_id, Write::ImageWriteInfo image_write, std::uint32_t array_index)
+	{
+		// We can find out the DescriptorType at this binding id from the sets layout. Here we make sure it matches.
+		#if TZ_DEBUG
+			const DescriptorLayoutInfo::BindingInfo& binding_info = this->get_set().get_layout().get_bindings()[binding_id];
+			constexpr std::array<DescriptorType, 3> image_descriptor_types = {DescriptorType::Image, DescriptorType::ImageWithSampler, DescriptorType::StorageImage};
+			tz_assert(std::find(image_descriptor_types.begin(), image_descriptor_types.end(), binding_info.type) != image_descriptor_types.end(), "EditRequest for a DescriptorSet wants to set an image at binding %u, but the DescriptorType at that index according to the layout is not an image.", binding_id);
+			if(array_index != 0)
+			{
+				tz_assert(array_index < binding_info.count, "EditRequest for a DescriptorSet wants to set an image at binding %u and array-index %u, but the array index was out of range. Descriptor array at this binding has length %u", binding_id, array_index, binding_info.count);
+			}
+		#endif
+		write_info.add
+		({
+			.set = this->set,
+			.binding_id = binding_id,
+			.array_element = array_index,
+			.write_infos = {image_write}
+		});
+	}
+
+	DescriptorSet::WriteList DescriptorSet::EditRequest::to_write_list() const
+	{
+		return this->write_info;
+	}
+
+	const DescriptorSet& DescriptorSet::EditRequest::get_set() const
+	{
+		tz_assert(this->set != nullptr, "DescriptorSet EditRequest has set nullptr, implying it is not correctly referencing an existing DescriptorSet. Please submit a bug report.");
+		return *this->set;
+	}
+
+	DescriptorSet::EditRequest::EditRequest(DescriptorSet& set):
+	set(&set){}
+
 	DescriptorSet::NativeType DescriptorSet::native() const
 	{
 		return this->set;
@@ -286,6 +343,11 @@ namespace tz::gl::vk2
 	const DescriptorLayout& DescriptorSet::get_layout() const
 	{
 		return *this->layout;
+	}
+
+	DescriptorSet::EditRequest DescriptorSet::make_edit_request()
+	{
+		return {*this};
 	}
 
 	DescriptorSet::DescriptorSet(std::size_t set_id, const DescriptorLayout& layout, NativeType native):
@@ -298,6 +360,20 @@ namespace tz::gl::vk2
 	{
 		return this->type == DescriptorPool::AllocationResult::AllocationResultType::Success;
 	}
+
+	void DescriptorPool::UpdateRequest::add_set_edit(DescriptorSet::EditRequest set_edit)
+	{
+		tz_assert(this->pool->contains(set_edit.get_set()), "Trying to add set EditRequest to a pool UpdateRequest, but the set edited in the request does not belong to the pool. Please submit a bug report.");
+		this->set_edits.push_back(set_edit);
+	}
+
+	std::span<const DescriptorSet::EditRequest> DescriptorPool::UpdateRequest::get_set_edits() const
+	{
+		return this->set_edits;
+	}
+
+	DescriptorPool::UpdateRequest::UpdateRequest(DescriptorPool& pool):
+	pool(&pool){}
 
 	DescriptorPool::DescriptorPool(DescriptorPoolInfo info):
 	pool(VK_NULL_HANDLE),
@@ -380,6 +456,11 @@ namespace tz::gl::vk2
 		std::swap(this->info, rhs.info);
 		std::swap(this->allocated_set_natives, rhs.allocated_set_natives);
 		return *this;
+	}
+
+	bool DescriptorPool::contains(const DescriptorSet& set) const
+	{
+		return std::find(this->allocated_set_natives.begin(), this->allocated_set_natives.end(), set.native()) != this->allocated_set_natives.end();
 	}
 
 	const LogicalDevice& DescriptorPool::get_device() const
@@ -468,6 +549,21 @@ namespace tz::gl::vk2
 			this->allocated_set_natives.push_back(output_set_natives[i]);
 		}
 		return ret;
+	}
+
+	DescriptorPool::UpdateRequest DescriptorPool::make_update_request()
+	{
+		return {*this};
+	}
+
+	void DescriptorPool::update_sets(DescriptorPool::UpdateRequest update_request)
+	{
+		DescriptorSet::WriteList writes;
+		for(const DescriptorSet::EditRequest& set_edit : update_request.get_set_edits())
+		{
+			writes.append(set_edit.to_write_list());
+		}
+		this->update_sets(writes);
 	}
 
 	void DescriptorPool::update_sets(const DescriptorSet::WriteList& writes)
