@@ -537,7 +537,7 @@ int main()
 			resources[triangle_idx].position[0] = (0.5f * triangle_idx) - 0.5f;
 			tz::Mat4 m = tz::model(resources[triangle_idx].position, resources[triangle_idx].rotation, resources[triangle_idx].scale);
 
-			tz::Mat4 v = tz::view({0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 3.14159f});
+			tz::Mat4 v = tz::view({0.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 0.0f});
 			tz::Mat4 p = tz::perspective(1.27f, tz::window().get_width() / tz::window().get_height(), 0.1f, 1000.0f);
 			resources[triangle_idx].mvp = (p * v * m).transpose();
 		};
@@ -570,7 +570,7 @@ int main()
 			std::size_t target_triangle_index = static_cast<std::size_t>((counter / 100.0f) * triangle_count);
 			set_triangle_data(target_triangle_index,
 				{0.0f, std::sin(counter) * 0.3f, -0.2f},
-				{0.0f, 0.0f, counter / 3.0f},
+				{0.0f, counter / 1.5f, counter / 1.5f},
 				{0.4f, 0.4f, 0.4f}, 0);
 			for(std::size_t i = 0; i < triangle_count; i++)
 			{

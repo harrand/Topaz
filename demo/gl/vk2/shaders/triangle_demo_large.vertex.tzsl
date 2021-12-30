@@ -38,8 +38,7 @@ void main()
 	texcoord_modelspace = cur_vertex.texcoord;
 	texture_id = cur_resource.texture_id;
 	vec3 position_modelspace = cur_vertex.position;
-	vec3 position_clipspace = (cur_resource.mvp * vec4(position_modelspace, 1.0)).xyz;
-	gl_Position = vec4(position_clipspace, 1.0);
+	gl_Position = cur_resource.mvp * vec4(position_modelspace, 1.0);
 
 #if TZ_DEBUG
 	if(triangle_vertex_id == 0)
