@@ -367,10 +367,21 @@ namespace tz::gl::vk2
 			AllocationResultType type;
 		};
 
+		/**
+		 * Specifies a requests to update zero or more @ref DescriptorSets owned by an existing @ref DescriptorPool.
+		 * - See @ref DescriptorPool::update_sets(UpdateRequest) for usage.
+		 * - To create a request for a given pool, see @ref DescriptorPool::make_update_request
+		 */
 		class UpdateRequest
 		{
 		public:
+			/**
+			 * Add an edit for a @ref DescriptorSet.
+			 */
 			void add_set_edit(DescriptorSet::EditRequest set_edit);
+			/**
+			 * Retrieve all @ref DescriptorSet edit requests added so far.
+			 */
 			std::span<const DescriptorSet::EditRequest> get_set_edits() const;
 			friend class DescriptorPool;
 		private:
