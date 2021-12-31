@@ -5,6 +5,7 @@
 
 #include "gl/impl/backend/vk2/swapchain.hpp"
 #include "gl/impl/backend/vk2/image.hpp"
+#include "gl/impl/frontend/vk2/renderer.hpp"
 
 namespace tz::gl
 {
@@ -30,6 +31,8 @@ namespace tz::gl
 	public:
 		DeviceVulkan();
 		DeviceVulkan(const vk2::VulkanInstance& instance);
+
+		RendererVulkan2 create_renderer(const RendererBuilderVulkan2& builder);
 	private:
 		vk2::LogicalDevice device;
 		DeviceWindowVulkan window_storage;

@@ -1,6 +1,7 @@
 #include "gl/impl/backend/vk2/extensions.hpp"
 #include "gl/impl/backend/vk2/hardware/physical_device.hpp"
 #include "gl/impl/backend/vk2/image_format.hpp"
+#include "gl/impl/frontend/vk2/renderer.hpp"
 #include <variant>
 #if TZ_VULKAN
 #include "gl/impl/frontend/vk2/device.hpp"
@@ -146,6 +147,25 @@ namespace tz::gl
 		
 		// Now finally create the DeviceWindow.
 		this->window_storage = {this->device};
+	}
+
+	RendererVulkan2 DeviceVulkan::create_renderer(const RendererBuilderVulkan2& builder)
+	{
+		std::span<vk2::Image> window_buffer_images;
+		if(this->window_storage.as_swapchain() != nullptr)
+		{
+			window_buffer_images = this->window_storage.as_swapchain()->get_images();
+		}
+		else if(this->window_storage.as_image() != nullptr)
+		{
+			window_buffer_images = {this->window_storage.as_image(), 1};
+		}
+
+		return {builder,
+		RendererBuilderDeviceInfoVulkan2{
+			.device = &this->device,
+			.output_images = window_buffer_images
+		}};
 	}
 }
 

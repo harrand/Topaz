@@ -252,10 +252,24 @@ namespace tz::gl::vk2
 		return this->info;
 	}
 
+	RenderPass RenderPass::null()
+	{
+		return {};
+	}
+
+	bool RenderPass::is_null() const
+	{
+		return this->pass == VK_NULL_HANDLE;
+	}
+
 	RenderPass::NativeType RenderPass::native() const
 	{
 		return this->pass;
 	}
+
+	RenderPass::RenderPass():
+	pass(VK_NULL_HANDLE),
+	info(){}
 
 	SubpassBuilder& SubpassBuilder::with_input_attachment(RenderPassInfo::InputAttachmentReference input_attachment)
 	{

@@ -213,9 +213,14 @@ namespace tz::gl::vk2
 		const LogicalDevice& get_device() const;
 		const RenderPassInfo& get_info() const;
 
+		static RenderPass null();
+		bool is_null() const;
+
 		using NativeType = VkRenderPass;
 		NativeType native() const;
 	private:
+		RenderPass();
+
 		VkRenderPass pass;
 		RenderPassInfo info;
 	};
