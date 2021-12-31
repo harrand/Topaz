@@ -108,6 +108,19 @@ namespace tz::gl::vk2
 		}
 		return ret;
 	}
+
+	Shader Shader::null()
+	{
+		return{};
+	}
+
+	bool Shader::is_null() const
+	{
+		return this->modules.empty();
+	}
+
+	Shader::Shader():
+	modules(){}
 }
 
 #endif // TZ_VULKAN

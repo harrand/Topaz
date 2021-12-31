@@ -65,6 +65,7 @@ namespace tz::gl::vk2
 	public:
 		QueueStorage() = default;
 		void init(std::span<const QueueFamilyInfo> queue_families, const LogicalDevice& device);
+		void notify_device_moved(const LogicalDevice& new_device);
 		const hardware::Queue* request_queue(QueueRequest request) const;
 		hardware::Queue* request_queue(QueueRequest request);
 	private:

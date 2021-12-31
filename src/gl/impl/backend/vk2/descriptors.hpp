@@ -433,7 +433,12 @@ namespace tz::gl::vk2
 		 * Purge all DescriptorSets. The pool reclaims all memory from previously allocated DescriptorSets. This also means that all DescriptorSets allocated from this pool are now invalid.
 		 */
 		void clear();
+
+		static DescriptorPool null();
+		bool is_null() const;
 	private:
+		DescriptorPool();
+
 		VkDescriptorPool pool;
 		DescriptorPoolInfo info;
 		std::vector<DescriptorSet::NativeType> allocated_set_natives;

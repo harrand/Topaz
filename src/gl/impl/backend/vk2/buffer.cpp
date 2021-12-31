@@ -148,10 +148,26 @@ namespace tz::gl::vk2
 		return this->info.size_bytes;
 	}
 
+	Buffer Buffer::null()
+	{
+		return {};
+	}
+
+	bool Buffer::is_null() const
+	{
+		return this->buffer == VK_NULL_HANDLE;
+	}
+
 	Buffer::NativeType Buffer::native() const
 	{
 		return this->buffer;
 	}
+
+	Buffer::Buffer():
+	buffer(VK_NULL_HANDLE),
+	info(),
+	vma_alloc(),
+	vma_alloc_info(){}
 }
 
 #endif // TZ_VULKAN

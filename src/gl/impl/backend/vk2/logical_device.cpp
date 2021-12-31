@@ -22,6 +22,17 @@ namespace tz::gl::vk2
 		}
 	}
 
+	void QueueStorage::notify_device_moved(const LogicalDevice& new_device)
+	{
+		for(QueueStorage::List& queue_list : this->hardware_queue_families)
+		{
+			for(QueueData& queue_data : queue_list)
+			{
+				queue_data.queue.set_logical_device(new_device);
+			}
+		}
+	}
+
 	const hardware::Queue* QueueStorage::request_queue(QueueRequest request) const
 	{
 		auto queue_satisfies_request = [request](const QueueFamilyInfo& info)
@@ -295,6 +306,9 @@ namespace tz::gl::vk2
 		std::swap(this->queue_families, rhs.queue_families);
 		std::swap(this->queue_storage, rhs.queue_storage);
 		std::swap(this->vma_allocator, rhs.vma_allocator);
+
+		this->queue_storage.notify_device_moved(*this);
+		rhs.queue_storage.notify_device_moved(rhs);
 		return *this;
 	}
 

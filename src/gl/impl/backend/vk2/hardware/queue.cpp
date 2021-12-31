@@ -26,6 +26,11 @@ namespace tz::gl::vk2::hardware
 		return *this->info.dev;
 	}
 
+	void Queue::set_logical_device(const LogicalDevice& device)
+	{
+		this->info.dev = &device;
+	}
+
 	void Queue::submit(SubmitInfo submit_info)
 	{
 		if(submit_info.execution_complete_fence != nullptr)

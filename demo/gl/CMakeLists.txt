@@ -46,6 +46,6 @@ add_demo(
 	TARGET vkfront_temp_demo
 	SOURCE_FILES vkfront_temp_demo.cpp
 	SHADER_SOURCES
-		demo/gl/triangle_demo.vertex.tzsl
-		demo/gl/triangle_demo.fragment.tzsl
+		demo/gl/vkfront_temp_demo.vertex.tzsl
+		demo/gl/vkfront_temp_demo.fragment.tzsl
 )

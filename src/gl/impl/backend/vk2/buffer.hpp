@@ -100,9 +100,14 @@ namespace tz::gl::vk2
 		 */
 		std::size_t size() const;
 
+		static Buffer null();
+		bool is_null() const;
+
 		using NativeType = VkBuffer;
 		NativeType native() const;
 	private:
+		Buffer();
+
 		VkBuffer buffer;
 		BufferInfo info;
 		VmaAllocation vma_alloc;

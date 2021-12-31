@@ -105,12 +105,12 @@ namespace tz::gl
 		return this->culling_strategy;
 	}
 
-	void RendererBuilderBase::set_shader(const Shader& shader)
+	void RendererBuilderBase::set_shader(const IShader& shader)
 	{
 		this->shader = &shader;
 	}
 
-	const Shader& RendererBuilderBase::get_shader() const
+	const IShader& RendererBuilderBase::get_shader() const
 	{
 		tz_assert(this->shader != nullptr, "No shader yet");
 		return *this->shader;

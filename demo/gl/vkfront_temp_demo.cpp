@@ -1,6 +1,8 @@
 #include "core/tz.hpp"
 #include "gl/mesh.hpp"
 #include "gl/input.hpp"
+#include "gl/resource.hpp"
+#include "gl/texture.hpp"
 #include "gl/impl/frontend/vk2/device.hpp"
 #include "gl/impl/frontend/vk2/renderer.hpp"
 
@@ -17,18 +19,37 @@ int main()
 	{
 		tz::gl::DeviceVulkan dev;
 
-		tz::gl::Mesh mesh;
-		mesh.vertices =
-			{
-				tz::gl::Vertex{{-0.5f, -0.5f, 0.0f}, {1.0f, 0.0f}, {}, {}, {}},
-				tz::gl::Vertex{{0.5f, -0.5f, 0.0f}, {0.0f, 0.0f}, {}, {}, {}},
-				tz::gl::Vertex{{0.5f, 0.5f, 0.0f}, {0.0f, 1.0f}, {}, {}, {}}
-			};
-		mesh.indices = {0, 1, 2};
-		tz::gl::MeshInput mesh_input{mesh};
+		tz::gl::ShaderBuilderVulkan2 shader_builder;
+		shader_builder.set_shader_file(tz::gl::ShaderType::VertexShader, "./demo/gl/vkfront_temp_demo.vertex.tzsl");
+		shader_builder.set_shader_file(tz::gl::ShaderType::FragmentShader, "./demo/gl/vkfront_temp_demo.fragment.tzsl");
+		tz::gl::ShaderVulkan2 shader = dev.create_shader(shader_builder);
+
+		tz::gl::TextureResource texture{tz::gl::TextureData::from_memory(2, 2,
+		{{
+			0b0000'0000,
+			0b0000'0000,
+			0b1111'1111,
+			0b1111'1111,
+
+			0b1111'1111,
+			0b0000'0000,
+			0b0000'0000,
+			0b1111'1111,
+
+			0b0000'0000,
+			0b1111'1111,
+			0b0000'0000,
+			0b1111'1111,
+
+			0b0000'0000,
+			0b0000'0000,
+			0b1111'1111,
+			0b1111'1111
+		}}), tz::gl::TextureFormat::Rgba32sRGB};
 
 		tz::gl::RendererBuilderVulkan2 renderer_builder;
-		renderer_builder.add_input(mesh_input);
+		renderer_builder.set_shader(shader);
+		renderer_builder.add_resource(texture);
 		renderer_builder.set_output(tz::window());
 
 		tz::gl::RendererVulkan2 renderer = dev.create_renderer(renderer_builder);

@@ -98,7 +98,12 @@ namespace tz::gl::vk2
 		Shader& operator=(Shader&& rhs);
 
 		ShaderPipelineData native_data() const;
+
+		static Shader null();
+		bool is_null() const;
 	private:
+		Shader();
+
 		std::vector<ShaderModule> modules;
 	};
 }

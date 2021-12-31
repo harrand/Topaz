@@ -25,15 +25,15 @@ namespace tz::gl
 
 		virtual void set_culling_strategy(RendererCullingStrategy culling_strategy) override;
 		virtual RendererCullingStrategy get_culling_strategy() const override;
-		virtual void set_shader(const Shader& shader) override;
-		virtual const Shader& get_shader() const override;
+		virtual void set_shader(const IShader& shader) override;
+		virtual const IShader& get_shader() const override;
 	protected:
 		std::vector<const IRendererInput*> inputs;
 		IRendererOutput* output = nullptr;
 		std::vector<const IResource*> buffer_resources;
 		std::vector<const IResource*> texture_resources;
 		RendererCullingStrategy culling_strategy = RendererCullingStrategy::NoCulling;
-		const Shader* shader = nullptr;
+		const IShader* shader = nullptr;
 	};
 
 	class RendererBase : public IRenderer

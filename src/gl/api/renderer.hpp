@@ -275,13 +275,13 @@ namespace tz::gl
 		 * 
 		 * @param shader Existing Shader program. Unlike resources/inputs, the shader must exist throughout the lifetime of the builder, and any spawned Renderers.
 		 */
-		virtual void set_shader(const Shader& shader) = 0;
+		virtual void set_shader(const IShader& shader) = 0;
 		/**
 		 * @brief Retrieve the shader that will be used while rendering.
 		 * @pre @ref IRendererBuilder::set_shader must have been invoked earlier, so a shader is currently being referred to.
 		 * @return const Shader& Reference to an existing Shader program.
 		 */
-		virtual const Shader& get_shader() const = 0;
+		virtual const IShader& get_shader() const = 0;
 	};
 
 	/**

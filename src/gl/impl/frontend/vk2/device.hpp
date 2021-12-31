@@ -6,6 +6,7 @@
 #include "gl/impl/backend/vk2/swapchain.hpp"
 #include "gl/impl/backend/vk2/image.hpp"
 #include "gl/impl/frontend/vk2/renderer.hpp"
+#include "gl/impl/frontend/vk2/shader.hpp"
 
 namespace tz::gl
 {
@@ -33,6 +34,7 @@ namespace tz::gl
 		DeviceVulkan(const vk2::VulkanInstance& instance);
 
 		RendererVulkan2 create_renderer(const RendererBuilderVulkan2& builder);
+		ShaderVulkan2 create_shader(const ShaderBuilderVulkan2& builder);
 	private:
 		vk2::LogicalDevice device;
 		DeviceWindowVulkan window_storage;

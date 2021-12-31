@@ -126,6 +126,7 @@ namespace tz::gl::vk2
 
 			const QueueInfo& get_info() const;
 			const LogicalDevice& get_device() const;
+			void set_logical_device(const LogicalDevice& device);
 			/**
 			 * Submit the queue, including any associated command buffers and perform necessary synchronisation.
 			 * See @ref SubmitInfo for more information.

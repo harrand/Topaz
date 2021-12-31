@@ -583,7 +583,7 @@ namespace tz::gl::vk2
 		{
 			return sum + std::count_if(write.write_infos.begin(), write.write_infos.end(), [](const DescriptorSet::Write::WriteInfo& write_info)
 			{
-				return std::holds_alternative<DescriptorSet::Write::BufferWriteInfo>(write_info);
+				return std::holds_alternative<DescriptorSet::Write::ImageWriteInfo>(write_info);
 			});
 		});
 		// Now create enough space for them and we'll write into them as we go along.
@@ -682,6 +682,21 @@ namespace tz::gl::vk2
 		//vkFreeDescriptorSets(this->get_device().native(), this->pool, this->allocated_set_natives.size(), this->allocated_set_natives.data());
 		//this->allocated_set_natives.clear();
 	}
+
+	DescriptorPool DescriptorPool::null()
+	{
+		return {};
+	}
+
+	bool DescriptorPool::is_null() const
+	{
+		return this->pool == VK_NULL_HANDLE;
+	}
+
+	DescriptorPool::DescriptorPool():
+	pool(VK_NULL_HANDLE),
+	info(),
+	allocated_set_natives(){}
 }
 
 #endif // TZ_VULKAN

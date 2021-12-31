@@ -2,6 +2,7 @@
 #include "gl/impl/backend/vk2/hardware/physical_device.hpp"
 #include "gl/impl/backend/vk2/image_format.hpp"
 #include "gl/impl/frontend/vk2/renderer.hpp"
+#include "gl/impl/frontend/vk2/shader.hpp"
 #include <variant>
 #if TZ_VULKAN
 #include "gl/impl/frontend/vk2/device.hpp"
@@ -165,6 +166,14 @@ namespace tz::gl
 		RendererBuilderDeviceInfoVulkan2{
 			.device = &this->device,
 			.output_images = window_buffer_images
+		}};
+	}
+
+	ShaderVulkan2 DeviceVulkan::create_shader(const ShaderBuilderVulkan2& builder)
+	{
+		return {builder,
+		ShaderDeviceInfoVulkan2{
+			.device = &this->device
 		}};
 	}
 }

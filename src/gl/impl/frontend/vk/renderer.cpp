@@ -129,8 +129,8 @@ namespace tz::gl
 	RendererPipelineManagerVulkan::RendererPipelineManagerVulkan(RendererBuilderVulkan builder, RendererBuilderDeviceInfoVulkan device_info, const RenderPassVulkan& render_pass):
 	device(device_info.device),
 	render_pass(&render_pass),
-	vertex_shader(&builder.get_shader().vk_get_vertex_shader()),
-	fragment_shader(&builder.get_shader().vk_get_fragment_shader()),
+	vertex_shader(&static_cast<const Shader&>(builder.get_shader()).vk_get_vertex_shader()),
+	fragment_shader(&static_cast<const Shader&>(builder.get_shader()).vk_get_fragment_shader()),
 	vertex_input_state(builder.vk_get_vertex_input()),
 	input_assembly(device_info.primitive_type),
 	rasteriser_state(builder.vk_get_rasteriser_state()),
@@ -1147,7 +1147,7 @@ namespace tz::gl
 	RendererVulkan::RendererVulkan(RendererBuilderVulkan builder, RendererBuilderDeviceInfoVulkan device_info):
 	RendererBase(builder),
 	render_pass(this->make_simple_render_pass(builder, device_info)),
-	buffer_manager(device_info, this->get_inputs(), builder.get_shader()),
+	buffer_manager(device_info, this->get_inputs(), static_cast<const Shader&>(builder.get_shader())),
 	pipeline_manager(builder, device_info, this->render_pass),
 	image_manager(builder, device_info, this->render_pass),
 	processor(builder, device_info, this->get_inputs(), this->render_pass),
