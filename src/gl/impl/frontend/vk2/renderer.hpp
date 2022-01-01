@@ -64,6 +64,13 @@ namespace tz::gl
 		public:
 			ResourceManager(ResourceManagerInfo info);
 			const vk2::DescriptorLayout& get_descriptor_layout() const;
+
+			std::span<vk2::Buffer> get_buffer_components();
+			std::span<const vk2::Buffer> get_buffer_components() const;
+			std::span<vk2::Image> get_texture_components();
+			std::span<const vk2::Image> get_texture_components() const;
+
+			std::span<const vk2::DescriptorSet> get_descriptor_sets() const;
 		private:
 			std::vector<vk2::Buffer> buffer_components;
 			std::vector<vk2::Image> texture_components;
@@ -87,6 +94,8 @@ namespace tz::gl
 		{
 		public:
 			GraphicsPipelineManager(GraphicsPipelineManagerInfo info);
+			const vk2::GraphicsPipeline& get_pipeline() const;
+
 		private:
 			vk2::PipelineLayout make_pipeline_layout(const vk2::DescriptorLayout& descriptor_layout, std::size_t frame_in_flight_count);
 
@@ -128,6 +137,14 @@ namespace tz::gl
 				});
 				work_complete_fence.wait_until_signalled();
 			}
+			void set_rendering_commands(tz::Action<vk2::CommandBufferRecording&, std::size_t> auto record_commands)
+			{
+				for(std::size_t i = 0; i < this->get_render_command_buffers().size(); i++)
+				{
+					vk2::CommandBufferRecording record = this->get_render_command_buffers()[i].record();
+					record_commands(record, i);
+				}
+			}
 		private:
 			vk2::hardware::Queue* graphics_queue;
 			vk2::CommandPool command_pool;
@@ -146,6 +163,9 @@ namespace tz::gl
 		virtual void render() final{}
 		virtual void render(RendererDrawList draws) final{}
 	private:
+		void setup_static_resources();
+		void setup_render_commands();
+
 		vk2::LogicalDevice& vk_device;
 		detail::IOManager io_manager;
 		detail::ResourceManager resource_manager;

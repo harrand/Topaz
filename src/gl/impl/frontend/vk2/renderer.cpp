@@ -1,3 +1,5 @@
+#include "gl/impl/backend/vk2/command.hpp"
+#include "gl/impl/backend/vk2/graphics_pipeline.hpp"
 #include "gl/impl/backend/vk2/logical_device.hpp"
 #include "gl/impl/backend/vk2/pipeline_layout.hpp"
 #include "gl/impl/backend/vk2/sampler.hpp"
@@ -259,6 +261,31 @@ namespace tz::gl
 			return this->descriptor_layout;
 		}
 
+		std::span<vk2::Buffer> ResourceManager::get_buffer_components()
+		{
+			return this->buffer_components;
+		}
+
+		std::span<const vk2::Buffer> ResourceManager::get_buffer_components() const
+		{
+			return this->buffer_components;
+		}
+
+		std::span<vk2::Image> ResourceManager::get_texture_components()
+		{
+			return this->texture_components;
+		}
+
+		std::span<const vk2::Image> ResourceManager::get_texture_components() const
+		{
+			return this->texture_components;
+		}
+
+		std::span<const vk2::DescriptorSet> ResourceManager::get_descriptor_sets() const
+		{
+			return this->descriptors.sets;
+		}
+
 		GraphicsPipelineManager::GraphicsPipelineManager(GraphicsPipelineManagerInfo info):
 		pipeline_layout(this->make_pipeline_layout(*info.descriptor_layout, info.frame_in_flight_count)),
 		graphics_pipeline
@@ -273,6 +300,11 @@ namespace tz::gl
 			.device = &info.render_pass.get_device()
 		})
 		{}
+
+		const vk2::GraphicsPipeline& GraphicsPipelineManager::get_pipeline() const
+		{
+			return this->graphics_pipeline;
+		}
 
 		vk2::PipelineLayout GraphicsPipelineManager::make_pipeline_layout(const vk2::DescriptorLayout& descriptor_layout, std::size_t frame_in_flight_count)
 		{
@@ -346,9 +378,148 @@ namespace tz::gl
 		.output_framebuffers = this->io_manager.get_output_framebuffers()
 	})
 	{
-		this->command_processor.do_scratch_operations([](vk2::CommandBufferRecording& recording)
+		this->setup_static_resources();
+		this->setup_render_commands();
+	}
+
+	void RendererVulkan2::setup_static_resources()
+	{
+		// Create staging buffers for each buffer and texture resource, and then fill the data with the resource data.
+		std::span<vk2::Buffer> buffers = this->resource_manager.get_buffer_components();
+		std::span<vk2::Image> textures = this->resource_manager.get_texture_components();
+		std::vector<vk2::Buffer> staging_buffers;
+		staging_buffers.reserve(buffers.size());
+		std::vector<vk2::Buffer> staging_texture_buffers;
+		staging_texture_buffers.reserve(textures.size());
+		// Fill staging buffers for buffer resources.
+		std::transform(buffers.begin(), buffers.end(), std::back_inserter(staging_buffers), [](const vk2::Buffer& buffer) -> vk2::Buffer
 		{
-			int x = 5;
+			return
+			{{
+				.device = &buffer.get_device(),
+				.size_bytes = buffer.size(),
+				.usage = {vk2::BufferUsage::TransferSource},
+				.residency = vk2::MemoryResidency::CPU
+			}};
+		});
+		// Then fill staging buffers for texture resources.
+		std::transform(textures.begin(), textures.end(), std::back_inserter(staging_texture_buffers), [](const vk2::Image& image) -> vk2::Buffer
+		{
+			return
+			{vk2::BufferInfo{
+				.device = &image.get_device(),
+				// TODO: Support non 32-bit formats
+				.size_bytes = 32/8 * image.get_dimensions()[0] * image.get_dimensions()[1],
+				.usage = {vk2::BufferUsage::TransferSource},
+				.residency = vk2::MemoryResidency::CPU
+			}};
+		});
+		this->command_processor.do_scratch_operations([this, &staging_buffers, &staging_texture_buffers, &buffers, &textures](vk2::CommandBufferRecording& recording)
+		{
+			// Finally, upload data for static resources.
+			for(std::size_t i = 0; i < RendererBase::resource_count_of(ResourceType::Buffer); i++)
+			{
+				IResource* res = this->get_resource(static_cast<tz::HandleValue>(i));
+				tz_assert(res->get_type() == ResourceType::Buffer, "Expected ResourceType of buffer, but is not a buffer. Please submit a bug report.");
+				if(res->data_access() != RendererInputDataAccess::StaticFixed)
+				{
+					continue;
+				}
+
+				// Now simply write the data straight in.
+				{
+					void* ptr = staging_buffers[i].map();
+					std::memcpy(ptr, res->get_resource_bytes().data(), res->get_resource_bytes().size_bytes());
+					staging_buffers[i].unmap();
+				}
+
+				// Record the command to transfer to the buffer resource.
+				recording.buffer_copy_buffer
+				({
+					.src = &staging_buffers[i],
+					.dst = &buffers[i]
+				});
+			}
+			for(std::size_t i = 0; i < RendererBase::resource_count_of(ResourceType::Texture); i++)
+			{
+				std::size_t idx = i + RendererBase::resource_count_of(ResourceType::Buffer);
+				IResource* res = this->get_resource(static_cast<tz::HandleValue>(idx));
+				tz_assert(res->get_type() == ResourceType::Texture, "Expected ResourceType of Texture, but is not a texture. Please submit a bug report.");
+				if(res->data_access() != RendererInputDataAccess::StaticFixed)
+				{
+					continue;
+				}
+				// Now simply write the data straight in.
+				{
+					void* ptr = staging_texture_buffers[i].map();
+					std::memcpy(ptr, res->get_resource_bytes().data(), res->get_resource_bytes().size_bytes());
+					staging_texture_buffers[i].unmap();
+				}
+				// Record the command to transfer to the texture resource.
+				// Image will initially be in undefined layout. We need to:
+				// - Transition the texture component to TransferDestination
+				// - Transfer from the staging texture buffer
+				// - Transition the texture component to ShaderResource so it can be used in the shader.
+				recording.transition_image_layout
+				({
+					.image = &textures[i],
+					.target_layout = vk2::ImageLayout::TransferDestination,
+					.source_access = {vk2::AccessFlag::None},
+					.destination_access = {vk2::AccessFlag::TransferOperationWrite},
+					.source_stage = vk2::PipelineStage::Top,
+					.destination_stage = vk2::PipelineStage::TransferCommands,
+					.image_aspects = {vk2::ImageAspectFlag::Colour}
+				});
+				recording.buffer_copy_image
+				({
+					.src = &staging_texture_buffers[i],
+					.dst = &textures[i],
+					.image_aspects = {vk2::ImageAspectFlag::Colour}
+				});
+				recording.transition_image_layout
+				({
+					.image = &textures[i],
+					.target_layout = vk2::ImageLayout::ShaderResource,
+					.source_access = {vk2::AccessFlag::TransferOperationWrite},
+					.destination_access = {vk2::AccessFlag::ShaderResourceRead},
+					.source_stage = vk2::PipelineStage::TransferCommands,
+					.destination_stage = vk2::PipelineStage::FragmentShader,
+					.image_aspects = {vk2::ImageAspectFlag::Colour}
+				});
+
+			}
+		});
+	}
+
+	void RendererVulkan2::setup_render_commands()
+	{
+		this->command_processor.set_rendering_commands([this](vk2::CommandBufferRecording& recording, std::size_t framebuffer_id)
+		{
+			vk2::CommandBufferRecording::RenderPassRun run{this->io_manager.get_output_framebuffers()[framebuffer_id], recording};
+			recording.bind_pipeline
+			({
+				.pipeline = &this->graphics_pipeline_manager.get_pipeline(),
+				.pipeline_context = vk2::PipelineContext::Graphics
+			});
+			tz::BasicList<const vk2::DescriptorSet*> sets;
+			std::span<const vk2::DescriptorSet> resource_sets = this->resource_manager.get_descriptor_sets();
+			sets.resize(resource_sets.size());
+			std::transform(resource_sets.begin(), resource_sets.end(), sets.begin(), [](const vk2::DescriptorSet& set){return &set;});
+			recording.bind_descriptor_sets
+			({
+				.pipeline_layout = this->graphics_pipeline_manager.get_pipeline().get_info().pipeline_layout,
+				.context = vk2::PipelineContext::Graphics,
+				.descriptor_sets = sets,
+				.first_set_id = 0
+			});
+			recording.draw
+			({
+				// TODO: Don't hardcode
+				.vertex_count = 3,
+				.instance_count = 1,
+				.first_vertex = 0,
+				.first_instance = 0
+			});
 		});
 	}
 }
