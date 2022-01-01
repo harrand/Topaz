@@ -1,15 +1,16 @@
+#if TZ_VULKAN
 #include "gl/impl/backend/vk2/command.hpp"
 #include "gl/impl/backend/vk2/graphics_pipeline.hpp"
 #include "gl/impl/backend/vk2/logical_device.hpp"
 #include "gl/impl/backend/vk2/pipeline_layout.hpp"
 #include "gl/impl/backend/vk2/sampler.hpp"
-#if TZ_VULKAN
 #include "gl/declare/renderer.hpp"
 #include "gl/resource.hpp"
 #include "gl/impl/backend/vk2/image_view.hpp"
 #include "gl/impl/frontend/vk2/renderer.hpp"
 #include "gl/impl/frontend/vk2/convert.hpp"
 #include "gl/impl/frontend/vk2/shader.hpp"
+#include "gl/impl/backend/vk2/swapchain.hpp"
 
 namespace tz::gl
 {
@@ -317,10 +318,11 @@ namespace tz::gl
 		}
 
 		CommandProcessor::CommandProcessor(CommandProcessorInfo info):
+		requires_present(info.output_type == RendererOutputType::Window),
 		graphics_queue(info.device->get_hardware_queue
 		({
 			.field = {vk2::QueueFamilyType::Graphics},
-			.present_support = (info.output_type == RendererOutputType::Window) ? true : false
+			.present_support = this->requires_present
 		})),
 		command_pool
 		({
@@ -330,9 +332,23 @@ namespace tz::gl
 		({
 			.buffer_count = static_cast<std::uint32_t>(info.frame_in_flight_count + 1)
 		})),
-		frame_in_flight_count(info.frame_in_flight_count)
+		frame_in_flight_count(info.frame_in_flight_count),
+		image_semaphores(),
+		render_work_semaphores(),
+		in_flight_fences(),
+		images_in_flight(this->frame_in_flight_count, nullptr)
 		{
 			tz_assert(this->commands.success(), "Failed to allocate from CommandPool");
+			for(std::size_t i = 0; i < this->frame_in_flight_count; i++)
+			{
+				this->image_semaphores.emplace_back(*info.device);
+				this->render_work_semaphores.emplace_back(*info.device);
+				this->in_flight_fences.emplace_back
+				(vk2::FenceInfo{
+					.device = info.device,
+					.initially_signalled = true
+				});
+			}
 		}
 
 		std::span<const vk2::CommandBuffer> CommandProcessor::get_render_command_buffers() const
@@ -343,6 +359,57 @@ namespace tz::gl
 		std::span<vk2::CommandBuffer> CommandProcessor::get_render_command_buffers()
 		{
 			return {this->commands.buffers.begin(), this->frame_in_flight_count};
+		}
+
+		void CommandProcessor::do_render_work(vk2::Swapchain* maybe_swapchain)
+		{
+			if(this->requires_present)
+			{
+				tz_assert(maybe_swapchain != nullptr, "Trying to do render work with presentation, but no Swapchain provided. Please submit a bug report.");
+				vk2::Swapchain& swapchain = *maybe_swapchain;
+				// Submit & Present
+				this->in_flight_fences[this->current_frame].wait_until_signalled();
+				this->output_image_index = swapchain.acquire_image
+				({
+					.signal_semaphore = &this->image_semaphores[current_frame]
+				}).image_index;
+
+				const vk2::Fence*& target_image = this->images_in_flight[this->output_image_index];
+				if(target_image != nullptr)
+				{
+					target_image->wait_until_signalled();
+				}
+				target_image = &this->in_flight_fences[this->output_image_index];
+
+				this->in_flight_fences[this->current_frame].unsignal();
+				this->graphics_queue->submit
+				({
+					.command_buffers = {&this->get_render_command_buffers()[this->output_image_index]},
+					.waits =
+					{
+						vk2::hardware::Queue::SubmitInfo::WaitInfo
+						{
+							.wait_semaphore = &this->image_semaphores[this->current_frame],
+							.wait_stage = vk2::PipelineStage::ColourAttachmentOutput
+						}
+					},
+					.signal_semaphores = {&this->render_work_semaphores[this->current_frame]},
+					.execution_complete_fence = &this->in_flight_fences[this->current_frame]
+				});
+
+				vk2::hardware::Queue::PresentResult present_res = this->graphics_queue->present
+				({
+					.wait_semaphores = {&this->render_work_semaphores[this->current_frame]},
+					.swapchain = maybe_swapchain,
+					.swapchain_image_index = this->output_image_index
+				});
+				tz_assert(present_res == vk2::hardware::Queue::PresentResult::Success || present_res == vk2::hardware::Queue::PresentResult::Success_Suboptimal, "Presentation Failed.");
+			}
+			else
+			{
+				// Headlessly
+				tz_error("Headless rendering not yet implemented.");
+			}
 		}
 	}
 
@@ -376,10 +443,21 @@ namespace tz::gl
 		.frame_in_flight_count = device_info.output_images.size(),
 		.output_type = builder.get_output()->get_type(),
 		.output_framebuffers = this->io_manager.get_output_framebuffers()
-	})
+	}),
+	maybe_swapchain(device_info.maybe_swapchain)
 	{
 		this->setup_static_resources();
 		this->setup_render_commands();
+	}
+
+	RendererVulkan2::~RendererVulkan2()
+	{
+		this->vk_device.wait_until_idle();
+	}
+
+	void RendererVulkan2::render()
+	{
+		this->command_processor.do_render_work(this->maybe_swapchain);
 	}
 
 	void RendererVulkan2::setup_static_resources()

@@ -54,9 +54,9 @@ int main()
 
 		tz::gl::RendererVulkan2 renderer = dev.create_renderer(renderer_builder);
 
-		int x = 5;
 		while(!tz::window().is_close_requested())
 		{
+			renderer.render();
 			tz::window().update();
 		}
 	}

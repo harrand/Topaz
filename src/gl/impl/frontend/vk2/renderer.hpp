@@ -12,6 +12,7 @@
 #include "gl/impl/backend/vk2/graphics_pipeline.hpp"
 #include "gl/impl/backend/vk2/command.hpp"
 #include "gl/impl/backend/vk2/fence.hpp"
+#include "gl/impl/backend/vk2/semaphore.hpp"
 
 namespace tz::gl
 {
@@ -23,6 +24,8 @@ namespace tz::gl
 		vk2::LogicalDevice* device;
 		/// List of output images. If the output is a window, this is likely to be swapchain images or an offscreen headless image.
 		std::span<vk2::Image> output_images;
+		/// Swapchain if there is one.
+		vk2::Swapchain* maybe_swapchain;
 	};
 
 	namespace detail
@@ -145,11 +148,20 @@ namespace tz::gl
 					record_commands(record, i);
 				}
 			}
+			void do_render_work(vk2::Swapchain* maybe_swapchain);
 		private:
+			bool requires_present;
 			vk2::hardware::Queue* graphics_queue;
 			vk2::CommandPool command_pool;
 			vk2::CommandPool::AllocationResult commands;
 			std::size_t frame_in_flight_count;
+
+			std::vector<vk2::BinarySemaphore> image_semaphores;
+			std::vector<vk2::BinarySemaphore> render_work_semaphores;
+			std::vector<vk2::Fence> in_flight_fences;
+			std::vector<const vk2::Fence*> images_in_flight;
+			std::uint32_t output_image_index = 0;
+			std::size_t current_frame = 0;
 		};
 	}
 
@@ -157,10 +169,11 @@ namespace tz::gl
 	{
 	public:
 		RendererVulkan2(RendererBuilderVulkan2 builder, RendererBuilderDeviceInfoVulkan2 device_info);
+		~RendererVulkan2();
 		virtual void set_clear_colour(tz::Vec4 clear_colour) final{}
 		virtual IComponent* get_component(ResourceHandle handle) final{return nullptr;}
 		
-		virtual void render() final{}
+		virtual void render() final;
 		virtual void render(RendererDrawList draws) final{}
 	private:
 		void setup_static_resources();
@@ -171,6 +184,7 @@ namespace tz::gl
 		detail::ResourceManager resource_manager;
 		detail::GraphicsPipelineManager graphics_pipeline_manager;
 		detail::CommandProcessor command_processor;
+		vk2::Swapchain* maybe_swapchain;
 	};
 }
 

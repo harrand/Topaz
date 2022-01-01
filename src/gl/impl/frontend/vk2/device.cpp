@@ -165,7 +165,8 @@ namespace tz::gl
 		return {builder,
 		RendererBuilderDeviceInfoVulkan2{
 			.device = &this->device,
-			.output_images = window_buffer_images
+			.output_images = window_buffer_images,
+			.maybe_swapchain = this->window_storage.as_swapchain()
 		}};
 	}
 
