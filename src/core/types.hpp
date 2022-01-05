@@ -47,6 +47,9 @@ namespace tz
 
 	template<typename T>
 	constexpr bool moveable = requires { requires std::movable<T>; };
+
+	template<typename T>
+	concept TriviallyCopyable = std::is_trivially_copyable_v<T>;
 }
 
 #endif // TOPAZ_CORE_TYPES_HPP

@@ -83,6 +83,20 @@ add_library(topaz
 	src/gl/declare/resource.hpp
 	src/gl/declare/texture.hpp
 
+	# tz::gl2 (API)
+	src/gl/2/api/device.hpp
+	src/gl/2/api/input.hpp
+	src/gl/2/api/renderer.hpp
+	src/gl/2/api/resource.hpp
+
+	# tz::gl2
+	src/gl/2/input.cpp
+	src/gl/2/input.hpp
+	src/gl/2/resource.cpp
+	src/gl/2/resource.hpp
+	src/gl/2/resource.inl
+	src/gl/2/tz_gl.hpp
+
 	# tz::gl (Common Impl)
 
 	src/gl/impl/frontend/common/component.cpp
