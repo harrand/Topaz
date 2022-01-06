@@ -32,7 +32,7 @@ namespace tz::gl2
 		DeviceVulkan(const vk2::VulkanInstance& instance);
 
 		// Satisfies DeviceType.
-		RendererVulkan create_renderer(const RendererInfoVulkan& info);
+		RendererVulkan create_renderer(RendererInfoVulkan& info);
 		ImageFormat get_window_format() const;
 	private:
 		vk2::LogicalDevice device;

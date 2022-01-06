@@ -16,7 +16,7 @@ namespace tz::gl2
 	 * - Have direct access to the window surface (or offline image in headless mode), and exposes relevant information about said surface.
 	 */
 	template<typename T, typename RendererInfo>
-	concept DeviceType = requires(T t, const RendererInfo& rinfo)
+	concept DeviceType = requires(T t, RendererInfo& rinfo)
 	{
 		requires std::is_default_constructible_v<std::decay_t<T>>;
 		requires RendererInfoType<RendererInfo>;

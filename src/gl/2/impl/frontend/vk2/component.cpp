@@ -28,6 +28,11 @@ namespace tz::gl2
 		return this->buffer.size();
 	}
 
+	vk2::Buffer& BufferComponentVulkan::vk_get_buffer()
+	{
+		return this->buffer;
+	}
+
 	vk2::Buffer BufferComponentVulkan::make_buffer(const vk2::LogicalDevice& ldev) const
 	{
 		vk2::BufferUsageField usage_field;
@@ -78,6 +83,11 @@ namespace tz::gl2
 	ImageFormat ImageComponentVulkan::get_format() const
 	{
 		return from_vk2(this->image.get_format());
+	}
+
+	vk2::Image& ImageComponentVulkan::vk_get_image()
+	{
+		return this->image;
 	}
 
 	vk2::Image ImageComponentVulkan::make_image(const vk2::LogicalDevice& ldev) const

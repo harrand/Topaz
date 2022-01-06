@@ -149,7 +149,7 @@ namespace tz::gl2
 		this->window_storage = {this->device};
 	}
 
-	RendererVulkan DeviceVulkan::create_renderer(const RendererInfoVulkan& info)
+	RendererVulkan DeviceVulkan::create_renderer(RendererInfoVulkan& info)
 	{
 		std::span<vk2::Image> window_buffer_images;
 		if(this->window_storage.as_swapchain() != nullptr)
@@ -163,7 +163,9 @@ namespace tz::gl2
 		
 		return {info,
 		{
-			.vk_device = &this->device
+			.device = &this->device,
+			.output_images = window_buffer_images,
+			.maybe_swapchain = this->window_storage.as_swapchain()
 		}};
 	}
 

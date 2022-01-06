@@ -96,6 +96,8 @@ add_library(topaz
 	src/gl/2/device.hpp
 	src/gl/2/input.cpp
 	src/gl/2/input.hpp
+	src/gl/2/output.cpp
+	src/gl/2/output.hpp
 	src/gl/2/renderer.hpp
 	src/gl/2/resource.cpp
 	src/gl/2/resource.hpp

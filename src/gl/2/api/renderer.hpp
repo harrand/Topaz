@@ -2,6 +2,7 @@
 #define TOPAZ_GL2_API_RENDERER_HPP
 
 #include "gl/2/api/input.hpp"
+#include "gl/2/api/output.hpp"
 #include "gl/2/api/resource.hpp"
 #include "gl/2/api/component.hpp"
 #include "core/containers/basic_list.hpp"
@@ -9,7 +10,7 @@
 namespace tz::gl2
 {
 	template<typename T>
-	concept RendererInfoType = requires(T t, InputHandle i, ResourceHandle r, IInput& input, IResource& resource)
+	concept RendererInfoType = requires(T t, InputHandle i, ResourceHandle r, IInput& input, IResource& resource, IOutput& output)
 	{
 		{t.input_count()} -> std::convertible_to<unsigned int>;
 		{t.get_input(i)} -> std::convertible_to<const IInput*>;
@@ -21,6 +22,8 @@ namespace tz::gl2
 
 		{t.add_input(input)} -> std::same_as<InputHandle>;
 		{t.add_resource(resource)} -> std::same_as<ResourceHandle>;
+		{t.set_output(output)} -> std::same_as<void>;
+		{t.get_output()} -> std::convertible_to<const IOutput*>;
 	};
 
 	/**
