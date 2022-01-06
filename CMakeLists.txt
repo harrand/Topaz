@@ -361,6 +361,7 @@ endif()
 
 add_subdirectory(lib)
 add_subdirectory(tools)
+include(cmake/shader_header_exporter.cmake)
 include(cmake/shader_compiler.cmake)
 add_subdirectory(demo)
 enable_testing()

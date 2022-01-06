@@ -1,5 +1,6 @@
 #include "core/assert.hpp"
 #include "preprocessor.hpp"
+#include "header_export.hpp"
 #include <cstdio>
 #include <fstream>
 #include <filesystem>
@@ -47,23 +48,43 @@ FILE* get_output_stream(int argc, char** argv)
 	return output;
 }
 
+bool generating_headers(int argc, char** argv)
+{
+	for(std::size_t i = 0; i < argc - 1; i++)
+	{
+		std::string_view arg{argv[i]};
+		if(arg == "-gen_header")
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
 FILE* get_output_stream_meta(int argc, char** argv)
 {
 	// get_output_stream() returns either stdout or a specific file.
 	// Often we will need to output a .meta file along with the compiled output. If we have a specific file, we chuck the meta in the same output directory as the output file.
-	// If we're writing to stdout, we won't bother writing the meta at all
+	// If we're writing to stdout or we're generating headers, we won't bother writing the meta at all
+	std::optional<std::string_view> maybe_meta_output_location = std::nullopt;
 	for(std::size_t i = 0; i < argc - 1; i++)
 	{
 		std::string_view arg{argv[i]};
 		std::string_view arg_next{argv[i + 1]};
 		if(arg == "-o")
 		{
-			// arg_next is the output file name. Retrieve the parent directory
-			std::filesystem::path output_path = arg_next;
-			output_path += ".meta";
-			return fopen(output_path.string().c_str(), "w");
+			maybe_meta_output_location = arg_next;
 		}
 	}
+	if(maybe_meta_output_location.has_value() && !generating_headers(argc, argv))
+	{
+		// arg_next is the output file name. Retrieve the parent directory
+		std::filesystem::path output_path = maybe_meta_output_location.value();
+		output_path += ".meta";
+		return fopen(output_path.string().c_str(), "w");
+	}
+
 	return nullptr;
 }
 
@@ -85,9 +106,21 @@ int main(int argc, char** argv)
 		shader.read(buffer.data(), file_size_bytes);
 		shader.close();
 
+		bool generate_header = generating_headers(argc, argv);
+
 		std::string metadata;
-		tzslc::preprocess(modules, buffer, metadata);
-		std::fprintf(out, "%s", buffer.data());
+		if(generating_headers(argc, argv))
+		{
+			tzslc::export_header(glsl_filename, buffer);
+		}
+		else
+		{
+			tzslc::preprocess(modules, buffer, metadata);
+		}
+		for(char c : buffer)
+		{
+			std::fprintf(out, "%c", c);
+		}
 
 		if(out_meta != nullptr)
 		{

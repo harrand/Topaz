@@ -7,6 +7,9 @@
 #include "gl/input.hpp"
 #include "gl/shader.hpp"
 
+#include ImportedShaderFile(triangle_demo.vertex)
+#include ImportedShaderFile(triangle_demo.fragment)
+
 float get_aspect_ratio()
 {
 	return tz::window().get_width() / tz::window().get_height();
@@ -22,8 +25,9 @@ int main()
 		tz::gl::Device device{device_builder};
 
 		tz::gl::ShaderBuilder shader_builder;
-		shader_builder.set_shader_file(tz::gl::ShaderType::VertexShader, ".\\demo\\gl\\triangle_demo.vertex.tzsl");
-		shader_builder.set_shader_file(tz::gl::ShaderType::FragmentShader, ".\\demo\\gl\\triangle_demo.fragment.tzsl");
+	
+		shader_builder.set_shader_source(tz::gl::ShaderType::VertexShader, std::string(GetImportedShaderSource(triangle_demo_vertex)));
+		shader_builder.set_shader_source(tz::gl::ShaderType::FragmentShader, std::string(GetImportedShaderSource(triangle_demo_fragment)));
 
 		tz::gl::Shader shader = device.create_shader(shader_builder);
 

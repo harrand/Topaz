@@ -1,5 +1,6 @@
 #ifndef TOPAZ_GL_SHADER_HPP
 #define TOPAZ_GL_SHADER_HPP
+#include "gl/imported_shaders.hpp"
 
 #if TZ_VULKAN
 #include "gl/impl/frontend/vk/shader.hpp"
