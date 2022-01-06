@@ -3,19 +3,10 @@
 #include "core/handle.hpp"
 #include <span>
 #include <cstddef>
+#include <memory>
 
 namespace tz::gl2
 {
-	namespace detail
-	{
-		struct InputHandleType{};
-	}
-	/**
-	 * @ingroup tz_gl2_io
-	 * Opaque handle which is used to refer to an existing @ref Input within a Renderer or Processor.
-	 */
-	using InputHandle = tz::Handle<detail::InputHandleType>;
-
 	/**
 	 * @ingroup tz_gl2_io
 	 * Describes the manner in which an input can be read or written to, when owned by a Renderer or Processor.
@@ -44,6 +35,7 @@ namespace tz::gl2
 	{
 	public:
 		IInput() = default;
+		virtual ~IInput() = default;
 		/**
 		 * Retrieve access information about this input when used in a Renderer or Processor.
 		 * @return InputAccess corresponding to usage in a Renderer or Processor.
@@ -67,7 +59,15 @@ namespace tz::gl2
 		 * @pre If this input is owned by a Renderer or Processor, `get_access()` must return any of the dynamic values. Otherwise, the behaviour of a write is undefined.
 		 */
 		virtual std::span<unsigned int> index_data() = 0;
+
+		virtual std::unique_ptr<IInput> unique_clone() const = 0;
 	};
+	/**
+	 * @ingroup tz_gl2_io
+	 * Opaque handle which is used to refer to an existing @ref Input within a Renderer or Processor.
+	 */
+	using InputHandle = tz::Handle<IInput>;
+
 }
 
 #endif // TOPAZ_GL2_API_INPUT_HPP

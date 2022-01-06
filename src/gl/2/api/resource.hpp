@@ -2,15 +2,10 @@
 #define TOPAZ_GL2_API_RESOURCE_HPP
 #include "core/handle.hpp"
 #include <span>
+#include <memory>
 
 namespace tz::gl2
 {
-	namespace detail
-	{
-		struct ResourceHandleType{};
-	}
-	/// Opaque handle which is used to refer to an existing Resource within a Renderer or Processor.
-	using ResourceHandle = tz::Handle<detail::ResourceHandleType>;
 
 	/**
 	 * @ingroup tz_gl2_res
@@ -53,6 +48,8 @@ namespace tz::gl2
 	class IResource
 	{
 	public:
+		IResource() = default;
+		virtual ~IResource() = default;
 		/**
 		 * Retrieve the type of the resource.
 		 */
@@ -71,7 +68,12 @@ namespace tz::gl2
 		 * @pre If this resource is owned by a Renderer or Processor, `get_access()` must return any of the dynamic values. Otherwise, the behaviour of a write is undefined.
 		 */
 		virtual std::span<std::byte> data() = 0;
+
+		virtual std::unique_ptr<IResource> unique_clone() const = 0;
 	};
+
+	/// Opaque handle which is used to refer to an existing Resource within a Renderer or Processor.
+	using ResourceHandle = tz::Handle<IResource>;
 }
 
 #endif // TOPAZ_GL2_API_RESOURCE_HPP

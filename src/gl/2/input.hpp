@@ -35,12 +35,14 @@ namespace tz::gl2
 	{
 	public:
 		MeshInput(Mesh data);
+		virtual ~MeshInput() = default;
 		// IInput
 		virtual InputAccess get_access() const final;
 		virtual std::span<const std::byte> vertex_data() const final;
 		virtual std::span<std::byte> vertex_data() final;
 		virtual std::span<const unsigned int> index_data() const final;
 		virtual std::span<unsigned int> index_data() final;
+		virtual std::unique_ptr<IInput> unique_clone() const final;
 	private:
 		Mesh data;
 	};

@@ -29,4 +29,9 @@ namespace tz::gl2
 	{
 		return this->data.indices;
 	}
+
+	std::unique_ptr<IInput> MeshInput::unique_clone() const
+	{
+		return std::make_unique<MeshInput>(*this);
+	}
 }

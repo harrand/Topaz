@@ -10,6 +10,7 @@ namespace tz::gl2
 	class Resource : public IResource
 	{
 	public:
+		virtual ~Resource() = default;
 		// IResource
 		virtual ResourceType get_type() const final;
 		virtual ResourceAccess get_access() const final;
@@ -30,6 +31,7 @@ namespace tz::gl2
 	class BufferResource : public Resource
 	{
 	public:
+		virtual ~BufferResource() = default;
 		/**
 		 * Create a BufferResource where the underlying data is a single object.
 		 * @tparam T Object type. It must be TriviallyCopyable.
@@ -47,6 +49,7 @@ namespace tz::gl2
 		 */
 		template<tz::TriviallyCopyable T>
 		static BufferResource from_many(std::span<const T> data);
+		virtual std::unique_ptr<IResource> unique_clone() const final;
 	private:
 		BufferResource(std::vector<std::byte> resource_data, std::size_t initial_alignment_offset);
 	};
@@ -58,6 +61,7 @@ namespace tz::gl2
 	class ImageResource : public Resource
 	{
 	public:
+		virtual ~ImageResource() = default;
 		/**
 		 * Create an ImageResource where the image-data is uninitialised.
 		 * @param format ImageFormat of the data. It must not be ImageFormat::Undefined.
@@ -65,8 +69,13 @@ namespace tz::gl2
 		 * @return ImageResource containing uninitialised image-data of the given format and dimensions.
 		 */
 		static ImageResource from_uninitialised(ImageFormat format, tz::Vec2ui dimensions);
+		virtual std::unique_ptr<IResource> unique_clone() const final;
+		ImageFormat get_format() const;
+		tz::Vec2ui get_dimensions() const;
 	private:
-		ImageResource(std::vector<std::byte> resource_data, std::size_t initial_alignment_offset);
+		ImageResource(std::vector<std::byte> resource_data, std::size_t initial_alignment_offset, ImageFormat format, tz::Vec2ui dimensions);
+		ImageFormat format;
+		tz::Vec2ui dimensions;
 	};
 }
 #include "gl/2/resource.inl"

@@ -84,14 +84,19 @@ add_library(topaz
 	src/gl/declare/texture.hpp
 
 	# tz::gl2 (API)
+	src/gl/2/api/component.hpp
 	src/gl/2/api/device.hpp
 	src/gl/2/api/input.hpp
+	src/gl/2/api/output.hpp
 	src/gl/2/api/renderer.hpp
 	src/gl/2/api/resource.hpp
 
 	# tz::gl2
+	src/gl/2/component.hpp
+	src/gl/2/device.hpp
 	src/gl/2/input.cpp
 	src/gl/2/input.hpp
+	src/gl/2/renderer.hpp
 	src/gl/2/resource.cpp
 	src/gl/2/resource.hpp
 	src/gl/2/resource.inl
@@ -136,6 +141,14 @@ add_library(topaz
 	src/gl/impl/frontend/vk2/renderer.hpp
 	src/gl/impl/frontend/vk2/shader.cpp
 	src/gl/impl/frontend/vk2/shader.hpp
+
+	# tz::gl2 (Vulkan Frontend)
+	src/gl/2/impl/frontend/vk2/component.cpp
+	src/gl/2/impl/frontend/vk2/component.hpp
+	src/gl/2/impl/frontend/vk2/device.cpp
+	src/gl/2/impl/frontend/vk2/device.hpp
+	src/gl/2/impl/frontend/vk2/renderer.cpp
+	src/gl/2/impl/frontend/vk2/renderer.hpp
 
 	# tz::gl (OpenGL Frontend)
 	src/gl/impl/frontend/ogl/component.cpp
