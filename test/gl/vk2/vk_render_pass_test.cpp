@@ -74,11 +74,9 @@ int main()
 {
 	tz::GameInfo game{"vk_render_pass_test", tz::Version{1, 0, 0}, tz::info()};
 	tz::initialise(game, tz::ApplicationType::Headless);
-	tz::gl::vk2::initialise(game, tz::ApplicationType::Headless);
 	{
 		basic_render_pass();
 		complicated_render_pass();
 	}
-	tz::gl::vk2::terminate();
 	tz::terminate();
 }

@@ -1,71 +1,92 @@
-#ifndef TOPAZ_GL_RESOURCE_HPP
-#define TOPAZ_GL_RESOURCE_HPP
-#include "core/assert.hpp"
+#ifndef TOPAZ_GL2_RESOURCE_HPP
+#define TOPAZ_GL2_RESOURCE_HPP
 #include "gl/api/resource.hpp"
-#include "gl/buffer.hpp"
-#include "gl/texture.hpp"
-#include <cstring>
+#include "gl/declare/image_format.hpp"
+#include "core/types.hpp"
+#include "core/vector.hpp"
 
-namespace tz::gl
+namespace tz::gl2
 {
+	class Resource : public IResource
+	{
+	public:
+		virtual ~Resource() = default;
+		// IResource
+		virtual ResourceType get_type() const final;
+		virtual ResourceAccess get_access() const final;
+		virtual std::span<const std::byte> data() const final;
+		virtual std::span<std::byte> data() final;
+	protected:
+		Resource(std::vector<std::byte> resource_data, std::size_t initial_alignment_offset, ResourceType type);
+	private:
+		std::vector<std::byte> resource_data;
+		std::size_t initial_alignment_offset;
+		ResourceType type;
+	};
+
 	/**
-	 * @brief Renderer Resource representing a uniform buffer.
+	 * @ingroup tz_gl2_res
+	 * Represents a fixed-size, static Buffer to be used by a Renderer or Processor.
 	 */
-	class BufferResource : public IResourceCopyable<BufferResource>
+	class BufferResource : public Resource
 	{
 	public:
-		BufferResource(BufferData data);
+		virtual ~BufferResource() = default;
+		/**
+		 * Create a BufferResource where the underlying data is a single object.
+		 * @tparam T Object type. It must be TriviallyCopyable.
+		 * @param data Object value to store within the underlying data.
+		 * @return BufferResource containing a copy of the provided object.
+		 */
+		template<tz::TriviallyCopyable T>
+		static BufferResource from_one(const T& data);
 
-		virtual constexpr ResourceType get_type() const final
-		{
-			return ResourceType::Buffer;
-		}
-
-		virtual std::span<const std::byte> get_resource_bytes() const final;
+		/**
+		 * Create a BufferResource where the underlying data is an array of objects.
+		 * @tparam T Array element type. It must be TriviallyCopyable.
+		 * @param data View into an array. The data will be copied from this span into the underlying buffer data.
+		 * @return BufferResource containing a copy of the provided array.
+		 */
+		template<tz::TriviallyCopyable T>
+		static BufferResource from_many(std::span<const T> data);
+		virtual std::unique_ptr<IResource> unique_clone() const final;
 	private:
-		BufferData data;
+		BufferResource(std::vector<std::byte> resource_data, std::size_t initial_alignment_offset);
 	};
 
-	class DynamicBufferResource : public IDynamicResourceCopyable<DynamicBufferResource>
+	/**
+	 * @ingroup tz_gl2_res
+	 * Represents a fixed-size, static Image to be used by a Renderer or Processor.
+	 */
+	class ImageResource : public Resource
 	{
 	public:
-		DynamicBufferResource(BufferData data);
-
-		virtual constexpr ResourceType get_type() const final
-		{
-			return ResourceType::Buffer;
-		}
-
-		virtual std::span<const std::byte> get_resource_bytes() const final;
-		virtual std::span<std::byte> get_resource_bytes_dynamic() final;
-		virtual void set_resource_data(std::byte* resource_data);
+		virtual ~ImageResource() = default;
+		/**
+		 * Create an ImageResource where the image-data is uninitialised.
+		 * @param format ImageFormat of the data. It must not be ImageFormat::Undefined.
+		 * @param dimensions {width, height} of the image, in pixels.
+		 * @return ImageResource containing uninitialised image-data of the given format and dimensions.
+		 */
+		static ImageResource from_uninitialised(ImageFormat format, tz::Vec2ui dimensions);
+		/**
+		 * Create an ImageResource using values existing in memory.
+		 * @param format ImageFormat of the data. It must not be ImageFormat::Undefined.
+		 * @param dimensions {width, height} of the image, in pixels.
+		 * @param byte_data Array of bytes, length equal to `tz::gl2::pixel_size_bytes(format) * dimensions[0] * dimensions[1]`
+		 * @return ImageResource containing an image using the provided data.
+		 * @pre `byte_data` exactly matches the number of bytes expected in the explanation above. Otherwise, the behaviour is undefined.
+		 */
+		static ImageResource from_memory(ImageFormat format, tz::Vec2ui dimensions, std::span<const std::byte> byte_data);
+		virtual std::unique_ptr<IResource> unique_clone() const final;
+		ImageFormat get_format() const;
+		tz::Vec2ui get_dimensions() const;
 	private:
-		BufferData initial_data;
-		std::byte* resource_data;
-	};
-
-	class TextureResource : public IResourceCopyable<TextureResource>
-	{
-	public:
-		TextureResource(TextureData data, TextureFormat format, TextureProperties properties = TextureProperties::get_default());
-
-		virtual constexpr ResourceType get_type() const final
-		{
-			return ResourceType::Texture;
-		}
-
-		virtual std::span<const std::byte> get_resource_bytes() const final;
-		
-		const TextureFormat& get_format() const;
-		const TextureProperties& get_properties() const;
-
-		unsigned int get_width() const;
-		unsigned int get_height() const;
-	private:
-		TextureData data;
-		TextureFormat format;
-		TextureProperties properties;
+		ImageResource(std::vector<std::byte> resource_data, std::size_t initial_alignment_offset, ImageFormat format, tz::Vec2ui dimensions);
+		ImageFormat format;
+		tz::Vec2ui dimensions;
 	};
 }
+#include "gl/resource.inl"
 
-#endif // TOPAZ_GL_DEVICE_HPP
+#endif // TOPAZ_GL2_RESOURCE_HPP

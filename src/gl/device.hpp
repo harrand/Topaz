@@ -1,20 +1,14 @@
-#ifndef TOPAZ_GL_DEVICE_HPP
-#define TOPAZ_GL_DEVICE_HPP
+#ifndef TOPAZ_GL2_DEVICE_HPP
+#define TOPAZ_GL2_DEVICE_HPP
 
 #if TZ_VULKAN
-#include "gl/impl/frontend/vk/device.hpp"
-namespace tz::gl
-{
-	using Device = DeviceVulkan;
-	using DeviceBuilder = DeviceBuilderVulkan;
-}
-#elif TZ_OGL
-#include "gl/impl/frontend/ogl/device.hpp"
-namespace tz::gl
-{
-	using Device = DeviceOGL;
-	using DeviceBuilder = DeviceBuilderOGL;
-}
+#include "gl/impl/frontend/vk2/device.hpp"
 #endif
+namespace tz::gl2
+{
+	#if TZ_VULKAN
+		using Device = DeviceVulkan;
+	#endif
+}
 
-#endif // TOPAZ_GL_DEVICE_HPP
+#endif // TOPAZ_GL2_DEVICE_HPP

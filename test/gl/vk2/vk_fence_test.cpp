@@ -32,10 +32,8 @@ int main()
 {
 	tz::GameInfo game{"vk_fence_test", tz::Version{1, 0, 0}, tz::info()};
 	tz::initialise(game, tz::ApplicationType::Headless);
-	tz::gl::vk2::initialise(game, tz::ApplicationType::Headless);
 	{
 		basic_fence_operations();
 	}
-	tz::gl::vk2::terminate();
 	tz::terminate();
 }

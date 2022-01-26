@@ -1,20 +1,16 @@
-#ifndef TOPAZ_GL_RENDERER_HPP
-#define TOPAZ_GL_RENDERER_HPP
+#ifndef TOPAZ_GL2_RENDERER_HPP
+#define TOPAZ_GL2_RENDERER_HPP
 
 #if TZ_VULKAN
-#include "gl/impl/frontend/vk/renderer.hpp"
-namespace tz::gl
-{
-    using RendererBuilder = RendererBuilderVulkan;
-    using Renderer = RendererVulkan;
-}
-#elif TZ_OGL
-#include "gl/impl/frontend/ogl/renderer.hpp"
-namespace tz::gl
-{
-    using RendererBuilder = RendererBuilderOGL;
-    using Renderer = RendererOGL;
-}
+#include "gl/impl/frontend/vk2/renderer.hpp"
 #endif
 
-#endif // TOPAZ_GL_RENDERER_HPP
+namespace tz::gl2
+{
+	#if TZ_VULKAN
+		using Renderer = RendererVulkan;
+		using RendererInfo = RendererInfoVulkan;
+	#endif
+}
+
+#endif // TOPAZ_GL2_RENDERER_HPP

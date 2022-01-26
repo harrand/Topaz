@@ -108,11 +108,9 @@ int main()
 {
 	tz::GameInfo game{"vk_image_test", tz::Version{1, 0, 0}, tz::info()};
 	tz::initialise(game, tz::ApplicationType::Headless);
-	tz::gl::vk2::initialise(game, tz::ApplicationType::Headless);
 	{
 		basic_images();
 		image_layout_transition();
 	}
-	tz::gl::vk2::terminate();
 	tz::terminate();
 }

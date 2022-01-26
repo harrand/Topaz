@@ -1,20 +1,17 @@
-#ifndef TOPAZ_GL_COMPONENT_HPP
-#define TOPAZ_GL_COMPONENT_HPP
+#ifndef TOPAZ_GL2_COMPONENT_HPP
+#define TOPAZ_GL2_COMPONENT_HPP
 
 #if TZ_VULKAN
-#include "gl/impl/frontend/vk/component.hpp"
-namespace tz::gl
-{
-	using BufferComponent = BufferComponentVulkan;
-	using TextureComponent = TextureComponentVulkan;
-}
-#elif TZ_OGL
-#include "gl/impl/frontend/ogl/component.hpp"
-namespace tz::gl
-{
-	using BufferComponent = BufferComponentOGL;
-	using TextureComponent = TextureComponentOGL;
-}
+#include "gl/impl/frontend/vk2/component.hpp"
 #endif
 
-#endif // TOPAZ_GL_RENDERER_HPP
+namespace tz::gl2
+{
+	#if TZ_VULKAN
+		using BufferComponent = BufferComponentVulkan;
+		using ImageComponent = ImageComponentVulkan;
+	#endif
+}
+
+#endif // TOPAZ_GL2_COMPONENT_HPP 
+

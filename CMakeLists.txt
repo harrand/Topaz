@@ -50,112 +50,39 @@ add_library(topaz
 	src/core/window.cpp
 	src/core/window.hpp
 
-	# tz::gl
-	src/gl/buffer.hpp
-	src/gl/buffer.inl
+	# tz::gl2 (API)
+	src/gl/api/component.hpp
+	src/gl/api/device.hpp
+	src/gl/api/input.hpp
+	src/gl/api/output.hpp
+	src/gl/api/renderer.hpp
+	src/gl/api/resource.hpp
+
+	# tz::gl2
 	src/gl/component.hpp
 	src/gl/device.hpp
 	src/gl/input.cpp
 	src/gl/input.hpp
-	src/gl/mesh.cpp
-	src/gl/mesh.hpp
 	src/gl/output.cpp
 	src/gl/output.hpp
-	src/gl/processor.hpp
 	src/gl/renderer.hpp
 	src/gl/resource.cpp
 	src/gl/resource.hpp
-	src/gl/shader.hpp
-	src/gl/texture.cpp
-	src/gl/texture.hpp
-
-	# tz::gl (API)
-	src/gl/api/component.hpp
-	src/gl/api/device.hpp
-	src/gl/api/processor.hpp
-	src/gl/api/renderer.hpp
-	src/gl/api/resource.hpp
-	src/gl/api/shader.hpp
-
-	# tz::gl (Declare)
-	src/gl/declare/device.hpp
-	src/gl/declare/renderer.hpp
-	src/gl/declare/resource.hpp
-	src/gl/declare/texture.hpp
-
-	# tz::gl2 (API)
-	src/gl/2/api/component.hpp
-	src/gl/2/api/device.hpp
-	src/gl/2/api/input.hpp
-	src/gl/2/api/output.hpp
-	src/gl/2/api/renderer.hpp
-	src/gl/2/api/resource.hpp
-
-	# tz::gl2
-	src/gl/2/component.hpp
-	src/gl/2/device.hpp
-	src/gl/2/input.cpp
-	src/gl/2/input.hpp
-	src/gl/2/output.cpp
-	src/gl/2/output.hpp
-	src/gl/2/renderer.hpp
-	src/gl/2/resource.cpp
-	src/gl/2/resource.hpp
-	src/gl/2/resource.inl
-	src/gl/2/tz_gl.hpp
+	src/gl/resource.inl
+	src/gl/tz_gl.hpp
 
 	# tz::gl2 (Common Impl)
-	src/gl/2/impl/frontend/common/shader.cpp
-	src/gl/2/impl/frontend/common/shader.hpp
-
-	# tz::gl (Common Impl)
-
-	src/gl/impl/frontend/common/component.cpp
-	src/gl/impl/frontend/common/component.hpp
-	src/gl/impl/frontend/common/component.inl
-	src/gl/impl/frontend/common/processor.cpp
-	src/gl/impl/frontend/common/processor.hpp
-	src/gl/impl/frontend/common/render_pass_info.cpp
-	src/gl/impl/frontend/common/render_pass_info.hpp
-	src/gl/impl/frontend/common/renderer.cpp
-	src/gl/impl/frontend/common/renderer.hpp
 	src/gl/impl/frontend/common/shader.cpp
 	src/gl/impl/frontend/common/shader.hpp
 
-	# tz::gl (Vulkan Frontend)
-	src/gl/impl/frontend/vk/component.cpp
-	src/gl/impl/frontend/vk/component.hpp
-	src/gl/impl/frontend/vk/convert.hpp
-	src/gl/impl/frontend/vk/convert.inl
-	src/gl/impl/frontend/vk/device.cpp
-	src/gl/impl/frontend/vk/device.hpp
-	src/gl/impl/frontend/vk/processor.cpp
-	src/gl/impl/frontend/vk/processor.hpp
-	src/gl/impl/frontend/vk/render_pass.cpp
-	src/gl/impl/frontend/vk/render_pass.hpp
-	src/gl/impl/frontend/vk/renderer.cpp
-	src/gl/impl/frontend/vk/renderer.hpp
-	src/gl/impl/frontend/vk/shader.cpp
-	src/gl/impl/frontend/vk/shader.hpp
-
-	# tz::gl (Vulkan Frontend 2)
-	src/gl/impl/frontend/vk2/convert.hpp
-	src/gl/impl/frontend/vk2/convert.inl
+	# tz::gl2 (Vulkan Frontend)
+	src/gl/impl/frontend/vk2/component.cpp
+	src/gl/impl/frontend/vk2/component.hpp
 	src/gl/impl/frontend/vk2/device.cpp
 	src/gl/impl/frontend/vk2/device.hpp
 	src/gl/impl/frontend/vk2/renderer.cpp
 	src/gl/impl/frontend/vk2/renderer.hpp
-	src/gl/impl/frontend/vk2/shader.cpp
-	src/gl/impl/frontend/vk2/shader.hpp
-
-	# tz::gl2 (Vulkan Frontend)
-	src/gl/2/impl/frontend/vk2/component.cpp
-	src/gl/2/impl/frontend/vk2/component.hpp
-	src/gl/2/impl/frontend/vk2/device.cpp
-	src/gl/2/impl/frontend/vk2/device.hpp
-	src/gl/2/impl/frontend/vk2/renderer.cpp
-	src/gl/2/impl/frontend/vk2/renderer.hpp
-	src/gl/2/impl/frontend/vk2/renderer.inl
+	src/gl/impl/frontend/vk2/renderer.inl
 
 	# tz::gl (OpenGL Frontend)
 	src/gl/impl/frontend/ogl/component.cpp
@@ -171,113 +98,6 @@ add_library(topaz
 	src/gl/impl/frontend/ogl/shader.cpp
 	src/gl/impl/frontend/ogl/shader.hpp
 
-	# tz::gl (Vulkan Backend)
-	src/gl/impl/backend/vk/extra/command_manager.cpp
-	src/gl/impl/backend/vk/extra/command_manager.hpp
-
-	src/gl/impl/backend/vk/hardware/device_filter.cpp
-	src/gl/impl/backend/vk/hardware/device_filter.hpp
-	src/gl/impl/backend/vk/hardware/device_filter.inl
-	src/gl/impl/backend/vk/hardware/device.cpp
-	src/gl/impl/backend/vk/hardware/device.hpp
-	src/gl/impl/backend/vk/hardware/memory.cpp
-	src/gl/impl/backend/vk/hardware/memory.hpp
-	src/gl/impl/backend/vk/hardware/queue_family.cpp
-	src/gl/impl/backend/vk/hardware/queue_family.hpp
-	src/gl/impl/backend/vk/hardware/swapchain_selector.cpp
-	src/gl/impl/backend/vk/hardware/swapchain_selector.hpp
-	src/gl/impl/backend/vk/hardware/swapchain_support.hpp
-
-	src/gl/impl/backend/vk/pipeline/colour_blend_state.cpp
-	src/gl/impl/backend/vk/pipeline/colour_blend_state.hpp
-	src/gl/impl/backend/vk/pipeline/compute_pipeline.cpp
-	src/gl/impl/backend/vk/pipeline/compute_pipeline.hpp
-	src/gl/impl/backend/vk/pipeline/dynamic_state.cpp
-	src/gl/impl/backend/vk/pipeline/dynamic_state.hpp
-	src/gl/impl/backend/vk/pipeline/graphics_pipeline.cpp
-	src/gl/impl/backend/vk/pipeline/graphics_pipeline.hpp
-	src/gl/impl/backend/vk/pipeline/input_assembly.cpp
-	src/gl/impl/backend/vk/pipeline/input_assembly.hpp
-	src/gl/impl/backend/vk/pipeline/layout.cpp
-	src/gl/impl/backend/vk/pipeline/layout.hpp
-	src/gl/impl/backend/vk/pipeline/multisample_state.cpp
-	src/gl/impl/backend/vk/pipeline/multisample_state.hpp
-	src/gl/impl/backend/vk/pipeline/rasteriser_state.cpp
-	src/gl/impl/backend/vk/pipeline/rasteriser_state.hpp
-	src/gl/impl/backend/vk/pipeline/shader_compiler.cpp
-	src/gl/impl/backend/vk/pipeline/shader_compiler.hpp
-	src/gl/impl/backend/vk/pipeline/shader_module.cpp
-	src/gl/impl/backend/vk/pipeline/shader_module.hpp
-	src/gl/impl/backend/vk/pipeline/shader_stage.cpp
-	src/gl/impl/backend/vk/pipeline/shader_stage.hpp
-	src/gl/impl/backend/vk/pipeline/vertex_input.cpp
-	src/gl/impl/backend/vk/pipeline/vertex_input.hpp
-	src/gl/impl/backend/vk/pipeline/viewport.cpp
-	src/gl/impl/backend/vk/pipeline/viewport.hpp
-
-	src/gl/impl/backend/vk/setup/extension_list.cpp
-	src/gl/impl/backend/vk/setup/extension_list.hpp
-	src/gl/impl/backend/vk/setup/vulkan_instance.cpp
-	src/gl/impl/backend/vk/setup/vulkan_instance.hpp
-	src/gl/impl/backend/vk/setup/window_surface.cpp
-	src/gl/impl/backend/vk/setup/window_surface.hpp
-
-	src/gl/impl/backend/vk/validation/debug_callback.hpp
-	src/gl/impl/backend/vk/validation/debug_messenger.cpp
-	src/gl/impl/backend/vk/validation/debug_messenger.hpp
-	src/gl/impl/backend/vk/validation/debug_messenger.inl
-	src/gl/impl/backend/vk/validation/layer.cpp
-	src/gl/impl/backend/vk/validation/layer.hpp
-
-	src/gl/impl/backend/vk/hardware/queue.cpp
-	src/gl/impl/backend/vk/hardware/queue.hpp
-
-	src/gl/impl/backend/vk/attachment.cpp
-	src/gl/impl/backend/vk/attachment.hpp
-	src/gl/impl/backend/vk/attribute_binding_description.cpp
-	src/gl/impl/backend/vk/attribute_binding_description.hpp
-	src/gl/impl/backend/vk/buffer.cpp
-	src/gl/impl/backend/vk/buffer.hpp
-	src/gl/impl/backend/vk/command.cpp
-	src/gl/impl/backend/vk/command.hpp
-	src/gl/impl/backend/vk/command.inl
-	src/gl/impl/backend/vk/descriptor_set_layout.cpp
-	src/gl/impl/backend/vk/descriptor_set_layout.hpp
-	src/gl/impl/backend/vk/descriptor.cpp
-	src/gl/impl/backend/vk/descriptor.hpp
-	src/gl/impl/backend/vk/descriptor.inl
-	src/gl/impl/backend/vk/fence.cpp
-	src/gl/impl/backend/vk/fence.hpp
-	src/gl/impl/backend/vk/frame_admin.cpp
-	src/gl/impl/backend/vk/frame_admin.hpp
-	src/gl/impl/backend/vk/frame_admin.inl
-	src/gl/impl/backend/vk/framebuffer.cpp
-	src/gl/impl/backend/vk/framebuffer.hpp
-	src/gl/impl/backend/vk/image_view.cpp
-	src/gl/impl/backend/vk/image_view.hpp
-	src/gl/impl/backend/vk/image.hpp
-	src/gl/impl/backend/vk/image.cpp
-	src/gl/impl/backend/vk/logical_device.cpp
-	src/gl/impl/backend/vk/logical_device.hpp
-	src/gl/impl/backend/vk/present.cpp
-	src/gl/impl/backend/vk/present.hpp
-	src/gl/impl/backend/vk/render_pass.cpp
-	src/gl/impl/backend/vk/render_pass.hpp
-	src/gl/impl/backend/vk/render_pass.inl
-	src/gl/impl/backend/vk/sampler.cpp
-	src/gl/impl/backend/vk/sampler.hpp
-	src/gl/impl/backend/vk/semaphore.cpp
-	src/gl/impl/backend/vk/semaphore.hpp
-	src/gl/impl/backend/vk/submit.cpp
-	src/gl/impl/backend/vk/submit.hpp
-	src/gl/impl/backend/vk/swapchain.cpp
-	src/gl/impl/backend/vk/swapchain.hpp
-	src/gl/impl/backend/vk/tz_vulkan.cpp
-	src/gl/impl/backend/vk/tz_vulkan.hpp
-	src/gl/impl/backend/vk/vertex_binding_description.cpp
-	src/gl/impl/backend/vk/vertex_binding_description.hpp
-	src/gl/impl/backend/vk/vma.cpp
-	
 	# tz::gl (Vulkan Backend 2)
 	src/gl/impl/backend/vk2/buffer.cpp
 	src/gl/impl/backend/vk2/buffer.hpp

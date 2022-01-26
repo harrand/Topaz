@@ -1,8 +1,7 @@
-#include "gl/impl/backend/vk/tz_vulkan.hpp"
+#if TZ_VULKAN
 #include "gl/impl/backend/vk2/features.hpp"
 #include "gl/impl/backend/vk2/image_format.hpp"
 #include "gl/impl/frontend/common/shader.hpp"
-#if TZ_VULKAN
 #include "gl/impl/backend/vk2/hardware/physical_device.hpp"
 #include <vector>
 

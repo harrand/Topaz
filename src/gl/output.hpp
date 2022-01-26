@@ -1,27 +1,39 @@
-#ifndef TOPAZ_GL_OUTPUT_HPP
-#define TOPAZ_GL_OUTPUT_HPP
-#include "gl/api/renderer.hpp"
+#ifndef TOPAZ_GL2_OUTPUT_HPP
+#define TOPAZ_GL2_OUTPUT_HPP
+#include "gl/api/output.hpp"
 #include "gl/component.hpp"
-#include <vector>
 
-namespace tz::gl
+namespace tz::gl2
 {
-	class TextureOutput : public IRendererOutput
+	class ImageOutput : public IOutput
 	{
 	public:
-		TextureOutput() = default;
-		void add_colour_output(tz::gl::TextureComponent* texture_component);
-		void set_depth_output(tz::gl::TextureComponent* texture_component);
-		const tz::gl::TextureComponent* get_first_colour_component() const;
-		tz::gl::TextureComponent* get_first_colour_component();
-		virtual RendererOutputType get_type() const final
+		ImageOutput(ImageComponent& component);
+		constexpr virtual OutputTarget get_target() const override
 		{
-			return RendererOutputType::Texture;
+			return OutputTarget::OffscreenImage;
 		}
+
+		const ImageComponent& get_component() const;
+		ImageComponent& get_component();
 	private:
-		std::vector<tz::gl::TextureComponent*> colour_outputs = {};
-		tz::gl::TextureComponent* depth_attachment = nullptr;
+		// TODO: Span of components when we go on to support multiple-render-targets?
+		ImageComponent* component;
+	};
+
+	class WindowOutput : public IOutput
+	{
+	public:
+		WindowOutput(const tz::Window& window);
+		constexpr virtual OutputTarget get_target() const override
+		{
+			return OutputTarget::Window;
+		}
+
+		const tz::Window& get_window() const;
+	private:
+		const tz::Window* wnd;
 	};
 }
 
-#endif // TOPAZ_GL_OUTPUT_HPP
+#endif // TOPAZ_GL2_OUTPUT_HPP

@@ -2,8 +2,6 @@
 #define TOPAZ_CORE_WINDOW_FUNCTIONALITY_HPP
 #include "core/types.hpp"
 #include "core/keyboard_state.hpp"
-#include "gl/api/renderer.hpp"
-
 #include <vector>
 #include <functional>
 
@@ -18,7 +16,7 @@ namespace tz
 	template<typename F>
 	concept WindowResizeConcept = tz::Action<F, int, int>;
 
-	class WindowFunctionality : public tz::gl::IRendererOutput
+	class WindowFunctionality
 	{
 	public:
 		WindowFunctionality(GLFWwindow* wnd);
@@ -32,11 +30,6 @@ namespace tz
 		bool is_key_pressed(int key_code) const;
 
 		void update();
-
-		virtual tz::gl::RendererOutputType get_type() const final
-		{
-			return tz::gl::RendererOutputType::Window;
-		}
 
 		static void block_until_event_happens();
 	protected:

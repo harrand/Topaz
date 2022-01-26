@@ -1,60 +1,50 @@
 #include "core/tz.hpp"
-#include "core/vector.hpp"
-#include "core/matrix_transform.hpp"
 #include "gl/device.hpp"
 #include "gl/renderer.hpp"
 #include "gl/resource.hpp"
-#include "gl/input.hpp"
-#include "gl/shader.hpp"
+#include "gl/imported_shaders.hpp"
 
-#include ImportedShaderFile(triangle_demo.vertex)
-#include ImportedShaderFile(triangle_demo.fragment)
-
-float get_aspect_ratio()
-{
-	return tz::window().get_width() / tz::window().get_height();
-}
+#include ImportedShaderFile(tz_triangle_demo.vertex)
+#include ImportedShaderFile(tz_triangle_demo.fragment)
 
 int main()
 {
-	tz::WindowInitArgs wargs = tz::default_args;
-	wargs.resizeable = false;
-	tz::initialise({"tz_triangle_demo", tz::Version{1, 0, 0}, tz::info()}, tz::ApplicationType::WindowApplication, wargs);
+	tz::GameInfo g{"tz_triangle_demo (gl2)", {1, 0, 0}, tz::info()};
+	tz::initialise(g, tz::ApplicationType::WindowApplication);
 	{
-		tz::gl::DeviceBuilder device_builder;
-		tz::gl::Device device{device_builder};
+		tz::gl2::Device dev;
 
-		tz::gl::ShaderBuilder shader_builder;
-	
-		shader_builder.set_shader_source(tz::gl::ShaderType::VertexShader, std::string(GetImportedShaderSource(triangle_demo_vertex)));
-		shader_builder.set_shader_source(tz::gl::ShaderType::FragmentShader, std::string(GetImportedShaderSource(triangle_demo_fragment)));
+		std::vector<unsigned char> imgdata = 
+		{{
+			0b0000'0000,
+			0b0000'0000,
+			0b1111'1111,
+			0b1111'1111,
 
-		tz::gl::Shader shader = device.create_shader(shader_builder);
+			0b1111'1111,
+			0b0000'0000,
+			0b0000'0000,
+			0b1111'1111,
 
-		tz::gl::RendererBuilder renderer_builder;
-		tz::gl::Mesh mesh;
-		mesh.vertices =
-			{
-				tz::gl::Vertex{{-0.5f, -0.5f, 0.0f}, {1.0f, 0.0f}, {}, {}, {}},
-				tz::gl::Vertex{{0.5f, -0.5f, 0.0f}, {0.0f, 0.0f}, {}, {}, {}},
-				tz::gl::Vertex{{0.5f, 0.5f, 0.0f}, {0.0f, 1.0f}, {}, {}, {}}
-			};
-		mesh.indices = {0, 1, 2};
-		tz::gl::MeshInput mesh_input{mesh};
-		// Note: Window is resizeable but we don't amend the aspect-ratio if it does. This is for simplicity's sake -- This is done properly in tz_dynamic_triangle_demo.
-		tz::gl::BufferResource buf_res{tz::gl::BufferData::from_array<tz::Mat4>
-		({{
-			tz::model({0.0f, 0.0f, -1.0f}, {0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f}),
-			tz::view({0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}),
-			tz::perspective(1.27f, get_aspect_ratio(), 0.1f, 1000.0f)
-		}})};
+			0b0000'0000,
+			0b1111'1111,
+			0b0000'0000,
+			0b1111'1111,
 
-		renderer_builder.add_input(mesh_input);
-		renderer_builder.set_output(tz::window());
-		renderer_builder.add_resource(buf_res);
-		renderer_builder.set_shader(shader);
-		tz::gl::Renderer renderer = device.create_renderer(renderer_builder);
-		renderer.set_clear_colour({0.1f, 0.2f, 0.4f, 1.0f});
+			0b0000'0000,
+			0b0000'0000,
+			0b1111'1111,
+			0b1111'1111
+		}};
+		tz::gl2::ImageResource img = tz::gl2::ImageResource::from_memory(tz::gl2::ImageFormat::RGBA32, {2u, 2u}, std::as_bytes(static_cast<std::span<unsigned char>>(imgdata)));
+
+		tz::gl2::RendererInfo rinfo;
+		rinfo.shader().set_shader(tz::gl2::ShaderStage::Vertex, GetImportedShaderSource(tz_triangle_demo_vertex));
+		rinfo.shader().set_shader(tz::gl2::ShaderStage::Fragment, GetImportedShaderSource(tz_triangle_demo_fragment));
+		rinfo.add_resource(img);
+
+		tz::gl2::Renderer renderer = dev.create_renderer(rinfo);
+
 		while(!tz::window().is_close_requested())
 		{
 			tz::window().update();

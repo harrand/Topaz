@@ -3,7 +3,7 @@
 #include "core/report.hpp"
 
 #if TZ_VULKAN
-#include "gl/impl/backend/vk/tz_vulkan.hpp"
+#include "gl/impl/backend/vk2/tz_vulkan.hpp"
 #elif TZ_OGL
 #include "gl/impl/backend/ogl/tz_opengl.hpp"
 #endif
@@ -46,18 +46,7 @@ namespace tz
 		tz_report("%s Application", app_type == ApplicationType::Headless ? "Headless" : "Windowed");
 		initialised = true;
 		#if TZ_VULKAN
-			if(app_type == ApplicationType::WindowApplication || app_type == ApplicationType::HiddenWindowApplication)
-			{
-				tz::gl::vk::initialise(game_info);
-			}
-			else if(app_type == ApplicationType::Headless)
-			{
-				tz::gl::vk::initialise_headless(game_info);
-			}
-			else
-			{
-				tz_error("Invalid tz::ApplicationType or support for that type is not yet implemented for this render-api (Vulkan)");
-			}
+			tz::gl::vk2::initialise(game_info, app_type);
 		#elif TZ_OGL
 			if(app_type == ApplicationType::WindowApplication || app_type == ApplicationType::HiddenWindowApplication)
 			{
@@ -79,7 +68,7 @@ namespace tz
 	void terminate()
 	{
 		#if TZ_VULKAN
-			tz::gl::vk::terminate();
+			tz::gl::vk2::terminate();
 		#elif TZ_OGL
 			tz::gl::ogl::terminate();
 		#endif

@@ -134,12 +134,10 @@ int main()
 {
 	tz::GameInfo g{"vk_swapchain_test", tz::Version{1, 0, 0}, tz::info()};
 	tz::initialise(g, tz::ApplicationType::HiddenWindowApplication);
-	tz::gl::vk2::initialise(g, tz::ApplicationType::HiddenWindowApplication);
 	{
 		swapchain_extension_supported();
 		mandatory_swapchain(g);
 		semantics();
 	}
-	tz::gl::vk2::terminate();
 	tz::terminate();
 }

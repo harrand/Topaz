@@ -1,8 +1,8 @@
 #ifndef TOPAZ_GL2_IMPL_FRONTEND_VK2_COMPONENT_HPP
 #define TOPAZ_GL2_IMPL_FRONTEND_VK2_COMPONENT_HPP
 #if TZ_VULKAN
-#include "gl/2/declare/image_format.hpp"
-#include "gl/2/api/component.hpp"
+#include "gl/declare/image_format.hpp"
+#include "gl/api/component.hpp"
 #include "gl/impl/backend/vk2/buffer.hpp"
 #include "gl/impl/backend/vk2/image.hpp"
 

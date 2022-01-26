@@ -1,67 +1,27 @@
-#ifndef TOPAZ_GL_IMPL_COMMON_SHADER_HPP
-#define TOPAZ_GL_IMPL_COMMON_SHADER_HPP
-#include <string>
-#include <unordered_map>
-#include <optional>
+#ifndef TOPAZ_GL2_IMPL_COMMON_SHADER_HPP
+#define TOPAZ_GL2_IMPL_COMMON_SHADER_HPP
 #include "gl/api/shader.hpp"
+#include <string>
+#include <array>
 
-namespace tz::gl
+namespace tz::gl2
 {
-	enum class ShaderMetaValue
-	{
-		// Buffers
-		UBO,
-		SSBO,
-		// Textures
-		Texture,
-
-		Count
-	};
-
-	namespace detail
-	{
-		constexpr const char* meta_value_names[]{"ubo", "ssbo", "texture"};
-	}
-
-	/**
-	 * @brief ShaderMetas contain information about a specific resource ID.
-	 * A metadata string is interpreted as a sequence of the following expressions, separated by newline:
-	 * "res-id = value"
-	 * Where res-id is the id of some resource associated with a renderer, and value represents some information about the resource.
-	 * For example, if "0 = ssbo" is written, this implies the resource with id 0 is not only a buffer resource, but also to be interpreted as an SSBO by the renderer.
-	 */
-	class ShaderMeta
+	class ShaderInfo
 	{
 	public:
-		static ShaderMeta from_metadata_string(const std::string& metadata);
-		ShaderMeta() = default;
+		ShaderInfo();
 
-		std::optional<ShaderMetaValue> try_get_meta_value(unsigned int resource_id) const;
+		void set_shader(ShaderStage stage, std::string_view source);
+		std::string_view get_shader(ShaderStage stage) const;
+		bool has_shader(ShaderStage stage) const;
+
+		void set_meta(ShaderStage stage, ShaderMeta meta);
+		const ShaderMeta& get_meta(ShaderStage stage) const;
 	private:
-		std::unordered_map<unsigned int, ShaderMetaValue> resource_types = {};
+		std::array<std::string, static_cast<int>(ShaderStage::Count)> source_data;
+		std::array<ShaderMeta, static_cast<int>(ShaderStage::Count)> meta_data;
 	};
 
-	class ShaderBuilderBase : public IShaderBuilder
-	{
-	public:
-		ShaderBuilderBase() = default;
-		virtual void set_shader_file(ShaderType type, std::filesystem::path shader_file) override;
-		virtual void set_shader_source(ShaderType type, std::string source_code) override;
-		virtual void set_shader_meta(ShaderType type, std::string metadata) override;
-		virtual std::string_view get_shader_source(ShaderType type) const override;
-		virtual std::string_view get_shader_meta(ShaderType type) const override;
-		virtual bool has_shader(ShaderType type) const override;
-	private:
-		struct ShaderInfo
-		{
-			static ShaderInfo null(){return {.source = "", .metadata = ""};}
-			std::string source;
-			std::string metadata;
-		};
-		ShaderInfo vertex;
-		ShaderInfo fragment;
-		ShaderInfo compute;
-	};
+	static_assert(ShaderInfoType<ShaderInfo>);
 }
-
-#endif // TOPAZ_GL_IMPL_COMMON_SHADER_HPP
+#endif // TOPAZ_GL2_IMPL_COMMON_SHADER_HPP

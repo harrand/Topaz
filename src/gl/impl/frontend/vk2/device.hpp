@@ -1,14 +1,12 @@
-#ifndef TOPAZ_GL_IMPL_FRONTEND_VK2_DEVICE_HPP
-#define TOPAZ_GL_IMPL_FRONTEND_VK2_DEVICE_HPP
+#ifndef TOPAZ_GL2_IMPL_FRONTEND_VK2_DEVICE_HPP
+#define TOPAZ_GL2_IMPL_FRONTEND_VK2_DEVICE_HPP
 #if TZ_VULKAN
 #include "gl/api/device.hpp"
-
+#include "gl/impl/frontend/vk2/renderer.hpp"
 #include "gl/impl/backend/vk2/swapchain.hpp"
 #include "gl/impl/backend/vk2/image.hpp"
-#include "gl/impl/frontend/vk2/renderer.hpp"
-#include "gl/impl/frontend/vk2/shader.hpp"
 
-namespace tz::gl
+namespace tz::gl2
 {
 	class DeviceWindowVulkan
 	{
@@ -33,13 +31,16 @@ namespace tz::gl
 		DeviceVulkan();
 		DeviceVulkan(const vk2::VulkanInstance& instance);
 
-		RendererVulkan2 create_renderer(const RendererBuilderVulkan2& builder);
-		ShaderVulkan2 create_shader(const ShaderBuilderVulkan2& builder);
+		// Satisfies DeviceType.
+		RendererVulkan create_renderer(RendererInfoVulkan& info);
+		ImageFormat get_window_format() const;
 	private:
 		vk2::LogicalDevice device;
 		DeviceWindowVulkan window_storage;
 	};
+
+	static_assert(DeviceType<DeviceVulkan, RendererInfoVulkan>);
 }
 
 #endif // TZ_VULKAN
-#endif // TOPAZ_GL_IMPL_FRONTEND_VK2_DEVICE_HPP
+#endif // TOPAZ_GL2_IMPL_FRONTEND_VK2_DEVICE_HPP

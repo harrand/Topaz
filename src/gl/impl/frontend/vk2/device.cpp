@@ -1,13 +1,12 @@
+#if TZ_VULKAN
+#include "gl/impl/frontend/vk2/device.hpp"
+#include "gl/impl/frontend/vk2/convert.hpp"
 #include "gl/impl/backend/vk2/extensions.hpp"
 #include "gl/impl/backend/vk2/hardware/physical_device.hpp"
 #include "gl/impl/backend/vk2/image_format.hpp"
-#include "gl/impl/frontend/vk2/renderer.hpp"
-#include "gl/impl/frontend/vk2/shader.hpp"
 #include <variant>
-#if TZ_VULKAN
-#include "gl/impl/frontend/vk2/device.hpp"
 
-namespace tz::gl
+namespace tz::gl2
 {
 	DeviceWindowVulkan::DeviceWindowVulkan():
 	window_buf(std::monostate{})
@@ -150,7 +149,7 @@ namespace tz::gl
 		this->window_storage = {this->device};
 	}
 
-	RendererVulkan2 DeviceVulkan::create_renderer(const RendererBuilderVulkan2& builder)
+	RendererVulkan DeviceVulkan::create_renderer(RendererInfoVulkan& info)
 	{
 		std::span<vk2::Image> window_buffer_images;
 		if(this->window_storage.as_swapchain() != nullptr)
@@ -161,21 +160,18 @@ namespace tz::gl
 		{
 			window_buffer_images = {this->window_storage.as_image(), 1};
 		}
-
-		return {builder,
-		RendererBuilderDeviceInfoVulkan2{
+		
+		return {info,
+		{
 			.device = &this->device,
 			.output_images = window_buffer_images,
 			.maybe_swapchain = this->window_storage.as_swapchain()
 		}};
 	}
 
-	ShaderVulkan2 DeviceVulkan::create_shader(const ShaderBuilderVulkan2& builder)
+	ImageFormat DeviceVulkan::get_window_format() const
 	{
-		return {builder,
-		ShaderDeviceInfoVulkan2{
-			.device = &this->device
-		}};
+		return from_vk2(this->window_storage.get_format());
 	}
 }
 

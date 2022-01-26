@@ -1,45 +1,33 @@
-#ifndef TOPAZ_GL_API_SHADER_HPP
-#define TOPAZ_GL_API_SHADER_HPP
-#include <string>
+#ifndef TOPAZ_GL2_API_SHADER_HPP
+#define TOPAZ_GL2_API_SHADER_HPP
 #include <string_view>
-#include <filesystem>
 
-namespace tz::gl
+namespace tz::gl2
 {
-	// Pre-declares
-	class ShaderMeta;
-
-	enum class ShaderType
+	enum class ShaderStage
 	{
-		VertexShader,
-		FragmentShader,
-		ComputeShader
+		Vertex,
+		Fragment,
+		Compute,
+
+		Count
 	};
 
-	/**
-	 * \addtogroup tz_gl Topaz Graphics Library (tz::gl)
-	 * A collection of low-level renderer-agnostic graphical interfaces.
-	 * @{
-	 */
-	class IShaderBuilder
+	struct ShaderMeta
 	{
-	public:
-		virtual void set_shader_file(ShaderType type, std::filesystem::path shader_file) = 0;
-		virtual void set_shader_source(ShaderType type, std::string source_code) = 0;
-		virtual void set_shader_meta(ShaderType type, std::string metadata) = 0;
-		virtual std::string_view get_shader_source(ShaderType type) const = 0;
-		virtual std::string_view get_shader_meta(ShaderType type) const = 0;
-		virtual bool has_shader(ShaderType type) const = 0;
+
 	};
 
-	class IShader
+	template<typename T>
+	concept ShaderInfoType = requires(T t, ShaderStage stage, std::string_view sv, ShaderMeta meta)
 	{
-	public:
-		virtual const ShaderMeta& get_meta() const = 0;
+		{t.set_shader(stage, sv)} -> std::same_as<void>;
+		{t.get_shader(stage)} -> std::same_as<std::string_view>;
+		{t.has_shader(stage)} -> std::same_as<bool>;
+
+		{t.set_meta(stage, meta)} -> std::same_as<void>;
+		{t.get_meta(stage)} -> std::convertible_to<ShaderMeta>;
 	};
-	/**
-	 * @}
-	 */
 }
 
-#endif // TOPAZ_GL_API_SHADER_HPP
+#endif // TOPAZ_GL2_API_SHADER_HPP

@@ -19,4 +19,3 @@ endfunction()
 
 add_subdirectory(core)
 add_subdirectory(gl)
-add_subdirectory(gl/2)

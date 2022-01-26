@@ -138,7 +138,8 @@ namespace tzslc
 	   tzslc::transform(shader_source, std::regex{"resource\\(id ?= ?([0-9]+)\\) const buffer"}, [&meta](auto beg, auto end)->std::string
 	   {
 			tz_assert(std::distance(beg, end) == 1, "resource(id = x) const buffer <name> : 'x' should be one number");
-			const char* buffer_subtype_name = tz::gl::detail::meta_value_names[static_cast<int>(tz::gl::ShaderMetaValue::UBO)];
+			// TODO: Don't hardcode.
+			const char* buffer_subtype_name = "ubo";
 			int id = std::stoi(*beg);
 			std::string replacement = "/*tzslc: const buffer resource (";
 			replacement += buffer_subtype_name;
@@ -155,7 +156,8 @@ namespace tzslc
 	   tzslc::transform(shader_source, std::regex{"resource\\(id ?= ?([0-9]+)\\) buffer"}, [&meta](auto beg, auto end)->std::string
 	   {
 			tz_assert(std::distance(beg, end) == 1, "resource(id = x) buffer : 'x' should be one number");
-			const char* buffer_subtype_name = tz::gl::detail::meta_value_names[static_cast<int>(tz::gl::ShaderMetaValue::SSBO)];
+			// TODO: Don't hardcode.
+			const char* buffer_subtype_name = "ssbo";
 			int id = std::stoi(*beg);
 			std::string replacement = "/*tzslc buffer resource (";
 			replacement += buffer_subtype_name;

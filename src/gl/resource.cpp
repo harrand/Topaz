@@ -1,73 +1,77 @@
 #include "gl/resource.hpp"
 
-namespace tz::gl
+namespace tz::gl2
 {
-	BufferResource::BufferResource(BufferData data):
-	data(data)
+	ResourceType Resource::get_type() const
+	{
+		return this->type;
+	}
+
+	ResourceAccess Resource::get_access() const
+	{
+		return ResourceAccess::StaticFixed;
+	}
+
+	std::span<const std::byte> Resource::data() const
+	{
+		auto beg_offsetted = this->resource_data.begin() + this->initial_alignment_offset;
+		return {beg_offsetted, this->resource_data.end()};
+	}
+
+	std::span<std::byte> Resource::data()
+	{
+		auto beg_offsetted = this->resource_data.begin() + this->initial_alignment_offset;
+		return {beg_offsetted, this->resource_data.end()};
+	}
+
+	Resource::Resource(std::vector<std::byte> resource_data, std::size_t initial_alignment_offset, ResourceType type):
+	resource_data(resource_data),
+	initial_alignment_offset(initial_alignment_offset),
+	type(type)
 	{}
 
-	std::span<const std::byte> BufferResource::get_resource_bytes() const
+	std::unique_ptr<IResource> BufferResource::unique_clone() const
 	{
-		return {this->data.data.begin(), this->data.data.end()};
+		return std::make_unique<BufferResource>(*this);
 	}
 
-	DynamicBufferResource::DynamicBufferResource(BufferData data):
-	initial_data(data),
-	resource_data(nullptr)
-	{}
-
-	std::span<const std::byte> DynamicBufferResource::get_resource_bytes() const
+	BufferResource::BufferResource(std::vector<std::byte> resource_data, std::size_t initial_alignment_offset):
+	Resource(resource_data, initial_alignment_offset, ResourceType::Buffer){}
+			
+	ImageResource ImageResource::from_uninitialised(ImageFormat format, tz::Vec2ui dimensions)
 	{
-		if(this->resource_data == nullptr)
-		{
-			return {this->initial_data.data.begin(), this->initial_data.data.end()};
-		}
-		return {this->resource_data, this->resource_data + this->initial_data.data.size()};
+		std::size_t pixel_size = tz::gl2::pixel_size_bytes(format);
+		std::vector<std::byte> resource_data(pixel_size * dimensions[0] * dimensions[1]);
+		// TODO: Sanity check? Is it correct to just not give a shit about alignment here?
+		return {resource_data, 0, format, dimensions};
 	}
 
-	std::span<std::byte> DynamicBufferResource::get_resource_bytes_dynamic()
+	ImageResource ImageResource::from_memory(ImageFormat format, tz::Vec2ui dimensions, std::span<const std::byte> byte_data)
 	{
-		if(this->resource_data == nullptr)
-		{
-			return {this->initial_data.data.begin(), this->initial_data.data.end()};
-		}
-		return {this->resource_data, this->resource_data + this->initial_data.data.size()};
+		std::size_t pixel_size = tz::gl2::pixel_size_bytes(format);
+		std::vector<std::byte> resource_data(pixel_size * dimensions[0] * dimensions[1]);
+		std::copy(byte_data.begin(), byte_data.end(), resource_data.begin());
+		// TODO: Sanity check? Is it correct to just not give a shit about alignment here?
+		return {resource_data, 0, format, dimensions};
 	}
 
-	void DynamicBufferResource::set_resource_data(std::byte* resource_data)
+	std::unique_ptr<IResource> ImageResource::unique_clone() const
 	{
-		auto res_data = this->get_resource_bytes();
-		this->resource_data = resource_data;
-		std::memcpy(this->resource_data, res_data.data(), res_data.size_bytes());
+		return std::make_unique<ImageResource>(*this);
 	}
 
-	TextureResource::TextureResource(TextureData data, TextureFormat format, TextureProperties properties):
-	data(data),
-	format(format),
-	properties(properties){}
-
-	std::span<const std::byte> TextureResource::get_resource_bytes() const
-	{
-		return {this->data.image_data.begin(), this->data.image_data.end()};
-	}
-
-	const TextureFormat& TextureResource::get_format() const
+	ImageFormat ImageResource::get_format() const
 	{
 		return this->format;
 	}
 
-	const TextureProperties& TextureResource::get_properties() const
+	tz::Vec2ui ImageResource::get_dimensions() const
 	{
-		return this->properties;
+		return this->dimensions;
 	}
 
-	unsigned int TextureResource::get_width() const
-	{
-		return data.width;
-	}
-
-	unsigned int TextureResource::get_height() const
-	{
-		return data.height;
-	}
+	ImageResource::ImageResource(std::vector<std::byte> resource_data, std::size_t initial_alignment_offset, ImageFormat format, tz::Vec2ui dimensions):
+	Resource(resource_data, initial_alignment_offset, ResourceType::Image),
+	format(format),
+	dimensions(dimensions){}
 }

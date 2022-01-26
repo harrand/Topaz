@@ -1,7 +1,7 @@
 #if TZ_VULKAN
-#include "gl/2/impl/frontend/vk2/component.hpp"
-#include "gl/2/impl/frontend/vk2/convert.hpp"
-#include "gl/2/resource.hpp"
+#include "gl/impl/frontend/vk2/component.hpp"
+#include "gl/impl/frontend/vk2/convert.hpp"
+#include "gl/resource.hpp"
 #include "core/assert.hpp"
 
 namespace tz::gl2

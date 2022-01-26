@@ -112,7 +112,6 @@ int main()
 {
 	tz::GameInfo game{"vk_logical_device_test", tz::Version{1, 0, 0}, tz::info()};
 	tz::initialise(game, tz::ApplicationType::HiddenWindowApplication);
-	tz::gl::vk2::initialise(game, tz::ApplicationType::HiddenWindowApplication);
 	{
 		extensions_coherent();
 		custom_instance_and_window_surface(game);
@@ -120,6 +119,5 @@ int main()
 		simulataneous_logical_devices();
 		headless_logical_device(game);
 	}
-	tz::gl::vk2::terminate();
 	tz::terminate();
 }

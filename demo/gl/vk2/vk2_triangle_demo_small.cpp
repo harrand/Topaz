@@ -22,7 +22,6 @@ int main()
 		.height = 600,
 		.resizeable = false,
 	});
-	tz::gl::vk2::initialise(g, tz::ApplicationType::WindowApplication);
 	{
 		// First start with basic state (get a LogicalDevice and Swapchain running)
 		using namespace tz::gl::vk2;
@@ -235,6 +234,5 @@ int main()
 		}
 		ldev.wait_until_idle();
 	}
-	tz::gl::vk2::terminate();
 	tz::terminate();
 }

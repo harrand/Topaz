@@ -310,7 +310,6 @@ int main()
 {
 	tz::GameInfo game{"vk_descriptor_test", tz::Version{1, 0, 0}, tz::info()};
 	tz::initialise(game, tz::ApplicationType::Headless);
-	tz::gl::vk2::initialise(game, tz::ApplicationType::Headless);
 	{
 		basic_descriptor_layouts();
 		descriptor_layouts_descriptor_indexing();
@@ -321,6 +320,5 @@ int main()
 		descriptor_set_allocation_descriptor_indexing();
 		write_actual_descriptors();
 	}
-	tz::gl::vk2::terminate();
 	tz::terminate();
 }

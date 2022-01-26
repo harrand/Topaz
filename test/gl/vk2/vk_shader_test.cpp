@@ -1,5 +1,4 @@
 #include "core/tz.hpp"
-#include "gl/impl/backend/vk/tz_vulkan.hpp"
 #include "gl/impl/backend/vk2/hardware/physical_device.hpp"
 #include "gl/impl/backend/vk2/shader.hpp"
 #include <string>
@@ -69,11 +68,9 @@ int main()
 {
 	tz::GameInfo game{"vk_shader_test", tz::Version{1, 0, 0}};
 	tz::initialise(game, tz::ApplicationType::Headless);
-	tz::gl::vk2::initialise(game, tz::ApplicationType::Headless);
 	{
 		basic_shader_module();
 		basic_shader();
 	}
-	tz::gl::vk2::terminate();
 	tz::terminate();
 }

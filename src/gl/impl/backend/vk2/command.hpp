@@ -1,8 +1,7 @@
 #ifndef TOPAZ_GL_IMPL_BACKEND_VK2_COMMAND_HPP
 #define TOPAZ_GL_IMPL_BACKEND_VK2_COMMAND_HPP
-#include "gl/impl/backend/vk2/render_pass.hpp"
 #if TZ_VULKAN
-#include "gl/impl/backend/vk/render_pass.hpp"
+#include "gl/impl/backend/vk2/render_pass.hpp"
 #include "gl/impl/backend/vk2/hardware/queue.hpp"
 #include "gl/impl/backend/vk2/logical_device.hpp"
 #include "gl/impl/backend/vk2/framebuffer.hpp"

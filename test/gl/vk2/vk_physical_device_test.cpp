@@ -148,7 +148,6 @@ int main()
 	tz::ApplicationType app_type = tz::ApplicationType::HiddenWindowApplication;
 	tz::initialise(game, app_type);
 	// TODO: Don't need to specifically vk2::initialise/term once vk2 is hooked up to tz::initialise.
-	tz::gl::vk2::initialise(game, app_type);
 	{
 		devices();
 		guaranteed_formats();
@@ -156,6 +155,5 @@ int main()
 		surface_present_modes(game);
 		semantics();
 	}
-	tz::gl::vk2::terminate();
 	tz::terminate();
 }

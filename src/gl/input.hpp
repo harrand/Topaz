@@ -1,66 +1,49 @@
-#ifndef TOPAZ_GL_INPUT_HPP
-#define TOPAZ_GL_INPUT_HPP
-#include "gl/mesh.hpp"
+#include "gl/api/input.hpp"
+#include "core/containers/basic_list.hpp"
+#include "core/vector.hpp"
 
-namespace tz::gl
+namespace tz::gl2
 {
 	/**
-	 * @brief If a shader does not explicitly use each mesh input attribute, a warning may be emitted by the runtime. Pass ignore flags for each attribute your shader won't reference to prevent this.
-	 * @note This may become required behaviour later on, so it is highly recommended that you provide ignore flags as necessary.
-	 * 
+	 * @ingroup tz_gl2_io
+	 * Standard-layout structure storing mesh data. Note that Meshes must always be indexed.
 	 */
-	enum class MeshInputIgnoreFlag
+	struct Mesh
 	{
-		PositionIgnore,
-		TexcoordIgnore,
-		NormalIgnore,
-		TangentIgnore,
-		BitangentIgnore
-	};
+		struct Vertex
+		{
+			tz::Vec3 position;
+			tz::Vec2 texcoord;
+			tz::Vec3 normal;
+			tz::Vec3 tangent;
+			tz::Vec3 bitangent;
+		};
 
-	using MeshInputIgnoreField = tz::EnumField<MeshInputIgnoreFlag>;
+		using Index = unsigned int;
+
+		/// Vertex data.
+		tz::BasicList<Vertex> vertices;
+		/// Index data.
+		tz::BasicList<Index> indices;
+	};
 
 	/**
-	 * @brief Renderer Input representing a typical mesh.
+	 * @ingroup tz_gl2_io
+	 * Represents a Mesh which is used as an input into a Renderer or Processor.
 	 */
-	class MeshInput : public IRendererInputCopyable<MeshInput>
+	class MeshInput : public IInput
 	{
 	public:
-		MeshInput(Mesh mesh);
-		MeshInput(Mesh mesh, MeshInputIgnoreField ignores);
-		MeshInput(const MeshInput& copy) = default;
-
-		virtual RendererElementFormat get_format() const final;
-		virtual std::span<const std::byte> get_vertex_bytes() const final;
-		virtual std::span<const unsigned int> get_indices() const final;
+		MeshInput(Mesh data);
+		virtual ~MeshInput() = default;
+		// IInput
+		virtual InputAccess get_access() const final;
+		virtual std::span<const std::byte> vertex_data() const final;
+		virtual std::span<std::byte> vertex_data() final;
+		virtual std::span<const unsigned int> index_data() const final;
+		virtual std::span<unsigned int> index_data() final;
+		virtual std::unique_ptr<IInput> unique_clone() const final;
 	private:
-		Mesh mesh;
-		MeshInputIgnoreField ignores;
-	};
-
-	class MeshDynamicInput : public IRendererDynamicInputCopyable<MeshDynamicInput>
-	{
-	public:
-		MeshDynamicInput(Mesh mesh);
-		MeshDynamicInput(Mesh mesh, MeshInputIgnoreField ignores);
-		MeshDynamicInput(const MeshDynamicInput& copy);
-		~MeshDynamicInput() = default;
-		MeshDynamicInput& operator=(const MeshDynamicInput& rhs);
-
-		virtual RendererElementFormat get_format() const final;
-		virtual std::span<const std::byte> get_vertex_bytes() const final;
-		virtual std::span<const unsigned int> get_indices() const final;
-
-		// IRendererDynamicInput
-		virtual std::span<std::byte> get_vertex_bytes_dynamic() final;
-		virtual void set_vertex_data(std::byte* vertex_data) final;
-		virtual void set_index_data(unsigned int* index_data) final;
-	private:
-		Mesh initial_data;
-		MeshInputIgnoreField ignores;
-		std::byte* vertex_data;
-		unsigned int* index_data;
+		Mesh data;
 	};
 }
-
-#endif // TOPAZ_GL_INPUT_HPP

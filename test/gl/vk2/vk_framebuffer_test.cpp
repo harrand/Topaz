@@ -57,10 +57,8 @@ int main()
 {
 	tz::GameInfo game{"vk_framebuffer_test", tz::Version{1, 0, 0}, tz::info()};
 	tz::initialise(game, tz::ApplicationType::HiddenWindowApplication);
-	tz::gl::vk2::initialise(game, tz::ApplicationType::HiddenWindowApplication);
 	{
 		swapchain_image_framebuffer();
 	}
-	tz::gl::vk2::terminate();
 	tz::terminate();
 }
