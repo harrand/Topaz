@@ -39,7 +39,7 @@ namespace tzslc
 		// Note, filename_cpy might be a spirv binary which is not a valid source file. We should convert it all into a series of std::bytes. This will not be fun.
 		std::size_t byte_count = buffer.size();
 		std::string buffer_array_literal = std_bytenise(buffer);
-		buffer = std::string("#include <cstdint>\n#include<span>\n/*tzslc_gen_header*/constexpr std::array<std::int8_t, " + std::to_string(byte_count) + "> " + filename_cpy + "{") + buffer_array_literal + "};";
+		buffer = std::string("#include <cstdint>\n#include <span>\n/*tzslc_gen_header*/constexpr std::array<std::int8_t, " + std::to_string(byte_count) + "> " + filename_cpy + "{") + buffer_array_literal + "};";
 		return false;
 	}
 }

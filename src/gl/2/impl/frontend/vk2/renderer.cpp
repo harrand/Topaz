@@ -1,6 +1,7 @@
+#include "gl/impl/backend/vk2/fixed_function.hpp"
+#if TZ_VULKAN
 #include "gl/impl/backend/vk2/descriptors.hpp"
 #include "gl/impl/backend/vk2/image_view.hpp"
-#if TZ_VULKAN
 #include "gl/2/impl/frontend/vk2/renderer.hpp"
 #include "gl/2/impl/frontend/vk2/component.hpp"
 #include "gl/2/output.hpp"
@@ -153,6 +154,11 @@ namespace tz::gl2
 		return this->components[static_cast<std::size_t>(static_cast<tz::HandleValue>(handle))].get();
 	}
 
+	const vk2::DescriptorLayout& ResourceStorage::get_descriptor_layout() const
+	{
+		return this->descriptor_layout;
+	}
+
 //--------------------------------------------------------------------------------------------------
 	unsigned int RendererInfoVulkan::input_count() const
 	{
@@ -209,6 +215,16 @@ namespace tz::gl2
 	IOutput* RendererInfoVulkan::get_output()
 	{
 		return this->output;
+	}
+
+	ShaderInfo& RendererInfoVulkan::shader()
+	{
+		return this->shader_info;
+	}
+
+	const ShaderInfo& RendererInfoVulkan::shader() const
+	{
+		return this->shader_info;
 	}
 
 //--------------------------------------------------------------------------------------------------
@@ -269,6 +285,11 @@ namespace tz::gl2
 		this->render_pass = rbuilder.with_subpass(sbuilder.build()).build();
 	}
 
+	const vk2::RenderPass& OutputManager::get_render_pass() const
+	{
+		return this->render_pass;
+	}
+
 	std::span<vk2::Image> OutputManager::get_output_images()
 	{
 		if(this->output == nullptr || this->output->get_target() == OutputTarget::Window)
@@ -309,10 +330,102 @@ namespace tz::gl2
 
 //--------------------------------------------------------------------------------------------------
 
+	GraphicsPipelineManager::GraphicsPipelineManager
+	(
+		const ShaderInfo& sinfo,
+		const vk2::DescriptorLayout& dlayout,
+		const vk2::RenderPass& render_pass,
+		std::size_t frame_in_flight_count,
+		tz::Vec2ui viewport_dimensions
+	):
+	shader(this->make_shader(dlayout.get_device(), sinfo)),
+	pipeline_layout(this->make_pipeline_layout(dlayout, frame_in_flight_count)),
+	graphics_pipeline
+	({
+		.shaders = this->shader.native_data(),
+		.state = vk2::PipelineState{.viewport = vk2::create_basic_viewport({static_cast<float>(viewport_dimensions[0]), static_cast<float>(viewport_dimensions[1])})},
+		.pipeline_layout = &this->pipeline_layout,
+		.render_pass = &render_pass,
+		.device = &render_pass.get_device()
+	})
+	{
+		// TODO: Implement vk2::LogicalDevice equality operator
+		//tz_assert(dlayout.get_device() == render_pass.get_device(), "");
+	}
+
+	vk2::Shader GraphicsPipelineManager::make_shader(const vk2::LogicalDevice& ldev, const ShaderInfo& sinfo) const
+	{
+		std::vector<char> vtx_src, frg_src, cmp_src;
+		tz::BasicList<vk2::ShaderModuleInfo> modules;
+		if(sinfo.has_shader(ShaderStage::Compute))
+		{
+			// Compute, we only care about the compute shader.
+			{
+				std::string_view compute_source = sinfo.get_shader(ShaderStage::Compute);
+				cmp_src.resize(compute_source.length());
+				std::copy(compute_source.begin(), compute_source.end(), cmp_src.begin());
+			}
+			modules =
+			{
+				{
+					.device = &ldev,
+					.type = vk2::ShaderType::Compute,
+					.code = cmp_src
+				}
+			};
+		}
+		else
+		{
+			// Graphics, must contain a Vertex and Fragment shader.
+			tz_assert(sinfo.has_shader(ShaderStage::Vertex), "ShaderInfo must contain a non-empty vertex shader if no compute shader is present.");
+			tz_assert(sinfo.has_shader(ShaderStage::Fragment), "ShaderInfo must contain a non-empty fragment shader if no compute shader is present.");
+			{
+				std::string_view vertex_source = sinfo.get_shader(ShaderStage::Vertex);
+				vtx_src.resize(vertex_source.length());
+				std::copy(vertex_source.begin(), vertex_source.end(), vtx_src.begin());
+
+				std::string_view fragment_source = sinfo.get_shader(ShaderStage::Fragment);
+				frg_src.resize(fragment_source.length());
+				std::copy(fragment_source.begin(), fragment_source.end(), frg_src.begin());
+			}
+			modules = 
+			{
+				{
+					.device = &ldev,
+					.type = vk2::ShaderType::Vertex,
+					.code = vtx_src
+				},
+				{
+					.device = &ldev,
+					.type = vk2::ShaderType::Fragment,
+					.code = frg_src
+				}
+			};
+		}
+		return
+		{{
+			.device = &ldev,
+			.modules = modules
+		}};
+	}
+
+	vk2::PipelineLayout GraphicsPipelineManager::make_pipeline_layout(const vk2::DescriptorLayout& dlayout, std::size_t frame_in_flight_count) const
+	{
+		std::vector<const vk2::DescriptorLayout*> layout_ptrs(frame_in_flight_count, &dlayout);
+		return
+		{{
+			.descriptor_layouts = std::move(layout_ptrs),
+			.logical_device = &dlayout.get_device()
+		}};
+	}
+
+//--------------------------------------------------------------------------------------------------
+
 	RendererVulkan::RendererVulkan(RendererInfoVulkan& info, const RendererDeviceInfoVulkan& device_info):
 	inputs(info.get_inputs()),
 	resources(info.get_resources(), *device_info.device),
-	output(info.get_output(), device_info.output_images, *device_info.device)
+	output(info.get_output(), device_info.output_images, *device_info.device),
+	pipeline(info.shader(), this->resources.get_descriptor_layout(), this->output.get_render_pass(), RendererVulkan::max_frames_in_flight, output.get_output_dimensions())
 	{
 		int x = 5;
 	}

@@ -104,6 +104,10 @@ add_library(topaz
 	src/gl/2/resource.inl
 	src/gl/2/tz_gl.hpp
 
+	# tz::gl2 (Common Impl)
+	src/gl/2/impl/frontend/common/shader.cpp
+	src/gl/2/impl/frontend/common/shader.hpp
+
 	# tz::gl (Common Impl)
 
 	src/gl/impl/frontend/common/component.cpp

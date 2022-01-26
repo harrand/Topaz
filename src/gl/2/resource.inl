@@ -21,7 +21,7 @@ namespace tz::gl2
 		bool success = std::align(alignof(T), sizeof(T), data_ptr, space) != nullptr;
 		tz_assert(success, "Storage for a single T (sizeof T + alignof T) was too small! Please submit a bug report.");
 
-		std::memcpy(data_ptr, &data, sizeof(T) * data.size());
+		std::memcpy(data_ptr, data.data(), sizeof(T) * data.size());
 		std::size_t alignment_usage = (sizeof(T) + alignof(T)) - space;
 		// space is now reduced by `alignment_usage` bytes, meaning that when we resize the vector to `space` bytes it is guaranteed to be less than or equal to its initial size. C++ spec says that "Vector capacity is never reduced when resizing to a smaller size because that would invalidate all iterators..." meaning that no realloc took place and the memcpy'd object is still aligned properly.
 		resource_data.resize(space);

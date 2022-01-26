@@ -3,6 +3,7 @@
 #if TZ_VULKAN
 #include "gl/2/api/renderer.hpp"
 #include "gl/2/api/component.hpp"
+#include "gl/2/impl/frontend/common/shader.hpp"
 #include "gl/impl/backend/vk2/logical_device.hpp"
 #include "gl/impl/backend/vk2/image.hpp"
 #include "gl/impl/backend/vk2/image_view.hpp"
@@ -10,6 +11,8 @@
 #include "gl/impl/backend/vk2/framebuffer.hpp"
 #include "gl/impl/backend/vk2/sampler.hpp"
 #include "gl/impl/backend/vk2/descriptors.hpp"
+#include "gl/impl/backend/vk2/pipeline_layout.hpp"
+#include "gl/impl/backend/vk2/graphics_pipeline.hpp"
 
 namespace tz::gl2
 {
@@ -85,6 +88,10 @@ namespace tz::gl2
 		 * @param handle Handle whose resource's component needs to be retrieved. The handle must have referred to one of the initial resources passed to the constructor, otherwise the behaviour is undefined.
 		 */
 		IComponent* get_component(ResourceHandle handle);
+		/**
+		 * Retrieve the descriptor layout representing the shader resources used by the renderer.
+		 */
+		const vk2::DescriptorLayout& get_descriptor_layout() const;
 	private:
 		/// Storage for all cloned resource's components.
 		std::vector<std::unique_ptr<IComponent>> components;
@@ -120,6 +127,10 @@ namespace tz::gl2
 		 * @param ldev Vulkan LogicalDevice which will be used to construct the render-pass and framebuffers etc. Right now we expect this to be the exact same LogicalDevice everywhere throughout this RendererVulkan. However this may change in the future (albeit unlikely tbh).
 		 */
 		OutputManager(IOutput* output, std::span<vk2::Image> window_buffer_images, const vk2::LogicalDevice& ldev);
+		/**
+		 * Retrieve the render pass used by the renderer.
+		 */
+		const vk2::RenderPass& get_render_pass() const;
 		/**
 		 * Retrieve a view into all of the output images.
 		 *
@@ -160,6 +171,19 @@ namespace tz::gl2
 		vk2::RenderPass render_pass;
 		/// List of framebuffers, one for each output image. These also haven't been re-ordered in any way FYI.
 		std::vector<vk2::Framebuffer> output_framebuffers;
+	};
+
+	class GraphicsPipelineManager
+	{
+	public:
+		GraphicsPipelineManager(const ShaderInfo& sinfo, const vk2::DescriptorLayout& dlayout, const vk2::RenderPass& render_pass, std::size_t frame_in_flight_count, tz::Vec2ui viewport_dimensions);
+	private:
+		vk2::Shader make_shader(const vk2::LogicalDevice& ldev, const ShaderInfo& sinfo) const;
+		vk2::PipelineLayout make_pipeline_layout(const vk2::DescriptorLayout& dlayout, std::size_t frame_in_flight_count) const;
+
+		vk2::Shader shader;
+		vk2::PipelineLayout pipeline_layout;
+		vk2::GraphicsPipeline graphics_pipeline;
 	};
 
 	/**
@@ -225,6 +249,14 @@ namespace tz::gl2
 		 * Retrieve the current render output. This may return nullptr, meaning that the main window will be rendered into.
 		 */
 		IOutput* get_output();
+		/**
+		 * Read/write information about the shader that will be built for the renderer.
+		 */
+		ShaderInfo& shader();
+		/**
+		 * Read/write information about the shader that will be built for the renderer.
+		 */
+		const ShaderInfo& shader() const;
 	private:
 		/// Stores all provided inputs. It is assumed that their lifetime is valid for the entirety of this helper struct's lifetime.
 		std::vector<IInput*> inputs = {};
@@ -232,6 +264,8 @@ namespace tz::gl2
 		std::vector<IResource*> resources = {};
 		/// Output. Can be null, which defaults to rendering into the main window.
 		IOutput* output = nullptr;
+		/// Describes the shader sources used.
+		ShaderInfo shader_info;
 	};
 	static_assert(RendererInfoType<RendererInfoVulkan>);
 
@@ -320,6 +354,7 @@ namespace tz::gl2
 		ResourceStorage resources;
 		/// Handles output image component logic, and exposes a nice list of images/views/framebuffers into which we can render into without having to worry about the complicated logic behind the output wrangling.
 		OutputManager output;
+		GraphicsPipelineManager pipeline;
 	};
 
 	static_assert(RendererType<RendererVulkan>);

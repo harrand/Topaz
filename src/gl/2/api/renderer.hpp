@@ -5,6 +5,7 @@
 #include "gl/2/api/output.hpp"
 #include "gl/2/api/resource.hpp"
 #include "gl/2/api/component.hpp"
+#include "gl/2/api/shader.hpp"
 #include "core/containers/basic_list.hpp"
 #include <concepts>
 namespace tz::gl2
@@ -24,6 +25,8 @@ namespace tz::gl2
 		{t.add_resource(resource)} -> std::same_as<ResourceHandle>;
 		{t.set_output(output)} -> std::same_as<void>;
 		{t.get_output()} -> std::convertible_to<const IOutput*>;
+
+		{t.shader()} -> ShaderInfoType;
 	};
 
 	/**
