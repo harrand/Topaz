@@ -657,12 +657,12 @@ namespace tz::gl2
 				.residency = vk2::MemoryResidency::CPU
 			}};
 		});
-		this->command.do_scratch_operations([this, &staging_buffers, &staging_image_buffers, &buffer_components, &image_components](vk2::CommandBufferRecording& recording)
+		this->command.do_scratch_operations([&staging_buffers, &staging_image_buffers, &buffer_components, &image_components](vk2::CommandBufferRecording& recording)
 		{
 			// Finally, upload data for static resources.
 			for(std::size_t i = 0; i < buffer_components.size(); i++)
 			{
-				IResource* res = this->get_resource(static_cast<tz::HandleValue>(i));
+				IResource* res = buffer_components[i]->get_resource();
 				tz_assert(res->get_type() == ResourceType::Buffer, "Expected ResourceType of buffer, but is not a buffer. Please submit a bug report.");
 				if(res->get_access() != ResourceAccess::StaticFixed)
 				{
@@ -685,8 +685,7 @@ namespace tz::gl2
 			}
 			for(std::size_t i = 0; i < image_components.size(); i++)
 			{
-				std::size_t idx = i + buffer_components.size();
-				IResource* res = this->get_resource(static_cast<tz::HandleValue>(idx));
+				IResource* res = image_components[i]->get_resource();
 				tz_assert(res->get_type() == ResourceType::Image, "Expected ResourceType of Texture, but is not a texture. Please submit a bug report.");
 				if(res->get_access() != ResourceAccess::StaticFixed)
 				{

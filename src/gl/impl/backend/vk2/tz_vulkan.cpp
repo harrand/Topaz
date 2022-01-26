@@ -1,11 +1,12 @@
 #if TZ_VULKAN
 #include "gl/impl/backend/vk2/tz_vulkan.hpp"
-#include "core/tz.hpp"
 #include "gl/impl/backend/vk2/extensions.hpp"
-#include "GLFW/glfw3.h"
+#include "core/tz.hpp"
+#include "core/report.hpp"
 #include <algorithm>
 #include <utility>
 #include <cstring>
+#include "GLFW/glfw3.h"
 
 namespace tz::gl::vk2
 {
@@ -23,6 +24,7 @@ namespace tz::gl::vk2
 #endif
 			.window = &tz::window()
 		}};
+		tz_report("Vulkan v%u.%u Initialised (%s)", vulkan_version.major, vulkan_version.minor, app_type == tz::ApplicationType::Headless ? "Headless" : "Windowed");
 	}
 
 	void terminate()
@@ -30,6 +32,7 @@ namespace tz::gl::vk2
 		tz_assert(inst != nullptr, "Not initialised");
 		delete inst;
 		inst = nullptr;
+		tz_report("Vulkan v%u.%u Terminated", vulkan_version.major, vulkan_version.minor);
 	}
 
 	const VulkanInstance& get()

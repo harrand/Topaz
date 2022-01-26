@@ -13,7 +13,7 @@ namespace tz::gl::ogl
 		tz_assert(inst == nullptr, "Already initialised");
 		inst = new OpenGLInstance{game_info};
 		tz::Version v = ogl::get_opengl_version();
-		tz_report("OpenGL v%u.%u, Initialised (Headless)", v.major, v.minor);
+		tz_report("OpenGL v%u.%u Initialised (Headless)", v.major, v.minor);
 	}
 
 	void initialise(tz::GameInfo game_info)
@@ -29,7 +29,8 @@ namespace tz::gl::ogl
 		tz_assert(inst != nullptr, "Not initialised");
 		delete inst;
 		inst = nullptr;
-		tz_report("OpenGL Terminated");
+		tz::Version v = ogl::get_opengl_version();
+		tz_report("OpenGL v%u.%u Terminated", v.major, v.minor);
 	}
 
 	OpenGLInstance& get()
