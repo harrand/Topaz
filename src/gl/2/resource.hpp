@@ -69,6 +69,15 @@ namespace tz::gl2
 		 * @return ImageResource containing uninitialised image-data of the given format and dimensions.
 		 */
 		static ImageResource from_uninitialised(ImageFormat format, tz::Vec2ui dimensions);
+		/**
+		 * Create an ImageResource using values existing in memory.
+		 * @param format ImageFormat of the data. It must not be ImageFormat::Undefined.
+		 * @param dimensions {width, height} of the image, in pixels.
+		 * @param byte_data Array of bytes, length equal to `tz::gl2::pixel_size_bytes(format) * dimensions[0] * dimensions[1]`
+		 * @return ImageResource containing an image using the provided data.
+		 * @pre `byte_data` exactly matches the number of bytes expected in the explanation above. Otherwise, the behaviour is undefined.
+		 */
+		static ImageResource from_memory(ImageFormat format, tz::Vec2ui dimensions, std::span<const std::byte> byte_data);
 		virtual std::unique_ptr<IResource> unique_clone() const final;
 		ImageFormat get_format() const;
 		tz::Vec2ui get_dimensions() const;

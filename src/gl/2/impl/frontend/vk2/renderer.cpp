@@ -1,5 +1,7 @@
-#include "gl/impl/backend/vk2/fixed_function.hpp"
+#include "gl/2/declare/image_format.hpp"
 #if TZ_VULKAN
+#include "gl/impl/backend/vk2/fixed_function.hpp"
+#include "gl/impl/backend/vk2/gpu_mem.hpp"
 #include "gl/impl/backend/vk2/descriptors.hpp"
 #include "gl/impl/backend/vk2/image_view.hpp"
 #include "gl/2/impl/frontend/vk2/renderer.hpp"
@@ -10,6 +12,7 @@ namespace tz::gl2
 {
 	using namespace tz::gl;
 
+//--------------------------------------------------------------------------------------------------
 	ResourceStorage::ResourceStorage(std::span<const IResource* const> resources, const vk2::LogicalDevice& ldev):
 	AssetStorage<IResource>(resources),
 	components(),
@@ -159,6 +162,11 @@ namespace tz::gl2
 		return this->descriptor_layout;
 	}
 
+	std::span<const vk2::DescriptorSet> ResourceStorage::get_descriptor_sets() const
+	{
+		return this->descriptors.sets;
+	}
+
 //--------------------------------------------------------------------------------------------------
 	unsigned int RendererInfoVulkan::input_count() const
 	{
@@ -283,6 +291,16 @@ namespace tz::gl2
 		});
 
 		this->render_pass = rbuilder.with_subpass(sbuilder.build()).build();
+
+		for(vk2::ImageView& output_view : this->output_imageviews)
+		{
+			this->output_framebuffers.push_back
+			(vk2::FramebufferInfo{
+				.render_pass = &this->render_pass,
+				.attachments = {&output_view},
+				.dimensions = output_view.get_image().get_dimensions()
+			});
+		}
 	}
 
 	const vk2::RenderPass& OutputManager::get_render_pass() const
@@ -353,6 +371,11 @@ namespace tz::gl2
 		//tz_assert(dlayout.get_device() == render_pass.get_device(), "");
 	}
 
+	const vk2::GraphicsPipeline& GraphicsPipelineManager::get_pipeline() const
+	{
+		return this->graphics_pipeline;
+	}
+
 	vk2::Shader GraphicsPipelineManager::make_shader(const vk2::LogicalDevice& ldev, const ShaderInfo& sinfo) const
 	{
 		std::vector<char> vtx_src, frg_src, cmp_src;
@@ -421,13 +444,121 @@ namespace tz::gl2
 
 //--------------------------------------------------------------------------------------------------
 
-	RendererVulkan::RendererVulkan(RendererInfoVulkan& info, const RendererDeviceInfoVulkan& device_info):
-	inputs(info.get_inputs()),
-	resources(info.get_resources(), *device_info.device),
-	output(info.get_output(), device_info.output_images, *device_info.device),
-	pipeline(info.shader(), this->resources.get_descriptor_layout(), this->output.get_render_pass(), RendererVulkan::max_frames_in_flight, output.get_output_dimensions())
+	CommandProcessor::CommandProcessor(vk2::LogicalDevice& ldev, std::size_t frame_in_flight_count, OutputTarget output_target, std::span<vk2::Framebuffer> output_framebuffers):
+	requires_present(output_target == OutputTarget::Window),
+	graphics_queue(ldev.get_hardware_queue
+	({
+		.field = {vk2::QueueFamilyType::Graphics},
+		.present_support = this->requires_present
+	})),
+	command_pool
+	({
+		.queue = this->graphics_queue
+	}),
+	commands(this->command_pool.allocate_buffers
+	({
+		.buffer_count = static_cast<std::uint32_t>(frame_in_flight_count + 1)
+	})),
+	frame_in_flight_count(frame_in_flight_count),
+	image_semaphores(),
+	render_work_semaphores(),
+	in_flight_fences(),
+	images_in_flight(this->frame_in_flight_count, nullptr)
 	{
-		int x = 5;
+		tz_assert(output_framebuffers.size() == this->frame_in_flight_count, "Provided incorrect number of output framebuffers. We must have enough framebuffers for each frame we have in flight. Provided %zu framebuffers, but need %zu because that's how many frames we have in flight.", output_framebuffers.size(), this->frame_in_flight_count);
+		tz_assert(this->commands.success(), "Failed to allocate from CommandPool");
+		for(std::size_t i = 0; i < this->frame_in_flight_count; i++)
+		{
+			this->image_semaphores.emplace_back(ldev);
+			this->render_work_semaphores.emplace_back(ldev);
+			this->in_flight_fences.emplace_back
+			(vk2::FenceInfo{
+				.device = &ldev,
+				.initially_signalled = true
+			});
+		}
+	}
+
+	std::span<const vk2::CommandBuffer> CommandProcessor::get_render_command_buffers() const
+	{
+		return {this->commands.buffers.begin(), this->frame_in_flight_count};
+	}
+
+	std::span<vk2::CommandBuffer> CommandProcessor::get_render_command_buffers()
+	{
+		return {this->commands.buffers.begin(), this->frame_in_flight_count};
+	}
+
+	void CommandProcessor::do_render_work(vk2::Swapchain* maybe_swapchain)
+	{
+		if(this->requires_present)
+		{
+			tz_assert(maybe_swapchain != nullptr, "Trying to do render work with presentation, but no Swapchain provided. Please submit a bug report.");
+			vk2::Swapchain& swapchain = *maybe_swapchain;
+			// Submit & Present
+			this->in_flight_fences[this->current_frame].wait_until_signalled();
+			this->output_image_index = swapchain.acquire_image
+			({
+				.signal_semaphore = &this->image_semaphores[current_frame]
+			}).image_index;
+
+			const vk2::Fence*& target_image = this->images_in_flight[this->output_image_index];
+			if(target_image != nullptr)
+			{
+				target_image->wait_until_signalled();
+			}
+			target_image = &this->in_flight_fences[this->output_image_index];
+
+			this->in_flight_fences[this->current_frame].unsignal();
+			this->graphics_queue->submit
+			({
+				.command_buffers = {&this->get_render_command_buffers()[this->output_image_index]},
+				.waits =
+				{
+					vk2::hardware::Queue::SubmitInfo::WaitInfo
+					{
+						.wait_semaphore = &this->image_semaphores[this->current_frame],
+						.wait_stage = vk2::PipelineStage::ColourAttachmentOutput
+					}
+				},
+				.signal_semaphores = {&this->render_work_semaphores[this->current_frame]},
+				.execution_complete_fence = &this->in_flight_fences[this->current_frame]
+			});
+
+			vk2::hardware::Queue::PresentResult present_res = this->graphics_queue->present
+			({
+				.wait_semaphores = {&this->render_work_semaphores[this->current_frame]},
+				.swapchain = maybe_swapchain,
+				.swapchain_image_index = this->output_image_index
+			});
+			tz_assert(present_res == vk2::hardware::Queue::PresentResult::Success || present_res == vk2::hardware::Queue::PresentResult::Success_Suboptimal, "Presentation Failed.");
+			this->current_frame = (this->current_frame + 1) % this->frame_in_flight_count;
+		}
+		else
+		{
+			// Headlessly
+			tz_error("Headless rendering not yet implemented.");
+		}
+	}
+
+//--------------------------------------------------------------------------------------------------
+
+	RendererVulkan::RendererVulkan(RendererInfoVulkan& info, const RendererDeviceInfoVulkan& device_info):
+	ldev(device_info.device),
+	inputs(info.get_inputs()),
+	resources(info.get_resources(), *this->ldev),
+	output(info.get_output(), device_info.output_images, *this->ldev),
+	pipeline(info.shader(), this->resources.get_descriptor_layout(), this->output.get_render_pass(), RendererVulkan::max_frames_in_flight, output.get_output_dimensions()),
+	command(*this->ldev, RendererVulkan::max_frames_in_flight, info.get_output() != nullptr ? info.get_output()->get_target() : OutputTarget::Window, this->output.get_output_framebuffers()),
+	maybe_swapchain(device_info.maybe_swapchain)
+	{
+		this->setup_static_resources();
+		this->setup_render_commands();
+	}
+
+	RendererVulkan::~RendererVulkan()
+	{
+		this->ldev->wait_until_idle();
 	}
 
 	unsigned int RendererVulkan::input_count() const
@@ -469,6 +600,173 @@ namespace tz::gl2
 	{
 		return this->resources.get_component(handle);
 	}
+
+	void RendererVulkan::render()
+	{
+		this->command.do_render_work(this->maybe_swapchain);
+	}
+
+	void RendererVulkan::setup_static_resources()
+	{
+		// Create staging buffers for each buffer and texture resource, and then fill the data with the resource data.
+		std::vector<BufferComponentVulkan*> buffer_components;
+		std::vector<ImageComponentVulkan*> image_components;
+		for(std::size_t i = 0; i < this->resource_count(); i++)
+		{
+			IComponent* icomp = this->get_component(static_cast<tz::HandleValue>(i));
+			switch(icomp->get_resource()->get_type())
+			{
+				case ResourceType::Buffer:
+					buffer_components.push_back(static_cast<BufferComponentVulkan*>(icomp));
+				break;
+				case ResourceType::Image:
+					image_components.push_back(static_cast<ImageComponentVulkan*>(icomp));
+				break;
+				default:
+					tz_error("Unknown ResourceType.");
+				break;
+			}
+		}
+
+		// Staging buffers.
+		std::vector<vk2::Buffer> staging_buffers;
+		staging_buffers.reserve(buffer_components.size());
+		std::vector<vk2::Buffer> staging_image_buffers;
+		staging_image_buffers.reserve(image_components.size());
+		// Fill buffers with resource data.
+		std::transform(buffer_components.begin(), buffer_components.end(), std::back_inserter(staging_buffers),
+		[](const BufferComponentVulkan* buf)->vk2::Buffer
+		{
+			return
+			{{
+				.device = &buf->vk_get_buffer().get_device(),
+				.size_bytes = buf->size(),
+				.usage = {vk2::BufferUsage::TransferSource},
+				.residency = vk2::MemoryResidency::CPU
+			}};
+		});
+		// Same with images.
+		std::transform(image_components.begin(), image_components.end(), std::back_inserter(staging_image_buffers),
+		[](const ImageComponentVulkan* img)->vk2::Buffer
+		{
+			return
+			{{
+				.device = &img->vk_get_image().get_device(),
+				.size_bytes = tz::gl2::pixel_size_bytes(img->get_format()) * img->get_dimensions()[0] * img->get_dimensions()[1],
+				.usage = {vk2::BufferUsage::TransferSource},
+				.residency = vk2::MemoryResidency::CPU
+			}};
+		});
+		this->command.do_scratch_operations([this, &staging_buffers, &staging_image_buffers, &buffer_components, &image_components](vk2::CommandBufferRecording& recording)
+		{
+			// Finally, upload data for static resources.
+			for(std::size_t i = 0; i < buffer_components.size(); i++)
+			{
+				IResource* res = this->get_resource(static_cast<tz::HandleValue>(i));
+				tz_assert(res->get_type() == ResourceType::Buffer, "Expected ResourceType of buffer, but is not a buffer. Please submit a bug report.");
+				if(res->get_access() != ResourceAccess::StaticFixed)
+				{
+					continue;
+				}
+
+				// Now simply write the data straight in.
+				{
+					void* ptr = staging_buffers[i].map();
+					std::memcpy(ptr, res->data().data(), res->data().size_bytes());
+					staging_buffers[i].unmap();
+				}
+
+				// Record the command to transfer to the buffer resource.
+				recording.buffer_copy_buffer
+				({
+					.src = &staging_buffers[i],
+					.dst = &buffer_components[i]->vk_get_buffer()
+				});
+			}
+			for(std::size_t i = 0; i < image_components.size(); i++)
+			{
+				std::size_t idx = i + buffer_components.size();
+				IResource* res = this->get_resource(static_cast<tz::HandleValue>(idx));
+				tz_assert(res->get_type() == ResourceType::Image, "Expected ResourceType of Texture, but is not a texture. Please submit a bug report.");
+				if(res->get_access() != ResourceAccess::StaticFixed)
+				{
+					continue;
+				}
+				// Now simply write the data straight in.
+				{
+					void* ptr = staging_image_buffers[i].map();
+					std::memcpy(ptr, res->data().data(), res->data().size_bytes());
+					staging_image_buffers[i].unmap();
+				}
+				// Record the command to transfer to the texture resource.
+				// Image will initially be in undefined layout. We need to:
+				// - Transition the texture component to TransferDestination
+				// - Transfer from the staging texture buffer
+				// - Transition the texture component to ShaderResource so it can be used in the shader.
+				recording.transition_image_layout
+				({
+					.image = &image_components[i]->vk_get_image(),
+					.target_layout = vk2::ImageLayout::TransferDestination,
+					.source_access = {vk2::AccessFlag::None},
+					.destination_access = {vk2::AccessFlag::TransferOperationWrite},
+					.source_stage = vk2::PipelineStage::Top,
+					.destination_stage = vk2::PipelineStage::TransferCommands,
+					.image_aspects = {vk2::ImageAspectFlag::Colour}
+				});
+				recording.buffer_copy_image
+				({
+					.src = &staging_image_buffers[i],
+					.dst = &image_components[i]->vk_get_image(),
+					.image_aspects = {vk2::ImageAspectFlag::Colour}
+				});
+				recording.transition_image_layout
+				({
+					.image = &image_components[i]->vk_get_image(),
+					.target_layout = vk2::ImageLayout::ShaderResource,
+					.source_access = {vk2::AccessFlag::TransferOperationWrite},
+					.destination_access = {vk2::AccessFlag::ShaderResourceRead},
+					.source_stage = vk2::PipelineStage::TransferCommands,
+					.destination_stage = vk2::PipelineStage::FragmentShader,
+					.image_aspects = {vk2::ImageAspectFlag::Colour}
+				});
+
+			}
+		});
+	}
+
+	void RendererVulkan::setup_render_commands()
+	{
+		this->command.set_rendering_commands([this](vk2::CommandBufferRecording& recording, std::size_t framebuffer_id)
+		{
+			tz_assert(framebuffer_id < this->output.get_output_framebuffers().size(), "Attempted to retrieve output framebuffer at index %zu, but there are only %zu framebuffers available. Please submit a bug report.", framebuffer_id, this->output.get_output_framebuffers().size());
+			vk2::CommandBufferRecording::RenderPassRun run{this->output.get_output_framebuffers()[framebuffer_id], recording};
+			recording.bind_pipeline
+			({
+				.pipeline = &this->pipeline.get_pipeline(),
+				.pipeline_context = vk2::PipelineContext::Graphics
+			});
+			tz::BasicList<const vk2::DescriptorSet*> sets;
+			std::span<const vk2::DescriptorSet> resource_sets = this->resources.get_descriptor_sets();
+			sets.resize(resource_sets.size());
+			std::transform(resource_sets.begin(), resource_sets.end(), sets.begin(), [](const vk2::DescriptorSet& set){return &set;});
+			recording.bind_descriptor_sets
+			({
+				.pipeline_layout = this->pipeline.get_pipeline().get_info().pipeline_layout,
+				.context = vk2::PipelineContext::Graphics,
+				.descriptor_sets = sets,
+				.first_set_id = 0
+			});
+			recording.draw
+			({
+				// TODO: Don't hardcode
+				.vertex_count = 3,
+				.instance_count = 1,
+				.first_vertex = 0,
+				.first_instance = 0
+			});
+		});
+	}
+
 }
 
 #endif // TZ_VULKAN

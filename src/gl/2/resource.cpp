@@ -46,6 +46,15 @@ namespace tz::gl2
 		return {resource_data, 0, format, dimensions};
 	}
 
+	ImageResource ImageResource::from_memory(ImageFormat format, tz::Vec2ui dimensions, std::span<const std::byte> byte_data)
+	{
+		std::size_t pixel_size = tz::gl2::pixel_size_bytes(format);
+		std::vector<std::byte> resource_data(pixel_size * dimensions[0] * dimensions[1]);
+		std::copy(byte_data.begin(), byte_data.end(), resource_data.begin());
+		// TODO: Sanity check? Is it correct to just not give a shit about alignment here?
+		return {resource_data, 0, format, dimensions};
+	}
+
 	std::unique_ptr<IResource> ImageResource::unique_clone() const
 	{
 		return std::make_unique<ImageResource>(*this);

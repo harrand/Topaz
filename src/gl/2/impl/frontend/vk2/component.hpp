@@ -17,6 +17,7 @@ namespace tz::gl2
 		virtual IResource* get_resource() final;
 		// Satisfy BufferComponentType
 		std::size_t size() const;
+		const vk2::Buffer& vk_get_buffer() const;
 		vk2::Buffer& vk_get_buffer();
 	private:
 		vk2::Buffer make_buffer(const vk2::LogicalDevice& ldev) const;
@@ -35,6 +36,7 @@ namespace tz::gl2
 		// Satisfy ImageComponentType
 		tz::Vec2ui get_dimensions() const;
 		ImageFormat get_format() const;
+		const vk2::Image& vk_get_image() const;
 		vk2::Image& vk_get_image();
 	private:
 		vk2::Image make_image(const vk2::LogicalDevice& ldev) const;

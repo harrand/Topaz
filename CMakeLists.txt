@@ -155,6 +155,7 @@ add_library(topaz
 	src/gl/2/impl/frontend/vk2/device.hpp
 	src/gl/2/impl/frontend/vk2/renderer.cpp
 	src/gl/2/impl/frontend/vk2/renderer.hpp
+	src/gl/2/impl/frontend/vk2/renderer.inl
 
 	# tz::gl (OpenGL Frontend)
 	src/gl/impl/frontend/ogl/component.cpp

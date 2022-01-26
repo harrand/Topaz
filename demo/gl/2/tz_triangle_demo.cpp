@@ -15,7 +15,30 @@ int main()
 	{
 		tz::gl2::Device dev;
 
-		tz::gl2::ImageResource img = tz::gl2::ImageResource::from_uninitialised(tz::gl2::ImageFormat::RGBA32, {64u, 64u});
+		// TODOOO: Don't use uninitialised data. During testing it appeared completely black, so don't yet see anything!
+		std::vector<unsigned char> imgdata = 
+		{{
+			0b0000'0000,
+			0b0000'0000,
+			0b1111'1111,
+			0b1111'1111,
+
+			0b1111'1111,
+			0b0000'0000,
+			0b0000'0000,
+			0b1111'1111,
+
+			0b0000'0000,
+			0b1111'1111,
+			0b0000'0000,
+			0b1111'1111,
+
+			0b0000'0000,
+			0b0000'0000,
+			0b1111'1111,
+			0b1111'1111
+		}};
+		tz::gl2::ImageResource img = tz::gl2::ImageResource::from_memory(tz::gl2::ImageFormat::RGBA32, {2u, 2u}, std::as_bytes(static_cast<std::span<unsigned char>>(imgdata)));
 
 		tz::gl2::RendererInfo rinfo;
 		rinfo.shader().set_shader(tz::gl2::ShaderStage::Vertex, GetImportedShaderSource(tz_triangle_demo_vertex));

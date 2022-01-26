@@ -13,6 +13,11 @@
 #include "gl/impl/backend/vk2/descriptors.hpp"
 #include "gl/impl/backend/vk2/pipeline_layout.hpp"
 #include "gl/impl/backend/vk2/graphics_pipeline.hpp"
+#include "gl/impl/backend/vk2/hardware/queue.hpp"
+#include "gl/impl/backend/vk2/command.hpp"
+#include "gl/impl/backend/vk2/semaphore.hpp"
+#include "gl/impl/backend/vk2/fence.hpp"
+#include "gl/impl/backend/vk2/swapchain.hpp"
 
 namespace tz::gl2
 {
@@ -92,6 +97,7 @@ namespace tz::gl2
 		 * Retrieve the descriptor layout representing the shader resources used by the renderer.
 		 */
 		const vk2::DescriptorLayout& get_descriptor_layout() const;
+		std::span<const vk2::DescriptorSet> get_descriptor_sets() const;
 	private:
 		/// Storage for all cloned resource's components.
 		std::vector<std::unique_ptr<IComponent>> components;
@@ -173,10 +179,23 @@ namespace tz::gl2
 		std::vector<vk2::Framebuffer> output_framebuffers;
 	};
 
+	/**
+	 * @ingroup tz_gl2_graphicsapi_vk_frontend_renderer
+	 * Retrieves the output and resource storage state and creates a shader and graphics pipeline to be used to render everything. If changes occur in the output/resource state then this is responsible for reflecting such changes in the pipeline if necessary.
+	 */
 	class GraphicsPipelineManager
 	{
 	public:
+		/**
+		 * Construct the pipeline manager using all the necessary shader sources aswell as resource state and output information.
+		 */
 		GraphicsPipelineManager(const ShaderInfo& sinfo, const vk2::DescriptorLayout& dlayout, const vk2::RenderPass& render_pass, std::size_t frame_in_flight_count, tz::Vec2ui viewport_dimensions);
+
+		/**
+		 * Retrieve the vulkan graphics pipeline which will be used for rendering.
+		 * @return Graphics pipeline which should be bound when rendering.
+		 */
+		const vk2::GraphicsPipeline& get_pipeline() const;
 	private:
 		vk2::Shader make_shader(const vk2::LogicalDevice& ldev, const ShaderInfo& sinfo) const;
 		vk2::PipelineLayout make_pipeline_layout(const vk2::DescriptorLayout& dlayout, std::size_t frame_in_flight_count) const;
@@ -184,6 +203,75 @@ namespace tz::gl2
 		vk2::Shader shader;
 		vk2::PipelineLayout pipeline_layout;
 		vk2::GraphicsPipeline graphics_pipeline;
+	};
+
+	/**
+	 * @ingroup tz_gl2_graphicsapi_vk_frontend_renderer
+	 * Responsible for all required command-buffers and drawing/scratch commands. The Renderer should not need to worry about command pools/buffers at all, but instead ask the command processor to schedule work and it can do so.
+	 */
+	class CommandProcessor
+	{
+	public:
+		/**
+		 * Construct a command processor, which will render into the provided output framebuffers. A command buffer will be created for each frame-in-flight, aswell as an extra buffer for scratch commands.
+		 * @param ldev LogicalDevice used to create command state.
+		 * @param frame_in_flight_count Number of frames to be doing work on in parallel.
+		 * @param output_target Describes what it is we are actually trying to render into, i.e a Window of offscreen Image.
+		 * @param output_framebuffers Array of framebuffers belonging to the output manager which will act as our render targets. The array should have length equal to `frame_in_flight_count`.
+		 * @pre `output_framebuffers.size() == frame_in_flight_count`, otherwise the behaviour is undefined.
+		 */
+		CommandProcessor(vk2::LogicalDevice& ldev, std::size_t frame_in_flight_count, OutputTarget output_target, std::span<vk2::Framebuffer> output_framebuffers);
+		/**
+		 * Retrieve a list of all command buffers which will be used for rendering. Each command buffer is guaranteed to have the exact same commands recorded within them.
+		 * @return Array of command buffers, length matching the number of frames-in-flight.
+		 */
+		std::span<const vk2::CommandBuffer> get_render_command_buffers() const;
+		/**
+		 * Retrieve a list of all command buffers which will be used for rendering. Each command buffer is guaranteed to have the exact same commands recorded within them.
+		 * @return Array of command buffers, length matching the number of frames-in-flight.
+		 */
+		std::span<vk2::CommandBuffer> get_render_command_buffers();
+		/**
+		 * Record all vulkan commands invoked in the provided function into the scratch command buffer, and submit it instantly. This function is synchronous so is guaranteed to return once the work is all done.
+		 * @param record_commands Function which will be invoked with the scratch buffer recording. The function should use the provided recording to invoke vulkan commands.
+		 */
+		void do_scratch_operations(tz::Action<vk2::CommandBufferRecording&> auto record_commands);
+		/**
+		 * Record all vulkan commands invoked in the provided function into each of the rendering command buffers. The index of the current rendering command buffer is also passed to the provided function.
+		 * @param record_commands Function which will be invoked with a recording for each render command buffer, aswell as the index of the command buffer being recorded.
+		 */
+		void set_rendering_commands(tz::Action<vk2::CommandBufferRecording&, std::size_t> auto record_commands);
+		/**
+		 * Submit the next render command buffer. If the output is presentable, it will also be presented. This function is asynchronous so you should not expect the submit/present work to be done upon return.
+		 * @param maybe_swapchain Pointer to the swapchain which will be presented to. If the renderer is not expected to perform any presentation, this can be nullptr.
+		 * @pre `maybe_swapchain` must not be nullptr if the renderer is expected to present the result of the submitted work to the window.
+		 * @note Headless rendering is not yet implemented.
+		 */
+		void do_render_work(vk2::Swapchain* maybe_swapchain);
+	private:
+		/// Stores whether we expect to present submitted results to a swapchain.
+		bool requires_present;
+		/// Hardware queue which will be used for the render work submission (and presentation, if we need to do so).
+		vk2::hardware::Queue* graphics_queue;
+		/// Pool which handles allocation of command buffers.
+		vk2::CommandPool command_pool;
+		/// Stores allocated command buffers.
+		vk2::CommandPool::AllocationResult commands;
+		/// Stores the number of frames we expect to have in flight.
+		std::size_t frame_in_flight_count;
+		/// List of semaphores, one for each frame in flight. Represents when a swapchain image is available.
+		std::vector<vk2::BinarySemaphore> image_semaphores;
+		/// List of semaphores, one for each frame in flight. Represents when submitted render work for a frame has been completed (does not include presentation).
+		std::vector<vk2::BinarySemaphore> render_work_semaphores;
+		/// List of fences, one for each frame in flight. Represents when all work for a given frame (submission + presentation) has completed and the frame is considered 'fully complete'. 
+		std::vector<vk2::Fence> in_flight_fences;
+		/// Helper list which refers to each in-flight-fence, but in an order useful to the swapchain image acquisition logic.
+		std::vector<const vk2::Fence*> images_in_flight;
+		/// The image index most recently acquired from the swapchain.
+		std::uint32_t output_image_index = 0;
+		/// Represents the current index of the frame (between 0 and frame_in_flight_count - 1).
+		std::size_t current_frame = 0;
+
 	};
 
 	/**
@@ -298,6 +386,7 @@ namespace tz::gl2
 		 * @param device_info A renderer is always created by a Device - This constructor is not invoked manually. When the Device does this, it provides some information about the internals; this.
 		 */
 		RendererVulkan(RendererInfoVulkan& info, const RendererDeviceInfoVulkan& device_info);
+		~RendererVulkan();
 		// Satisfies RendererType
 		/**
 		 * Retrieve the number of inputs.
@@ -346,8 +435,12 @@ namespace tz::gl2
 		/**
 		 * Render all inputs that were activated by the most recently-provided draw-list. If no draw-list was ever provided, this will render every input. Note: This is not true yet lmao - it does fuck all.
 		 */
-		void render(){}
+		void render();
 	private:
+		void setup_static_resources();
+		void setup_render_commands();
+
+		vk2::LogicalDevice* ldev;
 		/// Stores copies of all provided inputs and exposes them in a neater way.
 		InputStorage inputs;
 		/// Stores copies of all provided resources, and deals with all the vulkan descriptor magic. Exposes everything relevant to us when we want to draw.
@@ -355,10 +448,13 @@ namespace tz::gl2
 		/// Handles output image component logic, and exposes a nice list of images/views/framebuffers into which we can render into without having to worry about the complicated logic behind the output wrangling.
 		OutputManager output;
 		GraphicsPipelineManager pipeline;
+		CommandProcessor command;
+		vk2::Swapchain* maybe_swapchain;
 	};
 
 	static_assert(RendererType<RendererVulkan>);
 }
 
+#include "gl/2/impl/frontend/vk2/renderer.inl"
 #endif // TZ_VULKAN
 #endif // TOPAZ_GL2_IMPL_FRONTEND_VK2_RENDERER_HPP
