@@ -29,7 +29,6 @@ macro(add_shader_vulkan)
 		VERBATIM)
 
 	set_source_files_properties(${processed_shader_path} ${spv_path} PROPERTIES GENERATED TRUE)
-	target_sources(${ADD_SHADER_TARGET} PRIVATE ${processed_shader_path} ${spv_path})
 	export_shader_header(
 		FILE_NAME ${spv_path}
 	)
