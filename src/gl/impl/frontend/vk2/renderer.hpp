@@ -63,12 +63,6 @@ namespace tz::gl2
 
 	/**
 	 * @ingroup tz_gl2_graphicsapi_vk_frontend_renderer
-	 * Copies all input data from a RendererVulkan when it is created, and copies it all into its own memory so that the user doesn't need to worry about input lifetimes. Also exposes these copied inputs to the RendererVulkan.
-	 */
-	using InputStorage = AssetStorage<IInput>;
-
-	/**
-	 * @ingroup tz_gl2_graphicsapi_vk_frontend_renderer
 	 * Copies all resource data from a RendererVulkan when it is created, and copies it into its own memory so that the user doesn't need to worry about resource lifetimes. Also exposes the copied resources to the RendererVulkan.
 	 */
 	class ResourceStorage : public AssetStorage<IResource>
@@ -248,6 +242,7 @@ namespace tz::gl2
 		 * @note Headless rendering is not yet implemented.
 		 */
 		void do_render_work(vk2::Swapchain* maybe_swapchain);
+		void wait_pending_commands_complete();
 	private:
 		/// Stores whether we expect to present submitted results to a swapchain.
 		bool requires_present;
@@ -284,20 +279,6 @@ namespace tz::gl2
 		RendererInfoVulkan() = default;
 		// Satisfies RendererInfoType.
 		/**
-		 * Retrieve the number of inputs.
-		 */
-		unsigned int input_count() const;
-		/**
-		 * Retrieve the input corresponding to the given handle.
-		 * @param Handle handle returned from a previous call to `add_input`. If this handle came from a different RendererInfo, the behaviour is undefined.
-		 * @return Pointer to the input.
-		 */
-		const IInput* get_input(InputHandle handle);
-		/**
-		 * Retrieve a span containing all of the specified inputs. Size of the span is guaranteed to be equal to @ref input_count()
-		 */
-		std::span<const IInput* const> get_inputs() const;
-		/**
 		 * Retrieve the number of resources.
 		 */
 		unsigned int resource_count() const;
@@ -311,13 +292,6 @@ namespace tz::gl2
 		 * Retrieve a span containing all of the specified resources. Size of the span is guaranteed to be equal to @ref resource_count()
 		 */
 		std::span<const IResource* const> get_resources() const;
-		/**
-		 * Add a new input, which will be used by a Renderer which is created from this helper struct.
-		 *
-		 * @param input Reference to an existing input. This will be copied by the Renderer upon construction, so its lifetime only needs to last until the desired Renderer has been created.
-		 * @return Handle corresponding to the input. If you want to retrieve the input later, you should keep ahold of this handle.
-		 */
-		InputHandle add_input(IInput& input);
 		/**
 		 * Add a new resource, which will be used by a Renderer which is created from this helper struct.
 		 *
@@ -346,8 +320,6 @@ namespace tz::gl2
 		 */
 		const ShaderInfo& shader() const;
 	private:
-		/// Stores all provided inputs. It is assumed that their lifetime is valid for the entirety of this helper struct's lifetime.
-		std::vector<IInput*> inputs = {};
 		/// Stores all provided resources. It is assumed that their lifetime is valid for the entirety of this helper struct's lifetime.
 		std::vector<IResource*> resources = {};
 		/// Output. Can be null, which defaults to rendering into the main window.
@@ -382,28 +354,12 @@ namespace tz::gl2
 		static constexpr std::size_t max_frames_in_flight = 2;
 		/**
 		 * Create a new Renderer.
-		 * @param info User-exposed class which describes how many inputs, resources etc. we have and a high-level description of where we expect to render into.
+		 * @param info User-exposed class which describes how many resources etc. we have and a high-level description of where we expect to render into.
 		 * @param device_info A renderer is always created by a Device - This constructor is not invoked manually. When the Device does this, it provides some information about the internals; this.
 		 */
 		RendererVulkan(RendererInfoVulkan& info, const RendererDeviceInfoVulkan& device_info);
 		~RendererVulkan();
 		// Satisfies RendererType
-		/**
-		 * Retrieve the number of inputs.
-		 */
-		unsigned int input_count() const;
-		/**
-		 * Retrieve the cloned input (read-only) corresponding to the given handle.
-		 * @param Handle handle returned from a call to a RendererInfoVulkan's `add_input`. If this handle came from a RendererInfoVulkan different to the one we were provided, the behaviour is undefined.
-		 * @return Pointer to the input.
-		 */
-		const IInput* get_input(InputHandle handle) const;
-		/**
-		 * Retrieve the cloned input corresponding to the given handle.
-		 * @param Handle handle returned from a call to a RendererInfoVulkan's `add_input`. If this handle came from a RendererInfoVulkan different to the one we were provided, the behaviour is undefined.
-		 * @return Pointer to the input.
-		 */
-		IInput* get_input(InputHandle handle);
 		/**
 		 * Retrieve the number of resources.
 		 */
@@ -432,17 +388,13 @@ namespace tz::gl2
 		 * @return Pointer to the resource's underlying component.
 		 */
 		IComponent* get_component(ResourceHandle handle);
-		/**
-		 * Render all inputs that were activated by the most recently-provided draw-list. If no draw-list was ever provided, this will render every input. Note: This is not true yet lmao - it does fuck all.
-		 */
 		void render();
+		void render(unsigned int tri_count);
 	private:
 		void setup_static_resources();
 		void setup_render_commands();
 
 		vk2::LogicalDevice* ldev;
-		/// Stores copies of all provided inputs and exposes them in a neater way.
-		InputStorage inputs;
 		/// Stores copies of all provided resources, and deals with all the vulkan descriptor magic. Exposes everything relevant to us when we want to draw.
 		ResourceStorage resources;
 		/// Handles output image component logic, and exposes a nice list of images/views/framebuffers into which we can render into without having to worry about the complicated logic behind the output wrangling.
@@ -450,6 +402,7 @@ namespace tz::gl2
 		GraphicsPipelineManager pipeline;
 		CommandProcessor command;
 		vk2::Swapchain* maybe_swapchain;
+		unsigned int tri_count = 0;
 	};
 
 	static_assert(RendererType<RendererVulkan>);

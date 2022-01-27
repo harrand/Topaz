@@ -65,7 +65,7 @@ int main()
 		while(!tz::window().is_close_requested())
 		{
 			tz::window().update();
-			renderer.render();
+			renderer.render(1);
 		}
 	}
 	tz::terminate();

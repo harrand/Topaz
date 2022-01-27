@@ -53,7 +53,6 @@ add_library(topaz
 	# tz::gl2 (API)
 	src/gl/api/component.hpp
 	src/gl/api/device.hpp
-	src/gl/api/input.hpp
 	src/gl/api/output.hpp
 	src/gl/api/renderer.hpp
 	src/gl/api/resource.hpp
@@ -61,8 +60,6 @@ add_library(topaz
 	# tz::gl2
 	src/gl/component.hpp
 	src/gl/device.hpp
-	src/gl/input.cpp
-	src/gl/input.hpp
 	src/gl/output.cpp
 	src/gl/output.hpp
 	src/gl/renderer.hpp

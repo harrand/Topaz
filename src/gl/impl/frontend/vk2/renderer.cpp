@@ -168,21 +168,6 @@ namespace tz::gl2
 	}
 
 //--------------------------------------------------------------------------------------------------
-	unsigned int RendererInfoVulkan::input_count() const
-	{
-		return this->inputs.size();
-	}
-
-	const IInput* RendererInfoVulkan::get_input(InputHandle handle)
-	{
-		return this->inputs[static_cast<std::size_t>(static_cast<tz::HandleValue>(handle))];
-	}
-
-	std::span<const IInput* const> RendererInfoVulkan::get_inputs() const
-	{
-		return this->inputs;
-	}
-
 	unsigned int RendererInfoVulkan::resource_count() const
 	{
 		return this->resources.size();
@@ -196,12 +181,6 @@ namespace tz::gl2
 	std::span<const IResource* const> RendererInfoVulkan::get_resources() const
 	{
 		return this->resources;
-	}
-
-	InputHandle RendererInfoVulkan::add_input(IInput& input)
-	{
-		this->inputs.push_back(&input);
-		return static_cast<tz::HandleValue>(this->inputs.size() - 1);
 	}
 
 	ResourceHandle RendererInfoVulkan::add_resource(IResource& resource)
@@ -453,7 +432,8 @@ namespace tz::gl2
 	})),
 	command_pool
 	({
-		.queue = this->graphics_queue
+		.queue = this->graphics_queue,
+		.flags = {vk2::CommandPoolFlag::Reusable}
 	}),
 	commands(this->command_pool.allocate_buffers
 	({
@@ -541,11 +521,18 @@ namespace tz::gl2
 		}
 	}
 
+	void CommandProcessor::wait_pending_commands_complete()
+	{
+		for(const vk2::Fence& fence : this->in_flight_fences)
+		{
+			fence.wait_until_signalled();
+		}
+	}
+
 //--------------------------------------------------------------------------------------------------
 
 	RendererVulkan::RendererVulkan(RendererInfoVulkan& info, const RendererDeviceInfoVulkan& device_info):
 	ldev(device_info.device),
-	inputs(info.get_inputs()),
 	resources(info.get_resources(), *this->ldev),
 	output(info.get_output(), device_info.output_images, *this->ldev),
 	pipeline(info.shader(), this->resources.get_descriptor_layout(), this->output.get_render_pass(), RendererVulkan::max_frames_in_flight, output.get_output_dimensions()),
@@ -559,21 +546,6 @@ namespace tz::gl2
 	RendererVulkan::~RendererVulkan()
 	{
 		this->ldev->wait_until_idle();
-	}
-
-	unsigned int RendererVulkan::input_count() const
-	{
-		return this->inputs.count();
-	}
-
-	const IInput* RendererVulkan::get_input(InputHandle handle) const
-	{
-		return this->inputs.get(handle);
-	}
-
-	IInput* RendererVulkan::get_input(InputHandle handle)
-	{
-		return this->inputs.get(handle);
 	}
 
 	unsigned int RendererVulkan::resource_count() const
@@ -604,6 +576,17 @@ namespace tz::gl2
 	void RendererVulkan::render()
 	{
 		this->command.do_render_work(this->maybe_swapchain);
+	}
+
+	void RendererVulkan::render(unsigned int tri_count)
+	{
+		if(this->tri_count != tri_count)
+		{
+			this->tri_count = tri_count;
+			this->command.wait_pending_commands_complete();
+			this->setup_render_commands();
+		}
+		this->render();
 	}
 
 	void RendererVulkan::setup_static_resources()
@@ -757,8 +740,7 @@ namespace tz::gl2
 			});
 			recording.draw
 			({
-				// TODO: Don't hardcode
-				.vertex_count = 3,
+				.vertex_count = 3 * this->tri_count,
 				.instance_count = 1,
 				.first_vertex = 0,
 				.first_instance = 0

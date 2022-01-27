@@ -149,6 +149,12 @@ namespace tz::gl::vk2
 		/// Variant type which has alternatives for every single possible recordable command type.
 		using Variant = std::variant<Draw, BindPipeline, BindDescriptorSets, BeginRenderPass, EndRenderPass, BufferCopyBuffer, BufferCopyImage, BindBuffer, TransitionImageLayout>;
 	};
+
+	enum class CommandPoolFlag
+	{
+		Reusable = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT
+	};
+	using CommandPoolFlags = tz::EnumField<CommandPoolFlag>;
 	/**
 	 * @ingroup tz_gl_vk_commands
 	 * Specifies creation flags for a @ref CommandPool.
@@ -157,6 +163,8 @@ namespace tz::gl::vk2
 	{
 		/// Specifies which hardware queue is expected to act as the executor for the CommandPool's buffers.
 		const hardware::Queue* queue;
+		/// Specifies extra flags which affect the created command pool.
+		CommandPoolFlags flags = {};
 	};
 
 	class CommandBuffer;

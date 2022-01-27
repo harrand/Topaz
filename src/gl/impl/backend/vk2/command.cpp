@@ -329,7 +329,7 @@ namespace tz::gl::vk2
 		{
 			.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
 			.pNext = nullptr,
-			.flags = 0,
+			.flags = static_cast<VkCommandPoolCreateFlags>(static_cast<CommandPoolFlag>(info.flags)),
 			.queueFamilyIndex = this->info.queue->get_info().queue_family_idx
 		};
 
