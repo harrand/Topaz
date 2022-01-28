@@ -1,4 +1,5 @@
 #include "core/tz.hpp"
+#include "core/window.hpp"
 #include "gl/device.hpp"
 #include "gl/renderer.hpp"
 #include "gl/resource.hpp"
@@ -11,7 +12,9 @@ int main()
 {
 	using namespace tz::literals;
 	tz::GameInfo g{"tz_triangle_demo (gl2)", {1, 0, 0}, tz::info()};
-	tz::initialise(g, tz::ApplicationType::WindowApplication);
+	tz::WindowInitArgs wargs = tz::default_args;
+	wargs.resizeable = false;
+	tz::initialise(g, tz::ApplicationType::WindowApplication, wargs);
 	{
 		tz::gl2::Device dev;
 
