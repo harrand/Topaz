@@ -69,7 +69,34 @@ namespace tz::gl2
 		 */
 		virtual std::span<std::byte> data() = 0;
 
+		/**
+		 * Retrieve a read+write view into the resource data, interpreted as an array of some type.
+		 * @tparam T Type to interpret. The resource data is expressed as an array of this type.
+		 */
+		template<typename T> std::span<const T> data_as() const
+		{
+			const std::byte* byte_data = this->data().data();
+			return {reinterpret_cast<const T*>(byte_data), this->data().size_bytes() / sizeof(T)};
+		}
+
+		/**
+		 * Retrieve a read+write view into the resource data, interpreted as an array of some type.
+		 * @tparam T Type to interpret. The resource data is expressed as an array of this type.
+		 */
+		template<typename T> std::span<T> data_as()
+		{
+			std::byte* byte_data = this->data().data();
+			return {reinterpret_cast<T*>(byte_data), this->data().size_bytes() / sizeof(T)};
+		}
+
 		virtual std::unique_ptr<IResource> unique_clone() const = 0;
+		
+		#if TZ_VULKAN
+			// vk2 frontend RendererVulkan implementation detail.
+			friend class ResourceStorage;
+		#endif
+	protected:
+		virtual void set_mapped_data(std::span<std::byte> resource_data) = 0;
 	};
 
 	/// Opaque handle which is used to refer to an existing Resource within a Renderer or Processor.

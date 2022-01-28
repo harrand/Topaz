@@ -38,6 +38,14 @@ namespace tz::gl2
 			{
 				case ResourceType::Buffer:
 					this->components.push_back(std::make_unique<BufferComponentVulkan>(*res, ldev));
+					if(res->get_access() == ResourceAccess::DynamicFixed)
+					{
+						// Tell the resource to use the buffer's data. Also copy whatever we had before.
+						std::span<const std::byte> initial_data = res->data();
+						std::span<std::byte> buffer_byte_data = static_cast<BufferComponentVulkan*>(this->components.back().get())->vk_get_buffer().map_as<std::byte>();
+						std::copy(initial_data.begin(), initial_data.end(), buffer_byte_data.begin());
+						res->set_mapped_data(buffer_byte_data);
+					}
 				break;
 				case ResourceType::Image:
 					this->components.push_back(std::make_unique<ImageComponentVulkan>(*res, ldev));

@@ -5,9 +5,13 @@
 
 namespace tz
 {
-	/**
-	 * @}
-	 */
+	namespace literals
+	{
+		inline constexpr unsigned char operator "" _uc(unsigned long long arg) noexcept
+		{
+		    return static_cast<unsigned char>(arg);
+		}
+	}
 
 	/**
 	 * \addtogroup tz_core Topaz Core Library (tz)

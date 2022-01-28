@@ -1,0 +1,23 @@
+#pragma shader_stage(vertex)
+
+struct TriangleVertexData
+{
+    vec3 position;
+    vec2 texcoord;
+};
+
+resource(id = 0) buffer VertexData
+{
+    TriangleVertexData[3] vertices;
+} vertex_data;
+
+layout(location = 0) out vec2 texcoord;
+
+void main() {
+    TriangleVertexData cur_vertex = vertex_data.vertices[gl_VertexIndex];
+    gl_Position = vec4(cur_vertex.position, 1.0);
+    texcoord = cur_vertex.texcoord;
+    #if TZ_VULKAN
+        texcoord.y = 1.0 - texcoord.y;
+    #endif
+}

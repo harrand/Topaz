@@ -1,98 +1,81 @@
 #include "core/tz.hpp"
-#include "core/vector.hpp"
-#include "core/matrix_transform.hpp"
 #include "gl/device.hpp"
 #include "gl/renderer.hpp"
 #include "gl/resource.hpp"
-#include "gl/input.hpp"
-#include "gl/shader.hpp"
-#include "gl/texture.hpp"
+#include "gl/imported_shaders.hpp"
 
-float get_aspect_ratio()
-{
-	return tz::window().get_width() / tz::window().get_height();
-}
+#include ImportedShaderFile(tz_dynamic_triangle_demo.vertex)
+#include ImportedShaderFile(tz_dynamic_triangle_demo.fragment)
 
 int main()
 {
-	tz::initialise({"tz_dynamic_triangle_demo", tz::Version{1, 0, 0}, tz::info()});
+	using namespace tz::literals;
+	tz::GameInfo g{"tz_dynamic_triangle_demo (gl2)", {1, 0, 0}, tz::info()};
+	tz::initialise(g, tz::ApplicationType::WindowApplication);
 	{
-		tz::gl::DeviceBuilder device_builder;
-		tz::gl::Device device{device_builder};
-
-		tz::gl::ShaderBuilder shader_builder;
-		shader_builder.set_shader_file(tz::gl::ShaderType::VertexShader, ".\\demo\\gl\\dynamic_triangle_demo.vertex.tzsl");
-		shader_builder.set_shader_file(tz::gl::ShaderType::FragmentShader, ".\\demo\\gl\\dynamic_triangle_demo.fragment.tzsl");
-
-		tz::gl::Shader shader = device.create_shader(shader_builder);
-
-		tz::gl::RendererBuilder renderer_builder;
-		tz::gl::MeshInput mesh_input{tz::gl::Mesh
-		{
-			.vertices =
+		tz::gl2::Device dev;
+		tz::gl2::ImageResource img = tz::gl2::ImageResource::from_memory
+		(
+			tz::gl2::ImageFormat::RGBA32,
+			{2u, 2u},
 			{
-				tz::gl::Vertex{{-0.5f, -0.5f, 0.0f}, {1.0f, 0.0f}, {}, {}, {}},
-				tz::gl::Vertex{{0.5f, -0.5f, 0.0f}, {0.0f, 0.0f}, {}, {}, {}},
-				tz::gl::Vertex{{0.5f, 0.5f, 0.0f}, {0.0f, 1.0f}, {}, {}, {}}
-			},
-			.indices = {0, 1, 2}
-		}};
+				0b0000'0000_uc,
+				0b0000'0000_uc,
+				0b1111'1111_uc,
+				0b1111'1111_uc,
 
-		tz::gl::TextureResource texture{tz::gl::TextureData::from_memory(2, 2,
-		{{
-			0b0000'0000,
-			0b0000'0000,
-			0b1111'1111,
-			0b1111'1111,
+				0b1111'1111_uc,
+				0b0000'0000_uc,
+				0b0000'0000_uc,
+				0b1111'1111_uc,
 
-			0b1111'1111,
-			0b0000'0000,
-			0b0000'0000,
-			0b1111'1111,
+				0b0000'0000_uc,
+				0b1111'1111_uc,
+				0b0000'0000_uc,
+				0b1111'1111_uc,
 
-			0b0000'0000,
-			0b1111'1111,
-			0b0000'0000,
-			0b1111'1111,
+				0b0000'0000_uc,
+				0b0000'0000_uc,
+				0b1111'1111_uc,
+				0b1111'1111_uc
+			}
+		);
 
-			0b0000'0000,
-			0b0000'0000,
-			0b1111'1111,
-			0b1111'1111
-		}}), tz::gl::TextureFormat::Rgba32sRGB};
+		struct TriangleVertexData
+		{
+			tz::Vec3 position;
+			float pad0;
+			tz::Vec2 texcoord;
+			float pad1[2];
+		};
 
-		tz::gl::DynamicBufferResource buf_res{tz::gl::BufferData::from_array<tz::Mat4>
-		({{
-			tz::model({0.0f, 0.0f, -1.0f}, {0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f}),
-			tz::view({0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}),
-			tz::perspective(1.27f, get_aspect_ratio(), 0.1f, 1000.0f)
-		}})};
+		tz::gl2::BufferResource buf = tz::gl2::DynamicBufferResource::from_many
+		({
+			TriangleVertexData{.position = {-0.5f, 0.5f, 0.0f}, .texcoord = {0.0f, 0.0f}},
+			TriangleVertexData{.position = {0.0f, -0.5f, 0.0f}, .texcoord = {0.5f, 1.0f}},
+			TriangleVertexData{.position = {0.5f, 0.5f, 0.0f}, .texcoord = {1.0f, 0.0f}},
+		});
 
-		renderer_builder.add_input(mesh_input);
-		renderer_builder.set_output(tz::window());
-		tz::gl::ResourceHandle buf_handle = renderer_builder.add_resource(buf_res);
-		renderer_builder.add_resource(texture);
-		renderer_builder.set_shader(shader);
-		tz::gl::Renderer renderer = device.create_renderer(renderer_builder);
-		renderer.set_clear_colour({0.1f, 0.2f, 0.4f, 1.0f});
+		tz::gl2::RendererInfo rinfo;
+		rinfo.shader().set_shader(tz::gl2::ShaderStage::Vertex, GetImportedShaderSource(tz_dynamic_triangle_demo_vertex));
+		rinfo.shader().set_shader(tz::gl2::ShaderStage::Fragment, GetImportedShaderSource(tz_dynamic_triangle_demo_fragment));
+		rinfo.add_resource(img);
+		tz::gl2::ResourceHandle bufh = rinfo.add_resource(buf);
+
+		tz::gl2::Renderer renderer = dev.create_renderer(rinfo);
+
 		while(!tz::window().is_close_requested())
 		{
-			// Every frame, update some of the buffer resource data.
-			{
-				auto buffer_bytes = static_cast<tz::gl::IDynamicResource*>(renderer.get_resource(buf_handle))->get_resource_bytes_dynamic();
-				// Change the position of the triangle ever so slightly.
-				tz::Mat4& model = reinterpret_cast<tz::Mat4*>(buffer_bytes.data())[0];
-				static float counter = 0.0f;
-				model = tz::model({std::sin(counter * 0.25f) * 0.5f * get_aspect_ratio(), std::sin(counter) * 0.25f, -1.0f}, {0.0f, 0.0f, std::sin(counter * 0.1f) * 3.14159f}, {1.0f, 1.0f, 1.0f});
-				counter += 0.001f;
-
-				// Then update aspect ratio of mvp perspective.
-				tz::Mat4& projection = reinterpret_cast<tz::Mat4*>(buffer_bytes.data())[2];
-				projection = tz::perspective(1.27f, get_aspect_ratio(), 0.1f, 1000.0f);
-			}
-
 			tz::window().update();
-			renderer.render();
+			renderer.render(1);
+
+			{
+				// Get the top vertex of the triangle, and oscillate its height :)
+				TriangleVertexData& top_vertex = renderer.get_resource(bufh)->data_as<TriangleVertexData>()[1];
+				static float x = 0.0f;
+				// Between -1 and -0.5
+				top_vertex.position[1] = (std::sin(x += 0.05f) * 0.25f) - 0.25f;
+			}
 		}
 	}
 	tz::terminate();
