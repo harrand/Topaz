@@ -16,11 +16,6 @@ namespace tz
 	 */
 	struct GameInfo
 	{
-		constexpr GameInfo(const char* application_name, Version version, EngineInfo engine = tz::info()):
-		name(application_name),
-		version(version),
-		engine(engine){}
-
 		/**
 		 * @brief Retrieve a string describing the GameInfo.
 		 * - See @ref EngineInfo::to_string() for `ENGINEINFO`

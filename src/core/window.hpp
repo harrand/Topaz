@@ -17,22 +17,25 @@ namespace tz
 		int value;
 	};
 
-	struct WindowInitArgs
+	struct WindowExtraFlags
 	{
-		int width;
-		int height;
-		bool resizeable;
-		const char* title;
+		bool resizeable = true;
 	};
 
-	constexpr WindowInitArgs default_args = {.width = 800, .height = 600, .resizeable = true, .title = "Untitled"};
+	struct WindowInitArgs
+	{
+		int width = 800;
+		int height = 600;
+		const char* title = "Untitled";
+		WindowExtraFlags flags = {};
+	};
 
 	using WindowHintList = tz::BasicList<WindowHint>;
 
 	class Window : public WindowFunctionality
 	{
 	public:
-		Window(WindowInitArgs args = default_args, WindowHintList hints = {});
+		Window(WindowInitArgs args = {}, WindowHintList hints = {});
 		Window(const Window& copy) = delete;
 		Window(Window&& move);
 		~Window();

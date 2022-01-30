@@ -10,13 +10,14 @@
 
 int main()
 {
-	using namespace tz::literals;
-	tz::GameInfo g{"tz_dynamic_triangle_demo (gl2)", {1, 0, 0}, tz::info()};
-	tz::WindowInitArgs wargs = tz::default_args;
-	wargs.resizeable = false;
-	tz::initialise(g, tz::ApplicationType::WindowApplication, wargs);
+	tz::initialise
+	({
+		.name = "tz_triangle_demo (gl2)",
+		.window = {.flags = {.resizeable = false}}
+	});
 	{
 		tz::gl2::Device dev;
+		using namespace tz::literals;
 		tz::gl2::ImageResource img = tz::gl2::ImageResource::from_memory
 		(
 			tz::gl2::ImageFormat::RGBA32,

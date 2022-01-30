@@ -30,6 +30,14 @@ namespace tz
 		Headless
 	};
 
+	struct InitialiseInfo
+	{
+		const char* name = "Untitled";
+		tz::Version version = {1, 0, 0};
+		ApplicationType app_type = ApplicationType::WindowApplication;
+		WindowInitArgs window = {};
+	};
+
 	/**
 	 * @brief Initialise Topaz.
 	 * @pre If any other Topaz code not within the "Initial Group" has been invoked before this, then the behaviour of the program is undefined. To know if something is within the Initial Group, check their doucmentation notes.
@@ -39,7 +47,8 @@ namespace tz
 	 * @param game_info Information about the application
 	 * @param app_type Describes the anatomy of the application.
 	 */
-	void initialise(GameInfo game_info, ApplicationType app_type = ApplicationType::WindowApplication, WindowInitArgs wargs = tz::default_args);
+	void initialise(GameInfo game_info, ApplicationType app_type = ApplicationType::WindowApplication, WindowInitArgs wargs = {});
+	void initialise(InitialiseInfo init = {});
 	/**
 	 * @brief Terminate Topaz.
 	 * @pre If `tz::initialise` has not been invoked before this, then the behaviour of the program is undefined.

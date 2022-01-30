@@ -42,8 +42,6 @@ namespace tz
 				std::exit(0);
 			#endif
 		}
-		
-		tz_report("%s Application", app_type == ApplicationType::Headless ? "Headless" : "Windowed");
 		initialised = true;
 		#if TZ_VULKAN
 			tz::gl::vk2::initialise(game_info, app_type);
@@ -63,6 +61,12 @@ namespace tz
 		#endif
 
 		tz_app_type = app_type;
+	}
+
+	void initialise(InitialiseInfo init)
+	{
+		tz_report("%s v%u.%u.%u (%s)", init.name, init.version.major, init.version.minor, init.version.patch, tz::info().to_string().c_str());
+		initialise({.name = init.name, .version = init.version, .engine = tz::info()}, init.app_type, init.window);
 	}
 
 	void terminate()
