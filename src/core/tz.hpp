@@ -3,6 +3,8 @@
 #include "core/game_info.hpp"
 #include "core/window.hpp"
 
+static_assert(TZ_VULKAN || TZ_OGL, "No graphics API detected. You have not configured CMake correctly.");
+
 namespace tz
 {
 	namespace literals
