@@ -19,7 +19,11 @@ add_library(topaz
 	src/core/containers/polymorphic_list.inl
 
 	src/core/algorithms/static.hpp
+
 	src/core/interfaces/cloneable.hpp
+
+	src/core/peripherals/monitor.cpp
+	src/core/peripherals/monitor.hpp
 
 	src/core/profiling/zone.hpp
 

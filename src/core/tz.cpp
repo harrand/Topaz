@@ -1,6 +1,7 @@
 #include "core/tz.hpp"
 #include "core/assert.hpp"
 #include "core/report.hpp"
+#include "core/peripherals/monitor.hpp"
 
 #if TZ_VULKAN
 #include "gl/impl/backend/vk2/tz_vulkan.hpp"
@@ -21,6 +22,7 @@ namespace tz
 		if(app_type == ApplicationType::WindowApplication || app_type == ApplicationType::HiddenWindowApplication)
 		{
 			glfwInit();
+			tz::detail::peripherals::monitor::initialise();
 			tz_assert(wnd == nullptr && !initialised, "tz::initialise(): Already initialised");
 			WindowHintList hints;
 			if(app_type == ApplicationType::HiddenWindowApplication)
@@ -85,6 +87,7 @@ namespace tz
 
 		if(tz_app_type != ApplicationType::Headless)
 		{
+			tz::detail::peripherals::monitor::terminate();
 			glfwTerminate();
 		}
 		initialised = false;

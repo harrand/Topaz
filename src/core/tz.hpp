@@ -16,31 +16,59 @@ namespace tz
 	}
 
 	/**
-	 * \addtogroup tz_core Topaz Core Library (tz)
-	 * A collection of platform-agnostic core interfaces.
-	 * 
-	 * This is the only module containing members of the Initial Group. The Initial Group is a group of functions and structures which can be invoked before @ref tz::initialise().
-	 * @{
+	 * @defgroup tz_core Core Libraries (tz)
+	 * A collection of platform-agnostic core functionality.
+	 *
+	 * This includes:
+	 * - Engine initialisation/termination
+	 * - Windowing and hardware requests
+	 * - Input processing
 	 */
+
 	/**
-	 * Describes a given application.
+	 * @ingroup tz_core
+	 * @defgroup tz_core_init Initialisation and Termination
+	 * Documentation for functionality related to engine initialisation and termination.
+	 */
+
+	/**
+	 * @ingroup tz_core
+	 * @defgroup tz_core_peripherals Hardware and Peripherals
+	 * Documentation for retrieving hardware information, such as monitor properties.
+	 */
+
+	/**
+	 * @ingroup tz_core_init
+	 * Every application is of a single type. When you initialise the engine, you must choose one.
 	 */
 	enum class ApplicationType
 	{
+		/// - Initialisation should spawn a window that the user can see and interact with.
 		WindowApplication,
+		/// - Initialisation should spawn a window, but it is invisible to the user.
 		HiddenWindowApplication,
+		/// - Initialisation should not spawn a window at all. Headless applications have access to fewer features than others, but do not require a display to initialise. It is recommended to be used for applications used in continuous integration.
 		Headless
 	};
 
+	/**
+	 * @ingroup tz_core_init
+	 * Specifies everything needed to initialise the engine.
+	 */
 	struct InitialiseInfo
 	{
+		/// - Name of the application. If initialisation spawns a window, the title will contain this string. Defaults to 'Untitled'.
 		const char* name = "Untitled";
+		/// - Version of the application. If you do not version your application, you can leave this. Defaults to 1.0.0.
 		tz::Version version = {1, 0, 0};
+		/// - Describes the type of the application. See @ref ApplicationType for more information. Defaults to a window application.
 		ApplicationType app_type = ApplicationType::WindowApplication;
+		/// - Describes extra information about the window, if initialisation will spawn one. Defaults to a set of implementation-defined flags -- There is no guarantee these will change in subsequent releases so do not rely on the defaults not changing.
 		WindowInitArgs window = {};
 	};
 
 	/**
+	 * @ingroup tz_core_init
 	 * @brief Initialise Topaz.
 	 * @pre If any other Topaz code not within the "Initial Group" has been invoked before this, then the behaviour of the program is undefined. To know if something is within the Initial Group, check their doucmentation notes.
 	 * @post If `tz::terminate()` is not called before the end of program runtime, then the behaviour of the program is undefined.
@@ -50,8 +78,13 @@ namespace tz
 	 * @param app_type Describes the anatomy of the application.
 	 */
 	void initialise(GameInfo game_info, ApplicationType app_type = ApplicationType::WindowApplication, WindowInitArgs wargs = {});
+	/**
+	 * @ingroup tz_core_init
+	 * Initialise Topaz.
+	 */
 	void initialise(InitialiseInfo init = {});
 	/**
+	 * @ingroup tz_core_init
 	 * @brief Terminate Topaz.
 	 * @pre If `tz::initialise` has not been invoked before this, then the behaviour of the program is undefined.
 	 * @post If anything in `tz` is invoked after this, then the behaviour of the program is undefined.
@@ -59,6 +92,7 @@ namespace tz
 	 */
 	void terminate();
 	/**
+	 * @ingroup tz_core_init
 	 * @brief Retrieve the application window.
 	 * @pre @ref tz::initialise() has been invoked but not with `ApplicationType::Headless`.
 	 * @post @ref tz::terminate() has not yet been invoked.
@@ -66,15 +100,12 @@ namespace tz
 	 */
 	Window& window();
 	/**
+	 * @ingroup tz_core_init
 	 * @brief Query as to whether Topaz is initialised.
 	 * @note This function is within the Initial Group.
 	 * @return true If `tz::initialise` has been invoked and `tz::terminate()` has not yet been invoked. Otherwise, returns false.
 	 */
 	bool is_initialised();
-	
-	/**
-	 * @}
-	 */
 }
 #include "core/tz.inl"
 
