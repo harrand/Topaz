@@ -30,6 +30,7 @@ body {
 div.fragment, pre.fragment {
 	border: 1px solid #000000;
 	background: #32363d;
+	white-space: pre;
 }
 
 a, a:link, a:visited {

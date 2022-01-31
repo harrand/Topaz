@@ -121,29 +121,20 @@ namespace tz
 }
 #include "core/tz.inl"
 
-/*! \mainpage Topaz v3.1.0-indev
- * \section intro_sec Introduction
+/*! @mainpage Topaz Home
+ * # Topaz Documentation
+ * ## Introduction
  *
- * Welcome to the Topaz documentation. This was generated automatically via https://github.com/Harrand/Topaz/actions.
- * 
- * If you're here to learn how to use Topaz, it is also recommended to visit the wiki which contains examples and explanations of various engine features. You can find it at: https://github.com/Harrand/Topaz/wiki.
+ * Welcome to the home page of the Topaz documentation. Here you can find detailed information about the vast majority of modules, classes and functions within the Topaz engine.
  *
- * \section modules_sec Topaz Modules
- * The Topaz engine is comprised of several large modules. Each have their own responsibility, namespace and location with the source code. For more detailed information about the modules, visit the 'Modules' tab above. A summary of the modules has been provided for you below.
- * <hr>
- * \subsection tzcore Topaz Core
+ * ## Links
+ * - [Topaz Engine Repository](https://github.com/Harrand/Topaz)
+ * - [Topaz Engine Wiki](https://github.com/Harrand/Topaz/wiki)
+ * - [Development Playlist (YouTube)](https://www.youtube.com/playlist?list=PL6PSLdrGGe8I67_i6mNk8IUmOsP85Vhll)
  *
- * The core module of Topaz.
- * 
- * Source location: Topaz/src/core <br>
- * Namespace: `tz`
- * <hr>
- * \subsection tzgl Topaz Graphics Library
- * Low-level 3D graphics functionality. Interacts with a Vulkan or OpenGL frontend, depending on configuration.
- * 
- * Source location: Topaz/src/gl <br>
- * Namespace: `tz::gl`
- * <hr>
+ * ## Worked Example
+ * The code snippet you're about to see is the source code of the simplest demo, which simply draws a triangle to the screen. This is known as `tz_triangle_demo`.
+ * @include gl/tz_triangle_demo.cpp
  */
 
 #endif // TZ_CORE_TZ_HPP

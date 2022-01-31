@@ -1,6 +1,8 @@
 div.fragment, pre.fragment {
 	margin: 0;
 	padding: 4px;
+	white-space: pre;
+	padding:0; margin:0;
 }
 
 /*********************************************/
@@ -10,6 +12,13 @@ div.fragment, pre.fragment {
 	margin: 10px auto !important;
 	padding: 0 10px;
 	max-width: 1200px;
+}
+
+.navbar-selector {
+	display: flex;
+	justify-content: space-between;
+	width: 50%;
+	margin: auto;
 }
 
 /*********************************************/

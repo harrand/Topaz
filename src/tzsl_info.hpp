@@ -55,7 +55,7 @@
  *
  *    void main()
  *    {
- *            mat4 mvp_matrix = mvp.p * mvp.v * mvp.m;
+ *        mat4 mvp_matrix = mvp.p * mvp.v * mvp.m;
  *        gl_Position = mvp_matrix * vec4(position, 1.0);
  *        frag_tex_coord = texcoord;
  *    }
