@@ -1,5 +1,6 @@
 #include "core/tz.hpp"
 #include "core/window.hpp"
+#include "core/profiling/zone.hpp"
 #include "gl/device.hpp"
 #include "gl/renderer.hpp"
 #include "gl/resource.hpp"
@@ -70,6 +71,7 @@ int main()
 
 		while(!tz::window().is_close_requested())
 		{
+			TZ_FRAME_BEGIN;
 			tz::window().update();
 			renderer.render(1);
 
@@ -80,6 +82,7 @@ int main()
 				// Between -1 and -0.5
 				top_vertex.position[1] = (std::sin(x += 0.05f) * 0.25f) - 0.25f;
 			}
+			TZ_FRAME_END;
 		}
 	}
 	tz::terminate();

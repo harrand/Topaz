@@ -17,7 +17,7 @@ namespace tz
 	 */
 	struct MonitorInfo
 	{
-		/// - Index of the monitor. The primary monitor is guaranteed to be of index '0'. Each monitor has a unique index.
+		/// Index of the monitor. The primary monitor is guaranteed to be of index '0'. Each monitor has a unique index.
 		unsigned int monitor_index;
 		/**
 		 * Contains the real-life dimensions of the monitor (or a close estimation), in metric millimetres.

@@ -1,5 +1,6 @@
 #include "core/tz.hpp"
 #include "core/window.hpp"
+#include "core/profiling/zone.hpp"
 #include "gl/device.hpp"
 #include "gl/renderer.hpp"
 #include "gl/resource.hpp"
@@ -71,8 +72,10 @@ int main()
 
 		while(!tz::window().is_close_requested())
 		{
+			TZ_FRAME_BEGIN;
 			tz::window().update();
 			renderer.render(1);
+			TZ_FRAME_END;
 		}
 	}
 	tz::terminate();
