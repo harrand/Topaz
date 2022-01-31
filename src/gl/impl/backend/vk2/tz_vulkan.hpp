@@ -12,7 +12,7 @@ namespace tz::gl::vk2
 
 	/**
 	 * @ingroup tz_gl2_graphicsapi_vk
-	 * @defgroup tz_gl_vk Vulkan Backend (tz::gl::vk2)
+	 * @defgroup tz_gl_vk Vulkan Backend
 	 * Documentation for the Vulkan Backend, which acts as a large abstraction around the Vulkan API. This is a low-level module free of all context relevant to Topaz.
 	 */
 
