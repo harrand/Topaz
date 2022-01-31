@@ -38,6 +38,12 @@ namespace tz
 	 */
 
 	/**
+	 * @ingroup tz_core
+	 * @defgroup tz_core_containers Containers
+	 * Documentation for custom Topaz contains, such as BasicList and EnumField.
+	 */
+
+	/**
 	 * @ingroup tz_core_init
 	 * Every application is of a single type. When you initialise the engine, you must choose one.
 	 */

@@ -5,8 +5,8 @@
 #include "gl/resource.hpp"
 #include "gl/imported_shaders.hpp"
 
-#include ImportedShaderFile(tz_triangle_demo.vertex)
-#include ImportedShaderFile(tz_triangle_demo.fragment)
+#include ImportedShaderHeader(tz_triangle_demo, vertex)
+#include ImportedShaderHeader(tz_triangle_demo, fragment)
 
 int main()
 {
@@ -62,8 +62,8 @@ int main()
 		});
 
 		tz::gl2::RendererInfo rinfo;
-		rinfo.shader().set_shader(tz::gl2::ShaderStage::Vertex, GetImportedShaderSource(tz_triangle_demo_vertex));
-		rinfo.shader().set_shader(tz::gl2::ShaderStage::Fragment, GetImportedShaderSource(tz_triangle_demo_fragment));
+		rinfo.shader().set_shader(tz::gl2::ShaderStage::Vertex, ImportedShaderSource(tz_triangle_demo, vertex));
+		rinfo.shader().set_shader(tz::gl2::ShaderStage::Fragment, ImportedShaderSource(tz_triangle_demo, fragment));
 		rinfo.add_resource(img);
 		rinfo.add_resource(buf);
 
