@@ -559,7 +559,7 @@ namespace tz::gl2
 		return {this->commands.buffers.begin(), this->frame_in_flight_count};
 	}
 
-	void CommandProcessor::do_render_work(vk2::Swapchain* maybe_swapchain)
+	CommandProcessor::RenderWorkSubmitResult CommandProcessor::do_render_work(vk2::Swapchain* maybe_swapchain)
 	{
 		if(this->requires_present)
 		{
@@ -595,19 +595,22 @@ namespace tz::gl2
 				.execution_complete_fence = &this->in_flight_fences[this->current_frame]
 			});
 
-			vk2::hardware::Queue::PresentResult present_res = this->graphics_queue->present
+			CommandProcessor::RenderWorkSubmitResult result;
+
+			result.present = this->graphics_queue->present
 			({
 				.wait_semaphores = {&this->render_work_semaphores[this->current_frame]},
 				.swapchain = maybe_swapchain,
 				.swapchain_image_index = this->output_image_index
 			});
-			tz_assert(present_res == vk2::hardware::Queue::PresentResult::Success || present_res == vk2::hardware::Queue::PresentResult::Success_Suboptimal, "Presentation Failed.");
 			this->current_frame = (this->current_frame + 1) % this->frame_in_flight_count;
+			return result;
 		}
 		else
 		{
 			// Headlessly
 			tz_error("Headless rendering not yet implemented.");
+			return {.present = vk2::hardware::Queue::PresentResult::Fail_FatalError};
 		}
 	}
 
@@ -671,7 +674,19 @@ namespace tz::gl2
 
 	void RendererVulkan::render()
 	{
-		this->command.do_render_work(this->maybe_swapchain);
+		CommandProcessor::RenderWorkSubmitResult result = this->command.do_render_work(this->maybe_swapchain);
+		switch(result.present)
+		{
+			case vk2::hardware::Queue::PresentResult::Success_Suboptimal:
+			[[fallthrough]];
+			case vk2::hardware::Queue::PresentResult::Success:
+
+			break;
+			default:
+				// TODO: this->handle_resize();
+				tz_error("Presentation Failed. You probably tried to resize/minimise the window, but support for this on Vulkan is not yet implemented.");
+			break;
+		}
 	}
 
 	void RendererVulkan::render(unsigned int tri_count)
@@ -842,7 +857,6 @@ namespace tz::gl2
 			});
 		});
 	}
-
 }
 
 #endif // TZ_VULKAN

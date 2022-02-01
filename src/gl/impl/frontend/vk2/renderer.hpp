@@ -216,6 +216,10 @@ namespace tz::gl2
 	class CommandProcessor
 	{
 	public:
+		struct RenderWorkSubmitResult
+		{
+			vk2::hardware::Queue::PresentResult present;
+		};
 		/**
 		 * Construct a command processor, which will render into the provided output framebuffers. A command buffer will be created for each frame-in-flight, aswell as an extra buffer for scratch commands.
 		 * @param ldev LogicalDevice used to create command state.
@@ -248,10 +252,11 @@ namespace tz::gl2
 		/**
 		 * Submit the next render command buffer. If the output is presentable, it will also be presented. This function is asynchronous so you should not expect the submit/present work to be done upon return.
 		 * @param maybe_swapchain Pointer to the swapchain which will be presented to. If the renderer is not expected to perform any presentation, this can be nullptr.
+		 * @return Structure containing information about the results of the render work submission (and image presentation if applicable).
 		 * @pre `maybe_swapchain` must not be nullptr if the renderer is expected to present the result of the submitted work to the window.
 		 * @note Headless rendering is not yet implemented.
 		 */
-		void do_render_work(vk2::Swapchain* maybe_swapchain);
+		RenderWorkSubmitResult do_render_work(vk2::Swapchain* maybe_swapchain);
 		void wait_pending_commands_complete();
 	private:
 		/// Stores whether we expect to present submitted results to a swapchain.
