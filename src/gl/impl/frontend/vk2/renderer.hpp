@@ -124,9 +124,10 @@ namespace tz::gl2
 		 * Construct the manager to deal with this brain-knot of output components.
 		 * @param output Output which is either going to be a WindowOutput (containing swapchain images or a headless render-target image) or a TextureOutput which owns its own TextureComponent which we will need to extract.
 		 * @param window_buffer_images View into the array of WindowOutput images. These all belong to the creator Device. If we're a headless application, this is likely going to be a single offscreen render-target image. Otherwise, it's going to be the swapchain images. If the output is a TextureOutput then we're not going to use any of these.
+		 * @param create_depth_images Whether we should create depth images or not. If so, they will also be passed into the framebuffer. This means that the graphics pipeline the renderer ends up using will also need to know that we're using a depth attachment.
 		 * @param ldev Vulkan LogicalDevice which will be used to construct the render-pass and framebuffers etc. Right now we expect this to be the exact same LogicalDevice everywhere throughout this RendererVulkan. However this may change in the future (albeit unlikely tbh).
 		 */
-		OutputManager(IOutput* output, std::span<vk2::Image> window_buffer_images, const vk2::LogicalDevice& ldev);
+		OutputManager(IOutput* output, std::span<vk2::Image> window_buffer_images, bool create_depth_images, const vk2::LogicalDevice& ldev);
 		/**
 		 * Retrieve the render pass used by the renderer.
 		 */
@@ -165,8 +166,12 @@ namespace tz::gl2
 		IOutput* output;
 		/// List of window buffer images (offscreen image or swapchain images) from the Device.
 		std::span<vk2::Image> window_buffer_images;
+		/// List of depth images for each window buffer image (These may be null if depth testing is disabled).
+		std::vector<vk2::Image> window_buffer_depth_images;
 		/// List of image-views, one for each output image. These haven't been re-ordered in any way FYI.
 		std::vector<vk2::ImageView> output_imageviews;
+		/// List of depth-image-views, one for each output image.
+		std::vector<vk2::ImageView> output_depth_imageviews;
 		/// We don't support multiple sub-passes, so this is a run-of-the-mill basic-bitch render pass.
 		vk2::RenderPass render_pass;
 		/// List of framebuffers, one for each output image. These also haven't been re-ordered in any way FYI.
@@ -182,8 +187,13 @@ namespace tz::gl2
 	public:
 		/**
 		 * Construct the pipeline manager using all the necessary shader sources aswell as resource state and output information.
+		 * @param sinfo Information about the shader which will be used.
+		 * @param dlayout Describes the shader resource format used by the renderer.
+		 * @param frame_in_flight_count Describes the number of frames we have in flight. The descriptor layout will need to copy the format this amount of times.
+		 * @param viewport_dimensions Dimensions of the viewport, in pixels. Output images associated with the render pass may need to match these dimensions.
+		 * @param depth_testing_enabled Specifies whether we want to create a graphics pipeline which will perform depth tests or not. If the output manager was told to create depth images, this should be enabled (otherwise the framebuffer will not match the provided render pass).
 		 */
-		GraphicsPipelineManager(const ShaderInfo& sinfo, const vk2::DescriptorLayout& dlayout, const vk2::RenderPass& render_pass, std::size_t frame_in_flight_count, tz::Vec2ui viewport_dimensions);
+		GraphicsPipelineManager(const ShaderInfo& sinfo, const vk2::DescriptorLayout& dlayout, const vk2::RenderPass& render_pass, std::size_t frame_in_flight_count, tz::Vec2ui viewport_dimensions, bool depth_testing_enabled);
 
 		/**
 		 * Retrieve the vulkan graphics pipeline which will be used for rendering.
@@ -312,6 +322,14 @@ namespace tz::gl2
 		 */
 		IOutput* get_output();
 		/**
+		 * Retrieve the currently specified options which will be used by the renderer.
+		 */
+		const RendererOptions& get_options() const;
+		/**
+		 * Set the currently specified options which will be used by the renderer.
+		 */
+		void set_options(RendererOptions options);
+		/**
 		 * Read/write information about the shader that will be built for the renderer.
 		 */
 		ShaderInfo& shader();
@@ -324,6 +342,8 @@ namespace tz::gl2
 		std::vector<IResource*> resources = {};
 		/// Output. Can be null, which defaults to rendering into the main window.
 		IOutput* output = nullptr;
+		/// Specifies which extra features the Renderer will have.
+		RendererOptions options = {};
 		/// Describes the shader sources used.
 		ShaderInfo shader_info;
 	};
@@ -388,6 +408,11 @@ namespace tz::gl2
 		 * @return Pointer to the resource's underlying component.
 		 */
 		IComponent* get_component(ResourceHandle handle);
+		/**
+		 * Retrieve options denoting extra features used by the renderer.
+		 */
+		const RendererOptions& get_options() const;
+
 		void render();
 		void render(unsigned int tri_count);
 	private:
@@ -402,6 +427,7 @@ namespace tz::gl2
 		GraphicsPipelineManager pipeline;
 		CommandProcessor command;
 		vk2::Swapchain* maybe_swapchain;
+		RendererOptions options;
 		unsigned int tri_count = 0;
 	};
 

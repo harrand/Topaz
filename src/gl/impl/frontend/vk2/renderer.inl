@@ -20,6 +20,7 @@ namespace tz::gl2
 		});
 		work_complete_fence.wait_until_signalled();
 	}
+
 	void CommandProcessor::set_rendering_commands(tz::Action<vk2::CommandBufferRecording&, std::size_t> auto record_commands)
 	{
 		for(std::size_t i = 0; i < this->get_render_command_buffers().size(); i++)

@@ -24,6 +24,12 @@ namespace tz::gl2
 
 	/**
 	 * @ingroup tz_gl2
+	 * @defgroup tz_gl2_renderer Renderers
+	 * Documentation for Renderers.
+	 */
+
+	/**
+	 * @ingroup tz_gl2
 	 * @defgroup tz_gl2_graphicsapi Graphics API Specifics
 	 * Documentation for implementation layers for the supported graphics APIs.
 	 */

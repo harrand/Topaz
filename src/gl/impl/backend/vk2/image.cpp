@@ -49,7 +49,7 @@ namespace tz::gl::vk2
 			.flags = 0,
 			.imageType = VK_IMAGE_TYPE_2D,
 			.format = static_cast<VkFormat>(this->format),
-			.extent = {.width = info.dimensions[0], .height = info.dimensions[0], .depth = 1},
+			.extent = {.width = info.dimensions[0], .height = info.dimensions[1], .depth = 1},
 			.mipLevels = info.mip_levels,
 			.arrayLayers = info.array_layers,
 			.samples = static_cast<VkSampleCountFlagBits>(info.sample_count),
@@ -114,6 +114,7 @@ namespace tz::gl::vk2
 	image(VK_NULL_HANDLE),
 	format(ImageFormat::Undefined),
 	layout(ImageLayout::Undefined),
+	dimensions(0u, 0u),
 	device(nullptr),
 	destroy_on_destructor(false),
 	vma_alloc(std::nullopt)
@@ -137,6 +138,7 @@ namespace tz::gl::vk2
 		std::swap(this->image, rhs.image);
 		std::swap(this->format, rhs.format);
 		std::swap(this->layout, rhs.layout);
+		std::swap(this->dimensions, rhs.dimensions);
 		std::swap(this->device, rhs.device);
 		std::swap(this->destroy_on_destructor, rhs.destroy_on_destructor);
 		std::swap(this->vma_alloc, rhs.vma_alloc);

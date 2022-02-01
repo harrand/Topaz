@@ -212,6 +212,16 @@ namespace tz::gl2
 		return this->output;
 	}
 
+	const RendererOptions& RendererInfoVulkan::get_options() const
+	{
+		return this->options;
+	}
+
+	void RendererInfoVulkan::set_options(RendererOptions options)
+	{
+		this->options = options;
+	}
+
 	ShaderInfo& RendererInfoVulkan::shader()
 	{
 		return this->shader_info;
@@ -224,21 +234,59 @@ namespace tz::gl2
 
 //--------------------------------------------------------------------------------------------------
 
-	OutputManager::OutputManager(IOutput* output, std::span<vk2::Image> window_buffer_images, const vk2::LogicalDevice& ldev):
+	OutputManager::OutputManager(IOutput* output, std::span<vk2::Image> window_buffer_images, bool create_depth_images, const vk2::LogicalDevice& ldev):
 	output(output),
 	window_buffer_images(window_buffer_images),
+	window_buffer_depth_images(),
 	output_imageviews(),
 	render_pass(vk2::RenderPass::null()),
 	output_framebuffers()
 	{
 		tz_assert(!this->get_output_images().empty(), "RendererVulkan OutputManager was not given any output images. Please submit a bug report.");
-		for(vk2::Image& output_image : this->get_output_images())
+		this->window_buffer_depth_images.reserve(this->window_buffer_images.size());
+		this->output_depth_imageviews.reserve(this->window_buffer_images.size());
+		for(const vk2::Image& window_buffer_image : this->window_buffer_images)
 		{
+			// If we need depth images for depth testing, we'll create them based off of the existing output images we are provided from the Device.
+			if(create_depth_images)
+			{
+				this->window_buffer_depth_images.push_back
+				(vk2::ImageInfo{
+					.device = &ldev,
+					.format = vk2::ImageFormat::Depth16_UNorm,
+					.dimensions = window_buffer_image.get_dimensions(),
+					.usage = {vk2::ImageUsage::DepthStencilAttachment},
+					.residency = vk2::MemoryResidency::GPU
+				});
+			}
+			else
+			{
+				// Otherwise, just create empty ones and don't bother using them.
+				this->window_buffer_depth_images.push_back(vk2::Image::null());
+			}
+		}
+		for(std::size_t i = 0; i < this->get_output_images().size(); i++)
+		{
+			// We need to pass image views around in various places within the vulkan api. We create them here.
 			this->output_imageviews.push_back
 			(vk2::ImageViewInfo{
-				.image = &output_image,
+				.image = &this->get_output_images()[i],
 				.aspect = vk2::ImageAspect::Colour
 			});
+
+			// If we made depth images earlier, create views for them too.
+			if(create_depth_images)
+			{
+				this->output_depth_imageviews.push_back
+				(vk2::ImageViewInfo{
+					.image = &this->window_buffer_depth_images[i],
+					.aspect = vk2::ImageAspect::Depth
+				});
+			}
+			else
+			{
+				this->output_depth_imageviews.push_back(vk2::ImageView::null());
+			}
 		}
 
 		tz_assert(std::equal(this->output_imageviews.begin(), this->output_imageviews.end(), this->output_imageviews.begin(), [](const vk2::ImageView& a, const vk2::ImageView& b){return a.get_image().get_format() == b.get_image().get_format();}), "Detected that not every output image in a RendererVulkan has the same format. This is not permitted as RenderPasses would not be compatible. Please submit a bug report.");
@@ -265,9 +313,20 @@ namespace tz::gl2
 		rbuilder.with_attachment
 		({
 			.format = this->get_output_images().front().get_format(),
+			.colour_depth_store = vk2::StoreOp::Store,
 			.initial_layout = vk2::ImageLayout::Undefined,
 			.final_layout = final_layout
 		});
+		if(create_depth_images)
+		{
+			rbuilder.with_attachment
+			({
+				.format = this->window_buffer_depth_images.front().get_format(),
+				.colour_depth_store = vk2::StoreOp::DontCare,
+				.initial_layout = vk2::ImageLayout::Undefined,
+				.final_layout = vk2::ImageLayout::DepthStencilAttachment
+			});
+		}
 
 		vk2::SubpassBuilder sbuilder;
 		sbuilder.set_pipeline_context(vk2::PipelineContext::Graphics);
@@ -276,16 +335,30 @@ namespace tz::gl2
 			.attachment_idx = 0,
 			.current_layout = vk2::ImageLayout::ColourAttachment
 		});
+		if(create_depth_images)
+		{
+			sbuilder.with_depth_stencil_attachment
+			({
+				.attachment_idx = 1,
+				.current_layout = vk2::ImageLayout::DepthStencilAttachment
+			});
+		}
 
 		this->render_pass = rbuilder.with_subpass(sbuilder.build()).build();
 
-		for(vk2::ImageView& output_view : this->output_imageviews)
+		for(std::size_t i = 0; i < this->output_imageviews.size(); i++)
 		{
+			tz::Vec2ui dims = this->output_imageviews[i].get_image().get_dimensions();
+			tz::BasicList<vk2::ImageView*> attachments{&this->output_imageviews[i]};
+			if(create_depth_images)
+			{
+				attachments.add(&this->output_depth_imageviews[i]);
+			}
 			this->output_framebuffers.push_back
 			(vk2::FramebufferInfo{
 				.render_pass = &this->render_pass,
-				.attachments = {&output_view},
-				.dimensions = output_view.get_image().get_dimensions()
+				.attachments = attachments,
+				.dimensions = dims
 			});
 		}
 	}
@@ -341,14 +414,23 @@ namespace tz::gl2
 		const vk2::DescriptorLayout& dlayout,
 		const vk2::RenderPass& render_pass,
 		std::size_t frame_in_flight_count,
-		tz::Vec2ui viewport_dimensions
+		tz::Vec2ui viewport_dimensions,
+		bool depth_testing_enabled
 	):
 	shader(this->make_shader(dlayout.get_device(), sinfo)),
 	pipeline_layout(this->make_pipeline_layout(dlayout, frame_in_flight_count)),
 	graphics_pipeline
 	({
 		.shaders = this->shader.native_data(),
-		.state = vk2::PipelineState{.viewport = vk2::create_basic_viewport({static_cast<float>(viewport_dimensions[0]), static_cast<float>(viewport_dimensions[1])})},
+		.state = vk2::PipelineState
+		{
+			.viewport = vk2::create_basic_viewport({static_cast<float>(viewport_dimensions[0]), static_cast<float>(viewport_dimensions[1])}),
+			.depth_stencil =
+			{
+				.depth_testing = depth_testing_enabled,
+				.depth_writes = depth_testing_enabled,
+			}
+		},
 		.pipeline_layout = &this->pipeline_layout,
 		.render_pass = &render_pass,
 		.device = &render_pass.get_device()
@@ -542,10 +624,11 @@ namespace tz::gl2
 	RendererVulkan::RendererVulkan(RendererInfoVulkan& info, const RendererDeviceInfoVulkan& device_info):
 	ldev(device_info.device),
 	resources(info.get_resources(), *this->ldev),
-	output(info.get_output(), device_info.output_images, *this->ldev),
-	pipeline(info.shader(), this->resources.get_descriptor_layout(), this->output.get_render_pass(), RendererVulkan::max_frames_in_flight, output.get_output_dimensions()),
+	output(info.get_output(), device_info.output_images, !info.get_options().contains(RendererOption::NoDepthTesting), *this->ldev),
+	pipeline(info.shader(), this->resources.get_descriptor_layout(), this->output.get_render_pass(), RendererVulkan::max_frames_in_flight, output.get_output_dimensions(), !info.get_options().contains(RendererOption::NoDepthTesting)),
 	command(*this->ldev, RendererVulkan::max_frames_in_flight, info.get_output() != nullptr ? info.get_output()->get_target() : OutputTarget::Window, this->output.get_output_framebuffers()),
-	maybe_swapchain(device_info.maybe_swapchain)
+	maybe_swapchain(device_info.maybe_swapchain),
+	options(info.get_options())
 	{
 		this->setup_static_resources();
 		this->setup_render_commands();
@@ -579,6 +662,11 @@ namespace tz::gl2
 	IComponent* RendererVulkan::get_component(ResourceHandle handle)
 	{
 		return this->resources.get_component(handle);
+	}
+
+	const RendererOptions& RendererVulkan::get_options() const
+	{
+		return this->options;
 	}
 
 	void RendererVulkan::render()
@@ -719,7 +807,6 @@ namespace tz::gl2
 					.destination_stage = vk2::PipelineStage::FragmentShader,
 					.image_aspects = {vk2::ImageAspectFlag::Colour}
 				});
-
 			}
 		});
 	}

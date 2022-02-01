@@ -67,6 +67,7 @@ int main()
 		rinfo.shader().set_shader(tz::gl2::ShaderStage::Fragment, ImportedShaderSource(tz_triangle_demo, fragment));
 		rinfo.add_resource(img);
 		rinfo.add_resource(buf);
+		rinfo.set_options({tz::gl2::RendererOption::NoDepthTesting});
 
 		tz::gl2::Renderer renderer = dev.create_renderer(rinfo);
 

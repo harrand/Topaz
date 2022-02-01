@@ -34,9 +34,16 @@ namespace tz::gl::vk2
 		const Image& get_image() const;
 		Image& get_image();
 
+		ImageAspect get_aspect() const;
+
 		using NativeType = VkImageView;
 		NativeType native() const;
+
+		static ImageView null();
+		bool is_null() const;
 	private:
+		ImageView();
+
 		VkImageView image_view;
 		ImageViewInfo info;
 	};

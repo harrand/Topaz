@@ -9,8 +9,21 @@ namespace tz::gl::vk2
 	framebuffer(&framebuffer),
 	recording(&recording)
 	{
-		std::vector<VkClearValue> clear_values(framebuffer.get_attachment_views().length(), VkClearValue{.color = {.float32 = {0.0f, 0.0f, 0.0f, 1.0f}}});
-
+		constexpr VkClearValue colour_clear{.color = {.float32 = {0.0f, 0.0f, 0.0f, 1.0f}}};
+		constexpr VkClearValue depth_clear{.depthStencil = {1.0f, 0}};
+		std::vector<VkClearValue> clear_values(framebuffer.get_attachment_views().length());
+		for(std::size_t i = 0; i < framebuffer.get_attachment_views().length(); i++)
+		{
+			switch(framebuffer.get_attachment_views()[i]->get_aspect())
+			{
+				case ImageAspect::Colour:
+					clear_values[i] = colour_clear;
+				break;
+				case ImageAspect::Depth:
+					clear_values[i] = depth_clear;
+				break;
+			}
+		}
 		VkRenderPassBeginInfo begin
 		{
 			.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,

@@ -85,10 +85,29 @@ namespace tz::gl::vk2
 		return *this->info.image;
 	}
 
+	ImageAspect ImageView::get_aspect() const
+	{
+		return this->info.aspect;
+	}
+
 	ImageView::NativeType ImageView::native() const
 	{
 		return this->image_view;
 	}
+
+	ImageView ImageView::null()
+	{
+		return {};
+	}
+
+	bool ImageView::is_null() const
+	{
+		return this->image_view == VK_NULL_HANDLE;
+	}
+
+	ImageView::ImageView():
+	image_view(VK_NULL_HANDLE),
+	info(){}
 }
 
 #endif // TZ_VULKAN
