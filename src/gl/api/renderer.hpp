@@ -40,18 +40,42 @@ namespace tz::gl2
 	};
 
 	/**
-	 * @ingroup tz_gl2
+	 * @ingroup tz_gl2_renderer
 	 * Named requirement for a Renderer.
 	 */
 	template<typename T>
 	concept RendererType = requires(T t, ResourceHandle r, std::size_t tri_count)
 	{
+		/**
+		 * Retrieves the number of resources used by the renderer.
+		 * @return Number of resources of any type.
+		 */
 		{t.resource_count()} -> std::convertible_to<unsigned int>;
+		/**
+		 * Retrieve an existing renderer resource via an existing handle.
+		 * @param r Handle corresponding to an existing resource. If the handle is not associated with this renderer, the behaviour is undefined.
+		 * @return Pointer to the resource corresponding to the provided handle.
+		 */
 		{t.get_resource(r)} -> std::convertible_to<const IResource*>;
+		/**
+		 * Retrieve an existing renderer component via an existing handle.
+		 * @param r Handle corresponding to an existing resource. If the handle is not associated with this renderer, the behaviour is undefined.
+		 * @return Pointer to the component based upon the resource corresponding to the provided handle.
+		 */
 		{t.get_component(r)} -> std::convertible_to<const IComponent*>;
+		/**
+		 * Retrieve the options with which the renderer was constructed.
+		 * @return Options containing additional features used by the renderer.
+		 */
 		{t.get_options()} -> std::convertible_to<RendererOptions>;
-
+		/**
+		 * Invoke the renderer, emitting a single draw call of a set number of triangles. The number of triangles renderered is equal to the number of triangles rendered in the previous draw-call. If this is the first draw, zero triangles are rendered.
+		 */
 		{t.render()} -> std::same_as<void>;
+		/**
+		 * Invoke the renderer, emitting a single draw call of a set number of triangles.
+		 * @param tri_count Number of triangles to render.
+		 */
 		{t.render(tri_count)} -> std::same_as<void>;
 	};
 }
