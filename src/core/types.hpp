@@ -12,6 +12,9 @@ namespace tz
 	concept Arithmetic = std::is_arithmetic_v<std::decay_t<T>>;
 
 	template<typename T>
+	concept ConstType = std::is_const_v<T>;
+
+	template<typename T>
 	concept EnumClass = std::is_enum_v<T> && !std::is_convertible_v<T, int>;
 
 	/**

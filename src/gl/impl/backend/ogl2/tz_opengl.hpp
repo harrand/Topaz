@@ -24,6 +24,7 @@ namespace tz::gl::ogl2
 	 */
 	void initialise(tz::GameInfo game_info, tz::ApplicationType app_type);
 	void terminate();
+	bool is_initialised();
 
 	constexpr tz::Version ogl_version{4, 6, 0};
 }

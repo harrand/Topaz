@@ -82,6 +82,12 @@ namespace tz::gl::ogl2
 		 */
 		void* map();
 		/**
+		 * Map the buffer, receiving a CPU-visible pointer. Read-only.
+		 * @pre The buffer must have been created with a dynamic residency. See @ref BufferResidency::Dynamic. Otherwise, the behaviour is undefined.
+		 * @return Pointer to a block of memory of size `this->size()` bytes.
+		 */
+		const void* map() const;
+		/**
 		 * Map the buffer as an array of some type.
 		 * @pre The buffer must have been created with a dynamic residency. See @ref BufferResidency::Dynamic. Otherwise, the behaviour is undefined.
 		 * @tparam T Type of which to retrieve an array of.
@@ -90,16 +96,43 @@ namespace tz::gl::ogl2
 		template<typename T>
 		std::span<T> map_as()
 		{
-			return {reinterpret_cast<T*>(this->map(), this->size() / sizeof(T))};
+			return {reinterpret_cast<T*>(this->map()), this->size() / sizeof(T)};
 		}
+		/**
+		 * Map the buffer as an array of some type. Read-only.
+		 * @pre The buffer must have been created with a dynamic residency. See @ref BufferResidency::Dynamic. Otherwise, the behaviour is undefined.
+		 * @tparam T Type of which to retrieve an array of.
+		 * @return Span representing a view into an array of the provided type.
+		 */
+		template<tz::ConstType T>
+		std::span<T> map_as() const
+		{
+			return {reinterpret_cast<T*>(this->map()), this->size() / sizeof(T)};
+		}
+		/**
+		 * Create a buffer which acts as a null buffer, that is, no operations are valid on it.
+		 * @return Null Buffer.
+		 */
+		static Buffer null();
+		/**
+		 * Query as to whether the buffer is a null buffer. A null buffer is equivalent to @ref Buffer::null().
+		 */
+		bool is_null() const;
 
 		using NativeType = GLuint;
 		NativeType native() const;
 	private:
+		Buffer();
+
 		GLuint buffer;
 		BufferInfo info;
 		void* mapped_ptr = nullptr;
 	};
+
+	namespace buffer
+	{
+		void copy(const Buffer& source, Buffer& destination);
+	}
 }
 
 #endif // TZ_OGL

@@ -22,6 +22,11 @@ namespace tz::gl::ogl2
 		initialised = false;
 		tz_report("OpenGL v%u.%u Terminated", ogl_version.major, ogl_version.minor);
 	}
+
+	bool is_initialised()
+	{
+		return initialised;
+	}
 }
 
 #endif // TZ_OGL
