@@ -10,6 +10,9 @@ namespace tz::gl2
 	#if TZ_VULKAN
 		using BufferComponent = BufferComponentVulkan;
 		using ImageComponent = ImageComponentVulkan;
+	#elif TZ_OGL
+		struct BufferComponent{};
+		struct ImageComponent{};
 	#endif
 }
 

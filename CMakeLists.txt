@@ -86,18 +86,18 @@ add_library(topaz
 	src/gl/impl/frontend/vk2/renderer.inl
 
 	# tz::gl (OpenGL Frontend)
-	src/gl/impl/frontend/ogl/component.cpp
-	src/gl/impl/frontend/ogl/component.hpp
-	src/gl/impl/frontend/ogl/convert.hpp
-	src/gl/impl/frontend/ogl/convert.inl
-	src/gl/impl/frontend/ogl/device.cpp
-	src/gl/impl/frontend/ogl/device.hpp
-	src/gl/impl/frontend/ogl/processor.cpp
-	src/gl/impl/frontend/ogl/processor.hpp
-	src/gl/impl/frontend/ogl/renderer.hpp
-	src/gl/impl/frontend/ogl/renderer.cpp
-	src/gl/impl/frontend/ogl/shader.cpp
-	src/gl/impl/frontend/ogl/shader.hpp
+	#src/gl/impl/frontend/ogl/component.cpp
+	#src/gl/impl/frontend/ogl/component.hpp
+	#src/gl/impl/frontend/ogl/convert.hpp
+	#src/gl/impl/frontend/ogl/convert.inl
+	#src/gl/impl/frontend/ogl/device.cpp
+	#src/gl/impl/frontend/ogl/device.hpp
+	#src/gl/impl/frontend/ogl/processor.cpp
+	#src/gl/impl/frontend/ogl/processor.hpp
+	#src/gl/impl/frontend/ogl/renderer.hpp
+	#src/gl/impl/frontend/ogl/renderer.cpp
+	#src/gl/impl/frontend/ogl/shader.cpp
+	#src/gl/impl/frontend/ogl/shader.hpp
 
 	# tz::gl (Vulkan Backend 2)
 	src/gl/impl/backend/vk2/buffer.cpp
@@ -146,18 +146,21 @@ add_library(topaz
 	src/gl/impl/backend/vk2/vma.cpp
 
 	# tz::gl (OpenGL Backend)
-	src/gl/impl/backend/ogl/setup/opengl_instance.cpp
-	src/gl/impl/backend/ogl/setup/opengl_instance.hpp
-	src/gl/impl/backend/ogl/buffer.cpp
-	src/gl/impl/backend/ogl/buffer.hpp
-	src/gl/impl/backend/ogl/framebuffer.cpp
-	src/gl/impl/backend/ogl/framebuffer.hpp
-	src/gl/impl/backend/ogl/renderbuffer.cpp
-	src/gl/impl/backend/ogl/renderbuffer.hpp
-	src/gl/impl/backend/ogl/texture.cpp
-	src/gl/impl/backend/ogl/texture.hpp
-	src/gl/impl/backend/ogl/tz_opengl.hpp
-	src/gl/impl/backend/ogl/tz_opengl.cpp
+	src/gl/impl/backend/ogl2/tz_opengl.cpp
+	src/gl/impl/backend/ogl2/tz_opengl.hpp
+
+	#src/gl/impl/backend/ogl/setup/opengl_instance.cpp
+	#src/gl/impl/backend/ogl/setup/opengl_instance.hpp
+	#src/gl/impl/backend/ogl/buffer.cpp
+	#src/gl/impl/backend/ogl/buffer.hpp
+	#src/gl/impl/backend/ogl/framebuffer.cpp
+	#src/gl/impl/backend/ogl/framebuffer.hpp
+	#src/gl/impl/backend/ogl/renderbuffer.cpp
+	#src/gl/impl/backend/ogl/renderbuffer.hpp
+	#src/gl/impl/backend/ogl/texture.cpp
+	#src/gl/impl/backend/ogl/texture.hpp
+	#src/gl/impl/backend/ogl/tz_opengl.hpp
+	#src/gl/impl/backend/ogl/tz_opengl.cpp
 	)
 
 

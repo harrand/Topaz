@@ -57,12 +57,6 @@ namespace tz::gl2
 			 * @defgroup tz_gl2_graphicsapi_ogl_frontend OpenGL Frontend
 			 * Documentation for the OpenGL Frontend, which connects the OpenGL Backend to the tz::gl2 API.
 			 */
-	
-			/**
-			 * @ingroup tz_gl2_graphicsapi_ogl
-			 * @defgroup tz_gl2_graphicsapi_ogl_backend OpenGL Backend
-			 * Documentation for the OpenGL Backend, which acts as a large abstraction around the OpenGL API. This is a low-level module free of all context relevant to Topaz.
-			 */
 
 	/**
 	 * @ingroup tz_gl2

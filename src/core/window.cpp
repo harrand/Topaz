@@ -1,5 +1,5 @@
 #include "core/window.hpp"
-#include "gl/impl/backend/ogl/tz_opengl.hpp"
+#include "gl/impl/backend/ogl2/tz_opengl.hpp"
 #include <utility>
 
 namespace tz
@@ -21,9 +21,8 @@ namespace tz
 			glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 		#elif TZ_OGL
 			glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
-			constexpr tz::Version ogl_version = gl::ogl::get_opengl_version();
-			glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, ogl_version.major);
-			glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, ogl_version.minor);
+			glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, tz::gl::ogl2::ogl_version.major);
+			glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, tz::gl::ogl2::ogl_version.minor);
 			glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 			#if TZ_DEBUG
 				glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);

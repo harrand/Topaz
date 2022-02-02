@@ -6,7 +6,7 @@
 #if TZ_VULKAN
 #include "gl/impl/backend/vk2/tz_vulkan.hpp"
 #elif TZ_OGL
-#include "gl/impl/backend/ogl/tz_opengl.hpp"
+#include "gl/impl/backend/ogl2/tz_opengl.hpp"
 #endif
 
 #include <cstdio>
@@ -48,18 +48,7 @@ namespace tz
 		#if TZ_VULKAN
 			tz::gl::vk2::initialise(game_info, app_type);
 		#elif TZ_OGL
-			if(app_type == ApplicationType::WindowApplication || app_type == ApplicationType::HiddenWindowApplication)
-			{
-				tz::gl::ogl::initialise(game_info);
-			}
-			else if(app_type == ApplicationType::Headless)
-			{
-				tz::gl::ogl::initialise_headless(game_info);
-			}
-			else
-			{
-				tz_error("Invalid tz::ApplicationType or support for that type is not yet implemented for this render-api (OpenGL)");
-			}
+			tz::gl::ogl2::initialise(game_info, app_type);
 		#endif
 
 		tz_app_type = app_type;
@@ -76,7 +65,7 @@ namespace tz
 		#if TZ_VULKAN
 			tz::gl::vk2::terminate();
 		#elif TZ_OGL
-			tz::gl::ogl::terminate();
+			tz::gl::ogl2::terminate();
 		#endif
 
 		if(tz_app_type == ApplicationType::WindowApplication)

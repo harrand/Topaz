@@ -1,5 +1,6 @@
 if(${TOPAZ_OGL})
 	add_subdirectory(ogl)
+	add_subdirectory(ogl2)
 elseif(${TOPAZ_VULKAN})
 	add_subdirectory(vk2)
 endif()

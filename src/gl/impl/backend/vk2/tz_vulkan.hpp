@@ -1,3 +1,5 @@
+#ifndef TOPAZ_GL_IMPL_BACKEND_VK2_TZ_VULKAN_HPP
+#define TOPAZ_GL_IMPL_BACKEND_VK2_TZ_VULKAN_HPP
 #if TZ_VULKAN
 #include "core/window.hpp"
 #include "core/version.hpp"
@@ -266,3 +268,4 @@ namespace tz::gl::vk2
 	}
 }
 #endif // TZ_VULKAN
+#endif // TOPAZ_GL_IMPL_BACKEND_VK2_TZ_VULKAN_HPP
