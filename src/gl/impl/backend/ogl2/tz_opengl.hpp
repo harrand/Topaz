@@ -9,7 +9,7 @@ namespace tz::gl::ogl2
 	/**
 	 * @ingroup tz_gl2_graphicsapi_ogl
 	 * @defgroup tz_gl_ogl2 OpenGL Backend
-	 * Documentation for the OpenGL Backend, which acts as a large abstraction around the OpenGL API. This is a low-level module free of all context relevant to Topaz.
+	 * Documentation for the OpenGL Backend (4.6 Desktop), which acts as a large abstraction around the OpenGL API. This is a low-level module free of all context relevant to Topaz.
 	 */
 
 	/**
@@ -23,7 +23,15 @@ namespace tz::gl::ogl2
 	 * Initialise the OpenGL backend.
 	 */
 	void initialise(tz::GameInfo game_info, tz::ApplicationType app_type);
+	/**
+	 * @ingroup tz_gl_ogl2
+	 * Terminate the OpenGL backend.
+	 */
 	void terminate();
+	/**
+	 * @ingroup tz_gl_ogl2
+	 * Query as to whether the OpenGL backend has been initialised or not.
+	 */
 	bool is_initialised();
 
 	constexpr tz::Version ogl_version{4, 6, 0};
