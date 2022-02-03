@@ -131,7 +131,17 @@ namespace tz::gl::ogl2
 
 	namespace buffer
 	{
+		/**
+	 	 * @ingroup tz_gl_ogl2_buffers
+		 * Copy the entire data store of a buffer to another. If the destination buffer is larger than the source buffer, the bytes following the copy region are untouched.
+		 * @pre The destination buffer must have size greater than or equal to the source buffer, otherwise the behaviour is undefined.
+		 */
 		void copy(const Buffer& source, Buffer& destination);
+		/**
+	 	 * @ingroup tz_gl_ogl2_buffers
+		 * Buffers are not resizeable. However, this function creates an exact copy of the buffer, but with a new size. You can assume that the target, residency and data store contents are completely unchanged. If the resize increases the size of the buffer however, then the new bytes have undefined values.
+		 */
+		Buffer clone_resized(const Buffer& buf, std::size_t new_size);
 	}
 }
 

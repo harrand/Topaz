@@ -9,20 +9,16 @@ namespace tz::gl::ogl2
 	info(info)
 	{
 		tz_assert(ogl2::is_initialised(), "Cannot create ogl2 Buffer because ogl2 backend has not yet been initialised! Please submit a bug report.");
+		tz_assert(this->info.size_bytes > 0, "Cannot create a zero-sized buffer.");
 		glCreateBuffers(1, &this->buffer);
-		switch(this->info.residency)
+		constexpr GLenum buffer_create_flags_static = 0;
+		constexpr GLenum buffer_create_flags_dynamic = GL_DYNAMIC_STORAGE_BIT | GL_MAP_READ_BIT | GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT;
+		GLenum flags = buffer_create_flags_static;
+		if(this->info.residency == BufferResidency::Dynamic)
 		{
-			case BufferResidency::Static:
-				// Cannot be written to directly via neither glBufferSubData nor mapping, but transfer commands can be performed i.e `glCopyBufferSubData`
-				glNamedBufferStorage(this->buffer, static_cast<GLsizeiptr>(this->info.size_bytes), nullptr, 0);
-			break;
-			case BufferResidency::Dynamic:
-				glNamedBufferStorage(this->buffer, static_cast<GLsizeiptr>(this->info.size_bytes), nullptr, GL_MAP_READ_BIT | GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
-			break;
-			default:
-				tz_error("Unrecognised ogl2::BufferResidency. Please submit a bug report.");
-			break;
+			flags = buffer_create_flags_dynamic;
 		}
+		glNamedBufferStorage(this->buffer, static_cast<GLsizeiptr>(this->info.size_bytes), nullptr, flags);
 	}
 
 	Buffer::Buffer(Buffer&& move):
@@ -99,6 +95,28 @@ namespace tz::gl::ogl2
 
 			tz_assert(destination.size() >= source.size(), "Buffer Copy: Buffer source was larger than destination; therefore destination does not have enough space for transfer. Please submit a bug report.");
 			glCopyNamedBufferSubData(source.native(), destination.native(), 0, 0, static_cast<GLsizeiptr>(source.size()));
+		}
+
+		Buffer clone_resized(const Buffer& buf, std::size_t new_size)
+		{
+			Buffer newbuf
+			{{
+				.target = buf.get_target(),
+				.residency = buf.get_residency(),
+				.size_bytes = new_size
+			}};
+			if(new_size <= buf.size())
+			{
+
+				// We're smaller, so we copy all that we can.
+				glCopyNamedBufferSubData(buf.native(), newbuf.native(), 0, 0, static_cast<GLsizeiptr>(buf.size()));
+			}
+			else
+			{
+				// We're bigger or same size, so just copy the entire source. If anything is left in the destination it will be undefined values.
+				copy(buf, newbuf);
+			}
+			return newbuf;
 		}
 	}
 }

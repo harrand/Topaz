@@ -34,7 +34,7 @@ void create_empty_buffer()
 	{{
 		.target = BufferTarget::Uniform,
 		.residency = BufferResidency::Static,
-		.size_bytes = 0
+		.size_bytes = 1
 	}};
 }
 
@@ -44,7 +44,8 @@ void semantics()
 	Buffer buf1
 	{{
 		.target = BufferTarget::Uniform,
-		.residency = BufferResidency::Static
+		.residency = BufferResidency::Static,
+		.size_bytes = 1
 	}};
 	Buffer buf2
 	{{
