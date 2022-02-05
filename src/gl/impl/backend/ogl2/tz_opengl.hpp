@@ -20,6 +20,12 @@ namespace tz::gl::ogl2
 
 	/**
 	 * @ingroup tz_gl_ogl2
+	 * @defgroup tz_gl_ogl2_image Images, Samplers and Formats
+	 * Documentation for everything relating to Images, Samplers and ImageFormats.
+	 */
+
+	/**
+	 * @ingroup tz_gl_ogl2
 	 * Initialise the OpenGL backend.
 	 */
 	void initialise(tz::GameInfo game_info, tz::ApplicationType app_type);
