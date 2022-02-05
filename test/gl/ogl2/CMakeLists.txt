@@ -9,3 +9,7 @@ add_tz_test(NAME ogl_image_test
 add_tz_test(NAME ogl_initialise_test
 	SOURCE_FILES ogl_initialise_test.cpp	
 	)
+
+add_tz_test(NAME ogl_shader_test
+	SOURCE_FILES ogl_shader_test.cpp	
+	)

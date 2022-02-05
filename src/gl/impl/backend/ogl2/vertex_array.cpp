@@ -6,6 +6,7 @@ namespace tz::gl::ogl2
 	VertexArray::VertexArray():
 	vao(0)
 	{
+		tz_assert(ogl2::is_initialised(), "Tried to create vertex array because ogl2 was not initialised. Please submit a bug report.");
 		glCreateVertexArrays(1, &this->vao);
 	}
 
