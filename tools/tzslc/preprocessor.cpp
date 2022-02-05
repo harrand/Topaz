@@ -2,9 +2,6 @@
 #include "preprocessor.hpp"
 #include "source_transform.hpp"
 #include "gl/shader.hpp"
-#if TZ_VULKAN
-#include "gl/impl/backend/vk2/tz_vulkan.hpp"
-#endif
 
 namespace tzslc
 {
@@ -106,7 +103,7 @@ namespace tzslc
 		std::string expr = *beg;
 		std::string fmt_str = *(beg + 1);
 	   	work_done = true;
-	   	return std::string("tz_printf(") + std::string("\"") + std::string(tz::gl::vk2::VulkanDebugMessenger::debug_message_shader_printf_label) +  std::string("[%d]") + fmt_str + "\", " + expr;
+	   	return std::string("tz_printf(") + std::string("\"") + std::string("TZ_ASSERT_SHADER")+  std::string("[%d]") + fmt_str + "\", " + expr;
 	   });
 	   if(work_done)
 	   {

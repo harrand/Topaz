@@ -49,7 +49,10 @@ macro(add_shader_opengl)
 	)
 
 	set_source_files_properties(${output_path} PROPERTIES GENERATED TRUE)
-	target_sources(${ADD_SHADER_TARGET} PRIVATE ${output_path})
+	export_shader_header(
+		FILE_NAME ${output_path}
+	)
+	#target_sources(${ADD_SHADER_TARGET} PRIVATE ${output_path})
 endmacro()
 
 function(add_shader)

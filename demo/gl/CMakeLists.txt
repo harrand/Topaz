@@ -1,4 +1,8 @@
-add_subdirectory(vk2)
+if(${TOPAZ_VULKAN})
+	add_subdirectory(vk2)
+elseif(${TOPAZ_OGL})
+	add_subdirectory(ogl2)
+endif()
 
 add_demo(
 	TARGET tz_triangle_demo

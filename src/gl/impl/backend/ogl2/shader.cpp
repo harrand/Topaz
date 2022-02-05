@@ -50,6 +50,7 @@ namespace tz::gl::ogl2
 		OGLString info_log(info_log_length, '\0');
 		GLsizei length_used;
 		glGetShaderInfoLog(this->shader, info_log.length(), &length_used, info_log.data());
+		length_used++; // For null terminator.
 		tz_assert(std::cmp_equal(length_used, info_log.length()), "Shader Info Log had unexpected size. GL told us %zu, actual size was %u", info_log.length(), length_used);
 		return {.success = false, .info_log = info_log};
 	}
@@ -118,8 +119,14 @@ namespace tz::gl::ogl2
 		OGLString info_log(info_log_length, '\0');
 		GLsizei length_used;
 		glGetProgramInfoLog(this->program, info_log.length(), &length_used, info_log.data());
+		length_used++; // For null terminator.
 		tz_assert(std::cmp_equal(length_used, info_log.length()), "Program Info Log had unexpected size. GL told us %zu, actual size was %u", info_log.length(), length_used);
 		return {.success = false, .info_log = info_log};
+	}
+
+	void Shader::use() const
+	{
+		glUseProgram(this->program);
 	}
 
 	Shader Shader::null()
@@ -151,6 +158,7 @@ namespace tz::gl::ogl2
 		OGLString info_log(info_log_length, '\0');
 		GLsizei length_used;
 		glGetProgramInfoLog(this->program, info_log.length(), &length_used, info_log.data());
+		length_used++; // For null terminator.
 		tz_assert(std::cmp_equal(length_used, info_log.length()), "Program Info Log had unexpected size. GL told us %zu, actual size was %u", info_log.length(), length_used);
 		return {.success = false, .info_log = info_log};
 	}

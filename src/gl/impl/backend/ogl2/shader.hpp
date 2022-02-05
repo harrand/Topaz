@@ -119,6 +119,10 @@ namespace tz::gl::ogl2
 		 * @return Result state describing the success of the link + validate attempts.
 		 */
 		LinkResult link();
+		/**
+		 * Set the program as in-use, causing subsequent gl commands to use it as the shader program.
+		 */
+		void use() const;
 
 		/**
 		 * Create the null shader. Operations are invalid on the null shader.
