@@ -40,8 +40,8 @@ namespace tz
 				wnd = new tz::Window{tz::Window::null()};
 			#elif TZ_OGL
 				// TODO: Headless implementation for OGL
-				tz_report("Headless applications are stubbed out for OpenGL");
-				std::exit(0);
+				tz_error("Headless applications are stubbed out for OpenGL");
+				std::exit(-1);
 			#endif
 		}
 		initialised = true;
