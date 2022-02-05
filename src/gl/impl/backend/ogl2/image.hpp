@@ -29,6 +29,8 @@ namespace tz::gl::ogl2
 	class Image
 	{
 	public:
+		/// Opaque handle for a bindless texture.
+		using BindlessTextureHandle = GLuint64;
 		/**
 		 * Create a new Image.
 		 * @param info Specifies creation flags for the image.
@@ -52,6 +54,23 @@ namespace tz::gl::ogl2
 		 * Retrieves the state specifying how the image is sampled in a shader.
 		 */
 		const Sampler& get_sampler() const;
+	
+		/**
+		 * Make the image bindless, allowing for an alternate way to reference the image as a shader resource, via a bindless handle. See @ref Image::get_bindless_handle() for usage. Once the image is made bindless, the action cannot be undone.
+		 * @pre Image cannot already be bindless, otherwise the behaviour is undefined (this is also a major hazard and may cause a GPU crash).
+		 */
+		void make_bindless();
+		/**
+		 * Query as to whether this image is bindless.
+		 * @return True if the image is bindless, otherwise false.
+		 */
+		bool is_bindless() const;
+		/**
+		 * Retrieves the bindless texture handle for this bindless image.
+		 * @pre Image must be bindless, otherwise the behaviour is undefined.
+		 * @return Bindless image handle.
+		 */
+		BindlessTextureHandle get_bindless_handle() const;
 
 		using NativeType = GLuint;
 		NativeType native() const;
@@ -70,6 +89,7 @@ namespace tz::gl::ogl2
 
 		GLuint image;
 		ImageInfo info;
+		std::optional<BindlessTextureHandle> maybe_bindless_handle;
 	};
 
 	namespace image

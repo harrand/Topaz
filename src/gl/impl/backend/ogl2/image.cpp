@@ -5,7 +5,8 @@ namespace tz::gl::ogl2
 {
 	Image::Image(ImageInfo info):
 	image(0),
-	info(info)
+	info(info),
+	maybe_bindless_handle(std::nullopt)
 	{
 		glCreateTextures(GL_TEXTURE_2D, 1, &this->image);
 
@@ -21,7 +22,8 @@ namespace tz::gl::ogl2
 
 	Image::Image(Image&& move):
 	image(0),
-	info()
+	info(),
+	maybe_bindless_handle(std::nullopt)
 	{
 		*this = std::move(move);
 	}
@@ -35,6 +37,7 @@ namespace tz::gl::ogl2
 	{
 		std::swap(this->image, rhs.image);
 		std::swap(this->info, rhs.info);
+		std::swap(this->maybe_bindless_handle, rhs.maybe_bindless_handle);
 		return *this;
 	}
 
@@ -51,6 +54,17 @@ namespace tz::gl::ogl2
 	const Sampler& Image::get_sampler() const
 	{
 		return this->info.sampler;
+	}
+
+	void Image::make_bindless()
+	{
+		tz_assert(!this->is_bindless(), "Image is being made bindless, but it was already bindless. Please submit a bug report.");
+		this->maybe_bindless_handle = glGetTextureHandleARB(this->image);
+	}
+
+	bool Image::is_bindless() const
+	{
+		return this->maybe_bindless_handle.has_value();
 	}
 
 	Image::NativeType Image::native() const
@@ -70,7 +84,9 @@ namespace tz::gl::ogl2
 
 	Image::Image():
 	image(0),
-	info(){}
+	info(),
+	maybe_bindless_handle(std::nullopt)
+	{}
 
 	namespace image
 	{
@@ -94,6 +110,10 @@ namespace tz::gl::ogl2
 				std::min(image.get_dimensions()[1], new_size[1])
 			};
 			glCopyImageSubData(image.native(), GL_TEXTURE_2D, 0, 0, 0, 0, newimg.native(), GL_TEXTURE_2D, 0, 0, 0, 0, min[0], min[1], 0);
+			if(image.is_bindless())
+			{
+				newimg.make_bindless();
+			}
 			return newimg;
 		}
 	}
