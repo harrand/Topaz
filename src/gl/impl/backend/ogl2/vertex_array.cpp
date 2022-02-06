@@ -32,6 +32,12 @@ namespace tz::gl::ogl2
 		glBindVertexArray(this->vao);
 	}
 
+	void VertexArray::draw(unsigned int triangle_count)
+	{
+		this->bind();
+		glDrawArrays(GL_TRIANGLES, 0, triangle_count * 3);
+	}
+
 	VertexArray VertexArray::null()
 	{
 		return {nullptr};

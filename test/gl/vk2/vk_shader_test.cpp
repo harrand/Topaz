@@ -66,8 +66,11 @@ void basic_shader()
 
 int main()
 {
-	tz::GameInfo game{"vk_shader_test", tz::Version{1, 0, 0}};
-	tz::initialise(game, tz::ApplicationType::Headless);
+	tz::initialise
+	({
+		.name = "vk_shader_test",
+		.app_type = tz::ApplicationType::Headless
+	});
 	{
 		basic_shader_module();
 		basic_shader();

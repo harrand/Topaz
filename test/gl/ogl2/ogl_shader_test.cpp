@@ -23,8 +23,11 @@ void create_empty_shader()
 
 int main()
 {
-	tz::GameInfo game{"ogl_shader_test", tz::Version{1, 0, 0}, tz::info()};
-	tz::initialise(game, tz::ApplicationType::HiddenWindowApplication);
+	tz::initialise
+	({
+		.name = "ogl_shader_test",
+		.app_type = tz::ApplicationType::HiddenWindowApplication
+	});
 	{
 		create_empty_shader();
 	}

@@ -26,6 +26,11 @@ namespace tz::gl::ogl2
 		 * Bind the VAO, causing subsequent GL commands using VAO state to use this.
 		 */
 		void bind();
+		/**
+		 * Emit a single draw call, drawing a set number of triangles. Remember that vertex attributes are not supported in this backend, so you will source input data from either hard-coded shader values or from UBO/SSBO shader resources.
+		 * @param triangle_count Number of triangles to draw.
+		 */
+		void draw(unsigned int triangle_count);
 
 		/**
 		 * Retrieve the Null VertexArray. Binding the null vertex array is equivalent to unbinding a vertex array. It is invalid to attempt to perform draws or computes using the null vertex array.

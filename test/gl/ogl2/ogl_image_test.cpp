@@ -44,8 +44,11 @@ void create_empty_bindless_image()
 
 int main()
 {
-	tz::GameInfo game{"ogl_image_test", tz::Version{1, 0, 0}, tz::info()};
-	tz::initialise(game, tz::ApplicationType::HiddenWindowApplication);
+	tz::initialise
+	({
+		.name = "ogl_image_test",
+		.app_type = tz::ApplicationType::HiddenWindowApplication
+	});
 	{
 		create_empty_image();
 		create_empty_bindless_image();

@@ -58,8 +58,11 @@ void basic_graphics_pipeline()
 
 int main()
 {
-	tz::GameInfo game{"vk_descriptor_test", tz::Version{1, 0, 0}, tz::info()};
-	tz::initialise(game, tz::ApplicationType::Headless);
+	tz::initialise
+	({
+		.name = "vk_graphics_pipeline_test",
+		.app_type = tz::ApplicationType::Headless
+	});
 	{
 		basic_graphics_pipeline();
 	}

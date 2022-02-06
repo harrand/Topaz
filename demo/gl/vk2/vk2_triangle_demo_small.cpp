@@ -15,12 +15,10 @@
 
 int main()
 {
-	tz::GameInfo g{"vk2_triangle_demo_small", tz::Version{1, 0, 0}, tz::info()};
-	tz::initialise(g, tz::ApplicationType::WindowApplication, 
-	{
-		.width = 800,
-		.height = 600,
-		.resizeable = false,
+	tz::initialise
+	({
+		.name = "vk2_triangle_demo_small",
+		.window = {.flags = {.resizeable = false}}
 	});
 	{
 		// First start with basic state (get a LogicalDevice and Swapchain running)

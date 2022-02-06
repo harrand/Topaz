@@ -1,6 +1,7 @@
 #include "core/tz.hpp"
 #include "gl/imported_shaders.hpp"
 #include "gl/impl/backend/ogl2/tz_opengl.hpp"
+#include "gl/impl/backend/ogl2/framebuffer.hpp"
 #include "gl/impl/backend/ogl2/shader.hpp"
 #include "gl/impl/backend/ogl2/vertex_array.hpp"
 
@@ -35,15 +36,14 @@ int main()
 				}
 			 }
 		}};
-		vao.bind();
+		Framebuffer frame = Framebuffer::null();
 		while(!tz::window().is_close_requested())
 		{
 			tz::window().update();
-			glBindFramebuffer(GL_FRAMEBUFFER, 0);
-			glViewport(0, 0, static_cast<GLsizei>(tz::window().get_width()), static_cast<GLsizei>(tz::window().get_height()));
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			frame.bind();
+			frame.clear();
 			shader.use();
-			glDrawArrays(GL_TRIANGLES, 0, 3);
+			vao.draw(1);
 		}
 	}
 	tz::terminate();

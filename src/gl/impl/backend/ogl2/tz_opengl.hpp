@@ -32,6 +32,12 @@ namespace tz::gl::ogl2
 
 	/**
 	 * @ingroup tz_gl_ogl2
+	 * @defgroup tz_gl_ogl2_framebuffer Framebuffers
+	 * Documentation for everything relating to framebuffers.
+	 */
+
+	/**
+	 * @ingroup tz_gl_ogl2
 	 * Initialise the OpenGL backend.
 	 */
 	void initialise(tz::GameInfo game_info, tz::ApplicationType app_type);

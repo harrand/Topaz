@@ -144,11 +144,13 @@ void semantics()
 
 int main()
 {
-	tz::GameInfo game{"vk_physical_device_test", tz::Version{1, 0, 0}, tz::info()};
-	tz::ApplicationType app_type = tz::ApplicationType::HiddenWindowApplication;
-	tz::initialise(game, app_type);
-	// TODO: Don't need to specifically vk2::initialise/term once vk2 is hooked up to tz::initialise.
+	tz::initialise
+	({
+		.name = "vk_physical_device_test",
+		.app_type = tz::ApplicationType::HiddenWindowApplication
+	});
 	{
+		tz::GameInfo game{"vk_physical_device_test", {1, 0, 0}, tz::info()};
 		devices();
 		guaranteed_formats();
 		window_surfaces(game);

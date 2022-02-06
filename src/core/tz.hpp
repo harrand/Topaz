@@ -78,21 +78,10 @@ namespace tz
 		/// - Describes extra information about the window, if initialisation will spawn one. Defaults to a set of implementation-defined flags -- There is no guarantee these will change in subsequent releases so do not rely on the defaults not changing.
 		WindowInitArgs window = {};
 	};
-
-	/**
-	 * @ingroup tz_core_init
-	 * @brief Initialise Topaz.
-	 * @pre If any other Topaz code not within the "Initial Group" has been invoked before this, then the behaviour of the program is undefined. To know if something is within the Initial Group, check their doucmentation notes.
-	 * @post If `tz::terminate()` is not called before the end of program runtime, then the behaviour of the program is undefined.
-	 * @details This initialises the render-api backend. Also creates a window unless `ApplicationType::Headless` is specified. Note that for `ApplicationType::HiddenWindowApplication`, a window is created but it is invisible.
-	 * 
-	 * @param game_info Information about the application
-	 * @param app_type Describes the anatomy of the application.
-	 */
-	void initialise(GameInfo game_info, ApplicationType app_type = ApplicationType::WindowApplication, WindowInitArgs wargs = {});
 	/**
 	 * @ingroup tz_core_init
 	 * Initialise Topaz.
+	 * @param init Information about how the application should be initialised.
 	 */
 	void initialise(InitialiseInfo init = {});
 	/**

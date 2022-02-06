@@ -91,8 +91,11 @@ void buffer_copies()
 
 int main()
 {
-	tz::GameInfo game{"ogl_buffer_test", tz::Version{1, 0, 0}, tz::info()};
-	tz::initialise(game, tz::ApplicationType::HiddenWindowApplication);
+	tz::initialise
+	({
+		.name = "ogl_buffer_test",
+		.app_type = tz::ApplicationType::HiddenWindowApplication
+	});
 	{
 		create_empty_buffer();
 		semantics();

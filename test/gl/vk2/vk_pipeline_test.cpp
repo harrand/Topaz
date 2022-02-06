@@ -28,8 +28,11 @@ void basic_classic_pipeline_layout()
 
 int main()
 {
-	tz::GameInfo game{"vk_pipeline_test", tz::Version{1, 0, 0}, tz::info()};
-	tz::initialise(game, tz::ApplicationType::Headless);
+	tz::initialise
+	({
+		.name = "vk_pipeline_test",
+		.app_type = tz::ApplicationType::Headless
+	});
 	{
 		basic_classic_pipeline_layout();
 	}

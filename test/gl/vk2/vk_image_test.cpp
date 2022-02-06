@@ -106,8 +106,11 @@ void image_layout_transition()
 
 int main()
 {
-	tz::GameInfo game{"vk_image_test", tz::Version{1, 0, 0}, tz::info()};
-	tz::initialise(game, tz::ApplicationType::Headless);
+	tz::initialise
+	({
+		.name = "vk_image_test",
+		.app_type = tz::ApplicationType::Headless
+	});
 	{
 		basic_images();
 		image_layout_transition();

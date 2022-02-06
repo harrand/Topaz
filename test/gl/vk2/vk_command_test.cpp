@@ -131,8 +131,11 @@ void empty_command_buffer_recording()
 
 int main()
 {
-	tz::GameInfo game{"vk_command_test", tz::Version{1, 0, 0}, tz::info()};
-	tz::initialise(game, tz::ApplicationType::Headless);
+	tz::initialise
+	({
+		.name = "vk_command_test",
+		.app_type = tz::ApplicationType::Headless
+	});
 	{
 		empty_command_pool();
 		basic_command_buffers();

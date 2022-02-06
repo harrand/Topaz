@@ -148,6 +148,8 @@ add_library(topaz
 	# tz::gl (OpenGL Backend)
 	src/gl/impl/backend/ogl2/buffer.cpp
 	src/gl/impl/backend/ogl2/buffer.hpp
+	src/gl/impl/backend/ogl2/framebuffer.cpp
+	src/gl/impl/backend/ogl2/framebuffer.hpp
 	src/gl/impl/backend/ogl2/image.cpp
 	src/gl/impl/backend/ogl2/image.hpp
 	src/gl/impl/backend/ogl2/image_format.hpp

@@ -110,9 +110,13 @@ void headless_logical_device(tz::GameInfo game)
 
 int main()
 {
-	tz::GameInfo game{"vk_logical_device_test", tz::Version{1, 0, 0}, tz::info()};
-	tz::initialise(game, tz::ApplicationType::HiddenWindowApplication);
+	tz::initialise
+	({
+		.name = "vk_logical_device_test",
+		.app_type = tz::ApplicationType::HiddenWindowApplication
+	});
 	{
+		tz::GameInfo game{"vk_logical_device_test", {1, 0, 0}, tz::info()};
 		extensions_coherent();
 		custom_instance_and_window_surface(game);
 		semantics();

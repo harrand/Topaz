@@ -308,8 +308,11 @@ void write_actual_descriptors()
 
 int main()
 {
-	tz::GameInfo game{"vk_descriptor_test", tz::Version{1, 0, 0}, tz::info()};
-	tz::initialise(game, tz::ApplicationType::Headless);
+	tz::initialise
+	({
+		.name = "vk_descriptor_test",
+		.app_type = tz::ApplicationType::Headless
+	});
 	{
 		basic_descriptor_layouts();
 		descriptor_layouts_descriptor_indexing();

@@ -24,14 +24,14 @@ tz::gl::vk2::SwapchainInfo get_safe_swapchain_info(const tz::gl::vk2::LogicalDev
 	return sinfo;
 }
 
-void mandatory_swapchain(tz::GameInfo g)
+void mandatory_swapchain()
 {
 	// No shared state, create our own instance and everything...
 	// Create a swapchain with settings that are mandatory for all vulkan driver implementations, and make sure nothing crashes.
 	using namespace tz::gl::vk2;
 	VulkanInstance window_inst
 	{{
-		.game_info = g,
+		.game_info = {"vk_swapchain_test", {1, 0, 0}, tz::info()},
 		.app_type = tz::ApplicationType::HiddenWindowApplication,
 		.extensions = {InstanceExtension::DebugMessenger},
 		.window = &tz::window()
@@ -132,11 +132,14 @@ void semantics()
 
 int main()
 {
-	tz::GameInfo g{"vk_swapchain_test", tz::Version{1, 0, 0}, tz::info()};
-	tz::initialise(g, tz::ApplicationType::HiddenWindowApplication);
+	tz::initialise
+	({
+		.name = "vk_swapchain_test",
+		.app_type = tz::ApplicationType::HiddenWindowApplication
+	});
 	{
 		swapchain_extension_supported();
-		mandatory_swapchain(g);
+		mandatory_swapchain();
 		semantics();
 	}
 	tz::terminate();

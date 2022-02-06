@@ -153,8 +153,11 @@ void buffer_transfers()
 
 int main()
 {
-	tz::GameInfo game{"vk_buffer_test", tz::Version{1, 0, 0}, tz::info()};
-	tz::initialise(game, tz::ApplicationType::Headless);
+	tz::initialise
+	({
+		.name = "vk_buffer_test",
+		.app_type = tz::ApplicationType::Headless
+	});
 	{
 		basic_buffers();
 		buffer_transfers();

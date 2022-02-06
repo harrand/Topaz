@@ -72,8 +72,11 @@ void complicated_render_pass()
 
 int main()
 {
-	tz::GameInfo game{"vk_render_pass_test", tz::Version{1, 0, 0}, tz::info()};
-	tz::initialise(game, tz::ApplicationType::Headless);
+	tz::initialise
+	({
+		.name = "vk_render_pass_test",
+		.app_type = tz::ApplicationType::Headless
+	});
 	{
 		basic_render_pass();
 		complicated_render_pass();

@@ -1,3 +1,4 @@
+#include "core/tz.hpp"
 #include "gl/impl/backend/vk2/fence.hpp"
 
 void basic_fence_operations()
@@ -30,8 +31,11 @@ void basic_fence_operations()
 
 int main()
 {
-	tz::GameInfo game{"vk_fence_test", tz::Version{1, 0, 0}, tz::info()};
-	tz::initialise(game, tz::ApplicationType::Headless);
+	tz::initialise
+	({
+		.name = "vk_fence_test",
+		.app_type = tz::ApplicationType::Headless
+	});
 	{
 		basic_fence_operations();
 	}

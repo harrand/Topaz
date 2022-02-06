@@ -55,8 +55,11 @@ void swapchain_image_framebuffer()
 
 int main()
 {
-	tz::GameInfo game{"vk_framebuffer_test", tz::Version{1, 0, 0}, tz::info()};
-	tz::initialise(game, tz::ApplicationType::HiddenWindowApplication);
+	tz::initialise
+	({
+		.name = "vk_framebuffer_test",
+		.app_type = tz::ApplicationType::HiddenWindowApplication
+	});
 	{
 		swapchain_image_framebuffer();
 	}
