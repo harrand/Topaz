@@ -35,12 +35,18 @@ namespace tz::gl2
 			const vk2::WindowSurface& surface = instance.get_surface();
 
 			// Create a swapchain.
+			// Ideally we want mailbox present mode, but that may not be available.
+			vk2::SurfacePresentMode present_mode = vk2::SurfacePresentMode::Mailbox;
+			if(!device.get_hardware().get_supported_surface_present_modes().contains(present_mode))
+			{
+				present_mode = device.get_hardware().get_supported_surface_present_modes().front();
+			}
 			this->window_buf = vk2::Swapchain
 			{{
 				.device = &device,
 				.swapchain_image_count_minimum = device.get_hardware().get_surface_capabilities().min_image_count,
 				.image_format = device.get_hardware().get_supported_surface_formats().front(),
-				.present_mode = device.get_hardware().get_supported_surface_present_modes().front()
+				.present_mode = present_mode
 			}};
 		}
 	}
