@@ -13,7 +13,6 @@ int main()
 	tz::initialise
 	({
 		.name = "ogl2_triangle_demo",
-		.window = {}
 	});
 	{
 		using namespace tz::gl::ogl2;

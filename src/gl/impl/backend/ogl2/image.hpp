@@ -54,7 +54,11 @@ namespace tz::gl::ogl2
 		 * Retrieves the state specifying how the image is sampled in a shader.
 		 */
 		const Sampler& get_sampler() const;
-	
+		/**
+		 * Set the image data.
+		 * @param texture_data View into bytes representing the data. Should match the format and dimensions of this texture, as an array of rows of pixel data.
+		 */
+		void set_data(std::span<const std::byte> texture_data);
 		/**
 		 * Make the image bindless, allowing for an alternate way to reference the image as a shader resource, via a bindless handle. See @ref Image::get_bindless_handle() for usage. Once the image is made bindless, the action cannot be undone.
 		 * @pre Image cannot already be bindless, otherwise the behaviour is undefined (this is also a major hazard and may cause a GPU crash).

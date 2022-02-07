@@ -68,6 +68,12 @@ namespace tz::gl::ogl2
 		return this->mapped_ptr;
 	}
 
+	void Buffer::bind_to_resource_id(unsigned int shader_resource_id)
+	{
+		tz_assert(this->get_target() == BufferTarget::Uniform || this->get_target() == BufferTarget::ShaderStorage, "Attempted to bind buffer to resource id %u, but its target was invalid - Only UBOs and SSBOs can be bound to a resource id.", shader_resource_id);
+		glBindBufferBase(static_cast<GLenum>(this->get_target()), shader_resource_id, this->buffer);
+	}
+
 	Buffer Buffer::null()
 	{
 		return {};

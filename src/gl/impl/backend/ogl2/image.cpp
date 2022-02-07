@@ -30,6 +30,11 @@ namespace tz::gl::ogl2
 
 	Image::~Image()
 	{
+		if(this->maybe_bindless_handle.has_value())
+		{
+			glMakeTextureHandleNonResidentARB(this->maybe_bindless_handle.value());
+			this->maybe_bindless_handle = std::nullopt;
+		}
 		glDeleteTextures(1, &this->image);
 	}
 
@@ -56,15 +61,28 @@ namespace tz::gl::ogl2
 		return this->info.sampler;
 	}
 
+	void Image::set_data(std::span<const std::byte> texture_data)
+	{
+		const FormatData internal_fmt = get_format_data(this->get_format());
+		glTextureSubImage2D(this->image, 0, 0, 0, this->get_dimensions()[0], this->get_dimensions()[1], internal_fmt.format, internal_fmt.type, texture_data.data());
+	}
+
 	void Image::make_bindless()
 	{
 		tz_assert(!this->is_bindless(), "Image is being made bindless, but it was already bindless. Please submit a bug report.");
 		this->maybe_bindless_handle = glGetTextureHandleARB(this->image);
+		glMakeTextureHandleResidentARB(this->maybe_bindless_handle.value());
 	}
 
 	bool Image::is_bindless() const
 	{
 		return this->maybe_bindless_handle.has_value();
+	}
+
+	Image::BindlessTextureHandle Image::get_bindless_handle() const
+	{
+		tz_assert(this->is_bindless(), "Attempted to retrieve bindless handle for image which is not bindless.");
+		return this->maybe_bindless_handle.value();
 	}
 
 	Image::NativeType Image::native() const

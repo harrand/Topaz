@@ -110,6 +110,10 @@ namespace tz::gl::ogl2
 			return {reinterpret_cast<T*>(this->map()), this->size() / sizeof(T)};
 		}
 		/**
+		 * Bind the buffer to a shader resource id.
+		 */
+		void bind_to_resource_id(unsigned int shader_resource_id);
+		/**
 		 * Create a buffer which acts as a null buffer, that is, no operations are valid on it.
 		 * @return Null Buffer.
 		 */
