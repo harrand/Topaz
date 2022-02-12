@@ -1,0 +1,3 @@
+[submodule "lib/debugbreak"]
+	path = lib/debugbreak
+	url = https://github.com/Harrand/debugbreak
