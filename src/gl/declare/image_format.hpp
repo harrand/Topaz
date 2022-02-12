@@ -95,52 +95,51 @@ namespace tz::gl2
 		static_assert(CHAR_BIT == 8, "Detected architecture where 1 byte != 8 bits. Topaz does not support this hardware.");
 		switch(fmt)
 		{
-		using enum ImageFormat;
-		case R8_UNorm:
-		case R8_SNorm:
-		case R8_UInt:
-		case R8_SInt:
-		case R8_sRGB:
+		case ImageFormat::R8_UNorm:
+		case ImageFormat::R8_SNorm:
+		case ImageFormat::R8_UInt:
+		case ImageFormat::R8_SInt:
+		case ImageFormat::R8_sRGB:
 			return 1;
 		break;
-		case R16_UNorm:
-		case R16_SNorm:
-		case R16_UInt:
-		case R16_SInt:
-		case RG16_UNorm:
-		case RG16_SNorm:
-		case RG16_UInt:
-		case RG16_SInt:
-		case RG16_sRGB:
-		case Depth16_UNorm:
+		case ImageFormat::R16_UNorm:
+		case ImageFormat::R16_SNorm:
+		case ImageFormat::R16_UInt:
+		case ImageFormat::R16_SInt:
+		case ImageFormat::RG16_UNorm:
+		case ImageFormat::RG16_SNorm:
+		case ImageFormat::RG16_UInt:
+		case ImageFormat::RG16_SInt:
+		case ImageFormat::RG16_sRGB:
+		case ImageFormat::Depth16_UNorm:
 			return 2;
 		break;
-		case RGB24_UNorm:
-		case RGB24_SNorm:
-		case RGB24_UInt:
-		case RGB24_SInt:
-		case RGB24_sRGB:
-		case BGR24_UNorm:
-		case BGR24_SNorm:
-		case BGR24_UInt:
-		case BGR24_SInt:
-		case BGR24_sRGB:
+		case ImageFormat::RGB24_UNorm:
+		case ImageFormat::RGB24_SNorm:
+		case ImageFormat::RGB24_UInt:
+		case ImageFormat::RGB24_SInt:
+		case ImageFormat::RGB24_sRGB:
+		case ImageFormat::BGR24_UNorm:
+		case ImageFormat::BGR24_SNorm:
+		case ImageFormat::BGR24_UInt:
+		case ImageFormat::BGR24_SInt:
+		case ImageFormat::BGR24_sRGB:
 			return 3;
 		break;
-		case RG32_UNorm:
-		case RG32_SNorm:
-		case RG32_UInt:
-		case RG32_SInt:
-		case RGBA32_UNorm:
-		case RGBA32_SNorm:
-		case RGBA32_UInt:
-		case RGBA32_SInt:
-		case RGBA32_sRGB:
-		case BGRA32_UNorm:
-		case BGRA32_SNorm:
-		case BGRA32_UInt:
-		case BGRA32_SInt:
-		case BGRA32_sRGB:
+		case ImageFormat::RG32_UNorm:
+		case ImageFormat::RG32_SNorm:
+		case ImageFormat::RG32_UInt:
+		case ImageFormat::RG32_SInt:
+		case ImageFormat::RGBA32_UNorm:
+		case ImageFormat::RGBA32_SNorm:
+		case ImageFormat::RGBA32_UInt:
+		case ImageFormat::RGBA32_SInt:
+		case ImageFormat::RGBA32_sRGB:
+		case ImageFormat::BGRA32_UNorm:
+		case ImageFormat::BGRA32_SNorm:
+		case ImageFormat::BGRA32_UInt:
+		case ImageFormat::BGRA32_SInt:
+		case ImageFormat::BGRA32_sRGB:
 			return 4;
 		break;
 		default:
