@@ -3,6 +3,8 @@
 
 #if TZ_VULKAN
 #include "gl/impl/frontend/vk2/renderer.hpp"
+#elif TZ_OGL
+#include "gl/impl/frontend/ogl2/renderer.hpp"
 #endif
 
 namespace tz::gl2
@@ -20,6 +22,9 @@ namespace tz::gl2
 	#if TZ_VULKAN
 		using Renderer = RendererVulkan;
 		using RendererInfo = RendererInfoVulkan;
+	#elif TZ_OGL
+		using Renderer = RendererOGL;
+		using RendererInfo = RendererInfoOGL;
 	#endif
 }
 

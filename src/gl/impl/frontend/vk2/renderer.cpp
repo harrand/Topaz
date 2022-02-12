@@ -14,7 +14,7 @@ namespace tz::gl2
 
 //--------------------------------------------------------------------------------------------------
 	ResourceStorage::ResourceStorage(std::span<const IResource* const> resources, const vk2::LogicalDevice& ldev):
-	AssetStorage<IResource>(resources),
+	AssetStorageCommon<IResource>(resources),
 	components(),
 	image_component_views(),
 	basic_sampler(vk2::SamplerInfo
@@ -173,63 +173,6 @@ namespace tz::gl2
 	std::span<const vk2::DescriptorSet> ResourceStorage::get_descriptor_sets() const
 	{
 		return this->descriptors.sets;
-	}
-
-//--------------------------------------------------------------------------------------------------
-	unsigned int RendererInfoVulkan::resource_count() const
-	{
-		return this->resources.size();
-	}
-
-	const IResource* RendererInfoVulkan::get_resource(ResourceHandle handle)
-	{
-		return this->resources[static_cast<std::size_t>(static_cast<tz::HandleValue>(handle))];
-	}
-
-	std::span<const IResource* const> RendererInfoVulkan::get_resources() const
-	{
-		return this->resources;
-	}
-
-	ResourceHandle RendererInfoVulkan::add_resource(IResource& resource)
-	{
-		this->resources.push_back(&resource);
-		return static_cast<tz::HandleValue>(this->resources.size() - 1);
-	}
-
-	void RendererInfoVulkan::set_output(IOutput& output)
-	{
-		this->output = &output;
-	}
-
-	const IOutput* RendererInfoVulkan::get_output() const
-	{
-		return this->output;
-	}
-
-	IOutput* RendererInfoVulkan::get_output()
-	{
-		return this->output;
-	}
-
-	const RendererOptions& RendererInfoVulkan::get_options() const
-	{
-		return this->options;
-	}
-
-	void RendererInfoVulkan::set_options(RendererOptions options)
-	{
-		this->options = options;
-	}
-
-	ShaderInfo& RendererInfoVulkan::shader()
-	{
-		return this->shader_info;
-	}
-
-	const ShaderInfo& RendererInfoVulkan::shader() const
-	{
-		return this->shader_info;
 	}
 
 //--------------------------------------------------------------------------------------------------

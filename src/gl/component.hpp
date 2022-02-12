@@ -3,6 +3,8 @@
 
 #if TZ_VULKAN
 #include "gl/impl/frontend/vk2/component.hpp"
+#elif TZ_OGL
+#include "gl/impl/frontend/ogl2/component.hpp"
 #endif
 
 namespace tz::gl2
@@ -11,8 +13,8 @@ namespace tz::gl2
 		using BufferComponent = BufferComponentVulkan;
 		using ImageComponent = ImageComponentVulkan;
 	#elif TZ_OGL
-		struct BufferComponent{};
-		struct ImageComponent{};
+		using BufferComponent = BufferComponentOGL;
+		using ImageComponent = ImageComponentOGL;
 	#endif
 }
 

@@ -14,7 +14,12 @@ resource(id = 0) buffer VertexData
 layout(location = 0) out vec2 texcoord;
 
 void main() {
-    TriangleVertexData cur_vertex = vertex_data.vertices[gl_VertexIndex];
+    #if TZ_VULKAN
+        int vertex_id = gl_VertexIndex;
+    #elif TZ_OGL
+        int vertex_id = gl_VertexID;
+    #endif
+    TriangleVertexData cur_vertex = vertex_data.vertices[vertex_id];
     gl_Position = vec4(cur_vertex.position, 1.0);
     texcoord = cur_vertex.texcoord;
     #if TZ_VULKAN

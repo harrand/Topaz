@@ -73,17 +73,31 @@ add_library(topaz
 	src/gl/tz_gl.hpp
 
 	# tz::gl2 (Common Impl)
+	src/gl/impl/frontend/common/renderer.cpp
+	src/gl/impl/frontend/common/renderer.hpp
 	src/gl/impl/frontend/common/shader.cpp
 	src/gl/impl/frontend/common/shader.hpp
 
 	# tz::gl2 (Vulkan Frontend)
 	src/gl/impl/frontend/vk2/component.cpp
 	src/gl/impl/frontend/vk2/component.hpp
+	src/gl/impl/frontend/vk2/convert.hpp
+	src/gl/impl/frontend/vk2/convert.inl
 	src/gl/impl/frontend/vk2/device.cpp
 	src/gl/impl/frontend/vk2/device.hpp
 	src/gl/impl/frontend/vk2/renderer.cpp
 	src/gl/impl/frontend/vk2/renderer.hpp
 	src/gl/impl/frontend/vk2/renderer.inl
+
+	# tz::gl2 (OpenGL Frontend)
+	src/gl/impl/frontend/ogl2/component.cpp
+	src/gl/impl/frontend/ogl2/component.hpp
+	src/gl/impl/frontend/ogl2/convert.inl
+	src/gl/impl/frontend/ogl2/convert.hpp
+	src/gl/impl/frontend/ogl2/device.cpp
+	src/gl/impl/frontend/ogl2/device.hpp
+	src/gl/impl/frontend/ogl2/renderer.cpp
+	src/gl/impl/frontend/ogl2/renderer.hpp
 
 	# tz::gl (OpenGL Frontend)
 	#src/gl/impl/frontend/ogl/component.cpp
