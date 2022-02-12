@@ -5,6 +5,7 @@
 #include "gl/impl/backend/ogl2/tz_opengl.hpp"
 #include "gl/impl/backend/ogl2/sampler.hpp"
 #include "gl/impl/backend/ogl2/image_format.hpp"
+#include <optional>
 
 namespace tz::gl::ogl2
 {
