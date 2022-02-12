@@ -5,6 +5,7 @@
 #include "core/types.hpp"
 #include "core/vector.hpp"
 #include <ranges>
+#include <optional>
 
 namespace tz::gl2
 {
