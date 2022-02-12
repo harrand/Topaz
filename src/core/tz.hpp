@@ -33,6 +33,12 @@ namespace tz
 
 	/**
 	 * @ingroup tz_core
+	 * @defgroup tz_core_vecmat Vectors and Matrices
+	 * Documentation for vectors and matrices.
+	 */
+
+	/**
+	 * @ingroup tz_core
 	 * @defgroup tz_core_peripherals Hardware and Peripherals
 	 * Documentation for retrieving hardware information, such as monitor properties.
 	 */

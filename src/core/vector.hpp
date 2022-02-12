@@ -8,12 +8,7 @@
 namespace tz
 {
 	/**
-	 * \addtogroup tz_core Topaz Core Library (tz)
-	 * A collection of platform-agnostic core interfaces.
-	 * @{
-	 */
-
-	/**
+	 * @ingroup tz_core_vecmat
 	 * Represents a mathematical vector of S elements.
 	 * Typically, elements would be floats or doubles, but in this implementation they are templated on T.
 	 */
@@ -138,6 +133,10 @@ namespace tz
 		std::array<T, S> vec;
 	};
 
+	/**
+	 * @ingroup tz_core_vecmat
+	 * @{
+	 */
 	/// A vector of two floats.
 	using Vec2 = Vector<float, 2>;
 	/// A vector of three floats.

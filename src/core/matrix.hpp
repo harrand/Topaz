@@ -7,12 +7,7 @@
 namespace tz
 {
 	/**
-	 * \addtogroup tz_core Topaz Core Library (tz)
-	 * A collection of platform-agnostic core interfaces.
-	 * @{
-	 */
-
-	/**
+	 * @ingroup tz_core_vecmat
 	 * Represents a row-major matrix with R rows and C columns.
 	 * The value type of a matrix is typically a float or double, but for this implementation it is templated on T.
 	 */
@@ -201,11 +196,17 @@ namespace tz
 		std::array<Row, C> mat;
 	};
 
+	/**
+	 * @ingroup tz_core_vecmat
+	 * @{
+	 */
+
 	/// A 4x4 row-major matrix of floats.
 	using Mat4 = Matrix<float, 4, 4>;
 	/// A 3x3 row-major matrix of floats.
 	using Mat3 = Matrix<float, 3, 3>;
 	/// A 2x2 row-major matrix of floats.
+	using Mat2 = Matrix<float, 2, 2>;
 
 	/**
 	 * @}
