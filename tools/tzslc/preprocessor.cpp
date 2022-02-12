@@ -45,32 +45,52 @@ namespace tzslc
 		{
 			done_any_work |= preprocess_prints(shader_source);
 		}
-		add_glsl_header_info(shader_source);
-		preprocess_topaz_types(shader_source, meta);
 		if(modules.contains(PreprocessorModule::Sampler))
 		{
 			done_any_work |= preprocess_samplers(shader_source, meta);
 		}
+		add_glsl_header_info(shader_source);
+		preprocess_topaz_types(shader_source, meta);
 		return done_any_work;
 	}
 
 	bool preprocess_samplers(std::string& shader_source, std::string& meta)
 	{
-	   tzslc::transform(shader_source, std::regex{"resource\\(id ?= ?([0-9]+)\\) const texture"}, [&](auto beg, auto end)->std::string
-	   {
-			tz_assert(std::distance(beg, end) == 1, "resource(id = x) const texture <name> : 'x' should be one number");
-			int id = std::stoi(*beg);
-			std::string replacement = "/*tzslc: const texture*/ layout(";
-			#if TZ_VULKAN
-				replacement += "binding";
-			#elif TZ_OGL
-				replacement += "location";
-			#endif
-			replacement += " = " + std::to_string(id) + ") uniform sampler2D";
-			meta += std::to_string(id) + " = texture\n";
-			return replacement;
-	   });
-	   return false;
+		#if TZ_VULKAN
+			tzslc::transform(shader_source, std::regex{"resource\\(id ?= ?([0-9]+)\\) const texture"}, [&](auto beg, auto end)->std::string
+			{
+				tz_assert(std::distance(beg, end) == 1, "resource(id = x) const texture <name> : 'x' should be one number");
+				int id = std::stoi(*beg);
+				std::string replacement = "/*tzslc: const texture*/ layout(binding";
+				replacement += " = " + std::to_string(id) + ") uniform sampler2D";
+				meta += std::to_string(id) + " = texture\n";
+				return replacement;
+			});
+		#elif TZ_OGL
+			bool work_done = false;
+			tzslc::transform(shader_source, std::regex{"resource\\(id ?= ?([0-9]+)\\) const texture (.+)\\[([0-9]+)\\]?;"}, [&](auto beg, auto end)->std::string
+			{
+				tz_assert(std::distance(beg, end) == 3, "resource(id = x) const texture <name>[y] : Failed to parse correctly");
+				work_done = true;
+				int id = std::stoi(*beg);
+				std::string name = *(beg + 1);
+				int arr_len = std::stoi(*(beg + 2));
+				std::string replacement = "/*tzslc: const texture*/ layout(binding";
+				replacement += " = " + std::to_string(id) + ") buffer ImageData\n";
+				replacement += "{\n";
+				replacement += "\tsampler2D textures[" + std::to_string(arr_len) + "];\n";
+				replacement += "} " + name;
+				// So because this is now an SSBO we want <name>[x] to now refer to <name>.textures[x]. We do this by adding a super evil #define.
+				replacement += ";\n#define " + name + " " + name + ".textures";
+				meta += std::to_string(id) + " = texture\n";
+				return replacement;
+			});
+			if(work_done)
+			{
+				shader_source = "#extension GL_ARB_bindless_texture : enable\n" + shader_source;
+			}
+		#endif
+		return false;
 	}
 
 	bool preprocess_prints(std::string& shader_source)

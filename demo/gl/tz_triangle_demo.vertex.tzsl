@@ -23,6 +23,6 @@ void main() {
     gl_Position = vec4(cur_vertex.position, 1.0);
     texcoord = cur_vertex.texcoord;
     #if TZ_VULKAN
-        texcoord.y = 1.0 - texcoord.y;
+        gl_Position.y = -gl_Position.y;
     #endif
 }

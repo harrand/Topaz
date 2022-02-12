@@ -6,7 +6,7 @@
 namespace tz::gl2
 {
 	/**
-	 * @ingroup tz_gl2_graphicsapi_vk_frontend_renderer
+	 * @ingroup tz_gl2_renderer
 	 * Helper struct which the user can use to specify which inputs, resources they want and where they want a Renderer to render to. This is likely going to be refactored at some point because it doesn't do any Vulkan-specific magic.
 	 */
 	class RendererInfoCommon

@@ -17,7 +17,7 @@ namespace tz::gl2
 	 *
 	 * Ideally there are no implementation details to concern yourself with. However, the implementations for each graphics API are implemented:
 	 * - Vulkan: @ref tz::gl2::RendererVulkan
-	 * - OGL: Not Yet Implemented
+	 * - OGL: @ref tz::gl2::RendererOGL
 	 */
 	#if TZ_VULKAN
 		using Renderer = RendererVulkan;

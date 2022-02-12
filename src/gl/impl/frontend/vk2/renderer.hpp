@@ -58,6 +58,9 @@ namespace tz::gl2
 		 * Retrieve the descriptor layout representing the shader resources used by the renderer.
 		 */
 		const vk2::DescriptorLayout& get_descriptor_layout() const;
+		/**
+		 * Retrieve a view into the array of descriptor sets.
+		 */
 		std::span<const vk2::DescriptorSet> get_descriptor_sets() const;
 	private:
 		/// Storage for all cloned resource's components.
