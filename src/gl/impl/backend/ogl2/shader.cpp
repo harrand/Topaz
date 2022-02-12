@@ -1,7 +1,8 @@
-#include "gl/impl/backend/ogl2/tz_opengl.hpp"
 #if TZ_OGL
+#include "gl/impl/backend/ogl2/tz_opengl.hpp"
 #include "gl/impl/backend/ogl2/shader.hpp"
 #include <algorithm>
+#include <array>
 
 namespace tz::gl::ogl2
 {
