@@ -6,7 +6,6 @@
 #include <algorithm>
 #include <utility>
 #include <cstring>
-#include "GLFW/glfw3.h"
 
 namespace tz::gl::vk2
 {

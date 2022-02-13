@@ -1,9 +1,14 @@
 #ifndef TOPAZ_CORE_WINDOW_FUNCTIONALITY_HPP
 #define TOPAZ_CORE_WINDOW_FUNCTIONALITY_HPP
 #include "core/types.hpp"
-#include "core/keyboard_state.hpp"
+#include "core/peripherals/keyboard.hpp"
 #include <vector>
 #include <functional>
+
+#if TZ_VULKAN
+	#define GLFW_INCLUDE_VULKAN
+#endif // TZ_VULKAN
+#include "GLFW/glfw3.h"
 
 namespace tz
 {
@@ -31,7 +36,7 @@ namespace tz
 		 */
 		float get_height() const;
 
-		bool is_key_pressed(int key_code) const;
+		const KeyboardState& get_keyboard_state() const;
 
 		/**
 		 * Advance an update iteration for the window backend, polling for events etc...
@@ -55,7 +60,7 @@ namespace tz
 		std::pair<int, int> get_size() const;
 		void ensure() const;
 
-		KeyPressedState pressed;
+		KeyboardState kb_state;
 	};
 }
 

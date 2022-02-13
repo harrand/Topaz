@@ -1,5 +1,6 @@
 #include "core/window_functionality.hpp"
 #include "core/assert.hpp"
+#include "core/peripherals/keyboard.hpp"
 #include "core/profiling/zone.hpp"
 
 #if TZ_OGL
@@ -9,7 +10,9 @@
 namespace tz
 {
 	WindowFunctionality::WindowFunctionality(GLFWwindow* wnd):
-	wnd(wnd){}
+	wnd(wnd),
+	window_resize_callbacks(),
+	kb_state(){}
 
 	GLFWwindow* WindowFunctionality::get_middleware_handle() const
 	{
@@ -32,9 +35,9 @@ namespace tz
 		return static_cast<float>(this->get_size().second);
 	}
 
-	bool WindowFunctionality::is_key_pressed(int key_code) const
+	const KeyboardState& WindowFunctionality::get_keyboard_state() const
 	{
-		return this->pressed.is_pressed(key_code);
+		return this->kb_state;
 	}
 
 	void WindowFunctionality::update()
@@ -66,7 +69,31 @@ namespace tz
 
 	void WindowFunctionality::handle_key_event(int key, int scancode, int action, int mods)
 	{
-		this->pressed.glfw_update_state(key, scancode, action, mods);
+		KeyPressType t;
+		switch(action)
+		{
+			case GLFW_PRESS:
+			[[fallthrough]];
+			case GLFW_REPEAT:
+				t = KeyPressType::Press;
+			break;
+			case GLFW_RELEASE:
+				t = KeyPressType::Release;
+			break;
+			default:
+				return;
+			break;
+		}
+		const char* glfw_key_name = glfwGetKeyName(key, scancode);
+		if(glfw_key_name == nullptr)
+		{
+			return;
+		}
+		this->kb_state.update
+		({
+			.key = detail::peripherals::keyboard::get_key(glfw_key_name[0]),
+			.type = t
+		});
 	}
 
 	std::pair<int, int> WindowFunctionality::get_size() const

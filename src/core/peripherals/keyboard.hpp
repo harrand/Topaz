@@ -3,6 +3,7 @@
 #include <array>
 #include <cctype>
 #include <string>
+#include <vector>
 
 namespace tz
 {
@@ -69,7 +70,6 @@ namespace tz
 		KeyCode code;
 		/// Representation of the key, if it is typed. Many keys do not display a single character, for which this will simply be '\0'
 		char representation = '\0';
-
 	};
 
 	namespace detail::peripherals::keyboard
@@ -217,7 +217,7 @@ namespace tz
 			representation = std::tolower(representation);
 			for(std::size_t i = 0; i < static_cast<int>(KeyCode::Count); i++)
 			{
-				if(key_codes[i].representation == representation)
+				if(std::tolower(key_codes[i].representation) == representation)
 				{
 					return key_codes[i];
 				}
@@ -225,6 +225,67 @@ namespace tz
 			return key_null;
 		}
 	}
+
+	/**
+	 * @ingroup tz_core_peripherals_keyboard
+	 * Describes the nature of a keyboard key press.
+	 */
+	enum class KeyPressType
+	{
+		/// Key has just been pressed.
+		Press,
+		/// Key has just been released.
+		Release,
+		/// Key has been pressed for long enough to be considered 'repeating'.
+		Repeat
+	};
+
+	/**
+	 * @ingroup tz_core_peripherals_keyboard
+	 * Describes information about a key press.
+	 */
+	struct KeyPressInfo
+	{
+		/// Information about which key was pressed.
+		KeyInfo key;
+		/// Nature of the key press.
+		KeyPressType type;
+	};
+
+	/**
+	 * @ingroup tz_core_peripherals_keyboard
+	 * Stores all state for a keyboard. Can be used to query as to whether keys have been pressed or not.
+	 */
+	class KeyboardState
+	{
+	public:
+		KeyboardState() = default;
+		/**
+		 * Update keyboard state. This should be invoked each time the input backend receives a key press event.
+		 * @param info Describes the key press event.
+		 */
+		void update(KeyPressInfo info);
+		/**
+		 * Query as to whether a key is currently down. A key is down if it has been pressed at some point in the past, but not yet released.
+		 * @param key Describes which key should be checked.
+		 * @return True if key is down, otherwise false.
+		 */
+		bool is_key_down(KeyInfo key) const;
+		/**
+		 * Query as to whether a key has been pressed long enough for it to be considered 'repeating'. A key that is repeating is also considered to be down.
+		 * @param key Describes which key should be checked.
+		 * @return True if key is repeating, otherwise false.
+		 */
+		bool is_key_repeating(KeyInfo key) const;
+		/**
+		 * Attempt to print entire keyboard state to a single line of stdout.
+		 * 
+		 * If `!TZ_DEBUG`, this does nothing at all.
+		 */
+		void debug_print_state() const;
+	private:
+		std::vector<KeyPressInfo> pressed_keys = {};
+	};
 }
 
 #endif // TOPAZ_CORE_PERIPHERALS_KEYBOARD_HPP
