@@ -7,11 +7,6 @@
 
 namespace tz
 {
-	/**
-	 * \addtogroup tz_core Topaz Core Library (tz)
-	 * A collection of platform-agnostic core interfaces.
-	 * @{
-	 */
 	using WindowResizeSignature = void(int width, int height);
 	template<typename F>
 	concept WindowResizeConcept = tz::Action<F, int, int>;
@@ -21,16 +16,35 @@ namespace tz
 	public:
 		WindowFunctionality(GLFWwindow* wnd);
 		GLFWwindow* get_middleware_handle() const;
+		/**
+		 * Query as to whether the user has requested that the window should close.
+		 */
 		bool is_close_requested() const;
 		
 		void add_resize_callback(WindowResizeConcept auto on_window_resize);
+		/**
+		 * Retrieve the width of the window, in pixels.
+		 */
 		float get_width() const;
+		/**
+		 * Retrieve the height of the window, in pixels.
+		 */
 		float get_height() const;
 
 		bool is_key_pressed(int key_code) const;
 
+		/**
+		 * Advance an update iteration for the window backend, polling for events etc...
+		 *
+		 * You should invoke this once for every frame.
+		 */
 		void update();
 
+		/**
+		 * Block the current thread until some sort of window backend event takes place.
+		 *
+		 * An example use-case for this is holding off on rendering after the window has been minimised (and not doing any until the window is maximised again or otherwise awoken).
+		 */
 		static void block_until_event_happens();
 	protected:
 		void handle_key_event(int key, int scancode, int action, int mods);
@@ -43,10 +57,6 @@ namespace tz
 
 		KeyPressedState pressed;
 	};
-
-	/**
-	 * @}
-	 */
 }
 
 #include "core/window_functionality.inl"
