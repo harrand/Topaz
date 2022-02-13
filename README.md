@@ -24,7 +24,7 @@ The Topaz project has been ongoing since it began as a school project in 2015.
 | Topaz Version | Release Date | Branch      | Documentation        |
 |:-------------:|:-------------|-------------|----------------------|
 | 3.2           |TBA|[master](https://github.com/Harrand/Topaz/tree/master)| [harrand.github.io](https://harrand.github.io/Topaz/) |
-| 3.1           |Feb 13, 2022|[Topaz3.1](https://github.com/Harrand/Topaz/tree/Topaz3.1)| [harrand.github.io](https://harrand.github.io/Topaz/) |
+| 3.1           |Feb 13, 2022|[Topaz3.1](https://github.com/Harrand/Topaz/tree/Topaz3.1)| [harrand.github.io](https://github.com/Harrand/Topaz/tree/gh-pages-tz3.1) |
 | 3.0           |Sep 17, 2021| [Topaz3.0](https://github.com/Harrand/Topaz/tree/Topaz3.0)|[Branch: gh-pages-tz3](https://github.com/Harrand/Topaz/tree/gh-pages-tz3)|
 | 2.0           |May 9, 2021|[Topaz2.0](https://github.com/Harrand/Topaz/tree/Topaz2.0)|[Branch: gh-pages-tz2](https://github.com/Harrand/Topaz/tree/gh-pages-tz2)|
 | 1.0 |Sep 25, 2020|[Topaz1.0](https://github.com/Harrand/Topaz/tree/Topaz1.0)|[Branch: gh-pages-tz1](https://github.com/Harrand/Topaz/tree/gh-pages-tz1)|
