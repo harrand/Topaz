@@ -22,6 +22,7 @@ add_library(topaz
 
 	src/core/interfaces/cloneable.hpp
 
+	src/core/peripherals/keyboard.hpp
 	src/core/peripherals/monitor.cpp
 	src/core/peripherals/monitor.hpp
 

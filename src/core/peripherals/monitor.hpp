@@ -13,6 +13,12 @@ namespace tz
 
 	/**
 	 * @ingroup tz_core_peripherals
+	 * @defgroup tz_core_peripherals_monitor Monitors
+	 * Documentation for monitor properties.
+	 */
+
+	/**
+	 * @ingroup tz_core_peripherals_monitor
 	 * Describes properties about a specific monitor.
 	 */
 	struct MonitorInfo
@@ -39,13 +45,13 @@ namespace tz
 	};
 
 	/**
-	 * @ingroup tz_core_peripherals
+	 * @ingroup tz_core_peripherals_monitor
 	 * Retrieve the default/primary monitor. This is usually the one with global UI elements such as the task or menu bar.
 	 * @pre At least one monitor must be connected, otherwise the behaviour is undefined. To retrieve monitor information safely if you cannot guarantee this, retrieve the first result of @ref get_monitors() if its not empty.
 	 */
 	MonitorInfo get_default_monitor();
 	/**
-	 * @ingroup tz_core_peripherals
+	 * @ingroup tz_core_peripherals_monitor
 	 * Retrieve a list of all monitors, sorted by their ids. If no monitors are detected, returns an empty list.
 	 * @note The default monitor (see @ref get_default_monitor()) is guaranteed to be the first element in this list.
 	 */
