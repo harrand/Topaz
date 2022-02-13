@@ -36,11 +36,23 @@ namespace tz
 #undef tz_error
 #endif
 
+/**
+ * @ingroup tz_core
+ * @fn tz_error(msg, ...)
+ * @hideinitializer
+ * Causes a debug-only runtime error. Printf-like functionality which sends a formatted error message to stderr.
+ */
 #define tz_error(msg, ...) {tz::error_internal("tz_error:\nIn file %s:%d:\n\t " msg "\n", __FILE__, __LINE__, ##__VA_ARGS__);} (void)0;
 
 #ifdef tz_assert
 #undef tz_assert
 #endif
 
+/**
+ * @ingroup tz_core
+ * @fn tz_assert(eval, msg, ...)
+ * @hideinitializer
+ * Debug-only assert on some condition. If the condition evaluates to false, a runtime error is raised similar to @ref tz_error
+ */
 #define tz_assert(eval, msg, ...) {tz::assert_internal(eval, "tz_assert Failure: %s\nIn file: %s:%d:\n\t " msg "\n", #eval, __FILE__, __LINE__, ##__VA_ARGS__);} (void)0;
 #endif // TOPAZ_CORE_ASSERT_HPP
