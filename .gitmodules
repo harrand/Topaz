@@ -4,3 +4,6 @@
 [submodule "lib/VulkanMemoryAllocator"]
 	path = lib/VulkanMemoryAllocator
 	url = https://github.com/Harrand/VulkanMemoryAllocator
+[submodule "lib/tracy"]
+	path = lib/tracy
+	url = https://github.com/Harrand/tracy
