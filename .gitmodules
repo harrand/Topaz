@@ -7,3 +7,6 @@
 [submodule "lib/tracy"]
 	path = lib/tracy
 	url = https://github.com/Harrand/tracy
+[submodule "lib/glfw"]
+	path = lib/glfw
+	url = https://github.com/glfw/glfw
