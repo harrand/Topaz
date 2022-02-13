@@ -206,6 +206,11 @@ namespace tz
 			return key_null;
 		}
 
+		constexpr char static_tolower_dirty(char c)
+		{
+			return (c >= 'A' && c <= 'Z') ? c + ('a' - 'A') : c;
+		}
+
 		/**
 		 * @ingroup tz_core_peripherals_keyboard
 		 * Attempt to retrieve the key information corresponding to a typed character. If the char does not correspond to a key, the null-key is instead returned. See @ref key_null.
@@ -214,10 +219,10 @@ namespace tz
 		 */
 		constexpr KeyInfo get_key(char representation)
 		{
-			representation = std::tolower(representation);
+			representation = static_tolower_dirty(representation);
 			for(std::size_t i = 0; i < static_cast<int>(KeyCode::Count); i++)
 			{
-				if(std::tolower(key_codes[i].representation) == representation)
+				if(static_tolower_dirty(key_codes[i].representation) == representation)
 				{
 					return key_codes[i];
 				}

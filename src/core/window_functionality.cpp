@@ -67,7 +67,7 @@ namespace tz
 		glfwWaitEvents();
 	}
 
-	void WindowFunctionality::handle_key_event(int key, int scancode, int action, int mods)
+	void WindowFunctionality::handle_key_event(int key, int scancode, int action, [[maybe_unused]] int mods)
 	{
 		KeyPressType t;
 		switch(action)
