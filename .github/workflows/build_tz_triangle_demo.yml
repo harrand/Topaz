@@ -46,6 +46,8 @@ jobs:
           sudo apt-get install libxrandr-dev libxinerama-dev x11-xkb-utils libxcursor-dev libxi-dev
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
+        with:
+          submodules: recursive
 
       - name: 'Build Triangle Demo (clang-opengl-debug)'
         uses: lukka/run-cmake@v3
@@ -64,6 +66,8 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
+        with:
+          submodules: recursive
 
       - name: 'Build Triangle Demo (msvc-opengl-debug)'
         uses: lukka/run-cmake@v3
