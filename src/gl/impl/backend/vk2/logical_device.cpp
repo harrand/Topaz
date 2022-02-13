@@ -255,12 +255,11 @@ namespace tz::gl::vk2
 			.preferredLargeHeapBlockSize = 0,
 			.pAllocationCallbacks = nullptr,
 			.pDeviceMemoryCallbacks = nullptr,
-			.frameInUseCount = 0,
 			.pHeapSizeLimit = nullptr,
 			.pVulkanFunctions = nullptr,
-			.pRecordSettings = nullptr,
 			.instance = this->get_hardware().get_instance().native(),
-			.vulkanApiVersion = util::tz_to_vk_version(vulkan_version)
+			.vulkanApiVersion = util::tz_to_vk_version(vulkan_version),
+			.pTypeExternalMemoryHandleTypes = nullptr
 		};
 
 		VkResult alloc_res = vmaCreateAllocator(&vma_create, &this->vma_allocator);

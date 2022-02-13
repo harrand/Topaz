@@ -1,3 +1,6 @@
 [submodule "lib/debugbreak"]
 	path = lib/debugbreak
 	url = https://github.com/Harrand/debugbreak
+[submodule "lib/VulkanMemoryAllocator"]
+	path = lib/VulkanMemoryAllocator
+	url = https://github.com/Harrand/VulkanMemoryAllocator
