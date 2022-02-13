@@ -33,23 +33,29 @@ Note that the [Wiki](https://github.com/Harrand/Topaz/wiki) is only associated w
 
 ## Dependencies
 
-All dependencies are included in project - There are no submodules. This means you don't need to install any of these yourself.
+All dependencies bar GLAD are submodules. you should checkout the project recursively.
 
-* [debugbreak](https://github.com/scottt/debugbreak) - Debugbreak. Used to create breakpoints in code. Compiler-agnostic.
-* [GLAD](https://github.com/Dav1dde/glad) - Open Source, multi-language Vulkan/GL/GLES/EGL/GLX/WGL loader-generator based on the official specs.
-	* This is only used in the OpenGL build.
-* [GLFW](https://www.glfw.org/) - Open Source, multi-platform library for OpenGL, OpenGL ES and Vulkan development on the desktop. Used as a cross-platform abstraction for input event processing and windowing.
-* [VulkanMemoryAllocator](https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator) - Memory allocation library for Vulkan.
-	* This is only used in the Vulkan build.
+Some dependencies are only required for a specific render-backend and/or build config. See the table below:
+
+|  Render API	| Build Config | Dependency  |
+|:-------------:|:------------:|-------------|
+| Both          |   Debug      |[debugbreak](https://github.com/scottt/debugbreak)|
+| Both          |     Both     |[GLFW](https://www.glfw.org/)|
+| Both          |  Profile     |[Tracy](https://github.com/wolfpld/tracy)|
+| OpenGL        |     Both     |[GLAD](https://github.com/Dav1dde/glad)|
+| Vulkan        |     Both     |[VulkanMemoryAllocator](https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator)|
+
+This means that you do not need the dependencies if they are not required for your target render-api/build-config. For example, if you are targetting Topaz against OpenGL Release, you do not need VMA nor debugbreak. The intention is to minimise dependencies and only use them when absolutely necessary for a given build config.
 
 ## Requirements
 The following requirements apply for all possible build configurations:
 * A C++20-compliant compiler. GCC, MSVC and Clang are all tested so you can be confident using these. If you're not using any of these compilers, your mileage may vary.
 * CMake is required to build. There is not yet a specified minimum version, but unless yours is ancient you should be able to build the engine.
+* Unfortunately, neither render-api backends support macOS at present. This means you cannot use Topaz on macOS. However support for Metal is planend in the future, so this may change someday.
 #### Vulkan Build
-* Windows, macOS or Linux
-* Vulkan SDK 1.1.175 or later must be installed
-* Your graphics card must support Vulkan 1.1.175. [Check your graphics card here](https://vulkan.gpuinfo.org/).
+* Windows or Linux.
+* Vulkan SDK 1.2 or later must be installed.
+* Your graphics card must support Vulkan 1.2. [Check your graphics card here](https://vulkan.gpuinfo.org/).
 #### OpenGL Build
-* Windows or Linux. If you are on macOS, you must use the Vulkan build - Apple dropped support since OpenGL 4.1.
+* Windows or Linux.
 * Your graphics card must support OpenGL 4.6. [Check your graphics card here](https://opengl.gpuinfo.org/).
