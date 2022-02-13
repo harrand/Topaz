@@ -28,6 +28,8 @@ jobs:
 
         # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
         - uses: actions/checkout@v2
+        with:
+          submodules: recursive
 
         - name: 'Run all non-graphical tests (msvc vulkan-debug)'
           uses: lukka/run-cmake@v3
