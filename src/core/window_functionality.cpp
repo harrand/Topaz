@@ -87,11 +87,18 @@ namespace tz
 		const char* glfw_key_name = glfwGetKeyName(key, scancode);
 		if(glfw_key_name == nullptr)
 		{
+			// GLFW key has no name. We don't suppose those keys.
+			return;
+		}
+		KeyInfo tz_key = peripherals::keyboard::get_key(glfw_key_name[0]);
+		if(tz_key == peripherals::keyboard::key_null)
+		{
+			// GLFW key doesn't translate cleanly into a TZ key. We don't support such keys.
 			return;
 		}
 		this->kb_state.update
 		({
-			.key = detail::peripherals::keyboard::get_key(glfw_key_name[0]),
+			.key = tz_key,
 			.type = t
 		});
 	}
