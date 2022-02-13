@@ -242,4 +242,4 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
 	# MSVC-only options
 endif()
 target_include_directories(topaz PUBLIC ${PROJECT_SOURCE_DIR}/src)
-target_link_libraries(topaz PUBLIC debugbreak glfw stbi)
+target_link_libraries(topaz PUBLIC debugbreak glfw)
