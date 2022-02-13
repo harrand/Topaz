@@ -1,3 +1,4 @@
+#include "core/types.hpp"
 #include <cstdint>
 #include <tuple>
 #include <variant>
@@ -5,15 +6,19 @@
 namespace tz
 {
 	/**
-	 * \addtogroup tz_core Topaz Core Library (tz)
-	 * A collection of platform-agnostic core interfaces.
-	 * @{
-	 */
-	/**
+	 * @ingroup tz_core_algorithms
 	 * Compute a compile-time for-loop.
+	 * 
+	 * Equivalent to:
+	 * ```
+	 * for(std::size_t i = Begin; i < End; i++)
+	 * {
+	 * 	function(i);
+	 * }
+	 * ```
 	 */
-	template<std::size_t Begin, std::size_t End, typename Functor>
-	constexpr void static_for(const Functor& function)
+	template<std::size_t Begin, std::size_t End>
+	constexpr void static_for(tz::Action auto function)
 	{
 		if constexpr(Begin < End)
 		{
@@ -23,6 +28,7 @@ namespace tz
 	}
 
 	/**
+	 * @ingroup tz_core_algorithms
 	 * Check if a Needle is found in a Haystack at compile-time.
 	 * @tparam Needle Needle type to check exists within Haystack...
 	 * @tparam Haystack Parameter pack which may or may not contain the type Needle.
@@ -41,7 +47,4 @@ namespace tz
 		});
 		return b;
 	}
-	/**
-	 * @}
-	 */
 }

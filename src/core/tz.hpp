@@ -46,7 +46,13 @@ namespace tz
 	/**
 	 * @ingroup tz_core
 	 * @defgroup tz_core_containers Containers
-	 * Documentation for custom Topaz contains, such as BasicList and EnumField.
+	 * Documentation for custom Topaz containers, such as BasicList and EnumField.
+	 */
+
+	/**
+	 * @ingroup tz_core
+	 * @defgroup tz_core_algorithms Algorithms
+	 * Documentation for custom Topaz algorithms.
 	 */
 
 	/**
