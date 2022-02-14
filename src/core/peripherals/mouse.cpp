@@ -3,12 +3,12 @@
 
 namespace tz
 {
-	void MouseButtonState::update(MouseButtonInfo button, bool pressed)
+	void MouseButtonState::update(MouseButtonPressInfo button, bool pressed)
 	{
 		auto iter = std::find_if(this->pressed_buttons.begin(), this->pressed_buttons.end(),
-		[button](const MouseButtonInfo& info)
+		[button](const MouseButtonPressInfo& info)
 		{
-			return info.button == button.button;
+			return info.button.button == button.button.button;
 		});
 
 		if(pressed)
@@ -30,18 +30,18 @@ namespace tz
 	bool MouseButtonState::is_mouse_button_down(MouseButtonInfo button) const
 	{
 		return std::find_if(this->pressed_buttons.begin(), this->pressed_buttons.end(),
-		[button](const MouseButtonInfo& info)
+		[button](const MouseButtonPressInfo& info)
 		{
-			return info.button == button.button;
+			return info.button.button == button.button;
 		}) != this->pressed_buttons.end();
 	}
 
 	void MouseButtonState::debug_print_state() const
 	{
 		#if TZ_DEBUG
-			for(const MouseButtonInfo& info : this->pressed_buttons)
+			for(const MouseButtonPressInfo& info : this->pressed_buttons)
 			{
-				std::printf("{%s}", info.button_name);
+				std::printf("{%s (%u,%u)}", info.button.button_name, info.press_position[0], info.press_position[1]);
 			}
 			std::printf("                                                        \r");
 		#endif

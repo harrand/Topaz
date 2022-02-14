@@ -1,5 +1,6 @@
 #ifndef TOPAZ_CORE_PERIPHERALS_MOUSE_HPP
 #define TOPAZ_CORE_PERIPHERALS_MOUSE_HPP
+#include "core/vector.hpp"
 #include <array>
 #include <vector>
 
@@ -77,6 +78,13 @@ namespace tz
 		}
 	}
 
+
+	struct MouseButtonPressInfo
+	{
+		MouseButtonInfo button;
+		tz::Vec2ui press_position;
+	};
+
 	/**
 	 * @ingroup tz_core_peripherals_mouse
 	 * Stores all state for a mouse. Can be used to query which mouse buttons are currently pressed.
@@ -90,7 +98,7 @@ namespace tz
 		 * @param button Describes which mouse button sent an event.
 		 * @param pressed Whether the button is pressed (true) or released (false).
 		 */
-		void update(MouseButtonInfo button, bool pressed);
+		void update(MouseButtonPressInfo button, bool pressed);
 		/**
 		 * Query as to whether a mouse button is currently down. A mouse button is down if it has been pressed at some point in the past, but not yet released.
 		 * @param button Describes which mouse button should be checked.
@@ -98,13 +106,20 @@ namespace tz
 		 */
 		bool is_mouse_button_down(MouseButtonInfo button) const;
 		/**
+		 * Retrieve the position (in window-space) of the pressed mouse button.
+		 * @param button Describes which mouse button should be checked.
+		 * @return Positon of the cursor when the mouse button was pressed.
+		 * @pre `is_mouse_button_down(button) == true` otherwise the behaviour is undefined.
+		 */
+		tz::Vec2ui get_mouse_press_position(MouseButtonInfo button) const;
+		/**
 		 * Attempt to print entire mouse button state to a single line of stdout.
 		 * 
 		 * If `!TZ_DEBUG`, this does nothing at all.
 		 */
 		void debug_print_state() const;
 	private:
-		std::vector<MouseButtonInfo> pressed_buttons = {};
+		std::vector<MouseButtonPressInfo> pressed_buttons = {};
 	};
 }
 

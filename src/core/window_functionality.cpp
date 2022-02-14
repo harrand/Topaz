@@ -145,7 +145,13 @@ namespace tz
 		{
 			return;
 		}
-		this->mb_state.update(button_info, action == GLFW_PRESS);
+		double mxpos, mypos;
+		glfwGetCursorPos(this->wnd, &mxpos, &mypos);
+		this->mb_state.update(
+		{
+			.button = button_info,
+			.press_position = {static_cast<unsigned int>(mxpos), static_cast<unsigned int>(mypos)}
+		}, action == GLFW_PRESS);
 	}
 
 	std::pair<int, int> WindowFunctionality::get_size() const

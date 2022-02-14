@@ -8,9 +8,7 @@ int main()
 	{
 		while(!tz::window().is_close_requested())
 		{
-			const tz::KeyboardState& kb = tz::window().get_keyboard_state();
-			constexpr tz::KeyInfo w = tz::peripherals::keyboard::get_key('W');
-			std::printf("W is %spressed, %srepeating                 \r", kb.is_key_down(w) ? "" : "not ", kb.is_key_repeating(w) ? "" : "not ");
+			tz::window().get_keyboard_state().debug_print_state();
 			tz::window().update();
 		}
 		std::printf("\n");

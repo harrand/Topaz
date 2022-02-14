@@ -8,9 +8,7 @@ int main()
 	{
 		while(!tz::window().is_close_requested())
 		{
-			const tz::MouseButtonState& mb = tz::window().get_mouse_button_state();
-			constexpr tz::MouseButtonInfo left = tz::peripherals::mouse::get_mouse_button(tz::MouseButton::Left);
-			std::printf("Left click is %spressed                 \r", mb.is_mouse_button_down(left) ? "" : "not ");
+			tz::window().get_mouse_button_state().debug_print_state();
 			tz::window().update();
 		}
 		std::printf("\n");
