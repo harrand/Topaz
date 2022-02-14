@@ -110,7 +110,7 @@ namespace tz
 		});
 	}
 
-	void WindowFunctionality::handle_mouse_event(int button, int action, int mods)
+	void WindowFunctionality::handle_mouse_event(int button, int action, [[maybe_unused]] int mods)
 	{
 		MouseButton tz_button;
 		switch(button)
