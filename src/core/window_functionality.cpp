@@ -1,6 +1,7 @@
 #include "core/window_functionality.hpp"
 #include "core/assert.hpp"
 #include "core/peripherals/keyboard.hpp"
+#include "core/peripherals/mouse.hpp"
 #include "core/profiling/zone.hpp"
 
 #if TZ_OGL
@@ -12,7 +13,8 @@ namespace tz
 	WindowFunctionality::WindowFunctionality(GLFWwindow* wnd):
 	wnd(wnd),
 	window_resize_callbacks(),
-	kb_state(){}
+	kb_state(),
+	mb_state(){}
 
 	GLFWwindow* WindowFunctionality::get_middleware_handle() const
 	{
@@ -38,6 +40,11 @@ namespace tz
 	const KeyboardState& WindowFunctionality::get_keyboard_state() const
 	{
 		return this->kb_state;
+	}
+
+	const MouseButtonState& WindowFunctionality::get_mouse_button_state() const
+	{
+		return this->mb_state;
 	}
 
 	void WindowFunctionality::update()
@@ -101,6 +108,44 @@ namespace tz
 			.key = tz_key,
 			.type = t
 		});
+	}
+
+	void WindowFunctionality::handle_mouse_event(int button, int action, int mods)
+	{
+		MouseButton tz_button;
+		switch(button)
+		{
+			case GLFW_MOUSE_BUTTON_LEFT:
+				tz_button = MouseButton::Left;
+			break;
+			case GLFW_MOUSE_BUTTON_RIGHT:
+				tz_button = MouseButton::Right;
+			break;
+			case GLFW_MOUSE_BUTTON_MIDDLE:
+				tz_button = MouseButton::Middle;
+			break;
+			case GLFW_MOUSE_BUTTON_4:
+				tz_button = MouseButton::Extra0;
+			break;
+			case GLFW_MOUSE_BUTTON_5:
+				tz_button = MouseButton::Extra1;
+			break;
+			case GLFW_MOUSE_BUTTON_6:
+				tz_button = MouseButton::Extra2;
+			break;
+			case GLFW_MOUSE_BUTTON_7:
+				tz_button = MouseButton::Extra3;
+			break;
+			case GLFW_MOUSE_BUTTON_8:
+				tz_button = MouseButton::Extra4;
+			break;
+		}
+		MouseButtonInfo button_info = peripherals::mouse::get_mouse_button(tz_button);
+		if(button_info == peripherals::mouse::mouse_button_null)
+		{
+			return;
+		}
+		this->mb_state.update(button_info, action == GLFW_PRESS);
 	}
 
 	std::pair<int, int> WindowFunctionality::get_size() const

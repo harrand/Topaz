@@ -40,6 +40,7 @@ namespace tz
 		glfwSetWindowUserPointer(this->wnd, this);
 		glfwSetFramebufferSizeCallback(this->wnd, Window::window_resize_callback);
 		glfwSetKeyCallback(this->wnd, Window::key_callback);
+		glfwSetMouseButtonCallback(this->wnd, Window::mouse_button_callback);
 	}
 
 	Window::Window(Window&& move):
@@ -87,6 +88,12 @@ namespace tz
 	{
 		WindowFunctionality* cur_window_func = reinterpret_cast<WindowFunctionality*>(glfwGetWindowUserPointer(window));
 		static_cast<Window*>(cur_window_func)->handle_key_event(key, scancode, action, mods);
+	}
+
+	void Window::mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
+	{
+		WindowFunctionality* cur_window_func = reinterpret_cast<WindowFunctionality*>(glfwGetWindowUserPointer(window));
+		static_cast<Window*>(cur_window_func)->handle_mouse_event(button, action, mods);
 	}
 
 	void Window::handle_key_event(int key, int scancode, int action, int mods)

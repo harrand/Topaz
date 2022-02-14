@@ -2,6 +2,7 @@
 #define TOPAZ_CORE_WINDOW_FUNCTIONALITY_HPP
 #include "core/types.hpp"
 #include "core/peripherals/keyboard.hpp"
+#include "core/peripherals/mouse.hpp"
 #include <vector>
 #include <functional>
 
@@ -36,7 +37,14 @@ namespace tz
 		 */
 		float get_height() const;
 
+		/**
+		 * Retrieve state of keyboard presses.
+		 */
 		const KeyboardState& get_keyboard_state() const;
+		/**
+		 * Retrieve state of mouse button presses.
+		 */
+		const MouseButtonState& get_mouse_button_state() const;
 
 		/**
 		 * Advance an update iteration for the window backend, polling for events etc...
@@ -53,6 +61,7 @@ namespace tz
 		static void block_until_event_happens();
 	protected:
 		void handle_key_event(int key, int scancode, int action, int mods);
+		void handle_mouse_event(int button, int action, int mods);
 
 		GLFWwindow* wnd;
 		std::vector<std::function<WindowResizeSignature>> window_resize_callbacks;
@@ -61,6 +70,7 @@ namespace tz
 		void ensure() const;
 
 		KeyboardState kb_state;
+		MouseButtonState mb_state;
 	};
 }
 

@@ -26,6 +26,8 @@ add_library(topaz
 	src/core/peripherals/keyboard.hpp
 	src/core/peripherals/monitor.cpp
 	src/core/peripherals/monitor.hpp
+	src/core/peripherals/mouse.cpp
+	src/core/peripherals/mouse.hpp
 
 	src/core/profiling/zone.hpp
 
