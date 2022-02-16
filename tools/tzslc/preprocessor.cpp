@@ -34,9 +34,29 @@ namespace tzslc
 		shader_source = hdrinfo + shader_source;
 	}
 
+	bool evaluate_tzsl_keywords(std::string& shader_source)
+	{
+		bool done_work = false;
+		tzslc::transform(shader_source, std::regex{"tz_VertexID"},
+		[&done_work](auto beg, auto end)->std::string
+		{
+			done_work = true;
+			#if TZ_VULKAN
+				return "gl_VertexIndex";
+			#elif TZ_OGL
+				return "gl_VertexID";
+			#else
+				tz_error("Could not detect render api used during compilation.");
+				return "tz_VertexID";
+			#endif
+		});
+		return done_work;
+	}
+
 	bool preprocess(PreprocessorModuleField modules, std::string& shader_source, std::string& meta)
 	{
-		bool done_any_work = false;
+		bool done_any_work = evaluate_tzsl_keywords(shader_source);
+
 		if(modules.contains(PreprocessorModule::Assert))
 		{
 			done_any_work |= preprocess_asserts(shader_source);
