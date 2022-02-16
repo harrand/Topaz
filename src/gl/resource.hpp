@@ -47,9 +47,9 @@ namespace tz::gl2
 		static BufferResource from_one(const T& data, ResourceAccess access = ResourceAccess::StaticFixed);
 
 		template<tz::TriviallyCopyable T>
-		static BufferResource from_many(std::initializer_list<T> ts)
+		static BufferResource from_many(std::initializer_list<T> ts, ResourceAccess access = ResourceAccess::StaticFixed)
 		{
-			return from_many(std::span<const T>(ts));
+			return from_many(std::span<const T>(ts), access);
 		}
 		/**
 		 * Create a BufferResource where the underlying data is an array of objects.

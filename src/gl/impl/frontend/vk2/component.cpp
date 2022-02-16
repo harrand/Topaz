@@ -28,6 +28,18 @@ namespace tz::gl2
 		return this->buffer.size();
 	}
 
+	void BufferComponentVulkan::resize() const
+	{
+		tz_assert(this->get_resource()->get_access() == ResourceAccess::StaticVariable || this->get_resource()->get_access() == ResourceAccess::DynamicVariable, "Attempt to resize a buffer component which is not variable. ResourceAccess must be StaticVariable or DynamicVariable. Please submit a bug report.");
+		vk2::Buffer cpy = vk2::buffer::clone_resized(this->buffer, size);
+		std::swap(this->buffer, cpy);
+		// If we're dynamic, the resource points to the old buffer's mapped data. We will need to update that.
+		if(this->get_resource()->get_access() == ResourceAccess::DynamicVariable)
+		{
+			this->get_resource()->set_mapped_data(this->buffer.map_as<std::byte>());
+		}
+	}
+
 	const vk2::Buffer& BufferComponentVulkan::vk_get_buffer() const
 	{
 		return this->buffer;

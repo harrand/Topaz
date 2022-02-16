@@ -24,6 +24,8 @@ namespace tz::gl2
 						switch(buf.get_resource()->get_access())
 						{
 							case ResourceAccess::StaticFixed:
+							[[fallthrough]];
+							case ResourceAccess::StaticVariable:
 								{
 									// Create staging buffer and do a copy.
 									ogl2::Buffer staging
@@ -39,6 +41,8 @@ namespace tz::gl2
 								}
 							break;
 							case ResourceAccess::DynamicFixed:
+							[[fallthrough]];
+							case ResourceAccess::DynamicVariable:
 							{
 
 								// Tell the resource to use the buffer's data. Also copy whatever we had before.

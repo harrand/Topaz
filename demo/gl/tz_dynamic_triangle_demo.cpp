@@ -5,6 +5,7 @@
 #include "gl/renderer.hpp"
 #include "gl/resource.hpp"
 #include "gl/imported_shaders.hpp"
+#include "gl/component.hpp"
 
 #include ImportedShaderHeader(tz_dynamic_triangle_demo, vertex)
 #include ImportedShaderHeader(tz_dynamic_triangle_demo, fragment)
@@ -54,12 +55,12 @@ int main()
 			float pad1[2];
 		};
 
-		tz::gl2::BufferResource buf = tz::gl2::DynamicBufferResource::from_many
+		tz::gl2::BufferResource buf = tz::gl2::BufferResource::from_many
 		({
 			TriangleVertexData{.position = {-0.5f, -0.5f, 0.0f}, .texcoord = {0.0f, 0.0f}},
 			TriangleVertexData{.position = {0.0f, 0.5f, 0.0f}, .texcoord = {0.5f, 1.0f}},
 			TriangleVertexData{.position = {0.5f, -0.5f, 0.0f}, .texcoord = {1.0f, 0.0f}},
-		});
+		}, tz::gl2::ResourceAccess::DynamicVariable);
 
 		tz::gl2::RendererInfo rinfo;
 		rinfo.shader().set_shader(tz::gl2::ShaderStage::Vertex, ImportedShaderSource(tz_dynamic_triangle_demo, vertex));
@@ -68,6 +69,8 @@ int main()
 		tz::gl2::ResourceHandle bufh = rinfo.add_resource(buf);
 
 		tz::gl2::Renderer renderer = dev.create_renderer(rinfo);
+		// TODO: Remove
+		static_cast<tz::gl2::BufferComponent*>(renderer.get_component(bufh))->resize(4 * sizeof(TriangleVertexData));
 
 		while(!tz::window().is_close_requested())
 		{

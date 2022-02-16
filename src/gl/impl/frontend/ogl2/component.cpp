@@ -26,6 +26,18 @@ namespace tz::gl2
 		return this->buffer.size();
 	}
 
+	void BufferComponentOGL::resize(std::size_t size)
+	{
+		tz_assert(this->get_resource()->get_access() == ResourceAccess::StaticVariable || this->get_resource()->get_access() == ResourceAccess::DynamicVariable, "Attempt to resize a buffer component which is not variable. ResourceAccess must be StaticVariable or DynamicVariable. Please submit a bug report.");
+		ogl2::Buffer cpy = ogl2::buffer::clone_resized(this->buffer, size);
+		std::swap(this->buffer, cpy);
+		// If we're dynamic, the resource points to the old buffer's mapped data. We will need to update that.
+		if(this->get_resource()->get_access() == ResourceAccess::DynamicVariable)
+		{
+			this->get_resource()->set_mapped_data(this->buffer.map_as<std::byte>());
+		}
+	}
+
 	ogl2::Buffer& BufferComponentOGL::ogl_get_buffer()
 	{
 		return this->buffer;
