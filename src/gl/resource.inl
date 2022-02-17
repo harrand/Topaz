@@ -8,7 +8,7 @@ namespace tz::gl2
 	template<tz::TriviallyCopyable T>
 	BufferResource BufferResource::from_one(const T& data, ResourceAccess access)
 	{
-		return BufferResource::from_many<T>(std::span<const T>{&data, 1}, access);
+		return BufferResource::from_many<T>({data}, access);
 	}
 
 	template<std::ranges::contiguous_range R>
@@ -17,7 +17,7 @@ namespace tz::gl2
 		using T = decltype(*std::ranges::begin(data));
 		auto size = std::distance(std::ranges::begin(data), std::ranges::end(data));
 		std::vector<std::byte> resource_data;
-		std::size_t space = alignof(T) + (sizeof(T) * size);
+		std::size_t space = (sizeof(T) * size);
 		std::size_t space_copy = space;
 		resource_data.resize(space);
 		void* data_ptr = resource_data.data();

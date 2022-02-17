@@ -4,3 +4,8 @@ if(${TOPAZ_OGL})
 elseif(${TOPAZ_VULKAN})
 	add_subdirectory(vk2)
 endif()
+
+add_tz_test(NAME tz_resource_test
+	SOURCE_FILES tz_resource_test.cpp
+	GRAPHICAL
+	)
