@@ -19,7 +19,7 @@ jobs:
       # Steps represent a sequence of tasks that will be executed as part of the job
       steps:
         - name: Install Vulkan SDK
-          uses: humbletim/setup-vulkan-sdk@v1.1.0
+          uses: humbletim/setup-vulkan-sdk
 
         # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
         - uses: actions/checkout@v2
