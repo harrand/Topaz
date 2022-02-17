@@ -60,7 +60,7 @@ add_tz_test(NAME vk_render_pass_test
 
 add_tz_test(NAME vk_shader_test
 	SOURCE_FILES vk_shader_test.cpp	
-	SHADER_SOURCES test/gl/vk2/shaders/empty.glsl
+	SHADER_SOURCES test/gl/vk2/empty.glsl
 	GRAPHICAL
 	)
 
