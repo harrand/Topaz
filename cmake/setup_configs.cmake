@@ -7,9 +7,9 @@ endfunction()
 function(configure_vulkan target)
 	target_compile_definitions(${target} PUBLIC -DTZ_VULKAN=1 -DTZ_OGL=0)
 
-	message(STATUS "configure_vulkan(${target}): $VK_SDK_PATH == $ENV{VK_SDK_PATH}")
-	target_link_directories(${target} PUBLIC "$ENV{VK_SDK_PATH}/Lib")
-	target_include_directories(${target} PUBLIC "$ENV{VK_SDK_PATH}/include")
+	message(STATUS "configure_vulkan(${target}): $VULKAN_SDK == $ENV{VULKAN_SDK}")
+	target_link_directories(${target} PUBLIC "$ENV{VULKAN_SDK}/Lib")
+	target_include_directories(${target} PUBLIC "$ENV{VULKAN_SDK}/include")
 	target_link_libraries(${target} PUBLIC vulkan-1 vma)
 endfunction()
 
