@@ -15,13 +15,13 @@ on:
 jobs:
   msvc-vulkan-windows:
       # The type of runner that the job will run on
-      runs-on: windows-latest
+      runs-on: windows-2022
       # Steps represent a sequence of tasks that will be executed as part of the job
       steps:
         - uses: actions/checkout@v2
           with:
             submodules: recursive
-            
+
         - name: Install Vulkan SDK
           uses: humbletim/setup-vulkan-sdk@v1.0.3
 
