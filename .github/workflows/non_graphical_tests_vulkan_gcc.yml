@@ -21,14 +21,13 @@ jobs:
         - name: Ensure Dependencies
           run:   |
             sudo apt-get install libxrandr-dev libxinerama-dev x11-xkb-utils libxcursor-dev libxi-dev
-
-        - name: Install Vulkan SDK
-          uses: humbletim/setup-vulkan-sdk@v1.0.3
         
-        # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
         - uses: actions/checkout@v2
           with:
             submodules: recursive
+
+        - name: Install Vulkan SDK
+          uses: humbletim/setup-vulkan-sdk@v1.0.3
 
         - name: 'Run all non-graphical tests (gcc vulkan-debug)'
         uses: lukka/run-cmake@v3
