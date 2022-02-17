@@ -70,6 +70,7 @@ namespace tz::gl2
 	using RendererComponentEditRequest = std::variant<RendererBufferComponentEditRequest, RendererImageComponentEditRequest>;
 
 	/**
+	 * @ingroup tz_gl2_renderer
 	 * Represents an edit to an existing renderer.
 	 */
 	struct RendererEditRequest
