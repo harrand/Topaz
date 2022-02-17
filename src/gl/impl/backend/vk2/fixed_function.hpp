@@ -3,6 +3,7 @@
 #include "core/containers/basic_list.hpp"
 #include "core/vector.hpp"
 #include "vulkan/vulkan.h"
+#include <optional>
 
 namespace tz::gl::vk2
 {

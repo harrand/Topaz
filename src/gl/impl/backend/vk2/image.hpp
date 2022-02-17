@@ -6,6 +6,7 @@
 #include "gl/impl/backend/vk2/image_format.hpp"
 #include "gl/impl/backend/vk2/gpu_mem.hpp"
 #include "vk_mem_alloc.h"
+#include <optional>
 
 namespace tz::gl::vk2
 {
