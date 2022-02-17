@@ -62,7 +62,11 @@ namespace tz::gl2
 		 * Retrieve a view into the array of descriptor sets.
 		 */
 		std::span<const vk2::DescriptorSet> get_descriptor_sets() const;
+
+		std::size_t resource_count_of(ResourceType type) const;
+		void sync_descriptors(bool write_everything);
 	private:
+
 		/// Storage for all cloned resource's components.
 		std::vector<std::unique_ptr<IComponent>> components;
 		/// An ImageView for each ImageResource that was passed to the constructor. These are views referring to the corresponding ImageComponent to said resource.
@@ -322,6 +326,7 @@ namespace tz::gl2
 
 		void render();
 		void render(unsigned int tri_count);
+		void edit(const RendererEditRequest& edit_request);
 	private:
 		void setup_static_resources();
 		void setup_render_commands();

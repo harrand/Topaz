@@ -31,6 +31,7 @@ namespace tz::gl2
 	descriptor_pool(vk2::DescriptorPool::null()),
 	descriptors()
 	{
+		std::vector<bool> buffer_id_to_variable_access;
 		for(std::size_t i = 0; i < this->count(); i++)
 		{
 			IResource* res = this->get(static_cast<tz::HandleValue>(i));
@@ -38,7 +39,7 @@ namespace tz::gl2
 			{
 				case ResourceType::Buffer:
 					this->components.push_back(std::make_unique<BufferComponentVulkan>(*res, ldev));
-					if(res->get_access() == ResourceAccess::DynamicFixed)
+					if(res->get_access() == ResourceAccess::DynamicFixed || res->get_access() == ResourceAccess::DynamicVariable)
 					{
 						// Tell the resource to use the buffer's data. Also copy whatever we had before.
 						std::span<const std::byte> initial_data = res->data();
@@ -46,6 +47,7 @@ namespace tz::gl2
 						std::copy(initial_data.begin(), initial_data.end(), buffer_byte_data.begin());
 						res->set_mapped_data(buffer_byte_data);
 					}
+					buffer_id_to_variable_access.push_back(res->get_access() == ResourceAccess::StaticVariable || res->get_access() == ResourceAccess::DynamicVariable);
 				break;
 				case ResourceType::Image:
 					this->components.push_back(std::make_unique<ImageComponentVulkan>(*res, ldev));
@@ -67,25 +69,41 @@ namespace tz::gl2
 
 		// Figure out Descriptor stuffs. We are going to use bindless here.
 		// Firstly get all the buffer resources into one list of pointers. We already have a list of imageviews from earlier we can use.
-		std::vector<vk2::Buffer*> buffers;
-		for(const auto& component_ptr : this->components)
-		{
-			if(component_ptr->get_resource()->get_type() != ResourceType::Buffer)
-			{
-				continue;
-			}
-			buffers.push_back(&static_cast<BufferComponentVulkan*>(component_ptr.get())->vk_get_buffer());
-		}
+		//std::vector<vk2::Buffer*> buffers;
+		//for(const auto& component_ptr : this->components)
+		//{
+		//	if(component_ptr->get_resource()->get_type() != ResourceType::Buffer)
+		//	{
+		//		continue;
+		//	}
+		//	buffers.push_back(&static_cast<BufferComponentVulkan*>(component_ptr.get())->vk_get_buffer());
+		//}
+		std::size_t buffer_count = this->resource_count_of(ResourceType::Buffer);
+		// So buffer_id_to_variable_access stores a bool for each buffer (in-order). True if the access is variable, false otherwise. However, if any buffer at all is variable, we will unfortunately try to write to them all in sync_descriptors.
+		// Until we fix sync_descriptors to be a little less cavalier, we must add the descriptor-indexing flags and take the perf loss if there are *any* variable-sized buffer resources at all.
 		{
 			vk2::DescriptorLayoutBuilder lbuilder;
 			lbuilder.set_device(ldev);
 			// Each buffer gets their own binding id.
-			for(std::size_t i = 0; i < buffers.size(); i++)
+			for(std::size_t i = 0; i < buffer_count; i++)
 			{
+				// TODO: Only add the necessary flags to the buffers with variable access instead of all of them if any have it. Dependent on changes to sync_descriptors.
+				vk2::DescriptorFlags desc_flags;
+				if(std::any_of(buffer_id_to_variable_access.begin(), buffer_id_to_variable_access.end(),
+				[](bool b){return b;}))
+				{
+					desc_flags = 
+					{
+						vk2::DescriptorFlag::UpdateAfterBind,
+						vk2::DescriptorFlag::UpdateUnusedWhilePending
+					};
+				}
+
 				lbuilder.with_binding
 				({
 					.type = vk2::DescriptorType::StorageBuffer,
-					.count = 1
+					.count = 1,
+					.flags = desc_flags
 				});
 			}
 			// And one giant descriptor array for all textures. Wow.
@@ -104,10 +122,11 @@ namespace tz::gl2
 			{
 				.limits = 
 				{
-					{vk2::DescriptorType::StorageBuffer, buffers.size() * RendererVulkan::max_frames_in_flight},
+					{vk2::DescriptorType::StorageBuffer, buffer_count * RendererVulkan::max_frames_in_flight},
 					{vk2::DescriptorType::ImageWithSampler, this->image_component_views.size() * RendererVulkan::max_frames_in_flight}
 				},
-				.max_sets = static_cast<std::uint32_t>(RendererVulkan::max_frames_in_flight)
+				.max_sets = static_cast<std::uint32_t>(RendererVulkan::max_frames_in_flight),
+				.supports_update_after_bind = true
 			},
 			.logical_device = &ldev
 		}};
@@ -123,36 +142,7 @@ namespace tz::gl2
 			});
 		};
 		tz_assert(this->descriptors.success(), "Descriptor Pool allocation failed. Please submit a bug report.");
-
-		// Now write the initial resources into their descriptors.
-		vk2::DescriptorPool::UpdateRequest update = this->descriptor_pool.make_update_request();
-		// For each set, make the same edits.
-		for(std::size_t i = 0 ; i < RendererVulkan::max_frames_in_flight; i++)
-		{
-			vk2::DescriptorSet& set = this->descriptors.sets[i];
-			vk2::DescriptorSet::EditRequest set_edit = set.make_edit_request();
-			// Now update each binding corresponding to a buffer resource.
-			for(std::size_t j = 0; j < buffers.size(); j++)
-			{
-				set_edit.set_buffer(j,
-				{
-					.buffer = buffers[j],
-					.buffer_offset = 0,
-					.buffer_write_size = buffers[j]->size()
-				});
-			}
-			// And finally the binding corresponding to the texture resource descriptor array
-			for(std::size_t j = 0; j < this->image_component_views.size(); j++)
-			{
-				set_edit.set_image(buffers.size(),
-				{
-					.sampler = &this->basic_sampler,
-					.image_view = &this->image_component_views[j]
-				}, j);
-			}
-			update.add_set_edit(set_edit);
-		}
-		this->descriptor_pool.update_sets(update);
+		this->sync_descriptors(true);
 	}
 
 	const IComponent* ResourceStorage::get_component(ResourceHandle handle) const
@@ -173,6 +163,61 @@ namespace tz::gl2
 	std::span<const vk2::DescriptorSet> ResourceStorage::get_descriptor_sets() const
 	{
 		return this->descriptors.sets;
+	}
+
+	std::size_t ResourceStorage::resource_count_of(ResourceType type) const
+	{
+		return std::count_if(this->components.begin(), this->components.end(),
+		[type](const auto& component_ptr)
+		{
+			return component_ptr->get_resource()->get_type() == type;
+		});
+	}
+
+	void ResourceStorage::sync_descriptors(bool write_everything)
+	{
+		std::vector<vk2::Buffer*> buffers;
+		for(auto& component_ptr : this->components)
+		{
+			if(component_ptr->get_resource()->get_type() == ResourceType::Buffer)
+			{
+				buffers.push_back(&static_cast<BufferComponentVulkan*>(component_ptr.get())->vk_get_buffer());
+			}
+		}
+
+		// Now write the initial resources into their descriptors.
+		vk2::DescriptorPool::UpdateRequest update = this->descriptor_pool.make_update_request();
+		// For each set, make the same edits.
+		for(std::size_t i = 0 ; i < RendererVulkan::max_frames_in_flight; i++)
+		{
+			vk2::DescriptorSet& set = this->descriptors.sets[i];
+			vk2::DescriptorSet::EditRequest set_edit = set.make_edit_request();
+			// Now update each binding corresponding to a buffer resource.
+			for(std::size_t j = 0; j < buffers.size(); j++)
+			{
+				set_edit.set_buffer(j,
+				{
+					.buffer = buffers[j],
+					.buffer_offset = 0,
+					.buffer_write_size = buffers[j]->size()
+				});
+			}
+			// And finally the binding corresponding to the texture resource descriptor array
+			// Note, we only do this if we're writing to everything (we should only ever do this once because the image resources are not update-after-bind-bit!
+			if(write_everything)
+			{
+				for(std::size_t j = 0; j < this->image_component_views.size(); j++)
+				{
+					set_edit.set_image(buffers.size(),
+					{
+						.sampler = &this->basic_sampler,
+						.image_view = &this->image_component_views[j]
+					}, j);
+				}
+			}
+			update.add_set_edit(set_edit);
+		}
+		this->descriptor_pool.update_sets(update);
 	}
 
 //--------------------------------------------------------------------------------------------------
@@ -641,6 +686,72 @@ namespace tz::gl2
 			this->setup_render_commands();
 		}
 		this->render();
+	}
+
+	void RendererVulkan::edit(const RendererEditRequest& edit_request)
+	{
+		if(edit_request.component_edits.empty())
+		{
+			return;
+		}
+		// We have buffer/image components we need to edit.
+		// Firstly make sure all render work is done, then we need to update the resource storage and then write new descriptors for resized resources.
+		this->command.wait_pending_commands_complete();
+		// Now, if we resized any static resources we're going to have to run scratch commands again.
+		bool resized_static_resources = false;
+		for(const RendererComponentEditRequest& component_edit : edit_request.component_edits)
+		{
+			std::visit(
+			[this](auto&& arg)
+			{
+				using T = std::decay_t<decltype(arg)>;
+				if constexpr(std::is_same_v<T, RendererBufferComponentEditRequest>)
+				{
+					// We need to create a new buffer with the correct size, and swap it with the old one (which can now die because we're not rendering anymore).
+					// If it's a dynamic resource, we need to unmap the BufferResource from it though.
+					auto buf_comp = static_cast<BufferComponentVulkan*>(this->get_component(arg.buffer_handle));
+					tz_assert(buf_comp->get_resource()->get_access() == ResourceAccess::StaticVariable || buf_comp->get_resource()->get_access() == ResourceAccess::DynamicVariable, "Detected attempted resize of buffer resource (id %zu), but it ResourceAccess is not variable. This means it is a fixed-size resource, so attempting to resize it is invalid.", static_cast<std::size_t>(static_cast<tz::HandleValue>(arg.buffer_handle)));
+					// Make new buffer.
+					vk2::Buffer& buf = buf_comp->vk_get_buffer();
+					vk2::Buffer resized_copy
+					{{
+						.device = &buf.get_device(),
+						.size_bytes = arg.size,
+						.usage = buf.get_usage(),
+						.residency = buf.get_residency()
+					}};
+					// Swap them. If we're dynamic, we move the data over now, otherwise we will sort that later when we setup static resources again.
+					if(buf_comp->get_resource()->get_access() == ResourceAccess::DynamicFixed || buf_comp->get_resource()->get_access() == ResourceAccess::DynamicVariable)
+					{
+						// Unmap resource from previous buffer component, and instead map it to this one. But first we want to copy over the old data.
+						std::span<const std::byte> old_data = buf.map_as<const std::byte>();
+						std::span<std::byte> new_data = resized_copy.map_as<std::byte>();
+						// Assume new resource is larger than old one.
+						tz_assert(old_data.size_bytes() <= new_data.size_bytes(), "Buffer component resizing to a smaller size is not yet implemented.");
+						// do the copy.
+						std::copy(old_data.begin(), old_data.end(), new_data.begin());
+						// Now remap the resource to the new component. Then we can swap.
+						buf_comp->get_resource()->set_mapped_data(new_data);
+					}
+					// Swap the buffers, old one can now die. Remember if we're static the data can't change, so the initial resource data is still correct so we don't have to do anything.
+					std::swap(buf, resized_copy);
+					// Now update all descriptors.
+					this->resources.sync_descriptors(false);
+				}
+				else if constexpr(std::is_same_v<T, RendererImageComponentEditRequest>)
+				{
+					tz_error("Resizing images is not yet implemented");
+				}
+				else
+				{
+					tz_error("Unsupported Variant Type");
+				}
+			}, component_edit);
+		}
+		if(resized_static_resources)
+		{
+			this->setup_static_resources();
+		}
 	}
 
 	void RendererVulkan::setup_static_resources()

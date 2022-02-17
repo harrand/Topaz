@@ -71,6 +71,10 @@ namespace tz::gl::vk2
 		 */
 		BufferUsageField get_usage() const;
 		/**
+		 * Retrieve the residency of the buffer's memory.
+		 */
+		MemoryResidency get_residency() const;
+		/**
 		 * If possible, map the memory to a CPU-size pointer.
 		 * @return Pointer to mapped memory, or nullptr if something went wrong.
 		 */

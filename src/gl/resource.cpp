@@ -42,7 +42,7 @@ namespace tz::gl2
 
 	void Resource::set_mapped_data(std::span<std::byte> mapped_resource_data)
 	{
-		tz_assert(this->get_access() == ResourceAccess::DynamicFixed, "Cannot set mapped data on a static resource.");
+		tz_assert(this->get_access() == ResourceAccess::DynamicFixed || this->get_access() == ResourceAccess::DynamicVariable, "Cannot set mapped data on a static resource.");
 		this->mapped_resource_data = mapped_resource_data;
 	}
 

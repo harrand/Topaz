@@ -90,15 +90,7 @@ namespace tz::gl2
 		}
 
 		virtual std::unique_ptr<IResource> unique_clone() const = 0;
-		
-		#if TZ_VULKAN
-			// vk2 frontend RendererVulkan implementation detail.
-			friend class ResourceStorage;
-		#elif TZ_OGL
-			// ogl2 frontend RendererOGL implementation detail.
-			friend class ResourceStorage;
-		#endif
-	protected:
+
 		virtual void set_mapped_data(std::span<std::byte> resource_data) = 0;
 	};
 

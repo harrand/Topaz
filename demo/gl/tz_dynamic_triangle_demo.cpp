@@ -5,6 +5,8 @@
 #include "gl/renderer.hpp"
 #include "gl/resource.hpp"
 #include "gl/imported_shaders.hpp"
+// TODO: Remove
+#include "gl/component.hpp"
 
 #include ImportedShaderHeader(tz_dynamic_triangle_demo, vertex)
 #include ImportedShaderHeader(tz_dynamic_triangle_demo, fragment)
@@ -54,12 +56,12 @@ int main()
 			float pad1[2];
 		};
 
-		tz::gl2::BufferResource buf = tz::gl2::DynamicBufferResource::from_many
+		tz::gl2::BufferResource buf = tz::gl2::BufferResource::from_many
 		({
 			TriangleVertexData{.position = {-0.5f, -0.5f, 0.0f}, .texcoord = {0.0f, 0.0f}},
 			TriangleVertexData{.position = {0.0f, 0.5f, 0.0f}, .texcoord = {0.5f, 1.0f}},
 			TriangleVertexData{.position = {0.5f, -0.5f, 0.0f}, .texcoord = {1.0f, 0.0f}},
-		});
+		}, tz::gl2::ResourceAccess::DynamicVariable);
 
 		tz::gl2::RendererInfo rinfo;
 		rinfo.shader().set_shader(tz::gl2::ShaderStage::Vertex, ImportedShaderSource(tz_dynamic_triangle_demo, vertex));
@@ -77,11 +79,30 @@ int main()
 
 			{
 				// Get the top vertex of the triangle, and oscillate its height :)
+				#if TZ_DEBUG
+					const tz::gl2::BufferComponent& buf_comp = *(static_cast<const tz::gl2::BufferComponent*>(renderer.get_component(bufh)));
+					std::printf("Buffer Component Size = %zu triangles\n", buf_comp.size() / sizeof(TriangleVertexData));
+				#endif
 				TriangleVertexData& top_vertex = renderer.get_resource(bufh)->data_as<TriangleVertexData>()[1];
 				static float x = 0.0f;
 				// Between -1 and -0.5
 				top_vertex.position[1] = (std::sin(x += 0.05f) * 0.25f) - 0.25f;
 			}
+			// TODO: REmove
+			static int total = 3;
+			tz::gl2::RendererEditRequest renderer_edit
+			{
+				.component_edits =
+				{
+					tz::gl2::RendererBufferComponentEditRequest
+					{
+						.buffer_handle = bufh,
+						.size = sizeof(TriangleVertexData) * ++total
+					}
+				}
+			};
+			renderer.edit(renderer_edit);
+
 			TZ_FRAME_END;
 		}
 	}

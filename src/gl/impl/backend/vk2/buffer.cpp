@@ -111,6 +111,11 @@ namespace tz::gl::vk2
 		return this->info.usage;
 	}
 
+	MemoryResidency Buffer::get_residency() const
+	{
+		return this->info.residency;
+	}
+
 	void* Buffer::map()
 	{
 		// If we're GPU resident we can't be host visible, so early out.

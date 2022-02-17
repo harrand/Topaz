@@ -160,6 +160,7 @@ namespace tz::gl2
 
 		void render();
 		void render(unsigned int tri_count);
+		void edit(const RendererEditRequest& edit_request);
 	private:
 		ogl2::VertexArray vao;
 		ResourceStorage resources;

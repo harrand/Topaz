@@ -24,6 +24,8 @@ namespace tz::gl2
 						switch(buf.get_resource()->get_access())
 						{
 							case ResourceAccess::StaticFixed:
+							[[fallthrough]];
+							case ResourceAccess::StaticVariable:
 								{
 									// Create staging buffer and do a copy.
 									ogl2::Buffer staging
@@ -39,6 +41,8 @@ namespace tz::gl2
 								}
 							break;
 							case ResourceAccess::DynamicFixed:
+							[[fallthrough]];
+							case ResourceAccess::DynamicVariable:
 							{
 
 								// Tell the resource to use the buffer's data. Also copy whatever we had before.
@@ -282,6 +286,44 @@ namespace tz::gl2
 	{
 		this->tri_count = tri_count;
 		this->render();
+	}
+
+	void RendererOGL::edit(const RendererEditRequest& edit_request)
+	{
+		if(edit_request.component_edits.empty())
+		{
+			return;
+		}
+		for(const RendererComponentEditRequest& component_edit : edit_request.component_edits)
+		{
+
+			std::visit(
+			[this](auto&& arg)
+			{
+				using T = std::decay_t<decltype(arg)>;
+				if constexpr(std::is_same_v<T, RendererBufferComponentEditRequest>)
+				{
+					auto buf_comp = static_cast<BufferComponentOGL*>(this->get_component(arg.buffer_handle));
+					tz_assert(buf_comp->get_resource()->get_access() == ResourceAccess::StaticVariable || buf_comp->get_resource()->get_access() == ResourceAccess::DynamicVariable, "Detected attempted resize of buffer resource (id %zu), but it ResourceAccess is not variable. This means it is a fixed-size resource, so attempting to resize it is invalid.", static_cast<std::size_t>(static_cast<tz::HandleValue>(arg.buffer_handle)));
+					// Make new buffer copy, and swap them with the component's held buffer. That is literally it I believe.
+					ogl2::Buffer& old_buffer = buf_comp->ogl_get_buffer();
+					old_buffer = ogl2::buffer::clone_resized(old_buffer, arg.size);
+					// If we were dynamic, the resource mapping needs to refer to the new buffer though.
+					if(buf_comp->get_resource()->get_access() == ResourceAccess::DynamicVariable)
+					{
+						buf_comp->get_resource()->set_mapped_data(old_buffer.map_as<std::byte>());
+					}
+				}
+				else if constexpr(std::is_same_v<T, RendererImageComponentEditRequest>)
+				{
+					tz_error("Resizing images is not yet implemented");
+				}
+				else
+				{
+					tz_error("Unsupported variant type");
+				}
+			}, component_edit);
+		}
 	}
 }
 

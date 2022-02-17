@@ -7,7 +7,10 @@
 #include "gl/api/shader.hpp"
 #include "core/containers/basic_list.hpp"
 #include "core/containers/enum_field.hpp"
+#include "core/vector.hpp"
 #include <concepts>
+#include <variant>
+
 namespace tz::gl2
 {
 	/**
@@ -39,12 +42,31 @@ namespace tz::gl2
 		{t.shader()} -> ShaderInfoType;
 	};
 
+	struct RendererBufferComponentEditRequest
+	{
+		ResourceHandle buffer_handle;
+		std::size_t size;
+	};
+
+	struct RendererImageComponentEditRequest
+	{
+		ResourceHandle image_handle;
+		tz::Vec2ui dimensions;
+	};
+
+	using RendererComponentEditRequest = std::variant<RendererBufferComponentEditRequest, RendererImageComponentEditRequest>;
+
+	struct RendererEditRequest
+	{
+		std::vector<RendererComponentEditRequest> component_edits;
+	};
+
 	/**
 	 * @ingroup tz_gl2_renderer
 	 * Named requirement for a Renderer.
 	 */
 	template<typename T>
-	concept RendererType = requires(T t, ResourceHandle r, std::size_t tri_count)
+	concept RendererType = requires(T t, ResourceHandle r, std::size_t tri_count, const RendererEditRequest& edit_request)
 	{
 		/**
 		 * Retrieves the number of resources used by the renderer.
@@ -77,6 +99,7 @@ namespace tz::gl2
 		 * @param tri_count Number of triangles to render.
 		 */
 		{t.render(tri_count)} -> std::same_as<void>;
+		{t.edit(edit_request)} -> std::same_as<void>;
 	};
 }
 
