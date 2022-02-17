@@ -8,6 +8,8 @@
 #include "gl/impl/backend/vk2/extensions.hpp"
 #include "vk_mem_alloc.h"
 #include <cstdint>
+#include <optional>
+
 namespace tz::gl::vk2
 {
 	class VulkanInstance;
