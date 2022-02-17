@@ -5,17 +5,35 @@
 #include "gl/renderer.hpp"
 #include "gl/resource.hpp"
 #include "gl/imported_shaders.hpp"
-// TODO: Remove
 #include "gl/component.hpp"
+#include <random>
 
 #include ImportedShaderHeader(tz_dynamic_triangle_demo, vertex)
 #include ImportedShaderHeader(tz_dynamic_triangle_demo, fragment)
+
+struct TriangleVertexData
+{
+	tz::Vec3 position;
+	float pad0;
+	tz::Vec2 texcoord;
+	float pad1[2];
+};
+
+TriangleVertexData get_random_triangle(std::default_random_engine& rand)
+{
+	std::uniform_real_distribution<float> dist(-1.0f, 1.0f);
+	return
+	{
+		.position = {dist(rand), dist(rand), dist(rand)},
+		.texcoord = {dist(rand), dist(rand)}
+	};
+}
 
 int main()
 {
 	tz::initialise
 	({
-		.name = "tz_triangle_demo (gl2)",
+		.name = "tz_dynamic_triangle_demo (gl2)",
 		.window = {.flags = {.resizeable = false}}
 	});
 	{
@@ -48,14 +66,7 @@ int main()
 			}
 		);
 
-		struct TriangleVertexData
-		{
-			tz::Vec3 position;
-			float pad0;
-			tz::Vec2 texcoord;
-			float pad1[2];
-		};
-
+		std::size_t triangle_count = 1;
 		tz::gl2::BufferResource buf = tz::gl2::BufferResource::from_many
 		({
 			TriangleVertexData{.position = {-0.5f, -0.5f, 0.0f}, .texcoord = {0.0f, 0.0f}},
@@ -70,38 +81,41 @@ int main()
 		tz::gl2::ResourceHandle bufh = rinfo.add_resource(buf);
 
 		tz::gl2::Renderer renderer = dev.create_renderer(rinfo);
+		std::default_random_engine rand;
 
 		while(!tz::window().is_close_requested())
 		{
 			TZ_FRAME_BEGIN;
 			tz::window().update();
-			renderer.render(1);
-
+			renderer.render(triangle_count);
+			// Every 10k frames, add a new triangle at a random position.
+			static int counter = 0;
+			if(counter++ > 10000)
 			{
-				// Get the top vertex of the triangle, and oscillate its height :)
-				#if TZ_DEBUG
-					const tz::gl2::BufferComponent& buf_comp = *(static_cast<const tz::gl2::BufferComponent*>(renderer.get_component(bufh)));
-					std::printf("Buffer Component Size = %zu triangles\n", buf_comp.size() / sizeof(TriangleVertexData));
-				#endif
-				TriangleVertexData& top_vertex = renderer.get_resource(bufh)->data_as<TriangleVertexData>()[1];
-				static float x = 0.0f;
-				// Between -1 and -0.5
-				top_vertex.position[1] = (std::sin(x += 0.05f) * 0.25f) - 0.25f;
-			}
-			// TODO: REmove
-			static int total = 3;
-			tz::gl2::RendererEditRequest renderer_edit
-			{
-				.component_edits =
+				// Add new triangle by resizing the triangle vertex storage buffer to a capacity large enough for an extra triangle. Then we randomise the new triangle data.
+				counter = 0;
+				triangle_count++;
+				tz::gl2::RendererEditRequest renderer_edit
 				{
-					tz::gl2::RendererBufferComponentEditRequest
+					.component_edits =
 					{
-						.buffer_handle = bufh,
-						.size = sizeof(TriangleVertexData) * ++total
+						tz::gl2::RendererBufferComponentEditRequest
+						{
+							.buffer_handle = bufh,
+							.size = sizeof(TriangleVertexData) * 3 * triangle_count
+						}
 					}
+				};
+				renderer.edit(renderer_edit);
+				// Get the resource data for the new triangle and set it to random values.
+				tz::gl2::BufferResource* buf_res = static_cast<tz::gl2::BufferResource*>(renderer.get_resource(bufh));
+				std::span<TriangleVertexData> buf_data = buf_res->data_as<TriangleVertexData>();
+				// We do this by setting the last 3 vertices to a random triangle;
+				for(std::size_t i = 0; i < 3; i++)
+				{
+					buf_data[buf_data.size() - 3 + i] = get_random_triangle(rand);
 				}
-			};
-			renderer.edit(renderer_edit);
+			}
 
 			TZ_FRAME_END;
 		}

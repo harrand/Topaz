@@ -37,6 +37,7 @@ namespace tz::gl::ogl2
 	{
 		std::swap(this->buffer, move.buffer);
 		std::swap(this->info, move.info);
+		std::swap(this->mapped_ptr, move.mapped_ptr);
 		return *this;
 	}
 
