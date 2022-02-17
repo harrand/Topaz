@@ -42,22 +42,41 @@ namespace tz::gl2
 		{t.shader()} -> ShaderInfoType;
 	};
 
+	/**
+	 * Represents an edit to an existing buffer component owned by an existing renderer.
+	 */
 	struct RendererBufferComponentEditRequest
 	{
+		/// Handle corresponding to the buffer to edit.
 		ResourceHandle buffer_handle;
+		/// New size of the buffer, in bytes.
 		std::size_t size;
 	};
 
+	/**
+	 * Represents an edit to an existing image component owned by an existing renderer.
+	 */
 	struct RendererImageComponentEditRequest
 	{
+		/// Handle corresponding to the image to edit.
 		ResourceHandle image_handle;
+		/// New dimensions of the image, in pixels.
 		tz::Vec2ui dimensions;
 	};
 
+	/**
+	 * Type-safe union of @ref RendererBufferComponentEditRequest and @ref RendererImageComponentEditRequest
+	 */
 	using RendererComponentEditRequest = std::variant<RendererBufferComponentEditRequest, RendererImageComponentEditRequest>;
 
+	/**
+	 * Represents an edit to an existing renderer.
+	 */
 	struct RendererEditRequest
 	{
+		/**
+		 * List of edits to components owned by the renderer.
+		 */
 		std::vector<RendererComponentEditRequest> component_edits;
 	};
 
@@ -99,6 +118,12 @@ namespace tz::gl2
 		 * @param tri_count Number of triangles to render.
 		 */
 		{t.render(tri_count)} -> std::same_as<void>;
+		/**
+		 * Confirm changes to a renderer.
+		 *
+		 * Editing renderers is expensive, so it should only be done if absolutely necessary. If you are editing renderers on a per-frame basis, consider creating multiple different renderers upfront for each hot-path and switching between them as necessary instead.
+		 * @param edit_request Structure specifying which edits to make.
+		 */
 		{t.edit(edit_request)} -> std::same_as<void>;
 	};
 }

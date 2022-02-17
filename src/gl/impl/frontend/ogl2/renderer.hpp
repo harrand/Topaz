@@ -157,9 +157,21 @@ namespace tz::gl2
 		 * Retrieve options denoting extra features used by the renderer.
 		 */
 		const RendererOptions& get_options() const;
-
+		/**
+		 * Invoke the renderer, emitting a single draw call of a set number of triangles. The number of triangles rendered is equal to the number of triangles rendered in the previous draw-call. If this is the first draw, zero triangles are rendered.
+		 */
 		void render();
+		/**
+		 * Invoke the renderer, emitting a single draw call of a set number of triangles.
+		 * @param tri_count Number of triangles to render.
+		 */
 		void render(unsigned int tri_count);
+		/**
+		 * Confirm changes to a renderer.
+		 *
+		 * Editing renderers is expensive, so it should only be done if absolutely necessary. If you are editing renderers on a per-frame basis, consider creating multiple different renderers upfront for each hot-path and switching between them as necessary instead.
+		 * @param edit_request Structure specifying which edits to make.
+		 */
 		void edit(const RendererEditRequest& edit_request);
 	private:
 		ogl2::VertexArray vao;

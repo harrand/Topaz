@@ -90,7 +90,7 @@ int main()
 			renderer.render(triangle_count);
 			// Every 10k frames, add a new triangle at a random position.
 			static int counter = 0;
-			if(counter++ > 10000)
+			if(counter++ > 500)
 			{
 				// Add new triangle by resizing the triangle vertex storage buffer to a capacity large enough for an extra triangle. Then we randomise the new triangle data.
 				counter = 0;

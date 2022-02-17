@@ -51,7 +51,13 @@ namespace tz
 	{
 		TZ_PROFZONE("WindowFunctionality::update", TZ_PROFCOL_YELLOW);
 		glfwPollEvents();
-		#if TZ_OGL
+		#if TZ_VULKAN
+			// If we're on vulkan and we're minimised, halt until otherwise.
+			while(this->get_width() == 0 || this->get_height() == 0)
+			{
+				glfwWaitEvents();
+			}
+		#elif TZ_OGL
 			// OpenGL only
 			glfwSwapBuffers(this->wnd);
 		#endif
