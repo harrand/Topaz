@@ -68,6 +68,10 @@ namespace tz::gl::ogl2
 	
 	bool Framebuffer::has_depth_attachment() const
 	{
+		if(this->is_null())
+		{
+			return true;
+		}
 		return this->info.maybe_depth_attachment.has_value();
 	}
 

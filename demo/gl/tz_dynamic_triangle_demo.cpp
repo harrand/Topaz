@@ -69,9 +69,9 @@ int main()
 		std::size_t triangle_count = 1;
 		tz::gl2::BufferResource buf = tz::gl2::BufferResource::from_many
 		({
-			TriangleVertexData{.position = {-0.5f, -0.5f, 0.0f}, .texcoord = {0.0f, 0.0f}},
-			TriangleVertexData{.position = {0.0f, 0.5f, 0.0f}, .texcoord = {0.5f, 1.0f}},
-			TriangleVertexData{.position = {0.5f, -0.5f, 0.0f}, .texcoord = {1.0f, 0.0f}},
+			TriangleVertexData{.position = {-0.5f, -0.5f, -1.0f}, .texcoord = {0.0f, 0.0f}},
+			TriangleVertexData{.position = {0.0f, 0.5f, -1.0f}, .texcoord = {0.5f, 1.0f}},
+			TriangleVertexData{.position = {0.5f, -0.5f, -1.0f}, .texcoord = {1.0f, 0.0f}},
 		}, tz::gl2::ResourceAccess::DynamicVariable);
 
 		tz::gl2::RendererInfo rinfo;

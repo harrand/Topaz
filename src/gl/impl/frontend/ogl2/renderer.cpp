@@ -269,6 +269,15 @@ namespace tz::gl2
 
 	void RendererOGL::render()
 	{
+		if(this->options.contains(RendererOption::NoDepthTesting))
+		{
+			glDisable(GL_DEPTH_TEST);
+		}
+		else
+		{
+			glEnable(GL_DEPTH_TEST);
+			glDepthFunc(GL_LESS);
+		}
 		this->output.set_render_target();
 
 		this->shader.use();

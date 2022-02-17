@@ -19,5 +19,8 @@ void main() {
     texcoord = cur_vertex.texcoord;
     #if TZ_VULKAN
         gl_Position.y = -gl_Position.y;
+	// for OGL, z is [-1,1], but for VK is [0,1]
+	// we use OGL so to get vulkan z we add 1 and then half
+	gl_Position.z = (gl_Position.z + 1.0) * 0.5;
     #endif
 }
