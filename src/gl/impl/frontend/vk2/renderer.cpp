@@ -47,7 +47,7 @@ namespace tz::gl2
 						std::copy(initial_data.begin(), initial_data.end(), buffer_byte_data.begin());
 						res->set_mapped_data(buffer_byte_data);
 					}
-					buffer_id_to_variable_access.push_back(res->get_access() == ResourceAccess::StaticVariable || res->get_access() == ResourceAccess::DynamicVariable);
+					buffer_id_to_variable_access.push_back(res->get_access() == ResourceAccess::DynamicVariable);
 				break;
 				case ResourceType::Image:
 					this->components.push_back(std::make_unique<ImageComponentVulkan>(*res, ldev));
@@ -710,7 +710,7 @@ namespace tz::gl2
 					// We need to create a new buffer with the correct size, and swap it with the old one (which can now die because we're not rendering anymore).
 					// If it's a dynamic resource, we need to unmap the BufferResource from it though.
 					auto buf_comp = static_cast<BufferComponentVulkan*>(this->get_component(arg.buffer_handle));
-					tz_assert(buf_comp->get_resource()->get_access() == ResourceAccess::StaticVariable || buf_comp->get_resource()->get_access() == ResourceAccess::DynamicVariable, "Detected attempted resize of buffer resource (id %zu), but it ResourceAccess is not variable. This means it is a fixed-size resource, so attempting to resize it is invalid.", static_cast<std::size_t>(static_cast<tz::HandleValue>(arg.buffer_handle)));
+					tz_assert(buf_comp->get_resource()->get_access() == ResourceAccess::DynamicVariable, "Detected attempted resize of buffer resource (id %zu), but it ResourceAccess is not DynamicVariable. This means it is a fixed-size resource, so attempting to resize it is invalid.", static_cast<std::size_t>(static_cast<tz::HandleValue>(arg.buffer_handle)));
 					// Make new buffer.
 					vk2::Buffer& buf = buf_comp->vk_get_buffer();
 					vk2::Buffer resized_copy

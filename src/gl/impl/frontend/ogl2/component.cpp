@@ -37,8 +37,6 @@ namespace tz::gl2
 		switch(this->resource->get_access())
 		{
 			case ResourceAccess::StaticFixed:
-			[[fallthrough]];
-			case ResourceAccess::StaticVariable:
 				residency = ogl2::BufferResidency::Static;
 			break;
 			case ResourceAccess::DynamicFixed:

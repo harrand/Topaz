@@ -45,8 +45,6 @@ namespace tz::gl2
 		switch(this->resource->get_access())
 		{
 			case ResourceAccess::StaticFixed:
-			[[fallthrough]];
-			case ResourceAccess::StaticVariable:
 				usage_field = {vk2::BufferUsage::TransferDestination, vk2::BufferUsage::StorageBuffer};
 				residency = vk2::MemoryResidency::GPU;
 			break;
@@ -109,8 +107,6 @@ namespace tz::gl2
 		switch(this->resource->get_access())
 		{
 			case ResourceAccess::StaticFixed:
-			[[fallthrough]];
-			case ResourceAccess::StaticVariable:
 				usage_field = {vk2::ImageUsage::TransferDestination, vk2::ImageUsage::SampledImage};
 				residency = vk2::MemoryResidency::GPU;
 			break;

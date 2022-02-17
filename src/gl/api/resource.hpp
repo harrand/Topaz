@@ -27,8 +27,6 @@ namespace tz::gl2
 	{
 		/// - Resource data is written once initially, and cannot be resized.
 		StaticFixed,
-		/// - Resource data is written once initially, but resizeable.
-		StaticVariable,
 		/// - Resource data is always writable, but cannot be resized.
 		DynamicFixed,
 		/// - Resource data is always writeable and resizeable.

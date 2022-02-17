@@ -24,8 +24,6 @@ namespace tz::gl2
 						switch(buf.get_resource()->get_access())
 						{
 							case ResourceAccess::StaticFixed:
-							[[fallthrough]];
-							case ResourceAccess::StaticVariable:
 								{
 									// Create staging buffer and do a copy.
 									ogl2::Buffer staging
@@ -304,7 +302,7 @@ namespace tz::gl2
 				if constexpr(std::is_same_v<T, RendererBufferComponentEditRequest>)
 				{
 					auto buf_comp = static_cast<BufferComponentOGL*>(this->get_component(arg.buffer_handle));
-					tz_assert(buf_comp->get_resource()->get_access() == ResourceAccess::StaticVariable || buf_comp->get_resource()->get_access() == ResourceAccess::DynamicVariable, "Detected attempted resize of buffer resource (id %zu), but it ResourceAccess is not variable. This means it is a fixed-size resource, so attempting to resize it is invalid.", static_cast<std::size_t>(static_cast<tz::HandleValue>(arg.buffer_handle)));
+					tz_assert(buf_comp->get_resource()->get_access() == ResourceAccess::DynamicVariable, "Detected attempted resize of buffer resource (id %zu), but it ResourceAccess is not DynamicVariable. This means it is a fixed-size resource, so attempting to resize it is invalid.", static_cast<std::size_t>(static_cast<tz::HandleValue>(arg.buffer_handle)));
 					// Make new buffer copy, and swap them with the component's held buffer. That is literally it I believe.
 					ogl2::Buffer& old_buffer = buf_comp->ogl_get_buffer();
 					old_buffer = ogl2::buffer::clone_resized(old_buffer, arg.size);
