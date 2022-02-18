@@ -27,7 +27,9 @@ jobs:
 
         - name: Install glslc
           run:  |
-            cd ${{ github.workspace }}/glslc_dir
+            cd ${{ github.workspace }}
+            mkdir glslc_dir
+            cd glslc_dir
             curl https://storage.googleapis.com/shaderc/artifacts/prod/graphics_shader_compiler/shaderc/windows/continuous_release_2017/384/20220202-124410/install.zip > glslc.zip
             tar -xf glslc.zip
             cd install/bin
