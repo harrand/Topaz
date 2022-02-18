@@ -27,7 +27,7 @@ jobs:
           submodules: recursive
 
       - name: Install Vulkan SDK
-        uses: humbletim/setup-vulkan-sdk@v1.0.3
+        uses: humbletim/setup-vulkan-sdk@cc516797596f713aee3262a6b5271656a55fa59c
         with:
           vulkan-components: headers, loader, validation
           vulkan-use-cache: true
