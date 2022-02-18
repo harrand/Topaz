@@ -7,6 +7,7 @@
 ![non_graphical_tests](https://github.com/Harrand/Topaz/actions/workflows/non_graphical_tests_opengl_msvc.yml/badge.svg)
 
 ![non_graphical_tests](https://github.com/Harrand/Topaz/actions/workflows/non_graphical_tests_vulkan_gcc.yml/badge.svg)
+
 ![non_graphical_tests](https://github.com/Harrand/Topaz/actions/workflows/non_graphical_tests_vulkan_msvc.yml/badge.svg)
 
 ## About
