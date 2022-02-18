@@ -43,6 +43,7 @@ jobs:
             dir
             echo Expanding glslc.zip
             Expand-Archive -LiteralPath glslc.zip
+            echo Last exit code is $LASTEXITCODE
 
         - name: Install glslc
           shell: pwsh
