@@ -25,16 +25,29 @@ jobs:
         - name: Install Vulkan SDK
           uses: humbletim/setup-vulkan-sdk@v1.0.3
 
-        - name: Install glslc
+        - name: Download glslc
           shell: pwsh
           run:  |
             cd ${{ github.workspace }}
             mkdir glslc_dir
             cd glslc_dir
             curl https://storage.googleapis.com/shaderc/artifacts/prod/graphics_shader_compiler/shaderc/windows/continuous_release_2017/384/20220202-124410/install.zip > glslc.zip
+            echo Finished downloading
+            dir
+
+        - name: Unzip and Install glslc
+          shell: pwsh
+          run:  |
+            cd ${{ github.workspace }}/glslc_dir
+            echo Printing dirs
+            dir
+            echo Expanding glslc.zip
             Expand-Archive -LiteralPath glslc.zip
+            echo Looking for glslc.exe...
             cd install/bin
-            cmake -E copy glslc.exe ${{ github.workspace }}/VULKAN_SDK/Bin
+            dir
+            echo Copying glslc.exe to $env:VULKAN_SDK
+            cmake -E copy glslc.exe $env:VULKAN_SDK
 
         - name: 'Run all non-graphical tests (msvc vulkan-debug)'
           uses: lukka/run-cmake@v3
