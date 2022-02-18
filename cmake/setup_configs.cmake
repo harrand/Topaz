@@ -14,7 +14,7 @@ function(configure_vulkan target)
 	if(WIN32)
 		target_link_libraries(${target} PUBLIC vulkan-1 vma)
 	elseif(UNIX)
-		target_link_libraries(${target} PUBLIC vulkan vma)
+		target_link_libraries(${target} PUBLIC libvulkan.so.1 vma)
 	endif()
 
 endfunction()
