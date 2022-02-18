@@ -8,15 +8,17 @@ function(configure_vulkan target)
 	target_compile_definitions(${target} PUBLIC -DTZ_VULKAN=1 -DTZ_OGL=0)
 
 	message(STATUS "configure_vulkan(${target}): $VULKAN_SDK == $ENV{VULKAN_SDK}")
-	target_link_directories(${target} PUBLIC "$ENV{VULKAN_SDK}/Lib")
+	if(WIN32)
+		target_link_directories(${target} PUBLIC "$ENV{VULKAN_SDK}/Lib")
+	elseif(UNIX)
+		target_link_directories(${target} PUBLIC "$ENV{VULKAN_SDK}/lib")
+	endif()
 	target_include_directories(${target} PUBLIC "$ENV{VULKAN_SDK}/include")
-	# This is absurd
 	if(WIN32)
 		target_link_libraries(${target} PUBLIC vulkan-1 vma)
 	elseif(UNIX)
-		target_link_libraries(${target} PUBLIC libvulkan.so.1 vma)
+		target_link_libraries(${target} PUBLIC vulkan vma)
 	endif()
-
 endfunction()
 
 function(configure_debug target)
