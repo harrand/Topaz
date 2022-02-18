@@ -10,7 +10,13 @@ function(configure_vulkan target)
 	message(STATUS "configure_vulkan(${target}): $VULKAN_SDK == $ENV{VULKAN_SDK}")
 	target_link_directories(${target} PUBLIC "$ENV{VULKAN_SDK}/Lib")
 	target_include_directories(${target} PUBLIC "$ENV{VULKAN_SDK}/include")
-	target_link_libraries(${target} PUBLIC vulkan-1 vma)
+	# This is absurd
+	if(WIN32)
+		target_link_libraries(${target} PUBLIC vulkan-1 vma)
+	elseif(UNIX)
+		target_link_libraries(${target} PUBLIC vulkan vma)
+	endif()
+
 endfunction()
 
 function(configure_debug target)
