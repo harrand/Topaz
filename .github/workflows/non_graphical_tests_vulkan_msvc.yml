@@ -26,12 +26,13 @@ jobs:
           uses: humbletim/setup-vulkan-sdk@v1.0.3
 
         - name: Install glslc
+          shell: pwsh
           run:  |
             cd ${{ github.workspace }}
             mkdir glslc_dir
             cd glslc_dir
             curl https://storage.googleapis.com/shaderc/artifacts/prod/graphics_shader_compiler/shaderc/windows/continuous_release_2017/384/20220202-124410/install.zip > glslc.zip
-            tar -xf glslc.zip
+            Expand-Archive -LiteralPath glslc.zip
             cd install/bin
             cmake -E copy glslc.exe ${{ github.workspace }}/VULKAN_SDK/Bin
 
