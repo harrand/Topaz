@@ -29,7 +29,7 @@ jobs:
       - name: Install Vulkan SDK
         uses: humbletim/setup-vulkan-sdk@cc516797596f713aee3262a6b5271656a55fa59c
         with:
-          vulkan-components: headers, loader, validation
+          vulkan-components: prebuilt
 
       - name: Install glslc
         run:  |
