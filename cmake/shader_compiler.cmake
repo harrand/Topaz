@@ -2,7 +2,7 @@ include(CMakeParseArguments)
 
 macro(add_shader_vulkan)
 	# example: C:\VulkanSDK\1.2.170.0\Bin\glslc.exe
-	set(VK_BIN_DIR $ENV{VK_SDK_PATH}/Bin)
+	set(VK_BIN_DIR $ENV{VULKAN_SDK}/Bin)
 	set(VK_GLSLC_EXECUTABLE_PATH ${VK_BIN_DIR}/glslc)
 
 	set(shader_path ${PROJECT_SOURCE_DIR}/${SHADER})
