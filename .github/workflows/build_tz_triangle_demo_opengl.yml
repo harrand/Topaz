@@ -78,23 +78,3 @@ jobs:
           buildWithCMake: true
           buildWithCMakeArgs: "--target tz_triangle_demo --parallel 4"
           buildDirectory: "${{ github.workspace }}/../../_temp/build/debug"
-  
-  msvc-vulkan-windows:
-    runs-on: windows-2022
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          submodules: recursive
-      
-      - name: Install Vulkan SDK
-        uses: humbletim/setup-vulkan-sdk@v1.0.3
-
-      - name: 'Build Triangle Demo (msvc-vulkan-debug)'
-        uses: lukka/run-cmake@v3
-        with:
-          cmakeListsOrSettingsJson: "CMakeListsTxtAdvanced"
-          cmakeGenerator: UnixMakefiles
-          cmakeAppendedArgs: "-B \"${{ github.workspace }}/../../_temp/build/debug\" -DTOPAZ_DEBUG=1 -DTOPAZ_VULKAN=1 -DTOPAZ_OGL=0"
-          buildWithCMake: true
-          buildWithCMakeArgs: "--target tz_triangle_demo --parallel 4"
-          buildDirectory: "${{ github.workspace }}/../../_temp/build/debug"
