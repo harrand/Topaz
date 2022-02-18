@@ -27,10 +27,9 @@ jobs:
           submodules: recursive
 
       - name: Install Vulkan SDK
-        uses: humbletim/setup-vulkan-sdk@v1.0.3
+        uses: humbletim/setup-vulkan-sdk@cc516797596f713aee3262a6b5271656a55fa59c
         with:
           vulkan-components: headers, loader, validation
-          vulkan-use-cache: true
 
       - name: Install glslc
         run:  |
@@ -70,10 +69,9 @@ jobs:
           submodules: recursive
 
       - name: Install Vulkan SDK
-        uses: humbletim/setup-vulkan-sdk@v1.0.3
+        uses: humbletim/setup-vulkan-sdk@cc516797596f713aee3262a6b5271656a55fa59c
         with:
           vulkan-components: headers, loader, validation
-          vulkan-use-cache: true
 
       - name: Install glslc
         run:  |
@@ -110,10 +108,38 @@ jobs:
           submodules: recursive
 
       - name: Install Vulkan SDK
-        uses: humbletim/setup-vulkan-sdk@v1.0.3
+        uses: humbletim/setup-vulkan-sdk@cc516797596f713aee3262a6b5271656a55fa59c
         with:
           vulkan-components: headers, loader, validation
-          vulkan-use-cache: true
+
+      - name: Download glslc
+          shell: pwsh
+          run:  |
+            cd ${{ github.workspace }}
+            mkdir glslc_dir
+            cd glslc_dir
+            curl https://storage.googleapis.com/shaderc/artifacts/prod/graphics_shader_compiler/shaderc/windows/continuous_release_2015/382/20220202-124624/install.zip > glslc.zip
+            echo Finished downloading
+            dir
+
+      - name: Unzip glslc
+        shell: pwsh
+        run:  |
+          cd ${{ github.workspace }}/glslc_dir
+          echo Printing dirs
+          dir
+          echo Expanding glslc.zip
+          7z e glslc.zip
+          echo Last exit code is $LASTEXITCODE
+
+      - name: Install glslc
+        shell: pwsh
+        run:  |
+          echo Looking for glslc.exe...
+          cd ${{ github.workspace }}/glslc_dir/install/bin
+          dir
+          echo Copying glslc.exe to $env:VULKAN_SDK
+          cmake -E copy glslc.exe $env:VULKAN_SDK
 
       - name: 'Build Triangle Demo (msvc-vulkan-debug)'
         uses: lukka/run-cmake@v3

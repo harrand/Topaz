@@ -23,10 +23,9 @@ jobs:
             submodules: recursive
 
         - name: Install Vulkan SDK
-          uses: humbletim/setup-vulkan-sdk@v1.0.3
+          uses: humbletim/setup-vulkan-sdk@cc516797596f713aee3262a6b5271656a55fa59c
           with:
             vulkan-components: headers, loader, validation
-            vulkan-use-cache: true
 
         - name: Download glslc
           shell: pwsh
@@ -45,7 +44,7 @@ jobs:
             echo Printing dirs
             dir
             echo Expanding glslc.zip
-            Expand-Archive -LiteralPath glslc.zip
+            7z e glslc.zip
             echo Last exit code is $LASTEXITCODE
 
         - name: Install glslc
