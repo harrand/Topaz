@@ -1,3 +1,7 @@
+add_tz_test(NAME tz_callback_test
+	SOURCE_FILES callback_test.cpp
+	)
+
 add_tz_test(NAME tz_handle_test
 	SOURCE_FILES handle_test.cpp
 	)
