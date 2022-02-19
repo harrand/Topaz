@@ -31,5 +31,9 @@ int main()
 	cb(counter);
 	tz_assert(counter == 2, "Callback logic failed (registered callable not working). Expected %d, got %d", 2, counter);
 
+	h1 = cb.add_callback(increment_free_function);
+	cb(counter);
+	tz_assert(counter == 4, "Callback logic failed (registered callables not working). Expected %d, got %d", 4, counter);
+
 	return 0;
 }
