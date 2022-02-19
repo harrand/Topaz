@@ -1,12 +1,18 @@
 # Topaz
-![tz_triangle_demo](https://github.com/Harrand/Topaz/actions/workflows/build_tz_triangle_demo_opengl.yml/badge.svg)
+![tz_triangle_demo](https://github.com/Harrand/Topaz/actions/workflows/build_tz_triangle_demo_opengl_debug.yml/badge.svg)
+![tz_triangle_demo](https://github.com/Harrand/Topaz/actions/workflows/build_tz_triangle_demo_opengl_release.yml/badge.svg)
+
 ![tz_triangle_demo](https://github.com/Harrand/Topaz/actions/workflows/build_tz_triangle_demo_vulkan.yml/badge.svg)
 
-![non_graphical_tests](https://github.com/Harrand/Topaz/actions/workflows/non_graphical_tests_opengl_gcc.yml/badge.svg)
-![non_graphical_tests](https://github.com/Harrand/Topaz/actions/workflows/non_graphical_tests_opengl_clang.yml/badge.svg)
-![non_graphical_tests](https://github.com/Harrand/Topaz/actions/workflows/non_graphical_tests_opengl_msvc.yml/badge.svg)
+![non_graphical_tests](https://github.com/Harrand/Topaz/actions/workflows/non_graphical_tests_opengl_gcc_debug.yml/badge.svg)
+![non_graphical_tests](https://github.com/Harrand/Topaz/actions/workflows/non_graphical_tests_opengl_clang_debug.yml/badge.svg)
+![non_graphical_tests](https://github.com/Harrand/Topaz/actions/workflows/non_graphical_tests_opengl_msvc_debug.yml/badge.svg)
 
-![non_graphical_tests](https://github.com/Harrand/Topaz/actions/workflows/non_graphical_tests_vulkan_gcc.yml/badge.svg)
+![non_graphical_tests](https://github.com/Harrand/Topaz/actions/workflows/non_graphical_tests_opengl_gcc_release.yml/badge.svg)
+![non_graphical_tests](https://github.com/Harrand/Topaz/actions/workflows/non_graphical_tests_opengl_clang_release.yml/badge.svg)
+![non_graphical_tests](https://github.com/Harrand/Topaz/actions/workflows/non_graphical_tests_opengl_msvc_release.yml/badge.svg)
+
+![non_graphical_tests](https://github.com/Harrand/Topaz/actions/workflows/non_graphical_tests_vulkan_gcc_release.yml/badge.svg)
 
 ![non_graphical_tests](https://github.com/Harrand/Topaz/actions/workflows/non_graphical_tests_vulkan_msvc.yml/badge.svg)
 
