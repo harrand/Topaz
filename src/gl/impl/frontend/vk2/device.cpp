@@ -8,10 +8,6 @@
 
 namespace tz::gl2
 {
-	DeviceWindowVulkan::DeviceWindowVulkan():
-	window_buf(std::monostate{})
-	{}
-
 	DeviceWindowVulkan::DeviceWindowVulkan(const vk2::LogicalDevice& device):
 	DeviceWindowVulkan()
 	{
@@ -48,7 +44,28 @@ namespace tz::gl2
 				.image_format = device.get_hardware().get_supported_surface_formats().front(),
 				.present_mode = present_mode
 			}};
+			this->register_resize();
 		}
+	}
+
+	DeviceWindowVulkan::DeviceWindowVulkan(DeviceWindowVulkan&& move):
+	window_buf(std::monostate{})
+	{
+		*this = std::move(move);
+	}
+
+	DeviceWindowVulkan::~DeviceWindowVulkan()
+	{
+		this->unregister_resize();
+	}
+
+	DeviceWindowVulkan& DeviceWindowVulkan::operator=(DeviceWindowVulkan&& rhs)
+	{
+		std::swap(this->window_buf, rhs.window_buf);
+		std::swap(this->on_resize_handle, rhs.on_resize_handle);
+		this->reregister_resize();
+		rhs.unregister_resize();
+		return *this;
 	}
 
 	bool DeviceWindowVulkan::valid() const
@@ -118,6 +135,55 @@ namespace tz::gl2
 		return vk2::ImageFormat::Undefined;
 	}
 
+	DeviceWindowVulkan::ResizeCallbackType& DeviceWindowVulkan::resize_callback()
+	{
+		return this->renderer_resize_callbacks;
+	}
+
+	void DeviceWindowVulkan::on_resize(int width, int height)
+	{
+		// Assume we have a head, headless no support for resizeable output yet.
+		tz_assert(this->as_swapchain() != nullptr, "Resizeable output for headless applications is not yet supported.");
+		vk2::Swapchain& old_swapchain = *this->as_swapchain();
+		vk2::Swapchain new_swapchain
+		{{
+			.device = &old_swapchain.get_device(),
+			.swapchain_image_count_minimum = static_cast<std::uint32_t>(old_swapchain.get_image_views().size()),
+			.image_format = old_swapchain.get_image_format(),
+			.old_swapchain = &old_swapchain
+		}};
+		std::swap(old_swapchain, new_swapchain);
+		// Now notify all renderers.
+		this->renderer_resize_callbacks(width, height);
+	}
+
+	void DeviceWindowVulkan::register_resize()
+	{
+		this->on_resize_handle = tz::window().on_resize().add_callback([this](int w, int h){this->on_resize(w, h);});
+	}
+
+	void DeviceWindowVulkan::unregister_resize()
+	{
+		if(this->is_resize_registered())
+		{
+			tz::window().on_resize().remove_callback(this->on_resize_handle);
+			this->on_resize_handle = tz::nullhand;
+		}
+	}
+
+	bool DeviceWindowVulkan::is_resize_registered() const
+	{
+		return this->on_resize_handle != tz::nullhand;
+	}
+	
+	void DeviceWindowVulkan::reregister_resize()
+	{
+		this->unregister_resize();
+		this->register_resize();
+	}
+
+//--------------------------------------------------------------------------------------------------
+
 	DeviceVulkan::DeviceVulkan():
 	DeviceVulkan(vk2::get())
 	{
@@ -171,7 +237,8 @@ namespace tz::gl2
 		{
 			.device = &this->device,
 			.output_images = window_buffer_images,
-			.maybe_swapchain = this->window_storage.as_swapchain()
+			.maybe_swapchain = this->window_storage.as_swapchain(),
+			.resize_callback = &this->window_storage.resize_callback()
 		}};
 	}
 

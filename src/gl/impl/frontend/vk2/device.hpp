@@ -1,5 +1,7 @@
 #ifndef TOPAZ_GL2_IMPL_FRONTEND_VK2_DEVICE_HPP
 #define TOPAZ_GL2_IMPL_FRONTEND_VK2_DEVICE_HPP
+#include "core/callback.hpp"
+#include "core/handle.hpp"
 #if TZ_VULKAN
 #include "gl/api/device.hpp"
 #include "gl/impl/frontend/vk2/renderer.hpp"
@@ -11,8 +13,16 @@ namespace tz::gl2
 	class DeviceWindowVulkan
 	{
 	public:
-		DeviceWindowVulkan();
+		using ResizeCallbackType = tz::WindowFunctionality::ResizeCallbackType;
+
+		DeviceWindowVulkan() = default;
 		DeviceWindowVulkan(const vk2::LogicalDevice& device);
+		DeviceWindowVulkan(const DeviceWindowVulkan& copy) = delete;
+		DeviceWindowVulkan(DeviceWindowVulkan&& move);
+		~DeviceWindowVulkan();
+		DeviceWindowVulkan& operator=(const DeviceWindowVulkan& rhs) = delete;
+		DeviceWindowVulkan& operator=(DeviceWindowVulkan&& rhs);
+
 		bool valid() const;
 		vk2::Swapchain* as_swapchain();
 		const vk2::Swapchain* as_swapchain() const;
@@ -21,8 +31,18 @@ namespace tz::gl2
 
 		tz::Vec2ui get_dimensions() const;
 		vk2::ImageFormat get_format() const;
+
+		ResizeCallbackType& resize_callback();
 	private:
-		std::variant<vk2::Swapchain, vk2::Image, std::monostate> window_buf;
+		void on_resize(int width, int height);
+		void register_resize();
+		void unregister_resize();
+		bool is_resize_registered() const;
+		void reregister_resize();
+
+		std::variant<vk2::Swapchain, vk2::Image, std::monostate> window_buf = std::monostate{};
+		tz::CallbackHandle on_resize_handle = tz::nullhand;
+		ResizeCallbackType renderer_resize_callbacks = {};
 	};
 
 	class DeviceVulkan
@@ -30,6 +50,7 @@ namespace tz::gl2
 	public:
 		DeviceVulkan();
 		DeviceVulkan(const vk2::VulkanInstance& instance);
+		DeviceVulkan(const DeviceVulkan& copy) = delete;
 
 		// Satisfies DeviceType.
 		RendererVulkan create_renderer(RendererInfoVulkan& info);

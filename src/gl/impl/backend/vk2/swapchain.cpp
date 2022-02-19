@@ -63,6 +63,10 @@ namespace tz::gl::vk2
 		create.presentMode = static_cast<VkPresentModeKHR>(this->info.present_mode);
 		create.clipped = VK_TRUE;
 		create.oldSwapchain = VK_NULL_HANDLE;
+		if(info.old_swapchain != nullptr)
+		{
+			create.oldSwapchain = info.old_swapchain->native();
+		}
 
 		VkResult res = vkCreateSwapchainKHR(ldev.native(), &create, nullptr, &this->swapchain);
 		switch(res)

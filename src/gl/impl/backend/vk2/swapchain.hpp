@@ -5,6 +5,7 @@
 
 namespace tz::gl::vk2
 {
+	class Swapchain;
 	/**
 	 * @ingroup tz_gl_vk_presentation
 	 * Specifies parameters of a newly created @ref Swapchain.
@@ -17,9 +18,10 @@ namespace tz::gl::vk2
 		std::uint32_t swapchain_image_count_minimum;
 		/// Specifies the format the swapchain image(s) will be created with. 
 		ImageFormat image_format;
-		// sRGB colourspace hardcoded.
-		// Specifies the presentation mode the @ref Swapchain will use. This must be satisfied by the @ref PhysicalDevice corresponding to `device.get_hardware()`. See @ref PhysicalDevice::get_supported_surface_present_modes for more information.
+		/// Specifies the presentation mode the @ref Swapchain will use. This must be satisfied by the @ref PhysicalDevice corresponding to `device.get_hardware()`. See @ref PhysicalDevice::get_supported_surface_present_modes for more information.
 		SurfacePresentMode present_mode;
+		/// Pointer to swapchain which this will replace, if any. Defaults to nullptr.
+		const Swapchain* old_swapchain = nullptr;
 	};
 
 	/**

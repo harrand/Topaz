@@ -1,6 +1,7 @@
 #ifndef TOPAZ_CORE_WINDOW_FUNCTIONALITY_HPP
 #define TOPAZ_CORE_WINDOW_FUNCTIONALITY_HPP
 #include "core/types.hpp"
+#include "core/callback.hpp"
 #include "core/peripherals/keyboard.hpp"
 #include "core/peripherals/mouse.hpp"
 #include <vector>
@@ -20,14 +21,13 @@ namespace tz
 	class WindowFunctionality
 	{
 	public:
+		using ResizeCallbackType = Callback<int, int>;
 		WindowFunctionality(GLFWwindow* wnd);
 		GLFWwindow* get_middleware_handle() const;
 		/**
 		 * Query as to whether the user has requested that the window should close.
 		 */
 		bool is_close_requested() const;
-		
-		void add_resize_callback(WindowResizeConcept auto on_window_resize);
 		/**
 		 * Retrieve the width of the window, in pixels.
 		 */
@@ -36,6 +36,10 @@ namespace tz
 		 * Retrieve the height of the window, in pixels.
 		 */
 		float get_height() const;
+		/**
+		 * Retrieve the callback object for when the window is resized.
+		 */
+		ResizeCallbackType& on_resize();
 
 		/**
 		 * Retrieve state of keyboard presses.
@@ -64,7 +68,7 @@ namespace tz
 		void handle_mouse_event(int button, int action, int mods);
 
 		GLFWwindow* wnd;
-		std::vector<std::function<WindowResizeSignature>> window_resize_callbacks;
+		ResizeCallbackType window_resize_callbacks;
 	private:
 		std::pair<int, int> get_size() const;
 		void ensure() const;

@@ -9,9 +9,18 @@ namespace tz
 {
 	enum class HandleValue : std::size_t{};
 	using HandleValueUnderlying = std::underlying_type_t<HandleValue>;
+
 	struct nullhand_t{};
+	/**
+	 * @ingroup tz_core_utility
+	 * Represents the null Handle. Convertible to any handle type.
+	 */
 	constexpr nullhand_t nullhand;
 
+	/**
+	 * @ingroup tz_core_utility
+	 * Represents a generic opaque handle. Often engine features will return or take handles as parameters. Most likely you will want to save handles you are given when calling into engine routines (such as when adding resources to a renderer)
+	 */
 	template<typename T>
 	class Handle
 	{
@@ -19,6 +28,9 @@ namespace tz
 		Handle(HandleValue value):
 		value(value){}
 
+		/**
+		 * Retrieve the null handle.
+		 */
 		Handle(nullhand_t):
 		value(static_cast<HandleValue>(std::numeric_limits<std::size_t>::max())){}
 
@@ -34,7 +46,7 @@ namespace tz
 		}
 		bool operator==(nullhand_t) const
 		{
-			return this->value == static_cast<HandleValue>(0);
+			return this->value == static_cast<HandleValue>(std::numeric_limits<std::size_t>::max());
 		}
 		bool operator==(const Handle<T>& rhs) const = default;
 	private:

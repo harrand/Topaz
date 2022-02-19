@@ -621,12 +621,24 @@ namespace tz::gl2
 	maybe_swapchain(device_info.maybe_swapchain),
 	options(info.get_options())
 	{
+		// If we're not headless, we should register a callback for our lifetime.
+		if(info.get_output() == nullptr || info.get_output()->get_target() == OutputTarget::Window)
+		{
+			this->device_resize_callback = device_info.resize_callback;
+			this->window_resize_callback = this->device_resize_callback->add_callback([this](int w, int h){this->handle_resize(w, h);});
+		}
+
 		this->setup_static_resources();
 		this->setup_render_commands();
 	}
 
 	RendererVulkan::~RendererVulkan()
 	{
+		if(this->device_resize_callback != nullptr)
+		{
+			this->device_resize_callback->remove_callback(this->window_resize_callback);
+			this->window_resize_callback = tz::nullhand;
+		}
 		this->ldev->wait_until_idle();
 	}
 
@@ -910,6 +922,12 @@ namespace tz::gl2
 				.first_instance = 0
 			});
 		});
+	}
+
+	void RendererVulkan::handle_resize(int width, int height)
+	{
+		// Context: The top-level gl::Device has just been told by the window that it has been resized, and has recreated a new swapchain. Our old pointer to the swapchain `maybe_swapchain` correctly points to the new swapchain already, so we just have to recreate all the new state.
+		tz_error("TODO: Implement. %d, %d", width, height);
 	}
 }
 

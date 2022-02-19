@@ -33,8 +33,7 @@ int main()
 {
 	tz::initialise
 	({
-		.name = "tz_dynamic_triangle_demo (gl2)",
-		.window = {.flags = {.resizeable = false}}
+		.name = "tz_dynamic_triangle_demo (gl2)"
 	});
 	{
 		tz::gl2::Device dev;

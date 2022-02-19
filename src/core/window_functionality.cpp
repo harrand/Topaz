@@ -37,6 +37,11 @@ namespace tz
 		return static_cast<float>(this->get_size().second);
 	}
 
+	WindowFunctionality::ResizeCallbackType& WindowFunctionality::on_resize()
+	{
+		return this->window_resize_callbacks;
+	}
+
 	const KeyboardState& WindowFunctionality::get_keyboard_state() const
 	{
 		return this->kb_state;

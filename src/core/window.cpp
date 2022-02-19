@@ -78,10 +78,7 @@ namespace tz
 	{
 		WindowFunctionality* cur_window_func = reinterpret_cast<WindowFunctionality*>(glfwGetWindowUserPointer(window));
 		Window* cur_window = static_cast<Window*>(cur_window_func);
-		for(const auto& resize_callback : cur_window->window_resize_callbacks)
-		{
-			resize_callback(width, height);
-		}
+		cur_window->on_resize()(width, height);
 	}
 
 	void Window::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)

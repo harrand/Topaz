@@ -1,5 +1,6 @@
 #ifndef TOPAZ_GL2_IMPL_FRONTEND_VK2_RENDERER_HPP
 #define TOPAZ_GL2_IMPL_FRONTEND_VK2_RENDERER_HPP
+#include "core/window_functionality.hpp"
 #if TZ_VULKAN
 #include "gl/api/renderer.hpp"
 #include "gl/api/component.hpp"
@@ -135,6 +136,7 @@ namespace tz::gl2
 		 * @return {width, height} of the output images, in pixels.
 		 */
 		tz::Vec2ui get_output_dimensions() const;
+		void recreate_output_resources();
 	private:
 		/// Output provided by the RendererVulkan.
 		IOutput* output;
@@ -272,6 +274,8 @@ namespace tz::gl2
 		std::span<vk2::Image> output_images;
 		/// Swapchain if there is one.
 		vk2::Swapchain* maybe_swapchain;
+		/// Callback for resizing which the renderer subscribes to for the duration of its lifetime. Assume this isn't null but for headless applications this should not be used.
+		tz::WindowFunctionality::ResizeCallbackType* resize_callback;
 	};
 
 	/**
@@ -342,6 +346,7 @@ namespace tz::gl2
 	private:
 		void setup_static_resources();
 		void setup_render_commands();
+		void handle_resize(int width, int height);
 
 		vk2::LogicalDevice* ldev;
 		/// Stores copies of all provided resources, and deals with all the vulkan descriptor magic. Exposes everything relevant to us when we want to draw.
@@ -353,6 +358,8 @@ namespace tz::gl2
 		vk2::Swapchain* maybe_swapchain;
 		RendererOptions options;
 		unsigned int tri_count = 0;
+		tz::WindowFunctionality::ResizeCallbackType* device_resize_callback = nullptr;
+		tz::CallbackHandle window_resize_callback = tz::nullhand;
 	};
 
 	static_assert(RendererType<RendererVulkan>);

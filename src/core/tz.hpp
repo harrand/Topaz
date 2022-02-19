@@ -68,6 +68,12 @@ namespace tz
 	 */
 
 	/**
+	 * @ingroup tz_core
+	 * @defgroup tz_core_utility Utility Helpers
+	 * Documentation for utility helper functions and types. This includes 'general' style usage such as handles and callbacks.
+	 */
+
+	/**
 	 * @ingroup tz_core_init
 	 * Every application is of a single type. When you initialise the engine, you must choose one.
 	 */
