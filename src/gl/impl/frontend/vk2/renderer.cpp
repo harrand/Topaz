@@ -625,7 +625,7 @@ namespace tz::gl2
 		if(info.get_output() == nullptr || info.get_output()->get_target() == OutputTarget::Window)
 		{
 			this->device_resize_callback = device_info.resize_callback;
-			this->window_resize_callback = this->device_resize_callback->add_callback([this](int w, int h){this->handle_resize(w, h);});
+			this->window_resize_callback = this->device_resize_callback->add_callback([this](tz::Vec2ui dims){this->handle_resize(dims);});
 		}
 
 		this->setup_static_resources();
@@ -924,10 +924,10 @@ namespace tz::gl2
 		});
 	}
 
-	void RendererVulkan::handle_resize(int width, int height)
+	void RendererVulkan::handle_resize(tz::Vec2ui dims)
 	{
 		// Context: The top-level gl::Device has just been told by the window that it has been resized, and has recreated a new swapchain. Our old pointer to the swapchain `maybe_swapchain` correctly points to the new swapchain already, so we just have to recreate all the new state.
-		tz_error("TODO: Implement. %d, %d", width, height);
+		tz_error("TODO: Implement. %d, %d", dims[0], dims[1]);
 	}
 }
 

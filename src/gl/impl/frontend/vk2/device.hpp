@@ -34,7 +34,7 @@ namespace tz::gl2
 
 		ResizeCallbackType& resize_callback();
 	private:
-		void on_resize(int width, int height);
+		void on_resize(tz::Vec2ui dims);
 		void register_resize();
 		void unregister_resize();
 		bool is_resize_registered() const;

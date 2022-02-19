@@ -14,14 +14,13 @@
 
 namespace tz
 {
-	using WindowResizeSignature = void(int width, int height);
 	template<typename F>
 	concept WindowResizeConcept = tz::Action<F, int, int>;
 
 	class WindowFunctionality
 	{
 	public:
-		using ResizeCallbackType = Callback<int, int>;
+		using ResizeCallbackType = Callback<tz::Vec2ui>;
 		WindowFunctionality(GLFWwindow* wnd);
 		GLFWwindow* get_middleware_handle() const;
 		/**

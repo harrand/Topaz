@@ -346,7 +346,7 @@ namespace tz::gl2
 	private:
 		void setup_static_resources();
 		void setup_render_commands();
-		void handle_resize(int width, int height);
+		void handle_resize(tz::Vec2ui dims);
 
 		vk2::LogicalDevice* ldev;
 		/// Stores copies of all provided resources, and deals with all the vulkan descriptor magic. Exposes everything relevant to us when we want to draw.

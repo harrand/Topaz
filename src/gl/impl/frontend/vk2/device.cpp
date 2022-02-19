@@ -140,16 +140,16 @@ namespace tz::gl2
 		return this->renderer_resize_callbacks;
 	}
 
-	void DeviceWindowVulkan::on_resize(int width, int height)
+	void DeviceWindowVulkan::on_resize(tz::Vec2ui dims)
 	{
-		if(width == 0 || height == 0)
+		if(dims[0] == 0 || dims[0] == 0)
 		{
 			return;
 		}
 		// Assume we have a head, headless no support for resizeable output yet.
 		tz_assert(this->as_swapchain() != nullptr, "Resizeable output for headless applications is not yet supported.");
 		vk2::Swapchain& old_swapchain = *this->as_swapchain();
-		if(old_swapchain.get_dimensions() == tz::Vec2ui(static_cast<unsigned int>(width), static_cast<unsigned int>(height)))
+		if(old_swapchain.get_dimensions() == dims)
 		{
 			// Dimensions didn't actually change. Early out and don't bother telling the renderers.
 			return;
@@ -163,12 +163,12 @@ namespace tz::gl2
 		}};
 		std::swap(old_swapchain, new_swapchain);
 		// Now notify all renderers.
-		this->renderer_resize_callbacks(width, height);
+		this->renderer_resize_callbacks(dims);
 	}
 
 	void DeviceWindowVulkan::register_resize()
 	{
-		this->on_resize_handle = tz::window().on_resize().add_callback([this](int w, int h){this->on_resize(w, h);});
+		this->on_resize_handle = tz::window().on_resize().add_callback([this](tz::Vec2ui dims){this->on_resize(dims);});
 	}
 
 	void DeviceWindowVulkan::unregister_resize()
