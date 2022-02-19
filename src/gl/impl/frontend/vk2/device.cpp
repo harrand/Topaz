@@ -142,9 +142,18 @@ namespace tz::gl2
 
 	void DeviceWindowVulkan::on_resize(int width, int height)
 	{
+		if(width == 0 || height == 0)
+		{
+			return;
+		}
 		// Assume we have a head, headless no support for resizeable output yet.
 		tz_assert(this->as_swapchain() != nullptr, "Resizeable output for headless applications is not yet supported.");
 		vk2::Swapchain& old_swapchain = *this->as_swapchain();
+		if(old_swapchain.get_dimensions() == tz::Vec2ui(static_cast<unsigned int>(width), static_cast<unsigned int>(height)))
+		{
+			// Dimensions didn't actually change. Early out and don't bother telling the renderers.
+			return;
+		}
 		vk2::Swapchain new_swapchain
 		{{
 			.device = &old_swapchain.get_device(),
