@@ -32,6 +32,7 @@ add_library(topaz
 	src/core/profiling/zone.hpp
 
 	src/core/assert.hpp
+	src/core/callback.hpp
 	src/core/engine_info.cpp
 	src/core/engine_info.hpp
 	src/core/engine_info.inl
@@ -101,20 +102,6 @@ add_library(topaz
 	src/gl/impl/frontend/ogl2/renderer.cpp
 	src/gl/impl/frontend/ogl2/renderer.hpp
 
-	# tz::gl (OpenGL Frontend)
-	#src/gl/impl/frontend/ogl/component.cpp
-	#src/gl/impl/frontend/ogl/component.hpp
-	#src/gl/impl/frontend/ogl/convert.hpp
-	#src/gl/impl/frontend/ogl/convert.inl
-	#src/gl/impl/frontend/ogl/device.cpp
-	#src/gl/impl/frontend/ogl/device.hpp
-	#src/gl/impl/frontend/ogl/processor.cpp
-	#src/gl/impl/frontend/ogl/processor.hpp
-	#src/gl/impl/frontend/ogl/renderer.hpp
-	#src/gl/impl/frontend/ogl/renderer.cpp
-	#src/gl/impl/frontend/ogl/shader.cpp
-	#src/gl/impl/frontend/ogl/shader.hpp
-
 	# tz::gl (Vulkan Backend 2)
 	src/gl/impl/backend/vk2/buffer.cpp
 	src/gl/impl/backend/vk2/buffer.hpp
@@ -176,19 +163,6 @@ add_library(topaz
 	src/gl/impl/backend/ogl2/tz_opengl.hpp
 	src/gl/impl/backend/ogl2/vertex_array.cpp
 	src/gl/impl/backend/ogl2/vertex_array.hpp
-
-	#src/gl/impl/backend/ogl/setup/opengl_instance.cpp
-	#src/gl/impl/backend/ogl/setup/opengl_instance.hpp
-	#src/gl/impl/backend/ogl/buffer.cpp
-	#src/gl/impl/backend/ogl/buffer.hpp
-	#src/gl/impl/backend/ogl/framebuffer.cpp
-	#src/gl/impl/backend/ogl/framebuffer.hpp
-	#src/gl/impl/backend/ogl/renderbuffer.cpp
-	#src/gl/impl/backend/ogl/renderbuffer.hpp
-	#src/gl/impl/backend/ogl/texture.cpp
-	#src/gl/impl/backend/ogl/texture.hpp
-	#src/gl/impl/backend/ogl/tz_opengl.hpp
-	#src/gl/impl/backend/ogl/tz_opengl.cpp
 	)
 
 
