@@ -88,17 +88,17 @@ namespace tzslc
 			});
 		#elif TZ_OGL
 			bool work_done = false;
-			tzslc::transform(shader_source, std::regex{"resource\\(id ?= ?([0-9]+)\\) const texture (.+)\\[([0-9]+)\\]?;"}, [&](auto beg, auto end)->std::string
+			tzslc::transform(shader_source, std::regex{"resource\\(id ?= ?([0-9]+)\\) const texture (.+)\\[([0-9]*)\\]?;"}, [&](auto beg, auto end)->std::string
 			{
 				tz_assert(std::distance(beg, end) == 3, "resource(id = x) const texture <name>[y] : Failed to parse correctly");
 				work_done = true;
 				int id = std::stoi(*beg);
 				std::string name = *(beg + 1);
-				int arr_len = std::stoi(*(beg + 2));
+				std::string_view arr_len_str = *(beg + 2);
 				std::string replacement = "/*tzslc: const texture*/ layout(binding";
 				replacement += " = " + std::to_string(id) + ") buffer ImageData\n";
 				replacement += "{\n";
-				replacement += "\tsampler2D textures[" + std::to_string(arr_len) + "];\n";
+				replacement += "\tsampler2D textures[" + std::string(arr_len_str) + "];\n";
 				replacement += "} " + name;
 				// So because this is now an SSBO we want <name>[x] to now refer to <name>.textures[x]. We do this by adding a super evil #define.
 				replacement += ";\n#define " + name + " " + name + ".textures";

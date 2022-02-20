@@ -8,7 +8,7 @@ struct TriangleVertexData
 
 resource(id = 0) buffer VertexData
 {
-    TriangleVertexData[3] vertices;
+    TriangleVertexData[] vertices;
 } vertex_data;
 
 layout(location = 0) out vec2 texcoord;

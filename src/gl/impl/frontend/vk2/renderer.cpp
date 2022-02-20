@@ -111,7 +111,7 @@ namespace tz::gl2
 			({
 				.type = vk2::DescriptorType::ImageWithSampler,
 				.count = static_cast<std::uint32_t>(this->image_component_views.size()),
-				.flags = {vk2::DescriptorFlag::PartiallyBound}
+				.flags = {vk2::DescriptorFlag::PartiallyBound, vk2::DescriptorFlag::VariableCount}
 			});
 			this->descriptor_layout = lbuilder.build();
 		}
