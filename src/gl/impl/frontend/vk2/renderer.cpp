@@ -67,17 +67,6 @@ namespace tz::gl2
 			}
 		}
 
-		// Figure out Descriptor stuffs. We are going to use bindless here.
-		// Firstly get all the buffer resources into one list of pointers. We already have a list of imageviews from earlier we can use.
-		//std::vector<vk2::Buffer*> buffers;
-		//for(const auto& component_ptr : this->components)
-		//{
-		//	if(component_ptr->get_resource()->get_type() != ResourceType::Buffer)
-		//	{
-		//		continue;
-		//	}
-		//	buffers.push_back(&static_cast<BufferComponentVulkan*>(component_ptr.get())->vk_get_buffer());
-		//}
 		std::size_t buffer_count = this->resource_count_of(ResourceType::Buffer);
 		// So buffer_id_to_variable_access stores a bool for each buffer (in-order). True if the access is variable, false otherwise. However, if any buffer at all is variable, we will unfortunately try to write to them all in sync_descriptors.
 		// Until we fix sync_descriptors to be a little less cavalier, we must add the descriptor-indexing flags and take the perf loss if there are *any* variable-sized buffer resources at all.
@@ -111,7 +100,7 @@ namespace tz::gl2
 			({
 				.type = vk2::DescriptorType::ImageWithSampler,
 				.count = static_cast<std::uint32_t>(this->image_component_views.size()),
-				.flags = {vk2::DescriptorFlag::PartiallyBound, vk2::DescriptorFlag::VariableCount}
+				.flags = {vk2::DescriptorFlag::PartiallyBound}
 			});
 			this->descriptor_layout = lbuilder.build();
 		}
