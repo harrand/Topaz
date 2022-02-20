@@ -23,8 +23,11 @@ namespace tz::gl::vk2
 		state.viewports.add({});
 		VkViewport& viewport = state.viewports.back();
 
+		// OGL-like coordinate system. Note that ogl [mindepth, maxdepth] is [-1, 1] but we are forced to have it [0, 1] without extensions. This means we have no safe way of matching behaviour. For now the shaders have to do this manually :(
+		viewport.x = 0.0f;
+		viewport.y = dimensions[1];
 		viewport.width = dimensions[0];
-		viewport.height = dimensions[1];
+		viewport.height = -dimensions[1];
 		viewport.minDepth = 0.0f;
 		viewport.maxDepth = 1.0f;
 
