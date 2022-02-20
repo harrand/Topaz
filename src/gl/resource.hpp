@@ -64,24 +64,6 @@ namespace tz::gl2
 		BufferResource(ResourceAccess access, std::vector<std::byte> resource_data, std::size_t initial_alignment_offset);
 	};
 
-	struct DynamicBufferResource
-	{
-		template<tz::TriviallyCopyable T>
-		static BufferResource from_one(const T& data)
-		{
-			return BufferResource::from_one({data}, ResourceAccess::DynamicFixed);
-		}
-		template<typename T>
-		static BufferResource from_many(std::initializer_list<T> data)
-		{
-			return from_many(std::span<const T>(data));
-		}
-		static BufferResource from_many(std::ranges::contiguous_range auto data)
-		{
-			return BufferResource::from_many(data, ResourceAccess::DynamicFixed);
-		}
-	};
-
 	/**
 	 * @ingroup tz_gl2_res
 	 * Represents a fixed-size, static Image to be used by a Renderer or Processor.
