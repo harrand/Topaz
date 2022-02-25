@@ -211,7 +211,7 @@ namespace tz::gl2
 
 //--------------------------------------------------------------------------------------------------
 
-	OutputManager::OutputManager(IOutput* output, std::span<vk2::Image> window_buffer_images, bool create_depth_images, const vk2::LogicalDevice& ldev):
+	OutputManager::OutputManager(const IOutput* output, std::span<vk2::Image> window_buffer_images, bool create_depth_images, const vk2::LogicalDevice& ldev):
 	output(output),
 	window_buffer_images(window_buffer_images),
 	window_buffer_depth_images(),
@@ -356,7 +356,7 @@ namespace tz::gl2
 		{
 			// We have been provided an ImageOutput which will contain an ImageComponentVulkan. We need to retrieve that image and return a span covering it.
 			// TODO: Support multiple-render-targets.
-			ImageOutput& out = static_cast<ImageOutput&>(*this->output);
+			ImageOutput& out = const_cast<ImageOutput&>(static_cast<const ImageOutput&>(*this->output));
 			vk2::Image& output_image = out.get_component().vk_get_image();
 			return {&output_image, 1};
 		}
@@ -601,7 +601,7 @@ namespace tz::gl2
 
 //--------------------------------------------------------------------------------------------------
 
-	RendererVulkan::RendererVulkan(RendererInfoVulkan& info, const RendererDeviceInfoVulkan& device_info):
+	RendererVulkan::RendererVulkan(const RendererInfoVulkan& info, const RendererDeviceInfoVulkan& device_info):
 	ldev(device_info.device),
 	resources(info.get_resources(), *this->ldev),
 	output(info.get_output(), device_info.output_images, !info.get_options().contains(RendererOption::NoDepthTesting), *this->ldev),

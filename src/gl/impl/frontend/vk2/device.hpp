@@ -53,7 +53,7 @@ namespace tz::gl2
 		DeviceVulkan(const DeviceVulkan& copy) = delete;
 
 		// Satisfies DeviceType.
-		RendererVulkan create_renderer(RendererInfoVulkan& info);
+		RendererVulkan create_renderer(const RendererInfoVulkan& info);
 		ImageFormat get_window_format() const;
 	private:
 		vk2::LogicalDevice device;

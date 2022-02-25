@@ -102,7 +102,7 @@ namespace tz::gl2
 		 * @param create_depth_images Whether we should create depth images or not. If so, they will also be passed into the framebuffer. This means that the graphics pipeline the renderer ends up using will also need to know that we're using a depth attachment.
 		 * @param ldev Vulkan LogicalDevice which will be used to construct the render-pass and framebuffers etc. Right now we expect this to be the exact same LogicalDevice everywhere throughout this RendererVulkan. However this may change in the future (albeit unlikely tbh).
 		 */
-		OutputManager(IOutput* output, std::span<vk2::Image> window_buffer_images, bool create_depth_images, const vk2::LogicalDevice& ldev);
+		OutputManager(const IOutput* output, std::span<vk2::Image> window_buffer_images, bool create_depth_images, const vk2::LogicalDevice& ldev);
 		/**
 		 * Retrieve the render pass used by the renderer.
 		 */
@@ -139,7 +139,7 @@ namespace tz::gl2
 		void recreate_output_resources();
 	private:
 		/// Output provided by the RendererVulkan.
-		IOutput* output;
+		const IOutput* output;
 		/// List of window buffer images (offscreen image or swapchain images) from the Device.
 		std::span<vk2::Image> window_buffer_images;
 		/// List of depth images for each window buffer image (These may be null if depth testing is disabled).
@@ -292,7 +292,7 @@ namespace tz::gl2
 		 * @param info User-exposed class which describes how many resources etc. we have and a high-level description of where we expect to render into.
 		 * @param device_info A renderer is always created by a Device - This constructor is not invoked manually. When the Device does this, it provides some information about the internals; this.
 		 */
-		RendererVulkan(RendererInfoVulkan& info, const RendererDeviceInfoVulkan& device_info);
+		RendererVulkan(const RendererInfoVulkan& info, const RendererDeviceInfoVulkan& device_info);
 		~RendererVulkan();
 		// Satisfies RendererType
 		/**
