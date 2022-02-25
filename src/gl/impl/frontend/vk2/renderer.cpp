@@ -230,7 +230,7 @@ namespace tz::gl2
 				this->window_buffer_depth_images.push_back
 				(vk2::ImageInfo{
 					.device = &ldev,
-					.format = vk2::ImageFormat::Depth16_UNorm,
+					.format = vk2::ImageFormat::Depth32_SFloat,
 					.dimensions = window_buffer_image.get_dimensions(),
 					.usage = {vk2::ImageUsage::DepthStencilAttachment},
 					.residency = vk2::MemoryResidency::GPU

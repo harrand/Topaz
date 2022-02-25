@@ -90,7 +90,8 @@ namespace tz::gl::vk2
 		BGRA32_SInt = VK_FORMAT_B8G8R8A8_SINT,
 		BGRA32_sRGB = VK_FORMAT_B8G8R8A8_SRGB,
 
-		Depth16_UNorm = VK_FORMAT_D16_UNORM
+		Depth16_UNorm = VK_FORMAT_D16_UNORM,
+		Depth32_SFloat = VK_FORMAT_D32_SFLOAT
 	};
 
 	/*
