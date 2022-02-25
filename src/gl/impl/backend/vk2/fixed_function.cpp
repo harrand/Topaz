@@ -50,7 +50,7 @@ namespace tz::gl::vk2
 			.rasterizerDiscardEnable = VK_FALSE,
 			.polygonMode = static_cast<VkPolygonMode>(this->polygon_mode),
 			.cullMode = static_cast<VkCullModeFlags>(this->cull_mode),
-			.frontFace = VK_FRONT_FACE_CLOCKWISE,
+			.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE,
 			.depthBiasEnable = VK_FALSE,
 			.depthBiasConstantFactor = 0.0f,
 			.depthBiasClamp = 0.0f,
