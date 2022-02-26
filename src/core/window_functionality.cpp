@@ -1,4 +1,5 @@
 #include "core/window_functionality.hpp"
+#include "GLFW/glfw3.h"
 #include "core/assert.hpp"
 #include "core/peripherals/keyboard.hpp"
 #include "core/peripherals/mouse.hpp"
@@ -10,6 +11,8 @@
 
 namespace tz
 {
+	tz::KeyInfo get_key_from_glfw_code(int glfw_key, int scancode);
+
 	WindowFunctionality::WindowFunctionality(GLFWwindow* wnd):
 	wnd(wnd),
 	window_resize_callbacks(),
@@ -108,13 +111,7 @@ namespace tz
 				return;
 			break;
 		}
-		const char* glfw_key_name = glfwGetKeyName(key, scancode);
-		if(glfw_key_name == nullptr)
-		{
-			// GLFW key has no name. We don't suppose those keys.
-			return;
-		}
-		KeyInfo tz_key = peripherals::keyboard::get_key(glfw_key_name[0]);
+		KeyInfo tz_key = get_key_from_glfw_code(key, scancode);
 		if(tz_key == peripherals::keyboard::key_null)
 		{
 			// GLFW key doesn't translate cleanly into a TZ key. We don't support such keys.
@@ -181,5 +178,62 @@ namespace tz
 	void WindowFunctionality::ensure() const
 	{
 		tz_assert(this->wnd != nullptr, "WindowFunctionality::ensure(): Failed");
+	}
+
+	tz::KeyInfo get_key_from_glfw_code(int glfw_key, int scancode)
+	{
+		tz::KeyCode kc;
+		switch(glfw_key)
+		{
+			case GLFW_KEY_SPACE:
+				kc = tz::KeyCode::Space;
+			break;
+			case GLFW_KEY_LEFT_CONTROL:
+				kc = tz::KeyCode::LeftControl;
+			break;
+			case GLFW_KEY_LEFT_SHIFT:
+				kc = tz::KeyCode::LeftShift;
+			break;
+			case GLFW_KEY_LEFT_ALT:
+				kc = tz::KeyCode::LeftAlt;
+			break;
+			case GLFW_KEY_RIGHT_ALT:
+				kc = tz::KeyCode::AltGr;
+			break;
+			case GLFW_KEY_RIGHT_CONTROL:
+				kc = tz::KeyCode::RightControl;
+			break;
+			case GLFW_KEY_RIGHT_SHIFT:
+				kc = tz::KeyCode::RightShift;
+			break;
+			case GLFW_KEY_ENTER:
+				kc = tz::KeyCode::Enter;
+			break;
+			case GLFW_KEY_BACKSPACE:
+				kc = tz::KeyCode::Backspace;
+			break;
+			case GLFW_KEY_UP:
+				kc = tz::KeyCode::ArrowUp;
+			break;
+			case GLFW_KEY_LEFT:
+				kc = tz::KeyCode::ArrowLeft;
+			break;
+			case GLFW_KEY_DOWN:
+				kc = tz::KeyCode::ArrowDown;
+			break;
+			case GLFW_KEY_RIGHT:
+				kc = tz::KeyCode::ArrowRight;
+			break;
+			default:
+				// Try and retrieve by key name. This should catch all printable keys.
+				const char* glfw_key_name = glfwGetKeyName(glfw_key, scancode);
+				if(glfw_key_name == nullptr || glfw_key_name[0] == '\0')
+				{
+					return peripherals::keyboard::key_null;
+				}
+				return peripherals::keyboard::get_key(glfw_key_name[0]);
+			break;
+		}
+		return peripherals::keyboard::get_key(kc);
 	}
 }
