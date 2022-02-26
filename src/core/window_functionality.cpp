@@ -14,7 +14,8 @@ namespace tz
 	wnd(wnd),
 	window_resize_callbacks(),
 	kb_state(),
-	mb_state(){}
+	mb_state(),
+	mp_state(){}
 
 	GLFWwindow* WindowFunctionality::get_middleware_handle() const
 	{
@@ -56,6 +57,11 @@ namespace tz
 	{
 		TZ_PROFZONE("WindowFunctionality::update", TZ_PROFCOL_YELLOW);
 		glfwPollEvents();
+		{
+			double mx, my;
+			glfwGetCursorPos(this->wnd, &mx, &my);
+			this->mp_state.update({static_cast<unsigned int>(mx), static_cast<unsigned int>(my)});
+		}
 		#if TZ_VULKAN
 			// If we're on vulkan and we're minimised, halt until otherwise.
 			while(this->get_width() == 0 || this->get_height() == 0)
@@ -161,7 +167,7 @@ namespace tz
 		this->mb_state.update(
 		{
 			.button = button_info,
-			.press_position = {static_cast<unsigned int>(mxpos), static_cast<unsigned int>(mypos)}
+			.press_position = this->mp_state.get_mouse_position()
 		}, action == GLFW_PRESS);
 	}
 

@@ -74,6 +74,7 @@ namespace tz
 
 		KeyboardState kb_state;
 		MouseButtonState mb_state;
+		MousePositionState mp_state;
 	};
 }
 

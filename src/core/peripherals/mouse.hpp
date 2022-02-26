@@ -121,6 +121,27 @@ namespace tz
 	private:
 		std::vector<MouseButtonPressInfo> pressed_buttons = {};
 	};
+
+	struct MousePositionInfo
+	{
+		tz::Vec2ui position;
+	};
+
+	class MousePositionState
+	{
+	public:
+		MousePositionState() = default;
+		void update(tz::Vec2ui position);
+		tz::Vec2ui get_mouse_position() const;
+		/**
+		 * Attempt to print entire mouse position state to a single line of stdout.
+		 * 
+		 * If `!TZ_DEBUG`, this does nothing at all.
+		 */
+		void debug_print_state() const;
+	private:
+		MousePositionInfo info;
+	};
 }
 
 #endif // TOPAZ_CORE_PERIPHERALS_MOUSE_HPP

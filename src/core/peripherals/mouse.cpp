@@ -46,4 +46,22 @@ namespace tz
 			std::printf("                                                        \r");
 		#endif
 	}
+
+	void MousePositionState::update(tz::Vec2ui position)
+	{
+		this->info.position = position;
+	}
+
+	tz::Vec2ui MousePositionState::get_mouse_position() const
+	{
+		return this->info.position;
+	}
+
+	void MousePositionState::debug_print_state() const
+	{
+		#if TZ_DEBUG
+			std::printf("{%u, %u}", this->info.position[0], this->info.position[1]);
+			std::printf("                    \r");
+		#endif
+	}
 }
