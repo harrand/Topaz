@@ -56,6 +56,11 @@ namespace tz
 		return this->mb_state;
 	}
 
+	const MousePositionState& WindowFunctionality::get_mouse_position_state() const
+	{
+		return this->mp_state;
+	}
+
 	void WindowFunctionality::update()
 	{
 		TZ_PROFZONE("WindowFunctionality::update", TZ_PROFCOL_YELLOW);

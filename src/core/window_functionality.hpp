@@ -48,6 +48,10 @@ namespace tz
 		 * Retrieve state of mouse button presses.
 		 */
 		const MouseButtonState& get_mouse_button_state() const;
+		/**
+		 * Retrieve state of current mouse position.
+		 */
+		const MousePositionState& get_mouse_position_state() const;
 
 		/**
 		 * Advance an update iteration for the window backend, polling for events etc...
