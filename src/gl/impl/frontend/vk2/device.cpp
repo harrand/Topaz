@@ -218,6 +218,9 @@ namespace tz::gl2
 		{
 			dev_exts = {vk2::DeviceExtension::Swapchain};
 		}
+		#if TZ_DEBUG
+			dev_exts |= vk2::DeviceExtension::ShaderDebugPrint;
+		#endif
 		tz_assert(pdev.get_supported_extensions().contains(dev_exts), "One or more of the %zu required DeviceExtensions are not supported by this machine/driver. Please ensure your machine meets the system requirements.", dev_exts.count());
 		this->device =
 		{{
