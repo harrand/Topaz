@@ -74,6 +74,12 @@ namespace tz
 	 */
 
 	/**
+	 * @ingroup tz_core
+	 * @defgroup tz_core_time Times, Dates and sync scheduling
+	 * Documentation for functions and helpers which can be used to tell the time, and schedule sync tasks. Has nothing to do with parallellism or threads.
+	 */
+
+	/**
 	 * @ingroup tz_core_init
 	 * Every application is of a single type. When you initialise the engine, you must choose one.
 	 */

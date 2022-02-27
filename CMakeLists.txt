@@ -43,6 +43,8 @@ add_library(topaz
 	src/core/matrix.hpp
 	src/core/matrix.inl
 	src/core/report.hpp
+	src/core/time.cpp
+	src/core/time.hpp
 	src/core/tz.cpp
 	src/core/tz.hpp
 	src/core/tz.inl
