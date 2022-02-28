@@ -1,6 +1,7 @@
 #include "core/assert.hpp"
 #include <utility>
 #include <cmath>
+#include <algorithm>
 
 namespace tz
 {
@@ -179,6 +180,16 @@ namespace tz
 			data[idx] = this->vec[real_idx];
 		});
 		return {data};
+	}
+
+
+	template<tz::Number T, std::size_t S>
+	template<tz::Number X, typename>
+	Vector<T, S>::operator Vector<X, S>() const
+	{
+		std::array<X, S> different_data;
+		std::transform(this->vec.begin(), this->vec.end(), different_data.begin(), [](const T& t){return static_cast<X>(t);});
+		return {different_data};
 	}
 
 	template<tz::Number T>

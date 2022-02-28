@@ -72,10 +72,18 @@ void swizzle_test()
 	tz_assert(single == tz::Vec4(1.0f, 1.0f, 1.0f, 1.0f), "Swizzle using multiple of the same indices failed.");
 }
 
+void cast_test()
+{
+	tz::Vec2ui two_unsigneds{1u, 2u};
+	auto signeds = static_cast<tz::Vec2i>(two_unsigneds);
+	tz_assert(signeds == tz::Vec2i(1, 2), "Vector cast between different numeric types yielded incorrect values. Expected {%d, %d} but got {%d, %d}", 1, 2, signeds[0], signeds[1]);
+}
+
 int main()
 {
 	addition_subtraction();
 	dot();
 	cross();
 	swizzle_test();
+	cast_test();
 }

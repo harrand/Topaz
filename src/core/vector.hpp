@@ -133,6 +133,9 @@ namespace tz
 		// Swizzle
 		template<int... indices>
 		Vector<T, sizeof...(indices)> swizzle() const;
+
+		template<tz::Number X, typename = std::enable_if_t<!std::is_same_v<T, X>>>
+		operator Vector<X, S>() const;
 	private:
 		std::array<T, S> vec;
 	};
