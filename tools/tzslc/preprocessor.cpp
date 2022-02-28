@@ -120,7 +120,7 @@ namespace tzslc
 	   {
 	   	std::string contents = *beg;
 		// Only actually compile to debug printfs on debug mode.
-		#if TZ_DEBUG
+		#if TZ_DEBUG && TZ_VULKAN
 	   		work_done = true;
 	   		return std::string("debugPrintfEXT(") + contents + ");";
 		#else

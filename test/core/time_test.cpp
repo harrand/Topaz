@@ -8,14 +8,14 @@ void test_waits()
 	using namespace std::chrono_literals;
 	tz::Delay d{10_ms};
 	tz_assert(!d.done(), "Delay of 10 millis was apparantly done instantly.");
-	std::this_thread::sleep_for(10ms);
-	tz_assert(d.done(), "Delay of 10 millis was not done after a this_thread_sleep_for 10ms");
+	std::this_thread::sleep_for(11ms);
+	tz_assert(d.done(), "Delay of 10 millis was not done after a this_thread_sleep_for 11ms");
 
 	d.reset();
 	tz_assert(!d.done(), "Delay of 10 millis was apparantly done instantly.");
 	tz_assert(!d, "Delay of 10 millis was apparantly done instantly.");
-	std::this_thread::sleep_for(10ms);
-	tz_assert(d.done(), "Delay of 10 millis was not done after a this_thread_sleep_for 10ms");
+	std::this_thread::sleep_for(11ms);
+	tz_assert(d.done(), "Delay of 10 millis was not done after a this_thread_sleep_for 11ms");
 	tz_assert(d, "Delay of 10 millis was not done after a this_thread_sleep_for 10ms");
 }
 

@@ -4,6 +4,7 @@
 #include "core/algorithms/static.hpp"
 #include <array>
 #include <tuple>
+#include <span>
 
 namespace tz
 {
@@ -102,12 +103,12 @@ namespace tz
 		 * Retrieve a pointer to the vector data. This points to the first element of an array of size S.
 		 * @return Pointer to the first element of the vector array data.
 		 */
-		const T* data() const;
+		std::span<const T> data() const;
 		/**
 		 * Retrieve a pointer to the vector data. This points to the first element of an array of size S.
 		 * @return Pointer to the first element of the vector array data.
 		 */
-		T* data();
+		std::span<T> data();
 		/**
 		 * Compute a dot-product (otherwise known as the scalar-product) of the current vector against another given vector.
 		 * @param rhs The other given vector.
@@ -130,10 +131,44 @@ namespace tz
 		 */
 		Vector<T, S> normalised() const;
 
-		// Swizzle
+		/**
+		 * Perform vector swizzling.
+		 *
+		 * Creates a new vector of `sizeof...(indices)` dimensions. The i'th value of the new vector corresponds to the value at the i'th index within the parameter pack of the original vector.
+		 *
+		 * Example:
+		 * tz::Vec3{1.0f, 2.0f, 3.0f}.swizzle<0, 1, 0, 1>() == tz::Vec4{1.0f, 2.0f, 1.0f, 2.0f}
+		 * @tparam indices Variable number of integer indices.
+		 * @return Resultant swizzled vector.
+		 * @pre Each element of `indices` is less than or equal to `S`, being the number of dimensions of the original vector. Otherwise, the behaviour is undefined.
+		 */
 		template<int... indices>
 		Vector<T, sizeof...(indices)> swizzle() const;
 
+		/**
+		 * Create a new vector, with a single extra element appended to the end.
+		 *
+		 * Example:
+		 * tz::Vec2{1.0f, 2.0f}.with_more(3.0f) == tz::Vec3{1.0f, 2.0f, 3.0f}
+		 * @param end Value to be appended to the end of the resultant vector.
+		 * @return Vector with extra element appended.
+		 */
+		Vector<T, S + 1> with_more(T&& end) const;
+		/**
+		 * Create a new vector, with another vector appended to the end.
+		 *
+		 * Example:
+		 * tz::Vec2{0.0f, 1.0f}.with_more(tz::Vec3{2.0f, 3.0f, 4.0f}) == tz::Vector<float, 5>{0.0f, 1.0f, 2.0f, 3.0f, 4.0f}
+		 * @tparam S2 Number of dimensions of the appendage vector.
+		 * @param end Vector to be appended to the end of the resultant vector.
+		 * @param Vector with extra element(s) appended.
+		 */
+		template<std::size_t S2>
+		Vector<T, S + S2> with_more(const Vector<T, S2>& end) const;
+
+		/**
+		 * Perform a conversion to a vector of different numeric type. Numeric conversion is performed via explicit conversion.
+		 */
 		template<tz::Number X, typename = std::enable_if_t<!std::is_same_v<T, X>>>
 		operator Vector<X, S>() const;
 	private:

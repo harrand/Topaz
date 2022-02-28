@@ -79,6 +79,18 @@ void cast_test()
 	tz_assert(signeds == tz::Vec2i(1, 2), "Vector cast between different numeric types yielded incorrect values. Expected {%d, %d} but got {%d, %d}", 1, 2, signeds[0], signeds[1]);
 }
 
+void append_tests()
+{
+	tz::Vec2ui nums{1u, 2u};
+	tz::Vec3ui more_nums = nums.with_more(3u);
+
+	constexpr tz::Vec3ui result0{1u, 2u, 3u};
+	tz_assert(more_nums == result0, "Vector append (single T) does not work correctly.");
+	tz::Vec4ui even_more_nums = nums.with_more(nums);
+	constexpr tz::Vec4ui result1{1u, 2u, 1u, 2u};
+	tz_assert(even_more_nums == result1, "Vector append (another Vector) does not work correctly.");
+}
+
 int main()
 {
 	addition_subtraction();
@@ -86,4 +98,5 @@ int main()
 	cross();
 	swizzle_test();
 	cast_test();
+	append_tests();
 }

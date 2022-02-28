@@ -112,15 +112,15 @@ namespace tz
 	}
 
 	template<tz::Number T, std::size_t S>
-	const T* Vector<T, S>::data() const
+	std::span<const T> Vector<T, S>::data() const
 	{
-		return this->vec.data();
+		return this->vec;
 	}
 
 	template<tz::Number T, std::size_t S>
-	T* Vector<T, S>::data()
+	std::span<T> Vector<T, S>::data()
 	{
-		return this->vec.data();
+		return this->vec;
 	}
 
 	template<tz::Number T, std::size_t S>
@@ -180,6 +180,24 @@ namespace tz
 		return {data};
 	}
 
+	template<tz::Number T, std::size_t S>
+	Vector<T, S + 1> Vector<T, S>::with_more(T&& end) const
+	{
+		std::array<T, S + 1> new_data;
+		std::copy(this->vec.begin(), this->vec.end(), new_data.begin());
+		new_data.back() = end;
+		return {new_data};
+	}
+
+	template<tz::Number T, std::size_t S>
+	template<std::size_t S2>
+	Vector<T, S + S2> Vector<T, S>::with_more(const Vector<T, S2>& end) const
+	{
+		std::array<T, S + S2> new_data;
+		std::copy(this->vec.begin(), this->vec.end(), new_data.begin());
+		std::copy(end.vec.begin(), end.vec.end(), new_data.begin() + S);
+		return {new_data};
+	}
 
 	template<tz::Number T, std::size_t S>
 	template<tz::Number X, typename>

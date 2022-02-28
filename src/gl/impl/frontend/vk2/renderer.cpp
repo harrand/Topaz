@@ -916,7 +916,7 @@ namespace tz::gl2
 	void RendererVulkan::handle_resize(tz::Vec2ui dims)
 	{
 		// Context: The top-level gl::Device has just been told by the window that it has been resized, and has recreated a new swapchain. Our old pointer to the swapchain `maybe_swapchain` correctly points to the new swapchain already, so we just have to recreate all the new state.
-		tz_error("TODO: Implement. %d, %d", dims[0], dims[1]);
+		tz_error("Sorry. Window resizing is not yet implemented for this vulkan frontend. TODO: Implement. %d, %d", dims[0], dims[1]);
 	}
 }
 
