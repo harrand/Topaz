@@ -171,14 +171,12 @@ namespace tz
 	template<int... indices>
 	Vector<T, sizeof...(indices)> Vector<T, S>::swizzle() const
 	{
-		auto indices_tup = std::forward_as_tuple(indices...);
-		std::array<T, sizeof...(indices)> data;
-		tz::static_for<0, sizeof...(indices)>([this, &data, &indices_tup](auto idx)->void
+		std::array<int, sizeof...(indices)> data_unswizzled{indices...};
+		std::array<T, sizeof...(indices)> data{indices...};
+		for(std::size_t i = 0; i < sizeof...(indices); i++)
 		{
-			std::size_t real_idx = std::get<idx>(indices_tup);
-			tz_assert(real_idx < S, "Swizzle parameter contained index %zu, which would be out-of-bounds for the original vector of size %zu. Note that this was the %zu'th template parameter out of a total of %zu", real_idx, S, idx, std::tuple_size<decltype(indices_tup)>{});
-			data[idx] = this->vec[real_idx];
-		});
+			data[i] = this->vec[data_unswizzled[i]];
+		}
 		return {data};
 	}
 
