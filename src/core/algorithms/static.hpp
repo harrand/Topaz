@@ -18,7 +18,7 @@ namespace tz
 	 * ```
 	 */
 	template<std::size_t Begin, std::size_t End>
-	constexpr void static_for(tz::Action auto function)
+	constexpr void static_for(tz::Action<std::size_t> auto function)
 	{
 		if constexpr(Begin < End)
 		{

@@ -166,6 +166,21 @@ namespace tz
 		return cpy;
 	}
 
+	template<tz::Number T, std::size_t S>
+	template<int... indices>
+	Vector<T, sizeof...(indices)> Vector<T, S>::swizzle() const
+	{
+		auto indices_tup = std::forward_as_tuple(indices...);
+		std::array<T, sizeof...(indices)> data;
+		tz::static_for<0, sizeof...(indices)>([this, &data, &indices_tup](auto idx)->void
+		{
+			std::size_t real_idx = std::get<idx>(indices_tup);
+			tz_assert(real_idx < S, "Swizzle parameter contained index %zu, which would be out-of-bounds for the original vector of size %zu", real_idx, S);
+			data[idx] = this->vec[real_idx];
+		});
+		return {data};
+	}
+
 	template<tz::Number T>
 	Vector<T, 3> cross(const Vector<T, 3>& lhs, const Vector<T, 3>& rhs)
 	{

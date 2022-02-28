@@ -55,9 +55,27 @@ void cross()
 	// (2, 3, 4) × (5, 6, 7) = (−3, 6, −3)
 }
 
+void swizzle_test()
+{
+	tz::Vec4 a{1.0f, 2.0f, 3.0f, 4.0f};
+	tz::Vec4 same = a.swizzle<0, 1, 2, 3>();
+	tz::Vec4 backward = a.swizzle<3, 2, 1, 0>();
+	for(std::size_t i = 0; i < 4; i++)
+	{
+		tz_assert(a[i] == same[i], "Swizzle xyzw failed (idx = %zu, before = %g, after = %g)", i, a[i], same[i]);
+		tz_assert(a[i] == backward[3-i], "Swizzle wzyx failed (idx = %zu, before = %g, after = %g)", i, a[i], backward[3-i]);
+	}
+
+	tz::Vec3 smaller = a.swizzle<0, 1, 2>();
+	tz_assert(smaller == tz::Vec3(1.0f, 2.0f, 3.0f), "Swizzle from Vec4 to Vec3 via xyz failed.");
+	tz::Vec4 single = a.swizzle<0, 0, 0, 0>();
+	tz_assert(single == tz::Vec4(1.0f, 1.0f, 1.0f, 1.0f), "Swizzle using multiple of the same indices failed.");
+}
+
 int main()
 {
 	addition_subtraction();
 	dot();
 	cross();
+	swizzle_test();
 }

@@ -129,6 +129,10 @@ namespace tz
 		 * @return A normalised copy of the current vector.
 		 */
 		Vector<T, S> normalised() const;
+
+		// Swizzle
+		template<int... indices>
+		Vector<T, sizeof...(indices)> swizzle() const;
 	private:
 		std::array<T, S> vec;
 	};
