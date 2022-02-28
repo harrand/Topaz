@@ -229,6 +229,15 @@ namespace tz
 			case GLFW_KEY_RIGHT:
 				kc = tz::KeyCode::ArrowRight;
 			break;
+			case GLFW_KEY_CAPS_LOCK:
+				kc = tz::KeyCode::CapsLock;
+			break;
+			case GLFW_KEY_TAB:
+				kc = tz::KeyCode::Tab;
+			break;
+			case GLFW_KEY_ESCAPE:
+				kc = tz::KeyCode::Escape;
+			break;
 			default:
 				// Try and retrieve by key name. This should catch all printable keys.
 				const char* glfw_key_name = glfwGetKeyName(glfw_key, scancode);
