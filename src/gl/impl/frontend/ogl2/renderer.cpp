@@ -103,6 +103,10 @@ namespace tz::gl2
 
 	void ResourceStorage::fill_bindless_image_buffer()
 	{
+		if(this->image_handles.empty())
+		{
+			return;
+		}
 		const std::size_t buf_size = this->image_handles.size() * sizeof(ogl2::Image::BindlessTextureHandle);
 		this->bindless_image_storage_buffer =
 		{{
@@ -143,7 +147,10 @@ namespace tz::gl2
 
 	void ResourceStorage::bind_image_buffer()
 	{
-		this->bindless_image_storage_buffer.bind_to_resource_id(this->resource_count_of(ResourceType::Buffer));
+		if(!this->bindless_image_storage_buffer.is_null())
+		{
+			this->bindless_image_storage_buffer.bind_to_resource_id(this->resource_count_of(ResourceType::Buffer));
+		}
 	}
 
 //--------------------------------------------------------------------------------------------------
