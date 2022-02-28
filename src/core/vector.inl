@@ -176,7 +176,7 @@ namespace tz
 		tz::static_for<0, sizeof...(indices)>([this, &data, &indices_tup](auto idx)->void
 		{
 			std::size_t real_idx = std::get<idx>(indices_tup);
-			tz_assert(real_idx < S, "Swizzle parameter contained index %zu, which would be out-of-bounds for the original vector of size %zu. Note that this was the %zu'th template parameter.", real_idx, S, idx);
+			tz_assert(real_idx < S, "Swizzle parameter contained index %zu, which would be out-of-bounds for the original vector of size %zu. Note that this was the %zu'th template parameter out of a total of %zu", real_idx, S, idx, std::tuple_size<decltype(indices_tup)>{});
 			data[idx] = this->vec[real_idx];
 		});
 		return {data};
