@@ -95,25 +95,40 @@ namespace tz::gl2
 					.flags = desc_flags
 				});
 			}
-			// And one giant descriptor array for all textures. Wow.
-			lbuilder.with_binding
-			({
-				.type = vk2::DescriptorType::ImageWithSampler,
-				.count = static_cast<std::uint32_t>(this->image_component_views.size()),
-				.flags = {vk2::DescriptorFlag::PartiallyBound}
-			});
+			// And one giant descriptor array for all textures. If there aren't any image resources though, we won't bother.
+			if(this->resource_count_of(ResourceType::Image))
+			{
+				lbuilder.with_binding
+				({
+					.type = vk2::DescriptorType::ImageWithSampler,
+					.count = static_cast<std::uint32_t>(this->image_component_views.size()),
+					.flags = {vk2::DescriptorFlag::PartiallyBound}
+				});
+			}
 			this->descriptor_layout = lbuilder.build();
+		}
+
+		// If we have no resources at all, then we completely skip creating pools and sets.
+		if(this->count() == 0)
+		{
+			return;
+		}
+		// Create pool limits. Enough for all of our resources. However, if we don't have any of a specific resource, we shouldn't add a limit at all for it (zero-size limits are not allowed).
+		decltype(std::declval<vk2::DescriptorPoolInfo::PoolLimits>().limits) limits;
+		if(buffer_count > 0)
+		{
+			limits[vk2::DescriptorType::StorageBuffer] = buffer_count * RendererVulkan::max_frames_in_flight;
+		}
+		if(!this->image_component_views.empty())
+		{
+			limits[vk2::DescriptorType::ImageWithSampler] = this->image_component_views.size() * RendererVulkan::max_frames_in_flight;
 		}
 
 		this->descriptor_pool = 
 		{vk2::DescriptorPoolInfo{
 			.limits =
 			{
-				.limits = 
-				{
-					{vk2::DescriptorType::StorageBuffer, buffer_count * RendererVulkan::max_frames_in_flight},
-					{vk2::DescriptorType::ImageWithSampler, this->image_component_views.size() * RendererVulkan::max_frames_in_flight}
-				},
+				.limits = limits,
 				.max_sets = static_cast<std::uint32_t>(RendererVulkan::max_frames_in_flight),
 				.supports_update_after_bind = true
 			},
@@ -207,6 +222,11 @@ namespace tz::gl2
 			update.add_set_edit(set_edit);
 		}
 		this->descriptor_pool.update_sets(update);
+	}
+
+	bool ResourceStorage::empty() const
+	{
+		return this->count() == 0;
 	}
 
 //--------------------------------------------------------------------------------------------------
@@ -893,16 +913,19 @@ namespace tz::gl2
 				.pipeline_context = vk2::PipelineContext::Graphics
 			});
 			tz::BasicList<const vk2::DescriptorSet*> sets;
-			std::span<const vk2::DescriptorSet> resource_sets = this->resources.get_descriptor_sets();
-			sets.resize(resource_sets.size());
-			std::transform(resource_sets.begin(), resource_sets.end(), sets.begin(), [](const vk2::DescriptorSet& set){return &set;});
-			recording.bind_descriptor_sets
-			({
-				.pipeline_layout = this->pipeline.get_pipeline().get_info().pipeline_layout,
-				.context = vk2::PipelineContext::Graphics,
-				.descriptor_sets = sets,
-				.first_set_id = 0
-			});
+			if(!this->resources.empty())
+			{
+				std::span<const vk2::DescriptorSet> resource_sets = this->resources.get_descriptor_sets();
+				sets.resize(resource_sets.size());
+				std::transform(resource_sets.begin(), resource_sets.end(), sets.begin(), [](const vk2::DescriptorSet& set){return &set;});
+				recording.bind_descriptor_sets
+				({
+					.pipeline_layout = this->pipeline.get_pipeline().get_info().pipeline_layout,
+					.context = vk2::PipelineContext::Graphics,
+					.descriptor_sets = sets,
+					.first_set_id = 0
+				});
+			}
 			recording.draw
 			({
 				.vertex_count = 3 * this->tri_count,

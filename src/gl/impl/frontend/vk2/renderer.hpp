@@ -66,6 +66,7 @@ namespace tz::gl2
 
 		std::size_t resource_count_of(ResourceType type) const;
 		void sync_descriptors(bool write_everything);
+		bool empty() const;
 	private:
 
 		/// Storage for all cloned resource's components.

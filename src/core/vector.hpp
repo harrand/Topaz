@@ -161,7 +161,7 @@ namespace tz
 		 * tz::Vec2{0.0f, 1.0f}.with_more(tz::Vec3{2.0f, 3.0f, 4.0f}) == tz::Vector<float, 5>{0.0f, 1.0f, 2.0f, 3.0f, 4.0f}
 		 * @tparam S2 Number of dimensions of the appendage vector.
 		 * @param end Vector to be appended to the end of the resultant vector.
-		 * @param Vector with extra element(s) appended.
+		 * @return Vector with extra element(s) appended.
 		 */
 		template<std::size_t S2>
 		Vector<T, S + S2> with_more(const Vector<T, S2>& end) const;
