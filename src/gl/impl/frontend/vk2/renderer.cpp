@@ -448,7 +448,8 @@ namespace tz::gl2
 		.pipeline_layout = &this->pipeline_layout,
 		.render_pass = &render_pass,
 		.device = &render_pass.get_device()
-	})
+	}),
+	depth_testing_enabled(depth_testing_enabled)
 	{
 		// TODO: Implement vk2::LogicalDevice equality operator
 		//tz_assert(dlayout.get_device() == render_pass.get_device(), "");
@@ -457,6 +458,26 @@ namespace tz::gl2
 	const vk2::GraphicsPipeline& GraphicsPipelineManager::get_pipeline() const
 	{
 		return this->graphics_pipeline;
+	}
+
+	void GraphicsPipelineManager::recreate(const vk2::RenderPass& new_render_pass, tz::Vec2ui new_viewport_dimensions)
+	{
+		this->graphics_pipeline =
+		{{
+			.shaders = this->shader.native_data(),
+			.state = vk2::PipelineState
+			{
+				.viewport = vk2::create_basic_viewport(static_cast<tz::Vec2>(new_viewport_dimensions)),
+				.depth_stencil =
+				{
+					.depth_testing = this->depth_testing_enabled,
+					.depth_writes = this->depth_testing_enabled
+				}
+			},
+			.pipeline_layout = &this->pipeline_layout,
+			.render_pass = &new_render_pass,
+			.device = &new_render_pass.get_device()
+		 }};
 	}
 
 	vk2::Shader GraphicsPipelineManager::make_shader(const vk2::LogicalDevice& ldev, const ShaderInfo& sinfo) const
@@ -959,6 +980,7 @@ namespace tz::gl2
 		//tz_error("Sorry. Window resizing is not yet implemented for this vulkan frontend. TODO: Implement. %d, %d", resize_info.new_dimensions[0], resize_info.new_dimensions[1]);
 		this->command.wait_pending_commands_complete();
 		this->output.create_output_resources(resize_info.new_output_images, this->output.has_depth_images());
+		this->pipeline.recreate(this->output.get_render_pass(), resize_info.new_dimensions);
 		this->setup_render_commands();
 	}
 }

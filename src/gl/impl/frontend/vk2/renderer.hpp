@@ -180,6 +180,7 @@ namespace tz::gl2
 		 * @return Graphics pipeline which should be bound when rendering.
 		 */
 		const vk2::GraphicsPipeline& get_pipeline() const;
+		void recreate(const vk2::RenderPass& new_render_pass, tz::Vec2ui new_viewport_dimensions);
 	private:
 		vk2::Shader make_shader(const vk2::LogicalDevice& ldev, const ShaderInfo& sinfo) const;
 		vk2::PipelineLayout make_pipeline_layout(const vk2::DescriptorLayout& dlayout, std::size_t frame_in_flight_count) const;
@@ -187,6 +188,7 @@ namespace tz::gl2
 		vk2::Shader shader;
 		vk2::PipelineLayout pipeline_layout;
 		vk2::GraphicsPipeline graphics_pipeline;
+		bool depth_testing_enabled;
 	};
 
 	/**
