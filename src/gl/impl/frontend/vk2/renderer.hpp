@@ -137,10 +137,13 @@ namespace tz::gl2
 		 * @return {width, height} of the output images, in pixels.
 		 */
 		tz::Vec2ui get_output_dimensions() const;
-		void recreate_output_resources();
+		bool has_depth_images() const;
+		void create_output_resources(std::span<vk2::Image> window_buffer_images, bool create_depth_images);
 	private:
 		/// Output provided by the RendererVulkan.
 		const IOutput* output;
+		/// Logical device used to create depth images, render passes and framebuffers.
+		const vk2::LogicalDevice* ldev;
 		/// List of window buffer images (offscreen image or swapchain images) from the Device.
 		std::span<vk2::Image> window_buffer_images;
 		/// List of depth images for each window buffer image (These may be null if depth testing is disabled).

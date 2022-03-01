@@ -233,12 +233,72 @@ namespace tz::gl2
 
 	OutputManager::OutputManager(const IOutput* output, std::span<vk2::Image> window_buffer_images, bool create_depth_images, const vk2::LogicalDevice& ldev):
 	output(output),
+	ldev(&ldev),
 	window_buffer_images(window_buffer_images),
 	window_buffer_depth_images(),
 	output_imageviews(),
 	render_pass(vk2::RenderPass::null()),
 	output_framebuffers()
 	{
+		this->create_output_resources(this->window_buffer_images, create_depth_images);
+	}
+
+	const vk2::RenderPass& OutputManager::get_render_pass() const
+	{
+		return this->render_pass;
+	}
+
+	std::span<vk2::Image> OutputManager::get_output_images()
+	{
+		if(this->output == nullptr || this->output->get_target() == OutputTarget::Window)
+		{
+			// We're rendering into a window (which may be headless). The Device contained the swapchain images (or the offline headless images). Simply return those.
+			return this->window_buffer_images;
+		}
+		else if(this->output->get_target() == OutputTarget::OffscreenImage)
+		{
+			// We have been provided an ImageOutput which will contain an ImageComponentVulkan. We need to retrieve that image and return a span covering it.
+			// TODO: Support multiple-render-targets.
+			ImageOutput& out = const_cast<ImageOutput&>(static_cast<const ImageOutput&>(*this->output));
+			vk2::Image& output_image = out.get_component().vk_get_image();
+			return {&output_image, 1};
+		}
+		else
+		{
+			tz_error("Unrecognised OutputTarget. Please submit a bug report.");
+			return {};
+		}
+	}
+
+	std::span<const vk2::Framebuffer> OutputManager::get_output_framebuffers() const
+	{
+		return this->output_framebuffers;
+	}
+
+	std::span<vk2::Framebuffer> OutputManager::get_output_framebuffers()
+	{
+		return this->output_framebuffers;
+	}
+
+	tz::Vec2ui OutputManager::get_output_dimensions() const
+	{
+		tz_assert(!this->output_imageviews.empty(), "OutputManager had no output views, so impossible to retrieve viewport dimensions. Please submit a bug report.");
+		return this->output_imageviews.front().get_image().get_dimensions();
+	}
+	
+	bool OutputManager::has_depth_images() const
+	{
+		return !this->window_buffer_depth_images.empty();
+	}
+
+	void OutputManager::create_output_resources(std::span<vk2::Image> window_buffer_images, bool create_depth_images)
+	{
+		this->window_buffer_images = window_buffer_images;
+		this->window_buffer_depth_images.clear();
+		this->output_imageviews.clear();
+		this->output_depth_imageviews.clear();
+		this->output_framebuffers.clear();
+
 		tz_assert(!this->get_output_images().empty(), "RendererVulkan OutputManager was not given any output images. Please submit a bug report.");
 		this->window_buffer_depth_images.reserve(this->window_buffer_images.size());
 		this->output_depth_imageviews.reserve(this->window_buffer_images.size());
@@ -249,7 +309,7 @@ namespace tz::gl2
 			{
 				this->window_buffer_depth_images.push_back
 				(vk2::ImageInfo{
-					.device = &ldev,
+					.device = this->ldev,
 					.format = vk2::ImageFormat::Depth32_SFloat,
 					.dimensions = window_buffer_image.get_dimensions(),
 					.usage = {vk2::ImageUsage::DepthStencilAttachment},
@@ -306,7 +366,7 @@ namespace tz::gl2
 		}
 
 		vk2::RenderPassBuilder rbuilder;
-		rbuilder.set_device(ldev);
+		rbuilder.set_device(*this->ldev);
 		rbuilder.with_attachment
 		({
 			.format = this->get_output_images().front().get_format(),
@@ -358,49 +418,6 @@ namespace tz::gl2
 				.dimensions = dims
 			});
 		}
-	}
-
-	const vk2::RenderPass& OutputManager::get_render_pass() const
-	{
-		return this->render_pass;
-	}
-
-	std::span<vk2::Image> OutputManager::get_output_images()
-	{
-		if(this->output == nullptr || this->output->get_target() == OutputTarget::Window)
-		{
-			// We're rendering into a window (which may be headless). The Device contained the swapchain images (or the offline headless images). Simply return those.
-			return this->window_buffer_images;
-		}
-		else if(this->output->get_target() == OutputTarget::OffscreenImage)
-		{
-			// We have been provided an ImageOutput which will contain an ImageComponentVulkan. We need to retrieve that image and return a span covering it.
-			// TODO: Support multiple-render-targets.
-			ImageOutput& out = const_cast<ImageOutput&>(static_cast<const ImageOutput&>(*this->output));
-			vk2::Image& output_image = out.get_component().vk_get_image();
-			return {&output_image, 1};
-		}
-		else
-		{
-			tz_error("Unrecognised OutputTarget. Please submit a bug report.");
-			return {};
-		}
-	}
-
-	std::span<const vk2::Framebuffer> OutputManager::get_output_framebuffers() const
-	{
-		return this->output_framebuffers;
-	}
-
-	std::span<vk2::Framebuffer> OutputManager::get_output_framebuffers()
-	{
-		return this->output_framebuffers;
-	}
-
-	tz::Vec2ui OutputManager::get_output_dimensions() const
-	{
-		tz_assert(!this->output_imageviews.empty(), "OutputManager had no output views, so impossible to retrieve viewport dimensions. Please submit a bug report.");
-		return this->output_imageviews.front().get_image().get_dimensions();
 	}
 
 //--------------------------------------------------------------------------------------------------
@@ -939,7 +956,10 @@ namespace tz::gl2
 	void RendererVulkan::handle_resize(const RendererResizeInfoVulkan& resize_info)
 	{
 		// Context: The top-level gl::Device has just been told by the window that it has been resized, and has recreated a new swapchain. Our old pointer to the swapchain `maybe_swapchain` correctly points to the new swapchain already, so we just have to recreate all the new state.
-		tz_error("Sorry. Window resizing is not yet implemented for this vulkan frontend. TODO: Implement. %d, %d", resize_info.new_dimensions[0], resize_info.new_dimensions[1]);
+		//tz_error("Sorry. Window resizing is not yet implemented for this vulkan frontend. TODO: Implement. %d, %d", resize_info.new_dimensions[0], resize_info.new_dimensions[1]);
+		this->command.wait_pending_commands_complete();
+		this->output.create_output_resources(resize_info.new_output_images, this->output.has_depth_images());
+		this->setup_render_commands();
 	}
 }
 
