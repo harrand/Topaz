@@ -13,8 +13,6 @@ namespace tz::gl2
 	class DeviceWindowVulkan
 	{
 	public:
-		using ResizeCallbackType = tz::WindowFunctionality::ResizeCallbackType;
-
 		DeviceWindowVulkan() = default;
 		DeviceWindowVulkan(const vk2::LogicalDevice& device);
 		DeviceWindowVulkan(const DeviceWindowVulkan& copy) = delete;
@@ -32,7 +30,8 @@ namespace tz::gl2
 		tz::Vec2ui get_dimensions() const;
 		vk2::ImageFormat get_format() const;
 
-		ResizeCallbackType& resize_callback();
+		RendererResizeCallbackType& resize_callback();
+		std::span<vk2::Image> get_output_images();
 	private:
 		void on_resize(tz::Vec2ui dims);
 		void register_resize();
@@ -42,7 +41,7 @@ namespace tz::gl2
 
 		std::variant<vk2::Swapchain, vk2::Image, std::monostate> window_buf = std::monostate{};
 		tz::CallbackHandle on_resize_handle = tz::nullhand;
-		ResizeCallbackType renderer_resize_callbacks = {};
+		RendererResizeCallbackType renderer_resize_callbacks = {};
 	};
 
 	class DeviceVulkan

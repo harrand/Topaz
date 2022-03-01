@@ -1,3 +1,4 @@
+#include "gl/impl/frontend/vk2/renderer.hpp"
 #if TZ_VULKAN
 #include "gl/impl/frontend/vk2/device.hpp"
 #include "gl/impl/frontend/vk2/convert.hpp"
@@ -135,9 +136,23 @@ namespace tz::gl2
 		return vk2::ImageFormat::Undefined;
 	}
 
-	DeviceWindowVulkan::ResizeCallbackType& DeviceWindowVulkan::resize_callback()
+	RendererResizeCallbackType& DeviceWindowVulkan::resize_callback()
 	{
 		return this->renderer_resize_callbacks;
+	}
+
+	std::span<vk2::Image> DeviceWindowVulkan::get_output_images()
+	{
+		if(this->as_swapchain() != nullptr)
+		{
+			return this->as_swapchain()->get_images();
+		}
+		else if(this->as_image() != nullptr)
+		{
+			return {this->as_image(), 1};
+		}
+		tz_error("Could not recognise window storage. Please submit a bug report.");
+		return {};
 	}
 
 	void DeviceWindowVulkan::on_resize(tz::Vec2ui dims)
@@ -163,7 +178,11 @@ namespace tz::gl2
 		}};
 		std::swap(old_swapchain, new_swapchain);
 		// Now notify all renderers.
-		this->renderer_resize_callbacks(dims);
+		this->renderer_resize_callbacks
+		({
+			.new_dimensions = dims,
+			.new_output_images = this->get_output_images()
+		});
 	}
 
 	void DeviceWindowVulkan::register_resize()
@@ -235,20 +254,10 @@ namespace tz::gl2
 
 	RendererVulkan DeviceVulkan::create_renderer(const RendererInfoVulkan& info)
 	{
-		std::span<vk2::Image> window_buffer_images;
-		if(this->window_storage.as_swapchain() != nullptr)
-		{
-			window_buffer_images = this->window_storage.as_swapchain()->get_images();
-		}
-		else if(this->window_storage.as_image() != nullptr)
-		{
-			window_buffer_images = {this->window_storage.as_image(), 1};
-		}
-		
 		return {info,
 		{
 			.device = &this->device,
-			.output_images = window_buffer_images,
+			.output_images = this->window_storage.get_output_images(),
 			.maybe_swapchain = this->window_storage.as_swapchain(),
 			.resize_callback = &this->window_storage.resize_callback()
 		}};
@@ -258,6 +267,7 @@ namespace tz::gl2
 	{
 		return from_vk2(this->window_storage.get_format());
 	}
+
 }
 
 #endif // TZ_VULKAN

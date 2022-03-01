@@ -263,6 +263,15 @@ namespace tz::gl2
 
 	using RendererInfoVulkan = RendererInfoCommon;
 
+
+	struct RendererResizeInfoVulkan
+	{
+		tz::Vec2ui new_dimensions;
+		std::span<vk2::Image> new_output_images;
+	};
+
+	using RendererResizeCallbackType = tz::Callback<RendererResizeInfoVulkan>;
+
 	/**
 	 * @ingroup tz_gl2_graphicsapi_vk_frontend_renderer
 	 * When the Device wants to create a RendererVulkan, we need to know a little bit about the Device's internals (such as the swapchain images, or an offscreen image if we're headless).
@@ -276,7 +285,7 @@ namespace tz::gl2
 		/// Swapchain if there is one.
 		vk2::Swapchain* maybe_swapchain;
 		/// Callback for resizing which the renderer subscribes to for the duration of its lifetime. Assume this isn't null but for headless applications this should not be used.
-		tz::WindowFunctionality::ResizeCallbackType* resize_callback;
+		RendererResizeCallbackType* resize_callback;
 	};
 
 	/**
@@ -347,7 +356,7 @@ namespace tz::gl2
 	private:
 		void setup_static_resources();
 		void setup_render_commands();
-		void handle_resize(tz::Vec2ui dims);
+		void handle_resize(const RendererResizeInfoVulkan& resize_info);
 
 		vk2::LogicalDevice* ldev;
 		/// Stores copies of all provided resources, and deals with all the vulkan descriptor magic. Exposes everything relevant to us when we want to draw.
@@ -359,7 +368,7 @@ namespace tz::gl2
 		vk2::Swapchain* maybe_swapchain;
 		RendererOptions options;
 		unsigned int tri_count = 0;
-		tz::WindowFunctionality::ResizeCallbackType* device_resize_callback = nullptr;
+		RendererResizeCallbackType* device_resize_callback = nullptr;
 		tz::CallbackHandle window_resize_callback = tz::nullhand;
 	};
 
