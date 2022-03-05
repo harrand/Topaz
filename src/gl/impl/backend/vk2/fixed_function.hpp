@@ -212,6 +212,7 @@ namespace tz::gl::vk2
 	{
 		using AttachmentState = VkPipelineColorBlendAttachmentState; 
 		static AttachmentState no_blending();
+		static AttachmentState alpha_blending();
 
 		tz::BasicList<AttachmentState> attachment_states = {no_blending()};
 		std::optional<VkLogicOp> logical_operator = std::nullopt;

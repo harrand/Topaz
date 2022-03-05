@@ -56,6 +56,10 @@ namespace tz::gl::vk2
 			{
 				ret |= DeviceFeature::TimelineSemaphores;
 			}
+			if(features.features.features.logicOp)
+			{
+				ret |= DeviceFeature::ColourBlendLogicalOperations;
+			}
 		
 			return ret;
 		}
@@ -65,6 +69,7 @@ namespace tz::gl::vk2
 			DeviceFeatureInfo info;
 			info.features.features.multiDrawIndirect = feature_field.contains(DeviceFeature::MultiDrawIndirect) ? VK_TRUE : VK_FALSE;
 			info.features12.timelineSemaphore = feature_field.contains(DeviceFeature::TimelineSemaphores) ? VK_TRUE : VK_FALSE;
+			info.features.features.logicOp = feature_field.contains(DeviceFeature::ColourBlendLogicalOperations);
 
 			if(feature_field.contains(DeviceFeature::BindlessDescriptors))
 			{

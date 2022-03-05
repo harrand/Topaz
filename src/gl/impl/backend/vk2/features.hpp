@@ -20,7 +20,9 @@ namespace tz::gl::vk2
 		/// - Allows creation of bindless descriptors. Dramatically increases the limits for shader resources, and yields a moderate to vast improvement to performance across-the-board.
 		BindlessDescriptors,
 		/// - Enables use of @ref TimelineSemaphore.
-		TimelineSemaphores
+		TimelineSemaphores,
+		/// - Enables use of alpha blending.
+		ColourBlendLogicalOperations
 	};
 
 	using DeviceFeatureField = tz::EnumField<DeviceFeature>;

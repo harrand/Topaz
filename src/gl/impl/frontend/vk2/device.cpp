@@ -230,7 +230,8 @@ namespace tz::gl2
 		const vk2::DeviceFeatureField dev_feats =
 		{
 			vk2::DeviceFeature::BindlessDescriptors,
-			vk2::DeviceFeature::MultiDrawIndirect
+			vk2::DeviceFeature::MultiDrawIndirect,
+			vk2::DeviceFeature::ColourBlendLogicalOperations
 		};
 		tz_assert(pdev.get_supported_features().contains(dev_feats), "One or both of DeviceFeatures 'BindlessDescriptors' and 'MultiDrawIndirect' are not supported by this machine/driver. Please ensure your machine meets the system requirements.");
 		if(!instance.is_headless())

@@ -285,6 +285,15 @@ namespace tz::gl2
 			glEnable(GL_DEPTH_TEST);
 			glDepthFunc(GL_LESS);
 		}
+		if(this->options.contains(RendererOption::AlphaBlending))
+		{
+			glEnable(GL_BLEND);
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		}
+		else
+		{
+			glDisable(GL_BLEND);
+		}
 		this->output.set_render_target();
 
 		this->shader.use();

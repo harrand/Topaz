@@ -429,7 +429,8 @@ namespace tz::gl2
 		const vk2::RenderPass& render_pass,
 		std::size_t frame_in_flight_count,
 		tz::Vec2ui viewport_dimensions,
-		bool depth_testing_enabled
+		bool depth_testing_enabled,
+		bool alpha_blending_enabled
 	):
 	shader(this->make_shader(dlayout.get_device(), sinfo)),
 	pipeline_layout(this->make_pipeline_layout(dlayout, frame_in_flight_count)),
@@ -443,6 +444,11 @@ namespace tz::gl2
 			{
 				.depth_testing = depth_testing_enabled,
 				.depth_writes = depth_testing_enabled,
+			},
+			.colour_blend =
+			{
+				.attachment_states = alpha_blending_enabled ? tz::BasicList<vk2::ColourBlendState::AttachmentState>{vk2::ColourBlendState::alpha_blending()} : tz::BasicList<vk2::ColourBlendState::AttachmentState>{vk2::ColourBlendState::no_blending()},
+				.logical_operator = VK_LOGIC_OP_COPY
 			}
 		},
 		.pipeline_layout = &this->pipeline_layout,
@@ -663,7 +669,7 @@ namespace tz::gl2
 	ldev(device_info.device),
 	resources(info.get_resources(), *this->ldev),
 	output(info.get_output(), device_info.output_images, !info.get_options().contains(RendererOption::NoDepthTesting), *this->ldev),
-	pipeline(info.shader(), this->resources.get_descriptor_layout(), this->output.get_render_pass(), RendererVulkan::max_frames_in_flight, output.get_output_dimensions(), !info.get_options().contains(RendererOption::NoDepthTesting)),
+	pipeline(info.shader(), this->resources.get_descriptor_layout(), this->output.get_render_pass(), RendererVulkan::max_frames_in_flight, output.get_output_dimensions(), !info.get_options().contains(RendererOption::NoDepthTesting), info.get_options().contains(RendererOption::AlphaBlending)),
 	command(*this->ldev, RendererVulkan::max_frames_in_flight, info.get_output() != nullptr ? info.get_output()->get_target() : OutputTarget::Window, this->output.get_output_framebuffers()),
 	maybe_swapchain(device_info.maybe_swapchain),
 	options(info.get_options())

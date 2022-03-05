@@ -21,6 +21,7 @@ namespace tz::gl2
 	{
 		/// - Disables depth-testing, with a small gain in performance.
 		NoDepthTesting,
+		AlphaBlending
 	};
 	
 	using RendererOptions = tz::EnumField<RendererOption>;
