@@ -239,6 +239,7 @@ namespace tz::gl2
 	resources(info.get_resources()),
 	shader(info.shader()),
 	output(info.get_output()),
+	clear_colour(info.get_clear_colour()),
 	options(info.get_options())
 	{
 
@@ -276,6 +277,7 @@ namespace tz::gl2
 
 	void RendererOGL::render()
 	{
+		glClearColor(this->clear_colour[0], this->clear_colour[1], this->clear_colour[2], this->clear_colour[3]);
 		if(this->options.contains(RendererOption::NoDepthTesting))
 		{
 			glDisable(GL_DEPTH_TEST);

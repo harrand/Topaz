@@ -672,7 +672,8 @@ namespace tz::gl2
 	pipeline(info.shader(), this->resources.get_descriptor_layout(), this->output.get_render_pass(), RendererVulkan::max_frames_in_flight, output.get_output_dimensions(), !info.get_options().contains(RendererOption::NoDepthTesting), info.get_options().contains(RendererOption::AlphaBlending)),
 	command(*this->ldev, RendererVulkan::max_frames_in_flight, info.get_output() != nullptr ? info.get_output()->get_target() : OutputTarget::Window, this->output.get_output_framebuffers()),
 	maybe_swapchain(device_info.maybe_swapchain),
-	options(info.get_options())
+	options(info.get_options()),
+	clear_colour(info.get_clear_colour())
 	{
 		// If we're not headless, we should register a callback for our lifetime.
 		if(info.get_output() == nullptr || info.get_output()->get_target() == OutputTarget::Window)
@@ -950,7 +951,7 @@ namespace tz::gl2
 		this->command.set_rendering_commands([this](vk2::CommandBufferRecording& recording, std::size_t framebuffer_id)
 		{
 			tz_assert(framebuffer_id < this->output.get_output_framebuffers().size(), "Attempted to retrieve output framebuffer at index %zu, but there are only %zu framebuffers available. Please submit a bug report.", framebuffer_id, this->output.get_output_framebuffers().size());
-			vk2::CommandBufferRecording::RenderPassRun run{this->output.get_output_framebuffers()[framebuffer_id], recording};
+			vk2::CommandBufferRecording::RenderPassRun run{this->output.get_output_framebuffers()[framebuffer_id], recording, this->clear_colour};
 			recording.bind_pipeline
 			({
 				.pipeline = &this->pipeline.get_pipeline(),

@@ -189,7 +189,7 @@ namespace tz::gl::vk2
 			 * @param recording Existing recording of a @ref CommandBuffer which shall record the beginning/ending of the render pass.
 			 * @note The construction of this object begins the render pass, and the destruction ends the render pass. This means all commands recorded during the lifetime of this object will apply to the render pass.
 			 */
-			RenderPassRun(Framebuffer& framebuffer, CommandBufferRecording& recording);
+			RenderPassRun(Framebuffer& framebuffer, CommandBufferRecording& recording, tz::Vec4 clear_colour = {0.0f, 0.0f, 0.0f, 1.0f});
 			RenderPassRun(const RenderPassRun& copy) = delete;
 			RenderPassRun(RenderPassRun&& move) = delete;
 			~RenderPassRun();

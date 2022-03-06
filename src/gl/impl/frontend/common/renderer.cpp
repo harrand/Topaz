@@ -50,6 +50,16 @@ namespace tz::gl2
 		this->options = options;
 	}
 
+	void RendererInfoCommon::set_clear_colour(tz::Vec4 clear_colour)
+	{
+		this->clear_colour = clear_colour;
+	}
+
+	const tz::Vec4 RendererInfoCommon::get_clear_colour() const
+	{
+		return this->clear_colour;
+	}
+
 	ShaderInfo& RendererInfoCommon::shader()
 	{
 		return this->shader_info;

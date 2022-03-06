@@ -372,6 +372,7 @@ namespace tz::gl2
 		CommandProcessor command;
 		vk2::Swapchain* maybe_swapchain;
 		RendererOptions options;
+		tz::Vec4 clear_colour;
 		unsigned int tri_count = 0;
 		RendererResizeCallbackType* device_resize_callback = nullptr;
 		tz::CallbackHandle window_resize_callback = tz::nullhand;

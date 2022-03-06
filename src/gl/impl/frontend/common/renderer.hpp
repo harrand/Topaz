@@ -56,6 +56,14 @@ namespace tz::gl2
 		 */
 		void set_options(RendererOptions options);
 		/**
+		 * Set the clear colour value. Default is solid black. {0, 0, 0, 1}
+		 */
+		void set_clear_colour(tz::Vec4 clear_colour);
+		/**
+		 * Retrieve the current clear colour value.
+		 */
+		const tz::Vec4 get_clear_colour() const;
+		/**
 		 * Read/write information about the shader that will be built for the renderer.
 		 */
 		ShaderInfo& shader();
@@ -72,6 +80,8 @@ namespace tz::gl2
 		RendererOptions options = {};
 		/// Describes the shader sources used.
 		ShaderInfo shader_info;
+		/// The clear value for colour attachments.
+		tz::Vec4 clear_colour = {0.0f, 0.0f, 0.0f, 1.0f};
 	};
 	static_assert(RendererInfoType<RendererInfoCommon>);
 

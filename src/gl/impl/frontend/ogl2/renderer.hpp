@@ -178,6 +178,7 @@ namespace tz::gl2
 		ResourceStorage resources;
 		ShaderManager shader;
 		OutputManager output;
+		tz::Vec4 clear_colour;
 		RendererOptions options;
 		unsigned int tri_count = 0;
 	};

@@ -6,11 +6,11 @@
 
 namespace tz::gl::vk2
 {
-	CommandBufferRecording::RenderPassRun::RenderPassRun(Framebuffer& framebuffer, CommandBufferRecording& recording):
+	CommandBufferRecording::RenderPassRun::RenderPassRun(Framebuffer& framebuffer, CommandBufferRecording& recording, tz::Vec4 clear_colour):
 	framebuffer(&framebuffer),
 	recording(&recording)
 	{
-		constexpr VkClearValue colour_clear{.color = {.float32 = {0.0f, 0.0f, 0.0f, 1.0f}}};
+		VkClearValue colour_clear{.color = {.float32 = {clear_colour[0], clear_colour[1], clear_colour[2], clear_colour[3]}}};
 		constexpr VkClearValue depth_clear{.depthStencil = {1.0f, 0}};
 		std::vector<VkClearValue> clear_values(framebuffer.get_attachment_views().length());
 		for(std::size_t i = 0; i < framebuffer.get_attachment_views().length(); i++)
