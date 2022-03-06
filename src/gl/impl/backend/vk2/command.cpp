@@ -1,3 +1,4 @@
+#include "gl/impl/backend/vk2/framebuffer.hpp"
 #if TZ_VULKAN
 #include "gl/impl/backend/vk2/render_pass.hpp"
 #include "gl/impl/backend/vk2/command.hpp"
@@ -169,7 +170,28 @@ namespace tz::gl::vk2
 						img_layout = arg.target_layout;
 					}
 				}
-				// TODO: End of render pass can also change image layouts. We should check for this.
+				else if constexpr(std::is_same_v<T, VulkanCommand::EndRenderPass>)
+				{
+					// If some render pass has since ended, the layout may have changed if it was an attachment.
+					auto get_framebuffer_attachment_layout = [&arg](std::size_t attachment_idx)
+					{
+						return arg.framebuffer->get_pass().get_info().attachments[attachment_idx].final_layout;
+					};
+					// We end a framebuffer, which has some number of attachments. Firstly we check if any of them are this image. If it is, we query the render pass to find out what the layout was meant to be.
+					const tz::BasicList<ImageView*>& framebuffer_attachments = arg.framebuffer->get_attachment_views();
+					auto iter = std::find_if(framebuffer_attachments.begin(), framebuffer_attachments.end(),
+					[&command](ImageView* const & view_ptr)->bool
+					{
+						return &view_ptr->get_image() == command.dst;
+					});
+					if(iter != framebuffer_attachments.end())
+					{
+						std::size_t attachment_idx = std::distance(framebuffer_attachments.begin(), iter);
+
+						// Now find out which layout that is.
+						img_layout = get_framebuffer_attachment_layout(attachment_idx);
+					}
+				}
 			}, previous_command);
 		}
 		tz_assert(img_layout == ImageLayout::TransferDestination, "BufferCopyImage:: Destination image was not in TransferDestination ImageLayout, so it cannot be an, erm, transfer destination.");

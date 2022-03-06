@@ -1,7 +1,7 @@
 #ifndef TOPAZ_GL2_IMPL_FRONTEND_VK2_RENDERER_HPP
 #define TOPAZ_GL2_IMPL_FRONTEND_VK2_RENDERER_HPP
-#include "core/window_functionality.hpp"
 #if TZ_VULKAN
+#include "core/window_functionality.hpp"
 #include "gl/api/renderer.hpp"
 #include "gl/api/component.hpp"
 #include "gl/impl/frontend/common/renderer.hpp"
