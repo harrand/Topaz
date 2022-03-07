@@ -49,10 +49,10 @@
  * @note Specifying a profiling scope has no effect if `!TZ_PROFILE`
  */
 #if TZ_PROFILE
-	#define CONCAT(a, b) CONCAT_INNER(a, b)
-	#define CONCAT_INNER(a, b) a ## b
+	#define CONCAT_TZPROF(a, b) CONCAT_INNER_TZPROF(a, b)
+	#define CONCAT_INNER_TZPROF(a, b) a ## b
 
-	#define UNIQUE_NAME(base) CONCAT(base, __LINE__)
+	#define UNIQUE_NAME(base) CONCAT_TZPROF(base, __LINE__)
 	#define TZ_PROFZONE(name, colour) ZoneNamedNC(UNIQUE_NAME(tracy_profvar), name, colour, true)
 #else
 	#define TZ_PROFZONE(name, colour)
