@@ -107,8 +107,7 @@ int main()
 				};
 				renderer.edit(renderer_edit);
 				// Get the resource data for the new triangle and set it to random values.
-				tz::gl2::BufferResource* buf_res = static_cast<tz::gl2::BufferResource*>(renderer.get_resource(bufh));
-				std::span<TriangleVertexData> buf_data = buf_res->data_as<TriangleVertexData>();
+				std::span<TriangleVertexData> buf_data = renderer.get_resource(bufh)->data_as<TriangleVertexData>();
 				// We do this by setting the last 3 vertices to a random triangle;
 				for(std::size_t i = 0; i < 3; i++)
 				{
