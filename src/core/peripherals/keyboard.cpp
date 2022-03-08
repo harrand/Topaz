@@ -37,16 +37,16 @@ namespace tz
 		}
 	}
 
-	bool KeyboardState::is_key_down(KeyInfo key) const
+	bool KeyboardState::is_key_down(KeyCode key) const
 	{
 		return std::find_if(this->pressed_keys.begin(), this->pressed_keys.end(),
-		[key](const KeyPressInfo& info){return info.key.code == key.code;}) != this->pressed_keys.end();
+		[key](const KeyPressInfo& info){return info.key.code == key;}) != this->pressed_keys.end();
 	}
 
-	bool KeyboardState::is_key_repeating(KeyInfo key) const
+	bool KeyboardState::is_key_repeating(KeyCode key) const
 	{
 		auto iter = std::find_if(this->pressed_keys.begin(), this->pressed_keys.end(),
-		[key](const KeyPressInfo& info){return info.key.code == key.code;});
+		[key](const KeyPressInfo& info){return info.key.code == key;});
 		return iter != this->pressed_keys.end() && iter->type == KeyPressType::Repeat;
 	}
 

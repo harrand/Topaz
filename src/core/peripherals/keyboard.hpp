@@ -279,13 +279,13 @@ namespace tz
 		 * @param key Describes which key should be checked.
 		 * @return True if key is down, otherwise false.
 		 */
-		bool is_key_down(KeyInfo key) const;
+		bool is_key_down(KeyCode key) const;
 		/**
 		 * Query as to whether a key has been pressed long enough for it to be considered 'repeating'. A key that is repeating is also considered to be down.
 		 * @param key Describes which key should be checked.
 		 * @return True if key is repeating, otherwise false.
 		 */
-		bool is_key_repeating(KeyInfo key) const;
+		bool is_key_repeating(KeyCode key) const;
 		/**
 		 * Attempt to print entire keyboard state to a single line of stdout.
 		 * 
