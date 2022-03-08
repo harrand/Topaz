@@ -104,14 +104,14 @@ namespace tz
 		 * @param button Describes which mouse button should be checked.
 		 * @return True if mouse button is down, otherwise false.
 		 */
-		bool is_mouse_button_down(MouseButtonInfo button) const;
+		bool is_mouse_button_down(MouseButton button) const;
 		/**
 		 * Retrieve the position (in window-space) of the pressed mouse button.
 		 * @param button Describes which mouse button should be checked.
 		 * @return Positon of the cursor when the mouse button was pressed.
 		 * @pre `is_mouse_button_down(button) == true` otherwise the behaviour is undefined.
 		 */
-		tz::Vec2ui get_mouse_press_position(MouseButtonInfo button) const;
+		tz::Vec2ui get_mouse_press_position(MouseButton button) const;
 		/**
 		 * Attempt to print entire mouse button state to a single line of stdout.
 		 * 

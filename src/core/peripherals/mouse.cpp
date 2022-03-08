@@ -27,13 +27,28 @@ namespace tz
 		}
 	}
 
-	bool MouseButtonState::is_mouse_button_down(MouseButtonInfo button) const
+	bool MouseButtonState::is_mouse_button_down(MouseButton button) const
 	{
 		return std::find_if(this->pressed_buttons.begin(), this->pressed_buttons.end(),
 		[button](const MouseButtonPressInfo& info)
 		{
-			return info.button.button == button.button;
+			return info.button.button == button;
 		}) != this->pressed_buttons.end();
+	}
+
+	tz::Vec2ui MouseButtonState::get_mouse_press_position(MouseButton button) const
+	{
+		tz_assert(this->is_mouse_button_down(button), "Cannot retrieve mouse press position when the button is not pressed. Please submit a bug report.");
+		auto iter = std::find_if(this->pressed_buttons.begin(), this->pressed_buttons.end(),
+		[button](const MouseButtonPressInfo& info)
+		{
+			return info.button.button == button;
+		});
+		if(iter == this->pressed_buttons.end())
+		{
+			return {};
+		}
+		return iter->press_position;
 	}
 
 	void MouseButtonState::debug_print_state() const
