@@ -1,6 +1,6 @@
 #include "gl/resource.hpp"
 
-namespace tz::gl2
+namespace tz::gl
 {
 	ResourceType Resource::get_type() const
 	{
@@ -56,7 +56,7 @@ namespace tz::gl2
 			
 	ImageResource ImageResource::from_uninitialised(ImageFormat format, tz::Vec2ui dimensions, ResourceAccess access)
 	{
-		std::size_t pixel_size = tz::gl2::pixel_size_bytes(format);
+		std::size_t pixel_size = tz::gl::pixel_size_bytes(format);
 		std::vector<std::byte> resource_data(pixel_size * dimensions[0] * dimensions[1]);
 		// TODO: Sanity check? Is it correct to just not give a shit about alignment here?
 		return {access, resource_data, 0, format, dimensions};

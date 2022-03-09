@@ -7,17 +7,17 @@
 #include "gl/impl/frontend/ogl2/renderer.hpp"
 #endif
 
-namespace tz::gl2
+namespace tz::gl
 {
 
 	/**
 	 * @ingroup tz_gl2_renderer
 	 * @class Renderer
-	 * Implementation of @ref tz::gl2::RendererType. See concept for more info.
+	 * Implementation of @ref tz::gl::RendererType. See concept for more info.
 	 *
 	 * Ideally there are no implementation details to concern yourself with. However, the implementations for each graphics API are implemented:
-	 * - Vulkan: @ref tz::gl2::RendererVulkan
-	 * - OGL: @ref tz::gl2::RendererOGL
+	 * - Vulkan: @ref tz::gl::RendererVulkan
+	 * - OGL: @ref tz::gl::RendererOGL
 	 */
 	#if TZ_VULKAN
 		using Renderer = RendererVulkan;

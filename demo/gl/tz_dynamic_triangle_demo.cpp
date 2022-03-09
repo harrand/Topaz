@@ -33,14 +33,14 @@ int main()
 {
 	tz::initialise
 	({
-		.name = "tz_dynamic_triangle_demo (gl2)"
+		.name = "tz_dynamic_triangle_demo (gl)"
 	});
 	{
-		tz::gl2::Device dev;
+		tz::gl::Device dev;
 		using namespace tz::literals;
-		tz::gl2::ImageResource img = tz::gl2::ImageResource::from_memory
+		tz::gl::ImageResource img = tz::gl::ImageResource::from_memory
 		(
-			tz::gl2::ImageFormat::RGBA32,
+			tz::gl::ImageFormat::RGBA32,
 			{2u, 2u},
 			{
 				0b1111'1111_uc,
@@ -66,20 +66,20 @@ int main()
 		);
 
 		std::size_t triangle_count = 1;
-		tz::gl2::BufferResource buf = tz::gl2::BufferResource::from_many
+		tz::gl::BufferResource buf = tz::gl::BufferResource::from_many
 		({
 			TriangleVertexData{.position = {-0.5f, -0.5f, -1.0f}, .texcoord = {0.0f, 0.0f}},
 			TriangleVertexData{.position = {0.0f, 0.5f, -1.0f}, .texcoord = {0.5f, 1.0f}},
 			TriangleVertexData{.position = {0.5f, -0.5f, -1.0f}, .texcoord = {1.0f, 0.0f}},
-		}, tz::gl2::ResourceAccess::DynamicVariable);
+		}, tz::gl::ResourceAccess::DynamicVariable);
 
-		tz::gl2::RendererInfo rinfo;
-		rinfo.shader().set_shader(tz::gl2::ShaderStage::Vertex, ImportedShaderSource(tz_dynamic_triangle_demo, vertex));
-		rinfo.shader().set_shader(tz::gl2::ShaderStage::Fragment, ImportedShaderSource(tz_dynamic_triangle_demo, fragment));
+		tz::gl::RendererInfo rinfo;
+		rinfo.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(tz_dynamic_triangle_demo, vertex));
+		rinfo.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(tz_dynamic_triangle_demo, fragment));
 		rinfo.add_resource(img);
-		tz::gl2::ResourceHandle bufh = rinfo.add_resource(buf);
+		tz::gl::ResourceHandle bufh = rinfo.add_resource(buf);
 
-		tz::gl2::Renderer renderer = dev.create_renderer(rinfo);
+		tz::gl::Renderer renderer = dev.create_renderer(rinfo);
 		std::default_random_engine rand;
 
 		while(!tz::window().is_close_requested())
@@ -94,11 +94,11 @@ int main()
 				// Add new triangle by resizing the triangle vertex storage buffer to a capacity large enough for an extra triangle. Then we randomise the new triangle data.
 				counter = 0;
 				triangle_count++;
-				tz::gl2::RendererEditRequest renderer_edit
+				tz::gl::RendererEditRequest renderer_edit
 				{
 					.component_edits =
 					{
-						tz::gl2::RendererBufferComponentEditRequest
+						tz::gl::RendererBufferComponentEditRequest
 						{
 							.buffer_handle = bufh,
 							.size = sizeof(TriangleVertexData) * 3 * triangle_count

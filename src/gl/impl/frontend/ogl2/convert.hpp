@@ -4,7 +4,7 @@
 #include "gl/declare/image_format.hpp"
 #include "gl/impl/backend/ogl2/image_format.hpp"
 
-namespace tz::gl2
+namespace tz::gl
 {
 	constexpr tz::gl::ogl2::ImageFormat to_ogl2(ImageFormat fmt);
 	constexpr ImageFormat from_ogl2(tz::gl::ogl2::ImageFormat fmt);

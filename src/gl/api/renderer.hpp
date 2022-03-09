@@ -11,7 +11,7 @@
 #include <concepts>
 #include <variant>
 
-namespace tz::gl2
+namespace tz::gl
 {
 	/**
 	 * @ingroup tz_gl2_renderer

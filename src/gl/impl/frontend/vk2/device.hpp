@@ -8,7 +8,7 @@
 #include "gl/impl/backend/vk2/swapchain.hpp"
 #include "gl/impl/backend/vk2/image.hpp"
 
-namespace tz::gl2
+namespace tz::gl
 {
 	class DeviceWindowVulkan
 	{

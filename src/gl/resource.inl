@@ -3,7 +3,7 @@
 #include <cstring>
 #include <memory>
 
-namespace tz::gl2
+namespace tz::gl
 {
 	template<tz::TriviallyCopyable T>
 	BufferResource BufferResource::from_one(const T& data, ResourceAccess access)
@@ -37,7 +37,7 @@ namespace tz::gl2
 		using T = std::decay_t<decltype(*std::ranges::begin(data))>;
 		auto size = std::distance(std::ranges::begin(data), std::ranges::end(data));
 		std::span<const std::byte> byte_data = std::as_bytes(std::span<const T>(std::ranges::data(data), size));
-		std::size_t pixel_size = tz::gl2::pixel_size_bytes(format);
+		std::size_t pixel_size = tz::gl::pixel_size_bytes(format);
 		std::vector<std::byte> resource_data(pixel_size * dimensions[0] * dimensions[1]);
 		std::copy(byte_data.begin(), byte_data.end(), resource_data.begin());
 		// TODO: Sanity check? Is it correct to just not give a shit about alignment here?

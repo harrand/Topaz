@@ -5,7 +5,7 @@
 #include <functional>
 #include <type_traits>
 
-namespace tz::gl2
+namespace tz::gl
 {
 	/**
 	 * @ingroup tz_gl2

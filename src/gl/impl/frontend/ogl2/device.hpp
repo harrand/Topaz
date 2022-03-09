@@ -5,7 +5,7 @@
 #include "gl/declare/image_format.hpp"
 #include "gl/impl/frontend/ogl2/renderer.hpp"
 
-namespace tz::gl2
+namespace tz::gl
 {
 	class DeviceOGL
 	{

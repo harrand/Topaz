@@ -7,29 +7,29 @@
 #include ImportedShaderHeader(empty, vertex)
 #include ImportedShaderHeader(empty, fragment)
 
-void empty_renderer(tz::gl2::Device& dev)
+void empty_renderer(tz::gl::Device& dev)
 {
-	tz::gl2::RendererInfo rinfo;
-	rinfo.shader().set_shader(tz::gl2::ShaderStage::Vertex, ImportedShaderSource(empty, vertex));
-	rinfo.shader().set_shader(tz::gl2::ShaderStage::Fragment, ImportedShaderSource(empty, fragment));
-	tz::gl2::Renderer empty = dev.create_renderer(rinfo);
+	tz::gl::RendererInfo rinfo;
+	rinfo.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(empty, vertex));
+	rinfo.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(empty, fragment));
+	tz::gl::Renderer empty = dev.create_renderer(rinfo);
 	empty.render();
 }
 
-void renderer_creation(tz::gl2::Device& dev)
+void renderer_creation(tz::gl::Device& dev)
 {
-	tz::gl2::ImageResource ires0 = tz::gl2::ImageResource::from_uninitialised(tz::gl2::ImageFormat::RGBA32, {1u, 1u});
-	tz::gl2::BufferResource bres0 = tz::gl2::BufferResource::from_one(5.0f);
+	tz::gl::ImageResource ires0 = tz::gl::ImageResource::from_uninitialised(tz::gl::ImageFormat::RGBA32, {1u, 1u});
+	tz::gl::BufferResource bres0 = tz::gl::BufferResource::from_one(5.0f);
 
-	tz::gl2::RendererInfo rinfo1;
-	rinfo1.shader().set_shader(tz::gl2::ShaderStage::Vertex, ImportedShaderSource(empty, vertex));
-	rinfo1.shader().set_shader(tz::gl2::ShaderStage::Fragment, ImportedShaderSource(empty, fragment));
+	tz::gl::RendererInfo rinfo1;
+	rinfo1.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(empty, vertex));
+	rinfo1.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(empty, fragment));
 	rinfo1.add_resource(ires0);
-	tz::gl2::Renderer renderer1 = dev.create_renderer(rinfo1);
+	tz::gl::Renderer renderer1 = dev.create_renderer(rinfo1);
 
-	tz::gl2::RendererInfo rinfo2 = rinfo1;
+	tz::gl::RendererInfo rinfo2 = rinfo1;
 	rinfo2.add_resource(bres0);
-	tz::gl2::Renderer renderer2 = dev.create_renderer(rinfo2);
+	tz::gl::Renderer renderer2 = dev.create_renderer(rinfo2);
 
 	renderer1.render();
 	renderer2.render();
@@ -43,7 +43,7 @@ int main()
 		.app_type = tz::ApplicationType::HiddenWindowApplication
 	});
 	{
-		tz::gl2::Device dev;
+		tz::gl::Device dev;
 		empty_renderer(dev);
 		renderer_creation(dev);
 	}

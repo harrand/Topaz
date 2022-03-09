@@ -20,7 +20,7 @@
 #include "gl/impl/backend/vk2/fence.hpp"
 #include "gl/impl/backend/vk2/swapchain.hpp"
 
-namespace tz::gl2
+namespace tz::gl
 {
 	using namespace tz::gl;
 	/**

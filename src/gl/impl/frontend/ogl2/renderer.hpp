@@ -9,7 +9,7 @@
 #include "gl/impl/backend/ogl2/framebuffer.hpp"
 #include "gl/impl/backend/ogl2/buffer.hpp"
 
-namespace tz::gl2
+namespace tz::gl
 {
 	using namespace tz::gl;
 

@@ -7,7 +7,7 @@
 #include "gl/impl/backend/vk2/image_format.hpp"
 #include <variant>
 
-namespace tz::gl2
+namespace tz::gl
 {
 	DeviceWindowVulkan::DeviceWindowVulkan(const vk2::LogicalDevice& device):
 	DeviceWindowVulkan()

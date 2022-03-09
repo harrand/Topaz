@@ -2,7 +2,7 @@
 #define TOPAZ_GL2_API_SHADER_HPP
 #include <string_view>
 
-namespace tz::gl2
+namespace tz::gl
 {
 	enum class ShaderStage
 	{

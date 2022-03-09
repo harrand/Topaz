@@ -6,7 +6,7 @@
 #elif TZ_OGL
 #include "gl/impl/frontend/ogl2/device.hpp"
 #endif
-namespace tz::gl2
+namespace tz::gl
 {
 	#if TZ_VULKAN
 		using Device = DeviceVulkan;

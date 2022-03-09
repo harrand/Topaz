@@ -8,7 +8,7 @@
 #include "gl/impl/frontend/vk2/component.hpp"
 #include "gl/output.hpp"
 
-namespace tz::gl2
+namespace tz::gl
 {
 	using namespace tz::gl;
 
@@ -866,7 +866,7 @@ namespace tz::gl2
 			return
 			{{
 				.device = &img->vk_get_image().get_device(),
-				.size_bytes = tz::gl2::pixel_size_bytes(img->get_format()) * img->get_dimensions()[0] * img->get_dimensions()[1],
+				.size_bytes = tz::gl::pixel_size_bytes(img->get_format()) * img->get_dimensions()[0] * img->get_dimensions()[1],
 				.usage = {vk2::BufferUsage::TransferSource},
 				.residency = vk2::MemoryResidency::CPU
 			}};

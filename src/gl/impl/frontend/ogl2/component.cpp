@@ -4,7 +4,7 @@
 #include "gl/impl/frontend/ogl2/convert.hpp"
 #include "gl/resource.hpp"
 
-namespace tz::gl2
+namespace tz::gl
 {
 	BufferComponentOGL::BufferComponentOGL(IResource& resource):
 	resource(&resource),

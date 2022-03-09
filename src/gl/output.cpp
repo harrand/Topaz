@@ -1,6 +1,6 @@
 #include "gl/output.hpp"
 
-namespace tz::gl2
+namespace tz::gl
 {
 	ImageOutput::ImageOutput(ImageComponent& component):
 	component(&component){}

@@ -4,7 +4,7 @@
 #include "gl/resource.hpp"
 #include "core/assert.hpp"
 
-namespace tz::gl2
+namespace tz::gl
 {
 	using namespace tz::gl;
 	BufferComponentVulkan::BufferComponentVulkan(IResource& resource, const vk2::LogicalDevice& ldev):

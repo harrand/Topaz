@@ -3,7 +3,7 @@
 #include "gl/api/resource.hpp"
 #include "gl/declare/image_format.hpp"
 
-namespace tz::gl2
+namespace tz::gl
 {
 	class IComponent
 	{

@@ -4,7 +4,7 @@
 #include <string>
 #include <array>
 
-namespace tz::gl2
+namespace tz::gl
 {
 	class ShaderInfo
 	{

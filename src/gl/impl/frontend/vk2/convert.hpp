@@ -4,7 +4,7 @@
 #include "gl/declare/image_format.hpp"
 #include "gl/impl/backend/vk2/image_format.hpp"
 
-namespace tz::gl2
+namespace tz::gl
 {
 	constexpr tz::gl::vk2::ImageFormat to_vk2(ImageFormat fmt);
 	constexpr ImageFormat from_vk2(tz::gl::vk2::ImageFormat fmt);

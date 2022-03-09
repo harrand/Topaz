@@ -6,7 +6,7 @@
 #include "gl/impl/backend/vk2/buffer.hpp"
 #include "gl/impl/backend/vk2/image.hpp"
 
-namespace tz::gl2
+namespace tz::gl
 {
 	using namespace tz::gl;
 	class BufferComponentVulkan : public IComponent

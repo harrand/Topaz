@@ -2,7 +2,7 @@
 #if TZ_OGL
 #include "gl/impl/frontend/ogl2/device.hpp"
 
-namespace tz::gl2
+namespace tz::gl
 {
 
 	RendererOGL DeviceOGL::create_renderer(RendererInfoOGL info)

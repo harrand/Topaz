@@ -7,7 +7,7 @@
 #include <ranges>
 #include <optional>
 
-namespace tz::gl2
+namespace tz::gl
 {
 	class Resource : public IResource
 	{
@@ -89,7 +89,7 @@ namespace tz::gl2
 		 * Create an ImageResource using values existing in memory.
 		 * @param format ImageFormat of the data. It must not be ImageFormat::Undefined.
 		 * @param dimensions {width, height} of the image, in pixels.
-		 * @param byte_data Array of bytes, length equal to `tz::gl2::pixel_size_bytes(format) * dimensions[0] * dimensions[1]`
+		 * @param byte_data Array of bytes, length equal to `tz::gl::pixel_size_bytes(format) * dimensions[0] * dimensions[1]`
 		 * @return ImageResource containing an image using the provided data.
 		 * @pre `byte_data` exactly matches the number of bytes expected in the explanation above. Otherwise, the behaviour is undefined.
 		 */

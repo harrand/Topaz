@@ -3,7 +3,7 @@
 #include <cstdint>
 #include <optional>
 
-namespace tz::gl2
+namespace tz::gl
 {
 	using ImageFormatTuple = std::tuple<ImageFormat, tz::gl::vk2::ImageFormat>;
 	using namespace tz::gl;

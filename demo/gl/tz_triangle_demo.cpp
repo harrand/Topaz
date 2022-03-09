@@ -15,14 +15,14 @@ int main()
 		.name = "tz_triangle_demo",
 	});
 	{
-		tz::gl2::Device dev;
+		tz::gl::Device dev;
 
-		tz::gl2::RendererInfo rinfo;
-		rinfo.shader().set_shader(tz::gl2::ShaderStage::Vertex, ImportedShaderSource(tz_triangle_demo, vertex));
-		rinfo.shader().set_shader(tz::gl2::ShaderStage::Fragment, ImportedShaderSource(tz_triangle_demo, fragment));
-		rinfo.set_options({tz::gl2::RendererOption::NoDepthTesting});
+		tz::gl::RendererInfo rinfo;
+		rinfo.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(tz_triangle_demo, vertex));
+		rinfo.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(tz_triangle_demo, fragment));
+		rinfo.set_options({tz::gl::RendererOption::NoDepthTesting});
 
-		tz::gl2::Renderer renderer = dev.create_renderer(rinfo);
+		tz::gl::Renderer renderer = dev.create_renderer(rinfo);
 
 		while(!tz::window().is_close_requested())
 		{

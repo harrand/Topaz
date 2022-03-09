@@ -7,7 +7,7 @@
 #include "gl/impl/frontend/ogl2/component.hpp"
 #endif
 
-namespace tz::gl2
+namespace tz::gl
 {
 	#if TZ_VULKAN
 		using BufferComponent = BufferComponentVulkan;

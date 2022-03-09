@@ -1,6 +1,6 @@
 #include "gl/impl/frontend/common/renderer.hpp"
 
-namespace tz::gl2
+namespace tz::gl
 {
 
 //--------------------------------------------------------------------------------------------------

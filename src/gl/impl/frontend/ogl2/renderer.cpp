@@ -3,7 +3,7 @@
 #include "gl/impl/frontend/ogl2/renderer.hpp"
 #include "gl/impl/frontend/ogl2/component.hpp"
 
-namespace tz::gl2
+namespace tz::gl
 {
 	ResourceStorage::ResourceStorage(std::span<const IResource* const> resources):
 	AssetStorageCommon<IResource>(resources),

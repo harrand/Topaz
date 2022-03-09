@@ -3,7 +3,7 @@
 #include "gl/api/renderer.hpp"
 #include "gl/impl/frontend/common/shader.hpp"
 
-namespace tz::gl2
+namespace tz::gl
 {
 	/**
 	 * @ingroup tz_gl2_renderer

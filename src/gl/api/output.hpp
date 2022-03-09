@@ -2,7 +2,7 @@
 #define TOPAZ_GL2_API_OUTPUT_HPP
 #include <concepts>
 
-namespace tz::gl2
+namespace tz::gl
 {
 	enum class OutputTarget
 	{

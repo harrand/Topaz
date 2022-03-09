@@ -3,10 +3,10 @@
 #include "core/version.hpp"
 #include <array>
 
-namespace tz::gl2
+namespace tz::gl
 {
 	/**
-	 * @defgroup tz_gl2 Topaz Graphics Library 2 (tz::gl2)
+	 * @defgroup tz_gl2 Topaz Graphics Library 2 (tz::gl)
 	 * Documentation for the Topaz Graphics Library (since 3.1).
 	 */
 
@@ -43,7 +43,7 @@ namespace tz::gl2
 			/**
 			 * @ingroup tz_gl2_graphicsapi_vk
 			 * @defgroup tz_gl2_graphicsapi_vk_frontend Vulkan Frontend
-			 * Documentation for the Vulkan Frontend, which connects the Vulkan Backend to the tz::gl2 API.
+			 * Documentation for the Vulkan Frontend, which connects the Vulkan Backend to the tz::gl API.
 			 */
 
 		/**
@@ -55,7 +55,7 @@ namespace tz::gl2
 			/**
 			 * @ingroup tz_gl2_graphicsapi_ogl
 			 * @defgroup tz_gl2_graphicsapi_ogl_frontend OpenGL Frontend
-			 * Documentation for the OpenGL Frontend, which connects the OpenGL Backend to the tz::gl2 API.
+			 * Documentation for the OpenGL Frontend, which connects the OpenGL Backend to the tz::gl API.
 			 */
 
 	/**

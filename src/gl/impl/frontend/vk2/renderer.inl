@@ -1,4 +1,4 @@
-namespace tz::gl2
+namespace tz::gl
 {
 	void CommandProcessor::do_scratch_operations(tz::Action<vk2::CommandBufferRecording&> auto record_commands)
 	{

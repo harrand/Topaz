@@ -4,7 +4,7 @@
 #include "gl/api/output.hpp"
 #include "gl/component.hpp"
 
-namespace tz::gl2
+namespace tz::gl
 {
 	class ImageOutput : public IOutput
 	{

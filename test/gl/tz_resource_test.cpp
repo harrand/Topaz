@@ -4,14 +4,14 @@
 
 void empty_resources()
 {
-	using namespace tz::gl2;
+	using namespace tz::gl;
 	BufferResource bres = BufferResource::from_one<int>(5);
 	ImageResource ires = ImageResource::from_uninitialised(ImageFormat::RGBA32, {1u, 1u});
 }
 
 void api_correctness()
 {
-	using namespace tz::gl2;
+	using namespace tz::gl;
 	// Static fixed resources.
 	{
 		BufferResource bres0 = BufferResource::from_one<int>(0, ResourceAccess::StaticFixed);
@@ -56,7 +56,7 @@ void api_correctness()
 
 void data_correctness()
 {
-	using namespace tz::gl2;
+	using namespace tz::gl;
 	// Ensure buffer resource has expected size/data when it has one element.
 	BufferResource buf = BufferResource::from_one<float>(420.69f, ResourceAccess::StaticFixed);
 	tz_assert(buf.data().size_bytes() == sizeof(float), "BufferResource (one) had unexpected size. Expected %u, got %zu", sizeof(float), buf.data().size_bytes());

@@ -1,6 +1,6 @@
 #include "gl/impl/frontend/common/shader.hpp"
 
-namespace tz::gl2
+namespace tz::gl
 {
 	ShaderInfo::ShaderInfo()
 	{

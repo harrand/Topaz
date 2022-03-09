@@ -4,7 +4,7 @@
 #include <span>
 #include <memory>
 
-namespace tz::gl2
+namespace tz::gl
 {
 
 	/**

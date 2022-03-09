@@ -3,7 +3,7 @@
 #include "core/assert.hpp"
 #include <climits>
 
-namespace tz::gl2
+namespace tz::gl
 {
 	/**
 	 * @ingroup tz_gl2

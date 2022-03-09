@@ -59,14 +59,14 @@ add_library(topaz
 	src/core/window.cpp
 	src/core/window.hpp
 
-	# tz::gl2 (API)
+	# tz::gl (API)
 	src/gl/api/component.hpp
 	src/gl/api/device.hpp
 	src/gl/api/output.hpp
 	src/gl/api/renderer.hpp
 	src/gl/api/resource.hpp
 
-	# tz::gl2
+	# tz::gl
 	src/gl/component.hpp
 	src/gl/device.hpp
 	src/gl/output.cpp
@@ -77,13 +77,13 @@ add_library(topaz
 	src/gl/resource.inl
 	src/gl/tz_gl.hpp
 
-	# tz::gl2 (Common Impl)
+	# tz::gl (Common Impl)
 	src/gl/impl/frontend/common/renderer.cpp
 	src/gl/impl/frontend/common/renderer.hpp
 	src/gl/impl/frontend/common/shader.cpp
 	src/gl/impl/frontend/common/shader.hpp
 
-	# tz::gl2 (Vulkan Frontend)
+	# tz::gl (Vulkan Frontend)
 	src/gl/impl/frontend/vk2/component.cpp
 	src/gl/impl/frontend/vk2/component.hpp
 	src/gl/impl/frontend/vk2/convert.hpp
@@ -94,7 +94,7 @@ add_library(topaz
 	src/gl/impl/frontend/vk2/renderer.hpp
 	src/gl/impl/frontend/vk2/renderer.inl
 
-	# tz::gl2 (OpenGL Frontend)
+	# tz::gl (OpenGL Frontend)
 	src/gl/impl/frontend/ogl2/component.cpp
 	src/gl/impl/frontend/ogl2/component.hpp
 	src/gl/impl/frontend/ogl2/convert.inl
