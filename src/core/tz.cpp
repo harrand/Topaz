@@ -31,6 +31,9 @@ namespace tz
 			}
 
 			std::string wnd_title = game_info.to_string();
+			#if !TZ_DEBUG
+				wnd_title = game_info.name;
+			#endif
 			wargs.title = wnd_title.c_str();
 			wnd = new tz::Window{wargs, hints};
 		}
