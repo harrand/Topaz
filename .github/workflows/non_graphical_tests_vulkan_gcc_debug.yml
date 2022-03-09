@@ -27,23 +27,7 @@ jobs:
           submodules: recursive
 
       - name: Install Vulkan SDK
-        uses: humbletim/setup-vulkan-sdk@cc516797596f713aee3262a6b5271656a55fa59c
-        with:
-          vulkan-components: prebuilt
-
-      - name: Install glslc
-        run:  |
-          cd ${{ github.workspace }}
-          mkdir glslc_dir
-          cd glslc_dir
-          curl https://storage.googleapis.com/shaderc/artifacts/prod/graphics_shader_compiler/shaderc/linux/continuous_gcc_release/380/20220202-124800/install.tgz > glslc.tgz
-          tar zxvf glslc.tgz
-          cd install/bin
-          mkdir $VULKAN_SDK/Bin
-          cmake -E copy glslc $VULKAN_SDK/Bin
-          echo Copied glslc to $VULKAN_SDK/Bin
-          cd $VULKAN_SDK/Bin
-          ls
+        uses: humbletim/install-vulkan-sdk@v1.1.1
 
       - name: 'Run all non-graphical tests (gcc vulkan-debug)'
         uses: lukka/run-cmake@v3
