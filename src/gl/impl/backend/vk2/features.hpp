@@ -29,23 +29,35 @@ namespace tz::gl::vk2
 
 	namespace detail
 	{
+		constexpr VkPhysicalDeviceDescriptorIndexingFeatures empty_descriptor_indexing_features()
+		{
+			VkPhysicalDeviceDescriptorIndexingFeatures feats{};
+			feats.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES;
+			feats.pNext = nullptr;
+			return feats;
+		}
+	
+		constexpr VkPhysicalDeviceVulkan12Features empty_12_features(VkPhysicalDeviceDescriptorIndexingFeatures& next)
+		{
+			VkPhysicalDeviceVulkan12Features feats{};
+			feats.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_FEATURES;
+			feats.pNext = &next;
+			return feats;
+		}
+
+		constexpr VkPhysicalDeviceFeatures2 empty_features2(VkPhysicalDeviceVulkan12Features& next)
+		{
+			VkPhysicalDeviceFeatures2 feats{};
+			feats.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
+			feats.pNext = &next;
+			return feats;
+		}
+
 		struct DeviceFeatureInfo
 		{
-			VkPhysicalDeviceDescriptorIndexingFeatures descriptor_indexing_features =
-			{
-				.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES,
-				.pNext = nullptr
-			};
-			VkPhysicalDeviceVulkan12Features features12 =
-			{
-				.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_FEATURES,
-				.pNext = &descriptor_indexing_features
-			};
-			VkPhysicalDeviceFeatures2 features =
-			{
-				.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2,
-				.pNext = &features12
-			};
+			VkPhysicalDeviceDescriptorIndexingFeatures descriptor_indexing_features = empty_descriptor_indexing_features();
+			VkPhysicalDeviceVulkan12Features features12 = empty_12_features(descriptor_indexing_features);
+			VkPhysicalDeviceFeatures2 features = empty_features2(features12);
 		};
 	}
 }
