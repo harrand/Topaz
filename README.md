@@ -1,5 +1,8 @@
 # Topaz
 
+![OGL Debug](https://github.com/Harrand/Topaz/actions/workflows/codebuild_opengl_debug.yml/badge.svg)
+![OGL Release](https://github.com/Harrand/Topaz/actions/workflows/codebuild_opengl_release.yml/badge.svg)
+
 ![Documentation](https://github.com/Harrand/Topaz/actions/workflows/documentation.yml/badge.svg)
 
 ## About
