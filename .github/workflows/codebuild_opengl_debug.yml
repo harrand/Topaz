@@ -10,17 +10,12 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  setup_linux:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Ensure Dependencies
-        run:   |
-          sudo apt-get install libxrandr-dev libxinerama-dev x11-xkb-utils libxcursor-dev libxi-dev
-
   gcc_linux:
     runs-on: ubuntu-latest
-    needs: setup_linux
     steps:
+      - name: Install necessary linux dependencies
+        run:   |
+          sudo apt-get install libxrandr-dev libxinerama-dev x11-xkb-utils libxcursor-dev libxi-dev
       - uses: actions/checkout@v2
         with:
           submodules: recursive
@@ -36,8 +31,10 @@ jobs:
 
   clang_linux:
     runs-on: ubuntu-latest
-    needs: setup_linux
     steps:
+      - name: Install necessary linux dependencies
+        run:   |
+          sudo apt-get install libxrandr-dev libxinerama-dev x11-xkb-utils libxcursor-dev libxi-dev
       - uses: actions/checkout@v2
         with:
           submodules: recursive
