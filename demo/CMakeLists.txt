@@ -10,6 +10,12 @@ function(add_demo)
 	add_executable(${ADD_DEMO_TARGET}
 		${ADD_DEMO_SOURCE_FILES}
 	)
+
+	set_target_properties(${ADD_DEMO_TARGET} PROPERTIES
+		CXX_STANDARD 20
+		CXX_STANDARD_REQUIRED ON
+		CXX_EXTENSIONS OFF)
+
 	target_link_libraries(${ADD_DEMO_TARGET} PRIVATE topaz)
 	add_shader(
 		TARGET ${ADD_DEMO_TARGET}

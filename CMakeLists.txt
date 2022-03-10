@@ -4,9 +4,8 @@ include(cmake/setup_configs.cmake)
 file(READ ./version.txt TZ_VERSION)
 # Reconfigure on changes to ./version.txt
 configure_file(./version.txt topaz_version.xml)
-set(CXX_STANDARD_REQUIRED 20)
-set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(TZ_CXX_STANDARD 20)
 
 project(topaz VERSION ${TZ_VERSION})
 
@@ -169,6 +168,11 @@ add_library(topaz
 
 
 message(STATUS "Topaz v${TZ_VERSION}")
+set_target_properties(topaz PROPERTIES
+	CXX_STANDARD ${TZ_CXX_STANDARD}
+	CXX_STANDARD_REQUIRED ON
+	CXX_EXTENSIONS OFF)
+
 
 if(${TOPAZ_OGL})
 	# Vulkan + OGL

@@ -10,6 +10,12 @@ function(add_tz_test)
 	add_executable(${ADD_TZ_TEST_NAME}
 		${ADD_TZ_TEST_SOURCE_FILES}
 	)
+
+	set_target_properties(${ADD_TZ_TEST_NAME} PROPERTIES
+		CXX_STANDARD ${TZ_CXX_STANDARD}
+		CXX_STANDARD_REQUIRED ON
+		CXX_EXTENSIONS OFF)
+
 	target_include_directories(${ADD_TZ_TEST_NAME} PRIVATE ${PROJECT_SOURCE_DIR})
 	target_link_libraries(${ADD_TZ_TEST_NAME} PRIVATE topaz tz_test_harness)
 	add_shader(
