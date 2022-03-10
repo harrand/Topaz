@@ -43,7 +43,7 @@ jobs:
         with:
           cmakeListsOrSettingsJson: "CMakeListsTxtAdvanced"
           cmakeGenerator: UnixMakefiles
-          cmakeAppendedArgs: "-B \"${{ github.workspace }}/../../_temp/build/debug\" -DTOPAZ_DEBUG=1 -DTOPAZ_VULKAN=0 -DTOPAZ_OGL=1 -DCMAKE_CXX_COMPILER=clang++-10 -DCMAKE_C_COMPILER=clang-10"
+          cmakeAppendedArgs: "-B \"${{ github.workspace }}/../../_temp/build/debug\" -DTOPAZ_DEBUG=1 -DTOPAZ_VULKAN=0 -DTOPAZ_OGL=1 -DCMAKE_CXX_COMPILER=clang++-12 -DCMAKE_C_COMPILER=clang-12"
           buildWithCMake: true
           buildWithCMakeArgs: "--target topaz --parallel 4"
           buildDirectory: "${{ github.workspace }}/../../_temp/build/debug"
