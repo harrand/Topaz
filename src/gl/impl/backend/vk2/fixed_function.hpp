@@ -216,7 +216,7 @@ namespace tz::gl::vk2
 
 		tz::BasicList<AttachmentState> attachment_states = {no_blending()};
 		std::optional<VkLogicOp> logical_operator = std::nullopt;
-		tz::Vec4 blend_constants{0.0f, 0.0f, 0.0f, 0.0f};
+		tz::Vec4 blend_constants = tz::Vec4{0.0f, 0.0f, 0.0f, 0.0f};
 		
 		using NativeType = VkPipelineColorBlendStateCreateInfo;
 		NativeType native() const;

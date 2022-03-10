@@ -48,9 +48,9 @@ namespace tz::gl::vk2
 
 	inline VKAPI_ATTR VkBool32 VKAPI_CALL default_debug_callback
 	(
-		VkDebugUtilsMessageSeverityFlagBitsEXT message_severity,
+		[[maybe_unused]] VkDebugUtilsMessageSeverityFlagBitsEXT message_severity,
 		[[maybe_unused]] VkDebugUtilsMessageTypeFlagsEXT message_type,
-		const VkDebugUtilsMessengerCallbackDataEXT* callback_data,
+		[[maybe_unused]] const VkDebugUtilsMessengerCallbackDataEXT* callback_data,
 		[[maybe_unused]] void* user_data
 	)
 	{

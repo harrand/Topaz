@@ -11,7 +11,7 @@ namespace tz::gl::vk2
 		{
 			.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
 			.pNext = nullptr,
-			.flags = info.initially_signalled ? VK_FENCE_CREATE_SIGNALED_BIT : static_cast<VkFenceCreateFlags>(0),
+			.flags = info.initially_signalled ? static_cast<VkFenceCreateFlags>(VK_FENCE_CREATE_SIGNALED_BIT) : static_cast<VkFenceCreateFlags>(0),
 		};
 
 		VkResult res = vkCreateFence(this->get_device().native(), &create, nullptr, &this->fence);

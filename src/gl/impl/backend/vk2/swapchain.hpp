@@ -104,6 +104,11 @@ namespace tz::gl::vk2
 		 */
 		ImageFormat get_image_format() const;
 		/**
+		 * Retrieve the present mode used by the swapchain.
+		 * @return Present mode for the window surface.
+		 */
+		SurfacePresentMode get_present_mode() const;
+		/**
 		 * Retrieve the dimensions of the swapchain images.
 		 * @return Swapchain image dimensions, in pixels.
 		 */

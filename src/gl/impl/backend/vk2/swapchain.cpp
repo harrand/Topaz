@@ -199,6 +199,11 @@ namespace tz::gl::vk2
 		return this->info.image_format;
 	}
 
+	SurfacePresentMode Swapchain::get_present_mode() const
+	{
+		return this->info.present_mode;
+	}
+
 	Vec2ui Swapchain::get_dimensions() const
 	{
 		return this->dimensions;

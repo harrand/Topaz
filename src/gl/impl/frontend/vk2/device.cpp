@@ -29,7 +29,6 @@ namespace tz::gl
 		{
 			// if we're not headless we must have a WindowSurface.
 			tz_assert(instance.has_surface(), "DeviceWindowVulkan provided a VulkanInstance which is not headless, but doesn't have a WindowSurface attached. Please submit a bug report.");
-			const vk2::WindowSurface& surface = instance.get_surface();
 
 			// Create a swapchain.
 			// Ideally we want mailbox present mode, but that may not be available.
@@ -174,6 +173,7 @@ namespace tz::gl
 			.device = &old_swapchain.get_device(),
 			.swapchain_image_count_minimum = static_cast<std::uint32_t>(old_swapchain.get_image_views().size()),
 			.image_format = old_swapchain.get_image_format(),
+			.present_mode = old_swapchain.get_present_mode(),
 			.old_swapchain = &old_swapchain
 		}};
 		std::swap(old_swapchain, new_swapchain);

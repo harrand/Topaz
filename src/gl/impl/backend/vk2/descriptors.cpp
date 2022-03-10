@@ -117,7 +117,7 @@ namespace tz::gl::vk2
 				.pImmutableSamplers = nullptr
 			};
 		}
-		VkDescriptorSetLayoutCreateFlags flags = 0;
+		VkDescriptorSetLayoutCreateFlags layout_flags = 0;
 		// If any binding has the VK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT bit set, flags must include VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT
 		if(std::any_of(binding_flags.begin(), binding_flags.end(),
 		[](const VkDescriptorBindingFlags& flags) -> bool
@@ -125,7 +125,7 @@ namespace tz::gl::vk2
 			return flags & VK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT;
 		}))
 		{
-			flags |= VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT; 
+			layout_flags |= VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT; 
 		}
 
 		// Then fill the VKAPI createinfos.
@@ -142,7 +142,7 @@ namespace tz::gl::vk2
 		{
 			.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
 			.pNext = &binding_create,
-			.flags = flags,
+			.flags = layout_flags,
 			.bindingCount = static_cast<std::uint32_t>(info.binding_count()),
 			.pBindings = bindings.data()
 		};
