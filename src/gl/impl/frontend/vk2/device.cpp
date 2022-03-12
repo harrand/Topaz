@@ -1,5 +1,6 @@
-#include "gl/impl/frontend/vk2/renderer.hpp"
 #if TZ_VULKAN
+#include "core/profiling/zone.hpp"
+#include "gl/impl/frontend/vk2/renderer.hpp"
 #include "gl/impl/frontend/vk2/device.hpp"
 #include "gl/impl/frontend/vk2/convert.hpp"
 #include "gl/impl/backend/vk2/extensions.hpp"
@@ -222,6 +223,7 @@ namespace tz::gl
 	device(vk2::LogicalDevice::null()),
 	window_storage()
 	{
+		TZ_PROFZONE("Vulkan Frontend - DeviceVulkan Create", TZ_PROFCOL_YELLOW);
 		// First, create a LogicalDevice.
 		// TODO: Don't just choose a device at random.
 		vk2::PhysicalDevice pdev = vk2::get_all_devices(instance).front();
@@ -255,6 +257,7 @@ namespace tz::gl
 
 	RendererVulkan DeviceVulkan::create_renderer(const RendererInfoVulkan& info)
 	{
+		TZ_PROFZONE("Vulkan Frontend - Renderer Create (via DeviceVulkan)", TZ_PROFCOL_YELLOW);
 		return {info,
 		{
 			.device = &this->device,

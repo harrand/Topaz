@@ -1,4 +1,5 @@
 #if TZ_VULKAN
+#include "core/profiling/zone.hpp"
 #include "gl/impl/backend/vk2/buffer.hpp"
 
 namespace tz::gl::vk2
@@ -9,6 +10,8 @@ namespace tz::gl::vk2
 	vma_alloc(),
 	vma_alloc_info()
 	{
+		TZ_PROFZONE("Vulkan Backend - Buffer Create", TZ_PROFCOL_RED);
+
 		VkBufferCreateInfo create
 		{
 			.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
@@ -118,6 +121,7 @@ namespace tz::gl::vk2
 
 	void* Buffer::map()
 	{
+		TZ_PROFZONE("Vulkan Backend - Buffer Map", TZ_PROFCOL_RED);
 		// If we're GPU resident we can't be host visible, so early out.
 		if(this->info.residency == MemoryResidency::GPU)
 		{
@@ -139,6 +143,7 @@ namespace tz::gl::vk2
 
 	void Buffer::unmap()
 	{
+		TZ_PROFZONE("Vulkan Backend - Buffer Unmap", TZ_PROFCOL_RED);
 		if(this->vma_alloc_info.pMappedData == nullptr || this->info.residency == MemoryResidency::CPUPersistent)
 		{
 			return;

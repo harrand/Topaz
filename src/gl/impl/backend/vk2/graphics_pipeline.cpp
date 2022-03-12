@@ -1,4 +1,5 @@
 #if TZ_VULKAN
+#include "core/profiling/zone.hpp"
 #include "gl/impl/backend/vk2/graphics_pipeline.hpp"
 #include <algorithm>
 
@@ -21,6 +22,7 @@ namespace tz::gl::vk2
 	pipeline(VK_NULL_HANDLE),
 	info(info)
 	{
+		TZ_PROFZONE("Vulkan Backend - GraphicsPipeline Create", TZ_PROFCOL_RED);
 		tz_assert(info.valid(), "GraphicsPipelineInfo was invalid. Please submit a bug report.");
 		// https://youtu.be/yyLuGNPLRjc
 		// Vertex Input State

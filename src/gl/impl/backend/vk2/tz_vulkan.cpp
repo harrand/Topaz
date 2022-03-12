@@ -1,8 +1,9 @@
 #if TZ_VULKAN
-#include "gl/impl/backend/vk2/tz_vulkan.hpp"
-#include "gl/impl/backend/vk2/extensions.hpp"
 #include "core/tz.hpp"
 #include "core/report.hpp"
+#include "core/profiling/zone.hpp"
+#include "gl/impl/backend/vk2/tz_vulkan.hpp"
+#include "gl/impl/backend/vk2/extensions.hpp"
 #include <algorithm>
 #include <utility>
 #include <cstring>
@@ -13,6 +14,7 @@ namespace tz::gl::vk2
 
 	void initialise(tz::GameInfo game_info, tz::ApplicationType app_type)
 	{
+		TZ_PROFZONE("Vulkan Backend - Backend Initialise", TZ_PROFCOL_RED);
 		tz_assert(inst == nullptr, "Vulkan Backend already initialised");
 		inst = new VulkanInstance
 		{{

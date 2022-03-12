@@ -1,5 +1,6 @@
-#include "gl/impl/backend/vk2/sampler.hpp"
 #if TZ_VULKAN
+#include "core/profiling/zone.hpp"
+#include "gl/impl/backend/vk2/sampler.hpp"
 #include "gl/impl/backend/vk2/descriptors.hpp"
 #include <numeric>
 
@@ -96,6 +97,7 @@ namespace tz::gl::vk2
 	descriptor_layout(VK_NULL_HANDLE),
 	info(info)
 	{
+		TZ_PROFZONE("Vulkan Backend - Descriptor Layout Create", TZ_PROFCOL_RED);
 		// We need a valid LogicalDevice. The info should have that.
 		tz_assert(info.has_valid_device(), "DescriptorLayoutInfo did not have valid LogicalDevice. Please submit a bug report");
 		tz_assert(info.device_supports_flags(), "DescriptorLayoutInfo contained bindings with flags which are not supported by the LogicalDevice. Please submit a bug report.");
@@ -380,6 +382,7 @@ namespace tz::gl::vk2
 	info(info),
 	allocated_set_natives()
 	{
+		TZ_PROFZONE("Vulkan Backend - DescriptorPool Create", TZ_PROFCOL_RED);
 		tz_assert(this->info.has_valid_device(), "DescriptorPoolInfo did not have valid LogicalDevice. Please submit a bug report.");
 
 		VkDescriptorPoolCreateFlags flags = 0;
@@ -471,6 +474,7 @@ namespace tz::gl::vk2
 
 	DescriptorPool::AllocationResult DescriptorPool::allocate_sets(const DescriptorPool::Allocation& alloc)
 	{
+		TZ_PROFZONE("Vulkan Backend - DescriptorPool Set Allocate", TZ_PROFCOL_RED);
 		// One or more of our set layouts might contain a binding that is variable-size.
 		// Initially we will set the variable count to the max (which is stored in the set layout). Otherwise we will set it to zero.
 		std::vector<std::uint32_t> variable_counts(alloc.set_layouts.length());
@@ -568,6 +572,7 @@ namespace tz::gl::vk2
 
 	void DescriptorPool::update_sets(const DescriptorSet::WriteList& writes)
 	{
+		TZ_PROFZONE("Vulkan Backend - Descriptor Pool Sets Edit", TZ_PROFCOL_RED);
 		std::vector<VkWriteDescriptorSet> write_natives(writes.length());
 
 		// Firstly let's find out how many buffers/images we're actually going to need to write to.

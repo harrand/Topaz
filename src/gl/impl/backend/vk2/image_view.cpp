@@ -1,4 +1,5 @@
 #if TZ_VULKAN
+#include "core/profiling/zone.hpp"
 #include "gl/impl/backend/vk2/image_view.hpp"
 #include "gl/impl/backend/vk2/logical_device.hpp"
 
@@ -8,6 +9,7 @@ namespace tz::gl::vk2
 	image_view(VK_NULL_HANDLE),
 	info(info)
 	{
+		TZ_PROFZONE("Vulkan Backend - ImageView Create", TZ_PROFCOL_RED);
 		tz_assert(this->info.image != nullptr && !this->info.image->is_null(), "ImageViewInfo refers to nullptr or null Image");
 		VkImageViewCreateInfo create{};
 		create.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO; 

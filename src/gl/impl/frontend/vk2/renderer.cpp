@@ -1,4 +1,5 @@
 #if TZ_VULKAN
+#include "core/profiling/zone.hpp"
 #include "gl/declare/image_format.hpp"
 #include "gl/impl/backend/vk2/fixed_function.hpp"
 #include "gl/impl/backend/vk2/gpu_mem.hpp"
@@ -31,6 +32,7 @@ namespace tz::gl
 	descriptor_pool(vk2::DescriptorPool::null()),
 	descriptors()
 	{
+		TZ_PROFZONE("Vulkan Frontend - RendererVulkan ResourceStorage Create", TZ_PROFCOL_YELLOW);
 		std::vector<bool> buffer_id_to_variable_access;
 		for(std::size_t i = 0; i < this->count(); i++)
 		{
@@ -180,6 +182,7 @@ namespace tz::gl
 
 	void ResourceStorage::sync_descriptors(bool write_everything)
 	{
+		TZ_PROFZONE("Vulkan Frontend - RendererVulkan ResourceStorage Descriptor Sync", TZ_PROFCOL_YELLOW);
 		std::vector<vk2::Buffer*> buffers;
 		for(auto& component_ptr : this->components)
 		{
@@ -240,6 +243,7 @@ namespace tz::gl
 	render_pass(vk2::RenderPass::null()),
 	output_framebuffers()
 	{
+		TZ_PROFZONE("Vulkan Frontend - RendererVulkan OutputManager Create", TZ_PROFCOL_YELLOW);
 		this->create_output_resources(this->window_buffer_images, create_depth_images);
 	}
 
@@ -293,6 +297,7 @@ namespace tz::gl
 
 	void OutputManager::create_output_resources(std::span<vk2::Image> window_buffer_images, bool create_depth_images)
 	{
+		TZ_PROFZONE("Vulkan Frontend - RendererVulkan OutputManager (Output Resources Creation)", TZ_PROFCOL_YELLOW);
 		this->window_buffer_images = window_buffer_images;
 		this->window_buffer_depth_images.clear();
 		this->output_imageviews.clear();
@@ -468,6 +473,7 @@ namespace tz::gl
 
 	void GraphicsPipelineManager::recreate(const vk2::RenderPass& new_render_pass, tz::Vec2ui new_viewport_dimensions)
 	{
+		TZ_PROFZONE("Vulkan Frontend - RendererVulkan GraphicsPipelineManager Recreate", TZ_PROFCOL_YELLOW);
 		this->graphics_pipeline =
 		{{
 			.shaders = this->shader.native_data(),
@@ -488,6 +494,7 @@ namespace tz::gl
 
 	vk2::Shader GraphicsPipelineManager::make_shader(const vk2::LogicalDevice& ldev, const ShaderInfo& sinfo) const
 	{
+		TZ_PROFZONE("Vulkan Frontend - RendererVulkan GraphicsPipelineManager (Shader Create)", TZ_PROFCOL_YELLOW);
 		std::vector<char> vtx_src, frg_src, cmp_src;
 		tz::BasicList<vk2::ShaderModuleInfo> modules;
 		if(sinfo.has_shader(ShaderStage::Compute))
@@ -602,6 +609,7 @@ namespace tz::gl
 
 	CommandProcessor::RenderWorkSubmitResult CommandProcessor::do_render_work(vk2::Swapchain* maybe_swapchain)
 	{
+		TZ_PROFZONE("Vulkan Frontend - RendererVulkan CommandProcessor (Do Render Work)", TZ_PROFCOL_YELLOW);
 		if(this->requires_present)
 		{
 			tz_assert(maybe_swapchain != nullptr, "Trying to do render work with presentation, but no Swapchain provided. Please submit a bug report.");
@@ -657,6 +665,7 @@ namespace tz::gl
 
 	void CommandProcessor::wait_pending_commands_complete()
 	{
+		TZ_PROFZONE("Vulkan Frontend - RendererVulkan CommandProcessor (Waiting on commands to complete)", TZ_PROFCOL_YELLOW);
 		for(const vk2::Fence& fence : this->in_flight_fences)
 		{
 			fence.wait_until_signalled();
@@ -675,6 +684,7 @@ namespace tz::gl
 	options(info.get_options()),
 	clear_colour(info.get_clear_colour())
 	{
+		TZ_PROFZONE("Vulkan Frontend - RendererVulkan Create", TZ_PROFCOL_YELLOW);
 		// If we're not headless, we should register a callback for our lifetime.
 		if(info.get_output() == nullptr || info.get_output()->get_target() == OutputTarget::Window)
 		{
@@ -728,6 +738,7 @@ namespace tz::gl
 
 	void RendererVulkan::render()
 	{
+		TZ_PROFZONE("Vulkan Frontend - RendererVulkan Render", TZ_PROFCOL_YELLOW);
 		CommandProcessor::RenderWorkSubmitResult result = this->command.do_render_work(this->maybe_swapchain);
 		switch(result.present)
 		{
@@ -756,6 +767,7 @@ namespace tz::gl
 
 	void RendererVulkan::edit(const RendererEditRequest& edit_request)
 	{
+		TZ_PROFZONE("Vulkan Frontend - RendererVulkan Edit", TZ_PROFCOL_YELLOW);
 		if(edit_request.component_edits.empty())
 		{
 			return;
@@ -822,6 +834,7 @@ namespace tz::gl
 
 	void RendererVulkan::setup_static_resources()
 	{
+		TZ_PROFZONE("Vulkan Frontend - RendererVulkan Setup Static Resources", TZ_PROFCOL_YELLOW);
 		// Create staging buffers for each buffer and texture resource, and then fill the data with the resource data.
 		std::vector<BufferComponentVulkan*> buffer_components;
 		std::vector<ImageComponentVulkan*> image_components;
@@ -948,6 +961,7 @@ namespace tz::gl
 
 	void RendererVulkan::setup_render_commands()
 	{
+		TZ_PROFZONE("Vulkan Frontend - RendererVulkan Setup Render Commands", TZ_PROFCOL_YELLOW);
 		this->command.set_rendering_commands([this](vk2::CommandBufferRecording& recording, std::size_t framebuffer_id)
 		{
 			tz_assert(framebuffer_id < this->output.get_output_framebuffers().size(), "Attempted to retrieve output framebuffer at index %zu, but there are only %zu framebuffers available. Please submit a bug report.", framebuffer_id, this->output.get_output_framebuffers().size());
@@ -983,6 +997,7 @@ namespace tz::gl
 
 	void RendererVulkan::handle_resize(const RendererResizeInfoVulkan& resize_info)
 	{
+		TZ_PROFZONE("Vulkan Frontend - RendererVulkan Handle Resize", TZ_PROFCOL_YELLOW);
 		// Context: The top-level gl::Device has just been told by the window that it has been resized, and has recreated a new swapchain. Our old pointer to the swapchain `maybe_swapchain` correctly points to the new swapchain already, so we just have to recreate all the new state.
 		//tz_error("Sorry. Window resizing is not yet implemented for this vulkan frontend. TODO: Implement. %d, %d", resize_info.new_dimensions[0], resize_info.new_dimensions[1]);
 		this->command.wait_pending_commands_complete();

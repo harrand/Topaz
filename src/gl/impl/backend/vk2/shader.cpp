@@ -1,4 +1,5 @@
 #if TZ_VULKAN
+#include "core/profiling/zone.hpp"
 #include "gl/impl/backend/vk2/shader.hpp"
 
 namespace tz::gl::vk2
@@ -8,6 +9,7 @@ namespace tz::gl::vk2
 	type(info.type),
 	shader_module(VK_NULL_HANDLE)
 	{
+		TZ_PROFZONE("Vulkan Backend - ShaderModule Create (Compile)", TZ_PROFCOL_RED);
 		tz_assert(this->device != nullptr && !this->device->is_null(), "ShaderModuleInfo has nullptr or null LogicalDevice");
 
 		VkShaderModuleCreateInfo create{};

@@ -1,4 +1,5 @@
 #if TZ_VULKAN
+#include "core/profiling/zone.hpp"
 #include "gl/impl/backend/vk2/render_pass.hpp"
 #include <numeric>
 
@@ -57,6 +58,7 @@ namespace tz::gl::vk2
 	pass(VK_NULL_HANDLE),
 	info(info)
 	{
+		TZ_PROFZONE("Vulkan Backend - RenderPass Create", TZ_PROFCOL_RED);
 		tz_assert(this->info.has_valid_device(), "RenderPassInfo contained nullptr or null LogicalDevice. Please submit a bug report.");
 		tz_assert(this->info.values_make_sense(), "RenderPassInfo contained values which didn't pass sanity checks. This will most likely crash horribly. Please submit a bug report. Most likely candidate is one of the attachment references contains an attachment id out of range.");
 		std::vector<VkAttachmentDescription2> attachment_natives(info.attachments.length());

@@ -1,4 +1,5 @@
 #if TZ_VULKAN
+#include "core/profiling/zone.hpp"
 #include "gl/impl/backend/vk2/image.hpp"
 #include "gl/impl/backend/vk2/swapchain.hpp"
 #include "gl/impl/backend/vk2/logical_device.hpp"
@@ -14,6 +15,7 @@ namespace tz::gl::vk2
 	destroy_on_destructor(false),
 	vma_alloc(std::nullopt)
 	{
+		TZ_PROFZONE("Vulkan Backend - Swapchain Image Create", TZ_PROFCOL_RED);
 		tz_assert(sinfo.swapchain != nullptr && !sinfo.swapchain->is_null(), "SwapchainImageInfo had nullptr or null Swapchain");
 		std::uint32_t real_swapchain_image_count;
 		std::vector<VkImage> swapchain_image_natives;
@@ -42,6 +44,7 @@ namespace tz::gl::vk2
 	destroy_on_destructor(true),
 	vma_alloc(VmaAllocation{})
 	{
+		TZ_PROFZONE("Vulkan Backend - Image Create", TZ_PROFCOL_RED);
 		VkImageCreateInfo create
 		{
 			.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,

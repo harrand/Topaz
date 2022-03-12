@@ -1,4 +1,5 @@
 #if TZ_VULKAN
+#include "core/profiling/zone.hpp"
 #include "gl/impl/backend/vk2/pipeline_layout.hpp"
 
 namespace tz::gl::vk2
@@ -7,6 +8,7 @@ namespace tz::gl::vk2
 	pipeline_layout(VK_NULL_HANDLE),
 	logical_device(info.logical_device)
 	{
+		TZ_PROFZONE("Vulkan Backend - PipelineLayout Create", TZ_PROFCOL_RED);
 		tz_assert(this->logical_device != nullptr && !this->logical_device->is_null(), "PipelineLayoutInfo contained nullptr or null LogicalDevice. Please submit a bug report.");
 		VkPipelineLayoutCreateInfo create{};
 		create.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO; 

@@ -1,4 +1,5 @@
 #if TZ_VULKAN
+#include "core/profiling/zone.hpp"
 #include "gl/impl/backend/vk2/command.hpp"
 #include "gl/impl/backend/vk2/hardware/queue.hpp"
 #include "gl/impl/backend/vk2/semaphore.hpp"
@@ -33,6 +34,7 @@ namespace tz::gl::vk2::hardware
 
 	void Queue::submit(SubmitInfo submit_info)
 	{
+		TZ_PROFZONE("Vulkan Backend - Queue Submit", TZ_PROFCOL_RED);
 		if(submit_info.execution_complete_fence != nullptr)
 		{
 			tz_assert(!submit_info.execution_complete_fence->is_signalled(), "SubmitInfo contained Fence to signal on execution complete, but it was already signalled.");
@@ -97,6 +99,7 @@ namespace tz::gl::vk2::hardware
 
 	Queue::PresentResult Queue::present(Queue::PresentInfo present_info)
 	{
+		TZ_PROFZONE("Vulkan Backend - Queue Present", TZ_PROFCOL_RED);
 		std::vector<BinarySemaphore::NativeType> wait_sem_natives(present_info.wait_semaphores.length());
 		
 		std::transform(present_info.wait_semaphores.begin(), present_info.wait_semaphores.end(), wait_sem_natives.begin(), [](const BinarySemaphore* sem){return sem->native();});
@@ -161,6 +164,7 @@ namespace tz::gl::vk2::hardware
 
 	void Queue::execute_cpu_side_command_buffer(const CommandBuffer& command_buffer) const
 	{
+		TZ_PROFZONE("Vulkan Backend - Command Buffer CPU Execute", TZ_PROFCOL_RED);
 		for(const VulkanCommand::Variant& cmd : command_buffer.get_recorded_commands())
 		{
 			std::visit([](auto&& val)
@@ -168,6 +172,7 @@ namespace tz::gl::vk2::hardware
 				using T = std::decay_t<decltype(val)>;
 				if constexpr(std::is_same_v<T, VulkanCommand::BeginRenderPass>)
 				{
+					TZ_PROFZONE("Vulkan Backend - RenderPass Begin CPU Execute", TZ_PROFCOL_RED);
 					// Change image's layout CPU-side.
 					Framebuffer& framebuffer = *val.framebuffer;
 					const RenderPass& pass = framebuffer.get_pass();
@@ -180,6 +185,7 @@ namespace tz::gl::vk2::hardware
 				}
 				if constexpr(std::is_same_v<T, VulkanCommand::EndRenderPass>)
 				{
+					TZ_PROFZONE("Vulkan Backend - RenderPass End CPU Execute", TZ_PROFCOL_RED);
 					// Change image's layout CPU-side.
 					Framebuffer& framebuffer = *val.framebuffer;
 					const RenderPass& pass = framebuffer.get_pass();
@@ -192,6 +198,7 @@ namespace tz::gl::vk2::hardware
 				}
 				else if constexpr(std::is_same_v<T, VulkanCommand::TransitionImageLayout>)
 				{
+					TZ_PROFZONE("Vulkan Backend - TransitionImageLayout CPU Execute", TZ_PROFCOL_RED);
 					// We probably need to change the image's layout CPU-side.
 					Image& img = *val.image;
 					img.set_layout(val.target_layout);
