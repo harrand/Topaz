@@ -15,7 +15,7 @@ jobs:
     steps:
       - name: Install necessary linux dependencies
         run:   |
-          sudo apt-get install libxrandr-dev libxinerama-dev x11-xkb-utils libxcursor-dev libxi-dev xvfb
+          sudo apt-get install libxrandr-dev libxinerama-dev x11-xkb-utils libxcursor-dev libxi-dev xvfb mesa-utils
       - uses: actions/checkout@v2
         with:
           submodules: recursive
@@ -58,7 +58,7 @@ jobs:
     steps:
       - name: Install necessary linux dependencies
         run:   |
-          sudo apt-get install libxrandr-dev libxinerama-dev x11-xkb-utils libxcursor-dev libxi-dev xvfb
+          sudo apt-get install libxrandr-dev libxinerama-dev x11-xkb-utils libxcursor-dev libxi-dev xvfb mesa-utils
       - uses: actions/checkout@v2
         with:
           submodules: recursive
