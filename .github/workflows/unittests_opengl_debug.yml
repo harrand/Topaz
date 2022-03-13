@@ -28,6 +28,14 @@ jobs:
           buildWithCMake: true
           buildWithCMakeArgs: "--target tztest_build --parallel 4"
           buildDirectory: "${{ github.workspace }}/../../_temp/build/debug"
+      - name: 'Check OpenGL Support'
+        run:  |
+          cd ${{ github.workspace }}/../../_temp/build/debug
+          echo glxinfo results:
+          glxinfo
+          echo Retrieving OpenGL supported version...
+          glxinfo | grep -i "opengl core profile version" | sed 's/OpenGL core profile version string: //' | sed 's/ (Core Profile).*//' > ogl_version.txt
+          cat ogl_version.txt
       - name: 'Collaborate unit test executables'
         run:  |
           cd ${{ github.workspace }}/../../_temp/build/debug
@@ -63,6 +71,14 @@ jobs:
           buildWithCMake: true
           buildWithCMakeArgs: "--target tztest_build --parallel 4"
           buildDirectory: "${{ github.workspace }}/../../_temp/build/debug"
+      - name: 'Check OpenGL Support'
+        run:  |
+          cd ${{ github.workspace }}/../../_temp/build/debug
+          echo glxinfo results:
+          glxinfo
+          echo Retrieving OpenGL supported version...
+          glxinfo | grep -i "opengl core profile version" | sed 's/OpenGL core profile version string: //' | sed 's/ (Core Profile).*//' > ogl_version.txt
+          cat ogl_version.txt
       - name: 'Collaborate unit test executables'
         run:  |
           cd ${{ github.workspace }}/../../_temp/build/debug
