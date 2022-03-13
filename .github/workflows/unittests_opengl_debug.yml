@@ -99,8 +99,11 @@ jobs:
           submodules: recursive
       - name: 'Download mesa for windows'
         run:  |
-          cd ${{ github.workspace }}/mesa
+          cd ${{ github.workspace }}
+          mkdir mesa
+          cd mesa
           curl --location --request GET https://downloads.fdossena.com/geth.php?r=mesa64-latest -o mesa_download.7z
+          mkdir mesa_download
           7z x mesa_download.7z mesa_download
           cd mesa_download
           dir
