@@ -32,6 +32,37 @@ namespace tz
 		#endif
 
 		this->wnd = glfwCreateWindow(args.width, args.height, args.title, nullptr, nullptr);
+		if(TZ_DEBUG && this->wnd == nullptr)
+		{
+			// We failed somehow.	
+			switch(glfwGetError(nullptr))
+			{
+				case GLFW_NOT_INITIALIZED:
+					tz_error("Failed to create window because glfw was not initialised correctly.");
+				break;
+				case GLFW_INVALID_ENUM:
+					tz_error("Failed to create window due to invalid glfw enum.");
+				break;
+				case GLFW_INVALID_VALUE:
+					tz_error("Failed to create window due to invalid glfw value.");
+				break;
+				case GLFW_API_UNAVAILABLE:
+					tz_error("Failed to create window because GLFW could not find support for the requested API on the system.");
+				break;
+				case GLFW_VERSION_UNAVAILABLE:
+					tz_error("Failed to create window because the requested OpenGL version (4.6) is not available on this machine. If this is a vulkan build, please submit a bug report.");
+				break;
+				case GLFW_FORMAT_UNAVAILABLE:
+					tz_error("Failed to create window because the requested pixel format is not supported.");
+				break;
+				case GLFW_PLATFORM_ERROR:
+					tz_error("Failed to create window because a miscellaneous platform-specific error occurred. Either a bug/error in the config of GLFW has taken place, or the machine's OS/drivers are misconfigured, or there was a lack of required resources. Please submit a bug report.");
+				break;
+				default:
+					tz_error("Failed to create window, but for unknown reason. GLFW has returned an undocumented error code for glfwCreateWindow, so something is very wrong. Please submit a bug report. Error code %d", glfwGetError(nullptr));
+				break;
+			}
+		}
 		glfwMakeContextCurrent(this->wnd);
 		#if TZ_OGL
 			// Vulkan isn't fps-capped -- neither should opengl be.
