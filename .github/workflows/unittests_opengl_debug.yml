@@ -1,4 +1,4 @@
-name: "Unit Tests (OpenGL Debug)"
+name: "Unit Test Runs (OpenGL Debug)"
 
 # Controls when the action will run. 
 on:
