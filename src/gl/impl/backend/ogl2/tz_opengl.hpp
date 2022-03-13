@@ -52,7 +52,7 @@ namespace tz::gl::ogl2
 	 */
 	bool is_initialised();
 
-	constexpr tz::Version ogl_version{4, 6, 0};
+	constexpr tz::Version ogl_version{4, 5, 0};
 	using OGLString = std::basic_string<GLchar>;
 	using OGLStringView = std::basic_string_view<GLchar>;
 }

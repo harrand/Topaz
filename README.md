@@ -61,4 +61,4 @@ The following requirements apply for all possible build configurations:
 * Your graphics card must support Vulkan 1.2. [Check your graphics card here](https://vulkan.gpuinfo.org/).
 #### OpenGL Build
 * Windows or Linux.
-* Your graphics card must support OpenGL 4.6. [Check your graphics card here](https://opengl.gpuinfo.org/).
+* Your graphics card must support OpenGL 4.5. [Check your graphics card here](https://opengl.gpuinfo.org/).
