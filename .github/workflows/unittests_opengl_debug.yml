@@ -15,6 +15,7 @@ jobs:
     steps:
       - name: Install necessary linux dependencies
         run:   |
+          sudo apt-get update
           sudo apt-get install libxrandr-dev libxinerama-dev x11-xkb-utils libxcursor-dev libxi-dev xvfb mesa-utils gdb
       - uses: actions/checkout@v2
         with:
@@ -56,6 +57,7 @@ jobs:
     steps:
       - name: Install necessary linux dependencies
         run:   |
+          sudo apt-get update
           sudo apt-get install libxrandr-dev libxinerama-dev x11-xkb-utils libxcursor-dev libxi-dev xvfb mesa-utils gdb
       - uses: actions/checkout@v2
         with:
