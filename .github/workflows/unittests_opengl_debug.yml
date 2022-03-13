@@ -19,15 +19,23 @@ jobs:
       - uses: actions/checkout@v2
         with:
           submodules: recursive
-      - name: 'Run Unit Tests (ogl_gcc_debug)'
+      - name: 'Build Unit Tests (ogl_gcc_debug)'
         uses: lukka/run-cmake@v3
         with:
           cmakeListsOrSettingsJson: "CMakeListsTxtAdvanced"
           cmakeGenerator: UnixMakefiles
           cmakeAppendedArgs: "-B \"${{ github.workspace }}/../../_temp/build/debug\" -DTOPAZ_DEBUG=1 -DTOPAZ_VULKAN=0 -DTOPAZ_OGL=1 -DCMAKE_CXX_COMPILER=g++-10"
           buildWithCMake: true
-          buildWithCMakeArgs: "--target tztest --parallel 4"
+          buildWithCMakeArgs: "--target tztest_build --parallel 4"
           buildDirectory: "${{ github.workspace }}/../../_temp/build/debug"
+      - name: 'Run Unit Tests via xvfb'
+        run:  |
+          ctest -V | grep "Test command" | sed 's/[0-9]\+\ : Test command://' > unit_test_executables.txt
+          echo Unit Test Executables:
+          cat unit_test_executables.txt
+          echo Running...
+          cat unit_test_executables.txt | while read i do i done
+
 
   clang_linux:
     runs-on: ubuntu-latest
@@ -38,15 +46,22 @@ jobs:
       - uses: actions/checkout@v2
         with:
           submodules: recursive
-      - name: 'Run Unit Tests (ogl_clang_debug)'
+      - name: 'Build Unit Tests (ogl_clang_debug)'
         uses: lukka/run-cmake@v3
         with:
           cmakeListsOrSettingsJson: "CMakeListsTxtAdvanced"
           cmakeGenerator: UnixMakefiles
           cmakeAppendedArgs: "-B \"${{ github.workspace }}/../../_temp/build/debug\" -DTOPAZ_DEBUG=1 -DTOPAZ_VULKAN=0 -DTOPAZ_OGL=1 -DCMAKE_CXX_COMPILER=clang++-12 -DCMAKE_C_COMPILER=clang-12"
           buildWithCMake: true
-          buildWithCMakeArgs: "--target tztest --parallel 4"
+          buildWithCMakeArgs: "--target tztest_build --parallel 4"
           buildDirectory: "${{ github.workspace }}/../../_temp/build/debug"
+      - name: 'Run Unit Tests via xvfb'
+        run:  |
+          ctest -V | grep "Test command" | sed 's/[0-9]\+\ : Test command://' > unit_test_executables.txt
+          echo Unit Test Executables:
+          cat unit_test_executables.txt
+          echo Running...
+          cat unit_test_executables.txt | while read i do i done
 
   msvc_windows:
     runs-on: windows-2022

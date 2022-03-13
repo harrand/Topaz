@@ -25,6 +25,7 @@ function(add_tz_test)
 	add_test(NAME ${ADD_TZ_TEST_NAME}
 		COMMAND ${ADD_TZ_TEST_NAME}
 		WORKING_DIRECTORY ${PROJECT_BINARY_DIR})
+	add_dependencies(tztest_build ${ADD_TZ_TEST_NAME})
 	add_dependencies(tztest ${ADD_TZ_TEST_NAME})
 	add_dependencies(tztest_nographics ${ADD_TZ_TEST_NAME})
 	if(${ADD_TZ_TEST_GRAPHICAL})
@@ -35,6 +36,7 @@ function(add_tz_test)
 	endif()
 endfunction()
 
+add_custom_target(tztest_build)
 add_custom_target(tztest COMMAND "${CMAKE_CTEST_COMMAND}" --output-on-failure -C Debug
 						WORKING_DIRECTORY ${PROJECT_BINARY_DIR})
 
