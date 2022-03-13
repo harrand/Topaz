@@ -36,11 +36,12 @@ jobs:
           cat unit_test_executables.txt
       - name: 'Run Unit Tests via xvfb'
         run:  |
+          cd ${{ github.workspace }}/../../_temp/build/debug
           echo Running all unit tests
           for i in $(cat unit_test_executables.txt)
           do
             echo Running "$i"
-            ./$i
+            ~/$i
           done
 
 
@@ -70,11 +71,12 @@ jobs:
           cat unit_test_executables.txt
       - name: 'Run Unit Tests via xvfb'
         run:  |
+          cd ${{ github.workspace }}/../../_temp/build/debug
           echo Running all unit tests
           for i in $(cat unit_test_executables.txt)
           do
             echo Running "$i"
-            ./$i
+            ~/$i
           done
 
   msvc_windows:
