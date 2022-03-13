@@ -34,7 +34,7 @@ jobs:
           echo glxinfo results:
           glxinfo
           echo Retrieving OpenGL supported version...
-          glxinfo | grep -i "opengl core profile version" | sed 's/OpenGL core profile version string: //' | sed 's/ (Core Profile).*//' > ogl_version.txt
+          xvfb-run -a -s '-screen 0 1024x768x24' glxinfo | grep -i "opengl core profile version" | sed 's/OpenGL core profile version string: //' | sed 's/ (Core Profile).*//' > ogl_version.txt
           cat ogl_version.txt
       - name: 'Collaborate unit test executables'
         run:  |
@@ -77,7 +77,7 @@ jobs:
           echo glxinfo results:
           glxinfo
           echo Retrieving OpenGL supported version...
-          glxinfo | grep -i "opengl core profile version" | sed 's/OpenGL core profile version string: //' | sed 's/ (Core Profile).*//' > ogl_version.txt
+          xvfb-run -a -s '-screen 0 1024x768x24' glxinfo | grep -i "opengl core profile version" | sed 's/OpenGL core profile version string: //' | sed 's/ (Core Profile).*//' > ogl_version.txt
           cat ogl_version.txt
       - name: 'Collaborate unit test executables'
         run:  |
