@@ -28,14 +28,17 @@ jobs:
           buildWithCMake: true
           buildWithCMakeArgs: "--target tztest_build --parallel 4"
           buildDirectory: "${{ github.workspace }}/../../_temp/build/debug"
-      - name: 'Run Unit Tests via xvfb'
+      - name: 'Collaborate unit test executables'
         run:  |
           cd ${{ github.workspace }}/../../_temp/build/debug
           ctest -V | grep "Test command" | sed 's/[0-9]\+\ : Test command://' > unit_test_executables.txt
           echo Unit Test Executables:
           cat unit_test_executables.txt
-          echo Running...
-          cat unit_test_executables.txt | while read i do i done
+      - name: 'Run Unit Tests via xvfb'
+        run:  |
+          cd ${{ github.workspace }}/../../_temp/build/debug
+          echo Running all unit tests
+          cat unit_test_executables.txt | while read i do ./i done
 
 
   clang_linux:
@@ -56,14 +59,17 @@ jobs:
           buildWithCMake: true
           buildWithCMakeArgs: "--target tztest_build --parallel 4"
           buildDirectory: "${{ github.workspace }}/../../_temp/build/debug"
-      - name: 'Run Unit Tests via xvfb'
+      - name: 'Collaborate unit test executables'
         run:  |
           cd ${{ github.workspace }}/../../_temp/build/debug
           ctest -V | grep "Test command" | sed 's/[0-9]\+\ : Test command://' > unit_test_executables.txt
           echo Unit Test Executables:
           cat unit_test_executables.txt
-          echo Running...
-          cat unit_test_executables.txt | while read i do i done
+      - name: 'Run Unit Tests via xvfb'
+        run:  |
+          cd ${{ github.workspace }}/../../_temp/build/debug
+          echo Running all unit tests
+          cat unit_test_executables.txt | while read i do ./i done
 
   msvc_windows:
     runs-on: windows-2022
