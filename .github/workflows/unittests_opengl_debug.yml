@@ -38,7 +38,11 @@ jobs:
         run:  |
           cd ${{ github.workspace }}/../../_temp/build/debug
           echo Running all unit tests
-          cat unit_test_executables.txt | while read i do ./i done
+          for i in $(cat unit_test_executables.txt)
+          do
+            echo Running "$i"
+            ./$i
+          done
 
 
   clang_linux:
@@ -69,7 +73,11 @@ jobs:
         run:  |
           cd ${{ github.workspace }}/../../_temp/build/debug
           echo Running all unit tests
-          cat unit_test_executables.txt | while read i do ./i done
+          for i in $(cat unit_test_executables.txt)
+          do
+            echo Running "$i"
+            ./$i
+          done
 
   msvc_windows:
     runs-on: windows-2022
