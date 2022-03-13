@@ -21,7 +21,8 @@ namespace tz
 	{   
 		if(app_type == ApplicationType::WindowApplication || app_type == ApplicationType::HiddenWindowApplication)
 		{
-			glfwInit();
+			[[maybe_unused]] int glfw_ret = glfwInit();
+			tz_assert(glfw_ret == GLFW_TRUE, "GLFW initialisation returned without crashing, but we still failed to initialise. Most likely a platform-specific error has occurred. Does your machine support window creation?");
 			tz::detail::peripherals::monitor::initialise();
 			tz_assert(wnd == nullptr && !initialised, "tz::initialise(): Already initialised");
 			WindowHintList hints;
