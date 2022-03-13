@@ -1,0 +1,65 @@
+name: "Unit Tests (OpenGL Debug)"
+
+# Controls when the action will run. 
+on:
+  push:
+    branches: [ master ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  gcc_linux:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install necessary linux dependencies
+        run:   |
+          sudo apt-get install libxrandr-dev libxinerama-dev x11-xkb-utils libxcursor-dev libxi-dev
+      - uses: actions/checkout@v2
+        with:
+          submodules: recursive
+      - name: 'Run Unit Tests (ogl_gcc_debug)'
+        uses: lukka/run-cmake@v3
+        with:
+          cmakeListsOrSettingsJson: "CMakeListsTxtAdvanced"
+          cmakeGenerator: UnixMakefiles
+          cmakeAppendedArgs: "-B \"${{ github.workspace }}/../../_temp/build/debug\" -DTOPAZ_DEBUG=1 -DTOPAZ_VULKAN=0 -DTOPAZ_OGL=1 -DCMAKE_CXX_COMPILER=g++-10"
+          buildWithCMake: true
+          buildWithCMakeArgs: "--target tztest --parallel 4"
+          buildDirectory: "${{ github.workspace }}/../../_temp/build/debug"
+
+  clang_linux:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install necessary linux dependencies
+        run:   |
+          sudo apt-get install libxrandr-dev libxinerama-dev x11-xkb-utils libxcursor-dev libxi-dev
+      - uses: actions/checkout@v2
+        with:
+          submodules: recursive
+      - name: 'Run Unit Tests (ogl_clang_debug)'
+        uses: lukka/run-cmake@v3
+        with:
+          cmakeListsOrSettingsJson: "CMakeListsTxtAdvanced"
+          cmakeGenerator: UnixMakefiles
+          cmakeAppendedArgs: "-B \"${{ github.workspace }}/../../_temp/build/debug\" -DTOPAZ_DEBUG=1 -DTOPAZ_VULKAN=0 -DTOPAZ_OGL=1 -DCMAKE_CXX_COMPILER=clang++-12 -DCMAKE_C_COMPILER=clang-12"
+          buildWithCMake: true
+          buildWithCMakeArgs: "--target tztest --parallel 4"
+          buildDirectory: "${{ github.workspace }}/../../_temp/build/debug"
+
+  msvc_windows:
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: recursive
+      - name: 'Run Unit Tests (ogl_msvc_debug)'
+        uses: lukka/run-cmake@v3
+        with:
+          cmakeListsOrSettingsJson: "CMakeListsTxtAdvanced"
+          cmakeGenerator: UnixMakefiles
+          cmakeAppendedArgs: "-B \"${{ github.workspace }}/../../_temp/build/debug\" -DTOPAZ_DEBUG=1 -DTOPAZ_VULKAN=0 -DTOPAZ_OGL=1"
+          buildWithCMake: true
+          buildWithCMakeArgs: "--target tztest --parallel 4"
+          buildDirectory: "${{ github.workspace }}/../../_temp/build/debug"
