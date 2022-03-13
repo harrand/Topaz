@@ -104,7 +104,7 @@ jobs:
           cd mesa
           curl --location --request GET https://downloads.fdossena.com/geth.php?r=mesa64-latest -o mesa_download.7z
           mkdir mesa_download
-          7z x mesa_download.7z mesa_download
+          7z x mesa_download.7z =omesa_download
           cd mesa_download
           dir
       - name: 'Build Unit Tests (ogl_msvc_debug)'
