@@ -1,4 +1,5 @@
 #if TZ_OGL
+#include "core/profiling/zone.hpp"
 #include "gl/impl/backend/ogl2/tz_opengl.hpp"
 #include "gl/impl/backend/ogl2/shader.hpp"
 #include <algorithm>
@@ -10,6 +11,7 @@ namespace tz::gl::ogl2
 	shader(0),
 	info(info)
 	{
+		TZ_PROFZONE("OpenGL Backend - ShaderModule Create", TZ_PROFCOL_RED);
 		tz_assert(ogl2::is_initialised(), "Tried to create shader module because ogl2 was not initialised. Please submit a bug report.");
 		this->shader = glCreateShader(static_cast<GLenum>(this->info.type));
 		// Upload source code.
@@ -39,6 +41,7 @@ namespace tz::gl::ogl2
 
 	ShaderModule::CompileResult ShaderModule::compile()
 	{
+		TZ_PROFZONE("OpenGL Backend - Shader Source Compile", TZ_PROFCOL_RED);
 		glCompileShader(this->shader);
 		GLint success;
 		glGetShaderiv(this->shader, GL_COMPILE_STATUS, &success);
@@ -66,6 +69,7 @@ namespace tz::gl::ogl2
 	modules(),
 	info(info)
 	{
+		TZ_PROFZONE("OpenGL Backend - Shader Create", TZ_PROFCOL_RED);
 		tz_assert(ogl2::is_initialised(), "Tried to create shader program because ogl2 was not initialised. Please submit a bug report.");
 		this->program = glCreateProgram();
 
@@ -108,6 +112,7 @@ namespace tz::gl::ogl2
 
 	Shader::LinkResult Shader::link()
 	{
+		TZ_PROFZONE("OpenGL Backend - Shader Link", TZ_PROFCOL_RED);
 		glLinkProgram(this->program);
 		GLint success;
 		glGetProgramiv(this->program, GL_LINK_STATUS, &success);
@@ -147,6 +152,7 @@ namespace tz::gl::ogl2
 
 	Shader::LinkResult Shader::validate()
 	{
+		TZ_PROFZONE("OpenGL Backend - Shader Validate", TZ_PROFCOL_RED);
 		glValidateProgram(this->program);
 		GLint success;
 		glGetProgramiv(this->program, GL_VALIDATE_STATUS, &success);

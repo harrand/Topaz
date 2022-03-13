@@ -1,5 +1,6 @@
-#include "gl/impl/backend/ogl2/buffer.hpp"
 #if TZ_OGL
+#include "core/profiling/zone.hpp"
+#include "gl/impl/backend/ogl2/buffer.hpp"
 #include "gl/impl/frontend/ogl2/renderer.hpp"
 #include "gl/impl/frontend/ogl2/component.hpp"
 
@@ -11,6 +12,7 @@ namespace tz::gl
 	image_handles(),
 	bindless_image_storage_buffer(ogl2::Buffer::null())
 	{
+		TZ_PROFZONE("OpenGL Frontend - RendererOGL ResourceStorage Create", TZ_PROFCOL_RED);
 		for(std::size_t i = 0; i < this->count(); i++)
 		{
 			IResource* res = this->get(static_cast<tz::HandleValue>(i));
@@ -103,6 +105,7 @@ namespace tz::gl
 
 	void ResourceStorage::fill_bindless_image_buffer()
 	{
+		TZ_PROFZONE("OpenGL Frontend - RendererOGL ResourceStorage (Fill bindless image buffer)", TZ_PROFCOL_RED);
 		if(this->image_handles.empty())
 		{
 			return;
@@ -228,6 +231,7 @@ namespace tz::gl
 
 	void OutputManager::set_render_target() const
 	{
+		TZ_PROFZONE("OpenGL Frontend - RendererOGL OutputManager (Set Render Target)", TZ_PROFCOL_RED);
 		this->framebuffer.bind();
 		this->framebuffer.clear();
 	}
@@ -277,6 +281,7 @@ namespace tz::gl
 
 	void RendererOGL::render()
 	{
+		TZ_PROFZONE("OpenGL Frontend - RendererOGL Render", TZ_PROFCOL_RED);
 		glClearColor(this->clear_colour[0], this->clear_colour[1], this->clear_colour[2], this->clear_colour[3]);
 		if(this->options.contains(RendererOption::NoDepthTesting))
 		{
@@ -315,6 +320,7 @@ namespace tz::gl
 
 	void RendererOGL::edit(const RendererEditRequest& edit_request)
 	{
+		TZ_PROFZONE("OpenGL Backend - RendererOGL Edit", TZ_PROFCOL_RED);
 		if(edit_request.component_edits.empty())
 		{
 			return;

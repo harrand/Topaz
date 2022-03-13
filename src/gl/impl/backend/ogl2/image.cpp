@@ -1,4 +1,5 @@
 #if TZ_OGL
+#include "core/profiling/zone.hpp"
 #include "gl/impl/backend/ogl2/image.hpp"
 
 namespace tz::gl::ogl2
@@ -8,6 +9,7 @@ namespace tz::gl::ogl2
 	info(info),
 	maybe_bindless_handle(std::nullopt)
 	{
+		TZ_PROFZONE("OpenGL Backend - Image Create", TZ_PROFCOL_RED);
 		glCreateTextures(GL_TEXTURE_2D, 1, &this->image);
 
 		glTextureParameteri(this->image, GL_TEXTURE_WRAP_S, static_cast<GLint>(this->info.sampler.address_mode_s));
@@ -63,12 +65,14 @@ namespace tz::gl::ogl2
 
 	void Image::set_data(std::span<const std::byte> texture_data)
 	{
+		TZ_PROFZONE("OpenGL Backend - Image Data Write", TZ_PROFCOL_RED);
 		const FormatData internal_fmt = get_format_data(this->get_format());
 		glTextureSubImage2D(this->image, 0, 0, 0, this->get_dimensions()[0], this->get_dimensions()[1], internal_fmt.format, internal_fmt.type, texture_data.data());
 	}
 
 	void Image::make_bindless()
 	{
+		TZ_PROFZONE("OpenGL Backend - Image Make Bindless", TZ_PROFCOL_RED);
 		tz_assert(!this->is_bindless(), "Image is being made bindless, but it was already bindless. Please submit a bug report.");
 		this->maybe_bindless_handle = glGetTextureHandleARB(this->image);
 		glMakeTextureHandleResidentARB(this->maybe_bindless_handle.value());
@@ -110,12 +114,14 @@ namespace tz::gl::ogl2
 	{
 		void copy(const Image& source, Image& destination)
 		{
+			TZ_PROFZONE("OpenGL Backend - Image Copy", TZ_PROFCOL_RED);
 			tz_assert(source.get_format() == destination.get_format(), "Image Copy - Source and destination must have identical formats.");
 			glCopyImageSubData(source.native(), GL_TEXTURE_2D, 0, 0, 0, 0, destination.native(), GL_TEXTURE_2D, 0, 0, 0, 0, source.get_dimensions()[0], source.get_dimensions()[1], 0);
 		}
 
 		Image clone_resized(const Image& image, tz::Vec2ui new_size)
 		{
+			TZ_PROFZONE("OpenGL Backend - Image Clone Resized", TZ_PROFCOL_RED);
 			Image newimg
 			{{
 				.format = image.get_format(),

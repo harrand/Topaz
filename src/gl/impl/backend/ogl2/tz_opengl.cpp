@@ -1,5 +1,6 @@
 #if TZ_OGL
 #include "core/report.hpp"
+#include "core/profiling/zone.hpp"
 #include "gl/impl/backend/ogl2/tz_opengl.hpp"
 
 namespace tz::gl::ogl2
@@ -16,6 +17,7 @@ namespace tz::gl::ogl2
 
 	void initialise([[maybe_unused]] tz::GameInfo game_info, tz::ApplicationType app_type)
 	{
+		TZ_PROFZONE("OpenGL Backend - Backend Initialise", TZ_PROFCOL_RED);
 		tz_assert(!initialised, "Already initialised OpenGL but trying to do it again. Please submit a bug report.");
 		tz_assert(app_type != tz::ApplicationType::Headless, "Headless OpenGL applications are not yet supported.");
 		int res = gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress));
