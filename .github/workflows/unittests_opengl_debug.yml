@@ -31,8 +31,6 @@ jobs:
       - name: 'Check OpenGL Support'
         run:  |
           cd ${{ github.workspace }}/../../_temp/build/debug
-          echo glxinfo results:
-          xvfb-run -a -s '-screen 0 1024x768x24' glxinfo
           echo Retrieving OpenGL supported version...
           xvfb-run -a -s '-screen 0 1024x768x24' glxinfo | grep -i "opengl core profile version" | sed 's/OpenGL core profile version string: //' | sed 's/ (Core Profile).*//' > ogl_version.txt
           cat ogl_version.txt
@@ -74,8 +72,6 @@ jobs:
       - name: 'Check OpenGL Support'
         run:  |
           cd ${{ github.workspace }}/../../_temp/build/debug
-          xvfb-run -a -s '-screen 0 1024x768x24' echo glxinfo results:
-          glxinfo
           echo Retrieving OpenGL supported version...
           xvfb-run -a -s '-screen 0 1024x768x24' glxinfo | grep -i "opengl core profile version" | sed 's/OpenGL core profile version string: //' | sed 's/ (Core Profile).*//' > ogl_version.txt
           cat ogl_version.txt
