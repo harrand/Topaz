@@ -116,8 +116,8 @@ jobs:
       - name: 'Copy mesa opengl dll to output directories'
         run:  |
           cd ${{ github.workspace }}/mesa/mesa_download
-          xcopy opengl32.dll ${{ .github.workspace }}/../../_temp/build/debug/test/gl
-          xcopy opengl32.dll ${{ .github.workspace }}/../../_temp/build/debug/test/gl/ogl2
+          xcopy opengl32.dll ${{ github.workspace }}/../../_temp/build/debug/test/gl
+          xcopy opengl32.dll ${{ github.workspace }}/../../_temp/build/debug/test/gl/ogl2
       - name: 'Run Unit Tests (ogl_msvc_debug)'
         uses: lukka/run-cmake@v3
         with:
