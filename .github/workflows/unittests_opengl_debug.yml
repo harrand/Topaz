@@ -41,7 +41,7 @@ jobs:
           for i in $(cat unit_test_executables.txt)
           do
             echo Running "$i"
-            ~/$i
+            xvfb-run -s '-screen 0 1024x768x24' ~/$i
           done
 
 
@@ -76,7 +76,7 @@ jobs:
           for i in $(cat unit_test_executables.txt)
           do
             echo Running "$i"
-            ~/$i
+            xvfb-run -s '-screen 0 1024x768x24' ~/$i
           done
 
   msvc_windows:
