@@ -73,6 +73,7 @@ namespace tz::gl::ogl2
 	void Image::make_bindless()
 	{
 		TZ_PROFZONE("OpenGL Backend - Image Make Bindless", TZ_PROFCOL_RED);
+		tz_assert(supports_bindless_textures(), "Attempted to make an image bindless, but the bindless textures extension (\"GL_ARB_bindless_texture\") is not available on this machine. Your hardware/drivers do not support this specific OGL backend.");
 		tz_assert(!this->is_bindless(), "Image is being made bindless, but it was already bindless. Please submit a bug report.");
 		this->maybe_bindless_handle = glGetTextureHandleARB(this->image);
 		glMakeTextureHandleResidentARB(this->maybe_bindless_handle.value());

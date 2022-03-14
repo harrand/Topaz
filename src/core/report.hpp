@@ -22,6 +22,17 @@ namespace tz
  */
 #define tz_report(fmt, ...) {tz::report_internal("\"" fmt "\" -- %s:%d\n", ##__VA_ARGS__, __FILE__, __LINE__);} (void)0;
 
+#ifdef tz_warning_report
+#undef tz_warning_report
+#endif
+/**
+ * @ingroup tz_core
+ * @fn tz_warning_report(fmt, ...)
+ * @hideinitializer
+ * Functions like @ref tz_report except that the message indicates a warning -- something is wrong but execution should not be interrupted.
+ */
+#define tz_warning_report(fmt, ...) tz_report("Warning: " fmt, ##__VA_ARGS__)
+
 #ifdef tz_debug_report
 #undef tz_debug_report
 #endif

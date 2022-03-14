@@ -5,6 +5,8 @@
 
 namespace tz::gl::ogl2
 {
+	tz::BasicList<OGLStringView> get_supported_ogl_extensions();
+
 	bool initialised = false;
 
 	void debug_callback([[maybe_unused]] GLenum source, [[maybe_unused]] GLenum type, [[maybe_unused]] GLuint id, GLenum severity, [[maybe_unused]] GLsizei length, const GLchar* message, [[maybe_unused]] const void* userdata)
@@ -26,6 +28,10 @@ namespace tz::gl::ogl2
 			glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 			glDebugMessageCallback(debug_callback, nullptr);
 		#endif
+		if(!supports_bindless_textures())
+		{
+			tz_warning_report("The OpenGL backend implicitly uses bindless textures under-the-hood, and initialisation has just detected that the extension `GL_ARB_bindless_texture` is not available. The application will most certainly crash if you try to use OGL textures.");
+		}
 		tz_report("OpenGL v%u.%u Initialised (%s)", ogl_version.major, ogl_version.minor, app_type == tz::ApplicationType::Headless ? "Headless" : "Windowed");
 		initialised = true;
 	}
@@ -40,6 +46,24 @@ namespace tz::gl::ogl2
 	bool is_initialised()
 	{
 		return initialised;
+	}
+
+	tz::BasicList<OGLStringView> get_supported_ogl_extensions()
+	{
+		GLint extension_count;
+		glGetIntegerv(GL_NUM_EXTENSIONS, &extension_count);
+		tz::BasicList<OGLStringView> exts;
+		exts.resize(extension_count);
+		for(std::size_t i = 0; std::cmp_less(i, extension_count); i++)
+		{
+			exts[i] = reinterpret_cast<const char*>(glGetStringi(GL_EXTENSIONS, static_cast<GLuint>(i)));
+		}
+		return exts;
+	}
+
+	bool supports_bindless_textures()
+	{
+		return get_supported_ogl_extensions().contains("GL_ARB_bindless_texture");
 	}
 }
 
