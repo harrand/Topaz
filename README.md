@@ -2,6 +2,9 @@
 
 [![OGL Debug](https://github.com/Harrand/Topaz/actions/workflows/codebuild_opengl_debug.yml/badge.svg)](https://github.com/Harrand/Topaz/actions/workflows/codebuild_opengl_debug.yml)
 [![OGL Release](https://github.com/Harrand/Topaz/actions/workflows/codebuild_opengl_release.yml/badge.svg)](https://github.com/Harrand/Topaz/actions/workflows/codebuild_opengl_release.yml)
+[![OGL Tests Debug](https://github.com/Harrand/Topaz/actions/workflows/unittests_opengl_debug.yml/badge.svg)](https://github.com/Harrand/Topaz/actions/workflows/unittests_opengl_debug.yml)
+[![OGL Tests Release](https://github.com/Harrand/Topaz/actions/workflows/unittests_opengl_release.yml/badge.svg)](https://github.com/Harrand/Topaz/actions/workflows/unittests_opengl_release.yml)
+
 
 [![VK Debug](https://github.com/Harrand/Topaz/actions/workflows/codebuild_vulkan_debug.yml/badge.svg)](https://github.com/Harrand/Topaz/actions/workflows/codebuild_vulkan_debug.yml)
 [![VK Release](https://github.com/Harrand/Topaz/actions/workflows/codebuild_vulkan_release.yml/badge.svg)](https://github.com/Harrand/Topaz/actions/workflows/codebuild_vulkan_release.yml)
