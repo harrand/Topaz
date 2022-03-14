@@ -18,13 +18,11 @@ void empty_renderer(tz::gl::Device& dev)
 
 void renderer_creation(tz::gl::Device& dev)
 {
-	tz::gl::ImageResource ires0 = tz::gl::ImageResource::from_uninitialised(tz::gl::ImageFormat::RGBA32, {1u, 1u});
 	tz::gl::BufferResource bres0 = tz::gl::BufferResource::from_one(5.0f);
 
 	tz::gl::RendererInfo rinfo1;
 	rinfo1.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(empty, vertex));
 	rinfo1.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(empty, fragment));
-	rinfo1.add_resource(ires0);
 	tz::gl::Renderer renderer1 = dev.create_renderer(rinfo1);
 
 	tz::gl::RendererInfo rinfo2 = rinfo1;

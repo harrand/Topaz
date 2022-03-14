@@ -6,7 +6,7 @@
 
 std::vector<char> get_empty_shader_spirv()
 {
-	const char* path = "./test/gl/vk2/shaders/empty.glsl.spv";
+	const char* path = "./test/gl/vk2/empty.glsl.spv";
 	std::ifstream fstr{path, std::ios::ate | std::ios::binary};
 	if(!fstr.is_open())
 	{
