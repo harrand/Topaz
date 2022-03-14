@@ -48,7 +48,8 @@ jobs:
           for i in $(cat unit_test_executables.txt)
           do
             echo Running "$i"
-            xvfb-run -a -s '-screen 0 1024x768x24' gdb -return-child-result -ex run -ex "thread apply all bt" -ex "quit" --args ~/$i
+            #xvfb-run -a -s '-screen 0 1024x768x24' gdb -return-child-result -ex run -ex "thread apply all bt" -ex "quit" --args ~/$i
+            xvfb-run -a -s '-screen 0 1024x768x24' ~/$i
           done
 
 
@@ -90,7 +91,8 @@ jobs:
           for i in $(cat unit_test_executables.txt)
           do
             echo Running "$i"
-            xvfb-run -a -s '-screen 0 1024x768x24' gdb -return-child-result -ex run -ex "thread apply all bt" -ex "quit" --args ~/$i
+            # xvfb-run -a -s '-screen 0 1024x768x24' gdb -return-child-result -ex run -ex "thread apply all bt" -ex "quit" --args ~/$i
+            xvfb-run -a -s '-screen 0 1024x768x24' ~/$i
           done
 
           #  msvc_windows:
