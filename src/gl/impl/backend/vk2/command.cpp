@@ -244,13 +244,12 @@ namespace tz::gl::vk2
 		// X.begin() -> X.end() must be sequential with no gaps.
 		// i.e {-1, 0, 1, 2, 3} is fine {-1, 1, 2, 3} is not, neither is {-1, 2, 3, 0, 1}
 		// Assert that neither of these are the case.
-		auto is_ascending_with_no_gaps = []<typename T>(auto begin, auto end)->bool
+		auto is_ascending_with_no_gaps_ui32 = [](auto begin, auto end)->bool
 		{
-			std::vector<T> iota_version(std::distance(begin, end));
+			std::vector<std::uint32_t> iota_version(std::distance(begin, end));
 			std::iota(iota_version.begin(), iota_version.end(), *begin);
 			return std::equal(begin, end, iota_version.begin());
 		};
-		auto is_ascending_with_no_gaps_ui32 = [is_ascending_with_no_gaps](auto begin, auto end)->bool{return is_ascending_with_no_gaps.template operator()<std::uint32_t>(begin, end);};
 
 		tz_assert(is_ascending_with_no_gaps_ui32(command.affected_mip_levels.begin(), command.affected_mip_levels.end()), "TransitionImageLayout contained list of affected mip levels of size %zu. However, the elements were not 'sequential without gaps'.", command.affected_mip_levels.length());
 		tz_assert(is_ascending_with_no_gaps_ui32(command.affected_layers.begin(), command.affected_layers.end()), "TransitionImageLayout contained list of affected array layers of size %zu. However, the elements were not 'sequential without gaps'.", command.affected_layers.length());
