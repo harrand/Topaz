@@ -184,6 +184,7 @@ namespace tz::gl
 	private:
 		vk2::Shader make_shader(const vk2::LogicalDevice& ldev, const ShaderInfo& sinfo) const;
 		vk2::PipelineLayout make_pipeline_layout(const vk2::DescriptorLayout& dlayout, std::size_t frame_in_flight_count) const;
+		vk2::GraphicsPipeline make_graphics_pipeline(tz::Vec2ui viewport_dimensions, bool depth_testing_enabled, bool alpha_blending_enabled, const vk2::RenderPass& render_pass) const;
 
 		vk2::Shader shader;
 		vk2::PipelineLayout pipeline_layout;

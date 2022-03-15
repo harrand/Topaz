@@ -439,27 +439,7 @@ namespace tz::gl
 	):
 	shader(this->make_shader(dlayout.get_device(), sinfo)),
 	pipeline_layout(this->make_pipeline_layout(dlayout, frame_in_flight_count)),
-	graphics_pipeline
-	({
-		.shaders = this->shader.native_data(),
-		.state = vk2::PipelineState
-		{
-			.viewport = vk2::create_basic_viewport({static_cast<float>(viewport_dimensions[0]), static_cast<float>(viewport_dimensions[1])}),
-			.depth_stencil =
-			{
-				.depth_testing = depth_testing_enabled,
-				.depth_writes = depth_testing_enabled,
-			},
-			.colour_blend =
-			{
-				.attachment_states = alpha_blending_enabled ? tz::BasicList<vk2::ColourBlendState::AttachmentState>{vk2::ColourBlendState::alpha_blending()} : tz::BasicList<vk2::ColourBlendState::AttachmentState>{vk2::ColourBlendState::no_blending()},
-				.logical_operator = VK_LOGIC_OP_COPY
-			}
-		},
-		.pipeline_layout = &this->pipeline_layout,
-		.render_pass = &render_pass,
-		.device = &render_pass.get_device()
-	}),
+	graphics_pipeline(this->make_graphics_pipeline(viewport_dimensions, depth_testing_enabled, alpha_blending_enabled, render_pass)),
 	depth_testing_enabled(depth_testing_enabled)
 	{
 		// TODO: Implement vk2::LogicalDevice equality operator
@@ -556,6 +536,31 @@ namespace tz::gl
 		{{
 			.descriptor_layouts = std::move(layout_ptrs),
 			.logical_device = &dlayout.get_device()
+		}};
+	}
+
+	vk2::GraphicsPipeline GraphicsPipelineManager::make_graphics_pipeline(tz::Vec2ui viewport_dimensions, bool depth_testing_enabled, bool alpha_blending_enabled, const vk2::RenderPass& render_pass) const
+	{
+		return
+		{{
+			.shaders = this->shader.native_data(),
+			.state = vk2::PipelineState
+			{
+				.viewport = vk2::create_basic_viewport({static_cast<float>(viewport_dimensions[0]), static_cast<float>(viewport_dimensions[1])}),
+				.depth_stencil =
+				{
+					.depth_testing = depth_testing_enabled,
+					.depth_writes = depth_testing_enabled,
+				},
+				.colour_blend =
+				{
+					.attachment_states = alpha_blending_enabled ? tz::BasicList<vk2::ColourBlendState::AttachmentState>{vk2::ColourBlendState::alpha_blending()} : tz::BasicList<vk2::ColourBlendState::AttachmentState>{vk2::ColourBlendState::no_blending()},
+					.logical_operator = VK_LOGIC_OP_COPY
+				}
+			},
+			.pipeline_layout = &this->pipeline_layout,
+			.render_pass = &render_pass,
+			.device = &render_pass.get_device()
 		}};
 	}
 
