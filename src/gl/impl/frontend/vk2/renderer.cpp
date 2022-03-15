@@ -541,27 +541,25 @@ namespace tz::gl
 
 	vk2::GraphicsPipeline GraphicsPipelineManager::make_graphics_pipeline(tz::Vec2ui viewport_dimensions, bool depth_testing_enabled, bool alpha_blending_enabled, const vk2::RenderPass& render_pass) const
 	{
-		return
-		{{
-			.shaders = this->shader.native_data(),
-			.state = vk2::PipelineState
-			{
-				.viewport = vk2::create_basic_viewport({static_cast<float>(viewport_dimensions[0]), static_cast<float>(viewport_dimensions[1])}),
-				.depth_stencil =
-				{
-					.depth_testing = depth_testing_enabled,
-					.depth_writes = depth_testing_enabled,
-				},
-				.colour_blend =
-				{
-					.attachment_states = alpha_blending_enabled ? tz::BasicList<vk2::ColourBlendState::AttachmentState>{vk2::ColourBlendState::alpha_blending()} : tz::BasicList<vk2::ColourBlendState::AttachmentState>{vk2::ColourBlendState::no_blending()},
-					.logical_operator = VK_LOGIC_OP_COPY
-				}
-			},
-			.pipeline_layout = &this->pipeline_layout,
-			.render_pass = &render_pass,
-			.device = &render_pass.get_device()
-		}};
+		vk2::GraphicsPipelineInfo gpinfo;
+		gpinfo.shaders = this->shader.native_data();
+		gpinfo.state.viewport = vk2::create_basic_viewport(static_cast<tz::Vec2>(viewport_dimensions));
+		gpinfo.state.depth_stencil =
+		{
+			.depth_testing = depth_testing_enabled,
+			.depth_writes = depth_testing_enabled
+		};
+
+		gpinfo.state.colour_blend =
+		{
+			.attachment_states = alpha_blending_enabled ? tz::BasicList<vk2::ColourBlendState::AttachmentState>{vk2::ColourBlendState::alpha_blending()} : tz::BasicList<vk2::ColourBlendState::AttachmentState>{vk2::ColourBlendState::no_blending()},
+			.logical_operator = VK_LOGIC_OP_COPY
+		};
+		gpinfo.pipeline_layout = &this->pipeline_layout;
+		gpinfo.render_pass = &render_pass;
+		gpinfo.device = &render_pass.get_device();
+
+		return {gpinfo};
 	}
 
 //--------------------------------------------------------------------------------------------------
