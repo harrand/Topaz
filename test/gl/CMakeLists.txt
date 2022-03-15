@@ -7,7 +7,6 @@ endif()
 
 add_tz_test(NAME tz_resource_test
 	SOURCE_FILES tz_resource_test.cpp
-	GRAPHICAL
 	)
 
 add_tz_test(NAME tz_renderer_test
@@ -15,5 +14,4 @@ add_tz_test(NAME tz_renderer_test
 	SHADER_SOURCES
 		test/gl/empty.vertex.tzsl
 		test/gl/empty.fragment.tzsl
-	GRAPHICAL
 	)

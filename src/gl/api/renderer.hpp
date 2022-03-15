@@ -21,9 +21,14 @@ namespace tz::gl
 	{
 		/// - Disables depth-testing, with a small gain in performance.
 		NoDepthTesting,
+		/// - Enables alpha-blending. Causes pixels with alpha value <1.0 to blend with the previous colour in the framebuffer, at a small cost to performance.
 		AlphaBlending
 	};
 	
+	/**
+	 * @ingroup tz_gl2_renderer
+	 * Represents a collection of renderer options.
+	 */
 	using RendererOptions = tz::EnumField<RendererOption>;
 
 	template<typename T>

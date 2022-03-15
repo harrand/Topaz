@@ -1,7 +1,7 @@
 function(add_tz_test)
 	cmake_parse_arguments(
 		ADD_TZ_TEST
-		"GRAPHICAL"
+		""
 		"NAME"
 		"SOURCE_FILES;SHADER_SOURCES"
 		${ARGN}
@@ -27,20 +27,11 @@ function(add_tz_test)
 		WORKING_DIRECTORY ${PROJECT_BINARY_DIR})
 	add_dependencies(tztest_build ${ADD_TZ_TEST_NAME})
 	add_dependencies(tztest ${ADD_TZ_TEST_NAME})
-	add_dependencies(tztest_nographics ${ADD_TZ_TEST_NAME})
-	if(${ADD_TZ_TEST_GRAPHICAL})
-		set_tests_properties(${ADD_TZ_TEST_NAME} PROPERTIES LABELS GRAPHICAL)
-		message(STATUS "Found graphical test ${ADD_TZ_TEST_NAME}")
-	else()
-		message(STATUS "Found non-graphical test ${ADD_TZ_TEST_NAME}")
-	endif()
+	message(STATUS "Detected test ${ADD_TZ_TEST_NAME}")
 endfunction()
 
 add_custom_target(tztest_build)
 add_custom_target(tztest COMMAND "${CMAKE_CTEST_COMMAND}" --output-on-failure --schedule-random -C Debug
-						WORKING_DIRECTORY ${PROJECT_BINARY_DIR})
-
-add_custom_target(tztest_nographics COMMAND "${CMAKE_CTEST_COMMAND}" --output-on-failure --schedule-random -LE GRAPHICAL -C Debug
 						WORKING_DIRECTORY ${PROJECT_BINARY_DIR})
 
 add_library(tz_test_harness INTERFACE)
