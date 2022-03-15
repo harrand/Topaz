@@ -807,10 +807,10 @@ namespace tz::gl
 						// Unmap resource from previous buffer component, and instead map it to this one. But first we want to copy over the old data.
 						std::span<const std::byte> old_data = buf.map_as<const std::byte>();
 						std::span<std::byte> new_data = resized_copy.map_as<std::byte>();
-						// Assume new resource is larger than old one.
-						tz_assert(old_data.size_bytes() <= new_data.size_bytes(), "Buffer component resizing to a smaller size is not yet implemented.");
+						std::size_t byte_copy_length = std::min(old_data.size_bytes(), new_data.size_bytes());
+						auto old_data_end = old_data.begin() + byte_copy_length;
 						// do the copy.
-						std::copy(old_data.begin(), old_data.end(), new_data.begin());
+						std::copy(old_data.begin(), old_data_end, new_data.begin());
 						// Now remap the resource to the new component. Then we can swap.
 						buf_comp->get_resource()->set_mapped_data(new_data);
 					}

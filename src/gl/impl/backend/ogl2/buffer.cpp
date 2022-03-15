@@ -120,7 +120,7 @@ namespace tz::gl::ogl2
 			{
 
 				// We're smaller, so we copy all that we can.
-				glCopyNamedBufferSubData(buf.native(), newbuf.native(), 0, 0, static_cast<GLsizeiptr>(buf.size()));
+				glCopyNamedBufferSubData(buf.native(), newbuf.native(), 0, 0, static_cast<GLsizeiptr>(new_size));
 			}
 			else
 			{
