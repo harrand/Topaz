@@ -1,3 +1,7 @@
+add_tz_test(NAME tz_allocator_test
+	SOURCE_FILES allocator_test.cpp
+	)
+
 add_tz_test(NAME tz_callback_test
 	SOURCE_FILES callback_test.cpp
 	)

@@ -18,6 +18,9 @@ add_library(topaz
 	src/core/containers/polymorphic_list.inl
 
 	src/core/algorithms/static.hpp
+	
+	src/core/allocators/linear.hpp
+	src/core/allocators/linear.inl
 
 	src/core/interfaces/cloneable.hpp
 

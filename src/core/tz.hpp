@@ -57,6 +57,12 @@ namespace tz
 
 	/**
 	 * @ingroup tz_core
+	 * @defgroup tz_core_allocators Allocators
+	 * Documentation for custom Topaz allocators. All allocators satisfy `std::allocator_traits`.
+	 */
+
+	/**
+	 * @ingroup tz_core
 	 * @defgroup tz_core_profiling Profiling and Instrumentation
 	 * Documentation for profiling and instrumentation macros.
 	 */
