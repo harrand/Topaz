@@ -39,6 +39,7 @@ namespace tz
 	};
 
 	/**
+	 * @ingroup tz_core_allocators
 	 * Functions just like a @ref LinearAllocator, except that a scratch allocator comes with its own pre-allocated chunk of memory which is used as the arena for the linear allocator. The arena is therefore guaranteed to be on the stack, ensuring excellent performance at the cost of memory safety.
 	 * @tparam T Type of object which will be allocated.
 	 * @tparam S Number of T's which can be stored within the pre-allocated arena.
