@@ -21,8 +21,6 @@ add_library(topaz
 	
 	src/core/allocators/adapter.hpp
 	src/core/allocators/fallback.hpp
-	src/core/allocators/linear.hpp
-	src/core/allocators/linear.inl
 	src/core/allocators/malloc.cpp
 	src/core/allocators/malloc.hpp
 	src/core/allocators/null.hpp
@@ -51,6 +49,7 @@ add_library(topaz
 	src/core/matrix_transform.hpp
 	src/core/matrix.hpp
 	src/core/matrix.inl
+	src/core/memory.hpp
 	src/core/report.hpp
 	src/core/time.cpp
 	src/core/time.hpp

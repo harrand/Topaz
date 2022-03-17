@@ -2,6 +2,7 @@
 #define TOPAZ_CORE_ALLOCATORS_STACK_HPP
 #include "core/types.hpp"
 #include <functional>
+#include <cstddef>
 
 namespace tz
 {
