@@ -26,6 +26,8 @@ add_library(topaz
 	src/core/allocators/malloc.cpp
 	src/core/allocators/malloc.hpp
 	src/core/allocators/null.hpp
+	src/core/allocators/stack.hpp
+	src/core/allocators/stack.inl
 
 	src/core/interfaces/cloneable.hpp
 

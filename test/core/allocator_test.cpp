@@ -2,6 +2,7 @@
 #include "core/allocators/malloc.hpp"
 #include "core/allocators/null.hpp"
 #include "core/allocators/linear.hpp"
+#include "core/allocators/stack.hpp"
 #include "core/assert.hpp"
 #include <type_traits>
 #include <vector>
@@ -72,9 +73,24 @@ void linear_allocator_tests()
 	ints2.resize(10);
 }
 
+void stack_allocator_tests()
+{
+	tz::StackAllocator<64> s;
+	auto blk2 = s.allocate(1);
+	tz_assert(s.owns(blk2) && !s.owns(tz::nullblk), "StackAllocator says it doesn't own a block it allocated, or thinks it owns nullblk");
+	s.deallocate(blk2);
+
+	using LocalAllocator = tz::StackAllocator<64>;
+	std::vector<int, tz::AllocatorAdapter<int, LocalAllocator>> ints2;
+	ints2.resize(4);
+	ints2.push_back(5);
+	ints2.push_back(6);
+}
+
 int main()
 {
 	null_allocator_tests();
 	linear_allocator_tests();
 	mallocator_test();
+	stack_allocator_tests();
 }
