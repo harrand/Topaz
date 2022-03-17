@@ -19,12 +19,13 @@ add_library(topaz
 
 	src/core/algorithms/static.hpp
 	
+	src/core/allocators/adapter.hpp
+	src/core/allocators/fallback.hpp
 	src/core/allocators/linear.hpp
 	src/core/allocators/linear.inl
-	src/core/allocators/fallback.hpp
-	src/core/allocators/null.hpp
 	src/core/allocators/malloc.cpp
 	src/core/allocators/malloc.hpp
+	src/core/allocators/null.hpp
 
 	src/core/interfaces/cloneable.hpp
 

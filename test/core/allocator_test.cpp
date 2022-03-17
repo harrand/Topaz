@@ -1,9 +1,11 @@
+#include "core/allocators/adapter.hpp"
 #include "core/allocators/malloc.hpp"
 #include "core/allocators/null.hpp"
 #include "core/allocators/linear.hpp"
 #include "core/assert.hpp"
 #include <type_traits>
 #include <vector>
+#include <deque>
 #include <numeric>
 
 void null_allocator_tests()
@@ -21,6 +23,17 @@ void mallocator_test()
 	tz::Blk blk = ma.allocate(1024);
 	tz_assert(blk != tz::nullblk, "Mallocator failed to alloc 1024 bytes.");
 	tz_assert(ma.owns(blk), "Mallocator thinks it does not own the block it created.");
+
+	std::vector<int, tz::AllocatorAdapter<int, tz::Mallocator>> ints{1, 2, 3, 4};
+	ints.clear();
+	ints.push_back(5);
+
+	std::deque<int, tz::AllocatorAdapter<int, tz::Mallocator>> int_deque;
+	int_deque.push_back(0);
+	int_deque.push_front(1);
+	int_deque.clear();
+	int_deque.resize(10);
+	std::iota(int_deque.begin(), int_deque.end(), 0);
 }
 
 template<typename T, std::size_t N>
