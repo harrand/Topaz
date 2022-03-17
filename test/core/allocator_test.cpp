@@ -1,8 +1,27 @@
+#include "core/allocators/malloc.hpp"
+#include "core/allocators/null.hpp"
 #include "core/allocators/linear.hpp"
 #include "core/assert.hpp"
 #include <type_traits>
 #include <vector>
 #include <numeric>
+
+void null_allocator_tests()
+{
+	tz::NullAllocator na;
+	tz::Blk blk = na.allocate(1);
+	tz_assert(blk == tz::nullblk, "NullAllocator did not return a null allocation.");
+	tz_assert(na.owns(blk), "NullAllocator thinks it doesn't own the block it created.");
+	na.deallocate(blk);
+}
+
+void mallocator_test()
+{
+	tz::Mallocator ma;
+	tz::Blk blk = ma.allocate(1024);
+	tz_assert(blk != tz::nullblk, "Mallocator failed to alloc 1024 bytes.");
+	tz_assert(ma.owns(blk), "Mallocator thinks it does not own the block it created.");
+}
 
 template<typename T, std::size_t N>
 struct Storage
@@ -42,5 +61,7 @@ void linear_allocator_tests()
 
 int main()
 {
+	null_allocator_tests();
 	linear_allocator_tests();
+	mallocator_test();
 }

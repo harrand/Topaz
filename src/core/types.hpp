@@ -53,6 +53,32 @@ namespace tz
 
 	template<typename T>
 	concept TriviallyCopyable = std::is_trivially_copyable_v<T>;
+
+	/**
+	 * Represents an arbitrary, non-owning block of memory.
+	 */
+	struct Blk
+	{
+		/// Pointer to the start of the memory block.
+		void* ptr;
+		/// Size of the block, in bytes.
+		std::size_t size;
+
+		bool operator==(const Blk& rhs) const = default;
+	};
+	constexpr Blk nullblk{.ptr = nullptr, .size = 0};
+
+	/**
+	 * @ingroup tz_core_allocators
+	 * Named requirement for topaz allocators. Not to be confused with the c++ standard library allocators.
+	 */
+	template<typename T>
+	concept Allocator = requires(T t, Blk blk, std::size_t sz)
+	{
+		{t.allocate(sz)} -> std::same_as<Blk>;
+		{t.deallocate(blk)} -> std::same_as<void>;
+		{t.owns(blk)} -> std::same_as<bool>;
+	};
 }
 
 #endif // TOPAZ_CORE_TYPES_HPP

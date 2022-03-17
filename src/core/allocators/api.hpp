@@ -1,0 +1,9 @@
+#ifndef TOPAZ_CORE_ALLOCATORS_API_HPP
+#define TOPAZ_CORE_ALLOCATORS_API_HPP
+
+namespace tz
+{
+
+}
+
+#endif // TOPAZ_CORE_ALLOCATORS_API_HPP
