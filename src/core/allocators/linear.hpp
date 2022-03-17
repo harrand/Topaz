@@ -22,6 +22,10 @@ namespace tz
 		 * Create an allocator which manages a block of memory via the arena span.
 		 */
 		LinearAllocator(std::span<std::byte> arena);
+		LinearAllocator(const LinearAllocator<T>& copy) = default;
+		LinearAllocator(LinearAllocator<T>&& move) = default;
+		template<typename U>
+		LinearAllocator(const LinearAllocator<U>& other);
 		/**
 		 * Attempt to allocate memory from the arena. If there is not enough space for the allocation, an assert will fail, but the function may ultimately return nullptr.
 		 */
@@ -30,6 +34,12 @@ namespace tz
 		 * Deallocate existing memory. For linear allocators this does absolutely nothing.
 		 */
 		void deallocate(T* addr, std::size_t count){}
+
+		std::span<std::byte> get_arena();
+		std::size_t get_offset() const;
+
+		/// Allocators should compare equal if they can deallocate each others memory. Because deallocating is a no-op, this is always true!
+		constexpr bool operator==(const LinearAllocator<T>& rhs) const{return true;};
 	private:
 		std::byte* get_head() const;
 		std::size_t get_bytes_remaining() const;
