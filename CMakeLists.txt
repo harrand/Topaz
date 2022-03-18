@@ -21,6 +21,8 @@ add_library(topaz
 	
 	src/core/allocators/adapter.hpp
 	src/core/allocators/fallback.hpp
+	src/core/allocators/linear.hpp
+	src/core/allocators/linear.cpp
 	src/core/allocators/malloc.cpp
 	src/core/allocators/malloc.hpp
 	src/core/allocators/null.hpp

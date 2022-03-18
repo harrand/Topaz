@@ -22,6 +22,8 @@ namespace tz
 		using propagate_on_container_move_assignment = std::true_type;
 
 		AllocatorAdapter() = default;
+		AllocatorAdapter(const A& a):
+		A(a){}
 
 		template<class U>
 		AllocatorAdapter(const AllocatorAdapter<U, A>& other){}
