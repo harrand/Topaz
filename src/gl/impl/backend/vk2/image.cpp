@@ -1,5 +1,6 @@
 #if TZ_VULKAN
 #include "core/profiling/zone.hpp"
+#include "core/report.hpp"
 #include "gl/impl/backend/vk2/image.hpp"
 #include "gl/impl/backend/vk2/swapchain.hpp"
 #include "gl/impl/backend/vk2/logical_device.hpp"
@@ -10,10 +11,13 @@ namespace tz::gl::vk2
 	image(VK_NULL_HANDLE),
 	format(ImageFormat::Undefined),
 	layout(ImageLayout::Undefined),
+	tiling(ImageTiling::Optimal),
+	residency(MemoryResidency::GPU),
 	dimensions(),
 	device(nullptr),
 	destroy_on_destructor(false),
-	vma_alloc(std::nullopt)
+	vma_alloc(std::nullopt),
+	vma_alloc_info()
 	{
 		TZ_PROFZONE("Vulkan Backend - Swapchain Image Create", TZ_PROFCOL_RED);
 		tz_assert(sinfo.swapchain != nullptr && !sinfo.swapchain->is_null(), "SwapchainImageInfo had nullptr or null Swapchain");
@@ -39,10 +43,13 @@ namespace tz::gl::vk2
 	image(VK_NULL_HANDLE),
 	format(info.format),
 	layout(ImageLayout::Undefined),
+	tiling(info.image_tiling),
+	residency(info.residency),
 	dimensions(info.dimensions),
 	device(info.device),
 	destroy_on_destructor(true),
-	vma_alloc(VmaAllocation{})
+	vma_alloc(VmaAllocation{}),
+	vma_alloc_info()
 	{
 		TZ_PROFZONE("Vulkan Backend - Image Create", TZ_PROFCOL_RED);
 		VkImageCreateInfo create
@@ -95,7 +102,7 @@ namespace tz::gl::vk2
 			.priority = 0
 		};
 
-		VkResult res = vmaCreateImage(this->get_device().vma_native(), &create, &alloc, &this->image, &this->vma_alloc.value(), nullptr);
+		VkResult res = vmaCreateImage(this->get_device().vma_native(), &create, &alloc, &this->image, &this->vma_alloc.value(), &this->vma_alloc_info);
 		switch(res)
 		{
 			case VK_SUCCESS:
@@ -107,6 +114,9 @@ namespace tz::gl::vk2
 			case VK_ERROR_OUT_OF_DEVICE_MEMORY:
 				tz_error("Failed to create Image because we ran out of device memory (VRAM). Please ensure that your system meets the minimum requirements.");
 			break;
+			case VK_ERROR_FEATURE_NOT_PRESENT:
+				tz_error("Undocumented return value VK_ERROR_FEATURE_NOT_PRESENT from vmaCreateImage. TODO: Invoke vkGetPhysicalDeviceImageFormatProperties before trying to create the image to catch this early. The combination of format, tiling, residency etc are unsupported for this specific machine. Please submit a bug report.");
+			break;
 			default:
 				tz_error("Failed to create Image but cannot determine why. Please submit a bug report.");
 			break;
@@ -117,6 +127,8 @@ namespace tz::gl::vk2
 	image(VK_NULL_HANDLE),
 	format(ImageFormat::Undefined),
 	layout(ImageLayout::Undefined),
+	tiling(),
+	residency(),
 	dimensions(0u, 0u),
 	device(nullptr),
 	destroy_on_destructor(false),
@@ -167,6 +179,43 @@ namespace tz::gl::vk2
 	{
 		tz_assert(this->device != nullptr, "Image had nullptr or null LogicalDevice");
 		return *this->device;
+	}
+
+	void* Image::map()
+	{
+		TZ_PROFZONE("Vulkan Backend - Image Map", TZ_PROFCOL_RED);
+		if(!this->vma_alloc.has_value() || this->residency == MemoryResidency::GPU)
+		{
+			return nullptr;
+		}
+		if(this->tiling != ImageTiling::Linear)
+		{
+			tz_warning_report("Mapping image memory, but its tiling is not linear. You cannot predict the internal data format so writes are likely to be invalid");
+		}
+		// If we've mapped earlier/are CPUPersistent, we already have a ptr we can use.
+		if(this->vma_alloc_info.pMappedData != nullptr)
+		{
+			return this->vma_alloc_info.pMappedData;
+		}
+		// Otherwise we'll actually perform the map
+		VkResult res = vmaMapMemory(this->get_device().vma_native(), this->vma_alloc.value(), &this->vma_alloc_info.pMappedData);
+		if(res == VK_SUCCESS)
+		{
+			return this->vma_alloc_info.pMappedData;
+		}
+		return nullptr;
+	}
+
+	void Image::unmap()
+	{
+		TZ_PROFZONE("Vulkan Backend - Image Unmap", TZ_PROFCOL_RED);
+		if(!this->vma_alloc.has_value() || this->vma_alloc_info.pMappedData == nullptr || this->residency == MemoryResidency::CPUPersistent)
+		{
+			return;
+		}
+
+		vmaUnmapMemory(this->get_device().vma_native(), this->vma_alloc.value());
+		this->vma_alloc_info.pMappedData = nullptr;
 	}
 
 	Image::NativeType Image::native() const

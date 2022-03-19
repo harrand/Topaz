@@ -104,6 +104,63 @@ void image_layout_transition()
 	tz_assert(basic_img.get_layout() == ImageLayout::TransferDestination, "Image had unexpected layout post-transition");
 }
 
+void image_mapping()
+{
+	using namespace tz::gl::vk2;
+	PhysicalDevice pdev = get_all_devices().front();
+	LogicalDevice ldev
+	{{
+		.physical_device = pdev,
+	}};
+	hardware::Queue* queue = ldev.get_hardware_queue
+	({
+		.field = {QueueFamilyType::Transfer}
+	});
+
+	// Images with GPU residency and/or optimal tiling must return nullptr on map. Otherwise they must not.
+	constexpr ImageFormat fmt = format_traits::get_mandatory_sampled_image_formats().front();
+	Image img_gpu
+	{{
+		.device = &ldev,
+		.format = fmt,
+		.dimensions = {2u, 2u},
+		.usage = {ImageUsage::TransferDestination},
+		.residency = MemoryResidency::GPU,
+		.image_tiling = ImageTiling::Optimal
+	}};
+
+	Image img_cpu_linear
+	{{
+		.device = &ldev,
+		.format = fmt,
+		.dimensions = {2u, 2u},
+		.usage = {ImageUsage::TransferDestination},
+		.residency = MemoryResidency::CPU,
+		.image_tiling = ImageTiling::Linear
+	}};
+
+	Image img_cpu_linear_persistent
+	{{
+		.device = &ldev,
+		.format = ImageFormat::RGBA32,
+		.dimensions = {2u, 2u},
+		.usage = {ImageUsage::TransferDestination},
+		.residency = MemoryResidency::CPUPersistent,
+		.image_tiling = ImageTiling::Linear
+	}};
+
+	void* m1 = img_gpu.map();
+	void* m3 = img_cpu_linear.map();
+	void* m4 = img_cpu_linear_persistent.map();
+	tz_assert(m1 == nullptr, "GPU Image map() returned non-nullptr. These cannot be mapped and should return nullptr.");
+	//tz_assert(m2 == nullptr, "CPU Image map() returned non-nullptr when its tiling was optimal. Even a CPU image must return nullptr unless it has linear tiling");
+	tz_assert(m3 != nullptr, "CPU Image map() returned nullptr when its tiling was linear. Memory shenanigans or more likely a logic error");
+	tz_assert(m4 != nullptr, "CPUPersistent Image map() returned nullptr when its tiling was linear. Memory shenanigans or more likely a logic error (have you forgotten about MemoryResidency::CPUPersistent?)");
+
+	img_gpu.unmap();
+	img_cpu_linear.unmap();
+}
+
 void image_layout_end_render_pass()
 {
 	using namespace tz::gl::vk2;
@@ -225,6 +282,7 @@ int main()
 	{
 		basic_images();
 		image_layout_transition();
+		image_mapping();
 		image_layout_end_render_pass();
 	}
 	tz::terminate();

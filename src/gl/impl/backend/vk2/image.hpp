@@ -170,6 +170,21 @@ namespace tz::gl::vk2
 		 */
 		const LogicalDevice& get_device() const;
 
+		void* map();
+
+		template<typename T>
+		std::span<T> map_as()
+		{
+			auto* ptr = reinterpret_cast<T*>(this->map());
+			if(ptr == nullptr)
+			{
+				return {ptr, 0};
+			}
+			return {ptr, this->vma_alloc_info.size / sizeof(T)};
+		}
+
+		void unmap();
+
 		using NativeType = VkImage;
 		NativeType native() const;
 		static Image null();
@@ -185,10 +200,13 @@ namespace tz::gl::vk2
 		VkImage image;
 		ImageFormat format;
 		ImageLayout layout;
+		ImageTiling tiling;
+		MemoryResidency residency;
 		Vec2ui dimensions;
 		const LogicalDevice* device;
 		bool destroy_on_destructor;
 		std::optional<VmaAllocation> vma_alloc;
+		VmaAllocationInfo vma_alloc_info;
 	};
 }
 
