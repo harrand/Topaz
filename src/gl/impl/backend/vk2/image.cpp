@@ -218,6 +218,20 @@ namespace tz::gl::vk2
 		this->vma_alloc_info.pMappedData = nullptr;
 	}
 
+	std::size_t Image::get_row_padding() const
+	{
+		VkSubresourceLayout data_layout;
+		VkImageSubresource subresource
+		{
+			.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+			.mipLevel = 0,
+			.arrayLayer = 0
+		};
+		vkGetImageSubresourceLayout(this->get_device().native(), this->native(), &subresource, &data_layout);
+		// row pitch is the number of bytes between each row.
+		return data_layout.rowPitch;
+	}
+
 	Image::NativeType Image::native() const
 	{
 		return this->image;

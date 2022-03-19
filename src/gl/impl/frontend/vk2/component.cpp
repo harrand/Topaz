@@ -102,19 +102,19 @@ namespace tz::gl
 	{
 		tz_assert(this->resource->get_type() == ResourceType::Image, "ImageComponent was provided a resource which was not an ImageResource. Please submit a bug report.");
 		const ImageResource* img_res = static_cast<const ImageResource*>(this->resource);
-		vk2::ImageUsageField usage_field;
+		vk2::ImageUsageField usage_field = {vk2::ImageUsage::TransferDestination, vk2::ImageUsage::SampledImage};
 		vk2::MemoryResidency residency;
+		vk2::ImageTiling tiling = vk2::ImageTiling::Optimal;
 		switch(this->resource->get_access())
 		{
 			case ResourceAccess::StaticFixed:
-				usage_field = {vk2::ImageUsage::TransferDestination, vk2::ImageUsage::SampledImage};
 				residency = vk2::MemoryResidency::GPU;
 			break;
 			case ResourceAccess::DynamicFixed:
 			[[fallthrough]];
 			case ResourceAccess::DynamicVariable:
-				usage_field = {vk2::ImageUsage::StorageImage};
 				residency = vk2::MemoryResidency::CPUPersistent;
+				tiling = vk2::ImageTiling::Linear;
 			break;
 		}
 		return
@@ -123,7 +123,8 @@ namespace tz::gl
 			.format = to_vk2(img_res->get_format()),
 			.dimensions = img_res->get_dimensions(),
 			.usage = usage_field,
-			.residency = residency
+			.residency = residency,
+			.image_tiling = tiling
 		}};
 	}
 }

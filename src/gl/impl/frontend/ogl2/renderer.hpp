@@ -58,6 +58,7 @@ namespace tz::gl
 		 * Images are converted into bindless texture handles which are then all stored within a secret bespoke SSBO (this does not count as a buffer resource however). This binds that SSBO to the resource id equal to the list of images (this will be equal to the total number of buffer resources).
 		 */
 		void bind_image_buffer();
+		void write_dynamic_images();
 	private:
 		void fill_bindless_image_buffer();
 

@@ -53,6 +53,15 @@ namespace tz::gl
 				break;
 				case ResourceType::Image:
 					this->components.push_back(std::make_unique<ImageComponentVulkan>(*res, ldev));
+					if(res->get_access() == ResourceAccess::DynamicFixed || res->get_access() == ResourceAccess::DynamicVariable)
+					{
+						std::span<const std::byte> initial_data = res->data();
+						vk2::Image& underlying_image = static_cast<ImageComponentVulkan*>(this->components.back().get())->vk_get_image();
+						std::span<std::byte> image_data = {reinterpret_cast<std::byte*>(underlying_image.map()), initial_data.size_bytes()};
+						//tz_assert(initial_data.size_bytes() == image_data.size_bytes(), "ImageResource data span length disagrees with the vulkan backend image's mapped data span. Resource says %zu bytes, vk2::Image says %zu bytes", initial_data.size_bytes(), image_data.size_bytes());
+						std::copy(initial_data.begin(), initial_data.end(), image_data.begin());
+						res->set_mapped_data(image_data);
+					}
 					// If we're an image, we need to create an image view too.
 					{
 						vk2::Image& result_image = static_cast<ImageComponentVulkan*>(this->components.back().get())->vk_get_image();
@@ -230,6 +239,54 @@ namespace tz::gl
 	bool ResourceStorage::empty() const
 	{
 		return this->count() == 0;
+	}
+
+	void ResourceStorage::write_padded_image_data()
+	{
+		for(auto& component_ptr : this->components)
+		{
+			IResource* res = component_ptr->get_resource();
+			if(res->get_type() == ResourceType::Image && res->get_access() != ResourceAccess::StaticFixed)
+			{
+				const vk2::Image& img = static_cast<const ImageComponentVulkan*>(component_ptr.get())->vk_get_image();
+				// If it's dynamic in any way, the user might have written changes.
+				// The user writes image data assuming the rows are tightly-packed, but this is not at all guaranteed (infact its highly unlikely). We will correct the written data each time.
+				std::span<std::byte> d = res->data();
+				// How many rows do we have?
+				std::size_t num_rows = img.get_dimensions()[1];
+				std::size_t row_pitch = img.get_row_padding();
+				// Find out how many bytes the resource data takes up per row.
+				std::size_t resource_row_pitch = d.size_bytes() / num_rows;
+				if(row_pitch == resource_row_pitch)
+				{
+					// Image row data really is tightly packed.
+					continue;
+				}
+				tz_assert(row_pitch > resource_row_pitch, "Linear CPU vk2::Image row data is negatively-padded? Assuming ImageResource data is tightly-packed, it uses %zu bytes per row, but the actual image uses %zu? It should be using more, not less!", resource_row_pitch, row_pitch);
+				std::size_t required_padding = row_pitch - resource_row_pitch;
+				/*
+					// Consider the image resource data for a 3x3 image, there are 2 extra padding bytes which we want to fix.
+					// The next row needs to start X padding bytes later.
+				 	xxx**
+					xxx**
+					xxx**
+					// Whereas what we have rn is:
+					xxxxx
+					xxxx*
+					*****
+				 */
+				std::vector<char> buffer;
+				buffer.resize(row_pitch * num_rows, '\0');
+				for(std::size_t row_id = 0; row_id < num_rows; row_id++)
+				{
+					// Copy each row.
+					// We need a separate temp buffer to work with. Remember that the resource data and the mapped image data are actually the same thing!
+					std::memcpy(buffer.data() + (row_id * row_pitch), d.data() + (row_id * resource_row_pitch), row_pitch);
+				}
+				// Finally, copy the whole buffer into the actual image data.
+				std::memcpy(d.data(), buffer.data(), row_pitch * num_rows);
+			}
+		}
 	}
 
 //--------------------------------------------------------------------------------------------------
@@ -742,6 +799,7 @@ namespace tz::gl
 	void RendererVulkan::render()
 	{
 		TZ_PROFZONE("Vulkan Frontend - RendererVulkan Render", TZ_PROFCOL_YELLOW);
+		this->resources.write_padded_image_data();
 		CommandProcessor::RenderWorkSubmitResult result = this->command.do_render_work(this->maybe_swapchain);
 		switch(result.present)
 		{

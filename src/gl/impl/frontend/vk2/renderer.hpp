@@ -67,6 +67,7 @@ namespace tz::gl
 		std::size_t resource_count_of(ResourceType type) const;
 		void sync_descriptors(bool write_everything);
 		bool empty() const;
+		void write_padded_image_data();
 	private:
 
 		/// Storage for all cloned resource's components.

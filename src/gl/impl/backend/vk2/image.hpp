@@ -184,6 +184,7 @@ namespace tz::gl::vk2
 		}
 
 		void unmap();
+		std::size_t get_row_padding() const;
 
 		using NativeType = VkImage;
 		NativeType native() const;

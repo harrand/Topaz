@@ -156,6 +156,20 @@ namespace tz::gl
 		}
 	}
 
+	void ResourceStorage::write_dynamic_images()
+	{
+		for(auto& component_ptr : this->components)
+		{
+			tz::gl::IResource* res = component_ptr->get_resource();
+			if(res->get_type() == ResourceType::Image && res->get_access() != ResourceAccess::StaticFixed)
+			{
+				// Get the underlying image, and set its data to whatever the span said it was.
+				ogl2::Image& img = static_cast<ImageComponentOGL*>(component_ptr.get())->ogl_get_image();
+				img.set_data(res->data());
+			}
+		}
+	}
+
 //--------------------------------------------------------------------------------------------------
 
 	ShaderManager::ShaderManager(const ShaderInfo& sinfo):
@@ -282,6 +296,7 @@ namespace tz::gl
 	void RendererOGL::render()
 	{
 		TZ_PROFZONE("OpenGL Frontend - RendererOGL Render", TZ_PROFCOL_RED);
+		this->resources.write_dynamic_images();
 		glClearColor(this->clear_colour[0], this->clear_colour[1], this->clear_colour[2], this->clear_colour[3]);
 		if(this->options.contains(RendererOption::NoDepthTesting))
 		{

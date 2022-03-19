@@ -62,7 +62,8 @@ int main()
 				0b1111'1111_uc,
 				0b0000'0000_uc,
 				0b1111'1111_uc
-			}
+			},
+			tz::gl::ResourceAccess::DynamicFixed
 		);
 
 		std::size_t triangle_count = 1;
@@ -76,7 +77,7 @@ int main()
 		tz::gl::RendererInfo rinfo;
 		rinfo.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(tz_dynamic_triangle_demo, vertex));
 		rinfo.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(tz_dynamic_triangle_demo, fragment));
-		rinfo.add_resource(img);
+		tz::gl::ResourceHandle imgh = rinfo.add_resource(img);
 		tz::gl::ResourceHandle bufh = rinfo.add_resource(buf);
 
 		tz::gl::Renderer renderer = dev.create_renderer(rinfo);
@@ -113,6 +114,11 @@ int main()
 				{
 					buf_data[buf_data.size() - 3 + i] = get_random_triangle(rand);
 				}
+
+				// While we're at it, randomise the second pixel of the image.
+				std::span<std::byte> img_data = renderer.get_resource(imgh)->data();
+				auto pixel_data = img_data.subspan(4, 4);
+				std::random_shuffle(pixel_data.begin(), pixel_data.end());
 			}
 
 			TZ_FRAME_END;
