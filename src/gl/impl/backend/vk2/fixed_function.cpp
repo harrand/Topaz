@@ -135,10 +135,11 @@ namespace tz::gl::vk2
 			.logicOp = this->logical_operator.value_or(VkLogicOp{}),
 			.attachmentCount = static_cast<std::uint32_t>(this->attachment_states.length()),
 			.pAttachments = this->attachment_states.data(),
+			.blendConstants = {}
 		};
 		for(std::size_t i = 0; i < sizeof(native.blendConstants) / sizeof(native.blendConstants[0]); i++)
 		{
-			native.blendConstants[i] = 0.0f;
+			native.blendConstants[i] = this->blend_constants[i];
 		}
 		return native;
 	}
