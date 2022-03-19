@@ -218,7 +218,7 @@ namespace tz::gl::vk2
 		this->vma_alloc_info.pMappedData = nullptr;
 	}
 
-	std::size_t Image::get_row_padding() const
+	std::size_t Image::get_linear_row_length() const
 	{
 		VkSubresourceLayout data_layout;
 		VkImageSubresource subresource

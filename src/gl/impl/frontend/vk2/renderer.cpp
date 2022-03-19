@@ -254,7 +254,7 @@ namespace tz::gl
 				std::span<std::byte> d = res->data();
 				// How many rows do we have?
 				std::size_t num_rows = img.get_dimensions()[1];
-				std::size_t row_pitch = img.get_row_padding();
+				std::size_t row_pitch = img.get_linear_row_length();
 				// Find out how many bytes the resource data takes up per row.
 				std::size_t resource_row_pitch = d.size_bytes() / num_rows;
 				if(row_pitch == resource_row_pitch)
@@ -263,7 +263,6 @@ namespace tz::gl
 					continue;
 				}
 				tz_assert(row_pitch > resource_row_pitch, "Linear CPU vk2::Image row data is negatively-padded? Assuming ImageResource data is tightly-packed, it uses %zu bytes per row, but the actual image uses %zu? It should be using more, not less!", resource_row_pitch, row_pitch);
-				std::size_t required_padding = row_pitch - resource_row_pitch;
 				/*
 					// Consider the image resource data for a 3x3 image, there are 2 extra padding bytes which we want to fix.
 					// The next row needs to start X padding bytes later.
