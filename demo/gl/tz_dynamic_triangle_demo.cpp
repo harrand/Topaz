@@ -1,6 +1,7 @@
 #include "core/tz.hpp"
 #include "core/window.hpp"
 #include "core/profiling/zone.hpp"
+#include "core/containers/grid_view.hpp"
 #include "gl/device.hpp"
 #include "gl/renderer.hpp"
 #include "gl/resource.hpp"
@@ -117,7 +118,8 @@ int main()
 
 				// While we're at it, randomise the second pixel of the image.
 				std::span<std::byte> img_data = renderer.get_resource(imgh)->data();
-				auto pixel_data = img_data.subspan(4, 4);
+				tz::GridView<std::byte, 4> img_view{img_data, img.get_dimensions()};
+				std::span<std::byte> pixel_data = img_view(1, 0);
 				std::random_shuffle(pixel_data.begin(), pixel_data.end());
 			}
 

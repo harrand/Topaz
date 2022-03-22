@@ -14,6 +14,8 @@ add_library(topaz
 	src/core/containers/basic_list.hpp
 	src/core/containers/enum_field.hpp
 	src/core/containers/enum_field.inl
+	src/core/containers/grid_view.hpp
+	src/core/containers/grid_view.inl
 	src/core/containers/polymorphic_list.hpp
 	src/core/containers/polymorphic_list.inl
 
