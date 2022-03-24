@@ -1,4 +1,5 @@
 #include "core/peripherals/monitor.hpp"
+#include "core/profiling/zone.hpp"
 #include "GLFW/glfw3.h"
 #include "core/tz.hpp"
 
@@ -28,6 +29,7 @@ namespace tz
 
 		void initialise()
 		{
+			TZ_PROFZONE("Monitor Peripherals Initialise", TZ_PROFCOL_BLUE);
 			// Assume glfw has already been initialised. We don't yet have a way to check it.
 			int mon_count;
 			GLFWmonitor** mons = glfwGetMonitors(&mon_count);
@@ -42,6 +44,7 @@ namespace tz
 
 		void terminate()
 		{
+			TZ_PROFZONE("Monitor Peripherals Terminate", TZ_PROFCOL_BLUE);
 			int last_mon_count;
 			glfwGetMonitors(&last_mon_count);
 			tz_assert(std::cmp_equal(last_mon_count, all_monitors.length()), "Number of connected monitors changed throughout runtime. Topaz does not yet support dynamically adding monitors.");

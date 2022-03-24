@@ -13,6 +13,7 @@ namespace tz::gl
 	DeviceWindowVulkan::DeviceWindowVulkan(const vk2::LogicalDevice& device):
 	DeviceWindowVulkan()
 	{
+		TZ_PROFZONE("DeviceWindowVulkan Create", TZ_PROFCOL_YELLOW);
 		const vk2::VulkanInstance& instance = device.get_hardware().get_instance();
 		if(instance.is_headless())
 		{
@@ -157,6 +158,7 @@ namespace tz::gl
 
 	void DeviceWindowVulkan::on_resize(tz::Vec2ui dims)
 	{
+		TZ_PROFZONE("DeviceWindowVulkan OnResize", TZ_PROFCOL_YELLOW);
 		if(dims[0] == 0 || dims[0] == 0)
 		{
 			return;

@@ -38,6 +38,13 @@
  * Golden-yellow zone. Typically used for low-level backend engine contexts.
  */
 #define TZ_PROFCOL_YELLOW 0xFFAAAA00
+/**
+ * @ingroup tz_core_profiling
+ * @var TZ_PROFCOL TZ_PROFCOL_BROWN
+ * @hideinitializer
+ * Matte brown zone. Typically used for IO operations.
+ */
+#define TZ_PROFCOL_BROWN 0xFF8B4513
 
 /**
  * @ingroup tz_core_profiling

@@ -1,4 +1,5 @@
 #include "core/window.hpp"
+#include "core/profiling/zone.hpp"
 #include "gl/impl/backend/ogl2/tz_opengl.hpp"
 #include <utility>
 
@@ -7,6 +8,7 @@ namespace tz
 	Window::Window(WindowInitArgs args, WindowHintList hints):
 	WindowFunctionality(nullptr)
 	{
+		TZ_PROFZONE("tz::Window Create", TZ_PROFCOL_BLUE);
 		if(!args.flags.resizeable)
 		{
 			// GLFW assumes window is resizable. If not we will need to add an extra hint.
@@ -82,6 +84,7 @@ namespace tz
 
 	Window::~Window()
 	{
+		TZ_PROFZONE("tz::Window Destroy", TZ_PROFCOL_BLUE);
 		if(this->wnd != nullptr)
 		{
 			glfwDestroyWindow(this->wnd);

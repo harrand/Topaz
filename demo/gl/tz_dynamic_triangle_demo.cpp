@@ -93,6 +93,7 @@ int main()
 			static int counter = 0;
 			if(counter++ > 500)
 			{
+				TZ_PROFZONE("Dynamic Updates", TZ_PROFCOL_GREEN);
 				// Add new triangle by resizing the triangle vertex storage buffer to a capacity large enough for an extra triangle. Then we randomise the new triangle data.
 				counter = 0;
 				triangle_count++;

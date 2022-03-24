@@ -1,11 +1,13 @@
 #include <cstdio>
 #include <utility>
+#include "core/profiling/zone.hpp"
 
 namespace tz
 {
 	template<typename... Args>
 	void report_internal([[maybe_unused]] const char* fmt, [[maybe_unused]] Args&&... args)
 	{
+		TZ_PROFZONE("tz_report IO", TZ_PROFCOL_BROWN);
 		std::fflush(stdout);
 		std::fprintf(stdout, fmt, std::forward<Args>(args)...);
 	}

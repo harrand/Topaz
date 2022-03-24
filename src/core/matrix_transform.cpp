@@ -1,10 +1,12 @@
 #include "core/matrix_transform.hpp"
+#include "core/profiling/zone.hpp"
 #include <cmath>
 
 namespace tz
 {
 	Mat4 translate(Vec3 position)
 	{
+		TZ_PROFZONE("Matrix Translate", TZ_PROFCOL_BLUE);
 		Mat4 m = Mat4::identity();
 		m(0, 3) = position[0];
 		m(1, 3) = position[1];
@@ -79,6 +81,7 @@ namespace tz
 
 	Mat4 rotate(Vec3 rotation)
 	{
+		TZ_PROFZONE("Matrix Rotate", TZ_PROFCOL_BLUE);
 		Mat4 x = rotate_x(rotation[0]);
 		Mat4 y = rotate_y(rotation[1]);
 		Mat4 z = rotate_z(rotation[2]);
@@ -88,6 +91,7 @@ namespace tz
 
 	Mat4 scale(Vec3 scale)
 	{
+		TZ_PROFZONE("Matrix Scale", TZ_PROFCOL_BLUE);
 		Mat4 m = Mat4::identity();
 		for(std::size_t i = 0; i < 3; i++)
 		{
@@ -98,16 +102,19 @@ namespace tz
 
 	Mat4 model(Vec3 position, Vec3 rotation, Vec3 scale)
 	{
+		TZ_PROFZONE("Matrix Model", TZ_PROFCOL_BLUE);
 		return tz::translate(position) * tz::rotate(rotation) * tz::scale(scale);
 	}
 
 	Mat4 view(Vec3 position, Vec3 rotation)
 	{
+		TZ_PROFZONE("Matrix View", TZ_PROFCOL_BLUE);
 		return (translate(position) * rotate(rotation)).inverse();
 	}
 
 	Mat4 perspective(float fov, float aspect_ratio, float near, float far)
 	{
+		TZ_PROFZONE("Matrix Perspective", TZ_PROFCOL_BLUE);
 		const float thf = std::tan(fov / 2.0f);
 		Mat4 m = Mat4::identity();
 		m(0, 0) = 1.0f / (aspect_ratio * thf);
@@ -123,6 +130,7 @@ namespace tz
 
 	Mat4 orthographic(float left, float right, float top, float bottom, float near, float far)
 	{
+		TZ_PROFZONE("Matrix Orthographic", TZ_PROFCOL_BLUE);
 		Mat4 m = Mat4::identity();
 		m(0, 0) = 2.0f / (right - left);
 		m(1, 1) = 2.0f / (top - bottom);

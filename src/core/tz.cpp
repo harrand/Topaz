@@ -2,6 +2,7 @@
 #include "core/assert.hpp"
 #include "core/report.hpp"
 #include "core/peripherals/monitor.hpp"
+#include "core/profiling/zone.hpp"
 
 #if TZ_VULKAN
 #include "gl/impl/backend/vk2/tz_vulkan.hpp"
@@ -21,8 +22,11 @@ namespace tz
 	{   
 		if(app_type == ApplicationType::WindowApplication || app_type == ApplicationType::HiddenWindowApplication)
 		{
-			[[maybe_unused]] int glfw_ret = glfwInit();
-			tz_assert(glfw_ret == GLFW_TRUE, "GLFW initialisation returned without crashing, but we still failed to initialise. Most likely a platform-specific error has occurred. Does your machine support window creation?");
+			{
+				TZ_PROFZONE("GLFW Initialise", TZ_PROFCOL_BLUE);
+				[[maybe_unused]] int glfw_ret = glfwInit();
+				tz_assert(glfw_ret == GLFW_TRUE, "GLFW initialisation returned without crashing, but we still failed to initialise. Most likely a platform-specific error has occurred. Does your machine support window creation?");
+			}
 			tz::detail::peripherals::monitor::initialise();
 			tz_assert(wnd == nullptr && !initialised, "tz::initialise(): Already initialised");
 			WindowHintList hints;
@@ -60,12 +64,14 @@ namespace tz
 
 	void initialise(InitialiseInfo init)
 	{
+		TZ_PROFZONE("Topaz Initialise", TZ_PROFCOL_BLUE);
 		tz_report("%s v%u.%u.%u (%s)", init.name, init.version.major, init.version.minor, init.version.patch, tz::info().to_string().c_str());
 		initialise({.name = init.name, .version = init.version, .engine = tz::info()}, init.app_type, init.window);
 	}
 
 	void terminate()
 	{
+		TZ_PROFZONE("Topaz Terminate", TZ_PROFCOL_BLUE);
 		#if TZ_VULKAN
 			tz::gl::vk2::terminate();
 		#elif TZ_OGL
@@ -81,7 +87,10 @@ namespace tz
 		if(tz_app_type != ApplicationType::Headless)
 		{
 			tz::detail::peripherals::monitor::terminate();
-			glfwTerminate();
+			{
+				TZ_PROFZONE("GLFW Terminate", TZ_PROFCOL_BLUE);
+				glfwTerminate();
+			}
 		}
 		initialised = false;
 	}
