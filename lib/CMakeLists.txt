@@ -5,3 +5,15 @@ add_subdirectory(glad)# Special glad from https://glad.dav1d.de/ (ogl 4.6 with b
 add_subdirectory(debugbreak)
 add_subdirectory(VulkanMemoryAllocator)
 add_subdirectory(tracy)
+
+add_library(tz_vma STATIC
+	tz_vma.cpp)
+target_link_libraries(tz_vma PUBLIC vma)
+if(WIN32)
+	target_link_directories(tz_vma PUBLIC "$ENV{VULKAN_SDK}/Lib")
+	target_link_libraries(tz_vma PRIVATE vulkan-1)
+elseif(UNIX)
+	target_link_directories(tz_vma PUBLIC "$ENV{VULKAN_SDK}/lib")
+	target_link_libraries(tz_vma PRIVATE vulkan)
+endif()
+target_include_directories(tz_vma PUBLIC "$ENV{VULKAN_SDK}/include")
