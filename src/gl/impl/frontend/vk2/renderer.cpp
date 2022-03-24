@@ -1,3 +1,4 @@
+#include "gl/impl/backend/vk2/tz_vulkan.hpp"
 #if TZ_VULKAN
 #include "core/profiling/zone.hpp"
 #include "gl/declare/image_format.hpp"
@@ -14,7 +15,7 @@ namespace tz::gl
 	using namespace tz::gl;
 
 //--------------------------------------------------------------------------------------------------
-	ResourceStorage::ResourceStorage(std::span<const IResource* const> resources, const vk2::LogicalDevice& ldev):
+	ResourceStorage::ResourceStorage(std::span<const IResource* const> resources, const vk2::LogicalDevice& ldev, std::size_t frame_in_flight_count):
 	AssetStorageCommon<IResource>(resources),
 	components(),
 	image_component_views(),
@@ -30,7 +31,8 @@ namespace tz::gl
 	}),
 	descriptor_layout(vk2::DescriptorLayout::null()),
 	descriptor_pool(vk2::DescriptorPool::null()),
-	descriptors()
+	descriptors(),
+	frame_in_flight_count(frame_in_flight_count)
 	{
 		TZ_PROFZONE("Vulkan Frontend - RendererVulkan ResourceStorage Create", TZ_PROFCOL_YELLOW);
 		std::vector<bool> buffer_id_to_variable_access;
@@ -128,11 +130,11 @@ namespace tz::gl
 		decltype(std::declval<vk2::DescriptorPoolInfo::PoolLimits>().limits) limits;
 		if(buffer_count > 0)
 		{
-			limits[vk2::DescriptorType::StorageBuffer] = buffer_count * RendererVulkan::max_frames_in_flight;
+			limits[vk2::DescriptorType::StorageBuffer] = buffer_count * this->frame_in_flight_count;
 		}
 		if(!this->image_component_views.empty())
 		{
-			limits[vk2::DescriptorType::ImageWithSampler] = this->image_component_views.size() * RendererVulkan::max_frames_in_flight;
+			limits[vk2::DescriptorType::ImageWithSampler] = this->image_component_views.size() * this->frame_in_flight_count;
 		}
 
 		this->descriptor_pool = 
@@ -140,14 +142,14 @@ namespace tz::gl
 			.limits =
 			{
 				.limits = limits,
-				.max_sets = static_cast<std::uint32_t>(RendererVulkan::max_frames_in_flight),
+				.max_sets = static_cast<std::uint32_t>(this->frame_in_flight_count),
 				.supports_update_after_bind = true
 			},
 			.logical_device = &ldev
 		}};
 		{
 			tz::BasicList<const vk2::DescriptorLayout*> alloc_layout_list;
-			for(std::size_t i = 0; i < RendererVulkan::max_frames_in_flight; i++)
+			for(std::size_t i = 0; i < this->frame_in_flight_count; i++)
 			{
 				alloc_layout_list.add(&this->descriptor_layout);
 			}
@@ -204,7 +206,7 @@ namespace tz::gl
 		// Now write the initial resources into their descriptors.
 		vk2::DescriptorPool::UpdateRequest update = this->descriptor_pool.make_update_request();
 		// For each set, make the same edits.
-		for(std::size_t i = 0 ; i < RendererVulkan::max_frames_in_flight; i++)
+		for(std::size_t i = 0 ; i < this->frame_in_flight_count; i++)
 		{
 			vk2::DescriptorSet& set = this->descriptors.sets[i];
 			vk2::DescriptorSet::EditRequest set_edit = set.make_edit_request();
@@ -735,10 +737,10 @@ namespace tz::gl
 
 	RendererVulkan::RendererVulkan(const RendererInfoVulkan& info, const RendererDeviceInfoVulkan& device_info):
 	ldev(device_info.device),
-	resources(info.get_resources(), *this->ldev),
+	resources(info.get_resources(), *this->ldev, this->get_frame_in_flight_count(device_info)),
 	output(info.get_output(), device_info.output_images, !info.get_options().contains(RendererOption::NoDepthTesting), *this->ldev),
-	pipeline(info.shader(), this->resources.get_descriptor_layout(), this->output.get_render_pass(), RendererVulkan::max_frames_in_flight, output.get_output_dimensions(), !info.get_options().contains(RendererOption::NoDepthTesting), info.get_options().contains(RendererOption::AlphaBlending)),
-	command(*this->ldev, RendererVulkan::max_frames_in_flight, info.get_output() != nullptr ? info.get_output()->get_target() : OutputTarget::Window, this->output.get_output_framebuffers()),
+	pipeline(info.shader(), this->resources.get_descriptor_layout(), this->output.get_render_pass(), this->get_frame_in_flight_count(device_info), output.get_output_dimensions(), !info.get_options().contains(RendererOption::NoDepthTesting), info.get_options().contains(RendererOption::AlphaBlending)),
+	command(*this->ldev, this->get_frame_in_flight_count(device_info), info.get_output() != nullptr ? info.get_output()->get_target() : OutputTarget::Window, this->output.get_output_framebuffers()),
 	maybe_swapchain(device_info.maybe_swapchain),
 	options(info.get_options()),
 	clear_colour(info.get_clear_colour())
@@ -1059,11 +1061,21 @@ namespace tz::gl
 	{
 		TZ_PROFZONE("Vulkan Frontend - RendererVulkan Handle Resize", TZ_PROFCOL_YELLOW);
 		// Context: The top-level gl::Device has just been told by the window that it has been resized, and has recreated a new swapchain. Our old pointer to the swapchain `maybe_swapchain` correctly points to the new swapchain already, so we just have to recreate all the new state.
-		//tz_error("Sorry. Window resizing is not yet implemented for this vulkan frontend. TODO: Implement. %d, %d", resize_info.new_dimensions[0], resize_info.new_dimensions[1]);
 		this->command.wait_pending_commands_complete();
 		this->output.create_output_resources(resize_info.new_output_images, this->output.has_depth_images());
 		this->pipeline.recreate(this->output.get_render_pass(), resize_info.new_dimensions);
 		this->setup_render_commands();
+	}
+
+	std::size_t RendererVulkan::get_frame_in_flight_count(const RendererDeviceInfoVulkan& device_info) const
+	{
+		if(device_info.device->get_hardware().get_instance().is_headless())
+		{
+			return 1;
+		}
+		std::uint32_t min = device_info.device->get_hardware().get_surface_capabilities().min_image_count;
+		std::uint32_t max = device_info.device->get_hardware().get_surface_capabilities().max_image_count;
+		return std::clamp<std::uint32_t>(3u, min, max);
 	}
 }
 

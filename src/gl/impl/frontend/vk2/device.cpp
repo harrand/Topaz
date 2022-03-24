@@ -39,10 +39,14 @@ namespace tz::gl
 			{
 				present_mode = device.get_hardware().get_supported_surface_present_modes().front();
 			}
+			std::uint32_t swapchain_img_min = device.get_hardware().get_surface_capabilities().min_image_count;
+			std::uint32_t swapchain_img_max = device.get_hardware().get_surface_capabilities().max_image_count;
+			std::uint32_t swapchain_img_count = std::clamp<std::uint32_t>(3u, swapchain_img_min, swapchain_img_max);
+			swapchain_img_count = std::min<std::uint32_t>(swapchain_img_count, 3u);
 			this->window_buf = vk2::Swapchain
 			{{
 				.device = &device,
-				.swapchain_image_count_minimum = device.get_hardware().get_surface_capabilities().min_image_count,
+				.swapchain_image_count_minimum = swapchain_img_count,
 				.image_format = device.get_hardware().get_supported_surface_formats().front(),
 				.present_mode = present_mode
 			}};

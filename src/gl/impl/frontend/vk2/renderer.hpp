@@ -44,7 +44,7 @@ namespace tz::gl
 		 * @param resources A view into an array of existing resources. All of these will be copied into separate store, meaning the lifetime of the elements of the span need not last beyond this constructor's execution.
 		 * @param ldev Vulkan LogicalDevice, this will be used to handle the various components and vulkan descriptor shenanigans.
 		 */
-		ResourceStorage(std::span<const IResource* const> resources, const vk2::LogicalDevice& ldev);
+		ResourceStorage(std::span<const IResource* const> resources, const vk2::LogicalDevice& ldev, std::size_t frame_in_flight_count);
 		/**
 		 * Retrieve the component (read-only) which stores the corresponding vulkan backend objects for the resource corresponding to the handle.
 		 * @param handle Handle whose resource's component needs to be retrieved. The handle must have referred to one of the initial resources passed to the constructor, otherwise the behaviour is undefined.
@@ -82,6 +82,7 @@ namespace tz::gl
 		vk2::DescriptorPool descriptor_pool;
 		/// Stores the above pool's allocation result. We know the exact number of descriptors/sets etc that we need, so we only ever need a single allocation for now.
 		vk2::DescriptorPool::AllocationResult descriptors;
+		std::size_t frame_in_flight_count;
 	};
 
 	/**
@@ -302,8 +303,6 @@ namespace tz::gl
 	class RendererVulkan
 	{
 	public:
-		/// Hard-coded. We process frames in parallel on the GPU. This is the maximum number of frames we're working on at a time.
-		static constexpr std::size_t max_frames_in_flight = 2;
 		/**
 		 * Create a new Renderer.
 		 * @param info User-exposed class which describes how many resources etc. we have and a high-level description of where we expect to render into.
@@ -364,6 +363,7 @@ namespace tz::gl
 		void setup_static_resources();
 		void setup_render_commands();
 		void handle_resize(const RendererResizeInfoVulkan& resize_info);
+		std::size_t get_frame_in_flight_count(const RendererDeviceInfoVulkan& device_info) const;
 
 		vk2::LogicalDevice* ldev;
 		/// Stores copies of all provided resources, and deals with all the vulkan descriptor magic. Exposes everything relevant to us when we want to draw.
