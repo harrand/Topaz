@@ -75,9 +75,9 @@ namespace tz::gl::ogl2
 
 		this->modules.reserve(info.modules.length());
 		std::transform(info.modules.begin(), info.modules.end(), std::back_inserter(this->modules),
-		[](const ShaderModuleInfo& info)->ShaderModule
+		[](const ShaderModuleInfo& minfo)->ShaderModule
 		{
-			return {info};
+			return {minfo};
 		});
 		for(ShaderModule& shader_module : this->modules)
 		{
