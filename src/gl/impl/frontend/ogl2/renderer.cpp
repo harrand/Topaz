@@ -1,5 +1,6 @@
 #if TZ_OGL
 #include "core/profiling/zone.hpp"
+#include "gl/impl/backend/ogl2/tz_opengl.hpp"
 #include "gl/impl/backend/ogl2/buffer.hpp"
 #include "gl/impl/frontend/ogl2/renderer.hpp"
 #include "gl/impl/frontend/ogl2/component.hpp"
@@ -296,6 +297,7 @@ namespace tz::gl
 	void RendererOGL::render()
 	{
 		TZ_PROFZONE("OpenGL Frontend - RendererOGL Render", TZ_PROFCOL_RED);
+		TZ_PROFZONE_GPU("RendererOGL Render", TZ_PROFCOL_RED);
 		this->resources.write_dynamic_images();
 		glClearColor(this->clear_colour[0], this->clear_colour[1], this->clear_colour[2], this->clear_colour[3]);
 		if(this->options.contains(RendererOption::NoDepthTesting))

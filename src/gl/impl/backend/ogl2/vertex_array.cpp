@@ -8,6 +8,7 @@ namespace tz::gl::ogl2
 	vao(0)
 	{
 		TZ_PROFZONE("OpenGL Backend - VertexArray Create", TZ_PROFCOL_RED);
+		TZ_PROFZONE_GPU("VertexArray Create", TZ_PROFCOL_RED);
 		tz_assert(ogl2::is_initialised(), "Tried to create vertex array because ogl2 was not initialised. Please submit a bug report.");
 		glCreateVertexArrays(1, &this->vao);
 	}
@@ -32,12 +33,14 @@ namespace tz::gl::ogl2
 	void VertexArray::bind()
 	{
 		TZ_PROFZONE("OpenGL Backend - VertexArray Bind", TZ_PROFCOL_RED);
+		TZ_PROFZONE_GPU("VertexArray Bind", TZ_PROFCOL_RED);
 		glBindVertexArray(this->vao);
 	}
 
 	void VertexArray::draw(unsigned int triangle_count)
 	{
 		TZ_PROFZONE("OpenGL Backend - VertexArray Draw", TZ_PROFCOL_RED);
+		TZ_PROFZONE_GPU("VertexArray Draw", TZ_PROFCOL_RED);
 		this->bind();
 		glDrawArrays(GL_TRIANGLES, 0, triangle_count * 3);
 	}

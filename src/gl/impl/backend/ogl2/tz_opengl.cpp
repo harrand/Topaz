@@ -23,6 +23,9 @@ namespace tz::gl::ogl2
 		tz_assert(!initialised, "Already initialised OpenGL but trying to do it again. Please submit a bug report.");
 		tz_assert(app_type != tz::ApplicationType::Headless, "Headless OpenGL applications are not yet supported.");
 		int res = gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress));
+		#if TZ_PROFILE
+			TracyGpuContext;
+		#endif // TZ_PROFILE
 		tz_assert(res != 0, "GLAD failed to load");
 		#if TZ_DEBUG
 			glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);

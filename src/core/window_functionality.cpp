@@ -7,6 +7,9 @@
 
 #if TZ_OGL
 #include "glad/glad.h"
+#if TZ_PROFILE
+#include "TracyOpenGL.hpp"
+#endif // TZ_PROFILE
 #endif
 
 namespace tz
@@ -79,6 +82,9 @@ namespace tz
 		#elif TZ_OGL
 			// OpenGL only
 			glfwSwapBuffers(this->wnd);
+			#if TZ_PROFILE
+				TracyGpuCollect;
+			#endif // TZ_PROFILE
 		#endif
 	}
 

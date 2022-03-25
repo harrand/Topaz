@@ -7,6 +7,11 @@
 #include "core/tz.hpp"
 #include "gl/impl/backend/vk2/extensions.hpp"
 #include "vk_mem_alloc.h"
+
+#if TZ_PROFILE
+#include "TracyVulkan.hpp"
+#endif // TZ_PROFILE
+
 #include <cstdint>
 #include <optional>
 

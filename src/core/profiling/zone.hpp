@@ -2,6 +2,7 @@
 #define TOPAZ_CORE_PROFILING_ZONE_HPP
 #if TZ_PROFILE
 #include "Tracy.hpp"
+
 #endif // TZ_PROFILE
 
 /**
@@ -61,8 +62,13 @@
 
 	#define UNIQUE_NAME(base) CONCAT_TZPROF(base, __LINE__)
 	#define TZ_PROFZONE(name, colour) ZoneNamedNC(UNIQUE_NAME(tracy_profvar), name, colour, true)
+
+	#if TZ_OGL
+	#define TZ_PROFZONE_GPU(name, colour) TracyGpuZoneC(name, colour)
+	#endif // TZ_OGL
 #else
 	#define TZ_PROFZONE(name, colour)
+	#define TZ_PROFZONE_GPU(name, colour)
 #endif
 
 /**

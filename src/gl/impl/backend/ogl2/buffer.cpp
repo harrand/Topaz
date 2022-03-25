@@ -9,6 +9,7 @@ namespace tz::gl::ogl2
 	info(info)
 	{
 		TZ_PROFZONE("OpenGL Backend - Buffer Create", TZ_PROFCOL_RED);
+		TZ_PROFZONE_GPU("Buffer Create", TZ_PROFCOL_RED);
 		tz_assert(ogl2::is_initialised(), "Cannot create ogl2 Buffer because ogl2 backend has not yet been initialised! Please submit a bug report.");
 		tz_assert(this->info.size_bytes > 0, "Cannot create a zero-sized buffer.");
 		glCreateBuffers(1, &this->buffer);
@@ -60,6 +61,7 @@ namespace tz::gl::ogl2
 	void* Buffer::map()
 	{
 		TZ_PROFZONE("OpenGL Backend - Buffer Map", TZ_PROFCOL_RED);
+		TZ_PROFZONE_GPU("Buffer Map", TZ_PROFCOL_RED);
 		if(this->mapped_ptr != nullptr)
 		{
 			return this->mapped_ptr;
@@ -74,6 +76,7 @@ namespace tz::gl::ogl2
 	void Buffer::bind_to_resource_id(unsigned int shader_resource_id)
 	{
 		TZ_PROFZONE("OpenGL Backend - Buffer Bind", TZ_PROFCOL_RED);
+		TZ_PROFZONE_GPU("Buffer Bind", TZ_PROFCOL_RED);
 		tz_assert(this->get_target() == BufferTarget::Uniform || this->get_target() == BufferTarget::ShaderStorage, "Attempted to bind buffer to resource id %u, but its target was invalid - Only UBOs and SSBOs can be bound to a resource id.", shader_resource_id);
 		glBindBufferBase(static_cast<GLenum>(this->get_target()), shader_resource_id, this->buffer);
 	}
@@ -102,6 +105,7 @@ namespace tz::gl::ogl2
 		void copy(const Buffer& source, Buffer& destination)
 		{
 			TZ_PROFZONE("OpenGL Backend - Buffer Copy", TZ_PROFCOL_RED);
+			TZ_PROFZONE_GPU("Buffer Copy", TZ_PROFCOL_RED);
 
 			tz_assert(destination.size() >= source.size(), "Buffer Copy: Buffer source was larger than destination; therefore destination does not have enough space for transfer. Please submit a bug report.");
 			glCopyNamedBufferSubData(source.native(), destination.native(), 0, 0, static_cast<GLsizeiptr>(source.size()));
@@ -110,6 +114,7 @@ namespace tz::gl::ogl2
 		Buffer clone_resized(const Buffer& buf, std::size_t new_size)
 		{
 			TZ_PROFZONE("OpenGL Backend - Buffer Clone Resized", TZ_PROFCOL_RED);
+			TZ_PROFZONE_GPU("Buffer Clone Resized", TZ_PROFCOL_RED);
 			Buffer newbuf
 			{{
 				.target = buf.get_target(),
