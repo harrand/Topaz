@@ -26,7 +26,7 @@ jobs:
         with:
           cmakeListsOrSettingsJson: "CMakeListsTxtAdvanced"
           cmakeGenerator: UnixMakefiles
-          cmakeAppendedArgs: "-B \"${{ github.workspace }}/../../_temp/build/release\" -DTOPAZ_DEBUG=0 -DTOPAZ_VULKAN=0 -DTOPAZ_OGL=1 -DCMAKE_CXX_COMPILER=g++-10"
+          cmakeAppendedArgs: "-B \"${{ github.workspace }}/../../_temp/build/release\" -DTOPAZ_BUILDCONFIG=release -DTOPAZ_RENDERAPI=opengl -DCMAKE_CXX_COMPILER=g++-10"
           buildWithCMake: true
           buildWithCMakeArgs: "--target tztest_build --parallel 4"
           buildDirectory: "${{ github.workspace }}/../../_temp/build/release"
@@ -70,7 +70,7 @@ jobs:
         with:
           cmakeListsOrSettingsJson: "CMakeListsTxtAdvanced"
           cmakeGenerator: UnixMakefiles
-          cmakeAppendedArgs: "-B \"${{ github.workspace }}/../../_temp/build/release\" -DTOPAZ_DEBUG=0 -DTOPAZ_VULKAN=0 -DTOPAZ_OGL=1 -DCMAKE_CXX_COMPILER=clang++-12 -DCMAKE_C_COMPILER=clang-12"
+          cmakeAppendedArgs: "-B \"${{ github.workspace }}/../../_temp/build/release\" -DTOPAZ_BUILDCONFIG=release -DTOPAZ_RENDERAPI=opengl -DCMAKE_CXX_COMPILER=clang++-12 -DCMAKE_C_COMPILER=clang-12"
           buildWithCMake: true
           buildWithCMakeArgs: "--target tztest_build --parallel 4"
           buildDirectory: "${{ github.workspace }}/../../_temp/build/release"
@@ -118,7 +118,7 @@ jobs:
           #        with:
           #          cmakeListsOrSettingsJson: "CMakeListsTxtAdvanced"
           #          cmakeGenerator: UnixMakefiles
-          #          cmakeAppendedArgs: "-B \"${{ github.workspace }}/../../_temp/build/release\" -DTOPAZ_DEBUG=0 -DTOPAZ_VULKAN=0 -DTOPAZ_OGL=1"
+          #          cmakeAppendedArgs: "-B \"${{ github.workspace }}/../../_temp/build/release\" -DTOPAZ_BUILDCONFIG=release -DTOPAZ_RENDERAPI=opengl"
           #          buildWithCMake: true
           #          buildWithCMakeArgs: "--target tztest_build --parallel 4"
           #          buildDirectory: "${{ github.workspace }}/../../_temp/build/release"
@@ -132,7 +132,7 @@ jobs:
           #        with:
           #          cmakeListsOrSettingsJson: "CMakeListsTxtAdvanced"
           #          cmakeGenerator: UnixMakefiles
-          #          cmakeAppendedArgs: "-B \"${{ github.workspace }}/../../_temp/build/release\" -DTOPAZ_DEBUG=0 -DTOPAZ_VULKAN=0 -DTOPAZ_OGL=1"
+          #          cmakeAppendedArgs: "-B \"${{ github.workspace }}/../../_temp/build/release\" -DTOPAZ_BUILDCONFIG=release -DTOPAZ_RENDERAPI=opengl"
           #          buildWithCMake: true
           #          buildWithCMakeArgs: "--target tztest --parallel 4"
           #          buildDirectory: "${{ github.workspace }}/../../_temp/build/release"

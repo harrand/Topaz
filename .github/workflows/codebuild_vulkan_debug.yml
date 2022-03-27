@@ -28,7 +28,7 @@ jobs:
         with:
           cmakeListsOrSettingsJson: "CMakeListsTxtAdvanced"
           cmakeGenerator: UnixMakefiles
-          cmakeAppendedArgs: "-B \"${{ github.workspace }}/../../_temp/build/debug\" -DTOPAZ_DEBUG=1 -DTOPAZ_VULKAN=1 -DTOPAZ_OGL=0 -DCMAKE_CXX_COMPILER=g++-10"
+          cmakeAppendedArgs: "-B \"${{ github.workspace }}/../../_temp/build/debug\" -DTOPAZ_BUILDCONFIG=debug -DTOPAZ_RENDERAPI=vulkan -DCMAKE_CXX_COMPILER=g++-10"
           buildWithCMake: true
           buildWithCMakeArgs: "--target topaz --parallel 4"
           buildDirectory: "${{ github.workspace }}/../../_temp/build/debug"
@@ -51,7 +51,7 @@ jobs:
         with:
           cmakeListsOrSettingsJson: "CMakeListsTxtAdvanced"
           cmakeGenerator: UnixMakefiles
-          cmakeAppendedArgs: "-B \"${{ github.workspace }}/../../_temp/build/debug\" -DTOPAZ_DEBUG=1 -DTOPAZ_VULKAN=1 -DTOPAZ_OGL=0 -DCMAKE_CXX_COMPILER=clang++-12 -DCMAKE_C_COMPILER=clang-12"
+          cmakeAppendedArgs: "-B \"${{ github.workspace }}/../../_temp/build/debug\" -DTOPAZ_BUILDCONFIG=debug -DTOPAZ_RENDERAPI=vulkan -DCMAKE_CXX_COMPILER=clang++-12 -DCMAKE_C_COMPILER=clang-12"
           buildWithCMake: true
           buildWithCMakeArgs: "--target topaz --parallel 4"
           buildDirectory: "${{ github.workspace }}/../../_temp/build/debug"
@@ -71,7 +71,7 @@ jobs:
         with:
           cmakeListsOrSettingsJson: "CMakeListsTxtAdvanced"
           cmakeGenerator: UnixMakefiles
-          cmakeAppendedArgs: "-B \"${{ github.workspace }}/../../_temp/build/debug\" -DTOPAZ_DEBUG=1 -DTOPAZ_VULKAN=1 -DTOPAZ_OGL=0"
+          cmakeAppendedArgs: "-B \"${{ github.workspace }}/../../_temp/build/debug\" -DTOPAZ_BUILDCONFIG=debug -DTOPAZ_RENDERAPI=vulkan"
           buildWithCMake: true
           buildWithCMakeArgs: "--target topaz --parallel 4"
           buildDirectory: "${{ github.workspace }}/../../_temp/build/debug"

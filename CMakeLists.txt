@@ -184,28 +184,38 @@ set_target_properties(topaz PROPERTIES
 	CXX_STANDARD_REQUIRED ON
 	CXX_EXTENSIONS OFF)
 
-
-if(${TOPAZ_OGL})
-	# Vulkan + OGL
-	message(STATUS "RenderAPI: OpenGL (\"OGL\")")
-	configure_opengl(topaz)
-elseif(${TOPAZ_VULKAN})
-	# Vulkan
-	message(STATUS "RenderAPI: Vulkan (\"VK\")")
+if(${TOPAZ_RENDERAPI} MATCHES "vulkan")
 	configure_vulkan(topaz)
+elseif(${TOPAZ_RENDERAPI} MATCHES "opengl")
+	configure_opengl(topaz)
+else()
+	if(${TOPAZ_RENDERAPI})
+		message(SEND_ERROR "Render API \"${TOPAZ_BUILDCONFIG}\" not recognised.")
+	else()
+		message(SEND_ERROR "Render API not specified.")
+	endif()
+	message(FATAL_ERROR "Invalid render API. Values can be \"vulkan\" or \"opengl\"")
 endif()
-target_compile_definitions(topaz PUBLIC -DTZ_VERSION=\"${TZ_VERSION}\" -DTZ_SILENCED=0 -DGLFW_INCLUDE_NONE)
 
-if(${TOPAZ_DEBUG})
-	message(STATUS "BuildConfig: Debug")
+if(${TOPAZ_BUILDCONFIG} MATCHES "debug")
 	configure_debug(topaz)
-elseif(${TOPAZ_PROFILE})
-	message(STATUS "BuildConfig: Profile")
+elseif(${TOPAZ_BUILDCONFIG} MATCHES "release")
+	configure_release(topaz)
+elseif(${TOPAZ_BUILDCONFIG} MATCHES "profile")
 	configure_profile(topaz)
 else()
-	message(STATUS "BuildConfig: Release")
-	configure_release(topaz)
+	if(${TOPAZ_BUILDCONFIG})
+		message(SEND_ERROR "Build config \"${TOPAZ_BUILDCONFIG}\" not recognised.")
+	else()
+		message(SEND_ERROR "Build config not specified.")
+	endif()
+	message(FATAL_ERROR "Invalid build config. Values can be \"debug\", \"release\" or \"profile\"")
 endif()
+
+message(STATUS "Render API: ${TOPAZ_RENDERAPI}")
+message(STATUS "Build Config: ${TOPAZ_BUILDCONFIG}")
+
+target_compile_definitions(topaz PUBLIC -DTZ_VERSION=\"${TZ_VERSION}\" -DTZ_SILENCED=0 -DGLFW_INCLUDE_NONE)
 
 add_subdirectory(lib)
 add_subdirectory(tools)

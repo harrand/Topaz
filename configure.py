@@ -32,8 +32,10 @@ def parse_build_type():
 
 def configure():
 	build_type = parse_build_type()
+	build_config_str = build_type.build_config.name
+	render_api_str = build_type.render_api.name
 	build_dir = build_type.render_api.name + "_" + build_type.build_config.name
-	cmd = "cmake -B \"build/%s\" -DTOPAZ_DEBUG=%d -DTOPAZ_PROFILE=%d -DTOPAZ_VULKAN=%d -DTOPAZ_OGL=%d -G \"%s\"" % (build_dir, 1 if build_type.build_config == TopazBuildConfig.debug else 0, 1 if build_type.build_config == TopazBuildConfig.profile else 0, 1 if build_type.render_api == TopazRenderApi.vulkan else 0, 1 if build_type.render_api == TopazRenderApi.opengl else 0, build_type.generator)
+	cmd = "cmake -B \"build/{0}\" -DTOPAZ_BUILDCONFIG={1} -DTOPAZ_RENDERAPI={2} -G \"{3}\"".format(build_dir, build_config_str, render_api_str, build_type.generator)
 	print("Configuring Topaz build system generation with default settings...")
 	subprocess.call(cmd + " -S .")
 
