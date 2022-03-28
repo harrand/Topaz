@@ -310,6 +310,7 @@ namespace tz::gl::vk2
 		using NativeType = VkDescriptorSet;
 		NativeType native() const;
 
+		std::size_t get_set_id() const;
 		/**
 		 * Retrieve the @ref DescriptorLayout which this set matches.
 		 * @return Layout of this DescriptorSet.

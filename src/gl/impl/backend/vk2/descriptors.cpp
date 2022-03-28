@@ -342,6 +342,11 @@ namespace tz::gl::vk2
 		return this->set;
 	}
 
+	std::size_t DescriptorSet::get_set_id() const
+	{
+		return this->set_id;
+	}
+
 	const DescriptorLayout& DescriptorSet::get_layout() const
 	{
 		return *this->layout;
