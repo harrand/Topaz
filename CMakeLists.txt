@@ -18,9 +18,7 @@ add_library(topaz
 	src/core/containers/grid_view.inl
 	src/core/containers/polymorphic_list.hpp
 	src/core/containers/polymorphic_list.inl
-
 	src/core/algorithms/static.hpp
-	
 	src/core/allocators/adapter.hpp
 	src/core/allocators/fallback.hpp
 	src/core/allocators/linear.hpp
@@ -30,18 +28,14 @@ add_library(topaz
 	src/core/allocators/null.hpp
 	src/core/allocators/stack.hpp
 	src/core/allocators/stack.inl
-
 	src/core/interfaces/cloneable.hpp
-
 	src/core/peripherals/keyboard.cpp
 	src/core/peripherals/keyboard.hpp
 	src/core/peripherals/monitor.cpp
 	src/core/peripherals/monitor.hpp
 	src/core/peripherals/mouse.cpp
 	src/core/peripherals/mouse.hpp
-
 	src/core/profiling/zone.hpp
-
 	src/core/assert.hpp
 	src/core/callback.hpp
 	src/core/engine_info.cpp
@@ -70,14 +64,12 @@ add_library(topaz
 	src/core/window_functionality.inl
 	src/core/window.cpp
 	src/core/window.hpp
-
 	# tz::gl (API)
 	src/gl/api/component.hpp
 	src/gl/api/device.hpp
 	src/gl/api/output.hpp
 	src/gl/api/renderer.hpp
 	src/gl/api/resource.hpp
-
 	# tz::gl
 	src/gl/component.hpp
 	src/gl/device.hpp
@@ -88,13 +80,11 @@ add_library(topaz
 	src/gl/resource.hpp
 	src/gl/resource.inl
 	src/gl/tz_gl.hpp
-
 	# tz::gl (Common Impl)
 	src/gl/impl/frontend/common/renderer.cpp
 	src/gl/impl/frontend/common/renderer.hpp
 	src/gl/impl/frontend/common/shader.cpp
 	src/gl/impl/frontend/common/shader.hpp
-
 	# tz::gl (Vulkan Frontend)
 	src/gl/impl/frontend/vk2/component.cpp
 	src/gl/impl/frontend/vk2/component.hpp
@@ -105,7 +95,6 @@ add_library(topaz
 	src/gl/impl/frontend/vk2/renderer.cpp
 	src/gl/impl/frontend/vk2/renderer.hpp
 	src/gl/impl/frontend/vk2/renderer.inl
-
 	# tz::gl (OpenGL Frontend)
 	src/gl/impl/frontend/ogl2/component.cpp
 	src/gl/impl/frontend/ogl2/component.hpp
@@ -115,8 +104,7 @@ add_library(topaz
 	src/gl/impl/frontend/ogl2/device.hpp
 	src/gl/impl/frontend/ogl2/renderer.cpp
 	src/gl/impl/frontend/ogl2/renderer.hpp
-
-	# tz::gl (Vulkan Backend 2)
+	# tz::gl (Vulkan Backend)
 	src/gl/impl/backend/vk2/buffer.cpp
 	src/gl/impl/backend/vk2/buffer.hpp
 	src/gl/impl/backend/vk2/command.cpp
@@ -159,7 +147,6 @@ add_library(topaz
 	src/gl/impl/backend/vk2/hardware/physical_device.hpp
 	src/gl/impl/backend/vk2/hardware/queue.cpp
 	src/gl/impl/backend/vk2/hardware/queue.hpp
-
 	# tz::gl (OpenGL Backend)
 	src/gl/impl/backend/ogl2/buffer.cpp
 	src/gl/impl/backend/ogl2/buffer.hpp
@@ -176,7 +163,6 @@ add_library(topaz
 	src/gl/impl/backend/ogl2/vertex_array.cpp
 	src/gl/impl/backend/ogl2/vertex_array.hpp
 	)
-
 
 message(STATUS "Topaz v${TZ_VERSION}")
 set_target_properties(topaz PROPERTIES
@@ -211,6 +197,7 @@ else()
 	endif()
 	message(FATAL_ERROR "Invalid build config. Values can be \"debug\", \"release\" or \"profile\"")
 endif()
+configure_common(topaz)
 
 message(STATUS "Render API: ${TOPAZ_RENDERAPI}")
 message(STATUS "Build Config: ${TOPAZ_BUILDCONFIG}")
@@ -218,31 +205,14 @@ message(STATUS "Build Config: ${TOPAZ_BUILDCONFIG}")
 target_compile_definitions(topaz PUBLIC -DTZ_VERSION=\"${TZ_VERSION}\" -DTZ_SILENCED=0 -DGLFW_INCLUDE_NONE)
 
 add_subdirectory(lib)
+
+target_include_directories(topaz PUBLIC ${PROJECT_SOURCE_DIR}/src)
+target_link_libraries(topaz PUBLIC debugbreak glfw)
+
 add_subdirectory(tools)
 include(cmake/shader_header_exporter.cmake)
 include(cmake/shader_compiler.cmake)
 add_subdirectory(demo)
 enable_testing()
 add_subdirectory(test)
-#
-#add_tz_test(
-#    NAME default_test
-#    SOURCE_FILES test/test.cpp
-#)
 
-if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-	# GCC/Clang options
-	target_compile_options(topaz PRIVATE -Wall -Wextra -Wdelete-non-virtual-dtor -pedantic-errors)
-	if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-		# Clang-only options
-		# Use GNU's `, __VA_ARGS__` extension (used for tz_assert, tz_error, tz_report)
-		target_compile_options(topaz PRIVATE -Wno-gnu-zero-variadic-macro-arguments)
-	elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
-		# GCC-only options
-		target_compile_options(topaz PRIVATE -Wshadow=local)
-	endif()
-elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
-	# MSVC-only options
-endif()
-target_include_directories(topaz PUBLIC ${PROJECT_SOURCE_DIR}/src)
-target_link_libraries(topaz PUBLIC debugbreak glfw)
