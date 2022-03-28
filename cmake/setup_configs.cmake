@@ -1,7 +1,7 @@
 function(configure_common target)
 	if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
 		# GCC/Clang options
-		target_compile_options(${target} PRIVATE -Wall -Wextra -Wdelete-non-virtual-dtor -pedantic-errors)
+		target_compile_options(${target} PRIVATE -Wall -Wextra -Werror -pedantic-errors)
 		if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 			# Clang-only options
 			# Use GNU's `, __VA_ARGS__` extension (used for tz_assert, tz_error, tz_report)

@@ -28,6 +28,9 @@ namespace tz::gl::vk2
 		VmaAllocationCreateFlags vma_flags = 0;
 		switch(info.residency)
 		{
+			default:
+				tz_error("Unknown vk2::MemoryResidency. Please submit a bug report.");
+			[[fallthrough]];
 			case MemoryResidency::GPU:
 				vma_usage = VMA_MEMORY_USAGE_GPU_ONLY;
 			break;
@@ -37,9 +40,6 @@ namespace tz::gl::vk2
 			case MemoryResidency::CPUPersistent:
 				vma_usage = VMA_MEMORY_USAGE_CPU_ONLY;
 				vma_flags = VMA_ALLOCATION_CREATE_MAPPED_BIT;
-			break;
-			default:
-				tz_error("Unrecognised MemoryResidency. Please submit a bug report.");
 			break;
 		}
 

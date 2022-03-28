@@ -44,6 +44,9 @@ namespace tz::gl
 		vk2::MemoryResidency residency;
 		switch(this->resource->get_access())
 		{
+			default:
+				tz_error("Unrecognised ResourceAccess. Please submit a bug report.");
+			[[fallthrough]];
 			case ResourceAccess::StaticFixed:
 				usage_field = {vk2::BufferUsage::TransferDestination, vk2::BufferUsage::StorageBuffer};
 				residency = vk2::MemoryResidency::GPU;
@@ -107,6 +110,9 @@ namespace tz::gl
 		vk2::ImageTiling tiling = vk2::ImageTiling::Optimal;
 		switch(this->resource->get_access())
 		{
+			default:
+				tz_error("Unknown ResourceAccess. Please submit a bug report.");
+			[[fallthrough]];
 			case ResourceAccess::StaticFixed:
 				residency = vk2::MemoryResidency::GPU;
 			break;

@@ -140,6 +140,9 @@ namespace tz
 		MouseButton tz_button;
 		switch(button)
 		{
+			default:
+				tz_error("Unrecognised MouseButton. Memory corruption? Please submit a bug report.");
+			[[fallthrough]];
 			case GLFW_MOUSE_BUTTON_LEFT:
 				tz_button = MouseButton::Left;
 			break;

@@ -7,6 +7,10 @@ namespace tz
 
 	constexpr Version parse_version(const char* version_string)
 	{
+		if(version_string == nullptr || version_string[0] == '\0')
+		{
+			return {.major = 0, .minor = 0, .patch = 0};
+		}
 		std::string_view version_sv = version_string;
 		Version ver;
 		using spos = std::string_view::size_type;

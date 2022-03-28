@@ -81,9 +81,9 @@ namespace tz::gl::vk2
 
 	void vkDestroyDebugUtilsMessengerEXT
 	(
-		VkInstance instance,
-		VkDebugUtilsMessengerEXT messenger,
-		const VkAllocationCallbacks* pAllocator
+		[[maybe_unused]] VkInstance instance,
+		[[maybe_unused]] VkDebugUtilsMessengerEXT messenger,
+		[[maybe_unused]] const VkAllocationCallbacks* pAllocator
 	)	
 	{
 		#if TZ_DEBUG
@@ -236,7 +236,7 @@ namespace tz::gl::vk2
 			.apiVersion = util::tz_to_vk_version(vulkan_version)
 		};
 		// Validation Layers
-		const char* enabled_layers = "VK_LAYER_KHRONOS_validation";
+		[[maybe_unused]] const char* enabled_layers = "VK_LAYER_KHRONOS_validation";
 
 		// Extensions (Specified from VulkanInstanceInfo + GLFW if we're not headless)
 		std::size_t extension_count = info.extensions.count();

@@ -36,6 +36,9 @@ namespace tz::gl
 		ogl2::BufferResidency residency;
 		switch(this->resource->get_access())
 		{
+			default:
+				tz_error("Unknown ResourceAccess. Please submit a bug report.");
+			[[fallthrough]];
 			case ResourceAccess::StaticFixed:
 				residency = ogl2::BufferResidency::Static;
 			break;
