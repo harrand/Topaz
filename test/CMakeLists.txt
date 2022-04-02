@@ -39,3 +39,4 @@ target_include_directories(tz_test_harness INTERFACE ./)
 
 add_subdirectory(core)
 add_subdirectory(gl)
+add_subdirectory(phys)

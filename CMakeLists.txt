@@ -65,6 +65,11 @@ add_library(topaz
 	src/core/window_functionality.inl
 	src/core/window.cpp
 	src/core/window.hpp
+	# tz::phys
+	src/phys/body.cpp
+	src/phys/body.hpp
+	src/phys/transform.hpp
+	src/phys/tz_phys.hpp
 	# tz::gl (API)
 	src/gl/api/component.hpp
 	src/gl/api/device.hpp
