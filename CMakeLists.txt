@@ -7,7 +7,8 @@ configure_file(./version.txt topaz_version.xml)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(TZ_CXX_STANDARD 20)
 
-project(topaz VERSION ${TZ_VERSION})
+project(topaz VERSION ${TZ_VERSION}
+	DESCRIPTION "C++20 Graphics Engine")
 
 add_library(topaz
 	# tz::core
@@ -202,8 +203,6 @@ configure_common(topaz)
 message(STATUS "Render API: ${TOPAZ_RENDERAPI}")
 message(STATUS "Build Config: ${TOPAZ_BUILDCONFIG}")
 
-target_compile_definitions(topaz PUBLIC -DTZ_VERSION=\"${TZ_VERSION}\" -DTZ_SILENCED=0 -DGLFW_INCLUDE_NONE)
-
 add_subdirectory(lib)
 
 target_include_directories(topaz PUBLIC ${PROJECT_SOURCE_DIR}/src)
@@ -215,4 +214,3 @@ include(cmake/shader_compiler.cmake)
 add_subdirectory(demo)
 enable_testing()
 add_subdirectory(test)
-

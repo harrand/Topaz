@@ -13,6 +13,8 @@ function(configure_common target)
 	elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
 		# MSVC-only options
 	endif()
+	target_compile_definitions(${target} PUBLIC -DTZ_VERSION=\"${TZ_VERSION}\" -DTZ_SILENCED=0 -DGLFW_INCLUDE_NONE)
+
 endfunction()
 
 function(configure_opengl target)
