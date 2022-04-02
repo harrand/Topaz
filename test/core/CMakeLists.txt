@@ -26,6 +26,10 @@ add_tz_test(NAME tz_types_test
 	SOURCE_FILES types_test.cpp
 	)
 
+add_tz_test(NAME tz_types_test2
+	SOURCE_FILES types_test2.cpp
+	)
+
 add_tz_test(NAME tz_vector_test
 	SOURCE_FILES vector_test.cpp
 	)
