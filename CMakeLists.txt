@@ -66,6 +66,11 @@ add_library(topaz
 	src/core/window.cpp
 	src/core/window.hpp
 	# tz::phys
+	src/phys/colliders/box.cpp
+	src/phys/colliders/box.hpp
+	src/phys/colliders/common.hpp
+	src/phys/colliders/point.cpp
+	src/phys/colliders/point.hpp
 	src/phys/body.cpp
 	src/phys/body.hpp
 	src/phys/transform.hpp
