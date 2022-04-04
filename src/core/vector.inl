@@ -9,6 +9,21 @@ namespace tz
 	constexpr Vector<T, S>::Vector(std::array<T, S> data): vec(data){}
 
 	template<tz::Number T, std::size_t S>
+	template<int N>
+	/* static */ constexpr Vector<T, S> Vector<T, S>::filled_with()
+	{
+		Vector<T, S> vec;
+		std::fill(vec.vec.begin(), vec.vec.end(), T{N});
+		return vec;
+	}
+
+	template<tz::Number T, std::size_t S>
+	/* static */ constexpr Vector<T, S> Vector<T, S>::zero()
+	{
+		return filled_with<0>();
+	}
+
+	template<tz::Number T, std::size_t S>
 	const T& Vector<T, S>::operator[](std::size_t idx) const
 	{
 		tz_assert(idx < S, "Vector<T, %zu>::operator[%zu]: Index out of range!", S, idx);

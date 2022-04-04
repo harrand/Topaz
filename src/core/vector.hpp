@@ -33,6 +33,17 @@ namespace tz
 		 */
 		Vector() = default;
 		/**
+		 * Create a new vector, where every element is T{N}.
+		 */
+		template<int N>
+		static constexpr Vector<T, S> filled_with();
+		/**
+		 * Create a new vector, where every element is T{0}.
+		 *
+		 * The resultant vector is equivalent to `Vector<T, S>::filled<0>()`
+		 */
+		static constexpr Vector<T, S> zero();
+		/**
 		 * Retrieve the element value at the given index.
 		 * Precondition: idx < S. Otherwise, this will assert and invoke UB.
 		 * @return The value at the given index.

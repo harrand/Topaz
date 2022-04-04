@@ -9,12 +9,20 @@ namespace tz::phys
 
 	tz::Vec3 ColliderAABB::get_min() const
 	{
-		return this->body.transform.position + this->offset_min;
+		tz::Vec3 scaled_min = this->offset_min;
+		scaled_min[0] *= this->body.transform.scale[0];
+		scaled_min[1] *= this->body.transform.scale[1];
+		scaled_min[2] *= this->body.transform.scale[2];
+		return this->body.transform.position + scaled_min;
 	}
 
 	tz::Vec3 ColliderAABB::get_max() const
 	{
-		return this->body.transform.position + this->offset_max;
+		tz::Vec3 scaled_max = this->offset_max;
+		scaled_max[0] *= this->body.transform.scale[0];
+		scaled_max[1] *= this->body.transform.scale[1];
+		scaled_max[2] *= this->body.transform.scale[2];
+		return this->body.transform.position + scaled_max;
 	}
 
 	tz::Vec3 ColliderAABB::get_offset_midpoint() const
@@ -31,7 +39,7 @@ namespace tz::phys
 	
 
 	template<>
-	CollisionInfo<ColliderAABB, ColliderPoint> collide(Collision<ColliderAABB, ColliderPoint> collision)
+	CollisionInfo<ColliderAABB, ColliderPoint> collide(CollisionScenario<ColliderAABB, ColliderPoint> collision)
 	{
 		tz::Vec3 p = collision.b.get_position();
 		float px = p[0], py = p[1], pz = p[2];
@@ -47,7 +55,7 @@ namespace tz::phys
 	// AABB-AABB Collision
 
 	template<>
-	CollisionInfo<ColliderAABB, ColliderAABB> collide(Collision<ColliderAABB, ColliderAABB> collision)
+	CollisionInfo<ColliderAABB, ColliderAABB> collide(CollisionScenario<ColliderAABB, ColliderAABB> collision)
 	{
 		tz::Vec3 penetration_min, penetration_max;
 		bool collidex = false, collidey = false, collidez = false;

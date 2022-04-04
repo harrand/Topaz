@@ -12,9 +12,9 @@ namespace tz::phys
 	struct ColliderAABB : public ColliderBase
 	{
 		/// Offset from the transform position representing the min extent.
-		tz::Vec3 offset_min;
+		tz::Vec3 offset_min = {0.0f, 0.0f, 0.0f};
 		/// Offset from the transform position representing the max extent.
-		tz::Vec3 offset_max;
+		tz::Vec3 offset_max = {0.0f, 0.0f, 0.0f};
 
 		/**
 		 * Retrieve the volume of the box.
@@ -49,7 +49,7 @@ namespace tz::phys
 	};
 
 	template<>
-	CollisionInfo<ColliderAABB, ColliderPoint> collide(Collision<ColliderAABB, ColliderPoint> collision);
+	CollisionInfo<ColliderAABB, ColliderPoint> collide(CollisionScenario<ColliderAABB, ColliderPoint> collision);
 
 	// AABB-AABB Collision
 
@@ -62,7 +62,7 @@ namespace tz::phys
 	};
 
 	template<>
-	CollisionInfo<ColliderAABB, ColliderAABB> collide(Collision<ColliderAABB, ColliderAABB> collision);
+	CollisionInfo<ColliderAABB, ColliderAABB> collide(CollisionScenario<ColliderAABB, ColliderAABB> collision);
 }
 
 #endif // TOPAZ_PHYS_COLLIDERS_BOX_HPP
