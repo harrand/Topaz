@@ -28,7 +28,7 @@ namespace tz::phys
 	 * Each collider combination should exist as its own specialisation. The use of the generic CollisionInfo<A, B> is ill-formed.
 	 */
 	template<Collider A, Collider B>
-	struct CollisionInfo{};
+	struct CollisionInfo;
 
 	/**
 	 * @ingroup tz_phys_collider
