@@ -1,4 +1,5 @@
 #include "core/tz.hpp"
+#include "core/types.hpp"
 #include "gl/api/renderer.hpp"
 #include "gl/imported_shaders.hpp"
 #include "gl/device.hpp"
@@ -79,6 +80,19 @@ void renderer_edit(tz::gl::Device& dev)
 		tz_assert(data.size() == 1, "After a buffer resource was resized via Renderer edit, the buffer had unexpected size. Expected %u, but got %zu", 1, data.size());
 		tz_assert(data[0] == 5.0f, "After a buffer resource was resized via Renderer edit, the data was not preserved as required (buffer grew in size). Expected {%g} but got {%g}", data[0], 5.0f);
 	}
+}
+
+void semantics()
+{
+	static_assert(!tz::copyable<tz::gl::Renderer>);
+	static_assert(tz::moveable<tz::gl::Renderer>);
+	tz::gl::Device dev;
+	tz::gl::RendererInfo rinfo;
+	rinfo.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(empty, vertex));
+	rinfo.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(empty, fragment));
+	tz::gl::Renderer empty = dev.create_renderer(rinfo);
+	tz::gl::Renderer empty2 = std::move(empty);
+	empty2.render();
 }
 
 int main()

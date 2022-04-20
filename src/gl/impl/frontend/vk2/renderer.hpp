@@ -309,7 +309,9 @@ namespace tz::gl
 		 * @param device_info A renderer is always created by a Device - This constructor is not invoked manually. When the Device does this, it provides some information about the internals; this.
 		 */
 		RendererVulkan(const RendererInfoVulkan& info, const RendererDeviceInfoVulkan& device_info);
+		RendererVulkan(RendererVulkan&& move) = default;
 		~RendererVulkan();
+		RendererVulkan& operator=(RendererVulkan&& rhs) = default;
 		// Satisfies RendererType
 		/**
 		 * Retrieve the number of resources.
