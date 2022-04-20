@@ -2,7 +2,7 @@ namespace tz::gl
 {
 	void CommandProcessor::do_scratch_operations(tz::Action<vk2::CommandBufferRecording&> auto record_commands)
 	{
-		vk2::CommandBuffer scratch_buf = this->commands.buffers.back();
+		vk2::CommandBuffer& scratch_buf = this->commands.buffers.back();
 		{
 			vk2::CommandBufferRecording record = scratch_buf.record();
 			record_commands(record);

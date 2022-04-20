@@ -305,6 +305,22 @@ namespace tz::gl
 		this->create_output_resources(this->window_buffer_images, create_depth_images);
 	}
 
+	OutputManager::OutputManager(OutputManager&& move):
+	output(move.output),
+	ldev(move.ldev),
+	window_buffer_images(std::move(move.window_buffer_images)),
+	window_buffer_depth_images(std::move(move.window_buffer_depth_images)),
+	output_imageviews(std::move(move.output_imageviews)),
+	output_depth_imageviews(std::move(move.output_depth_imageviews)),
+	render_pass(std::move(move.render_pass)),
+	output_framebuffers(std::move(move.output_framebuffers))
+	{
+		for(auto& fb : this->output_framebuffers)
+		{
+			fb.set_render_pass(this->render_pass);
+		}
+	}
+
 	const vk2::RenderPass& OutputManager::get_render_pass() const
 	{
 		return this->render_pass;
@@ -755,6 +771,26 @@ namespace tz::gl
 
 		this->setup_static_resources();
 		this->setup_render_commands();
+	}
+
+	RendererVulkan::RendererVulkan(RendererVulkan&& move):
+	ldev(move.ldev),
+	resources(std::move(move.resources)),
+	output(std::move(move.output)),
+	pipeline(std::move(move.pipeline)),
+	command(std::move(move.command)),
+	maybe_swapchain(move.maybe_swapchain),
+	options(move.options),
+	clear_colour(move.clear_colour),
+	tri_count(move.tri_count),
+	device_resize_callback(move.device_resize_callback),
+	window_resize_callback(move.window_resize_callback)
+	{
+		this->handle_resize
+		({
+			.new_dimensions = this->output.get_output_dimensions(),
+			.new_output_images = this->output.get_output_images()
+		});
 	}
 
 	RendererVulkan::~RendererVulkan()

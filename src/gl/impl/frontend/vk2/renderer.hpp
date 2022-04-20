@@ -106,6 +106,8 @@ namespace tz::gl
 		 * @param ldev Vulkan LogicalDevice which will be used to construct the render-pass and framebuffers etc. Right now we expect this to be the exact same LogicalDevice everywhere throughout this RendererVulkan. However this may change in the future (albeit unlikely tbh).
 		 */
 		OutputManager(const IOutput* output, std::span<vk2::Image> window_buffer_images, bool create_depth_images, const vk2::LogicalDevice& ldev);
+		OutputManager(OutputManager&& move);
+		OutputManager& operator=(OutputManager&& rhs);
 		/**
 		 * Retrieve the render pass used by the renderer.
 		 */
@@ -309,7 +311,7 @@ namespace tz::gl
 		 * @param device_info A renderer is always created by a Device - This constructor is not invoked manually. When the Device does this, it provides some information about the internals; this.
 		 */
 		RendererVulkan(const RendererInfoVulkan& info, const RendererDeviceInfoVulkan& device_info);
-		RendererVulkan(RendererVulkan&& move) = default;
+		RendererVulkan(RendererVulkan&& move);
 		~RendererVulkan();
 		RendererVulkan& operator=(RendererVulkan&& rhs) = default;
 		// Satisfies RendererType

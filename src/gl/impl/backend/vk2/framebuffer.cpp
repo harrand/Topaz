@@ -19,6 +19,7 @@ namespace tz::gl::vk2
 	framebuffer(VK_NULL_HANDLE)
 	{
 		tz_assert(this->info.valid(), "FramebufferInfo was not valid. Please submit a bug report.");
+		tz_assert(info.attachments.length() == info.render_pass->get_info().attachments.length(), "Framebuffer had unexpected number of attachments. Provided %zu attachments, but associated renderpass only supports %zu attachments.", info.attachments.length(), info.render_pass->get_info().attachments.length());
 		std::vector<ImageView::NativeType> view_natives(info.attachments.length());
 		std::transform(info.attachments.begin(), info.attachments.end(), view_natives.begin(),
 		[](const ImageView* view) -> ImageView::NativeType
@@ -107,6 +108,11 @@ namespace tz::gl::vk2
 	tz::BasicList<ImageView*> Framebuffer::get_attachment_views()
 	{
 		return this->info.attachments;
+	}
+
+	void Framebuffer::set_render_pass(RenderPass& render_pass)
+	{
+		this->info.render_pass = &render_pass;
 	}
 
 	Framebuffer::NativeType Framebuffer::native() const
