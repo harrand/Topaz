@@ -81,8 +81,7 @@ int main()
 		tz::gl::ResourceHandle imgh = rinfo.add_resource(img);
 		tz::gl::ResourceHandle bufh = rinfo.add_resource(buf);
 
-		tz::gl::Renderer renderero = dev.create_renderer(rinfo);
-		tz::gl::Renderer renderer = std::move(renderero);
+		tz::gl::Renderer renderer = dev.create_renderer(rinfo);
 		std::default_random_engine rand;
 
 		while(!tz::window().is_close_requested())
