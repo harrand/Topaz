@@ -1,5 +1,5 @@
-#include "gl/impl/backend/vk2/tz_vulkan.hpp"
 #if TZ_VULKAN
+#include "gl/impl/backend/vk2/tz_vulkan.hpp"
 #include "core/profiling/zone.hpp"
 #include "gl/declare/image_format.hpp"
 #include "gl/impl/backend/vk2/fixed_function.hpp"
@@ -161,6 +161,23 @@ namespace tz::gl
 		tz_assert(this->descriptors.success(), "Descriptor Pool allocation failed. Please submit a bug report.");
 		this->sync_descriptors(true);
 	}
+
+	ResourceStorage::ResourceStorage(ResourceStorage&& move):
+	AssetStorageCommon<IResource>(static_cast<AssetStorageCommon<IResource>&&>(move)),
+	components(std::move(move.components)),
+	image_component_views(std::move(move.image_component_views)),
+	basic_sampler(std::move(move.basic_sampler)),
+	descriptor_layout(std::move(move.descriptor_layout)),
+	descriptor_pool(std::move(move.descriptor_pool)),
+	descriptors(std::move(move.descriptors)),
+	frame_in_flight_count(move.frame_in_flight_count)
+	{
+		for(auto& set : descriptors.sets)
+		{
+			set.set_layout(this->descriptor_layout);
+		}
+	}
+			
 
 	const IComponent* ResourceStorage::get_component(ResourceHandle handle) const
 	{

@@ -352,6 +352,11 @@ namespace tz::gl::vk2
 		return *this->layout;
 	}
 
+	void DescriptorSet::set_layout(DescriptorLayout& layout)
+	{
+		this->layout = &layout;
+	}
+
 	DescriptorSet::EditRequest DescriptorSet::make_edit_request()
 	{
 		return {*this};

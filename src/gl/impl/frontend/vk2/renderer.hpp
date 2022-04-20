@@ -45,6 +45,7 @@ namespace tz::gl
 		 * @param ldev Vulkan LogicalDevice, this will be used to handle the various components and vulkan descriptor shenanigans.
 		 */
 		ResourceStorage(std::span<const IResource* const> resources, const vk2::LogicalDevice& ldev, std::size_t frame_in_flight_count);
+		ResourceStorage(ResourceStorage&& move);
 		/**
 		 * Retrieve the component (read-only) which stores the corresponding vulkan backend objects for the resource corresponding to the handle.
 		 * @param handle Handle whose resource's component needs to be retrieved. The handle must have referred to one of the initial resources passed to the constructor, otherwise the behaviour is undefined.

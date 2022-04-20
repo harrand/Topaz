@@ -316,6 +316,7 @@ namespace tz::gl::vk2
 		 * @return Layout of this DescriptorSet.
 		 */
 		const DescriptorLayout& get_layout() const;
+		void set_layout(DescriptorLayout& layout);
 		/**
 		 * Retrieve an empty request for this set. You can use this to request changes to existing descriptors within this set.
 		 * @note This only represents a *request* to make changes. To submit requests, this request must be passed to a @ref DescriptorPool::UpdateRequest.
