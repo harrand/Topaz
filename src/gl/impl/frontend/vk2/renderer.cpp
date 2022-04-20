@@ -172,10 +172,26 @@ namespace tz::gl
 	descriptors(std::move(move.descriptors)),
 	frame_in_flight_count(move.frame_in_flight_count)
 	{
-		for(auto& set : descriptors.sets)
+		for(auto& set : this->descriptors.sets)
 		{
 			set.set_layout(this->descriptor_layout);
 		}
+	}
+
+	ResourceStorage& ResourceStorage::operator=(ResourceStorage&& rhs)
+	{
+		std::swap(this->components, rhs.components);
+		std::swap(this->image_component_views, rhs.image_component_views);
+		std::swap(this->basic_sampler, rhs.basic_sampler);
+		std::swap(this->descriptor_layout, rhs.descriptor_layout);
+		std::swap(this->descriptor_pool, rhs.descriptor_pool);
+		std::swap(this->descriptors, rhs.descriptors);
+		std::swap(this->frame_in_flight_count, rhs.frame_in_flight_count);
+		for(auto& set : this->descriptors.sets)
+		{
+			set.set_layout(this->descriptor_layout);
+		}
+		return *this;
 	}
 			
 
@@ -336,6 +352,23 @@ namespace tz::gl
 		{
 			fb.set_render_pass(this->render_pass);
 		}
+	}
+
+	OutputManager& OutputManager::operator=(OutputManager&& rhs)
+	{
+		std::swap(this->output, rhs.output);
+		std::swap(this->ldev, rhs.ldev);
+		std::swap(this->window_buffer_images, rhs.window_buffer_images);
+		std::swap(this->window_buffer_depth_images, rhs.window_buffer_depth_images);
+		std::swap(this->output_imageviews, rhs.output_imageviews);
+		std::swap(this->output_depth_imageviews, rhs.output_depth_imageviews);
+		std::swap(this->render_pass, rhs.render_pass);
+		std::swap(this->output_framebuffers, rhs.output_framebuffers);
+		for(auto& fb : this->output_framebuffers)
+		{
+			fb.set_render_pass(this->render_pass);
+		}
+		return *this;
 	}
 
 	const vk2::RenderPass& OutputManager::get_render_pass() const
@@ -818,6 +851,27 @@ namespace tz::gl
 			this->window_resize_callback = tz::nullhand;
 		}
 		this->ldev->wait_until_idle();
+	}
+
+	RendererVulkan& RendererVulkan::operator=(RendererVulkan&& rhs)
+	{
+		std::swap(this->ldev, rhs.ldev);
+		std::swap(this->resources, rhs.resources);
+		std::swap(this->output, rhs.output);
+		std::swap(this->pipeline, rhs.pipeline);
+		std::swap(this->command, rhs.command);
+		std::swap(this->maybe_swapchain, rhs.maybe_swapchain);
+		std::swap(this->options, rhs.options);
+		std::swap(this->clear_colour, rhs.clear_colour);
+		std::swap(this->tri_count, rhs.tri_count);
+		std::swap(this->device_resize_callback, rhs.device_resize_callback);
+		std::swap(this->window_resize_callback, rhs.window_resize_callback);
+		this->handle_resize
+		({
+			.new_dimensions = this->output.get_output_dimensions(),
+			.new_output_images = this->output.get_output_images()
+		});
+		return *this;
 	}
 
 	unsigned int RendererVulkan::resource_count() const

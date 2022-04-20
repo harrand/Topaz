@@ -46,6 +46,8 @@ namespace tz::gl
 		 */
 		ResourceStorage(std::span<const IResource* const> resources, const vk2::LogicalDevice& ldev, std::size_t frame_in_flight_count);
 		ResourceStorage(ResourceStorage&& move);
+		~ResourceStorage() = default;
+		ResourceStorage& operator=(ResourceStorage&& rhs);
 		/**
 		 * Retrieve the component (read-only) which stores the corresponding vulkan backend objects for the resource corresponding to the handle.
 		 * @param handle Handle whose resource's component needs to be retrieved. The handle must have referred to one of the initial resources passed to the constructor, otherwise the behaviour is undefined.
@@ -108,6 +110,7 @@ namespace tz::gl
 		 */
 		OutputManager(const IOutput* output, std::span<vk2::Image> window_buffer_images, bool create_depth_images, const vk2::LogicalDevice& ldev);
 		OutputManager(OutputManager&& move);
+		~OutputManager() = default;
 		OutputManager& operator=(OutputManager&& rhs);
 		/**
 		 * Retrieve the render pass used by the renderer.
@@ -314,7 +317,7 @@ namespace tz::gl
 		RendererVulkan(const RendererInfoVulkan& info, const RendererDeviceInfoVulkan& device_info);
 		RendererVulkan(RendererVulkan&& move);
 		~RendererVulkan();
-		RendererVulkan& operator=(RendererVulkan&& rhs) = default;
+		RendererVulkan& operator=(RendererVulkan&& rhs);
 		// Satisfies RendererType
 		/**
 		 * Retrieve the number of resources.
