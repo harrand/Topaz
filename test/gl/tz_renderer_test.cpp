@@ -82,6 +82,17 @@ void renderer_edit(tz::gl::Device& dev)
 	}
 }
 
+void resize_window(tz::gl::Device& dev)
+{
+	tz::gl::RendererInfo rinfo;
+	rinfo.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(empty, vertex));
+	rinfo.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(empty, fragment));
+	tz::gl::Renderer empty = dev.create_renderer(rinfo);
+	empty.render();
+	tz::window().set_width(tz::window().get_width() + 10.0f);
+	empty.render();
+}
+
 void semantics(tz::gl::Device& dev)
 {
 	static_assert(!tz::copyable<tz::gl::Renderer>);
@@ -110,6 +121,7 @@ int main()
 		empty_renderer(dev);
 		renderer_creation(dev);
 		renderer_edit(dev);
+		resize_window(dev);
 		semantics(dev);
 	}
 	tz::terminate();

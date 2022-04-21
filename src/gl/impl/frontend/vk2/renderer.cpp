@@ -570,6 +570,26 @@ namespace tz::gl
 		//tz_assert(dlayout.get_device() == render_pass.get_device(), "");
 	}
 
+	GraphicsPipelineManager::GraphicsPipelineManager(GraphicsPipelineManager&& move):
+	shader(std::move(move.shader)),
+	pipeline_layout(std::move(move.pipeline_layout)),
+	graphics_pipeline(std::move(move.graphics_pipeline)),
+	depth_testing_enabled(move.depth_testing_enabled)
+	{
+		this->graphics_pipeline.set_layout(this->pipeline_layout);
+	}
+
+	GraphicsPipelineManager& GraphicsPipelineManager::operator=(GraphicsPipelineManager&& rhs)
+	{
+		std::swap(this->shader, rhs.shader);
+		std::swap(this->pipeline_layout, rhs.pipeline_layout);
+		std::swap(this->graphics_pipeline, rhs.graphics_pipeline);
+		std::swap(this->depth_testing_enabled, rhs.depth_testing_enabled);
+		this->graphics_pipeline.set_layout(this->pipeline_layout);
+
+		return *this;
+	}
+
 	const vk2::GraphicsPipeline& GraphicsPipelineManager::get_pipeline() const
 	{
 		return this->graphics_pipeline;
@@ -836,11 +856,9 @@ namespace tz::gl
 	device_resize_callback(move.device_resize_callback),
 	window_resize_callback(move.window_resize_callback)
 	{
-		this->handle_resize
-		({
-			.new_dimensions = this->output.get_output_dimensions(),
-			.new_output_images = this->output.get_output_images()
-		});
+		this->device_resize_callback->remove_callback(move.window_resize_callback);
+		this->device_resize_callback->remove_callback(this->window_resize_callback);
+		this->window_resize_callback = this->device_resize_callback->add_callback([this](RendererResizeInfoVulkan resize_info){this->handle_resize(resize_info);});
 	}
 
 	RendererVulkan::~RendererVulkan()
@@ -866,11 +884,9 @@ namespace tz::gl
 		std::swap(this->tri_count, rhs.tri_count);
 		std::swap(this->device_resize_callback, rhs.device_resize_callback);
 		std::swap(this->window_resize_callback, rhs.window_resize_callback);
-		this->handle_resize
-		({
-			.new_dimensions = this->output.get_output_dimensions(),
-			.new_output_images = this->output.get_output_images()
-		});
+		this->device_resize_callback->remove_callback(rhs.window_resize_callback);
+		this->device_resize_callback->remove_callback(this->window_resize_callback);
+		this->window_resize_callback = this->device_resize_callback->add_callback([this](RendererResizeInfoVulkan resize_info){this->handle_resize(resize_info);});
 		return *this;
 	}
 

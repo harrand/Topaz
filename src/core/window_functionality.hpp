@@ -35,6 +35,8 @@ namespace tz
 		 * Retrieve the height of the window, in pixels.
 		 */
 		float get_height() const;
+		void set_width(float width);
+		void set_height(float height);
 		/**
 		 * Retrieve the callback object for when the window is resized.
 		 */
@@ -74,6 +76,7 @@ namespace tz
 		ResizeCallbackType window_resize_callbacks;
 	private:
 		std::pair<int, int> get_size() const;
+		void set_size(int w, int h);
 		void ensure() const;
 
 		KeyboardState kb_state;

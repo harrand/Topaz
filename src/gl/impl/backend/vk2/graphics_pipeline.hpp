@@ -55,6 +55,7 @@ namespace tz::gl::vk2
 
 		const LogicalDevice& get_device() const;
 		const GraphicsPipelineInfo& get_info() const;
+		void set_layout(PipelineLayout& layout);
 
 		using NativeType = VkPipeline;
 		NativeType native() const;

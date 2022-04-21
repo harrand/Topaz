@@ -44,6 +44,16 @@ namespace tz
 		return static_cast<float>(this->get_size().second);
 	}
 
+	void WindowFunctionality::set_width(float width)
+	{
+		this->set_size(width, this->get_height());
+	}
+
+	void WindowFunctionality::set_height(float height)
+	{
+		this->set_size(this->get_width(), height);
+	}
+
 	WindowFunctionality::ResizeCallbackType& WindowFunctionality::on_resize()
 	{
 		return this->window_resize_callbacks;
@@ -187,6 +197,11 @@ namespace tz
 		int w, h;
 		glfwGetFramebufferSize(this->wnd, &w, &h);
 		return {w, h};
+	}
+
+	void WindowFunctionality::set_size(int w, int h)
+	{
+		glfwSetWindowSize(this->wnd, w, h);
 	}
 
 	void WindowFunctionality::ensure() const

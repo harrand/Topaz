@@ -154,6 +154,11 @@ namespace tz::gl::vk2
 		return this->info;
 	}
 
+	void GraphicsPipeline::set_layout(PipelineLayout& layout)
+	{
+		this->info.pipeline_layout = &layout;
+	}
+
 	GraphicsPipeline::NativeType GraphicsPipeline::native() const
 	{
 		return this->pipeline;
