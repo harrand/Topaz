@@ -8,12 +8,21 @@
 
 #include ImportedShaderHeader(empty, vertex)
 #include ImportedShaderHeader(empty, fragment)
+#include ImportedShaderHeader(empty, compute)
 
 void empty_renderer(tz::gl::Device& dev)
 {
 	tz::gl::RendererInfo rinfo;
 	rinfo.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(empty, vertex));
 	rinfo.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(empty, fragment));
+	tz::gl::Renderer empty = dev.create_renderer(rinfo);
+	empty.render();
+}
+
+void empty_renderer_compute(tz::gl::Device& dev)
+{
+	tz::gl::RendererInfo rinfo;
+	rinfo.shader().set_shader(tz::gl::ShaderStage::Compute, ImportedShaderSource(empty, compute));
 	tz::gl::Renderer empty = dev.create_renderer(rinfo);
 	empty.render();
 }
@@ -119,6 +128,7 @@ int main()
 	{
 		tz::gl::Device dev;
 		empty_renderer(dev);
+		//empty_renderer_compute(dev);
 		renderer_creation(dev);
 		renderer_edit(dev);
 		resize_window(dev);

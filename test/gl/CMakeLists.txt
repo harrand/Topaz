@@ -13,4 +13,5 @@ add_tz_test(NAME tz_renderer_test
 	SHADER_SOURCES
 		test/gl/empty.vertex.tzsl
 		test/gl/empty.fragment.tzsl
+		test/gl/empty.compute.tzsl
 	)

@@ -261,7 +261,7 @@ namespace tz::gl
 	clear_colour(info.get_clear_colour()),
 	options(info.get_options())
 	{
-
+		tz_assert(!info.shader().has_shader(ShaderStage::Compute), "Compute Shaders are not yet implemented.");
 	}
 
 	unsigned int RendererOGL::resource_count() const
