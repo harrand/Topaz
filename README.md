@@ -21,7 +21,7 @@
 	* Vulkan configuration fully supports headless rendering
  * Strongly adheres to OOP
  
- [Topaz 3.1](https://github.com/Harrand/Topaz/tree/Topaz3.1) is the most recent release of the Topaz Engine. The next version will be version 3.2.
+ [Topaz 3.2](https://github.com/Harrand/Topaz/tree/Topaz3.2) is the most recent release of the Topaz Engine. The next version will be version 3.3.
 
 The Topaz project has been ongoing since it began as a school project in 2015.
 
@@ -29,13 +29,12 @@ The Topaz project has been ongoing since it began as a school project in 2015.
 
 | Topaz Version | Release Date | Branch      | Documentation        |
 |:-------------:|:-------------|-------------|----------------------|
-| 3.2           |TBA|[master](https://github.com/Harrand/Topaz/tree/master)| [harrand.github.io](https://harrand.github.io/Topaz/) |
+| 3.3           |TBA|[master](https://github.com/Harrand/Topaz/tree/master)| [harrand.github.io](https://harrand.github.io/Topaz/) |
+| 3.2           |Apr 23, 2022|[Topaz3.2](https://github.com/Harrand/Topaz/tree/Topaz3.2)| [Branch: gh-pages-tz3.2](https://github.com/Harrand/Topaz/tree/gh-pages-tz3.2) |
 | 3.1           |Feb 13, 2022|[Topaz3.1](https://github.com/Harrand/Topaz/tree/Topaz3.1)| [Branch: gh-pages-tz3.1](https://github.com/Harrand/Topaz/tree/gh-pages-tz3.1) |
 | 3.0           |Sep 17, 2021| [Topaz3.0](https://github.com/Harrand/Topaz/tree/Topaz3.0)|[Branch: gh-pages-tz3](https://github.com/Harrand/Topaz/tree/gh-pages-tz3)|
 | 2.0           |May 9, 2021|[Topaz2.0](https://github.com/Harrand/Topaz/tree/Topaz2.0)|[Branch: gh-pages-tz2](https://github.com/Harrand/Topaz/tree/gh-pages-tz2)|
 | 1.0 |Sep 25, 2020|[Topaz1.0](https://github.com/Harrand/Topaz/tree/Topaz1.0)|[Branch: gh-pages-tz1](https://github.com/Harrand/Topaz/tree/gh-pages-tz1)|
-
-Note that the [Wiki](https://github.com/Harrand/Topaz/wiki) is only associated with version 3.0 or later.
 
 ## Dependencies
 
