@@ -146,13 +146,12 @@ namespace tz
 }
 #include "core/tz.inl"
 
-/*! @mainpage Topaz Home
- * # Topaz Documentation
+/*! @mainpage Home
  * ## Introduction
  *
  * Welcome to the home page of the Topaz documentation. Here you can find detailed information about the vast majority of modules, classes and functions within the Topaz engine.
  *
- * If you've come here looking for documentation for a specific topaz technology, you can view documentation for all modules above and peruse at your heart's content. Alternatively, you can search for a specific name on the top-right. Oftentimes you will find usages of most topaz functionality in the existing demos and tests.
+ * If you've come here looking for documentation for a specific topaz technology, you can view documentation for all modules at your heart's content. Oftentimes you will find usages of most topaz functionality in the existing demos and tests.
  *
  * If you're looking for an introduction to the engine, you're best suited to visiting [the wiki](https://github.com/Harrand/Topaz/wiki).
  *
