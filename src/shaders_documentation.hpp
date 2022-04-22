@@ -1,5 +1,6 @@
 /**
- * @page tzsl Topaz Shader Language
+ * @page shaders Shaders
+ * @section tzsl Topaz Shader Language
  * @section Introduction
  * TZSL is a high-level shading language with a syntax very similar to the OpenGL Shading Language (GLSL). While GLSL has slightly different dialects for different render APIs (such as OpenGL and Vulkan), TZSL shaders can be used for all render-API builds.
  *
@@ -93,6 +94,7 @@
  *
  * Note: The example above is actually ill-formed -- An image and buffer resource are specified, but they share the same id which is impossible; a resource is either a buffer or an image resource, never both.
  * @section bif Built-in Functions
+ * @subsection bif_printf tz_printf
  * `void tz_printf(fmt: string-literal, ...)`
  * @note This is only available for Vulkan Debug builds. Otherwise, compiles down to no-op.
  *
@@ -106,17 +108,13 @@
  *	<li>In the 'Event Browser', navigate to the draw call that invokes the shader.</li>
  *	<li>You should see 'X msg(s)' annotated on the draw call. Click on this to see each printf invocation.</li>
  * </ol>
- * @subsection tz_printf_params Parameters
- * @subsubsection debug_printf_fmt_str fmt
- * String-literal specifying how to interpret the data. Regarding scalar types, format modifiers match that of C's `printf` function. However, format modifiers also exist for the built-in GLSL vector types.
- *
- * Format for specifier is "%"precision <d, i, o, u, x, X, a, A, e, E, f, F, g, G, ul, lu, lx>
- *
- * Format for vector specifier is "%"precision"v" [2, 3, 4] [specifiers above]
- *
- * @subsubsection debug_printf_fmt_varargs ...
- * Arguments specifying data to print. There must be an entry for each format modifier within the format string. Like `printf`, if no modifiers were specified in the format string, this parameter can be omitted.
- * @subsection debug_printf_example Examples
+ * @subsubsection tz_printf_params Parameters
+ * The parameters are much like C `printf`:
+ * - String-literal specifying how to interpret the data. Regarding scalar types, format modifiers match that of C's `printf` function. However, format modifiers also exist for the built-in GLSL vector types.
+ * 	- Format for specifier is "%"precision <d, i, o, u, x, X, a, A, e, E, f, F, g, G, ul, lu, lx>
+ * 	- Format for vector specifier is "%"precision"v" [2, 3, 4] [specifiers above]
+ * - Arguments specifying data to print. There must be an entry for each format modifier within the format string. Like `printf`, if no modifiers were specified in the format string, this parameter can be omitted.
+ * @subsubsection debug_printf_example Examples
  * Here are a few example usages:
  * ```c
  * float myfloat = 3.1415f;
