@@ -5,7 +5,7 @@
 #---------------------------------------------------------------------------
 DOXYFILE_ENCODING      = UTF-8
 PROJECT_NAME           = "Topaz"
-PROJECT_NUMBER         = "3.2 Alpha"
+PROJECT_NUMBER         = "3.2"
 PROJECT_BRIEF          = "C++20 Graphics Engine"
 PROJECT_LOGO           = doc/tz.png
 OUTPUT_DIRECTORY       = ./doc
