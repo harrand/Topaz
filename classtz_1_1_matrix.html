@@ -1,16 +1,19 @@
-<!-- HTML header for doxygen 1.8.8-->
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
-    <head>
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <!-- For Mobile Devices -->
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-        <meta name="generator" content="Doxygen 1.9.2"/>
-        <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-        <title>Topaz 3.1 Documentation</title>
-        <script type="text/javascript" src="dynsections.js"></script>
-        <link href="search/search.css" rel="stylesheet" type="text/css"/>
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.3"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Topaz: tz::Matrix&lt; T, R, C &gt; Class Template Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
 <script type="text/javascript">
@@ -18,29 +21,22 @@
   $(document).ready(function() { init_search(); });
 /* @license-end */
 </script>
-        <link href="custom_dark_theme.css" rel="stylesheet" type="text/css" />
-        <link href="custom.css" rel="stylesheet" type="text/css"/>
-<link href="custom_dark_theme.css" rel="stylesheet" type="text/css"/>
-        <script type="text/javascript" src="doxy-boot.js"></script>
-        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-        <link rel="manifest" href="/site.webmanifest">
-        <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
-        <meta name="msapplication-TileColor" content="#da532c">
-        <meta name="theme-color" content="#ffffff">
-    </head>
-    <body>
-        <nav class="navbar navbar-default" role="navigation">
-            <div class="container">
-                <div class="navbar-header">
-                    <a class="navbar-brand"><img src = "tz.png" width="2%" height="2%"></a>
-                    <a class="navbar-brand" href="index.html" style="font-size: xx-large; text-decoration: none;">Topaz</a>
-                    <a class="navbar-brand" href="modules.html">Modules</a>
-                    <a class="navbar-brand" href="annotated.html">Classes</a>
-                    <a class="navbar-brand" href="tools.html">Tools</a>
-                    <a class="navbar-brand" href="tzsl.html">TZSL</a>
-                            <div id="MSearchBox" class="MSearchBoxInactive">
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectlogo"><img alt="Logo" src="tz.png"/></td>
+  <td id="projectalign">
+   <div id="projectname">Topaz<span id="projectnumber">&#160;3.2</span>
+   </div>
+   <div id="projectbrief">C++20 Graphics Engine</div>
+  </td>
+    <td>        <div id="MSearchBox" class="MSearchBoxInactive">
         <span class="left">
           <img id="MSearchSelect" src="search/mag_sel.svg"
                onmouseover="return searchBox.OnSearchSelectShow()"
@@ -54,21 +50,35 @@
             <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
           </span>
         </div>
-                </div>
-            </div>
-        </nav>
-        <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
-            <div class="content" id="content">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-sm-12 panel " style="padding-bottom: 15px;">
-                            <div style="margin-bottom: 15px;">
-<!-- end header part --><!-- Generated by Doxygen 1.9.2 -->
+</td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.9.3 -->
 <script type="text/javascript">
 /* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
 var searchBox = new SearchBox("searchBox", "search",'Search','.html');
 /* @license-end */
 </script>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(document).ready(function(){initNavTree('classtz_1_1_matrix.html',''); initResizable(); });
+/* @license-end */
+</script>
+<div id="doc-content">
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"
@@ -83,18 +93,12 @@ var searchBox = new SearchBox("searchBox", "search",'Search','.html');
 </iframe>
 </div>
 
-<div id="nav-path" class="navpath">
-  <ul>
-<li class="navelem"><b>tz</b></li><li class="navelem"><a class="el" href="classtz_1_1_matrix.html">Matrix</a></li>  </ul>
-</div>
-</div><!-- top -->
 <div class="header">
   <div class="summary">
 <a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
-<a href="classtz_1_1_matrix-members.html">List of all members</a>  </div>
-  <div class="headertitle"><div class="title">tz::Matrix&lt; T, R, C &gt; Class Template Reference<div class="ingroups"><a class="el" href="group__tz__core.html">Topaz Core Library (tz)</a></div></div></div>
+<a href="#pub-static-methods">Static Public Member Functions</a>  </div>
+  <div class="headertitle"><div class="title">tz::Matrix&lt; T, R, C &gt; Class Template Reference<div class="ingroups"><a class="el" href="group__tz__core.html">Core Libraries (tz)</a> &raquo; <a class="el" href="group__tz__core__vecmat.html">Vectors and Matrices</a></div></div></div>
 </div><!--header-->
 <div class="contents">
 
@@ -209,7 +213,7 @@ template&lt;<a class="el" href="concepttz_1_1_number.html">tz::Number</a> T, std
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classtz_1_1_matrix.html">tz::Matrix</a>&lt; T, R, C &gt;::<a class="el" href="classtz_1_1_matrix.html">Matrix</a> </td>
+          <td class="memname"><a class="el" href="classtz_1_1_matrix.html">tz::Matrix</a>&lt; T, R, C &gt;::Matrix </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -236,7 +240,7 @@ template&lt;<a class="el" href="concepttz_1_1_number.html">tz::Number</a> T, std
 template&lt;<a class="el" href="concepttz_1_1_number.html">tz::Number</a> T, std::size_t R, std::size_t C&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classtz_1_1_matrix.html">tz::Matrix</a>&lt; T, R, C &gt;::<a class="el" href="classtz_1_1_matrix.html">Matrix</a> </td>
+          <td class="memname"><a class="el" href="classtz_1_1_matrix.html">tz::Matrix</a>&lt; T, R, C &gt;::Matrix </td>
           <td>(</td>
           <td class="paramtype">std::array&lt; std::array&lt; T, R &gt;, C &gt;&#160;</td>
           <td class="paramname"><em>data</em></td><td>)</td>
@@ -829,7 +833,7 @@ template&lt;<a class="el" href="concepttz_1_1_number.html">tz::Number</a> T, std
 template&lt;<a class="el" href="concepttz_1_1_number.html">tz::Number</a> T, std::size_t R, std::size_t C&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classtz_1_1_matrix.html">Matrix</a>&lt; T, R, C &gt;::<a class="el" href="classtz_1_1_matrix.html#a50ef4911814e693caafba0b1d506e612">Row</a> &amp; <a class="el" href="classtz_1_1_matrix.html">tz::Matrix</a>&lt; T, R, C &gt;::operator[] </td>
+          <td class="memname"><a class="el" href="classtz_1_1_matrix.html">Matrix</a>&lt; T, R, C &gt;<a class="el" href="classtz_1_1_matrix.html#a50ef4911814e693caafba0b1d506e612">::Row</a> &amp; <a class="el" href="classtz_1_1_matrix.html">tz::Matrix</a>&lt; T, R, C &gt;::operator[] </td>
           <td>(</td>
           <td class="paramtype">std::size_t&#160;</td>
           <td class="paramname"><em>row_idx</em></td><td>)</td>
@@ -858,7 +862,7 @@ template&lt;<a class="el" href="concepttz_1_1_number.html">tz::Number</a> T, std
 template&lt;<a class="el" href="concepttz_1_1_number.html">tz::Number</a> T, std::size_t R, std::size_t C&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">const <a class="el" href="classtz_1_1_matrix.html">Matrix</a>&lt; T, R, C &gt;::<a class="el" href="classtz_1_1_matrix.html#a50ef4911814e693caafba0b1d506e612">Row</a> &amp; <a class="el" href="classtz_1_1_matrix.html">tz::Matrix</a>&lt; T, R, C &gt;::operator[] </td>
+          <td class="memname">const <a class="el" href="classtz_1_1_matrix.html">Matrix</a>&lt; T, R, C &gt;<a class="el" href="classtz_1_1_matrix.html#a50ef4911814e693caafba0b1d506e612">::Row</a> &amp; <a class="el" href="classtz_1_1_matrix.html">tz::Matrix</a>&lt; T, R, C &gt;::operator[] </td>
           <td>(</td>
           <td class="paramtype">std::size_t&#160;</td>
           <td class="paramname"><em>row_idx</em></td><td>)</td>
@@ -897,22 +901,14 @@ template&lt;<a class="el" href="concepttz_1_1_number.html">tz::Number</a> T, std
 
 </div>
 </div>
-<hr/>The documentation for this class was generated from the following files:<ul>
-<li>src/core/<a class="el" href="matrix_8hpp_source.html">matrix.hpp</a></li>
-<li>src/core/matrix.inl</li>
-</ul>
 </div><!-- contents -->
+</div><!-- doc-content -->
 <!-- start footer part -->
-<hr class="footer"/><address class="footer"><small>
-    <nav class="navbar navbar-default" role="navigation">
-        <div class="container">
-            <div class="navbar-header">
-                <a class="navbar-brand" href="https://github.com/Harrand/Topaz" style="margin-right: 10px;">GitHub: topaz-master</a>
-                <a class="navbar-brand" href="https://harrand.github.io/" style="margin-right: 10px;">harrand.github.io</a>
-            </div>
-        </div>
-    </nav>
-    <p>Generated: Wed Sep 29 2021 01:11:50</p>
-</small></address>
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><b>tz</b></li><li class="navelem"><a class="el" href="classtz_1_1_matrix.html">Matrix</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.3 </li>
+  </ul>
+</div>
 </body>
 </html>

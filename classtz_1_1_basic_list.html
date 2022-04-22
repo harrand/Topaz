@@ -1,16 +1,19 @@
-<!-- HTML header for doxygen 1.8.8-->
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
-    <head>
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <!-- For Mobile Devices -->
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-        <meta name="generator" content="Doxygen 1.9.2"/>
-        <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-        <title>Topaz 3.1 Documentation</title>
-        <script type="text/javascript" src="dynsections.js"></script>
-        <link href="search/search.css" rel="stylesheet" type="text/css"/>
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.3"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Topaz: tz::BasicList&lt; T, Allocator &gt; Class Template Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
 <script type="text/javascript">
@@ -18,29 +21,22 @@
   $(document).ready(function() { init_search(); });
 /* @license-end */
 </script>
-        <link href="custom_dark_theme.css" rel="stylesheet" type="text/css" />
-        <link href="custom.css" rel="stylesheet" type="text/css"/>
-<link href="custom_dark_theme.css" rel="stylesheet" type="text/css"/>
-        <script type="text/javascript" src="doxy-boot.js"></script>
-        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-        <link rel="manifest" href="/site.webmanifest">
-        <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
-        <meta name="msapplication-TileColor" content="#da532c">
-        <meta name="theme-color" content="#ffffff">
-    </head>
-    <body>
-        <nav class="navbar navbar-default" role="navigation">
-            <div class="container">
-                <div class="navbar-header">
-                    <a class="navbar-brand"><img src = "tz.png" width="2%" height="2%"></a>
-                    <a class="navbar-brand" href="index.html" style="font-size: xx-large; text-decoration: none;">Topaz</a>
-                    <a class="navbar-brand" href="modules.html">Modules</a>
-                    <a class="navbar-brand" href="annotated.html">Classes</a>
-                    <a class="navbar-brand" href="tools.html">Tools</a>
-                    <a class="navbar-brand" href="tzsl.html">TZSL</a>
-                            <div id="MSearchBox" class="MSearchBoxInactive">
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectlogo"><img alt="Logo" src="tz.png"/></td>
+  <td id="projectalign">
+   <div id="projectname">Topaz<span id="projectnumber">&#160;3.2</span>
+   </div>
+   <div id="projectbrief">C++20 Graphics Engine</div>
+  </td>
+    <td>        <div id="MSearchBox" class="MSearchBoxInactive">
         <span class="left">
           <img id="MSearchSelect" src="search/mag_sel.svg"
                onmouseover="return searchBox.OnSearchSelectShow()"
@@ -54,21 +50,35 @@
             <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
           </span>
         </div>
-                </div>
-            </div>
-        </nav>
-        <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
-            <div class="content" id="content">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-sm-12 panel " style="padding-bottom: 15px;">
-                            <div style="margin-bottom: 15px;">
-<!-- end header part --><!-- Generated by Doxygen 1.9.2 -->
+</td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.9.3 -->
 <script type="text/javascript">
 /* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
 var searchBox = new SearchBox("searchBox", "search",'Search','.html');
 /* @license-end */
 </script>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(document).ready(function(){initNavTree('classtz_1_1_basic_list.html',''); initResizable(); });
+/* @license-end */
+</script>
+<div id="doc-content">
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"
@@ -83,126 +93,655 @@ var searchBox = new SearchBox("searchBox", "search",'Search','.html');
 </iframe>
 </div>
 
-<div id="nav-path" class="navpath">
-  <ul>
-<li class="navelem"><b>tz</b></li><li class="navelem"><a class="el" href="classtz_1_1_basic_list.html">BasicList</a></li>  </ul>
-</div>
-</div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#pub-types">Public Types</a> &#124;
-<a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="classtz_1_1_basic_list-members.html">List of all members</a>  </div>
-  <div class="headertitle"><div class="title">tz::BasicList&lt; T, Allocator &gt; Class Template Reference<div class="ingroups"><a class="el" href="group__tz__core.html">Topaz Core Library (tz)</a></div></div></div>
+<a href="#pub-methods">Public Member Functions</a>  </div>
+  <div class="headertitle"><div class="title">tz::BasicList&lt; T, Allocator &gt; Class Template Reference<div class="ingroups"><a class="el" href="group__tz__core.html">Core Libraries (tz)</a> &raquo; <a class="el" href="group__tz__core__containers.html">Containers</a></div></div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>Custom list, feature subset of <code>std::vector</code>.  
+ <a href="classtz_1_1_basic_list.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="basic__list_8hpp_source.html">basic_list.hpp</a>&gt;</code></p>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
-Public Types</h2></td></tr>
-<tr class="memitem:abcd0a58811dd3ef076ff585a9d4625a1"><td class="memItemLeft" align="right" valign="top"><a id="abcd0a58811dd3ef076ff585a9d4625a1" name="abcd0a58811dd3ef076ff585a9d4625a1"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>Iterator</b> = typename UnderlyingList::iterator</td></tr>
-<tr class="separator:abcd0a58811dd3ef076ff585a9d4625a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0f21a53e6fa55d2aaa31acdf048e1b2b"><td class="memItemLeft" align="right" valign="top"><a id="a0f21a53e6fa55d2aaa31acdf048e1b2b" name="a0f21a53e6fa55d2aaa31acdf048e1b2b"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>ConstIterator</b> = typename UnderlyingList::const_iterator</td></tr>
-<tr class="separator:a0f21a53e6fa55d2aaa31acdf048e1b2b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a676608deaf46660290d9f8db590b364d"><td class="memItemLeft" align="right" valign="top"><a id="a676608deaf46660290d9f8db590b364d" name="a676608deaf46660290d9f8db590b364d"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>BasicList</b> (std::initializer_list&lt; T &gt; elements)</td></tr>
+<tr class="memdesc:a676608deaf46660290d9f8db590b364d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a <a class="el" href="classtz_1_1_basic_list.html" title="Custom list, feature subset of std::vector.">BasicList</a> using existing elements via copy. <br /></td></tr>
 <tr class="separator:a676608deaf46660290d9f8db590b364d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2be671570eb4e70b195b2bf766bc5eca"><td class="memItemLeft" align="right" valign="top"><a id="a2be671570eb4e70b195b2bf766bc5eca" name="a2be671570eb4e70b195b2bf766bc5eca"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>operator std::span&lt; const T &gt;</b> () const</td></tr>
+<tr class="memitem:aac00a8d73335a4e1b594b4f77b70d3aa"><td class="memItemLeft" align="right" valign="top"><a id="aac00a8d73335a4e1b594b4f77b70d3aa" name="aac00a8d73335a4e1b594b4f77b70d3aa"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>BasicList</b> ()=default</td></tr>
+<tr class="memdesc:aac00a8d73335a4e1b594b4f77b70d3aa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct an empty <a class="el" href="classtz_1_1_basic_list.html" title="Custom list, feature subset of std::vector.">BasicList</a>. <br /></td></tr>
+<tr class="separator:aac00a8d73335a4e1b594b4f77b70d3aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2be671570eb4e70b195b2bf766bc5eca"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtz_1_1_basic_list.html#a2be671570eb4e70b195b2bf766bc5eca">operator std::span&lt; const T &gt;</a> () const</td></tr>
+<tr class="memdesc:a2be671570eb4e70b195b2bf766bc5eca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve a span over the entire list.  <a href="classtz_1_1_basic_list.html#a2be671570eb4e70b195b2bf766bc5eca">More...</a><br /></td></tr>
 <tr class="separator:a2be671570eb4e70b195b2bf766bc5eca"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6d0097df502af3ed4e5b2ce760e759c2"><td class="memItemLeft" align="right" valign="top"><a id="a6d0097df502af3ed4e5b2ce760e759c2" name="a6d0097df502af3ed4e5b2ce760e759c2"></a>
-T &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>front</b> ()</td></tr>
+<tr class="memitem:a6d0097df502af3ed4e5b2ce760e759c2"><td class="memItemLeft" align="right" valign="top">T &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtz_1_1_basic_list.html#a6d0097df502af3ed4e5b2ce760e759c2">front</a> ()</td></tr>
+<tr class="memdesc:a6d0097df502af3ed4e5b2ce760e759c2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve the first elements of the list.  <a href="classtz_1_1_basic_list.html#a6d0097df502af3ed4e5b2ce760e759c2">More...</a><br /></td></tr>
 <tr class="separator:a6d0097df502af3ed4e5b2ce760e759c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4dc235096ac55064551a386eef0ed1cd"><td class="memItemLeft" align="right" valign="top"><a id="a4dc235096ac55064551a386eef0ed1cd" name="a4dc235096ac55064551a386eef0ed1cd"></a>
-const T &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>front</b> () const</td></tr>
+<tr class="memitem:a4dc235096ac55064551a386eef0ed1cd"><td class="memItemLeft" align="right" valign="top">const T &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtz_1_1_basic_list.html#a4dc235096ac55064551a386eef0ed1cd">front</a> () const</td></tr>
+<tr class="memdesc:a4dc235096ac55064551a386eef0ed1cd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve the first elements of the list.  <a href="classtz_1_1_basic_list.html#a4dc235096ac55064551a386eef0ed1cd">More...</a><br /></td></tr>
 <tr class="separator:a4dc235096ac55064551a386eef0ed1cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a33131d1b6d56f57bc5554e486b297781"><td class="memItemLeft" align="right" valign="top"><a id="a33131d1b6d56f57bc5554e486b297781" name="a33131d1b6d56f57bc5554e486b297781"></a>
-T &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>back</b> ()</td></tr>
+<tr class="memitem:a33131d1b6d56f57bc5554e486b297781"><td class="memItemLeft" align="right" valign="top">T &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtz_1_1_basic_list.html#a33131d1b6d56f57bc5554e486b297781">back</a> ()</td></tr>
+<tr class="memdesc:a33131d1b6d56f57bc5554e486b297781"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve the last element of the list.  <a href="classtz_1_1_basic_list.html#a33131d1b6d56f57bc5554e486b297781">More...</a><br /></td></tr>
 <tr class="separator:a33131d1b6d56f57bc5554e486b297781"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a27e7783342edb3fb62bf59b71c9e0155"><td class="memItemLeft" align="right" valign="top"><a id="a27e7783342edb3fb62bf59b71c9e0155" name="a27e7783342edb3fb62bf59b71c9e0155"></a>
-const T &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>back</b> () const</td></tr>
+<tr class="memitem:a27e7783342edb3fb62bf59b71c9e0155"><td class="memItemLeft" align="right" valign="top">const T &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtz_1_1_basic_list.html#a27e7783342edb3fb62bf59b71c9e0155">back</a> () const</td></tr>
+<tr class="memdesc:a27e7783342edb3fb62bf59b71c9e0155"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve the last element of the list.  <a href="classtz_1_1_basic_list.html#a27e7783342edb3fb62bf59b71c9e0155">More...</a><br /></td></tr>
 <tr class="separator:a27e7783342edb3fb62bf59b71c9e0155"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5393f48f92124e56c6ba68418396c069"><td class="memItemLeft" align="right" valign="top"><a id="a5393f48f92124e56c6ba68418396c069" name="a5393f48f92124e56c6ba68418396c069"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>add</b> (const T &amp;element)</td></tr>
+<tr class="memdesc:a5393f48f92124e56c6ba68418396c069"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a copy of the provided value to the back of the list. <br /></td></tr>
 <tr class="separator:a5393f48f92124e56c6ba68418396c069"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a574e177f62913365c809b466e2e6e7ee"><td class="memItemLeft" align="right" valign="top"><a id="a574e177f62913365c809b466e2e6e7ee" name="a574e177f62913365c809b466e2e6e7ee"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>add</b> (T &amp;&amp;element)</td></tr>
+<tr class="memdesc:a574e177f62913365c809b466e2e6e7ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add the provided value to the back of the list. <br /></td></tr>
 <tr class="separator:a574e177f62913365c809b466e2e6e7ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae4a0d579ac84ec0b77b493f087c3b898"><td class="memTemplParams" colspan="2"><a id="ae4a0d579ac84ec0b77b493f087c3b898" name="ae4a0d579ac84ec0b77b493f087c3b898"></a>
-template&lt;typename... Args&gt; </td></tr>
-<tr class="memitem:ae4a0d579ac84ec0b77b493f087c3b898"><td class="memTemplItemLeft" align="right" valign="top">T &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>emplace</b> (Args &amp;&amp;... args)</td></tr>
+<tr class="memitem:ae4a0d579ac84ec0b77b493f087c3b898"><td class="memTemplParams" colspan="2">template&lt;typename... Args&gt; </td></tr>
+<tr class="memitem:ae4a0d579ac84ec0b77b493f087c3b898"><td class="memTemplItemLeft" align="right" valign="top">T &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classtz_1_1_basic_list.html#ae4a0d579ac84ec0b77b493f087c3b898">emplace</a> (Args &amp;&amp;... args)</td></tr>
+<tr class="memdesc:ae4a0d579ac84ec0b77b493f087c3b898"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a new value in-place at the end of the list.  <a href="classtz_1_1_basic_list.html#ae4a0d579ac84ec0b77b493f087c3b898">More...</a><br /></td></tr>
 <tr class="separator:ae4a0d579ac84ec0b77b493f087c3b898"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af02075882438c154c337230a4f06ee53"><td class="memItemLeft" align="right" valign="top"><a id="af02075882438c154c337230a4f06ee53" name="af02075882438c154c337230a4f06ee53"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>append</b> (const <a class="el" href="classtz_1_1_basic_list.html">BasicList</a>&lt; T &gt; &amp;other)</td></tr>
+<tr class="memitem:af02075882438c154c337230a4f06ee53"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtz_1_1_basic_list.html#af02075882438c154c337230a4f06ee53">append</a> (const <a class="el" href="classtz_1_1_basic_list.html">BasicList</a>&lt; T &gt; &amp;other)</td></tr>
+<tr class="memdesc:af02075882438c154c337230a4f06ee53"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy the elements of another list to the end of this list.  <a href="classtz_1_1_basic_list.html#af02075882438c154c337230a4f06ee53">More...</a><br /></td></tr>
 <tr class="separator:af02075882438c154c337230a4f06ee53"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa8a7c2a3d3bd5aa386bbe9688e1492cd"><td class="memItemLeft" align="right" valign="top"><a id="aa8a7c2a3d3bd5aa386bbe9688e1492cd" name="aa8a7c2a3d3bd5aa386bbe9688e1492cd"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>contains</b> (T element) const</td></tr>
+<tr class="memitem:a69c464a91fade75e71ee375b600b9964"><td class="memTemplParams" colspan="2">template&lt;typename InputIt &gt; </td></tr>
+<tr class="memitem:a69c464a91fade75e71ee375b600b9964"><td class="memTemplItemLeft" align="right" valign="top">Iterator&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classtz_1_1_basic_list.html#a69c464a91fade75e71ee375b600b9964">append_range</a> (InputIt first, InputIt last)</td></tr>
+<tr class="memdesc:a69c464a91fade75e71ee375b600b9964"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy the range of elements to the end of this list.  <a href="classtz_1_1_basic_list.html#a69c464a91fade75e71ee375b600b9964">More...</a><br /></td></tr>
+<tr class="separator:a69c464a91fade75e71ee375b600b9964"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa8a7c2a3d3bd5aa386bbe9688e1492cd"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtz_1_1_basic_list.html#aa8a7c2a3d3bd5aa386bbe9688e1492cd">contains</a> (T element) const</td></tr>
+<tr class="memdesc:aa8a7c2a3d3bd5aa386bbe9688e1492cd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query as to whether the list contains a given element.  <a href="classtz_1_1_basic_list.html#aa8a7c2a3d3bd5aa386bbe9688e1492cd">More...</a><br /></td></tr>
 <tr class="separator:aa8a7c2a3d3bd5aa386bbe9688e1492cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2e7b98d23d56f9370c54aabd4f402c4f"><td class="memItemLeft" align="right" valign="top"><a id="a2e7b98d23d56f9370c54aabd4f402c4f" name="a2e7b98d23d56f9370c54aabd4f402c4f"></a>
 Iterator&#160;</td><td class="memItemRight" valign="bottom"><b>begin</b> ()</td></tr>
+<tr class="memdesc:a2e7b98d23d56f9370c54aabd4f402c4f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve an iterator to the beginning of the list. <br /></td></tr>
 <tr class="separator:a2e7b98d23d56f9370c54aabd4f402c4f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ada63442e7add7f1a66e06295f42947a9"><td class="memItemLeft" align="right" valign="top"><a id="ada63442e7add7f1a66e06295f42947a9" name="ada63442e7add7f1a66e06295f42947a9"></a>
 Iterator&#160;</td><td class="memItemRight" valign="bottom"><b>end</b> ()</td></tr>
+<tr class="memdesc:ada63442e7add7f1a66e06295f42947a9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve an iterator to the end of the list. <br /></td></tr>
 <tr class="separator:ada63442e7add7f1a66e06295f42947a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adc4a0155460f87deb79b92f8791bf1d1"><td class="memItemLeft" align="right" valign="top"><a id="adc4a0155460f87deb79b92f8791bf1d1" name="adc4a0155460f87deb79b92f8791bf1d1"></a>
 ConstIterator&#160;</td><td class="memItemRight" valign="bottom"><b>begin</b> () const</td></tr>
+<tr class="memdesc:adc4a0155460f87deb79b92f8791bf1d1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve an iterator to the beginning of the list. <br /></td></tr>
 <tr class="separator:adc4a0155460f87deb79b92f8791bf1d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abeca63e13a83c36aec08b81992c29fec"><td class="memItemLeft" align="right" valign="top"><a id="abeca63e13a83c36aec08b81992c29fec" name="abeca63e13a83c36aec08b81992c29fec"></a>
 ConstIterator&#160;</td><td class="memItemRight" valign="bottom"><b>end</b> () const</td></tr>
+<tr class="memdesc:abeca63e13a83c36aec08b81992c29fec"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve an iterator to the end of the list. <br /></td></tr>
 <tr class="separator:abeca63e13a83c36aec08b81992c29fec"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ace3c8c7e3f63908e3560e4822f057117"><td class="memItemLeft" align="right" valign="top"><a id="ace3c8c7e3f63908e3560e4822f057117" name="ace3c8c7e3f63908e3560e4822f057117"></a>
 auto&#160;</td><td class="memItemRight" valign="bottom"><b>length</b> () const</td></tr>
+<tr class="memdesc:ace3c8c7e3f63908e3560e4822f057117"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrive the number of elements in the list. <br /></td></tr>
 <tr class="separator:ace3c8c7e3f63908e3560e4822f057117"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af32c2cc288f273c7983c57216bfc0e81"><td class="memItemLeft" align="right" valign="top"><a id="af32c2cc288f273c7983c57216bfc0e81" name="af32c2cc288f273c7983c57216bfc0e81"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>empty</b> () const</td></tr>
+<tr class="memitem:af32c2cc288f273c7983c57216bfc0e81"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtz_1_1_basic_list.html#af32c2cc288f273c7983c57216bfc0e81">empty</a> () const</td></tr>
+<tr class="memdesc:af32c2cc288f273c7983c57216bfc0e81"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query as to whether the list is empty or not.  <a href="classtz_1_1_basic_list.html#af32c2cc288f273c7983c57216bfc0e81">More...</a><br /></td></tr>
 <tr class="separator:af32c2cc288f273c7983c57216bfc0e81"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ada318583334664c93dbb90e897b7137d"><td class="memItemLeft" align="right" valign="top"><a id="ada318583334664c93dbb90e897b7137d" name="ada318583334664c93dbb90e897b7137d"></a>
-const T *&#160;</td><td class="memItemRight" valign="bottom"><b>data</b> () const</td></tr>
+<tr class="memitem:ada318583334664c93dbb90e897b7137d"><td class="memItemLeft" align="right" valign="top">const T *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtz_1_1_basic_list.html#ada318583334664c93dbb90e897b7137d">data</a> () const</td></tr>
+<tr class="memdesc:ada318583334664c93dbb90e897b7137d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve a pointer to the first element of the list.  <a href="classtz_1_1_basic_list.html#ada318583334664c93dbb90e897b7137d">More...</a><br /></td></tr>
 <tr class="separator:ada318583334664c93dbb90e897b7137d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af36289f18f4b52c1bfde2d3e044b1411"><td class="memItemLeft" align="right" valign="top"><a id="af36289f18f4b52c1bfde2d3e044b1411" name="af36289f18f4b52c1bfde2d3e044b1411"></a>
 T *&#160;</td><td class="memItemRight" valign="bottom"><b>data</b> ()</td></tr>
+<tr class="memdesc:af36289f18f4b52c1bfde2d3e044b1411"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve a pointer to the first element of the list. <br /></td></tr>
 <tr class="separator:af36289f18f4b52c1bfde2d3e044b1411"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adff59da57ac58ea0786dca5e8d47fc65"><td class="memItemLeft" align="right" valign="top"><a id="adff59da57ac58ea0786dca5e8d47fc65" name="adff59da57ac58ea0786dca5e8d47fc65"></a>
-const T &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator[]</b> (std::size_t index) const</td></tr>
+<tr class="memitem:adff59da57ac58ea0786dca5e8d47fc65"><td class="memItemLeft" align="right" valign="top">const T &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtz_1_1_basic_list.html#adff59da57ac58ea0786dca5e8d47fc65">operator[]</a> (std::size_t index) const</td></tr>
+<tr class="memdesc:adff59da57ac58ea0786dca5e8d47fc65"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve the element at a given index.  <a href="classtz_1_1_basic_list.html#adff59da57ac58ea0786dca5e8d47fc65">More...</a><br /></td></tr>
 <tr class="separator:adff59da57ac58ea0786dca5e8d47fc65"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8162159817605259a80062b23f5c9076"><td class="memItemLeft" align="right" valign="top"><a id="a8162159817605259a80062b23f5c9076" name="a8162159817605259a80062b23f5c9076"></a>
-T &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator[]</b> (std::size_t index)</td></tr>
+<tr class="memitem:a8162159817605259a80062b23f5c9076"><td class="memItemLeft" align="right" valign="top">T &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtz_1_1_basic_list.html#a8162159817605259a80062b23f5c9076">operator[]</a> (std::size_t index)</td></tr>
+<tr class="memdesc:a8162159817605259a80062b23f5c9076"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve the element at a given index.  <a href="classtz_1_1_basic_list.html#a8162159817605259a80062b23f5c9076">More...</a><br /></td></tr>
 <tr class="separator:a8162159817605259a80062b23f5c9076"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aefed57bf431fcc9874deb532053fde9d"><td class="memItemLeft" align="right" valign="top"><a id="aefed57bf431fcc9874deb532053fde9d" name="aefed57bf431fcc9874deb532053fde9d"></a>
-auto&#160;</td><td class="memItemRight" valign="bottom"><b>operator&lt;=&gt;</b> (const <a class="el" href="classtz_1_1_basic_list.html">tz::BasicList</a>&lt; T, Allocator &gt; &amp;rhs) const =default</td></tr>
-<tr class="separator:aefed57bf431fcc9874deb532053fde9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abe7b2c2f5ae52a55fe1e81ccd28f116f"><td class="memItemLeft" align="right" valign="top"><a id="abe7b2c2f5ae52a55fe1e81ccd28f116f" name="abe7b2c2f5ae52a55fe1e81ccd28f116f"></a>
-Iterator&#160;</td><td class="memItemRight" valign="bottom"><b>erase</b> (Iterator position)</td></tr>
+<tr class="memitem:abe7b2c2f5ae52a55fe1e81ccd28f116f"><td class="memItemLeft" align="right" valign="top">Iterator&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtz_1_1_basic_list.html#abe7b2c2f5ae52a55fe1e81ccd28f116f">erase</a> (Iterator position)</td></tr>
+<tr class="memdesc:abe7b2c2f5ae52a55fe1e81ccd28f116f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Erase the element at the given position.  <a href="classtz_1_1_basic_list.html#abe7b2c2f5ae52a55fe1e81ccd28f116f">More...</a><br /></td></tr>
 <tr class="separator:abe7b2c2f5ae52a55fe1e81ccd28f116f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad8b2b3307114db19edf2481570f4aec8"><td class="memItemLeft" align="right" valign="top"><a id="ad8b2b3307114db19edf2481570f4aec8" name="ad8b2b3307114db19edf2481570f4aec8"></a>
-Iterator&#160;</td><td class="memItemRight" valign="bottom"><b>erase</b> (Iterator first, Iterator last)</td></tr>
+<tr class="memitem:ad8b2b3307114db19edf2481570f4aec8"><td class="memItemLeft" align="right" valign="top">Iterator&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtz_1_1_basic_list.html#ad8b2b3307114db19edf2481570f4aec8">erase</a> (Iterator first, Iterator last)</td></tr>
+<tr class="memdesc:ad8b2b3307114db19edf2481570f4aec8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Erase the range of elements bounded within the provided iterator range.  <a href="classtz_1_1_basic_list.html#ad8b2b3307114db19edf2481570f4aec8">More...</a><br /></td></tr>
 <tr class="separator:ad8b2b3307114db19edf2481570f4aec8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae632a6571f62854098882e3f5a17af63"><td class="memItemLeft" align="right" valign="top"><a id="ae632a6571f62854098882e3f5a17af63" name="ae632a6571f62854098882e3f5a17af63"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>clear</b> ()</td></tr>
+<tr class="memdesc:ae632a6571f62854098882e3f5a17af63"><td class="mdescLeft">&#160;</td><td class="mdescRight">Erase the entire list, making it empty again and destroying everything inside. <br /></td></tr>
 <tr class="separator:ae632a6571f62854098882e3f5a17af63"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a96f11427f0be2835a9351d0b7ebbfc7b"><td class="memItemLeft" align="right" valign="top"><a id="a96f11427f0be2835a9351d0b7ebbfc7b" name="a96f11427f0be2835a9351d0b7ebbfc7b"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>resize</b> (std::size_t num_elements)</td></tr>
+<tr class="memdesc:a96f11427f0be2835a9351d0b7ebbfc7b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resize the list, matches the behaviour of <code>std::vector&lt;T&gt;::erase(num_elements)</code>. <br /></td></tr>
 <tr class="separator:a96f11427f0be2835a9351d0b7ebbfc7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<hr/>The documentation for this class was generated from the following file:<ul>
-<li>src/core/containers/<a class="el" href="basic__list_8hpp_source.html">basic_list.hpp</a></li>
-</ul>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><div class="compoundTemplParams">template&lt;typename T, typename Allocator = std::allocator&lt;T&gt;&gt;<br />
+class tz::BasicList&lt; T, Allocator &gt;</div><p >Custom list, feature subset of <code>std::vector</code>. </p>
+<p >Should be used when a list of contiguous elements is required to be exposed via an API. We never want to expose standard library containers (aside from span). </p><dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">T</td><td>Element type. </td></tr>
+    <tr><td class="paramname">Allocator</td><td>Allocator type. </td></tr>
+  </table>
+  </dd>
+</dl>
+</div><h2 class="groupheader">Member Function Documentation</h2>
+<a id="af02075882438c154c337230a4f06ee53" name="af02075882438c154c337230a4f06ee53"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af02075882438c154c337230a4f06ee53">&#9670;&nbsp;</a></span>append()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T , typename Allocator  = std::allocator&lt;T&gt;&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classtz_1_1_basic_list.html">tz::BasicList</a>&lt; T, Allocator &gt;::append </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classtz_1_1_basic_list.html">BasicList</a>&lt; T &gt; &amp;&#160;</td>
+          <td class="paramname"><em>other</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Copy the elements of another list to the end of this list. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">other</td><td>Second list whose elements should be appended to the end of this list. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a69c464a91fade75e71ee375b600b9964" name="a69c464a91fade75e71ee375b600b9964"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a69c464a91fade75e71ee375b600b9964">&#9670;&nbsp;</a></span>append_range()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T , typename Allocator  = std::allocator&lt;T&gt;&gt; </div>
+<div class="memtemplate">
+template&lt;typename InputIt &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Iterator <a class="el" href="classtz_1_1_basic_list.html">tz::BasicList</a>&lt; T, Allocator &gt;::append_range </td>
+          <td>(</td>
+          <td class="paramtype">InputIt&#160;</td>
+          <td class="paramname"><em>first</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">InputIt&#160;</td>
+          <td class="paramname"><em>last</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Copy the range of elements to the end of this list. </p>
+<dl class="section return"><dt>Returns</dt><dd>Iterator pointing to the first element inserted, or the end of the list if the range was empty. </dd></dl>
+
+</div>
+</div>
+<a id="a33131d1b6d56f57bc5554e486b297781" name="a33131d1b6d56f57bc5554e486b297781"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a33131d1b6d56f57bc5554e486b297781">&#9670;&nbsp;</a></span>back() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T , typename Allocator  = std::allocator&lt;T&gt;&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">T &amp; <a class="el" href="classtz_1_1_basic_list.html">tz::BasicList</a>&lt; T, Allocator &gt;::back </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Retrieve the last element of the list. </p>
+<dl class="section pre"><dt>Precondition</dt><dd>List must not be empty, otherwise the behaviour is undefined. </dd></dl>
+
+</div>
+</div>
+<a id="a27e7783342edb3fb62bf59b71c9e0155" name="a27e7783342edb3fb62bf59b71c9e0155"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a27e7783342edb3fb62bf59b71c9e0155">&#9670;&nbsp;</a></span>back() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T , typename Allocator  = std::allocator&lt;T&gt;&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const T &amp; <a class="el" href="classtz_1_1_basic_list.html">tz::BasicList</a>&lt; T, Allocator &gt;::back </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Retrieve the last element of the list. </p>
+<p >Read-only. </p><dl class="section pre"><dt>Precondition</dt><dd>List must not be empty, otherwise the behaviour is undefined. </dd></dl>
+
+</div>
+</div>
+<a id="aa8a7c2a3d3bd5aa386bbe9688e1492cd" name="aa8a7c2a3d3bd5aa386bbe9688e1492cd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa8a7c2a3d3bd5aa386bbe9688e1492cd">&#9670;&nbsp;</a></span>contains()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T , typename Allocator  = std::allocator&lt;T&gt;&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool <a class="el" href="classtz_1_1_basic_list.html">tz::BasicList</a>&lt; T, Allocator &gt;::contains </td>
+          <td>(</td>
+          <td class="paramtype">T&#160;</td>
+          <td class="paramname"><em>element</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Query as to whether the list contains a given element. </p>
+<dl class="section return"><dt>Returns</dt><dd>True if the element is within the list (equality comparison), otherwise false. </dd></dl>
+
+</div>
+</div>
+<a id="ada318583334664c93dbb90e897b7137d" name="ada318583334664c93dbb90e897b7137d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ada318583334664c93dbb90e897b7137d">&#9670;&nbsp;</a></span>data()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T , typename Allocator  = std::allocator&lt;T&gt;&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const T * <a class="el" href="classtz_1_1_basic_list.html">tz::BasicList</a>&lt; T, Allocator &gt;::data </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Retrieve a pointer to the first element of the list. </p>
+<p >Read-only. </p>
+
+</div>
+</div>
+<a id="ae4a0d579ac84ec0b77b493f087c3b898" name="ae4a0d579ac84ec0b77b493f087c3b898"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae4a0d579ac84ec0b77b493f087c3b898">&#9670;&nbsp;</a></span>emplace()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T , typename Allocator  = std::allocator&lt;T&gt;&gt; </div>
+<div class="memtemplate">
+template&lt;typename... Args&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">T &amp; <a class="el" href="classtz_1_1_basic_list.html">tz::BasicList</a>&lt; T, Allocator &gt;::emplace </td>
+          <td>(</td>
+          <td class="paramtype">Args &amp;&amp;...&#160;</td>
+          <td class="paramname"><em>args</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Create a new value in-place at the end of the list. </p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">Args</td><td>Represents the types used to invoke the element class constructor. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Reference to the constructed value. </dd></dl>
+
+</div>
+</div>
+<a id="af32c2cc288f273c7983c57216bfc0e81" name="af32c2cc288f273c7983c57216bfc0e81"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af32c2cc288f273c7983c57216bfc0e81">&#9670;&nbsp;</a></span>empty()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T , typename Allocator  = std::allocator&lt;T&gt;&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool <a class="el" href="classtz_1_1_basic_list.html">tz::BasicList</a>&lt; T, Allocator &gt;::empty </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Query as to whether the list is empty or not. </p>
+<dl class="section return"><dt>Returns</dt><dd>True if <code><a class="el" href="classtz_1_1_basic_list.html#ace3c8c7e3f63908e3560e4822f057117" title="Retrive the number of elements in the list.">length()</a> == 0</code>, otherwise false. </dd></dl>
+
+</div>
+</div>
+<a id="ad8b2b3307114db19edf2481570f4aec8" name="ad8b2b3307114db19edf2481570f4aec8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad8b2b3307114db19edf2481570f4aec8">&#9670;&nbsp;</a></span>erase() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T , typename Allocator  = std::allocator&lt;T&gt;&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Iterator <a class="el" href="classtz_1_1_basic_list.html">tz::BasicList</a>&lt; T, Allocator &gt;::erase </td>
+          <td>(</td>
+          <td class="paramtype">Iterator&#160;</td>
+          <td class="paramname"><em>first</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Iterator&#160;</td>
+          <td class="paramname"><em>last</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Erase the range of elements bounded within the provided iterator range. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">first</td><td>Iterator indicating the beginning of the range to delete. </td></tr>
+    <tr><td class="paramname">last</td><td>Iterator indicating the end of the range fo delete. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Iterator following the last erased element. </dd></dl>
+
+</div>
+</div>
+<a id="abe7b2c2f5ae52a55fe1e81ccd28f116f" name="abe7b2c2f5ae52a55fe1e81ccd28f116f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abe7b2c2f5ae52a55fe1e81ccd28f116f">&#9670;&nbsp;</a></span>erase() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T , typename Allocator  = std::allocator&lt;T&gt;&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Iterator <a class="el" href="classtz_1_1_basic_list.html">tz::BasicList</a>&lt; T, Allocator &gt;::erase </td>
+          <td>(</td>
+          <td class="paramtype">Iterator&#160;</td>
+          <td class="paramname"><em>position</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Erase the element at the given position. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">position</td><td>Iterator locating the element which should be erased. Invalidates iterators and references. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Iterator following the erased element. </dd></dl>
+
+</div>
+</div>
+<a id="a6d0097df502af3ed4e5b2ce760e759c2" name="a6d0097df502af3ed4e5b2ce760e759c2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6d0097df502af3ed4e5b2ce760e759c2">&#9670;&nbsp;</a></span>front() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T , typename Allocator  = std::allocator&lt;T&gt;&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">T &amp; <a class="el" href="classtz_1_1_basic_list.html">tz::BasicList</a>&lt; T, Allocator &gt;::front </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Retrieve the first elements of the list. </p>
+<dl class="section pre"><dt>Precondition</dt><dd>List must not be empty, otherwise the behaviour is undefined. </dd></dl>
+
+</div>
+</div>
+<a id="a4dc235096ac55064551a386eef0ed1cd" name="a4dc235096ac55064551a386eef0ed1cd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4dc235096ac55064551a386eef0ed1cd">&#9670;&nbsp;</a></span>front() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T , typename Allocator  = std::allocator&lt;T&gt;&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const T &amp; <a class="el" href="classtz_1_1_basic_list.html">tz::BasicList</a>&lt; T, Allocator &gt;::front </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Retrieve the first elements of the list. </p>
+<p >Read-only. </p><dl class="section pre"><dt>Precondition</dt><dd>List must not be empty, otherwise the behaviour is undefined. </dd></dl>
+
+</div>
+</div>
+<a id="a2be671570eb4e70b195b2bf766bc5eca" name="a2be671570eb4e70b195b2bf766bc5eca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2be671570eb4e70b195b2bf766bc5eca">&#9670;&nbsp;</a></span>operator std::span&lt; const T &gt;()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T , typename Allocator  = std::allocator&lt;T&gt;&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classtz_1_1_basic_list.html">tz::BasicList</a>&lt; T, Allocator &gt;::operator std::span&lt; const T &gt; </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Retrieve a span over the entire list. </p>
+<dl class="section return"><dt>Returns</dt><dd>Read-only span over the list. </dd></dl>
+
+</div>
+</div>
+<a id="a8162159817605259a80062b23f5c9076" name="a8162159817605259a80062b23f5c9076"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8162159817605259a80062b23f5c9076">&#9670;&nbsp;</a></span>operator[]() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T , typename Allocator  = std::allocator&lt;T&gt;&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">T &amp; <a class="el" href="classtz_1_1_basic_list.html">tz::BasicList</a>&lt; T, Allocator &gt;::operator[] </td>
+          <td>(</td>
+          <td class="paramtype">std::size_t&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Retrieve the element at a given index. </p>
+<dl class="section pre"><dt>Precondition</dt><dd><code>index &lt; this-&gt;<a class="el" href="classtz_1_1_basic_list.html#ace3c8c7e3f63908e3560e4822f057117" title="Retrive the number of elements in the list.">length()</a></code>, otherwise the behaviour is undefined. </dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">index</td><td>Index whose element should be retrieved. Must be in-range (see preconditions). </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Reference to the element at the provided index. </dd></dl>
+
+</div>
+</div>
+<a id="adff59da57ac58ea0786dca5e8d47fc65" name="adff59da57ac58ea0786dca5e8d47fc65"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adff59da57ac58ea0786dca5e8d47fc65">&#9670;&nbsp;</a></span>operator[]() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T , typename Allocator  = std::allocator&lt;T&gt;&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const T &amp; <a class="el" href="classtz_1_1_basic_list.html">tz::BasicList</a>&lt; T, Allocator &gt;::operator[] </td>
+          <td>(</td>
+          <td class="paramtype">std::size_t&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Retrieve the element at a given index. </p>
+<p >Read-only. </p><dl class="section pre"><dt>Precondition</dt><dd><code>index &lt; this-&gt;<a class="el" href="classtz_1_1_basic_list.html#ace3c8c7e3f63908e3560e4822f057117" title="Retrive the number of elements in the list.">length()</a></code>, otherwise the behaviour is undefined. </dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">index</td><td>Index whose element should be retrieved. Must be in-range (see preconditions). </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Reference to the element at the provided index. </dd></dl>
+
+</div>
+</div>
 </div><!-- contents -->
+</div><!-- doc-content -->
 <!-- start footer part -->
-<hr class="footer"/><address class="footer"><small>
-    <nav class="navbar navbar-default" role="navigation">
-        <div class="container">
-            <div class="navbar-header">
-                <a class="navbar-brand" href="https://github.com/Harrand/Topaz" style="margin-right: 10px;">GitHub: topaz-master</a>
-                <a class="navbar-brand" href="https://harrand.github.io/" style="margin-right: 10px;">harrand.github.io</a>
-            </div>
-        </div>
-    </nav>
-    <p>Generated: Wed Sep 29 2021 01:11:50</p>
-</small></address>
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><b>tz</b></li><li class="navelem"><a class="el" href="classtz_1_1_basic_list.html">BasicList</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.3 </li>
+  </ul>
+</div>
 </body>
 </html>

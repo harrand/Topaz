@@ -1,16 +1,19 @@
-<!-- HTML header for doxygen 1.8.8-->
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
-    <head>
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <!-- For Mobile Devices -->
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-        <meta name="generator" content="Doxygen 1.9.2"/>
-        <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-        <title>Topaz 3.1 Documentation</title>
-        <script type="text/javascript" src="dynsections.js"></script>
-        <link href="search/search.css" rel="stylesheet" type="text/css"/>
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.3"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Topaz: src/gl/impl/frontend/common/renderer.hpp Source File</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
 <script type="text/javascript">
@@ -18,29 +21,22 @@
   $(document).ready(function() { init_search(); });
 /* @license-end */
 </script>
-        <link href="custom_dark_theme.css" rel="stylesheet" type="text/css" />
-        <link href="custom.css" rel="stylesheet" type="text/css"/>
-<link href="custom_dark_theme.css" rel="stylesheet" type="text/css"/>
-        <script type="text/javascript" src="doxy-boot.js"></script>
-        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-        <link rel="manifest" href="/site.webmanifest">
-        <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
-        <meta name="msapplication-TileColor" content="#da532c">
-        <meta name="theme-color" content="#ffffff">
-    </head>
-    <body>
-        <nav class="navbar navbar-default" role="navigation">
-            <div class="container">
-                <div class="navbar-header">
-                    <a class="navbar-brand"><img src = "tz.png" width="2%" height="2%"></a>
-                    <a class="navbar-brand" href="index.html" style="font-size: xx-large; text-decoration: none;">Topaz</a>
-                    <a class="navbar-brand" href="modules.html">Modules</a>
-                    <a class="navbar-brand" href="annotated.html">Classes</a>
-                    <a class="navbar-brand" href="tools.html">Tools</a>
-                    <a class="navbar-brand" href="tzsl.html">TZSL</a>
-                            <div id="MSearchBox" class="MSearchBoxInactive">
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectlogo"><img alt="Logo" src="tz.png"/></td>
+  <td id="projectalign">
+   <div id="projectname">Topaz<span id="projectnumber">&#160;3.2</span>
+   </div>
+   <div id="projectbrief">C++20 Graphics Engine</div>
+  </td>
+    <td>        <div id="MSearchBox" class="MSearchBoxInactive">
         <span class="left">
           <img id="MSearchSelect" src="search/mag_sel.svg"
                onmouseover="return searchBox.OnSearchSelectShow()"
@@ -54,21 +50,35 @@
             <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
           </span>
         </div>
-                </div>
-            </div>
-        </nav>
-        <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
-            <div class="content" id="content">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-sm-12 panel " style="padding-bottom: 15px;">
-                            <div style="margin-bottom: 15px;">
-<!-- end header part --><!-- Generated by Doxygen 1.9.2 -->
+</td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.9.3 -->
 <script type="text/javascript">
 /* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
 var searchBox = new SearchBox("searchBox", "search",'Search','.html');
 /* @license-end */
 </script>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(document).ready(function(){initNavTree('impl_2frontend_2common_2renderer_8hpp_source.html',''); initResizable(); });
+/* @license-end */
+</script>
+<div id="doc-content">
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"
@@ -83,122 +93,107 @@ var searchBox = new SearchBox("searchBox", "search",'Search','.html');
 </iframe>
 </div>
 
-<div id="nav-path" class="navpath">
-  <ul>
-<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_22ef2c5f6712ba0a0b99c741bcfb15fe.html">gl</a></li><li class="navelem"><a class="el" href="dir_294d689e10da81f00c081b036a1431d9.html">impl</a></li><li class="navelem"><a class="el" href="dir_5dc250fa98469894779c63cc5b44e532.html">frontend</a></li><li class="navelem"><a class="el" href="dir_5030c4a498d7875a99bc450d8f07d664.html">common</a></li>  </ul>
-</div>
-</div><!-- top -->
 <div class="header">
   <div class="headertitle"><div class="title">renderer.hpp</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef TOPAZ_GL_IMPL_FRONTEND_COMMON_RENDERER_HPP</span></div>
-<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define TOPAZ_GL_IMPL_FRONTEND_COMMON_RENDERER_HPP</span></div>
+<div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef TOPAZ_GL2_IMPL_FRONTEND_COMMON_RENDERER_HPP</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define TOPAZ_GL2_IMPL_FRONTEND_COMMON_RENDERER_HPP</span></div>
 <div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;gl/api/renderer.hpp&quot;</span></div>
-<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
-<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
-<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
-<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="keyword">namespace </span>tz::gl</div>
-<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span>{</div>
-<div class="line"><a id="l00009" name="l00009"></a><span class="lineno"><a class="line" href="classtz_1_1gl_1_1_renderer_builder_base.html">    9</a></span>    <span class="keyword">class </span><a class="code hl_class" href="classtz_1_1gl_1_1_renderer_builder_base.html">RendererBuilderBase</a> : <span class="keyword">public</span> <a class="code hl_class" href="classtz_1_1gl_1_1_i_renderer_builder.html">IRendererBuilder</a></div>
-<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>    {</div>
-<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>    <span class="keyword">public</span>:</div>
-<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>        <a class="code hl_class" href="classtz_1_1gl_1_1_renderer_builder_base.html">RendererBuilderBase</a>() = <span class="keywordflow">default</span>;</div>
-<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>        <span class="keyword">virtual</span> <a class="code hl_class" href="classtz_1_1_handle.html">RendererInputHandle</a> <a class="code hl_function" href="classtz_1_1gl_1_1_renderer_builder_base.html#ac6aa3da761083a1708128ce002d047cf">add_input</a>(<span class="keyword">const</span> <a class="code hl_class" href="classtz_1_1gl_1_1_i_renderer_input.html">IRendererInput</a>&amp; input) <span class="keyword">override</span>;</div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>        <span class="keyword">virtual</span> <span class="keyword">const</span> <a class="code hl_class" href="classtz_1_1gl_1_1_i_renderer_input.html">IRendererInput</a>* <a class="code hl_function" href="classtz_1_1gl_1_1_renderer_builder_base.html#a7757fed87166e12b23fee0eef96c5cc1">get_input</a>(<a class="code hl_class" href="classtz_1_1_handle.html">RendererInputHandle</a> handle) <span class="keyword">const override</span>;</div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>        <span class="keyword">virtual</span> std::size_t <a class="code hl_function" href="classtz_1_1gl_1_1_renderer_builder_base.html#ad26388e47c580695bea4404eb624a781">input_count</a>() <span class="keyword">const override</span>;</div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>        <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classtz_1_1gl_1_1_renderer_builder_base.html#a42692bdc35023921814229ca548f0cdc">set_output</a>(<a class="code hl_class" href="classtz_1_1gl_1_1_i_renderer_output.html">IRendererOutput</a>&amp; output) <span class="keyword">override</span>;</div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>        <span class="keyword">virtual</span> <span class="keyword">const</span> <a class="code hl_class" href="classtz_1_1gl_1_1_i_renderer_output.html">IRendererOutput</a>* <a class="code hl_function" href="classtz_1_1gl_1_1_renderer_builder_base.html#aeaf80ef89dfcc9f035289b385db38ee1">get_output</a>() <span class="keyword">const override</span>;</div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>        <span class="keyword">virtual</span> <a class="code hl_class" href="classtz_1_1gl_1_1_i_renderer_output.html">IRendererOutput</a>* <a class="code hl_function" href="classtz_1_1gl_1_1_renderer_builder_base.html#aeaf80ef89dfcc9f035289b385db38ee1">get_output</a>() <span class="keyword">override</span>;</div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>        <span class="keyword">virtual</span> <a class="code hl_class" href="classtz_1_1_handle.html">ResourceHandle</a> <a class="code hl_function" href="classtz_1_1gl_1_1_renderer_builder_base.html#accbb3aa7de391a7565b503f8c97fb31c">add_resource</a>(<span class="keyword">const</span> <a class="code hl_class" href="classtz_1_1gl_1_1_i_resource.html">IResource</a>&amp; resource) <span class="keyword">override</span>;</div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>        <span class="keyword">virtual</span> <span class="keyword">const</span> <a class="code hl_class" href="classtz_1_1gl_1_1_i_resource.html">IResource</a>* <a class="code hl_function" href="classtz_1_1gl_1_1_renderer_builder_base.html#a51bb721b03343cce6b42aaae3daa4f92">get_resource</a>(<a class="code hl_class" href="classtz_1_1_handle.html">ResourceHandle</a> handle) <span class="keyword">const override</span>;</div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>        <span class="keyword">virtual</span> std::span&lt;const IResource* const&gt; <a class="code hl_function" href="classtz_1_1gl_1_1_renderer_builder_base.html#ae96e0700ad53d41e81517a190da5a937">get_resources</a>(ResourceType type) <span class="keyword">const override</span>;</div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>        <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classtz_1_1gl_1_1_renderer_builder_base.html#aebc3c9919021e221395edd82479e86a9">set_culling_strategy</a>(RendererCullingStrategy culling_strategy) <span class="keyword">override</span>;</div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>        <span class="keyword">virtual</span> RendererCullingStrategy <a class="code hl_function" href="classtz_1_1gl_1_1_renderer_builder_base.html#aa2ace287e796fbffc8a4aa276f9ddfd3">get_culling_strategy</a>() <span class="keyword">const override</span>;</div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>        <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classtz_1_1gl_1_1_renderer_builder_base.html#af135d25235f5a2dbb3da514471ef3729">set_shader</a>(<span class="keyword">const</span> Shader&amp; shader) <span class="keyword">override</span>;</div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>        <span class="keyword">virtual</span> <span class="keyword">const</span> Shader&amp; <a class="code hl_function" href="classtz_1_1gl_1_1_renderer_builder_base.html#a596777df66c4d8a787388c15c5aa91c6">get_shader</a>() <span class="keyword">const override</span>;</div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <span class="keyword">protected</span>:</div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>        std::vector&lt;const IRendererInput*&gt; inputs;</div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>        <a class="code hl_class" href="classtz_1_1gl_1_1_i_renderer_output.html">IRendererOutput</a>* output = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>        std::vector&lt;const IResource*&gt; buffer_resources;</div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>        std::vector&lt;const IResource*&gt; texture_resources;</div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>        RendererCullingStrategy culling_strategy = RendererCullingStrategy::NoCulling;</div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>        <span class="keyword">const</span> Shader* shader = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    };</div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="classtz_1_1gl_1_1_renderer_base.html">   39</a></span>    <span class="keyword">class </span><a class="code hl_class" href="classtz_1_1gl_1_1_renderer_base.html">RendererBase</a> : <span class="keyword">public</span> <a class="code hl_class" href="classtz_1_1gl_1_1_i_renderer.html">IRenderer</a></div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    {</div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="keyword">public</span>:</div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>        <a class="code hl_class" href="classtz_1_1gl_1_1_renderer_base.html">RendererBase</a>(<span class="keyword">const</span> <a class="code hl_class" href="classtz_1_1gl_1_1_i_renderer_builder.html">IRendererBuilder</a>&amp; builder);</div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>        <a class="code hl_class" href="classtz_1_1gl_1_1_renderer_base.html">RendererBase</a>() = <span class="keywordflow">default</span>;</div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>        <span class="comment">// IRenderer</span></div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>        <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classtz_1_1gl_1_1_renderer_base.html#ab496d9e20d1e5b3136a3c7f9a8170d94">set_clear_colour</a>(<a class="code hl_class" href="classtz_1_1_vector.html">tz::Vec4</a> clear_colour) <span class="keyword">override</span>;</div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>        <span class="keyword">virtual</span> <a class="code hl_class" href="classtz_1_1_vector.html">tz::Vec4</a> <a class="code hl_function" href="classtz_1_1gl_1_1_renderer_base.html#aac7d196a5d854d2b915e4020125e0763">get_clear_colour</a>() <span class="keyword">const override</span>;</div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        <span class="keyword">virtual</span> std::size_t <a class="code hl_function" href="classtz_1_1gl_1_1_renderer_base.html#ab3130a1c417cb19df3726d99a1852a32">input_count</a>() <span class="keyword">const override</span>;</div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        <span class="keyword">virtual</span> std::size_t <a class="code hl_function" href="classtz_1_1gl_1_1_renderer_base.html#ae26775c664ad5ba5a394a684d964a70d">input_count_of</a>(RendererInputDataAccess access) <span class="keyword">const override</span>;</div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        <span class="keyword">virtual</span> <a class="code hl_class" href="classtz_1_1gl_1_1_i_renderer_input.html">IRendererInput</a>* <a class="code hl_function" href="classtz_1_1gl_1_1_renderer_base.html#ab89930dfe5e3ce39dfe4b41b75bd01de">get_input</a>(<a class="code hl_class" href="classtz_1_1_handle.html">RendererInputHandle</a> handle) <span class="keyword">override</span>;</div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>        <span class="keyword">virtual</span> std::size_t <a class="code hl_function" href="classtz_1_1gl_1_1_renderer_base.html#aed2d172ad31238917ce55438c6b82100">resource_count</a>() <span class="keyword">const override</span>;</div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>        <span class="keyword">virtual</span> std::size_t <a class="code hl_function" href="classtz_1_1gl_1_1_renderer_base.html#ac7f4b76f08879320810cefee4684be30">resource_count_of</a>(ResourceType type) <span class="keyword">const override</span>;</div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>        <span class="keyword">virtual</span> <a class="code hl_class" href="classtz_1_1gl_1_1_i_resource.html">IResource</a>* <a class="code hl_function" href="classtz_1_1gl_1_1_renderer_base.html#a042cfb10c54230566fd9aa8bb044bb31">get_resource</a>(<a class="code hl_class" href="classtz_1_1_handle.html">ResourceHandle</a> handle) <span class="keyword">override</span>;</div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <span class="keyword">protected</span>:</div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>        <span class="keyword">static</span> std::vector&lt;std::unique_ptr&lt;IRendererInput&gt;&gt; copy_inputs(<span class="keyword">const</span> <a class="code hl_class" href="classtz_1_1gl_1_1_i_renderer_builder.html">IRendererBuilder</a>&amp; builder);</div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>        <span class="keyword">static</span> std::vector&lt;std::unique_ptr&lt;IResource&gt;&gt; copy_resources(ResourceType type, <span class="keyword">const</span> <a class="code hl_class" href="classtz_1_1gl_1_1_i_renderer_builder.html">IRendererBuilder</a>&amp; builder);</div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span> </div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>        std::vector&lt;std::unique_ptr&lt;IRendererInput&gt;&gt; inputs;</div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>        std::vector&lt;std::unique_ptr&lt;IResource&gt;&gt; buffer_resources;</div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>        std::vector&lt;std::unique_ptr&lt;IResource&gt;&gt; texture_resources;</div>
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>        <a class="code hl_class" href="classtz_1_1_vector.html">tz::Vec4</a> clear_colour;</div>
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    };</div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>}</div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span> </div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span><span class="preprocessor">#endif </span><span class="comment">// TOPAZ_GL_IMPL_FRONTEND_COMMON_RENDERER_HPP</span></div>
-<div class="ttc" id="aclasstz_1_1_handle_html"><div class="ttname"><a href="classtz_1_1_handle.html">tz::Handle</a></div><div class="ttdef"><b>Definition:</b> handle.hpp:14</div></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;gl/impl/frontend/common/shader.hpp&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="keyword">namespace </span>tz::gl</div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span>{</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno"><a class="line" href="classtz_1_1gl_1_1_renderer_info_common.html">   12</a></span>    <span class="keyword">class </span><a class="code hl_class" href="classtz_1_1gl_1_1_renderer_info_common.html">RendererInfoCommon</a></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>    {</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>    <span class="keyword">public</span>:</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>        <a class="code hl_class" href="classtz_1_1gl_1_1_renderer_info_common.html">RendererInfoCommon</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>        <span class="comment">// Satisfies RendererInfoType.</span></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="comment"></span>        <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> <a class="code hl_function" href="classtz_1_1gl_1_1_renderer_info_common.html#ac669437b6d3fc0e0ea0296554325863a">resource_count</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>        <span class="keyword">const</span> <a class="code hl_class" href="classtz_1_1gl_1_1_i_resource.html">IResource</a>* <a class="code hl_function" href="classtz_1_1gl_1_1_renderer_info_common.html#a34d0a0cd7049942ef33b88e450f25adb">get_resource</a>(<a class="code hl_class" href="classtz_1_1_handle.html">ResourceHandle</a> handle);</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>        std::span&lt;const IResource* const&gt; <a class="code hl_function" href="classtz_1_1gl_1_1_renderer_info_common.html#a180574f2a9ed478fd8812e81f4b1a54b">get_resources</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>        <a class="code hl_class" href="classtz_1_1_handle.html">ResourceHandle</a> <a class="code hl_function" href="classtz_1_1gl_1_1_renderer_info_common.html#a60a396b6d8515c099ee2fd762d9b2e6a">add_resource</a>(<a class="code hl_class" href="classtz_1_1gl_1_1_i_resource.html">IResource</a>&amp; resource);</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>        <span class="keywordtype">void</span> <a class="code hl_function" href="classtz_1_1gl_1_1_renderer_info_common.html#a1f972b5e563deb56ee69e9b53092ad31">set_output</a>(<a class="code hl_class" href="classtz_1_1gl_1_1_i_output.html">IOutput</a>&amp; output);</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>        <span class="keyword">const</span> <a class="code hl_class" href="classtz_1_1gl_1_1_i_output.html">IOutput</a>* <a class="code hl_function" href="classtz_1_1gl_1_1_renderer_info_common.html#a302be3bac4685ccb1149c59ace8c37e3">get_output</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        <a class="code hl_class" href="classtz_1_1gl_1_1_i_output.html">IOutput</a>* <a class="code hl_function" href="classtz_1_1gl_1_1_renderer_info_common.html#a302be3bac4685ccb1149c59ace8c37e3">get_output</a>();</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>        <span class="keyword">const</span> <a class="code hl_class" href="classtz_1_1_enum_field.html">RendererOptions</a>&amp; <a class="code hl_function" href="classtz_1_1gl_1_1_renderer_info_common.html#aec615b183a9960ec9a2ef2309109d2e5">get_options</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>        <span class="keywordtype">void</span> <a class="code hl_function" href="classtz_1_1gl_1_1_renderer_info_common.html#af3ed0524736fd7da2d5b21e1a7ca52b5">set_options</a>(<a class="code hl_class" href="classtz_1_1_enum_field.html">RendererOptions</a> options);</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>        <span class="keywordtype">void</span> <a class="code hl_function" href="classtz_1_1gl_1_1_renderer_info_common.html#a75d5ffc32adfdf6c42826df76162a650">set_clear_colour</a>(<a class="code hl_class" href="classtz_1_1_vector.html">tz::Vec4</a> clear_colour);</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>        <span class="keyword">const</span> <a class="code hl_class" href="classtz_1_1_vector.html">tz::Vec4</a> <a class="code hl_function" href="classtz_1_1gl_1_1_renderer_info_common.html#affed8abe9d07e37e1ceb276aeb23bf03">get_clear_colour</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>        <a class="code hl_class" href="classtz_1_1gl_1_1_shader_info.html">ShaderInfo</a>&amp; <a class="code hl_function" href="classtz_1_1gl_1_1_renderer_info_common.html#a012f942226ba5541004f46ad3bf8b2da">shader</a>();</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>        <span class="keyword">const</span> <a class="code hl_class" href="classtz_1_1gl_1_1_shader_info.html">ShaderInfo</a>&amp; <a class="code hl_function" href="classtz_1_1gl_1_1_renderer_info_common.html#a012f942226ba5541004f46ad3bf8b2da">shader</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    <span class="keyword">private</span>:</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>        std::vector&lt;IResource*&gt; resources = {};</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>        <a class="code hl_class" href="classtz_1_1gl_1_1_i_output.html">IOutput</a>* output = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>        <a class="code hl_class" href="classtz_1_1_enum_field.html">RendererOptions</a> options = {};</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>        <a class="code hl_class" href="classtz_1_1gl_1_1_shader_info.html">ShaderInfo</a> shader_info;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>        <a class="code hl_class" href="classtz_1_1_vector.html">tz::Vec4</a> clear_colour = {0.0f, 0.0f, 0.0f, 1.0f};</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    };</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    <span class="keyword">static_assert</span>(RendererInfoType&lt;RendererInfoCommon&gt;);</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span> </div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    <span class="keyword">template</span>&lt;<span class="keyword">class</span> Asset&gt;</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno"><a class="line" href="classtz_1_1gl_1_1_asset_storage_common.html">   89</a></span>    <span class="keyword">class </span><a class="code hl_class" href="classtz_1_1gl_1_1_asset_storage_common.html">AssetStorageCommon</a></div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    {</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    <span class="keyword">public</span>:</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>        <span class="keyword">using</span> <a class="code hl_class" href="classtz_1_1_handle.html">AssetHandle</a> = <a class="code hl_class" href="classtz_1_1_handle.html">tz::Handle&lt;Asset&gt;</a>;</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>        <a class="code hl_class" href="classtz_1_1gl_1_1_asset_storage_common.html">AssetStorageCommon</a>(std::span&lt;const Asset* const&gt; assets):</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>        asset_storage()</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>        {</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>            <span class="keywordflow">for</span>(<span class="keyword">const</span> Asset* asset : assets)</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>            {</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>                this-&gt;asset_storage.push_back(asset-&gt;unique_clone());</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>            }</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>        }</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>        <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> count()<span class="keyword"> const</span></div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span><span class="keyword">        </span>{</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>            <span class="keywordflow">return</span> this-&gt;asset_storage.size();</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>        }</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>        </div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>        <span class="keyword">const</span> Asset* get(<a class="code hl_class" href="classtz_1_1_handle.html">AssetHandle</a> handle)<span class="keyword"> const</span></div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span><span class="keyword">        </span>{</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>            std::size_t handle_val = <span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(<span class="keyword">static_cast&lt;</span>tz::HandleValue<span class="keyword">&gt;</span>(handle));</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>            <span class="keywordflow">return</span> this-&gt;asset_storage[handle_val].get();</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>        }</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span> </div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>        Asset* get(<a class="code hl_class" href="classtz_1_1_handle.html">AssetHandle</a> handle)</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>        {</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>            std::size_t handle_val = <span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(<span class="keyword">static_cast&lt;</span>tz::HandleValue<span class="keyword">&gt;</span>(handle));</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>            <span class="keywordflow">return</span> this-&gt;asset_storage[handle_val].get();</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>        }</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    <span class="keyword">private</span>:</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>        std::vector&lt;std::unique_ptr&lt;Asset&gt;&gt; asset_storage;</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    };</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span> </div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>}</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span> </div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span><span class="preprocessor">#endif </span><span class="comment">// TOPAZ_GL2_IMPL_FRONTEND_COMMON_RENDERER_HPP</span></div>
+<div class="ttc" id="aclasstz_1_1_enum_field_html"><div class="ttname"><a href="classtz_1_1_enum_field.html">tz::EnumField&lt; RendererOption &gt;</a></div></div>
+<div class="ttc" id="aclasstz_1_1_handle_html"><div class="ttname"><a href="classtz_1_1_handle.html">tz::Handle&lt; IResource &gt;</a></div></div>
 <div class="ttc" id="aclasstz_1_1_vector_html"><div class="ttname"><a href="classtz_1_1_vector.html">tz::Vector&lt; float, 4 &gt;</a></div></div>
-<div class="ttc" id="aclasstz_1_1gl_1_1_i_renderer_builder_html"><div class="ttname"><a href="classtz_1_1gl_1_1_i_renderer_builder.html">tz::gl::IRendererBuilder</a></div><div class="ttdoc">Structure describing the nature of a renderer.</div><div class="ttdef"><b>Definition:</b> renderer.hpp:195</div></div>
-<div class="ttc" id="aclasstz_1_1gl_1_1_i_renderer_html"><div class="ttname"><a href="classtz_1_1gl_1_1_i_renderer.html">tz::gl::IRenderer</a></div><div class="ttdoc">High-level object used to render geometry.</div><div class="ttdef"><b>Definition:</b> renderer.hpp:299</div></div>
-<div class="ttc" id="aclasstz_1_1gl_1_1_i_renderer_input_html"><div class="ttname"><a href="classtz_1_1gl_1_1_i_renderer_input.html">tz::gl::IRendererInput</a></div><div class="ttdoc">A renderer is always provided some input data.</div><div class="ttdef"><b>Definition:</b> renderer.hpp:53</div></div>
-<div class="ttc" id="aclasstz_1_1gl_1_1_i_renderer_output_html"><div class="ttname"><a href="classtz_1_1gl_1_1_i_renderer_output.html">tz::gl::IRendererOutput</a></div><div class="ttdef"><b>Definition:</b> renderer.hpp:183</div></div>
-<div class="ttc" id="aclasstz_1_1gl_1_1_i_resource_html"><div class="ttname"><a href="classtz_1_1gl_1_1_i_resource.html">tz::gl::IResource</a></div><div class="ttdoc">Renderers can be associated with zero or more resources.</div><div class="ttdef"><b>Definition:</b> resource.hpp:23</div></div>
-<div class="ttc" id="aclasstz_1_1gl_1_1_renderer_base_html"><div class="ttname"><a href="classtz_1_1gl_1_1_renderer_base.html">tz::gl::RendererBase</a></div><div class="ttdef"><b>Definition:</b> renderer.hpp:40</div></div>
-<div class="ttc" id="aclasstz_1_1gl_1_1_renderer_base_html_a042cfb10c54230566fd9aa8bb044bb31"><div class="ttname"><a href="classtz_1_1gl_1_1_renderer_base.html#a042cfb10c54230566fd9aa8bb044bb31">tz::gl::RendererBase::get_resource</a></div><div class="ttdeci">virtual IResource * get_resource(ResourceHandle handle) override</div><div class="ttdoc">Retrieve the resource corresponding to the given handle.</div><div class="ttdef"><b>Definition:</b> renderer.cpp:182</div></div>
-<div class="ttc" id="aclasstz_1_1gl_1_1_renderer_base_html_aac7d196a5d854d2b915e4020125e0763"><div class="ttname"><a href="classtz_1_1gl_1_1_renderer_base.html#aac7d196a5d854d2b915e4020125e0763">tz::gl::RendererBase::get_clear_colour</a></div><div class="ttdeci">virtual tz::Vec4 get_clear_colour() const override</div><div class="ttdoc">Retrieve the clear colour for any colour attachments throughout the renderpass.</div><div class="ttdef"><b>Definition:</b> renderer.cpp:133</div></div>
-<div class="ttc" id="aclasstz_1_1gl_1_1_renderer_base_html_ab3130a1c417cb19df3726d99a1852a32"><div class="ttname"><a href="classtz_1_1gl_1_1_renderer_base.html#ab3130a1c417cb19df3726d99a1852a32">tz::gl::RendererBase::input_count</a></div><div class="ttdeci">virtual std::size_t input_count() const override</div><div class="ttdoc">Retrieve the number of inputs within the renderer.</div><div class="ttdef"><b>Definition:</b> renderer.cpp:138</div></div>
-<div class="ttc" id="aclasstz_1_1gl_1_1_renderer_base_html_ab496d9e20d1e5b3136a3c7f9a8170d94"><div class="ttname"><a href="classtz_1_1gl_1_1_renderer_base.html#ab496d9e20d1e5b3136a3c7f9a8170d94">tz::gl::RendererBase::set_clear_colour</a></div><div class="ttdeci">virtual void set_clear_colour(tz::Vec4 clear_colour) override</div><div class="ttdoc">Set the clear colour for any colour attachments throughout the renderpass.</div><div class="ttdef"><b>Definition:</b> renderer.cpp:128</div></div>
-<div class="ttc" id="aclasstz_1_1gl_1_1_renderer_base_html_ab89930dfe5e3ce39dfe4b41b75bd01de"><div class="ttname"><a href="classtz_1_1gl_1_1_renderer_base.html#ab89930dfe5e3ce39dfe4b41b75bd01de">tz::gl::RendererBase::get_input</a></div><div class="ttdeci">virtual IRendererInput * get_input(RendererInputHandle handle) override</div><div class="ttdoc">Retrieve the renderer input.</div><div class="ttdef"><b>Definition:</b> renderer.cpp:154</div></div>
-<div class="ttc" id="aclasstz_1_1gl_1_1_renderer_base_html_ac7f4b76f08879320810cefee4684be30"><div class="ttname"><a href="classtz_1_1gl_1_1_renderer_base.html#ac7f4b76f08879320810cefee4684be30">tz::gl::RendererBase::resource_count_of</a></div><div class="ttdeci">virtual std::size_t resource_count_of(ResourceType type) const override</div><div class="ttdoc">Retrieve the number of resources of the given type within the renderer.</div><div class="ttdef"><b>Definition:</b> renderer.cpp:165</div></div>
-<div class="ttc" id="aclasstz_1_1gl_1_1_renderer_base_html_ae26775c664ad5ba5a394a684d964a70d"><div class="ttname"><a href="classtz_1_1gl_1_1_renderer_base.html#ae26775c664ad5ba5a394a684d964a70d">tz::gl::RendererBase::input_count_of</a></div><div class="ttdeci">virtual std::size_t input_count_of(RendererInputDataAccess access) const override</div><div class="ttdoc">Retrieve the number of inputs of the given access within the renderer.</div><div class="ttdef"><b>Definition:</b> renderer.cpp:143</div></div>
-<div class="ttc" id="aclasstz_1_1gl_1_1_renderer_base_html_aed2d172ad31238917ce55438c6b82100"><div class="ttname"><a href="classtz_1_1gl_1_1_renderer_base.html#aed2d172ad31238917ce55438c6b82100">tz::gl::RendererBase::resource_count</a></div><div class="ttdeci">virtual std::size_t resource_count() const override</div><div class="ttdoc">Retrieve the number of resources associated with the renderer.</div><div class="ttdef"><b>Definition:</b> renderer.cpp:160</div></div>
-<div class="ttc" id="aclasstz_1_1gl_1_1_renderer_builder_base_html"><div class="ttname"><a href="classtz_1_1gl_1_1_renderer_builder_base.html">tz::gl::RendererBuilderBase</a></div><div class="ttdef"><b>Definition:</b> renderer.hpp:10</div></div>
-<div class="ttc" id="aclasstz_1_1gl_1_1_renderer_builder_base_html_a42692bdc35023921814229ca548f0cdc"><div class="ttname"><a href="classtz_1_1gl_1_1_renderer_builder_base.html#a42692bdc35023921814229ca548f0cdc">tz::gl::RendererBuilderBase::set_output</a></div><div class="ttdeci">virtual void set_output(IRendererOutput &amp;output) override</div><div class="ttdoc">Renderers must have one output.</div><div class="ttdef"><b>Definition:</b> renderer.cpp:24</div></div>
-<div class="ttc" id="aclasstz_1_1gl_1_1_renderer_builder_base_html_a51bb721b03343cce6b42aaae3daa4f92"><div class="ttname"><a href="classtz_1_1gl_1_1_renderer_builder_base.html#a51bb721b03343cce6b42aaae3daa4f92">tz::gl::RendererBuilderBase::get_resource</a></div><div class="ttdeci">virtual const IResource * get_resource(ResourceHandle handle) const override</div><div class="ttdoc">Retrieve a resource using the given handle.</div><div class="ttdef"><b>Definition:</b> renderer.cpp:59</div></div>
-<div class="ttc" id="aclasstz_1_1gl_1_1_renderer_builder_base_html_a596777df66c4d8a787388c15c5aa91c6"><div class="ttname"><a href="classtz_1_1gl_1_1_renderer_builder_base.html#a596777df66c4d8a787388c15c5aa91c6">tz::gl::RendererBuilderBase::get_shader</a></div><div class="ttdeci">virtual const Shader &amp; get_shader() const override</div><div class="ttdoc">Retrieve the shader that will be used while rendering.</div><div class="ttdef"><b>Definition:</b> renderer.cpp:113</div></div>
-<div class="ttc" id="aclasstz_1_1gl_1_1_renderer_builder_base_html_a7757fed87166e12b23fee0eef96c5cc1"><div class="ttname"><a href="classtz_1_1gl_1_1_renderer_builder_base.html#a7757fed87166e12b23fee0eef96c5cc1">tz::gl::RendererBuilderBase::get_input</a></div><div class="ttdeci">virtual const IRendererInput * get_input(RendererInputHandle handle) const override</div><div class="ttdoc">Retrieve the format of the vertex data elements.</div><div class="ttdef"><b>Definition:</b> renderer.cpp:12</div></div>
-<div class="ttc" id="aclasstz_1_1gl_1_1_renderer_builder_base_html_aa2ace287e796fbffc8a4aa276f9ddfd3"><div class="ttname"><a href="classtz_1_1gl_1_1_renderer_builder_base.html#aa2ace287e796fbffc8a4aa276f9ddfd3">tz::gl::RendererBuilderBase::get_culling_strategy</a></div><div class="ttdeci">virtual RendererCullingStrategy get_culling_strategy() const override</div><div class="ttdoc">Retrieve the current culling strategy.</div><div class="ttdef"><b>Definition:</b> renderer.cpp:103</div></div>
-<div class="ttc" id="aclasstz_1_1gl_1_1_renderer_builder_base_html_ac6aa3da761083a1708128ce002d047cf"><div class="ttname"><a href="classtz_1_1gl_1_1_renderer_builder_base.html#ac6aa3da761083a1708128ce002d047cf">tz::gl::RendererBuilderBase::add_input</a></div><div class="ttdeci">virtual RendererInputHandle add_input(const IRendererInput &amp;input) override</div><div class="ttdoc">Add input data for the renderer.</div><div class="ttdef"><b>Definition:</b> renderer.cpp:5</div></div>
-<div class="ttc" id="aclasstz_1_1gl_1_1_renderer_builder_base_html_accbb3aa7de391a7565b503f8c97fb31c"><div class="ttname"><a href="classtz_1_1gl_1_1_renderer_builder_base.html#accbb3aa7de391a7565b503f8c97fb31c">tz::gl::RendererBuilderBase::add_resource</a></div><div class="ttdeci">virtual ResourceHandle add_resource(const IResource &amp;resource) override</div><div class="ttdoc">Add a resource to the renderer, meaning that its data may be used while rendering.</div><div class="ttdef"><b>Definition:</b> renderer.cpp:39</div></div>
-<div class="ttc" id="aclasstz_1_1gl_1_1_renderer_builder_base_html_ad26388e47c580695bea4404eb624a781"><div class="ttname"><a href="classtz_1_1gl_1_1_renderer_builder_base.html#ad26388e47c580695bea4404eb624a781">tz::gl::RendererBuilderBase::input_count</a></div><div class="ttdeci">virtual std::size_t input_count() const override</div><div class="ttdoc">Retrieve the number of inputs registered.</div><div class="ttdef"><b>Definition:</b> renderer.cpp:19</div></div>
-<div class="ttc" id="aclasstz_1_1gl_1_1_renderer_builder_base_html_ae96e0700ad53d41e81517a190da5a937"><div class="ttname"><a href="classtz_1_1gl_1_1_renderer_builder_base.html#ae96e0700ad53d41e81517a190da5a937">tz::gl::RendererBuilderBase::get_resources</a></div><div class="ttdeci">virtual std::span&lt; const IResource *const &gt; get_resources(ResourceType type) const override</div><div class="ttdoc">Retrieve a span containing all resources of a given type.</div><div class="ttdef"><b>Definition:</b> renderer.cpp:80</div></div>
-<div class="ttc" id="aclasstz_1_1gl_1_1_renderer_builder_base_html_aeaf80ef89dfcc9f035289b385db38ee1"><div class="ttname"><a href="classtz_1_1gl_1_1_renderer_builder_base.html#aeaf80ef89dfcc9f035289b385db38ee1">tz::gl::RendererBuilderBase::get_output</a></div><div class="ttdeci">virtual const IRendererOutput * get_output() const override</div><div class="ttdoc">Retrieve the output that will be used by the renderer.</div><div class="ttdef"><b>Definition:</b> renderer.cpp:29</div></div>
-<div class="ttc" id="aclasstz_1_1gl_1_1_renderer_builder_base_html_aebc3c9919021e221395edd82479e86a9"><div class="ttname"><a href="classtz_1_1gl_1_1_renderer_builder_base.html#aebc3c9919021e221395edd82479e86a9">tz::gl::RendererBuilderBase::set_culling_strategy</a></div><div class="ttdeci">virtual void set_culling_strategy(RendererCullingStrategy culling_strategy) override</div><div class="ttdoc">Set the culling strategy used during rendering.</div><div class="ttdef"><b>Definition:</b> renderer.cpp:98</div></div>
-<div class="ttc" id="aclasstz_1_1gl_1_1_renderer_builder_base_html_af135d25235f5a2dbb3da514471ef3729"><div class="ttname"><a href="classtz_1_1gl_1_1_renderer_builder_base.html#af135d25235f5a2dbb3da514471ef3729">tz::gl::RendererBuilderBase::set_shader</a></div><div class="ttdeci">virtual void set_shader(const Shader &amp;shader) override</div><div class="ttdoc">Set the shader which will be used while rendering.</div><div class="ttdef"><b>Definition:</b> renderer.cpp:108</div></div>
+<div class="ttc" id="aclasstz_1_1gl_1_1_asset_storage_common_html"><div class="ttname"><a href="classtz_1_1gl_1_1_asset_storage_common.html">tz::gl::AssetStorageCommon</a></div><div class="ttdef"><b>Definition:</b> renderer.hpp:90</div></div>
+<div class="ttc" id="aclasstz_1_1gl_1_1_i_output_html"><div class="ttname"><a href="classtz_1_1gl_1_1_i_output.html">tz::gl::IOutput</a></div><div class="ttdef"><b>Definition:</b> output.hpp:14</div></div>
+<div class="ttc" id="aclasstz_1_1gl_1_1_i_resource_html"><div class="ttname"><a href="classtz_1_1gl_1_1_i_resource.html">tz::gl::IResource</a></div><div class="ttdoc">Interface for a Renderer or Processor resource.</div><div class="ttdef"><b>Definition:</b> resource.hpp:47</div></div>
+<div class="ttc" id="aclasstz_1_1gl_1_1_renderer_info_common_html"><div class="ttname"><a href="classtz_1_1gl_1_1_renderer_info_common.html">tz::gl::RendererInfoCommon</a></div><div class="ttdoc">Helper struct which the user can use to specify which inputs, resources they want and where they want...</div><div class="ttdef"><b>Definition:</b> renderer.hpp:13</div></div>
+<div class="ttc" id="aclasstz_1_1gl_1_1_renderer_info_common_html_a012f942226ba5541004f46ad3bf8b2da"><div class="ttname"><a href="classtz_1_1gl_1_1_renderer_info_common.html#a012f942226ba5541004f46ad3bf8b2da">tz::gl::RendererInfoCommon::shader</a></div><div class="ttdeci">ShaderInfo &amp; shader()</div><div class="ttdoc">Read/write information about the shader that will be built for the renderer.</div><div class="ttdef"><b>Definition:</b> renderer.cpp:63</div></div>
+<div class="ttc" id="aclasstz_1_1gl_1_1_renderer_info_common_html_a180574f2a9ed478fd8812e81f4b1a54b"><div class="ttname"><a href="classtz_1_1gl_1_1_renderer_info_common.html#a180574f2a9ed478fd8812e81f4b1a54b">tz::gl::RendererInfoCommon::get_resources</a></div><div class="ttdeci">std::span&lt; const IResource *const &gt; get_resources() const</div><div class="ttdoc">Retrieve a span containing all of the specified resources.</div><div class="ttdef"><b>Definition:</b> renderer.cpp:17</div></div>
+<div class="ttc" id="aclasstz_1_1gl_1_1_renderer_info_common_html_a1f972b5e563deb56ee69e9b53092ad31"><div class="ttname"><a href="classtz_1_1gl_1_1_renderer_info_common.html#a1f972b5e563deb56ee69e9b53092ad31">tz::gl::RendererInfoCommon::set_output</a></div><div class="ttdeci">void set_output(IOutput &amp;output)</div><div class="ttdoc">Renderers always render into something.</div><div class="ttdef"><b>Definition:</b> renderer.cpp:28</div></div>
+<div class="ttc" id="aclasstz_1_1gl_1_1_renderer_info_common_html_a302be3bac4685ccb1149c59ace8c37e3"><div class="ttname"><a href="classtz_1_1gl_1_1_renderer_info_common.html#a302be3bac4685ccb1149c59ace8c37e3">tz::gl::RendererInfoCommon::get_output</a></div><div class="ttdeci">const IOutput * get_output() const</div><div class="ttdoc">Retrieve the current render output (read-only).</div><div class="ttdef"><b>Definition:</b> renderer.cpp:33</div></div>
+<div class="ttc" id="aclasstz_1_1gl_1_1_renderer_info_common_html_a34d0a0cd7049942ef33b88e450f25adb"><div class="ttname"><a href="classtz_1_1gl_1_1_renderer_info_common.html#a34d0a0cd7049942ef33b88e450f25adb">tz::gl::RendererInfoCommon::get_resource</a></div><div class="ttdeci">const IResource * get_resource(ResourceHandle handle)</div><div class="ttdoc">Retrieve the resource corresponding to the given handle.</div><div class="ttdef"><b>Definition:</b> renderer.cpp:12</div></div>
+<div class="ttc" id="aclasstz_1_1gl_1_1_renderer_info_common_html_a60a396b6d8515c099ee2fd762d9b2e6a"><div class="ttname"><a href="classtz_1_1gl_1_1_renderer_info_common.html#a60a396b6d8515c099ee2fd762d9b2e6a">tz::gl::RendererInfoCommon::add_resource</a></div><div class="ttdeci">ResourceHandle add_resource(IResource &amp;resource)</div><div class="ttdoc">Add a new resource, which will be used by a Renderer which is created from this helper struct.</div><div class="ttdef"><b>Definition:</b> renderer.cpp:22</div></div>
+<div class="ttc" id="aclasstz_1_1gl_1_1_renderer_info_common_html_a75d5ffc32adfdf6c42826df76162a650"><div class="ttname"><a href="classtz_1_1gl_1_1_renderer_info_common.html#a75d5ffc32adfdf6c42826df76162a650">tz::gl::RendererInfoCommon::set_clear_colour</a></div><div class="ttdeci">void set_clear_colour(tz::Vec4 clear_colour)</div><div class="ttdoc">Set the clear colour value.</div><div class="ttdef"><b>Definition:</b> renderer.cpp:53</div></div>
+<div class="ttc" id="aclasstz_1_1gl_1_1_renderer_info_common_html_ac669437b6d3fc0e0ea0296554325863a"><div class="ttname"><a href="classtz_1_1gl_1_1_renderer_info_common.html#ac669437b6d3fc0e0ea0296554325863a">tz::gl::RendererInfoCommon::resource_count</a></div><div class="ttdeci">unsigned int resource_count() const</div><div class="ttdoc">Retrieve the number of resources.</div><div class="ttdef"><b>Definition:</b> renderer.cpp:7</div></div>
+<div class="ttc" id="aclasstz_1_1gl_1_1_renderer_info_common_html_aec615b183a9960ec9a2ef2309109d2e5"><div class="ttname"><a href="classtz_1_1gl_1_1_renderer_info_common.html#aec615b183a9960ec9a2ef2309109d2e5">tz::gl::RendererInfoCommon::get_options</a></div><div class="ttdeci">const RendererOptions &amp; get_options() const</div><div class="ttdoc">Retrieve the currently specified options which will be used by the renderer.</div><div class="ttdef"><b>Definition:</b> renderer.cpp:43</div></div>
+<div class="ttc" id="aclasstz_1_1gl_1_1_renderer_info_common_html_af3ed0524736fd7da2d5b21e1a7ca52b5"><div class="ttname"><a href="classtz_1_1gl_1_1_renderer_info_common.html#af3ed0524736fd7da2d5b21e1a7ca52b5">tz::gl::RendererInfoCommon::set_options</a></div><div class="ttdeci">void set_options(RendererOptions options)</div><div class="ttdoc">Set the currently specified options which will be used by the renderer.</div><div class="ttdef"><b>Definition:</b> renderer.cpp:48</div></div>
+<div class="ttc" id="aclasstz_1_1gl_1_1_renderer_info_common_html_affed8abe9d07e37e1ceb276aeb23bf03"><div class="ttname"><a href="classtz_1_1gl_1_1_renderer_info_common.html#affed8abe9d07e37e1ceb276aeb23bf03">tz::gl::RendererInfoCommon::get_clear_colour</a></div><div class="ttdeci">const tz::Vec4 get_clear_colour() const</div><div class="ttdoc">Retrieve the current clear colour value.</div><div class="ttdef"><b>Definition:</b> renderer.cpp:58</div></div>
+<div class="ttc" id="aclasstz_1_1gl_1_1_shader_info_html"><div class="ttname"><a href="classtz_1_1gl_1_1_shader_info.html">tz::gl::ShaderInfo</a></div><div class="ttdef"><b>Definition:</b> shader.hpp:10</div></div>
 </div><!-- fragment --></div><!-- contents -->
+</div><!-- doc-content -->
 <!-- start footer part -->
-<hr class="footer"/><address class="footer"><small>
-    <nav class="navbar navbar-default" role="navigation">
-        <div class="container">
-            <div class="navbar-header">
-                <a class="navbar-brand" href="https://github.com/Harrand/Topaz" style="margin-right: 10px;">GitHub: topaz-master</a>
-                <a class="navbar-brand" href="https://harrand.github.io/" style="margin-right: 10px;">harrand.github.io</a>
-            </div>
-        </div>
-    </nav>
-    <p>Generated: Wed Sep 29 2021 01:11:50</p>
-</small></address>
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_22ef2c5f6712ba0a0b99c741bcfb15fe.html">gl</a></li><li class="navelem"><a class="el" href="dir_294d689e10da81f00c081b036a1431d9.html">impl</a></li><li class="navelem"><a class="el" href="dir_5dc250fa98469894779c63cc5b44e532.html">frontend</a></li><li class="navelem"><a class="el" href="dir_5030c4a498d7875a99bc450d8f07d664.html">common</a></li><li class="navelem"><b>renderer.hpp</b></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.3 </li>
+  </ul>
+</div>
 </body>
 </html>

@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['vec2_0',['Vec2',['../group__tz__core.html#ga2280dd8dc325d2b56ed8750b2d3a4ba3',1,'tz']]],
-  ['vec3_1',['Vec3',['../group__tz__core.html#gaf5ee3ec55283d482338ab2df715fbdb3',1,'tz']]],
-  ['vec4_2',['Vec4',['../group__tz__core.html#ga198a712bb2f95ccc6d0103fe67f86567',1,'tz']]]
+  ['mat2_0',['Mat2',['../group__tz__core__vecmat.html#ga9d3c1ed62232ca6932fc42a8d030d1d6',1,'tz']]],
+  ['mat3_1',['Mat3',['../group__tz__core__vecmat.html#ga9730329c4ea0d8dcc0ea4bfee3d4735b',1,'tz']]],
+  ['mat4_2',['Mat4',['../group__tz__core__vecmat.html#ga8cfb113cdb198fe50c0e74a721575b51',1,'tz']]]
 ];

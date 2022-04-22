@@ -1,16 +1,19 @@
-<!-- HTML header for doxygen 1.8.8-->
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
-    <head>
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <!-- For Mobile Devices -->
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-        <meta name="generator" content="Doxygen 1.9.2"/>
-        <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-        <title>Topaz 3.1 Documentation</title>
-        <script type="text/javascript" src="dynsections.js"></script>
-        <link href="search/search.css" rel="stylesheet" type="text/css"/>
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.3"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Topaz: tz::Vector&lt; T, S &gt; Class Template Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
 <script type="text/javascript">
@@ -18,29 +21,22 @@
   $(document).ready(function() { init_search(); });
 /* @license-end */
 </script>
-        <link href="custom_dark_theme.css" rel="stylesheet" type="text/css" />
-        <link href="custom.css" rel="stylesheet" type="text/css"/>
-<link href="custom_dark_theme.css" rel="stylesheet" type="text/css"/>
-        <script type="text/javascript" src="doxy-boot.js"></script>
-        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-        <link rel="manifest" href="/site.webmanifest">
-        <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
-        <meta name="msapplication-TileColor" content="#da532c">
-        <meta name="theme-color" content="#ffffff">
-    </head>
-    <body>
-        <nav class="navbar navbar-default" role="navigation">
-            <div class="container">
-                <div class="navbar-header">
-                    <a class="navbar-brand"><img src = "tz.png" width="2%" height="2%"></a>
-                    <a class="navbar-brand" href="index.html" style="font-size: xx-large; text-decoration: none;">Topaz</a>
-                    <a class="navbar-brand" href="modules.html">Modules</a>
-                    <a class="navbar-brand" href="annotated.html">Classes</a>
-                    <a class="navbar-brand" href="tools.html">Tools</a>
-                    <a class="navbar-brand" href="tzsl.html">TZSL</a>
-                            <div id="MSearchBox" class="MSearchBoxInactive">
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectlogo"><img alt="Logo" src="tz.png"/></td>
+  <td id="projectalign">
+   <div id="projectname">Topaz<span id="projectnumber">&#160;3.2</span>
+   </div>
+   <div id="projectbrief">C++20 Graphics Engine</div>
+  </td>
+    <td>        <div id="MSearchBox" class="MSearchBoxInactive">
         <span class="left">
           <img id="MSearchSelect" src="search/mag_sel.svg"
                onmouseover="return searchBox.OnSearchSelectShow()"
@@ -54,21 +50,35 @@
             <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
           </span>
         </div>
-                </div>
-            </div>
-        </nav>
-        <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
-            <div class="content" id="content">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-sm-12 panel " style="padding-bottom: 15px;">
-                            <div style="margin-bottom: 15px;">
-<!-- end header part --><!-- Generated by Doxygen 1.9.2 -->
+</td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.9.3 -->
 <script type="text/javascript">
 /* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
 var searchBox = new SearchBox("searchBox", "search",'Search','.html');
 /* @license-end */
 </script>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(document).ready(function(){initNavTree('classtz_1_1_vector.html',''); initResizable(); });
+/* @license-end */
+</script>
+<div id="doc-content">
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"
@@ -83,16 +93,10 @@ var searchBox = new SearchBox("searchBox", "search",'Search','.html');
 </iframe>
 </div>
 
-<div id="nav-path" class="navpath">
-  <ul>
-<li class="navelem"><b>tz</b></li><li class="navelem"><a class="el" href="classtz_1_1_vector.html">Vector</a></li>  </ul>
-</div>
-</div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="classtz_1_1_vector-members.html">List of all members</a>  </div>
-  <div class="headertitle"><div class="title">tz::Vector&lt; T, S &gt; Class Template Reference<div class="ingroups"><a class="el" href="group__tz__core.html">Topaz Core Library (tz)</a></div></div></div>
+<a href="#pub-methods">Public Member Functions</a>  </div>
+  <div class="headertitle"><div class="title">tz::Vector&lt; T, S &gt; Class Template Reference<div class="ingroups"><a class="el" href="group__tz__core.html">Core Libraries (tz)</a> &raquo; <a class="el" href="group__tz__core__vecmat.html">Vectors and Matrices</a></div></div></div>
 </div><!--header-->
 <div class="contents">
 
@@ -108,7 +112,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a31db035d173eff30542b592fe1e1a2c1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a vector directly using a variadic parameter pack value.  <a href="classtz_1_1_vector.html#a31db035d173eff30542b592fe1e1a2c1">More...</a><br /></td></tr>
 <tr class="separator:a31db035d173eff30542b592fe1e1a2c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae062ab9aedad3c3f52e6bb20ec540cdc"><td class="memItemLeft" align="right" valign="top"><a id="ae062ab9aedad3c3f52e6bb20ec540cdc" name="ae062ab9aedad3c3f52e6bb20ec540cdc"></a>
-constexpr&#160;</td><td class="memItemRight" valign="bottom"><b>Vector</b> (std::array&lt; T, S &gt; <a class="el" href="classtz_1_1_vector.html#a006f1b0b86e48b71111ae088fd21a3b2">data</a>)</td></tr>
+constexpr&#160;</td><td class="memItemRight" valign="bottom"><b>Vector</b> (std::array&lt; T, S &gt; <a class="el" href="classtz_1_1_vector.html#a21a9c99453bdc876c9197dd3dad760f1">data</a>)</td></tr>
 <tr class="memdesc:ae062ab9aedad3c3f52e6bb20ec540cdc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a vector using an existing array of appropriate size. <br /></td></tr>
 <tr class="separator:ae062ab9aedad3c3f52e6bb20ec540cdc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a99572d6582d8f70aff4908bfa866ddd7"><td class="memItemLeft" align="right" valign="top"><a id="a99572d6582d8f70aff4908bfa866ddd7" name="a99572d6582d8f70aff4908bfa866ddd7"></a>
@@ -148,12 +152,12 @@ constexpr&#160;</td><td class="memItemRight" valign="bottom"><b>Vector</b> (std:
 <tr class="memitem:a40c976e5a10a5f7038999081d4bf0d12"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtz_1_1_vector.html#a40c976e5a10a5f7038999081d4bf0d12">operator==</a> (const <a class="el" href="classtz_1_1_vector.html">Vector</a>&lt; T, S &gt; &amp;rhs) const</td></tr>
 <tr class="memdesc:a40c976e5a10a5f7038999081d4bf0d12"><td class="mdescLeft">&#160;</td><td class="mdescRight">Equate the current vector with the given vector.  <a href="classtz_1_1_vector.html#a40c976e5a10a5f7038999081d4bf0d12">More...</a><br /></td></tr>
 <tr class="separator:a40c976e5a10a5f7038999081d4bf0d12"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a006f1b0b86e48b71111ae088fd21a3b2"><td class="memItemLeft" align="right" valign="top">const T *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtz_1_1_vector.html#a006f1b0b86e48b71111ae088fd21a3b2">data</a> () const</td></tr>
-<tr class="memdesc:a006f1b0b86e48b71111ae088fd21a3b2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve a pointer to the vector data.  <a href="classtz_1_1_vector.html#a006f1b0b86e48b71111ae088fd21a3b2">More...</a><br /></td></tr>
-<tr class="separator:a006f1b0b86e48b71111ae088fd21a3b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0cbc18f0831a7b5765ca30d029540eb2"><td class="memItemLeft" align="right" valign="top">T *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtz_1_1_vector.html#a0cbc18f0831a7b5765ca30d029540eb2">data</a> ()</td></tr>
-<tr class="memdesc:a0cbc18f0831a7b5765ca30d029540eb2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve a pointer to the vector data.  <a href="classtz_1_1_vector.html#a0cbc18f0831a7b5765ca30d029540eb2">More...</a><br /></td></tr>
-<tr class="separator:a0cbc18f0831a7b5765ca30d029540eb2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a21a9c99453bdc876c9197dd3dad760f1"><td class="memItemLeft" align="right" valign="top">std::span&lt; const T &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtz_1_1_vector.html#a21a9c99453bdc876c9197dd3dad760f1">data</a> () const</td></tr>
+<tr class="memdesc:a21a9c99453bdc876c9197dd3dad760f1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve a pointer to the vector data.  <a href="classtz_1_1_vector.html#a21a9c99453bdc876c9197dd3dad760f1">More...</a><br /></td></tr>
+<tr class="separator:a21a9c99453bdc876c9197dd3dad760f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab48062f95431db9c627ae623b98f7e64"><td class="memItemLeft" align="right" valign="top">std::span&lt; T &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtz_1_1_vector.html#ab48062f95431db9c627ae623b98f7e64">data</a> ()</td></tr>
+<tr class="memdesc:ab48062f95431db9c627ae623b98f7e64"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve a pointer to the vector data.  <a href="classtz_1_1_vector.html#ab48062f95431db9c627ae623b98f7e64">More...</a><br /></td></tr>
+<tr class="separator:ab48062f95431db9c627ae623b98f7e64"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a786e868c58c0e2492a94502a9800ee2e"><td class="memItemLeft" align="right" valign="top">T&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtz_1_1_vector.html#a786e868c58c0e2492a94502a9800ee2e">dot</a> (const <a class="el" href="classtz_1_1_vector.html">Vector</a>&lt; T, S &gt; &amp;rhs) const</td></tr>
 <tr class="memdesc:a786e868c58c0e2492a94502a9800ee2e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute a dot-product (otherwise known as the scalar-product) of the current vector against another given vector.  <a href="classtz_1_1_vector.html#a786e868c58c0e2492a94502a9800ee2e">More...</a><br /></td></tr>
 <tr class="separator:a786e868c58c0e2492a94502a9800ee2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -166,6 +170,21 @@ constexpr&#160;</td><td class="memItemRight" valign="bottom"><b>Vector</b> (std:
 <tr class="memitem:ae1a45a839a3c0b01b619e79d4014e92f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classtz_1_1_vector.html">Vector</a>&lt; T, S &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtz_1_1_vector.html#ae1a45a839a3c0b01b619e79d4014e92f">normalised</a> () const</td></tr>
 <tr class="memdesc:ae1a45a839a3c0b01b619e79d4014e92f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a copy of the vector, normalise it and return the result.  <a href="classtz_1_1_vector.html#ae1a45a839a3c0b01b619e79d4014e92f">More...</a><br /></td></tr>
 <tr class="separator:ae1a45a839a3c0b01b619e79d4014e92f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6c83ecac5d0c452ec1b1c12702da2c58"><td class="memTemplParams" colspan="2">template&lt;int... indices&gt; </td></tr>
+<tr class="memitem:a6c83ecac5d0c452ec1b1c12702da2c58"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classtz_1_1_vector.html">Vector</a>&lt; T, sizeof...(indices)&gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classtz_1_1_vector.html#a6c83ecac5d0c452ec1b1c12702da2c58">swizzle</a> () const</td></tr>
+<tr class="memdesc:a6c83ecac5d0c452ec1b1c12702da2c58"><td class="mdescLeft">&#160;</td><td class="mdescRight">Perform vector swizzling.  <a href="classtz_1_1_vector.html#a6c83ecac5d0c452ec1b1c12702da2c58">More...</a><br /></td></tr>
+<tr class="separator:a6c83ecac5d0c452ec1b1c12702da2c58"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af5e9cbbcaf12c92ad1e9effc6005824b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classtz_1_1_vector.html">Vector</a>&lt; T, S+1 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtz_1_1_vector.html#af5e9cbbcaf12c92ad1e9effc6005824b">with_more</a> (T &amp;&amp;end) const</td></tr>
+<tr class="memdesc:af5e9cbbcaf12c92ad1e9effc6005824b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a new vector, with a single extra element appended to the end.  <a href="classtz_1_1_vector.html#af5e9cbbcaf12c92ad1e9effc6005824b">More...</a><br /></td></tr>
+<tr class="separator:af5e9cbbcaf12c92ad1e9effc6005824b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1b69907c426096c14929e4d5332cb236"><td class="memTemplParams" colspan="2">template&lt;std::size_t S2&gt; </td></tr>
+<tr class="memitem:a1b69907c426096c14929e4d5332cb236"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classtz_1_1_vector.html">Vector</a>&lt; T, S+S2 &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classtz_1_1_vector.html#a1b69907c426096c14929e4d5332cb236">with_more</a> (const <a class="el" href="classtz_1_1_vector.html">Vector</a>&lt; T, S2 &gt; &amp;end) const</td></tr>
+<tr class="memdesc:a1b69907c426096c14929e4d5332cb236"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a new vector, with another vector appended to the end.  <a href="classtz_1_1_vector.html#a1b69907c426096c14929e4d5332cb236">More...</a><br /></td></tr>
+<tr class="separator:a1b69907c426096c14929e4d5332cb236"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acfecb52bf16c8f9bb78802645aabeaea"><td class="memTemplParams" colspan="2">template&lt;<a class="el" href="concepttz_1_1_number.html">tz::Number</a> X, typename  = std::enable_if_t&lt;!std::is_same_v&lt;T, X&gt;&gt;&gt; </td></tr>
+<tr class="memitem:acfecb52bf16c8f9bb78802645aabeaea"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classtz_1_1_vector.html#acfecb52bf16c8f9bb78802645aabeaea">operator Vector&lt; X, S &gt;</a> () const</td></tr>
+<tr class="memdesc:acfecb52bf16c8f9bb78802645aabeaea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Perform a conversion to a vector of different numeric type.  <a href="classtz_1_1_vector.html#acfecb52bf16c8f9bb78802645aabeaea">More...</a><br /></td></tr>
+<tr class="separator:acfecb52bf16c8f9bb78802645aabeaea"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><div class="compoundTemplParams">template&lt;<a class="el" href="concepttz_1_1_number.html">tz::Number</a> T, std::size_t S&gt;<br />
@@ -186,7 +205,7 @@ template&lt;tz::Number... Ts&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr <a class="el" href="classtz_1_1_vector.html">tz::Vector</a>&lt; T, S &gt;::<a class="el" href="classtz_1_1_vector.html">Vector</a> </td>
+          <td class="memname">constexpr <a class="el" href="classtz_1_1_vector.html">tz::Vector</a>&lt; T, S &gt;::Vector </td>
           <td>(</td>
           <td class="paramtype">Ts &amp;&amp;...&#160;</td>
           <td class="paramname"><em>ts</em></td><td>)</td>
@@ -206,8 +225,8 @@ template&lt;tz::Number... Ts&gt; </div>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="a0cbc18f0831a7b5765ca30d029540eb2" name="a0cbc18f0831a7b5765ca30d029540eb2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0cbc18f0831a7b5765ca30d029540eb2">&#9670;&nbsp;</a></span>data() <span class="overload">[1/2]</span></h2>
+<a id="ab48062f95431db9c627ae623b98f7e64" name="ab48062f95431db9c627ae623b98f7e64"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab48062f95431db9c627ae623b98f7e64">&#9670;&nbsp;</a></span>data() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -215,7 +234,7 @@ template&lt;tz::Number... Ts&gt; </div>
 template&lt;<a class="el" href="concepttz_1_1_number.html">tz::Number</a> T, std::size_t S&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">T * <a class="el" href="classtz_1_1_vector.html">tz::Vector</a>&lt; T, S &gt;::data</td>
+          <td class="memname">std::span&lt; T &gt; <a class="el" href="classtz_1_1_vector.html">tz::Vector</a>&lt; T, S &gt;::data</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -225,8 +244,8 @@ template&lt;<a class="el" href="concepttz_1_1_number.html">tz::Number</a> T, std
 
 </div>
 </div>
-<a id="a006f1b0b86e48b71111ae088fd21a3b2" name="a006f1b0b86e48b71111ae088fd21a3b2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a006f1b0b86e48b71111ae088fd21a3b2">&#9670;&nbsp;</a></span>data() <span class="overload">[2/2]</span></h2>
+<a id="a21a9c99453bdc876c9197dd3dad760f1" name="a21a9c99453bdc876c9197dd3dad760f1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a21a9c99453bdc876c9197dd3dad760f1">&#9670;&nbsp;</a></span>data() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -234,7 +253,7 @@ template&lt;<a class="el" href="concepttz_1_1_number.html">tz::Number</a> T, std
 template&lt;<a class="el" href="concepttz_1_1_number.html">tz::Number</a> T, std::size_t S&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">const T * <a class="el" href="classtz_1_1_vector.html">tz::Vector</a>&lt; T, S &gt;::data</td>
+          <td class="memname">std::span&lt; const T &gt; <a class="el" href="classtz_1_1_vector.html">tz::Vector</a>&lt; T, S &gt;::data</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -327,6 +346,27 @@ template&lt;<a class="el" href="concepttz_1_1_number.html">tz::Number</a> T, std
 
 <p>Create a copy of the vector, normalise it and return the result. </p>
 <dl class="section return"><dt>Returns</dt><dd>A normalised copy of the current vector. </dd></dl>
+
+</div>
+</div>
+<a id="acfecb52bf16c8f9bb78802645aabeaea" name="acfecb52bf16c8f9bb78802645aabeaea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acfecb52bf16c8f9bb78802645aabeaea">&#9670;&nbsp;</a></span>operator Vector&lt; X, S &gt;()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;<a class="el" href="concepttz_1_1_number.html">tz::Number</a> T, std::size_t S&gt; </div>
+<div class="memtemplate">
+template&lt;<a class="el" href="concepttz_1_1_number.html">tz::Number</a> X, typename &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classtz_1_1_vector.html">tz::Vector</a>&lt; T, S &gt;::operator <a class="el" href="classtz_1_1_vector.html">Vector</a>&lt; X, S &gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Perform a conversion to a vector of different numeric type. </p>
+<p >Numeric conversion is performed via explicit conversion. </p>
 
 </div>
 </div>
@@ -637,22 +677,109 @@ template&lt;<a class="el" href="concepttz_1_1_number.html">tz::Number</a> T, std
 
 </div>
 </div>
-<hr/>The documentation for this class was generated from the following files:<ul>
-<li>src/core/<a class="el" href="vector_8hpp_source.html">vector.hpp</a></li>
-<li>src/core/vector.inl</li>
-</ul>
+<a id="a6c83ecac5d0c452ec1b1c12702da2c58" name="a6c83ecac5d0c452ec1b1c12702da2c58"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6c83ecac5d0c452ec1b1c12702da2c58">&#9670;&nbsp;</a></span>swizzle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;<a class="el" href="concepttz_1_1_number.html">tz::Number</a> T, std::size_t S&gt; </div>
+<div class="memtemplate">
+template&lt;int... indices&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classtz_1_1_vector.html">Vector</a>&lt; T, sizeof...(indices)&gt; <a class="el" href="classtz_1_1_vector.html">tz::Vector</a>&lt; T, S &gt;::swizzle</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Perform vector swizzling. </p>
+<p >Creates a new vector of <code>sizeof...(indices)</code> dimensions. The i'th value of the new vector corresponds to the value at the i'th index within the parameter pack of the original vector.</p>
+<p >Example: tz::Vec3{1.0f, 2.0f, 3.0f}.<a class="el" href="classtz_1_1_vector.html#a6c83ecac5d0c452ec1b1c12702da2c58" title="Perform vector swizzling.">swizzle&lt;0, 1, 0, 1&gt;()</a> == tz::Vec4{1.0f, 2.0f, 1.0f, 2.0f} </p><dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">indices</td><td>Variable number of integer indices. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Resultant swizzled vector. </dd></dl>
+<dl class="section pre"><dt>Precondition</dt><dd>Each element of <code>indices</code> is less than or equal to <code>S</code>, being the number of dimensions of the original vector. Otherwise, the behaviour is undefined. </dd></dl>
+
+</div>
+</div>
+<a id="a1b69907c426096c14929e4d5332cb236" name="a1b69907c426096c14929e4d5332cb236"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1b69907c426096c14929e4d5332cb236">&#9670;&nbsp;</a></span>with_more() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;<a class="el" href="concepttz_1_1_number.html">tz::Number</a> T, std::size_t S&gt; </div>
+<div class="memtemplate">
+template&lt;std::size_t S2&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classtz_1_1_vector.html">Vector</a>&lt; T, S+S2 &gt; <a class="el" href="classtz_1_1_vector.html">tz::Vector</a>&lt; T, S &gt;::with_more </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classtz_1_1_vector.html">Vector</a>&lt; T, S2 &gt; &amp;&#160;</td>
+          <td class="paramname"><em>end</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Create a new vector, with another vector appended to the end. </p>
+<p >Example: tz::Vec2{0.0f, 1.0f}.with_more(tz::Vec3{2.0f, 3.0f, 4.0f}) == tz::Vector&lt;float, 5&gt;{0.0f, 1.0f, 2.0f, 3.0f, 4.0f} </p><dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">S2</td><td>Number of dimensions of the appendage vector. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">end</td><td><a class="el" href="classtz_1_1_vector.html" title="Represents a mathematical vector of S elements.">Vector</a> to be appended to the end of the resultant vector. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="classtz_1_1_vector.html" title="Represents a mathematical vector of S elements.">Vector</a> with extra element(s) appended. </dd></dl>
+
+</div>
+</div>
+<a id="af5e9cbbcaf12c92ad1e9effc6005824b" name="af5e9cbbcaf12c92ad1e9effc6005824b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af5e9cbbcaf12c92ad1e9effc6005824b">&#9670;&nbsp;</a></span>with_more() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;<a class="el" href="concepttz_1_1_number.html">tz::Number</a> T, std::size_t S&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classtz_1_1_vector.html">Vector</a>&lt; T, S+1 &gt; <a class="el" href="classtz_1_1_vector.html">tz::Vector</a>&lt; T, S &gt;::with_more </td>
+          <td>(</td>
+          <td class="paramtype">T &amp;&amp;&#160;</td>
+          <td class="paramname"><em>end</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Create a new vector, with a single extra element appended to the end. </p>
+<p >Example: tz::Vec2{1.0f, 2.0f}.with_more(3.0f) == tz::Vec3{1.0f, 2.0f, 3.0f} </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">end</td><td>Value to be appended to the end of the resultant vector. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="classtz_1_1_vector.html" title="Represents a mathematical vector of S elements.">Vector</a> with extra element appended. </dd></dl>
+
+</div>
+</div>
 </div><!-- contents -->
+</div><!-- doc-content -->
 <!-- start footer part -->
-<hr class="footer"/><address class="footer"><small>
-    <nav class="navbar navbar-default" role="navigation">
-        <div class="container">
-            <div class="navbar-header">
-                <a class="navbar-brand" href="https://github.com/Harrand/Topaz" style="margin-right: 10px;">GitHub: topaz-master</a>
-                <a class="navbar-brand" href="https://harrand.github.io/" style="margin-right: 10px;">harrand.github.io</a>
-            </div>
-        </div>
-    </nav>
-    <p>Generated: Wed Sep 29 2021 01:11:50</p>
-</small></address>
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><b>tz</b></li><li class="navelem"><a class="el" href="classtz_1_1_vector.html">Vector</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.3 </li>
+  </ul>
+</div>
 </body>
 </html>

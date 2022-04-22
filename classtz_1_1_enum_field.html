@@ -1,16 +1,19 @@
-<!-- HTML header for doxygen 1.8.8-->
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
-    <head>
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <!-- For Mobile Devices -->
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-        <meta name="generator" content="Doxygen 1.9.2"/>
-        <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-        <title>Topaz 3.1 Documentation</title>
-        <script type="text/javascript" src="dynsections.js"></script>
-        <link href="search/search.css" rel="stylesheet" type="text/css"/>
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.3"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Topaz: tz::EnumField&lt; E &gt; Class Template Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
 <script type="text/javascript">
@@ -18,29 +21,22 @@
   $(document).ready(function() { init_search(); });
 /* @license-end */
 </script>
-        <link href="custom_dark_theme.css" rel="stylesheet" type="text/css" />
-        <link href="custom.css" rel="stylesheet" type="text/css"/>
-<link href="custom_dark_theme.css" rel="stylesheet" type="text/css"/>
-        <script type="text/javascript" src="doxy-boot.js"></script>
-        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-        <link rel="manifest" href="/site.webmanifest">
-        <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
-        <meta name="msapplication-TileColor" content="#da532c">
-        <meta name="theme-color" content="#ffffff">
-    </head>
-    <body>
-        <nav class="navbar navbar-default" role="navigation">
-            <div class="container">
-                <div class="navbar-header">
-                    <a class="navbar-brand"><img src = "tz.png" width="2%" height="2%"></a>
-                    <a class="navbar-brand" href="index.html" style="font-size: xx-large; text-decoration: none;">Topaz</a>
-                    <a class="navbar-brand" href="modules.html">Modules</a>
-                    <a class="navbar-brand" href="annotated.html">Classes</a>
-                    <a class="navbar-brand" href="tools.html">Tools</a>
-                    <a class="navbar-brand" href="tzsl.html">TZSL</a>
-                            <div id="MSearchBox" class="MSearchBoxInactive">
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectlogo"><img alt="Logo" src="tz.png"/></td>
+  <td id="projectalign">
+   <div id="projectname">Topaz<span id="projectnumber">&#160;3.2</span>
+   </div>
+   <div id="projectbrief">C++20 Graphics Engine</div>
+  </td>
+    <td>        <div id="MSearchBox" class="MSearchBoxInactive">
         <span class="left">
           <img id="MSearchSelect" src="search/mag_sel.svg"
                onmouseover="return searchBox.OnSearchSelectShow()"
@@ -54,21 +50,35 @@
             <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
           </span>
         </div>
-                </div>
-            </div>
-        </nav>
-        <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
-            <div class="content" id="content">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-sm-12 panel " style="padding-bottom: 15px;">
-                            <div style="margin-bottom: 15px;">
-<!-- end header part --><!-- Generated by Doxygen 1.9.2 -->
+</td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.9.3 -->
 <script type="text/javascript">
 /* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
 var searchBox = new SearchBox("searchBox", "search",'Search','.html');
 /* @license-end */
 </script>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(document).ready(function(){initNavTree('classtz_1_1_enum_field.html',''); initResizable(); });
+/* @license-end */
+</script>
+<div id="doc-content">
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"
@@ -83,77 +93,312 @@ var searchBox = new SearchBox("searchBox", "search",'Search','.html');
 </iframe>
 </div>
 
-<div id="nav-path" class="navpath">
-  <ul>
-<li class="navelem"><b>tz</b></li><li class="navelem"><a class="el" href="classtz_1_1_enum_field.html">EnumField</a></li>  </ul>
-</div>
-</div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="classtz_1_1_enum_field-members.html">List of all members</a>  </div>
-  <div class="headertitle"><div class="title">tz::EnumField&lt; E &gt; Class Template Reference<div class="ingroups"><a class="el" href="group__tz__core.html">Topaz Core Library (tz)</a></div></div></div>
+<a href="#pub-methods">Public Member Functions</a>  </div>
+  <div class="headertitle"><div class="title">tz::EnumField&lt; E &gt; Class Template Reference<div class="ingroups"><a class="el" href="group__tz__core.html">Core Libraries (tz)</a> &raquo; <a class="el" href="group__tz__core__containers.html">Containers</a></div></div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>Container for enum values, useful for vintage bitfield types.  
+ <a href="classtz_1_1_enum_field.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="enum__field_8hpp_source.html">enum_field.hpp</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr class="memitem:a8146bc9b29cf066120e2db88cb926ba6"><td class="memItemLeft" align="right" valign="top"><a id="a8146bc9b29cf066120e2db88cb926ba6" name="a8146bc9b29cf066120e2db88cb926ba6"></a>
+constexpr&#160;</td><td class="memItemRight" valign="bottom"><b>EnumField</b> ()=default</td></tr>
+<tr class="memdesc:a8146bc9b29cf066120e2db88cb926ba6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create an empty field. <br /></td></tr>
+<tr class="separator:a8146bc9b29cf066120e2db88cb926ba6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abe7be7e2e213b76b26587622f992dd2f"><td class="memItemLeft" align="right" valign="top"><a id="abe7be7e2e213b76b26587622f992dd2f" name="abe7be7e2e213b76b26587622f992dd2f"></a>
 constexpr&#160;</td><td class="memItemRight" valign="bottom"><b>EnumField</b> (std::initializer_list&lt; E &gt; types)</td></tr>
+<tr class="memdesc:abe7be7e2e213b76b26587622f992dd2f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a field from the provided values. <br /></td></tr>
 <tr class="separator:abe7be7e2e213b76b26587622f992dd2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae34bccd601304e19fe35ea117ed0391d"><td class="memItemLeft" align="right" valign="top"><a id="ae34bccd601304e19fe35ea117ed0391d" name="ae34bccd601304e19fe35ea117ed0391d"></a>
 constexpr&#160;</td><td class="memItemRight" valign="bottom"><b>EnumField</b> (E type)</td></tr>
+<tr class="memdesc:ae34bccd601304e19fe35ea117ed0391d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a field from a single value. <br /></td></tr>
 <tr class="separator:ae34bccd601304e19fe35ea117ed0391d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adf60f68be430993c223e091fa959e0e4"><td class="memItemLeft" align="right" valign="top"><a id="adf60f68be430993c223e091fa959e0e4" name="adf60f68be430993c223e091fa959e0e4"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>contains</b> (E type) const</td></tr>
+<tr class="memitem:adf60f68be430993c223e091fa959e0e4"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtz_1_1_enum_field.html#adf60f68be430993c223e091fa959e0e4">contains</a> (E type) const</td></tr>
+<tr class="memdesc:adf60f68be430993c223e091fa959e0e4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query as to whether the field contains the given value.  <a href="classtz_1_1_enum_field.html#adf60f68be430993c223e091fa959e0e4">More...</a><br /></td></tr>
 <tr class="separator:adf60f68be430993c223e091fa959e0e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a67781195d402e4b66f1c4b12d2f84ee4"><td class="memItemLeft" align="right" valign="top"><a id="a67781195d402e4b66f1c4b12d2f84ee4" name="a67781195d402e4b66f1c4b12d2f84ee4"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>contains</b> (const <a class="el" href="classtz_1_1_enum_field.html">EnumField</a>&lt; E &gt; &amp;field) const</td></tr>
+<tr class="memitem:a67781195d402e4b66f1c4b12d2f84ee4"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtz_1_1_enum_field.html#a67781195d402e4b66f1c4b12d2f84ee4">contains</a> (const <a class="el" href="classtz_1_1_enum_field.html">EnumField</a>&lt; E &gt; &amp;field) const</td></tr>
+<tr class="memdesc:a67781195d402e4b66f1c4b12d2f84ee4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query as to whether the field contains each element within another field.  <a href="classtz_1_1_enum_field.html#a67781195d402e4b66f1c4b12d2f84ee4">More...</a><br /></td></tr>
 <tr class="separator:a67781195d402e4b66f1c4b12d2f84ee4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab20e5c4932de66ba0cdaaee7e5fda55b"><td class="memItemLeft" align="right" valign="top"><a id="ab20e5c4932de66ba0cdaaee7e5fda55b" name="ab20e5c4932de66ba0cdaaee7e5fda55b"></a>
-std::size_t&#160;</td><td class="memItemRight" valign="bottom"><b>count</b> () const</td></tr>
+<tr class="memitem:ab20e5c4932de66ba0cdaaee7e5fda55b"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtz_1_1_enum_field.html#ab20e5c4932de66ba0cdaaee7e5fda55b">count</a> () const</td></tr>
+<tr class="memdesc:ab20e5c4932de66ba0cdaaee7e5fda55b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve the number of elements within the field.  <a href="classtz_1_1_enum_field.html#ab20e5c4932de66ba0cdaaee7e5fda55b">More...</a><br /></td></tr>
 <tr class="separator:ab20e5c4932de66ba0cdaaee7e5fda55b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5eb01abf94988a2d6080347bc89b1cdc"><td class="memItemLeft" align="right" valign="top"><a id="a5eb01abf94988a2d6080347bc89b1cdc" name="a5eb01abf94988a2d6080347bc89b1cdc"></a>
-<a class="el" href="classtz_1_1_enum_field.html">EnumField</a>&lt; E &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator|=</b> (E type)</td></tr>
+<tr class="memitem:ac5a41220a9c1a857794de061751749cd"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtz_1_1_enum_field.html#ac5a41220a9c1a857794de061751749cd">empty</a> () const</td></tr>
+<tr class="memdesc:ac5a41220a9c1a857794de061751749cd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query as to whether the field is empty or not.  <a href="classtz_1_1_enum_field.html#ac5a41220a9c1a857794de061751749cd">More...</a><br /></td></tr>
+<tr class="separator:ac5a41220a9c1a857794de061751749cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5eb01abf94988a2d6080347bc89b1cdc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classtz_1_1_enum_field.html">EnumField</a>&lt; E &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtz_1_1_enum_field.html#a5eb01abf94988a2d6080347bc89b1cdc">operator|=</a> (E type)</td></tr>
+<tr class="memdesc:a5eb01abf94988a2d6080347bc89b1cdc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add the element to the field.  <a href="classtz_1_1_enum_field.html#a5eb01abf94988a2d6080347bc89b1cdc">More...</a><br /></td></tr>
 <tr class="separator:a5eb01abf94988a2d6080347bc89b1cdc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae86f8f7dc64b433272264997b0a2226a"><td class="memItemLeft" align="right" valign="top"><a id="ae86f8f7dc64b433272264997b0a2226a" name="ae86f8f7dc64b433272264997b0a2226a"></a>
-<a class="el" href="classtz_1_1_enum_field.html">EnumField</a>&lt; E &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>operator|</b> (E type) const</td></tr>
+<tr class="memitem:ae86f8f7dc64b433272264997b0a2226a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classtz_1_1_enum_field.html">EnumField</a>&lt; E &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtz_1_1_enum_field.html#ae86f8f7dc64b433272264997b0a2226a">operator|</a> (E type) const</td></tr>
+<tr class="memdesc:ae86f8f7dc64b433272264997b0a2226a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a copy of this field, but with the parameter element added.  <a href="classtz_1_1_enum_field.html#ae86f8f7dc64b433272264997b0a2226a">More...</a><br /></td></tr>
 <tr class="separator:ae86f8f7dc64b433272264997b0a2226a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a567ea008816a060d1d8a8b9802b33d07"><td class="memItemLeft" align="right" valign="top"><a id="a567ea008816a060d1d8a8b9802b33d07" name="a567ea008816a060d1d8a8b9802b33d07"></a>
 auto&#160;</td><td class="memItemRight" valign="bottom"><b>begin</b> () const</td></tr>
+<tr class="memdesc:a567ea008816a060d1d8a8b9802b33d07"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve an iterator to the beginning of the elements. <br /></td></tr>
 <tr class="separator:a567ea008816a060d1d8a8b9802b33d07"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aad092d83d35a454475ea8d47017058a1"><td class="memItemLeft" align="right" valign="top"><a id="aad092d83d35a454475ea8d47017058a1" name="aad092d83d35a454475ea8d47017058a1"></a>
 auto&#160;</td><td class="memItemRight" valign="bottom"><b>begin</b> ()</td></tr>
+<tr class="memdesc:aad092d83d35a454475ea8d47017058a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve an iterator to the beginning of the elements. <br /></td></tr>
 <tr class="separator:aad092d83d35a454475ea8d47017058a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a66bbfabdc1244105301f43c4c8d694ed"><td class="memItemLeft" align="right" valign="top"><a id="a66bbfabdc1244105301f43c4c8d694ed" name="a66bbfabdc1244105301f43c4c8d694ed"></a>
 auto&#160;</td><td class="memItemRight" valign="bottom"><b>end</b> () const</td></tr>
+<tr class="memdesc:a66bbfabdc1244105301f43c4c8d694ed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve an iterator to the end of the elements. <br /></td></tr>
 <tr class="separator:a66bbfabdc1244105301f43c4c8d694ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a731057d2cf7aa6276e8a0fc06e1fddca"><td class="memItemLeft" align="right" valign="top"><a id="a731057d2cf7aa6276e8a0fc06e1fddca" name="a731057d2cf7aa6276e8a0fc06e1fddca"></a>
 auto&#160;</td><td class="memItemRight" valign="bottom"><b>end</b> ()</td></tr>
+<tr class="memdesc:a731057d2cf7aa6276e8a0fc06e1fddca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve an iterator to the end of the elements. <br /></td></tr>
 <tr class="separator:a731057d2cf7aa6276e8a0fc06e1fddca"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6d1e9fa5dd5ef69fc5e4785c603fb053"><td class="memItemLeft" align="right" valign="top"><a id="a6d1e9fa5dd5ef69fc5e4785c603fb053" name="a6d1e9fa5dd5ef69fc5e4785c603fb053"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator==</b> (const <a class="el" href="classtz_1_1_enum_field.html">EnumField</a>&lt; E &gt; &amp;rhs) const =default</td></tr>
+<tr class="memitem:a2bdde13670e02592bbe2aaa21e2a3069"><td class="memItemLeft" align="right" valign="top">const E &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtz_1_1_enum_field.html#a2bdde13670e02592bbe2aaa21e2a3069">front</a> () const</td></tr>
+<tr class="memdesc:a2bdde13670e02592bbe2aaa21e2a3069"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve the first value within the field.  <a href="classtz_1_1_enum_field.html#a2bdde13670e02592bbe2aaa21e2a3069">More...</a><br /></td></tr>
+<tr class="separator:a2bdde13670e02592bbe2aaa21e2a3069"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afe414cccb7348231d03f8ed3c76f941a"><td class="memItemLeft" align="right" valign="top">const E &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtz_1_1_enum_field.html#afe414cccb7348231d03f8ed3c76f941a">back</a> () const</td></tr>
+<tr class="memdesc:afe414cccb7348231d03f8ed3c76f941a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve the last value within the field.  <a href="classtz_1_1_enum_field.html#afe414cccb7348231d03f8ed3c76f941a">More...</a><br /></td></tr>
+<tr class="separator:afe414cccb7348231d03f8ed3c76f941a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6d1e9fa5dd5ef69fc5e4785c603fb053"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtz_1_1_enum_field.html#a6d1e9fa5dd5ef69fc5e4785c603fb053">operator==</a> (const <a class="el" href="classtz_1_1_enum_field.html">EnumField</a>&lt; E &gt; &amp;rhs) const =default</td></tr>
+<tr class="memdesc:a6d1e9fa5dd5ef69fc5e4785c603fb053"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query as to whether the elements of the field exactly match that of another field.  <a href="classtz_1_1_enum_field.html#a6d1e9fa5dd5ef69fc5e4785c603fb053">More...</a><br /></td></tr>
 <tr class="separator:a6d1e9fa5dd5ef69fc5e4785c603fb053"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7d9dcd4b9c5c3891939ea63720309819"><td class="memItemLeft" align="right" valign="top"><a id="a7d9dcd4b9c5c3891939ea63720309819" name="a7d9dcd4b9c5c3891939ea63720309819"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>operator E</b> () const</td></tr>
+<tr class="memdesc:a7d9dcd4b9c5c3891939ea63720309819"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve the cumulative value of the field. <br /></td></tr>
 <tr class="separator:a7d9dcd4b9c5c3891939ea63720309819"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<hr/>The documentation for this class was generated from the following files:<ul>
-<li>src/core/containers/<a class="el" href="enum__field_8hpp_source.html">enum_field.hpp</a></li>
-<li>src/core/containers/enum_field.inl</li>
-</ul>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><div class="compoundTemplParams">template&lt;tz::EnumClass E&gt;<br />
+class tz::EnumField&lt; E &gt;</div><p >Container for enum values, useful for vintage bitfield types. </p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">E</td><td>Enum class type. </td></tr>
+  </table>
+  </dd>
+</dl>
+</div><h2 class="groupheader">Member Function Documentation</h2>
+<a id="afe414cccb7348231d03f8ed3c76f941a" name="afe414cccb7348231d03f8ed3c76f941a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afe414cccb7348231d03f8ed3c76f941a">&#9670;&nbsp;</a></span>back()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;tz::EnumClass E&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">const E &amp; <a class="el" href="classtz_1_1_enum_field.html">tz::EnumField</a>&lt; E &gt;::back</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Retrieve the last value within the field. </p>
+<dl class="section pre"><dt>Precondition</dt><dd>Field must not be empty, otherwise the behaviour is undefined. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>Last element of the field. </dd></dl>
+
+</div>
+</div>
+<a id="a67781195d402e4b66f1c4b12d2f84ee4" name="a67781195d402e4b66f1c4b12d2f84ee4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a67781195d402e4b66f1c4b12d2f84ee4">&#9670;&nbsp;</a></span>contains() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;tz::EnumClass E&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">bool <a class="el" href="classtz_1_1_enum_field.html">tz::EnumField</a>&lt; E &gt;::contains </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classtz_1_1_enum_field.html">EnumField</a>&lt; E &gt; &amp;&#160;</td>
+          <td class="paramname"><em>field</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Query as to whether the field contains each element within another field. </p>
+<dl class="section return"><dt>Returns</dt><dd>True if for each element <code>x</code> in the parameter field, <code>this-&gt;contains(x)</code>, otherwise false. </dd></dl>
+
+</div>
+</div>
+<a id="adf60f68be430993c223e091fa959e0e4" name="adf60f68be430993c223e091fa959e0e4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adf60f68be430993c223e091fa959e0e4">&#9670;&nbsp;</a></span>contains() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;tz::EnumClass E&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">bool <a class="el" href="classtz_1_1_enum_field.html">tz::EnumField</a>&lt; E &gt;::contains </td>
+          <td>(</td>
+          <td class="paramtype">E&#160;</td>
+          <td class="paramname"><em>type</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Query as to whether the field contains the given value. </p>
+<dl class="section note"><dt>Note</dt><dd>The value is only contained if the exact value was inserted into the field, not if the field contains elements forming a bitwise equivalent.</dd></dl>
+<p>Example: A = {0x01, 0x10}, B = {0x00, 0x11} <code>A.contains(0x11) == false</code>, <code>B.contains(0x11) == true</code>. </p><dl class="section return"><dt>Returns</dt><dd>True if value is within the field, false otherwise. </dd></dl>
+
+</div>
+</div>
+<a id="ab20e5c4932de66ba0cdaaee7e5fda55b" name="ab20e5c4932de66ba0cdaaee7e5fda55b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab20e5c4932de66ba0cdaaee7e5fda55b">&#9670;&nbsp;</a></span>count()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;tz::EnumClass E&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">std::size_t <a class="el" href="classtz_1_1_enum_field.html">tz::EnumField</a>&lt; E &gt;::count</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Retrieve the number of elements within the field. </p>
+<dl class="section return"><dt>Returns</dt><dd>Number of elements within the field. </dd></dl>
+
+</div>
+</div>
+<a id="ac5a41220a9c1a857794de061751749cd" name="ac5a41220a9c1a857794de061751749cd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac5a41220a9c1a857794de061751749cd">&#9670;&nbsp;</a></span>empty()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;tz::EnumClass E&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">bool <a class="el" href="classtz_1_1_enum_field.html">tz::EnumField</a>&lt; E &gt;::empty</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Query as to whether the field is empty or not. </p>
+<dl class="section return"><dt>Returns</dt><dd>True if <code><a class="el" href="classtz_1_1_enum_field.html#ab20e5c4932de66ba0cdaaee7e5fda55b" title="Retrieve the number of elements within the field.">count()</a> == 0</code>, otherwise false. </dd></dl>
+
+</div>
+</div>
+<a id="a2bdde13670e02592bbe2aaa21e2a3069" name="a2bdde13670e02592bbe2aaa21e2a3069"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2bdde13670e02592bbe2aaa21e2a3069">&#9670;&nbsp;</a></span>front()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;tz::EnumClass E&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">const E &amp; <a class="el" href="classtz_1_1_enum_field.html">tz::EnumField</a>&lt; E &gt;::front</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Retrieve the first value within the field. </p>
+<dl class="section pre"><dt>Precondition</dt><dd>Field must not be empty, otherwise the behaviour is undefined. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>First element of the field. </dd></dl>
+
+</div>
+</div>
+<a id="a6d1e9fa5dd5ef69fc5e4785c603fb053" name="a6d1e9fa5dd5ef69fc5e4785c603fb053"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6d1e9fa5dd5ef69fc5e4785c603fb053">&#9670;&nbsp;</a></span>operator==()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;tz::EnumClass E&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool <a class="el" href="classtz_1_1_enum_field.html">tz::EnumField</a>&lt; E &gt;::operator== </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classtz_1_1_enum_field.html">EnumField</a>&lt; E &gt; &amp;&#160;</td>
+          <td class="paramname"><em>rhs</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Query as to whether the elements of the field exactly match that of another field. </p>
+<p >This may return false even if the cumulative values are equivalent. </p><dl class="section return"><dt>Returns</dt><dd>True if fields contain same elements, otherwise false. </dd></dl>
+
+</div>
+</div>
+<a id="ae86f8f7dc64b433272264997b0a2226a" name="ae86f8f7dc64b433272264997b0a2226a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae86f8f7dc64b433272264997b0a2226a">&#9670;&nbsp;</a></span>operator|()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;tz::EnumClass E&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classtz_1_1_enum_field.html">EnumField</a>&lt; E &gt; <a class="el" href="classtz_1_1_enum_field.html">tz::EnumField</a>&lt; E &gt;::operator| </td>
+          <td>(</td>
+          <td class="paramtype">E&#160;</td>
+          <td class="paramname"><em>type</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Create a copy of this field, but with the parameter element added. </p>
+<p >The cumulative value <code>C</code> of the field becomes <code>C | E</code>. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">type</td><td>Element to add to the new field. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A copy of this. </dd></dl>
+
+</div>
+</div>
+<a id="a5eb01abf94988a2d6080347bc89b1cdc" name="a5eb01abf94988a2d6080347bc89b1cdc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5eb01abf94988a2d6080347bc89b1cdc">&#9670;&nbsp;</a></span>operator|=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;tz::EnumClass E&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classtz_1_1_enum_field.html">EnumField</a>&lt; E &gt; &amp; <a class="el" href="classtz_1_1_enum_field.html">tz::EnumField</a>&lt; E &gt;::operator|= </td>
+          <td>(</td>
+          <td class="paramtype">E&#160;</td>
+          <td class="paramname"><em>type</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Add the element to the field. </p>
+<p >The cumulative value <code>C</code> of the field becomes <code>C | E</code>. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">type</td><td>Element to add to the field. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>This. </dd></dl>
+
+</div>
+</div>
 </div><!-- contents -->
+</div><!-- doc-content -->
 <!-- start footer part -->
-<hr class="footer"/><address class="footer"><small>
-    <nav class="navbar navbar-default" role="navigation">
-        <div class="container">
-            <div class="navbar-header">
-                <a class="navbar-brand" href="https://github.com/Harrand/Topaz" style="margin-right: 10px;">GitHub: topaz-master</a>
-                <a class="navbar-brand" href="https://harrand.github.io/" style="margin-right: 10px;">harrand.github.io</a>
-            </div>
-        </div>
-    </nav>
-    <p>Generated: Wed Sep 29 2021 01:11:50</p>
-</small></address>
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><b>tz</b></li><li class="navelem"><a class="el" href="classtz_1_1_enum_field.html">EnumField</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.3 </li>
+  </ul>
+</div>
 </body>
 </html>

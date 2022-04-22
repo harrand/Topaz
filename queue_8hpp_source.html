@@ -1,16 +1,19 @@
-<!-- HTML header for doxygen 1.8.8-->
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
-    <head>
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <!-- For Mobile Devices -->
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-        <meta name="generator" content="Doxygen 1.9.2"/>
-        <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-        <title>Topaz 3.1 Documentation</title>
-        <script type="text/javascript" src="dynsections.js"></script>
-        <link href="search/search.css" rel="stylesheet" type="text/css"/>
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.3"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Topaz: src/gl/impl/backend/vk2/hardware/queue.hpp Source File</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
 <script type="text/javascript">
@@ -18,29 +21,22 @@
   $(document).ready(function() { init_search(); });
 /* @license-end */
 </script>
-        <link href="custom_dark_theme.css" rel="stylesheet" type="text/css" />
-        <link href="custom.css" rel="stylesheet" type="text/css"/>
-<link href="custom_dark_theme.css" rel="stylesheet" type="text/css"/>
-        <script type="text/javascript" src="doxy-boot.js"></script>
-        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-        <link rel="manifest" href="/site.webmanifest">
-        <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
-        <meta name="msapplication-TileColor" content="#da532c">
-        <meta name="theme-color" content="#ffffff">
-    </head>
-    <body>
-        <nav class="navbar navbar-default" role="navigation">
-            <div class="container">
-                <div class="navbar-header">
-                    <a class="navbar-brand"><img src = "tz.png" width="2%" height="2%"></a>
-                    <a class="navbar-brand" href="index.html" style="font-size: xx-large; text-decoration: none;">Topaz</a>
-                    <a class="navbar-brand" href="modules.html">Modules</a>
-                    <a class="navbar-brand" href="annotated.html">Classes</a>
-                    <a class="navbar-brand" href="tools.html">Tools</a>
-                    <a class="navbar-brand" href="tzsl.html">TZSL</a>
-                            <div id="MSearchBox" class="MSearchBoxInactive">
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectlogo"><img alt="Logo" src="tz.png"/></td>
+  <td id="projectalign">
+   <div id="projectname">Topaz<span id="projectnumber">&#160;3.2</span>
+   </div>
+   <div id="projectbrief">C++20 Graphics Engine</div>
+  </td>
+    <td>        <div id="MSearchBox" class="MSearchBoxInactive">
         <span class="left">
           <img id="MSearchSelect" src="search/mag_sel.svg"
                onmouseover="return searchBox.OnSearchSelectShow()"
@@ -54,21 +50,35 @@
             <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
           </span>
         </div>
-                </div>
-            </div>
-        </nav>
-        <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
-            <div class="content" id="content">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-sm-12 panel " style="padding-bottom: 15px;">
-                            <div style="margin-bottom: 15px;">
-<!-- end header part --><!-- Generated by Doxygen 1.9.2 -->
+</td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.9.3 -->
 <script type="text/javascript">
 /* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
 var searchBox = new SearchBox("searchBox", "search",'Search','.html');
 /* @license-end */
 </script>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(document).ready(function(){initNavTree('queue_8hpp_source.html',''); initResizable(); });
+/* @license-end */
+</script>
+<div id="doc-content">
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"
@@ -83,52 +93,157 @@ var searchBox = new SearchBox("searchBox", "search",'Search','.html');
 </iframe>
 </div>
 
-<div id="nav-path" class="navpath">
-  <ul>
-<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_22ef2c5f6712ba0a0b99c741bcfb15fe.html">gl</a></li><li class="navelem"><a class="el" href="dir_294d689e10da81f00c081b036a1431d9.html">impl</a></li><li class="navelem"><a class="el" href="dir_f1e396d78ce7c2379251e63a766e1a72.html">backend</a></li><li class="navelem"><a class="el" href="dir_51fffc773d44d6a26d9615133461279e.html">vk</a></li><li class="navelem"><a class="el" href="dir_7b0ea9f28854ed11176f98ab68d1d249.html">hardware</a></li>  </ul>
-</div>
-</div><!-- top -->
 <div class="header">
   <div class="headertitle"><div class="title">queue.hpp</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef TOPAZ_GL_VK_HARDWARE_QUEUE_HPP</span></div>
-<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define TOPAZ_GL_VK_HARDWARE_QUEUE_HPP</span></div>
+<div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef TOPAZ_GL_IMPL_BACKEND_VK2_HARDWARE_QUEUE_HPP</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define TOPAZ_GL_IMPL_BACKEND_VK2_HARDWARE_QUEUE_HPP</span></div>
 <div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#if TZ_VULKAN</span></div>
-<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;gl/impl/backend/vk/hardware/queue_family.hpp&quot;</span></div>
-<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
-<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
-<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="keyword">namespace </span>tz::gl::vk</div>
-<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span>{</div>
-<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>    <span class="keyword">class </span>LogicalDevice;</div>
-<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>    <span class="keyword">namespace </span>hardware</div>
-<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>    {</div>
-<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>        <span class="keyword">class </span>Queue</div>
-<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>        {</div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>        <span class="keyword">public</span>:</div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>            Queue(<span class="keyword">const</span> LogicalDevice&amp; device, <span class="keyword">const</span> DeviceQueueFamily&amp; queue_family, std::uint32_t queue_index);</div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>            <span class="keywordtype">void</span> block_until_idle() <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>            VkQueue native() <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>        <span class="keyword">private</span>:</div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>            VkQueue queue;</div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>        };</div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    }</div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>}</div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="preprocessor">#endif </span><span class="comment">// TZ_VULKAN</span></div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>#endif <span class="comment">// TOPAZ_GL_VK_HARDWARE_QUEUE_HPP</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;core/containers/basic_list.hpp&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;vulkan/vulkan.h&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">namespace </span>tz::gl::vk2</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>{</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>    <span class="keyword">class </span>LogicalDevice;</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>    <span class="keyword">class </span>CommandBuffer;</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>    <span class="keyword">class </span>BinarySemaphore;</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>    <span class="keyword">class </span>Swapchain;</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>    <span class="keyword">class </span>Fence;</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="group__tz__gl__vk__graphics__pipeline.html#gaa581c5a329a76e48f41ca02bd263251a">   20</a></span>    <span class="keyword">enum class</span> <a class="code hl_enumeration" href="group__tz__gl__vk__graphics__pipeline.html#gaa581c5a329a76e48f41ca02bd263251a">PipelineStage</a></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    {</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>        <a class="code hl_enumvalue" href="group__tz__gl__vk__graphics__pipeline.html#ggaa581c5a329a76e48f41ca02bd263251aaa4ffdcf0dc1f31b9acaf295d75b51d00">Top</a> = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>        <a class="code hl_enumvalue" href="group__tz__gl__vk__graphics__pipeline.html#ggaa581c5a329a76e48f41ca02bd263251aa2ad9d63b69c4a10a5cc9cad923133bc4">Bottom</a> = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>        <a class="code hl_enumvalue" href="group__tz__gl__vk__graphics__pipeline.html#ggaa581c5a329a76e48f41ca02bd263251aacf92f78ac1cdeee1e78e8b2866abe474">AllCommands</a> = VK_PIPELINE_STAGE_ALL_COMMANDS_BIT,</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>        <a class="code hl_enumvalue" href="group__tz__gl__vk__graphics__pipeline.html#ggaa581c5a329a76e48f41ca02bd263251aa576ad90e86113d352899b3369a9c5b15">AllGraphics</a> = VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT,</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>        <a class="code hl_enumvalue" href="group__tz__gl__vk__graphics__pipeline.html#ggaa581c5a329a76e48f41ca02bd263251aa95b0e6b8c7aa6af632295afda7a926bc">DrawIndirect</a> = VK_PIPELINE_STAGE_DRAW_INDIRECT_BIT,</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>        <a class="code hl_enumvalue" href="group__tz__gl__vk__graphics__pipeline.html#ggaa581c5a329a76e48f41ca02bd263251aa1311d08fb1f8b78c1be3ebb4c53c0e80">VertexIndexInput</a> = VK_PIPELINE_STAGE_VERTEX_INPUT_BIT,</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>        <a class="code hl_enumvalue" href="group__tz__gl__vk__graphics__pipeline.html#ggaa581c5a329a76e48f41ca02bd263251aaeb3ca4dac3e206977e0b7d998eefcc33">VertexShader</a> = VK_PIPELINE_STAGE_VERTEX_SHADER_BIT,</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>        <a class="code hl_enumvalue" href="group__tz__gl__vk__graphics__pipeline.html#ggaa581c5a329a76e48f41ca02bd263251aae1bc6b887951aa3ad70f1cdebd02aa7c">TessellationControlShader</a> = VK_PIPELINE_STAGE_TESSELLATION_CONTROL_SHADER_BIT,</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>        <a class="code hl_enumvalue" href="group__tz__gl__vk__graphics__pipeline.html#ggaa581c5a329a76e48f41ca02bd263251aa8dbef1b4099311308f1297f6fb54c1b8">TessellationEvaluationShader</a> = VK_PIPELINE_STAGE_TESSELLATION_EVALUATION_SHADER_BIT,</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>        <a class="code hl_enumvalue" href="group__tz__gl__vk__graphics__pipeline.html#ggaa581c5a329a76e48f41ca02bd263251aa87fd5b66e314d52345d46590e7124805">GeometryShader</a> = VK_PIPELINE_STAGE_GEOMETRY_SHADER_BIT,</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>        <a class="code hl_enumvalue" href="group__tz__gl__vk__graphics__pipeline.html#ggaa581c5a329a76e48f41ca02bd263251aa90a9bb4e665932b1781da33fc2f32922">FragmentShader</a> = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>        <a class="code hl_enumvalue" href="group__tz__gl__vk__graphics__pipeline.html#ggaa581c5a329a76e48f41ca02bd263251aa5ad09049db5ad41b32b78a92294484c7">EarlyFragmentTests</a> = VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>        <a class="code hl_enumvalue" href="group__tz__gl__vk__graphics__pipeline.html#ggaa581c5a329a76e48f41ca02bd263251aaeada3dda11ce9944c5f92e0d721f9394">LateFragmentTests</a> = VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT,</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        <a class="code hl_enumvalue" href="group__tz__gl__vk__graphics__pipeline.html#ggaa581c5a329a76e48f41ca02bd263251aaec356eeffd7d26280475eadca9140604">ColourAttachmentOutput</a> = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        ComputeShader = VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT,</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>        <a class="code hl_enumvalue" href="group__tz__gl__vk__graphics__pipeline.html#ggaa581c5a329a76e48f41ca02bd263251aa6ceeb738294823c48050af12328d0606">TransferCommands</a> = VK_PIPELINE_STAGE_TRANSFER_BIT,</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    };</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <span class="keyword">namespace </span>hardware</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    {</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="structtz_1_1gl_1_1vk2_1_1hardware_1_1_queue_info.html">   58</a></span>        <span class="keyword">struct </span><a class="code hl_struct" href="structtz_1_1gl_1_1vk2_1_1hardware_1_1_queue_info.html">QueueInfo</a></div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>        {</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>            <span class="keyword">const</span> <a class="code hl_class" href="classtz_1_1gl_1_1vk2_1_1_logical_device.html">LogicalDevice</a>* dev;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>            std::uint32_t queue_family_idx;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>            std::uint32_t queue_idx;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>        };</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno"><a class="line" href="classtz_1_1gl_1_1vk2_1_1hardware_1_1_queue.html">   69</a></span>        <span class="keyword">class </span><a class="code hl_class" href="classtz_1_1gl_1_1vk2_1_1hardware_1_1_queue.html">Queue</a></div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>        {</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>        <span class="keyword">public</span>:</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno"><a class="line" href="structtz_1_1gl_1_1vk2_1_1hardware_1_1_queue_1_1_submit_info.html">   75</a></span>            <span class="keyword">struct </span><a class="code hl_struct" href="structtz_1_1gl_1_1vk2_1_1hardware_1_1_queue_1_1_submit_info.html">SubmitInfo</a></div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>            {</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno"><a class="line" href="structtz_1_1gl_1_1vk2_1_1hardware_1_1_queue_1_1_submit_info_1_1_wait_info.html">   77</a></span>                <span class="keyword">struct </span><a class="code hl_struct" href="structtz_1_1gl_1_1vk2_1_1hardware_1_1_queue_1_1_submit_info_1_1_wait_info.html">WaitInfo</a></div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>                {</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno"><a class="line" href="structtz_1_1gl_1_1vk2_1_1hardware_1_1_queue_1_1_submit_info_1_1_wait_info.html#a0a4757e6b992ea078cad8039d08ec587">   80</a></span>                    <span class="keyword">const</span> <a class="code hl_class" href="classtz_1_1gl_1_1vk2_1_1_binary_semaphore.html">BinarySemaphore</a>* <a class="code hl_variable" href="structtz_1_1gl_1_1vk2_1_1hardware_1_1_queue_1_1_submit_info_1_1_wait_info.html#a0a4757e6b992ea078cad8039d08ec587">wait_semaphore</a>;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno"><a class="line" href="structtz_1_1gl_1_1vk2_1_1hardware_1_1_queue_1_1_submit_info_1_1_wait_info.html#a526d5799de8b0b4a49a1f381d3ef1e27">   82</a></span>                    <a class="code hl_enumeration" href="group__tz__gl__vk__graphics__pipeline.html#gaa581c5a329a76e48f41ca02bd263251a">PipelineStage</a> <a class="code hl_variable" href="structtz_1_1gl_1_1vk2_1_1hardware_1_1_queue_1_1_submit_info_1_1_wait_info.html#a526d5799de8b0b4a49a1f381d3ef1e27">wait_stage</a>;</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>                };</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span> </div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno"><a class="line" href="structtz_1_1gl_1_1vk2_1_1hardware_1_1_queue_1_1_submit_info.html#a66803043b1779ee34b6804f82d3b1ced">   86</a></span>                <a class="code hl_class" href="classtz_1_1_basic_list.html">tz::BasicList&lt;const CommandBuffer*&gt;</a> <a class="code hl_variable" href="structtz_1_1gl_1_1vk2_1_1hardware_1_1_queue_1_1_submit_info.html#a66803043b1779ee34b6804f82d3b1ced">command_buffers</a>;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno"><a class="line" href="structtz_1_1gl_1_1vk2_1_1hardware_1_1_queue_1_1_submit_info.html#a74f67f754d176a90fdc2b0b00497fa52">   88</a></span>                <a class="code hl_class" href="classtz_1_1_basic_list.html">tz::BasicList&lt;WaitInfo&gt;</a> <a class="code hl_variable" href="structtz_1_1gl_1_1vk2_1_1hardware_1_1_queue_1_1_submit_info.html#a74f67f754d176a90fdc2b0b00497fa52">waits</a>;</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno"><a class="line" href="structtz_1_1gl_1_1vk2_1_1hardware_1_1_queue_1_1_submit_info.html#af0063a74319745f3e0e489641dfa199b">   90</a></span>                <a class="code hl_class" href="classtz_1_1_basic_list.html">tz::BasicList&lt;const BinarySemaphore*&gt;</a> <a class="code hl_variable" href="structtz_1_1gl_1_1vk2_1_1hardware_1_1_queue_1_1_submit_info.html#af0063a74319745f3e0e489641dfa199b">signal_semaphores</a>;</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno"><a class="line" href="structtz_1_1gl_1_1vk2_1_1hardware_1_1_queue_1_1_submit_info.html#a31872f3076d704954546232c562b4467">   92</a></span>                <span class="keyword">const</span> <a class="code hl_class" href="classtz_1_1gl_1_1vk2_1_1_fence.html">Fence</a>* <a class="code hl_variable" href="structtz_1_1gl_1_1vk2_1_1hardware_1_1_queue_1_1_submit_info.html#a31872f3076d704954546232c562b4467">execution_complete_fence</a>;</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>            };</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span> </div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno"><a class="line" href="classtz_1_1gl_1_1vk2_1_1hardware_1_1_queue.html#a85b458bfb664176d140abf3b6b627e67">   96</a></span>            <span class="keyword">enum class</span> <a class="code hl_enumeration" href="classtz_1_1gl_1_1vk2_1_1hardware_1_1_queue.html#a85b458bfb664176d140abf3b6b627e67">PresentResult</a></div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>            {</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>                Success,</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>                Success_Suboptimal,</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>                Fail_OutOfDate,</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>                Fail_AccessDenied,</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>                Fail_SurfaceLost,</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>                Fail_FatalError</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>            };</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span> </div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno"><a class="line" href="structtz_1_1gl_1_1vk2_1_1hardware_1_1_queue_1_1_present_info.html">  115</a></span>            <span class="keyword">struct </span><a class="code hl_struct" href="structtz_1_1gl_1_1vk2_1_1hardware_1_1_queue_1_1_present_info.html">PresentInfo</a></div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>            {</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno"><a class="line" href="structtz_1_1gl_1_1vk2_1_1hardware_1_1_queue_1_1_present_info.html#a8e68c155c3bae04ca3a02d723e75b87d">  118</a></span>                <a class="code hl_class" href="classtz_1_1_basic_list.html">tz::BasicList&lt;const BinarySemaphore*&gt;</a> <a class="code hl_variable" href="structtz_1_1gl_1_1vk2_1_1hardware_1_1_queue_1_1_present_info.html#a8e68c155c3bae04ca3a02d723e75b87d">wait_semaphores</a>;</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno"><a class="line" href="structtz_1_1gl_1_1vk2_1_1hardware_1_1_queue_1_1_present_info.html#a588d339e32335bc14df6785b5a53e285">  120</a></span>                <span class="keyword">const</span> <a class="code hl_class" href="classtz_1_1gl_1_1vk2_1_1_swapchain.html">Swapchain</a>* <a class="code hl_variable" href="structtz_1_1gl_1_1vk2_1_1hardware_1_1_queue_1_1_present_info.html#a588d339e32335bc14df6785b5a53e285">swapchain</a>;</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno"><a class="line" href="structtz_1_1gl_1_1vk2_1_1hardware_1_1_queue_1_1_present_info.html#a6aedbfffad39d0b167d57187a5637c10">  122</a></span>                std::uint32_t <a class="code hl_variable" href="structtz_1_1gl_1_1vk2_1_1hardware_1_1_queue_1_1_present_info.html#a6aedbfffad39d0b167d57187a5637c10">swapchain_image_index</a>;</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>            };</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span> </div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>            <a class="code hl_class" href="classtz_1_1gl_1_1vk2_1_1hardware_1_1_queue.html">Queue</a>(<a class="code hl_struct" href="structtz_1_1gl_1_1vk2_1_1hardware_1_1_queue_info.html">QueueInfo</a> info);</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span> </div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>            <span class="keyword">const</span> <a class="code hl_struct" href="structtz_1_1gl_1_1vk2_1_1hardware_1_1_queue_info.html">QueueInfo</a>&amp; get_info() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>            <span class="keyword">const</span> <a class="code hl_class" href="classtz_1_1gl_1_1vk2_1_1_logical_device.html">LogicalDevice</a>&amp; get_device() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>            <span class="keywordtype">void</span> set_logical_device(<span class="keyword">const</span> <a class="code hl_class" href="classtz_1_1gl_1_1vk2_1_1_logical_device.html">LogicalDevice</a>&amp; device);</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>            <span class="keywordtype">void</span> <a class="code hl_function" href="classtz_1_1gl_1_1vk2_1_1hardware_1_1_queue.html#a8a26295a1157308783f3606ddd47922e">submit</a>(<a class="code hl_struct" href="structtz_1_1gl_1_1vk2_1_1hardware_1_1_queue_1_1_submit_info.html">SubmitInfo</a> submit_info);</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>            [[nodiscard]] <a class="code hl_enumeration" href="classtz_1_1gl_1_1vk2_1_1hardware_1_1_queue.html#a85b458bfb664176d140abf3b6b627e67">PresentResult</a> <a class="code hl_function" href="classtz_1_1gl_1_1vk2_1_1hardware_1_1_queue.html#aa4f3d7a351fe699cd90ea6457c64caee">present</a>(<a class="code hl_struct" href="structtz_1_1gl_1_1vk2_1_1hardware_1_1_queue_1_1_present_info.html">PresentInfo</a> present_info);</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span> </div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>            <span class="keyword">using</span> NativeType = VkQueue;</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>            NativeType native() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>        <span class="keyword">private</span>:</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>            <span class="keywordtype">void</span> execute_cpu_side_command_buffer(<span class="keyword">const</span> <a class="code hl_class" href="classtz_1_1gl_1_1vk2_1_1_command_buffer.html">CommandBuffer</a>&amp; command_buffer) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span> </div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>            VkQueue queue;</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>            <a class="code hl_struct" href="structtz_1_1gl_1_1vk2_1_1hardware_1_1_queue_info.html">QueueInfo</a> info;</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>        };</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>    }</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>}</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span> </div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span><span class="preprocessor">#endif </span><span class="comment">// TZ_VULKAN</span></div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span><span class="preprocessor">#endif </span><span class="comment">// TOPAZ_GL_IMPL_BACKEND_VK2_HARDWARE_QUEUE_HPP</span></div>
+<div class="ttc" id="aclasstz_1_1_basic_list_html"><div class="ttname"><a href="classtz_1_1_basic_list.html">tz::BasicList</a></div><div class="ttdoc">Custom list, feature subset of std::vector.</div><div class="ttdef"><b>Definition:</b> basic_list.hpp:21</div></div>
+<div class="ttc" id="aclasstz_1_1gl_1_1vk2_1_1_binary_semaphore_html"><div class="ttname"><a href="classtz_1_1gl_1_1vk2_1_1_binary_semaphore.html">tz::gl::vk2::BinarySemaphore</a></div><div class="ttdoc">Synchronisation primitive which is not interactable on the host and which has two states:</div><div class="ttdef"><b>Definition:</b> semaphore.hpp:16</div></div>
+<div class="ttc" id="aclasstz_1_1gl_1_1vk2_1_1_command_buffer_html"><div class="ttname"><a href="classtz_1_1gl_1_1vk2_1_1_command_buffer.html">tz::gl::vk2::CommandBuffer</a></div><div class="ttdoc">Represents storage for vulkan commands, such as draw calls, binds, transfers etc.....</div><div class="ttdef"><b>Definition:</b> command.hpp:266</div></div>
+<div class="ttc" id="aclasstz_1_1gl_1_1vk2_1_1_fence_html"><div class="ttname"><a href="classtz_1_1gl_1_1vk2_1_1_fence.html">tz::gl::vk2::Fence</a></div><div class="ttdoc">Synchronisation primitive which is useful to detect completion of a GPU operation,...</div><div class="ttdef"><b>Definition:</b> fence.hpp:25</div></div>
+<div class="ttc" id="aclasstz_1_1gl_1_1vk2_1_1_logical_device_html"><div class="ttname"><a href="classtz_1_1gl_1_1vk2_1_1_logical_device.html">tz::gl::vk2::LogicalDevice</a></div><div class="ttdoc">Logical interface to an existing PhysicalDevice.</div><div class="ttdef"><b>Definition:</b> logical_device.hpp:93</div></div>
+<div class="ttc" id="aclasstz_1_1gl_1_1vk2_1_1_swapchain_html"><div class="ttname"><a href="classtz_1_1gl_1_1vk2_1_1_swapchain.html">tz::gl::vk2::Swapchain</a></div><div class="ttdoc">Swapchains are infrastructures which represent GPU images we will render to before they can be presen...</div><div class="ttdef"><b>Definition:</b> swapchain.hpp:32</div></div>
+<div class="ttc" id="aclasstz_1_1gl_1_1vk2_1_1hardware_1_1_queue_html"><div class="ttname"><a href="classtz_1_1gl_1_1vk2_1_1hardware_1_1_queue.html">tz::gl::vk2::hardware::Queue</a></div><div class="ttdoc">Represents a single hardware Queue.</div><div class="ttdef"><b>Definition:</b> queue.hpp:70</div></div>
+<div class="ttc" id="aclasstz_1_1gl_1_1vk2_1_1hardware_1_1_queue_html_a85b458bfb664176d140abf3b6b627e67"><div class="ttname"><a href="classtz_1_1gl_1_1vk2_1_1hardware_1_1_queue.html#a85b458bfb664176d140abf3b6b627e67">tz::gl::vk2::hardware::Queue::PresentResult</a></div><div class="ttdeci">PresentResult</div><div class="ttdoc">Describes the result of a presentation request. See Queue::present.</div><div class="ttdef"><b>Definition:</b> queue.hpp:97</div></div>
+<div class="ttc" id="aclasstz_1_1gl_1_1vk2_1_1hardware_1_1_queue_html_a8a26295a1157308783f3606ddd47922e"><div class="ttname"><a href="classtz_1_1gl_1_1vk2_1_1hardware_1_1_queue.html#a8a26295a1157308783f3606ddd47922e">tz::gl::vk2::hardware::Queue::submit</a></div><div class="ttdeci">void submit(SubmitInfo submit_info)</div><div class="ttdoc">Submit the queue, including any associated command buffers and perform necessary synchronisation.</div><div class="ttdef"><b>Definition:</b> queue.cpp:35</div></div>
+<div class="ttc" id="aclasstz_1_1gl_1_1vk2_1_1hardware_1_1_queue_html_aa4f3d7a351fe699cd90ea6457c64caee"><div class="ttname"><a href="classtz_1_1gl_1_1vk2_1_1hardware_1_1_queue.html#aa4f3d7a351fe699cd90ea6457c64caee">tz::gl::vk2::hardware::Queue::present</a></div><div class="ttdeci">PresentResult present(PresentInfo present_info)</div><div class="ttdoc">Queue an image for presentation.</div><div class="ttdef"><b>Definition:</b> queue.cpp:100</div></div>
+<div class="ttc" id="agroup__tz__gl__vk__graphics__pipeline_html_gaa581c5a329a76e48f41ca02bd263251a"><div class="ttname"><a href="group__tz__gl__vk__graphics__pipeline.html#gaa581c5a329a76e48f41ca02bd263251a">tz::gl::vk2::PipelineStage</a></div><div class="ttdeci">PipelineStage</div><div class="ttdoc">Specifies a certain stage (point of execution) during the invocation of a graphics pipeline.</div><div class="ttdef"><b>Definition:</b> queue.hpp:21</div></div>
+<div class="ttc" id="agroup__tz__gl__vk__graphics__pipeline_html_ggaa581c5a329a76e48f41ca02bd263251aa1311d08fb1f8b78c1be3ebb4c53c0e80"><div class="ttname"><a href="group__tz__gl__vk__graphics__pipeline.html#ggaa581c5a329a76e48f41ca02bd263251aa1311d08fb1f8b78c1be3ebb4c53c0e80">tz::gl::vk2::PipelineStage::VertexIndexInput</a></div><div class="ttdeci">@ VertexIndexInput</div></div>
+<div class="ttc" id="agroup__tz__gl__vk__graphics__pipeline_html_ggaa581c5a329a76e48f41ca02bd263251aa2ad9d63b69c4a10a5cc9cad923133bc4"><div class="ttname"><a href="group__tz__gl__vk__graphics__pipeline.html#ggaa581c5a329a76e48f41ca02bd263251aa2ad9d63b69c4a10a5cc9cad923133bc4">tz::gl::vk2::PipelineStage::Bottom</a></div><div class="ttdeci">@ Bottom</div></div>
+<div class="ttc" id="agroup__tz__gl__vk__graphics__pipeline_html_ggaa581c5a329a76e48f41ca02bd263251aa576ad90e86113d352899b3369a9c5b15"><div class="ttname"><a href="group__tz__gl__vk__graphics__pipeline.html#ggaa581c5a329a76e48f41ca02bd263251aa576ad90e86113d352899b3369a9c5b15">tz::gl::vk2::PipelineStage::AllGraphics</a></div><div class="ttdeci">@ AllGraphics</div></div>
+<div class="ttc" id="agroup__tz__gl__vk__graphics__pipeline_html_ggaa581c5a329a76e48f41ca02bd263251aa5ad09049db5ad41b32b78a92294484c7"><div class="ttname"><a href="group__tz__gl__vk__graphics__pipeline.html#ggaa581c5a329a76e48f41ca02bd263251aa5ad09049db5ad41b32b78a92294484c7">tz::gl::vk2::PipelineStage::EarlyFragmentTests</a></div><div class="ttdeci">@ EarlyFragmentTests</div></div>
+<div class="ttc" id="agroup__tz__gl__vk__graphics__pipeline_html_ggaa581c5a329a76e48f41ca02bd263251aa6ceeb738294823c48050af12328d0606"><div class="ttname"><a href="group__tz__gl__vk__graphics__pipeline.html#ggaa581c5a329a76e48f41ca02bd263251aa6ceeb738294823c48050af12328d0606">tz::gl::vk2::PipelineStage::TransferCommands</a></div><div class="ttdeci">@ TransferCommands</div></div>
+<div class="ttc" id="agroup__tz__gl__vk__graphics__pipeline_html_ggaa581c5a329a76e48f41ca02bd263251aa87fd5b66e314d52345d46590e7124805"><div class="ttname"><a href="group__tz__gl__vk__graphics__pipeline.html#ggaa581c5a329a76e48f41ca02bd263251aa87fd5b66e314d52345d46590e7124805">tz::gl::vk2::PipelineStage::GeometryShader</a></div><div class="ttdeci">@ GeometryShader</div></div>
+<div class="ttc" id="agroup__tz__gl__vk__graphics__pipeline_html_ggaa581c5a329a76e48f41ca02bd263251aa8dbef1b4099311308f1297f6fb54c1b8"><div class="ttname"><a href="group__tz__gl__vk__graphics__pipeline.html#ggaa581c5a329a76e48f41ca02bd263251aa8dbef1b4099311308f1297f6fb54c1b8">tz::gl::vk2::PipelineStage::TessellationEvaluationShader</a></div><div class="ttdeci">@ TessellationEvaluationShader</div></div>
+<div class="ttc" id="agroup__tz__gl__vk__graphics__pipeline_html_ggaa581c5a329a76e48f41ca02bd263251aa90a9bb4e665932b1781da33fc2f32922"><div class="ttname"><a href="group__tz__gl__vk__graphics__pipeline.html#ggaa581c5a329a76e48f41ca02bd263251aa90a9bb4e665932b1781da33fc2f32922">tz::gl::vk2::PipelineStage::FragmentShader</a></div><div class="ttdeci">@ FragmentShader</div></div>
+<div class="ttc" id="agroup__tz__gl__vk__graphics__pipeline_html_ggaa581c5a329a76e48f41ca02bd263251aa95b0e6b8c7aa6af632295afda7a926bc"><div class="ttname"><a href="group__tz__gl__vk__graphics__pipeline.html#ggaa581c5a329a76e48f41ca02bd263251aa95b0e6b8c7aa6af632295afda7a926bc">tz::gl::vk2::PipelineStage::DrawIndirect</a></div><div class="ttdeci">@ DrawIndirect</div></div>
+<div class="ttc" id="agroup__tz__gl__vk__graphics__pipeline_html_ggaa581c5a329a76e48f41ca02bd263251aaa4ffdcf0dc1f31b9acaf295d75b51d00"><div class="ttname"><a href="group__tz__gl__vk__graphics__pipeline.html#ggaa581c5a329a76e48f41ca02bd263251aaa4ffdcf0dc1f31b9acaf295d75b51d00">tz::gl::vk2::PipelineStage::Top</a></div><div class="ttdeci">@ Top</div></div>
+<div class="ttc" id="agroup__tz__gl__vk__graphics__pipeline_html_ggaa581c5a329a76e48f41ca02bd263251aacf92f78ac1cdeee1e78e8b2866abe474"><div class="ttname"><a href="group__tz__gl__vk__graphics__pipeline.html#ggaa581c5a329a76e48f41ca02bd263251aacf92f78ac1cdeee1e78e8b2866abe474">tz::gl::vk2::PipelineStage::AllCommands</a></div><div class="ttdeci">@ AllCommands</div></div>
+<div class="ttc" id="agroup__tz__gl__vk__graphics__pipeline_html_ggaa581c5a329a76e48f41ca02bd263251aae1bc6b887951aa3ad70f1cdebd02aa7c"><div class="ttname"><a href="group__tz__gl__vk__graphics__pipeline.html#ggaa581c5a329a76e48f41ca02bd263251aae1bc6b887951aa3ad70f1cdebd02aa7c">tz::gl::vk2::PipelineStage::TessellationControlShader</a></div><div class="ttdeci">@ TessellationControlShader</div></div>
+<div class="ttc" id="agroup__tz__gl__vk__graphics__pipeline_html_ggaa581c5a329a76e48f41ca02bd263251aaeada3dda11ce9944c5f92e0d721f9394"><div class="ttname"><a href="group__tz__gl__vk__graphics__pipeline.html#ggaa581c5a329a76e48f41ca02bd263251aaeada3dda11ce9944c5f92e0d721f9394">tz::gl::vk2::PipelineStage::LateFragmentTests</a></div><div class="ttdeci">@ LateFragmentTests</div></div>
+<div class="ttc" id="agroup__tz__gl__vk__graphics__pipeline_html_ggaa581c5a329a76e48f41ca02bd263251aaeb3ca4dac3e206977e0b7d998eefcc33"><div class="ttname"><a href="group__tz__gl__vk__graphics__pipeline.html#ggaa581c5a329a76e48f41ca02bd263251aaeb3ca4dac3e206977e0b7d998eefcc33">tz::gl::vk2::PipelineStage::VertexShader</a></div><div class="ttdeci">@ VertexShader</div></div>
+<div class="ttc" id="agroup__tz__gl__vk__graphics__pipeline_html_ggaa581c5a329a76e48f41ca02bd263251aaec356eeffd7d26280475eadca9140604"><div class="ttname"><a href="group__tz__gl__vk__graphics__pipeline.html#ggaa581c5a329a76e48f41ca02bd263251aaec356eeffd7d26280475eadca9140604">tz::gl::vk2::PipelineStage::ColourAttachmentOutput</a></div><div class="ttdeci">@ ColourAttachmentOutput</div></div>
+<div class="ttc" id="astructtz_1_1gl_1_1vk2_1_1hardware_1_1_queue_1_1_present_info_html"><div class="ttname"><a href="structtz_1_1gl_1_1vk2_1_1hardware_1_1_queue_1_1_present_info.html">tz::gl::vk2::hardware::Queue::PresentInfo</a></div><div class="ttdoc">Specifies information about a present request issued to a Queue.</div><div class="ttdef"><b>Definition:</b> queue.hpp:116</div></div>
+<div class="ttc" id="astructtz_1_1gl_1_1vk2_1_1hardware_1_1_queue_1_1_present_info_html_a588d339e32335bc14df6785b5a53e285"><div class="ttname"><a href="structtz_1_1gl_1_1vk2_1_1hardware_1_1_queue_1_1_present_info.html#a588d339e32335bc14df6785b5a53e285">tz::gl::vk2::hardware::Queue::PresentInfo::swapchain</a></div><div class="ttdeci">const Swapchain * swapchain</div><div class="ttdoc">Pointer to a swapchain from which an image will be sourced. This must not be nullptr.</div><div class="ttdef"><b>Definition:</b> queue.hpp:120</div></div>
+<div class="ttc" id="astructtz_1_1gl_1_1vk2_1_1hardware_1_1_queue_1_1_present_info_html_a6aedbfffad39d0b167d57187a5637c10"><div class="ttname"><a href="structtz_1_1gl_1_1vk2_1_1hardware_1_1_queue_1_1_present_info.html#a6aedbfffad39d0b167d57187a5637c10">tz::gl::vk2::hardware::Queue::PresentInfo::swapchain_image_index</a></div><div class="ttdeci">std::uint32_t swapchain_image_index</div><div class="ttdoc">Index to the swapchain's images which will be presented to the surface. The index must have value suc...</div><div class="ttdef"><b>Definition:</b> queue.hpp:122</div></div>
+<div class="ttc" id="astructtz_1_1gl_1_1vk2_1_1hardware_1_1_queue_1_1_present_info_html_a8e68c155c3bae04ca3a02d723e75b87d"><div class="ttname"><a href="structtz_1_1gl_1_1vk2_1_1hardware_1_1_queue_1_1_present_info.html#a8e68c155c3bae04ca3a02d723e75b87d">tz::gl::vk2::hardware::Queue::PresentInfo::wait_semaphores</a></div><div class="ttdeci">tz::BasicList&lt; const BinarySemaphore * &gt; wait_semaphores</div><div class="ttdoc">List of wait semaphores. The present request will not be issued until all of these semaphores are sig...</div><div class="ttdef"><b>Definition:</b> queue.hpp:118</div></div>
+<div class="ttc" id="astructtz_1_1gl_1_1vk2_1_1hardware_1_1_queue_1_1_submit_info_1_1_wait_info_html"><div class="ttname"><a href="structtz_1_1gl_1_1vk2_1_1hardware_1_1_queue_1_1_submit_info_1_1_wait_info.html">tz::gl::vk2::hardware::Queue::SubmitInfo::WaitInfo</a></div><div class="ttdef"><b>Definition:</b> queue.hpp:78</div></div>
+<div class="ttc" id="astructtz_1_1gl_1_1vk2_1_1hardware_1_1_queue_1_1_submit_info_1_1_wait_info_html_a0a4757e6b992ea078cad8039d08ec587"><div class="ttname"><a href="structtz_1_1gl_1_1vk2_1_1hardware_1_1_queue_1_1_submit_info_1_1_wait_info.html#a0a4757e6b992ea078cad8039d08ec587">tz::gl::vk2::hardware::Queue::SubmitInfo::WaitInfo::wait_semaphore</a></div><div class="ttdeci">const BinarySemaphore * wait_semaphore</div><div class="ttdoc">Semaphore which will be waited on.</div><div class="ttdef"><b>Definition:</b> queue.hpp:80</div></div>
+<div class="ttc" id="astructtz_1_1gl_1_1vk2_1_1hardware_1_1_queue_1_1_submit_info_1_1_wait_info_html_a526d5799de8b0b4a49a1f381d3ef1e27"><div class="ttname"><a href="structtz_1_1gl_1_1vk2_1_1hardware_1_1_queue_1_1_submit_info_1_1_wait_info.html#a526d5799de8b0b4a49a1f381d3ef1e27">tz::gl::vk2::hardware::Queue::SubmitInfo::WaitInfo::wait_stage</a></div><div class="ttdeci">PipelineStage wait_stage</div><div class="ttdoc">Information about when specifically the semaphore will be waited on.</div><div class="ttdef"><b>Definition:</b> queue.hpp:82</div></div>
+<div class="ttc" id="astructtz_1_1gl_1_1vk2_1_1hardware_1_1_queue_1_1_submit_info_html"><div class="ttname"><a href="structtz_1_1gl_1_1vk2_1_1hardware_1_1_queue_1_1_submit_info.html">tz::gl::vk2::hardware::Queue::SubmitInfo</a></div><div class="ttdoc">Specifies information about a submission of GPU work to a Queue.</div><div class="ttdef"><b>Definition:</b> queue.hpp:76</div></div>
+<div class="ttc" id="astructtz_1_1gl_1_1vk2_1_1hardware_1_1_queue_1_1_submit_info_html_a31872f3076d704954546232c562b4467"><div class="ttname"><a href="structtz_1_1gl_1_1vk2_1_1hardware_1_1_queue_1_1_submit_info.html#a31872f3076d704954546232c562b4467">tz::gl::vk2::hardware::Queue::SubmitInfo::execution_complete_fence</a></div><div class="ttdeci">const Fence * execution_complete_fence</div><div class="ttdoc">Optional fence which is signalled once all command buffers have finished execution....</div><div class="ttdef"><b>Definition:</b> queue.hpp:92</div></div>
+<div class="ttc" id="astructtz_1_1gl_1_1vk2_1_1hardware_1_1_queue_1_1_submit_info_html_a66803043b1779ee34b6804f82d3b1ced"><div class="ttname"><a href="structtz_1_1gl_1_1vk2_1_1hardware_1_1_queue_1_1_submit_info.html#a66803043b1779ee34b6804f82d3b1ced">tz::gl::vk2::hardware::Queue::SubmitInfo::command_buffers</a></div><div class="ttdeci">tz::BasicList&lt; const CommandBuffer * &gt; command_buffers</div><div class="ttdoc">List of command buffers to submit.</div><div class="ttdef"><b>Definition:</b> queue.hpp:86</div></div>
+<div class="ttc" id="astructtz_1_1gl_1_1vk2_1_1hardware_1_1_queue_1_1_submit_info_html_a74f67f754d176a90fdc2b0b00497fa52"><div class="ttname"><a href="structtz_1_1gl_1_1vk2_1_1hardware_1_1_queue_1_1_submit_info.html#a74f67f754d176a90fdc2b0b00497fa52">tz::gl::vk2::hardware::Queue::SubmitInfo::waits</a></div><div class="ttdeci">tz::BasicList&lt; WaitInfo &gt; waits</div><div class="ttdoc">List of wait semaphores. Command buffers for this submission batch will not begin execution until the...</div><div class="ttdef"><b>Definition:</b> queue.hpp:88</div></div>
+<div class="ttc" id="astructtz_1_1gl_1_1vk2_1_1hardware_1_1_queue_1_1_submit_info_html_af0063a74319745f3e0e489641dfa199b"><div class="ttname"><a href="structtz_1_1gl_1_1vk2_1_1hardware_1_1_queue_1_1_submit_info.html#af0063a74319745f3e0e489641dfa199b">tz::gl::vk2::hardware::Queue::SubmitInfo::signal_semaphores</a></div><div class="ttdeci">tz::BasicList&lt; const BinarySemaphore * &gt; signal_semaphores</div><div class="ttdoc">List of signal semaphores. Once the command buffers associated with this submission have completed ex...</div><div class="ttdef"><b>Definition:</b> queue.hpp:90</div></div>
+<div class="ttc" id="astructtz_1_1gl_1_1vk2_1_1hardware_1_1_queue_info_html"><div class="ttname"><a href="structtz_1_1gl_1_1vk2_1_1hardware_1_1_queue_info.html">tz::gl::vk2::hardware::QueueInfo</a></div><div class="ttdef"><b>Definition:</b> queue.hpp:59</div></div>
 </div><!-- fragment --></div><!-- contents -->
+</div><!-- doc-content -->
 <!-- start footer part -->
-<hr class="footer"/><address class="footer"><small>
-    <nav class="navbar navbar-default" role="navigation">
-        <div class="container">
-            <div class="navbar-header">
-                <a class="navbar-brand" href="https://github.com/Harrand/Topaz" style="margin-right: 10px;">GitHub: topaz-master</a>
-                <a class="navbar-brand" href="https://harrand.github.io/" style="margin-right: 10px;">harrand.github.io</a>
-            </div>
-        </div>
-    </nav>
-    <p>Generated: Wed Sep 29 2021 01:11:50</p>
-</small></address>
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_22ef2c5f6712ba0a0b99c741bcfb15fe.html">gl</a></li><li class="navelem"><a class="el" href="dir_294d689e10da81f00c081b036a1431d9.html">impl</a></li><li class="navelem"><a class="el" href="dir_f1e396d78ce7c2379251e63a766e1a72.html">backend</a></li><li class="navelem"><a class="el" href="dir_0b7f26d7b2839feebc272b1e805dca31.html">vk2</a></li><li class="navelem"><a class="el" href="dir_f415390c9ac14c68e288c6d8785884f3.html">hardware</a></li><li class="navelem"><b>queue.hpp</b></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.3 </li>
+  </ul>
+</div>
 </body>
 </html>

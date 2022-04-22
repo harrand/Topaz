@@ -1,7 +1,7 @@
 var searchData=
 [
-  ['terminate_0',['terminate',['../group__tz__core.html#ga0a5d1e375e7e82fcd12a8b74b8012bae',1,'tz']]],
-  ['to_5fstring_1',['to_string',['../structtz_1_1_engine_info.html#aa507cafab5155e38aea436e5071b011b',1,'tz::EngineInfo::to_string()'],['../structtz_1_1_game_info.html#a1fee2a0c657af65c289ae60d9b23b604',1,'tz::GameInfo::to_string()']]],
-  ['translate_2',['translate',['../group__tz__core.html#ga196feac53bc36a1b8302d93815179e5a',1,'tz']]],
-  ['transpose_3',['transpose',['../classtz_1_1_matrix.html#aeaa132835833d0516a7323603eeb73da',1,'tz::Matrix']]]
+  ['perspective_0',['perspective',['../group__tz__core__vecmat__transform.html#ga1908e15a62cb6d470c13655984a0dbf6',1,'tz']]],
+  ['physicaldevice_1',['PhysicalDevice',['../classtz_1_1gl_1_1vk2_1_1_physical_device.html#a1af757e82fdc5ebc851cf9489fdb5c25',1,'tz::gl::vk2::PhysicalDevice']]],
+  ['polymorphiclist_2',['PolymorphicList',['../classtz_1_1_polymorphic_list.html#abc16be83e1ee23b79e3f6025015cc036',1,'tz::PolymorphicList']]],
+  ['present_3',['present',['../classtz_1_1gl_1_1vk2_1_1hardware_1_1_queue.html#aa4f3d7a351fe699cd90ea6457c64caee',1,'tz::gl::vk2::hardware::Queue']]]
 ];

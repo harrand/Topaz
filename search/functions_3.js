@@ -1,7 +1,18 @@
 var searchData=
 [
-  ['from_5farray_0',['from_array',['../structtz_1_1gl_1_1_buffer_data.html#a1c98350abe9cd06f36d349036e94a72c',1,'tz::gl::BufferData']]],
-  ['from_5fimage_5ffile_1',['from_image_file',['../structtz_1_1gl_1_1_texture_data.html#a08caba4d24951de0d6d0f445c312d700',1,'tz::gl::TextureData']]],
-  ['from_5fmemory_2',['from_memory',['../structtz_1_1gl_1_1_texture_data.html#a0798d4731844d7e669b070d3b885c1bd',1,'tz::gl::TextureData']]],
-  ['from_5fvalue_3',['from_value',['../structtz_1_1gl_1_1_buffer_data.html#a5c898e6e83217cc211054f702d730f59',1,'tz::gl::BufferData']]]
+  ['data_0',['data',['../classtz_1_1_basic_list.html#ada318583334664c93dbb90e897b7137d',1,'tz::BasicList::data() const'],['../classtz_1_1_basic_list.html#af36289f18f4b52c1bfde2d3e044b1411',1,'tz::BasicList::data()'],['../classtz_1_1_vector.html#a21a9c99453bdc876c9197dd3dad760f1',1,'tz::Vector::data() const'],['../classtz_1_1_vector.html#ab48062f95431db9c627ae623b98f7e64',1,'tz::Vector::data()'],['../classtz_1_1gl_1_1_i_resource.html#a9c27891c1f4be84fb4ec9d5f9c0fa469',1,'tz::gl::IResource::data() const =0'],['../classtz_1_1gl_1_1_i_resource.html#ab89c6f791da2a798ea8a3538b154bd95',1,'tz::gl::IResource::data()=0'],['../classtz_1_1gl_1_1_resource.html#ab4d47c4dee33fc18276b05a9f37213ff',1,'tz::gl::Resource::data() const final'],['../classtz_1_1gl_1_1_resource.html#a2badb8ab88a39f4b0e074276d7b977a3',1,'tz::gl::Resource::data() final']]],
+  ['data_5fas_1',['data_as',['../classtz_1_1gl_1_1_i_resource.html#ac4943601c0baf5cf664ab5710a3ad003',1,'tz::gl::IResource::data_as() const'],['../classtz_1_1gl_1_1_i_resource.html#a0ddc2f5ca83851511f3d8ca0583c990c',1,'tz::gl::IResource::data_as()']]],
+  ['days_2',['days',['../classtz_1_1_duration.html#a1427311a17f00cbd704a745b7c45f58a',1,'tz::Duration']]],
+  ['debug_5fprint_5fstate_3',['debug_print_state',['../classtz_1_1_keyboard_state.html#a0dae8e64d136e9cc5c56f163da9959da',1,'tz::KeyboardState::debug_print_state()'],['../classtz_1_1_mouse_button_state.html#aae858102fe58ae640f68e20961c56eda',1,'tz::MouseButtonState::debug_print_state()'],['../classtz_1_1_mouse_position_state.html#acfd3021a0d018e15d8f4d18f3a22462d',1,'tz::MousePositionState::debug_print_state()']]],
+  ['delay_4',['Delay',['../classtz_1_1_delay.html#a691e833c3e035463c8b71657a05b0e56',1,'tz::Delay']]],
+  ['descriptor_5fcount_5',['descriptor_count',['../classtz_1_1gl_1_1vk2_1_1_descriptor_layout.html#accc746a50caa61641bb14fc4f8fadc6a',1,'tz::gl::vk2::DescriptorLayout']]],
+  ['descriptor_5fcount_5fof_6',['descriptor_count_of',['../classtz_1_1gl_1_1vk2_1_1_descriptor_layout.html#a4dcee1b2805e6163351ea0aefbcc3305',1,'tz::gl::vk2::DescriptorLayout']]],
+  ['descriptorlayout_7',['DescriptorLayout',['../classtz_1_1gl_1_1vk2_1_1_descriptor_layout.html#a9ef5579debbf8a3d6d758c714edaf3b8',1,'tz::gl::vk2::DescriptorLayout']]],
+  ['descriptorlayoutbuilder_8',['DescriptorLayoutBuilder',['../classtz_1_1gl_1_1vk2_1_1_descriptor_layout_builder.html#a44093ba76ad98d8c6209143c8f4de242',1,'tz::gl::vk2::DescriptorLayoutBuilder::DescriptorLayoutBuilder()=default'],['../classtz_1_1gl_1_1vk2_1_1_descriptor_layout_builder.html#ab2892131f4b7b43aed19eda352dfef81',1,'tz::gl::vk2::DescriptorLayoutBuilder::DescriptorLayoutBuilder(DescriptorLayoutInfo existing_info)']]],
+  ['device_5fsupports_5fflags_9',['device_supports_flags',['../structtz_1_1gl_1_1vk2_1_1_descriptor_layout_info.html#a2e5cab5844cce37fcc8a06c1436f33e6',1,'tz::gl::vk2::DescriptorLayoutInfo']]],
+  ['do_5frender_5fwork_10',['do_render_work',['../classtz_1_1gl_1_1_command_processor.html#ad03bad20c91da8d9b203901b08cae4da',1,'tz::gl::CommandProcessor']]],
+  ['do_5fscratch_5foperations_11',['do_scratch_operations',['../classtz_1_1gl_1_1_command_processor.html#a3d3721f6b03bbd343b099d258cd49c30',1,'tz::gl::CommandProcessor']]],
+  ['done_12',['done',['../classtz_1_1_delay.html#a8c6450459a799834adfea423639e96d4',1,'tz::Delay']]],
+  ['dot_13',['dot',['../classtz_1_1_vector.html#a786e868c58c0e2492a94502a9800ee2e',1,'tz::Vector']]],
+  ['draw_14',['draw',['../classtz_1_1gl_1_1ogl2_1_1_vertex_array.html#af204d3d89c4aa9a192c8b3c12e1abb7b',1,'tz::gl::ogl2::VertexArray::draw()'],['../classtz_1_1gl_1_1vk2_1_1_command_buffer_recording.html#acd2074bf1faa8b35502ec823cfde1abf',1,'tz::gl::vk2::CommandBufferRecording::draw()']]]
 ];

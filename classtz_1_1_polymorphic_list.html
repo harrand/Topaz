@@ -1,16 +1,19 @@
-<!-- HTML header for doxygen 1.8.8-->
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
-    <head>
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <!-- For Mobile Devices -->
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-        <meta name="generator" content="Doxygen 1.9.2"/>
-        <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-        <title>Topaz 3.1 Documentation</title>
-        <script type="text/javascript" src="dynsections.js"></script>
-        <link href="search/search.css" rel="stylesheet" type="text/css"/>
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.3"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Topaz: tz::PolymorphicList&lt; T, Allocator &gt; Class Template Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
 <script type="text/javascript">
@@ -18,29 +21,22 @@
   $(document).ready(function() { init_search(); });
 /* @license-end */
 </script>
-        <link href="custom_dark_theme.css" rel="stylesheet" type="text/css" />
-        <link href="custom.css" rel="stylesheet" type="text/css"/>
-<link href="custom_dark_theme.css" rel="stylesheet" type="text/css"/>
-        <script type="text/javascript" src="doxy-boot.js"></script>
-        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-        <link rel="manifest" href="/site.webmanifest">
-        <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
-        <meta name="msapplication-TileColor" content="#da532c">
-        <meta name="theme-color" content="#ffffff">
-    </head>
-    <body>
-        <nav class="navbar navbar-default" role="navigation">
-            <div class="container">
-                <div class="navbar-header">
-                    <a class="navbar-brand"><img src = "tz.png" width="2%" height="2%"></a>
-                    <a class="navbar-brand" href="index.html" style="font-size: xx-large; text-decoration: none;">Topaz</a>
-                    <a class="navbar-brand" href="modules.html">Modules</a>
-                    <a class="navbar-brand" href="annotated.html">Classes</a>
-                    <a class="navbar-brand" href="tools.html">Tools</a>
-                    <a class="navbar-brand" href="tzsl.html">TZSL</a>
-                            <div id="MSearchBox" class="MSearchBoxInactive">
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectlogo"><img alt="Logo" src="tz.png"/></td>
+  <td id="projectalign">
+   <div id="projectname">Topaz<span id="projectnumber">&#160;3.2</span>
+   </div>
+   <div id="projectbrief">C++20 Graphics Engine</div>
+  </td>
+    <td>        <div id="MSearchBox" class="MSearchBoxInactive">
         <span class="left">
           <img id="MSearchSelect" src="search/mag_sel.svg"
                onmouseover="return searchBox.OnSearchSelectShow()"
@@ -54,21 +50,35 @@
             <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
           </span>
         </div>
-                </div>
-            </div>
-        </nav>
-        <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
-            <div class="content" id="content">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-sm-12 panel " style="padding-bottom: 15px;">
-                            <div style="margin-bottom: 15px;">
-<!-- end header part --><!-- Generated by Doxygen 1.9.2 -->
+</td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.9.3 -->
 <script type="text/javascript">
 /* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
 var searchBox = new SearchBox("searchBox", "search",'Search','.html');
 /* @license-end */
 </script>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(document).ready(function(){initNavTree('classtz_1_1_polymorphic_list.html',''); initResizable(); });
+/* @license-end */
+</script>
+<div id="doc-content">
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"
@@ -83,79 +93,174 @@ var searchBox = new SearchBox("searchBox", "search",'Search','.html');
 </iframe>
 </div>
 
-<div id="nav-path" class="navpath">
-  <ul>
-<li class="navelem"><b>tz</b></li><li class="navelem"><a class="el" href="classtz_1_1_polymorphic_list.html">PolymorphicList</a></li>  </ul>
-</div>
-</div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#pub-types">Public Types</a> &#124;
-<a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="classtz_1_1_polymorphic_list-members.html">List of all members</a>  </div>
-  <div class="headertitle"><div class="title">tz::PolymorphicList&lt; T, Allocator &gt; Class Template Reference<div class="ingroups"><a class="el" href="group__tz__core.html">Topaz Core Library (tz)</a></div></div></div>
+<a href="#pub-methods">Public Member Functions</a>  </div>
+  <div class="headertitle"><div class="title">tz::PolymorphicList&lt; T, Allocator &gt; Class Template Reference<div class="ingroups"><a class="el" href="group__tz__core.html">Core Libraries (tz)</a> &raquo; <a class="el" href="group__tz__core__containers.html">Containers</a></div></div></div>
 </div><!--header-->
 <div class="contents">
+
+<p><code>#include &lt;<a class="el" href="polymorphic__list_8hpp_source.html">polymorphic_list.hpp</a>&gt;</code></p>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
-Public Types</h2></td></tr>
-<tr class="memitem:ad545abb04a29c9c05cf486c50d241c1c"><td class="memItemLeft" align="right" valign="top"><a id="ad545abb04a29c9c05cf486c50d241c1c" name="ad545abb04a29c9c05cf486c50d241c1c"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>Pointer</b> = T *</td></tr>
-<tr class="separator:ad545abb04a29c9c05cf486c50d241c1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aeed51b909d93ba23b689636d2ed08501"><td class="memItemLeft" align="right" valign="top"><a id="aeed51b909d93ba23b689636d2ed08501" name="aeed51b909d93ba23b689636d2ed08501"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>Reference</b> = T &amp;</td></tr>
-<tr class="separator:aeed51b909d93ba23b689636d2ed08501"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abccd889bb6ff496c0c4827cf25b476d7"><td class="memItemLeft" align="right" valign="top"><a id="abccd889bb6ff496c0c4827cf25b476d7" name="abccd889bb6ff496c0c4827cf25b476d7"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>Iterator</b> = <a class="el" href="classtz_1_1_interface_iterator.html">InterfaceIterator</a>&lt; T &gt;</td></tr>
-<tr class="separator:abccd889bb6ff496c0c4827cf25b476d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:abcd45264b9a32adcfde7d7469d526bac"><td class="memTemplParams" colspan="2"><a id="abcd45264b9a32adcfde7d7469d526bac" name="abcd45264b9a32adcfde7d7469d526bac"></a>
-template&lt;typename Derived , typename... Args&gt; </td></tr>
-<tr class="memitem:abcd45264b9a32adcfde7d7469d526bac"><td class="memTemplItemLeft" align="right" valign="top">Reference&#160;</td><td class="memTemplItemRight" valign="bottom"><b>emplace</b> (Args &amp;&amp;... args)</td></tr>
+<tr class="memitem:abc16be83e1ee23b79e3f6025015cc036"><td class="memItemLeft" align="right" valign="top"><a id="abc16be83e1ee23b79e3f6025015cc036" name="abc16be83e1ee23b79e3f6025015cc036"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>PolymorphicList</b> ()=default</td></tr>
+<tr class="memdesc:abc16be83e1ee23b79e3f6025015cc036"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create an empty list. <br /></td></tr>
+<tr class="separator:abc16be83e1ee23b79e3f6025015cc036"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abcd45264b9a32adcfde7d7469d526bac"><td class="memTemplParams" colspan="2">template&lt;typename Derived , typename... Args&gt; </td></tr>
+<tr class="memitem:abcd45264b9a32adcfde7d7469d526bac"><td class="memTemplItemLeft" align="right" valign="top">Reference&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classtz_1_1_polymorphic_list.html#abcd45264b9a32adcfde7d7469d526bac">emplace</a> (Args &amp;&amp;... args)</td></tr>
+<tr class="memdesc:abcd45264b9a32adcfde7d7469d526bac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a new element to the back of the list.  <a href="classtz_1_1_polymorphic_list.html#abcd45264b9a32adcfde7d7469d526bac">More...</a><br /></td></tr>
 <tr class="separator:abcd45264b9a32adcfde7d7469d526bac"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a513535554bf5116e539e356764b812b3"><td class="memItemLeft" align="right" valign="top"><a id="a513535554bf5116e539e356764b812b3" name="a513535554bf5116e539e356764b812b3"></a>
 <a class="el" href="classtz_1_1_interface_iterator.html">Iterator</a>&#160;</td><td class="memItemRight" valign="bottom"><b>begin</b> ()</td></tr>
+<tr class="memdesc:a513535554bf5116e539e356764b812b3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve the begin interator. <br /></td></tr>
 <tr class="separator:a513535554bf5116e539e356764b812b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a005d33c6203712c5304224285b389c50"><td class="memItemLeft" align="right" valign="top"><a id="a005d33c6203712c5304224285b389c50" name="a005d33c6203712c5304224285b389c50"></a>
 <a class="el" href="classtz_1_1_interface_iterator.html">Iterator</a>&#160;</td><td class="memItemRight" valign="bottom"><b>end</b> ()</td></tr>
+<tr class="memdesc:a005d33c6203712c5304224285b389c50"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve the end interator. <br /></td></tr>
 <tr class="separator:a005d33c6203712c5304224285b389c50"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad6f049474f8d35b6accbb19d6e66524b"><td class="memItemLeft" align="right" valign="top"><a id="ad6f049474f8d35b6accbb19d6e66524b" name="ad6f049474f8d35b6accbb19d6e66524b"></a>
 <a class="el" href="classtz_1_1_interface_iterator.html">Iterator</a>&#160;</td><td class="memItemRight" valign="bottom"><b>begin</b> () const</td></tr>
+<tr class="memdesc:ad6f049474f8d35b6accbb19d6e66524b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve the begin interator. <br /></td></tr>
 <tr class="separator:ad6f049474f8d35b6accbb19d6e66524b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a01e936a09d95b4898311f84ddc356e97"><td class="memItemLeft" align="right" valign="top"><a id="a01e936a09d95b4898311f84ddc356e97" name="a01e936a09d95b4898311f84ddc356e97"></a>
 <a class="el" href="classtz_1_1_interface_iterator.html">Iterator</a>&#160;</td><td class="memItemRight" valign="bottom"><b>end</b> () const</td></tr>
+<tr class="memdesc:a01e936a09d95b4898311f84ddc356e97"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve the begin interator. <br /></td></tr>
 <tr class="separator:a01e936a09d95b4898311f84ddc356e97"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4ff3d2bc56929abcbea5811bff6bdbd7"><td class="memItemLeft" align="right" valign="top"><a id="a4ff3d2bc56929abcbea5811bff6bdbd7" name="a4ff3d2bc56929abcbea5811bff6bdbd7"></a>
-std::size_t&#160;</td><td class="memItemRight" valign="bottom"><b>size</b> () const</td></tr>
+<tr class="memitem:a4ff3d2bc56929abcbea5811bff6bdbd7"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtz_1_1_polymorphic_list.html#a4ff3d2bc56929abcbea5811bff6bdbd7">size</a> () const</td></tr>
+<tr class="memdesc:a4ff3d2bc56929abcbea5811bff6bdbd7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve the number of elements.  <a href="classtz_1_1_polymorphic_list.html#a4ff3d2bc56929abcbea5811bff6bdbd7">More...</a><br /></td></tr>
 <tr class="separator:a4ff3d2bc56929abcbea5811bff6bdbd7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4b4801429d2e32a6d7a7c6c25ac26adc"><td class="memItemLeft" align="right" valign="top"><a id="a4b4801429d2e32a6d7a7c6c25ac26adc" name="a4b4801429d2e32a6d7a7c6c25ac26adc"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>clear</b> ()</td></tr>
+<tr class="memdesc:a4b4801429d2e32a6d7a7c6c25ac26adc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove all elements from the list. <br /></td></tr>
 <tr class="separator:a4b4801429d2e32a6d7a7c6c25ac26adc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac9d9ca26cd70c5cdf6f45678fccdcfe1"><td class="memItemLeft" align="right" valign="top"><a id="ac9d9ca26cd70c5cdf6f45678fccdcfe1" name="ac9d9ca26cd70c5cdf6f45678fccdcfe1"></a>
-const T &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator[]</b> (std::size_t idx) const</td></tr>
+<tr class="memitem:ac9d9ca26cd70c5cdf6f45678fccdcfe1"><td class="memItemLeft" align="right" valign="top">const T &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtz_1_1_polymorphic_list.html#ac9d9ca26cd70c5cdf6f45678fccdcfe1">operator[]</a> (std::size_t idx) const</td></tr>
+<tr class="memdesc:ac9d9ca26cd70c5cdf6f45678fccdcfe1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve a base-class reference to the element at the given index.  <a href="classtz_1_1_polymorphic_list.html#ac9d9ca26cd70c5cdf6f45678fccdcfe1">More...</a><br /></td></tr>
 <tr class="separator:ac9d9ca26cd70c5cdf6f45678fccdcfe1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1c35e09a69492845e176f0b4533fbc9d"><td class="memItemLeft" align="right" valign="top"><a id="a1c35e09a69492845e176f0b4533fbc9d" name="a1c35e09a69492845e176f0b4533fbc9d"></a>
-T &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator[]</b> (std::size_t idx)</td></tr>
+<tr class="memitem:a1c35e09a69492845e176f0b4533fbc9d"><td class="memItemLeft" align="right" valign="top">T &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtz_1_1_polymorphic_list.html#a1c35e09a69492845e176f0b4533fbc9d">operator[]</a> (std::size_t idx)</td></tr>
+<tr class="memdesc:a1c35e09a69492845e176f0b4533fbc9d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve a base-class reference to the element at the given index.  <a href="classtz_1_1_polymorphic_list.html#a1c35e09a69492845e176f0b4533fbc9d">More...</a><br /></td></tr>
 <tr class="separator:a1c35e09a69492845e176f0b4533fbc9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<hr/>The documentation for this class was generated from the following files:<ul>
-<li>src/core/containers/<a class="el" href="polymorphic__list_8hpp_source.html">polymorphic_list.hpp</a></li>
-<li>src/core/containers/polymorphic_list.inl</li>
-</ul>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><div class="compoundTemplParams">template&lt;typename T, typename Allocator = std::allocator&lt;std::unique_ptr&lt;T&gt;&gt;&gt;<br />
+class tz::PolymorphicList&lt; T, Allocator &gt;</div><dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">T</td><td>Common base type. List of elements, where all elements inherit from a common type but may be different types within themselves. </td></tr>
+  </table>
+  </dd>
+</dl>
+</div><h2 class="groupheader">Member Function Documentation</h2>
+<a id="abcd45264b9a32adcfde7d7469d526bac" name="abcd45264b9a32adcfde7d7469d526bac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abcd45264b9a32adcfde7d7469d526bac">&#9670;&nbsp;</a></span>emplace()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T , typename Allocator &gt; </div>
+<div class="memtemplate">
+template&lt;typename Derived , typename... Args&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classtz_1_1_polymorphic_list.html">PolymorphicList</a>&lt; T, Allocator &gt;::Reference <a class="el" href="classtz_1_1_polymorphic_list.html">tz::PolymorphicList</a>&lt; T, Allocator &gt;::emplace </td>
+          <td>(</td>
+          <td class="paramtype">Args &amp;&amp;...&#160;</td>
+          <td class="paramname"><em>args</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Add a new element to the back of the list. </p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">Derived</td><td>Type of the element to construct. It must be a subtype of <code>T</code>. </td></tr>
+    <tr><td class="paramname">Args</td><td>Types used to construct the new Derived element. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">args</td><td>Argument values for construction. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a1c35e09a69492845e176f0b4533fbc9d" name="a1c35e09a69492845e176f0b4533fbc9d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1c35e09a69492845e176f0b4533fbc9d">&#9670;&nbsp;</a></span>operator[]() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T , typename Allocator &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">T &amp; <a class="el" href="classtz_1_1_polymorphic_list.html">tz::PolymorphicList</a>&lt; T, Allocator &gt;::operator[] </td>
+          <td>(</td>
+          <td class="paramtype">std::size_t&#160;</td>
+          <td class="paramname"><em>idx</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Retrieve a base-class reference to the element at the given index. </p>
+<dl class="section pre"><dt>Precondition</dt><dd>idx &lt; this-&gt;<a class="el" href="classtz_1_1_polymorphic_list.html#a4ff3d2bc56929abcbea5811bff6bdbd7" title="Retrieve the number of elements.">size()</a>, otherwise the behaviour is undefined. </dd></dl>
+
+</div>
+</div>
+<a id="ac9d9ca26cd70c5cdf6f45678fccdcfe1" name="ac9d9ca26cd70c5cdf6f45678fccdcfe1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac9d9ca26cd70c5cdf6f45678fccdcfe1">&#9670;&nbsp;</a></span>operator[]() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T , typename Allocator &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">const T &amp; <a class="el" href="classtz_1_1_polymorphic_list.html">tz::PolymorphicList</a>&lt; T, Allocator &gt;::operator[] </td>
+          <td>(</td>
+          <td class="paramtype">std::size_t&#160;</td>
+          <td class="paramname"><em>idx</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Retrieve a base-class reference to the element at the given index. </p>
+<p >Read-only. </p><dl class="section pre"><dt>Precondition</dt><dd>idx &lt; this-&gt;<a class="el" href="classtz_1_1_polymorphic_list.html#a4ff3d2bc56929abcbea5811bff6bdbd7" title="Retrieve the number of elements.">size()</a>, otherwise the behaviour is undefined. </dd></dl>
+
+</div>
+</div>
+<a id="a4ff3d2bc56929abcbea5811bff6bdbd7" name="a4ff3d2bc56929abcbea5811bff6bdbd7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4ff3d2bc56929abcbea5811bff6bdbd7">&#9670;&nbsp;</a></span>size()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T , typename Allocator &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">std::size_t <a class="el" href="classtz_1_1_polymorphic_list.html">tz::PolymorphicList</a>&lt; T, Allocator &gt;::size</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Retrieve the number of elements. </p>
+<dl class="section return"><dt>Returns</dt><dd>Number of elements within the list. </dd></dl>
+
+</div>
+</div>
 </div><!-- contents -->
+</div><!-- doc-content -->
 <!-- start footer part -->
-<hr class="footer"/><address class="footer"><small>
-    <nav class="navbar navbar-default" role="navigation">
-        <div class="container">
-            <div class="navbar-header">
-                <a class="navbar-brand" href="https://github.com/Harrand/Topaz" style="margin-right: 10px;">GitHub: topaz-master</a>
-                <a class="navbar-brand" href="https://harrand.github.io/" style="margin-right: 10px;">harrand.github.io</a>
-            </div>
-        </div>
-    </nav>
-    <p>Generated: Wed Sep 29 2021 01:11:50</p>
-</small></address>
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><b>tz</b></li><li class="navelem"><a class="el" href="classtz_1_1_polymorphic_list.html">PolymorphicList</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.3 </li>
+  </ul>
+</div>
 </body>
 </html>

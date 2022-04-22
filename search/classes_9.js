@@ -1,4 +1,6 @@
 var searchData=
 [
-  ['nullhand_5ft_0',['nullhand_t',['../structtz_1_1nullhand__t.html',1,'tz']]]
+  ['keyboardstate_0',['KeyboardState',['../classtz_1_1_keyboard_state.html',1,'tz']]],
+  ['keyinfo_1',['KeyInfo',['../structtz_1_1_key_info.html',1,'tz']]],
+  ['keypressinfo_2',['KeyPressInfo',['../structtz_1_1_key_press_info.html',1,'tz']]]
 ];

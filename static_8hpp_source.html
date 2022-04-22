@@ -1,16 +1,19 @@
-<!-- HTML header for doxygen 1.8.8-->
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
-    <head>
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <!-- For Mobile Devices -->
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-        <meta name="generator" content="Doxygen 1.9.2"/>
-        <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-        <title>Topaz 3.1 Documentation</title>
-        <script type="text/javascript" src="dynsections.js"></script>
-        <link href="search/search.css" rel="stylesheet" type="text/css"/>
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.3"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Topaz: src/core/algorithms/static.hpp Source File</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
 <script type="text/javascript">
@@ -18,29 +21,22 @@
   $(document).ready(function() { init_search(); });
 /* @license-end */
 </script>
-        <link href="custom_dark_theme.css" rel="stylesheet" type="text/css" />
-        <link href="custom.css" rel="stylesheet" type="text/css"/>
-<link href="custom_dark_theme.css" rel="stylesheet" type="text/css"/>
-        <script type="text/javascript" src="doxy-boot.js"></script>
-        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-        <link rel="manifest" href="/site.webmanifest">
-        <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
-        <meta name="msapplication-TileColor" content="#da532c">
-        <meta name="theme-color" content="#ffffff">
-    </head>
-    <body>
-        <nav class="navbar navbar-default" role="navigation">
-            <div class="container">
-                <div class="navbar-header">
-                    <a class="navbar-brand"><img src = "tz.png" width="2%" height="2%"></a>
-                    <a class="navbar-brand" href="index.html" style="font-size: xx-large; text-decoration: none;">Topaz</a>
-                    <a class="navbar-brand" href="modules.html">Modules</a>
-                    <a class="navbar-brand" href="annotated.html">Classes</a>
-                    <a class="navbar-brand" href="tools.html">Tools</a>
-                    <a class="navbar-brand" href="tzsl.html">TZSL</a>
-                            <div id="MSearchBox" class="MSearchBoxInactive">
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectlogo"><img alt="Logo" src="tz.png"/></td>
+  <td id="projectalign">
+   <div id="projectname">Topaz<span id="projectnumber">&#160;3.2</span>
+   </div>
+   <div id="projectbrief">C++20 Graphics Engine</div>
+  </td>
+    <td>        <div id="MSearchBox" class="MSearchBoxInactive">
         <span class="left">
           <img id="MSearchSelect" src="search/mag_sel.svg"
                onmouseover="return searchBox.OnSearchSelectShow()"
@@ -54,21 +50,35 @@
             <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
           </span>
         </div>
-                </div>
-            </div>
-        </nav>
-        <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
-            <div class="content" id="content">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-sm-12 panel " style="padding-bottom: 15px;">
-                            <div style="margin-bottom: 15px;">
-<!-- end header part --><!-- Generated by Doxygen 1.9.2 -->
+</td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.9.3 -->
 <script type="text/javascript">
 /* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
 var searchBox = new SearchBox("searchBox", "search",'Search','.html');
 /* @license-end */
 </script>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(document).ready(function(){initNavTree('static_8hpp_source.html',''); initResizable(); });
+/* @license-end */
+</script>
+<div id="doc-content">
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"
@@ -83,59 +93,53 @@ var searchBox = new SearchBox("searchBox", "search",'Search','.html');
 </iframe>
 </div>
 
-<div id="nav-path" class="navpath">
-  <ul>
-<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_aebb8dcc11953d78e620bbef0b9e2183.html">core</a></li><li class="navelem"><a class="el" href="dir_dd4a3aad74a83f373a162359d104c308.html">algorithms</a></li>  </ul>
-</div>
-</div><!-- top -->
 <div class="header">
   <div class="headertitle"><div class="title">static.hpp</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
-<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &lt;tuple&gt;</span></div>
-<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;variant&gt;</span></div>
-<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
-<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="keyword">namespace </span>tz</div>
-<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span>{</div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>    <span class="keyword">template</span>&lt;std::<span class="keywordtype">size_t</span> Begin, std::<span class="keywordtype">size_t</span> End, <span class="keyword">typename</span> Functor&gt;</div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="group__tz__core.html#gaa286c039ff91658f1195bf5d91e126cb">   16</a></span>    <span class="keyword">constexpr</span> <span class="keywordtype">void</span> <a class="code hl_function" href="group__tz__core.html#gaa286c039ff91658f1195bf5d91e126cb">static_for</a>(<span class="keyword">const</span> Functor&amp; <span class="keyword">function</span>)</div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    {</div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>        <span class="keywordflow">if</span> <span class="keyword">constexpr</span>(Begin &lt; End)</div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>        {</div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>            <span class="keyword">function</span>(std::integral_constant&lt;std::size_t, Begin&gt;{});</div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>            static_for&lt;Begin + 1, End&gt;(<span class="keyword">function</span>);</div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>        }</div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    }</div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Needle, <span class="keyword">typename</span>... Haystack&gt;</div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="group__tz__core.html#gac864efe5932f846519806594da168044">   32</a></span>    <span class="keyword">constexpr</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="group__tz__core.html#gac864efe5932f846519806594da168044">static_find</a>()</div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    {</div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>        <span class="keywordtype">bool</span> b = <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>        <a class="code hl_function" href="group__tz__core.html#gaa286c039ff91658f1195bf5d91e126cb">static_for</a>&lt;0, <span class="keyword">sizeof</span>...(Haystack)&gt;([&amp;b]([[maybe_unused]] <span class="keyword">auto</span> i) <span class="keyword">constexpr</span></div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>        {</div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>            <span class="keywordflow">if</span> <span class="keyword">constexpr</span>(std::is_same&lt;std::decay_t&lt;<span class="keyword">decltype</span>(std::get&lt;i.value&gt;(std::declval&lt;std::tuple&lt;Haystack...&gt;&gt;()))&gt;, Needle&gt;::value)</div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>            {</div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>                b = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>            }</div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>        });</div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>        <span class="keywordflow">return</span> b;</div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    }</div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>}</div>
-<div class="ttc" id="agroup__tz__core_html_gaa286c039ff91658f1195bf5d91e126cb"><div class="ttname"><a href="group__tz__core.html#gaa286c039ff91658f1195bf5d91e126cb">tz::static_for</a></div><div class="ttdeci">constexpr void static_for(const Functor &amp;function)</div><div class="ttdoc">Compute a compile-time for-loop.</div><div class="ttdef"><b>Definition:</b> static.hpp:16</div></div>
-<div class="ttc" id="agroup__tz__core_html_gac864efe5932f846519806594da168044"><div class="ttname"><a href="group__tz__core.html#gac864efe5932f846519806594da168044">tz::static_find</a></div><div class="ttdeci">constexpr bool static_find()</div><div class="ttdoc">Check if a Needle is found in a Haystack at compile-time.</div><div class="ttdef"><b>Definition:</b> static.hpp:32</div></div>
+<div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;core/types.hpp&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;tuple&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;variant&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="keyword">namespace </span>tz</div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span>{</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    <span class="keyword">template</span>&lt;std::<span class="keywordtype">size_t</span> Begin, std::<span class="keywordtype">size_t</span> End&gt;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="group__tz__core__algorithms.html#gaecff43eda06c17c015ff1fb7ad6b8234">   21</a></span>    <span class="keyword">constexpr</span> <span class="keywordtype">void</span> <a class="code hl_function" href="group__tz__core__algorithms.html#gaecff43eda06c17c015ff1fb7ad6b8234">static_for</a>(<a class="code hl_concept" href="concepttz_1_1_action.html">tz::Action&lt;std::size_t&gt;</a> <span class="keyword">auto</span> function)</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    {</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>        <span class="keywordflow">if</span> <span class="keyword">constexpr</span>(Begin &lt; End)</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>        {</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>            function(std::integral_constant&lt;std::size_t, Begin&gt;{});</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>            static_for&lt;Begin + 1, End&gt;(function);</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>        }</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    }</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Needle, <span class="keyword">typename</span>... Haystack&gt;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="group__tz__core__algorithms.html#gac864efe5932f846519806594da168044">   38</a></span>    <span class="keyword">constexpr</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="group__tz__core__algorithms.html#gac864efe5932f846519806594da168044">static_find</a>()</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    {</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>        <span class="keywordtype">bool</span> b = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>        <a class="code hl_function" href="group__tz__core__algorithms.html#gaecff43eda06c17c015ff1fb7ad6b8234">static_for</a>&lt;0, <span class="keyword">sizeof</span>...(Haystack)&gt;([&amp;b]([[maybe_unused]] <span class="keyword">auto</span> i) <span class="keyword">constexpr</span></div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>        {</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>            <span class="keywordflow">if</span> <span class="keyword">constexpr</span>(std::is_same&lt;std::decay_t&lt;<span class="keyword">decltype</span>(<a class="code hl_function" href="group__tz__gl__vk.html#ga6b2997a4d85a7a421f621c046553eb9e">std::get</a>&lt;i.value&gt;(std::declval&lt;std::tuple&lt;Haystack...&gt;&gt;()))&gt;, Needle&gt;::value)</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>            {</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>                b = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>            }</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>        });</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>        <span class="keywordflow">return</span> b;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    }</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>}</div>
+<div class="ttc" id="aconcepttz_1_1_action_html"><div class="ttname"><a href="concepttz_1_1_action.html">tz::Action</a></div><div class="ttdoc">Just like a tz::Function, except will never return anything.</div><div class="ttdef"><b>Definition:</b> types.hpp:47</div></div>
+<div class="ttc" id="agroup__tz__core__algorithms_html_gac864efe5932f846519806594da168044"><div class="ttname"><a href="group__tz__core__algorithms.html#gac864efe5932f846519806594da168044">tz::static_find</a></div><div class="ttdeci">constexpr bool static_find()</div><div class="ttdoc">Check if a Needle is found in a Haystack at compile-time.</div><div class="ttdef"><b>Definition:</b> static.hpp:38</div></div>
+<div class="ttc" id="agroup__tz__core__algorithms_html_gaecff43eda06c17c015ff1fb7ad6b8234"><div class="ttname"><a href="group__tz__core__algorithms.html#gaecff43eda06c17c015ff1fb7ad6b8234">tz::static_for</a></div><div class="ttdeci">constexpr void static_for(tz::Action&lt; std::size_t &gt; auto function)</div><div class="ttdoc">Compute a compile-time for-loop.</div><div class="ttdef"><b>Definition:</b> static.hpp:21</div></div>
+<div class="ttc" id="agroup__tz__gl__vk_html_ga6b2997a4d85a7a421f621c046553eb9e"><div class="ttname"><a href="group__tz__gl__vk.html#ga6b2997a4d85a7a421f621c046553eb9e">tz::gl::vk2::get</a></div><div class="ttdeci">const VulkanInstance &amp; get()</div><div class="ttdoc">Retrieve a reference to the current Vulkan Instance.</div><div class="ttdef"><b>Definition:</b> tz_vulkan.cpp:39</div></div>
 </div><!-- fragment --></div><!-- contents -->
+</div><!-- doc-content -->
 <!-- start footer part -->
-<hr class="footer"/><address class="footer"><small>
-    <nav class="navbar navbar-default" role="navigation">
-        <div class="container">
-            <div class="navbar-header">
-                <a class="navbar-brand" href="https://github.com/Harrand/Topaz" style="margin-right: 10px;">GitHub: topaz-master</a>
-                <a class="navbar-brand" href="https://harrand.github.io/" style="margin-right: 10px;">harrand.github.io</a>
-            </div>
-        </div>
-    </nav>
-    <p>Generated: Wed Sep 29 2021 01:11:50</p>
-</small></address>
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_aebb8dcc11953d78e620bbef0b9e2183.html">core</a></li><li class="navelem"><a class="el" href="dir_dd4a3aad74a83f373a162359d104c308.html">algorithms</a></li><li class="navelem"><b>static.hpp</b></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.3 </li>
+  </ul>
+</div>
 </body>
 </html>
