@@ -1,8 +1,8 @@
-#pragma shader_stage(fragment)
+shader(type = fragment);
 
 resource(id = 1) const texture tex_sampler[1];
-layout(location = 0) in vec2 texcoord;
-layout(location = 0) out vec4 output_colour;
+input(id = 0) vec2 texcoord;
+output(id = 0) vec4 output_colour;
 
 void main()
 {

@@ -1,4 +1,4 @@
-#pragma shader_stage(vertex)
+shader(type = vertex);
 
 struct TriangleVertexData
 {
@@ -11,7 +11,7 @@ resource(id = 0) buffer VertexData
     TriangleVertexData[] vertices;
 } vertex_data;
 
-layout(location = 0) out vec2 texcoord;
+output(id = 0) vec2 texcoord;
 
 void main() {
     TriangleVertexData cur_vertex = vertex_data.vertices[tz_VertexID];

@@ -53,6 +53,49 @@ namespace tzslc
 		return done_work;
 	}
 
+	bool preprocess_stage_specifier(std::string& shader_source)
+	{
+		tzslc::transform(shader_source, std::regex{"shader\\(type ?= ?([a-zA-Z]+)\\) ?;"}, [&](auto beg, auto end)-> std::string
+		{
+			tz_assert(std::distance(beg, end) == 1, "stage(...) is invalid. One string must reside within the parentheses.");
+			const std::string& stage_name = *beg;
+			std::string replacement = "#pragma shader_stage(";
+			replacement += stage_name + ")";
+			return replacement;
+		});
+		return true;
+	}
+
+	bool preprocess_outputs(std::string& shader_source)
+	{
+		tzslc::transform(shader_source, std::regex{"output\\(id ?= ?([0-9]+)\\) (.*)"}, [&](auto beg, auto end)-> std::string
+		{
+			tz_assert(std::distance(beg, end) == 2, "output(...) parse error.");
+			int output_id = std::stoi(*beg);
+			std::string rest = *(beg + 1);
+			std::string replacement = "layout(location = ";
+			replacement += std::to_string(output_id) + ") out ";
+			replacement += rest;
+			return replacement;
+		});
+		return true;
+	}
+
+	bool preprocess_inputs(std::string& shader_source)
+	{
+		tzslc::transform(shader_source, std::regex{"input\\(id ?= ?([0-9]+)\\) (.*)"}, [&](auto beg, auto end)-> std::string
+		{
+			tz_assert(std::distance(beg, end) == 2, "input(...) parse error.");
+			int output_id = std::stoi(*beg);
+			std::string rest = *(beg + 1);
+			std::string replacement = "layout(location = ";
+			replacement += std::to_string(output_id) + ") in ";
+			replacement += rest;
+			return replacement;
+		});
+		return true;
+	}
+
 	bool preprocess(PreprocessorModuleField modules, std::string& shader_source, std::string& meta)
 	{
 		bool done_any_work = evaluate_tzsl_keywords(shader_source);
@@ -69,6 +112,9 @@ namespace tzslc
 		{
 			done_any_work |= preprocess_samplers(shader_source, meta);
 		}
+		preprocess_stage_specifier(shader_source);
+		preprocess_outputs(shader_source);
+		preprocess_inputs(shader_source);
 		add_glsl_header_info(shader_source);
 		preprocess_topaz_types(shader_source, meta);
 		return done_any_work;

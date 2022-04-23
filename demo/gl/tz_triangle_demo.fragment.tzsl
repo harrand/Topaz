@@ -1,7 +1,7 @@
-#pragma shader_stage(fragment)
+shader(type = fragment);
 
-layout(location = 0) in vec3 frag_colour;
-layout(location = 0) out vec4 output_colour;
+input(id = 0) vec3 frag_colour;
+output(id = 0) vec4 output_colour;
 
 void main()
 {
