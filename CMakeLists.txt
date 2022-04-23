@@ -214,3 +214,18 @@ include(cmake/shader_compiler.cmake)
 add_subdirectory(demo)
 enable_testing()
 add_subdirectory(test)
+
+function(add_app)
+	cmake_parse_arguments(
+		ADD_APP
+		""
+		"TARGET"
+		"SOURCE_FILES;SHADER_SOURCES"
+		${ARGN}
+	)
+
+	add_demo(TARGET ${ADD_APP_TARGET}
+		SOURCE_FILES ${ADD_APP_SOURCE_FILES}
+		SHADER_SOURCES ${ADD_APP_SHADER_SOURCES}
+	)
+endfunction()

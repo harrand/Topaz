@@ -183,7 +183,7 @@
  * Using a header import, you can access the shaders at compile-time within main.cpp.
  * @subsubsection cml_example CMakeLists.txt
  * ```cmake
- * add_application(
+ * add_app(
  * 	TARGET MyGame
  * 	SOURCE_FILES main.cpp
  * 	SHADER_SOURCES
