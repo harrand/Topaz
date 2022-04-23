@@ -113,6 +113,28 @@ namespace tzslc
 			replacement += rest;
 			return replacement;
 		});
+
+		// Also support for flat etc...
+		tzslc::transform(shader_source, std::regex{"input\\(id ?= ?([0-9]+), ?([a-zA-Z])\\) (.*)"}, [&](auto beg, auto end)-> std::string
+		{
+			tz_assert(std::distance(beg, end) == 3, "input(...) parse error.");
+			int output_id = std::stoi(*beg);
+			std::string extra_specifier = *(beg + 1);
+			std::string rest = *(beg + 2);
+			std::string replacement = "layout(location = ";
+			replacement += std::to_string(output_id) + ")";
+			if(extra_specifier == "flat")
+			{
+				replacement += " flat";
+			}
+			else
+			{
+				tz_error("input(id = x, flag): Unrecognised flag \"%s\". Expected \"flat\"", extra_specifier.c_str());
+			}
+			replacement += " in ";
+			replacement += rest;
+			return replacement;
+		});
 		return true;
 	}
 
