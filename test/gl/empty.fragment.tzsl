@@ -1,5 +1,6 @@
 shader(type = fragment);
 
+input(id = 0, flat) uint number;
 output(id = 0) vec4 frag_colour;
 
 void main()

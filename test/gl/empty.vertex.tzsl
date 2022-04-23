@@ -1,6 +1,9 @@
 shader(type = vertex);
 
+output(id = 0) uint number;
+
 void main()
 {
+	number = 5;
 	gl_Position = vec4(0.0);
 }

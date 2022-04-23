@@ -115,7 +115,7 @@ namespace tzslc
 		});
 
 		// Also support for flat etc...
-		tzslc::transform(shader_source, std::regex{"input\\(id ?= ?([0-9]+), ?([a-zA-Z])\\) (.*)"}, [&](auto beg, auto end)-> std::string
+		tzslc::transform(shader_source, std::regex{"input\\(id ?= ?([0-9]+), ?([a-zA-Z]+)\\) (.*)"}, [&](auto beg, auto end)-> std::string
 		{
 			tz_assert(std::distance(beg, end) == 3, "input(...) parse error.");
 			int output_id = std::stoi(*beg);
