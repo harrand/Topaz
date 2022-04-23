@@ -1,4 +1,4 @@
-#pragma shader_stage(fragment)
+shader(type = fragment);
 
 void main()
 {

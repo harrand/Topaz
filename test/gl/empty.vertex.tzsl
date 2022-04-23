@@ -1,4 +1,4 @@
-#pragma shader_stage(vertex)
+shader(type = vertex);
 
 void main()
 {

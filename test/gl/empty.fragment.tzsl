@@ -1,6 +1,6 @@
-#pragma shader_stage(fragment)
+shader(type = fragment);
 
-layout(location = 0) out vec4 frag_colour;
+output(id = 0) vec4 frag_colour;
 
 void main()
 {

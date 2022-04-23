@@ -1,7 +1,7 @@
 #include "core/assert.hpp"
 #include "preprocessor.hpp"
 #include "source_transform.hpp"
-#include "gl/shader.hpp"
+#include "gl/api/shader.hpp"
 
 namespace tzslc
 {
@@ -53,17 +53,37 @@ namespace tzslc
 		return done_work;
 	}
 
-	bool preprocess_stage_specifier(std::string& shader_source)
+	::tz::gl::ShaderStage preprocess_stage_specifier(std::string& shader_source)
 	{
+		tz::gl::ShaderStage stage;
+		bool found_specifier = false;
 		tzslc::transform(shader_source, std::regex{"shader\\(type ?= ?([a-zA-Z]+)\\) ?;"}, [&](auto beg, auto end)-> std::string
 		{
 			tz_assert(std::distance(beg, end) == 1, "stage(...) is invalid. One string must reside within the parentheses.");
 			const std::string& stage_name = *beg;
+			found_specifier = true;
+			if(stage_name == "vertex")
+			{
+				stage = tz::gl::ShaderStage::Vertex;
+			}
+			else if(stage_name == "fragment")
+			{
+				stage = tz::gl::ShaderStage::Fragment;
+			}
+			else if(stage_name == "compute")
+			{
+				stage = tz::gl::ShaderStage::Compute;
+			}
+			else
+			{
+				tz_error("Invalid shader stage. Do not recognise \"%s\", must be \"vertex\", \"fragment\" or \"compute\"", stage_name.c_str());
+			}
 			std::string replacement = "#pragma shader_stage(";
 			replacement += stage_name + ")";
 			return replacement;
 		});
-		return true;
+		tz_assert(found_specifier, "Could not find a shader type specifier. You need `shader(type = ?);` to be defined somewhere in the shader source.");
+		return stage;
 	}
 
 	bool preprocess_outputs(std::string& shader_source)
@@ -96,6 +116,28 @@ namespace tzslc
 		return true;
 	}
 
+	void rename_user_main(std::string& shader_source)
+	{
+		tzslc::transform(shader_source, std::regex{" +main"}, [&](auto beg, auto end)-> std::string
+		{
+			return " user_main";
+		});
+	}
+	
+	void add_main_definition(std::string& shader_source)
+	{
+		constexpr char main_def[] = R"|(
+void main()
+{
+	user_main();
+	#if TZ_VULKAN
+		gl_Position.z = (gl_Position.z + 1.0) * 0.5;
+	#endif // TZ_VULKAN
+}
+		)|";
+		shader_source += main_def;
+	}
+
 	bool preprocess(PreprocessorModuleField modules, std::string& shader_source, std::string& meta)
 	{
 		bool done_any_work = evaluate_tzsl_keywords(shader_source);
@@ -112,11 +154,17 @@ namespace tzslc
 		{
 			done_any_work |= preprocess_samplers(shader_source, meta);
 		}
-		preprocess_stage_specifier(shader_source);
+		tz::gl::ShaderStage stage = preprocess_stage_specifier(shader_source);
 		preprocess_outputs(shader_source);
 		preprocess_inputs(shader_source);
 		add_glsl_header_info(shader_source);
 		preprocess_topaz_types(shader_source, meta);
+
+		if(stage == tz::gl::ShaderStage::Vertex)
+		{
+			rename_user_main(shader_source);
+			add_main_definition(shader_source);
+		}
 		return done_any_work;
 	}
 
