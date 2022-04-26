@@ -160,8 +160,12 @@ void main()
 		shader_source += main_def;
 	}
 
+	void convert_constants(std::string&, tz::gl::ShaderStage);
+
 	bool preprocess(PreprocessorModuleField modules, std::string& shader_source, std::string& meta)
 	{
+		tz::gl::ShaderStage stage = preprocess_stage_specifier(shader_source);
+		convert_constants(shader_source, stage);
 		bool done_any_work = evaluate_tzsl_keywords(shader_source);
 
 		if(modules.contains(PreprocessorModule::Assert))
@@ -176,7 +180,6 @@ void main()
 		{
 			done_any_work |= preprocess_samplers(shader_source, meta);
 		}
-		tz::gl::ShaderStage stage = preprocess_stage_specifier(shader_source);
 		preprocess_outputs(shader_source);
 		preprocess_inputs(shader_source);
 		add_glsl_header_info(shader_source);
@@ -323,5 +326,41 @@ void main()
 			return replacement;
 	   });
 	   return false;
+	}
+
+	void convert_constants(std::string& shader_source, tz::gl::ShaderStage stage)
+	{
+		auto xmog = [&shader_source](const char* from, const char* to)
+		{
+			shader_source = std::regex_replace(shader_source, std::regex{from}, to);
+		};
+
+		switch(stage)
+		{
+			case tz::gl::ShaderStage::Vertex:
+			{
+				#if TZ_VULKAN
+					constexpr char vertexid[] = "gl_VertexIndex";
+					constexpr char instanceid[] = "gl_InstanceIndex";
+				#elif TZ_OGL
+					constexpr char vertexid[] = "gl_VertexID";
+					constexpr char instanceid[] = "gl_InstanceID";
+				#endif
+				xmog("input::vertex_id", vertexid);
+				xmog("input::instance_id", instanceid);
+				xmog("output::position", "gl_Position");
+			}
+			break;
+			case tz::gl::ShaderStage::Fragment:
+				xmog("input::fragment_coord", "gl_FragCoord");
+				xmog("output::fragment_depth", "gl_FragDepth");
+			break;
+			case tz::gl::ShaderStage::Compute:
+				xmog("input::workgroup_count", "gl_NumWorkGroups");
+				xmog("input::workgroup_id", "gl_WorkGroupID");
+				xmog("input::local_id", "gl_LocalInvocationID");
+				xmog("input::global_id", "gl_GlobalInvocationID");
+			break;
+		}
 	}
 }

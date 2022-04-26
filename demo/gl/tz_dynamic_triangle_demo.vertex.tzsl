@@ -14,12 +14,7 @@ resource(id = 0) buffer VertexData
 output(id = 0) vec2 texcoord;
 
 void main() {
-    TriangleVertexData cur_vertex = vertex_data.vertices[tz_VertexID];
-    gl_Position = vec4(cur_vertex.position, 1.0);
+    TriangleVertexData cur_vertex = vertex_data.vertices[input::vertex_id];
+    output::position = vec4(cur_vertex.position, 1.0);
     texcoord = cur_vertex.texcoord;
-    #if TZ_VULKAN
-	// for OGL, z is [-1,1], but for VK is [0,1]
-	// we use OGL so to get vulkan z we add 1 and then half
-	gl_Position.z = (gl_Position.z + 1.0) * 0.5;
-    #endif
 }
