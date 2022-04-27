@@ -346,20 +346,20 @@ void main()
 					constexpr char vertexid[] = "gl_VertexID";
 					constexpr char instanceid[] = "gl_InstanceID";
 				#endif
-				xmog("input::vertex_id", vertexid);
-				xmog("input::instance_id", instanceid);
-				xmog("output::position", "gl_Position");
+				xmog("in::vertex_id", vertexid);
+				xmog("in::instance_id", instanceid);
+				xmog("out::position", "gl_Position");
 			}
 			break;
 			case tz::gl::ShaderStage::Fragment:
-				xmog("input::fragment_coord", "gl_FragCoord");
-				xmog("output::fragment_depth", "gl_FragDepth");
+				xmog("in::fragment_coord", "gl_FragCoord");
+				xmog("out::fragment_depth", "gl_FragDepth");
 			break;
 			case tz::gl::ShaderStage::Compute:
-				xmog("input::workgroup_count", "gl_NumWorkGroups");
-				xmog("input::workgroup_id", "gl_WorkGroupID");
-				xmog("input::local_id", "gl_LocalInvocationID");
-				xmog("input::global_id", "gl_GlobalInvocationID");
+				xmog("in::workgroup_count", "gl_NumWorkGroups");
+				xmog("in::workgroup_id", "gl_WorkGroupID");
+				xmog("in::local_id", "gl_LocalInvocationID");
+				xmog("in::global_id", "gl_GlobalInvocationID");
 			break;
 		}
 	}

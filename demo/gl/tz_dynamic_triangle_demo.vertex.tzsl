@@ -14,7 +14,7 @@ resource(id = 0) buffer VertexData
 output(id = 0) vec2 texcoord;
 
 void main() {
-    TriangleVertexData cur_vertex = vertex_data.vertices[input::vertex_id];
-    output::position = vec4(cur_vertex.position, 1.0);
+    TriangleVertexData cur_vertex = vertex_data.vertices[in::vertex_id];
+    out::position = vec4(cur_vertex.position, 1.0);
     texcoord = cur_vertex.texcoord;
 }

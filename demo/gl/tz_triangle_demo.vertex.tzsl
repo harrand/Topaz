@@ -18,6 +18,6 @@ output(id = 0) vec3 frag_colour;
 
 void main()
 {
-    output::position = vec4(positions[input::vertex_id], 0.0, 1.0);
-    frag_colour = colours[input::vertex_id];
+    out::position = vec4(positions[in::vertex_id], 0.0, 1.0);
+    frag_colour = colours[in::vertex_id];
 }

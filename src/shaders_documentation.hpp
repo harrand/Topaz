@@ -18,7 +18,6 @@
  * @subsection Inputs
  * Fragment shaders may have inputs. These are variable passed from the output of a vertex shader. Because Topaz does not deal with input state (there are no vertex buffers), vertex shaders cannot have inputs. Compute shaders cannot have inputs either, but that is normal. Every input must have an index, type and name.
  *
- * Note: These inputs are not the same as input blocks. Input blocks are found within the namespace `input::`.
  *
  * Syntax:
  * `input(id = x) variable_type variable_name;`
@@ -26,8 +25,6 @@
  * `input(id = 0) vec2 texcoord;`
  * @subsection Outputs
  * Vertex and fragment shaders may have any number of outputs. These are similar to `out` variables from GLSL, although the syntax is slightly different. Every output must have an index, type and name.
- *
- * Note: These outputs are not the same as output blocks. Output blocks are found within the namespace `output::`.
  *
  * Syntax:
  * `output(id = x) variable_type variable_name;`
@@ -105,8 +102,8 @@
  *	#endif
  * }
  * ```
- * @section stypes Input and Output Blocks
- * Below are the input and output blocks for each programmable shader type. Each shader stage has a fixed-set of input and output variables, in the `input::` and `output::` namespaces respectively. These are not the same as input and output language specifiers.
+ * @section stypes IO Blocks
+ * Below are the input and output blocks for each programmable shader type. Each shader stage has a fixed-set of input and output variables, in the `in::` and `out::` namespaces respectively. These are not the same as input and output language specifiers.
  * <details>
  * <summary>Vertex Shader</summary>
  * <table>
@@ -115,15 +112,15 @@
  * 		<th>GLSL Equivalent</th>
  * 	</tr>
  * 	<tr>
- *		<td>input::vertex_id</td>
+ *		<td>in::vertex_id</td>
  *		<td>gl_VertexID</td>
  * 	</tr>
  * 	<tr>
- *		<td>input::instance_id</td>
+ *		<td>in::instance_id</td>
  *		<td>gl_InstanceID</td>
  * 	</tr>
  * 	<tr>
- *		<td>output::position</td>
+ *		<td>out::position</td>
  *		<td>gl_Position</td>
  * 	</tr>
  * </table>
@@ -137,11 +134,11 @@
  * 		<th>GLSL Equivalent</th>
  * 	</tr>
  * 	<tr>
- *		<td>input::fragment_coord</td>
+ *		<td>in::fragment_coord</td>
  *		<td>gl_FragCoord</td>
  * 	</tr>
  * 	<tr>
- *		<td>output::fragment_depth</td>
+ *		<td>out::fragment_depth</td>
  *		<td>gl_FragDepth</td>
  * 	</tr>
  * </table>
@@ -155,19 +152,19 @@
  * 		<th>GLSL Equivalent</th>
  * 	</tr>
  * 	<tr>
- *		<td>input::workgroup_count</td>
+ *		<td>in::workgroup_count</td>
  *		<td>gl_NumWorkGroups</td>
  * 	</tr>
  * 	<tr>
- *		<td>input::workgroup_id</td>
+ *		<td>in::workgroup_id</td>
  *		<td>gl_WorkGroupID</td>
  * 	</tr>
  * 	<tr>
- *		<td>input::local_id</td>
+ *		<td>in::local_id</td>
  *		<td>gl_LocalInvocationID</td>
  * 	</tr>
  * 	<tr>
- *		<td>input::global_id</td>
+ *		<td>in::global_id</td>
  *		<td>gl_GlobalInvocationID</td>
  * 	</tr>
  * </table>
