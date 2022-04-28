@@ -145,6 +145,15 @@ namespace tzslc
 			return " user_main";
 		});
 	}
+
+	void mangle_tz_namespace(std::string& shader_source)
+	{
+		tzslc::transform(shader_source, std::regex{"tz::"}, [](auto beg, auto end)-> std::string
+		{
+			return "__tz_stdlib_";
+		});
+		shader_source = std::regex_replace(shader_source, std::regex{"::"}, "_");
+	}
 	
 	void add_main_definition(std::string& shader_source)
 	{
@@ -190,6 +199,7 @@ void main()
 			rename_user_main(shader_source);
 			add_main_definition(shader_source);
 		}
+		mangle_tz_namespace(shader_source);
 		return done_any_work;
 	}
 
