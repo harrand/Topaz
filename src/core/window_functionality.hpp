@@ -20,7 +20,9 @@ namespace tz
 	class WindowFunctionality
 	{
 	public:
-		using ResizeCallbackType = Callback<tz::Vec2ui>;
+		using ResizeCallbackType = tz::Callback<tz::Vec2ui>;
+		using MoveCallbackType = tz::Callback<tz::Vec2ui>;
+
 		WindowFunctionality(GLFWwindow* wnd);
 		GLFWwindow* get_middleware_handle() const;
 		/**
@@ -41,6 +43,10 @@ namespace tz
 		 * Retrieve the callback object for when the window is resized.
 		 */
 		ResizeCallbackType& on_resize();
+		/**
+		 * Retrieve the callback object for when the window is moved.
+		 */
+		MoveCallbackType& on_move();
 
 		/**
 		 * Retrieve state of keyboard presses.
@@ -74,6 +80,7 @@ namespace tz
 
 		GLFWwindow* wnd;
 		ResizeCallbackType window_resize_callbacks;
+		MoveCallbackType window_move_callbacks;
 	private:
 		std::pair<int, int> get_size() const;
 		void set_size(int w, int h);

@@ -66,6 +66,7 @@ namespace tz
 		bool is_null() const;
 
 		static void window_resize_callback(GLFWwindow* window, int width, int height);
+		static void window_move_callback(GLFWwindow* window, int xpos, int ypos);
 		static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 		static void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
 	private:

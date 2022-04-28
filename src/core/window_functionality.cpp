@@ -19,6 +19,7 @@ namespace tz
 	WindowFunctionality::WindowFunctionality(GLFWwindow* wnd):
 	wnd(wnd),
 	window_resize_callbacks(),
+	window_move_callbacks(),
 	kb_state(),
 	mb_state(),
 	mp_state(){}
@@ -57,6 +58,11 @@ namespace tz
 	WindowFunctionality::ResizeCallbackType& WindowFunctionality::on_resize()
 	{
 		return this->window_resize_callbacks;
+	}
+
+	WindowFunctionality::MoveCallbackType& WindowFunctionality::on_move()
+	{
+		return this->window_move_callbacks;
 	}
 
 	const KeyboardState& WindowFunctionality::get_keyboard_state() const
