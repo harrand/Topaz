@@ -3,84 +3,86 @@
  * harrand 28/04/2022 for tz3.3
  */
 
-struct tz::space::MVP
-{
-	mat4 m;
-	mat4 v;
-	mat4 p;
-};
+	struct tz::space::MVP
+	{
+		mat4 m;
+		mat4 v;
+		mat4 p;
+	};
 
-tz::space::MVP tz::space::make_transform(mat4 m, mat4 v, mat4 p)
-{
-	tz::space::MVP mvp;
-	mvp.m = m;
-	mvp.v = v;
-	mvp.p = p;
-}
+	tz::space::MVP tz::space::make_transform(mat4 m, mat4 v, mat4 p)
+	{
+		tz::space::MVP mvp;
+		mvp.m = m;
+		mvp.v = v;
+		mvp.p = p;
+	}
 
-// Forwards conversions.
-// Single-length conversion
+	// Forwards conversions.
+	// Single-length conversion
 
-vec4 tz::space::model_to_world(vec4 v, tz::space::MVP mvp)
-{
-	return mvp.m * v;
-}
+	vec4 tz::space::model_to_world(vec4 v, tz::space::MVP mvp)
+	{
+		return mvp.m * v;
+	}
 
-vec4 tz::space::world_to_camera(vec4 v, tz::space::MVP mvp)
-{
-	return mvp.v * v;
-}
+	vec4 tz::space::world_to_camera(vec4 v, tz::space::MVP mvp)
+	{
+		return mvp.v * v;
+	}
 
-vec4 tz::space::camera_to_clip(vec4 v, tz::space::MVP mvp)
-{
-	return mvp.p * v;
-}
+	vec4 tz::space::camera_to_clip(vec4 v, tz::space::MVP mvp)
+	{
+		return mvp.p * v;
+	}
 
-// Multiple-length conversion.
-vec4 tz::space::model_to_camera(vec4 v, tz::space::MVP mvp)
-{
-	return mvp.v * mvp.m * v;
-}
+	// Multiple-length conversion.
+	vec4 tz::space::model_to_camera(vec4 v, tz::space::MVP mvp)
+	{
+		return mvp.v * mvp.m * v;
+	}
 
-vec4 tz::space::model_to_clip(vec4 v, tz::space::MVP mvp)
-{
-	return mvp.p * mvp.v * mvp.m * v;
-}
+	vec4 tz::space::model_to_clip(vec4 v, tz::space::MVP mvp)
+	{
+		return mvp.p * mvp.v * mvp.m * v;
+	}
 
-vec4 tz::space::world_to_clip(vec4 v, tz::space::MVP mvp)
-{
-	return mvp.p * mvp.v * v;
-}
+	vec4 tz::space::world_to_clip(vec4 v, tz::space::MVP mvp)
+	{
+		return mvp.p * mvp.v * v;
+	}
 
-// Backwards conversions.
-// Single-length conversion
-vec4 tz::space::clip_to_camera(vec4 v, tz::space::MVP mvp)
-{
-	return inverse(mvp.p) * v;
-}
+	// Backwards conversions.
+	// Single-length conversion
+	vec4 tz::space::clip_to_camera(vec4 v, tz::space::MVP mvp)
+	{
+		return inverse(mvp.p) * v;
+	}
 
-vec4 tz::space::camera_to_world(vec4 v, tz::space::MVP mvp)
-{
-	return inverse(mvp.v) * v;
-}
+	vec4 tz::space::camera_to_world(vec4 v, tz::space::MVP mvp)
+	{
+		return inverse(mvp.v) * v;
+	}
 
-vec4 tz::space::world_to_model(vec4 v, tz::space::MVP mvp)
-{
-	return inverse(mvp.m) * v;
-}
+	vec4 tz::space::world_to_model(vec4 v, tz::space::MVP mvp)
+	{
+		return inverse(mvp.m) * v;
+	}
 
-// Multiple-length conversion
-vec4 tz::space::clip_to_world(vec4 v, tz::space::MVP mvp)
-{
-	return inverse(mvp.p * mvp.v) * v;
-}
+	// Multiple-length conversion
+	vec4 tz::space::clip_to_world(vec4 v, tz::space::MVP mvp)
+	{
+		return inverse(mvp.p * mvp.v) * v;
+	}
 
-vec4 tz::space::clip_to_model(vec4 v, tz::space::MVP mvp)
-{
-	return inverse(mvp.p * mvp.v * mvp.m) * v;
-}
+	vec4 tz::space::clip_to_model(vec4 v, tz::space::MVP mvp)
+	{
+		return inverse(mvp.p * mvp.v * mvp.m) * v;
+	}
 
-vec4 tz::space::camera_to_model(vec4 v, tz::space::MVP mvp)
-{
-	return inverse(mvp.v * mvp.m) * v;
-}
+	vec4 tz::space::camera_to_model(vec4 v, tz::space::MVP mvp)
+	{
+		return inverse(mvp.v * mvp.m) * v;
+	}
+
+/// End stdlib impl: <space>
