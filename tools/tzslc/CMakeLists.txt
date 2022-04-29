@@ -13,5 +13,5 @@ add_tool(
 add_text(
 	TARGET tzslc
 	TEXT_FILES
-		tools/tzslc/stdlib/space.tzsl
+		tools/tzslc/space.tzsl
 )
