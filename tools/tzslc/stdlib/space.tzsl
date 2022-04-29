@@ -16,6 +16,7 @@
 		mvp.m = m;
 		mvp.v = v;
 		mvp.p = p;
+		return mvp;
 	}
 
 	// Forwards conversions.

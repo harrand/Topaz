@@ -6,5 +6,12 @@ add_tool(
 		preprocessor.cpp
 		preprocessor.hpp
 		source_transform.hpp
+		stdlib.hpp
 		tzslc_main.cpp
+)
+
+add_text(
+	TARGET tzslc
+	TEXT_FILES
+		tools/tzslc/stdlib/space.tzsl
 )

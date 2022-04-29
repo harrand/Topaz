@@ -1,5 +1,8 @@
 shader(type = vertex);
 
+// TODO: Remove unnecessary import.
+import <space>
+
 struct TriangleVertexData
 {
     vec3 position;

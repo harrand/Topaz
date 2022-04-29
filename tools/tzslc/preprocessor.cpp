@@ -3,6 +3,8 @@
 #include "source_transform.hpp"
 #include "gl/api/shader.hpp"
 
+#include "stdlib.hpp"
+
 namespace tzslc
 {
 	constexpr const char* tzslc_platform_defines()
@@ -170,6 +172,7 @@ void main()
 	}
 
 	void convert_constants(std::string&, tz::gl::ShaderStage);
+	void evaluate_imports(std::string&);
 
 	bool preprocess(PreprocessorModuleField modules, std::string& shader_source, std::string& meta)
 	{
@@ -193,6 +196,7 @@ void main()
 		preprocess_inputs(shader_source);
 		add_glsl_header_info(shader_source);
 		preprocess_topaz_types(shader_source, meta);
+		evaluate_imports(shader_source);
 
 		if(stage == tz::gl::ShaderStage::Vertex)
 		{
@@ -372,5 +376,19 @@ void main()
 				xmog("in::global_id", "gl_GlobalInvocationID");
 			break;
 		}
+	}
+
+	void evaluate_imports(std::string& shader_source)
+	{
+		tzslc::transform(shader_source, std::regex{"import <([a-zA-Z0-9]+)>"}, [](auto beg, auto end)->std::string
+		{
+			std::string import_module = *beg;
+			if(import_module == "space")
+			{
+				return std::string(stdlib_space);
+			}
+			tz_error("Unrecognised stdlib import module \"%s\"", import_module.c_str());
+			return "";
+		});
 	}
 }

@@ -18,4 +18,5 @@ function(add_tool)
 	target_link_libraries(${ADD_TOOL_TARGET} PRIVATE topaz)
 endfunction()
 
+add_subdirectory(textc)
 add_subdirectory(tzslc)

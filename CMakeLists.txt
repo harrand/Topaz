@@ -208,6 +208,7 @@ add_subdirectory(lib)
 target_include_directories(topaz PUBLIC ${PROJECT_SOURCE_DIR}/src)
 target_link_libraries(topaz PUBLIC debugbreak glfw)
 
+include(cmake/text_compiler.cmake)
 add_subdirectory(tools)
 include(cmake/shader_header_exporter.cmake)
 include(cmake/shader_compiler.cmake)
