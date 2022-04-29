@@ -380,7 +380,7 @@ void main()
 
 	void evaluate_imports(std::string& shader_source)
 	{
-		tzslc::transform(shader_source, std::regex{"import <([a-zA-Z0-9]+)>"}, [](auto beg, auto end)->std::string
+		tzslc::transform(shader_source, std::regex{"import <([a-zA-Z0-9\\s]+)>"}, [](auto beg, auto end)->std::string
 		{
 			std::string import_module = *beg;
 			if(import_module == "space")
