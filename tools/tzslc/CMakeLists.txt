@@ -13,5 +13,6 @@ add_tool(
 add_text(
 	TARGET tzslc
 	TEXT_FILES
+		tools/tzslc/matrix.tzsl
 		tools/tzslc/space.tzsl
 )

@@ -27,6 +27,7 @@ function(add_text)
 		set_source_files_properties(${output_path} PROPERTIES GENERATED TRUE)
 		target_sources(${ADD_TEXT_TARGET} PRIVATE ${output_path})
 		# FInally, create a target represening the header so we can depend on it.
+		get_filename_component(text_name ${output_path} NAME_WLE)
 		set(text_header_library ${ADD_TEXT_TARGET}_${text_name})
 		add_library(${text_header_library} INTERFACE)
 		target_include_directories(${text_header_library} INTERFACE ${text_dirname})

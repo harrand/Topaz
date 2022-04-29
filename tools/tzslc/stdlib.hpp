@@ -19,10 +19,12 @@
 #define ImportedTextData(text_name, text_ext) []()->std::string_view{std::span<const std::byte> shader_bin = std::as_bytes(std::span<const std::int8_t>(JOIN(text_name, _, text_ext))); return std::string_view{reinterpret_cast<const char*>(shader_bin.data()), shader_bin.size_bytes()};}()
 
 #include ImportedTextHeader(space, tzsl)
+#include ImportedTextHeader(matrix, tzsl)
 
 namespace tzslc
 {
 	const std::string_view stdlib_space = ImportedTextData(space, tzsl);
+	const std::string_view stdlib_matrix = ImportedTextData(matrix, tzsl);
 }
 
 #endif // TOPAZ_TZSLC_STDLIB_HPP

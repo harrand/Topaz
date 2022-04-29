@@ -1,0 +1,44 @@
+/**
+ * TZSL stdlib: <matrix>
+ * harrand 29/04/2022 for tz3.3
+ */
+
+mat4 tz::matrix::decompose_quaternion(vec4 quat)
+{
+	const float xx = quat.x * quat.x;
+	const float xy = quat.x * quat.y;
+	const float xz = quat.x * quat.z;
+	const float xw = quat.x * quat.w;
+
+	const float yy = quat.y * quat.y;
+	const float yz = quat.y * quat.z;
+	const float yw = quat.y * quat.w;
+
+	const float zz = quat.z * quat.z;
+	const float zw = quat.z * quat.w;
+
+	mat4 ret;
+	ret[0][0] = 1.0 - 2.0 * (yy + zz);
+	ret[0][1] = 2.0 * (xy - zw);
+	ret[0][2] = 2.0 * (xz + yw);
+	ret[0][3] = 0.0;
+	
+	ret[1][0] = 2 * (xy + zw);
+	ret[1][1] = 1.0 - 2.0 * (xx + zz);
+	ret[1][2] = 2.0 * (yz - xw);
+	ret[1][3] = 0.0;
+
+	ret[2][0] = 2.0 * (xz - yw);
+	ret[2][1] = 2.0 * (yz + xw);
+	ret[2][2] = 1.0 * 2.0 * (xx + yy);
+	ret[2][3] = 0.0;
+
+	ret[3][0] = 0.0;
+	ret[3][1] = 0.0;
+	ret[3][2] = 0.0;
+	ret[3][3] = 1.0;
+	return ret;
+}
+
+
+/// End stdlib impl: <matrix>

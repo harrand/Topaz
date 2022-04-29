@@ -152,7 +152,7 @@ namespace tzslc
 	{
 		tzslc::transform(shader_source, std::regex{"tz::"}, [](auto beg, auto end)-> std::string
 		{
-			return "__tz_stdlib_";
+			return "z_tz_stdlib_";
 		});
 		shader_source = std::regex_replace(shader_source, std::regex{"::"}, "_");
 	}
@@ -386,6 +386,10 @@ void main()
 			if(import_module == "space")
 			{
 				return std::string(stdlib_space);
+			}
+			if(import_module == "matrix")
+			{
+				return std::string(stdlib_matrix);
 			}
 			tz_error("Unrecognised stdlib import module \"%s\"", import_module.c_str());
 			return "";
