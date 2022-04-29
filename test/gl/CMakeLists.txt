@@ -15,3 +15,10 @@ add_tz_test(NAME tz_renderer_test
 		test/gl/empty.fragment.tzsl
 		test/gl/empty.compute.tzsl
 	)
+
+add_tz_test(NAME tz_shader_test
+	SOURCE_FILES tz_shader_test.cpp
+	SHADER_SOURCES
+		test/gl/a.vertex.tzsl
+		test/gl/stdlib_test.compute.tzsl
+	)
