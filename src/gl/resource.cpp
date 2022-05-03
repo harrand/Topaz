@@ -32,12 +32,13 @@ namespace tz::gl
 		return {beg_offsetted, this->resource_data.end()};
 	}
 
-	Resource::Resource(ResourceAccess access, std::vector<std::byte> resource_data, std::size_t initial_alignment_offset, ResourceType type):
+	Resource::Resource(ResourceAccess access, std::vector<std::byte> resource_data, std::size_t initial_alignment_offset, ResourceType type, ResourceFlags flags):
 	access(access),
 	resource_data(resource_data),
 	mapped_resource_data(std::nullopt),
 	initial_alignment_offset(initial_alignment_offset),
-	type(type)
+	type(type),
+	flags(flags)
 	{}
 
 	void Resource::set_mapped_data(std::span<std::byte> mapped_resource_data)
@@ -46,13 +47,18 @@ namespace tz::gl
 		this->mapped_resource_data = mapped_resource_data;
 	}
 
+	const ResourceFlags& Resource::get_flags() const
+	{
+		return this->flags;
+	}
+
 	std::unique_ptr<IResource> BufferResource::unique_clone() const
 	{
 		return std::make_unique<BufferResource>(*this);
 	}
 
-	BufferResource::BufferResource(ResourceAccess access, std::vector<std::byte> resource_data, std::size_t initial_alignment_offset):
-	Resource(access, resource_data, initial_alignment_offset, ResourceType::Buffer){}
+	BufferResource::BufferResource(ResourceAccess access, std::vector<std::byte> resource_data, std::size_t initial_alignment_offset, ResourceFlags flags):
+	Resource(access, resource_data, initial_alignment_offset, ResourceType::Buffer, flags){}
 			
 	ImageResource ImageResource::from_uninitialised(ImageFormat format, tz::Vec2ui dimensions, ResourceAccess access)
 	{

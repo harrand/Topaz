@@ -6,13 +6,13 @@
 namespace tz::gl
 {
 	template<tz::TriviallyCopyable T>
-	BufferResource BufferResource::from_one(const T& data, ResourceAccess access)
+	BufferResource BufferResource::from_one(const T& data, ResourceAccess access, ResourceFlags flags)
 	{
-		return BufferResource::from_many<T>({data}, access);
+		return BufferResource::from_many<T>({data}, access, flags);
 	}
 
 	template<std::ranges::contiguous_range R>
-	BufferResource BufferResource::from_many(R&& data, ResourceAccess access)
+	BufferResource BufferResource::from_many(R&& data, ResourceAccess access, ResourceFlags flags)
 	{
 		using T = decltype(*std::ranges::begin(data));
 		auto size = std::distance(std::ranges::begin(data), std::ranges::end(data));
@@ -29,7 +29,7 @@ namespace tz::gl
 		std::size_t alignment_usage = space_copy - space;
 		// space is now reduced by `alignment_usage` bytes, meaning that when we resize the vector to `space` bytes it is guaranteed to be less than or equal to its initial size. C++ spec says that "Vector capacity is never reduced when resizing to a smaller size because that would invalidate all iterators..." meaning that no realloc took place and the memcpy'd object is still aligned properly.
 		resource_data.resize(space);
-		return {access, resource_data, alignment_usage};
+		return {access, resource_data, alignment_usage, flags};
 	}
 
 	ImageResource ImageResource::from_memory(ImageFormat format, tz::Vec2ui dimensions, std::ranges::contiguous_range auto data, ResourceAccess access)

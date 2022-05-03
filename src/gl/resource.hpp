@@ -19,14 +19,16 @@ namespace tz::gl
 		virtual std::span<const std::byte> data() const final;
 		virtual std::span<std::byte> data() final;
 	protected:
-		Resource(ResourceAccess access, std::vector<std::byte> resource_data, std::size_t initial_alignment_offset, ResourceType type);
+		Resource(ResourceAccess access, std::vector<std::byte> resource_data, std::size_t initial_alignment_offset, ResourceType type, ResourceFlags flags = {});
 		virtual void set_mapped_data(std::span<std::byte> mapped_resource_data) override;
+		virtual const ResourceFlags& get_flags() const;
 	private:
 		ResourceAccess access;
 		std::vector<std::byte> resource_data;
 		std::optional<std::span<std::byte>> mapped_resource_data;
 		std::size_t initial_alignment_offset;
 		ResourceType type;
+		ResourceFlags flags;
 	};
 
 	/**
@@ -44,12 +46,12 @@ namespace tz::gl
 		 * @return BufferResource containing a copy of the provided object.
 		 */
 		template<tz::TriviallyCopyable T>
-		static BufferResource from_one(const T& data, ResourceAccess access = ResourceAccess::StaticFixed);
+		static BufferResource from_one(const T& data, ResourceAccess access = ResourceAccess::StaticFixed, ResourceFlags flags = {});
 
 		template<tz::TriviallyCopyable T>
-		static BufferResource from_many(std::initializer_list<T> ts, ResourceAccess access = ResourceAccess::StaticFixed)
+		static BufferResource from_many(std::initializer_list<T> ts, ResourceAccess access = ResourceAccess::StaticFixed, ResourceFlags flags = {})
 		{
-			return from_many(std::span<const T>(ts), access);
+			return from_many(std::span<const T>(ts), access, flags);
 		}
 		/**
 		 * Create a BufferResource where the underlying data is an array of objects.
@@ -58,10 +60,10 @@ namespace tz::gl
 		 * @return BufferResource containing a copy of the provided array.
 		 */
 		template<std::ranges::contiguous_range R>
-		static BufferResource from_many(R&& data, ResourceAccess access = ResourceAccess::StaticFixed);
+		static BufferResource from_many(R&& data, ResourceAccess access = ResourceAccess::StaticFixed, ResourceFlags flags = {});
 		virtual std::unique_ptr<IResource> unique_clone() const final;
 	private:
-		BufferResource(ResourceAccess access, std::vector<std::byte> resource_data, std::size_t initial_alignment_offset);
+		BufferResource(ResourceAccess access, std::vector<std::byte> resource_data, std::size_t initial_alignment_offset, ResourceFlags flags);
 	};
 
 	/**

@@ -1,6 +1,7 @@
 #ifndef TOPAZ_GL2_API_RESOURCE_HPP
 #define TOPAZ_GL2_API_RESOURCE_HPP
 #include "core/handle.hpp"
+#include "core/containers/enum_field.hpp"
 #include <span>
 #include <memory>
 
@@ -18,6 +19,13 @@ namespace tz::gl
 		/// - Resource is an image of some format and dimensions.
 		Image
 	};
+
+	enum class ResourceFlag
+	{
+		IndexBuffer
+	};
+
+	using ResourceFlags = tz::EnumField<ResourceFlag>;
 
 	/**
 	 * @ingroup tz_gl2_res
@@ -90,6 +98,8 @@ namespace tz::gl
 		virtual std::unique_ptr<IResource> unique_clone() const = 0;
 
 		virtual void set_mapped_data(std::span<std::byte> resource_data) = 0;
+
+		virtual const ResourceFlags& get_flags() const = 0;
 	};
 
 	/// Opaque handle which is used to refer to an existing Resource within a Renderer or Processor.
