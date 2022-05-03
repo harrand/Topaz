@@ -85,6 +85,18 @@ namespace tzslc
 			return replacement;
 		});
 		tz_assert(found_specifier, "Could not find a shader type specifier. You need `shader(type = ?);` to be defined somewhere in the shader source.");
+
+		bool compute_contains_kernel = false;
+		tzslc::transform(shader_source, std::regex{"kernel\\(([0-9]+), ?([0-9]+), ?([0-9]+)\\);"}, [&](auto beg, auto end)
+		{
+			tz_assert(stage == tz::gl::ShaderStage::Compute, "Detected 'kernel' keyword used, but the shader is not a compute shader.");
+			compute_contains_kernel = true;
+			int x = std::stoi(*beg);
+			int y = std::stoi(*(beg + 1));
+			int z = std::stoi(*(beg + 2));
+			return std::string("layout(local_size_x = ") + *beg + ", local_size_y = " + *(beg + 1) + ", local_size_z = " + *(beg + 2) + ") in;";
+		});
+		tz_assert(stage != tz::gl::ShaderStage::Compute || compute_contains_kernel, "Compute shader is missing 'kernel' keyword. All compute shaders must specify kernel (local size x, y, and z)");
 		return stage;
 	}
 
