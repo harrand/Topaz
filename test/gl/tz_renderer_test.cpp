@@ -44,6 +44,25 @@ void renderer_creation(tz::gl::Device& dev)
 	renderer2.render();
 }
 
+void renderer_creation_index_buffer(tz::gl::Device& dev)
+{
+	tz::gl::BufferResource bres0 = tz::gl::BufferResource::from_one(5.0f);
+	tz::gl::BufferResource ibuf = tz::gl::BufferResource::from_one(0u, tz::gl::ResourceAccess::StaticFixed, {tz::gl::ResourceFlag::IndexBuffer});
+
+	tz::gl::RendererInfo rinfo1;
+	rinfo1.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(empty, vertex));
+	rinfo1.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(empty, fragment));
+	tz::gl::Renderer renderer1 = dev.create_renderer(rinfo1);
+
+	tz::gl::RendererInfo rinfo2 = rinfo1;
+	rinfo2.add_resource(bres0);
+	rinfo2.add_resource(ibuf);
+	tz::gl::Renderer renderer2 = dev.create_renderer(rinfo2);
+
+	renderer1.render();
+	renderer2.render();
+}
+
 void renderer_edit(tz::gl::Device& dev)
 {
 	tz::gl::BufferResource bres0 = tz::gl::BufferResource::from_many({5.0f, 6.0f}, tz::gl::ResourceAccess::DynamicVariable);
@@ -130,6 +149,7 @@ int main()
 		empty_renderer(dev);
 		//empty_renderer_compute(dev);
 		renderer_creation(dev);
+		renderer_creation_index_buffer(dev);
 		renderer_edit(dev);
 		resize_window(dev);
 		semantics(dev);

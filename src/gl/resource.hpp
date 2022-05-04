@@ -43,6 +43,8 @@ namespace tz::gl
 		 * Create a BufferResource where the underlying data is a single object.
 		 * @tparam T Object type. It must be TriviallyCopyable.
 		 * @param data Object value to store within the underlying data.
+		 * @param access Specifies access rules after the resource is created under a renderer.
+		 * @param flags An enum-field of @ref ResourceFlag.
 		 * @return BufferResource containing a copy of the provided object.
 		 */
 		template<tz::TriviallyCopyable T>
@@ -57,6 +59,8 @@ namespace tz::gl
 		 * Create a BufferResource where the underlying data is an array of objects.
 		 * @tparam T Array element type. It must be TriviallyCopyable.
 		 * @param data View into an array. The data will be copied from this span into the underlying buffer data.
+		 * @param access Specifies access rules after the resource is created under a renderer.
+		 * @param flags An enum-field of @ref ResourceFlag.
 		 * @return BufferResource containing a copy of the provided array.
 		 */
 		template<std::ranges::contiguous_range R>

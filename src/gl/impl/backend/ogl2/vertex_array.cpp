@@ -51,6 +51,7 @@ namespace tz::gl::ogl2
 		TZ_PROFZONE("OpenGL Backend - VertexArray DrawIndexed", TZ_PROFCOL_RED);
 		TZ_PROFZONE_GPU("VertexArray DrawIndexed", TZ_PROFCOL_RED);
 		tz_assert(index_buffer.get_target() == BufferTarget::Index, "Passed non-index buffer to VertexArray::draw_indexed(...). Please submit a bug report.");
+		// Note: Normally basic bind (glBindBuffer) has nothing to do with the VAO. Index buffers (GL_ELEMENT_ARRAY_BUFFER) bindings are an exception - this is explicitly associated with the currently-bound VAO. That is why we need to have the index buffer passed in via param so we can bind the vao before actually trying to bind the buffer.
 		this->bind();
 		index_buffer.basic_bind();
 		glDrawElements(GL_TRIANGLES, triangle_count * 3, GL_UNSIGNED_INT, nullptr);

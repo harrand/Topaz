@@ -14,14 +14,19 @@ namespace tz::gl
 	 */
 	enum class ResourceType
 	{
-		/// - Resource is a buffer, which contains arbitrary data.
+		/// - Resource is a buffer resource, which contains arbitrary data.
 		Buffer,
-		/// - Resource is an image of some format and dimensions.
+		/// - Resource is an image resource, of some format and dimensions.
 		Image
 	};
 
+	/**
+	 * @ingroup tz_gl2_res
+	 * Specifies optional flags which affect the behaviour of a resource in some way.
+	 */
 	enum class ResourceFlag
 	{
+		/// - Indicates that the buffer should be treated as a hardware index buffer. It will act as a bespoke non-shader-resource buffer that must store indices encoded as `unsigned int[]`. Can only be applied to buffer resources.
 		IndexBuffer
 	};
 
@@ -99,6 +104,9 @@ namespace tz::gl
 
 		virtual void set_mapped_data(std::span<std::byte> resource_data) = 0;
 
+		/**
+		 * Retrieve a field containing all flags applied to this resource. If you didn't specify any flags for this resource, it will be empty.
+		 */
 		virtual const ResourceFlags& get_flags() const = 0;
 	};
 
