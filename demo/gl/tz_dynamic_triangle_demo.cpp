@@ -110,16 +110,23 @@ int main()
 						{
 							.buffer_handle = bufh,
 							.size = sizeof(TriangleVertexData) * 3 * triangle_count
+						},
+						tz::gl::RendererBufferComponentEditRequest
+						{
+							.buffer_handle = ibufh,
+							.size = sizeof(unsigned int) * 3 * triangle_count
 						}
 					}
 				};
 				renderer.edit(renderer_edit);
 				// Get the resource data for the new triangle and set it to random values.
 				std::span<TriangleVertexData> buf_data = renderer.get_resource(bufh)->data_as<TriangleVertexData>();
+				std::span<unsigned int> idx_data = renderer.get_resource(ibufh)->data_as<unsigned int>();
 				// We do this by setting the last 3 vertices to a random triangle;
 				for(std::size_t i = 0; i < 3; i++)
 				{
 					buf_data[buf_data.size() - 3 + i] = get_random_triangle(rand);
+					idx_data[idx_data.size() - 3 + i] = (triangle_count * 3) + i;
 				}
 
 				// While we're at it, randomise the second pixel of the image.

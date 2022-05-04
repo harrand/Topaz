@@ -1205,13 +1205,29 @@ namespace tz::gl
 					.first_set_id = 0
 				});
 			}
-			recording.draw
-			({
-				.vertex_count = 3 * this->tri_count,
-				.instance_count = 1,
-				.first_vertex = 0,
-				.first_instance = 0
-			});
+
+			const IComponent* idx_buf = this->resources.try_get_index_buffer();
+			if(idx_buf == nullptr)
+			{
+				recording.draw
+				({
+					.vertex_count = 3 * this->tri_count,
+					.instance_count = 1,
+					.first_vertex = 0,
+					.first_instance = 0
+				});
+			}
+			else
+			{
+				recording.bind_index_buffer
+				({
+					.index_buffer = &static_cast<const BufferComponentVulkan*>(idx_buf)->vk_get_buffer()
+				});
+				recording.draw_indexed
+				({
+					.index_count = 3 * this->tri_count
+				});
+			}
 		});
 	}
 

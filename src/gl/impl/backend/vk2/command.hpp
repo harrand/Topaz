@@ -33,6 +33,29 @@ namespace tz::gl::vk2
 		};
 
 		/**
+		 * Record an indexed draw.
+		 * See @ref CommandBufferRecording::draw_indexed for usage.
+		 */
+		struct DrawIndexed
+		{
+			std::uint32_t index_count;
+			std::uint32_t instance_count = 1;
+			std::uint32_t first_index = 0;
+			std::int32_t vertex_offset = 0;
+			std::uint32_t first_instance = 0;
+		};
+
+		/**
+		 * Bind an index buffer.
+		 * See @ref CommandBufferRecording::bind_index_buffer for usage.
+		 */
+		struct BindIndexBuffer
+		{
+			const vk2::Buffer* index_buffer;
+			std::uint64_t buffer_offset = 0;
+		};
+
+		/**
 		 * Record a bind of a @ref GraphicsPipeline.
 		 * See @ref CommandBufferRecording::bind_pipeline for usage.
 		 */
@@ -147,7 +170,7 @@ namespace tz::gl::vk2
 		};
 
 		/// Variant type which has alternatives for every single possible recordable command type.
-		using Variant = std::variant<Draw, BindPipeline, BindDescriptorSets, BeginRenderPass, EndRenderPass, BufferCopyBuffer, BufferCopyImage, BindBuffer, TransitionImageLayout>;
+		using Variant = std::variant<Draw, DrawIndexed, BindIndexBuffer, BindPipeline, BindDescriptorSets, BeginRenderPass, EndRenderPass, BufferCopyBuffer, BufferCopyImage, BindBuffer, TransitionImageLayout>;
 	};
 
 	enum class CommandPoolFlag
@@ -219,6 +242,12 @@ namespace tz::gl::vk2
 		 * See @ref VulkanCommand::Draw for details.
 		 */
 		void draw(VulkanCommand::Draw draw);
+		/**
+		 * Perform an indexed draw.
+		 * See @ref VulkanCommand::Draw for details.
+		 */
+		void draw_indexed(VulkanCommand::DrawIndexed draw);
+		void bind_index_buffer(VulkanCommand::BindIndexBuffer bind);
 		/**
 		 * Bind a list of @ref DescriptorSet.
 		 * See @ref VulkanCommand::BindDescriptorSets for details.

@@ -1,5 +1,5 @@
-#include "gl/impl/backend/vk2/framebuffer.hpp"
 #if TZ_VULKAN
+#include "gl/impl/backend/vk2/framebuffer.hpp"
 #include "gl/impl/backend/vk2/render_pass.hpp"
 #include "gl/impl/backend/vk2/command.hpp"
 #include <numeric>
@@ -121,6 +121,18 @@ namespace tz::gl::vk2
 	{
 		this->register_command(command);
 		vkCmdDraw(this->get_command_buffer().native(), command.vertex_count, command.instance_count, command.first_vertex, command.first_instance);
+	}
+
+	void CommandBufferRecording::draw_indexed(VulkanCommand::DrawIndexed command)
+	{
+		this->register_command(command);
+		vkCmdDrawIndexed(this->get_command_buffer().native(), command.index_count, command.instance_count, command.first_index, command.vertex_offset, command.first_instance);
+	}
+
+	void CommandBufferRecording::bind_index_buffer(VulkanCommand::BindIndexBuffer command)
+	{
+		this->register_command(command);
+		vkCmdBindIndexBuffer(this->get_command_buffer().native(), command.index_buffer->native(), command.buffer_offset, VK_INDEX_TYPE_UINT32);
 	}
 
 	void CommandBufferRecording::bind_descriptor_sets(VulkanCommand::BindDescriptorSets command)
