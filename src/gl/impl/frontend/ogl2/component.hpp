@@ -19,6 +19,7 @@ namespace tz::gl
 		std::size_t size() const;
 
 		ogl2::Buffer& ogl_get_buffer();
+		bool ogl_is_descriptor_stakeholder() const;
 	private:
 		ogl2::Buffer make_buffer() const;
 

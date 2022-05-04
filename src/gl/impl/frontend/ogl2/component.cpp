@@ -31,6 +31,11 @@ namespace tz::gl
 		return this->buffer;
 	}
 
+	bool BufferComponentOGL::ogl_is_descriptor_stakeholder() const
+	{
+		return !this->resource->get_flags().contains(ResourceFlag::IndexBuffer);
+	}
+
 	ogl2::Buffer BufferComponentOGL::make_buffer() const
 	{
 		ogl2::BufferResidency residency;
@@ -48,9 +53,18 @@ namespace tz::gl
 				residency = ogl2::BufferResidency::Dynamic;
 			break;
 		}
+		ogl2::BufferTarget tar;
+		if(this->resource->get_flags().contains(ResourceFlag::IndexBuffer))
+		{
+			tar = ogl2::BufferTarget::Index;
+		}
+		else
+		{
+			tar = ogl2::BufferTarget::ShaderStorage;
+		}
 		return
 		{{
-			.target = ogl2::BufferTarget::ShaderStorage,
+			.target = tar,
 			.residency = residency,
 			.size_bytes = this->resource->data().size_bytes()
 		}};

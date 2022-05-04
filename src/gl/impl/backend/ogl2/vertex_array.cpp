@@ -1,6 +1,7 @@
 #if TZ_OGL
 #include "core/profiling/zone.hpp"
 #include "gl/impl/backend/ogl2/vertex_array.hpp"
+#include "gl/impl/backend/ogl2/buffer.hpp"
 
 namespace tz::gl::ogl2
 {
@@ -43,6 +44,16 @@ namespace tz::gl::ogl2
 		TZ_PROFZONE_GPU("VertexArray Draw", TZ_PROFCOL_RED);
 		this->bind();
 		glDrawArrays(GL_TRIANGLES, 0, triangle_count * 3);
+	}
+
+	void VertexArray::draw_indexed(unsigned int triangle_count, const Buffer& index_buffer)
+	{
+		TZ_PROFZONE("OpenGL Backend - VertexArray DrawIndexed", TZ_PROFCOL_RED);
+		TZ_PROFZONE_GPU("VertexArray DrawIndexed", TZ_PROFCOL_RED);
+		tz_assert(index_buffer.get_target() == BufferTarget::Index, "Passed non-index buffer to VertexArray::draw_indexed(...). Please submit a bug report.");
+		this->bind();
+		index_buffer.basic_bind();
+		glDrawElements(GL_TRIANGLES, triangle_count * 3, GL_UNSIGNED_INT, nullptr);
 	}
 
 	VertexArray VertexArray::null()

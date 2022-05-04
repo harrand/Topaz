@@ -59,6 +59,7 @@ namespace tz::gl
 		 */
 		void bind_image_buffer();
 		void write_dynamic_images();
+		IComponent* try_get_index_buffer() const;
 	private:
 		void fill_bindless_image_buffer();
 

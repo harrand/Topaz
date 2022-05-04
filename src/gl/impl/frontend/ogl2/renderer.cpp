@@ -29,9 +29,18 @@ namespace tz::gl
 							case ResourceAccess::StaticFixed:
 								{
 									// Create staging buffer and do a copy.
+									ogl2::BufferTarget buf_tar;
+									if(buf.get_resource()->get_flags().contains(ResourceFlag::IndexBuffer))
+									{
+										buf_tar = ogl2::BufferTarget::Index;
+									}
+									else
+									{
+										buf_tar = ogl2::BufferTarget::ShaderStorage;
+									}
 									ogl2::Buffer staging
 									{{
-										.target = ogl2::BufferTarget::ShaderStorage,
+										.target = buf_tar,
 										.residency = ogl2::BufferResidency::Dynamic,
 										.size_bytes = buffer.size()
 									}};
@@ -143,17 +152,29 @@ namespace tz::gl
 			IComponent* comp = this->components[j].get();
 			if(comp->get_resource()->get_type() == ResourceType::Buffer)
 			{
-				static_cast<BufferComponentOGL*>(comp)->ogl_get_buffer().bind_to_resource_id(i++);
+				auto bcomp = static_cast<BufferComponentOGL*>(comp);
+				if(bcomp->ogl_is_descriptor_stakeholder())
+				{
+					bcomp->ogl_get_buffer().bind_to_resource_id(i++);
+				}
+				else
+				{
+					bcomp->ogl_get_buffer().basic_bind();
+				}
 			}
 		}
-		tz_assert(i == this->resource_count_of(ResourceType::Buffer), "ResourceStorage::bind_buffers had some kind of logic error and didn't find all the buffers. Please submit a bug report.");
 	}
 
 	void ResourceStorage::bind_image_buffer()
 	{
 		if(!this->bindless_image_storage_buffer.is_null())
 		{
-			this->bindless_image_storage_buffer.bind_to_resource_id(this->resource_count_of(ResourceType::Buffer));
+			auto buf_res_count = this->resource_count_of(ResourceType::Buffer);
+			if(this->try_get_index_buffer() != nullptr)
+			{
+				buf_res_count--;
+			}
+			this->bindless_image_storage_buffer.bind_to_resource_id(buf_res_count);
 		}
 	}
 
@@ -169,6 +190,19 @@ namespace tz::gl
 				img.set_data(res->data());
 			}
 		}
+	}
+
+	IComponent* ResourceStorage::try_get_index_buffer() const
+	{
+		for(auto& component_ptr : this->components)
+		{
+			if(component_ptr->get_resource()->get_flags().contains(ResourceFlag::IndexBuffer))
+			{
+				tz_assert(component_ptr->get_resource()->get_type() == ResourceType::Buffer, "Detected non-buffer resource with ResourceFlag::IndexBuffer which is illegal. Please submit a bug report.");
+				return component_ptr.get();
+			}
+		}
+		return nullptr;
 	}
 
 //--------------------------------------------------------------------------------------------------
@@ -326,7 +360,15 @@ namespace tz::gl
 		{
 			this->resources.bind_image_buffer();
 		}
-		this->vao.draw(this->tri_count);
+		if(this->resources.try_get_index_buffer() != nullptr)
+		{
+			const ogl2::Buffer& ibuf = static_cast<BufferComponentOGL*>(this->resources.try_get_index_buffer())->ogl_get_buffer();
+			this->vao.draw_indexed(tri_count, ibuf);
+		}
+		else
+		{
+			this->vao.draw(this->tri_count);
+		}
 	}
 
 	void RendererOGL::render(unsigned int tri_count)

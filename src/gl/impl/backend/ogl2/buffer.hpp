@@ -11,6 +11,8 @@ namespace tz::gl::ogl2
 	 */
 	enum class BufferTarget : GLenum
 	{
+		/// - Index Buffers (IBOs).
+		Index = GL_ELEMENT_ARRAY_BUFFER,
 		/// - Uniform Buffers (UBOs).
 		Uniform = GL_UNIFORM_BUFFER,
 		/// - Shader Storage Buffers (SSBOs).
@@ -110,9 +112,13 @@ namespace tz::gl::ogl2
 			return {reinterpret_cast<T*>(this->map()), this->size() / sizeof(T)};
 		}
 		/**
+		 * Bind without a resource id (i.e you are an Index Buffer).
+		 */
+		void basic_bind() const;
+		/**
 		 * Bind the buffer to a shader resource id.
 		 */
-		void bind_to_resource_id(unsigned int shader_resource_id);
+		void bind_to_resource_id(unsigned int shader_resource_id) const;
 		/**
 		 * Create a buffer which acts as a null buffer, that is, no operations are valid on it.
 		 * @return Null Buffer.

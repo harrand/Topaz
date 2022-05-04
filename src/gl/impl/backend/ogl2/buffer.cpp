@@ -73,7 +73,14 @@ namespace tz::gl::ogl2
 		return this->mapped_ptr;
 	}
 
-	void Buffer::bind_to_resource_id(unsigned int shader_resource_id)
+	void Buffer::basic_bind() const
+	{
+		auto en = static_cast<GLenum>(this->get_target());
+		tz_assert(en == GL_ELEMENT_ARRAY_BUFFER, "fooey");
+		glBindBuffer(en, this->buffer);
+	}
+
+	void Buffer::bind_to_resource_id(unsigned int shader_resource_id) const
 	{
 		TZ_PROFZONE("OpenGL Backend - Buffer Bind", TZ_PROFCOL_RED);
 		TZ_PROFZONE_GPU("Buffer Bind", TZ_PROFCOL_RED);
