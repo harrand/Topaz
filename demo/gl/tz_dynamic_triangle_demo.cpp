@@ -126,7 +126,7 @@ int main()
 				for(std::size_t i = 0; i < 3; i++)
 				{
 					buf_data[buf_data.size() - 3 + i] = get_random_triangle(rand);
-					idx_data[idx_data.size() - 3 + i] = (triangle_count * 3) + i;
+					idx_data[idx_data.size() - 3 + i] = ((triangle_count - 1) * 3) + i;
 				}
 
 				// While we're at it, randomise the second pixel of the image.
