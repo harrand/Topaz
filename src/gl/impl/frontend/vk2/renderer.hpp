@@ -67,6 +67,8 @@ namespace tz::gl
 		 */
 		std::span<const vk2::DescriptorSet> get_descriptor_sets() const;
 
+		const IComponent* try_get_index_buffer() const;
+
 		std::size_t resource_count_of(ResourceType type) const;
 		void sync_descriptors(bool write_everything);
 		bool empty() const;

@@ -226,6 +226,21 @@ namespace tz::gl
 		return this->descriptors.sets;
 	}
 
+	const IComponent* ResourceStorage::try_get_index_buffer() const
+	{
+		auto iter = std::find_if(this->components.begin(), this->components.end(),
+		[](const auto& component_ptr)
+		{
+			auto res = component_ptr->get_resource();
+			return res->get_type() == ResourceType::Buffer && res->get_flags().contains(ResourceFlag::IndexBuffer);
+		});
+		if(iter == this->components.end())
+		{
+			return nullptr;
+		}
+		return iter->get();
+	}
+
 	std::size_t ResourceStorage::resource_count_of(ResourceType type) const
 	{
 		return std::count_if(this->components.begin(), this->components.end(),
