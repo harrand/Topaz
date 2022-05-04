@@ -36,13 +36,16 @@ namespace tz::gl
 	{
 		TZ_PROFZONE("Vulkan Frontend - RendererVulkan ResourceStorage Create", TZ_PROFCOL_YELLOW);
 		std::vector<bool> buffer_id_to_variable_access;
+		std::vector<bool> buffer_id_to_descriptor_visibility;
 		for(std::size_t i = 0; i < this->count(); i++)
 		{
 			IResource* res = this->get(static_cast<tz::HandleValue>(i));
 			switch(res->get_type())
 			{
 				case ResourceType::Buffer:
+				{
 					this->components.push_back(std::make_unique<BufferComponentVulkan>(*res, ldev));
+					auto* buf_comp = static_cast<BufferComponentVulkan*>(this->components.back().get());
 					if(res->get_access() == ResourceAccess::DynamicFixed || res->get_access() == ResourceAccess::DynamicVariable)
 					{
 						// Tell the resource to use the buffer's data. Also copy whatever we had before.
@@ -52,6 +55,8 @@ namespace tz::gl
 						res->set_mapped_data(buffer_byte_data);
 					}
 					buffer_id_to_variable_access.push_back(res->get_access() == ResourceAccess::DynamicVariable);
+					buffer_id_to_descriptor_visibility.push_back(buf_comp->vk_is_descriptor_relevant());
+				}
 				break;
 				case ResourceType::Image:
 					this->components.push_back(std::make_unique<ImageComponentVulkan>(*res, ldev));
@@ -81,6 +86,7 @@ namespace tz::gl
 		}
 
 		std::size_t buffer_count = this->resource_count_of(ResourceType::Buffer);
+		std::size_t descriptor_buffer_count = std::count(buffer_id_to_descriptor_visibility.begin(), buffer_id_to_descriptor_visibility.end(), true);
 		// So buffer_id_to_variable_access stores a bool for each buffer (in-order). True if the access is variable, false otherwise. However, if any buffer at all is variable, we will unfortunately try to write to them all in sync_descriptors.
 		// Until we fix sync_descriptors to be a little less cavalier, we must add the descriptor-indexing flags and take the perf loss if there are *any* variable-sized buffer resources at all.
 		{
@@ -89,6 +95,11 @@ namespace tz::gl
 			// Each buffer gets their own binding id.
 			for(std::size_t i = 0; i < buffer_count; i++)
 			{
+				// If the buffer shouldn't be visible to descriptors (e.g it is an index buffer) then skip it.
+				if(!buffer_id_to_descriptor_visibility[i])
+				{
+					continue;
+				}
 				// TODO: Only add the necessary flags to the buffers with variable access instead of all of them if any have it. Dependent on changes to sync_descriptors.
 				vk2::DescriptorFlags desc_flags;
 				if(std::any_of(buffer_id_to_variable_access.begin(), buffer_id_to_variable_access.end(),
@@ -130,7 +141,7 @@ namespace tz::gl
 		decltype(std::declval<vk2::DescriptorPoolInfo::PoolLimits>().limits) limits;
 		if(buffer_count > 0)
 		{
-			limits[vk2::DescriptorType::StorageBuffer] = buffer_count * this->frame_in_flight_count;
+			limits[vk2::DescriptorType::StorageBuffer] = descriptor_buffer_count * this->frame_in_flight_count;
 		}
 		if(!this->image_component_views.empty())
 		{
@@ -227,14 +238,18 @@ namespace tz::gl
 	void ResourceStorage::sync_descriptors(bool write_everything)
 	{
 		TZ_PROFZONE("Vulkan Frontend - RendererVulkan ResourceStorage Descriptor Sync", TZ_PROFCOL_YELLOW);
-		std::vector<vk2::Buffer*> buffers;
+		std::vector<BufferComponentVulkan*> buffers;
 		for(auto& component_ptr : this->components)
 		{
 			if(component_ptr->get_resource()->get_type() == ResourceType::Buffer)
 			{
-				buffers.push_back(&static_cast<BufferComponentVulkan*>(component_ptr.get())->vk_get_buffer());
+				buffers.push_back(static_cast<BufferComponentVulkan*>(component_ptr.get()));
 			}
 		}
+		std::size_t descriptor_buffer_count = std::count_if(buffers.begin(), buffers.end(), [](BufferComponentVulkan* buf)
+		{
+			return buf->vk_is_descriptor_relevant();
+		});
 
 		// Now write the initial resources into their descriptors.
 		vk2::DescriptorPool::UpdateRequest update = this->descriptor_pool.make_update_request();
@@ -246,11 +261,15 @@ namespace tz::gl
 			// Now update each binding corresponding to a buffer resource.
 			for(std::size_t j = 0; j < buffers.size(); j++)
 			{
+				if(!buffers[j]->vk_is_descriptor_relevant())
+				{
+					continue;
+				}
 				set_edit.set_buffer(j,
 				{
-					.buffer = buffers[j],
+					.buffer = &buffers[j]->vk_get_buffer(),
 					.buffer_offset = 0,
-					.buffer_write_size = buffers[j]->size()
+					.buffer_write_size = buffers[j]->vk_get_buffer().size()
 				});
 			}
 			// And finally the binding corresponding to the texture resource descriptor array
@@ -259,7 +278,7 @@ namespace tz::gl
 			{
 				for(std::size_t j = 0; j < this->image_component_views.size(); j++)
 				{
-					set_edit.set_image(buffers.size(),
+					set_edit.set_image(descriptor_buffer_count,
 					{
 						.sampler = &this->basic_sampler,
 						.image_view = &this->image_component_views[j]

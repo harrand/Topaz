@@ -74,12 +74,17 @@ int main()
 			TriangleVertexData{.position = {0.0f, 0.5f, -1.0f}, .texcoord = {0.5f, 1.0f}},
 			TriangleVertexData{.position = {0.5f, -0.5f, -1.0f}, .texcoord = {1.0f, 0.0f}},
 		}, tz::gl::ResourceAccess::DynamicVariable);
+		tz::gl::BufferResource ibuf = tz::gl::BufferResource::from_many
+		({
+			0u, 1u, 2u
+		}, tz::gl::ResourceAccess::DynamicVariable, {tz::gl::ResourceFlag::IndexBuffer});
 
 		tz::gl::RendererInfo rinfo;
 		rinfo.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(tz_dynamic_triangle_demo, vertex));
 		rinfo.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(tz_dynamic_triangle_demo, fragment));
 		tz::gl::ResourceHandle imgh = rinfo.add_resource(img);
 		tz::gl::ResourceHandle bufh = rinfo.add_resource(buf);
+		tz::gl::ResourceHandle ibufh = rinfo.add_resource(ibuf);
 
 		tz::gl::Renderer renderer = dev.create_renderer(rinfo);
 		std::default_random_engine rand;

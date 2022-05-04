@@ -19,6 +19,7 @@ namespace tz::gl
 		std::size_t size() const;
 		const vk2::Buffer& vk_get_buffer() const;
 		vk2::Buffer& vk_get_buffer();
+		bool vk_is_descriptor_relevant() const;
 	private:
 		vk2::Buffer make_buffer(const vk2::LogicalDevice& ldev) const;
 

@@ -38,23 +38,39 @@ namespace tz::gl
 		return this->buffer;
 	}
 
+	bool BufferComponentVulkan::vk_is_descriptor_relevant() const
+	{
+		return !this->resource->get_flags().contains(ResourceFlag::IndexBuffer);
+	}
+
 	vk2::Buffer BufferComponentVulkan::make_buffer(const vk2::LogicalDevice& ldev) const
 	{
 		vk2::BufferUsageField usage_field;
 		vk2::MemoryResidency residency;
+
+		vk2::BufferUsage buf_usage;
+		if(this->resource->get_flags().contains(ResourceFlag::IndexBuffer))
+		{
+			buf_usage = vk2::BufferUsage::IndexBuffer;
+		}
+		else
+		{
+			buf_usage = vk2::BufferUsage::StorageBuffer;
+		}
+
 		switch(this->resource->get_access())
 		{
 			default:
 				tz_error("Unrecognised ResourceAccess. Please submit a bug report.");
 			[[fallthrough]];
 			case ResourceAccess::StaticFixed:
-				usage_field = {vk2::BufferUsage::TransferDestination, vk2::BufferUsage::StorageBuffer};
+				usage_field = {vk2::BufferUsage::TransferDestination, buf_usage};
 				residency = vk2::MemoryResidency::GPU;
 			break;
 			case ResourceAccess::DynamicFixed:
 			[[fallthrough]];
 			case ResourceAccess::DynamicVariable:
-				usage_field = {vk2::BufferUsage::StorageBuffer};
+				usage_field = {buf_usage};
 				residency = vk2::MemoryResidency::CPUPersistent;
 			break;
 		}
