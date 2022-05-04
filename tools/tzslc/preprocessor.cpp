@@ -299,43 +299,8 @@ void main()
 
 	bool preprocess_topaz_types(std::string& shader_source, std::string& meta)
 	{
-		/*
-		example tzsl:
-		resource(id = 0) const buffer MVP
-		{
-			mat4 model;
-			mat4 view;
-			mat4 projection;
-		} mvp;
-
-		desired output (vulkan & opengl):
-		layout(binding = 0) uniform MVP
-		{
-			mat4 model;
-			mat4 view;
-			mat4 projection;
-		} mvp;
-		*/
-	   // Handle 'const buffer' (UBO)
-	   tzslc::transform(shader_source, std::regex{"resource\\(id ?= ?([0-9]+)\\) const buffer"}, [&meta](auto beg, auto end)->std::string
-	   {
-			tz_assert(std::distance(beg, end) == 1, "resource(id = x) const buffer <name> : 'x' should be one number");
-			// TODO: Don't hardcode.
-			const char* buffer_subtype_name = "ubo";
-			int id = std::stoi(*beg);
-			std::string replacement = "/*tzslc: const buffer resource (";
-			replacement += buffer_subtype_name;
-			replacement += ")*/ layout(binding = ";
-			replacement += std::to_string(id);
-			replacement += ") uniform";
-
-			meta += std::to_string(id) + " = ";
-			meta += buffer_subtype_name;
-			meta += "\n";
-			return replacement;
-	   });
 	   // Handle 'buffer' (SSBO)
-	   tzslc::transform(shader_source, std::regex{"resource\\(id ?= ?([0-9]+)\\) buffer"}, [&meta](auto beg, auto end)->std::string
+	   tzslc::transform(shader_source, std::regex{"resource\\(id ?= ?([0-9]+)\\) ?[a-zA-Z ]*buffer"}, [&meta](auto beg, auto end)->std::string
 	   {
 			tz_assert(std::distance(beg, end) == 1, "resource(id = x) buffer : 'x' should be one number");
 			// TODO: Don't hardcode.
