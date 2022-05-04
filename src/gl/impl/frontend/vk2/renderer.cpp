@@ -995,12 +995,14 @@ namespace tz::gl
 		// We have buffer/image components we need to edit.
 		// Firstly make sure all render work is done, then we need to update the resource storage and then write new descriptors for resized resources.
 		this->command.wait_pending_commands_complete();
+		// If we resize an index buffer, the command buffer to draw will need to be re-recorded because that is explicitly bound.
+		bool index_buffer_needs_rebinding = false;
 		// Now, if we resized any static resources we're going to have to run scratch commands again.
 		bool resized_static_resources = false;
 		for(const RendererComponentEditRequest& component_edit : edit_request.component_edits)
 		{
 			std::visit(
-			[this](auto&& arg)
+			[this, &index_buffer_needs_rebinding](auto&& arg)
 			{
 				using T = std::decay_t<decltype(arg)>;
 				if constexpr(std::is_same_v<T, RendererBufferComponentEditRequest>)
@@ -1021,6 +1023,11 @@ namespace tz::gl
 					// Swap them. If we're dynamic, we move the data over now, otherwise we will sort that later when we setup static resources again.
 					if(buf_comp->get_resource()->get_access() == ResourceAccess::DynamicFixed || buf_comp->get_resource()->get_access() == ResourceAccess::DynamicVariable)
 					{
+						if(buf_comp == this->resources.try_get_index_buffer())
+						{
+							// Index buffer has resized.
+							index_buffer_needs_rebinding = true;
+						}
 						// Unmap resource from previous buffer component, and instead map it to this one. But first we want to copy over the old data.
 						std::span<const std::byte> old_data = buf.map_as<const std::byte>();
 						std::span<std::byte> new_data = resized_copy.map_as<std::byte>();
@@ -1049,6 +1056,10 @@ namespace tz::gl
 		if(resized_static_resources)
 		{
 			this->setup_static_resources();
+		}
+		if(index_buffer_needs_rebinding)
+		{
+			this->setup_render_commands();
 		}
 	}
 
