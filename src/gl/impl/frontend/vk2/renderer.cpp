@@ -1058,21 +1058,26 @@ namespace tz::gl
 	void RendererVulkan::edit(const RendererEditRequest& edit_request)
 	{
 		TZ_PROFZONE("Vulkan Frontend - RendererVulkan Edit", TZ_PROFCOL_YELLOW);
-		if(edit_request.component_edits.empty())
+		bool work_commands_need_recording = false;
+		if(edit_request.compute_edit.has_value() && edit_request.compute_edit.value().kernel != this->compute_kernel)
+		{
+			this->compute_kernel = edit_request.compute_edit.value().kernel;
+			work_commands_need_recording = true;
+		}
+		else if(edit_request.component_edits.empty())
 		{
 			return;
 		}
 		// We have buffer/image components we need to edit.
 		// Firstly make sure all render work is done, then we need to update the resource storage and then write new descriptors for resized resources.
 		this->command.wait_pending_commands_complete();
-		// If we resize an index buffer, the command buffer to draw will need to be re-recorded because that is explicitly bound.
-		bool index_buffer_needs_rebinding = false;
 		// Now, if we resized any static resources we're going to have to run scratch commands again.
 		bool resized_static_resources = false;
 		for(const RendererComponentEditRequest& component_edit : edit_request.component_edits)
 		{
+			// If we resize an index buffer, the command buffer to draw will need to be re-recorded because that is explicitly bound.
 			std::visit(
-			[this, &index_buffer_needs_rebinding](auto&& arg)
+			[this, &work_commands_need_recording](auto&& arg)
 			{
 				using T = std::decay_t<decltype(arg)>;
 				if constexpr(std::is_same_v<T, RendererBufferComponentEditRequest>)
@@ -1096,7 +1101,7 @@ namespace tz::gl
 						if(buf_comp == this->resources.try_get_index_buffer())
 						{
 							// Index buffer has resized.
-							index_buffer_needs_rebinding = true;
+							work_commands_need_recording = true;
 						}
 						// Unmap resource from previous buffer component, and instead map it to this one. But first we want to copy over the old data.
 						std::span<const std::byte> old_data = buf.map_as<const std::byte>();
@@ -1123,13 +1128,13 @@ namespace tz::gl
 				}
 			}, component_edit);
 		}
+		if(work_commands_need_recording)
+		{
+			this->setup_work_commands();
+		}
 		if(resized_static_resources)
 		{
 			this->setup_static_resources();
-		}
-		if(index_buffer_needs_rebinding)
-		{
-			this->setup_work_commands();
 		}
 	}
 

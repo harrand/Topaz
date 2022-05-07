@@ -79,6 +79,15 @@ namespace tz::gl
 	};
 
 	/**
+	 * Represents an edit, setting a new value for the compute kernel for a renderer.
+	 */
+	struct RendererComputeEditRequest
+	{
+		/// New compute kernel workgroup dimensions.
+		tz::Vec3ui kernel;
+	};
+
+	/**
 	 * Type-safe union of @ref RendererBufferComponentEditRequest and @ref RendererImageComponentEditRequest
 	 */
 	using RendererComponentEditRequest = std::variant<RendererBufferComponentEditRequest, RendererImageComponentEditRequest>;
@@ -93,6 +102,7 @@ namespace tz::gl
 		 * List of edits to components owned by the renderer.
 		 */
 		std::vector<RendererComponentEditRequest> component_edits;
+		std::optional<RendererComputeEditRequest> compute_edit = std::nullopt;
 	};
 
 	/**

@@ -409,6 +409,10 @@ namespace tz::gl
 		{
 			return;
 		}
+		if(edit_request.compute_edit.has_value())
+		{
+			this->compute_kernel = edit_request.compute_edit.value().kernel;
+		}
 		for(const RendererComponentEditRequest& component_edit : edit_request.component_edits)
 		{
 
