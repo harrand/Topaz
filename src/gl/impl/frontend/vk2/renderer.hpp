@@ -194,6 +194,7 @@ namespace tz::gl
 		 */
 		const vk2::GraphicsPipeline& get_pipeline() const;
 		void recreate(const vk2::RenderPass& new_render_pass, tz::Vec2ui new_viewport_dimensions);
+		bool is_compute() const;
 	private:
 		vk2::Shader make_shader(const vk2::LogicalDevice& ldev, const ShaderInfo& sinfo) const;
 		vk2::PipelineLayout make_pipeline_layout(const vk2::DescriptorLayout& dlayout, std::size_t frame_in_flight_count) const;
@@ -259,6 +260,7 @@ namespace tz::gl
 		bool requires_present;
 		/// Hardware queue which will be used for the render work submission (and presentation, if we need to do so).
 		vk2::hardware::Queue* graphics_queue;
+		/// Hardware queue which will be used for any compute work that needs to be done.
 		vk2::hardware::Queue* compute_queue;
 		/// Pool which handles allocation of command buffers.
 		vk2::CommandPool command_pool;

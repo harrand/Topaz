@@ -650,10 +650,15 @@ namespace tz::gl
 		 }};
 	}
 
+	bool GraphicsPipelineManager::is_compute(const ShaderInfo& sinfo) const
+	{
+		return sinfo.has_shader(ShaderStage::Compute);
+	}
+
 	vk2::Shader GraphicsPipelineManager::make_shader(const vk2::LogicalDevice& ldev, const ShaderInfo& sinfo) const
 	{
 		TZ_PROFZONE("Vulkan Frontend - RendererVulkan GraphicsPipelineManager (Shader Create)", TZ_PROFCOL_YELLOW);
-		tz_assert(!sinfo.has_shader(ShaderStage::Compute), "Compute Shaders are not yet implemented.");
+		tz_assert(!this->is_compute(sinfo), "Compute Shaders are not yet implemented.");
 		std::vector<char> vtx_src, frg_src, cmp_src;
 		tz::BasicList<vk2::ShaderModuleInfo> modules;
 		if(sinfo.has_shader(ShaderStage::Compute))
