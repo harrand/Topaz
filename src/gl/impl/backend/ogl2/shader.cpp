@@ -151,6 +151,15 @@ namespace tz::gl::ogl2
 		return this->program == 0;
 	}
 
+	bool Shader::is_compute() const
+	{
+		return std::any_of(this->info.modules.begin(), this->info.modules.end(),
+		[](const ShaderModuleInfo& mod)
+		{
+			return mod.type == ShaderType::Compute;
+		});
+	}
+
 	Shader::Shader(std::nullptr_t):
 	program(0),
 	modules(),

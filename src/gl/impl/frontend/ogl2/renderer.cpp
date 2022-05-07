@@ -218,6 +218,11 @@ namespace tz::gl
 		this->shader.use();
 	}
 
+	bool ShaderManager::is_compute() const
+	{
+		return this->shader.is_compute();
+	}
+
 	ogl2::Shader ShaderManager::make_shader(const ShaderInfo& sinfo) const
 	{
 		tz::BasicList<ogl2::ShaderModuleInfo> modules;
@@ -295,7 +300,6 @@ namespace tz::gl
 	clear_colour(info.get_clear_colour()),
 	options(info.get_options())
 	{
-		tz_assert(!info.shader().has_shader(ShaderStage::Compute), "Compute Shaders are not yet implemented.");
 	}
 
 	unsigned int RendererOGL::resource_count() const
@@ -332,42 +336,62 @@ namespace tz::gl
 	{
 		TZ_PROFZONE("OpenGL Frontend - RendererOGL Render", TZ_PROFCOL_RED);
 		TZ_PROFZONE_GPU("RendererOGL Render", TZ_PROFCOL_RED);
-		this->resources.write_dynamic_images();
-		glClearColor(this->clear_colour[0], this->clear_colour[1], this->clear_colour[2], this->clear_colour[3]);
-		if(this->options.contains(RendererOption::NoDepthTesting))
-		{
-			glDisable(GL_DEPTH_TEST);
-		}
-		else
-		{
-			glEnable(GL_DEPTH_TEST);
-			glDepthFunc(GL_LESS);
-		}
-		if(this->options.contains(RendererOption::AlphaBlending))
-		{
-			glEnable(GL_BLEND);
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		}
-		else
-		{
-			glDisable(GL_BLEND);
-		}
-		this->output.set_render_target();
 
-		this->shader.use();
-		this->resources.bind_buffers();
-		if(this->resources.resource_count_of(ResourceType::Image) > 0)
+		if(this->shader.is_compute())
 		{
-			this->resources.bind_image_buffer();
-		}
-		if(this->resources.try_get_index_buffer() != nullptr)
-		{
-			const ogl2::Buffer& ibuf = static_cast<BufferComponentOGL*>(this->resources.try_get_index_buffer())->ogl_get_buffer();
-			this->vao.draw_indexed(tri_count, ibuf);
+			this->resources.write_dynamic_images();
+			this->shader.use();
+			this->resources.bind_buffers();
+			if(this->resources.resource_count_of(ResourceType::Image) > 0)
+			{
+				this->resources.bind_image_buffer();
+			}
+			tz_assert(this->resources.try_get_index_buffer() == nullptr, "Compute renderer has an index buffer applied to it. This doesn't make any sense. Please submit a bug report.");
+			glDispatchCompute(1, 1, 1);
+			if(this->get_options().contains(RendererOption::BlockingCompute))
+			{
+				glClientWaitSync(glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0), GL_SYNC_FLUSH_COMMANDS_BIT, std::numeric_limits<GLuint64>::max());
+			}
 		}
 		else
 		{
-			this->vao.draw(this->tri_count);
+			this->resources.write_dynamic_images();
+			glClearColor(this->clear_colour[0], this->clear_colour[1], this->clear_colour[2], this->clear_colour[3]);
+			if(this->options.contains(RendererOption::NoDepthTesting))
+			{
+				glDisable(GL_DEPTH_TEST);
+			}
+			else
+			{
+				glEnable(GL_DEPTH_TEST);
+				glDepthFunc(GL_LESS);
+			}
+			if(this->options.contains(RendererOption::AlphaBlending))
+			{
+				glEnable(GL_BLEND);
+				glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			}
+			else
+			{
+				glDisable(GL_BLEND);
+			}
+			this->output.set_render_target();
+
+			this->shader.use();
+			this->resources.bind_buffers();
+			if(this->resources.resource_count_of(ResourceType::Image) > 0)
+			{
+				this->resources.bind_image_buffer();
+			}
+			if(this->resources.try_get_index_buffer() != nullptr)
+			{
+				const ogl2::Buffer& ibuf = static_cast<BufferComponentOGL*>(this->resources.try_get_index_buffer())->ogl_get_buffer();
+				this->vao.draw_indexed(tri_count, ibuf);
+			}
+			else
+			{
+				this->vao.draw(this->tri_count);
+			}
 		}
 	}
 

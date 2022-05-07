@@ -132,6 +132,8 @@ namespace tz::gl::ogl2
 		 * Query as to whether this is a null shader. See @ref Shader::null().
 		 */
 		bool is_null() const;
+
+		bool is_compute() const;
 	private:
 		Shader(std::nullptr_t);
 		Shader::LinkResult validate();

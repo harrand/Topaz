@@ -86,6 +86,7 @@ namespace tz::gl
 		 * Use the shader program, meaning it will be used in the next draw call.
 		 */
 		void use();
+		bool is_compute() const;
 	private:
 		ogl2::Shader make_shader(const ShaderInfo& sinfo) const;
 
