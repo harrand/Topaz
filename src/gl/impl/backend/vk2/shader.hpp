@@ -98,6 +98,7 @@ namespace tz::gl::vk2
 		Shader& operator=(Shader&& rhs);
 
 		ShaderPipelineData native_data() const;
+		bool is_compute() const;
 
 		static Shader null();
 		bool is_null() const;

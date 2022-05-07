@@ -597,7 +597,7 @@ namespace tz::gl
 	):
 	shader(this->make_shader(dlayout.get_device(), sinfo)),
 	pipeline_layout(this->make_pipeline_layout(dlayout, frame_in_flight_count)),
-	graphics_pipeline(this->make_pipeline(sinfo, viewport_dimensions, depth_testing_enabled, alpha_blending_enabled, render_pass)),
+	graphics_pipeline(this->make_pipeline(viewport_dimensions, depth_testing_enabled, alpha_blending_enabled, render_pass)),
 	depth_testing_enabled(depth_testing_enabled)
 	{
 		// TODO: Implement vk2::LogicalDevice equality operator
@@ -650,9 +650,9 @@ namespace tz::gl
 		 }};
 	}
 
-	bool GraphicsPipelineManager::is_compute(const ShaderInfo& sinfo) const
+	bool GraphicsPipelineManager::is_compute() const
 	{
-		return sinfo.has_shader(ShaderStage::Compute);
+		return this->shader.is_compute();
 	}
 
 	vk2::Shader GraphicsPipelineManager::make_shader(const vk2::LogicalDevice& ldev, const ShaderInfo& sinfo) const
@@ -757,9 +757,9 @@ namespace tz::gl
 		};
 	}
 
-	vk2::Pipeline GraphicsPipelineManager::make_pipeline(const ShaderInfo& sinfo, tz::Vec2ui viewport_dimensions, bool depth_testing_enabled, bool alpha_blending_enabled, const vk2::RenderPass& render_pass) const
+	vk2::Pipeline GraphicsPipelineManager::make_pipeline(tz::Vec2ui viewport_dimensions, bool depth_testing_enabled, bool alpha_blending_enabled, const vk2::RenderPass& render_pass) const
 	{
-		if(this->is_compute(sinfo))
+		if(this->is_compute())
 		{
 			return {this->make_compute_pipeline()};
 		}
@@ -876,6 +876,12 @@ namespace tz::gl
 			tz_error("Headless rendering not yet implemented.");
 			return {.present = vk2::hardware::Queue::PresentResult::Fail_FatalError};
 		}
+	}
+
+	void CommandProcessor::do_compute_work()
+	{
+		TZ_PROFZONE("Vulkan Frontend - RendererVulkan CommandProcessor (Do Compute Work)", TZ_PROFCOL_YELLOW);
+		tz_error("Not yet implemented.");
 	}
 
 	void CommandProcessor::wait_pending_commands_complete()
@@ -1226,52 +1232,59 @@ namespace tz::gl
 	void RendererVulkan::setup_render_commands()
 	{
 		TZ_PROFZONE("Vulkan Frontend - RendererVulkan Setup Render Commands", TZ_PROFCOL_YELLOW);
-		this->command.set_rendering_commands([this](vk2::CommandBufferRecording& recording, std::size_t framebuffer_id)
+		if(this->pipeline.is_compute())
 		{
-			tz_assert(framebuffer_id < this->output.get_output_framebuffers().size(), "Attempted to retrieve output framebuffer at index %zu, but there are only %zu framebuffers available. Please submit a bug report.", framebuffer_id, this->output.get_output_framebuffers().size());
-			vk2::CommandBufferRecording::RenderPassRun run{this->output.get_output_framebuffers()[framebuffer_id], recording, this->clear_colour};
-			recording.bind_pipeline
-			({
-				.pipeline = &this->pipeline.get_pipeline(),
-			});
-			tz::BasicList<const vk2::DescriptorSet*> sets;
-			if(!this->resources.empty())
+			tz_error("Sorry. Compute is not yet implemented.");
+		}
+		else
+		{
+			this->command.set_rendering_commands([this](vk2::CommandBufferRecording& recording, std::size_t framebuffer_id)
 			{
-				std::span<const vk2::DescriptorSet> resource_sets = this->resources.get_descriptor_sets();
-				sets.resize(resource_sets.size());
-				std::transform(resource_sets.begin(), resource_sets.end(), sets.begin(), [](const vk2::DescriptorSet& set){return &set;});
-				recording.bind_descriptor_sets
+				tz_assert(framebuffer_id < this->output.get_output_framebuffers().size(), "Attempted to retrieve output framebuffer at index %zu, but there are only %zu framebuffers available. Please submit a bug report.", framebuffer_id, this->output.get_output_framebuffers().size());
+				vk2::CommandBufferRecording::RenderPassRun run{this->output.get_output_framebuffers()[framebuffer_id], recording, this->clear_colour};
+				recording.bind_pipeline
 				({
-					.pipeline_layout = &this->pipeline.get_pipeline().get_layout(),
-					.context = this->pipeline.get_pipeline().get_context(),
-					.descriptor_sets = sets,
-					.first_set_id = 0
+					.pipeline = &this->pipeline.get_pipeline(),
 				});
-			}
+				tz::BasicList<const vk2::DescriptorSet*> sets;
+				if(!this->resources.empty())
+				{
+					std::span<const vk2::DescriptorSet> resource_sets = this->resources.get_descriptor_sets();
+					sets.resize(resource_sets.size());
+					std::transform(resource_sets.begin(), resource_sets.end(), sets.begin(), [](const vk2::DescriptorSet& set){return &set;});
+					recording.bind_descriptor_sets
+					({
+						.pipeline_layout = &this->pipeline.get_pipeline().get_layout(),
+						.context = this->pipeline.get_pipeline().get_context(),
+						.descriptor_sets = sets,
+						.first_set_id = 0
+					});
+				}
 
-			const IComponent* idx_buf = this->resources.try_get_index_buffer();
-			if(idx_buf == nullptr)
-			{
-				recording.draw
-				({
-					.vertex_count = 3 * this->tri_count,
-					.instance_count = 1,
-					.first_vertex = 0,
-					.first_instance = 0
-				});
-			}
-			else
-			{
-				recording.bind_index_buffer
-				({
-					.index_buffer = &static_cast<const BufferComponentVulkan*>(idx_buf)->vk_get_buffer()
-				});
-				recording.draw_indexed
-				({
-					.index_count = 3 * this->tri_count
-				});
-			}
-		});
+				const IComponent* idx_buf = this->resources.try_get_index_buffer();
+				if(idx_buf == nullptr)
+				{
+					recording.draw
+					({
+						.vertex_count = 3 * this->tri_count,
+						.instance_count = 1,
+						.first_vertex = 0,
+						.first_instance = 0
+					});
+				}
+				else
+				{
+					recording.bind_index_buffer
+					({
+						.index_buffer = &static_cast<const BufferComponentVulkan*>(idx_buf)->vk_get_buffer()
+					});
+					recording.draw_indexed
+					({
+						.index_count = 3 * this->tri_count
+					});
+				}
+			});
+		}
 	}
 
 	void RendererVulkan::handle_resize(const RendererResizeInfoVulkan& resize_info)

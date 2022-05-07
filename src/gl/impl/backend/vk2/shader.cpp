@@ -111,6 +111,15 @@ namespace tz::gl::vk2
 		return ret;
 	}
 
+	bool Shader::is_compute() const
+	{
+		return std::any_of(this->modules.begin(), this->modules.end(),
+		[](const ShaderModule& mod)
+		{
+			return mod.get_type() == ShaderType::Compute;
+		});
+	}
+
 	Shader Shader::null()
 	{
 		return{};
