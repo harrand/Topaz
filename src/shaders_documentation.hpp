@@ -10,7 +10,6 @@
  * 	- Index buffers are planned, but not yet implemented. For the time being you must perform index-pulling aswell.
  * - Fragment Shaders, which processes fragments into a set of colours and optionally depth value.
  * - Compute Shaders, which can be used to perform general-purpose computation on the GPU.
- * 	- Compute Shaders are not yet implemented. However, it is high on the priority list.
  *
  * TZSL Shaders have first-class support in the engine's build system. When specifying your application in CMake, you can specify tzsl shader files. When the application needs to be built, the shaders are compiled into specially-encoded C++ headers which you can include in your application at compile-time. This is known as a TZSL Header Import.
  *
