@@ -914,7 +914,7 @@ namespace tz::gl
 		}
 
 		this->setup_static_resources();
-		this->setup_render_commands();
+		this->setup_work_commands();
 	}
 
 	RendererVulkan::RendererVulkan(RendererVulkan&& move):
@@ -1019,7 +1019,7 @@ namespace tz::gl
 		{
 			this->tri_count = tri_count;
 			this->command.wait_pending_commands_complete();
-			this->setup_render_commands();
+			this->setup_work_commands();
 		}
 		this->render();
 	}
@@ -1098,7 +1098,7 @@ namespace tz::gl
 		}
 		if(index_buffer_needs_rebinding)
 		{
-			this->setup_render_commands();
+			this->setup_work_commands();
 		}
 	}
 
@@ -1232,58 +1232,73 @@ namespace tz::gl
 	void RendererVulkan::setup_render_commands()
 	{
 		TZ_PROFZONE("Vulkan Frontend - RendererVulkan Setup Render Commands", TZ_PROFCOL_YELLOW);
+		tz_assert(!this->pipeline.is_compute(), "Running render command recording path, but pipeline is a compute pipeline. Logic error, please submit a bug report.");
+
+		this->command.set_rendering_commands([this](vk2::CommandBufferRecording& recording, std::size_t framebuffer_id)
+		{
+			tz_assert(framebuffer_id < this->output.get_output_framebuffers().size(), "Attempted to retrieve output framebuffer at index %zu, but there are only %zu framebuffers available. Please submit a bug report.", framebuffer_id, this->output.get_output_framebuffers().size());
+			vk2::CommandBufferRecording::RenderPassRun run{this->output.get_output_framebuffers()[framebuffer_id], recording, this->clear_colour};
+			recording.bind_pipeline
+			({
+				.pipeline = &this->pipeline.get_pipeline(),
+			});
+			tz::BasicList<const vk2::DescriptorSet*> sets;
+			if(!this->resources.empty())
+			{
+				std::span<const vk2::DescriptorSet> resource_sets = this->resources.get_descriptor_sets();
+				sets.resize(resource_sets.size());
+				std::transform(resource_sets.begin(), resource_sets.end(), sets.begin(), [](const vk2::DescriptorSet& set){return &set;});
+				recording.bind_descriptor_sets
+				({
+					.pipeline_layout = &this->pipeline.get_pipeline().get_layout(),
+					.context = this->pipeline.get_pipeline().get_context(),
+					.descriptor_sets = sets,
+					.first_set_id = 0
+				});
+			}
+
+			const IComponent* idx_buf = this->resources.try_get_index_buffer();
+			if(idx_buf == nullptr)
+			{
+				recording.draw
+				({
+					.vertex_count = 3 * this->tri_count,
+					.instance_count = 1,
+					.first_vertex = 0,
+					.first_instance = 0
+				});
+			}
+			else
+			{
+				recording.bind_index_buffer
+				({
+					.index_buffer = &static_cast<const BufferComponentVulkan*>(idx_buf)->vk_get_buffer()
+				});
+				recording.draw_indexed
+				({
+					.index_count = 3 * this->tri_count
+				});
+			}
+		});
+	}
+	
+	void RendererVulkan::setup_compute_commands()
+	{
+		TZ_PROFZONE("Vulkan Frontend - RendererVulkan Setup Compute Commands", TZ_PROFCOL_YELLOW);
+		tz_assert(this->pipeline.is_compute(), "Running compute command recording path, but pipeline is a graphics pipeline. Logic error, please submit a bug report.");
+
+		tz_error("Sorry. Compute not yet implemented.");
+	}
+
+	void RendererVulkan::setup_work_commands()
+	{
 		if(this->pipeline.is_compute())
 		{
-			tz_error("Sorry. Compute is not yet implemented.");
+			this->setup_compute_commands();
 		}
 		else
 		{
-			this->command.set_rendering_commands([this](vk2::CommandBufferRecording& recording, std::size_t framebuffer_id)
-			{
-				tz_assert(framebuffer_id < this->output.get_output_framebuffers().size(), "Attempted to retrieve output framebuffer at index %zu, but there are only %zu framebuffers available. Please submit a bug report.", framebuffer_id, this->output.get_output_framebuffers().size());
-				vk2::CommandBufferRecording::RenderPassRun run{this->output.get_output_framebuffers()[framebuffer_id], recording, this->clear_colour};
-				recording.bind_pipeline
-				({
-					.pipeline = &this->pipeline.get_pipeline(),
-				});
-				tz::BasicList<const vk2::DescriptorSet*> sets;
-				if(!this->resources.empty())
-				{
-					std::span<const vk2::DescriptorSet> resource_sets = this->resources.get_descriptor_sets();
-					sets.resize(resource_sets.size());
-					std::transform(resource_sets.begin(), resource_sets.end(), sets.begin(), [](const vk2::DescriptorSet& set){return &set;});
-					recording.bind_descriptor_sets
-					({
-						.pipeline_layout = &this->pipeline.get_pipeline().get_layout(),
-						.context = this->pipeline.get_pipeline().get_context(),
-						.descriptor_sets = sets,
-						.first_set_id = 0
-					});
-				}
-
-				const IComponent* idx_buf = this->resources.try_get_index_buffer();
-				if(idx_buf == nullptr)
-				{
-					recording.draw
-					({
-						.vertex_count = 3 * this->tri_count,
-						.instance_count = 1,
-						.first_vertex = 0,
-						.first_instance = 0
-					});
-				}
-				else
-				{
-					recording.bind_index_buffer
-					({
-						.index_buffer = &static_cast<const BufferComponentVulkan*>(idx_buf)->vk_get_buffer()
-					});
-					recording.draw_indexed
-					({
-						.index_count = 3 * this->tri_count
-					});
-				}
-			});
+			this->setup_render_commands();
 		}
 	}
 
@@ -1294,7 +1309,7 @@ namespace tz::gl
 		this->command.wait_pending_commands_complete();
 		this->output.create_output_resources(resize_info.new_output_images, this->output.has_depth_images());
 		this->pipeline.recreate(this->output.get_render_pass(), resize_info.new_dimensions);
-		this->setup_render_commands();
+		this->setup_work_commands();
 	}
 
 	std::size_t RendererVulkan::get_frame_in_flight_count(const RendererDeviceInfoVulkan& device_info) const

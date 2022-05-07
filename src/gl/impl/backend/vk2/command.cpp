@@ -117,6 +117,12 @@ namespace tz::gl::vk2
 		vkCmdBindPipeline(this->get_command_buffer().native(), static_cast<VkPipelineBindPoint>(command.pipeline->get_context()), command.pipeline->native());
 	}
 
+	void CommandBufferRecording::dispatch(VulkanCommand::Dispatch command)
+	{
+		this->register_command(command);
+		vkCmdDispatch(this->get_command_buffer().native(), command.groups[0], command.groups[1], command.groups[2]);
+	}
+
 	void CommandBufferRecording::draw(VulkanCommand::Draw command)
 	{
 		this->register_command(command);

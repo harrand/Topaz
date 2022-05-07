@@ -382,6 +382,8 @@ namespace tz::gl
 	private:
 		void setup_static_resources();
 		void setup_render_commands();
+		void setup_compute_commands();
+		void setup_work_commands();
 		void handle_resize(const RendererResizeInfoVulkan& resize_info);
 		std::size_t get_frame_in_flight_count(const RendererDeviceInfoVulkan& device_info) const;
 

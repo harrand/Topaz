@@ -16,6 +16,10 @@ namespace tz::gl::vk2
 	 */
 	struct VulkanCommand
 	{
+		struct Dispatch
+		{
+			tz::Vec3ui groups;
+		};
 		/**
 		 * Record a non-indexed draw.
 		 * See @ref CommandBufferRecording::draw for usage.
@@ -168,7 +172,7 @@ namespace tz::gl::vk2
 		};
 
 		/// Variant type which has alternatives for every single possible recordable command type.
-		using Variant = std::variant<Draw, DrawIndexed, BindIndexBuffer, BindPipeline, BindDescriptorSets, BeginRenderPass, EndRenderPass, BufferCopyBuffer, BufferCopyImage, BindBuffer, TransitionImageLayout>;
+		using Variant = std::variant<Dispatch, Draw, DrawIndexed, BindIndexBuffer, BindPipeline, BindDescriptorSets, BeginRenderPass, EndRenderPass, BufferCopyBuffer, BufferCopyImage, BindBuffer, TransitionImageLayout>;
 	};
 
 	enum class CommandPoolFlag
@@ -235,6 +239,11 @@ namespace tz::gl::vk2
 		 * See @ref VulkanCommand::BindPipeline for details.
 		 */
 		void bind_pipeline(VulkanCommand::BindPipeline command);
+		/**
+		 * Dispatch some compute work.
+		 * See @ref VulkanCommand::Dispatch for details.
+		 */
+		void dispatch(VulkanCommand::Dispatch dispatch);
 		/**
 		 * Perform a non-instanced draw.
 		 * See @ref VulkanCommand::Draw for details.
