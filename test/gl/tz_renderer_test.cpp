@@ -129,6 +129,7 @@ void renderer_compute_test(tz::gl::Device& dev)
 	tz::gl::RendererInfo rinfo;
 	rinfo.shader().set_shader(tz::gl::ShaderStage::Compute, ImportedShaderSource(six_writer, compute));
 	rinfo.set_options({tz::gl::RendererOption::BlockingCompute});
+	rinfo.set_compute_kernel({1u, 1u, 1u});
 	tz::gl::ResourceHandle numbuf = rinfo.add_resource(number);
 	tz::gl::Renderer compute = dev.create_renderer(rinfo);
 

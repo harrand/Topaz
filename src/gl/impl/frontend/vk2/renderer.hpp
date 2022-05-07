@@ -399,6 +399,7 @@ namespace tz::gl
 		vk2::Swapchain* maybe_swapchain;
 		RendererOptions options;
 		tz::Vec4 clear_colour;
+		tz::Vec3ui compute_kernel;
 		unsigned int tri_count = 0;
 		RendererResizeCallbackType* device_resize_callback = nullptr;
 		tz::CallbackHandle window_resize_callback = tz::nullhand;

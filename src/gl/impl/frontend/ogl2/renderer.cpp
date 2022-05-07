@@ -298,6 +298,7 @@ namespace tz::gl
 	shader(info.shader()),
 	output(info.get_output()),
 	clear_colour(info.get_clear_colour()),
+	compute_kernel(info.get_compute_kernel()),
 	options(info.get_options())
 	{
 	}
@@ -347,7 +348,7 @@ namespace tz::gl
 				this->resources.bind_image_buffer();
 			}
 			tz_assert(this->resources.try_get_index_buffer() == nullptr, "Compute renderer has an index buffer applied to it. This doesn't make any sense. Please submit a bug report.");
-			glDispatchCompute(1, 1, 1);
+			glDispatchCompute(this->compute_kernel[0], this->compute_kernel[1], this->compute_kernel[2]);
 			if(this->get_options().contains(RendererOption::BlockingCompute))
 			{
 				glClientWaitSync(glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0), GL_SYNC_FLUSH_COMMANDS_BIT, std::numeric_limits<GLuint64>::max());

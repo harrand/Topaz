@@ -182,6 +182,7 @@ namespace tz::gl
 		ShaderManager shader;
 		OutputManager output;
 		tz::Vec4 clear_colour;
+		tz::Vec3ui compute_kernel;
 		RendererOptions options;
 		unsigned int tri_count = 0;
 	};

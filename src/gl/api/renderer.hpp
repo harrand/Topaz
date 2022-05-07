@@ -34,7 +34,7 @@ namespace tz::gl
 	using RendererOptions = tz::EnumField<RendererOption>;
 
 	template<typename T>
-	concept RendererInfoType = requires(T t, ResourceHandle r, IResource& resource, IOutput& output, RendererOptions options, tz::Vec4 vec4)
+	concept RendererInfoType = requires(T t, ResourceHandle r, IResource& resource, IOutput& output, RendererOptions options, tz::Vec4 vec4, tz::Vec3ui vec3ui)
 	{
 		{t.resource_count()} -> std::convertible_to<unsigned int>;
 		{t.get_resource(r)} -> std::convertible_to<const IResource*>;
@@ -49,6 +49,9 @@ namespace tz::gl
 
 		{t.set_clear_colour(vec4)} -> std::same_as<void>;
 		{t.get_clear_colour()} -> std::convertible_to<tz::Vec4>;
+
+		{t.set_compute_kernel(vec3ui)} -> std::same_as<void>;
+		{t.get_compute_kernel()} -> std::convertible_to<tz::Vec3ui>;
 
 		{t.shader()} -> ShaderInfoType;
 	};

@@ -62,9 +62,19 @@ namespace tz::gl
 		this->clear_colour = clear_colour;
 	}
 
-	const tz::Vec4 RendererInfoCommon::get_clear_colour() const
+	const tz::Vec4& RendererInfoCommon::get_clear_colour() const
 	{
 		return this->clear_colour;
+	}
+
+	void RendererInfoCommon::set_compute_kernel(tz::Vec3ui compute_kernel)
+	{
+		this->compute_kernel = compute_kernel;
+	}
+
+	const tz::Vec3ui& RendererInfoCommon::get_compute_kernel() const
+	{
+		return this->compute_kernel;
 	}
 
 	ShaderInfo& RendererInfoCommon::shader()

@@ -933,7 +933,8 @@ namespace tz::gl
 	command(*this->ldev, this->get_frame_in_flight_count(device_info), info.get_output() != nullptr ? info.get_output()->get_target() : OutputTarget::Window, this->output.get_output_framebuffers(), pipeline.is_compute(), info.get_options().contains(RendererOption::BlockingCompute)),
 	maybe_swapchain(device_info.maybe_swapchain),
 	options(info.get_options()),
-	clear_colour(info.get_clear_colour())
+	clear_colour(info.get_clear_colour()),
+	compute_kernel(info.get_compute_kernel())
 	{
 		TZ_PROFZONE("Vulkan Frontend - RendererVulkan Create", TZ_PROFCOL_YELLOW);
 		// If we're not headless, we should register a callback for our lifetime.
@@ -1345,7 +1346,7 @@ namespace tz::gl
 			{
 				recording.dispatch
 				({
-					.groups = {1u, 1u, 1u}
+					.groups = this->compute_kernel
 				});
 			}
 		});
