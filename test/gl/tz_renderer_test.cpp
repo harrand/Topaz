@@ -9,6 +9,7 @@
 #include ImportedShaderHeader(empty, vertex)
 #include ImportedShaderHeader(empty, fragment)
 #include ImportedShaderHeader(empty, compute)
+#include ImportedShaderHeader(six_writer, compute)
 
 void empty_renderer(tz::gl::Device& dev)
 {
@@ -121,6 +122,22 @@ void resize_window(tz::gl::Device& dev)
 	empty.render();
 }
 
+void renderer_compute_test(tz::gl::Device& dev)
+{
+	tz::gl::BufferResource number = tz::gl::BufferResource::from_one(0.0f, tz::gl::ResourceAccess::DynamicFixed);
+
+	tz::gl::RendererInfo rinfo;
+	rinfo.shader().set_shader(tz::gl::ShaderStage::Compute, ImportedShaderSource(six_writer, compute));
+	tz::gl::ResourceHandle numbuf = rinfo.add_resource(number);
+	tz::gl::Renderer compute = dev.create_renderer(rinfo);
+
+
+	compute.render();
+
+	float num = compute.get_resource(numbuf)->data_as<float>().front();
+	tz_assert(num == 6.0f, "Compute shader was meant to write 6.0f to num that was initially 0.0f. The current value is %.1ff", num);
+}
+
 void semantics(tz::gl::Device& dev)
 {
 	static_assert(!tz::copyable<tz::gl::Renderer>);
@@ -152,6 +169,7 @@ int main()
 		renderer_creation_index_buffer(dev);
 		renderer_edit(dev);
 		resize_window(dev);
+		renderer_compute_test(dev);
 		semantics(dev);
 	}
 	tz::terminate();

@@ -14,6 +14,7 @@ add_tz_test(NAME tz_renderer_test
 		test/gl/empty.vertex.tzsl
 		test/gl/empty.fragment.tzsl
 		test/gl/empty.compute.tzsl
+		test/gl/six_writer.compute.tzsl
 	)
 
 add_tz_test(NAME tz_shader_test
