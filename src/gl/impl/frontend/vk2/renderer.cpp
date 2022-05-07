@@ -1,6 +1,7 @@
 #if TZ_VULKAN
 #include "gl/impl/backend/vk2/tz_vulkan.hpp"
 #include "core/profiling/zone.hpp"
+#include "core/report.hpp"
 #include "gl/declare/image_format.hpp"
 #include "gl/impl/backend/vk2/fixed_function.hpp"
 #include "gl/impl/backend/vk2/gpu_mem.hpp"
@@ -769,9 +770,10 @@ namespace tz::gl
 
 //--------------------------------------------------------------------------------------------------
 
-	CommandProcessor::CommandProcessor(vk2::LogicalDevice& ldev, std::size_t frame_in_flight_count, OutputTarget output_target, std::span<vk2::Framebuffer> output_framebuffers, bool is_compute):
+	CommandProcessor::CommandProcessor(vk2::LogicalDevice& ldev, std::size_t frame_in_flight_count, OutputTarget output_target, std::span<vk2::Framebuffer> output_framebuffers, bool is_compute, bool instant_compute_enabled):
 	requires_present(output_target == OutputTarget::Window),
 	is_compute(is_compute),
+	instant_compute_enabled(instant_compute_enabled),
 	graphics_queue(ldev.get_hardware_queue
 	({
 		.field = {vk2::QueueFamilyType::Graphics},
@@ -837,8 +839,15 @@ namespace tz::gl
 				.execution_complete_fence = &this->in_flight_fences[this->current_frame]
 			});
 
-			// TODO: Dont just wait insta.
-			this->in_flight_fences[this->current_frame].wait_until_signalled();
+			if(this->instant_compute_enabled)
+			{
+				this->in_flight_fences[this->current_frame].wait_until_signalled();
+			}
+			else
+			{
+				// TODO: Resource references.
+				tz_warning_report("Detected compute renderer work recording, but RendererOption::BlockingCompute was not provided. Resource references are not yet implemented, so there is no guarantee when the compute work is done. For now, I recommend you pass BlockingCompute for compute shader writes to instantly be visible.");
+			}
 			return {vk2::hardware::Queue::PresentResult::Success};
 		}
 		else
@@ -919,7 +928,7 @@ namespace tz::gl
 	resources(info.get_resources(), *this->ldev, this->get_frame_in_flight_count(device_info)),
 	output(info.get_output(), device_info.output_images, !info.get_options().contains(RendererOption::NoDepthTesting), *this->ldev),
 	pipeline(info.shader(), this->resources.get_descriptor_layout(), this->output.get_render_pass(), this->get_frame_in_flight_count(device_info), output.get_output_dimensions(), !info.get_options().contains(RendererOption::NoDepthTesting), info.get_options().contains(RendererOption::AlphaBlending)),
-	command(*this->ldev, this->get_frame_in_flight_count(device_info), info.get_output() != nullptr ? info.get_output()->get_target() : OutputTarget::Window, this->output.get_output_framebuffers(), pipeline.is_compute()),
+	command(*this->ldev, this->get_frame_in_flight_count(device_info), info.get_output() != nullptr ? info.get_output()->get_target() : OutputTarget::Window, this->output.get_output_framebuffers(), pipeline.is_compute(), info.get_options().contains(RendererOption::BlockingCompute)),
 	maybe_swapchain(device_info.maybe_swapchain),
 	options(info.get_options()),
 	clear_colour(info.get_clear_colour())

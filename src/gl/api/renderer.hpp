@@ -22,7 +22,9 @@ namespace tz::gl
 		/// - Disables depth-testing, with a small gain in performance.
 		NoDepthTesting,
 		/// - Enables alpha-blending. Causes pixels with alpha value <1.0 to blend with the previous colour in the framebuffer, at a small cost to performance.
-		AlphaBlending
+		AlphaBlending,
+		/// - When a compute renderer's `render()` is invoked, the thread will block until the compute-shader has finished processing.
+		BlockingCompute
 	};
 	
 	/**
