@@ -663,6 +663,8 @@ namespace tz::gl
 		tz::BasicList<vk2::ShaderModuleInfo> modules;
 		if(sinfo.has_shader(ShaderStage::Compute))
 		{
+			tz_assert(!sinfo.has_shader(ShaderStage::Vertex), "Shader has compute shader and vertex shader. These are mutually exclusive.");
+			tz_assert(!sinfo.has_shader(ShaderStage::Fragment), "Shader has compute shader and fragment shader. These are mutually exclusive.");
 			// Compute, we only care about the compute shader.
 			{
 				std::string_view compute_source = sinfo.get_shader(ShaderStage::Compute);
