@@ -227,7 +227,7 @@ namespace tz::gl
 		 * @param output_framebuffers Array of framebuffers belonging to the output manager which will act as our render targets. The array should have length equal to `frame_in_flight_count`.
 		 * @pre `output_framebuffers.size() == frame_in_flight_count`, otherwise the behaviour is undefined.
 		 */
-		CommandProcessor(vk2::LogicalDevice& ldev, std::size_t frame_in_flight_count, OutputTarget output_target, std::span<vk2::Framebuffer> output_framebuffers);
+		CommandProcessor(vk2::LogicalDevice& ldev, std::size_t frame_in_flight_count, OutputTarget output_target, std::span<vk2::Framebuffer> output_framebuffers, bool is_compute);
 		/**
 		 * Retrieve a list of all command buffers which will be used for rendering. Each command buffer is guaranteed to have the exact same commands recorded within them.
 		 * @return Array of command buffers, length matching the number of frames-in-flight.
@@ -262,6 +262,7 @@ namespace tz::gl
 	private:
 		/// Stores whether we expect to present submitted results to a swapchain.
 		bool requires_present;
+		bool is_compute;
 		/// Hardware queue which will be used for the render work submission (and presentation, if we need to do so).
 		vk2::hardware::Queue* graphics_queue;
 		/// Hardware queue which will be used for any compute work that needs to be done.

@@ -769,8 +769,9 @@ namespace tz::gl
 
 //--------------------------------------------------------------------------------------------------
 
-	CommandProcessor::CommandProcessor(vk2::LogicalDevice& ldev, std::size_t frame_in_flight_count, OutputTarget output_target, std::span<vk2::Framebuffer> output_framebuffers):
+	CommandProcessor::CommandProcessor(vk2::LogicalDevice& ldev, std::size_t frame_in_flight_count, OutputTarget output_target, std::span<vk2::Framebuffer> output_framebuffers, bool is_compute):
 	requires_present(output_target == OutputTarget::Window),
+	is_compute(is_compute),
 	graphics_queue(ldev.get_hardware_queue
 	({
 		.field = {vk2::QueueFamilyType::Graphics},
@@ -825,56 +826,74 @@ namespace tz::gl
 	CommandProcessor::RenderWorkSubmitResult CommandProcessor::do_render_work(vk2::Swapchain* maybe_swapchain)
 	{
 		TZ_PROFZONE("Vulkan Frontend - RendererVulkan CommandProcessor (Do Render Work)", TZ_PROFCOL_YELLOW);
-		if(this->requires_present)
+		if(this->is_compute)
 		{
-			tz_assert(maybe_swapchain != nullptr, "Trying to do render work with presentation, but no Swapchain provided. Please submit a bug report.");
-			vk2::Swapchain& swapchain = *maybe_swapchain;
-			// Submit & Present
-			this->in_flight_fences[this->current_frame].wait_until_signalled();
-			this->output_image_index = swapchain.acquire_image
-			({
-				.signal_semaphore = &this->image_semaphores[current_frame]
-			}).image_index;
-
-			const vk2::Fence*& target_image = this->images_in_flight[this->output_image_index];
-			if(target_image != nullptr)
-			{
-				target_image->wait_until_signalled();
-			}
-			target_image = &this->in_flight_fences[this->output_image_index];
-
 			this->in_flight_fences[this->current_frame].unsignal();
-			this->graphics_queue->submit
+			this->compute_queue->submit
 			({
-				.command_buffers = {&this->get_render_command_buffers()[this->output_image_index]},
-				.waits =
-				{
-					vk2::hardware::Queue::SubmitInfo::WaitInfo
-					{
-						.wait_semaphore = &this->image_semaphores[this->current_frame],
-						.wait_stage = vk2::PipelineStage::ColourAttachmentOutput
-					}
-				},
-				.signal_semaphores = {&this->render_work_semaphores[this->current_frame]},
+				.command_buffers = {&this->get_render_command_buffers().front()},
+				.waits = {},
+				.signal_semaphores = {},
 				.execution_complete_fence = &this->in_flight_fences[this->current_frame]
 			});
 
-			CommandProcessor::RenderWorkSubmitResult result;
-
-			result.present = this->graphics_queue->present
-			({
-				.wait_semaphores = {&this->render_work_semaphores[this->current_frame]},
-				.swapchain = maybe_swapchain,
-				.swapchain_image_index = this->output_image_index
-			});
-			this->current_frame = (this->current_frame + 1) % this->frame_in_flight_count;
-			return result;
+			// TODO: Dont just wait insta.
+			this->in_flight_fences[this->current_frame].wait_until_signalled();
+			return {vk2::hardware::Queue::PresentResult::Success};
 		}
 		else
 		{
-			// Headlessly
-			tz_error("Headless rendering not yet implemented.");
-			return {.present = vk2::hardware::Queue::PresentResult::Fail_FatalError};
+			if(this->requires_present)
+			{
+				tz_assert(maybe_swapchain != nullptr, "Trying to do render work with presentation, but no Swapchain provided. Please submit a bug report.");
+				vk2::Swapchain& swapchain = *maybe_swapchain;
+				// Submit & Present
+				this->in_flight_fences[this->current_frame].wait_until_signalled();
+				this->output_image_index = swapchain.acquire_image
+				({
+					.signal_semaphore = &this->image_semaphores[current_frame]
+				}).image_index;
+
+				const vk2::Fence*& target_image = this->images_in_flight[this->output_image_index];
+				if(target_image != nullptr)
+				{
+					target_image->wait_until_signalled();
+				}
+				target_image = &this->in_flight_fences[this->output_image_index];
+
+				this->in_flight_fences[this->current_frame].unsignal();
+				this->graphics_queue->submit
+				({
+					.command_buffers = {&this->get_render_command_buffers()[this->output_image_index]},
+					.waits =
+					{
+						vk2::hardware::Queue::SubmitInfo::WaitInfo
+						{
+							.wait_semaphore = &this->image_semaphores[this->current_frame],
+							.wait_stage = vk2::PipelineStage::ColourAttachmentOutput
+						}
+					},
+					.signal_semaphores = {&this->render_work_semaphores[this->current_frame]},
+					.execution_complete_fence = &this->in_flight_fences[this->current_frame]
+				});
+
+				CommandProcessor::RenderWorkSubmitResult result;
+
+				result.present = this->graphics_queue->present
+				({
+					.wait_semaphores = {&this->render_work_semaphores[this->current_frame]},
+					.swapchain = maybe_swapchain,
+					.swapchain_image_index = this->output_image_index
+				});
+				this->current_frame = (this->current_frame + 1) % this->frame_in_flight_count;
+				return result;
+			}
+			else
+			{
+				// Headlessly
+				tz_error("Headless rendering not yet implemented.");
+				return {.present = vk2::hardware::Queue::PresentResult::Fail_FatalError};
+			}
 		}
 	}
 
@@ -900,7 +919,7 @@ namespace tz::gl
 	resources(info.get_resources(), *this->ldev, this->get_frame_in_flight_count(device_info)),
 	output(info.get_output(), device_info.output_images, !info.get_options().contains(RendererOption::NoDepthTesting), *this->ldev),
 	pipeline(info.shader(), this->resources.get_descriptor_layout(), this->output.get_render_pass(), this->get_frame_in_flight_count(device_info), output.get_output_dimensions(), !info.get_options().contains(RendererOption::NoDepthTesting), info.get_options().contains(RendererOption::AlphaBlending)),
-	command(*this->ldev, this->get_frame_in_flight_count(device_info), info.get_output() != nullptr ? info.get_output()->get_target() : OutputTarget::Window, this->output.get_output_framebuffers()),
+	command(*this->ldev, this->get_frame_in_flight_count(device_info), info.get_output() != nullptr ? info.get_output()->get_target() : OutputTarget::Window, this->output.get_output_framebuffers(), pipeline.is_compute()),
 	maybe_swapchain(device_info.maybe_swapchain),
 	options(info.get_options()),
 	clear_colour(info.get_clear_colour())
@@ -1287,7 +1306,38 @@ namespace tz::gl
 		TZ_PROFZONE("Vulkan Frontend - RendererVulkan Setup Compute Commands", TZ_PROFCOL_YELLOW);
 		tz_assert(this->pipeline.is_compute(), "Running compute command recording path, but pipeline is a graphics pipeline. Logic error, please submit a bug report.");
 
-		tz_error("Sorry. Compute not yet implemented.");
+		//tz_error("Sorry. Compute not yet implemented.");
+
+		this->command.set_rendering_commands([this](vk2::CommandBufferRecording& recording, std::size_t framebuffer_id)
+		{
+			tz_assert(framebuffer_id < this->output.get_output_framebuffers().size(), "Attempted to retrieve output framebuffer at index %zu, but there are only %zu framebuffers available. Please submit a bug report.", framebuffer_id, this->output.get_output_framebuffers().size());
+			recording.bind_pipeline
+			({
+				.pipeline = &this->pipeline.get_pipeline(),
+			});
+			tz::BasicList<const vk2::DescriptorSet*> sets;
+			if(!this->resources.empty())
+			{
+				std::span<const vk2::DescriptorSet> resource_sets = this->resources.get_descriptor_sets();
+				sets.resize(resource_sets.size());
+				std::transform(resource_sets.begin(), resource_sets.end(), sets.begin(), [](const vk2::DescriptorSet& set){return &set;});
+				recording.bind_descriptor_sets
+				({
+					.pipeline_layout = &this->pipeline.get_pipeline().get_layout(),
+					.context = this->pipeline.get_pipeline().get_context(),
+					.descriptor_sets = sets,
+					.first_set_id = 0
+				});
+			}
+
+			tz_assert(!this->resources.try_get_index_buffer(), "Compute Renderer has an index buffer applied. This doesn't make any sense. Please submit a bug report.");
+			{
+				recording.dispatch
+				({
+					.groups = {1u, 1u, 1u}
+				});
+			}
+		});
 	}
 
 	void RendererVulkan::setup_work_commands()
