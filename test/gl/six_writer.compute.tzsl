@@ -8,5 +8,5 @@ resource(id = 0) buffer NumberStorage
 
 void main()
 {
-	num = 6.0f;
+	num *= 6.0f;
 }

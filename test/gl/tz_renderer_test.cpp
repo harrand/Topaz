@@ -124,7 +124,7 @@ void resize_window(tz::gl::Device& dev)
 
 void renderer_compute_test(tz::gl::Device& dev)
 {
-	tz::gl::BufferResource number = tz::gl::BufferResource::from_one(0.0f, tz::gl::ResourceAccess::DynamicFixed);
+	tz::gl::BufferResource number = tz::gl::BufferResource::from_one(1.0f, tz::gl::ResourceAccess::DynamicFixed);
 
 	tz::gl::RendererInfo rinfo;
 	rinfo.shader().set_shader(tz::gl::ShaderStage::Compute, ImportedShaderSource(six_writer, compute));
@@ -134,8 +134,10 @@ void renderer_compute_test(tz::gl::Device& dev)
 
 	compute.render();
 
-	float num = compute.get_resource(numbuf)->data_as<float>().front();
+	float& num = compute.get_resource(numbuf)->data_as<float>().front();
 	tz_assert(num == 6.0f, "Compute shader was meant to write 6.0f to num that was initially 0.0f. The current value is %.1ff", num);
+	compute.render();
+	tz_assert(num == 36.0f, "Compute shader was meant to write 36.0f to num that was initially 6.0f. The current value is %.1ff", num);
 }
 
 void semantics(tz::gl::Device& dev)
