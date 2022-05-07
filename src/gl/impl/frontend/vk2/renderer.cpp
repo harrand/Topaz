@@ -750,6 +750,11 @@ namespace tz::gl
 		.field = {vk2::QueueFamilyType::Graphics},
 		.present_support = this->requires_present
 	})),
+	compute_queue(ldev.get_hardware_queue
+	({
+		.field = {vk2::QueueFamilyType::Compute},
+		.present_support = false
+	})),
 	command_pool
 	({
 		.queue = this->graphics_queue,
@@ -765,6 +770,8 @@ namespace tz::gl
 	in_flight_fences(),
 	images_in_flight(this->frame_in_flight_count, nullptr)
 	{
+		tz_assert(this->graphics_queue != nullptr, "Could not retrieve graphics present queue. Either your machine does not meet requirements, or (more likely) a logical error. Please submit a bug report.");
+		tz_assert(this->compute_queue != nullptr, "Could not retrieve compute queue. Either your machine does not meet requirements, or (more likely) a logical error. Please submit a bug report.");
 		tz_assert(output_framebuffers.size() == this->frame_in_flight_count, "Provided incorrect number of output framebuffers. We must have enough framebuffers for each frame we have in flight. Provided %zu framebuffers, but need %zu because that's how many frames we have in flight.", output_framebuffers.size(), this->frame_in_flight_count);
 		tz_assert(this->commands.success(), "Failed to allocate from CommandPool");
 		for(std::size_t i = 0; i < this->frame_in_flight_count; i++)

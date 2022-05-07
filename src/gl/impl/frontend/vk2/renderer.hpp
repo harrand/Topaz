@@ -259,6 +259,7 @@ namespace tz::gl
 		bool requires_present;
 		/// Hardware queue which will be used for the render work submission (and presentation, if we need to do so).
 		vk2::hardware::Queue* graphics_queue;
+		vk2::hardware::Queue* compute_queue;
 		/// Pool which handles allocation of command buffers.
 		vk2::CommandPool command_pool;
 		/// Stores allocated command buffers.
