@@ -147,7 +147,7 @@ int main()
 	{
 		tz::gl::Device dev;
 		empty_renderer(dev);
-		//empty_renderer_compute(dev);
+		empty_renderer_compute(dev);
 		renderer_creation(dev);
 		renderer_creation_index_buffer(dev);
 		renderer_edit(dev);

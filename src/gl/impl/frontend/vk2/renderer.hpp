@@ -194,7 +194,7 @@ namespace tz::gl
 		 */
 		const vk2::GraphicsPipeline& get_pipeline() const;
 		void recreate(const vk2::RenderPass& new_render_pass, tz::Vec2ui new_viewport_dimensions);
-		bool is_compute() const;
+		bool is_compute(const ShaderInfo& sinfo) const;
 	private:
 		vk2::Shader make_shader(const vk2::LogicalDevice& ldev, const ShaderInfo& sinfo) const;
 		vk2::PipelineLayout make_pipeline_layout(const vk2::DescriptorLayout& dlayout, std::size_t frame_in_flight_count) const;
