@@ -38,6 +38,14 @@ namespace tz::gl::vk2
 		const LogicalDevice* device;
 	};
 
+	struct ComputePipelineInfo
+	{
+		ShaderPipelineData shader;
+		const PipelineLayout* pipeline_layout;
+
+		const LogicalDevice* device;
+	};
+
 	/**
 	 * @ingroup tz_gl_vk_graphics_pipeline
 	 * Represents the Graphics Pipeline.
@@ -62,6 +70,45 @@ namespace tz::gl::vk2
 	private:
 		VkPipeline pipeline;
 		GraphicsPipelineInfo info;
+	};
+
+	class ComputePipeline
+	{
+	public:
+		ComputePipeline(const ComputePipelineInfo& info);
+		ComputePipeline(const ComputePipeline& copy) = delete;
+		ComputePipeline(ComputePipeline&& move);
+		~ComputePipeline();
+
+		ComputePipeline& operator=(const ComputePipeline& rhs) = delete;
+		ComputePipeline& operator=(ComputePipeline&& rhs);
+
+		const LogicalDevice& get_device() const;
+		const ComputePipelineInfo& get_info() const;
+		void set_layout(PipelineLayout& layout);
+
+		using NativeType = VkPipeline;
+		NativeType native() const;
+	private:
+		VkPipeline pipeline;
+		ComputePipelineInfo info;
+	};
+
+	class Pipeline
+	{
+	public:
+		Pipeline(const GraphicsPipelineInfo& graphics_info);
+		Pipeline(const ComputePipelineInfo& compute_info);
+
+		PipelineContext get_context() const;
+		const LogicalDevice& get_device() const;
+		const PipelineLayout& get_layout() const;
+		void set_layout(PipelineLayout& layout);
+
+		using NativeType = VkPipeline;
+		NativeType native() const;
+	private:
+		std::variant<GraphicsPipeline, ComputePipeline> pipeline_variant;
 	};
 }
 

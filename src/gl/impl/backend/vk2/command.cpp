@@ -114,7 +114,7 @@ namespace tz::gl::vk2
 		tz_assert(command.pipeline != nullptr, "BindPipeline Command contained nullptr GraphicsPipeline");
 		this->register_command(command);
 
-		vkCmdBindPipeline(this->get_command_buffer().native(), static_cast<VkPipelineBindPoint>(command.pipeline_context), command.pipeline->native());
+		vkCmdBindPipeline(this->get_command_buffer().native(), static_cast<VkPipelineBindPoint>(command.pipeline->get_context()), command.pipeline->native());
 	}
 
 	void CommandBufferRecording::draw(VulkanCommand::Draw command)

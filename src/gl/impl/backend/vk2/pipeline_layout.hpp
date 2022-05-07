@@ -32,6 +32,8 @@ namespace tz::gl::vk2
 		PipelineLayout& operator=(const PipelineLayout& rhs) = delete;
 		PipelineLayout& operator=(PipelineLayout&& rhs);
 
+		const LogicalDevice& get_device() const;
+
 		using NativeType = VkPipelineLayout;
 		NativeType native() const;
 	private:

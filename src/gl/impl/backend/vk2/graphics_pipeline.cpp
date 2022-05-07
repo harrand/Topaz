@@ -163,6 +163,142 @@ namespace tz::gl::vk2
 	{
 		return this->pipeline;
 	}
+
+	ComputePipeline::ComputePipeline(const ComputePipelineInfo& info):
+	pipeline(VK_NULL_HANDLE),
+	info(info)
+	{
+		TZ_PROFZONE("Vulkan Backend - ComputePipeline Create", TZ_PROFCOL_RED);
+		VkComputePipelineCreateInfo create
+		{
+			.sType = VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO,
+			.pNext = nullptr,
+			.flags = 0,
+			.stage = this->info.shader.create_infos.front(),
+			.layout = this->info.pipeline_layout->native(),
+			.basePipelineHandle = VK_NULL_HANDLE,
+			.basePipelineIndex = 0
+		};
+
+		VkResult res = vkCreateComputePipelines(this->get_device().native(), VK_NULL_HANDLE, 1, &create, nullptr, &this->pipeline);
+		switch(res)
+		{
+			case VK_SUCCESS:
+
+			break;
+			case VK_ERROR_OUT_OF_HOST_MEMORY:
+				tz_error("Failed to create ComputePipeline because we ran out of host memory (RAM). Please ensure that your system meets the minimum requirements.");
+			break;
+			case VK_ERROR_OUT_OF_DEVICE_MEMORY:
+				tz_error("Failed to create ComputePipeline because we ran out of device memory (VRAM). Please ensure that your system meets the minimum requirements.");
+			break;
+			case VK_ERROR_INVALID_SHADER_NV:
+				tz_error("Failed to create ComputePipeline because one or more shaders failed to compile/link. Please submit a bug report");
+			break;
+			default:
+				tz_error("Failed to create ComputePipeline but cannot determine why. Please submit a bug report.");
+			break;
+		}
+	}
+
+	ComputePipeline::ComputePipeline(ComputePipeline&& move):
+	pipeline(VK_NULL_HANDLE),
+	info()
+	{
+		*this = std::move(move);
+	}
+
+	ComputePipeline::~ComputePipeline()
+	{
+		if(this->pipeline != VK_NULL_HANDLE)
+		{
+			vkDestroyPipeline(this->get_device().native(), this->pipeline, nullptr);
+			this->pipeline = VK_NULL_HANDLE;
+		}
+	}
+
+	ComputePipeline& ComputePipeline::operator=(ComputePipeline&& rhs)
+	{
+		std::swap(this->pipeline, rhs.pipeline);
+		std::swap(this->info, rhs.info);
+		return *this;
+	}
+
+	const LogicalDevice& ComputePipeline::get_device() const
+	{
+		tz_assert(this->info.device != nullptr, "ComputePipelineInfo contained nullptr LogicalDevice. Please submit a bug report.");
+		return *this->info.device;
+	}
+
+	const ComputePipelineInfo& ComputePipeline::get_info() const
+	{
+		return this->info;
+	}
+
+	void ComputePipeline::set_layout(PipelineLayout& layout)
+	{
+		this->info.pipeline_layout = &layout;
+	}
+
+	ComputePipeline::NativeType ComputePipeline::native() const
+	{
+		return this->pipeline;
+	}
+
+	Pipeline::Pipeline(const GraphicsPipelineInfo& graphics_info):
+	pipeline_variant(GraphicsPipeline{graphics_info}){}
+
+	Pipeline::Pipeline(const ComputePipelineInfo& compute_info):
+	pipeline_variant(ComputePipeline{compute_info}){}
+
+	PipelineContext Pipeline::get_context() const
+	{
+		if(std::holds_alternative<GraphicsPipeline>(this->pipeline_variant))
+		{
+			return PipelineContext::Graphics;
+		}
+		return PipelineContext::Compute;
+	}
+
+	const LogicalDevice& Pipeline::get_device() const
+	{
+		const LogicalDevice* ldev;
+		std::visit([&ldev](auto&& arg)
+		{
+			ldev = &arg.get_device();
+		}, this->pipeline_variant);
+		tz_assert(ldev != nullptr, "Pipeline had no LogicalDevice attached. Please submit a bug report.");
+		return *ldev;
+	}
+
+	const PipelineLayout& Pipeline::get_layout() const
+	{
+		const PipelineLayout* lay;
+		std::visit([&lay](auto&& arg)
+		{
+			lay = arg.get_info().pipeline_layout;
+		}, this->pipeline_variant);
+		tz_assert(lay != nullptr, "Pipeline had no PipelineLayout attached. Please submit a bug report.");
+		return *lay;
+	}
+
+	void Pipeline::set_layout(PipelineLayout& layout)
+	{
+		std::visit([&layout](auto&& arg)
+		{
+			arg.set_layout(layout);
+		}, this->pipeline_variant);
+	}
+
+	Pipeline::NativeType Pipeline::native() const
+	{
+		Pipeline::NativeType nat;
+		std::visit([&nat](auto&& arg)
+		{
+			nat = arg.native();
+		}, this->pipeline_variant);
+		return nat;
+	}
 }
 
 #endif // TZ_VULKAN

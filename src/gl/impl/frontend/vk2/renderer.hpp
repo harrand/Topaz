@@ -192,17 +192,19 @@ namespace tz::gl
 		 * Retrieve the vulkan graphics pipeline which will be used for rendering.
 		 * @return Graphics pipeline which should be bound when rendering.
 		 */
-		const vk2::GraphicsPipeline& get_pipeline() const;
+		const vk2::Pipeline& get_pipeline() const;
 		void recreate(const vk2::RenderPass& new_render_pass, tz::Vec2ui new_viewport_dimensions);
 		bool is_compute(const ShaderInfo& sinfo) const;
 	private:
 		vk2::Shader make_shader(const vk2::LogicalDevice& ldev, const ShaderInfo& sinfo) const;
 		vk2::PipelineLayout make_pipeline_layout(const vk2::DescriptorLayout& dlayout, std::size_t frame_in_flight_count) const;
-		vk2::GraphicsPipeline make_graphics_pipeline(tz::Vec2ui viewport_dimensions, bool depth_testing_enabled, bool alpha_blending_enabled, const vk2::RenderPass& render_pass) const;
+		vk2::GraphicsPipelineInfo make_graphics_pipeline(tz::Vec2ui viewport_dimensions, bool depth_testing_enabled, bool alpha_blending_enabled, const vk2::RenderPass& render_pass) const;
+		vk2::ComputePipelineInfo make_compute_pipeline() const;
+		vk2::Pipeline make_pipeline(const ShaderInfo& sinfo, tz::Vec2ui viewport_dimensions, bool depth_testing_enabled, bool alpha_blending_enabled, const vk2::RenderPass& render_pass) const;
 
 		vk2::Shader shader;
 		vk2::PipelineLayout pipeline_layout;
-		vk2::GraphicsPipeline graphics_pipeline;
+		vk2::Pipeline graphics_pipeline;
 		bool depth_testing_enabled;
 	};
 

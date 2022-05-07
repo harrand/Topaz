@@ -65,6 +65,11 @@ namespace tz::gl::vk2
 		return *this;
 	}
 
+	const LogicalDevice& PipelineLayout::get_device() const
+	{
+		return *this->logical_device;
+	}
+
 	PipelineLayout::NativeType PipelineLayout::native() const
 	{
 		return this->pipeline_layout;

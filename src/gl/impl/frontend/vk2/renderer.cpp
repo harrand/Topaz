@@ -597,7 +597,7 @@ namespace tz::gl
 	):
 	shader(this->make_shader(dlayout.get_device(), sinfo)),
 	pipeline_layout(this->make_pipeline_layout(dlayout, frame_in_flight_count)),
-	graphics_pipeline(this->make_graphics_pipeline(viewport_dimensions, depth_testing_enabled, alpha_blending_enabled, render_pass)),
+	graphics_pipeline(this->make_pipeline(sinfo, viewport_dimensions, depth_testing_enabled, alpha_blending_enabled, render_pass)),
 	depth_testing_enabled(depth_testing_enabled)
 	{
 		// TODO: Implement vk2::LogicalDevice equality operator
@@ -624,7 +624,7 @@ namespace tz::gl
 		return *this;
 	}
 
-	const vk2::GraphicsPipeline& GraphicsPipelineManager::get_pipeline() const
+	const vk2::Pipeline& GraphicsPipelineManager::get_pipeline() const
 	{
 		return this->graphics_pipeline;
 	}
@@ -658,7 +658,6 @@ namespace tz::gl
 	vk2::Shader GraphicsPipelineManager::make_shader(const vk2::LogicalDevice& ldev, const ShaderInfo& sinfo) const
 	{
 		TZ_PROFZONE("Vulkan Frontend - RendererVulkan GraphicsPipelineManager (Shader Create)", TZ_PROFCOL_YELLOW);
-		tz_assert(!this->is_compute(sinfo), "Compute Shaders are not yet implemented.");
 		std::vector<char> vtx_src, frg_src, cmp_src;
 		tz::BasicList<vk2::ShaderModuleInfo> modules;
 		if(sinfo.has_shader(ShaderStage::Compute))
@@ -723,27 +722,49 @@ namespace tz::gl
 		}};
 	}
 
-	vk2::GraphicsPipeline GraphicsPipelineManager::make_graphics_pipeline(tz::Vec2ui viewport_dimensions, bool depth_testing_enabled, bool alpha_blending_enabled, const vk2::RenderPass& render_pass) const
+	vk2::GraphicsPipelineInfo GraphicsPipelineManager::make_graphics_pipeline(tz::Vec2ui viewport_dimensions, bool depth_testing_enabled, bool alpha_blending_enabled, const vk2::RenderPass& render_pass) const
 	{
-		vk2::GraphicsPipelineInfo gpinfo;
-		gpinfo.shaders = this->shader.native_data();
-		gpinfo.state.viewport = vk2::create_basic_viewport(static_cast<tz::Vec2>(viewport_dimensions));
-		gpinfo.state.depth_stencil =
+		return
 		{
-			.depth_testing = depth_testing_enabled,
-			.depth_writes = depth_testing_enabled
+			.shaders = this->shader.native_data(),
+			.state =
+			{
+				.viewport = vk2::create_basic_viewport(static_cast<tz::Vec2>(viewport_dimensions)),
+				.depth_stencil =
+				{
+					.depth_testing = depth_testing_enabled,
+					.depth_writes = depth_testing_enabled
+				},
+				.colour_blend =
+				{
+					.attachment_states = alpha_blending_enabled ? tz::BasicList<vk2::ColourBlendState::AttachmentState>{vk2::ColourBlendState::alpha_blending()} : tz::BasicList<vk2::ColourBlendState::AttachmentState>{vk2::ColourBlendState::no_blending()},
+					.logical_operator = VK_LOGIC_OP_COPY
+				}
+			},
+			.pipeline_layout = &this->pipeline_layout,
+			.render_pass = &render_pass,
+			.device = &this->pipeline_layout.get_device()
 		};
+	}
 
-		gpinfo.state.colour_blend =
+	vk2::ComputePipelineInfo GraphicsPipelineManager::make_compute_pipeline() const
+	{
+		return
 		{
-			.attachment_states = alpha_blending_enabled ? tz::BasicList<vk2::ColourBlendState::AttachmentState>{vk2::ColourBlendState::alpha_blending()} : tz::BasicList<vk2::ColourBlendState::AttachmentState>{vk2::ColourBlendState::no_blending()},
-			.logical_operator = VK_LOGIC_OP_COPY
+			.shader = this->shader.native_data(),
+			.pipeline_layout = &this->pipeline_layout,
+			.device = &this->pipeline_layout.get_device()
 		};
-		gpinfo.pipeline_layout = &this->pipeline_layout;
-		gpinfo.render_pass = &render_pass;
-		gpinfo.device = &render_pass.get_device();
+	}
 
-		return {gpinfo};
+	vk2::Pipeline GraphicsPipelineManager::make_pipeline(const ShaderInfo& sinfo, tz::Vec2ui viewport_dimensions, bool depth_testing_enabled, bool alpha_blending_enabled, const vk2::RenderPass& render_pass) const
+	{
+		if(this->is_compute(sinfo))
+		{
+			return {this->make_compute_pipeline()};
+		}
+
+		return {this->make_graphics_pipeline(viewport_dimensions, depth_testing_enabled, alpha_blending_enabled, render_pass)};
 	}
 
 //--------------------------------------------------------------------------------------------------
@@ -1212,7 +1233,6 @@ namespace tz::gl
 			recording.bind_pipeline
 			({
 				.pipeline = &this->pipeline.get_pipeline(),
-				.pipeline_context = vk2::PipelineContext::Graphics
 			});
 			tz::BasicList<const vk2::DescriptorSet*> sets;
 			if(!this->resources.empty())
@@ -1222,8 +1242,8 @@ namespace tz::gl
 				std::transform(resource_sets.begin(), resource_sets.end(), sets.begin(), [](const vk2::DescriptorSet& set){return &set;});
 				recording.bind_descriptor_sets
 				({
-					.pipeline_layout = this->pipeline.get_pipeline().get_info().pipeline_layout,
-					.context = vk2::PipelineContext::Graphics,
+					.pipeline_layout = &this->pipeline.get_pipeline().get_layout(),
+					.context = this->pipeline.get_pipeline().get_context(),
 					.descriptor_sets = sets,
 					.first_set_id = 0
 				});

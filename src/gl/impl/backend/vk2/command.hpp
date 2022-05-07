@@ -62,9 +62,7 @@ namespace tz::gl::vk2
 		struct BindPipeline
 		{
 			/// Pipeline to be bound. Must not be null.
-			const GraphicsPipeline* pipeline;
-			/// Specify the pipeline context to bind to. Binding to one context does not disturb existing binds to other contexts.
-			PipelineContext pipeline_context;
+			const Pipeline* pipeline;
 		};
 
 		/**
