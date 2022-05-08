@@ -26,11 +26,13 @@ int main()
 			tz::Vec4{0.0f, 1.0f, 0.0f, 1.0f},
 			tz::Vec4{0.0f, 0.0f, 1.0f, 1.0f}
 		});
+		tz::gl::BufferResource time_buffer = tz::gl::BufferResource::from_one(0u);
 
 		tz::gl::RendererInfo pinfo;
 		pinfo.shader().set_shader(tz::gl::ShaderStage::Compute, ImportedShaderSource(tz_compute_demo, compute));
 		pinfo.set_options({tz::gl::RendererOption::BlockingCompute});
 		auto cbuf = pinfo.add_resource(colour_buffer);
+		pinfo.add_resource(time_buffer);
 
 		tz::gl::Renderer compute_worker = dev.create_renderer(pinfo);
 

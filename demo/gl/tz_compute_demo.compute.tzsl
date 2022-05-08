@@ -6,10 +6,21 @@ resource(id = 0) buffer ColourData
 	vec4 colours[4];
 };
 
+resource(id = 1) buffer Time
+{
+	uint time;
+};
+
+float get_value(float mul)
+{
+	return (sin(time * mul * 0.00001f) + 1.0f) * 0.5f;
+}
+
 void main()
 {
 	uint id = in::local_id[0];
-	float strength = length(colours[id]);
-	float sign = strength > 1.0f ? 0.01f : 1.0002f;
-	colours[id] = colours[id] * sign;
+	colours[id].r = get_value(id * 5.0f);
+	colours[id].g = get_value(id * 2.0f);
+	colours[id].b = get_value(id * 0.2f);
+	atomicAdd(time, 1);
 }
