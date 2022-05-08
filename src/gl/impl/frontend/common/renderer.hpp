@@ -28,6 +28,7 @@ namespace tz::gl
 		 * Retrieve a span containing all of the specified resources. Size of the span is guaranteed to be equal to @ref resource_count()
 		 */
 		std::span<const IResource* const> get_resources() const;
+		std::span<const IComponent* const> get_components() const;
 		/**
 		 * Add a new resource, which will be used by a Renderer which is created from this helper struct.
 		 *
@@ -109,7 +110,14 @@ namespace tz::gl
 		{
 			for(const Asset* asset : assets)
 			{
-				this->asset_storage.push_back(asset->unique_clone());
+				if(asset == nullptr)
+				{
+					this->asset_storage.push_back(nullptr);
+				}
+				else
+				{
+					this->asset_storage.push_back(asset->unique_clone());
+				}
 			}
 		}
 		unsigned int count() const

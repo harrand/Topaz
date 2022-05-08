@@ -44,7 +44,7 @@ int main()
 		{
 			TZ_FRAME_BEGIN;
 			tz::window().update();
-			compute_worker.render(1);
+			compute_worker.render();
 			renderer.render(1);
 			TZ_FRAME_END;
 		}

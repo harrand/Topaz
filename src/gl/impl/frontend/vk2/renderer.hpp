@@ -23,6 +23,9 @@
 namespace tz::gl
 {
 	using namespace tz::gl;
+	using RendererInfoVulkan = RendererInfoCommon;
+
+
 	/**
 	 * @ingroup tz_gl2_graphicsapi_vk_frontend
 	 * @defgroup tz_gl2_graphicsapi_vk_frontend_renderer Renderer Implementation
@@ -44,9 +47,9 @@ namespace tz::gl
 		 * @param resources A view into an array of existing resources. All of these will be copied into separate store, meaning the lifetime of the elements of the span need not last beyond this constructor's execution.
 		 * @param ldev Vulkan LogicalDevice, this will be used to handle the various components and vulkan descriptor shenanigans.
 		 */
-		ResourceStorage(std::span<const IResource* const> resources, const vk2::LogicalDevice& ldev, std::size_t frame_in_flight_count);
+		ResourceStorage(const RendererInfoVulkan& info, const vk2::LogicalDevice& ldev, std::size_t frame_in_flight_count);
 		ResourceStorage(ResourceStorage&& move);
-		~ResourceStorage() = default;
+		~ResourceStorage();
 		ResourceStorage& operator=(ResourceStorage&& rhs);
 		/**
 		 * Retrieve the component (read-only) which stores the corresponding vulkan backend objects for the resource corresponding to the handle.
@@ -76,8 +79,8 @@ namespace tz::gl
 	private:
 
 		/// Storage for all cloned resource's components.
-		std::vector<std::unique_ptr<IComponent>> components;
-		std::vector<IComponent*> component_references;
+		std::vector<IComponent*> components;
+		std::vector<bool> component_ownership_mask;
 		/// An ImageView for each ImageResource that was passed to the constructor. These are views referring to the corresponding ImageComponent to said resource.
 		std::vector<vk2::ImageView> image_component_views;
 		/// Hard-coded sampler info. This might need to be editable in the future, but for now the user has no control over this. Care must be taken to ensure that other graphics API frontends sample images in the same way.
@@ -289,9 +292,6 @@ namespace tz::gl
 		std::size_t current_frame = 0;
 
 	};
-
-	using RendererInfoVulkan = RendererInfoCommon;
-
 
 	struct RendererResizeInfoVulkan
 	{

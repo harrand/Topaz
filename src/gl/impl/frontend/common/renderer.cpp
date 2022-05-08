@@ -19,6 +19,11 @@ namespace tz::gl
 		return this->resources;
 	}
 
+	std::span<const IComponent* const> RendererInfoCommon::get_components() const
+	{
+		return this->components;
+	}
+
 	ResourceHandle RendererInfoCommon::add_resource(IResource& resource)
 	{
 		#if TZ_DEBUG
@@ -34,6 +39,7 @@ namespace tz::gl
 
 	ResourceHandle RendererInfoCommon::add_component(IComponent& component)
 	{
+		this->resources.push_back(nullptr);
 		this->components.push_back(&component);
 		return static_cast<tz::HandleValue>(this->real_resource_count() - 1);
 	}
@@ -95,6 +101,6 @@ namespace tz::gl
 
 	std::size_t RendererInfoCommon::real_resource_count() const
 	{
-		return this->resources.size() + this->components.size();
+		return this->resources.size();
 	}
 }

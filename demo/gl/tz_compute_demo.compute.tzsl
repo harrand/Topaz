@@ -9,5 +9,7 @@ resource(id = 0) buffer ColourData
 void main()
 {
 	uint id = in::local_id[0];
-	colours[id] = colours[4 - id];
+	float strength = length(colours[id]);
+	float sign = strength > 1.0f ? 0.01f : 1.0002f;
+	colours[id] = colours[id] * sign;
 }
