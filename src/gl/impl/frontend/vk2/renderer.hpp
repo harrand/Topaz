@@ -49,7 +49,7 @@ namespace tz::gl
 		 */
 		ResourceStorage(const RendererInfoVulkan& info, const vk2::LogicalDevice& ldev, std::size_t frame_in_flight_count);
 		ResourceStorage(ResourceStorage&& move);
-		~ResourceStorage();
+		~ResourceStorage() = default;
 		ResourceStorage& operator=(ResourceStorage&& rhs);
 		/**
 		 * Retrieve the component (read-only) which stores the corresponding vulkan backend objects for the resource corresponding to the handle.
@@ -79,8 +79,7 @@ namespace tz::gl
 	private:
 
 		/// Storage for all cloned resource's components.
-		std::vector<IComponent*> components;
-		std::vector<bool> component_ownership_mask;
+		std::vector<tz::MaybeOwnedPtr<IComponent>> components;
 		/// An ImageView for each ImageResource that was passed to the constructor. These are views referring to the corresponding ImageComponent to said resource.
 		std::vector<vk2::ImageView> image_component_views;
 		/// Hard-coded sampler info. This might need to be editable in the future, but for now the user has no control over this. Care must be taken to ensure that other graphics API frontends sample images in the same way.

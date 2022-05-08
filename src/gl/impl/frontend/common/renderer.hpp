@@ -1,5 +1,6 @@
 #ifndef TOPAZ_GL2_IMPL_FRONTEND_COMMON_RENDERER_HPP
 #define TOPAZ_GL2_IMPL_FRONTEND_COMMON_RENDERER_HPP
+#include "core/memory.hpp"
 #include "gl/api/renderer.hpp"
 #include "gl/impl/frontend/common/shader.hpp"
 
@@ -113,23 +114,10 @@ namespace tz::gl
 				if(asset == nullptr)
 				{
 					this->asset_storage.push_back(nullptr);
-					this->asset_ownership_mask.push_back(false);
 				}
 				else
 				{
-					this->asset_storage.push_back(asset->unique_clone().release());
-					this->asset_ownership_mask.push_back(true);
-				}
-			}
-		}
-
-		~AssetStorageCommon()
-		{
-			for(std::size_t i = 0; i < this->count(); i++)
-			{
-				if(this->asset_ownership_mask[i])
-				{
-					delete this->asset_storage[i];
+					this->asset_storage.push_back(asset->unique_clone());
 				}
 			}
 		}
@@ -142,24 +130,23 @@ namespace tz::gl
 		const Asset* get(AssetHandle handle) const
 		{
 			std::size_t handle_val = static_cast<std::size_t>(static_cast<tz::HandleValue>(handle));
-			return this->asset_storage[handle_val];
+			return this->asset_storage[handle_val].get();
 		}
 
 		Asset* get(AssetHandle handle)
 		{
 			std::size_t handle_val = static_cast<std::size_t>(static_cast<tz::HandleValue>(handle));
-			return this->asset_storage[handle_val];
+			return this->asset_storage[handle_val].get();
 		}
 
 		void set(AssetHandle handle, Asset* value)
 		{
 			std::size_t handle_val = static_cast<std::size_t>(static_cast<tz::HandleValue>(handle));
-			tz_assert(!this->asset_ownership_mask[handle_val], "AssetStorageCommon: Try to set specific asset value, but the asset at that handle is not a reference (it is owned by us)");
+			tz_assert(!this->asset_storage[handle_val].owning(), "AssetStorageCommon: Try to set specific asset value, but the asset at that handle is not a reference (it is owned by us)");
 			this->asset_storage[handle_val] = value;
 		}
 	private:
-		std::vector<Asset*> asset_storage;
-		std::vector<bool> asset_ownership_mask;
+		std::vector<MaybeOwnedPtr<Asset>> asset_storage;
 	};
 
 }

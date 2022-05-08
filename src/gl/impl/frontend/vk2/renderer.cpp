@@ -56,7 +56,7 @@ namespace tz::gl
 					if(res->get_access() == ResourceAccess::DynamicFixed || res->get_access() == ResourceAccess::DynamicVariable)
 					{
 						std::span<const std::byte> initial_data = res->data();
-						std::span<std::byte> buffer_byte_data = static_cast<BufferComponentVulkan*>(this->components.back())->vk_get_buffer().map_as<std::byte>();
+						std::span<std::byte> buffer_byte_data = this->components.back().as<BufferComponentVulkan>()->vk_get_buffer().map_as<std::byte>();
 						std::copy(initial_data.begin(), initial_data.end(), buffer_byte_data.begin());
 						res->set_mapped_data(buffer_byte_data);
 					}
@@ -99,7 +99,6 @@ namespace tz::gl
 				// If we see a null resource, it means we're looking for a component (resource reference).
 				comp = const_cast<IComponent*>(info.get_components()[encountered_reference_count]);
 				this->components.push_back(comp);
-				this->component_ownership_mask.push_back(false);
 				encountered_reference_count++;
 
 				res = comp->get_resource();
@@ -112,19 +111,17 @@ namespace tz::gl
 				{
 					case ResourceType::Buffer:
 					{
-						this->components.push_back(new BufferComponentVulkan(*res, ldev));
-						this->component_ownership_mask.push_back(true);
+						this->components.push_back(tz::make_owned<BufferComponentVulkan>(*res, ldev));
 					}
 					break;
 					case ResourceType::Image:
-						this->components.push_back(new ImageComponentVulkan(*res, ldev));
-						this->component_ownership_mask.push_back(true);
+						this->components.push_back(tz::make_owned<ImageComponentVulkan>(*res, ldev));
 					break;
 					default:
 						tz_error("Unrecognised ResourceType. Please submit a bug report.");
 					break;
 				}
-				comp = this->components.back();
+				comp = this->components.back().get();
 			}
 			retrieve_resource_metadata(comp);
 		}
@@ -233,17 +230,6 @@ namespace tz::gl
 		}
 	}
 
-	ResourceStorage::~ResourceStorage()
-	{
-		for(std::size_t i = 0; i < this->count(); i++)
-		{
-			if(this->component_ownership_mask[i])
-			{
-				delete this->components[i];
-			}
-		}
-	}
-
 	ResourceStorage& ResourceStorage::operator=(ResourceStorage&& rhs)
 	{
 		std::swap(this->components, rhs.components);
@@ -263,12 +249,12 @@ namespace tz::gl
 
 	const IComponent* ResourceStorage::get_component(ResourceHandle handle) const
 	{
-		return this->components[static_cast<std::size_t>(static_cast<tz::HandleValue>(handle))];
+		return this->components[static_cast<std::size_t>(static_cast<tz::HandleValue>(handle))].get();
 	}
 
 	IComponent* ResourceStorage::get_component(ResourceHandle handle)
 	{
-		return this->components[static_cast<std::size_t>(static_cast<tz::HandleValue>(handle))];
+		return this->components[static_cast<std::size_t>(static_cast<tz::HandleValue>(handle))].get();
 	}
 
 	const vk2::DescriptorLayout& ResourceStorage::get_descriptor_layout() const
@@ -293,7 +279,7 @@ namespace tz::gl
 		{
 			return nullptr;
 		}
-		return *iter;
+		return iter->get();
 	}
 
 	std::size_t ResourceStorage::resource_count_of(ResourceType type) const
@@ -313,7 +299,7 @@ namespace tz::gl
 		{
 			if(component_ptr->get_resource()->get_type() == ResourceType::Buffer)
 			{
-				buffers.push_back(static_cast<BufferComponentVulkan*>(component_ptr));
+				buffers.push_back(component_ptr.as<BufferComponentVulkan>());
 			}
 		}
 		std::size_t descriptor_buffer_count = std::count_if(buffers.begin(), buffers.end(), [](BufferComponentVulkan* buf)
@@ -372,7 +358,7 @@ namespace tz::gl
 			IResource* res = component_ptr->get_resource();
 			if(res->get_type() == ResourceType::Image && res->get_access() != ResourceAccess::StaticFixed)
 			{
-				const vk2::Image& img = static_cast<const ImageComponentVulkan*>(component_ptr)->vk_get_image();
+				const vk2::Image& img = component_ptr.as<const ImageComponentVulkan>()->vk_get_image();
 				// If it's dynamic in any way, the user might have written changes.
 				// The user writes image data assuming the rows are tightly-packed, but this is not at all guaranteed (infact its highly unlikely). We will correct the written data each time.
 				std::span<std::byte> d = res->data();
