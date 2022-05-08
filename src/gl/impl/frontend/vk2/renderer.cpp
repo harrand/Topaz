@@ -40,23 +40,69 @@ namespace tz::gl
 		std::vector<bool> buffer_id_to_variable_access;
 		std::vector<bool> buffer_id_to_descriptor_visibility;
 		std::size_t encountered_reference_count = 0;
+
+		[[maybe_unused]] auto retrieve_resource_metadata = [this, &buffer_id_to_variable_access, &buffer_id_to_descriptor_visibility](IComponent* cmp)
+		{
+			IResource* res = cmp->get_resource();
+			switch(res->get_type())
+			{
+				case ResourceType::Buffer:
+				{
+					auto buf = static_cast<BufferComponentVulkan*>(cmp);
+					// We need to know this when creating the descriptors.
+					buffer_id_to_variable_access.push_back(res->get_access() == ResourceAccess::DynamicVariable);
+					buffer_id_to_descriptor_visibility.push_back(buf->vk_is_descriptor_relevant());
+					// If the buffer is dynamic, let's link up the resource data span now.
+					if(res->get_access() == ResourceAccess::DynamicFixed || res->get_access() == ResourceAccess::DynamicVariable)
+					{
+						std::span<const std::byte> initial_data = res->data();
+						std::span<std::byte> buffer_byte_data = static_cast<BufferComponentVulkan*>(this->components.back())->vk_get_buffer().map_as<std::byte>();
+						std::copy(initial_data.begin(), initial_data.end(), buffer_byte_data.begin());
+						res->set_mapped_data(buffer_byte_data);
+					}
+				}
+				break;
+				case ResourceType::Image:
+				{
+					auto* img = static_cast<ImageComponentVulkan*>(cmp);
+					// We will need to create an image view. Let's get that out-of-the-way-now.
+					vk2::Image& underlying_image = img->vk_get_image();
+					this->image_component_views.emplace_back
+						(vk2::ImageViewInfo{
+							.image = &underlying_image,
+							.aspect = vk2::ImageAspect::Colour
+						 });
+					// If the image is dynamic, let's link up the resource data span now.
+					if(res->get_access() == ResourceAccess::DynamicFixed || res->get_access() == ResourceAccess::DynamicVariable)
+					{
+
+						std::span<const std::byte> initial_data = res->data();
+						std::span<std::byte> image_data = {reinterpret_cast<std::byte*>(underlying_image.map()), initial_data.size_bytes()};
+						//tz_assert(initial_data.size_bytes() == image_data.size_bytes(), "ImageResource data span length disagrees with the vulkan backend image's mapped data span. Resource says %zu bytes, vk2::Image says %zu bytes", initial_data.size_bytes(), image_data.size_bytes());
+						std::copy(initial_data.begin(), initial_data.end(), image_data.begin());
+						res->set_mapped_data(image_data);
+					}
+				}
+				break;
+				default:
+					tz_error("TODO: better error message lmao");
+				break;
+			}
+		};
+
 		for(std::size_t i = 0; i < this->count(); i++)
 		{
 			IResource* res = this->get(static_cast<tz::HandleValue>(i));
+			IComponent* comp = nullptr;
 			if(res == nullptr)
 			{
 				// If we see a null resource, it means we're looking for a component (resource reference).
-				IComponent* comp = const_cast<IComponent*>(info.get_components()[encountered_reference_count]);
+				comp = const_cast<IComponent*>(info.get_components()[encountered_reference_count]);
 				this->components.push_back(comp);
 				this->component_ownership_mask.push_back(false);
 				encountered_reference_count++;
 
 				res = comp->get_resource();
-				if(res->get_type() == ResourceType::Buffer)
-				{
-					buffer_id_to_variable_access.push_back(res->get_access() == ResourceAccess::DynamicVariable);
-					buffer_id_to_descriptor_visibility.push_back(static_cast<BufferComponentVulkan*>(comp)->vk_is_descriptor_relevant());
-				}
 				// Also we'll write into the asset storage so it doesn't still think the resource is null.
 				this->set(static_cast<tz::HandleValue>(i), res);
 			}
@@ -68,46 +114,19 @@ namespace tz::gl
 					{
 						this->components.push_back(new BufferComponentVulkan(*res, ldev));
 						this->component_ownership_mask.push_back(true);
-						auto* buf_comp = static_cast<BufferComponentVulkan*>(this->components.back());
-						if(res->get_access() == ResourceAccess::DynamicFixed || res->get_access() == ResourceAccess::DynamicVariable)
-						{
-							// Tell the resource to use the buffer's data. Also copy whatever we had before.
-							std::span<const std::byte> initial_data = res->data();
-							std::span<std::byte> buffer_byte_data = static_cast<BufferComponentVulkan*>(this->components.back())->vk_get_buffer().map_as<std::byte>();
-							std::copy(initial_data.begin(), initial_data.end(), buffer_byte_data.begin());
-							res->set_mapped_data(buffer_byte_data);
-						}
-						buffer_id_to_variable_access.push_back(res->get_access() == ResourceAccess::DynamicVariable);
-						buffer_id_to_descriptor_visibility.push_back(buf_comp->vk_is_descriptor_relevant());
 					}
 					break;
 					case ResourceType::Image:
 						this->components.push_back(new ImageComponentVulkan(*res, ldev));
 						this->component_ownership_mask.push_back(true);
-						if(res->get_access() == ResourceAccess::DynamicFixed || res->get_access() == ResourceAccess::DynamicVariable)
-						{
-							std::span<const std::byte> initial_data = res->data();
-							vk2::Image& underlying_image = static_cast<ImageComponentVulkan*>(this->components.back())->vk_get_image();
-							std::span<std::byte> image_data = {reinterpret_cast<std::byte*>(underlying_image.map()), initial_data.size_bytes()};
-							//tz_assert(initial_data.size_bytes() == image_data.size_bytes(), "ImageResource data span length disagrees with the vulkan backend image's mapped data span. Resource says %zu bytes, vk2::Image says %zu bytes", initial_data.size_bytes(), image_data.size_bytes());
-							std::copy(initial_data.begin(), initial_data.end(), image_data.begin());
-							res->set_mapped_data(image_data);
-						}
-						// If we're an image, we need to create an image view too.
-						{
-							vk2::Image& result_image = static_cast<ImageComponentVulkan*>(this->components.back())->vk_get_image();
-							this->image_component_views.emplace_back
-								(vk2::ImageViewInfo{
-									.image = &result_image,
-									.aspect = vk2::ImageAspect::Colour
-								 });
-						}
 					break;
 					default:
 						tz_error("Unrecognised ResourceType. Please submit a bug report.");
 					break;
 				}
+				comp = this->components.back();
 			}
+			retrieve_resource_metadata(comp);
 		}
 
 		std::size_t buffer_count = this->resource_count_of(ResourceType::Buffer);

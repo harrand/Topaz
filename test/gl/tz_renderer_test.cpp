@@ -155,7 +155,7 @@ void resource_references_compute_test(tz::gl::Device& dev)
 	tz::gl::RendererInfo rinfo2;
 	rinfo2.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(empty, vertex));
 	rinfo2.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(empty, fragment));
-	tz::gl::ResourceHandle refh = rinfo.add_component(*compute.get_component(numbuf));
+	tz::gl::ResourceHandle refh = rinfo2.add_component(*compute.get_component(numbuf));
 	tz::gl::Renderer renderer = dev.create_renderer(rinfo2);
 
 	tz_assert(renderer.get_resource(refh) != nullptr, "Renderer resource reference returned nullptr from a valid handle. Resource references are broken.");
