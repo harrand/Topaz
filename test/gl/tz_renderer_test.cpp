@@ -141,6 +141,35 @@ void renderer_compute_test(tz::gl::Device& dev)
 	tz_assert(num == 36.0f, "Compute shader was meant to write 36.0f to num that was initially 6.0f. The current value is %.1ff", num);
 }
 
+void resource_references_compute_test(tz::gl::Device& dev)
+{
+	tz::gl::BufferResource number = tz::gl::BufferResource::from_one(1.0f, tz::gl::ResourceAccess::DynamicFixed);
+
+	tz::gl::RendererInfo rinfo;
+	rinfo.shader().set_shader(tz::gl::ShaderStage::Compute, ImportedShaderSource(six_writer, compute));
+	rinfo.set_options({tz::gl::RendererOption::BlockingCompute});
+	rinfo.set_compute_kernel({1u, 1u, 1u});
+	tz::gl::ResourceHandle numbuf = rinfo.add_resource(number);
+	tz::gl::Renderer compute = dev.create_renderer(rinfo);
+
+	tz::gl::RendererInfo rinfo2;
+	rinfo2.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(empty, vertex));
+	rinfo2.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(empty, fragment));
+	tz::gl::ResourceHandle refh = rinfo.add_component(*compute.get_component(numbuf));
+	tz::gl::Renderer renderer = dev.create_renderer(rinfo2);
+
+	tz_assert(renderer.get_resource(refh) != nullptr, "Renderer resource reference returned nullptr from a valid handle. Resource references are broken.");
+	tz_assert(renderer.get_resource(refh) == compute.get_resource(numbuf), "Renderer resource reference is not exactly equal to the original resource from another renderer. %p != %p", renderer.get_resource(refh), compute.get_resource(numbuf));
+
+	compute.render();
+	renderer.render(1);
+
+	float& num = compute.get_resource(numbuf)->data_as<float>().front();
+	tz_assert(num == 6.0f, "Compute shader was meant to write 6.0f to num that was initially 0.0f. The current value is %.1ff", num);
+	compute.render();
+	tz_assert(num == 36.0f, "Compute shader was meant to write 36.0f to num that was initially 6.0f. The current value is %.1ff", num);
+}
+
 void semantics(tz::gl::Device& dev)
 {
 	static_assert(!tz::copyable<tz::gl::Renderer>);
@@ -173,6 +202,7 @@ int main()
 		renderer_edit(dev);
 		resize_window(dev);
 		renderer_compute_test(dev);
+		resource_references_compute_test(dev);
 		semantics(dev);
 	}
 	tz::terminate();

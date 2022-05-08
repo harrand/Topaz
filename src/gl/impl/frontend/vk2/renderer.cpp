@@ -57,6 +57,8 @@ namespace tz::gl
 					buffer_id_to_variable_access.push_back(res->get_access() == ResourceAccess::DynamicVariable);
 					buffer_id_to_descriptor_visibility.push_back(static_cast<BufferComponentVulkan*>(comp)->vk_is_descriptor_relevant());
 				}
+				// Also we'll write into the asset storage so it doesn't still think the resource is null.
+				this->set(static_cast<tz::HandleValue>(i), res);
 			}
 			else
 			{
