@@ -29,7 +29,13 @@ namespace tz::gl
 			}
 		#endif
 		this->resources.push_back(&resource);
-		return static_cast<tz::HandleValue>(this->resources.size() - 1);
+		return static_cast<tz::HandleValue>(this->real_resource_count() - 1);
+	}
+
+	ResourceHandle RendererInfoCommon::add_component(IComponent& component)
+	{
+		this->components.push_back(&component);
+		return static_cast<tz::HandleValue>(this->real_resource_count() - 1);
 	}
 
 	void RendererInfoCommon::set_output(IOutput& output)
@@ -87,4 +93,8 @@ namespace tz::gl
 		return this->shader_info;
 	}
 
+	std::size_t RendererInfoCommon::real_resource_count() const
+	{
+		return this->resources.size() + this->components.size();
+	}
 }

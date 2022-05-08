@@ -1,0 +1,13 @@
+shader(type = compute);
+kernel(4, 1, 1);
+
+resource(id = 0) buffer ColourData
+{
+	vec4 colours[4];
+};
+
+void main()
+{
+	uint id = in::local_id[0];
+	colours[id] = colours[4 - id];
+}

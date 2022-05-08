@@ -19,3 +19,10 @@ add_demo(
 		demo/gl/tz_dynamic_triangle_demo.vertex.tzsl
 		demo/gl/tz_dynamic_triangle_demo.fragment.tzsl
 )
+
+add_demo(
+	TARGET tz_compute_demo
+	SOURCE_FILES tz_compute_demo.cpp
+	SHADER_SOURCES
+		demo/gl/tz_compute_demo.compute.tzsl
+)
