@@ -10,6 +10,7 @@
 #include "core/vector.hpp"
 #include <concepts>
 #include <variant>
+#include <optional>
 
 namespace tz::gl
 {
