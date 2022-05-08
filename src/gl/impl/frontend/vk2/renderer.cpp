@@ -673,22 +673,34 @@ namespace tz::gl
 	void GraphicsPipelineManager::recreate(const vk2::RenderPass& new_render_pass, tz::Vec2ui new_viewport_dimensions)
 	{
 		TZ_PROFZONE("Vulkan Frontend - RendererVulkan GraphicsPipelineManager Recreate", TZ_PROFCOL_YELLOW);
-		this->graphics_pipeline =
-		{{
-			.shaders = this->shader.native_data(),
-			.state = vk2::PipelineState
-			{
-				.viewport = vk2::create_basic_viewport(static_cast<tz::Vec2>(new_viewport_dimensions)),
-				.depth_stencil =
+		if(this->is_compute())
+		{
+			this->graphics_pipeline =
+			{vk2::ComputePipelineInfo{
+				.shader = this->shader.native_data(),
+				.pipeline_layout = &this->pipeline_layout,
+				.device = &this->pipeline_layout.get_device()
+			}};
+		}
+		else
+		{
+			this->graphics_pipeline =
+			{{
+				.shaders = this->shader.native_data(),
+				.state = vk2::PipelineState
 				{
-					.depth_testing = this->depth_testing_enabled,
-					.depth_writes = this->depth_testing_enabled
-				}
-			},
-			.pipeline_layout = &this->pipeline_layout,
-			.render_pass = &new_render_pass,
-			.device = &new_render_pass.get_device()
-		 }};
+					.viewport = vk2::create_basic_viewport(static_cast<tz::Vec2>(new_viewport_dimensions)),
+					.depth_stencil =
+					{
+						.depth_testing = this->depth_testing_enabled,
+						.depth_writes = this->depth_testing_enabled
+					}
+				},
+				.pipeline_layout = &this->pipeline_layout,
+				.render_pass = &new_render_pass,
+				.device = &new_render_pass.get_device()
+			 }};
+		}
 	}
 
 	bool GraphicsPipelineManager::is_compute() const
