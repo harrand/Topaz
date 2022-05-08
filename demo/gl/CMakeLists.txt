@@ -25,4 +25,6 @@ add_demo(
 	SOURCE_FILES tz_compute_demo.cpp
 	SHADER_SOURCES
 		demo/gl/tz_compute_demo.compute.tzsl
+		demo/gl/tz_compute_demo_render.vertex.tzsl
+		demo/gl/tz_compute_demo_render.fragment.tzsl
 )

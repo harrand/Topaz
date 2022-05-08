@@ -7,6 +7,8 @@
 #include "gl/resource.hpp"
 
 #include ImportedShaderHeader(tz_compute_demo, compute)
+#include ImportedShaderHeader(tz_compute_demo_render, vertex)
+#include ImportedShaderHeader(tz_compute_demo_render, fragment)
 
 int main()
 {
@@ -32,11 +34,18 @@ int main()
 
 		tz::gl::Renderer compute_worker = dev.create_renderer(pinfo);
 
+		tz::gl::RendererInfo rinfo;
+		rinfo.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(tz_compute_demo_render, vertex));
+		rinfo.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(tz_compute_demo_render, fragment));
+		auto refbuf = rinfo.add_component(*compute_worker.get_component(cbuf));
+		tz::gl::Renderer renderer = dev.create_renderer(rinfo);
+
 		while(!tz::window().is_close_requested())
 		{
 			TZ_FRAME_BEGIN;
 			tz::window().update();
 			compute_worker.render(1);
+			renderer.render(1);
 			TZ_FRAME_END;
 		}
 	}

@@ -77,6 +77,7 @@ namespace tz::gl
 
 		/// Storage for all cloned resource's components.
 		std::vector<std::unique_ptr<IComponent>> components;
+		std::vector<IComponent*> component_references;
 		/// An ImageView for each ImageResource that was passed to the constructor. These are views referring to the corresponding ImageComponent to said resource.
 		std::vector<vk2::ImageView> image_component_views;
 		/// Hard-coded sampler info. This might need to be editable in the future, but for now the user has no control over this. Care must be taken to ensure that other graphics API frontends sample images in the same way.
