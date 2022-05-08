@@ -7,22 +7,21 @@
 
 namespace tz::gl
 {
-	ResourceStorage::ResourceStorage(std::span<const IResource* const> resources):
+	ResourceStorage::ResourceStorage(std::span<const IResource* const> resources, std::span<const IComponent* const> components):
 	AssetStorageCommon<IResource>(resources),
 	components(),
 	image_handles(),
 	bindless_image_storage_buffer(ogl2::Buffer::null())
 	{
 		TZ_PROFZONE("OpenGL Frontend - RendererOGL ResourceStorage Create", TZ_PROFCOL_RED);
-		for(std::size_t i = 0; i < this->count(); i++)
+		auto do_metadata = [this](IComponent* comp)
 		{
-			IResource* res = this->get(static_cast<tz::HandleValue>(i));
+			IResource* res = comp->get_resource();
 			switch(res->get_type())
 			{
 				case ResourceType::Buffer:
-					this->components.push_back(std::make_unique<BufferComponentOGL>(*res));
 					{
-						BufferComponentOGL& buf = *static_cast<BufferComponentOGL*>(this->components.back().get());
+						BufferComponentOGL& buf = *static_cast<BufferComponentOGL*>(comp);
 						ogl2::Buffer& buffer = buf.ogl_get_buffer();
 						switch(buf.get_resource()->get_access())
 						{
@@ -30,7 +29,7 @@ namespace tz::gl
 								{
 									// Create staging buffer and do a copy.
 									ogl2::BufferTarget buf_tar;
-									if(buf.get_resource()->get_flags().contains(ResourceFlag::IndexBuffer))
+									if(res->get_flags().contains(ResourceFlag::IndexBuffer))
 									{
 										buf_tar = ogl2::BufferTarget::Index;
 									}
@@ -66,20 +65,20 @@ namespace tz::gl
 								tz_error("ResourceAccess for this buffer is not yet implemented.");
 							break;
 						}
-					}
-					if(res->get_access() == ResourceAccess::DynamicFixed)
-					{
-						// Tell the resource to use the buffer's data. Also copy whatever we had before.
-						std::span<const std::byte> initial_data = res->data();
-						std::span<std::byte> buffer_byte_data = static_cast<BufferComponentOGL*>(this->components.back().get())->ogl_get_buffer().map_as<std::byte>();
-						std::copy(initial_data.begin(), initial_data.end(), buffer_byte_data.begin());
-						res->set_mapped_data(buffer_byte_data);
+
+						if(res->get_access() == ResourceAccess::DynamicFixed)
+						{
+							// Tell the resource to use the buffer's data. Also copy whatever we had before.
+							std::span<const std::byte> initial_data = res->data();
+							std::span<std::byte> buffer_byte_data = buf.ogl_get_buffer().map_as<std::byte>();
+							std::copy(initial_data.begin(), initial_data.end(), buffer_byte_data.begin());
+							res->set_mapped_data(buffer_byte_data);
+						}
 					}
 				break;
 				case ResourceType::Image:
-					this->components.push_back(std::make_unique<ImageComponentOGL>(*res));
 					{
-						ImageComponentOGL& img = *static_cast<ImageComponentOGL*>(this->components.back().get());
+						ImageComponentOGL& img = *static_cast<ImageComponentOGL*>(comp);
 						ogl2::Image& image = img.ogl_get_image();
 						image.set_data(img.get_resource()->data());
 						image.make_bindless();
@@ -90,6 +89,37 @@ namespace tz::gl
 					tz_error("Unrecognised ResourceType. Please submit a bug report.");
 				break;
 			}
+		};
+		std::size_t encountered_reference_count = 0;
+		for(std::size_t i = 0; i < this->count(); i++)
+		{
+			IResource* res = this->get(static_cast<tz::HandleValue>(i));
+			IComponent* comp = nullptr;
+			if(res == nullptr)
+			{
+				comp = const_cast<IComponent*>(components[encountered_reference_count]);
+				this->components.push_back(comp);
+				encountered_reference_count++;
+				res = comp->get_resource();
+				this->set(static_cast<tz::HandleValue>(i), res);
+			}
+			else
+			{
+				switch(res->get_type())
+				{
+					case ResourceType::Buffer:
+						this->components.push_back(tz::make_owned<BufferComponentOGL>(*res));
+					break;
+					case ResourceType::Image:
+						this->components.push_back(tz::make_owned<ImageComponentOGL>(*res));
+					break;
+					default:
+						tz_error("Unrecognised ResourceType. Please submit a bug report.");
+					break;
+				}
+				comp = this->components.back().get();
+			}
+			do_metadata(comp);
 		}
 		this->fill_bindless_image_buffer();
 	}
@@ -199,7 +229,7 @@ namespace tz::gl
 			if(component_ptr->get_resource()->get_flags().contains(ResourceFlag::IndexBuffer))
 			{
 				tz_assert(component_ptr->get_resource()->get_type() == ResourceType::Buffer, "Detected non-buffer resource with ResourceFlag::IndexBuffer which is illegal. Please submit a bug report.");
-				return component_ptr.get();
+				return const_cast<IComponent*>(component_ptr.get());
 			}
 		}
 		return nullptr;
@@ -294,7 +324,7 @@ namespace tz::gl
 	
 	RendererOGL::RendererOGL(RendererInfoOGL info):
 	vao(),
-	resources(info.get_resources()),
+	resources(info.get_resources(), info.get_components()),
 	shader(info.shader()),
 	output(info.get_output()),
 	clear_colour(info.get_clear_colour()),

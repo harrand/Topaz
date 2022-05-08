@@ -8,6 +8,7 @@
 #include "gl/impl/backend/ogl2/shader.hpp"
 #include "gl/impl/backend/ogl2/framebuffer.hpp"
 #include "gl/impl/backend/ogl2/buffer.hpp"
+#include "core/memory.hpp"
 
 namespace tz::gl
 {
@@ -33,7 +34,7 @@ namespace tz::gl
 		 *
 		 * @param resources A view into an array of existing resources. All of these will be copies into a separate storage, meaning the elements of the span are allowed to reach the end of their lifetime after the storage has been constructed, because they will have been cloned.
 		 */
-		ResourceStorage(std::span<const IResource* const> resources);
+		ResourceStorage(std::span<const IResource* const> resources, std::span<const IComponent* const> components);
 		/**
 		 * Retrieve the component (read-only) which stores the corresponding opengl backend objects for the resource corresponding to the handle.
 		 * @param handle Handle whose resource's component needs to be retrieved. The handle must have referred to one of the initial resources passed to the constructor, otherwise the behaviour is undefined.
@@ -64,7 +65,7 @@ namespace tz::gl
 		void fill_bindless_image_buffer();
 
 		/// Stores components corresponding to each resource.
-		std::vector<std::unique_ptr<IComponent>> components;
+		std::vector<tz::MaybeOwnedPtr<IComponent>> components;
 		/// Stores a bindless texture handle for each image resource.
 		std::vector<ogl2::Image::BindlessTextureHandle> image_handles;
 		// Shader has an array of texture samplers in tzsl. tzslc compiles this down to actually a storage buffer containing a variable array of texture samplers. This is that buffer.
