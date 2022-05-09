@@ -6,7 +6,7 @@ struct TriangleVertexData
     vec2 texcoord;
 };
 
-resource(id = 0) buffer VertexData
+resource(id = 0) const buffer VertexData
 {
     TriangleVertexData[] vertices;
 } vertex_data;

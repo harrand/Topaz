@@ -327,7 +327,7 @@ void main()
 			replacement += buffer_subtype_name;
 			replacement += ")*/ layout(binding = ";
 			replacement += std::to_string(id);
-			replacement += ") uniform";
+			replacement += ") readonly buffer";
 
 			meta += std::to_string(id) + " = ";
 			meta += buffer_subtype_name;

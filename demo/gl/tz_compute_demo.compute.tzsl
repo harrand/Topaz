@@ -18,9 +18,9 @@ float get_value(float mul)
 
 void main()
 {
-	uint id = in::local_id[0];
-	colours[id].r = get_value(id * 5.0f);
-	colours[id].g = get_value(id * 2.0f);
-	colours[id].b = get_value(id * 0.2f);
+	uint idx = in::local_id[0];
+	colours[idx].r = get_value(idx * 5.0f);
+	colours[idx].g = get_value(idx * 2.0f);
+	colours[idx].b = get_value(idx * 0.2f);
 	atomicAdd(time, 1);
 }
