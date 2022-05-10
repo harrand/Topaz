@@ -30,7 +30,6 @@ int main()
 
 		tz::gl::RendererInfo pinfo;
 		pinfo.shader().set_shader(tz::gl::ShaderStage::Compute, ImportedShaderSource(tz_compute_demo, compute));
-		pinfo.set_options({tz::gl::RendererOption::BlockingCompute});
 		auto cbuf = pinfo.add_resource(colour_buffer);
 		pinfo.add_resource(time_buffer);
 

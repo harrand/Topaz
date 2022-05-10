@@ -884,6 +884,10 @@ namespace tz::gl
 		TZ_PROFZONE("Vulkan Frontend - RendererVulkan CommandProcessor (Do Render Work)", TZ_PROFCOL_YELLOW);
 		if(this->is_compute)
 		{
+			if(!this->instant_compute_enabled)
+			{
+				this->in_flight_fences[this->current_frame].wait_until_signalled();
+			}
 			this->in_flight_fences[this->current_frame].unsignal();
 			this->compute_queue->submit
 			({
@@ -896,11 +900,6 @@ namespace tz::gl
 			if(this->instant_compute_enabled)
 			{
 				this->in_flight_fences[this->current_frame].wait_until_signalled();
-			}
-			else
-			{
-				// TODO: Resource references.
-				tz_warning_report("Detected compute renderer work recording, but RendererOption::BlockingCompute was not provided. Resource references are not yet implemented, so there is no guarantee when the compute work is done. For now, I recommend you pass BlockingCompute for compute shader writes to instantly be visible.");
 			}
 			return {vk2::hardware::Queue::PresentResult::Success};
 		}
