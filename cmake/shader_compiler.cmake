@@ -67,7 +67,6 @@ function(add_shader)
 		endif()
 		# `output_path` is the path to the built shader (i.e glsl (ogl) or spv (vk)).
 		STRING(REGEX REPLACE "^${CMAKE_SOURCE_DIR}/" "" offset_dir ${output_path})
-		message(WARNING "built shader: ${offset_dir}")
 		add_text(
 			TARGET ${ADD_SHADER_TARGET}
 			INPUT_DIR ${PROJECT_SOURCE_DIR}

@@ -24,8 +24,6 @@ function(add_tool)
 		OUTPUT prepended_text_list
 	)
 
-	message(WARNING "before: ${ADD_TOOL_TEXT_FILES} \n after: ${prepended_text_list}")
-
 	add_text(
 		TARGET ${ADD_TOOL_TARGET}
 		INPUT_DIR ${PROJECT_SOURCE_DIR}

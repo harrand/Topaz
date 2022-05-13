@@ -1,6 +1,5 @@
 #include "core/assert.hpp"
 #include "preprocessor.hpp"
-#include "header_export.hpp"
 #include <cstdio>
 #include <fstream>
 #include <filesystem>
@@ -48,20 +47,6 @@ FILE* get_output_stream(int argc, char** argv)
 	return output;
 }
 
-bool generating_headers(int argc, char** argv)
-{
-	for(std::size_t i = 0; i < argc - 1; i++)
-	{
-		std::string_view arg{argv[i]};
-		if(arg == "-gen_header")
-		{
-			return true;
-		}
-	}
-
-	return false;
-}
-
 FILE* get_output_stream_meta(int argc, char** argv)
 {
 	// get_output_stream() returns either stdout or a specific file.
@@ -77,7 +62,7 @@ FILE* get_output_stream_meta(int argc, char** argv)
 			maybe_meta_output_location = arg_next;
 		}
 	}
-	if(maybe_meta_output_location.has_value() && !generating_headers(argc, argv))
+	if(maybe_meta_output_location.has_value())
 	{
 		// arg_next is the output file name. Retrieve the parent directory
 		std::filesystem::path output_path = maybe_meta_output_location.value();
@@ -106,17 +91,8 @@ int main(int argc, char** argv)
 		shader.read(buffer.data(), file_size_bytes);
 		shader.close();
 
-		bool generate_header = generating_headers(argc, argv);
-
 		std::string metadata;
-		if(generating_headers(argc, argv))
-		{
-			tzslc::export_header(glsl_filename, buffer);
-		}
-		else
-		{
-			tzslc::preprocess(modules, buffer, metadata);
-		}
+		tzslc::preprocess(modules, buffer, metadata);
 		for(char c : buffer)
 		{
 			std::fprintf(out, "%c", c);
