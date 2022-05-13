@@ -5,17 +5,16 @@ function(add_text)
 	cmake_parse_arguments(
 		ADD_TEXT
 		""
-		"TARGET"
+		"TARGET;INPUT_DIR;OUTPUT_DIR"
 		"TEXT_FILES"
 		${ARGN}
 	)
-	
+
 	foreach(TEXT ${ADD_TEXT_TEXT_FILES})
-		set(text_path ${PROJECT_SOURCE_DIR}/${TEXT})
+		set(text_path ${ADD_TEXT_INPUT_DIR}/${TEXT})
 		set(output_name ${TEXT}.hpp)
-		set(output_path ${PROJECT_BINARY_DIR}/${output_name})
+		set(output_path ${ADD_TEXT_OUTPUT_DIR}/${output_name})
 		cmake_path(GET output_path PARENT_PATH text_dirname)
-		#message(FATAL_ERROR "text: ${TEXT}, \n text_path: ${text_path}")
 		add_custom_command(
 			OUTPUT ${output_path}
 			COMMENT "TEXTC: Bundling ${TEXT} -> ${output_name}"

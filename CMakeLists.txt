@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.9)
+include(cmake/util.cmake)
 include(cmake/setup_configs.cmake)
 
 file(READ ./version.txt TZ_VERSION)

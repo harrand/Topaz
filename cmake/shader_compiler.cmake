@@ -28,10 +28,8 @@ macro(add_shader_vulkan)
 		IMPLICIT_DEPENDS CXX ${processed_shader_path}
 		VERBATIM)
 
-	set_source_files_properties(${processed_shader_path} ${spv_path} PROPERTIES GENERATED TRUE)
-	export_shader_header(
-		FILE_NAME ${spv_path}
-	)
+	set(output_path ${spv_path})
+	set_source_files_properties(${processed_shader_path} ${output_path} PROPERTIES GENERATED TRUE)
 endmacro()
 
 macro(add_shader_opengl)
@@ -49,10 +47,6 @@ macro(add_shader_opengl)
 	)
 
 	set_source_files_properties(${output_path} PROPERTIES GENERATED TRUE)
-	export_shader_header(
-		FILE_NAME ${output_path}
-	)
-	#target_sources(${ADD_SHADER_TARGET} PRIVATE ${output_path})
 endmacro()
 
 function(add_shader)
@@ -71,5 +65,15 @@ function(add_shader)
 		elseif(${TOPAZ_RENDERAPI} MATCHES "vulkan")
 			add_shader_vulkan()
 		endif()
+		# `output_path` is the path to the built shader (i.e glsl (ogl) or spv (vk)).
+		STRING(REGEX REPLACE "^${CMAKE_SOURCE_DIR}/" "" offset_dir ${output_path})
+		message(WARNING "built shader: ${offset_dir}")
+		add_text(
+			TARGET ${ADD_SHADER_TARGET}
+			INPUT_DIR ${PROJECT_SOURCE_DIR}
+			OUTPUT_DIR ${PROJECT_SOURCE_DIR}
+			TEXT_FILES ${offset_dir}
+		)
+
 	endforeach()
 endfunction()
