@@ -8,11 +8,7 @@ add_tool(
 		source_transform.hpp
 		stdlib.hpp
 		tzslc_main.cpp
-)
-
-add_text(
-	TARGET tzslc
 	TEXT_FILES
-		tools/tzslc/matrix.tzsl
-		tools/tzslc/space.tzsl
+		matrix.tzsl
+		space.tzsl
 )
