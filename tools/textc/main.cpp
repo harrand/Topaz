@@ -84,6 +84,8 @@ void headerify(std::string_view filename, std::string& text)
 		std::string extension = *(beg + 1);
 		return part_we_want + "_" + extension;
 	});
+	// If we have multiple file extensions, there will be dots sitting in the variable name. Let's change these all to underscores.
+	filename_cpy = std::regex_replace(filename_cpy, std::regex{"\\."}, "_");
 
 	std::size_t byte_count = text.size();
 	std::string buffer_array_literal = std_bytenise(text);
