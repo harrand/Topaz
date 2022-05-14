@@ -11,15 +11,15 @@ add_tz_test(NAME tz_resource_test
 add_tz_test(NAME tz_renderer_test
 	SOURCE_FILES tz_renderer_test.cpp
 	SHADER_SOURCES
-		test/gl/empty.vertex.tzsl
-		test/gl/empty.fragment.tzsl
-		test/gl/empty.compute.tzsl
-		test/gl/six_writer.compute.tzsl
+		test/gl/shaders/empty.vertex.tzsl
+		test/gl/shaders/empty.fragment.tzsl
+		test/gl/shaders/empty.compute.tzsl
+		test/gl/shaders/six_writer.compute.tzsl
 	)
 
 add_tz_test(NAME tz_shader_test
 	SOURCE_FILES tz_shader_test.cpp
 	SHADER_SOURCES
-		test/gl/a.vertex.tzsl
-		test/gl/stdlib_test.compute.tzsl
+		test/gl/shaders/a.vertex.tzsl
+		test/gl/shaders/stdlib_test.compute.tzsl
 	)
