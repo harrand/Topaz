@@ -61,7 +61,7 @@ namespace tzslc
 		#if TZ_DEBUG
 			ret += "#define TZ_DEBUG 1;\n";
 		#else
-			ret += "#define TZ_DEBUG 0;\n"
+			ret += "#define TZ_DEBUG 0;\n";
 		#endif
 		return ret;
 	}
