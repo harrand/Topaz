@@ -45,6 +45,7 @@ add_library(topaz
 	src/core/engine_info.inl
 	src/core/game_info.hpp
 	src/core/handle.hpp
+	src/core/imported_text.hpp
 	src/core/matrix_transform.cpp
 	src/core/matrix_transform.hpp
 	src/core/matrix.hpp

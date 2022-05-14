@@ -1,16 +1,13 @@
 #ifndef TOPAZ_GL_IMPORTED_SHADERS_HPP
 #define TOPAZ_GL_IMPORTED_SHADERS_HPP
+#include "core/imported_text.hpp"
 #include <string_view>
 #include <span>
 
-#define TZ_MACROHACKERY_STRINGIFY(X) TZ_MACROHACKERY_STRINGIFY2(X)    
-#define TZ_MACROHACKERY_STRINGIFY2(X) #X
-#define TZ_MACROHACKERY_CONCAT(X, Y) X##Y
-#define TZ_MACROHACKERY_JOIN(X, Y, Z, W) X##Y##Z##W
 #if TZ_VULKAN
-#define TZ_MACROHACKERY_JOIN_SHADER(X, Y, Z) TZ_MACROHACKERY_JOIN(X, Y, Z, _tzsl_spv)
+#define TZ_MACROHACKERY_JOIN_SHADER(X, Y, Z) TZ_MACROHACKERY_JOIN4(X, Y, Z, _tzsl_spv)
 #elif TZ_OGL
-#define TZ_MACROHACKERY_JOIN_SHADER(X, Y, Z) TZ_MACROHACKERY_JOIN(X, Y, Z, _tzsl_glsl)
+#define TZ_MACROHACKERY_JOIN_SHADER(X, Y, Z) TZ_MACROHACKERY_JOIN4(X, Y, Z, _tzsl_glsl)
 #endif
 /**
  * @ingroup tz_gl2
