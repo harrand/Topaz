@@ -6,11 +6,7 @@
 
 namespace tzslc
 {
-	bool preprocess(std::string& shader_source);
-	bool preprocess_samplers(std::string& shader_source);
-	bool preprocess_prints(std::string& shader_source);
-	bool preprocess_asserts(std::string& shader_source);
-	bool preprocess_topaz_types(std::string& shader_source);
+	void preprocess(std::string& shader_source);
 }
 
 #endif // TZSLC_PREPROCESSOR_HPP
