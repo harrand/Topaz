@@ -186,28 +186,18 @@ void main()
 	void convert_constants(std::string&, tz::gl::ShaderStage);
 	void evaluate_imports(std::string&);
 
-	bool preprocess(PreprocessorModuleField modules, std::string& shader_source, std::string& meta)
+	bool preprocess(std::string& shader_source)
 	{
 		tz::gl::ShaderStage stage = preprocess_stage_specifier(shader_source);
 		convert_constants(shader_source, stage);
 		bool done_any_work = evaluate_tzsl_keywords(shader_source);
-
-		if(modules.contains(PreprocessorModule::Assert))
-		{
 			done_any_work |= preprocess_asserts(shader_source);
-		}
-		if(modules.contains(PreprocessorModule::DebugPrint))
-		{
 			done_any_work |= preprocess_prints(shader_source);
-		}
-		if(modules.contains(PreprocessorModule::Sampler))
-		{
-			done_any_work |= preprocess_samplers(shader_source, meta);
-		}
+			done_any_work |= preprocess_samplers(shader_source);
 		preprocess_outputs(shader_source);
 		preprocess_inputs(shader_source);
 		add_glsl_header_info(shader_source);
-		preprocess_topaz_types(shader_source, meta);
+		preprocess_topaz_types(shader_source);
 		evaluate_imports(shader_source);
 
 		if(stage == tz::gl::ShaderStage::Vertex)
@@ -219,7 +209,7 @@ void main()
 		return done_any_work;
 	}
 
-	bool preprocess_samplers(std::string& shader_source, std::string& meta)
+	bool preprocess_samplers(std::string& shader_source)
 	{
 		#if TZ_VULKAN
 			tzslc::transform(shader_source, std::regex{"resource\\(id ?= ?([0-9]+)\\) const texture"}, [&](auto beg, auto end)->std::string
@@ -228,7 +218,6 @@ void main()
 				int id = std::stoi(*beg);
 				std::string replacement = "/*tzslc: const texture*/ layout(binding";
 				replacement += " = " + std::to_string(id) + ") uniform sampler2D";
-				meta += std::to_string(id) + " = texture\n";
 				return replacement;
 			});
 		#elif TZ_OGL
@@ -247,7 +236,6 @@ void main()
 				replacement += "} " + name;
 				// So because this is now an SSBO we want <name>[x] to now refer to <name>.textures[x]. We do this by adding a super evil #define.
 				replacement += ";\n#define " + name + " " + name + ".textures";
-				meta += std::to_string(id) + " = texture\n";
 				return replacement;
 			});
 			if(work_done)
@@ -297,7 +285,7 @@ void main()
 	   return false;
 	}
 
-	bool preprocess_topaz_types(std::string& shader_source, std::string& meta)
+	bool preprocess_topaz_types(std::string& shader_source)
 	{
 		/*
 		example tzsl:
@@ -317,7 +305,7 @@ void main()
 		} mvp;
 		*/
 	   // Handle 'const buffer' (UBO)
-	   tzslc::transform(shader_source, std::regex{"resource\\(id ?= ?([0-9]+)\\) const buffer"}, [&meta](auto beg, auto end)->std::string
+	   tzslc::transform(shader_source, std::regex{"resource\\(id ?= ?([0-9]+)\\) const buffer"}, [](auto beg, auto end)->std::string
 	   {
 			tz_assert(std::distance(beg, end) == 1, "resource(id = x) const buffer <name> : 'x' should be one number");
 			// TODO: Don't hardcode.
@@ -329,13 +317,10 @@ void main()
 			replacement += std::to_string(id);
 			replacement += ") readonly buffer";
 
-			meta += std::to_string(id) + " = ";
-			meta += buffer_subtype_name;
-			meta += "\n";
 			return replacement;
 	   });
 	   // Handle 'buffer' (SSBO)
-	   tzslc::transform(shader_source, std::regex{"resource\\(id ?= ?([0-9]+)\\) buffer"}, [&meta](auto beg, auto end)->std::string
+	   tzslc::transform(shader_source, std::regex{"resource\\(id ?= ?([0-9]+)\\) buffer"}, [](auto beg, auto end)->std::string
 	   {
 			tz_assert(std::distance(beg, end) == 1, "resource(id = x) buffer : 'x' should be one number");
 			// TODO: Don't hardcode.
@@ -346,9 +331,6 @@ void main()
 			replacement += ")*/ layout(binding = ";
 			replacement += std::to_string(id);
 			replacement += ") buffer";
-			meta += std::to_string(id) + " = ";
-			meta += buffer_subtype_name;
-			meta += "\n";
 			return replacement;
 	   });
 	   return false;
