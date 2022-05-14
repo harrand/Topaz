@@ -1,5 +1,5 @@
+#include "tzsl.hpp"
 #include "core/assert.hpp"
-#include "preprocessor.hpp"
 #include "source_transform.hpp"
 #include "gl/api/shader.hpp"
 
@@ -15,6 +15,9 @@ namespace tzslc
 	void evaluate_language_level_functions(std::string&);
 	void collapse_namespaces(std::string&);
 
+	void rename_user_main(std::string& shader_source);
+	void add_main_definition(std::string& shader_source);
+
 //--------------------------------------------------------------------------------------------------
 
 	void preprocess(std::string& shader_source)
@@ -27,6 +30,12 @@ namespace tzslc
 		evaluate_inout_blocks(shader_source, stage);
 		evaluate_language_level_functions(shader_source);
 		collapse_namespaces(shader_source);
+
+		if(stage == tz::gl::ShaderStage::Vertex)
+		{
+			rename_user_main(shader_source);
+			add_main_definition(shader_source);
+		}
 	}
 
 //--------------------------------------------------------------------------------------------------
@@ -46,7 +55,7 @@ namespace tzslc
 		#if TZ_VULKAN
 			ret += "#define TZ_OGL 0\n#define TZ_VULKAN 1\n#extension GL_EXT_debug_printf : enable\n";
 		#elif TZ_OGL
-			ret += "#define TZ_OGL 1\n#define TZ_VULKAN 0\n";
+			ret += "#define TZ_OGL 1\n#define TZ_VULKAN 0\n#extension GL_ARB_bindless_texture : enable\n";
 		#endif
 
 		#if TZ_DEBUG
@@ -267,4 +276,30 @@ namespace tzslc
 
 		shader_source = std::regex_replace(shader_source, std::regex{"::"}, "_");
 	}
+
+//--------------------------------------------------------------------------------------------------
+
+	void rename_user_main(std::string& shader_source)
+	{
+		tzslc::transform(shader_source, std::regex{" +main"}, [&](auto beg, auto end)-> std::string
+		{
+			return " user_main";
+		});
+	}
+	
+//--------------------------------------------------------------------------------------------------
+
+	void add_main_definition(std::string& shader_source)
+	{
+		constexpr char main_def[] = R"|(
+void main()
+{
+	user_main();
+	#if TZ_VULKAN
+		gl_Position.z = (gl_Position.z + 1.0) * 0.5;
+	#endif // TZ_VULKAN
+}
+		)|";
+		shader_source += main_def;
+	}	
 }
