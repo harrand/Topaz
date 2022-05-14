@@ -3,11 +3,15 @@
 #include <string_view>
 #include <span>
 
-#define STRINGIFY(X) STRINGIFY2(X)    
-#define STRINGIFY2(X) #X
-#define CONCAT(X, Y) X##Y
-#define JOIN(X, Y, Z, W) X##Y##Z##W
-
+#define TZ_MACROHACKERY_STRINGIFY(X) TZ_MACROHACKERY_STRINGIFY2(X)    
+#define TZ_MACROHACKERY_STRINGIFY2(X) #X
+#define TZ_MACROHACKERY_CONCAT(X, Y) X##Y
+#define TZ_MACROHACKERY_JOIN(X, Y, Z, W) X##Y##Z##W
+#if TZ_VULKAN
+#define TZ_MACROHACKERY_JOIN_SHADER(X, Y, Z) TZ_MACROHACKERY_JOIN(X, Y, Z, _tzsl_spv)
+#elif TZ_OGL
+#define TZ_MACROHACKERY_JOIN_SHADER(X, Y, Z) TZ_MACROHACKERY_JOIN(X, Y, Z, _tzsl_glsl)
+#endif
 /**
  * @ingroup tz_gl2
  * @fn ImportedShaderHeader(shader_name, shader_type)
@@ -15,9 +19,9 @@
  * Retrieves a file path which is intended to be #included in a application's main source file. Once included, the imported shader's source code can be retrieved as a constexpr string_view via @ref ImportedShaderSource
  */
 #if TZ_VULKAN
-#define ImportedShaderHeader(shader_name, shader_type) STRINGIFY2(shader_name.shader_type.tzsl.spv.hpp)
+#define ImportedShaderHeader(shader_name, shader_type) TZ_MACROHACKERY_STRINGIFY2(shader_name.shader_type.tzsl.spv.hpp)
 #elif TZ_OGL
-#define ImportedShaderHeader(shader_name, shader_type) STRINGIFY2(shader_name.shader_type.tzsl.glsl.hpp)
+#define ImportedShaderHeader(shader_name, shader_type) TZ_MACROHACKERY_STRINGIFY2(shader_name.shader_type.tzsl.glsl.hpp)
 #endif
 
 /**
@@ -26,10 +30,7 @@
  * @hideinitializer
  * Retrieves a token representing a `std::string_view` which contains the shader's compiled results. On Vulkan, this will be SPIRV, and GLSL source code for OpenGL. You can only retrieve an imported shader's source if the imported header has been included via @ref ImportedShaderHeader
  */
-#if TZ_VULKAN
-#define ImportedShaderSource(shader_name, shader_type) []()->std::string_view{std::span<const std::byte> shader_bin = std::as_bytes(std::span<const std::int8_t>(JOIN(shader_name, _, shader_type, _tzsl_spv))); return std::string_view{reinterpret_cast<const char*>(shader_bin.data()), shader_bin.size_bytes()};}()
-#elif TZ_OGL
-#define ImportedShaderSource(shader_name, shader_type) []()->std::string_view{std::span<const std::byte> shader_bin = std::as_bytes(std::span<const std::int8_t>(JOIN(shader_name, _, shader_type, _tzsl_glsl))); return std::string_view{reinterpret_cast<const char*>(shader_bin.data()), shader_bin.size_bytes()};}()
-#endif
+
+#define ImportedShaderSource(shader_name, shader_type) []()->std::string_view{std::span<const std::byte> shader_bin = std::as_bytes(std::span<const std::int8_t>(TZ_MACROHACKERY_JOIN_SHADER(shader_name, _, shader_type))); return std::string_view{reinterpret_cast<const char*>(shader_bin.data()), shader_bin.size_bytes()};}()
 
 #endif // TOPAZ_GL_IMPORTED_SHADERS_HPP
