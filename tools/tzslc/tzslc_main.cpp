@@ -4,6 +4,7 @@
 #include <fstream>
 #include <cerrno>
 #include <cstring>
+#include <filesystem>
 
 FILE* get_output_stream(int argc, char** argv)
 {
@@ -15,6 +16,12 @@ FILE* get_output_stream(int argc, char** argv)
 		std::string_view arg_next{argv[i + 1]};
 		if(arg == "-o")
 		{
+			std::filesystem::path out_path{arg_next.data()};
+			std::filesystem::path parent = out_path.parent_path();
+			if(!std::filesystem::exists(parent))
+			{
+				std::filesystem::create_directories(parent);
+			}
 			output = fopen(arg_next.data(), "w");
 			tz_assert(output != nullptr, "Failed to open output stream. Perhaps missing intermediate directory, or no write permissions for this area of the filesystem?\nOutput was %s.\nErrno says: %s", arg_next.data(), std::strerror(errno));
 		}
