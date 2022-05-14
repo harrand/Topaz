@@ -28,10 +28,10 @@ jobs:
         with:
           cmakeListsOrSettingsJson: "CMakeListsTxtAdvanced"
           cmakeGenerator: UnixMakefiles
-          cmakeAppendedArgs: "-B \"${{ github.workspace }}/../../_temp/build/release\" -DTOPAZ_BUILDCONFIG=release -DTOPAZ_RENDERAPI=vulkan -DCMAKE_CXX_COMPILER=g++-10"
+          cmakeAppendedArgs: "-B \"${{ github.workspace }}/build/release\" -DTOPAZ_BUILDCONFIG=release -DTOPAZ_RENDERAPI=vulkan -DCMAKE_CXX_COMPILER=g++-10"
           buildWithCMake: true
           buildWithCMakeArgs: "--target topaz --parallel 4"
-          buildDirectory: "${{ github.workspace }}/../../_temp/build/release"
+          buildDirectory: "${{ github.workspace }}/build/release"
 
   clang_linux:
     runs-on: ubuntu-latest
@@ -51,10 +51,10 @@ jobs:
         with:
           cmakeListsOrSettingsJson: "CMakeListsTxtAdvanced"
           cmakeGenerator: UnixMakefiles
-          cmakeAppendedArgs: "-B \"${{ github.workspace }}/../../_temp/build/release\" -DTOPAZ_BUILDCONFIG=release -DTOPAZ_RENDERAPI=vulkan -DCMAKE_CXX_COMPILER=clang++-12 -DCMAKE_C_COMPILER=clang-12"
+          cmakeAppendedArgs: "-B \"${{ github.workspace }}/build/release\" -DTOPAZ_BUILDCONFIG=release -DTOPAZ_RENDERAPI=vulkan -DCMAKE_CXX_COMPILER=clang++-12 -DCMAKE_C_COMPILER=clang-12"
           buildWithCMake: true
           buildWithCMakeArgs: "--target topaz --parallel 4"
-          buildDirectory: "${{ github.workspace }}/../../_temp/build/release"
+          buildDirectory: "${{ github.workspace }}/build/release"
 
   msvc_windows:
     runs-on: windows-2022
@@ -71,7 +71,7 @@ jobs:
         with:
           cmakeListsOrSettingsJson: "CMakeListsTxtAdvanced"
           cmakeGenerator: UnixMakefiles
-          cmakeAppendedArgs: "-B \"${{ github.workspace }}/../../_temp/build/release\" -DTOPAZ_BUILDCONFIG=release -DTOPAZ_RENDERAPI=vulkan"
+          cmakeAppendedArgs: "-B \"${{ github.workspace }}/build/release\" -DTOPAZ_BUILDCONFIG=release -DTOPAZ_RENDERAPI=vulkan"
           buildWithCMake: true
           buildWithCMakeArgs: "--target topaz --parallel 4"
-          buildDirectory: "${{ github.workspace }}/../../_temp/build/release"
+          buildDirectory: "${{ github.workspace }}/build/release"
