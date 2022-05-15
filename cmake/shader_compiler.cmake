@@ -66,11 +66,11 @@ function(add_shader)
 			add_shader_vulkan()
 		endif()
 		# `output_path` is the path to the built shader (i.e glsl (ogl) or spv (vk)).
-		STRING(REGEX REPLACE "^${CMAKE_SOURCE_DIR}/" "" built_shader_offset_path ${output_path})
+		STRING(REGEX REPLACE "^${PROJECT_BINARY_DIR}/" "" built_shader_offset_path ${output_path})
 		add_text(
 			TARGET ${ADD_SHADER_TARGET}
-			INPUT_DIR ${PROJECT_SOURCE_DIR}
-			OUTPUT_DIR ${PROJECT_SOURCE_DIR}
+			INPUT_DIR ${PROJECT_BINARY_DIR}
+			OUTPUT_DIR ${PROJECT_BINARY_DIR}
 			TEXT_FILES ${built_shader_offset_path}
 		)
 
