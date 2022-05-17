@@ -882,79 +882,72 @@ namespace tz::gl
 	CommandProcessor::RenderWorkSubmitResult CommandProcessor::do_render_work(vk2::Swapchain* maybe_swapchain)
 	{
 		TZ_PROFZONE("Vulkan Frontend - RendererVulkan CommandProcessor (Do Render Work)", TZ_PROFCOL_YELLOW);
-		if(this->is_compute)
-		{
-			if(!this->instant_compute_enabled)
-			{
-				this->in_flight_fences[this->current_frame].wait_until_signalled();
-			}
-			this->in_flight_fences[this->current_frame].unsignal();
-			this->compute_queue->submit
-			({
-				.command_buffers = {&this->get_render_command_buffers().front()},
-				.waits = {},
-				.signal_semaphores = {},
-				.execution_complete_fence = &this->in_flight_fences[this->current_frame]
-			});
+		tz_assert(this->requires_present, "Requires present is false. Logic error, possibly trying to do headless stuff which is no longer supported? Please submit a bug report.")
+		tz_assert(maybe_swapchain != nullptr, "Trying to do render work with presentation, but no Swapchain provided. Please submit a bug report.");
+		vk2::Swapchain& swapchain = *maybe_swapchain;
+		// Submit & Present
+		this->in_flight_fences[this->current_frame].wait_until_signalled();
+		this->output_image_index = swapchain.acquire_image
+		({
+			.signal_semaphore = &this->image_semaphores[current_frame]
+		}).image_index;
 
-			if(this->instant_compute_enabled)
-			{
-				this->in_flight_fences[this->current_frame].wait_until_signalled();
-			}
-			return {vk2::hardware::Queue::PresentResult::Success};
+		const vk2::Fence*& target_image = this->images_in_flight[this->output_image_index];
+		if(target_image != nullptr)
+		{
+			target_image->wait_until_signalled();
 		}
-		else
-		{
-			tz_assert(this->requires_present, "Requires present is false. Logic error, possibly trying to do headless stuff which is no longer supported? Please submit a bug report.")
-			tz_assert(maybe_swapchain != nullptr, "Trying to do render work with presentation, but no Swapchain provided. Please submit a bug report.");
-			vk2::Swapchain& swapchain = *maybe_swapchain;
-			// Submit & Present
-			this->in_flight_fences[this->current_frame].wait_until_signalled();
-			this->output_image_index = swapchain.acquire_image
-			({
-				.signal_semaphore = &this->image_semaphores[current_frame]
-			}).image_index;
+		target_image = &this->in_flight_fences[this->output_image_index];
 
-			const vk2::Fence*& target_image = this->images_in_flight[this->output_image_index];
-			if(target_image != nullptr)
+		this->in_flight_fences[this->current_frame].unsignal();
+		this->graphics_queue->submit
+		({
+			.command_buffers = {&this->get_render_command_buffers()[this->output_image_index]},
+			.waits =
 			{
-				target_image->wait_until_signalled();
-			}
-			target_image = &this->in_flight_fences[this->output_image_index];
-
-			this->in_flight_fences[this->current_frame].unsignal();
-			this->graphics_queue->submit
-			({
-				.command_buffers = {&this->get_render_command_buffers()[this->output_image_index]},
-				.waits =
+				vk2::hardware::Queue::SubmitInfo::WaitInfo
 				{
-					vk2::hardware::Queue::SubmitInfo::WaitInfo
-					{
-						.wait_semaphore = &this->image_semaphores[this->current_frame],
-						.wait_stage = vk2::PipelineStage::ColourAttachmentOutput
-					}
-				},
-				.signal_semaphores = {&this->render_work_semaphores[this->current_frame]},
-				.execution_complete_fence = &this->in_flight_fences[this->current_frame]
-			});
+					.wait_semaphore = &this->image_semaphores[this->current_frame],
+					.wait_stage = vk2::PipelineStage::ColourAttachmentOutput
+				}
+			},
+			.signal_semaphores = {&this->render_work_semaphores[this->current_frame]},
+			.execution_complete_fence = &this->in_flight_fences[this->current_frame]
+		});
 
-			CommandProcessor::RenderWorkSubmitResult result;
+		CommandProcessor::RenderWorkSubmitResult result;
 
-			result.present = this->graphics_queue->present
-			({
-				.wait_semaphores = {&this->render_work_semaphores[this->current_frame]},
-				.swapchain = maybe_swapchain,
-				.swapchain_image_index = this->output_image_index
-			});
-			this->current_frame = (this->current_frame + 1) % this->frame_in_flight_count;
-			return result;
-		}
+		result.present = this->graphics_queue->present
+		({
+			.wait_semaphores = {&this->render_work_semaphores[this->current_frame]},
+			.swapchain = maybe_swapchain,
+			.swapchain_image_index = this->output_image_index
+		});
+		this->current_frame = (this->current_frame + 1) % this->frame_in_flight_count;
+		return result;
 	}
 
 	void CommandProcessor::do_compute_work()
 	{
 		TZ_PROFZONE("Vulkan Frontend - RendererVulkan CommandProcessor (Do Compute Work)", TZ_PROFCOL_YELLOW);
-		tz_error("Not yet implemented.");
+
+		if(!this->instant_compute_enabled)
+		{
+			this->in_flight_fences[this->current_frame].wait_until_signalled();
+		}
+		this->in_flight_fences[this->current_frame].unsignal();
+		this->compute_queue->submit
+		({
+			.command_buffers = {&this->get_render_command_buffers().front()},
+			.waits = {},
+			.signal_semaphores = {},
+			.execution_complete_fence = &this->in_flight_fences[this->current_frame]
+		});
+
+		if(this->instant_compute_enabled)
+		{
+			this->in_flight_fences[this->current_frame].wait_until_signalled();
+		}
 	}
 
 	void CommandProcessor::wait_pending_commands_complete()
@@ -1072,18 +1065,25 @@ namespace tz::gl
 	{
 		TZ_PROFZONE("Vulkan Frontend - RendererVulkan Render", TZ_PROFCOL_YELLOW);
 		this->resources.write_padded_image_data();
-		CommandProcessor::RenderWorkSubmitResult result = this->command.do_render_work(this->maybe_swapchain);
-		switch(result.present)
+		if(this->pipeline.is_compute())
 		{
-			case vk2::hardware::Queue::PresentResult::Success_Suboptimal:
-			[[fallthrough]];
-			case vk2::hardware::Queue::PresentResult::Success:
+			this->command.do_compute_work();
+		}
+		else
+		{
+			CommandProcessor::RenderWorkSubmitResult result = this->command.do_render_work(this->maybe_swapchain);
+			switch(result.present)
+			{
+				case vk2::hardware::Queue::PresentResult::Success_Suboptimal:
+				[[fallthrough]];
+				case vk2::hardware::Queue::PresentResult::Success:
 
-			break;
-			default:
-				// TODO: this->handle_resize();
-				tz_error("Presentation Failed. You probably tried to resize/minimise the window, but support for this on Vulkan is not yet implemented.");
-			break;
+				break;
+				default:
+					// TODO: this->handle_resize();
+					tz_error("Presentation Failed. You probably tried to resize/minimise the window, but support for this on Vulkan is not yet implemented.");
+				break;
+			}
 		}
 	}
 
