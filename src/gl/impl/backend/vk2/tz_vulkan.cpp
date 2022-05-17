@@ -234,26 +234,21 @@ namespace tz::gl::vk2
 
 		// Extensions (Specified from VulkanInstanceInfo + GLFW)
 		util::VkExtensionList extension_natives;
-		#if 1 /*Headless doesnt need this*/
-		{
-			// Use what we asked for, plus everything GLFW wants.
-			std::uint32_t glfw_extension_count;
-			const char** glfw_extensions = glfwGetRequiredInstanceExtensions(&glfw_extension_count);
+		// Use what we asked for, plus everything GLFW wants.
+		std::uint32_t glfw_extension_count;
+		const char** glfw_extensions = glfwGetRequiredInstanceExtensions(&glfw_extension_count);
 
-			extension_natives.resize(info.extensions.count() + glfw_extension_count);
-			std::transform(info.extensions.begin(), info.extensions.end(), extension_natives.begin(), [](InstanceExtension ext){return util::to_vk_extension(ext);});
-			for(std::size_t i = 0; std::cmp_less(i, glfw_extension_count); i++)
-			{
-				std::size_t idx = i + info.extensions.count();
-				extension_natives[idx] = glfw_extensions[i];
-			}
+		extension_natives.resize(info.extensions.count() + glfw_extension_count);
+		std::transform(info.extensions.begin(), info.extensions.end(), extension_natives.begin(), [](InstanceExtension ext){return util::to_vk_extension(ext);});
+		for(std::size_t i = 0; std::cmp_less(i, glfw_extension_count); i++)
+		{
+			std::size_t idx = i + info.extensions.count();
+			extension_natives[idx] = glfw_extensions[i];
 		}
-		#endif
 
 		void* inst_create_pnext = nullptr;
 		// Debug Messenger
 		const bool create_debug_validation = info.extensions.contains(InstanceExtension::DebugMessenger) && TZ_DEBUG;
-		constexpr bool create_window_surface = true;
 		tz_assert(info.window != nullptr && !info.window->is_null(), "Null window provided. Please submit a bug report.");
 		VkDebugUtilsMessengerCreateInfoEXT debug_validation_create;
 		if(create_debug_validation)
@@ -310,10 +305,7 @@ namespace tz::gl::vk2
 		{
 			this->maybe_debug_messenger = VulkanDebugMessenger{*this};
 		}
-		if(create_window_surface)
-		{
-			this->maybe_window_surface = WindowSurface{*this, *info.window};
-		}
+		this->maybe_window_surface = WindowSurface{*this, *info.window};
 	}
 
 

@@ -15,43 +15,27 @@ namespace tz::gl
 	{
 		TZ_PROFZONE("DeviceWindowVulkan Create", TZ_PROFCOL_YELLOW);
 		const vk2::VulkanInstance& instance = device.get_hardware().get_instance();
-		//if(instance.is_headless())
-		//{
-		//	this->window_buf = vk2::Image
-		//	{{
-		//		.device = &device,
-		//		.format = vk2::format_traits::get_mandatory_colour_attachment_formats().front(),
-		//		/*TODO: Don't hardcode this jesus fucking christ*/
-		//		.dimensions = {800u, 600u},
-		//		.usage = {vk2::ImageUsage::ColourAttachment},
-		//		.residency = vk2::MemoryResidency::GPU
-		//	}};
-		//}
-		//else
-		{
-			// if we're not headless we must have a WindowSurface.
-			tz_assert(instance.has_surface(), "DeviceWindowVulkan provided a VulkanInstance that doesn't have a WindowSurface attached. Please submit a bug report.");
+		tz_assert(instance.has_surface(), "DeviceWindowVulkan provided a VulkanInstance which is not headless, but doesn't have a WindowSurface attached. Please submit a bug report.");
 
-			// Create a swapchain.
-			// Ideally we want mailbox present mode, but that may not be available.
-			vk2::SurfacePresentMode present_mode = vk2::SurfacePresentMode::Mailbox;
-			if(!device.get_hardware().get_supported_surface_present_modes().contains(present_mode))
-			{
-				present_mode = device.get_hardware().get_supported_surface_present_modes().front();
-			}
-			std::uint32_t swapchain_img_min = device.get_hardware().get_surface_capabilities().min_image_count;
-			std::uint32_t swapchain_img_max = device.get_hardware().get_surface_capabilities().max_image_count;
-			std::uint32_t swapchain_img_count = std::clamp<std::uint32_t>(3u, swapchain_img_min, swapchain_img_max);
-			swapchain_img_count = std::min<std::uint32_t>(swapchain_img_count, 3u);
-			this->window_buf = vk2::Swapchain
-			{{
-				.device = &device,
-				.swapchain_image_count_minimum = swapchain_img_count,
-				.image_format = device.get_hardware().get_supported_surface_formats().front(),
-				.present_mode = present_mode
-			}};
-			this->register_resize();
+		// Create a swapchain.
+		// Ideally we want mailbox present mode, but that may not be available.
+		vk2::SurfacePresentMode present_mode = vk2::SurfacePresentMode::Mailbox;
+		if(!device.get_hardware().get_supported_surface_present_modes().contains(present_mode))
+		{
+			present_mode = device.get_hardware().get_supported_surface_present_modes().front();
 		}
+		std::uint32_t swapchain_img_min = device.get_hardware().get_surface_capabilities().min_image_count;
+		std::uint32_t swapchain_img_max = device.get_hardware().get_surface_capabilities().max_image_count;
+		std::uint32_t swapchain_img_count = std::clamp<std::uint32_t>(3u, swapchain_img_min, swapchain_img_max);
+		swapchain_img_count = std::min<std::uint32_t>(swapchain_img_count, 3u);
+		this->window_buf = vk2::Swapchain
+		{{
+			.device = &device,
+			.swapchain_image_count_minimum = swapchain_img_count,
+			.image_format = device.get_hardware().get_supported_surface_formats().front(),
+			.present_mode = present_mode
+		}};
+		this->register_resize();
 	}
 
 	DeviceWindowVulkan::DeviceWindowVulkan(DeviceWindowVulkan&& move):
@@ -167,7 +151,8 @@ namespace tz::gl
 		{
 			return;
 		}
-		tz_assert(this->as_swapchain() != nullptr, "Nullptr swapchain detected. Logic error. Please submit a bug report.");
+		// Assume we have a head, headless no support for resizeable output yet.
+		tz_assert(this->as_swapchain() != nullptr, "Resizeable output for headless applications is not yet supported.");
 		vk2::Swapchain& old_swapchain = *this->as_swapchain();
 		if(old_swapchain.get_dimensions() == dims)
 		{
