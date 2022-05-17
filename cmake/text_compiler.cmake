@@ -18,7 +18,7 @@ function(add_text)
 		add_custom_command(
 			OUTPUT ${output_path}
 			COMMENT "TEXTC: Bundling ${TEXT} -> ${output_name}"
-			COMMAND "${TEXTC_EXECUTABLE_PATH}" ${text_path} > ${output_path}
+			COMMAND "${TEXTC_EXECUTABLE_PATH}" ${text_path} -o ${output_path}
 			DEPENDS textc ${text_path}
 			IMPLICIT_DEPENDS CXX
 			VERBATIM

@@ -1,5 +1,7 @@
 #include "core/assert.hpp"
 #include "core/types.hpp"
+#include <filesystem>
+#include <cerrno>
 #include <fstream>
 #include <string>
 #include <string_view>
@@ -92,10 +94,35 @@ void headerify(std::string_view filename, std::string& text)
 	text = std::string("#include <cstdint>\n#include <array>\n/*textc_gen_header*/constexpr std::array<std::int8_t, " + std::to_string(byte_count) + "> " + filename_cpy + "{") + buffer_array_literal + "};";
 }
 
+FILE* get_output_stream(int argc, char** argv)
+{
+	// We're either writing to stdout or a specific file. Return the relevant filestream
+	FILE* output = stdout;
+	for(std::size_t i = 0; i < argc - 1; i++)
+	{
+		std::string_view arg{argv[i]};
+		std::string_view arg_next{argv[i + 1]};
+		if(arg == "-o")
+		{
+			std::filesystem::path out_path{arg_next.data()};
+			std::filesystem::path parent = out_path.parent_path();
+			if(!std::filesystem::exists(parent))
+			{
+				std::filesystem::create_directories(parent);
+			}
+			output = fopen(arg_next.data(), "w");
+			tz_assert(output != nullptr, "Failed to open output stream. Perhaps missing intermediate directory, or no write permissions for this area of the filesystem?\nOutput was %s.\nErrno says: %s", arg_next.data(), std::strerror(errno));
+		}
+	}
+	return output;
+}
+
 int main(int argc, char** argv)
 {
-	tz_assert(argc == 2, "Not enough arguments (%d). Require exactly 2.", argc);
+	tz_assert(argc >= 2, "Not enough arguments (%d). At least 2. Usage: `textc <file-path> [-o <output_file_path>]`", argc);
 	const char* txt_filename = argv[1];
+	FILE* out = get_output_stream(argc, argv);
+
 	std::ifstream file{txt_filename, std::ios::ate | std::ios::binary};
 	tz_assert(file.is_open(), "Cannot open text file %s", txt_filename);
 
@@ -109,6 +136,10 @@ int main(int argc, char** argv)
 	headerify(txt_filename, buffer);
 	for(char c : buffer)
 	{
-		std::printf("%c", c);
+		std::fprintf(out, "%c", c);
+	}
+	if(out != stdout)
+	{
+		fclose(out);
 	}
 }

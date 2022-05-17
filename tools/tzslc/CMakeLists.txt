@@ -7,6 +7,6 @@ add_tool(
 		tzsl.hpp
 		tzslc_main.cpp
 	TEXT_FILES
-		matrix.tzsl
-		space.tzsl
+		shaders/matrix.tzsl
+		shaders/space.tzsl
 )
