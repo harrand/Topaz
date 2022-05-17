@@ -42,6 +42,10 @@ mat4 tz::matrix::decompose_quaternion(vec4 quat)
 	return ret;
 }
 
+#define tz::matrix::determinant(m) determinant(m)
+#define tz::matrix::inverse(m) inverse(m)
+#define tz::matrix::transpose(m) transpose(m)
+
 
 /// End stdlib impl: <matrix>
 #endif // TZSLC_STDLIB_MATRIX_TZSL

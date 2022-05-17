@@ -79,9 +79,17 @@ namespace tzslc
 		[](auto beg, auto end)
 		{
 			const std::string& m = *beg;
+			if(m == "atomic")
+			{
+				return std::string(stdlib_atomic);
+			}
 			if(m == "space")
 			{
 				return std::string(stdlib_space);
+			}
+			if(m == "math")
+			{
+				return std::string(stdlib_math);
 			}
 			if(m == "matrix")
 			{

@@ -1,0 +1,56 @@
+#ifndef TZSLC_STDLIB_MATH_TZSL
+#define TZSLC_STDLIB_MATH_TZSL
+/**
+ * TZSL stdlib: <math>
+ * harrand 17/05/2022 for tz3.3
+ */
+#define tz::math::abs(x) abs(x)
+
+#define tz::math::cos(x) cos(x)
+#define tz::math::sin(x) sin(x)
+#define tz::math::tan(x) tan(x)
+#define tz::math::acos(x) acos(x)
+#define tz::math::acosh(x) acosh(x)
+#define tz::math::asin(x) asin(x)
+#define tz::math::asinh(x) asinh(x)
+#define tz::math::atan(x) atan(x)
+#define tz::math::atanh(x) atanh(x)
+
+#define tz::math::ceil(x) ceil(x)
+#define tz::math::floor(x) floor(x)
+#define tz::math::round(x) round(x)
+#define tz::math::trunc(x) trunc(x)
+#define tz::math::fract(x) fract(x)
+#define tz::math::sign(x) sign(x)
+
+#define tz::math::clamp(x, min, max) clamp(x, min, max)
+#define tz::math::cross(x, y) cross(x, y)
+#define tz::math::distance(p0, p1) distance(p0, p1)
+#define tz::math::dot(x, y) dot(x, y)
+#define tz::math::exp(x) exp(x)
+#define tz::math::exp2(x) exp2(x)
+#define tz::math::sqrt(x) sqrt(x)
+#define tz::math::inverse_sqrt(x) inversesqrt(x)
+#define tz::math::is_infinity(x) isinf(x)
+#define tz::math::is_nan(x) isnan(x)
+
+#define tz::math::step(edge, x) step(edge, x)
+#define tz::math::smooth_step(edge0, edge1, x) smoothstep(edge0, edge1, x)
+
+#define tz::math::magnitude(x) length(x)
+#define tz::math::normalise(x) normalize(x)
+
+#define tz::math::ln(x) log(x)
+#define tz::math::log(x) log2(x)
+#define tz::math::pow(x, y) pow(x, y)
+
+#define tz::math::max(x, y) max(x, y)
+#define tz::math::min(x, y) min(x, y)
+#define tz::math::lerp(x, y, v) mix(x, y, v)
+#define tz::math::mod(x, y) mod(x, y)
+
+#define tz::math::reflect(i, n) reflect(i, n)
+#define tz::math::refract(i, n, eta) refract(i, n, eta)
+
+/// End stdlib impl: <math>
+#endif // TZSLC_STDLIB_MATH_TZSL

@@ -1,6 +1,9 @@
 shader(type = compute);
 kernel(4, 1, 1);
 
+import <math>
+import <atomic>
+
 resource(id = 0) buffer ColourData
 {
 	vec4 colours[4];
@@ -13,7 +16,7 @@ resource(id = 1) buffer Time
 
 float get_value(float mul)
 {
-	return (sin(time * mul * 0.00001f) + 1.0f) * 0.5f;
+	return (tz::math::sin(time * mul * 0.00001f) + 1.0f) * 0.5f;
 }
 
 void main()
@@ -22,5 +25,5 @@ void main()
 	colours[idx].r = get_value(idx * 5.0f);
 	colours[idx].g = get_value(idx * 2.0f);
 	colours[idx].b = get_value(idx * 0.2f);
-	atomicAdd(time, 1);
+	tz::atomic::add(time, 1);
 }
