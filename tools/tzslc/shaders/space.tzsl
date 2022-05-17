@@ -1,3 +1,5 @@
+#ifndef TZSLC_STDLIB_SPACE_TZSL
+#define TZSLC_STDLIB_SPACE_TZSL
 /**
  * TZSL stdlib: <space>
  * harrand 28/04/2022 for tz3.3
@@ -87,3 +89,4 @@
 	}
 
 /// End stdlib impl: <space>
+#endif //TZSLC_STDLIB_SPACE_TZSL
