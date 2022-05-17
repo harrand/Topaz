@@ -97,14 +97,14 @@ namespace tzslc
 
 	void evaluate_user_imports(std::string& shader_source, std::filesystem::path shader_filename)
 	{
-		constexpr char user_import_regex[] = "import \"([a-zA-Z0-9\\s]+)\"";
+		constexpr char user_import_regex[] = "import \"([a-zA-Z0-9\\.\\s]+)\"";
 		// User-defined imports
 		tzslc::transform(shader_source, std::regex{user_import_regex},
 		[shader_filename](auto beg, auto end)
 		{
 			const std::string& filename = *beg;
 			std::filesystem::path full_path = shader_filename.parent_path() / (filename + ".tzsl");
-			tz_assert(std::filesystem::exists(full_path), "import \"%s\" - Cannot find %s.tzsl.\nInclude Directory: %s", filename.c_str(), filename.c_str(), shader_filename.parent_path().c_str());
+			tz_assert(std::filesystem::exists(full_path), "import \"%s\" - Cannot find %s.tzsl.\nInclude Directory: %s", filename.c_str(), filename.c_str(), shader_filename.parent_path().string().c_str());
 			std::ifstream import_file{full_path.c_str(), std::ios::ate | std::ios::binary};
 			tz_assert(import_file.is_open(), "import \"%s\" - Shader file located no filesystem, but could not read for some reason. Read access denied?", filename.c_str());
 			std::string buffer;
@@ -113,6 +113,10 @@ namespace tzslc
 			import_file.seekg(0);
 			import_file.read(buffer.data(), buffer.size());
 			import_file.close();
+
+			// The included file might have includes aswell, process them.
+			evaluate_imports(buffer);
+			evaluate_user_imports(buffer, full_path);
 			return buffer;
 		});
 	}
@@ -152,11 +156,15 @@ namespace tzslc
 		// Firstly, we'll evaluate stage specifiers.
 		constexpr char shader_specifier_regex[] = "shader\\(type ?= ?([a-zA-Z]+)\\) ?;";
 
+		std::size_t stage_specifier_count = 0;
 		tzslc::transform(shader_source, std::regex{shader_specifier_regex},
-		[](auto beg, auto end)
+		[&stage_specifier_count](auto beg, auto end)
 		{
+			stage_specifier_count++;
 			return "#pragma shader_stage(" + *beg + ")";
 		});
+
+		tz_assert(stage_specifier_count == 1, "Unexpected number of shader stage specifiers. Expected 1, got %zu", stage_specifier_count);
 
 		// Secondly, kernel specifiers for compute shaders.
 		constexpr char kernel_regex[] = "kernel\\(([0-9]+), ?([0-9]+), ?([0-9]+)\\) ?;";
