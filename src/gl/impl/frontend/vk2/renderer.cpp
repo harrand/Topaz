@@ -463,7 +463,9 @@ namespace tz::gl
 			// We have been provided an ImageOutput which will contain an ImageComponentVulkan. We need to retrieve that image and return a span covering it.
 			// TODO: Support multiple-render-targets.
 			ImageOutput& out = const_cast<ImageOutput&>(static_cast<const ImageOutput&>(*this->output));
-			vk2::Image& output_image = out.get_component().vk_get_image();
+			tz_assert(out.colour_attachment_count() == 1, "Multiple colour outputs on a render-to-texture target is not yet implemented.");
+			tz_assert(!out.has_depth_attachment(), "Depth attachment on an ImageOutput is not yet implemented");
+			vk2::Image& output_image = out.get_colour_attachment(0).vk_get_image();
 			return {&output_image, 1};
 		}
 		else

@@ -6,20 +6,30 @@
 
 namespace tz::gl
 {
+	struct ImageOutputInfo
+	{
+		tz::BasicList<IComponent*> colours;
+		IComponent* depth;
+	};
+
 	class ImageOutput : public IOutput
 	{
 	public:
-		ImageOutput(ImageComponent& component);
+		ImageOutput(ImageOutputInfo info);
 		constexpr virtual OutputTarget get_target() const override
 		{
 			return OutputTarget::OffscreenImage;
 		}
 
-		const ImageComponent& get_component() const;
-		ImageComponent& get_component();
+		std::size_t colour_attachment_count() const;
+		bool has_depth_attachment() const;
+
+		const ImageComponent& get_colour_attachment(std::size_t colour_attachment_idx) const;
+		ImageComponent& get_colour_attachment(std::size_t colour_attachment_idx);
+
 	private:
-		// TODO: Span of components when we go on to support multiple-render-targets?
-		ImageComponent* component;
+		std::vector<ImageComponent*> colour_attachments;
+		ImageComponent* depth_attachment;
 	};
 
 	class WindowOutput : public IOutput
