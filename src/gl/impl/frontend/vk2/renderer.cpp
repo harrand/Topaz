@@ -824,9 +824,8 @@ namespace tz::gl
 
 //--------------------------------------------------------------------------------------------------
 
-	CommandProcessor::CommandProcessor(vk2::LogicalDevice& ldev, std::size_t frame_in_flight_count, OutputTarget output_target, std::span<vk2::Framebuffer> output_framebuffers, bool is_compute, bool instant_compute_enabled):
+	CommandProcessor::CommandProcessor(vk2::LogicalDevice& ldev, std::size_t frame_in_flight_count, OutputTarget output_target, std::span<vk2::Framebuffer> output_framebuffers, bool instant_compute_enabled):
 	requires_present(output_target == OutputTarget::Window),
-	is_compute(is_compute),
 	instant_compute_enabled(instant_compute_enabled),
 	graphics_queue(ldev.get_hardware_queue
 	({
@@ -966,7 +965,7 @@ namespace tz::gl
 	resources(info, *this->ldev, this->get_frame_in_flight_count(device_info)),
 	output(info.get_output(), device_info.output_images, !info.get_options().contains(RendererOption::NoDepthTesting), *this->ldev),
 	pipeline(info.shader(), this->resources.get_descriptor_layout(), this->output.get_render_pass(), this->get_frame_in_flight_count(device_info), output.get_output_dimensions(), !info.get_options().contains(RendererOption::NoDepthTesting), info.get_options().contains(RendererOption::AlphaBlending)),
-	command(*this->ldev, this->get_frame_in_flight_count(device_info), info.get_output() != nullptr ? info.get_output()->get_target() : OutputTarget::Window, this->output.get_output_framebuffers(), pipeline.is_compute(), info.get_options().contains(RendererOption::BlockingCompute)),
+	command(*this->ldev, this->get_frame_in_flight_count(device_info), info.get_output() != nullptr ? info.get_output()->get_target() : OutputTarget::Window, this->output.get_output_framebuffers(), info.get_options().contains(RendererOption::BlockingCompute)),
 	maybe_swapchain(device_info.maybe_swapchain),
 	options(info.get_options()),
 	clear_colour(info.get_clear_colour()),
