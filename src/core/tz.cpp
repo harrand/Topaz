@@ -42,16 +42,6 @@ namespace tz
 			wargs.title = wnd_title.c_str();
 			wnd = new tz::Window{wargs, hints};
 		}
-		else
-		{
-			#if TZ_VULKAN
-				wnd = new tz::Window{tz::Window::null()};
-			#elif TZ_OGL
-				// TODO: Headless implementation for OGL
-				tz_error("Headless applications are stubbed out for OpenGL");
-				std::exit(-1);
-			#endif
-		}
 		initialised = true;
 		#if TZ_VULKAN
 			tz::gl::vk2::initialise(game_info, app_type);
@@ -84,13 +74,10 @@ namespace tz
 			delete wnd;
 		}
 
-		if(tz_app_type != ApplicationType::Headless)
+		tz::detail::peripherals::monitor::terminate();
 		{
-			tz::detail::peripherals::monitor::terminate();
-			{
-				TZ_PROFZONE("GLFW Terminate", TZ_PROFCOL_BLUE);
-				glfwTerminate();
-			}
+			TZ_PROFZONE("GLFW Terminate", TZ_PROFCOL_BLUE);
+			glfwTerminate();
 		}
 		initialised = false;
 	}

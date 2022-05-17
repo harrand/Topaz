@@ -57,7 +57,7 @@ namespace tz
 		Window& operator=(Window&& rhs);
 
 		/**
-		 * Retrieve the null window. Operations on the null window are invalid, but it is a useful alias if the application is headless.
+		 * Retrieve the null window. Operations on the null window are invalid.
 		 */
 		static Window null();
 		/**

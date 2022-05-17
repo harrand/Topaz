@@ -110,7 +110,6 @@ namespace tz::gl::vk2
 	 * @brief Retrieve a reference to the current Vulkan Instance. This will have been created during initialisation.
 	 */
 	const VulkanInstance& get();
-	bool is_headless();
 
 	/**
 	 * @}
@@ -153,7 +152,6 @@ namespace tz::gl::vk2
 	/**
 	 * @ingroup tz_gl_vk_presentation
 	 * Represents a Vulkan-friendly interface to an existing OS window. In order to present results to the screen, it is done via this WindowSurface class.
-	 * @pre The @ref VulkanInstance associated with the surface must not be a Headless instance.
 	 * @post Once a WindowSurface is created for a given @ref tz::Window, no other WindowSurfaces can be created for that window. This means only one VulkanInstance can own a Window.
 	 */
 	class WindowSurface
@@ -189,11 +187,11 @@ namespace tz::gl::vk2
 	{
 		/// Information about the application.
 		tz::GameInfo game_info;
-		/// Describes the application type. If Headless is passed, the resultant @ref VulkanInstance will not have an associated @ref WindowSurface.
+		/// Describes the application type.
 		tz::ApplicationType app_type = tz::ApplicationType::WindowApplication;
 		/// List of extensions to enable. Empty by default.
 		InstanceExtensionList extensions = {};
-		/// Window from which to create a @ref WindowSurface. If nullptr is passed, no @ref WindowSurface is created. If `app_type == tz::ApplicationType::Headless`, this is ignored. Defaults to nullptr.
+		/// Window from which to create a @ref WindowSurface. If nullptr is passed, no @ref WindowSurface is created. Defaults to nullptr.
 		const tz::Window* window = nullptr;
 	};
 
@@ -213,12 +211,6 @@ namespace tz::gl::vk2
 		VulkanInstance& operator=(const VulkanInstance& rhs) = delete;
 		VulkanInstance& operator=(VulkanInstance&& rhs) = delete;
 
-		/**
-		 * Query as to whether the instance is headless or not.
-		 *
-		 * A headless instance does not support WSI.
-		 */
-		bool is_headless() const;
 		bool has_surface() const;
 
 		const WindowSurface& get_surface() const;

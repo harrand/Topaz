@@ -89,25 +89,6 @@ void simulataneous_logical_devices()
 	}
 }
 
-void headless_logical_device(tz::GameInfo game)
-{
-	using namespace tz::gl::vk2;
-	VulkanInstance vinst
-	{{
-		.game_info = game,
-		.app_type = tz::ApplicationType::Headless,
-	}};
-	{
-		PhysicalDevice pdev = get_all_devices(vinst).front();
-		LogicalDevice ldev
-		{{
-			.physical_device = pdev,
-			.extensions = {},
-			.features = {},
-		}};
-	}
-}
-
 int main()
 {
 	tz::initialise
@@ -121,7 +102,6 @@ int main()
 		custom_instance_and_window_surface(game);
 		semantics();
 		simulataneous_logical_devices();
-		headless_logical_device(game);
 	}
 	tz::terminate();
 }

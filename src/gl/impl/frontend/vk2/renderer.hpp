@@ -96,10 +96,9 @@ namespace tz::gl
 	/**
 	 * @ingroup tz_gl2_graphicsapi_vk_frontend_renderer
 	 * Deciphering the actual render target is pretty complicated. There are various gotchas:
-	 * - The tz::ApplicationType might be Headless, meaning that we don't have a vk2::Swapchain at all, and the Device instead exposed some offscreen images.
 	 * - If there is a swapchain, we don't have control over how many swapchain images are available. We need to be flexible as the Device has sole control over this.
 	 * - If we're rendering into a separate image (most likely a texture resource belonging to another RendererVulkan), that RendererVulkan has ownership of the image component, not us.
-	 * - If we're rendering to the window, the Device used to create this RendererVulkan has ownership of those image components. This is true if there is a swapchain available, and even if we're a headless application and the Device has still provided us with an offscreen image.
+	 * - If we're rendering to the window, the Device used to create this RendererVulkan has ownership of those image components. This should always be the case.
 	 *
 	 * This class deals with all of those cases and exposes a list of output images, aswell as imageviews and framebuffers for them.
 	 */
@@ -108,8 +107,8 @@ namespace tz::gl
 	public:
 		/**
 		 * Construct the manager to deal with this brain-knot of output components.
-		 * @param output Output which is either going to be a WindowOutput (containing swapchain images or a headless render-target image) or a TextureOutput which owns its own TextureComponent which we will need to extract.
-		 * @param window_buffer_images View into the array of WindowOutput images. These all belong to the creator Device. If we're a headless application, this is likely going to be a single offscreen render-target image. Otherwise, it's going to be the swapchain images. If the output is a TextureOutput then we're not going to use any of these.
+		 * @param output Output which is either going to be a WindowOutput (containing swapchain images) or a TextureOutput which owns its own TextureComponent which we will need to extract.
+		 * @param window_buffer_images View into the array of WindowOutput images. These all belong to the creator Device. It's going to be the swapchain images. If the output is a TextureOutput then we're not going to use any of these.
 		 * @param create_depth_images Whether we should create depth images or not. If so, they will also be passed into the framebuffer. This means that the graphics pipeline the renderer ends up using will also need to know that we're using a depth attachment.
 		 * @param ldev Vulkan LogicalDevice which will be used to construct the render-pass and framebuffers etc. Right now we expect this to be the exact same LogicalDevice everywhere throughout this RendererVulkan. However this may change in the future (albeit unlikely tbh).
 		 */
@@ -126,8 +125,7 @@ namespace tz::gl
 		 *
 		 * There is no way to guarantee how many output images there are, but here is an explanation of what you might get:
 		 * - If the output is a window output:
-		 * 	- If Topaz was initialised headlessly, this is most likely going to be a single offscreen image which was provided by the Device.
-		 *  	- If Topaz is running in a window, this is going to contain the swapchain images. Unfortunately this may vary depending on the machine running and what it supports, but in practice most likely this will be a couple (2-4).
+		 * 		- This is going to contain the swapchain images. Unfortunately this may vary depending on the machine running and what it supports, but in practice most likely this will be a couple (2-4).
 		 * @return List of output images.
 		 */
 		std::span<vk2::Image> get_output_images();
@@ -256,7 +254,6 @@ namespace tz::gl
 		 * @param maybe_swapchain Pointer to the swapchain which will be presented to. If the renderer is not expected to perform any presentation, this can be nullptr.
 		 * @return Structure containing information about the results of the render work submission (and image presentation if applicable).
 		 * @pre `maybe_swapchain` must not be nullptr if the renderer is expected to present the result of the submitted work to the window.
-		 * @note Headless rendering is not yet implemented.
 		 */
 		RenderWorkSubmitResult do_render_work(vk2::Swapchain* maybe_swapchain);
 		void do_compute_work();
@@ -302,17 +299,17 @@ namespace tz::gl
 
 	/**
 	 * @ingroup tz_gl2_graphicsapi_vk_frontend_renderer
-	 * When the Device wants to create a RendererVulkan, we need to know a little bit about the Device's internals (such as the swapchain images, or an offscreen image if we're headless).
+	 * When the Device wants to create a RendererVulkan, we need to know a little bit about the Device's internals (such as the swapchain images).
 	 */
 	struct RendererDeviceInfoVulkan
 	{
 		/// LogicalDevice used to create VKAPI objects. Most likely comes from a DeviceVulkan.
 		vk2::LogicalDevice* device;
-		/// List of output images. If the output is a window, this is likely to be swapchain images or an offscreen headless image.
+		/// List of output images. These are going to be swapchain images.
 		std::span<vk2::Image> output_images;
 		/// Swapchain if there is one.
 		vk2::Swapchain* maybe_swapchain;
-		/// Callback for resizing which the renderer subscribes to for the duration of its lifetime. Assume this isn't null but for headless applications this should not be used.
+		/// Callback for resizing which the renderer subscribes to for the duration of its lifetime. Assume this isn't null.
 		RendererResizeCallbackType* resize_callback;
 	};
 

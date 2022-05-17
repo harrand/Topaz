@@ -13,7 +13,7 @@ namespace tz::gl
 	 *
 	 * Device types are types which:
 	 * - Implement the factory pattern for various graphics library objects, such as @ref RendererType
-	 * - Have direct access to the window surface (or offline image in headless mode), and exposes relevant information about said surface.
+	 * - Have direct access to the window surface, and exposes relevant information about said surface.
 	 */
 	template<typename T, typename RendererInfo>
 	concept DeviceType = requires(T t, RendererInfo& rinfo)

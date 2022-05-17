@@ -61,7 +61,7 @@ namespace tz
 
 	tz::BasicList<MonitorInfo> get_monitors()
 	{
-		tz_assert(detail::peripherals::monitor::initialised, "Monitors submodule not initialised. You either forgot to invoke `tz::initialise` or this is a Headless application.");
+		tz_assert(detail::peripherals::monitor::initialised, "Monitors submodule not initialised. You forgot to invoke `tz::initialise`?");
 		return detail::peripherals::monitor::all_monitors;
 	}
 }

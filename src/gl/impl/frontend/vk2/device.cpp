@@ -15,22 +15,22 @@ namespace tz::gl
 	{
 		TZ_PROFZONE("DeviceWindowVulkan Create", TZ_PROFCOL_YELLOW);
 		const vk2::VulkanInstance& instance = device.get_hardware().get_instance();
-		if(instance.is_headless())
-		{
-			this->window_buf = vk2::Image
-			{{
-				.device = &device,
-				.format = vk2::format_traits::get_mandatory_colour_attachment_formats().front(),
-				/*TODO: Don't hardcode this jesus fucking christ*/
-				.dimensions = {800u, 600u},
-				.usage = {vk2::ImageUsage::ColourAttachment},
-				.residency = vk2::MemoryResidency::GPU
-			}};
-		}
-		else
+		//if(instance.is_headless())
+		//{
+		//	this->window_buf = vk2::Image
+		//	{{
+		//		.device = &device,
+		//		.format = vk2::format_traits::get_mandatory_colour_attachment_formats().front(),
+		//		/*TODO: Don't hardcode this jesus fucking christ*/
+		//		.dimensions = {800u, 600u},
+		//		.usage = {vk2::ImageUsage::ColourAttachment},
+		//		.residency = vk2::MemoryResidency::GPU
+		//	}};
+		//}
+		//else
 		{
 			// if we're not headless we must have a WindowSurface.
-			tz_assert(instance.has_surface(), "DeviceWindowVulkan provided a VulkanInstance which is not headless, but doesn't have a WindowSurface attached. Please submit a bug report.");
+			tz_assert(instance.has_surface(), "DeviceWindowVulkan provided a VulkanInstance that doesn't have a WindowSurface attached. Please submit a bug report.");
 
 			// Create a swapchain.
 			// Ideally we want mailbox present mode, but that may not be available.
@@ -167,8 +167,7 @@ namespace tz::gl
 		{
 			return;
 		}
-		// Assume we have a head, headless no support for resizeable output yet.
-		tz_assert(this->as_swapchain() != nullptr, "Resizeable output for headless applications is not yet supported.");
+		tz_assert(this->as_swapchain() != nullptr, "Nullptr swapchain detected. Logic error. Please submit a bug report.");
 		vk2::Swapchain& old_swapchain = *this->as_swapchain();
 		if(old_swapchain.get_dimensions() == dims)
 		{
@@ -242,10 +241,7 @@ namespace tz::gl
 			vk2::DeviceFeature::ColourBlendLogicalOperations
 		};
 		tz_assert(pdev.get_supported_features().contains(dev_feats), "One or both of DeviceFeatures 'BindlessDescriptors' and 'MultiDrawIndirect' are not supported by this machine/driver. Please ensure your machine meets the system requirements.");
-		if(!instance.is_headless())
-		{
-			dev_exts = {vk2::DeviceExtension::Swapchain};
-		}
+		dev_exts = {vk2::DeviceExtension::Swapchain};
 		#if TZ_DEBUG
 			dev_exts |= vk2::DeviceExtension::ShaderDebugPrint;
 		#endif

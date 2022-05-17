@@ -95,8 +95,6 @@ namespace tz
 		WindowApplication,
 		/// - Initialisation should spawn a window, but it is invisible to the user.
 		HiddenWindowApplication,
-		/// - Initialisation should not spawn a window at all. Headless applications have access to fewer features than others, but do not require a display to initialise. It is recommended to be used for applications used in continuous integration.
-		Headless
 	};
 
 	/**
@@ -131,7 +129,6 @@ namespace tz
 	/**
 	 * @ingroup tz_core_init
 	 * @brief Retrieve the application window.
-	 * @pre @ref tz::initialise() has been invoked but not with `ApplicationType::Headless`.
 	 * @post @ref tz::terminate() has not yet been invoked.
 	 * @return Window& Reference to the application window.
 	 */

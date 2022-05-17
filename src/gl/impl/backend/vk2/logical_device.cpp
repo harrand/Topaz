@@ -156,13 +156,12 @@ namespace tz::gl::vk2
 				}
 
 				const VulkanInstance& vk_inst = this->get_hardware().get_instance();
-				if(!vk_inst.is_headless() && vk_inst.has_surface())
-				{
-					const WindowSurface& surf = vk_inst.get_surface();
-					VkBool32 present_support;
-					vkGetPhysicalDeviceSurfaceSupportKHR(this->physical_device.native(), queue_family_index, surf.native(), &present_support);
-					info.present_support = present_support == VK_TRUE;
-				}
+				tz_assert(vk_inst.has_surface(), "VulkanInstance did not have a surface associated with it.");
+				const WindowSurface& surf = vk_inst.get_surface();
+				VkBool32 present_support;
+				vkGetPhysicalDeviceSurfaceSupportKHR(this->physical_device.native(), queue_family_index, surf.native(), &present_support);
+				info.present_support = present_support == VK_TRUE;
+
 				this->queue_families.push_back(info);
 			};
 		}

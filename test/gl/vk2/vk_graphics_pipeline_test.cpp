@@ -61,7 +61,7 @@ int main()
 	tz::initialise
 	({
 		.name = "vk_graphics_pipeline_test",
-		.app_type = tz::ApplicationType::Headless
+		.app_type = tz::ApplicationType::HiddenWindowApplication
 	});
 	{
 		basic_graphics_pipeline();

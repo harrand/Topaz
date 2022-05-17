@@ -31,7 +31,7 @@ int main()
 	tz::initialise
 	({
 		.name = "vk_pipeline_test",
-		.app_type = tz::ApplicationType::Headless
+		.app_type = tz::ApplicationType::HiddenWindowApplication
 	});
 	{
 		basic_classic_pipeline_layout();

@@ -277,7 +277,7 @@ int main()
 	tz::initialise
 	({
 		.name = "vk_image_test",
-		.app_type = tz::ApplicationType::Headless
+		.app_type = tz::ApplicationType::HiddenWindowApplication
 	});
 	{
 		basic_images();

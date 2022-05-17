@@ -87,7 +87,7 @@ void swapchain_extension_supported()
 	{
 		return pdev.get_supported_extensions().contains(DeviceExtension::Swapchain);
 	});
-	tz_assert(anyone_supports_swapchain, "In a non-headless application, no PhysicalDevices were found which support DeviceExtension::Swapchain");
+	tz_assert(anyone_supports_swapchain, "In a non-HiddenWindowApplication application, no PhysicalDevices were found which support DeviceExtension::Swapchain");
 }
 
 void semantics()

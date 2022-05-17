@@ -905,57 +905,49 @@ namespace tz::gl
 		}
 		else
 		{
-			if(this->requires_present)
-			{
-				tz_assert(maybe_swapchain != nullptr, "Trying to do render work with presentation, but no Swapchain provided. Please submit a bug report.");
-				vk2::Swapchain& swapchain = *maybe_swapchain;
-				// Submit & Present
-				this->in_flight_fences[this->current_frame].wait_until_signalled();
-				this->output_image_index = swapchain.acquire_image
-				({
-					.signal_semaphore = &this->image_semaphores[current_frame]
-				}).image_index;
+			tz_assert(this->requires_present, "Requires present is false. Logic error, possibly trying to do headless stuff which is no longer supported? Please submit a bug report.")
+			tz_assert(maybe_swapchain != nullptr, "Trying to do render work with presentation, but no Swapchain provided. Please submit a bug report.");
+			vk2::Swapchain& swapchain = *maybe_swapchain;
+			// Submit & Present
+			this->in_flight_fences[this->current_frame].wait_until_signalled();
+			this->output_image_index = swapchain.acquire_image
+			({
+				.signal_semaphore = &this->image_semaphores[current_frame]
+			}).image_index;
 
-				const vk2::Fence*& target_image = this->images_in_flight[this->output_image_index];
-				if(target_image != nullptr)
+			const vk2::Fence*& target_image = this->images_in_flight[this->output_image_index];
+			if(target_image != nullptr)
+			{
+				target_image->wait_until_signalled();
+			}
+			target_image = &this->in_flight_fences[this->output_image_index];
+
+			this->in_flight_fences[this->current_frame].unsignal();
+			this->graphics_queue->submit
+			({
+				.command_buffers = {&this->get_render_command_buffers()[this->output_image_index]},
+				.waits =
 				{
-					target_image->wait_until_signalled();
-				}
-				target_image = &this->in_flight_fences[this->output_image_index];
-
-				this->in_flight_fences[this->current_frame].unsignal();
-				this->graphics_queue->submit
-				({
-					.command_buffers = {&this->get_render_command_buffers()[this->output_image_index]},
-					.waits =
+					vk2::hardware::Queue::SubmitInfo::WaitInfo
 					{
-						vk2::hardware::Queue::SubmitInfo::WaitInfo
-						{
-							.wait_semaphore = &this->image_semaphores[this->current_frame],
-							.wait_stage = vk2::PipelineStage::ColourAttachmentOutput
-						}
-					},
-					.signal_semaphores = {&this->render_work_semaphores[this->current_frame]},
-					.execution_complete_fence = &this->in_flight_fences[this->current_frame]
-				});
+						.wait_semaphore = &this->image_semaphores[this->current_frame],
+						.wait_stage = vk2::PipelineStage::ColourAttachmentOutput
+					}
+				},
+				.signal_semaphores = {&this->render_work_semaphores[this->current_frame]},
+				.execution_complete_fence = &this->in_flight_fences[this->current_frame]
+			});
 
-				CommandProcessor::RenderWorkSubmitResult result;
+			CommandProcessor::RenderWorkSubmitResult result;
 
-				result.present = this->graphics_queue->present
-				({
-					.wait_semaphores = {&this->render_work_semaphores[this->current_frame]},
-					.swapchain = maybe_swapchain,
-					.swapchain_image_index = this->output_image_index
-				});
-				this->current_frame = (this->current_frame + 1) % this->frame_in_flight_count;
-				return result;
-			}
-			else
-			{
-				// Headlessly
-				tz_error("Headless rendering not yet implemented.");
-				return {.present = vk2::hardware::Queue::PresentResult::Fail_FatalError};
-			}
+			result.present = this->graphics_queue->present
+			({
+				.wait_semaphores = {&this->render_work_semaphores[this->current_frame]},
+				.swapchain = maybe_swapchain,
+				.swapchain_image_index = this->output_image_index
+			});
+			this->current_frame = (this->current_frame + 1) % this->frame_in_flight_count;
+			return result;
 		}
 	}
 
@@ -1432,10 +1424,6 @@ namespace tz::gl
 
 	std::size_t RendererVulkan::get_frame_in_flight_count(const RendererDeviceInfoVulkan& device_info) const
 	{
-		if(device_info.device->get_hardware().get_instance().is_headless())
-		{
-			return 1;
-		}
 		std::uint32_t min = device_info.device->get_hardware().get_surface_capabilities().min_image_count;
 		std::uint32_t max = device_info.device->get_hardware().get_surface_capabilities().max_image_count;
 		return std::clamp<std::uint32_t>(3u, min, max);

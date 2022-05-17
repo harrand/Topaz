@@ -25,7 +25,7 @@ namespace tz::gl::vk2
 #endif
 			.window = &tz::window()
 		}};
-		tz_report("Vulkan v%u.%u Initialised (%s)", vulkan_version.major, vulkan_version.minor, app_type == tz::ApplicationType::Headless ? "Headless" : "Windowed");
+		tz_report("Vulkan v%u.%u Initialised (%s)", vulkan_version.major, vulkan_version.minor, app_type == tz::ApplicationType::HiddenWindowApplication ? "Hidden" : "Windowed");
 	}
 
 	void terminate()
@@ -40,12 +40,6 @@ namespace tz::gl::vk2
 	{
 		tz_assert(inst != nullptr, "Not initialised");
 		return *inst;
-	}
-
-	bool is_headless()
-	{
-		tz_assert(inst != nullptr, "Not initialised");
-		return inst->is_headless();
 	}
 
 	inline VKAPI_ATTR VkBool32 VKAPI_CALL default_debug_callback
@@ -153,7 +147,7 @@ namespace tz::gl::vk2
 	instance(&instance),
 	window(&window)
 	{
-		tz_assert(!this->window->is_null(), "Cannot create WindowSurface off of a null window. GLFW has likely failed. If you are trying to run a headless application, please submit a bug report.");
+		tz_assert(!this->window->is_null(), "Cannot create WindowSurface off of a null window. GLFW has likely failed. Please submit a bug report.");
 
 		VkResult res = glfwCreateWindowSurface(this->instance->native(), this->window->get_middleware_handle(), nullptr, &this->surface);
 		switch(res)
@@ -238,16 +232,9 @@ namespace tz::gl::vk2
 		// Validation Layers
 		[[maybe_unused]] const char* enabled_layers = "VK_LAYER_KHRONOS_validation";
 
-		// Extensions (Specified from VulkanInstanceInfo + GLFW if we're not headless)
-		std::size_t extension_count = info.extensions.count();
+		// Extensions (Specified from VulkanInstanceInfo + GLFW)
 		util::VkExtensionList extension_natives;
-		if(this->is_headless())
-		{
-			// Only use the extensions we asked for.
-			extension_natives.resize(extension_count);
-			std::transform(info.extensions.begin(), info.extensions.end(), extension_natives.begin(), [](InstanceExtension ext){return util::to_vk_extension(ext);});
-		}
-		else
+		#if 1 /*Headless doesnt need this*/
 		{
 			// Use what we asked for, plus everything GLFW wants.
 			std::uint32_t glfw_extension_count;
@@ -261,11 +248,13 @@ namespace tz::gl::vk2
 				extension_natives[idx] = glfw_extensions[i];
 			}
 		}
+		#endif
 
 		void* inst_create_pnext = nullptr;
 		// Debug Messenger
 		const bool create_debug_validation = info.extensions.contains(InstanceExtension::DebugMessenger) && TZ_DEBUG;
-		const bool create_window_surface = !this->is_headless() && info.window != nullptr && !info.window->is_null();
+		constexpr bool create_window_surface = true;
+		tz_assert(info.window != nullptr && !info.window->is_null(), "Null window provided. Please submit a bug report.");
 		VkDebugUtilsMessengerCreateInfoEXT debug_validation_create;
 		if(create_debug_validation)
 		{
@@ -338,11 +327,6 @@ namespace tz::gl::vk2
 			vkDestroyInstance(this->instance, nullptr);	
 			this->instance = VK_NULL_HANDLE;
 		}
-	}
-
-	bool VulkanInstance::is_headless() const
-	{
-		return this->info.app_type == tz::ApplicationType::Headless;
 	}
 
 	bool VulkanInstance::has_surface() const
