@@ -3,10 +3,11 @@
 #include "core/containers/enum_field.hpp"
 #include <array>
 #include <string>
+#include <filesystem>
 
 namespace tzslc
 {
-	void preprocess(std::string& shader_source);
+	void compile_to_glsl(std::string& shader_source, std::filesystem::path shader_filename);
 }
 
 #endif // TZSLC_PREPROCESSOR_HPP

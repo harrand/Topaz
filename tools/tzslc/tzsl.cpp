@@ -2,6 +2,7 @@
 #include "core/assert.hpp"
 #include "source_transform.hpp"
 #include "gl/api/shader.hpp"
+#include <fstream>
 
 #include "stdlib.hpp"
 
@@ -9,7 +10,8 @@ namespace tzslc
 {
 	std::string default_defines();
 	tz::gl::ShaderStage try_get_stage(const std::string&);
-	void evaluate_imports_new(std::string&);
+	void evaluate_imports(std::string&);
+	void evaluate_user_imports(std::string&, std::filesystem::path);
 	void evaluate_keywords(std::string&, tz::gl::ShaderStage);
 	void evaluate_inout_blocks(std::string&, tz::gl::ShaderStage);
 	void evaluate_language_level_functions(std::string&);
@@ -20,10 +22,11 @@ namespace tzslc
 
 //--------------------------------------------------------------------------------------------------
 
-	void preprocess(std::string& shader_source)
+	void compile_to_glsl(std::string& shader_source, std::filesystem::path shader_filename)
 	{
 		shader_source = default_defines() + shader_source;
-		evaluate_imports_new(shader_source);
+		evaluate_imports(shader_source);
+		evaluate_user_imports(shader_source, shader_filename);
 		tz::gl::ShaderStage stage = try_get_stage(shader_source);
 		tz_assert(stage != tz::gl::ShaderStage::Count, "Detected invalid shader stage. Internal tzslc error. Please submit a bug report.");
 		evaluate_keywords(shader_source, stage);
@@ -68,9 +71,10 @@ namespace tzslc
 
 //--------------------------------------------------------------------------------------------------
 
-	void evaluate_imports_new(std::string& shader_source)
+	void evaluate_imports(std::string& shader_source)
 	{
 		constexpr char import_regex[] = "import <([a-zA-Z0-9\\s]+)>";
+		// Standard library imports.
 		tzslc::transform(shader_source, std::regex{import_regex},
 		[](auto beg, auto end)
 		{
@@ -85,6 +89,31 @@ namespace tzslc
 			}
 			tz_error("Unknown stdlib import <%s>.", m.c_str());
 			return std::string{""};
+		});
+	}
+
+
+//--------------------------------------------------------------------------------------------------
+
+	void evaluate_user_imports(std::string& shader_source, std::filesystem::path shader_filename)
+	{
+		constexpr char user_import_regex[] = "import \"([a-zA-Z0-9\\s]+)\"";
+		// User-defined imports
+		tzslc::transform(shader_source, std::regex{user_import_regex},
+		[shader_filename](auto beg, auto end)
+		{
+			const std::string& filename = *beg;
+			std::filesystem::path full_path = shader_filename.parent_path() / (filename + ".tzsl");
+			tz_assert(std::filesystem::exists(full_path), "import \"%s\" - Cannot find %s.tzsl.\nInclude Directory: %s", filename.c_str(), filename.c_str(), shader_filename.parent_path().c_str());
+			std::ifstream import_file{full_path.c_str(), std::ios::ate | std::ios::binary};
+			tz_assert(import_file.is_open(), "import \"%s\" - Shader file located no filesystem, but could not read for some reason. Read access denied?", filename.c_str());
+			std::string buffer;
+			
+			buffer.resize(static_cast<std::size_t>(import_file.tellg()));
+			import_file.seekg(0);
+			import_file.read(buffer.data(), buffer.size());
+			import_file.close();
+			return buffer;
 		});
 	}
 

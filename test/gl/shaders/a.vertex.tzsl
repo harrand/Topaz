@@ -1,9 +1,11 @@
 shader(type = vertex);
 
 import <matrix>
+import "foo"
 
 void main()
 {
+	foo();
 	mat4 m = tz::matrix::decompose_quaternion(vec4(0.0));
 	uint a = in::vertex_id;
 	uint b = in::instance_id;

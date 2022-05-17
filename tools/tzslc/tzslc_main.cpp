@@ -45,7 +45,7 @@ int main(int argc, char** argv)
 		shader.read(buffer.data(), file_size_bytes);
 		shader.close();
 
-		tzslc::preprocess(buffer);
+		tzslc::compile_to_glsl(buffer, tzsl_filename);
 		for(char c : buffer)
 		{
 			std::fprintf(out, "%c", c);
