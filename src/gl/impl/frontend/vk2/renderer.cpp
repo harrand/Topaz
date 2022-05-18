@@ -451,22 +451,32 @@ namespace tz::gl
 		return this->render_pass;
 	}
 
-	std::span<vk2::Image> OutputManager::get_output_images()
+	std::vector<vk2::Image*> OutputManager::get_output_images()
 	{
 		if(this->output == nullptr || this->output->get_target() == OutputTarget::Window)
 		{
 			// We're rendering into a window (which may be headless). The Device contained the swapchain images (or the offline headless images). Simply return those.
-			return this->window_buffer_images;
+			std::vector<vk2::Image*> ret(this->window_buffer_images.size());
+			std::transform(this->window_buffer_images.begin(), this->window_buffer_images.end(), ret.begin(),
+			[](vk2::Image& img)
+			{
+				return &img;
+			});
+			return ret;
 		}
 		else if(this->output->get_target() == OutputTarget::OffscreenImage)
 		{
 			// We have been provided an ImageOutput which will contain an ImageComponentVulkan. We need to retrieve that image and return a span covering it.
 			// TODO: Support multiple-render-targets.
 			ImageOutput& out = const_cast<ImageOutput&>(static_cast<const ImageOutput&>(*this->output));
+			std::vector<vk2::Image*> ret(out.colour_attachment_count());
+			for(std::size_t i = 0; i < ret.size(); i++)
+			{
+				ret[i] = &out.get_colour_attachment(i).vk_get_image();
+			}
 			tz_assert(out.colour_attachment_count() == 1, "Multiple colour outputs on a render-to-texture target is not yet implemented.");
 			tz_assert(!out.has_depth_attachment(), "Depth attachment on an ImageOutput is not yet implemented");
-			vk2::Image& output_image = out.get_colour_attachment(0).vk_get_image();
-			return {&output_image, 1};
+			return ret;
 		}
 		else
 		{
@@ -533,7 +543,7 @@ namespace tz::gl
 			// We need to pass image views around in various places within the vulkan api. We create them here.
 			this->output_imageviews.push_back
 			(vk2::ImageViewInfo{
-				.image = &this->get_output_images()[i],
+				.image = this->get_output_images()[i],
 				.aspect = vk2::ImageAspect::Colour
 			});
 
@@ -575,7 +585,7 @@ namespace tz::gl
 		rbuilder.set_device(*this->ldev);
 		rbuilder.with_attachment
 		({
-			.format = this->get_output_images().front().get_format(),
+			.format = this->get_output_images().front()->get_format(),
 			.colour_depth_store = vk2::StoreOp::Store,
 			.initial_layout = vk2::ImageLayout::Undefined,
 			.final_layout = final_layout

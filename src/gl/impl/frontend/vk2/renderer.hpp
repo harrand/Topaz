@@ -128,7 +128,7 @@ namespace tz::gl
 		 * 		- This is going to contain the swapchain images. Unfortunately this may vary depending on the machine running and what it supports, but in practice most likely this will be a couple (2-4).
 		 * @return List of output images.
 		 */
-		std::span<vk2::Image> get_output_images();
+		std::vector<vk2::Image*> get_output_images();
 		/**
 		 * Retrieve a view (read-only) into all of the framebuffers.
 		 *
