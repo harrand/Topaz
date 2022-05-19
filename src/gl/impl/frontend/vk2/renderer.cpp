@@ -1359,6 +1359,31 @@ namespace tz::gl
 		this->command.set_rendering_commands([this](vk2::CommandBufferRecording& recording, std::size_t framebuffer_id)
 		{
 			tz_assert(framebuffer_id < this->output.get_output_framebuffers().size(), "Attempted to retrieve output framebuffer at index %zu, but there are only %zu framebuffers available. Please submit a bug report.", framebuffer_id, this->output.get_output_framebuffers().size());
+			// Possible scenario: One or more of our image resources was recently used as a render target, meaning its layout is ColourAttachment. We should identify those and make sure they are back in ShaderResource layout.
+			for(std::size_t i = 0; i < this->resource_count(); i++)
+			{
+				IComponent* comp = this->get_component(static_cast<tz::HandleValue>(i));
+				if(comp->get_resource()->get_type() == ResourceType::Image && comp->get_resource()->get_flags().contains(ResourceFlag::RendererOutput))
+				{
+					// If this renderer output resource is not a shader resource, make sure it is.
+					// Note: Without this whole big code fragment it still seems to run on my machine, however I am pretty sure if any of our image resources are also image outputs, then these will be in ColourAttachment instead of ShaderResource, whcih should technically be wrong when we try to consume these as descriptors? This big code fragment transitions any of those to ShaderResources which should be correct? Future Harry - sanity-check this please.
+					auto icomp = static_cast<ImageComponentVulkan*>(comp);
+					if(icomp->vk_get_image().get_layout() != vk2::ImageLayout::ShaderResource)
+					{
+						recording.transition_image_layout
+						({
+							.image = &icomp->vk_get_image(),
+							.target_layout = vk2::ImageLayout::ShaderResource,
+							.source_access = {vk2::AccessFlag::ColourAttachmentWrite},
+							.destination_access = {vk2::AccessFlag::ShaderResourceRead, vk2::AccessFlag::ShaderResourceWrite},
+							.source_stage = vk2::PipelineStage::ColourAttachmentOutput,
+							.destination_stage = vk2::PipelineStage::VertexShader,
+							.image_aspects = {vk2::ImageAspectFlag::Colour}
+						});
+					}
+				}
+			}
+
 			vk2::CommandBufferRecording::RenderPassRun run{this->output.get_output_framebuffers()[framebuffer_id], recording, this->clear_colour};
 			recording.bind_pipeline
 			({
