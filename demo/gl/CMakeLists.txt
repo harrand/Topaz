@@ -13,11 +13,19 @@ add_demo(
 )
 
 add_demo(
+	TARGET tz_blur_triangle_demo
+	SOURCE_FILES tz_blur_triangle_demo.cpp
+	SHADER_SOURCES
+		demo/gl/shaders/tz_triangle_demo.vertex.tzsl
+		demo/gl/shaders/tz_triangle_demo.fragment.tzsl
+		demo/gl/shaders/blur.vertex.tzsl
+		demo/gl/shaders/blur.fragment.tzsl
+)
+
+add_demo(
 	TARGET tz_dynamic_triangle_demo
 	SOURCE_FILES tz_dynamic_triangle_demo.cpp
 	SHADER_SOURCES
-		demo/gl/shaders/fst.vertex.tzsl
-		demo/gl/shaders/fst.fragment.tzsl
 		demo/gl/shaders/tz_dynamic_triangle_demo.vertex.tzsl
 		demo/gl/shaders/tz_dynamic_triangle_demo.fragment.tzsl
 )
