@@ -1,3 +1,4 @@
+#include "gl/impl/backend/vk2/image_format.hpp"
 #if TZ_VULKAN
 #include "gl/impl/frontend/vk2/component.hpp"
 #include "gl/impl/frontend/vk2/convert.hpp"
@@ -125,6 +126,12 @@ namespace tz::gl
 		if(this->resource->get_flags().contains(ResourceFlag::RendererOutput))
 		{
 			usage_field |= vk2::ImageUsage::ColourAttachment;
+			// Let's make sure the format is applicable. We will not allow the user to use an image format that isn't guaranteed to be safe as a colour attachment, even if the machine building the engine allows it. This prevents horrific runtime issues.
+			constexpr auto allowed = vk2::format_traits::get_mandatory_colour_attachment_formats();
+			if(std::find(allowed.begin(), allowed.end(), to_vk2(img_res->get_format())) == allowed.end())
+			{
+				tz_error("Detected ResourceFlag::RendererOutput in combination with an ImageFormat that is not guaranteed to work on all GPUs. This may work on some machines, but not others. I cannot allow code to ship which is guaranteed to crash on some devices, sorry.");
+			}
 		}
 		vk2::MemoryResidency residency;
 		vk2::ImageTiling tiling = vk2::ImageTiling::Optimal;

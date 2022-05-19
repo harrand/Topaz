@@ -126,6 +126,8 @@ namespace tz::gl
 		 * There is no way to guarantee how many output images there are, but here is an explanation of what you might get:
 		 * - If the output is a window output:
 		 * 		- This is going to contain the swapchain images. Unfortunately this may vary depending on the machine running and what it supports, but in practice most likely this will be a couple (2-4).
+		 * - Otherwise if the output is an ImageOutput:
+		 *   		- This is going to contain the 0th colour attachment, with duplicates matching each frame-in-flight.
 		 * @return List of output images.
 		 */
 		std::vector<vk2::Image*> get_output_images();
