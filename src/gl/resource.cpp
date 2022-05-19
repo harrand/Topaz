@@ -60,12 +60,12 @@ namespace tz::gl
 	BufferResource::BufferResource(ResourceAccess access, std::vector<std::byte> resource_data, std::size_t initial_alignment_offset, ResourceFlags flags):
 	Resource(access, resource_data, initial_alignment_offset, ResourceType::Buffer, flags){}
 			
-	ImageResource ImageResource::from_uninitialised(ImageFormat format, tz::Vec2ui dimensions, ResourceAccess access)
+	ImageResource ImageResource::from_uninitialised(ImageFormat format, tz::Vec2ui dimensions, ResourceAccess access, ResourceFlags flags)
 	{
 		std::size_t pixel_size = tz::gl::pixel_size_bytes(format);
 		std::vector<std::byte> resource_data(pixel_size * dimensions[0] * dimensions[1]);
 		// TODO: Sanity check? Is it correct to just not give a shit about alignment here?
-		return {access, resource_data, 0, format, dimensions};
+		return {access, resource_data, 0, format, dimensions, flags};
 	}
 
 	std::unique_ptr<IResource> ImageResource::unique_clone() const
@@ -83,8 +83,8 @@ namespace tz::gl
 		return this->dimensions;
 	}
 
-	ImageResource::ImageResource(ResourceAccess access, std::vector<std::byte> resource_data, std::size_t initial_alignment_offset, ImageFormat format, tz::Vec2ui dimensions):
-	Resource(access, resource_data, initial_alignment_offset, ResourceType::Image),
+	ImageResource::ImageResource(ResourceAccess access, std::vector<std::byte> resource_data, std::size_t initial_alignment_offset, ImageFormat format, tz::Vec2ui dimensions, ResourceFlags flags):
+	Resource(access, resource_data, initial_alignment_offset, ResourceType::Image, flags),
 	format(format),
 	dimensions(dimensions){}
 }

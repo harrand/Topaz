@@ -122,6 +122,10 @@ namespace tz::gl
 		tz_assert(this->resource->get_type() == ResourceType::Image, "ImageComponent was provided a resource which was not an ImageResource. Please submit a bug report.");
 		const ImageResource* img_res = static_cast<const ImageResource*>(this->resource);
 		vk2::ImageUsageField usage_field = {vk2::ImageUsage::TransferDestination, vk2::ImageUsage::SampledImage};
+		if(this->resource->get_flags().contains(ResourceFlag::RendererOutput))
+		{
+			usage_field |= vk2::ImageUsage::ColourAttachment;
+		}
 		vk2::MemoryResidency residency;
 		vk2::ImageTiling tiling = vk2::ImageTiling::Optimal;
 		switch(this->resource->get_access())

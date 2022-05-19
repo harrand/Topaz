@@ -84,12 +84,12 @@ namespace tz::gl
 		 * @param dimensions {width, height} of the image, in pixels.
 		 * @return ImageResource containing uninitialised image-data of the given format and dimensions.
 		 */
-		static ImageResource from_uninitialised(ImageFormat format, tz::Vec2ui dimensions, ResourceAccess access = ResourceAccess::StaticFixed);
+		static ImageResource from_uninitialised(ImageFormat format, tz::Vec2ui dimensions, ResourceAccess access = ResourceAccess::StaticFixed, ResourceFlags flags = {});
 
 		template<tz::TriviallyCopyable T>
-		static ImageResource from_memory(ImageFormat fmt, tz::Vec2ui dimensions, std::initializer_list<T> ts, ResourceAccess access = ResourceAccess::StaticFixed)
+		static ImageResource from_memory(ImageFormat fmt, tz::Vec2ui dimensions, std::initializer_list<T> ts, ResourceAccess access = ResourceAccess::StaticFixed, ResourceFlags flags = {})
 		{
-			return from_memory(fmt, dimensions, std::span<const T>(ts), access);
+			return from_memory(fmt, dimensions, std::span<const T>(ts), access, flags);
 		}
 		/**
 		 * Create an ImageResource using values existing in memory.
@@ -99,12 +99,12 @@ namespace tz::gl
 		 * @return ImageResource containing an image using the provided data.
 		 * @pre `byte_data` exactly matches the number of bytes expected in the explanation above. Otherwise, the behaviour is undefined.
 		 */
-		static ImageResource from_memory(ImageFormat format, tz::Vec2ui dimensions, std::ranges::contiguous_range auto data, ResourceAccess access = ResourceAccess::StaticFixed);
+		static ImageResource from_memory(ImageFormat format, tz::Vec2ui dimensions, std::ranges::contiguous_range auto data, ResourceAccess access = ResourceAccess::StaticFixed, ResourceFlags flags = {});
 		virtual std::unique_ptr<IResource> unique_clone() const final;
 		ImageFormat get_format() const;
 		tz::Vec2ui get_dimensions() const;
 	private:
-		ImageResource(ResourceAccess access, std::vector<std::byte> resource_data, std::size_t initial_alignment_offset, ImageFormat format, tz::Vec2ui dimensions);
+		ImageResource(ResourceAccess access, std::vector<std::byte> resource_data, std::size_t initial_alignment_offset, ImageFormat format, tz::Vec2ui dimensions, ResourceFlags flags);
 		ImageFormat format;
 		tz::Vec2ui dimensions;
 	};

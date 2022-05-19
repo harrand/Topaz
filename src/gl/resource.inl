@@ -32,7 +32,7 @@ namespace tz::gl
 		return {access, resource_data, alignment_usage, flags};
 	}
 
-	ImageResource ImageResource::from_memory(ImageFormat format, tz::Vec2ui dimensions, std::ranges::contiguous_range auto data, ResourceAccess access)
+	ImageResource ImageResource::from_memory(ImageFormat format, tz::Vec2ui dimensions, std::ranges::contiguous_range auto data, ResourceAccess access, ResourceFlags flags)
 	{
 		using T = std::decay_t<decltype(*std::ranges::begin(data))>;
 		auto size = std::distance(std::ranges::begin(data), std::ranges::end(data));
@@ -41,7 +41,7 @@ namespace tz::gl
 		std::vector<std::byte> resource_data(pixel_size * dimensions[0] * dimensions[1]);
 		std::copy(byte_data.begin(), byte_data.end(), resource_data.begin());
 		// TODO: Sanity check? Is it correct to just not give a shit about alignment here?
-		return {access, resource_data, 0, format, dimensions};
+		return {access, resource_data, 0, format, dimensions, flags};
 	}
 
 }

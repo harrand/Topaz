@@ -27,7 +27,9 @@ namespace tz::gl
 	enum class ResourceFlag
 	{
 		/// - Indicates that the buffer should be treated as a hardware index buffer. It will act as a bespoke non-shader-resource buffer that must store indices encoded as `unsigned int[]`. Can only be applied to buffer resources.
-		IndexBuffer
+		IndexBuffer,
+		/// - Indicates that the image can be used as an ImageOutput for another renderer.
+		RendererOutput
 	};
 
 	using ResourceFlags = tz::EnumField<ResourceFlag>;

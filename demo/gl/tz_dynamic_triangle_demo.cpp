@@ -7,8 +7,11 @@
 #include "gl/resource.hpp"
 #include "gl/imported_shaders.hpp"
 #include "gl/component.hpp"
+#include "gl/output.hpp"
 #include <random>
 
+#include ImportedShaderHeader(fst, vertex)
+#include ImportedShaderHeader(fst, fragment)
 #include ImportedShaderHeader(tz_dynamic_triangle_demo, vertex)
 #include ImportedShaderHeader(tz_dynamic_triangle_demo, fragment)
 
@@ -39,6 +42,20 @@ int main()
 	{
 		tz::gl::Device dev;
 		using namespace tz::literals;
+
+		// Create a renderer which draws a texture straight to the screen.
+		tz::gl::RendererInfo rtt_info;
+		auto ires = tz::gl::ImageResource::from_uninitialised(tz::gl::ImageFormat::BGRA32, tz::Vec2{tz::window().get_width(), tz::window().get_height()}, tz::gl::ResourceAccess::StaticFixed, {tz::gl::ResourceFlag::RendererOutput});
+		tz::gl::ResourceHandle render_to_texture_handle = rtt_info.add_resource(ires);
+		rtt_info.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(fst, vertex));
+		rtt_info.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(fst, fragment));
+		tz::gl::Renderer rtt = dev.create_renderer(rtt_info);
+		tz::gl::ImageOutput render_to_texture
+		{{
+			.colours = {rtt.get_component(render_to_texture_handle)},
+			.depth = nullptr
+		}};
+
 		tz::gl::ImageResource img = tz::gl::ImageResource::from_memory
 		(
 			tz::gl::ImageFormat::RGBA32,
@@ -85,6 +102,7 @@ int main()
 		tz::gl::ResourceHandle imgh = rinfo.add_resource(img);
 		tz::gl::ResourceHandle bufh = rinfo.add_resource(buf);
 		tz::gl::ResourceHandle ibufh = rinfo.add_resource(ibuf);
+		rinfo.set_output(render_to_texture);
 
 		tz::gl::Renderer renderer = dev.create_renderer(rinfo);
 		std::default_random_engine rand;
@@ -94,6 +112,7 @@ int main()
 			TZ_FRAME_BEGIN;
 			tz::window().update();
 			renderer.render(triangle_count);
+			rtt.render(2);
 			// Every 10k frames, add a new triangle at a random position.
 			static int counter = 0;
 			if(counter++ > 500)

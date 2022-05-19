@@ -1,0 +1,18 @@
+shader(type = vertex);
+output(id = 0) vec2 texcoord;
+
+vec2 quad_positions[6] = vec2[](
+	vec2(-1.0, -1.0), vec2(1.0, 1.0), vec2(1.0, -1.0),
+	vec2(-1.0, -1.0), vec2(-1.0, 1.0), vec2(1.0, 1.0)
+);
+
+vec2 quad_texcoords[6] = vec2[](
+	vec2(0.0, 1.0), vec2(1.0, 0.0), vec2(1.0, 1.0),
+	vec2(0.0, 1.0), vec2(0.0, 0.0), vec2(1.0, 0.0)
+);
+
+void main()
+{
+	out::position = vec4(quad_positions[in::vertex_id % 6], 0.0, 1.0);
+	texcoord = quad_texcoords[in::vertex_id % 6];
+}

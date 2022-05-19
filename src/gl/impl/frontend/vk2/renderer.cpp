@@ -469,10 +469,10 @@ namespace tz::gl
 			// We have been provided an ImageOutput which will contain an ImageComponentVulkan. We need to retrieve that image and return a span covering it.
 			// TODO: Support multiple-render-targets.
 			ImageOutput& out = const_cast<ImageOutput&>(static_cast<const ImageOutput&>(*this->output));
-			std::vector<vk2::Image*> ret(out.colour_attachment_count());
+			std::vector<vk2::Image*> ret(this->window_buffer_images.size());
 			for(std::size_t i = 0; i < ret.size(); i++)
 			{
-				ret[i] = &out.get_colour_attachment(i).vk_get_image();
+				ret[i] = &out.get_colour_attachment(0).vk_get_image();
 			}
 			tz_assert(out.colour_attachment_count() == 1, "Multiple colour outputs on a render-to-texture target is not yet implemented.");
 			tz_assert(!out.has_depth_attachment(), "Depth attachment on an ImageOutput is not yet implemented");
@@ -523,14 +523,23 @@ namespace tz::gl
 			// If we need depth images for depth testing, we'll create them based off of the existing output images we are provided from the Device.
 			if(create_depth_images)
 			{
-				this->window_buffer_depth_images.push_back
-				(vk2::ImageInfo{
-					.device = this->ldev,
-					.format = vk2::ImageFormat::Depth32_SFloat,
-					.dimensions = window_buffer_image.get_dimensions(),
-					.usage = {vk2::ImageUsage::DepthStencilAttachment},
-					.residency = vk2::MemoryResidency::GPU
-				});
+				// If we're rendering to a TextureOutput and it has a depth attachment, then we want to use that. Otherwise, we create one now.
+				if(this->output != nullptr && this->output->get_target() == OutputTarget::OffscreenImage && static_cast<const ImageOutput*>(this->output)->has_depth_attachment())
+				{
+					tz_error("Sorry, depth attachment to image outputs are not yet implemented.");
+					this->window_buffer_depth_images.push_back(vk2::Image::null());
+				}
+				else
+				{
+					this->window_buffer_depth_images.push_back
+					(vk2::ImageInfo{
+						.device = this->ldev,
+						.format = vk2::ImageFormat::Depth32_SFloat,
+						.dimensions = window_buffer_image.get_dimensions(),
+						.usage = {vk2::ImageUsage::DepthStencilAttachment},
+						.residency = vk2::MemoryResidency::GPU
+					});
+				}
 			}
 			else
 			{
@@ -893,47 +902,70 @@ namespace tz::gl
 	CommandProcessor::RenderWorkSubmitResult CommandProcessor::do_render_work(vk2::Swapchain* maybe_swapchain)
 	{
 		TZ_PROFZONE("Vulkan Frontend - RendererVulkan CommandProcessor (Do Render Work)", TZ_PROFCOL_YELLOW);
-		tz_assert(this->requires_present, "Requires present is false. Logic error, possibly trying to do headless stuff which is no longer supported? Please submit a bug report.")
 		tz_assert(maybe_swapchain != nullptr, "Trying to do render work with presentation, but no Swapchain provided. Please submit a bug report.");
 		vk2::Swapchain& swapchain = *maybe_swapchain;
 		// Submit & Present
 		this->in_flight_fences[this->current_frame].wait_until_signalled();
-		this->output_image_index = swapchain.acquire_image
-		({
-			.signal_semaphore = &this->image_semaphores[current_frame]
-		}).image_index;
-
-		const vk2::Fence*& target_image = this->images_in_flight[this->output_image_index];
-		if(target_image != nullptr)
+		if(requires_present)
 		{
-			target_image->wait_until_signalled();
+			this->output_image_index = swapchain.acquire_image
+			({
+				.signal_semaphore = &this->image_semaphores[current_frame]
+			}).image_index;
+
+			const vk2::Fence*& target_image = this->images_in_flight[this->output_image_index];
+			if(target_image != nullptr)
+			{
+				target_image->wait_until_signalled();
+			}
+			target_image = &this->in_flight_fences[this->output_image_index];
 		}
-		target_image = &this->in_flight_fences[this->output_image_index];
+		else
+		{
+			this->output_image_index = this->current_frame;
+		}
 
 		this->in_flight_fences[this->current_frame].unsignal();
-		this->graphics_queue->submit
-		({
-			.command_buffers = {&this->get_render_command_buffers()[this->output_image_index]},
-			.waits =
+		tz::BasicList<vk2::hardware::Queue::SubmitInfo::WaitInfo> waits;
+		if(requires_present)
+		{
+			waits =
 			{
 				vk2::hardware::Queue::SubmitInfo::WaitInfo
 				{
 					.wait_semaphore = &this->image_semaphores[this->current_frame],
 					.wait_stage = vk2::PipelineStage::ColourAttachmentOutput
 				}
-			},
-			.signal_semaphores = {&this->render_work_semaphores[this->current_frame]},
+			};
+		}
+		tz::BasicList<const vk2::BinarySemaphore*> sem_signals;
+		if(requires_present)
+		{
+			sem_signals = {&this->render_work_semaphores[this->current_frame]};
+		}
+		this->graphics_queue->submit
+		({
+			.command_buffers = {&this->get_render_command_buffers()[this->output_image_index]},
+			.waits = waits,
+			.signal_semaphores = sem_signals,
 			.execution_complete_fence = &this->in_flight_fences[this->current_frame]
 		});
 
 		CommandProcessor::RenderWorkSubmitResult result;
 
-		result.present = this->graphics_queue->present
-		({
-			.wait_semaphores = {&this->render_work_semaphores[this->current_frame]},
-			.swapchain = maybe_swapchain,
-			.swapchain_image_index = this->output_image_index
-		});
+		if(requires_present)
+		{
+			result.present = this->graphics_queue->present
+			({
+				.wait_semaphores = {&this->render_work_semaphores[this->current_frame]},
+				.swapchain = maybe_swapchain,
+				.swapchain_image_index = this->output_image_index
+			});
+		}
+		else
+		{
+			result.present = vk2::hardware::Queue::PresentResult::Success;
+		}
 		this->current_frame = (this->current_frame + 1) % this->frame_in_flight_count;
 		return result;
 	}

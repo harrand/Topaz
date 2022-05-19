@@ -1,0 +1,12 @@
+shader(type = fragment);
+
+resource(id = 0) const texture tex[1];
+input(id = 0) vec2 texcoord;
+output(id = 0) vec4 frag_colour;
+
+void main()
+{
+	vec4 col = texture(tex[0], texcoord);
+	frag_colour = vec4(1.0) - col;
+	frag_colour.w = 1.0;
+}
