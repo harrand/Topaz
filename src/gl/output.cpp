@@ -10,6 +10,12 @@ namespace tz::gl
 		{
 			return comp != nullptr && comp->get_resource() != nullptr && comp->get_resource()->get_type() == ResourceType::Image;
 		}), "Provided at least one IComponent to an ImageOutput colour attachment which was not an ImageResource. Please submit a bug report.");
+
+		tz_assert(std::all_of(info.colours.begin(), info.colours.end(), [](IComponent* comp)
+		{
+			return comp != nullptr && comp->get_resource() != nullptr && comp->get_resource()->get_flags().contains(ResourceFlag::RendererOutput);
+		}), "ImageOutput contains colour attachments, but one or more of them is missing ResourceFlag::RendererOutput. An image resource cannot be an image output attachment unless it contains this flag.");
+
 		if(this->depth_attachment != nullptr)
 		{
 			tz_assert(info.depth->get_resource() != nullptr && info.depth->get_resource()->get_type() == ResourceType::Image, "Provided an IComponent to an ImageOutput depth attachment which was not an ImageResource. Please submit a bug report.");

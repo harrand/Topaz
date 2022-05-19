@@ -7,6 +7,14 @@ output(id = 0) vec4 frag_colour;
 void main()
 {
 	vec4 col = texture(tex[0], texcoord);
-	frag_colour = vec4(1.0) - col;
-	frag_colour.w = 1.0;
+	float frag_x = in::fragment_coord.x;
+	if(frag_x > 400.0)
+	{
+		frag_colour = vec4(1.0) - col;
+		frag_colour.w = 1.0;
+	}
+	else
+	{
+		frag_colour = col;
+	}
 }
