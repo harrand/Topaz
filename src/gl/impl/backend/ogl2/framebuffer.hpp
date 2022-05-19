@@ -3,6 +3,7 @@
 #if TZ_OGL
 #include "gl/impl/backend/ogl2/tz_opengl.hpp"
 #include "gl/impl/backend/ogl2/image.hpp"
+#include "gl/impl/backend/ogl2/renderbuffer.hpp"
 #include "core/vector.hpp"
 
 namespace tz::gl::ogl2
@@ -11,7 +12,7 @@ namespace tz::gl::ogl2
 	 * @ingroup tz_gl_ogl2_framebuffer
 	 * Describes a reference to either an image or renderbuffer. Is used as a @ref Framebuffer attachment.
 	 */
-	using FramebufferTexture = std::variant<const Image*>;
+	using FramebufferTexture = std::variant<const Image*, const Renderbuffer*>;
 	/**
 	 * @ingroup tz_gl_ogl2_framebuffer
 	 * Specifies creation flags for a @ref Framebuffer.

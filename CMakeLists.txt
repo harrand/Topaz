@@ -159,6 +159,8 @@ add_library(topaz
 	src/gl/impl/backend/ogl2/image.cpp
 	src/gl/impl/backend/ogl2/image.hpp
 	src/gl/impl/backend/ogl2/image_format.hpp
+	src/gl/impl/backend/ogl2/renderbuffer.cpp
+	src/gl/impl/backend/ogl2/renderbuffer.hpp
 	src/gl/impl/backend/ogl2/sampler.hpp
 	src/gl/impl/backend/ogl2/shader.cpp
 	src/gl/impl/backend/ogl2/shader.hpp

@@ -25,6 +25,10 @@ namespace tz::gl::ogl2
 				{
 					glNamedFramebufferTexture(this->framebuffer, GL_DEPTH_ATTACHMENT, arg->native(), 0);
 				}
+				else if constexpr(std::is_same_v<T, const Renderbuffer*>)
+				{
+					glNamedFramebufferRenderbuffer(this->framebuffer, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, arg->native());
+				}
 				else
 				{
 					tz_error("Unknown FramebufferTexture variant entry. Perhaps a new one has only been partially implemented? Please submit a bug report.");

@@ -111,6 +111,7 @@ namespace tz::gl
 		void set_render_target() const;
 	private:
 		IOutput* output;
+		ogl2::Renderbuffer default_depth_renderbuffer;
 		ogl2::Framebuffer framebuffer;
 	};
 

@@ -6,7 +6,11 @@ output(id = 0) vec4 frag_colour;
 
 void main()
 {
-	vec4 col = texture(tex[0], texcoord);
+	vec2 texc = texcoord;
+	#if TZ_OGL
+		texc.y = 1.0 - texc.y;
+	#endif
+	vec4 col = texture(tex[0], texc);
 	float frag_x = in::fragment_coord.x;
 	if(frag_x > 400.0)
 	{

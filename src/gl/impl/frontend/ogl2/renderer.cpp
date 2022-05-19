@@ -4,6 +4,7 @@
 #include "gl/impl/backend/ogl2/buffer.hpp"
 #include "gl/impl/frontend/ogl2/renderer.hpp"
 #include "gl/impl/frontend/ogl2/component.hpp"
+#include "gl/output.hpp"
 
 namespace tz::gl
 {
@@ -294,6 +295,7 @@ namespace tz::gl
 
 	OutputManager::OutputManager(IOutput* output):
 	output(output),
+	default_depth_renderbuffer(ogl2::Renderbuffer::null()),
 	framebuffer(ogl2::Framebuffer::null())
 	{
 		if(this->output != nullptr)
@@ -301,7 +303,29 @@ namespace tz::gl
 			switch(this->output->get_target())
 			{
 			case OutputTarget::OffscreenImage:
+			{
+				auto* out = static_cast<ImageOutput*>(this->output);
+				tz_assert(!out->has_depth_attachment(), "ImageOutput with depth attachment is not yet implemented.");
+				tz::BasicList<ogl2::FramebufferTexture> colour_attachments;
+				colour_attachments.resize(out->colour_attachment_count());
+				for(std::size_t i = 0; i < colour_attachments.length(); i++)
+				{
+					colour_attachments[i] = {&out->get_colour_attachment(i).ogl_get_image()};
+				}
 
+				this->default_depth_renderbuffer =
+				{{
+					.format = ogl2::ImageFormat::Depth32_UNorm,
+					.dimensions = out->get_colour_attachment(0).get_dimensions()
+				}};
+
+				this->framebuffer =
+				{ogl2::FramebufferInfo{
+					.dimensions = out->get_colour_attachment(0).get_dimensions(),
+					.maybe_depth_attachment = {&this->default_depth_renderbuffer},
+					.colour_attachments = colour_attachments
+				}};
+			}
 			break;
 			case OutputTarget::Window:
 				// Do nothing. We use null framebuffer.
