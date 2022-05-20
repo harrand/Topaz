@@ -43,16 +43,14 @@ int main()
 		postprocess_info.set_options({tz::gl::RendererOption::NoDepthTesting});
 		tz::gl::Renderer blur_renderer = dev.create_renderer(postprocess_info);
 
-		tz::gl::ImageOutput output_image
-		{{
-			.colours = {blur_renderer.get_component(colour_target_handle)}
-		}};
-
 		tz::gl::RendererInfo rinfo;
 		rinfo.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(tz_triangle_demo, vertex));
 		rinfo.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(tz_triangle_demo, fragment));
 		rinfo.set_options({tz::gl::RendererOption::NoDepthTesting});
-		rinfo.set_output(output_image);
+		rinfo.set_output(tz::gl::ImageOutput
+		{{
+			.colours = {blur_renderer.get_component(colour_target_handle)}
+		}});
 
 		tz::gl::Renderer renderer = dev.create_renderer(rinfo);
 
