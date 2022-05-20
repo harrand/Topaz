@@ -401,7 +401,7 @@ namespace tz::gl
 //--------------------------------------------------------------------------------------------------
 
 	OutputManager::OutputManager(const IOutput* output, std::span<vk2::Image> window_buffer_images, bool create_depth_images, const vk2::LogicalDevice& ldev):
-	output(output),
+	output(output != nullptr ? output->unique_clone() : nullptr),
 	ldev(&ldev),
 	window_buffer_images(window_buffer_images),
 	window_buffer_depth_images(),
@@ -414,7 +414,7 @@ namespace tz::gl
 	}
 
 	OutputManager::OutputManager(OutputManager&& move):
-	output(move.output),
+	output(std::move(move.output)),
 	ldev(move.ldev),
 	window_buffer_images(std::move(move.window_buffer_images)),
 	window_buffer_depth_images(std::move(move.window_buffer_depth_images)),
@@ -468,7 +468,7 @@ namespace tz::gl
 		{
 			// We have been provided an ImageOutput which will contain an ImageComponentVulkan. We need to retrieve that image and return a span covering it.
 			// TODO: Support multiple-render-targets.
-			ImageOutput& out = const_cast<ImageOutput&>(static_cast<const ImageOutput&>(*this->output));
+			auto& out = static_cast<ImageOutput&>(*this->output);
 			std::vector<vk2::Image*> ret(this->window_buffer_images.size());
 			for(std::size_t i = 0; i < ret.size(); i++)
 			{
@@ -524,7 +524,7 @@ namespace tz::gl
 			if(create_depth_images)
 			{
 				// If we're rendering to a TextureOutput and it has a depth attachment, then we want to use that. Otherwise, we create one now.
-				if(this->output != nullptr && this->output->get_target() == OutputTarget::OffscreenImage && static_cast<const ImageOutput*>(this->output)->has_depth_attachment())
+				if(this->output != nullptr && this->output->get_target() == OutputTarget::OffscreenImage && static_cast<const ImageOutput*>(this->output.get())->has_depth_attachment())
 				{
 					tz_error("Sorry, depth attachment to image outputs are not yet implemented.");
 					this->window_buffer_depth_images.push_back(vk2::Image::null());

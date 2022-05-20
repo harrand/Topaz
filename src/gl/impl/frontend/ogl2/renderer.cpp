@@ -293,8 +293,8 @@ namespace tz::gl
 
 //--------------------------------------------------------------------------------------------------
 
-	OutputManager::OutputManager(IOutput* output):
-	output(output),
+	OutputManager::OutputManager(const IOutput* output):
+	output(output != nullptr ? output->unique_clone() : nullptr),
 	default_depth_renderbuffer(ogl2::Renderbuffer::null()),
 	framebuffer(ogl2::Framebuffer::null())
 	{
@@ -304,7 +304,7 @@ namespace tz::gl
 			{
 			case OutputTarget::OffscreenImage:
 			{
-				auto* out = static_cast<ImageOutput*>(this->output);
+				auto* out = static_cast<ImageOutput*>(this->output.get());
 				tz_assert(!out->has_depth_attachment(), "ImageOutput with depth attachment is not yet implemented.");
 				tz::BasicList<ogl2::FramebufferTexture> colour_attachments;
 				colour_attachments.resize(out->colour_attachment_count());

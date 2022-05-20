@@ -44,17 +44,12 @@ namespace tz::gl
 		return static_cast<tz::HandleValue>(this->real_resource_count() - 1);
 	}
 
-	void RendererInfoCommon::set_output(IOutput& output)
+	void RendererInfoCommon::set_output(const IOutput& output)
 	{
 		this->output = &output;
 	}
 
 	const IOutput* RendererInfoCommon::get_output() const
-	{
-		return this->output;
-	}
-
-	IOutput* RendererInfoCommon::get_output()
 	{
 		return this->output;
 	}

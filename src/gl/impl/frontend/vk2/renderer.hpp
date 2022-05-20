@@ -154,7 +154,7 @@ namespace tz::gl
 		void create_output_resources(std::span<vk2::Image> window_buffer_images, bool create_depth_images);
 	private:
 		/// Output provided by the RendererVulkan.
-		const IOutput* output;
+		std::unique_ptr<IOutput> output;
 		/// Logical device used to create depth images, render passes and framebuffers.
 		const vk2::LogicalDevice* ldev;
 		/// List of window buffer images (offscreen image or swapchain images) from the Device.

@@ -41,15 +41,11 @@ namespace tz::gl
 		/**
 		 * Renderers always render into something. By default, it renders to the window (only one window is supported so no confusion there). You can however set it to render into something else, such as a @ref TextureOutput if you want to render into the resource of another Renderer.
 		 */
-		void set_output(IOutput& output);
+		void set_output(const IOutput& output);
 		/**
 		 * Retrieve the current render output (read-only). This may return nullptr, meaning that the main window will be rendered into.
 		 */
 		const IOutput* get_output() const;
-		/**
-		 * Retrieve the current render output. This may return nullptr, meaning that the main window will be rendered into.
-		 */
-		IOutput* get_output();
 		/**
 		 * Retrieve the currently specified options which will be used by the renderer.
 		 */
@@ -89,7 +85,7 @@ namespace tz::gl
 		/// Stores all provided components. In this context, components act as references to existing resources owned by another renderer.
 		std::vector<IComponent*> components = {};
 		/// Output. Can be null, which defaults to rendering into the main window.
-		IOutput* output = nullptr;
+		const IOutput* output = nullptr;
 		/// Specifies which extra features the Renderer will have.
 		RendererOptions options = {};
 		/// Describes the shader sources used.

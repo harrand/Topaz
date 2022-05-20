@@ -21,6 +21,11 @@ namespace tz::gl
 			return OutputTarget::OffscreenImage;
 		}
 
+		virtual std::unique_ptr<IOutput> unique_clone() const override
+		{
+			return std::make_unique<ImageOutput>(*this);
+		}
+
 		std::size_t colour_attachment_count() const;
 		bool has_depth_attachment() const;
 
@@ -39,6 +44,11 @@ namespace tz::gl
 		constexpr virtual OutputTarget get_target() const override
 		{
 			return OutputTarget::Window;
+		}
+
+		virtual std::unique_ptr<IOutput> unique_clone() const override
+		{
+			return std::make_unique<WindowOutput>(*this);
 		}
 
 		const tz::Window& get_window() const;
