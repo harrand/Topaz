@@ -40,6 +40,7 @@ int main()
 		postprocess_info.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(blur, fragment));
 		tz::gl::ResourceHandle blur_buffer_handle = postprocess_info.add_resource(blur_data);
 		tz::gl::ResourceHandle colour_target_handle = postprocess_info.add_resource(blur_image);
+		postprocess_info.set_options({tz::gl::RendererOption::NoDepthTesting});
 		tz::gl::Renderer blur_renderer = dev.create_renderer(postprocess_info);
 
 		tz::gl::ImageOutput output_image
@@ -61,7 +62,9 @@ int main()
 			tz::window().update();
 			renderer.render(1);
 			BlurData& blur = blur_renderer.get_resource(blur_buffer_handle)->data_as<BlurData>().front();
-			blur.direction = tz::Vec2{5.0f, 0.0f};
+			static float counter = 0.0f;
+			blur.direction = tz::Vec2{std::sin(counter) * 50.0f, std::cos(counter * 2.0f) * 50.0f};
+			counter += 0.0003f;
 			blur_renderer.render(1);
 			TZ_FRAME_END;
 		}
