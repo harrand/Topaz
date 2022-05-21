@@ -462,7 +462,7 @@ namespace tz::gl
 				ret[i] =
 				{
 					.colour_attachments = {&this->window_buffer_images[i]},
-					.depth_attachment = {&this->window_buffer_depth_images[i]}
+					.depth_attachment = &this->window_buffer_depth_images[i]
 				};
 			}
 			return ret;
