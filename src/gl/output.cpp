@@ -47,6 +47,18 @@ namespace tz::gl
 		return *this->colour_attachments[colour_attachment_idx];
 	}
 
+	const ImageComponent& ImageOutput::get_depth_attachment() const
+	{
+		tz_assert(this->has_depth_attachment(), "Requested ImageOutput depth attachment, but there isn't one. Please submit a bug report.");
+		return *this->depth_attachment;
+	}
+
+	ImageComponent& ImageOutput::get_depth_attachment()
+	{
+		tz_assert(this->has_depth_attachment(), "Requested ImageOutput depth attachment, but there isn't one. Please submit a bug report.");
+		return *this->depth_attachment;
+	}
+
 	WindowOutput::WindowOutput(const tz::Window& window):
 	wnd(&window){}
 

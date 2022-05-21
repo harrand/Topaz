@@ -451,17 +451,20 @@ namespace tz::gl
 		return this->render_pass;
 	}
 
-	std::vector<vk2::Image*> OutputManager::get_output_images()
+	std::vector<OutputImageState> OutputManager::get_output_images()
 	{
 		if(this->output == nullptr || this->output->get_target() == OutputTarget::Window)
 		{
 			// We're rendering into a window (which may be headless). The Device contained the swapchain images (or the offline headless images). Simply return those.
-			std::vector<vk2::Image*> ret(this->window_buffer_images.size());
-			std::transform(this->window_buffer_images.begin(), this->window_buffer_images.end(), ret.begin(),
-			[](vk2::Image& img)
+			std::vector<OutputImageState> ret(this->window_buffer_images.size());
+			for(std::size_t i = 0; i < this->window_buffer_images.size(); i++)
 			{
-				return &img;
-			});
+				ret[i] =
+				{
+					.colour_attachments = {&this->window_buffer_images[i]},
+					.depth_attachment = {&this->window_buffer_depth_images[i]}
+				};
+			}
 			return ret;
 		}
 		else if(this->output->get_target() == OutputTarget::OffscreenImage)
@@ -469,12 +472,18 @@ namespace tz::gl
 			// We have been provided an ImageOutput which will contain an ImageComponentVulkan. We need to retrieve that image and return a span covering it.
 			// TODO: Support multiple-render-targets.
 			auto& out = static_cast<ImageOutput&>(*this->output);
-			std::vector<vk2::Image*> ret(this->window_buffer_images.size());
-			for(std::size_t i = 0; i < ret.size(); i++)
+
+			OutputImageState out_image;
+			for(std::size_t i = 0; i < out.colour_attachment_count(); i++)
 			{
-				ret[i] = &out.get_colour_attachment(0).vk_get_image();
+				out_image.colour_attachments.add(&out.get_colour_attachment(i).vk_get_image());
 			}
-			tz_assert(out.colour_attachment_count() == 1, "Multiple colour outputs on a render-to-texture target is not yet implemented.");
+			if(out.has_depth_attachment())
+			{
+				out_image.depth_attachment = &out.get_depth_attachment().vk_get_image();
+			}
+
+			std::vector<OutputImageState> ret(this->window_buffer_images.size(), out_image);
 			tz_assert(!out.has_depth_attachment(), "Depth attachment on an ImageOutput is not yet implemented");
 			return ret;
 		}
@@ -498,7 +507,7 @@ namespace tz::gl
 	tz::Vec2ui OutputManager::get_output_dimensions() const
 	{
 		tz_assert(!this->output_imageviews.empty(), "OutputManager had no output views, so impossible to retrieve viewport dimensions. Please submit a bug report.");
-		return this->output_imageviews.front().get_image().get_dimensions();
+		return this->output_imageviews.front().colour_views.front().get_image().get_dimensions();
 	}
 	
 	bool OutputManager::has_depth_images() const
@@ -515,7 +524,7 @@ namespace tz::gl
 		this->output_depth_imageviews.clear();
 		this->output_framebuffers.clear();
 
-		tz_assert(!this->get_output_images().empty(), "RendererVulkan OutputManager was not given any output images. Please submit a bug report.");
+		//tz_assert(!this->get_output_images().empty(), "RendererVulkan OutputManager was not given any output images. Please submit a bug report.");
 		this->window_buffer_depth_images.reserve(this->window_buffer_images.size());
 		this->output_depth_imageviews.reserve(this->window_buffer_images.size());
 		for(const vk2::Image& window_buffer_image : this->window_buffer_images)
@@ -547,14 +556,20 @@ namespace tz::gl
 				this->window_buffer_depth_images.push_back(vk2::Image::null());
 			}
 		}
-		for(std::size_t i = 0; i < this->get_output_images().size(); i++)
+		auto output_image_copy = this->get_output_images();
+		for(std::size_t i = 0; i < output_image_copy.size(); i++)
 		{
 			// We need to pass image views around in various places within the vulkan api. We create them here.
-			this->output_imageviews.push_back
-			(vk2::ImageViewInfo{
-				.image = this->get_output_images()[i],
-				.aspect = vk2::ImageAspect::Colour
-			});
+			const OutputImageState& out_image = output_image_copy[i];
+			OutputImageViewState out_view;
+			for(vk2::Image* colour_img : out_image.colour_attachments)
+			{
+				out_view.colour_views.add({vk2::ImageViewInfo{
+					.image = colour_img,
+					.aspect = vk2::ImageAspect::Colour
+				}});
+			}
+			this->output_imageviews.push_back(std::move(out_view));
 
 			// If we made depth images earlier, create views for them too.
 			if(create_depth_images)
@@ -571,7 +586,10 @@ namespace tz::gl
 			}
 		}
 
-		tz_assert(std::equal(this->output_imageviews.begin(), this->output_imageviews.end(), this->output_imageviews.begin(), [](const vk2::ImageView& a, const vk2::ImageView& b){return a.get_image().get_format() == b.get_image().get_format();}), "Detected that not every output image in a RendererVulkan has the same format. This is not permitted as RenderPasses would not be compatible. Please submit a bug report.");
+		for(const OutputImageViewState& out_view : this->output_imageviews)
+		{
+			tz_assert(std::equal(out_view.colour_views.begin(), out_view.colour_views.end(), out_view.colour_views.begin(), [](const vk2::ImageView& a, const vk2::ImageView& b){return a.get_image().get_format() == b.get_image().get_format();}), "Detected that not every output image in a RendererVulkan has the same format. This is not permitted as RenderPasses would not be compatible. Please submit a bug report.");
+		}
 
 		// Now create an ultra-basic renderpass.
 		// We're matching the ImageFormat of the provided output image.
@@ -589,16 +607,22 @@ namespace tz::gl
 			final_layout = vk2::ImageLayout::Undefined;
 			tz_error("Unknown RendererOutputType. Please submit a bug report.");
 		}
+		
+		// Our renderpass is no longer so simple with the possibilty of multiple colour outputs.
+		std::uint32_t colour_output_length = output_image_copy.front().colour_attachments.length();
 
 		vk2::RenderPassBuilder rbuilder;
 		rbuilder.set_device(*this->ldev);
-		rbuilder.with_attachment
-		({
-			.format = this->get_output_images().front()->get_format(),
-			.colour_depth_store = vk2::StoreOp::Store,
-			.initial_layout = vk2::ImageLayout::Undefined,
-			.final_layout = final_layout
-		});
+		for(vk2::Image* colour_image : output_image_copy.front().colour_attachments)
+		{
+			rbuilder.with_attachment
+			({
+				.format = colour_image->get_format(),
+				.colour_depth_store = vk2::StoreOp::Store,
+				.initial_layout = vk2::ImageLayout::Undefined,
+				.final_layout = final_layout
+			});
+		}
 		if(create_depth_images)
 		{
 			rbuilder.with_attachment
@@ -612,16 +636,19 @@ namespace tz::gl
 
 		vk2::SubpassBuilder sbuilder;
 		sbuilder.set_pipeline_context(vk2::PipelineContext::Graphics);
-		sbuilder.with_colour_attachment
-		({
-			.attachment_idx = 0,
-			.current_layout = vk2::ImageLayout::ColourAttachment
-		});
+		for(std::uint32_t i = 0; i < colour_output_length; i++)
+		{
+			sbuilder.with_colour_attachment
+			({
+				.attachment_idx = i,
+				.current_layout = vk2::ImageLayout::ColourAttachment
+			});
+		}
 		if(create_depth_images)
 		{
 			sbuilder.with_depth_stencil_attachment
 			({
-				.attachment_idx = 1,
+				.attachment_idx = colour_output_length,
 				.current_layout = vk2::ImageLayout::DepthStencilAttachment
 			});
 		}
@@ -630,8 +657,14 @@ namespace tz::gl
 
 		for(std::size_t i = 0; i < this->output_imageviews.size(); i++)
 		{
-			tz::Vec2ui dims = this->output_imageviews[i].get_image().get_dimensions();
-			tz::BasicList<vk2::ImageView*> attachments{&this->output_imageviews[i]};
+			tz::Vec2ui dims = this->output_imageviews[i].colour_views.front().get_image().get_dimensions();
+			tz::BasicList<vk2::ImageView*> attachments;
+			attachments.resize(this->output_imageviews[i].colour_views.length());
+			std::transform(this->output_imageviews[i].colour_views.begin(), this->output_imageviews[i].colour_views.end(), attachments.begin(),
+			[](vk2::ImageView& colour_view)
+			{
+				return &colour_view;
+			});
 			if(create_depth_images)
 			{
 				attachments.add(&this->output_depth_imageviews[i]);
@@ -800,6 +833,9 @@ namespace tz::gl
 
 	vk2::GraphicsPipelineInfo GraphicsPipelineManager::make_graphics_pipeline(tz::Vec2ui viewport_dimensions, bool depth_testing_enabled, bool alpha_blending_enabled, const vk2::RenderPass& render_pass) const
 	{
+		tz::BasicList<vk2::ColourBlendState::AttachmentState> alpha_blending_options;
+		alpha_blending_options.resize(render_pass.get_info().total_colour_attachment_count());
+		std::fill(alpha_blending_options.begin(), alpha_blending_options.end(), alpha_blending_enabled ? vk2::ColourBlendState::alpha_blending() : vk2::ColourBlendState::no_blending());
 		return
 		{
 			.shaders = this->shader.native_data(),
@@ -813,7 +849,7 @@ namespace tz::gl
 				},
 				.colour_blend =
 				{
-					.attachment_states = alpha_blending_enabled ? tz::BasicList<vk2::ColourBlendState::AttachmentState>{vk2::ColourBlendState::alpha_blending()} : tz::BasicList<vk2::ColourBlendState::AttachmentState>{vk2::ColourBlendState::no_blending()},
+					.attachment_states = alpha_blending_options,
 					.logical_operator = VK_LOGIC_OP_COPY
 				}
 			},

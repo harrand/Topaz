@@ -93,6 +93,17 @@ namespace tz::gl
 		std::size_t frame_in_flight_count;
 	};
 
+	struct OutputImageState
+	{
+		tz::BasicList<vk2::Image*> colour_attachments = {};
+		vk2::Image* depth_attachment = nullptr;
+	};
+
+	struct OutputImageViewState
+	{
+		tz::BasicList<vk2::ImageView> colour_views = {};
+	};
+
 	/**
 	 * @ingroup tz_gl2_graphicsapi_vk_frontend_renderer
 	 * Deciphering the actual render target is pretty complicated. There are various gotchas:
@@ -130,7 +141,7 @@ namespace tz::gl
 		 *   		- This is going to contain the 0th colour attachment, with duplicates matching each frame-in-flight.
 		 * @return List of output images.
 		 */
-		std::vector<vk2::Image*> get_output_images();
+		std::vector<OutputImageState> get_output_images();
 		/**
 		 * Retrieve a view (read-only) into all of the framebuffers.
 		 *
@@ -162,7 +173,7 @@ namespace tz::gl
 		/// List of depth images for each window buffer image (These may be null if depth testing is disabled).
 		std::vector<vk2::Image> window_buffer_depth_images;
 		/// List of image-views, one for each output image. These haven't been re-ordered in any way FYI.
-		std::vector<vk2::ImageView> output_imageviews;
+		std::vector<OutputImageViewState> output_imageviews;
 		/// List of depth-image-views, one for each output image.
 		std::vector<vk2::ImageView> output_depth_imageviews;
 		/// We don't support multiple sub-passes, so this is a run-of-the-mill basic-bitch render pass.

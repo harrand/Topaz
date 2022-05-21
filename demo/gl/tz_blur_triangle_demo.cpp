@@ -47,10 +47,11 @@ int main()
 		rinfo.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(tz_triangle_demo, vertex));
 		rinfo.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(tz_triangle_demo, fragment));
 		rinfo.set_options({tz::gl::RendererOption::NoDepthTesting});
-		rinfo.set_output(tz::gl::ImageOutput
+		tz::gl::ImageOutput temp
 		{{
 			.colours = {blur_renderer.get_component(colour_target_handle)}
-		}});
+		}};
+		rinfo.set_output(temp);
 
 		tz::gl::Renderer renderer = dev.create_renderer(rinfo);
 

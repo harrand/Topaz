@@ -31,7 +31,9 @@ namespace tz::gl
 
 		const ImageComponent& get_colour_attachment(std::size_t colour_attachment_idx) const;
 		ImageComponent& get_colour_attachment(std::size_t colour_attachment_idx);
-
+		
+		const ImageComponent& get_depth_attachment() const;
+		ImageComponent& get_depth_attachment();
 	private:
 		std::vector<ImageComponent*> colour_attachments;
 		ImageComponent* depth_attachment;
