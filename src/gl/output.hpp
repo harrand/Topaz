@@ -12,7 +12,7 @@ namespace tz::gl
 		IComponent* depth = nullptr;
 	};
 
-	class ImageOutput : public IOutput
+	class ImageOutput final : public IOutput
 	{
 	public:
 		ImageOutput(ImageOutputInfo info);
@@ -39,7 +39,7 @@ namespace tz::gl
 		ImageComponent* depth_attachment;
 	};
 
-	class WindowOutput : public IOutput
+	class WindowOutput final : public IOutput
 	{
 	public:
 		WindowOutput(const tz::Window& window);
