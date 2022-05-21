@@ -37,9 +37,8 @@ void renderer_creation(tz::gl::Device& dev)
 	rinfo1.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(empty, fragment));
 	tz::gl::Renderer renderer1 = dev.create_renderer(rinfo1);
 
-	tz::gl::RendererInfo rinfo2 = rinfo1;
-	rinfo2.add_resource(bres0);
-	tz::gl::Renderer renderer2 = dev.create_renderer(rinfo2);
+	rinfo1.add_resource(bres0);
+	tz::gl::Renderer renderer2 = dev.create_renderer(rinfo1);
 
 	renderer1.render();
 	renderer2.render();
@@ -55,10 +54,9 @@ void renderer_creation_index_buffer(tz::gl::Device& dev)
 	rinfo1.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(empty, fragment));
 	tz::gl::Renderer renderer1 = dev.create_renderer(rinfo1);
 
-	tz::gl::RendererInfo rinfo2 = rinfo1;
-	rinfo2.add_resource(bres0);
-	rinfo2.add_resource(ibuf);
-	tz::gl::Renderer renderer2 = dev.create_renderer(rinfo2);
+	rinfo1.add_resource(bres0);
+	rinfo1.add_resource(ibuf);
+	tz::gl::Renderer renderer2 = dev.create_renderer(rinfo1);
 
 	renderer1.render();
 	renderer2.render();
