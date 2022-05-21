@@ -85,7 +85,7 @@ namespace tz::gl
 		/// Stores all provided components. In this context, components act as references to existing resources owned by another renderer.
 		std::vector<IComponent*> components = {};
 		/// Output. Can be null, which defaults to rendering into the main window.
-		const IOutput* output = nullptr;
+		std::unique_ptr<IOutput> output = nullptr;
 		/// Specifies which extra features the Renderer will have.
 		RendererOptions options = {};
 		/// Describes the shader sources used.

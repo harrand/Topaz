@@ -13,7 +13,7 @@ namespace tz::gl
 		DeviceOGL() = default;
 
 		// Satisfies DeviceType.
-		RendererOGL create_renderer(RendererInfoOGL info);
+		RendererOGL create_renderer(const RendererInfoOGL& info);
 		ImageFormat get_window_format() const;
 	};
 	static_assert(DeviceType<DeviceOGL, RendererInfoOGL>);

@@ -128,7 +128,7 @@ namespace tz::gl
 		 * Create a new Renderer.
 		 * @param info User-exposed class which describes how many resources etc. we have and a high-level description of where we expect to render into.
 		 */
-		RendererOGL(RendererInfoOGL info);
+		RendererOGL(const RendererInfoOGL& info);
 		// Satisfies RendererType.
 		/**
 		 * Retrieve the number of resources.

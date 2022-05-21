@@ -6,7 +6,7 @@
 namespace tz::gl
 {
 
-	RendererOGL DeviceOGL::create_renderer(RendererInfoOGL info)
+	RendererOGL DeviceOGL::create_renderer(const RendererInfoOGL& info)
 	{
 		TZ_PROFZONE("OpenGL Frontend - Renderer Create (via Device)", TZ_PROFCOL_RED);
 		return {info};

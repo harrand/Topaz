@@ -46,12 +46,12 @@ namespace tz::gl
 
 	void RendererInfoCommon::set_output(const IOutput& output)
 	{
-		this->output = &output;
+		this->output = output.unique_clone();
 	}
 
 	const IOutput* RendererInfoCommon::get_output() const
 	{
-		return this->output;
+		return this->output.get();
 	}
 
 	const RendererOptions& RendererInfoCommon::get_options() const
