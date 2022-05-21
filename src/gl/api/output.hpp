@@ -15,7 +15,7 @@ namespace tz::gl
 	{
 	public:
 		constexpr virtual OutputTarget get_target() const = 0;
-		~virtual IOutput() = default;
+		virtual ~IOutput() = default;
 	};
 }
 
