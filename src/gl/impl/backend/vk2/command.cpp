@@ -177,7 +177,6 @@ namespace tz::gl::vk2
 		ImageLayout img_layout = this->get_layout_so_far(*command.dst);
 		tz_assert(img_layout == ImageLayout::TransferDestination, "BufferCopyImage:: Destination image was not in TransferDestination ImageLayout, so it cannot be an, erm, transfer destination.");
 
-		this->register_command(command);
 		tz::Vec2ui img_dims = command.dst->get_dimensions();
 		VkBufferImageCopy cpy
 		{
@@ -195,6 +194,7 @@ namespace tz::gl::vk2
 			.imageExtent = VkExtent3D{.width = img_dims[0], .height = img_dims[1], .depth = 1}
 		};
 		vkCmdCopyBufferToImage(this->get_command_buffer().native(), command.src->native(), command.dst->native(), static_cast<VkImageLayout>(img_layout), 1, &cpy);
+		this->register_command(command);
 	}
 
 	void CommandBufferRecording::image_copy_image(VulkanCommand::ImageCopyImage command)

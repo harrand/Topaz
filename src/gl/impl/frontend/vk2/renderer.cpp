@@ -9,6 +9,7 @@
 #include "gl/impl/backend/vk2/image_view.hpp"
 #include "gl/impl/frontend/vk2/renderer.hpp"
 #include "gl/impl/frontend/vk2/component.hpp"
+#include "gl/impl/frontend/vk2/convert.hpp"
 #include "gl/output.hpp"
 
 namespace tz::gl
@@ -167,7 +168,10 @@ namespace tz::gl
 				({
 					.type = vk2::DescriptorType::ImageWithSampler,
 					.count = static_cast<std::uint32_t>(this->image_component_views.size()),
-					.flags = {vk2::DescriptorFlag::PartiallyBound}
+					.flags = {	vk2::DescriptorFlag::PartiallyBound,
+							vk2::DescriptorFlag::UpdateAfterBind,
+							vk2::DescriptorFlag::UpdateUnusedWhilePending
+						}
 				});
 			}
 			this->descriptor_layout = lbuilder.build();
@@ -289,6 +293,25 @@ namespace tz::gl
 		{
 			return component_ptr->get_resource()->get_type() == type;
 		});
+	}
+
+	void ResourceStorage::notify_image_recreated(tz::gl::ResourceHandle image_resource_handle)
+	{
+		// ImageComponent's underlying vk2::Image was recently replaced with another. This means this->image_component_views[id corresponding to handle] is wrong and needs to be remade.
+		std::size_t img_view_idx = 0;
+		auto handle_val = static_cast<std::size_t>(static_cast<tz::HandleValue>(image_resource_handle));
+		for(std::size_t i = 0; i < handle_val; i++)
+		{
+			if(this->get(static_cast<tz::HandleValue>(i))->get_type() == ResourceType::Image)
+			{
+				img_view_idx++;
+			}
+		}
+		this->image_component_views[img_view_idx] =
+		{{
+			.image = &(static_cast<ImageComponentVulkan*>(this->get_component(image_resource_handle))->vk_get_image()),
+			.aspect = vk2::ImageAspect::Colour
+		}};
 	}
 
 	void ResourceStorage::sync_descriptors(bool write_everything)
@@ -1242,7 +1265,27 @@ namespace tz::gl
 				}
 				else if constexpr(std::is_same_v<T, RendererImageComponentEditRequest>)
 				{
-					tz_error("Resizing images is not yet implemented");
+					auto img_comp = static_cast<ImageComponentVulkan*>(this->get_component(arg.image_handle));
+					// Firstly, make a copy of the old image data.
+					std::vector<std::byte> old_data;
+					auto old_span = img_comp->get_resource()->data_as<std::byte>();
+					old_data.resize(old_span.size_bytes());
+					std::copy(old_span.begin(), old_span.end(), old_data.begin());
+
+					// Now, create new data.
+					img_comp->resize(arg.dimensions);
+					vk2::Image& new_image = img_comp->vk_get_image();
+					auto* data_begin = static_cast<std::byte*>(new_image.map());
+					std::size_t byte_length = tz::gl::pixel_size_bytes(from_vk2(new_image.get_format())) * new_image.get_dimensions()[0] * new_image.get_dimensions()[1];
+					std::span<std::byte> new_image_data{data_begin, byte_length};
+					img_comp->get_resource()->set_mapped_data(new_image_data);
+					// Let's also copy over the new data.
+					std::size_t copy_size = std::min(new_image_data.size_bytes(), old_data.size());
+					std::copy(old_span.begin(), old_span.begin() + copy_size, new_image_data.begin());
+					// An imageview was looking at the old image, let's update that.
+					this->resources.notify_image_recreated(arg.image_handle);
+					// New image so descriptor array needs to be re-written to.
+					this->resources.sync_descriptors(true);
 				}
 				else
 				{

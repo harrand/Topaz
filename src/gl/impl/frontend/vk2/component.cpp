@@ -118,6 +118,14 @@ namespace tz::gl
 		return this->image;
 	}
 
+	void ImageComponentVulkan::resize(tz::Vec2ui new_dimensions)
+	{
+		auto* ires = static_cast<ImageResource*>(this->resource);
+		ires->set_dimensions(new_dimensions);
+		ires->resize_data(tz::gl::pixel_size_bytes(ires->get_format()) * new_dimensions[0] * new_dimensions[1]);
+		this->image = make_image(this->image.get_device());
+	}
+
 	vk2::Image ImageComponentVulkan::make_image(const vk2::LogicalDevice& ldev) const
 	{
 		tz_assert(this->resource->get_type() == ResourceType::Image, "ImageComponent was provided a resource which was not an ImageResource. Please submit a bug report.");

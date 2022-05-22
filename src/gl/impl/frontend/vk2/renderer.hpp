@@ -73,6 +73,7 @@ namespace tz::gl
 		const IComponent* try_get_index_buffer() const;
 
 		std::size_t resource_count_of(ResourceType type) const;
+		void notify_image_recreated(tz::gl::ResourceHandle image_resource_handle);
 		void sync_descriptors(bool write_everything);
 		bool empty() const;
 		void write_padded_image_data();
