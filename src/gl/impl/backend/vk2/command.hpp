@@ -132,6 +132,15 @@ namespace tz::gl::vk2
 			/// Aspect of `image` in this context.
 			ImageAspectFlags image_aspects;
 		};
+
+		/**
+		 *
+		 */
+		struct ImageCopyImage
+		{
+
+		};
+
 		/**
 		 * Bind a vertex or index @ref Buffer.
 		 */

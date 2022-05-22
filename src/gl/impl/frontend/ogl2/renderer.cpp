@@ -5,6 +5,7 @@
 #include "gl/impl/frontend/ogl2/renderer.hpp"
 #include "gl/impl/frontend/ogl2/component.hpp"
 #include "gl/output.hpp"
+#include "gl/resource.hpp"
 
 namespace tz::gl
 {
@@ -221,6 +222,11 @@ namespace tz::gl
 				img.set_data(res->data());
 			}
 		}
+	}
+
+	void ResourceStorage::set_image_handle(tz::gl::ResourceHandle h, ogl2::Image::BindlessTextureHandle bindless_handle)
+	{
+		this->image_handles[static_cast<std::size_t>(static_cast<tz::HandleValue>(h))] = bindless_handle;
 	}
 
 	IComponent* ResourceStorage::try_get_index_buffer() const
@@ -489,7 +495,18 @@ namespace tz::gl
 				}
 				else if constexpr(std::is_same_v<T, RendererImageComponentEditRequest>)
 				{
-					tz_error("Resizing images is not yet implemented");
+					auto img_comp = static_cast<ImageComponentOGL*>(this->get_component(arg.image_handle));
+					tz_assert(img_comp->get_resource()->get_access() == ResourceAccess::DynamicVariable, "Detected attempted resize of image resource (id %zu), but it ResourceAccess is not DynamicVariable. This means it is a fixed-size resource, so attempting to resize it is invalid.", static_cast<std::size_t>(static_cast<tz::HandleValue>(arg.image_handle)));
+					// Make new buffer copy, and swap them with the component's held buffer. That is literally it I believe.
+					ogl2::Image& old_image = img_comp->ogl_get_image();
+					old_image = ogl2::image::clone_resized(old_image, arg.dimensions);
+					if(img_comp->get_resource()->get_access() == ResourceAccess::DynamicVariable)
+					{
+						this->resources.set_image_handle(arg.image_handle, old_image.get_bindless_handle());
+						auto* ires = static_cast<ImageResource*>(img_comp->get_resource());
+						ires->set_dimensions(arg.dimensions);
+						ires->resize_data(tz::gl::pixel_size_bytes(ires->get_format()) * arg.dimensions[0] * arg.dimensions[1]);
+					}
 				}
 				else
 				{

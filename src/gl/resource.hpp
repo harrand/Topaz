@@ -18,6 +18,8 @@ namespace tz::gl
 		virtual ResourceAccess get_access() const final;
 		virtual std::span<const std::byte> data() const final;
 		virtual std::span<std::byte> data() final;
+
+		void resize_data(std::size_t new_size);
 	protected:
 		Resource(ResourceAccess access, std::vector<std::byte> resource_data, std::size_t initial_alignment_offset, ResourceType type, ResourceFlags flags = {});
 		virtual void set_mapped_data(std::span<std::byte> mapped_resource_data) override;
@@ -103,6 +105,7 @@ namespace tz::gl
 		virtual std::unique_ptr<IResource> unique_clone() const final;
 		ImageFormat get_format() const;
 		tz::Vec2ui get_dimensions() const;
+		void set_dimensions(tz::Vec2ui dims);
 	private:
 		ImageResource(ResourceAccess access, std::vector<std::byte> resource_data, std::size_t initial_alignment_offset, ImageFormat format, tz::Vec2ui dimensions, ResourceFlags flags);
 		ImageFormat format;

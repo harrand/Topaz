@@ -64,7 +64,7 @@ int main()
 				0b0000'0000_uc,
 				0b1111'1111_uc
 			},
-			tz::gl::ResourceAccess::DynamicFixed
+			tz::gl::ResourceAccess::DynamicVariable
 		);
 
 		std::size_t triangle_count = 1;
@@ -115,6 +115,11 @@ int main()
 						{
 							.buffer_handle = ibufh,
 							.size = sizeof(unsigned int) * 3 * triangle_count
+						},
+						tz::gl::RendererImageComponentEditRequest
+						{
+							.image_handle = imgh,
+							.dimensions = static_cast<tz::gl::ImageResource*>(renderer.get_resource(imgh))->get_dimensions() + tz::Vec2ui{1u, 1u}
 						}
 					}
 				};
@@ -130,10 +135,12 @@ int main()
 				}
 
 				// While we're at it, randomise the second pixel of the image.
+				tz::Vec2ui img_dims = static_cast<tz::gl::ImageResource*>(renderer.get_resource(imgh))->get_dimensions();
 				std::span<std::byte> img_data = renderer.get_resource(imgh)->data();
-				tz::GridView<std::byte, 4> img_view{img_data, img.get_dimensions()};
-				std::span<std::byte> pixel_data = img_view(1, 0);
+				tz::GridView<std::byte, 4> img_view{img_data, img_dims};
+				std::span<std::byte> pixel_data = img_view(img_dims[0] / 2, img_dims[1] / 2);
 				std::random_shuffle(pixel_data.begin(), pixel_data.end());
+				std::printf("img dims = {%u, %u}\n", img_dims[0], img_dims[1]);
 			}
 
 			TZ_FRAME_END;

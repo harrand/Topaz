@@ -134,7 +134,7 @@ namespace tz::gl::ogl2
 				std::min(image.get_dimensions()[0], new_size[0]),
 				std::min(image.get_dimensions()[1], new_size[1])
 			};
-			glCopyImageSubData(image.native(), GL_TEXTURE_2D, 0, 0, 0, 0, newimg.native(), GL_TEXTURE_2D, 0, 0, 0, 0, min[0], min[1], 0);
+			glCopyImageSubData(image.native(), GL_TEXTURE_2D, 0, 0, 0, 0, newimg.native(), GL_TEXTURE_2D, 0, 0, 0, 0, min[0], min[1], 1);
 			if(image.is_bindless())
 			{
 				newimg.make_bindless();
