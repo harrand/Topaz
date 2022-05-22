@@ -153,10 +153,13 @@ namespace tz::gl::vk2
 		std::swap(this->image, rhs.image);
 		std::swap(this->format, rhs.format);
 		std::swap(this->layout, rhs.layout);
+		std::swap(this->tiling, rhs.tiling);
+		std::swap(this->residency, rhs.residency);
 		std::swap(this->dimensions, rhs.dimensions);
 		std::swap(this->device, rhs.device);
 		std::swap(this->destroy_on_destructor, rhs.destroy_on_destructor);
 		std::swap(this->vma_alloc, rhs.vma_alloc);
+		std::swap(this->vma_alloc_info, rhs.vma_alloc_info);
 		return *this;
 	}
 

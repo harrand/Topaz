@@ -122,8 +122,8 @@ namespace tz::gl
 	{
 		auto* ires = static_cast<ImageResource*>(this->resource);
 		ires->set_dimensions(new_dimensions);
-		ires->resize_data(tz::gl::pixel_size_bytes(ires->get_format()) * new_dimensions[0] * new_dimensions[1]);
 		this->image = make_image(this->image.get_device());
+		// Caller needs to set new image data if we're dynamic, old span is wrong size.
 	}
 
 	vk2::Image ImageComponentVulkan::make_image(const vk2::LogicalDevice& ldev) const

@@ -79,7 +79,6 @@ namespace tz::gl
 
 						std::span<const std::byte> initial_data = res->data();
 						std::span<std::byte> image_data = {reinterpret_cast<std::byte*>(underlying_image.map()), initial_data.size_bytes()};
-						//tz_assert(initial_data.size_bytes() == image_data.size_bytes(), "ImageResource data span length disagrees with the vulkan backend image's mapped data span. Resource says %zu bytes, vk2::Image says %zu bytes", initial_data.size_bytes(), image_data.size_bytes());
 						std::copy(initial_data.begin(), initial_data.end(), image_data.begin());
 						res->set_mapped_data(image_data);
 					}
@@ -1266,6 +1265,7 @@ namespace tz::gl
 				else if constexpr(std::is_same_v<T, RendererImageComponentEditRequest>)
 				{
 					auto img_comp = static_cast<ImageComponentVulkan*>(this->get_component(arg.image_handle));
+					auto old_dims = img_comp->vk_get_image().get_dimensions();
 					// Firstly, make a copy of the old image data.
 					std::vector<std::byte> old_data;
 					auto old_span = img_comp->get_resource()->data_as<std::byte>();
@@ -1275,11 +1275,10 @@ namespace tz::gl
 					// Now, create new data.
 					img_comp->resize(arg.dimensions);
 					vk2::Image& new_image = img_comp->vk_get_image();
-					auto* data_begin = static_cast<std::byte*>(new_image.map());
-					std::size_t byte_length = tz::gl::pixel_size_bytes(from_vk2(new_image.get_format())) * new_image.get_dimensions()[0] * new_image.get_dimensions()[1];
-					std::span<std::byte> new_image_data{data_begin, byte_length};
+					auto new_image_data = new_image.map_as<std::byte>();
 					img_comp->get_resource()->set_mapped_data(new_image_data);
 					// Let's also copy over the new data.
+					std::printf("image resize (%ux%u -> %ux%u), (%zub -> %zub)\n", old_dims[0], old_dims[1], arg.dimensions[0], arg.dimensions[1], old_data.size(), new_image_data.size_bytes());
 					std::size_t copy_size = std::min(new_image_data.size_bytes(), old_data.size());
 					std::copy(old_span.begin(), old_span.begin() + copy_size, new_image_data.begin());
 					// An imageview was looking at the old image, let's update that.
