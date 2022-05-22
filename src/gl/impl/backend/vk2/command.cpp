@@ -174,44 +174,7 @@ namespace tz::gl::vk2
 		tz_assert(command.src->get_usage().contains(BufferUsage::TransferSource), "BufferCopyImage: Source buffer did not contain BufferUsage::TransferSource");
 
 		// So ideally we could just use command.dst->get_layout(). However, it's very possible this recording contains a previous command which will have changed that layout. We will check to make sure. If so, we use the updated layout (even though it hasn't happened yet), otherwise we just use the images current layout.
-		ImageLayout img_layout = command.dst->get_layout();
-		for(const VulkanCommand::Variant& previous_command : this->get_command_buffer().get_recorded_commands())
-		{
-			std::visit([&img_layout, &command](auto&& arg)
-			{
-				using T = std::decay_t<decltype(arg)>;
-				if constexpr(std::is_same_v<T, VulkanCommand::TransitionImageLayout>)
-				{
-					// If the image layout will have been transitioned, then use the updated layout.
-					if(arg.image == command.dst)
-					{
-						img_layout = arg.target_layout;
-					}
-				}
-				else if constexpr(std::is_same_v<T, VulkanCommand::EndRenderPass>)
-				{
-					// If some render pass has since ended, the layout may have changed if it was an attachment.
-					auto get_framebuffer_attachment_layout = [&arg](std::size_t attachment_idx)
-					{
-						return arg.framebuffer->get_pass().get_info().attachments[attachment_idx].final_layout;
-					};
-					// We end a framebuffer, which has some number of attachments. Firstly we check if any of them are this image. If it is, we query the render pass to find out what the layout was meant to be.
-					const tz::BasicList<ImageView*>& framebuffer_attachments = arg.framebuffer->get_attachment_views();
-					auto iter = std::find_if(framebuffer_attachments.begin(), framebuffer_attachments.end(),
-					[&command](ImageView* const & view_ptr)->bool
-					{
-						return &view_ptr->get_image() == command.dst;
-					});
-					if(iter != framebuffer_attachments.end())
-					{
-						std::size_t attachment_idx = std::distance(framebuffer_attachments.begin(), iter);
-
-						// Now find out which layout that is.
-						img_layout = get_framebuffer_attachment_layout(attachment_idx);
-					}
-				}
-			}, previous_command);
-		}
+		ImageLayout img_layout = this->get_layout_so_far(*command.dst);
 		tz_assert(img_layout == ImageLayout::TransferDestination, "BufferCopyImage:: Destination image was not in TransferDestination ImageLayout, so it cannot be an, erm, transfer destination.");
 
 		this->register_command(command);
@@ -232,6 +195,42 @@ namespace tz::gl::vk2
 			.imageExtent = VkExtent3D{.width = img_dims[0], .height = img_dims[1], .depth = 1}
 		};
 		vkCmdCopyBufferToImage(this->get_command_buffer().native(), command.src->native(), command.dst->native(), static_cast<VkImageLayout>(img_layout), 1, &cpy);
+	}
+
+	void CommandBufferRecording::image_copy_image(VulkanCommand::ImageCopyImage command)
+	{
+		tz_assert(command.src != nullptr, "ImageCopyImage contained nullptr for its source image. Please submit a bug report.");
+		tz_assert(command.dst != nullptr, "ImageCopyImage contained nullptr for its destination image. Please submit a bug report.");
+
+		tz::Vec2ui min_dims;
+		min_dims[0] = std::min(command.src->get_dimensions()[0], command.dst->get_dimensions()[0]);
+		min_dims[1] = std::min(command.src->get_dimensions()[1], command.dst->get_dimensions()[1]);
+		VkImageCopy copy_region
+		{
+			.srcSubresource =
+			{
+				.aspectMask = static_cast<VkImageAspectFlags>(static_cast<ImageAspectFlag>(command.image_aspects)),
+				.mipLevel = 0,
+				.baseArrayLayer = 0,
+				.layerCount = 1
+			},
+			.srcOffset = {0, 0, 0},
+			.dstSubresource =
+			{
+				.aspectMask = static_cast<VkImageAspectFlags>(static_cast<ImageAspectFlag>(command.image_aspects)),
+				.mipLevel = 0,
+				.baseArrayLayer = 0,
+				.layerCount = 1
+			},
+			.dstOffset = {0, 0, 0},
+			.extent = {min_dims[0], min_dims[1], 1u}
+		};
+		ImageLayout src_layout = this->get_layout_so_far(*command.src);
+		ImageLayout dst_layout = this->get_layout_so_far(*command.dst);
+		tz_assert(src_layout == ImageLayout::General || src_layout == ImageLayout::TransferSource, "ImageCopyImage source image was not in expected layout. It should either be TransferSource or General.");
+		tz_assert(dst_layout == ImageLayout::General || src_layout == ImageLayout::TransferDestination, "ImageCopyImage destination image was not in expected layout. It should either be TransferDestination or General.");
+		vkCmdCopyImage(this->get_command_buffer().native(), command.src->native(), static_cast<VkImageLayout>(src_layout), command.dst->native(), static_cast<VkImageLayout>(dst_layout), 1, &copy_region);
+		this->register_command(command);
 	}
 
 	void CommandBufferRecording::bind_buffer(VulkanCommand::BindBuffer command)
@@ -316,6 +315,49 @@ namespace tz::gl::vk2
 		CommandBuffer& buf = this->get_command_buffer();
 		tz_assert(buf.is_recording(), "CommandBufferRecording tried to register a command, but the CommandBuffer isn't actually recording. Please submit a bug report.");
 		buf.add_command(command);
+	}
+
+	ImageLayout CommandBufferRecording::get_layout_so_far(const Image& image) const
+	{
+		ImageLayout img_layout = image.get_layout();
+		for(const VulkanCommand::Variant& previous_command : this->get_command_buffer().get_recorded_commands())
+		{
+			std::visit([&img_layout, &image](auto&& arg)
+			{
+				using T = std::decay_t<decltype(arg)>;
+				if constexpr(std::is_same_v<T, VulkanCommand::TransitionImageLayout>)
+				{
+					// If the image layout will have been transitioned, then use the updated layout.
+					if(arg.image == &image)
+					{
+						img_layout = arg.target_layout;
+					}
+				}
+				else if constexpr(std::is_same_v<T, VulkanCommand::EndRenderPass>)
+				{
+					// If some render pass has since ended, the layout may have changed if it was an attachment.
+					auto get_framebuffer_attachment_layout = [&arg](std::size_t attachment_idx)
+					{
+						return arg.framebuffer->get_pass().get_info().attachments[attachment_idx].final_layout;
+					};
+					// We end a framebuffer, which has some number of attachments. Firstly we check if any of them are this image. If it is, we query the render pass to find out what the layout was meant to be.
+					const tz::BasicList<ImageView*>& framebuffer_attachments = arg.framebuffer->get_attachment_views();
+					auto iter = std::find_if(framebuffer_attachments.begin(), framebuffer_attachments.end(),
+					[&image](ImageView* const & view_ptr)->bool
+					{
+						return &view_ptr->get_image() == &image;
+					});
+					if(iter != framebuffer_attachments.end())
+					{
+						std::size_t attachment_idx = std::distance(framebuffer_attachments.begin(), iter);
+
+						// Now find out which layout that is.
+						img_layout = get_framebuffer_attachment_layout(attachment_idx);
+					}
+				}
+			}, previous_command);
+		}
+		return img_layout;
 	}
 
 	const LogicalDevice& CommandBuffer::get_device() const

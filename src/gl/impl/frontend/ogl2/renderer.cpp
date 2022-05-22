@@ -464,6 +464,11 @@ namespace tz::gl
 
 	void RendererOGL::edit(const RendererEditRequest& edit_request)
 	{
+		this->edit_internal(edit_request);
+	}
+
+	void RendererOGL::edit_internal(const RendererEditRequest& edit_request, bool permissive)
+	{
 		TZ_PROFZONE("OpenGL Backend - RendererOGL Edit", TZ_PROFCOL_RED);
 		if(edit_request.component_edits.empty())
 		{
@@ -477,7 +482,7 @@ namespace tz::gl
 		{
 
 			std::visit(
-			[this](auto&& arg)
+			[this, permissive](auto&& arg)
 			{
 				using T = std::decay_t<decltype(arg)>;
 				if constexpr(std::is_same_v<T, RendererBufferComponentEditRequest>)
@@ -496,7 +501,8 @@ namespace tz::gl
 				else if constexpr(std::is_same_v<T, RendererImageComponentEditRequest>)
 				{
 					auto img_comp = static_cast<ImageComponentOGL*>(this->get_component(arg.image_handle));
-					tz_assert(img_comp->get_resource()->get_access() == ResourceAccess::DynamicVariable, "Detected attempted resize of image resource (id %zu), but it ResourceAccess is not DynamicVariable. This means it is a fixed-size resource, so attempting to resize it is invalid.", static_cast<std::size_t>(static_cast<tz::HandleValue>(arg.image_handle)));
+					// If we're permissive, it's OK to resize non-DynamicVariable images.
+					tz_assert(!permissive && img_comp->get_resource()->get_access() == ResourceAccess::DynamicVariable, "Detected attempted resize of image resource (id %zu), but it ResourceAccess is not DynamicVariable. This means it is a fixed-size resource, so attempting to resize it is invalid.", static_cast<std::size_t>(static_cast<tz::HandleValue>(arg.image_handle)));
 					// Make new buffer copy, and swap them with the component's held buffer. That is literally it I believe.
 					ogl2::Image& old_image = img_comp->ogl_get_image();
 					old_image = ogl2::image::clone_resized(old_image, arg.dimensions);

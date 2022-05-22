@@ -121,7 +121,7 @@ namespace tz::gl::vk2
 		/**
 		 * Record a copy from one @ref Buffer to an @ref Image.
 		 *
-		 * The first N bytes will be copied from the source buffer to the destination image.
+		 * The first N bytes will be copied from the source buffer to the destination image, there N == min(src->size(), dst->size()).
 		 */
 		struct BufferCopyImage
 		{
@@ -134,11 +134,18 @@ namespace tz::gl::vk2
 		};
 
 		/**
+		 * Copy data from one image to another.
 		 *
+		 * Note: If image sizes do not match, the minimums of their dimensions are represented as a subregion to copy over, starting at [0, 0] for each image.
 		 */
 		struct ImageCopyImage
 		{
-
+			/// Image to copy from
+			const Image* src;
+			/// Image to copy to
+			Image* dst;
+			/// Aspect of both images.
+			ImageAspectFlags image_aspects;
 		};
 
 		/**
@@ -181,7 +188,7 @@ namespace tz::gl::vk2
 		};
 
 		/// Variant type which has alternatives for every single possible recordable command type.
-		using Variant = std::variant<Dispatch, Draw, DrawIndexed, BindIndexBuffer, BindPipeline, BindDescriptorSets, BeginRenderPass, EndRenderPass, BufferCopyBuffer, BufferCopyImage, BindBuffer, TransitionImageLayout>;
+		using Variant = std::variant<Dispatch, Draw, DrawIndexed, BindIndexBuffer, BindPipeline, BindDescriptorSets, BeginRenderPass, EndRenderPass, BufferCopyBuffer, BufferCopyImage, ImageCopyImage, BindBuffer, TransitionImageLayout>;
 	};
 
 	enum class CommandPoolFlag
@@ -280,6 +287,11 @@ namespace tz::gl::vk2
 		 */
 		void buffer_copy_image(VulkanCommand::BufferCopyImage command);
 		/**
+		 * Copy data from one @ref Image to another.
+		 * See @ref VulkanCommand::ImageCopyImage for details.
+		 */
+		void image_copy_image(VulkanCommand::ImageCopyImage command);
+		/**
 		 * Bind a @ref Buffer.
 		 * See @ref VulkanCommand::BindBuffer for details.
 		 */
@@ -297,6 +309,7 @@ namespace tz::gl::vk2
 	private:
 		CommandBuffer& get_command_buffer();
 		void register_command(VulkanCommand::Variant command);
+		ImageLayout get_layout_so_far(const Image& image) const;
 
 		CommandBuffer* command_buffer;
 	};

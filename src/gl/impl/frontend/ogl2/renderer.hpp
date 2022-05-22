@@ -180,6 +180,7 @@ namespace tz::gl
 		 */
 		void edit(const RendererEditRequest& edit_request);
 	private:
+		void edit_internal(const RendererEditRequest& edit_request, bool permissive = false);
 		ogl2::VertexArray vao;
 		ResourceStorage resources;
 		ShaderManager shader;
