@@ -7,7 +7,7 @@ namespace tz
 	data(data),
 	dimensions(dimensions)
 	{
-		if(this->data.size_bytes() != (this->dimensions[0] * this->dimensions[1] * sizeof(T) * N))
+		if(this->data.size_bytes() < (this->dimensions[0] * this->dimensions[1] * sizeof(T) * N))
 		{
 			tz_warning_report("GridView passed a span of unexpected size. View is %ux%u where each element is %zu bytes, for a expected buffer size of %zu, but buffer provided has %zu bytes.", this->dimensions[0], this->dimensions[1], sizeof(T) * N, (this->dimensions[0] * this->dimensions[1] * sizeof(T) * N), this->data.size_bytes());
 		}

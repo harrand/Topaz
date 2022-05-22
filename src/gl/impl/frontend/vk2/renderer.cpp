@@ -1266,6 +1266,10 @@ namespace tz::gl
 				{
 					auto img_comp = static_cast<ImageComponentVulkan*>(this->get_component(arg.image_handle));
 					auto old_dims = img_comp->vk_get_image().get_dimensions();
+					if(old_dims == arg.dimensions)
+					{
+						return;
+					}
 					// Firstly, make a copy of the old image data.
 					std::vector<std::byte> old_data;
 					auto old_span = img_comp->get_resource()->data_as<std::byte>();
@@ -1278,9 +1282,11 @@ namespace tz::gl
 					auto new_image_data = new_image.map_as<std::byte>();
 					img_comp->get_resource()->set_mapped_data(new_image_data);
 					// Let's also copy over the new data.
-					std::printf("image resize (%ux%u -> %ux%u), (%zub -> %zub)\n", old_dims[0], old_dims[1], arg.dimensions[0], arg.dimensions[1], old_data.size(), new_image_data.size_bytes());
 					std::size_t copy_size = std::min(new_image_data.size_bytes(), old_data.size());
 					std::copy(old_span.begin(), old_span.begin() + copy_size, new_image_data.begin());
+					// However, now that the image has grown, the new elements are not at all guaranteed to be zero. Let's zero the new elems to make sure random colours aren't introduced.
+					std::size_t num_new_elems = std::max(new_image_data.size_bytes(), old_data.size()) - copy_size;
+					std::fill_n(new_image_data.begin() + copy_size, num_new_elems, std::byte{0});
 					// An imageview was looking at the old image, let's update that.
 					this->resources.notify_image_recreated(arg.image_handle);
 					// New image so descriptor array needs to be re-written to.

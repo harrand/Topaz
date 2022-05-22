@@ -26,7 +26,7 @@ TriangleVertexData get_random_triangle(std::default_random_engine& rand)
 	return
 	{
 		.position = {dist(rand), dist(rand), dist(rand)},
-		.texcoord = {dist(rand), dist(rand)}
+		.texcoord = {std::abs(dist(rand)), std::abs(dist(rand))}
 	};
 }
 
@@ -96,12 +96,31 @@ int main()
 			renderer.render(triangle_count);
 			// Every 10k frames, add a new triangle at a random position.
 			static int counter = 0;
+			static bool up = true;
 			if(counter++ > 500)
 			{
 				TZ_PROFZONE("Dynamic Updates", TZ_PROFCOL_GREEN);
 				// Add new triangle by resizing the triangle vertex storage buffer to a capacity large enough for an extra triangle. Then we randomise the new triangle data.
 				counter = 0;
 				triangle_count++;
+				auto img_comp = static_cast<tz::gl::ImageComponent*>(renderer.get_component(imgh));
+				if(img_comp->get_dimensions()[0] > 49)
+				{
+					up = false;
+				}
+				else if(img_comp->get_dimensions()[0] < 2)
+				{
+					up = true;
+				}
+				tz::Vec2ui new_dims = img_comp->get_dimensions();
+				if(up)
+				{
+					new_dims += {1u, 1u};
+				}
+				else
+				{
+					new_dims -= {1u, 1u};
+				}
 				tz::gl::RendererEditRequest renderer_edit
 				{
 					.component_edits =
@@ -119,7 +138,7 @@ int main()
 						tz::gl::RendererImageComponentEditRequest
 						{
 							.image_handle = imgh,
-							.dimensions = static_cast<tz::gl::ImageResource*>(renderer.get_resource(imgh))->get_dimensions() + tz::Vec2ui{1u, 1u}
+							.dimensions = new_dims
 						}
 					}
 				};
@@ -135,12 +154,12 @@ int main()
 				}
 
 				// While we're at it, randomise the second pixel of the image.
-				tz::Vec2ui img_dims = static_cast<tz::gl::ImageResource*>(renderer.get_resource(imgh))->get_dimensions();
+				tz::Vec2ui img_dims = img_comp->get_dimensions();
 				std::span<std::byte> img_data = renderer.get_resource(imgh)->data();
+				std::random_shuffle(img_data.begin(), img_data.end());
 				tz::GridView<std::byte, 4> img_view{img_data, img_dims};
-				std::span<std::byte> pixel_data = img_view(img_dims[0] / 2, img_dims[1] / 2);
-				std::random_shuffle(pixel_data.begin(), pixel_data.end());
-				std::printf("img dims = {%u, %u}\n", img_dims[0], img_dims[1]);
+				std::span<std::byte> pixel_data = img_view(0, 0);
+				std::fill(pixel_data.begin(), pixel_data.end(), std::byte{255});
 			}
 
 			TZ_FRAME_END;
