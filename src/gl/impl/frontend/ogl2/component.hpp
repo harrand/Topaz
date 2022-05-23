@@ -17,6 +17,7 @@ namespace tz::gl
 		virtual IResource* get_resource() final;
 		// Satisfy BufferComponentType
 		std::size_t size() const;
+		void resize(std::size_t sz);
 
 		ogl2::Buffer& ogl_get_buffer();
 		bool ogl_is_descriptor_stakeholder() const;

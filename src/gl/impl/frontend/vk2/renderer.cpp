@@ -1219,46 +1219,23 @@ namespace tz::gl
 		bool resized_static_resources = false;
 		for(const RendererComponentEditRequest& component_edit : edit_request.component_edits)
 		{
-			// If we resize an index buffer, the command buffer to draw will need to be re-recorded because that is explicitly bound.
 			std::visit(
 			[this, &work_commands_need_recording](auto&& arg)
 			{
 				using T = std::decay_t<decltype(arg)>;
 				if constexpr(std::is_same_v<T, RendererBufferComponentEditRequest>)
 				{
-					// We need to create a new buffer with the correct size, and swap it with the old one (which can now die because we're not rendering anymore).
-					// If it's a dynamic resource, we need to unmap the BufferResource from it though.
 					auto buf_comp = static_cast<BufferComponentVulkan*>(this->get_component(arg.buffer_handle));
-					tz_assert(buf_comp->get_resource()->get_access() == ResourceAccess::DynamicVariable, "Detected attempted resize of buffer resource (id %zu), but it ResourceAccess is not DynamicVariable. This means it is a fixed-size resource, so attempting to resize it is invalid.", static_cast<std::size_t>(static_cast<tz::HandleValue>(arg.buffer_handle)));
-					// Make new buffer.
-					vk2::Buffer& buf = buf_comp->vk_get_buffer();
-					vk2::Buffer resized_copy
-					{{
-						.device = &buf.get_device(),
-						.size_bytes = arg.size,
-						.usage = buf.get_usage(),
-						.residency = buf.get_residency()
-					}};
-					// Swap them. If we're dynamic, we move the data over now, otherwise we will sort that later when we setup static resources again.
-					if(buf_comp->get_resource()->get_access() == ResourceAccess::DynamicFixed || buf_comp->get_resource()->get_access() == ResourceAccess::DynamicVariable)
+					if(buf_comp->size() == arg.size)
 					{
-						if(buf_comp == this->resources.try_get_index_buffer())
-						{
-							// Index buffer has resized.
-							work_commands_need_recording = true;
-						}
-						// Unmap resource from previous buffer component, and instead map it to this one. But first we want to copy over the old data.
-						std::span<const std::byte> old_data = buf.map_as<const std::byte>();
-						std::span<std::byte> new_data = resized_copy.map_as<std::byte>();
-						std::size_t byte_copy_length = std::min(old_data.size_bytes(), new_data.size_bytes());
-						auto old_data_end = old_data.begin() + byte_copy_length;
-						// do the copy.
-						std::copy(old_data.begin(), old_data_end, new_data.begin());
-						// Now remap the resource to the new component. Then we can swap.
-						buf_comp->get_resource()->set_mapped_data(new_data);
+						return;
 					}
-					// Swap the buffers, old one can now die. Remember if we're static the data can't change, so the initial resource data is still correct so we don't have to do anything.
-					std::swap(buf, resized_copy);
+					buf_comp->resize(arg.size);
+					if(buf_comp == this->resources.try_get_index_buffer())
+					{
+						// Index buffer has resized, meaning there will be a new underlying buffer object. This means the rendering commands need to be recorded because the bind command for the index buffer now references the dead old buffer.
+						work_commands_need_recording = true;
+					}
 					// Now update all descriptors.
 					this->resources.sync_descriptors(false);
 				}

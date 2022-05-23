@@ -488,15 +488,11 @@ namespace tz::gl
 				if constexpr(std::is_same_v<T, RendererBufferComponentEditRequest>)
 				{
 					auto buf_comp = static_cast<BufferComponentOGL*>(this->get_component(arg.buffer_handle));
-					tz_assert(buf_comp->get_resource()->get_access() == ResourceAccess::DynamicVariable, "Detected attempted resize of buffer resource (id %zu), but it ResourceAccess is not DynamicVariable. This means it is a fixed-size resource, so attempting to resize it is invalid.", static_cast<std::size_t>(static_cast<tz::HandleValue>(arg.buffer_handle)));
-					// Make new buffer copy, and swap them with the component's held buffer. That is literally it I believe.
-					ogl2::Buffer& old_buffer = buf_comp->ogl_get_buffer();
-					old_buffer = ogl2::buffer::clone_resized(old_buffer, arg.size);
-					// If we were dynamic, the resource mapping needs to refer to the new buffer though.
-					if(buf_comp->get_resource()->get_access() == ResourceAccess::DynamicVariable)
+					if(buf_comp->size() == arg.size)
 					{
-						buf_comp->get_resource()->set_mapped_data(old_buffer.map_as<std::byte>());
+						return;
 					}
+					buf_comp->resize(arg.size);
 				}
 				else if constexpr(std::is_same_v<T, RendererImageComponentEditRequest>)
 				{

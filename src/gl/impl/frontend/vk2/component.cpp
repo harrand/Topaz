@@ -1,5 +1,5 @@
-#include "gl/impl/backend/vk2/image_format.hpp"
 #if TZ_VULKAN
+#include "gl/impl/backend/vk2/image_format.hpp"
 #include "gl/impl/frontend/vk2/component.hpp"
 #include "gl/impl/frontend/vk2/convert.hpp"
 #include "gl/resource.hpp"
@@ -27,6 +27,29 @@ namespace tz::gl
 	{
 		tz_assert(this->resource->data().size_bytes() == this->buffer.size(), "BufferComponent Size does not match its IResource data size. Please submit a bug report.");
 		return this->buffer.size();
+	}
+
+	void BufferComponentVulkan::resize(std::size_t sz)
+	{
+		tz_assert(this->resource->get_access() == ResourceAccess::DynamicVariable, "Attempted to resize BufferComponentVulkan, but it not ResourceAccess::DynamicVariable. Please submit a bug report.");
+		// Let's create a new buffer of the correct size.
+		vk2::Buffer& old_buf = this->vk_get_buffer();
+		vk2::Buffer new_buf
+		{{
+			.device = &old_buf.get_device(),
+			.size_bytes = sz,
+			.usage = old_buf.get_usage(),
+			.residency = old_buf.get_residency()
+		}};
+		// Copy the data over.
+		{
+			auto old_data = old_buf.map_as<const std::byte>();
+			auto new_data = new_buf.map_as<std::byte>();
+			std::size_t copy_length = std::min(old_data.size_bytes(), new_data.size_bytes());
+			std::copy(old_data.begin(), old_data.begin() + copy_length, new_data.begin());
+			this->resource->set_mapped_data(new_data);
+		}
+		std::swap(old_buf, new_buf);
 	}
 
 	const vk2::Buffer& BufferComponentVulkan::vk_get_buffer() const

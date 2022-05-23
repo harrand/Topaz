@@ -17,6 +17,8 @@ namespace tz::gl
 		virtual IResource* get_resource() final;
 		// Satisfy BufferComponentType
 		std::size_t size() const;
+		void resize(std::size_t sz);
+
 		const vk2::Buffer& vk_get_buffer() const;
 		vk2::Buffer& vk_get_buffer();
 		bool vk_is_descriptor_relevant() const;

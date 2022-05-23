@@ -15,10 +15,11 @@ namespace tz::gl
 	};
 
 	template<typename T>
-	concept BufferComponentType = requires(T t)
+	concept BufferComponentType = requires(T t, std::size_t sz)
 	{
 		requires std::derived_from<T, IComponent>;
 		{t.size()} -> std::convertible_to<std::size_t>;
+		{t.resize(sz)} -> std::same_as<void>;
 	};
 	
 	template<typename T>

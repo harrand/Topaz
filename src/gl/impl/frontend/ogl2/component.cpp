@@ -26,6 +26,16 @@ namespace tz::gl
 		return this->buffer.size();
 	}
 
+	void BufferComponentOGL::resize(std::size_t sz)
+	{
+		tz_assert(this->resource->get_access() == ResourceAccess::DynamicVariable, "Requested to resize a BufferComponentOGL, but the underlying resource was not ResourceAccess::DynamicVariable. Please submit a bug report.");
+		ogl2::Buffer& old_buffer = this->ogl_get_buffer();
+		ogl2::Buffer new_buffer = ogl2::buffer::clone_resized(old_buffer, sz);
+		// Just set the new buffer range, clone resized already sorts out the data for us.
+		this->resource->set_mapped_data(new_buffer.map_as<std::byte>());
+		std::swap(old_buffer, new_buffer);
+	}
+
 	ogl2::Buffer& BufferComponentOGL::ogl_get_buffer()
 	{
 		return this->buffer;
