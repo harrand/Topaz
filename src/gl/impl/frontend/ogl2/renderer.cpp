@@ -464,11 +464,6 @@ namespace tz::gl
 
 	void RendererOGL::edit(const RendererEditRequest& edit_request)
 	{
-		this->edit_internal(edit_request);
-	}
-
-	void RendererOGL::edit_internal(const RendererEditRequest& edit_request, bool permissive)
-	{
 		TZ_PROFZONE("OpenGL Backend - RendererOGL Edit", TZ_PROFCOL_RED);
 		if(edit_request.component_edits.empty())
 		{
@@ -482,7 +477,7 @@ namespace tz::gl
 		{
 
 			std::visit(
-			[this, permissive](auto&& arg)
+			[this](auto&& arg)
 			{
 				using T = std::decay_t<decltype(arg)>;
 				if constexpr(std::is_same_v<T, RendererBufferComponentEditRequest>)
