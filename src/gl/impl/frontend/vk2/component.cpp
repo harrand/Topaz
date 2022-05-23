@@ -131,6 +131,34 @@ namespace tz::gl
 		return from_vk2(this->image.get_format());
 	}
 
+	void ImageComponentVulkan::resize(tz::Vec2ui new_dimensions)
+	{
+		tz_assert(this->resource->get_access() == ResourceAccess::DynamicVariable, "Requested to resize an ImageComponentVulkan, but it does not have ResourceAccess::DynamicVariable. Please submit a bug report.");
+
+		// Firstly, make a copy of the old image data.
+		std::vector<std::byte> old_data;
+		{
+			auto old_span = this->resource->data_as<std::byte>();
+			old_data.resize(old_span.size_bytes());
+			std::copy(old_span.begin(), old_span.end(), old_data.begin());
+		}
+		// Secondly, let's tell the ImageResource the new dimensions. It's data will be invalidated as soon as we do this.
+		auto* ires = static_cast<ImageResource*>(this->resource);
+		ires->set_dimensions(new_dimensions);
+		// Then, recreate the image. The image will have the new dimensions but undefined data contents.
+		this->image = make_image(this->image.get_device());
+		// After that, let's re-validate the resource data span. It will still have undefined contents for now.
+		auto new_data = this->vk_get_image().map_as<std::byte>();
+		this->resource->set_mapped_data(new_data);
+		// Finally, copy over the old data.
+		std::size_t copy_size = std::min(new_data.size_bytes(), old_data.size());
+		std::copy(old_data.begin(), old_data.begin() + copy_size, new_data.begin());
+		// If the image has grown, then the new texels will still have undefined values because the copy didnt cover the entire contents.
+		// Let's zero it all.
+		std::size_t num_new_texels = std::max(new_data.size_bytes(), old_data.size()) - copy_size;
+		std::fill_n(new_data.begin() + copy_size, num_new_texels, std::byte{0});
+	}
+
 	const vk2::Image& ImageComponentVulkan::vk_get_image() const
 	{
 		return this->image;
@@ -139,14 +167,6 @@ namespace tz::gl
 	vk2::Image& ImageComponentVulkan::vk_get_image()
 	{
 		return this->image;
-	}
-
-	void ImageComponentVulkan::resize(tz::Vec2ui new_dimensions)
-	{
-		auto* ires = static_cast<ImageResource*>(this->resource);
-		ires->set_dimensions(new_dimensions);
-		this->image = make_image(this->image.get_device());
-		// Caller needs to set new image data if we're dynamic, old span is wrong size.
 	}
 
 	vk2::Image ImageComponentVulkan::make_image(const vk2::LogicalDevice& ldev) const

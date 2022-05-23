@@ -38,6 +38,8 @@ namespace tz::gl
 		// Satisfy ImageComponentType
 		tz::Vec2ui get_dimensions() const;
 		ImageFormat get_format() const;
+		void resize(tz::Vec2ui dims);
+
 		const ogl2::Image& ogl_get_image() const;
 		ogl2::Image& ogl_get_image();
 	private:

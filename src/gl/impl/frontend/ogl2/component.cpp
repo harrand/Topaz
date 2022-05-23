@@ -1,5 +1,5 @@
-#include "gl/impl/backend/ogl2/sampler.hpp"
 #if TZ_OGL
+#include "gl/impl/backend/ogl2/sampler.hpp"
 #include "gl/impl/frontend/ogl2/component.hpp"
 #include "gl/impl/frontend/ogl2/convert.hpp"
 #include "gl/resource.hpp"
@@ -103,6 +103,18 @@ namespace tz::gl
 	ImageFormat ImageComponentOGL::get_format() const
 	{
 		return from_ogl2(this->image.get_format());
+	}
+
+	void ImageComponentOGL::resize(tz::Vec2ui dims)
+	{
+		tz_assert(this->resource->get_access() == ResourceAccess::DynamicVariable, "Requested resize of ImageComponentOGL, but the underlying resource did not have ResourceAccess::DynamicVariable. Please submit a bug report.");
+		ogl2::Image& old_image = this->ogl_get_image();
+		ogl2::Image new_image = ogl2::image::clone_resized(old_image, dims);
+
+		auto* ires = static_cast<ImageResource*>(this->resource);
+		ires->set_dimensions(dims);
+		ires->resize_data(tz::gl::pixel_size_bytes(ires->get_format()) * dims[0] * dims[1]);
+		std::swap(old_image, new_image);
 	}
 
 	const ogl2::Image& ImageComponentOGL::ogl_get_image() const

@@ -39,10 +39,10 @@ namespace tz::gl
 		// Satisfy ImageComponentType
 		tz::Vec2ui get_dimensions() const;
 		ImageFormat get_format() const;
+		void resize(tz::Vec2ui new_dimensions);
+
 		const vk2::Image& vk_get_image() const;
 		vk2::Image& vk_get_image();
-
-		void resize(tz::Vec2ui new_dimensions);
 	private:
 		vk2::Image make_image(const vk2::LogicalDevice& ldev) const;
 

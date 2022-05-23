@@ -1,5 +1,6 @@
 #ifndef TOPAZ_GL2_API_COMPONENT_HPP
 #define TOPAZ_GL2_API_COMPONENT_HPP
+#include "core/vector.hpp"
 #include "gl/api/resource.hpp"
 #include "gl/declare/image_format.hpp"
 
@@ -23,12 +24,13 @@ namespace tz::gl
 	};
 	
 	template<typename T>
-	concept ImageComponentType = requires(T t)
+	concept ImageComponentType = requires(T t, tz::Vec2ui dims)
 	{
 		requires std::derived_from<T, IComponent>;
 		{t.get_dimensions()[0]} -> std::convertible_to<unsigned int>;
 		{t.get_dimensions()[1]} -> std::convertible_to<unsigned int>;
 		{t.get_format()} -> std::convertible_to<ImageFormat>;
+		{t.resize(dims)} -> std::same_as<void>;
 	};
 }
 
