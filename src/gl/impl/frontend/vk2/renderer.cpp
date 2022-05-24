@@ -1181,8 +1181,7 @@ namespace tz::gl
 
 				break;
 				default:
-					// TODO: this->handle_resize();
-					tz_error("Presentation Failed. You probably tried to resize/minimise the window, but support for this on Vulkan is not yet implemented.");
+					tz_error("Presentation failed, but for unknown reason. Please submit a bug report.");
 				break;
 			}
 		}
@@ -1453,8 +1452,6 @@ namespace tz::gl
 	{
 		TZ_PROFZONE("Vulkan Frontend - RendererVulkan Setup Compute Commands", TZ_PROFCOL_YELLOW);
 		tz_assert(this->pipeline.is_compute(), "Running compute command recording path, but pipeline is a graphics pipeline. Logic error, please submit a bug report.");
-
-		//tz_error("Sorry. Compute not yet implemented.");
 
 		this->command.set_rendering_commands([this](vk2::CommandBufferRecording& recording, std::size_t framebuffer_id)
 		{
