@@ -378,7 +378,7 @@ namespace tz::gl
 		for(auto& component_ptr : this->components)
 		{
 			IResource* res = component_ptr->get_resource();
-			if(res->get_type() == ResourceType::Image && res->get_access() != ResourceAccess::StaticFixed)
+			if(res->get_type() == ResourceType::Image && res->get_access() != ResourceAccess::StaticFixed && res->get_access() != ResourceAccess::StaticVariable)
 			{
 				const vk2::Image& img = component_ptr.as<const ImageComponentVulkan>()->vk_get_image();
 				// If it's dynamic in any way, the user might have written changes.
@@ -544,7 +544,6 @@ namespace tz::gl
 		this->window_buffer_depth_images.clear();
 		this->output_imageviews.clear();
 		this->output_depth_imageviews.clear();
-		this->output_framebuffers.clear();
 
 		//tz_assert(!this->get_output_images().empty(), "RendererVulkan OutputManager was not given any output images. Please submit a bug report.");
 		this->window_buffer_depth_images.reserve(this->window_buffer_images.size());
@@ -676,7 +675,12 @@ namespace tz::gl
 		}
 
 		this->render_pass = rbuilder.with_subpass(sbuilder.build()).build();
+		this->create_framebuffers();
+	}
 
+	void OutputManager::create_framebuffers()
+	{
+		this->output_framebuffers.clear();
 		for(std::size_t i = 0; i < this->output_imageviews.size(); i++)
 		{
 			tz::Vec2ui dims = this->output_imageviews[i].colour_views.front().get_image().get_dimensions();
@@ -687,7 +691,7 @@ namespace tz::gl
 			{
 				return &colour_view;
 			});
-			if(create_depth_images)
+			if(this->output_depth_imageviews.size() > i && !this->output_depth_imageviews[i].is_null())
 			{
 				attachments.add(&this->output_depth_imageviews[i]);
 			}
@@ -1207,9 +1211,19 @@ namespace tz::gl
 			this->compute_kernel = edit_request.compute_edit.value().kernel;
 			work_commands_need_recording = true;
 		}
-		else if(edit_request.component_edits.empty())
+
+		if(edit_request.output_edit.has_value())
 		{
-			return;
+			std::visit([this](auto&& arg)
+			{
+				using T = std::decay_t<decltype(arg)>;
+				if constexpr(std::is_same_v<T, RendererOutputNotifyRequest>)
+				{
+					// We've been told that we should recreate the output resource.
+					tz_error("Sorry, RendererOutputNotify is not yet implemented.");
+					//this->output.create_framebuffers();
+				}
+			}, edit_request.output_edit.value());
 		}
 		// We have buffer/image components we need to edit.
 		// Firstly make sure all render work is done, then we need to update the resource storage and then write new descriptors for resized resources.
@@ -1219,7 +1233,7 @@ namespace tz::gl
 		for(const RendererComponentEditRequest& component_edit : edit_request.component_edits)
 		{
 			std::visit(
-			[this, &work_commands_need_recording](auto&& arg)
+			[this, &work_commands_need_recording, &resized_static_resources](auto&& arg)
 			{
 				using T = std::decay_t<decltype(arg)>;
 				if constexpr(std::is_same_v<T, RendererBufferComponentEditRequest>)
@@ -1230,6 +1244,10 @@ namespace tz::gl
 						return;
 					}
 					buf_comp->resize(arg.size);
+					if(buf_comp->get_resource()->get_access() == ResourceAccess::StaticVariable)
+					{
+						resized_static_resources = true;
+					}
 					if(buf_comp == this->resources.try_get_index_buffer())
 					{
 						// Index buffer has resized, meaning there will be a new underlying buffer object. This means the rendering commands need to be recorded because the bind command for the index buffer now references the dead old buffer.
@@ -1246,6 +1264,11 @@ namespace tz::gl
 						return;
 					}
 					img_comp->resize(arg.dimensions);
+					if(img_comp->get_resource()->get_access() == ResourceAccess::StaticVariable)
+					{
+						// A static resource has been resized!
+						resized_static_resources = true;
+					}
 					// An imageview was looking at the old image, let's update that.
 					this->resources.notify_image_recreated(arg.image_handle);
 					// New image so descriptor array needs to be re-written to.
@@ -1326,7 +1349,7 @@ namespace tz::gl
 			{
 				IResource* res = buffer_components[i]->get_resource();
 				tz_assert(res->get_type() == ResourceType::Buffer, "Expected ResourceType of buffer, but is not a buffer. Please submit a bug report.");
-				if(res->get_access() != ResourceAccess::StaticFixed)
+				if(res->get_access() != ResourceAccess::StaticFixed && res->get_access() != ResourceAccess::StaticVariable)
 				{
 					continue;
 				}
@@ -1349,7 +1372,7 @@ namespace tz::gl
 			{
 				IResource* res = image_components[i]->get_resource();
 				tz_assert(res->get_type() == ResourceType::Image, "Expected ResourceType of Texture, but is not a texture. Please submit a bug report.");
-				if(res->get_access() != ResourceAccess::StaticFixed)
+				if(res->get_access() != ResourceAccess::StaticFixed && res->get_access() != ResourceAccess::StaticVariable)
 				{
 					continue;
 				}

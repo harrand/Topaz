@@ -89,10 +89,16 @@ namespace tz::gl
 		tz::Vec3ui kernel;
 	};
 
+	struct RendererOutputNotifyRequest
+	{
+	};
+
 	/**
 	 * Type-safe union of @ref RendererBufferComponentEditRequest and @ref RendererImageComponentEditRequest
 	 */
 	using RendererComponentEditRequest = std::variant<RendererBufferComponentEditRequest, RendererImageComponentEditRequest>;
+
+	using RendererOutputEditRequest = std::variant<RendererOutputNotifyRequest>;
 
 	/**
 	 * @ingroup tz_gl2_renderer
@@ -105,6 +111,7 @@ namespace tz::gl
 		 */
 		std::vector<RendererComponentEditRequest> component_edits;
 		std::optional<RendererComputeEditRequest> compute_edit = std::nullopt;
+		std::optional<RendererOutputEditRequest> output_edit = std::nullopt;
 	};
 
 	/**

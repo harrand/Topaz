@@ -133,7 +133,7 @@ namespace tz::gl
 
 	void ImageComponentVulkan::resize(tz::Vec2ui new_dimensions)
 	{
-		tz_assert(this->resource->get_access() == ResourceAccess::DynamicVariable, "Requested to resize an ImageComponentVulkan, but it does not have ResourceAccess::DynamicVariable. Please submit a bug report.");
+		tz_assert(this->resource->get_access() == ResourceAccess::DynamicVariable || this->resource->get_access() == ResourceAccess::StaticVariable, "Requested to resize an ImageComponentVulkan, but it does not have ResourceAccess::DynamicVariable. Please submit a bug report.");
 
 		// Firstly, make a copy of the old image data.
 		std::vector<std::byte> old_data;
@@ -147,16 +147,19 @@ namespace tz::gl
 		ires->set_dimensions(new_dimensions);
 		// Then, recreate the image. The image will have the new dimensions but undefined data contents.
 		this->image = make_image(this->image.get_device());
-		// After that, let's re-validate the resource data span. It will still have undefined contents for now.
-		auto new_data = this->vk_get_image().map_as<std::byte>();
-		this->resource->set_mapped_data(new_data);
-		// Finally, copy over the old data.
-		std::size_t copy_size = std::min(new_data.size_bytes(), old_data.size());
-		std::copy(old_data.begin(), old_data.begin() + copy_size, new_data.begin());
-		// If the image has grown, then the new texels will still have undefined values because the copy didnt cover the entire contents.
-		// Let's zero it all.
-		std::size_t num_new_texels = std::max(new_data.size_bytes(), old_data.size()) - copy_size;
-		std::fill_n(new_data.begin() + copy_size, num_new_texels, std::byte{0});
+		if(this->resource->get_access() == ResourceAccess::DynamicVariable)
+		{
+			// After that, let's re-validate the resource data span. It will still have undefined contents for now.
+			auto new_data = this->vk_get_image().map_as<std::byte>();
+			this->resource->set_mapped_data(new_data);
+			// Finally, copy over the old data.
+			std::size_t copy_size = std::min(new_data.size_bytes(), old_data.size());
+			std::copy(old_data.begin(), old_data.begin() + copy_size, new_data.begin());
+			// If the image has grown, then the new texels will still have undefined values because the copy didnt cover the entire contents.
+			// Let's zero it all.
+			std::size_t num_new_texels = std::max(new_data.size_bytes(), old_data.size()) - copy_size;
+			std::fill_n(new_data.begin() + copy_size, num_new_texels, std::byte{0});
+		}
 	}
 
 	const vk2::Image& ImageComponentVulkan::vk_get_image() const
@@ -192,6 +195,8 @@ namespace tz::gl
 				tz_error("Unknown ResourceAccess. Please submit a bug report.");
 			[[fallthrough]];
 			case ResourceAccess::StaticFixed:
+			[[fallthrough]];
+			case ResourceAccess::StaticVariable:
 				residency = vk2::MemoryResidency::GPU;
 			break;
 			case ResourceAccess::DynamicFixed:

@@ -44,6 +44,8 @@ namespace tz::gl
 		StaticFixed,
 		/// - Resource data is always writable, but cannot be resized.
 		DynamicFixed,
+		/// - Resource data is written once initially, but resizeable.
+		StaticVariable,
 		/// - Resource data is always writeable and resizeable.
 		DynamicVariable
 	};

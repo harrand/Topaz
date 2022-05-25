@@ -163,8 +163,11 @@ namespace tz::gl
 		 */
 		tz::Vec2ui get_output_dimensions() const;
 		bool has_depth_images() const;
+		void update_output_resources();
 		void create_output_resources(std::span<vk2::Image> window_buffer_images, bool create_depth_images);
+		void create_framebuffers();
 	private:
+		void create_render_pass();
 		/// Output provided by the RendererVulkan.
 		std::unique_ptr<IOutput> output;
 		/// Logical device used to create depth images, render passes and framebuffers.

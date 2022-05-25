@@ -17,10 +17,6 @@ int main()
 	tz::initialise
 	({
 		.name = "tz_blur_triangle_demo",
-		.window =
-		{
-			.flags = {.resizeable = false}
-		}
 	});
 	{
 		tz::gl::Device dev;
@@ -33,7 +29,7 @@ int main()
 		};
 
 		tz::gl::BufferResource blur_data = tz::gl::BufferResource::from_one(BlurData{}, tz::gl::ResourceAccess::DynamicFixed);
-		tz::gl::ImageResource blur_image = tz::gl::ImageResource::from_uninitialised(tz::gl::ImageFormat::BGRA32, tz::Vec2{tz::window().get_width(), tz::window().get_height()}, tz::gl::ResourceAccess::StaticFixed, {tz::gl::ResourceFlag::RendererOutput});
+		tz::gl::ImageResource blur_image = tz::gl::ImageResource::from_uninitialised(tz::gl::ImageFormat::BGRA32, tz::Vec2{tz::window().get_width(), tz::window().get_height()}, tz::gl::ResourceAccess::StaticVariable, {tz::gl::ResourceFlag::RendererOutput});
 
 		tz::gl::RendererInfo postprocess_info;
 		postprocess_info.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(blur, vertex));
@@ -53,6 +49,25 @@ int main()
 		}});
 
 		tz::gl::Renderer renderer = dev.create_renderer(rinfo);
+
+		tz::window().on_resize().add_callback([&blur_renderer, &renderer, colour_target_handle](tz::Vec2ui dims)
+		{
+			blur_renderer.edit
+			({
+				.component_edits =
+				{
+					tz::gl::RendererImageComponentEditRequest
+					{
+						.image_handle = colour_target_handle,
+						.dimensions = dims
+					}
+				}
+			});
+			renderer.edit
+			({
+				.output_edit = tz::gl::RendererOutputNotifyRequest{}
+			});
+		});
 
 		while(!tz::window().is_close_requested())
 		{
