@@ -1,6 +1,7 @@
 #include "core/assert.hpp"
 #include "core/types.hpp"
 #include <filesystem>
+#include <cstring>
 #include <cerrno>
 #include <fstream>
 #include <string>

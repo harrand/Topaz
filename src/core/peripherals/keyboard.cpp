@@ -1,5 +1,6 @@
 #include "core/peripherals/keyboard.hpp"
 #include "core/assert.hpp"
+#include <algorithm>
 
 namespace tz
 {
