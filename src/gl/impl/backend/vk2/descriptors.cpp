@@ -612,7 +612,7 @@ namespace tz::gl::vk2
 		for(std::size_t i = 0; i < writes.length(); i++)
 		{
 			const DescriptorSet::Write& write = writes[i];
-			bool is_buffer;
+			bool is_buffer = false;
 			for(const DescriptorSet::Write::WriteInfo& write_info : write.write_infos)
 			{
 				std::visit([&](auto&& arg)

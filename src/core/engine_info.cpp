@@ -13,6 +13,10 @@ namespace tz
 			case RenderAPI::Vulkan:
 				render_api = "Vulkan";
 			break;
+			default:
+				tz_error("Unrecognised graphics API. A serious error has occurred. Please submit a bug report");
+				render_api = "Unknown";
+			break;
 		}
 		const char* build_config;
 		switch(this->build)
@@ -25,6 +29,10 @@ namespace tz
 			break;
 			case BuildConfig::Release:
 				build_config = "Release";
+			break;
+			default:
+				tz_error("Unrecognised build config. A serious error has occurred. Please submit a bug report");
+				build_config = "Unknown";
 			break;
 		}
 		std::string result = "Topaz v";
