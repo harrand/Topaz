@@ -55,6 +55,11 @@ namespace tz
 		this->set_size(this->get_width(), height);
 	}
 
+	bool WindowFunctionality::is_minimised() const
+	{
+		return glfwGetWindowAttrib(this->wnd, GLFW_ICONIFIED);
+	}
+
 	WindowFunctionality::ResizeCallbackType& WindowFunctionality::on_resize()
 	{
 		return this->window_resize_callbacks;

@@ -39,6 +39,8 @@ namespace tz
 		float get_height() const;
 		void set_width(float width);
 		void set_height(float height);
+		
+		bool is_minimised() const;
 		/**
 		 * Retrieve the callback object for when the window is resized.
 		 */
