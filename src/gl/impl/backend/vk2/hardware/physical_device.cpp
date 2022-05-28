@@ -48,7 +48,8 @@ namespace tz::gl::vk2
 			&& features.descriptor_indexing_features.descriptorBindingSampledImageUpdateAfterBind
 			&& features.descriptor_indexing_features.descriptorBindingUpdateUnusedWhilePending
 			&& features.descriptor_indexing_features.descriptorBindingPartiallyBound
-			&& features.descriptor_indexing_features.descriptorBindingVariableDescriptorCount)
+			&& features.descriptor_indexing_features.descriptorBindingVariableDescriptorCount
+			&& features.descriptor_indexing_features.runtimeDescriptorArray)
 			{
 				ret |= DeviceFeature::BindlessDescriptors;
 			}
@@ -79,6 +80,7 @@ namespace tz::gl::vk2
 				info.descriptor_indexing_features.descriptorBindingUpdateUnusedWhilePending = VK_TRUE;
 				info.descriptor_indexing_features.descriptorBindingPartiallyBound = VK_TRUE;
 				info.descriptor_indexing_features.descriptorBindingVariableDescriptorCount = VK_TRUE;
+				info.descriptor_indexing_features.runtimeDescriptorArray = VK_TRUE;
 			}
 			return info;
 		}

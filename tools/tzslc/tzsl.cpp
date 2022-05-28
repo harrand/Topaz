@@ -56,7 +56,7 @@ namespace tzslc
 		 */
 		std::string ret = "/*tzslc header info*/\n#version 450 core\n";
 		#if TZ_VULKAN
-			ret += "#define TZ_OGL 0\n#define TZ_VULKAN 1\n#extension GL_EXT_debug_printf : enable\n";
+			ret += "#define TZ_OGL 0\n#define TZ_VULKAN 1\n#extension GL_EXT_debug_printf : enable\n#extension GL_EXT_nonuniform_qualifier : enable\n";
 		#elif TZ_OGL
 			ret += "#define TZ_OGL 1\n#define TZ_VULKAN 0\n#extension GL_ARB_bindless_texture : enable\n";
 		#endif
