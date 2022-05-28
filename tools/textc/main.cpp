@@ -80,7 +80,7 @@ void headerify(std::string_view filename, std::string& text)
 	std::string filename_cpy{filename};
 	// filename is a full path e.g "root/path_parent/filename.txt"
 	// we want to get filename_txt.
-	const char* regex_str =  ".*[\\/\\\\]([a-zA-Z_]+)\\.([a-zA-Z]+)";
+	const char* regex_str =  ".*[\\/\\\\]([a-zA-Z_0-9]+)\\.([a-zA-Z]+)";
 	textc::transform(filename_cpy, std::regex{regex_str}, [&](auto beg, auto end)->std::string
 	{
 		std::string part_we_want = *beg;
