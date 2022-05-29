@@ -45,7 +45,7 @@ function(configure_debug target)
 	if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
 		target_compile_options(${target} PUBLIC /Zi)
 	else()
-		target_compile_options(${target} PUBLIC -g)
+		target_compile_options(${target} PUBLIC -g -Og)
 	endif()
 endfunction()
 

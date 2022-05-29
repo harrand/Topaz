@@ -14,7 +14,7 @@ namespace tz
 		std::string_view version_sv = version_string;
 		Version ver;
 		using spos = std::string_view::size_type;
-		spos max, min, patch;
+		spos max = {}, min = {}, patch = {};
 		unsigned int dot_counter = 0, counter = 0;
 		for(char c : version_sv)
 		{

@@ -146,9 +146,9 @@ namespace tz
 				T res_ele = T();
 				for(std::size_t k = 0; k < C; k++)
 				{
-					res_ele += (m(i, k) * matrix(k, j));
+					res_ele += (m.internal_get(i, k) * matrix.internal_get(k, j));
 				}
-				(*this)(i, j) = res_ele;
+				this->internal_get(i, j) = res_ele;
 			}
 		}
 		return *this;
@@ -188,7 +188,7 @@ namespace tz
 		{
 			for(std::size_t j = 0; j < C; j++)
 			{
-				if((*this)(i, j) != scalar)
+				if(this->internal_get(i, j) != scalar)
 					return false;
 			}
 		}
@@ -202,7 +202,7 @@ namespace tz
 		{
 			for(std::size_t j = 0; j < C; j++)
 			{
-				if((*this)(i, j) != matrix(i, j))
+				if(this->internal_get(i, j) != matrix.internal_get(i, j))
 					return false;
 			}
 		}
@@ -224,7 +224,7 @@ namespace tz
 			// column_id = (1*4)
 			std::size_t row_id = idx / C;
 			std::size_t column_id = idx - (row_id*C);
-			return m(row_id, column_id);
+			return m.internal_get(row_id, column_id);
 		};
 
 		auto cat = [](const Matrix<T, R, C>& m, std::size_t idx)->const T&
@@ -234,7 +234,7 @@ namespace tz
 			// column_id = (1*4)
 			std::size_t row_id = idx / C;
 			std::size_t column_id = idx - (row_id*C);
-			return m(row_id, column_id);
+			return m.internal_get(row_id, column_id);
 		};
 
 		at(mat, 0) = cat(*this, 5) * cat(*this, 10) * cat(*this, 15) -
@@ -368,7 +368,7 @@ namespace tz
 			{
 				if(i != j)
 				{
-					std::swap(m(i, j), m(j, i));
+					std::swap(m.internal_get(i, j), m.internal_get(j, i));
 				}
 			}
 		}
@@ -396,4 +396,16 @@ namespace tz
 		std::printf("\n");
 	}
 	#endif
+
+	template<tz::Number T, std::size_t R, std::size_t C>
+	const T& Matrix<T, R, C>::internal_get(std::size_t row, std::size_t column) const
+	{
+		return this->mat[column][row];
+	}
+
+	template<tz::Number T, std::size_t R, std::size_t C>
+	T& Matrix<T, R, C>::internal_get(std::size_t row, std::size_t column)
+	{
+		return this->mat[column][row];
+	}
 }
