@@ -2,6 +2,7 @@
 #include "core/window.hpp"
 #include "core/profiling/zone.hpp"
 #include "core/containers/grid_view.hpp"
+#include "core/time.hpp"
 #include "gl/device.hpp"
 #include "gl/renderer.hpp"
 #include "gl/resource.hpp"
@@ -88,20 +89,19 @@ int main()
 
 		tz::gl::Renderer renderer = dev.create_renderer(rinfo);
 		std::default_random_engine rand;
+		tz::Delay fixed_update{50_ms};
 
 		while(!tz::window().is_close_requested())
 		{
 			TZ_FRAME_BEGIN;
 			tz::window().update();
 			renderer.render(triangle_count);
-			// Every 10k frames, add a new triangle at a random position.
-			static int counter = 0;
 			static bool up = true;
-			if(counter++ > 500)
+			if(fixed_update.done())
 			{
 				TZ_PROFZONE("Dynamic Updates", TZ_PROFCOL_GREEN);
 				// Add new triangle by resizing the triangle vertex storage buffer to a capacity large enough for an extra triangle. Then we randomise the new triangle data.
-				counter = 0;
+				fixed_update.reset();
 				triangle_count++;
 				auto img_comp = static_cast<tz::gl::ImageComponent*>(renderer.get_component(imgh));
 				if(img_comp->get_dimensions()[0] > 49)
