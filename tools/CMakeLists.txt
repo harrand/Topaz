@@ -32,5 +32,4 @@ function(add_tool)
 	)
 endfunction()
 
-add_subdirectory(textc)
 add_subdirectory(tzslc)
