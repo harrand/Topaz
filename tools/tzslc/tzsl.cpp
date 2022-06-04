@@ -1,20 +1,26 @@
 #include "tzsl.hpp"
-#include "core/assert.hpp"
 #include "source_transform.hpp"
-#include "gl/api/shader.hpp"
 #include <fstream>
 
 #include "stdlib.hpp"
 
 namespace tzslc
 {
-	std::string default_defines();
-	tz::gl::ShaderStage try_get_stage(const std::string&);
+	enum class ShaderStage
+	{
+		Compute,
+		Vertex,
+		Fragment,
+		Count
+	};
+
+	std::string default_defines(GLSLDialect dialect);
+	ShaderStage try_get_stage(const std::string&);
 	void evaluate_imports(std::string&);
 	void evaluate_user_imports(std::string&, std::filesystem::path);
-	void evaluate_keywords(std::string&, tz::gl::ShaderStage);
-	void evaluate_inout_blocks(std::string&, tz::gl::ShaderStage);
-	void evaluate_language_level_functions(std::string&);
+	void evaluate_keywords(std::string&, ShaderStage, GLSLDialect);
+	void evaluate_inout_blocks(std::string&, ShaderStage, GLSLDialect);
+	void evaluate_language_level_functions(std::string&, GLSLDialect);
 	void collapse_namespaces(std::string&);
 
 	void rename_user_main(std::string& shader_source);
@@ -22,19 +28,19 @@ namespace tzslc
 
 //--------------------------------------------------------------------------------------------------
 
-	void compile_to_glsl(std::string& shader_source, std::filesystem::path shader_filename)
+	void compile_to_glsl(std::string& shader_source, std::filesystem::path shader_filename, GLSLDialect dialect)
 	{
-		shader_source = default_defines() + shader_source;
+		shader_source = default_defines(dialect) + shader_source;
 		evaluate_imports(shader_source);
 		evaluate_user_imports(shader_source, shader_filename);
-		tz::gl::ShaderStage stage = try_get_stage(shader_source);
-		tz_assert(stage != tz::gl::ShaderStage::Count, "Detected invalid shader stage. Internal tzslc error. Please submit a bug report.");
-		evaluate_keywords(shader_source, stage);
-		evaluate_inout_blocks(shader_source, stage);
-		evaluate_language_level_functions(shader_source);
+		ShaderStage stage = try_get_stage(shader_source);
+		tzslc_assert(stage != ShaderStage::Count, "Detected invalid shader stage. Internal tzslc error. Please submit a bug report.");
+		evaluate_keywords(shader_source, stage, dialect);
+		evaluate_inout_blocks(shader_source, stage, dialect);
+		evaluate_language_level_functions(shader_source, dialect);
 		collapse_namespaces(shader_source);
 
-		if(stage == tz::gl::ShaderStage::Vertex)
+		if(stage == ShaderStage::Vertex)
 		{
 			rename_user_main(shader_source);
 			add_main_definition(shader_source);
@@ -43,7 +49,7 @@ namespace tzslc
 
 //--------------------------------------------------------------------------------------------------
 
-	std::string default_defines()
+	std::string default_defines(GLSLDialect dialect)
 	{
 		/*
 		 * tzslc header info
@@ -55,17 +61,18 @@ namespace tzslc
 		 * 5 lines total
 		 */
 		std::string ret = "/*tzslc header info*/\n#version 450 core\n";
-		#if TZ_VULKAN
+		if(dialect == GLSLDialect::Vulkan)
+		{
 			ret += "#define TZ_OGL 0\n#define TZ_VULKAN 1\n#extension GL_EXT_debug_printf : enable\n#extension GL_EXT_nonuniform_qualifier : enable\n";
-		#elif TZ_OGL
+		}
+		else if(dialect == GLSLDialect::OpenGL)
+		{
 			ret += "#define TZ_OGL 1\n#define TZ_VULKAN 0\n#extension GL_ARB_bindless_texture : enable\n";
-		#endif
-
-		#if TZ_DEBUG
-			ret += "#define TZ_DEBUG 1;\n";
-		#else
-			ret += "#define TZ_DEBUG 0;\n";
-		#endif
+		}
+		else
+		{
+			tzslc_error("ICE: Unrecognised GLSLDialect.");
+		}
 		return ret;
 	}
 
@@ -95,7 +102,7 @@ namespace tzslc
 			{
 				return std::string(stdlib_matrix);
 			}
-			tz_error("Unknown stdlib import <%s>.", m.c_str());
+			tzslc_error("Unknown stdlib import <%s>.", m.c_str());
 			return std::string{""};
 		});
 	}
@@ -112,9 +119,9 @@ namespace tzslc
 		{
 			const std::string& filename = *beg;
 			std::filesystem::path full_path = shader_filename.parent_path() / (filename + ".tzsl");
-			tz_assert(std::filesystem::exists(full_path), "import \"%s\" - Cannot find %s.tzsl.\nInclude Directory: %s", filename.c_str(), filename.c_str(), shader_filename.parent_path().string().c_str());
+			tzslc_assert(std::filesystem::exists(full_path), "import \"%s\" - Cannot find %s.tzsl.\nInclude Directory: %s", filename.c_str(), filename.c_str(), shader_filename.parent_path().string().c_str());
 			std::ifstream import_file{full_path.c_str(), std::ios::ate | std::ios::binary};
-			tz_assert(import_file.is_open(), "import \"%s\" - Shader file located no filesystem, but could not read for some reason. Read access denied?", filename.c_str());
+			tzslc_assert(import_file.is_open(), "import \"%s\" - Shader file located no filesystem, but could not read for some reason. Read access denied?", filename.c_str());
 			std::string buffer;
 			
 			buffer.resize(static_cast<std::size_t>(import_file.tellg()));
@@ -131,35 +138,35 @@ namespace tzslc
 
 //--------------------------------------------------------------------------------------------------
 
-	tz::gl::ShaderStage try_get_stage(const std::string& src)
+	ShaderStage try_get_stage(const std::string& src)
 	{
 		std::smatch match;
 		bool found_specifier = std::regex_search(src, match, std::regex{"shader\\(type ?= ?([a-zA-Z]+)\\) ?;"});
-		tz_assert(found_specifier, "Could not find shader stage specifier. TZSL source requires:\n`shader(type = ?)`\n where `?` is one of `vertex`, `fragment`, or `compute`");
-		tz_assert(match.size() == 2, "Detected multiple shader stage specifiers. Exactly one shader stage specifier should exist in a compiled TZSL shader.");
+		tzslc_assert(found_specifier, "Could not find shader stage specifier. TZSL source requires:\n`shader(type = ?)`\n where `?` is one of `vertex`, `fragment`, or `compute`");
+		tzslc_assert(match.size() == 2, "Detected multiple shader stage specifiers. Exactly one shader stage specifier should exist in a compiled TZSL shader.");
 		const std::string& specifier = match[1];
 		if(specifier == "vertex")
 		{
-			return tz::gl::ShaderStage::Vertex;
+			return ShaderStage::Vertex;
 		}
 		else if(specifier == "fragment")
 		{
-			return tz::gl::ShaderStage::Fragment;
+			return ShaderStage::Fragment;
 		}
 		else if(specifier == "compute")
 		{
-			return tz::gl::ShaderStage::Compute;
+			return ShaderStage::Compute;
 		}
 		else
 		{
-			tz_error("Unrecognised shader stage name `%s`. Expected either `vertex`, `fragment`, or `compute`", specifier.c_str());
-			return tz::gl::ShaderStage::Count;
+			tzslc_error("Unrecognised shader stage name `%s`. Expected either `vertex`, `fragment`, or `compute`", specifier.c_str());
+			return ShaderStage::Count;
 		}
 	}
 
 //--------------------------------------------------------------------------------------------------
 
-	void evaluate_keywords(std::string& shader_source, tz::gl::ShaderStage stage)
+	void evaluate_keywords(std::string& shader_source, ShaderStage stage, GLSLDialect dialect)
 	{
 		// Firstly, we'll evaluate stage specifiers.
 		constexpr char shader_specifier_regex[] = "shader\\(type ?= ?([a-zA-Z]+)\\) ?;";
@@ -172,7 +179,7 @@ namespace tzslc
 			return "#pragma shader_stage(" + *beg + ")";
 		});
 
-		tz_assert(stage_specifier_count == 1, "Unexpected number of shader stage specifiers. Expected 1, got %zu", stage_specifier_count);
+		tzslc_assert(stage_specifier_count == 1, "Unexpected number of shader stage specifiers. Expected 1, got %zu", stage_specifier_count);
 
 		// Secondly, kernel specifiers for compute shaders.
 		constexpr char kernel_regex[] = "kernel\\(([0-9]+), ?([0-9]+), ?([0-9]+)\\) ?;";
@@ -182,11 +189,11 @@ namespace tzslc
 		[stage, &kernel_specified](auto beg, auto end)->std::string
 		{
 			kernel_specified = true;
-			tz_assert(stage == tz::gl::ShaderStage::Compute, "Detected `kernel` specifier, but shader is not a compute shader. Kernel specifiers are only valid within compute shaders.");
+			tzslc_assert(stage == ShaderStage::Compute, "Detected `kernel` specifier, but shader is not a compute shader. Kernel specifiers are only valid within compute shaders.");
 			return "layout(local_size_x = " + *(beg) + ", local_size_y = " + *(beg + 1) + ", local_size_z = " + *(beg + 2) + ") in;";
 		});
 
-		tz_assert(kernel_specified == (stage == tz::gl::ShaderStage::Compute), "Missing `kernel` specifier for compute shader. A compute shader must specify a kernel exactly once.");
+		tzslc_assert(kernel_specified == (stage == ShaderStage::Compute), "Missing `kernel` specifier for compute shader. A compute shader must specify a kernel exactly once.");
 
 		// Thirdly, inputs.
 		constexpr char input_regex[] = "input\\(id ?= ?([0-9]+)\\) (.*)";
@@ -202,7 +209,7 @@ namespace tzslc
 		[](auto beg, auto end)
 		{
 			const std::string& extra_specifier = *(beg + 1);
-			tz_assert(extra_specifier == "flat", "`input(id = x, flag)`: Unrecognised flag \"%s\". Must be `flat`.", extra_specifier.c_str());
+			tzslc_assert(extra_specifier == "flat", "`input(id = x, flag)`: Unrecognised flag \"%s\". Must be `flat`.", extra_specifier.c_str());
 			return "layout(location = " + *(beg) + ") " + extra_specifier + " in " + *(beg + 2);
 		});
 
@@ -222,7 +229,7 @@ namespace tzslc
 		[](auto beg, auto end)
 		{
 			std::string flag = *(beg + 1);
-			tz_assert(flag.empty() || (flag == "const"), "Detected unrecognised token `%s` in buffer resource specifier. Replace with nothing, or `const`.", flag.c_str());
+			tzslc_assert(flag.empty() || (flag == "const"), "Detected unrecognised token `%s` in buffer resource specifier. Replace with nothing, or `const`.", flag.c_str());
 			if(flag == "const")
 			{
 				flag = "readonly";
@@ -234,28 +241,35 @@ namespace tzslc
 		constexpr char texture_resource_regex_vk[] = "resource\\(id ?= ?([0-9]+)\\) ?([a-zA-Z]*) ?texture";
 		constexpr char texture_resource_regex_ogl[] = "resource\\(id ?= ?([0-9]+)\\) ?([a-zA-Z]*) ?texture (.+)\\[([0-9]*)\\]?;";
 		// For VK, this is pretty easy.
-		#if TZ_VULKAN
+		if(dialect == GLSLDialect::Vulkan)
+		{
 			tzslc::transform(shader_source, std::regex{texture_resource_regex_vk},
 			[](auto beg, auto end)
 			{
 				std::string flag = *(beg + 1);
-				tz_assert(flag == "const", "Detected unrecognised token `%s` in buffer resource specifier. Replace with nothing, or `const`. Non-const texture resources are not yet implemented.", flag.c_str());
+				tzslc_assert(flag == "const", "Detected unrecognised token `%s` in buffer resource specifier. Replace with nothing, or `const`. Non-const texture resources are not yet implemented.", flag.c_str());
 				return "layout(binding = " + *(beg) + ") uniform sampler2D";
 			});
-		#elif TZ_OGL
+		}
+		else if(dialect == GLSLDialect::OpenGL)
+		{
 			tzslc::transform(shader_source, std::regex{texture_resource_regex_ogl},
 			[](auto beg, auto end)
 			{
 				std::string flag = *(beg + 1);
-				tz_assert(flag == "const", "Detected unrecognised token `%s` in buffer resource specifier. Replace with nothing, or `const`. Non-const texture resources are not yet implemented.", flag.c_str());
+				tzslc_assert(flag == "const", "Detected unrecognised token `%s` in buffer resource specifier. Replace with nothing, or `const`. Non-const texture resources are not yet implemented.", flag.c_str());
 				return "layout(binding = " + *(beg) + ") buffer ImageData\n{\n\tsampler2D textures[" + *(beg + 3) + "];\n} " + *(beg + 2) + ";\n#define " + *(beg + 2) + " " + *(beg + 2) + ".textures";
 			});
-		#endif
+		}
+		else
+		{
+			tzslc_error("ICE: Unrecognised GLSLDialect");
+		}
 	}
 
 //--------------------------------------------------------------------------------------------------
 	
-	void evaluate_inout_blocks(std::string& shader_source, tz::gl::ShaderStage stage)
+	void evaluate_inout_blocks(std::string& shader_source, ShaderStage stage, GLSLDialect dialect)
 	{
 		auto xmog = [&shader_source](const char* from, const char* to)
 		{
@@ -264,25 +278,34 @@ namespace tzslc
 
 		switch(stage)
 		{
-			case tz::gl::ShaderStage::Vertex:
+			case ShaderStage::Vertex:
 			{
-				#if TZ_VULKAN
-					constexpr char vertexid[] = "gl_VertexIndex";
-					constexpr char instanceid[] = "gl_InstanceIndex";
-				#elif TZ_OGL
-					constexpr char vertexid[] = "gl_VertexID";
-					constexpr char instanceid[] = "gl_InstanceID";
-				#endif
+				const char* vertexid = nullptr;
+				const char* instanceid = nullptr;
+				if(dialect == GLSLDialect::Vulkan)
+				{
+					vertexid = "gl_VertexIndex";
+					instanceid = "gl_InstanceIndex";
+				}
+				else if(dialect == GLSLDialect::OpenGL)
+				{
+					vertexid = "gl_VertexID";
+					instanceid = "gl_InstanceID";
+				}
+				else
+				{
+					tzslc_error("ICE: Unrecognised GLSLDialect.");
+				}
 				xmog("in::vertex_id", vertexid);
 				xmog("in::instance_id", instanceid);
 				xmog("out::position", "gl_Position");
 			}
 			break;
-			case tz::gl::ShaderStage::Fragment:
+			case ShaderStage::Fragment:
 				xmog("in::fragment_coord", "gl_FragCoord");
 				xmog("out::fragment_depth", "gl_FragDepth");
 			break;
-			case tz::gl::ShaderStage::Compute:
+			case ShaderStage::Compute:
 				xmog("in::workgroup_count", "gl_NumWorkGroups");
 				xmog("in::workgroup_id", "gl_WorkGroupID");
 				xmog("in::local_id", "gl_LocalInvocationID");
@@ -293,15 +316,22 @@ namespace tzslc
 
 //--------------------------------------------------------------------------------------------------
 
-	void evaluate_language_level_functions(std::string& shader_source)
+	void evaluate_language_level_functions(std::string& shader_source, GLSLDialect dialect)
 	{
 		constexpr char tz_printf_regex[] = "tz_printf\\((.*)\\).*;";
 
 		tzslc::transform(shader_source, std::regex{tz_printf_regex},
-		[](auto beg, auto end)
+		[dialect](auto beg, auto end)
 		{
-			#if TZ_DEBUG && TZ_VULKAN
-				return "debugPrintfEXT(" + *(beg) + ");";
+			#if !NDEBUG
+				if(dialect == GLSLDialect::Vulkan)
+				{
+					return "debugPrintfEXT(" + *(beg) + ");";
+				}
+				else
+				{
+					return std::string("");
+				}
 			#else
 				return std::string("");
 			#endif

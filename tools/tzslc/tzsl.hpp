@@ -1,13 +1,18 @@
 #ifndef TZSLC_PREPROCESSOR_HPP
 #define TZSLC_PREPROCESSOR_HPP
-#include "core/containers/enum_field.hpp"
 #include <array>
 #include <string>
 #include <filesystem>
 
 namespace tzslc
 {
-	void compile_to_glsl(std::string& shader_source, std::filesystem::path shader_filename);
+	enum class GLSLDialect
+	{
+		Vulkan,
+		OpenGL
+	};
+
+	void compile_to_glsl(std::string& shader_source, std::filesystem::path shader_filename, GLSLDialect dialect);
 }
 
 #endif // TZSLC_PREPROCESSOR_HPP

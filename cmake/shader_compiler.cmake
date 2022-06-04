@@ -12,7 +12,7 @@ macro(add_shader_vulkan)
 	add_custom_command(
 		OUTPUT ${processed_shader_path}
 		COMMENT "TZSLC_VK: Preprocessing ${SHADER} -> ${processed_shader_name}"
-		COMMAND "${TZSLC_EXECUTABLE_PATH}" ${shader_path} -o ${processed_shader_path}
+		COMMAND "${TZSLC_EXECUTABLE_PATH}" ${shader_path} -o ${processed_shader_path} -api vk
 		DEPENDS tzslc ${shader_path}
 		IMPLICIT_DEPENDS CXX ${shader_path}
 		VERBATIM
@@ -40,7 +40,7 @@ macro(add_shader_opengl)
 	add_custom_command(
 		OUTPUT ${output_path}
 		COMMENT "TZSLC_OGL: Building ${SHADER} -> ${output_name}"
-		COMMAND "${TZSLC_EXECUTABLE_PATH}" ${shader_path} -o ${output_path}
+		COMMAND "${TZSLC_EXECUTABLE_PATH}" ${shader_path} -o ${output_path} -api ogl
 		DEPENDS tzslc ${shader_path}
 		IMPLICIT_DEPENDS CXX ${processed_shader_path}
 		VERBATIM

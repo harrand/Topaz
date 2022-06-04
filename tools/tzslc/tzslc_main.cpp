@@ -1,4 +1,4 @@
-#include "core/assert.hpp"
+#include "assert.hpp"
 #include "tzsl.hpp"
 #include <cstdio>
 #include <fstream>
@@ -23,21 +23,49 @@ FILE* get_output_stream(int argc, char** argv)
 				std::filesystem::create_directories(parent);
 			}
 			output = fopen(arg_next.data(), "w");
-			tz_assert(output != nullptr, "Failed to open output stream. Perhaps missing intermediate directory, or no write permissions for this area of the filesystem?\nOutput was %s.\nErrno says: %s", arg_next.data(), std::strerror(errno));
+			tzslc_assert(output != nullptr, "Failed to open output stream. Perhaps missing intermediate directory, or no write permissions for this area of the filesystem?\nOutput was %s.\nErrno says: %s", arg_next.data(), std::strerror(errno));
 		}
 	}
 	return output;
 }
 
+tzslc::GLSLDialect get_dialect(int argc, char** argv)
+{
+	for(std::size_t i = 0; i < argc - 1; i++)
+	{
+		std::string_view arg{argv[i]};
+		std::string_view arg_next{argv[i + 1]};
+		if(arg == "-api")
+		{
+			if(arg_next == "vk")
+			{
+				return tzslc::GLSLDialect::Vulkan;
+			}
+			else if(arg_next == "ogl")
+			{
+				return tzslc::GLSLDialect::OpenGL;
+			}
+			else
+			{
+				tzslc_error("Unrecognised -api \"%s\". Expected 'vk' or 'ogl'", arg_next.data());
+				return tzslc::GLSLDialect::Vulkan;
+			}
+		}
+	}
+	tzslc_error("Missing -api invocation. Must specify -api vk, or -api ogl");
+	return tzslc::GLSLDialect::Vulkan;
+}
+
 int main(int argc, char** argv)
 {
-	tz_assert(argc >= 2, "Not enough arguments (%d). At least 2. Usage: `tzslc <tzsl_file_path> [-o <output_file_path>]`", argc);
+	tzslc_assert(argc >= 2, "Not enough arguments (%d). At least 2. Usage: `tzslc <tzsl_file_path> [-o <output_file_path>]`", argc);
 	const char* tzsl_filename = argv[1];
 
 	FILE* out = get_output_stream(argc, argv);
+	tzslc::GLSLDialect dialect = get_dialect(argc, argv);
 	{
 		std::ifstream shader{tzsl_filename, std::ios::ate | std::ios::binary};
-		tz_assert(shader.is_open(), "Cannot open shader file %s", tzsl_filename);
+		tzslc_assert(shader.is_open(), "Cannot open shader file %s", tzsl_filename);
 		auto file_size_bytes = static_cast<std::size_t>(shader.tellg());
 		shader.seekg(0);
 		std::string buffer;
@@ -45,7 +73,7 @@ int main(int argc, char** argv)
 		shader.read(buffer.data(), file_size_bytes);
 		shader.close();
 
-		tzslc::compile_to_glsl(buffer, tzsl_filename);
+		tzslc::compile_to_glsl(buffer, tzsl_filename, dialect);
 		for(char c : buffer)
 		{
 			std::fprintf(out, "%c", c);

@@ -15,7 +15,6 @@ function(add_tool)
 		CXX_STANDARD_REQUIRED ON
 		CXX_EXTENSIONS OFF)
 
-	target_link_libraries(${ADD_TOOL_TARGET} PRIVATE topaz)
 	STRING(REGEX REPLACE "^${PROJECT_SOURCE_DIR}/" "" offset_dir ${CMAKE_CURRENT_SOURCE_DIR})
 
 	tz_append_list(

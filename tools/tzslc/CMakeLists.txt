@@ -1,6 +1,7 @@
 add_tool(
 	TARGET tzslc
 	SOURCE_FILES
+		assert.hpp
 		source_transform.hpp
 		stdlib.hpp
 		tzsl.cpp

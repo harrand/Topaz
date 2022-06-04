@@ -1,6 +1,6 @@
 #ifndef TOPAZ_TZSLC_STDLIB_HPP
 #define TOPAZ_TZSLC_STDLIB_HPP
-#include "core/imported_text.hpp"
+#include "textc/imported_text.hpp"
 #include <string_view>
 #include <span>
 
