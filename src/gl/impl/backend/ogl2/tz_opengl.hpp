@@ -43,7 +43,7 @@ namespace tz::gl::ogl2
 	 * @ingroup tz_gl_ogl2
 	 * Initialise the OpenGL backend.
 	 */
-	void initialise(tz::GameInfo game_info, tz::ApplicationType app_type);
+	void initialise();
 	/**
 	 * @ingroup tz_gl_ogl2
 	 * Terminate the OpenGL backend.

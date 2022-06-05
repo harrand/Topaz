@@ -134,7 +134,7 @@ int main()
 	tz::initialise
 	({
 		.name = "vk_command_test",
-		.app_type = tz::ApplicationType::HiddenWindowApplication
+		.flags = {tz::ApplicationFlag::HiddenWindow}
 	});
 	{
 		empty_command_pool();

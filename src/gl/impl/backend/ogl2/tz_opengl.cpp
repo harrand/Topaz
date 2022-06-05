@@ -17,7 +17,7 @@ namespace tz::gl::ogl2
 		}
 	}
 
-	void initialise([[maybe_unused]] tz::GameInfo game_info, tz::ApplicationType app_type)
+	void initialise()
 	{
 		TZ_PROFZONE("OpenGL Backend - Backend Initialise", TZ_PROFCOL_RED);
 		tz_assert(!initialised, "Already initialised OpenGL but trying to do it again. Please submit a bug report.");
@@ -34,7 +34,7 @@ namespace tz::gl::ogl2
 		{
 			tz_warning_report("The OpenGL backend implicitly uses bindless textures under-the-hood, and initialisation has just detected that the extension `GL_ARB_bindless_texture` is not available. The application will most certainly crash if you try to use OGL textures.");
 		}
-		tz_report("OpenGL v%u.%u Initialised (%s)", ogl_version.major, ogl_version.minor, app_type == tz::ApplicationType::HiddenWindowApplication ? "Hidden" : "Windowed");
+		tz_report("OpenGL v%u.%u Initialised", ogl_version.major, ogl_version.minor);
 		initialised = true;
 	}
 

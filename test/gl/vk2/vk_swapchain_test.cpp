@@ -32,7 +32,6 @@ void mandatory_swapchain()
 	VulkanInstance window_inst
 	{{
 		.game_info = {"vk_swapchain_test", {1, 0, 0}, tz::info()},
-		.app_type = tz::ApplicationType::HiddenWindowApplication,
 		.extensions = {InstanceExtension::DebugMessenger},
 		.window = &tz::window()
 	}};
@@ -135,7 +134,7 @@ int main()
 	tz::initialise
 	({
 		.name = "vk_swapchain_test",
-		.app_type = tz::ApplicationType::HiddenWindowApplication
+		.flags = {tz::ApplicationFlag::HiddenWindow}
 	});
 	{
 		swapchain_extension_supported();

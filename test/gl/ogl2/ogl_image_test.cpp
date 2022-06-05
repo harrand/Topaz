@@ -26,7 +26,7 @@ int main()
 	tz::initialise
 	({
 		.name = "ogl_image_test",
-		.app_type = tz::ApplicationType::HiddenWindowApplication
+		.flags = {tz::ApplicationFlag::HiddenWindow}
 	});
 	{
 		create_empty_image();

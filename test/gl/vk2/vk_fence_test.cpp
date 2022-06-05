@@ -34,7 +34,7 @@ int main()
 	tz::initialise
 	({
 		.name = "vk_fence_test",
-		.app_type = tz::ApplicationType::HiddenWindowApplication
+		.flags = {tz::ApplicationFlag::HiddenWindow}
 	});
 	{
 		basic_fence_operations();

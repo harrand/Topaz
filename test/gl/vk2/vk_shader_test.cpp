@@ -69,7 +69,7 @@ int main()
 	tz::initialise
 	({
 		.name = "vk_shader_test",
-		.app_type = tz::ApplicationType::HiddenWindowApplication
+		.flags = {tz::ApplicationFlag::HiddenWindow}
 	});
 	{
 		basic_shader_module();

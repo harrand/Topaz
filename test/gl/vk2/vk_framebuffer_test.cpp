@@ -58,7 +58,7 @@ int main()
 	tz::initialise
 	({
 		.name = "vk_framebuffer_test",
-		.app_type = tz::ApplicationType::HiddenWindowApplication
+		.flags = {tz::ApplicationFlag::HiddenWindow}
 	});
 	{
 		swapchain_image_framebuffer();

@@ -189,7 +189,7 @@ int main()
 	tz::initialise
 	({
 		.name = "tz_renderer_test",
-		.app_type = tz::ApplicationType::HiddenWindowApplication
+		.flags = {tz::ApplicationFlag::HiddenWindow}
 	});
 	{
 		tz::gl::Device dev;

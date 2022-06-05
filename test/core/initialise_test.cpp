@@ -5,7 +5,7 @@ int main()
 	tz::initialise
 	({
 		.name = "tz_initialise_test",
-		.app_type = tz::ApplicationType::HiddenWindowApplication
+		.flags = {tz::ApplicationFlag::HiddenWindow}
 	});
 	{
 		// Nothing

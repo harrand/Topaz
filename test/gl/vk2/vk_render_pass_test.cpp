@@ -75,7 +75,7 @@ int main()
 	tz::initialise
 	({
 		.name = "vk_render_pass_test",
-		.app_type = tz::ApplicationType::HiddenWindowApplication
+		.flags = {tz::ApplicationFlag::HiddenWindow}
 	});
 	{
 		basic_render_pass();

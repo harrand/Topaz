@@ -35,7 +35,7 @@ int main()
 {
 	tz::initialise
 	({
-		.name = "tz_dynamic_triangle_demo (gl)"
+		.name = "tz_dynamic_triangle_demo"
 	});
 	{
 		tz::gl::Device dev;

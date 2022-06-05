@@ -311,7 +311,7 @@ int main()
 	tz::initialise
 	({
 		.name = "vk_descriptor_test",
-		.app_type = tz::ApplicationType::HiddenWindowApplication
+		.flags = {tz::ApplicationFlag::HiddenWindow}
 	});
 	{
 		basic_descriptor_layouts();

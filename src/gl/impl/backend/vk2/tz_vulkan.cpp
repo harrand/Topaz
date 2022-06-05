@@ -12,20 +12,19 @@ namespace tz::gl::vk2
 {
 	VulkanInstance* inst = nullptr;
 
-	void initialise(tz::GameInfo game_info, tz::ApplicationType app_type)
+	void initialise(tz::GameInfo game_info)
 	{
 		TZ_PROFZONE("Vulkan Backend - Backend Initialise", TZ_PROFCOL_RED);
 		tz_assert(inst == nullptr, "Vulkan Backend already initialised");
 		inst = new VulkanInstance
 		{{
 			.game_info = game_info,
-			.app_type = app_type,
 #if TZ_DEBUG
 			.extensions = {InstanceExtension::DebugMessenger},
 #endif
 			.window = &tz::window()
 		}};
-		tz_report("Vulkan v%u.%u Initialised (%s)", vulkan_version.major, vulkan_version.minor, app_type == tz::ApplicationType::HiddenWindowApplication ? "Hidden" : "Windowed");
+		tz_report("Vulkan v%u.%u Initialised", vulkan_version.major, vulkan_version.minor);
 	}
 
 	void terminate()

@@ -8,7 +8,6 @@ void custom_instance()
 	VulkanInstance custom
 	{{
 		.game_info = {"Custom Vulkan", tz::Version{1, 0, 0}, tz::info()},
-		.app_type = tz::ApplicationType::HiddenWindowApplication,
 		.window = &tz::window()
 	}};
 }
@@ -18,7 +17,7 @@ int main()
 	tz::initialise
 	({
 		.name = "vk_initialise_test",
-		.app_type = tz::ApplicationType::HiddenWindowApplication
+		.flags = {tz::ApplicationFlag::HiddenWindow}
 	});
 	{
 		custom_instance();

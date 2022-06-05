@@ -16,63 +16,76 @@ namespace tz
 {
 	tz::Window* wnd = nullptr;
 	bool initialised = false;
-	ApplicationType tz_app_type = ApplicationType::WindowApplication;
-
-	void initialise(GameInfo game_info, ApplicationType app_type, WindowInitArgs wargs)
-	{   
-		if(app_type == ApplicationType::WindowApplication || app_type == ApplicationType::HiddenWindowApplication)
-		{
-			{
-				TZ_PROFZONE("GLFW Initialise", TZ_PROFCOL_BLUE);
-				[[maybe_unused]] int glfw_ret = glfwInit();
-				tz_assert(glfw_ret == GLFW_TRUE, "GLFW initialisation returned without crashing, but we still failed to initialise. Most likely a platform-specific error has occurred. Does your machine support window creation?");
-			}
-			tz::detail::peripherals::monitor::initialise();
-			tz_assert(wnd == nullptr && !initialised, "tz::initialise(): Already initialised");
-			WindowHintList hints;
-			if(app_type == ApplicationType::HiddenWindowApplication)
-			{
-				hints.add(WindowHint{.hint = GLFW_VISIBLE, .value = GLFW_FALSE});
-			}
-
-			std::string wnd_title = game_info.to_string();
-			#if !TZ_DEBUG
-				wnd_title = game_info.name;
-			#endif
-			wargs.title = wnd_title.c_str();
-			wnd = new tz::Window{wargs, hints};
-		}
-		initialised = true;
-		#if TZ_VULKAN
-			tz::gl::vk2::initialise(game_info, app_type);
-		#elif TZ_OGL
-			tz::gl::ogl2::initialise(game_info, app_type);
-		#endif
-
-		tz_app_type = app_type;
-	}
+	InitialiseInfo init_info = {};
 
 	void initialise(InitialiseInfo init)
 	{
 		TZ_PROFZONE("Topaz Initialise", TZ_PROFCOL_BLUE);
 		tz_report("%s v%u.%u.%u (%s)", init.name, init.version.major, init.version.minor, init.version.patch, tz::info().to_string().c_str());
-		initialise({.name = init.name, .version = init.version, .engine = tz::info()}, init.app_type, init.window);
+		tz::GameInfo game_info{.name = init.name, .version = init.version, .engine = tz::info()};
+		// Ensure we're not already initialised before doing anything.
+		tz_assert(wnd == nullptr && !initialised, "tz::initialise(): Already initialised (wnd = %p, init = %d)", wnd, initialised);
+
+		// Firstly, initialise GLFW.
+		{
+			TZ_PROFZONE("GLFW Initialise", TZ_PROFCOL_BLUE);
+			[[maybe_unused]] int glfw_ret = glfwInit();
+			tz_assert(glfw_ret == GLFW_TRUE, "GLFW initialisation returned without crashing, but we still failed to initialise. Most likely a platform-specific error has occurred. Does your machine support window creation?");
+		}
+		// Then, initialise peripherals.
+		{
+			tz::detail::peripherals::monitor::initialise();
+		}
+		// After that, create the window.
+		{
+			WindowHintList hints;
+			if(init.flags.contains(ApplicationFlag::HiddenWindow))
+			{
+				hints.add(WindowHint{.hint = GLFW_VISIBLE, .value = GLFW_FALSE});
+			}
+
+			std::string window_title = init.name;
+			#if TZ_DEBUG
+				window_title = game_info.to_string();
+			#endif // TZ_DEBUG
+
+			WindowInitArgs wargs
+			{
+				.width = static_cast<int>(init.dimensions[0]),
+				.height = static_cast<int>(init.dimensions[1]),
+				.title = window_title.c_str(),
+				.flags =
+				{
+					.resizeable = !init.flags.contains(ApplicationFlag::UnresizeableWindow)
+				}
+			};
+
+			wnd = new tz::Window{wargs, hints};
+		}
+		// Finally, initialise render backends.
+		{
+			#if TZ_VULKAN
+				tz::gl::vk2::initialise(game_info);
+			#elif TZ_OGL
+				tz::gl::ogl2::initialise();
+			#endif
+		}
+
+		initialised = true;
+		init_info = init;
 	}
 
 	void terminate()
 	{
 		TZ_PROFZONE("Topaz Terminate", TZ_PROFCOL_BLUE);
+		tz_assert(wnd != nullptr && initialised, "tz::terminate(): Not initialised");
 		#if TZ_VULKAN
 			tz::gl::vk2::terminate();
 		#elif TZ_OGL
 			tz::gl::ogl2::terminate();
 		#endif
 
-		if(tz_app_type == ApplicationType::WindowApplication)
-		{
-			tz_assert(wnd != nullptr && initialised, "tz::terminate(): Not initialised");
-			delete wnd;
-		}
+		delete wnd;
 
 		tz::detail::peripherals::monitor::terminate();
 		{

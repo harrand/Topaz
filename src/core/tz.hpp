@@ -1,5 +1,6 @@
 #ifndef TZ_CORE_TZ_HPP
 #define TZ_CORE_TZ_HPP
+#include "core/containers/enum_field.hpp"
 #include "core/game_info.hpp"
 #include "core/window.hpp"
 
@@ -85,17 +86,13 @@ namespace tz
 	 * Documentation for functions and helpers which can be used to tell the time, and schedule sync tasks. Has nothing to do with parallellism or threads.
 	 */
 
-	/**
-	 * @ingroup tz_core_init
-	 * Every application is of a single type. When you initialise the engine, you must choose one.
-	 */
-	enum class ApplicationType
+	enum class ApplicationFlag
 	{
-		/// - Initialisation should spawn a window that the user can see and interact with.
-		WindowApplication,
-		/// - Initialisation should spawn a window, but it is invisible to the user.
-		HiddenWindowApplication,
+		HiddenWindow,
+		UnresizeableWindow
 	};
+
+	using ApplicationFlags = tz::EnumField<ApplicationFlag>;
 
 	/**
 	 * @ingroup tz_core_init
@@ -107,10 +104,10 @@ namespace tz
 		const char* name = "Untitled";
 		/// - Version of the application. If you do not version your application, you can leave this. Defaults to 1.0.0.
 		tz::Version version = {1, 0, 0};
-		/// - Describes the type of the application. See @ref ApplicationType for more information. Defaults to a window application.
-		ApplicationType app_type = ApplicationType::WindowApplication;
-		/// - Describes extra information about the window, if initialisation will spawn one. Defaults to a set of implementation-defined flags -- There is no guarantee these will change in subsequent releases so do not rely on the defaults not changing.
-		WindowInitArgs window = {};
+		/// - Specifies dimensions of the window, in pixels.
+		tz::Vec2ui dimensions = {800u, 600u};
+		/// - Describes some optional behaviours for the application. See @ref ApplicationFlag for details.
+		ApplicationFlags flags = {};
 	};
 	/**
 	 * @ingroup tz_core_init

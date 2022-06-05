@@ -101,7 +101,6 @@ void window_surfaces(tz::GameInfo game)
 	VulkanInstance window_inst
 	{{
 		.game_info = game,
-		.app_type = tz::ApplicationType::HiddenWindowApplication,
 		.window = &tz::window()
 	}};
 	PhysicalDeviceList devices = get_all_devices(window_inst);	
@@ -119,7 +118,6 @@ void surface_present_modes(tz::GameInfo game)
 	VulkanInstance window_inst
 	{{
 		.game_info = game,
-		.app_type = tz::ApplicationType::HiddenWindowApplication,
 		.window = &tz::window()
 	}};
 	PhysicalDeviceList devices = get_all_devices(window_inst);	
@@ -147,7 +145,7 @@ int main()
 	tz::initialise
 	({
 		.name = "vk_physical_device_test",
-		.app_type = tz::ApplicationType::HiddenWindowApplication
+		.flags = {tz::ApplicationFlag::HiddenWindow}
 	});
 	{
 		tz::GameInfo game{"vk_physical_device_test", {1, 0, 0}, tz::info()};
