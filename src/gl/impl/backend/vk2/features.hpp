@@ -22,7 +22,9 @@ namespace tz::gl::vk2
 		/// - Enables use of @ref TimelineSemaphore.
 		TimelineSemaphores,
 		/// - Enables use of alpha blending.
-		ColourBlendLogicalOperations
+		ColourBlendLogicalOperations,
+		/// - Enables use of rasteriser polygon modes which aren't filled, e.g wireframe.
+		NonSolidFillRasteriser,
 	};
 
 	using DeviceFeatureField = tz::EnumField<DeviceFeature>;

@@ -277,7 +277,8 @@ namespace tz::gl
 		const vk2::DeviceFeatureField dev_feats =
 		{
 			vk2::DeviceFeature::BindlessDescriptors,
-			vk2::DeviceFeature::ColourBlendLogicalOperations
+			vk2::DeviceFeature::ColourBlendLogicalOperations,
+			vk2::DeviceFeature::NonSolidFillRasteriser
 		};
 		tz_assert(pdev.get_supported_features().contains(dev_feats), "One or both of DeviceFeatures 'BindlessDescriptors' and 'ColourBlendLogicalOperations' are not supported by this machine/driver. Please ensure your machine meets the system requirements.");
 		dev_exts = {vk2::DeviceExtension::Swapchain};
