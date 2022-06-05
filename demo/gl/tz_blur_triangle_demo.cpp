@@ -17,10 +17,7 @@ int main()
 	tz::initialise
 	({
 		.name = "tz_blur_triangle_demo",
-		.window =
-		{
-			.flags = {.resizeable = false}
-		}
+		.flags = {tz::ApplicationFlag::UnresizeableWindow}
 	});
 	{
 		tz::gl::Device dev;
