@@ -746,8 +746,9 @@ namespace tz::gl
 		return this->graphics_pipeline;
 	}
 
-	void GraphicsPipelineManager::recreate(const vk2::RenderPass& new_render_pass, tz::Vec2ui new_viewport_dimensions)
+	void GraphicsPipelineManager::recreate(const vk2::RenderPass& new_render_pass, tz::Vec2ui new_viewport_dimensions, bool wireframe_mode)
 	{
+		this->wireframe_mode = wireframe_mode;
 		TZ_PROFZONE("Vulkan Frontend - RendererVulkan GraphicsPipelineManager Recreate", TZ_PROFCOL_YELLOW);
 		if(this->is_compute())
 		{
@@ -766,11 +767,12 @@ namespace tz::gl
 				.state = vk2::PipelineState
 				{
 					.viewport = vk2::create_basic_viewport(static_cast<tz::Vec2>(new_viewport_dimensions)),
+					.rasteriser = {.polygon_mode = (this->wireframe_mode ? vk2::PolygonMode::Line : vk2::PolygonMode::Fill)},
 					.depth_stencil =
 					{
 						.depth_testing = this->depth_testing_enabled,
 						.depth_writes = this->depth_testing_enabled
-					}
+					},
 				},
 				.pipeline_layout = &this->pipeline_layout,
 				.render_pass = &new_render_pass,
@@ -782,6 +784,11 @@ namespace tz::gl
 	bool GraphicsPipelineManager::is_compute() const
 	{
 		return this->shader.is_compute();
+	}
+
+	bool GraphicsPipelineManager::is_wireframe_mode() const
+	{
+		return this->wireframe_mode;
 	}
 
 	vk2::Shader GraphicsPipelineManager::make_shader(const vk2::LogicalDevice& ldev, const ShaderInfo& sinfo) const
@@ -1202,10 +1209,15 @@ namespace tz::gl
 	{
 		TZ_PROFZONE("Vulkan Frontend - RendererVulkan Edit", TZ_PROFCOL_YELLOW);
 		bool work_commands_need_recording = false;
+		bool pipeline_needs_recreating = false;
 		if(edit_request.compute_edit.has_value() && edit_request.compute_edit.value().kernel != this->compute_kernel)
 		{
 			this->compute_kernel = edit_request.compute_edit.value().kernel;
 			work_commands_need_recording = true;
+		}
+		else if(edit_request.render_state_edit.has_value() && this->pipeline.is_wireframe_mode() != edit_request.render_state_edit.value().wireframe_mode)
+		{
+			pipeline_needs_recreating = true;
 		}
 		else if(edit_request.component_edits.empty())
 		{
@@ -1256,6 +1268,10 @@ namespace tz::gl
 					tz_error("Unsupported Variant Type");
 				}
 			}, component_edit);
+		}
+		if(pipeline_needs_recreating)
+		{
+			this->pipeline.recreate(this->output.get_render_pass(), this->output.get_output_dimensions(), edit_request.render_state_edit.value().wireframe_mode);
 		}
 		if(work_commands_need_recording)
 		{
@@ -1503,7 +1519,7 @@ namespace tz::gl
 		// Context: The top-level gl::Device has just been told by the window that it has been resized, and has recreated a new swapchain. Our old pointer to the swapchain `maybe_swapchain` correctly points to the new swapchain already, so we just have to recreate all the new state.
 		this->command.wait_pending_commands_complete();
 		this->output.create_output_resources(resize_info.new_output_images, this->output.has_depth_images());
-		this->pipeline.recreate(this->output.get_render_pass(), resize_info.new_dimensions);
+		this->pipeline.recreate(this->output.get_render_pass(), resize_info.new_dimensions, this->pipeline.is_wireframe_mode());
 		this->setup_work_commands();
 	}
 

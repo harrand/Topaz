@@ -89,6 +89,11 @@ namespace tz::gl
 		tz::Vec3ui kernel;
 	};
 
+	struct RendererStateEditRequest
+	{
+		bool wireframe_mode = false;
+	};
+
 	/**
 	 * Type-safe union of @ref RendererBufferComponentEditRequest and @ref RendererImageComponentEditRequest
 	 */
@@ -105,6 +110,7 @@ namespace tz::gl
 		 */
 		std::vector<RendererComponentEditRequest> component_edits;
 		std::optional<RendererComputeEditRequest> compute_edit = std::nullopt;
+		std::optional<RendererStateEditRequest> render_state_edit = std::nullopt;
 	};
 
 	/**

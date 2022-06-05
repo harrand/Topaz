@@ -444,6 +444,7 @@ namespace tz::gl
 			{
 				this->resources.bind_image_buffer();
 			}
+			glPolygonMode(GL_FRONT_AND_BACK, this->wireframe_mode ? GL_LINE : GL_FILL);
 			if(this->resources.try_get_index_buffer() != nullptr)
 			{
 				const ogl2::Buffer& ibuf = static_cast<BufferComponentOGL*>(this->resources.try_get_index_buffer())->ogl_get_buffer();
@@ -465,13 +466,13 @@ namespace tz::gl
 	void RendererOGL::edit(const RendererEditRequest& edit_request)
 	{
 		TZ_PROFZONE("OpenGL Backend - RendererOGL Edit", TZ_PROFCOL_RED);
-		if(edit_request.component_edits.empty())
-		{
-			return;
-		}
 		if(edit_request.compute_edit.has_value())
 		{
 			this->compute_kernel = edit_request.compute_edit.value().kernel;
+		}
+		if(edit_request.render_state_edit.has_value())
+		{
+			this->wireframe_mode = edit_request.render_state_edit.value().wireframe_mode;
 		}
 		for(const RendererComponentEditRequest& component_edit : edit_request.component_edits)
 		{

@@ -99,6 +99,12 @@ int main()
 			static bool up = true;
 			if(fixed_update.done())
 			{
+				static bool wireframe_mode = false;
+				if(tz::window().get_keyboard_state().is_key_down(tz::KeyCode::Q))
+				{
+					wireframe_mode = !wireframe_mode;
+				}
+
 				TZ_PROFZONE("Dynamic Updates", TZ_PROFCOL_GREEN);
 				// Add new triangle by resizing the triangle vertex storage buffer to a capacity large enough for an extra triangle. Then we randomise the new triangle data.
 				fixed_update.reset();
@@ -140,7 +146,8 @@ int main()
 							.image_handle = imgh,
 							.dimensions = new_dims
 						}
-					}
+					},
+					.render_state_edit = tz::gl::RendererStateEditRequest{.wireframe_mode = wireframe_mode}
 				};
 				renderer.edit(renderer_edit);
 				// Get the resource data for the new triangle and set it to random values.
