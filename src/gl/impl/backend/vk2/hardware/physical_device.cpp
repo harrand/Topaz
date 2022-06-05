@@ -107,6 +107,30 @@ namespace tz::gl::vk2
 				break;
 			}
 		}
+
+		PhysicalDeviceType to_tz_type(VkPhysicalDeviceType type)
+		{
+			switch(type)
+			{
+				default:
+					[[fallthrough]];
+				case VK_PHYSICAL_DEVICE_TYPE_OTHER:
+					return PhysicalDeviceType::Unknown;
+				break;
+				case VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU:
+					return PhysicalDeviceType::IntegratedGPU;
+				break;
+				case VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU:
+					return PhysicalDeviceType::DiscreteGPU;
+				break;
+				case VK_PHYSICAL_DEVICE_TYPE_VIRTUAL_GPU:
+					return PhysicalDeviceType::VirtualGPU;
+				break;
+				case VK_PHYSICAL_DEVICE_TYPE_CPU:
+					return PhysicalDeviceType::CPU;
+				break;
+			}
+		}
 	}
 
 	PhysicalDevice::PhysicalDevice(VkPhysicalDevice native, const VulkanInstance& instance):
@@ -146,12 +170,17 @@ namespace tz::gl::vk2
 
 		return exts;
 	}
-	
-	PhysicalDeviceVendor PhysicalDevice::get_vendor() const
+
+	PhysicalDeviceInfo PhysicalDevice::get_info() const
 	{
 		tz_assert(!this->is_null(), "This was PhysicalDevice::null()");
 		DeviceProps props = this->get_internal_device_props();
-		return detail::to_tz_vendor(props.driver_props.driverID);
+		return
+		{
+			.vendor = detail::to_tz_vendor(props.driver_props.driverID),
+			.type = detail::to_tz_type(props.props.properties.deviceType),
+			.name = std::string(props.props.properties.deviceName)
+		};
 	}
 
 	tz::BasicList<ImageFormat> PhysicalDevice::get_supported_surface_formats() const

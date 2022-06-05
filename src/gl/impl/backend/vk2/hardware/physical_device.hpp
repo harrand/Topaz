@@ -22,6 +22,22 @@ namespace tz::gl::vk2
 		Other
 	};
 
+	enum class PhysicalDeviceType
+	{
+		IntegratedGPU,
+		DiscreteGPU,
+		VirtualGPU,
+		CPU,
+		Unknown
+	};
+
+	struct PhysicalDeviceInfo
+	{
+		PhysicalDeviceVendor vendor;
+		PhysicalDeviceType type;
+		std::string name;
+	};
+
 	struct PhysicalDeviceSurfaceCapabilityInfo
 	{
 		PhysicalDeviceSurfaceCapabilityInfo(VkSurfaceCapabilitiesKHR vk_capabilities);
@@ -50,6 +66,7 @@ namespace tz::gl::vk2
 		DeviceFeatureInfo from_feature_field(const DeviceFeatureField& feature_field);
 
 		PhysicalDeviceVendor to_tz_vendor(VkDriverId driver_id);
+		PhysicalDeviceType to_tz_type(VkPhysicalDeviceType type);
 	}
 
 	/**
@@ -77,7 +94,7 @@ namespace tz::gl::vk2
 		 * Retrieve the vendor. Only a few vendors are supported, so check @ref PhysicalDeviceVendor for information.
 		 * If you're using very new hardware, or various custom drivers such as MoltenVK, this may very well not return the expected value. This should mainly be used for vendor-specific optimisations and shouldn't be exposed to the end-user.
 		 */
-		PhysicalDeviceVendor get_vendor() const;
+		PhysicalDeviceInfo get_info() const;
 		/**
 		 * Retrieve a list of all ImageFormats that could represent the given window surface.
 		 * @return List of acceptable ImageFormats for a window surface.

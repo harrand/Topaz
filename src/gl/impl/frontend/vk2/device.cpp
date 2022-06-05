@@ -1,5 +1,6 @@
 #if TZ_VULKAN
 #include "core/profiling/zone.hpp"
+#include "core/report.hpp"
 #include "gl/impl/frontend/vk2/renderer.hpp"
 #include "gl/impl/frontend/vk2/device.hpp"
 #include "gl/impl/frontend/vk2/convert.hpp"
@@ -10,6 +11,33 @@
 
 namespace tz::gl
 {
+
+	unsigned int rate_physical_device(const vk2::PhysicalDevice device)
+	{
+		unsigned int rating = 0u;
+		const vk2::PhysicalDeviceInfo info = device.get_info();
+		switch(info.type)
+		{
+			case vk2::PhysicalDeviceType::IntegratedGPU:
+				rating += 500;
+			break;
+			case vk2::PhysicalDeviceType::DiscreteGPU:
+				rating += 2000;
+			break;
+			case vk2::PhysicalDeviceType::VirtualGPU:
+				rating += 300;
+			break;
+			case vk2::PhysicalDeviceType::CPU:
+				rating += 100;
+			break;
+			default:
+			break;
+		}
+		return rating;
+	}
+
+//--------------------------------------------------------------------------------------------------
+
 	DeviceWindowVulkan::DeviceWindowVulkan(const vk2::LogicalDevice& device):
 	DeviceWindowVulkan()
 	{
@@ -216,7 +244,34 @@ namespace tz::gl
 		TZ_PROFZONE("Vulkan Frontend - DeviceVulkan Create", TZ_PROFCOL_YELLOW);
 		// First, create a LogicalDevice.
 		// TODO: Don't just choose a device at random.
-		vk2::PhysicalDevice pdev = vk2::get_all_devices(instance).front();
+		vk2::PhysicalDeviceList pdevs = vk2::get_all_devices(instance);
+		tz_assert(!pdevs.empty(), "Could not locate any physical devices at all. Your machine either needs a valid GPU, CPU or a virtualised device acting as the former. Please ensure your machine meets minimum system requirements.");
+		vk2::PhysicalDevice pdev = *std::max_element(pdevs.begin(), pdevs.end(),
+		[](const vk2::PhysicalDevice& a, const vk2::PhysicalDevice& b)
+		{
+			return rate_physical_device(a) < rate_physical_device(b);
+		});
+		tz_debug_report("Vulkan Device: Out of %zu device%s, chose \"%s\" because it had the highest rating (%u)", pdevs.length(), pdevs.length() == 1 ? "" : "s", pdev.get_info().name.c_str(), rate_physical_device(pdev));
+
+		// TODO: Remove when we can get testing on devices that aren't NV.
+		#if TZ_DEBUG
+			if(pdev.get_info().vendor != vk2::PhysicalDeviceVendor::Nvidia)
+			{
+				const char* vendor_name = "<Unknown, sorry>";
+				switch(pdev.get_info().vendor)
+				{
+					default:
+					break;
+					case vk2::PhysicalDeviceVendor::AMD:
+						vendor_name = "AMD";
+					break;
+					case vk2::PhysicalDeviceVendor::Intel:
+						vendor_name = "Intel";
+					break;
+				}
+				tz_debug_report("Developer: Warning: The selected device is not an Nvidia device. Non-nvidia devices are not tested at present, so if you do run into any issues please note on the bug report that your vendor is %s", vendor_name);
+			}
+		#endif
 
 		vk2::DeviceExtensionList dev_exts = {};
 		const vk2::DeviceFeatureField dev_feats =
