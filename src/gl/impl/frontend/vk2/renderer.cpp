@@ -1272,6 +1272,7 @@ namespace tz::gl
 		if(pipeline_needs_recreating)
 		{
 			this->pipeline.recreate(this->output.get_render_pass(), this->output.get_output_dimensions(), edit_request.render_state_edit.value().wireframe_mode);
+			work_commands_need_recording = true;
 		}
 		if(work_commands_need_recording)
 		{
