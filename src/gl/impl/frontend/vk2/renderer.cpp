@@ -546,13 +546,29 @@ namespace tz::gl
 		this->output_depth_imageviews.clear();
 		this->output_framebuffers.clear();
 
-		//tz_assert(!this->get_output_images().empty(), "RendererVulkan OutputManager was not given any output images. Please submit a bug report.");
 		this->swapchain_depth_images.reserve(this->swapchain_images.size());
 		this->output_depth_imageviews.reserve(this->swapchain_images.size());
+
+		this->populate_depth_images(create_depth_images);
+		this->populate_output_views(create_depth_images);
+
+		#if TZ_DEBUG
+			for(const OutputImageViewState& out_view : this->output_imageviews)
+			{
+				tz_assert(std::equal(out_view.colour_views.begin(), out_view.colour_views.end(), out_view.colour_views.begin(), [](const vk2::ImageView& a, const vk2::ImageView& b){return a.get_image().get_format() == b.get_image().get_format();}), "Detected that not every output image in a RendererVulkan has the same format. This is not permitted as RenderPasses would not be compatible. Please submit a bug report.");
+			}
+		#endif // TZ_DEBUG
+
+		this->make_render_pass(create_depth_images);
+		this->populate_framebuffers(create_depth_images);
+	}
+
+	void OutputManager::populate_depth_images(bool has_depth_images)
+	{
 		for(const vk2::Image& window_buffer_image : this->swapchain_images)
 		{
 			// If we need depth images for depth testing, we'll create them based off of the existing output images we are provided from the Device.
-			if(create_depth_images)
+			if(has_depth_images)
 			{
 				// If we're rendering to a TextureOutput and it has a depth attachment, then we want to use that. Otherwise, we create one now.
 				if(this->output != nullptr && this->output->get_target() == OutputTarget::OffscreenImage && static_cast<const ImageOutput*>(this->output.get())->has_depth_attachment())
@@ -578,6 +594,10 @@ namespace tz::gl
 				this->swapchain_depth_images.push_back(vk2::Image::null());
 			}
 		}
+	}
+
+	void OutputManager::populate_output_views(bool has_depth_images)
+	{
 		auto output_image_copy = this->get_output_images();
 		for(std::size_t i = 0; i < output_image_copy.size(); i++)
 		{
@@ -594,7 +614,7 @@ namespace tz::gl
 			this->output_imageviews.push_back(std::move(out_view));
 
 			// If we made depth images earlier, create views for them too.
-			if(create_depth_images)
+			if(has_depth_images)
 			{
 				this->output_depth_imageviews.push_back
 				(vk2::ImageViewInfo{
@@ -607,12 +627,10 @@ namespace tz::gl
 				this->output_depth_imageviews.push_back(vk2::ImageView::null());
 			}
 		}
+	}
 
-		for(const OutputImageViewState& out_view : this->output_imageviews)
-		{
-			tz_assert(std::equal(out_view.colour_views.begin(), out_view.colour_views.end(), out_view.colour_views.begin(), [](const vk2::ImageView& a, const vk2::ImageView& b){return a.get_image().get_format() == b.get_image().get_format();}), "Detected that not every output image in a RendererVulkan has the same format. This is not permitted as RenderPasses would not be compatible. Please submit a bug report.");
-		}
-
+	void OutputManager::make_render_pass(bool has_depth_images)
+	{
 		// Now create an ultra-basic renderpass.
 		// We're matching the ImageFormat of the provided output image.
 		vk2::ImageLayout final_layout;
@@ -630,6 +648,7 @@ namespace tz::gl
 			tz_error("Unknown RendererOutputType. Please submit a bug report.");
 		}
 		
+		auto output_image_copy = this->get_output_images();
 		// Our renderpass is no longer so simple with the possibilty of multiple colour outputs.
 		std::uint32_t colour_output_length = output_image_copy.front().colour_attachments.length();
 
@@ -645,7 +664,7 @@ namespace tz::gl
 				.final_layout = final_layout
 			});
 		}
-		if(create_depth_images)
+		if(has_depth_images)
 		{
 			rbuilder.with_attachment
 			({
@@ -666,7 +685,7 @@ namespace tz::gl
 				.current_layout = vk2::ImageLayout::ColourAttachment
 			});
 		}
-		if(create_depth_images)
+		if(has_depth_images)
 		{
 			sbuilder.with_depth_stencil_attachment
 			({
@@ -677,6 +696,10 @@ namespace tz::gl
 
 		this->render_pass = rbuilder.with_subpass(sbuilder.build()).build();
 
+	}
+
+	void OutputManager::populate_framebuffers(bool has_depth_images)
+	{
 		for(std::size_t i = 0; i < this->output_imageviews.size(); i++)
 		{
 			tz::Vec2ui dims = this->output_imageviews[i].colour_views.front().get_image().get_dimensions();
@@ -687,7 +710,7 @@ namespace tz::gl
 			{
 				return &colour_view;
 			});
-			if(create_depth_images)
+			if(has_depth_images)
 			{
 				attachments.add(&this->output_depth_imageviews[i]);
 			}

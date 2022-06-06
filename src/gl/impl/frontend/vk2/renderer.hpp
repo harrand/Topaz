@@ -186,6 +186,10 @@ namespace tz::gl
 		bool has_depth_images() const;
 		void create_output_resources(std::span<vk2::Image> swapchain_images, bool create_depth_images);
 	private:
+		void populate_depth_images(bool has_depth_images);
+		void populate_output_views(bool has_depth_images);
+		void make_render_pass(bool has_depth_images);
+		void populate_framebuffers(bool has_depth_images);
 		/// Output provided by the RendererVulkan.
 		std::unique_ptr<IOutput> output;
 		/// Logical device used to create depth images, render passes and framebuffers.
