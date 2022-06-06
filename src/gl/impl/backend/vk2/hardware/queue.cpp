@@ -162,6 +162,11 @@ namespace tz::gl::vk2::hardware
 		return this->queue;
 	}
 
+	bool Queue::operator==(const Queue& rhs) const
+	{
+		return this->queue == rhs.queue;
+	}
+
 	void Queue::execute_cpu_side_command_buffer(const CommandBuffer& command_buffer) const
 	{
 		TZ_PROFZONE("Vulkan Backend - Command Buffer CPU Execute", TZ_PROFCOL_RED);

@@ -283,6 +283,11 @@ namespace tz::gl::vk2
 		return this->dev == VK_NULL_HANDLE;
 	}
 
+	bool PhysicalDevice::operator==(const PhysicalDevice& rhs) const
+	{
+		return this->dev == rhs.dev;
+	}
+
 	PhysicalDevice::DeviceProps PhysicalDevice::get_internal_device_props() const
 	{
 		tz_assert(!this->is_null(), "This was PhysicalDevice::null()");

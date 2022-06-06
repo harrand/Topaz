@@ -132,6 +132,7 @@ namespace tz::gl::vk2
 		NativeType native() const;
 		static PhysicalDevice null(); 
 		bool is_null() const;
+		bool operator==(const PhysicalDevice& rhs) const;
 	private:
 		struct DeviceProps
 		{

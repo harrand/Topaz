@@ -114,6 +114,11 @@ namespace tz::gl::vk2
 		return *this;
 	}
 
+	bool QueueStorage::QueueData::operator==(const QueueStorage::QueueData& rhs)
+	{
+		return this->queue == rhs.queue;
+	}
+
 	LogicalDevice::LogicalDevice(LogicalDeviceInfo device_info):
 	dev(VK_NULL_HANDLE),
 	physical_device(device_info.physical_device),
@@ -362,6 +367,11 @@ namespace tz::gl::vk2
 	bool LogicalDevice::is_null() const
 	{
 		return this->dev == VK_NULL_HANDLE;
+	}
+
+	bool LogicalDevice::operator==(const LogicalDevice& rhs) const
+	{
+		return this->dev == rhs.dev;
 	}
 
 	LogicalDevice::LogicalDevice():

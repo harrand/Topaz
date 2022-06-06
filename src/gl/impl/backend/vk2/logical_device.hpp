@@ -80,6 +80,8 @@ namespace tz::gl::vk2
 
 			hardware::Queue queue;
 			QueueFamilyInfo family;
+
+			bool operator==(const QueueData& rhs);
 		};
 		using List = tz::BasicList<QueueData>;
 		tz::BasicList<List> hardware_queue_families;	
@@ -136,6 +138,7 @@ namespace tz::gl::vk2
 		 * See @ref LogicalDevice::null for more information.
 		 */
 		bool is_null() const;
+		bool operator==(const LogicalDevice& rhs) const;
 	private:
 		LogicalDevice();
 

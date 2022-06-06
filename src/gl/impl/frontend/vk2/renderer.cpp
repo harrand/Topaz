@@ -85,7 +85,7 @@ namespace tz::gl
 				}
 				break;
 				default:
-					tz_error("TODO: better error message lmao");
+					tz_error("Unrecognised ResourceType. Please submit a bug report.");
 				break;
 			}
 		};
@@ -717,8 +717,7 @@ namespace tz::gl
 	graphics_pipeline(this->make_pipeline(viewport_dimensions, depth_testing_enabled, alpha_blending_enabled, render_pass)),
 	depth_testing_enabled(depth_testing_enabled)
 	{
-		// TODO: Implement vk2::LogicalDevice equality operator
-		//tz_assert(dlayout.get_device() == render_pass.get_device(), "");
+		tz_assert(dlayout.get_device() == render_pass.get_device(), "DescriptorLayout and RenderPass were not made by the same LogicalDevice. This is likely to cause issues, please submit a bug report.");
 	}
 
 	GraphicsPipelineManager::GraphicsPipelineManager(GraphicsPipelineManager&& move):
