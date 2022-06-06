@@ -73,9 +73,23 @@ namespace tz::gl
 		const IComponent* try_get_index_buffer() const;
 
 		std::size_t resource_count_of(ResourceType type) const;
+		/**
+		 * Notifies that an ImageComponent at the provided handle has had its underlying vk2::Image re-seated. This recreates any necessary image views.
+		 */
 		void notify_image_recreated(tz::gl::ResourceHandle image_resource_handle);
+		/**
+		 * Updates all relevant descriptors. If buffers are resized for example, their underlying vk2::Buffer has been re-seated and thus the descriptors need to be re-synced.
+		 * @param write_everything If true, image component views are also written. This should only need to happen during renderer construction or if an image component renderer edit is being performed.
+		 */
 		void sync_descriptors(bool write_everything);
+		/**
+		 * Query as to whether there are any resources or not.
+		 * @return True if there is at least one buffer or image resource, otherwise false. This includes resource references.
+		 */
 		bool empty() const;
+		/**
+		 * This must happen every frame. For each dynamic image resource, pad the current data and update the mapped data. This is because vk2::Image mappings have an implementation-defined row padding, which this function is responsible for correcting.
+		 */
 		void write_padded_image_data();
 	private:
 
@@ -91,15 +105,22 @@ namespace tz::gl
 		vk2::DescriptorPool descriptor_pool;
 		/// Stores the above pool's allocation result. We know the exact number of descriptors/sets etc that we need, so we only ever need a single allocation for now.
 		vk2::DescriptorPool::AllocationResult descriptors;
+		/// Describes the number of frames that are in-flight at once.
 		std::size_t frame_in_flight_count;
 	};
 
+	/**
+	 * Represents the image state of a renderer output.
+	 */
 	struct OutputImageState
 	{
 		tz::BasicList<vk2::Image*> colour_attachments = {};
 		vk2::Image* depth_attachment = nullptr;
 	};
 
+	/**
+	 * Represent the imageview state of a renderer output.
+	 */
 	struct OutputImageViewState
 	{
 		tz::BasicList<vk2::ImageView> colour_views = {};
@@ -120,11 +141,11 @@ namespace tz::gl
 		/**
 		 * Construct the manager to deal with this brain-knot of output components.
 		 * @param output Output which is either going to be a WindowOutput (containing swapchain images) or a TextureOutput which owns its own TextureComponent which we will need to extract.
-		 * @param window_buffer_images View into the array of WindowOutput images. These all belong to the creator Device. It's going to be the swapchain images. If the output is a TextureOutput then we're not going to use any of these.
+		 * @param swapchain_images View into the array of WindowOutput images. These all belong to the creator Device. It's going to be the swapchain images. If the output is a TextureOutput then we're not going to use any of these.
 		 * @param create_depth_images Whether we should create depth images or not. If so, they will also be passed into the framebuffer. This means that the graphics pipeline the renderer ends up using will also need to know that we're using a depth attachment.
 		 * @param ldev Vulkan LogicalDevice which will be used to construct the render-pass and framebuffers etc. Right now we expect this to be the exact same LogicalDevice everywhere throughout this RendererVulkan. However this may change in the future (albeit unlikely tbh).
 		 */
-		OutputManager(const IOutput* output, std::span<vk2::Image> window_buffer_images, bool create_depth_images, const vk2::LogicalDevice& ldev);
+		OutputManager(const IOutput* output, std::span<vk2::Image> swapchain_images, bool create_depth_images, const vk2::LogicalDevice& ldev);
 		OutputManager(OutputManager&& move);
 		~OutputManager() = default;
 		OutputManager& operator=(OutputManager&& rhs);
@@ -163,16 +184,16 @@ namespace tz::gl
 		 */
 		tz::Vec2ui get_output_dimensions() const;
 		bool has_depth_images() const;
-		void create_output_resources(std::span<vk2::Image> window_buffer_images, bool create_depth_images);
+		void create_output_resources(std::span<vk2::Image> swapchain_images, bool create_depth_images);
 	private:
 		/// Output provided by the RendererVulkan.
 		std::unique_ptr<IOutput> output;
 		/// Logical device used to create depth images, render passes and framebuffers.
 		const vk2::LogicalDevice* ldev;
 		/// List of window buffer images (offscreen image or swapchain images) from the Device.
-		std::span<vk2::Image> window_buffer_images;
+		std::span<vk2::Image> swapchain_images;
 		/// List of depth images for each window buffer image (These may be null if depth testing is disabled).
-		std::vector<vk2::Image> window_buffer_depth_images;
+		std::vector<vk2::Image> swapchain_depth_images;
 		/// List of image-views, one for each output image. These haven't been re-ordered in any way FYI.
 		std::vector<OutputImageViewState> output_imageviews;
 		/// List of depth-image-views, one for each output image.

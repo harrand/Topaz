@@ -422,24 +422,24 @@ namespace tz::gl
 
 //--------------------------------------------------------------------------------------------------
 
-	OutputManager::OutputManager(const IOutput* output, std::span<vk2::Image> window_buffer_images, bool create_depth_images, const vk2::LogicalDevice& ldev):
+	OutputManager::OutputManager(const IOutput* output, std::span<vk2::Image> swapchain_images, bool create_depth_images, const vk2::LogicalDevice& ldev):
 	output(output != nullptr ? output->unique_clone() : nullptr),
 	ldev(&ldev),
-	window_buffer_images(window_buffer_images),
-	window_buffer_depth_images(),
+	swapchain_images(swapchain_images),
+	swapchain_depth_images(),
 	output_imageviews(),
 	render_pass(vk2::RenderPass::null()),
 	output_framebuffers()
 	{
 		TZ_PROFZONE("Vulkan Frontend - RendererVulkan OutputManager Create", TZ_PROFCOL_YELLOW);
-		this->create_output_resources(this->window_buffer_images, create_depth_images);
+		this->create_output_resources(this->swapchain_images, create_depth_images);
 	}
 
 	OutputManager::OutputManager(OutputManager&& move):
 	output(std::move(move.output)),
 	ldev(move.ldev),
-	window_buffer_images(std::move(move.window_buffer_images)),
-	window_buffer_depth_images(std::move(move.window_buffer_depth_images)),
+	swapchain_images(std::move(move.swapchain_images)),
+	swapchain_depth_images(std::move(move.swapchain_depth_images)),
 	output_imageviews(std::move(move.output_imageviews)),
 	output_depth_imageviews(std::move(move.output_depth_imageviews)),
 	render_pass(std::move(move.render_pass)),
@@ -455,8 +455,8 @@ namespace tz::gl
 	{
 		std::swap(this->output, rhs.output);
 		std::swap(this->ldev, rhs.ldev);
-		std::swap(this->window_buffer_images, rhs.window_buffer_images);
-		std::swap(this->window_buffer_depth_images, rhs.window_buffer_depth_images);
+		std::swap(this->swapchain_images, rhs.swapchain_images);
+		std::swap(this->swapchain_depth_images, rhs.swapchain_depth_images);
 		std::swap(this->output_imageviews, rhs.output_imageviews);
 		std::swap(this->output_depth_imageviews, rhs.output_depth_imageviews);
 		std::swap(this->render_pass, rhs.render_pass);
@@ -475,16 +475,17 @@ namespace tz::gl
 
 	std::vector<OutputImageState> OutputManager::get_output_images()
 	{
+		// This depends on whether we're rendering into the window or we have an image output.
 		if(this->output == nullptr || this->output->get_target() == OutputTarget::Window)
 		{
-			// We're rendering into a window (which may be headless). The Device contained the swapchain images (or the offline headless images). Simply return those.
-			std::vector<OutputImageState> ret(this->window_buffer_images.size());
-			for(std::size_t i = 0; i < this->window_buffer_images.size(); i++)
+			// We're rendering directly into the window, so we just use the swapchain images.
+			std::vector<OutputImageState> ret(this->swapchain_images.size());
+			for(std::size_t i = 0; i < this->swapchain_images.size(); i++)
 			{
 				ret[i] =
 				{
-					.colour_attachments = {&this->window_buffer_images[i]},
-					.depth_attachment = &this->window_buffer_depth_images[i]
+					.colour_attachments = {&this->swapchain_images[i]},
+					.depth_attachment = &this->swapchain_depth_images[i]
 				};
 			}
 			return ret;
@@ -492,7 +493,6 @@ namespace tz::gl
 		else if(this->output->get_target() == OutputTarget::OffscreenImage)
 		{
 			// We have been provided an ImageOutput which will contain an ImageComponentVulkan. We need to retrieve that image and return a span covering it.
-			// TODO: Support multiple-render-targets.
 			auto& out = static_cast<ImageOutput&>(*this->output);
 
 			OutputImageState out_image;
@@ -505,7 +505,7 @@ namespace tz::gl
 				out_image.depth_attachment = &out.get_depth_attachment().vk_get_image();
 			}
 
-			std::vector<OutputImageState> ret(this->window_buffer_images.size(), out_image);
+			std::vector<OutputImageState> ret(this->swapchain_images.size(), out_image);
 			tz_assert(!out.has_depth_attachment(), "Depth attachment on an ImageOutput is not yet implemented");
 			return ret;
 		}
@@ -534,22 +534,22 @@ namespace tz::gl
 	
 	bool OutputManager::has_depth_images() const
 	{
-		return !this->window_buffer_depth_images.empty();
+		return !this->swapchain_depth_images.empty();
 	}
 
-	void OutputManager::create_output_resources(std::span<vk2::Image> window_buffer_images, bool create_depth_images)
+	void OutputManager::create_output_resources(std::span<vk2::Image> swapchain_images, bool create_depth_images)
 	{
 		TZ_PROFZONE("Vulkan Frontend - RendererVulkan OutputManager (Output Resources Creation)", TZ_PROFCOL_YELLOW);
-		this->window_buffer_images = window_buffer_images;
-		this->window_buffer_depth_images.clear();
+		this->swapchain_images = swapchain_images;
+		this->swapchain_depth_images.clear();
 		this->output_imageviews.clear();
 		this->output_depth_imageviews.clear();
 		this->output_framebuffers.clear();
 
 		//tz_assert(!this->get_output_images().empty(), "RendererVulkan OutputManager was not given any output images. Please submit a bug report.");
-		this->window_buffer_depth_images.reserve(this->window_buffer_images.size());
-		this->output_depth_imageviews.reserve(this->window_buffer_images.size());
-		for(const vk2::Image& window_buffer_image : this->window_buffer_images)
+		this->swapchain_depth_images.reserve(this->swapchain_images.size());
+		this->output_depth_imageviews.reserve(this->swapchain_images.size());
+		for(const vk2::Image& window_buffer_image : this->swapchain_images)
 		{
 			// If we need depth images for depth testing, we'll create them based off of the existing output images we are provided from the Device.
 			if(create_depth_images)
@@ -558,11 +558,11 @@ namespace tz::gl
 				if(this->output != nullptr && this->output->get_target() == OutputTarget::OffscreenImage && static_cast<const ImageOutput*>(this->output.get())->has_depth_attachment())
 				{
 					tz_error("Sorry, depth attachment to image outputs are not yet implemented.");
-					this->window_buffer_depth_images.push_back(vk2::Image::null());
+					this->swapchain_depth_images.push_back(vk2::Image::null());
 				}
 				else
 				{
-					this->window_buffer_depth_images.push_back
+					this->swapchain_depth_images.push_back
 					(vk2::ImageInfo{
 						.device = this->ldev,
 						.format = vk2::ImageFormat::Depth32_SFloat,
@@ -575,7 +575,7 @@ namespace tz::gl
 			else
 			{
 				// Otherwise, just create empty ones and don't bother using them.
-				this->window_buffer_depth_images.push_back(vk2::Image::null());
+				this->swapchain_depth_images.push_back(vk2::Image::null());
 			}
 		}
 		auto output_image_copy = this->get_output_images();
@@ -598,7 +598,7 @@ namespace tz::gl
 			{
 				this->output_depth_imageviews.push_back
 				(vk2::ImageViewInfo{
-					.image = &this->window_buffer_depth_images[i],
+					.image = &this->swapchain_depth_images[i],
 					.aspect = vk2::ImageAspect::Depth
 				});
 			}
@@ -649,7 +649,7 @@ namespace tz::gl
 		{
 			rbuilder.with_attachment
 			({
-				.format = this->window_buffer_depth_images.front().get_format(),
+				.format = this->swapchain_depth_images.front().get_format(),
 				.colour_depth_store = vk2::StoreOp::DontCare,
 				.initial_layout = vk2::ImageLayout::Undefined,
 				.final_layout = vk2::ImageLayout::DepthStencilAttachment
