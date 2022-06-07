@@ -3,4 +3,8 @@ shader(type = tesseval);
 void main()
 {
 	out::position = vec4(in::tess_coord, 1.0);
+	if(in::primitive_id != 0)
+	{
+		out::position.xy *= -1.0f;
+	}
 }
