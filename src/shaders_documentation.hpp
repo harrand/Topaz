@@ -4,12 +4,21 @@
  * @section Introduction
  * TZSL is a high-level shader language with a syntax very similar to that of GLSL. A tool named tzslc ships with the engine, which can be used to build tzsl shaders to output SPIRV, GLSL shaders or SPIRV encoded within a C++ header.
  *
- * TZSL Shaders come in three types:
+ * TZSL Shaders come in five types:
  * - Vertex Shaders, which specify the locations of individual vertices.
  * 	- There are no vertex buffers, so vertex-pulling is a must.
- * 	- Index buffers are planned, but not yet implemented. For the time being you must perform index-pulling aswell.
+ * 	- Vertex shaders must exist, unless a compute shader exists.
+ * 	- If a vertex shader exists, a fragment shader must also exist.
+ * - Tessellation Control Shaders, which specify how much tessellation is applied to triangles.
+ * 	- These are optional. However, if it does exist, a tessellation evaluation shader must also exist.
+ * - Tessellation Evaluation Shaders, which computes interpolated positions for tessellated triangles.
+ *   	- These are optional. However, if it does exist, a tessellation control shader must also exist.
  * - Fragment Shaders, which processes fragments into a set of colours and optionally depth value.
+ * 	- Fragment shaders must exist, unless a compute shader exists.
+ * 	- If a fragment shader exists, a vertex shader must also exist.
  * - Compute Shaders, which can be used to perform general-purpose computation on the GPU.
+ * 	- If there is no vertex or fragment shader, there must be a compute shader.
+ * 	- If a compute shader exists, there must be no other shaders in the shader program.
  *
  * TZSL Shaders have first-class support in the engine's build system. When specifying your application in CMake, you can specify tzsl shader files. When the application needs to be built, the shaders are compiled into specially-encoded C++ headers which you can include in your application at compile-time. This is known as a TZSL Header Import.
  *
@@ -125,6 +134,62 @@
  * </table>
  * </details>
  *
+ * <details>
+ * <summary>Tessellation Control Shader</summary>
+ * <table>
+ * 	<tr>
+ * 		<th>Variable</th>
+ * 		<th>GLSL Equivalent</th>
+ * 	</tr>
+ * 	<tr>
+ *		<td>in::input_length</td>
+ *		<td>gl_PatchVerticesIn</td>
+ * 	</tr>
+ * 	<tr>
+ *		<td>in::primitive_id</td>
+ *		<td>gl_PrimitiveID</td>
+ * 	</tr>
+ * 	<tr>
+ *		<td>in::invocation_id</td>
+ *		<td>gl_InvocationID</td>
+ * 	</tr>
+ * 	<tr>
+ *		<td>out::inner_tessellate</td>
+ *		<td>gl_TessLevelInner</td>
+ * 	</tr>
+ * 	<tr>
+ *		<td>out::outer_tessellate</td>
+ *		<td>gl_TessLevelOuter</td>
+ * 	</tr>
+ * </table>
+ * </details>
+ *
+ * <details>
+ * <summary>Tessellation Evaluation Shader</summary>
+ * <table>
+ * 	<tr>
+ * 		<th>Variable</th>
+ * 		<th>GLSL Equivalent</th>
+ * 	</tr>
+ * 	<tr>
+ *		<td>in::tess_coord</td>
+ *		<td>gl_TessCoord</td>
+ * 	</tr>
+ * 	<tr>
+ *		<td>in::patch_size</td>
+ *		<td>gl_PatchVerticesIn</td>
+ * 	</tr>
+ * 	<tr>
+ *		<td>in::primitive_id</td>
+ *		<td>gl_PrimitiveID</td>
+ * 	</tr>
+ * 	<tr>
+ *		<td>out::position</td>
+ *		<td>gl_Position</td>
+ * 	</tr>
+ * </table>
+ * </details>
+ * 
  * <details>
  * <summary>Fragment Shader</summary>
  * <table>
@@ -268,7 +333,7 @@
  * <hr>
  * @section rwe Example Shader: tz_dynamic_triangle_demo.fragment.tzsl
  * The following is the fragment shader used by `tz_dynamic_triangle_demo`:
- * @include gl/tz_dynamic_triangle_demo.fragment.tzsl
+ * @include gl/shaders/tz_dynamic_triangle_demo.fragment.tzsl
  *
  * @subsection rwe_analysis Analysis
  * - The shader contains a type declaration at the top, like all shaders. This informs tzslc that this is a fragment shader.
