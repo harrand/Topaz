@@ -1,0 +1,13 @@
+shader(type = tesscontrol);
+
+patch_size(3);
+
+void main()
+{
+	out::outer_tessellate[0] = 1.0;
+	out::outer_tessellate[1] = 1.0;
+	out::outer_tessellate[2] = 1.0;
+	out::outer_tessellate[3] = 1.0;
+	
+	out::inner_tessellate[0] = 1.0;
+}

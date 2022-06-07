@@ -61,12 +61,18 @@ namespace tz::gl::vk2
 			.pVertexAttributeDescriptions = vertex_input_attribute_natives.data()
 		};
 
+		const bool has_tessellation = std::any_of(info.shaders.create_infos.begin(), info.shaders.create_infos.end(), [](const VkPipelineShaderStageCreateInfo& shader_create)
+		{
+			return shader_create.stage == VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT
+			||     shader_create.stage == VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT;
+		});
+
 		VkPipelineInputAssemblyStateCreateInfo input_assembly_native =
 		{
 			.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO, 
 			.pNext = nullptr,
 			.flags = 0,
-			.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
+			.topology = has_tessellation ? VK_PRIMITIVE_TOPOLOGY_PATCH_LIST : VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
 			.primitiveRestartEnable = VK_FALSE
 		};
 
@@ -76,6 +82,13 @@ namespace tz::gl::vk2
 		auto depth_stencil_state_native = info.state.depth_stencil.native();
 		auto colour_blend_state_native = info.state.colour_blend.native();
 		auto dynamic_state_native = info.state.dynamic.native();
+		auto tess_state = VkPipelineTessellationStateCreateInfo
+		{
+			.sType = VK_STRUCTURE_TYPE_PIPELINE_TESSELLATION_STATE_CREATE_INFO,
+			.pNext = nullptr,
+			.flags = 0,
+			.patchControlPoints = 3
+		};
 		VkGraphicsPipelineCreateInfo create
 		{
 			.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
@@ -85,7 +98,7 @@ namespace tz::gl::vk2
 			.pStages = info.shaders.create_infos.data(),
 			.pVertexInputState = &vertex_input_state_native,
 			.pInputAssemblyState = &input_assembly_native,
-			.pTessellationState = nullptr,
+			.pTessellationState = &tess_state,
 			.pViewportState = &viewport_state_native,
 			.pRasterizationState = &rasteriser_state_native,
 			.pMultisampleState = &multisample_state_native,

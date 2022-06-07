@@ -9,6 +9,8 @@ add_demo(
 	SOURCE_FILES tz_terrain_demo.cpp
 	SHADER_SOURCES
 		demo/gl/shaders/tz_terrain_demo.vertex.tzsl
+		demo/gl/shaders/tz_terrain_demo.tesscon.tzsl
+		demo/gl/shaders/tz_terrain_demo.tesseval.tzsl
 		demo/gl/shaders/tz_terrain_demo.fragment.tzsl
 )
 

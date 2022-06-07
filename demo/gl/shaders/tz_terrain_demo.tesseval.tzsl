@@ -1,0 +1,6 @@
+shader(type = tesseval);
+
+void main()
+{
+	out::position = vec4(in::tess_coord, 1.0);
+}

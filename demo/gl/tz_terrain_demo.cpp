@@ -6,6 +6,8 @@
 #include "gl/imported_shaders.hpp"
 
 #include ImportedShaderHeader(tz_terrain_demo, vertex)
+#include ImportedShaderHeader(tz_terrain_demo, tesscon)
+#include ImportedShaderHeader(tz_terrain_demo, tesseval)
 #include ImportedShaderHeader(tz_terrain_demo, fragment)
 
 int main()
@@ -19,6 +21,8 @@ int main()
 
 		tz::gl::RendererInfo rinfo;
 		rinfo.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(tz_terrain_demo, vertex));
+		rinfo.shader().set_shader(tz::gl::ShaderStage::TessellationControl, ImportedShaderSource(tz_terrain_demo, tesscon));
+		rinfo.shader().set_shader(tz::gl::ShaderStage::TessellationEvaluation, ImportedShaderSource(tz_terrain_demo, tesseval));
 		rinfo.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(tz_terrain_demo, fragment));
 
 		tz::gl::Renderer renderer = dev.create_renderer(rinfo);

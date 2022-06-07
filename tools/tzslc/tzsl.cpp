@@ -151,7 +151,7 @@ namespace tzslc
 		{
 			return ShaderStage::Vertex;
 		}
-		else if(specifier == "tesscon")
+		else if(specifier == "tesscontrol")
 		{
 			return ShaderStage::TessellationControl;
 		}
@@ -183,9 +183,14 @@ namespace tzslc
 
 		std::size_t stage_specifier_count = 0;
 		tzslc::transform(shader_source, std::regex{shader_specifier_regex},
-		[&stage_specifier_count](auto beg, auto end)
+		[&stage_specifier_count, stage](auto beg, auto end)
 		{
 			stage_specifier_count++;
+			if(stage == ShaderStage::TessellationEvaluation)
+			{
+				// Tessellation Evaluation shaders hardcode to equally spaced triangles.
+				return "#pragma shader_stage(" + *beg + ")\nlayout(triangles) in;";
+			}
 			return "#pragma shader_stage(" + *beg + ")";
 		});
 
@@ -205,7 +210,20 @@ namespace tzslc
 
 		tzslc_assert(kernel_specified == (stage == ShaderStage::Compute), "Missing `kernel` specifier for compute shader. A compute shader must specify a kernel exactly once.");
 
-		// Thirdly, inputs.
+		// Thirdly, patch specifiers for tessellation control shaders.
+		constexpr char patch_specifier_regex[] = "patch_size\\(([0-9]+)\\) ?;";
+		bool patch_specified = false;
+		tzslc::transform(shader_source, std::regex{patch_specifier_regex},
+		[stage, &patch_specified](auto beg, auto end)->std::string
+		{
+			patch_specified = true;
+			tzslc_assert(stage == ShaderStage::TessellationControl, "Detected `patch_size` specifier, but shader is not a tessellation control shader. Patch size specifiers are only valid within tessellation control shaders.");
+			return "layout(vertices = " + *(beg) + ") out;";
+		});
+
+		tzslc_assert(patch_specified == (stage == ShaderStage::TessellationControl), "Missing `patch_size` specifier for tessellation control shader. A tessellation control shader must specify its patch size.");
+
+		// And then, inputs.
 		constexpr char input_regex[] = "input\\(id ?= ?([0-9]+)\\) (.*)";
 		constexpr char flagged_input_regex[] = "input\\(id ?= ?([0-9]+), ?([a-zA-Z]+)\\) (.*)"; // Support for flat, etc...
 		
@@ -310,6 +328,19 @@ namespace tzslc
 				xmog("in::instance_id", instanceid);
 				xmog("out::position", "gl_Position");
 			}
+			case ShaderStage::TessellationControl:
+				xmog("in::input_length", "gl_PatchVerticesIn");
+				xmog("in::primitive_id", "gl_PrimitiveID");
+				xmog("in::invocation_id", "gl_InvocationID");
+				xmog("out::inner_tessellate", "gl_TessLevelInner");
+				xmog("out::outer_tessellate", "gl_TessLevelOuter");
+			break;
+			case ShaderStage::TessellationEvaluation:
+				xmog("in::tess_coord", "gl_TessCoord");
+				xmog("in::patch_size", "gl_PatchVerticesIn");
+				xmog("in::primitive_id", "gl_PrimitiveID");
+				xmog("out::position", "gl_Position");
+			break;
 			break;
 			case ShaderStage::Fragment:
 				xmog("in::fragment_coord", "gl_FragCoord");
