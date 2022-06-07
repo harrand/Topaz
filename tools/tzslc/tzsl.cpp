@@ -10,6 +10,8 @@ namespace tzslc
 	{
 		Compute,
 		Vertex,
+		TessellationControl,
+		TessellationEvaluation,
 		Fragment,
 		Count
 	};
@@ -148,6 +150,14 @@ namespace tzslc
 		if(specifier == "vertex")
 		{
 			return ShaderStage::Vertex;
+		}
+		else if(specifier == "tesscon")
+		{
+			return ShaderStage::TessellationControl;
+		}
+		else if(specifier == "tesseval")
+		{
+			return ShaderStage::TessellationEvaluation;
 		}
 		else if(specifier == "fragment")
 		{
