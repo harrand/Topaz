@@ -25,6 +25,8 @@ namespace tz::gl::vk2
 		ColourBlendLogicalOperations,
 		/// - Enables use of rasteriser polygon modes which aren't filled, e.g wireframe.
 		NonSolidFillRasteriser,
+		/// - Enables use of tesselation-control and tessellation-evaluation shaders.
+		TessellationShaders,
 	};
 
 	using DeviceFeatureField = tz::EnumField<DeviceFeature>;

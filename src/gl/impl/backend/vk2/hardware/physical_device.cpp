@@ -65,6 +65,10 @@ namespace tz::gl::vk2
 			{
 				ret |= DeviceFeature::NonSolidFillRasteriser;
 			}
+			if(features.features.features.tessellationShader)
+			{
+				ret |= DeviceFeature::TessellationShaders;
+			}
 		
 			return ret;
 		}
@@ -76,6 +80,7 @@ namespace tz::gl::vk2
 			info.features12.timelineSemaphore = feature_field.contains(DeviceFeature::TimelineSemaphores) ? VK_TRUE : VK_FALSE;
 			info.features.features.logicOp = feature_field.contains(DeviceFeature::ColourBlendLogicalOperations);
 			info.features.features.fillModeNonSolid = feature_field.contains(DeviceFeature::NonSolidFillRasteriser);
+			info.features.features.tessellationShader = feature_field.contains(DeviceFeature::TessellationShaders);
 
 			if(feature_field.contains(DeviceFeature::BindlessDescriptors))
 			{
