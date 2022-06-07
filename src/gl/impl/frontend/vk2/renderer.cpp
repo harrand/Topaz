@@ -816,7 +816,7 @@ namespace tz::gl
 	vk2::Shader GraphicsPipelineManager::make_shader(const vk2::LogicalDevice& ldev, const ShaderInfo& sinfo) const
 	{
 		TZ_PROFZONE("Vulkan Frontend - RendererVulkan GraphicsPipelineManager (Shader Create)", TZ_PROFCOL_YELLOW);
-		std::vector<char> vtx_src, frg_src, cmp_src;
+		std::vector<char> vtx_src, frg_src, tesscon_src, tesseval_src, cmp_src;
 		tz::BasicList<vk2::ShaderModuleInfo> modules;
 		if(sinfo.has_shader(ShaderStage::Compute))
 		{
@@ -864,6 +864,31 @@ namespace tz::gl
 					.code = frg_src
 				}
 			};
+			// Add optional shader stages.
+			if(sinfo.has_shader(ShaderStage::TessellationControl) || sinfo.has_shader(ShaderStage::TessellationEvaluation))
+			{
+				tz_assert(sinfo.has_shader(ShaderStage::TessellationControl) && sinfo.has_shader(ShaderStage::TessellationEvaluation), "Detected a tessellaton shader type, but it was missing its sister. If a control or evaluation shader exists, they both must exist.");
+
+				std::string_view tesscon_source = sinfo.get_shader(ShaderStage::TessellationControl);
+				tesscon_src.resize(tesscon_source.length());
+				std::copy(tesscon_source.begin(), tesscon_source.end(), tesscon_src.begin());
+
+				std::string_view tesseval_source = sinfo.get_shader(ShaderStage::TessellationEvaluation);
+				tesseval_src.resize(tesseval_source.length());
+				std::copy(tesseval_source.begin(), tesseval_source.end(), tesseval_src.begin());
+				modules.add(vk2::ShaderModuleInfo
+				{
+					.device = &ldev,
+					.type = vk2::ShaderType::TessellationControl,
+					.code = tesscon_src
+				});
+				modules.add(vk2::ShaderModuleInfo
+				{
+					.device = &ldev,
+					.type = vk2::ShaderType::TessellationEvaluation,
+					.code = tesseval_src
+				});
+			}
 		}
 		return
 		{{

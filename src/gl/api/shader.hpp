@@ -9,6 +9,8 @@ namespace tz::gl
 		Vertex,
 		Fragment,
 		Compute,
+		TessellationControl,
+		TessellationEvaluation,
 
 		Count
 	};
