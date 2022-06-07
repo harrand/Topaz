@@ -38,15 +38,15 @@ namespace tz::gl::ogl2
 		glBindVertexArray(this->vao);
 	}
 
-	void VertexArray::draw(unsigned int triangle_count)
+	void VertexArray::draw(unsigned int triangle_count, bool tessellation)
 	{
 		TZ_PROFZONE("OpenGL Backend - VertexArray Draw", TZ_PROFCOL_RED);
 		TZ_PROFZONE_GPU("VertexArray Draw", TZ_PROFCOL_RED);
 		this->bind();
-		glDrawArrays(GL_TRIANGLES, 0, triangle_count * 3);
+		glDrawArrays(tessellation ? GL_PATCHES : GL_TRIANGLES, 0, triangle_count * 3);
 	}
 
-	void VertexArray::draw_indexed(unsigned int triangle_count, const Buffer& index_buffer)
+	void VertexArray::draw_indexed(unsigned int triangle_count, const Buffer& index_buffer, bool tessellation)
 	{
 		TZ_PROFZONE("OpenGL Backend - VertexArray DrawIndexed", TZ_PROFCOL_RED);
 		TZ_PROFZONE_GPU("VertexArray DrawIndexed", TZ_PROFCOL_RED);
@@ -54,7 +54,7 @@ namespace tz::gl::ogl2
 		// Note: Normally basic bind (glBindBuffer) has nothing to do with the VAO. Index buffers (GL_ELEMENT_ARRAY_BUFFER) bindings are an exception - this is explicitly associated with the currently-bound VAO. That is why we need to have the index buffer passed in via param so we can bind the vao before actually trying to bind the buffer.
 		this->bind();
 		index_buffer.basic_bind();
-		glDrawElements(GL_TRIANGLES, triangle_count * 3, GL_UNSIGNED_INT, nullptr);
+		glDrawElements(tessellation ? GL_PATCHES : GL_TRIANGLES, triangle_count * 3, GL_UNSIGNED_INT, nullptr);
 	}
 
 	VertexArray VertexArray::null()

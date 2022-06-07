@@ -260,6 +260,11 @@ namespace tz::gl
 		return this->shader.is_compute();
 	}
 
+	bool ShaderManager::has_tessellation() const
+	{
+		return this->shader.has_tessellation();
+	}
+
 	ogl2::Shader ShaderManager::make_shader(const ShaderInfo& sinfo) const
 	{
 		tz::BasicList<ogl2::ShaderModuleInfo> modules;
@@ -290,6 +295,22 @@ namespace tz::gl
 					.code = ogl2::OGLString(sinfo.get_shader(ShaderStage::Fragment))
 				}
 			};
+
+			if(sinfo.has_shader(ShaderStage::TessellationControl) || sinfo.has_shader(ShaderStage::TessellationEvaluation))
+			{
+				tz_assert(sinfo.has_shader(ShaderStage::TessellationControl) && sinfo.has_shader(ShaderStage::TessellationEvaluation), "Detected a tessellaton shader type, but it was missing its sister. If a control or evaluation shader exists, they both must exist.");
+				modules.add
+				({
+					.type = ogl2::ShaderType::TessellationControl,
+					.code = ogl2::OGLString(sinfo.get_shader(ShaderStage::TessellationControl))
+				});
+
+				modules.add
+				({
+					.type = ogl2::ShaderType::TessellationEvaluation,
+					.code = ogl2::OGLString(sinfo.get_shader(ShaderStage::TessellationEvaluation))
+				});
+			}
 		}
 		return
 		{{
@@ -444,15 +465,17 @@ namespace tz::gl
 			{
 				this->resources.bind_image_buffer();
 			}
+
 			glPolygonMode(GL_FRONT_AND_BACK, this->wireframe_mode ? GL_LINE : GL_FILL);
+
 			if(this->resources.try_get_index_buffer() != nullptr)
 			{
 				const ogl2::Buffer& ibuf = static_cast<BufferComponentOGL*>(this->resources.try_get_index_buffer())->ogl_get_buffer();
-				this->vao.draw_indexed(tri_count, ibuf);
+				this->vao.draw_indexed(tri_count, ibuf, this->shader.has_tessellation());
 			}
 			else
 			{
-				this->vao.draw(this->tri_count);
+				this->vao.draw(this->tri_count, this->shader.has_tessellation());
 			}
 		}
 	}

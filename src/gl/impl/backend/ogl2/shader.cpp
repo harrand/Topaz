@@ -160,6 +160,15 @@ namespace tz::gl::ogl2
 		});
 	}
 
+	bool Shader::has_tessellation() const
+	{
+		return std::any_of(this->info.modules.begin(), this->info.modules.end(),
+		[](const ShaderModuleInfo& mod)
+		{
+			return mod.type == ShaderType::TessellationControl || mod.type == ShaderType::TessellationEvaluation;
+		});
+	}
+
 	Shader::Shader(std::nullptr_t):
 	program(0),
 	modules(),

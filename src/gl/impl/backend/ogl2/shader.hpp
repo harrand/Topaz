@@ -13,6 +13,10 @@ namespace tz::gl::ogl2
 	{
 		/// - Vertex Shader.
 		Vertex = GL_VERTEX_SHADER,
+		/// - Tessellation Control Shader.
+		TessellationControl = GL_TESS_CONTROL_SHADER,
+		/// - Tessellation Evaluation Shader.
+		TessellationEvaluation = GL_TESS_EVALUATION_SHADER,
 		/// - Fragment Shader.
 		Fragment = GL_FRAGMENT_SHADER,
 		/// - Compute Shader.
@@ -134,6 +138,7 @@ namespace tz::gl::ogl2
 		bool is_null() const;
 
 		bool is_compute() const;
+		bool has_tessellation() const;
 	private:
 		Shader(std::nullptr_t);
 		Shader::LinkResult validate();
