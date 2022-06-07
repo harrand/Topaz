@@ -5,6 +5,14 @@ elseif(${TOPAZ_OGL})
 endif()
 
 add_demo(
+	TARGET tz_terrain_demo
+	SOURCE_FILES tz_terrain_demo.cpp
+	SHADER_SOURCES
+		demo/gl/shaders/tz_terrain_demo.vertex.tzsl
+		demo/gl/shaders/tz_terrain_demo.fragment.tzsl
+)
+
+add_demo(
 	TARGET tz_triangle_demo
 	SOURCE_FILES tz_triangle_demo.cpp
 	SHADER_SOURCES
