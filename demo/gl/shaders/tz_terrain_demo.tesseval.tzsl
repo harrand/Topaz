@@ -38,9 +38,7 @@ void main()
 	vec4 pos = vec4(interpolate3(position[0], position[1], position[2]), 1.0);
 	vertex_colour = get_colour(pos.xz) * 2.0f;
 
-	tz_printf("before pos = %v4f", pos);
 	pos.y = vertex_colour.r * 10.0f;
 	pos = interpolate4m(mvp[0], mvp[1], mvp[2]) * pos;
-	tz_printf("after pos = %v4f", pos);
 	out::position = pos;
 }

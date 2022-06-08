@@ -53,10 +53,12 @@ int main()
 			renderer.render(2);
 			TZ_FRAME_END;
 
+			// Every 25ms, we do a fixed-update.
 			if(fixed_update.done())
 			{
 				fixed_update.reset();
 
+				// If Q is pressed, toggle wireframe mode via renderer edit.
 				if(tz::window().get_keyboard_state().is_key_down(tz::KeyCode::Q))
 				{
 					renderer.edit
@@ -68,8 +70,10 @@ int main()
 					});
 					wireframe_mode = !wireframe_mode;
 				}
+				// Retrieve the dynamic buffer resource data.
 				BufferData& bufd = renderer.get_resource(bufh)->data_as<BufferData>().front();
 
+				// Dragging the mouse influences the camera rotation.
 				static tz::Vec2i mouse_position;
 				auto mpi = static_cast<tz::Vec2i>(tz::window().get_mouse_position_state().get_mouse_position());
 				if(tz::window().get_mouse_button_state().is_mouse_button_down(tz::MouseButton::Left))
@@ -83,8 +87,10 @@ int main()
 				mouse_position = mpi;
 
 				bufd.view = tz::view(camera_position, cam_rot);
+				// Recalculate projection every fixed update. This is a massive waste of time but easily guarantees no distortion if the window is ever resized.
 				const float aspect_ratio = static_cast<float>(tz::window().get_width()) / tz::window().get_height();
 				bufd.projection = tz::perspective(1.6f, aspect_ratio, 0.1f, 1000.0f);
+				// WASD move the camera position around. Space and LeftShift move camera directly up or down.
 
 				tz::Vec4 cam_forward4 = bufd.view * tz::Vec4{0.0f, 0.0f, -1.0f, 0.0f};
 				tz::Vec4 cam_right4 = bufd.view * tz::Vec4{-1.0f, 0.0f, 0.0f, 0.0f};
