@@ -1,6 +1,6 @@
 shader(type = fragment);
 
-input(id = 0) vec4 vertex_colour;
+input(id = 0, flat) vec4 vertex_colour;
 output(id = 0) vec4 output_colour;
 
 void main()
