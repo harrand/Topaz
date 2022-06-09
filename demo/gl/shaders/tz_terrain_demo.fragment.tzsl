@@ -31,6 +31,10 @@ vec3 get_colour(float height)
 	{
 		current_fluid_colour = tz::math::lerp(fruid_outer_froth_colour, fluid_colour, (fluid_threshold - height) / fluid_threshold);
 	}
+	if(height < 0.05f)
+	{
+		return mix(vec3(0.0, 0.6, 0.75), current_fluid_colour, height / 0.05f);
+	}
 	if(abs(fluid_value) > froth_region.x && abs(fluid_value) < froth_region.y)
 	{
 		return fluid_froth_colour;
