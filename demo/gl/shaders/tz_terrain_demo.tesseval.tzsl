@@ -24,7 +24,7 @@ void main()
 	// if camera moves 1 unit, noise texture sampling should swing by same amount.
 
 	vec4 pos = vec4(interpolate3(position[0], position[1], position[2]), 1.0);
-	vertex_height = tz::math::clamp(tz::noise::simplex((pos.xz + cam_pos.xz) / 300.0f), 0.1f, 1.0f);
+	vertex_height = tz::math::clamp(tz::noise::simplex((pos.xz + cam_pos.xz) / 300.0f), 0.0f, 1.0f);
 	pos.y = vertex_height * 60.0f;
 	pos = interpolate4m(mvp[0], mvp[1], mvp[2]) * pos;
 	out::position = pos;

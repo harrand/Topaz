@@ -10,17 +10,32 @@ input(id = 0) float vertex_height;
 const vec3 terrain_colour = vec3(1.0f, 0.914f, 0.0f);
 // Base colour of fluid.
 const vec3 fluid_colour = vec3(0.0f, 0.765f, 1.0f);
+// Colour of inner froth of fluid.
+const vec3 fluid_froth_colour = vec3(1.0f, 1.0f, 1.0f);
+// Colour of outer froth of fluid.
+const vec3 fruid_outer_froth_colour = vec3(1.0f, 1.0f, 1.0f);
 // Base colour of tip of terrain.
 const vec3 tip_colour = terrain_colour;
 
 const float fluid_threshold = 0.05f;
+const float deep_fluid_threshold = 0.5f;
 const float tip_threshold = 0.7f;
+const vec2 froth_region = vec2(0.1f, 0.2f);
 
 vec3 get_colour(float height)
 {
 	float tip_value = height - tip_threshold;
 	float fluid_value = height - fluid_threshold;
-	return tz::math::lerp(fluid_colour, tz::math::lerp(terrain_colour, tip_colour, tip_value), fluid_value);
+	vec3 current_fluid_colour = fluid_colour;
+	if(height < fluid_threshold)
+	{
+		current_fluid_colour = tz::math::lerp(fruid_outer_froth_colour, fluid_colour, (fluid_threshold - height) / fluid_threshold);
+	}
+	if(abs(fluid_value) > froth_region.x && abs(fluid_value) < froth_region.y)
+	{
+		return fluid_froth_colour;
+	}
+	return tz::math::lerp(current_fluid_colour, tz::math::lerp(terrain_colour, tip_colour, tip_value), fluid_value);
 }
 
 void main()
