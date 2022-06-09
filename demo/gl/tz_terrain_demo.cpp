@@ -25,6 +25,7 @@ int main()
 			tz::Mat4 model = tz::model({0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f});
 			tz::Mat4 view = tz::Mat4::identity();
 			tz::Mat4 projection = tz::Mat4::identity();
+			tz::Vec3 camera_position = {0.0f, 50.0f, 0.0f};
 		};
 
 		tz::gl::Device dev;
@@ -40,7 +41,6 @@ int main()
 		rinfo.set_clear_colour({0.0f, 0.765f, 1.0f, 1.0f});
 
 		tz::gl::Renderer renderer = dev.create_renderer(rinfo);
-		tz::Vec3 camera_position{0.0f, 50.0f, 1.0f};
 		tz::Vec3 cam_rot{0.0f, 0.0f, 0.0f};
 		bool wireframe_mode = false;
 		using namespace tz::literals;
@@ -51,7 +51,7 @@ int main()
 		{
 			TZ_FRAME_BEGIN;
 			tz::window().update();
-			renderer.render(2);
+			renderer.render(4);
 			TZ_FRAME_END;
 
 			// Every 25ms, we do a fixed-update.
@@ -73,6 +73,7 @@ int main()
 				}
 				// Retrieve the dynamic buffer resource data.
 				BufferData& bufd = renderer.get_resource(bufh)->data_as<BufferData>().front();
+				tz::Vec3& camera_position = bufd.camera_position;
 
 				// Dragging the mouse influences the camera rotation.
 				static tz::Vec2i mouse_position;
@@ -87,7 +88,9 @@ int main()
 				}
 				mouse_position = mpi;
 
-				bufd.view = tz::view(camera_position, cam_rot);
+				tz::Vec3 camera_position_height_only = camera_position;
+				camera_position_height_only[0] = camera_position_height_only[2] = 0.0f;
+				bufd.view = tz::view(camera_position_height_only, cam_rot);
 				// Recalculate projection every fixed update. This is a massive waste of time but easily guarantees no distortion if the window is ever resized.
 				const float aspect_ratio = static_cast<float>(tz::window().get_width()) / tz::window().get_height();
 				bufd.projection = tz::perspective(1.6f, aspect_ratio, 0.1f, 1000.0f);
