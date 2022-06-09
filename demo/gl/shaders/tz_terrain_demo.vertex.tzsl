@@ -20,5 +20,5 @@ output(id = 1) mat4 mvp;
 void main()
 {
 	mvp = data.projection * data.view * data.model;
-	vertex_position = quad_positions[in::vertex_id] * 500.0f;
+	vertex_position = quad_positions[in::vertex_id] * 1000.0f;
 }
