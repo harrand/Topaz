@@ -8,11 +8,13 @@
 #include ImportedTextHeader(space, tzsl)
 #include ImportedTextHeader(math, tzsl)
 #include ImportedTextHeader(matrix, tzsl)
+#include ImportedTextHeader(noise, tzsl)
 
 namespace tzslc
 {
 	const std::string_view stdlib_atomic = ImportedTextData(atomic, tzsl);
 	const std::string_view stdlib_space = ImportedTextData(space, tzsl);
+	const std::string_view stdlib_noise = ImportedTextData(noise, tzsl);
 	const std::string_view stdlib_math = ImportedTextData(math, tzsl);
 	const std::string_view stdlib_matrix = ImportedTextData(matrix, tzsl);
 }

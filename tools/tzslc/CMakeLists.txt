@@ -11,5 +11,6 @@ add_tool(
 		shaders/atomic.tzsl
 		shaders/math.tzsl
 		shaders/matrix.tzsl
+		shaders/noise.tzsl
 		shaders/space.tzsl
 )

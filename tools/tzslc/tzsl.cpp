@@ -96,6 +96,10 @@ namespace tzslc
 			{
 				return std::string(stdlib_space);
 			}
+			if(m == "noise")
+			{
+				return std::string(stdlib_noise);
+			}
 			if(m == "math")
 			{
 				return std::string(stdlib_math);
