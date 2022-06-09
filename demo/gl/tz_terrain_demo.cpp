@@ -40,7 +40,7 @@ int main()
 		rinfo.set_clear_colour({0.0f, 0.765f, 1.0f, 1.0f});
 
 		tz::gl::Renderer renderer = dev.create_renderer(rinfo);
-		tz::Vec3 camera_position{0.0f, 2.0f, 1.0f};
+		tz::Vec3 camera_position{0.0f, 50.0f, 1.0f};
 		tz::Vec3 cam_rot{0.0f, 0.0f, 0.0f};
 		bool wireframe_mode = false;
 		using namespace tz::literals;
