@@ -37,6 +37,7 @@ int main()
 		rinfo.shader().set_shader(tz::gl::ShaderStage::TessellationControl, ImportedShaderSource(tz_terrain_demo, tesscon));
 		rinfo.shader().set_shader(tz::gl::ShaderStage::TessellationEvaluation, ImportedShaderSource(tz_terrain_demo, tesseval));
 		rinfo.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(tz_terrain_demo, fragment));
+		rinfo.set_clear_colour({0.0f, 0.765f, 1.0f, 1.0f});
 
 		tz::gl::Renderer renderer = dev.create_renderer(rinfo);
 		tz::Vec3 camera_position{0.0f, 2.0f, 1.0f};
@@ -45,7 +46,7 @@ int main()
 		using namespace tz::literals;
 		tz::Delay fixed_update{25_ms};
 
-		constexpr float multiplier = 0.6f;
+		constexpr float multiplier = 1.5f;
 		while(!tz::window().is_close_requested())
 		{
 			TZ_FRAME_BEGIN;

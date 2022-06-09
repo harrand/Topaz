@@ -1,9 +1,27 @@
 shader(type = fragment);
 
-input(id = 0, flat) vec4 vertex_colour;
 output(id = 0) vec4 output_colour;
+// vertex_height somewhere between 0.0 and 1.0.
+input(id = 0) float vertex_height;
+
+// Base colour of terrain.
+const vec3 terrain_colour = vec3(1.0f, 0.914f, 0.0f);
+// Base colour of fluid.
+const vec3 fluid_colour = vec3(0.0f, 0.765f, 1.0f);
+// Base colour of tip of terrain.
+const vec3 tip_colour = terrain_colour;
+
+const float fluid_threshold = 0.05f;
+const float tip_threshold = 0.7f;
+
+vec3 get_colour(float height)
+{
+	float tip_value = height - tip_threshold;
+	float fluid_value = height - fluid_threshold;
+	return mix(fluid_colour, mix(terrain_colour, tip_colour, tip_value), fluid_value);
+}
 
 void main()
 {
-	output_colour = vertex_colour;
+	output_colour = vec4(get_colour(vertex_height), 1.0);
 }
