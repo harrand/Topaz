@@ -108,6 +108,10 @@ namespace tzslc
 			{
 				return std::string(stdlib_matrix);
 			}
+			if(m == "mesh")
+			{
+				return std::string(stdlib_mesh);
+			}
 			tzslc_error("Unknown stdlib import <%s>.", m.c_str());
 			return std::string{""};
 		});
@@ -155,7 +159,7 @@ namespace tzslc
 		{
 			return ShaderStage::Vertex;
 		}
-		else if(specifier == "tesscontrol")
+		else if(specifier == "tesscon")
 		{
 			return ShaderStage::TessellationControl;
 		}
@@ -190,6 +194,10 @@ namespace tzslc
 		[&stage_specifier_count, stage](auto beg, auto end)
 		{
 			stage_specifier_count++;
+			if(stage == ShaderStage::TessellationControl)
+			{
+				return std::string("#pragma shader_stage(tesscontrol)");
+			}
 			if(stage == ShaderStage::TessellationEvaluation)
 			{
 				// Tessellation Evaluation shaders hardcode to equally spaced triangles.

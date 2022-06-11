@@ -1,11 +1,6 @@
 shader(type = vertex);
 
-vec2 positions[3] = vec2[]
-(
-    vec2(0.0, 0.5),
-    vec2(0.5, -0.5),
-    vec2(-0.5, -0.5)
-);
+import <mesh>
 
 resource(id = 0) const buffer ColourData
 {
@@ -16,6 +11,6 @@ output(id = 0) vec4 frag_colour;
 
 void main()
 {
-    out::position = vec4(positions[in::vertex_id], 0.0, 1.0);
+    out::position = vec4(tz::mesh::fullscreen_triangle[in::vertex_id], 1.0);
     frag_colour = buf.colours[in::vertex_id];
 }

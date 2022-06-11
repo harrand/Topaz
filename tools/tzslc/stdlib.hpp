@@ -8,6 +8,7 @@
 #include ImportedTextHeader(space, tzsl)
 #include ImportedTextHeader(math, tzsl)
 #include ImportedTextHeader(matrix, tzsl)
+#include ImportedTextHeader(mesh, tzsl)
 #include ImportedTextHeader(noise, tzsl)
 
 namespace tzslc
@@ -17,6 +18,7 @@ namespace tzslc
 	const std::string_view stdlib_noise = ImportedTextData(noise, tzsl);
 	const std::string_view stdlib_math = ImportedTextData(math, tzsl);
 	const std::string_view stdlib_matrix = ImportedTextData(matrix, tzsl);
+	const std::string_view stdlib_mesh = ImportedTextData(mesh, tzsl);
 }
 
 #endif // TOPAZ_TZSLC_STDLIB_HPP

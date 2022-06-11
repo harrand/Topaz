@@ -1,4 +1,4 @@
-shader(type = tesscontrol);
+shader(type = tesscon);
 
 patch_size(3);
 
