@@ -21,7 +21,7 @@
  * Configurable render backend, currently supporting Vulkan and OpenGL
 	* Not coming anytime soon, but planned backends include DX12 and Metal
  
- [Topaz 3.2](https://github.com/Harrand/Topaz/tree/Topaz3.2) is the most recent release of the Topaz Engine. The next version will be version 3.3.
+ [Topaz 3.3](https://github.com/Harrand/Topaz/tree/Topaz3.3) is the most recent release of the Topaz Engine. The next version will be version 3.4.
 
 The Topaz project has been ongoing since it began as a school project in 2015.
 
