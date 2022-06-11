@@ -69,6 +69,14 @@ namespace tz::gl::vk2
 			{
 				ret |= DeviceFeature::TessellationShaders;
 			}
+			if(features.features.features.vertexPipelineStoresAndAtomics)
+			{
+				ret |= DeviceFeature::VertexPipelineResourceWrite;
+			}
+			if(features.features.features.fragmentStoresAndAtomics)
+			{
+				ret |= DeviceFeature::FragmentShaderResourceWrite;
+			}
 		
 			return ret;
 		}
@@ -81,6 +89,8 @@ namespace tz::gl::vk2
 			info.features.features.logicOp = feature_field.contains(DeviceFeature::ColourBlendLogicalOperations);
 			info.features.features.fillModeNonSolid = feature_field.contains(DeviceFeature::NonSolidFillRasteriser);
 			info.features.features.tessellationShader = feature_field.contains(DeviceFeature::TessellationShaders);
+			info.features.features.vertexPipelineStoresAndAtomics = feature_field.contains(DeviceFeature::VertexPipelineResourceWrite);
+			info.features.features.fragmentStoresAndAtomics = feature_field.contains(DeviceFeature::FragmentShaderResourceWrite);
 
 			if(feature_field.contains(DeviceFeature::BindlessDescriptors))
 			{

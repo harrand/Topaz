@@ -23,17 +23,24 @@ int main()
 		struct BufferData
 		{
 			tz::Mat4 model = tz::model({0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f});
-			tz::Mat4 view = tz::Mat4::identity();
+			tz::Mat4 view = tz::view({0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f});
 			tz::Mat4 projection = tz::Mat4::identity();
-			tz::Vec3 camera_position = {0.0f, 50.0f, 0.0f};
+			tz::Vec3 camera_position{0.0f, 0.0f, 0.0f};
+		};
+
+		struct FeedbackData
+		{
+			tz::Vec3 pos{0.0f, 0.0f, 0.0f};
 		};
 
 		tz::gl::Device dev;
 
 		tz::gl::BufferResource buf = tz::gl::BufferResource::from_one(BufferData{}, tz::gl::ResourceAccess::DynamicFixed);
+		tz::gl::BufferResource buf2 = tz::gl::BufferResource::from_one(FeedbackData{}, tz::gl::ResourceAccess::DynamicFixed);
 
 		tz::gl::RendererInfo rinfo;
 		tz::gl::ResourceHandle bufh = rinfo.add_resource(buf);
+		tz::gl::ResourceHandle bufh2 = rinfo.add_resource(buf2);
 		rinfo.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(tz_terrain_demo, vertex));
 		rinfo.shader().set_shader(tz::gl::ShaderStage::TessellationControl, ImportedShaderSource(tz_terrain_demo, tesscon));
 		rinfo.shader().set_shader(tz::gl::ShaderStage::TessellationEvaluation, ImportedShaderSource(tz_terrain_demo, tesseval));
@@ -124,6 +131,9 @@ int main()
 				{
 					camera_position -= cam_right * multiplier;
 				}
+
+				float output_vertex_height = renderer.get_resource(bufh2)->data_as<FeedbackData>().front().pos[1];
+				camera_position[1] = output_vertex_height;
 
 			}
 		}

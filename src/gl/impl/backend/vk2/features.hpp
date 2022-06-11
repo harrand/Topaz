@@ -27,6 +27,10 @@ namespace tz::gl::vk2
 		NonSolidFillRasteriser,
 		/// - Enables use of tesselation-control and tessellation-evaluation shaders.
 		TessellationShaders,
+		/// - Enables vertex, geometry, and tessellation shaders to write to storage buffers.
+		VertexPipelineResourceWrite,
+		/// - Enables fragment shaders to write to storage buffers.
+		FragmentShaderResourceWrite
 	};
 
 	using DeviceFeatureField = tz::EnumField<DeviceFeature>;
