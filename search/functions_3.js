@@ -10,9 +10,11 @@ var searchData=
   ['descriptorlayout_7',['DescriptorLayout',['../classtz_1_1gl_1_1vk2_1_1_descriptor_layout.html#a9ef5579debbf8a3d6d758c714edaf3b8',1,'tz::gl::vk2::DescriptorLayout']]],
   ['descriptorlayoutbuilder_8',['DescriptorLayoutBuilder',['../classtz_1_1gl_1_1vk2_1_1_descriptor_layout_builder.html#a44093ba76ad98d8c6209143c8f4de242',1,'tz::gl::vk2::DescriptorLayoutBuilder::DescriptorLayoutBuilder()=default'],['../classtz_1_1gl_1_1vk2_1_1_descriptor_layout_builder.html#ab2892131f4b7b43aed19eda352dfef81',1,'tz::gl::vk2::DescriptorLayoutBuilder::DescriptorLayoutBuilder(DescriptorLayoutInfo existing_info)']]],
   ['device_5fsupports_5fflags_9',['device_supports_flags',['../structtz_1_1gl_1_1vk2_1_1_descriptor_layout_info.html#a2e5cab5844cce37fcc8a06c1436f33e6',1,'tz::gl::vk2::DescriptorLayoutInfo']]],
-  ['do_5frender_5fwork_10',['do_render_work',['../classtz_1_1gl_1_1_command_processor.html#ad03bad20c91da8d9b203901b08cae4da',1,'tz::gl::CommandProcessor']]],
-  ['do_5fscratch_5foperations_11',['do_scratch_operations',['../classtz_1_1gl_1_1_command_processor.html#a3d3721f6b03bbd343b099d258cd49c30',1,'tz::gl::CommandProcessor']]],
-  ['done_12',['done',['../classtz_1_1_delay.html#a8c6450459a799834adfea423639e96d4',1,'tz::Delay']]],
-  ['dot_13',['dot',['../classtz_1_1_vector.html#a786e868c58c0e2492a94502a9800ee2e',1,'tz::Vector']]],
-  ['draw_14',['draw',['../classtz_1_1gl_1_1ogl2_1_1_vertex_array.html#af204d3d89c4aa9a192c8b3c12e1abb7b',1,'tz::gl::ogl2::VertexArray::draw()'],['../classtz_1_1gl_1_1vk2_1_1_command_buffer_recording.html#acd2074bf1faa8b35502ec823cfde1abf',1,'tz::gl::vk2::CommandBufferRecording::draw()']]]
+  ['dispatch_10',['dispatch',['../classtz_1_1gl_1_1vk2_1_1_command_buffer_recording.html#a3c305e3576f093dad51bd911c6dbab60',1,'tz::gl::vk2::CommandBufferRecording']]],
+  ['do_5frender_5fwork_11',['do_render_work',['../classtz_1_1gl_1_1_command_processor.html#ad03bad20c91da8d9b203901b08cae4da',1,'tz::gl::CommandProcessor']]],
+  ['do_5fscratch_5foperations_12',['do_scratch_operations',['../classtz_1_1gl_1_1_command_processor.html#a3d3721f6b03bbd343b099d258cd49c30',1,'tz::gl::CommandProcessor']]],
+  ['done_13',['done',['../classtz_1_1_delay.html#a8c6450459a799834adfea423639e96d4',1,'tz::Delay']]],
+  ['dot_14',['dot',['../classtz_1_1_vector.html#a786e868c58c0e2492a94502a9800ee2e',1,'tz::Vector']]],
+  ['draw_15',['draw',['../classtz_1_1gl_1_1ogl2_1_1_vertex_array.html#a6923f776d4abfb8d334afe2840c502cc',1,'tz::gl::ogl2::VertexArray::draw()'],['../classtz_1_1gl_1_1vk2_1_1_command_buffer_recording.html#acd2074bf1faa8b35502ec823cfde1abf',1,'tz::gl::vk2::CommandBufferRecording::draw()']]],
+  ['draw_5findexed_16',['draw_indexed',['../classtz_1_1gl_1_1ogl2_1_1_vertex_array.html#a3367675230cbe147114cee8ff8b68f36',1,'tz::gl::ogl2::VertexArray::draw_indexed()'],['../classtz_1_1gl_1_1vk2_1_1_command_buffer_recording.html#ad5539795d16fdb9fc6d507d38a45123c',1,'tz::gl::vk2::CommandBufferRecording::draw_indexed()']]]
 ];

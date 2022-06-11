@@ -21,6 +21,8 @@ var group__tz__core =
       [ "ptr", "structtz_1_1_blk.html#aa2f989e5c7a475da244daa8c0d96ec02", null ],
       [ "size", "structtz_1_1_blk.html#a86e7dd32d729010af0af78bb4d7a5579", null ]
     ] ],
+    [ "ImportedTextData", "group__tz__core.html#ga5716aac48c79a21fe8e66ebdc6c39177", null ],
+    [ "ImportedTextHeader", "group__tz__core.html#ga4f3e8bda82a6d0f26e688f5c6a2eb921", null ],
     [ "tz_assert", "group__tz__core.html#ga3cd9aafb91fe073ccf575281a4ed7acd", null ],
     [ "tz_debug_report", "group__tz__core.html#gaedc5290dfa96e8fd6ace3aea65a16e99", null ],
     [ "tz_error", "group__tz__core.html#ga1c23fd5abac5ba889b9b62885e1d692f", null ],

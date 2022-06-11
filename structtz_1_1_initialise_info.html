@@ -32,7 +32,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="tz.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Topaz<span id="projectnumber">&#160;3.2</span>
+   <div id="projectname">Topaz<span id="projectnumber">&#160;3.3</span>
    </div>
    <div id="projectbrief">C++20 Graphics Engine</div>
   </td>
@@ -111,27 +111,44 @@ Data Fields</h2></td></tr>
 <tr class="separator:a020101b6a72aa4f60480dfea019b7381"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac1c71fd718babdb640e189caaf26535a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structtz_1_1_version.html">tz::Version</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtz_1_1_initialise_info.html#ac1c71fd718babdb640e189caaf26535a">version</a> = {1, 0, 0}</td></tr>
 <tr class="separator:ac1c71fd718babdb640e189caaf26535a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7c1be85dd864028634e930b5359c75e1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__tz__core__init.html#gadf2ca063dc9da7506f02d8821761278c">ApplicationType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtz_1_1_initialise_info.html#a7c1be85dd864028634e930b5359c75e1">app_type</a> = <a class="el" href="group__tz__core__init.html#ggadf2ca063dc9da7506f02d8821761278ca02f48080f0de7046952459e70887e8a1">ApplicationType::WindowApplication</a></td></tr>
-<tr class="separator:a7c1be85dd864028634e930b5359c75e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae20145650f32d06258dbf08982dcc8fb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structtz_1_1_window_init_args.html">WindowInitArgs</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtz_1_1_initialise_info.html#ae20145650f32d06258dbf08982dcc8fb">window</a> = {}</td></tr>
-<tr class="separator:ae20145650f32d06258dbf08982dcc8fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a39fc1386268e43d20a9c6fddfc304569"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__tz__core__vecmat.html#ga2e6e360d229150d32624a64b286395f4">tz::Vec2ui</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtz_1_1_initialise_info.html#a39fc1386268e43d20a9c6fddfc304569">dimensions</a> = {800u, 600u}</td></tr>
+<tr class="separator:a39fc1386268e43d20a9c6fddfc304569"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a18492613a2cd89d1a89f7e49f9252607"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classtz_1_1_enum_field.html">ApplicationFlags</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtz_1_1_initialise_info.html#a18492613a2cd89d1a89f7e49f9252607">flags</a> = {}</td></tr>
+<tr class="separator:a18492613a2cd89d1a89f7e49f9252607"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >Specifies everything needed to initialise the engine. </p>
 </div><h2 class="groupheader">Field Documentation</h2>
-<a id="a7c1be85dd864028634e930b5359c75e1" name="a7c1be85dd864028634e930b5359c75e1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7c1be85dd864028634e930b5359c75e1">&#9670;&nbsp;</a></span>app_type</h2>
+<a id="a39fc1386268e43d20a9c6fddfc304569" name="a39fc1386268e43d20a9c6fddfc304569"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a39fc1386268e43d20a9c6fddfc304569">&#9670;&nbsp;</a></span>dimensions</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="group__tz__core__init.html#gadf2ca063dc9da7506f02d8821761278c">ApplicationType</a> tz::InitialiseInfo::app_type = <a class="el" href="group__tz__core__init.html#ggadf2ca063dc9da7506f02d8821761278ca02f48080f0de7046952459e70887e8a1">ApplicationType::WindowApplication</a></td>
+          <td class="memname"><a class="el" href="group__tz__core__vecmat.html#ga2e6e360d229150d32624a64b286395f4">tz::Vec2ui</a> tz::InitialiseInfo::dimensions = {800u, 600u}</td>
         </tr>
       </table>
 </div><div class="memdoc">
 <ul>
-<li>Describes the type of the application. See ApplicationType for more information. Defaults to a window application. </li>
+<li>Specifies dimensions of the window, in pixels. </li>
+</ul>
+
+</div>
+</div>
+<a id="a18492613a2cd89d1a89f7e49f9252607" name="a18492613a2cd89d1a89f7e49f9252607"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a18492613a2cd89d1a89f7e49f9252607">&#9670;&nbsp;</a></span>flags</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classtz_1_1_enum_field.html">ApplicationFlags</a> tz::InitialiseInfo::flags = {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<ul>
+<li>Describes some optional behaviours for the application. See ApplicationFlag for details. </li>
 </ul>
 
 </div>
@@ -166,23 +183,6 @@ Data Fields</h2></td></tr>
 </div><div class="memdoc">
 <ul>
 <li><a class="el" href="structtz_1_1_version.html">Version</a> of the application. If you do not version your application, you can leave this. Defaults to 1.0.0. </li>
-</ul>
-
-</div>
-</div>
-<a id="ae20145650f32d06258dbf08982dcc8fb" name="ae20145650f32d06258dbf08982dcc8fb"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae20145650f32d06258dbf08982dcc8fb">&#9670;&nbsp;</a></span>window</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="structtz_1_1_window_init_args.html">WindowInitArgs</a> tz::InitialiseInfo::window = {}</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<ul>
-<li>Describes extra information about the window, if initialisation will spawn one. Defaults to a set of implementation-defined flags &ndash; There is no guarantee these will change in subsequent releases so do not rely on the defaults not changing. </li>
 </ul>
 
 </div>

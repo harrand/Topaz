@@ -30,17 +30,23 @@ var NAVTREE =
       [ "Topaz Shader Language", "shaders.html#tzsl", null ],
       [ "Introduction", "shaders.html#Introduction", null ],
       [ "Language", "shaders.html#Language", [
-        [ "Definitions", "shaders.html#Preprocessor", [
+        [ "Inputs", "shaders.html#Inputs", null ],
+        [ "Outputs", "shaders.html#Outputs", null ],
+        [ "Resources", "shaders.html#Resources", null ],
+        [ "Preprocessor Definitions", "shaders.html#preproc", [
           [ "Example Fragment Shader", "shaders.html#ex0", null ]
-        ] ],
-        [ "Keywords", "shaders.html#Keywords", null ],
-        [ "Resources", "shaders.html#Resources", null ]
+        ] ]
       ] ],
+      [ "IO Blocks", "shaders.html#stypes", null ],
       [ "Built-in Functions", "shaders.html#bif", [
         [ "tz_printf", "shaders.html#bif_printf", [
           [ "Parameters", "shaders.html#tz_printf_params", null ],
           [ "Examples", "shaders.html#debug_printf_example", null ]
         ] ]
+      ] ],
+      [ "TZSL Header Imports", "shaders.html#header_imports", null ],
+      [ "Example Shader: tz_dynamic_triangle_demo.fragment.tzsl", "shaders.html#rwe", [
+        [ "Analysis", "shaders.html#rwe_analysis", null ]
       ] ]
     ] ],
     [ "Modules", "modules.html", "modules" ],
@@ -56,7 +62,7 @@ var NAVTREE =
       [ "Data Fields", "functions.html", [
         [ "All", "functions.html", "functions_dup" ],
         [ "Functions", "functions_func.html", "functions_func" ],
-        [ "Variables", "functions_vars.html", null ],
+        [ "Variables", "functions_vars.html", "functions_vars" ],
         [ "Typedefs", "functions_type.html", null ],
         [ "Enumerations", "functions_enum.html", null ]
       ] ]
@@ -67,10 +73,10 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "annotated.html",
-"classtz_1_1gl_1_1_renderer_vulkan.html#aca759d82373f617453912e4a438dbc8b",
-"functions_e.html",
-"group__tz__gl__vk__graphics__pipeline__render__pass.html#gab92f36711ba7bb90caf0e4a39748ed7d",
-"structtz_1_1gl_1_1vk2_1_1_fence_info.html#a22f2ab9e2e0152fde4949ea49dbd0cc4"
+"classtz_1_1gl_1_1_renderer_vulkan.html#a610cf9bae85091c03bd5b919b9ba113f",
+"concepttz_1_1_action.html",
+"group__tz__gl__vk__extension.html#ggaab3eb58740575c989d5eab8c3fd877a7ad69051b615fff4b893472a8289678385",
+"structtz_1_1gl_1_1vk2_1_1_colour_blend_state.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

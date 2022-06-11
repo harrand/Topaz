@@ -32,7 +32,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="tz.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Topaz<span id="projectnumber">&#160;3.2</span>
+   <div id="projectname">Topaz<span id="projectnumber">&#160;3.3</span>
    </div>
    <div id="projectbrief">C++20 Graphics Engine</div>
   </td>
@@ -122,7 +122,7 @@ const <a class="el" href="classtz_1_1gl_1_1vk2_1_1_buffer.html">Buffer</a> *&#16
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >Record a copy from one <a class="el" href="classtz_1_1gl_1_1vk2_1_1_buffer.html">Buffer</a> to an <a class="el" href="classtz_1_1gl_1_1vk2_1_1_image.html">Image</a>. </p>
-<p >The first N bytes will be copied from the source buffer to the destination image. </p>
+<p >The first N bytes will be copied from the source buffer to the destination image, there N == min(src-&gt;size(), dst-&gt;size()). </p>
 </div></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

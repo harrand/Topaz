@@ -1,7 +1,7 @@
 var searchData=
 [
   ['image_0',['image',['../structtz_1_1gl_1_1vk2_1_1_vulkan_command_1_1_transition_image_layout.html#a1e8990d656299ed2c114569299dccc2c',1,'tz::gl::vk2::VulkanCommand::TransitionImageLayout']]],
-  ['image_5faspects_1',['image_aspects',['../structtz_1_1gl_1_1vk2_1_1_vulkan_command_1_1_buffer_copy_image.html#a6e202dd142f2048d57785500b0764373',1,'tz::gl::vk2::VulkanCommand::BufferCopyImage::image_aspects()'],['../structtz_1_1gl_1_1vk2_1_1_vulkan_command_1_1_transition_image_layout.html#a222df56b11ad097bb6f2db067220b636',1,'tz::gl::vk2::VulkanCommand::TransitionImageLayout::image_aspects()']]],
+  ['image_5faspects_1',['image_aspects',['../structtz_1_1gl_1_1vk2_1_1_vulkan_command_1_1_buffer_copy_image.html#a6e202dd142f2048d57785500b0764373',1,'tz::gl::vk2::VulkanCommand::BufferCopyImage::image_aspects()'],['../structtz_1_1gl_1_1vk2_1_1_vulkan_command_1_1_image_copy_image.html#a0e407b294c7e6ee5ef34c9cc7ee4aa13',1,'tz::gl::vk2::VulkanCommand::ImageCopyImage::image_aspects()'],['../structtz_1_1gl_1_1vk2_1_1_vulkan_command_1_1_transition_image_layout.html#a222df56b11ad097bb6f2db067220b636',1,'tz::gl::vk2::VulkanCommand::TransitionImageLayout::image_aspects()']]],
   ['image_5fformat_2',['image_format',['../structtz_1_1gl_1_1vk2_1_1_swapchain_info.html#a055b9d3c8fdb45c9b5fdee572e6a3664',1,'tz::gl::vk2::SwapchainInfo']]],
   ['image_5fhandle_3',['image_handle',['../structtz_1_1gl_1_1_renderer_image_component_edit_request.html#ab46e5af65c93f5fa1059a6f537ae3e0c',1,'tz::gl::RendererImageComponentEditRequest']]],
   ['image_5findex_4',['image_index',['../structtz_1_1gl_1_1vk2_1_1_swapchain_image_info.html#adf625a0862f94f5073b0615b7a069361',1,'tz::gl::vk2::SwapchainImageInfo']]],

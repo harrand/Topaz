@@ -32,7 +32,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="tz.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Topaz<span id="projectnumber">&#160;3.2</span>
+   <div id="projectname">Topaz<span id="projectnumber">&#160;3.3</span>
    </div>
    <div id="projectbrief">C++20 Graphics Engine</div>
   </td>
@@ -126,6 +126,14 @@ Enumerations</h2></td></tr>
  }</td></tr>
 <tr class="memdesc:gac6834632961a6223450b780b32ced684"><td class="mdescLeft">&#160;</td><td class="mdescRight">Specifies the type of the resource; which is how a <a class="el" href="class_renderer.html" title="Implementation of tz::gl::RendererType.">Renderer</a> or Processor will interpret the usage of the resource within a shader.  <a href="group__tz__gl2__res.html#gac6834632961a6223450b780b32ced684">More...</a><br /></td></tr>
 <tr class="separator:gac6834632961a6223450b780b32ced684"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga49d5e99134986b45c3e73f9c2e3f3c31"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__tz__gl2__res.html#ga49d5e99134986b45c3e73f9c2e3f3c31">tz::gl::ResourceFlag</a> { <br />
+&#160;&#160;<a class="el" href="group__tz__gl2__res.html#gga49d5e99134986b45c3e73f9c2e3f3c31a7c3895116254ff0417e58b6286de27c0">ResourceFlag::IndexBuffer</a>
+, <br />
+&#160;&#160;<a class="el" href="group__tz__gl2__res.html#gga49d5e99134986b45c3e73f9c2e3f3c31a9b684106a7d819f0f033820570aa1e80">ResourceFlag::RendererOutput</a>
+<br />
+ }</td></tr>
+<tr class="memdesc:ga49d5e99134986b45c3e73f9c2e3f3c31"><td class="mdescLeft">&#160;</td><td class="mdescRight">Specifies optional flags which affect the behaviour of a resource in some way.  <a href="group__tz__gl2__res.html#ga49d5e99134986b45c3e73f9c2e3f3c31">More...</a><br /></td></tr>
+<tr class="separator:ga49d5e99134986b45c3e73f9c2e3f3c31"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaac6c9b5f2142e64f58da44ba1b7dedca"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__tz__gl2__res.html#gaac6c9b5f2142e64f58da44ba1b7dedca">tz::gl::ResourceAccess</a> { <br />
 &#160;&#160;<a class="el" href="group__tz__gl2__res.html#ggaac6c9b5f2142e64f58da44ba1b7dedcaab6808d7d17fa4d376d212668279ef514">ResourceAccess::StaticFixed</a>
 , <br />
@@ -179,6 +187,40 @@ Enumerations</h2></td></tr>
 
 </div>
 </div>
+<a id="ga49d5e99134986b45c3e73f9c2e3f3c31" name="ga49d5e99134986b45c3e73f9c2e3f3c31"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga49d5e99134986b45c3e73f9c2e3f3c31">&#9670;&nbsp;</a></span>ResourceFlag</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="group__tz__gl2__res.html#ga49d5e99134986b45c3e73f9c2e3f3c31">tz::gl::ResourceFlag</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Specifies optional flags which affect the behaviour of a resource in some way. </p>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="gga49d5e99134986b45c3e73f9c2e3f3c31a7c3895116254ff0417e58b6286de27c0" name="gga49d5e99134986b45c3e73f9c2e3f3c31a7c3895116254ff0417e58b6286de27c0"></a>IndexBuffer&#160;</td><td class="fielddoc"><ul>
+<li>Indicates that the buffer should be treated as a hardware index buffer. It will act as a bespoke non-shader-resource buffer that must store indices encoded as <code>unsigned int[]</code>. Can only be applied to buffer resources. </li>
+</ul>
+</td></tr>
+<tr><td class="fieldname"><a id="gga49d5e99134986b45c3e73f9c2e3f3c31a9b684106a7d819f0f033820570aa1e80" name="gga49d5e99134986b45c3e73f9c2e3f3c31a9b684106a7d819f0f033820570aa1e80"></a>RendererOutput&#160;</td><td class="fielddoc"><ul>
+<li>Indicates that the image can be used as an <a class="el" href="classtz_1_1gl_1_1_image_output.html">ImageOutput</a> for another renderer. </li>
+</ul>
+</td></tr>
+</table>
+
+</div>
+</div>
 <a id="gac6834632961a6223450b780b32ced684" name="gac6834632961a6223450b780b32ced684"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#gac6834632961a6223450b780b32ced684">&#9670;&nbsp;</a></span>ResourceType</h2>
 
@@ -202,11 +244,11 @@ Enumerations</h2></td></tr>
 <p>Specifies the type of the resource; which is how a <a class="el" href="class_renderer.html" title="Implementation of tz::gl::RendererType.">Renderer</a> or Processor will interpret the usage of the resource within a shader. </p>
 <table class="fieldtable">
 <tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ggac6834632961a6223450b780b32ced684a7e62bc342f41c946868f0ea6f0b712d8" name="ggac6834632961a6223450b780b32ced684a7e62bc342f41c946868f0ea6f0b712d8"></a>Buffer&#160;</td><td class="fielddoc"><ul>
-<li><a class="el" href="classtz_1_1gl_1_1_resource.html">Resource</a> is a buffer, which contains arbitrary data. </li>
+<li><a class="el" href="classtz_1_1gl_1_1_resource.html">Resource</a> is a buffer resource, which contains arbitrary data. </li>
 </ul>
 </td></tr>
 <tr><td class="fieldname"><a id="ggac6834632961a6223450b780b32ced684abe53a0541a6d36f6ecb879fa2c584b08" name="ggac6834632961a6223450b780b32ced684abe53a0541a6d36f6ecb879fa2c584b08"></a>Image&#160;</td><td class="fielddoc"><ul>
-<li><a class="el" href="classtz_1_1gl_1_1_resource.html">Resource</a> is an image of some format and dimensions. </li>
+<li><a class="el" href="classtz_1_1gl_1_1_resource.html">Resource</a> is an image resource, of some format and dimensions. </li>
 </ul>
 </td></tr>
 </table>

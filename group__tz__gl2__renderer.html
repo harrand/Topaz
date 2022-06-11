@@ -32,7 +32,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="tz.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Topaz<span id="projectnumber">&#160;3.2</span>
+   <div id="projectname">Topaz<span id="projectnumber">&#160;3.3</span>
    </div>
    <div id="projectbrief">C++20 Graphics Engine</div>
   </td>
@@ -137,6 +137,8 @@ Enumerations</h2></td></tr>
 &#160;&#160;<a class="el" href="group__tz__gl2__renderer.html#gga3f915e283a9998c54f738b2735c206ceaae6026b17332e73cf67e9d0461759d00">RendererOption::NoDepthTesting</a>
 , <br />
 &#160;&#160;<a class="el" href="group__tz__gl2__renderer.html#gga3f915e283a9998c54f738b2735c206cea8bb7dc17a08b6afa19cc4c18c6334eee">RendererOption::AlphaBlending</a>
+, <br />
+&#160;&#160;<a class="el" href="group__tz__gl2__renderer.html#gga3f915e283a9998c54f738b2735c206cea0d5bb23c4705e9f1e03d87a1ea451a64">RendererOption::BlockingCompute</a>
 <br />
  }</td></tr>
 <tr class="memdesc:ga3f915e283a9998c54f738b2735c206ce"><td class="mdescLeft">&#160;</td><td class="mdescRight">Specifies options to enable extra functionality within Renderers.  <a href="group__tz__gl2__renderer.html#ga3f915e283a9998c54f738b2735c206ce">More...</a><br /></td></tr>
@@ -173,6 +175,10 @@ Enumerations</h2></td></tr>
 </td></tr>
 <tr><td class="fieldname"><a id="gga3f915e283a9998c54f738b2735c206cea8bb7dc17a08b6afa19cc4c18c6334eee" name="gga3f915e283a9998c54f738b2735c206cea8bb7dc17a08b6afa19cc4c18c6334eee"></a>AlphaBlending&#160;</td><td class="fielddoc"><ul>
 <li>Enables alpha-blending. Causes pixels with alpha value &lt;1.0 to blend with the previous colour in the framebuffer, at a small cost to performance. </li>
+</ul>
+</td></tr>
+<tr><td class="fieldname"><a id="gga3f915e283a9998c54f738b2735c206cea0d5bb23c4705e9f1e03d87a1ea451a64" name="gga3f915e283a9998c54f738b2735c206cea0d5bb23c4705e9f1e03d87a1ea451a64"></a>BlockingCompute&#160;</td><td class="fielddoc"><ul>
+<li>When a compute renderer's <code>render()</code> is invoked, the thread will block until the compute-shader has finished processing. </li>
 </ul>
 </td></tr>
 </table>

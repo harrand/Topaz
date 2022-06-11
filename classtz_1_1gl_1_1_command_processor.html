@@ -32,7 +32,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="tz.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Topaz<span id="projectnumber">&#160;3.2</span>
+   <div id="projectname">Topaz<span id="projectnumber">&#160;3.3</span>
    </div>
    <div id="projectbrief">C++20 Graphics Engine</div>
   </td>
@@ -113,9 +113,9 @@ Data Structures</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ab8cdf2464510579fe77d64cd437028be"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtz_1_1gl_1_1_command_processor.html#ab8cdf2464510579fe77d64cd437028be">CommandProcessor</a> (<a class="el" href="classtz_1_1gl_1_1vk2_1_1_logical_device.html">vk2::LogicalDevice</a> &amp;ldev, std::size_t frame_in_flight_count, OutputTarget output_target, std::span&lt; <a class="el" href="classtz_1_1gl_1_1vk2_1_1_framebuffer.html">vk2::Framebuffer</a> &gt; output_framebuffers)</td></tr>
-<tr class="memdesc:ab8cdf2464510579fe77d64cd437028be"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a command processor, which will render into the provided output framebuffers.  <a href="classtz_1_1gl_1_1_command_processor.html#ab8cdf2464510579fe77d64cd437028be">More...</a><br /></td></tr>
-<tr class="separator:ab8cdf2464510579fe77d64cd437028be"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acba5228d0f956cc6f644f14b6077333c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtz_1_1gl_1_1_command_processor.html#acba5228d0f956cc6f644f14b6077333c">CommandProcessor</a> (<a class="el" href="classtz_1_1gl_1_1vk2_1_1_logical_device.html">vk2::LogicalDevice</a> &amp;ldev, std::size_t frame_in_flight_count, OutputTarget output_target, std::span&lt; <a class="el" href="classtz_1_1gl_1_1vk2_1_1_framebuffer.html">vk2::Framebuffer</a> &gt; output_framebuffers, bool instant_compute_enabled)</td></tr>
+<tr class="memdesc:acba5228d0f956cc6f644f14b6077333c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a command processor, which will render into the provided output framebuffers.  <a href="classtz_1_1gl_1_1_command_processor.html#acba5228d0f956cc6f644f14b6077333c">More...</a><br /></td></tr>
+<tr class="separator:acba5228d0f956cc6f644f14b6077333c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a332f26f09b8abae2ca30c0a94e117c56"><td class="memItemLeft" align="right" valign="top">std::span&lt; const <a class="el" href="classtz_1_1gl_1_1vk2_1_1_command_buffer.html">vk2::CommandBuffer</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtz_1_1gl_1_1_command_processor.html#a332f26f09b8abae2ca30c0a94e117c56">get_render_command_buffers</a> () const</td></tr>
 <tr class="memdesc:a332f26f09b8abae2ca30c0a94e117c56"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve a list of all command buffers which will be used for rendering.  <a href="classtz_1_1gl_1_1_command_processor.html#a332f26f09b8abae2ca30c0a94e117c56">More...</a><br /></td></tr>
 <tr class="separator:a332f26f09b8abae2ca30c0a94e117c56"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -136,8 +136,8 @@ Public Member Functions</h2></td></tr>
 <div class="textblock"><p >Responsible for all required command-buffers and drawing/scratch commands. </p>
 <p >The <a class="el" href="class_renderer.html" title="Implementation of tz::gl::RendererType.">Renderer</a> should not need to worry about command pools/buffers at all, but instead ask the command processor to schedule work and it can do so. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="ab8cdf2464510579fe77d64cd437028be" name="ab8cdf2464510579fe77d64cd437028be"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab8cdf2464510579fe77d64cd437028be">&#9670;&nbsp;</a></span>CommandProcessor()</h2>
+<a id="acba5228d0f956cc6f644f14b6077333c" name="acba5228d0f956cc6f644f14b6077333c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acba5228d0f956cc6f644f14b6077333c">&#9670;&nbsp;</a></span>CommandProcessor()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -164,7 +164,13 @@ Public Member Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">std::span&lt; <a class="el" href="classtz_1_1gl_1_1vk2_1_1_framebuffer.html">vk2::Framebuffer</a> &gt;&#160;</td>
-          <td class="paramname"><em>output_framebuffers</em>&#160;</td>
+          <td class="paramname"><em>output_framebuffers</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>instant_compute_enabled</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -214,7 +220,6 @@ Public Member Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Structure containing information about the results of the render work submission (and image presentation if applicable). </dd></dl>
 <dl class="section pre"><dt>Precondition</dt><dd><code>maybe_swapchain</code> must not be nullptr if the renderer is expected to present the result of the submitted work to the window. </dd></dl>
-<dl class="section note"><dt>Note</dt><dd>Headless rendering is not yet implemented. </dd></dl>
 
 </div>
 </div>

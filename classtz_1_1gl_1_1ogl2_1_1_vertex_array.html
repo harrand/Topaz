@@ -32,7 +32,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="tz.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Topaz<span id="projectnumber">&#160;3.2</span>
+   <div id="projectname">Topaz<span id="projectnumber">&#160;3.3</span>
    </div>
    <div id="projectbrief">C++20 Graphics Engine</div>
   </td>
@@ -116,9 +116,12 @@ Public Member Functions</h2></td></tr>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>bind</b> ()</td></tr>
 <tr class="memdesc:a32ee3090b86da0b1ad3f3eefac69b5b5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bind the VAO, causing subsequent GL commands using VAO state to use this. <br /></td></tr>
 <tr class="separator:a32ee3090b86da0b1ad3f3eefac69b5b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af204d3d89c4aa9a192c8b3c12e1abb7b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtz_1_1gl_1_1ogl2_1_1_vertex_array.html#af204d3d89c4aa9a192c8b3c12e1abb7b">draw</a> (unsigned int triangle_count)</td></tr>
-<tr class="memdesc:af204d3d89c4aa9a192c8b3c12e1abb7b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Emit a single draw call, drawing a set number of triangles.  <a href="classtz_1_1gl_1_1ogl2_1_1_vertex_array.html#af204d3d89c4aa9a192c8b3c12e1abb7b">More...</a><br /></td></tr>
-<tr class="separator:af204d3d89c4aa9a192c8b3c12e1abb7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6923f776d4abfb8d334afe2840c502cc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtz_1_1gl_1_1ogl2_1_1_vertex_array.html#a6923f776d4abfb8d334afe2840c502cc">draw</a> (unsigned int triangle_count, bool tessellation=false)</td></tr>
+<tr class="memdesc:a6923f776d4abfb8d334afe2840c502cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Emit a single draw call, drawing a set number of triangles.  <a href="classtz_1_1gl_1_1ogl2_1_1_vertex_array.html#a6923f776d4abfb8d334afe2840c502cc">More...</a><br /></td></tr>
+<tr class="separator:a6923f776d4abfb8d334afe2840c502cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3367675230cbe147114cee8ff8b68f36"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtz_1_1gl_1_1ogl2_1_1_vertex_array.html#a3367675230cbe147114cee8ff8b68f36">draw_indexed</a> (unsigned int triangle_count, const <a class="el" href="classtz_1_1gl_1_1ogl2_1_1_buffer.html">Buffer</a> &amp;index_buffer, bool tessellation=false)</td></tr>
+<tr class="memdesc:a3367675230cbe147114cee8ff8b68f36"><td class="mdescLeft">&#160;</td><td class="mdescRight">Emit a single draw call, drawing a set number of triangles, assuming an index buffer has already been bound.  <a href="classtz_1_1gl_1_1ogl2_1_1_vertex_array.html#a3367675230cbe147114cee8ff8b68f36">More...</a><br /></td></tr>
+<tr class="separator:a3367675230cbe147114cee8ff8b68f36"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a19dda2ee7ef54a92945507ef9a0c2978"><td class="memItemLeft" align="right" valign="top"><a id="a19dda2ee7ef54a92945507ef9a0c2978" name="a19dda2ee7ef54a92945507ef9a0c2978"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_null</b> () const</td></tr>
 <tr class="memdesc:a19dda2ee7ef54a92945507ef9a0c2978"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query as to whether this is a null vertex array, which is equivalent to <a class="el" href="classtz_1_1gl_1_1ogl2_1_1_vertex_array.html#ab8f3b3c1363a4f9a0b2777975fe06da6">VertexArray::null()</a>. <br /></td></tr>
@@ -133,8 +136,8 @@ Static Public Member Functions</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >Wrapper for an OpenGL VAO. </p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="af204d3d89c4aa9a192c8b3c12e1abb7b" name="af204d3d89c4aa9a192c8b3c12e1abb7b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af204d3d89c4aa9a192c8b3c12e1abb7b">&#9670;&nbsp;</a></span>draw()</h2>
+<a id="a6923f776d4abfb8d334afe2840c502cc" name="a6923f776d4abfb8d334afe2840c502cc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6923f776d4abfb8d334afe2840c502cc">&#9670;&nbsp;</a></span>draw()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -143,13 +146,65 @@ Static Public Member Functions</h2></td></tr>
           <td class="memname">void tz::gl::ogl2::VertexArray::draw </td>
           <td>(</td>
           <td class="paramtype">unsigned int&#160;</td>
-          <td class="paramname"><em>triangle_count</em></td><td>)</td>
+          <td class="paramname"><em>triangle_count</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>tessellation</em> = <code>false</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 <p>Emit a single draw call, drawing a set number of triangles. </p>
+<p >Remember that vertex attributes are not supported in this backend, so you will source input data from either hard-coded shader values or from UBO/SSBO shader resources. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">triangle_count</td><td>Number of triangles to draw. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a3367675230cbe147114cee8ff8b68f36" name="a3367675230cbe147114cee8ff8b68f36"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3367675230cbe147114cee8ff8b68f36">&#9670;&nbsp;</a></span>draw_indexed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void tz::gl::ogl2::VertexArray::draw_indexed </td>
+          <td>(</td>
+          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramname"><em>triangle_count</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classtz_1_1gl_1_1ogl2_1_1_buffer.html">Buffer</a> &amp;&#160;</td>
+          <td class="paramname"><em>index_buffer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>tessellation</em> = <code>false</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Emit a single draw call, drawing a set number of triangles, assuming an index buffer has already been bound. </p>
 <p >Remember that vertex attributes are not supported in this backend, so you will source input data from either hard-coded shader values or from UBO/SSBO shader resources. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">triangle_count</td><td>Number of triangles to draw. </td></tr>

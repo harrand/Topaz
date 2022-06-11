@@ -8,9 +8,8 @@ var searchData=
   ['address_5fmode_5fw_5',['address_mode_w',['../structtz_1_1gl_1_1vk2_1_1_sampler_info.html#ab44f5074772b344c8307c561f98b2149',1,'tz::gl::vk2::SamplerInfo']]],
   ['affected_5flayers_6',['affected_layers',['../structtz_1_1gl_1_1vk2_1_1_vulkan_command_1_1_transition_image_layout.html#aeaac71f2af5dc6deb49315ceedd90b66',1,'tz::gl::vk2::VulkanCommand::TransitionImageLayout']]],
   ['affected_5fmip_5flevels_7',['affected_mip_levels',['../structtz_1_1gl_1_1vk2_1_1_vulkan_command_1_1_transition_image_layout.html#ad3b165303278ffd2d8da71e26f53219b',1,'tz::gl::vk2::VulkanCommand::TransitionImageLayout']]],
-  ['app_5ftype_8',['app_type',['../structtz_1_1_initialise_info.html#a7c1be85dd864028634e930b5359c75e1',1,'tz::InitialiseInfo::app_type()'],['../structtz_1_1gl_1_1vk2_1_1_vulkan_instance_info.html#afc9c619b8760063408c0b2126cb358b3',1,'tz::gl::vk2::VulkanInstanceInfo::app_type()']]],
-  ['array_5felement_9',['array_element',['../structtz_1_1gl_1_1vk2_1_1_descriptor_set_1_1_write.html#a7646cd399f52126271396f9693e69c94',1,'tz::gl::vk2::DescriptorSet::Write']]],
-  ['array_5flayers_10',['array_layers',['../structtz_1_1gl_1_1vk2_1_1_image_info.html#a67bbc897a20870d0bb9073899a73bd3f',1,'tz::gl::vk2::ImageInfo']]],
-  ['attachment_5fidx_11',['attachment_idx',['../structtz_1_1gl_1_1vk2_1_1_render_pass_info_1_1_attachment_reference.html#ae5b305155d4912ffe6cae8a8e593a7a5',1,'tz::gl::vk2::RenderPassInfo::AttachmentReference']]],
-  ['attachments_12',['attachments',['../structtz_1_1gl_1_1vk2_1_1_framebuffer_info.html#acb89c1a109015291b8128c562ca2d223',1,'tz::gl::vk2::FramebufferInfo::attachments()'],['../structtz_1_1gl_1_1vk2_1_1_render_pass_info.html#a182ef5dcf73cdebd454098b8db457f13',1,'tz::gl::vk2::RenderPassInfo::attachments()']]]
+  ['array_5felement_8',['array_element',['../structtz_1_1gl_1_1vk2_1_1_descriptor_set_1_1_write.html#a7646cd399f52126271396f9693e69c94',1,'tz::gl::vk2::DescriptorSet::Write']]],
+  ['array_5flayers_9',['array_layers',['../structtz_1_1gl_1_1vk2_1_1_image_info.html#a67bbc897a20870d0bb9073899a73bd3f',1,'tz::gl::vk2::ImageInfo']]],
+  ['attachment_5fidx_10',['attachment_idx',['../structtz_1_1gl_1_1vk2_1_1_render_pass_info_1_1_attachment_reference.html#ae5b305155d4912ffe6cae8a8e593a7a5',1,'tz::gl::vk2::RenderPassInfo::AttachmentReference']]],
+  ['attachments_11',['attachments',['../structtz_1_1gl_1_1vk2_1_1_framebuffer_info.html#acb89c1a109015291b8128c562ca2d223',1,'tz::gl::vk2::FramebufferInfo::attachments()'],['../structtz_1_1gl_1_1vk2_1_1_render_pass_info.html#a182ef5dcf73cdebd454098b8db457f13',1,'tz::gl::vk2::RenderPassInfo::attachments()']]]
 ];

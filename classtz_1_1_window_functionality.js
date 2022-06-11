@@ -6,6 +6,7 @@ var classtz_1_1_window_functionality =
     [ "get_mouse_position_state", "classtz_1_1_window_functionality.html#aec10c749d0bac6470393e31a856700b9", null ],
     [ "get_width", "classtz_1_1_window_functionality.html#a812ceed878c9ee05e3f97ab007919234", null ],
     [ "is_close_requested", "classtz_1_1_window_functionality.html#a494b025f7deff360b29f4f1ac7f47ed8", null ],
+    [ "on_move", "classtz_1_1_window_functionality.html#ae3b17f38e317da1ea7a846a631298212", null ],
     [ "on_resize", "classtz_1_1_window_functionality.html#a6f1fd77dc9e48ba0056d20ea8aa5e4e5", null ],
     [ "update", "classtz_1_1_window_functionality.html#afbe2354f5ea3d1cd85c6b720cf421444", null ]
 ];

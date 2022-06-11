@@ -32,7 +32,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="tz.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Topaz<span id="projectnumber">&#160;3.2</span>
+   <div id="projectname">Topaz<span id="projectnumber">&#160;3.3</span>
    </div>
    <div id="projectbrief">C++20 Graphics Engine</div>
   </td>
@@ -109,55 +109,63 @@ $(document).ready(function(){initNavTree('features_8hpp_source.html',''); initRe
 <div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>        <a class="code hl_enumvalue" href="group__tz__gl__vk__extension.html#gga6744c8f7d1276d6d9ae861b21c489505abea0d690193c82d29c896d859a91d8ff">MultiDrawIndirect</a>,</div>
 <div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>        <a class="code hl_enumvalue" href="group__tz__gl__vk__extension.html#gga6744c8f7d1276d6d9ae861b21c489505aa470c5a1e7f7f5154881cbc29acff30c">BindlessDescriptors</a>,</div>
 <div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>        <a class="code hl_enumvalue" href="group__tz__gl__vk__extension.html#gga6744c8f7d1276d6d9ae861b21c489505a2ba71b83fa5ce2f8870a1259a92cd76b">TimelineSemaphores</a>,</div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>        <a class="code hl_enumvalue" href="group__tz__gl__vk__extension.html#gga6744c8f7d1276d6d9ae861b21c489505a5c5e6dcae77164cee63d668af3b3bc9e">ColourBlendLogicalOperations</a></div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    };</div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <span class="keyword">using</span> DeviceFeatureField = <a class="code hl_class" href="classtz_1_1_enum_field.html">tz::EnumField&lt;DeviceFeature&gt;</a>;</div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <span class="keyword">namespace </span>detail</div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    {</div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>        <span class="keyword">constexpr</span> VkPhysicalDeviceDescriptorIndexingFeatures empty_descriptor_indexing_features()</div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>        {</div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>            VkPhysicalDeviceDescriptorIndexingFeatures feats{};</div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>            feats.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES;</div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>            feats.pNext = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>            <span class="keywordflow">return</span> feats;</div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>        }</div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    </div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>        <span class="keyword">constexpr</span> VkPhysicalDeviceVulkan12Features empty_12_features(VkPhysicalDeviceDescriptorIndexingFeatures&amp; next)</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>        <a class="code hl_enumvalue" href="group__tz__gl__vk__extension.html#gga6744c8f7d1276d6d9ae861b21c489505a5c5e6dcae77164cee63d668af3b3bc9e">ColourBlendLogicalOperations</a>,</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>        <a class="code hl_enumvalue" href="group__tz__gl__vk__extension.html#gga6744c8f7d1276d6d9ae861b21c489505a50df80e0d2daa3c2a0fbf8a994ad3a62">NonSolidFillRasteriser</a>,</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>        <a class="code hl_enumvalue" href="group__tz__gl__vk__extension.html#gga6744c8f7d1276d6d9ae861b21c489505a0fc969c0579e0ecc3324615f8eff626d">TessellationShaders</a>,</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>        <a class="code hl_enumvalue" href="group__tz__gl__vk__extension.html#gga6744c8f7d1276d6d9ae861b21c489505ab77badc545def5f132a116dcfab8e272">VertexPipelineResourceWrite</a>,</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>        <a class="code hl_enumvalue" href="group__tz__gl__vk__extension.html#gga6744c8f7d1276d6d9ae861b21c489505a70e29cc30c58871bc15535cb09d4ee87">FragmentShaderResourceWrite</a></div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    };</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keyword">using</span> DeviceFeatureField = <a class="code hl_class" href="classtz_1_1_enum_field.html">tz::EnumField&lt;DeviceFeature&gt;</a>;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="keyword">namespace </span>detail</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    {</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>        <span class="keyword">constexpr</span> VkPhysicalDeviceDescriptorIndexingFeatures empty_descriptor_indexing_features()</div>
 <div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>        {</div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>            VkPhysicalDeviceVulkan12Features feats{};</div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>            feats.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_FEATURES;</div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>            feats.pNext = &amp;next;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>            VkPhysicalDeviceDescriptorIndexingFeatures feats{};</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>            feats.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>            feats.pNext = <span class="keyword">nullptr</span>;</div>
 <div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>            <span class="keywordflow">return</span> feats;</div>
 <div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>        }</div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>        <span class="keyword">constexpr</span> VkPhysicalDeviceFeatures2 empty_features2(VkPhysicalDeviceVulkan12Features&amp; next)</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    </div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>        <span class="keyword">constexpr</span> VkPhysicalDeviceVulkan12Features empty_12_features(VkPhysicalDeviceDescriptorIndexingFeatures&amp; next)</div>
 <div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        {</div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>            VkPhysicalDeviceFeatures2 feats{};</div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>            feats.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>            VkPhysicalDeviceVulkan12Features feats{};</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>            feats.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_FEATURES;</div>
 <div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>            feats.pNext = &amp;next;</div>
 <div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>            <span class="keywordflow">return</span> feats;</div>
 <div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>        }</div>
 <div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno"><a class="line" href="structtz_1_1gl_1_1vk2_1_1detail_1_1_device_feature_info.html">   56</a></span>        <span class="keyword">struct </span><a class="code hl_struct" href="structtz_1_1gl_1_1vk2_1_1detail_1_1_device_feature_info.html">DeviceFeatureInfo</a></div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>        <span class="keyword">constexpr</span> VkPhysicalDeviceFeatures2 empty_features2(VkPhysicalDeviceVulkan12Features&amp; next)</div>
 <div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>        {</div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>            VkPhysicalDeviceDescriptorIndexingFeatures descriptor_indexing_features = empty_descriptor_indexing_features();</div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>            VkPhysicalDeviceVulkan12Features features12 = empty_12_features(descriptor_indexing_features);</div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>            VkPhysicalDeviceFeatures2 features = empty_features2(features12);</div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>        };</div>
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    }</div>
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>}</div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span><span class="preprocessor">#endif </span><span class="comment">// TZ_VULKAN</span></div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span><span class="preprocessor">#endif </span><span class="comment">// TOPAZ_GL_IMPL_BACKEND_VK2_FEATURES_HPP</span></div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>            VkPhysicalDeviceFeatures2 feats{};</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>            feats.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>            feats.pNext = &amp;next;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>            <span class="keywordflow">return</span> feats;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>        }</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span> </div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno"><a class="line" href="structtz_1_1gl_1_1vk2_1_1detail_1_1_device_feature_info.html">   64</a></span>        <span class="keyword">struct </span><a class="code hl_struct" href="structtz_1_1gl_1_1vk2_1_1detail_1_1_device_feature_info.html">DeviceFeatureInfo</a></div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>        {</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>            VkPhysicalDeviceDescriptorIndexingFeatures descriptor_indexing_features = empty_descriptor_indexing_features();</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>            VkPhysicalDeviceVulkan12Features features12 = empty_12_features(descriptor_indexing_features);</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>            VkPhysicalDeviceFeatures2 features = empty_features2(features12);</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>        };</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    }</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>}</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span> </div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span><span class="preprocessor">#endif </span><span class="comment">// TZ_VULKAN</span></div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span><span class="preprocessor">#endif </span><span class="comment">// TOPAZ_GL_IMPL_BACKEND_VK2_FEATURES_HPP</span></div>
 <div class="ttc" id="aclasstz_1_1_enum_field_html"><div class="ttname"><a href="classtz_1_1_enum_field.html">tz::EnumField&lt; DeviceFeature &gt;</a></div></div>
 <div class="ttc" id="agroup__tz__gl__vk__extension_html_ga6744c8f7d1276d6d9ae861b21c489505"><div class="ttname"><a href="group__tz__gl__vk__extension.html#ga6744c8f7d1276d6d9ae861b21c489505">tz::gl::vk2::DeviceFeature</a></div><div class="ttdeci">DeviceFeature</div><div class="ttdoc">Represents an optional feature specific to a PhysicalDevice.</div><div class="ttdef"><b>Definition:</b> features.hpp:17</div></div>
+<div class="ttc" id="agroup__tz__gl__vk__extension_html_gga6744c8f7d1276d6d9ae861b21c489505a0fc969c0579e0ecc3324615f8eff626d"><div class="ttname"><a href="group__tz__gl__vk__extension.html#gga6744c8f7d1276d6d9ae861b21c489505a0fc969c0579e0ecc3324615f8eff626d">tz::gl::vk2::DeviceFeature::TessellationShaders</a></div><div class="ttdeci">@ TessellationShaders</div></div>
 <div class="ttc" id="agroup__tz__gl__vk__extension_html_gga6744c8f7d1276d6d9ae861b21c489505a2ba71b83fa5ce2f8870a1259a92cd76b"><div class="ttname"><a href="group__tz__gl__vk__extension.html#gga6744c8f7d1276d6d9ae861b21c489505a2ba71b83fa5ce2f8870a1259a92cd76b">tz::gl::vk2::DeviceFeature::TimelineSemaphores</a></div><div class="ttdeci">@ TimelineSemaphores</div></div>
+<div class="ttc" id="agroup__tz__gl__vk__extension_html_gga6744c8f7d1276d6d9ae861b21c489505a50df80e0d2daa3c2a0fbf8a994ad3a62"><div class="ttname"><a href="group__tz__gl__vk__extension.html#gga6744c8f7d1276d6d9ae861b21c489505a50df80e0d2daa3c2a0fbf8a994ad3a62">tz::gl::vk2::DeviceFeature::NonSolidFillRasteriser</a></div><div class="ttdeci">@ NonSolidFillRasteriser</div></div>
 <div class="ttc" id="agroup__tz__gl__vk__extension_html_gga6744c8f7d1276d6d9ae861b21c489505a5c5e6dcae77164cee63d668af3b3bc9e"><div class="ttname"><a href="group__tz__gl__vk__extension.html#gga6744c8f7d1276d6d9ae861b21c489505a5c5e6dcae77164cee63d668af3b3bc9e">tz::gl::vk2::DeviceFeature::ColourBlendLogicalOperations</a></div><div class="ttdeci">@ ColourBlendLogicalOperations</div></div>
+<div class="ttc" id="agroup__tz__gl__vk__extension_html_gga6744c8f7d1276d6d9ae861b21c489505a70e29cc30c58871bc15535cb09d4ee87"><div class="ttname"><a href="group__tz__gl__vk__extension.html#gga6744c8f7d1276d6d9ae861b21c489505a70e29cc30c58871bc15535cb09d4ee87">tz::gl::vk2::DeviceFeature::FragmentShaderResourceWrite</a></div><div class="ttdeci">@ FragmentShaderResourceWrite</div></div>
 <div class="ttc" id="agroup__tz__gl__vk__extension_html_gga6744c8f7d1276d6d9ae861b21c489505aa470c5a1e7f7f5154881cbc29acff30c"><div class="ttname"><a href="group__tz__gl__vk__extension.html#gga6744c8f7d1276d6d9ae861b21c489505aa470c5a1e7f7f5154881cbc29acff30c">tz::gl::vk2::DeviceFeature::BindlessDescriptors</a></div><div class="ttdeci">@ BindlessDescriptors</div></div>
+<div class="ttc" id="agroup__tz__gl__vk__extension_html_gga6744c8f7d1276d6d9ae861b21c489505ab77badc545def5f132a116dcfab8e272"><div class="ttname"><a href="group__tz__gl__vk__extension.html#gga6744c8f7d1276d6d9ae861b21c489505ab77badc545def5f132a116dcfab8e272">tz::gl::vk2::DeviceFeature::VertexPipelineResourceWrite</a></div><div class="ttdeci">@ VertexPipelineResourceWrite</div></div>
 <div class="ttc" id="agroup__tz__gl__vk__extension_html_gga6744c8f7d1276d6d9ae861b21c489505abea0d690193c82d29c896d859a91d8ff"><div class="ttname"><a href="group__tz__gl__vk__extension.html#gga6744c8f7d1276d6d9ae861b21c489505abea0d690193c82d29c896d859a91d8ff">tz::gl::vk2::DeviceFeature::MultiDrawIndirect</a></div><div class="ttdeci">@ MultiDrawIndirect</div></div>
-<div class="ttc" id="astructtz_1_1gl_1_1vk2_1_1detail_1_1_device_feature_info_html"><div class="ttname"><a href="structtz_1_1gl_1_1vk2_1_1detail_1_1_device_feature_info.html">tz::gl::vk2::detail::DeviceFeatureInfo</a></div><div class="ttdef"><b>Definition:</b> features.hpp:57</div></div>
+<div class="ttc" id="astructtz_1_1gl_1_1vk2_1_1detail_1_1_device_feature_info_html"><div class="ttname"><a href="structtz_1_1gl_1_1vk2_1_1detail_1_1_device_feature_info.html">tz::gl::vk2::detail::DeviceFeatureInfo</a></div><div class="ttdef"><b>Definition:</b> features.hpp:65</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

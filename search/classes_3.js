@@ -12,7 +12,9 @@ var searchData=
   ['deviceogl_9',['DeviceOGL',['../classtz_1_1gl_1_1_device_o_g_l.html',1,'tz::gl']]],
   ['devicevulkan_10',['DeviceVulkan',['../classtz_1_1gl_1_1_device_vulkan.html',1,'tz::gl']]],
   ['devicewindowvulkan_11',['DeviceWindowVulkan',['../classtz_1_1gl_1_1_device_window_vulkan.html',1,'tz::gl']]],
-  ['draw_12',['Draw',['../structtz_1_1gl_1_1vk2_1_1_vulkan_command_1_1_draw.html',1,'tz::gl::vk2::VulkanCommand']]],
-  ['duration_13',['Duration',['../classtz_1_1_duration.html',1,'tz']]],
-  ['dynamicstate_14',['DynamicState',['../structtz_1_1gl_1_1vk2_1_1_dynamic_state.html',1,'tz::gl::vk2']]]
+  ['dispatch_12',['Dispatch',['../structtz_1_1gl_1_1vk2_1_1_vulkan_command_1_1_dispatch.html',1,'tz::gl::vk2::VulkanCommand']]],
+  ['draw_13',['Draw',['../structtz_1_1gl_1_1vk2_1_1_vulkan_command_1_1_draw.html',1,'tz::gl::vk2::VulkanCommand']]],
+  ['drawindexed_14',['DrawIndexed',['../structtz_1_1gl_1_1vk2_1_1_vulkan_command_1_1_draw_indexed.html',1,'tz::gl::vk2::VulkanCommand']]],
+  ['duration_15',['Duration',['../classtz_1_1_duration.html',1,'tz']]],
+  ['dynamicstate_16',['DynamicState',['../structtz_1_1gl_1_1vk2_1_1_dynamic_state.html',1,'tz::gl::vk2']]]
 ];

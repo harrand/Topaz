@@ -32,7 +32,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="tz.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Topaz<span id="projectnumber">&#160;3.2</span>
+   <div id="projectname">Topaz<span id="projectnumber">&#160;3.3</span>
    </div>
    <div id="projectbrief">C++20 Graphics Engine</div>
   </td>
@@ -159,6 +159,12 @@ Macros</h2></td></tr>
 <tr class="memitem:ga3cd9aafb91fe073ccf575281a4ed7acd"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__tz__core.html#ga3cd9aafb91fe073ccf575281a4ed7acd">tz_assert</a>(eval,  msg, ...)</td></tr>
 <tr class="memdesc:ga3cd9aafb91fe073ccf575281a4ed7acd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Debug-only assert on some condition.  <a href="group__tz__core.html#ga3cd9aafb91fe073ccf575281a4ed7acd">More...</a><br /></td></tr>
 <tr class="separator:ga3cd9aafb91fe073ccf575281a4ed7acd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga4f3e8bda82a6d0f26e688f5c6a2eb921"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__tz__core.html#ga4f3e8bda82a6d0f26e688f5c6a2eb921">ImportedTextHeader</a>(text_name,  text_ext)</td></tr>
+<tr class="memdesc:ga4f3e8bda82a6d0f26e688f5c6a2eb921"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves a file path which is intended to be #included in a application's main source file.  <a href="group__tz__core.html#ga4f3e8bda82a6d0f26e688f5c6a2eb921">More...</a><br /></td></tr>
+<tr class="separator:ga4f3e8bda82a6d0f26e688f5c6a2eb921"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga5716aac48c79a21fe8e66ebdc6c39177"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__tz__core.html#ga5716aac48c79a21fe8e66ebdc6c39177">ImportedTextData</a>(text_name,  text_ext)</td></tr>
+<tr class="memdesc:ga5716aac48c79a21fe8e66ebdc6c39177"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves a token representing a <code>std::string_view</code> which contains an imported text file's contents.  <a href="group__tz__core.html#ga5716aac48c79a21fe8e66ebdc6c39177">More...</a><br /></td></tr>
+<tr class="separator:ga5716aac48c79a21fe8e66ebdc6c39177"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga689877fdd5704decf3fde4adf8c07031"><td class="memItemLeft" align="right" valign="top"><a id="ga689877fdd5704decf3fde4adf8c07031" name="ga689877fdd5704decf3fde4adf8c07031"></a>
 #define&#160;</td><td class="memItemRight" valign="bottom"><b>tz_report</b>(fmt, ...)</td></tr>
 <tr class="memdesc:ga689877fdd5704decf3fde4adf8c07031"><td class="mdescLeft">&#160;</td><td class="mdescRight">Send formatted output to stdout, but also print out the source of the report in the codebase. <br /></td></tr>
@@ -187,6 +193,68 @@ Functions</h2></td></tr>
 <li>Input processing </li>
 </ul>
 <h2 class="groupheader">Macro Definition Documentation</h2>
+<a id="ga5716aac48c79a21fe8e66ebdc6c39177" name="ga5716aac48c79a21fe8e66ebdc6c39177"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga5716aac48c79a21fe8e66ebdc6c39177">&#9670;&nbsp;</a></span>ImportedTextData</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">ImportedTextData</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">text_name, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">text_ext&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Retrieves a token representing a <code>std::string_view</code> which contains an imported text file's contents. </p>
+<p >You can only retrieve an imported text's contents if the imported text has been included via <a class="el" href="group__tz__core.html#ga4f3e8bda82a6d0f26e688f5c6a2eb921">ImportedTextHeader</a> </p>
+
+</div>
+</div>
+<a id="ga4f3e8bda82a6d0f26e688f5c6a2eb921" name="ga4f3e8bda82a6d0f26e688f5c6a2eb921"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga4f3e8bda82a6d0f26e688f5c6a2eb921">&#9670;&nbsp;</a></span>ImportedTextHeader</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">ImportedTextHeader</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">text_name, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">text_ext&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Retrieves a file path which is intended to be #included in a application's main source file. </p>
+<p >Once included, the imported text's contents can be retrieved as a constexpr string_view via <a class="el" href="group__tz__core.html#ga5716aac48c79a21fe8e66ebdc6c39177">ImportedTextData</a>. </p>
+
+</div>
+</div>
 <a id="ga3cd9aafb91fe073ccf575281a4ed7acd" name="ga3cd9aafb91fe073ccf575281a4ed7acd"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ga3cd9aafb91fe073ccf575281a4ed7acd">&#9670;&nbsp;</a></span>tz_assert</h2>
 

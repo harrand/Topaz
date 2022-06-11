@@ -12,5 +12,6 @@ var searchData=
   ['with_5fdepth_5fstencil_5fattachment_9',['with_depth_stencil_attachment',['../classtz_1_1gl_1_1vk2_1_1_subpass_builder.html#af3b5e86fed158d329db4b084556eab85',1,'tz::gl::vk2::SubpassBuilder']]],
   ['with_5finput_5fattachment_10',['with_input_attachment',['../classtz_1_1gl_1_1vk2_1_1_subpass_builder.html#a732e8dc67451e314bae38faf24cd1fa6',1,'tz::gl::vk2::SubpassBuilder']]],
   ['with_5fmore_11',['with_more',['../classtz_1_1_vector.html#af5e9cbbcaf12c92ad1e9effc6005824b',1,'tz::Vector::with_more(T &amp;&amp;end) const'],['../classtz_1_1_vector.html#a1b69907c426096c14929e4d5332cb236',1,'tz::Vector::with_more(const Vector&lt; T, S2 &gt; &amp;end) const']]],
-  ['with_5fsubpass_12',['with_subpass',['../classtz_1_1gl_1_1vk2_1_1_render_pass_builder.html#a2d7d398247571d6314e727923d8f7160',1,'tz::gl::vk2::RenderPassBuilder']]]
+  ['with_5fsubpass_12',['with_subpass',['../classtz_1_1gl_1_1vk2_1_1_render_pass_builder.html#a2d7d398247571d6314e727923d8f7160',1,'tz::gl::vk2::RenderPassBuilder']]],
+  ['write_5fpadded_5fimage_5fdata_13',['write_padded_image_data',['../classtz_1_1gl_1_1_resource_storage.html#a99fc67dff012a832a3180cccfc328be7',1,'tz::gl::ResourceStorage']]]
 ];
