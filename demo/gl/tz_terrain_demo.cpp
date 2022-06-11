@@ -50,8 +50,10 @@ int main()
 		tz::gl::Renderer renderer = dev.create_renderer(rinfo);
 		tz::Vec3 cam_rot{0.0f, 0.0f, 0.0f};
 		bool wireframe_mode = false;
+		bool lock_camera_height = true;
 		using namespace tz::literals;
 		tz::Delay fixed_update{25_ms};
+		tz::Delay input_latch{500_ms};
 
 		constexpr float multiplier = 3.5f;
 		while(!tz::window().is_close_requested())
@@ -67,8 +69,9 @@ int main()
 				fixed_update.reset();
 
 				// If Q is pressed, toggle wireframe mode via renderer edit.
-				if(tz::window().get_keyboard_state().is_key_down(tz::KeyCode::Q))
+				if(tz::window().get_keyboard_state().is_key_down(tz::KeyCode::Q) && input_latch.done())
 				{
+					input_latch.reset();
 					renderer.edit
 					({
 						.render_state_edit = tz::gl::RendererStateEditRequest
@@ -115,13 +118,10 @@ int main()
 				{
 					camera_position -= cam_forward * multiplier;
 				}
-				if(tz::window().get_keyboard_state().is_key_down(tz::KeyCode::Space))
+				if(tz::window().get_keyboard_state().is_key_down(tz::KeyCode::Space) && input_latch.done())
 				{
-					camera_position[1] += multiplier;
-				}
-				if(tz::window().get_keyboard_state().is_key_down(tz::KeyCode::LeftShift))
-				{
-					camera_position[1] -= multiplier;
+					lock_camera_height = !lock_camera_height;
+					input_latch.reset();
 				}
 				if(tz::window().get_keyboard_state().is_key_down(tz::KeyCode::A))
 				{
@@ -132,8 +132,12 @@ int main()
 					camera_position -= cam_right * multiplier;
 				}
 
-				float output_vertex_height = renderer.get_resource(bufh2)->data_as<FeedbackData>().front().pos[1];
-				camera_position[1] = output_vertex_height;
+				if(lock_camera_height)
+				{
+					float output_vertex_height = renderer.get_resource(bufh2)->data_as<FeedbackData>().front().pos[1];
+					float dist_to_terrain = output_vertex_height - camera_position[1];
+					camera_position[1] += std::clamp(dist_to_terrain * 0.3f, -5.0f, 5.0f);
+				}
 
 			}
 		}
