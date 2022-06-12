@@ -20,6 +20,5 @@ add_tz_test(NAME tz_renderer_test
 add_tz_test(NAME tz_shader_test
 	SOURCE_FILES tz_shader_test.cpp
 	SHADER_SOURCES
-		test/gl/shaders/a.vertex.tzsl
-		test/gl/shaders/stdlib_test.compute.tzsl
+		test/gl/shaders/shader_test.compute.tzsl
 	)

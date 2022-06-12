@@ -1,0 +1,15 @@
+shader(type = compute);
+kernel(1, 1, 1);
+
+import <debug>
+import <matrix>
+import <math>
+
+void main()
+{
+	vec4 quat = vec4(0.0, 0.0, 0.0, 1.0);
+	mat4 quatmat = tz::matrix::decompose_quaternion(quat);
+	vec4 point = vec4(1.0, 0.0, 1.0, 1.0);
+	vec4 after = quatmat * point;
+	tz::debug::assert(point == after);
+}
