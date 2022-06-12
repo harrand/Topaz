@@ -7,39 +7,41 @@ output(id = 0) vec4 output_colour;
 input(id = 0) float vertex_height;
 
 // Base colour of terrain.
-const vec3 terrain_colour = vec3(1.0f, 0.914f, 0.0f);
+const vec3 terrain_colour = vec3(0.65f, 0.4f, 0.25f);
 // Base colour of fluid.
 const vec3 fluid_colour = vec3(0.0f, 0.765f, 1.0f);
+// Base colour of deep fluid.
+const vec3 deep_fluid_colour = vec3(0.0f, 0.3f, 0.7f);
 // Colour of inner froth of fluid.
 const vec3 fluid_froth_colour = vec3(1.0f, 1.0f, 1.0f);
 // Colour of outer froth of fluid.
-const vec3 fruid_outer_froth_colour = vec3(1.0f, 1.0f, 1.0f);
+const vec3 fluid_outer_froth_colour = vec3(1.0f, 1.0f, 1.0f);
 // Base colour of tip of terrain.
-const vec3 tip_colour = terrain_colour;
+const vec3 tip_colour = vec3(0.26f, 0.524f, 0.0f);
 
-const float fluid_threshold = 0.05f;
-const float deep_fluid_threshold = 0.5f;
-const float tip_threshold = 0.7f;
-const vec2 froth_region = vec2(0.1f, 0.2f);
+const vec2 froth_region = vec2(0.0f, 0.2f);
+const float outer_froth_width = 0.02f;
 
 vec3 get_colour(float height)
 {
-	float tip_value = height - tip_threshold;
-	float fluid_value = height - fluid_threshold;
-	vec3 current_fluid_colour = fluid_colour;
-	if(height < fluid_threshold)
+	if(height > 0.0f)
 	{
-		current_fluid_colour = tz::math::lerp(fruid_outer_froth_colour, fluid_colour, (fluid_threshold - height) / fluid_threshold);
+		return tz::math::lerp(terrain_colour, tip_colour, (tz::math::pow(height, 3)) * 2.6f + 0.4f);
 	}
-	if(height < 0.05f)
+	float ah = tz::math::abs(height);
+	if(ah > froth_region.x && ah < froth_region.y)
 	{
-		return mix(vec3(0.0, 0.6, 0.75), current_fluid_colour, height / 0.05f);
+		// We mix between froth and fluid colour.
+		return tz::math::lerp(fluid_froth_colour, fluid_colour, ah / froth_region.y);
 	}
-	if(abs(fluid_value) > froth_region.x && abs(fluid_value) < froth_region.y)
+	if(ah < (froth_region.y + outer_froth_width))
 	{
-		return fluid_froth_colour;
+		return fluid_outer_froth_colour;
 	}
-	return tz::math::lerp(current_fluid_colour, tz::math::lerp(terrain_colour, tip_colour, tip_value), fluid_value);
+	float fluid_depth = froth_region.y + outer_froth_width;
+	return tz::math::lerp(fluid_colour, deep_fluid_colour, ah - fluid_depth);
+
+	return vec3(0.0);
 }
 
 void main()
