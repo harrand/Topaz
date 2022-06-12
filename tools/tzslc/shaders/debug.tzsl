@@ -7,8 +7,10 @@
 
 #if TZ_VULKAN && TZ_DEBUG
 	#define tz::debug::printf debugPrintfEXT
+	#define tz::debug::assert(expr) debugPrintfEXT("TZ_GPUASSERT(%d,%d): Assert failure on line %d.", expr, TZ_SHADER_STAGE, __LINE__ + 1)
 #else
 	#define tz::debug::printf //
+	#define tz::debug::assert //
 #endif
 
 /// End stdlib impl: <debug>

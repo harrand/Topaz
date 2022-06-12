@@ -1,6 +1,8 @@
 #include "tzsl.hpp"
 #include "source_transform.hpp"
+#include <bits/c++config.h>
 #include <fstream>
+#include <sstream>
 
 #include "stdlib.hpp"
 
@@ -16,6 +18,7 @@ namespace tzslc
 		Count
 	};
 
+	void evaluate_line_numbers(std::string&);
 	std::string default_defines(GLSLDialect, BuildConfig);
 	ShaderStage try_get_stage(const std::string&);
 	void evaluate_imports(std::string&);
@@ -31,6 +34,7 @@ namespace tzslc
 
 	void compile_to_glsl(std::string& shader_source, std::filesystem::path shader_filename, GLSLDialect dialect, BuildConfig build_config)
 	{
+		evaluate_line_numbers(shader_source);
 		shader_source = default_defines(dialect, build_config) + shader_source;
 		evaluate_imports(shader_source);
 		evaluate_user_imports(shader_source, shader_filename);
@@ -47,6 +51,34 @@ namespace tzslc
 		}
 	}
 
+//--------------------------------------------------------------------------------------------------
+	std::size_t replace_all(std::string& inout, std::string_view what, std::string_view with)
+	{
+	    std::size_t count{};
+	    for (std::string::size_type pos{};
+		 inout.npos != (pos = inout.find(what.data(), pos, what.length()));
+		 pos += with.length(), ++count) {
+		inout.replace(pos, what.length(), with.data(), with.length());
+	    }
+	    return count;
+	}
+
+	void evaluate_line_numbers(std::string& shader_source)
+	{
+		std::string output;
+
+		std::istringstream iss{shader_source};
+		std::string line;
+		std::size_t line_count = 0;
+		while(std::getline(iss, line))
+		{
+			replace_all(line, "tz::debug::assert", std::string("#line ") + std::to_string(line_count) + "\ntz::debug::assert");
+			line_count++;
+			output += line + "\n";
+		}
+
+		shader_source = output;
+	}
 //--------------------------------------------------------------------------------------------------
 
 	std::string default_defines(GLSLDialect dialect, BuildConfig build_config)
@@ -196,17 +228,18 @@ namespace tzslc
 		tzslc::transform(shader_source, std::regex{shader_specifier_regex},
 		[&stage_specifier_count, stage](auto beg, auto end)
 		{
+			std::string stage_define = "\n#define TZ_SHADER_STAGE " + std::to_string(static_cast<int>(stage)) + "\n";
 			stage_specifier_count++;
 			if(stage == ShaderStage::TessellationControl)
 			{
-				return std::string("#pragma shader_stage(tesscontrol)");
+				return std::string("#pragma shader_stage(tesscontrol)") + stage_define;
 			}
 			if(stage == ShaderStage::TessellationEvaluation)
 			{
 				// Tessellation Evaluation shaders hardcode to equally spaced triangles.
-				return "#pragma shader_stage(" + *beg + ")\nlayout(triangles) in;";
+				return "#pragma shader_stage(" + *beg + ")\nlayout(triangles) in;" + stage_define;
 			}
-			return "#pragma shader_stage(" + *beg + ")";
+			return "#pragma shader_stage(" + *beg + ")" + stage_define;
 		});
 
 		tzslc_assert(stage_specifier_count == 1, "Unexpected number of shader stage specifiers. Expected 1, got %zu", stage_specifier_count);

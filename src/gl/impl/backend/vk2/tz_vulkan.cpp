@@ -43,13 +43,64 @@ namespace tz::gl::vk2
 
 	inline VKAPI_ATTR VkBool32 VKAPI_CALL default_debug_callback
 	(
-		[[maybe_unused]] VkDebugUtilsMessageSeverityFlagBitsEXT message_severity,
+		VkDebugUtilsMessageSeverityFlagBitsEXT message_severity,
 		[[maybe_unused]] VkDebugUtilsMessageTypeFlagsEXT message_type,
-		[[maybe_unused]] const VkDebugUtilsMessengerCallbackDataEXT* callback_data,
+		const VkDebugUtilsMessengerCallbackDataEXT* callback_data,
 		[[maybe_unused]] void* user_data
 	)
 	{
-		tz_error("[Vulkan Debug Callback]: %s\n", callback_data->pMessage);
+		if(message_severity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT)
+		{
+			tz_error("[Vulkan Error Callback]: %s\n", callback_data->pMessage);
+		}
+		else if(message_severity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT)
+		{
+			tz_report("[Vulkan Warning Callback]: %s\n", callback_data->pMessage);
+		}
+		else
+		{
+			// Support for shader asserts (tz::debug::assert(expr) from <debug> in TZSL).
+			std::string_view callback_message = callback_data->pMessage;
+			auto pos = callback_message.find("TZ_GPUASSERT(");
+			if(pos != std::string_view::npos)
+			{
+				constexpr int expr_loc = 13;
+				callback_message.remove_prefix(pos);
+				if(callback_message[expr_loc] == '0')
+				{
+					constexpr int shadertype_loc = 15;
+					const char* shadertype;
+					auto shadertype_index = static_cast<int>(callback_message[shadertype_loc]) - '0';
+					switch(shadertype_index)
+					{
+						// Note: These must match the order in tzslc::ShaderStage.
+						case 0:
+							shadertype = "Compute";
+						break;
+						case 1:
+							shadertype = "Vertex";
+						break;
+						case 2:
+							shadertype = "Tessellation Control";
+						break;
+						case 3:
+							shadertype = "Tessellation Evaluation";
+						break;
+						case 4:
+							shadertype = "Fragment";
+						break;
+						default:
+							shadertype = "Unknown";
+						break;
+					}
+					tz_error("%s Shader%s", shadertype, callback_message.data() + shadertype_loc + 2);
+				}
+			}
+			else
+			{
+				tz_report("%s", callback_data->pMessage);
+			}
+		}
 		return VK_FALSE;
 	}
 
@@ -92,8 +143,8 @@ namespace tz::gl::vk2
 	{
 		VkDebugUtilsMessengerCreateInfoEXT create{};
 		create.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
-		create.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT;
-		create.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
+		create.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT;
+		create.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT;
 		create.pfnUserCallback = default_debug_callback;
 		return create;
 	}
@@ -255,6 +306,21 @@ namespace tz::gl::vk2
 			debug_validation_create = make_debug_messenger_info();
 			inst_create_pnext = &debug_validation_create;
 		}
+
+		#if TZ_DEBUG
+			// If we're on debug, we need to pass VkValidationFeatures to enable debug pritnf.
+			VkValidationFeatureEnableEXT validation_features_enabled[1] = {VK_VALIDATION_FEATURE_ENABLE_DEBUG_PRINTF_EXT};
+			VkValidationFeaturesEXT validation_features =
+			{
+				.sType = VK_STRUCTURE_TYPE_VALIDATION_FEATURES_EXT,
+				.pNext = &debug_validation_create,
+				.enabledValidationFeatureCount = 1,
+				.pEnabledValidationFeatures = validation_features_enabled,
+				.disabledValidationFeatureCount = 0,
+				.pDisabledValidationFeatures = nullptr
+			};
+			inst_create_pnext = &validation_features;
+		#endif
 
 		VkInstanceCreateInfo create
 		{
