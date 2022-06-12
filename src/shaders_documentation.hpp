@@ -86,10 +86,12 @@
  * 		<th>Define</th>
  * 		<th>Value (Debug)</th>
  * 		<th>Value (Release)</th>
+ * 		<th>Value (Profile)</th>
  * 	</tr>
  * 	<tr>
  *		<td>TZ_DEBUG</td>
  *		<td style="text-align: center;">1</td>
+ *		<td style="text-align: center;">0</td>
  *		<td style="text-align: center;">0</td>
  * 	</tr>
  * </table>
@@ -233,47 +235,6 @@
  * 	</tr>
  * </table>
  * </details>
- *
- * @section bif Built-in Functions
- * @subsection bif_printf tz_printf
- * `void tz_printf(fmt: string-literal, ...)`
- * @note This is only available for Vulkan Debug builds. Otherwise, compiles down to no-op.
- *
- * Specifies a debug-printf statement. The syntax is c-like. Intuitively you might expect the printed output to be sent to the host program's stdout. This is not the case. At present, you can only view these in graphics debuggers which support the vulkan `debugPrintfEXT`, namely RenderDoc.
- *
- * The frequency of this output logically matches that of the context. If for example you're invoking `tz_printf` in a vertex shader's main function, a message will be emitted for each vertex drawn.
- *
- * To view the output message in RenderDoc:
- * <ol>
- *	<li>Capture a frame using a renderer that uses a shader with this debug output. Ensure the host program is Vulkan Debug.</li>
- *	<li>In the 'Event Browser', navigate to the draw call that invokes the shader.</li>
- *	<li>You should see 'X msg(s)' annotated on the draw call. Click on this to see each printf invocation.</li>
- * </ol>
- * @subsubsection tz_printf_params Parameters
- * The parameters are much like C `printf`:
- * - String-literal specifying how to interpret the data. Regarding scalar types, format modifiers match that of C's `printf` function. However, format modifiers also exist for the built-in GLSL vector types.
- * 	- Format for specifier is "%"precision <d, i, o, u, x, X, a, A, e, E, f, F, g, G, ul, lu, lx>
- * 	- Format for vector specifier is "%"precision"v" [2, 3, 4] [specifiers above]
- * - Arguments specifying data to print. There must be an entry for each format modifier within the format string. Like `printf`, if no modifiers were specified in the format string, this parameter can be omitted.
- * @subsubsection debug_printf_example Examples
- * Here are a few example usages:
- * ```c
- * float myfloat = 3.1415f;
- * vec4 floatvec = vec4(1.2f, 2.2f, 3.2f, 4.2f);
- * uint64_t bigvar = 0x2000000000000001ul;
- *
- * tz_printf("Here's a float value with full precision %f", myfloat);
- * tz_printf("Here's a float value to 2 decimal places %1.2f", myfloat);
- * tz_printf("Here's a vector of floats %1.2v4f", floatvec);
- * tz_printf("Unsigned long as decimal %lu and as hex 0x%lx", bigvar, bigvar);
- * ```
- * Outputs:
- * ```diff
- * Here's a float value with full precision 3.141500
- * Here's a float value to 2 decimal places 3.14
- * Here's a vector of floats 1.20, 2.20, 3.20, 4.20
- * Unsigned long as decimal 2305843009213693953 and as hex 0x2000000000000001
- * ```
  *
  * @section header_imports TZSL Header Imports
  * Note that this feature is optional. If you don't like it, you can completely ignore it.
