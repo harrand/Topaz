@@ -17,7 +17,7 @@ void empty_renderer(tz::gl::Device& dev)
 	rinfo.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(empty, vertex));
 	rinfo.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(empty, fragment));
 	tz::gl::Renderer empty = dev.create_renderer(rinfo);
-	empty.render();
+	empty.render(1);
 }
 
 void empty_renderer_compute(tz::gl::Device& dev)

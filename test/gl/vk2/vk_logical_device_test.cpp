@@ -38,23 +38,6 @@ void extensions_coherent()
 	}
 }
 
-void custom_instance_and_window_surface(const tz::GameInfo& game)
-{
-	using namespace tz::gl::vk2;
-	// Now try with a custom WindowSurface.
-	{
-		VulkanInstance window_inst
-		{{
-			.game_info = game,
-			.window = &tz::window()
-		}};
-		PhysicalDeviceList devices = get_all_devices(window_inst);	
-		PhysicalDevice local_pdev = devices.front();
-		WindowSurface window_surf{window_inst, tz::window()};
-
-		LogicalDevice ldev4{LogicalDeviceInfo{.physical_device = local_pdev}};
-	}
-}
 
 void semantics()
 {
@@ -98,7 +81,6 @@ int main()
 	{
 		tz::GameInfo game{"vk_logical_device_test", {1, 0, 0}, tz::info()};
 		extensions_coherent();
-		custom_instance_and_window_surface(game);
 		semantics();
 		simulataneous_logical_devices();
 	}
