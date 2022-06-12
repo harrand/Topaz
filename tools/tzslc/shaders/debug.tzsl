@@ -1,0 +1,15 @@
+#ifndef TZSLC_STDLIB_DEBUG_TZSL
+#define TZSLC_STDLIB_DEBUG_TZSL
+/**
+ * TZSL stdlib: <debug>
+ * harrand 12/06/2022 for tz3.4
+ */
+
+#if TZ_VULKAN && TZ_DEBUG
+	#define tz::debug::printf debugPrintfEXT
+#else
+	#define tz::debug::printf //
+#endif
+
+/// End stdlib impl: <debug>
+ #endif // TZSLC_STDLIB_DEBUG_TZSL

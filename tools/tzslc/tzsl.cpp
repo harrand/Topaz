@@ -16,13 +16,12 @@ namespace tzslc
 		Count
 	};
 
-	std::string default_defines(GLSLDialect dialect);
+	std::string default_defines(GLSLDialect, BuildConfig);
 	ShaderStage try_get_stage(const std::string&);
 	void evaluate_imports(std::string&);
 	void evaluate_user_imports(std::string&, std::filesystem::path);
 	void evaluate_keywords(std::string&, ShaderStage, GLSLDialect);
 	void evaluate_inout_blocks(std::string&, ShaderStage, GLSLDialect);
-	void evaluate_language_level_functions(std::string&, GLSLDialect);
 	void collapse_namespaces(std::string&);
 
 	void rename_user_main(std::string& shader_source);
@@ -30,16 +29,15 @@ namespace tzslc
 
 //--------------------------------------------------------------------------------------------------
 
-	void compile_to_glsl(std::string& shader_source, std::filesystem::path shader_filename, GLSLDialect dialect)
+	void compile_to_glsl(std::string& shader_source, std::filesystem::path shader_filename, GLSLDialect dialect, BuildConfig build_config)
 	{
-		shader_source = default_defines(dialect) + shader_source;
+		shader_source = default_defines(dialect, build_config) + shader_source;
 		evaluate_imports(shader_source);
 		evaluate_user_imports(shader_source, shader_filename);
 		ShaderStage stage = try_get_stage(shader_source);
 		tzslc_assert(stage != ShaderStage::Count, "Detected invalid shader stage. Internal tzslc error. Please submit a bug report.");
 		evaluate_keywords(shader_source, stage, dialect);
 		evaluate_inout_blocks(shader_source, stage, dialect);
-		evaluate_language_level_functions(shader_source, dialect);
 		collapse_namespaces(shader_source);
 
 		if(stage == ShaderStage::Vertex)
@@ -51,7 +49,7 @@ namespace tzslc
 
 //--------------------------------------------------------------------------------------------------
 
-	std::string default_defines(GLSLDialect dialect)
+	std::string default_defines(GLSLDialect dialect, BuildConfig build_config)
 	{
 		/*
 		 * tzslc header info
@@ -75,6 +73,7 @@ namespace tzslc
 		{
 			tzslc_error("ICE: Unrecognised GLSLDialect.");
 		}
+		ret += std::string("#define TZ_DEBUG ") + (build_config == BuildConfig::Debug ? "1\n" : "0\n");
 		return ret;
 	}
 
@@ -91,6 +90,10 @@ namespace tzslc
 			if(m == "atomic")
 			{
 				return std::string(stdlib_atomic);
+			}
+			if(m == "debug")
+			{
+				return std::string(stdlib_debug);
 			}
 			if(m == "space")
 			{
@@ -365,30 +368,6 @@ namespace tzslc
 				xmog("in::global_id", "gl_GlobalInvocationID");
 			break;
 		}
-	}
-
-//--------------------------------------------------------------------------------------------------
-
-	void evaluate_language_level_functions(std::string& shader_source, GLSLDialect dialect)
-	{
-		constexpr char tz_printf_regex[] = "tz_printf\\((.*)\\).*;";
-
-		tzslc::transform(shader_source, std::regex{tz_printf_regex},
-		[dialect](auto beg, auto end)
-		{
-			#if !NDEBUG
-				if(dialect == GLSLDialect::Vulkan)
-				{
-					return "debugPrintfEXT(" + *(beg) + ");";
-				}
-				else
-				{
-					return std::string("");
-				}
-			#else
-				return std::string("");
-			#endif
-		});
 	}
 
 //--------------------------------------------------------------------------------------------------

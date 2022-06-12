@@ -9,14 +9,25 @@ macro(add_shader_vulkan)
 	set(processed_shader_name ${SHADER}.glsl)
 	set(processed_shader_path ${PROJECT_BINARY_DIR}/${processed_shader_name})
 
-	add_custom_command(
-		OUTPUT ${processed_shader_path}
-		COMMENT "TZSLC_VK: Preprocessing ${SHADER} -> ${processed_shader_name}"
-		COMMAND "${TZSLC_EXECUTABLE_PATH}" ${shader_path} -o ${processed_shader_path} -api vk
-		DEPENDS tzslc ${shader_path}
-		IMPLICIT_DEPENDS CXX ${shader_path}
-		VERBATIM
-	)
+	if(${TOPAZ_BUILDCONFIG} MATCHES "debug")
+
+		add_custom_command( OUTPUT ${processed_shader_path}
+			COMMENT "TZSLC_VK (Debug): Preprocessing ${SHADER} -> ${processed_shader_name}"
+			COMMAND "${TZSLC_EXECUTABLE_PATH}" ${shader_path} -o ${processed_shader_path} -api vk -g
+			DEPENDS tzslc ${shader_path}
+			IMPLICIT_DEPENDS CXX ${shader_path}
+			VERBATIM
+		)
+	else()
+		add_custom_command( OUTPUT ${processed_shader_path}
+			COMMENT "TZSLC_VK (Release): Preprocessing ${SHADER} -> ${processed_shader_name}"
+			COMMAND "${TZSLC_EXECUTABLE_PATH}" ${shader_path} -o ${processed_shader_path} -api vk
+			DEPENDS tzslc ${shader_path}
+			IMPLICIT_DEPENDS CXX ${shader_path}
+			VERBATIM
+		)
+	endif()
+
 	set(spv_name ${SHADER}.spv)
 	set(spv_path ${PROJECT_BINARY_DIR}/${spv_name})
 
@@ -37,14 +48,26 @@ macro(add_shader_opengl)
 	set(output_name ${SHADER}.glsl)
 	set(output_path ${PROJECT_BINARY_DIR}/${output_name})
 
-	add_custom_command(
-		OUTPUT ${output_path}
-		COMMENT "TZSLC_OGL: Building ${SHADER} -> ${output_name}"
-		COMMAND "${TZSLC_EXECUTABLE_PATH}" ${shader_path} -o ${output_path} -api ogl
-		DEPENDS tzslc ${shader_path}
-		IMPLICIT_DEPENDS CXX ${processed_shader_path}
-		VERBATIM
-	)
+	if(${TOPAZ_BUILDCONFIG} MATCHES "debug")
+		add_custom_command(
+			OUTPUT ${output_path}
+			COMMENT "TZSLC_OGL (Debug): Building ${SHADER} -> ${output_name}"
+			COMMAND "${TZSLC_EXECUTABLE_PATH}" ${shader_path} -o ${output_path} -api ogl -g
+			DEPENDS tzslc ${shader_path}
+			IMPLICIT_DEPENDS CXX ${processed_shader_path}
+			VERBATIM
+		)
+	else()
+		add_custom_command(
+			OUTPUT ${output_path}
+			COMMENT "TZSLC_OGL (Release): Building ${SHADER} -> ${output_name}"
+			COMMAND "${TZSLC_EXECUTABLE_PATH}" ${shader_path} -o ${output_path} -api ogl
+			DEPENDS tzslc ${shader_path}
+			IMPLICIT_DEPENDS CXX ${processed_shader_path}
+			VERBATIM
+		)
+
+	endif()
 
 	set_source_files_properties(${output_path} PROPERTIES GENERATED TRUE)
 endmacro()

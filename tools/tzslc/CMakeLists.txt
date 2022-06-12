@@ -9,6 +9,7 @@ add_tool(
 		tzslc_main.cpp
 	TEXT_FILES
 		shaders/atomic.tzsl
+		shaders/debug.tzsl
 		shaders/math.tzsl
 		shaders/matrix.tzsl
 		shaders/mesh.tzsl

@@ -1,6 +1,7 @@
 shader(type = vertex);
 
 import <matrix>
+import <debug>
 import "foo"
 
 void main()
@@ -10,5 +11,5 @@ void main()
 	uint a = in::vertex_id;
 	uint b = in::instance_id;
 	out::position = m * vec4(1.0, 0.0, 0.0, 1.0);
-	tz_printf("out::position = %v4f", out::position);
+	tz::debug::printf("out::position = %v4f", out::position);
 }

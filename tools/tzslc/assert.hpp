@@ -5,29 +5,29 @@
 
 namespace tzslc
 {
+	namespace detail
+	{
+		struct AssertionError{const char* what;};
+	}
 	template<typename... Args>
 	void error_internal([[maybe_unused]] const char* fmt, [[maybe_unused]] Args&&... args)
 	{
-		#if TZ_DEBUG
 			std::fflush(stderr);
 			std::fprintf(stderr, fmt, std::forward<Args>(args)...);
 			std::fflush(stderr);
-			throw "TZSLC Error";
-		#endif
+			throw detail::AssertionError{"TZSLC Error"};
 	}
 
 	template<typename... Args>
 	void assert_internal([[maybe_unused]] bool eval, [[maybe_unused]] const char* fmt, [[maybe_unused]] Args&&... args)
 	{
-		#if TZ_DEBUG
 			if(!eval)
 			{
 				std::fflush(stderr);
 				std::fprintf(stderr, fmt, std::forward<Args>(args)...);
 				std::fflush(stderr);
-				throw "TZSLC Assert";
+				throw detail::AssertionError{"TZSLC Assert"};
 			}
-		#endif
 	}
 }
 

@@ -56,13 +56,27 @@ tzslc::GLSLDialect get_dialect(int argc, char** argv)
 	return tzslc::GLSLDialect::Vulkan;
 }
 
+tzslc::BuildConfig get_config(int argc, char** argv)
+{
+	for(std::size_t i = 0; i < argc; i++)
+	{
+		std::string_view arg{argv[i]};
+		if(arg == "-g")
+		{
+			return tzslc::BuildConfig::Debug;
+		}
+	}
+	return tzslc::BuildConfig::Release;
+}
+
 int main(int argc, char** argv)
 {
-	tzslc_assert(argc >= 2, "Not enough arguments (%d). At least 2. Usage: `tzslc <tzsl_file_path> [-o <output_file_path>]`", argc);
+	tzslc_assert(argc >= 4, "Not enough arguments (%d). At least 4. Usage: `tzslc <tzsl_file_path> <-api vk/ogl>[-o <output_file_path>]`", argc);
 	const char* tzsl_filename = argv[1];
 
 	FILE* out = get_output_stream(argc, argv);
 	tzslc::GLSLDialect dialect = get_dialect(argc, argv);
+	tzslc::BuildConfig build_config = get_config(argc, argv);
 	{
 		std::ifstream shader{tzsl_filename, std::ios::ate | std::ios::binary};
 		tzslc_assert(shader.is_open(), "Cannot open shader file %s", tzsl_filename);
@@ -73,7 +87,7 @@ int main(int argc, char** argv)
 		shader.read(buffer.data(), file_size_bytes);
 		shader.close();
 
-		tzslc::compile_to_glsl(buffer, tzsl_filename, dialect);
+		tzslc::compile_to_glsl(buffer, tzsl_filename, dialect, build_config);
 		for(char c : buffer)
 		{
 			std::fprintf(out, "%c", c);
