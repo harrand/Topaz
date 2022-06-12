@@ -11,7 +11,7 @@ const float _tz_noise_internal_PHI = 1.61803398874989484820459;  // Φ = Golden 
  * Gold Noise, extremely fast, highly volatile noise based on the golden ratio. Recommended for only the most basic of needs.
  */
 float tz::noise::gold(vec2 uv){
-       return fract(tan(distance(uv*_tz_noise_internal_PHI, uv)*length(uv)*34567.23456)*uv.x);
+       return fract(tan(distance(uv*_tz_noise_internal_PHI, uv)*34567.23456)*uv.x);
 }
 
 vec3 _tz_noise_internal_permute(vec3 x) { return mod(((x*34.0)+1.0)*x, 289.0); }
