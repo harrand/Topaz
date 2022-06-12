@@ -44,7 +44,7 @@ namespace tz::gl::vk2
 	inline VKAPI_ATTR VkBool32 VKAPI_CALL default_debug_callback
 	(
 		VkDebugUtilsMessageSeverityFlagBitsEXT message_severity,
-		[[maybe_unused]] VkDebugUtilsMessageTypeFlagsEXT message_type,
+		VkDebugUtilsMessageTypeFlagsEXT message_type,
 		const VkDebugUtilsMessengerCallbackDataEXT* callback_data,
 		[[maybe_unused]] void* user_data
 	)
@@ -98,7 +98,10 @@ namespace tz::gl::vk2
 			}
 			else
 			{
-				tz_report("%s", callback_data->pMessage);
+				if(message_severity == VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT && message_type == VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT)
+				{
+					tz_report("%s", callback_data->pMessage);
+				}
 			}
 		}
 		return VK_FALSE;
