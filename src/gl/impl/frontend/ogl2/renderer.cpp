@@ -320,10 +320,11 @@ namespace tz::gl
 
 //--------------------------------------------------------------------------------------------------
 
-	OutputManager::OutputManager(const IOutput* output):
+	OutputManager::OutputManager(const IOutput* output, tz::gl::RendererOptions options):
 	output(output != nullptr ? output->unique_clone() : nullptr),
 	default_depth_renderbuffer(ogl2::Renderbuffer::null()),
-	framebuffer(ogl2::Framebuffer::null())
+	framebuffer(ogl2::Framebuffer::null()),
+	options(options)
 	{
 		if(this->output != nullptr)
 		{
@@ -368,7 +369,10 @@ namespace tz::gl
 	{
 		TZ_PROFZONE("OpenGL Frontend - RendererOGL OutputManager (Set Render Target)", TZ_PROFCOL_RED);
 		this->framebuffer.bind();
-		this->framebuffer.clear();
+		if(!this->options.contains(tz::gl::RendererOption::NoClearOutput))
+		{
+			this->framebuffer.clear();
+		}
 	}
 
 //--------------------------------------------------------------------------------------------------
@@ -377,7 +381,7 @@ namespace tz::gl
 	vao(),
 	resources(info.get_resources(), info.get_components()),
 	shader(info.shader()),
-	output(info.get_output()),
+	output(info.get_output(), info.get_options()),
 	clear_colour(info.get_clear_colour()),
 	compute_kernel(info.get_compute_kernel()),
 	options(info.get_options())

@@ -106,7 +106,7 @@ namespace tz::gl
 		/**
 		 * Create the output target based upon the renderer information.
 		 */
-		OutputManager(const IOutput* output);
+		OutputManager(const IOutput* output, tz::gl::RendererOptions options);
 		/**
 		 * Set this as the render target, causing subsequent draw calls to render into whatever the output is.
 		 */
@@ -115,6 +115,7 @@ namespace tz::gl
 		std::unique_ptr<IOutput> output;
 		ogl2::Renderbuffer default_depth_renderbuffer;
 		ogl2::Framebuffer framebuffer;
+		tz::gl::RendererOptions options;
 	};
 
 	using RendererInfoOGL = RendererInfoCommon;
