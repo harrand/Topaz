@@ -12,8 +12,6 @@
 #include ImportedShaderHeader(tz_terrain_demo, tesscon)
 #include ImportedShaderHeader(tz_terrain_demo, tesseval)
 #include ImportedShaderHeader(tz_terrain_demo, fragment)
-#include ImportedShaderHeader(tz_triangle_demo, vertex)
-#include ImportedShaderHeader(tz_triangle_demo, fragment)
 
 int main()
 {
@@ -48,18 +46,8 @@ int main()
 		rinfo.shader().set_shader(tz::gl::ShaderStage::TessellationEvaluation, ImportedShaderSource(tz_terrain_demo, tesseval));
 		rinfo.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(tz_terrain_demo, fragment));
 		rinfo.set_clear_colour({0.0f, 0.765f, 1.0f, 1.0f});
-		rinfo.set_options({tz::gl::RendererOption::NoPresent});
 
 		tz::gl::Renderer renderer = dev.create_renderer(rinfo);
-
-
-		tz::gl::RendererInfo rinfo2;
-		rinfo2.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(tz_triangle_demo, vertex));
-		rinfo2.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(tz_triangle_demo, fragment));
-		rinfo2.set_options({tz::gl::RendererOption::NoDepthTesting, tz::gl::RendererOption::NoClearOutput});
-
-		tz::gl::Renderer renderer2 = dev.create_renderer(rinfo2);
-
 		tz::Vec3 cam_rot{0.0f, 0.0f, 0.0f};
 		bool wireframe_mode = false;
 		bool lock_camera_height = true;
@@ -73,7 +61,6 @@ int main()
 			TZ_FRAME_BEGIN;
 			tz::window().update();
 			renderer.render(4);
-			renderer2.render(1);
 			TZ_FRAME_END;
 
 			// Every 25ms, we do a fixed-update.
