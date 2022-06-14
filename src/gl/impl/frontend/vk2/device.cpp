@@ -111,6 +111,20 @@ namespace tz::gl
 		return this->get_swapchain().get_image_format();
 	}
 
+	vk2::Swapchain::ImageAcquisitionResult DeviceWindowVulkan::get_unused_image(const vk2::Swapchain::ImageAcquisition& acquire)
+	{
+		if(!this->recent_acquire.has_value())
+		{
+			this->recent_acquire = this->get_swapchain().acquire_image(acquire);
+		}
+		return this->recent_acquire.value();
+	}
+
+	void DeviceWindowVulkan::mark_image_used()
+	{
+		this->recent_acquire = std::nullopt;
+	}
+
 	RendererResizeCallbackType& DeviceWindowVulkan::resize_callback()
 	{
 		return this->renderer_resize_callbacks;
@@ -255,7 +269,7 @@ namespace tz::gl
 		{
 			.device = &this->device,
 			.output_images = this->window_storage.get_output_images(),
-			.maybe_swapchain = &this->window_storage.get_swapchain(),
+			.device_window = &this->window_storage,
 			.resize_callback = &this->window_storage.resize_callback()
 		}};
 	}

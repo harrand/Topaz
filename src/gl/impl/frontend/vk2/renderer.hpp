@@ -22,6 +22,7 @@
 
 namespace tz::gl
 {
+	class DeviceWindowVulkan;
 	using namespace tz::gl;
 	using RendererInfoVulkan = RendererInfoCommon;
 
@@ -348,7 +349,7 @@ namespace tz::gl
 		/// List of output images. These are going to be swapchain images.
 		std::span<vk2::Image> output_images;
 		/// Swapchain if there is one.
-		vk2::Swapchain* maybe_swapchain;
+		DeviceWindowVulkan* device_window;
 		/// Callback for resizing which the renderer subscribes to for the duration of its lifetime. Assume this isn't null.
 		RendererResizeCallbackType* resize_callback;
 	};

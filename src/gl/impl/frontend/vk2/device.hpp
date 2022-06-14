@@ -1,8 +1,8 @@
 #ifndef TOPAZ_GL2_IMPL_FRONTEND_VK2_DEVICE_HPP
 #define TOPAZ_GL2_IMPL_FRONTEND_VK2_DEVICE_HPP
+#if TZ_VULKAN
 #include "core/callback.hpp"
 #include "core/handle.hpp"
-#if TZ_VULKAN
 #include "gl/api/device.hpp"
 #include "gl/impl/frontend/vk2/renderer.hpp"
 #include "gl/impl/backend/vk2/swapchain.hpp"
@@ -28,6 +28,9 @@ namespace tz::gl
 		tz::Vec2ui get_dimensions() const;
 		vk2::ImageFormat get_format() const;
 
+		vk2::Swapchain::ImageAcquisitionResult get_unused_image(const vk2::Swapchain::ImageAcquisition& acquire);
+		void mark_image_used();
+
 		RendererResizeCallbackType& resize_callback();
 		std::span<vk2::Image> get_output_images();
 	private:
@@ -40,6 +43,7 @@ namespace tz::gl
 		vk2::Swapchain window_buf = vk2::Swapchain::null();
 		tz::CallbackHandle on_resize_handle = tz::nullhand;
 		RendererResizeCallbackType renderer_resize_callbacks = {};
+		std::optional<vk2::Swapchain::ImageAcquisitionResult> recent_acquire = std::nullopt;
 	};
 
 	class DeviceVulkan

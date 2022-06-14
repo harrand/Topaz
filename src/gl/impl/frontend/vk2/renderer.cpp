@@ -1,5 +1,6 @@
 #if TZ_VULKAN
 #include "gl/impl/backend/vk2/tz_vulkan.hpp"
+#include "gl/impl/frontend/vk2/device.hpp"
 #include "core/profiling/zone.hpp"
 #include "core/report.hpp"
 #include "gl/declare/image_format.hpp"
@@ -1122,7 +1123,7 @@ namespace tz::gl
 	output(info.get_output(), device_info.output_images, info.get_options(), *this->ldev),
 	pipeline(info.shader(), this->resources.get_descriptor_layout(), this->output.get_render_pass(), this->get_frame_in_flight_count(device_info), output.get_output_dimensions(), !info.get_options().contains(RendererOption::NoDepthTesting), info.get_options().contains(RendererOption::AlphaBlending)),
 	command(*this->ldev, this->get_frame_in_flight_count(device_info), info.get_output() != nullptr ? info.get_output()->get_target() : OutputTarget::Window, this->output.get_output_framebuffers(), info.get_options().contains(RendererOption::BlockingCompute)),
-	maybe_swapchain(device_info.maybe_swapchain),
+	maybe_swapchain(&device_info.device_window->get_swapchain()),
 	options(info.get_options()),
 	clear_colour(info.get_clear_colour()),
 	compute_kernel(info.get_compute_kernel())
