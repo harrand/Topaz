@@ -197,6 +197,47 @@ namespace tz::gl
 	}
 
 //--------------------------------------------------------------------------------------------------
+	DeviceRenderSchedulerVulkan::DeviceRenderSchedulerVulkan(const vk2::LogicalDevice& ldev, std::size_t frame_in_flight_count):
+	image_available(),
+	render_work_done(),
+	frame_work()
+	{
+		for(std::size_t i = 0; i < frame_in_flight_count; i++)
+		{
+			this->image_available.emplace_back(ldev);
+			this->render_work_done.emplace_back(ldev);
+			this->frame_work.emplace_back(vk2::FenceInfo
+			{
+				.device = &ldev,
+				.initially_signalled = true
+			});
+		}
+	}
+
+	std::span<const vk2::BinarySemaphore> DeviceRenderSchedulerVulkan::get_image_signals() const
+	{
+		return this->image_available;
+	}
+
+	std::span<const vk2::BinarySemaphore> DeviceRenderSchedulerVulkan::get_render_work_signals() const
+	{
+		return this->render_work_done;
+	}
+
+	std::span<const vk2::Fence> DeviceRenderSchedulerVulkan::get_frame_fences() const
+	{
+		return this->frame_work;
+	}
+
+	void DeviceRenderSchedulerVulkan::wait_frame_work_complete() const
+	{
+		for(const vk2::Fence& fence : this->frame_work)
+		{
+			fence.wait_until_signalled();
+		}
+	}
+
+//--------------------------------------------------------------------------------------------------
 
 	DeviceVulkan::DeviceVulkan():
 	DeviceVulkan(vk2::get())
@@ -205,10 +246,32 @@ namespace tz::gl
 	}
 
 	DeviceVulkan::DeviceVulkan(const vk2::VulkanInstance& instance):
-	device(vk2::LogicalDevice::null()),
-	window_storage()
+	device(DeviceVulkan::make_device(instance)),
+	window_storage(this->device),
+	scheduler(this->device, this->window_storage.get_output_images().size())
 	{
 		TZ_PROFZONE("Vulkan Frontend - DeviceVulkan Create", TZ_PROFCOL_YELLOW);
+	}
+
+	RendererVulkan DeviceVulkan::create_renderer(const RendererInfoVulkan& info)
+	{
+		TZ_PROFZONE("Vulkan Frontend - Renderer Create (via DeviceVulkan)", TZ_PROFCOL_YELLOW);
+		return {info,
+		{
+			.device = &this->device,
+			.output_images = this->window_storage.get_output_images(),
+			.device_window = &this->window_storage,
+			.resize_callback = &this->window_storage.resize_callback()
+		}};
+	}
+
+	ImageFormat DeviceVulkan::get_window_format() const
+	{
+		return from_vk2(this->window_storage.get_format());
+	}
+
+	/*static*/vk2::LogicalDevice DeviceVulkan::make_device(const vk2::VulkanInstance& instance)
+	{
 		// First, create a LogicalDevice.
 		// TODO: Don't just choose a device at random.
 		vk2::PhysicalDeviceList pdevs = vk2::get_all_devices(instance);
@@ -256,34 +319,14 @@ namespace tz::gl
 			dev_exts |= vk2::DeviceExtension::ShaderDebugPrint;
 		#endif
 		tz_assert(pdev.get_supported_extensions().contains(dev_exts), "One or more of the %zu required DeviceExtensions are not supported by this machine/driver. Please ensure your machine meets the system requirements.", dev_exts.count());
-		this->device =
+		return
 		{{
 			.physical_device = pdev,
 			.extensions = dev_exts,
 			.features = dev_feats
 		}};
 		
-		// Now finally create the DeviceWindow.
-		this->window_storage = {this->device};
 	}
-
-	RendererVulkan DeviceVulkan::create_renderer(const RendererInfoVulkan& info)
-	{
-		TZ_PROFZONE("Vulkan Frontend - Renderer Create (via DeviceVulkan)", TZ_PROFCOL_YELLOW);
-		return {info,
-		{
-			.device = &this->device,
-			.output_images = this->window_storage.get_output_images(),
-			.device_window = &this->window_storage,
-			.resize_callback = &this->window_storage.resize_callback()
-		}};
-	}
-
-	ImageFormat DeviceVulkan::get_window_format() const
-	{
-		return from_vk2(this->window_storage.get_format());
-	}
-
 }
 
 #endif // TZ_VULKAN

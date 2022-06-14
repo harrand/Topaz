@@ -47,6 +47,20 @@ namespace tz::gl
 		std::optional<vk2::Swapchain::ImageAcquisitionResult> recent_acquire = std::nullopt;
 	};
 
+	class DeviceRenderSchedulerVulkan
+	{
+	public:
+		DeviceRenderSchedulerVulkan(const vk2::LogicalDevice& ldev, std::size_t frame_in_flight_count);
+		std::span<const vk2::BinarySemaphore> get_image_signals() const;
+		std::span<const vk2::BinarySemaphore> get_render_work_signals() const;
+		std::span<const vk2::Fence> get_frame_fences() const;
+		void wait_frame_work_complete() const;
+	private:
+		std::vector<vk2::BinarySemaphore> image_available;
+		std::vector<vk2::BinarySemaphore> render_work_done;
+		std::vector<vk2::Fence> frame_work;
+	};
+
 	class DeviceVulkan
 	{
 	public:
@@ -58,8 +72,11 @@ namespace tz::gl
 		RendererVulkan create_renderer(const RendererInfoVulkan& info);
 		ImageFormat get_window_format() const;
 	private:
+		static vk2::LogicalDevice make_device(const vk2::VulkanInstance& instance);
+
 		vk2::LogicalDevice device;
 		DeviceWindowVulkan window_storage;
+		DeviceRenderSchedulerVulkan scheduler;
 	};
 
 	static_assert(DeviceType<DeviceVulkan, RendererInfoVulkan>);
