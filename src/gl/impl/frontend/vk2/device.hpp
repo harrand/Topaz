@@ -22,10 +22,8 @@ namespace tz::gl
 		DeviceWindowVulkan& operator=(DeviceWindowVulkan&& rhs);
 
 		bool valid() const;
-		vk2::Swapchain* as_swapchain();
-		const vk2::Swapchain* as_swapchain() const;
-		vk2::Image* as_image();
-		const vk2::Image* as_image() const;
+		const vk2::Swapchain& get_swapchain() const;
+		vk2::Swapchain& get_swapchain();
 
 		tz::Vec2ui get_dimensions() const;
 		vk2::ImageFormat get_format() const;
@@ -39,7 +37,7 @@ namespace tz::gl
 		bool is_resize_registered() const;
 		void reregister_resize();
 
-		std::variant<vk2::Swapchain, vk2::Image, std::monostate> window_buf = std::monostate{};
+		vk2::Swapchain window_buf = vk2::Swapchain::null();
 		tz::CallbackHandle on_resize_handle = tz::nullhand;
 		RendererResizeCallbackType renderer_resize_callbacks = {};
 	};

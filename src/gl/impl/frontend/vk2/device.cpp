@@ -67,7 +67,7 @@ namespace tz::gl
 	}
 
 	DeviceWindowVulkan::DeviceWindowVulkan(DeviceWindowVulkan&& move):
-	window_buf(std::monostate{})
+	window_buf(vk2::Swapchain::null())
 	{
 		*this = std::move(move);
 	}
@@ -88,69 +88,27 @@ namespace tz::gl
 
 	bool DeviceWindowVulkan::valid() const
 	{
-		return !std::holds_alternative<std::monostate>(this->window_buf);
+		return !this->get_swapchain().is_null();
 	}
 
-	vk2::Swapchain* DeviceWindowVulkan::as_swapchain()
+	const vk2::Swapchain& DeviceWindowVulkan::get_swapchain() const
 	{
-		if(std::holds_alternative<vk2::Swapchain>(window_buf))
-		{
-			return &std::get<vk2::Swapchain>(window_buf);
-		}
-		return nullptr;
+		return this->window_buf;
 	}
 
-	const vk2::Swapchain* DeviceWindowVulkan::as_swapchain() const
+	vk2::Swapchain& DeviceWindowVulkan::get_swapchain()
 	{
-		if(std::holds_alternative<vk2::Swapchain>(window_buf))
-		{
-			return &std::get<vk2::Swapchain>(window_buf);
-		}
-		return nullptr;
-	}
-
-	vk2::Image* DeviceWindowVulkan::as_image()
-	{
-		if(std::holds_alternative<vk2::Image>(window_buf))
-		{
-			return &std::get<vk2::Image>(window_buf);
-		}
-		return nullptr;
-	}
-
-	const vk2::Image* DeviceWindowVulkan::as_image() const
-	{
-		if(std::holds_alternative<vk2::Image>(window_buf))
-		{
-			return &std::get<vk2::Image>(window_buf);
-		}
-		return nullptr;
+		return this->window_buf;
 	}
 
 	tz::Vec2ui DeviceWindowVulkan::get_dimensions() const
 	{
-		if(this->as_swapchain() != nullptr)
-		{
-			return this->as_swapchain()->get_dimensions();
-		}
-		else if(this->as_image() != nullptr)
-		{
-			return this->as_image()->get_dimensions();
-		}
-		return {0u, 0u};
+		return this->get_swapchain().get_dimensions();
 	}
 
 	vk2::ImageFormat DeviceWindowVulkan::get_format() const
 	{
-		if(this->as_swapchain() != nullptr)
-		{
-			return this->as_swapchain()->get_image_format();
-		}
-		else if(this->as_image() != nullptr)
-		{
-			return this->as_image()->get_format();
-		}
-		return vk2::ImageFormat::Undefined;
+		return this->get_swapchain().get_image_format();
 	}
 
 	RendererResizeCallbackType& DeviceWindowVulkan::resize_callback()
@@ -160,16 +118,7 @@ namespace tz::gl
 
 	std::span<vk2::Image> DeviceWindowVulkan::get_output_images()
 	{
-		if(this->as_swapchain() != nullptr)
-		{
-			return this->as_swapchain()->get_images();
-		}
-		else if(this->as_image() != nullptr)
-		{
-			return {this->as_image(), 1};
-		}
-		tz_error("Could not recognise window storage. Please submit a bug report.");
-		return {};
+		return this->get_swapchain().get_images();
 	}
 
 	void DeviceWindowVulkan::on_resize(tz::Vec2ui dims)
@@ -180,8 +129,7 @@ namespace tz::gl
 			return;
 		}
 		// Assume we have a head, headless no support for resizeable output yet.
-		tz_assert(this->as_swapchain() != nullptr, "Resizeable output for headless applications is not yet supported.");
-		vk2::Swapchain& old_swapchain = *this->as_swapchain();
+		vk2::Swapchain& old_swapchain = this->get_swapchain();
 		if(old_swapchain.get_dimensions() == dims)
 		{
 			// Dimensions didn't actually change. Early out and don't bother telling the renderers.
@@ -307,7 +255,7 @@ namespace tz::gl
 		{
 			.device = &this->device,
 			.output_images = this->window_storage.get_output_images(),
-			.maybe_swapchain = this->window_storage.as_swapchain(),
+			.maybe_swapchain = &this->window_storage.get_swapchain(),
 			.resize_callback = &this->window_storage.resize_callback()
 		}};
 	}
