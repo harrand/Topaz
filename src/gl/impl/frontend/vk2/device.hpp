@@ -52,8 +52,10 @@ namespace tz::gl
 	public:
 		DeviceRenderSchedulerVulkan(const vk2::LogicalDevice& ldev, std::size_t frame_in_flight_count);
 		std::span<const vk2::BinarySemaphore> get_image_signals() const;
+		std::span<vk2::BinarySemaphore> get_image_signals();
 		std::span<const vk2::BinarySemaphore> get_render_work_signals() const;
 		std::span<const vk2::Fence> get_frame_fences() const;
+		std::span<vk2::Fence> get_frame_fences();
 		void wait_frame_work_complete() const;
 	private:
 		std::vector<vk2::BinarySemaphore> image_available;

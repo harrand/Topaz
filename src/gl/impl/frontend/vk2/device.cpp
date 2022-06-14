@@ -219,12 +219,22 @@ namespace tz::gl
 		return this->image_available;
 	}
 
+	std::span<vk2::BinarySemaphore> DeviceRenderSchedulerVulkan::get_image_signals()
+	{
+		return this->image_available;
+	}
+
 	std::span<const vk2::BinarySemaphore> DeviceRenderSchedulerVulkan::get_render_work_signals() const
 	{
 		return this->render_work_done;
 	}
 
 	std::span<const vk2::Fence> DeviceRenderSchedulerVulkan::get_frame_fences() const
+	{
+		return this->frame_work;
+	}
+
+	std::span<vk2::Fence> DeviceRenderSchedulerVulkan::get_frame_fences()
 	{
 		return this->frame_work;
 	}

@@ -962,7 +962,7 @@ namespace tz::gl
 
 //--------------------------------------------------------------------------------------------------
 
-	CommandProcessor::CommandProcessor(vk2::LogicalDevice& ldev, std::size_t frame_in_flight_count, OutputTarget output_target, std::span<vk2::Framebuffer> output_framebuffers, bool instant_compute_enabled, tz::gl::RendererOptions options):
+	CommandProcessor::CommandProcessor(vk2::LogicalDevice& ldev, std::size_t frame_in_flight_count, OutputTarget output_target, std::span<vk2::Framebuffer> output_framebuffers, bool instant_compute_enabled, tz::gl::RendererOptions options, DeviceRenderSchedulerVulkan& device_scheduler):
 	requires_present(output_target == OutputTarget::Window),
 	instant_compute_enabled(instant_compute_enabled),
 	graphics_queue(ldev.get_hardware_queue
@@ -985,26 +985,14 @@ namespace tz::gl
 		.buffer_count = static_cast<std::uint32_t>(frame_in_flight_count + 1)
 	})),
 	frame_in_flight_count(frame_in_flight_count),
-	image_semaphores(),
-	render_work_semaphores(),
-	in_flight_fences(),
 	images_in_flight(this->frame_in_flight_count, nullptr),
-	options(options)
+	options(options),
+	device_scheduler(&device_scheduler)
 	{
 		tz_assert(this->graphics_queue != nullptr, "Could not retrieve graphics present queue. Either your machine does not meet requirements, or (more likely) a logical error. Please submit a bug report.");
 		tz_assert(this->compute_queue != nullptr, "Could not retrieve compute queue. Either your machine does not meet requirements, or (more likely) a logical error. Please submit a bug report.");
 		tz_assert(output_framebuffers.size() == this->frame_in_flight_count, "Provided incorrect number of output framebuffers. We must have enough framebuffers for each frame we have in flight. Provided %zu framebuffers, but need %zu because that's how many frames we have in flight.", output_framebuffers.size(), this->frame_in_flight_count);
 		tz_assert(this->commands.success(), "Failed to allocate from CommandPool");
-		for(std::size_t i = 0; i < this->frame_in_flight_count; i++)
-		{
-			this->image_semaphores.emplace_back(ldev);
-			this->render_work_semaphores.emplace_back(ldev);
-			this->in_flight_fences.emplace_back
-			(vk2::FenceInfo{
-				.device = &ldev,
-				.initially_signalled = true
-			});
-		}
 	}
 
 	std::span<const vk2::CommandBuffer> CommandProcessor::get_render_command_buffers() const
@@ -1021,14 +1009,14 @@ namespace tz::gl
 	{
 		TZ_PROFZONE("Vulkan Frontend - RendererVulkan CommandProcessor (Do Render Work)", TZ_PROFCOL_YELLOW);
 		// Submit & Present
-		this->in_flight_fences[this->current_frame].wait_until_signalled();
+		this->device_scheduler->get_frame_fences()[this->current_frame].wait_until_signalled();
 		bool already_have_image = device_window.has_unused_image();
 		if(requires_present)
 		{
 			vk2::Semaphore* signal_sem = nullptr;
 			if(!already_have_image)
 			{
-				signal_sem = &this->image_semaphores[current_frame];
+				signal_sem = &this->device_scheduler->get_image_signals()[current_frame];
 			}
 			this->output_image_index = device_window.get_unused_image
 			({
@@ -1040,14 +1028,14 @@ namespace tz::gl
 			{
 				target_image->wait_until_signalled();
 			}
-			target_image = &this->in_flight_fences[this->output_image_index];
+			target_image = &this->device_scheduler->get_frame_fences()[this->output_image_index];
 		}
 		else
 		{
 			this->output_image_index = this->current_frame;
 		}
 
-		this->in_flight_fences[this->current_frame].unsignal();
+		this->device_scheduler->get_frame_fences()[this->current_frame].unsignal();
 		tz::BasicList<vk2::hardware::Queue::SubmitInfo::WaitInfo> waits;
 		if(requires_present && !already_have_image)
 		{
@@ -1055,7 +1043,7 @@ namespace tz::gl
 			{
 				vk2::hardware::Queue::SubmitInfo::WaitInfo
 				{
-					.wait_semaphore = &this->image_semaphores[this->current_frame],
+					.wait_semaphore = &this->device_scheduler->get_image_signals()[this->current_frame],
 					.wait_stage = vk2::PipelineStage::ColourAttachmentOutput
 				}
 			};
@@ -1063,20 +1051,20 @@ namespace tz::gl
 		tz::BasicList<const vk2::BinarySemaphore*> sem_signals;
 		if(requires_present && !this->options.contains(tz::gl::RendererOption::NoPresent))
 		{
-			sem_signals = {&this->render_work_semaphores[this->current_frame]};
+			sem_signals = {&this->device_scheduler->get_render_work_signals()[this->current_frame]};
 		}
 		this->graphics_queue->submit
 		({
 			.command_buffers = {&this->get_render_command_buffers()[this->output_image_index]},
 			.waits = waits,
 			.signal_semaphores = sem_signals,
-			.execution_complete_fence = &this->in_flight_fences[this->current_frame]
+			.execution_complete_fence = &this->device_scheduler->get_frame_fences()[this->current_frame]
 		});
 
 		// If we're disabled present, that means we've just submitted work that no present exists to wait on. If there is a composite renderer after us, it's gonna try and render before this work is done. For this edge-case we will instantly wait now. Horrible perf but oh well.
 		if(requires_present && this->options.contains(tz::gl::RendererOption::NoPresent))
 		{
-			this->in_flight_fences[this->current_frame].wait_until_signalled();
+			this->device_scheduler->get_frame_fences()[this->current_frame].wait_until_signalled();
 		}
 
 		CommandProcessor::RenderWorkSubmitResult result;
@@ -1085,7 +1073,7 @@ namespace tz::gl
 		{
 			result.present = this->graphics_queue->present
 			({
-				.wait_semaphores = {&this->render_work_semaphores[this->current_frame]},
+				.wait_semaphores = {&this->device_scheduler->get_render_work_signals()[this->current_frame]},
 				.swapchain = &device_window.get_swapchain(),
 				.swapchain_image_index = this->output_image_index
 			});
@@ -1103,32 +1091,26 @@ namespace tz::gl
 	{
 		TZ_PROFZONE("Vulkan Frontend - RendererVulkan CommandProcessor (Do Compute Work)", TZ_PROFCOL_YELLOW);
 
-		if(!this->instant_compute_enabled)
-		{
-			this->in_flight_fences[this->current_frame].wait_until_signalled();
-		}
-		this->in_flight_fences[this->current_frame].unsignal();
+		this->device_scheduler->get_frame_fences()[this->current_frame].wait_until_signalled();
+		this->device_scheduler->get_frame_fences()[this->current_frame].unsignal();
 		this->compute_queue->submit
 		({
 			.command_buffers = {&this->get_render_command_buffers().front()},
 			.waits = {},
 			.signal_semaphores = {},
-			.execution_complete_fence = &this->in_flight_fences[this->current_frame]
+			.execution_complete_fence = &this->device_scheduler->get_frame_fences()[this->current_frame]
 		});
 
 		if(this->instant_compute_enabled)
 		{
-			this->in_flight_fences[this->current_frame].wait_until_signalled();
+			this->device_scheduler->get_frame_fences()[this->current_frame].wait_until_signalled();
 		}
 	}
 
 	void CommandProcessor::wait_pending_commands_complete()
 	{
 		TZ_PROFZONE("Vulkan Frontend - RendererVulkan CommandProcessor (Waiting on commands to complete)", TZ_PROFCOL_YELLOW);
-		for(const vk2::Fence& fence : this->in_flight_fences)
-		{
-			fence.wait_until_signalled();
-		}
+		this->device_scheduler->wait_frame_work_complete();
 	}
 
 //--------------------------------------------------------------------------------------------------
@@ -1138,7 +1120,7 @@ namespace tz::gl
 	resources(info, *this->ldev, this->get_frame_in_flight_count(device_info)),
 	output(info.get_output(), device_info.output_images, info.get_options(), *this->ldev),
 	pipeline(info.shader(), this->resources.get_descriptor_layout(), this->output.get_render_pass(), this->get_frame_in_flight_count(device_info), output.get_output_dimensions(), !info.get_options().contains(RendererOption::NoDepthTesting), info.get_options().contains(RendererOption::AlphaBlending)),
-	command(*this->ldev, this->get_frame_in_flight_count(device_info), info.get_output() != nullptr ? info.get_output()->get_target() : OutputTarget::Window, this->output.get_output_framebuffers(), info.get_options().contains(RendererOption::BlockingCompute), info.get_options()),
+	command(*this->ldev, this->get_frame_in_flight_count(device_info), info.get_output() != nullptr ? info.get_output()->get_target() : OutputTarget::Window, this->output.get_output_framebuffers(), info.get_options().contains(RendererOption::BlockingCompute), info.get_options(), *device_info.device_scheduler),
 	device_window(device_info.device_window),
 	options(info.get_options()),
 	clear_colour(info.get_clear_colour()),
