@@ -29,6 +29,7 @@ namespace tz::gl
 		vk2::ImageFormat get_format() const;
 
 		vk2::Swapchain::ImageAcquisitionResult get_unused_image(const vk2::Swapchain::ImageAcquisition& acquire);
+		bool has_unused_image() const;
 		void mark_image_used();
 
 		RendererResizeCallbackType& resize_callback();

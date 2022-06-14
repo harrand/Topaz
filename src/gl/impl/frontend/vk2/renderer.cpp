@@ -663,8 +663,9 @@ namespace tz::gl
 			rbuilder.with_attachment
 			({
 				.format = colour_image->get_format(),
+				.colour_depth_load = this->options.contains(tz::gl::RendererOption::NoClearOutput) ? vk2::LoadOp::Load : vk2::LoadOp::Clear,
 				.colour_depth_store = vk2::StoreOp::Store,
-				.initial_layout = vk2::ImageLayout::Undefined,
+				.initial_layout = this->options.contains(tz::gl::RendererOption::NoClearOutput) ? vk2::ImageLayout::Present : vk2::ImageLayout::Undefined,
 				.final_layout = final_layout
 			});
 		}
@@ -961,7 +962,7 @@ namespace tz::gl
 
 //--------------------------------------------------------------------------------------------------
 
-	CommandProcessor::CommandProcessor(vk2::LogicalDevice& ldev, std::size_t frame_in_flight_count, OutputTarget output_target, std::span<vk2::Framebuffer> output_framebuffers, bool instant_compute_enabled):
+	CommandProcessor::CommandProcessor(vk2::LogicalDevice& ldev, std::size_t frame_in_flight_count, OutputTarget output_target, std::span<vk2::Framebuffer> output_framebuffers, bool instant_compute_enabled, tz::gl::RendererOptions options):
 	requires_present(output_target == OutputTarget::Window),
 	instant_compute_enabled(instant_compute_enabled),
 	graphics_queue(ldev.get_hardware_queue
@@ -987,7 +988,8 @@ namespace tz::gl
 	image_semaphores(),
 	render_work_semaphores(),
 	in_flight_fences(),
-	images_in_flight(this->frame_in_flight_count, nullptr)
+	images_in_flight(this->frame_in_flight_count, nullptr),
+	options(options)
 	{
 		tz_assert(this->graphics_queue != nullptr, "Could not retrieve graphics present queue. Either your machine does not meet requirements, or (more likely) a logical error. Please submit a bug report.");
 		tz_assert(this->compute_queue != nullptr, "Could not retrieve compute queue. Either your machine does not meet requirements, or (more likely) a logical error. Please submit a bug report.");
@@ -1020,11 +1022,17 @@ namespace tz::gl
 		TZ_PROFZONE("Vulkan Frontend - RendererVulkan CommandProcessor (Do Render Work)", TZ_PROFCOL_YELLOW);
 		// Submit & Present
 		this->in_flight_fences[this->current_frame].wait_until_signalled();
+		bool already_have_image = device_window.has_unused_image();
 		if(requires_present)
 		{
+			vk2::Semaphore* signal_sem = nullptr;
+			if(!already_have_image)
+			{
+				signal_sem = &this->image_semaphores[current_frame];
+			}
 			this->output_image_index = device_window.get_unused_image
 			({
-				.signal_semaphore = &this->image_semaphores[current_frame]
+				.signal_semaphore = signal_sem
 			}).image_index;
 
 			const vk2::Fence*& target_image = this->images_in_flight[this->output_image_index];
@@ -1041,7 +1049,7 @@ namespace tz::gl
 
 		this->in_flight_fences[this->current_frame].unsignal();
 		tz::BasicList<vk2::hardware::Queue::SubmitInfo::WaitInfo> waits;
-		if(requires_present)
+		if(requires_present && !already_have_image)
 		{
 			waits =
 			{
@@ -1053,7 +1061,7 @@ namespace tz::gl
 			};
 		}
 		tz::BasicList<const vk2::BinarySemaphore*> sem_signals;
-		if(requires_present)
+		if(requires_present && !this->options.contains(tz::gl::RendererOption::NoPresent))
 		{
 			sem_signals = {&this->render_work_semaphores[this->current_frame]};
 		}
@@ -1065,9 +1073,15 @@ namespace tz::gl
 			.execution_complete_fence = &this->in_flight_fences[this->current_frame]
 		});
 
+		// If we're disabled present, that means we've just submitted work that no present exists to wait on. If there is a composite renderer after us, it's gonna try and render before this work is done. For this edge-case we will instantly wait now. Horrible perf but oh well.
+		if(requires_present && this->options.contains(tz::gl::RendererOption::NoPresent))
+		{
+			this->in_flight_fences[this->current_frame].wait_until_signalled();
+		}
+
 		CommandProcessor::RenderWorkSubmitResult result;
 
-		if(requires_present)
+		if(requires_present && !this->options.contains(tz::gl::RendererOption::NoPresent))
 		{
 			result.present = this->graphics_queue->present
 			({
@@ -1124,7 +1138,7 @@ namespace tz::gl
 	resources(info, *this->ldev, this->get_frame_in_flight_count(device_info)),
 	output(info.get_output(), device_info.output_images, info.get_options(), *this->ldev),
 	pipeline(info.shader(), this->resources.get_descriptor_layout(), this->output.get_render_pass(), this->get_frame_in_flight_count(device_info), output.get_output_dimensions(), !info.get_options().contains(RendererOption::NoDepthTesting), info.get_options().contains(RendererOption::AlphaBlending)),
-	command(*this->ldev, this->get_frame_in_flight_count(device_info), info.get_output() != nullptr ? info.get_output()->get_target() : OutputTarget::Window, this->output.get_output_framebuffers(), info.get_options().contains(RendererOption::BlockingCompute)),
+	command(*this->ldev, this->get_frame_in_flight_count(device_info), info.get_output() != nullptr ? info.get_output()->get_target() : OutputTarget::Window, this->output.get_output_framebuffers(), info.get_options().contains(RendererOption::BlockingCompute), info.get_options()),
 	device_window(device_info.device_window),
 	options(info.get_options()),
 	clear_colour(info.get_clear_colour()),

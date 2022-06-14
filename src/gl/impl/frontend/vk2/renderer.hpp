@@ -271,7 +271,7 @@ namespace tz::gl
 		 * @param output_framebuffers Array of framebuffers belonging to the output manager which will act as our render targets. The array should have length equal to `frame_in_flight_count`.
 		 * @pre `output_framebuffers.size() == frame_in_flight_count`, otherwise the behaviour is undefined.
 		 */
-		CommandProcessor(vk2::LogicalDevice& ldev, std::size_t frame_in_flight_count, OutputTarget output_target, std::span<vk2::Framebuffer> output_framebuffers, bool instant_compute_enabled);
+		CommandProcessor(vk2::LogicalDevice& ldev, std::size_t frame_in_flight_count, OutputTarget output_target, std::span<vk2::Framebuffer> output_framebuffers, bool instant_compute_enabled, tz::gl::RendererOptions options);
 		/**
 		 * Retrieve a list of all command buffers which will be used for rendering. Each command buffer is guaranteed to have the exact same commands recorded within them.
 		 * @return Array of command buffers, length matching the number of frames-in-flight.
@@ -324,6 +324,7 @@ namespace tz::gl
 		std::vector<vk2::Fence> in_flight_fences;
 		/// Helper list which refers to each in-flight-fence, but in an order useful to the swapchain image acquisition logic.
 		std::vector<const vk2::Fence*> images_in_flight;
+		tz::gl::RendererOptions options;
 		/// The image index most recently acquired from the swapchain.
 		std::uint32_t output_image_index = 0;
 		/// Represents the current index of the frame (between 0 and frame_in_flight_count - 1).

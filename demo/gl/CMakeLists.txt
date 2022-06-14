@@ -12,6 +12,8 @@ add_demo(
 		demo/gl/shaders/tz_terrain_demo.tesscon.tzsl
 		demo/gl/shaders/tz_terrain_demo.tesseval.tzsl
 		demo/gl/shaders/tz_terrain_demo.fragment.tzsl
+		demo/gl/shaders/tz_triangle_demo.vertex.tzsl
+		demo/gl/shaders/tz_triangle_demo.fragment.tzsl
 )
 
 add_demo(

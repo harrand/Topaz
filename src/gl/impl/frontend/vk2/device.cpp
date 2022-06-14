@@ -120,6 +120,11 @@ namespace tz::gl
 		return this->recent_acquire.value();
 	}
 
+	bool DeviceWindowVulkan::has_unused_image() const
+	{
+		return this->recent_acquire.has_value();
+	}
+
 	void DeviceWindowVulkan::mark_image_used()
 	{
 		this->recent_acquire = std::nullopt;
