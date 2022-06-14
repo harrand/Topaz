@@ -319,7 +319,9 @@ namespace tz::gl
 		std::size_t frame_in_flight_count;
 		/// Helper list which refers to each in-flight-fence, but in an order useful to the swapchain image acquisition logic.
 		std::vector<const vk2::Fence*> images_in_flight;
+		/// Copy of all renderer options specified.
 		tz::gl::RendererOptions options;
+		/// Scheduler object belonging to the parent device. We retrieve scheduling primitives from here, such as semaphores and fences.
 		DeviceRenderSchedulerVulkan* device_scheduler;
 		/// The image index most recently acquired from the swapchain.
 		std::uint32_t output_image_index = 0;
