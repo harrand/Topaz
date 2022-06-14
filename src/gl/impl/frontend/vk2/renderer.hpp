@@ -207,6 +207,7 @@ namespace tz::gl
 		vk2::RenderPass render_pass;
 		/// List of framebuffers, one for each output image. These also haven't been re-ordered in any way FYI.
 		std::vector<vk2::Framebuffer> output_framebuffers;
+		tz::gl::RendererOptions options;
 	};
 
 	/**

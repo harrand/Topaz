@@ -430,10 +430,11 @@ namespace tz::gl
 	swapchain_depth_images(),
 	output_imageviews(),
 	render_pass(vk2::RenderPass::null()),
-	output_framebuffers()
+	output_framebuffers(),
+	options(options)
 	{
 		TZ_PROFZONE("Vulkan Frontend - RendererVulkan OutputManager Create", TZ_PROFCOL_YELLOW);
-		this->create_output_resources(this->swapchain_images, !options.contains(tz::gl::RendererOption::NoDepthTesting));
+		this->create_output_resources(this->swapchain_images, !this->options.contains(tz::gl::RendererOption::NoDepthTesting));
 	}
 
 	OutputManager::OutputManager(OutputManager&& move):
@@ -444,7 +445,8 @@ namespace tz::gl
 	output_imageviews(std::move(move.output_imageviews)),
 	output_depth_imageviews(std::move(move.output_depth_imageviews)),
 	render_pass(std::move(move.render_pass)),
-	output_framebuffers(std::move(move.output_framebuffers))
+	output_framebuffers(std::move(move.output_framebuffers)),
+	options(std::move(move.options))
 	{
 		for(auto& fb : this->output_framebuffers)
 		{
@@ -462,6 +464,7 @@ namespace tz::gl
 		std::swap(this->output_depth_imageviews, rhs.output_depth_imageviews);
 		std::swap(this->render_pass, rhs.render_pass);
 		std::swap(this->output_framebuffers, rhs.output_framebuffers);
+		std::swap(this->options, rhs.options);
 		for(auto& fb : this->output_framebuffers)
 		{
 			fb.set_render_pass(this->render_pass);
