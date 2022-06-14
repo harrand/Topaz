@@ -261,6 +261,7 @@ namespace tz::gl
 			.device = &this->device,
 			.output_images = this->window_storage.get_output_images(),
 			.device_window = &this->window_storage,
+			.device_scheduler = &this->scheduler,
 			.resize_callback = &this->window_storage.resize_callback()
 		}};
 	}
