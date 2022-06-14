@@ -145,7 +145,7 @@ namespace tz::gl
 		 * @param create_depth_images Whether we should create depth images or not. If so, they will also be passed into the framebuffer. This means that the graphics pipeline the renderer ends up using will also need to know that we're using a depth attachment.
 		 * @param ldev Vulkan LogicalDevice which will be used to construct the render-pass and framebuffers etc. Right now we expect this to be the exact same LogicalDevice everywhere throughout this RendererVulkan. However this may change in the future (albeit unlikely tbh).
 		 */
-		OutputManager(const IOutput* output, std::span<vk2::Image> swapchain_images, bool create_depth_images, const vk2::LogicalDevice& ldev);
+		OutputManager(const IOutput* output, std::span<vk2::Image> swapchain_images, tz::gl::RendererOptions options, const vk2::LogicalDevice& ldev);
 		OutputManager(OutputManager&& move);
 		~OutputManager() = default;
 		OutputManager& operator=(OutputManager&& rhs);

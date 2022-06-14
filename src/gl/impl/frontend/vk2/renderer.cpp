@@ -422,7 +422,7 @@ namespace tz::gl
 
 //--------------------------------------------------------------------------------------------------
 
-	OutputManager::OutputManager(const IOutput* output, std::span<vk2::Image> swapchain_images, bool create_depth_images, const vk2::LogicalDevice& ldev):
+	OutputManager::OutputManager(const IOutput* output, std::span<vk2::Image> swapchain_images, tz::gl::RendererOptions options, const vk2::LogicalDevice& ldev):
 	output(output != nullptr ? output->unique_clone() : nullptr),
 	ldev(&ldev),
 	swapchain_images(swapchain_images),
@@ -432,7 +432,7 @@ namespace tz::gl
 	output_framebuffers()
 	{
 		TZ_PROFZONE("Vulkan Frontend - RendererVulkan OutputManager Create", TZ_PROFCOL_YELLOW);
-		this->create_output_resources(this->swapchain_images, create_depth_images);
+		this->create_output_resources(this->swapchain_images, !options.contains(tz::gl::RendererOption::NoDepthTesting));
 	}
 
 	OutputManager::OutputManager(OutputManager&& move):
@@ -1119,7 +1119,7 @@ namespace tz::gl
 	RendererVulkan::RendererVulkan(const RendererInfoVulkan& info, const RendererDeviceInfoVulkan& device_info):
 	ldev(device_info.device),
 	resources(info, *this->ldev, this->get_frame_in_flight_count(device_info)),
-	output(info.get_output(), device_info.output_images, !info.get_options().contains(RendererOption::NoDepthTesting), *this->ldev),
+	output(info.get_output(), device_info.output_images, info.get_options(), *this->ldev),
 	pipeline(info.shader(), this->resources.get_descriptor_layout(), this->output.get_render_pass(), this->get_frame_in_flight_count(device_info), output.get_output_dimensions(), !info.get_options().contains(RendererOption::NoDepthTesting), info.get_options().contains(RendererOption::AlphaBlending)),
 	command(*this->ldev, this->get_frame_in_flight_count(device_info), info.get_output() != nullptr ? info.get_output()->get_target() : OutputTarget::Window, this->output.get_output_framebuffers(), info.get_options().contains(RendererOption::BlockingCompute)),
 	maybe_swapchain(device_info.maybe_swapchain),
