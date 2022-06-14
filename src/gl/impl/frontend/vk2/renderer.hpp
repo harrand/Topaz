@@ -297,7 +297,7 @@ namespace tz::gl
 		 * @return Structure containing information about the results of the render work submission (and image presentation if applicable).
 		 * @pre `maybe_swapchain` must not be nullptr if the renderer is expected to present the result of the submitted work to the window.
 		 */
-		RenderWorkSubmitResult do_render_work(vk2::Swapchain* maybe_swapchain);
+		RenderWorkSubmitResult do_render_work(DeviceWindowVulkan& device_window);
 		void do_compute_work();
 
 		void wait_pending_commands_complete();
@@ -434,7 +434,7 @@ namespace tz::gl
 		OutputManager output;
 		GraphicsPipelineManager pipeline;
 		CommandProcessor command;
-		vk2::Swapchain* maybe_swapchain;
+		DeviceWindowVulkan* device_window;
 		RendererOptions options;
 		tz::Vec4 clear_colour;
 		tz::Vec3ui compute_kernel;

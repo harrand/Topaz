@@ -1012,16 +1012,14 @@ namespace tz::gl
 		return {this->commands.buffers.begin(), this->frame_in_flight_count};
 	}
 
-	CommandProcessor::RenderWorkSubmitResult CommandProcessor::do_render_work(vk2::Swapchain* maybe_swapchain)
+	CommandProcessor::RenderWorkSubmitResult CommandProcessor::do_render_work(DeviceWindowVulkan& device_window)
 	{
 		TZ_PROFZONE("Vulkan Frontend - RendererVulkan CommandProcessor (Do Render Work)", TZ_PROFCOL_YELLOW);
-		tz_assert(maybe_swapchain != nullptr, "Trying to do render work with presentation, but no Swapchain provided. Please submit a bug report.");
-		vk2::Swapchain& swapchain = *maybe_swapchain;
 		// Submit & Present
 		this->in_flight_fences[this->current_frame].wait_until_signalled();
 		if(requires_present)
 		{
-			this->output_image_index = swapchain.acquire_image
+			this->output_image_index = device_window.get_unused_image
 			({
 				.signal_semaphore = &this->image_semaphores[current_frame]
 			}).image_index;
@@ -1071,9 +1069,10 @@ namespace tz::gl
 			result.present = this->graphics_queue->present
 			({
 				.wait_semaphores = {&this->render_work_semaphores[this->current_frame]},
-				.swapchain = maybe_swapchain,
+				.swapchain = &device_window.get_swapchain(),
 				.swapchain_image_index = this->output_image_index
 			});
+			device_window.mark_image_used();
 		}
 		else
 		{
@@ -1123,7 +1122,7 @@ namespace tz::gl
 	output(info.get_output(), device_info.output_images, info.get_options(), *this->ldev),
 	pipeline(info.shader(), this->resources.get_descriptor_layout(), this->output.get_render_pass(), this->get_frame_in_flight_count(device_info), output.get_output_dimensions(), !info.get_options().contains(RendererOption::NoDepthTesting), info.get_options().contains(RendererOption::AlphaBlending)),
 	command(*this->ldev, this->get_frame_in_flight_count(device_info), info.get_output() != nullptr ? info.get_output()->get_target() : OutputTarget::Window, this->output.get_output_framebuffers(), info.get_options().contains(RendererOption::BlockingCompute)),
-	maybe_swapchain(&device_info.device_window->get_swapchain()),
+	device_window(device_info.device_window),
 	options(info.get_options()),
 	clear_colour(info.get_clear_colour()),
 	compute_kernel(info.get_compute_kernel())
@@ -1146,7 +1145,7 @@ namespace tz::gl
 	output(std::move(move.output)),
 	pipeline(std::move(move.pipeline)),
 	command(std::move(move.command)),
-	maybe_swapchain(move.maybe_swapchain),
+	device_window(move.device_window),
 	options(move.options),
 	clear_colour(move.clear_colour),
 	tri_count(move.tri_count),
@@ -1175,7 +1174,7 @@ namespace tz::gl
 		std::swap(this->output, rhs.output);
 		std::swap(this->pipeline, rhs.pipeline);
 		std::swap(this->command, rhs.command);
-		std::swap(this->maybe_swapchain, rhs.maybe_swapchain);
+		std::swap(this->device_window, rhs.device_window);
 		std::swap(this->options, rhs.options);
 		std::swap(this->clear_colour, rhs.clear_colour);
 		std::swap(this->tri_count, rhs.tri_count);
@@ -1227,7 +1226,7 @@ namespace tz::gl
 		}
 		else
 		{
-			CommandProcessor::RenderWorkSubmitResult result = this->command.do_render_work(this->maybe_swapchain);
+			CommandProcessor::RenderWorkSubmitResult result = this->command.do_render_work(*this->device_window);
 			switch(result.present)
 			{
 				case vk2::hardware::Queue::PresentResult::Success_Suboptimal:
