@@ -1061,12 +1061,6 @@ namespace tz::gl
 			.execution_complete_fence = &this->device_scheduler->get_frame_fences()[this->current_frame]
 		});
 
-		// If we're disabled present, that means we've just submitted work that no present exists to wait on. If there is a composite renderer after us, it's gonna try and render before this work is done. For this edge-case we will instantly wait now. Horrible perf but oh well.
-		if(requires_present && this->options.contains(tz::gl::RendererOption::NoPresent))
-		{
-			this->device_scheduler->get_frame_fences()[this->current_frame].wait_until_signalled();
-		}
-
 		CommandProcessor::RenderWorkSubmitResult result;
 
 		if(requires_present && !this->options.contains(tz::gl::RendererOption::NoPresent))
