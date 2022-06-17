@@ -1111,14 +1111,14 @@ namespace tz::gl
 
 	RendererVulkan::RendererVulkan(const RendererInfoVulkan& info, const RendererDeviceInfoVulkan& device_info):
 	ldev(device_info.device),
-	resources(info, *this->ldev, this->get_frame_in_flight_count(device_info)),
-	output(info.get_output(), device_info.output_images, info.get_options(), *this->ldev),
-	pipeline(info.shader(), this->resources.get_descriptor_layout(), this->output.get_render_pass(), this->get_frame_in_flight_count(device_info), output.get_output_dimensions(), !info.get_options().contains(RendererOption::NoDepthTesting), info.get_options().contains(RendererOption::AlphaBlending)),
-	command(*this->ldev, this->get_frame_in_flight_count(device_info), info.get_output() != nullptr ? info.get_output()->get_target() : OutputTarget::Window, this->output.get_output_framebuffers(), info.get_options().contains(RendererOption::BlockingCompute), info.get_options(), *device_info.device_scheduler),
 	device_window(device_info.device_window),
 	options(info.get_options()),
 	clear_colour(info.get_clear_colour()),
-	compute_kernel(info.get_compute_kernel())
+	compute_kernel(info.get_compute_kernel()),
+	resources(info, *this->ldev, this->get_frame_in_flight_count()),
+	output(info.get_output(), device_info.output_images, info.get_options(), *this->ldev),
+	pipeline(info.shader(), this->resources.get_descriptor_layout(), this->output.get_render_pass(), this->get_frame_in_flight_count(), output.get_output_dimensions(), !info.get_options().contains(RendererOption::NoDepthTesting), info.get_options().contains(RendererOption::AlphaBlending)),
+	command(*this->ldev, this->get_frame_in_flight_count(), info.get_output() != nullptr ? info.get_output()->get_target() : OutputTarget::Window, this->output.get_output_framebuffers(), info.get_options().contains(RendererOption::BlockingCompute), info.get_options(), *device_info.device_scheduler)
 	{
 		TZ_PROFZONE("Vulkan Frontend - RendererVulkan Create", TZ_PROFCOL_YELLOW);
 		// If we're not headless, we should register a callback for our lifetime.
@@ -1134,13 +1134,14 @@ namespace tz::gl
 
 	RendererVulkan::RendererVulkan(RendererVulkan&& move):
 	ldev(move.ldev),
+	device_window(move.device_window),
+	options(move.options),
+	clear_colour(move.clear_colour),
+	compute_kernel(move.compute_kernel),
 	resources(std::move(move.resources)),
 	output(std::move(move.output)),
 	pipeline(std::move(move.pipeline)),
 	command(std::move(move.command)),
-	device_window(move.device_window),
-	options(move.options),
-	clear_colour(move.clear_colour),
 	tri_count(move.tri_count),
 	device_resize_callback(move.device_resize_callback),
 	window_resize_callback(move.window_resize_callback)
@@ -1163,13 +1164,14 @@ namespace tz::gl
 	RendererVulkan& RendererVulkan::operator=(RendererVulkan&& rhs)
 	{
 		std::swap(this->ldev, rhs.ldev);
+		std::swap(this->device_window, rhs.device_window);
+		std::swap(this->options, rhs.options);
+		std::swap(this->clear_colour, rhs.clear_colour);
+		std::swap(this->compute_kernel, rhs.compute_kernel);
 		std::swap(this->resources, rhs.resources);
 		std::swap(this->output, rhs.output);
 		std::swap(this->pipeline, rhs.pipeline);
 		std::swap(this->command, rhs.command);
-		std::swap(this->device_window, rhs.device_window);
-		std::swap(this->options, rhs.options);
-		std::swap(this->clear_colour, rhs.clear_colour);
 		std::swap(this->tri_count, rhs.tri_count);
 		std::swap(this->device_resize_callback, rhs.device_resize_callback);
 		std::swap(this->window_resize_callback, rhs.window_resize_callback);
@@ -1564,11 +1566,10 @@ namespace tz::gl
 		this->setup_work_commands();
 	}
 
-	std::size_t RendererVulkan::get_frame_in_flight_count(const RendererDeviceInfoVulkan& device_info) const
+	std::size_t RendererVulkan::get_frame_in_flight_count() const
 	{
-		std::uint32_t min = device_info.device->get_hardware().get_surface_capabilities().min_image_count;
-		std::uint32_t max = device_info.device->get_hardware().get_surface_capabilities().max_image_count;
-		return std::clamp<std::uint32_t>(3u, min, max);
+		tz_assert(this->device_window != nullptr, "DeviceWindow was nullptr. Please submit a bug report.");
+		return this->device_window->get_output_images().size();
 	}
 }
 

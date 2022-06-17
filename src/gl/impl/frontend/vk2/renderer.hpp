@@ -427,21 +427,31 @@ namespace tz::gl
 		void setup_compute_commands();
 		void setup_work_commands();
 		void handle_resize(const RendererResizeInfoVulkan& resize_info);
-		std::size_t get_frame_in_flight_count(const RendererDeviceInfoVulkan& device_info) const;
+		std::size_t get_frame_in_flight_count() const;
 
+		// LogicalDevice that every vulkan backend object will use.
 		vk2::LogicalDevice* ldev;
+		// Stores information about the window e.g swapchain images.
+		DeviceWindowVulkan* device_window;
+		// Contains which renderer options were enabled.
+		RendererOptions options;
+		// Clear colour values if a clear is performed during a render pass.
+		tz::Vec4 clear_colour;
+		// Workgroup dimensions, if we're doing compute work.
+		tz::Vec3ui compute_kernel;
 		/// Stores copies of all provided resources, and deals with all the vulkan descriptor magic. Exposes everything relevant to us when we want to draw.
 		ResourceStorage resources;
 		/// Handles output image component logic, and exposes a nice list of images/views/framebuffers into which we can render into without having to worry about the complicated logic behind the output wrangling.
 		OutputManager output;
+		/// Helper object for managing the underlying graphics/compute pipeline.
 		GraphicsPipelineManager pipeline;
+		/// Helper object for managing/executing/scheduling GPU work.
 		CommandProcessor command;
-		DeviceWindowVulkan* device_window;
-		RendererOptions options;
-		tz::Vec4 clear_colour;
-		tz::Vec3ui compute_kernel;
+		/// Number of triangles that will be drawn in the next render() invocation.
 		unsigned int tri_count = 0;
+		/// Callback object which we attach to listen for when the device has been informed that the window is resized.
 		RendererResizeCallbackType* device_resize_callback = nullptr;
+		/// Handle representing the registration of our callback function from `device_resize_callback`.
 		tz::CallbackHandle window_resize_callback = tz::nullhand;
 	};
 
