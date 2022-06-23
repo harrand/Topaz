@@ -435,7 +435,7 @@ namespace tz::gl
 	options(options)
 	{
 		TZ_PROFZONE("Vulkan Frontend - RendererVulkan OutputManager Create", TZ_PROFCOL_YELLOW);
-		this->create_output_resources(this->swapchain_images, this->swapchain_depth_images, !this->options.contains(tz::gl::RendererOption::NoDepthTesting));
+		this->create_output_resources(this->swapchain_images, this->swapchain_depth_images);
 	}
 
 	OutputManager::OutputManager(OutputManager&& move):
@@ -542,7 +542,7 @@ namespace tz::gl
 		return !this->options.contains(tz::gl::RendererOption::NoDepthTesting);
 	}
 
-	void OutputManager::create_output_resources(std::span<vk2::Image> swapchain_images, vk2::Image* depth_image, bool create_depth_images)
+	void OutputManager::create_output_resources(std::span<vk2::Image> swapchain_images, vk2::Image* depth_image)
 	{
 		TZ_PROFZONE("Vulkan Frontend - RendererVulkan OutputManager (Output Resources Creation)", TZ_PROFCOL_YELLOW);
 		this->swapchain_images = swapchain_images;
@@ -553,7 +553,7 @@ namespace tz::gl
 		this->swapchain_depth_images = depth_image;
 		this->output_depth_imageviews.reserve(this->swapchain_images.size());
 
-		this->populate_output_views(create_depth_images);
+		this->populate_output_views();
 
 		#if TZ_DEBUG
 			for(const OutputImageViewState& out_view : this->output_imageviews)
@@ -562,12 +562,12 @@ namespace tz::gl
 			}
 		#endif // TZ_DEBUG
 
-		this->make_render_pass(create_depth_images);
-		this->populate_framebuffers(create_depth_images);
+		this->make_render_pass();
+		this->populate_framebuffers();
 	}
 
 
-	void OutputManager::populate_output_views(bool has_depth_images)
+	void OutputManager::populate_output_views()
 	{
 		auto output_image_copy = this->get_output_images();
 		for(std::size_t i = 0; i < output_image_copy.size(); i++)
@@ -584,23 +584,15 @@ namespace tz::gl
 			}
 			this->output_imageviews.push_back(std::move(out_view));
 
-			// If we made depth images earlier, create views for them too.
-			if(has_depth_images)
-			{
-				this->output_depth_imageviews.push_back
-				(vk2::ImageViewInfo{
-					.image = this->swapchain_depth_images,
-					.aspect = vk2::ImageAspect::Depth
-				});
-			}
-			else
-			{
-				this->output_depth_imageviews.push_back(vk2::ImageView::null());
-			}
+			this->output_depth_imageviews.push_back
+			(vk2::ImageViewInfo{
+				.image = this->swapchain_depth_images,
+				.aspect = vk2::ImageAspect::Depth
+			});
 		}
 	}
 
-	void OutputManager::make_render_pass(bool has_depth_images)
+	void OutputManager::make_render_pass()
 	{
 		// Now create an ultra-basic renderpass.
 		// We're matching the ImageFormat of the provided output image.
@@ -636,17 +628,15 @@ namespace tz::gl
 				.final_layout = final_layout
 			});
 		}
-		if(has_depth_images)
-		{
-			rbuilder.with_attachment
-			({
-				.format = this->swapchain_depth_images->get_format(),
-				.colour_depth_load = this->options.contains(tz::gl::RendererOption::NoClearOutput) ? vk2::LoadOp::Load : vk2::LoadOp::Clear,
-				.colour_depth_store = this->options.contains(tz::gl::RendererOption::NoPresent) ? vk2::StoreOp::Store : vk2::StoreOp::DontCare,
-				.initial_layout = this->options.contains(tz::gl::RendererOption::NoClearOutput) ? vk2::ImageLayout::DepthStencilAttachment : vk2::ImageLayout::Undefined,
-				.final_layout = vk2::ImageLayout::DepthStencilAttachment
-			});
-		}
+
+		rbuilder.with_attachment
+		({
+			.format = this->swapchain_depth_images->get_format(),
+			.colour_depth_load = this->options.contains(tz::gl::RendererOption::NoClearOutput) ? vk2::LoadOp::Load : vk2::LoadOp::Clear,
+			.colour_depth_store = this->options.contains(tz::gl::RendererOption::NoPresent) ? vk2::StoreOp::Store : vk2::StoreOp::DontCare,
+			.initial_layout = this->options.contains(tz::gl::RendererOption::NoClearOutput) ? vk2::ImageLayout::DepthStencilAttachment : vk2::ImageLayout::Undefined,
+			.final_layout = vk2::ImageLayout::DepthStencilAttachment
+		});
 
 		vk2::SubpassBuilder sbuilder;
 		sbuilder.set_pipeline_context(vk2::PipelineContext::Graphics);
@@ -658,20 +648,17 @@ namespace tz::gl
 				.current_layout = vk2::ImageLayout::ColourAttachment
 			});
 		}
-		if(has_depth_images)
-		{
-			sbuilder.with_depth_stencil_attachment
-			({
-				.attachment_idx = colour_output_length,
-				.current_layout = vk2::ImageLayout::DepthStencilAttachment
-			});
-		}
+		sbuilder.with_depth_stencil_attachment
+		({
+			.attachment_idx = colour_output_length,
+			.current_layout = vk2::ImageLayout::DepthStencilAttachment
+		});
 
 		this->render_pass = rbuilder.with_subpass(sbuilder.build()).build();
 
 	}
 
-	void OutputManager::populate_framebuffers(bool has_depth_images)
+	void OutputManager::populate_framebuffers()
 	{
 		for(std::size_t i = 0; i < this->output_imageviews.size(); i++)
 		{
@@ -683,10 +670,7 @@ namespace tz::gl
 			{
 				return &colour_view;
 			});
-			if(has_depth_images)
-			{
-				attachments.add(&this->output_depth_imageviews[i]);
-			}
+			attachments.add(&this->output_depth_imageviews[i]);
 			this->output_framebuffers.push_back
 			(vk2::FramebufferInfo{
 				.render_pass = &this->render_pass,
@@ -1529,7 +1513,7 @@ namespace tz::gl
 		TZ_PROFZONE("Vulkan Frontend - RendererVulkan Handle Resize", TZ_PROFCOL_YELLOW);
 		// Context: The top-level gl::Device has just been told by the window that it has been resized, and has recreated a new swapchain. Our old pointer to the swapchain `maybe_swapchain` correctly points to the new swapchain already, so we just have to recreate all the new state.
 		this->command.wait_pending_commands_complete();
-		this->output.create_output_resources(resize_info.new_output_images, resize_info.new_depth_image, this->output.has_depth_images());
+		this->output.create_output_resources(resize_info.new_output_images, resize_info.new_depth_image);
 		this->pipeline.recreate(this->output.get_render_pass(), resize_info.new_dimensions, this->pipeline.is_wireframe_mode());
 		this->setup_work_commands();
 	}
