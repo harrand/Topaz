@@ -426,7 +426,6 @@ namespace tz::gl
 	OutputManager::OutputManager(const IOutput* output, DeviceWindowVulkan* device_window, tz::gl::RendererOptions options, const vk2::LogicalDevice& ldev):
 	output(output != nullptr ? output->unique_clone() : nullptr),
 	ldev(&ldev),
-	device_window(device_window),
 	swapchain_images(device_window->get_output_images()),
 	swapchain_depth_images(&device_window->get_depth_image()),
 	output_imageviews(),

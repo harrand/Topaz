@@ -195,7 +195,6 @@ namespace tz::gl
 		std::unique_ptr<IOutput> output;
 		/// Logical device used to create depth images, render passes and framebuffers.
 		const vk2::LogicalDevice* ldev;
-		DeviceWindowVulkan* device_window;
 		/// List of window buffer images (offscreen image or swapchain images) from the Device.
 		std::span<vk2::Image> swapchain_images;
 		/// List of depth images for each window buffer image (These may be null if depth testing is disabled).
