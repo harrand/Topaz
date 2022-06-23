@@ -34,7 +34,9 @@ namespace tz::gl
 
 		RendererResizeCallbackType& resize_callback();
 		std::span<vk2::Image> get_output_images();
+		vk2::Image& get_depth_image();
 	private:
+		void make_depth_image();
 		void on_resize(tz::Vec2ui dims);
 		void register_resize();
 		void unregister_resize();
@@ -42,6 +44,8 @@ namespace tz::gl
 		void reregister_resize();
 
 		vk2::Swapchain window_buf = vk2::Swapchain::null();
+		vk2::Image old_depth_image = vk2::Image::null();
+		vk2::Image depth_image = vk2::Image::null();
 		tz::CallbackHandle on_resize_handle = tz::nullhand;
 		RendererResizeCallbackType renderer_resize_callbacks = {};
 		std::optional<vk2::Swapchain::ImageAcquisitionResult> recent_acquire = std::nullopt;

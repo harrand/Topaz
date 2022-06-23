@@ -423,18 +423,19 @@ namespace tz::gl
 
 //--------------------------------------------------------------------------------------------------
 
-	OutputManager::OutputManager(const IOutput* output, std::span<vk2::Image> swapchain_images, tz::gl::RendererOptions options, const vk2::LogicalDevice& ldev):
+	OutputManager::OutputManager(const IOutput* output, DeviceWindowVulkan* device_window, tz::gl::RendererOptions options, const vk2::LogicalDevice& ldev):
 	output(output != nullptr ? output->unique_clone() : nullptr),
 	ldev(&ldev),
-	swapchain_images(swapchain_images),
-	swapchain_depth_images(),
+	device_window(device_window),
+	swapchain_images(device_window->get_output_images()),
+	swapchain_depth_images(&device_window->get_depth_image()),
 	output_imageviews(),
 	render_pass(vk2::RenderPass::null()),
 	output_framebuffers(),
 	options(options)
 	{
 		TZ_PROFZONE("Vulkan Frontend - RendererVulkan OutputManager Create", TZ_PROFCOL_YELLOW);
-		this->create_output_resources(this->swapchain_images, !this->options.contains(tz::gl::RendererOption::NoDepthTesting));
+		this->create_output_resources(this->swapchain_images, this->swapchain_depth_images, !this->options.contains(tz::gl::RendererOption::NoDepthTesting));
 	}
 
 	OutputManager::OutputManager(OutputManager&& move):
@@ -538,22 +539,20 @@ namespace tz::gl
 	
 	bool OutputManager::has_depth_images() const
 	{
-		return !this->swapchain_depth_images.empty();
+		return !this->options.contains(tz::gl::RendererOption::NoDepthTesting);
 	}
 
-	void OutputManager::create_output_resources(std::span<vk2::Image> swapchain_images, bool create_depth_images)
+	void OutputManager::create_output_resources(std::span<vk2::Image> swapchain_images, vk2::Image* depth_image, bool create_depth_images)
 	{
 		TZ_PROFZONE("Vulkan Frontend - RendererVulkan OutputManager (Output Resources Creation)", TZ_PROFCOL_YELLOW);
 		this->swapchain_images = swapchain_images;
-		this->swapchain_depth_images.clear();
 		this->output_imageviews.clear();
 		this->output_depth_imageviews.clear();
 		this->output_framebuffers.clear();
 
-		this->swapchain_depth_images.reserve(this->swapchain_images.size());
+		this->swapchain_depth_images = depth_image;
 		this->output_depth_imageviews.reserve(this->swapchain_images.size());
 
-		this->populate_depth_images(create_depth_images);
 		this->populate_output_views(create_depth_images);
 
 		#if TZ_DEBUG
@@ -567,38 +566,6 @@ namespace tz::gl
 		this->populate_framebuffers(create_depth_images);
 	}
 
-	void OutputManager::populate_depth_images(bool has_depth_images)
-	{
-		for(const vk2::Image& window_buffer_image : this->swapchain_images)
-		{
-			// If we need depth images for depth testing, we'll create them based off of the existing output images we are provided from the Device.
-			if(has_depth_images)
-			{
-				// If we're rendering to a TextureOutput and it has a depth attachment, then we want to use that. Otherwise, we create one now.
-				if(this->output != nullptr && this->output->get_target() == OutputTarget::OffscreenImage && static_cast<const ImageOutput*>(this->output.get())->has_depth_attachment())
-				{
-					tz_error("Sorry, depth attachment to image outputs are not yet implemented.");
-					this->swapchain_depth_images.push_back(vk2::Image::null());
-				}
-				else
-				{
-					this->swapchain_depth_images.push_back
-					(vk2::ImageInfo{
-						.device = this->ldev,
-						.format = vk2::ImageFormat::Depth32_SFloat,
-						.dimensions = window_buffer_image.get_dimensions(),
-						.usage = {vk2::ImageUsage::DepthStencilAttachment},
-						.residency = vk2::MemoryResidency::GPU
-					});
-				}
-			}
-			else
-			{
-				// Otherwise, just create empty ones and don't bother using them.
-				this->swapchain_depth_images.push_back(vk2::Image::null());
-			}
-		}
-	}
 
 	void OutputManager::populate_output_views(bool has_depth_images)
 	{
@@ -622,7 +589,7 @@ namespace tz::gl
 			{
 				this->output_depth_imageviews.push_back
 				(vk2::ImageViewInfo{
-					.image = &this->swapchain_depth_images[i],
+					.image = this->swapchain_depth_images,
 					.aspect = vk2::ImageAspect::Depth
 				});
 			}
@@ -673,9 +640,10 @@ namespace tz::gl
 		{
 			rbuilder.with_attachment
 			({
-				.format = this->swapchain_depth_images.front().get_format(),
-				.colour_depth_store = vk2::StoreOp::DontCare,
-				.initial_layout = vk2::ImageLayout::Undefined,
+				.format = this->swapchain_depth_images->get_format(),
+				.colour_depth_load = this->options.contains(tz::gl::RendererOption::NoClearOutput) ? vk2::LoadOp::Load : vk2::LoadOp::Clear,
+				.colour_depth_store = this->options.contains(tz::gl::RendererOption::NoPresent) ? vk2::StoreOp::Store : vk2::StoreOp::DontCare,
+				.initial_layout = this->options.contains(tz::gl::RendererOption::NoClearOutput) ? vk2::ImageLayout::DepthStencilAttachment : vk2::ImageLayout::Undefined,
 				.final_layout = vk2::ImageLayout::DepthStencilAttachment
 			});
 		}
@@ -1116,7 +1084,7 @@ namespace tz::gl
 	clear_colour(info.get_clear_colour()),
 	compute_kernel(info.get_compute_kernel()),
 	resources(info, *this->ldev, this->get_frame_in_flight_count()),
-	output(info.get_output(), device_info.output_images, info.get_options(), *this->ldev),
+	output(info.get_output(), device_info.device_window, info.get_options(), *this->ldev),
 	pipeline(info.shader(), this->resources.get_descriptor_layout(), this->output.get_render_pass(), this->get_frame_in_flight_count(), output.get_output_dimensions(), !info.get_options().contains(RendererOption::NoDepthTesting), info.get_options().contains(RendererOption::AlphaBlending)),
 	command(*this->ldev, this->get_frame_in_flight_count(), info.get_output() != nullptr ? info.get_output()->get_target() : OutputTarget::Window, this->output.get_output_framebuffers(), info.get_options().contains(RendererOption::BlockingCompute), info.get_options(), *device_info.device_scheduler)
 	{
@@ -1561,7 +1529,7 @@ namespace tz::gl
 		TZ_PROFZONE("Vulkan Frontend - RendererVulkan Handle Resize", TZ_PROFCOL_YELLOW);
 		// Context: The top-level gl::Device has just been told by the window that it has been resized, and has recreated a new swapchain. Our old pointer to the swapchain `maybe_swapchain` correctly points to the new swapchain already, so we just have to recreate all the new state.
 		this->command.wait_pending_commands_complete();
-		this->output.create_output_resources(resize_info.new_output_images, this->output.has_depth_images());
+		this->output.create_output_resources(resize_info.new_output_images, resize_info.new_depth_image, this->output.has_depth_images());
 		this->pipeline.recreate(this->output.get_render_pass(), resize_info.new_dimensions, this->pipeline.is_wireframe_mode());
 		this->setup_work_commands();
 	}

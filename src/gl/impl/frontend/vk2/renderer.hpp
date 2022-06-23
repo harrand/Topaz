@@ -147,7 +147,7 @@ namespace tz::gl
 		 * @param create_depth_images Whether we should create depth images or not. If so, they will also be passed into the framebuffer. This means that the graphics pipeline the renderer ends up using will also need to know that we're using a depth attachment.
 		 * @param ldev Vulkan LogicalDevice which will be used to construct the render-pass and framebuffers etc. Right now we expect this to be the exact same LogicalDevice everywhere throughout this RendererVulkan. However this may change in the future (albeit unlikely tbh).
 		 */
-		OutputManager(const IOutput* output, std::span<vk2::Image> swapchain_images, tz::gl::RendererOptions options, const vk2::LogicalDevice& ldev);
+		OutputManager(const IOutput* output, DeviceWindowVulkan* device_window, tz::gl::RendererOptions options, const vk2::LogicalDevice& ldev);
 		OutputManager(OutputManager&& move);
 		~OutputManager() = default;
 		OutputManager& operator=(OutputManager&& rhs);
@@ -186,9 +186,8 @@ namespace tz::gl
 		 */
 		tz::Vec2ui get_output_dimensions() const;
 		bool has_depth_images() const;
-		void create_output_resources(std::span<vk2::Image> swapchain_images, bool create_depth_images);
+		void create_output_resources(std::span<vk2::Image> swapchain_images, vk2::Image* depth_image, bool create_depth_images);
 	private:
-		void populate_depth_images(bool has_depth_images);
 		void populate_output_views(bool has_depth_images);
 		void make_render_pass(bool has_depth_images);
 		void populate_framebuffers(bool has_depth_images);
@@ -196,10 +195,11 @@ namespace tz::gl
 		std::unique_ptr<IOutput> output;
 		/// Logical device used to create depth images, render passes and framebuffers.
 		const vk2::LogicalDevice* ldev;
+		DeviceWindowVulkan* device_window;
 		/// List of window buffer images (offscreen image or swapchain images) from the Device.
 		std::span<vk2::Image> swapchain_images;
 		/// List of depth images for each window buffer image (These may be null if depth testing is disabled).
-		std::vector<vk2::Image> swapchain_depth_images;
+		vk2::Image* swapchain_depth_images;
 		/// List of image-views, one for each output image. These haven't been re-ordered in any way FYI.
 		std::vector<OutputImageViewState> output_imageviews;
 		/// List of depth-image-views, one for each output image.
@@ -334,6 +334,7 @@ namespace tz::gl
 	{
 		tz::Vec2ui new_dimensions;
 		std::span<vk2::Image> new_output_images;
+		vk2::Image* new_depth_image;
 	};
 
 	using RendererResizeCallbackType = tz::Callback<RendererResizeInfoVulkan>;

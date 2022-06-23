@@ -63,6 +63,7 @@ namespace tz::gl
 			.image_format = device.get_hardware().get_supported_surface_formats().front(),
 			.present_mode = present_mode
 		}};
+		this->make_depth_image();
 		this->register_resize();
 	}
 
@@ -140,6 +141,23 @@ namespace tz::gl
 		return this->get_swapchain().get_images();
 	}
 
+	vk2::Image& DeviceWindowVulkan::get_depth_image()
+	{
+		return this->depth_image;
+	}
+
+	void DeviceWindowVulkan::make_depth_image()
+	{
+		this->depth_image = vk2::Image
+		{vk2::ImageInfo{
+			.device = &this->get_swapchain().get_device(),
+			.format = vk2::ImageFormat::Depth32_SFloat,
+			.dimensions = this->get_swapchain().get_dimensions(),
+			.usage = {vk2::ImageUsage::DepthStencilAttachment},
+			.residency = vk2::MemoryResidency::GPU
+		}};
+	}
+
 	void DeviceWindowVulkan::on_resize(tz::Vec2ui dims)
 	{
 		TZ_PROFZONE("DeviceWindowVulkan OnResize", TZ_PROFCOL_YELLOW);
@@ -163,11 +181,14 @@ namespace tz::gl
 			.old_swapchain = &old_swapchain
 		}};
 		std::swap(old_swapchain, new_swapchain);
+		this->old_depth_image = std::move(this->depth_image);
+		this->make_depth_image();
 		// Now notify all renderers.
 		this->renderer_resize_callbacks
 		({
 			.new_dimensions = dims,
-			.new_output_images = this->get_output_images()
+			.new_output_images = this->get_output_images(),
+			.new_depth_image = &this->depth_image
 		});
 	}
 
