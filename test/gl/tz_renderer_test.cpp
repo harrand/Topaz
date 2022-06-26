@@ -11,20 +11,30 @@
 #include ImportedShaderHeader(empty, compute)
 #include ImportedShaderHeader(six_writer, compute)
 
-void empty_renderer(tz::gl::Device& dev)
+tz::gl::RendererInfo get_empty(bool compute = false)
 {
 	tz::gl::RendererInfo rinfo;
-	rinfo.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(empty, vertex));
-	rinfo.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(empty, fragment));
-	tz::gl::Renderer empty = dev.create_renderer(rinfo);
+	if(compute)
+	{
+		rinfo.shader().set_shader(tz::gl::ShaderStage::Compute, ImportedShaderSource(empty, compute));
+	}
+	else
+	{
+		rinfo.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(empty, vertex));
+		rinfo.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(empty, fragment));
+	}
+	return rinfo;
+}
+
+void empty_renderer(tz::gl::Device& dev)
+{
+	tz::gl::Renderer empty = dev.create_renderer(get_empty());
 	empty.render(1);
 }
 
 void empty_renderer_compute(tz::gl::Device& dev)
 {
-	tz::gl::RendererInfo rinfo;
-	rinfo.shader().set_shader(tz::gl::ShaderStage::Compute, ImportedShaderSource(empty, compute));
-	tz::gl::Renderer empty = dev.create_renderer(rinfo);
+	tz::gl::Renderer empty = dev.create_renderer(get_empty(true));
 	empty.render();
 }
 
@@ -32,9 +42,7 @@ void renderer_creation(tz::gl::Device& dev)
 {
 	tz::gl::BufferResource bres0 = tz::gl::BufferResource::from_one(5.0f);
 
-	tz::gl::RendererInfo rinfo1;
-	rinfo1.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(empty, vertex));
-	rinfo1.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(empty, fragment));
+	tz::gl::RendererInfo rinfo1 = get_empty();
 	tz::gl::Renderer renderer1 = dev.create_renderer(rinfo1);
 
 	rinfo1.add_resource(bres0);
@@ -49,9 +57,7 @@ void renderer_creation_index_buffer(tz::gl::Device& dev)
 	tz::gl::BufferResource bres0 = tz::gl::BufferResource::from_one(5.0f);
 	tz::gl::BufferResource ibuf = tz::gl::BufferResource::from_one(0u, tz::gl::ResourceAccess::StaticFixed, {tz::gl::ResourceFlag::IndexBuffer});
 
-	tz::gl::RendererInfo rinfo1;
-	rinfo1.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(empty, vertex));
-	rinfo1.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(empty, fragment));
+	tz::gl::RendererInfo rinfo1 = get_empty();
 	tz::gl::Renderer renderer1 = dev.create_renderer(rinfo1);
 
 	rinfo1.add_resource(bres0);
@@ -66,9 +72,7 @@ void renderer_edit(tz::gl::Device& dev)
 {
 	tz::gl::BufferResource bres0 = tz::gl::BufferResource::from_many({5.0f, 6.0f}, tz::gl::ResourceAccess::DynamicVariable);
 
-	tz::gl::RendererInfo rinfo1;
-	rinfo1.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(empty, vertex));
-	rinfo1.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(empty, fragment));
+	tz::gl::RendererInfo rinfo1 = get_empty();
 	tz::gl::ResourceHandle bh = rinfo1.add_resource(bres0);
 
 	tz::gl::Renderer ren = dev.create_renderer(rinfo1);
@@ -111,10 +115,7 @@ void renderer_edit(tz::gl::Device& dev)
 
 void resize_window(tz::gl::Device& dev)
 {
-	tz::gl::RendererInfo rinfo;
-	rinfo.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(empty, vertex));
-	rinfo.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(empty, fragment));
-	tz::gl::Renderer empty = dev.create_renderer(rinfo);
+	tz::gl::Renderer empty = dev.create_renderer(get_empty());
 	empty.render();
 	tz::window().set_width(tz::window().get_width() + 10.0f);
 	empty.render();
@@ -150,9 +151,7 @@ void resource_references_compute_test(tz::gl::Device& dev)
 	tz::gl::ResourceHandle numbuf = rinfo.add_resource(number);
 	tz::gl::Renderer compute = dev.create_renderer(rinfo);
 
-	tz::gl::RendererInfo rinfo2;
-	rinfo2.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(empty, vertex));
-	rinfo2.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(empty, fragment));
+	tz::gl::RendererInfo rinfo2 = get_empty();
 	tz::gl::ResourceHandle refh = rinfo2.add_component(*compute.get_component(numbuf));
 	tz::gl::Renderer renderer = dev.create_renderer(rinfo2);
 
@@ -172,9 +171,7 @@ void semantics(tz::gl::Device& dev)
 {
 	static_assert(!tz::copyable<tz::gl::Renderer>);
 	static_assert(tz::moveable<tz::gl::Renderer>);
-	tz::gl::RendererInfo rinfo;
-	rinfo.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(empty, vertex));
-	rinfo.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(empty, fragment));
+	tz::gl::RendererInfo rinfo = get_empty();
 	tz::gl::Renderer empty = dev.create_renderer(rinfo);
 	tz::gl::Renderer empty2 = dev.create_renderer(rinfo);
 	tz::gl::Renderer empty_mv = std::move(empty);
