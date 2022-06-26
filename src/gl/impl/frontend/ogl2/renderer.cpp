@@ -481,6 +481,10 @@ namespace tz::gl
 			{
 				this->vao.draw(this->tri_count, this->shader.has_tessellation());
 			}
+			if(!this->options.contains(tz::gl::RendererOption::NoPresent))
+			{
+				glfwSwapBuffers(tz::window().get_middleware_handle());
+			}
 		}
 	}
 

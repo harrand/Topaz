@@ -98,11 +98,10 @@ namespace tz
 			// If we're on vulkan and we're minimised, halt until otherwise.
 			while(this->get_width() == 0 || this->get_height() == 0)
 			{
-				glfwWaitEvents();
+				this->block_until_event_happens();
 			}
 		#elif TZ_OGL
 			// OpenGL only
-			glfwSwapBuffers(this->wnd);
 			#if TZ_PROFILE
 				TracyGpuCollect;
 			#endif // TZ_PROFILE
