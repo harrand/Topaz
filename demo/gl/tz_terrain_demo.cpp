@@ -72,13 +72,11 @@ int main()
 				if(tz::window().get_keyboard_state().is_key_down(tz::KeyCode::Q) && input_latch.done())
 				{
 					input_latch.reset();
-					renderer.edit
-					({
-						.render_state_edit = tz::gl::RendererStateEditRequest
-						{
-							.wireframe_mode = wireframe_mode
-						}
-					});
+
+					renderer.edit(tz::gl::RendererEditBuilder{}
+						.render_state({.wireframe_mode = wireframe_mode})
+						.build());
+
 					wireframe_mode = !wireframe_mode;
 				}
 				// Retrieve the dynamic buffer resource data.

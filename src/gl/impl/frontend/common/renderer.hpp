@@ -8,6 +8,38 @@ namespace tz::gl
 {
 	/**
 	 * @ingroup tz_gl2_renderer
+	 * Helper class which can be used to generate a @ref RendererEditRequest.
+	 */
+	class RendererEditBuilder
+	{
+	public:
+		RendererEditBuilder() = default;
+		/**
+		 * Make amendments to the compute configuration of the renderer. See @ref RendererComputeEditRequest for details.
+		 */
+		RendererEditBuilder& compute(RendererComputeEditRequest req);
+		/**
+		 * Make amendments to the current render state. See @ref RendererStateEditRequest for details.
+		 */
+		RendererEditBuilder& render_state(RendererStateEditRequest req);
+		/**
+		 * Make amendments to an existing image resource. See @ref RendererImageComponentEditRequest for details.
+		 */
+		RendererEditBuilder& image(RendererImageComponentEditRequest req);
+		/**
+		 * Make amendments to an existing buffer resource. See @ref RendererBufferComponentEditRequest for details.
+		 */
+		RendererEditBuilder& buffer(RendererBufferComponentEditRequest req);
+
+		/**
+		 * Retrieve a @ref RendererEditRequest corresponding to all edits specified within the builder so far.
+		 */
+		RendererEditRequest build() const;
+	private:
+		RendererEditRequest request = {.component_edits = {}};
+	};
+	/**
+	 * @ingroup tz_gl2_renderer
 	 * Helper struct which the user can use to specify which inputs, resources they want and where they want a Renderer to render to. This is likely going to be refactored at some point because it doesn't do any Vulkan-specific magic.
 	 */
 	class RendererInfoCommon

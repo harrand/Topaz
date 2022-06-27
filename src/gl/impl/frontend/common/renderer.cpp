@@ -4,6 +4,37 @@ namespace tz::gl
 {
 
 //--------------------------------------------------------------------------------------------------
+
+	RendererEditBuilder& RendererEditBuilder::compute(RendererComputeEditRequest req)
+	{
+		this->request.compute_edit = req;
+		return *this;
+	}
+
+	RendererEditBuilder& RendererEditBuilder::render_state(RendererStateEditRequest req)
+	{
+		this->request.render_state_edit = req;
+		return *this;
+	}
+
+	RendererEditBuilder& RendererEditBuilder::image(RendererImageComponentEditRequest req)
+	{
+		this->request.component_edits.push_back(req);
+		return *this;
+	}
+
+	RendererEditBuilder& RendererEditBuilder::buffer(RendererBufferComponentEditRequest req)
+	{
+		this->request.component_edits.push_back(req);
+		return *this;
+	}
+
+	RendererEditRequest RendererEditBuilder::build() const
+	{
+		return this->request;
+	}
+
+//--------------------------------------------------------------------------------------------------
 	unsigned int RendererInfoCommon::resource_count() const
 	{
 		return this->resources.size();

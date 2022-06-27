@@ -20,15 +20,15 @@ namespace tz::gl
 	 */
 	enum class RendererOption
 	{
-		/// - Disables depth-testing, with a small gain in performance.
+		/// - Disables depth-testing and depth-writing.
 		NoDepthTesting,
 		/// - Enables alpha-blending. Causes pixels with alpha value <1.0 to blend with the previous colour in the framebuffer, at a small cost to performance.
 		AlphaBlending,
 		/// - When a compute renderer's `render()` is invoked, the thread will block until the compute-shader has finished processing.
 		BlockingCompute,
-		/// - When a renderer is invoked, the output image is not cleared before being rendered tou.
+		/// - When a renderer is invoked, the output image is not cleared before being rendered to. If nothing has been rendered into the output this frame, then the behaviour is undefined.
 		NoClearOutput,
-		/// - When a renderer is invoked, the output image is not presented to the screen.
+		/// - When a renderer is invoked, the output image is not presented to the screen. If the output is an ImageOutput, this has no effect.
 		NoPresent,
 	};
 	
@@ -63,7 +63,7 @@ namespace tz::gl
 	};
 
 	/**
-	 * Represents an edit to an existing buffer component owned by an existing renderer.
+	 * Represents a resize operation for an existing buffer component.
 	 */
 	struct RendererBufferComponentEditRequest
 	{
@@ -74,7 +74,7 @@ namespace tz::gl
 	};
 
 	/**
-	 * Represents an edit to an existing image component owned by an existing renderer.
+	 * Represents a resize operation for an existing image component.
 	 */
 	struct RendererImageComponentEditRequest
 	{
@@ -93,8 +93,12 @@ namespace tz::gl
 		tz::Vec3ui kernel;
 	};
 
+	/**
+	 * Represents an edit to the fixed-function renderer state.
+	 */
 	struct RendererStateEditRequest
 	{
+		/// Whether triangles should only have their outlines drawn, instead of filled.
 		bool wireframe_mode = false;
 	};
 
@@ -106,6 +110,8 @@ namespace tz::gl
 	/**
 	 * @ingroup tz_gl2_renderer
 	 * Represents an edit to an existing renderer.
+	 *
+	 * @note This is a large structure. You should use the helper class @ref RendererEditBuilder to create one of these instead of attempting to fill it directly.
 	 */
 	struct RendererEditRequest
 	{

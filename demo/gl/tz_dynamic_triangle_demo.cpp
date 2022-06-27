@@ -127,29 +127,14 @@ int main()
 				{
 					new_dims -= {1u, 1u};
 				}
-				tz::gl::RendererEditRequest renderer_edit
-				{
-					.component_edits =
-					{
-						tz::gl::RendererBufferComponentEditRequest
-						{
-							.buffer_handle = bufh,
-							.size = sizeof(TriangleVertexData) * 3 * triangle_count
-						},
-						tz::gl::RendererBufferComponentEditRequest
-						{
-							.buffer_handle = ibufh,
-							.size = sizeof(unsigned int) * 3 * triangle_count
-						},
-						tz::gl::RendererImageComponentEditRequest
-						{
-							.image_handle = imgh,
-							.dimensions = new_dims
-						}
-					},
-					.render_state_edit = tz::gl::RendererStateEditRequest{.wireframe_mode = wireframe_mode}
-				};
-				renderer.edit(renderer_edit);
+
+				const std::size_t vtx_count = 3 * triangle_count;
+				renderer.edit(tz::gl::RendererEditBuilder{}
+					.buffer({.buffer_handle = bufh, .size = sizeof(TriangleVertexData) * vtx_count})
+					.buffer({.buffer_handle = ibufh, .size = sizeof(unsigned int) * vtx_count})
+					.image({.image_handle = imgh, .dimensions = new_dims})
+					.render_state({.wireframe_mode = wireframe_mode})
+					.build());
 				// Get the resource data for the new triangle and set it to random values.
 				std::span<TriangleVertexData> buf_data = renderer.get_resource(bufh)->data_as<TriangleVertexData>();
 				std::span<unsigned int> idx_data = renderer.get_resource(ibufh)->data_as<unsigned int>();
