@@ -145,13 +145,12 @@ int main()
 					idx_data[idx_data.size() - 3 + i] = ((triangle_count - 1) * 3) + i;
 				}
 
-				// While we're at it, randomise the second pixel of the image.
+				// Shuffle each byte randomly.
 				tz::Vec2ui img_dims = img_comp->get_dimensions();
 				std::span<std::byte> img_data = renderer.get_resource(imgh)->data();
 				std::random_shuffle(img_data.begin(), img_data.end());
-				tz::GridView<std::byte, 4> img_view{img_data, img_dims};
-				std::span<std::byte> pixel_data = img_view(0, 0);
-				std::fill(pixel_data.begin(), pixel_data.end(), std::byte{255});
+				// But set the first pixel (bottom left) to always be white.
+				std::fill(img_data.begin(), img_data.begin() + 4, std::byte{255});
 			}
 
 			TZ_FRAME_END;
