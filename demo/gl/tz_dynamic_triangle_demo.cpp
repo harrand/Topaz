@@ -1,7 +1,6 @@
 #include "core/tz.hpp"
 #include "core/window.hpp"
 #include "core/profiling/zone.hpp"
-#include "core/containers/grid_view.hpp"
 #include "core/time.hpp"
 #include "gl/device.hpp"
 #include "gl/renderer.hpp"
