@@ -108,18 +108,6 @@ namespace tz
 		#endif
 	}
 
-	/*
-	void WindowFunctionality::set_render_target() const
-	{
-		#if TZ_VULKAN
-
-		#elif TZ_OGL
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		glViewport(0, 0, static_cast<GLsizei>(this->get_width()), static_cast<GLsizei>(this->get_height()));
-		#endif
-	}
-	*/
-
 	void WindowFunctionality::block_until_event_happens()
 	{
 		glfwWaitEvents();

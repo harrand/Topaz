@@ -49,7 +49,6 @@ namespace tz
 		 * Retrieve the callback object for when the window is moved.
 		 */
 		MoveCallbackType& on_move();
-
 		/**
 		 * Retrieve state of keyboard presses.
 		 */
@@ -62,14 +61,12 @@ namespace tz
 		 * Retrieve state of current mouse position.
 		 */
 		const MousePositionState& get_mouse_position_state() const;
-
 		/**
 		 * Advance an update iteration for the window backend, polling for events etc...
 		 *
 		 * You should invoke this once for every frame.
 		 */
 		void update();
-
 		/**
 		 * Block the current thread until some sort of window backend event takes place.
 		 *

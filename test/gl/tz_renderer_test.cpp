@@ -121,6 +121,21 @@ void resize_window(tz::gl::Device& dev)
 	empty.render();
 }
 
+void wireframe_toggle(tz::gl::Device& dev)
+{
+	tz::gl::Renderer empty = dev.create_renderer(get_empty());
+	empty.render();
+	empty.edit
+	({
+		.render_state_edit =
+		tz::gl::RendererStateEditRequest
+		{
+			.wireframe_mode = true
+		}
+	});
+	empty.render();
+}
+
 void renderer_compute_test(tz::gl::Device& dev)
 {
 	tz::gl::BufferResource number = tz::gl::BufferResource::from_one(1.0f, tz::gl::ResourceAccess::DynamicFixed);
@@ -196,6 +211,7 @@ int main()
 		renderer_creation_index_buffer(dev);
 		renderer_edit(dev);
 		resize_window(dev);
+		wireframe_toggle(dev);
 		renderer_compute_test(dev);
 		resource_references_compute_test(dev);
 		semantics(dev);
