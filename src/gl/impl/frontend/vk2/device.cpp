@@ -172,6 +172,12 @@ namespace tz::gl
 			// Dimensions didn't actually change. Early out and don't bother telling the renderers.
 			return;
 		}
+		if(dims[0] == 0 || dims[1] == 0)
+		{
+			// Cannot create a swapchain, We just hold off on rendering.
+			tz::WindowFunctionality::block_until_event_happens();
+			return;
+		}
 		vk2::Swapchain new_swapchain
 		{{
 			.device = &old_swapchain.get_device(),
