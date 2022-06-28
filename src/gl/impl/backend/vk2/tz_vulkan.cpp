@@ -100,7 +100,16 @@ namespace tz::gl::vk2
 			{
 				if(message_severity == VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT && message_type == VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT)
 				{
-					tz_report("%s", callback_data->pMessage);
+					// It could be a debug printf or a normal validation info.
+					constexpr char gpumsg_token[] = "TZ_GPUMSG: ";
+					auto print_pos = callback_message.find(gpumsg_token);
+					if(print_pos != std::string_view::npos)
+					{
+						// We're printing!
+						callback_message.remove_prefix(print_pos + std::strlen(gpumsg_token));
+						callback_message.remove_suffix(callback_message.find("\""));
+						tz_report("%s", callback_message.data());
+					}
 				}
 			}
 		}
