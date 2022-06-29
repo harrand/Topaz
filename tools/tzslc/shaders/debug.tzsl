@@ -9,7 +9,7 @@
 	// tz::debug::printf(...) implemented via compiler magic. Assume it's here.
 	#define tz::debug::assert(expr) debugPrintfEXT("TZ_GPUASSERT(%d,%d): Assert failure on line %d.", expr, TZ_SHADER_STAGE, __LINE__ + 1)
 #else
-	#define tz::debug::printf //
+	#define debugPrintfEXT //
 	#define tz::debug::assert //
 #endif
 
