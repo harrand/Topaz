@@ -1,9 +1,247 @@
 #ifndef TZSLC_STDLIB_MATH_TZSL
 #define TZSLC_STDLIB_MATH_TZSL
-/**
+/*
  * TZSL stdlib: <math>
  * harrand 17/05/2022 for tz3.3
  */
+
+/**
+ * @ingroup tzsl
+ * @defgroup tzsl_math Mathematical Operations
+ * Access the most basic mathematical functions. Import <math>
+ */
+
+// Documentation purposes only.
+#define DOCONLY TZ_VULKAN && TZ_OGL
+#if DOCONLY
+
+/**
+ * @ingroup tzsl_math
+ * Contains generic mathematical functions.
+ */
+namespace tz::math
+{
+	 /**
+	  * @ingroup tzsl_math
+	  * Return the absolute value of the parameter.
+	  */
+	generic_number_t abs(generic_number_t x);
+	 /**
+	  * @ingroup tzsl_math
+	  * Return the cosine of the provided value, in radians.
+	  */
+	generic_number_t cos(generic_number_t angle);
+	 /**
+	  * @ingroup tzsl_math
+	  * Return the sine of the provided value, in radians.
+	  */
+	generic_number_t sin(generic_number_t angle);
+	 /**
+	  * @ingroup tzsl_math
+	  * Return the tangent of the provided value, in radians.
+	  */
+	generic_number_t tan(generic_number_t angle);
+	 /**
+	  * @ingroup tzsl_math
+	  * Return the arc-cosine of the provided value.
+	  * @pre `-1 < value < 1`, otherwise the result is undefined.
+	  * @return Angle in radians, between 0 to pi.
+	  */
+	generic_number_t acos(generic_number_t value);
+	 /**
+	  * @ingroup tzsl_math
+	  * Return the arc-hyperbolic-cosine of the provided value.
+	  * @pre `value >= 1`, otherwise the result is undefined.
+	  */
+	generic_number_t acosh(generic_number_t value);
+	 /**
+	  * @ingroup tzsl_math
+	  * Return the arc-sine of the provided value.
+	  * @pre `-1 < value < 1`, otherwise the result is undefined.
+	  * @return Angle in radians, between 0 to pi.
+	  */
+	generic_number_t asin(generic_number_t value);
+	 /**
+	  * @ingroup tzsl_math
+	  * Return the arc-hyperbolic-sine of the provided value.
+	  * @pre `value >= 1`, otherwise the result is undefined.
+	  */
+	generic_number_t asinh(generic_number_t value);
+	 /**
+	  * @ingroup tzsl_math
+	  * Return the arc-tangent of the provided value.
+	  * @pre `value != 0`, otherwise the result is undefined.
+	  * @return Angle in radians, between -pi to pi.
+	  */
+	generic_number_t atan(generic_number_t value);
+	 /**
+	  * @ingroup tzsl_math
+	  * Return the arc-hyperbolic-tangent of the provided value.
+	  * @pre `-1 < value < 1`, otherwise the result is undefined.
+	  */
+	generic_number_t atanh(generic_number_t value);
+	 /**
+	  * @ingroup tzsl_math
+	  * Return a value equal to the nearest integer that is greater than or equal to the parameter.
+	  */
+	generic_number_t ceil(generic_number_t value);
+	 /**
+	  * @ingroup tzsl_math
+	  * Return a value equal to the nearest integer that is less than or equal to the parameter.
+	  */
+	generic_number_t floor(generic_number_t value);
+	 /**
+	  * @ingroup tzsl_math
+	  * Return a value equal to the value, rounded to the nearest integer.
+	  */
+	generic_number_t round(generic_number_t value);
+	 /**
+	  * @ingroup tzsl_math
+	  * Return a value equal to the nearest integer to the parameter whose absolute value is not larger than the absolute value of the parameter.
+	  */
+	generic_number_t trunc(generic_number_t value);
+	 /**
+	  * @ingroup tzsl_math
+	  * Return the fractional component of the argument.
+	  */
+	generic_number_t fract(generic_number_t value);
+	 /**
+	  * @ingroup tzsl_math
+	  * Extract the sign of the parameter.
+	  * @return `-1.0` if thw parameter is less than `0.0`, and `1.0` if the pareameter is greater than `0.0`.
+	  */
+	generic_number_t sign(generic_number_t value);
+	 /**
+	  * @ingroup tzsl_math
+	  * Constrain a value to lie between two further values.
+	  */
+	generic_number_t clamp(generic_number_t value, generic_number_t min_val, generic_number_t max_val);
+	 /**
+	  * @ingroup tzsl_math
+	  * Calculate the cross-product of two vectors.
+	  */
+	vec3 cross(vec3 x, vec3 y);
+	 /**
+	  * @ingroup tzsl_math
+	  * Calculate the distance between two points.
+	  */
+	float distance(generic_number_t x, generic_number_t y);
+	 /**
+	  * @ingroup tzsl_math
+	  * Calculate the dot product of two vectors.
+	  */
+	float dot(generic_number_t x, generic_number_t y);
+	 /**
+	  * @ingroup tzsl_math
+	  * Retrieve the natural exponentiation of the parameter i.e `e^x`
+	  */
+	generic_number_t exp(generic_number_t x);
+	 /**
+	  * @ingroup tzsl_math
+	  * Retrieve `2^x`
+	  */
+	generic_number_t exp2(generic_number_t x);
+	 /**
+	  * @ingroup tzsl_math
+	  * Retrieve the square-root of the parameter.
+	  * @pre `x >= 0`, otherwise the result is undefined.
+	  */
+	generic_number_t sqrt(generic_number_t x);
+	 /**
+	  * @ingroup tzsl_math
+	  * Retrieve the inverse of the square-root of the parameter.
+	  * @pre `x > 0`, otherwise the result is undefined.
+	  */
+	generic_number_t inverse_sqrt(generic_number_t x);
+	 /**
+	  * @ingroup tzsl_math
+	  * Determine whether the parameter is positive of negative infinity.
+	  */
+	bool is_infinity(generic_number_t x);
+	 /**
+	  * @ingroup tzsl_math
+	  * Determine whether the parameter is not-a-number.
+	  */
+	bool is_nan(generic_number_t x);
+
+	 /**
+	  * @ingroup tzsl_math
+	  * Generates a step function by comparing two values.
+	  * @return `0.0` if `x < edge`, otherwise `1.0`.
+	  */
+	generic_number_t step(generic_number_t edge, generic_number_t x);
+	 /**
+	  * @ingroup tzsl_math
+	  * Perform Hermite interpolation between two values.
+	  */
+	generic_number_t smooth_step(generic_number_t edge0, generic_number_t edge1, generic_number_t x);
+
+	 /**
+	  * @ingroup tzsl_math
+	  * Calculate the length of a vector.
+	  */
+	float magnitude(vecn x);
+	 /**
+	  * @ingroup tzsl_math
+	  * Calculate the unit-vector in the same direction as the parameter vector.
+	  */
+	vecn normalise(vecn x);
+
+	 /**
+	  * @ingroup tzsl_math
+	  * Retrieve the natural logarithm o fthe parameter.
+	  */
+	generic_number_t ln(generic_number_t x);
+	 /**
+	  * @ingroup tzsl_math
+	  * Retrieve the base-2 logarithm of the parameter.
+	  */
+	generic_number_t log(generic_number_t x);
+	 /**
+	  * @ingroup tzsl_math
+	  * Retrieve the value of the first parameter raised to the power of the second.
+	  * @return `x^y`
+	  */
+	generic_number_t pow(generic_number_t x, generic_number_t y);
+
+	 /**
+	  * @ingroup tzsl_math
+	  * Retrieve the greater of two values
+	  */
+	generic_number_t max(generic_number_t x, generic_number_t y);
+	 /**
+	  * @ingroup tzsl_math
+	  * Retrieve the min of two values
+	  */
+	generic_number_t min(generic_number_t x, generic_number_t y);
+	 /**
+	  * @ingroup tzsl_math
+	  * Linearly interpolate between two values.
+	  * 'return `x * (1 - v) + y * v`
+	  */
+	generic_number_t lerp(generic_number_t x, generic_number_t y, generic_number_t v);
+	 /**
+	  * @ingroup tzsl_math
+	  * Compute value of one parameter modulo another.
+	  */
+	generic_number_t mod(generic_number_t x, generic_number_t y);
+
+	 /**
+	  * @ingroup tzsl_math
+	  * Calculate the reflection direction for an incident vector and a normal vector.
+	  * @return `i - 2.0 * tz::math::dot(n, i) * n`
+	  */
+	vecn reflect(vecn i, vecn n);
+	 /**
+	  * @ingroup tzsl_math
+	  * Calculate the refraction direction for an incident vector, a normal vector and a ratio of indices of refraction.
+	  * @pre The parameters `i` and `n` should be normalised, otherwise the result may be distorted.
+	  */
+	vecn refract(vecn i, vecn n, float eta);
+}
+
+#endif // DOCONLY
+
 #define tz::math::abs(x) abs(x)
 
 #define tz::math::cos(x) cos(x)
@@ -52,5 +290,5 @@
 #define tz::math::reflect(i, n) reflect(i, n)
 #define tz::math::refract(i, n, eta) refract(i, n, eta)
 
-/// End stdlib impl: <math>
+// End stdlib impl: <math>
 #endif // TZSLC_STDLIB_MATH_TZSL

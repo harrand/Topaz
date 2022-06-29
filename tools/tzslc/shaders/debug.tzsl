@@ -1,9 +1,49 @@
 #ifndef TZSLC_STDLIB_DEBUG_TZSL
 #define TZSLC_STDLIB_DEBUG_TZSL
-/**
+/*
  * TZSL stdlib: <debug>
  * harrand 12/06/2022 for tz3.4
  */
+
+/**
+ * @ingroup tzsl
+ * @defgroup tzsl_debug Debugging
+ * Perform basic debugging operations within a shader. Import <debug>
+ */
+
+ // Documentation purposes only.
+ #define DOCONLY TZ_VULKAN && TZ_OGL
+ #if DOCONLY
+
+/**
+ * @ingroup tzsl_debug
+ * Contains debug-only operations as functions.
+ */
+ namespace tz::debug
+ {
+	 /**
+	  * @ingroup tzsl_debug
+	  * Print formatted output to CPU-side stdout.
+	  *
+	  * Only available on vulkan-debug. On all other build combinations, this has no effect.
+	  *
+	  * 
+	  * @note `const char*` is not a valid type in TZSL. In this context, it is a string-literal (which is only useable in this specific function due to compiler support. There are no string literals otherwise in TZSL.)
+	  * 
+	  * 
+	  * You should take great care when using this, as this could be invoked many many times within shaders and quickly spam your application to lagginess.
+	  */
+	void printf(const char* fmt, ...);
+	 /**
+	  * @ingroup tzsl_debug
+	  * Assert that a condition is true. If it evaluates to false, an assert will occur as soon as possible CPU-side.
+	  *
+	  * Only available on vulkan-debug. On all other build combinations, this has no effect.
+	  */
+	void assert(bool condition);
+ }
+
+ #endif // DOCONLY
 
 #if TZ_VULKAN && TZ_DEBUG
 	// tz::debug::printf(...) implemented via compiler magic. Assume it's here.
@@ -13,5 +53,5 @@
 	#define tz::debug::assert //
 #endif
 
-/// End stdlib impl: <debug>
+// End stdlib impl: <debug>
  #endif // TZSLC_STDLIB_DEBUG_TZSL

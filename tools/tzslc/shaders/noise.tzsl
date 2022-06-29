@@ -1,24 +1,48 @@
 #ifndef TZSLC_STDLIB_NOISE_TZSL
 #define TZSLC_STDLIB_NOISE_TZSL
-/**
+/*
  * TZSL stdlib: <noise>
  * harrand 09/06/2022 for tz3.3
  */
 
-const float _tz_noise_internal_PHI = 1.61803398874989484820459;  // Φ = Golden Ratio   
+/**
+ * @ingroup tzsl
+ * @defgroup tzsl_noise Noise Functions
+ * Access common noise functions which are already provided for you. Import <noise>
+ */
+
+// Documentation purposes only.
+#define DOCONLY TZ_VULKAN && TZ_OGL
+#if DOCONLY
 
 /**
- * Gold Noise, extremely fast, highly volatile noise based on the golden ratio. Recommended for only the most basic of needs.
+ * @ingroup tzsl_noise
+ * Contains noise functions.
  */
+namespace tz::noise
+{
+	 /**
+	  * @ingroup tzsl_noise
+	  * Gold Noise. This is extremely fast, but highly volatile noise based on the golden ratio. Recommended for very basic requirements, poor for terrain.
+	  */
+	float gold(vec2 uv);
+	 /**
+	  * @ingroup tzsl_noise
+	  * Simplex Noise. This is a slower, stable, classic noise with little dimensional artifacts. Highly recommended for terrain.
+	  */
+	float simplex(vec2 uv);
+}
+
+#endif // DOCONLY
+
+const float _tz_noise_internal_PHI = 1.61803398874989484820459;  // Φ = Golden Ratio   
+
 float tz::noise::gold(vec2 uv){
        return fract(tan(distance(uv*_tz_noise_internal_PHI, uv)*0.023456)*uv.x);
 }
 
 vec3 _tz_noise_internal_permute(vec3 x) { return mod(((x*34.0)+1.0)*x, 289.0); }
 
-/**
- * A reasonably stable classic-noise with little dimensional artifacts. Recommended for terrain.
- */
 float tz::noise::simplex(vec2 v)
 {
   const vec4 C = vec4(0.211324865405187, 0.366025403784439,
@@ -47,5 +71,5 @@ float tz::noise::simplex(vec2 v)
   return 130.0 * dot(m, g);
 }
 
-/// End stdlib impl: <noise>
+// End stdlib impl: <noise>
 #endif // TZSLC_STDLIB_NOISE_TZSL

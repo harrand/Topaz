@@ -1,9 +1,52 @@
 #ifndef TZSLC_STDLIB_MATRIX_TZSL
 #define TZSLC_STDLIB_MATRIX_TZSL
-/**
+/*
  * TZSL stdlib: <matrix>
  * harrand 29/04/2022 for tz3.3
  */
+
+/**
+ * @ingroup tzsl
+ * @defgroup tzsl_matrix Matrix Operations
+ * Access matrix operations. Import <matrix>
+ */
+
+// Documentation purposes only.
+#define DOCONLY TZ_VULKAN && TZ_OGL
+#if DOCONLY
+
+/**
+ * @ingroup tzsl_matrix
+ * Contains matrix-specific mathematical functions.
+ */
+namespace tz::matrix
+{
+
+	 /**
+	  * @ingroup tzsl_matrix
+	  * Given the quaternion parameter, retrieve a rotational 4x4 matrix which represents a similar rotation in 3D space.
+	  * @note `quat` is expressed as a quaternion as `xyzw`.
+	  */
+	mat4 decompose_quaternion(vec4 quat);
+	 /**
+	  * @ingroup tzsl_matrix
+	  * Calculate the determinant of a matrix.
+	  */
+	float determinant(matn m);
+	 /**
+	  * @ingroup tzsl_matrix
+	  * Calculate the inverse of a matrix.
+	  */
+	matn inverse(matn m);
+	 /**
+	  * @ingroup tzsl_matrix
+	  * Calculate the transpose of a matrix.
+	  */
+	matnm transpose(matmn m);
+}
+
+#endif // DOCONLY
+
 
 mat4 tz::matrix::decompose_quaternion(vec4 quat)
 {
@@ -47,5 +90,5 @@ mat4 tz::matrix::decompose_quaternion(vec4 quat)
 #define tz::matrix::transpose(m) transpose(m)
 
 
-/// End stdlib impl: <matrix>
+// End stdlib impl: <matrix>
 #endif // TZSLC_STDLIB_MATRIX_TZSL

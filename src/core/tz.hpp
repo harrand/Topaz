@@ -86,6 +86,11 @@ namespace tz
 	 * Documentation for functions and helpers which can be used to tell the time, and schedule sync tasks. Has nothing to do with parallellism or threads.
 	 */
 
+	/**
+	 * @defgroup tzsl Topaz Shading Language (TZSL)
+	 * Documentation for the TZSL language and standard library.
+	 */
+
 	enum class ApplicationFlag
 	{
 		HiddenWindow,

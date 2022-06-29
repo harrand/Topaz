@@ -43,7 +43,7 @@ OPTIMIZE_OUTPUT_FOR_C  = YES
 OPTIMIZE_OUTPUT_JAVA   = NO
 OPTIMIZE_FOR_FORTRAN   = NO
 OPTIMIZE_OUTPUT_VHDL   = NO
-EXTENSION_MAPPING      =
+EXTENSION_MAPPING      = tzsl=c++
 MARKDOWN_SUPPORT       = YES
 TOC_INCLUDE_HEADINGS   = 0
 AUTOLINK_SUPPORT       = YES
@@ -112,7 +112,7 @@ WARN_LOGFILE           =
 #---------------------------------------------------------------------------
 # Configuration options related to the input files
 #---------------------------------------------------------------------------
-INPUT                  = ./src ./demo/gl/tz_triangle_demo.cpp
+INPUT                  = ./src ./demo/gl/tz_triangle_demo.cpp ./tools/tzslc/shaders
 INPUT_ENCODING         = UTF-8
 FILE_PATTERNS          = *.c \
                          *.cc \
@@ -154,6 +154,7 @@ FILE_PATTERNS          = *.c \
                          *.f \
                          *.for \
                          *.tcl \
+			 *.tzsl \
                          *.vhd \
                          *.vhdl \
                          *.ucf \
