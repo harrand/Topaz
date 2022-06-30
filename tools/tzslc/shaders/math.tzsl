@@ -108,7 +108,7 @@ namespace tz::math
 	 /**
 	  * @ingroup tzsl_math
 	  * Extract the sign of the parameter.
-	  * @return `-1.0` if thw parameter is less than `0.0`, and `1.0` if the pareameter is greater than `0.0`.
+	  * @return `-1.0` if the parameter is less than `0.0`, or `1.0` if the parameter is greater than `0.0`.
 	  */
 	generic_number_t sign(generic_number_t value);
 	 /**
@@ -217,7 +217,7 @@ namespace tz::math
 	 /**
 	  * @ingroup tzsl_math
 	  * Linearly interpolate between two values.
-	  * 'return `x * (1 - v) + y * v`
+	  * @return `x * (1 - v) + y * v`
 	  */
 	generic_number_t lerp(generic_number_t x, generic_number_t y, generic_number_t v);
 	 /**
