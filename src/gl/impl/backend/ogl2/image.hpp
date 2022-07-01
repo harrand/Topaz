@@ -80,6 +80,9 @@ namespace tz::gl::ogl2
 		using NativeType = GLuint;
 		NativeType native() const;
 
+		std::string debug_get_name() const;
+		void debug_set_name(std::string name);
+
 		/**
 		 * Create an image which acts as a null image, that is, no operations are valid on it.
 		 * @return Null Image.
@@ -95,6 +98,7 @@ namespace tz::gl::ogl2
 		GLuint image;
 		ImageInfo info;
 		std::optional<BindlessTextureHandle> maybe_bindless_handle;
+		std::string debug_name = "";
 	};
 
 	namespace image

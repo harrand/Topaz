@@ -398,6 +398,12 @@ namespace tz::gl
 					std::string n = buf.debug_get_name();
 					buf.debug_set_name(n + (n.empty() ? "" : " -> ") + this->debug_name + ":B" + std::to_string(i));
 				}
+				if(comp->get_resource()->get_type() == ResourceType::Image)
+				{
+					ogl2::Image& img = static_cast<ImageComponentOGL*>(comp)->ogl_get_image();
+					std::string n = img.debug_get_name();
+					img.debug_set_name(n + (n.empty() ? "" : " -> ") + this->debug_name + ":I" + std::to_string(i));
+				}
 			}
 		#endif // TZ_DEBUG
 	}

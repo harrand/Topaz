@@ -95,6 +95,19 @@ namespace tz::gl::ogl2
 		return this->image;
 	}
 
+	std::string Image::debug_get_name() const
+	{
+		return this->debug_name;
+	}
+
+	void Image::debug_set_name(std::string name)
+	{
+		this->debug_name = name;
+		#if TZ_DEBUG
+			glObjectLabel(GL_TEXTURE, this->image, -1, this->debug_name.c_str());
+		#endif
+	}
+
 	Image Image::null()
 	{
 		return {};
