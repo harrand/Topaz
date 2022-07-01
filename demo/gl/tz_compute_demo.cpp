@@ -32,6 +32,7 @@ int main()
 		pinfo.shader().set_shader(tz::gl::ShaderStage::Compute, ImportedShaderSource(tz_compute_demo, compute));
 		auto cbuf = pinfo.add_resource(colour_buffer);
 		pinfo.add_resource(time_buffer);
+		pinfo.debug_name("Compute");
 
 		tz::gl::Renderer compute_worker = dev.create_renderer(pinfo);
 
@@ -39,6 +40,7 @@ int main()
 		rinfo.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(tz_compute_demo_render, vertex));
 		rinfo.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(tz_compute_demo_render, fragment));
 		auto refbuf = rinfo.add_component(*compute_worker.get_component(cbuf));
+		rinfo.debug_name("Window Renderer");
 		tz::gl::Renderer renderer = dev.create_renderer(rinfo);
 
 		while(!tz::window().is_close_requested())

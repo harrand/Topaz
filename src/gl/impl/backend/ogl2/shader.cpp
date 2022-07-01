@@ -40,6 +40,11 @@ namespace tz::gl::ogl2
 		return *this;
 	}
 
+	ShaderType ShaderModule::get_type() const
+	{
+		return this->info.type;
+	}
+
 	ShaderModule::CompileResult ShaderModule::compile()
 	{
 		TZ_PROFZONE("OpenGL Backend - Shader Source Compile", TZ_PROFCOL_RED);
@@ -167,6 +172,46 @@ namespace tz::gl::ogl2
 		{
 			return mod.type == ShaderType::TessellationControl || mod.type == ShaderType::TessellationEvaluation;
 		});
+	}
+
+	std::string Shader::debug_get_name() const
+	{
+		return this->debug_name;
+	}
+
+	void Shader::debug_set_name(std::string name)
+	{
+		this->debug_name = name;
+		#if TZ_DEBUG
+			glObjectLabel(GL_PROGRAM, this->program, -1, this->debug_name.c_str());
+			for(const ShaderModule& s_module : this->modules)
+			{
+				const char* extension;
+				switch(s_module.get_type())
+				{
+					case ShaderType::Vertex:
+						extension = "vertex";
+					break;
+					case ShaderType::TessellationControl:
+						extension = "tesscon";
+					break;
+					case ShaderType::TessellationEvaluation:
+						extension = "tesseval";
+					break;
+					case ShaderType::Fragment:
+						extension = "fragment";
+					break;
+					case ShaderType::Compute:
+						extension = "compute";
+					break;
+					default:
+						extension = "unknown-shader-type";
+					break;
+				}
+				std::string mod_name = this->debug_name + "." + extension;
+				glObjectLabel(GL_SHADER, s_module.native(), -1, mod_name.c_str());
+			}
+		#endif
 	}
 
 	Shader::Shader(std::nullptr_t):

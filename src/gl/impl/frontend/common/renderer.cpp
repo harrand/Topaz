@@ -125,9 +125,18 @@ namespace tz::gl
 		return this->shader_info;
 	}
 
+	void RendererInfoCommon::debug_name(std::string debug_name)
+	{
+		this->dbg_name = debug_name;
+	}
+
 	std::string RendererInfoCommon::debug_get_name() const
 	{
 		#if TZ_DEBUG
+			if(!this->dbg_name.empty())
+			{
+				return this->dbg_name;
+			}
 			std::size_t bufc = 0, imgc = 0;
 			bufc = std::count_if(this->resources.begin(), this->resources.end(),
 			[](const IResource* res)
@@ -149,7 +158,7 @@ namespace tz::gl
 			{
 				return comp != nullptr && comp->get_resource()->get_type() == ResourceType::Image;
 			});
-			return (this->shader().has_shader(tz::gl::ShaderStage::Compute) ? "Comp" : "Ren") + std::string("_") + std::to_string(bufc) + "b" + std::to_string(imgc) + std::string("i") + (this->output != nullptr && this->output->get_target() == OutputTarget::OffscreenImage ? "h" : "w");
+			return (this->shader().has_shader(tz::gl::ShaderStage::Compute) ? "C" : "R") + std::to_string(bufc) + "b" + std::to_string(imgc) + std::string("i") + (this->output != nullptr && this->output->get_target() == OutputTarget::OffscreenImage ? "h" : "w");
 		#else
 			return "";
 		#endif

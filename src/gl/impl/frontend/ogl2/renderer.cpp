@@ -265,6 +265,11 @@ namespace tz::gl
 		return this->shader.has_tessellation();
 	}
 
+	ogl2::Shader& ShaderManager::get_program()
+	{
+		return this->shader;
+	}
+
 	ogl2::Shader ShaderManager::make_shader(const ShaderInfo& sinfo) const
 	{
 		tz::BasicList<ogl2::ShaderModuleInfo> modules;
@@ -405,6 +410,7 @@ namespace tz::gl
 					img.debug_set_name(n + (n.empty() ? "" : " -> ") + this->debug_name + ":I" + std::to_string(i));
 				}
 			}
+			this->shader.get_program().debug_set_name(this->debug_name + ":Shader");
 		#endif // TZ_DEBUG
 	}
 

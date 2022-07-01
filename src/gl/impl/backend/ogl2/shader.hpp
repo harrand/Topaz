@@ -75,6 +75,8 @@ namespace tz::gl::ogl2
 		ShaderModule& operator=(const ShaderModule& rhs) = delete;
 		ShaderModule& operator=(ShaderModule&& rhs);
 
+		ShaderType get_type() const;
+
 		/**
 		 * Attempt to compile the shader source. This could fail.
 		 * @return Result state describing the success of the compilation attempt.
@@ -139,6 +141,9 @@ namespace tz::gl::ogl2
 
 		bool is_compute() const;
 		bool has_tessellation() const;
+
+		std::string debug_get_name() const;
+		void debug_set_name(std::string name);
 	private:
 		Shader(std::nullptr_t);
 		Shader::LinkResult validate();
@@ -146,6 +151,7 @@ namespace tz::gl::ogl2
 		GLuint program;
 		std::vector<ShaderModule> modules;
 		ShaderInfo info;
+		std::string debug_name = "";
 	};
 }
 

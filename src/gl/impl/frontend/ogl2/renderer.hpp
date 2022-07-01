@@ -90,6 +90,8 @@ namespace tz::gl
 		void use();
 		bool is_compute() const;
 		bool has_tessellation() const;
+
+		ogl2::Shader& get_program();
 	private:
 		ogl2::Shader make_shader(const ShaderInfo& sinfo) const;
 

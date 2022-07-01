@@ -110,6 +110,7 @@ namespace tz::gl
 		 * Read/write information about the shader that will be built for the renderer.
 		 */
 		const ShaderInfo& shader() const;
+		void debug_name(std::string debug_name);
 		std::string debug_get_name() const;
 	private:
 		std::size_t real_resource_count() const;
@@ -127,6 +128,7 @@ namespace tz::gl
 		tz::Vec4 clear_colour = {0.0f, 0.0f, 0.0f, 1.0f};
 		/// Workgroup sizes if we're doing compute.
 		tz::Vec3ui compute_kernel = {1u, 1u, 1u};
+		std::string dbg_name = "";
 	};
 	static_assert(RendererInfoType<RendererInfoCommon>);
 
