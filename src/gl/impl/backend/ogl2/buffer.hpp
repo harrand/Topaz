@@ -131,12 +131,16 @@ namespace tz::gl::ogl2
 
 		using NativeType = GLuint;
 		NativeType native() const;
+		
+		std::string debug_get_name() const;
+		void debug_set_name(std::string name);
 	private:
 		Buffer();
 
 		GLuint buffer;
 		BufferInfo info;
 		void* mapped_ptr = nullptr;
+		std::string debug_name = "";
 	};
 
 	namespace buffer

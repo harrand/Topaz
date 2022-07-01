@@ -60,6 +60,7 @@ namespace tz::gl
 		{t.get_compute_kernel()} -> std::convertible_to<tz::Vec3ui>;
 
 		{t.shader()} -> ShaderInfoType;
+		{t.debug_get_name()} -> std::same_as<std::string>;
 	};
 
 	/**

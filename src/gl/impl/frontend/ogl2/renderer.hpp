@@ -189,6 +189,7 @@ namespace tz::gl
 		tz::Vec4 clear_colour;
 		tz::Vec3ui compute_kernel;
 		RendererOptions options;
+		std::string debug_name;
 		unsigned int tri_count = 0;
 		bool wireframe_mode = false;
 	};

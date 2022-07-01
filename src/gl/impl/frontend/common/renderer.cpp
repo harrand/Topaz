@@ -125,6 +125,36 @@ namespace tz::gl
 		return this->shader_info;
 	}
 
+	std::string RendererInfoCommon::debug_get_name() const
+	{
+		#if TZ_DEBUG
+			std::size_t bufc = 0, imgc = 0;
+			bufc = std::count_if(this->resources.begin(), this->resources.end(),
+			[](const IResource* res)
+			{
+				return res != nullptr && res->get_type() == ResourceType::Buffer;
+			}) +
+			std::count_if(this->components.begin(), this->components.end(),
+			[](const IComponent* comp)
+			{
+				return comp != nullptr && comp->get_resource()->get_type() == ResourceType::Buffer;
+			});
+			imgc = std::count_if(this->resources.begin(), this->resources.end(),
+			[](const IResource* res)
+			{
+				return res != nullptr && res->get_type() == ResourceType::Image;
+			}) +
+			std::count_if(this->components.begin(), this->components.end(),
+			[](const IComponent* comp)
+			{
+				return comp != nullptr && comp->get_resource()->get_type() == ResourceType::Image;
+			});
+			return (this->shader().has_shader(tz::gl::ShaderStage::Compute) ? "Comp" : "Ren") + std::string("_") + std::to_string(bufc) + "b" + std::to_string(imgc) + std::string("i") + (this->output != nullptr && this->output->get_target() == OutputTarget::OffscreenImage ? "h" : "w");
+		#else
+			return "";
+		#endif
+	}
+
 	std::size_t RendererInfoCommon::real_resource_count() const
 	{
 		return this->resources.size();

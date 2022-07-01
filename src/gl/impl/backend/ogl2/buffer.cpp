@@ -103,6 +103,19 @@ namespace tz::gl::ogl2
 		return this->buffer;
 	}
 
+	std::string Buffer::debug_get_name() const
+	{
+		return this->debug_name;
+	}
+
+	void Buffer::debug_set_name(std::string name)
+	{
+		this->debug_name = name;
+		#if TZ_DEBUG
+			glObjectLabel(GL_BUFFER, this->buffer, -1, this->debug_name.c_str());
+		#endif
+	}
+
 	Buffer::Buffer():
 	buffer(0),
 	info(){}

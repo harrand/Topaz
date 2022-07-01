@@ -110,6 +110,7 @@ namespace tz::gl
 		 * Read/write information about the shader that will be built for the renderer.
 		 */
 		const ShaderInfo& shader() const;
+		std::string debug_get_name() const;
 	private:
 		std::size_t real_resource_count() const;
 		/// Stores all provided resources. It is assumed that their lifetime is valid for the entirety of this helper struct's lifetime.

@@ -384,8 +384,22 @@ namespace tz::gl
 	output(info.get_output(), info.get_options()),
 	clear_colour(info.get_clear_colour()),
 	compute_kernel(info.get_compute_kernel()),
-	options(info.get_options())
+	options(info.get_options()),
+	debug_name(info.debug_get_name())
 	{
+		// Handle debug names for resources.
+		#if TZ_DEBUG
+			for(std::size_t i = 0; i < this->resource_count(); i++)
+			{
+				IComponent* comp = this->resources.get_component(static_cast<tz::HandleValue>(i));
+				if(comp->get_resource()->get_type() == ResourceType::Buffer)
+				{
+					ogl2::Buffer& buf = static_cast<BufferComponentOGL*>(comp)->ogl_get_buffer();
+					std::string n = buf.debug_get_name();
+					buf.debug_set_name(n + (n.empty() ? "" : " -> ") + this->debug_name + ":B" + std::to_string(i));
+				}
+			}
+		#endif // TZ_DEBUG
 	}
 
 	unsigned int RendererOGL::resource_count() const
@@ -422,6 +436,11 @@ namespace tz::gl
 	{
 		TZ_PROFZONE("OpenGL Frontend - RendererOGL Render", TZ_PROFCOL_RED);
 		TZ_PROFZONE_GPU("RendererOGL Render", TZ_PROFCOL_RED);
+		#if TZ_DEBUG
+		{
+			glPushDebugGroup(GL_DEBUG_SOURCE_APPLICATION, 0, -1, this->debug_name.c_str());
+		}
+		#endif
 
 		if(this->shader.is_compute())
 		{
@@ -486,6 +505,11 @@ namespace tz::gl
 				glfwSwapBuffers(tz::window().get_middleware_handle());
 			}
 		}
+		#if TZ_DEBUG
+		{
+			glPopDebugGroup();
+		}
+		#endif
 	}
 
 	void RendererOGL::render(unsigned int tri_count)
