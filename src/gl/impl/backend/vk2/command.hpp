@@ -187,8 +187,16 @@ namespace tz::gl::vk2
 			tz::BasicList<std::uint32_t> affected_layers = {0u};
 		};
 
+		struct DebugBeginLabel
+		{
+			std::string name;
+			tz::Vec4 colour{0.0f, 0.0f, 0.0f, 0.0f};
+		};
+
+		struct DebugEndLabel{};
+
 		/// Variant type which has alternatives for every single possible recordable command type.
-		using Variant = std::variant<Dispatch, Draw, DrawIndexed, BindIndexBuffer, BindPipeline, BindDescriptorSets, BeginRenderPass, EndRenderPass, BufferCopyBuffer, BufferCopyImage, ImageCopyImage, BindBuffer, TransitionImageLayout>;
+		using Variant = std::variant<Dispatch, Draw, DrawIndexed, BindIndexBuffer, BindPipeline, BindDescriptorSets, BeginRenderPass, EndRenderPass, BufferCopyBuffer, BufferCopyImage, ImageCopyImage, BindBuffer, TransitionImageLayout, DebugBeginLabel, DebugEndLabel>;
 	};
 
 	enum class CommandPoolFlag
@@ -298,6 +306,9 @@ namespace tz::gl::vk2
 		void bind_buffer(VulkanCommand::BindBuffer command);
 
 		void transition_image_layout(VulkanCommand::TransitionImageLayout command);
+
+		void debug_begin_label(VulkanCommand::DebugBeginLabel command);
+		void debug_end_label(VulkanCommand::DebugEndLabel command);
 
 		/**
 		 * Retrieve the @ref CommandBuffer that is currently being recorded.

@@ -298,6 +298,45 @@ namespace tz::gl::vk2
 		vkCmdPipelineBarrier(this->get_command_buffer().native(), static_cast<VkPipelineStageFlags>(command.source_stage), static_cast<VkPipelineStageFlags>(command.destination_stage), 0, 0, nullptr, 0, nullptr, 1, &barrier);
 	}
 
+	void CommandBufferRecording::debug_begin_label([[maybe_unused]] VulkanCommand::DebugBeginLabel command)
+	{
+		#if TZ_DEBUG
+			this->register_command(command);
+
+			const VulkanInstance& inst = this->get_command_buffer().get_device().get_hardware().get_instance();
+			auto func = reinterpret_cast<PFN_vkCmdBeginDebugUtilsLabelEXT>(vkGetInstanceProcAddr(inst.native(), "vkCmdBeginDebugUtilsLabelEXT"));
+			if(func != nullptr)
+			{
+				VkDebugUtilsLabelEXT label
+				{
+					.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_LABEL_EXT,
+					.pNext = nullptr,
+					.pLabelName = command.name.c_str(),
+					.color = {}
+				};
+				label.color[0] = command.colour[0];
+				label.color[1] = command.colour[1];
+				label.color[2] = command.colour[2];
+				label.color[3] = command.colour[3];
+				func(this->get_command_buffer().native(), &label);
+			}
+		#endif
+	}
+
+	void CommandBufferRecording::debug_end_label([[maybe_unused]] VulkanCommand::DebugEndLabel command)
+	{
+		#if TZ_DEBUG
+			this->register_command(command);
+
+			const VulkanInstance& inst = this->get_command_buffer().get_device().get_hardware().get_instance();
+			auto func = reinterpret_cast<PFN_vkCmdEndDebugUtilsLabelEXT>(vkGetInstanceProcAddr(inst.native(), "vkCmdEndDebugUtilsLabelEXT"));
+			if(func != nullptr)
+			{
+				func(this->get_command_buffer().native());
+			}
+		#endif
+	}
+
 	const CommandBuffer& CommandBufferRecording::get_command_buffer() const
 	{
 		tz_assert(this->command_buffer != nullptr, "CommandBufferRecording had nullptr CommandBuffer. Please submit a bug report");

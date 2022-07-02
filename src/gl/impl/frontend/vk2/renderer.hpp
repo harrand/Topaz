@@ -447,6 +447,7 @@ namespace tz::gl
 		GraphicsPipelineManager pipeline;
 		/// Helper object for managing/executing/scheduling GPU work.
 		CommandProcessor command;
+		std::string debug_name;
 		/// Number of triangles that will be drawn in the next render() invocation.
 		unsigned int tri_count = 0;
 		/// Callback object which we attach to listen for when the device has been informed that the window is resized.

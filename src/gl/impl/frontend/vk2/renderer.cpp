@@ -1069,7 +1069,8 @@ namespace tz::gl
 	resources(info, *this->ldev, this->get_frame_in_flight_count()),
 	output(info.get_output(), device_info.device_window, info.get_options(), *this->ldev),
 	pipeline(info.shader(), this->resources.get_descriptor_layout(), this->output.get_render_pass(), this->get_frame_in_flight_count(), output.get_output_dimensions(), !info.get_options().contains(RendererOption::NoDepthTesting), info.get_options().contains(RendererOption::AlphaBlending)),
-	command(*this->ldev, this->get_frame_in_flight_count(), info.get_output() != nullptr ? info.get_output()->get_target() : OutputTarget::Window, this->output.get_output_framebuffers(), info.get_options().contains(RendererOption::BlockingCompute), info.get_options(), *device_info.device_scheduler)
+	command(*this->ldev, this->get_frame_in_flight_count(), info.get_output() != nullptr ? info.get_output()->get_target() : OutputTarget::Window, this->output.get_output_framebuffers(), info.get_options().contains(RendererOption::BlockingCompute), info.get_options(), *device_info.device_scheduler),
+	debug_name(info.debug_get_name())
 	{
 		TZ_PROFZONE("Vulkan Frontend - RendererVulkan Create", TZ_PROFCOL_YELLOW);
 		// If we're not headless, we should register a callback for our lifetime.
@@ -1093,6 +1094,7 @@ namespace tz::gl
 	output(std::move(move.output)),
 	pipeline(std::move(move.pipeline)),
 	command(std::move(move.command)),
+	debug_name(std::move(move.debug_name)),
 	tri_count(move.tri_count),
 	device_resize_callback(move.device_resize_callback),
 	window_resize_callback(move.window_resize_callback)
@@ -1123,6 +1125,7 @@ namespace tz::gl
 		std::swap(this->output, rhs.output);
 		std::swap(this->pipeline, rhs.pipeline);
 		std::swap(this->command, rhs.command);
+		std::swap(this->debug_name, rhs.debug_name);
 		std::swap(this->tri_count, rhs.tri_count);
 		std::swap(this->device_resize_callback, rhs.device_resize_callback);
 		std::swap(this->window_resize_callback, rhs.window_resize_callback);
@@ -1412,49 +1415,56 @@ namespace tz::gl
 		this->command.set_rendering_commands([this](vk2::CommandBufferRecording& recording, std::size_t framebuffer_id)
 		{
 			tz_assert(framebuffer_id < this->output.get_output_framebuffers().size(), "Attempted to retrieve output framebuffer at index %zu, but there are only %zu framebuffers available. Please submit a bug report.", framebuffer_id, this->output.get_output_framebuffers().size());
-
-			vk2::CommandBufferRecording::RenderPassRun run{this->output.get_output_framebuffers()[framebuffer_id], recording, this->clear_colour};
-			recording.bind_pipeline
+			recording.debug_begin_label
 			({
-				.pipeline = &this->pipeline.get_pipeline(),
+				.name = this->debug_name
 			});
-			tz::BasicList<const vk2::DescriptorSet*> sets;
-			if(!this->resources.empty())
-			{
-				std::span<const vk2::DescriptorSet> resource_sets = this->resources.get_descriptor_sets();
-				sets.resize(resource_sets.size());
-				std::transform(resource_sets.begin(), resource_sets.end(), sets.begin(), [](const vk2::DescriptorSet& set){return &set;});
-				recording.bind_descriptor_sets
-				({
-					.pipeline_layout = &this->pipeline.get_pipeline().get_layout(),
-					.context = this->pipeline.get_pipeline().get_context(),
-					.descriptor_sets = sets,
-					.first_set_id = 0
-				});
-			}
 
-			const IComponent* idx_buf = this->resources.try_get_index_buffer();
-			if(idx_buf == nullptr)
 			{
-				recording.draw
+				vk2::CommandBufferRecording::RenderPassRun run{this->output.get_output_framebuffers()[framebuffer_id], recording, this->clear_colour};
+				recording.bind_pipeline
 				({
-					.vertex_count = 3 * this->tri_count,
-					.instance_count = 1,
-					.first_vertex = 0,
-					.first_instance = 0
+					.pipeline = &this->pipeline.get_pipeline(),
 				});
+				tz::BasicList<const vk2::DescriptorSet*> sets;
+				if(!this->resources.empty())
+				{
+					std::span<const vk2::DescriptorSet> resource_sets = this->resources.get_descriptor_sets();
+					sets.resize(resource_sets.size());
+					std::transform(resource_sets.begin(), resource_sets.end(), sets.begin(), [](const vk2::DescriptorSet& set){return &set;});
+					recording.bind_descriptor_sets
+					({
+						.pipeline_layout = &this->pipeline.get_pipeline().get_layout(),
+						.context = this->pipeline.get_pipeline().get_context(),
+						.descriptor_sets = sets,
+						.first_set_id = 0
+					});
+				}
+
+				const IComponent* idx_buf = this->resources.try_get_index_buffer();
+				if(idx_buf == nullptr)
+				{
+					recording.draw
+					({
+						.vertex_count = 3 * this->tri_count,
+						.instance_count = 1,
+						.first_vertex = 0,
+						.first_instance = 0
+					});
+				}
+				else
+				{
+					recording.bind_index_buffer
+					({
+						.index_buffer = &static_cast<const BufferComponentVulkan*>(idx_buf)->vk_get_buffer()
+					});
+					recording.draw_indexed
+					({
+						.index_count = 3 * this->tri_count
+					});
+				}
 			}
-			else
-			{
-				recording.bind_index_buffer
-				({
-					.index_buffer = &static_cast<const BufferComponentVulkan*>(idx_buf)->vk_get_buffer()
-				});
-				recording.draw_indexed
-				({
-					.index_count = 3 * this->tri_count
-				});
-			}
+			recording.debug_end_label({});
 		});
 	}
 	
@@ -1466,6 +1476,10 @@ namespace tz::gl
 		this->command.set_rendering_commands([this](vk2::CommandBufferRecording& recording, std::size_t framebuffer_id)
 		{
 			tz_assert(framebuffer_id < this->output.get_output_framebuffers().size(), "Attempted to retrieve output framebuffer at index %zu, but there are only %zu framebuffers available. Please submit a bug report.", framebuffer_id, this->output.get_output_framebuffers().size());
+			recording.debug_begin_label
+			({
+				.name = this->debug_name
+			});
 			recording.bind_pipeline
 			({
 				.pipeline = &this->pipeline.get_pipeline(),
@@ -1492,6 +1506,8 @@ namespace tz::gl
 					.groups = this->compute_kernel
 				});
 			}
+
+			recording.debug_end_label({});
 		});
 	}
 
