@@ -186,6 +186,9 @@ namespace tz::gl::vk2
 		void unmap();
 		std::size_t get_linear_row_length() const;
 
+		std::string debug_get_name() const;
+		void debug_set_name(std::string name);
+
 		using NativeType = VkImage;
 		NativeType native() const;
 		static Image null();
@@ -208,6 +211,7 @@ namespace tz::gl::vk2
 		bool destroy_on_destructor;
 		std::optional<VmaAllocation> vma_alloc;
 		VmaAllocationInfo vma_alloc_info;
+		std::string debug_name = "";
 	};
 }
 

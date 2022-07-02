@@ -1073,6 +1073,7 @@ namespace tz::gl
 	debug_name(info.debug_get_name())
 	{
 		TZ_PROFZONE("Vulkan Frontend - RendererVulkan Create", TZ_PROFCOL_YELLOW);
+
 		// If we're not headless, we should register a callback for our lifetime.
 		if(info.get_output() == nullptr || info.get_output()->get_target() == OutputTarget::Window)
 		{
@@ -1082,6 +1083,26 @@ namespace tz::gl
 
 		this->setup_static_resources();
 		this->setup_work_commands();
+
+		// Debug name settings.
+		#if TZ_DEBUG
+			for(std::size_t i = 0; i < this->resource_count(); i++)
+			{
+				IComponent* comp = this->resources.get_component(static_cast<tz::HandleValue>(i));
+				if(comp->get_resource()->get_type() == ResourceType::Buffer)
+				{
+					vk2::Buffer& buf = static_cast<BufferComponentVulkan*>(comp)->vk_get_buffer();
+					std::string n = buf.debug_get_name();
+					buf.debug_set_name(n + (n.empty() ? "" : " -> ") + this->debug_name + ":B" + std::to_string(i));
+				}
+				if(comp->get_resource()->get_type() == ResourceType::Image)
+				{
+					vk2::Image& img = static_cast<ImageComponentVulkan*>(comp)->vk_get_image();
+					std::string n = img.debug_get_name();
+					img.debug_set_name(n + (n.empty() ? "" : " -> ") + this->debug_name + ":I" + std::to_string(i));
+				}
+			}
+		#endif
 	}
 
 	RendererVulkan::RendererVulkan(RendererVulkan&& move):

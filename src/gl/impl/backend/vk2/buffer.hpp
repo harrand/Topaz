@@ -104,6 +104,9 @@ namespace tz::gl::vk2
 		 */
 		std::size_t size() const;
 
+		std::string debug_get_name() const;
+		void debug_set_name(std::string name);
+
 		static Buffer null();
 		bool is_null() const;
 
@@ -116,6 +119,7 @@ namespace tz::gl::vk2
 		BufferInfo info;
 		VmaAllocation vma_alloc;
 		VmaAllocationInfo vma_alloc_info;
+		std::string debug_name = "";
 	};
 }
 

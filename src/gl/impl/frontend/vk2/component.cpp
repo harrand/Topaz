@@ -49,6 +49,7 @@ namespace tz::gl
 			std::copy(old_data.begin(), old_data.begin() + copy_length, new_data.begin());
 			this->resource->set_mapped_data(new_data);
 		}
+		new_buf.debug_set_name(old_buf.debug_get_name());
 		std::swap(old_buf, new_buf);
 	}
 
@@ -146,7 +147,9 @@ namespace tz::gl
 		auto* ires = static_cast<ImageResource*>(this->resource);
 		ires->set_dimensions(new_dimensions);
 		// Then, recreate the image. The image will have the new dimensions but undefined data contents.
+		std::string debug_name = this->image.debug_get_name();
 		this->image = make_image(this->image.get_device());
+		this->image.debug_set_name(debug_name);
 		// After that, let's re-validate the resource data span. It will still have undefined contents for now.
 		auto new_data = this->vk_get_image().map_as<std::byte>();
 		this->resource->set_mapped_data(new_data);

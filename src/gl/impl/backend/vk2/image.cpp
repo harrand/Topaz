@@ -132,7 +132,8 @@ namespace tz::gl::vk2
 	dimensions(0u, 0u),
 	device(nullptr),
 	destroy_on_destructor(false),
-	vma_alloc(std::nullopt)
+	vma_alloc(std::nullopt),
+	debug_name(std::move(move.debug_name))
 	{
 		*this = std::move(move);
 	}
@@ -160,6 +161,7 @@ namespace tz::gl::vk2
 		std::swap(this->destroy_on_destructor, rhs.destroy_on_destructor);
 		std::swap(this->vma_alloc, rhs.vma_alloc);
 		std::swap(this->vma_alloc_info, rhs.vma_alloc_info);
+		std::swap(this->debug_name, rhs.debug_name);
 		return *this;
 	}
 
@@ -233,6 +235,42 @@ namespace tz::gl::vk2
 		vkGetImageSubresourceLayout(this->get_device().native(), this->native(), &subresource, &data_layout);
 		// row pitch is the number of bytes between each row.
 		return data_layout.rowPitch;
+	}
+
+	std::string Image::debug_get_name() const
+	{
+		return this->debug_name;
+	}
+
+	void Image::debug_set_name(std::string name)
+	{
+		this->debug_name = name;
+		#if TZ_DEBUG
+			VkDebugUtilsObjectNameInfoEXT info
+			{
+				.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_NAME_INFO_EXT,
+				.pNext = nullptr,
+				.objectType = VK_OBJECT_TYPE_IMAGE,
+				.objectHandle = reinterpret_cast<std::uint64_t>(this->image),
+				.pObjectName = this->debug_name.c_str()
+			};
+
+			const VulkanInstance& inst = this->get_device().get_hardware().get_instance();
+			auto func = reinterpret_cast<PFN_vkSetDebugUtilsObjectNameEXT>(vkGetInstanceProcAddr(inst.native(), "vkSetDebugUtilsObjectNameEXT"));
+			if(func != nullptr)
+			{
+				VkResult res = func(this->get_device().native(), &info);
+				switch(res)
+				{
+					case VK_SUCCESS:
+					break;
+					default:
+						tz_error("Failed to set debug name for image backend, but for unknown reason. Please submit a bug report.");
+					break;
+				}
+			}
+		#endif
+
 	}
 
 	Image::NativeType Image::native() const
