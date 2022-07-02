@@ -235,6 +235,8 @@ namespace tz::gl
 		 * @return Graphics pipeline which should be bound when rendering.
 		 */
 		const vk2::Pipeline& get_pipeline() const;
+		const vk2::Shader& get_shader() const;
+		vk2::Shader& get_shader();
 		void recreate(const vk2::RenderPass& new_render_pass, tz::Vec2ui new_viewport_dimensions, bool wireframe_mode = false);
 		bool is_compute() const;
 		bool is_wireframe_mode() const;

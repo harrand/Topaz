@@ -59,6 +59,8 @@ namespace tz::gl::vk2
 		 */
 		ShaderType get_type() const;
 
+		const LogicalDevice& get_device() const;
+
 		using NativeType = VkShaderModule;
 		NativeType native() const;
 	private:
@@ -102,12 +104,16 @@ namespace tz::gl::vk2
 		ShaderPipelineData native_data() const;
 		bool is_compute() const;
 
+		std::string debug_get_name() const;
+		void debug_set_name(std::string debug_name);
+
 		static Shader null();
 		bool is_null() const;
 	private:
 		Shader();
 
 		std::vector<ShaderModule> modules;
+		std::string debug_name = "";
 	};
 }
 

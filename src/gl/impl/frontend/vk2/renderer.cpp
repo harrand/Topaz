@@ -724,6 +724,16 @@ namespace tz::gl
 		return this->graphics_pipeline;
 	}
 
+	const vk2::Shader& GraphicsPipelineManager::get_shader() const
+	{
+		return this->shader;
+	}
+
+	vk2::Shader& GraphicsPipelineManager::get_shader()
+	{
+		return this->shader;
+	}
+
 	void GraphicsPipelineManager::recreate(const vk2::RenderPass& new_render_pass, tz::Vec2ui new_viewport_dimensions, bool wireframe_mode)
 	{
 		this->wireframe_mode = wireframe_mode;
@@ -1102,6 +1112,8 @@ namespace tz::gl
 					img.debug_set_name(n + (n.empty() ? "" : " -> ") + this->debug_name + ":I" + std::to_string(i));
 				}
 			}
+
+			this->pipeline.get_shader().debug_set_name(this->debug_name);
 		#endif
 	}
 

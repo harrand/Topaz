@@ -69,6 +69,11 @@ namespace tz::gl::vk2
 		return this->type;
 	}
 
+	const LogicalDevice& ShaderModule::get_device() const
+	{
+		return *this->device;
+	}
+
 	ShaderModule::NativeType ShaderModule::native() const
 	{
 		return this->shader_module;
@@ -118,6 +123,63 @@ namespace tz::gl::vk2
 		{
 			return mod.get_type() == ShaderType::Compute;
 		});
+	}
+
+	std::string Shader::debug_get_name() const
+	{
+		return this->debug_name;
+	}
+
+	void Shader::debug_set_name(std::string debug_name)
+	{
+		this->debug_name = debug_name;
+		#if TZ_DEBUG
+			for(const ShaderModule& s_module : this->modules)
+			{
+				const char* ext;
+				switch(s_module.get_type())
+				{
+					case ShaderType::Vertex:
+						ext = "vertex";
+					break;
+					case ShaderType::TessellationControl:
+						ext = "tesscon";
+					break;
+					case ShaderType::TessellationEvaluation:
+						ext = "tesseval";
+					break;
+					case ShaderType::Fragment:
+						ext = "fragment";
+					break;
+					case ShaderType::Compute:
+						ext = "compute";
+					break;
+					default:
+						ext = "invalid-shader-type";
+					break;
+				}
+				std::string name = this->debug_name + ".Shader." + ext;
+				VkDebugUtilsObjectNameInfoEXT info
+				{
+					.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_NAME_INFO_EXT,
+					.pNext = nullptr,
+					.objectType = VK_OBJECT_TYPE_SHADER_MODULE,
+					.objectHandle = reinterpret_cast<std::uint64_t>(s_module.native()),
+					.pObjectName = name.c_str()
+				};
+
+				const VulkanInstance& inst = s_module.get_device().get_hardware().get_instance();
+				VkResult res = inst.ext_set_debug_utils_object_name(s_module.get_device().native(), info);
+				switch(res)
+				{
+					case VK_SUCCESS:
+					break;
+					default:
+						tz_error("Failed to set debug name for image backend, but for unknown reason. Please submit a bug report.");
+					break;
+				}
+			}
+		#endif
 	}
 
 	Shader Shader::null()

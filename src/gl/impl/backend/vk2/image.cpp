@@ -37,6 +37,7 @@ namespace tz::gl::vk2
 		this->dimensions = sinfo.swapchain->get_dimensions();
 		this->device = &sinfo.swapchain->get_device();
 		// I verified in the spec here: https://www.khronos.org/registry/vulkan/specs/1.2-extensions/html/vkspec.html#_wsi_swapchain that the initial layout of a swapchain image is guaranteed to be undefined.
+		this->debug_set_name("Swapchain Image " + std::to_string(sinfo.image_index));
 	}
 
 	Image::Image(ImageInfo info):
