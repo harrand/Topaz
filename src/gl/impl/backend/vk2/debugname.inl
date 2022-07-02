@@ -17,7 +17,7 @@ namespace tz::gl::vk2
 	}
 	
 	template<VkObjectType T>
-	void DebugNameable<T>::debug_set_name(std::string debug_name)
+	void DebugNameable<T>::debug_set_name([[maybe_unused]] std::string debug_name)
 	{
 		#if TZ_DEBUG
 			this->debug_name = debug_name;
