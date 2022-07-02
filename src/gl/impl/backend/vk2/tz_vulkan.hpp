@@ -217,11 +217,20 @@ namespace tz::gl::vk2
 		NativeType native() const;
 
 		bool operator==(const VulkanInstance& rhs) const;
+
+		void ext_begin_debug_utils_label(VkCommandBuffer cmdbuf_native, VkDebugUtilsLabelEXT label) const;
+		void ext_end_debug_utils_label(VkCommandBuffer cmdbuf_native) const;
+		VkResult ext_set_debug_utils_object_name(VkDevice device_native, VkDebugUtilsObjectNameInfoEXT info) const;
 	private:
+		void load_extension_functions();
+
 		VulkanInstanceInfo info;
 		VkInstance instance;
 		std::optional<VulkanDebugMessenger> maybe_debug_messenger;
 		std::optional<WindowSurface> maybe_window_surface;
+		PFN_vkCmdBeginDebugUtilsLabelEXT ext_vkcmdbegindebugutilslabel = nullptr;
+		PFN_vkCmdEndDebugUtilsLabelEXT ext_vkcmdenddebugutilslabel = nullptr;
+		PFN_vkSetDebugUtilsObjectNameEXT ext_vksetdebugutilsobjectname = nullptr;
 	};
 
 	/**

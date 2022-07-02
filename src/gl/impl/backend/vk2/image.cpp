@@ -256,18 +256,14 @@ namespace tz::gl::vk2
 			};
 
 			const VulkanInstance& inst = this->get_device().get_hardware().get_instance();
-			auto func = reinterpret_cast<PFN_vkSetDebugUtilsObjectNameEXT>(vkGetInstanceProcAddr(inst.native(), "vkSetDebugUtilsObjectNameEXT"));
-			if(func != nullptr)
+			VkResult res = inst.ext_set_debug_utils_object_name(this->get_device().native(), info);
+			switch(res)
 			{
-				VkResult res = func(this->get_device().native(), &info);
-				switch(res)
-				{
-					case VK_SUCCESS:
-					break;
-					default:
-						tz_error("Failed to set debug name for image backend, but for unknown reason. Please submit a bug report.");
-					break;
-				}
+				case VK_SUCCESS:
+				break;
+				default:
+					tz_error("Failed to set debug name for image backend, but for unknown reason. Please submit a bug report.");
+				break;
 			}
 		#endif
 

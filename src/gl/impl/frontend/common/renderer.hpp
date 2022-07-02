@@ -110,7 +110,14 @@ namespace tz::gl
 		 * Read/write information about the shader that will be built for the renderer.
 		 */
 		const ShaderInfo& shader() const;
+		/**
+		 * Set the debug name of the spawned renderer. By default, the debug name is a compact description of the renderer.
+		 * @note This only has an affect on debug builds.
+		 */
 		void debug_name(std::string debug_name);
+		/**
+		 * Retrieve the debug name which will be used for the spawned renderer.
+		 */
 		std::string debug_get_name() const;
 	private:
 		std::size_t real_resource_count() const;

@@ -383,6 +383,7 @@ namespace tz::gl::vk2
 			this->maybe_debug_messenger = VulkanDebugMessenger{*this};
 		}
 		this->maybe_window_surface = WindowSurface{*this, *info.window};
+		this->load_extension_functions();
 	}
 
 
@@ -409,14 +410,39 @@ namespace tz::gl::vk2
 		return this->maybe_window_surface.value();
 	}
 
+	VulkanInstance::NativeType VulkanInstance::native() const
+	{
+		return this->instance;
+	}
+
 	bool VulkanInstance::operator==(const VulkanInstance& rhs) const
 	{
 		return this->instance == rhs.instance;
 	}
 
-	VulkanInstance::NativeType VulkanInstance::native() const
+	void VulkanInstance::ext_begin_debug_utils_label(VkCommandBuffer cmdbuf_native, VkDebugUtilsLabelEXT label) const
 	{
-		return this->instance;
+		tz_assert(this->ext_vkcmdbegindebugutilslabel != nullptr && TZ_DEBUG, "vkCmdBeginDebugUtilsLabelEXT failed to load properly. Either you're not on a debug build or your machine does not support debug utils.");
+		this->ext_vkcmdbegindebugutilslabel(cmdbuf_native, &label);
+	}
+
+	void VulkanInstance::ext_end_debug_utils_label(VkCommandBuffer cmdbuf_native) const
+	{
+		tz_assert(this->ext_vkcmdenddebugutilslabel != nullptr && TZ_DEBUG, "vkCmdEndDebugUtilsLabelEXT failed to load properly. Either you're not on a debug build or your machine does not support debug utils.");
+		this->ext_vkcmdenddebugutilslabel(cmdbuf_native);
+	}
+
+	VkResult VulkanInstance::ext_set_debug_utils_object_name(VkDevice device_native, VkDebugUtilsObjectNameInfoEXT info) const
+	{
+		tz_assert(this->ext_vksetdebugutilsobjectname != nullptr && TZ_DEBUG, "vkSetDebugUtilsObjectNameEXT failed to load properly. Either you're not on a debug build or your machine does not support debug utils.");
+		return this->ext_vksetdebugutilsobjectname(device_native, &info);
+	}
+
+	void VulkanInstance::load_extension_functions()
+	{
+		this->ext_vkcmdbegindebugutilslabel = reinterpret_cast<PFN_vkCmdBeginDebugUtilsLabelEXT>(vkGetInstanceProcAddr(this->native(), "vkCmdBeginDebugUtilsLabelEXT"));
+		this->ext_vkcmdenddebugutilslabel = reinterpret_cast<PFN_vkCmdEndDebugUtilsLabelEXT>(vkGetInstanceProcAddr(this->native(), "vkCmdEndDebugUtilsLabelEXT"));
+		this->ext_vksetdebugutilsobjectname = reinterpret_cast<PFN_vkSetDebugUtilsObjectNameEXT>(vkGetInstanceProcAddr(this->native(), "vkSetDebugUtilsObjectNameEXT"));
 	}
 
 }

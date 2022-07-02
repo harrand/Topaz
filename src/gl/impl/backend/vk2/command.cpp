@@ -304,22 +304,18 @@ namespace tz::gl::vk2
 			this->register_command(command);
 
 			const VulkanInstance& inst = this->get_command_buffer().get_device().get_hardware().get_instance();
-			auto func = reinterpret_cast<PFN_vkCmdBeginDebugUtilsLabelEXT>(vkGetInstanceProcAddr(inst.native(), "vkCmdBeginDebugUtilsLabelEXT"));
-			if(func != nullptr)
+			VkDebugUtilsLabelEXT label
 			{
-				VkDebugUtilsLabelEXT label
-				{
-					.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_LABEL_EXT,
-					.pNext = nullptr,
-					.pLabelName = command.name.c_str(),
-					.color = {}
-				};
-				label.color[0] = command.colour[0];
-				label.color[1] = command.colour[1];
-				label.color[2] = command.colour[2];
-				label.color[3] = command.colour[3];
-				func(this->get_command_buffer().native(), &label);
-			}
+				.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_LABEL_EXT,
+				.pNext = nullptr,
+				.pLabelName = command.name.c_str(),
+				.color = {}
+			};
+			label.color[0] = command.colour[0];
+			label.color[1] = command.colour[1];
+			label.color[2] = command.colour[2];
+			label.color[3] = command.colour[3];
+			inst.ext_begin_debug_utils_label(this->get_command_buffer().native(), label);
 		#endif
 	}
 
@@ -329,11 +325,7 @@ namespace tz::gl::vk2
 			this->register_command(command);
 
 			const VulkanInstance& inst = this->get_command_buffer().get_device().get_hardware().get_instance();
-			auto func = reinterpret_cast<PFN_vkCmdEndDebugUtilsLabelEXT>(vkGetInstanceProcAddr(inst.native(), "vkCmdEndDebugUtilsLabelEXT"));
-			if(func != nullptr)
-			{
-				func(this->get_command_buffer().native());
-			}
+			inst.ext_end_debug_utils_label(this->get_command_buffer().native());
 		#endif
 	}
 
