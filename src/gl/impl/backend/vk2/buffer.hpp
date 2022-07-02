@@ -2,6 +2,7 @@
 #define TOPAZ_GL_IMPL_BACKEND_VK2_BUFFER_HPP
 #if TZ_VULKAN
 #include "gl/impl/backend/vk2/logical_device.hpp"
+#include "gl/impl/backend/vk2/debugname.hpp"
 #include "gl/impl/backend/vk2/gpu_mem.hpp"
 
 namespace tz::gl::vk2
@@ -51,7 +52,7 @@ namespace tz::gl::vk2
 	 * @ingroup tz_gl_vk_buffer
 	 * Represents a linear array of data which can be used for various purposes. See @ref BufferUsage for some examples of usages.
 	 */
-	class Buffer
+	class Buffer : public DebugNameable<VK_OBJECT_TYPE_BUFFER>
 	{
 	public:
 		Buffer(BufferInfo info);
@@ -104,9 +105,6 @@ namespace tz::gl::vk2
 		 */
 		std::size_t size() const;
 
-		std::string debug_get_name() const;
-		void debug_set_name(std::string name);
-
 		static Buffer null();
 		bool is_null() const;
 
@@ -119,7 +117,6 @@ namespace tz::gl::vk2
 		BufferInfo info;
 		VmaAllocation vma_alloc;
 		VmaAllocationInfo vma_alloc_info;
-		std::string debug_name = "";
 	};
 }
 

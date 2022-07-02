@@ -5,6 +5,7 @@
 namespace tz::gl::vk2
 {
 	Buffer::Buffer(BufferInfo info):
+	DebugNameable<VK_OBJECT_TYPE_BUFFER>(*info.device),
 	buffer(VK_NULL_HANDLE),
 	info(info),
 	vma_alloc(),
@@ -74,6 +75,7 @@ namespace tz::gl::vk2
 				tz_error("Failed to create Buffer but cannot determine why. Please submit a bug report.");
 			break;
 		}
+		DebugNameable<VK_OBJECT_TYPE_BUFFER>::debug_set_handle(reinterpret_cast<std::uint64_t>(this->buffer));
 	}
 
 	Buffer::Buffer(Buffer&& move):
@@ -100,7 +102,7 @@ namespace tz::gl::vk2
 		std::swap(this->info, rhs.info);
 		std::swap(this->vma_alloc, rhs.vma_alloc);
 		std::swap(this->vma_alloc_info, rhs.vma_alloc_info);
-		std::swap(this->debug_name, rhs.debug_name);
+		DebugNameable<VK_OBJECT_TYPE_BUFFER>::debugname_swap(rhs);
 		return *this;
 	}
 
@@ -157,37 +159,6 @@ namespace tz::gl::vk2
 	std::size_t Buffer::size() const
 	{
 		return this->info.size_bytes;
-	}
-
-	std::string Buffer::debug_get_name() const
-	{
-		return this->debug_name;
-	}
-
-	void Buffer::debug_set_name(std::string name)
-	{
-		this->debug_name = name;
-		#if TZ_DEBUG
-			VkDebugUtilsObjectNameInfoEXT info
-			{
-				.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_NAME_INFO_EXT,
-				.pNext = nullptr,
-				.objectType = VK_OBJECT_TYPE_BUFFER,
-				.objectHandle = reinterpret_cast<std::uint64_t>(this->buffer),
-				.pObjectName = this->debug_name.c_str()
-			};
-
-			const VulkanInstance& inst = this->get_device().get_hardware().get_instance();
-			VkResult res = inst.ext_set_debug_utils_object_name(this->get_device().native(), info);
-			switch(res)
-			{
-				case VK_SUCCESS:
-				break;
-				default:
-					tz_error("Failed to set debug name for buffer backend, but for unknown reason. Please submit a bug report.");
-				break;
-			}
-		#endif
 	}
 
 	Buffer Buffer::null()

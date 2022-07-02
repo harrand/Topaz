@@ -112,6 +112,8 @@ add_library(topaz
 	src/gl/impl/backend/vk2/buffer.hpp
 	src/gl/impl/backend/vk2/command.cpp
 	src/gl/impl/backend/vk2/command.hpp
+	src/gl/impl/backend/vk2/debugname.hpp
+	src/gl/impl/backend/vk2/debugname.inl
 	src/gl/impl/backend/vk2/descriptors.cpp
 	src/gl/impl/backend/vk2/descriptors.hpp
 	src/gl/impl/backend/vk2/extensions.hpp

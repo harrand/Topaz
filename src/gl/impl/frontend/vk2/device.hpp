@@ -36,6 +36,7 @@ namespace tz::gl
 		std::span<vk2::Image> get_output_images();
 		vk2::Image& get_depth_image();
 	private:
+		void set_swapchain_images_debug_name();
 		void make_depth_image();
 		void on_resize(tz::Vec2ui dims);
 		void register_resize();

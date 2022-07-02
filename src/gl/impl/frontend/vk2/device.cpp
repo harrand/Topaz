@@ -63,6 +63,8 @@ namespace tz::gl
 			.image_format = device.get_hardware().get_supported_surface_formats().front(),
 			.present_mode = present_mode
 		}};
+		this->set_swapchain_images_debug_name();
+
 		this->make_depth_image();
 		this->register_resize();
 	}
@@ -146,6 +148,17 @@ namespace tz::gl
 		return this->depth_image;
 	}
 
+	void DeviceWindowVulkan::set_swapchain_images_debug_name()
+	{
+		#if TZ_DEBUG
+			for(std::size_t i = 0; i < this->window_buf.get_images().size(); i++)
+			{
+				this->window_buf.get_images()[i].debug_set_name("Device Swapchain Image " + std::to_string (i));
+			}
+		#endif
+	}
+
+
 	void DeviceWindowVulkan::make_depth_image()
 	{
 		this->depth_image = vk2::Image
@@ -189,6 +202,7 @@ namespace tz::gl
 		std::swap(old_swapchain, new_swapchain);
 		this->old_depth_image = std::move(this->depth_image);
 		this->make_depth_image();
+		this->set_swapchain_images_debug_name();
 		// Now notify all renderers.
 		this->renderer_resize_callbacks
 		({

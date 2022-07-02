@@ -3,6 +3,7 @@
 #if TZ_VULKAN
 #include "core/vector.hpp"
 #include "core/containers/enum_field.hpp"
+#include "gl/impl/backend/vk2/debugname.hpp"
 #include "gl/impl/backend/vk2/image_format.hpp"
 #include "gl/impl/backend/vk2/gpu_mem.hpp"
 #include "vk_mem_alloc.h"
@@ -135,7 +136,7 @@ namespace tz::gl::vk2
 	 * @ingroup tz_gl_vk_image
 	 * Represents an Image owned by the Vulkan API. This includes Swapchain images!
 	 */
-	class Image
+	class Image : public DebugNameable<VK_OBJECT_TYPE_IMAGE>
 	{
 	public:
 		/**
@@ -187,9 +188,6 @@ namespace tz::gl::vk2
 		void unmap();
 		std::size_t get_linear_row_length() const;
 
-		std::string debug_get_name() const;
-		void debug_set_name(std::string name);
-
 		using NativeType = VkImage;
 		NativeType native() const;
 		static Image null();
@@ -212,7 +210,6 @@ namespace tz::gl::vk2
 		bool destroy_on_destructor;
 		std::optional<VmaAllocation> vma_alloc;
 		VmaAllocationInfo vma_alloc_info;
-		std::string debug_name = "";
 	};
 }
 

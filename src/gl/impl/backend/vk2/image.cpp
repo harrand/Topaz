@@ -8,6 +8,7 @@
 namespace tz::gl::vk2
 {
 	Image::Image(SwapchainImageInfo sinfo):
+	DebugNameable<VK_OBJECT_TYPE_IMAGE>(sinfo.swapchain->get_device()),
 	image(VK_NULL_HANDLE),
 	format(ImageFormat::Undefined),
 	layout(ImageLayout::Undefined),
@@ -37,10 +38,11 @@ namespace tz::gl::vk2
 		this->dimensions = sinfo.swapchain->get_dimensions();
 		this->device = &sinfo.swapchain->get_device();
 		// I verified in the spec here: https://www.khronos.org/registry/vulkan/specs/1.2-extensions/html/vkspec.html#_wsi_swapchain that the initial layout of a swapchain image is guaranteed to be undefined.
-		this->debug_set_name("Swapchain Image " + std::to_string(sinfo.image_index));
+		DebugNameable<VK_OBJECT_TYPE_IMAGE>::debug_set_handle(reinterpret_cast<std::uint64_t>(this->image));
 	}
 
 	Image::Image(ImageInfo info):
+	DebugNameable<VK_OBJECT_TYPE_IMAGE>(*info.device),
 	image(VK_NULL_HANDLE),
 	format(info.format),
 	layout(ImageLayout::Undefined),
@@ -122,6 +124,7 @@ namespace tz::gl::vk2
 				tz_error("Failed to create Image but cannot determine why. Please submit a bug report.");
 			break;
 		}
+		DebugNameable<VK_OBJECT_TYPE_IMAGE>::debug_set_handle(reinterpret_cast<std::uint64_t>(this->image));
 	}
 
 	Image::Image(Image&& move):
@@ -133,8 +136,7 @@ namespace tz::gl::vk2
 	dimensions(0u, 0u),
 	device(nullptr),
 	destroy_on_destructor(false),
-	vma_alloc(std::nullopt),
-	debug_name(std::move(move.debug_name))
+	vma_alloc(std::nullopt)
 	{
 		*this = std::move(move);
 	}
@@ -162,7 +164,7 @@ namespace tz::gl::vk2
 		std::swap(this->destroy_on_destructor, rhs.destroy_on_destructor);
 		std::swap(this->vma_alloc, rhs.vma_alloc);
 		std::swap(this->vma_alloc_info, rhs.vma_alloc_info);
-		std::swap(this->debug_name, rhs.debug_name);
+		DebugNameable<VK_OBJECT_TYPE_IMAGE>::debugname_swap(rhs);
 		return *this;
 	}
 
@@ -236,38 +238,6 @@ namespace tz::gl::vk2
 		vkGetImageSubresourceLayout(this->get_device().native(), this->native(), &subresource, &data_layout);
 		// row pitch is the number of bytes between each row.
 		return data_layout.rowPitch;
-	}
-
-	std::string Image::debug_get_name() const
-	{
-		return this->debug_name;
-	}
-
-	void Image::debug_set_name(std::string name)
-	{
-		this->debug_name = name;
-		#if TZ_DEBUG
-			VkDebugUtilsObjectNameInfoEXT info
-			{
-				.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_NAME_INFO_EXT,
-				.pNext = nullptr,
-				.objectType = VK_OBJECT_TYPE_IMAGE,
-				.objectHandle = reinterpret_cast<std::uint64_t>(this->image),
-				.pObjectName = this->debug_name.c_str()
-			};
-
-			const VulkanInstance& inst = this->get_device().get_hardware().get_instance();
-			VkResult res = inst.ext_set_debug_utils_object_name(this->get_device().native(), info);
-			switch(res)
-			{
-				case VK_SUCCESS:
-				break;
-				default:
-					tz_error("Failed to set debug name for image backend, but for unknown reason. Please submit a bug report.");
-				break;
-			}
-		#endif
-
 	}
 
 	Image::NativeType Image::native() const
