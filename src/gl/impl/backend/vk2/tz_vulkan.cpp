@@ -440,9 +440,11 @@ namespace tz::gl::vk2
 
 	void VulkanInstance::load_extension_functions()
 	{
-		this->ext_vkcmdbegindebugutilslabel = reinterpret_cast<PFN_vkCmdBeginDebugUtilsLabelEXT>(vkGetInstanceProcAddr(this->native(), "vkCmdBeginDebugUtilsLabelEXT"));
-		this->ext_vkcmdenddebugutilslabel = reinterpret_cast<PFN_vkCmdEndDebugUtilsLabelEXT>(vkGetInstanceProcAddr(this->native(), "vkCmdEndDebugUtilsLabelEXT"));
-		this->ext_vksetdebugutilsobjectname = reinterpret_cast<PFN_vkSetDebugUtilsObjectNameEXT>(vkGetInstanceProcAddr(this->native(), "vkSetDebugUtilsObjectNameEXT"));
+		#if TZ_DEBUG
+			this->ext_vkcmdbegindebugutilslabel = reinterpret_cast<PFN_vkCmdBeginDebugUtilsLabelEXT>(vkGetInstanceProcAddr(this->native(), "vkCmdBeginDebugUtilsLabelEXT"));
+			this->ext_vkcmdenddebugutilslabel = reinterpret_cast<PFN_vkCmdEndDebugUtilsLabelEXT>(vkGetInstanceProcAddr(this->native(), "vkCmdEndDebugUtilsLabelEXT"));
+			this->ext_vksetdebugutilsobjectname = reinterpret_cast<PFN_vkSetDebugUtilsObjectNameEXT>(vkGetInstanceProcAddr(this->native(), "vkSetDebugUtilsObjectNameEXT"));
+		#endif
 	}
 
 }
