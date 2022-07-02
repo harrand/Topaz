@@ -7,6 +7,7 @@
 #include "gl/impl/backend/vk2/gpu_mem.hpp"
 #include "vk_mem_alloc.h"
 #include <optional>
+#include <string>
 
 namespace tz::gl::vk2
 {
