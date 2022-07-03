@@ -20,7 +20,7 @@ namespace tz::gl::vk2
 	/**
 	 * @ingroup tz_gl_vk_image
 	 */
-	class ImageView
+	class ImageView : public DebugNameable<VK_OBJECT_TYPE_IMAGE_VIEW>
 	{
 	public:
 		ImageView(ImageViewInfo info);

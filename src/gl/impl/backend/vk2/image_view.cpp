@@ -6,6 +6,7 @@
 namespace tz::gl::vk2
 {
 	ImageView::ImageView(ImageViewInfo info):
+	DebugNameable<VK_OBJECT_TYPE_IMAGE_VIEW>(info.image->get_device()),
 	image_view(VK_NULL_HANDLE),
 	info(info)
 	{
@@ -50,6 +51,11 @@ namespace tz::gl::vk2
 				tz_error("Failed to create ImageView, but the error code is unrecognised. Please submit a bug report.");
 			break;
 		}
+		DebugNameable<VK_OBJECT_TYPE_IMAGE_VIEW>::debug_set_handle(reinterpret_cast<std::uint64_t>(this->image_view));
+		if(!this->get_image().debug_get_name().empty())
+		{
+			DebugNameable<VK_OBJECT_TYPE_IMAGE_VIEW>::debug_set_name("View : " + this->get_image().debug_get_name());
+		}
 	}
 
 	ImageView::ImageView(ImageView&& move):
@@ -72,6 +78,7 @@ namespace tz::gl::vk2
 	{
 		std::swap(this->image_view, rhs.image_view);
 		std::swap(this->info, rhs.info);
+		DebugNameable<VK_OBJECT_TYPE_IMAGE_VIEW>::debugname_swap(rhs);
 		return *this;
 	}
 

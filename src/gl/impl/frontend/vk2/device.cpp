@@ -169,6 +169,7 @@ namespace tz::gl
 			.usage = {vk2::ImageUsage::DepthStencilAttachment},
 			.residency = vk2::MemoryResidency::GPU
 		}};
+		this->depth_image.debug_set_name("Device Depth Image");
 	}
 
 	void DeviceWindowVulkan::on_resize(tz::Vec2ui dims)
