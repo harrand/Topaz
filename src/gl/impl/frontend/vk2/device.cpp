@@ -33,6 +33,27 @@ namespace tz::gl
 			default:
 			break;
 		}
+		unsigned int max_vram_size = 0;
+		for(std::size_t i = 0; i < info.internal.memory.memoryHeapCount; i++)
+		{
+			if(info.internal.memory.memoryHeaps[i].flags & VK_MEMORY_HEAP_DEVICE_LOCAL_BIT)
+			{
+				max_vram_size = std::max(max_vram_size, static_cast<unsigned int>(info.internal.memory.memoryHeaps[i].size));
+			}
+		}
+		// Each 5MiB of VRAM in the biggest device-local heap adds an extra point to the score.
+		// This means a CPU could be taken over a Discrete GPU if it has 9.5GiB more VRAM, which is not happening anytime soon.
+		rating += max_vram_size / (1024 * 1024 * 5);
+		// If the device supports more than 64 buffer resources, add 500 rating.
+		if(info.internal.limits.maxPerStageDescriptorStorageBuffers > 64)
+		{
+			rating += 500;
+		}
+		// If the device supports more than 64 image resources, add 500 rating.
+		if(info.internal.limits.maxPerStageDescriptorSampledImages > 64)
+		{
+			rating += 500;
+		}
 		return rating;
 	}
 
@@ -244,15 +265,21 @@ namespace tz::gl
 	render_work_done(),
 	frame_work()
 	{
+		this->image_available.reserve(frame_in_flight_count);
+		this->render_work_done.reserve(frame_in_flight_count);
+		this->frame_work.reserve(frame_in_flight_count);
 		for(std::size_t i = 0; i < frame_in_flight_count; i++)
 		{
-			this->image_available.emplace_back(ldev);
-			this->render_work_done.emplace_back(ldev);
-			this->frame_work.emplace_back(vk2::FenceInfo
+			auto& iasev = this->image_available.emplace_back(ldev);
+			iasev.debug_set_name("Device Image Semaphore " + std::to_string(i));
+			auto& rwsev = this->render_work_done.emplace_back(ldev);
+			rwsev.debug_set_name("Device Render Semaphore " + std::to_string(i));
+			auto& fence = this->frame_work.emplace_back(vk2::FenceInfo
 			{
 				.device = &ldev,
 				.initially_signalled = true
 			});
+			fence.debug_set_name("Device Frame Fence " + std::to_string(i));
 		}
 	}
 

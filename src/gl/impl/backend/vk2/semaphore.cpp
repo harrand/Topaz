@@ -4,6 +4,7 @@
 namespace tz::gl::vk2
 {
 	BinarySemaphore::BinarySemaphore(const LogicalDevice& device):
+	DebugNameable<VK_OBJECT_TYPE_SEMAPHORE>(device),
 	sem(VK_NULL_HANDLE),
 	device(&device)
 	{
@@ -30,6 +31,7 @@ namespace tz::gl::vk2
 				tz_error("Failed to create BinarySemaphore but cannot determine why. Please submit a bug report.");
 			break;
 		}
+		DebugNameable<VK_OBJECT_TYPE_SEMAPHORE>::debug_set_handle(reinterpret_cast<std::uint64_t>(this->sem));
 	}
 
 	BinarySemaphore::BinarySemaphore(BinarySemaphore&& move):
@@ -51,6 +53,7 @@ namespace tz::gl::vk2
 	{
 		std::swap(this->sem, rhs.sem);
 		std::swap(this->device, rhs.device);
+		DebugNameable<VK_OBJECT_TYPE_SEMAPHORE>::debugname_swap(rhs);
 		return *this;
 	}
 

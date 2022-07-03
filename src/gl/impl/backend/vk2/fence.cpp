@@ -4,6 +4,7 @@
 namespace tz::gl::vk2
 {
 	Fence::Fence(FenceInfo info):
+	DebugNameable<VK_OBJECT_TYPE_FENCE>(*info.device),
 	fence(VK_NULL_HANDLE),
 	info(info)
 	{
@@ -30,6 +31,7 @@ namespace tz::gl::vk2
 				tz_error("Failed to create Fence but cannot determine why. Please submit a bug report.");
 			break;
 		}
+		DebugNameable<VK_OBJECT_TYPE_FENCE>::debug_set_handle(reinterpret_cast<std::uint64_t>(this->fence));
 	}
 
 	Fence::Fence(Fence&& move):
@@ -52,6 +54,7 @@ namespace tz::gl::vk2
 	{
 		std::swap(this->fence, rhs.fence);
 		std::swap(this->info, rhs.info);
+		DebugNameable<VK_OBJECT_TYPE_FENCE>::debugname_swap(rhs);
 		return *this;
 	}
 

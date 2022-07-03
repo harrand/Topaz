@@ -2,6 +2,7 @@
 #define TOPAZ_GL_IMPL_BACKEND_VK2_FENCE_HPP
 #if TZ_VULKAN
 #include "gl/impl/backend/vk2/logical_device.hpp"
+#include "gl/impl/backend/vk2/debugname.hpp"
 
 namespace tz::gl::vk2
 {
@@ -21,7 +22,7 @@ namespace tz::gl::vk2
 	 * @ingroup tz_gl_vk_sync
 	 * Synchronisation primitive which is useful to detect completion of a GPU operation, CPU-side.
 	 */
-	class Fence
+	class Fence : public DebugNameable<VK_OBJECT_TYPE_FENCE>
 	{
 	public:
 		Fence(FenceInfo info);

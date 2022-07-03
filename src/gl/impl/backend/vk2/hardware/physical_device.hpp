@@ -31,11 +31,18 @@ namespace tz::gl::vk2
 		Unknown
 	};
 
+	struct InternalDeviceInfo
+	{
+		VkPhysicalDeviceMemoryProperties memory;
+		VkPhysicalDeviceLimits limits;
+	};
+
 	struct PhysicalDeviceInfo
 	{
 		PhysicalDeviceVendor vendor;
 		PhysicalDeviceType type;
 		std::string name;
+		InternalDeviceInfo internal;
 	};
 
 	struct PhysicalDeviceSurfaceCapabilityInfo

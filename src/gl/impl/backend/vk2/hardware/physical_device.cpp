@@ -195,12 +195,16 @@ namespace tz::gl::vk2
 	{
 		tz_assert(!this->is_null(), "This was PhysicalDevice::null()");
 		DeviceProps props = this->get_internal_device_props();
-		return
+		PhysicalDeviceInfo ret =
 		{
 			.vendor = detail::to_tz_vendor(props.driver_props.driverID),
 			.type = detail::to_tz_type(props.props.properties.deviceType),
-			.name = std::string(props.props.properties.deviceName)
+			.name = std::string(props.props.properties.deviceName),
+			.internal = {}
 		};
+		vkGetPhysicalDeviceMemoryProperties(this->dev, &ret.internal.memory);
+		ret.internal.limits = props.props.properties.limits;
+		return ret;
 	}
 
 	tz::BasicList<ImageFormat> PhysicalDevice::get_supported_surface_formats() const

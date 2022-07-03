@@ -2,6 +2,7 @@
 #define TOPAZ_GL_IMPL_BACKEND_VK2_SEMAPHORE_HPP
 #if TZ_VULKAN
 #include "gl/impl/backend/vk2/logical_device.hpp"
+#include "gl/impl/backend/vk2/debugname.hpp"
 
 namespace tz::gl::vk2
 {
@@ -12,7 +13,7 @@ namespace tz::gl::vk2
 	 * - Unsignalled
 	 * Useful for the GPU detecting the completion of another GPU operation.
 	 */
-	class BinarySemaphore
+	class BinarySemaphore : public DebugNameable<VK_OBJECT_TYPE_SEMAPHORE>
 	{
 	public:
 		BinarySemaphore(const LogicalDevice& device);
