@@ -33,6 +33,16 @@ namespace tz::gl
 			default:
 			break;
 		}
+		// Slight preference for NV/AMD cards, 250 points.
+		switch(info.vendor)
+		{
+			case vk2::PhysicalDeviceVendor::Nvidia:
+			[[fallthrough]];
+			case vk2::PhysicalDeviceVendor::AMD:
+				rating += 250;
+			break;
+			default: break;
+		}
 		unsigned int max_vram_size = 0;
 		for(std::size_t i = 0; i < info.internal.memory.memoryHeapCount; i++)
 		{
@@ -42,7 +52,7 @@ namespace tz::gl
 			}
 		}
 		// Each 5MiB of VRAM in the biggest device-local heap adds an extra point to the score.
-		// This means a CPU could be taken over a Discrete GPU if it has 9.5GiB more VRAM, which is not happening anytime soon.
+		// This means an Integrated GPU could be taken over a Discrete GPU if it has 7.5GiB more VRAM, which is not happening anytime soon.
 		rating += max_vram_size / (1024 * 1024 * 5);
 		// If the device supports more than 64 buffer resources, add 500 rating.
 		if(info.internal.limits.maxPerStageDescriptorStorageBuffers > 64)
