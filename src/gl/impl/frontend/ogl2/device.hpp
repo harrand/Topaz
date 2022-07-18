@@ -10,7 +10,7 @@ namespace tz::gl
 	class DeviceOGL
 	{
 	public:
-		DeviceOGL() = default;
+		DeviceOGL();
 
 		// Satisfies DeviceType.
 		RendererOGL create_renderer(const RendererInfoOGL& info);
