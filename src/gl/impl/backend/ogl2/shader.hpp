@@ -1,6 +1,7 @@
 #ifndef TOPAZ_GL_IMPL_BACKEND_OGL2_SHADER_HPP
 #define TOPAZ_GL_IMPL_BACKEND_OGL2_SHADER_HPP
 #if TZ_OGL
+#include "core/containers/basic_list.hpp"
 #include "gl/impl/backend/ogl2/tz_opengl.hpp"
 
 namespace tz::gl::ogl2

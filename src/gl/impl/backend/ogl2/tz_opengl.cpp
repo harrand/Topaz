@@ -1,4 +1,5 @@
 #if TZ_OGL
+#include "core/containers/basic_list.hpp"
 #include "core/report.hpp"
 #include "core/profiling/zone.hpp"
 #include "gl/impl/backend/ogl2/tz_opengl.hpp"
