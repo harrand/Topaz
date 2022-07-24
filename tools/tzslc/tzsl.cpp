@@ -63,6 +63,10 @@ namespace tzslc
 		std::size_t line_count = 0;
 		while(std::getline(iss, line))
 		{
+			if(line.find("tz::debug::assert") != std::string::npos)
+			{
+				line = "#line " + std::to_string(line_count) + "\n" + line;
+			}
 			replace_all(line, "tz::debug::assert", std::string("#line ") + std::to_string(line_count) + "\ntz::debug::assert");
 			line_count++;
 			output += line + "\n";
