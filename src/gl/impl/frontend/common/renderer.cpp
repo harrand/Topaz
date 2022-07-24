@@ -61,7 +61,7 @@ namespace tz::gl
 			if(resource.get_flags().contains(ResourceFlag::IndexBuffer))
 			{
 				tz_assert(resource.get_type() == ResourceType::Buffer, "Attempting to add a resource with ResourceFlag::IndexBuffer specified, but the resource is not a buffer resource! Logic error/memory corruption? Please submit a bug report.");
-				tz_assert(!std::any_of(this->resources.begin(), this->resources.end(), [](const IResource* r)->bool{return r->get_flags().contains(ResourceFlag::IndexBuffer);}), "Attempting to add a resource with ResourceFlag::IndexBuffer specified, but a resource was already added which is an index buffer. You cannot have more than one index buffer in a renderer. Logic error? Please submit a bug report.");
+				tz_assert(!std::any_of(this->resources.begin(), this->resources.end(), [](const IResource* r)->bool{return r != nullptr && r->get_flags().contains(ResourceFlag::IndexBuffer);}), "Attempting to add a resource with ResourceFlag::IndexBuffer specified, but a resource was already added which is an index buffer. You cannot have more than one index buffer in a renderer. Logic error? Please submit a bug report.");
 			}
 		#endif
 		this->resources.push_back(&resource);
