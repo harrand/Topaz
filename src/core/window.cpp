@@ -6,19 +6,12 @@
 
 namespace tz
 {
-	Window::Window(WindowInitArgs args, WindowHintList hints):
+	Window::Window(WindowInitArgs args):
 	WindowFunctionality(nullptr)
 	{
 		TZ_PROFZONE("tz::Window Create", TZ_PROFCOL_BLUE);
-		if(!args.flags.resizeable)
-		{
-			// GLFW assumes window is resizable. If not we will need to add an extra hint.
-			hints.add(WindowHint{.hint = GLFW_RESIZABLE, .value = GLFW_FALSE});
-		}
-		for(const WindowHint& hint : hints)
-		{
-			glfwWindowHint(hint.hint, hint.value);
-		}
+		glfwWindowHint(GLFW_RESIZABLE, args.flags.resizeable ? GLFW_TRUE : GLFW_FALSE);
+		glfwWindowHint(GLFW_VISIBLE, args.flags.invisible ? GLFW_FALSE : GLFW_TRUE);
 
 		#if TZ_VULKAN
 			glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);

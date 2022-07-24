@@ -19,6 +19,8 @@ namespace tz
 	{
 		/// If true, the window is resizeable, otherwise the window cannot be resized. Defaults to true.
 		bool resizeable = true;
+		/// If true, the window is invisible upon creation. Defaults to false.
+		bool invisible = false;
 	};
 
 	/**
@@ -49,7 +51,7 @@ namespace tz
 		/**
 		 * Create a new Window.
 		 */
-		Window(WindowInitArgs args = {}, WindowHintList hints = {});
+		Window(WindowInitArgs args = {});
 		Window(const Window& copy) = delete;
 		Window(Window&& move);
 		~Window();

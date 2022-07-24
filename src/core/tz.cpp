@@ -38,12 +38,6 @@ namespace tz
 		}
 		// After that, create the window.
 		{
-			WindowHintList hints;
-			if(init.flags.contains(ApplicationFlag::HiddenWindow))
-			{
-				hints.add(WindowHint{.hint = GLFW_VISIBLE, .value = GLFW_FALSE});
-			}
-
 			std::string window_title = init.name;
 			#if TZ_DEBUG
 				window_title = game_info.to_string();
@@ -56,11 +50,12 @@ namespace tz
 				.title = window_title.c_str(),
 				.flags =
 				{
-					.resizeable = !init.flags.contains(ApplicationFlag::UnresizeableWindow)
+					.resizeable = !init.flags.contains(ApplicationFlag::UnresizeableWindow),
+					.invisible = init.flags.contains(ApplicationFlag::HiddenWindow)
 				}
 			};
 
-			wnd = new tz::Window{wargs, hints};
+			wnd = new tz::Window{wargs};
 		}
 		// Finally, initialise render backends.
 		{
