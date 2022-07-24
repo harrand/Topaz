@@ -1,16 +1,9 @@
 #ifndef TOPAZ_CORE_WINDOW_HPP
 #define TOPAZ_CORE_WINDOW_HPP
-#include "core/containers/basic_list.hpp"
 #include "core/window_functionality.hpp"
 
 namespace tz
 {
-	struct WindowHint
-	{
-		int hint;
-		int value;
-	};
-
 	/**
 	 * @ingroup tz_core_windowing
 	 * Structure containing extra functionality for windows upon creation.
@@ -38,8 +31,6 @@ namespace tz
 		/// Extra functionality for the window. If you don't provide this, the defaults are used.
 		WindowExtraFlags flags = {};
 	};
-
-	using WindowHintList = tz::BasicList<WindowHint>;
 
 	/**
 	 * @ingroup tz_core_windowing
