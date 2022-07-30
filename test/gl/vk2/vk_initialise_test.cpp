@@ -1,6 +1,6 @@
-#include "core/assert.hpp"
-#include "core/tz.hpp"
-#include "gl/impl/backend/vk2/tz_vulkan.hpp"
+#include "tz/core/assert.hpp"
+#include "tz/core/tz.hpp"
+#include "tz/gl/impl/backend/vk2/tz_vulkan.hpp"
 
 int main()
 {

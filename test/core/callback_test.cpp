@@ -1,5 +1,5 @@
-#include "core/callback.hpp"
-#include "core/assert.hpp"
+#include "tz/core/callback.hpp"
+#include "tz/core/assert.hpp"
 
 void increment_free_function(int& x)
 {

@@ -1,5 +1,5 @@
-#include "core/tz.hpp"
-#include "gl/impl/backend/vk2/fence.hpp"
+#include "tz/core/tz.hpp"
+#include "tz/gl/impl/backend/vk2/fence.hpp"
 
 void basic_fence_operations()
 {

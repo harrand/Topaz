@@ -1,11 +1,11 @@
-#include "core/tz.hpp"
-#include "core/window.hpp"
-#include "core/profiling/zone.hpp"
-#include "gl/device.hpp"
-#include "gl/renderer.hpp"
-#include "gl/resource.hpp"
-#include "gl/output.hpp"
-#include "gl/imported_shaders.hpp"
+#include "tz/core/tz.hpp"
+#include "tz/core/window.hpp"
+#include "tz/core/profiling/zone.hpp"
+#include "tz/gl/device.hpp"
+#include "tz/gl/renderer.hpp"
+#include "tz/gl/resource.hpp"
+#include "tz/gl/output.hpp"
+#include "tz/gl/imported_shaders.hpp"
 
 #include ImportedShaderHeader(blur, vertex)
 #include ImportedShaderHeader(blur, fragment)

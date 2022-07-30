@@ -1,6 +1,6 @@
-#include "core/window.hpp"
-#include "gl/impl/backend/vk2/graphics_pipeline.hpp"
-#include "gl/impl/backend/vk2/image_format.hpp"
+#include "tz/core/window.hpp"
+#include "tz/gl/impl/backend/vk2/graphics_pipeline.hpp"
+#include "tz/gl/impl/backend/vk2/image_format.hpp"
 
 void basic_graphics_pipeline()
 {

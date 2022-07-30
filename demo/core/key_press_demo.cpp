@@ -1,6 +1,6 @@
-#include "core/peripherals/keyboard.hpp"
-#include "core/tz.hpp"
-#include "core/report.hpp"
+#include "tz/core/peripherals/keyboard.hpp"
+#include "tz/core/tz.hpp"
+#include "tz/core/report.hpp"
 
 int main()
 {

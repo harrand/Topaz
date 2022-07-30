@@ -274,7 +274,7 @@
  *
  * @subsubsection maincpp main.cpp
  * ```cpp
- * #include "gl/imported_shaders.hpp"
+ * #include "tz/gl/imported_shaders.hpp"
  * #include <string_view>
  *
  * // Includes the compiled tzsl c++ header within this translation unit.

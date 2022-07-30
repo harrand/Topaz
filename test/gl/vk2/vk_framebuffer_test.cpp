@@ -1,5 +1,5 @@
-#include "gl/impl/backend/vk2/framebuffer.hpp"
-#include "gl/impl/backend/vk2/swapchain.hpp"
+#include "tz/gl/impl/backend/vk2/framebuffer.hpp"
+#include "tz/gl/impl/backend/vk2/swapchain.hpp"
 
 void swapchain_image_framebuffer()
 {

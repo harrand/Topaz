@@ -1,6 +1,6 @@
-#include "core/tz.hpp"
-#include "gl/impl/backend/ogl2/tz_opengl.hpp"
-#include "gl/impl/backend/ogl2/image.hpp"
+#include "tz/core/tz.hpp"
+#include "tz/gl/impl/backend/ogl2/tz_opengl.hpp"
+#include "tz/gl/impl/backend/ogl2/image.hpp"
 #include <numeric>
 
 void create_empty_image()

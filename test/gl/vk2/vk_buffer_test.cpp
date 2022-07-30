@@ -1,9 +1,9 @@
-#include "gl/impl/backend/vk2/buffer.hpp"
-#include "gl/impl/backend/vk2/gpu_mem.hpp"
-#include "gl/impl/backend/vk2/hardware/physical_device.hpp"
-#include "gl/impl/backend/vk2/command.hpp"
-#include "gl/impl/backend/vk2/fence.hpp"
-#include "gl/impl/backend/vk2/semaphore.hpp"
+#include "tz/gl/impl/backend/vk2/buffer.hpp"
+#include "tz/gl/impl/backend/vk2/gpu_mem.hpp"
+#include "tz/gl/impl/backend/vk2/hardware/physical_device.hpp"
+#include "tz/gl/impl/backend/vk2/command.hpp"
+#include "tz/gl/impl/backend/vk2/fence.hpp"
+#include "tz/gl/impl/backend/vk2/semaphore.hpp"
 
 void basic_buffers()
 {

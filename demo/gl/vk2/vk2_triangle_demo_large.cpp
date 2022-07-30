@@ -1,16 +1,16 @@
-#include "gl/impl/backend/vk2/hardware/physical_device.hpp"
-#include "gl/impl/backend/vk2/logical_device.hpp"
-#include "gl/impl/backend/vk2/sampler.hpp"
-#include "gl/impl/backend/vk2/swapchain.hpp"
-#include "gl/impl/backend/vk2/render_pass.hpp"
-#include "gl/impl/backend/vk2/graphics_pipeline.hpp"
-#include "gl/impl/backend/vk2/framebuffer.hpp"
-#include "gl/impl/backend/vk2/command.hpp"
-#include "gl/impl/backend/vk2/semaphore.hpp"
-#include "gl/impl/backend/vk2/fence.hpp"
+#include "tz/gl/impl/backend/vk2/hardware/physical_device.hpp"
+#include "tz/gl/impl/backend/vk2/logical_device.hpp"
+#include "tz/gl/impl/backend/vk2/sampler.hpp"
+#include "tz/gl/impl/backend/vk2/swapchain.hpp"
+#include "tz/gl/impl/backend/vk2/render_pass.hpp"
+#include "tz/gl/impl/backend/vk2/graphics_pipeline.hpp"
+#include "tz/gl/impl/backend/vk2/framebuffer.hpp"
+#include "tz/gl/impl/backend/vk2/command.hpp"
+#include "tz/gl/impl/backend/vk2/semaphore.hpp"
+#include "tz/gl/impl/backend/vk2/fence.hpp"
 
 #include "vk2_triangle_demo_common.hpp"
-#include "core/matrix_transform.hpp"
+#include "tz/core/matrix_transform.hpp"
 #include <random>
 #include <chrono>
 

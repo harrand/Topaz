@@ -1,10 +1,10 @@
-#include "core/tz.hpp"
-#include "core/types.hpp"
-#include "gl/api/renderer.hpp"
-#include "gl/imported_shaders.hpp"
-#include "gl/device.hpp"
-#include "gl/renderer.hpp"
-#include "gl/resource.hpp"
+#include "tz/core/tz.hpp"
+#include "tz/core/types.hpp"
+#include "tz/gl/api/renderer.hpp"
+#include "tz/gl/imported_shaders.hpp"
+#include "tz/gl/device.hpp"
+#include "tz/gl/renderer.hpp"
+#include "tz/gl/resource.hpp"
 
 #include ImportedShaderHeader(empty, vertex)
 #include ImportedShaderHeader(empty, fragment)

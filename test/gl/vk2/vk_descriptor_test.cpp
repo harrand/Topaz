@@ -1,5 +1,5 @@
-#include "gl/impl/backend/vk2/descriptors.hpp"
-#include "gl/impl/backend/vk2/image_format.hpp"
+#include "tz/gl/impl/backend/vk2/descriptors.hpp"
+#include "tz/gl/impl/backend/vk2/image_format.hpp"
 
 void basic_descriptor_layouts()
 {

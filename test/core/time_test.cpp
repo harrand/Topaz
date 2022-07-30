@@ -1,5 +1,5 @@
-#include "core/time.hpp"
-#include "core/assert.hpp"
+#include "tz/core/time.hpp"
+#include "tz/core/assert.hpp"
 #include <thread>
 
 void test_waits()

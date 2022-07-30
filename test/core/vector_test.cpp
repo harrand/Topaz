@@ -2,8 +2,8 @@
 // Created by Harrand on 06/01/2020.
 //
 
-#include "core/tz.hpp"
-#include "core/vector.hpp"
+#include "tz/core/tz.hpp"
+#include "tz/core/vector.hpp"
 #include <string>
 #include <cstring>
 

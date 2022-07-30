@@ -1,8 +1,8 @@
-#include "core/tz.hpp"
-#include "core/types.hpp"
-#include "gl/impl/backend/vk2/features.hpp"
-#include "gl/impl/backend/vk2/hardware/physical_device.hpp"
-#include "gl/impl/backend/vk2/image_format.hpp"
+#include "tz/core/tz.hpp"
+#include "tz/core/types.hpp"
+#include "tz/gl/impl/backend/vk2/features.hpp"
+#include "tz/gl/impl/backend/vk2/hardware/physical_device.hpp"
+#include "tz/gl/impl/backend/vk2/image_format.hpp"
 
 namespace drivers
 {

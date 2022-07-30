@@ -1,9 +1,9 @@
-#include "core/vector.hpp"
-#include "gl/impl/backend/vk2/image.hpp"
-#include "gl/impl/backend/vk2/image_format.hpp"
-#include "gl/impl/backend/vk2/logical_device.hpp"
-#include "gl/impl/backend/vk2/command.hpp"
-#include "gl/impl/backend/vk2/fence.hpp"
+#include "tz/core/vector.hpp"
+#include "tz/gl/impl/backend/vk2/image.hpp"
+#include "tz/gl/impl/backend/vk2/image_format.hpp"
+#include "tz/gl/impl/backend/vk2/logical_device.hpp"
+#include "tz/gl/impl/backend/vk2/command.hpp"
+#include "tz/gl/impl/backend/vk2/fence.hpp"
 
 void basic_images()
 {

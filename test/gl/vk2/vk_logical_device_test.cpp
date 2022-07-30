@@ -1,6 +1,6 @@
-#include "core/tz.hpp"
-#include "gl/impl/backend/vk2/hardware/physical_device.hpp"
-#include "gl/impl/backend/vk2/logical_device.hpp"
+#include "tz/core/tz.hpp"
+#include "tz/gl/impl/backend/vk2/hardware/physical_device.hpp"
+#include "tz/gl/impl/backend/vk2/logical_device.hpp"
 #include <concepts>
 
 void extensions_coherent()

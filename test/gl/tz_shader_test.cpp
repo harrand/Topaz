@@ -1,7 +1,7 @@
-#include "core/tz.hpp"
-#include "gl/device.hpp"
-#include "gl/renderer.hpp"
-#include "gl/imported_shaders.hpp"
+#include "tz/core/tz.hpp"
+#include "tz/gl/device.hpp"
+#include "tz/gl/renderer.hpp"
+#include "tz/gl/imported_shaders.hpp"
 
 #include ImportedShaderHeader(shader_test, compute)
 

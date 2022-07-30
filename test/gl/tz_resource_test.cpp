@@ -1,6 +1,6 @@
-#include "core/tz.hpp"
-#include "core/assert.hpp"
-#include "gl/resource.hpp"
+#include "tz/core/tz.hpp"
+#include "tz/core/assert.hpp"
+#include "tz/gl/resource.hpp"
 
 void empty_resources()
 {

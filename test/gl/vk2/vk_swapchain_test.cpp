@@ -1,7 +1,7 @@
-#include "core/types.hpp"
-#include "gl/impl/backend/vk2/extensions.hpp"
-#include "gl/impl/backend/vk2/hardware/physical_device.hpp"
-#include "gl/impl/backend/vk2/swapchain.hpp"
+#include "tz/core/types.hpp"
+#include "tz/gl/impl/backend/vk2/extensions.hpp"
+#include "tz/gl/impl/backend/vk2/hardware/physical_device.hpp"
+#include "tz/gl/impl/backend/vk2/swapchain.hpp"
 
 tz::gl::vk2::SwapchainInfo get_safe_swapchain_info(const tz::gl::vk2::LogicalDevice& ldev)
 {

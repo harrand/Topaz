@@ -1,10 +1,10 @@
-#include "core/tz.hpp"
-#include "core/window.hpp"
-#include "core/profiling/zone.hpp"
-#include "gl/device.hpp"
-#include "gl/renderer.hpp"
-#include "gl/imported_shaders.hpp"
-#include "gl/resource.hpp"
+#include "tz/core/tz.hpp"
+#include "tz/core/window.hpp"
+#include "tz/core/profiling/zone.hpp"
+#include "tz/gl/device.hpp"
+#include "tz/gl/renderer.hpp"
+#include "tz/gl/imported_shaders.hpp"
+#include "tz/gl/resource.hpp"
 
 #include ImportedShaderHeader(tz_compute_demo, compute)
 #include ImportedShaderHeader(tz_compute_demo_render, vertex)

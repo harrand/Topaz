@@ -1,6 +1,6 @@
-#include "core/peripherals/mouse.hpp"
-#include "core/tz.hpp"
-#include "core/report.hpp"
+#include "tz/core/peripherals/mouse.hpp"
+#include "tz/core/tz.hpp"
+#include "tz/core/report.hpp"
 
 int main()
 {

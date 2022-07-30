@@ -1,5 +1,5 @@
-#include "core/tz.hpp"
-#include "core/report.hpp"
+#include "tz/core/tz.hpp"
+#include "tz/core/report.hpp"
 #include <cstdio>
 
 int main()
