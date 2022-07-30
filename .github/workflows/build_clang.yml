@@ -22,7 +22,7 @@ jobs:
 
       - name: 'Install Vulkan SDK'
         uses: humbletim/install-vulkan-sdk@v1.1.1
-        if: ${{${{inputs.render_api}} == 'vulkan'}}
+        if: ${{inputs.render_api == 'vulkan'}}
 
       - name: 'Build Topaz ${{inputs.render_api}}_clang_${{inputs.build_config}}'
         uses: lukka/run-cmake@v3
