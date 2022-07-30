@@ -49,17 +49,7 @@ jobs:
           buildDirectory: "${{ github.workspace }}/build/debug"
 
   msvc_windows:
-    runs-on: windows-2022
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          submodules: recursive
-      - name: 'Build Topaz (ogl_msvc_debug)'
-        uses: lukka/run-cmake@v3
-        with:
-          cmakeListsOrSettingsJson: "CMakeListsTxtAdvanced"
-          cmakeGenerator: UnixMakefiles
-          cmakeAppendedArgs: "-B \"${{ github.workspace }}/build/debug\" -DTOPAZ_BUILDCONFIG=debug -DTOPAZ_RENDERAPI=opengl"
-          buildWithCMake: true
-          buildWithCMakeArgs: "--target topaz --parallel 4"
-          buildDirectory: "${{ github.workspace }}/build/debug"
+    uses: Harrand/Topaz/.github/workflows/build_msvc.yml@master
+    with:
+      render_api: opengl
+      build_config: debug
