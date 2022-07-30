@@ -24,4 +24,4 @@ jobs:
           cmakeAppendedArgs: "-B \"${{github.workspace}}/build/${{inputs.render_api}}_${{inputs.build_config}}\" -DTOPAZ_BUILDCONFIG=${{inputs.build_config}} -DTOPAZ_RENDERAPI=${{inputs.render_api}}"
           buildWithCmake: true
           buildWithCMakeArgs: "--target topaz --parallel 4"
-          buildDirectory = "${{github.workspace}}/build/${{inputs.render_api}}_${{inputs.build_config}}"
+          buildDirectory: "${{github.workspace}}/build/${{inputs.render_api}}_${{inputs.build_config}}"
