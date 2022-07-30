@@ -1,0 +1,27 @@
+name: "MSVC Code Build"
+on:
+  workflow_call:
+    inputs:
+      render_api:
+        required: true
+        type: string
+      build_config:
+        required: true
+        type: string
+
+jobs:
+  build:
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: recursive
+      - name: 'Build Topaz ${{inputs.render_api}}_msvc_${{inputs.build_config}}'
+        uses: lukka/run-cmake@v3
+        with:
+          cmakeListsOrSettingsJson: "CMakeListsTxtAdvanced"
+          cmakeGenerator: UnixMakefiles
+          cmakeAppendedArgs: "-B \"${{github.workspace}}/build/${{inputs.render_api}}_${{inputs.build_config}}\" -DTOPAZ_BUILDCONFIG=${{inputs.build_config}} -DTOPAZ_RENDERAPI=${{inputs.render_api}}"
+          buildWithCmake: true
+          buildWithCMakeArgs: "--target topaz --parallel 4"
+          buildDirectory = "${{github.workspace}}/build/${{inputs.render_api}}_${{inputs.build_config}}"
