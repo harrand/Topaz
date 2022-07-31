@@ -489,7 +489,7 @@ namespace tz::gl
 				ret[i] =
 				{
 					.colour_attachments = {&this->swapchain_images[i]},
-					.depth_attachment = &this->swapchain_depth_images[i]
+					.depth_attachment = this->swapchain_depth_images
 				};
 			}
 			return ret;
@@ -507,6 +507,10 @@ namespace tz::gl
 			if(out.has_depth_attachment())
 			{
 				out_image.depth_attachment = &out.get_depth_attachment().vk_get_image();
+			}
+			else
+			{
+				out_image.depth_attachment = this->swapchain_depth_images;
 			}
 
 			std::vector<OutputImageState> ret(this->swapchain_images.size(), out_image);
@@ -585,7 +589,7 @@ namespace tz::gl
 
 			this->output_depth_imageviews.push_back
 			(vk2::ImageViewInfo{
-				.image = this->swapchain_depth_images,
+				.image = out_image.depth_attachment,
 				.aspect = vk2::ImageAspect::Depth
 			});
 		}
@@ -630,7 +634,7 @@ namespace tz::gl
 
 		rbuilder.with_attachment
 		({
-			.format = this->swapchain_depth_images->get_format(),
+			.format = output_image_copy.front().depth_attachment->get_format(),
 			.colour_depth_load = this->options.contains(tz::gl::RendererOption::NoClearOutput) ? vk2::LoadOp::Load : vk2::LoadOp::Clear,
 			.colour_depth_store = this->options.contains(tz::gl::RendererOption::NoPresent) ? vk2::StoreOp::Store : vk2::StoreOp::DontCare,
 			.initial_layout = this->options.contains(tz::gl::RendererOption::NoClearOutput) ? vk2::ImageLayout::DepthStencilAttachment : vk2::ImageLayout::Undefined,
