@@ -548,7 +548,7 @@ namespace tz::gl
 			[this](auto&& arg)
 			{
 				using T = std::decay_t<decltype(arg)>;
-				if constexpr(std::is_same_v<T, RendererBufferComponentEditRequest>)
+				if constexpr(std::is_same_v<T, RendererBufferComponentResizeRequest>)
 				{
 					auto buf_comp = static_cast<BufferComponentOGL*>(this->get_component(arg.buffer_handle));
 					if(buf_comp->size() == arg.size)
@@ -557,7 +557,7 @@ namespace tz::gl
 					}
 					buf_comp->resize(arg.size);
 				}
-				else if constexpr(std::is_same_v<T, RendererImageComponentEditRequest>)
+				else if constexpr(std::is_same_v<T, RendererImageComponentResizeRequest>)
 				{
 					auto img_comp = static_cast<ImageComponentOGL*>(this->get_component(arg.image_handle));
 					img_comp->resize(arg.dimensions);

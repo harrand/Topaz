@@ -78,12 +78,12 @@ void renderer_edit(tz::gl::Device& dev)
 	tz::gl::Renderer ren = dev.create_renderer(rinfo1);
 	tz_assert(bres0.data().size_bytes() == sizeof(float) * 2, "BufferResource had unexpected size before Renderer edit. Expected %zu, got %zu", sizeof(float) * 2, bres0.data().size_bytes());
 	// Try to resize it larger, and then smaller. Both should work.
-	tz::gl::RendererBufferComponentEditRequest bres0_large
+	tz::gl::RendererBufferComponentResizeRequest bres0_large
 	{
 		.buffer_handle = bh,
 		.size = sizeof(float) * 3
 	};
-	tz::gl::RendererBufferComponentEditRequest bres0_small
+	tz::gl::RendererBufferComponentResizeRequest bres0_small
 	{
 		.buffer_handle = bh,
 		.size = sizeof(float) * 1

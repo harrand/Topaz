@@ -23,13 +23,13 @@ namespace tz::gl
 		 */
 		RendererEditBuilder& render_state(RendererStateEditRequest req);
 		/**
-		 * Make amendments to an existing image resource. See @ref RendererImageComponentEditRequest for details.
+		 * Make amendments to an existing image resource. See @ref RendererImageComponentResizeRequest for details.
 		 */
-		RendererEditBuilder& image(RendererImageComponentEditRequest req);
+		RendererEditBuilder& image_resize(RendererImageComponentResizeRequest req);
 		/**
-		 * Make amendments to an existing buffer resource. See @ref RendererBufferComponentEditRequest for details.
+		 * Make amendments to an existing buffer resource. See @ref RendererBufferComponentResizeRequest for details.
 		 */
-		RendererEditBuilder& buffer(RendererBufferComponentEditRequest req);
+		RendererEditBuilder& buffer_resize(RendererBufferComponentResizeRequest req);
 
 		/**
 		 * Retrieve a @ref RendererEditRequest corresponding to all edits specified within the builder so far.

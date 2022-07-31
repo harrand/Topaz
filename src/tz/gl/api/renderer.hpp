@@ -67,7 +67,7 @@ namespace tz::gl
 	/**
 	 * Represents a resize operation for an existing buffer component.
 	 */
-	struct RendererBufferComponentEditRequest
+	struct RendererBufferComponentResizeRequest
 	{
 		/// Handle corresponding to the buffer to edit.
 		ResourceHandle buffer_handle;
@@ -78,7 +78,7 @@ namespace tz::gl
 	/**
 	 * Represents a resize operation for an existing image component.
 	 */
-	struct RendererImageComponentEditRequest
+	struct RendererImageComponentResizeRequest
 	{
 		/// Handle corresponding to the image to edit.
 		ResourceHandle image_handle;
@@ -105,9 +105,9 @@ namespace tz::gl
 	};
 
 	/**
-	 * Type-safe union of @ref RendererBufferComponentEditRequest and @ref RendererImageComponentEditRequest
+	 * Type-safe union of @ref RendererBufferComponentResizeRequest and @ref RendererImageComponentResizeRequest
 	 */
-	using RendererComponentEditRequest = std::variant<RendererBufferComponentEditRequest, RendererImageComponentEditRequest>;
+	using RendererComponentEditRequest = std::variant<RendererBufferComponentResizeRequest, RendererImageComponentResizeRequest>;
 
 	/**
 	 * @ingroup tz_gl2_renderer

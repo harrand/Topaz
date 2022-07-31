@@ -17,13 +17,13 @@ namespace tz::gl
 		return *this;
 	}
 
-	RendererEditBuilder& RendererEditBuilder::image(RendererImageComponentEditRequest req)
+	RendererEditBuilder& RendererEditBuilder::image_resize(RendererImageComponentResizeRequest req)
 	{
 		this->request.component_edits.push_back(req);
 		return *this;
 	}
 
-	RendererEditBuilder& RendererEditBuilder::buffer(RendererBufferComponentEditRequest req)
+	RendererEditBuilder& RendererEditBuilder::buffer_resize(RendererBufferComponentResizeRequest req)
 	{
 		this->request.component_edits.push_back(req);
 		return *this;

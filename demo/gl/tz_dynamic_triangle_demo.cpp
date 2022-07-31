@@ -129,9 +129,9 @@ int main()
 
 				const std::size_t vtx_count = 3 * triangle_count;
 				renderer.edit(tz::gl::RendererEditBuilder{}
-					.buffer({.buffer_handle = bufh, .size = sizeof(TriangleVertexData) * vtx_count})
-					.buffer({.buffer_handle = ibufh, .size = sizeof(unsigned int) * vtx_count})
-					.image({.image_handle = imgh, .dimensions = new_dims})
+					.buffer_resize({.buffer_handle = bufh, .size = sizeof(TriangleVertexData) * vtx_count})
+					.buffer_resize({.buffer_handle = ibufh, .size = sizeof(unsigned int) * vtx_count})
+					.image_resize({.image_handle = imgh, .dimensions = new_dims})
 					.render_state({.wireframe_mode = wireframe_mode})
 					.build());
 				// Get the resource data for the new triangle and set it to random values.

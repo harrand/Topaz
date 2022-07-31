@@ -1267,7 +1267,7 @@ namespace tz::gl
 			[this, &work_commands_need_recording](auto&& arg)
 			{
 				using T = std::decay_t<decltype(arg)>;
-				if constexpr(std::is_same_v<T, RendererBufferComponentEditRequest>)
+				if constexpr(std::is_same_v<T, RendererBufferComponentResizeRequest>)
 				{
 					auto buf_comp = static_cast<BufferComponentVulkan*>(this->get_component(arg.buffer_handle));
 					if(buf_comp->size() == arg.size)
@@ -1283,7 +1283,7 @@ namespace tz::gl
 					// Now update all descriptors.
 					this->resources.sync_descriptors(false);
 				}
-				else if constexpr(std::is_same_v<T, RendererImageComponentEditRequest>)
+				else if constexpr(std::is_same_v<T, RendererImageComponentResizeRequest>)
 				{
 					auto img_comp = static_cast<ImageComponentVulkan*>(this->get_component(arg.image_handle));
 					if(img_comp->get_dimensions() == arg.dimensions)
