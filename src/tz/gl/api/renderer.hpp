@@ -86,6 +86,13 @@ namespace tz::gl
 		tz::Vec2ui dimensions;
 	};
 
+	struct RendererComponentWriteRequest
+	{
+		ResourceHandle resource;
+		std::span<const std::byte> data = {};
+		std::size_t offset = 0;
+	};
+
 	/**
 	 * Represents an edit, setting a new value for the compute kernel for a renderer.
 	 */
@@ -105,9 +112,9 @@ namespace tz::gl
 	};
 
 	/**
-	 * Type-safe union of @ref RendererBufferComponentResizeRequest and @ref RendererImageComponentResizeRequest
+	 * Type-safe union of @ref RendererBufferComponentResizeRequest, @ref RendererImageComponentResizeRequest and @ref RendererComponentWriteRequest.
 	 */
-	using RendererComponentEditRequest = std::variant<RendererBufferComponentResizeRequest, RendererImageComponentResizeRequest>;
+	using RendererComponentEditRequest = std::variant<RendererBufferComponentResizeRequest, RendererImageComponentResizeRequest, RendererComponentWriteRequest>;
 
 	/**
 	 * @ingroup tz_gl2_renderer

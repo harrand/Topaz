@@ -30,6 +30,7 @@ namespace tz::gl
 		 * Make amendments to an existing buffer resource. See @ref RendererBufferComponentResizeRequest for details.
 		 */
 		RendererEditBuilder& buffer_resize(RendererBufferComponentResizeRequest req);
+		RendererEditBuilder& write(RendererComponentWriteRequest req);
 
 		/**
 		 * Retrieve a @ref RendererEditRequest corresponding to all edits specified within the builder so far.

@@ -29,6 +29,12 @@ namespace tz::gl
 		return *this;
 	}
 
+	RendererEditBuilder& RendererEditBuilder::write(RendererComponentWriteRequest req)
+	{
+		this->request.component_edits.push_back(req);
+		return *this;
+	}
+
 	RendererEditRequest RendererEditBuilder::build() const
 	{
 		return this->request;

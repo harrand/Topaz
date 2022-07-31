@@ -1,5 +1,6 @@
 #if TZ_OGL
 #include "tz/core/profiling/zone.hpp"
+#include "tz/core/report.hpp"
 #include "tz/gl/impl/backend/ogl2/tz_opengl.hpp"
 #include "tz/gl/impl/backend/ogl2/buffer.hpp"
 #include "tz/gl/impl/frontend/ogl2/renderer.hpp"
@@ -563,6 +564,21 @@ namespace tz::gl
 					img_comp->resize(arg.dimensions);
 
 					this->resources.set_image_handle(arg.image_handle, img_comp->ogl_get_image().get_bindless_handle());
+				}
+				else if constexpr(std::is_same_v<T, RendererComponentWriteRequest>)
+				{
+					IResource* res = this->get_resource(arg.resource);
+					switch(res->get_access())
+					{
+						case ResourceAccess::StaticFixed:
+
+						break;
+						default:
+							tz_warning_report("Received component write edit request for resource handle %zu, which is being carried out, but is unnecessary because the resource has dynamic access, meaning you can just mutate data().", static_cast<std::size_t>(static_cast<tz::HandleValue>(arg.resource)));
+							std::span<std::byte> data = res->data_as<std::byte>();
+							std::copy(arg.data.begin(), arg.data.end(), data.begin() + arg.offset);
+						break;
+					}
 				}
 				else
 				{
