@@ -1,0 +1,6 @@
+shader(type = vertex);
+
+void main()
+{
+
+}

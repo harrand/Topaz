@@ -1,6 +1,7 @@
 #ifndef TOPAZ_DBGUI_DBGUI_HPP
 #define TOPAZ_DBGUI_DBGUI_HPP
 #include "tz/gl/device.hpp"
+#include "imgui.h"
 
 namespace tz::dbgui
 {

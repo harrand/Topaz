@@ -219,6 +219,13 @@ target_link_libraries(topaz PUBLIC debugbreak glfw imgui)
 
 add_subdirectory(tools)
 include(cmake/shader_compiler.cmake)
+add_shader(
+	TARGET topaz
+	SHADERS
+		src/tz/dbgui/dbgui.vertex.tzsl
+		src/tz/dbgui/dbgui.fragment.tzsl
+	)
+
 add_subdirectory(demo)
 enable_testing()
 add_subdirectory(test)

@@ -30,9 +30,11 @@ int main()
 			while(!tz::window().is_close_requested())
 			{
 				TZ_FRAME_BEGIN;
-				tz::dbgui::begin_frame();
 				tz::window().update();
+				tz::dbgui::begin_frame();
 				renderer.render(1);
+				ImGui::Begin("Well met");
+				ImGui::End();
 				tz::dbgui::end_frame();
 				TZ_FRAME_END;
 			}

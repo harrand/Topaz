@@ -3,9 +3,13 @@
 #include "tz/core/window.hpp"
 #include "tz/gl/renderer.hpp"
 #include "tz/gl/resource.hpp"
+#include "tz/gl/imported_shaders.hpp"
 #include "imgui.h"
 
 #include <memory>
+
+#include ImportedShaderHeader(dbgui, vertex)
+#include ImportedShaderHeader(dbgui, fragment)
 
 namespace tz::dbgui
 {
@@ -13,6 +17,11 @@ namespace tz::dbgui
 
 	bool imgui_impl_tz_init();
 	void imgui_impl_tz_term();
+	void imgui_impl_render();
+	ImTextureID handle_to_texid(tz::gl::ResourceHandle handle)
+	{
+		return reinterpret_cast<ImTextureID>(static_cast<std::uintptr_t>(static_cast<std::size_t>(static_cast<tz::HandleValue>(handle))));
+	}
 
 	void initialise(Info info)
 	{
@@ -47,6 +56,8 @@ namespace tz::dbgui
 	{
 		#if TZ_DEBUG
 			ImGui::EndFrame();
+			ImGui::Render();
+			imgui_impl_render();
 		#endif //TZ_DEBUG
 	}
 
@@ -85,8 +96,13 @@ namespace tz::dbgui
 		tz::gl::ImageResource font_image = tz::gl::ImageResource::from_memory(tz::gl::ImageFormat::RGBA32, {static_cast<unsigned int>(font_width), static_cast<unsigned int>(font_height)}, font_data, tz::gl::ResourceAccess::StaticFixed);
 
 		tz::gl::RendererInfo rinfo;
+		tz::gl::ResourceHandle font_image_handle = rinfo.add_resource(font_image);
+		rinfo.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(dbgui, vertex));
+		rinfo.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(dbgui, fragment));
 		
 		global_render_data->renderer = std::make_unique<tz::gl::Renderer>(global_device->create_renderer(rinfo));
+
+		io.Fonts->SetTexID(handle_to_texid(font_image_handle));
 
 		return true;
 	}
@@ -99,5 +115,15 @@ namespace tz::dbgui
 		global_render_data = nullptr;
 
 		ImGui::DestroyContext();
+	}
+
+	void imgui_impl_render()
+	{
+		ImDrawData* draw = ImGui::GetDrawData();
+		tz_assert(draw != nullptr, "Null imgui draw data!");
+
+		tz_assert(global_render_data->renderer != nullptr, "Null imgui renderer when trying to render!");
+		tz::gl::Renderer& renderer = *(global_render_data->renderer);
+		renderer.render(1);
 	}
 }
