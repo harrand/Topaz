@@ -7,6 +7,14 @@ add_subdirectory(VulkanMemoryAllocator)
 add_subdirectory(textc)
 add_subdirectory(tracy)
 
+add_library(imgui STATIC
+	imgui/imgui.cpp
+	imgui/imgui_demo.cpp
+	imgui/imgui_draw.cpp
+	imgui/imgui_tables.cpp
+	imgui/imgui_widgets.cpp)
+target_include_directories(imgui PUBLIC "${PROJECT_SOURCE_DIR}/lib/imgui")
+
 add_library(tz_vma STATIC
 	tz_vma.cpp)
 target_link_libraries(tz_vma PUBLIC vma)

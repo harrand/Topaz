@@ -212,7 +212,7 @@ message(STATUS "Build Config: ${TOPAZ_BUILDCONFIG}")
 add_subdirectory(lib)
 
 target_include_directories(topaz PUBLIC ${PROJECT_SOURCE_DIR}/src)
-target_link_libraries(topaz PUBLIC debugbreak glfw)
+target_link_libraries(topaz PUBLIC debugbreak glfw imgui)
 
 add_subdirectory(tools)
 include(cmake/shader_compiler.cmake)

@@ -13,3 +13,6 @@
 [submodule "lib/textc"]
 	path = lib/textc
 	url = https://github.com/Harrand/textc
+[submodule "lib/imgui"]
+	path = lib/imgui
+	url = https://github.com/ocornut/imgui
