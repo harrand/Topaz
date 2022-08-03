@@ -274,6 +274,11 @@ namespace tz::gl
 		 * @pre `output_framebuffers.size() == frame_in_flight_count`, otherwise the behaviour is undefined.
 		 */
 		CommandProcessor(vk2::LogicalDevice& ldev, std::size_t frame_in_flight_count, OutputTarget output_target, std::span<vk2::Framebuffer> output_framebuffers, bool instant_compute_enabled, tz::gl::RendererOptions options, DeviceRenderSchedulerVulkan& scheduler);
+		CommandProcessor(const CommandProcessor& copy) = delete;
+		CommandProcessor(CommandProcessor&& move);
+		~CommandProcessor() = default;
+		CommandProcessor& operator=(const CommandProcessor& rhs) = delete;
+		CommandProcessor& operator=(CommandProcessor&& rhs);
 		/**
 		 * Retrieve a list of all command buffers which will be used for rendering. Each command buffer is guaranteed to have the exact same commands recorded within them.
 		 * @return Array of command buffers, length matching the number of frames-in-flight.

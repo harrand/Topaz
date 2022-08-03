@@ -418,6 +418,11 @@ namespace tz::gl::vk2
 		return this->recorded_commands;
 	}
 
+	void CommandBuffer::set_owner(const CommandPool& owner_pool)
+	{
+		this->owner_pool = &owner_pool;
+	}
+
 	CommandBuffer::NativeType CommandBuffer::native() const
 	{
 		return this->command_buffer;

@@ -355,6 +355,7 @@ namespace tz::gl::vk2
 		 */
 		std::size_t command_count() const;
 		std::span<const VulkanCommand::Variant> get_recorded_commands() const;
+		void set_owner(const CommandPool& owner);
 
 		using NativeType = VkCommandBuffer;
 		NativeType native() const;
