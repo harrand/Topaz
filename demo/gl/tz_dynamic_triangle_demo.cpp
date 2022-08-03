@@ -70,9 +70,9 @@ int main()
 		std::size_t triangle_count = 1;
 		tz::gl::BufferResource buf = tz::gl::BufferResource::from_many
 		({
-			TriangleVertexData{.position = {-0.5f, -0.5f, -1.0f}, .texcoord = {0.0f, 0.0f}},
-			TriangleVertexData{.position = {0.0f, 0.5f, -1.0f}, .texcoord = {0.5f, 1.0f}},
-			TriangleVertexData{.position = {0.5f, -0.5f, -1.0f}, .texcoord = {1.0f, 0.0f}},
+			TriangleVertexData{.position = {-0.5f, -0.5f, 0.0f}, .texcoord = {0.0f, 0.0f}},
+			TriangleVertexData{.position = {0.0f, 0.5f, 0.0f}, .texcoord = {0.5f, 1.0f}},
+			TriangleVertexData{.position = {0.5f, -0.5f, 0.0f}, .texcoord = {1.0f, 0.0f}},
 		}, tz::gl::ResourceAccess::DynamicVariable);
 		tz::gl::BufferResource ibuf = tz::gl::BufferResource::from_many
 		({
