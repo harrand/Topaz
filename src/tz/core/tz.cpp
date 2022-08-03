@@ -3,7 +3,6 @@
 #include "tz/core/report.hpp"
 #include "tz/core/peripherals/monitor.hpp"
 #include "tz/core/profiling/zone.hpp"
-#include "tz/dbgui/dbgui.hpp"
 
 #if TZ_VULKAN
 #include "tz/gl/impl/backend/vk2/tz_vulkan.hpp"
@@ -66,8 +65,6 @@ namespace tz
 				tz::gl::ogl2::initialise();
 			#endif
 		}
-		tz::dbgui::initialise();
-
 		initialised = true;
 		init_info = init;
 	}
@@ -76,7 +73,6 @@ namespace tz
 	{
 		TZ_PROFZONE("Topaz Terminate", TZ_PROFCOL_BLUE);
 		tz_assert(wnd != nullptr && initialised, "tz::terminate(): Not initialised");
-		tz::dbgui::terminate();
 		#if TZ_VULKAN
 			tz::gl::vk2::terminate();
 		#elif TZ_OGL

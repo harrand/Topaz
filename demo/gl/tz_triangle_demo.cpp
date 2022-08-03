@@ -4,6 +4,7 @@
 #include "tz/gl/device.hpp"
 #include "tz/gl/renderer.hpp"
 #include "tz/gl/imported_shaders.hpp"
+#include "tz/dbgui/dbgui.hpp"
 
 #include ImportedShaderHeader(tz_triangle_demo, vertex)
 #include ImportedShaderHeader(tz_triangle_demo, fragment)
@@ -16,21 +17,27 @@ int main()
 	});
 	{
 		tz::gl::Device dev;
-
-		tz::gl::RendererInfo rinfo;
-		rinfo.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(tz_triangle_demo, vertex));
-		rinfo.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(tz_triangle_demo, fragment));
-		rinfo.set_options({tz::gl::RendererOption::NoDepthTesting});
-
-		tz::gl::Renderer renderer = dev.create_renderer(rinfo);
-
-		while(!tz::window().is_close_requested())
+		tz::dbgui::initialise({.device = &dev});
 		{
-			TZ_FRAME_BEGIN;
-			tz::window().update();
-			renderer.render(1);
-			TZ_FRAME_END;
+
+			tz::gl::RendererInfo rinfo;
+			rinfo.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(tz_triangle_demo, vertex));
+			rinfo.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(tz_triangle_demo, fragment));
+			rinfo.set_options({tz::gl::RendererOption::NoDepthTesting});
+
+			tz::gl::Renderer renderer = dev.create_renderer(rinfo);
+
+			while(!tz::window().is_close_requested())
+			{
+				TZ_FRAME_BEGIN;
+				tz::dbgui::begin_frame();
+				tz::window().update();
+				renderer.render(1);
+				tz::dbgui::end_frame();
+				TZ_FRAME_END;
+			}
 		}
+		tz::dbgui::terminate();
 	}
 	tz::terminate();
 }
