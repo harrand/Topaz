@@ -69,6 +69,8 @@ namespace tz::dbgui
 	struct TopazRenderData
 	{
 		std::unique_ptr<tz::gl::Renderer> renderer = nullptr;
+		tz::gl::ResourceHandle vertex_buffer = tz::nullhand;
+		tz::gl::ResourceHandle index_buffer = tz::nullhand;
 	};
 
 	TopazPlatformData* global_platform_data = nullptr;
@@ -91,14 +93,23 @@ namespace tz::dbgui
 		// - Font texture ImageResource.
 		unsigned char* font_pixels;
 		int font_width, font_height;
-		std::span<unsigned char> font_data{font_pixels, font_pixels + (font_width * font_height * 1)};
 		io.Fonts->GetTexDataAsRGBA32(&font_pixels, &font_width, &font_height);
+		std::span<unsigned char> font_data{font_pixels, static_cast<std::size_t>(font_width * font_height * 4)};
+
+		// IB and VB have initial size of 1KiB.
+		struct Kibibyte{char d[1024];};
+
+		tz::gl::BufferResource vertex_buffer = tz::gl::BufferResource::from_one(Kibibyte{}, tz::gl::ResourceAccess::DynamicVariable);
+		tz::gl::BufferResource index_buffer = tz::gl::BufferResource::from_one(Kibibyte{}, tz::gl::ResourceAccess::DynamicVariable, {tz::gl::ResourceFlag::IndexBuffer});
 		tz::gl::ImageResource font_image = tz::gl::ImageResource::from_memory(tz::gl::ImageFormat::RGBA32, {static_cast<unsigned int>(font_width), static_cast<unsigned int>(font_height)}, font_data, tz::gl::ResourceAccess::StaticFixed);
 
 		tz::gl::RendererInfo rinfo;
+		global_render_data->vertex_buffer = rinfo.add_resource(vertex_buffer);
+		global_render_data->index_buffer = rinfo.add_resource(index_buffer);
 		tz::gl::ResourceHandle font_image_handle = rinfo.add_resource(font_image);
 		rinfo.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(dbgui, vertex));
 		rinfo.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(dbgui, fragment));
+		rinfo.set_options({tz::gl::RendererOption::NoClearOutput});
 		
 		global_render_data->renderer = std::make_unique<tz::gl::Renderer>(global_device->create_renderer(rinfo));
 
@@ -121,9 +132,22 @@ namespace tz::dbgui
 	{
 		ImDrawData* draw = ImGui::GetDrawData();
 		tz_assert(draw != nullptr, "Null imgui draw data!");
+		tz_assert(draw->Valid, "Invalid draw data!");
 
 		tz_assert(global_render_data->renderer != nullptr, "Null imgui renderer when trying to render!");
+		// We have a font texture already.
 		tz::gl::Renderer& renderer = *(global_render_data->renderer);
+		// We have no idea how big our vertex/index buffers need to be. Let's copy over the data now.
+		const int req_idx_size = draw->TotalIdxCount;
+		const int req_vtx_size = draw->TotalVtxCount;
+		if(std::cmp_less_equal(renderer.get_resource(global_render_data->index_buffer)->data().size_bytes(), req_idx_size))
+		{
+			tz_error("idx buf too small");
+		}
+		if(std::cmp_less_equal(renderer.get_resource(global_render_data->vertex_buffer)->data().size_bytes(), req_vtx_size))
+		{
+			tz_error("vtx buf too small");
+		}
 		renderer.render(1);
 	}
 }
