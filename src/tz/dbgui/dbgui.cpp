@@ -138,16 +138,47 @@ namespace tz::dbgui
 		// We have a font texture already.
 		tz::gl::Renderer& renderer = *(global_render_data->renderer);
 		// We have no idea how big our vertex/index buffers need to be. Let's copy over the data now.
-		const int req_idx_size = draw->TotalIdxCount;
-		const int req_vtx_size = draw->TotalVtxCount;
-		if(std::cmp_less_equal(renderer.get_resource(global_render_data->index_buffer)->data().size_bytes(), req_idx_size))
+		const auto req_idx_size = static_cast<std::size_t>(draw->TotalIdxCount) * sizeof(ImDrawIdx);
+		const auto req_vtx_size = static_cast<std::size_t>(draw->TotalVtxCount) * sizeof(ImDrawVert);
+		tz::gl::RendererEditBuilder edit;
+		if(renderer.get_resource(global_render_data->index_buffer)->data().size_bytes() <= req_idx_size)
 		{
-			tz_error("idx buf too small");
+			edit.buffer_resize
+			({
+				.buffer_handle = global_render_data->index_buffer,
+				.size = req_idx_size
+			});
 		}
-		if(std::cmp_less_equal(renderer.get_resource(global_render_data->vertex_buffer)->data().size_bytes(), req_vtx_size))
+		if(renderer.get_resource(global_render_data->vertex_buffer)->data().size_bytes() <= req_vtx_size)
 		{
-			tz_error("vtx buf too small");
+			edit.buffer_resize
+			({
+				.buffer_handle = global_render_data->vertex_buffer,
+				.size = req_vtx_size
+			});
 		}
+		// TODO: Ensure this in imconfig because rendering wont work until this is fixed.
+		//static_assert(sizeof(ImDrawIdx) == sizeof(unsigned int), "Topaz indices must be c++ unsigned ints under-the-hood. ImDrawIdx does not match its size.");
+		auto indices = renderer.get_resource(global_render_data->index_buffer)->data();
+		auto vertices = renderer.get_resource(global_render_data->vertex_buffer)->data();
+		renderer.edit(edit.build());
+		// Copy over all the vertex and index data.
+		std::size_t vb_cursor = 0, ib_cursor = 0;
+		for(std::size_t n = 0; std::cmp_less(n, draw->CmdListsCount); n++)
+		{
+			const ImDrawList* cmd = draw->CmdLists[n];
+			// So far we only support command buffer with a single render.
+			tz_assert(cmd->CmdBuffer.Size == 1, "ImDrawList command buffer had more than 1 command. Support for this is not yet implemented.");
+			// Copy over the vertex and index data.
+			std::memcpy(indices.data() + ib_cursor, cmd->IdxBuffer.Data, cmd->IdxBuffer.Size * sizeof(ImDrawIdx));
+			std::memcpy(vertices.data() + vb_cursor, cmd->VtxBuffer.Data, cmd->VtxBuffer.Size * sizeof(ImDrawVert));
+
+			// Advance the cursors.
+			vb_cursor += cmd->VtxBuffer.Size * sizeof(ImDrawVert);
+			ib_cursor += cmd->IdxBuffer.Size * sizeof(ImDrawIdx);
+		}
+		tz_assert(ib_cursor == req_idx_size, "Command list total vertex count was dodgy. Expected %zu, got %zu", req_idx_size, ib_cursor);
+		tz_assert(vb_cursor == req_vtx_size, "Command list total vertex count was dodgy. Expected %zu, got %zu", req_vtx_size, vb_cursor);
 		renderer.render(1);
 	}
 }
