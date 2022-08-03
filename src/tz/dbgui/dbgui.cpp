@@ -178,6 +178,7 @@ namespace tz::dbgui
 		}
 		tz_assert(ib_cursor == req_idx_size, "Command list total vertex count was dodgy. Expected %zu, got %zu", req_idx_size, ib_cursor);
 		tz_assert(vb_cursor == req_vtx_size, "Command list total vertex count was dodgy. Expected %zu, got %zu", req_vtx_size, vb_cursor);
-		renderer.render(1);
+		const std::size_t index_count = draw->TotalIdxCount;
+		renderer.render(index_count / 3);
 	}
 }
