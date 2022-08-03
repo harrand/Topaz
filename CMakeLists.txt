@@ -67,6 +67,9 @@ add_library(topaz
 	src/tz/core/window_functionality.inl
 	src/tz/core/window.cpp
 	src/tz/core/window.hpp
+	# tz::dbgui
+	src/tz/dbgui/dbgui.cpp
+	src/tz/dbgui/dbgui.hpp
 	# tz::gl (API)
 	src/tz/gl/api/component.hpp
 	src/tz/gl/api/device.hpp
