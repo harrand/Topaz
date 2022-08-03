@@ -32,7 +32,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="tz.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Topaz<span id="projectnumber">&#160;3.2</span>
+   <div id="projectname">Topaz<span id="projectnumber">&#160;3.4</span>
    </div>
    <div id="projectbrief">C++20 Graphics Engine</div>
   </td>
@@ -117,9 +117,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a9bbd0557b43b2c2605e36c0e5a70a59c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classtz_1_1_enum_field.html">DeviceExtensionList</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtz_1_1gl_1_1vk2_1_1_physical_device.html#a9bbd0557b43b2c2605e36c0e5a70a59c">get_supported_extensions</a> () const</td></tr>
 <tr class="memdesc:a9bbd0557b43b2c2605e36c0e5a70a59c"><td class="mdescLeft">&#160;</td><td class="mdescRight">PhysicalDevices support various extensions, but not necessarily all of them.  <a href="classtz_1_1gl_1_1vk2_1_1_physical_device.html#a9bbd0557b43b2c2605e36c0e5a70a59c">More...</a><br /></td></tr>
 <tr class="separator:a9bbd0557b43b2c2605e36c0e5a70a59c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0bb8693aec95d035568003c94f60af00"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__tz__gl__vk.html#ga50848b0c20c1ec0f873eddc129dbecd7">PhysicalDeviceVendor</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtz_1_1gl_1_1vk2_1_1_physical_device.html#a0bb8693aec95d035568003c94f60af00">get_vendor</a> () const</td></tr>
-<tr class="memdesc:a0bb8693aec95d035568003c94f60af00"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve the vendor.  <a href="classtz_1_1gl_1_1vk2_1_1_physical_device.html#a0bb8693aec95d035568003c94f60af00">More...</a><br /></td></tr>
-<tr class="separator:a0bb8693aec95d035568003c94f60af00"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a137b5674d71035b2e60524cb15aefbe5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structtz_1_1gl_1_1vk2_1_1_physical_device_info.html">PhysicalDeviceInfo</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtz_1_1gl_1_1vk2_1_1_physical_device.html#a137b5674d71035b2e60524cb15aefbe5">get_info</a> () const</td></tr>
+<tr class="memdesc:a137b5674d71035b2e60524cb15aefbe5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve the vendor.  <a href="classtz_1_1gl_1_1vk2_1_1_physical_device.html#a137b5674d71035b2e60524cb15aefbe5">More...</a><br /></td></tr>
+<tr class="separator:a137b5674d71035b2e60524cb15aefbe5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a25870f61ea9878c4fda8c502dfee86f8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classtz_1_1_basic_list.html">tz::BasicList</a>&lt; <a class="el" href="group__tz__gl__vk__image.html#gabed50557c32f9500cc40bc86a02b3eb3">ImageFormat</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtz_1_1gl_1_1vk2_1_1_physical_device.html#a25870f61ea9878c4fda8c502dfee86f8">get_supported_surface_formats</a> () const</td></tr>
 <tr class="memdesc:a25870f61ea9878c4fda8c502dfee86f8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve a list of all ImageFormats that could represent the given window surface.  <a href="classtz_1_1gl_1_1vk2_1_1_physical_device.html#a25870f61ea9878c4fda8c502dfee86f8">More...</a><br /></td></tr>
 <tr class="separator:a25870f61ea9878c4fda8c502dfee86f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -176,6 +176,26 @@ const <a class="el" href="classtz_1_1gl_1_1vk2_1_1_vulkan_instance.html">VulkanI
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a id="a137b5674d71035b2e60524cb15aefbe5" name="a137b5674d71035b2e60524cb15aefbe5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a137b5674d71035b2e60524cb15aefbe5">&#9670;&nbsp;</a></span>get_info()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structtz_1_1gl_1_1vk2_1_1_physical_device_info.html">PhysicalDeviceInfo</a> tz::gl::vk2::PhysicalDevice::get_info </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Retrieve the vendor. </p>
+<p >Only a few vendors are supported, so check PhysicalDeviceVendor for information. If you're using very new hardware, or various custom drivers such as MoltenVK, this may very well not return the expected value. This should mainly be used for vendor-specific optimisations and shouldn't be exposed to the end-user. </p>
+
+</div>
+</div>
 <a id="a9bbd0557b43b2c2605e36c0e5a70a59c" name="a9bbd0557b43b2c2605e36c0e5a70a59c"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a9bbd0557b43b2c2605e36c0e5a70a59c">&#9670;&nbsp;</a></span>get_supported_extensions()</h2>
 
@@ -253,26 +273,6 @@ const <a class="el" href="classtz_1_1gl_1_1vk2_1_1_vulkan_instance.html">VulkanI
 
 <p>Retrieve a list of all SurfacePresentModes that could be used to present images to the <a class="el" href="classtz_1_1gl_1_1vk2_1_1_window_surface.html">WindowSurface</a> attached to the <a class="el" href="classtz_1_1gl_1_1vk2_1_1_vulkan_instance.html">VulkanInstance</a> owning this device. </p>
 <p >This is guaranteed to contain every element within <a class="el" href="namespacetz_1_1gl_1_1vk2_1_1present__traits.html#a8adc3d9ac1c32a9741e53297195174f0">present_traits::get_mandatory_present_modes()</a>. </p><dl class="section return"><dt>Returns</dt><dd>List of acceptable SurfacePresentModes for a window surface. </dd></dl>
-
-</div>
-</div>
-<a id="a0bb8693aec95d035568003c94f60af00" name="a0bb8693aec95d035568003c94f60af00"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0bb8693aec95d035568003c94f60af00">&#9670;&nbsp;</a></span>get_vendor()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="group__tz__gl__vk.html#ga50848b0c20c1ec0f873eddc129dbecd7">PhysicalDeviceVendor</a> tz::gl::vk2::PhysicalDevice::get_vendor </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Retrieve the vendor. </p>
-<p >Only a few vendors are supported, so check PhysicalDeviceVendor for information. If you're using very new hardware, or various custom drivers such as MoltenVK, this may very well not return the expected value. This should mainly be used for vendor-specific optimisations and shouldn't be exposed to the end-user. </p>
 
 </div>
 </div>

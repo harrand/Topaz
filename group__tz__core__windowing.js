@@ -1,6 +1,7 @@
 var group__tz__core__windowing =
 [
     [ "tz::WindowExtraFlags", "structtz_1_1_window_extra_flags.html", [
+      [ "invisible", "structtz_1_1_window_extra_flags.html#a43a8acc4ad0ac2710350cdd46cd313db", null ],
       [ "resizeable", "structtz_1_1_window_extra_flags.html#a4ce7cd4033c6fb2ada3e5f4c8d2999d3", null ]
     ] ],
     [ "tz::WindowInitArgs", "structtz_1_1_window_init_args.html", [
@@ -10,7 +11,7 @@ var group__tz__core__windowing =
       [ "width", "structtz_1_1_window_init_args.html#a730901591cb3b9f573d3ceaa5f022e79", null ]
     ] ],
     [ "tz::Window", "classtz_1_1_window.html", [
-      [ "Window", "classtz_1_1_window.html#a75601a1e4fb4194326919b31e89f14ba", null ],
+      [ "Window", "classtz_1_1_window.html#a158ddaaf0778fb18d4ac4a6e25252fce", null ],
       [ "is_null", "classtz_1_1_window.html#a651f308e08fed1516d2177901798cdcc", null ]
     ] ]
 ];

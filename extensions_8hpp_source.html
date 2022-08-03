@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.3"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Topaz: src/gl/impl/backend/vk2/extensions.hpp Source File</title>
+<title>Topaz: src/tz/gl/impl/backend/vk2/extensions.hpp Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -32,7 +32,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="tz.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Topaz<span id="projectnumber">&#160;3.2</span>
+   <div id="projectname">Topaz<span id="projectnumber">&#160;3.4</span>
    </div>
    <div id="projectbrief">C++20 Graphics Engine</div>
   </td>
@@ -99,8 +99,8 @@ $(document).ready(function(){initNavTree('extensions_8hpp_source.html',''); init
 <div class="contents">
 <div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef TOPAZ_GL_IMPL_BACKEND_VK2_EXTENSIONS_HPP</span></div>
 <div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define TOPAZ_GL_IMPL_BACKEND_VK2_EXTENSIONS_HPP</span></div>
-<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;core/containers/basic_list.hpp&quot;</span></div>
-<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;core/containers/enum_field.hpp&quot;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;tz/core/containers/basic_list.hpp&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;tz/core/containers/enum_field.hpp&quot;</span></div>
 <div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;vulkan/vulkan.h&quot;</span></div>
 <div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;array&gt;</span></div>
 <div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;cstring&gt;</span></div>
@@ -148,7 +148,7 @@ $(document).ready(function(){initNavTree('extensions_8hpp_source.html',''); init
 <div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>            <span class="keyword">auto</span> iter = std::find_if(instance_extension_names.begin(), instance_extension_names.end(), [extension](VkExtension cur_ext)-&gt;bool{return std::strcmp(cur_ext, extension) == 0;});</div>
 <div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>            <span class="keywordflow">if</span>(iter != instance_extension_names.end())</div>
 <div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>            {</div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>                <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><a class="code hl_enumeration" href="group__tz__gl__vk__extension.html#gaab3eb58740575c989d5eab8c3fd877a7">InstanceExtension</a><span class="keyword">&gt;</span>(<span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(std::distance(instance_extension_names.begin(), iter)));</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>                <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><a class="code hl_enumeration" href="group__tz__gl__vk__extension.html#gaab3eb58740575c989d5eab8c3fd877a7">InstanceExtension</a><span class="keyword">&gt;</span>(<span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(<a class="code hl_function" href="group__tzsl__math.html#ga81780532b6bb411b2b550c09b76b7f93">std::distance</a>(instance_extension_names.begin(), iter)));</div>
 <div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>            }</div>
 <div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>            <span class="keywordflow">return</span> InstanceExtension::Count;</div>
 <div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>        }</div>
@@ -158,7 +158,7 @@ $(document).ready(function(){initNavTree('extensions_8hpp_source.html',''); init
 <div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>            <span class="keyword">auto</span> iter = std::find_if(device_extension_names.begin(), device_extension_names.end(), [extension](VkExtension cur_ext)-&gt;bool{return std::strcmp(cur_ext, extension) == 0;});</div>
 <div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>            <span class="keywordflow">if</span>(iter != device_extension_names.end())</div>
 <div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>            {</div>
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>                <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><a class="code hl_enumeration" href="group__tz__gl__vk__extension.html#ga56bb45f4b48b35c621dc90ea70227158">DeviceExtension</a><span class="keyword">&gt;</span>(<span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(std::distance(device_extension_names.begin(), iter)));</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>                <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><a class="code hl_enumeration" href="group__tz__gl__vk__extension.html#ga56bb45f4b48b35c621dc90ea70227158">DeviceExtension</a><span class="keyword">&gt;</span>(<span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(<a class="code hl_function" href="group__tzsl__math.html#ga81780532b6bb411b2b550c09b76b7f93">std::distance</a>(device_extension_names.begin(), iter)));</div>
 <div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>            }</div>
 <div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>            <span class="keywordflow">return</span> DeviceExtension::Count;</div>
 <div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>        }</div>
@@ -174,12 +174,13 @@ $(document).ready(function(){initNavTree('extensions_8hpp_source.html',''); init
 <div class="ttc" id="agroup__tz__gl__vk__extension_html_ga56bb45f4b48b35c621dc90ea70227158"><div class="ttname"><a href="group__tz__gl__vk__extension.html#ga56bb45f4b48b35c621dc90ea70227158">tz::gl::vk2::DeviceExtension</a></div><div class="ttdeci">DeviceExtension</div><div class="ttdoc">Supported Vulkan extension for a LogicalDevice.</div><div class="ttdef"><b>Definition:</b> extensions.hpp:31</div></div>
 <div class="ttc" id="agroup__tz__gl__vk__extension_html_gaab3eb58740575c989d5eab8c3fd877a7"><div class="ttname"><a href="group__tz__gl__vk__extension.html#gaab3eb58740575c989d5eab8c3fd877a7">tz::gl::vk2::InstanceExtension</a></div><div class="ttdeci">InstanceExtension</div><div class="ttdoc">Supported Vulkan extension for a VulkanInstance.</div><div class="ttdef"><b>Definition:</b> extensions.hpp:20</div></div>
 <div class="ttc" id="agroup__tz__gl__vk__extension_html_ggaab3eb58740575c989d5eab8c3fd877a7ad69051b615fff4b893472a8289678385"><div class="ttname"><a href="group__tz__gl__vk__extension.html#ggaab3eb58740575c989d5eab8c3fd877a7ad69051b615fff4b893472a8289678385">tz::gl::vk2::InstanceExtension::DebugMessenger</a></div><div class="ttdeci">@ DebugMessenger</div></div>
+<div class="ttc" id="agroup__tzsl__math_html_ga81780532b6bb411b2b550c09b76b7f93"><div class="ttname"><a href="group__tzsl__math.html#ga81780532b6bb411b2b550c09b76b7f93">tz::math::distance</a></div><div class="ttdeci">float distance(generic_number_t x, generic_number_t y)</div><div class="ttdoc">Calculate the distance between two points.</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_22ef2c5f6712ba0a0b99c741bcfb15fe.html">gl</a></li><li class="navelem"><a class="el" href="dir_294d689e10da81f00c081b036a1431d9.html">impl</a></li><li class="navelem"><a class="el" href="dir_f1e396d78ce7c2379251e63a766e1a72.html">backend</a></li><li class="navelem"><a class="el" href="dir_0b7f26d7b2839feebc272b1e805dca31.html">vk2</a></li><li class="navelem"><b>extensions.hpp</b></li>
+    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_173d7eb180c4d4693124e94b33941768.html">tz</a></li><li class="navelem"><a class="el" href="dir_c45f7307fd1a89701e5a7df4b0292432.html">gl</a></li><li class="navelem"><a class="el" href="dir_b6f1048c6f0057577e2c84efc97e28f6.html">impl</a></li><li class="navelem"><a class="el" href="dir_aab655f56fc07094ba97e63e989016de.html">backend</a></li><li class="navelem"><a class="el" href="dir_4a80e19c5eb833488f7a427fec98a543.html">vk2</a></li><li class="navelem"><b>extensions.hpp</b></li>
     <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.3 </li>
   </ul>
 </div>

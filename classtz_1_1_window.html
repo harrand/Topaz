@@ -32,7 +32,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="tz.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Topaz<span id="projectnumber">&#160;3.2</span>
+   <div id="projectname">Topaz<span id="projectnumber">&#160;3.4</span>
    </div>
    <div id="projectbrief">C++20 Graphics Engine</div>
   </td>
@@ -117,10 +117,10 @@ Inheritance diagram for tz::Window:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a75601a1e4fb4194326919b31e89f14ba"><td class="memItemLeft" align="right" valign="top"><a id="a75601a1e4fb4194326919b31e89f14ba" name="a75601a1e4fb4194326919b31e89f14ba"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>Window</b> (<a class="el" href="structtz_1_1_window_init_args.html">WindowInitArgs</a> args={}, <a class="el" href="classtz_1_1_basic_list.html">WindowHintList</a> hints={})</td></tr>
-<tr class="memdesc:a75601a1e4fb4194326919b31e89f14ba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a new <a class="el" href="classtz_1_1_window.html" title="Represents an OS Window.">Window</a>. <br /></td></tr>
-<tr class="separator:a75601a1e4fb4194326919b31e89f14ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a158ddaaf0778fb18d4ac4a6e25252fce"><td class="memItemLeft" align="right" valign="top"><a id="a158ddaaf0778fb18d4ac4a6e25252fce" name="a158ddaaf0778fb18d4ac4a6e25252fce"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>Window</b> (<a class="el" href="structtz_1_1_window_init_args.html">WindowInitArgs</a> args={})</td></tr>
+<tr class="memdesc:a158ddaaf0778fb18d4ac4a6e25252fce"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a new <a class="el" href="classtz_1_1_window.html" title="Represents an OS Window.">Window</a>. <br /></td></tr>
+<tr class="separator:a158ddaaf0778fb18d4ac4a6e25252fce"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a651f308e08fed1516d2177901798cdcc"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtz_1_1_window.html#a651f308e08fed1516d2177901798cdcc">is_null</a> () const</td></tr>
 <tr class="memdesc:a651f308e08fed1516d2177901798cdcc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query as to whether the window is the null window.  <a href="classtz_1_1_window.html#a651f308e08fed1516d2177901798cdcc">More...</a><br /></td></tr>
 <tr class="separator:a651f308e08fed1516d2177901798cdcc"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -141,6 +141,10 @@ float&#160;</td><td class="memItemRight" valign="bottom"><b>get_height</b> () co
 <a class="el" href="classtz_1_1_callback.html">ResizeCallbackType</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>on_resize</b> ()</td></tr>
 <tr class="memdesc:a6f1fd77dc9e48ba0056d20ea8aa5e4e5 inherit pub_methods_classtz_1_1_window_functionality"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve the callback object for when the window is resized. <br /></td></tr>
 <tr class="separator:a6f1fd77dc9e48ba0056d20ea8aa5e4e5 inherit pub_methods_classtz_1_1_window_functionality"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae3b17f38e317da1ea7a846a631298212 inherit pub_methods_classtz_1_1_window_functionality"><td class="memItemLeft" align="right" valign="top"><a id="ae3b17f38e317da1ea7a846a631298212" name="ae3b17f38e317da1ea7a846a631298212"></a>
+<a class="el" href="classtz_1_1_callback.html">MoveCallbackType</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>on_move</b> ()</td></tr>
+<tr class="memdesc:ae3b17f38e317da1ea7a846a631298212 inherit pub_methods_classtz_1_1_window_functionality"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve the callback object for when the window is moved. <br /></td></tr>
+<tr class="separator:ae3b17f38e317da1ea7a846a631298212 inherit pub_methods_classtz_1_1_window_functionality"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8150bf0afdc1bc61f6198d4266fe55c4 inherit pub_methods_classtz_1_1_window_functionality"><td class="memItemLeft" align="right" valign="top"><a id="a8150bf0afdc1bc61f6198d4266fe55c4" name="a8150bf0afdc1bc61f6198d4266fe55c4"></a>
 const <a class="el" href="classtz_1_1_keyboard_state.html">KeyboardState</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>get_keyboard_state</b> () const</td></tr>
 <tr class="memdesc:a8150bf0afdc1bc61f6198d4266fe55c4 inherit pub_methods_classtz_1_1_window_functionality"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve state of keyboard presses. <br /></td></tr>
@@ -214,7 +218,7 @@ Static Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Retrieve the null window. </p>
-<p >Operations on the null window are invalid, but it is a useful alias if the application is headless. </p>
+<p >Operations on the null window are invalid. </p>
 
 </div>
 </div>

@@ -32,7 +32,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="tz.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Topaz<span id="projectnumber">&#160;3.2</span>
+   <div id="projectname">Topaz<span id="projectnumber">&#160;3.4</span>
    </div>
    <div id="projectbrief">C++20 Graphics Engine</div>
   </td>
@@ -100,7 +100,7 @@ $(document).ready(function(){initNavTree('structtz_1_1gl_1_1_renderer_device_inf
 </div><!--header-->
 <div class="contents">
 
-<p>When the Device wants to create a <a class="el" href="classtz_1_1gl_1_1_renderer_vulkan.html" title="Renderer implementation which heavily calls into the backend at Vulkan Backend.">RendererVulkan</a>, we need to know a little bit about the Device's internals (such as the swapchain images, or an offscreen image if we're headless).  
+<p>When the Device wants to create a <a class="el" href="classtz_1_1gl_1_1_renderer_vulkan.html" title="Renderer implementation which heavily calls into the backend at Vulkan Backend.">RendererVulkan</a>, we need to know a little bit about the Device's internals (such as the swapchain images).  
  <a href="structtz_1_1gl_1_1_renderer_device_info_vulkan.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="impl_2frontend_2vk2_2renderer_8hpp_source.html">renderer.hpp</a>&gt;</code></p>
@@ -113,19 +113,23 @@ Data Fields</h2></td></tr>
 <tr class="separator:af59c0fcd8d99355fc8f822274da28f00"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad8e7c09a55b7537047a4e1a4b3630c30"><td class="memItemLeft" align="right" valign="top"><a id="ad8e7c09a55b7537047a4e1a4b3630c30" name="ad8e7c09a55b7537047a4e1a4b3630c30"></a>
 std::span&lt; <a class="el" href="classtz_1_1gl_1_1vk2_1_1_image.html">vk2::Image</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>output_images</b></td></tr>
-<tr class="memdesc:ad8e7c09a55b7537047a4e1a4b3630c30"><td class="mdescLeft">&#160;</td><td class="mdescRight">List of output images. If the output is a window, this is likely to be swapchain images or an offscreen headless image. <br /></td></tr>
+<tr class="memdesc:ad8e7c09a55b7537047a4e1a4b3630c30"><td class="mdescLeft">&#160;</td><td class="mdescRight">List of output images. These are going to be swapchain images. <br /></td></tr>
 <tr class="separator:ad8e7c09a55b7537047a4e1a4b3630c30"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a707b43f3ab3bff359fa39f26fa7a7b9e"><td class="memItemLeft" align="right" valign="top"><a id="a707b43f3ab3bff359fa39f26fa7a7b9e" name="a707b43f3ab3bff359fa39f26fa7a7b9e"></a>
-<a class="el" href="classtz_1_1gl_1_1vk2_1_1_swapchain.html">vk2::Swapchain</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>maybe_swapchain</b></td></tr>
-<tr class="memdesc:a707b43f3ab3bff359fa39f26fa7a7b9e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Swapchain if there is one. <br /></td></tr>
-<tr class="separator:a707b43f3ab3bff359fa39f26fa7a7b9e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0a98b368c52dd48d6d9c252deb0a35e9"><td class="memItemLeft" align="right" valign="top"><a id="a0a98b368c52dd48d6d9c252deb0a35e9" name="a0a98b368c52dd48d6d9c252deb0a35e9"></a>
+<a class="el" href="classtz_1_1gl_1_1_device_window_vulkan.html">DeviceWindowVulkan</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>device_window</b></td></tr>
+<tr class="memdesc:a0a98b368c52dd48d6d9c252deb0a35e9"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classtz_1_1_window.html" title="Represents an OS Window.">Window</a> information belonging to the parent device. <br /></td></tr>
+<tr class="separator:a0a98b368c52dd48d6d9c252deb0a35e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1b059156f9c5eff2206b0a2122ca0496"><td class="memItemLeft" align="right" valign="top"><a id="a1b059156f9c5eff2206b0a2122ca0496" name="a1b059156f9c5eff2206b0a2122ca0496"></a>
+<a class="el" href="classtz_1_1gl_1_1_device_render_scheduler_vulkan.html">DeviceRenderSchedulerVulkan</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>device_scheduler</b></td></tr>
+<tr class="memdesc:a1b059156f9c5eff2206b0a2122ca0496"><td class="mdescLeft">&#160;</td><td class="mdescRight">Scheduler belonging to the parent device. <br /></td></tr>
+<tr class="separator:a1b059156f9c5eff2206b0a2122ca0496"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a82ca49ea66db14a2b0e53d1a81fa042a"><td class="memItemLeft" align="right" valign="top"><a id="a82ca49ea66db14a2b0e53d1a81fa042a" name="a82ca49ea66db14a2b0e53d1a81fa042a"></a>
 <a class="el" href="classtz_1_1_callback.html">RendererResizeCallbackType</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>resize_callback</b></td></tr>
-<tr class="memdesc:a82ca49ea66db14a2b0e53d1a81fa042a"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classtz_1_1_callback.html" title="Represents a centralised storage/management of callback functions of a common signature void(Args....">Callback</a> for resizing which the renderer subscribes to for the duration of its lifetime. Assume this isn't null but for headless applications this should not be used. <br /></td></tr>
+<tr class="memdesc:a82ca49ea66db14a2b0e53d1a81fa042a"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classtz_1_1_callback.html" title="Represents a centralised storage/management of callback functions of a common signature void(Args....">Callback</a> for resizing which the renderer subscribes to for the duration of its lifetime. Assume this isn't null. <br /></td></tr>
 <tr class="separator:a82ca49ea66db14a2b0e53d1a81fa042a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p >When the Device wants to create a <a class="el" href="classtz_1_1gl_1_1_renderer_vulkan.html" title="Renderer implementation which heavily calls into the backend at Vulkan Backend.">RendererVulkan</a>, we need to know a little bit about the Device's internals (such as the swapchain images, or an offscreen image if we're headless). </p>
+<div class="textblock"><p >When the Device wants to create a <a class="el" href="classtz_1_1gl_1_1_renderer_vulkan.html" title="Renderer implementation which heavily calls into the backend at Vulkan Backend.">RendererVulkan</a>, we need to know a little bit about the Device's internals (such as the swapchain images). </p>
 </div></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

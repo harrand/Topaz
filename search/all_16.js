@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['zero_0',['zero',['../classtz_1_1_vector.html#a1077e545ce34107bf432ca9df08ab97d',1,'tz::Vector']]]
+  ['xor_0',['xor',['../group__tzsl__atomic.html#ga7be1a0f30393cbdf216e5515d6fde1b0',1,'tz::atomic']]]
 ];

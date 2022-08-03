@@ -1,7 +1,8 @@
 var classtz_1_1gl_1_1ogl2_1_1_buffer =
 [
     [ "Buffer", "classtz_1_1gl_1_1ogl2_1_1_buffer.html#a6493e1b7ed2403c2391a6e16c7ad41ee", null ],
-    [ "bind_to_resource_id", "classtz_1_1gl_1_1ogl2_1_1_buffer.html#a18091fcc98ca65431629e70bd97a482d", null ],
+    [ "basic_bind", "classtz_1_1gl_1_1ogl2_1_1_buffer.html#aaecff210969fff230fef0932438b8ef1", null ],
+    [ "bind_to_resource_id", "classtz_1_1gl_1_1ogl2_1_1_buffer.html#ac875a792db00c0351984923c3cbe52b0", null ],
     [ "get_residency", "classtz_1_1gl_1_1ogl2_1_1_buffer.html#ad54ec6668bc55a50e56ee3029584c37c", null ],
     [ "get_target", "classtz_1_1gl_1_1ogl2_1_1_buffer.html#a6c3a82dbd4c6409cfc7f7e0c40ba4779", null ],
     [ "is_null", "classtz_1_1gl_1_1ogl2_1_1_buffer.html#ad260e01439c118161bc34108d8a58161", null ],

@@ -32,7 +32,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="tz.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Topaz<span id="projectnumber">&#160;3.2</span>
+   <div id="projectname">Topaz<span id="projectnumber">&#160;3.4</span>
    </div>
    <div id="projectbrief">C++20 Graphics Engine</div>
   </td>
@@ -95,7 +95,8 @@ $(document).ready(function(){initNavTree('classtz_1_1gl_1_1_resource.html',''); 
 
 <div class="header">
   <div class="summary">
-<a href="#pub-methods">Public Member Functions</a>  </div>
+<a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pro-methods">Protected Member Functions</a>  </div>
   <div class="headertitle"><div class="title">tz::gl::Resource Class Reference</div></div>
 </div><!--header-->
 <div class="contents">
@@ -150,6 +151,15 @@ virtual std::span&lt; const std::byte &gt;&#160;</td><td class="memItemRight" va
 <tr class="memitem:a0ddc2f5ca83851511f3d8ca0583c990c inherit pub_methods_classtz_1_1gl_1_1_i_resource"><td class="memTemplItemLeft" align="right" valign="top">std::span&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classtz_1_1gl_1_1_i_resource.html#a0ddc2f5ca83851511f3d8ca0583c990c">data_as</a> ()</td></tr>
 <tr class="memdesc:a0ddc2f5ca83851511f3d8ca0583c990c inherit pub_methods_classtz_1_1gl_1_1_i_resource"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve a read+write view into the resource data, interpreted as an array of some type.  <a href="classtz_1_1gl_1_1_i_resource.html#a0ddc2f5ca83851511f3d8ca0583c990c">More...</a><br /></td></tr>
 <tr class="separator:a0ddc2f5ca83851511f3d8ca0583c990c inherit pub_methods_classtz_1_1gl_1_1_i_resource"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af1c40dc4fb591ac0f751331d731205eb inherit pub_methods_classtz_1_1gl_1_1_i_resource"><td class="memItemLeft" align="right" valign="top">virtual const <a class="el" href="classtz_1_1_enum_field.html">ResourceFlags</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtz_1_1gl_1_1_i_resource.html#af1c40dc4fb591ac0f751331d731205eb">get_flags</a> () const =0</td></tr>
+<tr class="memdesc:af1c40dc4fb591ac0f751331d731205eb inherit pub_methods_classtz_1_1gl_1_1_i_resource"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve a field containing all flags applied to this resource.  <a href="classtz_1_1gl_1_1_i_resource.html#af1c40dc4fb591ac0f751331d731205eb">More...</a><br /></td></tr>
+<tr class="separator:af1c40dc4fb591ac0f751331d731205eb inherit pub_methods_classtz_1_1gl_1_1_i_resource"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-methods" name="pro-methods"></a>
+Protected Member Functions</h2></td></tr>
+<tr class="memitem:aae2bcb75b9d5eedcb039c4830fb777cc"><td class="memItemLeft" align="right" valign="top">virtual const <a class="el" href="classtz_1_1_enum_field.html">ResourceFlags</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtz_1_1gl_1_1_resource.html#aae2bcb75b9d5eedcb039c4830fb777cc">get_flags</a> () const final</td></tr>
+<tr class="memdesc:aae2bcb75b9d5eedcb039c4830fb777cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve a field containing all flags applied to this resource.  <a href="classtz_1_1gl_1_1_resource.html#aae2bcb75b9d5eedcb039c4830fb777cc">More...</a><br /></td></tr>
+<tr class="separator:aae2bcb75b9d5eedcb039c4830fb777cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Member Function Documentation</h2>
 <a id="a2badb8ab88a39f4b0e074276d7b977a3" name="a2badb8ab88a39f4b0e074276d7b977a3"></a>
@@ -209,6 +219,36 @@ virtual std::span&lt; const std::byte &gt;&#160;</td><td class="memItemRight" va
 <dl class="section return"><dt>Returns</dt><dd>ResourceAccess corresponding to usage in a <a class="el" href="class_renderer.html" title="Implementation of tz::gl::RendererType.">Renderer</a> or Processor. </dd></dl>
 
 <p>Implements <a class="el" href="classtz_1_1gl_1_1_i_resource.html#a30140461ed037030d6c549fed9353fe9">tz::gl::IResource</a>.</p>
+
+</div>
+</div>
+<a id="aae2bcb75b9d5eedcb039c4830fb777cc" name="aae2bcb75b9d5eedcb039c4830fb777cc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aae2bcb75b9d5eedcb039c4830fb777cc">&#9670;&nbsp;</a></span>get_flags()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classtz_1_1_enum_field.html">ResourceFlags</a> &amp; tz::gl::Resource::get_flags </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">final</span><span class="mlabel">protected</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Retrieve a field containing all flags applied to this resource. </p>
+<p >If you didn't specify any flags for this resource, it will be empty. </p>
+
+<p>Implements <a class="el" href="classtz_1_1gl_1_1_i_resource.html#af1c40dc4fb591ac0f751331d731205eb">tz::gl::IResource</a>.</p>
 
 </div>
 </div>

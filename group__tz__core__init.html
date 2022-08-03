@@ -32,7 +32,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="tz.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Topaz<span id="projectnumber">&#160;3.2</span>
+   <div id="projectname">Topaz<span id="projectnumber">&#160;3.4</span>
    </div>
    <div id="projectbrief">C++20 Graphics Engine</div>
   </td>
@@ -96,7 +96,6 @@ $(document).ready(function(){initNavTree('group__tz__core__init.html',''); initR
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Data Structures</a> &#124;
-<a href="#enum-members">Enumerations</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle"><div class="title">Initialisation and Termination<div class="ingroups"><a class="el" href="group__tz__core.html">Core Libraries (tz)</a></div></div></div>
 </div><!--header-->
@@ -110,19 +109,6 @@ Data Structures</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtz_1_1_initialise_info.html">tz::InitialiseInfo</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Specifies everything needed to initialise the engine.  <a href="structtz_1_1_initialise_info.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
-Enumerations</h2></td></tr>
-<tr class="memitem:gadf2ca063dc9da7506f02d8821761278c"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__tz__core__init.html#gadf2ca063dc9da7506f02d8821761278c">tz::ApplicationType</a> { <br />
-&#160;&#160;<a class="el" href="group__tz__core__init.html#ggadf2ca063dc9da7506f02d8821761278ca02f48080f0de7046952459e70887e8a1">ApplicationType::WindowApplication</a>
-, <br />
-&#160;&#160;<a class="el" href="group__tz__core__init.html#ggadf2ca063dc9da7506f02d8821761278ca4c550e0ddec7c1f1080ceb6efbf42338">ApplicationType::HiddenWindowApplication</a>
-, <br />
-&#160;&#160;<a class="el" href="group__tz__core__init.html#ggadf2ca063dc9da7506f02d8821761278cae190748285bfdd771d294c1e7109271b">ApplicationType::Headless</a>
-<br />
- }</td></tr>
-<tr class="memdesc:gadf2ca063dc9da7506f02d8821761278c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Every application is of a single type.  <a href="group__tz__core__init.html#gadf2ca063dc9da7506f02d8821761278c">More...</a><br /></td></tr>
-<tr class="separator:gadf2ca063dc9da7506f02d8821761278c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
@@ -141,46 +127,6 @@ Functions</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p >Documentation for functionality related to engine initialisation and termination. </p>
-<h2 class="groupheader">Enumeration Type Documentation</h2>
-<a id="gadf2ca063dc9da7506f02d8821761278c" name="gadf2ca063dc9da7506f02d8821761278c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gadf2ca063dc9da7506f02d8821761278c">&#9670;&nbsp;</a></span>ApplicationType</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">enum class <a class="el" href="group__tz__core__init.html#gadf2ca063dc9da7506f02d8821761278c">tz::ApplicationType</a></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Every application is of a single type. </p>
-<p >When you initialise the engine, you must choose one. </p>
-<table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ggadf2ca063dc9da7506f02d8821761278ca02f48080f0de7046952459e70887e8a1" name="ggadf2ca063dc9da7506f02d8821761278ca02f48080f0de7046952459e70887e8a1"></a>WindowApplication&#160;</td><td class="fielddoc"><ul>
-<li>Initialisation should spawn a window that the user can see and interact with. </li>
-</ul>
-</td></tr>
-<tr><td class="fieldname"><a id="ggadf2ca063dc9da7506f02d8821761278ca4c550e0ddec7c1f1080ceb6efbf42338" name="ggadf2ca063dc9da7506f02d8821761278ca4c550e0ddec7c1f1080ceb6efbf42338"></a>HiddenWindowApplication&#160;</td><td class="fielddoc"><ul>
-<li>Initialisation should spawn a window, but it is invisible to the user. </li>
-</ul>
-</td></tr>
-<tr><td class="fieldname"><a id="ggadf2ca063dc9da7506f02d8821761278cae190748285bfdd771d294c1e7109271b" name="ggadf2ca063dc9da7506f02d8821761278cae190748285bfdd771d294c1e7109271b"></a>Headless&#160;</td><td class="fielddoc"><ul>
-<li>Initialisation should not spawn a window at all. Headless applications have access to fewer features than others, but do not require a display to initialise. It is recommended to be used for applications used in continuous integration. </li>
-</ul>
-</td></tr>
-</table>
-
-</div>
-</div>
 <h2 class="groupheader">Function Documentation</h2>
 <a id="gadc2dcae2bdcef568206f55a9f48d6658" name="gadc2dcae2bdcef568206f55a9f48d6658"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#gadc2dcae2bdcef568206f55a9f48d6658">&#9670;&nbsp;</a></span>initialise()</h2>
@@ -267,7 +213,6 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Retrieve the application window. </p>
-<dl class="section pre"><dt>Precondition</dt><dd><a class="el" href="group__tz__core__init.html#gadc2dcae2bdcef568206f55a9f48d6658">tz::initialise()</a> has been invoked but not with <code><a class="el" href="group__tz__core__init.html#ggadf2ca063dc9da7506f02d8821761278cae190748285bfdd771d294c1e7109271b">ApplicationType::Headless</a></code>. </dd></dl>
 <dl class="section post"><dt>Postcondition</dt><dd><a class="el" href="group__tz__core__init.html#ga0a5d1e375e7e82fcd12a8b74b8012bae">tz::terminate()</a> has not yet been invoked. </dd></dl>
 <dl class="section return"><dt>Returns</dt><dd><a class="el" href="classtz_1_1_window.html" title="Represents an OS Window.">Window</a>&amp; Reference to the application window. </dd></dl>
 

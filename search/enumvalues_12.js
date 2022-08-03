@@ -13,5 +13,6 @@ var searchData=
   ['vertexbuffer_10',['VertexBuffer',['../group__tz__gl__vk__buffer.html#gga0c6ff78fc058c3e209ba59dc1b2c02a6a10461f19cdb5aadba2fc9986be6400bd',1,'tz::gl::vk2']]],
   ['vertexbufferread_11',['VertexBufferRead',['../group__tz__gl__vk__graphics__pipeline__render__pass.html#ggaa5dd0142a36cd59d14dff54eed67c3dfaec21703627e9de694102e22b1f2542c0',1,'tz::gl::vk2']]],
   ['vertexindexinput_12',['VertexIndexInput',['../group__tz__gl__vk__graphics__pipeline.html#ggaa581c5a329a76e48f41ca02bd263251aa1311d08fb1f8b78c1be3ebb4c53c0e80',1,'tz::gl::vk2']]],
-  ['vertexshader_13',['VertexShader',['../group__tz__gl__vk__graphics__pipeline.html#ggaa581c5a329a76e48f41ca02bd263251aaeb3ca4dac3e206977e0b7d998eefcc33',1,'tz::gl::vk2']]]
+  ['vertexpipelineresourcewrite_13',['VertexPipelineResourceWrite',['../group__tz__gl__vk__extension.html#gga6744c8f7d1276d6d9ae861b21c489505ab77badc545def5f132a116dcfab8e272',1,'tz::gl::vk2']]],
+  ['vertexshader_14',['VertexShader',['../group__tz__gl__vk__graphics__pipeline.html#ggaa581c5a329a76e48f41ca02bd263251aaeb3ca4dac3e206977e0b7d998eefcc33',1,'tz::gl::vk2']]]
 ];

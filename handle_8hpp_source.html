@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.3"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Topaz: src/core/handle.hpp Source File</title>
+<title>Topaz: src/tz/core/handle.hpp Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -32,7 +32,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="tz.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Topaz<span id="projectnumber">&#160;3.2</span>
+   <div id="projectname">Topaz<span id="projectnumber">&#160;3.4</span>
    </div>
    <div id="projectbrief">C++20 Graphics Engine</div>
   </td>
@@ -120,7 +120,7 @@ $(document).ready(function(){initNavTree('handle_8hpp_source.html',''); initResi
 <div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>        value(value){}</div>
 <div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
 <div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="classtz_1_1_handle.html#add89060948353a203f3b12606b0f16a5">   34</a></span>        <a class="code hl_function" href="classtz_1_1_handle.html#add89060948353a203f3b12606b0f16a5">Handle</a>(<a class="code hl_struct" href="structtz_1_1nullhand__t.html">nullhand_t</a>):</div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>        value(static_cast&lt;HandleValue&gt;(std::numeric_limits&lt;std::size_t&gt;::max())){}</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>        value(static_cast&lt;HandleValue&gt;(std::numeric_limits&lt;std::size_t&gt;::<a class="code hl_function" href="group__tzsl__atomic.html#ga7be084073b7420420cd5f5b5b9f81db6">max</a>())){}</div>
 <div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
 <div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>        <span class="keyword">explicit</span> <span class="keyword">operator</span> HandleValue()<span class="keyword"> const</span></div>
 <div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span><span class="keyword">        </span>{</div>
@@ -134,7 +134,7 @@ $(document).ready(function(){initNavTree('handle_8hpp_source.html',''); initResi
 <div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>        }</div>
 <div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>        <span class="keywordtype">bool</span> operator==(nullhand_t)<span class="keyword"> const</span></div>
 <div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span><span class="keyword">        </span>{</div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>            <span class="keywordflow">return</span> this-&gt;value == <span class="keyword">static_cast&lt;</span>HandleValue<span class="keyword">&gt;</span>(std::numeric_limits&lt;std::size_t&gt;::max());</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>            <span class="keywordflow">return</span> this-&gt;value == <span class="keyword">static_cast&lt;</span>HandleValue<span class="keyword">&gt;</span>(<a class="code hl_function" href="group__tzsl__atomic.html#ga7be084073b7420420cd5f5b5b9f81db6">std::numeric_limits&lt;std::size_t&gt;::max</a>());</div>
 <div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        }</div>
 <div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        <span class="keywordtype">bool</span> operator==(<span class="keyword">const</span> Handle&lt;T&gt;&amp; rhs) <span class="keyword">const</span> = <span class="keywordflow">default</span>;</div>
 <div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <span class="keyword">private</span>:</div>
@@ -157,13 +157,14 @@ $(document).ready(function(){initNavTree('handle_8hpp_source.html',''); initResi
 <div class="ttc" id="aclasstz_1_1_handle_html"><div class="ttname"><a href="classtz_1_1_handle.html">tz::Handle</a></div><div class="ttdoc">Represents a generic opaque handle.</div><div class="ttdef"><b>Definition:</b> handle.hpp:26</div></div>
 <div class="ttc" id="aclasstz_1_1_handle_html_add89060948353a203f3b12606b0f16a5"><div class="ttname"><a href="classtz_1_1_handle.html#add89060948353a203f3b12606b0f16a5">tz::Handle::Handle</a></div><div class="ttdeci">Handle(nullhand_t)</div><div class="ttdoc">Retrieve the null handle.</div><div class="ttdef"><b>Definition:</b> handle.hpp:34</div></div>
 <div class="ttc" id="agroup__tz__core__utility_html_gac7ea0910b66986864e3463748d8bd94a"><div class="ttname"><a href="group__tz__core__utility.html#gac7ea0910b66986864e3463748d8bd94a">tz::nullhand</a></div><div class="ttdeci">constexpr nullhand_t nullhand</div><div class="ttdoc">Represents the null Handle.</div><div class="ttdef"><b>Definition:</b> handle.hpp:18</div></div>
+<div class="ttc" id="agroup__tzsl__atomic_html_ga7be084073b7420420cd5f5b5b9f81db6"><div class="ttname"><a href="group__tzsl__atomic.html#ga7be084073b7420420cd5f5b5b9f81db6">tz::atomic::max</a></div><div class="ttdeci">int max(int &amp;mem, int data)</div><div class="ttdoc">Performs an atomic max operation.</div></div>
 <div class="ttc" id="astructtz_1_1nullhand__t_html"><div class="ttname"><a href="structtz_1_1nullhand__t.html">tz::nullhand_t</a></div><div class="ttdef"><b>Definition:</b> handle.hpp:13</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_aebb8dcc11953d78e620bbef0b9e2183.html">core</a></li><li class="navelem"><b>handle.hpp</b></li>
+    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_173d7eb180c4d4693124e94b33941768.html">tz</a></li><li class="navelem"><a class="el" href="dir_08a9ab9f761476898a1bf8c3b193f50f.html">core</a></li><li class="navelem"><b>handle.hpp</b></li>
     <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.3 </li>
   </ul>
 </div>

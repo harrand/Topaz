@@ -14,5 +14,5 @@ var group__tz__gl__ogl2__framebuffer =
       [ "has_depth_attachment", "classtz_1_1gl_1_1ogl2_1_1_framebuffer.html#a4ea17c22f864ca9957087ac4090774d0", null ],
       [ "is_null", "classtz_1_1gl_1_1ogl2_1_1_framebuffer.html#a1e38fc43fd59962e749b34ccf6e80a1e", null ]
     ] ],
-    [ "tz::gl::ogl2::FramebufferTexture", "group__tz__gl__ogl2__framebuffer.html#gace2fe89a1f43411ad7188b4d9d0fb9f8", null ]
+    [ "tz::gl::ogl2::FramebufferTexture", "group__tz__gl__ogl2__framebuffer.html#ga0ca5030b95c0c5b75f8f817694d1a948", null ]
 ];

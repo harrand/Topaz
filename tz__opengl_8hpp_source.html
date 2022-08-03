@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.3"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Topaz: src/gl/impl/backend/ogl2/tz_opengl.hpp Source File</title>
+<title>Topaz: src/tz/gl/impl/backend/ogl2/tz_opengl.hpp Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -32,7 +32,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="tz.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Topaz<span id="projectnumber">&#160;3.2</span>
+   <div id="projectname">Topaz<span id="projectnumber">&#160;3.4</span>
    </div>
    <div id="projectbrief">C++20 Graphics Engine</div>
   </td>
@@ -100,7 +100,7 @@ $(document).ready(function(){initNavTree('tz__opengl_8hpp_source.html',''); init
 <div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef TOPAZ_GL_IMPL_BACKEND_OGL2_TZ_OPENGL_HPP</span></div>
 <div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define TOPAZ_GL_IMPL_BACKEND_OGL2_TZ_OPENGL_HPP</span></div>
 <div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#if TZ_OGL</span></div>
-<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;core/tz.hpp&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;tz/core/tz.hpp&quot;</span></div>
 <div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;glad/glad.h&quot;</span></div>
 <div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#if TZ_PROFILE</span></div>
 <div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;TracyOpenGL.hpp&quot;</span></div>
@@ -108,7 +108,7 @@ $(document).ready(function(){initNavTree('tz__opengl_8hpp_source.html',''); init
 <div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
 <div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">namespace </span>tz::gl::ogl2</div>
 <div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>{</div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="group__tz__core__init.html#gadc2dcae2bdcef568206f55a9f48d6658">initialise</a>(<a class="code hl_struct" href="structtz_1_1_game_info.html">tz::GameInfo</a> game_info, <a class="code hl_enumeration" href="group__tz__core__init.html#gadf2ca063dc9da7506f02d8821761278c">tz::ApplicationType</a> app_type);</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="group__tz__core__init.html#gadc2dcae2bdcef568206f55a9f48d6658">initialise</a>();</div>
 <div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="group__tz__core__init.html#ga0a5d1e375e7e82fcd12a8b74b8012bae">terminate</a>();</div>
 <div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="group__tz__core__init.html#ga4197bca3cce79edb5652963d5bd7c1f0">is_initialised</a>();</div>
 <div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span> </div>
@@ -121,18 +121,16 @@ $(document).ready(function(){initNavTree('tz__opengl_8hpp_source.html',''); init
 <div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
 <div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span><span class="preprocessor">#endif </span><span class="comment">// TZ_OGL</span></div>
 <div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span><span class="preprocessor">#endif </span><span class="comment">// TOPAZ_GL_IMPL_BACKEND_OGL2_TZ_OPENGL_HPP</span></div>
-<div class="ttc" id="agroup__tz__core__init_html_ga0a5d1e375e7e82fcd12a8b74b8012bae"><div class="ttname"><a href="group__tz__core__init.html#ga0a5d1e375e7e82fcd12a8b74b8012bae">tz::terminate</a></div><div class="ttdeci">void terminate()</div><div class="ttdoc">Terminate Topaz.</div><div class="ttdef"><b>Definition:</b> tz.cpp:72</div></div>
-<div class="ttc" id="agroup__tz__core__init_html_ga4197bca3cce79edb5652963d5bd7c1f0"><div class="ttname"><a href="group__tz__core__init.html#ga4197bca3cce79edb5652963d5bd7c1f0">tz::is_initialised</a></div><div class="ttdeci">bool is_initialised()</div><div class="ttdoc">Query as to whether Topaz is initialised.</div><div class="ttdef"><b>Definition:</b> tz.cpp:104</div></div>
-<div class="ttc" id="agroup__tz__core__init_html_gadc2dcae2bdcef568206f55a9f48d6658"><div class="ttname"><a href="group__tz__core__init.html#gadc2dcae2bdcef568206f55a9f48d6658">tz::initialise</a></div><div class="ttdeci">void initialise(InitialiseInfo init)</div><div class="ttdoc">Initialise Topaz.</div><div class="ttdef"><b>Definition:</b> tz.cpp:65</div></div>
-<div class="ttc" id="agroup__tz__core__init_html_gadf2ca063dc9da7506f02d8821761278c"><div class="ttname"><a href="group__tz__core__init.html#gadf2ca063dc9da7506f02d8821761278c">tz::ApplicationType</a></div><div class="ttdeci">ApplicationType</div><div class="ttdoc">Every application is of a single type.</div><div class="ttdef"><b>Definition:</b> tz.hpp:93</div></div>
-<div class="ttc" id="astructtz_1_1_game_info_html"><div class="ttname"><a href="structtz_1_1_game_info.html">tz::GameInfo</a></div><div class="ttdoc">Contains basic information about the target game/application.</div><div class="ttdef"><b>Definition:</b> game_info.hpp:18</div></div>
+<div class="ttc" id="agroup__tz__core__init_html_ga0a5d1e375e7e82fcd12a8b74b8012bae"><div class="ttname"><a href="group__tz__core__init.html#ga0a5d1e375e7e82fcd12a8b74b8012bae">tz::terminate</a></div><div class="ttdeci">void terminate()</div><div class="ttdoc">Terminate Topaz.</div><div class="ttdef"><b>Definition:</b> tz.cpp:73</div></div>
+<div class="ttc" id="agroup__tz__core__init_html_ga4197bca3cce79edb5652963d5bd7c1f0"><div class="ttname"><a href="group__tz__core__init.html#ga4197bca3cce79edb5652963d5bd7c1f0">tz::is_initialised</a></div><div class="ttdeci">bool is_initialised()</div><div class="ttdoc">Query as to whether Topaz is initialised.</div><div class="ttdef"><b>Definition:</b> tz.cpp:99</div></div>
+<div class="ttc" id="agroup__tz__core__init_html_gadc2dcae2bdcef568206f55a9f48d6658"><div class="ttname"><a href="group__tz__core__init.html#gadc2dcae2bdcef568206f55a9f48d6658">tz::initialise</a></div><div class="ttdeci">void initialise(InitialiseInfo init)</div><div class="ttdoc">Initialise Topaz.</div><div class="ttdef"><b>Definition:</b> tz.cpp:21</div></div>
 <div class="ttc" id="astructtz_1_1_version_html"><div class="ttname"><a href="structtz_1_1_version.html">tz::Version</a></div><div class="ttdef"><b>Definition:</b> version.hpp:8</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_22ef2c5f6712ba0a0b99c741bcfb15fe.html">gl</a></li><li class="navelem"><a class="el" href="dir_294d689e10da81f00c081b036a1431d9.html">impl</a></li><li class="navelem"><a class="el" href="dir_f1e396d78ce7c2379251e63a766e1a72.html">backend</a></li><li class="navelem"><a class="el" href="dir_fb9167214c2750e98e3162cd0938ddbd.html">ogl2</a></li><li class="navelem"><b>tz_opengl.hpp</b></li>
+    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_173d7eb180c4d4693124e94b33941768.html">tz</a></li><li class="navelem"><a class="el" href="dir_c45f7307fd1a89701e5a7df4b0292432.html">gl</a></li><li class="navelem"><a class="el" href="dir_b6f1048c6f0057577e2c84efc97e28f6.html">impl</a></li><li class="navelem"><a class="el" href="dir_aab655f56fc07094ba97e63e989016de.html">backend</a></li><li class="navelem"><a class="el" href="dir_a03ce29cbe824474471f8ca85cd8b795.html">ogl2</a></li><li class="navelem"><b>tz_opengl.hpp</b></li>
     <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.3 </li>
   </ul>
 </div>

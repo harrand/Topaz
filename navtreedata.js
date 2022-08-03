@@ -30,23 +30,24 @@ var NAVTREE =
       [ "Topaz Shader Language", "shaders.html#tzsl", null ],
       [ "Introduction", "shaders.html#Introduction", null ],
       [ "Language", "shaders.html#Language", [
-        [ "Definitions", "shaders.html#Preprocessor", [
+        [ "Inputs", "shaders.html#Inputs", null ],
+        [ "Outputs", "shaders.html#Outputs", null ],
+        [ "Resources", "shaders.html#Resources", null ],
+        [ "Preprocessor Definitions", "shaders.html#preproc", [
           [ "Example Fragment Shader", "shaders.html#ex0", null ]
-        ] ],
-        [ "Keywords", "shaders.html#Keywords", null ],
-        [ "Resources", "shaders.html#Resources", null ]
-      ] ],
-      [ "Built-in Functions", "shaders.html#bif", [
-        [ "tz_printf", "shaders.html#bif_printf", [
-          [ "Parameters", "shaders.html#tz_printf_params", null ],
-          [ "Examples", "shaders.html#debug_printf_example", null ]
         ] ]
+      ] ],
+      [ "IO Blocks", "shaders.html#stypes", null ],
+      [ "TZSL Header Imports", "shaders.html#header_imports", null ],
+      [ "Example Shader: tz_dynamic_triangle_demo.fragment.tzsl", "shaders.html#rwe", [
+        [ "Analysis", "shaders.html#rwe_analysis", null ]
       ] ]
     ] ],
     [ "Modules", "modules.html", "modules" ],
     [ "Namespace Members", "namespacemembers.html", [
       [ "All", "namespacemembers.html", null ],
-      [ "Functions", "namespacemembers_func.html", null ]
+      [ "Functions", "namespacemembers_func.html", null ],
+      [ "Variables", "namespacemembers_vars.html", null ]
     ] ],
     [ "Concepts", "concepts.html", "concepts" ],
     [ "Data Structures", "annotated.html", [
@@ -56,7 +57,7 @@ var NAVTREE =
       [ "Data Fields", "functions.html", [
         [ "All", "functions.html", "functions_dup" ],
         [ "Functions", "functions_func.html", "functions_func" ],
-        [ "Variables", "functions_vars.html", null ],
+        [ "Variables", "functions_vars.html", "functions_vars" ],
         [ "Typedefs", "functions_type.html", null ],
         [ "Enumerations", "functions_enum.html", null ]
       ] ]
@@ -67,10 +68,11 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "annotated.html",
-"classtz_1_1gl_1_1_renderer_vulkan.html#aca759d82373f617453912e4a438dbc8b",
-"functions_e.html",
-"group__tz__gl__vk__graphics__pipeline__render__pass.html#gab92f36711ba7bb90caf0e4a39748ed7d",
-"structtz_1_1gl_1_1vk2_1_1_fence_info.html#a22f2ab9e2e0152fde4949ea49dbd0cc4"
+"classtz_1_1gl_1_1_renderer_o_g_l.html#aa9d358d0bd4fc8a616f1a02ab4a3806b",
+"classtz_1_1gl_1_1vk2_1_1hardware_1_1_queue.html#a85b458bfb664176d140abf3b6b627e67",
+"group__tz__gl__vk__extension.html",
+"structtz_1_1_mouse_position_info.html",
+"structtz_1_1gl_1_1vk2_1_1_vulkan_command_1_1_begin_render_pass.html#a0d726e5259950517b292d3a0620db647"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

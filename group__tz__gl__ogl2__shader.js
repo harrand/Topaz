@@ -27,6 +27,8 @@ var group__tz__gl__ogl2__shader =
     ] ],
     [ "tz::gl::ogl2::ShaderType", "group__tz__gl__ogl2__shader.html#gab25d42f22a690872511e7db2cbaa97e9", [
       [ "tz::gl::ogl2::ShaderType::Vertex", "group__tz__gl__ogl2__shader.html#ggab25d42f22a690872511e7db2cbaa97e9ab22b929ba52471a02d18bb3a4e4472e6", null ],
+      [ "tz::gl::ogl2::ShaderType::TessellationControl", "group__tz__gl__ogl2__shader.html#ggab25d42f22a690872511e7db2cbaa97e9a91a08ad964ef35c89ae69cd4176cfb4a", null ],
+      [ "tz::gl::ogl2::ShaderType::TessellationEvaluation", "group__tz__gl__ogl2__shader.html#ggab25d42f22a690872511e7db2cbaa97e9a85a5d743bd284736223e3c1e95c6b952", null ],
       [ "tz::gl::ogl2::ShaderType::Fragment", "group__tz__gl__ogl2__shader.html#ggab25d42f22a690872511e7db2cbaa97e9a37d01b98065725fe3a1d30acf3a0064a", null ],
       [ "tz::gl::ogl2::ShaderType::Compute", "group__tz__gl__ogl2__shader.html#ggab25d42f22a690872511e7db2cbaa97e9aa623a8d0366bf079411aa30be45b2d10", null ]
     ] ]

@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.3"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Topaz: src/gl/impl/backend/vk2/image_view.hpp Source File</title>
+<title>Topaz: src/tz/gl/impl/backend/vk2/image_view.hpp Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -32,7 +32,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="tz.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Topaz<span id="projectnumber">&#160;3.2</span>
+   <div id="projectname">Topaz<span id="projectnumber">&#160;3.4</span>
    </div>
    <div id="projectbrief">C++20 Graphics Engine</div>
   </td>
@@ -100,7 +100,7 @@ $(document).ready(function(){initNavTree('image__view_8hpp_source.html',''); ini
 <div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef TOPAZ_GL_IMPL_BACKEND_VK2_IMAGE_VIEW_HPP</span></div>
 <div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define TOPAZ_GL_IMPL_BACKEND_VK2_IMAGE_VIEW_HPP</span></div>
 <div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#if TZ_VULKAN</span></div>
-<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;gl/impl/backend/vk2/image.hpp&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;tz/gl/impl/backend/vk2/image.hpp&quot;</span></div>
 <div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
 <div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="keyword">namespace </span>tz::gl::vk2</div>
 <div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span>{</div>
@@ -116,7 +116,7 @@ $(document).ready(function(){initNavTree('image__view_8hpp_source.html',''); ini
 <div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>        ImageAspect aspect;</div>
 <div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    };</div>
 <div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="classtz_1_1gl_1_1vk2_1_1_image_view.html">   23</a></span>    <span class="keyword">class </span><a class="code hl_class" href="classtz_1_1gl_1_1vk2_1_1_image_view.html">ImageView</a></div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="classtz_1_1gl_1_1vk2_1_1_image_view.html">   23</a></span>    <span class="keyword">class </span><a class="code hl_class" href="classtz_1_1gl_1_1vk2_1_1_image_view.html">ImageView</a> : <span class="keyword">public</span> <a class="code hl_class" href="classtz_1_1gl_1_1vk2_1_1_debug_nameable.html">DebugNameable</a>&lt;VK_OBJECT_TYPE_IMAGE_VIEW&gt;</div>
 <div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    {</div>
 <div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <span class="keyword">public</span>:</div>
 <div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>        <a class="code hl_class" href="classtz_1_1gl_1_1vk2_1_1_image_view.html">ImageView</a>(<a class="code hl_struct" href="structtz_1_1gl_1_1vk2_1_1_image_view_info.html">ImageViewInfo</a> info);</div>
@@ -147,16 +147,17 @@ $(document).ready(function(){initNavTree('image__view_8hpp_source.html',''); ini
 <div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span> </div>
 <div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span><span class="preprocessor">#endif </span><span class="comment">// TZ_VULKAN</span></div>
 <div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span><span class="preprocessor">#endif </span><span class="comment">// TOPAZ_GL_IMPL_BACKEND_VK2_IMAGE_VIEW_HPP</span></div>
-<div class="ttc" id="aclasstz_1_1gl_1_1vk2_1_1_image_html"><div class="ttname"><a href="classtz_1_1gl_1_1vk2_1_1_image.html">tz::gl::vk2::Image</a></div><div class="ttdoc">Represents an Image owned by the Vulkan API.</div><div class="ttdef"><b>Definition:</b> image.hpp:138</div></div>
+<div class="ttc" id="aclasstz_1_1gl_1_1vk2_1_1_debug_nameable_html"><div class="ttname"><a href="classtz_1_1gl_1_1vk2_1_1_debug_nameable.html">tz::gl::vk2::DebugNameable</a></div><div class="ttdef"><b>Definition:</b> debugname.hpp:10</div></div>
+<div class="ttc" id="aclasstz_1_1gl_1_1vk2_1_1_image_html"><div class="ttname"><a href="classtz_1_1gl_1_1vk2_1_1_image.html">tz::gl::vk2::Image</a></div><div class="ttdoc">Represents an Image owned by the Vulkan API.</div><div class="ttdef"><b>Definition:</b> image.hpp:140</div></div>
 <div class="ttc" id="aclasstz_1_1gl_1_1vk2_1_1_image_view_html"><div class="ttname"><a href="classtz_1_1gl_1_1vk2_1_1_image_view.html">tz::gl::vk2::ImageView</a></div><div class="ttdef"><b>Definition:</b> image_view.hpp:24</div></div>
-<div class="ttc" id="agroup__tz__gl__ogl2__buffers_html_gadc71f031030e7f584e43416c367717fc"><div class="ttname"><a href="group__tz__gl__ogl2__buffers.html#gadc71f031030e7f584e43416c367717fc">tz::gl::ogl2::buffer::copy</a></div><div class="ttdeci">void copy(const Buffer &amp;source, Buffer &amp;destination)</div><div class="ttdoc">Copy the entire data store of a buffer to another.</div><div class="ttdef"><b>Definition:</b> buffer.cpp:105</div></div>
+<div class="ttc" id="agroup__tz__gl__ogl2__buffers_html_gadc71f031030e7f584e43416c367717fc"><div class="ttname"><a href="group__tz__gl__ogl2__buffers.html#gadc71f031030e7f584e43416c367717fc">tz::gl::ogl2::buffer::copy</a></div><div class="ttdeci">void copy(const Buffer &amp;source, Buffer &amp;destination)</div><div class="ttdoc">Copy the entire data store of a buffer to another.</div><div class="ttdef"><b>Definition:</b> buffer.cpp:125</div></div>
 <div class="ttc" id="astructtz_1_1gl_1_1vk2_1_1_image_view_info_html"><div class="ttname"><a href="structtz_1_1gl_1_1vk2_1_1_image_view_info.html">tz::gl::vk2::ImageViewInfo</a></div><div class="ttdef"><b>Definition:</b> image_view.hpp:15</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_22ef2c5f6712ba0a0b99c741bcfb15fe.html">gl</a></li><li class="navelem"><a class="el" href="dir_294d689e10da81f00c081b036a1431d9.html">impl</a></li><li class="navelem"><a class="el" href="dir_f1e396d78ce7c2379251e63a766e1a72.html">backend</a></li><li class="navelem"><a class="el" href="dir_0b7f26d7b2839feebc272b1e805dca31.html">vk2</a></li><li class="navelem"><b>image_view.hpp</b></li>
+    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_173d7eb180c4d4693124e94b33941768.html">tz</a></li><li class="navelem"><a class="el" href="dir_c45f7307fd1a89701e5a7df4b0292432.html">gl</a></li><li class="navelem"><a class="el" href="dir_b6f1048c6f0057577e2c84efc97e28f6.html">impl</a></li><li class="navelem"><a class="el" href="dir_aab655f56fc07094ba97e63e989016de.html">backend</a></li><li class="navelem"><a class="el" href="dir_4a80e19c5eb833488f7a427fec98a543.html">vk2</a></li><li class="navelem"><b>image_view.hpp</b></li>
     <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.3 </li>
   </ul>
 </div>

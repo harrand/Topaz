@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.3"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Topaz: src/core/peripherals/monitor.hpp Source File</title>
+<title>Topaz: src/tz/core/peripherals/monitor.hpp Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -32,7 +32,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="tz.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Topaz<span id="projectnumber">&#160;3.2</span>
+   <div id="projectname">Topaz<span id="projectnumber">&#160;3.4</span>
    </div>
    <div id="projectbrief">C++20 Graphics Engine</div>
   </td>
@@ -99,8 +99,8 @@ $(document).ready(function(){initNavTree('monitor_8hpp_source.html',''); initRes
 <div class="contents">
 <div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef TOPAZ_CORE_PERIPHERALS_MONITOR_HPP</span></div>
 <div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define TOPAZ_CORE_PERIPHERALS_MONITOR_HPP</span></div>
-<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;core/vector.hpp&quot;</span></div>
-<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;core/containers/basic_list.hpp&quot;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;tz/core/vector.hpp&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;tz/core/containers/basic_list.hpp&quot;</span></div>
 <div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
 <div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="keyword">namespace </span>tz</div>
 <div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span>{</div>
@@ -126,8 +126,8 @@ $(document).ready(function(){initNavTree('monitor_8hpp_source.html',''); initRes
 <div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span><span class="preprocessor">#endif </span><span class="comment">// TOPAZ_CORE_PERIPHERALS_MONITOR_HPP</span></div>
 <div class="ttc" id="aclasstz_1_1_basic_list_html"><div class="ttname"><a href="classtz_1_1_basic_list.html">tz::BasicList</a></div><div class="ttdoc">Custom list, feature subset of std::vector.</div><div class="ttdef"><b>Definition:</b> basic_list.hpp:21</div></div>
 <div class="ttc" id="aclasstz_1_1_vector_html"><div class="ttname"><a href="classtz_1_1_vector.html">tz::Vector&lt; unsigned int, 2 &gt;</a></div></div>
-<div class="ttc" id="agroup__tz__core__init_html_ga0a5d1e375e7e82fcd12a8b74b8012bae"><div class="ttname"><a href="group__tz__core__init.html#ga0a5d1e375e7e82fcd12a8b74b8012bae">tz::terminate</a></div><div class="ttdeci">void terminate()</div><div class="ttdoc">Terminate Topaz.</div><div class="ttdef"><b>Definition:</b> tz.cpp:72</div></div>
-<div class="ttc" id="agroup__tz__core__init_html_gadc2dcae2bdcef568206f55a9f48d6658"><div class="ttname"><a href="group__tz__core__init.html#gadc2dcae2bdcef568206f55a9f48d6658">tz::initialise</a></div><div class="ttdeci">void initialise(InitialiseInfo init)</div><div class="ttdoc">Initialise Topaz.</div><div class="ttdef"><b>Definition:</b> tz.cpp:65</div></div>
+<div class="ttc" id="agroup__tz__core__init_html_ga0a5d1e375e7e82fcd12a8b74b8012bae"><div class="ttname"><a href="group__tz__core__init.html#ga0a5d1e375e7e82fcd12a8b74b8012bae">tz::terminate</a></div><div class="ttdeci">void terminate()</div><div class="ttdoc">Terminate Topaz.</div><div class="ttdef"><b>Definition:</b> tz.cpp:73</div></div>
+<div class="ttc" id="agroup__tz__core__init_html_gadc2dcae2bdcef568206f55a9f48d6658"><div class="ttname"><a href="group__tz__core__init.html#gadc2dcae2bdcef568206f55a9f48d6658">tz::initialise</a></div><div class="ttdeci">void initialise(InitialiseInfo init)</div><div class="ttdoc">Initialise Topaz.</div><div class="ttdef"><b>Definition:</b> tz.cpp:21</div></div>
 <div class="ttc" id="agroup__tz__core__peripherals__monitor_html_ga8c375e888a0744d39a2dbbbb8595b3a3"><div class="ttname"><a href="group__tz__core__peripherals__monitor.html#ga8c375e888a0744d39a2dbbbb8595b3a3">tz::get_default_monitor</a></div><div class="ttdeci">MonitorInfo get_default_monitor()</div><div class="ttdoc">Retrieve the default/primary monitor.</div><div class="ttdef"><b>Definition:</b> monitor.cpp:56</div></div>
 <div class="ttc" id="agroup__tz__core__peripherals__monitor_html_gac8609d020ccb07c03704a90b2c192b0c"><div class="ttname"><a href="group__tz__core__peripherals__monitor.html#gac8609d020ccb07c03704a90b2c192b0c">tz::get_monitors</a></div><div class="ttdeci">tz::BasicList&lt; MonitorInfo &gt; get_monitors()</div><div class="ttdoc">Retrieve a list of all monitors, sorted by their ids.</div><div class="ttdef"><b>Definition:</b> monitor.cpp:62</div></div>
 <div class="ttc" id="astructtz_1_1_monitor_info_html"><div class="ttname"><a href="structtz_1_1_monitor_info.html">tz::MonitorInfo</a></div><div class="ttdoc">Describes properties about a specific monitor.</div><div class="ttdef"><b>Definition:</b> monitor.hpp:25</div></div>
@@ -141,7 +141,7 @@ $(document).ready(function(){initNavTree('monitor_8hpp_source.html',''); initRes
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_aebb8dcc11953d78e620bbef0b9e2183.html">core</a></li><li class="navelem"><a class="el" href="dir_34794bca92a793a1e58b77dac439fbe4.html">peripherals</a></li><li class="navelem"><b>monitor.hpp</b></li>
+    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_173d7eb180c4d4693124e94b33941768.html">tz</a></li><li class="navelem"><a class="el" href="dir_08a9ab9f761476898a1bf8c3b193f50f.html">core</a></li><li class="navelem"><a class="el" href="dir_fa3eadf5bafccf7a4eea134e172a2de6.html">peripherals</a></li><li class="navelem"><b>monitor.hpp</b></li>
     <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.3 </li>
   </ul>
 </div>

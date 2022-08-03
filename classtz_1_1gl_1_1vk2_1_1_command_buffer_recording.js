@@ -6,6 +6,9 @@ var classtz_1_1gl_1_1vk2_1_1_command_buffer_recording =
     [ "bind_pipeline", "classtz_1_1gl_1_1vk2_1_1_command_buffer_recording.html#a8bbeeef67dcb9b04b17bf5abde907e01", null ],
     [ "buffer_copy_buffer", "classtz_1_1gl_1_1vk2_1_1_command_buffer_recording.html#a42ed45f3524b6bfe1c98de341b8b88de", null ],
     [ "buffer_copy_image", "classtz_1_1gl_1_1vk2_1_1_command_buffer_recording.html#a245b299b9c5cf4248e7ae19c63f63a8d", null ],
+    [ "dispatch", "classtz_1_1gl_1_1vk2_1_1_command_buffer_recording.html#a3c305e3576f093dad51bd911c6dbab60", null ],
     [ "draw", "classtz_1_1gl_1_1vk2_1_1_command_buffer_recording.html#acd2074bf1faa8b35502ec823cfde1abf", null ],
-    [ "get_command_buffer", "classtz_1_1gl_1_1vk2_1_1_command_buffer_recording.html#a6678f3d4ee65c534f273547942dbc208", null ]
+    [ "draw_indexed", "classtz_1_1gl_1_1vk2_1_1_command_buffer_recording.html#ad5539795d16fdb9fc6d507d38a45123c", null ],
+    [ "get_command_buffer", "classtz_1_1gl_1_1vk2_1_1_command_buffer_recording.html#a6678f3d4ee65c534f273547942dbc208", null ],
+    [ "image_copy_image", "classtz_1_1gl_1_1vk2_1_1_command_buffer_recording.html#a25b7a8e42401dd2af896c3c9459e112e", null ]
 ];

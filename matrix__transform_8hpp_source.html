@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.3"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Topaz: src/core/matrix_transform.hpp Source File</title>
+<title>Topaz: src/tz/core/matrix_transform.hpp Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -32,7 +32,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="tz.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Topaz<span id="projectnumber">&#160;3.2</span>
+   <div id="projectname">Topaz<span id="projectnumber">&#160;3.4</span>
    </div>
    <div id="projectbrief">C++20 Graphics Engine</div>
   </td>
@@ -103,8 +103,8 @@ $(document).ready(function(){initNavTree('matrix__transform_8hpp_source.html',''
 <div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
 <div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#ifndef TOPAZ_CORE_MATRIX_TRANSFORM_HPP</span></div>
 <div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#define TOPAZ_CORE_MATRIX_TRANSFORM_HPP</span></div>
-<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;core/matrix.hpp&quot;</span></div>
-<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;core/vector.hpp&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;tz/core/matrix.hpp&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;tz/core/vector.hpp&quot;</span></div>
 <div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
 <div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">namespace </span>tz</div>
 <div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>{</div>
@@ -125,14 +125,14 @@ $(document).ready(function(){initNavTree('matrix__transform_8hpp_source.html',''
 <div class="ttc" id="agroup__tz__core__vecmat__transform_html_ga8688d528fb598d8114bee15d030f343e"><div class="ttname"><a href="group__tz__core__vecmat__transform.html#ga8688d528fb598d8114bee15d030f343e">tz::rotate</a></div><div class="ttdeci">Mat4 rotate(Vec3 rotation)</div><div class="ttdoc">Generates a matrix which performs the following three transformations, in chronological order:</div><div class="ttdef"><b>Definition:</b> matrix_transform.cpp:82</div></div>
 <div class="ttc" id="agroup__tz__core__vecmat__transform_html_gaa745a0323f5e67e9a304bf108dbbc23d"><div class="ttname"><a href="group__tz__core__vecmat__transform.html#gaa745a0323f5e67e9a304bf108dbbc23d">tz::view</a></div><div class="ttdeci">Mat4 view(Vec3 position, Vec3 rotation)</div><div class="ttdoc">Generates a view matrix using the given view position and rotation.</div><div class="ttdef"><b>Definition:</b> matrix_transform.cpp:109</div></div>
 <div class="ttc" id="agroup__tz__core__vecmat__transform_html_gad00741152abc4c285840a062ad467582"><div class="ttname"><a href="group__tz__core__vecmat__transform.html#gad00741152abc4c285840a062ad467582">tz::model</a></div><div class="ttdeci">Mat4 model(Vec3 position, Vec3 rotation, Vec3 scale)</div><div class="ttdoc">Generates a model matrix using the given position, euler-rotation and scale vectors.</div><div class="ttdef"><b>Definition:</b> matrix_transform.cpp:103</div></div>
-<div class="ttc" id="agroup__tz__core__vecmat_html_ga8cfb113cdb198fe50c0e74a721575b51"><div class="ttname"><a href="group__tz__core__vecmat.html#ga8cfb113cdb198fe50c0e74a721575b51">tz::Mat4</a></div><div class="ttdeci">Matrix&lt; float, 4, 4 &gt; Mat4</div><div class="ttdef"><b>Definition:</b> matrix.hpp:205</div></div>
+<div class="ttc" id="agroup__tz__core__vecmat_html_ga8cfb113cdb198fe50c0e74a721575b51"><div class="ttname"><a href="group__tz__core__vecmat.html#ga8cfb113cdb198fe50c0e74a721575b51">tz::Mat4</a></div><div class="ttdeci">Matrix&lt; float, 4, 4 &gt; Mat4</div><div class="ttdef"><b>Definition:</b> matrix.hpp:207</div></div>
 <div class="ttc" id="agroup__tz__core__vecmat_html_gaf5ee3ec55283d482338ab2df715fbdb3"><div class="ttname"><a href="group__tz__core__vecmat.html#gaf5ee3ec55283d482338ab2df715fbdb3">tz::Vec3</a></div><div class="ttdeci">Vector&lt; float, 3 &gt; Vec3</div><div class="ttdoc">A vector of three floats.</div><div class="ttdef"><b>Definition:</b> vector.hpp:185</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_aebb8dcc11953d78e620bbef0b9e2183.html">core</a></li><li class="navelem"><b>matrix_transform.hpp</b></li>
+    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_173d7eb180c4d4693124e94b33941768.html">tz</a></li><li class="navelem"><a class="el" href="dir_08a9ab9f761476898a1bf8c3b193f50f.html">core</a></li><li class="navelem"><b>matrix_transform.hpp</b></li>
     <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.3 </li>
   </ul>
 </div>
