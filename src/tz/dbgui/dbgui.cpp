@@ -157,8 +157,7 @@ namespace tz::dbgui
 				.size = req_vtx_size
 			});
 		}
-		// TODO: Ensure this in imconfig because rendering wont work until this is fixed.
-		//static_assert(sizeof(ImDrawIdx) == sizeof(unsigned int), "Topaz indices must be c++ unsigned ints under-the-hood. ImDrawIdx does not match its size.");
+		static_assert(sizeof(ImDrawIdx) == sizeof(unsigned int), "Topaz indices must be c++ unsigned ints under-the-hood. ImDrawIdx does not match its size.");
 		auto indices = renderer.get_resource(global_render_data->index_buffer)->data();
 		auto vertices = renderer.get_resource(global_render_data->vertex_buffer)->data();
 		renderer.edit(edit.build());
