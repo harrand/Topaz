@@ -4,8 +4,8 @@ import <debug>
 
 struct ImGuiVertex
 {
-	vec2 pos;
-	vec2 uv;
+	float px, py;
+	float uvx, uvy;
 	uint col;
 };
 
@@ -14,14 +14,20 @@ resource(id = 0) const buffer Vertices
 	ImGuiVertex data[];
 } vertices;
 
+resource(id = 1) const buffer RenderData
+{
+	mat4 vp;
+	uint texture_id;
+} render;
+
 output(id = 0) vec2 vertex_uv;
 output(id = 1) vec4 vertex_colour;
 
 void main()
 {
 	ImGuiVertex vtx = vertices.data[in::vertex_id];
-	out::position = vec4(vtx.pos, 0.0f, 1.0f);
-	vertex_uv = vtx.uv;
+	out::position = render.vp * vec4(vtx.px, vtx.py, 0.0f, 1.0f);
+	vertex_uv = vec2(vtx.uvx, vtx.uvy);
 
 	vertex_colour = vec4(0.0);
 	vertex_colour.r = ((vtx.col >> 24) & 0xFF) / 255.0f;

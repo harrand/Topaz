@@ -1,6 +1,7 @@
 #include "tz/dbgui/dbgui.hpp"
 #include "tz/core/assert.hpp"
 #include "tz/core/window.hpp"
+#include "tz/core/matrix_transform.hpp"
 #include "tz/gl/renderer.hpp"
 #include "tz/gl/resource.hpp"
 #include "tz/gl/imported_shaders.hpp"
@@ -71,10 +72,18 @@ namespace tz::dbgui
 		std::unique_ptr<tz::gl::Renderer> renderer = nullptr;
 		tz::gl::ResourceHandle vertex_buffer = tz::nullhand;
 		tz::gl::ResourceHandle index_buffer = tz::nullhand;
+		tz::gl::ResourceHandle shader_data_buffer = tz::nullhand;
 	};
 
 	TopazPlatformData* global_platform_data = nullptr;
 	TopazRenderData* global_render_data = nullptr;
+
+	struct TopazShaderRenderData
+	{
+		tz::Mat4 vp;
+		std::uint32_t texture_id;
+		float pad[3];
+	};
 
 	bool imgui_impl_tz_init()
 	{
@@ -101,15 +110,18 @@ namespace tz::dbgui
 
 		tz::gl::BufferResource vertex_buffer = tz::gl::BufferResource::from_one(Kibibyte{}, tz::gl::ResourceAccess::DynamicVariable);
 		tz::gl::BufferResource index_buffer = tz::gl::BufferResource::from_one(Kibibyte{}, tz::gl::ResourceAccess::DynamicVariable, {tz::gl::ResourceFlag::IndexBuffer});
+		tz::gl::BufferResource shader_data_buffer = tz::gl::BufferResource::from_one(TopazShaderRenderData{}, tz::gl::ResourceAccess::DynamicFixed);
+
 		tz::gl::ImageResource font_image = tz::gl::ImageResource::from_memory(tz::gl::ImageFormat::RGBA32, {static_cast<unsigned int>(font_width), static_cast<unsigned int>(font_height)}, font_data, tz::gl::ResourceAccess::StaticFixed);
 
 		tz::gl::RendererInfo rinfo;
 		global_render_data->vertex_buffer = rinfo.add_resource(vertex_buffer);
+		global_render_data->shader_data_buffer = rinfo.add_resource(shader_data_buffer);
 		global_render_data->index_buffer = rinfo.add_resource(index_buffer);
 		tz::gl::ResourceHandle font_image_handle = rinfo.add_resource(font_image);
 		rinfo.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(dbgui, vertex));
 		rinfo.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(dbgui, fragment));
-		rinfo.set_options({tz::gl::RendererOption::NoClearOutput});
+		rinfo.set_options({tz::gl::RendererOption::NoClearOutput, tz::gl::RendererOption::NoDepthTesting});
 		
 		global_render_data->renderer = std::make_unique<tz::gl::Renderer>(global_device->create_renderer(rinfo));
 
@@ -162,23 +174,33 @@ namespace tz::dbgui
 		auto vertices = renderer.get_resource(global_render_data->vertex_buffer)->data();
 		renderer.edit(edit.build());
 		// Copy over all the vertex and index data.
-		std::size_t vb_cursor = 0, ib_cursor = 0;
 		for(std::size_t n = 0; std::cmp_less(n, draw->CmdListsCount); n++)
 		{
+			std::memset(indices.data(), 0, indices.size_bytes());
+			std::memset(vertices.data(), 0, vertices.size_bytes());
 			const ImDrawList* cmd = draw->CmdLists[n];
 			// So far we only support command buffer with a single render.
 			tz_assert(cmd->CmdBuffer.Size == 1, "ImDrawList command buffer had more than 1 command. Support for this is not yet implemented.");
+			ImDrawCmd draw_cmd = cmd->CmdBuffer[0];
 			// Copy over the vertex and index data.
-			std::memcpy(indices.data() + ib_cursor, cmd->IdxBuffer.Data, cmd->IdxBuffer.Size * sizeof(ImDrawIdx));
-			std::memcpy(vertices.data() + vb_cursor, cmd->VtxBuffer.Data, cmd->VtxBuffer.Size * sizeof(ImDrawVert));
+			std::memcpy(indices.data(), cmd->IdxBuffer.Data, cmd->IdxBuffer.Size * sizeof(ImDrawIdx));
+			std::memcpy(vertices.data(), cmd->VtxBuffer.Data, cmd->VtxBuffer.Size * sizeof(ImDrawVert));
+			// Set shader data (view-projection and texture-id)
+			TopazShaderRenderData& shader_data = renderer.get_resource(global_render_data->shader_data_buffer)->data_as<TopazShaderRenderData>().front();
+			const ImDrawData& draw_data = *ImGui::GetDrawData();
+			shader_data.vp = tz::orthographic(
+				0,
+				draw_data.DisplaySize.x,
+				0,
+				draw_data.DisplaySize.y,
+				-0.1f,
+				0.1f
+			);
+			shader_data.texture_id = 0u;
 
-			// Advance the cursors.
-			vb_cursor += cmd->VtxBuffer.Size * sizeof(ImDrawVert);
-			ib_cursor += cmd->IdxBuffer.Size * sizeof(ImDrawIdx);
+			// Do a draw.
+			const std::size_t tri_count = draw_cmd.ElemCount / 3;
+			renderer.render(tri_count);
 		}
-		tz_assert(ib_cursor == req_idx_size, "Command list total vertex count was dodgy. Expected %zu, got %zu", req_idx_size, ib_cursor);
-		tz_assert(vb_cursor == req_vtx_size, "Command list total vertex count was dodgy. Expected %zu, got %zu", req_vtx_size, vb_cursor);
-		const std::size_t index_count = draw->TotalIdxCount;
-		renderer.render(index_count / 3);
 	}
 }

@@ -1,11 +1,11 @@
 shader(type = fragment);
 
-resource(id = 1) const texture font_image[1];
+resource(id = 2) const texture font_image[1];
 input(id = 0) vec2 vertex_uv;
 input(id = 1) vec4 vertex_colour;
 output(id = 0) vec4 frag_colour;
 
 void main()
 {
-	frag_colour = vertex_colour.rgba;
+	frag_colour = vertex_colour.rgba * texture(font_image[0], vertex_uv).a;
 }
