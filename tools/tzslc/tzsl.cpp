@@ -343,13 +343,21 @@ namespace tzslc
 		tzslc::transform(shader_source, std::regex{builtin_printf_regex_noparams},
 		[](auto beg, auto end)
 		{
-			return std::string("debugPrintfEXT(\"TZ_GPUMSG: ") + *(beg + 0) + "\")";
+			#if TZ_VULKAN
+				return std::string("debugPrintfEXT(\"TZ_GPUMSG: ") + *(beg + 0) + "\")";
+			#else
+				return "";
+			#endif
 		});
 		constexpr char builtin_printf_regex[] = "tz::debug::printf\\(\\\"(.*)\\\"(.+)\\)";
 		tzslc::transform(shader_source, std::regex{builtin_printf_regex},
 		[](auto beg, auto end)
 		{
-			return std::string("debugPrintfEXT(\"TZ_GPUMSG: ") + *(beg + 0) + "\"" + *(beg + 1) + ")";
+			#if TZ_VULKAN
+				return std::string("debugPrintfEXT(\"TZ_GPUMSG: ") + *(beg + 0) + "\"" + *(beg + 1) + ")";
+			#else
+				return "";
+			#endif
 		});
 	}
 
