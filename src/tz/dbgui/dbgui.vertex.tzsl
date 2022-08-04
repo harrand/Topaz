@@ -1,7 +1,5 @@
 shader(type = vertex);
 
-import <debug>
-
 struct ImGuiVertex
 {
 	float px, py;
@@ -34,5 +32,4 @@ void main()
 	vertex_colour.b = ((vtx.col >> 16) & 0xFF) / 255.0f;
 	vertex_colour.g = ((vtx.col >> 8) & 0xFF) / 255.0f;
 	vertex_colour.r = ((vtx.col) & 0xFF) / 255.0f;
-	tz::debug::printf("vertex colour = %u {%v4f}", vtx.col, vertex_colour);
 }

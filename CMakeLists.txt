@@ -224,6 +224,8 @@ add_shader(
 	SHADERS
 		src/tz/dbgui/dbgui.vertex.tzsl
 		src/tz/dbgui/dbgui.fragment.tzsl
+		src/tz/dbgui/empty.vertex.tzsl
+		src/tz/dbgui/empty.fragment.tzsl
 	)
 
 add_subdirectory(demo)

@@ -1,5 +1,6 @@
 #include "tz/dbgui/dbgui.hpp"
 #include "tz/core/assert.hpp"
+#include "tz/core/report.hpp"
 #include "tz/core/window.hpp"
 #include "tz/core/matrix_transform.hpp"
 #include "tz/gl/renderer.hpp"
@@ -11,6 +12,8 @@
 
 #include ImportedShaderHeader(dbgui, vertex)
 #include ImportedShaderHeader(dbgui, fragment)
+#include ImportedShaderHeader(empty, vertex)
+#include ImportedShaderHeader(empty, fragment)
 
 namespace tz::dbgui
 {
@@ -19,6 +22,9 @@ namespace tz::dbgui
 	bool imgui_impl_tz_init();
 	void imgui_impl_tz_term();
 	void imgui_impl_render();
+
+	ImGuiKey tz_key_to_imgui(tz::KeyCode key_code);
+
 	ImTextureID handle_to_texid(tz::gl::ResourceHandle handle)
 	{
 		return reinterpret_cast<ImTextureID>(static_cast<std::uintptr_t>(static_cast<std::size_t>(static_cast<tz::HandleValue>(handle))));
@@ -70,6 +76,7 @@ namespace tz::dbgui
 	struct TopazRenderData
 	{
 		std::unique_ptr<tz::gl::Renderer> renderer = nullptr;
+		std::unique_ptr<tz::gl::Renderer> final_renderer = nullptr;
 		tz::gl::ResourceHandle vertex_buffer = tz::nullhand;
 		tz::gl::ResourceHandle index_buffer = tz::nullhand;
 		tz::gl::ResourceHandle shader_data_buffer = tz::nullhand;
@@ -118,14 +125,20 @@ namespace tz::dbgui
 		global_render_data->vertex_buffer = rinfo.add_resource(vertex_buffer);
 		global_render_data->shader_data_buffer = rinfo.add_resource(shader_data_buffer);
 		global_render_data->index_buffer = rinfo.add_resource(index_buffer);
-		tz::gl::ResourceHandle font_image_handle = rinfo.add_resource(font_image);
+		rinfo.add_resource(font_image);
 		rinfo.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(dbgui, vertex));
 		rinfo.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(dbgui, fragment));
-		rinfo.set_options({tz::gl::RendererOption::NoClearOutput, tz::gl::RendererOption::NoDepthTesting});
+		rinfo.set_options({tz::gl::RendererOption::NoClearOutput, tz::gl::RendererOption::NoDepthTesting, tz::gl::RendererOption::NoPresent});
 		
 		global_render_data->renderer = std::make_unique<tz::gl::Renderer>(global_device->create_renderer(rinfo));
 
-		io.Fonts->SetTexID(handle_to_texid(font_image_handle));
+		tz::gl::RendererInfo empty;
+		empty.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(empty, vertex));
+		empty.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(empty, fragment));
+		empty.set_options({tz::gl::RendererOption::NoClearOutput, tz::gl::RendererOption::NoDepthTesting});
+		global_render_data->final_renderer = std::make_unique<tz::gl::Renderer>(global_device->create_renderer(empty));
+
+		io.Fonts->SetTexID(0);
 
 		return true;
 	}
@@ -176,13 +189,10 @@ namespace tz::dbgui
 		// Copy over all the vertex and index data.
 		for(std::size_t n = 0; std::cmp_less(n, draw->CmdListsCount); n++)
 		{
+			// Copy over the vertex and index data.
 			std::memset(indices.data(), 0, indices.size_bytes());
 			std::memset(vertices.data(), 0, vertices.size_bytes());
 			const ImDrawList* cmd = draw->CmdLists[n];
-			// So far we only support command buffer with a single render.
-			tz_assert(cmd->CmdBuffer.Size == 1, "ImDrawList command buffer had more than 1 command. Support for this is not yet implemented.");
-			ImDrawCmd draw_cmd = cmd->CmdBuffer[0];
-			// Copy over the vertex and index data.
 			std::memcpy(indices.data(), cmd->IdxBuffer.Data, cmd->IdxBuffer.Size * sizeof(ImDrawIdx));
 			std::memcpy(vertices.data(), cmd->VtxBuffer.Data, cmd->VtxBuffer.Size * sizeof(ImDrawVert));
 			// Set shader data (view-projection and texture-id)
@@ -196,11 +206,65 @@ namespace tz::dbgui
 				-0.1f,
 				0.1f
 			);
-			shader_data.texture_id = 0u;
+			std::vector<std::byte> idxbuf_copy;
+			idxbuf_copy.resize(indices.size_bytes());
+			std::copy(indices.begin(), indices.end(), idxbuf_copy.begin());
+			for(const ImDrawCmd& draw_cmd : cmd->CmdBuffer)
+			{
+				// Copy initial indices back into index buffer.
+				std::copy(idxbuf_copy.begin(), idxbuf_copy.end(), indices.begin());
+				tz_assert(draw_cmd.VtxOffset == 0, "Draw Commands must have 0 vertex offset");
+				//tz_assert(draw_cmd.IdxOffset == 0, "Draw Commands must have 0 index offset");
+				// Rotate left for each idx offset.
+				std::rotate(indices.begin(), indices.begin() + (sizeof(unsigned int) * draw_cmd.IdxOffset), indices.end());
+				shader_data.texture_id = static_cast<std::size_t>(reinterpret_cast<std::uintptr_t>(draw_cmd.TextureId));
 
-			// Do a draw.
-			const std::size_t tri_count = draw_cmd.ElemCount / 3;
-			renderer.render(tri_count);
+				// Do a draw.
+				const std::size_t tri_count = draw_cmd.ElemCount / 3;
+				if(draw_cmd.UserCallback == nullptr)
+				{
+					renderer.render(tri_count);
+				}
+				else
+				{
+					draw_cmd.UserCallback(cmd, &draw_cmd);
+				}
+			}
+			global_render_data->final_renderer->render();
+		}
+
+	}
+
+	ImGuiKey tz_key_to_imgui(tz::KeyCode key_code)
+	{
+		switch(key_code)
+		{
+			using enum tz::KeyCode;
+			case Space:
+				return ImGuiKey_Space;
+			break;
+			case Backspace:
+				return ImGuiKey_Backspace;
+			break;
+			case Apostrophe:
+				return ImGuiKey_Apostrophe;
+			break;
+			case Comma:
+				return ImGuiKey_Comma;
+			break;
+			case Period:
+				return ImGuiKey_Period;
+			break;
+			case Minus:
+				return ImGuiKey_Minus;
+			break;
+			//case Plus:
+			//	return ImGuiKey_Plus;
+			//break;
+
+			default:
+				return ImGuiKey_None;
+			break;
 		}
 	}
 }

@@ -33,7 +33,9 @@ int main()
 				tz::window().update();
 				tz::dbgui::begin_frame();
 				renderer.render(1);
-				ImGui::Begin("Well met");
+				ImGui::Begin("Well met", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
+				ImGui::Text("i am harrand, gee i hope this text works!");
+				ImGui::Button("press me hnngh");
 				ImGui::End();
 				tz::dbgui::end_frame();
 				TZ_FRAME_END;
