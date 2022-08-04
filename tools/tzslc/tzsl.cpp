@@ -341,23 +341,19 @@ namespace tzslc
 		// Unfortunately, we have to do some hacking here because tz::debug::printf requires TZSL compiler support.
 		constexpr char builtin_printf_regex_noparams[] = "tz::debug::printf\\(\\\"(.*)\\\"\\)";
 		tzslc::transform(shader_source, std::regex{builtin_printf_regex_noparams},
-		[](auto beg, auto end)
+		[dialect](auto beg, auto end)
 		{
-			#if TZ_VULKAN
+			if(dialect == GLSLDialect::Vulkan)
 				return std::string("debugPrintfEXT(\"TZ_GPUMSG: ") + *(beg + 0) + "\")";
-			#else
-				return "";
-			#endif
+			return std::string("");
 		});
 		constexpr char builtin_printf_regex[] = "tz::debug::printf\\(\\\"(.*)\\\"(.+)\\)";
 		tzslc::transform(shader_source, std::regex{builtin_printf_regex},
-		[](auto beg, auto end)
+		[dialect](auto beg, auto end)
 		{
-			#if TZ_VULKAN
+			if(dialect == GLSLDialect::Vulkan)
 				return std::string("debugPrintfEXT(\"TZ_GPUMSG: ") + *(beg + 0) + "\"" + *(beg + 1) + ")";
-			#else
-				return "";
-			#endif
+			return std::string("");
 		});
 	}
 

@@ -187,12 +187,12 @@ namespace tz::dbgui
 			std::memcpy(vertices.data(), cmd->VtxBuffer.Data, cmd->VtxBuffer.Size * sizeof(ImDrawVert));
 			// Set shader data (view-projection and texture-id)
 			TopazShaderRenderData& shader_data = renderer.get_resource(global_render_data->shader_data_buffer)->data_as<TopazShaderRenderData>().front();
-			const ImDrawData& draw_data = *ImGui::GetDrawData();
+			const ImGuiIO& io = ImGui::GetIO();
 			shader_data.vp = tz::orthographic(
 				0,
-				draw_data.DisplaySize.x,
+				io.DisplaySize.x,
 				0,
-				draw_data.DisplaySize.y,
+				io.DisplaySize.y,
 				-0.1f,
 				0.1f
 			);

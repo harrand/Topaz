@@ -30,9 +30,9 @@ void main()
 	vertex_uv = vec2(vtx.uvx, vtx.uvy);
 
 	vertex_colour = vec4(0.0);
-	vertex_colour.r = ((vtx.col >> 24) & 0xFF) / 255.0f;
-	vertex_colour.g = ((vtx.col >> 16) & 0xFF) / 255.0f;
-	vertex_colour.b = ((vtx.col >> 8) & 0xFF) / 255.0f;
-	vertex_colour.a = 1.0f;
+	vertex_colour.a = ((vtx.col >> 24) & 0xFF) / 255.0f;
+	vertex_colour.b = ((vtx.col >> 16) & 0xFF) / 255.0f;
+	vertex_colour.g = ((vtx.col >> 8) & 0xFF) / 255.0f;
+	vertex_colour.r = ((vtx.col) & 0xFF) / 255.0f;
 	tz::debug::printf("vertex colour = %u {%v4f}", vtx.col, vertex_colour);
 }
