@@ -7,5 +7,5 @@ output(id = 0) vec4 frag_colour;
 
 void main()
 {
-	frag_colour = vertex_colour;
+	frag_colour = vertex_colour.rgba;
 }
