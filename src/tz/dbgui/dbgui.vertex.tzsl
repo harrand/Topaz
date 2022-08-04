@@ -1,6 +1,29 @@
 shader(type = vertex);
 
+struct ImGuiVertex
+{
+	vec2 pos;
+	vec2 uv;
+	uint col;
+};
+
+resource(id = 0) const buffer Vertices
+{
+	ImGuiVertex data[];
+} vertices;
+
+output(id = 0) vec2 vertex_uv;
+output(id = 1) vec4 vertex_colour;
+
 void main()
 {
+	ImGuiVertex vtx = vertices.data[in::vertex_id];
+	out::position = vec4(vtx.pos, 0.0f, 1.0f);
+	vertex_uv = vtx.uv;
 
+	vertex_colour = vec4(0.0);
+	vertex_colour.r = (vtx.col & 0xFF000000) / 0xFF;
+	vertex_colour.g = (vtx.col & 0x00FF0000) / 0xFF;
+	vertex_colour.b = (vtx.col & 0x0000FF00) / 0xFF;
+	vertex_colour.a = (vtx.col & 0x000000FF) / 0xFF;
 }
