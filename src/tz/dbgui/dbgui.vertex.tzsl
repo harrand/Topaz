@@ -20,12 +20,14 @@ resource(id = 1) const buffer RenderData
 
 output(id = 0) vec2 vertex_uv;
 output(id = 1) vec4 vertex_colour;
+output(id = 2) uint vertex_texture_id;
 
 void main()
 {
 	ImGuiVertex vtx = vertices.data[in::vertex_id];
 	out::position = render.vp * vec4(vtx.px, vtx.py, 0.0f, 1.0f);
 	vertex_uv = vec2(vtx.uvx, vtx.uvy);
+	vertex_texture_id = render.texture_id;
 
 	vertex_colour = vec4(0.0);
 	vertex_colour.a = ((vtx.col >> 24) & 0xFF) / 255.0f;
