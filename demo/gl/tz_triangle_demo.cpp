@@ -37,6 +37,8 @@ int main()
 				ImGui::Text("i am harrand, gee i hope this text works!");
 				ImGui::Button("press me hnngh");
 				ImGui::End();
+				ImGui::ShowDemoWindow();
+				ImGui::ShowStyleEditor();
 				tz::dbgui::end_frame();
 				TZ_FRAME_END;
 			}

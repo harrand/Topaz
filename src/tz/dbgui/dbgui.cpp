@@ -230,9 +230,8 @@ namespace tz::dbgui
 					draw_cmd.UserCallback(cmd, &draw_cmd);
 				}
 			}
-			global_render_data->final_renderer->render();
 		}
-
+		global_render_data->final_renderer->render();
 	}
 
 	ImGuiKey tz_key_to_imgui(tz::KeyCode key_code)
