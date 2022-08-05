@@ -8,6 +8,7 @@
 #include "tz/gl/imported_shaders.hpp"
 #include "tz/gl/component.hpp"
 #include <random>
+#include <algorithm>
 
 #include ImportedShaderHeader(tz_dynamic_triangle_demo, vertex)
 #include ImportedShaderHeader(tz_dynamic_triangle_demo, fragment)

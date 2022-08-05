@@ -1,6 +1,5 @@
 #include "tzsl.hpp"
 #include "source_transform.hpp"
-#include <bits/c++config.h>
 #include <fstream>
 #include <sstream>
 

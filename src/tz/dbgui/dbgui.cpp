@@ -183,9 +183,9 @@ namespace tz::dbgui
 			});
 		}
 		static_assert(sizeof(ImDrawIdx) == sizeof(unsigned int), "Topaz indices must be c++ unsigned ints under-the-hood. ImDrawIdx does not match its size.");
+		renderer.edit(edit.build());
 		auto indices = renderer.get_resource(global_render_data->index_buffer)->data();
 		auto vertices = renderer.get_resource(global_render_data->vertex_buffer)->data();
-		renderer.edit(edit.build());
 		// Copy over all the vertex and index data.
 		for(std::size_t n = 0; std::cmp_less(n, draw->CmdListsCount); n++)
 		{
