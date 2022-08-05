@@ -8,5 +8,10 @@ output(id = 0) vec4 frag_colour;
 
 void main()
 {
-	frag_colour = vertex_colour.rgba * texture(font_image[vertex_texture_id], vertex_uv).a;
+	float texa = texture(font_image[vertex_texture_id], vertex_uv).a;
+	frag_colour = vertex_colour.rgba * texa;
+	if(texa < 0.1f)
+	{
+		discard;
+	}
 }
