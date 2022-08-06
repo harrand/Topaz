@@ -100,6 +100,15 @@ namespace tz::dbgui
 			newly_pressed.erase(pressed_end, newly_pressed.end());
 			newly_released.erase(released_end, newly_released.end());
 			// Pass to imgui.
+			ImGuiIO* io = &ImGui::GetIO();
+			for(const auto& press : newly_pressed)
+			{
+				io->AddKeyEvent(tz_key_to_imgui(press.key.code), true);
+			}
+			for(const auto& release : newly_released)
+			{
+				io->AddKeyEvent(tz_key_to_imgui(release.key.code), false);
+			}
 			global_platform_data->kb_state = tz::window().get_keyboard_state();
 		#endif //TZ_DEBUG
 	}
@@ -279,6 +288,145 @@ namespace tz::dbgui
 			break;
 			//case Plus:
 			//	return ImGuiKey_Plus;
+			//break;
+			case ForwardSlash:
+				return ImGuiKey_Slash;
+			break;
+			case BackSlash:
+				return ImGuiKey_Backslash;
+			break;
+			case Zero:
+				return ImGuiKey_0;
+			break;
+			case One:
+				return ImGuiKey_1;
+			break;
+			case Two:
+				return ImGuiKey_2;
+			break;
+			case Three:
+				return ImGuiKey_3;
+			break;
+			case Four:
+				return ImGuiKey_4;
+			break;
+			case Five:
+				return ImGuiKey_5;
+			break;
+			case Six:
+				return ImGuiKey_6;
+			break;
+			case Seven:
+				return ImGuiKey_7;
+			break;
+			case Eight:
+				return ImGuiKey_8;
+			break;
+			case Nine:
+				return ImGuiKey_9;
+			break;
+			case Semicolon:
+				return ImGuiKey_Semicolon;
+			break;
+			case Equals:
+				return ImGuiKey_Equal;
+			break;
+			case A:
+				return ImGuiKey_A;
+			break;
+			case B:
+				return ImGuiKey_B;
+			break;
+			case C:
+				return ImGuiKey_C;
+			break;
+			case D:
+				return ImGuiKey_D;
+			break;
+			case E:
+				return ImGuiKey_E;
+			break;
+			case F:
+				return ImGuiKey_F;
+			break;
+			case G:
+				return ImGuiKey_G;
+			break;
+			case H:
+				return ImGuiKey_H;
+			break;
+			case I:
+				return ImGuiKey_I;
+			break;
+			case J:
+				return ImGuiKey_J;
+			break;
+			case K:
+				return ImGuiKey_K;
+			break;
+			case L:
+				return ImGuiKey_L;
+			break;
+			case M:
+				return ImGuiKey_M;
+			break;
+			case N:
+				return ImGuiKey_N;
+			break;
+			case O:
+				return ImGuiKey_O;
+			break;
+			case P:
+				return ImGuiKey_P;
+			break;
+			case Q:
+				return ImGuiKey_Q;
+			break;
+			case R:
+				return ImGuiKey_R;
+			break;
+			case S:
+				return ImGuiKey_S;
+			break;
+			case T:
+				return ImGuiKey_T;
+			break;
+			case U:
+				return ImGuiKey_U;
+			break;
+			case V:
+				return ImGuiKey_V;
+			break;
+			case W:
+				return ImGuiKey_W;
+			break;
+			case X:
+				return ImGuiKey_X;
+			break;
+			case Y:
+				return ImGuiKey_Y;
+			break;
+			case Z:
+				return ImGuiKey_Z;
+			break;
+			
+			case LeftBracket:
+				return ImGuiKey_LeftBracket;
+			break;
+			case RightBracket:
+				return ImGuiKey_RightBracket;
+			break;
+			//case LeftParenthesis:
+			//	return ImGuiKey_LeftParenthesis;
+			//break;
+			//case RightParenthesis:
+			//	return ImGuiKey_RightParenthesis;
+			//break;
+			//case LeftBrace:
+			//	return ImGuiKey_LeftBrace;
+			//break;
+			//case RightBrace:
+			//	return ImGuiKey_RightBrace;
 			//break;
 
 			default:
