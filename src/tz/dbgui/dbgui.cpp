@@ -17,6 +17,22 @@
 
 namespace tz::dbgui
 {
+	struct TopazPlatformData
+	{
+		tz::KeyboardState kb_state;
+	};
+
+	struct TopazRenderData
+	{
+		std::unique_ptr<tz::gl::Renderer> renderer = nullptr;
+		std::unique_ptr<tz::gl::Renderer> final_renderer = nullptr;
+		tz::gl::ResourceHandle vertex_buffer = tz::nullhand;
+		tz::gl::ResourceHandle index_buffer = tz::nullhand;
+		tz::gl::ResourceHandle shader_data_buffer = tz::nullhand;
+	};
+
+	TopazPlatformData* global_platform_data = nullptr;
+	TopazRenderData* global_render_data = nullptr;
 	tz::gl::Device* global_device = nullptr;
 
 	bool imgui_impl_tz_init();
@@ -30,7 +46,7 @@ namespace tz::dbgui
 		return reinterpret_cast<ImTextureID>(static_cast<std::uintptr_t>(static_cast<std::size_t>(static_cast<tz::HandleValue>(handle))));
 	}
 
-	void initialise(Info info)
+	void initialise([[maybe_unused]] Info info)
 	{
 		#if TZ_DEBUG
 			global_device = info.device;
@@ -65,25 +81,29 @@ namespace tz::dbgui
 			ImGui::EndFrame();
 			ImGui::Render();
 			imgui_impl_render();
+
+			std::span<const tz::KeyPressInfo> before = global_platform_data->kb_state.get_pressed_keys();
+			std::span<const tz::KeyPressInfo> after = tz::window().get_keyboard_state().get_pressed_keys();
+
+			const std::size_t x = std::max(before.size(), after.size());
+			if(x == 0)
+				return;
+			std::vector<tz::KeyPressInfo> newly_pressed;
+			newly_pressed.resize(x);
+			std::vector<tz::KeyPressInfo> newly_released;
+			newly_released.resize(x);
+
+			auto keypress_comp = [](const tz::KeyPressInfo& a, const tz::KeyPressInfo& b){return static_cast<int>(a.key.code) < static_cast<int>(b.key.code);};
+			auto released_end = std::set_difference(before.begin(), before.end(), after.begin(), after.end(), newly_released.begin(), keypress_comp);
+			auto pressed_end = std::set_difference(after.begin(), after.end(), before.begin(), before.end(), newly_pressed.begin(), keypress_comp);
+			
+			newly_pressed.erase(pressed_end, newly_pressed.end());
+			newly_released.erase(released_end, newly_released.end());
+			// Pass to imgui.
+			global_platform_data->kb_state = tz::window().get_keyboard_state();
 		#endif //TZ_DEBUG
 	}
 
-	struct TopazPlatformData
-	{
-
-	};
-
-	struct TopazRenderData
-	{
-		std::unique_ptr<tz::gl::Renderer> renderer = nullptr;
-		std::unique_ptr<tz::gl::Renderer> final_renderer = nullptr;
-		tz::gl::ResourceHandle vertex_buffer = tz::nullhand;
-		tz::gl::ResourceHandle index_buffer = tz::nullhand;
-		tz::gl::ResourceHandle shader_data_buffer = tz::nullhand;
-	};
-
-	TopazPlatformData* global_platform_data = nullptr;
-	TopazRenderData* global_render_data = nullptr;
 
 	struct TopazShaderRenderData
 	{

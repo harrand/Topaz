@@ -4,6 +4,7 @@
 #include <cctype>
 #include <string>
 #include <vector>
+#include <span>
 
 namespace tz
 {
@@ -286,6 +287,7 @@ namespace tz
 		 * @return True if key is repeating, otherwise false.
 		 */
 		bool is_key_repeating(KeyCode key) const;
+		std::span<const KeyPressInfo> get_pressed_keys() const;
 		/**
 		 * Attempt to print entire keyboard state to a single line of stdout.
 		 * 

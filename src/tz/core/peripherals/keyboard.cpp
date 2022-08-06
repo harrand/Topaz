@@ -51,6 +51,11 @@ namespace tz
 		return iter != this->pressed_keys.end() && iter->type == KeyPressType::Repeat;
 	}
 
+	std::span<const KeyPressInfo> KeyboardState::get_pressed_keys() const
+	{
+		return this->pressed_keys;
+	}
+
 	void KeyboardState::debug_print_state() const
 	{
 		#if TZ_DEBUG
