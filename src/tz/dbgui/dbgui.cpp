@@ -20,6 +20,8 @@ namespace tz::dbgui
 	struct TopazPlatformData
 	{
 		tz::KeyboardState kb_state;
+		tz::MousePositionState mouse_pos_state;
+		tz::MouseButtonState mouse_button_state;
 	};
 
 	struct TopazRenderData
@@ -34,6 +36,8 @@ namespace tz::dbgui
 	TopazPlatformData* global_platform_data = nullptr;
 	TopazRenderData* global_render_data = nullptr;
 	tz::gl::Device* global_device = nullptr;
+
+	void imgui_impl_handle_inputs();
 
 	bool imgui_impl_tz_init();
 	void imgui_impl_tz_term();
@@ -82,34 +86,8 @@ namespace tz::dbgui
 			ImGui::Render();
 			imgui_impl_render();
 
-			std::span<const tz::KeyPressInfo> before = global_platform_data->kb_state.get_pressed_keys();
-			std::span<const tz::KeyPressInfo> after = tz::window().get_keyboard_state().get_pressed_keys();
+			imgui_impl_handle_inputs();
 
-			const std::size_t x = std::max(before.size(), after.size());
-			if(x == 0)
-				return;
-			std::vector<tz::KeyPressInfo> newly_pressed;
-			newly_pressed.resize(x);
-			std::vector<tz::KeyPressInfo> newly_released;
-			newly_released.resize(x);
-
-			auto keypress_comp = [](const tz::KeyPressInfo& a, const tz::KeyPressInfo& b){return static_cast<int>(a.key.code) < static_cast<int>(b.key.code);};
-			auto released_end = std::set_difference(before.begin(), before.end(), after.begin(), after.end(), newly_released.begin(), keypress_comp);
-			auto pressed_end = std::set_difference(after.begin(), after.end(), before.begin(), before.end(), newly_pressed.begin(), keypress_comp);
-			
-			newly_pressed.erase(pressed_end, newly_pressed.end());
-			newly_released.erase(released_end, newly_released.end());
-			// Pass to imgui.
-			ImGuiIO* io = &ImGui::GetIO();
-			for(const auto& press : newly_pressed)
-			{
-				io->AddKeyEvent(tz_key_to_imgui(press.key.code), true);
-			}
-			for(const auto& release : newly_released)
-			{
-				io->AddKeyEvent(tz_key_to_imgui(release.key.code), false);
-			}
-			global_platform_data->kb_state = tz::window().get_keyboard_state();
 		#endif //TZ_DEBUG
 	}
 
@@ -120,6 +98,52 @@ namespace tz::dbgui
 		std::uint32_t texture_id;
 		float pad[3];
 	};
+
+	void imgui_impl_handle_inputs()
+	{
+		#if TZ_DEBUG
+			ImGuiIO& io = ImGui::GetIO();
+			std::span<const tz::KeyPressInfo> before = global_platform_data->kb_state.get_pressed_keys();
+			std::span<const tz::KeyPressInfo> after = tz::window().get_keyboard_state().get_pressed_keys();
+
+			const std::size_t x = std::max(before.size(), after.size());
+			if(x > 0)
+			{
+				std::vector<tz::KeyPressInfo> newly_pressed;
+				newly_pressed.resize(x);
+				std::vector<tz::KeyPressInfo> newly_released;
+				newly_released.resize(x);
+
+				auto keypress_comp = [](const tz::KeyPressInfo& a, const tz::KeyPressInfo& b){return static_cast<int>(a.key.code) < static_cast<int>(b.key.code);};
+				auto released_end = std::set_difference(before.begin(), before.end(), after.begin(), after.end(), newly_released.begin(), keypress_comp);
+				auto pressed_end = std::set_difference(after.begin(), after.end(), before.begin(), before.end(), newly_pressed.begin(), keypress_comp);
+				
+				newly_pressed.erase(pressed_end, newly_pressed.end());
+				newly_released.erase(released_end, newly_released.end());
+				// Pass to imgui.
+				for(const auto& press : newly_pressed)
+				{
+					io.AddKeyEvent(tz_key_to_imgui(press.key.code), true);
+				}
+				for(const auto& release : newly_released)
+				{
+					io.AddKeyEvent(tz_key_to_imgui(release.key.code), false);
+				}
+			}
+
+			if(tz::window().get_mouse_position_state().get_mouse_position() != global_platform_data->mouse_pos_state.get_mouse_position())
+			{
+				auto mpos = static_cast<tz::Vec2>(tz::window().get_mouse_position_state().get_mouse_position());
+				//tz_report("mouse {%.2f, %.2f}", mpos[0], mpos[1]);
+				io.AddMousePosEvent(mpos[0], mpos[1]);
+			}
+
+			global_platform_data->kb_state = tz::window().get_keyboard_state();
+			global_platform_data->mouse_pos_state = tz::window().get_mouse_position_state();
+			global_platform_data->mouse_button_state = tz::window().get_mouse_button_state();
+
+		#endif // TZ_DEBUG
+	}
 
 	bool imgui_impl_tz_init()
 	{
