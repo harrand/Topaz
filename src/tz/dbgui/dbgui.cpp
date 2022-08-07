@@ -96,7 +96,9 @@ namespace tz::dbgui
 	{
 		tz::Mat4 vp;
 		std::uint32_t texture_id;
-		float pad[3];
+		std::uint32_t index_offset;
+		std::uint32_t vertex_offset;
+		float pad[1];
 	};
 
 	void imgui_impl_handle_inputs()
@@ -169,7 +171,7 @@ namespace tz::dbgui
 		struct Kibibyte{char d[1024];};
 
 		tz::gl::BufferResource vertex_buffer = tz::gl::BufferResource::from_one(Kibibyte{}, tz::gl::ResourceAccess::DynamicVariable);
-		tz::gl::BufferResource index_buffer = tz::gl::BufferResource::from_one(Kibibyte{}, tz::gl::ResourceAccess::DynamicVariable, {tz::gl::ResourceFlag::IndexBuffer});
+		tz::gl::BufferResource index_buffer = tz::gl::BufferResource::from_one(Kibibyte{}, tz::gl::ResourceAccess::DynamicVariable);
 		tz::gl::BufferResource shader_data_buffer = tz::gl::BufferResource::from_one(TopazShaderRenderData{}, tz::gl::ResourceAccess::DynamicFixed);
 
 		tz::gl::ImageResource font_image = tz::gl::ImageResource::from_memory(tz::gl::ImageFormat::RGBA32, {static_cast<unsigned int>(font_width), static_cast<unsigned int>(font_height)}, font_data, tz::gl::ResourceAccess::StaticFixed);
@@ -239,15 +241,17 @@ namespace tz::dbgui
 		renderer.edit(edit.build());
 		auto indices = renderer.get_resource(global_render_data->index_buffer)->data();
 		auto vertices = renderer.get_resource(global_render_data->vertex_buffer)->data();
+		// Copy over the vertex and index data.
+		std::memset(indices.data(), 0, indices.size_bytes());
+		std::memset(vertices.data(), 0, vertices.size_bytes());
 		// Copy over all the vertex and index data.
+		std::size_t index_cursor = 0;
+		std::size_t vertex_cursor = 0;
 		for(std::size_t n = 0; std::cmp_less(n, draw->CmdListsCount); n++)
 		{
-			// Copy over the vertex and index data.
-			std::memset(indices.data(), 0, indices.size_bytes());
-			std::memset(vertices.data(), 0, vertices.size_bytes());
 			const ImDrawList* cmd = draw->CmdLists[n];
-			std::memcpy(indices.data(), cmd->IdxBuffer.Data, cmd->IdxBuffer.Size * sizeof(ImDrawIdx));
-			std::memcpy(vertices.data(), cmd->VtxBuffer.Data, cmd->VtxBuffer.Size * sizeof(ImDrawVert));
+			std::memcpy(indices.data() + index_cursor, cmd->IdxBuffer.Data, cmd->IdxBuffer.Size * sizeof(ImDrawIdx));
+			std::memcpy(vertices.data() + vertex_cursor, cmd->VtxBuffer.Data, cmd->VtxBuffer.Size * sizeof(ImDrawVert));
 			// Set shader data (view-projection and texture-id)
 			TopazShaderRenderData& shader_data = renderer.get_resource(global_render_data->shader_data_buffer)->data_as<TopazShaderRenderData>().front();
 			const ImGuiIO& io = ImGui::GetIO();
@@ -259,18 +263,11 @@ namespace tz::dbgui
 				-0.1f,
 				0.1f
 			);
-			std::vector<std::byte> idxbuf_copy;
-			idxbuf_copy.resize(indices.size_bytes());
-			std::copy(indices.begin(), indices.end(), idxbuf_copy.begin());
 			for(const ImDrawCmd& draw_cmd : cmd->CmdBuffer)
 			{
-				// Copy initial indices back into index buffer.
-				std::copy(idxbuf_copy.begin(), idxbuf_copy.end(), indices.begin());
-				tz_assert(draw_cmd.VtxOffset == 0, "Draw Commands must have 0 vertex offset");
-				//tz_assert(draw_cmd.IdxOffset == 0, "Draw Commands must have 0 index offset");
-				// Rotate left for each idx offset.
-				std::rotate(indices.begin(), indices.begin() + (sizeof(unsigned int) * draw_cmd.IdxOffset), indices.end());
 				shader_data.texture_id = static_cast<std::size_t>(reinterpret_cast<std::uintptr_t>(draw_cmd.TextureId));
+				shader_data.index_offset = draw_cmd.IdxOffset;
+				shader_data.vertex_offset = draw_cmd.VtxOffset;
 
 				// Do a draw.
 				const std::size_t tri_count = draw_cmd.ElemCount / 3;

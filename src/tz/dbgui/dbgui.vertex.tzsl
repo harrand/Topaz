@@ -16,7 +16,14 @@ resource(id = 1) const buffer RenderData
 {
 	mat4 vp;
 	uint texture_id;
+	uint index_offset;
+	uint vertex_offset;
 } render;
+
+resource(id = 2) const buffer IndexData
+{
+	uint data[];
+} indices;
 
 output(id = 0) vec2 vertex_uv;
 output(id = 1) vec4 vertex_colour;
@@ -24,7 +31,8 @@ output(id = 2) uint vertex_texture_id;
 
 void main()
 {
-	ImGuiVertex vtx = vertices.data[in::vertex_id];
+	uint index = indices.data[in::vertex_id + render.index_offset];
+	ImGuiVertex vtx = vertices.data[index + render.vertex_offset];
 	out::position = render.vp * vec4(vtx.px, vtx.py, 0.0f, 1.0f);
 	vertex_uv = vec2(vtx.uvx, vtx.uvy);
 	vertex_texture_id = render.texture_id;

@@ -1,6 +1,6 @@
 shader(type = fragment);
 
-resource(id = 2) const texture font_image[1];
+resource(id = 3) const texture font_image[1];
 input(id = 0) vec2 vertex_uv;
 input(id = 1) vec4 vertex_colour;
 input(id = 2, flat) uint vertex_texture_id;
