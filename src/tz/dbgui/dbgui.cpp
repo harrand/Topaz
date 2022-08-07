@@ -42,8 +42,10 @@ namespace tz::dbgui
 	bool imgui_impl_tz_init();
 	void imgui_impl_tz_term();
 	void imgui_impl_render();
+	void imgui_impl_begin_commands();
 
 	ImGuiKey tz_key_to_imgui(tz::KeyCode key_code);
+	ImGuiMouseButton tz_btn_to_imgui(tz::MouseButton btn);
 
 	ImTextureID handle_to_texid(tz::gl::ResourceHandle handle)
 	{
@@ -76,6 +78,7 @@ namespace tz::dbgui
 				static_cast<float>(tz::window().get_height())
 			};
 			ImGui::NewFrame();
+			imgui_impl_begin_commands();
 		#endif // TZ_DEBUG
 	}
 
@@ -105,6 +108,8 @@ namespace tz::dbgui
 	{
 		std::vector<tz::KeyPressInfo> newly_pressed = {};
 		std::vector<tz::KeyPressInfo> newly_released = {};
+		std::vector<tz::MouseButtonPressInfo> newly_pressed_buttons = {};
+		std::vector<tz::MouseButtonPressInfo> newly_released_buttons = {};
 		bool mouse_position_changed = false;
 	};
 
@@ -117,7 +122,7 @@ namespace tz::dbgui
 			std::vector<tz::KeyPressInfo> newly_pressed;
 			std::vector<tz::KeyPressInfo> newly_released;
 
-			const std::size_t x = std::max(before.size(), after.size());
+			std::size_t x = std::max(before.size(), after.size());
 			if(x > 0)
 			{
 				newly_pressed.resize(x);
@@ -131,16 +136,38 @@ namespace tz::dbgui
 				newly_released.erase(released_end, newly_released.end());
 			}
 
+			// Mouse position and buttons
 			bool mouse_moved = tz::window().get_mouse_position_state().get_mouse_position() != global_platform_data->mouse_pos_state.get_mouse_position();
+			std::span<const tz::MouseButtonPressInfo> before_buttons = global_platform_data->mouse_button_state.get_pressed_buttons();
+			std::span<const tz::MouseButtonPressInfo> after_buttons = tz::window().get_mouse_button_state().get_pressed_buttons();
+			std::vector<tz::MouseButtonPressInfo> newly_pressed_buttons;
+			std::vector<tz::MouseButtonPressInfo> newly_released_buttons;
+			x = std::max(before_buttons.size(), after_buttons.size());
+			if(x > 0)
+			{
+				newly_pressed_buttons.resize(x);
+				newly_released_buttons.resize(x);
+				auto btnpress_comp = [](const tz::MouseButtonPressInfo& a, const tz::MouseButtonPressInfo& b){return static_cast<int>(a.button.button) < static_cast<int>(b.button.button);};
+				auto released_end = std::set_difference(before_buttons.begin(), before_buttons.end(), after_buttons.begin(), after_buttons.end(), newly_released_buttons.begin(), btnpress_comp);
+				auto pressed_end = std::set_difference(after_buttons.begin(), after_buttons.end(), before_buttons.begin(), before_buttons.end(), newly_pressed_buttons.begin(), btnpress_comp);
+				
+				newly_pressed_buttons.erase(pressed_end, newly_pressed_buttons.end());
+				newly_released_buttons.erase(released_end, newly_released_buttons.end());
+			}
 
+
+			// Update global platform data.
 			global_platform_data->kb_state = tz::window().get_keyboard_state();
 			global_platform_data->mouse_pos_state = tz::window().get_mouse_position_state();
 			global_platform_data->mouse_button_state = tz::window().get_mouse_button_state();
 
+			// Return results.
 			return
 			{
 				.newly_pressed = std::move(newly_pressed),
 				.newly_released = std::move(newly_released),
+				.newly_pressed_buttons = std::move(newly_pressed_buttons),
+				.newly_released_buttons = std::move(newly_released_buttons),
 				.mouse_position_changed  = mouse_moved
 			};
 		#endif // TZ_DEBUG
@@ -160,6 +187,25 @@ namespace tz::dbgui
 			for(const auto& release : delta.newly_released)
 			{
 				io.AddKeyEvent(tz_key_to_imgui(release.key.code), false);
+			}
+
+			for(const auto& btn_press : delta.newly_pressed_buttons)
+			{
+				ImGuiMouseButton btn = tz_btn_to_imgui(btn_press.button.button);
+				if(btn == ImGuiMouseButton_COUNT)
+				{
+					continue;
+				}
+				io.AddMouseButtonEvent(btn, true);
+			}
+			for(const auto& btn_release : delta.newly_released_buttons)
+			{
+				ImGuiMouseButton btn = tz_btn_to_imgui(btn_release.button.button);
+				if(btn == ImGuiMouseButton_COUNT)
+				{
+					continue;
+				}
+				io.AddMouseButtonEvent(btn, false);
 			}
 
 			if(delta.mouse_position_changed)
@@ -305,6 +351,44 @@ namespace tz::dbgui
 			}
 		}
 		global_render_data->final_renderer->render();
+	}
+
+	void imgui_impl_begin_commands()
+	{
+		if(ImGui::BeginMainMenuBar())
+		{
+			if(ImGui::BeginMenu("tz"))
+			{
+				ImGui::MenuItem("you've been morbed");
+				ImGui::EndMenu();
+			}
+			if(ImGui::BeginMenu("tz::gl"))
+			{
+				ImGui::MenuItem("hello me old chum");
+				ImGui::EndMenu();
+			}
+			ImGui::EndMainMenuBar();
+		}
+	}
+
+	ImGuiMouseButton tz_btn_to_imgui(tz::MouseButton button)
+	{
+		switch(button)
+		{
+			using enum tz::MouseButton;
+			case Left:
+				return ImGuiMouseButton_Left;
+			break;
+			case Right:
+				return ImGuiMouseButton_Right;
+			break;
+			case Middle:
+				return ImGuiMouseButton_Middle;
+			break;
+			default:
+				return ImGuiMouseButton_COUNT;
+			break;
+		}
 	}
 
 	ImGuiKey tz_key_to_imgui(tz::KeyCode key_code)

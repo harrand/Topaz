@@ -36,6 +36,11 @@ namespace tz
 		}) != this->pressed_buttons.end();
 	}
 
+	std::span<const MouseButtonPressInfo> MouseButtonState::get_pressed_buttons() const
+	{
+		return this->pressed_buttons;
+	}
+
 	tz::Vec2ui MouseButtonState::get_mouse_press_position(MouseButton button) const
 	{
 		tz_assert(this->is_mouse_button_down(button), "Cannot retrieve mouse press position when the button is not pressed. Please submit a bug report.");

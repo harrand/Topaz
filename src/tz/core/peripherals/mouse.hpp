@@ -112,6 +112,7 @@ namespace tz
 		 * @pre `is_mouse_button_down(button) == true` otherwise the behaviour is undefined.
 		 */
 		tz::Vec2ui get_mouse_press_position(MouseButton button) const;
+		std::span<const MouseButtonPressInfo> get_pressed_buttons() const;
 		/**
 		 * Attempt to print entire mouse button state to a single line of stdout.
 		 * 
