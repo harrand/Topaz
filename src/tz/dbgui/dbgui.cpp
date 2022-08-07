@@ -262,7 +262,7 @@ namespace tz::dbgui
 				io.DisplaySize.y,
 				-0.1f,
 				0.1f
-			);
+			) * tz::view(tz::Vec3{io.DisplaySize.x * 0.5f, io.DisplaySize.y * 0.5f, 0.0f}, {});
 			for(const ImDrawCmd& draw_cmd : cmd->CmdBuffer)
 			{
 				shader_data.texture_id = static_cast<std::size_t>(reinterpret_cast<std::uintptr_t>(draw_cmd.TextureId));
