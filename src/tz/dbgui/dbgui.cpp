@@ -183,6 +183,8 @@ namespace tz::dbgui
 			for(const auto& press : delta.newly_pressed)
 			{
 				io.AddKeyEvent(tz_key_to_imgui(press.key.code), true);
+				// TODO: Proper text parsing
+				io.AddInputCharacter(press.key.representation);
 			}
 			for(const auto& release : delta.newly_released)
 			{
