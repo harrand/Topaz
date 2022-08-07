@@ -101,19 +101,26 @@ namespace tz::dbgui
 		float pad[1];
 	};
 
-	void imgui_impl_handle_inputs()
+	struct InputDelta
+	{
+		std::vector<tz::KeyPressInfo> newly_pressed = {};
+		std::vector<tz::KeyPressInfo> newly_released = {};
+		bool mouse_position_changed = false;
+	};
+
+	InputDelta imgui_impl_get_input_delta()
 	{
 		#if TZ_DEBUG
-			ImGuiIO& io = ImGui::GetIO();
+			// Get keyboard pressed/released deltas.
 			std::span<const tz::KeyPressInfo> before = global_platform_data->kb_state.get_pressed_keys();
 			std::span<const tz::KeyPressInfo> after = tz::window().get_keyboard_state().get_pressed_keys();
+			std::vector<tz::KeyPressInfo> newly_pressed;
+			std::vector<tz::KeyPressInfo> newly_released;
 
 			const std::size_t x = std::max(before.size(), after.size());
 			if(x > 0)
 			{
-				std::vector<tz::KeyPressInfo> newly_pressed;
 				newly_pressed.resize(x);
-				std::vector<tz::KeyPressInfo> newly_released;
 				newly_released.resize(x);
 
 				auto keypress_comp = [](const tz::KeyPressInfo& a, const tz::KeyPressInfo& b){return static_cast<int>(a.key.code) < static_cast<int>(b.key.code);};
@@ -122,28 +129,44 @@ namespace tz::dbgui
 				
 				newly_pressed.erase(pressed_end, newly_pressed.end());
 				newly_released.erase(released_end, newly_released.end());
-				// Pass to imgui.
-				for(const auto& press : newly_pressed)
-				{
-					io.AddKeyEvent(tz_key_to_imgui(press.key.code), true);
-				}
-				for(const auto& release : newly_released)
-				{
-					io.AddKeyEvent(tz_key_to_imgui(release.key.code), false);
-				}
 			}
 
-			if(tz::window().get_mouse_position_state().get_mouse_position() != global_platform_data->mouse_pos_state.get_mouse_position())
-			{
-				auto mpos = static_cast<tz::Vec2>(tz::window().get_mouse_position_state().get_mouse_position());
-				//tz_report("mouse {%.2f, %.2f}", mpos[0], mpos[1]);
-				io.AddMousePosEvent(mpos[0], mpos[1]);
-			}
+			bool mouse_moved = tz::window().get_mouse_position_state().get_mouse_position() != global_platform_data->mouse_pos_state.get_mouse_position();
 
 			global_platform_data->kb_state = tz::window().get_keyboard_state();
 			global_platform_data->mouse_pos_state = tz::window().get_mouse_position_state();
 			global_platform_data->mouse_button_state = tz::window().get_mouse_button_state();
 
+			return
+			{
+				.newly_pressed = std::move(newly_pressed),
+				.newly_released = std::move(newly_released),
+				.mouse_position_changed  = mouse_moved
+			};
+		#endif // TZ_DEBUG
+		return {};
+	}
+
+	void imgui_impl_handle_inputs()
+	{
+		#if TZ_DEBUG
+			ImGuiIO& io = ImGui::GetIO();
+			InputDelta delta = imgui_impl_get_input_delta();
+			// Pass to imgui.
+			for(const auto& press : delta.newly_pressed)
+			{
+				io.AddKeyEvent(tz_key_to_imgui(press.key.code), true);
+			}
+			for(const auto& release : delta.newly_released)
+			{
+				io.AddKeyEvent(tz_key_to_imgui(release.key.code), false);
+			}
+
+			if(delta.mouse_position_changed)
+			{
+				const auto mpos = static_cast<tz::Vec2>(tz::window().get_mouse_position_state().get_mouse_position());
+				io.AddMousePosEvent(mpos[0], mpos[1]);
+			}
 		#endif // TZ_DEBUG
 	}
 
