@@ -1071,6 +1071,11 @@ namespace tz::gl
 			.execution_complete_fence = &this->device_scheduler->get_frame_fences()[this->current_frame]
 		});
 
+		if(this->instant_compute_enabled)
+		{
+			this->device_scheduler->get_frame_fences()[this->current_frame].wait_until_signalled();
+		}
+
 		CommandProcessor::RenderWorkSubmitResult result;
 
 		if(requires_present && !this->options.contains(tz::gl::RendererOption::NoPresent))
@@ -1088,10 +1093,6 @@ namespace tz::gl
 			result.present = vk2::hardware::Queue::PresentResult::Success;
 		}
 
-		if(this->instant_compute_enabled)
-		{
-			this->device_scheduler->get_frame_fences()[this->current_frame].wait_until_signalled();
-		}
 		this->current_frame = (this->current_frame + 1) % this->frame_in_flight_count;
 		return result;
 	}

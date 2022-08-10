@@ -466,10 +466,6 @@ namespace tz::gl
 			}
 			tz_assert(this->resources.try_get_index_buffer() == nullptr, "Compute renderer has an index buffer applied to it. This doesn't make any sense. Please submit a bug report.");
 			glDispatchCompute(this->compute_kernel[0], this->compute_kernel[1], this->compute_kernel[2]);
-			if(this->get_options().contains(RendererOption::BlockingCompute))
-			{
-				glClientWaitSync(glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0), GL_SYNC_FLUSH_COMMANDS_BIT, std::numeric_limits<GLuint64>::max());
-			}
 		}
 		else
 		{
@@ -521,6 +517,11 @@ namespace tz::gl
 		#if TZ_DEBUG
 		{
 			glPopDebugGroup();
+		}
+		// If we're doing instant render, block now.
+		if(this->get_options().contains(RendererOption::BlockingCompute))
+		{
+			glClientWaitSync(glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0), GL_SYNC_FLUSH_COMMANDS_BIT, std::numeric_limits<GLuint64>::max());
 		}
 		#endif
 	}
