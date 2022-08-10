@@ -94,7 +94,6 @@ namespace tz::dbgui
 		#endif //TZ_DEBUG
 	}
 
-
 	struct TopazShaderRenderData
 	{
 		tz::Mat4 vp;
@@ -254,7 +253,8 @@ namespace tz::dbgui
 		rinfo.add_resource(font_image);
 		rinfo.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(dbgui, vertex));
 		rinfo.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(dbgui, fragment));
-		rinfo.set_options({tz::gl::RendererOption::NoClearOutput, tz::gl::RendererOption::NoDepthTesting, tz::gl::RendererOption::NoPresent});
+		rinfo.set_options({tz::gl::RendererOption::NoClearOutput, tz::gl::RendererOption::NoDepthTesting, tz::gl::RendererOption::NoPresent, tz::gl::RendererOption::BlockingCompute});
+		rinfo.debug_name("ImGui Intermediate Renderer");
 		
 		global_render_data->renderer = std::make_unique<tz::gl::Renderer>(global_device->create_renderer(rinfo));
 
@@ -262,6 +262,7 @@ namespace tz::dbgui
 		empty.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(empty, vertex));
 		empty.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(empty, fragment));
 		empty.set_options({tz::gl::RendererOption::NoClearOutput, tz::gl::RendererOption::NoDepthTesting});
+		empty.debug_name("ImGui Final Renderer");
 		global_render_data->final_renderer = std::make_unique<tz::gl::Renderer>(global_device->create_renderer(empty));
 
 		io.Fonts->SetTexID(0);
@@ -355,6 +356,33 @@ namespace tz::dbgui
 		global_render_data->final_renderer->render();
 	}
 
+	struct ImGuiTabTZGL
+	{
+		bool show_info = false;
+	};
+
+	ImGuiTabTZGL tab_tzgl;
+
+	void draw_tz_gl_info()
+	{
+		if(ImGui::Begin("tz::gl Info", &tab_tzgl.show_info))
+		{
+			ImGui::Text("Graphics API:");
+			ImGui::SameLine();
+			#if TZ_VULKAN
+				ImGui::Text("Vulkan");					
+			#elif TZ_OGL
+				ImGui::Text("OpenGL");	
+			#else
+				InGui::Text("Unknown");	
+			#endif
+			ImGui::Spacing();
+			ImGui::Text("well met");
+			ImGui::End();
+		}
+	}
+
+
 	void imgui_impl_begin_commands()
 	{
 		if(ImGui::BeginMainMenuBar())
@@ -367,9 +395,20 @@ namespace tz::dbgui
 			if(ImGui::BeginMenu("tz::gl"))
 			{
 				ImGui::MenuItem("hello me old chum");
+				ImGui::MenuItem("Info", nullptr, &tab_tzgl.show_info);
 				ImGui::EndMenu();
 			}
 			ImGui::EndMainMenuBar();
+
+			if(tab_tzgl.show_info)
+			{
+				draw_tz_gl_info();
+			}
+		}
+
+		if(tab_tzgl.show_info)
+		{
+
 		}
 	}
 

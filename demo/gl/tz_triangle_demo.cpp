@@ -35,8 +35,8 @@ int main()
 				renderer.render(1);
 				#if TZ_DEBUG
 					ImGui::Begin("Well met", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
-					ImGui::Text("i am harrand, gee i hope this text works!");
-					ImGui::Button("press me hnngh");
+					ImGui::Text("font image:");
+					ImGui::Image((void*)0, {512, 64});
 					ImGui::End();
 					ImGui::ShowDemoWindow();
 					ImGui::ShowStyleEditor();
