@@ -775,6 +775,10 @@ namespace tz::gl
 						.depth_testing = this->depth_testing_enabled,
 						.depth_writes = this->depth_testing_enabled
 					},
+					.dynamic =
+					{
+						.states = {vk2::DynamicStateType::Scissor}
+					}
 				},
 				.pipeline_layout = &this->pipeline_layout,
 				.render_pass = &new_render_pass,
@@ -907,6 +911,10 @@ namespace tz::gl
 				{
 					.attachment_states = alpha_blending_options,
 					.logical_operator = VK_LOGIC_OP_COPY
+				},
+				.dynamic =
+				{
+					.states = {vk2::DynamicStateType::Scissor}
 				}
 			},
 			.pipeline_layout = &this->pipeline_layout,
@@ -1195,7 +1203,8 @@ namespace tz::gl
 	debug_name(std::move(move.debug_name)),
 	tri_count(move.tri_count),
 	device_resize_callback(move.device_resize_callback),
-	window_resize_callback(move.window_resize_callback)
+	window_resize_callback(move.window_resize_callback),
+	scissor_cache(move.scissor_cache)
 	{
 		this->device_resize_callback->remove_callback(move.window_resize_callback);
 		this->device_resize_callback->remove_callback(this->window_resize_callback);
@@ -1227,6 +1236,7 @@ namespace tz::gl
 		std::swap(this->tri_count, rhs.tri_count);
 		std::swap(this->device_resize_callback, rhs.device_resize_callback);
 		std::swap(this->window_resize_callback, rhs.window_resize_callback);
+		std::swap(this->scissor_cache, rhs.scissor_cache);
 		this->device_resize_callback->remove_callback(rhs.window_resize_callback);
 		this->device_resize_callback->remove_callback(this->window_resize_callback);
 		this->window_resize_callback = this->device_resize_callback->add_callback([this](RendererResizeInfoVulkan resize_info){this->handle_resize(resize_info);});
@@ -1276,6 +1286,18 @@ namespace tz::gl
 	void RendererVulkan::render()
 	{
 		TZ_PROFZONE("Vulkan Frontend - RendererVulkan Render", TZ_PROFCOL_YELLOW);
+		
+		// If output scissor region has changed, we need to rerecord.
+		if(this->get_output() != nullptr)
+		{
+			TZ_PROFZONE("Vulkan Frontend - RendererVulkan Scissor Cache Miss", TZ_PROFCOL_RED);
+			if(this->get_output()->scissor != this->scissor_cache)
+			{
+				this->scissor_cache = this->get_output()->scissor;
+				this->command.wait_pending_commands_complete();
+				this->setup_work_commands();
+			}
+		}
 		this->resources.write_padded_image_data();
 		if(this->pipeline.is_compute())
 		{
@@ -1567,6 +1589,24 @@ namespace tz::gl
 						.first_set_id = 0
 					});
 				}
+
+				tz::Vec2ui offset{0u, 0u};
+				tz::Vec2ui extent = this->output.get_output_dimensions();
+
+				if(this->get_output() != nullptr)
+				{
+					if(this->get_output()->scissor != tz::gl::ScissorRegion::null())
+					{
+						offset = this->get_output()->scissor.offset;
+						extent = this->get_output()->scissor.extent;
+					}
+				}
+
+				recording.set_scissor_dynamic
+				({
+					.offset = offset,
+					.extent = extent
+				});
 
 				const IComponent* idx_buf = this->resources.try_get_index_buffer();
 				if(idx_buf == nullptr)

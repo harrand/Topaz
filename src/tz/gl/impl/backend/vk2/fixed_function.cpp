@@ -143,18 +143,6 @@ namespace tz::gl::vk2
 		}
 		return native;
 	}
-
-	DynamicState::NativeType DynamicState::native() const
-	{
-		return
-		{
-			.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO,
-			.pNext = nullptr,
-			.flags = 0,
-			.dynamicStateCount = 0,
-			.pDynamicStates = nullptr
-		};
-	}
 }
 
 #endif // TZ_VULKAN

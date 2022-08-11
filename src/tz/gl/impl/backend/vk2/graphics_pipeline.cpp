@@ -76,12 +76,25 @@ namespace tz::gl::vk2
 			.primitiveRestartEnable = VK_FALSE
 		};
 
+		std::vector<VkDynamicState> dynamic_states_enabled;
+		for(const DynamicStateType state : info.state.dynamic.states)
+		{
+			dynamic_states_enabled.push_back(static_cast<VkDynamicState>(state));
+		}
+
 		auto viewport_state_native = info.state.viewport.native();
 		auto rasteriser_state_native = info.state.rasteriser.native();
 		auto multisample_state_native = info.state.multisample.native();
 		auto depth_stencil_state_native = info.state.depth_stencil.native();
 		auto colour_blend_state_native = info.state.colour_blend.native();
-		auto dynamic_state_native = info.state.dynamic.native();
+		auto dynamic_state_native = VkPipelineDynamicStateCreateInfo
+		{
+			.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO,
+			.pNext = nullptr,
+			.flags = 0,
+			.dynamicStateCount = static_cast<std::uint32_t>(dynamic_states_enabled.size()),
+			.pDynamicStates = dynamic_states_enabled.data()
+		};
 		auto tess_state = VkPipelineTessellationStateCreateInfo
 		{
 			.sType = VK_STRUCTURE_TYPE_PIPELINE_TESSELLATION_STATE_CREATE_INFO,

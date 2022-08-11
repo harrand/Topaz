@@ -1,6 +1,7 @@
 #ifndef TOPAZ_GL_IMPL_BACKEND_VK2_FIXED_FUNCTION_HPP
 #define TOPAZ_GL_IMPL_BACKEND_VK2_FIXED_FUNCTION_HPP
 #include "tz/core/containers/basic_list.hpp"
+#include "tz/core/containers/enum_field.hpp"
 #include "tz/core/vector.hpp"
 #include "vulkan/vulkan.h"
 #include <optional>
@@ -222,14 +223,21 @@ namespace tz::gl::vk2
 		NativeType native() const;
 	};
 
+	enum class DynamicStateType
+	{
+		Viewport = VK_DYNAMIC_STATE_VIEWPORT,
+		Scissor = VK_DYNAMIC_STATE_SCISSOR
+	};
+
+	using DynamicStateTypes = tz::EnumField<DynamicStateType>;
+
 	/**
 	 * @ingroup tz_gl_vk_graphics_pipeline_fixed
 	 * At present, dynamic state is not supported, so this struct is not configurable.
 	 */
 	struct DynamicState
 	{
-		using NativeType = VkPipelineDynamicStateCreateInfo;
-		NativeType native() const;
+		DynamicStateTypes states = {};
 	};
 }
 

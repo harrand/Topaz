@@ -298,6 +298,15 @@ namespace tz::gl::vk2
 		vkCmdPipelineBarrier(this->get_command_buffer().native(), static_cast<VkPipelineStageFlags>(command.source_stage), static_cast<VkPipelineStageFlags>(command.destination_stage), 0, 0, nullptr, 0, nullptr, 1, &barrier);
 	}
 
+	void CommandBufferRecording::set_scissor_dynamic(VulkanCommand::SetScissorDynamic command)
+	{
+		this->register_command(command);
+		VkRect2D rect;
+		rect.offset = {static_cast<std::int32_t>(command.offset[0]), static_cast<std::int32_t>(command.offset[1])};
+		rect.extent = {static_cast<std::uint32_t>(command.extent[0]), static_cast<std::uint32_t>(command.extent[1])};
+		vkCmdSetScissor(this->get_command_buffer().native(), 0, 1, &rect);
+	}
+
 	void CommandBufferRecording::debug_begin_label([[maybe_unused]] VulkanCommand::DebugBeginLabel command)
 	{
 		#if TZ_DEBUG

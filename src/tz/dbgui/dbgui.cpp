@@ -354,7 +354,9 @@ namespace tz::dbgui
 				ImVec2 max = {draw_cmd.ClipRect.z - draw_cmd.ClipRect.x, draw_cmd.ClipRect.w - draw_cmd.ClipRect.y};
 				output->scissor.offset = static_cast<tz::Vec2ui>(tz::Vec2{min.x, min.y} - tz::Vec2{draw->DisplayPos.x, draw->DisplayPos.y});
 				output->scissor.extent = static_cast<tz::Vec2ui>(tz::Vec2{max.x, max.y});
+#if TZ_OGL
 				output->scissor.offset[1] = io.DisplaySize.y - output->scissor.extent[1] - output->scissor.offset[1];
+#endif
 
 				// Do a draw.
 				const std::size_t tri_count = draw_cmd.ElemCount / 3;

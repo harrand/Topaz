@@ -467,6 +467,7 @@ namespace tz::gl
 		RendererResizeCallbackType* device_resize_callback = nullptr;
 		/// Handle representing the registration of our callback function from `device_resize_callback`.
 		tz::CallbackHandle window_resize_callback = tz::nullhand;
+		tz::gl::ScissorRegion scissor_cache = tz::gl::ScissorRegion::null();
 	};
 
 	static_assert(RendererType<RendererVulkan>);
