@@ -38,7 +38,6 @@ int main()
 		.name = "tz_dynamic_triangle_demo"
 	});
 	{
-		tz::gl::Device dev;
 		using namespace tz::literals;
 		tz::gl::ImageResource img = tz::gl::ImageResource::from_memory
 		(
@@ -87,15 +86,16 @@ int main()
 		tz::gl::ResourceHandle bufh = rinfo.add_resource(buf);
 		tz::gl::ResourceHandle ibufh = rinfo.add_resource(ibuf);
 
-		tz::gl::Renderer renderer = dev.create_renderer(rinfo);
+		tz::gl::Renderer renderer = tz::gl::device().create_renderer(rinfo);
 		std::default_random_engine rand;
 		tz::Delay fixed_update{50_ms};
 
 		while(!tz::window().is_close_requested())
 		{
-			TZ_FRAME_BEGIN;
-			tz::window().update();
+			tz::window().begin_frame();
 			renderer.render(triangle_count);
+			tz::window().end_frame();
+
 			static bool up = true;
 			if(fixed_update.done())
 			{

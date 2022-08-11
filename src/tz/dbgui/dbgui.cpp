@@ -54,10 +54,10 @@ namespace tz::dbgui
 		return reinterpret_cast<ImTextureID>(static_cast<std::uintptr_t>(static_cast<std::size_t>(static_cast<tz::HandleValue>(handle))));
 	}
 
-	void initialise([[maybe_unused]] Info info)
+	void initialise()
 	{
 		#if TZ_DEBUG
-			global_device = info.device;
+			global_device = &tz::gl::device();
 			bool ret = imgui_impl_tz_init();
 			tz_assert(ret, "Failed to initialise tz imgui backend.");
 		#endif // TZ_DEBUG

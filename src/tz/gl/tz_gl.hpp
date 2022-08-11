@@ -67,6 +67,9 @@ namespace tz::gl
 		OpenGL,
 		Vulkan
 	};
+
+	void initialise();
+	void terminate();
 }
 
 #endif // TOPAZ_GL2_TZ_GL_HPP

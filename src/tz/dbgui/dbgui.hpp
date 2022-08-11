@@ -5,12 +5,7 @@
 
 namespace tz::dbgui
 {
-	struct Info
-	{
-		tz::gl::Device* device;
-	};
-
-	void initialise(Info info);
+	void initialise();
 	void terminate();
 
 	void begin_frame();

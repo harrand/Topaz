@@ -13,6 +13,9 @@ namespace tz::gl
 	#elif TZ_OGL
 		using Device = DeviceOGL;
 	#endif
+
+	Device& device();
+	void destroy_device();
 }
 
 #endif // TOPAZ_GL2_DEVICE_HPP

@@ -78,6 +78,7 @@ add_library(topaz
 	src/tz/gl/api/resource.hpp
 	# tz::gl
 	src/tz/gl/component.hpp
+	src/tz/gl/device.cpp
 	src/tz/gl/device.hpp
 	src/tz/gl/output.cpp
 	src/tz/gl/output.hpp
