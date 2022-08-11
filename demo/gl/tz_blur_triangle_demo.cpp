@@ -20,8 +20,6 @@ int main()
 		.flags = {tz::ApplicationFlag::UnresizeableWindow}
 	});
 	{
-		tz::gl::Device dev;
-
 		// Create a renderer which just draws a square with a texture applied (fragment-shader post-processing does a blur)
 		struct BlurData
 		{
@@ -38,7 +36,7 @@ int main()
 		tz::gl::ResourceHandle blur_buffer_handle = postprocess_info.add_resource(blur_data);
 		tz::gl::ResourceHandle colour_target_handle = postprocess_info.add_resource(blur_image);
 		postprocess_info.set_options({tz::gl::RendererOption::NoDepthTesting});
-		tz::gl::Renderer blur_renderer = dev.create_renderer(postprocess_info);
+		tz::gl::Renderer blur_renderer = tz::gl::device().create_renderer(postprocess_info);
 
 		tz::gl::RendererInfo rinfo;
 		rinfo.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(tz_triangle_demo, vertex));
@@ -49,19 +47,18 @@ int main()
 			.colours = {blur_renderer.get_component(colour_target_handle)}
 		}});
 
-		tz::gl::Renderer renderer = dev.create_renderer(rinfo);
+		tz::gl::Renderer renderer = tz::gl::device().create_renderer(rinfo);
 
 		while(!tz::window().is_close_requested())
 		{
-			TZ_FRAME_BEGIN;
-			tz::window().update();
+			tz::window().begin_frame();
 			renderer.render(1);
 			BlurData& blur = blur_renderer.get_resource(blur_buffer_handle)->data_as<BlurData>().front();
 			static float counter = 0.0f;
 			blur.direction = tz::Vec2{std::sin(counter) * 50.0f, std::cos(counter * 2.0f) * 50.0f};
 			counter += 0.0003f;
 			blur_renderer.render(1);
-			TZ_FRAME_END;
+			tz::window().end_frame();
 		}
 	}
 	tz::terminate();

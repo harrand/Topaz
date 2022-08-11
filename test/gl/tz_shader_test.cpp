@@ -13,10 +13,9 @@ int main()
 		.flags = {tz::ApplicationFlag::HiddenWindow}
 	});
 	{
-		tz::gl::Device dev;
 		tz::gl::RendererInfo rinfo;
 		rinfo.shader().set_shader(tz::gl::ShaderStage::Compute, ImportedShaderSource(shader_test, compute));
-		tz::gl::Renderer renderer = dev.create_renderer(rinfo);
+		tz::gl::Renderer renderer = tz::gl::device().create_renderer(rinfo);
 		renderer.render(1);
 	}
 	tz::terminate();

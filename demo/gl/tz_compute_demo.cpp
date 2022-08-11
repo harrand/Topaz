@@ -17,8 +17,6 @@ int main()
 		.name = "tz_compute_demo",
 	});
 	{
-		tz::gl::Device dev;
-
 		tz::gl::BufferResource colour_buffer = tz::gl::BufferResource::from_many
 		({
 			tz::Vec4{0.0f, 0.0f, 0.0f, 1.0f},
@@ -34,22 +32,21 @@ int main()
 		pinfo.add_resource(time_buffer);
 		pinfo.debug_name("Compute");
 
-		tz::gl::Renderer compute_worker = dev.create_renderer(pinfo);
+		tz::gl::Renderer compute_worker = tz::gl::device().create_renderer(pinfo);
 
 		tz::gl::RendererInfo rinfo;
 		rinfo.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(tz_compute_demo_render, vertex));
 		rinfo.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(tz_compute_demo_render, fragment));
 		auto refbuf = rinfo.add_component(*compute_worker.get_component(cbuf));
 		rinfo.debug_name("Window Renderer");
-		tz::gl::Renderer renderer = dev.create_renderer(rinfo);
+		tz::gl::Renderer renderer = tz::gl::device().create_renderer(rinfo);
 
 		while(!tz::window().is_close_requested())
 		{
-			TZ_FRAME_BEGIN;
-			tz::window().update();
+			tz::window().begin_frame();
 			compute_worker.render();
 			renderer.render(1);
-			TZ_FRAME_END;
+			tz::window().end_frame();
 		}
 	}
 	tz::terminate();

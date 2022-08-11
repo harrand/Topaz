@@ -28,8 +28,10 @@ tz::gl::RendererInfo get_empty(bool compute = false)
 
 void empty_renderer(tz::gl::Device& dev)
 {
+	tz::window().begin_frame();
 	tz::gl::Renderer empty = dev.create_renderer(get_empty());
 	empty.render(1);
+	tz::window().end_frame();
 }
 
 void empty_renderer_compute(tz::gl::Device& dev)
@@ -40,6 +42,7 @@ void empty_renderer_compute(tz::gl::Device& dev)
 
 void renderer_creation(tz::gl::Device& dev)
 {
+	tz::window().begin_frame();
 	tz::gl::BufferResource bres0 = tz::gl::BufferResource::from_one(5.0f);
 
 	tz::gl::RendererInfo rinfo1 = get_empty();
@@ -50,10 +53,12 @@ void renderer_creation(tz::gl::Device& dev)
 
 	renderer1.render();
 	renderer2.render();
+	tz::window().end_frame();
 }
 
 void renderer_creation_index_buffer(tz::gl::Device& dev)
 {
+	tz::window().begin_frame();
 	tz::gl::BufferResource bres0 = tz::gl::BufferResource::from_one(5.0f);
 	tz::gl::BufferResource ibuf = tz::gl::BufferResource::from_one(0u, tz::gl::ResourceAccess::StaticFixed, {tz::gl::ResourceFlag::IndexBuffer});
 
@@ -66,6 +71,7 @@ void renderer_creation_index_buffer(tz::gl::Device& dev)
 
 	renderer1.render();
 	renderer2.render();
+	tz::window().end_frame();
 }
 
 void renderer_edit(tz::gl::Device& dev)
@@ -115,6 +121,7 @@ void renderer_edit(tz::gl::Device& dev)
 
 void resize_window(tz::gl::Device& dev)
 {
+
 	tz::gl::Renderer empty = dev.create_renderer(get_empty());
 	empty.render();
 	tz::window().set_width(tz::window().get_width() + 10.0f);
@@ -204,7 +211,7 @@ int main()
 		.flags = {tz::ApplicationFlag::HiddenWindow}
 	});
 	{
-		tz::gl::Device dev;
+		tz::gl::Device& dev = tz::gl::device();
 		empty_renderer(dev);
 		empty_renderer_compute(dev);
 		renderer_creation(dev);
