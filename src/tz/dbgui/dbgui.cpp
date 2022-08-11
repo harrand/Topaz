@@ -43,6 +43,7 @@ namespace tz::dbgui
 	void imgui_impl_tz_term();
 	void imgui_impl_render();
 	void imgui_impl_begin_commands();
+	void imgui_impl_style_colours_purple();
 
 	ImGuiKey tz_key_to_imgui(tz::KeyCode key_code);
 	ImGuiMouseButton tz_btn_to_imgui(tz::MouseButton btn);
@@ -267,6 +268,8 @@ namespace tz::dbgui
 
 		io.Fonts->SetTexID(0);
 
+		imgui_impl_style_colours_purple();
+
 		return true;
 	}
 
@@ -361,12 +364,22 @@ namespace tz::dbgui
 		bool show_info = false;
 	};
 
-	ImGuiTabTZGL tab_tzgl;
-
-	void draw_tz_gl_info()
+	struct ImGuiTabTZ
 	{
-		if(ImGui::Begin("tz::gl Info", &tab_tzgl.show_info))
+		bool show_info = false;
+	};
+
+	ImGuiTabTZGL tab_tzgl;
+	ImGuiTabTZ tab_tz;
+
+	void draw_tz_info()
+	{
+		if(ImGui::Begin("Topaz Info", &tab_tz.show_info))
 		{
+			tz::EngineInfo info = tz::info();
+			ImGui::Text("Engine Info: \"%s\"", info.to_string().c_str());
+			ImGui::Spacing();
+
 			ImGui::Text("Graphics API:");
 			ImGui::SameLine();
 			#if TZ_VULKAN
@@ -374,10 +387,43 @@ namespace tz::dbgui
 			#elif TZ_OGL
 				ImGui::Text("OpenGL");	
 			#else
-				InGui::Text("Unknown");	
+				ImGui::Text("Unknown");	
 			#endif
-			ImGui::Spacing();
-			ImGui::Text("well met");
+
+			ImGui::Text("Build Config:");
+			ImGui::SameLine();
+			#if TZ_DEBUG
+				ImGui::Text("Debug");
+			#elif TZ_PROFILE
+				ImGui::Text("Profile");
+			#else
+				ImGui::Text("Release");
+			#endif
+
+			ImGui::Text("Build Compiler:");
+			ImGui::SameLine();
+			#if defined(__GNUC__)
+				ImGui::Text("GCC");
+			#elif defined(__clang__)
+				ImGui::Text("Clang");
+			#elif defined(_MSC_VER)
+				ImGui::Text("MSVC");
+			#else
+				ImGui::Text("Unknown");
+			#endif
+
+			if(ImGui::Button("Purple Style"))
+			{
+				imgui_impl_style_colours_purple();
+			}
+			ImGui::End();
+		}
+	}
+
+	void draw_tz_gl_info()
+	{
+		if(ImGui::Begin("tz::gl Info", &tab_tzgl.show_info))
+		{
 			ImGui::End();
 		}
 	}
@@ -389,17 +435,24 @@ namespace tz::dbgui
 		{
 			if(ImGui::BeginMenu("tz"))
 			{
-				ImGui::MenuItem("you've been morbed");
+				ImGui::MenuItem("Info", nullptr, &tab_tz.show_info);
+				if(ImGui::MenuItem("Debug Breakpoint"))
+				{
+					tz_error("Manual debug breakpoint occurred.");
+				}
 				ImGui::EndMenu();
 			}
 			if(ImGui::BeginMenu("tz::gl"))
 			{
-				ImGui::MenuItem("hello me old chum");
 				ImGui::MenuItem("Info", nullptr, &tab_tzgl.show_info);
 				ImGui::EndMenu();
 			}
 			ImGui::EndMainMenuBar();
 
+			if(tab_tz.show_info)
+			{
+				draw_tz_info();
+			}
 			if(tab_tzgl.show_info)
 			{
 				draw_tz_gl_info();
@@ -409,6 +462,20 @@ namespace tz::dbgui
 		if(tab_tzgl.show_info)
 		{
 
+		}
+	}
+
+	void imgui_impl_style_colours_purple()
+	{
+		ImGuiStyle& style = ImGui::GetStyle();
+		ImGui::StyleColorsDark(&style);
+
+		ImVec4* colours = style.Colors;
+		for(int i = ImGuiCol_Text; i < ImGuiCol_COUNT; i++)
+		{
+			std::swap(colours[i].y, colours[i].x);
+			if(colours[i].x < 0.98f)
+				colours[i].x *= 0.5f;
 		}
 	}
 

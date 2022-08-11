@@ -23,7 +23,11 @@ int main()
 			tz::gl::RendererInfo rinfo;
 			rinfo.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(tz_triangle_demo, vertex));
 			rinfo.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(tz_triangle_demo, fragment));
-			rinfo.set_options({tz::gl::RendererOption::NoDepthTesting, tz::gl::RendererOption::NoPresent});
+			#if TZ_DEBUG
+				rinfo.set_options({tz::gl::RendererOption::NoDepthTesting, tz::gl::RendererOption::NoPresent});
+			#else
+				rinfo.set_options({tz::gl::RendererOption::NoDepthTesting});
+			#endif
 
 			tz::gl::Renderer renderer = dev.create_renderer(rinfo);
 
