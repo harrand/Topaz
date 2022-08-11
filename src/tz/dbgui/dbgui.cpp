@@ -73,6 +73,10 @@ namespace tz::dbgui
 	void begin_frame()
 	{
 		#if TZ_DEBUG
+			if(global_device == nullptr)
+			{
+				return;
+			}
 			ImGuiIO& io = ImGui::GetIO();
 			io.DisplaySize = ImVec2
 			{
@@ -87,6 +91,10 @@ namespace tz::dbgui
 	void end_frame()
 	{
 		#if TZ_DEBUG
+			if(global_device == nullptr)
+			{
+				return;
+			}
 			ImGui::EndFrame();
 			ImGui::Render();
 			imgui_impl_render();
@@ -266,7 +274,7 @@ namespace tz::dbgui
 		tz::gl::RendererInfo empty;
 		empty.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(empty, vertex));
 		empty.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(empty, fragment));
-		empty.set_options({tz::gl::RendererOption::NoClearOutput, tz::gl::RendererOption::NoDepthTesting});
+		empty.set_options({tz::gl::RendererOption::NoClearOutput, tz::gl::RendererOption::NoDepthTesting, tz::gl::RendererOption::Internal_FinalDebugUIRenderer});
 		empty.debug_name("ImGui Final Renderer");
 		global_render_data->final_renderer = std::make_unique<tz::gl::Renderer>(global_device->create_renderer(empty));
 

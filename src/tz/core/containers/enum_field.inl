@@ -46,7 +46,6 @@ namespace tz
 	template<tz::EnumClass E>
 	EnumField<E>& EnumField<E>::operator|=(E type)
 	{
-		if(!this->contains(type))
 		{
 			this->elements.push_back(type);
 		}

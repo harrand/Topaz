@@ -67,6 +67,8 @@ namespace tz
 		 * You should invoke this once for every frame.
 		 */
 		void update();
+		void begin_frame();
+		void end_frame();
 		/**
 		 * Block the current thread until some sort of window backend event takes place.
 		 *

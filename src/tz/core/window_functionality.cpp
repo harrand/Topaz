@@ -1,10 +1,12 @@
 #include "tz/core/window_functionality.hpp"
-#include "GLFW/glfw3.h"
 #include "tz/core/assert.hpp"
 #include "tz/core/peripherals/keyboard.hpp"
 #include "tz/core/peripherals/mouse.hpp"
 #include "tz/core/profiling/zone.hpp"
 
+#include "tz/dbgui/dbgui.hpp"
+
+#include "GLFW/glfw3.h"
 #if TZ_OGL
 #include "glad/glad.h"
 #if TZ_PROFILE
@@ -106,6 +108,19 @@ namespace tz
 				TracyGpuCollect;
 			#endif // TZ_PROFILE
 		#endif
+	}
+
+	void WindowFunctionality::begin_frame()
+	{
+		TZ_FRAME_BEGIN;
+		this->update();
+		tz::dbgui::begin_frame();
+	}
+
+	void WindowFunctionality::end_frame()
+	{
+		tz::dbgui::end_frame();
+		TZ_FRAME_END;
 	}
 
 	void WindowFunctionality::block_until_event_happens()

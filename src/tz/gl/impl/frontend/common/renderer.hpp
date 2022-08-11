@@ -46,7 +46,7 @@ namespace tz::gl
 	class RendererInfoCommon
 	{
 	public:
-		RendererInfoCommon() = default;
+		RendererInfoCommon();
 		// Satisfies RendererInfoType.
 		/**
 		 * Retrieve the number of resources.

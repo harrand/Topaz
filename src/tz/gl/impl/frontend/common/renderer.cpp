@@ -41,6 +41,13 @@ namespace tz::gl
 	}
 
 //--------------------------------------------------------------------------------------------------
+	RendererInfoCommon::RendererInfoCommon()
+	{
+		#if TZ_DEBUG
+			this->options |= tz::gl::RendererOption::NoPresent;
+		#endif // TZ_DEBUG
+	}
+
 	unsigned int RendererInfoCommon::resource_count() const
 	{
 		return this->resources.size();
@@ -98,6 +105,12 @@ namespace tz::gl
 
 	void RendererInfoCommon::set_options(RendererOptions options)
 	{
+		#if TZ_DEBUG
+			if(!options.contains(RendererOption::Internal_FinalDebugUIRenderer))
+			{
+				options |= RendererOption::NoPresent;
+			}
+		#endif
 		this->options = options;
 	}
 

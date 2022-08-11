@@ -30,6 +30,8 @@ namespace tz::gl
 		NoClearOutput,
 		/// - When a renderer is invoked, the output image is not presented to the screen. If the output is an ImageOutput, this has no effect.
 		NoPresent,
+
+		Internal_FinalDebugUIRenderer
 	};
 	
 	/**
