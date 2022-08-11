@@ -539,6 +539,16 @@ namespace tz::gl
 		tz_assert(!this->output_imageviews.empty(), "OutputManager had no output views, so impossible to retrieve viewport dimensions. Please submit a bug report.");
 		return this->output_imageviews.front().colour_views.front().get_image().get_dimensions();
 	}
+
+	IOutput* OutputManager::get_output()
+	{
+		return this->output.get();
+	}
+
+	const IOutput* OutputManager::get_output() const
+	{
+		return this->output.get();
+	}
 	
 	bool OutputManager::has_depth_images() const
 	{
@@ -1246,6 +1256,16 @@ namespace tz::gl
 	IComponent* RendererVulkan::get_component(ResourceHandle handle)
 	{
 		return this->resources.get_component(handle);
+	}
+
+	IOutput* RendererVulkan::get_output()
+	{
+		return this->output.get_output();
+	}
+
+	const IOutput* RendererVulkan::get_output() const
+	{
+		return this->output.get_output();
 	}
 
 	const RendererOptions& RendererVulkan::get_options() const

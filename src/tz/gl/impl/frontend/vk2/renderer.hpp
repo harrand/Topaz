@@ -185,6 +185,10 @@ namespace tz::gl
 		 * @return {width, height} of the output images, in pixels.
 		 */
 		tz::Vec2ui get_output_dimensions() const;
+
+		IOutput* get_output();
+		const IOutput* get_output() const;
+
 		bool has_depth_images() const;
 		void create_output_resources(std::span<vk2::Image> swapchain_images, vk2::Image* depth_image);
 	private:
@@ -408,6 +412,8 @@ namespace tz::gl
 		 * @return Pointer to the resource's underlying component.
 		 */
 		IComponent* get_component(ResourceHandle handle);
+		IOutput* get_output();
+		const IOutput* get_output() const;
 		/**
 		 * Retrieve options denoting extra features used by the renderer.
 		 */

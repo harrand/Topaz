@@ -399,7 +399,6 @@ namespace tz::gl
 			auto width = static_cast<GLsizei>(this->output->scissor.extent[0]);
 			auto height = static_cast<GLsizei>(this->output->scissor.extent[1]);
 			glScissor(x, y, width, height);
-			tz_report("glScissor(%d, %d, %d, %d)", x, y, width, height);
 		}
 		else
 		{
