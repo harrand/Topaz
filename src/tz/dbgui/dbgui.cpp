@@ -265,7 +265,7 @@ namespace tz::dbgui
 		rinfo.add_resource(font_image);
 		rinfo.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(dbgui, vertex));
 		rinfo.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(dbgui, fragment));
-		rinfo.set_options({tz::gl::RendererOption::NoClearOutput, tz::gl::RendererOption::NoDepthTesting, tz::gl::RendererOption::NoPresent, tz::gl::RendererOption::BlockingCompute});
+		rinfo.set_options({tz::gl::RendererOption::NoClearOutput, tz::gl::RendererOption::NoDepthTesting, tz::gl::RendererOption::NoPresent, tz::gl::RendererOption::RenderWait});
 		rinfo.set_output(wout);
 		rinfo.debug_name("ImGui Intermediate Renderer");
 		

@@ -1152,7 +1152,7 @@ namespace tz::gl
 	resources(info, *this->ldev, this->get_frame_in_flight_count()),
 	output(info.get_output(), device_info.device_window, info.get_options(), *this->ldev),
 	pipeline(info.shader(), this->resources.get_descriptor_layout(), this->output.get_render_pass(), this->get_frame_in_flight_count(), output.get_output_dimensions(), !info.get_options().contains(RendererOption::NoDepthTesting), info.get_options().contains(RendererOption::AlphaBlending)),
-	command(*this->ldev, this->get_frame_in_flight_count(), info.get_output() != nullptr ? info.get_output()->get_target() : OutputTarget::Window, this->output.get_output_framebuffers(), info.get_options().contains(RendererOption::BlockingCompute), info.get_options(), *device_info.device_scheduler),
+	command(*this->ldev, this->get_frame_in_flight_count(), info.get_output() != nullptr ? info.get_output()->get_target() : OutputTarget::Window, this->output.get_output_framebuffers(), info.get_options().contains(RendererOption::RenderWait), info.get_options(), *device_info.device_scheduler),
 	debug_name(info.debug_get_name())
 	{
 		TZ_PROFZONE("Vulkan Frontend - RendererVulkan Create", TZ_PROFCOL_YELLOW);

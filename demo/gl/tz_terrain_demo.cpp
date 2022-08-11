@@ -50,34 +50,28 @@ int main()
 		tz::gl::Renderer renderer = tz::gl::device().create_renderer(rinfo);
 		tz::Vec3 cam_rot{0.0f, 0.0f, 0.0f};
 		bool wireframe_mode = false;
-		bool lock_camera_height = true;
+		bool flight_enabled = false;
 		using namespace tz::literals;
 		tz::Delay fixed_update{25_ms};
-		tz::Delay input_latch{500_ms};
 
 		constexpr float multiplier = 3.5f;
 		while(!tz::window().is_close_requested())
 		{
 			tz::window().begin_frame();
 			renderer.render(4);
-			tz::window().end_frame();
 
+			ImGui::Begin("tz_terrain_demo");
+			ImGui::Checkbox("Flight Enabled", &flight_enabled);
+			ImGui::Checkbox("Wireframe Enabled", &wireframe_mode);
+			ImGui::End();
 			// Every 25ms, we do a fixed-update.
 			if(fixed_update.done())
 			{
 				fixed_update.reset();
 
-				// If Q is pressed, toggle wireframe mode via renderer edit.
-				if(tz::window().get_keyboard_state().is_key_down(tz::KeyCode::Q) && input_latch.done())
-				{
-					input_latch.reset();
-
-					renderer.edit(tz::gl::RendererEditBuilder{}
-						.render_state({.wireframe_mode = wireframe_mode})
-						.build());
-
-					wireframe_mode = !wireframe_mode;
-				}
+				renderer.edit(tz::gl::RendererEditBuilder{}
+					.render_state({.wireframe_mode = wireframe_mode})
+					.build());
 				// Retrieve the dynamic buffer resource data.
 				BufferData& bufd = renderer.get_resource(bufh)->data_as<BufferData>().front();
 				tz::Vec3& camera_position = bufd.camera_position;
@@ -115,11 +109,6 @@ int main()
 				{
 					camera_position -= cam_forward * multiplier;
 				}
-				if(tz::window().get_keyboard_state().is_key_down(tz::KeyCode::Space) && input_latch.done())
-				{
-					lock_camera_height = !lock_camera_height;
-					input_latch.reset();
-				}
 				if(tz::window().get_keyboard_state().is_key_down(tz::KeyCode::A))
 				{
 					camera_position += cam_right * multiplier;
@@ -129,13 +118,14 @@ int main()
 					camera_position -= cam_right * multiplier;
 				}
 
-				if(lock_camera_height)
+				if(!flight_enabled)
 				{
 					float output_vertex_height = renderer.get_resource(bufh2)->data_as<FeedbackData>().front().pos[1];
 					float dist_to_terrain = output_vertex_height - camera_position[1];
 					camera_position[1] += std::clamp(dist_to_terrain * 0.3f, -5.0f, 5.0f);
 				}
 			}
+			tz::window().end_frame();
 		}
 	}
 	tz::terminate();

@@ -564,7 +564,7 @@ namespace tz::gl
 			glPopDebugGroup();
 		}
 		// If we're doing instant render, block now.
-		if(this->get_options().contains(RendererOption::BlockingCompute))
+		if(this->get_options().contains(RendererOption::RenderWait))
 		{
 			glClientWaitSync(glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0), GL_SYNC_FLUSH_COMMANDS_BIT, std::numeric_limits<GLuint64>::max());
 		}

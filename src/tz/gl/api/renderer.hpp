@@ -25,7 +25,7 @@ namespace tz::gl
 		/// - Enables alpha-blending. Causes pixels with alpha value <1.0 to blend with the previous colour in the framebuffer, at a small cost to performance.
 		AlphaBlending,
 		/// - When a compute renderer's `render()` is invoked, the thread will block until the compute-shader has finished processing.
-		BlockingCompute,
+		RenderWait,
 		/// - When a renderer is invoked, the output image is not cleared before being rendered to. If nothing has been rendered into the output this frame, then the behaviour is undefined.
 		NoClearOutput,
 		/// - When a renderer is invoked, the output image is not presented to the screen. If the output is an ImageOutput, this has no effect.
