@@ -157,6 +157,12 @@ namespace tz::gl
 		 */
 		{t.get_component(r)} -> std::convertible_to<const IComponent*>;
 		/**
+		 * Retrieve the renderer output, if there is one.
+		 *
+		 * @note This may return nullptr, in which case it is rendering directly into the window with no custom viewport/scissor.
+		 */
+		{t.get_output()} -> std::convertible_to<const IOutput*>;
+		/**
 		 * Retrieve the options with which the renderer was constructed.
 		 * @return Options containing additional features used by the renderer.
 		 */

@@ -379,6 +379,42 @@ namespace tz::gl
 		{
 			this->framebuffer.clear();
 		}
+		if(this->output != nullptr && this->output->viewport != tz::gl::ViewportRegion::null())
+		{
+			auto x = static_cast<GLint>(this->output->viewport.offset[0]);
+			auto y = static_cast<GLint>(this->output->viewport.offset[1]);
+			auto width = static_cast<GLsizei>(this->output->viewport.extent[0]);
+			auto height = static_cast<GLsizei>(this->output->viewport.extent[1]);
+			glViewport(x, y, width, height);
+		}
+		else
+		{
+			glViewport(0, 0, this->framebuffer.get_dimensions()[0], this->framebuffer.get_dimensions()[1]);
+		}
+		if(this->output != nullptr && this->output->scissor != tz::gl::ScissorRegion::null())
+		{
+			glEnable(GL_SCISSOR_TEST);
+			auto x = static_cast<GLint>(this->output->scissor.offset[0]);
+			auto y = static_cast<GLint>(this->output->scissor.offset[1]);
+			auto width = static_cast<GLsizei>(this->output->scissor.extent[0]);
+			auto height = static_cast<GLsizei>(this->output->scissor.extent[1]);
+			glScissor(x, y, width, height);
+			tz_report("glScissor(%d, %d, %d, %d)", x, y, width, height);
+		}
+		else
+		{
+			glDisable(GL_SCISSOR_TEST);
+		}
+	}
+
+	IOutput* OutputManager::get_output()
+	{
+		return this->output.get();
+	}
+
+	const IOutput* OutputManager::get_output() const
+	{
+		return this->output.get();
 	}
 
 //--------------------------------------------------------------------------------------------------
@@ -438,6 +474,16 @@ namespace tz::gl
 	IComponent* RendererOGL::get_component(ResourceHandle handle)
 	{
 		return this->resources.get_component(handle);
+	}
+
+	IOutput* RendererOGL::get_output()
+	{
+		return this->output.get_output();
+	}
+
+	const IOutput* RendererOGL::get_output() const
+	{
+		return this->output.get_output();
 	}
 
 	const RendererOptions& RendererOGL::get_options() const

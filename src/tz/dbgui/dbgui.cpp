@@ -3,6 +3,7 @@
 #include "tz/core/report.hpp"
 #include "tz/core/window.hpp"
 #include "tz/core/matrix_transform.hpp"
+#include "tz/gl/output.hpp"
 #include "tz/gl/renderer.hpp"
 #include "tz/gl/resource.hpp"
 #include "tz/gl/imported_shaders.hpp"
@@ -247,6 +248,8 @@ namespace tz::dbgui
 
 		tz::gl::ImageResource font_image = tz::gl::ImageResource::from_memory(tz::gl::ImageFormat::RGBA32, {static_cast<unsigned int>(font_width), static_cast<unsigned int>(font_height)}, font_data, tz::gl::ResourceAccess::StaticFixed);
 
+		tz::gl::WindowOutput wout{tz::window()};
+
 		tz::gl::RendererInfo rinfo;
 		global_render_data->vertex_buffer = rinfo.add_resource(vertex_buffer);
 		global_render_data->shader_data_buffer = rinfo.add_resource(shader_data_buffer);
@@ -255,6 +258,7 @@ namespace tz::dbgui
 		rinfo.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(dbgui, vertex));
 		rinfo.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(dbgui, fragment));
 		rinfo.set_options({tz::gl::RendererOption::NoClearOutput, tz::gl::RendererOption::NoDepthTesting, tz::gl::RendererOption::NoPresent, tz::gl::RendererOption::BlockingCompute});
+		rinfo.set_output(wout);
 		rinfo.debug_name("ImGui Intermediate Renderer");
 		
 		global_render_data->renderer = std::make_unique<tz::gl::Renderer>(global_device->create_renderer(rinfo));
@@ -343,6 +347,14 @@ namespace tz::dbgui
 				shader_data.texture_id = static_cast<std::size_t>(reinterpret_cast<std::uintptr_t>(draw_cmd.TextureId));
 				shader_data.index_offset = draw_cmd.IdxOffset;
 				shader_data.vertex_offset = draw_cmd.VtxOffset;
+
+				tz::gl::IOutput* output = renderer.get_output();
+				tz_assert(output != nullptr, "");
+				ImVec2 min = {draw_cmd.ClipRect.x, draw_cmd.ClipRect.y};
+				ImVec2 max = {draw_cmd.ClipRect.z - draw_cmd.ClipRect.x, draw_cmd.ClipRect.w - draw_cmd.ClipRect.y};
+				output->scissor.offset = static_cast<tz::Vec2ui>(tz::Vec2{min.x, min.y} - tz::Vec2{draw->DisplayPos.x, draw->DisplayPos.y});
+				output->scissor.extent = static_cast<tz::Vec2ui>(tz::Vec2{max.x, max.y});
+				output->scissor.offset[1] = io.DisplaySize.y - output->scissor.extent[1] - output->scissor.offset[1];
 
 				// Do a draw.
 				const std::size_t tri_count = draw_cmd.ElemCount / 3;

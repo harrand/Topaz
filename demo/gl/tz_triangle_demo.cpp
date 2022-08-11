@@ -38,10 +38,6 @@ int main()
 				tz::dbgui::begin_frame();
 				renderer.render(1);
 				#if TZ_DEBUG
-					ImGui::Begin("Well met", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
-					ImGui::Text("font image:");
-					ImGui::Image((void*)0, {512, 64});
-					ImGui::End();
 					ImGui::ShowDemoWindow();
 					ImGui::ShowStyleEditor();
 				#endif // TZ_DEBUG

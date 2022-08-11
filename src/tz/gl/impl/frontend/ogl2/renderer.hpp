@@ -113,6 +113,8 @@ namespace tz::gl
 		 * Set this as the render target, causing subsequent draw calls to render into whatever the output is.
 		 */
 		void set_render_target() const;
+		IOutput* get_output();
+		const IOutput* get_output() const;
 	private:
 		std::unique_ptr<IOutput> output;
 		ogl2::Renderbuffer default_depth_renderbuffer;
@@ -163,6 +165,8 @@ namespace tz::gl
 		 * @return Pointer to the resource's underlying component.
 		 */
 		IComponent* get_component(ResourceHandle handle);
+		IOutput* get_output();
+		const IOutput* get_output() const;
 		/**
 		 * Retrieve options denoting extra features used by the renderer.
 		 */
