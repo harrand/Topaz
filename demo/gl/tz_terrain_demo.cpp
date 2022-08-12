@@ -51,8 +51,14 @@ int main()
 		tz::Vec3 cam_rot{0.0f, 0.0f, 0.0f};
 		bool wireframe_mode = false;
 		bool flight_enabled = false;
+		bool game_menu_enabled = false;
 		using namespace tz::literals;
 		tz::Delay fixed_update{25_ms};
+
+		tz::dbgui::game_menu().add_callback([&game_menu_enabled]()
+		{
+			ImGui::MenuItem("Control Panel", nullptr, &game_menu_enabled);
+		});
 
 		constexpr float multiplier = 3.5f;
 		while(!tz::window().is_close_requested())
@@ -60,12 +66,16 @@ int main()
 			tz::window().begin_frame();
 			renderer.render(4);
 
-			#if TZ_DEBUG
-			ImGui::Begin("tz_terrain_demo");
-			ImGui::Checkbox("Flight Enabled", &flight_enabled);
-			ImGui::Checkbox("Wireframe Enabled", &wireframe_mode);
-			ImGui::End();
-			#endif
+			tz::dbgui::run([&wireframe_mode, &flight_enabled, game_menu_enabled]()
+			{
+				if(game_menu_enabled)
+				{
+					ImGui::Begin("Control Panel");
+					ImGui::Checkbox("Flight Enabled", &flight_enabled);
+					ImGui::Checkbox("Wireframe Enabled", &wireframe_mode);
+					ImGui::End();
+				}
+			});
 
 			// Every 25ms, we do a fixed-update.
 			if(fixed_update.done())

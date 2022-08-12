@@ -45,6 +45,7 @@ namespace tz::dbgui
 	TopazRenderData* global_render_data = nullptr;
 	tz::gl::Device* global_device = nullptr;
 	tz::GameInfo global_info;
+	GameMenuCallbackType game_menu_callback;
 
 	void imgui_impl_handle_inputs();
 
@@ -111,6 +112,11 @@ namespace tz::dbgui
 			imgui_impl_handle_inputs();
 
 		#endif //TZ_DEBUG
+	}
+
+	GameMenuCallbackType& game_menu()
+	{
+		return game_menu_callback;
 	}
 
 	struct TopazShaderRenderData
@@ -473,6 +479,11 @@ namespace tz::dbgui
 				}
 				ImGui::EndMenu();
 			}
+			if(!game_menu_callback.empty() && ImGui::BeginMenu(global_info.name))
+			{
+				game_menu_callback();
+				ImGui::EndMenu();
+			}	
 			ImGui::EndMainMenuBar();
 
 			if(tab_tz.show_info)
@@ -494,6 +505,9 @@ namespace tz::dbgui
 			if(colours[i].x < 0.98f)
 				colours[i].x *= 0.5f;
 		}
+		colours[ImGuiCol_CheckMark].x *= 2.0f;
+		colours[ImGuiCol_CheckMark].y *= 2.0f;
+		colours[ImGuiCol_CheckMark].z *= 2.0f;
 	}
 
 	ImGuiMouseButton tz_btn_to_imgui(tz::MouseButton button)

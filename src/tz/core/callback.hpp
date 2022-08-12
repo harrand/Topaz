@@ -68,6 +68,11 @@ namespace tz
 				}
 			}
 		}
+
+		bool empty() const
+		{
+			return this->callback_storage.empty();
+		}
 	private:
 		std::vector<std::function<void(Args...)>> callback_storage = {};
 	};
