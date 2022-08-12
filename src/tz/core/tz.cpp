@@ -69,7 +69,7 @@ namespace tz
 		initialised = true;
 		init_info = init;
 
-		tz::dbgui::initialise();
+		tz::dbgui::initialise({.game_info = game_info});
 	}
 
 	void terminate()

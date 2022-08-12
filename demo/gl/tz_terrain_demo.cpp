@@ -60,10 +60,13 @@ int main()
 			tz::window().begin_frame();
 			renderer.render(4);
 
+			#if TZ_DEBUG
 			ImGui::Begin("tz_terrain_demo");
 			ImGui::Checkbox("Flight Enabled", &flight_enabled);
 			ImGui::Checkbox("Wireframe Enabled", &wireframe_mode);
 			ImGui::End();
+			#endif
+
 			// Every 25ms, we do a fixed-update.
 			if(fixed_update.done())
 			{

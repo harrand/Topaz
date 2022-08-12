@@ -9,6 +9,12 @@
 #include "tz/gl/imported_shaders.hpp"
 #include "imgui.h"
 
+#if TZ_VULKAN
+#include "tz/gl/impl/backend/vk2/tz_vulkan.hpp"
+#elif TZ_OGL
+#include "tz/gl/impl/backend/ogl2/tz_opengl.hpp"
+#endif
+
 #include <memory>
 
 #include ImportedShaderHeader(dbgui, vertex)
@@ -20,6 +26,7 @@ namespace tz::dbgui
 {
 	struct TopazPlatformData
 	{
+		tz::GameInfo game_info;
 		tz::KeyboardState kb_state;
 		tz::MousePositionState mouse_pos_state;
 		tz::MouseButtonState mouse_button_state;
@@ -37,6 +44,7 @@ namespace tz::dbgui
 	TopazPlatformData* global_platform_data = nullptr;
 	TopazRenderData* global_render_data = nullptr;
 	tz::gl::Device* global_device = nullptr;
+	tz::GameInfo global_info;
 
 	void imgui_impl_handle_inputs();
 
@@ -54,10 +62,11 @@ namespace tz::dbgui
 		return reinterpret_cast<ImTextureID>(static_cast<std::uintptr_t>(static_cast<std::size_t>(static_cast<tz::HandleValue>(handle))));
 	}
 
-	void initialise()
+	void initialise([[maybe_unused]] InitInfo info)
 	{
 		#if TZ_DEBUG
 			global_device = &tz::gl::device();
+			global_info = info.game_info;
 			bool ret = imgui_impl_tz_init();
 			tz_assert(ret, "Failed to initialise tz imgui backend.");
 		#endif // TZ_DEBUG
@@ -381,33 +390,32 @@ namespace tz::dbgui
 		global_render_data->final_renderer->render();
 	}
 
-	struct ImGuiTabTZGL
-	{
-		bool show_info = false;
-	};
-
 	struct ImGuiTabTZ
 	{
 		bool show_info = false;
 	};
 
-	ImGuiTabTZGL tab_tzgl;
 	ImGuiTabTZ tab_tz;
 
 	void draw_tz_info()
 	{
-		if(ImGui::Begin("Topaz Info", &tab_tz.show_info))
+		if(ImGui::Begin("Engine Info", &tab_tz.show_info))
 		{
-			tz::EngineInfo info = tz::info();
-			ImGui::Text("Engine Info: \"%s\"", info.to_string().c_str());
+			ImGui::Text("%s", global_info.to_string().c_str());
 			ImGui::Spacing();
 
 			ImGui::Text("Graphics API:");
 			ImGui::SameLine();
 			#if TZ_VULKAN
 				ImGui::Text("Vulkan");					
+				ImGui::SameLine();
+				tz::Version ver = tz::gl::vk2::vulkan_version;
+				ImGui::Text("%u.%u", ver.major, ver.minor);
 			#elif TZ_OGL
 				ImGui::Text("OpenGL");	
+				ImGui::SameLine();
+				tz::Version ver = tz::gl::ogl2::ogl_version;
+				ImGui::Text("%u.%u Core Profile", ver.major, ver.minor);
 			#else
 				ImGui::Text("Unknown");	
 			#endif
@@ -434,6 +442,16 @@ namespace tz::dbgui
 				ImGui::Text("Unknown");
 			#endif
 
+			ImGui::Text("Operating System:");
+			ImGui::SameLine();
+			#if defined(_WIN64)
+				ImGui::Text("Windows");
+			#elif defined(__unix__)
+				ImGui::Text("Unix");	
+			#else
+				ImGui::Text("Unknown");
+			#endif
+
 			if(ImGui::Button("Purple Style"))
 			{
 				imgui_impl_style_colours_purple();
@@ -442,20 +460,11 @@ namespace tz::dbgui
 		}
 	}
 
-	void draw_tz_gl_info()
-	{
-		if(ImGui::Begin("tz::gl Info", &tab_tzgl.show_info))
-		{
-			ImGui::End();
-		}
-	}
-
-
 	void imgui_impl_begin_commands()
 	{
 		if(ImGui::BeginMainMenuBar())
 		{
-			if(ImGui::BeginMenu("tz"))
+			if(ImGui::BeginMenu("Engine"))
 			{
 				ImGui::MenuItem("Info", nullptr, &tab_tz.show_info);
 				if(ImGui::MenuItem("Debug Breakpoint"))
@@ -464,26 +473,12 @@ namespace tz::dbgui
 				}
 				ImGui::EndMenu();
 			}
-			if(ImGui::BeginMenu("tz::gl"))
-			{
-				ImGui::MenuItem("Info", nullptr, &tab_tzgl.show_info);
-				ImGui::EndMenu();
-			}
 			ImGui::EndMainMenuBar();
 
 			if(tab_tz.show_info)
 			{
 				draw_tz_info();
 			}
-			if(tab_tzgl.show_info)
-			{
-				draw_tz_gl_info();
-			}
-		}
-
-		if(tab_tzgl.show_info)
-		{
-
 		}
 	}
 
