@@ -92,7 +92,7 @@ int main()
 				// Dragging the mouse influences the camera rotation.
 				static tz::Vec2i mouse_position;
 				auto mpi = static_cast<tz::Vec2i>(tz::window().get_mouse_position_state().get_mouse_position());
-				if(tz::window().get_mouse_button_state().is_mouse_button_down(tz::MouseButton::Left))
+				if(tz::window().get_mouse_button_state().is_mouse_button_down(tz::MouseButton::Left) && !tz::dbgui::claims_mouse())
 				{
 					// Get mouse delta since last frame.
 					tz::Vec2i mouse_delta = mpi - mouse_position;

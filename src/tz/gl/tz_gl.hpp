@@ -6,8 +6,8 @@
 namespace tz::gl
 {
 	/**
-	 * @defgroup tz_gl2 Topaz Graphics Library 2 (tz::gl)
-	 * Documentation for the Topaz Graphics Library (since 3.1).
+	 * @defgroup tz_gl2 Graphics Library (tz::gl)
+	 * Hardware-accelerated 3D graphics library.
 	 */
 
 	/**

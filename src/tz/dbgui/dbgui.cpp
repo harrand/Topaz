@@ -119,6 +119,22 @@ namespace tz::dbgui
 		return game_menu_callback;
 	}
 
+	bool claims_keyboard()
+	{
+		#if TZ_DEBUG
+			return ImGui::GetIO().WantCaptureKeyboard;
+		#endif
+		return false;
+	}
+
+	bool claims_mouse()
+	{
+		#if TZ_DEBUG
+			return ImGui::GetIO().WantCaptureMouse;
+		#endif
+		return false;
+	}
+
 	struct TopazShaderRenderData
 	{
 		tz::Mat4 vp;
