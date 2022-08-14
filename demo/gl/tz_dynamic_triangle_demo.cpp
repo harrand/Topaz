@@ -152,8 +152,6 @@ int main()
 				// But set the first pixel (bottom left) to always be white.
 				std::fill(img_data.begin(), img_data.begin() + 4, std::byte{255});
 			}
-
-			TZ_FRAME_END;
 		}
 	}
 	tz::terminate();

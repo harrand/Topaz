@@ -66,11 +66,11 @@ int main()
 			tz::window().begin_frame();
 			renderer.render(4);
 
-			tz::dbgui::run([&wireframe_mode, &flight_enabled, game_menu_enabled]()
+			tz::dbgui::run([&wireframe_mode, &flight_enabled, &game_menu_enabled]()
 			{
 				if(game_menu_enabled)
 				{
-					ImGui::Begin("Control Panel");
+					ImGui::Begin("Control Panel", &game_menu_enabled);
 					ImGui::Checkbox("Flight Enabled", &flight_enabled);
 					ImGui::Checkbox("Wireframe Enabled", &wireframe_mode);
 					ImGui::End();

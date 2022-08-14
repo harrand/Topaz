@@ -41,6 +41,13 @@
 #define TZ_PROFCOL_YELLOW 0xFFAAAA00
 /**
  * @ingroup tz_core_profiling
+ * @var TZ_PROFCOL TZ_PROFCOL_PURPLE
+ * @hideinitializer
+ * Purple zone. Typically used for heavy-duty debug-only functionality.
+ */
+#define TZ_PROFCOL_PURPLE 0xFFAA00AA
+/**
+ * @ingroup tz_core_profiling
  * @var TZ_PROFCOL TZ_PROFCOL_BROWN
  * @hideinitializer
  * Matte brown zone. Typically used for IO operations.

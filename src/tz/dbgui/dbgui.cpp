@@ -3,6 +3,7 @@
 #include "tz/core/report.hpp"
 #include "tz/core/window.hpp"
 #include "tz/core/matrix_transform.hpp"
+#include "tz/core/profiling/zone.hpp"
 #include "tz/gl/output.hpp"
 #include "tz/gl/renderer.hpp"
 #include "tz/gl/resource.hpp"
@@ -65,6 +66,7 @@ namespace tz::dbgui
 
 	void initialise([[maybe_unused]] InitInfo info)
 	{
+		TZ_PROFZONE("tz::dbgui::initialise", TZ_PROFCOL_PURPLE);
 		#if TZ_DEBUG
 			global_device = &tz::gl::device();
 			global_info = info.game_info;
