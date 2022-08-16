@@ -44,7 +44,6 @@ namespace tz::dbgui
 
 	TopazPlatformData* global_platform_data = nullptr;
 	TopazRenderData* global_render_data = nullptr;
-	tz::gl::Device* global_device = nullptr;
 	tz::GameInfo global_info;
 	GameMenuCallbackType game_menu_callback;
 
@@ -68,7 +67,6 @@ namespace tz::dbgui
 	{
 		TZ_PROFZONE("tz::dbgui::initialise", TZ_PROFCOL_PURPLE);
 		#if TZ_DEBUG
-			global_device = &tz::gl::device();
 			global_info = info.game_info;
 			bool ret = imgui_impl_tz_init();
 			tz_assert(ret, "Failed to initialise tz imgui backend.");
@@ -85,10 +83,6 @@ namespace tz::dbgui
 	void begin_frame()
 	{
 		#if TZ_DEBUG
-			if(global_device == nullptr)
-			{
-				return;
-			}
 			ImGuiIO& io = ImGui::GetIO();
 			io.DisplaySize = ImVec2
 			{
@@ -103,10 +97,6 @@ namespace tz::dbgui
 	void end_frame()
 	{
 		#if TZ_DEBUG
-			if(global_device == nullptr)
-			{
-				return;
-			}
 			ImGui::EndFrame();
 			ImGui::Render();
 			imgui_impl_render();
@@ -302,14 +292,14 @@ namespace tz::dbgui
 		rinfo.set_output(wout);
 		rinfo.debug_name("ImGui Intermediate Renderer");
 		
-		global_render_data->renderer = std::make_unique<tz::gl::Renderer>(global_device->create_renderer(rinfo));
+		global_render_data->renderer = std::make_unique<tz::gl::Renderer>(tz::gl::device().create_renderer(rinfo));
 
 		tz::gl::RendererInfo empty;
 		empty.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(empty, vertex));
 		empty.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(empty, fragment));
 		empty.set_options({tz::gl::RendererOption::NoClearOutput, tz::gl::RendererOption::NoDepthTesting, tz::gl::RendererOption::Internal_FinalDebugUIRenderer});
 		empty.debug_name("ImGui Final Renderer");
-		global_render_data->final_renderer = std::make_unique<tz::gl::Renderer>(global_device->create_renderer(empty));
+		global_render_data->final_renderer = std::make_unique<tz::gl::Renderer>(tz::gl::device().create_renderer(empty));
 
 		io.Fonts->SetTexID(0);
 
