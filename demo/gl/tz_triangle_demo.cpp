@@ -27,10 +27,11 @@ int main()
 		{
 			tz::window().begin_frame();
 			renderer.render(1);
-			#if TZ_DEBUG
+			tz::dbgui::run([]()
+			{
 				ImGui::ShowDemoWindow();
 				ImGui::ShowStyleEditor();
-			#endif // TZ_DEBUG
+			});
 			tz::window().end_frame();
 		}
 	}

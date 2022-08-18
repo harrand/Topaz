@@ -99,6 +99,7 @@ namespace tz
 		 * @param pressed Whether the button is pressed (true) or released (false).
 		 */
 		void update(MouseButtonPressInfo button, bool pressed);
+		void update_scroll(tz::Vec2 offset);
 		/**
 		 * Query as to whether a mouse button is currently down. A mouse button is down if it has been pressed at some point in the past, but not yet released.
 		 * @param button Describes which mouse button should be checked.
@@ -113,6 +114,7 @@ namespace tz
 		 */
 		tz::Vec2ui get_mouse_press_position(MouseButton button) const;
 		std::span<const MouseButtonPressInfo> get_pressed_buttons() const;
+		tz::Vec2 get_scroll_offset() const;
 		/**
 		 * Attempt to print entire mouse button state to a single line of stdout.
 		 * 
@@ -121,6 +123,7 @@ namespace tz
 		void debug_print_state() const;
 	private:
 		std::vector<MouseButtonPressInfo> pressed_buttons = {};
+		tz::Vec2 mouse_wheel_offset = {0.0f, 0.0f};
 	};
 
 	struct MousePositionInfo

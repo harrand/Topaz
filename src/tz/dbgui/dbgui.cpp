@@ -136,6 +136,13 @@ namespace tz::dbgui
 		float pad[1];
 	};
 
+	enum class MouseWheelDirection
+	{
+		Up,
+		Down,
+		Same
+	};
+
 	struct InputDelta
 	{
 		std::vector<tz::KeyPressInfo> newly_pressed = {};
@@ -143,6 +150,7 @@ namespace tz::dbgui
 		std::vector<tz::MouseButtonPressInfo> newly_pressed_buttons = {};
 		std::vector<tz::MouseButtonPressInfo> newly_released_buttons = {};
 		bool mouse_position_changed = false;
+		MouseWheelDirection mouse_wheel_dir = MouseWheelDirection::Same;
 	};
 
 	InputDelta imgui_impl_get_input_delta()
@@ -174,6 +182,19 @@ namespace tz::dbgui
 			std::span<const tz::MouseButtonPressInfo> after_buttons = tz::window().get_mouse_button_state().get_pressed_buttons();
 			std::vector<tz::MouseButtonPressInfo> newly_pressed_buttons;
 			std::vector<tz::MouseButtonPressInfo> newly_released_buttons;
+			
+			float ybefore = global_platform_data->mouse_button_state.get_scroll_offset()[1];
+			float ynow = tz::window().get_mouse_button_state().get_scroll_offset()[1];
+			MouseWheelDirection mdir = MouseWheelDirection::Same;
+			if(ynow > ybefore)
+			{
+				mdir = MouseWheelDirection::Up;
+			}
+			else if(ynow < ybefore)
+			{
+				mdir = MouseWheelDirection::Down;
+			}
+
 			x = std::max(before_buttons.size(), after_buttons.size());
 			if(x > 0)
 			{
@@ -200,7 +221,8 @@ namespace tz::dbgui
 				.newly_released = std::move(newly_released),
 				.newly_pressed_buttons = std::move(newly_pressed_buttons),
 				.newly_released_buttons = std::move(newly_released_buttons),
-				.mouse_position_changed  = mouse_moved
+				.mouse_position_changed  = mouse_moved,
+				.mouse_wheel_dir = mdir
 			};
 		#endif // TZ_DEBUG
 		return {};
@@ -246,6 +268,17 @@ namespace tz::dbgui
 			{
 				const auto mpos = static_cast<tz::Vec2>(tz::window().get_mouse_position_state().get_mouse_position());
 				io.AddMousePosEvent(mpos[0], mpos[1]);
+			}
+			if(delta.mouse_wheel_dir != MouseWheelDirection::Same)
+			{
+				if(delta.mouse_wheel_dir == MouseWheelDirection::Up)
+				{
+					io.AddMouseWheelEvent(0.0f, 1.0f);
+				}
+				else
+				{
+					io.AddMouseWheelEvent(0.0f, -1.0f);
+				}
 			}
 		#endif // TZ_DEBUG
 	}
@@ -466,10 +499,81 @@ namespace tz::dbgui
 				ImGui::Text("Unknown");
 			#endif
 
+			ImGui::Spacing();
+			if(ImGui::CollapsingHeader("Graphics Backend"))
+			{
+				#if TZ_VULKAN
+					ImGui::Text("Vulkan Instance Extensions:");
+					const tz::gl::vk2::VulkanInstance& vinst = tz::gl::vk2::get();
+					for(tz::gl::vk2::InstanceExtension iext : vinst.get_extensions())
+					{
+						ImGui::Text("- %s (%s)", tz::gl::vk2::util::instance_extension_tz_names[static_cast<int>(iext)], tz::gl::vk2::util::instance_extension_names[static_cast<int>(iext)]);
+					}
+					const tz::gl::vk2::LogicalDevice& ldev = tz::gl::device().vk_get_logical_device();
+					ImGui::Text("Vulkan Device Extensions:");
+					for(tz::gl::vk2::DeviceExtension dext : ldev.get_extensions())
+					{
+						ImGui::Text("- %s (%s)", tz::gl::vk2::util::device_extension_tz_names[static_cast<int>(dext)], tz::gl::vk2::util::device_extension_names[static_cast<int>(dext)]);
+					}
+
+					ImGui::Spacing();
+					for(const tz::gl::vk2::PhysicalDevice& pdev : tz::gl::vk2::get_all_devices())
+					{
+						tz::gl::vk2::PhysicalDeviceInfo pinfo = pdev.get_info();
+						if(ImGui::CollapsingHeader(pinfo.name.c_str()))
+						{
+							ImGui::Text("Used: %d", pdev == ldev.get_hardware());
+							ImGui::Text("Vendor:");
+							ImGui::SameLine();
+							switch(pinfo.vendor)
+							{
+								using enum tz::gl::vk2::PhysicalDeviceVendor;
+								case Nvidia:
+									ImGui::Text("Nvidia");
+								break;
+								case AMD:
+									ImGui::Text("AMD");
+								break;
+								case Intel:
+									ImGui::Text("Intel");
+								break;
+								case Other:
+									ImGui::Text("Unknown");
+								break;
+							}
+							ImGui::Text("Type:");
+							ImGui::SameLine();
+							switch(pinfo.type)
+							{
+								using enum tz::gl::vk2::PhysicalDeviceType;
+								case IntegratedGPU:
+									ImGui::Text("Integrated GPU");
+								break;
+								case DiscreteGPU:
+									ImGui::Text("Discrete GPU");
+								break;
+								case VirtualGPU:
+									ImGui::Text("Virtual GPU");
+								break;
+								case CPU:
+									ImGui::Text("CPU");
+								break;
+								default:
+									ImGui::Text("Unknown");
+								break;
+							}
+						}
+					}
+				#elif TZ_OGL
+					ImGui::Text("Supports Bindless Textures: %d", tz::gl::ogl2::supports_bindless_textures());
+				#endif
+			}
+
 			if(ImGui::Button("Purple Style"))
 			{
 				imgui_impl_style_colours_purple();
 			}
+
 			ImGui::End();
 		}
 	}

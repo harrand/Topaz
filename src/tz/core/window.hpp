@@ -62,6 +62,7 @@ namespace tz
 		static void window_move_callback(GLFWwindow* window, int xpos, int ypos);
 		static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 		static void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
+		static void mouse_wheel_callback(GLFWwindow* window, double xoffset, double yoffset);
 	private:
 		void handle_key_event(int key, int scancode, int action, int mods);
 		

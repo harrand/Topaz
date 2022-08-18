@@ -78,6 +78,7 @@ namespace tz
 	protected:
 		void handle_key_event(int key, int scancode, int action, int mods);
 		void handle_mouse_event(int button, int action, int mods);
+		void handle_scroll_event(float xoffset, float yoffset);
 
 		GLFWwindow* wnd;
 		ResizeCallbackType window_resize_callbacks;

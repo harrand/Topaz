@@ -212,6 +212,7 @@ namespace tz::gl::vk2
 		bool has_surface() const;
 
 		const WindowSurface& get_surface() const;
+		const InstanceExtensionList& get_extensions() const;
 
 		using NativeType = VkInstance;
 		NativeType native() const;

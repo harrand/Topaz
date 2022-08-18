@@ -360,6 +360,11 @@ namespace tz::gl
 		return from_vk2(this->window_storage.get_format());
 	}
 
+	const vk2::LogicalDevice& DeviceVulkan::vk_get_logical_device() const
+	{
+		return this->device;
+	}
+
 	/*static*/vk2::LogicalDevice DeviceVulkan::make_device(const vk2::VulkanInstance& instance)
 	{
 		// First, create a LogicalDevice.

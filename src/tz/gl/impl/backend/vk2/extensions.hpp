@@ -45,6 +45,9 @@ namespace tz::gl::vk2
 
 	namespace util
 	{
+		constexpr std::array<const char*, static_cast<int>(InstanceExtension::Count)> instance_extension_tz_names{"Debug Messenger"};
+		constexpr std::array<const char*, static_cast<int>(DeviceExtension::Count)> device_extension_tz_names{"Swapchain", "Shader Debug Print"};
+
 		using VkExtension = const char*;
 		constexpr std::array<VkExtension, static_cast<int>(InstanceExtension::Count)> instance_extension_names{VK_EXT_DEBUG_UTILS_EXTENSION_NAME};
 		constexpr std::array<VkExtension, static_cast<int>(DeviceExtension::Count)> device_extension_names{VK_KHR_SWAPCHAIN_EXTENSION_NAME, VK_KHR_SHADER_NON_SEMANTIC_INFO_EXTENSION_NAME};

@@ -69,6 +69,7 @@ namespace tz
 		glfwSetWindowPosCallback(this->wnd, Window::window_move_callback);
 		glfwSetKeyCallback(this->wnd, Window::key_callback);
 		glfwSetMouseButtonCallback(this->wnd, Window::mouse_button_callback);
+		glfwSetScrollCallback(this->wnd, Window::mouse_wheel_callback);
 	}
 
 	Window::Window(Window&& move):
@@ -127,6 +128,12 @@ namespace tz
 	{
 		WindowFunctionality* cur_window_func = reinterpret_cast<WindowFunctionality*>(glfwGetWindowUserPointer(window));
 		static_cast<Window*>(cur_window_func)->handle_mouse_event(button, action, mods);
+	}
+
+	void Window::mouse_wheel_callback(GLFWwindow* window, double xoffset, double yoffset)
+	{
+		WindowFunctionality* cur_window_func = reinterpret_cast<WindowFunctionality*>(glfwGetWindowUserPointer(window));
+		static_cast<Window*>(cur_window_func)->handle_scroll_event(static_cast<float>(xoffset), static_cast<float>(yoffset));
 	}
 
 	void Window::handle_key_event(int key, int scancode, int action, int mods)

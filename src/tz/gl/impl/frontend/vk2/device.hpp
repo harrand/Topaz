@@ -78,6 +78,7 @@ namespace tz::gl
 		// Satisfies DeviceType.
 		RendererVulkan create_renderer(const RendererInfoVulkan& info);
 		ImageFormat get_window_format() const;
+		const vk2::LogicalDevice& vk_get_logical_device() const;
 	private:
 		static vk2::LogicalDevice make_device(const vk2::VulkanInstance& instance);
 

@@ -205,6 +205,11 @@ namespace tz
 		}, action == GLFW_PRESS);
 	}
 
+	void WindowFunctionality::handle_scroll_event(float xoffset, float yoffset)
+	{
+		this->mb_state.update_scroll({xoffset, yoffset});
+	}
+
 	std::pair<int, int> WindowFunctionality::get_size() const
 	{
 		int w, h;

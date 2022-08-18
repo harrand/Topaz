@@ -27,6 +27,11 @@ namespace tz
 		}
 	}
 
+	void MouseButtonState::update_scroll(tz::Vec2 offset)
+	{
+		this->mouse_wheel_offset += offset;
+	}
+
 	bool MouseButtonState::is_mouse_button_down(MouseButton button) const
 	{
 		return std::find_if(this->pressed_buttons.begin(), this->pressed_buttons.end(),
@@ -39,6 +44,11 @@ namespace tz
 	std::span<const MouseButtonPressInfo> MouseButtonState::get_pressed_buttons() const
 	{
 		return this->pressed_buttons;
+	}
+
+	tz::Vec2 MouseButtonState::get_scroll_offset() const
+	{
+		return this->mouse_wheel_offset;
 	}
 
 	tz::Vec2ui MouseButtonState::get_mouse_press_position(MouseButton button) const

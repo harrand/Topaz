@@ -410,6 +410,11 @@ namespace tz::gl::vk2
 		return this->maybe_window_surface.value();
 	}
 
+	const InstanceExtensionList& VulkanInstance::get_extensions() const
+	{
+		return this->info.extensions;
+	}
+
 	VulkanInstance::NativeType VulkanInstance::native() const
 	{
 		return this->instance;
