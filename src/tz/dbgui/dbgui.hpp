@@ -62,7 +62,7 @@ namespace tz::dbgui
 	 *	}
 	 * ```
 	 */
-	inline void run(tz::Action auto action)
+	inline void run([[maybe_unused]] tz::Action auto action)
 	{
 		#if TZ_DEBUG
 			action();
