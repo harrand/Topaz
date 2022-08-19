@@ -310,7 +310,7 @@ namespace tz::dbgui
 		tz::gl::BufferResource index_buffer = tz::gl::BufferResource::from_one(Kibibyte{}, tz::gl::ResourceAccess::DynamicVariable);
 		tz::gl::BufferResource shader_data_buffer = tz::gl::BufferResource::from_one(TopazShaderRenderData{}, tz::gl::ResourceAccess::DynamicFixed);
 
-		tz::gl::ImageResource font_image = tz::gl::ImageResource::from_memory(tz::gl::ImageFormat::RGBA32, {static_cast<unsigned int>(font_width), static_cast<unsigned int>(font_height)}, font_data, tz::gl::ResourceAccess::StaticFixed);
+		tz::gl::ImageResource font_image = tz::gl::ImageResource::from_memory(tz::gl::ImageFormat::RGBA32, {static_cast<unsigned int>(font_width), static_cast<unsigned int>(font_height)}, font_data, tz::gl::ResourceAccess::StaticFixed, {});
 
 		tz::gl::WindowOutput wout{tz::window()};
 
@@ -626,14 +626,13 @@ namespace tz::dbgui
 	{
 		switch(button)
 		{
-			using enum tz::MouseButton;
-			case Left:
+			case tz::MouseButton::Left:
 				return ImGuiMouseButton_Left;
 			break;
-			case Right:
+			case tz::MouseButton::Right:
 				return ImGuiMouseButton_Right;
 			break;
-			case Middle:
+			case tz::MouseButton::Middle:
 				return ImGuiMouseButton_Middle;
 			break;
 			default:
@@ -647,152 +646,151 @@ namespace tz::dbgui
 		switch(key_code)
 		{
 			using enum tz::KeyCode;
-			case Space:
+			case tz::KeyCode::Space:
 				return ImGuiKey_Space;
 			break;
-			case Backspace:
+			case tz::KeyCode::Backspace:
 				return ImGuiKey_Backspace;
 			break;
-			case Apostrophe:
+			case tz::KeyCode::Apostrophe:
 				return ImGuiKey_Apostrophe;
 			break;
-			case Comma:
+			case tz::KeyCode::Comma:
 				return ImGuiKey_Comma;
 			break;
-			case Period:
+			case tz::KeyCode::Period:
 				return ImGuiKey_Period;
 			break;
-			case Minus:
+			case tz::KeyCode::Minus:
 				return ImGuiKey_Minus;
 			break;
 			//case Plus:
 			//	return ImGuiKey_Plus;
 			//break;
-			case ForwardSlash:
+			case tz::KeyCode::ForwardSlash:
 				return ImGuiKey_Slash;
 			break;
-			case BackSlash:
+			case tz::KeyCode::BackSlash:
 				return ImGuiKey_Backslash;
 			break;
-			case Zero:
+			case tz::KeyCode::Zero:
 				return ImGuiKey_0;
 			break;
-			case One:
+			case tz::KeyCode::One:
 				return ImGuiKey_1;
 			break;
-			case Two:
+			case tz::KeyCode::Two:
 				return ImGuiKey_2;
 			break;
-			case Three:
+			case tz::KeyCode::Three:
 				return ImGuiKey_3;
 			break;
-			case Four:
+			case tz::KeyCode::Four:
 				return ImGuiKey_4;
 			break;
-			case Five:
+			case tz::KeyCode::Five:
 				return ImGuiKey_5;
 			break;
-			case Six:
+			case tz::KeyCode::Six:
 				return ImGuiKey_6;
 			break;
-			case Seven:
+			case tz::KeyCode::Seven:
 				return ImGuiKey_7;
 			break;
-			case Eight:
+			case tz::KeyCode::Eight:
 				return ImGuiKey_8;
 			break;
-			case Nine:
+			case tz::KeyCode::Nine:
 				return ImGuiKey_9;
 			break;
-			case Semicolon:
+			case tz::KeyCode::Semicolon:
 				return ImGuiKey_Semicolon;
 			break;
-			case Equals:
+			case tz::KeyCode::Equals:
 				return ImGuiKey_Equal;
 			break;
-			case A:
+			case tz::KeyCode::A:
 				return ImGuiKey_A;
 			break;
-			case B:
+			case tz::KeyCode::B:
 				return ImGuiKey_B;
 			break;
-			case C:
+			case tz::KeyCode::C:
 				return ImGuiKey_C;
 			break;
-			case D:
+			case tz::KeyCode::D:
 				return ImGuiKey_D;
 			break;
-			case E:
+			case tz::KeyCode::E:
 				return ImGuiKey_E;
 			break;
-			case F:
+			case tz::KeyCode::F:
 				return ImGuiKey_F;
 			break;
-			case G:
+			case tz::KeyCode::G:
 				return ImGuiKey_G;
 			break;
-			case H:
+			case tz::KeyCode::H:
 				return ImGuiKey_H;
 			break;
-			case I:
+			case tz::KeyCode::I:
 				return ImGuiKey_I;
 			break;
-			case J:
+			case tz::KeyCode::J:
 				return ImGuiKey_J;
 			break;
-			case K:
+			case tz::KeyCode::K:
 				return ImGuiKey_K;
 			break;
-			case L:
+			case tz::KeyCode::L:
 				return ImGuiKey_L;
 			break;
-			case M:
+			case tz::KeyCode::M:
 				return ImGuiKey_M;
 			break;
-			case N:
+			case tz::KeyCode::N:
 				return ImGuiKey_N;
 			break;
-			case O:
+			case tz::KeyCode::O:
 				return ImGuiKey_O;
 			break;
-			case P:
+			case tz::KeyCode::P:
 				return ImGuiKey_P;
 			break;
-			case Q:
+			case tz::KeyCode::Q:
 				return ImGuiKey_Q;
 			break;
-			case R:
+			case tz::KeyCode::R:
 				return ImGuiKey_R;
 			break;
-			case S:
+			case tz::KeyCode::S:
 				return ImGuiKey_S;
 			break;
-			case T:
+			case tz::KeyCode::T:
 				return ImGuiKey_T;
 			break;
-			case U:
+			case tz::KeyCode::U:
 				return ImGuiKey_U;
 			break;
-			case V:
+			case tz::KeyCode::V:
 				return ImGuiKey_V;
 			break;
-			case W:
+			case tz::KeyCode::W:
 				return ImGuiKey_W;
 			break;
-			case X:
+			case tz::KeyCode::X:
 				return ImGuiKey_X;
 			break;
-			case Y:
+			case tz::KeyCode::Y:
 				return ImGuiKey_Y;
 			break;
-			case Z:
+			case tz::KeyCode::Z:
 				return ImGuiKey_Z;
 			break;
-			
-			case LeftBracket:
+			case tz::KeyCode::LeftBracket:
 				return ImGuiKey_LeftBracket;
 			break;
-			case RightBracket:
+			case tz::KeyCode::RightBracket:
 				return ImGuiKey_RightBracket;
 			break;
 			//case LeftParenthesis:
