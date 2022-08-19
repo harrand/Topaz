@@ -527,17 +527,16 @@ namespace tz::dbgui
 							ImGui::SameLine();
 							switch(pinfo.vendor)
 							{
-								using enum tz::gl::vk2::PhysicalDeviceVendor;
-								case Nvidia:
+								case tz::gl::vk2::PhysicalDeviceVendor::Nvidia:
 									ImGui::Text("Nvidia");
 								break;
-								case AMD:
+								case tz::gl::vk2::PhysicalDeviceVendor::AMD:
 									ImGui::Text("AMD");
 								break;
-								case Intel:
+								case tz::gl::vk2::PhysicalDeviceVendor::Intel:
 									ImGui::Text("Intel");
 								break;
-								case Other:
+								case tz::gl::vk2::PhysicalDeviceVendor::Other:
 									ImGui::Text("Unknown");
 								break;
 							}
@@ -545,17 +544,16 @@ namespace tz::dbgui
 							ImGui::SameLine();
 							switch(pinfo.type)
 							{
-								using enum tz::gl::vk2::PhysicalDeviceType;
-								case IntegratedGPU:
+								case tz::gl::vk2::PhysicalDeviceType::IntegratedGPU:
 									ImGui::Text("Integrated GPU");
 								break;
-								case DiscreteGPU:
+								case tz::gl::vk2::PhysicalDeviceType::DiscreteGPU:
 									ImGui::Text("Discrete GPU");
 								break;
-								case VirtualGPU:
+								case tz::gl::vk2::PhysicalDeviceType::VirtualGPU:
 									ImGui::Text("Virtual GPU");
 								break;
-								case CPU:
+								case tz::gl::vk2::PhysicalDeviceType::CPU:
 									ImGui::Text("CPU");
 								break;
 								default:
@@ -645,7 +643,6 @@ namespace tz::dbgui
 	{
 		switch(key_code)
 		{
-			using enum tz::KeyCode;
 			case tz::KeyCode::Space:
 				return ImGuiKey_Space;
 			break;
