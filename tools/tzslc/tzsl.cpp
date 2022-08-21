@@ -328,7 +328,22 @@ namespace tzslc
 			{
 				std::string flag = *(beg + 1);
 				tzslc_assert(flag == "const", "Detected unrecognised token `%s` in buffer resource specifier. Replace with nothing, or `const`. Non-const texture resources are not yet implemented.", flag.c_str());
-				return "layout(binding = " + *(beg) + ") buffer ImageData\n{\n\tsampler2D textures[" + *(beg + 3) + "];\n} " + *(beg + 2) + ";\n#define " + *(beg + 2) + " " + *(beg + 2) + ".textures";
+				/*
+				 * if bindless textures are supported:
+				 * layout(binding = x) buffer ImageData
+				 * {
+				 * 	sampler2D textures[n];
+				 * } varname;
+				 * #define varname varname.textures;
+				 *
+				 * otherwise:
+				 * layout(location = x) uniform sampler2D varname[n];
+				 *
+				 */
+				auto binding_id = *beg;
+				auto tex_count = *(beg + 3);
+				auto varname = *(beg + 2);
+				return "#ifdef GL_ARB_bindless_texture\n\nlayout(binding = " + binding_id + ") buffer ImageData\n{\n\tsampler2D textures[" + tex_count + "];\n} " + varname + ";\n#define " + varname + " " + varname + ".textures\n\n#else\n\nlayout(location = " + binding_id + ") uniform sampler2D " + varname + "[" + tex_count + "];\n#endif";
 			});
 		}
 		else

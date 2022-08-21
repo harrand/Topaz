@@ -84,8 +84,15 @@ namespace tz::gl
 						ImageComponentOGL& img = *static_cast<ImageComponentOGL*>(comp);
 						ogl2::Image& image = img.ogl_get_image();
 						image.set_data(img.get_resource()->data());
-						image.make_bindless();
-						this->image_handles.push_back(img.ogl_get_image().get_bindless_handle());
+						if(ogl2::supports_bindless_textures())
+						{
+							image.make_bindless();
+							this->image_handles.push_back(img.ogl_get_image().get_bindless_handle());
+						}
+						else
+						{
+							this->image_handles.push_back(img.ogl_get_image().native());
+						}
 					}
 				break;
 				default:
@@ -149,7 +156,7 @@ namespace tz::gl
 	void ResourceStorage::fill_bindless_image_buffer()
 	{
 		TZ_PROFZONE("OpenGL Frontend - RendererOGL ResourceStorage (Fill bindless image buffer)", TZ_PROFCOL_RED);
-		if(this->image_handles.empty())
+		if(this->image_handles.empty() || !ogl2::supports_bindless_textures())
 		{
 			return;
 		}
@@ -200,14 +207,29 @@ namespace tz::gl
 
 	void ResourceStorage::bind_image_buffer()
 	{
-		if(!this->bindless_image_storage_buffer.is_null())
+		auto buf_res_count = this->resource_count_of(ResourceType::Buffer);
+
+		if(ogl2::supports_bindless_textures())
 		{
-			auto buf_res_count = this->resource_count_of(ResourceType::Buffer);
-			if(this->try_get_index_buffer() != nullptr)
+			if(!this->bindless_image_storage_buffer.is_null())
 			{
-				buf_res_count--;
+				if(this->try_get_index_buffer() != nullptr)
+				{
+					buf_res_count--;
+				}
+				this->bindless_image_storage_buffer.bind_to_resource_id(buf_res_count);
 			}
-			this->bindless_image_storage_buffer.bind_to_resource_id(buf_res_count);
+		}
+		else
+		{
+			// Just set uniforms.
+			for(std::size_t i = 0; i < this->image_handles.size(); i++)
+			{
+				auto img_nat = static_cast<ogl2::Image::NativeType>(this->image_handles[i]);
+				glActiveTexture(GL_TEXTURE0 + i);
+				glBindTexture(GL_TEXTURE_2D, img_nat);
+				glUniform1i(buf_res_count + i, i);
+			}
 		}
 	}
 
