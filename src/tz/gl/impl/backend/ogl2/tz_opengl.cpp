@@ -33,9 +33,9 @@ namespace tz::gl::ogl2
 		#endif
 		if(!supports_bindless_textures())
 		{
-			tz_warning_report("The OpenGL backend implicitly uses bindless textures under-the-hood, and initialisation has just detected that the extension `GL_ARB_bindless_texture` is not available. The application will most certainly crash if you try to use OGL textures.");
+			tz_warning_report("The OpenGL backend prefers using bindless textures under-the-hood. Unfortunately, the bindless textures extension `GL_ARB_bindltess_texture` is unavailable on this implementation. Renderers will fallback to old-style OpenGL uniforms for image resources, although this behaviour is unreliable and could be removed at any point.");
 		}
-		tz_report("OpenGL v%u.%u Initialised", ogl_version.major, ogl_version.minor);
+		tz_report("OpenGL v%u.%u %sInitialised", ogl_version.major, ogl_version.minor, supports_bindless_textures() ? "" : "(Bindful) ");
 		initialised = true;
 	}
 
