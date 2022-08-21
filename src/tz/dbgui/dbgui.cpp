@@ -318,7 +318,19 @@ namespace tz::dbgui
 		global_render_data->vertex_buffer = rinfo.add_resource(vertex_buffer);
 		global_render_data->shader_data_buffer = rinfo.add_resource(shader_data_buffer);
 		global_render_data->index_buffer = rinfo.add_resource(index_buffer);
-		rinfo.add_resource(font_image);
+
+		// TODO: OGL imageresource support even when there arent bindless textures
+		bool support_images = true;
+#if TZ_OGL
+		if(!tz::gl::ogl2::supports_bindless_textures())
+		{
+			support_images = false;
+		}
+#endif
+		if(support_images)
+		{
+			rinfo.add_resource(font_image);
+		}
 		rinfo.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(dbgui, vertex));
 		rinfo.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(dbgui, fragment));
 		rinfo.set_options({tz::gl::RendererOption::NoClearOutput, tz::gl::RendererOption::NoDepthTesting, tz::gl::RendererOption::NoPresent, tz::gl::RendererOption::RenderWait});
